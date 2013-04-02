@@ -116,41 +116,16 @@ float64_t CSimpleLocalityImprovedStringKernel::dot_pyr (const char* const x1,
 	     const int32_t DEGREE1, const int32_t DEGREE2, float64_t *pyra)
 {
 	const int32_t PYRAL = 2*NTWIDTH-1; // total window length
-	int32_t pyra_len, pyra_len2;
-	float64_t pot, PYRAL_pot;
+	float64_t pot;
 	float64_t sum;
 	int32_t DEGREE1_1 = (DEGREE1 & 0x1)==0;
 	int32_t DEGREE1_1n = (DEGREE1 & ~0x1)!=0;
 	int32_t DEGREE1_2 = (DEGREE1 & 0x2)!=0;
 	int32_t DEGREE1_3 = (DEGREE1 & ~0x3)!=0;
 	int32_t DEGREE1_4 = (DEGREE1 & 0x4)!=0;
-	{
-	float64_t PYRAL_ = PYRAL;
-	PYRAL_pot = DEGREE1_1 ? 1.0 : PYRAL_;
-	if (DEGREE1_1n)
-	{
-		PYRAL_ *= PYRAL_;
-		if (DEGREE1_2) PYRAL_pot *= PYRAL_;
-		if (DEGREE1_3)
-		{
-			PYRAL_ *= PYRAL_;
-			if (DEGREE1_4) PYRAL_pot *= PYRAL_;
-		}
-	}
-	}
 
 	ASSERT((DEGREE1 & ~0x7) == 0)
 	ASSERT((DEGREE2 & ~0x7) == 0)
-
-	pyra_len = NOF_NTS-PYRAL+1;
-	pyra_len2 = (int32_t) pyra_len/2;
-	{
-	int32_t j;
-	for (j = 0; j < pyra_len; j++)
-		pyra[j] = 4*((float64_t)((j < pyra_len2) ? j+1 : pyra_len-j))/((float64_t)pyra_len);
-	for (j = 0; j < pyra_len; j++)
-		pyra[j] /= PYRAL_pot;
-	}
 
 	register int32_t conv;
 	register int32_t i;
