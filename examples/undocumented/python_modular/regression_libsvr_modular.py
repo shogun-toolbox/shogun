@@ -1,40 +1,50 @@
 #!/usr/bin/env python
-from numpy import array
-from numpy.random import seed, rand
-from tools.load import LoadMatrix
-lm=LoadMatrix()
+from numpy import * 
 
-traindat = lm.load_numbers('../data/fm_train_real.dat')
-testdat = lm.load_numbers('../data/fm_test_real.dat')
-label_traindat = lm.load_labels('../data/label_train_twoclass.dat')
+parameter_list=[[1, 0.1,20,100,6,10,0.5,1, 1], [2,0.2,20,100,6,10,0.5,1, 2]]
 
-
-parameter_list = [[traindat,testdat,label_traindat,2.1,1,1e-5,1e-2], \
-                 [traindat,testdat,label_traindat,2.1,1,1e-5,1e-2]]
-
-
-def regression_libsvr_modular (fm_train=traindat,fm_test=testdat,label_train=label_traindat,\
-				       width=2.1,C=1,epsilon=1e-5,tube_epsilon=1e-2):
+def regression_libsvr_modular (svm_c=1, svr_param=0.1, n=100,n_test=100, \
+		x_range=6,x_range_test=10,noise_var=0.5,width=1, seed=1):
 
 	from shogun.Features import RegressionLabels, RealFeatures
 	from shogun.Kernel import GaussianKernel
-	from shogun.Regression import LibSVR
+	from shogun.Regression import LibSVR, LIBSVR_NU_SVR, LIBSVR_EPSILON_SVR
 
-	feats_train=RealFeatures(fm_train)
-	feats_test=RealFeatures(fm_test)
+	# reproducable results
+	random.seed(seed)
+	
+	# easy regression data: one dimensional noisy sine wave
+	n=15
+	n_test=100
+	x_range_test=10
+	noise_var=0.5;
+	X=random.rand(1,n)*x_range
+	
+	X_test=array([[float(i)/n_test*x_range_test for i in range(n_test)]])
+	Y_test=sin(X_test)
+	Y=sin(X)+random.randn(n)*noise_var
+	
+	# shogun representation
+	labels=RegressionLabels(Y[0])
+	feats_train=RealFeatures(X)
+	feats_test=RealFeatures(X_test)
 
 	kernel=GaussianKernel(feats_train, feats_train, width)
-	labels=RegressionLabels(label_train)
+	
+	# two svr models: epsilon and nu
+	svr_epsilon=LibSVR(svm_c, svr_param, kernel, labels, LIBSVR_EPSILON_SVR)
+	svr_epsilon.train()
+	svr_nu=LibSVR(svm_c, svr_param, kernel, labels, LIBSVR_NU_SVR)
+	svr_nu.train()
 
-	svr=LibSVR(C, tube_epsilon, kernel, labels)
-	svr.set_epsilon(epsilon)
-	svr.train()
-
+	# predictions
 	kernel.init(feats_train, feats_test)
-	out1=svr.apply().get_labels()
-	out2=svr.apply(feats_test).get_labels()
+	out1_epsilon=svr_epsilon.apply().get_labels()
+	out2_epsilon=svr_epsilon.apply(feats_test).get_labels()
+	out1_nu=svr_epsilon.apply().get_labels()
+	out2_nu=svr_epsilon.apply(feats_test).get_labels()
 
-	return out1,out2,kernel
+	return out1_epsilon,out2_epsilon,out1_nu,out2_nu ,kernel
 
 if __name__=='__main__':
 	print('LibSVR')

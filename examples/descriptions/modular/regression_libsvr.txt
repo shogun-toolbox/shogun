@@ -1,7 +1,6 @@
 In this example a support vector regression algorithm is trained on a
 real-valued toy data set. The underlying library used for the SVR training is
-LIBSVM. The SVR is trained with regularization parameter C=1 and a gaussian
-kernel with width=2.1. The labels of both the train and the test data are
-fetched via svr.classify().get_labels().
+LIBSVM. Both the epsilon-SVR and the nu-SVR formulation are used.
+Data is a noisy sine wave on which a Gaussian kernel is used.
 
 For more details on LIBSVM solver see http://www.csie.ntu.edu.tw/~cjlin/libsvm/ .
