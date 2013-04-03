@@ -6,3 +6,5 @@
 ../data/classifier/SVMSGD_30_1en05_1_True.m
 ../data/classifier/SubGradientSVM_0017_1en05_1_05_False.m
 ../data/classifier/SubGradientSVM_15_1en05_1_05_False.m
+../data/kernel/Poly_1_0_10_3_6_01_False_False_CUBE_1_FK.m
+../data/kernel/Poly_1_0_10_3_6_01_False_False_CUBE_1_TOP.m
