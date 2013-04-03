@@ -1,1 +1,8 @@
 ../data/distribution/HMM_1en10_60_4_1_0_6_3_False_CUBE.m
+../data/classifier/SVMSGD_0017_1en05_1_True.m
+../data/classifier/SVMSGD_023_1en05_1_True.m
+../data/classifier/SVMSGD_15_1en05_1_True.m
+../data/classifier/SVMSGD_30_1en05_16_True.m
+../data/classifier/SVMSGD_30_1en05_1_True.m
+../data/classifier/SubGradientSVM_0017_1en05_1_05_False.m
+../data/classifier/SubGradientSVM_15_1en05_1_05_False.m
