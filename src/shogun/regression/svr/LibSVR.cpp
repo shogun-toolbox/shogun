@@ -30,7 +30,7 @@ CLibSVR::CLibSVR(float64_t C, float64_t svr_param, CKernel* k, CLabels* lab,
 
 	set_C(C,C);
 
-	switch (solver_type)
+	switch (st)
 	{
 	case LIBSVR_EPSILON_SVR:
 		set_tube_epsilon(svr_param);
