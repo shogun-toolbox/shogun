@@ -45,6 +45,7 @@ function y = classifier(filename)
 
 	elseif strcmp(classifier_name, 'LibLinear')==1
 		classifier=LibLinear(classifier_C, feats_train, lab);
+		classifier.set_liblinear_solver_type(L2R_LR)
 
 	elseif strcmp(classifier_name, 'LibSVMMultiClass')==1
 		classifier=LibSVMMultiClass(classifier_C, kernel, lab);

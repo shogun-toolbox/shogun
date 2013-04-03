@@ -67,8 +67,8 @@ function y = set_distance()
 		distance=MinkowskiMetric(feats_train, feats_train, distance_arg0_k);
 
 	elseif strcmp(dname, 'SparseEuclideanDistance')==1
-		global EuclideanDistance;
-		distance=EuclideanDistance(feats_train, feats_train);
+		global SparseEuclideanDistance;
+		distance=SparseEuclideanDistance(feats_train, feats_train);
 
 	elseif strcmp(dname, 'TanimotoDistance')==1
 		global TanimotoDistance;

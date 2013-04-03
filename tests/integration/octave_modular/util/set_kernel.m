@@ -47,6 +47,10 @@ function y = set_kernel()
 		subkernel=GaussianKernel(subfeats_train, subfeats_test, ...
 			kernel_subkernel0_arg1_width);
 		kernel=AUCKernel(0, subkernel);
+		kernel.init(feats_train, feats_train);
+
+		%feats_train=WordFeatures(kernel_subkernel0_data_train);
+		%feats_test=WordFeatures(kernel_subkernel0_data_test);
 
 	elseif strcmp(kname, 'Chi2')==1
 		global Chi2Kernel;

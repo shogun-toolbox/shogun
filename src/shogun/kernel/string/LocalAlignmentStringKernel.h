@@ -43,7 +43,7 @@ class CLocalAlignmentStringKernel: public CStringKernel<char>
 		 */
 		CLocalAlignmentStringKernel(
 			CStringFeatures<char>* l, CStringFeatures<char>* r,
-			float64_t opening=12, float64_t extension=2);
+			float64_t opening=10, float64_t extension=2);
 
 		virtual ~CLocalAlignmentStringKernel();
 
