@@ -47,6 +47,17 @@ namespace shogun
  * 		-{\bf w}^T{\bf x}_i-b-c_i^*-\xi_i^*\leq 0,&\, \forall i=1\dots N
  * \f}
  * with \f$c_i=y_i+ \epsilon\f$ and \f$c_i^*=-y_i+ \epsilon\f$
+ *
+ * This class also support the \f$\nu\f$-SVR regression version of the problem,
+ * where \f$\nu\f$ replaces the \f$\epsilon\f$ parameter and represents an
+ * upper bound on the fraction of margin errors and a lower bound on the fraction
+ * of support vectors. While it is easier to interpret, the resulting
+ * optimization problem usually takes longer to solve. Note that these different
+ * parameters do not result in different predictive power. For a given problem,
+ * the best SVR for each parametrization will lead to the same results.
+ * See the letter "Training \nu-Support Vector Regression: Theory and Algorithms" by
+ * Chih-Chung Chang and Chih-Jen Lin for the relation of \f$\epsilon\f$-SVR and
+ * \f$\nu\f$-SVR.
  */
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 enum LIBSVR_SOLVER_TYPE
