@@ -3,7 +3,7 @@ function y = preproc(filename)
 	y=true;
 
 	addpath('util');
-	addpath('../data/preproc');
+	addpath('../data/preprocessor');
 
 	eval('globals'); % ugly hack to have vars from filename as globals
 	eval(filename);

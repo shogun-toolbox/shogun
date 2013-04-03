@@ -35,9 +35,9 @@ function y = set_distance()
 		global CosineDistance;
 		distance=CosineDistance(feats_train, feats_train);
 
-	elseif strcmp(dname, 'EuclidianDistance')==1
-		global EuclidianDistance;
-		distance=EuclidianDistance(feats_train, feats_train);
+	elseif strcmp(dname, 'EuclideanDistance')==1
+		global EuclideanDistance;
+		distance=EuclideanDistance(feats_train, feats_train);
 
 	elseif strcmp(dname, 'GeodesicMetric')==1
 		global GeodesicMetric;
@@ -66,9 +66,9 @@ function y = set_distance()
 		global distance_arg0_k;
 		distance=MinkowskiMetric(feats_train, feats_train, distance_arg0_k);
 
-	elseif strcmp(dname, 'SparseEuclidianDistance')==1
-		global SparseEuclidianDistance;
-		distance=SparseEuclidianDistance(feats_train, feats_train);
+	elseif strcmp(dname, 'SparseEuclideanDistance')==1
+		global EuclideanDistance;
+		distance=EuclideanDistance(feats_train, feats_train);
 
 	elseif strcmp(dname, 'TanimotoDistance')==1
 		global TanimotoDistance;
