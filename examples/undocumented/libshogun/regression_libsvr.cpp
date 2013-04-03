@@ -20,7 +20,7 @@ void test_libsvr()
 	const int32_t kernel_cache=0;
 	const float64_t rbf_width=10;
 	const float64_t svm_C=10;
-	const float64_t svm_nu=0.001;
+	const float64_t svm_nu=0.01;
 
 	/* create some easy regression data: 1d noisy sine wave */
 	index_t n=100;
@@ -50,7 +50,9 @@ void test_libsvr()
 	CGaussianKernel* kernel=new CGaussianKernel(kernel_cache, rbf_width);
 	kernel->init(features_train, features_train);
 
-	CLibSVR* svm=new CLibSVR(svm_C, svm_nu, kernel, labels_train, LIBSVR_EPSILON_SVR);
+	// also epsilon svr possible here
+	LIBSVR_SOLVER_TYPE st=LIBSVR_NU_SVR;
+	CLibSVR* svm=new CLibSVR(svm_C, svm_nu, kernel, labels_train, st);
 	svm->train();
 
 	/* predict */
