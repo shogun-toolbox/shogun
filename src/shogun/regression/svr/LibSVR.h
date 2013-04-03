@@ -5,6 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 1999-2009 Soeren Sonnenburg
+ * Written (W) 2013 Heiko Strathmann
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
@@ -55,7 +56,7 @@ namespace shogun
  * optimization problem usually takes longer to solve. Note that these different
  * parameters do not result in different predictive power. For a given problem,
  * the best SVR for each parametrization will lead to the same results.
- * See the letter "Training \nu-Support Vector Regression: Theory and Algorithms" by
+ * See the letter "Training \f$\nu\f$-Support Vector Regression: Theory and Algorithms" by
  * Chih-Chung Chang and Chih-Jen Lin for the relation of \f$\epsilon\f$-SVR and
  * \f$\nu\f$-SVR.
  */
