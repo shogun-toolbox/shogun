@@ -5,6 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 1999-2009 Soeren Sonnenburg
+ * Written (W) 2013 Heiko Strathmann
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
@@ -47,24 +48,45 @@ namespace shogun
  * 		-{\bf w}^T{\bf x}_i-b-c_i^*-\xi_i^*\leq 0,&\, \forall i=1\dots N
  * \f}
  * with \f$c_i=y_i+ \epsilon\f$ and \f$c_i^*=-y_i+ \epsilon\f$
+ *
+ * This class also support the \f$\nu\f$-SVR regression version of the problem,
+ * where \f$\nu\f$ replaces the \f$\epsilon\f$ parameter and represents an
+ * upper bound on the fraction of margin errors and a lower bound on the fraction
+ * of support vectors. While it is easier to interpret, the resulting
+ * optimization problem usually takes longer to solve. Note that these different
+ * parameters do not result in different predictive power. For a given problem,
+ * the best SVR for each parametrization will lead to the same results.
+ * See the letter "Training \f$\nu\f$-Support Vector Regression: Theory and Algorithms" by
+ * Chih-Chung Chang and Chih-Jen Lin for the relation of \f$\epsilon\f$-SVR and
+ * \f$\nu\f$-SVR.
  */
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+enum LIBSVR_SOLVER_TYPE
+{
+	LIBSVR_EPSILON_SVR = 1,
+	LIBSVR_NU_SVR = 2
+};
+#endif
 class CLibSVR : public CSVM
 {
 	public:
 		/** problem type */
 		MACHINE_PROBLEM_TYPE(PT_REGRESSION);
 
-		/** default constructor */
+		/** default constructor, creates a EPISOLON-SVR */
 		CLibSVR();
 
 		/** constructor
 		 *
 		 * @param C constant C
-		 * @param epsilon tube epsilon
+		 * @param svr_param tube epsilon or SVR-NU depending on solver type
 		 * @param k kernel
 		 * @param lab labels
+		 * @param st solver type to use, EPSILON-SVR or NU-SVR
 		 */
-		CLibSVR(float64_t C, float64_t epsilon, CKernel* k, CLabels* lab);
+		CLibSVR(float64_t C, float64_t svr_param, CKernel* k, CLabels* lab,
+				LIBSVR_SOLVER_TYPE st=LIBSVR_EPSILON_SVR);
+
 		virtual ~CLibSVR();
 
 		/** get classifier type
@@ -94,6 +116,9 @@ class CLibSVR : public CSVM
 
 		/** SVM model */
 		struct svm_model* model;
+
+		/** solver type */
+		LIBSVR_SOLVER_TYPE solver_type;
 };
 }
 #endif
