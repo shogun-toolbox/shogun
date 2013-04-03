@@ -16,7 +16,7 @@ function y = regression(filename)
 	end
 	kernel.parallel.set_num_threads(regression_num_threads);
 
-	lab=Labels(regression_labels);
+	lab=RegressionLabels(regression_labels);
 
 	if strcmp(regression_name, 'KernelRidgeRegression')==1
 		regression=KernelRidgeRegression(regression_tau, kernel, lab);
@@ -64,7 +64,7 @@ function y = regression(filename)
 
 	kernel.init(feats_train, feats_test);
 	classified=max(abs(
-		regression.classify().get_labels()-regression_classified));
+		regression.apply().get_labels()-regression_classified));
 
  	data={'classifier', alphas, bias, sv, classified};
 	y=check_accuracy(regression_accuracy, data);
