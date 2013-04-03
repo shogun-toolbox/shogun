@@ -122,7 +122,7 @@ class CQuadraticTimeMMD : public CKernelTwoSampleTestStatistic
 		 * the appended features p and q
 		 * @param m index of first sample of q
 		 */
-		CQuadraticTimeMMD(CCustomKernel* kernel, index_t m);
+		CQuadraticTimeMMD(CCustomKernel* custom_kernel, index_t m);
 
 		virtual ~CQuadraticTimeMMD();
 

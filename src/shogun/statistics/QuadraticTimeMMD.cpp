@@ -46,8 +46,8 @@ CQuadraticTimeMMD::CQuadraticTimeMMD(CKernel* kernel, CFeatures* p,
 	}
 }
 
-CQuadraticTimeMMD::CQuadraticTimeMMD(CCustomKernel* kernel, index_t m) :
-		CKernelTwoSampleTestStatistic(kernel, NULL, m)
+CQuadraticTimeMMD::CQuadraticTimeMMD(CCustomKernel* custom_kernel, index_t m) :
+		CKernelTwoSampleTestStatistic(custom_kernel, NULL, m)
 {
 	init();
 }
