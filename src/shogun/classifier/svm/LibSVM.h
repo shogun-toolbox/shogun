@@ -28,16 +28,24 @@ enum LIBSVM_SOLVER_TYPE
 class CLibSVM : public CSVM
 {
 	public:
-		/** constructor */
-		CLibSVM(LIBSVM_SOLVER_TYPE st=LIBSVM_C_SVC);
+		/** Default constructor, create a C-SVC svm */
+		CLibSVM();
+
+		/** Constructor
+		 *
+		 * @param st solver type C or NU SVC
+		 */
+		CLibSVM(LIBSVM_SOLVER_TYPE st);
 
 		/** constructor
 		 *
 		 * @param C constant C
 		 * @param k kernel
 		 * @param lab labels
+		 * @param st solver type to use, C-SVC or nu-SVC
 		 */
-		CLibSVM(float64_t C, CKernel* k, CLabels* lab);
+		CLibSVM(float64_t C, CKernel* k, CLabels* lab,
+				LIBSVM_SOLVER_TYPE st=LIBSVM_C_SVC);
 
 		virtual ~CLibSVM();
 

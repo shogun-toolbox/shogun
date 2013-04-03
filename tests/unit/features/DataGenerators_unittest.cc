@@ -47,7 +47,7 @@ TEST(GaussianBlobsDataGenerator,get_next_example)
 
     /* rougly ensures right results, set to 0.3 for now, if test fails, set a
      * bit larger */
-    float64_t accuracy=0.3;
+    float64_t accuracy=0.5;
 
 	/* matrix is expected to look like [1.5, 0.5; 0.5, 1.5] */
 	EXPECT_LE(CMath::abs(cov(0,0)-1.5), accuracy);

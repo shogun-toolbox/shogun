@@ -14,13 +14,19 @@
 
 using namespace shogun;
 
+CLibSVM::CLibSVM()
+: CSVM(), model(NULL), solver_type(LIBSVM_C_SVC)
+{
+}
+
 CLibSVM::CLibSVM(LIBSVM_SOLVER_TYPE st)
 : CSVM(), model(NULL), solver_type(st)
 {
 }
 
-CLibSVM::CLibSVM(float64_t C, CKernel* k, CLabels* lab)
-: CSVM(C, k, lab), model(NULL), solver_type(LIBSVM_C_SVC)
+
+CLibSVM::CLibSVM(float64_t C, CKernel* k, CLabels* lab, LIBSVM_SOLVER_TYPE st)
+: CSVM(C, k, lab), model(NULL), solver_type(st)
 {
 	problem = svm_problem();
 }
@@ -87,9 +93,21 @@ bool CLibSVM::train_machine(CFeatures* data)
 	float64_t weights[2]={1.0,get_C2()/get_C1()};
 
 	ASSERT(kernel && kernel->has_features())
-    ASSERT(kernel->get_num_vec_lhs()==problem.l)
+	ASSERT(kernel->get_num_vec_lhs()==problem.l)
 
-	param.svm_type=solver_type; // C SVM or NU_SVM
+	switch (solver_type)
+	{
+	case LIBSVM_C_SVC:
+		param.svm_type=C_SVC;
+		break;
+	case LIBSVM_NU_SVC:
+		param.svm_type=NU_SVC;
+		break;
+	default:
+		SG_ERROR("%s::train_machine(): Unknown solver type!\n", get_name());
+		break;
+	}
+
 	param.kernel_type = LINEAR;
 	param.degree = 3;
 	param.gamma = 0;	// 1/k
