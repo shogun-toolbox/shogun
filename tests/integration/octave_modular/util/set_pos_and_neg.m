@@ -37,15 +37,15 @@ function y = set_pos_and_neg(prefix)
 	wordfeats_train.obtain_from_char(charfeat, order-1, order, gap, reverse);
 	preproc=SortWordString();
 	preproc.init(wordfeats_train);
-	wordfeats_train.add_preproc(preproc);
-	wordfeats_train.apply_preproc();
+	wordfeats_train.add_preprocessor(preproc);
+	wordfeats_train.apply_preprocessor();
 
 	charfeat=StringCharFeatures(CUBE);
 	charfeat.set_features(data_test);
 	wordfeats_test=StringWordFeatures(charfeat.get_alphabet());
 	wordfeats_test.obtain_from_char(charfeat, order-1, order, gap, reverse);
-	wordfeats_test.add_preproc(preproc);
-	wordfeats_test.apply_preproc();
+	wordfeats_test.add_preprocessor(preproc);
+	wordfeats_test.apply_preprocessor();
 
 	pos_train=HMM(wordfeats_train, N, M, pseudo);
 	pos_train.train();

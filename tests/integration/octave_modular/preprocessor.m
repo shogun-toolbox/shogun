@@ -1,4 +1,4 @@
-function y = preproc(filename)
+function y = preprocessor(filename)
 	init_shogun;
 	y=true;
 
@@ -8,18 +8,18 @@ function y = preproc(filename)
 	eval('globals'); % ugly hack to have vars from filename as globals
 	eval(filename);
 
-	if strcmp(preproc_name, 'LogPlusOne')==1
+	if strcmp(preprocessor_name, 'LogPlusOne')==1
 		preproc=LogPlusOne();
-	elseif strcmp(preproc_name, 'NormOne')==1
+	elseif strcmp(preprocessor_name, 'NormOne')==1
 		preproc=NormOne();
-	elseif strcmp(preproc_name, 'PruneVarSubMean')==1
-		preproc=PruneVarSubMean(tobool(preproc_arg0_divide));
-	elseif strcmp(preproc_name, 'SortUlongString')==1
+	elseif strcmp(preprocessor_name, 'PruneVarSubMean')==1
+		preproc=PruneVarSubMean(tobool(preprocessor_arg0_divide));
+	elseif strcmp(preprocessor_name, 'SortUlongString')==1
 		preproc=SortUlongString();
-	elseif strcmp(preproc_name, 'SortWordString')==1
+	elseif strcmp(preprocessor_name, 'SortWordString')==1
 		preproc=SortWordString();
 	else
-		error('Unsupported preproc %s', preproc_name);
+		error('Unsupported preproc %s', preprocessor_name);
 	end
 
 	if ~set_features('kernel_')
@@ -27,10 +27,10 @@ function y = preproc(filename)
 	end
 
 	preproc.init(feats_train);
-	feats_train.add_preproc(preproc);
-	feats_train.apply_preproc();
-	feats_test.add_preproc(preproc);
-	feats_test.apply_preproc();
+	feats_train.add_preprocessor(preproc);
+	feats_train.apply_preprocessor();
+	feats_test.add_preprocessor(preproc);
+	feats_test.apply_preprocessor();
 
 	if ~set_kernel()
 		return;

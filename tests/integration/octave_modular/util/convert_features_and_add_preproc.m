@@ -40,9 +40,9 @@ function y = convert_features_and_add_preproc(prefix)
 		order-1, order, gap, tobool(reverse));
 
 	preproc.init(feats_train);
-	feats_train.add_preproc(preproc);
-	feats_train.apply_preproc();
-	feats_test.add_preproc(preproc);
-	feats_test.apply_preproc();
+	feats_train.add_preprocessor(preproc);
+	feats_train.apply_preprocessor();
+	feats_test.add_preprocessor(preproc);
+	feats_test.apply_preprocessor();
 
 	y=true;
