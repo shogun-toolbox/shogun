@@ -14,20 +14,26 @@ function test_all () {
 	echo "*** Testing in ${datapath}"
 	sleep 1
 	for file in ${datapath}; do
-		dump=`echo ${file} | grep WDSVMOcas`
-		if [ $? -eq 0 ]; then
-			echo WDSVMOcas totally unsupported: ERROR
+		if grep -q $file ../blacklist 
+		then
+			echo 'SKIPPING'
 		else
-			echo -n "${file}"
-			echo -n -e "\t\t"
-
-			output=`R --no-save --no-restore --no-readline --slave ${file} < test_one.R`
-			if [ $? -ne 0 ]; then
-				exitcode=1
-				echo ERROR
-				echo ${output}
+			dump=`echo ${file} | grep WDSVMOcas`
+			if [ $? -eq 0 ]
+			then
+				echo WDSVMOcas totally unsupported: ERROR
 			else
-				echo OK
+				echo -n "${file}"
+				echo -n -e "\t\t"
+
+				output=`R --no-save --no-restore --no-readline --slave ${file} < test_one.R`
+				if [ $? -ne 0 ]; then
+					exitcode=1
+					echo ERROR
+					echo ${output}
+				else
+					echo OK
+				fi
 			fi
 		fi
 	done

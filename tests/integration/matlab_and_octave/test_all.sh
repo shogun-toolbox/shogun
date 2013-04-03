@@ -18,25 +18,30 @@ function test_all () {
 		echo -n "$file"
 		echo -n -e "\t\t"
 
-		output=`./test_one.sh ${file} ${interface}`
-
-		if [ "${interface}" == "octave" ]; then
-			ans=`echo $output | grep 'ans =' | awk '{print $NF}'`
-		else # matlab has '>>' as last element in output
-			ans=`echo $output | grep 'ans =' | awk '{print $(NF-1)}'`
-		fi
-
-		if [ -z ${ans} ]; then
-			ans=0
-		fi
-
-		# thanks to matlab, 1 means ok and 0 means error
-		if [ "$?" -ne 0 -o "${ans}" -eq 0 ]; then
-			exitcode=1
-			echo ERROR
-			echo ${output}
+		if grep -q $file ../blacklist 
+		then
+			echo 'SKIPPING'
 		else
-			echo OK
+			output=`./test_one.sh ${file} ${interface}`
+
+			if [ "${interface}" == "octave" ]; then
+				ans=`echo $output | grep 'ans =' | awk '{print $NF}'`
+			else # matlab has '>>' as last element in output
+				ans=`echo $output | grep 'ans =' | awk '{print $(NF-1)}'`
+			fi
+
+			if [ -z ${ans} ]; then
+				ans=0
+			fi
+
+			# thanks to matlab, 1 means ok and 0 means error
+			if [ "$?" -ne 0 -o "${ans}" -eq 0 ]; then
+				exitcode=1
+				echo ERROR
+				echo ${output}
+			else
+				echo OK
+			fi
 		fi
 	done
 	sleep 1

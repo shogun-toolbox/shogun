@@ -21,15 +21,21 @@ function test_all () {
     for file in $datapath; do
 	echo -n "$file"
 	echo -n -e "\t\t"
-	output=`./test_one.pl "$file"`
-	ret=$?
 
-	if [ $ret -eq 1 ] ; then
-	    echo 'OK'
+	if grep -q $file ../blacklist 
+	then
+		echo 'SKIPPING'
 	else
-	    echo 'ERROR'
-		exitcode=1
-	    echo $output
+		output=`./test_one.pl "$file"`
+		ret=$?
+
+		if [ $ret -eq 1 ] ; then
+			echo 'OK'
+		else
+			echo 'ERROR'
+			exitcode=1
+			echo $output
+		fi
 	fi
     done
     sleep 1
