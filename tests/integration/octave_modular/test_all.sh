@@ -16,20 +16,25 @@ function test_all () {
 		echo -n "${file}"
 		echo -n -e "\t\t"
 
-		output=`./test_one.sh ${file}`
-		ans=`echo ${output} | grep 'ans =' | awk '{print $NF}'`
-		if [ -z ${ans} ]; then
-			ans=0
-		fi
-
-		# thanks to matlab, 1 means ok and 0 means error
-		if [ ${ans} -eq 0 ]; then
-			exitcode=1
-			echo ERROR
-			# remove octave banner
-			echo ${output} | grep -v 'GNU Octave'
+		if grep -q $file ../blacklist 
+		then
+			echo 'SKIPPING'
 		else
-			echo OK
+			output=`./test_one.sh ${file}`
+			ans=`echo ${output} | grep 'ans =' | awk '{print $NF}'`
+			if [ -z ${ans} ]; then
+				ans=0
+			fi
+
+			# thanks to matlab, 1 means ok and 0 means error
+			if [ ${ans} -eq 0 ]; then
+				exitcode=1
+				echo ERROR
+				# remove octave banner
+				echo ${output} | grep -v 'GNU Octave'
+			else
+				echo OK
+			fi
 		fi
 	done
 	sleep 1

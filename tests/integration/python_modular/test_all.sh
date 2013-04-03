@@ -22,15 +22,20 @@ function test_all () {
 		echo -n "$file"
 		echo -n -e "\t\t"
 
-		output=`${PYTHON} test_one.py "$file"`
-		ret=$?
-
-		if [ $ret -eq 0 ] ; then
-			echo 'OK'
+		if grep -q $file ../blacklist 
+		then
+			echo 'SKIPPING'
 		else
-			exitcode=1
-			echo 'ERROR'
-			echo $output
+			output=`${PYTHON} test_one.py "$file"`
+			ret=$?
+
+			if [ $ret -eq 0 ] ; then
+				echo 'OK'
+			else
+				exitcode=1
+				echo 'ERROR'
+				echo $output
+			fi
 		fi
 	done
 	sleep 1
