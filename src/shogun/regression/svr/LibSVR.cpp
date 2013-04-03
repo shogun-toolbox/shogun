@@ -110,7 +110,7 @@ bool CLibSVR::train_machine(CFeatures* data)
 	param.degree = 3;
 	param.gamma = 0;	// 1/k
 	param.coef0 = 0;
-	param.nu = 0.5;
+	param.nu = nu;
 	param.kernel=kernel;
 	param.cache_size = kernel->get_cache_size();
 	param.max_train_time = m_max_train_time;
