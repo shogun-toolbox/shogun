@@ -534,22 +534,22 @@ protected:
 };
 
 #ifdef HAVE_EIGEN3
-	/** EigenTriplet definition
-	 * for Eigen3 backword compatibility.
-	 */
+	/** EigenTriplet definition for Eigen3 backword compatibility */
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 	template <typename T> struct EigenTriplet
 	{
 		EigenTriplet(index_t colIndex, index_t rowIndex, T valueT) :
-		col_(colIndex), row_(rowIndex), value_(valueT)
+		ecol(colIndex), erow(rowIndex), evalue(valueT)
 		{
 		}
-		index_t col() const { return col_; };
-		index_t row() const { return row_; };
-		T value() const { return value_; };
-		index_t col_;
-		index_t row_;
-		T value_;
+		index_t col() const { return ecol; };
+		index_t row() const { return erow; };
+		T value() const { return evalue; };
+		index_t ecol;
+		index_t erow;
+		T evalue;
 	};
+#endif /* DOXYGEN_SHOULD_SKIP_THIS */
 #endif //HAVE_EIGEN3
 }
 
