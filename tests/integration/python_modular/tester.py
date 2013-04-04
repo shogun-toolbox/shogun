@@ -1,9 +1,11 @@
 #!/usr/bin/env python
+
 import modshogun
 import pickle
 import os
 import filecmp
 import numpy
+import sys
 
 from generator import setup_tests, get_fname, blacklist, get_test_mod, run_test
 
@@ -83,7 +85,7 @@ def compare_dbg_helper(a, b, tolerance):
 		return False
 
 def tester(tests, cmp_method, tolerance, failures, missing):
-	failed=False
+	failed=[]
 
 	for t in tests:
 		try:
@@ -93,7 +95,7 @@ def tester(tests, cmp_method, tolerance, failures, missing):
 			continue
 		except Exception, e:
 			print "%-60s ERROR (%s)" % (t,e)
-			failed=True
+			failed.append(t)
 			continue
 		fname = ""
 
@@ -110,15 +112,16 @@ def tester(tests, cmp_method, tolerance, failures, missing):
 							print "%-60s OK" % setting_str
 					else:
 						if not missing:
+							failed.append(setting_str)
 							print "%-60s ERROR" % setting_str
 				except Exception, e:
 					print setting_str, e
 			except IOError, e:
-				failed=True
+				failed.append(setting_str)
 				if not failures:
 					print "%-60s NO TEST (%s)" % (setting_str, e)
 			except Exception, e:
-				failed=True
+				failed.append(setting_str)
 				if not missing:
 					print "%-60s EXCEPTION %s" % (setting_str,e)
 	return failed
@@ -143,6 +146,11 @@ if __name__=='__main__':
 	else:
 		cmp_method=compare
 	tests = setup_tests(args)
-	if tester(tests, cmp_method, opts.tolerance, opts.failures, opts.missing):
+	failed = tester(tests, cmp_method, opts.tolerance, opts.failures, opts.missing)
+	if failed:
+		print
+		print "The following tests failed!"
+		for f in failed:
+			print "\t", f
 		sys.exit(1)
 	sys.exit(0)
