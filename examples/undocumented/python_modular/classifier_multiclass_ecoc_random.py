@@ -6,7 +6,7 @@ lm=LoadMatrix()
 if exists('../data/../mldata/uci-20070111-optdigits.mat'):
     from scipy.io import loadmat
 
-    mat = loadmat('../data/../mldata/uci-20070111-optdigits.mat')['int0'].astype(float)
+    mat = loadmat('../data/../mldata/uci-20070111-optdigits.mat', struct_as_record=False)['int0'].astype(float)
     X = mat[:-1,:]
     Y = mat[-1,:]
     isplit = X.shape[1]/2

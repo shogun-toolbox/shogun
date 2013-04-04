@@ -4,7 +4,7 @@ import numpy
 import scipy
 
 from scipy import io
-data_dict = scipy.io.loadmat('../data/hmsvm_data_large_integer.mat')
+data_dict = scipy.io.loadmat('../data/hmsvm_data_large_integer.mat', struct_as_record=False)
 
 parameter_list=[[data_dict]]
 
