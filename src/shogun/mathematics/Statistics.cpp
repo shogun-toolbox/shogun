@@ -17,6 +17,8 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
+#include <shogun/lib/SGSparseMatrix.h>
+#include <shogun/lib/SGSparseVector.h>
 
 #ifdef HAVE_LAPACK
 #include <shogun/mathematics/lapack.h>
@@ -1982,4 +1984,78 @@ float64_t CStatistics::log_det(SGMatrix<float64_t> m)
 
 	return retval;
 }
+
+float64_t CStatistics::log_det(const SGSparseMatrix<float64_t> m)
+{
+	// convert from SGSparseMatrix<T> to SparseMatrix<T>
+	index_t num_rows = m.num_vectors;
+	index_t num_cols = m.num_features;
+
+#ifdef EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
+	typedef shogun::EigenTriplet<float64_t> SparseTriplet;
+#else // EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
+	typedef Eigen::Triplet<float64_t> SparseTriplet;
+#endif // EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
+
+	// create a triplet list
+	std::vector<SparseTriplet> tripletList;
+
+	// fill the triplet list
+	for( index_t i = 0; i < num_rows; ++i )
+	{
+		for( index_t k = 0; k < m[i].num_feat_entries; ++k )
+		{
+			index_t &index_i = i;
+			index_t &index_j = m[i].features[k].feat_index;
+			float64_t &val = m[i].features[k].entry;
+			tripletList.push_back(SparseTriplet(index_i, index_j, val));
+		}
+	}
+#ifdef EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
+	// initialize the sparse matrix
+	DynamicSparseMatrix<float64_t> dM(num_rows, num_cols);
+	dM.reserve(tripletList.size());
+
+	for( std::vector<SparseTriplet>::iterator it = tripletList.begin(); it != tripletList.end(); ++it )
+			dM.coeffRef(it->row(), it->col()) += it->value();
+	SparseMatrix<float64_t> M(dM);
+
+	// access the lower triangular factor after cholesky decomposition
+	typedef SparseMatrix<float64_t> MatrixType;
+	class EigenSimplicialLLT: public SimplicialCholesky<MatrixType, Eigen::Lower>
+	{
+	public:
+		EigenSimplicialLLT(): SimplicialCholesky<MatrixType>()
+		{
+			setMode(SimplicialCholeskyLLt);
+		}
+		~EigenSimplicialLLT()
+		{
+		}
+		inline const MatrixType matrixL() { return SimplicialCholesky<MatrixType>::m_matrix; }
+	};
+
+	EigenSimplicialLLT llt;
+#else // EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
+	// initialize the sparse matrix
+	SparseMatrix<float64_t> M(num_rows, num_cols);
+	M.setFromTriplets(tripletList.begin(), tripletList.end());
+
+	SimplicialLLT<SparseMatrix<float64_t> > llt;
+#endif // EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
+
+	// factorize using cholesky with amd permutation 
+	llt.compute(M);
+	// get the lower triangular matrix
+	SparseMatrix<float64_t> L =  llt.matrixL();
+	
+	// calculate the log-determinant
+	float64_t retval = 0.0;
+	for( index_t i = 0; i < M.rows(); ++i )
+		retval += log(L.coeff(i,i));
+	retval *= 2;
+
+	return retval;
+}
+
 #endif //HAVE_EIGEN3
