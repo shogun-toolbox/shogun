@@ -8,7 +8,7 @@ def regression_libsvr_modular (svm_c=1, svr_param=0.1, n=100,n_test=100, \
 
 	from shogun.Features import RegressionLabels, RealFeatures
 	from shogun.Kernel import GaussianKernel
-	from shogun.Regression import LibSVR, LIBSVR_NU_SVR, LIBSVR_EPSILON_SVR
+	from shogun.Regression import LibSVR
 
 	# reproducable results
 	random.seed(seed)
@@ -32,9 +32,9 @@ def regression_libsvr_modular (svm_c=1, svr_param=0.1, n=100,n_test=100, \
 	kernel=GaussianKernel(feats_train, feats_train, width)
 	
 	# two svr models: epsilon and nu
-	svr_epsilon=LibSVR(svm_c, svr_param, kernel, labels, LIBSVR_EPSILON_SVR)
+	svr_epsilon=LibSVR(svm_c, svr_param, kernel, labels)
 	svr_epsilon.train()
-	svr_nu=LibSVR(svm_c, svr_param, kernel, labels, LIBSVR_NU_SVR)
+	svr_nu=LibSVR(svm_c, svr_param, kernel, labels)
 	svr_nu.train()
 
 	# predictions
