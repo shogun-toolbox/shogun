@@ -2,15 +2,18 @@
 #ifdef HAVE_EIGEN3
 
 #include <shogun/lib/SGMatrix.h>
+#include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGSparseMatrix.h>
 #include <shogun/lib/SGSparseVector.h>
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/mathematics/eigen3.h>
 #include <math.h>
 #include <gtest/gtest.h>
+#include <iostream>	//TODO remove
 
 using namespace shogun;
 using namespace Eigen;
+using namespace std;	//TODO remove
 
 // TEST 1
 TEST(Statistics, log_det_test_1)
@@ -96,4 +99,34 @@ TEST(Statistics, log_det_test_3)
 	EXPECT_NEAR(CStatistics::log_det(M), 4605.0649365774307, 1E-10);
 
 }
+
+// TEST 4
+TEST(Statistics, sample_from_gaussian_dense)
+{
+
+	int32_t N = 1000;
+	int32_t dim = 30;
+
+	// create a mean vector
+	VectorXd m = VectorXd::Constant(dim, 1, 5.0);//5.0
+
+	// create a random covariance matrix
+	MatrixXd c = MatrixXd::Random(dim, dim);
+	c = c * c.transpose() + MatrixXd::Identity(dim, dim); 
+
+	SGVector<float64_t> *mean = new SGVector<float64_t> (m.data(), m.rows());
+	SGMatrix<float64_t> *cov = new SGMatrix<float64_t> (c.data(), c.rows(), c.cols());
+	SGMatrix<float64_t> samples = CStatistics::sample_from_gaussian(*mean, *cov, N);
+
+	// calculate the sample mean and covariance
+	SGVector<float64_t> sample_mean = CStatistics::matrix_mean(samples);
+	SGMatrix<float64_t> sample_cov = CStatistics::covariance_matrix(samples);
+	Map<VectorXd> smu(sample_mean.vector, sample_mean.vlen);
+	Map<MatrixXd> scov(sample_cov.matrix, sample_cov.num_rows, sample_cov.num_cols);
+
+	EXPECT_NEAR(m.norm(), smu.norm(), 0.5);
+	EXPECT_NEAR(c.norm(), scov.norm(), 0.5);
+
+}
+
 #endif // HAVE_EIGEN3

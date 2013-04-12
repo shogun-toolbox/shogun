@@ -2058,4 +2058,30 @@ float64_t CStatistics::log_det(const SGSparseMatrix<float64_t> m)
 	return retval;
 }
 
+SGMatrix<float64_t> CStatistics::sample_from_gaussian(SGVector<float64_t> mean, SGMatrix<float64_t> cov, int32_t N)
+{
+	int32_t dim = mean.vlen;
+	Map<VectorXd> mu(mean.vector, mean.vlen);
+	Map<MatrixXd> c(cov.matrix, cov.num_rows, cov.num_cols);
+
+	// calculate the upper triangular cholesky factor of the covariance matrix
+	MatrixXd U = c.llt().matrixU();
+
+	// generate samples from N(0, I), NxD
+	MatrixXd S(N, dim); 
+	for( int32_t i = 0; i < N; ++i ) 
+		for( int32_t j = 0; j < dim; ++j )
+			S(i,j) = CMath::randn_double();
+
+	// generate samples from N(mean, cov), NxD
+	S = S * U;
+	for( int32_t i = 0; i < N; ++i ) 
+		S.row(i) += mu;
+
+	SGMatrix<float64_t> *samples = new SGMatrix<float64_t> (S.data(), S.rows(), S.cols());
+
+	return *samples;
+}
+
+
 #endif //HAVE_EIGEN3
