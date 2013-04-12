@@ -9,11 +9,9 @@
 #include <shogun/mathematics/eigen3.h>
 #include <math.h>
 #include <gtest/gtest.h>
-#include <iostream>	//TODO remove
 
 using namespace shogun;
 using namespace Eigen;
-using namespace std;	//TODO remove
 
 // TEST 1
 TEST(Statistics, log_det_test_1)
