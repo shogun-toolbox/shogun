@@ -495,7 +495,8 @@ public:
 	 * @param N number of samples
 	 * @return the sample matrix of size \f$N\times dim\f$
 	 */
-	static SGMatrix<float64_t> sample_from_gaussian(SGVector<float64_t> mean, SGMatrix<float64_t> cov, int32_t N = 1);
+	static SGMatrix<float64_t> sample_from_gaussian(SGVector<float64_t> mean, 
+	SGMatrix<float64_t> cov, int32_t N=1, bool precision_matrix=false);
 
 #endif //HAVE_EIGEN3
 

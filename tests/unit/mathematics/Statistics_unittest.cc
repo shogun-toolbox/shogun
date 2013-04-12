@@ -98,32 +98,38 @@ TEST(Statistics, log_det_test_3)
 
 }
 
-// TEST 4
+// TEST 4 - Sampling from Multivariate Gaussian distribution with Dense 
+// covariance matrix.
 TEST(Statistics, sample_from_gaussian_dense)
 {
 
-	int32_t N = 1000;
-	int32_t dim = 30;
+	int32_t N=1000;
+	int32_t dim=100;
 
 	// create a mean vector
-	VectorXd m = VectorXd::Constant(dim, 1, 5.0);//5.0
+	SGVector<float64_t> mean(dim);
+	Map<VectorXd> mu(mean.vector, mean.vlen);
+	mu=VectorXd::Constant(dim, 1, 5.0);
 
 	// create a random covariance matrix
-	MatrixXd c = MatrixXd::Random(dim, dim);
-	c = c * c.transpose() + MatrixXd::Identity(dim, dim); //TODO rewrite with noalias
+	SGMatrix<float64_t> cov(dim, dim);
+	Map<MatrixXd> c(cov.matrix, cov.num_rows, cov.num_cols);
+	c=MatrixXd::Random(dim, dim);
+	c=c*c.transpose()+MatrixXd::Identity(dim, dim);
 
-	SGVector<float64_t> mean(m.data(), m.rows());
-	SGMatrix<float64_t> cov(c.data(), c.rows(), c.cols());
-	SGMatrix<float64_t> samples = CStatistics::sample_from_gaussian(mean, cov, N);
+	SGMatrix<float64_t> samples=CStatistics::sample_from_gaussian(mean, cov, N);
 
 	// calculate the sample mean and covariance
-	SGVector<float64_t> sample_mean = CStatistics::matrix_mean(samples);
-	SGMatrix<float64_t> sample_cov = CStatistics::covariance_matrix(samples);
-	Map<VectorXd> smu(sample_mean.vector, sample_mean.vlen);
-	Map<MatrixXd> scov(sample_cov.matrix, sample_cov.num_rows, sample_cov.num_cols);
+	SGVector<float64_t> s_mean=CStatistics::matrix_mean(samples);
+	SGMatrix<float64_t> s_cov=CStatistics::covariance_matrix(samples);
+	Map<VectorXd> s_mu(s_mean.vector, s_mean.vlen);
+	Map<MatrixXd> s_c(s_cov.matrix, s_cov.num_rows, s_cov.num_cols);
 
-	EXPECT_NEAR(m.norm(), smu.norm(), 0.5);
-	EXPECT_NEAR(c.norm(), scov.norm(), 0.5);
+	ASSERT_EQ(mu.rows(), s_mu.rows());
+	ASSERT_EQ(c.rows(), s_c.rows());
+	ASSERT_EQ(c.cols(), s_c.cols());
+	EXPECT_NEAR(mu.norm(), s_mu.norm(), 0.1);
+	EXPECT_NEAR(c.norm(), s_c.norm(), 15.0);
 
 }
 
