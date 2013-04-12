@@ -112,11 +112,11 @@ TEST(Statistics, sample_from_gaussian_dense)
 
 	// create a random covariance matrix
 	MatrixXd c = MatrixXd::Random(dim, dim);
-	c = c * c.transpose() + MatrixXd::Identity(dim, dim); 
+	c = c * c.transpose() + MatrixXd::Identity(dim, dim); //TODO rewrite with noalias
 
-	SGVector<float64_t> *mean = new SGVector<float64_t> (m.data(), m.rows());
-	SGMatrix<float64_t> *cov = new SGMatrix<float64_t> (c.data(), c.rows(), c.cols());
-	SGMatrix<float64_t> samples = CStatistics::sample_from_gaussian(*mean, *cov, N);
+	SGVector<float64_t> mean(m.data(), m.rows());
+	SGMatrix<float64_t> cov(c.data(), c.rows(), c.cols());
+	SGMatrix<float64_t> samples = CStatistics::sample_from_gaussian(mean, cov, N);
 
 	// calculate the sample mean and covariance
 	SGVector<float64_t> sample_mean = CStatistics::matrix_mean(samples);
