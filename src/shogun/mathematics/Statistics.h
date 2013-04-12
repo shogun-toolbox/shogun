@@ -488,6 +488,15 @@ public:
 	 */
 	static float64_t log_det(const SGSparseMatrix<float64_t> m);
 
+	/** Sampling from a multivariate Gaussian distribution
+	 * 
+	 * @param mean the mean vector
+	 * @param cov the covariance matrix
+	 * @param N number of samples
+	 * @return the sample matrix of size \f$N\times dim\f$
+	 */
+	static SGMatrix<float64_t> sample_from_gaussian(SGVector<float64_t> mean, SGMatrix<float64_t> cov, int32_t N);
+
 #endif //HAVE_EIGEN3
 
 
