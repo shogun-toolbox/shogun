@@ -128,7 +128,7 @@ TEST(Statistics, sample_from_gaussian_dense)
 	ASSERT_EQ(mu.rows(), s_mu.rows());
 	ASSERT_EQ(c.rows(), s_c.rows());
 	ASSERT_EQ(c.cols(), s_c.cols());
-	EXPECT_NEAR(mu.norm(), s_mu.norm(), 0.1);
+	EXPECT_NEAR(mu.norm(), s_mu.norm(), 0.5);
 	EXPECT_NEAR(c.norm(), s_c.norm(), 15.0);
 
 }

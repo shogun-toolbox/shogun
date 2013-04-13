@@ -2083,8 +2083,11 @@ SGMatrix<float64_t> CStatistics::sample_from_gaussian(SGVector<float64_t> mean,
 	SGMatrix<float64_t>::transpose_matrix(S.matrix, S.num_rows, S.num_cols);
 	Map<MatrixXd> s(S.matrix, S.num_rows, S.num_cols);
 
-	// generate samples from N(mean, cov), NxD
-	s=s*U;
+	// generate samples from N(mean, cov) or N(mean, cov^-1), NxD
+	if( precision_matrix )
+		s=s*U.transpose().inverse();
+	else
+		s=s*U;
 	for( int32_t i=0; i<N; ++i ) 
 		s.row(i)+=mu;
 
