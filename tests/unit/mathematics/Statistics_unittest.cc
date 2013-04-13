@@ -100,7 +100,7 @@ TEST(Statistics, log_det_test_3)
 
 // TEST 4 - Sampling from Multivariate Gaussian distribution with Dense 
 // covariance matrix.
-TEST(Statistics, sample_from_gaussian_dense)
+TEST(Statistics, sample_from_gaussian_dense1)
 {
 
 	int32_t N=1000;
@@ -130,6 +130,42 @@ TEST(Statistics, sample_from_gaussian_dense)
 	ASSERT_EQ(c.cols(), s_c.cols());
 	EXPECT_NEAR(mu.norm(), s_mu.norm(), 0.5);
 	EXPECT_NEAR(c.norm(), s_c.norm(), 15.0);
+
+}
+
+// TEST 5 - Sampling from Multivariate Gaussian distribution with Dense 
+// covariance matrix, using inverse of cov_matrix instead
+TEST(Statistics, sample_from_gaussian_dense2)
+{
+
+	int32_t N=1000;
+	int32_t dim=100;
+
+	// create a mean vector
+	SGVector<float64_t> mean(dim);
+	Map<VectorXd> mu(mean.vector, mean.vlen);
+	mu=VectorXd::Constant(dim, 1, 5.0);
+
+	// create a random covariance matrix
+	SGMatrix<float64_t> cov(dim, dim);
+	Map<MatrixXd> c(cov.matrix, cov.num_rows, cov.num_cols);
+	c=MatrixXd::Random(dim, dim);
+	c=c*c.transpose()+MatrixXd::Identity(dim, dim);
+
+	SGMatrix<float64_t> samples=CStatistics::sample_from_gaussian(mean, cov, N,
+								true);
+
+	// calculate the sample mean and covariance
+	SGVector<float64_t> s_mean=CStatistics::matrix_mean(samples);
+	SGMatrix<float64_t> s_cov=CStatistics::covariance_matrix(samples);
+	Map<VectorXd> s_mu(s_mean.vector, s_mean.vlen);
+	Map<MatrixXd> s_c(s_cov.matrix, s_cov.num_rows, s_cov.num_cols);
+
+	ASSERT_EQ(mu.rows(), s_mu.rows());
+	ASSERT_EQ(c.rows(), s_c.rows());
+	ASSERT_EQ(c.cols(), s_c.cols());
+	EXPECT_NEAR(mu.norm(), s_mu.norm(), 0.5);
+	EXPECT_NEAR(c.inverse().norm(), s_c.norm(), 0.5);
 
 }
 
