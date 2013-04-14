@@ -393,7 +393,7 @@ void CExactInferenceMethod::update_chol()
 	for (index_t i=0; i<m_ktrtr.num_rows; ++i)
 		m_ktrtr(i, i)+=noise;
 
-	/* check whether to allocate cholesky mempory */
+	/* check whether to allocate cholesky memory */
 	if (!m_L.matrix || m_L.num_rows!=m_ktrtr.num_rows)
 		m_L=SGMatrix<float64_t>(m_ktrtr.num_rows, m_ktrtr.num_cols);
 
@@ -411,33 +411,19 @@ void CExactInferenceMethod::update_chol()
 
 void CExactInferenceMethod::update_alpha()
 {
-	float64_t sigma =
-			dynamic_cast<CGaussianLikelihood*>(m_model)->get_sigma();
-
 	for (int i = 0; i < m_label_vector.vlen; i++)
 		m_label_vector[i] = m_label_vector[i] - m_data_means[i];
 
 	m_alpha = SGVector<float64_t>(m_label_vector.vlen);
 
-	/* temporaryly add noise */
-	float64_t noise=(m_scale*m_scale)/(sigma*sigma);
-	for (index_t i=0; i<m_ktrtr.num_rows; ++i)
-		m_ktrtr(i, i)+=noise;
-
-	/* creates views on kernel matrix, labels, and alpha and solve system
-	 * (K(X, X)+sigma*I) a = y for a */
-	Map<MatrixXd> K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
+	/* creates views on cholesky matrix, labels, and alpha and solve system
+	 * (L * L^T) * a = y for a */
 	Map<VectorXd> a(m_alpha.vector, m_alpha.vlen);
 	Map<VectorXd> y(m_label_vector.vector, m_label_vector.vlen);
+	Map<MatrixXd> L(m_L.matrix, m_L.num_rows, m_L.num_cols);
 
-	LLT<MatrixXd> llt;
-	llt.compute(K);
-	a=llt.solve(y);
-
-	/* remove noise again */
-	for (index_t i=0; i<m_ktrtr.num_rows; ++i)
-		m_ktrtr(i, i)-=noise;
-
+	a=L.triangularView<Upper>().adjoint().solve(y);
+	a=L.triangularView<Upper>().solve(a);
 }
 #endif
 #endif // HAVE_LAPACK
