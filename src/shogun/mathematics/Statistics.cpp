@@ -2061,6 +2061,7 @@ float64_t CStatistics::log_det(const SGSparseMatrix<float64_t> m)
 SGMatrix<float64_t> CStatistics::sample_from_gaussian(SGVector<float64_t> mean,
 	SGMatrix<float64_t> cov, int32_t N, bool precision_matrix)
 {
+	//TODO give proper error messages
 	ASSERT(cov.num_rows>0)
 	ASSERT(cov.num_cols>0)
 	ASSERT(cov.matrix)
@@ -2071,23 +2072,29 @@ SGMatrix<float64_t> CStatistics::sample_from_gaussian(SGVector<float64_t> mean,
 	Map<VectorXd> mu(mean.vector, mean.vlen);
 	Map<MatrixXd> c(cov.matrix, cov.num_rows, cov.num_cols);
 
-	// calculate the upper triangular cholesky factor of the covariance matrix
-	MatrixXd U=c.llt().matrixU();
-
-	// generate samples from N(0, I), DxN
-	SGMatrix<float64_t> S(dim, N);
-	for( int32_t j=0; j<N; ++j ) 
-		for( int32_t i=0; i<dim; ++i )
+	// generate samples from N(0, I), NxD
+	SGMatrix<float64_t> S(N, dim);
+	for( int32_t i=0; i<N; ++i ) 
+		for( int32_t j=0; j<dim; ++j )
 			S(i,j)=CMath::randn_double();
 
-	SGMatrix<float64_t>::transpose_matrix(S.matrix, S.num_rows, S.num_cols);
+	//SGMatrix<float64_t>::transpose_matrix(S.matrix, S.num_rows, S.num_cols);
 	Map<MatrixXd> s(S.matrix, S.num_rows, S.num_cols);
 
 	// generate samples from N(mean, cov) or N(mean, cov^-1), NxD
 	if( precision_matrix )
-		s=s*U.transpose().inverse();
+	{
+		//TODO don't use inverse, rather solve system
+		// calculate the lower triangular cholesky factor of the covariance matrix
+		MatrixXd L=c.llt().matrixL();
+		s=s*L.inverse();
+	}
 	else
+	{
+		// calculate the upper triangular cholesky factor of the covariance matrix
+		MatrixXd U=c.llt().matrixU();
 		s=s*U;
+	}
 	for( int32_t i=0; i<N; ++i ) 
 		s.row(i)+=mu;
 
