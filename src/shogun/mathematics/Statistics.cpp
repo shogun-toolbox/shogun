@@ -2061,45 +2061,61 @@ float64_t CStatistics::log_det(const SGSparseMatrix<float64_t> m)
 SGMatrix<float64_t> CStatistics::sample_from_gaussian(SGVector<float64_t> mean,
 	SGMatrix<float64_t> cov, int32_t N, bool precision_matrix)
 {
-	//TODO give proper error messages
-	ASSERT(cov.num_rows>0)
-	ASSERT(cov.num_cols>0)
-	ASSERT(cov.matrix)
-	ASSERT(cov.num_rows==cov.num_cols)
-	ASSERT(mean.vlen==cov.num_rows)
+	REQUIRE(cov.num_rows>0, 
+		"CStatistics::sample_from_gaussian(): \
+		Number of covariance rows must be positive!\n");
+	REQUIRE(cov.num_cols>0,
+		"CStatistics::sample_from_gaussian(): \
+		Number of covariance cols must be positive!\n");
+	REQUIRE(cov.matrix,
+		"CStatistics::sample_from_gaussian(): \
+		Covariance is not initialized!\n");
+	REQUIRE(cov.num_rows==cov.num_cols,
+		"CStatistics::sample_from_gaussian(): \
+		Covariance should be square matrix!\n");
+	REQUIRE(mean.vlen==cov.num_rows,
+		"CStatistics::sample_from_gaussian(): \
+		Mean and covariance dimension mismatch!\n");
 
 	int32_t dim=mean.vlen;
 	Map<VectorXd> mu(mean.vector, mean.vlen);
 	Map<MatrixXd> c(cov.matrix, cov.num_rows, cov.num_cols);
 
-	// generate samples from N(0, I), NxD
-	SGMatrix<float64_t> S(N, dim);
-	for( int32_t i=0; i<N; ++i ) 
-		for( int32_t j=0; j<dim; ++j )
+	// generate samples, z,  from N(0, I), DxN
+	SGMatrix<float64_t> S(dim, N);
+	for( int32_t j=0; j<N; ++j )
+		for( int32_t i=0; i<dim; ++i )
 			S(i,j)=CMath::randn_double();
 
-	//SGMatrix<float64_t>::transpose_matrix(S.matrix, S.num_rows, S.num_cols);
-	Map<MatrixXd> s(S.matrix, S.num_rows, S.num_cols);
+	// the cholesky factorization c=L*U
+	MatrixXd U=c.llt().matrixU();
 
-	// generate samples from N(mean, cov) or N(mean, cov^-1), NxD
+	// generate samples, x, from N(mean, cov) or N(mean, cov^-1)
+	// return samples of dimension NxD
 	if( precision_matrix )
 	{
-		//TODO don't use inverse, rather solve system
-		// calculate the lower triangular cholesky factor of the covariance matrix
-		MatrixXd L=c.llt().matrixL();
-		s=s*L.inverse();
+		// here we have U*x=z, to solve this, we use cholesky again
+		Map<MatrixXd> s(S.matrix, S.num_rows, S.num_cols);
+		LDLT<MatrixXd> ldlt;
+		ldlt.compute(U);
+		s=ldlt.solve(s);
 	}
-	else
+	
+	SGMatrix<float64_t>::transpose_matrix(S.matrix, S.num_rows, S.num_cols);
+
+	if( !precision_matrix )
 	{
-		// calculate the upper triangular cholesky factor of the covariance matrix
-		MatrixXd U=c.llt().matrixU();
+		// here we need to find x=L*z, so, x'=z'*L' i.e. x'=z'*U
+		Map<MatrixXd> s(S.matrix, S.num_rows, S.num_cols);
 		s=s*U;
 	}
+
+	// add the mean
+	Map<MatrixXd> x(S.matrix, S.num_rows, S.num_cols);
 	for( int32_t i=0; i<N; ++i ) 
-		s.row(i)+=mu;
+			x.row(i)+=mu;
 
 	return S;
 }
-
 
 #endif //HAVE_EIGEN3
