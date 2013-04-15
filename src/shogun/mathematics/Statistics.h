@@ -488,6 +488,23 @@ public:
 	 */
 	static float64_t log_det(const SGSparseMatrix<float64_t> m);
 
+	/** Sampling from a multivariate Gaussian distribution with
+	 * dense covariance matrix
+	 * 
+	 * Sampling is performed by taking samples from \f$N(0, I)\f$, then 
+	 * using cholesky factor of the covariance matrix, \f$\Sigma\f$ and
+	 * performing 
+	 * \f[S_{N(\mu,\Sigma)}=S_{N(0,I)}*L^{T}+\mu\f]
+	 * where \f$\Sigma=L*L^{T}\f$ and \f$\mu\f$ is the mean vector.
+	 *
+	 * @param mean the mean vector
+	 * @param cov the covariance matrix
+	 * @param N number of samples
+	 * @return the sample matrix of size \f$N\times dim\f$
+	 */
+	static SGMatrix<float64_t> sample_from_gaussian(SGVector<float64_t> mean, 
+	SGMatrix<float64_t> cov, int32_t N=1, bool precision_matrix=false);
+
 #endif //HAVE_EIGEN3
 
 
