@@ -2113,7 +2113,7 @@ SGMatrix<float64_t> CStatistics::sample_from_gaussian(SGVector<float64_t> mean,
 	// add the mean
 	Map<MatrixXd> x(S.matrix, S.num_rows, S.num_cols);
 	for( int32_t i=0; i<N; ++i ) 
-			x.row(i)+=mu;
+		x.row(i)+=mu;
 
 	return S;
 }
