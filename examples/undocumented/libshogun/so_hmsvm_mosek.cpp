@@ -1,6 +1,6 @@
 #include <shogun/labels/StructuredLabels.h>
 #include <shogun/loss/HingeLoss.h>
-#include <shogun/structure/HMSVMLabels.h>
+#include <shogun/structure/SequenceLabels.h>
 #include <shogun/structure/HMSVMModel.h>
 #include <shogun/structure/PrimalMosekSOSVM.h>
 #include <shogun/structure/TwoStateModel.h>
