@@ -54,7 +54,7 @@ TEST(Statistics, log_det_test_2)
 	EXPECT_NEAR(CStatistics::log_det(K), 12.731839097176634, 1E-10);
 
 }
-/* memory leak - needs fix
+
 // TEST 3 - Sparse matrix
 TEST(Statistics, log_det_test_3)
 {
@@ -62,42 +62,44 @@ TEST(Statistics, log_det_test_3)
 	// whose the diagonal contains all 100's
 	// the rest of first row and first column contains all 1's
 	
-	index_t size = 1000;
+	index_t size=1000;
 
 	// initialize the matrix
 	SGSparseMatrix<float64_t> M(size, size);
-
-	SGSparseVector<float64_t> *vec;
+	typedef SGSparseVectorEntry<float64_t> Entry;
 
 	// for first row
-	SGSparseVectorEntry<float64_t> *entries = new SGSparseVectorEntry<float64_t>[size];
-	entries[0].feat_index = 0;		// the digonal index for row #1
-	entries[0].entry = 100;
-	for( index_t i = 1; i < size; ++i )
+	Entry *first=new Entry[size];
+	first[0].feat_index=0;		// the digonal index for row #1
+	first[0].entry=100;
+	for( index_t i=1; i<size; ++i )
 	{
-		entries[i].feat_index = i;	// fill the index for row #1
-		entries[i].entry = 1;
+		first[i].feat_index=i;	// fill the index for row #1
+		first[i].entry=1;
 	}
-	vec = new SGSparseVector<float64_t>(entries, size);
-	M[0] = vec->get();
+	SGSparseVector<float64_t> vec(first, size);
+	M[0]=vec.get();
 
 	// fill the rest of the rows
-	for( index_t i = 1; i < size; ++i )
+	Entry* rest[size];
+	SGSparseVector<float64_t> v[size-1];
+	for( index_t i=1; i<size; ++i )
 	{
-		entries = new SGSparseVectorEntry<float64_t>[2];
-		entries[0].feat_index = 0;	// the first column
-		entries[0].entry = 1;
-		entries[1].feat_index = i;	// the diagonal element
-		entries[1].entry = 100;
-		vec = new SGSparseVector<float64_t>(entries, 2);
-		M[i] = vec->get();
+		rest[i-1]=new Entry[2];
+		rest[i-1][0].feat_index=0;	// the first column
+		rest[i-1][0].entry=1;
+		rest[i-1][1].feat_index=i;	// the diagonal element
+		rest[i-1][1].entry=100;
+		v[i-1].features=rest[i-1];
+		v[i-1].num_feat_entries=2;
+		M[i]=v[i-1].get();
 	}
 
 	// check if log_det is equal to log(det(M))
 	EXPECT_NEAR(CStatistics::log_det(M), 4605.0649365774307, 1E-10);
-
+	
 }
-*/
+
 // TEST 4 - Sampling from Multivariate Gaussian distribution with Dense 
 // covariance matrix.
 TEST(Statistics, sample_from_gaussian_dense1)
