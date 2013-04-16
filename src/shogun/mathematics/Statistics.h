@@ -500,6 +500,7 @@ public:
 	 * @param mean the mean vector
 	 * @param cov the covariance matrix
 	 * @param N number of samples
+	 * @param precision_matrix if true, samples from N(mu, C^-1)
 	 * @return the sample matrix of size \f$N\times dim\f$
 	 */
 	static SGMatrix<float64_t> sample_from_gaussian(SGVector<float64_t> mean, 
@@ -550,24 +551,6 @@ protected:
 	static inline bool greater_equal(float64_t a, float64_t b) { return a>=b; }
 };
 
-#ifdef HAVE_EIGEN3
-	/** EigenTriplet definition for Eigen3 backword compatibility */
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-	template <typename T> struct EigenTriplet
-	{
-		EigenTriplet(index_t colIndex, index_t rowIndex, T valueT) :
-		ecol(colIndex), erow(rowIndex), evalue(valueT)
-		{
-		}
-		index_t col() const { return ecol; };
-		index_t row() const { return erow; };
-		T value() const { return evalue; };
-		index_t ecol;
-		index_t erow;
-		T evalue;
-	};
-#endif /* DOXYGEN_SHOULD_SKIP_THIS */
-#endif //HAVE_EIGEN3
 }
 
 #endif /* __STATISTICS_H_ */
