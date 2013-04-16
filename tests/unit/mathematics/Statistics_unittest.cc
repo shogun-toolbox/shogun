@@ -82,6 +82,7 @@ TEST(Statistics, log_det_test_3)
 
 	// fill the rest of the rows
 	Entry* rest[size];
+	SGSparseVector<float64_t> v[size-1];
 	for( index_t i=1; i<size; ++i )
 	{
 		rest[i-1]=new Entry[2];
@@ -89,8 +90,9 @@ TEST(Statistics, log_det_test_3)
 		rest[i-1][0].entry=1;
 		rest[i-1][1].feat_index=i;	// the diagonal element
 		rest[i-1][1].entry=100;
-		SGSparseVector<float64_t> v(rest[i-1], 2);
-		M[i]=v.get();
+		v[i-1].features=rest[i-1];
+		v[i-1].num_feat_entries=2;
+		M[i]=v[i-1].get();
 	}
 
 	// check if log_det is equal to log(det(M))
