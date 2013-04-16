@@ -83,7 +83,7 @@ public:
 		{
 			char* name = gradient.get_node_ptr(i)->key->m_name;
 			for (index_t j = 0; j < gradient.get_element_ptr(i)->vlen; j++)
-				SG_SPRINT("%s: %f, ", (*gradient.get_element_ptr(i))[j], name)
+				SG_SPRINT("%s: %f, ", name, (*gradient.get_element_ptr(i))[j])
 		}
 		SG_SPRINT("]\n")
 
