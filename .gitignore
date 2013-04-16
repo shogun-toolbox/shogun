@@ -91,6 +91,7 @@ configure.log
 /src/interfaces/java_modular/org/*
 /src/interfaces/java_modular/shogun/*
 /src/interfaces/python_modular/*.py
+/src/interfaces/python_modular/abstract_types_extension.i
 /src/interfaces/r_modular/*.R
 /src/interfaces/r_modular/*.RData
 /src/interfaces/perl_modular/*.pm
