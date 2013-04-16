@@ -8,22 +8,22 @@
  * Copyright (C) 2012 Fernando José Iglesias García
  */
 
-#include <shogun/structure/HMSVMLabels.h>
+#include <shogun/structure/SequenceLabels.h>
 
 using namespace shogun;
 
-CHMSVMLabels::CHMSVMLabels()
+CSequenceLabels::CSequenceLabels()
 : CStructuredLabels()
 {
 }
 
-CHMSVMLabels::CHMSVMLabels(int32_t num_labels, int32_t num_states)
+CSequenceLabels::CSequenceLabels(int32_t num_labels, int32_t num_states)
 : CStructuredLabels(num_labels), m_num_states(num_states)
 {
 	init();
 }
 
-CHMSVMLabels::CHMSVMLabels(SGVector< int32_t > labels, int32_t label_length,
+CSequenceLabels::CSequenceLabels(SGVector< int32_t > labels, int32_t label_length,
 		int32_t num_labels, int32_t num_states)
 : CStructuredLabels(num_labels), m_num_states(num_states)
 {
@@ -39,16 +39,16 @@ CHMSVMLabels::CHMSVMLabels(SGVector< int32_t > labels, int32_t label_length,
 	}
 }
 
-CHMSVMLabels::~CHMSVMLabels()
+CSequenceLabels::~CSequenceLabels()
 {
 }
 
-void CHMSVMLabels::add_label(SGVector< int32_t > label)
+void CSequenceLabels::add_label(SGVector< int32_t > label)
 {
 	CStructuredLabels::add_label( new CSequence(label) );
 }
 
-void CHMSVMLabels::init()
+void CSequenceLabels::init()
 {
 	SG_ADD(&m_num_states, "m_num_states", "Number of states", MS_NOT_AVAILABLE);
 }

@@ -11,7 +11,7 @@ parameter_list=[[data_dict]]
 def structure_hmsvm_mosek (m_data_dict=data_dict):
 	from shogun.Features   import RealMatrixFeatures
 	from shogun.Loss       import HingeLoss
-	from shogun.Structure  import HMSVMLabels, HMSVMModel, Sequence, TwoStateModel, SMT_TWO_STATE
+	from shogun.Structure  import SequenceLabels, HMSVMModel, Sequence, TwoStateModel, SMT_TWO_STATE
 	from shogun.Evaluation import StructuredAccuracy
 
 	try:
@@ -25,7 +25,7 @@ def structure_hmsvm_mosek (m_data_dict=data_dict):
 	idxs = numpy.nonzero(labels_array == -1)
 	labels_array[idxs] = 0
 
-	labels = HMSVMLabels(labels_array, 250, 500, 2)
+	labels = SequenceLabels(labels_array, 250, 500, 2)
 	features = RealMatrixFeatures(m_data_dict['signal'].astype(float), 250, 500)
 
 	loss = HingeLoss()

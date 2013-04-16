@@ -30,7 +30,7 @@
 %rename(MulticlassSOLabels) CMulticlassSOLabels;
 %rename(RealNumber) CRealNumber;
 %rename(HMSVMModel) CHMSVMModel;
-%rename(HMSVMLabels) CHMSVMLabels;
+%rename(SequenceLabels) CSequenceLabels;
 %rename(Sequence) CSequence;
 %rename(StateModel) CStateModel;
 %rename(TwoStateModel) CTwoStateModel;
@@ -59,7 +59,7 @@
 %include <shogun/structure/MulticlassModel.h>
 %include <shogun/structure/MulticlassSOLabels.h>
 %include <shogun/structure/HMSVMModel.h>
-%include <shogun/structure/HMSVMLabels.h>
+%include <shogun/structure/SequenceLabels.h>
 %include <shogun/structure/StateModelTypes.h>
 %include <shogun/structure/StateModel.h>
 %include <shogun/structure/TwoStateModel.h>
