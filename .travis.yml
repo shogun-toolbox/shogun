@@ -5,6 +5,7 @@ compiler:
 branches:
   only:
     - master
+    - develop
 notifications:
   email: false
   irc:
