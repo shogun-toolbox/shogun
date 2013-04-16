@@ -2,10 +2,6 @@ language: cpp
 compiler:
   - gcc
   - clang
-branches:
-  only:
-    - master
-    - develop
 notifications:
   email: false
   irc:
