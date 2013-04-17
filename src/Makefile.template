@@ -444,11 +444,11 @@ check-examples-csharp_modular:
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) ./check.sh    )
 
 run-testsuite-r_modular:
-	cd $(CONFIGPATH)/../tests/integration/r_modular && \
+	-cd $(CONFIGPATH)/../tests/integration/r_modular && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
 		R_LIBS="$(DESTDIR)$(RDIR)" ./test_all.sh )
 check-examples-r_modular:
-	cd $(CONFIGPATH)/../examples/undocumented/r_modular && \
+	-cd $(CONFIGPATH)/../examples/undocumented/r_modular && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
 		R_LIBS="$(DESTDIR)$(RDIR)" ./check.sh )
 
