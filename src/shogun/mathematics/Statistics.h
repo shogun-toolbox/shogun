@@ -500,8 +500,7 @@ public:
 	 * @param mean the mean vector
 	 * @param cov the covariance matrix
 	 * @param N number of samples
-	 * @param precision_matrix if true, use precision matrix instead
-	 * of covariance matrix for sampling
+	 * @param precision_matrix if true, sample from N(mu,C^-1)
 	 * @return the sample matrix of size \f$N\times dim\f$
 	 */
 	static SGMatrix<float64_t> sample_from_gaussian(SGVector<float64_t> mean, 
