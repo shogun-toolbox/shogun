@@ -54,7 +54,8 @@ template<class T> class SGSparseMatrix;
 template<typename T> class EigenSparseUtil
 {
 	public:
-	/** Converts a SGSparseMatrix to Eigen3 SparseMatrix
+	/** Converts a SGSparseMatrix to Eigen3 SparseMatrix by copying
+	 * its non-zero co-efficients to a eigen3 SparseMatrix.
 	 * 
 	 * @param sg_matrix the SGSparseMatrix
 	 * @return Eigen3 SparseMatrix representation of sg_matrix
