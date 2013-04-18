@@ -17,7 +17,7 @@ env:
  - INTERFACES=python_modular EXTRA_PACKAGES="python-numpy-dev python-dev python-scipy swig2.0"
  - INTERFACES=r_modular EXTRA_PACKAGES="r-base-core swig2.0"
  - INTERFACES=java_modular EXTRA_PACKAGES="openjdk-6-jdk jblas ant swig2.0"
- - INTERFACES=ruby_modular EXTRA_PACKAGES="ruby1.9.1, ruby1.9.1-dev, ruby-narray swig2.0"
+ - INTERFACES=ruby_modular EXTRA_PACKAGES="ruby1.9.1 ruby1.9.1-dev ruby-narray swig2.0"
  - INTERFACES=csharp_modular EXTRA_PACKAGES="mono-devel mono-gmcs cli-common-dev swig2.0"
  - INTERFACES=lua_modular EXTRA_PACKAGES="lua5.1 liblua5.1-0-dev swig2.0"
 matrix:
