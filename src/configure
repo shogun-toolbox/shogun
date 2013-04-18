@@ -937,7 +937,7 @@ require 'narray'
 NArray[[1, 0, 0], [0, 1, 2]]
 EOF
 	echocheck "Ruby NArray"
-	if ruby $TMPRUBY >/dev/null 2>&1 
+	if $RUBY $TMPRUBY >/dev/null 2>&1 
 	then
 		echores "yes"
 
@@ -1403,7 +1403,7 @@ Installation directories:
   --libdir=DIR                   use this prefix for object code libraries [PREFIX/lib]
   --incdir=DIR                   use this prefix for include files [PREFIX/include]
   --pydir=DIR                    use this prefix for python files [PREFIX/auto-detected]
-  --rubydir=DIR                  use this prefix for python files [PREFIX/auto-detected]
+  --rubydir=DIR                  use this prefix for ruby files [PREFIX/auto-detected]
   --octdir=DIR                   use this prefix for octave files [PREFIX/auto-detected]
   --rdir=DIR                     use this prefix for r files [PREFIX/auto-detected]
 
