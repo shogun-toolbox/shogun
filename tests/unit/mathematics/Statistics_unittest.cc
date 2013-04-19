@@ -67,9 +67,10 @@ TEST(Statistics, log_det_test_3)
 	// initialize the matrix
 	SGSparseMatrix<float64_t> M(size, size);
 	typedef SGSparseVectorEntry<float64_t> Entry;
+	SGSparseVector<float64_t> *vec=SG_MALLOC(SGSparseVector<float64_t>, size);
 
 	// for first row
-	Entry *first=new Entry[size];
+	Entry *first=SG_MALLOC(Entry, size);
 	first[0].feat_index=0;		// the digonal index for row #1
 	first[0].entry=100;
 	for( index_t i=1; i<size; ++i )
@@ -77,27 +78,28 @@ TEST(Statistics, log_det_test_3)
 		first[i].feat_index=i;	// fill the index for row #1
 		first[i].entry=1;
 	}
-	SGSparseVector<float64_t> vec(first, size);
-	M[0]=vec.get();
+	vec[0].features=first;
+	vec[0].num_feat_entries=size;
+	M[0]=vec[0].get();
 
 	// fill the rest of the rows
-	Entry* rest[size];
-	SGSparseVector<float64_t> v[size-1];
-	for( index_t i=1; i<size; ++i )
+	Entry* rest[size-1];
+	for( index_t i=0; i<size-1; ++i )
 	{
-		rest[i-1]=new Entry[2];
-		rest[i-1][0].feat_index=0;	// the first column
-		rest[i-1][0].entry=1;
-		rest[i-1][1].feat_index=i;	// the diagonal element
-		rest[i-1][1].entry=100;
-		v[i-1].features=rest[i-1];
-		v[i-1].num_feat_entries=2;
-		M[i]=v[i-1].get();
+		rest[i]=SG_MALLOC(Entry, 2);
+		rest[i][0].feat_index=0;	// the first column
+		rest[i][0].entry=1;
+		rest[i][1].feat_index=i+1;	// the diagonal element
+		rest[i][1].entry=100;
+		vec[i+1].features=rest[i];
+		vec[i+1].num_feat_entries=2;
+		M[i+1]=vec[i+1].get();
 	}
 
 	// check if log_det is equal to log(det(M))
 	EXPECT_NEAR(CStatistics::log_det(M), 4605.0649365774307, 1E-10);
-	
+	SG_FREE(vec);
+
 }
 
 // TEST 4 - Sampling from Multivariate Gaussian distribution with Dense 
