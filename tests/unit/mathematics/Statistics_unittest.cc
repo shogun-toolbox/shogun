@@ -237,7 +237,7 @@ TEST(Statistics, sample_from_gaussian_sparse1)
 	}
 
 	EXPECT_NEAR((s_mu-mu).norm(), 0.0, 0.5);
-	EXPECT_NEAR((d_cov-s_c).norm(), 0.0, 2.0);
+	EXPECT_NEAR((d_cov-s_c).norm(), 0.0, 2.5);
 
 	SG_FREE(vec);
 	SG_FREE(rest);

@@ -1990,28 +1990,7 @@ float64_t CStatistics::log_det(const SGSparseMatrix<float64_t> m)
 {
 	const SparseMatrix<float64_t> &M=EigenSparseUtil<float64_t>::toEigenSparse(m);
 	typedef SparseMatrix<float64_t> MatrixType;
-#ifdef EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
-	// access the lower triangular factor after cholesky decomposition
-	class EigenSimplicialLLT: public SimplicialCholesky<MatrixType, Eigen::Lower>
-	{
-	public:
-		EigenSimplicialLLT(): SimplicialCholesky<MatrixType>()
-		{
-			setMode(SimplicialCholeskyLLt);
-		}
-		~EigenSimplicialLLT()
-		{
-		}
-		inline const MatrixType matrixL() 
-		{ 
-			return SimplicialCholesky<MatrixType>::m_matrix; 
-		}
-	};
-
-	EigenSimplicialLLT llt;
-#else // EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
 	SimplicialLLT<MatrixType> llt;
-#endif // EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
 
 	// factorize using cholesky with amd permutation 
 	llt.compute(M);
@@ -2110,30 +2089,7 @@ SGMatrix<float64_t> CStatistics::sample_from_gaussian(SGVector<float64_t> mean,
 	const SparseMatrix<float64_t> &c=EigenSparseUtil<float64_t>::toEigenSparse(cov);
 	typedef SparseMatrix<float64_t> MatrixType;
 
-#ifdef EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
-	class EigenSimplicialLLT: public SimplicialCholesky<MatrixType, Eigen::Lower>
-	{
-	public:
-		EigenSimplicialLLT(): SimplicialCholesky<MatrixType>()
-		{
-			setMode(SimplicialCholeskyLLt);
-		}
-		~EigenSimplicialLLT()
-		{
-		}
-		inline const MatrixType matrixL()
-		{
-			return SimplicialCholesky<MatrixType>::m_matrix;
-		}
-		inline const MatrixType matrixU()
-		{
-			return SimplicialCholesky<MatrixType>::m_matrix.transpose();
-		}
-	};
-	EigenSimplicialLLT llt;
-#else // EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
 	SimplicialLLT<MatrixType> llt;
-#endif // EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
 
 	// generate samples, z,  from N(0, I), DxN
 	SGMatrix<float64_t> S(dim, N);
@@ -2153,11 +2109,7 @@ SGMatrix<float64_t> CStatistics::sample_from_gaussian(SGVector<float64_t> mean,
 	if( precision_matrix )
 	{
 		// here we have UP*xP=z, to solve this, we use cholesky again
-#ifdef EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
-		EigenSimplicialLLT lltUP;
-#else // EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
 		SimplicialLLT<MatrixType> lltUP;
-#endif // EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
 		lltUP.compute(UP);
 		s=lltUP.solve(s);
 	} 
