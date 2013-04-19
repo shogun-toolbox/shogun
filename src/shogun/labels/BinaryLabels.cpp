@@ -57,36 +57,40 @@ CBinaryLabels* CBinaryLabels::obtain_from_generic(CLabels* base_labels)
 
 void CBinaryLabels::ensure_valid(const char* context)
 {
-    CDenseLabels::ensure_valid(context);
-    bool found_plus_one=false;
-    bool found_minus_one=false;
+	CDenseLabels::ensure_valid(context);
+	bool found_plus_one=false;
+	bool found_minus_one=false;
 
-    int32_t subset_size=get_num_labels();
-    for (int32_t i=0; i<subset_size; i++)
-    {
-        int32_t real_i=m_subset_stack->subset_idx_conversion(i);
-        if (m_labels[real_i]==+1.0)
-            found_plus_one=true;
-        else if (m_labels[real_i]==-1.0)
-            found_minus_one=true;
-        else
-        {
-            SG_ERROR("%s%sNot a two class labeling label[%d]=%f (only +1/-1 "
-                    "allowed)\n", context?context:"", context?": ":"", i, m_labels[real_i]);
-        }
-    }
-    
-    if (!found_plus_one)
-    {
-        SG_ERROR("%s%sNot a two class labeling - no positively labeled examples found\n",
-                context?context:"", context?": ":"");
-    }
+	int32_t subset_size=get_num_labels();
+	for (int32_t i=0; i<subset_size; i++)
+	{
+		int32_t real_i=m_subset_stack->subset_idx_conversion(i);
+		if (m_labels[real_i]==+1.0)
+			found_plus_one=true;
+		else if (m_labels[real_i]==-1.0)
+			found_minus_one=true;
+		else
+		{
+			SG_ERROR(
+					"%s%s%s::ensure_valid(): Not a two class labeling label[%d]=%f (only +1/-1 "
+							"allowed)\n", context ? context : "",
+					context ? ": " : "", get_name(), i, m_labels[real_i]);
+		}
+	}
 
-    if (!found_minus_one)
-    {
-        SG_ERROR("%s%sNot a two class labeling - no negatively labeled examples found\n",
-                context?context:"", context?": ":"");
-    }
+	if (!found_plus_one)
+	{
+		SG_ERROR(
+				"%s%s%s::ensure_valid(): Not a two class labeling - no positively labeled examples found\n",
+				context ? context : "", context ? ": " : "", get_name());
+	}
+
+	if (!found_minus_one)
+	{
+		SG_ERROR(
+				"%s%s%s::ensure_valid): Not a two class labeling - no negatively labeled examples found\n",
+				context ? context : "", context ? ": " : "", get_name());
+	}
 }
 
 ELabelType CBinaryLabels::get_label_type()
