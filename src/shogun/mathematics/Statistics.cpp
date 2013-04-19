@@ -2141,8 +2141,11 @@ SGMatrix<float64_t> CStatistics::sample_from_gaussian(SGVector<float64_t> mean,
 		for( int32_t i=0; i<dim; ++i )
 			S(i,j)=CMath::randn_double();
 
-	// the cholesky factorization P*c*P^-1=LP*UP, i.e. c=(P^-1*L)*(U*P)
+	Map<MatrixXd> s(S.matrix, S.num_rows, S.num_cols);
+
+	// the cholesky factorization P*c*P^-1 = LP*UP, with LP=P*L, UP=U*P^-1
 	llt.compute(c);
+	MatrixType LP=llt.matrixL();
 	MatrixType UP=llt.matrixU();
 	
 	// generate samples, x, from N(mean, cov) or N(mean, cov^-1)
@@ -2150,7 +2153,6 @@ SGMatrix<float64_t> CStatistics::sample_from_gaussian(SGVector<float64_t> mean,
 	if( precision_matrix )
 	{
 		// here we have UP*xP=z, to solve this, we use cholesky again
-		Map<MatrixXd> s(S.matrix, S.num_rows, S.num_cols);
 #ifdef EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
 		EigenSimplicialLLT lltUP;
 #else // EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
@@ -2158,23 +2160,17 @@ SGMatrix<float64_t> CStatistics::sample_from_gaussian(SGVector<float64_t> mean,
 #endif // EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
 		lltUP.compute(UP);
 		s=lltUP.solve(s);
-		
-		// we get actual samples x=P*xP, because U*P*xP=z, xP=P^-1*U^-1*z, so
-		// x=U^-1*z=P*P^-1*U^-1*z=P*xP
-		s=llt.permutationP()*s;
+	} 
+	else
+	{
+		// here we need to find xP=LP*z
+		s=LP*s;
 	}
+
+	// permute the samples back with x=P^-1*xP
+	s=llt.permutationPinv()*s;		
 
 	SGMatrix<float64_t>::transpose_matrix(S.matrix, S.num_rows, S.num_cols);
-
-	if( !precision_matrix )
-	{
-		// here we need to find xP=LP*z, so, xP'=z'*LP' i.e. xP'=z'*UP
-		Map<MatrixXd> s(S.matrix, S.num_rows, S.num_cols);
-		s=s*UP;
-		// we get actual samples x'=xP'*P^-1=z'*U*P*P^-1=z'*U
-		s=s*llt.permutationPinv();
-	}
-	
 	// add the mean
 	Map<MatrixXd> x(S.matrix, S.num_rows, S.num_cols);
 	for( int32_t i=0; i<N; ++i )

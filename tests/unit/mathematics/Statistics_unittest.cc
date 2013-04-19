@@ -187,17 +187,31 @@ TEST(Statistics, sample_from_gaussian_sparse1)
 	typedef SGSparseVectorEntry<float64_t> Entry;
 	SGSparseVector<float64_t> *vec=SG_MALLOC(SGSparseVector<float64_t>, dim);
 
-	// fill the rows
-	Entry** rest=SG_MALLOC(Entry*, dim);
-
-	for( index_t i=0; i<dim; ++i )
+	// for first row
+	Entry *first=SG_MALLOC(Entry, dim);
+	first[0].feat_index=0;		// the digonal index for row #1
+	first[0].entry=0.5;
+	for( index_t i=1; i<dim; ++i )
 	{
-		rest[i]=SG_MALLOC(Entry, 1);
-		rest[i][0].feat_index=i;
+		first[i].feat_index=i;	// fill the index for row #1
+		first[i].entry=0.05;
+	}
+	vec[0].features=first;
+	vec[0].num_feat_entries=dim;
+	cov[0]=vec[0].get();
+
+	// fill the rest of the rows
+	Entry** rest=SG_MALLOC(Entry*, dim-1);
+	for( index_t i=0; i<dim-1; ++i )
+	{
+		rest[i]=SG_MALLOC(Entry, 2);
+		rest[i][0].feat_index=0;	// the first column
 		rest[i][0].entry=0.05;
-		vec[i].features=rest[i];
-		vec[i].num_feat_entries=1;
-		cov[i]=vec[i].get();
+		rest[i][1].feat_index=i+1;	// the diagonal element
+		rest[i][1].entry=0.5;
+		vec[i+1].features=rest[i];
+		vec[i+1].num_feat_entries=2;
+		cov[i+1]=vec[i+1].get();
 	}
 
 	// create a mean vector
@@ -213,8 +227,17 @@ TEST(Statistics, sample_from_gaussian_sparse1)
 	Map<VectorXd> s_mu(s_mean.vector, s_mean.vlen);
 	Map<MatrixXd> s_c(s_cov.matrix, s_cov.num_rows, s_cov.num_cols);
 
+	// create a similar dense cov matrix as of the original one
+	// for calculating the norm of the difference
+	MatrixXd d_cov=MatrixXd::Identity(dim, dim)*0.5;
+	for( index_t i=1; i<dim; ++i )
+	{
+		d_cov(i,0)=0.05;
+		d_cov(0,i)=0.05;
+	}
+
 	EXPECT_NEAR((s_mu-mu).norm(), 0.0, 0.5);
-	EXPECT_NEAR((MatrixXd::Identity(dim,dim)*0.05-s_c).norm(), 0.0, 1.0);
+	EXPECT_NEAR((d_cov-s_c).norm(), 0.0, 2.0);
 
 	SG_FREE(vec);
 	SG_FREE(rest);
