@@ -112,12 +112,20 @@ CMulticlassLabels* CMulticlassMachine::apply_multiclass(CFeatures* data)
 			SG_ERROR("num_machines = %d, did you train your machine?", num_machines)
 
 		CMulticlassLabels* result=new CMulticlassLabels(num_vectors);
-		result->allocate_confidences_for(num_machines);
+
+        if (is_prob_support())
+		    result->allocate_confidences_for(m_multiclass_strategy->get_num_classes());
+        else
+		    result->allocate_confidences_for(num_machines);
 
 		CBinaryLabels** outputs=SG_MALLOC(CBinaryLabels*, num_machines);
 
 		for (int32_t i=0; i < num_machines; ++i)
+        {
 			outputs[i] = (CBinaryLabels*) get_submachine_outputs(i);
+            if (is_prob_support())
+                outputs[i]->scores_to_probabilities();
+        }
 
 		SGVector<float64_t> output_for_i(num_machines);
 		for (int32_t i=0; i<num_vectors; i++)
@@ -125,6 +133,14 @@ CMulticlassLabels* CMulticlassMachine::apply_multiclass(CFeatures* data)
 			for (int32_t j=0; j<num_machines; j++)
 				output_for_i[j] = outputs[j]->get_value(i);
 
+            // rescale outputs using strategy dependent heuristic
+            if (is_prob_support())
+            {
+                SGVector<float64_t> new_output_for_i = m_multiclass_strategy->rescale_output(output_for_i);
+			    result->set_label(i, m_multiclass_strategy->decide_label(new_output_for_i));
+			    result->set_multiclass_confidences(i, new_output_for_i);
+                continue;
+            }
 			result->set_label(i, m_multiclass_strategy->decide_label(output_for_i));
 			result->set_multiclass_confidences(i, output_for_i.clone());
 		}

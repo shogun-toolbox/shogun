@@ -72,6 +72,13 @@ public:
 		return "MulticlassOneVsRestStrategy";
 	};
 
+    /** estimate the posterior probabilities of class label given classifier outputs
+	 * @param outputs a vector of output from each machine (in that order), replace with probabilities
+	 * @param n_outputs number of outputs
+     * @return new outputs
+     */
+    virtual SGVector<float64_t> rescale_output(SGVector<float64_t> outputs);
+
 };
 
 } // namespace shogun

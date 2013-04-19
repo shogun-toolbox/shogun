@@ -304,6 +304,9 @@ class CMachine : public CSGObject
 
 		virtual const char* get_name() const { return "Machine"; }
 
+		/** set support of probabilistic outputs */
+		void set_prob_support();
+
 	protected:
 		/** train machine
 		 *
@@ -353,6 +356,12 @@ class CMachine : public CSGObject
 		/** returns whether machine require labels for training */
 		virtual bool train_require_labels() const { return true; }
 
+		/** @return wether the outputs are probabilities. */
+		virtual bool is_prob_support() const
+		{
+			return m_prob_output_supported;
+		}
+
 	protected:
 		/** maximum training time */
 		float64_t m_max_train_time;
@@ -368,6 +377,9 @@ class CMachine : public CSGObject
 
 		/** whether data is locked */
 		bool m_data_locked;
+
+        /** whether output is probabilistic */
+        bool m_prob_output_supported;
 };
 }
 #endif // _MACHINE_H__

@@ -68,6 +68,16 @@ SGVector<int32_t> CMulticlassOneVsOneStrategy::train_prepare_next()
 
 int32_t CMulticlassOneVsOneStrategy::decide_label(SGVector<float64_t> outputs)
 {
+    if (outputs.vlen==m_num_classes)
+    {
+	    return SGVector<float64_t>::arg_max(outputs.vector, 1, outputs.vlen);
+    }
+    // if length of outputs is not c(c-1)/2 or c
+    if (outputs.vlen!=m_num_machines)
+    {
+        SG_ERROR("Dimension of outputs are incorrect");
+    }
+
 	int32_t s=0;
 	SGVector<int32_t> votes(m_num_classes);
     SGVector<int32_t> dec_vals(m_num_classes);
@@ -115,4 +125,45 @@ int32_t CMulticlassOneVsOneStrategy::decide_label(SGVector<float64_t> outputs)
     }
 
     return i_max;
+}
+
+/** OVO method 3 in Jonathan Milgram
+ * "One Against One" or "One Against All"
+ * Which One is Better for Handwriting Recognition with SVMs?
+ */
+SGVector<float64_t> CMulticlassOneVsOneStrategy::rescale_output(SGVector<float64_t> outputs)
+{
+	SGVector<int32_t> indx1(m_num_machines);
+    SGVector<int32_t> indx2(m_num_machines);
+
+    int32_t tot = 0;
+    for (int32_t j=0; j<m_num_classes; j++)
+    {
+        for (int32_t k=j+1; k<m_num_classes; k++)
+        {
+            indx1[tot] = j;
+            indx2[tot] = k;
+            tot++;
+        }
+    }
+
+    ASSERT(tot==m_num_machines);
+
+    SGVector<float64_t> posterior(m_num_classes);
+    SGVector<float64_t>::fill_vector(posterior.vector, posterior.vlen, 1.0);
+    for (int32_t j=0; j<m_num_classes; j++)
+    {
+        for (int32_t m=0; m<m_num_machines; m++)
+        {
+            if (indx1[m]==j)
+                posterior[j] *= outputs[m]; 
+            if (indx2[m]==j)
+                posterior[j] *= 1-outputs[m]; 
+        }
+    }
+
+    float64_t norm = SGVector<float64_t>::sum(posterior);
+    for (int32_t i=0; i<posterior.vlen; i++) 
+        posterior[i] /= norm;
+    return posterior;
 }
