@@ -1988,8 +1988,9 @@ float64_t CStatistics::log_det(SGMatrix<float64_t> m)
 
 float64_t CStatistics::log_det(const SGSparseMatrix<float64_t> m)
 {
-	const SparseMatrix<float64_t> &M=EigenSparseUtil<float64_t>::toEigenSparse(m);
 	typedef SparseMatrix<float64_t> MatrixType;
+	const MatrixType &M=EigenSparseUtil<float64_t>::toEigenSparse(m);
+
 	SimplicialLLT<MatrixType> llt;
 
 	// factorize using cholesky with amd permutation 
@@ -2086,8 +2087,9 @@ SGMatrix<float64_t> CStatistics::sample_from_gaussian(SGVector<float64_t> mean,
 
 	int32_t dim=mean.vlen;
 	Map<VectorXd> mu(mean.vector, mean.vlen);
-	const SparseMatrix<float64_t> &c=EigenSparseUtil<float64_t>::toEigenSparse(cov);
+
 	typedef SparseMatrix<float64_t> MatrixType;
+	const MatrixType &c=EigenSparseUtil<float64_t>::toEigenSparse(cov);
 
 	SimplicialLLT<MatrixType> llt;
 
