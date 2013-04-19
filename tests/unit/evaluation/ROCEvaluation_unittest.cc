@@ -5,6 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 2013 Viktor Gal
+ * Written (W) 2013 Heiko Strathmann
  */
 
 #include <shogun/base/init.h>
@@ -16,16 +17,20 @@ using namespace shogun;
 
 TEST(ROCEvaluation,one)
 {
-	int num_labels = 10;
-	CBinaryLabels* gt = new CBinaryLabels(num_labels);
-	CROCEvaluation* roc = new CROCEvaluation();
+	index_t num_labels=10;
+	CBinaryLabels* gt=new CBinaryLabels(num_labels);
+	CROCEvaluation* roc=new CROCEvaluation();
 
-	for (int i = 0; i < num_labels; i++) {
-		int l = (CMath::random(-1.0, 1.0) < 0 ? -1 : 1);
+	for (index_t i=0; i<num_labels; i++)
+	{
+		float64_t l=i%2==0 ? -1 : 1;
+		gt->set_value(l, i);
 		gt->set_label(i, l);
 	}
 
-	roc->evaluate(gt, gt);
+	float64_t auc=roc->evaluate(gt, gt);
+	EXPECT_EQ(auc, 1);
 
-	EXPECT_EQ(roc->get_auROC(), 1);
+	SG_UNREF(roc);
+	SG_UNREF(gt);
 }
