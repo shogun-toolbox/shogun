@@ -83,7 +83,7 @@ TEST(Statistics, log_det_test_3)
 	M[0]=vec[0].get();
 
 	// fill the rest of the rows
-	Entry* rest[size-1];
+	Entry** rest=SG_MALLOC(Entry*, size-1);
 	for( index_t i=0; i<size-1; ++i )
 	{
 		rest[i]=SG_MALLOC(Entry, 2);
@@ -99,6 +99,7 @@ TEST(Statistics, log_det_test_3)
 	// check if log_det is equal to log(det(M))
 	EXPECT_NEAR(CStatistics::log_det(M), 4605.0649365774307, 1E-10);
 	SG_FREE(vec);
+	SG_FREE(rest);
 
 }
 
@@ -173,4 +174,50 @@ TEST(Statistics, sample_from_gaussian_dense2)
 
 }
 
+// TEST 6 - Sampling from Multivariate Gaussian distribution with Sparse
+// covariance matrix. Using precision_matrix instead
+TEST(Statistics, sample_from_gaussian_sparse1)
+{
+
+	int32_t N=1000;
+	int32_t dim=100;
+
+	// initialize the covariance matrix
+	SGSparseMatrix<float64_t> cov(dim, dim);
+	typedef SGSparseVectorEntry<float64_t> Entry;
+	SGSparseVector<float64_t> *vec=SG_MALLOC(SGSparseVector<float64_t>, dim);
+
+	// fill the rows
+	Entry** rest=SG_MALLOC(Entry*, dim);
+
+	for( index_t i=0; i<dim; ++i )
+	{
+		rest[i]=SG_MALLOC(Entry, 1);
+		rest[i][0].feat_index=i;
+		rest[i][0].entry=0.05;
+		vec[i].features=rest[i];
+		vec[i].num_feat_entries=1;
+		cov[i]=vec[i].get();
+	}
+
+	// create a mean vector
+	SGVector<float64_t> mean(dim);
+	Map<VectorXd> mu(mean.vector, mean.vlen);
+	mu=VectorXd::Constant(dim, 1, 5.0);
+
+	SGMatrix<float64_t> samples=CStatistics::sample_from_gaussian(mean, cov, N);
+
+	// calculate the sample mean and covariance
+	SGVector<float64_t> s_mean=CStatistics::matrix_mean(samples);
+	SGMatrix<float64_t> s_cov=CStatistics::covariance_matrix(samples);
+	Map<VectorXd> s_mu(s_mean.vector, s_mean.vlen);
+	Map<MatrixXd> s_c(s_cov.matrix, s_cov.num_rows, s_cov.num_cols);
+
+	EXPECT_NEAR((s_mu-mu).norm(), 0.0, 0.5);
+	EXPECT_NEAR((MatrixXd::Identity(dim,dim)*0.05-s_c).norm(), 0.0, 1.0);
+
+	SG_FREE(vec);
+	SG_FREE(rest);
+
+}
 #endif // HAVE_EIGEN3

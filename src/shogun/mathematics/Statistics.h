@@ -506,6 +506,24 @@ public:
 	static SGMatrix<float64_t> sample_from_gaussian(SGVector<float64_t> mean, 
 	SGMatrix<float64_t> cov, int32_t N=1, bool precision_matrix=false);
 
+	/** Sampling from a multivariate Gaussian distribution with
+	 * sparse covariance matrix
+	 *  
+	 * Sampling is performed in similar way as of dense covariance
+	 * matrix, but direct cholesky factorization of sparse matrices
+	 * could be inefficient. So, this method uses permutation matrix 
+	 * for factorization and then permutes back the final samples
+	 * before adding the mean.
+	 * 
+	 * @param mean the mean vector
+	 * @param cov the covariance matrix
+	 * @param N number of samples
+	 * @param precision_matrix if true, sample from N(mu,C^-1)
+	 * @return the sample matrix of size \f$N\times dim\f$
+	 */
+	static SGMatrix<float64_t> sample_from_gaussian(SGVector<float64_t> mean,  
+	SGSparseMatrix<float64_t> cov, int32_t N=1, bool precision_matrix=false);
+
 #endif //HAVE_EIGEN3
 
 
