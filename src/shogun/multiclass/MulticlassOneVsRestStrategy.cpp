@@ -61,3 +61,11 @@ SGVector<index_t> CMulticlassOneVsRestStrategy::decide_label_multiple_output(SGV
 	return result;
 }
 
+SGVector<float64_t> CMulticlassOneVsRestStrategy::rescale_output(SGVector<float64_t> outputs)
+{
+    SGVector<float64_t> posterior(outputs);
+    float64_t norm = SGVector<float64_t>::sum(outputs);
+    for (int32_t i=0; i<outputs.vlen; i++) 
+        posterior[i] /= norm;
+    return posterior;
+}

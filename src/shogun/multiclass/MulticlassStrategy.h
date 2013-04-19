@@ -97,6 +97,16 @@ public:
 	 */
 	virtual int32_t get_num_machines()=0;
 
+    /** estimate the posterior probabilities of class label given classifier outputs
+	 * @param outputs a vector of output from each machine (in that order), replace with probabilities
+	 * @param n_outputs number of outputs
+     * @return new outputs
+     */
+    virtual SGVector<float64_t> rescale_output(SGVector<float64_t> outputs)
+    {
+		SG_NOTIMPLEMENTED
+    }
+
 protected:
 
 	CRejectionStrategy* m_rejection_strategy; ///< rejection strategy

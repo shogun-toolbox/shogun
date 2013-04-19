@@ -57,6 +57,13 @@ public:
 		return "MulticlassOneVsOneStrategy";
 	};
 
+    /** estimate the posterior probabilities of class label given classifier outputs
+	 * @param outputs a vector of output from each machine (in that order), replace with probabilities
+	 * @param n_outputs number of outputs
+     * @return new outputs
+     */
+    virtual SGVector<float64_t> rescale_output(SGVector<float64_t> outputs);
+
 protected:
 	int32_t m_num_machines;     ///< number of machines
 	int32_t m_train_pair_idx_1; ///< 1st index of current submachine being trained

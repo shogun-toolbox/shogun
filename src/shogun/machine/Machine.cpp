@@ -39,6 +39,7 @@ CMachine::CMachine() : CSGObject(), m_max_train_time(0), m_labels(NULL),
 	);
 
 	m_parameter_map->finalize_map();
+    m_prob_output_supported = false;
 }
 
 CMachine::~CMachine()
@@ -117,6 +118,11 @@ ESolverType CMachine::get_solver_type()
 void CMachine::set_store_model_features(bool store_model)
 {
 	m_store_model_features = store_model;
+}
+
+void CMachine::set_prob_support()
+{
+    m_prob_output_supported = true;
 }
 
 void CMachine::data_lock(CLabels* labs, CFeatures* features)
