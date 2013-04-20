@@ -42,8 +42,6 @@
 %rename(OnlineLibLinear) COnlineLibLinear;
 %rename(Perceptron) CPerceptron;
 %rename(AveragedPerceptron) CAveragedPerceptron;
-%rename(SubGradientLPM) CSubGradientLPM;
-%rename(SubGradientSVM) CSubGradientSVM;
 %rename(NewtonSVM) CNewtonSVM;
 #ifndef HAVE_PYTHON
 %rename(SVM) CSVM;
@@ -93,8 +91,6 @@
 %include <shogun/classifier/svm/OnlineLibLinear.h>
 %include <shogun/classifier/Perceptron.h>
 %include <shogun/classifier/AveragedPerceptron.h>
-%include <shogun/classifier/SubGradientLPM.h>
-%include <shogun/classifier/svm/SubGradientSVM.h>
 %include <shogun/classifier/svm/SVMLin.h>
 %include <shogun/classifier/svm/SVMOcas.h>
 %include <shogun/classifier/svm/SVMSGD.h>

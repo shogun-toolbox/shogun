@@ -30,7 +30,7 @@
 	#define EIGEN_RUNTIME_NO_MALLOC
 	#include <Eigen/Eigen>
 	#include <Eigen/Dense>
-	#if EIGEN_VERSION_AT_LEAST(3,1,0)
+	#if EIGEN_VERSION_AT_LEAST(3,0,93)
 		#include <Eigen/Sparse>
 		#if defined(TAPKEE_SUPERLU_AVAILABLE) && defined(TAPKEE_USE_SUPERLU)
 			#include <Eigen/SuperLUSupport>

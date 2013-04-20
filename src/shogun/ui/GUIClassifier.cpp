@@ -58,8 +58,6 @@
 #include <shogun/multiclass/ScatterSVM.h>
 
 #include <shogun/classifier/svm/SVMLin.h>
-#include <shogun/classifier/svm/SubGradientSVM.h>
-#include <shogun/classifier/SubGradientLPM.h>
 #include <shogun/classifier/svm/SVMOcas.h>
 #include <shogun/classifier/svm/SVMSGD.h>
 #include <shogun/classifier/svm/WDSVMOcas.h>
@@ -309,19 +307,6 @@ bool CGUIClassifier::new_classifier(char* name, int32_t d, int32_t from_d)
 		((CLPBoost*) classifier)->set_max_train_time(max_train_time);
 		SG_INFO("created LPBoost object\n") 
 	}
-	else if (strcmp(name,"SUBGRADIENTLPM")==0)
-	{
-		SG_UNREF(classifier);
-		classifier= new CSubGradientLPM();
-
-		((CSubGradientLPM*) classifier)->set_bias_enabled(svm_use_bias);
-		((CSubGradientLPM*) classifier)->set_qpsize(svm_qpsize);
-		((CSubGradientLPM*) classifier)->set_qpsize_max(svm_max_qpsize);
-		((CSubGradientLPM*) classifier)->set_C(svm_C1, svm_C2);
-		((CSubGradientLPM*) classifier)->set_epsilon(svm_epsilon);
-		((CSubGradientLPM*) classifier)->set_max_train_time(max_train_time);
-		SG_INFO("created Subgradient LPM object\n") 
-	}
 #endif //USE_CPLEX
 	else if (strncmp(name,"KNN", strlen("KNN"))==0)
 	{
@@ -349,19 +334,6 @@ bool CGUIClassifier::new_classifier(char* name, int32_t d, int32_t from_d)
 		((CSVMLin*) classifier)->set_epsilon(svm_epsilon);
 		((CSVMLin*) classifier)->set_bias_enabled(svm_use_bias);
 		SG_INFO("created SVMLin object\n") 
-	}
-	else if (strcmp(name,"SUBGRADIENTSVM")==0)
-	{
-		SG_UNREF(classifier);
-		classifier= new CSubGradientSVM();
-
-		((CSubGradientSVM*) classifier)->set_bias_enabled(svm_use_bias);
-		((CSubGradientSVM*) classifier)->set_qpsize(svm_qpsize);
-		((CSubGradientSVM*) classifier)->set_qpsize_max(svm_max_qpsize);
-		((CSubGradientSVM*) classifier)->set_C(svm_C1, svm_C2);
-		((CSubGradientSVM*) classifier)->set_epsilon(svm_epsilon);
-		((CSubGradientSVM*) classifier)->set_max_train_time(max_train_time);
-		SG_INFO("created Subgradient SVM object\n") 
 	}
 	else if (strncmp(name,"WDSVMOCAS", strlen("WDSVMOCAS"))==0)
 	{
@@ -788,9 +760,6 @@ bool CGUIClassifier::train_linear(float64_t gamma)
 		((CSVMLin*) classifier)->set_C(svm_C1, svm_C2);
 	else if (ctype==CT_SVMSGD)
 		((CSVMSGD*) classifier)->set_C(svm_C1, svm_C2);
-	else if (ctype==CT_SUBGRADIENTSVM)
-		((CSubGradientSVM*) classifier)->set_C(svm_C1, svm_C2);
-
 	else if (ctype==CT_LPM || ctype==CT_LPBOOST)
 	{
 		if (trainfeatures->get_feature_class()!=C_SPARSE ||
@@ -1152,12 +1121,10 @@ CLabels* CGUIClassifier::classify()
 			return classify_linear();
 		case CT_SVMLIN:
 		case CT_SVMPERF:
-		case CT_SUBGRADIENTSVM:
 		case CT_SVMOCAS:
 		case CT_SVMSGD:
 		case CT_LPM:
 		case CT_LPBOOST:
-		case CT_SUBGRADIENTLPM:
 		case CT_LIBLINEAR:
 			return classify_linear();
 		case CT_WDSVMOCAS:
@@ -1253,12 +1220,10 @@ bool CGUIClassifier::get_trained_classifier(
 		case CT_LDA:
 		case CT_LPM:
 		case CT_LPBOOST:
-		case CT_SUBGRADIENTLPM:
 		case CT_SVMOCAS:
 		case CT_SVMSGD:
 		case CT_SVMLIN:
 		case CT_SVMPERF:
-		case CT_SUBGRADIENTSVM:
 		case CT_LIBLINEAR:
 			return get_linear(weights, rows, cols, bias, brows, bcols);
 			break;

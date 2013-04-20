@@ -27,7 +27,7 @@ CHMSVMModel::CHMSVMModel(CFeatures* features, CStructuredLabels* labels, EStateM
 
 	m_num_obs = num_obs;
 	// Shorthand for the number of free states
-	int32_t free_states = ((CHMSVMLabels*) m_labels)->get_num_states();
+	int32_t free_states = ((CSequenceLabels*) m_labels)->get_num_states();
 	// Shorthand for the number of features of the feature vector
 	int32_t D = ((CMatrixFeatures< float64_t >*) m_features)->get_num_features();
 	m_num_aux = free_states*D*(num_obs-1);
@@ -55,7 +55,7 @@ CHMSVMModel::~CHMSVMModel()
 int32_t CHMSVMModel::get_dim() const
 {
 	// Shorthand for the number of states
-	int32_t S = ((CHMSVMLabels*) m_labels)->get_num_states();
+	int32_t S = ((CSequenceLabels*) m_labels)->get_num_states();
 	// Shorthand for the number of features of the feature vector
 	int32_t D = ((CMatrixFeatures< float64_t >*) m_features)->get_num_features();
 
@@ -281,7 +281,7 @@ void CHMSVMModel::init_opt(
 		SGMatrix< float64_t > & C)
 {
 	// Shorthand for the number of free states
-	int32_t S = ((CHMSVMLabels*) m_labels)->get_num_states();
+	int32_t S = ((CSequenceLabels*) m_labels)->get_num_states();
 	// Shorthand for the number of features of the feature vector
 	int32_t D = ((CMatrixFeatures< float64_t >*) m_features)->get_num_features();
 
@@ -357,7 +357,7 @@ void CHMSVMModel::init_opt(
 bool CHMSVMModel::check_training_setup() const
 {
 	// Shorthand for the labels in the correct type
-	CHMSVMLabels* hmsvm_labels = (CHMSVMLabels*) m_labels;
+	CSequenceLabels* hmsvm_labels = (CSequenceLabels*) m_labels;
 	// Frequency of each state
 	SGVector< int32_t > state_freq( hmsvm_labels->get_num_states() );
 	state_freq.zero();

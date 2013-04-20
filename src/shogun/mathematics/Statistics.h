@@ -488,6 +488,24 @@ public:
 	 */
 	static float64_t log_det(const SGSparseMatrix<float64_t> m);
 
+	/** Sampling from a multivariate Gaussian distribution with
+	 * dense covariance matrix
+	 * 
+	 * Sampling is performed by taking samples from \f$N(0, I)\f$, then 
+	 * using cholesky factor of the covariance matrix, \f$\Sigma\f$ and
+	 * performing 
+	 * \f[S_{N(\mu,\Sigma)}=S_{N(0,I)}*L^{T}+\mu\f]
+	 * where \f$\Sigma=L*L^{T}\f$ and \f$\mu\f$ is the mean vector.
+	 *
+	 * @param mean the mean vector
+	 * @param cov the covariance matrix
+	 * @param N number of samples
+	 * @param precision_matrix if true, sample from N(mu,C^-1)
+	 * @return the sample matrix of size \f$N\times dim\f$
+	 */
+	static SGMatrix<float64_t> sample_from_gaussian(SGVector<float64_t> mean, 
+	SGMatrix<float64_t> cov, int32_t N=1, bool precision_matrix=false);
+
 #endif //HAVE_EIGEN3
 
 
@@ -533,24 +551,6 @@ protected:
 	static inline bool greater_equal(float64_t a, float64_t b) { return a>=b; }
 };
 
-#ifdef HAVE_EIGEN3
-	/** EigenTriplet definition for Eigen3 backword compatibility */
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-	template <typename T> struct EigenTriplet
-	{
-		EigenTriplet(index_t colIndex, index_t rowIndex, T valueT) :
-		ecol(colIndex), erow(rowIndex), evalue(valueT)
-		{
-		}
-		index_t col() const { return ecol; };
-		index_t row() const { return erow; };
-		T value() const { return evalue; };
-		index_t ecol;
-		index_t erow;
-		T evalue;
-	};
-#endif /* DOXYGEN_SHOULD_SKIP_THIS */
-#endif //HAVE_EIGEN3
 }
 
 #endif /* __STATISTICS_H_ */
