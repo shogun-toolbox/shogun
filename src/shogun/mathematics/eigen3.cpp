@@ -33,7 +33,7 @@ SparseMatrix<T> EigenSparseUtil<T>::toEigenSparse(SGSparseMatrix<T> sg_matrix)
 	index_t num_rows=sg_matrix.num_vectors;
 	index_t num_cols=sg_matrix.num_features;
 
-  typedef Eigen::Triplet<T> SparseTriplet;
+	typedef Eigen::Triplet<T> SparseTriplet;
 
 	std::vector<SparseTriplet> tripletList;
 	for( index_t i=0; i<num_rows; ++i )
