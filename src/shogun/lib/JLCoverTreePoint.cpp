@@ -11,10 +11,10 @@
 
 #include <shogun/lib/JLCoverTreePoint.h>
 
+
+namespace shogun { 
 /** Functions declared out of the class definition to respect JLCoverTree 
  *  structure */
-
-using namespace shogun ;
 
 float distance(CJLCoverTreePoint p1, CJLCoverTreePoint p2, float64_t upper_bound)
 {
@@ -88,4 +88,6 @@ v_array< CJLCoverTreePoint > parse_points(CDistance* distance, EFeaturesContaine
 void print(CJLCoverTreePoint &p)
 {
 	SG_SERROR("Print JLCoverTreePoint not implemented\n")
+}
+
 }

@@ -132,16 +132,13 @@ class CJLCoverTreePoint
 
 }; /* class JLCoverTreePoint */
 
-/** Functions declared out of the class definition to respect JLCoverTree 
- *  structure */
-
 float distance(CJLCoverTreePoint p1, CJLCoverTreePoint p2, float64_t upper_bound) ;
 
 /** Fills up a v_array of CJLCoverTreePoint objects */
 v_array< CJLCoverTreePoint > parse_points(CDistance* distance, EFeaturesContainer fc) ;
 
 /** Print the information of the CoverTree point */
-void print(CJLCoverTreePoint &p) ;
+void print(CJLCoverTreePoint &p);
 
 } /* namespace shogun */
 
