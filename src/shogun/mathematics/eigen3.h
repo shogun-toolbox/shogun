@@ -38,6 +38,25 @@
 			index_t erow;
 			T evalue;
 		};
+
+		// SimplicialLLT definition for Eigen3 backword compatibility
+		template <typename T> class SimplicialLLT
+		: public SimplicialCholesky<T,Lower>
+		{
+		public:
+			SimplicialLLT()
+			{
+				SimplicialCholesky<T>::setMode(SimplicialCholeskyLLt);
+			}
+			inline const T matrixL()
+			{
+				return SimplicialCholesky<T>::m_matrix;
+			}
+			inline const T matrixU()
+			{
+				return SimplicialCholesky<T>::m_matrix.transpose();
+			}
+		};
 		}
 		#endif //DOXYGEN_SHOULD_SKIP_THIS
 
