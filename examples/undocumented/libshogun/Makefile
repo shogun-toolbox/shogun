@@ -24,6 +24,7 @@ TARGETS = basic_minimal \
 		  classifier_gaussiannaivebayes \
 		  classifier_multiclasslibsvm \
 		  classifier_qda \
+		  classifier_lda \
 		  classifier_multiclasslinearmachine \
 		  kernel_gaussian kernel_revlin kernel_custom\
 		  library_dyn_int library_gc_array library_indirect_object \
