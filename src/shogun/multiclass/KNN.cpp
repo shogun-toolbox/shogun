@@ -17,7 +17,6 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/Signal.h>
 #include <shogun/lib/JLCoverTree.h>
-#include <shogun/lib/JLCoverTreePoint.h>
 #include <shogun/lib/Time.h>
 #include <shogun/base/Parameter.h>
 

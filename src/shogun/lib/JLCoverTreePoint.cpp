@@ -13,8 +13,6 @@
 
 
 namespace shogun { 
-/** Functions declared out of the class definition to respect JLCoverTree 
- *  structure */
 
 float distance(CJLCoverTreePoint p1, CJLCoverTreePoint p2, float64_t upper_bound)
 {
