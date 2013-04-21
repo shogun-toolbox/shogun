@@ -1,4 +1,5 @@
 #include <vector>
+#include <set>
 #include <algorithm> /* heap operations, std::sort */
 #include <iostream>
 
@@ -26,7 +27,9 @@ struct heap_comparator
 	}
 } comparator;
 
-std::vector<index_t> get_neighbors_indices(CDistance* distance_object, index_t feature_vector_index, index_t n_neighbors);
+std::set<index_t> get_neighbors_indices(CDistance* distance_object, index_t feature_vector_index, index_t n_neighbors);
+
+void check_similarity_of_sets(const std::set<index_t>& first_set,const std::set<index_t>& second_set, float min_similarity_level);
 
 TEST(LocallyLinearEmbeddingTest,neighbors_preserving)
 {
@@ -34,18 +37,19 @@ TEST(LocallyLinearEmbeddingTest,neighbors_preserving)
 	const index_t n_gaussians = 1;
 	const index_t n_dimensions = 4;
 	const index_t n_target_dimensions = 3;
-	const index_t n_neighbors = 30;
+	const index_t n_neighbors = 40;
+	const float required_similarity_level = 0.5; /*hope we will get rid of this*/
 	CDenseFeatures<float64_t>* high_dimensional_features = 
 		new CDenseFeatures<float64_t>(CDataGenerator::generate_gaussians(n_samples, n_gaussians, n_dimensions)); 
 	
 	CDistance* high_dimensional_dist = 
 		new CEuclideanDistance(high_dimensional_features, high_dimensional_features);
 
-	std::vector<std::vector<index_t> > neighbors_for_vectors;
+	std::vector<std::set<index_t> > high_dimensional_neighbors_for_vectors;
 	/* Find n_neighbors nearest eighbours for each vector */
 	for (index_t i=0; i<n_samples; ++i)
 	{
-		neighbors_for_vectors.push_back(get_neighbors_indices(high_dimensional_dist, i, n_neighbors));
+		high_dimensional_neighbors_for_vectors.push_back(get_neighbors_indices(high_dimensional_dist, i, n_neighbors));
 	}
 
 	CLocallyLinearEmbedding* lleEmbedder =
@@ -66,7 +70,8 @@ TEST(LocallyLinearEmbeddingTest,neighbors_preserving)
 	
 	for (index_t i=0; i<n_samples; ++i) 
 	{
-		ASSERT_EQ(neighbors_for_vectors[i], get_neighbors_indices(low_dimensional_dist, i, n_neighbors));
+		std::set<index_t> low_dimensional_neighbors = get_neighbors_indices(low_dimensional_dist, i, n_neighbors);
+		check_similarity_of_sets(high_dimensional_neighbors_for_vectors[i], low_dimensional_neighbors, required_similarity_level);
 	}
 
 	SG_UNREF(lleEmbedder);
@@ -74,7 +79,7 @@ TEST(LocallyLinearEmbeddingTest,neighbors_preserving)
 	SG_UNREF(low_dimensional_dist);
 }
 
-std::vector<index_t> get_neighbors_indices(CDistance* distance_object, index_t feature_vector_index, index_t n_neighbors)
+std::set<index_t> get_neighbors_indices(CDistance* distance_object, index_t feature_vector_index, index_t n_neighbors)
 {
 	index_t n_vectors = distance_object->get_num_vec_lhs();
 	EXPECT_EQ(n_vectors, distance_object->get_num_vec_rhs());
@@ -96,15 +101,38 @@ std::vector<index_t> get_neighbors_indices(CDistance* distance_object, index_t f
 
 	/* Heapify, and then extract n_neighbors nearest neighbors*/
 	std::make_heap(distances_and_indices.begin(), distances_and_indices.end(), comparator);
-	std::vector<index_t> neighbors_for_current_vector;
+	std::set<index_t> neighbors_for_current_vector;
 	for (index_t j = 0; j < n_neighbors; ++j)
 	{
-		neighbors_for_current_vector.push_back(distances_and_indices[0].neighbor_index);
+		neighbors_for_current_vector.insert(distances_and_indices[0].neighbor_index);
 		std::pop_heap(distances_and_indices.begin(), distances_and_indices.end(), comparator);
 		distances_and_indices.pop_back();
 	}
-	std::sort(neighbors_for_current_vector.begin(), neighbors_for_current_vector.end());
 	return neighbors_for_current_vector;
 }
 
+void check_similarity_of_sets(const std::set<index_t>& first_set,const std::set<index_t>& second_set, float min_similarity_level)
+{
+	index_t total_elements_count = first_set.size();
+	ASSERT_EQ(total_elements_count, second_set.size()) << "Can not compare sets of different size.";
+	ASSERT_LE(min_similarity_level, 1.0) << "Similarity level can not be greater than 1.";
+	ASSERT_GE(min_similarity_level, 0) << "Similarity level can not be less than 0.";
+	if (min_similarity_level == 0)
+		/*Nothing to do*/
+		return;
+	index_t similar_elements_count = 0;
+	std::set<index_t>::iterator first_iter = first_set.begin(), second_iter = second_set.begin();
+	while (first_iter != first_set.end() && second_iter != second_set.end())
+	{
+		if (*first_iter < *second_iter)
+			++first_iter;
+		else if (*second_iter < *first_iter)
+			++second_iter;
+		else
+		{
+			++similar_elements_count; ++first_iter; ++second_iter;
+		}
+	}
+	EXPECT_GE((float) similar_elements_count /(float) total_elements_count, min_similarity_level)<<"#similarElements/#total < minimal similarity level.";
+}
 #endif
