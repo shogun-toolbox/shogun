@@ -68,7 +68,6 @@ uninstall:
 
 include .config
 unit-tests: .config
-	echo $(USE_GMOCK)
 ifneq ($(USE_GMOCK),)
 	$(MAKE) -C ../tests/unit
 endif
