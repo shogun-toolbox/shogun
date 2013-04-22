@@ -48,7 +48,6 @@ CDenseLabels::~CDenseLabels()
 void CDenseLabels::init()
 {
 	SG_ADD(&m_labels, "labels", "The labels.", MS_NOT_AVAILABLE);
-	SG_ADD(&m_current_values, "values", "Active values.", MS_NOT_AVAILABLE);
 }
 
 void CDenseLabels::set_to_one()
