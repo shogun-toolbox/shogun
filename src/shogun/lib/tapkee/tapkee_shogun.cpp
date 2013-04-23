@@ -7,8 +7,8 @@
  * Copyright (c) 2012-2013 Sergey Lisitsyn
  */
 
-#include <shogun/lib/tapkee/tapkee_shogun.hpp>
 
+#include <shogun/lib/tapkee/tapkee_shogun.hpp>
 #ifdef HAVE_EIGEN3
 
 #define TAPKEE_EIGEN_INCLUDE_FILE <shogun/mathematics/eigen3.h>
@@ -59,18 +59,13 @@ struct ShogunFeatureVectorCallback
 	CDotFeatures* features;
 };
 
-
-CDenseFeatures<float64_t>* shogun::tapkee_embed(const shogun::TAPKEE_PARAMETERS_FOR_SHOGUN& parameters)
+void prepare_tapkee_parameters(const TAPKEE_PARAMETERS_FOR_SHOGUN& parameters,  tapkee::ParametersMap& tapkee_parameters,  std::vector<int32_t> & indices)
 {
-	tapkee::LoggingSingleton::instance().set_logger_impl(new ShogunLoggerImplementation);
+  	tapkee::LoggingSingleton::instance().set_logger_impl(new ShogunLoggerImplementation);
 	tapkee::LoggingSingleton::instance().enable_benchmark();
 	tapkee::LoggingSingleton::instance().enable_info();
 
-	pimpl_kernel_callback<CKernel> kernel_callback(parameters.kernel);
-	pimpl_distance_callback<CDistance> distance_callback(parameters.distance);
-	ShogunFeatureVectorCallback features_callback(parameters.features);
 
-	tapkee::ParametersMap tapkee_parameters;
 #ifdef HAVE_ARPACK
 	tapkee_parameters[tapkee::EIGEN_EMBEDDING_METHOD] = tapkee::ARPACK;
 #else
@@ -210,18 +205,36 @@ CDenseFeatures<float64_t>* shogun::tapkee_embed(const shogun::TAPKEE_PARAMETERS_
 			tapkee_parameters[tapkee::FA_EPSILON] =
 				static_cast<tapkee::ScalarType>(parameters.fa_epsilon);
 			break;
-	}
-	
-	std::vector<int32_t> indices(N);
-	for (size_t i=0; i<N; i++)
-		indices[i] = i;
+          case SHOGUN_KERNEL_PCA:
+                   tapkee_parameters[tapkee::REDUCTION_METHOD] = 
+                       tapkee::KERNEL_PCA;
+                   N = parameters.kernel->get_num_vec_lhs();
 
-	tapkee::ReturnResult result = tapkee::embed(indices.begin(),indices.end(),
+                        break;
+            
+	}
+        std::vector<int32_t> tmp_indices(N);
+	for (size_t i=0; i<N; i++)
+		tmp_indices[i] = i;
+        indices = tmp_indices;
+}
+
+CDenseFeatures<float64_t>* shogun::tapkee_embed(const shogun::TAPKEE_PARAMETERS_FOR_SHOGUN& parameters)
+{
+
+        std::vector<int32_t> indices;
+        tapkee::ParametersMap tapkee_parameters;
+	pimpl_kernel_callback<CKernel> kernel_callback(parameters.kernel);
+	pimpl_distance_callback<CDistance> distance_callback(parameters.distance);
+	ShogunFeatureVectorCallback features_callback(parameters.features);
+
+        prepare_tapkee_parameters(parameters, tapkee_parameters, indices);
+        tapkee::ReturnResult result = tapkee::embed(indices.begin(),indices.end(),
 			kernel_callback,distance_callback,features_callback,tapkee_parameters);
-	tapkee::DenseMatrix result_embedding = result.first;
+        tapkee::DenseMatrix result_embedding = result.first;
 	// destroy projecting function
 	result.second.clear();
-
+        size_t N = result_embedding.cols();
 	SGMatrix<float64_t> feature_matrix(parameters.target_dimension,N);
 	// TODO avoid copying
 	for (uint32_t i=0; i<N; i++) 
@@ -232,6 +245,20 @@ CDenseFeatures<float64_t>* shogun::tapkee_embed(const shogun::TAPKEE_PARAMETERS_
 		}
 	}
 	return new CDenseFeatures<float64_t>(feature_matrix);
+}
+
+tapkee::ProjectingFunction* shogun::calc_tapkee_projecting_function(const TAPKEE_PARAMETERS_FOR_SHOGUN& parameters)
+{
+        std::vector<int32_t> indices;
+        tapkee::ParametersMap tapkee_parameters;
+	pimpl_kernel_callback<CKernel> kernel_callback(parameters.kernel);
+	pimpl_distance_callback<CDistance> distance_callback(parameters.distance);
+	ShogunFeatureVectorCallback features_callback(parameters.features);
+
+        prepare_tapkee_parameters(parameters, tapkee_parameters, indices);
+        tapkee::ReturnResult result=  tapkee::embed(indices.begin(),indices.end(),
+			kernel_callback,distance_callback,features_callback,tapkee_parameters);
+        return new tapkee::ProjectingFunction( result.second.implementation );
 }
 
 #endif
