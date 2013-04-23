@@ -24,33 +24,40 @@ using namespace Eigen;
 
 CStudentsTLikelihood::CStudentsTLikelihood() : CLikelihoodModel()
 {
-	init();
+	init(0.01, 3);
 }
 
 CStudentsTLikelihood::CStudentsTLikelihood(float64_t sigma, float64_t df) : CLikelihoodModel()
 {
-	init();
-
-	m_sigma=sigma;
-
-	if (df<=1.0)
-		SG_ERROR("Number of degrees of freedom must be greater than one")
-	else
-		m_df=df;
+	init(sigma, df);
 }
 
-void CStudentsTLikelihood::init()
+void CStudentsTLikelihood::init(float64_t sigma, float64_t df)
 {
-	m_df = 3.0;
-	m_sigma = 0.01;
-	SG_ADD(&m_sigma, "sigma", "Observation Noise.", MS_AVAILABLE);
+	REQUIRE(df>1.0, "%s::init(): Number of degrees of "
+			"freedom must be greater than one\n", get_name())
+	m_df=df;
+	m_sigma = sigma;
+
 	SG_ADD(&m_df, "df", "Degrees of Freedom.", MS_AVAILABLE);
+	SG_ADD(&m_sigma, "sigma", "Observation Noise.", MS_AVAILABLE);
 }
 
 CStudentsTLikelihood::~CStudentsTLikelihood()
 {
 }
 
+CStudentsTLikelihood* CStudentsTLikelihood::obtain_from_generic(CLikelihoodModel* likelihood)
+{
+	ASSERT(likelihood!=NULL);
+
+	if (likelihood->get_model_type()!=LT_STUDENTST)
+		SG_SERROR("CStudentsTLikelihood::obtain_from_generic(): provided likelihood is "
+			"not of type CStudentsTLikelihood!\n")
+
+	SG_REF(likelihood);
+	return (CStudentsTLikelihood*)likelihood;
+}
 
 SGVector<float64_t> CStudentsTLikelihood::evaluate_means(
 		SGVector<float64_t>& means)

@@ -74,11 +74,17 @@ public:
 	 */
 	void set_degrees_freedom(float64_t df)
 	{
-		if (df<=1.0)
-			SG_ERROR("Number of degrees of freedom must be greater than one")
-		else
-			m_df=df;
+		REQUIRE(df>1.0, "%s::set_degrees_freedom(): Number of degrees of "
+				"freedom must be greater than one\n", get_name())
+		m_df=df;
 	}
+
+	/** helper method used to specialize a base class instance
+	 *
+	 * @param likelihood likelihood model
+	 * @return casted CStudentsTLikelihood object
+	 */
+	static CStudentsTLikelihood* obtain_from_generic(CLikelihoodModel* likelihood);
 
 	/** Evaluate means
 	 *
@@ -96,7 +102,7 @@ public:
 
 	/** get model type
 	  *
-	  * @return model type Gaussian
+	  * @return model type Student's T
 	 */
 	virtual ELikelihoodModelType get_model_type() {return LT_STUDENTST;}
 
@@ -168,7 +174,7 @@ private:
 	float64_t m_df;
 
 	/** Initialize function*/
-	void init();
+	void init(float64_t sigma, float64_t df);
 
 };
 

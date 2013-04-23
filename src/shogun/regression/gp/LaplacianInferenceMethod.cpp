@@ -778,13 +778,15 @@ void CLaplacianInferenceMethod::update_alpha()
 			//Suggested by Vanhatalo et. al.,
 			//Gaussian Process Regression with Student's t likelihood, NIPS 2009
 			//Quoted from infLaplace.m
-			CStudentsTLikelihood* lik=dynamic_cast<CStudentsTLikelihood*>(m_model);
 			float64_t df;
 
-			if (lik)
-				df = lik->get_degrees_freedom();
+			if (m_model->get_model_type()==LT_STUDENTST)
+			{
+				CStudentsTLikelihood* lik=CStudentsTLikelihood::obtain_from_generic(m_model);
+				df=lik->get_degrees_freedom();
+			}
 			else
-				df = 1;
+				df=1;
 
 			for (index_t i = 0; i < eigen_W.rows(); i++)
 				eigen_W[i] += 2.0/(df)*dlp[i]*dlp[i];
