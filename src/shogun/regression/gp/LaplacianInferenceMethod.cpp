@@ -803,18 +803,11 @@ void CLaplacianInferenceMethod::update_alpha()
 				eigen_temp_kernel*m_scale*m_scale) +
 				MatrixXd::Identity(m_ktrtr.num_rows, m_ktrtr.num_cols));
 
-		MatrixXd chol = L.matrixL();
-
-		MatrixXd temp = L.matrixL();
-
 		Map<VectorXd> temp_eigen_dlp(dlp.vector, dlp.vlen);
 
 		VectorXd b = eigen_W.cwiseProduct((eigen_function - eigen_m_means)) + temp_eigen_dlp;
 
-		chol = chol.colPivHouseholderQr().solve(eigen_sW.cwiseProduct(
-				(eigen_temp_kernel*b*m_scale*m_scale)));
-
-		chol = temp.transpose().colPivHouseholderQr().solve(chol);
+		MatrixXd chol = L.solve(eigen_sW.cwiseProduct((eigen_temp_kernel*b*m_scale*m_scale)));
 
 		VectorXd dalpha = b - eigen_sW.cwiseProduct(chol) - eigen_temp_alpha;
 
