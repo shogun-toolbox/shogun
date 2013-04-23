@@ -27,11 +27,24 @@ CStudentsTLikelihood::CStudentsTLikelihood() : CLikelihoodModel()
 	init();
 }
 
+CStudentsTLikelihood::CStudentsTLikelihood(float64_t sigma, float64_t df) : CLikelihoodModel()
+{
+	init();
+
+	m_sigma=sigma;
+
+	if (df<=1.0)
+		SG_ERROR("Number of degrees of freedom must be greater than one")
+	else
+		m_df=df;
+}
+
 void CStudentsTLikelihood::init()
 {
 	m_df = 3.0;
 	m_sigma = 0.01;
 	SG_ADD(&m_sigma, "sigma", "Observation Noise.", MS_AVAILABLE);
+	SG_ADD(&m_df, "df", "Degrees of Freedom.", MS_AVAILABLE);
 }
 
 CStudentsTLikelihood::~CStudentsTLikelihood()
@@ -211,7 +224,7 @@ SGVector<float64_t> CStudentsTLikelihood::get_first_derivative(
 
 		for (index_t i = 0; i < result.rows(); i++)
 			sgresult[i] = result[i];
- 
+
 		return sgresult;
 	}
 
@@ -267,7 +280,7 @@ SGVector<float64_t> CStudentsTLikelihood::get_second_derivative(
 		result = b.cwiseQuotient(c);
 
 		result = result/(m_df-1);
-		
+
 		for (index_t i = 0; i < result.rows(); i++)
 			sgresult[i] = result[i];
 		return sgresult;
