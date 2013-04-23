@@ -83,7 +83,7 @@ CMulticlassLabels* CMCLDA::apply_multiclass(CFeatures* data)
 	ASSERT(num_vecs > 0)
 	ASSERT( m_dim == m_features->get_dim_feature_space() )
 
-    // collect features into a matrix
+	// collect features into a matrix
 	CDenseFeatures< float64_t >* rf = (CDenseFeatures< float64_t >*) m_features;
 	
 	SGMatrix< float64_t > X = SGMatrix< float64_t >(num_vecs, m_dim);
@@ -93,11 +93,11 @@ CMulticlassLabels* CMCLDA::apply_multiclass(CFeatures* data)
 	bool vfree;
 	float64_t* vec;
 	for ( i = 0 ; i < num_vecs ; ++i )
-	    for ( j = 0 ; j < m_dim ; ++j )
-        {
-            vec = rf->get_feature_vector(i, vlen, vfree);
-            X(i,j) = vec[j] - m_xbar[j];
-	    }
+		for ( j = 0 ; j < m_dim ; ++j )
+		{
+			vec = rf->get_feature_vector(i, vlen, vfree);
+			X(i,j) = vec[j] - m_xbar[j];
+    	}
 
 #ifdef DEBUG_MCLDA
 	SG_PRINT("\n>>> Displaying X ...\n");
@@ -105,7 +105,7 @@ CMulticlassLabels* CMCLDA::apply_multiclass(CFeatures* data)
 #endif
 	
 	// center and scale data
-    SGMatrix< float64_t > Xs = SGMatrix< float64_t >(num_vecs, m_rank);
+	SGMatrix< float64_t > Xs = SGMatrix< float64_t >(num_vecs, m_rank);
 	cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
 	            num_vecs, m_rank, m_dim, 1.0,
 	            X.matrix, num_vecs,
@@ -114,7 +114,6 @@ CMulticlassLabels* CMCLDA::apply_multiclass(CFeatures* data)
     	
 #ifdef DEBUG_MCLDA
 	SG_PRINT("\n>>> Displaying Xs ...\n");
-	//SGVector< float64_t >::display_vector(Xs.vector, num_vecs);
 	SGMatrix< float64_t >::display_matrix(Xs.matrix, num_vecs, m_rank);
 #endif
 	
@@ -132,7 +131,7 @@ CMulticlassLabels* CMCLDA::apply_multiclass(CFeatures* data)
 	// argmax to apply labels       
 	CMulticlassLabels* out = new CMulticlassLabels(num_vecs);
 	for ( i = 0 ; i < num_vecs ; ++i )
-        out->set_label(i, SGVector<float64_t>::arg_max(d.matrix+i, num_vecs, m_num_classes));
+    	out->set_label(i, SGVector<float64_t>::arg_max(d.matrix+i, num_vecs, m_num_classes));
 
 #ifdef DEBUG_MCLDA
 	SG_PRINT("\n>>> Displaying labels ...\n");
