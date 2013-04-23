@@ -17,7 +17,7 @@
 
 namespace shogun
 {
-  
+
 /** Type of likelihood model*/
 enum ELikelihoodModelType
 {
@@ -25,7 +25,7 @@ enum ELikelihoodModelType
 	LT_GAUSSIAN = 10,
 	LT_STUDENTST = 20
 };
-	
+
 
 /** @brief The Likelihood Model base class.
  *
@@ -38,7 +38,7 @@ class CLikelihoodModel : public CSGObject
 {
 
 public:
-  
+
 	/*Constructor*/
 	CLikelihoodModel();
 
@@ -65,21 +65,13 @@ public:
 	 * @return Final variances evaluated by likelihood function
 	 */
 	virtual SGVector<float64_t> evaluate_variances(SGVector<float64_t>& vars) = 0;
-	
+
 	/** get model type
 	  *
 	  * @return model type NONE
 	 */
 	virtual ELikelihoodModelType get_model_type() {return LT_NONE;}
 
-	/** get degrees of freedom (1 if
-	 * degrees of freedom not supported
-	 * by likelihood function)
-	 *
-	 * @return degrees of freedom
-	 */
-	virtual float64_t get_degrees_freedom() {return m_df;}
-	
 	/** get log likelihood log(P(y|f)) with respect
 	 *  to location f
 	 *
@@ -138,11 +130,6 @@ public:
 	 */
 	virtual SGVector<float64_t> get_second_derivative(CRegressionLabels* labels,
 			TParameter* param, CSGObject* obj, SGVector<float64_t> function) = 0;
-protected:
-
-	/** Degrees of Freedom*/
-	float64_t m_df;
-
 };
 
 

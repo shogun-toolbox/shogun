@@ -24,17 +24,23 @@ namespace shogun
  * with a Student's T Distribution. The parameters include
  * degrees of freedom as well as a sigma scale parameter.
  *
- *
  */
 class CStudentsTLikelihood: public CLikelihoodModel
 {
 
 public:
 
-	/*Constructor*/
+	/** default constructor */
 	CStudentsTLikelihood();
 
-	/*Destructor*/
+	/** constructor
+	 *
+	 * @param sigma noise variance
+	 * @param df degrees of freedom
+	 */
+	CStudentsTLikelihood(float64_t sigma, float64_t df);
+
+	/** destructor */
 	virtual ~CStudentsTLikelihood();
 
 	/** Returns the name of the SGSerializable instance.  It MUST BE
@@ -56,6 +62,30 @@ public:
 	 */
 	void set_sigma(float64_t s) {m_sigma = s;}
 
+	/** get degrees of freedom
+	 *
+	 * @return degrees of freedom
+	 */
+	float64_t get_degrees_freedom() {return m_df;}
+
+	/** sets degrees of freedom
+	 *
+	 * @param df degrees of freedom
+	 */
+	void set_degrees_freedom(float64_t df)
+	{
+		REQUIRE(df>1.0, "%s::set_degrees_freedom(): Number of degrees of "
+				"freedom must be greater than one\n", get_name())
+		m_df=df;
+	}
+
+	/** helper method used to specialize a base class instance
+	 *
+	 * @param likelihood likelihood model
+	 * @return casted CStudentsTLikelihood object
+	 */
+	static CStudentsTLikelihood* obtain_from_generic(CLikelihoodModel* likelihood);
+
 	/** Evaluate means
 	 *
 	 * @param means Vector of means calculated by inference method
@@ -72,7 +102,7 @@ public:
 
 	/** get model type
 	  *
-	  * @return model type Gaussian
+	  * @return model type Student's T
 	 */
 	virtual ELikelihoodModelType get_model_type() {return LT_STUDENTST;}
 
@@ -140,9 +170,11 @@ private:
 	/** Observation noise sigma */
 	float64_t m_sigma;
 
+	/** Degrees of Freedom */
+	float64_t m_df;
 
 	/** Initialize function*/
-	void init();
+	void init(float64_t sigma, float64_t df);
 
 };
 

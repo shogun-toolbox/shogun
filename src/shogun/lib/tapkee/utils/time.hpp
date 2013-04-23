@@ -47,4 +47,9 @@ struct timed_context
 };
 }
 }
+
+#undef CLOCK_TYPE
+#undef CLOCK_GET
+#undef CLOCK_DIVISOR
+
 #endif
