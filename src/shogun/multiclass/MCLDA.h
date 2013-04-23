@@ -41,7 +41,7 @@ class CMCLDA : public CNativeMulticlassMachine
 	public:
 		MACHINE_PROBLEM_TYPE(PT_MULTICLASS)
         
-        /** constructor
+        	/** constructor
 		 *
 		 * @param tolerance tolerance used in training
 		 * @param store_covs whether to store the within class covariances
@@ -64,9 +64,9 @@ class CMCLDA : public CNativeMulticlassMachine
 		 * @param data (test) data to be classified
 		 * @return labels result of classification
 		 */
-        virtual CMulticlassLabels* apply_multiclass(CFeatures* data=NULL);
+		virtual CMulticlassLabels* apply_multiclass(CFeatures* data=NULL);
 
-        /** set tolerance
+        	/** set tolerance
 		 *
 		 * @param tolerance tolerance used during training
 		 */
@@ -111,8 +111,8 @@ class CMCLDA : public CNativeMulticlassMachine
 		 */
 		virtual const char* get_name() const { return "MCLDA"; }
 
-    protected:
-        /** train MCLDA classifier
+    	protected:
+		/** train MCLDA classifier
 		 *
 		 * @param data training data
 		 *
@@ -125,14 +125,14 @@ class CMCLDA : public CNativeMulticlassMachine
 
 		void cleanup();
 		
-    private:
-        /** feature vectors */
+    	private:
+       		/** feature vectors */
 		CDotFeatures* m_features;
 
 		/** tolerance used during training */
 		float64_t m_tolerance;
 
-        /** whether to store the within class covariances */
+       		/** whether to store the within class covariances */
 		bool m_store_cov;
 
 		/** number of classes */
