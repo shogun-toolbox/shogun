@@ -152,11 +152,14 @@ class CMCLDA : public CNativeMulticlassMachine
 		/** total mean */
 		SGVector< float64_t > m_xbar;
 		
+		/** rank */
+		int32_t m_rank;
+		
 		/** scalings */
-		SGVector< float64_t > m_scalings;
+		SGMatrix< float64_t > m_scalings;
 		
 		/** weight vectors / coefs */
-		SGVector< float64_t > m_coef;
+		SGMatrix< float64_t > m_coef;
 		
 		/** intercept */
 		SGVector< float64_t > m_intercept;

@@ -23,8 +23,6 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/lapack.h>
 
-#include <iostream>
-
 using namespace shogun;
 
 CMCLDA::CMCLDA(float64_t tolerance, bool store_cov)
@@ -57,6 +55,7 @@ void CMCLDA::init()
 	SG_ADD(&m_cov, "m_cov", "covariance matrix", MS_NOT_AVAILABLE);
 	SG_ADD(&m_xbar, "m_xbar", "total mean", MS_NOT_AVAILABLE);
     SG_ADD(&m_scalings, "m_scalings", "scalings", MS_NOT_AVAILABLE);
+    SG_ADD(&m_rank, "m_rank", "rank", MS_NOT_AVAILABLE);
     SG_ADD(&m_coef, "m_coef", "weight vector", MS_NOT_AVAILABLE);
     SG_ADD(&m_intercept, "m_intercept", "intercept", MS_NOT_AVAILABLE);
 	m_features  = NULL;
@@ -106,16 +105,17 @@ CMulticlassLabels* CMCLDA::apply_multiclass(CFeatures* data)
 #endif
 	
 	// center and scale data
-	SGVector< float64_t > Xs = SGVector< float64_t >(num_vecs);
-	cblas_dgemv(CblasColMajor, CblasNoTrans,
-	            num_vecs, m_dim, 1.0,
+    SGMatrix< float64_t > Xs = SGMatrix< float64_t >(num_vecs, m_rank);
+	cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
+	            num_vecs, m_rank, m_dim, 1.0,
 	            X.matrix, num_vecs,
-	            m_scalings.vector, 1, 0.0,
-	            Xs.vector, 1);
-	
+	            m_scalings.matrix, m_dim, 0.0,
+	            Xs.matrix, num_vecs);
+    	
 #ifdef DEBUG_MCLDA
 	SG_PRINT("\n>>> Displaying Xs ...\n");
-	SGVector< float64_t >::display_vector(Xs.vector, num_vecs);
+	//SGVector< float64_t >::display_vector(Xs.vector, num_vecs);
+	SGMatrix< float64_t >::display_matrix(Xs.matrix, num_vecs, m_rank);
 #endif
 	
 	// decision function
@@ -248,8 +248,8 @@ bool CMCLDA::train_machine(CFeatures* data)
 				X(iX,j) = buffer[i + j*class_nums[k]];
 	        }
 	        iX+=1;
-        }
-	        
+        } 
+
 	    if ( m_store_cov )
 	    {
             // calc cov = buffer.T * buffer
@@ -259,10 +259,11 @@ bool CMCLDA::train_machine(CFeatures* data)
 				        buffer.matrix, m_dim, 0.0, 
 				        covs.get_matrix(k), m_dim);
 	    }
+
 	}   
 
 #ifdef DEBUG_MCLDA
-	SG_PRINT("\n>>> Displaying means ...\n")
+	SG_PRINT("\n>>> Displaying means ...\n");
 	SGMatrix< float64_t >::display_matrix(m_means.matrix, m_dim, m_num_classes);
 #endif
 	
@@ -273,15 +274,18 @@ bool CMCLDA::train_machine(CFeatures* data)
         
         // normalize the covar mat
         for ( i = 0 ; i < m_dim*m_dim ; ++i )
+        {
             for ( k = 0 ; k < m_num_classes ; ++k ) 
                 m_cov[i] += covs.get_matrix(k)[i];
+                
             m_cov[i] / m_num_classes;
+        }
     }
 
 #ifdef DEBUG_MCLDA		
 	if ( m_store_cov )
     {
-	    SG_PRINT("\n>>> Displaying cov ...\n")
+	    SG_PRINT("\n>>> Displaying cov ...\n");
 	    SGMatrix< float64_t >::display_matrix(m_cov.matrix, m_dim, m_dim);
 	}
 #endif
@@ -335,8 +339,9 @@ bool CMCLDA::train_machine(CFeatures* data)
 	//SGVector< float64_t >::display_vector(S.vector, m_dim);
 	
 	int rank = 0;
-	while ( S[rank] > m_tolerance && rank <= m_dim)
+	while ( S[rank] > m_tolerance && rank < m_dim)
 	    rank++;
+	//printf("%d",rank);
 	
 	if ( rank < m_dim )
         SG_ERROR("Warning: Variables are collinear\n")
@@ -347,7 +352,7 @@ bool CMCLDA::train_machine(CFeatures* data)
 		    scalings(i,j) = V(j,i) / std[j] / S[j];
 
 #ifdef DEBUG_MCLDA	
-	SG_PRINT("\n>>> Displaying scalings ...\n")
+	SG_PRINT("\n>>> Displaying scalings ...\n");
 	SGMatrix< float64_t >::display_matrix(scalings.matrix, m_dim, rank);
 #endif
 	
@@ -384,43 +389,44 @@ bool CMCLDA::train_machine(CFeatures* data)
     //SGMatrix< float64_t >::display_matrix(V.matrix, rank, rank);
 	//SGVector< float64_t >::display_vector(S.vector, rank);
 	
-	int new_rank = 0;
-	while ( S[new_rank] > m_tolerance*S[0] && new_rank <= rank)
-	    new_rank++;
-	//std::cout << new_rank << std::endl;
+	m_rank = 0;
+	while ( S[m_rank] > m_tolerance*S[0] && m_rank < rank )
+	    m_rank++;
+	//printf("%d",m_rank);
 	
 	// compose the scalings
     // m_scalings = scalings dot V^T[:,:new_rank]
-    m_scalings  = SGVector< float64_t >(rank);
-	cblas_dgemm(CblasColMajor, CblasNoTrans, CblasTrans, 
-	            m_dim, new_rank, rank, 1.0,
+    m_scalings  = SGMatrix< float64_t >(rank, m_rank);
+	cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, 
+	            m_dim, m_rank, rank, 1.0,
 				scalings.matrix, rank, 
 				V.matrix, rank, 0.0, 
-				m_scalings.vector, rank);
+				m_scalings.matrix, rank);
+								
 #ifdef DEBUG_MCLDA	
-	SG_PRINT("\n>>> Displaying m_scalings ...\n")
-	SGVector< float64_t >::display_vector(m_scalings.vector,rank);
+	SG_PRINT("\n>>> Displaying m_scalings ...\n");
+	SGMatrix< float64_t >::display_matrix(m_scalings.matrix, rank, m_rank);
 #endif
-	
+
 	// weight vectors / centroids
 	// m_coef = (m_means - xbar) dot m_scalings
 	SGMatrix< float64_t > meansc = SGMatrix< float64_t >(m_dim, m_num_classes);
 	for ( i = 0 ; i < m_dim ; ++i )
 	    for ( j = 0 ; j < m_num_classes ; ++j )
 	        meansc(i,j) = m_means(i,j) - m_xbar[j];    
+	
 	//SGMatrix< float64_t >::display_matrix(meansc.matrix, m_dim, m_num_classes);
-	m_coef = SGVector< float64_t >(m_num_classes);
-	cblas_dgemv(CblasRowMajor, CblasNoTrans,
-	            m_num_classes, m_dim, 1.0,
-	            meansc.matrix, m_dim,
-	            m_scalings.vector, 1, 0.0,
-	            m_coef.vector, 1);
-				
+	m_coef = SGMatrix< float64_t >(m_num_classes, m_rank);
+	cblas_dgemm(CblasColMajor, CblasTrans, CblasNoTrans, 
+                m_num_classes, m_rank, rank, 1.0,
+                meansc.matrix, m_dim,
+                m_scalings.matrix, rank, 0.0,
+                m_coef.matrix, m_num_classes);
+			
 #ifdef DEBUG_MCLDA	
-	SG_PRINT("\n>>> Displaying m_coefs ...\n")
-	SGVector< float64_t >::display_vector(m_coef.vector, m_num_classes);
+	SG_PRINT("\n>>> Displaying m_coefs ...\n");
+	SGMatrix< float64_t >::display_matrix(m_coef.matrix, m_num_classes, m_rank);
 #endif
-  
     // intercept
     m_intercept  = SGVector< float64_t >(m_num_classes);
     m_intercept.zero();
@@ -428,12 +434,13 @@ bool CMCLDA::train_machine(CFeatures* data)
         m_intercept[j] = -0.5*m_coef[j]*m_coef[j] + log(class_nums[j]/float(num_vec));
 
 #ifdef DEBUG_MCLDA	
-	SG_PRINT("\n>>> Displaying m_intercept ...\n")
+	SG_PRINT("\n>>> Displaying m_intercept ...\n");
 	SGVector< float64_t >::display_vector(m_intercept.vector, m_num_classes);
 #endif    
-
+    
     SG_FREE(class_idxs);
 	SG_FREE(class_nums);
+	
 	return true;
 }
 
