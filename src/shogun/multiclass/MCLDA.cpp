@@ -68,21 +68,21 @@ void CMCLDA::cleanup()
 
 CMulticlassLabels* CMCLDA::apply_multiclass(CFeatures* data)
 {
-    if (data)
+	if (data)
 	{
 		if (!data->has_property(FP_DOT))
 			SG_ERROR("Specified features are not of type CDotFeatures\n")
-
+		
 		set_features((CDotFeatures*) data);
 	}
-
+	
 	if ( !m_features )
 		return NULL;
-		
+	
 	int32_t num_vecs = m_features->get_num_vectors();
 	ASSERT(num_vecs > 0)
 	ASSERT( m_dim == m_features->get_dim_feature_space() )
-
+	
 	// collect features into a matrix
 	CDenseFeatures< float64_t >* rf = (CDenseFeatures< float64_t >*) m_features;
 	
@@ -97,7 +97,7 @@ CMulticlassLabels* CMCLDA::apply_multiclass(CFeatures* data)
 		{
 			vec = rf->get_feature_vector(i, vlen, vfree);
 			X(i,j) = vec[j] - m_xbar[j];
-    	}
+		}
 
 #ifdef DEBUG_MCLDA
 	SG_PRINT("\n>>> Displaying X ...\n");
