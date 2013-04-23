@@ -784,6 +784,7 @@ void CLaplacianInferenceMethod::update_alpha()
 			{
 				CStudentsTLikelihood* lik=CStudentsTLikelihood::obtain_from_generic(m_model);
 				df=lik->get_degrees_freedom();
+				SG_UNREF(lik);
 			}
 			else
 				df=1;
