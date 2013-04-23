@@ -54,10 +54,10 @@ void CMCLDA::init()
 	SG_ADD(&m_means, "m_means", "Mean vectors list", MS_NOT_AVAILABLE);
 	SG_ADD(&m_cov, "m_cov", "covariance matrix", MS_NOT_AVAILABLE);
 	SG_ADD(&m_xbar, "m_xbar", "total mean", MS_NOT_AVAILABLE);
-    SG_ADD(&m_scalings, "m_scalings", "scalings", MS_NOT_AVAILABLE);
-    SG_ADD(&m_rank, "m_rank", "rank", MS_NOT_AVAILABLE);
-    SG_ADD(&m_coef, "m_coef", "weight vector", MS_NOT_AVAILABLE);
-    SG_ADD(&m_intercept, "m_intercept", "intercept", MS_NOT_AVAILABLE);
+	SG_ADD(&m_scalings, "m_scalings", "scalings", MS_NOT_AVAILABLE);
+	SG_ADD(&m_rank, "m_rank", "rank", MS_NOT_AVAILABLE);
+	SG_ADD(&m_coef, "m_coef", "weight vector", MS_NOT_AVAILABLE);
+	SG_ADD(&m_intercept, "m_intercept", "intercept", MS_NOT_AVAILABLE);
 	m_features  = NULL;
 }
 
