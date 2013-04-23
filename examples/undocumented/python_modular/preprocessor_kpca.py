@@ -1,4 +1,3 @@
-
 import math as m
 import sys
 import numpy as n
@@ -6,7 +5,7 @@ from numpy import *
 import matplotlib.pyplot as p
 import os, sys, inspect
 
-subfolder = os.path.realpath(os.path.abspath(os.path.join(os.path.split(inspect.getfile( inspect.currentframe() ))[0],"cir")))
+subfolder = os.path.realpath(os.path.abspath(os.path.join(os.path.split(inspect.getfile( inspect.currentframe() ))[0],"tools")))
 if subfolder not in sys.path:
   sys.path.insert(0,subfolder)
 
