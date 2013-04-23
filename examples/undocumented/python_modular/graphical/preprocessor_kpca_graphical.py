@@ -1,4 +1,3 @@
-
 import math as m
 import sys
 import numpy as n
@@ -9,7 +8,7 @@ import os, sys, inspect
 subfolder = os.path.realpath(os.path.abspath(os.path.join(os.path.split(inspect.getfile( inspect.currentframe() ))[0],"cir")))
 if subfolder not in sys.path:
   sys.path.insert(0,subfolder)
-import circle_data as cir
+import  generate_circle_data as cir
 
 
 d=[[0 for x in xrange(50)] for x in xrange(2)] 
