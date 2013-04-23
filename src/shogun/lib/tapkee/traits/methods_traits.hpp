@@ -11,26 +11,17 @@ namespace tapkee
 
 //! Traits used to obtain information about dimension reduction methods compile-time
 //!
-//! Usage: 
-//! \code
-//! MethodTraits<SomeDimensionReductionMethod>::some_information() 
-//! \endcode
 template <int method> struct MethodTraits
 {
-	//! @return true if method needs kernel callback
-	static bool needs_kernel();
-	//! @return true if method needs distance callback
-	static bool needs_distance();
-	//! @return true if method needs feature vector access callback
-	static bool needs_feature_vectors();
+	static const bool needs_kernel;
+	static const bool needs_distance;
+	static const bool needs_features;
 };
 
-#define METHOD_TRAIT(X,kernel_needed,distance_needed,feature_vector_needed) template <> struct MethodTraits<X> \
-{ \
-	static bool needs_kernel() { return kernel_needed; } \
-	static bool needs_distance() { return distance_needed; } \
-	static bool needs_feature_vector() { return feature_vector_needed; } \
-}
+#define METHOD_TRAIT(X,kernel_needed,distance_needed,features_needed)			\
+template <> const bool MethodTraits<X>::needs_kernel = kernel_needed;			\
+template <> const bool MethodTraits<X>::needs_distance = distance_needed;		\
+template <> const bool MethodTraits<X>::needs_features = features_needed		\
 
 #define METHOD_THAT_NEEDS_ONLY_KERNEL_IS(X) METHOD_TRAIT(X,true,false,false)
 #define METHOD_THAT_NEEDS_ONLY_DISTANCE_IS(X) METHOD_TRAIT(X,false,true,false)

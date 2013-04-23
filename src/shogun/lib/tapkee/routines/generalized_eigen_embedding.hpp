@@ -34,7 +34,7 @@ struct generalized_eigen_embedding_impl
 #ifdef TAPKEE_WITH_ARPACK
 //! ARPACK implementation of eigendecomposition-based embedding
 template <class LMatrixType, class RMatrixType, class MatrixOperationType> 
-struct generalized_eigen_embedding_impl<LMatrixType, RMatrixType, MatrixOperationType, ARPACK>
+struct generalized_eigen_embedding_impl<LMatrixType, RMatrixType, MatrixOperationType, Arpack>
 {
 	EmbeddingResult embed(const LMatrixType& lhs, const RMatrixType& rhs, IndexType target_dimension, unsigned int skip)
 	{
@@ -62,7 +62,7 @@ struct generalized_eigen_embedding_impl<LMatrixType, RMatrixType, MatrixOperatio
 
 //! Eigen library dense implementation of eigendecomposition
 template <class LMatrixType, class RMatrixType, class MatrixOperationType> 
-struct generalized_eigen_embedding_impl<LMatrixType, RMatrixType, MatrixOperationType, EIGEN_DENSE_SELFADJOINT_SOLVER>
+struct generalized_eigen_embedding_impl<LMatrixType, RMatrixType, MatrixOperationType, Dense>
 {
 	EmbeddingResult embed(const LMatrixType& lhs, const RMatrixType& rhs, IndexType target_dimension, unsigned int skip)
 	{
@@ -94,28 +94,23 @@ struct generalized_eigen_embedding_impl<LMatrixType, RMatrixType, MatrixOperatio
 	}
 };
 
-//! Adapter method for various generalized eigendecomposition methods. Currently
-//! supports two methods:
-//! <ul>
-//! <li> ARPACK_XSXUPD
-//! <li> EIGEN_DENSE_SELFADJOINT_SOLVER
-//! </ul>
 template <class LMatrixType, class RMatrixType, class MatrixOperationType>
-EmbeddingResult generalized_eigen_embedding(TAPKEE_EIGEN_EMBEDDING_METHOD method, const LMatrixType& lhs,
+EmbeddingResult generalized_eigen_embedding(EigenMethod method, const LMatrixType& lhs,
                                             const RMatrixType& rhs,
                                             IndexType target_dimension, unsigned int skip)
 {
+	LoggingSingleton::instance().message_info("Using the " + get_eigen_method_name(method) + " eigendecomposition method.");
 	switch (method)
 	{
 #ifdef TAPKEE_WITH_ARPACK
-		case ARPACK: 
+		case Arpack: 
 			return generalized_eigen_embedding_impl<LMatrixType, RMatrixType, MatrixOperationType, 
-				ARPACK>().embed(lhs, rhs, target_dimension, skip);
+				Arpack>().embed(lhs, rhs, target_dimension, skip);
 #endif
-		case EIGEN_DENSE_SELFADJOINT_SOLVER:
+		case Dense:
 			return generalized_eigen_embedding_impl<LMatrixType, RMatrixType, MatrixOperationType,
-				EIGEN_DENSE_SELFADJOINT_SOLVER>().embed(lhs, rhs, target_dimension, skip);
-		case RANDOMIZED:
+				Dense>().embed(lhs, rhs, target_dimension, skip);
+		case Randomized:
 			throw unsupported_method_error("Randomized method is not supported for generalized eigenproblems");
 			return EmbeddingResult();
 		default: break;

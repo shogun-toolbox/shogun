@@ -29,7 +29,7 @@ DenseMatrix project(RandomAccessIterator begin, RandomAccessIterator end, Featur
 
 	for (RandomAccessIterator iter=begin; iter!=end; ++iter)
 	{
-		callback(*iter,current_vector);
+		callback.vector(*iter,current_vector);
 		X.col(iter-begin) = current_vector - mean_vector;
 	}
 

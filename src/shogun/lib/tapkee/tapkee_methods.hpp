@@ -8,9 +8,11 @@
 
 /* Tapkee includes */
 #include <shogun/lib/tapkee/tapkee_defines.hpp>
+#include <shogun/lib/tapkee/utils/naming.hpp>
 #include <shogun/lib/tapkee/utils/time.hpp>
 #include <shogun/lib/tapkee/utils/logging.hpp>
-#include <shogun/lib/tapkee/utils/parameters.hpp>
+#include <shogun/lib/tapkee/utils/conditional_select.hpp>
+#include <shogun/lib/tapkee/parameters/defaults.hpp>
 #include <shogun/lib/tapkee/routines/locally_linear.hpp>
 #include <shogun/lib/tapkee/routines/eigen_embedding.hpp>
 #include <shogun/lib/tapkee/routines/generalized_eigen_embedding.hpp>
@@ -23,10 +25,7 @@
 #include <shogun/lib/tapkee/routines/spe.hpp>
 #include <shogun/lib/tapkee/routines/fa.hpp>
 #include <shogun/lib/tapkee/neighbors/neighbors.hpp>
-
-#ifdef TAPKEE_USE_GPL_TSNE
 #include <shogun/lib/tapkee/external/barnes_hut_sne/tsne.hpp>
-#endif
 /* End of Tapkee includes */
 
 namespace tapkee
@@ -35,238 +34,295 @@ namespace tapkee
 namespace tapkee_internal
 {
 
-std::string get_method_name(TAPKEE_METHOD m)
+class Context
 {
-	switch (m)
-	{
-		case KERNEL_LOCALLY_LINEAR_EMBEDDING: return "Kernel Locally Linear Embedding";
-		case KERNEL_LOCAL_TANGENT_SPACE_ALIGNMENT: return "Local Tangent Space Alignment";
-		case DIFFUSION_MAP: return "Diffusion Map";
-		case MULTIDIMENSIONAL_SCALING: return "Classic Multidimensional Scaling";
-		case LANDMARK_MULTIDIMENSIONAL_SCALING: return "Landmark Multidimensional Scaling";
-		case ISOMAP: return "Isomap";
-		case LANDMARK_ISOMAP: return "Landmark Isomap";
-		case NEIGHBORHOOD_PRESERVING_EMBEDDING: return "Neighborhood Preserving Embedding";
-		case LINEAR_LOCAL_TANGENT_SPACE_ALIGNMENT: return "Linear Local Tangent Space Alignment";
-		case HESSIAN_LOCALLY_LINEAR_EMBEDDING: return "Hessian Locally Linear Embedding";
-		case LAPLACIAN_EIGENMAPS: return "Laplacian Eigenmaps";
-		case LOCALITY_PRESERVING_PROJECTIONS: return "Locality Preserving Embedding";
-		case PCA: return "Principal Component Analysis";
-		case KERNEL_PCA: return "Kernel Principal Component Analysis";
-		case STOCHASTIC_PROXIMITY_EMBEDDING: return "Stochastic Proximity Embedding";
-		case PASS_THRU: return "passing through";
-		case RANDOM_PROJECTION: return "Random Projection";
-		case FACTOR_ANALYSIS: return "Factor Analysis";
-#ifdef TAPKEE_USE_GPL_TSNE
-		case T_DISTRIBUTED_STOCHASTIC_NEIGHBOR_EMBEDDING: return "t-distributed Stochastic Neighbor Embedding";
-#endif
-		case UNKNOWN_METHOD: return "this should not happen, call police";
-	}
-	return "hello";
-}
+public:
 
-template <class RandomAccessIterator, class KernelCallback, class DistanceCallback, class FeatureVectorCallback, int IMPLEMENTATION>
-struct implementation
-{
-	ReturnResult operator()(RandomAccessIterator begin, RandomAccessIterator end,
-                            KernelCallback kernel_callback, DistanceCallback distance_callback,
-                            FeatureVectorCallback feature_vector_callback, ParametersMap parameters);
+	Context(void (*progress)(double), bool (*cancel)()) :
+		progress_function(progress), cancel_function(cancel)
+	{
+	}
+
+	inline void report_progress(double x) const
+	{
+		if (progress_function)
+			progress_function(x);
+	}
+
+	inline bool is_cancelled() const
+	{
+		if (cancel_function)
+			return cancel_function();
+		return false;
+	}
+
+private:
+	void (*progress_function)(double);
+	bool (*cancel_function)();
 };
 
-// concrete implementation macro to make code little shorter 
-#define CONCRETE_IMPLEMENTATION(METHOD) \
-	template <class RandomAccessIterator, class KernelCallback, class DistanceCallback, class FeatureVectorCallback> \
-	struct implementation<RandomAccessIterator,KernelCallback,DistanceCallback,FeatureVectorCallback,METHOD>
-
-// eigenvalues parameters
-#define SKIP_ONE_EIGENVALUE 1
-#define SKIP_NO_EIGENVALUES 0
-
-// minimal values
-#define MINIMAL_K static_cast<IndexType>(3)
-#define MINIMAL_TD static_cast<IndexType>(1)
-
-// other useful macro
-#define NUM_VECTORS static_cast<IndexType>(end-begin)
-
-CONCRETE_IMPLEMENTATION(KERNEL_LOCALLY_LINEAR_EMBEDDING)
+template <class RandomAccessIterator, class KernelCallback,
+          class DistanceCallback, class FeaturesCallback>
+class ImplementationBase
 {
-	ReturnResult operator()(RandomAccessIterator begin, RandomAccessIterator end,
-                            KernelCallback kernel_callback, DistanceCallback,
-                            FeatureVectorCallback, ParametersMap parameters)
-	{
-		PARAMETER(IndexType,                     k,                  NUMBER_OF_NEIGHBORS,    IN_RANGE(k,MINIMAL_K,NUM_VECTORS));
-		PARAMETER(TAPKEE_EIGEN_EMBEDDING_METHOD, eigen_method,       EIGEN_EMBEDDING_METHOD, NOT(eigen_method,UNKNOWN_EIGEN_METHOD));
-		PARAMETER(TAPKEE_NEIGHBORS_METHOD,       neighbors_method,   NEIGHBORS_METHOD,       NOT(neighbors_method,UNKNOWN_NEIGHBORS_METHOD));
-		PARAMETER(IndexType,                     target_dimension,   TARGET_DIMENSION,       IN_RANGE(target_dimension,MINIMAL_TD,NUM_VECTORS));
-		PARAMETER(ScalarType,                    eigenshift,         EIGENSHIFT);
-		PARAMETER(bool,                          check_connectivity, CHECK_CONNECTIVITY);
+public:
 
-		timed_context context("[+] Embedding with KLLE");
-		Neighbors neighbors =
-			find_neighbors(neighbors_method,begin,end,kernel_callback,k,check_connectivity);
+	ImplementationBase(RandomAccessIterator b, RandomAccessIterator e,
+	                   KernelCallback k, DistanceCallback d, FeaturesCallback f,
+	                   ParametersSet& pmap, const Context& ctx) : 
+		parameters(pmap), context(ctx), kernel(k), distance(d), features(f),
+		plain_distance(PlainDistance<RandomAccessIterator,DistanceCallback>(distance)),
+		kernel_distance(KernelDistance<RandomAccessIterator,KernelCallback>(kernel)),
+		begin(b), end(e), 
+		eigen_method(), neighbors_method(), eigenshift(), traceshift(),
+		check_connectivity(), n_neighbors(), width(), timesteps(),
+		ratio(), max_iteration(), tolerance(), n_updates(), perplexity(), 
+		theta(), global_strategy(), epsilon(), target_dimension(),
+		n_vectors(0), current_dimension(0)
+	{
+		n_vectors = (end-begin);
+
+		target_dimension = parameters(keywords::target_dimension);
+		n_neighbors = parameters(keywords::num_neighbors).checked().positive();
+		
+		if (n_vectors > 0)
+		{
+			target_dimension = target_dimension
+				.checked()
+				.in_range(static_cast<IndexType>(1),static_cast<IndexType>(n_vectors));
+			n_neighbors = n_neighbors
+				.checked()
+				.in_range(static_cast<IndexType>(3),static_cast<IndexType>(n_vectors));
+		}
+
+		eigen_method = parameters(keywords::eigen_method);
+		neighbors_method = parameters(keywords::neighbors_method);
+		check_connectivity = parameters(keywords::check_connectivity);
+		width = parameters(keywords::gaussian_kernel_width).checked().positive();
+		timesteps = parameters(keywords::diffusion_map_timesteps).checked().positive();
+		eigenshift = parameters(keywords::nullspace_shift);
+		traceshift = parameters(keywords::klle_shift);
+		max_iteration = parameters(keywords::max_iteration);
+		tolerance = parameters(keywords::spe_tolerance).checked().positive();
+		n_updates = parameters(keywords::spe_num_updates).checked().positive();
+		theta = parameters(keywords::sne_theta).checked().positive();
+		global_strategy = parameters(keywords::spe_global_strategy);
+		epsilon = parameters(keywords::fa_epsilon);
+		perplexity = parameters(keywords::sne_perplexity);
+		ratio = parameters(keywords::landmark_ratio);
+
+		if (n_vectors > 0)
+		{
+			try 
+			{
+				current_dimension = features.dimension();
+			}
+			catch (const unsupported_method_error&)
+			{
+				current_dimension = 0;
+			}
+		}
+	}
+
+	static const IndexType SkipOneEigenvalue = 1;
+	static const IndexType SkipNoEigenvalues = 0;
+
+	ParametersSet parameters;
+	Context context;
+	KernelCallback kernel;
+	DistanceCallback distance;
+	FeaturesCallback features;
+	PlainDistance<RandomAccessIterator,DistanceCallback> plain_distance;
+	KernelDistance<RandomAccessIterator,KernelCallback> kernel_distance;
+
+	RandomAccessIterator begin;
+	RandomAccessIterator end;
+
+	Parameter eigen_method;
+	Parameter neighbors_method;
+	Parameter eigenshift;
+	Parameter traceshift;
+	Parameter check_connectivity;
+	Parameter n_neighbors;
+	Parameter width;
+	Parameter timesteps;
+	Parameter ratio;
+	Parameter max_iteration;
+	Parameter tolerance;
+	Parameter n_updates;
+	Parameter perplexity;
+	Parameter theta;
+	Parameter global_strategy;
+	Parameter epsilon;
+	Parameter target_dimension;
+
+	IndexType n_vectors;
+	IndexType current_dimension;
+
+	TapkeeOutput embedUsing(DimensionReductionMethod method)
+	{
+		if (context.is_cancelled()) 
+			throw cancelled_exception();
+
+		using std::mem_fun_ref_t;
+		using std::mem_fun_ref;
+		typedef std::mem_fun_ref_t<TapkeeOutput,ImplementationBase> ImplRef;
+
+#define tapkee_method_handle(X)																	\
+		case X:																					\
+		{																						\
+			timed_context tctx__("[+] embedding with " # X);									\
+			ImplRef ref = conditional_select<													\
+				((!MethodTraits<X>::needs_kernel)   || (!is_dummy<KernelCallback>::value))       &&	\
+				((!MethodTraits<X>::needs_distance) || (!is_dummy<DistanceCallback>::value))     &&	\
+				((!MethodTraits<X>::needs_features) || (!is_dummy<FeaturesCallback>::value)),	\
+					ImplRef>()(mem_fun_ref(&ImplementationBase::embed##X),						\
+					           mem_fun_ref(&ImplementationBase::embedEmpty));					\
+			return ref(*this);																	\
+		}																						\
+		break																					\
+
+		switch (method)
+		{
+			tapkee_method_handle(KernelLocallyLinearEmbedding);
+			tapkee_method_handle(KernelLocalTangentSpaceAlignment);
+			tapkee_method_handle(DiffusionMap);
+			tapkee_method_handle(MultidimensionalScaling);
+			tapkee_method_handle(LandmarkMultidimensionalScaling);
+			tapkee_method_handle(Isomap);
+			tapkee_method_handle(LandmarkIsomap);
+			tapkee_method_handle(NeighborhoodPreservingEmbedding);
+			tapkee_method_handle(LinearLocalTangentSpaceAlignment);
+			tapkee_method_handle(HessianLocallyLinearEmbedding);
+			tapkee_method_handle(LaplacianEigenmaps);
+			tapkee_method_handle(LocalityPreservingProjections);
+			tapkee_method_handle(PCA);
+			tapkee_method_handle(KernelPCA);
+			tapkee_method_handle(RandomProjection);
+			tapkee_method_handle(StochasticProximityEmbedding);
+			tapkee_method_handle(PassThru);
+			tapkee_method_handle(FactorAnalysis);
+			tapkee_method_handle(tDistributedStochasticNeighborEmbedding);
+		}
+#undef tapkee_method_handle
+		return TapkeeOutput();
+	}
+
+	TapkeeOutput embedEmpty()
+	{
+		throw unsupported_method_error("Some callback is missed");
+		return TapkeeOutput();
+	}
+
+	TapkeeOutput embedKernelLocallyLinearEmbedding()
+	{
+		Neighbors neighbors = find_neighbors(neighbors_method,begin,end,kernel_distance,
+		                                     n_neighbors,check_connectivity);
 		SparseWeightMatrix weight_matrix =
-			linear_weight_matrix(begin,end,neighbors,kernel_callback,eigenshift);
-		return ReturnResult(eigen_embedding<SparseWeightMatrix,SparseInverseMatrixOperation>(eigen_method,
-			weight_matrix,target_dimension,SKIP_ONE_EIGENVALUE).first, tapkee::ProjectingFunction());
+			linear_weight_matrix(begin,end,neighbors,kernel,eigenshift,traceshift);
+		return TapkeeOutput(eigen_embedding<SparseWeightMatrix,SparseInverseMatrixOperation>(eigen_method,
+			weight_matrix,target_dimension,SkipOneEigenvalue).first, tapkee::ProjectingFunction());
 	}
-};
 
-CONCRETE_IMPLEMENTATION(KERNEL_LOCAL_TANGENT_SPACE_ALIGNMENT)
-{
-	ReturnResult operator()(RandomAccessIterator begin, RandomAccessIterator end,
-                            KernelCallback kernel_callback, DistanceCallback,
-                            FeatureVectorCallback, ParametersMap parameters)
+	TapkeeOutput embedKernelLocalTangentSpaceAlignment()
 	{
-		PARAMETER(IndexType,                     k,                  NUMBER_OF_NEIGHBORS,    IN_RANGE(k,MINIMAL_K,NUM_VECTORS));
-		PARAMETER(TAPKEE_EIGEN_EMBEDDING_METHOD, eigen_method,       EIGEN_EMBEDDING_METHOD, NOT(eigen_method,UNKNOWN_EIGEN_METHOD));
-		PARAMETER(TAPKEE_NEIGHBORS_METHOD,       neighbors_method,   NEIGHBORS_METHOD,       NOT(neighbors_method,UNKNOWN_NEIGHBORS_METHOD));
-		PARAMETER(IndexType,                     target_dimension,   TARGET_DIMENSION,       IN_RANGE(target_dimension,MINIMAL_TD,NUM_VECTORS));
-		PARAMETER(ScalarType,                    eigenshift,         EIGENSHIFT);
-		PARAMETER(bool,                          check_connectivity, CHECK_CONNECTIVITY);
-		
-		timed_context context("[+] Embedding with KLTSA");
-		Neighbors neighbors = 
-			find_neighbors(neighbors_method,begin,end,kernel_callback,k,check_connectivity);
+		Neighbors neighbors = find_neighbors(neighbors_method,begin,end,kernel_distance,
+		                                     n_neighbors,check_connectivity);
 		SparseWeightMatrix weight_matrix = 
-			tangent_weight_matrix(begin,end,neighbors,kernel_callback,target_dimension,eigenshift);
-		return ReturnResult(eigen_embedding<SparseWeightMatrix,SparseInverseMatrixOperation>(eigen_method,
-			weight_matrix,target_dimension,SKIP_ONE_EIGENVALUE).first, tapkee::ProjectingFunction());
+			tangent_weight_matrix(begin,end,neighbors,kernel,target_dimension,eigenshift);
+		return TapkeeOutput(eigen_embedding<SparseWeightMatrix,SparseInverseMatrixOperation>(eigen_method,
+			weight_matrix,target_dimension,SkipOneEigenvalue).first, tapkee::ProjectingFunction());
 	}
-};
 
-CONCRETE_IMPLEMENTATION(DIFFUSION_MAP)
-{
-	ReturnResult operator()(RandomAccessIterator begin, RandomAccessIterator end,
-                            KernelCallback, DistanceCallback distance_callback,
-                            FeatureVectorCallback, ParametersMap parameters)
+	TapkeeOutput embedDiffusionMap()
 	{
-		PARAMETER(TAPKEE_EIGEN_EMBEDDING_METHOD, eigen_method,     EIGEN_EMBEDDING_METHOD,  NOT(eigen_method, UNKNOWN_EIGEN_METHOD));
-		PARAMETER(IndexType,                     target_dimension, TARGET_DIMENSION,        IN_RANGE(target_dimension,MINIMAL_TD,NUM_VECTORS));
-		PARAMETER(ScalarType,                    width,            GAUSSIAN_KERNEL_WIDTH,   POSITIVE(width));
-		PARAMETER(IndexType,                     timesteps,        DIFFUSION_MAP_TIMESTEPS);
-		
-		timed_context context("[+] Embedding with diffusion map");
+		#ifdef TAPKEE_GPU
+			#define DM_MATRIX_OP GPUDenseImplicitSquareMatrixOperation
+		#else
+			#define DM_MATRIX_OP DenseImplicitSquareSymmetricMatrixOperation
+		#endif
+
 		DenseSymmetricMatrix diffusion_matrix =
-			compute_diffusion_matrix(begin,end,distance_callback,timesteps,width);
-		return ReturnResult(eigen_embedding<DenseSymmetricMatrix,
-				#ifdef TAPKEE_GPU
-					GPUDenseImplicitSquareMatrixOperation
-				#else 
-					DenseImplicitSquareMatrixOperation 
-				#endif
-				>(eigen_method,
-			diffusion_matrix,target_dimension,SKIP_NO_EIGENVALUES).first, tapkee::ProjectingFunction());
+			compute_diffusion_matrix(begin,end,distance,timesteps,width);
+		return TapkeeOutput(eigen_embedding<DenseSymmetricMatrix,DM_MATRIX_OP>(eigen_method,diffusion_matrix,
+			target_dimension,SkipNoEigenvalues).first, tapkee::ProjectingFunction());
+
+		#undef DM_MATRIX_OP
 	}
-};
 
-CONCRETE_IMPLEMENTATION(MULTIDIMENSIONAL_SCALING)
-{
-	ReturnResult operator()(RandomAccessIterator begin, RandomAccessIterator end,
-                            KernelCallback, DistanceCallback distance_callback,
-                            FeatureVectorCallback, ParametersMap parameters)
+	TapkeeOutput embedMultidimensionalScaling()
 	{
-		PARAMETER(IndexType,                     target_dimension, TARGET_DIMENSION,       IN_RANGE(target_dimension,MINIMAL_TD,NUM_VECTORS));
-		PARAMETER(TAPKEE_EIGEN_EMBEDDING_METHOD, eigen_method,     EIGEN_EMBEDDING_METHOD, NOT(eigen_method,UNKNOWN_EIGEN_METHOD));
+		#ifdef TAPKEE_GPU
+			#define MDS_MATRIX_OP GPUDenseImplicitSquareMatrixOperation
+		#else
+			#define MDS_MATRIX_OP DenseImplicitSquareSymmetricMatrixOperation
+		#endif
 
-		timed_context context("[+] Embedding with MDS");
-		DenseSymmetricMatrix distance_matrix = compute_distance_matrix(begin,end,distance_callback);
+		DenseSymmetricMatrix distance_matrix = compute_distance_matrix(begin,end,distance);
 		centerMatrix(distance_matrix);
 		distance_matrix.array() *= -0.5;
-		EmbeddingResult result = eigen_embedding<DenseSymmetricMatrix,
-				#ifdef TAPKEE_GPU
-						GPUDenseMatrixOperation
-				#else
-						DenseMatrixOperation
-				#endif
-				>(eigen_method,
-			distance_matrix,target_dimension,SKIP_NO_EIGENVALUES);
+		EmbeddingResult result = eigen_embedding<DenseSymmetricMatrix,MDS_MATRIX_OP>(eigen_method,
+			distance_matrix,target_dimension,SkipNoEigenvalues);
 
-		for (IndexType i=0; i<target_dimension; i++)
+		for (IndexType i=0; i<static_cast<IndexType>(target_dimension); i++)
 			result.first.col(i).array() *= sqrt(result.second(i));
-		return ReturnResult(result.first, tapkee::ProjectingFunction());
+		return TapkeeOutput(result.first, tapkee::ProjectingFunction());
+		#undef MDS_MATRIX_OP
 	}
-};
 
-CONCRETE_IMPLEMENTATION(LANDMARK_MULTIDIMENSIONAL_SCALING)
-{
-	ReturnResult operator()(RandomAccessIterator begin, RandomAccessIterator end,
-                            KernelCallback, DistanceCallback distance_callback,
-                            FeatureVectorCallback, ParametersMap parameters)
+	TapkeeOutput embedLandmarkMultidimensionalScaling()
 	{
-		PARAMETER(IndexType,                     target_dimension, TARGET_DIMENSION,       IN_RANGE(target_dimension,MINIMAL_TD,NUM_VECTORS));
-		PARAMETER(TAPKEE_EIGEN_EMBEDDING_METHOD, eigen_method,     EIGEN_EMBEDDING_METHOD, NOT(eigen_method,UNKNOWN_EIGEN_METHOD));
-		PARAMETER(ScalarType,                    ratio,            LANDMARK_RATIO,         IN_RANGE(ratio,1/(NUM_VECTORS),1.0));
+		ratio.checked()
+		     .in_range(static_cast<ScalarType>(1.0/n_vectors),
+		               static_cast<ScalarType>(1.0 + 1e-6));
 
-		timed_context context("[+] Embedding with Landmark MDS");
 		Landmarks landmarks = 
 			select_landmarks_random(begin,end,ratio);
 		DenseSymmetricMatrix distance_matrix = 
-			compute_distance_matrix(begin,end,landmarks,distance_callback);
+			compute_distance_matrix(begin,end,landmarks,distance);
 		DenseVector landmark_distances_squared = distance_matrix.colwise().mean();
 		centerMatrix(distance_matrix);
 		distance_matrix.array() *= -0.5;
 		EmbeddingResult landmarks_embedding = 
 			eigen_embedding<DenseSymmetricMatrix,DenseMatrixOperation>(eigen_method,
-					distance_matrix,target_dimension,SKIP_NO_EIGENVALUES);
-		for (IndexType i=0; i<target_dimension; i++)
+					distance_matrix,target_dimension,SkipNoEigenvalues);
+		for (IndexType i=0; i<static_cast<IndexType>(target_dimension); i++)
 			landmarks_embedding.first.col(i).array() *= sqrt(landmarks_embedding.second(i));
-		return ReturnResult(triangulate(begin,end,distance_callback,landmarks,
+		return TapkeeOutput(triangulate(begin,end,distance,landmarks,
 			landmark_distances_squared,landmarks_embedding,target_dimension).first, tapkee::ProjectingFunction());
 	}
-};
 
-CONCRETE_IMPLEMENTATION(ISOMAP)
-{
-	ReturnResult operator()(RandomAccessIterator begin, RandomAccessIterator end,
-                            KernelCallback, DistanceCallback distance_callback,
-                            FeatureVectorCallback, ParametersMap parameters)
+	TapkeeOutput embedIsomap()
 	{
-		PARAMETER(IndexType,                     target_dimension,   TARGET_DIMENSION,       IN_RANGE(target_dimension,MINIMAL_TD,NUM_VECTORS));
-		PARAMETER(TAPKEE_EIGEN_EMBEDDING_METHOD, eigen_method,       EIGEN_EMBEDDING_METHOD, NOT(eigen_method,UNKNOWN_EIGEN_METHOD));
-		PARAMETER(IndexType,                     k,                  NUMBER_OF_NEIGHBORS,    IN_RANGE(k,MINIMAL_K,NUM_VECTORS));
-		PARAMETER(TAPKEE_NEIGHBORS_METHOD,       neighbors_method,   NEIGHBORS_METHOD,       NOT(neighbors_method,UNKNOWN_NEIGHBORS_METHOD));
-		PARAMETER(bool,                          check_connectivity, CHECK_CONNECTIVITY);
-
-		timed_context context("[+] Embedding with Isomap");
-		Neighbors neighbors = 
-			find_neighbors(neighbors_method,begin,end,distance_callback,k,check_connectivity);
+		Neighbors neighbors = find_neighbors(neighbors_method,begin,end,plain_distance,
+		                                     n_neighbors,check_connectivity);
 		DenseSymmetricMatrix shortest_distances_matrix = 
-			compute_shortest_distances_matrix(begin,end,neighbors,distance_callback);
+			compute_shortest_distances_matrix(begin,end,neighbors,distance);
 		shortest_distances_matrix = shortest_distances_matrix.array().square();
 		centerMatrix(shortest_distances_matrix);
 		shortest_distances_matrix.array() *= -0.5;
 		
 		EmbeddingResult embedding = eigen_embedding<DenseSymmetricMatrix,DenseMatrixOperation>(eigen_method,
-			shortest_distances_matrix,target_dimension,SKIP_NO_EIGENVALUES);
+			shortest_distances_matrix,target_dimension,SkipNoEigenvalues);
 
-		for (IndexType i=0; i<target_dimension; i++)
+		for (IndexType i=0; i<static_cast<IndexType>(target_dimension); i++)
 			embedding.first.col(i).array() *= sqrt(embedding.second(i));
-		
-		return ReturnResult(embedding.first, tapkee::ProjectingFunction());
+
+		return TapkeeOutput(embedding.first, tapkee::ProjectingFunction());
 	}
-};
 
-CONCRETE_IMPLEMENTATION(LANDMARK_ISOMAP)
-{
-	ReturnResult operator()(RandomAccessIterator begin, RandomAccessIterator end,
-                            KernelCallback, DistanceCallback distance_callback,
-                            FeatureVectorCallback, ParametersMap parameters)
+	TapkeeOutput embedLandmarkIsomap()
 	{
-		PARAMETER(IndexType,                     target_dimension,   TARGET_DIMENSION,       IN_RANGE(target_dimension,MINIMAL_TD,NUM_VECTORS));
-		PARAMETER(TAPKEE_EIGEN_EMBEDDING_METHOD, eigen_method,       EIGEN_EMBEDDING_METHOD, NOT(eigen_method,UNKNOWN_EIGEN_METHOD));
-		PARAMETER(ScalarType,                    ratio,              LANDMARK_RATIO,         IN_RANGE(ratio,1/(NUM_VECTORS),1.0));
-		PARAMETER(IndexType,                     k,                  NUMBER_OF_NEIGHBORS,    IN_RANGE(k,MINIMAL_K,NUM_VECTORS));
-		PARAMETER(TAPKEE_NEIGHBORS_METHOD,       neighbors_method,   NEIGHBORS_METHOD,       NOT(neighbors_method,UNKNOWN_NEIGHBORS_METHOD));
-		PARAMETER(bool,                          check_connectivity, CHECK_CONNECTIVITY);
+		ratio.checked()
+		     .in_range(static_cast<ScalarType>(1.0/n_vectors),
+		               static_cast<ScalarType>(1.0 + 1e-6));
 
-		timed_context context("[+] Embedding with Landmark Isomap");
-		Neighbors neighbors = 
-			find_neighbors(neighbors_method,begin,end,distance_callback,k,check_connectivity);
+		Neighbors neighbors = find_neighbors(neighbors_method,begin,end,plain_distance,
+		                                     n_neighbors,check_connectivity);
 		Landmarks landmarks = 
 			select_landmarks_random(begin,end,ratio);
 		DenseMatrix distance_matrix = 
-			compute_shortest_distances_matrix(begin,end,landmarks,neighbors,distance_callback);
+			compute_shortest_distances_matrix(begin,end,landmarks,neighbors,distance);
 		distance_matrix = distance_matrix.array().square();
 		
 		DenseVector col_means = distance_matrix.colwise().mean();
@@ -277,321 +333,204 @@ CONCRETE_IMPLEMENTATION(LANDMARK_ISOMAP)
 		distance_matrix.rowwise() -= col_means.transpose();
 		distance_matrix.array() *= -0.5;
 
-		EmbeddingResult landmarks_embedding = 
-			eigen_embedding<DenseSymmetricMatrix,DenseMatrixOperation>(eigen_method,
-					distance_matrix*distance_matrix.transpose(),target_dimension,SKIP_NO_EIGENVALUES);
+		EmbeddingResult landmarks_embedding;
+		
+		if (eigen_method.is(Dense))
+		{
+			DenseMatrix distance_matrix_sym = distance_matrix*distance_matrix.transpose();
+			landmarks_embedding = eigen_embedding<DenseSymmetricMatrix,DenseImplicitSquareMatrixOperation>
+				(eigen_method,distance_matrix_sym,target_dimension,SkipNoEigenvalues);
+		}
+		else 
+		{
+			landmarks_embedding = eigen_embedding<DenseSymmetricMatrix,DenseImplicitSquareMatrixOperation>
+				(eigen_method,distance_matrix,target_dimension,SkipNoEigenvalues);
+		}
 
 		DenseMatrix embedding = distance_matrix.transpose()*landmarks_embedding.first;
 
-		for (IndexType i=0; i<target_dimension; i++)
+		for (IndexType i=0; i<static_cast<IndexType>(target_dimension); i++)
 			embedding.col(i).array() /= sqrt(sqrt(landmarks_embedding.second(i)));
-		return ReturnResult(embedding,tapkee::ProjectingFunction());
+		return TapkeeOutput(embedding,tapkee::ProjectingFunction());
 	}
-};
 
-CONCRETE_IMPLEMENTATION(NEIGHBORHOOD_PRESERVING_EMBEDDING)
-{
-	ReturnResult operator()(RandomAccessIterator begin, RandomAccessIterator end,
-                            KernelCallback kernel_callback, DistanceCallback,
-                            FeatureVectorCallback feature_vector_callback, ParametersMap parameters)
+	TapkeeOutput embedNeighborhoodPreservingEmbedding()
 	{
-		PARAMETER(IndexType,                     target_dimension,   TARGET_DIMENSION,       IN_RANGE(target_dimension,MINIMAL_TD,NUM_VECTORS));
-		PARAMETER(TAPKEE_EIGEN_EMBEDDING_METHOD, eigen_method,       EIGEN_EMBEDDING_METHOD, NOT(eigen_method,UNKNOWN_EIGEN_METHOD));
-		PARAMETER(IndexType,                     k,                  NUMBER_OF_NEIGHBORS,    IN_RANGE(k,MINIMAL_K,NUM_VECTORS));
-		PARAMETER(TAPKEE_NEIGHBORS_METHOD,       neighbors_method,   NEIGHBORS_METHOD,       NOT(neighbors_method,UNKNOWN_NEIGHBORS_METHOD));
-		PARAMETER(IndexType,                     dimension,          CURRENT_DIMENSION,      POSITIVE(dimension));
-		PARAMETER(ScalarType,                    eigenshift,         EIGENSHIFT);
-		PARAMETER(bool,                          check_connectivity, CHECK_CONNECTIVITY);
-		
-		timed_context context("[+] Embedding with NPE");
-		Neighbors neighbors = 
-			find_neighbors(neighbors_method,begin,end,kernel_callback,k,check_connectivity);
+		Neighbors neighbors = find_neighbors(neighbors_method,begin,end,kernel_distance,
+		                                     n_neighbors,check_connectivity);
 		SparseWeightMatrix weight_matrix = 
-			linear_weight_matrix(begin,end,neighbors,kernel_callback,eigenshift);
+			linear_weight_matrix(begin,end,neighbors,kernel,eigenshift,traceshift);
 		DenseSymmetricMatrixPair eig_matrices =
 			construct_neighborhood_preserving_eigenproblem(weight_matrix,begin,end,
-				feature_vector_callback,dimension);
+				features,current_dimension);
 		EmbeddingResult projection_result = 
 			generalized_eigen_embedding<DenseSymmetricMatrix,DenseSymmetricMatrix,DenseInverseMatrixOperation>(
-				eigen_method,eig_matrices.first,eig_matrices.second,target_dimension,SKIP_NO_EIGENVALUES);
+				eigen_method,eig_matrices.first,eig_matrices.second,target_dimension,SkipNoEigenvalues);
 		DenseVector mean_vector = 
-			compute_mean(begin,end,feature_vector_callback,dimension);
+			compute_mean(begin,end,features,current_dimension);
 		tapkee::ProjectingFunction projecting_function(new tapkee::MatrixProjectionImplementation(projection_result.first,mean_vector));
-		return ReturnResult(project(projection_result.first,mean_vector,begin,end,feature_vector_callback,dimension),projecting_function);
+		return TapkeeOutput(project(projection_result.first,mean_vector,begin,end,features,current_dimension),projecting_function);
 	}
-};
 
-CONCRETE_IMPLEMENTATION(HESSIAN_LOCALLY_LINEAR_EMBEDDING)
-{
-	ReturnResult operator()(RandomAccessIterator begin, RandomAccessIterator end,
-                            KernelCallback kernel_callback, DistanceCallback,
-                            FeatureVectorCallback, ParametersMap parameters)
+	TapkeeOutput embedHessianLocallyLinearEmbedding()
 	{
-		PARAMETER(IndexType,                     target_dimension,   TARGET_DIMENSION,       IN_RANGE(target_dimension,MINIMAL_TD,NUM_VECTORS));
-		PARAMETER(TAPKEE_EIGEN_EMBEDDING_METHOD, eigen_method,       EIGEN_EMBEDDING_METHOD, NOT(eigen_method,UNKNOWN_EIGEN_METHOD));
-		PARAMETER(IndexType,                     k,                  NUMBER_OF_NEIGHBORS,    IN_RANGE(k,MINIMAL_K,NUM_VECTORS));
-		PARAMETER(TAPKEE_NEIGHBORS_METHOD,       neighbors_method,   NEIGHBORS_METHOD,       NOT(neighbors_method,UNKNOWN_NEIGHBORS_METHOD));
-		PARAMETER(bool,                          check_connectivity, CHECK_CONNECTIVITY);
-		
-		timed_context context("[+] Embedding with HLLE");
-		Neighbors neighbors =
-			find_neighbors(neighbors_method,begin,end,kernel_callback,k,check_connectivity);
+		Neighbors neighbors = find_neighbors(neighbors_method,begin,end,kernel_distance,
+		                                     n_neighbors,check_connectivity);
 		SparseWeightMatrix weight_matrix =
-			hessian_weight_matrix(begin,end,neighbors,kernel_callback,target_dimension);
-		return ReturnResult(eigen_embedding<SparseWeightMatrix,SparseInverseMatrixOperation>(eigen_method,
-			weight_matrix,target_dimension,SKIP_ONE_EIGENVALUE).first, tapkee::ProjectingFunction());
+			hessian_weight_matrix(begin,end,neighbors,kernel,target_dimension);
+		return TapkeeOutput(eigen_embedding<SparseWeightMatrix,SparseInverseMatrixOperation>(eigen_method,
+			weight_matrix,target_dimension,SkipOneEigenvalue).first, tapkee::ProjectingFunction());
 	}
-};
 
-CONCRETE_IMPLEMENTATION(LAPLACIAN_EIGENMAPS)
-{
-	ReturnResult operator()(RandomAccessIterator begin, RandomAccessIterator end,
-                            KernelCallback, DistanceCallback distance_callback,
-                            FeatureVectorCallback, ParametersMap parameters)
+	TapkeeOutput embedLaplacianEigenmaps()
 	{
-		PARAMETER(IndexType,                     target_dimension,   TARGET_DIMENSION,       IN_RANGE(target_dimension,MINIMAL_TD,NUM_VECTORS));
-		PARAMETER(TAPKEE_EIGEN_EMBEDDING_METHOD, eigen_method,       EIGEN_EMBEDDING_METHOD, NOT(eigen_method,UNKNOWN_EIGEN_METHOD));
-		PARAMETER(IndexType,                     k,                  NUMBER_OF_NEIGHBORS,    IN_RANGE(k,MINIMAL_K,NUM_VECTORS));
-		PARAMETER(TAPKEE_NEIGHBORS_METHOD,       neighbors_method,   NEIGHBORS_METHOD,       NOT(neighbors_method,UNKNOWN_NEIGHBORS_METHOD));
-		PARAMETER(ScalarType,                    width,              GAUSSIAN_KERNEL_WIDTH,  POSITIVE(width));
-		PARAMETER(bool,                          check_connectivity, CHECK_CONNECTIVITY);
-		
-		timed_context context("[+] Embedding with Laplacian Eigenmaps");
-		Neighbors neighbors = 
-			find_neighbors(neighbors_method,begin,end,distance_callback,k,check_connectivity);
+		Neighbors neighbors = find_neighbors(neighbors_method,begin,end,plain_distance,
+		                                     n_neighbors,check_connectivity);
 		Laplacian laplacian = 
-			compute_laplacian(begin,end,neighbors,distance_callback,width);
-		return ReturnResult(generalized_eigen_embedding<SparseWeightMatrix,DenseDiagonalMatrix,SparseInverseMatrixOperation>(
-			eigen_method,laplacian.first,laplacian.second,target_dimension,SKIP_ONE_EIGENVALUE).first, tapkee::ProjectingFunction());
+			compute_laplacian(begin,end,neighbors,distance,width);
+		return TapkeeOutput(generalized_eigen_embedding<SparseWeightMatrix,DenseDiagonalMatrix,SparseInverseMatrixOperation>(
+			eigen_method,laplacian.first,laplacian.second,target_dimension,SkipOneEigenvalue).first, tapkee::ProjectingFunction());
 	}
-};
 
-CONCRETE_IMPLEMENTATION(LOCALITY_PRESERVING_PROJECTIONS)
-{
-	ReturnResult operator()(RandomAccessIterator begin, RandomAccessIterator end,
-                            KernelCallback, DistanceCallback distance_callback,
-                            FeatureVectorCallback feature_vector_callback, ParametersMap parameters)
+	TapkeeOutput embedLocalityPreservingProjections()
 	{
-		PARAMETER(IndexType,                     target_dimension,   TARGET_DIMENSION,       IN_RANGE(target_dimension,MINIMAL_TD,NUM_VECTORS));
-		PARAMETER(TAPKEE_EIGEN_EMBEDDING_METHOD, eigen_method,       EIGEN_EMBEDDING_METHOD, NOT(eigen_method,UNKNOWN_EIGEN_METHOD));
-		PARAMETER(IndexType,                     k,                  NUMBER_OF_NEIGHBORS,    IN_RANGE(k,MINIMAL_K,NUM_VECTORS));
-		PARAMETER(TAPKEE_NEIGHBORS_METHOD,       neighbors_method,   NEIGHBORS_METHOD,       NOT(neighbors_method,UNKNOWN_NEIGHBORS_METHOD));
-		PARAMETER(ScalarType,                    width,              GAUSSIAN_KERNEL_WIDTH,  POSITIVE(width));
-		PARAMETER(IndexType,                     dimension,          CURRENT_DIMENSION,      POSITIVE(dimension));
-		PARAMETER(bool,                          check_connectivity, CHECK_CONNECTIVITY);
-		
-		timed_context context("[+] Embedding with LPP");
-		Neighbors neighbors = 
-			find_neighbors(neighbors_method,begin,end,distance_callback,k,check_connectivity);
+		Neighbors neighbors = find_neighbors(neighbors_method,begin,end,plain_distance,
+		                                     n_neighbors,check_connectivity);
 		Laplacian laplacian = 
-			compute_laplacian(begin,end,neighbors,distance_callback,width);
+			compute_laplacian(begin,end,neighbors,distance,width);
 		DenseSymmetricMatrixPair eigenproblem_matrices =
 			construct_locality_preserving_eigenproblem(laplacian.first,laplacian.second,begin,end,
-					feature_vector_callback,dimension);
+					features,current_dimension);
 		EmbeddingResult projection_result = 
 			generalized_eigen_embedding<DenseSymmetricMatrix,DenseSymmetricMatrix,DenseInverseMatrixOperation>(
-				eigen_method,eigenproblem_matrices.first,eigenproblem_matrices.second,target_dimension,SKIP_NO_EIGENVALUES);
+				eigen_method,eigenproblem_matrices.first,eigenproblem_matrices.second,target_dimension,SkipNoEigenvalues);
 		DenseVector mean_vector = 
-			compute_mean(begin,end,feature_vector_callback,dimension);
+			compute_mean(begin,end,features,current_dimension);
 		tapkee::ProjectingFunction projecting_function(new tapkee::MatrixProjectionImplementation(projection_result.first,mean_vector));
-		return ReturnResult(project(projection_result.first,mean_vector,begin,end,feature_vector_callback,dimension),projecting_function);
+		return TapkeeOutput(project(projection_result.first,mean_vector,begin,end,features,current_dimension),projecting_function);
 	}
-};
 
-CONCRETE_IMPLEMENTATION(PCA)
-{
-	ReturnResult operator()(RandomAccessIterator begin, RandomAccessIterator end,
-                            KernelCallback, DistanceCallback,
-                            FeatureVectorCallback feature_vector_callback, ParametersMap parameters)
+	TapkeeOutput embedPCA()
 	{
-		PARAMETER(IndexType,                     target_dimension, TARGET_DIMENSION,       IN_RANGE(target_dimension,MINIMAL_TD,NUM_VECTORS));
-		PARAMETER(TAPKEE_EIGEN_EMBEDDING_METHOD, eigen_method,     EIGEN_EMBEDDING_METHOD, NOT(eigen_method,UNKNOWN_EIGEN_METHOD));
-		PARAMETER(IndexType,                     dimension,        CURRENT_DIMENSION,      POSITIVE(dimension));
-		
-		timed_context context("[+] Embedding with PCA");
 		DenseVector mean_vector = 
-			compute_mean(begin,end,feature_vector_callback,dimension);
+			compute_mean(begin,end,features,current_dimension);
 		DenseSymmetricMatrix centered_covariance_matrix = 
-			compute_covariance_matrix(begin,end,mean_vector,feature_vector_callback,dimension);
+			compute_covariance_matrix(begin,end,mean_vector,features,current_dimension);
 		EmbeddingResult projection_result = 
-			eigen_embedding<DenseSymmetricMatrix,DenseMatrixOperation>(eigen_method,centered_covariance_matrix,target_dimension,SKIP_NO_EIGENVALUES);
+			eigen_embedding<DenseSymmetricMatrix,DenseMatrixOperation>(eigen_method,centered_covariance_matrix,target_dimension,SkipNoEigenvalues);
 		tapkee::ProjectingFunction projecting_function(new tapkee::MatrixProjectionImplementation(projection_result.first,mean_vector));
-		return ReturnResult(project(projection_result.first,mean_vector,begin,end,feature_vector_callback,dimension), projecting_function);
+		return TapkeeOutput(project(projection_result.first,mean_vector,begin,end,features,current_dimension), projecting_function);
 	}
-};
 
-CONCRETE_IMPLEMENTATION(RANDOM_PROJECTION)
-{
-	ReturnResult operator()(RandomAccessIterator begin, RandomAccessIterator end,
-	                        KernelCallback, DistanceCallback, FeatureVectorCallback feature_vector_callback,
-	                        ParametersMap parameters)
+	TapkeeOutput embedRandomProjection()
 	{
-		PARAMETER(IndexType, target_dimension, TARGET_DIMENSION,  IN_RANGE(target_dimension,MINIMAL_TD,NUM_VECTORS));
-		PARAMETER(IndexType, dimension,        CURRENT_DIMENSION, POSITIVE(dimension));
-
-		timed_context context("[+] Embedding with Random Projection");
-
 		DenseMatrix projection_matrix = 
-			gaussian_projection_matrix(dimension, target_dimension);
-
+			gaussian_projection_matrix(current_dimension, target_dimension);
 		DenseVector mean_vector = 
-			compute_mean(begin,end,feature_vector_callback,dimension);
+			compute_mean(begin,end,features,current_dimension);
 
 		tapkee::ProjectingFunction projecting_function(new tapkee::MatrixProjectionImplementation(projection_matrix,mean_vector));
-
-		return ReturnResult(project(projection_matrix,mean_vector,begin,end,feature_vector_callback,dimension), projecting_function);
+		return TapkeeOutput(project(projection_matrix,mean_vector,begin,end,features,current_dimension), projecting_function);
 	}
-};
 
-CONCRETE_IMPLEMENTATION(KERNEL_PCA)
-{
-	ReturnResult operator()(RandomAccessIterator begin, RandomAccessIterator end,
-                            KernelCallback kernel_callback, DistanceCallback,
-                            FeatureVectorCallback, ParametersMap parameters)
+	TapkeeOutput embedKernelPCA()
 	{
-		PARAMETER(IndexType,                     target_dimension, TARGET_DIMENSION,       IN_RANGE(target_dimension,MINIMAL_TD,NUM_VECTORS));
-		PARAMETER(TAPKEE_EIGEN_EMBEDDING_METHOD, eigen_method,     EIGEN_EMBEDDING_METHOD, NOT(eigen_method,UNKNOWN_EIGEN_METHOD));
-
-		timed_context context("[+] Embedding with kPCA");
 		DenseSymmetricMatrix centered_kernel_matrix = 
-			compute_centered_kernel_matrix(begin,end,kernel_callback);
-		return ReturnResult(eigen_embedding<DenseSymmetricMatrix,DenseMatrixOperation>(eigen_method,
-			centered_kernel_matrix,target_dimension,SKIP_NO_EIGENVALUES).first, tapkee::ProjectingFunction());
+			compute_centered_kernel_matrix(begin,end,kernel);
+		EmbeddingResult embedding = eigen_embedding<DenseSymmetricMatrix,DenseMatrixOperation>(eigen_method,
+			centered_kernel_matrix,target_dimension,SkipNoEigenvalues);
+		for (IndexType i=0; i<static_cast<IndexType>(target_dimension); i++)
+			embedding.first.col(i).array() *= sqrt(embedding.second(i));
+		return TapkeeOutput(embedding.first, tapkee::ProjectingFunction());
 	}
-};
 
-CONCRETE_IMPLEMENTATION(LINEAR_LOCAL_TANGENT_SPACE_ALIGNMENT)
-{
-	ReturnResult operator()(RandomAccessIterator begin, RandomAccessIterator end,
-                           KernelCallback kernel_callback, DistanceCallback,
-                           FeatureVectorCallback feature_vector_callback, ParametersMap parameters)
+	TapkeeOutput embedLinearLocalTangentSpaceAlignment()
 	{
-		PARAMETER(IndexType,                     target_dimension,   TARGET_DIMENSION,       IN_RANGE(target_dimension,MINIMAL_TD,NUM_VECTORS));
-		PARAMETER(TAPKEE_EIGEN_EMBEDDING_METHOD, eigen_method,       EIGEN_EMBEDDING_METHOD, NOT(eigen_method,UNKNOWN_EIGEN_METHOD));
-		PARAMETER(IndexType,                     k,                  NUMBER_OF_NEIGHBORS,    IN_RANGE(k,MINIMAL_K,NUM_VECTORS));
-		PARAMETER(TAPKEE_NEIGHBORS_METHOD,       neighbors_method,   NEIGHBORS_METHOD,       NOT(neighbors_method,UNKNOWN_NEIGHBORS_METHOD));
-		PARAMETER(IndexType,                     dimension,          CURRENT_DIMENSION,      POSITIVE(dimension));
-		PARAMETER(ScalarType,                    eigenshift,         EIGENSHIFT);
-		PARAMETER(bool,                          check_connectivity, CHECK_CONNECTIVITY);
-		
-		timed_context context("[+] Embedding with LLTSA");
-		Neighbors neighbors = 
-			find_neighbors(neighbors_method,begin,end,kernel_callback,k,check_connectivity);
+		Neighbors neighbors = find_neighbors(neighbors_method,begin,end,kernel_distance,
+		                                     n_neighbors,check_connectivity);
 		SparseWeightMatrix weight_matrix = 
-			tangent_weight_matrix(begin,end,neighbors,kernel_callback,target_dimension,eigenshift);
+			tangent_weight_matrix(begin,end,neighbors,kernel,target_dimension,eigenshift);
 		DenseSymmetricMatrixPair eig_matrices =
 			construct_lltsa_eigenproblem(weight_matrix,begin,end,
-				feature_vector_callback,dimension);
+				features,current_dimension);
 		EmbeddingResult projection_result = 
 			generalized_eigen_embedding<DenseSymmetricMatrix,DenseSymmetricMatrix,DenseInverseMatrixOperation>(
-				eigen_method,eig_matrices.first,eig_matrices.second,target_dimension,SKIP_NO_EIGENVALUES);
+				eigen_method,eig_matrices.first,eig_matrices.second,target_dimension,SkipNoEigenvalues);
 		DenseVector mean_vector = 
-			compute_mean(begin,end,feature_vector_callback,dimension);
+			compute_mean(begin,end,features,current_dimension);
 		tapkee::ProjectingFunction projecting_function(new tapkee::MatrixProjectionImplementation(projection_result.first,mean_vector));
-		return ReturnResult(project(projection_result.first,mean_vector,begin,end,feature_vector_callback,dimension),
+		return TapkeeOutput(project(projection_result.first,mean_vector,begin,end,features,current_dimension),
 				projecting_function);
 	}
-};
 
-CONCRETE_IMPLEMENTATION(STOCHASTIC_PROXIMITY_EMBEDDING)
-{
-	ReturnResult operator()(RandomAccessIterator begin, RandomAccessIterator end,
-                            KernelCallback, DistanceCallback distance_callback,
-                            FeatureVectorCallback, ParametersMap parameters)
+	TapkeeOutput embedStochasticProximityEmbedding()
 	{
-		PARAMETER(IndexType,               target_dimension,   TARGET_DIMENSION,    IN_RANGE(target_dimension,MINIMAL_TD,NUM_VECTORS));
-		PARAMETER(IndexType,               k,                  NUMBER_OF_NEIGHBORS, IN_RANGE(k,MINIMAL_K,NUM_VECTORS));
-		PARAMETER(TAPKEE_NEIGHBORS_METHOD, neighbors_method,   NEIGHBORS_METHOD,    NOT(neighbors_method,UNKNOWN_NEIGHBORS_METHOD));
-		PARAMETER(ScalarType,              tolerance,          SPE_TOLERANCE,       POSITIVE(tolerance));
-		PARAMETER(IndexType,               max_iteration,      MAX_ITERATION);
-		PARAMETER(IndexType,               nupdates,           SPE_NUM_UPDATES);
-		PARAMETER(bool,                    global_strategy,    SPE_GLOBAL_STRATEGY);
-		PARAMETER(bool,                    check_connectivity, CHECK_CONNECTIVITY);
-
 		Neighbors neighbors;
-		if (!global_strategy)
+		if (global_strategy.is(false))
 		{
-			neighbors = find_neighbors(neighbors_method,begin,end,distance_callback,k,check_connectivity);
+			neighbors = find_neighbors(neighbors_method,begin,end,plain_distance,
+			                           n_neighbors,check_connectivity);
 		}
 
-		timed_context context("[+] Embedding with SPE");
-		return ReturnResult(spe_embedding(begin,end,distance_callback,neighbors,
-				target_dimension,global_strategy,tolerance,nupdates,max_iteration), tapkee::ProjectingFunction());
+		return TapkeeOutput(spe_embedding(begin,end,distance,neighbors,
+				target_dimension,global_strategy,tolerance,n_updates,max_iteration), tapkee::ProjectingFunction());
 	}
-};
 
-CONCRETE_IMPLEMENTATION(PASS_THRU)
-{
-	ReturnResult operator()(RandomAccessIterator begin, RandomAccessIterator end,
-                            KernelCallback, DistanceCallback, FeatureVectorCallback feature_callback, 
-                            ParametersMap parameters)
+	TapkeeOutput embedPassThru()
 	{
-		PARAMETER(IndexType, dimension, CURRENT_DIMENSION, POSITIVE(dimension));
-
-		DenseMatrix feature_matrix(dimension,(NUM_VECTORS));
-		DenseVector feature_vector(dimension);
+		DenseMatrix feature_matrix(static_cast<IndexType>(current_dimension),n_vectors);
+		DenseVector feature_vector(static_cast<IndexType>(current_dimension));
 		for (RandomAccessIterator iter=begin; iter!=end; ++iter)
 		{
-			feature_callback(*iter,feature_vector);
+			features.vector(*iter,feature_vector);
 			feature_matrix.col(iter-begin).array() = feature_vector;
 		}
-		return ReturnResult(feature_matrix.transpose(),tapkee::ProjectingFunction());
+		return TapkeeOutput(feature_matrix.transpose(),tapkee::ProjectingFunction());
 	}
-};
 
-CONCRETE_IMPLEMENTATION(FACTOR_ANALYSIS)
-{
-	ReturnResult operator()(RandomAccessIterator begin, RandomAccessIterator end,
-                            KernelCallback, DistanceCallback,
-                            FeatureVectorCallback callback, ParametersMap parameters)
+	TapkeeOutput embedFactorAnalysis()
 	{
-		PARAMETER(IndexType,  current_dimension, CURRENT_DIMENSION, POSITIVE(current_dimension));
-		PARAMETER(IndexType,  target_dimension,  TARGET_DIMENSION,  IN_RANGE(target_dimension,MINIMAL_TD,NUM_VECTORS));
-		PARAMETER(ScalarType, epsilon,           FA_EPSILON, POSITIVE(epsilon));
-		PARAMETER(IndexType,  max_iteration,     MAX_ITERATION);
-
-		timed_context context("[+] Embedding with FA");
-		DenseVector mean_vector = compute_mean(begin,end,callback,current_dimension);
-		return ReturnResult(project(begin,end,callback,current_dimension,max_iteration,epsilon,
-                                    target_dimension, mean_vector), tapkee::ProjectingFunction());
+		DenseVector mean_vector = compute_mean(begin,end,features,current_dimension);
+		return TapkeeOutput(project(begin,end,features,current_dimension,max_iteration,epsilon,
+									target_dimension, mean_vector), tapkee::ProjectingFunction());
 	}
-};
 
-#ifdef TAPKEE_USE_GPL_TSNE
-CONCRETE_IMPLEMENTATION(T_DISTRIBUTED_STOCHASTIC_NEIGHBOR_EMBEDDING)
-{
-	ReturnResult operator()(RandomAccessIterator begin, RandomAccessIterator end,
-                            KernelCallback, DistanceCallback,
-                            FeatureVectorCallback callback, ParametersMap parameters)
+	TapkeeOutput embedtDistributedStochasticNeighborEmbedding()
 	{
-		const IndexType N = NUM_VECTORS;
-		
-		PARAMETER(IndexType,  current_dimension, CURRENT_DIMENSION, POSITIVE(current_dimension));
-		PARAMETER(IndexType,  target_dimension,  TARGET_DIMENSION,  EXACTLY(target_dimension,2));
-		PARAMETER(ScalarType, perplexity,        SNE_PERPLEXITY,    IN_RANGE(perplexity,0,(N-1)/3));
-		PARAMETER(ScalarType, theta,             SNE_THETA,         NON_NEGATIVE(theta));
+		perplexity.checked()
+		          .in_range(static_cast<ScalarType>(0.0),
+		                    static_cast<ScalarType>((n_vectors-1)/3.0 + 1e-6));
 
-		timed_context context("Embedding with t-SNE");
-		DenseMatrix data(current_dimension,NUM_VECTORS);
-		DenseVector feature_vector(current_dimension);
+		DenseMatrix data(static_cast<IndexType>(current_dimension),n_vectors);
+		DenseVector feature_vector(static_cast<IndexType>(current_dimension));
 		for (RandomAccessIterator iter=begin; iter!=end; ++iter)
 		{
-			callback(*iter,feature_vector);
+			features.vector(*iter,feature_vector);
 			data.col(iter-begin).array() = feature_vector;
 		}
 
-		DenseMatrix embedding(target_dimension,N);
+		DenseMatrix embedding(static_cast<IndexType>(target_dimension),n_vectors);
 		tsne::TSNE* tsne = new tsne::TSNE;
-		tsne->run(data.data(),N,current_dimension,embedding.data(),target_dimension,perplexity,theta);
+		tsne->run(data.data(),n_vectors,current_dimension,embedding.data(),target_dimension,perplexity,theta);
 		delete tsne;
 
-		return ReturnResult(embedding.transpose(),tapkee::ProjectingFunction());
+		return TapkeeOutput(embedding.transpose(),tapkee::ProjectingFunction());
 	}
-};
-#endif
 
+};
+
+template <class RandomAccessIterator, class KernelCallback,
+          class DistanceCallback, class FeaturesCallback>
+ImplementationBase<RandomAccessIterator,KernelCallback,DistanceCallback,FeaturesCallback>
+	initialize(RandomAccessIterator begin, RandomAccessIterator end,
+	           KernelCallback kernel, DistanceCallback distance, FeaturesCallback features,
+	           ParametersSet& pmap, const Context& ctx)
+{
+	return ImplementationBase<RandomAccessIterator,KernelCallback,DistanceCallback,FeaturesCallback>(
+			begin,end,kernel,distance,features,pmap,ctx);
 }
-}
-#undef CONCRETE_IMPLEMENTATION
-#undef PARAMETER
+
+} // End of namespace tapkee_internal
+} // End of namespace tapkee
+
 #endif
