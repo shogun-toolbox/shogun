@@ -2,7 +2,7 @@ import math as m
 import sys
 import numpy as n
 from numpy import *
-import os, sys, inspect
+
 
 from tools.generate_circle_data import circle_data
 cir=circle_data()
