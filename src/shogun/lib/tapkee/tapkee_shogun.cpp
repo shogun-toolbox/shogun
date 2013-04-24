@@ -258,6 +258,7 @@ tapkee::ProjectingFunction* shogun::calc_tapkee_projecting_function(const TAPKEE
         prepare_tapkee_parameters(parameters, tapkee_parameters, indices);
         tapkee::ReturnResult result=  tapkee::embed(indices.begin(),indices.end(),
 			kernel_callback,distance_callback,features_callback,tapkee_parameters);
+        // std::cout<<"My God, is that zero implementation?"<<(long long)result.second.implementation<<std::endl;
         return new tapkee::ProjectingFunction( result.second.implementation );
 }
 
