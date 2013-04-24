@@ -255,7 +255,7 @@ public:
 		#ifdef TAPKEE_GPU
 			#define MDS_MATRIX_OP GPUDenseImplicitSquareMatrixOperation
 		#else
-			#define MDS_MATRIX_OP DenseImplicitSquareSymmetricMatrixOperation
+			#define MDS_MATRIX_OP DenseMatrixOperation
 		#endif
 
 		DenseSymmetricMatrix distance_matrix = compute_distance_matrix(begin,end,distance);
