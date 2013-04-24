@@ -1,9 +1,4 @@
-import math as m
-import sys
-import numpy as n
 from numpy import *
-
-
 from tools.generate_circle_data import circle_data
 cir=circle_data()
 number_of_points_for_circle1=42
