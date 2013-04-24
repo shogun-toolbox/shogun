@@ -1,4 +1,3 @@
-
 from numpy import *
 import numpy as np
 import sys
@@ -52,18 +51,13 @@ class circle_data:
 		mat2=radius2*radius2*ones((1,number_of_points_for_circle2))
 		circle1[1][:]=mat1-(circle1[0][:]*circle1[0][:])
 		circle2[1][:]=mat2-(circle2[0][:]*circle2[0][:])
-		i=0
-		while (i<number_of_points_for_circle1):
-			circle1[1][i]=m.sqrt(circle1[1][i])
-			if(i>=(number_of_points_for_circle1/2)):
-				circle1[1][i]=-1*circle1[1][i]
-			i=i+1
-		i=0
-		while(i<number_of_points_for_circle2):
-			circle2[1][i]=m.sqrt(circle2[1][i])
-			if(i>=(number_of_points_for_circle2/2)):
-				circle2[1][i]=-1*circle2[1][i]
-			i=i+1
+		
+		circle1[1][:]=[m.sqrt(circle1[1][i]) for i in range(0,number_of_points_for_circle1)]
+		circle1[1][(number_of_points_for_circle1/2):]=-1*circle1[1][(number_of_points_for_circle1/2):]
+	
+		circle2[1][:]=[m.sqrt(circle2[1][i]) for i in range(0,number_of_points_for_circle2)]
+		circle2[1][(number_of_points_for_circle2/2):]=-1*circle2[1][(number_of_points_for_circle2/2):]
+		
 		two_circles=hstack((circle1,circle2))
 		
 		return two_circles
