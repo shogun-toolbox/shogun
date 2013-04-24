@@ -5,7 +5,7 @@ import sys
 import math as m
 
 class circle_data:
-  def __init__(self):
+	def __init__(self):
 		pass
 	
 	def  generate_data(self,number_of_points_for_circle1,number_of_points_for_circle2,row_vector):
