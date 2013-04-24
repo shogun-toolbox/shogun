@@ -1,3 +1,7 @@
+#include <vector>
+#include <set>
+#include <algorithm>
+
 #include <shogun/converter/Isomap.h>
 #include <shogun/distance/EuclideanDistance.h>
 #include <shogun/features/DenseFeatures.h>
