@@ -49,16 +49,28 @@ class CStructuredOutputMachine : public CMachine
 		 */
 		void set_model(CStructuredModel* model);
 
+		/** get structured model
+		 *
+		 * @return structured model
+		 */
+		CStructuredModel* get_model() const;
+
 		/** set loss function
 		 *
 		 * @param loss loss function to set
 		 */
 		void set_loss(CLossFunction* loss);
 
+		/** get loss function
+		 *
+		 * @return loss function
+		 */
+		CLossFunction* get_loss() const;
+
 		/** @return object name */
-		virtual const char* get_name() const 
+		virtual const char* get_name() const
 		{ 
-			return "StructuredOutputMachine"; 
+			return "StructuredOutputMachine";
 		}
 
 	private:
