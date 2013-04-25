@@ -1988,30 +1988,10 @@ float64_t CStatistics::log_det(SGMatrix<float64_t> m)
 
 float64_t CStatistics::log_det(const SGSparseMatrix<float64_t> m)
 {
-	const SparseMatrix<float64_t> &M=EigenSparseUtil<float64_t>::toEigenSparse(m);
 	typedef SparseMatrix<float64_t> MatrixType;
-#ifdef EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
-	// access the lower triangular factor after cholesky decomposition
-	class EigenSimplicialLLT: public SimplicialCholesky<MatrixType, Eigen::Lower>
-	{
-	public:
-		EigenSimplicialLLT(): SimplicialCholesky<MatrixType>()
-		{
-			setMode(SimplicialCholeskyLLt);
-		}
-		~EigenSimplicialLLT()
-		{
-		}
-		inline const MatrixType matrixL() 
-		{ 
-			return SimplicialCholesky<MatrixType>::m_matrix; 
-		}
-	};
+	const MatrixType &M=EigenSparseUtil<float64_t>::toEigenSparse(m);
 
-	EigenSimplicialLLT llt;
-#else // EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
 	SimplicialLLT<MatrixType> llt;
-#endif // EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
 
 	// factorize using cholesky with amd permutation 
 	llt.compute(M);
@@ -2081,6 +2061,73 @@ SGMatrix<float64_t> CStatistics::sample_from_gaussian(SGVector<float64_t> mean,
 	// add the mean
 	Map<MatrixXd> x(S.matrix, S.num_rows, S.num_cols);
 	for( int32_t i=0; i<N; ++i ) 
+		x.row(i)+=mu;
+
+	return S;
+}
+
+SGMatrix<float64_t> CStatistics::sample_from_gaussian(SGVector<float64_t> mean,
+ SGSparseMatrix<float64_t> cov, int32_t N, bool precision_matrix)
+{
+	REQUIRE(cov.num_vectors>0, 
+		"CStatistics::sample_from_gaussian(): \
+		Number of covariance rows must be positive!\n");
+	REQUIRE(cov.num_features>0,
+		"CStatistics::sample_from_gaussian(): \
+		Number of covariance cols must be positive!\n");
+	REQUIRE(cov.sparse_matrix,
+		"CStatistics::sample_from_gaussian(): \
+		Covariance is not initialized!\n");
+	REQUIRE(cov.num_vectors==cov.num_features,
+		"CStatistics::sample_from_gaussian(): \
+		Covariance should be square matrix!\n");
+	REQUIRE(mean.vlen==cov.num_vectors,
+		"CStatistics::sample_from_gaussian(): \
+		Mean and covariance dimension mismatch!\n");
+
+	int32_t dim=mean.vlen;
+	Map<VectorXd> mu(mean.vector, mean.vlen);
+
+	typedef SparseMatrix<float64_t> MatrixType;
+	const MatrixType &c=EigenSparseUtil<float64_t>::toEigenSparse(cov);
+
+	SimplicialLLT<MatrixType> llt;
+
+	// generate samples, z,  from N(0, I), DxN
+	SGMatrix<float64_t> S(dim, N);
+	for( int32_t j=0; j<N; ++j )
+		for( int32_t i=0; i<dim; ++i )
+			S(i,j)=CMath::randn_double();
+
+	Map<MatrixXd> s(S.matrix, S.num_rows, S.num_cols);
+
+	// the cholesky factorization P*c*P^-1 = LP*UP, with LP=P*L, UP=U*P^-1
+	llt.compute(c);
+	MatrixType LP=llt.matrixL();
+	MatrixType UP=llt.matrixU();
+	
+	// generate samples, x, from N(mean, cov) or N(mean, cov^-1)
+	// return samples of dimension NxD
+	if( precision_matrix )
+	{
+		// here we have UP*xP=z, to solve this, we use cholesky again
+		SimplicialLLT<MatrixType> lltUP;
+		lltUP.compute(UP);
+		s=lltUP.solve(s);
+	} 
+	else
+	{
+		// here we need to find xP=LP*z
+		s=LP*s;
+	}
+
+	// permute the samples back with x=P^-1*xP
+	s=llt.permutationPinv()*s;		
+
+	SGMatrix<float64_t>::transpose_matrix(S.matrix, S.num_rows, S.num_cols);
+	// add the mean
+	Map<MatrixXd> x(S.matrix, S.num_rows, S.num_cols);
+	for( int32_t i=0; i<N; ++i )
 		x.row(i)+=mu;
 
 	return S;

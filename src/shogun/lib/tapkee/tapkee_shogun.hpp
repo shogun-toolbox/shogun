@@ -19,12 +19,21 @@
 
 
 using namespace shogun;
-namespace tapkee{
+namespace tapkee
+{
 struct ProjectingFunction;
 }
 
 namespace shogun
 {
+
+struct ProjectingFunction
+{
+  ProjectingFunction(): m_tapkee_projecting_function(NULL) {};
+  void clear();
+  CDenseFeatures<float64_t>* operator()( CDenseFeatures<float64_t>* features);
+  tapkee::ProjectingFunction* m_tapkee_projecting_function; 
+};
 
 enum TAPKEE_METHODS_FOR_SHOGUN
 {
@@ -48,6 +57,17 @@ enum TAPKEE_METHODS_FOR_SHOGUN
 
 struct TAPKEE_PARAMETERS_FOR_SHOGUN
 {
+	TAPKEE_PARAMETERS_FOR_SHOGUN() :
+		method(SHOGUN_KERNEL_LOCALLY_LINEAR_EMBEDDING),
+		n_neighbors(10), n_timesteps(3),
+		target_dimension(2), spe_num_updates(100),
+		eigenshift(1e-9), landmark_ratio(0.5),
+		gaussian_kernel_width(1.0), spe_tolerance(1e-5),
+		spe_global_strategy(false), max_iteration(100),
+		fa_epsilon(1e-5),
+		kernel(NULL), distance(NULL), features(NULL)
+	{
+	}
 	TAPKEE_METHODS_FOR_SHOGUN method;
 	uint32_t n_neighbors;
 	uint32_t n_timesteps;
@@ -57,16 +77,17 @@ struct TAPKEE_PARAMETERS_FOR_SHOGUN
 	float64_t landmark_ratio;
 	float64_t gaussian_kernel_width;
 	float64_t spe_tolerance;
-	CKernel* kernel;
-	CDistance* distance;
-	CDotFeatures* features;
 	bool spe_global_strategy;
 	uint32_t max_iteration;
 	float64_t fa_epsilon;
+	CKernel* kernel;
+	CDistance* distance;
+	CDotFeatures* features;
 };
 
 CDenseFeatures<float64_t>* tapkee_embed(const TAPKEE_PARAMETERS_FOR_SHOGUN& parameters);
-tapkee::ProjectingFunction* calc_tapkee_projecting_function(const TAPKEE_PARAMETERS_FOR_SHOGUN& parameters);
+shogun::ProjectingFunction calc_projecting_function(const TAPKEE_PARAMETERS_FOR_SHOGUN& parameters);
+
 }
 
 #endif

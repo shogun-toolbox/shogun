@@ -6,6 +6,8 @@
 #ifndef TAPKEE_PRECOMPUTED_CALLBACKS_H_
 #define TAPKEE_PRECOMPUTED_CALLBACKS_H_
 
+namespace tapkee
+{
 // Here we provide basic but still full set of callbacks
 // based on the Eigen3 template matrix library
 
@@ -16,15 +18,12 @@
 struct precomputed_kernel_callback
 {
 	precomputed_kernel_callback(const tapkee::DenseMatrix& matrix) : kernel_matrix(matrix) {};
-	inline tapkee::ScalarType operator()(int a, int b) const
+	inline tapkee::ScalarType kernel(int a, int b) const
 	{
 		return kernel_matrix(a,b);
 	}
 	const tapkee::DenseMatrix& kernel_matrix;
 };
-// That's mandatory to specify that kernel_callback
-// is a kernel (and it is good to know that it is linear).
-TAPKEE_CALLBACK_IS_KERNEL(precomputed_kernel_callback);
 
 // Distance function callback that provides
 // dissimilarity function values on vectors
@@ -33,14 +32,13 @@ TAPKEE_CALLBACK_IS_KERNEL(precomputed_kernel_callback);
 struct precomputed_distance_callback
 {
 	precomputed_distance_callback(const tapkee::DenseMatrix& matrix) : distance_matrix(matrix) {};
-	inline tapkee::ScalarType operator()(int a, int b) const
+	inline tapkee::ScalarType distance(int a, int b) const
 	{
 		return distance_matrix(a,b);
 	}
 	const tapkee::DenseMatrix& distance_matrix;
 };
-// That's mandatory to specify that distance_callback
-// is a distance
-TAPKEE_CALLBACK_IS_DISTANCE(precomputed_distance_callback);
+
+}
 #endif
 
