@@ -112,7 +112,10 @@ def tester(tests, cmp_method, tolerance, failures, missing):
 							print "%-60s OK" % setting_str
 					else:
 						if not missing:
-							failed.append(setting_str)
+							failed_string = []
+							failed_string.append(a)
+							failed_string.append(b)
+							failed.append((setting_str, failed_string))
 							print "%-60s ERROR" % setting_str
 				except Exception, e:
 					print setting_str, e
