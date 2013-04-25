@@ -99,11 +99,10 @@ CSerializableJsonFile::init(const char* fname)
 					   fname);
 			return;
 		}
-		push_object(buf);
+		m_stack_stream.push_back(buf);
 		break;
 	case 'w':
-		push_object(json_object_new_object());
-
+		m_stack_stream.push_back(json_object_new_object());
 		buf = json_object_new_string(STR_FILETYPE_00);
 		json_object_object_add(m_stack_stream.back(),
 							   STR_KEY_FILETYPE, buf);
