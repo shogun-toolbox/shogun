@@ -20,7 +20,6 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/lapack.h>
 #include <shogun/mathematics/eigen3.h>
-#include <iostream>
 
 using namespace shogun;
 
@@ -101,8 +100,8 @@ CMulticlassLabels* CQDA::apply_multiclass(CFeatures* data)
 			vec = rf->get_feature_vector(i, vlen, vfree);
 			ASSERT(vec)
 
-			Eigen::Map< Eigen::VectorXd > Evec(vec,vlen);
-			Eigen::Map< Eigen::VectorXd > Em_means_col(m_means.get_column_vector(k), m_dim);
+			Eigen::Map< Eigen::Matrix< float64_t, Eigen::Dynamic, 1, Eigen::ColMajor > > Evec(vec,vlen);
+			Eigen::Map< Eigen::Matrix< float64_t, Eigen::Dynamic, 1, Eigen::ColMajor > > Em_means_col(m_means.get_column_vector(k), m_dim);
 
 			X.row(i) = Evec - Em_means_col;
 
@@ -228,27 +227,24 @@ bool CQDA::train_machine(CFeatures* data)
 	float64_t* vec;
 	for ( k = 0 ; k < m_num_classes ; ++k )
 	{
-		SGMatrix< float64_t > buffer(class_nums[k], m_dim);
+		Eigen::Matrix< float64_t, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor > buffer(class_nums[k], m_dim);
+		Eigen::Map< Eigen::Matrix< float64_t, Eigen::Dynamic, 1, Eigen::ColMajor > > Em_means(m_means.get_column_vector(k), m_dim);
 		for ( i = 0 ; i < class_nums[k] ; ++i )
 		{
 			vec = rf->get_feature_vector(class_idxs[k*num_vec + i], vlen, vfree);
 			ASSERT(vec)
 
-			for ( j = 0 ; j < vlen ; ++j )
-			{
-				m_means[k*m_dim + j] += vec[j];
-				buffer[i + j*class_nums[k]] = vec[j];
-			}
+			Eigen::Map< Eigen::Matrix< float64_t, Eigen::Dynamic, 1, Eigen::ColMajor > > Evec(vec, vlen);
+			Em_means += Evec;
+			buffer.row(i) = Evec;
 
 			rf->free_feature_vector(vec, class_idxs[k*num_vec + i], vfree);
 		}
 
-		for ( j = 0 ; j < m_dim ; ++j )
-			m_means[k*m_dim + j] /= class_nums[k];
+		Em_means /= class_nums[k];
 
 		for ( i = 0 ; i < class_nums[k] ; ++i )
-			for ( j = 0 ; j < m_dim ; ++j )
-				buffer[i + j*class_nums[k]] -= m_means[k*m_dim + j];
+			buffer.row(i) -= Em_means;
 
 		/* calling external lib, buffer = U * S * V^T, U is not interesting here */
 		char jobu = 'N', jobvt = 'A';
@@ -258,31 +254,42 @@ bool CQDA::train_machine(CFeatures* data)
 		float64_t * col = scalings.get_column_vector(k);
 		float64_t * rot_mat = rotations.get_matrix(k);
 
-		wrap_dgesvd(jobu, jobvt, m, n, buffer.matrix, lda, col, NULL, ldu,
+
+		// Faster than Eigen::JacobiSVD
+		wrap_dgesvd(jobu, jobvt, m, n, buffer.data(), lda, col, NULL, ldu,
 			rot_mat, ldvt, &info);
+			
+
+		/*
+		Eigen::JacobiSVD< Eigen::Matrix< float64_t, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor > > svdSolver(buffer, Eigen::ComputeFullV);
+		memcpy(col, svdSolver.singularValues().data(), m);
+		memcpy(rot_mat, svdSolver.matrixV().data(), n*n);
+		*/
+
 		ASSERT(info == 0)
-		buffer=SGMatrix<float64_t>();
 
 		SGVector<float64_t>::vector_multiply(col, col, col, m_dim);
 		SGVector<float64_t>::scale_vector(1.0/(m-1), col, m_dim);
 		rotations.transpose_matrix(k);
 
+
+
 		if ( m_store_covs )
 		{
-			SGMatrix< float64_t > M(n ,n);
+			Eigen::Map< Eigen::Matrix< float64_t, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor > > EM(SGVector<float64_t>::clone_vector(rot_mat, n*n), n, n);
 
-			M.matrix = SGVector<float64_t>::clone_vector(rot_mat, n*n);
+			Eigen::Map< Eigen::Array< float64_t, Eigen::Dynamic, 1 > > Escalings(scalings.get_column_vector(k), m_dim);
 			for ( i = 0 ; i < m_dim ; ++i )
-				for ( j = 0 ; j < m_dim ; ++j )
-					M[i + j*m_dim] *= scalings[k*m_dim + j];
+					EM.row(i) = ( (EM.row(i).array()) * Escalings ).matrix();
 
-			cblas_dgemm(CblasColMajor, CblasNoTrans, CblasTrans, n, n, n, 1.0,
-				M.matrix, n, rot_mat, n, 0.0, m_covs.get_matrix(k), n);
+			Eigen::Map< Eigen::Matrix< float64_t, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor > > Em_covs(m_covs.get_matrix(k), n, n);
+			Eigen::Map< Eigen::Matrix< float64_t, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor > > Erot_mat(rot_mat, n, n);
+
+			Em_covs = EM*Erot_mat;
 		}
 	}
 
 	/* Computation of terms required for classification */
-
 	SGVector< float32_t > sinvsqrt(m_dim);
 
 	// M_dims will be freed in m_M.destroy_ndarray()
