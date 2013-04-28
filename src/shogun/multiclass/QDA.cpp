@@ -19,6 +19,8 @@
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/lapack.h>
+#include <shogun/mathematics/eigen3.h>
+#include <iostream>
 
 using namespace shogun;
 
@@ -83,12 +85,12 @@ CMulticlassLabels* CQDA::apply_multiclass(CFeatures* data)
 
 	CDenseFeatures< float64_t >* rf = (CDenseFeatures< float64_t >*) m_features;
 
-	SGMatrix< float64_t > X(num_vecs, m_dim);
-	SGMatrix< float64_t > A(num_vecs, m_dim);
-	SGVector< float64_t > norm2(num_vecs*m_num_classes);
-	norm2.zero();
+	Eigen::Matrix< float64_t, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor > X(num_vecs, m_dim);
+	Eigen::Matrix< float64_t, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor > A(num_vecs, m_dim);
+	Eigen::Matrix< float64_t, Eigen::Dynamic, 1, Eigen::ColMajor > norm2(num_vecs*m_num_classes);
+	norm2.setZero();
 
-	int i, j, k, vlen;
+	int i, k, vlen;
 	bool vfree;
 	float64_t* vec;
 	for ( k = 0 ; k < m_num_classes ; ++k )
@@ -99,20 +101,21 @@ CMulticlassLabels* CQDA::apply_multiclass(CFeatures* data)
 			vec = rf->get_feature_vector(i, vlen, vfree);
 			ASSERT(vec)
 
-			for ( j = 0 ; j < m_dim ; ++j )
-				X[i + j*num_vecs] = vec[j] - m_means[k*m_dim + j];
+			Eigen::Map< Eigen::VectorXd > Evec(vec,vlen);
+			Eigen::Map< Eigen::VectorXd > Em_means_col(m_means.get_column_vector(k), m_dim);
+
+			X.row(i) = Evec - Em_means_col;
 
 			rf->free_feature_vector(vec, i, vfree);
 
 		}
 
-		cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, num_vecs, m_dim,
-			m_dim, 1.0, X.matrix, num_vecs, m_M.get_matrix(k), m_dim, 0.0,
-			A.matrix, num_vecs);
+		Eigen::Map< Eigen::Matrix< float64_t, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor > > Em_M(m_M.get_matrix(k), m_dim, m_dim);
+		A = X*Em_M;
 
-		for ( i = 0 ; i < num_vecs ; ++i )
-			for ( j = 0 ; j < m_dim ; ++j )
-				norm2[i + k*num_vecs] += CMath::sq(A[i + j*num_vecs]);
+		for(i = 0; i < num_vecs; ++i)
+			norm2(i + k*num_vecs) = A.row(i).array().square().sum();
+
 
 #ifdef DEBUG_QDA
 	CMath::display_matrix(A.matrix, num_vecs, m_dim, "A");
@@ -122,17 +125,17 @@ CMulticlassLabels* CQDA::apply_multiclass(CFeatures* data)
 	for ( i = 0 ; i < num_vecs ; ++i )
 		for ( k = 0 ; k < m_num_classes ; ++k )
 		{
-			norm2[i + k*num_vecs] += m_slog[k];
-			norm2[i + k*num_vecs] *= -0.5;
+			norm2(i + k*num_vecs) += m_slog[k];
+			norm2(i + k*num_vecs) *= -0.5;
 		}
 
 	CMulticlassLabels* out = new CMulticlassLabels(num_vecs);
 
 	for ( i = 0 ; i < num_vecs ; ++i )
-		out->set_label(i, SGVector<float64_t>::arg_max(norm2.vector+i, num_vecs, m_num_classes));
+		out->set_label(i, SGVector<float64_t>::arg_max(norm2.data()+i, num_vecs, m_num_classes));
 
 #ifdef DEBUG_QDA
-	CMath::display_matrix(norm2.vector, num_vecs, m_num_classes, "norm2");
+	CMath::display_matrix(norm2.data(), num_vecs, m_num_classes, "norm2");
 	CMath::display_vector(out->get_labels().vector, num_vecs, "Labels");
 #endif
 
@@ -152,6 +155,7 @@ bool CQDA::train_machine(CFeatures* data)
 	}
 	if ( !m_features )
 		SG_ERROR("No features allocated in QDA training\n")
+
 	SGVector< int32_t > train_labels = ((CMulticlassLabels*) m_labels)->get_int_labels();
 	if ( !train_labels.vector )
 		SG_ERROR("No train_labels allocated in QDA training\n")
@@ -161,6 +165,7 @@ bool CQDA::train_machine(CFeatures* data)
 	m_num_classes = ((CMulticlassLabels*) m_labels)->get_num_classes();
 	m_dim = m_features->get_dim_feature_space();
 	int32_t num_vec  = m_features->get_num_vectors();
+	// Replace train_lables.vlen
 	if ( num_vec != train_labels.vlen )
 		SG_ERROR("Dimension mismatch between features and labels in QDA training")
 
