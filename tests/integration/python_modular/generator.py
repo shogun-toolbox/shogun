@@ -85,8 +85,7 @@ def generator(tests):
 		except TypeError:
 			continue
 		except Exception, e:
-			print "%-60s" % mod_name,
-			print e
+			print t, e
 			continue
 		fname = ""
 
