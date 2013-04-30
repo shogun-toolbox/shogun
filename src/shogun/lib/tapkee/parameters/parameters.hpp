@@ -233,8 +233,9 @@ public:
 		if (!parameter.in_range(lower, upper))
 		{
 			std::string error_message = 
-				(Message() << "Value " << parameter.get_value<T>() << " doesn't fit the range [" << 
-				 lower << ", " << upper << ")");
+				(Message() << "Value " << parameter.name() << " " 
+				 << parameter.get_value<T>() << " doesn't fit the range [" << 
+				    lower << ", " << upper << ")");
 			throw tapkee::wrong_parameter_error(error_message);
 		}
 		return *this;
@@ -245,7 +246,7 @@ public:
 		if (!parameter.positive())
 		{
 			std::string error_message = 
-				(Message() << "Value is not positive");
+				(Message() << "Value of " << parameter.name() << " is not positive");
 			throw tapkee::wrong_parameter_error(error_message);
 		}
 		return *this;
@@ -278,9 +279,9 @@ public:
 
 		pmap[p.name()] = p;
 	}
-	bool contains(const string& name) 
+	bool contains(const string& name) const
 	{
-		return pmap.count(name);
+		return pmap.count(name) > 0;
 	}
 	void merge(const ParametersSet& pg) 
 	{
