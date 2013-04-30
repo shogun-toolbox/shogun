@@ -1,7 +1,0 @@
-Documentation for Kernel PCA algorithm and its data generation
-
-preprocessor_kpca.py: this python script implements the Kernel PCA algorithm on the dataset,but does not plot the results.
-
-preprocessor_kpca_graphical.py : this python script implements the Kernel PCA algorithm and also plots the results
-
-generate_circle_data.py : this is a script in the tools folder, which returns a circular data ,which is used for Kernal PCA
