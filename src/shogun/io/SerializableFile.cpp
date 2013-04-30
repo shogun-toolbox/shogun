@@ -62,7 +62,7 @@ CSerializableFile::init(FILE* fstream, char task, const char* filename)
 {
 	m_fstream = fstream;
     m_task = task;
-    m_filename = strdup(filename);
+	m_filename = (strcmp(filename,"(file)")!=0) ? strdup(filename) : NULL;
 	m_reader = NULL;
 }
 
