@@ -29,6 +29,7 @@ def serialization_complex_example (num=5, dist=1, dim=10, C=2.0, width=10):
 
 	feats=RealFeatures(data)
 	#feats.io.set_loglevel(MSG_DEBUG)
+	#feats.io.enable_file_and_line()
 	kernel=GaussianKernel(feats, feats, width)
 
 	labels=MulticlassLabels(lab)
@@ -50,9 +51,9 @@ def serialization_complex_example (num=5, dist=1, dim=10, C=2.0, width=10):
 	status = svm.save_serializable(fstream)
 	check_status(status,'asc')
 
-	#fstream = SerializableJsonFile("blaah.json", "w")
-	#status = svm.save_serializable(fstream)
-	#check_status(status,'json')
+	fstream = SerializableJsonFile("blaah.json", "w")
+	status = svm.save_serializable(fstream)
+	check_status(status,'json')
 
 	fstream = SerializableXmlFile("blaah.xml", "w")
 	status = svm.save_serializable(fstream)
@@ -71,11 +72,11 @@ def serialization_complex_example (num=5, dist=1, dim=10, C=2.0, width=10):
 	check_status(status,'asc')
 	new_svm.train()
 
-	#fstream = SerializableJsonFile("blaah.json", "r")
-	#new_svm=GMNPSVM()
-	#status = new_svm.load_serializable(fstream)
-	#check_status(status,'json')
-	#new_svm.train()
+	fstream = SerializableJsonFile("blaah.json", "r")
+	new_svm=GMNPSVM()
+	status = new_svm.load_serializable(fstream)
+	check_status(status,'json')
+	new_svm.train()
 
 	fstream = SerializableXmlFile("blaah.xml", "r")
 	new_svm=GMNPSVM()
@@ -85,7 +86,7 @@ def serialization_complex_example (num=5, dist=1, dim=10, C=2.0, width=10):
 
 	os.unlink("blaah.h5")
 	os.unlink("blaah.asc")
-	#os.unlink("blaah.json")
+	os.unlink("blaah.json")
 	os.unlink("blaah.xml")
 	return svm,new_svm
 
