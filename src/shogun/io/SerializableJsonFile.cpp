@@ -129,6 +129,7 @@ CSerializableJsonFile::close()
 					   m_filename);
 		}
 
+		json_object_put(m_stack_stream.back());
 		pop_object();
 	}
 }
