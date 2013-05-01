@@ -50,7 +50,7 @@ DenseSymmetricMatrix compute_distance_matrix(RandomAccessIterator begin, RandomA
 		{
 			for (j_index_iter=i_index_iter; j_index_iter<n_landmarks; ++j_index_iter)
 			{
-				ScalarType d = callback(begin[landmarks[i_index_iter]],begin[landmarks[j_index_iter]]);
+				ScalarType d = callback.distance(begin[landmarks[i_index_iter]],begin[landmarks[j_index_iter]]);
 				d *= d;
 				distance_matrix(i_index_iter,j_index_iter) = d;
 				distance_matrix(j_index_iter,i_index_iter) = d;
@@ -97,7 +97,7 @@ EmbeddingResult triangulate(RandomAccessIterator begin, RandomAccessIterator end
 
 			for (IndexType i=0; i<n_landmarks; ++i)
 			{
-				ScalarType d = distance_callback(begin[index_iter],begin[landmarks[i]]);
+				ScalarType d = distance_callback.distance(begin[index_iter],begin[landmarks[i]]);
 				distances_to_landmarks(i) = d*d;
 			}
 			//distances_to_landmarks.array().square();
@@ -129,7 +129,7 @@ DenseSymmetricMatrix compute_distance_matrix(RandomAccessIterator begin, RandomA
 		{
 			for (j_index_iter=i_index_iter; j_index_iter<n_vectors; ++j_index_iter)
 			{
-				ScalarType d = callback(begin[i_index_iter],begin[j_index_iter]);
+				ScalarType d = callback.distance(begin[i_index_iter],begin[j_index_iter]);
 				d *= d;
 				distance_matrix(i_index_iter,j_index_iter) = d;
 				distance_matrix(j_index_iter,i_index_iter) = d;

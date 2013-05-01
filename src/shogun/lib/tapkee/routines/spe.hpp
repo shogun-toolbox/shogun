@@ -42,7 +42,7 @@ DenseMatrix spe_embedding(RandomAccessIterator begin, RandomAccessIterator end,
 	{
 		for (RandomAccessIterator j_iter=i_iter+1; j_iter!=end; ++j_iter)
 		{
-			max = std::max(max, callback(*i_iter,*j_iter));
+			max = std::max(max, callback.distance(*i_iter,*j_iter));
 		}
 	}
 
@@ -140,7 +140,7 @@ DenseMatrix spe_embedding(RandomAccessIterator begin, RandomAccessIterator end,
 		ind1 = indices.begin();
 		ind2 = indices.begin()+nupdates;
 		for (int j=0; j<nupdates; ++j)
-			Rt[j] *= callback(*(begin + *ind1++), *(begin + *ind2++));
+			Rt[j] *= callback.distance(*(begin + *ind1++), *(begin + *ind2++));
 
 		// Compute some terms for update
 

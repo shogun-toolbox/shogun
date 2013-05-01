@@ -142,7 +142,7 @@ inline ScalarType distance(Callback cb, const CoverTreePoint<RandomAccessIterato
 	if (l.iter_==r.iter_)
 		return 0.0;
 
-	return distance_impl_if_kernel<BasicCallbackTraits<Callback>::is_kernel,RandomAccessIterator,Callback>()(cb,l,r,upper_bound);
+	return distance_impl_if_kernel<Callback::is_kernel,RandomAccessIterator,Callback>()(cb,l,r,upper_bound);
 }
 
 template <class RandomAccessIterator, class Callback>
@@ -151,7 +151,7 @@ struct distance_impl_if_kernel<true,RandomAccessIterator,Callback>
 	inline ScalarType operator()(Callback cb, const CoverTreePoint<RandomAccessIterator>& l,
                                  const CoverTreePoint<RandomAccessIterator>& r, ScalarType /*upper_bound*/)
 	{
-		return sqrt(l.norm_ + r.norm_ - 2*cb(*r.iter_,*l.iter_));
+		return sqrt(l.norm_ + r.norm_ - 2*cb(r.iter_,l.iter_));
 	}
 };
 
@@ -161,7 +161,7 @@ struct distance_impl_if_kernel<false,RandomAccessIterator,Callback>
 	inline ScalarType operator()(Callback cb, const CoverTreePoint<RandomAccessIterator>& l,
                                  const CoverTreePoint<RandomAccessIterator>& r, ScalarType /*upper_bound*/)
 	{
-		return cb(*l.iter_,*r.iter_);
+		return cb(l.iter_,r.iter_);
 	}
 };
 

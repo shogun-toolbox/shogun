@@ -577,7 +577,7 @@ float64_t CFITCInferenceMethod::get_negative_marginal_likelihood()
 	if(update_parameter_hash())
 		update_all();
 
-       Map<MatrixXd> eigen_chol_utr(m_chol_utr.matrix, 			m_chol_utr.num_rows, m_chol_utr.num_cols);
+    Map<MatrixXd> eigen_chol_utr(m_chol_utr.matrix, m_chol_utr.num_rows, m_chol_utr.num_cols);
 
 	Map<VectorXd> eigen_dg(m_dg.vector, m_dg.vlen);
 
@@ -660,134 +660,109 @@ void CFITCInferenceMethod::update_train_kernel()
 	}
 }
 
-
 void CFITCInferenceMethod::update_chol()
 {
 	check_members();
 
-	//Get the sigma variable from the likelihood model
+	// get the sigma variable from the likelihood model
 	float64_t m_sigma =
 			dynamic_cast<CGaussianLikelihood*>(m_model)->get_sigma();
 
-	Map<MatrixXd> eigen_uu(m_kuu.matrix, m_kuu.num_rows, m_kuu.num_cols);
+	// eigen3 representation of covariance matrix of latent features (m_kuu)
+	// and training features (m_ktru)
+	Map<MatrixXd> eigen_kuu(m_kuu.matrix, m_kuu.num_rows, m_kuu.num_cols);
+	Map<MatrixXd> eigen_ktru(m_ktru.matrix, m_ktru.num_rows, m_ktru.num_cols);
 
-	Map<MatrixXd> eigen_ktru(m_ktru.matrix, m_ktru.num_rows,
-m_ktru.num_cols);
+	// solve Luu' * Luu = Kuu + m_ind_noise * I
+	LLT<MatrixXd> Luu(eigen_kuu+m_ind_noise*MatrixXd::Identity(
+		m_kuu.num_rows, m_kuu.num_cols));
 
-	LLT<MatrixXd> Luu(eigen_uu +
-			m_ind_noise*MatrixXd::Identity(m_kuu.num_rows, m_kuu.num_cols));
+	// create shogun and eigen3 representation of cholesky of covariance of
+    // latent features Luu (m_chol_uu and eigen_chol_uu)
+	m_chol_uu=SGMatrix<float64_t>(Luu.rows(), Luu.cols());
+	Map<MatrixXd> eigen_chol_uu(m_chol_uu.matrix, m_chol_uu.num_rows,
+		m_chol_uu.num_cols);
+	eigen_chol_uu=Luu.matrixU();
 
-	MatrixXd eigen_chol_uu = Luu.matrixL();
+	// solve Luu' * V = Ktru, and calculate sV = V.^2
+	MatrixXd V = eigen_chol_uu.triangularView<Upper>().adjoint().solve(eigen_ktru);
+	MatrixXd sV = V.cwiseProduct(V);
 
-	MatrixXd V = eigen_chol_uu.colPivHouseholderQr().solve(eigen_ktru);
-
-	m_chol_uu = SGMatrix<float64_t>(eigen_chol_uu.rows(), 
-			eigen_chol_uu.cols());
-
-	for (index_t f = 0; f < eigen_chol_uu.rows(); f++)
-	{
-		for (index_t s = 0; s < eigen_chol_uu.cols(); s++)
-			m_chol_uu(f,s) = eigen_chol_uu(f,s);
-	}	
-	
-	MatrixXd temp_V = V.cwiseProduct(V);
-
-	VectorXd eigen_dg;
-
-	eigen_dg.resize(m_ktrtr.num_cols);
-	VectorXd sqrt_dg(m_ktrtr.num_cols);
+	// create shogun and eigen3 representation of
+	// dg = diag(K) + sn2 - diag(Q), and also compute idg = 1/dg
+	m_dg = SGVector<float64_t>(m_ktrtr.num_cols);
+	Map<VectorXd> eigen_dg(m_dg.vector, m_dg.vlen);
+	VectorXd eigen_idg(m_dg.vlen);
 
 	for (index_t i = 0; i < m_ktrtr.num_cols; i++)
 	{
-		eigen_dg[i] = m_ktrtr(i,i)*m_scale*m_scale + m_sigma*m_sigma - temp_V.col(i).sum();
-		sqrt_dg[i] = sqrt(eigen_dg[i]);
+		eigen_dg[i]=m_ktrtr(i,i)*m_scale*m_scale+m_sigma*m_sigma-sV.col(i).sum();
+		eigen_idg[i] = 1.0 / eigen_dg[i];
 	}
 
-	m_dg = SGVector<float64_t>(eigen_dg.rows());
-
-	for (index_t i = 0; i < eigen_dg.rows(); i++)
-		m_dg[i] = eigen_dg[i];
-
-	for (index_t i = 0; i < V.rows(); i++)
-	{
-		for (index_t j = 0; j < V.cols(); j++)
-			V(i,j) /= sqrt_dg[j];
-	}
-
-	LLT<MatrixXd> Lu(V*V.transpose() +
+	// solve Lu' * Lu = V * diag(idg) * V' + I
+	LLT<MatrixXd> Lu(V*eigen_idg.asDiagonal()*V.transpose()+
 			MatrixXd::Identity(m_kuu.num_rows, m_kuu.num_cols));
 
-	MatrixXd eigen_chol_utr = Lu.matrixL();
+	// create shogun and eigen3 representation of cholesky of covariance of
+    // training features Luu (m_chol_utr and eigen_chol_utr)
+	m_chol_utr = SGMatrix<float64_t>(Lu.rows(),	Lu.cols());
+	Map<MatrixXd> eigen_chol_utr(m_chol_utr.matrix, m_chol_utr.num_rows,
+		m_chol_utr.num_rows);
+	eigen_chol_utr = Lu.matrixU();
 
-	m_chol_utr = SGMatrix<float64_t>(eigen_chol_utr.rows(), 
-			eigen_chol_utr.cols());
-
-	for (index_t f = 0; f < eigen_chol_utr.rows(); f++)
-	{
-		for (index_t s = 0; s < eigen_chol_utr.cols(); s++)
-			m_chol_utr(f,s) = eigen_chol_utr(f,s);
-	}	
-
+	// compute true labels
 	VectorXd true_lab(m_data_means.vlen);
 
 	for (index_t j = 0; j < m_data_means.vlen; j++)
 		true_lab[j] = m_label_vector[j] - m_data_means[j];
 
-	VectorXd eigen_r;
+	// compute sgrt_dg = sqrt(dg)
+	VectorXd sqrt_dg(m_ktrtr.num_cols);
 
-	eigen_r = true_lab.cwiseQuotient(sqrt_dg);
+	for (index_t i=0; i<m_dg.vlen; i++)
+		sqrt_dg[i]=sqrt(m_dg[i]);
 
-	m_r = SGVector<float64_t>(eigen_r.rows());
+	// create shogun and eigen3 representation of labels adjusted for
+	// noise and means (m_r)
+	m_r=SGVector<float64_t>(m_label_vector.vlen);
+	Map<VectorXd> eigen_r(m_r.vector, m_r.vlen);
+	eigen_r=true_lab.cwiseQuotient(sqrt_dg);
 
-	for (index_t j = 0; j < eigen_r.rows(); j++)
-		m_r[j] = eigen_r[j];
+	// compute be
+	m_be=SGVector<float64_t>(m_r.vlen);
+	Map<VectorXd> eigen_be(m_be.vector, m_be.vlen);
+	eigen_be=eigen_chol_utr.triangularView<Upper>().adjoint().solve(
+		V*eigen_r.cwiseQuotient(sqrt_dg));
 
-	VectorXd eigen_be = eigen_chol_utr.colPivHouseholderQr().solve(V*eigen_r);
-	
+	// compute iKuu
+	MatrixXd iKuu = Luu.solve(MatrixXd::Identity(m_kuu.num_rows, m_kuu.num_cols));
 
-	m_be = SGVector<float64_t>(eigen_be.rows());
+	// create shogun and eigen3 representation of posterior cholesky
+	MatrixXd eigen_prod=eigen_chol_utr*eigen_chol_uu;
+	m_L = SGMatrix<float64_t>(m_kuu.num_rows, m_kuu.num_cols);
+	Map<MatrixXd> eigen_chol(m_L.matrix, m_L.num_rows, m_L.num_cols);
 
-	for (index_t j = 0; j < eigen_be.rows(); j++)
-		m_be[j] = eigen_be[j];
-
-	MatrixXd iKuu = eigen_chol_uu.llt().solve(
-			MatrixXd::Identity(m_kuu.num_rows, m_kuu.num_cols));
-
-	MatrixXd chol = eigen_chol_utr*eigen_chol_uu;
-
-	chol *= chol.transpose();
-
-	chol = chol.llt().solve(MatrixXd::Identity(m_kuu.num_rows, m_kuu.num_cols));
-
-	chol = chol - iKuu;
-
-	m_L = SGMatrix<float64_t>(chol.rows(), chol.cols());
-
-	for (index_t i = 0; i < chol.rows(); i++)
-	{
-		for (index_t j = 0; j < chol.cols(); j++)
-			m_L(i,j) = chol(i,j);
-	}
+	eigen_chol=eigen_prod.triangularView<Upper>().adjoint().solve(
+		MatrixXd::Identity(m_kuu.num_rows, m_kuu.num_cols));
+	eigen_chol=eigen_prod.triangularView<Upper>().solve(eigen_chol)-iKuu;
 }
 
 void CFITCInferenceMethod::update_alpha()
 {
-	MatrixXd alph;
-
-        Map<MatrixXd> eigen_chol_uu(m_chol_uu.matrix, 			m_chol_uu.num_rows, m_chol_uu.num_cols);
-
-        Map<MatrixXd> eigen_chol_utr(m_chol_utr.matrix, 			m_chol_utr.num_rows, m_chol_utr.num_cols);
-
+    Map<MatrixXd> eigen_chol_uu(m_chol_uu.matrix, m_chol_uu.num_rows,
+		m_chol_uu.num_cols);
+	Map<MatrixXd> eigen_chol_utr(m_chol_utr.matrix, m_chol_utr.num_rows,
+		m_chol_utr.num_cols);
 	Map<VectorXd> eigen_be(m_be.vector, m_be.vlen);
 
-	alph = eigen_chol_utr.colPivHouseholderQr().solve(eigen_be);
+	// create shogun and eigen representations of alpha
+	// and solve Luu * Lu * alpha = be
+	m_alpha = SGVector<float64_t>(m_chol_uu.num_rows);
+	Map<VectorXd> eigen_alpha(m_alpha.vector, m_alpha.vlen);
 
-	alph = eigen_chol_uu.colPivHouseholderQr().solve(alph);
-
-	m_alpha = SGVector<float64_t>(alph.rows());
-
-	for (index_t i = 0; i < alph.rows(); i++)
-		m_alpha[i] = alph(i,0);
+	eigen_alpha=eigen_chol_utr.triangularView<Upper>().solve(eigen_be);
+	eigen_alpha=eigen_chol_uu.triangularView<Upper>().solve(eigen_alpha);
 }
 
 #endif // HAVE_EIGEN3

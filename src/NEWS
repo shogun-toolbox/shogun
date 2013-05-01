@@ -1,13 +1,14 @@
-2013-04-01 Soeren Sonnenburg <sonne@debian.org>
+2013-10-01 Soeren Sonnenburg <sonne@debian.org>
 
 	* SHOGUN Release version 2.2.0 (libshogun 14.0, data 0.6, parameter 1)
 	* This release contains several cleanups and bugfixes:
 	* Features:
 		- Added nu-SVR for LibSVR class
+		- Proa
 	* Bugfixes:
-		- None
+		- Fix json serialization.
 	* Cleanup and API Changes:
-		- None
+		- Rename HMSVMLabels to SequenceLabels
 
 2013-03-17 Soeren Sonnenburg <sonne@debian.org>
 

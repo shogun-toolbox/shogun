@@ -12,7 +12,7 @@
 #define _HMSVM_MODEL__H__
 
 #include <shogun/structure/StructuredModel.h>
-#include <shogun/structure/HMSVMLabels.h>
+#include <shogun/structure/SequenceLabels.h>
 #include <shogun/structure/StateModelTypes.h>
 #include <shogun/structure/StateModel.h>
 
@@ -35,7 +35,7 @@ class CHMSVMModel : public CStructuredModel
 		/** constructor
 		 *
 		 * @param features the feature vectors, must be of type MatrixFeatures
-		 * @param labels HMSVM labels
+		 * @param labels sequence labels
 		 * @param smt internal state representation
 		 * @param num_obs number of observations
 		 */
