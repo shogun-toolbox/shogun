@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import numpy as np
-import networkx as nx
 import matplotlib.pyplot as plt
 from pylab import show, imshow
 
@@ -12,9 +11,7 @@ def simulate_data (n,p):
 	sic = SparseInverseCovariance()
 	
 	#create a random pxp covariance matrix
-	cov = []
-	for _ in range(p):
-		cov.append(np.random.normal(size=p))
+	cov = np.random.normal(size=(p,p))
 	
 	#generate data set with multivariate Gaussian distribution	
 	mean = [0] * p
@@ -41,21 +38,17 @@ def inverse_covariance (data,lc):
 
 
 def draw_graph(sic, subplot):
+	import numpy as np
+	import networkx as nx
 
 	#create list of edges
 	#an egde means there is a dependency between variables
 	#0 value in sic matrix mean independent variables given all the other variables
-	graph = []
-	line = 0
-	for sl in sic:
-		line = line + 1	
-		column = 0
-		for sc in sl:
-			column = column + 1
-			if sc != 0:
-				graph.append((line,column))	
-
-    # extract nodes from graph
+	p = sic.shape[0]
+	X, Y = np.meshgrid(range(p), range(p))
+	graph = np.array((X[sic != 0], Y[sic != 0])).T
+	
+	# extract nodes from graph
 	nodes = set([n1 for n1, n2 in graph] + [n2 for n1, n2 in graph])
 
     # create networkx graph
@@ -82,7 +75,7 @@ if __name__=='__main__':
 	#edit here for your own simulation
 	num_observations = 100
 	num_variables = 11
-	penalties = [0.00001, 0.01, 0.1, 0.5, 1, 2]
+	penalties = [0.00001, 0.05, 0.1, 0.5, 1, 2]
 	
 	columns = len(penalties)
 
