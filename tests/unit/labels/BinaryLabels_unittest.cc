@@ -22,7 +22,9 @@ TEST(BinaryLabels,scores_to_probabilities)
 		labels->set_value(i%2==0 ? 1 : -1, i);
 
 	labels->get_values().display_vector("scores");
-	labels->scores_to_probabilities();
+	// call with 0,0 to make the method compute sigmoid parameters itself
+	// g-test somehow does not allow std parameters
+	labels->scores_to_probabilities(0,0);
 
 	/* only two probabilities will be the result. Results from implementation that
 	 * comes with the original paper, see BinaryLabels documentation */

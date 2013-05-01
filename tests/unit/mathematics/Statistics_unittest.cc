@@ -13,6 +13,22 @@
 using namespace shogun;
 using namespace Eigen;
 
+TEST(Statistics, fit_sigmoid)
+{
+	SGVector<float64_t> scores(10);
+
+	for (index_t i=0; i<scores.vlen; ++i)
+		scores[i]=i%2==0 ? 1 : -1;
+
+	CStatistics::SigmoidParamters params=CStatistics::fit_sigmoid(scores);
+
+	// compare against python implementation of john plat's algoorithm
+//	SG_SPRINT("a=%f, b=%f\n", params.a, params.b);
+
+	EXPECT_NEAR(params.a, -1.791759, 1E-5);
+	EXPECT_NEAR(params.b, 0.000000, 10E-5);
+}
+
 // TEST 1
 TEST(Statistics, log_det_test_1)
 {
