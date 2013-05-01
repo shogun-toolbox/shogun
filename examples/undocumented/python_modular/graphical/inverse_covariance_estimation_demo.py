@@ -38,8 +38,6 @@ def inverse_covariance (data,lc):
 	Si = sic.estimate(cov,lc)
 
 	return Si
-	
-
 
 
 def draw_graph(sic, subplot):
