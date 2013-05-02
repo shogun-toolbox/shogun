@@ -85,8 +85,10 @@ namespace shogun
 			/** PRNG state */
 			PRNG_STATE m_state;
 
+#ifdef HAVE_PTHREAD
 			/** state lock */
 			PTHREAD_LOCK_T m_state_lock;
+#endif
 
 	};
 }

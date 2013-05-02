@@ -9,6 +9,7 @@
  */
 
 #include <shogun/mathematics/Random.h>
+#include <shogun/base/Parameter.h>
 
 using namespace shogun;
 
@@ -28,7 +29,9 @@ CRandom::CRandom(uint32_t seed)
 
 CRandom::~CRandom()
 {
+#ifdef HAVE_PTHREAD
 	PTHREAD_LOCK_DESTROY(&m_state_lock);
+#endif
 	SG_FREE(m_sfmt);
 }
 
@@ -41,7 +44,9 @@ void CRandom::seed(uint32_t seed)
 void CRandom::init()
 {
 	m_sfmt = SG_MALLOC(sfmt_t, 1);
+#ifdef HAVE_PTHREAD	
 	PTHREAD_LOCK_INIT(&m_state_lock);
+#endif	
 	reinit(PRNG_32);
 }
 
@@ -111,16 +116,18 @@ float64_t CRandom::random_float_res53()
 
 void CRandom::reinit(PRNG_STATE state)
 {
+#ifdef HAVE_PTHREAD	
 	PTHREAD_LOCK(&m_state_lock);
+#endif	
 	sfmt_init_gen_rand(m_sfmt, m_seed);
 	m_state = state;
+#ifdef HAVE_PTHREAD	
 	PTHREAD_UNLOCK(&m_state_lock);
+#endif	
 }
 
 void CRandom::register_params()
 {
-	//SG_ADD(&m_seed, "seed", "Seed for PRNG", MS_NOT_AVAILABLE);
-	//SG_ADD(&m_sfmt, "sfmt", "SFMT struct for PRNG", MS_NOT_AVAILABLE);
-	//SG_ADD(&m_state, "state", "state of the PRNG", MS_NOT_AVAILABLE);
-	//SG_ADD(&m_state_lock, "state_lock", "state lock", MS_NOT_AVAILABLE);
+	SG_ADD(&m_seed, "seed", "Seed for PRNG", MS_NOT_AVAILABLE);
+	SG_ADD((machine_int_t*)&m_state, "state", "state of the PRNG", MS_NOT_AVAILABLE);
 }
