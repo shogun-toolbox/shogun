@@ -15,10 +15,13 @@
 
 #include <shogun/lib/external/SFMT/SFMT.h>
 
+#define RAND_MAX_32 4294967296.0
+#define RAND_MAX_64 18446744073709551616.0L
+
 namespace shogun
 {
 
-#ifndef DOXYGEN_SHOULD_SKIP_THIS	
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 	enum PRNG_STATE
 	{
 		PRNG_32 = 1,
@@ -45,7 +48,13 @@ namespace shogun
 			 *
 			 * @param seed seed for PRNG
 			 */
-			void seed(uint32_t seed);
+			void set_seed(uint32_t seed);
+
+			/** get seed
+			 * 
+			 * @return seed
+			 */
+			uint32_t get_seed() const;
 
 			uint32_t random_32();
 			
@@ -70,7 +79,20 @@ namespace shogun
 			 * 
 			 * @param state PRNG_32 or PRNG_64
 			 */
-			void reinit(PRNG_STATE state);
+			 inline void reinit(PRNG_STATE state)
+			 {
+#ifdef HAVE_PTHREAD
+			 	PTHREAD_LOCK(&m_state_lock);
+#endif
+			 	if (m_state != state)
+			 	{
+			 		sfmt_init_gen_rand(m_sfmt, m_seed);
+			 		m_state = state;
+			 	}
+#ifdef HAVE_PTHREAD
+			 	PTHREAD_UNLOCK(&m_state_lock);
+#endif
+			 }
 
 		private:
 			/** seed */
