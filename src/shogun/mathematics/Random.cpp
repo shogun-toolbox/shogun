@@ -17,14 +17,12 @@ CRandom::CRandom()
  : m_seed(12345)
 {
 	init();
-	register_params();
 }
 
 CRandom::CRandom(uint32_t seed)
  : m_seed(seed)
 {
 	init();
-	register_params();
 }
 
 CRandom::~CRandom()
@@ -124,10 +122,4 @@ void CRandom::reinit(PRNG_STATE state)
 #ifdef HAVE_PTHREAD	
 	PTHREAD_UNLOCK(&m_state_lock);
 #endif	
-}
-
-void CRandom::register_params()
-{
-	SG_ADD(&m_seed, "seed", "Seed for PRNG", MS_NOT_AVAILABLE);
-	SG_ADD((machine_int_t*)&m_state, "state", "state of the PRNG", MS_NOT_AVAILABLE);
 }

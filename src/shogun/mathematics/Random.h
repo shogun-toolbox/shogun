@@ -63,9 +63,6 @@ namespace shogun
 			virtual const char* get_name() const { return "Random"; } 
 
 		private:
-			/** register parameters */
-			void register_params();
-
 			/** initialise the object */
 			void init();
 
