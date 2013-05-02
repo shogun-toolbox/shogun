@@ -457,8 +457,8 @@ void LaRankOutput::update (int32_t x_id, float64_t lambda, float64_t gp)
 	else
 	{
 		larank_kcache_swap_ri (kernel, l, x_id);
-		SGVector<float32_t>::resize(g, l, l+1);
-		SGVector<float32_t>::resize(beta, l, l+1);
+		g = SG_REALLOC(float32_t, g, l, l+1);
+		beta = SG_REALLOC(float32_t, beta, l, l+1);
 		g[l]=gp;
 		beta[l]=lambda;
 		l++;
@@ -504,8 +504,8 @@ int32_t LaRankOutput::cleanup ()
 			g[r]=g[r + 1];
 		}
 	}
-	SGVector<float32_t>::resize(beta, l, new_l+1);
-	SGVector<float32_t>::resize(g, l, new_l+1);
+	beta = SG_REALLOC(float32_t, beta, l, new_l+1);
+	g = SG_REALLOC(float32_t, g, l, new_l+1);
 	beta[new_l]=0;
 	g[new_l]=0;
 	l = new_l;
