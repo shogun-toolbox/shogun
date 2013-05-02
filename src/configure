@@ -5060,12 +5060,12 @@ EOF
 test_mexp()
 {
 cat > $TMPC << EOF
-#include "shogun/lib/external/SFMT/SFMT-params.h"
+#include <shogun/lib/external/SFMT/SFMT-params.h>
 int main(void) { return 0; }
 EOF
 
 	echocheck "Mersenne exponent"
-	if cc_check $_cflags -DSFMT_MEXP=$SFMT_MEXP >/dev/null 2>&1
+	if cc_check $_cflags -I. -DSFMT_MEXP=$SFMT_MEXP >/dev/null 2>&1
 	then
 		echores $SFMT_MEXP
 		DEFINES="$DEFINES -DSFMT_MEXP=$SFMT_MEXP"
