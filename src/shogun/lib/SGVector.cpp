@@ -568,15 +568,6 @@ void SGVector<T>::permute_vector(SGVector<T> vec)
 	}
 }
 
-template <class T>
-void SGVector<T>::resize(T* &data, int64_t old_size, int64_t new_size)
-{
-	if (old_size==new_size)
-		return;
-
-	data = SG_REALLOC(T, data, old_size, new_size);
-}
-
 template <>
 bool SGVector<bool>::twonorm(const bool* x, int32_t len)
 {
