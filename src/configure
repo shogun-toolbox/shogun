@@ -42,6 +42,7 @@ PYTHON=python
 PYVER=
 GMOCK_DIR="/usr/src/gmock"
 GTEST_DIR="/usr/src/gtest"
+SFMT_MEXP=19937
 KERNELNAME=`uname`
 MACHINE=`uname -m | tr ' ' '-'`
 EXT_OBJ_CPP=cpp.o
@@ -1481,7 +1482,8 @@ Miscellaneous options:
   --gmock=PATH                   the path to the Google C++ Mocking framework source [default: /usr/src/gmock]
   --gtest=PATH                   the path to the Google C++ test framework source [default: /usr/src/gtest]
   --ruby=ruby                    use this ruby executable [ruby]
-  --swig=swig			 use this swig executable [swig]
+  --swig=swig                    use this swig executable [swig]
+  --mexp=EXP                     Mersenne exponent 607, 1279, 2281, 4253, 11213, 19937, 44497, 86243, 132049, 216091 [19937]
   --cc=COMPILER                  use this C compiler to build shogun [autodetected]
   --cxx=COMPILER                 use this C++ compiler to build shogun [autodetected]
   --cflags=OPTIONS               use these C compiler options
@@ -1594,6 +1596,9 @@ EOF
 		;;
 	  --swig=*)
 		SWIG=`echo $ac_option | cut -d '=' -f 2`
+		;;
+	  --mexp=*)
+		SFMT_MEXP=`echo $ac_option | cut -d '=' -f 2`
 		;;
 	  --ruby=*)
 		RUBY=`echo $ac_option | cut -d '=' -f 2`
@@ -2915,6 +2920,21 @@ EOF
     _def_builtin_vector='#define HAVE_BUILTIN_VECTOR 1'
   else
     _def_builtin_vector='#undef HAVE_BUILTIN_VECTOR'
+  fi
+  echores "$_builtin_vector"
+fi
+
+# intrinsics headers for use with SFMT
+if test "$_sse2" = yes ; then
+  echocheck "emmintrin.h"
+  cat > $TMPC << EOF
+#include <emmintrin.h>
+int main() { _mm_mfence(); return 0; }
+EOF
+  _builtin_vector=no
+  cc_check -msse2 && _builtin_vector=yes
+  if test "$_builtin_vector" = yes ; then
+  	DEFINES="$DEFINES -DHAVE_SSE2"
   fi
   echores "$_builtin_vector"
 fi
@@ -5037,6 +5057,23 @@ EOF
 	fi
 }
 
+test_mexp()
+{
+cat > $TMPC << EOF
+#include "shogun/lib/external/SFMT/SFMT-params.h"
+int main(void) { return 0; }
+EOF
+
+	echocheck "Mersenne exponent"
+	if cc_check $_cflags -DSFMT_MEXP=$SFMT_MEXP >/dev/null 2>&1
+	then
+		echores $SFMT_MEXP
+		DEFINES="$DEFINES -DSFMT_MEXP=$SFMT_MEXP"
+	else
+		die "provided SFMT_MEXP = $SFMT_MEXP is not valid!"
+	fi
+}
+
 #write the actual config
 
 write_dot_config()
@@ -5492,6 +5529,7 @@ check_bzip2
 check_lzma
 check_lpsolve
 set_opts
+test_mexp
 test_spinlocks
 test_libshogun
 test_cmdline
