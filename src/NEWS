@@ -11,6 +11,8 @@
 		- Fixed bugs in GP Regression that caused negative values for the variances.
 	* Cleanup and API Changes:
 		- Rename HMSVMLabels to SequenceLabels
+		- Refactored method to fit a sigmoid to SVM scores, now in CStatistics,
+		  still called from CBinaryLabels.
 
 2013-03-17 Soeren Sonnenburg <sonne@debian.org>
 
