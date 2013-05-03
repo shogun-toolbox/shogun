@@ -110,6 +110,8 @@ namespace tapkee
 		/** t-SNE and Barnes-Hut-SNE as described in 
 		 * @cite vanDerMaaten2008 and @cite vanDerMaaten2013 */
 		tDistributedStochasticNeighborEmbedding,
+		/**SammonMapping Implementation*/
+		SammonMapping,
 		/** Passing through (doing nothing just passes the 
 		 * data through) */
 		PassThru
@@ -135,6 +137,7 @@ namespace tapkee
 	METHOD_THAT_NEEDS_ONLY_FEATURES_IS(RandomProjection);
 	METHOD_THAT_NEEDS_NOTHING_IS(PassThru);
 	METHOD_THAT_NEEDS_ONLY_FEATURES_IS(FactorAnalysis);
+	METHOD_THAT_NEEDS_ONLY_FEATURES_IS(SammonMapping);
 	METHOD_THAT_NEEDS_ONLY_FEATURES_IS(tDistributedStochasticNeighborEmbedding);
 #endif // DOXYGEN_SHOULD_SKIP_THS
 
@@ -438,7 +441,14 @@ namespace tapkee
 			 */
 			const ParameterKeyword<IndexType>
 				spe_num_updates("SPE number of updates", 100);
-
+				
+			/**parameters for Sammonmapping*/
+			const ParameterKeyword<IndexType>
+				opts_MaxHalves("Maximum Number of Halves",20);
+			const ParameterKeyword<IndexType>
+				opts_MaxIter("Maximum Number of Iterations",500);
+			const ParameterKeyword<ScalarType>
+				opts_TolFun("Tolerance in Function",1e-9);
 			/** The keyword for the value that stores the tolerance of
 			 * the SPE algorithm. 
 			 * 
