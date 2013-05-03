@@ -239,7 +239,7 @@ CHMSVMModel* CTwoStateModel::simulate_two_state_data()
 	// num_blocks[1] blocks of positive labels each of length between
 	// block_len[0] and block_len[1]
 
-	CHMSVMLabels* labels = new CHMSVMLabels(num_exm, num_states);
+	CSequenceLabels* labels = new CSequenceLabels(num_exm, num_states);
 	SGVector< int32_t > ll(num_exm*exm_len);
 	ll.zero();
 	int32_t rnb, rl, rp;

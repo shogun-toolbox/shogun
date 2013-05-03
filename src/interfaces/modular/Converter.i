@@ -22,6 +22,7 @@
 %rename(Isomap) CIsomap;
 %rename(StochasticProximityEmbedding) CStochasticProximityEmbedding;
 %rename(FactorAnalysis) CFactorAnalysis;
+%rename (TDistributedStochasticNeighborEmbedding) CTDistributedStochasticNeighborEmbedding;
 
 %newobject shogun::CEmbeddingConverter::apply;
 %newobject shogun::*::embed_kernel;
@@ -42,3 +43,4 @@
 %include <shogun/converter/Isomap.h>
 %include <shogun/converter/StochasticProximityEmbedding.h>
 %include <shogun/converter/FactorAnalysis.h>
+%include <shogun/converter/TDistributedStochasticNeighborEmbedding.h>

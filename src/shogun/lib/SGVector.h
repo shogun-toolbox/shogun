@@ -224,11 +224,6 @@ template<class T> class SGVector : public SGReferencedData
 		/** create a random permutation in place */
 		void permute();
 
-		/** resize array from old_size to new_size (keeping as much array
-		 * content as possible intact)
-		 */
-		static void resize(T* &data, int64_t old_size, int64_t new_size);
-
 		/// || x ||_2
 		static T twonorm(const T* x, int32_t len);
 

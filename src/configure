@@ -269,8 +269,8 @@ PYTHON_TARGET=
 DEFINES_PYTHON=
 INCLUDES_PYTHON=
 PRELINKFLAGS_PYTHON=
-LINKFLAGS_PYTHON="-ldl -lutil"
-POSTLINKFLAGS_PYTHON="-ldl -lutil"
+LINKFLAGS_PYTHON="-lutil"
+POSTLINKFLAGS_PYTHON="-lutil"
 
 # stuff needed for autodetections (definitely needs cleanup)
 TMPLOG="configure.log"
@@ -937,7 +937,7 @@ require 'narray'
 NArray[[1, 0, 0], [0, 1, 2]]
 EOF
 	echocheck "Ruby NArray"
-	if ruby $TMPRUBY >/dev/null 2>&1 
+	if $RUBY $TMPRUBY >/dev/null 2>&1 
 	then
 		echores "yes"
 
@@ -1403,7 +1403,7 @@ Installation directories:
   --libdir=DIR                   use this prefix for object code libraries [PREFIX/lib]
   --incdir=DIR                   use this prefix for include files [PREFIX/include]
   --pydir=DIR                    use this prefix for python files [PREFIX/auto-detected]
-  --rubydir=DIR                  use this prefix for python files [PREFIX/auto-detected]
+  --rubydir=DIR                  use this prefix for ruby files [PREFIX/auto-detected]
   --octdir=DIR                   use this prefix for octave files [PREFIX/auto-detected]
   --rdir=DIR                     use this prefix for r files [PREFIX/auto-detected]
 
@@ -1481,6 +1481,7 @@ Miscellaneous options:
   --gmock=PATH                   the path to the Google C++ Mocking framework source [default: /usr/src/gmock]
   --gtest=PATH                   the path to the Google C++ test framework source [default: /usr/src/gtest]
   --ruby=ruby                    use this ruby executable [ruby]
+  --swig=swig			 use this swig executable [swig]
   --cc=COMPILER                  use this C compiler to build shogun [autodetected]
   --cxx=COMPILER                 use this C++ compiler to build shogun [autodetected]
   --cflags=OPTIONS               use these C compiler options
@@ -1590,6 +1591,9 @@ EOF
 		;;
 	  --gtest=*)
 		GTEST_DIR=`echo $ac_option | cut -d '=' -f 2`
+		;;
+	  --swig=*)
+		SWIG=`echo $ac_option | cut -d '=' -f 2`
 		;;
 	  --ruby=*)
 		RUBY=`echo $ac_option | cut -d '=' -f 2`
@@ -3049,6 +3053,10 @@ EOF
 	if ! darwin && test "$WORDSIZE" = 64
 	then
 		DEFINES_SWIG="${DEFINES_SWIG} -DSWIGWORDSIZE64"
+		if freebsd
+		then
+			DEFINES="${DEFINES} -DUINTPTR_MAX=0xffffffffffffffff -DUINT64_MAX=0xffffffffffffffff"
+		fi
 	fi
 }
 

@@ -5,19 +5,17 @@
  * (at your option) any later version.
  *
  * Copyright (C) 2012 Jacob Walker
- * 
+ *
  * Code adapted from Gaussian Process Machine Learning Toolbox
  * http://www.gaussianprocess.org/gpml/code/matlab/doc/
- * 
+ *
  */
 
 #include <shogun/lib/config.h>
 #ifdef HAVE_EIGEN3
-#ifdef HAVE_LAPACK
 
 #include <shogun/io/SGIO.h>
 #include <shogun/regression/GaussianProcessRegression.h>
-#include <shogun/mathematics/lapack.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/labels/RegressionLabels.h>
@@ -40,7 +38,7 @@ CGaussianProcessRegression::CGaussianProcessRegression(CInferenceMethod* inf, CF
 
 	set_labels(lab);
 	set_features(data);
-	set_method(inf);	
+	set_method(inf);
 }
 
 void CGaussianProcessRegression::init()
@@ -100,7 +98,7 @@ void CGaussianProcessRegression::update_kernel_matrices()
 			for (index_t j = 0; j < m_k_tsts.num_cols; j++)
 				m_k_tsts(i,j) *= (m_scale*m_scale);
 		}
-		
+
 		kernel->remove_lhs_and_rhs();
 
 		SG_UNREF(kernel);
@@ -255,126 +253,54 @@ SGVector<float64_t> CGaussianProcessRegression::get_mean_vector()
 	return result_vector;
 }
 
-
 SGVector<float64_t> CGaussianProcessRegression::get_covariance_vector()
 {
-
 	if (!m_data)
 		SG_ERROR("No testing features!\n")
 
-	SGVector<float64_t> diagonal = m_method->get_diagonal_vector();
+	// get shogun of diagonal sigma vector and create eigen representation
+	SGVector<float64_t> diagonal=m_method->get_diagonal_vector();
+	Map<VectorXd> eigen_diagonal(diagonal.vector, diagonal.vlen);
 
-	if (diagonal.vlen > 0)
+	// get shogun representation of cholesky and create eigen representation
+	SGMatrix<float64_t> L=m_method->get_cholesky();
+	Map<MatrixXd> eigen_L(L.matrix, L.num_rows, L.num_cols);
+
+	// create eigen representation of K(train, tests) kernel matrix
+	Map<MatrixXd> eigen_Ks(m_k_trts.matrix, m_k_trts.num_rows, m_k_trts.num_cols);
+
+	// variance vector
+	SGVector<float64_t> s2(m_k_tsts.num_cols);
+
+	if (diagonal.vlen>0)
 	{
-		SGVector<float64_t> diagonal2(m_data->get_num_vectors());
+		// solve L' * V = diagonal * Ks and compute V.^2
+		MatrixXd eigen_V=eigen_L.triangularView<Upper>().adjoint().solve(
+			eigen_diagonal.asDiagonal()*eigen_Ks);
+		MatrixXd eigen_sV=eigen_V.cwiseProduct(eigen_V);
 
-		SGMatrix<float64_t> temp1(m_data->get_num_vectors(), diagonal.vlen);
+		VectorXd eigen_diagonal2=eigen_sV.colwise().sum();
 
-		SGMatrix<float64_t> m_L = m_method->get_cholesky();
-
-		SGMatrix<float64_t> temp2(m_L.num_rows, m_L.num_cols);
-
-		for (index_t i = 0; i < diagonal.vlen; i++)
-		{
-			for (index_t j = 0; j < m_data->get_num_vectors(); j++)
-				temp1(j,i) = diagonal[i]*m_k_trts(j,i);
-		}
-
-		for (index_t i = 0; i < diagonal2.vlen; i++)
-			diagonal2[i] = 0;
-
-		memcpy(temp2.matrix, m_L.matrix,
-				m_L.num_cols*m_L.num_rows*sizeof(float64_t));
-
-
-		temp2.transpose_matrix(temp2.matrix, temp2.num_rows, temp2.num_cols);
-
-		SGVector<int32_t> ipiv(temp2.num_cols);
-
-		//Solve L^T V = K(Train,Test)*Diagonal Vector Entries for V
-		clapack_dgetrf(CblasColMajor, temp2.num_rows, temp2.num_cols,
-				temp2.matrix, temp2.num_cols, ipiv.vector);
-
-		clapack_dgetrs(CblasColMajor, CblasNoTrans,
-				temp2.num_rows, temp1.num_cols, temp2.matrix,
-				temp2.num_cols, ipiv.vector, temp1.matrix,
-				temp1.num_cols);
-
-		for (index_t i = 0; i < temp1.num_rows; i++)
-		{
-			for (index_t j = 0; j < temp1.num_cols; j++)
-				temp1(i,j) = temp1(i,j)*temp1(i,j);
-		}
-
-		for (index_t i = 0; i < temp1.num_cols; i++)
-		{
-			diagonal2[i] = 0;
-
-			for (index_t j = 0; j < temp1.num_rows; j++)
-				diagonal2[i] += temp1(j,i);
-		}
-
-
-		SGVector<float64_t> result(m_k_tsts.num_cols);
-
-		//Subtract V from K(Test,Test) to get covariances.
-		for (index_t i = 0; i < m_k_tsts.num_cols; i++)
-			result[i] = m_k_tsts(i,i) - diagonal2[i];
-
-		CLikelihoodModel* lik = m_method->get_model();
-
-		SG_UNREF(lik);
-
-		return lik->evaluate_variances(result);
+		for (index_t i=0; i<m_k_tsts.num_cols; i++)
+			s2[i]=m_k_tsts(i,i)-eigen_diagonal2[i];
 	}
-
 	else
 	{
-		SGMatrix<float64_t> m_L = m_method->get_cholesky();
+		// M = Ks .* (L * Ks)
+		MatrixXd eigen_M=eigen_Ks.cwiseProduct(eigen_L*eigen_Ks);
 
-		SGMatrix<float64_t> temp1(m_k_trts.num_rows, m_k_trts.num_cols);
-		SGMatrix<float64_t> temp2(m_L.num_rows, m_L.num_cols);
+		VectorXd eigen_diagonal2=eigen_M.colwise().sum();
 
-		memcpy(temp1.matrix, m_k_trts.matrix,
-				m_k_trts.num_cols*m_k_trts.num_rows*sizeof(float64_t));
-
-		memcpy(temp2.matrix, m_L.matrix,
-				m_L.num_cols*m_L.num_rows*sizeof(float64_t));
-
-		cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, m_L.num_rows,
-				m_k_trts.num_cols, m_L.num_rows, 1.0, m_L.matrix, m_L.num_cols,
-				m_k_trts.matrix, m_k_trts.num_cols, 0.0, temp1.matrix,
-				temp1.num_cols);
-
-		for (index_t i = 0; i < temp1.num_rows; i++)
-		{
-			for (index_t j = 0; j < temp1.num_cols; j++)
-				temp1(i,j) *= m_k_trts(i,j);
-		}
-
-		SGVector<float64_t> temp3(temp2.num_cols);
-
-		for (index_t i = 0; i < temp1.num_cols; i++)
-		{
-			float64_t sum = 0;
-			for (index_t j = 0; j < temp1.num_rows; j++)
-				sum += temp1(j,i);
-			temp3[i] = sum;
-		}
-
-		SGVector<float64_t> result(m_k_tsts.num_cols);
-
-		for (index_t i = 0; i < m_k_tsts.num_cols; i++)
-			result[i] = m_k_tsts(i,i) + temp3[i];
-
-		CLikelihoodModel* lik = m_method->get_model();
-
-		SG_UNREF(lik);
-
-		return lik->evaluate_variances(result);
+		for (index_t i=0; i<m_k_tsts.num_cols; i++)
+			s2[i]=m_k_tsts(i,i)+eigen_diagonal2[i];
 	}
-}
 
+	CLikelihoodModel* lik=m_method->get_model();
+	s2=lik->evaluate_variances(s2);
+	SG_UNREF(lik);
+
+	return s2;
+}
 
 CGaussianProcessRegression::~CGaussianProcessRegression()
 {
@@ -406,5 +332,4 @@ bool CGaussianProcessRegression::save(FILE* dstfile)
 	SG_RESET_LOCALE;
 	return false;
 }
-#endif
 #endif

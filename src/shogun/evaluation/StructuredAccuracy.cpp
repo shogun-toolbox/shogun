@@ -4,12 +4,12 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2012 Fernando José Iglesias García
- * Copyright (C) 2012 Fernando José Iglesias García
+ * Written (W) 2012-2013 Fernando José Iglesias García
+ * Copyright (C) 2012-2013 Fernando José Iglesias García
  */
 
 #include <shogun/evaluation/StructuredAccuracy.h>
-#include <shogun/structure/HMSVMLabels.h>
+#include <shogun/structure/SequenceLabels.h>
 #include <shogun/structure/MulticlassSOLabels.h>
 
 using namespace shogun;

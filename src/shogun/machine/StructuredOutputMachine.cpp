@@ -43,11 +43,23 @@ void CStructuredOutputMachine::set_model(CStructuredModel* model)
 	m_model = model;
 }
 
+CStructuredModel* CStructuredOutputMachine::get_model() const
+{
+	SG_REF(m_model);
+	return m_model;
+}
+
 void CStructuredOutputMachine::set_loss(CLossFunction* loss)
 {
 	SG_UNREF(m_loss);
 	SG_REF(loss);
 	m_loss = loss;
+}
+
+CLossFunction* CStructuredOutputMachine::get_loss() const
+{
+	SG_REF(m_loss);
+	return m_loss;
 }
 
 void CStructuredOutputMachine::register_parameters()
