@@ -9,6 +9,16 @@
  */
 
 /* One dimensional input arrays */
+
+%{
+// luaL_typerror was removed in Lua 5.2.
+int luaL_typerror (lua_State *L, int narg, const char *tname) {
+  const char *msg = lua_pushfstring(L, "%s expected, got %s", tname, luaL_typename(L, narg));
+  return luaL_argerror(L, narg, msg);
+}
+
+%}
+
 %define TYPEMAP_SGVECTOR(SGTYPE)
 
 %typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) shogun::SGVector<SGTYPE> {
@@ -19,7 +29,7 @@
     else {
         $1 = 1;
         int numitems = 0;
-        numitems = lua_objlen(L, $input);
+        numitems = lua_rawlen(L, ($input));
         if(numitems == 0) {
             luaL_argerror(L, $input, "empty vector");
             $1 = 0;
@@ -35,7 +45,7 @@
         return 0;
     }
 
-    len = lua_objlen(L, $input);
+    len = lua_rawlen(L, ($input));
     if (len == 0){
         luaL_argerror(L, $input, "empty vector");
         return 0;
@@ -88,7 +98,7 @@ TYPEMAP_SGVECTOR(float64_t)
     else {
         $1 = 1;
         int numitems = 0;
-        numitems = lua_objlen(L, $input);
+        numitems = lua_rawlen(L, ($input));
         if(numitems == 0) {
             luaL_argerror(L, $input, "empty vector");
             $1 = 0;
@@ -104,7 +114,7 @@ TYPEMAP_SGVECTOR(float64_t)
         return 0;
     }
 
-    len = lua_objlen(L, $input);
+    len = lua_rawlen(L, ($input));
     if (len == 0){
         luaL_argerror(L, $input, "empty vector");
         return 0;
@@ -155,7 +165,7 @@ TYPEMAP_SGVECTOR(float64_t)
     }
     else {
         $1 = 1;
-        int rows = lua_objlen(L, $input);
+        int rows = lua_rawlen(L, ($input));
         if(rows == 0) {
             luaL_argerror(L, $input, "empty matrix");
             $1 = 0;
@@ -167,7 +177,7 @@ TYPEMAP_SGVECTOR(float64_t)
                 $1 = 0;
             }
             else {
-                int cols = lua_objlen(L, -1);
+                int cols = lua_rawlen(L, (-1));
                 if (cols == 0) {
                     luaL_argerror(L, $input, "matrix row appears to be empty");
                     $1 = 0;
@@ -186,9 +196,9 @@ TYPEMAP_SGVECTOR(float64_t)
         return luaL_typerror(L, $input, "matrix");
     }
 
-    rows = lua_objlen(L, $input);
+    rows = lua_rawlen(L, ($input));
     lua_rawgeti(L, $input, 1);
-    cols = lua_objlen(L, -1);
+    cols = lua_rawlen(L, (-1));
     if (cols == 0) {
         return luaL_argerror(L, $input, "matrix row appears to be empty");
     }
@@ -201,7 +211,7 @@ TYPEMAP_SGVECTOR(float64_t)
             return luaL_argerror(L, $input, "matrix row is not a table");
         }
 
-        if (lua_objlen(L, -1) != cols)
+        if (lua_rawlen(L, (-1)) != cols)
             return luaL_argerror(L, $input, "matrix rows have inconsistent sizes");
 
         for (j = 0; j < cols; j++) {
@@ -261,7 +271,7 @@ TYPEMAP_SGMATRIX(float64_t)
     else {
         $1 = 1;
         int numitems = 0;
-        numitems = lua_objlen(L, $input);
+        numitems = lua_rawlen(L, ($input));
         if(numitems == 0) {
             luaL_argerror(L, $input, "empty table");
             $1 = 0;
@@ -278,7 +288,7 @@ TYPEMAP_SGMATRIX(float64_t)
         return luaL_typerror(L, $input, "stringList");
     }
 
-    size = lua_objlen(L, $input);
+    size = lua_rawlen(L, ($input));
     shogun::SGString<SGTYPE>* strings=SG_MALLOC(shogun::SGString<SGTYPE>, size);
 
     for (i = 0; i < size; i++) {
@@ -302,7 +312,7 @@ TYPEMAP_SGMATRIX(float64_t)
                 return luaL_argerror(L, $input, "expected matrix ");
             }
             SGTYPE *arr = (SGTYPE *)lua_topointer(L, -1);
-            len = lua_objlen(L, -1);
+            len = lua_rawlen(L, (-1));
             max_len = shogun::CMath::max(len, max_len);
 
             strings[i].slen=len;
