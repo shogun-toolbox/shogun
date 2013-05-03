@@ -58,7 +58,7 @@ def features_dense_protocols_modular (in_data=data):
 		f_real*=m_real
 		f_real-=m_real
 	else:
-		print "numpy version >= 1.5 is needed"
+		print("numpy version >= 1.5 is needed")
 		return None
 
 	f_real+=f_real
@@ -71,7 +71,7 @@ def features_dense_protocols_modular (in_data=data):
 	try:
 		mem_real=memoryview(f_real)
 	except NameError:
-		print "Python2.7 is needed for memoryview class"
+		print("Python2.7 and later is needed for memoryview class")
 		return
 
 	ret_real=array(f_real)

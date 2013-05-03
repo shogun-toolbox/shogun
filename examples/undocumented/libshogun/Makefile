@@ -18,6 +18,7 @@ VALGRIND_LOG = valgrind.log
 
 TARGETS = basic_minimal \
 		  classifier_libsvm \
+		  classifier_libsvm_probabilities\
 		  classifier_minimal_svm \
 		  classifier_mklmulticlass \
   		  classifier_conjugateindex \

@@ -8,8 +8,10 @@
  */
 
 /* helper's stuff */
-%init
+%wrapper
 %{
+// needed for support of new buffer protocol in python 2.6 and later
+// doesn't make sense for python3
 #if (PY_VERSION_HEX < 0x02060000) || (PY_VERSION_HEX >= 0x03000000)
 #define Py_TPFLAGS_HAVE_NEWBUFFER 0
 #endif

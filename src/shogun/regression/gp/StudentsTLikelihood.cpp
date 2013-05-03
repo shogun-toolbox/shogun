@@ -24,13 +24,22 @@ using namespace Eigen;
 
 CStudentsTLikelihood::CStudentsTLikelihood() : CLikelihoodModel()
 {
-	init();
+	init(0.01, 3);
 }
 
-void CStudentsTLikelihood::init()
+CStudentsTLikelihood::CStudentsTLikelihood(float64_t sigma, float64_t df) : CLikelihoodModel()
 {
-	m_df = 3.0;
-	m_sigma = 0.01;
+	init(sigma, df);
+}
+
+void CStudentsTLikelihood::init(float64_t sigma, float64_t df)
+{
+	REQUIRE(df>1.0, "%s::init(): Number of degrees of "
+			"freedom must be greater than one\n", get_name())
+	m_df=df;
+	m_sigma = sigma;
+
+	SG_ADD(&m_df, "df", "Degrees of Freedom.", MS_AVAILABLE);
 	SG_ADD(&m_sigma, "sigma", "Observation Noise.", MS_AVAILABLE);
 }
 
@@ -38,6 +47,17 @@ CStudentsTLikelihood::~CStudentsTLikelihood()
 {
 }
 
+CStudentsTLikelihood* CStudentsTLikelihood::obtain_from_generic(CLikelihoodModel* likelihood)
+{
+	ASSERT(likelihood!=NULL);
+
+	if (likelihood->get_model_type()!=LT_STUDENTST)
+		SG_SERROR("CStudentsTLikelihood::obtain_from_generic(): provided likelihood is "
+			"not of type CStudentsTLikelihood!\n")
+
+	SG_REF(likelihood);
+	return (CStudentsTLikelihood*)likelihood;
+}
 
 SGVector<float64_t> CStudentsTLikelihood::evaluate_means(
 		SGVector<float64_t>& means)
@@ -211,7 +231,7 @@ SGVector<float64_t> CStudentsTLikelihood::get_first_derivative(
 
 		for (index_t i = 0; i < result.rows(); i++)
 			sgresult[i] = result[i];
- 
+
 		return sgresult;
 	}
 
@@ -267,7 +287,7 @@ SGVector<float64_t> CStudentsTLikelihood::get_second_derivative(
 		result = b.cwiseQuotient(c);
 
 		result = result/(m_df-1);
-		
+
 		for (index_t i = 0; i < result.rows(); i++)
 			sgresult[i] = result[i];
 		return sgresult;

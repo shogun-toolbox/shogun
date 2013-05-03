@@ -85,15 +85,19 @@ configure.log
 
 # particular modular ones
 /src/interfaces/csharp_modular/*.cs
+/src/interfaces/csharp_modular/abstract_types_extension.i
+/src/interfaces/csharp_modular/modshogun.dll
 /src/interfaces/java_modular/*.java
 /src/interfaces/java_modular/*.jar
 /src/interfaces/java_modular/*.class
 /src/interfaces/java_modular/org/*
 /src/interfaces/java_modular/shogun/*
 /src/interfaces/python_modular/*.py
+/src/interfaces/python_modular/abstract_types_extension.i
 /src/interfaces/r_modular/*.R
 /src/interfaces/r_modular/*.RData
 /src/interfaces/perl_modular/*.pm
+/src/interfaces/octave_modular/abstract_types_extension.i
 /.duped_py_pl.pb
 
 # /examples/

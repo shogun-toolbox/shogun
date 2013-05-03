@@ -100,6 +100,34 @@ const bool DenseMatrixOperation::largest = true;
 //! computes matrix product with provided
 //! right-hand side part *twice*.
 //!
+struct DenseImplicitSquareSymmetricMatrixOperation
+{
+	DenseImplicitSquareSymmetricMatrixOperation(const DenseMatrix& matrix) : _matrix(matrix)
+	{
+	}
+	//! Computes matrix product of the matrix and provided right-hand 
+	//! side matrix twice
+	//! 
+	//! @param rhs right-hand side matrix
+	//!
+	inline DenseMatrix operator()(const DenseMatrix& rhs)
+	{
+		return _matrix.selfadjointView<Eigen::Upper>()*(_matrix.selfadjointView<Eigen::Upper>()*rhs);
+	}
+	const DenseMatrix& _matrix;
+	static const char* ARPACK_CODE;
+	static const bool largest;
+};
+const char* DenseImplicitSquareSymmetricMatrixOperation::ARPACK_CODE = "LM";
+const bool DenseImplicitSquareSymmetricMatrixOperation::largest = true;
+
+//! Matrix-matrix operation used to
+//! compute largest eigenvalues and
+//! associated eigenvectors of X*X^T like
+//! matrix implicitly. Essentially
+//! computes matrix product with provided
+//! right-hand side part *twice*.
+//!
 struct DenseImplicitSquareMatrixOperation
 {
 	DenseImplicitSquareMatrixOperation(const DenseMatrix& matrix) : _matrix(matrix)
@@ -112,7 +140,7 @@ struct DenseImplicitSquareMatrixOperation
 	//!
 	inline DenseMatrix operator()(const DenseMatrix& rhs)
 	{
-		return _matrix.selfadjointView<Eigen::Upper>()*(_matrix.selfadjointView<Eigen::Upper>()*rhs);
+		return _matrix*(_matrix.transpose()*rhs);
 	}
 	const DenseMatrix& _matrix;
 	static const char* ARPACK_CODE;

@@ -14,4 +14,5 @@
 #include <shogun/converter/Isomap.h>
 #include <shogun/converter/StochasticProximityEmbedding.h>
 #include <shogun/converter/FactorAnalysis.h>
+#include <shogun/converter/TDistributedStochasticNeighborEmbedding.h>
 %}

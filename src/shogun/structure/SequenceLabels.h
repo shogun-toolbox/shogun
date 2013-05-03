@@ -4,12 +4,12 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2012 Fernando José Iglesias García
- * Copyright (C) 2012 Fernando José Iglesias García
+ * Written (W) 2012-2013 Fernando José Iglesias García
+ * Copyright (C) 2012-2013 Fernando José Iglesias García
  */
 
-#ifndef _HMSVM_LABELS__H__
-#define _HMSVM_LABELS__H__
+#ifndef _SEQUENCE_LABELS__H__
+#define _SEQUENCE_LABELS__H__
 
 #include <shogun/labels/StructuredLabels.h>
 #include <shogun/lib/SGVector.h>
@@ -19,7 +19,7 @@
 namespace shogun
 {
 
-class CHMSVMLabels;
+class CSequenceLabels;
 
 /** @brief Class CSequence to be used in the application of Structured Output
  * (SO) learning to Hidden Markov Support Vector Machines (HM-SVM). */
@@ -65,22 +65,22 @@ protected:
 
 };
 
-/** @brief Class CHMSVMLabels to be used in the application of Structured Output
+/** @brief Class CSequenceLabels used e.g. in the application of Structured Output
  * (SO) learning to Hidden Markov Support Vector Machines (HM-SVM). Each of the
  * labels is represented by a sequence of integers. Each label is of type
  * CSequence and all of them are stored in a CDynamicObjectArray. */
-class CHMSVMLabels : public CStructuredLabels
+class CSequenceLabels : public CStructuredLabels
 {
 	public:
 		/** default constructor */
-		CHMSVMLabels();
+		CSequenceLabels();
 
 		/** standard constructor
 		 *
 		 * @param num_labels number of labels
 		 * @param num_states number of states
 		 */
-		CHMSVMLabels(int32_t num_labels, int32_t num_states);
+		CSequenceLabels(int32_t num_labels, int32_t num_states);
 
 		/**
 		 * constructor using the data of all the labels concatenated. All the
@@ -92,13 +92,13 @@ class CHMSVMLabels : public CStructuredLabels
 		 * @param num_labels number of labels
 		 * @param num_states number of states
 		 */
-		CHMSVMLabels(SGVector< int32_t > labels, int32_t label_length, int32_t num_labels, int32_t num_states);
+		CSequenceLabels(SGVector< int32_t > labels, int32_t label_length, int32_t num_labels, int32_t num_states);
 
 		/** destructor */
-		virtual ~CHMSVMLabels();
+		virtual ~CSequenceLabels();
 
 		/** @return object name */
-		virtual const char* get_name() const { return "HMSVMLabels"; }
+		virtual const char* get_name() const { return "SequenceLabels"; }
 
 		/**
 		 * add a new label to the vector of labels, effectively
@@ -128,8 +128,8 @@ class CHMSVMLabels : public CStructuredLabels
 		 */
 		int32_t m_num_states;
 
-}; /* CHMSVMLabels */
+}; /* CSequenceLabels */
 
 } /* namespace shogun */
 
-#endif /* _HMSVM_LABELS__H__ */
+#endif /* _SEQUENCE_LABELS__H__ */

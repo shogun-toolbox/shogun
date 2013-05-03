@@ -16,8 +16,6 @@
  #include <shogun/classifier/svm/OnlineLibLinear.h>
  #include <shogun/classifier/Perceptron.h>
  #include <shogun/classifier/AveragedPerceptron.h>
- #include <shogun/classifier/SubGradientLPM.h>
- #include <shogun/classifier/svm/SubGradientSVM.h>
  #include <shogun/classifier/svm/SVM.h>
  #include <shogun/classifier/svm/SVMLin.h>
  #include <shogun/machine/KernelMachine.h>

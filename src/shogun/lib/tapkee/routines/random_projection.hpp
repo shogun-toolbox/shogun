@@ -3,8 +3,8 @@
  * Copyright (c) 2012-2013 Sergey Lisitsyn
  */
 
-#ifndef TAPKEE_RANDOM_PROJECTION_H_
-#define TAPKEE_RANDOM_PROJECTION_H_
+#ifndef TAPKEE_RandomProjection_H_
+#define TAPKEE_RandomProjection_H_
 
 /* Tapkee includes */
 #include <shogun/lib/tapkee/tapkee_defines.hpp>
