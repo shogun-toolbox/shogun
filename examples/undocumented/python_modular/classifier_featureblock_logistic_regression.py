@@ -18,8 +18,8 @@ def classifier_featureblock_logistic_regression (fm_train=traindat,fm_test=testd
 	labels = BinaryLabels(hstack((label_train,label_train)))
 
 	n_features = features.get_num_features()
-	block_one = IndexBlock(0,n_features/2)
-	block_two = IndexBlock(n_features/2,n_features)
+	block_one = IndexBlock(0,n_features//2)
+	block_two = IndexBlock(n_features//2,n_features)
 	block_group = IndexBlockGroup()
 	block_group.add_block(block_one)
 	block_group.add_block(block_two)

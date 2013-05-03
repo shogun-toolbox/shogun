@@ -108,7 +108,7 @@ def serialization_svmlight_modular (num, dist, width, C):
     out2 =  svm2.apply(feats_test).get_labels()
 
     # assert outputs are close
-    for i in xrange(len(out)):
+    for i in range(len(out)):
         assert abs(out[i] - out2[i] < 0.000001)
 
     #print("all checks passed.")

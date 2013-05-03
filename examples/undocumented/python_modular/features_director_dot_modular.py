@@ -15,7 +15,7 @@ def features_director_dot_modular (fm_train_real, fm_test_real,
 		from shogun.Features import DirectorDotFeatures
 		from shogun.Library import RealVector
 	except ImportError:
-		print "recompile shogun with --enable-swig-directors"
+		print("recompile shogun with --enable-swig-directors")
 		return
 
 	class NumpyFeatures(DirectorDotFeatures):

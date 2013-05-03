@@ -26,7 +26,7 @@ except ImportError:
 def get_ver(ver_str):
 	scipy_ver=[int(i) for i in scipy.__version__.split('.')]
 	v=0
-	for i in xrange(len(scipy_ver)):
+	for i in range(len(scipy_ver)):
 		v+=10**(len(scipy_ver)-i)*scipy_ver[i]
 	return v
 

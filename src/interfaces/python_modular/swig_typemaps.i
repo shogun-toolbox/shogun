@@ -51,13 +51,13 @@ static const char* typecode_string(PyObject* py_obj) {
   if (PyUnicode_Check( py_obj)) return "unicode";
 #else
   if (PyString_Check(  py_obj)) return "string";
-#endif  
+#endif
 
 #if PY_VERSION_HEX >= 0x03000000
   if (PyLong_Check(    py_obj)) return "int";
 #else
   if (PyInt_Check(     py_obj)) return "int";
-#endif  
+#endif
   if (PyFloat_Check(   py_obj)) return "float";
   if (PyDict_Check(    py_obj)) return "dict";
   if (PyList_Check(    py_obj)) return "list";
@@ -98,7 +98,7 @@ static void* get_copy(void* src, size_t len)
  * return the input pointer and flag it as not a new object.  If it is
  * not contiguous, create a new PyArrayObject using the original data,
  * flag it as a new object and return the pointer.
- * 
+ *
  * If array is NULL or dimensionality or typecode does not match
  * return NULL
  */
@@ -133,7 +133,7 @@ static PyObject* make_contiguous(PyObject* ary, int* is_new_object,
 
     if (dims!=-1 && array_dimensions(array)!=dims)
     {
-        PyErr_Format(PyExc_TypeError, "Array has wrong dimensionality, " 
+        PyErr_Format(PyExc_TypeError, "Array has wrong dimensionality, "
                 "expected a %dd-array, received a %dd-array", dims, array_dimensions(array));
         if (*is_new_object)
             Py_DECREF(array);
@@ -143,13 +143,13 @@ static PyObject* make_contiguous(PyObject* ary, int* is_new_object,
 
     /*this works around a numpy oddity when LONG==INT32*/
     if ((array_type(array) != typecode) &&
-        !(typecode==NPY_LONG && NPY_BITSOF_INT == NPY_BITSOF_LONG 
+        !(typecode==NPY_LONG && NPY_BITSOF_INT == NPY_BITSOF_LONG
             && NPY_BITSOF_INT==32 && array_type(array)==NPY_INT))
     {
         const char* desired_type = typecode_string(typecode);
         const char* actual_type = typecode_string(array_type(array));
-        PyErr_Format(PyExc_TypeError, 
-                "Array of type '%s' required.  Array of type '%s' given", 
+        PyErr_Format(PyExc_TypeError,
+                "Array of type '%s' required.  Array of type '%s' given",
                 desired_type, actual_type);
         if (*is_new_object)
             Py_DECREF(array);
@@ -217,7 +217,7 @@ static int is_pystring_list(PyObject* obj, int typecode)
             {
 #if PY_VERSION_HEX >= 0x03000000
                 if (!PyUnicode_Check(o))
-#else				
+#else
 				if (!PyString_Check(o))
 #endif
                 {
@@ -345,7 +345,7 @@ static bool array_from_numpy(SGNDArray<type>& sg_array, PyObject* obj, int typec
 
     for (int32_t i=0; i<ndim; i++)
       temp_dims[i] = py_dims[i];
-    
+
     sg_array = SGNDArray<type>((type*) PyArray_BYTES(array), temp_dims, ndim);
 
     ((PyArrayObject*) array)->flags &= (-1 ^ NPY_OWNDATA);
@@ -373,7 +373,7 @@ static bool string_from_strpy(SGStringList<type>& sg_strings, PyObject* obj, int
             {
 #if PY_VERSION_HEX >= 0x03000000
                 if (PyUnicode_Check(o))
-#else				
+#else
 				if (PyString_Check(o))
 #endif
                 {
@@ -610,7 +610,7 @@ static bool spmatrix_from_numpy(SGSparseMatrix<type>& sg_matrix, PyObject* obj, 
     for (int32_t i=1; i<len_indptr; i++)
     {
         int32_t num = bytes_indptr[i]-bytes_indptr[i-1];
-        
+
         if (num>0)
         {
             shogun::SGSparseVectorEntry<type>* features=SG_MALLOC(shogun::SGSparseVectorEntry<type>, num);
@@ -902,22 +902,28 @@ static bool spvector_to_numpy(PyObject* &obj, SGSparseVector<type> sg_vector, in
 }
 
 #ifdef PYTHON3
-%typemap(typecheck) const char* 
+%typemap(typecheck, precedence=SWIG_TYPECHECK_STRING) const char *
 {
-	$1 = PyUnicode_Check($input);
+	$1 = (PyUnicode_Check($input) || PyString_Check($input)) ? 1 : 0;
 }
-
-%typemap(in) const char* 
+%typemap(in) const char *
 {
-	if (PyUnicode_Check($input))
+	if (PyString_Check($input))
+	{
+		$1 = PyString_AsString($input);
+	}
+	else if (PyUnicode_Check($input))
+	{
 		$1 = PyBytes_AsString(PyUnicode_AsASCIIString(const_cast<PyObject*>($input)));
-    	else
-		SWIG_fail;
+    	}
+	else
+	{
+		PyErr_SetString(PyExc_TypeError, "Expected a string");
+	}
 }
-
-%typemap(freearg) const char* 
+%typemap(freearg) const char *
 {
-	// pass
+	// nothing to do there
 }
 #endif
 
