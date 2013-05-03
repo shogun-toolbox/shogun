@@ -4,7 +4,7 @@ from tools.multiclass_shared import prepare_data
 try:
 	from shogun.Classifier import MulticlassLogisticRegression
 except ImportError:
-	print "recompile shogun with Eigen3 support"
+	print("recompile shogun with Eigen3 support")
 	import sys
 	sys.exit(0)
 

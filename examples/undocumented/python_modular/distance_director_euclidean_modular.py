@@ -11,7 +11,7 @@ def distance_director_euclidean_modular (fm_train_real=traindat,fm_test_real=tes
 	try:
 		from shogun.Distance import DirectorDistance
 	except ImportError:
-		print "recompile shogun with --enable-swig-directors"
+		print("recompile shogun with --enable-swig-directors")
 		return
 
 	class DirectorEuclideanDistance(DirectorDistance):

@@ -13,7 +13,7 @@ def regression_gaussian_process_modular (n=100,n_test=100, \
 		from shogun.Regression import GaussianLikelihood, ZeroMean, \
 				ExactInferenceMethod, GaussianProcessRegression
 	except ImportError:
-		print "Eigen3 needed for Gaussian Processes"
+		print("Eigen3 needed for Gaussian Processes")
 		return
 		
 	# reproducable results

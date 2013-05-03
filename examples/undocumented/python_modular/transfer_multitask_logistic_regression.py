@@ -18,8 +18,8 @@ def transfer_multitask_logistic_regression (fm_train=traindat,fm_test=testdat,la
 	labels = BinaryLabels(hstack((label_train,label_train)))
 
 	n_vectors = features.get_num_vectors()
-	task_one = Task(0,n_vectors/2)
-	task_two = Task(n_vectors/2,n_vectors)
+	task_one = Task(0,n_vectors//2)
+	task_two = Task(n_vectors//2,n_vectors)
 	task_group = TaskGroup()
 	task_group.append_task(task_one)
 	task_group.append_task(task_two)

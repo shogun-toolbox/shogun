@@ -31,7 +31,7 @@ def so_multiclass (fm_train_real=traindat,label_train_multiclass=label_traindat)
 		from shogun.Loss     	import HingeLoss
 		from shogun.Structure	import MulticlassModel, MulticlassSOLabels, PrimalMosekSOSVM, RealNumber
 	except ImportError:
-		print "Mosek not available"
+		print("Mosek not available")
 		return
 
 	labels = MulticlassSOLabels(label_train_multiclass)
@@ -49,7 +49,7 @@ def so_multiclass (fm_train_real=traindat,label_train_multiclass=label_traindat)
 		if yi_pred.value == label_train_multiclass[i]:
 			count = count + 1
 
-	print "Correct classification rate: %0.2f" % ( 100.0*count/out.get_num_labels() )
+	print("Correct classification rate: %0.2f" % ( 100.0*count/out.get_num_labels() ))
 
 if __name__=='__main__':
 	print('SO multiclass')
