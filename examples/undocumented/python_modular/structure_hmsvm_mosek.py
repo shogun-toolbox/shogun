@@ -17,7 +17,7 @@ def structure_hmsvm_mosek (m_data_dict=data_dict):
 	try:
 		from shogun.Structure import PrimalMosekSOSVM
 	except ImportError:
-		print "Mosek not available"
+		print("Mosek not available")
 		return
 
 	labels_array = m_data_dict['label'][0]
@@ -33,7 +33,7 @@ def structure_hmsvm_mosek (m_data_dict=data_dict):
 
 	sosvm = PrimalMosekSOSVM(model, loss, labels)
 	sosvm.train()
-	print sosvm.get_w()
+	print(sosvm.get_w())
 
 	predicted = sosvm.apply()
 	evaluator = StructuredAccuracy()
