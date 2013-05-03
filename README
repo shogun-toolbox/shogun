@@ -1,6 +1,6 @@
 Explanation of directory content
 ================================
-
+  
 README       - this file
 Makefile     - to create release archives
 src          - shogun source code
