@@ -24,6 +24,7 @@
 #include <shogun/lib/tapkee/routines/random_projection.hpp>
 #include <shogun/lib/tapkee/routines/spe.hpp>
 #include <shogun/lib/tapkee/routines/fa.hpp>
+#include <src/shogun/lib/tapkee/routines/sammon.hpp>
 #include <shogun/lib/tapkee/neighbors/neighbors.hpp>
 #include <shogun/lib/tapkee/external/barnes_hut_sne/tsne.hpp>
 /* End of Tapkee includes */
@@ -77,7 +78,7 @@ public:
 		eigen_method(), neighbors_method(), eigenshift(), traceshift(),
 		check_connectivity(), n_neighbors(), width(), timesteps(),
 		ratio(), max_iteration(), tolerance(), n_updates(), perplexity(), 
-		theta(), global_strategy(), epsilon(), target_dimension(),
+		theta(), global_strategy(), epsilon(), target_dimension(),opts_MaxHalves(),opts_Maxiter(),opts_TolFun(),
 		n_vectors(0), current_dimension(0)
 	{
 		n_vectors = (end-begin);
@@ -110,6 +111,9 @@ public:
 		epsilon = parameters(keywords::fa_epsilon);
 		perplexity = parameters(keywords::sne_perplexity);
 		ratio = parameters(keywords::landmark_ratio);
+		opts_MaxIter=parameters(keywords::opts_MaxIter);
+		opts_MaxHalves=parameters(keywords::opts_MaxHalves);
+		opts_TolFun=parametes(keywords::opts_TolFun).checked().positive();
 
 		if (n_vectors > 0)
 		{
@@ -154,6 +158,9 @@ public:
 	Parameter theta;
 	Parameter global_strategy;
 	Parameter epsilon;
+	Parameter opts_MaxHalves;
+	Parameter opts_Maxiter;
+	Parameter opts_TolFun;
 	Parameter target_dimension;
 
 	IndexType n_vectors;
@@ -202,6 +209,7 @@ public:
 			tapkee_method_handle(StochasticProximityEmbedding);
 			tapkee_method_handle(PassThru);
 			tapkee_method_handle(FactorAnalysis);
+			tapkee_method_handle(SammonMapping);
 			tapkee_method_handle(tDistributedStochasticNeighborEmbedding);
 		}
 #undef tapkee_method_handle
@@ -493,6 +501,11 @@ public:
 		DenseVector mean_vector = compute_mean(begin,end,features,current_dimension);
 		return TapkeeOutput(project(begin,end,features,current_dimension,max_iteration,epsilon,
 									target_dimension, mean_vector), tapkee::ProjectingFunction());
+	}
+	TapkeeOutput embedSammonMapping()
+	{
+		throw unsupported_method_error("Not Completed Yet!!!");
+		return TapkeeOutput();
 	}
 
 	TapkeeOutput embedtDistributedStochasticNeighborEmbedding()
