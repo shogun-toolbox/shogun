@@ -6,6 +6,7 @@
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/regression/gp/ExactInferenceMethod.h>
 #include <shogun/regression/gp/ZeroMean.h>
+#include <shogun/evaluation/GradientResult.h>
 #include <shogun/regression/gp/GaussianLikelihood.h>
 #include <gtest/gtest.h>
 
@@ -168,4 +169,67 @@ TEST(ExactInferenceMethod,get_negative_marginal_likelihood)
 	SG_UNREF(inf);
 }
 
-#endif
+TEST(ExactInferenceMethod,get_marginal_likelihood_derivatives)
+{
+	// create some easy regression data: 1d noisy sine wave
+	index_t ntr=5;
+
+	SGMatrix<float64_t> feat_train(1, ntr);
+	SGVector<float64_t> lab_train(ntr);
+
+	feat_train[0]=1.25107;
+	feat_train[1]=2.16097;
+	feat_train[2]=0.00034;
+	feat_train[3]=0.90699;
+	feat_train[4]=0.44026;
+
+	lab_train[0]=0.39635;
+	lab_train[1]=0.00358;
+	lab_train[2]=-1.18139;
+	lab_train[3]=1.35533;
+	lab_train[4]=-0.08232;
+
+	// shogun representation of features and labels
+	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
+	CRegressionLabels* labels_train=new CRegressionLabels(lab_train);
+
+	float64_t ell = 0.1;
+
+	// choose Gaussian kernel with width = 2 * ell^2 = 0.02 and zero mean function
+	CGaussianKernel* kernel=new CGaussianKernel(10, 2*ell*ell);
+	CZeroMean* mean=new CZeroMean();
+
+	// Gaussian likelihood with sigma = 0.25
+	CGaussianLikelihood* liklihood=new CGaussianLikelihood(0.25);
+
+	// specify GP regression with exact inference
+	CExactInferenceMethod* inf=new CExactInferenceMethod(kernel, features_train,
+			mean, labels_train, liklihood);
+
+	CGradientResult* result = new CGradientResult();
+
+	result->total_variables=3;
+	result->gradient=inf->get_marginal_likelihood_derivatives(result->parameter_dictionary);
+
+	// in GPML package: dK(i,j)/dell = sf2 * exp(-(x(i) - x(j))^2/(2*ell^2)) * (x(i) - x(j))^2 / (ell^2),
+	// but in SHOGUN we compute: dK(i,j)/dw = sf2 * exp(-(x(i) - x(j))^2/w) * (x(i) - x(j))^2 / (w^2),
+	// so if w = 2 * ell^2, then dK(i,j)/dell = 4 * ell^2 * dK(i,j)/dw.
+	float64_t dnlZ_ell=4*ell*ell*(*result->gradient.get_element_ptr(0))[0];
+	float64_t dnlZ_sf2=(*result->gradient.get_element_ptr(1))[0];
+	float64_t dnlZ_lik=(*result->gradient.get_element_ptr(2))[0];
+
+	// comparison of partial derivatives of negative marginal likelihood with
+	// result from GPML package:
+	// lik =  0.10638
+	// cov =
+	// -0.015133
+	// 1.699483
+	EXPECT_NEAR(dnlZ_lik, 0.10638, 1E-5);
+	EXPECT_NEAR(dnlZ_ell, -0.015133, 1E-6);
+	EXPECT_NEAR(dnlZ_sf2, 1.699483, 1E-6);
+
+	SG_UNREF(result);
+	SG_UNREF(inf);
+}
+
+#endif // HAVE_EIGEN3

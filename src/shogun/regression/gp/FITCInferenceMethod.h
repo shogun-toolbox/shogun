@@ -16,7 +16,6 @@
 
 #include <shogun/lib/config.h>
 #ifdef HAVE_EIGEN3
-#ifdef HAVE_LAPACK
 
 #include <shogun/regression/gp/InferenceMethod.h>
 
@@ -224,7 +223,5 @@ private:
 
 }
 #endif // HAVE_EIGEN3
-#endif // HAVE_LAPACK
 
-#endif /* CFITCInferenceMethod_H_ */
-
+#endif /* CFITCINFERENCEMETHOD_H_ */
