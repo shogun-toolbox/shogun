@@ -145,6 +145,7 @@ get_marginal_likelihood_derivatives(CMap<TParameter*,
 	// get the sigma variable from the Gaussian likelihood model
 	CGaussianLikelihood* lik=CGaussianLikelihood::obtain_from_generic(m_model);
 	float64_t sigma=lik->get_sigma();
+	SG_UNREF(lik);
 
 	// create eigen representation of derivative matrix and cholesky
 	MatrixXd eigen_Q(m_L.num_rows, m_L.num_cols);
@@ -263,6 +264,7 @@ SGVector<float64_t> CExactInferenceMethod::get_diagonal_vector()
 	// get the sigma variable from the Gaussian likelihood model
 	CGaussianLikelihood* lik=CGaussianLikelihood::obtain_from_generic(m_model);
 	float64_t sigma=lik->get_sigma();
+	SG_UNREF(lik);
 
 	SGVector<float64_t> result =
 			SGVector<float64_t>(m_features->get_num_vectors());
@@ -286,6 +288,7 @@ float64_t CExactInferenceMethod::get_negative_marginal_likelihood()
 	// get the sigma variable from the Gaussian likelihood model
 	CGaussianLikelihood* lik=CGaussianLikelihood::obtain_from_generic(m_model);
 	float64_t sigma=lik->get_sigma();
+	SG_UNREF(lik);
 
 	for (int i = 0; i < m_L.num_rows; i++)
 		result += CMath::log(m_L(i,i));
@@ -330,6 +333,7 @@ void CExactInferenceMethod::update_chol()
 	// get the sigma variable from the Gaussian likelihood model
 	CGaussianLikelihood* lik=CGaussianLikelihood::obtain_from_generic(m_model);
 	float64_t sigma=lik->get_sigma();
+	SG_UNREF(lik);
 
 	/* noise */
 	float64_t noise=(m_scale*m_scale)/(sigma*sigma);
@@ -351,6 +355,7 @@ void CExactInferenceMethod::update_alpha()
 	// get the sigma variable from the Gaussian likelihood model
 	CGaussianLikelihood* lik=CGaussianLikelihood::obtain_from_generic(m_model);
 	float64_t sigma=lik->get_sigma();
+	SG_UNREF(lik);
 
 	for (int i = 0; i < m_label_vector.vlen; i++)
 		m_label_vector[i] = m_label_vector[i] - m_data_means[i];
