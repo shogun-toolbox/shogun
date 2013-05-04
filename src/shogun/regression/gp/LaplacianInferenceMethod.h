@@ -16,7 +16,6 @@
 
 #include <shogun/lib/config.h>
 #ifdef HAVE_EIGEN3
-#ifdef HAVE_LAPACK
 
 #include <shogun/regression/gp/InferenceMethod.h>
 
@@ -290,6 +289,5 @@ private:
 
 }
 #endif // HAVE_EIGEN3
-#endif // HAVE_LAPACK
 
 #endif /* CLAPLACIANINFERENCEMETHOD_H_ */

@@ -12,11 +12,9 @@
  */
 #include <shogun/lib/config.h>
 #ifdef HAVE_EIGEN3
-#ifdef HAVE_LAPACK
 
 #include <shogun/regression/gp/ExactInferenceMethod.h>
 #include <shogun/regression/gp/GaussianLikelihood.h>
-#include <shogun/mathematics/lapack.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/kernel/GaussianKernel.h>
@@ -144,56 +142,25 @@ get_marginal_likelihood_derivatives(CMap<TParameter*,
 	if(update_parameter_hash())
 		update_all();
 
-	//Get the sigma variable from the likelihood model
-	float64_t m_sigma =
-			dynamic_cast<CGaussianLikelihood*>(m_model)->get_sigma();
+	// get the sigma variable from the Gaussian likelihood model
+	CGaussianLikelihood* lik=CGaussianLikelihood::obtain_from_generic(m_model);
+	float64_t sigma=lik->get_sigma();
 
-	//Placeholder Matrix
-	SGMatrix<float64_t> temp1(m_ktrtr.num_rows, m_ktrtr.num_cols);
+	// create eigen representation of derivative matrix and cholesky
+	MatrixXd eigen_Q(m_L.num_rows, m_L.num_cols);
+	Map<MatrixXd> eigen_L(m_L.matrix, m_L.num_rows, m_L.num_cols);
 
-	//Placeholder Matrix
-	SGMatrix<float64_t> temp2(m_alpha.vlen, m_alpha.vlen);
+	// solve L * L' * Q = I
+	eigen_Q=eigen_L.triangularView<Upper>().adjoint().solve(
+		MatrixXd::Identity(m_L.num_rows, m_L.num_cols));
+	eigen_Q=eigen_L.triangularView<Upper>().solve(eigen_Q);
 
-	//Derivative Matrix
-	SGMatrix<float64_t> Q(m_L.num_rows, m_L.num_cols);
+	// divide Q by sigma^2
+	eigen_Q/=(sigma*sigma);
 
-	//Vector used to fill diagonal of Matrix.
-	SGVector<float64_t> diagonal(temp1.num_rows);
-	SGVector<float64_t> diagonal2(temp2.num_rows);
-
-	diagonal.fill_vector(diagonal.vector, temp1.num_rows, 1.0);
-	diagonal2.fill_vector(diagonal2.vector, temp2.num_rows, 0.0);
-
-	temp1.create_diagonal_matrix(temp1.matrix, diagonal.vector, temp1.num_rows);
-	Q.create_diagonal_matrix(Q.matrix, diagonal.vector, temp2.num_rows);
-	temp2.create_diagonal_matrix(temp2.matrix, diagonal2.vector, temp2.num_rows);
-
-	memcpy(temp1.matrix, m_L.matrix,
-			m_L.num_cols*m_L.num_rows*sizeof(float64_t));
-
-	//Solve (L) Q = Identity for Q.
-	clapack_dpotrs(CblasColMajor, CblasUpper,
-			temp1.num_rows, Q.num_cols, temp1.matrix, temp1.num_cols,
-			Q.matrix, Q.num_cols);
-
-	//Calculate alpha*alpha'
-	cblas_dger(CblasColMajor, m_alpha.vlen, m_alpha.vlen,
-			1.0, m_alpha.vector, 1, m_alpha.vector, 1,
-			temp2.matrix, m_alpha.vlen);
-
-	temp1.create_diagonal_matrix(temp1.matrix, diagonal.vector, temp1.num_rows);
-
-	//Subtracct alpha*alpha' from Q.
-	cblas_dsymm(CblasColMajor, CblasLeft, CblasUpper,
-			temp1.num_rows, temp1.num_cols, 1.0/(m_sigma*m_sigma),
-			Q.matrix, temp1.num_cols,
-			temp1.matrix, temp1.num_cols, -1.0,
-			temp2.matrix, temp2.num_cols);
-
-	memcpy(Q.matrix, temp2.matrix,
-			temp2.num_cols*temp2.num_rows*sizeof(float64_t));
-
-	float64_t sum = 0;
+	// create eigen representation of alpha and compute Q = Q - alpha * alpha'
+	Map<VectorXd> eigen_alpha(m_alpha.vector, m_alpha.vlen);
+	eigen_Q-=eigen_alpha*eigen_alpha.transpose();
 
 	m_kernel->build_parameter_dictionary(para_dict);
 	m_mean->build_parameter_dictionary(para_dict);
@@ -224,7 +191,6 @@ get_marginal_likelihood_derivatives(CMap<TParameter*,
 
 		for (index_t g = 0; g < length; g++)
 		{
-
 			SGMatrix<float64_t> deriv;
 			SGVector<float64_t> mean_derivatives;
 
@@ -235,7 +201,6 @@ get_marginal_likelihood_derivatives(CMap<TParameter*,
 				mean_derivatives = m_mean->get_parameter_derivative(
 						param, obj, m_feature_matrix, g);
 			}
-
 			else
 			{
 				mean_derivatives = m_mean->get_parameter_derivative(
@@ -244,72 +209,48 @@ get_marginal_likelihood_derivatives(CMap<TParameter*,
 				deriv = m_kernel->get_parameter_gradient(param, obj);
 			}
 
-			sum = 0;
-
-
 			if (deriv.num_cols*deriv.num_rows > 0)
 			{
-				for (index_t k = 0; k < Q.num_rows; k++)
-				{
-					for (index_t j = 0; j < Q.num_cols; j++)
-						sum += Q(k,j)*deriv(k,j)*m_scale*m_scale;
-				}
-
-				sum /= 2.0;
-				variables[g] = sum;
+				Map<MatrixXd> eigen_deriv(deriv.matrix, deriv.num_rows, deriv.num_cols);
+				MatrixXd eigen_S=eigen_Q.cwiseProduct(eigen_deriv)*m_scale*m_scale;
+				variables[g]=eigen_S.sum()/2.0;
 				deriv_found = true;
 			}
-
 			else if (mean_derivatives.vlen > 0)
 			{
-				sum = mean_derivatives.dot(mean_derivatives.vector,
+				variables[g]=mean_derivatives.dot(mean_derivatives.vector,
 						m_alpha.vector, m_alpha.vlen);
-				variables[g] = sum;
 				deriv_found = true;
 			}
-
-
 		}
 
 		if (deriv_found)
 			gradient.add(param, variables);
-
 	}
 
 	TParameter* param;
 	index_t index = get_modsel_param_index("scale");
 	param = m_model_selection_parameters->get_parameter(index);
 
-	sum = 0;
+	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
+	MatrixXd eigen_S=eigen_Q.cwiseProduct(eigen_K)*m_scale*2.0;
 
-	for (index_t i = 0; i < Q.num_rows; i++)
-	{
-		for (index_t j = 0; j < Q.num_cols; j++)
-			sum += Q(i,j)*m_ktrtr(i,j)*m_scale*2.0;
-	}
+	SGVector<float64_t> vscale(1);
+	vscale[0]=eigen_S.sum()/2.0;
 
-	sum /= 2.0;
-
-	SGVector<float64_t> scale(1);
-
-	scale[0] = sum;
-
-	gradient.add(param, scale);
+	gradient.add(param, vscale);
 	para_dict.add(param, this);
 
 	index = m_model->get_modsel_param_index("sigma");
 	param = m_model->m_model_selection_parameters->get_parameter(index);
 
-	sum = m_sigma*Q.trace(Q.matrix, Q.num_rows, Q.num_cols);
+	SGVector<float64_t> vsigma(1);
+	vsigma[0]=(sigma*sigma)*eigen_Q.trace();
 
-	SGVector<float64_t> sigma(1);
-
-	sigma[0] = sum;
-	gradient.add(param, sigma);
+	gradient.add(param, vsigma);
 	para_dict.add(param, m_model);
 
 	return gradient;
-
 }
 
 SGVector<float64_t> CExactInferenceMethod::get_diagonal_vector()
@@ -319,14 +260,15 @@ SGVector<float64_t> CExactInferenceMethod::get_diagonal_vector()
 
 	check_members();
 
-	float64_t m_sigma =
-			dynamic_cast<CGaussianLikelihood*>(m_model)->get_sigma();
+	// get the sigma variable from the Gaussian likelihood model
+	CGaussianLikelihood* lik=CGaussianLikelihood::obtain_from_generic(m_model);
+	float64_t sigma=lik->get_sigma();
 
 	SGVector<float64_t> result =
 			SGVector<float64_t>(m_features->get_num_vectors());
 
 	result.fill_vector(result.vector, m_features->get_num_vectors(),
-			1.0/m_sigma);
+			1.0/sigma);
 
 	return result;
 }
@@ -341,13 +283,14 @@ float64_t CExactInferenceMethod::get_negative_marginal_likelihood()
 	result = m_label_vector.dot(m_label_vector.vector, m_alpha.vector,
 			m_label_vector.vlen)/2.0;
 
-	float64_t m_sigma =
-			dynamic_cast<CGaussianLikelihood*>(m_model)->get_sigma();
+	// get the sigma variable from the Gaussian likelihood model
+	CGaussianLikelihood* lik=CGaussianLikelihood::obtain_from_generic(m_model);
+	float64_t sigma=lik->get_sigma();
 
 	for (int i = 0; i < m_L.num_rows; i++)
 		result += CMath::log(m_L(i,i));
 
-	result += m_L.num_rows * CMath::log(2*CMath::PI*m_sigma*m_sigma)/2.0;
+	result+=m_L.num_rows*CMath::log(2*CMath::PI*sigma*sigma)/2.0;
 
 	return result;
 }
@@ -380,18 +323,16 @@ void CExactInferenceMethod::update_train_kernel()
 	m_ktrtr=kernel_matrix.clone();
 }
 
-
 void CExactInferenceMethod::update_chol()
 {
 	check_members();
 
-	float64_t sigma =
-			dynamic_cast<CGaussianLikelihood*>(m_model)->get_sigma();
+	// get the sigma variable from the Gaussian likelihood model
+	CGaussianLikelihood* lik=CGaussianLikelihood::obtain_from_generic(m_model);
+	float64_t sigma=lik->get_sigma();
 
-	/* temporaryly add noise */
+	/* noise */
 	float64_t noise=(m_scale*m_scale)/(sigma*sigma);
-	for (index_t i=0; i<m_ktrtr.num_rows; ++i)
-		m_ktrtr(i, i)+=noise;
 
 	/* check whether to allocate cholesky memory */
 	if (!m_L.matrix || m_L.num_rows!=m_ktrtr.num_rows)
@@ -401,16 +342,16 @@ void CExactInferenceMethod::update_chol()
 	Map<MatrixXd> K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
 	Map<MatrixXd> L(m_L.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
 	LLT<MatrixXd> llt;
-	llt.compute(K);
+	llt.compute(K*noise+MatrixXd::Identity(m_ktrtr.num_rows, m_ktrtr.num_cols));
 	L=llt.matrixU();
-
-	/* remove noise again */
-	for (index_t i=0; i<m_ktrtr.num_rows; ++i)
-		m_ktrtr(i, i)-=noise;
 }
 
 void CExactInferenceMethod::update_alpha()
 {
+	// get the sigma variable from the Gaussian likelihood model
+	CGaussianLikelihood* lik=CGaussianLikelihood::obtain_from_generic(m_model);
+	float64_t sigma=lik->get_sigma();
+
 	for (int i = 0; i < m_label_vector.vlen; i++)
 		m_label_vector[i] = m_label_vector[i] - m_data_means[i];
 
@@ -424,6 +365,8 @@ void CExactInferenceMethod::update_alpha()
 
 	a=L.triangularView<Upper>().adjoint().solve(y);
 	a=L.triangularView<Upper>().solve(a);
+
+	a/=(sigma*sigma);
 }
-#endif
-#endif // HAVE_LAPACK
+
+#endif // HAVE_EIGEN3
