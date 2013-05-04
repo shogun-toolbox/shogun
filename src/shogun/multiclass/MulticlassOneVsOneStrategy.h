@@ -5,6 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 2012 Chiyuan Zhang
+ * Written (W) 2013 Shell Hu and Heiko Strathmann
  * Copyright (C) 2012 Chiyuan Zhang
  */
 
@@ -18,12 +19,22 @@ namespace shogun
  * for K-class problems with building 
  * voting-based ensemble of K*(K-1) 
  * binary classifiers
+ * multiclass probabilistic outputs can be
+ * obtained by using the heuristics described in [1]
+ *
+ * [1] J. Milgram, M. Cheriet, R.Sabourin, "One Against One" or "One Against One":
+ * Which One is Better for Handwriting Recognition with SVMs?
  */
 class CMulticlassOneVsOneStrategy: public CMulticlassStrategy
 {
 public:
 	/** constructor */
 	CMulticlassOneVsOneStrategy();
+
+	/** constructor 
+	 * @param prob_heuris probability estimation heuristic 
+	 */
+	CMulticlassOneVsOneStrategy(EProbHeuristicType prob_heuris);
 
 	/** destructor */
 	virtual ~CMulticlassOneVsOneStrategy() {}
@@ -57,10 +68,42 @@ public:
 		return "MulticlassOneVsOneStrategy";
 	};
 
+	/** rescale multiclass outputs according to the selected heuristic 
+	 * @param outputs a vector of output from each machine (in that order)
+	 * which will be resized to length of num_classes if heuristic is set
+	 */
+	virtual void rescale_outputs(SGVector<float64_t>& outputs);
+
+protected:
+	/** OVO Price's heuristic see [1]
+	 * @param outputs a vector of output from each machine (in that order)
+	 * @param indx1 indices of 1st involved class of training machines
+	 * @param indx2 indices of 2nd involved class of training machines
+	 */
+	void rescale_heuris_price(SGVector<float64_t>& outputs,
+		const SGVector<int32_t> indx1, const SGVector<int32_t> indx2);
+
+	/** OVO Hastie's heuristic see [1]
+	 * @param outputs a vector of output from each machine (in that order)
+	 * @param indx1 indices of 1st involved class of training machines
+	 * @param indx2 indices of 2nd involved class of training machines
+	 */
+	void rescale_heuris_hastie(SGVector<float64_t>& outputs,
+		const SGVector<int32_t> indx1, const SGVector<int32_t> indx2);
+
+	/** OVO Hamamura's heuristic see [1]
+	 * @param outputs a vector of output from each machine (in that order)
+	 * @param indx1 indices of 1st involved class of training machines
+	 * @param indx2 indices of 2nd involved class of training machines
+	 */
+	void rescale_heuris_hamamura(SGVector<float64_t>& outputs,
+		const SGVector<int32_t> indx1, const SGVector<int32_t> indx2);
+
 protected:
 	int32_t m_num_machines;     ///< number of machines
 	int32_t m_train_pair_idx_1; ///< 1st index of current submachine being trained
 	int32_t m_train_pair_idx_2; ///< 2nd index of current submachine being trained
+	SGVector<int32_t> m_num_samples; ///< number of samples per machine
 };
 
 } // namespace shogun

@@ -108,6 +108,7 @@ TARGETS = basic_minimal \
   		  classifier_mkl_svmlight_modelselection_bug \
   		  base_migration_new_buggy \
   		  regression_libsvr \
+  		  classifier_multiclass_prob_heuristics \
   		  
 
 all: $(TARGETS)
