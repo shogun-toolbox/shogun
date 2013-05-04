@@ -23,6 +23,10 @@
 
 using namespace shogun;
 
+typedef Eigen::Matrix< float64_t, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor > EMatrix;
+typedef Eigen::Matrix< float64_t, Eigen::Dynamic, 1, Eigen::ColMajor > EVector;
+typedef Eigen::Array< float64_t, Eigen::Dynamic, 1 > EArray;
+
 CQDA::CQDA(float64_t tolerance, bool store_covs)
 : CNativeMulticlassMachine(), m_tolerance(tolerance), 
 	m_store_covs(store_covs), m_num_classes(0), m_dim(0)
@@ -84,9 +88,9 @@ CMulticlassLabels* CQDA::apply_multiclass(CFeatures* data)
 
 	CDenseFeatures< float64_t >* rf = (CDenseFeatures< float64_t >*) m_features;
 
-	Eigen::Matrix< float64_t, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor > X(num_vecs, m_dim);
-	Eigen::Matrix< float64_t, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor > A(num_vecs, m_dim);
-	Eigen::Matrix< float64_t, Eigen::Dynamic, 1, Eigen::ColMajor > norm2(num_vecs*m_num_classes);
+	EMatrix X(num_vecs, m_dim);
+	EMatrix A(num_vecs, m_dim);
+	EVector norm2(num_vecs*m_num_classes);
 	norm2.setZero();
 
 	int i, k, vlen;
@@ -100,8 +104,8 @@ CMulticlassLabels* CQDA::apply_multiclass(CFeatures* data)
 			vec = rf->get_feature_vector(i, vlen, vfree);
 			ASSERT(vec)
 
-			Eigen::Map< Eigen::Matrix< float64_t, Eigen::Dynamic, 1, Eigen::ColMajor > > Evec(vec,vlen);
-			Eigen::Map< Eigen::Matrix< float64_t, Eigen::Dynamic, 1, Eigen::ColMajor > > Em_means_col(m_means.get_column_vector(k), m_dim);
+			Eigen::Map< EVector > Evec(vec,vlen);
+			Eigen::Map< EVector > Em_means_col(m_means.get_column_vector(k), m_dim);
 
 			X.row(i) = Evec - Em_means_col;
 
@@ -109,7 +113,7 @@ CMulticlassLabels* CQDA::apply_multiclass(CFeatures* data)
 
 		}
 
-		Eigen::Map< Eigen::Matrix< float64_t, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor > > Em_M(m_M.get_matrix(k), m_dim, m_dim);
+		Eigen::Map< EMatrix > Em_M(m_M.get_matrix(k), m_dim, m_dim);
 		A = X*Em_M;
 
 		for(i = 0; i < num_vecs; ++i)
@@ -227,14 +231,14 @@ bool CQDA::train_machine(CFeatures* data)
 	float64_t* vec;
 	for ( k = 0 ; k < m_num_classes ; ++k )
 	{
-		Eigen::Matrix< float64_t, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor > buffer(class_nums[k], m_dim);
-		Eigen::Map< Eigen::Matrix< float64_t, Eigen::Dynamic, 1, Eigen::ColMajor > > Em_means(m_means.get_column_vector(k), m_dim);
+		EMatrix buffer(class_nums[k], m_dim);
+		Eigen::Map< EVector > Em_means(m_means.get_column_vector(k), m_dim);
 		for ( i = 0 ; i < class_nums[k] ; ++i )
 		{
 			vec = rf->get_feature_vector(class_idxs[k*num_vec + i], vlen, vfree);
 			ASSERT(vec)
 
-			Eigen::Map< Eigen::Matrix< float64_t, Eigen::Dynamic, 1, Eigen::ColMajor > > Evec(vec, vlen);
+			Eigen::Map< EVector > Evec(vec, vlen);
 			Em_means += Evec;
 			buffer.row(i) = Evec;
 
@@ -276,14 +280,14 @@ bool CQDA::train_machine(CFeatures* data)
 
 		if ( m_store_covs )
 		{
-			Eigen::Map< Eigen::Matrix< float64_t, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor > > EM(SGVector<float64_t>::clone_vector(rot_mat, n*n), n, n);
+			Eigen::Map< EMatrix > EM(SGVector<float64_t>::clone_vector(rot_mat, n*n), n, n);
 
-			Eigen::Map< Eigen::Array< float64_t, Eigen::Dynamic, 1 > > Escalings(scalings.get_column_vector(k), m_dim);
+			Eigen::Map< EArray > Escalings(scalings.get_column_vector(k), m_dim);
 			for ( i = 0 ; i < m_dim ; ++i )
 					EM.row(i) = ( (EM.row(i).array()) * Escalings ).matrix();
 
-			Eigen::Map< Eigen::Matrix< float64_t, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor > > Em_covs(m_covs.get_matrix(k), n, n);
-			Eigen::Map< Eigen::Matrix< float64_t, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor > > Erot_mat(rot_mat, n, n);
+			Eigen::Map< EMatrix > Em_covs(m_covs.get_matrix(k), n, n);
+			Eigen::Map< EMatrix > Erot_mat(rot_mat, n, n);
 
 			Em_covs = EM*Erot_mat;
 		}
