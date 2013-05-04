@@ -72,8 +72,10 @@ public:
 	{
 		SG_SPRINT("Quantity: [")
 
-		for (index_t i = 0; i < quantity.vlen; i++)
+		for (index_t i=0; i<quantity.vlen-1; i++)
 			SG_SPRINT("%f, ", quantity[i])
+
+		SG_SPRINT("%f", quantity[quantity.vlen-1])
 
 		SG_SPRINT("] ")
 
@@ -82,8 +84,15 @@ public:
 		for (index_t i = 0; i < gradient.get_num_elements(); i++)
 		{
 			char* name = gradient.get_node_ptr(i)->key->m_name;
-			for (index_t j = 0; j < gradient.get_element_ptr(i)->vlen; j++)
-				SG_SPRINT("%s: %f, ", name, (*gradient.get_element_ptr(i))[j])
+
+			SG_PRINT("%s: ", name)
+			for (index_t j = 0; j < gradient.get_element_ptr(i)->vlen-1; j++)
+				SG_SPRINT("%f, ", name, (*gradient.get_element_ptr(i))[j])
+
+			if (i==gradient.get_num_elements()-1)
+				SG_PRINT("%f", (*gradient.get_element_ptr(i))[gradient.get_element_ptr(i)->vlen-1])
+			else
+				SG_PRINT("%f; ", (*gradient.get_element_ptr(i))[gradient.get_element_ptr(i)->vlen-1])
 		}
 		SG_SPRINT("]\n")
 
