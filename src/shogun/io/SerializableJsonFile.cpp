@@ -55,13 +55,17 @@ CSerializableJsonFile::new_reader(char* dest_version, size_t n)
 	return NULL;
 }
 
-void
-CSerializableJsonFile::push_object(json_object* o)
-{ m_stack_stream.push_back(o); json_object_get(o); }
+void CSerializableJsonFile::push_object(json_object* o)
+{
+	m_stack_stream.push_back(o);
+	json_object_get(o);
+}
 
-void
-CSerializableJsonFile::pop_object()
-{ json_object_put(m_stack_stream.back()); m_stack_stream.pop_back(); }
+void CSerializableJsonFile::pop_object()
+{
+	json_object_put(m_stack_stream.back());
+	m_stack_stream.pop_back();
+}
 
 bool
 CSerializableJsonFile::get_object_any(
@@ -87,7 +91,8 @@ CSerializableJsonFile::init(const char* fname)
 {
 	if (m_filename == NULL || *m_filename == '\0') {
 		SG_WARNING("Filename not given for opening file!\n")
-		close(); return;
+		close();
+		return;
 	}
 
 	json_object* buf;
@@ -99,11 +104,10 @@ CSerializableJsonFile::init(const char* fname)
 					   fname);
 			return;
 		}
-		push_object(buf);
+		m_stack_stream.push_back(buf);
 		break;
 	case 'w':
-		push_object(json_object_new_object());
-
+		m_stack_stream.push_back(json_object_new_object());
 		buf = json_object_new_string(STR_FILETYPE_00);
 		json_object_object_add(m_stack_stream.back(),
 							   STR_KEY_FILETYPE, buf);
@@ -111,7 +115,8 @@ CSerializableJsonFile::init(const char* fname)
 	default:
 		SG_WARNING("Could not open file `%s', unknown mode!\n",
 				   m_filename);
-		close(); return;
+		close();
+		return;
 	}
 }
 
