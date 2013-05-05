@@ -106,7 +106,7 @@ class CBinaryLabels : public CDenseLabels
 		 * is done via computing
 		 * \f$pf=x*a+b\f$ for a given score \f$x\f$ and then computing
 		 * \f$\frac{\exp(-f)}{1+}exp(-f)}\f$ if \f$f\geq 0\f$ and
-		 * \f$\frac{1}{(1+\exp(f)}\f$ otherwise, where \f$a, bf$ are shape parameters
+		 * \f$\frac{1}{(1+\exp(f)}\f$ otherwise, where \f$a, bf\f$ are shape parameters
 		 * of the sigmoid. These can be specified or learned automatically
 		 *
 		 * Should only be used in conjunction with SVM.
