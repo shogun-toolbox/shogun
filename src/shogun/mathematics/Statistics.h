@@ -471,8 +471,8 @@ public:
 	 *
 	 * This can be used to transform scores to probabilities as setting
 	 * \f$pf=x*a+b\f$ for a given score \f$x\f$ and computing
-	 * \f$\frac{\exp(-f)}{1+}exp(-f)} if \f$f\geq 0\f$ and
-	 * \f$\frac{1}{(1+\exp(f)} otherwise
+	 * \f$\frac{\exp(-f)}{1+}exp(-f)}\f$ if \f$f\geq 0\f$ and
+	 * \f$\frac{1}{(1+\exp(f)}\f$ otherwise
 	 *
 	 * @param scores scores to fit the sigmoid to
 	 * @return struct containing the sigmoid's shape parameters a and b
