@@ -12,18 +12,15 @@
  */
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_LAPACK
 #ifdef HAVE_EIGEN3
 
 #include <shogun/regression/gp/FITCInferenceMethod.h>
 #include <shogun/regression/gp/GaussianLikelihood.h>
-#include <shogun/mathematics/lapack.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/features/CombinedFeatures.h>
 #include <shogun/mathematics/eigen3.h>
-
 
 using namespace shogun;
 using namespace Eigen;
@@ -766,4 +763,3 @@ void CFITCInferenceMethod::update_alpha()
 }
 
 #endif // HAVE_EIGEN3
-#endif // HAVE_LAPACK

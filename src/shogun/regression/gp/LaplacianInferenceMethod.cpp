@@ -13,13 +13,11 @@
  */
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_LAPACK
 #ifdef HAVE_EIGEN3
 
 #include <shogun/regression/gp/LaplacianInferenceMethod.h>
 #include <shogun/regression/gp/GaussianLikelihood.h>
 #include <shogun/regression/gp/StudentsTLikelihood.h>
-#include <shogun/mathematics/lapack.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/kernel/GaussianKernel.h>
@@ -880,5 +878,3 @@ void CLaplacianInferenceMethod::update_alpha()
 }
 
 #endif // HAVE_EIGEN3
-#endif // HAVE_LAPACK
-

@@ -38,6 +38,17 @@ CGaussianLikelihood::~CGaussianLikelihood()
 {
 }
 
+CGaussianLikelihood* CGaussianLikelihood::obtain_from_generic(CLikelihoodModel* likelihood)
+{
+	ASSERT(likelihood!=NULL);
+
+	if (likelihood->get_model_type()!=LT_GAUSSIAN)
+		SG_SERROR("CGaussianLikelihood::obtain_from_generic(): provided likelihood is "
+			"not of type CGaussianLikelihood!\n")
+
+	SG_REF(likelihood);
+	return (CGaussianLikelihood*)likelihood;
+}
 
 SGVector<float64_t> CGaussianLikelihood::evaluate_means(
 		SGVector<float64_t>& means)
@@ -98,7 +109,7 @@ SGVector<float64_t> CGaussianLikelihood::get_log_probability_derivative_f(
 		SG_ERROR("Invalid Index for Likelihood Derivative\n")
 
 	SGVector<float64_t> sgresult(result.rows());
-	
+
 	for (index_t i = 0; i < result.rows(); i++)
 		sgresult[i] = result[i];
 
@@ -129,7 +140,7 @@ SGVector<float64_t> CGaussianLikelihood::get_first_derivative(CRegressionLabels*
 
 	for (index_t i = 0; i < function.rows(); i++)
 		result[i] -= 1;
-	
+
 	for (index_t i = 0; i < result.rows(); i++)
 		sgresult[i] = result[i];
 
@@ -159,5 +170,3 @@ SGVector<float64_t> CGaussianLikelihood::get_second_derivative(CRegressionLabels
 }
 
 #endif //HAVE_EIGEN3
-
-
