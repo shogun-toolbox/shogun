@@ -4,13 +4,16 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2012 Fernando José Iglesias García
- * Copyright (C) 2012 Fernando José Iglesias García
+ * Written (W) 2013 Kevin Hughes
+ * Copyright (C) 2013 Kevin Hughes
+ *
+ * Thanks to Fernando José Iglesias García (shogun) 
+ *           and Matthieu Perrot (scikit-learn)
  */
 
 #include <shogun/base/init.h>
 #include <shogun/labels/MulticlassLabels.h>
-#include <shogun/multiclass/QDA.h>
+#include <shogun/multiclass/MCLDA.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/common.h>
@@ -39,18 +42,18 @@ void test()
 	CDenseFeatures< float64_t >* features = new CDenseFeatures< float64_t >(feat);
 
 	// Create QDA classifier
-	CQDA* qda = new CQDA(features, labels);
-	SG_REF(qda);
-	qda->train();
+	CMCLDA* lda = new CMCLDA(features, labels);
+	SG_REF(lda);
+	lda->train();
 
 	// Classify and display output
-	CMulticlassLabels* output = CMulticlassLabels::obtain_from_generic(qda->apply());
+	CMulticlassLabels* output=CMulticlassLabels::obtain_from_generic(lda->apply());
 	SG_REF(output);
 	SGVector<float64_t>::display_vector(output->get_labels().vector, output->get_num_labels());
 
 	// Free memory
 	SG_UNREF(output);
-	SG_UNREF(qda);
+	SG_UNREF(lda);
 }
 
 int main(int argc, char ** argv)
