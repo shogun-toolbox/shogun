@@ -21,7 +21,7 @@
 #ifndef DSFMT_COMMON_H
 #define DSFMT_COMMON_H
 
-#include "dSFMT.h"
+#include <shogun/lib/external/dSFMT/dSFMT.h>
 
 #if defined(HAVE_SSE2)
 #  include <emmintrin.h>

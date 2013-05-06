@@ -14,8 +14,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "dSFMT-params.h"
-#include "dSFMT-common.h"
+#include <shogun/lib/external/dSFMT/dSFMT-params.h>
+#include <shogun/lib/external/dSFMT/dSFMT-common.h>
 
 #if defined(__cplusplus)
 extern "C" {
