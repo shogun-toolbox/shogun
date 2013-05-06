@@ -175,11 +175,15 @@ if __name__=='__main__':
 			print "=== EXPECTED =========="
 			#import pdb
 			#pdb.set_trace()
-			print '\n'.join(expected)
-			print "=== GOT ==============="
-			print '\n'.join(got)
+			#print '\n'.join(expected)
+			#print "=== GOT ==============="
+			#print '\n'.join(got)
 			print "====DIFF================"
 			print '\n'.join(difflib.unified_diff(expected, got, fromfile='expected', tofile='got'))
 			print "====EOT================"
+			print "\n\n\n"
+		for f in failed:
+			print "\t", f[0]
+
 		sys.exit(1)
 	sys.exit(0)
