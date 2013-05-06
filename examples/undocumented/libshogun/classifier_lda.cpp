@@ -32,8 +32,8 @@ void test()
 
 	feat = CDataGenerator::generate_gaussians(NUM,CLASSES,DIMS);
 	for( int i = 0 ; i < CLASSES ; ++i )
-	for( int j = 0 ; j < NUM ; ++j )
-		lab[i*NUM+j] = double(i);
+		for( int j = 0 ; j < NUM ; ++j )
+			lab[i*NUM+j] = double(i);
 
 	// Create train labels
 	CMulticlassLabels* labels = new CMulticlassLabels(lab);
