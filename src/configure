@@ -42,7 +42,7 @@ PYTHON=python
 PYVER=
 GMOCK_DIR="/usr/src/gmock"
 GTEST_DIR="/usr/src/gtest"
-SFMT_MEXP=19937
+MEXP=19937
 KERNELNAME=`uname`
 MACHINE=`uname -m | tr ' ' '-'`
 EXT_OBJ_CPP=cpp.o
@@ -1598,7 +1598,7 @@ EOF
 		SWIG=`echo $ac_option | cut -d '=' -f 2`
 		;;
 	  --mexp=*)
-		SFMT_MEXP=`echo $ac_option | cut -d '=' -f 2`
+		MEXP=`echo $ac_option | cut -d '=' -f 2`
 		;;
 	  --ruby=*)
 		RUBY=`echo $ac_option | cut -d '=' -f 2`
@@ -5065,12 +5065,12 @@ int main(void) { return 0; }
 EOF
 
 	echocheck "Mersenne exponent"
-	if cc_check $_cflags -I. -DSFMT_MEXP=$SFMT_MEXP >/dev/null 2>&1
+	if cc_check $_cflags -I. -DSFMT_MEXP=$MEXP >/dev/null 2>&1
 	then
-		echores $SFMT_MEXP
-		DEFINES="$DEFINES -DSFMT_MEXP=$SFMT_MEXP"
+		echores $MEXP
+		DEFINES="$DEFINES -DSFMT_MEXP=$MEXP -DDSFMT_MEXP=$MEXP"
 	else
-		die "provided SFMT_MEXP = $SFMT_MEXP is not valid!"
+		die "provided $MEXP is not valid!"
 	fi
 }
 
