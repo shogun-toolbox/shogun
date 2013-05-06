@@ -153,7 +153,6 @@ public:
 	virtual void rescale_outputs(SGVector<float64_t>& outputs,
 			const SGVector<float64_t> As, const SGVector<float64_t> Bs)
 	{
-		SG_NOTIMPLEMENTED
 	}	
 
 private:

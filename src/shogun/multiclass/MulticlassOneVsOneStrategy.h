@@ -74,6 +74,16 @@ public:
 	 */
 	virtual void rescale_outputs(SGVector<float64_t>& outputs);
 
+	/** set the number of classes, since the number of machines totally 
+	 * depends on the number of classes, which will also be set.
+	 * @param num_classes number of classes
+	 */
+	void set_num_classes(int32_t num_classes)
+	{
+		CMulticlassStrategy::set_num_classes(num_classes);
+		m_num_machines = m_num_classes*(m_num_classes-1)/2;
+	}
+
 protected:
 	/** OVO Price's heuristic see [1]
 	 * @param outputs a vector of output from each machine (in that order)
@@ -98,6 +108,10 @@ protected:
 	 */
 	void rescale_heuris_hamamura(SGVector<float64_t>& outputs,
 		const SGVector<int32_t> indx1, const SGVector<int32_t> indx2);
+
+private:
+	/** register parameters */
+	void register_parameters();
 
 protected:
 	int32_t m_num_machines;     ///< number of machines
