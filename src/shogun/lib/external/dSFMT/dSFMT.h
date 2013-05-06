@@ -34,6 +34,7 @@
 
 #ifndef DSFMT_H
 #define DSFMT_H
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 #if defined(__cplusplus)
 extern "C" {
 #endif
@@ -630,5 +631,7 @@ inline static void fill_array_close1_open2(double array[], int size) {
 #if defined(__cplusplus)
 }
 #endif
+
+#endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
 #endif /* DSFMT_H */
