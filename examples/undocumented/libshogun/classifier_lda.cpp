@@ -27,13 +27,13 @@ using namespace shogun;
 
 void test()
 {
-    SGVector< float64_t > lab(CLASSES*NUM);
-    SGMatrix< float64_t > feat(DIMS, CLASSES*NUM);
+	SGVector< float64_t > lab(CLASSES*NUM);
+	SGMatrix< float64_t > feat(DIMS, CLASSES*NUM);
 
-    feat = CDataGenerator::generate_gaussians(NUM,CLASSES,DIMS);
-    for( int i = 0 ; i < CLASSES ; ++i )
-        for( int j = 0 ; j < NUM ; ++j )
-            lab[i*NUM+j] = double(i);
+	feat = CDataGenerator::generate_gaussians(NUM,CLASSES,DIMS);
+	for( int i = 0 ; i < CLASSES ; ++i )
+	for( int j = 0 ; j < NUM ; ++j )
+		lab[i*NUM+j] = double(i);
 
 	// Create train labels
 	CMulticlassLabels* labels = new CMulticlassLabels(lab);
