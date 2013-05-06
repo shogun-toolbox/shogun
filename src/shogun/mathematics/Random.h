@@ -20,15 +20,6 @@
 
 namespace shogun
 {
-
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-	enum PRNG_STATE
-	{
-		PRNG_32 = 1,
-		PRNG_64 = 2
-	};
-#endif
-
 	/** @breif: PRNG */
 	class CRandom : public CSGObject
 	{
@@ -75,20 +66,18 @@ namespace shogun
 			/** initialise the object */
 			void init();
 
-			/** reinit for new state
-			 * 
-			 * @param state PRNG_32 or PRNG_64
+			/** reinit PRNG 
+			 *
+			 * @param seed seed for the PRNG
 			 */
-			 inline void reinit(PRNG_STATE state)
+			 inline void reinit(uint32_t seed)
 			 {
 #ifdef HAVE_PTHREAD
 			 	PTHREAD_LOCK(&m_state_lock);
 #endif
-			 	if (m_state != state)
-			 	{
-			 		sfmt_init_gen_rand(m_sfmt, m_seed);
-			 		m_state = state;
-			 	}
+			 	m_seed = seed;
+		 		sfmt_init_gen_rand(m_sfmt_32, m_seed);
+		 		sfmt_init_gen_rand(m_sfmt_64, m_seed);
 #ifdef HAVE_PTHREAD
 			 	PTHREAD_UNLOCK(&m_state_lock);
 #endif
@@ -98,11 +87,11 @@ namespace shogun
 			/** seed */
 			uint32_t m_seed;
 
-			/** SFMT struct */
-			sfmt_t* m_sfmt;
+			/** SFMT struct for 32-bit random */
+			sfmt_t* m_sfmt_32;
 
-			/** PRNG state */
-			PRNG_STATE m_state;
+			/** SFMT struct for 64-bit random */
+			sfmt_t* m_sfmt_64;
 
 #ifdef HAVE_PTHREAD
 			/** state lock */

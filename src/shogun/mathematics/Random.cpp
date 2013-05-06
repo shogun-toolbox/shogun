@@ -27,16 +27,13 @@ CRandom::CRandom(uint32_t seed)
 
 CRandom::~CRandom()
 {
-#ifdef HAVE_PTHREAD
-	PTHREAD_LOCK_DESTROY(&m_state_lock);
-#endif
-	SG_FREE(m_sfmt);
+	SG_FREE(m_sfmt_32);
+	SG_FREE(m_sfmt_64);
 }
 
 void CRandom::set_seed(uint32_t seed)
-{
-	m_seed = seed;
-	reinit(PRNG_32);
+{	
+	reinit(seed);
 }
 
 uint32_t CRandom::get_seed() const
@@ -46,65 +43,50 @@ uint32_t CRandom::get_seed() const
 
 void CRandom::init()
 {
-	m_sfmt = SG_MALLOC(sfmt_t, 1);
+	m_sfmt_32 = SG_MALLOC(sfmt_t, 1);
+	m_sfmt_64 = SG_MALLOC(sfmt_t, 1);
 #ifdef HAVE_PTHREAD	
 	PTHREAD_LOCK_INIT(&m_state_lock);
-#endif	
-	reinit(PRNG_32);
+#endif
+	reinit(m_seed);
 }
 
 uint32_t CRandom::random_32()
 {
-	reinit(PRNG_32);
-
-	return sfmt_genrand_uint32(m_sfmt);
+	return sfmt_genrand_uint32(m_sfmt_32);
 }
 
 uint64_t CRandom::random_64()
 {
-	reinit(PRNG_64);
-
-	return sfmt_genrand_uint64(m_sfmt);
+	return sfmt_genrand_uint64(m_sfmt_64);
 }
 
 void CRandom::fill_array_32(uint32_t* array, int size)
 {
-	reinit(PRNG_32);
-
-	sfmt_fill_array32(m_sfmt, array, size);
+	sfmt_fill_array32(m_sfmt_32, array, size);
 }
 
 void CRandom::fill_array_64(uint64_t* array, int size)
 {
-	reinit(PRNG_64);
-
-	sfmt_fill_array64(m_sfmt, array, size);
+	sfmt_fill_array64(m_sfmt_64, array, size);
 }
 
 float64_t CRandom::random_close()
 {
-	reinit(PRNG_32);
-
-	return sfmt_genrand_real1(m_sfmt);
+	return sfmt_genrand_real1(m_sfmt_32);
 }
 
 float64_t CRandom::random_open()
 {
-	reinit(PRNG_32);
-
-	return sfmt_genrand_real3(m_sfmt);
+	return sfmt_genrand_real3(m_sfmt_32);
 }
 
 float64_t CRandom::random_half_open()
 {
-	reinit(PRNG_32);
-
-	return sfmt_genrand_real2(m_sfmt);
+	return sfmt_genrand_real2(m_sfmt_32);
 }
 
 float64_t CRandom::random_float_res53()
 {
-	reinit(PRNG_64);
-
-	return sfmt_genrand_res53(m_sfmt);
+	return sfmt_genrand_res53(m_sfmt_64);
 }
