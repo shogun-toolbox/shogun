@@ -130,6 +130,7 @@ template <class T1, class T2> struct thread_qsort
 
 namespace shogun
 {
+	extern CRandom* sg_rand;
 	class CSGObject;
 /** @brief Class which collects generic mathematical functions
  */
@@ -462,9 +463,7 @@ class CMath : public CSGObject
 
 		static inline uint64_t random()
 		{
-			CRandom* prng = get_global_rand();
-			uint64_t rnd = prng->random_64();
-			SG_UNREF(prng);
+			uint64_t rnd = sg_rand->random_64();
 
 			return rnd;
 		}
@@ -499,8 +498,7 @@ class CMath : public CSGObject
 
 		static inline float32_t random(float32_t min_value, float32_t max_value)
 		{
-			float32_t ret = min_value + ((max_value-min_value) * (CMath::random() / (1.0*RAND_MAX_64)));
-
+			float32_t ret = min_value + ((max_value-min_value) * sg_rand->random_close());
 			if (ret<min_value || ret>max_value)
 				SG_SPRINT("min_value:%10.10f value: %10.10f max_value:%10.10f", min_value, ret, max_value)
 			ASSERT(ret>=min_value && ret<=max_value)
@@ -509,8 +507,7 @@ class CMath : public CSGObject
 
 		static inline float64_t random(float64_t min_value, float64_t max_value)
 		{
-			float64_t ret = min_value + ((max_value-min_value) * (CMath::random() / (1.0*RAND_MAX_64)));
-
+			float64_t ret = min_value + ((max_value-min_value) * sg_rand->random_close());
 			if (ret<min_value || ret>max_value)
 				SG_SPRINT("min_value:%10.10f value: %10.10f max_value:%10.10f", min_value, ret, max_value)
 			ASSERT(ret>=min_value && ret<=max_value)
@@ -519,8 +516,7 @@ class CMath : public CSGObject
 
 		static inline floatmax_t random(floatmax_t min_value, floatmax_t max_value)
 		{
-			floatmax_t ret = min_value + ((max_value-min_value) * (CMath::random() / (1.0*RAND_MAX_64)));
-
+			floatmax_t ret = min_value + ((max_value-min_value) * sg_rand->random_close());
 			if (ret<min_value || ret>max_value)
 				SG_SPRINT("min_value:%10.10f value: %10.10f max_value:%10.10f", min_value, ret, max_value)
 			ASSERT(ret>=min_value && ret<=max_value)
