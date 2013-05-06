@@ -140,7 +140,7 @@ int32_t CMulticlassOneVsOneStrategy::decide_label(SGVector<float64_t> outputs)
     return i_max;
 }
 
-void CMulticlassOneVsOneStrategy::rescale_outputs(SGVector<float64_t>& outputs)
+void CMulticlassOneVsOneStrategy::rescale_outputs(SGVector<float64_t> outputs)
 {
 	if (m_num_machines < 1)
 		return;
@@ -181,7 +181,7 @@ void CMulticlassOneVsOneStrategy::rescale_outputs(SGVector<float64_t>& outputs)
 	}
 }
 
-void CMulticlassOneVsOneStrategy::rescale_heuris_price(SGVector<float64_t>& outputs, 
+void CMulticlassOneVsOneStrategy::rescale_heuris_price(SGVector<float64_t> outputs, 
 		const SGVector<int32_t> indx1, const SGVector<int32_t> indx2)
 {
 	if (m_num_machines != outputs.vlen)
@@ -213,7 +213,7 @@ void CMulticlassOneVsOneStrategy::rescale_heuris_price(SGVector<float64_t>& outp
 		outputs[i] = new_outputs[i] / norm;
 }
 
-void CMulticlassOneVsOneStrategy::rescale_heuris_hastie(SGVector<float64_t>& outputs, 
+void CMulticlassOneVsOneStrategy::rescale_heuris_hastie(SGVector<float64_t> outputs, 
 		const SGVector<int32_t> indx1, const SGVector<int32_t> indx2)
 {
 	if (m_num_machines != outputs.vlen)
@@ -289,7 +289,7 @@ void CMulticlassOneVsOneStrategy::rescale_heuris_hastie(SGVector<float64_t>& out
 		outputs[i] = new_outputs[i];
 }
 
-void CMulticlassOneVsOneStrategy::rescale_heuris_hamamura(SGVector<float64_t>& outputs, 
+void CMulticlassOneVsOneStrategy::rescale_heuris_hamamura(SGVector<float64_t> outputs, 
 		const SGVector<int32_t> indx1, const SGVector<int32_t> indx2)
 {
 	if (m_num_machines != outputs.vlen)

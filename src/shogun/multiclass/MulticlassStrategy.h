@@ -141,7 +141,7 @@ public:
 	/** rescale multiclass outputs according to the selected heuristic 
 	 * @param outputs a vector of output from each machine (in that order)
 	 */
-	virtual void rescale_outputs(SGVector<float64_t>& outputs)
+	virtual void rescale_outputs(SGVector<float64_t> outputs)
 	{
 	}	
 
@@ -150,7 +150,7 @@ public:
 	 * @param outputs a vector of output from each machine (in that order)
 	 * @param sig_params a vector of sigmoid parameters w.r.t binary machines
 	 */
-	virtual void rescale_outputs(SGVector<float64_t>& outputs,
+	virtual void rescale_outputs(SGVector<float64_t> outputs,
 			const SGVector<float64_t> As, const SGVector<float64_t> Bs)
 	{
 	}	

@@ -67,7 +67,7 @@ SGVector<index_t> CMulticlassOneVsRestStrategy::decide_label_multiple_output(SGV
 	return result;
 }
 
-void CMulticlassOneVsRestStrategy::rescale_outputs(SGVector<float64_t>& outputs)
+void CMulticlassOneVsRestStrategy::rescale_outputs(SGVector<float64_t> outputs)
 {
 	switch(get_prob_heuris_type())
 	{
@@ -85,7 +85,7 @@ void CMulticlassOneVsRestStrategy::rescale_outputs(SGVector<float64_t>& outputs)
 	}
 }
 
-void CMulticlassOneVsRestStrategy::rescale_outputs(SGVector<float64_t>& outputs,
+void CMulticlassOneVsRestStrategy::rescale_outputs(SGVector<float64_t> outputs,
 		const SGVector<float64_t> As, const SGVector<float64_t> Bs)
 {
 	if (get_prob_heuris_type()==OVA_SOFTMAX)
@@ -94,7 +94,7 @@ void CMulticlassOneVsRestStrategy::rescale_outputs(SGVector<float64_t>& outputs,
 		rescale_outputs(outputs);
 }
 
-void CMulticlassOneVsRestStrategy::rescale_heuris_norm(SGVector<float64_t>& outputs)
+void CMulticlassOneVsRestStrategy::rescale_heuris_norm(SGVector<float64_t> outputs)
 {
 	if (m_num_classes != outputs.vlen)
 	{
@@ -108,7 +108,7 @@ void CMulticlassOneVsRestStrategy::rescale_heuris_norm(SGVector<float64_t>& outp
 		outputs[i] /= norm;
 }
 
-void CMulticlassOneVsRestStrategy::rescale_heuris_softmax(SGVector<float64_t>& outputs,
+void CMulticlassOneVsRestStrategy::rescale_heuris_softmax(SGVector<float64_t> outputs,
 		const SGVector<float64_t> As, const SGVector<float64_t> Bs)
 {
 	if (m_num_classes != outputs.vlen)

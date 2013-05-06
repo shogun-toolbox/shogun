@@ -72,7 +72,7 @@ public:
 	 * @param outputs a vector of output from each machine (in that order)
 	 * which will be resized to length of num_classes if heuristic is set
 	 */
-	virtual void rescale_outputs(SGVector<float64_t>& outputs);
+	virtual void rescale_outputs(SGVector<float64_t> outputs);
 
 	/** set the number of classes, since the number of machines totally 
 	 * depends on the number of classes, which will also be set.
@@ -90,7 +90,7 @@ protected:
 	 * @param indx1 indices of 1st involved class of training machines
 	 * @param indx2 indices of 2nd involved class of training machines
 	 */
-	void rescale_heuris_price(SGVector<float64_t>& outputs,
+	void rescale_heuris_price(SGVector<float64_t> outputs,
 		const SGVector<int32_t> indx1, const SGVector<int32_t> indx2);
 
 	/** OVO Hastie's heuristic see [1]
@@ -98,7 +98,7 @@ protected:
 	 * @param indx1 indices of 1st involved class of training machines
 	 * @param indx2 indices of 2nd involved class of training machines
 	 */
-	void rescale_heuris_hastie(SGVector<float64_t>& outputs,
+	void rescale_heuris_hastie(SGVector<float64_t> outputs,
 		const SGVector<int32_t> indx1, const SGVector<int32_t> indx2);
 
 	/** OVO Hamamura's heuristic see [1]
@@ -106,7 +106,7 @@ protected:
 	 * @param indx1 indices of 1st involved class of training machines
 	 * @param indx2 indices of 2nd involved class of training machines
 	 */
-	void rescale_heuris_hamamura(SGVector<float64_t>& outputs,
+	void rescale_heuris_hamamura(SGVector<float64_t> outputs,
 		const SGVector<int32_t> indx1, const SGVector<int32_t> indx2);
 
 private:
