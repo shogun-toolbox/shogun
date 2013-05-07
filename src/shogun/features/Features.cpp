@@ -64,8 +64,8 @@ void CFeatures::init()
 	/* TODO, use SGVector for arrays to be able to use SG_ADD macro */
 	m_parameters->add_vector((CSGObject***) &preproc, &num_preproc, "preproc",
 			"List of preprocessors");
-	m_parameters->add_vector(&preprocessed, &num_preproc, "preprocessed",
-			"Feature[i] is already preprocessed");
+	//m_parameters->add_vector(&preprocessed, &num_preproc, "preprocessed",
+	//		"Feature[i] is already preprocessed");
 
 	SG_ADD((CSGObject**)&m_subset_stack, "subset_stack", "Stack of subsets",
 			MS_NOT_AVAILABLE);
@@ -118,7 +118,7 @@ CPreprocessor* CFeatures::get_preprocessor(int32_t num) const
 	if (num<num_preproc)
 	{
 	  //SG_REF(preproc[num]);
-	  return preproc->get_element(num);
+	  return static_cast<CPreprocessor*>(preproc->get_element(num));
 	  //return preproc[num];
 	}
 	else
@@ -154,7 +154,7 @@ CPreprocessor* CFeatures::del_preprocessor(int32_t num)
 
 	if (num_preproc>0 && num<num_preproc)
 	{
-	        removed_preproc=preproc->get_element(num);
+	  removed_preproc = static_cast<CPreprocessor*>(preproc->get_element(num));
 
 		preproc->delete_element(num);
 		preprocessed->delete_element(num);
