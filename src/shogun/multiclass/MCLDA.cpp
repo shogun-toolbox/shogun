@@ -143,8 +143,8 @@ CMulticlassLabels* CMCLDA::apply_multiclass(CFeatures* data)
 
 bool CMCLDA::train_machine(CFeatures* data)
 {
-    	if ( !m_labels )
-		SG_ERROR("No labels allocated in MCLDA training\n")
+	if ( !m_labels )
+	SG_ERROR("No labels allocated in MCLDA training\n")
 
 	if ( data )
 	{
@@ -171,7 +171,7 @@ bool CMCLDA::train_machine(CFeatures* data)
 	int32_t* class_nums = SG_MALLOC(int32_t, m_num_classes);
 	memset(class_nums, 0, m_num_classes*sizeof(int32_t));
 	int32_t class_idx;
-	int32_t i, j, k, l;
+	int32_t i, j, k;
 	for ( i = 0 ; i < train_labels.vlen ; ++i )
 	{
 		class_idx = train_labels.vector[i];
@@ -208,7 +208,7 @@ bool CMCLDA::train_machine(CFeatures* data)
 	m_means = SGMatrix< float64_t >(m_dim, m_num_classes, true);
 
 	// matrix of all samples
-	SGMatrix< float64_t > X = SGMatrix< float64_t >(num_vec, m_dim, true);
+	SGMatrix< float64_t > X(num_vec, m_dim, true);
 	int32_t iX = 0;
 	
 	m_means.zero();
@@ -267,25 +267,27 @@ bool CMCLDA::train_machine(CFeatures* data)
 #endif
 	
 	if ( m_store_cov )
-    	{
-        	m_cov = SGMatrix< float64_t >(m_dim, m_dim, true);
-        	m_cov.zero();
+	{
+    	m_cov = SGMatrix< float64_t >(m_dim, m_dim, true);
+    	m_cov.zero();
         
-        	// normalize the covar mat
-        	for ( i = 0 ; i < m_dim*m_dim ; ++i )
-        	{
-            		for ( k = 0 ; k < m_num_classes ; ++k ) 
-                		m_cov[i] += covs.get_matrix(k)[i];
-                
-            		m_cov[i] / m_num_classes;
-        	}
+    	// normalize the covar mat
+    	for ( i = 0 ; i < m_dim*m_dim ; ++i )
+    	{
+    		for ( k = 0 ; k < m_num_classes ; ++k )
+    		{ 
+        		m_cov[i] += covs.get_matrix(k)[i];
+            }
+            
+    		m_cov[i] / m_num_classes;
     	}
+	}
 
 #ifdef DEBUG_MCLDA		
 	if ( m_store_cov )
-    	{
-	    	SG_PRINT("\n>>> Displaying cov ...\n");
-	    	SGMatrix< float64_t >::display_matrix(m_cov.matrix, m_dim, m_dim);
+	{
+    	SG_PRINT("\n>>> Displaying cov ...\n");
+    	SGMatrix< float64_t >::display_matrix(m_cov.matrix, m_dim, m_dim);
 	}
 #endif
 	
@@ -299,56 +301,57 @@ bool CMCLDA::train_machine(CFeatures* data)
 		for ( j = 0 ; j < m_dim ; ++j )
 			m_xbar[j] += X(i,j) / num_vec;
 
-	SGVector< float64_t > std = SGVector< float64_t >(m_dim);
+	SGVector< float64_t > std(m_dim);
 	std.zero();
 	for ( i = 0 ; i < num_vec ; ++i )
-	    	for ( j = 0 ; j < m_dim ; ++j )
-		    	std[j] += (X(i,j) - m_xbar[j])*(X(i,j) - m_xbar[j]);
+    	for ( j = 0 ; j < m_dim ; ++j )
+	    	std[j] += (X(i,j) - m_xbar[j])*(X(i,j) - m_xbar[j]);
 
 	for ( j = 0 ; j < m_dim ; ++j )
 	{
-	    	std[j] = sqrt(std[j] / num_vec);
-	    	if(std[j] == 0)
-	        	std[j] = 1;
-    	}
+    	std[j] = sqrt(std[j] / num_vec);
+    	if(std[j] == 0)
+        	std[j] = 1;
+	}
 	
 	float64_t fac = 1.0 / (num_vec - m_num_classes);
     
-    	///////////////////////////////
+	///////////////////////////////
 	// 2) Within variance scaling
 	for ( i = 0 ; i < num_vec ; ++i )
-	    	for ( j = 0 ; j < m_dim ; ++j )
-	        	X(i,j) = sqrt(fac) * X(i,j) / std[j];	
+    	for ( j = 0 ; j < m_dim ; ++j )
+        	X(i,j) = sqrt(fac) * X(i,j) / std[j];	
     
-    	// SVD of centered (within)scaled data
-    	/* calling external lib, buffer = U * S * V^T, U is not interesting here */
-    	SGVector< float64_t > S  = SGVector< float64_t >(m_dim);
-    	SGMatrix< float64_t > V  = SGMatrix< float64_t >(m_dim, m_dim);
+	// SVD of centered (within)scaled data
+	/* calling external lib, buffer = U * S * V^T, U is not interesting here */
+	SGVector< float64_t > S(m_dim);
+	SGMatrix< float64_t > V(m_dim, m_dim);
     
 	char jobu = 'N', jobvt = 'A';
 	int m = num_vec, n = m_dim;
 	int lda = m, ldu = m, ldvt = n;
 	int info = -1;
 	
-	wrap_dgesvd(jobu, jobvt, m, n, X.matrix, lda, S.vector, NULL, ldu,
-			V.matrix, ldvt, &info);
+	wrap_dgesvd(jobu, jobvt, m, n, X.matrix, lda, S.vector, NULL, ldu, V.matrix, ldvt, &info);
 	ASSERT(info == 0)
 	
 	//SGMatrix< float64_t >::display_matrix(V.matrix, m_dim, m_dim);
 	//SGVector< float64_t >::display_vector(S.vector, m_dim);
 	
 	int rank = 0;
-	while ( S[rank] > m_tolerance && rank < m_dim)
-	    	rank++;
+	while (rank < m_dim && S[rank] > m_tolerance)
+	{
+    	rank++;
+	}
 	//printf("%d",rank);
 	
 	if ( rank < m_dim )
         SG_ERROR("Warning: Variables are collinear\n")
 	
-	SGMatrix< float64_t > scalings  = SGMatrix< float64_t >(m_dim, rank);
-    		for ( i = 0 ; i < m_dim ; ++i )
-	    		for ( j = 0 ; j < rank ; ++j )
-		    		scalings(i,j) = V(j,i) / std[j] / S[j];
+	SGMatrix< float64_t > scalings(m_dim, rank);
+		for ( i = 0 ; i < m_dim ; ++i )
+    		for ( j = 0 ; j < rank ; ++j )
+	    		scalings(i,j) = V(j,i) / std[j] / S[j];
 
 #ifdef DEBUG_MCLDA	
 	SG_PRINT("\n>>> Displaying scalings ...\n");
@@ -366,41 +369,42 @@ bool CMCLDA::train_machine(CFeatures* data)
 			scalings.matrix, rank, 0.0, 
 			Xc.matrix, m_num_classes);
    	for ( i = 0 ; i < m_num_classes ; ++i )	
-        	for ( j = 0 ; j < rank ; ++j )
-		    	Xc(i,j) *= sqrt(class_nums[i] * fac);
-    	//SGMatrix< float64_t >::display_matrix(Xc.matrix, m_num_classes, rank);
+    	for ( j = 0 ; j < rank ; ++j )
+	    	Xc(i,j) *= sqrt(class_nums[i] * fac);
+	//SGMatrix< float64_t >::display_matrix(Xc.matrix, m_num_classes, rank);
 
-    	// Centers are living in a space with n_classes-1 dim (maximum)
-    	// Use svd to find projection in the space spanned by the
-    	// (n_classes) centers
-    	S  = SGVector< float64_t >(rank);
-    	V  = SGMatrix< float64_t >(rank, rank);
+	// Centers are living in a space with n_classes-1 dim (maximum)
+	// Use svd to find projection in the space spanned by the
+	// (n_classes) centers
+	S  = SGVector< float64_t >(rank);
+	V  = SGMatrix< float64_t >(rank, rank);
     
 	jobu = 'N', jobvt = 'A';
 	m = m_num_classes, n = rank;
 	lda = m, ldu = m, ldvt = n;
 	info = -1;
 	
-	wrap_dgesvd(jobu, jobvt, m, n, Xc.matrix, lda, S.vector, NULL, ldu,
-			V.matrix, ldvt, &info);
+	wrap_dgesvd(jobu, jobvt, m, n, Xc.matrix, lda, S.vector, NULL, ldu, V.matrix, ldvt, &info);
 	ASSERT(info == 0)
     
-    	//SGMatrix< float64_t >::display_matrix(V.matrix, rank, rank);
+	//SGMatrix< float64_t >::display_matrix(V.matrix, rank, rank);
 	//SGVector< float64_t >::display_vector(S.vector, rank);
 	
 	m_rank = 0;
-	while ( S[m_rank] > m_tolerance*S[0] && m_rank < rank )
-	    	m_rank++;
+	while ( m_rank < rank && S[m_rank] > m_tolerance*S[0] )
+	{
+    	m_rank++;
+	}
 	//printf("%d",m_rank);
 	
 	// compose the scalings
-    	// m_scalings = scalings dot V^T[:,:new_rank]
-    	m_scalings  = SGMatrix< float64_t >(rank, m_rank);
+	// m_scalings = scalings dot V^T[:,:new_rank]
+	m_scalings  = SGMatrix< float64_t >(rank, m_rank);
 	cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, 
-			m_dim, m_rank, rank, 1.0,
-			scalings.matrix, rank, 
-			V.matrix, rank, 0.0, 
-			m_scalings.matrix, rank);
+		m_dim, m_rank, rank, 1.0,
+		scalings.matrix, rank, 
+		V.matrix, rank, 0.0, 
+		m_scalings.matrix, rank);
 								
 #ifdef DEBUG_MCLDA	
 	SG_PRINT("\n>>> Displaying m_scalings ...\n");
@@ -409,7 +413,7 @@ bool CMCLDA::train_machine(CFeatures* data)
 
 	// weight vectors / centroids
 	// m_coef = (m_means - xbar) dot m_scalings
-	SGMatrix< float64_t > meansc = SGMatrix< float64_t >(m_dim, m_num_classes);
+	SGMatrix< float64_t > meansc(m_dim, m_num_classes);
 	for ( i = 0 ; i < m_dim ; ++i )
 	    for ( j = 0 ; j < m_num_classes ; ++j )
 	        meansc(i,j) = m_means(i,j) - m_xbar[j];    
@@ -426,18 +430,18 @@ bool CMCLDA::train_machine(CFeatures* data)
 	SG_PRINT("\n>>> Displaying m_coefs ...\n");
 	SGMatrix< float64_t >::display_matrix(m_coef.matrix, m_num_classes, m_rank);
 #endif
-    	// intercept
-    	m_intercept  = SGVector< float64_t >(m_num_classes);
-    	m_intercept.zero();
-    	for ( j = 0 ; j < m_num_classes ; ++j )
-        	m_intercept[j] = -0.5*m_coef[j]*m_coef[j] + log(class_nums[j]/float(num_vec));
+	// intercept
+	m_intercept  = SGVector< float64_t >(m_num_classes);
+	m_intercept.zero();
+	for ( j = 0 ; j < m_num_classes ; ++j )
+    	m_intercept[j] = -0.5*m_coef[j]*m_coef[j] + log(class_nums[j]/float(num_vec));
 
 #ifdef DEBUG_MCLDA	
 	SG_PRINT("\n>>> Displaying m_intercept ...\n");
 	SGVector< float64_t >::display_vector(m_intercept.vector, m_num_classes);
 #endif    
     
-    	SG_FREE(class_idxs);
+	SG_FREE(class_idxs);
 	SG_FREE(class_nums);
 	
 	return true;
