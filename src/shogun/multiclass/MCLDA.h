@@ -110,7 +110,27 @@ class CMCLDA : public CNativeMulticlassMachine
 		 * @return object name
 		 */
 		virtual const char* get_name() const { return "MCLDA"; }
+		
+		/** get a class' mean vector
+		 *
+		 * @param c class index
+		 *
+		 * @return mean vector of class c
+		 */
+		inline SGVector< float64_t > get_mean(int32_t c) const
+		{
+			return SGVector< float64_t >(m_means.get_column_vector(c), m_dim, false);
+		}
 
+		/** get covariance matrix
+		 *
+		 * @return covariance matrix
+		 */
+		inline SGMatrix< float64_t > get_cov() const
+		{
+			return m_cov;
+		}
+		
     	protected:
 		/** train MCLDA classifier
 		 *
