@@ -144,11 +144,12 @@ namespace tapkee
 		//! Brute force method with not least than 
 		//! \f$ O(N N \log k) \f$ time complexity.
 		//! Recommended to be used only in debug purposes.
-		Brute,
+		Brute, 
+		VpTree
 #ifdef TAPKEE_USE_LGPL_COVERTREE
 		//! Covertree-based method with approximate \f$ O(\log N) \f$ time complexity.
 		//! Recommended to be used as a default method.
-		CoverTree
+		, CoverTree
 #endif
 	};
 #ifdef TAPKEE_USE_LGPL_COVERTREE
@@ -269,7 +270,8 @@ namespace tapkee
 				T default_value;
 			};
 		}
-		using namespace keywords_internal;
+		using keywords_internal::ParameterKeyword;
+		using keywords_internal::DefaultValue;
 
 		namespace {
 			/** The keyword for the value that stands for the dimension reduction 

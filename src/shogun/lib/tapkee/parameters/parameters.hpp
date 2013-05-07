@@ -78,9 +78,9 @@ public:
 	}
 
 	template <typename T>
-	inline Parameter with_default(T value)
+	inline Parameter withDefault(T value)
 	{
-		if (!is_initialized())
+		if (!isInitialized())
 		{
 			keeper = tapkee_internal::ValueKeeper(value);
 		}
@@ -92,7 +92,7 @@ public:
 	{
 		try 
 		{
-			return get_value<T>();
+			return getValue<T>();
 		}
 		catch (const missed_parameter_error&)
 		{
@@ -105,9 +105,9 @@ public:
 	template <typename T>
 	bool is(T v)
 	{
-		if (!is_type_correct<T>())
+		if (!isTypeCorrect<T>())
 			return false;
-		T kv = keeper.get_value<T>();
+		T kv = keeper.getValue<T>();
 		if (v == kv)
 			return true;
 		return false;
@@ -122,48 +122,53 @@ public:
 	CheckedParameter checked();
 
 	template <typename T>
-	bool in_range(T lower, T upper) const
+	bool isInRange(T lower, T upper) const
 	{
-		return keeper.in_range<T>(lower, upper);
+		return keeper.inRange<T>(lower, upper);
 	}
 
 	template <typename T>
-	bool equal(T value) const
+	bool isEqual(T value) const
 	{
 		return keeper.equal<T>(value);
 	}
 
 	template <typename T>
-	bool not_equal(T value) const
+	bool isNotEqual(T value) const
 	{
-		return keeper.not_equal<T>(value);
+		return keeper.notEqual<T>(value);
 	}
 
-	bool positive() const 
+	bool isPositive() const 
 	{
 		return keeper.positive();
 	}
+	
+	bool isNonNegative() const 
+	{
+		return keeper.nonNegative();
+	}
 
-	bool negative() const
+	bool isNegative() const
 	{
 		return keeper.negative();
 	}
 
 	template <typename T>
-	bool greater(T lower) const
+	bool isGreater(T lower) const
 	{
 		return keeper.greater<T>(lower);
 	}
 
 	template <typename T>
-	bool is_lesser(T upper) const
+	bool isLesser(T upper) const
 	{
 		return keeper.lesser<T>(upper);
 	}
 
-	bool is_initialized() const
+	bool isInitialized() const
 	{
-		return keeper.is_initialized();
+		return keeper.isInitialized();
 	}
 
 	ParameterName name() const 
@@ -176,15 +181,15 @@ public:
 private:
 
 	template <typename T>
-	inline T get_value() const
+	inline T getValue() const
 	{
-		return keeper.get_value<T>();
+		return keeper.getValue<T>();
 	}
 	
 	template <typename T>
-	inline bool is_type_correct() const
+	inline bool isTypeCorrect() const
 	{
-		return keeper.is_type_correct<T>();
+		return keeper.isTypeCorrect<T>();
 	}
 
 private:
@@ -207,7 +212,7 @@ public:
 	template <typename T>
 	inline operator T() const
 	{
-		return parameter.get_value<T>();
+		return parameter.getValue<T>();
 	}
 	
 	inline operator const Parameter&()
@@ -228,13 +233,13 @@ public:
 	}
 
 	template <typename T>
-	CheckedParameter& in_range(T lower, T upper)
+	CheckedParameter& inRange(T lower, T upper)
 	{
-		if (!parameter.in_range(lower, upper))
+		if (!parameter.isInRange(lower, upper))
 		{
 			std::string error_message = 
 				(Message() << "Value " << parameter.name() << " " 
-				 << parameter.get_value<T>() << " doesn't fit the range [" << 
+				 << parameter.getValue<T>() << " doesn't fit the range [" << 
 				    lower << ", " << upper << ")");
 			throw tapkee::wrong_parameter_error(error_message);
 		}
@@ -243,7 +248,7 @@ public:
 	
 	CheckedParameter& positive()
 	{
-		if (!parameter.positive())
+		if (!parameter.isPositive())
 		{
 			std::string error_message = 
 				(Message() << "Value of " << parameter.name() << " is not positive");
@@ -251,6 +256,18 @@ public:
 		}
 		return *this;
 	}
+
+	CheckedParameter& nonNegative()
+	{
+		if (!parameter.isNonNegative())
+		{
+			std::string error_message = 
+				(Message() << "Value of " << parameter.name() << " is negative");
+			throw tapkee::wrong_parameter_error(error_message);
+		}
+		return *this;
+	}
+
 
 private:
 

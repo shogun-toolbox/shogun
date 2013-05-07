@@ -192,7 +192,7 @@ void split(v_array<ds_node<P> >& point_set, v_array<ds_node<P> >& far_set, int m
 }
 
 template<class P, class DistanceCallback>
-void dist_split(const DistanceCallback& dcb, v_array<ds_node<P> >& point_set,
+void dist_split(DistanceCallback& dcb, v_array<ds_node<P> >& point_set,
 		v_array<ds_node<P> >& new_point_set, 
 		P new_point, 
 		int max_scale)
@@ -219,7 +219,7 @@ void dist_split(const DistanceCallback& dcb, v_array<ds_node<P> >& point_set,
    point_set contains points which are 2*max_scale or less away.
    */
 template <class P, class DistanceCallback>
-node<P> batch_insert(const DistanceCallback& dcb, const P& p,
+node<P> batch_insert(DistanceCallback& dcb, const P& p,
 		int max_scale, 
 		int top_scale,
 		v_array<ds_node<P> >& point_set, 
@@ -316,7 +316,7 @@ node<P> batch_insert(const DistanceCallback& dcb, const P& p,
 }
 
 template<class P, class DistanceCallback>
-node<P> batch_create(const DistanceCallback& dcb, v_array<P> points)
+node<P> batch_create(DistanceCallback& dcb, v_array<P> points)
 {
 	assert(points.index > 0);
 	v_array<ds_node<P> > point_set;
@@ -552,7 +552,7 @@ void (*setter)(ScalarType *foo, ScalarType bar) = set_k;
 ScalarType* (*alloc_upper)() = alloc_k;
 
 template <class P, class DistanceCallback>
-inline void copy_zero_set(const DistanceCallback& dcb, node<P>* query_chi,
+inline void copy_zero_set(DistanceCallback& dcb, node<P>* query_chi,
 		ScalarType* new_upper_bound, v_array<d_node<P> > &zero_set,
 		v_array<d_node<P> > &new_zero_set)
 {
@@ -577,7 +577,7 @@ inline void copy_zero_set(const DistanceCallback& dcb, node<P>* query_chi,
 }
 
 template <class P, class DistanceCallback>
-inline void copy_cover_sets(const DistanceCallback& dcb, node<P>* query_chi,
+inline void copy_cover_sets(DistanceCallback& dcb, node<P>* query_chi,
 		ScalarType* new_upper_bound,
 		v_array<v_array<d_node<P> > > &cover_sets,
 		v_array<v_array<d_node<P> > > &new_cover_sets,
@@ -657,7 +657,7 @@ void print_cover_sets(v_array<v_array<d_node<P> > > &cover_sets,
    */
 template <class P, class DistanceCallback>
 inline 
-void descend(const DistanceCallback& dcb, const node<P>* query, ScalarType* upper_bound,
+void descend(DistanceCallback& dcb, const node<P>* query, ScalarType* upper_bound,
 		int current_scale,int &max_scale, v_array<v_array<d_node<P> > > &cover_sets,
 		v_array<d_node<P> > &zero_set)
 {
@@ -716,7 +716,7 @@ void descend(const DistanceCallback& dcb, const node<P>* query, ScalarType* uppe
 }
 
 template <class P, class DistanceCallback>
-void brute_nearest(const DistanceCallback& dcb, const node<P>* query,
+void brute_nearest(DistanceCallback& dcb, const node<P>* query,
 		v_array<d_node<P> > zero_set, ScalarType* upper_bound,
 		v_array<v_array<P> > &results,
 		v_array<v_array<d_node<P> > > &spare_zero_sets)
@@ -752,7 +752,7 @@ void brute_nearest(const DistanceCallback& dcb, const node<P>* query,
 }
 
 template <class P, class DistanceCallback>
-void internal_batch_nearest_neighbor(const DistanceCallback& dcb, const node<P> *query,
+void internal_batch_nearest_neighbor(DistanceCallback& dcb, const node<P> *query,
 		v_array<v_array<d_node<P> > > &cover_sets,
 		v_array<d_node<P> > &zero_set,
 		int current_scale,
@@ -804,7 +804,7 @@ void internal_batch_nearest_neighbor(const DistanceCallback& dcb, const node<P> 
 }
 
 template <class P, class DistanceCallback>
-void batch_nearest_neighbor(const DistanceCallback &dcb, const node<P> &top_node,
+void batch_nearest_neighbor(DistanceCallback &dcb, const node<P> &top_node,
 		const node<P> &query, v_array<v_array<P> > &results)
 {
 	v_array<v_array<v_array<d_node<P> > > > spare_cover_sets;
@@ -845,7 +845,7 @@ void batch_nearest_neighbor(const DistanceCallback &dcb, const node<P> &top_node
 }
 
 template <class P, class DistanceCallback>
-void k_nearest_neighbor(const DistanceCallback &dcb, const node<P> &top_node,
+void k_nearest_neighbor(DistanceCallback &dcb, const node<P> &top_node,
 		const node<P> &query, v_array<v_array<P> > &results, int k)
 {
 	internal_k = k;
@@ -857,7 +857,7 @@ void k_nearest_neighbor(const DistanceCallback &dcb, const node<P> &top_node,
 }
 /*
 template <class P, class DistanceCallback>
-void epsilon_nearest_neighbor(const DistanceCallback &dcb, const node<P> &top_node,
+void epsilon_nearest_neighbor(DistanceCallback &dcb, const node<P> &top_node,
 		const node<P> &query, v_array<v_array<P> > &results,
 		ScalarType epsilon)
 {
@@ -870,7 +870,7 @@ void epsilon_nearest_neighbor(const DistanceCallback &dcb, const node<P> &top_no
 }
 
 template <class P, class DistanceCallback>
-void unequal_nearest_neighbor(const DistanceCallback &dcb, const node<P> &top_node,
+void unequal_nearest_neighbor(DistanceCallback &dcb, const node<P> &top_node,
 		const node<P> &query, v_array<v_array<P> > &results)
 {
 	update = update_unequal;

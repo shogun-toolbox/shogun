@@ -12,6 +12,7 @@
 	#include <shogun/lib/tapkee/neighbors/covertree.hpp>
 #endif
 #include <shogun/lib/tapkee/neighbors/connected.hpp>
+#include <shogun/lib/tapkee/neighbors/vptree.hpp>
 /* End of Tapkee includes */
 
 #include <vector>
@@ -29,7 +30,7 @@ namespace tapkee_internal
 template <class DistanceRecord>
 struct distances_comparator
 {
-	bool operator()(const DistanceRecord& l, const DistanceRecord& r) 
+	inline bool operator()(const DistanceRecord& l, const DistanceRecord& r) const
 	{
 		return (l.second < r.second);
 	}
@@ -43,6 +44,10 @@ struct KernelDistance
 	{
 		return callback.kernel(*l,*r);
 	}
+	inline ScalarType distance(const RandomAccessIterator& l, const RandomAccessIterator& r)
+	{
+		return sqrt(callback.kernel(*l,*l) - 2*callback.kernel(*l,*r) + callback.kernel(*r,*r));
+	}
 	static const bool is_kernel;
 	Callback callback;
 };
@@ -54,6 +59,10 @@ struct PlainDistance
 {
 	PlainDistance(const Callback& cb) : callback(cb) {  }
 	inline ScalarType operator()(const RandomAccessIterator& l, const RandomAccessIterator& r)
+	{
+		return callback.distance(*l,*r);
+	}
+	inline ScalarType distance(const RandomAccessIterator& l, const RandomAccessIterator& r)
 	{
 		return callback.distance(*l,*r);
 	}
@@ -119,17 +128,8 @@ Neighbors find_neighbors_bruteforce_impl(const RandomAccessIterator& begin, cons
 	for (RandomAccessIterator iter=begin; iter!=end; ++iter)
 	{
 		Distances distances;
-		if (Callback::is_kernel)
-		{
-			for (RandomAccessIterator around_iter=begin; around_iter!=end; ++around_iter)
-				distances.push_back(make_pair(around_iter, 
-							callback(around_iter,around_iter) + callback(iter,iter) - 2*callback(iter,around_iter)));
-		}
-		else
-		{
-			for (RandomAccessIterator around_iter=begin; around_iter!=end; ++around_iter)
-				distances.push_back(make_pair(around_iter, callback(iter,around_iter)));
-		}
+		for (RandomAccessIterator around_iter=begin; around_iter!=end; ++around_iter)
+			distances.push_back(make_pair(around_iter, callback.distance(iter,around_iter)));
 
 		nth_element(distances.begin(),distances.begin()+k+1,distances.end(),
 		            distances_comparator<DistanceRecord>());
@@ -144,6 +144,27 @@ Neighbors find_neighbors_bruteforce_impl(const RandomAccessIterator& begin, cons
 		}
 		neighbors.push_back(local_neighbors);
 	}
+	return neighbors;
+}
+
+template <class RandomAccessIterator, class Callback>
+Neighbors find_neighbors_vptree_impl(const RandomAccessIterator& begin, const RandomAccessIterator& end, 
+                                     Callback callback, IndexType k)
+{
+	timed_context context("VP-Tree based neighbors search");
+
+	Neighbors neighbors;
+	neighbors.reserve(end-begin);
+
+	VantagePointTree<RandomAccessIterator,Callback> tree(begin,end,callback);
+
+	for (RandomAccessIterator i=begin; i!=end; ++i)
+	{
+		LocalNeighbors local_neighbors = tree.search(i,k+1);
+		std::remove(local_neighbors.begin(),local_neighbors.end(),i-begin);
+		neighbors.push_back(local_neighbors);
+	}
+
 	return neighbors;
 }
 
@@ -163,6 +184,7 @@ Neighbors find_neighbors(NeighborsMethod method, const RandomAccessIterator& beg
 	switch (method)
 	{
 		case Brute: neighbors = find_neighbors_bruteforce_impl(begin,end,callback,k); break;
+		case VpTree: neighbors = find_neighbors_vptree_impl(begin,end,callback,k); break;
 #ifdef TAPKEE_USE_LGPL_COVERTREE
 		case CoverTree: neighbors = find_neighbors_covertree_impl(begin,end,callback,k); break;
 #endif

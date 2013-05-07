@@ -25,13 +25,13 @@ class ValueKeeper
 public:
 	template <typename T>
 	explicit ValueKeeper(const T& value) : 
-		policy(get_policy<T>()), checker(get_checker_policy<T>()), value_ptr(NULL) 
+		policy(getPolicy<T>()), checker(getCheckerPolicy<T>()), value_ptr(NULL) 
 	{
-		policy->copy_from_value(&value, &value_ptr);
+		policy->copyFromValue(&value, &value_ptr);
 	}
 
 	ValueKeeper() :
-		policy(get_policy<EmptyType>()), checker(get_checker_policy<EmptyType>()), value_ptr(NULL) 
+		policy(getPolicy<EmptyType>()), checker(getCheckerPolicy<EmptyType>()), value_ptr(NULL) 
 	{
 	}
 
@@ -55,16 +55,16 @@ public:
 	}
 
 	template <typename T>
-	inline T get_value() const
+	inline T getValue() const
 	{
 		T* v;
-		if (!is_initialized())
+		if (!isInitialized())
 		{
 			throw missed_parameter_error("Parameter is missed");
 		}
-		if (is_type_correct<T>())
+		if (isTypeCorrect<T>())
 		{
-			void* vv = policy->get_value(const_cast<void**>(&value_ptr));
+			void* vv = policy->getValue(const_cast<void**>(&value_ptr));
 			v = reinterpret_cast<T*>(vv);
 		}
 		else
@@ -73,67 +73,78 @@ public:
 	}
 
 	template <typename T>
-	inline bool is_type_correct() const
+	inline bool isTypeCorrect() const
 	{
-		return get_policy<T>() == policy;
+		return getPolicy<T>() == policy;
 	}
 
-	inline bool is_initialized() const
+	inline bool isInitialized() const
 	{
-		return get_policy<EmptyType>() != policy;
+		return getPolicy<EmptyType>() != policy;
 	}
 
 	template <typename T>
-	inline bool in_range(T lower, T upper) const
+	inline bool inRange(T lower, T upper) const
 	{
-		if (!is_type_correct<T>() && is_initialized())
+		if (!isTypeCorrect<T>() && isInitialized())
 			throw std::domain_error("Wrong range bounds type");
-		return checker->is_in_range(&value_ptr,&lower,&upper);
+		return checker->isInRange(&value_ptr,&lower,&upper);
 	}
 
 	template <typename T>
 	inline bool equal(T value) const
 	{
-		if (!is_type_correct<T>() && is_initialized())
+		if (!isTypeCorrect<T>() && isInitialized())
 			throw std::domain_error("Wrong equality value type");
-		return checker->is_equal(&value_ptr,&value);
+		return checker->isEqual(&value_ptr,&value);
 	}
 
 	template <typename T>
-	inline bool not_equal(T value) const
+	inline bool notEqual(T value) const
 	{
-		if (!is_type_correct<T>() && is_initialized())
+		if (!isTypeCorrect<T>() && isInitialized())
 			throw std::domain_error("Wrong non-equality value type");
-		return checker->is_not_equal(&value_ptr,&value);
+		return checker->isNotEqual(&value_ptr,&value);
 	}
 
 	inline bool positive() const
 	{
-		return checker->is_positive(&value_ptr);
+		return checker->isPositive(&value_ptr);
+	}
+
+	inline bool nonNegative() const
+	{
+		return checker->isNonNegative(&value_ptr);
 	}
 
 	inline bool negative() const
 	{
-		return checker->is_negative(&value_ptr);
+		return checker->isNegative(&value_ptr);
+	}
+
+	inline bool nonPositive() const
+	{
+		return checker->isNonPositive(&value_ptr);
 	}
 
 	template <typename T>
 	inline bool greater(T lower) const
 	{
-		if (!is_type_correct<T>() && is_initialized())
+		if (!isTypeCorrect<T>() && isInitialized())
 			throw std::domain_error("Wrong greater check bound type");
-		return checker->is_greater(&value_ptr,&lower);
+		return checker->isGreater(&value_ptr,&lower);
 	}
 
 	template <typename T>
 	inline bool lesser(T upper) const
 	{
-		if (!is_type_correct<T>() && is_initialized())
+		if (!isTypeCorrect<T>() && isInitialized())
 			throw std::domain_error("Wrong lesser check bound type");
-		return checker->is_lesser(&value_ptr,&upper);
+		return checker->isLesser(&value_ptr,&upper);
 	}
 
 private:
+
 	TypePolicyBase* policy;
 	CheckerPolicyBase* checker;
 	void* value_ptr;
