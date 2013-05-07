@@ -6,7 +6,9 @@
 #ifndef TAPKEE_VPTREE_H_
 #define TAPKEE_VPTREE_H_
 
-#include <tapkee_defines.hpp>
+/* Tapkee include */
+#include <shogun/lib/tapkee/tapkee_defines.hpp>
+/* End of Tapkee includes */
 
 #include <vector>
 #include <queue>
