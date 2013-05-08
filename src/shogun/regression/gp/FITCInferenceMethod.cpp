@@ -213,9 +213,10 @@ get_marginal_likelihood_derivatives(CMap<TParameter*,
 	if(update_parameter_hash())
 		update_all();
 
-	//Get the sigma variable from the likelihood model
-	float64_t m_sigma =
-			dynamic_cast<CGaussianLikelihood*>(m_model)->get_sigma();
+	// get the sigma variable from the Gaussian likelihood model
+	CGaussianLikelihood* lik=CGaussianLikelihood::obtain_from_generic(m_model);
+	float64_t sigma=lik->get_sigma();
+	SG_UNREF(lik);
 
 	Map<MatrixXd> eigen_ktru(m_ktru.matrix, m_ktru.num_rows, m_ktru.num_cols);
 
@@ -524,7 +525,7 @@ get_marginal_likelihood_derivatives(CMap<TParameter*,
 
 	sum[0] = VectorXd::Ones(eigen_dg.rows()).cwiseQuotient(eigen_dg).sum() - sum[0];
 
-	sum = sum*m_sigma*m_sigma;
+	sum = sum*sigma*sigma;
 	float64_t dKuui = 2.0*m_ind_noise;
 
 	MatrixXd R = -dKuui*B;
@@ -552,10 +553,10 @@ get_marginal_likelihood_derivatives(CMap<TParameter*,
 
 	sum[0] = sum[0] - Wdg_temp.sum()/2.0;
 
-	SGVector<float64_t> sigma(1);
+	SGVector<float64_t> vsigma(1);
 
-	sigma[0] = sum[0];
-	gradient.add(param, sigma);
+	vsigma[0] = sum[0];
+	gradient.add(param, vsigma);
 	para_dict.add(param, m_model);
 
 	return gradient;
@@ -661,9 +662,10 @@ void CFITCInferenceMethod::update_chol()
 {
 	check_members();
 
-	// get the sigma variable from the likelihood model
-	float64_t m_sigma =
-			dynamic_cast<CGaussianLikelihood*>(m_model)->get_sigma();
+	// get the sigma variable from the Gaussian likelihood model
+	CGaussianLikelihood* lik=CGaussianLikelihood::obtain_from_generic(m_model);
+	float64_t sigma=lik->get_sigma();
+	SG_UNREF(lik);
 
 	// eigen3 representation of covariance matrix of latent features (m_kuu)
 	// and training features (m_ktru)
@@ -693,7 +695,7 @@ void CFITCInferenceMethod::update_chol()
 
 	for (index_t i = 0; i < m_ktrtr.num_cols; i++)
 	{
-		eigen_dg[i]=m_ktrtr(i,i)*m_scale*m_scale+m_sigma*m_sigma-sV.col(i).sum();
+		eigen_dg[i]=m_ktrtr(i,i)*m_scale*m_scale+sigma*sigma-sV.col(i).sum();
 		eigen_idg[i] = 1.0 / eigen_dg[i];
 	}
 
