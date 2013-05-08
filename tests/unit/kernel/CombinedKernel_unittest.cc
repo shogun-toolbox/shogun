@@ -98,7 +98,8 @@ TEST(CombinedKernelTest,combination)
 	
 	combined_list = CCombinedKernel::combine_kernels(kernel_list);
 	index_t i = 0;
-	for (CSGObject* kernel=combined_list->get_first_element(); kernel; kernel=combined_list->get_next_element())
+	for (CSGObject* kernel=combined_list->get_first_element(); kernel;
+			kernel=combined_list->get_next_element())
 	{
 		CCombinedKernel* c_kernel = dynamic_cast<CCombinedKernel* >(kernel);
 		CSGObject* subkernel = c_kernel->get_first_kernel();
@@ -119,18 +120,20 @@ TEST(CombinedKernelTest,combination)
 	sub_list_2->append_element(ck5);
 	kernel_list->append_element(sub_list_2);
 
-	float64_t combs2[2][6] = {{ 21, 21, 21, 31, 31, 31},
-											{   3,   5,    7,  3,   5,    7}};
+	float64_t combs2[2][6] = {{   3,   5,    7,  3,   5,    7},
+											{ 21, 21, 21, 31, 31, 31}};
 
 	combined_list = CCombinedKernel::combine_kernels(kernel_list);
 	
 	index_t j = 0;
-	for (CSGObject* kernel=combined_list->get_first_element(); kernel; kernel=combined_list->get_next_element())
+	for (CSGObject* kernel=combined_list->get_first_element(); kernel; 
+			kernel=combined_list->get_next_element())
 	{
 		CCombinedKernel* c_kernel = dynamic_cast<CCombinedKernel* >(kernel);
 		EXPECT_EQ(c_kernel->get_num_subkernels(), 2);
 		i = 0;
-		for (CSGObject* subkernel=c_kernel->get_first_kernel(); subkernel; subkernel=c_kernel->get_next_kernel())
+		for (CSGObject* subkernel=c_kernel->get_first_kernel(); subkernel; 
+			subkernel=c_kernel->get_next_kernel())
 		{
 			CGaussianKernel* c_subkernel = dynamic_cast<CGaussianKernel* >(subkernel);
 			EXPECT_EQ(c_subkernel->get_width(), combs2[i++][j]);
@@ -154,19 +157,22 @@ TEST(CombinedKernelTest,combination)
 	kernel_list->append_element(sub_list_3);
 
 	float64_t combs[3][24] = {
-		{	109,	109,	109,	109,	109,	109,	203,	203,	203,	203,	203,	203,	308,	308,	308,	308,	308,	308,	404,	404,	404,	404,	404,	404},
+		{	3,		5,		7,		3,		5,		7,		3,		5,		7,		3,		5,		7,		3,		5,		7,		3,		5,		7,		3,		5,		7,		3,		5,		7},
 		{	21, 	21,	21,	31,	31,	31,	21,	21,	21,	31,	31,	31,	21,	21,	21,	31,	31,	31,	21,	21,	21,	31,	31,	31},
-		{	3,		5,		7,		3,		5,		7,		3,		5,		7,		3,		5,		7,		3,		5,		7,		3,		5,		7,		3,		5,		7,		3,		5,		7}};
+		{	109,	109,	109,	109,	109,	109,	203,	203,	203,	203,	203,	203,	308,	308,	308,	308,	308,	308,	404,	404,	404,	404,	404,	404}
+		};
 	
 	combined_list = CCombinedKernel::combine_kernels(kernel_list);
 	
 	j = 0;
-	for (CSGObject* kernel=combined_list->get_first_element(); kernel; kernel=combined_list->get_next_element())
+	for (CSGObject* kernel=combined_list->get_first_element(); kernel;
+			kernel=combined_list->get_next_element())
 	{
 		CCombinedKernel* c_kernel = dynamic_cast<CCombinedKernel* >(kernel);
 		i = 0;
 		EXPECT_EQ(c_kernel->get_num_subkernels(), 3);
-		for (CSGObject* subkernel=c_kernel->get_first_kernel(); subkernel; subkernel=c_kernel->get_next_kernel())
+		for (CSGObject* subkernel=c_kernel->get_first_kernel(); subkernel;
+			subkernel=c_kernel->get_next_kernel())
 		{
 			CGaussianKernel* c_subkernel = dynamic_cast<CGaussianKernel* >(subkernel);
 			EXPECT_EQ(c_subkernel->get_width(), combs[i++][j]);
