@@ -299,14 +299,12 @@ class CFeatures : public CSGObject
 		int32_t cache_size;
 
 		/** list of preprocessors */
-		//CPreprocessor** preproc;
 		CDynamicObjectArray *preproc;
 
 		/** number of preprocs in list */
 		int32_t num_preproc;
 
 		/** i'th entry is true if features were already preprocessed with preproc i */
-		//bool* preprocessed;
 		CDynamicArray<bool> *preprocessed;
 
 	protected:
