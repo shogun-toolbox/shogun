@@ -158,14 +158,13 @@ TEST(QuadraticTimeMMD,test_quadratic_mmd_precomputed_kernel)
 	mmd->set_bootstrap_iterations(10);
 
 	/* use fixed seed */
-	CMath::init_random(1);
+	sg_rand->set_seed(12345);
 	SGVector<float64_t> null_samples=mmd->bootstrap_null();
 
 	float64_t mean=CStatistics::mean(null_samples);
 	float64_t var=CStatistics::variance(null_samples);
 
-	//SG_SPRINT("mean %f\n", mean);
-	//SG_SPRINT("var %f\n", var);
+	//SG_SPRINT("mean %f, var %f\n", mean, var);
 
 	/* now again but with a precomputed kernel, same features.
 	 * This avoids re-computing the kernel matrix in every bootstrapping
@@ -179,7 +178,7 @@ TEST(QuadraticTimeMMD,test_quadratic_mmd_precomputed_kernel)
 	mmd=new CQuadraticTimeMMD(precomputed_kernel, p_and_q, m);
 	mmd->set_statistic_type(UNBIASED);
 	mmd->set_bootstrap_iterations(10);
-	CMath::init_random(1);
+	sg_rand->set_seed(12345);
 	null_samples=mmd->bootstrap_null();
 
 	/* assert that results do not change */
