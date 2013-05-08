@@ -16,6 +16,7 @@
 #include <shogun/regression/gp/FITCInferenceMethod.h>
 #include <shogun/regression/gp/ZeroMean.h>
 #include <shogun/regression/gp/GaussianLikelihood.h>
+#include <shogun/evaluation/GradientResult.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;
@@ -70,11 +71,11 @@ TEST(FITCInferenceMethod,get_cholesky)
 	// comparison of posterior cholesky with result from GPML package:
 	// L =
 	// -0.326180   0.148601   0.405579  -0.683624   0.319057  -0.073608
-    //  0.148601  -2.222957   1.480121   0.170280  -0.102392  -0.016981
-    //  0.405579   1.480121  -2.887356   1.091245  -0.481484   0.129348
-    // -0.683624   0.170280   1.091245  -1.628117   0.779654  -0.016188
-    //  0.319057  -0.102392  -0.481484   0.779654  -0.410200  -0.152221
-    // -0.073608  -0.016981   0.129348  -0.016188  -0.152221  -0.722832
+	//  0.148601  -2.222957   1.480121   0.170280  -0.102392  -0.016981
+	//  0.405579   1.480121  -2.887356   1.091245  -0.481484   0.129348
+	// -0.683624   0.170280   1.091245  -1.628117   0.779654  -0.016188
+	//  0.319057  -0.102392  -0.481484   0.779654  -0.410200  -0.152221
+	// -0.073608  -0.016981   0.129348  -0.016188  -0.152221  -0.722832
 	SGMatrix<float64_t> L=inf->get_cholesky();
 
 	EXPECT_NEAR(L(0,0), -0.326180, 1E-5);
@@ -247,6 +248,77 @@ TEST(FITCInferenceMethod,get_negative_marginal_likelihood)
 	EXPECT_NEAR(nml, 0.84354, 1E-5);
 
 	// clean up
+	SG_UNREF(inf);
+}
+
+TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives)
+{
+	// create some easy regression data with latent features:
+	// y approximately equals to x^sin(x)
+	index_t n=6;
+
+	SGMatrix<float64_t> feat_train(1, n);
+	SGMatrix<float64_t> lat_feat_train(1, n);
+	SGVector<float64_t> lab_train(n);
+
+	feat_train[0]=0.81263;
+	feat_train[1]=0.99976;
+	feat_train[2]=1.17037;
+	feat_train[3]=1.51752;
+	feat_train[4]=1.57765;
+	feat_train[5]=3.89440;
+
+	lat_feat_train[0]=0.00000;
+	lat_feat_train[1]=0.80000;
+	lat_feat_train[2]=1.60000;
+	lat_feat_train[3]=2.40000;
+	lat_feat_train[4]=3.20000;
+	lat_feat_train[5]=4.00000;
+
+	lab_train[0]=0.86015;
+	lab_train[1]=0.99979;
+	lab_train[2]=1.15589;
+	lab_train[3]=1.51662;
+	lab_train[4]=1.57764;
+	lab_train[5]=0.39475;
+
+	// shogun representation of features and labels
+	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
+	CDenseFeatures<float64_t>* latent_features_train=new CDenseFeatures<float64_t>(lat_feat_train);
+	CRegressionLabels* labels_train=new CRegressionLabels(lab_train);
+
+	// choose Gaussian kernel with sigma = 2 and zero mean function
+	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
+	CZeroMean* mean=new CZeroMean();
+
+	// Gaussian likelihood with sigma = 0.1
+	CGaussianLikelihood* likelihood=new CGaussianLikelihood(0.1);
+
+	// specify GP regression with Laplacian inference
+	CFITCInferenceMethod* inf=new CFITCInferenceMethod(kernel, features_train,
+		mean, labels_train, likelihood, latent_features_train);
+
+	CGradientResult* result = new CGradientResult();
+
+	result->total_variables=3;
+	result->gradient=inf->get_marginal_likelihood_derivatives(result->parameter_dictionary);
+
+	float64_t dnlZ_ell=4*(*result->gradient.get_element_ptr(0))[0];
+	float64_t dnlZ_sf2=(*result->gradient.get_element_ptr(1))[0];
+	float64_t dnlZ_lik=(*result->gradient.get_element_ptr(2))[0];
+
+	// comparison of partial derivatives of negative marginal likelihood with
+	// result from GPML package:
+	// lik =  2.1930
+	// cov =
+	// -1.67233
+	// 0.55979
+	EXPECT_NEAR(dnlZ_lik, 2.1930, 1E-4);
+	EXPECT_NEAR(dnlZ_ell, -1.67233, 1E-5);
+	EXPECT_NEAR(dnlZ_sf2, 0.55979, 1E-5);
+
+	// clean up
+	SG_UNREF(result);
 	SG_UNREF(inf);
 }
 
