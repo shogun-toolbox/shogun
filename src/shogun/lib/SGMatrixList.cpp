@@ -78,7 +78,7 @@ void SGMatrixList<T>::cleanup_matrices()
 		{
 			// Explicit call to the destructor required
 			// due to the use of in-place constructors
-			matrix_list[i].~SGMatrix();
+			matrix_list[i].~SGMatrix<T>();
 		}
 	}
 }
