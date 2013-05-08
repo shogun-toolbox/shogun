@@ -16,7 +16,7 @@ def preprocessor_kpca(data, threshold, width):
 	from shogun.Preprocessor import KernelPCA
 	from shogun.Kernel import GaussianKernel
 	features = RealFeatures(data)
-	kernel=GaussianKernel(features,features,width)
+	kernel=GaussianKernel(features,features,width)   
 	preprocessor=KernelPCA(kernel)
 	preprocessor.init(features)
 	preprocessor.set_target_dim(2)
