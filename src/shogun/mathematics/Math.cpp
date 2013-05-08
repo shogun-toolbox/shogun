@@ -44,15 +44,11 @@ const float64_t CMath::MIN_REAL_NUMBER=1E-300;
 #ifdef USE_LOGCACHE
 float64_t* CMath::logtable = NULL;
 #endif
-char* CMath::rand_state = NULL;
 uint32_t CMath::seed = 0;
 
 CMath::CMath()
 : CSGObject()
 {
-	CMath::rand_state=SG_MALLOC(char, RNG_SEED_SIZE);
-	init_random();
-
 #ifdef USE_LOGCACHE
     LOGRANGE=CMath::determine_logrange();
     LOGACCURACY=CMath::determine_logaccuracy(LOGRANGE);
@@ -69,8 +65,6 @@ CMath::CMath()
 
 CMath::~CMath()
 {
-	SG_FREE(CMath::rand_state);
-	CMath::rand_state=NULL;
 #ifdef USE_LOGCACHE
 	SG_FREE(CMath::logtable);
 	CMath::logtable=NULL;

@@ -454,11 +454,8 @@ class CMath : public CSGObject
 			}
 			else
 				seed=initseed;
-#if !defined(CYGWIN) && !defined(__INTERIX)
-			//seed=42
-			//SG_SPRINT("initializing random number generator with %d (seed size %d)\n", seed, RNG_SEED_SIZE)
-			initstate(seed, CMath::rand_state, RNG_SEED_SIZE);
-#endif
+
+			sg_rand->set_seed(seed);
 		}
 
 		static inline uint64_t random()
@@ -1167,7 +1164,6 @@ class CMath : public CSGObject
 
 				/// random generator seed
 				static uint32_t seed;
-				static char* rand_state;
 
 #ifdef USE_LOGCACHE
 
