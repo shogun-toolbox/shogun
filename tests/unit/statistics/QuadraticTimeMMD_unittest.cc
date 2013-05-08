@@ -60,8 +60,7 @@ TEST(QuadraticTimeMMD,test_quadratic_mmd_biased)
 	/* assert matlab result */
 	float64_t statistic=mmd->compute_statistic();
 	//SG_SPRINT("statistic=%f\n", statistic);
-	float64_t difference=statistic-0.357650929735592;
-	EXPECT_LE(CMath::abs(difference), 10E-15);
+	EXPECT_NEAR(statistic, 0.357650929735592, 10E-15);
 
 	/* clean up */
 	SG_UNREF(mmd);
