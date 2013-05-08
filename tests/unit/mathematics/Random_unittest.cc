@@ -96,3 +96,13 @@ TEST(Random, fill_array_oc_simd)
 	EXPECT_DOUBLE_EQ(t, rv[dsfmt_get_min_array_size()]);
 }
 #endif
+
+TEST(Random, normal_distrib)
+{
+	CRandom* prng = new CRandom();
+	float64_t t = 75.567130769021162;
+	float64_t r = prng->normal_distrib(100.0, 10.0);
+	SG_UNREF(prng);
+
+	EXPECT_DOUBLE_EQ(t, r);
+}
