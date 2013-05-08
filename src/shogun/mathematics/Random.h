@@ -12,6 +12,7 @@
 #define __RANDOM_H__
 
 #include <shogun/base/SGObject.h>
+#include <shogun/lib/common.h>
 
 #include <shogun/lib/external/SFMT/SFMT.h>
 #include <shogun/lib/external/dSFMT/dSFMT.h>
