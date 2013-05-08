@@ -21,7 +21,7 @@
 using namespace shogun;
 namespace tapkee
 {
-struct ProjectingFunction;
+	struct ProjectingFunction;
 }
 
 namespace shogun
@@ -29,10 +29,10 @@ namespace shogun
 
 struct ProjectingFunction
 {
-  ProjectingFunction(): m_tapkee_projecting_function(NULL) {};
-  void clear();
-  CDenseFeatures<float64_t>* operator()( CDenseFeatures<float64_t>* features);
-  tapkee::ProjectingFunction* m_tapkee_projecting_function; 
+	ProjectingFunction(): m_tapkee_projecting_function(NULL) {};
+	void clear();
+	CDenseFeatures<float64_t>* operator()( CDenseFeatures<float64_t>* features);
+	tapkee::ProjectingFunction* m_tapkee_projecting_function; 
 };
 
 enum TAPKEE_METHODS_FOR_SHOGUN
