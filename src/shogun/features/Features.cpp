@@ -32,12 +32,8 @@ CFeatures::CFeatures(const CFeatures& orig)
 {
 	init();
 
-	//preproc = orig.preproc;
 	preproc = orig.preproc;
 	num_preproc = orig.num_preproc;
-
-	//preprocessed=SG_MALLOC(bool, orig.num_preproc);
-	//memcpy(preprocessed, orig.preprocessed, sizeof(bool)*orig.num_preproc);
 	preprocessed = orig.preprocessed;
 }
 
@@ -64,8 +60,8 @@ void CFeatures::init()
 	/* TODO, use SGVector for arrays to be able to use SG_ADD macro */
 	m_parameters->add_vector((CSGObject***) &preproc, &num_preproc, "preproc",
 			"List of preprocessors");
-	//m_parameters->add_vector(&preprocessed, &num_preproc, "preprocessed",
-	//		"Feature[i] is already preprocessed");
+	m_parameters->add_vector((CSGObject***) &preprocessed, &num_preproc, "preprocessed",
+			"Feature[i] is already preprocessed");
 
 	SG_ADD((CSGObject**)&m_subset_stack, "subset_stack", "Stack of subsets",
 			MS_NOT_AVAILABLE);
@@ -86,28 +82,12 @@ int32_t CFeatures::add_preprocessor(CPreprocessor* p)
 	SG_INFO("%d preprocs currently, new preproc list is\n", num_preproc)
 	ASSERT(p)
 
-	// bool* preprocd=SG_MALLOC(bool, num_preproc+1);
-	// CPreprocessor** pps=SG_MALLOC(CPreprocessor*, num_preproc+1);
-	// for (int32_t i=0; i<num_preproc; i++)
-	// {
-	// 	pps[i]=preproc[i];
-	// 	preprocd[i]=preprocessed[i];
-	// }
-	// SG_FREE(preproc);
-	// SG_FREE(preprocessed);
-	// preproc=pps;
-	// preprocessed=preprocd;
-
-	// preproc[num_preproc]=p;
-	// preprocessed[num_preproc]=false;
 	preproc->push_back(p);
 	preprocessed->push_back(false);
 	num_preproc++;
 
 	for (int32_t i=0; i<num_preproc; i++)
-	  //		SG_INFO("preproc[%d]=%s %ld\n",i, preproc[i]->get_name(), preproc[i]) 
 	  SG_INFO("preproc[%d]=%s %ld\n",i, preproc->get_element(i)->get_name(), preproc->get_element(i));
-		  // SG_REF(p);
 
 	return num_preproc;
 }
@@ -117,9 +97,7 @@ CPreprocessor* CFeatures::get_preprocessor(int32_t num) const
 {
 	if (num<num_preproc)
 	{
-	  //SG_REF(preproc[num]);
 	  return static_cast<CPreprocessor*>(preproc->get_element(num));
-	  //return preproc[num];
 	}
 	else
 		return NULL;
@@ -148,8 +126,6 @@ void CFeatures::clean_preprocessors()
 /// del current preprocessor
 CPreprocessor* CFeatures::del_preprocessor(int32_t num)
 {
-        //CPreprocessor** pps=NULL;
-	//bool* preprocd=NULL;
 	CPreprocessor* removed_preproc=NULL;
 
 	if (num_preproc>0 && num<num_preproc)
@@ -158,35 +134,10 @@ CPreprocessor* CFeatures::del_preprocessor(int32_t num)
 
 		preproc->delete_element(num);
 		preprocessed->delete_element(num);
-		// if (num_preproc>1)
-		// {
-		// 	pps= SG_MALLOC(CPreprocessor*, num_preproc-1);
-		// 	preprocd= SG_MALLOC(bool, num_preproc-1);
-
-		// 	if (pps && preprocd)
-		// 	{
-		// 		int32_t j=0;
-		// 		for (int32_t i=0; i<num_preproc; i++)
-		// 		{
-		// 			if (i!=num)
-		// 			{
-		// 				pps[j]=preproc[i];
-		// 				preprocd[j]=preprocessed[i];
-		// 				j++;
-		// 			}
-		// 		}
-		// 	}
-		// }
-
-		// SG_FREE(preproc);
-		// preproc=pps;
-		// SG_FREE(preprocessed);
-		// preprocessed=preprocd;
 
 		num_preproc--;
 
 		for (int32_t i=0; i<num_preproc; i++)
-		  //SG_INFO("preproc[%d]=%s\n",i, preproc[i]->get_name()) 
 		  SG_INFO("preproc[%d]=%s\n",i, preproc->get_element(i)->get_name()) 
 	}
 
