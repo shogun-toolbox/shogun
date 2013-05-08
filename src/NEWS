@@ -4,7 +4,10 @@
 	* This release contains several cleanups and bugfixes:
 	* Features:
 		- Added nu-SVR for LibSVR class
-		- Proa
+		- Modelselection is now supported for parameters of sub-kernels of
+		  combined kernels in the MKL context. Thanks to Evangelos Anagnostopoulos
+		- Probability output for multi-class SVMs is now supported using various
+		  heuristics. Thanks to Shell Xu Hu.
 	* Bugfixes:
 		- Fix json serialization.
 		- Fixed bugs in FITC inference method that caused wrong posterior results.
