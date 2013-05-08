@@ -94,6 +94,7 @@ TARGETS = basic_minimal \
 		  statistics_quadratic_time_mmd \
 		  statistics_linear_time_mmd \
 		  statistics_mmd_kernel_selection \
+		  statistics_hsic \
 		  classifier_featureblocklogisticregression \
 		  so_multiclass_BMRM \
 		  balanced_conditional_probability_tree \
