@@ -9,7 +9,7 @@ def kernel_director_linear_modular (fm_train_real=traindat,fm_test_real=testdat,
 	try:
 		from shogun.Kernel import DirectorKernel
 	except ImportError:
-		print "recompile shogun with --enable-swig-directors"
+		print("recompile shogun with --enable-swig-directors")
 		return
 
 	class DirectorLinearKernel(DirectorKernel):

@@ -63,7 +63,7 @@ document_interface()
 							prefix="#"
 							;;
 						(lua)
-							prefix="- "
+							prefix="-- "
 							;;
 						(java)
 							prefix="\/\/"

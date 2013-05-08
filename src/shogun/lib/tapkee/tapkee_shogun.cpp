@@ -137,10 +137,17 @@ void prepare_tapkee_parameters_set(const TAPKEE_PARAMETERS_FOR_SHOGUN& parameter
 			method = tapkee::FactorAnalysis;
 			N = parameters.features->get_num_vectors();
 			break;
+
                 case SHOGUN_KERNEL_PCA:
                         method = tapkee::KernelPCA;
                         N = parameters.kernel->get_num_vec_lhs();
                         break;
+
+		case SHOGUN_TDISTRIBUTED_STOCHASTIC_NEIGHBOR_EMBEDDING:
+			method = tapkee::tDistributedStochasticNeighborEmbedding;
+			N = parameters.features->get_num_vectors();
+			break;
+
 	}
 
 	std::vector<int32_t> tmp_indices(N);
@@ -161,7 +168,9 @@ void prepare_tapkee_parameters_set(const TAPKEE_PARAMETERS_FOR_SHOGUN& parameter
 		 tapkee::keywords::spe_tolerance = parameters.spe_tolerance,
 		 tapkee::keywords::spe_global_strategy = parameters.spe_global_strategy,
 		 tapkee::keywords::max_iteration = parameters.max_iteration,
-		 tapkee::keywords::fa_epsilon = parameters.fa_epsilon
+		 tapkee::keywords::fa_epsilon = parameters.fa_epsilon,
+		 tapkee::keywords::sne_perplexity = parameters.sne_perplexity,
+		 tapkee::keywords::sne_theta = parameters.sne_theta
 		 );
 
 }

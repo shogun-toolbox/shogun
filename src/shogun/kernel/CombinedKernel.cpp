@@ -13,7 +13,7 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/Signal.h>
 #include <shogun/base/Parallel.h>
-
+#include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/kernel/CombinedKernel.h>
 #include <shogun/kernel/CustomKernel.h>
@@ -924,4 +924,143 @@ CCombinedKernel* CCombinedKernel::obtain_from_generic(CKernel* kernel)
 	/* since an additional reference is returned */
 	SG_REF(kernel);
 	return (CCombinedKernel*)kernel;
+}
+
+CList* CCombinedKernel::combine_kernels(CList* kernel_list)
+{
+	CList* return_list = new CList(true);
+	SG_REF(return_list);
+
+	if (!kernel_list)
+		return return_list;
+
+	if (kernel_list->get_num_elements()==0)
+		return return_list;
+	
+	int32_t num_combinations = 1;
+	int32_t list_index = 0;
+
+	/* calculation of total combinations */
+	CSGObject* list = kernel_list->get_first_element();
+	while (list)
+	{
+		CList* c_list= dynamic_cast<CList* >(list);
+		if (!c_list) 
+			SG_SERROR("CCombinedKernel::combine_kernels() : Failed to cast list of type "
+					"%s to type CList\n", list->get_name());
+
+		if (c_list->get_num_elements()==0)
+			SG_SERROR("CCombinedKernel::combine_kernels() : Sub-list in position %d "
+					"is empty.\n", list_index);
+
+		num_combinations *= c_list->get_num_elements();
+
+		if (kernel_list->get_delete_data())
+			SG_UNREF(list);
+
+		list = kernel_list->get_next_element();
+		++list_index;
+	}
+
+	/* creation of CCombinedKernels */
+	CDynamicObjectArray kernel_array(num_combinations);
+	for (index_t i=0; i<num_combinations; ++i)
+	{
+		CCombinedKernel* c_kernel = new CCombinedKernel();
+		return_list->append_element(c_kernel);
+		kernel_array.push_back(c_kernel);
+	}
+
+	/* first pass */
+	list = kernel_list->get_first_element();
+	CList* c_list = dynamic_cast<CList* >(list);
+
+	/* kernel index in the list */
+	index_t kernel_index = 0;
+
+	/* here we duplicate the first list in the following form 
+	*  a,b,c,d,   a,b,c,d  ......   a,b,c,d  ---- for  a total of num_combinations elements
+	*/
+	EKernelType prev_kernel_type;
+	bool first_kernel = true;
+	for (CSGObject* kernel=c_list->get_first_element(); kernel; kernel=c_list->get_next_element())
+	{
+		CKernel* c_kernel = dynamic_cast<CKernel* >(kernel);
+
+		if (first_kernel)
+			 first_kernel = false;
+		else if (c_kernel->get_kernel_type()!=prev_kernel_type)
+			SG_SERROR("CCombinedKernel::combine_kernels() : Sub-list in position "
+					"0 contains different types of kernels\n");
+		
+		prev_kernel_type = c_kernel->get_kernel_type();
+
+		for (index_t index=kernel_index; index<num_combinations; index+=c_list->get_num_elements())
+		{
+			CCombinedKernel* comb_kernel = 
+					dynamic_cast<CCombinedKernel* >(kernel_array.get_element(index));
+			comb_kernel->insert_kernel(c_kernel);
+			SG_UNREF(comb_kernel);
+		}
+		++kernel_index;
+		if (c_list->get_delete_data())
+			SG_UNREF(kernel);
+	}
+
+	if (kernel_list->get_delete_data())
+		SG_UNREF(list);
+
+	/* how often each kernel of the sub-list must appear */
+	int32_t freq = c_list->get_num_elements();
+
+	/* in this loop we replicate each kernel freq times 
+	*  until we assign to all the CombinedKernels a sub-kernel from this list 
+	*  That is for num_combinations */
+	list = kernel_list->get_next_element();
+	list_index = 1;
+	while (list)
+	{
+		c_list = dynamic_cast<CList* >(list);
+
+		/* index of kernel in the list */
+		kernel_index = 0;
+		first_kernel = true;
+		for (CSGObject* kernel=c_list->get_first_element(); kernel; kernel=c_list->get_next_element())
+		{
+			CKernel* c_kernel = dynamic_cast<CKernel* >(kernel);
+
+			if (first_kernel)
+				first_kernel = false;
+			else if (c_kernel->get_kernel_type()!=prev_kernel_type)
+				SG_SERROR("CCombinedKernel::combine_kernels() : Sub-list in position "
+						"%d contains different types of kernels\n", list_index);
+
+			prev_kernel_type = c_kernel->get_kernel_type();
+
+			/* moves the index so that we keep filling in, the way we do, until we reach the end of the list of combinedkernels */
+			for (index_t base=kernel_index*freq; base<num_combinations; base+=c_list->get_num_elements()*freq)
+			{
+				/* inserts freq consecutives times the current kernel */
+				for (index_t index=0; index<freq; ++index)
+				{
+					CCombinedKernel* comb_kernel = 
+							dynamic_cast<CCombinedKernel* >(kernel_array.get_element(base+index));
+					comb_kernel->insert_kernel(c_kernel);
+					SG_UNREF(comb_kernel);
+				}
+			}
+			++kernel_index;
+
+			if (c_list->get_delete_data())
+				SG_UNREF(kernel);
+		}
+
+		freq *= c_list->get_num_elements();
+		if (kernel_list->get_delete_data())
+			SG_UNREF(list);
+		list = kernel_list->get_next_element();
+		++list_index;
+	}
+
+	return return_list;
 }

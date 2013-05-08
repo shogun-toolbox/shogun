@@ -13,7 +13,7 @@ def regression_gaussian_process_modular (n=100,n_test=100, \
 		from shogun.Regression import GaussianLikelihood, ZeroMean, \
 				ExactInferenceMethod, GaussianProcessRegression
 	except ImportError:
-		print "Eigen3 needed for Gaussian Processes"
+		print("Eigen3 needed for Gaussian Processes")
 		return
 		
 	# reproducable results
@@ -52,7 +52,7 @@ def regression_gaussian_process_modular (n=100,n_test=100, \
 	# inference
 	gp.set_return_type(GaussianProcessRegression.GP_RETURN_MEANS)
 	mean = gp.apply_regression(feats_test)
-	gp.set_return_type(GaussianProcessRegression.GP_RETURN_MEANS)
+	gp.set_return_type(GaussianProcessRegression.GP_RETURN_COV)
 	covariance = gp.apply_regression(feats_test)
 	
 	# plot results

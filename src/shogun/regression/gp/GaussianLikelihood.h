@@ -25,7 +25,7 @@ namespace shogun
  */
 class CGaussianLikelihood: public CLikelihoodModel
 {
-  
+
 public:
 	/** Constructor*/
 	CGaussianLikelihood();
@@ -56,6 +56,13 @@ public:
 	 */
 	void set_sigma(float64_t s) {m_sigma = s;}
 
+	/** helper method used to specialize a base class instance
+	 *
+	 * @param likelihood likelihood model
+	 * @return casted CGaussianLikelihood object
+	 */
+	static CGaussianLikelihood* obtain_from_generic(CLikelihoodModel* likelihood);
+
 	/** Evaluate means
 	 *
 	 * @param means vector of means calculated by inference method
@@ -69,7 +76,7 @@ public:
 	 * @return Final variances evaluated by likelihood function
 	 */
 	virtual SGVector<float64_t> evaluate_variances(SGVector<float64_t>& vars);
-	
+
 	/** get model type
 	  *
 	  * @return model type Gaussian

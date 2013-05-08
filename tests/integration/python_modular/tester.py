@@ -6,6 +6,7 @@ import os
 import filecmp
 import numpy
 import sys
+import difflib
 
 from generator import setup_tests, get_fname, blacklist, get_test_mod, run_test
 
@@ -84,6 +85,23 @@ def compare_dbg_helper(a, b, tolerance):
 		print "b", b
 		return False
 
+def get_fail_string(a):
+	failed_string = []
+	if type(a) in (tuple,list):
+		for i in xrange(len(a)):
+			failed_string.append(get_fail_string(a[i]))
+	elif isinstance(a, modshogun.SGObject):
+		failed_string.append(pickle.dumps(a))
+	else:
+		failed_string.append(str(a))
+	return failed_string
+
+def get_split_string(a):
+	strs=[]
+	for l in a:
+		strs.extend(l[0].replace('\\n','\n').splitlines())
+	return strs
+
 def tester(tests, cmp_method, tolerance, failures, missing):
 	failed=[]
 
@@ -112,7 +130,7 @@ def tester(tests, cmp_method, tolerance, failures, missing):
 							print "%-60s OK" % setting_str
 					else:
 						if not missing:
-							failed.append(setting_str)
+							failed.append((setting_str, get_fail_string(a), get_fail_string(b)))
 							print "%-60s ERROR" % setting_str
 				except Exception, e:
 					print setting_str, e
@@ -151,6 +169,21 @@ if __name__=='__main__':
 		print
 		print "The following tests failed!"
 		for f in failed:
-			print "\t", f
+			print "\t", f[0]
+			expected=get_split_string(f[1])
+			got=get_split_string(f[2])
+			print "=== EXPECTED =========="
+			#import pdb
+			#pdb.set_trace()
+			#print '\n'.join(expected)
+			#print "=== GOT ==============="
+			#print '\n'.join(got)
+			print "====DIFF================"
+			print '\n'.join(difflib.unified_diff(expected, got, fromfile='expected', tofile='got'))
+			print "====EOT================"
+			print "\n\n\n"
+		for f in failed:
+			print "\t", f[0]
+
 		sys.exit(1)
 	sys.exit(0)

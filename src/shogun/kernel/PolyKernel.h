@@ -83,6 +83,9 @@ class CPolyKernel: public CDotKernel
 		 */
 		virtual const char* get_name() const { return "PolyKernel"; };
 
+		/** @return degree of kernel */
+		virtual int32_t get_degree() { return degree; }
+
 	protected:
 		/** compute kernel function for features a and b
 		 * idx_{a,b} denote the index of the feature vectors

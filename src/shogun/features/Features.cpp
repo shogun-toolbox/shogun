@@ -137,6 +137,8 @@ int32_t CFeatures::get_num_preprocessed() const
 void CFeatures::clean_preprocessors()
 {
 	while (del_preprocessor(0));
+	SG_FREE(preproc);
+	preproc=NULL;
 }
 
 /// del current preprocessor

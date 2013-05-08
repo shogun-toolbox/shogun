@@ -12,7 +12,6 @@
 
 #include <shogun/lib/config.h>
 #ifdef HAVE_EIGEN3
-#ifdef HAVE_LAPACK
 
 #include <shogun/regression/Regression.h>
 #include <shogun/machine/Machine.h>
@@ -222,6 +221,5 @@ class CGaussianProcessRegression : public CMachine
 
 }
 
-#endif 
 #endif
 #endif /* _GAUSSIANPROCESSREGRESSION_H__ */

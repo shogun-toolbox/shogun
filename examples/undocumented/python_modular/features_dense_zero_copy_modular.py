@@ -32,7 +32,7 @@ def features_dense_zero_copy_modular (in_data=data):
 		#print d[0:4]
 		#print e[0:4]
 	else:
-		print "numpy version >= 1.5 is needed"
+		print("numpy version >= 1.5 is needed")
 
 	return feats
 

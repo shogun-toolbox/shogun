@@ -13,7 +13,7 @@
 #include <shogun/lib/config.h>
 #include <shogun/regression/gp/InferenceMethod.h>
 #ifdef HAVE_EIGEN3
-#ifdef HAVE_LAPACK
+
 namespace shogun
 {
 
@@ -130,7 +130,7 @@ public:
 	{
 		return "ExactInferenceMethod";
 	}
-	
+
 	/** Get the gradient
 	 *
 	 * @return Map of gradient. Keys are names of parameters, values are
@@ -178,7 +178,6 @@ private:
 };
 
 }
-#endif 
-#endif // HAVE_LAPACK
+#endif // HAVE_EIGEN3
 
 #endif /* CEXACTINFERENCEMETHOD_H_ */

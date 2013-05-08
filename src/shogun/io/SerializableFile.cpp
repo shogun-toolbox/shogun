@@ -14,19 +14,19 @@
 using namespace shogun;
 
 CSerializableFile::CSerializableFile()
-	:CSGObject()
+	: CSGObject(), m_filename(NULL)
 {
 	init(NULL, 0, "(file)");
 }
 
 CSerializableFile::CSerializableFile(FILE* fstream, char rw)
-	:CSGObject()
+	:CSGObject(), m_filename(NULL)
 {
 	init(fstream, rw, "(file)");
 }
 
 CSerializableFile::CSerializableFile(const char* fname, char rw)
-	:CSGObject()
+	:CSGObject(), m_filename(NULL)
 {
 	char mode[3] = {rw, 'b', '\0'};
 
@@ -61,8 +61,10 @@ void
 CSerializableFile::init(FILE* fstream, char task, const char* filename)
 {
 	m_fstream = fstream;
-    m_task = task;
-    m_filename = strdup(filename);
+	m_task = task;
+	SG_FREE(m_filename);
+	m_filename = SG_MALLOC(char, strlen(filename)+1);
+	strcpy(m_filename, filename);
 	m_reader = NULL;
 }
 

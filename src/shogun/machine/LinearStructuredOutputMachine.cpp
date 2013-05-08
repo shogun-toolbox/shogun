@@ -42,6 +42,11 @@ CFeatures* CLinearStructuredOutputMachine::get_features() const
 	return m_model->get_features();
 }
 
+void CLinearStructuredOutputMachine::set_w(SGVector< float64_t > w)
+{
+	m_w = w;
+}
+
 SGVector< float64_t > CLinearStructuredOutputMachine::get_w() const
 {
 	return m_w;

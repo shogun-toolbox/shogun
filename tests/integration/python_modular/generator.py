@@ -7,6 +7,7 @@ import pickle
 example_dir = '../../../examples/undocumented/python_modular'
 test_dir = '../../../tests/integration/tests'
 blacklist = ("__init__.py", "classifier_libsvm_minimal_modular.py",
+		"converter_tdistributedstochasticneighborembedding_modular.py",
 		"kernel_combined_modular.py",
 		"kernel_distance_modular.py",
 		"distribution_hmm_modular.py",
@@ -85,8 +86,7 @@ def generator(tests):
 		except TypeError:
 			continue
 		except Exception, e:
-			print "%-60s" % mod_name,
-			print e
+			print t, e
 			continue
 		fname = ""
 

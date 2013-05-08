@@ -1,20 +1,30 @@
-2013-04-01 Soeren Sonnenburg <sonne@debian.org>
+2013-10-01 Soeren Sonnenburg <sonne@debian.org>
 
 	* SHOGUN Release version 2.2.0 (libshogun 14.0, data 0.6, parameter 1)
 	* This release contains several cleanups and bugfixes:
 	* Features:
 		- Added nu-SVR for LibSVR class
+		- Modelselection is now supported for parameters of sub-kernels of
+		  combined kernels in the MKL context. Thanks to Evangelos Anagnostopoulos
+		- Probability output for multi-class SVMs is now supported using various
+		  heuristics. Thanks to Shell Xu Hu.
 	* Bugfixes:
-		- None
+		- Fix json serialization.
+		- Fixed bugs in FITC inference method that caused wrong posterior results.
+		- Fixed bugs in GP Regression that caused negative values for the variances.
+		- Fixed two memory errors in the streaming-features framework.
 	* Cleanup and API Changes:
-		- None
+		- Rename HMSVMLabels to SequenceLabels
+		- Refactored method to fit a sigmoid to SVM scores, now in CStatistics,
+		  still called from CBinaryLabels.
+		- Use Eigen3 for GPs
 
 2013-03-17 Soeren Sonnenburg <sonne@debian.org>
 
 	* SHOGUN Release version 2.1.0 (libshogun 13.0, data 0.5, parameter 1)
 	* This release also contains several enhancements, cleanups and bugfixes:
 	* Features:
-		- Linear Time MMD two-sample test now works on streaming-features, which 
+		- Linear Time MMD two-sample test now works on streaming-features, which
 		  allows to perform tests on infinite amounts of data. A block size may
 		  be specified for fast processing. The below features were also added.
 		  By Heiko Strathmann.
@@ -25,8 +35,8 @@
 		- New concept of artificial data generator classes: Based on streaming
 		  features. First implemented instances are CMeanShiftDataGenerator and
 		  CGaussianBlobsDataGenerator.
-		  Use above new concepts to get non-streaming data if desired. 
-		- Accelerated projected gradient multiclass logistic regression classifier 
+		  Use above new concepts to get non-streaming data if desired.
+		- Accelerated projected gradient multiclass logistic regression classifier
 		  by Sergey Lisitsyn.
 		- New CCSOSVM based structured output solver by Viktor Gal
 		- A collection of kernel selection methods for MMD-based kernel two-
@@ -48,7 +58,7 @@
 		  that was suggested by Oksana Bayda.
 		- Fix for wrong Spectrum mismatch RBF construction in static interfaces reported
 		  by Nona Kermani.
-		- Fix for wrong include in SGMatrix causing build fail on Mac OS X 
+		- Fix for wrong include in SGMatrix causing build fail on Mac OS X
 		  (thanks to @bianjiang).
 		- Fixed a bug that caused kernel machines to return non-sense when using
           custom kernel matrices with subsets attached to them.
@@ -81,8 +91,8 @@
 		  and kernel multiclass machines, multiclass LibLinear and OCAS wrappers,
 		  new rejection schemes concept by Sergey Lisitsyn.
 		- Various multitask learning algorithms including L1/Lq multitask group lasso logistic regression
-		  and least squares regression, L1/L2 multitask tree guided group lasso logistic regression 
-		  and least squares regression, trace norm regularized multitask logistic regression, clustered multitask 
+		  and least squares regression, L1/L2 multitask tree guided group lasso logistic regression
+		  and least squares regression, trace norm regularized multitask logistic regression, clustered multitask
 		  logistic regression and L1/L2 multitask group logistic regression by Sergey Lisitsyn.
 		- Group and tree-guided logistic regression for binary and multiclass problems by Sergey Lisitsyn.
 		- Mahalanobis distance, QDA, Stochastic Proximity Embedding,
@@ -110,7 +120,7 @@
 		  tree and relaxed tree by Chiyuan Zhang.
 		- Python Sparse matrix typemap for octave modular interface (thanks to Evgeniy Andreev).
 		- Newton SVM port (thanks to Harshit Syal).
-		- Some progress on native windows compilation using 
+		- Some progress on native windows compilation using
 		  cmake and mingw-w64 (thanks to Josh aka jklontz).
 		- CMake compilation improvements (thanks to Eric aka yoo).
 	* Bugfixes:
@@ -173,7 +183,7 @@
 	   - Port all examples to the new languages:
 	     Ruby examples with example transition tool (thanks to Justin Patera aka serialhex)
 	   - Dimensionality reduction (manifold learning) algorithms
-	     are now available. In particular: Locally Linear Embedding (LLE), Hessian 
+	     are now available. In particular: Locally Linear Embedding (LLE), Hessian
 	     Locally Linear Embedding (HLLE), Local Tangent Space Alignment (LTSA),
 	     Kernel PCA (kPCA), Multidimensional Scaling (MDS, with possible landmark
 	     approximation), Isomap (using Fibonacci Heap Dijkstra for shortest paths),
@@ -181,21 +191,21 @@
 	     (GSoC project of Sergey Lisitsyn)
 	   - Various new kernels: TStudentKernel, CircularKernel, WaveKernel,
 	     SplineKernel, LogKernel, RationalQuadraticKernel, WaveletKernel,
-	     BesselKernel, PowerKernel, ExponentialKernel, CauchyKernel, 
-	     ANOVAKernel, MultiquadricKernel, SphericalKernel, 
+	     BesselKernel, PowerKernel, ExponentialKernel, CauchyKernel,
+	     ANOVAKernel, MultiquadricKernel, SphericalKernel,
 	     DistantSegmentsKernel (thanks GSoC students for the contributions!)
 	   - Streaming / Online Feature Framework for SimpleFeatures,
 	     SparseFeatures, StringFeatures (GSoC project of Shashwat Lal Das)
 	   - SGD-QN, Online SGD, Online Liblinear, Online Vowpal Vabit (GSoC
 	     project of Shashwat Lal Das)
-	   - Model selection framework for arbitrary Machines 
+	   - Model selection framework for arbitrary Machines
 	     (GSoC project of Heiko Strathmann)
 	   - Gaussian Mixture Models (GSoC project of Alesis Novik)
 	   - FibonacciHeap for efficient shortest-path
 	     problem solving (thanks to Evgeniy Andreev)
 	   - Efficient HashSet (thanks to Evgeniy Andreev)
 	   - ARPACK wrapper (dseupd) for symmetric eigenproblems (both
-	     generalized and non-generalized), 
+	     generalized and non-generalized),
 	     some new LAPACK wrappers (Sergey Lisitsyn)
 	   - New Statistics module for various statistics measures (Heiko Strathmann)
 	   - Subset support to features (Heiko Strathmann)
@@ -215,7 +225,7 @@
 	   - Create a single 'modshogun' module resembling the functionality found
 	     in libshogun. Now octave_modular and other modular interfaces work reliably.
 	   - Introduce SGVector, SGMatrix, SGNDArray, SGStringList for transfering
-	     object-pointers and meta-data from/to shogun. 
+	     object-pointers and meta-data from/to shogun.
 	   - Classes no longer store copies of e.g. matrices, and just pass
 	     pointers on set/get operations.
 	   - Stop using new[] / delete[] and switch to SG_MALLOC, SG_CALLOC,
@@ -723,7 +733,7 @@
 2007-07-30  Soeren Sonnenburg <debian@nn7.de>
 
 	* SHOGUN Release version 0.4.0
-	* new methods: 
+	* new methods:
 		- SubgradientSVM
 		- GMNPSVM (multiclass b-SVM)
 		- SubgradientLPM
@@ -734,7 +744,7 @@
 	* linadd support for GPDTSVM
 	* new commands new_classifier / train_classifier / get_classifier
 	* support for sparse features (from matlab)
-	* cleaned and added many more examples 
+	* cleaned and added many more examples
 	* removed suffixarray code due to license conflicts
 	* Matlab R2007a support
 	* all string kernels now work on strings (not charfeatures)
@@ -767,7 +777,7 @@
 	* much improved build system
 	* updated coding conventions (though still in a flux)
 	* enable warnings for shadowed variables
-	* lots of build fixes 
+	* lots of build fixes
 
 2006-12-05  Soeren Sonnenburg <debian@nn7.de>
 
@@ -803,7 +813,7 @@
 	* compile fixes for octave and matlab on osx
 	* configure now scans a number of variants to detect include and library paths
 	* configure obeys INCLUDES LIBS environment variables and optional
-	  paths specified by --libraries --includes 
+	  paths specified by --libraries --includes
 	* updated copyright infos
 	* updated license infos
 
@@ -814,7 +824,7 @@
 	* some compile fixes for cygwin/WIN32
 	* Weighted Degree/Weighted Degree Shift kernel speedups & fixes
 	* python build fixes
-	* initial *workin* swig support 
+	* initial *workin* swig support
 	* entropy example
 
 2006-06-15  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>

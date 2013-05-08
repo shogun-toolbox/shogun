@@ -13,7 +13,7 @@ def evaluation_director_contingencytableevaluation_modular (ground_truth, predic
 	try:
 		from shogun.Evaluation import DirectorContingencyTableEvaluation, ED_MAXIMIZE
 	except ImportError:
-		print "recompile shogun with --enable-swig-directors"
+		print("recompile shogun with --enable-swig-directors")
 		return
 
 	class SimpleWeightedBinaryEvaluator(DirectorContingencyTableEvaluation):
@@ -29,7 +29,7 @@ def evaluation_director_contingencytableevaluation_modular (ground_truth, predic
 	evaluator = SimpleWeightedBinaryEvaluator()
 	r = evaluator.evaluate(BinaryLabels(ground_truth), BinaryLabels(predicted))
 	r2 = evaluator.get_custom_score()
-	print r,r2
+	print(r,r2)
 
 	return r,r2
 

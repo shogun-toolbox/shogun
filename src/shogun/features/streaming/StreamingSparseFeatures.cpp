@@ -31,6 +31,11 @@ CStreamingSparseFeatures<T>::CStreamingSparseFeatures(CStreamingFile* file,
 template <class T>
 CStreamingSparseFeatures<T>::~CStreamingSparseFeatures()
 {
+	/* needed to prevent double free memory errors */
+	/* this might result in a small memory leak... */
+	current_sgvector.features=NULL;
+	current_sgvector.num_feat_entries=0;
+
 	parser.end_parser();
 }
 

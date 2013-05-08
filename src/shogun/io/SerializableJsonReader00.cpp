@@ -18,7 +18,9 @@ using namespace shogun;
 SerializableJsonReader00::SerializableJsonReader00(
 	CSerializableJsonFile* file) { m_file = file; }
 
-SerializableJsonReader00::~SerializableJsonReader00() {}
+SerializableJsonReader00::~SerializableJsonReader00()
+{
+}
 
 bool
 SerializableJsonReader00::read_scalar_wrapped(
@@ -304,8 +306,8 @@ SerializableJsonReader00::read_type_begin_wrapped(
 	if (strcmp(str_buf, json_object_get_string(buf)) != 0)
 		return false;
 
-	if (!m_file->get_object_any(&buf, buf_type, STR_KEY_DATA))
-		return false;
+	// data (and so buf) can be NULL for empty objects
+	m_file->get_object_any(&buf, buf_type, STR_KEY_DATA);
 	m_file->push_object(buf);
 
 	return true;

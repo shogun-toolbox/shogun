@@ -445,14 +445,39 @@ public:
 	}
 
 	 /** Derivative of the log gamma function.
-         *
-         * Taken from likT.m from the GPML
-         * toolbox.
-         *
-         * @param x input
-         * @return derivative of the log gamma input
-         */
-        static float64_t dlgamma(float64_t x);
+	 *
+	 * Taken from likT.m from the GPML
+	 * toolbox.
+	 *
+	 * @param x input
+	 * @return derivative of the log gamma input
+	 */
+	static float64_t dlgamma(float64_t x);
+
+	/** Representation of a Sigmoid function for the fit_sigmoid function */
+	struct SigmoidParamters
+	{
+		/** parameter a */
+		float64_t a;
+
+		/** parameter b */
+		float64_t b;
+	};
+
+	/** Converts a given vector of scores to calibrated probabilities by fitting a
+	 * sigmoid function using the method described in
+	 * Lin, H., Lin, C., and Weng, R. (2007).
+	 * A note on Platt's probabilistic outputs for support vector machines.
+	 *
+	 * This can be used to transform scores to probabilities as setting
+	 * \f$pf=x*a+b\f$ for a given score \f$x\f$ and computing
+	 * \f$\frac{\exp(-f)}{1+}exp(-f)}\f$ if \f$f\geq 0\f$ and
+	 * \f$\frac{1}{(1+\exp(f)}\f$ otherwise
+	 *
+	 * @param scores scores to fit the sigmoid to
+	 * @return struct containing the sigmoid's shape parameters a and b
+	 */
+	static SigmoidParamters fit_sigmoid(SGVector<float64_t> scores);
 
 #ifdef HAVE_EIGEN3
 	/** The log determinant of a dense matrix
@@ -523,7 +548,6 @@ public:
 	 */
 	static SGMatrix<float64_t> sample_from_gaussian(SGVector<float64_t> mean,  
 	SGSparseMatrix<float64_t> cov, int32_t N=1, bool precision_matrix=false);
-
 #endif //HAVE_EIGEN3
 
 

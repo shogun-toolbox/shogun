@@ -25,6 +25,7 @@ TARGETS = basic_minimal \
 		  classifier_gaussiannaivebayes \
 		  classifier_multiclasslibsvm \
 		  classifier_qda \
+		  classifier_lda \
 		  classifier_multiclasslinearmachine \
 		  kernel_gaussian kernel_revlin kernel_custom\
 		  library_dyn_int library_gc_array library_indirect_object \
@@ -52,6 +53,7 @@ TARGETS = basic_minimal \
 		  modelselection_grid_search_kernel \
 		  modelselection_grid_search_string_kernel \
 		  modelselection_grid_search_multiclass_svm \
+  		  modelselection_combined_kernel_sub_parameters \
 		  features_dense_real_modular \
 		  features_subset_stack \
 		  features_subset_simple_features \
@@ -108,6 +110,7 @@ TARGETS = basic_minimal \
   		  classifier_mkl_svmlight_modelselection_bug \
   		  base_migration_new_buggy \
   		  regression_libsvr \
+  		  classifier_multiclass_prob_heuristics \
   		  
 
 all: $(TARGETS)

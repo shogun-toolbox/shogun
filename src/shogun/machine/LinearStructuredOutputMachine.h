@@ -47,6 +47,12 @@ class CLinearStructuredOutputMachine : public CStructuredOutputMachine
 		 */
 		CFeatures* get_features() const;
 
+		/** set w (useful for modular interfaces)
+		 *
+		 * @param w weight vector to set
+		 */
+		void set_w(SGVector< float64_t > w);
+
 		/** get w
 		 *
 		 * @return w
