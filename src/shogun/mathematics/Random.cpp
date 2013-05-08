@@ -14,13 +14,19 @@
 using namespace shogun;
 
 CRandom::CRandom()
- : m_seed(12345)
+ : m_seed(12345),
+ m_sfmt_32(NULL),
+ m_sfmt_64(NULL),
+ m_dsfmt(NULL)
 {
 	init();
 }
 
 CRandom::CRandom(uint32_t seed)
- : m_seed(seed)
+ : m_seed(seed),
+ m_sfmt_32(NULL),
+ m_sfmt_64(NULL),
+ m_dsfmt(NULL)
 {
 	init();
 }
@@ -88,7 +94,6 @@ void CRandom::fill_array(uint64_t* array, int32_t size) const
 			array[i] = random_64();
 	}
 }
-
 
 void CRandom::fill_array_oc(float64_t* array, int32_t size) const
 {
