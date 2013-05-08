@@ -19,7 +19,7 @@ d2=[data[i][number_of_points_for_circle1:(number_of_points_for_circle1+number_of
 p.plot(d[1][:],d[0][:],'x',d2[1][:],d2[0][:],'o')
 p.title('input data')
 p.show()
-
+  
 
 
 parameter_list = [[data,0.01,1.0], [data,0.05,2.0]]

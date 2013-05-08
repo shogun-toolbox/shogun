@@ -11,7 +11,7 @@ d=[data[i][0:number_of_points_for_circle1] for i in range(0,row_vector)]
 d2=[data[i][number_of_points_for_circle1:(number_of_points_for_circle1+number_of_points_for_circle2)] for i in range(0,row_vector)]	
 parameter_list = [[data,0.01,1.0], [data,0.05,2.0]]
 def preprocessor_kpca(data, threshold, width):
-	
+	 
 	from shogun.Features import RealFeatures
 	from shogun.Preprocessor import KernelPCA
 	from shogun.Kernel import GaussianKernel
