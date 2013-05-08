@@ -12,6 +12,7 @@
 		- Fix json serialization.
 		- Fixed bugs in FITC inference method that caused wrong posterior results.
 		- Fixed bugs in GP Regression that caused negative values for the variances.
+		- Fixed two memory errors in the streaming-features framework.
 	* Cleanup and API Changes:
 		- Rename HMSVMLabels to SequenceLabels
 		- Refactored method to fit a sigmoid to SVM scores, now in CStatistics,
