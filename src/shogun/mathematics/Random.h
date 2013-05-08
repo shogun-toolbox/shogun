@@ -134,6 +134,27 @@ namespace shogun
 			 */			
 			float64_t random_half_open() const;
 
+			/**
+			 * Sample a normal distrbution.
+			 * Using Ziggurat algorithm
+			 * @TODO check it's correctness
+			 *
+			 * @param mu mean
+			 * @param sigma variance
+			 * @return sample from the desired normal distrib
+			 */
+			float64_t normal_distrib(float64_t mu, float64_t sigma) const;
+
+			/**
+			 * Sample a standard normal distribution, 
+			 * i.e. mean = 0, var = 1.0
+			 * @TODO check it's correctness!
+			 *
+			 * @return sample from the std normal distrib
+			 */
+			float64_t std_normal_distrib() const;
+
+
 			virtual const char* get_name() const { return "Random"; } 
 
 		private:
@@ -158,6 +179,23 @@ namespace shogun
 #endif
 			 }
 
+			/**
+			 * Sample from the distribution tail (defined as having x >= R).
+			 * 
+			 * @return
+			 */
+			float64_t sample_tail() const;
+
+			/**
+			 * Gaussian probability density function, denormailised, that is, y = e^-(x^2/2).
+			 */
+			float64_t GaussianPdfDenorm(float64_t x) const;
+
+			/**
+			 * Inverse function of GaussianPdfDenorm(x)
+			 */
+			float64_t GaussianPdfDenormInv(float64_t y) const;
+
 		private:
 			/** seed */
 			uint32_t m_seed;
@@ -170,6 +208,31 @@ namespace shogun
 
 			/** dSFMT struct */
 			dsfmt_t* m_dsfmt;
+
+			/** Number of blocks */
+			static const int32_t m_blockCount = 128;
+
+			/** Right hand x coord of the base rectangle, thus also the left hand x coord of the tail */
+    		float64_t m_R;//= 3.442619855899;
+
+    		/** Area of each rectangle (pre-determined/computed for 128 blocks). */
+			float64_t m_A;// = 9.91256303526217e-3;
+
+			/** Scale factor for converting a UInt with range [0,0xffffffff] to a double with range [0,1]. */
+			float64_t m_uint32ToU;// = 1.0 / (float64_t)UINT32_MAX;
+
+			/** Area A divided by the height of B0 */
+			float64_t m_A_div_y0;
+
+			/** top-right position ox rectangle i */
+			float64_t m_x[m_blockCount + 1];
+			float64_t m_y[m_blockCount];
+
+			/** The proprtion of each segment that is entirely within the distribution, expressed as uint where 
+        	  a value of 0 indicates 0% and uint.MaxValue 100%. Expressing this as an integer allows some floating
+        	  points operations to be replaced with integer ones.
+        	 */
+ 			uint32_t m_xComp[m_blockCount];
 
 #ifdef HAVE_PTHREAD
 			/** state lock */
