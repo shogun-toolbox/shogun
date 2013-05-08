@@ -64,8 +64,8 @@ CModelSelectionParameters* build_combined_kernel_parameter_tree()
 	{
 		/* print out current kernel's subkernels */
 		SG_SPRINT("combined kernel %d:\n", i++);
-		CPolyKernel* poly=(CPolyKernel*)current->get_kernel(0);
-		CGaussianKernel* gaussian=(CGaussianKernel*)current->get_kernel(1);
+		CGaussianKernel* gaussian=(CGaussianKernel*)current->get_kernel(0);
+		CPolyKernel* poly=(CPolyKernel*)current->get_kernel(1);
 		SG_SPRINT("kernel_a type: %s\n", poly->get_name());
 		SG_SPRINT("kernel_b type: %s\n", gaussian->get_name());
 		SG_SPRINT("kernel_a parameter: %d\n", poly->get_degree());
@@ -143,8 +143,8 @@ void modelselection_combined_kernel()
 
 	/* print subkernel parameters, I know what the subkernel types are here */
 	CCombinedKernel* kernel=(CCombinedKernel*)classifier->get_kernel();
-	CGaussianKernel* gaussian=(CGaussianKernel*)kernel->get_kernel(1);
-	CPolyKernel* poly=(CPolyKernel*)kernel->get_kernel(0);
+	CGaussianKernel* gaussian=(CGaussianKernel*)kernel->get_kernel(0);
+	CPolyKernel* poly=(CPolyKernel*)kernel->get_kernel(1);
 	SG_SPRINT("gaussian width: %f\n", gaussian->get_width());
 	SG_SPRINT("poly degree: %d\n", poly->get_degree());
 	SG_UNREF(kernel);
