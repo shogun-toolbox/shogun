@@ -77,7 +77,7 @@ void prepare_tapkee_parameters_set(const TAPKEE_PARAMETERS_FOR_SHOGUN& parameter
 #endif
 	tapkee::NeighborsMethod neighbors_method = tapkee::CoverTree;
 	size_t N = 0;
-        uint32_t num_neighbors = parameters.n_neighbors;
+	uint32_t num_neighbors = parameters.n_neighbors;
 	switch (parameters.method) 
 	{
 		case SHOGUN_KERNEL_LOCALLY_LINEAR_EMBEDDING:
