@@ -33,6 +33,9 @@ CRandom::CRandom(uint32_t seed)
 
 CRandom::~CRandom()
 {
+	SG_FREE(m_x);
+	SG_FREE(m_y);
+	SG_FREE(m_xComp);
 	SG_FREE(m_sfmt_32);
 	SG_FREE(m_sfmt_64);
 	SG_FREE(m_dsfmt);
@@ -51,9 +54,14 @@ uint32_t CRandom::get_seed() const
 void CRandom::init()
 {
 	/** init ziggurat variables */
+	m_blockCount = 128;
 	m_R = 3.442619855899;
 	m_A = 9.91256303526217e-3;
 	m_uint32ToU = 1.0 / (float64_t)UINT32_MAX;
+
+	m_x = SG_MALLOC(float64_t, m_blockCount + 1);
+	m_y = SG_MALLOC(float64_t, m_blockCount);
+	m_xComp = SG_MALLOC(uint32_t, m_blockCount);
 
 	// Initialise rectangle position data. 
 	// m_x[i] and m_y[i] describe the top-right position ox Box i.

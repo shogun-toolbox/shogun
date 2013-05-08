@@ -16,8 +16,8 @@
 #include <shogun/lib/external/SFMT/SFMT.h>
 #include <shogun/lib/external/dSFMT/dSFMT.h>
 
-#define RAND_MAX_32 4294967296.0
-#define RAND_MAX_64 18446744073709551616.0L
+#define RAND_MAX_32 (float32_t)UINT32_MAX
+#define RAND_MAX_64 (float64_t)UINT64_MAX
 
 namespace shogun
 {
@@ -210,7 +210,7 @@ namespace shogun
 			dsfmt_t* m_dsfmt;
 
 			/** Number of blocks */
-			static const int32_t m_blockCount = 128;
+			int32_t m_blockCount; //= 128;
 
 			/** Right hand x coord of the base rectangle, thus also the left hand x coord of the tail */
     		float64_t m_R;//= 3.442619855899;
@@ -225,14 +225,14 @@ namespace shogun
 			float64_t m_A_div_y0;
 
 			/** top-right position ox rectangle i */
-			float64_t m_x[m_blockCount + 1];
-			float64_t m_y[m_blockCount];
+			float64_t* m_x;
+			float64_t* m_y;
 
 			/** The proprtion of each segment that is entirely within the distribution, expressed as uint where 
         	  a value of 0 indicates 0% and uint.MaxValue 100%. Expressing this as an integer allows some floating
         	  points operations to be replaced with integer ones.
         	 */
- 			uint32_t m_xComp[m_blockCount];
+ 			uint32_t* m_xComp;
 
 #ifdef HAVE_PTHREAD
 			/** state lock */
