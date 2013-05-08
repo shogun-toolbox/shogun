@@ -77,7 +77,7 @@ void prepare_tapkee_parameters_set(const TAPKEE_PARAMETERS_FOR_SHOGUN& parameter
 #endif
 	tapkee::NeighborsMethod neighbors_method = tapkee::CoverTree;
 	size_t N = 0;
-
+        uint32_t num_neighbors = parameters.n_neighbors;
 	switch (parameters.method) 
 	{
 		case SHOGUN_KERNEL_LOCALLY_LINEAR_EMBEDDING:
@@ -141,6 +141,7 @@ void prepare_tapkee_parameters_set(const TAPKEE_PARAMETERS_FOR_SHOGUN& parameter
                 case SHOGUN_KERNEL_PCA:
                         method = tapkee::KernelPCA;
                         N = parameters.kernel->get_num_vec_lhs();
+                        num_neighbors = N-1;//KPCA doesn't need it.
                         break;
 
 		case SHOGUN_TDISTRIBUTED_STOCHASTIC_NEIGHBOR_EMBEDDING:
@@ -158,7 +159,7 @@ void prepare_tapkee_parameters_set(const TAPKEE_PARAMETERS_FOR_SHOGUN& parameter
 		(tapkee::keywords::method=method,
 		 tapkee::keywords::eigen_method=eigen_method,
 		 tapkee::keywords::neighbors_method=neighbors_method,
-		 tapkee::keywords::num_neighbors=parameters.n_neighbors,
+		 tapkee::keywords::num_neighbors=num_neighbors,
 		 tapkee::keywords::diffusion_map_timesteps = parameters.n_timesteps,
 		 tapkee::keywords::target_dimension = parameters.target_dimension,
 		 tapkee::keywords::spe_num_updates = parameters.spe_num_updates,
