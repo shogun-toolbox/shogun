@@ -65,8 +65,7 @@ struct ShogunFeatureVectorCallback
 };
 
 void prepare_tapkee_parameters_set(const TAPKEE_PARAMETERS_FOR_SHOGUN& parameters, tapkee::ParametersSet& parameters_set, 	std::vector<int32_t>& indices)
-{
-  tapkee::LoggingSingleton::instance().set_logger_impl(new ShogunLoggerImplementation);
+{	tapkee::LoggingSingleton::instance().set_logger_impl(new ShogunLoggerImplementation);
 	tapkee::LoggingSingleton::instance().enable_benchmark();
 	tapkee::LoggingSingleton::instance().enable_info();
 
@@ -175,12 +174,13 @@ CDenseFeatures<float64_t>* shogun::tapkee_embed(const shogun::TAPKEE_PARAMETERS_
 	pimpl_distance_callback<CDistance> distance_callback(parameters.distance);
 	ShogunFeatureVectorCallback features_callback(parameters.features);
         prepare_tapkee_parameters_set(parameters, parameters_set, indices);
-	tapkee::TapkeeOutput output = tapkee::embed(indices.begin(),indices.end(),
+	tapkee::TapkeeOutput output = 
+			tapkee::embed(indices.begin(), indices.end(),
 			kernel_callback,distance_callback,features_callback,parameters_set);
 	tapkee::DenseMatrix result_embedding = output.embedding;
 	// destroy projecting function
 	output.projection.clear();
-        size_t N = indices.size();
+	size_t N = indices.size();
 	SGMatrix<float64_t> feature_matrix(parameters.target_dimension,N);
 	// TODO avoid copying
 	for (uint32_t i=0; i<N; i++) 
@@ -193,69 +193,57 @@ CDenseFeatures<float64_t>* shogun::tapkee_embed(const shogun::TAPKEE_PARAMETERS_
 	return new CDenseFeatures<float64_t>(feature_matrix);
 }
 
-/*
-  
-struct ProjectingFunction
-{
-  ProjectingFunction(): m_tapkee_projecting_function(NULL) {};
-  void clear();
-  CDenseFeatures* operator()(const CDenseFeatures* features);
-  tapkee::ProjectingFunction* m_tapkee_projecting_function; 
-}
-
- */
 
 void shogun::ProjectingFunction::clear()
 {
-  if ( m_tapkee_projecting_function )
-  {
-    m_tapkee_projecting_function->clear();
-    m_tapkee_projecting_function = NULL;
-  }
+	if ( m_tapkee_projecting_function )
+	{
+		m_tapkee_projecting_function->clear();
+		m_tapkee_projecting_function = NULL;
+	}
 }
 
 CDenseFeatures<float64_t>* shogun::ProjectingFunction::operator () ( CDenseFeatures<float64_t>* features)
 {
-  ASSERT(m_tapkee_projecting_function)
-  size_t num_features = features->get_num_features();
-  size_t num_vectors  = features->get_num_vectors();
-  Eigen::Map<tapkee::DenseMatrix> tmp_matrix( (features->get_feature_matrix()).matrix,
-                                    num_features, num_vectors);
-  tapkee::DenseVector tt = tmp_matrix.col(0);
-  std::cout<<"in operator"<<(long long)(*m_tapkee_projecting_function).implementation<<std::endl;
-  tapkee::DenseVector tmp_vec = (*m_tapkee_projecting_function)(tt); return NULL;
-  size_t target_dim = tmp_vec.rows();
-  float64_t* new_feature_matrix = SG_MALLOC(float64_t, target_dim*num_vectors);
-  size_t i,j;
-  for (j = 0;j<target_dim; ++j)
-    new_feature_matrix[j] = tmp_vec(0,j);
-  for (i = 1;i<num_vectors; ++i)
-  {
-    tmp_vec = (*m_tapkee_projecting_function)(tmp_matrix.col(i));
-    for (j = 0; j<target_dim; ++j)
-      new_feature_matrix[i * target_dim + j] = tmp_vec(0,j);
-  }
-  CDenseFeatures<float64_t>* result_features = new CDenseFeatures<float64_t>();
-  result_features->set_feature_matrix(SGMatrix<float64_t>(new_feature_matrix, target_dim,num_vectors));
-  return result_features;
+	ASSERT(m_tapkee_projecting_function)
+	size_t num_features = features->get_num_features();
+	size_t num_vectors  = features->get_num_vectors();
+	Eigen::Map<tapkee::DenseMatrix> tmp_matrix( (features->get_feature_matrix()).matrix,
+	                                    num_features, num_vectors);
+	tapkee::DenseVector tt = tmp_matrix.col(0);
+	
+	tapkee::DenseVector tmp_vec = (*m_tapkee_projecting_function)(tt); return NULL;
+	size_t target_dim = tmp_vec.rows();
+	float64_t* new_feature_matrix = SG_MALLOC(float64_t, target_dim*num_vectors);
+	size_t i,j;
+	for (j = 0;j<target_dim; ++j)
+		new_feature_matrix[j] = tmp_vec(0,j);
+	for (i = 1;i<num_vectors; ++i)
+	{
+		tmp_vec = (*m_tapkee_projecting_function)(tmp_matrix.col(i));
+		for (j = 0; j<target_dim; ++j)
+			new_feature_matrix[i * target_dim + j] = tmp_vec(0,j);
+	}
+	CDenseFeatures<float64_t>* result_features = new CDenseFeatures<float64_t>();
+	result_features->set_feature_matrix(SGMatrix<float64_t>(new_feature_matrix, target_dim,num_vectors));
+	return result_features;
 }
 
 shogun::ProjectingFunction shogun::calc_projecting_function(const TAPKEE_PARAMETERS_FOR_SHOGUN& parameters)
 {
 
-        tapkee::ParametersSet parameters_set;
-        std::vector<int32_t> indices;
-        pimpl_kernel_callback<CKernel> kernel_callback(parameters.kernel);
+	tapkee::ParametersSet parameters_set;
+	std::vector<int32_t> indices;
+	pimpl_kernel_callback<CKernel> kernel_callback(parameters.kernel);
 	pimpl_distance_callback<CDistance> distance_callback(parameters.distance);
 	ShogunFeatureVectorCallback features_callback(parameters.features);
-        prepare_tapkee_parameters_set(parameters, parameters_set, indices);
+	prepare_tapkee_parameters_set(parameters, parameters_set, indices);
 	tapkee::TapkeeOutput output = tapkee::embed(indices.begin(),indices.end(),
 			kernel_callback,distance_callback,features_callback,parameters_set);
-        shogun::ProjectingFunction res;
-        
-        res.m_tapkee_projecting_function = new tapkee::ProjectingFunction( output.projection.implementation );
-        std::cout<<"in calc"<<(long long)((res.m_tapkee_projecting_function)->implementation)<<std::endl; 
-        return res;
+	shogun::ProjectingFunction res;
+	res.m_tapkee_projecting_function = new tapkee::ProjectingFunction( output.projection.implementation );
+	std::cout<<"in calc"<<(long long)((res.m_tapkee_projecting_function)->implementation)<<std::endl; 
+	return res;
 }
 
 
