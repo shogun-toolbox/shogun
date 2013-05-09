@@ -30,13 +30,7 @@
 */
 //@{
 
-#ifdef __STDC_LIMIT_MACROS
 #include <stdint.h>
-#else
-#define __STDC_LIMIT_MACROS 1
-#include <stdint.h>
-#undef __STDC_LIMIT_MACROS
-#endif
 
 /* No feature test:
  * ISO C99: 7.8 Format conversion of integer types	<inttypes.h>

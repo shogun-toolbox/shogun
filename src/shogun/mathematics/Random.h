@@ -12,13 +12,13 @@
 #define __RANDOM_H__
 
 #include <shogun/base/SGObject.h>
-#include <shogun/lib/common.h>
+#include <limits>
 
 #include <shogun/lib/external/SFMT/SFMT.h>
 #include <shogun/lib/external/dSFMT/dSFMT.h>
 
-#define RAND_MAX_32 (float32_t)UINT32_MAX
-#define RAND_MAX_64 (float64_t)UINT64_MAX
+#define RAND_MAX_32 ((float32_t)std::numeric_limits<uint32_t>::max())
+#define RAND_MAX_64 ((float64_t)std::numeric_limits<uint64_t>::max())
 
 namespace shogun
 {
