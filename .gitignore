@@ -26,6 +26,7 @@ configure.log
 *.mex*
 *.oct
 .localvimrc
+*.DS_Store
 
 *~
 \#*\#
