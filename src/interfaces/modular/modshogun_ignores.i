@@ -36,6 +36,8 @@
 %ignore shogun::SGMatrix::matrix_multiply;
 %ignore shogun::CStructuredModel::init_opt;
 %ignore shogun::CIndexBlockTree::CIndexBlockTree(SGVector<float64_t> G, SGVector<float64_t> ind_t);
+%ignore shogun::CMulticlassStrategy::rescale_outputs(SGVector<float64_t> outputs, const SGVector<float64_t> As, const SGVector<float64_t> Bs);
+%ignore shogun::CMulticlassOneVsRestStrategy::rescale_outputs(SGVector<float64_t> outputs, const SGVector<float64_t> As, const SGVector<float64_t> Bs);
 %ignore shogun::CKernelMeanMatching::CKernelMeanMatching(CKernel* kernel, SGVector<index_t> training_indices, SGVector<index_t> test_indices);
 #endif
 
