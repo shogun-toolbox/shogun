@@ -16,7 +16,7 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_LAPACK
+#ifdef HAVE_EIGEN3
 
 #include <shogun/features/DotFeatures.h>
 #include <shogun/features/DenseFeatures.h>
@@ -40,8 +40,8 @@ class CMCLDA : public CNativeMulticlassMachine
 {
 	public:
 		MACHINE_PROBLEM_TYPE(PT_MULTICLASS)
-        
-        	/** constructor
+
+		/** constructor
 		 *
 		 * @param tolerance tolerance used in training
 		 * @param store_covs whether to store the within class covariances
@@ -66,7 +66,7 @@ class CMCLDA : public CNativeMulticlassMachine
 		 */
 		virtual CMulticlassLabels* apply_multiclass(CFeatures* data=NULL);
 
-        	/** set tolerance
+		/** set tolerance
 		 *
 		 * @param tolerance tolerance used during training
 		 */
@@ -131,7 +131,7 @@ class CMCLDA : public CNativeMulticlassMachine
 			return m_cov;
 		}
 		
-    	protected:
+		protected:
 		/** train MCLDA classifier
 		 *
 		 * @param data training data
@@ -145,14 +145,14 @@ class CMCLDA : public CNativeMulticlassMachine
 
 		void cleanup();
 		
-    	private:
-       		/** feature vectors */
+		private:
+			/** feature vectors */
 		CDotFeatures* m_features;
 
 		/** tolerance used during training */
 		float64_t m_tolerance;
 
-       		/** whether to store the within class covariances */
+			/** whether to store the within class covariances */
 		bool m_store_cov;
 
 		/** number of classes */
@@ -187,5 +187,5 @@ class CMCLDA : public CNativeMulticlassMachine
 }; /* class MCLDA */
 }  /* namespace shogun */
 
-#endif /* HAVE_LAPACK */
+#endif /* HAVE_EIGEN3 */
 #endif /* _MCLDA_H__ */
