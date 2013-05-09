@@ -135,7 +135,6 @@ def tester(tests, cmp_method, tolerance, failures, missing):
 				except Exception, e:
 					print setting_str, e
 			except IOError, e:
-				failed.append(setting_str)
 				if not failures:
 					print "%-60s NO TEST (%s)" % (setting_str, e)
 			except Exception, e:
@@ -175,7 +174,7 @@ if __name__=='__main__':
 			print "=== EXPECTED =========="
 			#import pdb
 			#pdb.set_trace()
-			#print '\n'.join(expected)
+			print '\n'.join(expected)
 			#print "=== GOT ==============="
 			#print '\n'.join(got)
 			print "====DIFF================"
