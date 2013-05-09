@@ -42,6 +42,7 @@ PYTHON=python
 PYVER=
 GMOCK_DIR="/usr/src/gmock"
 GTEST_DIR="/usr/src/gtest"
+MEXP=19937
 KERNELNAME=`uname`
 MACHINE=`uname -m | tr ' ' '-'`
 EXT_OBJ_CPP=cpp.o
@@ -109,6 +110,7 @@ _hmmcache=yes
 _debug=yes
 _trace_mallocs=no
 _reference_counting=yes
+_aligned_memory=no
 _hmmdebug=no
 _pathdebug=no
 _profile=no
@@ -1472,6 +1474,7 @@ Miscellaneous options:
   --enable-debug                 enable debugging [enabled]
   --enable-trace-mallocs         enable memory allocation tracing [disabled]
   --disable-reference-counting   disables reference counting causing severe memory leakage [enabled]
+  --enable-aligned-memory		 enable aligned memory allocation [auto]
   --enable-swig-directors        enables swig based director classes [disabled]
   --enable-path-debug            enable viterbi path debugging [disabled]
   --enable-profile               compile profiling and test coverage information into shogun (gprof, gcov) [disable]
@@ -1481,7 +1484,8 @@ Miscellaneous options:
   --gmock=PATH                   the path to the Google C++ Mocking framework source [default: /usr/src/gmock]
   --gtest=PATH                   the path to the Google C++ test framework source [default: /usr/src/gtest]
   --ruby=ruby                    use this ruby executable [ruby]
-  --swig=swig			 use this swig executable [swig]
+  --swig=swig                    use this swig executable [swig]
+  --mexp=EXP                     Mersenne exponent 607, 1279, 2281, 4253, 11213, 19937, 44497, 86243, 132049, 216091 [19937]
   --cc=COMPILER                  use this C compiler to build shogun [autodetected]
   --cxx=COMPILER                 use this C++ compiler to build shogun [autodetected]
   --cflags=OPTIONS               use these C compiler options
@@ -1594,6 +1598,9 @@ EOF
 		;;
 	  --swig=*)
 		SWIG=`echo $ac_option | cut -d '=' -f 2`
+		;;
+	  --mexp=*)
+		MEXP=`echo $ac_option | cut -d '=' -f 2`
 		;;
 	  --ruby=*)
 		RUBY=`echo $ac_option | cut -d '=' -f 2`
@@ -1721,6 +1728,8 @@ EOF
 	  --enable-cpudetection) 	_cpudetection=yes ;;
 	  --disable-optimization)	_optimization=no ;;
 	  --enable-optimization)	_optimization=yes ;;
+	  --enable-aligned-memory)	_aligned_memory=yes ;;
+	  --disable-aligned-memory)	_aligned_memory=no ;;
 	  --destdir=*)
 		_destdir=$(mangle_homedir_tilde "`echo $ac_option | cut -d '=' -f 2`")
 		;;
@@ -2915,6 +2924,21 @@ EOF
     _def_builtin_vector='#define HAVE_BUILTIN_VECTOR 1'
   else
     _def_builtin_vector='#undef HAVE_BUILTIN_VECTOR'
+  fi
+  echores "$_builtin_vector"
+fi
+
+# intrinsics headers for use with SFMT
+if test "$_sse2" = yes ; then
+  echocheck "emmintrin.h"
+  cat > $TMPC << EOF
+#include <emmintrin.h>
+int main() { _mm_mfence(); return 0; }
+EOF
+  _builtin_vector=no
+  cc_check -msse2 && _builtin_vector=yes
+  if test "$_builtin_vector" = yes ; then
+  	DEFINES="$DEFINES -DHAVE_SSE2"
   fi
   echores "$_builtin_vector"
 fi
@@ -5037,6 +5061,68 @@ EOF
 	fi
 }
 
+test_mexp()
+{
+cat > $TMPC << EOF
+#include <shogun/lib/external/SFMT/SFMT-params.h>
+int main(void) { return 0; }
+EOF
+
+	echocheck "Mersenne exponent"
+	if cc_check $_cflags -I. -DSFMT_MEXP=$MEXP >/dev/null 2>&1
+	then
+		echores $MEXP
+		DEFINES="$DEFINES -DSFMT_MEXP=$MEXP -DDSFMT_MEXP=$MEXP"
+	else
+		die "provided $MEXP is not valid!"
+	fi
+}
+
+check_aligned_memory()
+{
+
+cat > $TMPC << EOF
+#include <stdlib.h>
+
+int main(void)
+{ 
+  char* foo;
+
+  posix_memalign(&foo, 16, 64);
+  free(foo);
+  return 0;
+}
+EOF
+	echocheck "aligned memory support"
+	if darwin
+	then
+		echores "native support"
+		_aligned_memory=yes
+		return
+	fi
+
+	if test "$_aligned_memory" = yes
+	then
+		if cc_check > /dev/null 2>&1
+		then
+			echores "yes"
+			_aligned_memory=yes
+			DEFINES="$DEFINES -DUSE_ALIGNED_MEMORY"
+		else
+			if test "$_aligned_memory" = yes
+			then
+				die "no"
+			else
+				echores "no"
+				_aligned_memory=no
+			fi
+		fi
+	else
+		_aligned_memory=no
+		echores "no"
+	fi
+}
+
 #write the actual config
 
 write_dot_config()
@@ -5465,6 +5551,7 @@ check_doxygen
 check_gtest
 check_gmock
 determine_march_mtune
+check_aligned_memory
 check_datatypes
 check_wordsize
 check_math
@@ -5492,6 +5579,7 @@ check_bzip2
 check_lzma
 check_lpsolve
 set_opts
+test_mexp
 test_spinlocks
 test_libshogun
 test_cmdline

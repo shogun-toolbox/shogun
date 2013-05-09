@@ -33,7 +33,7 @@ const char fname_labels[]="../data/label_train_multiclass.dat";
 void test_multiclass_mkl_cv()
 {
 	/* init random number generator for reproducible results of cross-validation in the light of ASSERT(result->mean>0.81); some lines down below */
-	CMath::init_random(1);
+	sg_rand->set_seed(12);
 
 	/* dense features from matrix */
 	CAsciiFile* feature_file = new CAsciiFile(fname_feats);

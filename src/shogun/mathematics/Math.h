@@ -22,6 +22,7 @@
 #include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/base/Parallel.h>
+#include <shogun/mathematics/Random.h>
 
 #include <math.h>
 #include <stdio.h>
@@ -129,6 +130,7 @@ template <class T1, class T2> struct thread_qsort
 
 namespace shogun
 {
+	extern CRandom* sg_rand;
 	class CSGObject;
 /** @brief Class which collects generic mathematical functions
  */
@@ -452,54 +454,48 @@ class CMath : public CSGObject
 			}
 			else
 				seed=initseed;
-#if !defined(CYGWIN) && !defined(__INTERIX)
-			//seed=42
-			//SG_SPRINT("initializing random number generator with %d (seed size %d)\n", seed, RNG_SEED_SIZE)
-			initstate(seed, CMath::rand_state, RNG_SEED_SIZE);
-#endif
+
+			sg_rand->set_seed(seed);
 		}
 
-		static inline int64_t random()
+		static inline uint64_t random()
 		{
-#if defined(CYGWIN) || defined(__INTERIX)
-			return rand();
-#else
-			return ::random();
-#endif
+			uint64_t rnd = sg_rand->random_64();
+
+			return rnd;
 		}
 
 		static inline uint64_t random(uint64_t min_value, uint64_t max_value)
 		{
-			uint64_t ret = min_value + (uint64_t) ((max_value-min_value+1) * (random() / (RAND_MAX+1.0)));
+			uint64_t ret = min_value + (uint64_t) ((max_value-min_value+1) * (CMath::random() / (RAND_MAX_64)));
 			ASSERT(ret>=min_value && ret<=max_value)
 			return ret ;
 		}
 
 		static inline int64_t random(int64_t min_value, int64_t max_value)
 		{
-			int64_t ret = min_value + (int64_t) ((max_value-min_value+1) * (random() / (RAND_MAX+1.0)));
+			int64_t ret = min_value + (int64_t) ((max_value-min_value+1) * (CMath::random() / (RAND_MAX_64)));
 			ASSERT(ret>=min_value && ret<=max_value)
 			return ret ;
 		}
 
 		static inline uint32_t random(uint32_t min_value, uint32_t max_value)
 		{
-			uint32_t ret = min_value + (uint32_t) ((max_value-min_value+1) * (random() / (RAND_MAX+1.0)));
+			uint32_t ret = min_value + (uint32_t) ((max_value-min_value+1) * (CMath::random() / (RAND_MAX_64)));
 			ASSERT(ret>=min_value && ret<=max_value)
 			return ret ;
 		}
 
 		static inline int32_t random(int32_t min_value, int32_t max_value)
 		{
-			int32_t ret = min_value + (int32_t) ((max_value-min_value+1) * (random() / (RAND_MAX+1.0)));
+			int32_t ret = min_value + (int32_t) ((max_value-min_value+1) * (CMath::random() / (RAND_MAX_64)));
 			ASSERT(ret>=min_value && ret<=max_value)
 			return ret ;
 		}
 
 		static inline float32_t random(float32_t min_value, float32_t max_value)
 		{
-			float32_t ret = min_value + ((max_value-min_value) * (random() / (1.0*RAND_MAX)));
-
+			float32_t ret = min_value + ((max_value-min_value) * sg_rand->random_close());
 			if (ret<min_value || ret>max_value)
 				SG_SPRINT("min_value:%10.10f value: %10.10f max_value:%10.10f", min_value, ret, max_value)
 			ASSERT(ret>=min_value && ret<=max_value)
@@ -508,8 +504,7 @@ class CMath : public CSGObject
 
 		static inline float64_t random(float64_t min_value, float64_t max_value)
 		{
-			float64_t ret = min_value + ((max_value-min_value) * (random() / (1.0*RAND_MAX)));
-
+			float64_t ret = min_value + ((max_value-min_value) * sg_rand->random_close());
 			if (ret<min_value || ret>max_value)
 				SG_SPRINT("min_value:%10.10f value: %10.10f max_value:%10.10f", min_value, ret, max_value)
 			ASSERT(ret>=min_value && ret<=max_value)
@@ -518,8 +513,7 @@ class CMath : public CSGObject
 
 		static inline floatmax_t random(floatmax_t min_value, floatmax_t max_value)
 		{
-			floatmax_t ret = min_value + ((max_value-min_value) * (random() / (1.0*RAND_MAX)));
-
+			floatmax_t ret = min_value + ((max_value-min_value) * sg_rand->random_close());
 			if (ret<min_value || ret>max_value)
 				SG_SPRINT("min_value:%10.10f value: %10.10f max_value:%10.10f", min_value, ret, max_value)
 			ASSERT(ret>=min_value && ret<=max_value)
@@ -538,8 +532,8 @@ class CMath : public CSGObject
 			float32_t rand_s;
 			do
 			{
-				rand_u = random(-1.0, 1.0);
-				rand_v = random(-1.0, 1.0);
+				rand_u = CMath::random(-1.0, 1.0);
+				rand_v = CMath::random(-1.0, 1.0);
 				rand_s = rand_u*rand_u + rand_v*rand_v;
 			} while ((rand_s == 0) || (rand_s >= 1));
 
@@ -560,8 +554,8 @@ class CMath : public CSGObject
 			float64_t rand_s;
 			do
 			{
-				rand_u = random(-1.0, 1.0);
-				rand_v = random(-1.0, 1.0);
+				rand_u = CMath::random(-1.0, 1.0);
+				rand_v = CMath::random(-1.0, 1.0);
 				rand_s = rand_u*rand_u + rand_v*rand_v;
 			} while ((rand_s == 0) || (rand_s >= 1));
 
@@ -1170,7 +1164,6 @@ class CMath : public CSGObject
 
 				/// random generator seed
 				static uint32_t seed;
-				static char* rand_state;
 
 #ifdef USE_LOGCACHE
 

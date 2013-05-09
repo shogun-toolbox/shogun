@@ -10,6 +10,7 @@
 
 #include <shogun/base/init.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/Random.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/Map.h>
 #include <shogun/base/Parallel.h>
@@ -25,6 +26,7 @@ namespace shogun
 	SGIO* sg_io=NULL;
 	Version* sg_version=NULL;
 	CMath* sg_math=NULL;
+	CRandom* sg_rand=NULL;
 
 	/// function called to print normal messages
 	void (*sg_print_message)(FILE* target, const char* str) = NULL;
@@ -52,6 +54,8 @@ namespace shogun
 			sg_version = new shogun::Version();
 		if (!sg_math)
 			sg_math = new shogun::CMath();
+		if (!sg_rand)
+			sg_rand = new shogun::CRandom();
 #ifdef TRACE_MEMORY_ALLOCS
 		if (!sg_mallocs)
 			sg_mallocs = new shogun::CMap<void*, MemoryBlock>(631, 1024, false);
@@ -62,6 +66,7 @@ namespace shogun
 		SG_REF(sg_parallel);
 		SG_REF(sg_version);
 		SG_REF(sg_math);
+		SG_REF(sg_rand);
 
 		sg_print_message=print_message;
 		sg_print_warning=print_warning;
@@ -93,6 +98,7 @@ namespace shogun
 		sg_print_error=NULL;
 		sg_cancel_computations=NULL;
 
+		SG_UNREF(sg_rand);
 		SG_UNREF(sg_math);
 		SG_UNREF(sg_version);
 		SG_UNREF(sg_parallel);
@@ -150,5 +156,18 @@ namespace shogun
 	{
 		SG_REF(sg_math);
 		return sg_math;
+	}
+
+	void set_global_rand(CRandom* rand)
+	{
+		SG_UNREF(sg_rand);
+		sg_rand=rand;
+		SG_REF(sg_rand);
+	}
+
+	CRandom* get_global_rand()
+	{
+		SG_REF(sg_rand);
+		return sg_rand;
 	}
 }
