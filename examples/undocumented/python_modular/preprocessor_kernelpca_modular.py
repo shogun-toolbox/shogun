@@ -17,6 +17,7 @@ def preprocessor_kernelpca_modular (data, threshold, width):
 		
 	preprocessor = KernelPCA(kernel)
 	preprocessor.init(features)
+	preprocessor.set_target_dim(2)
 	preprocessor.apply_to_feature_matrix(features)
 
 	return features
