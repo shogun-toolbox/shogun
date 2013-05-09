@@ -252,7 +252,7 @@ shogun::ProjectingFunction shogun::calc_projecting_function(const TAPKEE_PARAMET
 			kernel_callback,distance_callback,features_callback,parameters_set);
 	shogun::ProjectingFunction res;
 	res.m_tapkee_projecting_function = new tapkee::ProjectingFunction( output.projection.implementation );
-	std::cout<<"in calc"<<(long long)((res.m_tapkee_projecting_function)->implementation)<<std::endl; 
+	 
 	return res;
 }
 
