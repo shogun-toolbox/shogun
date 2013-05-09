@@ -57,7 +57,7 @@ void CRandom::init()
 	m_blockCount = 128;
 	m_R = 3.442619855899;
 	m_A = 9.91256303526217e-3;
-	m_uint32ToU = 1.0 / (float64_t)UINT32_MAX;
+	m_uint32ToU = 1.0 / (float64_t)std::numeric_limits<uint32_t>::max();
 
 	m_x = SG_MALLOC(float64_t, m_blockCount + 1);
 	m_y = SG_MALLOC(float64_t, m_blockCount);
@@ -94,11 +94,11 @@ void CRandom::init()
 	// Special case for base box. m_xComp[0] stores the area of B0 as a proportion of R 
 	// (recalling that all segments have area A, but that the base segment is the combination of B0 and the distribution tail).
 	// Thus -m_xComp[0] is the probability that a sample point is within the box part of the segment.
-	m_xComp[0] = (uint32_t)(((m_R * m_y[0]) / m_A) * (float64_t)UINT32_MAX);
+	m_xComp[0] = (uint32_t)(((m_R * m_y[0]) / m_A) * (float64_t)std::numeric_limits<uint32_t>::max());
 
 	for(int32_t i=1; i < m_blockCount-1; i++) 
 	{
-		m_xComp[i] = (uint32_t)((m_x[i+1] / m_x[i]) * (float64_t)UINT32_MAX);
+		m_xComp[i] = (uint32_t)((m_x[i+1] / m_x[i]) * (float64_t)std::numeric_limits<uint32_t>::max());
 	}
 	m_xComp[m_blockCount-1] = 0;  // Shown for completeness.
 
