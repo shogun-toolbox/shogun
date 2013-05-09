@@ -8,8 +8,6 @@ def simulate_data (n,p):
 	from modshogun import SparseInverseCovariance
 	import numpy as np
 	
-	sic = SparseInverseCovariance()
-	
 	#create a random pxp covariance matrix
 	cov = np.random.normal(size=(p,p))
 	
@@ -31,7 +29,7 @@ def inverse_covariance (data,lc):
 	max_cov = cov.max()
 	min_cov = cov.min()
 	
-	#comupute inverse conariance matrix
+	#compute inverse conariance matrix
 	Si = sic.estimate(cov,lc)
 
 	return Si
@@ -85,6 +83,7 @@ if __name__=='__main__':
 	f.suptitle('Inverse Covariance Estimation\nfor ' +str(num_variables)+' variables and '+str(num_observations)+' observations', fontsize=20)	
 	
 	data = simulate_data (num_observations, num_variables)	
+	print data.shape
 	
 	column = -1;
 	for p in penalties:
