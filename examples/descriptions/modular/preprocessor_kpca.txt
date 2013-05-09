@@ -1,0 +1,8 @@
+This example shows the implementation of Kernel PCA algorithim on a unclustered dataset.The output dataset
+will be clustered.
+The code sets the target dimension of the output data i.e. after kernel pca to 2.
+For example,if the user eneters a circular dataset with 2 labels,then the output dataset will be in the form of 2 clusters,
+each cluster representing one of the labels.
+The kernel used is a GAUSSIAN kernel.
+
+
