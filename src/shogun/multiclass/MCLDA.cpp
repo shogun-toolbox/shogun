@@ -279,7 +279,7 @@ bool CMCLDA::train_machine(CFeatures* data)
         		m_cov[i] += covs.get_matrix(k)[i];
             }
             
-    		m_cov[i] / m_num_classes;
+    		m_cov[i] /= m_num_classes;
     	}
 	}
 
