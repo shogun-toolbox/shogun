@@ -110,6 +110,7 @@ _hmmcache=yes
 _debug=yes
 _trace_mallocs=no
 _reference_counting=yes
+_aligned_memory=no
 _hmmdebug=no
 _pathdebug=no
 _profile=no
@@ -1473,6 +1474,7 @@ Miscellaneous options:
   --enable-debug                 enable debugging [enabled]
   --enable-trace-mallocs         enable memory allocation tracing [disabled]
   --disable-reference-counting   disables reference counting causing severe memory leakage [enabled]
+  --enable-aligned-memory		 enable aligned memory allocation [auto]
   --enable-swig-directors        enables swig based director classes [disabled]
   --enable-path-debug            enable viterbi path debugging [disabled]
   --enable-profile               compile profiling and test coverage information into shogun (gprof, gcov) [disable]
@@ -1726,6 +1728,8 @@ EOF
 	  --enable-cpudetection) 	_cpudetection=yes ;;
 	  --disable-optimization)	_optimization=no ;;
 	  --enable-optimization)	_optimization=yes ;;
+	  --enable-aligned-memory)	_aligned_memory=yes ;;
+	  --disable-aligned-memory)	_aligned_memory=no ;;
 	  --destdir=*)
 		_destdir=$(mangle_homedir_tilde "`echo $ac_option | cut -d '=' -f 2`")
 		;;
@@ -5074,6 +5078,51 @@ EOF
 	fi
 }
 
+check_aligned_memory()
+{
+
+cat > $TMPC << EOF
+#include <stdlib.h>
+
+int main(void)
+{ 
+  char* foo;
+
+  posix_memalign(&foo, 16, 64);
+  free(foo);
+  return 0;
+}
+EOF
+	echocheck "aligned memory support"
+	if darwin
+	then
+		echores "native support"
+		_aligned_memory=yes
+		return
+	fi
+
+	if test "$_aligned_memory" = yes
+	then
+		if cc_check > /dev/null 2>&1
+		then
+			echores "yes"
+			_aligned_memory=yes
+			DEFINES="$DEFINES -DUSE_ALIGNED_MEMORY"
+		else
+			if test "$_aligned_memory" = yes
+			then
+				die "no"
+			else
+				echores "no"
+				_aligned_memory=no
+			fi
+		fi
+	else
+		_aligned_memory=no
+		echores "no"
+	fi
+}
+
 #write the actual config
 
 write_dot_config()
@@ -5502,6 +5551,7 @@ check_doxygen
 check_gtest
 check_gmock
 determine_march_mtune
+check_aligned_memory
 check_datatypes
 check_wordsize
 check_math
