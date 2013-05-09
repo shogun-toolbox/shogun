@@ -36,6 +36,10 @@ struct distances_comparator
 	}
 };
 
+struct KernelType 
+{
+};
+
 template <class RandomAccessIterator, class Callback>
 struct KernelDistance
 {
@@ -48,11 +52,13 @@ struct KernelDistance
 	{
 		return sqrt(callback.kernel(*l,*l) - 2*callback.kernel(*l,*r) + callback.kernel(*r,*r));
 	}
-	static const bool is_kernel;
+	typedef KernelType type;
 	Callback callback;
 };
-template <class RandomAccessIterator, class Callback>
-const bool KernelDistance<RandomAccessIterator, Callback>::is_kernel = true;
+
+struct DistanceType
+{
+};
 
 template <class RandomAccessIterator, class Callback>
 struct PlainDistance
@@ -66,11 +72,9 @@ struct PlainDistance
 	{
 		return callback.distance(*l,*r);
 	}
-	static const bool is_kernel;
+	typedef DistanceType type;
 	Callback callback;
 };
-template <class RandomAccessIterator, class Callback>
-const bool PlainDistance<RandomAccessIterator, Callback>::is_kernel = false;
 
 #ifdef TAPKEE_USE_LGPL_COVERTREE
 template <class RandomAccessIterator, class Callback>

@@ -14,10 +14,6 @@
 #include <vector>
 #include <map>
 
-using std::vector;
-using std::string;
-using std::stringstream;
-
 namespace tapkee
 {
 
@@ -37,7 +33,7 @@ struct Message
 		return ss.str();
 	}
 
-	stringstream ss;
+	std::stringstream ss;
 };
 
 class ParametersSet;
@@ -53,6 +49,7 @@ private:
 
 	template <typename T>
 	Parameter(const ParameterName& pname, const T& value) : 
+		valid(true), invalidity_reason(),
 		parameter_name(pname), keeper(tapkee_internal::ValueKeeper(value))
 	{
 	}
@@ -65,11 +62,15 @@ public:
 		return Parameter(name, value);
 	}
 
-	Parameter() : parameter_name("unknown"), keeper(tapkee_internal::ValueKeeper())
+	Parameter() : 
+		valid(false), invalidity_reason(),
+		parameter_name("unknown"), keeper(tapkee_internal::ValueKeeper())
 	{
 	}
 
-	Parameter(const Parameter& p) : parameter_name(p.name()), keeper(p.keeper)
+	Parameter(const Parameter& p) : 
+		valid(p.valid), invalidity_reason(p.invalidity_reason),
+		parameter_name(p.name()), keeper(p.keeper)
 	{
 	}
 
@@ -90,6 +91,10 @@ public:
 	template <typename T>
 	inline operator T()
 	{
+		if (!valid)
+		{
+			throw wrong_parameter_error(invalidity_reason);
+		}
 		try 
 		{
 			return getValue<T>();
@@ -192,7 +197,16 @@ private:
 		return keeper.isTypeCorrect<T>();
 	}
 
+	inline void invalidate(const std::string& reason)
+	{
+		valid = false;
+		invalidity_reason = reason;
+	}
+
 private:
+
+	bool valid;
+	std::string invalidity_reason;
 
 	ParameterName parameter_name;
 
@@ -205,16 +219,10 @@ class CheckedParameter
 
 public:
 
-	explicit CheckedParameter(const Parameter& p) : parameter(p)
+	explicit CheckedParameter(Parameter& p) : parameter(p)
 	{
 	}
 
-	template <typename T>
-	inline operator T() const
-	{
-		return parameter.getValue<T>();
-	}
-	
 	inline operator const Parameter&()
 	{
 		return parameter;
@@ -237,11 +245,11 @@ public:
 	{
 		if (!parameter.isInRange(lower, upper))
 		{
-			std::string error_message = 
-				(Message() << "Value " << parameter.name() << " " 
+			std::string reason = 
+				(Message() << "Value of " << parameter.name() << " " 
 				 << parameter.getValue<T>() << " doesn't fit the range [" << 
 				    lower << ", " << upper << ")");
-			throw tapkee::wrong_parameter_error(error_message);
+			parameter.invalidate(reason);
 		}
 		return *this;
 	}
@@ -250,9 +258,9 @@ public:
 	{
 		if (!parameter.isPositive())
 		{
-			std::string error_message = 
+			std::string reason = 
 				(Message() << "Value of " << parameter.name() << " is not positive");
-			throw tapkee::wrong_parameter_error(error_message);
+			parameter.invalidate(reason);
 		}
 		return *this;
 	}
@@ -261,9 +269,9 @@ public:
 	{
 		if (!parameter.isNonNegative())
 		{
-			std::string error_message = 
+			std::string reason = 
 				(Message() << "Value of " << parameter.name() << " is negative");
-			throw tapkee::wrong_parameter_error(error_message);
+			parameter.invalidate(reason);
 		}
 		return *this;
 	}
@@ -271,7 +279,7 @@ public:
 
 private:
 
-	Parameter parameter;
+	Parameter& parameter;
 
 };
 

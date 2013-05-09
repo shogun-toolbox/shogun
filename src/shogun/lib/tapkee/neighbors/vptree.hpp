@@ -1,12 +1,12 @@
 /* This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Copyright (c) 2012-2013 Sergey Lisitsyn
+ * Copyright (c) 2012-2013 Laurens van der Maaten, Sergey Lisitsyn
  */
 
 #ifndef TAPKEE_VPTREE_H_
 #define TAPKEE_VPTREE_H_
 
-/* Tapkee include */
+/* Tapkee includes */
 #include <shogun/lib/tapkee/tapkee_defines.hpp>
 /* End of Tapkee includes */
 
@@ -20,8 +20,8 @@ namespace tapkee
 namespace tapkee_internal
 {
 
-template<bool, class RandomAccessIterator, class DistanceCallback> 
-struct compare_if_kernel;
+template<class Type, class RandomAccessIterator, class DistanceCallback> 
+struct compare_impl;
 
 template<class RandomAccessIterator, class DistanceCallback>
 struct DistanceComparator
@@ -32,13 +32,15 @@ struct DistanceComparator
 		callback(c), item(i) {}
 	inline bool operator()(const RandomAccessIterator& a, const RandomAccessIterator& b)
 	{
-		return compare_if_kernel<DistanceCallback::is_kernel,RandomAccessIterator,DistanceCallback>()
+		return compare_impl<typename DistanceCallback::type,RandomAccessIterator,DistanceCallback>()
 			(callback,item,a,b);
 	}
 };
 
+struct KernelType;
+
 template<class RandomAccessIterator, class DistanceCallback> 
-struct compare_if_kernel<true,RandomAccessIterator,DistanceCallback>
+struct compare_impl<KernelType,RandomAccessIterator,DistanceCallback>
 {
 	inline bool operator()(DistanceCallback& callback, const RandomAccessIterator& item,
 	                       const RandomAccessIterator& a, const RandomAccessIterator& b)
@@ -47,8 +49,10 @@ struct compare_if_kernel<true,RandomAccessIterator,DistanceCallback>
 	}
 };
 
+struct DistanceType;
+
 template<class RandomAccessIterator, class DistanceCallback> 
-struct compare_if_kernel<false,RandomAccessIterator,DistanceCallback>
+struct compare_impl<DistanceType,RandomAccessIterator,DistanceCallback>
 {
 	inline bool operator()(DistanceCallback& callback, const RandomAccessIterator& item,
 	                       const RandomAccessIterator& a, const RandomAccessIterator& b)
