@@ -1050,8 +1050,20 @@ test_spinlocks()
 		return
 	fi
 
+if darwin
+then
 cat > $TMPC << EOF
-#include <pthread.h>
+#include <libkern/OSAtomic.h>
+int main(void)
+{
+	volatile OSSpinLock lock;
+	OSSpinLockTry(&lock);
+	return 0;
+}
+EOF
+else
+cat > $TMPC << EOF
+#include <pthread.h>	
 int main(void)
 {
 	volatile pthread_spinlock_t lock;
@@ -1059,8 +1071,9 @@ int main(void)
 	return 0;
 }
 EOF
+fi
 
-	echocheck "Posix thread spinlock support"
+	echocheck "spinlock support"
 	if cc_check $pthr
 	then
 		echores "yes"
