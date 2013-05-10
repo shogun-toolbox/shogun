@@ -20,11 +20,11 @@
 #ifdef DARWIN
 #include <libkern/OSAtomic.h>
 
- 	#define PTHREAD_LOCK_T OSSpinLock
+	#define PTHREAD_LOCK_T OSSpinLock
 	#define PTHREAD_LOCK_INIT(lock) *lock = OS_SPINLOCK_INIT
 	#define PTHREAD_LOCK_DESTROY(lock)
 	#define PTHREAD_LOCK(lock) OSSpinLockLock(lock)
-	#define PTHREAD_UNLOCK(lock) OSSpinLockUnlock(lock) 	
+	#define PTHREAD_UNLOCK(lock) OSSpinLockUnlock(lock)
 #else
 	#define PTHREAD_LOCK_T pthread_spinlock_t
 	#define PTHREAD_LOCK_INIT(lock) pthread_spin_init(lock, 0)
