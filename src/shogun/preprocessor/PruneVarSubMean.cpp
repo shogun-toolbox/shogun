@@ -125,6 +125,7 @@ void CPruneVarSubMean::cleanup()
 	mean=NULL;
 	SG_FREE(std);
 	std=NULL;
+	initialized = false;
 }
 
 /// apply preproc on feature matrix

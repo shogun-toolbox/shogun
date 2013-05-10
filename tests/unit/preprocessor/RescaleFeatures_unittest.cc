@@ -17,7 +17,8 @@ TEST(RescaleFeatures, apply_to_feature_matrix)
 	index_t num_features = 3;
 	index_t num_vectors = 10;
 	SGVector<float64_t> min(num_features), range(num_features);
-	SGVector<float64_t> v(num_features*num_vectors), ev; 
+	SGVector<float64_t> v(num_features*num_vectors), ev;
+	sg_rand->set_seed(12345);
 	v.random(-1024, 1024);
 	ev = v.clone();
 
@@ -25,6 +26,7 @@ TEST(RescaleFeatures, apply_to_feature_matrix)
 	SGMatrix<float64_t> em(ev.vector, num_features, num_vectors, false);
 	CDenseFeatures<float64_t>* feats = new CDenseFeatures<float64_t>(m);
 	CRescaleFeatures* rescaler = new CRescaleFeatures();
+	rescaler->init(feats);
 
 	/* find the min and range for each feature among all the vectors */
 	for (index_t i = 0; i < num_features; i++)

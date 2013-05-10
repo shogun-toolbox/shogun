@@ -24,7 +24,6 @@ namespace shogun
 	 * x' = \frac{x - min}{max - min}
 	 * \f]
 	 * where \f$x\f$ is an original value, \f$x'\f$ is the normalized value.
-	 * It does not need any initialization.
      */
 	class CRescaleFeatures : public CDensePreprocessor<float64_t>
 	{
@@ -37,7 +36,8 @@ namespace shogun
 
 			/**
 			 * initialize preprocessor from features
-			 * initialization is not required by this preprocessor.
+			 * 
+			 * @param features the features to derive the min and max values from.
 			 */
 			virtual bool init(CFeatures* features);
 
@@ -45,16 +45,6 @@ namespace shogun
 			 * Cleanup
 			 */
 			virtual void cleanup();
-
-			/**
-			 * initialize preprocessor from file
-			 */
-			virtual bool load(FILE* f);
-
-			/**
-			 * save preprocessor init-data to file
-			 */
-			virtual bool save(FILE* f);
 
 			/**
 			 * Apply preproc on a feature matrix
@@ -66,8 +56,6 @@ namespace shogun
 
 			/**
 			 * Apply preproc on a single feature vector
-			 * @NOTE: this is a dummy function as it makes no sense to apply this
-			 * preprocessor on a single feature vector.
 			 */			
 			virtual SGVector<float64_t> apply_to_feature_vector(SGVector<float64_t> vector);
 
@@ -76,7 +64,18 @@ namespace shogun
 
 			/** return a type of preprocessor */
 			virtual EPreprocessorType get_type() const { return P_RESCALEFEATURES; }
-	};
+
+		private:
+			void register_parameters();
+
+		protected:
+			/** min */
+			SGVector<float64_t> m_min;
+			/** 1.0/(max[i]-min[i]) */
+			SGVector<float64_t> m_range;
+			/** true when already initialized */
+			bool m_initialized;
+		};
 }
 
 #endif /* __RESCALEFEATURES_H__ */
