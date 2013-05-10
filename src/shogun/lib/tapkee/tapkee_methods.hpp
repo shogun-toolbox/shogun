@@ -77,7 +77,7 @@ public:
 		max_iteration = parameters(keywords::max_iteration);
 		tolerance = parameters(keywords::spe_tolerance).checked().positive();
 		n_updates = parameters(keywords::spe_num_updates).checked().positive();
-		theta = parameters(keywords::sne_theta).checked().positive();
+		theta = parameters(keywords::sne_theta).checked().nonNegative();
 		global_strategy = parameters(keywords::spe_global_strategy);
 		epsilon = parameters(keywords::fa_epsilon).checked().nonNegative();
 		perplexity = parameters(keywords::sne_perplexity).checked().nonNegative();
@@ -248,8 +248,8 @@ private:
 	TapkeeOutput embedLandmarkMultidimensionalScaling()
 	{
 		ratio.checked()
-			.inRange(static_cast<ScalarType>(1.0/n_vectors),
-			         static_cast<ScalarType>(1.0 + 1e-6));
+			.inClosedRange(static_cast<ScalarType>(3.0/n_vectors),
+			               static_cast<ScalarType>(1.0));
 
 		Landmarks landmarks = 
 			select_landmarks_random(begin,end,ratio);
@@ -288,8 +288,8 @@ private:
 	TapkeeOutput embedLandmarkIsomap()
 	{
 		ratio.checked()
-			.inRange(static_cast<ScalarType>(1.0/n_vectors),
-			         static_cast<ScalarType>(1.0 + 1e-6));
+			.inClosedRange(static_cast<ScalarType>(3.0/n_vectors),
+			               static_cast<ScalarType>(1.0));
 
 		Neighbors neighbors = findNeighborsWith(plain_distance);
 		Landmarks landmarks = 
@@ -465,8 +465,8 @@ private:
 	TapkeeOutput embedtDistributedStochasticNeighborEmbedding()
 	{
 		perplexity.checked()
-			.inRange(static_cast<ScalarType>(0.0),
-			         static_cast<ScalarType>((n_vectors-1)/3.0 + 1e-6));
+			.inClosedRange(static_cast<ScalarType>(0.0),
+			               static_cast<ScalarType>((n_vectors-1)/3.0));
 
 		DenseMatrix data(static_cast<IndexType>(current_dimension),n_vectors);
 		DenseVector feature_vector(static_cast<IndexType>(current_dimension));

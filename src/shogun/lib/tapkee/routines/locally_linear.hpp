@@ -28,7 +28,7 @@ SparseWeightMatrix tangent_weight_matrix(RandomAccessIterator begin, RandomAcces
 	const IndexType k = neighbors[0].size();
 
 	SparseTriplets sparse_triplets;
-	sparse_triplets.reserve((k*k+k+1)*(end-begin));
+	sparse_triplets.reserve((k*k+2*k+1)*(end-begin));
 
 #pragma omp parallel shared(begin,end,neighbors,callback,sparse_triplets) default(none)
 	{

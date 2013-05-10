@@ -773,7 +773,7 @@ private:
 		}
 		Eigen::Map<Eigen::MatrixXd> DD_map(DD,N,N);
 		Eigen::Map<Eigen::MatrixXd> X_map(X,D,N);
-		X_map.noalias() = -2.0*DD_map.transpose()*DD_map;
+		DD_map.noalias() = -2.0*X_map.transpose()*X_map;
 
 		//cblas_dgemm(CblasColMajor, CblasTrans, CblasNoTrans, N, N, D, -2.0, X, D, X, D, 1.0, DD, N);
 		free(dataSums); dataSums = NULL;

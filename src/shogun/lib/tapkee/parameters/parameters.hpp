@@ -253,7 +253,21 @@ public:
 		}
 		return *this;
 	}
-	
+
+	template <typename T>
+	CheckedParameter& inClosedRange(T lower, T upper)
+	{
+		if (!parameter.isInRange(lower, upper) && !parameter.is(upper))
+		{
+			std::string reason = 
+				(Message() << "Value of " << parameter.name() << " " 
+				 << parameter.getValue<T>() << " doesn't fit the range [" << 
+				    lower << ", " << upper << "]");
+			parameter.invalidate(reason);
+		}
+		return *this;
+	}
+
 	CheckedParameter& positive()
 	{
 		if (!parameter.isPositive())
