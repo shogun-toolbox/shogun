@@ -478,7 +478,8 @@ check-examples-ruby_modular:
 		RUBY=$(RUBY) RUBYLIB="$$RUBYLIB:$(DESTDIR)$(RUBY_EXTENSIONS_INSTALL_DIR):." ./check.sh )
 
 lib/versionstring.h:    $(GITHEAD) 
-	        PYTHON=$(PYTHON) sh $(CONFIGPATH)/.version.sh > $@
+	@echo 'Creating version header'
+	@PYTHON=$(PYTHON) sh $(CONFIGPATH)/.version.sh > $@
 
 doc-libshogun:	lib/versionstring.h
 	-@$(SEDMI) "s/PROJECT_NUMBER         = .*/PROJECT_NUMBER         = `\
@@ -665,7 +666,8 @@ ifeq (makedepend,$(MAKEDEPEND))
 		$(shell find $(SRCDIR) -name "*.$(EXT_SRC_C)" ) $(MAKEDEPENDOPTS) | \
 		sed -e 's/\.o:/.$(EXT_OBJ_C):/g' >>.depend
 else #gcc -MM
-	find $(SRCDIR) -name "*.$(EXT_SRC_C)" -o -name "*.$(EXT_SRC_CPP)" \
+	@echo 'Generating dependencies'
+	@find $(SRCDIR) -name "*.$(EXT_SRC_C)" -o -name "*.$(EXT_SRC_CPP)" \
 	-exec $(MAKEDEPEND) $(DEFINES) $(INCLUDES) {} -MT {}.o \; >.depend
 	( find . -name "*.$(EXT_INP_SWIG)" | cut -c 3- ; find $(CONFIGPATH)/shogun/ -name "*.h"  ) | \
 	 		sed 's#/[/]*#/#g' | \
