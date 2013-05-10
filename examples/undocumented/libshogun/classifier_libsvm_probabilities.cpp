@@ -12,9 +12,9 @@ void gen_rand_data(SGMatrix<float64_t> features, SGVector<float64_t> labels, flo
 {
     index_t num_samples=labels.vlen;
     index_t dimensions=features.num_rows;
-    for (int32_t i=0; i<num_samples; i++) 
+    for (int32_t i=0; i<num_samples; i++)
     {
-        if (i<num_samples/2)	
+        if (i<num_samples/2)
         {
             labels[i]=-1.0;
             for(int32_t j=0; j<dimensions; j++)
@@ -54,7 +54,7 @@ int main(int argc, char** argv)
     //create train features
     CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>();
     SG_REF(features);
-    features->set_feature_matrix(featureMatrix); 
+    features->set_feature_matrix(featureMatrix);
 
     //create linear kernel
     CLinearKernel* kernel=new CLinearKernel();
@@ -66,12 +66,12 @@ int main(int argc, char** argv)
     SG_REF(svm);
     svm->train();
 
-    //classify data points 
-    CBinaryLabels* out_labels=CBinaryLabels::obtain_from_generic(svm->apply());
-    
-    /*convert scores to calibrated probabilities  by fitting a sigmoid function 
-    using the method described in Lin, H., Lin, C., and Weng,  R. (2007). A note 
-    on Platt's probabilistic outputs for support vector machines.	
+    //classify data points
+    CBinaryLabels* out_labels=CLabelsFactory::to_binary(svm->apply());
+
+    /*convert scores to calibrated probabilities  by fitting a sigmoid function
+    using the method described in Lin, H., Lin, C., and Weng,  R. (2007). A note
+    on Platt's probabilistic outputs for support vector machines.
     See BinaryLabels documentation for details*/
     out_labels->scores_to_probabilities();
 
@@ -82,13 +82,13 @@ int main(int argc, char** argv)
             out_labels->get_value(i));
     }
 
-    //clean up	
+    //clean up
     SG_UNREF(out_labels);
     SG_UNREF(kernel);
     SG_UNREF(features);
-    SG_UNREF(svm);	
+    SG_UNREF(svm);
 
-    exit_shogun();	
+    exit_shogun();
 
     return 0;
 }

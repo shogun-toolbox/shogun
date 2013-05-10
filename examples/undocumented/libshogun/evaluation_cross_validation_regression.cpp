@@ -65,7 +65,7 @@ void test_cross_validation()
 
 	/* train and output */
 	krr->train(features);
-	CRegressionLabels* output= CRegressionLabels::obtain_from_generic(krr->apply());
+	CRegressionLabels* output= CLabelsFactory::to_regression(krr->apply());
 	for (index_t i=0; i<num_vectors; ++i)
 	{
 		SG_SPRINT("x=%f, train=%f, predict=%f\n", train_dat.matrix[i],

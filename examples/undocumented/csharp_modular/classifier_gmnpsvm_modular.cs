@@ -25,7 +25,7 @@ public class classifier_gmnpsvm_modular {
 		svm.set_epsilon(epsilon);
 		svm.train();
 		kernel.init(feats_train, feats_test);
-		double[] out_labels = MulticlassLabels.obtain_from_generic(svm.apply(feats_test)).get_labels();
+		double[] out_labels = LabelsFactory.to_multiclass(svm.apply(feats_test)).get_labels();
 
 		foreach(double item in out_labels) {
 			Console.Write(item);

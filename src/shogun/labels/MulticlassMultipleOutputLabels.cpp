@@ -30,16 +30,6 @@ CMulticlassMultipleOutputLabels::~CMulticlassMultipleOutputLabels()
 	SG_FREE(m_labels);
 }
 
-CMulticlassMultipleOutputLabels* CMulticlassMultipleOutputLabels::obtain_from_generic(CLabels* base_labels)
-{
-	if (base_labels->get_label_type() == LT_MULTICLASS_MULTIPLE_OUTPUT)
-		return (CMulticlassMultipleOutputLabels*) base_labels;
-	else
-		SG_SERROR("base_labels must be of dynamic type CMulticlassMultipleOutputLabels\n")
-
-	return NULL;
-}
-
 void CMulticlassMultipleOutputLabels::ensure_valid(const char* context)
 {
 	if ( m_labels == NULL )

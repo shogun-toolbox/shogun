@@ -16,6 +16,7 @@
 #include <shogun/lib/common.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/labels/LabelTypes.h>
+#include <shogun/labels/LabelsFactory.h>
 #include <shogun/features/SubsetStack.h>
 
 namespace shogun

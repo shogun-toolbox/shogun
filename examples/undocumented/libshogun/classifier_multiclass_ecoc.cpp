@@ -54,7 +54,7 @@ void test()
 	mc_svm->train();
 
 	// Classify the training examples and show the results
-	CMulticlassLabels* output = CMulticlassLabels::obtain_from_generic(mc_svm->apply());
+	CMulticlassLabels* output = CLabelsFactory::to_multiclass(mc_svm->apply());
 
 	SGVector< int32_t > out_labels = output->get_int_labels();
 	SGVector< int32_t >::display_vector(out_labels.vector, out_labels.vlen);

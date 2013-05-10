@@ -47,7 +47,7 @@ public class classifier_libsvm_minimal_modular {
 		LibSVM svm = new LibSVM(C, kernel, labels);
 		svm.train();
 
-		double[] result = BinaryLabels.obtain_from_generic(svm.apply(feats_test)).get_labels();
+		double[] result = LabelsFactory.to_binary(svm.apply(feats_test)).get_labels();
 
 		int err_num = 0;
 		for (int i = 0; i < num; i++) {
