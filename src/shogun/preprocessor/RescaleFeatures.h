@@ -17,7 +17,7 @@ namespace shogun
 {
 	/**@brief Preprocessor RescaleFeautres is rescaling the range of features to
 	 * make the features independent of each other and aims to scale the range 
-	 * in [0, 1] or [−1, 1].
+	 * in [0, 1] or [-1, 1].
 	 *
 	 * The general formula is given as:
 	 * \f[
