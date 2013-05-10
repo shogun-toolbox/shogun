@@ -232,7 +232,7 @@ int main(int argc, char * argv[])
 			res.Fp, res.Fd, res.nIter, res.nCP, res.nzA, res.exitflag);
 
 	CStructuredLabels* out =
-		CStructuredLabels::obtain_from_generic(sosvm->apply());
+		CLabelsFactory::to_structured(sosvm->apply());
 	SG_REF(out);
 
 	SG_SPRINT("\n");

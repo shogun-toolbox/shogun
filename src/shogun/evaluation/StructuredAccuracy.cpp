@@ -34,8 +34,8 @@ float64_t CStructuredAccuracy::evaluate(CLabels* predicted, CLabels* ground_trut
 	REQUIRE(ground_truth->get_label_type() == LT_STRUCTURED, "The ground truth "
 			"labels must be of type CStructuredLabels\n");
 
-	CStructuredLabels* pred_labs = CStructuredLabels::obtain_from_generic(predicted);
-	CStructuredLabels* true_labs = CStructuredLabels::obtain_from_generic(ground_truth);
+	CStructuredLabels* pred_labs = CLabelsFactory::to_structured(predicted);
+	CStructuredLabels* true_labs = CLabelsFactory::to_structured(ground_truth);
 
 	REQUIRE(pred_labs->get_structured_data_type() ==
 			true_labs->get_structured_data_type(), "Predicted and ground truth "

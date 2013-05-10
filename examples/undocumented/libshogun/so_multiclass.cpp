@@ -43,12 +43,12 @@ void gen_rand_data(SGVector< float64_t > labs, SGMatrix< float64_t > feats)
 		for ( int32_t i = 0 ; i < NUM_SAMPLES ; ++i )
 		{
 			labs[c*NUM_SAMPLES+i] = c;
-			
+
 			fprintf(pfile, "%d", c);
 
 			for ( int32_t j = 0 ; j < DIMS ; ++j )
 			{
-				feats[(c*NUM_SAMPLES+i)*DIMS + j] = 
+				feats[(c*NUM_SAMPLES+i)*DIMS + j] =
 					CMath::normal_random(means[j], stds[j]);
 
 				fprintf(pfile, " %f", feats[(c*NUM_SAMPLES+i)*DIMS + j]);
@@ -89,7 +89,7 @@ void read_data(SGVector< float64_t > labs, SGMatrix< float64_t > feats)
 int main(int argc, char ** argv)
 {
 	init_shogun_with_defaults();
-	
+
 	SGVector< float64_t > labs(NUM_CLASSES*NUM_SAMPLES);
 	SGMatrix< float64_t > feats(DIMS, NUM_CLASSES*NUM_SAMPLES);
 
@@ -122,8 +122,8 @@ int main(int argc, char ** argv)
 	SG_SPRINT(">>>> PrimalMosekSOSVM trained in %9.4f\n", (t1 = start.cur_time_diff(false)));
 	bundle->train();
 	SG_SPRINT(">>>> BMRM trained in %9.4f\n", start.cur_time_diff(false)-t1);
-	CStructuredLabels* out = CStructuredLabels::obtain_from_generic(sosvm->apply());
-	CStructuredLabels* bout = CStructuredLabels::obtain_from_generic(bundle->apply());
+	CStructuredLabels* out = CLabelsFactory::to_structured(sosvm->apply());
+	CStructuredLabels* bout = CLabelsFactory::to_structured(bundle->apply());
 
 	// Create liblinear svm classifier with L2-regularized L2-loss
 	CLibLinear* svm = new CLibLinear(L2R_L2LOSS_SVC);
@@ -133,14 +133,14 @@ int main(int argc, char ** argv)
 	svm->set_bias_enabled(false);
 
 	// Create a multiclass svm classifier that consists of several of the previous one
-	CLinearMulticlassMachine* mc_svm = 
-			new CLinearMulticlassMachine( new CMulticlassOneVsRestStrategy(), 
+	CLinearMulticlassMachine* mc_svm =
+			new CLinearMulticlassMachine( new CMulticlassOneVsRestStrategy(),
 			(CDotFeatures*) features, svm, mlabels);
 	SG_REF(mc_svm);
 
 	// Train the multiclass machine using the data passed in the constructor
 	mc_svm->train();
-	CMulticlassLabels* mout = CMulticlassLabels::obtain_from_generic(mc_svm->apply());
+	CMulticlassLabels* mout = CLabelsFactory::to_multiclass(mc_svm->apply());
 
 	SGVector< float64_t > w = sosvm->get_w();
 	for ( int32_t i = 0 ; i < w.vlen ; ++i )

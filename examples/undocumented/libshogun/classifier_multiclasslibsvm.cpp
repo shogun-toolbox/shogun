@@ -35,7 +35,7 @@ int main(int argc, char** argv)
 	svm->train();
 
 	// classify on training examples
-	CMulticlassLabels* output=CMulticlassLabels::obtain_from_generic(svm->apply());
+	CMulticlassLabels* output=CLabelsFactory::to_multiclass(svm->apply());
 	SGVector<float64_t>::display_vector(output->get_labels().vector, output->get_num_labels(),
 			"batch output");
 

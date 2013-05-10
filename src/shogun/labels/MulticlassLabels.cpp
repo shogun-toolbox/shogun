@@ -70,20 +70,6 @@ void CMulticlassLabels::allocate_confidences_for(int32_t n_classes)
 	m_multiclass_confidences = SGMatrix<float64_t>(n_classes,n_labels);
 }
 
-CMulticlassLabels* CMulticlassLabels::obtain_from_generic(CLabels* base_labels)
-{
-	if (!base_labels)
-		return NULL;
-
-	if (base_labels->get_label_type()!=LT_MULTICLASS)
-	{
-		SG_SERROR("CMulticlassLabels::base_labels is of wrong type \"%s\"!\n",
-				base_labels->get_name());
-	}
-
-	return (CMulticlassLabels*) base_labels;
-}
-
 void CMulticlassLabels::ensure_valid(const char* context)
 {       
     CDenseLabels::ensure_valid(context);

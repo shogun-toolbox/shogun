@@ -40,12 +40,6 @@ class CStructuredLabels : public CLabels
 		/** destructor */
 		virtual ~CStructuredLabels();
 
-		/** helper method used to specialize a base class instance
-		 *
-		 * @param base_labels its dynamic type must be CStructuredLabels
-		 */
-		static CStructuredLabels* obtain_from_generic(CLabels* base_labels);
-
 		/** check if labeling is valid
 		 *
 		 * possible with subset

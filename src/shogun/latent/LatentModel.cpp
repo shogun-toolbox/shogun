@@ -68,10 +68,9 @@ void CLatentModel::set_features(CLatentFeatures* feats)
 void CLatentModel::argmax_h(const SGVector<float64_t>& w)
 {
 	int32_t num = get_num_vectors();
-	CBinaryLabels* y = CBinaryLabels::obtain_from_generic(m_labels->get_labels());
+	CBinaryLabels* y = CLabelsFactory::to_binary(m_labels->get_labels());
 	ASSERT(num > 0)
 	ASSERT(num == m_labels->get_num_labels())
-	
 
 	// argmax_h only for positive examples
 	for (int32_t i = 0; i < num; ++i)

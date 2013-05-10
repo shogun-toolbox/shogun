@@ -75,7 +75,7 @@ void test_cross_validation()
 	/* train and output the normal way */
 	SG_SPRINT("starting normal training\n");
 	svm->train(features);
-	CBinaryLabels* output=CBinaryLabels::obtain_from_generic(svm->apply(features));
+	CBinaryLabels* output=CLabelsFactory::to_binary(svm->apply(features));
 
 	/* evaluation criterion */
 	CContingencyTableEvaluation* eval_crit=
@@ -124,7 +124,7 @@ void test_cross_validation()
 	SG_SPRINT("locked in every iteration x-val\n");
 	cross->set_autolock(true);
 	time.start();
-	
+
 	for (index_t i=0; i<repetitions; ++i)
         {
                 tmp = (CCrossValidationResult*)cross->evaluate();
@@ -138,7 +138,7 @@ void test_cross_validation()
 	svm->data_lock(labels, features);
 	SG_SPRINT("locked x-val\n");
 	time.start();
-	
+
         for (index_t i=0; i<repetitions; ++i)
         {
                 tmp = (CCrossValidationResult*)cross->evaluate();
