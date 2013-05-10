@@ -19,7 +19,10 @@ def converter_factoranalysis_modular(data):
 		converter.set_target_dim(2)
 		embedding = converter.apply(features)
 
-		return embedding
+		X = embedding.get_feature_matrix()
+		covdet = numpy.linalg.det(numpy.dot(X,X.T))
+
+		return covdet > 0
 	except ImportError:
 		print('No Eigen3 available')
 
