@@ -23,8 +23,9 @@ endif
 PARTDEPS = $(foreach part, $(PARTS), interfaces/$(part)/Makefile )
 all:  $(PARTDEPS) examples $(LIBSHOGUN_TARGET)
 	@echo ============================================================
-	@echo ==== Building shogun for platform $(KERNELNAME)-$(MACHINE)
-	@echo ==== opts: $(COMPFLAGS_CPP)
+	@echo ==== Building Shogun for platform $(KERNELNAME)-$(MACHINE)
+	@echo ==== Compilation options: 
+	@echo $(COMPFLAGS_CPP) | fold -s -w 60 | sed 's/.*/==== &/'
 	@echo ============================================================
 	@echo 
 	$(foreach part, $(PARTS), $(MAKE) -C interfaces/$(part) $@ &&) true
