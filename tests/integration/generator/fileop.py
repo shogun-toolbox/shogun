@@ -1,7 +1,7 @@
 """Common operations related to file handling"""
 
 import os
-from numpy import int, long, float, double, ushort, uint16, ubyte, short, matrix
+from numpy import int, long, float, double, ushort, uint16, ubyte, short, matrix, int32, int64, uint32, uint64
 
 import featop
 import dataop
@@ -20,7 +20,7 @@ def _get_matrix (name, kmatrix):
 	"""
 
 	line=list()
-	list_numbers=(int, long, float, double, ubyte, ushort, short, uint16)
+	list_numbers=(int, long, float, double, ubyte, ushort, short, uint16, int32, int64, uint32, uint64)
 	matrix=[]
 	is_string=True
 
