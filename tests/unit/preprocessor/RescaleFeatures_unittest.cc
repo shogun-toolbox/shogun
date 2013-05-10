@@ -12,25 +12,6 @@
 
 using namespace shogun;
 
-TEST(RescaleFeatures, apply_to_feature_vector)
-{
-	index_t vlen = 10;
-	SGVector<float64_t> t(vlen);
-	CRescaleFeatures rescaler;
-
-	sg_rand->set_seed(12345);
-	t.random(-1024, 1024);
-	float64_t min = SGVector<float64_t>::min(t, vlen);
-	float64_t max = SGVector<float64_t>::max(t, vlen);
-	float64_t range = max - min;
-	SGVector<float64_t> out = rescaler.apply_to_feature_vector(t);
-
-	for (index_t i = 0; i < vlen; i++) {
-		float64_t e = (t[i]-min)/range;
-		EXPECT_DOUBLE_EQ(e, out[i]);
-	}
-}
-
 TEST(RescaleFeatures, apply_to_feature_matrix)
 {
 	index_t num_features = 3;
