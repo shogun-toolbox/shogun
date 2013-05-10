@@ -564,14 +564,16 @@ ifeq (csharp_modular,$(TEMPLATE_TARGET))
 endif
 else
 $(TEMPLATE_TARGET): .depend $(OBJFILES) $(SRCFILES) $(HEADERFILES) $(OTHERDEPS)
-	$(LINK) $(PRELINKFLAGS) $(shell find $(SRCDIR) -name "*.$(EXT_OBJ_CPP)" -o \
+	@echo 'Linking object files'
+	@$(LINK) $(PRELINKFLAGS) $(shell find $(SRCDIR) -name "*.$(EXT_OBJ_CPP)" -o \
 		-name "*.$(EXT_OBJ_C)" 2>/dev/null) $(LINKFLAGS) -o $@ $(POSTLINKFLAGS)
 	@$(POSTLINKCMD) $@
 	@$(LIBSYMLINKCMD)
 endif
 
 $(TEMPLATE_STATIC): .depend $(OBJFILES) $(SRCFILES) $(HEADERFILES)
-	-ar rcs $@ $(shell find $(SRCDIR) -name "*.$(EXT_OBJ_CPP)" -o \
+	@echo 'Creating static library'
+	@-ar rcs $@ $(shell find $(SRCDIR) -name "*.$(EXT_OBJ_CPP)" -o \
 		-name "*.$(EXT_OBJ_C)" 2>/dev/null)
 
 %.R: %${EXT_LIB_SWIG_TEMPLATE}
@@ -583,18 +585,21 @@ $(PRE_LIB_SWIG_TEMPLATE)%${EXT_LIB_SWIG_TEMPLATE}:	%$(EXT_OBJ_SWIG)
 	$(LINK) $(LINKFLAGS) -o $@ $^ $(POSTLINKFLAGS)
 
 %${EXT_OBJ_SWIG}:	%$(EXT_SRC_SWIG)
-	$(COMP_CPP) $(COMPFLAGS_SWIG_CPP) $(DEFINES) -c $(INCLUDES) -o $@ $<
+	@echo 'Compiling interface'
+	@$(COMP_CPP) $(COMPFLAGS_SWIG_CPP) $(DEFINES) -c $(INCLUDES) -o $@ $<
 
 %.$(EXT_OBJ_CPP):	%.$(EXT_SRC_CPP)
-	$(COMP_CPP) $(COMPFLAGS_CPP) $(DEFINES) -c $(INCLUDES) -o $@ $<
+	@echo 'Compiling $@'
+	@$(COMP_CPP) $(COMPFLAGS_CPP) $(DEFINES) -c $(INCLUDES) -o $@ $<
 	@test -f $*.$(EXT_CPP_TMP) && test "$(SRCDIR)" != "." \
 	  && rm -f $< || true
 
 %.$(EXT_OBJ_C):	%.$(EXT_SRC_C)
-	$(COMP_C) $(COMPFLAGS_C) $(DEFINES) -c $(INCLUDES) -o $@ $<
+	@echo 'Compiling $@'
+	@$(COMP_C) $(COMPFLAGS_C) $(DEFINES) -c $(INCLUDES) -o $@ $<
 
 %.$(EXT_SRC_CPP): %.$(EXT_CPP_TMP) %.$(EXT_CPP_SH) $(HEADERFILES)
-	@echo "generating $@ from $*.$(EXT_CPP_TMP) by running $*.$(EXT_CPP_SH)"
+	@echo "Generating $@ from $*.$(EXT_CPP_TMP) by running $*.$(EXT_CPP_SH)"
 	@echo "/*" > $@
 	@echo " * THIS IS A GENERATED FILE!  DO NOT CHANGE THIS FILE!  CHANGE THE" >> $@
 	@echo " * CORRESPONDING TEMPLATE FILE, PLEASE!" >> $@
@@ -603,7 +608,7 @@ $(PRE_LIB_SWIG_TEMPLATE)%${EXT_LIB_SWIG_TEMPLATE}:	%$(EXT_OBJ_SWIG)
 	@sh $*.$(EXT_CPP_SH) $@ $(HEADERFILES)
 
 %.$(EXT_SRC_CPP): %.$(EXT_CPP_TMP) %.$(EXT_CPP_PY) $(HEADERFILES)
-	@echo "generating $@ from $*.$(EXT_CPP_TMP) by running $*.$(EXT_CPP_PY)"
+	@echo "Generating $@ from $*.$(EXT_CPP_TMP) by running $*.$(EXT_CPP_PY)"
 	@echo "/*" > $@
 	@echo " * THIS IS A GENERATED FILE!  DO NOT CHANGE THIS FILE!  CHANGE THE" >> $@
 	@echo " * CORRESPONDING TEMPLATE FILE, PLEASE!" >> $@
@@ -612,7 +617,7 @@ $(PRE_LIB_SWIG_TEMPLATE)%${EXT_LIB_SWIG_TEMPLATE}:	%$(EXT_OBJ_SWIG)
 	@$(PYTHON) $*.$(EXT_CPP_PY) $@ $(HEADERFILES)
 
 %.$(EXT_SRC_CPP): %.$(EXT_CPP_TMP) %.$(EXT_CPP_PL) $(HEADERFILES)
-	@echo "generating $@ from $*.$(EXT_CPP_TMP) by running $*.$(EXT_CPP_PL)"
+	@echo "Generating $@ from $*.$(EXT_CPP_TMP) by running $*.$(EXT_CPP_PL)"
 	@echo "/*" > $@
 	@echo " * THIS IS A GENERATED FILE!  DO NOT CHANGE THIS FILE!  CHANGE THE" >> $@
 	@echo " * CORRESPONDING TEMPLATE FILE, PLEASE!" >> $@
@@ -621,7 +626,7 @@ $(PRE_LIB_SWIG_TEMPLATE)%${EXT_LIB_SWIG_TEMPLATE}:	%$(EXT_OBJ_SWIG)
 	@$(PERL) $*.$(EXT_CPP_PL) $@ $(HEADERFILES)
 
 %.$(EXT_SRC_CPP): %.$(EXT_CPP_TMP) %.$(EXT_CPP_PM) $(HEADERFILES)
-	@echo "generating $@ from $*.$(EXT_CPP_TMP) by running $*.$(EXT_CPP_PM)"
+	@echo "Generating $@ from $*.$(EXT_CPP_TMP) by running $*.$(EXT_CPP_PM)"
 	@echo "/*" > $@
 	@echo " * THIS IS A GENERATED FILE!  DO NOT CHANGE THIS FILE!  CHANGE THE" >> $@
 	@echo " * CORRESPONDING TEMPLATE FILE, PLEASE!" >> $@
