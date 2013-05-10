@@ -12,9 +12,9 @@
 Shogun Gaussian processes demo based on interactive SVM demo by Christian \
 Widmer and Soeren Sonnenburg which itself is based on PyQT Demo by Eli Bendersky
 
-NOT NEARLY FINISHED YET. Just checked in due to the quick need of a demo.
+Work to be done on parameter (e.g. kernel width) optimization.
 
-Heiko Strathmann
+Heiko Strathmann/Cameron Lai
 License: GPLv3
 """
 import sys, os, csv
@@ -42,24 +42,27 @@ class Form(QMainWindow):
 
         self.series_list_model = QStandardItemModel()
 
+        self.create_menu()
         self.create_main_frame()
         self.create_status_bar()
         self.create_toy_data()
         
         self.on_show()
-
+                             
     def on_show(self):
         self.axes.clear()
         self.axes.plot(self.x, self.y, 'ro')
-        self.axes.set_xlim((-5,5))
-        self.axes.set_ylim((-5,5))
+        self.axes.set_xlim((self.xmin,self.xmax))
+        self.axes.set_ylim((self.ymin,self.ymax))
         self.axes.grid(True)
         self.canvas.draw()
-    
+        self.fill_series_list(self.get_stats())
 
+    
     def on_about(self):
         msg = __doc__
         QMessageBox.about(self, "About the demo", msg.strip())
+
 
     def fill_series_list(self, names):
         self.series_list_model.clear()
@@ -70,20 +73,67 @@ class Form(QMainWindow):
             item.setCheckable(False)
             self.series_list_model.appendRow(item)
 
+
     def onclick(self, event):
-        0
-        #print 'button=%d, x=%d, y=%d, xdata=%f, ydata=%f'%(event.button, event.x, event.y, event.xdata, event.ydata)
-        #self.data.add_example(event.xdata, event.ydata)
-        #self.on_show()
+        print 'button=%d, x=%d, y=%d, xdata=%f, ydata=%f'%(event.button, event.x, event.y, event.xdata, event.ydata)
+        x=SP.append(self.x, event.xdata)
+        self.y=SP.append(self.y, event.ydata)
+        self.x= x[:,SP.newaxis]
+        self.on_show()
+        self.status_text.setText("New data point: x=%f, y=%f"%(event.xdata, event.ydata))
+
+    def create_menu(self):
+        self.file_menu = self.menuBar().addMenu("&File")
+        
+        #load_action = self.create_action("&Load file",
+        #    shortcut="Ctrl+L", slot=self.load_file, tip="Load a file")
+        quit_action = self.create_action("&Quit", slot=self.close, 
+            shortcut="Ctrl+Q", tip="Close the application")
+        
+        #self.add_actions(self.file_menu, 
+        #    (load_action, None, quit_action))
+            
+        self.help_menu = self.menuBar().addMenu("&Help")
+        about_action = self.create_action("&About", 
+            shortcut='F1', slot=self.on_about, 
+            tip='About the demo')
+            
+        self.add_actions(self.help_menu, (about_action,))
+
+    def clear_data(self):
+        self.x=SP.array([])
+        self.y=SP.array([])
+        self.xmin=-5
+        self.xmax=5
+        self.ymin=-5
+        self.ymax=5
+        self.on_show()
+        self.status_text.setText("Data cleared")
+
+    def enable_widgets(self):
+        kernel_name = self.kernel_combo.currentText()
+        if kernel_name == "Linear":
+            self.sigma.setDisabled(True)
+            self.degree.setDisabled(True)
+        elif kernel_name == "Polynomial":
+            self.sigma.setDisabled(True)
+            self.degree.setEnabled(True)
+        elif kernel_name == "Gaussian":
+            self.sigma.setEnabled(True)
+            self.degree.setDisabled(True)         
+
+    def get_stats(self):
+        num_train = len(self.x)
+        str_train = "num training points: %i" % num_train
+        str_test = "num training points: %s" % self.nTest.text()
+
+        return (str_train, str_test)
 
     def create_toy_data(self):
         #0. generate Toy-Data; just samples from a superposition of a sin + linear trend
-        xmin = -5
-        xmax = 5
-        x = SP.arange(xmin,xmax,(xmax-xmin)/100.0)
+        x = SP.arange(self.xmin,self.xmax,(self.xmax-self.xmin)/100.0)
 
         C = 2       #offset
-
         b = 0
 
         y  = b*x + C + float(self.sine_amplitude.text())*SP.sin(float(self.sine_freq.text())*x)
@@ -91,7 +141,6 @@ class Form(QMainWindow):
         y += float(self.noise_level.text())*random.randn(y.shape[0])
 
         self.y=y-y.mean()
-
         self.x= x[:,SP.newaxis]
         self.on_show()
     
@@ -118,8 +167,7 @@ class Form(QMainWindow):
         
         crit = GradientCriterion();
 
-        grad=GradientEvaluation(gp, feat_train, labels,
-			    crit);
+        grad=GradientEvaluation(gp, feat_train, labels, crit);
 
         grad.set_function(inf);
 
@@ -127,8 +175,7 @@ class Form(QMainWindow):
 
         root.print_tree();
 
-        grad_search=GradientModelSelection(
-			    root, grad);
+        grad_search=GradientModelSelection(root, grad);
 
         grad.set_autolock(0);
 
@@ -145,20 +192,33 @@ class Form(QMainWindow):
         #labels=RegressionLabels(y)
         n_dimensions = 1
         
+        kernel_name = self.kernel_combo.currentText()
+        print "current kernel is %s" % (kernel_name)
+        
         #new interface with likelihood parametres being decoupled from the covaraince function
         likelihood = GaussianLikelihood()
-        covar_parms = SP.log([2])
-        hyperparams = {'covar':covar_parms,'lik':SP.log([1])}
+        #covar_parms = SP.log([2])
+        #hyperparams = {'covar':covar_parms,'lik':SP.log([1])}
         
         # construct covariance function
         width=float(self.sigma.text())
-        SECF = GaussianKernel(feat_train, feat_train,width)
-        covar = SECF
+        degree=int(self.degree.text())
+        if kernel_name == "Linear":
+            gk = LinearKernel(feat_train, feat_train)
+            gk.set_normalizer(IdentityKernelNormalizer())
+        elif kernel_name == "Polynomial":
+            gk = PolyKernel(feat_train, feat_train, degree, True)
+            gk.set_normalizer(IdentityKernelNormalizer())
+        elif kernel_name == "Gaussian":
+            gk = GaussianKernel(feat_train, feat_train, width)
+        #SECF = GaussianKernel(feat_train, feat_train, width)
+        #covar = SECF
         zmean = ZeroMean();
-        inf = ExactInferenceMethod(SECF, feat_train, zmean, labels, likelihood);
+        inf = ExactInferenceMethod(gk, feat_train, zmean, labels, likelihood);
 
+        inf.get_negative_marginal_likelihood()
         # location of unispaced predictions
-        x_test = array([linspace(min(self.x),max(self.x), feat_train.get_num_vectors())])
+        x_test = array([linspace(self.xmin,self.xmax, self.nTest.text())])
         feat_test=RealFeatures(x_test)
         
         gp = GaussianProcessRegression(inf, feat_train, labels);
@@ -171,23 +231,37 @@ class Form(QMainWindow):
         #print feat_test.get_feature_matrix()
         #print "mean predictions"
         #print predictions.get_labels()
-        print "covariances"
-        print covariance.get_labels()
+        #print "covariances"
+        #print covariance.get_labels()
+
+        self.status_text.setText("Negative Log Marginal Likelihood = %f"%(inf.get_negative_marginal_likelihood()))
+
         
         self.axes.clear()
         self.axes.grid(True)
-        self.axes.set_xlim((-5,5))
-        self.axes.set_ylim((-5,5))
+        self.axes.set_xlim((self.xmin,self.xmax))
+        self.axes.set_ylim((self.ymin,self.ymax))
         self.axes.hold(True)
-        self.axes.plot(feat_test.get_feature_matrix()[0], predictions.get_labels(), 'b-x')
-        self.axes.plot(feat_train.get_feature_matrix()[0], labels.get_labels(), 'ro')
-        self.axes.plot(feat_test.get_feature_matrix()[0], predictions.get_labels()-3*sqrt(covariance.get_labels()))
-        self.axes.plot(feat_test.get_feature_matrix()[0], predictions.get_labels()+3*sqrt(covariance.get_labels()))
+        x_test=feat_test.get_feature_matrix()[0]
+        self.axes.plot(x_test, predictions.get_labels(), 'b-x')
+        #self.axes.plot(x_test, labels.get_labels(), 'ro')
+        self.axes.plot(self.x, self.y, 'ro')
+        #self.axes.plot(feat_test.get_feature_matrix()[0], predictions.get_labels()-3*sqrt(covariance.get_labels()))
+        #self.axes.plot(feat_test.get_feature_matrix()[0], predictions.get_labels()+3*sqrt(covariance.get_labels()))
+        upper = predictions.get_labels()+3*sqrt(covariance.get_labels())
+        lower = predictions.get_labels()-3*sqrt(covariance.get_labels())
+        self.axes.fill_between(x_test, lower, upper, color='grey')
         self.axes.hold(False)
         self.canvas.draw()
+        self.fill_series_list(self.get_stats())
 
 
     def create_main_frame(self):
+        self.xmin=-5
+        self.xmax=5
+        self.ymin=-5
+        self.ymax=5
+            
         self.main_frame = QWidget()
         
         plot_frame = QWidget()
@@ -202,61 +276,101 @@ class Form(QMainWindow):
         self.cax = None
         #self.mpl_toolbar = NavigationToolbar(self.canvas, self.main_frame)
         
+        self.kernel_combo = QComboBox()
+        self.kernel_combo.insertItem(-1, "Gaussian")
+        self.kernel_combo.insertItem(-1, "Polynomial")
+        self.kernel_combo.insertItem(-1, "Linear")
+        self.kernel_combo.maximumSize = QSize(300, 50)
+        self.connect(self.kernel_combo, SIGNAL("currentIndexChanged(QString)"), self.enable_widgets)
+        
+        log_label = QLabel("Data points")
+        self.series_list_view = QListView()
+        self.series_list_view.setModel(self.series_list_model)
+        
         self.sine_freq = QLineEdit()
         self.sine_freq.setText("1.0")
         self.sine_amplitude = QLineEdit()
         self.sine_amplitude.setText("1.0")
         self.sigma = QLineEdit()
         self.sigma.setText("1.2")
+        self.degree = QLineEdit()
+        self.degree.setText("2")
         self.noise_level = QLineEdit()
         self.noise_level.setText("1")
+        self.nTest = QLineEdit()
+        self.nTest.setText("100")
         
         spins_hbox = QHBoxLayout()
+        spins_hbox.addWidget(QLabel('Sine data setting:     '))
         spins_hbox.addWidget(QLabel('Sine Freq.'))
         spins_hbox.addWidget(self.sine_freq)
         spins_hbox.addWidget(QLabel('Sine Amplitude'))
         spins_hbox.addWidget(self.sine_amplitude)
         spins_hbox.addWidget(QLabel('Noise Level'))
         spins_hbox.addWidget(self.noise_level)
-        spins_hbox.addWidget(QLabel('Kernel Width'))
-        spins_hbox.addWidget(self.sigma)
         spins_hbox.addStretch(1)
+        
+        spins_hbox2 = QHBoxLayout()
+        spins_hbox2.addWidget(QLabel('Kernel Setting:      '))
+        spins_hbox2.addWidget(QLabel('Type'))
+        spins_hbox2.addWidget(self.kernel_combo)
+        spins_hbox2.addWidget(QLabel("Width"))
+        spins_hbox2.addWidget(self.sigma)
+        spins_hbox2.addWidget(QLabel("Degree"))
+        spins_hbox2.addWidget(self.degree)
+        spins_hbox2.addStretch(1)
+        
+        spins_hbox3 = QHBoxLayout()
+        spins_hbox3.addWidget(QLabel('Test Setting:     '))
+        spins_hbox3.addWidget(QLabel('Number of test points'))
+        spins_hbox3.addWidget(self.nTest)
+        spins_hbox3.addStretch(1)
         
         self.show_button = QPushButton("&Train GP")
         self.connect(self.show_button, SIGNAL('clicked()'), self.plot_gp)
 
         self.gen_sine_data_button = QPushButton("&Generate Sine Data")
         self.connect(self.gen_sine_data_button, SIGNAL('clicked()'), self.create_toy_data)
-
+        
+        self.clear_data_button = QPushButton("&Clear")
+        self.connect(self.clear_data_button, SIGNAL('clicked()'), self.clear_data)
         
         self.learn_kernel_button = QPushButton("&Learn Kernel Width and train GP")
         self.connect(self.learn_kernel_button, SIGNAL('clicked()'), self.learn_kernel_width)
-
 
         left_vbox = QVBoxLayout()
         left_vbox.addWidget(self.canvas)
         #left_vbox.addWidget(self.mpl_toolbar)
 
+        right0_vbox = QVBoxLayout()
+        right0_vbox.addWidget(QLabel("Data Points"))
+        right0_vbox.addWidget(self.series_list_view)
+        #right0_vbox.addWidget(self.legend_cb)
+        right0_vbox.addStretch(1)
+
         right2_vbox = QVBoxLayout()
         right2_vbox.addWidget(QLabel("Settings"))
         right2_vbox.addWidget(self.gen_sine_data_button)
+        right2_vbox.addWidget(self.clear_data_button)
         right2_vbox.addWidget(self.show_button)
         #right2_vbox.addWidget(self.learn_kernel_button)
         right2_vbox.addLayout(spins_hbox)
-        
-
+        right2_vbox.addLayout(spins_hbox2)
+        right2_vbox.addLayout(spins_hbox3)
         right2_vbox.addStretch(1)
 
         right_vbox = QHBoxLayout()
+        right_vbox.addLayout(right0_vbox)
         right_vbox.addLayout(right2_vbox)
     
-        
         hbox = QVBoxLayout()
         hbox.addLayout(left_vbox)
         hbox.addLayout(right_vbox)
         self.main_frame.setLayout(hbox)
 
         self.setCentralWidget(self.main_frame)
+        self.enable_widgets()
+
 
 
     def create_status_bar(self):
