@@ -66,9 +66,8 @@ namespace shogun
 
 			/**
 			 * Apply preproc on a single feature vector
-			 *
-			 * @param vector the input feature vector
-			 * @return the output feature vector
+			 * @NOTE: this is a dummy function as it makes no sense to apply this
+			 * preprocessor on a single feature vector.
 			 */			
 			virtual SGVector<float64_t> apply_to_feature_vector(SGVector<float64_t> vector);
 

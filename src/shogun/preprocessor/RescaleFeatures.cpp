@@ -52,6 +52,11 @@ bool CRescaleFeatures::save(FILE* f)
 SGMatrix<float64_t> CRescaleFeatures::apply_to_feature_matrix(CFeatures* features)
 {
 	SGMatrix<float64_t> feature_matrix=((CDenseFeatures<float64_t>*)features)->get_feature_matrix();
+
+	/* Need at least 2 feature vectors to apply this preprocessor */
+	if (feature_matrix.num_cols < 2)
+		return feature_matrix;
+	
 	for (index_t i = 0; i < feature_matrix.num_rows; i++)
 	{
 		SGVector<float64_t> vec = feature_matrix.get_row_vector(i);
@@ -81,24 +86,6 @@ SGMatrix<float64_t> CRescaleFeatures::apply_to_feature_matrix(CFeatures* feature
 
 SGVector<float64_t> CRescaleFeatures::apply_to_feature_vector(SGVector<float64_t> vector)
 {
-	ASSERT(vector.vlen > 0);
-	SGVector<float64_t> rescaled_vec = vector.clone();
-	float64_t min = vector[0];
-	float64_t max = vector[0];
-
-		/* find the max and min values in one loop */
-	for (index_t i = 1; i < vector.vlen; i++)
-	{
-		min = CMath::min(vector[i], min);
-		max = CMath::max(vector[i], max);
-	}
-	float64_t range = max - min;
-
-	if (range > 0)
-	{
-		rescaled_vec.add(-min);
-		rescaled_vec.scale(1/range);
-	}
-
-	return rescaled_vec;
+	/* nothing to do here */
+	return vector;
 }
