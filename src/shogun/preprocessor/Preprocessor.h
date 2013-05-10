@@ -48,7 +48,8 @@ enum EPreprocessorType
 	P_DIMENSIONREDUCTIONPREPROCESSOR=160,
 	P_SUMONE=170,
 	P_HOMOGENEOUSKERNELMAP = 180,
-	P_PNORM = 190
+	P_PNORM = 190,
+	P_RESCALEFEATURES = 200
 };
 
 /** @brief Class Preprocessor defines a preprocessor interface.

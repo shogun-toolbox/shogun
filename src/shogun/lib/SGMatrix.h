@@ -53,6 +53,13 @@ template<class T> class SGMatrix : public SGReferencedData
 			return &matrix[col*num_rows];
 		}
 
+		/** get a row vector
+		 *
+		 * @param row row index
+		 * @return row vector
+		 */
+		SGVector<T> get_row_vector(index_t row) const;
+
 		/** operator overload for matrix read only access
 		 * @param i_row
 		 * @param i_col

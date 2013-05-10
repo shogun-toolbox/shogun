@@ -893,6 +893,17 @@ void SGMatrix<T>::save(CFile* writer)
 	SG_RESET_LOCALE;
 }
 
+template<class T>
+SGVector<T> SGMatrix<T>::get_row_vector(index_t row) const
+{
+	SGVector<T> rowv(num_cols, false);
+	for (index_t i = 0; i < num_cols; i++)
+	{
+		rowv[i] = matrix[i*num_rows+row];
+	}
+	return rowv;
+}
+
 template class SGMatrix<bool>;
 template class SGMatrix<char>;
 template class SGMatrix<int8_t>;
