@@ -1,7 +1,7 @@
 import org.shogun.*;
 import org.jblas.*;
 
-import static org.shogun.BinaryLabels.obtain_from_generic;
+import static org.shogun.LabelsFactory.to_binary;
 
 public class kernel_combined_custom_poly_modular {
 	static {
@@ -57,7 +57,7 @@ public class kernel_combined_custom_poly_modular {
 		kernel_pred.init(feats_train, feats_pred);
 
 		svm.set_kernel(kernel_pred);
-		obtain_from_generic(svm.apply());
+		to_binary(svm.apply());
 		DoubleMatrix km_train=kernel.get_kernel_matrix();
 		System.out.println(km_train.toString());
 

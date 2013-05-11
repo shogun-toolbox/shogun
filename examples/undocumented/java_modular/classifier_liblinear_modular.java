@@ -2,7 +2,7 @@ import org.shogun.*;
 import org.jblas.*;
 
 import static org.shogun.LIBLINEAR_SOLVER_TYPE.L2R_L2LOSS_SVC_DUAL;
-import static org.shogun.BinaryLabels.obtain_from_generic;
+import static org.shogun.LabelsFactory.to_binary;
 
 public class classifier_liblinear_modular {
 	static {
@@ -33,7 +33,7 @@ public class classifier_liblinear_modular {
 		svm.set_bias_enabled(true);
 		svm.train();
 		svm.set_features(feats_test);
-		DoubleMatrix out_labels = obtain_from_generic(svm.apply()).get_labels();
+		DoubleMatrix out_labels = to_binary(svm.apply()).get_labels();
 		System.out.println(out_labels.toString());
 
 		modshogun.exit_shogun();
