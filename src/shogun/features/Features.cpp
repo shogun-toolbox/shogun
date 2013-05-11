@@ -50,6 +50,8 @@ CFeatures::~CFeatures()
 {
 	clean_preprocessors();
 	SG_UNREF(m_subset_stack);
+	SG_UNREF(preproc);
+	SG_UNREF(preprocessed);
 }
 
 void CFeatures::init()
