@@ -94,12 +94,17 @@ def get_fail_string(a):
 		failed_string.append(pickle.dumps(a))
 	else:
 		failed_string.append(str(a))
+	print failed_string
 	return failed_string
 
 def get_split_string(a):
 	strs=[]
 	for l in a:
-		strs.extend(l[0].replace('\\n','\n').splitlines())
+		if type(l) in (tuple,list):
+			e=l[0]
+		else:
+			e=l
+		strs.extend(e.replace('\\n','\n').splitlines())
 	return strs
 
 def tester(tests, cmp_method, tolerance, failures, missing):
@@ -169,8 +174,8 @@ if __name__=='__main__':
 		print "The following tests failed!"
 		for f in failed:
 			print "\t", f[0]
-			expected=get_split_string(f[1])
-			got=get_split_string(f[2])
+			got=get_split_string(f[1])
+			expected=get_split_string(f[2])
 			print "=== EXPECTED =========="
 			#import pdb
 			#pdb.set_trace()
