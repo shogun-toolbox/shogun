@@ -114,7 +114,7 @@ CMulticlassLabels* CMulticlassMachine::apply_multiclass(CFeatures* data)
 			SG_ERROR("num_machines = %d, did you train your machine?", num_machines)
 
 		CMulticlassLabels* result=new CMulticlassLabels(num_vectors);
-		
+
 		// if outputs are prob, only one confidence for each class
 		int32_t num_classes=m_multiclass_strategy->get_num_classes();
 		EProbHeuristicType heuris = get_prob_heuris();
@@ -255,7 +255,7 @@ bool CMulticlassMachine::train_machine(CFeatures* data)
 	SG_REF(train_labels);
 	m_machine->set_labels(train_labels);
 
-	m_multiclass_strategy->train_start(CMulticlassLabels::obtain_from_generic(m_labels), train_labels);
+	m_multiclass_strategy->train_start(CLabelsFactory::to_multiclass(m_labels), train_labels);
 	while (m_multiclass_strategy->train_has_more())
 	{
 		SGVector<index_t> subset=m_multiclass_strategy->train_prepare_next();

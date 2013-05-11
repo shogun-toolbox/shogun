@@ -29,7 +29,7 @@ public class classifier_lda_modular {
 
 
 		lda.set_features(feats_test);
-		double[] out_labels = BinaryLabels.obtain_from_generic(lda.apply()).get_labels();
+		double[] out_labels = LabelsFactory.to_binary(lda.apply()).get_labels();
 
 		foreach(double item in out_labels) {
 			Console.Write(item);
