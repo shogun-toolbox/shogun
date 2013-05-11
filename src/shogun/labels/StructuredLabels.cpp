@@ -31,16 +31,6 @@ CStructuredLabels::~CStructuredLabels()
 	SG_UNREF(m_labels);
 }
 
-CStructuredLabels* CStructuredLabels::obtain_from_generic(CLabels* base_labels)
-{
-	if ( base_labels->get_label_type() == LT_STRUCTURED )
-		return (CStructuredLabels*) base_labels;
-	else
-		SG_SERROR("base_labels must be of dynamic type CStructuredLabels\n")
-
-	return NULL;
-}
-
 void CStructuredLabels::ensure_valid(const char* context)
 {
 	if ( m_labels == NULL )

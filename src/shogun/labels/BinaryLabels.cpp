@@ -45,17 +45,6 @@ CBinaryLabels::CBinaryLabels(CFile* loader) : CDenseLabels(loader)
 {
 }
 
-CBinaryLabels* CBinaryLabels::obtain_from_generic(CLabels* base_labels)
-{
-	if ( base_labels->get_label_type() == LT_BINARY )
-		return (CBinaryLabels*) base_labels;
-	else
-		SG_SERROR("base_labels must be of dynamic type CBinaryLabels")
-
-	return NULL;
-}
-
-
 void CBinaryLabels::ensure_valid(const char* context)
 {
 	CDenseLabels::ensure_valid(context);

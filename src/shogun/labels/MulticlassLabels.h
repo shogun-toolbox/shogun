@@ -57,12 +57,6 @@ class CMulticlassLabels : public CDenseLabels
 		/** destructor */
 		~CMulticlassLabels();
 
-		/** helper method used to specialize a base class instance
-		 *
-		 * @param base_labels its dynamic type must be CMulticlassLabels
-		 */
-		static CMulticlassLabels* obtain_from_generic(CLabels* base_labels);
-
 		/** Make sure the label is valid, otherwise raise SG_ERROR.
 		 *
 		 * possible with subset

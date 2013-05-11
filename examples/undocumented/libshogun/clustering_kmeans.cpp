@@ -82,7 +82,7 @@ int main(int argc, char **argv)
 	clustering->train(features);
 
 	/* build clusters */
-	CMulticlassLabels* result=CMulticlassLabels::obtain_from_generic(clustering->apply());
+	CMulticlassLabels* result=CLabelsFactory::to_multiclass(clustering->apply());
 	for (index_t i=0; i<result->get_num_labels(); ++i)
 		SG_SPRINT("cluster index of vector %i: %f\n", i, result->get_label(i));
 

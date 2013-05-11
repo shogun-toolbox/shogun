@@ -77,7 +77,7 @@ void test_cross_validation()
 
 	/* train and output */
 	svm->train(features);
-	CBinaryLabels* output=CBinaryLabels::obtain_from_generic(svm->apply(features));
+	CBinaryLabels* output=CLabelsFactory::to_binary(svm->apply(features));
 	for (index_t i=0; i<num_vectors; ++i)
 		SG_SPRINT("i=%d, class=%f,\n", i, output->get_label(i));
 

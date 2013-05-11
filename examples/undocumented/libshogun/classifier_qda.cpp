@@ -44,7 +44,7 @@ void test()
 	qda->train();
 
 	// Classify and display output
-	CMulticlassLabels* output = CMulticlassLabels::obtain_from_generic(qda->apply());
+	CMulticlassLabels* output = CLabelsFactory::to_multiclass(qda->apply());
 	SG_REF(output);
 	SGVector<float64_t>::display_vector(output->get_labels().vector, output->get_num_labels());
 

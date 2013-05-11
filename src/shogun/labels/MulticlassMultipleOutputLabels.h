@@ -39,12 +39,6 @@ class CMulticlassMultipleOutputLabels : public CLabels
 		/** destructor */
 		virtual ~CMulticlassMultipleOutputLabels();
 
-		/** helper method used to specialize a base class instance
-		 *
-		 * @param base_labels its dynamic type must be CStructuredLabels
-		 */
-		static CMulticlassMultipleOutputLabels* obtain_from_generic(CLabels* base_labels);
-
 		/** check if labeling is valid
 		 *
 		 * possible with subset

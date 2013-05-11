@@ -43,7 +43,7 @@ def krr_short()
 	krr=Modshogun::KernelRidgeRegression.new(tau, GaussianKernel(0, width), RegressionLabels(label_train))
 	#krr.set_features(tau, GaussianKernel(0, width), RegressionLabels(label_train))
 	krr.train(RealFeatures(fm_train))
-	out = Modshogun::RegressionLabels.obtain_from_generic(krr.apply(RealFeatures(fm_test)).get_labels())
+	out = Modshogun::LabelsFactory.to_regression(krr.apply(RealFeatures(fm_test)).get_labels())
 
 	return krr,out
 
