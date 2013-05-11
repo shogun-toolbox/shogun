@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.io.Serializable;
-import static org.shogun.BinaryLabels.obtain_from_generic;
+import static org.shogun.LabelsFactory.to_binary;
 
 public class classifier_averaged_perceptron_modular{
 	static {
 		System.loadLibrary("modshogun");
 	}
-	
+
 	public static void main(String argv[]) {
 		modshogun.init_shogun_with_defaults();
 		double learn_rate = 10;
@@ -31,7 +31,7 @@ public class classifier_averaged_perceptron_modular{
 		perceptron.train();
 
 		perceptron.set_features(feats_test);
-		DoubleMatrix out_labels = obtain_from_generic(perceptron.apply()).get_labels();
+		DoubleMatrix out_labels = to_binary(perceptron.apply()).get_labels();
 
 		modshogun.exit_shogun();
 	}

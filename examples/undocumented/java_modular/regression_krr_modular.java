@@ -1,7 +1,7 @@
 import org.shogun.*;
 import org.jblas.*;
 
-import static org.shogun.RegressionLabels.obtain_from_generic;
+import static org.shogun.LabelsFactory.to_regression;
 
 public class regression_krr_modular {
 	static {
@@ -28,7 +28,7 @@ public class regression_krr_modular {
 		krr.train(feats_train);
 
 		kernel.init(feats_train, feats_test);
-		DoubleMatrix out_labels = obtain_from_generic(krr.apply()).get_labels();
+		DoubleMatrix out_labels = to_regression(krr.apply()).get_labels();
 		System.out.println(out_labels.toString());
 
 		modshogun.exit_shogun();

@@ -5,13 +5,13 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.shogun.EAlphabet.DNA;
-import static org.shogun.BinaryLabels.obtain_from_generic;
+import static org.shogun.LabelsFactory.to_binary;
 
 public class classifier_svmlight_linear_term_modular {
 	static {
 		System.loadLibrary("modshogun");
 	}
-	
+
 	public static void main(String argv[]) {
 		int degree = 20;
 		modshogun.init_shogun_with_defaults();
@@ -55,7 +55,7 @@ public class classifier_svmlight_linear_term_modular {
 		svm.train();
 
 		kernel.init(feats_train, feats_test);
-		obtain_from_generic(svm.apply()).get_labels();
+		to_binary(svm.apply()).get_labels();
 
 		modshogun.exit_shogun();
 	}

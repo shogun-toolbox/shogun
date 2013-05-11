@@ -21,6 +21,7 @@
 #include <shogun/features/CombinedFeatures.h>
 #include <shogun/features/CombinedDotFeatures.h>
 #include <shogun/labels/Labels.h>
+#include <shogun/labels/LabelsFactory.h>
 #include <shogun/labels/DenseLabels.h>
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/labels/LatentLabels.h>

@@ -101,7 +101,7 @@ TEST(Serialization, liblinear)
 	liblin->set_epsilon(1e-5);
 	liblin->train();
 
-	CBinaryLabels* pred = CBinaryLabels::obtain_from_generic(liblin->apply(test_feats));
+	CBinaryLabels* pred = CLabelsFactory::to_binary(liblin->apply(test_feats));
 	for (int i = 0; i < num_samples; ++i)
 		EXPECT_EQ(ground_truth->get_int_label(i), pred->get_int_label(i));
 
@@ -120,7 +120,7 @@ TEST(Serialization, liblinear)
 	SG_UNREF(file);
 
 	/* classify with the deserialized model */
-	pred = CBinaryLabels::obtain_from_generic(liblin_loaded->apply(test_feats));
+	pred = CLabelsFactory::to_binary(liblin_loaded->apply(test_feats));
 	for (int i = 0; i < num_samples; ++i)
 		EXPECT_EQ(ground_truth->get_int_label(i), pred->get_int_label(i));
 
