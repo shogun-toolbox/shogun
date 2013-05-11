@@ -10,8 +10,11 @@
 #ifndef _LABELS_FACTORY__H__
 #define _LABELS_FACTORY__H__
 
+#include <shogun/base/SGObject.h>
+
 namespace shogun
 {
+	class SGObject;
 	class CLabels;
 	class CBinaryLabels;
 	class CLatentLabels;
@@ -22,7 +25,7 @@ namespace shogun
 
 /** @brief The helper class to specialize base class instances of labels
  */
-class CLabelsFactory
+class CLabelsFactory : public CSGObject
 {
 public:
 	/** specialize a base class instance to CBinaryLabels
@@ -60,6 +63,9 @@ public:
 	 * @param base_labels its dynamic type must be CMulticlassMultipleOutputLabels
 	 */
 	static CMulticlassMultipleOutputLabels* to_multiclass_multiple_output(CLabels* base_labels);
+
+    /** @return object name */
+    virtual const char* get_name() const { return "CLabelsFactory"; }
 };
 
 }

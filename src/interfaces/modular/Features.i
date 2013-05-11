@@ -487,6 +487,7 @@ namespace shogun
 %include <shogun/labels/RegressionLabels.h>
 %include <shogun/labels/StructuredLabels.h>
 %include <shogun/labels/MulticlassMultipleOutputLabels.h>
+
 %include <shogun/features/RealFileFeatures.h>
 %include <shogun/features/FKFeatures.h>
 %include <shogun/features/TOPFeatures.h>
