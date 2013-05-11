@@ -1,7 +1,7 @@
 import org.shogun.*;
 import org.jblas.*;
 
-import static org.shogun.MulticlassLabels.obtain_from_generic;
+import static org.shogun.LabelsFactory.to_multiclass;
 
 public class classifier_knn_modular {
 	static {
@@ -25,7 +25,7 @@ public class classifier_knn_modular {
 
 		KNN knn = new KNN(k, distance, labels);
 		knn.train();
-		DoubleMatrix out_labels = obtain_from_generic(knn.apply(feats_test)).get_labels();
+		DoubleMatrix out_labels = to_multiclass(knn.apply(feats_test)).get_labels();
 		System.out.println(out_labels.toString());
 
 		modshogun.exit_shogun();
