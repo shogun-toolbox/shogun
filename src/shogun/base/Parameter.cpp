@@ -2857,14 +2857,16 @@ bool TParameter::equals(TParameter* other, floatmax_t accuracy)
 		return false;
 	}
 
-	SG_SDEBUG("Comparing data\n");
+	SG_SDEBUG("Comparing stype\n");
 	switch (m_datatype.m_ctype)
 	{
 		case CT_SCALAR:
 		{
 			SG_SDEBUG("CT_SCALAR\n");
-			if (!TParameter::compare_ptype(m_datatype.m_ptype, m_parameter,
-					other->m_parameter, accuracy))
+			if (!TParameter::compare_stype(m_datatype.m_stype,
+					m_datatype.m_ptype, m_datatype.sizeof_ptype(), m_parameter,
+					other->m_parameter,
+					accuracy))
 			{
 				SG_SPRINT("leaving TParameter::equals(): scalar data differes\n");
 				return false;
@@ -2886,10 +2888,12 @@ bool TParameter::equals(TParameter* other, floatmax_t accuracy)
 				void* pointer_a=&((*(char**)m_parameter)[x]);
 				void* pointer_b=&((*(char**)other->m_parameter)[x]);
 
-				if (!TParameter::compare_ptype(m_datatype.m_ptype, pointer_a,
-						pointer_b, accuracy))
+				if (!TParameter::compare_stype(m_datatype.m_stype,
+						m_datatype.m_ptype, m_datatype.sizeof_ptype(),
+						pointer_a, pointer_b, accuracy))
 				{
-					SG_SPRINT("leaving TParameter::equals(): vector element differes\n");
+					SG_SPRINT("leaving TParameter::equals(): vector element "
+							"differes\n");
 					return false;
 				}
 
@@ -2915,10 +2919,12 @@ bool TParameter::equals(TParameter* other, floatmax_t accuracy)
 				void* pointer_a=&((*(char**)m_parameter)[x]);
 				void* pointer_b=&((*(char**)other->m_parameter)[x]);
 
-				if (!TParameter::compare_ptype(m_datatype.m_ptype, pointer_a,
-						pointer_b, accuracy))
+				if (!TParameter::compare_stype(m_datatype.m_stype,
+						m_datatype.m_ptype, m_datatype.sizeof_ptype(),
+						pointer_a, pointer_b, accuracy))
 				{
-					SG_SPRINT("leaving TParameter::equals(): vector element differes\n");
+					SG_SPRINT("leaving TParameter::equals(): vector element "
+							"differes\n");
 					return false;
 				}
 
@@ -3143,5 +3149,65 @@ bool TParameter::compare_ptype(EPrimitiveType ptype, void* data1, void* data2,
 	}
 
 	SG_SDEBUG("leaving TParameter::compare_ptype(): Data were equal\n");
+	return true;
+}
+
+bool TParameter::compare_stype(EStructType stype, EPrimitiveType ptype,
+		size_t size_ptype, void* data1, void* data2, floatmax_t accuracy)
+{
+	SG_SDEBUG("entering TParameter::compare_stype()\n");
+
+	switch (stype)
+	{
+		case ST_NONE:
+		{
+			return TParameter::compare_ptype(ptype, data1, data2, accuracy);
+			break;
+		}
+		case ST_SPARSE:
+		{
+			SGSparseVector<char>* spr_ptr1 = (SGSparseVector<char>*) data2;
+			SGSparseVector<char>* spr_ptr2 = (SGSparseVector<char>*) data2;
+			break;
+		}
+		case ST_STRING:
+		{
+			SGString<char>* str_ptr1 = (SGString<char>*) data1;
+			SGString<char>* str_ptr2 = (SGString<char>*) data2;
+
+			if (str_ptr1->slen != str_ptr2->slen)
+			{
+				SG_SDEBUG("leaving TParameter::compare_stype(): Length of "
+						"string1 (%d)  is different of string2 (%d)\n",
+						str_ptr1->slen, str_ptr2->slen);
+				return false;
+			}
+
+			SG_SDEBUG("Comparing strings\n");
+			for (index_t i=0; i<str_ptr1->slen; ++i)
+			{
+				SG_SPRINT("Comparing string element %d at offset %d\n", i,
+						i*size_ptype);
+				void* pointer1=str_ptr1->string+i*size_ptype;
+				void* pointer2=str_ptr2->string+i*size_ptype;
+
+				if (!TParameter::compare_ptype(ptype, pointer1,
+						pointer2, accuracy))
+				{
+					SG_SDEBUG("leaving TParameter::compare_stype(): Data of"
+							" string element is different\n");
+					return false;
+				}
+			}
+			break;
+		}
+		default:
+		{
+			SG_SERROR("TParameter::compare_stype(): Undefined struct type\n");
+			break;
+		}
+	}
+
+	SG_SDEBUG("leaving TParameter::compare_stype(): Data were equal\n");
 	return true;
 }

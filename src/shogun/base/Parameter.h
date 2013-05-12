@@ -100,6 +100,24 @@ struct TParameter
 	static bool compare_ptype(EPrimitiveType ptype, void* data1, void* data2,
 			floatmax_t accuracy=0.0);
 
+	/** Given two pointers to a string element of a given primitive-type, this
+	 * method compares the values up to a given accuracy.
+	 *
+	 * If the type of the data is SGObject, recursively calls equals on the
+	 * object.
+	 *
+	 * @param stype string type of both data
+	 * @param ptype primitive type of both data
+	 * @param size_ptype size of primitive type in bytes
+	 * @param data1 pointer 1
+	 * @param data2 pointer 2
+	 * @param accuracy accuracy to compare
+	 * @return whether the data was equal
+	 */
+	static bool compare_stype(EStructType stype, EPrimitiveType ptype,
+			size_t size_ptype, void* data1, void* data2,
+			floatmax_t accuracy=0.0);
+
 	/** operator for comparison, (by string m_name) */
 	bool operator==(const TParameter& other) const;
 
