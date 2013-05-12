@@ -15,13 +15,16 @@ TESTSRCFILES = $(shell find $(SRCDIR) -name "*$(EXT_SRC_TEST)")
 TESTOBJFILES = $(patsubst %$(EXT_SRC_TEST),%$(EXT_OBJ_TEST), $(TESTSRCFILES))
 
 gtest-all.o: $(GTEST_DIR)/src/gtest-all.cc
-	$(COMP_CPP) $(COMPFLAGS_CPP) $(INCLUDES) $(DEFINES) -I$(SHOGUNSRCTOP) $(COMPFLAGS_GTEST_CPP) $(COMPFLAGS_GMOCK_CPP) -I$(GTEST_DIR) -I$(GMOCK_DIR) -c $<
+	@$(COMP_CPP) $(COMPFLAGS_CPP) $(INCLUDES) $(DEFINES) -I$(SHOGUNSRCTOP) $(COMPFLAGS_GTEST_CPP) $(COMPFLAGS_GMOCK_CPP) -I$(GTEST_DIR) -I$(GMOCK_DIR) -c $<
+	@echo 'Compiling gtest'
 
 gmock-all.o: $(GMOCK_DIR)/src/gmock-all.cc
-	$(COMP_CPP) $(COMPFLAGS_CPP) $(INCLUDES) $(DEFINES) -I$(SHOGUNSRCTOP) $(COMPFLAGS_GTEST_CPP) $(COMPFLAGS_GMOCK_CPP) -I$(GTEST_DIR) -I$(GMOCK_DIR) -c $<
+	@$(COMP_CPP) $(COMPFLAGS_CPP) $(INCLUDES) $(DEFINES) -I$(SHOGUNSRCTOP) $(COMPFLAGS_GTEST_CPP) $(COMPFLAGS_GMOCK_CPP) -I$(GTEST_DIR) -I$(GMOCK_DIR) -c $<
+	@echo 'Compiling gmock'
 
-libgmock.a: gtest-all.o gmock-all.o
-	ar -crv libgmock.a gtest-all.o gmock-all.o 
+libgmock.a: gtest-all.o gmock-all.o 
+	@ar -crv libgmock.a gtest-all.o gmock-all.o 
+	@echo 'Creating gmock library'
 
 shogun-lib:
 	@$(MAKE) -C $(SHOGUNSRCTOP)/shogun
@@ -42,7 +45,9 @@ valgrind-per-module: shogun-unit-test
 	 xargs -I{} valgrind $(VALGRINDOPTS) ./shogun-unit-test --gtest_filter={}\*
 
 %$(EXT_OBJ_TEST): %$(EXT_SRC_TEST)
-	$(COMP_CPP) -I$(SHOGUNSRCTOP) $(COMPFLAGS_CPP) $(COMPFLAGS_GTEST_CPP) $(COMPFLAGS_GMOCK_CPP) $(DEFINES) -c $(INCLUDES) -o $@ $<
+	@$(COMP_CPP) -I$(SHOGUNSRCTOP) $(COMPFLAGS_CPP) $(COMPFLAGS_GTEST_CPP) $(COMPFLAGS_GMOCK_CPP) $(DEFINES) -c $(INCLUDES) -o $@ $<
+	@echo 'Compiling $@'
 
 clean:
 	@rm -f ./shogun-unit-test libgmock.a gmock-all.o gtest-all.o $(TESTOBJFILES)
+	@echo 'Removing compiled binaries'
