@@ -362,3 +362,49 @@ TEST(TParameter,equals_matrix_equal)
 	delete param1;
 	delete param2;
 }
+
+TEST(TParameter,equals_string_scalar_different)
+{
+	SGVector<float64_t> a(2);
+	SGVector<float64_t> b(2);
+	float64_t accuracy=0.1;
+
+	a.set_const(1);
+	b.set_const(1);
+	b[1]=1.11;
+
+	SGString<float64_t> str1(a);
+	SGString<float64_t> str2(b);
+
+	TSGDataType type(CT_SCALAR, ST_STRING, PT_FLOAT64);
+	TParameter* param1=new TParameter(&type, &str1.string, "", "");
+	TParameter* param2=new TParameter(&type, &str2.string, "", "");
+
+	EXPECT_FALSE(param1->equals(param2, accuracy));
+
+	delete param1;
+	delete param2;
+}
+
+TEST(TParameter,equals_string_scalar_equal)
+{
+	SGVector<float64_t> a(2);
+	SGVector<float64_t> b(2);
+	float64_t accuracy=0.1;
+
+	a.set_const(1);
+	b.set_const(1);
+	b[1]=1.01;
+
+	SGString<float64_t> str1(a);
+	SGString<float64_t> str2(b);
+
+	TSGDataType type(CT_SCALAR, ST_STRING, PT_FLOAT64);
+	TParameter* param1=new TParameter(&type, &str1.string, "", "");
+	TParameter* param2=new TParameter(&type, &str2.string, "", "");
+
+	EXPECT_TRUE(param1->equals(param2, accuracy));
+
+	delete param1;
+	delete param2;
+}
