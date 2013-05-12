@@ -490,6 +490,12 @@ template <class T> class CDynamicArray :public CSGObject
 			m_array.clear_array(value);
 		}
 
+		/** resets the array */
+		inline void reset_array()
+		{
+			m_array.reset((T) 0);
+		}
+
 		/** operator overload for array read only access
 		 * use set_element() for write access (will also make the array
 		 * dynamically grow)

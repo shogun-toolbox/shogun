@@ -33,8 +33,9 @@ CFeatures::CFeatures(const CFeatures& orig)
 	init();
 
 	preproc = orig.preproc;
-	num_preproc = orig.num_preproc;
 	preprocessed = orig.preprocessed;
+	SG_REF(preproc);
+	SG_REF(preprocessed);
 }
 
 CFeatures::CFeatures(CFile* loader)
@@ -59,7 +60,6 @@ void CFeatures::init()
 	SG_ADD(&properties, "properties", "Feature properties", MS_NOT_AVAILABLE);
 	SG_ADD(&cache_size, "cache_size", "Size of cache in MB", MS_NOT_AVAILABLE);
 
-	/* TODO, use SGVector for arrays to be able to use SG_ADD macro */
 	SG_ADD((CSGObject**) &preproc, "preproc", "Array of preprocessors.", 
 	       MS_NOT_AVAILABLE);
 	SG_ADD((CSGObject**) &preprocessed, "preprocessed", "Array of preprocessed.", 
@@ -74,43 +74,34 @@ void CFeatures::init()
 	properties = FP_NONE;
 	cache_size = 0;
 	preproc = new CDynamicObjectArray() ;
-	num_preproc = 0;
 	preprocessed = new CDynamicArray<bool>();
+	SG_REF(preproc);
+	SG_REF(preprocessed);
 }
 
-/// set preprocessor
-int32_t CFeatures::add_preprocessor(CPreprocessor* p)
+void CFeatures::add_preprocessor(CPreprocessor* p)
 {
-	SG_INFO("%d preprocs currently, new preproc list is\n", num_preproc)
 	ASSERT(p)
 
 	preproc->push_back(p);
 	preprocessed->push_back(false);
-	num_preproc++;
-
-	for (int32_t i=0; i<num_preproc; i++)
-	  SG_INFO("preproc[%d]=%s %ld\n",i, preproc->get_element(i)->get_name(), preproc->get_element(i));
-
-	return num_preproc;
 }
 
-/// get current preprocessor
 CPreprocessor* CFeatures::get_preprocessor(int32_t num) const
 {
-	if (num<num_preproc)
+	if (num<preproc->get_num_elements() && num>=0)
 	{
-	  return static_cast<CPreprocessor*>(preproc->get_element(num));
+	  return (CPreprocessor*) preproc->get_element(num);
 	}
 	else
 		return NULL;
 }
 
-/// get whether specified preprocessor (or all if num=1) was/were already applied
 int32_t CFeatures::get_num_preprocessed() const
 {
 	int32_t num=0;
 
-	for (int32_t i=0; i<num_preproc; i++)
+	for (int32_t i=0; i<preproc->get_num_elements(); i++)
 	{
 	  if ((*preprocessed)[i])
 			num++;
@@ -119,49 +110,48 @@ int32_t CFeatures::get_num_preprocessed() const
 	return num;
 }
 
-/// clears all preprocs
 void CFeatures::clean_preprocessors()
 {
-	while (del_preprocessor(0));
-	SG_FREE(preproc);
-	preproc=NULL;
+	preproc->reset_array();
+	preprocessed->reset_array();
 }
 
-/// del current preprocessor
-CPreprocessor* CFeatures::del_preprocessor(int32_t num)
+void CFeatures::del_preprocessor(int32_t num)
 {
-	CPreprocessor* removed_preproc=NULL;
-
-	if (num_preproc>0 && num<num_preproc)
+	if (num<preproc->get_num_elements() && num>=0)
 	{
-	  removed_preproc = static_cast<CPreprocessor*>(preproc->get_element(num));
-
 		preproc->delete_element(num);
 		preprocessed->delete_element(num);
-
-		num_preproc--;
-
-		for (int32_t i=0; i<num_preproc; i++)
-		  SG_INFO("preproc[%d]=%s\n",i, preproc->get_element(i)->get_name()) 
 	}
+}
 
-	SG_UNREF(removed_preproc);
-	return removed_preproc;
+void CFeatures::list_preprocessors()
+{
+	int32_t num_preproc = preproc->get_num_elements();
+
+	for (int32_t i=0; i<num_preproc; i++)
+	{
+		SG_INFO("preproc[%d]=%s applied=%s\n",i,
+				preproc->get_element(i)->get_name(),
+				preprocessed->get_element(i) ? "true" : "false");
+	}
 }
 
 void CFeatures::set_preprocessed(int32_t num)
 {
-  (*preprocessed)[num]=true;
+	ASSERT(num<preprocessed->get_num_elements() && num>=0);
+	(*preprocessed)[num]=true;
 }
 
 bool CFeatures::is_preprocessed(int32_t num) const
 {
-  return (*preprocessed)[num];
+	ASSERT(num<preprocessed->get_num_elements() && num>=0);
+	return (*preprocessed)[num];
 }
 
 int32_t CFeatures::get_num_preprocessors() const
 {
-	return num_preproc;
+	return preproc->get_num_elements();
 }
 
 int32_t CFeatures::get_cache_size() const
@@ -292,8 +282,10 @@ bool CFeatures::check_feature_compatibility(CFeatures* f) const
 	bool result=false;
 
 	if (f)
+	{
 		result= ( (this->get_feature_class() == f->get_feature_class()) &&
 				(this->get_feature_type() == f->get_feature_type()));
+	}
 	return result;
 }
 
