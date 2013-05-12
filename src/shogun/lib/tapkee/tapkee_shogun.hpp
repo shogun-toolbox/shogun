@@ -40,6 +40,7 @@ enum TAPKEE_METHODS_FOR_SHOGUN
 	SHOGUN_STOCHASTIC_PROXIMITY_EMBEDDING,
 	SHOGUN_FACTOR_ANALYSIS,
 	SHOGUN_TDISTRIBUTED_STOCHASTIC_NEIGHBOR_EMBEDDING,
+	SHOGUN_MANIFOLD_SCULPTING
 };
 
 struct TAPKEE_PARAMETERS_FOR_SHOGUN
@@ -52,8 +53,8 @@ struct TAPKEE_PARAMETERS_FOR_SHOGUN
 		gaussian_kernel_width(1.0), spe_tolerance(1e-5),
 		spe_global_strategy(false), max_iteration(100),
 		fa_epsilon(1e-5), sne_theta(0.5),
-		sne_perplexity(30.0), kernel(NULL),
-		distance(NULL), features(NULL)
+		sne_perplexity(30.0), squishing_rate(0.99),
+		kernel(NULL), distance(NULL), features(NULL)
 	{
 	}
 	TAPKEE_METHODS_FOR_SHOGUN method;
@@ -70,6 +71,7 @@ struct TAPKEE_PARAMETERS_FOR_SHOGUN
 	float64_t fa_epsilon;
 	float64_t sne_theta;
 	float64_t sne_perplexity;
+	float64_t squishing_rate;
 	CKernel* kernel;
 	CDistance* distance;
 	CDotFeatures* features;

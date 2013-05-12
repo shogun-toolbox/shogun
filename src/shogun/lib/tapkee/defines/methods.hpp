@@ -63,6 +63,9 @@ namespace tapkee
 		/** t-SNE and Barnes-Hut-SNE as described in 
 		 * @cite vanDerMaaten2008 and @cite vanDerMaaten2013 */
 		tDistributedStochasticNeighborEmbedding,
+		/** Manifold Sculpting as described in
+		* @cite Gashler2007 */
+		ManifoldSculpting,
 		/** Passing through (doing nothing just passes the 
 		 * data through) */
 		PassThru
@@ -89,6 +92,7 @@ namespace tapkee
 	METHOD_THAT_NEEDS_NOTHING_IS(PassThru);
 	METHOD_THAT_NEEDS_ONLY_FEATURES_IS(FactorAnalysis);
 	METHOD_THAT_NEEDS_ONLY_FEATURES_IS(tDistributedStochasticNeighborEmbedding);
+	METHOD_THAT_NEEDS_DISTANCE_AND_FEATURES_IS(ManifoldSculpting);
 #endif // DOXYGEN_SHOULD_SKIP_THS
 
 	//! Neighbors computation methods
