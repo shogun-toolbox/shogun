@@ -5,6 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 2010 Soeren Sonnenburg
+ * Written (W) 2011-2013 Heiko Strathmann
  * Copyright (C) 2010 Berlin Institute of Technology
  */
 
@@ -45,12 +46,77 @@ TSGDataType::operator==(const TSGDataType& a)
 	bool result = m_ctype == a.m_ctype && m_stype == a.m_stype
 		&& m_ptype == a.m_ptype;
 
+	SG_SPRINT("lena=%d, lenb=%d\n", m_length_y, *a.m_length_y)
+
 	result &= m_length_y != NULL && a.m_length_y != NULL
 		? *m_length_y == *a.m_length_y: m_length_y == a.m_length_y;
 	result &= m_length_x != NULL && a.m_length_x != NULL
 		? *m_length_x == *a.m_length_x: m_length_x == a.m_length_x;
 
 	return result;
+}
+
+bool TSGDataType::equals(TSGDataType other)
+{
+	SG_SDEBUG("entering TSGDataType::equals()\n");
+
+	if (m_ctype!=other.m_ctype)
+	{
+		SG_SDEBUG("leaving TSGDataType::equals(): container types are "
+				"different\n");
+		return false;
+	}
+
+	if (m_stype!=other.m_stype)
+	{
+		SG_SDEBUG("leaving TSGDataType::equals(): struct types are "
+				"different\n");
+		return false;
+	}
+
+	if (m_ptype!=other.m_ptype)
+	{
+		SG_SDEBUG("leaving TSGDataType::equals(): primitive types are "
+				"different\n");
+		return false;
+	}
+
+	if ((!m_length_y && other.m_length_y) || (m_length_y && !other.m_length_y))
+	{
+		SG_SDEBUG("leaving TSGDataType::equals(): length_y is at %p while "
+				"other's length_y is at %p\n", m_length_y, other.m_length_y);
+		return false;
+	}
+
+	if (m_length_y && other.m_length_y)
+	{
+		if (*m_length_y!=*other.m_length_y)
+		{
+			SG_SDEBUG("leaving TSGDataType::equals(): length_y=%d while "
+					"other's length_y=%d\n", *m_length_y, *other.m_length_y);
+			return false;
+		}
+	}
+
+	if ((!m_length_x && other.m_length_x) || (m_length_x && !other.m_length_x))
+	{
+		SG_SDEBUG("leaving TSGDataType::equals(): m_length_x is at %p while "
+				"other's m_length_x is at %p\n", m_length_x, other.m_length_x);
+		return false;
+	}
+
+	if (m_length_x && other.m_length_x)
+	{
+		if (*m_length_x!=*other.m_length_x)
+		{
+			SG_SDEBUG("leaving TSGDataType::equals(): m_length_x=%d while "
+					"other's m_length_x=%d\n", *m_length_x, *other.m_length_x);
+			return false;
+		}
+	}
+
+	SG_SDEBUG("leaving TSGDataType::equals(): datatypes are equal\n");
+	return true;
 }
 
 void
