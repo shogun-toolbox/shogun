@@ -5,7 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 2010 Soeren Sonnenburg
- * Written (W) 2011 Heiko Strathmann
+ * Written (W) 2011-2013 Heiko Strathmann
  * Copyright (C) 2010 Berlin Institute of Technology
  */
 
@@ -2830,4 +2830,318 @@ void TParameter::copy_data(const TParameter* source)
 		*m_datatype.m_length_y=*source->m_datatype.m_length_y;
 
 	SG_SDEBUG("leaving TParameter::copy_data for %s\n", m_name)
+}
+
+bool TParameter::equals(TParameter* other, floatmax_t accuracy)
+{
+	SG_SDEBUG("entering TParameter::equals()\n");
+
+	if (!other)
+	{
+		SG_SDEBUG("leaving TParameter::equals(): other parameter is NULL\n");
+		return false;
+	}
+
+	if (strcmp(m_name, other->m_name))
+	{
+		SG_SDEBUG("leaving TParameter::equals(): name \"%s\" is different from"
+				" other parameter's name \"%s\"\n", m_name, other->m_name);
+		return false;
+	}
+
+	SG_SDEBUG("Comparing datatypes\n");
+	if (!(m_datatype.equals(other->m_datatype)))
+	{
+		SG_SPRINT("leaving TParameter::equals(): type of \"%s\" is different "
+				"from other parameter's \"%s\" type\n", m_name, other->m_name);
+		return false;
+	}
+
+	SG_SDEBUG("Comparing data\n");
+	switch (m_datatype.m_ctype)
+	{
+		case CT_SCALAR:
+		{
+			SG_SDEBUG("CT_SCALAR\n");
+			if (!TParameter::compare_ptype(m_datatype.m_ptype, m_parameter,
+					other->m_parameter, accuracy))
+			{
+				SG_SPRINT("leaving TParameter::equals(): scalar data differes\n");
+				return false;
+			}
+			break;
+		}
+		case CT_VECTOR: case CT_SGVECTOR:
+		{
+			SG_SDEBUG("CT_VECTOR or CT_SGVECTOR\n");
+
+			/* x is number of processed bytes */
+			index_t x=0;
+			SG_SPRINT("length_y: %d\n", *m_datatype.m_length_y)
+			for (index_t i=0; i<*m_datatype.m_length_y; ++i)
+			{
+				SG_SPRINT("comparing element %d which is %d byes from start\n",
+						i, x);
+
+				void* pointer_a=&((*(char**)m_parameter)[x]);
+				void* pointer_b=&((*(char**)other->m_parameter)[x]);
+
+				if (!TParameter::compare_ptype(m_datatype.m_ptype, pointer_a,
+						pointer_b, accuracy))
+				{
+					SG_SPRINT("leaving TParameter::equals(): vector element differes\n");
+					return false;
+				}
+
+				x=x+(m_datatype.sizeof_ptype());
+			}
+
+			break;
+		}
+		case CT_MATRIX: case CT_SGMATRIX:
+		{
+			SG_SDEBUG("CT_MATRIX or CT_SGMATRIX\n");
+
+			/* x is number of processed bytes */
+			index_t x=0;
+			SG_SPRINT("length_y: %d\n", *m_datatype.m_length_y)
+			SG_SPRINT("length_x: %d\n", *m_datatype.m_length_x)
+			int64_t length=(*m_datatype.m_length_y) * (*m_datatype.m_length_x);
+			for (index_t i=0; i<length; ++i)
+			{
+				SG_SPRINT("comparing element %d which is %d byes from start\n",
+						i, x);
+
+				void* pointer_a=&((*(char**)m_parameter)[x]);
+				void* pointer_b=&((*(char**)other->m_parameter)[x]);
+
+				if (!TParameter::compare_ptype(m_datatype.m_ptype, pointer_a,
+						pointer_b, accuracy))
+				{
+					SG_SPRINT("leaving TParameter::equals(): vector element differes\n");
+					return false;
+				}
+
+				x=x+(m_datatype.sizeof_ptype());
+			}
+
+			break;
+		}
+		case CT_NDARRAY:
+		{
+			SG_SDEBUG("CT_NDARRAY\n");
+			SG_SERROR("TParameter::equals(): Not yet implemented for "
+					"CT_NDARRAY!\n");
+			break;
+		}
+	}
+
+	SG_SDEBUG("leaving TParameter::equals(): Parameters are equal\n");
+	return true;
+}
+
+bool TParameter::compare_ptype(EPrimitiveType ptype, void* data1, void* data2,
+			floatmax_t accuracy)
+{
+	SG_SDEBUG("entering TParameter::compare_ptype()\n");
+
+	if ((data1 && !data2) || (!data1 && data2))
+	{
+		SG_SDEBUG("leaving TParameter::compare_ptype(): data1 is at %p while "
+				"data2 is at %p\n", data1, data2);
+		return false;
+	}
+
+	switch (ptype)
+	{
+	case PT_BOOL:
+	{
+		bool casted1=*((bool*)data1);
+		bool casted2=*((bool*)data2);
+
+		if (CMath::abs(casted1-casted2)>accuracy)
+		{
+			SG_SDEBUG("leaving TParameter::compare_ptype(): PT_BOOL: "
+					"data1=%d, data=%d\n", casted1, casted2);
+			return false;
+		}
+		break;
+	}
+	case PT_CHAR:
+	{
+		char casted1=*((char*)data1);
+		char casted2=*((char*)data2);
+
+		if (CMath::abs(casted1-casted2)>accuracy)
+		{
+			SG_SDEBUG("leaving TParameter::compare_ptype(): PT_CHAR: "
+					"data1=%c, data=%c\n", casted1, casted2);
+			return false;
+		}
+		break;
+	}
+	case PT_INT8:
+	{
+		int8_t casted1=*((int8_t*)data1);
+		int8_t casted2=*((int8_t*)data2);
+
+		if (CMath::abs(casted1-casted2)>accuracy)
+		{
+			SG_SDEBUG("leaving TParameter::compare_ptype(): PT_INT8: "
+					"data1=%d, data=%d\n", casted1, casted2);
+			return false;
+		}
+		break;
+	}
+	case PT_UINT8:
+	{
+		uint8_t casted1=*((uint8_t*)data1);
+		uint8_t casted2=*((uint8_t*)data2);
+
+		if (CMath::abs(casted1-casted2)>accuracy)
+		{
+			SG_SDEBUG("leaving TParameter::compare_ptype(): PT_UINT8: "
+					"data1=%d, data=%d\n", casted1, casted2);
+			return false;
+		}
+		break;
+	}
+	case PT_INT16:
+	{
+		int16_t casted1=*((int16_t*)data1);
+		int16_t casted2=*((int16_t*)data2);
+
+		if (CMath::abs(casted1-casted2)>accuracy)
+		{
+			SG_SDEBUG("leaving TParameter::compare_ptype(): PT_INT16: "
+					"data1=%d, data=%d\n", casted1, casted2);
+			return false;
+		}
+		break;
+	}
+	case PT_UINT16:
+	{
+		uint16_t casted1=*((uint16_t*)data1);
+		uint16_t casted2=*((uint16_t*)data2);
+
+		if (CMath::abs(casted1-casted2)>accuracy)
+		{
+			SG_SDEBUG("leaving TParameter::compare_ptype(): PT_UINT16: "
+					"data1=%d, data=%d\n", casted1, casted2);
+			return false;
+		}
+		break;
+	}
+	case PT_INT32:
+	{
+		int32_t casted1=*((int32_t*)data1);
+		int32_t casted2=*((int32_t*)data2);
+
+		if (CMath::abs(casted1-casted2)>accuracy)
+		{
+			SG_SPRINT("leaving TParameter::compare_ptype(): PT_INT32: "
+					"data1=%d, data=%d\n", casted1, casted2);
+			return false;
+		}
+		break;
+	}
+	case PT_UINT32:
+	{
+		uint32_t casted1=*((uint32_t*)data1);
+		uint32_t casted2=*((uint32_t*)data2);
+
+		if (CMath::abs(casted1-casted2)>accuracy)
+		{
+			SG_SDEBUG("leaving TParameter::compare_ptype(): PT_UINT32: "
+					"data1=%d, data=%d\n", casted1, casted2);
+			return false;
+		}
+		break;
+	}
+	case PT_INT64:
+	{
+		int64_t casted1=*((int64_t*)data1);
+		int64_t casted2=*((int64_t*)data2);
+
+		if (CMath::abs(casted1-casted2)>accuracy)
+		{
+			SG_SDEBUG("leaving TParameter::compare_ptype(): PT_INT64: "
+					"data1=%d, data=%d\n", casted1, casted2);
+			return false;
+		}
+		break;
+	}
+	case PT_UINT64:
+	{
+		uint64_t casted1=*((uint64_t*)data1);
+		uint64_t casted2=*((uint64_t*)data2);
+
+		if (CMath::abs(casted1-casted2)>accuracy)
+		{
+			SG_SDEBUG("leaving TParameter::compare_ptype(): PT_UINT64: "
+					"data1=%d, data=%d\n", casted1, casted2);
+			return false;
+		}
+		break;
+	}
+	case PT_FLOAT32:
+	{
+		float32_t casted1=*((float32_t*)data1);
+		float32_t casted2=*((float32_t*)data2);
+
+		if (CMath::abs(casted1-casted2)>accuracy)
+		{
+			SG_SDEBUG("leaving TParameter::compare_ptype(): PT_FLOAT32: "
+					"data1=%f, data=%f\n", casted1, casted2);
+			return false;
+		}
+		break;
+	}
+	case PT_FLOAT64:
+	{
+		float64_t casted1=*((float64_t*)data1);
+		float64_t casted2=*((float64_t*)data2);
+
+		if (CMath::abs(casted1-casted2)>accuracy)
+		{
+			SG_SPRINT("leaving TParameter::compare_ptype(): PT_FLOAT64: "
+					"data1=%f, data=%f\n", casted1, casted2);
+			return false;
+		}
+		break;
+	}
+	case PT_FLOATMAX:
+	{
+		floatmax_t casted1=*((floatmax_t*)data1);
+		floatmax_t casted2=*((floatmax_t*)data2);
+
+		if (CMath::abs(casted1-casted2)>accuracy)
+		{
+			SG_SDEBUG("leaving TParameter::compare_ptype(): PT_FLOATMAX: "
+					"data1=%f, data=%f\n", casted1, casted2);
+			return false;
+		}
+		break;
+	}
+	case PT_SGOBJECT:
+	{
+		CSGObject* casted1=*((CSGObject**)data1);
+		CSGObject* casted2=*((CSGObject**)data2);
+
+		if (!(casted1->equals(casted2)))
+		{
+			SG_SDEBUG("leaving TParameter::compare_ptype(): PT_SGOBJECT "
+					"equals returned false\n");
+			return false;
+		}
+		break;
+	}
+	default:
+		SG_SERROR("TParameter::compare_ptype(): Encountered unknown primitive"
+				"-type: %d\n", ptype);
+		break;
+	}
+
+	SG_SDEBUG("leaving TParameter::compare_ptype(): Data were equal\n");
+	return true;
 }
