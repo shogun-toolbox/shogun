@@ -5,7 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 2008-2009 Soeren Sonnenburg
- * Written (W) 2011-2012 Heiko Strathmann
+ * Written (W) 2011-2013 Heiko Strathmann
  * Copyright (C) 2008-2009 Fraunhofer Institute FIRST and Max Planck Society
  */
 
@@ -1227,5 +1227,74 @@ void CSGObject::build_parameter_dictionary(CMap<TParameter*, CSGObject*>& dict)
 
 		}
 	}
+}
+
+bool CSGObject::equals(CSGObject* other, floatmax_t accuracy)
+{
+	SG_DEBUG("entering %s::equals()\n", get_name());
+	if (!other)
+	{
+		SG_DEBUG("leaving %s::equals(): other object is NULL\n", get_name());
+		return false;
+	}
+
+	/* a crude type check based on the get_name */
+	if (strcmp(other->get_name(), get_name()))
+	{
+		SG_DEBUG("leaving %s::equals(): name of other object differs\n", get_name());
+		return false;
+	}
+
+	/* should not be necessary but just ot be sure that type has not changed.
+	 * Will assume that parameters are in same order with same name from here */
+	if (m_parameters->get_num_parameters()!=other->m_parameters->get_num_parameters())
+	{
+		SG_DEBUG("leaving %s::equals(): number of parameters of other object "
+				"differs\n", get_name());
+		return false;
+	}
+
+	for (index_t i=0; i<m_parameters->get_num_parameters(); ++i)
+	{
+		SG_DEBUG("comparing parameter %d\n", i);
+
+		TParameter* this_param=m_parameters->get_parameter(i);
+		TParameter* other_param=other->m_parameters->get_parameter(i);
+
+		/* some checks to make sure parameters have same order and names and
+		 * are not NULL. Should never be the case but check anyway. */
+		if (!this_param && !other_param)
+			continue;
+
+		if (!this_param && other_param)
+		{
+			SG_DEBUG("leaving %s::equals(): parameter %d is NULL where other's "
+					"parameter \"%s\" is not\n", get_name(), other_param->m_name);
+			return false;
+		}
+
+		if (this_param && !other_param)
+		{
+			SG_DEBUG("leaving %s::equals(): parameter %d is \"%s\" where other's "
+						"parameter is NULL\n", get_name(), this_param->m_name);
+			return false;
+		}
+
+		SG_DEBUG("comparing parameter \"%s\" to other's \"%s\"\n",
+				this_param->m_name, other_param->m_name);
+
+		/* use equals method of TParameter from here */
+		if (!this_param->equals(other_param, accuracy))
+		{
+			SG_DEBUG("leaving %s::equals(): parameters at position %d with name"
+					" \"%s\" differs from other object parameter with name"
+					"\"%s\"\n",
+					get_name(), i, this_param->m_name, other_param->m_name);
+			return false;
+		}
+	}
+
+	SG_DEBUG("leaving %s::equals(): object are equal\n", get_name());
+	return true;
 }
 

@@ -5,7 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 2008-2010 Soeren Sonnenburg
- * Written (W) 2011-2012 Heiko Strathmann
+ * Written (W) 2011-2013 Heiko Strathmann
  * Copyright (C) 2008-2010 Fraunhofer Institute FIRST and Max Planck Society
  */
 
@@ -417,6 +417,19 @@ public:
 	 * update.
 	 */
 	virtual bool update_parameter_hash();
+
+	/** Recursively compares the current SGObject to another one. Compares all
+	 * registered numerical parameters, recursion upon complex (SGObject)
+	 * parameters. Does not compare pointers!
+	 *
+	 * May be overwritten but please do with care! Should not be necessary in
+	 * most cases.
+	 *
+	 * @other object to compare with
+	 * @accuracy accuracy to use for comparison (optional)
+	 * @return true if all parameters were equal, false if not
+	 */
+	virtual bool equals(CSGObject* other, floatmax_t accuracy=0.0);
 
 private:
 	void set_global_objects();
