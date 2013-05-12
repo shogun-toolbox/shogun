@@ -583,7 +583,8 @@ $(TEMPLATE_STATIC): .depend $(OBJFILES) $(SRCFILES) $(HEADERFILES)
 		($(LIBRARY_PATH)=$(CONFIGPATH)/../shogun R --no-save)
 
 $(PRE_LIB_SWIG_TEMPLATE)%${EXT_LIB_SWIG_TEMPLATE}:	%$(EXT_OBJ_SWIG)
-	$(LINK) $(LINKFLAGS) -o $@ $^ $(POSTLINKFLAGS)
+	@$(LINK) $(LINKFLAGS) -o $@ $^ $(POSTLINKFLAGS)
+	@echo 'Compiling generated SWIG interface'
 
 %${EXT_OBJ_SWIG}:	%$(EXT_SRC_SWIG)
 	@echo 'Compiling interface'
@@ -639,17 +640,20 @@ $(PRE_LIB_SWIG_TEMPLATE)%${EXT_LIB_SWIG_TEMPLATE}:	%$(EXT_OBJ_SWIG)
 
 ifeq (yes,$(USE_DOXYGEN))
 %${EXT_SRC_SWIG}:	%$(EXT_SWIG_DOXY) %.$(EXT_INP_SWIG)
-	$(SWIG) $(SWIGFLAGS) $(DEFINES_SWIG) $(DEFINES) $*.$(EXT_INP_SWIG)
-	$(PYTHON) $(CONFIGPATH)/.scrub_docstrings.py $(EXT_IF_SWIG_TEMPLATE) $@
+	@$(SWIG) $(SWIGFLAGS) $(DEFINES_SWIG) $(DEFINES) $*.$(EXT_INP_SWIG)
+	@echo 'Generating interface with SWIG'
+	@$(PYTHON) $(CONFIGPATH)/.scrub_docstrings.py $(EXT_IF_SWIG_TEMPLATE) $@
 
 %$(EXT_SWIG_DOXY): %$(EXT_DOXY)
-	$(DOXYGEN) $<
-	$(PYTHON) $(CONFIGPATH)/.doxy2swig.py --quiet --no-function-definition \
+	@$(DOXYGEN) $<
+	@echo 'Generating Doxygen doc'
+	@$(PYTHON) $(CONFIGPATH)/.doxy2swig.py --quiet --no-function-definition \
 		$(shell basename $< $(EXT_DOXY))/doxygen_xml/index.xml $@
 else
 %${EXT_SRC_SWIG}: %.$(EXT_INP_SWIG)
-	$(SWIG) $(SWIGFLAGS) $(DEFINES_SWIG) $(DEFINES) $*.$(EXT_INP_SWIG)
-	$(PYTHON) $(CONFIGPATH)/.scrub_docstrings.py $(EXT_IF_SWIG_TEMPLATE) $@
+	@$(SWIG) $(SWIGFLAGS) $(DEFINES_SWIG) $(DEFINES) $*.$(EXT_INP_SWIG)
+	@echo 'Generating interface with SWIG'
+	@$(PYTHON) $(CONFIGPATH)/.scrub_docstrings.py $(EXT_IF_SWIG_TEMPLATE) $@
 endif
 
 # Do not include dependencies when they are about to be removed anyway.
@@ -669,7 +673,7 @@ else #gcc -MM
 	@echo 'Generating dependencies'
 	@find $(SRCDIR) -name "*.$(EXT_SRC_C)" -o -name "*.$(EXT_SRC_CPP)" \
 	-exec $(MAKEDEPEND) $(DEFINES) $(INCLUDES) {} -MT {}.o \; >.depend
-	( find . -name "*.$(EXT_INP_SWIG)" | cut -c 3- ; find $(CONFIGPATH)/shogun/ -name "*.h"  ) | \
+	@( find . -name "*.$(EXT_INP_SWIG)" | cut -c 3- ; find $(CONFIGPATH)/shogun/ -name "*.h"  ) | \
 	 		sed 's#/[/]*#/#g' | \
 			$(PYTHON) $(CONFIGPATH)/.generate_link_dependencies.py "$(PRE_LIB_SWIG_TEMPLATE)" \
 			"$(EXT_LIB_SWIG_TEMPLATE)" $(LIBSHOGUN_MODE) >>.depend
