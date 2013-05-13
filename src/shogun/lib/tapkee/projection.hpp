@@ -62,6 +62,5 @@ struct MatrixProjectionImplementation : public ProjectionImplementation
 	DenseVector mean_vec;
 };
 
-
 }
 #endif

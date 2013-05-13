@@ -7,7 +7,7 @@
 #define TAPKEE_CHAIN_H_
 
 /* Tapkee includes */
-#include <shogun/lib/tapkee/tapkee_embed.hpp>
+#include <shogun/lib/tapkee/embed.hpp>
 #include <shogun/lib/tapkee/callbacks/dummy_callbacks.hpp>
 #include <shogun/lib/tapkee/callbacks/eigen_callbacks.hpp>
 /* End of Tapkee includes */
@@ -422,7 +422,7 @@ namespace tapkee_internal
 		 */
 		TapkeeOutput embedUsing(const DenseMatrix& matrix) const
 		{
-			vector<IndexType> indices(matrix.cols());
+			std::vector<IndexType> indices(matrix.cols());
 			for (IndexType i=0; i<matrix.cols(); i++) indices[i] = i;
 			eigen_kernel_callback kcb(matrix);
 			eigen_distance_callback dcb(matrix);

@@ -3,11 +3,11 @@
  * Copyright (c) 2011-2013 Evgeniy Andreev
  */
 
-#ifndef FIBONACCI_H_
-#define FIBONACCI_H_
+#ifndef TAPKEE_FIBONACCI_H_
+#define TAPKEE_FIBONACCI_H_
 
 /* Tapkee includes */
-#include <shogun/lib/tapkee/tapkee_defines.hpp>
+#include <shogun/lib/tapkee/defines.hpp>
 /* End of Tapkee includes */
 
 #include <cmath>

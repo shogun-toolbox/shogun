@@ -12,13 +12,11 @@
 #define _JL_COVERTREE_POINT_H_
 
 /* Tapkee includes */
-#include <shogun/lib/tapkee/tapkee_defines.hpp>
+#include <shogun/lib/tapkee/defines.hpp>
 /* End of Tapkee includes */
 
 #include <iostream>
 #include <cmath>
-
-using std::sqrt;
 
 namespace tapkee
 {
@@ -149,7 +147,7 @@ struct distance_impl<KernelType,RandomAccessIterator,Callback>
 	inline ScalarType operator()(Callback& cb, const CoverTreePoint<RandomAccessIterator>& l,
                                  const CoverTreePoint<RandomAccessIterator>& r, ScalarType /*upper_bound*/)
 	{
-		return sqrt(l.norm_ + r.norm_ - 2*cb(r.iter_,l.iter_));
+		return std::sqrt(l.norm_ + r.norm_ - 2*cb(r.iter_,l.iter_));
 	}
 };
 

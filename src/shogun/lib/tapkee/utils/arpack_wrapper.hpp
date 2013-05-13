@@ -11,7 +11,7 @@
 #define EIGEN_ARPACKGENERALIZEDSELFADJOINTEIGENSOLVER_H
 
 /* Tapkee includes */
-#include <shogun/lib/tapkee/tapkee_defines.hpp>
+#include <shogun/lib/tapkee/defines.hpp>
 /* End of Tapkee includes */
 
 using Eigen::Matrix;
