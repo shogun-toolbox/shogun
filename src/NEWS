@@ -8,6 +8,9 @@
 		  combined kernels in the MKL context. Thanks to Evangelos Anagnostopoulos
 		- Probability output for multi-class SVMs is now supported using various
 		  heuristics. Thanks to Shell Xu Hu.
+		- Added an "equals" method to all Shogun objects that recursively
+		  compares all registered parameters with those of another instance -- 
+		  up to a specified accuracy.
 	* Bugfixes:
 		- Fix json serialization.
 		- Fixed bugs in FITC inference method that caused wrong posterior results.

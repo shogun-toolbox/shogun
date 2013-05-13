@@ -5,6 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 2010 Soeren Sonnenburg
+ * Written (W) 2011-2013 Heiko Strathmann
  * Copyright (C) 2010 Berlin Institute of Technology
  */
 #ifndef __PARAMETER_H__
@@ -74,6 +75,48 @@ struct TParameter
 	 * Old SG_OBJECTS are SG_UNREF'ed and the new ones are SG_REF'ed.
 	 * @param source source TParameter instance to copy from */
 	void copy_data(const TParameter* source);
+
+	/** Numerically this instance with another instance. Compares recursively
+	 * in case of non-numerical parameters
+	 *
+	 * @param other other instance to compare with
+	 * @param accuracy accuracy for numerical comparison
+	 * @return true if given parameter instance is equal, false otherwise
+	 */
+	bool equals(TParameter* other, floatmax_t accuracy=0.0);
+
+	/** Given two pointers to a scalar element of a given primitive-type, this
+	 * method compares the values up to a given accuracy.
+	 *
+	 * If the type of the data is SGObject, recursively calls equals on the
+	 * object.
+	 *
+	 * @param ptype primitive type of both data
+	 * @param data1 pointer 1
+	 * @param data2 pointer 2
+	 * @param accuracy accuracy to compare
+	 * @return whether the data was equal
+	 */
+	static bool compare_ptype(EPrimitiveType ptype, void* data1, void* data2,
+			floatmax_t accuracy=0.0);
+
+	/** Given two pointers to a string element of a given primitive-type, this
+	 * method compares the values up to a given accuracy.
+	 *
+	 * If the type of the data is SGObject, recursively calls equals on the
+	 * object.
+	 *
+	 * @param stype string type of both data
+	 * @param ptype primitive type of both data
+	 * @param size_ptype size of primitive type in bytes
+	 * @param data1 pointer 1
+	 * @param data2 pointer 2
+	 * @param accuracy accuracy to compare
+	 * @return whether the data was equal
+	 */
+	static bool compare_stype(EStructType stype, EPrimitiveType ptype,
+			size_t size_ptype, void* data1, void* data2,
+			floatmax_t accuracy=0.0);
 
 	/** operator for comparison, (by string m_name) */
 	bool operator==(const TParameter& other) const;
