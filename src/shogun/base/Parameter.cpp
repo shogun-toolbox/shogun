@@ -2857,6 +2857,20 @@ bool TParameter::equals(TParameter* other, floatmax_t accuracy)
 		return false;
 	}
 
+	/* avoid comparing NULL */
+	if (!m_parameter && !other->m_parameter)
+	{
+		SG_SDEBUG("leaving TParameter::equals(): both parameters are NULL\n");
+		return true;
+	}
+
+	if ((!m_parameter && other->m_parameter) || (m_parameter && !other->m_parameter))
+	{
+		SG_SDEBUG("leaving TParameter::equals(): param1 is at %p while "
+				"param2 is at %p\n", m_parameter, other->m_parameter);
+		return false;
+	}
+
 	SG_SDEBUG("Comparing stype\n");
 	switch (m_datatype.m_ctype)
 	{
@@ -2956,6 +2970,13 @@ bool TParameter::compare_ptype(EPrimitiveType ptype, void* data1, void* data2,
 		SG_SDEBUG("leaving TParameter::compare_ptype(): data1 is at %p while "
 				"data2 is at %p\n", data1, data2);
 		return false;
+	}
+
+	/** ensure that no NULL data are de-referenced */
+	if (!data1 && !data2)
+	{
+		SG_SDEBUG("leaving TParameter::compare_ptype(): both data are NULL\n");
+		return true;
 	}
 
 	switch (ptype)
@@ -3170,6 +3191,21 @@ bool TParameter::compare_stype(EStructType stype, EPrimitiveType ptype,
 		size_t size_ptype, void* data1, void* data2, floatmax_t accuracy)
 {
 	SG_SDEBUG("entering TParameter::compare_stype()\n");
+
+	/* Avoid comparing NULL */
+	if (!data1 && !data2)
+	{
+		SG_SDEBUG("leaving TParameter::compare_stype(): both data are NULL\n");
+		return true;
+	}
+
+	/* If one is NULL, data are not equal */
+	if ((data1 && !data2) || (!data1 && data2))
+	{
+		SG_SDEBUG("leaving TParameter::compare_stype(): data1 is at %p while "
+				"data2 is at %p\n", data1, data2);
+		return false;
+	}
 
 	switch (stype)
 	{
