@@ -2961,8 +2961,7 @@ bool TParameter::compare_ptype(EPrimitiveType ptype, void* data1, void* data2,
 	/** ensure that no NULL data are de-referenced */
 	if (!data1 && !data2)
 	{
-		SG_SDEBUG("leaving TParameter::compare_ptype(): both data are NULL\n",
-				data1, data2);
+		SG_SDEBUG("leaving TParameter::compare_ptype(): both data are NULL\n");
 		return true;
 	}
 
@@ -3182,8 +3181,7 @@ bool TParameter::compare_stype(EStructType stype, EPrimitiveType ptype,
 	/* Avoid comparing NULL */
 	if (!data1 && !data2)
 	{
-		SG_SDEBUG("leaving TParameter::compare_stype(): both data are NULL\n",
-				data1, data2);
+		SG_SDEBUG("leaving TParameter::compare_stype(): both data are NULL\n");
 		return true;
 	}
 
