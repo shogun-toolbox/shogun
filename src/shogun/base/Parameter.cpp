@@ -3161,17 +3161,46 @@ bool TParameter::compare_stype(EStructType stype, EPrimitiveType ptype,
 	{
 		case ST_NONE:
 		{
+			SG_SDEBUG("ST_NONE\n");
 			return TParameter::compare_ptype(ptype, data1, data2, accuracy);
 			break;
 		}
 		case ST_SPARSE:
 		{
+			SG_SDEBUG("ST_SPARSE\n");
 			SGSparseVector<char>* spr_ptr1 = (SGSparseVector<char>*) data2;
 			SGSparseVector<char>* spr_ptr2 = (SGSparseVector<char>*) data2;
+
+			if (spr_ptr1->num_feat_entries != spr_ptr2->num_feat_entries)
+			{
+				SG_SDEBUG("leaving TParameter::compare_stype(): Length of "
+						"sparse vector1 (%d)  is different of vector 2 (%d)\n",
+						spr_ptr1->num_feat_entries, spr_ptr2->num_feat_entries);
+				return false;
+			}
+
+			SG_SDEBUG("Comparing sparse vectors\n");
+			for (index_t i=0; i<spr_ptr1->num_feat_entries; ++i)
+			{
+				SG_SPRINT("Comparing sparse entry %d at offset %d\n", i,
+						i*TSGDataType::sizeof_sparseentry(ptype));
+
+				void* pointer1=&((spr_ptr1->features+(i*TSGDataType::sizeof_sparseentry(ptype)))->entry);
+				void* pointer2=&((spr_ptr2->features+(i*TSGDataType::sizeof_sparseentry(ptype)))->entry);
+
+				if (!TParameter::compare_ptype(ptype, pointer1,
+						pointer2, accuracy))
+				{
+					SG_SDEBUG("leaving TParameter::compare_stype(): Data of"
+							" string element is different\n");
+					return false;
+				}
+			}
 			break;
 		}
 		case ST_STRING:
 		{
+			SG_SDEBUG("ST_STRING\n");
 			SGString<char>* str_ptr1 = (SGString<char>*) data1;
 			SGString<char>* str_ptr2 = (SGString<char>*) data2;
 
