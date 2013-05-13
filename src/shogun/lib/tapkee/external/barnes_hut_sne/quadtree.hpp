@@ -38,8 +38,6 @@
 #ifndef QUADTREE_H
 #define QUADTREE_H
 
-using std::max;
-
 namespace tsne
 {
 
@@ -115,8 +113,8 @@ public:
 		for(int d = 0; d < QT_NO_DIMS; d++) mean_Y[d] /= (double) N;
 		
 		// Construct quadtree
-		init(NULL, inp_data, mean_Y[0], mean_Y[1], max(max_Y[0] - mean_Y[0], mean_Y[0] - min_Y[0]) + 1e-5,
-		                                           max(max_Y[1] - mean_Y[1], mean_Y[1] - min_Y[1]) + 1e-5);
+		init(NULL, inp_data, mean_Y[0], mean_Y[1], std::max(max_Y[0] - mean_Y[0], mean_Y[0] - min_Y[0]) + 1e-5,
+		                                           std::max(max_Y[1] - mean_Y[1], mean_Y[1] - min_Y[1]) + 1e-5);
 		fill(N);
 		delete[] mean_Y; delete[] max_Y; delete[] min_Y;
 	}
@@ -307,10 +305,10 @@ public:
 	int getDepth()
 	{
 		if(is_leaf) return 1;
-		return 1 + max(max(northWest->getDepth(),
-						   northEast->getDepth()),
-					   max(southWest->getDepth(),
-						   southEast->getDepth()));                
+		return 1 + std::max(std::max(northWest->getDepth(),
+		                             northEast->getDepth()),
+		                    std::max(southWest->getDepth(),
+		                             southEast->getDepth()));                
 	}
 
 	// Compute non-edge forces using Barnes-Hut algorithm
@@ -328,7 +326,7 @@ public:
 		for(int d = 0; d < QT_NO_DIMS; d++) D += buff[d] * buff[d];
 		
 		// Check whether we can use this node as a "summary"
-		if(is_leaf || max(boundary.hh, boundary.hw) / sqrt(D) < theta) {
+		if(is_leaf || std::max(boundary.hh, boundary.hw)/sqrt(D) < theta) {
 		
 			// Compute and add t-SNE force between point and current node
 			double Q = 1.0 / (1.0 + D);

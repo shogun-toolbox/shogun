@@ -28,7 +28,7 @@ struct Message
 		ss << data;
 		return *this;
 	}
-	operator string() 
+	operator std::string() 
 	{
 		return ss.str();
 	}
@@ -318,7 +318,7 @@ public:
 
 		pmap[p.name()] = p;
 	}
-	bool contains(const string& name) const
+	bool contains(const std::string& name) const
 	{
 		return pmap.count(name) > 0;
 	}
@@ -333,7 +333,7 @@ public:
 			}
 		}
 	}
-	Parameter operator()(const string& name) const
+	Parameter operator()(const std::string& name) const
 	{
 		ParametersMap::const_iterator it = pmap.find(name);
 		if (it != pmap.end())

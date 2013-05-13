@@ -7,8 +7,8 @@
 #define TAPKEE_MAIN_H_
 
 /* Tapkee includes */
-#include <shogun/lib/tapkee/tapkee_embed.hpp>
-#include <shogun/lib/tapkee/tapkee_chain_interface.hpp>
+#include <shogun/lib/tapkee/embed.hpp>
+#include <shogun/lib/tapkee/chain_interface.hpp>
 /* End of Tapkee includes */
 
 #endif

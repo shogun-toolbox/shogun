@@ -10,7 +10,7 @@ namespace tapkee
 {
 
 /** Returns the name of the provided method */
-string get_method_name(DimensionReductionMethod m)
+std::string get_method_name(DimensionReductionMethod m)
 {
 	switch (m)
 	{
@@ -38,7 +38,7 @@ string get_method_name(DimensionReductionMethod m)
 }
 
 /** Returns the name of the provided neighbors method */
-string get_neighbors_method_name(NeighborsMethod m)
+std::string get_neighbors_method_name(NeighborsMethod m)
 {
 	switch (m)
 	{
@@ -52,7 +52,7 @@ string get_neighbors_method_name(NeighborsMethod m)
 }
 
 /** Returns the name of the provided eigen method */
-string get_eigen_method_name(EigenMethod m)
+std::string get_eigen_method_name(EigenMethod m)
 {
 	switch (m)
 	{

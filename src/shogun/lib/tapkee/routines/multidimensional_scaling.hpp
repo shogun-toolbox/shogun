@@ -7,14 +7,11 @@
 #define TAPKEE_MDS_H_
 
 /* Tapkee includes */
-#include <shogun/lib/tapkee/tapkee_defines.hpp>
+#include <shogun/lib/tapkee/defines.hpp>
 #include <shogun/lib/tapkee/utils/time.hpp>
 /* End of Tapkee includes */
 
 #include <algorithm>
-
-using std::random_shuffle;
-using std::fill;
 
 namespace tapkee
 {
@@ -28,7 +25,7 @@ Landmarks select_landmarks_random(RandomAccessIterator begin, RandomAccessIterat
 	landmarks.reserve(end-begin);
 	for (RandomAccessIterator iter=begin; iter!=end; ++iter)
 		landmarks.push_back(iter-begin);
-	random_shuffle(landmarks.begin(),landmarks.end());
+	std::random_shuffle(landmarks.begin(),landmarks.end());
 	landmarks.erase(landmarks.begin() + static_cast<IndexType>(landmarks.size()*ratio),landmarks.end());
 	return landmarks;
 }
@@ -61,9 +58,9 @@ DenseSymmetricMatrix compute_distance_matrix(RandomAccessIterator begin, RandomA
 }
 
 template <class RandomAccessIterator, class PairwiseCallback>
-EmbeddingResult triangulate(RandomAccessIterator begin, RandomAccessIterator end, PairwiseCallback distance_callback,
-                            const Landmarks& landmarks, const DenseVector& landmark_distances_squared, 
-                            EmbeddingResult& landmarks_embedding, IndexType target_dimension)
+DenseMatrix triangulate(RandomAccessIterator begin, RandomAccessIterator end, PairwiseCallback distance_callback,
+                        const Landmarks& landmarks, const DenseVector& landmark_distances_squared, 
+                        EigendecompositionResult& landmarks_embedding, IndexType target_dimension)
 {
 	timed_context context("Landmark triangulation");
 	
@@ -71,7 +68,7 @@ EmbeddingResult triangulate(RandomAccessIterator begin, RandomAccessIterator end
 	const IndexType n_landmarks = landmarks.size();
 
 	bool* to_process = new bool[n_vectors];
-	fill(to_process,to_process+n_vectors,true);
+	std::fill(to_process,to_process+n_vectors,true);
 	
 	DenseMatrix embedding(n_vectors,target_dimension);
 
@@ -109,7 +106,7 @@ EmbeddingResult triangulate(RandomAccessIterator begin, RandomAccessIterator end
 
 	delete[] to_process;
 
-	return EmbeddingResult(embedding,DenseVector());
+	return embedding;
 }
 
 template <class RandomAccessIterator, class PairwiseCallback>
