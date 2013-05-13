@@ -46,8 +46,6 @@ TSGDataType::operator==(const TSGDataType& a)
 	bool result = m_ctype == a.m_ctype && m_stype == a.m_stype
 		&& m_ptype == a.m_ptype;
 
-	SG_SPRINT("lena=%d, lenb=%d\n", m_length_y, *a.m_length_y)
-
 	result &= m_length_y != NULL && a.m_length_y != NULL
 		? *m_length_y == *a.m_length_y: m_length_y == a.m_length_y;
 	result &= m_length_x != NULL && a.m_length_x != NULL
