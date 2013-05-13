@@ -22,27 +22,7 @@
 /* First written by John Langford jl@hunch.net
    Templatization by Dinoj Surendran dinojs@gmail.com
    Adaptation to Shogun by Fernando José Iglesias García
-   */
-
-// the files below may not need to be included
-
-/* Whatever structure/class/type is used for P, it must have the following functions defined:
-
-   ScalarType distance(P v1, P v2, ScalarType upper_bound);
-   : this returns the distance between two P objects
-   : the distance does not have to be calculated fully if it's more than upper_bound
-
-   v_array<P> parse_points(char *filename);
-   : this fills up a v_array of P objects from the input file
-
-   void print(point &P);
-   : this prints out the contents of a P object.
-   */
-
-using std::swap;
-using std::min;
-using std::numeric_limits;
-
+ */
 namespace tapkee
 {
 namespace tapkee_internal
@@ -230,7 +210,7 @@ node<P> batch_insert(DistanceCallback& dcb, const P& p,
 		return new_leaf(p);
 	else {
 		ScalarType max_dist = max_set(point_set); //O(|point_set|)
-		int next_scale = min(max_scale - 1, get_scale(max_dist));
+		int next_scale = std::min(max_scale - 1, get_scale(max_dist));
 		if (next_scale == -2147483647-1) // We have points with distance 0.
 		{
 			v_array<node<P> > children;
@@ -324,7 +304,7 @@ node<P> batch_create(DistanceCallback& dcb, v_array<P> points)
 
 	for (int i = 1; i < points.index; i++) {
 		ds_node<P> temp;
-		push(temp.dist, distance(dcb, points[0], points[i], numeric_limits<ScalarType>::max()));
+		push(temp.dist, distance(dcb, points[0], points[i], std::numeric_limits<ScalarType>::max()));
 		temp.p = points[i];
 		push(point_set,temp);
 	}
@@ -438,13 +418,13 @@ void halfsort (v_array<d_node<P> > cover_set)
 		d_node<P> *mid = base_ptr + ((hi - base_ptr) >> 1);
 
 		if (compare ( mid,  base_ptr) < 0.)
-			swap(*mid, *base_ptr);
+			std::swap(*mid, *base_ptr);
 		if (compare ( hi,  mid) < 0.)
-			swap(*mid, *hi);
+			std::swap(*mid, *hi);
 		else
 			goto jump_over;
 		if (compare ( mid,  base_ptr) < 0.)
-			swap(*mid, *base_ptr);
+			std::swap(*mid, *base_ptr);
 jump_over:;
 
 		left_ptr  = base_ptr + 1;
@@ -460,7 +440,7 @@ jump_over:;
 
 			if (left_ptr < right_ptr)
 			{
-				swap(*left_ptr, *right_ptr);
+				std::swap(*left_ptr, *right_ptr);
 				if (mid == left_ptr)
 					mid = right_ptr;
 				else if (mid == right_ptr)
@@ -814,9 +794,9 @@ void batch_nearest_neighbor(DistanceCallback &dcb, const node<P> &top_node,
 	v_array<d_node<P> > zero_set = pop(spare_zero_sets);
 
 	ScalarType* upper_bound = alloc_upper();
-	setter(upper_bound,numeric_limits<ScalarType>::max());
+	setter(upper_bound, std::numeric_limits<ScalarType>::max());
 
-	ScalarType top_dist = distance(dcb, query.p, top_node.p,numeric_limits<ScalarType>::max());
+	ScalarType top_dist = distance(dcb, query.p, top_node.p, std::numeric_limits<ScalarType>::max());
 	update(upper_bound, top_dist);
 
 	d_node<P> temp = {top_dist, &top_node};

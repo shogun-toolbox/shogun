@@ -7,7 +7,7 @@
 #define TAPKEE_NEIGHBORS_H_
 
 /* Tapkee includes */
-#include <shogun/lib/tapkee/tapkee_defines.hpp>
+#include <shogun/lib/tapkee/defines.hpp>
 #ifdef TAPKEE_USE_LGPL_COVERTREE
 	#include <shogun/lib/tapkee/neighbors/covertree.hpp>
 #endif
@@ -18,9 +18,6 @@
 #include <vector>
 #include <utility>
 #include <algorithm>
-
-using std::nth_element;
-using std::pair;
 
 namespace tapkee
 {
@@ -133,10 +130,10 @@ Neighbors find_neighbors_bruteforce_impl(const RandomAccessIterator& begin, cons
 	{
 		Distances distances;
 		for (RandomAccessIterator around_iter=begin; around_iter!=end; ++around_iter)
-			distances.push_back(make_pair(around_iter, callback.distance(iter,around_iter)));
+			distances.push_back(std::make_pair(around_iter, callback.distance(iter,around_iter)));
 
-		nth_element(distances.begin(),distances.begin()+k+1,distances.end(),
-		            distances_comparator<DistanceRecord>());
+		std::nth_element(distances.begin(),distances.begin()+k+1,distances.end(),
+		                 distances_comparator<DistanceRecord>());
 
 		LocalNeighbors local_neighbors;
 		local_neighbors.reserve(k);
