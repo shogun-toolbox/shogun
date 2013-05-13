@@ -4,8 +4,9 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2012 Fernando José Iglesias García
+ * Written (W) 2012 Fernando Jose Iglesias Garcia
  * Written (W) 2010,2012 Soeren Sonnenburg
+ * Written (W) 2011-2013 Heiko Strathmann
  * Copyright (C) 2010 Berlin Institute of Technology
  * Copyright (C) 2012 Soeren Sonnenburg
  */
@@ -98,6 +99,13 @@ struct TSGDataType
 	explicit TSGDataType(EContainerType ctype, EStructType stype,
 						 EPrimitiveType ptype, index_t* length_y,
 						 index_t* length_x);
+
+	/** Compares the content of the data types, including the length fields if
+	 * non-NULL
+	 * @return other type to compare with
+	 * @return true if equals, false otherwise
+	 */
+	bool equals(TSGDataType other);
 
 	/** equality */
 	bool operator==(const TSGDataType& a);
