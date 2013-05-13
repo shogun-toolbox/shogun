@@ -50,6 +50,8 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 		set_features(data);
 
 	CFeatures* model_features = get_features();
+	// Initialize the model for training
+	m_model->init_training();
 	// Check that the scenary is correct to start with training
 	m_model->check_training_setup();
 	SG_DEBUG("The training setup is correct.\n");

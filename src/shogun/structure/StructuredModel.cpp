@@ -39,6 +39,9 @@ CStructuredModel::CStructuredModel(
 		CStructuredLabels* labels)
 : CSGObject()
 {
+#ifdef USE_SWIG_DIRECTORS
+	m_use_director_risk=false;
+#endif
 	init();
 
 	m_features = features;
@@ -142,6 +145,11 @@ void CStructuredModel::init()
 
 	m_features = NULL;
 	m_labels   = NULL;
+}
+
+void CStructuredModel::init_training()
+{
+	// Nothing to do here
 }
 
 bool CStructuredModel::check_training_setup() const

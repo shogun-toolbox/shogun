@@ -64,7 +64,7 @@ class CStateModel : public CSGObject
 		virtual float64_t loss(CSequence* label_seq_lhs, CSequence* label_seq_rhs) = 0;
 
 		/**
-		 * arranges the emission parameterss of the weight vector into a vector
+		 * arranges the emission parameters of the weight vector into a vector
 		 * adding zero elements for the states whose parameters are not learnt.
 		 * This vector is suitable to iterate through when constructing the
 		 * emission matrix used in Viterbi decoding
@@ -78,7 +78,20 @@ class CStateModel : public CSGObject
 			SGVector< float64_t > w, int32_t num_feats, int32_t num_obs) = 0;
 
 		/**
-		 * arranges the tranmission parameterss of the weight vector into a matrix
+		 * arranges the emission parameters of the weight vector into a matrix
+		 * of PLiFs adding zero elements for the states whose parameters are not
+		 * learnt.
+		 *
+		 * @param plif_matrix matrix of PLiFs outputted
+		 * @param w the weight vector
+		 * @param num_feats number of features
+		 * @param num_plif_nodes number of nodes in the PLiFs
+		 */
+		virtual void reshape_emission_params(CDynamicObjectArray* plif_matrix,
+			SGVector< float64_t > w, int32_t num_feats, int32_t num_plif_nodes) = 0;
+
+		/**
+		 * arranges the transmission parameters of the weight vector into a matrix
 		 * adding zero elements for the states whose parameters are not learnt.
 		 * This matrix is suitable to iterate during Viterbi decoding
 		 *

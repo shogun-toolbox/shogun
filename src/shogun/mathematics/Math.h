@@ -577,6 +577,15 @@ class CMath : public CSGObject
 			return res/factorial(k);
 		}
 
+		/** Builds an array with n linearly spaced elements between start and end.
+		 *
+		 * @param output array with linearly spaced elements within the interval
+		 * @param start beginning of the interval to divide
+		 * @param end upper bound of the interval to divide
+		 * @param n number of elements used to divide the interval
+		 */
+		static void linspace(float64_t* output, float64_t start, float64_t end, int32_t n = 100);
+
 		/** performs a bubblesort on a given matrix a.
 		 * it is sorted in ascending order from top to bottom
 		 * and left to right */

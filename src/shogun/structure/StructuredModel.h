@@ -208,6 +208,12 @@ class CStructuredModel : public CSGObject
 		/** @return name of SGSerializable */
 		virtual const char* get_name() const { return "StructuredModel"; }
 
+		/** initializes the part of the model that needs to be used during training.
+		 * In this class this method is empty and it can be re-implemented for any
+		 * particular StructuredModel
+		 */
+		virtual void init_training();
+
 		/**
 		 * method to be called from a SO machine before training
 		 * to ensure that the training data is valid (e.g. check that
