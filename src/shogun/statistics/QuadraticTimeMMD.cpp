@@ -234,17 +234,15 @@ SGVector<float64_t> CQuadraticTimeMMD::compute_statistic(
 		mmds=SGVector<float64_t>(combined->get_num_subkernels());
 
 		/* iterate through all kernels and compute statistic */
-		CKernel* current=combined->get_first_kernel();
-
 		/* TODO this might be done in parallel */
 		for (index_t i=0; i<mmds.vlen; ++i)
 		{
+			CKernel* current=combined->get_kernel(i);
 			/* temporarily replace underlying kernel and compute statistic */
 			m_kernel=current;
 			mmds[i]=compute_statistic();
 
 			SG_UNREF(current);
-			current=combined->get_next_kernel();
 		}
 
 		/* restore combined kernel */

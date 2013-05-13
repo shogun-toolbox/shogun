@@ -119,14 +119,12 @@ bool CSVMLightOneClass::train_machine(CFeatures* data)
 
 	if (kernel->get_kernel_type() == K_COMBINED)
 	{
-		CKernel* kn = ((CCombinedKernel*)kernel)->get_first_kernel();
-
-		while (kn)
+		for (index_t k_idx=0; k_idx<((CCombinedKernel*) kernel)->get_num_kernels(); k_idx++)
 		{
+			CKernel* kn =  ((CCombinedKernel*) kernel)->get_kernel(k_idx);
 			// allocate kernel cache but clean up beforehand
 			kn->resize_kernel_cache(kn->get_cache_size());
 			SG_UNREF(kn);
-			kn = ((CCombinedKernel*) kernel)->get_next_kernel();
 		}
 	}
 

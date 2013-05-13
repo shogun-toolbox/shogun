@@ -247,14 +247,13 @@ bool CSVMLight::train_machine(CFeatures* data)
 
 	if (kernel->get_kernel_type() == K_COMBINED)
 	{
-		CKernel* kn = ((CCombinedKernel*)kernel)->get_first_kernel();
 
-		while (kn)
+		for (index_t k_idx=0; k_idx<((CCombinedKernel*) kernel)->get_num_kernels(); k_idx++)
 		{
+			CKernel* kn = ((CCombinedKernel*) kernel)->get_kernel(k_idx);
 			// allocate kernel cache but clean up beforehand
 			kn->resize_kernel_cache(kn->get_cache_size());
 			SG_UNREF(kn);
-			kn = ((CCombinedKernel*) kernel)->get_next_kernel();
 		}
 	}
 
@@ -432,14 +431,13 @@ void CSVMLight::svm_learn()
 	if (use_kernel_cache)
 	{
 		if (callback &&
-				(!((CCombinedKernel*)kernel)->get_append_subkernel_weights())
+				(!((CCombinedKernel*) kernel)->get_append_subkernel_weights())
 		   )
 		{
-			CCombinedKernel* k      = (CCombinedKernel*) kernel;
-			CKernel* kn = k->get_first_kernel();
-
-			while (kn)
+			CCombinedKernel* k = (CCombinedKernel*) kernel;
+			for (index_t k_idx=0; k_idx<k->get_num_kernels(); k_idx++)
 			{
+				CKernel* kn = k->get_kernel(k_idx);
 				for (i=0;i<totdoc;i++)     // fill kernel cache with unbounded SV
 					if((alpha[i]>0) && (alpha[i]<learn_parm->svm_cost[i])
 							&& (kn->kernel_cache_space_available()))
@@ -451,7 +449,6 @@ void CSVMLight::svm_learn()
 						kn->cache_kernel_row(i);
 
 				SG_UNREF(kn);
-				kn = k->get_next_kernel();
 			}
 		}
 		else
@@ -759,14 +756,12 @@ int32_t CSVMLight::optimize_to_convergence(int32_t* docs, int32_t* label, int32_
 				  (!((CCombinedKernel*) kernel)->get_append_subkernel_weights())
 			 )
 		  {
-			  CCombinedKernel* k      = (CCombinedKernel*) kernel;
-			  CKernel* kn = k->get_first_kernel();
-
-			  while (kn)
+			  CCombinedKernel* k = (CCombinedKernel*) kernel;
+			  for (index_t k_idx=0; k_idx<k->get_num_kernels(); k_idx++)
 			  {
+				  CKernel* kn = k->get_kernel(k_idx);
 				  kn->cache_multiple_kernel_rows(working2dnum, choosenum);
 				  SG_UNREF(kn);
-				  kn = k->get_next_kernel() ;
 			  }
 		  }
 		  else
@@ -1533,14 +1528,15 @@ void CSVMLight::update_linear_component_mkl(
 	ASSERT(num_weights==num_kernels)
 
 	if ((kernel->get_kernel_type()==K_COMBINED) &&
-			 (!((CCombinedKernel*)kernel)->get_append_subkernel_weights()))// for combined kernel
+			 (!((CCombinedKernel*) kernel)->get_append_subkernel_weights()))// for combined kernel
 	{
-		CCombinedKernel* k      = (CCombinedKernel*) kernel;
-		CKernel* kn = k->get_first_kernel() ;
+		CCombinedKernel* k = (CCombinedKernel*) kernel;
+		
 		int32_t n = 0, i, j ;
 
-		while (kn!=NULL)
+		for (index_t k_idx=0; k_idx<k->get_num_kernels(); k_idx++)
 		{
+			CKernel* kn = k->get_kernel(k_idx);
 			for (i=0;i<num;i++)
 			{
 				if(a[i] != a_old[i])
@@ -1552,7 +1548,6 @@ void CSVMLight::update_linear_component_mkl(
 			}
 
 			SG_UNREF(kn);
-			kn = k->get_next_kernel();
 			n++ ;
 		}
 	}

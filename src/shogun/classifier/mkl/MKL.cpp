@@ -593,11 +593,12 @@ float64_t CMKL::compute_elasticnet_dual_objective()
 		// Compute Elastic-net dual
 		float64_t* nm = SG_MALLOC(float64_t, num_kernels);
 		float64_t del=0;
-		CKernel* kn = ((CCombinedKernel*)kernel)->get_first_kernel();
+
 
 		int32_t k=0;
-		while (kn)
+		for (index_t k_idx=0; k_idx<((CCombinedKernel*) kernel)->get_num_kernels(); k_idx++)
 		{
+			CKernel* kn = ((CCombinedKernel*) kernel)->get_kernel(k_idx);
 			float64_t sum=0;
 			for (int32_t i=0; i<n; i++)
 			{
@@ -617,7 +618,6 @@ float64_t CMKL::compute_elasticnet_dual_objective()
 
 
 			SG_UNREF(kn);
-			kn = ((CCombinedKernel*) kernel)->get_next_kernel();
 		}
 		// initial delta
 		del = del/CMath::sqrt(2*(1-ent_lambda));
@@ -1529,9 +1529,9 @@ float64_t CMKL::compute_mkl_dual_objective()
 
 	if (m_labels && kernel && kernel->get_kernel_type() == K_COMBINED)
 	{
-		CKernel* kn = ((CCombinedKernel*)kernel)->get_first_kernel();
-		while (kn)
+		for (index_t k_idx=0; k_idx<((CCombinedKernel*) kernel)->get_num_kernels(); k_idx++)
 		{
+			CKernel* kn = ((CCombinedKernel*) kernel)->get_kernel(k_idx);
 			float64_t sum=0;
 			for (int32_t i=0; i<n; i++)
 			{
@@ -1550,7 +1550,6 @@ float64_t CMKL::compute_mkl_dual_objective()
 				mkl_obj += CMath::pow(sum, mkl_norm/(mkl_norm-1));
 
 			SG_UNREF(kn);
-			kn = ((CCombinedKernel*) kernel)->get_next_kernel();
 		}
 
 		if (mkl_norm==1.0)
