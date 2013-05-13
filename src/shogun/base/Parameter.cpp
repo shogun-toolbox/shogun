@@ -2857,6 +2857,20 @@ bool TParameter::equals(TParameter* other, floatmax_t accuracy)
 		return false;
 	}
 
+	/* avoid comparing NULL */
+	if (!m_parameter && !other->m_parameter)
+	{
+		SG_SDEBUG("leaving TParameter::equals(): both parameters are NULL\n");
+		return true;
+	}
+
+	if ((!m_parameter && other->m_parameter) || (m_parameter && !other->m_parameter))
+	{
+		SG_SDEBUG("leaving TParameter::equals(): param1 is at %p while "
+				"param2 is at %p\n", m_parameter, other->m_parameter);
+		return false;
+	}
+
 	SG_SDEBUG("Comparing stype\n");
 	switch (m_datatype.m_ctype)
 	{
