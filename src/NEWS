@@ -17,6 +17,7 @@
 		- Rename HMSVMLabels to SequenceLabels
 		- Refactored method to fit a sigmoid to SVM scores, now in CStatistics,
 		  still called from CBinaryLabels.
+		- Use Dynamic arrays to hold preprocessors in features instead of raw pointers.
 		- Use Eigen3 for GPs
 
 2013-03-17 Soeren Sonnenburg <sonne@debian.org>
