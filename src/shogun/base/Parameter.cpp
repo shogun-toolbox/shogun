@@ -2852,7 +2852,7 @@ bool TParameter::equals(TParameter* other, floatmax_t accuracy)
 	SG_SDEBUG("Comparing datatypes\n");
 	if (!(m_datatype.equals(other->m_datatype)))
 	{
-		SG_SPRINT("leaving TParameter::equals(): type of \"%s\" is different "
+		SG_SDEBUG("leaving TParameter::equals(): type of \"%s\" is different "
 				"from other parameter's \"%s\" type\n", m_name, other->m_name);
 		return false;
 	}
@@ -2868,7 +2868,7 @@ bool TParameter::equals(TParameter* other, floatmax_t accuracy)
 					other->m_parameter,
 					accuracy))
 			{
-				SG_SPRINT("leaving TParameter::equals(): scalar data differes\n");
+				SG_SDEBUG("leaving TParameter::equals(): scalar data differes\n");
 				return false;
 			}
 			break;
@@ -2879,10 +2879,10 @@ bool TParameter::equals(TParameter* other, floatmax_t accuracy)
 
 			/* x is number of processed bytes */
 			index_t x=0;
-			SG_SPRINT("length_y: %d\n", *m_datatype.m_length_y)
+			SG_SDEBUG("length_y: %d\n", *m_datatype.m_length_y)
 			for (index_t i=0; i<*m_datatype.m_length_y; ++i)
 			{
-				SG_SPRINT("comparing element %d which is %d byes from start\n",
+				SG_SDEBUG("comparing element %d which is %d byes from start\n",
 						i, x);
 
 				void* pointer_a=&((*(char**)m_parameter)[x]);
@@ -2892,7 +2892,7 @@ bool TParameter::equals(TParameter* other, floatmax_t accuracy)
 						m_datatype.m_ptype, m_datatype.sizeof_ptype(),
 						pointer_a, pointer_b, accuracy))
 				{
-					SG_SPRINT("leaving TParameter::equals(): vector element "
+					SG_SDEBUG("leaving TParameter::equals(): vector element "
 							"differes\n");
 					return false;
 				}
@@ -2908,12 +2908,12 @@ bool TParameter::equals(TParameter* other, floatmax_t accuracy)
 
 			/* x is number of processed bytes */
 			index_t x=0;
-			SG_SPRINT("length_y: %d\n", *m_datatype.m_length_y)
-			SG_SPRINT("length_x: %d\n", *m_datatype.m_length_x)
+			SG_SDEBUG("length_y: %d\n", *m_datatype.m_length_y)
+			SG_SDEBUG("length_x: %d\n", *m_datatype.m_length_x)
 			int64_t length=(*m_datatype.m_length_y) * (*m_datatype.m_length_x);
 			for (index_t i=0; i<length; ++i)
 			{
-				SG_SPRINT("comparing element %d which is %d byes from start\n",
+				SG_SDEBUG("comparing element %d which is %d byes from start\n",
 						i, x);
 
 				void* pointer_a=&((*(char**)m_parameter)[x]);
@@ -2923,7 +2923,7 @@ bool TParameter::equals(TParameter* other, floatmax_t accuracy)
 						m_datatype.m_ptype, m_datatype.sizeof_ptype(),
 						pointer_a, pointer_b, accuracy))
 				{
-					SG_SPRINT("leaving TParameter::equals(): vector element "
+					SG_SDEBUG("leaving TParameter::equals(): vector element "
 							"differes\n");
 					return false;
 				}
@@ -3045,7 +3045,7 @@ bool TParameter::compare_ptype(EPrimitiveType ptype, void* data1, void* data2,
 
 		if (CMath::abs(casted1-casted2)>accuracy)
 		{
-			SG_SPRINT("leaving TParameter::compare_ptype(): PT_INT32: "
+			SG_SDEBUG("leaving TParameter::compare_ptype(): PT_INT32: "
 					"data1=%d, data2=%d\n", casted1, casted2);
 			return false;
 		}
@@ -3110,7 +3110,7 @@ bool TParameter::compare_ptype(EPrimitiveType ptype, void* data1, void* data2,
 
 		if (CMath::abs(casted1-casted2)>accuracy)
 		{
-			SG_SPRINT("leaving TParameter::compare_ptype(): PT_FLOAT64: "
+			SG_SDEBUG("leaving TParameter::compare_ptype(): PT_FLOAT64: "
 					"data1=%f, data2=%f\n", casted1, casted2);
 			return false;
 		}
@@ -3196,7 +3196,7 @@ bool TParameter::compare_stype(EStructType stype, EPrimitiveType ptype,
 			SG_SDEBUG("Comparing sparse vectors\n");
 			for (index_t i=0; i<spr_ptr1->num_feat_entries; ++i)
 			{
-				SG_SPRINT("Comparing sparse entry %d at offset %d\n", i,
+				SG_SDEBUG("Comparing sparse entry %d at offset %d\n", i,
 						i*TSGDataType::sizeof_sparseentry(ptype));
 
 				SGSparseVectorEntry<char>* cur1 = (SGSparseVectorEntry<char>*)
@@ -3241,7 +3241,7 @@ bool TParameter::compare_stype(EStructType stype, EPrimitiveType ptype,
 			SG_SDEBUG("Comparing strings\n");
 			for (index_t i=0; i<str_ptr1->slen; ++i)
 			{
-				SG_SPRINT("Comparing string element %d at offset %d\n", i,
+				SG_SDEBUG("Comparing string element %d at offset %d\n", i,
 						i*size_ptype);
 				void* pointer1=str_ptr1->string+i*size_ptype;
 				void* pointer2=str_ptr2->string+i*size_ptype;
