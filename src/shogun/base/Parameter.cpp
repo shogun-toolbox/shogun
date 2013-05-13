@@ -2968,7 +2968,7 @@ bool TParameter::compare_ptype(EPrimitiveType ptype, void* data1, void* data2,
 		if (CMath::abs(casted1-casted2)>accuracy)
 		{
 			SG_SDEBUG("leaving TParameter::compare_ptype(): PT_BOOL: "
-					"data1=%d, data=%d\n", casted1, casted2);
+					"data1=%d, data2=%d\n", casted1, casted2);
 			return false;
 		}
 		break;
@@ -2981,7 +2981,7 @@ bool TParameter::compare_ptype(EPrimitiveType ptype, void* data1, void* data2,
 		if (CMath::abs(casted1-casted2)>accuracy)
 		{
 			SG_SDEBUG("leaving TParameter::compare_ptype(): PT_CHAR: "
-					"data1=%c, data=%c\n", casted1, casted2);
+					"data1=%c, data2=%c\n", casted1, casted2);
 			return false;
 		}
 		break;
@@ -2994,7 +2994,7 @@ bool TParameter::compare_ptype(EPrimitiveType ptype, void* data1, void* data2,
 		if (CMath::abs(casted1-casted2)>accuracy)
 		{
 			SG_SDEBUG("leaving TParameter::compare_ptype(): PT_INT8: "
-					"data1=%d, data=%d\n", casted1, casted2);
+					"data1=%d, data2=%d\n", casted1, casted2);
 			return false;
 		}
 		break;
@@ -3007,7 +3007,7 @@ bool TParameter::compare_ptype(EPrimitiveType ptype, void* data1, void* data2,
 		if (CMath::abs(casted1-casted2)>accuracy)
 		{
 			SG_SDEBUG("leaving TParameter::compare_ptype(): PT_UINT8: "
-					"data1=%d, data=%d\n", casted1, casted2);
+					"data1=%d, data2=%d\n", casted1, casted2);
 			return false;
 		}
 		break;
@@ -3020,7 +3020,7 @@ bool TParameter::compare_ptype(EPrimitiveType ptype, void* data1, void* data2,
 		if (CMath::abs(casted1-casted2)>accuracy)
 		{
 			SG_SDEBUG("leaving TParameter::compare_ptype(): PT_INT16: "
-					"data1=%d, data=%d\n", casted1, casted2);
+					"data1=%d, data2=%d\n", casted1, casted2);
 			return false;
 		}
 		break;
@@ -3033,7 +3033,7 @@ bool TParameter::compare_ptype(EPrimitiveType ptype, void* data1, void* data2,
 		if (CMath::abs(casted1-casted2)>accuracy)
 		{
 			SG_SDEBUG("leaving TParameter::compare_ptype(): PT_UINT16: "
-					"data1=%d, data=%d\n", casted1, casted2);
+					"data1=%d, data2=%d\n", casted1, casted2);
 			return false;
 		}
 		break;
@@ -3046,7 +3046,7 @@ bool TParameter::compare_ptype(EPrimitiveType ptype, void* data1, void* data2,
 		if (CMath::abs(casted1-casted2)>accuracy)
 		{
 			SG_SPRINT("leaving TParameter::compare_ptype(): PT_INT32: "
-					"data1=%d, data=%d\n", casted1, casted2);
+					"data1=%d, data2=%d\n", casted1, casted2);
 			return false;
 		}
 		break;
@@ -3059,7 +3059,7 @@ bool TParameter::compare_ptype(EPrimitiveType ptype, void* data1, void* data2,
 		if (CMath::abs(casted1-casted2)>accuracy)
 		{
 			SG_SDEBUG("leaving TParameter::compare_ptype(): PT_UINT32: "
-					"data1=%d, data=%d\n", casted1, casted2);
+					"data1=%d, data2=%d\n", casted1, casted2);
 			return false;
 		}
 		break;
@@ -3072,7 +3072,7 @@ bool TParameter::compare_ptype(EPrimitiveType ptype, void* data1, void* data2,
 		if (CMath::abs(casted1-casted2)>accuracy)
 		{
 			SG_SDEBUG("leaving TParameter::compare_ptype(): PT_INT64: "
-					"data1=%d, data=%d\n", casted1, casted2);
+					"data1=%d, data2=%d\n", casted1, casted2);
 			return false;
 		}
 		break;
@@ -3085,7 +3085,7 @@ bool TParameter::compare_ptype(EPrimitiveType ptype, void* data1, void* data2,
 		if (CMath::abs(casted1-casted2)>accuracy)
 		{
 			SG_SDEBUG("leaving TParameter::compare_ptype(): PT_UINT64: "
-					"data1=%d, data=%d\n", casted1, casted2);
+					"data1=%d, data2=%d\n", casted1, casted2);
 			return false;
 		}
 		break;
@@ -3098,7 +3098,7 @@ bool TParameter::compare_ptype(EPrimitiveType ptype, void* data1, void* data2,
 		if (CMath::abs(casted1-casted2)>accuracy)
 		{
 			SG_SDEBUG("leaving TParameter::compare_ptype(): PT_FLOAT32: "
-					"data1=%f, data=%f\n", casted1, casted2);
+					"data1=%f, data2=%f\n", casted1, casted2);
 			return false;
 		}
 		break;
@@ -3111,7 +3111,7 @@ bool TParameter::compare_ptype(EPrimitiveType ptype, void* data1, void* data2,
 		if (CMath::abs(casted1-casted2)>accuracy)
 		{
 			SG_SPRINT("leaving TParameter::compare_ptype(): PT_FLOAT64: "
-					"data1=%f, data=%f\n", casted1, casted2);
+					"data1=%f, data2=%f\n", casted1, casted2);
 			return false;
 		}
 		break;
@@ -3124,7 +3124,7 @@ bool TParameter::compare_ptype(EPrimitiveType ptype, void* data1, void* data2,
 		if (CMath::abs(casted1-casted2)>accuracy)
 		{
 			SG_SDEBUG("leaving TParameter::compare_ptype(): PT_FLOATMAX: "
-					"data1=%f, data=%f\n", casted1, casted2);
+					"data1=%f, data2=%f\n", casted1, casted2);
 			return false;
 		}
 		break;
@@ -3134,7 +3134,21 @@ bool TParameter::compare_ptype(EPrimitiveType ptype, void* data1, void* data2,
 		CSGObject* casted1=*((CSGObject**)data1);
 		CSGObject* casted2=*((CSGObject**)data2);
 
-		if (!(casted1->equals(casted2)))
+		/* important not to call methods on NULL */
+		if (!casted1 && ! casted2)
+		{
+			SG_SDEBUG("leaving TParameter::compare_ptype(): SGObjects are equal\n");
+			return true;
+		}
+
+		if (casted1 && !(casted1->equals(casted2, accuracy)))
+		{
+			SG_SDEBUG("leaving TParameter::compare_ptype(): PT_SGOBJECT "
+					"equals returned false\n");
+			return false;
+		}
+
+		if (casted2 && !(casted2->equals(casted1, accuracy)))
 		{
 			SG_SDEBUG("leaving TParameter::compare_ptype(): PT_SGOBJECT "
 					"equals returned false\n");
@@ -3148,7 +3162,7 @@ bool TParameter::compare_ptype(EPrimitiveType ptype, void* data1, void* data2,
 		break;
 	}
 
-	SG_SDEBUG("leaving TParameter::compare_ptype(): Data were equal\n");
+	SG_SDEBUG("leaving TParameter::compare_ptype(): Data are equal\n");
 	return true;
 }
 
@@ -3168,7 +3182,7 @@ bool TParameter::compare_stype(EStructType stype, EPrimitiveType ptype,
 		case ST_SPARSE:
 		{
 			SG_SDEBUG("ST_SPARSE\n");
-			SGSparseVector<char>* spr_ptr1 = (SGSparseVector<char>*) data2;
+			SGSparseVector<char>* spr_ptr1 = (SGSparseVector<char>*) data1;
 			SGSparseVector<char>* spr_ptr2 = (SGSparseVector<char>*) data2;
 
 			if (spr_ptr1->num_feat_entries != spr_ptr2->num_feat_entries)
@@ -3185,8 +3199,20 @@ bool TParameter::compare_stype(EStructType stype, EPrimitiveType ptype,
 				SG_SPRINT("Comparing sparse entry %d at offset %d\n", i,
 						i*TSGDataType::sizeof_sparseentry(ptype));
 
-				void* pointer1=&((spr_ptr1->features+(i*TSGDataType::sizeof_sparseentry(ptype)))->entry);
-				void* pointer2=&((spr_ptr2->features+(i*TSGDataType::sizeof_sparseentry(ptype)))->entry);
+				SGSparseVectorEntry<char>* cur1 = (SGSparseVectorEntry<char>*)
+								((char*) spr_ptr1->features + i*TSGDataType
+								 ::sizeof_sparseentry(ptype));
+				SGSparseVectorEntry<char>* cur2 = (SGSparseVectorEntry<char>*)
+								((char*) spr_ptr2->features + i*TSGDataType
+								 ::sizeof_sparseentry(ptype));
+
+				/* sparse entries have an offset of the enty pointer depending
+				 * on type. Since I cast everything down to char, I need to remove
+				 * the char offset and add the offset of the ptype */
+				index_t char_offset=TSGDataType::offset_sparseentry(PT_CHAR);
+				index_t ptype_offset=TSGDataType::offset_sparseentry(ptype);
+				void* pointer1=&(cur1->entry)-char_offset+ptype_offset;
+				void* pointer2=&(cur2->entry)-char_offset+ptype_offset;
 
 				if (!TParameter::compare_ptype(ptype, pointer1,
 						pointer2, accuracy))
