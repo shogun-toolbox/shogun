@@ -1229,7 +1229,7 @@ void CSGObject::build_parameter_dictionary(CMap<TParameter*, CSGObject*>& dict)
 	}
 }
 
-bool CSGObject::equals(CSGObject* other, floatmax_t accuracy)
+bool CSGObject::equals(CSGObject* other, float64_t accuracy)
 {
 	SG_DEBUG("entering %s::equals()\n", get_name());
 

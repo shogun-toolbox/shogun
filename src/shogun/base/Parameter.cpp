@@ -2832,7 +2832,7 @@ void TParameter::copy_data(const TParameter* source)
 	SG_SDEBUG("leaving TParameter::copy_data for %s\n", m_name)
 }
 
-bool TParameter::equals(TParameter* other, floatmax_t accuracy)
+bool TParameter::equals(TParameter* other, float64_t accuracy)
 {
 	SG_SDEBUG("entering TParameter::equals()\n");
 
@@ -2877,6 +2877,12 @@ bool TParameter::equals(TParameter* other, floatmax_t accuracy)
 		case CT_SCALAR:
 		{
 			SG_SDEBUG("CT_SCALAR\n");
+			if (strcmp("m_name", "num_elements"))
+			{
+				SG_SDEBUG("Ignoring num_elements field\n");
+				break;
+			}
+
 			if (!TParameter::compare_stype(m_datatype.m_stype,
 					m_datatype.m_ptype, m_datatype.sizeof_ptype(), m_parameter,
 					other->m_parameter,

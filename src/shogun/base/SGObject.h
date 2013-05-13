@@ -72,7 +72,8 @@ template <class T> class DynArray;
 
 /** model selection availability */
 enum EModelSelectionAvailability {
-	MS_NOT_AVAILABLE=0, MS_AVAILABLE
+	MS_NOT_AVAILABLE=0,
+	MS_AVAILABLE=1,
 };
 
 /** @brief Class SGObject is the base class of all shogun objects.
@@ -429,7 +430,7 @@ public:
 	 * @accuracy accuracy to use for comparison (optional)
 	 * @return true if all parameters were equal, false if not
 	 */
-	virtual bool equals(CSGObject* other, floatmax_t accuracy=0.0);
+	virtual bool equals(CSGObject* other, float64_t accuracy=0.0);
 
 private:
 	void set_global_objects();

@@ -83,7 +83,7 @@ struct TParameter
 	 * @param accuracy accuracy for numerical comparison
 	 * @return true if given parameter instance is equal, false otherwise
 	 */
-	bool equals(TParameter* other, floatmax_t accuracy=0.0);
+	bool equals(TParameter* other, float64_t accuracy=0.0);
 
 	/** Given two pointers to a scalar element of a given primitive-type, this
 	 * method compares the values up to a given accuracy.

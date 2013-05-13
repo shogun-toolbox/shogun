@@ -73,7 +73,7 @@ void CFeatures::init()
 
 	properties = FP_NONE;
 	cache_size = 0;
-	preproc = new CDynamicObjectArray() ;
+	preproc = new CDynamicObjectArray();
 	preprocessed = new CDynamicArray<bool>();
 	SG_REF(preproc);
 	SG_REF(preprocessed);
