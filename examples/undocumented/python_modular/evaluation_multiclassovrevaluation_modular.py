@@ -32,7 +32,7 @@ def evaluation_multiclassovrevaluation_modular (traindat, label_traindat, testda
 	mean_accuracy = evaluator.evaluate(predicted_labels,ground_truth_labels)
 	#print mean_accuracy
 
-	return mean_roc, mean_accuracy
+	return mean_roc, mean_accuracy, predicted_labels, svm
 
 
 if __name__=='__main__':
