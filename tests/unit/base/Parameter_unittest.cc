@@ -10,6 +10,7 @@
 #include <shogun/base/Parameter.h>
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/labels/RegressionLabels.h>
+#include <shogun/features/SparseFeatures.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;
@@ -407,4 +408,68 @@ TEST(TParameter,equals_string_scalar_equal)
 
 	delete param1;
 	delete param2;
+}
+
+TEST(TParameter,equals_sparse_scalar_different)
+{
+	SGMatrix<float64_t> a(2,2);
+	a.set_const(1);
+	SGMatrix<float64_t> b(2,2);
+	b.set_const(1);
+	float64_t accuracy=0.1;
+
+	a.set_const(1);
+	b.set_const(1);
+	b(1,1)=1.11;
+
+	CSparseFeatures<float64_t>* s1=new CSparseFeatures<float64_t>(a);
+	CSparseFeatures<float64_t>* s2=new CSparseFeatures<float64_t>(b);
+
+	SGSparseVector<float64_t> vec1=s1->get_sparse_feature_vector(1);
+	SGSparseVector<float64_t> vec2=s2->get_sparse_feature_vector(1);
+
+	TSGDataType type(CT_SCALAR, ST_SPARSE, PT_FLOAT64);
+	TParameter* param1=new TParameter(&type, &vec1, "", "");
+	TParameter* param2=new TParameter(&type, &vec2, "", "");
+
+	EXPECT_FALSE(param1->equals(param2, accuracy));
+
+	delete param1;
+	delete param2;
+	s1->free_sparse_feature_vector(0);
+	s2->free_sparse_feature_vector(0);
+	SG_UNREF(s1);
+	SG_UNREF(s2);
+}
+
+TEST(TParameter,equals_sparse_scalar_equal)
+{
+	SGMatrix<float64_t> a(2,2);
+	a.set_const(1);
+	SGMatrix<float64_t> b(2,2);
+	b.set_const(1);
+	float64_t accuracy=0.1;
+
+	a.set_const(1);
+	b.set_const(1);
+	b(1,1)=1.01;
+
+	CSparseFeatures<float64_t>* s1=new CSparseFeatures<float64_t>(a);
+	CSparseFeatures<float64_t>* s2=new CSparseFeatures<float64_t>(b);
+
+	SGSparseVector<float64_t> vec1=s1->get_sparse_feature_vector(1);
+	SGSparseVector<float64_t> vec2=s2->get_sparse_feature_vector(1);
+
+	TSGDataType type(CT_SCALAR, ST_SPARSE, PT_FLOAT64);
+	TParameter* param1=new TParameter(&type, &vec1, "", "");
+	TParameter* param2=new TParameter(&type, &vec2, "", "");
+
+	EXPECT_TRUE(param1->equals(param2, accuracy));
+
+	delete param1;
+	delete param2;
+	s1->free_sparse_feature_vector(0);
+	s2->free_sparse_feature_vector(0);
+	SG_UNREF(s1);
+	SG_UNREF(s2);
 }
