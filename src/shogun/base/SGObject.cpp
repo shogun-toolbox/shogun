@@ -1232,6 +1232,7 @@ void CSGObject::build_parameter_dictionary(CMap<TParameter*, CSGObject*>& dict)
 bool CSGObject::equals(CSGObject* other, floatmax_t accuracy)
 {
 	SG_DEBUG("entering %s::equals()\n", get_name());
+
 	if (!other)
 	{
 		SG_DEBUG("leaving %s::equals(): other object is NULL\n", get_name());
@@ -1287,7 +1288,7 @@ bool CSGObject::equals(CSGObject* other, floatmax_t accuracy)
 		if (!this_param->equals(other_param, accuracy))
 		{
 			SG_DEBUG("leaving %s::equals(): parameters at position %d with name"
-					" \"%s\" differs from other object parameter with name"
+					" \"%s\" differs from other object parameter with name "
 					"\"%s\"\n",
 					get_name(), i, this_param->m_name, other_param->m_name);
 			return false;
