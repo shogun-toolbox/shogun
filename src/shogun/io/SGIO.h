@@ -152,7 +152,7 @@ __FILE__ ":" func ": Unstable method!  Please report if it seems to " \
 }
 
 #define SG_SDEBUG(...) {											\
-	if (SG_UNLIKELY(sg_io->loglevel_above(MSG_GCDEBUG)))			\
+	if (SG_UNLIKELY(sg_io->loglevel_above(MSG_DEBUG)))			\
 		sg_io->message(MSG_DEBUG,__FILE__, __LINE__, __VA_ARGS__);	\
 }
 
