@@ -190,14 +190,13 @@ void CSVRLight::svr_learn()
 
   if (kernel->get_kernel_type() == K_COMBINED)
   {
-	  CCombinedKernel* k      = (CCombinedKernel*) kernel;
-	  CKernel* kn = k->get_first_kernel();
-
-	  while (kn)
+	  CCombinedKernel* k = (CCombinedKernel*) kernel;
+	  
+	  for (index_t k_idx=0; k_idx<k->get_num_kernels(); k_idx++)  
 	  {
+		  CKernel* kn = k->get_kernel(k_idx);
 		  kn->resize_kernel_cache( kernel->get_cache_size(), true);
 		  SG_UNREF(kn);
-		  kn = k->get_next_kernel();
 	  }
   }
 
@@ -508,12 +507,13 @@ void CSVRLight::update_linear_component_mkl(
 	if ((kernel->get_kernel_type()==K_COMBINED) &&
 			 (!((CCombinedKernel*)kernel)->get_append_subkernel_weights()))// for combined kernel
 	{
-		CCombinedKernel* k      = (CCombinedKernel*) kernel;
-		CKernel* kn = k->get_first_kernel() ;
+		CCombinedKernel* k = (CCombinedKernel*) kernel;
+		
 		int32_t n = 0, i, j ;
 
-		while (kn!=NULL)
+		for (index_t k_idx=0; k_idx<k->get_num_kernels(); k_idx++)
 		{
+			CKernel* kn = k->get_kernel(k_idx);
 			for(i=0;i<num;i++)
 			{
 				if(a[i] != a_old[i])
@@ -524,7 +524,6 @@ void CSVRLight::update_linear_component_mkl(
 				}
 			}
 			SG_UNREF(kn);
-			kn = k->get_next_kernel();
 			n++ ;
 		}
 	}
