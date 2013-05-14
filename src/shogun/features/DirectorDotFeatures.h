@@ -267,11 +267,10 @@ IGNORE_IN_CLASSLIST class CDirectorDotFeatures : public CDotFeatures
 		/** add preprocessor
 		 *
 		 * @param p preprocessor to set
-		 * @return something inty
 		 */
-		virtual int32_t add_preprocessor(CPreprocessor* p)
+		virtual void add_preprocessor(CPreprocessor* p)
 		{
-			return CFeatures::add_preprocessor(p);
+			CFeatures::add_preprocessor(p);
 		}
 
 		/** delete preprocessor from list
@@ -279,9 +278,9 @@ IGNORE_IN_CLASSLIST class CDirectorDotFeatures : public CDotFeatures
 		 *
 		 * @param num index of preprocessor in list
 		 */
-		virtual CPreprocessor* del_preprocessor(int32_t num)
+		virtual void del_preprocessor(int32_t num)
 		{
-			return CFeatures::del_preprocessor(num);
+			CFeatures::del_preprocessor(num);
 		}
 
 		/** in case there is a feature matrix allow for reshaping
