@@ -2877,12 +2877,6 @@ bool TParameter::equals(TParameter* other, float64_t accuracy)
 		case CT_SCALAR:
 		{
 			SG_SDEBUG("CT_SCALAR\n");
-			if (strcmp("m_name", "num_elements"))
-			{
-				SG_SDEBUG("Ignoring num_elements field\n");
-				break;
-			}
-
 			if (!TParameter::compare_stype(m_datatype.m_stype,
 					m_datatype.m_ptype, m_datatype.sizeof_ptype(), m_parameter,
 					other->m_parameter,
@@ -3147,7 +3141,6 @@ bool TParameter::compare_ptype(EPrimitiveType ptype, void* data1, void* data2,
 	{
 		floatmax_t casted1=*((floatmax_t*)data1);
 		floatmax_t casted2=*((floatmax_t*)data2);
-
 		if (CMath::abs(casted1-casted2)>accuracy)
 		{
 			SG_SDEBUG("leaving TParameter::compare_ptype(): PT_FLOATMAX: "
@@ -3168,18 +3161,25 @@ bool TParameter::compare_ptype(EPrimitiveType ptype, void* data1, void* data2,
 			return true;
 		}
 
-		if (casted1 && !(casted1->equals(casted2, accuracy)))
+		/* make sure to not call NULL methods */
+		if (casted1)
 		{
-			SG_SDEBUG("leaving TParameter::compare_ptype(): PT_SGOBJECT "
-					"equals returned false\n");
-			return false;
+			if (!(casted1->equals(casted2, accuracy)))
+			{
+				SG_SDEBUG("leaving TParameter::compare_ptype(): PT_SGOBJECT "
+						"equals returned false\n");
+				return false;
+			}
 		}
-
-		if (casted2 && !(casted2->equals(casted1, accuracy)))
+		else
 		{
-			SG_SDEBUG("leaving TParameter::compare_ptype(): PT_SGOBJECT "
-					"equals returned false\n");
-			return false;
+			if (!(casted2->equals(casted1, accuracy)))
+			{
+				SG_SDEBUG("leaving TParameter::compare_ptype(): PT_SGOBJECT "
+						"equals returned false\n");
+				return false;
+			}
+
 		}
 		break;
 	}
