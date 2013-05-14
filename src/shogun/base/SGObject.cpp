@@ -1233,11 +1233,19 @@ bool CSGObject::equals(CSGObject* other, float64_t accuracy)
 {
 	SG_DEBUG("entering %s::equals()\n", get_name());
 
+	if (other==this)
+	{
+		SG_DEBUG("leaving %s::equals(): other object is me\n", get_name());
+		return true;
+	}
+
 	if (!other)
 	{
 		SG_DEBUG("leaving %s::equals(): other object is NULL\n", get_name());
 		return false;
 	}
+
+	SG_SPRINT("comparing \"%s\" to \"%s\"\n", get_name(), other->get_name());
 
 	/* a crude type check based on the get_name */
 	if (strcmp(other->get_name(), get_name()))
@@ -1283,6 +1291,15 @@ bool CSGObject::equals(CSGObject* other, float64_t accuracy)
 
 		SG_DEBUG("comparing parameter \"%s\" to other's \"%s\"\n",
 				this_param->m_name, other_param->m_name);
+
+		/* hard-wired exception for DynamicObjectArray parameter num_elements */
+		if (!strcmp("DynamicObjectArray", get_name()) &&
+				!strcmp(this_param->m_name, "num_elements") &&
+				!strcmp(other_param->m_name, "num_elements"))
+		{
+			SG_DEBUG("Ignoring DynamicObjectArray::num_elements field\n");
+			continue;
+		}
 
 		/* use equals method of TParameter from here */
 		if (!this_param->equals(other_param, accuracy))

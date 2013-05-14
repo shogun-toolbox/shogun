@@ -19,9 +19,34 @@
 #include <shogun/regression/gp/GaussianLikelihood.h>
 #endif
 #include <shogun/io/SerializableAsciiFile.h>
+#include <shogun/statistics/QuadraticTimeMMD.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;
+
+TEST(SGObject,equals_same)
+{
+	CGaussianKernel* kernel=new CGaussianKernel();
+	EXPECT_TRUE(kernel->equals(kernel));
+	SG_UNREF(kernel);
+}
+
+TEST(SGObject,equals_NULL_parameter)
+{
+	SGMatrix<float64_t> data(3,10);
+	for (index_t i=0; i<data.num_rows*data.num_cols; ++i)
+		data.matrix[i]=CMath::randn_double();
+
+	CDenseFeatures<float64_t>* feats=new CDenseFeatures<float64_t>(data);
+	CGaussianKernel* kernel=new CGaussianKernel();
+	CQuadraticTimeMMD* mmd=new CQuadraticTimeMMD(kernel, feats, 5);
+	CQuadraticTimeMMD* mmd2=new CQuadraticTimeMMD(NULL, feats, 5);
+
+	mmd->equals(mmd2);
+
+	SG_UNREF(mmd);
+	SG_UNREF(mmd2);
+}
 
 TEST(SGObject,equals_null)
 {
@@ -41,6 +66,47 @@ TEST(SGObject,equals_different_name)
 
 	SG_UNREF(labels);
 	SG_UNREF(labels2);
+}
+
+TEST(SGObject,equals_DynamicObjectArray_equal)
+{
+	CDynamicObjectArray* array1=new CDynamicObjectArray();
+	CDynamicObjectArray* array2=new CDynamicObjectArray();
+
+	EXPECT_TRUE(TParameter::compare_ptype(PT_SGOBJECT, &array1, &array2));
+
+	SG_UNREF(array1);
+	SG_UNREF(array2);
+}
+
+TEST(SGObject,equals_DynamicObjectArray_equal_after_resize)
+{
+	CDynamicObjectArray* array1=new CDynamicObjectArray();
+	CDynamicObjectArray* array2=new CDynamicObjectArray();
+
+	/* enforce a resize */
+	for (index_t i=0; i<1000; ++i)
+		array1->append_element(new CGaussianKernel());
+
+	array1->reset_array();
+
+	EXPECT_TRUE(TParameter::compare_ptype(PT_SGOBJECT, &array1, &array2));
+
+	SG_UNREF(array1);
+	SG_UNREF(array2);
+}
+
+TEST(SGObject,equals_DynamicObjectArray_different)
+{
+	CDynamicObjectArray* array1=new CDynamicObjectArray();
+	CDynamicObjectArray* array2=new CDynamicObjectArray();
+
+	array1->append_element(new CGaussianKernel());
+
+	EXPECT_FALSE(TParameter::compare_ptype(PT_SGOBJECT, &array1, &array2));
+
+	SG_UNREF(array1);
+	SG_UNREF(array2);
 }
 
 #ifdef HAVE_EIGEN3
