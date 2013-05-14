@@ -906,9 +906,9 @@ bool CGUIKernel::del_last_kernel()
 	if (kernel->get_kernel_type()!=K_COMBINED)
 		SG_ERROR("Need a combined kernel for deleting the last kernel in it.\n")
 
-	CKernel* last=((CCombinedKernel*) kernel)->get_last_kernel();
-	if (last)
-		return ((CCombinedKernel*) kernel)->delete_kernel();
+	if (((CCombinedKernel*) kernel)->get_num_kernels()>0)
+		return ((CCombinedKernel*) kernel)->
+				delete_kernel(((CCombinedKernel*) kernel)->get_num_kernels()-1);
 	else
 		SG_ERROR("No kernel available to delete.\n")
 

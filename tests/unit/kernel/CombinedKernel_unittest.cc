@@ -132,12 +132,12 @@ TEST(CombinedKernelTest,combination)
 		CCombinedKernel* c_kernel = dynamic_cast<CCombinedKernel* >(kernel);
 		EXPECT_EQ(c_kernel->get_num_subkernels(), 2);
 		i = 0;
-		for (CSGObject* subkernel=c_kernel->get_first_kernel(); subkernel; 
-			subkernel=c_kernel->get_next_kernel())
+		for (index_t k_idx=0; k_idx<c_kernel->get_num_kernels(); k_idx++)
 		{
-			CGaussianKernel* c_subkernel = dynamic_cast<CGaussianKernel* >(subkernel);
+			CGaussianKernel* c_subkernel = 
+					dynamic_cast<CGaussianKernel* >(c_kernel->get_kernel(k_idx));
 			EXPECT_EQ(c_subkernel->get_width(), combs2[i++][j]);
-			SG_UNREF(subkernel);
+			SG_UNREF(c_subkernel);
 		}
 		++j;
 		SG_UNREF(kernel);
@@ -171,12 +171,12 @@ TEST(CombinedKernelTest,combination)
 		CCombinedKernel* c_kernel = dynamic_cast<CCombinedKernel* >(kernel);
 		i = 0;
 		EXPECT_EQ(c_kernel->get_num_subkernels(), 3);
-		for (CSGObject* subkernel=c_kernel->get_first_kernel(); subkernel;
-			subkernel=c_kernel->get_next_kernel())
+		for (index_t k_idx=0; k_idx<c_kernel->get_num_kernels(); k_idx++)
 		{
-			CGaussianKernel* c_subkernel = dynamic_cast<CGaussianKernel* >(subkernel);
+			CGaussianKernel* c_subkernel = 
+					dynamic_cast<CGaussianKernel* >(c_kernel->get_kernel(k_idx));
 			EXPECT_EQ(c_subkernel->get_width(), combs[i++][j]);
-			SG_UNREF(subkernel);
+			SG_UNREF(c_subkernel);
 		}
 		++j;
 		SG_UNREF(kernel);
