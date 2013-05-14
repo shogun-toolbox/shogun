@@ -40,14 +40,14 @@ TEST(KernelPCA, apply_to_feature_matrix_input)
 	shogun::CKernelPCA kpca(kernel);
 	kpca.set_target_dim(2);
 	kpca.init(feats);
-	SGMatrix<float64_t> tran_matrix = kpca.apply_to_feature_matrix(feats);
+	SGMatrix<float64_t> embedding = kpca.apply_to_feature_matrix(feats);
   
 	float64_t s;
 	// allow embedding with opposite sign
-	if (tran_matrix.matrix[0] > 0)
+	if ( embedding.matrix[0] > 0)
 		s = -1;
 	for (index_t i = 0; i < num_features * num_vectors; ++i)
-		EXPECT_LE(CMath::abs(tran_matrix.matrix[i] - s * resdata[i]), 1E-6);
+		EXPECT_LE(CMath::abs(embedding.matrix[i] - s * resdata[i]), 1E-6);
   
 	SG_UNREF(feats);
 }
