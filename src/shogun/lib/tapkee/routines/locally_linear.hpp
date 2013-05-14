@@ -11,6 +11,7 @@
 #include <shogun/lib/tapkee/defines.hpp>
 #include <shogun/lib/tapkee/utils/matrix.hpp>
 #include <shogun/lib/tapkee/utils/time.hpp>
+#include <shogun/lib/tapkee/utils/sparse.hpp>
 /* End of Tapkee includes */
 
 namespace tapkee
@@ -18,20 +19,7 @@ namespace tapkee
 namespace tapkee_internal
 {
 
-SparseMatrix matrix_from_triplets(const SparseTriplets& sparse_triplets, IndexType m, IndexType n)
-{
-#ifdef EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
-	Eigen::DynamicSparseMatrix<ScalarType> dynamic_weight_matrix(m, n);
-	dynamic_weight_matrix.reserve(sparse_triplets.size());
-	for (SparseTriplets::const_iterator it=sparse_triplets.begin(); it!=sparse_triplets.end(); ++it)
-		dynamic_weight_matrix.coeffRef(it->col(),it->row()) += it->value();
-	SparseMatrix matrix(dynamic_weight_matrix);
-#else
-	SparseMatrix matrix(m, n);
-	matrix.setFromTriplets(sparse_triplets.begin(),sparse_triplets.end());
-#endif
-	return matrix;
-}
+
 
 template <class RandomAccessIterator, class PairwiseCallback>
 SparseWeightMatrix tangent_weight_matrix(RandomAccessIterator begin, RandomAccessIterator end, 
@@ -111,7 +99,7 @@ SparseWeightMatrix tangent_weight_matrix(RandomAccessIterator begin, RandomAcces
 		}
 	}
 
-	return matrix_from_triplets(sparse_triplets, end - begin, end - begin);
+	return sparse_matrix_from_triplets(sparse_triplets, end-begin, end-begin);
 }
 
 template <class RandomAccessIterator, class PairwiseCallback>
@@ -182,7 +170,7 @@ SparseWeightMatrix linear_weight_matrix(const RandomAccessIterator& begin, const
 		//UNRESTRICT_ALLOC;
 	}
 
-	return matrix_from_triplets(sparse_triplets, end - begin, end - begin);
+	return sparse_matrix_from_triplets(sparse_triplets, end-begin, end-begin);
 }
 
 template <class RandomAccessIterator, class PairwiseCallback>
@@ -278,7 +266,7 @@ SparseWeightMatrix hessian_weight_matrix(RandomAccessIterator begin, RandomAcces
 		}
 	}
 
-	return matrix_from_triplets(sparse_triplets, end - begin, end - begin);
+	return sparse_matrix_from_triplets(sparse_triplets, end-begin, end-begin);
 }
 
 template<class RandomAccessIterator, class FeatureVectorCallback>

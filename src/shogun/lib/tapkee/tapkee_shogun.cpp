@@ -174,7 +174,7 @@ CDenseFeatures<float64_t>* shogun::tapkee_embed(const shogun::TAPKEE_PARAMETERS_
 		 tapkee::keywords::fa_epsilon = parameters.fa_epsilon,
 		 tapkee::keywords::sne_perplexity = parameters.sne_perplexity,
 		 tapkee::keywords::sne_theta = parameters.sne_theta,
- 		 tapkee::keywords::squishing_rate = parameters.squishing_rate
+		 tapkee::keywords::squishing_rate = parameters.squishing_rate
 		 );
 
 	tapkee::TapkeeOutput output = tapkee::embed(indices.begin(),indices.end(),

@@ -42,6 +42,7 @@ namespace tapkee_internal
 	typedef TAPKEE_INTERNAL_VECTOR<tapkee::IndexType> Landmarks;
 	typedef TAPKEE_INTERNAL_PAIR<tapkee::SparseWeightMatrix,tapkee::DenseDiagonalMatrix> Laplacian;
 	typedef TAPKEE_INTERNAL_PAIR<tapkee::DenseSymmetricMatrix,tapkee::DenseSymmetricMatrix> DenseSymmetricMatrixPair;
+	typedef TAPKEE_INTERNAL_PAIR<tapkee::SparseMatrix,tapkee::tapkee_internal::Neighbors> SparseMatrixNeighborsPair;
 
 #if defined(TAPKEE_USE_PRIORITY_QUEUE) && defined(TAPKEE_USE_FIBONACCI_HEAP)
 	#error "Can't use both priority queue and fibonacci heap at the same time"

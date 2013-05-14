@@ -7,8 +7,8 @@
 #define TAPKEE_MANIFOLD_SCULPTING_H_
 
 /* Tapkee includes */
-#include <shogun/lib/tapkee/tapkee_defines.hpp>
-#include <shogun/lib/tapkee/routines/locally_linear.hpp>
+#include <shogun/lib/tapkee/defines.hpp>
+#include <shogun/lib/tapkee/utils/sparse.hpp>
 /* End of Tapkee includes */
 
 #include <math.h>
@@ -85,11 +85,11 @@ SparseMatrix neighbors_distances_matrix(const Neighbors& neighbors, const Distan
 		}
 	}
 	average_distance /= (k*n);
-	return matrix_from_triplets(sparse_triplets, n, n);
+	return sparse_matrix_from_triplets(sparse_triplets, n, n);
 }
 
-TAPKEE_INTERNAL_PAIR<SparseMatrix, Neighbors> angles_matrix_and_neighbors(const Neighbors& neighbors, 
-																	  	  const DenseMatrix& data)
+SparseMatrixNeighborsPair angles_matrix_and_neighbors(const Neighbors& neighbors, 
+													const DenseMatrix& data)
 {
 	const IndexType k = neighbors[0].size();
 	const IndexType n_vectors = data.cols();
@@ -120,8 +120,8 @@ TAPKEE_INTERNAL_PAIR<SparseMatrix, Neighbors> angles_matrix_and_neighbors(const 
 				DenseVector neighbor_to_its_neighbor = data.col(neighbors_of_neighbor[l])
 														- data.col(current_neighbors[j]);
 				current_cos_value = neighbor_to_point.dot(neighbor_to_its_neighbor) /
-				 					( sqrt(neighbor_to_point.squaredNorm()) *
-				 					 sqrt(neighbor_to_its_neighbor.squaredNorm()) );
+				 					(neighbor_to_point.norm() *
+				 					 neighbor_to_its_neighbor.norm());
 				if (current_cos_value < min_cos_value)
 				{
 					most_collinear_current_neighbors[j] = neighbors_of_neighbor[l];
@@ -134,8 +134,8 @@ TAPKEE_INTERNAL_PAIR<SparseMatrix, Neighbors> angles_matrix_and_neighbors(const 
 			most_collinear_neighbors_of_neighbors.push_back(most_collinear_current_neighbors);
 		}
 	}
-	return TAPKEE_INTERNAL_PAIR<SparseMatrix, Neighbors>
-		(matrix_from_triplets(sparse_triplets, n_vectors, n_vectors), 
+	return SparseMatrixNeighborsPair
+		(sparse_matrix_from_triplets(sparse_triplets, n_vectors, n_vectors), 
 		 most_collinear_neighbors_of_neighbors);
 }
 
@@ -148,7 +148,7 @@ ScalarType average_neighbor_distance(const DenseMatrix& data, const Neighbors& n
 	{
 		for (IndexType j = 0; j < k; ++j)
 		{
-			average_distance += sqrt((data.col(i) - data.col(neighbors[i][j])).squaredNorm());
+			average_distance += (data.col(i) - data.col(neighbors[i][j])).norm();
 		}
 	}
 	return average_distance / (k * data.cols());
@@ -169,24 +169,24 @@ ScalarType compute_error_for_point(const IndexType index, const DenseMatrix& dat
 		DenseVector neighbor_to_its_neighbor = data.col(neighbor_of_neighbor)
 												- data.col(neighbor);
 		ScalarType current_cos_value = neighbor_to_point.dot(neighbor_to_its_neighbor) /
-				 					( sqrt(neighbor_to_point.squaredNorm()) *
-				 					 sqrt(neighbor_to_its_neighbor.squaredNorm()) );
+				 					(neighbor_to_point.norm() *
+				 					 neighbor_to_its_neighbor.norm());
 		/* Find new distance */
-		ScalarType current_distance = sqrt((data.col(index) - data.col(neighbor)).squaredNorm());
+		ScalarType current_distance = (data.col(index) - data.col(neighbor)).norm();
 		/* Compute one component of error function's value*/
-		ScalarType diffCos = 
+		ScalarType diff_cos = 
 			current_cos_value - error_func_data.angles_matrix.coeff(index, neighbor_of_neighbor);
-		if (diffCos < 0)
-			diffCos = 0;
-		ScalarType diffDistance = 
+		if (diff_cos < 0)
+			diff_cos = 0;
+		ScalarType diff_distance = 
 			current_distance - error_func_data.distance_matrix.coeff(index, neighbor);
-		diffDistance /= error_func_data.average_distance;
+		diff_distance /= error_func_data.average_distance;
 		/* Weight for adjusted point should be bigger than 1, according to the
 		 * original algorithm
 		 */
 		ScalarType weight = 
 			(error_func_data.adjusted_points.count(neighbor) == 0) ? 1 : weight_for_adjusted_point;
-		error_value += weight * (diffCos * diffCos + diffDistance * diffDistance);
+		error_value += weight * (diff_cos * diff_cos + diff_distance * diff_distance);
 	}
 	return error_value;
 }
@@ -258,7 +258,7 @@ void manifold_sculpting_embed(DenseMatrix& data, const IndexType target_dimensio
 	 */
 	ScalarType initial_average_distance;
 	SparseMatrix distances_to_neighbors = neighbors_distances_matrix(neighbors, callback, initial_average_distance);
-	TAPKEE_INTERNAL_PAIR<SparseMatrix, Neighbors> angles_and_neighbors =
+	SparseMatrixNeighborsPair angles_and_neighbors =
 					angles_matrix_and_neighbors(neighbors, data);
 	/* Step 2: Optionally preprocess the data using PCA
 	 * (skipped for now).
@@ -271,9 +271,9 @@ void manifold_sculpting_embed(DenseMatrix& data, const IndexType target_dimensio
 	/* Step 3: Do until no improvement is made for some period
 	 * (or until max_iteration number is reached):
 	 */
-	while ( ( (no_improvement_counter++ < max_number_of_iterations_without_improvement)
-	 		|| (current_multiplier >  multiplier_treshold) )
-	 		&& (normal_counter++ < max_iteration) )
+	while (((no_improvement_counter++ < max_number_of_iterations_without_improvement)
+	 		|| (current_multiplier >  multiplier_treshold))
+	 		&& (normal_counter++ < max_iteration))
 	{
 	 	/* Step 3a: Scale the data in non-preserved dimensions
 	 	 * by a factor of squishingRate.

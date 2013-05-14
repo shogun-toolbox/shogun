@@ -466,8 +466,8 @@ private:
 
 	TapkeeOutput embedPassThru()
 	{
-		DenseMatrix feature_matrix;
-		fill_DenseMatrix_from_features(feature_matrix, features, begin, end);
+		DenseMatrix feature_matrix =
+			dense_matrix_from_features(features, begin, end);
 		return TapkeeOutput(feature_matrix.transpose(),tapkee::ProjectingFunction());
 	}
 
@@ -484,8 +484,8 @@ private:
 			.inClosedRange(static_cast<ScalarType>(0.0),
 			               static_cast<ScalarType>((n_vectors-1)/3.0));
 
-		DenseMatrix data;
-		fill_DenseMatrix_from_features(data, features, begin, end);
+		DenseMatrix data = 
+			dense_matrix_from_features(features, begin, end);
 
 		DenseMatrix embedding(static_cast<IndexType>(target_dimension),n_vectors);
 		tsne::TSNE tsne;
@@ -497,10 +497,10 @@ private:
 	TapkeeOutput embedManifoldSculpting()
 	{
 		squishing_rate.checked()
-		.in_range(static_cast<ScalarType>(0.0), static_cast<ScalarType>(1.0));
+		.inRange(static_cast<ScalarType>(0.0), static_cast<ScalarType>(1.0));
 
-		DenseMatrix embedding;
-		fill_DenseMatrix_from_features(embedding, features, begin, end);
+		DenseMatrix embedding =
+			dense_matrix_from_features(features, begin, end);
 
 		Neighbors neighbors = find_neighbors(neighbors_method,begin,end,plain_distance,
 		                                     n_neighbors,check_connectivity);
