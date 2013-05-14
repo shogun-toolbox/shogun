@@ -1245,7 +1245,7 @@ bool CSGObject::equals(CSGObject* other, float64_t accuracy)
 		return false;
 	}
 
-	SG_SPRINT("comparing \"%s\" to \"%s\"\n", get_name(), other->get_name());
+	SG_DEBUG("comparing \"%s\" to \"%s\"\n", get_name(), other->get_name());
 
 	/* a crude type check based on the get_name */
 	if (strcmp(other->get_name(), get_name()))
@@ -1298,6 +1298,15 @@ bool CSGObject::equals(CSGObject* other, float64_t accuracy)
 				!strcmp(other_param->m_name, "num_elements"))
 		{
 			SG_DEBUG("Ignoring DynamicObjectArray::num_elements field\n");
+			continue;
+		}
+
+		/* hard-wired exception for DynamicArray parameter num_elements */
+		if (!strcmp("DynamicArray", get_name()) &&
+				!strcmp(this_param->m_name, "num_elements") &&
+				!strcmp(other_param->m_name, "num_elements"))
+		{
+			SG_DEBUG("Ignoring DynamicArray::num_elements field\n");
 			continue;
 		}
 
