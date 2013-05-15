@@ -17,10 +17,23 @@
 #include <shogun/distance/Distance.h>
 #include <shogun/features/DenseFeatures.h>
 
+
 using namespace shogun;
+namespace tapkee
+{
+	struct ProjectingFunction;
+}
 
 namespace shogun
 {
+
+struct ProjectingFunction
+{
+	ProjectingFunction(): m_tapkee_projecting_function(NULL) {};
+	void clear();
+	CDenseFeatures<float64_t>* operator()( CDenseFeatures<float64_t>* features);
+	tapkee::ProjectingFunction* m_tapkee_projecting_function; 
+};
 
 enum TAPKEE_METHODS_FOR_SHOGUN
 {
@@ -39,6 +52,7 @@ enum TAPKEE_METHODS_FOR_SHOGUN
 	SHOGUN_LANDMARK_ISOMAP,
 	SHOGUN_STOCHASTIC_PROXIMITY_EMBEDDING,
 	SHOGUN_FACTOR_ANALYSIS,
+        SHOGUN_KERNEL_PCA,
 	SHOGUN_TDISTRIBUTED_STOCHASTIC_NEIGHBOR_EMBEDDING,
 };
 
@@ -76,6 +90,8 @@ struct TAPKEE_PARAMETERS_FOR_SHOGUN
 };
 
 CDenseFeatures<float64_t>* tapkee_embed(const TAPKEE_PARAMETERS_FOR_SHOGUN& parameters);
+shogun::ProjectingFunction calc_projecting_function(const TAPKEE_PARAMETERS_FOR_SHOGUN& parameters);
+
 }
 
 #endif

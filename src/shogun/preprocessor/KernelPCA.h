@@ -17,6 +17,8 @@
 #include <shogun/features/Features.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/lib/common.h>
+//#include <shogun/lib/tapkee/tapkee_shogun.hpp>
+
 
 namespace shogun
 {
@@ -91,6 +93,7 @@ public:
 
 		/** default init */
 		void init();
+                void fill_projected_data(float64_t *target_array, CFeatures* features);
 
 	protected:
 
@@ -105,7 +108,7 @@ public:
 
 		/** true when already initialized */
 		bool m_initialized;
-
+ 
 };
 }
 #endif
