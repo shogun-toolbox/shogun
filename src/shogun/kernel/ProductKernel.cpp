@@ -45,18 +45,19 @@ bool CProductKernel::init(CFeatures* l, CFeatures* r)
 
 	bool result=true;
 
-	CListElement* lfc = NULL;
-	CListElement* rfc = NULL;
-	lf=((CCombinedFeatures*) l)->get_first_feature_obj(lfc);
-	rf=((CCombinedFeatures*) r)->get_first_feature_obj(rfc);
 	CListElement* current = NULL;
 	k=get_first_kernel(current);
+	
+	index_t f_idx=0;
 
 	while ( result && k )
 	{
 		// skip over features - the custom kernel does not need any
 		if (k->get_kernel_type() != K_CUSTOM)
 		{
+			lf=((CCombinedFeatures*) l)->get_feature_obj(f_idx);
+			rf=((CCombinedFeatures*) r)->get_feature_obj(f_idx);
+			f_idx++;
 			if (!lf || !rf)
 			{
 				SG_UNREF(lf);
@@ -67,11 +68,6 @@ bool CProductKernel::init(CFeatures* l, CFeatures* r)
 
 			SG_DEBUG("Initializing 0x%p - \"%s\"\n", this, k->get_name())
 			result=k->init(lf,rf);
-			SG_UNREF(lf);
-			SG_UNREF(rf);
-
-			lf=((CCombinedFeatures*) l)->get_next_feature_obj(lfc) ;
-			rf=((CCombinedFeatures*) r)->get_next_feature_obj(rfc) ;
 		}
 		else
 		{
@@ -85,6 +81,8 @@ bool CProductKernel::init(CFeatures* l, CFeatures* r)
 		}
 
 		SG_UNREF(k);
+		SG_UNREF(lf);
+		SG_UNREF(rf);
 		k=get_next_kernel(current) ;
 	}
 
@@ -98,10 +96,9 @@ bool CProductKernel::init(CFeatures* l, CFeatures* r)
 		return false;
 	}
 
-	if ((lf!=NULL) || (rf!=NULL) || (k!=NULL))
+	if ( (f_idx!=((CCombinedFeatures*) l)->get_num_feature_obj()) || 
+			(f_idx!=((CCombinedFeatures*) r)->get_num_feature_obj()) )
 	{
-		SG_UNREF(lf);
-		SG_UNREF(rf);
 		SG_UNREF(k);
 		SG_ERROR("ProductKernel: Number of features/kernels does not match - bailing out\n")
 	}
