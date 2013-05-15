@@ -40,11 +40,11 @@ TEST(RescaleFeatures, apply_to_feature_matrix)
 	feats->apply_preprocessor();
 	for (index_t i = 0; i < num_vectors; i++)
 	{
-		SGVector<float64_t> v = feats->get_feature_vector(i);
+		SGVector<float64_t> vec = feats->get_feature_vector(i);
 		float64_t* v_orig = em.get_column_vector(i);
 		for (index_t j = 0; j < num_features; j++) {
 			float64_t e = (v_orig[j]-min[j])/range[j];
-			EXPECT_DOUBLE_EQ(e, v[j]);
+			EXPECT_DOUBLE_EQ(e, vec[j]);
 		}
 	}
 

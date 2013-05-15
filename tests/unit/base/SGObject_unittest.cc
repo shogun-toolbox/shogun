@@ -149,7 +149,7 @@ TEST(SGObject,equals_complex_equal)
 	/* perform inference */
 	gpr->set_return_type(CGaussianProcessRegression::GP_RETURN_MEANS);
 	CRegressionLabels* predictions=gpr->apply_regression(feat_test);
-	predictions->get_labels().display_vector("predictions");
+	//predictions->get_labels().display_vector("predictions");
 
 	/* save and load instance to compare */
 	const char* filename_gpr="gpr_instance.txt";
