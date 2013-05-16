@@ -280,7 +280,7 @@ bool CGUIFeatures::set_convert_features(CFeatures* features, char* target)
 	if (features_prev->get_feature_class()==C_COMBINED)
 	{
 		CCombinedFeatures* combined=(CCombinedFeatures*) features_prev;
-		combined->delete_feature_obj();
+		combined->delete_feature_obj(combined->get_num_feature_obj()-1);
 		combined->append_feature_obj(features);
 		combined->list_feature_objs();
 	}
@@ -695,7 +695,7 @@ bool CGUIFeatures::del_last_feature_obj(char* target)
 	else
 		SG_ERROR("Unknown target %s, neither TRAIN nor TEST.\n", target)
 
-	if (!cf->delete_feature_obj())
+	if (!cf->delete_feature_obj(cf->get_num_feature_obj()-1))
 		SG_ERROR("No features available to delete.\n")
 
 	return false;
