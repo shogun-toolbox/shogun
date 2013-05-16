@@ -13,6 +13,7 @@
 
 #include <math.h>
 #include <ctime>
+#include <cfloat>
 #include <deque>
 #include <set>
 
@@ -21,14 +22,11 @@ namespace tapkee
 namespace tapkee_internal
 {
 
-const ScalarType max_number_of_iterations_without_improvement = 50;
+const ScalarType max_number_of_iterations_without_improvement = 20;
 const ScalarType multiplier_treshold = 0.01;
 const ScalarType weight_for_adjusted_point = 10.0;
 const ScalarType learning_rate_grow_factor = 1.1;
 const ScalarType learning_rate_shrink_factor = 0.9;
-
-using std::deque;
-using std::set;
 
 /** @brief Data needed to compute error function
  */ 
@@ -57,7 +55,7 @@ struct DataForErrorFunc
 	/** a set of indices of points, that have been 
 	 * already adjusted
 	 */
-	const set<IndexType>& adjusted_points;
+	const std::set<IndexType>& adjusted_points;
 	/** initial average distance between neighbors */
 	const ScalarType average_distance;
 };
@@ -131,8 +129,8 @@ SparseMatrixNeighborsPair angles_matrix_and_neighbors(const Neighbors& neighbors
 
 			SparseTriplet triplet(i, most_collinear_current_neighbors[j], min_cos_value);
 			sparse_triplets.push_back(triplet);
-			most_collinear_neighbors_of_neighbors.push_back(most_collinear_current_neighbors);
 		}
+		most_collinear_neighbors_of_neighbors.push_back(most_collinear_current_neighbors);
 	}
 	return SparseMatrixNeighborsPair
 		(sparse_matrix_from_triplets(sparse_triplets, n_vectors, n_vectors), 
@@ -204,13 +202,16 @@ ScalarType compute_error_for_point(const IndexType index, const DenseMatrix& dat
  * data, needed for error function calculation - such
  * as initial distances between neighbors, initial
  * angles, etc.
+ * @param point_error - will be set to the error function
+ * value, calculated for the point
  * @return a number of steps it took to  adjust the
  * point
  */
 IndexType adjust_point_at_index(const IndexType index, DenseMatrix& data, 
 								const IndexType target_dimension, 
 								const ScalarType learning_rate,
-								const DataForErrorFunc& error_func_data)
+								const DataForErrorFunc& error_func_data,
+								ScalarType& point_error)
 {
 	IndexType n_steps = 0;
 	ScalarType old_error, new_error;
@@ -244,6 +245,7 @@ IndexType adjust_point_at_index(const IndexType index, DenseMatrix& data,
 		}
 		++n_steps;
 	}
+	point_error = compute_error_for_point(index, data, error_func_data);
 	return n_steps;
 }
 
@@ -267,6 +269,7 @@ void manifold_sculpting_embed(DenseMatrix& data, const IndexType target_dimensio
 	ScalarType no_improvement_counter = 0, normal_counter = 0;
 	ScalarType current_multiplier = squishingRate;
 	ScalarType learning_rate = initial_average_distance;
+	ScalarType best_error = DBL_MAX, current_error, point_error;
 	std::srand(static_cast<unsigned int>(std::time(NULL)));
 	/* Step 3: Do until no improvement is made for some period
 	 * (or until max_iteration number is reached):
@@ -290,10 +293,11 @@ void manifold_sculpting_embed(DenseMatrix& data, const IndexType target_dimensio
 	 	 */
 	 	/* Start adjusting from a random point */
 	 	IndexType start_point_index = std::rand() % data.cols();
-	 	deque<IndexType> points_to_adjust;
+	 	std::deque<IndexType> points_to_adjust;
 	 	points_to_adjust.push_back(start_point_index);
 	 	ScalarType steps_made = 0;
-	 	set<IndexType> adjusted_points;
+	 	current_error = 0;
+	 	std::set<IndexType> adjusted_points;
 
 	 	while (!points_to_adjust.empty())
 	 	{
@@ -310,7 +314,8 @@ void manifold_sculpting_embed(DenseMatrix& data, const IndexType target_dimensio
 			 		initial_average_distance
 			 	};
 	 			adjust_point_at_index(current_point_index, data, target_dimension,
-	 								learning_rate, error_func_data);
+	 								learning_rate, error_func_data, point_error);
+	 			current_error += point_error;
 	 			/* Insert all neighbors into deque */
 	 			std::copy(neighbors[current_point_index].begin(), 
 	 					neighbors[current_point_index].end(),
@@ -323,8 +328,14 @@ void manifold_sculpting_embed(DenseMatrix& data, const IndexType target_dimensio
 	 		learning_rate *= learning_rate_grow_factor;
 	 	else
 	 		learning_rate *= learning_rate_shrink_factor;
+	 	if (current_error < best_error)
+	 	{
+	 		best_error = current_error;
+	 		no_improvement_counter = 0;
+	 	}
 	}
 	data.conservativeResize(target_dimension, Eigen::NoChange);
+	data.transposeInPlace();
 }
 
 }
