@@ -33,6 +33,7 @@ std::string get_method_name(DimensionReductionMethod m)
 		case RandomProjection: return "Random Projection";
 		case FactorAnalysis: return "Factor Analysis";
 		case tDistributedStochasticNeighborEmbedding: return "t-distributed Stochastic Neighbor Embedding";
+		case ManifoldSculpting: return "Manifold Sculpting";
 	}
 	return "hello";
 }

@@ -15,4 +15,5 @@
 #include <shogun/converter/StochasticProximityEmbedding.h>
 #include <shogun/converter/FactorAnalysis.h>
 #include <shogun/converter/TDistributedStochasticNeighborEmbedding.h>
+#include <shogun/converter/ManifoldSculpting.h>
 %}

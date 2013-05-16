@@ -126,6 +126,7 @@ namespace tapkee
 			 * - @ref tapkee::LandmarkIsomap
 			 * - @ref tapkee::StochasticProximityEmbedding (with local strategy, i.e. 
 			 *        when @ref tapkee::keywords::spe_global_strategy is set to false)
+			 * - @ref tapkee::ManifoldSculpting
 			 *
 			 * Default value is @ref tapkee::CoverTree if available, @ref tapkee::Brute otherwise.
 			 *
@@ -150,6 +151,7 @@ namespace tapkee
 			 * - @ref tapkee::LandmarkIsomap
 			 * - @ref tapkee::StochasticProximityEmbedding (with local strategy, i.e. 
 			 *        when @ref tapkee::keywords::spe_global_strategy is set to false)
+			 * - @ref tapkee::ManifoldSculpting
 			 *
 			 * Default value is 5.
 			 *
@@ -207,6 +209,7 @@ namespace tapkee
 			 * Used by the following iterative methods:
 			 * - @ref tapkee::StochasticProximityEmbedding
 			 * - @ref tapkee::FactorAnalysis
+			 * - @ref tapkee::ManifoldSculpting
 			 * 
 			 * Default value is 100.
 			 *
@@ -320,6 +323,7 @@ namespace tapkee
 			 * - @ref tapkee::LandmarkIsomap
 			 * - @ref tapkee::StochasticProximityEmbedding (with local strategy, i.e. 
 			 *        when @ref tapkee::keywords::spe_global_strategy is set to false)
+			 * - @ref tapkee::ManifoldSculpting
 			 *
 			 * Default is true. 
 			 *
@@ -395,6 +399,17 @@ namespace tapkee
 			 * The corresponding value should have type @ref tapkee::ScalarType.
 			 */
 			const ParameterKeyword<ScalarType> sne_theta("SNE theta", 0.5);
+
+			/** The keyword for the value that stores the squishingRate 
+			 * parameter of the Manifold Sculpting algorithm.
+			 *
+			 * Used by @ref tapkee::ManifoldSculpting.
+			 *
+			 * Default value is 0.99.
+			 * 
+			 * The corresponding value should have type @ref tapkee::ScalarType.
+			 */
+			const ParameterKeyword<ScalarType> squishing_rate("squishing rate", 0.99);
 
 			/** The default value - assigning any keyword to this
 			 * static struct produces a parameter with its default value.
