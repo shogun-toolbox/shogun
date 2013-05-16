@@ -27,6 +27,8 @@ namespace tapkee
 	typedef Eigen::DiagonalMatrix<tapkee::ScalarType,Eigen::Dynamic> DenseDiagonalMatrix;
 	//! sparse weight matrix type (non-overridable)
 	typedef Eigen::SparseMatrix<tapkee::ScalarType> SparseWeightMatrix;
+	//! sparse matrix type (non-overridable)
+	typedef Eigen::SparseMatrix<tapkee::ScalarType> SparseMatrix;	
 	//! selfadjoint solver (non-overridable)
 	typedef Eigen::SelfAdjointEigenSolver<tapkee::DenseMatrix> DenseSelfAdjointEigenSolver;
 	//! dense solver (non-overridable)
