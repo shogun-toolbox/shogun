@@ -12,6 +12,7 @@
 #include <shogun/lib/tapkee/utils/time.hpp>
 #include <shogun/lib/tapkee/utils/logging.hpp>
 #include <shogun/lib/tapkee/utils/conditional_select.hpp>
+#include <shogun/lib/tapkee/utils/features.hpp>
 #include <shogun/lib/tapkee/parameters/defaults.hpp>
 #include <shogun/lib/tapkee/parameters/context.hpp>
 #include <shogun/lib/tapkee/routines/locally_linear.hpp>
@@ -25,6 +26,7 @@
 #include <shogun/lib/tapkee/routines/random_projection.hpp>
 #include <shogun/lib/tapkee/routines/spe.hpp>
 #include <shogun/lib/tapkee/routines/fa.hpp>
+#include <shogun/lib/tapkee/routines/manifold_sculpting.hpp>
 #include <shogun/lib/tapkee/neighbors/neighbors.hpp>
 #include <shogun/lib/tapkee/external/barnes_hut_sne/tsne.hpp>
 /* End of Tapkee includes */
@@ -51,7 +53,7 @@ public:
 		eigen_method(), neighbors_method(), eigenshift(), traceshift(),
 		check_connectivity(), n_neighbors(), width(), timesteps(),
 		ratio(), max_iteration(), tolerance(), n_updates(), perplexity(), 
-		theta(), global_strategy(), epsilon(), target_dimension(),
+		theta(), squishing_rate(), global_strategy(), epsilon(), target_dimension(),
 		n_vectors(0), current_dimension(0)
 	{
 		n_vectors = (end-begin);
@@ -78,6 +80,7 @@ public:
 		tolerance = parameters(keywords::spe_tolerance).checked().positive();
 		n_updates = parameters(keywords::spe_num_updates).checked().positive();
 		theta = parameters(keywords::sne_theta).checked().nonNegative();
+		squishing_rate = parameters(keywords::squishing_rate);
 		global_strategy = parameters(keywords::spe_global_strategy);
 		epsilon = parameters(keywords::fa_epsilon).checked().nonNegative();
 		perplexity = parameters(keywords::sne_perplexity).checked().nonNegative();
@@ -137,6 +140,7 @@ public:
 			tapkee_method_handle(PassThru);
 			tapkee_method_handle(FactorAnalysis);
 			tapkee_method_handle(tDistributedStochasticNeighborEmbedding);
+			tapkee_method_handle(ManifoldSculpting);
 		}
 #undef tapkee_method_handle
 		return TapkeeOutput();
@@ -172,6 +176,7 @@ private:
 	Parameter n_updates;
 	Parameter perplexity;
 	Parameter theta;
+	Parameter squishing_rate;	
 	Parameter global_strategy;
 	Parameter epsilon;
 	Parameter target_dimension;
@@ -461,13 +466,8 @@ private:
 
 	TapkeeOutput embedPassThru()
 	{
-		DenseMatrix feature_matrix(static_cast<IndexType>(current_dimension),n_vectors);
-		DenseVector feature_vector(static_cast<IndexType>(current_dimension));
-		for (RandomAccessIterator iter=begin; iter!=end; ++iter)
-		{
-			features.vector(*iter,feature_vector);
-			feature_matrix.col(iter-begin).array() = feature_vector;
-		}
+		DenseMatrix feature_matrix =
+			dense_matrix_from_features(features, begin, end);
 		return TapkeeOutput(feature_matrix.transpose(),tapkee::ProjectingFunction());
 	}
 
@@ -484,19 +484,30 @@ private:
 			.inClosedRange(static_cast<ScalarType>(0.0),
 			               static_cast<ScalarType>((n_vectors-1)/3.0));
 
-		DenseMatrix data(static_cast<IndexType>(current_dimension),n_vectors);
-		DenseVector feature_vector(static_cast<IndexType>(current_dimension));
-		for (RandomAccessIterator iter=begin; iter!=end; ++iter)
-		{
-			features.vector(*iter,feature_vector);
-			data.col(iter-begin).array() = feature_vector;
-		}
+		DenseMatrix data = 
+			dense_matrix_from_features(features, begin, end);
 
 		DenseMatrix embedding(static_cast<IndexType>(target_dimension),n_vectors);
 		tsne::TSNE tsne;
 		tsne.run(data.data(),n_vectors,current_dimension,embedding.data(),target_dimension,perplexity,theta);
 
 		return TapkeeOutput(embedding.transpose(), unimplementedProjectingFunction());
+	}
+
+	TapkeeOutput embedManifoldSculpting()
+	{
+		squishing_rate.checked()
+		.inRange(static_cast<ScalarType>(0.0), static_cast<ScalarType>(1.0));
+
+		DenseMatrix embedding =
+			dense_matrix_from_features(features, begin, end);
+
+		Neighbors neighbors = find_neighbors(neighbors_method,begin,end,plain_distance,
+		                                     n_neighbors,check_connectivity);
+
+		manifold_sculpting_embed(embedding, target_dimension, neighbors, distance, max_iteration, squishing_rate);
+
+		return TapkeeOutput(embedding, tapkee::ProjectingFunction());	
 	}
 
 };
