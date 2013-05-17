@@ -110,7 +110,7 @@ CRegressionLabels* CGaussianProcessRegression::apply_regression(CFeatures* data)
 
 	if (data)
 	{
-		if(data->get_feature_class() == C_COMBINED)
+		if (data->get_feature_class() == C_COMBINED)
 		{
 			SG_WARNING("%s::apply_regression(): This only works for combined"
 						" features which all share the same underlying object!\n",
