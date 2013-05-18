@@ -94,7 +94,6 @@ def get_fail_string(a):
 		failed_string.append(pickle.dumps(a))
 	else:
 		failed_string.append(str(a))
-	print failed_string
 	return failed_string
 
 def get_split_string(a):
@@ -174,6 +173,9 @@ if __name__=='__main__':
 		print "The following tests failed!"
 		for f in failed:
 			print "\t", f[0]
+
+		for f in failed:
+			print "\t", f[0]
 			got=get_split_string(f[1])
 			expected=get_split_string(f[2])
 			print "=== EXPECTED =========="
@@ -186,8 +188,6 @@ if __name__=='__main__':
 			print '\n'.join(difflib.unified_diff(expected, got, fromfile='expected', tofile='got'))
 			print "====EOT================"
 			print "\n\n\n"
-		for f in failed:
-			print "\t", f[0]
 
 		sys.exit(1)
 	sys.exit(0)
