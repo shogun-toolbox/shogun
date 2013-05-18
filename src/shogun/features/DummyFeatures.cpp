@@ -29,11 +29,6 @@ int32_t CDummyFeatures::get_num_vectors() const
 	return num_vectors;
 }
 
-int32_t CDummyFeatures::get_size() const 
-{
-	return 1;
-}
-
 CFeatures* CDummyFeatures::duplicate() const
 {
 	return new CDummyFeatures(*this);

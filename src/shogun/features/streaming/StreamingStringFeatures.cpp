@@ -94,12 +94,6 @@ int32_t CStreamingStringFeatures<T>::get_num_vectors() const
 }
 
 template <class T>
-int32_t CStreamingStringFeatures<T>::get_size() const
-{
-	return sizeof(T);
-}
-
-template <class T>
 int32_t CStreamingStringFeatures<T>::get_num_features()
 {
 	return current_length;

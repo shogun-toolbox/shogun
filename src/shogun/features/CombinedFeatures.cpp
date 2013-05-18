@@ -46,20 +46,6 @@ CCombinedFeatures::~CCombinedFeatures()
 	SG_UNREF(feature_array);
 }
 
-//TODO remove from hierarchy in future patch
-int32_t CCombinedFeatures::get_size() const
-{
-	if (feature_array->get_num_elements()==0)
-		return 0;
-	CFeatures* f = (CFeatures*) feature_array->get_element(0);
-	if (!f) 
-		return 0;
-	int32_t size = f->get_size();
-	SG_UNREF(f);
-	return size;
-}
-
-
 CFeatures* CCombinedFeatures::get_feature_obj(int32_t idx)
 {
 	return (CFeatures*) feature_array->get_element(idx);

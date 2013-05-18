@@ -187,11 +187,6 @@ int32_t CLBPPyrDotFeatures::get_num_vectors() const
 
 }
 
-int32_t CLBPPyrDotFeatures::get_size() const
-{
-	return sizeof(float64_t);
-}
-
 void* CLBPPyrDotFeatures::get_feature_iterator(int32_t vector_index)
 {
 	SG_NOTIMPLEMENTED

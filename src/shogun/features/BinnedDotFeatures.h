@@ -218,12 +218,6 @@ class CBinnedDotFeatures : public CDotFeatures
 		 */
 		virtual int32_t get_num_vectors() const;
 
-		/** get size of underlying data type in bytes
-		 *
-		 * @return size in bytes
-		 */
-		virtual int32_t get_size() const;
-
 	private:
 		void init();
 

@@ -129,11 +129,6 @@ int32_t CStreamingVwFeatures::get_num_vectors() const
 		return 0;
 }
 
-int32_t CStreamingVwFeatures::get_size() const
-{
-	return sizeof(VwExample);
-}
-
 EFeatureType CStreamingVwFeatures::get_feature_type() const
 {
 	return F_DREAL;

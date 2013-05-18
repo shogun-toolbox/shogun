@@ -189,8 +189,3 @@ int32_t CExplicitSpecFeatures::get_num_vectors() const
 {
 	return num_strings;
 }
-
-int32_t CExplicitSpecFeatures::get_size() const
-{
-	return sizeof(float64_t);
-}

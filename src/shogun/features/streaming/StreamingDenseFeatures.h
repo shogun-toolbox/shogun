@@ -266,13 +266,6 @@ public:
 	 */
 	virtual int32_t get_num_vectors() const;
 
-	/**
-	 * Return the size of one T object.
-	 *
-	 * @return Size of T.
-	 */
-	virtual int32_t get_size() const;
-
 	/** Returns a CDebseFeatures instance which contains num_elements elements
 	 * from the underlying stream
 	 *

@@ -414,8 +414,6 @@ template<class ST> bool CDenseFeatures<ST>::apply_preprocessor(bool force_prepro
 	}
 }
 
-template<class ST> int32_t CDenseFeatures<ST>::get_size() const  { return sizeof(ST); }
-
 template<class ST> int32_t CDenseFeatures<ST>::get_num_vectors() const
 {
 	return m_subset_stack->has_subsets() ? m_subset_stack->get_size() : num_vectors;

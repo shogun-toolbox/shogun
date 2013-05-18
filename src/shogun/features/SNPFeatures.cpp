@@ -97,11 +97,6 @@ int32_t CSNPFeatures::get_num_vectors() const
 	return num_strings;
 }
 
-int32_t CSNPFeatures::get_size() const
-{
-	return sizeof(float64_t);
-}
-
 float64_t CSNPFeatures::get_normalization_const()
 {
 	return normalization_const;
