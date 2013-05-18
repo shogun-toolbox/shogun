@@ -1498,7 +1498,7 @@ Miscellaneous options:
   --gtest=PATH                   the path to the Google C++ test framework source [default: /usr/src/gtest]
   --ruby=ruby                    use this ruby executable [ruby]
   --swig=swig                    use this swig executable [swig]
-  --mexp=EXP                     Mersenne exponent 607, 1279, 2281, 4253, 11213, 19937, 44497, 86243, 132049, 216091 [19937]
+  --mexp=EXP                     PRNG Mersenne exponent 607, 1279, 2281, 4253, 11213, 19937, 44497, 86243, 132049, 216091 [19937]
   --cc=COMPILER                  use this C compiler to build shogun [autodetected]
   --cxx=COMPILER                 use this C++ compiler to build shogun [autodetected]
   --cflags=OPTIONS               use these C compiler options
@@ -5081,7 +5081,7 @@ cat > $TMPC << EOF
 int main(void) { return 0; }
 EOF
 
-	echocheck "Mersenne exponent"
+	echocheck "PRNG Mersenne exponent"
 	if cc_check $_cflags -I. -DSFMT_MEXP=$MEXP >/dev/null 2>&1
 	then
 		echores $MEXP
