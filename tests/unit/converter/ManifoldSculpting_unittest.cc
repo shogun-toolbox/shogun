@@ -8,7 +8,7 @@ using namespace shogun;
 #ifdef HAVE_EIGEN3
 
 /* Basic test for manifold sculpting, that just checks that it works anyhow */
-TEST(ManifoldSculptingTest,basic)
+TEST(ManifoldSculptingTest,DISABLED_basic)
 {
 	const index_t n_samples = 15;
 	const index_t n_dimensions = 3;

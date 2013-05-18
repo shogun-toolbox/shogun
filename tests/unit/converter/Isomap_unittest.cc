@@ -14,7 +14,7 @@ using namespace shogun;
 
 #ifdef HAVE_EIGEN3
 
-TEST(IsomapTest,distance_preserving_max_k)
+TEST(IsomapTest,DISABLED_distance_preserving_max_k)
 {
 	const index_t n_samples = 5;
 	const index_t n_gaussians = 5;
