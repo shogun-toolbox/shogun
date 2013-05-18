@@ -1,0 +1,35 @@
+
+/** Author: Monica DRAGAN, for GSoc 2013 **/
+
+The program builds a id3 tree for discrete input values.
+
+The datastructures used to store the dataset are:
+CMulticlassLabels - for iterating through samples and for the classes
+CDenseFeatures - a matrix for all the samples
+
+
+The lables of sample data are codified in positive integers.
+For a human readable display of the ID3 tree, the name of the lables are give by hand by the user (for the moment). 
+
+The Data in classifier_id3_meteo.dat file represents a codification of the followinf dataset:
+
+OVERCAST	TEMPERATURE	HUMIDITY	WIND	CLASS
+sunny		worm       	high       false      N
+sunny      	worm       	high       true       N
+cloudy     	worm      	high       false      P
+rain    	fine     	high       false      P
+rain   	 	cold     	normal     false      P
+rain    	cold     	normal     true       N
+cloudy      cold     	normal     true       P
+sunny     	fine     	high       false      N
+sunny    	cold     	normal     false      P
+rain    	fine      	normal     false      P
+sunny     	fine      	normal     true       P
+cloudy      fine     	high       true       P
+cloudy      worm        normal     false      P
+rain    	fine     	high       true       N
+
+** Compile & Run **
+$ g++ -O0 -g -I/usr/include -I/usr/include/atlas -I/usr/include/eigen3 -lshogun -L/usr/local/lib  classifier_multiclass_id3.cpp  -o classifier
+$ ./classifier
+
