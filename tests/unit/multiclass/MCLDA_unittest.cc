@@ -3,6 +3,7 @@
 #include <shogun/features/DataGenerator.h>
 #include <shogun/multiclass/MCLDA.h>
 #include <gtest/gtest.h>
+#ifdef HAVE_EIGEN3
 
 #define	NUM  50
 #define DIMS 2
@@ -37,3 +38,4 @@ TEST(MCLDA, train_and_apply)
 	SG_UNREF(output);
 	SG_UNREF(lda);
 }
+#endif //HAVE_EIGEN3
