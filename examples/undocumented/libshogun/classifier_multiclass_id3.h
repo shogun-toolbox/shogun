@@ -70,7 +70,9 @@ public:
 		m_feats = feats;
 	
 	}		
-	
+	/** set names
+	 * @param names of the attributes, names of the labels for each attribute
+	 */	
 	void set_names(std::vector<string> v1,	std::vector< std::vector<string> > v2)
 	{
 		int i;

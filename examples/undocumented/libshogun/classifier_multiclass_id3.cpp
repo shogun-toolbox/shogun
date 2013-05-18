@@ -5,11 +5,6 @@
 #include <stdlib.h>
 #include <string>
 
-#include <shogun/labels/BinaryLabels.h>
-#include <shogun/multiclass/tree/RelaxedTreeUtil.h>
-#include <shogun/multiclass/tree/RelaxedTree.h>
-#include <shogun/kernel/GaussianKernel.h>
-
 
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/io/streaming/StreamingAsciiFile.h>
@@ -154,8 +149,8 @@ id3_node CID3Classifier::train(CFeatures* data, CMulticlassLabels *class_labels,
 		}
 	}
 	
-	if(attributes == NULL){
-	
+	if(attributes == NULL)
+	{
 		attributes = new SGVector<int32_t>(feats->get_num_features());					
 		for(i=0;i<attributes->size();i++)
 			attributes->set_element(i,i);	
@@ -163,26 +158,27 @@ id3_node CID3Classifier::train(CFeatures* data, CMulticlassLabels *class_labels,
 	}
 	
 	//if all samples belong to the same class
-	if(class_labels->get_unique_labels().size() == 1){
-
+	if(class_labels->get_unique_labels().size() == 1)
+	{
 		node.attribute=class_labels->get_unique_labels().get_element(0);
 		return node;
 	}
 	
 	//if training set is vide
-	else if(class_labels->get_unique_labels().size() == 0){
-
+	else if(class_labels->get_unique_labels().size() == 0)
+	{
 		return node;	
 	}
 	
 	//if there is no attribute left
-	else if(feats->get_num_features() == 0){
-
+	else if(feats->get_num_features() == 0)
+	{
 		return node;		
 	}
 	
 	//else get the attribute with the highest informational gain
-	for(i=0; i<feats->get_num_features(); i++){
+	for(i=0; i<feats->get_num_features(); i++)
+	{
 		float64_t gain = informational_gain_attribute(i,feats,class_labels);	
 
 		if(gain > max){
@@ -202,7 +198,8 @@ id3_node CID3Classifier::train(CFeatures* data, CMulticlassLabels *class_labels,
 		//comupte the number attributes with the curret attribute values
 		//to allocate matrix
 		int32_t no_lines = 0;
-		for(j=0; j<feats->get_num_vectors(); j++){
+		for(j=0; j<feats->get_num_vectors(); j++)
+		{
 			if(attribute_labels->get_unique_labels().get_element(i) == feats->get_feature_vector(j).get_element(best_attribute))
 			{
 				no_lines++;
@@ -215,7 +212,8 @@ id3_node CID3Classifier::train(CFeatures* data, CMulticlassLabels *class_labels,
 		int32_t cnt = -1;
 		
 		//choose the samples that have the specific value for the attribute best_attribute
-		for(j=0; j<feats->get_num_vectors(); j++){
+		for(j=0; j<feats->get_num_vectors(); j++)
+		{
 			SGVector< float64_t > sample = feats->get_feature_vector(j);
 			if(attribute_labels->get_unique_labels().get_element(i) == sample.get_element(best_attribute))
 			{
@@ -306,7 +304,8 @@ void CID3Classifier::print_id3_tree(id3_node* root, int tab)
 	if(tab == 0)
 		SG_SPRINT("\n-----------------ID3 tree print-----------------\n");
 	
-	if(node != NULL){
+	if(node != NULL)
+	{
 		for(i=0;i<tab;i++)
 			SG_SPRINT("\t\t");
 			
@@ -438,8 +437,6 @@ int main(){
 	input2.set_element(0,3);			
 
 	SG_SPRINT("Classification answer: %d\n",machine->evaluate(input2, root));	
-	
-
 
 	return 0;
 
