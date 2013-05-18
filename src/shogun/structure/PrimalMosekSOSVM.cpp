@@ -21,6 +21,7 @@ CPrimalMosekSOSVM::CPrimalMosekSOSVM()
 : CLinearStructuredOutputMachine(),
 	po_value(0.0)
 {
+	init();
 }
 
 CPrimalMosekSOSVM::CPrimalMosekSOSVM(
@@ -30,6 +31,7 @@ CPrimalMosekSOSVM::CPrimalMosekSOSVM(
 : CLinearStructuredOutputMachine(model, loss, labs),
 	po_value(0.0)
 {
+	init();
 }
 
 void CPrimalMosekSOSVM::init()

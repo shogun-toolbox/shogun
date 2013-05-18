@@ -18,6 +18,7 @@ using namespace shogun;
 CDualLibQPBMSOSVM::CDualLibQPBMSOSVM()
 :CLinearStructuredOutputMachine()
 {
+	init();
 }
 
 CDualLibQPBMSOSVM::CDualLibQPBMSOSVM(
