@@ -134,7 +134,8 @@ class CCombinedKernel : public CKernel
 			return get_kernel(get_num_kernels()-1);
 		}
 
-		/** insert kernel
+		/** insert kernel at position idx
+		 *	 idx must be < num_kernels
 		 *
 		 * @param k kernel
 		 * @param idx the index of the position where the kernel should be added
@@ -152,14 +153,21 @@ class CCombinedKernel : public CKernel
 		}
 
 		/** append kernel to the end of the array
-		 *  convient method for insert_kernel(k, get_num_kernels())
 		 *
 		 * @param k kernel
 		 * @return if appending was successful
 		 */
 		inline bool append_kernel(CKernel* k)
 		{
-			return insert_kernel(k, get_num_kernels());
+			ASSERT(k)
+			adjust_num_lhs_rhs_initialized(k);
+
+			if (!(k->has_property(KP_LINADD)))
+				unset_property(KP_LINADD);
+
+			int n = get_num_kernels();
+			kernel_array->push_back(k);
+			return n+1==get_num_kernels();
 		}
 
 

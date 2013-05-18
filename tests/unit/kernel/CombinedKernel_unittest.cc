@@ -5,6 +5,38 @@
 
 using namespace shogun;
 
+TEST(CombinedKernelTest,test_array_operations)
+{
+	CCombinedKernel* combined = new CCombinedKernel();
+	CGaussianKernel* gaus_1 = new CGaussianKernel();
+	combined->append_kernel(gaus_1);
+	
+	CGaussianKernel* gaus_2 = new CGaussianKernel();
+	combined->append_kernel(gaus_2);
+	
+	CGaussianKernel* gaus_3 = new CGaussianKernel();
+	combined->insert_kernel(gaus_3,1);
+
+	CGaussianKernel* gaus_4 = new CGaussianKernel();
+	combined->insert_kernel(gaus_4,0);
+
+	EXPECT_EQ(combined->get_num_kernels(),4);
+
+	combined->delete_kernel(2);
+
+	CKernel* k_1 = combined->get_kernel(0);
+	EXPECT_EQ(k_1, gaus_4);
+	CKernel* k_2 = combined->get_kernel(1);
+	EXPECT_EQ(k_2, gaus_1);
+	CKernel* k_3 = combined->get_kernel(2);
+	EXPECT_EQ(k_3, gaus_2);
+
+	SG_UNREF(k_1);
+	SG_UNREF(k_2);
+	SG_UNREF(k_3);
+	SG_UNREF(combined);
+}
+
 TEST(CombinedKernelTest,weights)
 {
 	CCombinedKernel* combined = new CCombinedKernel();
