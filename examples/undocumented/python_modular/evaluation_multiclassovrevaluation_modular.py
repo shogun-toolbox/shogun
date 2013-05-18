@@ -3,13 +3,13 @@ from tools.load import LoadMatrix
 from numpy import random
 lm=LoadMatrix()
 
-random.seed(17)
-from tools.multiclass_shared import prepare_data
-[traindat, label_traindat, testdat, label_testdat] = prepare_data(False)
+traindat = lm.load_numbers('../data/fm_train_real.dat')
+testdat  = lm.load_numbers('../data/fm_test_real.dat')
+label_traindat = lm.load_labels('../data/label_train_multiclass.dat')
 
-parameter_list = [[traindat, label_traindat, testdat, label_testdat]]
+parameter_list = [[traindat, label_traindat]]
 
-def evaluation_multiclassovrevaluation_modular (traindat, label_traindat, testdat, label_testdat):
+def evaluation_multiclassovrevaluation_modular (traindat, label_traindat):
 	from shogun.Features import MulticlassLabels
 	from shogun.Evaluation import MulticlassOVREvaluation,ROCEvaluation
 	from modshogun import MulticlassLibLinear,RealFeatures,ContingencyTableEvaluation,ACCURACY
@@ -19,6 +19,7 @@ def evaluation_multiclassovrevaluation_modular (traindat, label_traindat, testda
 
 	ground_truth_labels = MulticlassLabels(label_traindat)
 	svm = MulticlassLibLinear(1.0,RealFeatures(traindat),MulticlassLabels(label_traindat))
+	svm.parallel.set_num_threads(1)
 	svm.train()
 	predicted_labels = svm.apply()
 	
