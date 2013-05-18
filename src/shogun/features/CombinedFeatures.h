@@ -187,7 +187,7 @@ class CCombinedFeatures : public CFeatures
 		void init();
 
 	protected:
-		/* feature array */
+		/** feature array */
 		CDynamicObjectArray* feature_array;
 
 		/** number of vectors

@@ -130,6 +130,7 @@ template <class T1, class T2> struct thread_qsort
 
 namespace shogun
 {
+	/** random number generator */
 	extern CRandom* sg_rand;
 	class CSGObject;
 /** @brief Class which collects generic mathematical functions

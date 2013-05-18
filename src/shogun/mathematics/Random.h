@@ -12,6 +12,7 @@
 #define __RANDOM_H__
 
 #include <shogun/base/SGObject.h>
+#include <shogun/lib/config.h>
 #include <limits>
 
 #include <shogun/lib/external/SFMT/SFMT.h>
@@ -22,7 +23,12 @@
 
 namespace shogun
 {
-	/** @breif: PRNG */
+	/** @brief: Pseudo random number geneartor
+	 *
+	 * It is based on SIMD oriented Fast Mersenne Twister(SFMT) pseudorandom
+	 * number generator.
+	 *
+	 * */
 	class CRandom : public CSGObject
 	{
 		public:

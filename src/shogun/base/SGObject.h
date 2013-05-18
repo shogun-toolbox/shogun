@@ -426,8 +426,8 @@ public:
 	 * May be overwritten but please do with care! Should not be necessary in
 	 * most cases.
 	 *
-	 * @other object to compare with
-	 * @accuracy accuracy to use for comparison (optional)
+	 * @param other object to compare with
+	 * @param accuracy accuracy to use for comparison (optional)
 	 * @return true if all parameters were equal, false if not
 	 */
 	virtual bool equals(CSGObject* other, float64_t accuracy=0.0);
