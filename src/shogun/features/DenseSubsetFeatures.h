@@ -96,19 +96,6 @@ public:
 		return m_fea->get_num_vectors();
 	}
 
-
-	/** get memory footprint of one feature
-	 *
-	 * abstract base method
-	 *
-	 * @return memory footprint of one feature
-	 */
-	virtual int32_t get_size() const
-	{
-		return m_fea->get_size();
-	}
-
-
 	/** obtain the dimensionality of the feature space
 	 *
 	 * (not mix this up with the dimensionality of the input space, usually

@@ -70,12 +70,6 @@ template< class ST > EFeatureClass CMatrixFeatures< ST >::get_feature_class() co
 	return C_MATRIX;
 }
 
-/* TODO */
-template< class ST > int32_t CMatrixFeatures< ST >::get_size() const
-{
-	return 0;
-}
-
 template< class ST > SGMatrix< ST > CMatrixFeatures< ST >::get_feature_vector(
 		int32_t num) const
 {

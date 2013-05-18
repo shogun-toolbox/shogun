@@ -159,12 +159,6 @@ class CExplicitSpecFeatures : public CDotFeatures
 		 */
 		virtual int32_t get_num_vectors() const;
 
-		/** get size of one element
-		 *
-		 * @return size of one element
-		 */
-		virtual int32_t get_size() const;
-
 		/** @return object name */
 		virtual const char* get_name() const { return "ExplicitSpecFeatures"; }
 

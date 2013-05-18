@@ -87,12 +87,6 @@ class CSparsePolyFeatures : public CDotFeatures
 		 */
 		virtual float64_t dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2);
 
-		/**
-		 *
-		 * @return size
-		 */
-		virtual int32_t get_size() const;
-
 		#ifndef DOXYGEN_SHOULD_SKIP_THIS
 		/** iterator for weighted spectrum features */
 		struct sparse_poly_feature_iterator

@@ -77,12 +77,6 @@ class CCombinedFeatures : public CFeatures
 			return m_subset_stack->has_subsets()
 					? m_subset_stack->get_size() : num_vec;
 		}
-	
-		/** get memory footprint of one feature
-		 *
-		 * @return memory footprint of one feature
-		 */
-		virtual int32_t get_size() const;
 
 		/** list feature objects */
 		void list_feature_objs();

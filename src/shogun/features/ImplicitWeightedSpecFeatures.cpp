@@ -336,8 +336,3 @@ int32_t CImplicitWeightedSpecFeatures::get_num_vectors() const
 {
 	return num_strings;
 }
-
-int32_t CImplicitWeightedSpecFeatures::get_size() const
-{
-	return sizeof(float64_t);
-}

@@ -85,12 +85,6 @@ class CLBPPyrDotFeatures : public CDotFeatures
 		 */
 		virtual float64_t dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2);
 
-		/**
-		 *
-		 * @return size
-		 */
-		virtual int32_t get_size() const;
-
 		/** iterate over the non-zero features
 		 *
 		 * call get_feature_iterator first, followed by get_next_feature and

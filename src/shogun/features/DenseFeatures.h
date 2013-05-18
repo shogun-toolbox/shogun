@@ -287,12 +287,6 @@ public:
 	 */
 	virtual bool apply_preprocessor(bool force_preprocessing = false);
 
-	/** get memory footprint of one feature
-	 *
-	 * @return memory footprint of one feature
-	 */
-	virtual int32_t get_size() const;
-
 	/** get number of feature vectors
 	 *
 	 * @return number of feature vectors

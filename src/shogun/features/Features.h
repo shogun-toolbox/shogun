@@ -175,14 +175,6 @@ class CFeatures : public CSGObject
 		 */
 		virtual bool reshape(int32_t num_features, int32_t num_vectors);
 
-		/** get memory footprint of one feature
-		 *
-		 * abstract base method
-		 *
-		 * @return memory footprint of one feature
-		 */
-		virtual int32_t get_size() const=0;
-
 		/** list feature object */
 		void list_feature_obj() const;
 

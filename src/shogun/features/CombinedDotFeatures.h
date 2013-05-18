@@ -154,15 +154,6 @@ class CCombinedDotFeatures : public CDotFeatures
 			return C_COMBINED_DOT;
 		}
 
-		/** get the size of a single element
-		 *
-		 * @return size of a element
-		 */
-		virtual int32_t get_size() const
-		{
-			return sizeof(float64_t);
-		}
-
 		#ifndef DOXYGEN_SHOULD_SKIP_THIS
 		/** iterator for combined dotfeatures */
 		struct combined_feature_iterator

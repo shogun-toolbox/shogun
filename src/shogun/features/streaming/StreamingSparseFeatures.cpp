@@ -328,12 +328,6 @@ int32_t CStreamingSparseFeatures<T>::get_num_vectors() const
 	return 0;
 }
 
-template <class T>
-int32_t CStreamingSparseFeatures<T>::get_size() const
-{
-	return sizeof(T);
-}
-
 template <class T> void CStreamingSparseFeatures<T>::set_vector_reader()
 {
 	parser.set_read_vector(&CStreamingFile::get_sparse_vector);

@@ -153,11 +153,6 @@ class CHashedWDFeaturesTransposed : public CDotFeatures
 			return num_strings;
 		}
 
-		virtual int32_t get_size() const
-		{
-			return sizeof(float64_t);
-		}
-
 		/** set normalization constant
 		 * @param n n=0 means automagic */
 		void set_normalization_const(float64_t n=0);

@@ -520,11 +520,6 @@ template<class ST> bool CSparseFeatures<ST>::apply_preprocessor(bool force_prepr
 	}
 }
 
-template<class ST> int32_t CSparseFeatures<ST>::get_size() const
-{
-	return sizeof(ST);
-}
-
 template<class ST> bool CSparseFeatures<ST>::obtain_from_simple(CDenseFeatures<ST>* sf)
 {
 	SGMatrix<ST> fm=sf->get_feature_matrix();
