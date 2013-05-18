@@ -1166,8 +1166,6 @@ template<class ST> bool CStringFeatures<ST>::save_compressed(char* dest, E_COMPR
 	return true;
 }
 
-template<class ST> int32_t CStringFeatures<ST>::get_size() const { return sizeof(ST); }
-
 template<class ST> bool CStringFeatures<ST>::apply_preprocessor(bool force_preprocessing)
 {
 	SG_DEBUG("force: %d\n", force_preprocessing)

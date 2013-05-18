@@ -140,12 +140,6 @@ class CSNPFeatures : public CDotFeatures
 		 */
 		virtual int32_t get_num_vectors() const;
 
-		/** get memory footprint of one feature
-		 *
-		 * @return memory footprint of one feature
-		 */
-		virtual int32_t get_size() const;
-
 		/** set normalization constant
 		 * @param n n=0 means automagic */
 		void set_normalization_const(float64_t n=0);

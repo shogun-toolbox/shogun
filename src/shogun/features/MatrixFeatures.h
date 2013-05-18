@@ -88,12 +88,6 @@ template< class ST > class CMatrixFeatures : public CFeatures
 		 */
 		virtual int32_t get_num_vectors() const { return m_num_vectors; }
 
-		/** get memory footprint of one feature
-		 *
-		 * @return memory footprint of one feature
-		 */
-		virtual int32_t get_size() const;
-
 		/** get feature vector num
 		 *
 		 * @param num feature vector index

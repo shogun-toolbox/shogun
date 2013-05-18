@@ -53,11 +53,6 @@ int32_t CLatentFeatures::get_num_vectors() const
 		return m_samples->get_array_size();
 }
 
-int32_t CLatentFeatures::get_size() const
-{
-	return sizeof(float64_t);
-}
-
 bool CLatentFeatures::add_sample(CData* example)
 {
 	ASSERT(m_samples != NULL)

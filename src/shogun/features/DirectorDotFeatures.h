@@ -297,18 +297,6 @@ IGNORE_IN_CLASSLIST class CDirectorDotFeatures : public CDotFeatures
 			return false;
 		}
 
-		/** get memory footprint of one feature
-		 *
-		 * abstract base method
-		 *
-		 * @return memory footprint of one feature
-		 */
-		virtual int32_t get_size() const
-		{
-			SG_NOTIMPLEMENTED
-			return 0;
-		}
-
 		/** load features from file
 		 *
 		 * @param loader File object via which data shall be loaded

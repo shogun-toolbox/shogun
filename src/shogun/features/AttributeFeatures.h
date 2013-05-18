@@ -122,14 +122,6 @@ public:
 	 */
 	virtual int32_t get_num_vectors() const=0;
 
-	/** get memory footprint of one feature
-	 *
-	 * abstract base method
-	 *
-	 * @return memory footprint of one feature
-	 */
-	virtual int32_t get_size() const=0;
-
 protected:
 	/** find the index of the attribute matching attribute name
 	 *
