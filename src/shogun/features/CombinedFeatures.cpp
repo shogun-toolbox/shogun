@@ -147,7 +147,20 @@ bool CCombinedFeatures::insert_feature_obj(CFeatures* obj, int32_t idx)
 
 bool CCombinedFeatures::append_feature_obj(CFeatures* obj)
 {
-	return insert_feature_obj(obj, get_num_feature_obj());
+	ASSERT(obj)
+	int32_t n=obj->get_num_vectors();
+
+	if (get_num_vectors()>0 && n!=get_num_vectors())
+	{
+		SG_ERROR("Number of feature vectors does not match (expected %d, "
+				"obj has %d)\n", get_num_vectors(), n);
+	}
+
+	num_vec=n;
+
+	int num_feature_obj = get_num_feature_obj();
+	feature_array->push_back(obj);
+	return num_feature_obj+1 == feature_array->get_num_elements();
 }
 
 bool CCombinedFeatures::delete_feature_obj(int32_t idx)
