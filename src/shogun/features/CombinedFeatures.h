@@ -114,6 +114,7 @@ class CCombinedFeatures : public CFeatures
 		CFeatures* get_last_feature_obj();
 
 		/** insert feature object at index idx
+		 *  Important, idx must be < num_feature_obj
 		 *
 		 * @param obj feature object to insert
 		 * @param idx the index where to insert the feature object
@@ -122,7 +123,6 @@ class CCombinedFeatures : public CFeatures
 		bool insert_feature_obj(CFeatures* obj, int32_t idx);
 
 		/** append feature object to the end of this CombinedFeatures object array
-		 *  convience method for insert_feature_obj(obj, get_num_feature_obj())
 		 *
 		 * @param obj feature object to append
 		 * @return if appending was successful
