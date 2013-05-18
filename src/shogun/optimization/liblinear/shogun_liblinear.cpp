@@ -518,7 +518,7 @@ void Solver_MCSVM_CS::solve()
 		double stopping = -CMath::INFTY;
 		for(i=0;i<active_size;i++)
 		{
-			int j = i+rand()%(active_size-i);
+			int j = CMath::random(i, active_size-1);
 			CMath::swap(index[i], index[j]);
 		}
 		for(s=0;s<active_size;s++)

@@ -211,7 +211,7 @@ void CLibLinearRegression::solve_l2r_l1l2_svr(const problem *prob)
 
 		for(i=0; i<active_size; i++)
 		{
-			int j = i+rand()%(active_size-i);
+			int j = CMath::random(i, active_size-1);
 			CMath::swap(index[i], index[j]);
 		}
 

@@ -299,17 +299,7 @@ void PMurHash32_test(const void *key, int len, uint32_t seed, void *out)
   const uint8_t *ptr = (uint8_t*)key;
   const uint8_t *end = ptr + len;
 
-#if 0 /* Exercise the progressive processing */
-  while(ptr < end) {
-    //const uint8_t *mid = ptr + rand()%(end-ptr)+1;
-    const uint8_t *mid = ptr + (rand()&0xF);
-    mid = mid<end?mid:end;
-    PMurHash32_Process(&h1, &carry, ptr, mid-ptr);
-    ptr = mid;
-  }
-#else
   PMurHash32_Process(&h1, &carry, ptr, (int)(end-ptr));
-#endif
   h1 = PMurHash32_Result(h1, carry, len);
   *(uint32_t*)out = h1;
 }
