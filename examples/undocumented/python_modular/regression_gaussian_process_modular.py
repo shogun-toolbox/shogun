@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from numpy import * 
+from numpy import random,array,sin,round
 #from pylab import plot, show, legend
 
 parameter_list=[[20,100,6,10,0.05,1, 1], [10,30,7,9,0.5,0.5, 2]]
@@ -61,7 +61,7 @@ def regression_gaussian_process_modular (n=100,n_test=100, \
 	#
 	#show()
 
-	return gp, alpha, labels, diagonal, covariance, mean, cholesky
+	return gp, alpha, labels, diagonal, covariance, round(mean.get_labels(),12), cholesky
 
 if __name__=='__main__':
 	print('Gaussian Process Regression')
