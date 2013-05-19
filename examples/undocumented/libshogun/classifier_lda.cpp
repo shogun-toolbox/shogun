@@ -12,6 +12,8 @@
  */
 
 #include <shogun/base/init.h>
+
+#include <shogun/lib/config.h>
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/multiclass/MCLDA.h>
 #include <shogun/features/DenseFeatures.h>
@@ -27,6 +29,7 @@ using namespace shogun;
 
 void test()
 {
+#ifdef HAVE_EIGEN3
 	SGVector< float64_t > lab(CLASSES*NUM);
 	SGMatrix< float64_t > feat(DIMS, CLASSES*NUM);
 
@@ -54,6 +57,7 @@ void test()
 	// Free memory
 	SG_UNREF(output);
 	SG_UNREF(lda);
+#endif
 }
 
 int main(int argc, char ** argv)
