@@ -11,6 +11,7 @@
 		- Added an "equals" method to all Shogun objects that recursively
 		  compares all registered parameters with those of another instance -- 
 		  up to a specified accuracy.
+		- Multiclass LDA. Thanks to Kevin Hughes.
 	* Bugfixes:
 		- Fix json serialization.
 		- Fixed bugs in FITC inference method that caused wrong posterior results.
@@ -21,7 +22,9 @@
 		- Refactored method to fit a sigmoid to SVM scores, now in CStatistics,
 		  still called from CBinaryLabels.
 		- Use Dynamic arrays to hold preprocessors in features instead of raw pointers.
-		- Use Eigen3 for GPs
+		- Use Dynamic arrays to hold Features in CombinedFeatures.
+		- Use Dynamic arrays to hold Kernels in CombinedKernels/ProductKernels.
+		- Use Eigen3 for GPs, LDA
 
 2013-03-17 Soeren Sonnenburg <sonne@debian.org>
 
