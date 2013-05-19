@@ -11,6 +11,7 @@
  * This code specifically adapted from infLaplace.m
  *
  */
+
 #include <shogun/lib/config.h>
 
 #ifdef HAVE_EIGEN3
@@ -33,46 +34,39 @@ namespace shogun
 	/*Wrapper class used for the Brent minimizer
 	 *
 	 */
-	class Psi_line : public func_base
+	class CPsiLine : public func_base
 	{
 	public:
-		Eigen::Map<Eigen::VectorXd>* alpha;
-		Eigen::VectorXd* dalpha;
-		Eigen::Map<Eigen::MatrixXd>* K;
-		float64_t* l1;
-		SGVector<float64_t>* dl1;
-		Eigen::Map<Eigen::VectorXd>* dl2;
-		SGVector<float64_t>* mW;
+		float64_t scale;
+		MatrixXd K;
+		VectorXd dalpha;
+		VectorXd start_alpha;
+		Map<VectorXd>* alpha;
+		SGVector<float64_t>* dlp;
+		SGVector<float64_t>* W;
 		SGVector<float64_t>* f;
 		SGVector<float64_t>* m;
-		float64_t scale;
 		CLikelihoodModel* lik;
-		CRegressionLabels *lab;
-
-		Eigen::VectorXd start_alpha;
+		CRegressionLabels* lab;
 
 		virtual double operator() (double x)
 		{
-			Eigen::Map<Eigen::VectorXd> eigen_f(f->vector, f->vlen);
-			Eigen::Map<Eigen::VectorXd> eigen_m(m->vector, m->vlen);
+			Map<VectorXd> eigen_f(f->vector, f->vlen);
+			Map<VectorXd> eigen_m(m->vector, m->vlen);
 
-			*alpha = start_alpha + x*(*dalpha);
-			(eigen_f) = (*K)*(*alpha)*scale*scale+(eigen_m);
+			// compute alpha=alpha+x*dalpha and f=K*alpha+m
+			(*alpha)=start_alpha+x*dalpha;
+			eigen_f=K*(*alpha)*CMath::sq(scale)+eigen_m;
 
+			// get first and secod derivatives of log likelihood
+			(*dlp)=lik->get_log_probability_derivative_f(lab, (*f), 1);
 
-			for (index_t i = 0; i < eigen_f.rows(); i++)
-				(*f)[i] = eigen_f[i];
+			(*W)=lik->get_log_probability_derivative_f(lab, (*f), 2);
+			W->scale(-1.0);
 
-			(*dl1) = lik->get_log_probability_derivative_f(lab, (*f), 1);
-			(*mW) = lik->get_log_probability_derivative_f(lab, (*f), 2);
-			float64_t result = ((*alpha).dot(((eigen_f)-(eigen_m))))/2.0;
-
-			for (index_t i = 0; i < (*mW).vlen; i++)
-				(*mW)[i] = -(*mW)[i];
-
-
-
-			result -= lik->get_log_probability_f(lab, *f);
+			// compute psi=alpha'*(f-m)/2-lp
+			float64_t result = (*alpha).dot(eigen_f-eigen_m)/2.0-
+				lik->get_log_probability_f(lab, *f);
 
 			return result;
 		}
@@ -121,7 +115,6 @@ void CLaplacianInferenceMethod::update_all()
 				((CDotFeatures*)m_features)->get_computed_dot_feature_matrix();
 
 	}
-
 	else if (m_features && m_features->get_feature_class() == C_COMBINED)
 	{
 		CDotFeatures* feat =
@@ -177,7 +170,6 @@ void CLaplacianInferenceMethod::check_members()
 
 		SG_UNREF(feat);
 	}
-
 	else
 	{
 		if (!m_features->has_property(FP_DOT))
@@ -207,106 +199,49 @@ get_marginal_likelihood_derivatives(CMap<TParameter*,
 	if(update_parameter_hash())
 		update_all();
 
-	MatrixXd Z(m_L.num_rows, m_L.num_cols);
-
-	Map<VectorXd> eigen_dlp(dlp.vector, dlp.vlen);
-
-	for (index_t i = 0; i < m_L.num_rows; i++)
-	{
-		for (index_t j = 0; j < m_L.num_cols; j++)
-			Z(i,j) = m_L(i,j);
-	}
-
-	MatrixXd sW_temp(sW.vlen, m_ktrtr.num_cols);
-	VectorXd sum(1);
-	sum[0] = 0;
-
-
-	for (index_t i = 0; i < sW.vlen; i++)
-	{
-		for (index_t j = 0; j < m_ktrtr.num_cols; j++)
-			sW_temp(i,j) = sW[i];
-	}
-
-	VectorXd g;
-
+	// create eigen representation of W, sW, dlp, d3lp, K, temp_alpha and L
 	Map<VectorXd> eigen_W(W.vector, W.vlen);
+	Map<VectorXd> eigen_sW(sW.vector, sW.vlen);
+	Map<VectorXd> eigen_dlp(dlp.vector, dlp.vlen);
+	Map<VectorXd> eigen_d3lp(d3lp.vector, d3lp.vlen);
+	Map<MatrixXd> eigen_ktrtr(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
+	Map<VectorXd> eigen_temp_alpha(temp_alpha.vector, temp_alpha.vlen);
+	Map<MatrixXd> eigen_L(m_L.matrix, m_L.num_rows, m_L.num_cols);
 
-	Map<MatrixXd> eigen_temp_kernel(temp_kernel.matrix,
-        	temp_kernel.num_rows, temp_kernel.num_cols);
+	MatrixXd Z;
+	VectorXd g;
 
 	if (eigen_W.minCoeff() < 0)
 	{
-		Z = -Z;
+		Z=-eigen_L;
 
-		MatrixXd A = MatrixXd::Identity(m_ktrtr.num_rows, m_ktrtr.num_cols);
+		// compute iA = (I + K * diag(W))^-1
+		FullPivLU<MatrixXd> lu(MatrixXd::Identity(m_ktrtr.num_rows, m_ktrtr.num_cols)+
+			eigen_ktrtr*CMath::sq(m_scale)*eigen_W.asDiagonal());
+		MatrixXd iA=lu.inverse();
 
-		MatrixXd temp_diagonal(sW.vlen, sW.vlen);
-		temp_diagonal.setZero(sW.vlen, sW.vlen);
-
-		for (index_t s = 0; s < temp_diagonal.rows(); s++)
-		{
-			for (index_t r = 0; r < temp_diagonal.cols(); r++)
-				temp_diagonal(r,s) = W[s];
-		}
-
-		A = A + eigen_temp_kernel*m_scale*m_scale*temp_diagonal;
-
-		FullPivLU<MatrixXd> lu(A);
-
-		MatrixXd temp_matrix =
-				lu.inverse().cwiseProduct(eigen_temp_kernel*m_scale*m_scale);
-
-		VectorXd temp_sum(temp_matrix.rows());
-
-		for (index_t i = 0; i < temp_matrix.rows(); i++)
-		{
-			for (index_t j = 0; j < temp_matrix.cols(); j++)
-				temp_sum[i] += temp_matrix(j,i);
-		}
-
-		g = temp_sum/2.0;
+		// compute derivative ln|L'*L| wrt W: g=sum(iA.*K,2)/2
+		g=(iA.cwiseProduct(eigen_ktrtr*CMath::sq(m_scale))).rowwise().sum()/2.0;
 	}
-
 	else
 	{
-		MatrixXd C = Z.transpose().colPivHouseholderQr().solve(
-				sW_temp.cwiseProduct(eigen_temp_kernel*m_scale*m_scale));
+		// solve L'*L*Z=diag(sW) and compute Z=diag(sW)*Z
+		Z=eigen_L.triangularView<Upper>().adjoint().solve(
+			MatrixXd(eigen_sW.asDiagonal()));
+		Z=eigen_L.triangularView<Upper>().solve(Z);
+		Z=eigen_sW.asDiagonal()*Z;
 
-		MatrixXd temp_diagonal(sW.vlen, sW.vlen);
-		temp_diagonal.setZero(sW.vlen, sW.vlen);
+		// solve L'*C=diag(sW)*K
+		MatrixXd C=eigen_L.triangularView<Upper>().adjoint().solve(
+			eigen_sW.asDiagonal()*eigen_ktrtr*CMath::sq(m_scale));
 
-		for (index_t s = 0; s < sW.vlen; s++)
-			temp_diagonal(s,s) = sW[s];
-
-		MatrixXd temp = Z.transpose();
-
-		Z = Z.transpose().colPivHouseholderQr().solve(temp_diagonal);
-
-		Z = temp.transpose().colPivHouseholderQr().solve(Z);
-
-		for (index_t s = 0; s < Z.rows(); s++)
-		{
-			for (index_t r = 0; r < Z.cols(); r++)
-				Z(s,r) *= sW[s];
-		}
-
-		VectorXd temp_sum(C.rows());
-
-		temp_sum.setZero(C.rows());
-
-		for (index_t i = 0; i < C.rows(); i++)
-		{
-			for (index_t j = 0; j < C.cols(); j++)
-				temp_sum[i] += C(j,i)*C(j,i);
-		}
-
-		g = (eigen_temp_kernel.diagonal()*m_scale*m_scale-temp_sum)/2.0;
+		// compute derivative ln|L'*L| wrt W: g=(diag(K)-sum(C.^2,1)')/2
+		VectorXd sum=(C.cwiseProduct(C)).colwise().sum();
+		g=(eigen_ktrtr.diagonal()*CMath::sq(m_scale)-sum)/2.0;
 	}
 
-	Map<VectorXd> eigen_d3lp(d3lp.vector, d3lp.vlen);
-
-	VectorXd dfhat = g.cwiseProduct(eigen_d3lp);
+	// compute derivative of nlZ wrt fhat
+	VectorXd dfhat=g.cwiseProduct(eigen_d3lp);
 
 	m_kernel->build_parameter_dictionary(para_dict);
 	m_mean->build_parameter_dictionary(para_dict);
@@ -335,133 +270,86 @@ get_marginal_likelihood_derivatives(CMap<TParameter*,
 
 		bool deriv_found = false;
 
-		Map<VectorXd> eigen_temp_alpha(temp_alpha.vector,
-			temp_alpha.vlen);
-
 		for (index_t h = 0; h < length; h++)
 		{
-
-			SGMatrix<float64_t> deriv;
-			SGVector<float64_t> mean_derivatives;
-			VectorXd mean_dev_temp;
-			SGVector<float64_t> lik_first_deriv;
-			SGVector<float64_t> lik_second_deriv;
+			SGMatrix<float64_t> deriv=m_kernel->get_parameter_gradient(param, obj);
+			SGVector<float64_t> lik_first_deriv=m_model->get_first_derivative(
+				(CRegressionLabels*)m_labels, param, obj, function);
+			SGVector<float64_t> lik_second_deriv=m_model->get_second_derivative(
+				(CRegressionLabels*)m_labels, param, obj, function);
+			SGVector<float64_t> lik_third_deriv=m_model->get_third_derivative(
+				(CRegressionLabels*)m_labels, param, obj, function);
+			SGVector<float64_t> mean_deriv;
 
 			if (param->m_datatype.m_ctype == CT_VECTOR ||
 					param->m_datatype.m_ctype == CT_SGVECTOR)
-			{
-				deriv = m_kernel->get_parameter_gradient(param, obj);
-
-				lik_first_deriv = m_model->get_first_derivative(
-						(CRegressionLabels*)m_labels, param, obj, function);
-
-				lik_second_deriv = m_model->get_second_derivative(
-						(CRegressionLabels*)m_labels, param, obj, function);
-
-				mean_derivatives = m_mean->get_parameter_derivative(
-						param, obj, m_feature_matrix, h);
-
-				for (index_t d = 0; d < mean_derivatives.vlen; d++)
-					mean_dev_temp[d] = mean_derivatives[d];
-			}
-
+				mean_deriv=m_mean->get_parameter_derivative(
+					param, obj, m_feature_matrix, h);
 			else
-			{
-				mean_derivatives = m_mean->get_parameter_derivative(
-						param, obj, m_feature_matrix);
+				mean_deriv=m_mean->get_parameter_derivative(
+					param, obj, m_feature_matrix);
 
-				for (index_t d = 0; d < mean_derivatives.vlen; d++)
-					mean_dev_temp[d] = mean_derivatives[d];
-
-				deriv = m_kernel->get_parameter_gradient(param, obj);
-
-				lik_first_deriv = m_model->get_first_derivative(
-						(CRegressionLabels*)m_labels, param, obj, function);
-
-				lik_second_deriv = m_model->get_second_derivative(
-						(CRegressionLabels*)m_labels, param, obj, function);
-			}
+			Map<VectorXd> eigen_mean_deriv(mean_deriv.vector, mean_deriv.vlen);
 
 			if (deriv.num_cols*deriv.num_rows > 0)
 			{
-				MatrixXd dK(deriv.num_cols, deriv.num_rows);
+				Map<MatrixXd> dK(deriv.matrix, deriv.num_cols, deriv.num_rows);
 
-				for (index_t d = 0; d < deriv.num_rows; d++)
-				{
-					for (index_t s = 0; s < deriv.num_cols; s++)
-						dK(d,s) = deriv(d,s);
-				}
+				// compute dnlZ=sum(sum(Z.*dK))/2-alpha'*dK*alpha/2
+				variables[h]=(Z.cwiseProduct(dK)).sum()/2.0-
+					(eigen_temp_alpha.transpose()*dK).dot(eigen_temp_alpha)/2.0;
 
-
-				sum[0] = (Z.cwiseProduct(dK)).sum()/2.0;
-
-
-				sum = sum - eigen_temp_alpha.transpose()*dK*eigen_temp_alpha/2.0;
-
+				// compute b=dK*dlp
 				VectorXd b = dK*eigen_dlp;
 
-				sum = sum -
-						dfhat.transpose()*(b-eigen_temp_kernel*(Z*b)*m_scale*m_scale);
-
-				variables[h] = sum[0];
-
+				// compute dnlZ=dnlZ-dfhat'*(b-K*(Z*b))
+				variables[h]=variables[h]-dfhat.dot(b-eigen_ktrtr*(Z*b)*CMath::sq(m_scale));
 				deriv_found = true;
 			}
-
-			else if (mean_derivatives.vlen > 0)
+			else if (mean_deriv.vlen > 0)
 			{
-				sum = -eigen_temp_alpha.transpose()*mean_dev_temp;
-				sum = sum - dfhat.transpose()*(mean_dev_temp-eigen_temp_kernel*
-						(Z*mean_dev_temp)*m_scale*m_scale);
-				variables[h] = sum[0];
+				// compute dnlZ=-alpha'*dm-dfhat'*(dm-K*(Z*dm))
+				variables[h]=-eigen_temp_alpha.dot(eigen_mean_deriv)-dfhat.dot(
+					eigen_mean_deriv-eigen_ktrtr*(Z*eigen_mean_deriv)*CMath::sq(m_scale));
 				deriv_found = true;
 			}
-
-			else if (lik_first_deriv[0]+lik_second_deriv[0] != CMath::INFTY)
+			else if ((lik_first_deriv[0]+lik_second_deriv[0]+lik_third_deriv[0])!=CMath::INFTY)
 			{
 				Map<VectorXd> eigen_fd(lik_first_deriv.vector, lik_first_deriv.vlen);
-
 				Map<VectorXd> eigen_sd(lik_second_deriv.vector, lik_second_deriv.vlen);
+				Map<VectorXd> eigen_td(lik_third_deriv.vector, lik_third_deriv.vlen);
 
-				sum[0] = -g.dot(eigen_sd);
-				sum[0] = sum[0] - eigen_fd.sum();
-				variables[h] = sum[0];
+				VectorXd b=eigen_ktrtr*eigen_sd;
+
+				// compute dnlZ=-g'*d2lp_dhyp-sum(lp_dhyp)-dfhat'*(b-K*(Z*b))
+				variables[h]=-g.dot(eigen_td)-eigen_fd.sum()-
+					dfhat.dot(b-eigen_ktrtr*(Z*b)*CMath::sq(m_scale));
 				deriv_found = true;
 			}
-
 		}
 
 		if (deriv_found)
 			gradient.add(param, variables);
-
 	}
 
 	TParameter* param;
 	index_t index = get_modsel_param_index("scale");
 	param = m_model_selection_parameters->get_parameter(index);
 
-	MatrixXd dK(m_ktrtr.num_cols, m_ktrtr.num_rows);
-
-	for (index_t d = 0; d < m_ktrtr.num_rows; d++)
-	{
-		for (index_t s = 0; s < m_ktrtr.num_cols; s++)
-			dK(d,s) = m_ktrtr(d,s)*m_scale*2.0;;
-	}
-
-	Map<VectorXd> eigen_temp_alpha(temp_alpha.vector,
-		temp_alpha.vlen);
-
-	sum[0] = (Z.cwiseProduct(dK)).sum()/2.0;
-
-	sum = sum - eigen_temp_alpha.transpose()*dK*eigen_temp_alpha/2.0;
-
-	VectorXd b = dK*eigen_dlp;
-
-	sum = sum - dfhat.transpose()*(b-eigen_temp_kernel*(Z*b)*m_scale*m_scale);
-
 	SGVector<float64_t> scale(1);
 
-	scale[0] = sum[0];
+	// compute derivative K wrt scale
+	MatrixXd dK=eigen_ktrtr*m_scale*2.0;
+
+	// compute dnlZ=sum(sum(Z.*dK))/2-alpha'*dK*temp_alpha/2
+	scale[0]=(Z.cwiseProduct(dK)).sum()/2.0-
+		(eigen_temp_alpha.transpose()*dK).dot(eigen_temp_alpha)/2.0;
+
+	// compute b=dK*dlp
+	VectorXd b=dK*eigen_dlp;
+
+	// compute dnlZ=dnlZ-dfhat'*(b-K*(Z*b))
+	scale[0]=scale[0]-dfhat.transpose()*(b-eigen_ktrtr*(Z*b)*CMath::sq(m_scale));
 
 	gradient.add(param, scale);
 	para_dict.add(param, this);
@@ -471,11 +359,7 @@ get_marginal_likelihood_derivatives(CMap<TParameter*,
 
 SGVector<float64_t> CLaplacianInferenceMethod::get_diagonal_vector()
 {
-	SGVector<float64_t> result(sW.vlen);
-
-	for (index_t i = 0; i < sW.vlen; i++)
-		result[i] = sW[i];
-
+	SGVector<float64_t> result(sW);
 	return result;
 }
 
@@ -484,60 +368,36 @@ float64_t CLaplacianInferenceMethod::get_negative_marginal_likelihood()
 	if(update_parameter_hash())
 		update_all();
 
+	// create eigen representations alpha, f, W, mean vectors
 	Map<VectorXd> eigen_temp_alpha(temp_alpha.vector, temp_alpha.vlen);
-
-	Map<MatrixXd> eigen_temp_kernel(temp_kernel.matrix,
-temp_kernel.num_rows, temp_kernel.num_cols);
-
-	Map<VectorXd> eigen_function(function.vector,
-		function.vlen);
-
+	Map<VectorXd> eigen_function(function.vector, function.vlen);
 	Map<VectorXd> eigen_W(W.vector, W.vlen);
-
 	Map<VectorXd> eigen_m_means(m_means.vector, m_means.vlen);
 
-	if (eigen_W.minCoeff() < 0)
+	float64_t result;
+
+	if (eigen_W.minCoeff()<0)
 	{
-		MatrixXd A = MatrixXd::Identity(m_ktrtr.num_rows, m_ktrtr.num_cols);
+		Map<VectorXd> eigen_sW(sW.vector, sW.vlen);
+		Map<MatrixXd> eigen_ktrtr(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
 
-		MatrixXd temp_diagonal(sW.vlen, sW.vlen);
-		temp_diagonal.setZero(sW.vlen, sW.vlen);
+		FullPivLU<MatrixXd> lu(MatrixXd::Identity(m_ktrtr.num_rows, m_ktrtr.num_cols)+
+			eigen_ktrtr*CMath::sq(m_scale)*eigen_sW.asDiagonal());
 
-		for (index_t s = 0; s < sW.vlen; s++)
-			temp_diagonal(s,s) = sW[s];
-
-		A = A + eigen_temp_kernel*m_scale*m_scale*temp_diagonal;
-
-		FullPivLU<MatrixXd> lu(A);
-
-		float64_t result = (eigen_temp_alpha.transpose()*(eigen_function-eigen_m_means))[0]/2.0 -
-				lp + log(lu.determinant())/2.0;
-
-		return result;
+		result=(eigen_temp_alpha.dot(eigen_function-eigen_m_means))/2.0-
+			lp+log(lu.determinant())/2.0;
 	}
-
 	else
 	{
-
-		Map<VectorXd> eigen_sW(sW.vector, sW.vlen);
-
-		LLT<MatrixXd> L(
-				(eigen_sW*eigen_sW.transpose()).cwiseProduct(eigen_temp_kernel*m_scale*m_scale) +
-				MatrixXd::Identity(m_ktrtr.num_rows, m_ktrtr.num_cols));
-
-		MatrixXd chol = L.matrixL();
-
 		float64_t sum = 0;
 
 		for (index_t i = 0; i < m_L.num_rows; i++)
 			sum += log(m_L(i,i));
 
-		float64_t result = eigen_temp_alpha.dot(eigen_function-eigen_m_means)/2.0 -
-			lp + sum;
-
-		return result;
+		result=eigen_temp_alpha.dot(eigen_function-eigen_m_means)/2.0-lp+sum;
 	}
 
+	return result;
 }
 
 SGVector<float64_t> CLaplacianInferenceMethod::get_alpha()
@@ -568,16 +428,7 @@ void CLaplacianInferenceMethod::update_train_kernel()
 	SGMatrix<float64_t> kernel_matrix = m_kernel->get_kernel_matrix();
 
 	m_ktrtr=kernel_matrix.clone();
-
-	temp_kernel =SGMatrix<float64_t>(kernel_matrix.num_rows, kernel_matrix.num_cols);
-
-	for (index_t i = 0; i < kernel_matrix.num_rows; i++)
-	{
-		for (index_t j = 0; j < kernel_matrix.num_cols; j++)
-			temp_kernel(i,j) = kernel_matrix(i,j);
-	}
 }
-
 
 void CLaplacianInferenceMethod::update_chol()
 {
@@ -585,56 +436,34 @@ void CLaplacianInferenceMethod::update_chol()
 
 	Map<VectorXd> eigen_W(W.vector, W.vlen);
 
-	Map<MatrixXd> eigen_temp_kernel(temp_kernel.matrix,
-		temp_kernel.num_rows, temp_kernel.num_cols);
+	// create eigen representation of kernel matrix
+	Map<MatrixXd> eigen_ktrtr(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
 
+	// create shogun and eigen representation of posterior cholesky
+	m_L=SGMatrix<float64_t>(m_ktrtr.num_rows, m_ktrtr.num_cols);
+	Map<MatrixXd> eigen_L(m_L.matrix, m_L.num_rows, m_L.num_cols);
 
 	if (eigen_W.minCoeff() < 0)
 	{
-		MatrixXd temp_diagonal(sW.vlen, sW.vlen);
-		temp_diagonal.setZero(sW.vlen, sW.vlen);
+		// compute inverse of diagonal noise: iW = 1/W
+		VectorXd eigen_iW = (VectorXd::Ones(W.vlen)).cwiseQuotient(eigen_W);
 
-		for (index_t s = 0; s < temp_diagonal.rows(); s++)
-		{
-			for (index_t r = 0; r < temp_diagonal.cols(); r++)
-				temp_diagonal(s,s) = 1.0/W[s];
-		}
+		FullPivLU<MatrixXd> lu(
+			eigen_ktrtr*CMath::sq(m_scale)+MatrixXd(eigen_iW.asDiagonal()));
 
-
-		MatrixXd A = eigen_temp_kernel*m_scale*m_scale+temp_diagonal;
-
-		FullPivLU<MatrixXd> lu(A);
-
-		MatrixXd chol = -lu.inverse();
-
-		m_L = SGMatrix<float64_t>(chol.rows(), chol.cols());
-
-		for (index_t i = 0; i < chol.rows(); i++)
-		{
-			for (index_t j = 0; j < chol.cols(); j++)
-				m_L(i,j) = chol(i,j);
-		}
-
+		// compute cholesky: L = -(K + iW)^-1
+		eigen_L = -lu.inverse();
 	}
-
 	else
 	{
-
 		Map<VectorXd> eigen_sW(sW.vector, sW.vlen);
 
+		// compute cholesky: L = chol(sW * sW' .* K + I)
 		LLT<MatrixXd> L(
-				(eigen_sW*eigen_sW.transpose()).cwiseProduct((eigen_temp_kernel*m_scale*m_scale)) +
-				MatrixXd::Identity(m_ktrtr.num_rows, m_ktrtr.num_cols));
+			(eigen_sW*eigen_sW.transpose()).cwiseProduct(eigen_ktrtr*CMath::sq(m_scale))+
+			MatrixXd::Identity(m_ktrtr.num_rows, m_ktrtr.num_cols));
 
-		MatrixXd chol = L.matrixU();
-
-		m_L = SGMatrix<float64_t>(chol.rows(), chol.cols());
-
-		for (index_t i = 0; i < chol.rows(); i++)
-		{
-			for (index_t j = 0; j < chol.cols(); j++)
-				m_L(i,j) = chol(i,j);
-		}
+		eigen_L = L.matrixU();
 	}
 }
 
@@ -644,129 +473,83 @@ void CLaplacianInferenceMethod::update_alpha()
 	float64_t Psi_New;
 	float64_t Psi_Def;
 
-	SGVector<float64_t> temp_mean = m_mean->get_mean_vector(m_feature_matrix);
-
-	m_means = SGVector<float64_t>(temp_mean.vlen);
-	temp_kernel = SGMatrix<float64_t>(m_ktrtr.num_rows, m_ktrtr.num_cols);
-	temp_alpha = SGVector<float64_t>(m_labels->get_num_labels());
-	VectorXd first_derivative;
-
-	for (index_t i = 0; i < temp_mean.vlen; i++)
-		m_means[i] = temp_mean[i];
-
-	for (index_t i = 0; i < m_alpha.vlen; i++)
-		temp_alpha[i] = m_alpha[i];
-
-	for (index_t i = 0; i < m_ktrtr.num_rows; i++)
-	{
-		for (index_t j = 0; j < m_ktrtr.num_cols; j++)
-			temp_kernel(i,j) = m_ktrtr(i,j);
-	}
-
-	Map<MatrixXd> eigen_temp_kernel(temp_kernel.matrix, temp_kernel.num_rows, temp_kernel.num_cols);
-
-	VectorXd eigen_function;
-
+	// get mean vector and create eigen representation of it
+	m_means=SGVector<float64_t>(m_mean->get_mean_vector(m_feature_matrix));
 	Map<VectorXd> eigen_m_means(m_means.vector, m_means.vlen);
+
+	// make temp_alpha equals to alpha
+	temp_alpha=SGVector<float64_t>(m_alpha);
+
+	// create eigen representation of kernel matrix
+	Map<MatrixXd> eigen_ktrtr(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
+
+	// create shogun and eigen representation of function vector
+	function=SGVector<float64_t>(m_means.vlen);
+	Map<VectorXd> eigen_function(function.vector, function.vlen);
 
 	if (m_alpha.vlen != m_labels->get_num_labels())
 	{
+		// set alpha a zero vector
+		temp_alpha=SGVector<float64_t>(m_labels->get_num_labels());
+		temp_alpha.zero();
 
+		// f = mean, if length of alpha and length of y doesn't match
+		eigen_function=eigen_m_means;
 
-		temp_alpha = SGVector<float64_t>(m_labels->get_num_labels());
-
-		for (index_t i = 0; i < temp_alpha.vlen; i++)
-			temp_alpha[i] = 0.0;
-
-		Map<VectorXd> eigen_temp_alpha2(temp_alpha.vector, temp_alpha.vlen);
-
-		eigen_function = eigen_temp_kernel*eigen_temp_alpha2*m_scale*m_scale+eigen_m_means;
-
-		function = SGVector<float64_t>(eigen_function.rows());
-
-		for (index_t i = 0; i < eigen_function.rows(); i++)
-			function[i] = eigen_function[i];
-
+		// compute W = -d2lp
 		W = m_model->get_log_probability_derivative_f(
-				(CRegressionLabels*)m_labels, function, 2);
-		for (index_t i = 0; i < W.vlen; i++)
-			W[i] = -W[i];
+			(CRegressionLabels*)m_labels, function, 2);
+		W.scale(-1.0);
 
 		Psi_New = -m_model->get_log_probability_f(
-				(CRegressionLabels*)m_labels, function);
+			(CRegressionLabels*)m_labels, function);
 	}
-
-
 	else
 	{
+		Map<VectorXd> eigen_temp_alpha(temp_alpha.vector, temp_alpha.vlen);
 
-		Map<VectorXd> eigen_temp_alpha2(temp_alpha.vector, temp_alpha.vlen);
+		// compute f = K * alpha + m
+		eigen_function=eigen_ktrtr*CMath::sq(m_scale)*eigen_temp_alpha+eigen_m_means;
 
-		eigen_function = eigen_temp_kernel*m_scale*m_scale*eigen_temp_alpha2+eigen_m_means;
-
-		function = SGVector<float64_t>(eigen_function.rows());
-
-		for (index_t i = 0; i < eigen_function.rows(); i++)
-			function[i] = eigen_function[i];
-
-
-
+		// compute W = -d2lp
 		W = m_model->get_log_probability_derivative_f(
-				(CRegressionLabels*)m_labels, function, 2);
+			(CRegressionLabels*)m_labels, function, 2);
+		W.scale(-1.0);
 
-
-		for (index_t i = 0; i < W.vlen; i++)
-			W[i] = -W[i];
-
-		Psi_New = (eigen_temp_alpha2.transpose()*(eigen_function-eigen_m_means))[0]/2.0;
-
-		Psi_New -= m_model->get_log_probability_f(
-				(CRegressionLabels*)m_labels, function);
-
-
+		Psi_New = eigen_temp_alpha.dot(eigen_function-eigen_m_means)/2.0 -
+			m_model->get_log_probability_f((CRegressionLabels*)m_labels, function);
 
 		Psi_Def = -m_model->get_log_probability_f(
-				(CRegressionLabels*)m_labels, m_means);
+			(CRegressionLabels*)m_labels, m_means);
 
+		// if default is better, then use it
 		if (Psi_Def < Psi_New)
 		{
-			eigen_temp_alpha2 = eigen_temp_alpha2.Zero(m_labels->get_num_labels());
+			temp_alpha.zero();
 
-			for (index_t i = 0; i < m_alpha.vlen; i++)
-				temp_alpha[i] = eigen_temp_alpha2[i];
-
-			W = m_model->get_log_probability_derivative_f(
-					(CRegressionLabels*)m_labels, function, 2);
-
-			for (index_t i = 0; i < W.vlen; i++)
-				W[i] = -W[i];
+			eigen_function=eigen_m_means;
 
 			Psi_New = -m_model->get_log_probability_f(
-					(CRegressionLabels*)m_labels, function);
+				(CRegressionLabels*)m_labels, function);
 		}
 	}
 
 	Map<VectorXd> eigen_temp_alpha(temp_alpha.vector, temp_alpha.vlen);
 
-	index_t itr = 0;
-
+	// get first derivative of log probability function
 	dlp = m_model->get_log_probability_derivative_f(
-			(CRegressionLabels*)m_labels, function, 1);
+		(CRegressionLabels*)m_labels, function, 1);
 
-	d2lp = m_model->get_log_probability_derivative_f(
-			(CRegressionLabels*)m_labels, function, 2);
+	// create shogun and eigen representation of sW
+	sW=SGVector<float64_t>(W.vlen);
+	Map<VectorXd> eigen_sW(sW.vector, sW.vlen);
 
-	d3lp = m_model->get_log_probability_derivative_f(
-			(CRegressionLabels*)m_labels, function, 3);
-
-	Map<VectorXd> eigen_d2lp(d2lp.vector, d2lp.vlen);
-
-	sW = W.clone();
+	index_t itr = 0;
 
 	while (Psi_Old - Psi_New > m_tolerance && itr < m_max_itr)
 	{
-
 		Map<VectorXd> eigen_W(W.vector, W.vlen);
+		Map<VectorXd> eigen_dlp(dlp.vector, dlp.vlen);
 
 		Psi_Old = Psi_New;
 		itr++;
@@ -787,94 +570,67 @@ void CLaplacianInferenceMethod::update_alpha()
 			else
 				df=1;
 
-			for (index_t i = 0; i < eigen_W.rows(); i++)
-				eigen_W[i] += 2.0/(df)*dlp[i]*dlp[i];
-
+			eigen_W+=(2.0/df)*eigen_dlp.cwiseProduct(eigen_dlp);
 		}
 
-		for (index_t i = 0; i < eigen_W.rows(); i++)
-			W[i] = eigen_W[i];
+		// compute sW = sqrt(W)
+		eigen_sW=eigen_W.cwiseSqrt();
 
-		for (index_t i = 0; i < W.vlen; i++)
-			sW[i] = CMath::sqrt(float64_t(W[i]));
+		LLT<MatrixXd> L((eigen_sW*eigen_sW.transpose()).cwiseProduct(eigen_ktrtr*CMath::sq(m_scale))+
+			MatrixXd::Identity(m_ktrtr.num_rows, m_ktrtr.num_cols));
 
-		Map<VectorXd> eigen_sW(sW.vector, sW.vlen);
+		VectorXd b=eigen_W.cwiseProduct(eigen_function - eigen_m_means)+eigen_dlp;
 
-		LLT<MatrixXd> L((eigen_sW*eigen_sW.transpose()).cwiseProduct(
-				eigen_temp_kernel*m_scale*m_scale) +
-				MatrixXd::Identity(m_ktrtr.num_rows, m_ktrtr.num_cols));
+		VectorXd dalpha=b-eigen_sW.cwiseProduct(
+			L.solve(eigen_sW.cwiseProduct(eigen_ktrtr*b*CMath::sq(m_scale))))-eigen_temp_alpha;
 
-		Map<VectorXd> temp_eigen_dlp(dlp.vector, dlp.vlen);
+		// perfom Brent's optimization
+		CPsiLine func;
 
-		VectorXd b = eigen_W.cwiseProduct((eigen_function - eigen_m_means)) + temp_eigen_dlp;
-
-		MatrixXd chol = L.solve(eigen_sW.cwiseProduct((eigen_temp_kernel*b*m_scale*m_scale)));
-
-		VectorXd dalpha = b - eigen_sW.cwiseProduct(chol) - eigen_temp_alpha;
-
-		Psi_line func;
-
-		func.lab = (CRegressionLabels*)m_labels;
-		func.K = &eigen_temp_kernel;
 		func.scale = m_scale;
-		func.alpha = &eigen_temp_alpha;
-		func.dalpha = &dalpha;
-		func.l1 = &lp;
-		func.dl1 = &dlp;
-		func.dl2 = &eigen_d2lp;
-		func.f = &function;
-		func.lik = m_model;
-		func.m = &m_means;
-		func.mW = &W;
+		func.K = eigen_ktrtr;
+		func.dalpha = dalpha;
 		func.start_alpha = eigen_temp_alpha;
+		func.alpha = &eigen_temp_alpha;
+		func.dlp = &dlp;
+		func.f = &function;
+		func.m = &m_means;
+		func.W = &W;
+		func.lik = m_model;
+		func.lab = (CRegressionLabels*)m_labels;
+
 		local_min(0, m_max, m_opt_tolerance, func, Psi_New);
 	}
 
-	for (index_t i = 0; i < m_alpha.vlen; i++)
-		temp_alpha[i] = eigen_temp_alpha[i];
+	// compute f = K * alpha + m
+	eigen_function=eigen_ktrtr*CMath::sq(m_scale)*eigen_temp_alpha+eigen_m_means;
 
-	Map<VectorXd> eigen_dlp(dlp.vector, dlp.vlen);
-
-	eigen_function = eigen_temp_kernel*m_scale*m_scale*eigen_temp_alpha+eigen_m_means;
-
-	function = SGVector<float64_t>(eigen_function.rows());
-
-	for (index_t i = 0; i < eigen_function.rows(); i++)
-		function[i] = eigen_function[i];
-
+	// get log probability
 	lp = m_model->get_log_probability_f((CRegressionLabels*)m_labels, function);
 
+	// get log probability derivatives
 	dlp = m_model->get_log_probability_derivative_f(
-			(CRegressionLabels*)m_labels, function, 1);
+		(CRegressionLabels*)m_labels, function, 1);
 
 	d2lp = m_model->get_log_probability_derivative_f(
-			(CRegressionLabels*)m_labels, function, 2);
+		(CRegressionLabels*)m_labels, function, 2);
 
 	d3lp = m_model->get_log_probability_derivative_f(
-			(CRegressionLabels*)m_labels, function, 3);
+		(CRegressionLabels*)m_labels, function, 3);
 
-	W = m_model->get_log_probability_derivative_f(
-			(CRegressionLabels*)m_labels, function, 2);
+	// W = -d2lp
+	W = d2lp.clone();
+	W.scale(-1.0);
 
-	for (index_t i = 0; i < W.vlen; i++)
-		W[i] = -W[i];
+	// compute sW
+	Map<VectorXd> eigen_W(W.vector, W.vlen);
 
-	for (index_t i = 0; i < sW.vlen; i++)
-		sW[i] = 0.0;
+	if (eigen_W.minCoeff() > 0)
+		eigen_sW=eigen_W.cwiseSqrt();
+	else
+		eigen_sW.setZero();
 
-	Map<VectorXd> eigen_W2(W.vector, W.vlen);
-
-	if (eigen_W2.minCoeff() > 0)
-	{
-		for (index_t i = 0; i < sW.vlen; i++)
-			sW[i] = CMath::sqrt(float64_t(W[i]));
-	}
-
-	m_alpha = SGVector<float64_t>(eigen_temp_alpha.rows());
-
-	for (index_t i = 0; i < m_alpha.vlen; i++)
-		m_alpha[i] = eigen_temp_alpha[i];
-
+	m_alpha=SGVector<float64_t>(temp_alpha);
 }
 
 #endif // HAVE_EIGEN3

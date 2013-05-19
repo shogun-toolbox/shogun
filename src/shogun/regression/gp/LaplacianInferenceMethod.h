@@ -57,7 +57,7 @@ public:
 	 * @param mean mean function
 	 * @param labels labels of the features
 	 * @param model Likelihood model to use
-]	 */
+	 */
 	CLaplacianInferenceMethod(CKernel* kernel, CFeatures* features,
 			CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model);
 
@@ -84,8 +84,7 @@ public:
 	 * \f]
 	 */
 	virtual CMap<TParameter*, SGVector<float64_t> >
-	get_marginal_likelihood_derivatives(
-			CMap<TParameter*, CSGObject*>& para_dict);
+		get_marginal_likelihood_derivatives(CMap<TParameter*, CSGObject*>& para_dict);
 
 	/** get Alpha Matrix
 	 *
@@ -159,59 +158,49 @@ public:
 	 *
 	 * @return Tolerance for Newton Iterations
 	 */
-	virtual float64_t get_newton_tolerance() {
-		return m_tolerance;}
+	virtual float64_t get_newton_tolerance() { return m_tolerance; }
 
 	/** Set tolerance for Newton Iterations
 	 *
 	 * @param tol Tolerance for Newton Iterations
 	 */
-	virtual void set_newton_tolerance(float64_t tol) {
-		m_tolerance = tol;}
+	virtual void set_newton_tolerance(float64_t tol) { m_tolerance=tol; }
 
 	/** Get tolerance for Brent's Minimization Method
 	 *
 	 * @return tolerance for Brent's Minimization Method
 	 */
-	virtual float64_t get_minimization_tolerance() {
-		return m_opt_tolerance;}
+	virtual float64_t get_minimization_tolerance() { return m_opt_tolerance; }
 
 	/** Set tolerance for Brent's Minimization Method
 	 *
 	 * @param tol tolerance for Brent's Minimization Method
 	 */
-	virtual void set_minimization_tolerance(float64_t tol) {
-		m_opt_tolerance = tol;}
+	virtual void set_minimization_tolerance(float64_t tol) { m_opt_tolerance=tol; }
 
 	/** Get max iterations for Brent's Minimization Method
 	 *
 	 * @return max iterations for Brent's Minimization Method
 	 */
-	virtual int32_t get_minimization_iterations() {
-		return m_max;}
+	virtual int32_t get_minimization_iterations() { return m_max; }
 
 	/** Set max iterations for Brent's Minimization Method
 	 *
 	 * @param itr max iterations for Brent's Minimization Method
 	 */
-	virtual void set_minimization_tolerance(int32_t itr) {
-		m_max = itr;}
+	virtual void set_minimization_tolerance(int32_t itr) { m_max=itr; }
 
 	/** Get max Newton iterations
 	 *
 	 * @return max Newton iterations
 	 */
-	virtual int32_t get_newton_iterations() {
-		return m_max_itr;}
+	virtual int32_t get_newton_iterations() { return m_max_itr; }
 
 	/** Set max Newton iterations
 	 *
 	 * @param itr max Newton iterations
 	 */
-	virtual void set_newton_tolerance(int32_t itr) {
-		m_max_itr = itr;}
-
-
+	virtual void set_newton_tolerance(int32_t itr) { m_max_itr=itr; }
 
 protected:
 	/** Update alpha matrix */
@@ -249,9 +238,6 @@ private:
 	/*Max Newton Iterations*/
 	index_t m_max_itr;
 
-	/*Kernel Matrix*/
-	SGMatrix<float64_t> temp_kernel;
-
 	/*Eigen version of alpha vector*/
 	SGVector<float64_t> temp_alpha;
 
@@ -284,7 +270,6 @@ private:
 
 	/*log likelihood*/
 	float64_t lp;
-
 };
 
 }

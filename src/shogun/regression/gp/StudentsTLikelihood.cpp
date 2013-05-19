@@ -11,11 +11,12 @@
  *
  */
 
-
 #include <shogun/regression/gp/StudentsTLikelihood.h>
 #ifdef HAVE_EIGEN3
+#include <shogun/mathematics/eigen3.h>
 #include <shogun/modelselection/ParameterCombination.h>
 #include <shogun/mathematics/Statistics.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/mathematics/eigen3.h>
 
@@ -70,13 +71,12 @@ SGVector<float64_t> CStudentsTLikelihood::evaluate_variances(
 {
 	SGVector<float64_t> result(vars);
 
-	for (index_t i = 0; i < result.vlen; i++)
+	for (index_t i=0; i<result.vlen; i++)
 	{
-		if (m_df < 2)
-			result[i] = CMath::INFTY;
+		if (m_df<2.0)
+			result[i]=CMath::INFTY;
 		else
-			result[i] += m_df*(m_sigma*m_sigma)/float64_t(m_df-2);
-
+			result[i]+=m_df*CMath::sq(m_sigma)/(m_df-2.0);
 	}
 
 	return result;
@@ -85,244 +85,228 @@ SGVector<float64_t> CStudentsTLikelihood::evaluate_variances(
 float64_t CStudentsTLikelihood::get_log_probability_f(
 		CRegressionLabels* labels, SGVector<float64_t> m_function)
 {
-	Map<VectorXd> function(m_function.vector, m_function.vlen);
+	Map<VectorXd> eigen_f(m_function.vector, m_function.vlen);
 
-	float64_t temp = lgamma(m_df/2.0+0.5) -
-			lgamma(m_df/2.0) - log(m_df*CMath::PI*m_sigma*m_sigma)/2.0;
+	SGVector<float64_t> r(m_function.vlen);
+	Map<VectorXd> eigen_r(r.vector, r.vlen);
 
-	VectorXd result(function.rows());
+	SGVector<float64_t> y=labels->get_labels();
+	Map<VectorXd> eigen_y(y.vector, y.vlen);
 
-	for (index_t i = 0; i < function.rows(); i++)
-		result[i] = labels->get_labels()[i] - function[i];
+	// compute lZ=log(gamma(df/2+1/2))-log(gamma(df/2))-log(df*pi*sigma^2)/2
+	VectorXd eigen_lZ=(CStatistics::lgamma(m_df/2.0+0.5)-
+		CStatistics::lgamma(m_df/2.0)-log(m_df*CMath::PI*CMath::sq(m_sigma))/2.0)*
+		VectorXd::Ones(r.vlen);
 
-	result = result.cwiseProduct(result);
+	// compute log probability: lp=lZ-(df+1)*log(1+(y-f).^2./(df*sigma^2))/2
+	eigen_r=eigen_y-eigen_f;
+	eigen_r=eigen_r.cwiseProduct(eigen_r)/(m_df*CMath::sq(m_sigma));
+	eigen_r=eigen_lZ-(m_df+1)*
+		(eigen_r+VectorXd::Ones(r.vlen)).array().log().matrix()/2.0;
 
-	result /= m_df*m_sigma*m_sigma;
-
-	for (index_t i = 0; i < function.rows(); i++)
-	{
-		result[i] = -(m_df+1)*log(1.0+float64_t(result[i]))/2.0;
-
-		result[i] += temp;
-	}
-
-	return result.sum();
+	return eigen_r.sum();
 }
 
 SGVector<float64_t>  CStudentsTLikelihood::get_log_probability_derivative_f(
 		CRegressionLabels* labels, SGVector<float64_t> m_function, index_t j)
 {
-	Map<VectorXd> function(m_function.vector, m_function.vlen);
-	VectorXd result(function.rows());
+	Map<VectorXd> eigen_f(m_function.vector, m_function.vlen);
 
-	for (index_t i = 0; i < function.rows(); i++)
-		result[i] = (labels->get_labels()[i] - function[i]);
+	SGVector<float64_t> r(m_function.vlen);
+	Map<VectorXd> eigen_r(r.vector, r.vlen);
 
-	VectorXd result_squared = result.cwiseProduct(result);
+	SGVector<float64_t> y=labels->get_labels();
+	Map<VectorXd> eigen_y(y.vector, y.vlen);
 
-	VectorXd a(function.rows());
-	VectorXd b(function.rows());
-	VectorXd c(function.rows());
-	VectorXd d(function.rows());
+	// compute r=y-f, r2=r.^2
+	eigen_r=eigen_y-eigen_f;
+	VectorXd eigen_r2=eigen_r.cwiseProduct(eigen_r);
 
-	SGVector<float64_t> sgresult(result.rows());
+	// compute a=(y-f).^2+df*sigma^2
+	VectorXd a=eigen_r2+VectorXd::Ones(r.vlen)*m_df*CMath::sq(m_sigma);
 
-	for (index_t i = 0; i < function.rows(); i++)
-		a[i] = result_squared[i] + m_df*m_sigma*m_sigma;
-
-	if (j == 1)
+	if (j==1)
 	{
-		result = (m_df+1)*result.cwiseQuotient(a);
-		for (index_t i = 0; i < result.rows(); i++)
-			sgresult[i] = result[i];
-		return sgresult;
+		// compute first derivative of log probability wrt f:
+		// dlp=(df+1)*(y-f)./a
+		eigen_r=(m_df+1)*eigen_r.cwiseQuotient(a);
 	}
-
-	for (index_t i = 0; i < function.rows(); i++)
-		b[i] = result_squared[i] - m_df*m_sigma*m_sigma;
-
-	if (j == 2)
+	else if (j==2)
 	{
-		result = (m_df+1)*b.cwiseQuotient(a.cwiseProduct(a));
-		for (index_t i = 0; i < result.rows(); i++)
-			sgresult[i] = result[i];
-		return sgresult;
+		// compute second derivative of log probability wrt f:
+		// d2lp=(df+1)*((y-f)^2-df*sigma^2)./a.^2
+		VectorXd b=eigen_r2-VectorXd::Ones(r.vlen)*m_df*CMath::sq(m_sigma);
+
+		eigen_r=(m_df+1)*b.cwiseQuotient(a.cwiseProduct(a));
 	}
-
-	for (index_t i = 0; i < function.rows(); i++)
-		c[i] = result_squared[i] - 3*m_df*m_sigma*m_sigma;
-
-	d = a.cwiseProduct(a);
-
-	if (j == 3)
+	else if (j==3)
 	{
-		result = (m_df+1)*2*result.cwiseProduct(c).cwiseQuotient(d.cwiseProduct(a));
-		for (index_t i = 0; i < result.rows(); i++)
-			sgresult[i] = result[i];
-		return sgresult;
+		// compute third derivative of log probability wrt f:
+		// d3lp=(f+1)*2*(y-f).*((y-f)^2-3*f*sigma^2)./a.^3
+		VectorXd c=eigen_r2-VectorXd::Ones(r.vlen)*3*m_df*CMath::sq(m_sigma);
+		VectorXd a2=a.cwiseProduct(a);
 
+		eigen_r=(m_df+1)*2*eigen_r.cwiseProduct(c).cwiseQuotient(
+			a2.cwiseProduct(a));
 	}
-
 	else
 	{
 		SG_ERROR("Invalid index for derivative\n")
-		return sgresult;
 	}
+
+	return r;
 }
 
-//Taken in log space then converted back to direct derivative
 SGVector<float64_t> CStudentsTLikelihood::get_first_derivative(
 		CRegressionLabels* labels, TParameter* param,
 		CSGObject* obj, SGVector<float64_t> m_function)
 {
-	Map<VectorXd> function(m_function.vector, m_function.vlen);
+	SGVector<float64_t> r(m_function.vlen);
+	Map<VectorXd> eigen_r(r.vector, r.vlen);
 
-	SGVector<float64_t> sgresult(function.rows());
-
-	VectorXd result(function.rows());
-
-	for (index_t i = 0; i < function.rows(); i++)
-		result[i] = (labels->get_labels()[i] - function[i]);
-
-
-	VectorXd result_squared = result.cwiseProduct(result);
-
-	VectorXd a(function.rows());
-	VectorXd b(function.rows());
-	VectorXd c(function.rows());
-	VectorXd d(function.rows());
-
-
-	if (strcmp(param->m_name, "df") == 0 && obj == this)
+	if (obj==this)
 	{
-		for (index_t i = 0; i < function.rows(); i++)
-			a[i] = result_squared[i] + m_df*m_sigma*m_sigma;
+		Map<VectorXd> eigen_f(m_function.vector, m_function.vlen);
 
-		a = result_squared.cwiseQuotient(a);
+		SGVector<float64_t> y=labels->get_labels();
+		Map<VectorXd> eigen_y(y.vector, y.vlen);
 
-		a *= (m_df/2.0+.5);
+		// compute r=y-f and r2=(y-f).^2
+		eigen_r=eigen_y-eigen_f;
+		VectorXd eigen_r2=eigen_r.cwiseProduct(eigen_r);
 
-		for (index_t i = 0; i < function.rows(); i++)
-			a[i] += m_df*( CStatistics::dlgamma(m_df/2.0+1/2.0)-
-			CStatistics::dlgamma(m_df/2.0) )/2.0 - 1/2.0
-			-m_df*log(1+result_squared[i]/(m_df*m_sigma*m_sigma))/2.0;
+		if (!strcmp(param->m_name, "df"))
+		{
+			// compute derivative of log probability wrt df:
+			// lp_ddf=df*(dloggamma(df/2+1/2)-dloggamma(df/2))/2-1/2-
+			// df*log(1+r2/(df*sigma^2))/2 +(df/2+1/2)*r2./(df*sigma^2+r2)
+			eigen_r=(m_df*(CStatistics::dlgamma(m_df*0.5+0.5)-
+				CStatistics::dlgamma(m_df*0.5))*0.5-0.5)*VectorXd::Ones(r.vlen);
 
-		a *= (1-1/m_df);
+			eigen_r-=m_df*(VectorXd::Ones(r.vlen)+
+				eigen_r2/(m_df*CMath::sq(m_sigma))).array().log().matrix()/2.0;
 
-		result = a/(m_df-1);
+			eigen_r+=(m_df/2.0+0.5)*eigen_r2.cwiseQuotient(
+				eigen_r2+VectorXd::Ones(r.vlen)*(m_df*CMath::sq(m_sigma)));
 
-		for (index_t i = 0; i < result.rows(); i++)
-			sgresult[i] = result[i];
-		return sgresult;
+			eigen_r*=(1.0-1.0/m_df);
+
+			return r;
+		}
+		else if (!strcmp(param->m_name, "sigma"))
+		{
+			// compute derivative of log probability wrt sigma:
+			// lp_dsigma=(df+1)*r2./a-1
+			eigen_r=(m_df+1)*eigen_r2.cwiseQuotient(eigen_r2+
+				VectorXd::Ones(r.vlen)*(m_df*CMath::sq(m_sigma)));
+			eigen_r-=VectorXd::Ones(r.vlen);
+
+			return r;
+		}
 	}
 
+	r[0]=CMath::INFTY;
 
-	if (strcmp(param->m_name, "sigma") == 0 && obj == this)
-	{
-		for (index_t i = 0; i < function.rows(); i++)
-			a[i] = result_squared[i] + m_df*m_sigma*m_sigma;
-
-		a = (m_df+1)*result_squared.cwiseQuotient(a);
-
-		for (index_t i = 0; i < function.rows(); i++)
-			a[i] -= 1.0;
-
-		result = a/(m_sigma);
-
-		for (index_t i = 0; i < result.rows(); i++)
-			sgresult[i] = result[i];
-
-		return sgresult;
-	}
-
-
-	sgresult[0] = CMath::INFTY;
-
-	return sgresult;
+	return r;
 }
 
-//Taken in log space then converted back to direct derivative
 SGVector<float64_t> CStudentsTLikelihood::get_second_derivative(
 		CRegressionLabels* labels, TParameter* param,
 		CSGObject* obj, SGVector<float64_t> m_function)
 {
-	Map<VectorXd> function(m_function.vector, m_function.vlen);
+	SGVector<float64_t> r(m_function.vlen);
+	Map<VectorXd> eigen_r(r.vector, r.vlen);
 
-	SGVector<float64_t> sgresult(function.rows());
-	VectorXd result(function.rows());
-
-	for (index_t i = 0; i < function.rows(); i++)
-		result[i] = (labels->get_labels()[i] - function[i]);
-
-	VectorXd result_squared = result.cwiseProduct(result);
-
-	VectorXd a(function.rows());
-	VectorXd b(function.rows());
-	VectorXd c(function.rows());
-	VectorXd d(function.rows());
-
-	if (strcmp(param->m_name, "df") == 0 && obj == this)
+	if (obj==this)
 	{
-		for (index_t i = 0; i < function.rows(); i++)
-			a[i] = result_squared[i] + m_df*m_sigma*m_sigma;
+		Map<VectorXd> eigen_f(m_function.vector, m_function.vlen);
 
-		b = result_squared.cwiseProduct(result_squared);
+		SGVector<float64_t> y=labels->get_labels();
+		Map<VectorXd> eigen_y(y.vector, y.vlen);
 
-		b = b - 3*result_squared*m_sigma*m_sigma*(m_df+1);
+		// compute r=y-f and r2=(y-f).^2
+		eigen_r=eigen_y-eigen_f;
+		VectorXd eigen_r2=eigen_r.cwiseProduct(eigen_r);
 
-		for (index_t i = 0; i < function.rows(); i++)
-			b[i] = result_squared[i] - 3*m_sigma*m_sigma*(1+m_df);
+		// compute a=r+sigma^2*df and a2=a.^2
+		VectorXd a=eigen_r2+CMath::sq(m_sigma)*m_df*VectorXd::Ones(r.vlen);
+		VectorXd a2=a.cwiseProduct(a);
 
-		b = b.cwiseProduct(result_squared);
+		if (!strcmp(param->m_name, "df"))
+		{
+			// compute derivative of first derivative of log probability wrt df:
+			// dlp_ddf=df*r.*(a-sigma^2*(df+1))./a2
+			eigen_r=m_df*eigen_r.cwiseProduct(a-CMath::sq(m_sigma)*(m_df+1.0)*
+				VectorXd::Ones(r.vlen)).cwiseQuotient(a2);
+			eigen_r*=(1.0-1.0/m_df);
 
-		for (index_t i = 0; i < function.rows(); i++)
-			b[i] = b[i] + pow(m_sigma, 4)*m_df;
+			return r;
+		}
+		else if (!strcmp(param->m_name, "sigma"))
+		{
+			// compute derivative of first derivative of log probability wrt sigma:
+			// dlp_dsigma=-(df+1)*2*df*sigma^2*r./a2
+			eigen_r=-(m_df+1.0)*2*m_df*CMath::sq(m_sigma)*eigen_r.cwiseQuotient(a2);
 
-		b *= m_df;
-
-		c = a.cwiseProduct(a);
-
-		c = c.cwiseProduct(a);
-
-		result = b.cwiseQuotient(c);
-
-		result = result/(m_df-1);
-
-		for (index_t i = 0; i < result.rows(); i++)
-			sgresult[i] = result[i];
-		return sgresult;
+			return r;
+		}
 	}
 
-	if (strcmp(param->m_name, "sigma") == 0 && obj == this)
+	r[0]=CMath::INFTY;
+
+	return r;
+}
+
+SGVector<float64_t> CStudentsTLikelihood::get_third_derivative(
+		CRegressionLabels* labels, TParameter* param,
+		CSGObject* obj, SGVector<float64_t> m_function)
+{
+	SGVector<float64_t> r(m_function.vlen);
+	Map<VectorXd> eigen_r(r.vector, r.vlen);
+
+	if (obj==this)
 	{
-		for (index_t i = 0; i < function.rows(); i++)
-			a[i] = result_squared[i] + m_df*m_sigma*m_sigma;
+		Map<VectorXd> eigen_f(m_function.vector, m_function.vlen);
 
-		c = a.cwiseProduct(a);
+		SGVector<float64_t> y=labels->get_labels();
+		Map<VectorXd> eigen_y(y.vector, y.vlen);
 
-		c = c.cwiseProduct(a);
+		// compute r=y-f and r2=(y-f).^2
+		eigen_r=eigen_y-eigen_f;
+		VectorXd eigen_r2=eigen_r.cwiseProduct(eigen_r);
 
-		for (index_t i = 0; i < function.rows(); i++)
-			b[i] = m_df*m_sigma*m_sigma - 3*result_squared[i];
+		// compute a=r+sigma^2*df and a3=a.^3
+		VectorXd a=eigen_r2+CMath::sq(m_sigma)*m_df*VectorXd::Ones(r.vlen);
+		VectorXd a3=(a.cwiseProduct(a)).cwiseProduct(a);
 
-		b *= m_sigma*m_sigma*m_df*2.0*(m_df+1);
+		if (!strcmp(param->m_name, "df"))
+		{
+			// compute derivative of second derivative of log probability wrt df:
+			// d2lp_ddf=df*(r2.*(r2-3*sigma^2*(1+df))+df*sigma^4)./a3
+			float64_t sigma2=CMath::sq(m_sigma);
 
-		result = b.cwiseQuotient(c)/m_sigma;
+			eigen_r=m_df*(eigen_r2.cwiseProduct(eigen_r2-3*sigma2*(1.0+m_df)*
+				VectorXd::Ones(r.vlen))+(m_df*CMath::sq(sigma2))*VectorXd::Ones(r.vlen));
+			eigen_r=eigen_r.cwiseQuotient(a3);
 
-		for (index_t i = 0; i < result.rows(); i++)
-			sgresult[i] = result[i];
+			eigen_r*=(1.0-1.0/m_df);
 
-		return sgresult;
+			return r;
+		}
+		else if (!strcmp(param->m_name, "sigma"))
+		{
+			// compute derivative of second derivative of log probability wrt sigma:
+			// d2lp_dsigma=(df+1)*2*df*sigma^2*(a-4*r2)./a3
+			eigen_r=(m_df+1.0)*2*m_df*CMath::sq(m_sigma)*
+				(a-4.0*eigen_r2).cwiseQuotient(a3);
 
+			return r;
+		}
 	}
 
+	r[0] = CMath::INFTY;
 
-	sgresult[0] = CMath::INFTY;
-	return sgresult;
-
+	return r;
 }
 
 #endif //HAVE_EIGEN3
-
-
-

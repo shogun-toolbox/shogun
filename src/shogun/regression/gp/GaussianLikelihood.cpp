@@ -9,9 +9,9 @@
 
 #include <shogun/regression/gp/GaussianLikelihood.h>
 #ifdef HAVE_EIGEN3
-#include <shogun/modelselection/ParameterCombination.h>
 #include <shogun/mathematics/eigen3.h>
-
+#include <shogun/modelselection/ParameterCombination.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/base/Parameter.h>
 
 using namespace shogun;
@@ -61,8 +61,8 @@ SGVector<float64_t> CGaussianLikelihood::evaluate_variances(
 {
 	SGVector<float64_t> result(vars);
 
-	for (index_t i = 0; i < result.vlen; i++)
-		result[i] += (m_sigma*m_sigma);
+	for (index_t i=0; i<result.vlen; i++)
+		result[i]+=CMath::sq(m_sigma);
 
 	return result;
 }
@@ -70,103 +70,121 @@ SGVector<float64_t> CGaussianLikelihood::evaluate_variances(
 float64_t CGaussianLikelihood::get_log_probability_f(CRegressionLabels* labels,
 		SGVector<float64_t> m_function)
 {
-	Map<VectorXd> function(m_function.vector, m_function.vlen);
+	Map<VectorXd> eigen_function(m_function.vector, m_function.vlen);
 
-	VectorXd result(function.rows());
+	SGVector<float64_t> result(m_function.vlen);
+	Map<VectorXd> eigen_result(result.vector, result.vlen);
 
-	for (index_t i = 0; i < function.rows(); i++)
-		result[i] = labels->get_labels()[i] - function[i];
+	SGVector<float64_t> y=labels->get_labels();
+	Map<VectorXd> eigen_y(y.vector, y.vlen);
 
-	result = result.cwiseProduct(result);
+	// compute log probability: lp=-(y-f).^2./sigma^2/2-log(2*pi*sigma^2)/2
+	eigen_result=eigen_y-eigen_function;
+	eigen_result=-eigen_result.cwiseProduct(eigen_result)/(2*CMath::sq(m_sigma))-
+		VectorXd::Ones(result.vlen)*log(2*CMath::PI*CMath::sq(m_sigma))/2.0;
 
-	result /= -2*m_sigma*m_sigma;
-
-	for (index_t i = 0; i < function.rows(); i++)
-		result[i] -= log(2*CMath::PI*m_sigma*m_sigma)/2.0;
-
-	return result.sum();
+	return eigen_result.sum();
 }
 
 SGVector<float64_t> CGaussianLikelihood::get_log_probability_derivative_f(
 		CRegressionLabels* labels, SGVector<float64_t> m_function, index_t j)
 {
-	Map<VectorXd> function(m_function.vector, m_function.vlen);
-	VectorXd result(function.rows());
+	Map<VectorXd> eigen_function(m_function.vector, m_function.vlen);
 
-	for (index_t i = 0; i < function.rows(); i++)
-		result[i] = labels->get_labels()[i] - function[i];
+	SGVector<float64_t> result(m_function.vlen);
+	Map<VectorXd> eigen_result(result.vector, result.vlen);
 
+	SGVector<float64_t> y=labels->get_labels();
+	Map<VectorXd> eigen_y(y.vector, y.vlen);
+
+	// set result=y-f
+	eigen_result=eigen_y-eigen_function;
+
+	// compute derivatives of log probability wrt f
 	if (j == 1)
-		result = result/(m_sigma*m_sigma);
+		eigen_result/=CMath::sq(m_sigma);
 
 	else if (j == 2)
-		result = -VectorXd::Ones(result.rows())/(m_sigma*m_sigma);
+		eigen_result=-VectorXd::Ones(result.vlen)/CMath::sq(m_sigma);
 
 	else if (j == 3)
-		result = VectorXd::Zero(result.rows());
+		eigen_result=VectorXd::Zero(result.vlen);
 
 	else
 		SG_ERROR("Invalid Index for Likelihood Derivative\n")
 
-	SGVector<float64_t> sgresult(result.rows());
-
-	for (index_t i = 0; i < result.rows(); i++)
-		sgresult[i] = result[i];
-
-	return sgresult;
+	return result;
 }
 
 SGVector<float64_t> CGaussianLikelihood::get_first_derivative(CRegressionLabels* labels,
 		TParameter* param,  CSGObject* obj, SGVector<float64_t> m_function)
 {
-	Map<VectorXd> function(m_function.vector, m_function.vlen);
+	Map<VectorXd> eigen_function(m_function.vector, m_function.vlen);
 
-	VectorXd result(function.rows());
-
-	SGVector<float64_t> sgresult(result.rows());
+	SGVector<float64_t> result(m_function.vlen);
+	Map<VectorXd> eigen_result(result.vector, result.vlen);
 
 	if (strcmp(param->m_name, "sigma") || obj != this)
 	{
-		sgresult[0] = CMath::INFTY;
-		return sgresult;
+		result[0] = CMath::INFTY;
+		return result;
 	}
 
-	for (index_t i = 0; i < function.rows(); i++)
-		result[i] = labels->get_labels()[i] - function[i];
+	SGVector<float64_t> y=labels->get_labels();
+	Map<VectorXd> eigen_y(y.vector, y.vlen);
 
-	result = result.cwiseProduct(result);
+	// compute derivative of log probability wrt sigma:
+	// lp_dsigma=(y-f).^2/sigma^2-1
+	eigen_result=eigen_y-eigen_function;
+	eigen_result=eigen_result.cwiseProduct(eigen_result)/CMath::sq(m_sigma);
+	eigen_result-=VectorXd::Ones(result.vlen);
 
-	result /= m_sigma*m_sigma;
-
-	for (index_t i = 0; i < function.rows(); i++)
-		result[i] -= 1;
-
-	for (index_t i = 0; i < result.rows(); i++)
-		sgresult[i] = result[i];
-
-	return sgresult;
+	return result;
 }
 
 SGVector<float64_t> CGaussianLikelihood::get_second_derivative(CRegressionLabels* labels,
-		TParameter* param, CSGObject* obj, SGVector<float64_t> m_function)
+		TParameter* param,  CSGObject* obj, SGVector<float64_t> m_function)
 {
-	Map<VectorXd> function(m_function.vector, m_function.vlen);
-	VectorXd result(function.rows());
+	Map<VectorXd> eigen_function(m_function.vector, m_function.vlen);
 
-	SGVector<float64_t> sgresult(result.rows());
+	SGVector<float64_t> result(m_function.vlen);
+	Map<VectorXd> eigen_result(result.vector, result.vlen);
 
 	if (strcmp(param->m_name, "sigma") || obj != this)
 	{
-		sgresult[0] = CMath::INFTY;
-		return sgresult;
+		result[0] = CMath::INFTY;
+		return result;
 	}
 
-	result = 2*VectorXd::Ones(function.rows())/(m_sigma*m_sigma);
+	SGVector<float64_t> y=labels->get_labels();
+	Map<VectorXd> eigen_y(y.vector, y.vlen);
 
-	for (index_t i = 0; i < result.rows(); i++)
-		sgresult[i] = result[i];
+	// compute derivative of the first derivative of log probability wrt sigma:
+	// dlp_dsigma=2*(f-y)/sigma^2
+	eigen_result=2*(eigen_function-eigen_y)/CMath::sq(m_sigma);
 
-	return sgresult;
+	return result;
+}
+
+SGVector<float64_t> CGaussianLikelihood::get_third_derivative(CRegressionLabels* labels,
+		TParameter* param, CSGObject* obj, SGVector<float64_t> m_function)
+{
+	Map<VectorXd> eigen_function(m_function.vector, m_function.vlen);
+
+	SGVector<float64_t> result(m_function.vlen);
+	Map<VectorXd> eigen_result(result.vector, result.vlen);
+
+	if (strcmp(param->m_name, "sigma") || obj != this)
+	{
+		result[0] = CMath::INFTY;
+		return result;
+	}
+
+	// compute derivative of the second derivative of log probability wrt sigma:
+	// d2lp_dsigma=1/sigma^2
+	eigen_result=2*VectorXd::Ones(result.vlen)/CMath::sq(m_sigma);
+
+	return result;
 }
 
 #endif //HAVE_EIGEN3
