@@ -446,9 +446,6 @@ public:
 
 	 /** Derivative of the log gamma function.
 	 *
-	 * Taken from likT.m from the GPML
-	 * toolbox.
-	 *
 	 * @param x input
 	 * @return derivative of the log gamma input
 	 */
@@ -481,7 +478,7 @@ public:
 
 #ifdef HAVE_EIGEN3
 	/** The log determinant of a dense matrix
-	 * 
+	 *
 	 * The log determinant of a positive definite symmetric real valued
 	 * matrix is calculated as
 	 * \f[
@@ -497,17 +494,17 @@ public:
 	static float64_t log_det(SGMatrix<float64_t> m);
 
 	/** The log determinant of a sparse matrix
-	 * 
+	 *
 	 * The log determinant of symmetric positive definite sparse matrix
-	 * is calculated in a similar way as the dense case. But using 
-	 * cholesky decomposition on sparse matrices may suffer from fill-in 
-	 * phenomenon, i.e. the factors may not be as sparse. The 
-	 * SimplicialCholesky module for sparse matrix in eigen3 library 
-	 * uses an approach called approximate minimum degree reordering, 
-	 * or amd, which permutes the matrix beforehand and results in much 
+	 * is calculated in a similar way as the dense case. But using
+	 * cholesky decomposition on sparse matrices may suffer from fill-in
+	 * phenomenon, i.e. the factors may not be as sparse. The
+	 * SimplicialCholesky module for sparse matrix in eigen3 library
+	 * uses an approach called approximate minimum degree reordering,
+	 * or amd, which permutes the matrix beforehand and results in much
 	 * sparser factors. If \f$P\f$ is the permutation matrix, it computes
 	 * \f$\text{LLT}(P\times M\times P^{-1}) = L\times L'\f$.
-	 * 
+	 *
 	 * @param m input sparse matrix
 	 * @return the log determinant value
 	 */
@@ -515,10 +512,10 @@ public:
 
 	/** Sampling from a multivariate Gaussian distribution with
 	 * dense covariance matrix
-	 * 
-	 * Sampling is performed by taking samples from \f$N(0, I)\f$, then 
+	 *
+	 * Sampling is performed by taking samples from \f$N(0, I)\f$, then
 	 * using cholesky factor of the covariance matrix, \f$\Sigma\f$ and
-	 * performing 
+	 * performing
 	 * \f[S_{N(\mu,\Sigma)}=S_{N(0,I)}*L^{T}+\mu\f]
 	 * where \f$\Sigma=L*L^{T}\f$ and \f$\mu\f$ is the mean vector.
 	 *
@@ -528,25 +525,25 @@ public:
 	 * @param precision_matrix if true, sample from N(mu,C^-1)
 	 * @return the sample matrix of size \f$N\times dim\f$
 	 */
-	static SGMatrix<float64_t> sample_from_gaussian(SGVector<float64_t> mean, 
+	static SGMatrix<float64_t> sample_from_gaussian(SGVector<float64_t> mean,
 	SGMatrix<float64_t> cov, int32_t N=1, bool precision_matrix=false);
 
 	/** Sampling from a multivariate Gaussian distribution with
 	 * sparse covariance matrix
-	 *  
+	 *
 	 * Sampling is performed in similar way as of dense covariance
 	 * matrix, but direct cholesky factorization of sparse matrices
-	 * could be inefficient. So, this method uses permutation matrix 
+	 * could be inefficient. So, this method uses permutation matrix
 	 * for factorization and then permutes back the final samples
 	 * before adding the mean.
-	 * 
+	 *
 	 * @param mean the mean vector
 	 * @param cov the covariance matrix
 	 * @param N number of samples
 	 * @param precision_matrix if true, sample from N(mu,C^-1)
 	 * @return the sample matrix of size \f$N\times dim\f$
 	 */
-	static SGMatrix<float64_t> sample_from_gaussian(SGVector<float64_t> mean,  
+	static SGMatrix<float64_t> sample_from_gaussian(SGVector<float64_t> mean,
 	SGSparseMatrix<float64_t> cov, int32_t N=1, bool precision_matrix=false);
 #endif //HAVE_EIGEN3
 

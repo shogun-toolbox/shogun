@@ -1954,12 +1954,50 @@ SGVector<int32_t> CStatistics::sample_indices(int32_t sample_size, int32_t N)
 
 float64_t CStatistics::dlgamma(float64_t x)
 {
-	x = x+6.0;
-        float64_t df = 1./(x*x);
-        df = (((df/240-0.003968253986254)*df+1/120.0)*df-1/120.0)*df;
-        df = df+log(x)-0.5/x-1.0/(x-1.0)-1.0/(x-2.0)-1.0/
-                          (x-3.0)-1.0/(x-4.0)-1.0/(x-5.0)-1.0/(x-6.0);
-        return df;
+	float64_t result=0.0;
+
+	if (x<0.0)
+	{
+		// use reflection formula
+		x=1.0-x;
+		result=CMath::PI/CMath::tan(CMath::PI*x);
+	}
+
+	// make x>7 for approximation
+	// (use reccurent formula: psi(x+1) = psi(x) + 1/x)
+	while (x<=7.0)
+	{
+		result-=1.0/x;
+		x++;
+	}
+
+	// perform approximation
+	x-=0.5;
+	result+=log(x);
+
+	float64_t coeff[10]={
+		0.04166666666666666667,
+		-0.00729166666666666667,
+		0.00384424603174603175,
+		-0.00413411458333333333,
+		0.00756096117424242424,
+		-0.02108249687595390720,
+		0.08332316080729166666,
+		-0.44324627670587277880,
+		3.05393103044765369366,
+		-26.45616165999210241989};
+
+	float64_t power=1.0;
+	float64_t ix2=1.0/CMath::sq(x);
+
+	// perform approximation
+	for (index_t i=0; i<10; i++)
+	{
+		power*=ix2;
+		result+=coeff[i]*power;
+	}
+
+	return result;
 }
 
 #ifdef HAVE_EIGEN3
@@ -1993,10 +2031,10 @@ float64_t CStatistics::log_det(const SGSparseMatrix<float64_t> m)
 
 	SimplicialLLT<MatrixType> llt;
 
-	// factorize using cholesky with amd permutation 
+	// factorize using cholesky with amd permutation
 	llt.compute(M);
 	MatrixType L=llt.matrixL();
-	
+
 	// calculate the log-determinant
 	float64_t retval=0.0;
 	for( index_t i=0; i<M.rows(); ++i )
@@ -2009,7 +2047,7 @@ float64_t CStatistics::log_det(const SGSparseMatrix<float64_t> m)
 SGMatrix<float64_t> CStatistics::sample_from_gaussian(SGVector<float64_t> mean,
 	SGMatrix<float64_t> cov, int32_t N, bool precision_matrix)
 {
-	REQUIRE(cov.num_rows>0, 
+	REQUIRE(cov.num_rows>0,
 		"CStatistics::sample_from_gaussian(): \
 		Number of covariance rows must be positive!\n");
 	REQUIRE(cov.num_cols>0,
@@ -2048,7 +2086,7 @@ SGMatrix<float64_t> CStatistics::sample_from_gaussian(SGVector<float64_t> mean,
 		ldlt.compute(U);
 		s=ldlt.solve(s);
 	}
-	
+
 	SGMatrix<float64_t>::transpose_matrix(S.matrix, S.num_rows, S.num_cols);
 
 	if( !precision_matrix )
@@ -2060,7 +2098,7 @@ SGMatrix<float64_t> CStatistics::sample_from_gaussian(SGVector<float64_t> mean,
 
 	// add the mean
 	Map<MatrixXd> x(S.matrix, S.num_rows, S.num_cols);
-	for( int32_t i=0; i<N; ++i ) 
+	for( int32_t i=0; i<N; ++i )
 		x.row(i)+=mu;
 
 	return S;
@@ -2069,7 +2107,7 @@ SGMatrix<float64_t> CStatistics::sample_from_gaussian(SGVector<float64_t> mean,
 SGMatrix<float64_t> CStatistics::sample_from_gaussian(SGVector<float64_t> mean,
  SGSparseMatrix<float64_t> cov, int32_t N, bool precision_matrix)
 {
-	REQUIRE(cov.num_vectors>0, 
+	REQUIRE(cov.num_vectors>0,
 		"CStatistics::sample_from_gaussian(): \
 		Number of covariance rows must be positive!\n");
 	REQUIRE(cov.num_features>0,
@@ -2105,7 +2143,7 @@ SGMatrix<float64_t> CStatistics::sample_from_gaussian(SGVector<float64_t> mean,
 	llt.compute(c);
 	MatrixType LP=llt.matrixL();
 	MatrixType UP=llt.matrixU();
-	
+
 	// generate samples, x, from N(mean, cov) or N(mean, cov^-1)
 	// return samples of dimension NxD
 	if( precision_matrix )
@@ -2114,7 +2152,7 @@ SGMatrix<float64_t> CStatistics::sample_from_gaussian(SGVector<float64_t> mean,
 		SimplicialLLT<MatrixType> lltUP;
 		lltUP.compute(UP);
 		s=lltUP.solve(s);
-	} 
+	}
 	else
 	{
 		// here we need to find xP=LP*z
@@ -2122,7 +2160,7 @@ SGMatrix<float64_t> CStatistics::sample_from_gaussian(SGVector<float64_t> mean,
 	}
 
 	// permute the samples back with x=P^-1*xP
-	s=llt.permutationPinv()*s;		
+	s=llt.permutationPinv()*s;
 
 	SGMatrix<float64_t>::transpose_matrix(S.matrix, S.num_rows, S.num_cols);
 	// add the mean
