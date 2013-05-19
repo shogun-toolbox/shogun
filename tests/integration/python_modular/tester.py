@@ -174,14 +174,17 @@ if __name__=='__main__':
 		for f in failed:
 			print "\t", f[0]
 
+		print
+		print "Detailled failures:"
+		print
 		for f in failed:
 			print "\t", f[0]
 			got=get_split_string(f[1])
 			expected=get_split_string(f[2])
-			print "=== EXPECTED =========="
+			#print "=== EXPECTED =========="
 			#import pdb
 			#pdb.set_trace()
-			print '\n'.join(expected)
+			#print '\n'.join(expected)
 			#print "=== GOT ==============="
 			#print '\n'.join(got)
 			print "====DIFF================"
