@@ -1,15 +1,3 @@
-#include <utility>
-#include <vector>
-#include <iostream>
-
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/classifier/svm/LibSVM.h>
-#include <shogun/multiclass/tree/TreeMachine.h>
-#include <shogun/multiclass/tree/RelaxedTreeNodeData.h>
-#include <shogun/transfer/multitask/MultitaskKernelTreeNormalizer.h>
-
-#include <shogun/labels/BinaryLabels.h>
-#include <shogun/kernel/GaussianKernel.h>
 
 using namespace std;
 
@@ -39,37 +27,12 @@ public:
 	 *
 	 * @param lab labels
 	 */
-	virtual void set_labels(CLabels* lab)
-	{
-		int i;
-		
-		CMulticlassLabels *mlab = dynamic_cast<CMulticlassLabels *>(lab);
-		REQUIRE(lab, "requires MulticlassLabes\n");
-		
-		SG_REF(mlab);
-		SG_UNREF(class_labels);
-		class_labels = mlab;		
-
-		m_num_classes = mlab->get_num_classes();
-
-		SGVector<float64_t> values = mlab->get_values();
-		
-		for(i=0;i<mlab->get_unique_labels().size();i++){			
-			float64_t val = mlab->get_unique_labels().get_element(i);
-		}		
-	}	
+	void set_labels(CLabels* lab);
 	
 	/** set features
 	 * @param feats features
 	 */
-	void set_features(CDenseFeatures<float64_t> *feats)
-	{
-		int i;
-		SG_REF(feats);
-		SG_UNREF(m_feats);
-		m_feats = feats;
-	
-	}		
+	void set_features(CDenseFeatures<float64_t> *feats);		
 	/** set names
 	 * @param names of the attributes, names of the labels for each attribute
 	 */	
@@ -105,6 +68,7 @@ public:
 	 * @return informational gain
 	 */	
 	float64_t informational_gain_attribute(int32_t attr_no, CFeatures* data, CMulticlassLabels *class_labels);	
+	
 	/** informational_gain_attribute
 	 *
 	 * @param a set of lables for an attribute
@@ -114,10 +78,13 @@ public:
 
 	/** features */
 	CDenseFeatures<float64_t> *m_feats;
+	
 	/** attributes index vector **/
 	SGVector<int32_t> *attributes;	
+	
 	/** class labels */
-	CMulticlassLabels *class_labels;	
+	CMulticlassLabels *class_labels;
+		
 	/** lable names **/
 	std::vector<string> attribute_names;
 	std::vector< std::vector<string> > names;	

@@ -1,23 +1,9 @@
-#include <limits>
-#include <queue>
-#include <algorithm>
-#include <functional>
-#include <stdlib.h>
 #include <string>
+#include <vector>
 
-
-#include <shogun/labels/MulticlassLabels.h>
 #include <shogun/io/streaming/StreamingAsciiFile.h>
-#include <shogun/io/SGIO.h>
 #include <shogun/features/streaming/StreamingDenseFeatures.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/features/DenseSubsetFeatures.h>
-#include <shogun/base/init.h>
 #include <shogun/multiclass/MulticlassLibLinear.h>
-#include <shogun/evaluation/MulticlassAccuracy.h>
-#include <shogun/kernel/GaussianKernel.h>
-#include <shogun/transfer/multitask/MultitaskKernelTreeNormalizer.h>
-
 
 #include "classifier_multiclass_id3.h"
 
@@ -25,15 +11,29 @@
 using namespace shogun;
 
 CID3Classifier::CID3Classifier()
-	:m_feats(NULL), m_num_classes(0)
 {
-
 }
 
 CID3Classifier::~CID3Classifier()
 {
-
 }
+
+void CID3Classifier::set_labels(CLabels* lab)
+{
+	CMulticlassLabels *mlab = dynamic_cast<CMulticlassLabels *>(lab);
+	REQUIRE(lab, "requires MulticlassLabes\n");
+		
+	class_labels = mlab;			
+}
+
+void CID3Classifier::set_features(CDenseFeatures<float64_t> *feats)
+{
+
+	SG_REF(feats);
+    SG_UNREF(m_feats);
+	m_feats = feats;
+	
+}		
 
 
 float64_t CID3Classifier::informational_gain_attribute(int32_t attr_no, CFeatures* data, CMulticlassLabels *class_labels)
@@ -338,39 +338,8 @@ int main(){
 	int32_t num_vectors = 0;
 	int32_t num_feats   = 0;
 	
-	const char*fname_train = "data/classifier_id3_meteo.dat";
+	const char*fname_train = "../data/classifier_id3_meteo.dat";
 
-	/** lable names **/
-	std::vector<string> attr_names;
-	std::vector< std::vector<string> > label_names;	
-
-	attr_names.push_back("outlook");
-    std::vector<std::string> attr1;
-    attr1.push_back("sunny");
-    attr1.push_back("overcast");
-    attr1.push_back("rain");        
-    	
-	attr_names.push_back("temperature");
-    std::vector<std::string> attr2;
-    attr2.push_back("worm");     
-    attr2.push_back("fine");         
-    attr2.push_back("cold");         
-    	
-	attr_names.push_back("humidity");	
-    std::vector<std::string> attr3;
-    attr3.push_back("high");         
-    attr3.push_back("normal");         
-    	
-	attr_names.push_back("wind");	
-    std::vector<std::string> attr4;
-    attr4.push_back("true");
-    attr4.push_back("false");    
-
-	label_names.push_back(attr1);
-	label_names.push_back(attr2);
-	label_names.push_back(attr3);
-	label_names.push_back(attr4);			
-	
 	CStreamingAsciiFile *train_file = new CStreamingAsciiFile(fname_train);
 	SG_REF(train_file);
 
@@ -416,11 +385,9 @@ int main(){
 	CID3Classifier *machine = new CID3Classifier();
 	machine->set_labels(labels);
 	machine->set_features(features);
-	machine->set_names(attr_names, label_names);
 
 	id3_node root = machine->train(features, labels);
-	machine->print_id3_tree(&root);
-	
+		
 	//Test the decission tree 
 	SGVector<float64_t> input(4);
 	input.set_element(2,0);
@@ -428,7 +395,7 @@ int main(){
 	input.set_element(1,2);
 	input.set_element(1,3);			
 
-	SG_SPRINT("Classification answer: %d\n",machine->evaluate(input, root));
+	SG_SPRINT("Classification1 answer: %d\n",machine->evaluate(input, root));
 	
 	SGVector<float64_t> input2(4);
 	input2.set_element(2,0);
@@ -436,7 +403,45 @@ int main(){
 	input2.set_element(0,2);
 	input2.set_element(0,3);			
 
-	SG_SPRINT("Classification answer: %d\n",machine->evaluate(input2, root));	
+	SG_SPRINT("Classification2 answer: %d\n",machine->evaluate(input2, root));	
+
+	//*******************************************************************//
+	/** Remove this if you don't want to print a huma readable ID3 tree **/
+
+	// lable names
+	std::vector<string> attr_names;
+	std::vector< std::vector<string> > label_names;	
+
+	attr_names.push_back("outlook");
+    std::vector<std::string> attr1;
+    attr1.push_back("sunny");
+    attr1.push_back("overcast");
+    attr1.push_back("rain");        
+    	
+	attr_names.push_back("temperature");
+    std::vector<std::string> attr2;
+    attr2.push_back("worm");     
+    attr2.push_back("fine");         
+    attr2.push_back("cold");         
+    	
+	attr_names.push_back("humidity");	
+    std::vector<std::string> attr3;
+    attr3.push_back("high");         
+    attr3.push_back("normal");         
+    	
+	attr_names.push_back("wind");	
+    std::vector<std::string> attr4;
+    attr4.push_back("true");
+    attr4.push_back("false");    
+
+	label_names.push_back(attr1);
+	label_names.push_back(attr2);
+	label_names.push_back(attr3);
+	label_names.push_back(attr4);
+
+	machine->set_names(attr_names, label_names);
+	machine->print_id3_tree(&root);
+
 
 	return 0;
 
