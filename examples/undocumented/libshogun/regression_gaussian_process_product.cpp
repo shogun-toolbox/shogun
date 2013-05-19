@@ -60,6 +60,7 @@ void build_matrices(SGMatrix<float64_t>& test, SGMatrix<float64_t>& train,
 	}
 }
 
+/* HEIKO FIXME
 CModelSelectionParameters* build_tree(CInferenceMethod* inf, 
 				      CLikelihoodModel* lik, CProductKernel* kernel)
 {		
@@ -168,6 +169,7 @@ CModelSelectionParameters* build_tree(CInferenceMethod* inf,
 
 	return root;
 }
+*/
 
 int main(int argc, char **argv)
 {
@@ -225,78 +227,78 @@ int main(int argc, char **argv)
 
 	SG_REF(gp);
 	
-	CModelSelectionParameters* root = build_tree(inf, lik, test_kernel);
-	
-	/*Criterion for gradient search*/
-	CGradientCriterion* crit = new CGradientCriterion();
+	//CModelSelectionParameters* root = build_tree(inf, lik, test_kernel);
+	//
+	///*Criterion for gradient search*/
+	//CGradientCriterion* crit = new CGradientCriterion();
 
-	/*This will evaluate our inference method for its derivatives*/
-	CGradientEvaluation* grad=new CGradientEvaluation(gp, comb_features, labels,
-			crit);
+	///*This will evaluate our inference method for its derivatives*/
+	//CGradientEvaluation* grad=new CGradientEvaluation(gp, comb_features, labels,
+	//		crit);
 
-	grad->set_function(inf);
+	//grad->set_function(inf);
 
-	gp->print_modsel_params();
+	//gp->print_modsel_params();
 
-	root->print_tree();
+	//root->print_tree();
 
-	/* handles all of the above structures in memory */
-	CGradientModelSelection* grad_search=new CGradientModelSelection(
-			root, grad);
+	///* handles all of the above structures in memory */
+	//CGradientModelSelection* grad_search=new CGradientModelSelection(
+	//		root, grad);
 
-	/* set autolocking to false to get rid of warnings */
-	grad->set_autolock(false);
+	///* set autolocking to false to get rid of warnings */
+	//grad->set_autolock(false);
 
-	/*Search for best parameters*/
-	CParameterCombination* best_combination=grad_search->select_model(true);
+	///*Search for best parameters*/
+	//CParameterCombination* best_combination=grad_search->select_model(true);
 
-	/*Output all the results and information*/
-	if (best_combination)
-	{
-		SG_SPRINT("best parameter(s):\n");
-		best_combination->print_tree();
+	///*Output all the results and information*/
+	//if (best_combination)
+	//{
+	//	SG_SPRINT("best parameter(s):\n");
+	//	best_combination->print_tree();
 
-		best_combination->apply_to_machine(gp);
-	}
+	//	best_combination->apply_to_machine(gp);
+	//}
 
-	CGradientResult* result=(CGradientResult*)grad->evaluate();
+	//CGradientResult* result=(CGradientResult*)grad->evaluate();
 
-	if(result->get_result_type() != GRADIENTEVALUATION_RESULT)
-		SG_SERROR("Evaluation result not a GradientEvaluationResult!");
+	//if(result->get_result_type() != GRADIENTEVALUATION_RESULT)
+	//	SG_SERROR("Evaluation result not a GradientEvaluationResult!");
 
-	result->print_result();
+	//result->print_result();
 
-	SGVector<float64_t> alpha = inf->get_alpha();
-	SGVector<float64_t> labe = labels->get_labels();
-	SGVector<float64_t> diagonal = inf->get_diagonal_vector();
-	SGMatrix<float64_t> cholesky = inf->get_cholesky();
-	gp->set_return_type(CGaussianProcessRegression::GP_RETURN_COV);
+	//SGVector<float64_t> alpha = inf->get_alpha();
+	//SGVector<float64_t> labe = labels->get_labels();
+	//SGVector<float64_t> diagonal = inf->get_diagonal_vector();
+	//SGMatrix<float64_t> cholesky = inf->get_cholesky();
+	//gp->set_return_type(CGaussianProcessRegression::GP_RETURN_COV);
 
-	CRegressionLabels* covariance = gp->apply_regression(comb_features);
+	//CRegressionLabels* covariance = gp->apply_regression(comb_features);
 
-	gp->set_return_type(CGaussianProcessRegression::GP_RETURN_MEANS);
-	
-	CRegressionLabels* predictions = gp->apply_regression();
+	//gp->set_return_type(CGaussianProcessRegression::GP_RETURN_MEANS);
+	//
+	//CRegressionLabels* predictions = gp->apply_regression();
 
-	alpha.display_vector("Alpha Vector");
-	labe.display_vector("Labels");
-	diagonal.display_vector("sW Matrix");
-	covariance->get_labels().display_vector("Predicted Variances");
-	predictions->get_labels().display_vector("Mean Predictions");
-	cholesky.display_matrix("Cholesky Matrix L");
-	matrix.display_matrix("Training Features");
-	matrix2.display_matrix("Testing Features");
+	//alpha.display_vector("Alpha Vector");
+	//labe.display_vector("Labels");
+	//diagonal.display_vector("sW Matrix");
+	//covariance->get_labels().display_vector("Predicted Variances");
+	//predictions->get_labels().display_vector("Mean Predictions");
+	//cholesky.display_matrix("Cholesky Matrix L");
+	//matrix.display_matrix("Training Features");
+	//matrix2.display_matrix("Testing Features");
 
-	/*free memory*/
-	SG_UNREF(predictions);
-	SG_UNREF(covariance);
-	SG_UNREF(labels);
-	SG_UNREF(comb_features);
-	SG_UNREF(inf);
-	SG_UNREF(gp);
-	SG_UNREF(grad_search);
-	SG_UNREF(best_combination);
-	SG_UNREF(result);
+	///*free memory*/
+	//SG_UNREF(predictions);
+	//SG_UNREF(covariance);
+	//SG_UNREF(labels);
+	//SG_UNREF(comb_features);
+	//SG_UNREF(inf);
+	//SG_UNREF(gp);
+	//SG_UNREF(grad_search);
+	//SG_UNREF(best_combination);
+	//SG_UNREF(result);
 
 	exit_shogun();
 
