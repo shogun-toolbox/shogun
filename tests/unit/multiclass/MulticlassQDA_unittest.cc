@@ -32,8 +32,9 @@ TEST(QDA,train_test)
 	qda->train();
 	
 	CDenseFeatures<float64_t>* test_features=new CDenseFeatures<float64_t>(vec_train);
-	lab_test = CMulticlassLabels::obtain_from_generic(qda->apply(test_features));
-	
+	lab_test = CLabelsFactory::to_multiclass(qda->apply(test_features));
+    SG_REF(lab_test);
+
 	for ( int i = 0; i < CLASSES*NUM; ++i )
 		EXPECT_EQ(lab_test->get_label(i),lab_train->get_label(i));
 	

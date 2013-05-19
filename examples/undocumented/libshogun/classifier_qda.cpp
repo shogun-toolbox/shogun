@@ -63,7 +63,7 @@ void test()
 
 	// Classify and display output
 	CDenseFeatures< float64_t >* test_features = new CDenseFeatures< float64_t >(feat);
-	CMulticlassLabels* out_labels = CMulticlassLabels::obtain_from_generic(qda->apply(test_features));
+	CMulticlassLabels* out_labels = CLabelsFactory::to_multiclass(lda->apply(test_features));
 	SG_REF(out_labels);
 
 	// Free memory
