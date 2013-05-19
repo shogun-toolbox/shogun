@@ -12,7 +12,7 @@
 #ifndef _PRODUCTKERNEL_H___
 #define _PRODUCTKERNEL_H___
 
-#include <shogun/lib/List.h>
+#include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/kernel/Kernel.h>
 
@@ -23,8 +23,7 @@ namespace shogun
 {
 class CFeatures;
 class CCombinedFeatures;
-class CList;
-class CListElement;
+class CDynamicObjectArray;
 /**
  * @brief The Product kernel is used to combine a number of kernels into a
  * single ProductKernel object by element multiplication.
@@ -98,25 +97,6 @@ class CProductKernel : public CKernel
 		/** list kernels */
 		void list_kernels();
 
-		/** get first kernel
-		 *
-		 * @return first kernel
-		 */
-		inline CKernel* get_first_kernel()
-		{
-			return (CKernel*) kernel_list->get_first_element();
-		}
-
-		/** get first kernel
-		 *
-		 * @param current
-		 * @return first kernel
-		 */
-		inline CKernel* get_first_kernel(CListElement*& current)
-		{
-			return (CKernel*) kernel_list->get_first_element(current);
-		}
-
 		/** get kernel
 		 *
 		 * @param idx index of kernel
@@ -124,49 +104,17 @@ class CProductKernel : public CKernel
 		 */
 		inline CKernel* get_kernel(int32_t idx)
 		{
-			CKernel * k = get_first_kernel();
-			for (int32_t i=0; i<idx; i++)
-			{
-				SG_UNREF(k);
-				k = get_next_kernel();
-			}
-			return k;
+			return (CKernel*) kernel_array->get_element(idx);
 		}
 
-		/** get last kernel
-		 *
-		 * @return last kernel
-		 */
-		inline CKernel* get_last_kernel()
-		{
-			return (CKernel*) kernel_list->get_last_element();
-		}
-
-		/** get next kernel
-		 *
-		 * @return next kernel
-		 */
-		inline CKernel* get_next_kernel()
-		{
-			return (CKernel*) kernel_list->get_next_element();
-		}
-
-		/** get next kernel multi-thread safe
-		 *
-		 * @param current
-		 * @return next kernel
-		 */
-		inline CKernel* get_next_kernel(CListElement*& current)
-		{
-			return (CKernel*) kernel_list->get_next_element(current);
-		}
-
-		/** insert kernel
+		/** insert kernel at position idx
+		 * Idx must be less than get_num_subkernels()
 		 *
 		 * @param k kernel
+		 * @param idx the position where to add the kernel
 		 * @return if inserting was successful
 		 */
-		inline bool insert_kernel(CKernel* k)
+		inline bool insert_kernel(CKernel* k, int32_t idx)
 		{
 			ASSERT(k)
 			adjust_num_lhs_rhs_initialized(k);
@@ -174,7 +122,7 @@ class CProductKernel : public CKernel
 			if (!(k->has_property(KP_LINADD)))
 				unset_property(KP_LINADD);
 
-			return kernel_list->insert_element(k);
+			return kernel_array->insert_element(k, idx);
 		}
 
 		/** append kernel
@@ -190,26 +138,20 @@ class CProductKernel : public CKernel
 			if (!(k->has_property(KP_LINADD)))
 				unset_property(KP_LINADD);
 
-			return kernel_list->append_element(k);
+			int32_t n = get_num_subkernels();
+			kernel_array->push_back(k);
+			return n+1==get_num_subkernels();		
 		}
 
 
-		/** delete kernel
+		/** delete kernel at position idx
 		 *
+		 * @param idx the index of the kernel to delete
 		 * @return if deleting was successful
 		 */
-		inline bool delete_kernel()
+		inline bool delete_kernel(int32_t idx)
 		{
-			CKernel* k=(CKernel*) kernel_list->delete_element();
-			SG_UNREF(k);
-
-			if (!k)
-			{
-				num_lhs=0;
-				num_rhs=0;
-			}
-
-			return (k!=NULL);
+			return kernel_array->delete_element(idx);
 		}
 
 
@@ -219,7 +161,7 @@ class CProductKernel : public CKernel
 		 */
 		inline int32_t get_num_subkernels()
 		{
-		    return kernel_list->get_num_elements();
+		    return kernel_array->get_num_elements();
 		}
 
 		/** test whether features have been assigned to lhs and rhs
@@ -262,11 +204,11 @@ class CProductKernel : public CKernel
 		SGMatrix<float64_t> get_parameter_gradient(TParameter* param,
 				CSGObject* obj, index_t index);
 
-		/** Get the Kernel list
+		/** Get the Kernel array
 		 *
-		 * @return kernel list
+		 * @return kernel array
 		 */
-		inline CList* get_list() {SG_REF(kernel_list); return kernel_list;}
+		inline CDynamicObjectArray* get_array() {SG_REF(kernel_array); return kernel_array;}
 
 	protected:
 		/** compute kernel function
@@ -325,8 +267,8 @@ class CProductKernel : public CKernel
 		void init();
 
 	protected:
-		/** list of kernels */
-		CList* kernel_list;
+		/** array of kernels */
+		CDynamicObjectArray* kernel_array;
 		/** whether kernel is ready to be used */
 		bool initialized;
 };
