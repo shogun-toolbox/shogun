@@ -23,7 +23,7 @@ TEST(Statistics, fit_sigmoid)
 	CStatistics::SigmoidParamters params=CStatistics::fit_sigmoid(scores);
 
 	// compare against python implementation of john plat's algoorithm
-//	SG_SPRINT("a=%f, b=%f\n", params.a, params.b);
+	//	SG_SPRINT("a=%f, b=%f\n", params.a, params.b);
 
 	EXPECT_NEAR(params.a, -1.791759, 1E-5);
 	EXPECT_NEAR(params.b, 0.000000, 10E-5);
@@ -35,12 +35,12 @@ TEST(Statistics, log_det_test_1)
 	// create a small test matrix, symmetric positive definite
 	index_t size = 3;
 	SGMatrix<float64_t> m(size, size);
-	
+
 	// initialize the matrix
 	m(0, 0) =   4; m(0, 1) =  12; m(0, 2) = -16;
 	m(1, 0) =  12; m(1, 1) =  37; m(1, 2) = -43;
 	m(2, 0) = -16; m(2, 1) = -43; m(2, 2) =  98;
-	
+
 	/* the cholesky decomposition gives m = L.L', where
 	 * L = [(2, 0, 0), (6, 1, 0), (-8, 5, 3)].
 	 * 2 * (log(2) + log(1) + log(3)) = 3.58351893846
@@ -65,7 +65,7 @@ TEST(Statistics, log_det_test_2)
 			K(i,j) = M(i,j);
 		}
 	}
-	
+
 	// check if log_det is equal to log(det(M))
 	EXPECT_NEAR(CStatistics::log_det(K), 12.731839097176634, 1E-10);
 
@@ -77,7 +77,7 @@ TEST(Statistics, log_det_test_3)
 	// create a sparse test matrix, symmetric positive definite
 	// whose the diagonal contains all 100's
 	// the rest of first row and first column contains all 1's
-	
+
 	index_t size=1000;
 
 	// initialize the matrix
@@ -119,7 +119,7 @@ TEST(Statistics, log_det_test_3)
 
 }
 
-// TEST 4 - Sampling from Multivariate Gaussian distribution with Dense 
+// TEST 4 - Sampling from Multivariate Gaussian distribution with Dense
 // covariance matrix.
 TEST(Statistics, sample_from_gaussian_dense1)
 {
@@ -154,7 +154,7 @@ TEST(Statistics, sample_from_gaussian_dense1)
 
 }
 
-// TEST 5 - Sampling from Multivariate Gaussian distribution with Dense 
+// TEST 5 - Sampling from Multivariate Gaussian distribution with Dense
 // covariance matrix. Using precision_matrix instead
 TEST(Statistics, sample_from_gaussian_dense2)
 {
@@ -173,7 +173,7 @@ TEST(Statistics, sample_from_gaussian_dense2)
 	c=MatrixXd::Random(dim, dim)*0.5+MatrixXd::Constant(dim, dim, 1);
 	c=c*c.transpose()+MatrixXd::Identity(dim, dim);
 
-	SGMatrix<float64_t> samples=CStatistics::sample_from_gaussian(mean, cov, N, 
+	SGMatrix<float64_t> samples=CStatistics::sample_from_gaussian(mean, cov, N,
 		true);
 
 	// calculate the sample mean and covariance
@@ -259,4 +259,42 @@ TEST(Statistics, sample_from_gaussian_sparse1)
 	SG_FREE(rest);
 
 }
+
+TEST(Statistics, dlgamma)
+{
+	// get digamma of positive x and compare result
+	// with result from gsl implementation
+	float64_t psi=CStatistics::dlgamma(0.3);
+	EXPECT_NEAR(psi, -3.50252422220013, 1e-14);
+
+	psi=CStatistics::dlgamma(1.2);
+	EXPECT_NEAR(psi, -0.289039896592188, 1e-15);
+
+	psi=CStatistics::dlgamma(3.7);
+	EXPECT_NEAR(psi, 1.16715353936151, 1e-14);
+
+	psi=CStatistics::dlgamma(14.9);
+	EXPECT_NEAR(psi, 2.66742897621604, 1e-14);
+
+	psi=CStatistics::dlgamma(1063.7);
+	EXPECT_NEAR(psi, 6.96903854425933, 1e-14);
+
+	// get digamma of negative x and compare result
+	// with result from gsl implementation
+	psi=CStatistics::dlgamma(-0.6);
+	EXPECT_NEAR(psi, -0.894717877918449, 1e-15);
+
+	psi=CStatistics::dlgamma(-1.4);
+	EXPECT_NEAR(psi, 1.67366650039252, 1e-14);
+
+	psi=CStatistics::dlgamma(-5.4);
+	EXPECT_NEAR(psi, 2.79690872657593, 1e-14);
+
+	psi=CStatistics::dlgamma(-15.3);
+	EXPECT_NEAR(psi, 5.042677398790, 1e-12);
+
+	psi=CStatistics::dlgamma(-122.7);
+	EXPECT_NEAR(psi, 2.531311127723, 1e-12);
+}
+
 #endif // HAVE_EIGEN3

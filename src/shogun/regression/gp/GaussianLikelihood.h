@@ -94,7 +94,6 @@ public:
 	virtual float64_t get_log_probability_f(CRegressionLabels* labels,
 			SGVector<float64_t> f);
 
-
 	/** get derivative of log likelihood log(P(y|f)) with respect
 	 *  to location f
 	 *
@@ -123,6 +122,25 @@ public:
 	virtual SGVector<float64_t> get_first_derivative(CRegressionLabels* labels,
 			TParameter* param, CSGObject* obj, SGVector<float64_t> function);
 
+	/** get derivative of the first derivative
+	 *  of log likelihood with respect to function
+	 *  location, i.e.
+	 *
+	 *  \f$\frac{\partial}log(P(y|f))}{\partial{f}}\f$
+	 *
+	 *  with respect to given parameter
+	 *
+	 *  @param labels labels used
+	 *  @param param parameter
+	 *  @param obj pointer to object to make sure we
+	 *  have the right parameter
+	 *  @param function function location
+	 *
+	 *  @return derivative
+	 */
+	virtual SGVector<float64_t> get_second_derivative(CRegressionLabels* labels,
+			TParameter* param, CSGObject* obj, SGVector<float64_t> function);
+
 	/** get derivative of the second derivative
 	 *  of log likelihood with respect to function
 	 *  location, i.e.
@@ -139,7 +157,7 @@ public:
 	 *
 	 *  @return derivative
 	 */
-	virtual SGVector<float64_t> get_second_derivative(CRegressionLabels* labels,
+	virtual SGVector<float64_t> get_third_derivative(CRegressionLabels* labels,
 			TParameter* param, CSGObject* obj, SGVector<float64_t> function);
 
 private:
