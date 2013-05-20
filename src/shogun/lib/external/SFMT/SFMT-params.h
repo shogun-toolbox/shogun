@@ -13,7 +13,7 @@
   -----------------*/
 /** Mersenne Exponent. The period of the sequence
  *  is a multiple of 2^MEXP-1.
- * #define SFMT_MEXP 19937 */
+ * define SFMT_MEXP 19937 */
 /** SFMT generator has an internal state array of 128-bit integers,
  * and N is its size. */
 #define SFMT_N (SFMT_MEXP / 128 + 1)

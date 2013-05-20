@@ -8,26 +8,26 @@
   following definitions are in dSFMT-paramsXXXX.h file.
   ----------------------*/
 /** the pick up position of the array.
-#define DSFMT_POS1 122 
+define DSFMT_POS1 122 
 */
 
 /** the parameter of shift left as four 32-bit registers.
-#define DSFMT_SL1 18
+define DSFMT_SL1 18
  */
 
 /** the parameter of shift right as four 32-bit registers.
-#define DSFMT_SR1 12
+define DSFMT_SR1 12
 */
 
 /** A bitmask, used in the recursion.  These parameters are introduced
  * to break symmetry of SIMD.
-#define DSFMT_MSK1 (uint64_t)0xdfffffefULL
-#define DSFMT_MSK2 (uint64_t)0xddfecb7fULL
+define DSFMT_MSK1 (uint64_t)0xdfffffefULL
+define DSFMT_MSK2 (uint64_t)0xddfecb7fULL
 */
 
 /** These definitions are part of a 128-bit period certification vector.
-#define DSFMT_PCV1	UINT64_C(0x00000001)
-#define DSFMT_PCV2	UINT64_C(0x00000000)
+define DSFMT_PCV1	UINT64_C(0x00000001)
+define DSFMT_PCV2	UINT64_C(0x00000000)
 */
 
 #define DSFMT_LOW_MASK  UINT64_C(0x000FFFFFFFFFFFFF)
