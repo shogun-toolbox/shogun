@@ -7,21 +7,22 @@
  * Written (W) 2013 Mikhail Belous
  */
 
+#ifndef __CSparseGraphColoring_H_
+#define __CSparseGraphColoring_H_
 #include<vector>
 #include<algorithm>
 #include<cstdio>
 
-#ifndef __CSparseGraphColoring_H_
-#define __CSparseGraphColoring_H_
 
 class CSparseGraphColoring 
 {
-  public:
+  private:
     std::vector<std::vector<int> > edges;
     std::vector<int> colors;
     std::vector<std::vector<int> > possibleColors;
     std::vector<int> possibleColorsNum;
     bool dfs(int v);
+  public:
     CSparseGraphColoring(std::vector<std::vector<int> > _edges){
       edges = _edges;
     }
