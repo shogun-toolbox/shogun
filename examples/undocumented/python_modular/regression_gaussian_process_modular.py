@@ -61,7 +61,7 @@ def regression_gaussian_process_modular (n=100,n_test=100, \
 	#
 	#show()
 
-	return gp, alpha, labels, diagonal, covariance, round(mean.get_labels(),12), cholesky
+	return alpha, diagonal, round(covariance.get_labels(),12), round(mean.get_labels(),12), cholesky
 
 if __name__=='__main__':
 	print('Gaussian Process Regression')
