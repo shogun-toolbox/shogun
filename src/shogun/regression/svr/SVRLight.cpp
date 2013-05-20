@@ -191,7 +191,7 @@ void CSVRLight::svr_learn()
   if (kernel->get_kernel_type() == K_COMBINED)
   {
 	  CCombinedKernel* k      = (CCombinedKernel*) kernel;
-	  CKernel* kn = k->get_first_kernel();
+	  CKernel* kn = k->get_kernel(0);
 
 	  while (kn)
 	  {
@@ -509,7 +509,7 @@ void CSVRLight::update_linear_component_mkl(
 			 (!((CCombinedKernel*)kernel)->get_append_subkernel_weights()))// for combined kernel
 	{
 		CCombinedKernel* k      = (CCombinedKernel*) kernel;
-		CKernel* kn = k->get_first_kernel() ;
+		CKernel* kn = k->get_kernel(0) ;
 		int32_t n = 0, i, j ;
 
 		while (kn!=NULL)

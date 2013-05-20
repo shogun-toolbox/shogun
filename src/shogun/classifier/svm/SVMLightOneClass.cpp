@@ -119,7 +119,7 @@ bool CSVMLightOneClass::train_machine(CFeatures* data)
 
 	if (kernel->get_kernel_type() == K_COMBINED)
 	{
-		CKernel* kn = ((CCombinedKernel*)kernel)->get_first_kernel();
+		CKernel* kn = ((CCombinedKernel*)kernel)->get_kernel(0);
 
 		while (kn)
 		{

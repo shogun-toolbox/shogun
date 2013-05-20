@@ -247,7 +247,7 @@ bool CSVMLight::train_machine(CFeatures* data)
 
 	if (kernel->get_kernel_type() == K_COMBINED)
 	{
-		CKernel* kn = ((CCombinedKernel*)kernel)->get_first_kernel();
+		CKernel* kn = ((CCombinedKernel*)kernel)->get_kernel(0);
 
 		while (kn)
 		{
@@ -436,7 +436,7 @@ void CSVMLight::svm_learn()
 		   )
 		{
 			CCombinedKernel* k      = (CCombinedKernel*) kernel;
-			CKernel* kn = k->get_first_kernel();
+			CKernel* kn = k->get_kernel(0);
 
 			while (kn)
 			{
@@ -760,7 +760,7 @@ int32_t CSVMLight::optimize_to_convergence(int32_t* docs, int32_t* label, int32_
 			 )
 		  {
 			  CCombinedKernel* k      = (CCombinedKernel*) kernel;
-			  CKernel* kn = k->get_first_kernel();
+			  CKernel* kn = k->get_kernel(0);
 
 			  while (kn)
 			  {
@@ -1536,7 +1536,7 @@ void CSVMLight::update_linear_component_mkl(
 			 (!((CCombinedKernel*)kernel)->get_append_subkernel_weights()))// for combined kernel
 	{
 		CCombinedKernel* k      = (CCombinedKernel*) kernel;
-		CKernel* kn = k->get_first_kernel() ;
+		CKernel* kn = k->get_kernel(0) ;
 		int32_t n = 0, i, j ;
 
 		while (kn!=NULL)

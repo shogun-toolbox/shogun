@@ -107,15 +107,6 @@ class CCombinedKernel : public CKernel
 
 		/** get first kernel
 		 *
-		 * @return first kernel
-		 */
-		inline CKernel* get_first_kernel()
-		{
-			return (CKernel*) kernel_list->get_first_element();
-		}
-
-		/** get first kernel
-		 *
 		 * @param current
 		 * @return first kernel
 		 */
@@ -131,7 +122,7 @@ class CCombinedKernel : public CKernel
 		 */
 		inline CKernel* get_kernel(int32_t idx)
 		{
-			CKernel * k = get_first_kernel();
+		  CKernel * k = (CKernel*) kernel_list->get_first_element();
 			for (int32_t i=0; i<idx; i++)
 			{
 				SG_UNREF(k);

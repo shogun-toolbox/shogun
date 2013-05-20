@@ -764,7 +764,7 @@ void CCombinedKernel::set_subkernel_weights(SGVector<float64_t> weights)
 
 void CCombinedKernel::set_optimization_type(EOptimizationType t)
 {
-	CKernel* k = get_first_kernel();
+	CKernel* k = get_kernel(0);
 
 	while(k)
 	{
@@ -779,7 +779,7 @@ void CCombinedKernel::set_optimization_type(EOptimizationType t)
 
 bool CCombinedKernel::precompute_subkernels()
 {
-	CKernel* k = get_first_kernel();
+	CKernel* k = get_kernel(0);
 
 	if (!k)
 		return false;

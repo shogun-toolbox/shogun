@@ -195,7 +195,7 @@ void CLinearTimeMMD::compute_statistic_and_variance(
 		if (multiple_kernels)
 		{
 			SG_DEBUG("using multiple kernels\n");
-			kernel=((CCombinedKernel*)m_kernel)->get_first_kernel();
+			kernel=((CCombinedKernel*)m_kernel)->get_kernel(0);
 		}
 
 		/* iterate through all kernels for this data */
@@ -327,7 +327,7 @@ void CLinearTimeMMD::compute_statistic_and_Q(
 	/* produce two kernel lists to iterate doubly nested */
 	CList* list_i=new CList();
 	CList* list_j=new CList();
-	CKernel* kernel=combined->get_first_kernel();
+	CKernel* kernel=combined->get_kernel(0);
 	while (kernel)
 	{
 		list_i->append_element(kernel);

@@ -40,7 +40,7 @@ CMMDKernelSelectionMedian::CMMDKernelSelectionMedian(
 
 	/* assert that all subkernels are Gaussian kernels */
 	CCombinedKernel* combined=(CCombinedKernel*)kernel;
-	CKernel* subkernel=combined->get_first_kernel();
+	CKernel* subkernel=combined->get_kernel(0);
 	index_t i=0;
 	while (subkernel)
 	{
@@ -206,7 +206,7 @@ CKernel* CMMDKernelSelectionMedian::select_kernel()
 	/* now of all kernels, find the one which has its width closest
 	 * Cast is safe due to constructor of MMDKernelSelection class */
 	CCombinedKernel* combined=(CCombinedKernel*)m_mmd->get_kernel();
-	CKernel* current=combined->get_first_kernel();
+	CKernel* current=combined->get_kernel(0);
 	float64_t min_distance=CMath::MAX_REAL_NUMBER;
 	CKernel* min_kernel=NULL;
 	float64_t distance;

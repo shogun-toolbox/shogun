@@ -593,7 +593,7 @@ float64_t CMKL::compute_elasticnet_dual_objective()
 		// Compute Elastic-net dual
 		float64_t* nm = SG_MALLOC(float64_t, num_kernels);
 		float64_t del=0;
-		CKernel* kn = ((CCombinedKernel*)kernel)->get_first_kernel();
+		CKernel* kn = ((CCombinedKernel*)kernel)->get_kernel(0);
 
 		int32_t k=0;
 		while (kn)
@@ -1529,7 +1529,7 @@ float64_t CMKL::compute_mkl_dual_objective()
 
 	if (m_labels && kernel && kernel->get_kernel_type() == K_COMBINED)
 	{
-		CKernel* kn = ((CCombinedKernel*)kernel)->get_first_kernel();
+		CKernel* kn = ((CCombinedKernel*)kernel)->get_kernel(0);
 		while (kn)
 		{
 			float64_t sum=0;
