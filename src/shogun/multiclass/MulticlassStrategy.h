@@ -138,9 +138,9 @@ public:
 		m_prob_heuris = prob_heuris;
 	}
 
-	/** rescale multiclass outputs according to the selected heuristic 
-     * NOTE: no matter OVA or OVO, only num_classes rescaled outputs 
-     * will be returned as the posteriors
+	/** rescale multiclass outputs according to the selected heuristic
+	 * NOTE: no matter OVA or OVO, only num_classes rescaled outputs
+	 * will be returned as the posteriors
 	 * @param outputs a vector of output from each machine (in that order)
 	 */
 	virtual void rescale_outputs(SGVector<float64_t> outputs)
@@ -149,9 +149,9 @@ public:
 
 	/** rescale multiclass outputs according to the selected heuristic 
 	 * this function only being called with OVA_SOFTMAX heuristic
-     * the CStatistics::fit_sigmoid() should be called first
+	 * the CStatistics::fit_sigmoid() should be called first
 	 * @param outputs a vector of output from each machine (in that order)
-	 * @param As fitted sigmoid parameters a one for each machine 
+	 * @param As fitted sigmoid parameters a one for each machine
 	 * @param Bs fitted sigmoid parameters b one for each machine
 	 */
 	virtual void rescale_outputs(SGVector<float64_t> outputs,
