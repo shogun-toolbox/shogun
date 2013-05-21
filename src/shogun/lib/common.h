@@ -19,12 +19,6 @@
 #include <stdio.h>
 #include <shogun/lib/config.h>
 
-#ifndef LINUX
-#define RANDOM_MAX 2147483647
-#else
-#define RANDOM_MAX RAND_MAX
-#endif
-
 /**@name Standard Types
  * Definition of Platform independent Types
 */

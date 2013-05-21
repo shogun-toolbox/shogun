@@ -461,64 +461,42 @@ class CMath : public CSGObject
 
 		static inline uint64_t random()
 		{
-			uint64_t rnd = sg_rand->random_64();
-
-			return rnd;
+			return sg_rand->random_64();
 		}
 
 		static inline uint64_t random(uint64_t min_value, uint64_t max_value)
 		{
-			uint64_t ret = min_value + (uint64_t) ((max_value-min_value+1) * (CMath::random() / (RAND_MAX_64)));
-			ASSERT(ret>=min_value && ret<=max_value)
-			return ret ;
+			return sg_rand->random(min_value, max_value);
 		}
 
 		static inline int64_t random(int64_t min_value, int64_t max_value)
 		{
-			int64_t ret = min_value + (int64_t) ((max_value-min_value+1) * (CMath::random() / (RAND_MAX_64)));
-			ASSERT(ret>=min_value && ret<=max_value)
-			return ret ;
+			return sg_rand->random(min_value, max_value);
 		}
 
 		static inline uint32_t random(uint32_t min_value, uint32_t max_value)
 		{
-			uint32_t ret = min_value + (uint32_t) ((max_value-min_value+1) * (CMath::random() / (RAND_MAX_64)));
-			ASSERT(ret>=min_value && ret<=max_value)
-			return ret ;
+			return sg_rand->random(min_value, max_value);
 		}
 
 		static inline int32_t random(int32_t min_value, int32_t max_value)
 		{
-			int32_t ret = min_value + (int32_t) ((max_value-min_value+1) * (CMath::random() / (RAND_MAX_64)));
-			ASSERT(ret>=min_value && ret<=max_value)
-			return ret ;
+			return sg_rand->random(min_value, max_value);
 		}
 
 		static inline float32_t random(float32_t min_value, float32_t max_value)
 		{
-			float32_t ret = min_value + ((max_value-min_value) * sg_rand->random_close());
-			if (ret<min_value || ret>max_value)
-				SG_SPRINT("min_value:%10.10f value: %10.10f max_value:%10.10f", min_value, ret, max_value)
-			ASSERT(ret>=min_value && ret<=max_value)
-			return ret;
+			return sg_rand->random(min_value, max_value);
 		}
 
 		static inline float64_t random(float64_t min_value, float64_t max_value)
 		{
-			float64_t ret = min_value + ((max_value-min_value) * sg_rand->random_close());
-			if (ret<min_value || ret>max_value)
-				SG_SPRINT("min_value:%10.10f value: %10.10f max_value:%10.10f", min_value, ret, max_value)
-			ASSERT(ret>=min_value && ret<=max_value)
-			return ret;
+			return sg_rand->random(min_value, max_value);
 		}
 
 		static inline floatmax_t random(floatmax_t min_value, floatmax_t max_value)
 		{
-			floatmax_t ret = min_value + ((max_value-min_value) * sg_rand->random_close());
-			if (ret<min_value || ret>max_value)
-				SG_SPRINT("min_value:%10.10f value: %10.10f max_value:%10.10f", min_value, ret, max_value)
-			ASSERT(ret>=min_value && ret<=max_value)
-			return ret;
+			return sg_rand->random(min_value, max_value);
 		}
 
 		/// Returns a Gaussian or Normal random number.

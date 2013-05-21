@@ -3,8 +3,12 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/SGVector.h>
 #include <gtest/gtest.h>
+#include <stdio.h>
 
 using namespace shogun;
+
+const uint32_t n_runs=1200000;
+const uint32_t array_len=23;
 
 /**
  * NOTE: these unit tests were generated with MEXP=19937
@@ -193,17 +197,127 @@ TEST(Random, random_int32_1_2)
 	}
 }
 
-TEST(Random, random_int32_0_10)
+TEST(Random, random_int64_range)
 {
 	CMath::init_random(17);
-	int rnds[10] = {0,0,0,0,0,0};
-	for (int32_t i=0; i<10000; i++)
+	int rnds[array_len];
+	for (uint32_t i=0; i<array_len; i++)
+		rnds[i]=0;
+	for (uint32_t i=0; i<n_runs; i++)
 	{
-		int32_t r=CMath::random((int32_t) 0, (int32_t) 9);
+		int64_t r=CMath::random((int64_t) 0, (int64_t) array_len-1);
 		rnds[r]++;
 	}
 
-	for (int32_t i=0; i<10; i++) {
-		EXPECT_TRUE(rnds[i]>0);
+	for (uint32_t i=0; i<array_len; i++) {
+		double pbin=double(rnds[i])/n_runs*100*array_len;
+		EXPECT_GE(pbin, 99.0);
 	}
+}
+
+TEST(Random, random_uint64_range)
+{
+	CMath::init_random(17);
+	int rnds[array_len];
+	for (uint32_t i=0; i<array_len; i++)
+		rnds[i]=0;
+	for (uint32_t i=0; i<n_runs; i++)
+	{
+		uint64_t r=CMath::random((uint64_t) 0, (uint64_t) array_len-1);
+		rnds[r]++;
+	}
+
+	for (uint32_t i=0; i<array_len; i++) {
+		double pbin=double(rnds[i])/n_runs*100*array_len;
+		EXPECT_GE(pbin, 99.0);
+	}
+}
+
+TEST(Random, random_int32_range)
+{
+	CMath::init_random(17);
+	int rnds[array_len];
+	for (uint32_t i=0; i<array_len; i++)
+		rnds[i]=0;
+	for (uint32_t i=0; i<n_runs; i++)
+	{
+		int32_t r=CMath::random((int32_t) 0, (int32_t) array_len-1);
+		rnds[r]++;
+	}
+
+	for (uint32_t i=0; i<array_len; i++) {
+		double pbin=double(rnds[i])/n_runs*100*array_len;
+		EXPECT_GE(pbin, 99.0);
+	}
+}
+
+TEST(Random, random_uint32_range)
+{
+	CMath::init_random(17);
+	int rnds[array_len];
+	for (uint32_t i=0; i<array_len; i++)
+		rnds[i]=0;
+	for (uint32_t i=0; i<n_runs; i++)
+	{
+		uint32_t r=CMath::random((uint32_t) 0, (uint32_t) array_len-1);
+		rnds[r]++;
+	}
+
+	for (uint32_t i=0; i<array_len; i++) {
+		double pbin=double(rnds[i])/n_runs*100*array_len;
+		EXPECT_GE(pbin, 99.0);
+	}
+}
+
+TEST(Random, random_uint32_random_range)
+{
+	CRandom* prng = new CRandom();
+	prng->set_seed(17);
+	int rnds[array_len];
+	for (uint32_t i=0; i<array_len; i++)
+		rnds[i]=0;
+	for (uint32_t i=0; i<n_runs; i++)
+	{
+		uint32_t r=prng->random_32() % array_len;
+		rnds[r]++;
+	}
+
+	for (uint32_t i=0; i<array_len; i++) {
+		double pbin=double(rnds[i])/n_runs*100*array_len;
+		EXPECT_GE(pbin, 99.0);
+	}
+	SG_UNREF(prng);
+}
+
+TEST(Random, random_float64_range)
+{
+	CMath::init_random(17);
+	int rnds[array_len];
+	for (uint32_t i=0; i<array_len; i++)
+		rnds[i]=0;
+	for (uint32_t i=0; i<n_runs; i++)
+	{
+		int32_t r= (int32_t) CMath::random((float64_t) 0, (float64_t) array_len);
+		rnds[r]++;
+	}
+
+	for (uint32_t i=0; i<array_len; i++) {
+		double pbin=double(rnds[i])/n_runs*100*array_len;
+		EXPECT_GE(pbin, 99.0);
+	}
+}
+
+TEST(Random, random_float64_range2)
+{
+	CMath::init_random(12345678);
+	float64_t min=1.0;
+	float64_t max=0.0;
+	for (uint32_t i=0; i<n_runs; i++)
+	{
+		float64_t r=CMath::random((float64_t) 0, (float64_t) 1.0);
+		min=CMath::min(min, r);
+		max=CMath::max(max, r);
+	}
+	EXPECT_GE(max, 0.99999);
+	EXPECT_LE(min, 0.00001);
 }

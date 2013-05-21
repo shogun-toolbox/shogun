@@ -165,7 +165,6 @@ template<class T> class CCache : public CSGObject
 		if (lookup_table)
 		{
 			// first look for the element with smallest usage count
-			//int64_t min_idx=((nr_cache_lines-1)*random())/(RAND_MAX+1); //avoid the last elem and the scratch line
 			int64_t min_idx=0;
 			int64_t min=-1;
 			bool found_free_line=false;

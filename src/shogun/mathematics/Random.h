@@ -18,9 +18,6 @@
 #include <shogun/lib/external/SFMT/SFMT.h>
 #include <shogun/lib/external/dSFMT/dSFMT.h>
 
-#define RAND_MAX_32 ((float32_t)std::numeric_limits<uint32_t>::max())
-#define RAND_MAX_64 ((float64_t)std::numeric_limits<uint64_t>::max())
-
 namespace shogun
 {
 	/** @brief: Pseudo random number geneartor
@@ -56,18 +53,73 @@ namespace shogun
 			uint32_t get_seed() const;
 
 			/**
-			 * Generate an unsinged 32-bit random integer
+			 * Generate an unsigned 32-bit random integer
 			 *
 			 * @return the random 32-bit unsigned integer
 			 */
 			uint32_t random_32() const;
 
 			/**
-			 * Generate an unsinged 64-bit random integer
+			 * Generate an unsigned 64-bit random integer
 			 *
 			 * @return the random 64-bit unsigned integer
 			 */			
 			uint64_t random_64() const;
+
+			/**
+			 * Generate a signed 32-bit random integer
+			 *
+			 * @return the random 32-bit signed integer
+			 */
+			inline int32_t random_s32() const
+			{
+				return random_32() & 0x7fffffff;
+			}
+
+			/**
+			 * Generate a signed 64-bit random integer
+			 *
+			 * @return the random 64-bit signed integer
+			 */			
+			int64_t random_s64() const
+			{
+				return random_64() & 0x7fffffffffffffffl;
+			}
+
+			inline uint64_t random(uint64_t min_value, uint64_t max_value)
+			{
+				return min_value + random_64() % (max_value-min_value+1);
+			}
+
+			inline int64_t random(int64_t min_value, int64_t max_value)
+			{
+				return min_value + random_s64() % (max_value-min_value+1);
+			}
+
+			inline uint32_t random(uint32_t min_value, uint32_t max_value)
+			{
+				return min_value + random_32() % (max_value-min_value+1);
+			}
+
+			inline int32_t random(int32_t min_value, int32_t max_value)
+			{
+				return min_value + random_s32() % (max_value-min_value+1);
+			}
+
+			inline float32_t random(float32_t min_value, float32_t max_value)
+			{
+				return min_value + ((max_value-min_value) * random_close());
+			}
+
+			inline float64_t random(float64_t min_value, float64_t max_value)
+			{
+				return min_value + ((max_value-min_value) * random_close());
+			}
+
+			inline floatmax_t random(floatmax_t min_value, floatmax_t max_value)
+			{
+				return min_value + ((max_value-min_value) * random_close());
+			}
 
 			/**
 			 * Fill an array of unsinged 32 bit integer
