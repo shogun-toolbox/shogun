@@ -139,6 +139,8 @@ public:
 	}
 
 	/** rescale multiclass outputs according to the selected heuristic 
+     * NOTE: no matter OVA or OVO, only num_classes rescaled outputs 
+     * will be returned as the posteriors
 	 * @param outputs a vector of output from each machine (in that order)
 	 */
 	virtual void rescale_outputs(SGVector<float64_t> outputs)
@@ -147,8 +149,10 @@ public:
 
 	/** rescale multiclass outputs according to the selected heuristic 
 	 * this function only being called with OVA_SOFTMAX heuristic
+     * the CStatistics::fit_sigmoid() should be called first
 	 * @param outputs a vector of output from each machine (in that order)
-	 * @param sig_params a vector of sigmoid parameters w.r.t binary machines
+	 * @param As fitted sigmoid parameters a one for each machine 
+	 * @param Bs fitted sigmoid parameters b one for each machine
 	 */
 	virtual void rescale_outputs(SGVector<float64_t> outputs,
 			const SGVector<float64_t> As, const SGVector<float64_t> Bs)
