@@ -14,6 +14,7 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/lib/Trie.h>
+#include <shogun/kernel/Kernel.h>
 #include <shogun/kernel/string/StringKernel.h>
 #include <shogun/transfer/multitask/MultitaskKernelMklNormalizer.h>
 #include <shogun/features/StringFeatures.h>
@@ -52,7 +53,12 @@ enum EWDKernType
  */
 class CWeightedDegreeStringKernel: public CStringKernel<char>
 {
+	template <class KernelType>
+	friend float64_t get_feature_vectors_and_compute(KernelType* kernel, int32_t idx_a, int32_t idx_b);
+
 	public:
+
+		typedef CStringFeatures<char> FeaturesType;
 
 		/** default constructor
 		 *
@@ -655,49 +661,51 @@ class CWeightedDegreeStringKernel: public CStringKernel<char>
 		 */
 		float64_t compute(int32_t idx_a, int32_t idx_b);
 
+		/** compute kernel function for features, represented
+		 * by vectors avec and bvec.
+		 *
+		 * @param avec first feature vector
+		 * @param bvec second feature vector
+		 * @return computed kernel function for feature vectors
+		 * avec and bvec
+		 */
+		float64_t inner_compute(const SGVector<char>& avec, const SGVector<char>& bvec);
+
 		/** compute with mismatch
 		 *
 		 * @param avec vector a
-		 * @param alen length of vector a
 		 * @param bvec vector b
-		 * @param blen length of vector b
 		 * @return computed value
 		 */
 		float64_t compute_with_mismatch(
-			char* avec, int32_t alen, char* bvec, int32_t blen);
+			const SGVector<char>& avec, const SGVector<char>& bvec);
 
 		/** compute without mismatch
 		 *
 		 * @param avec vector a
-		 * @param alen length of vector a
 		 * @param bvec vector b
-		 * @param blen length of vector b
 		 * @return computed value
 		 */
 		float64_t compute_without_mismatch(
-			char* avec, int32_t alen, char* bvec, int32_t blen);
+			const SGVector<char>& avec, const SGVector<char>& bvec);
 
 		/** compute without mismatch matrix
 		 *
 		 * @param avec vector a
-		 * @param alen length of vector a
 		 * @param bvec vector b
-		 * @param blen length of vector b
 		 * @return computed value
 		 */
 		float64_t compute_without_mismatch_matrix(
-			char* avec, int32_t alen, char* bvec, int32_t blen);
+			const SGVector<char>& avec, const SGVector<char>& bvec);
 
 		/** compute using block
 		 *
 		 * @param avec vector a
-		 * @param alen length of vector a
 		 * @param bvec vector b
-		 * @param blen length of vector b
 		 * @return computed value
 		 */
-		float64_t compute_using_block(char* avec, int32_t alen,
-			char* bvec, int32_t blen);
+		float64_t compute_using_block(
+			const SGVector<char>& avec, const SGVector<char>& bvec);
 
 		/** remove lhs from kernel */
 		virtual void remove_lhs();

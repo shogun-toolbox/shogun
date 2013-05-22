@@ -260,16 +260,16 @@ bool CWeightedDegreeStringKernel::delete_optimization()
 
 
 float64_t CWeightedDegreeStringKernel::compute_with_mismatch(
-	char* avec, int32_t alen, char* bvec, int32_t blen)
+	const SGVector<char>& avec, const SGVector<char>& bvec)
 {
 	float64_t sum = 0.0;
 
-	for (int32_t i=0; i<alen; i++)
+	for (int32_t i=0; i<avec.vlen; i++)
 	{
 		float64_t sumi = 0.0;
 		int32_t mismatches=0;
 
-		for (int32_t j=0; (i+j<alen) && (j<degree); j++)
+		for (int32_t j=0; (i+j<avec.vlen) && (j<degree); j++)
 		{
 			if (avec[i+j]!=bvec[i+j])
 			{
@@ -288,14 +288,14 @@ float64_t CWeightedDegreeStringKernel::compute_with_mismatch(
 }
 
 float64_t CWeightedDegreeStringKernel::compute_using_block(
-	char* avec, int32_t alen, char* bvec, int32_t blen)
+	const SGVector<char>& avec, const SGVector<char>& bvec)
 {
-	ASSERT(alen==blen)
+	ASSERT(avec.vlen==bvec.vlen)
 
 	float64_t sum=0;
 	int32_t match_len=-1;
 
-	for (int32_t i=0; i<alen; i++)
+	for (int32_t i=0; i<avec.vlen; i++)
 	{
 		if (avec[i]==bvec[i])
 			match_len++;
@@ -314,15 +314,15 @@ float64_t CWeightedDegreeStringKernel::compute_using_block(
 }
 
 float64_t CWeightedDegreeStringKernel::compute_without_mismatch(
-	char* avec, int32_t alen, char* bvec, int32_t blen)
+	const SGVector<char>& avec, const SGVector<char>& bvec)
 {
 	float64_t sum = 0.0;
 
-	for (int32_t i=0; i<alen; i++)
+	for (int32_t i=0; i<avec.vlen; i++)
 	{
 		float64_t sumi = 0.0;
 
-		for (int32_t j=0; (i+j<alen) && (j<degree); j++)
+		for (int32_t j=0; (i+j<avec.vlen) && (j<degree); j++)
 		{
 			if (avec[i+j]!=bvec[i+j])
 				break ;
@@ -337,14 +337,14 @@ float64_t CWeightedDegreeStringKernel::compute_without_mismatch(
 }
 
 float64_t CWeightedDegreeStringKernel::compute_without_mismatch_matrix(
-	char* avec, int32_t alen, char* bvec, int32_t blen)
+	const SGVector<char>& avec, const SGVector<char>& bvec)
 {
 	float64_t sum = 0.0;
 
-	for (int32_t i=0; i<alen; i++)
+	for (int32_t i=0; i<avec.vlen; i++)
 	{
 		float64_t sumi=0.0;
-		for (int32_t j=0; (i+j<alen) && (j<degree); j++)
+		for (int32_t j=0; (i+j<avec.vlen) && (j<degree); j++)
 		{
 			if (avec[i+j]!=bvec[i+j])
 				break;
@@ -362,26 +362,25 @@ float64_t CWeightedDegreeStringKernel::compute_without_mismatch_matrix(
 
 float64_t CWeightedDegreeStringKernel::compute(int32_t idx_a, int32_t idx_b)
 {
-	int32_t alen, blen;
-	bool free_avec, free_bvec;
-	char* avec=((CStringFeatures<char>*) lhs)->get_feature_vector(idx_a, alen, free_avec);
-	char* bvec=((CStringFeatures<char>*) rhs)->get_feature_vector(idx_b, blen, free_bvec);
+	return get_feature_vectors_and_compute(this, idx_a, idx_b);
+}
+
+float64_t CWeightedDegreeStringKernel::inner_compute(
+	const SGVector<char>& avec, const SGVector<char>& bvec)
+{
 	float64_t result=0;
 
 	if (max_mismatch==0 && length==0 && block_computation)
-		result=compute_using_block(avec, alen, bvec, blen);
+		result=compute_using_block(avec, bvec);
 	else
 	{
 		if (max_mismatch>0)
-			result=compute_with_mismatch(avec, alen, bvec, blen);
+			result=compute_with_mismatch(avec, bvec);
 		else if (length==0)
-			result=compute_without_mismatch(avec, alen, bvec, blen);
+			result=compute_without_mismatch(avec, bvec);
 		else
-			result=compute_without_mismatch_matrix(avec, alen, bvec, blen);
+			result=compute_without_mismatch_matrix(avec, bvec);
 	}
-	((CStringFeatures<char>*) lhs)->free_feature_vector(avec, idx_a, free_avec);
-	((CStringFeatures<char>*) rhs)->free_feature_vector(bvec, idx_b, free_bvec);
-
 	return result;
 }
 
