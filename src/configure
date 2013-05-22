@@ -103,6 +103,7 @@ _mosek=auto
 _arpack=auto
 _nlopt=auto
 _eigen3=auto
+_arprec=no
 _gmock=auto
 _gtest=auto
 _bigstates=yes
@@ -1435,6 +1436,7 @@ Optional features:
   --enable-superlu               enable SuperLU [auto]
   --enable-nlopt                 enable NLOPT [auto]
   --enable-eigen3                enable Eigen3 [auto]
+  --enable-arprec                enable Arprec [disabled]
   --enable-cplex                 enable code using CPLEX  [auto]
   --enable-lpsolve               enable code using lpsolve  [auto]
   --enable-glpk                  enable code using GLPK [auto]
@@ -1462,6 +1464,7 @@ Optional features:
   --disable-superlu              disable SuperLU [auto]
   --disable-nlopt                disable NLOPT [auto]
   --disable-eigen3               disable Eigen3 [auto]
+  --disable-arprec               disable Arprec [disabled]
   --disable-gmock                disable google mocking framework [auto]
   --disable-gtest                disable google testing framework [auto]
   --disable-cplex                disable code using CPLEX  [auto]
@@ -1693,6 +1696,8 @@ EOF
 	  --enable-nlopt)		_nlopt=yes	;;
 	  --disable-eigen3)		_eigen3=no	;;
 	  --enable-eigen3)		_eigen3=yes	;;
+	  --disable-arprec)		_arprec=no	;;
+	  --enable-arprec)		_arprec=yes	;;
 	  --disable-gtest)		_gtest=no	;;
 	  --enable-gtest)		_gtest=yes	;;
 	  --disable-gmock)		_gmock=no	;;
@@ -3675,6 +3680,41 @@ EOF
 	fi
 }
 
+check_arprec()
+{
+	if test "$_arprec" = yes || test "$_arprec" = auto
+	then
+		cat > $TMPCXX << EOF
+#include <arprec/mp_real.h>
+#include <arprec/mp_complex.h>
+
+int main()
+{
+	mp::mp_init(100,NULL,true);
+	mp_real pi=mp_real::_pi;
+	mp_complex sin_u=sin(mp_complex(20));
+	mp::mp_finalize();
+	return 0;
+}
+EOF
+		echocheck "ARPREC support"
+		if cxx_check -larprec
+		then
+			echores "yes"
+			HAVE_ARPREC='#define HAVE_ARPREC 1'
+			DEFINES="$DEFINES -DHAVE_ARPREC"
+			POSTLINKFLAGS="$POSTLINKFLAGS -larprec"
+		else
+			if test "$_arprec" = yes
+			then
+				die "ARPREC not found"
+			else
+				echores "no"
+			fi
+		fi
+	fi
+}
+
 check_mosek()
 {
 	if test "$_mosek" = yes || test "$_mosek" = auto
@@ -5589,6 +5629,7 @@ check_mosek
 check_arpack
 check_nlopt
 check_eigen3
+check_arprec
 check_cplex
 check_glpk
 check_lzo
