@@ -72,6 +72,9 @@ struct SSKTripleFeature
 template <class ST> class CStringFeatures : public CFeatures
 {
 	public:
+
+		typedef ST ElementType;
+
 		/** default constructor
 		 *
 		 */

@@ -1082,5 +1082,17 @@ class CKernel : public CSGObject
 		CKernelNormalizer* normalizer;
 };
 
+template <class KernelType>
+float64_t get_feature_vectors_and_compute(KernelType* kernel, int32_t idx_a, int32_t idx_b)
+{
+    SGVector<typename KernelType::FeaturesType::ElementType> avec=
+            ((typename KernelType::FeaturesType*) kernel->lhs)->get_feature_vector(idx_a);
+    SGVector<typename KernelType::FeaturesType::ElementType> bvec=
+            ((typename KernelType::FeaturesType*) kernel->rhs)->get_feature_vector(idx_b);
+    REQUIRE(avec.vlen==bvec.vlen, "Number of Right and Left Hand "\
+            "Features Must be the Same./n");
+    return kernel->inner_compute(avec, bvec);	
+}
+
 }
 #endif /* _KERNEL_H__ */
