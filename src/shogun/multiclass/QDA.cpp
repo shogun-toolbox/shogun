@@ -10,7 +10,7 @@
 
 #include <shogun/lib/common.h>
 
-#ifdef HAVE_LAPACK
+#ifdef HAVE_EIGEN3
 
 #include <shogun/multiclass/QDA.h>
 #include <shogun/machine/NativeMulticlassMachine.h>
@@ -18,9 +18,9 @@
 #include <shogun/labels/Labels.h>
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/mathematics/lapack.h>
-
+#include <shogun/mathematics/eigen3.h>
 using namespace shogun;
+using namespace Eigen;
 
 CQDA::CQDA(float64_t tolerance, bool store_covs)
 : CNativeMulticlassMachine(), m_tolerance(tolerance), 
@@ -59,7 +59,7 @@ void CQDA::init()
 
 void CQDA::cleanup()
 {
-	m_means=SGMatrix<float64_t>();
+//	m_means=SGMatrix<float64_t>();
 
 	m_num_classes = 0;
 }
@@ -83,10 +83,10 @@ CMulticlassLabels* CQDA::apply_multiclass(CFeatures* data)
 
 	CDenseFeatures< float64_t >* rf = (CDenseFeatures< float64_t >*) m_features;
 
-	SGMatrix< float64_t > X(num_vecs, m_dim);
-	SGMatrix< float64_t > A(num_vecs, m_dim);
-	SGVector< float64_t > norm2(num_vecs*m_num_classes);
-	norm2.zero();
+	Matrix<float64_t,Dynamic,Dynamic,ColMajor> X(num_vecs, m_dim);
+	Matrix<float64_t,Dynamic,Dynamic,ColMajor> A(num_vecs, m_dim);
+	Matrix<float64_t,Dynamic,1> norm2(num_vecs*m_num_classes);
+	norm2.setZero();
 
 	int i, j, k, vlen;
 	bool vfree;
@@ -100,39 +100,35 @@ CMulticlassLabels* CQDA::apply_multiclass(CFeatures* data)
 			ASSERT(vec)
 
 			for ( j = 0 ; j < m_dim ; ++j )
-				X[i + j*num_vecs] = vec[j] - m_means[k*m_dim + j];
-
+				X(i,j) = vec[j] - m_means[k*m_dim + j];
 			rf->free_feature_vector(vec, i, vfree);
 
 		}
 
-		cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, num_vecs, m_dim,
-			m_dim, 1.0, X.matrix, num_vecs, m_M.get_matrix(k), m_dim, 0.0,
-			A.matrix, num_vecs);
-
+		Matrix<float64_t,Dynamic,Dynamic,ColMajor> m_Mk = Map<Matrix<float64_t,Dynamic,Dynamic,ColMajor> >(m_M.get_matrix(k),m_dim,m_dim);
+		A = X * m_Mk;
 		for ( i = 0 ; i < num_vecs ; ++i )
 			for ( j = 0 ; j < m_dim ; ++j )
-				norm2[i + k*num_vecs] += CMath::sq(A[i + j*num_vecs]);
+				norm2[i + k*num_vecs] += CMath::sq(A(i,j));
 
 #ifdef DEBUG_QDA
-	CMath::display_matrix(A.matrix, num_vecs, m_dim, "A");
+	CMath::display_matrix(A.data(), num_vecs, m_dim, "A");
 #endif
 	}
-
 	for ( i = 0 ; i < num_vecs ; ++i )
 		for ( k = 0 ; k < m_num_classes ; ++k )
 		{
-			norm2[i + k*num_vecs] += m_slog[k];
-			norm2[i + k*num_vecs] *= -0.5;
+			norm2(i + k*num_vecs) += m_slog[k];
+			norm2(i + k*num_vecs) *= -0.5;
 		}
 
 	CMulticlassLabels* out = new CMulticlassLabels(num_vecs);
 
 	for ( i = 0 ; i < num_vecs ; ++i )
-		out->set_label(i, SGVector<float64_t>::arg_max(norm2.vector+i, num_vecs, m_num_classes));
+		out->set_label(i, SGVector<float64_t>::arg_max(norm2.data()+i, num_vecs, m_num_classes));
 
 #ifdef DEBUG_QDA
-	CMath::display_matrix(norm2.vector, num_vecs, m_num_classes, "norm2");
+	CMath::display_matrix(norm2.data(), num_vecs, m_num_classes, "norm2");
 	CMath::display_vector(out->get_labels().vector, num_vecs, "Labels");
 #endif
 
@@ -246,33 +242,32 @@ bool CQDA::train_machine(CFeatures* data)
 				buffer[i + j*class_nums[k]] -= m_means[k*m_dim + j];
 
 		/* calling external lib, buffer = U * S * V^T, U is not interesting here */
-		char jobu = 'N', jobvt = 'A';
 		int m = class_nums[k], n = m_dim;
-		int lda = m, ldu = m, ldvt = n;
-		int info = -1;
+
 		float64_t * col = scalings.get_column_vector(k);
 		float64_t * rot_mat = rotations.get_matrix(k);
 
-		wrap_dgesvd(jobu, jobvt, m, n, buffer.matrix, lda, col, NULL, ldu,
-			rot_mat, ldvt, &info);
-		ASSERT(info == 0)
-		buffer=SGMatrix<float64_t>();
+		Matrix<float64_t,Dynamic,Dynamic,ColMajor> buff = Map<Matrix<float64_t,Dynamic,Dynamic,ColMajor> >(buffer.matrix,m,m_dim);
+		JacobiSVD<Matrix<float64_t,Dynamic,Dynamic,ColMajor> > eSvd(buff,ComputeFullV);
+		memcpy(col, eSvd.singularValues().data(), m_dim*sizeof(float64_t));
+		memcpy(rot_mat, eSvd.matrixV().data(), m_dim*m_dim*sizeof(float64_t));
 
+		buffer=SGMatrix<float64_t>();
 		SGVector<float64_t>::vector_multiply(col, col, col, m_dim);
 		SGVector<float64_t>::scale_vector(1.0/(m-1), col, m_dim);
 		rotations.transpose_matrix(k);
-
+		
 		if ( m_store_covs )
 		{
 			SGMatrix< float64_t > M(n ,n);
-
-			M.matrix = SGVector<float64_t>::clone_vector(rot_mat, n*n);
+			Matrix<float64_t,Dynamic,Dynamic,ColMajor> MEig = Map<Matrix<float64_t,Dynamic,Dynamic,ColMajor> >(rot_mat,n,n);
 			for ( i = 0 ; i < m_dim ; ++i )
 				for ( j = 0 ; j < m_dim ; ++j )
-					M[i + j*m_dim] *= scalings[k*m_dim + j];
-
-			cblas_dgemm(CblasColMajor, CblasNoTrans, CblasTrans, n, n, n, 1.0,
-				M.matrix, n, rot_mat, n, 0.0, m_covs.get_matrix(k), n);
+					M(i,j)*=scalings[k*m_dim + j];
+			Matrix<float64_t,Dynamic,Dynamic,ColMajor> rotE=Map<Matrix<float64_t,Dynamic,Dynamic,ColMajor> >(rot_mat,n,n);
+			Matrix<float64_t,Dynamic,Dynamic,ColMajor> resE(n,n);
+			resE = MEig * rotE.transpose();
+			memcpy(m_covs.get_matrix(k),resE.data(),n*n*sizeof(float64_t));
 		}
 	}
 
