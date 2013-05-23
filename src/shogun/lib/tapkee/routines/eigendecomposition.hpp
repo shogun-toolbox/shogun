@@ -90,10 +90,9 @@ EigendecompositionResult eigendecomposition_impl_randomized(const MatrixType& wm
 	DenseMatrix O(wm.rows(), target_dimension+skip);
 	for (IndexType i=0; i<O.rows(); ++i)
 	{
-		for (IndexType j=0; j+1 < O.cols(); j++)
+		for (IndexType j=0; j<O.cols(); j++)
 		{
 			O(i,j) = tapkee::gaussian_random();
-			O(i,j+1) = tapkee::gaussian_random();
 		}
 	}
 	MatrixOperationType operation(wm);

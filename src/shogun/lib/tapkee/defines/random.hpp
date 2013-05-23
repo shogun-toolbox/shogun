@@ -8,45 +8,46 @@
 
 #include <cstdlib>
 #include <algorithm>
+#include <limits>
 
 namespace tapkee
 {
 
-IndexType uniform_random_index() 
+inline IndexType uniform_random_index() 
 {
 #ifdef CUSTOM_UNIFORM_RANDOM_INDEX_FUNCTION
-	return CUSTOM_UNIFORM_RANDOM_INDEX_FUNCTION;
+	return CUSTOM_UNIFORM_RANDOM_INDEX_FUNCTION % std::numeric_limits<IndexType>::max();
 #else
-	return rand();
+	return std::rand();
 #endif
 }
 
-IndexType uniform_random_index_bounded(IndexType upper)
+inline IndexType uniform_random_index_bounded(IndexType upper)
 {
 	return uniform_random_index() % upper;
 }
 
-ScalarType uniform_random()
+inline ScalarType uniform_random()
 {
 #ifdef CUSTOM_UNIFORM_RANDOM_FUNCTION
 	return CUSTOM_UNIFORM_RANDOM_FUNCTION;
 #else
-	return rand()/static_cast<ScalarType>(RAND_MAX);
+	return std::rand()/((double)RAND_MAX+1);
 #endif
 }
 
-ScalarType gaussian_random()
+inline ScalarType gaussian_random()
 {
 #ifdef CUSTOM_GAUSSIAN_RANDOM_FUNCTION
 	return CUSTOM_GAUSSIAN_RANDOM_FUNCTION;
 #else
 	ScalarType x, y, radius;
 	do {
-		x = 2 * (rand() / ((double) RAND_MAX + 1)) - 1;
-		y = 2 * (rand() / ((double) RAND_MAX + 1)) - 1;
+		x = 2*(std::rand()/((double)RAND_MAX+1)) - 1;
+		y = 2*(std::rand()/((double)RAND_MAX+1)) - 1;
 		radius = (x * x) + (y * y);
 	} while ((radius >= 1.0) || (radius == 0.0));
-	radius = sqrt(-2 * log(radius) / radius);
+	radius = std::sqrt(-2 * std::log(radius) / radius);
 	x *= radius;
 	y *= radius;
 	return x;
@@ -54,9 +55,9 @@ ScalarType gaussian_random()
 }
 
 template <class RAI>
-void random_shuffle(RAI first, RAI last)
+inline void random_shuffle(RAI first, RAI last)
 {
-	std::random_shuffle(first,last);
+	std::random_shuffle(first,last,uniform_random_index_bounded);
 }
 
 }

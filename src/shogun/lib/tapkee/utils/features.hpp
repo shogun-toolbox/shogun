@@ -16,12 +16,13 @@ namespace tapkee_internal
 {
 
 template<class RandomAccessIterator, class FeaturesCallback>
-DenseMatrix dense_matrix_from_features(const FeaturesCallback& features,
-									const RandomAccessIterator& begin, 
-									const RandomAccessIterator& end)
+DenseMatrix dense_matrix_from_features(FeaturesCallback features,
+                                       IndexType dimension,
+                                       RandomAccessIterator begin, 
+                                       RandomAccessIterator end)
 {
-	DenseMatrix matrix(features.dimension(), end-begin);
-	DenseVector feature_vector(features.dimension());
+	DenseMatrix matrix(dimension, end-begin);
+	DenseVector feature_vector(dimension);
 
 	for (RandomAccessIterator iter=begin; iter!=end; ++iter)
 	{

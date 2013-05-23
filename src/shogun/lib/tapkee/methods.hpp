@@ -467,7 +467,7 @@ private:
 	TapkeeOutput embedPassThru()
 	{
 		DenseMatrix feature_matrix =
-			dense_matrix_from_features(features, begin, end);
+			dense_matrix_from_features(features, current_dimension, begin, end);
 		return TapkeeOutput(feature_matrix.transpose(),tapkee::ProjectingFunction());
 	}
 
@@ -485,7 +485,7 @@ private:
 			               static_cast<ScalarType>((n_vectors-1)/3.0));
 
 		DenseMatrix data = 
-			dense_matrix_from_features(features, begin, end);
+			dense_matrix_from_features(features, current_dimension, begin, end);
 
 		DenseMatrix embedding(static_cast<IndexType>(target_dimension),n_vectors);
 		tsne::TSNE tsne;
@@ -501,7 +501,7 @@ private:
 			         static_cast<ScalarType>(1.0));
 
 		DenseMatrix embedding =
-			dense_matrix_from_features(features, begin, end);
+			dense_matrix_from_features(features, current_dimension, begin, end);
 
 		Neighbors neighbors = findNeighborsWith(plain_distance);
 
