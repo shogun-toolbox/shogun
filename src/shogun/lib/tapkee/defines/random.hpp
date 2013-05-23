@@ -56,7 +56,7 @@ ScalarType gaussian_random()
 template <class RAI>
 void random_shuffle(RAI first, RAI last)
 {
-	std::random_shuffle(first,last,uniform_random_index_bounded);
+	std::random_shuffle(first,last);
 }
 
 }
