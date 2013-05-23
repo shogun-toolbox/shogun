@@ -14,23 +14,41 @@
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/common.h>
-#include <shogun/features/DataGenerator.h>
+#include <shogun/mathematics/Math.h>
 
 using namespace shogun;
 
-#define	NUM  50
+#define	NUM  100
 #define DIMS 2
-#define CLASSES 2
+#define DIST 0.5
+
+void gen_rand_data(SGVector< float64_t > lab, SGMatrix< float64_t > feat)
+{
+	for (int32_t i = 0; i < NUM; i++)
+	{
+		if (i < NUM/2)
+		{
+			lab[i] = 0.0;
+
+			for (int32_t j = 0; j < DIMS; j++)
+				feat[i*DIMS + j] = CMath::random(0.0,1.0) + DIST;
+		}
+		else
+		{
+			lab[i] = 1.0;
+
+			for (int32_t j = 0; j < DIMS; j++)
+				feat[i*DIMS + j] = CMath::random(0.0,1.0) - DIST;
+		}
+	}
+}
 
 void test()
 {
-	SGVector< float64_t > lab(CLASSES*NUM);
-	SGMatrix< float64_t > feat(DIMS, CLASSES*NUM);
+	SGVector< float64_t > lab(NUM);
+	SGMatrix< float64_t > feat(DIMS, NUM);
 
-	feat = CDataGenerator::generate_gaussians(NUM,CLASSES,DIMS);
-	for( int i = 0 ; i < CLASSES ; ++i )
-		for( int j = 0 ; j < NUM ; ++j )
-			lab[i*NUM+j] = double(i);
+	gen_rand_data(lab, feat);
 
 	// Create train labels
 	CMulticlassLabels* labels = new CMulticlassLabels(lab);
@@ -44,12 +62,12 @@ void test()
 	qda->train();
 
 	// Classify and display output
-	CMulticlassLabels* output = CLabelsFactory::to_multiclass(qda->apply());
-	SG_REF(output);
-	SGVector<float64_t>::display_vector(output->get_labels().vector, output->get_num_labels());
+	CDenseFeatures< float64_t >* test_features = new CDenseFeatures< float64_t >(feat);
+	CMulticlassLabels* out_labels = CLabelsFactory::to_multiclass(qda->apply(test_features));
+	SG_REF(out_labels);
 
 	// Free memory
-	SG_UNREF(output);
+	SG_UNREF(out_labels);
 	SG_UNREF(qda);
 }
 
@@ -63,4 +81,3 @@ int main(int argc, char ** argv)
 
 	return 0;
 }
-

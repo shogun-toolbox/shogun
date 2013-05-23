@@ -19,8 +19,13 @@
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/lapack.h>
+#include <shogun/mathematics/eigen3.h>
 
 using namespace shogun;
+
+typedef Eigen::Matrix< float64_t, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor > EMatrix;
+typedef Eigen::Matrix< float64_t, Eigen::Dynamic, 1, Eigen::ColMajor > EVector;
+typedef Eigen::Array< float64_t, Eigen::Dynamic, 1 > EArray;
 
 CQDA::CQDA(float64_t tolerance, bool store_covs)
 : CNativeMulticlassMachine(), m_tolerance(tolerance), 
@@ -83,12 +88,12 @@ CMulticlassLabels* CQDA::apply_multiclass(CFeatures* data)
 
 	CDenseFeatures< float64_t >* rf = (CDenseFeatures< float64_t >*) m_features;
 
-	SGMatrix< float64_t > X(num_vecs, m_dim);
-	SGMatrix< float64_t > A(num_vecs, m_dim);
-	SGVector< float64_t > norm2(num_vecs*m_num_classes);
-	norm2.zero();
+	EMatrix X(num_vecs, m_dim);
+	EMatrix A(num_vecs, m_dim);
+	EVector norm2(num_vecs*m_num_classes);
+	norm2.setZero();
 
-	int i, j, k, vlen;
+	int i, k, vlen;
 	bool vfree;
 	float64_t* vec;
 	for ( k = 0 ; k < m_num_classes ; ++k )
@@ -99,20 +104,21 @@ CMulticlassLabels* CQDA::apply_multiclass(CFeatures* data)
 			vec = rf->get_feature_vector(i, vlen, vfree);
 			ASSERT(vec)
 
-			for ( j = 0 ; j < m_dim ; ++j )
-				X[i + j*num_vecs] = vec[j] - m_means[k*m_dim + j];
+			Eigen::Map< EVector > Evec(vec,vlen);
+			Eigen::Map< EVector > Em_means_col(m_means.get_column_vector(k), m_dim);
+
+			X.row(i) = Evec - Em_means_col;
 
 			rf->free_feature_vector(vec, i, vfree);
 
 		}
 
-		cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, num_vecs, m_dim,
-			m_dim, 1.0, X.matrix, num_vecs, m_M.get_matrix(k), m_dim, 0.0,
-			A.matrix, num_vecs);
+		Eigen::Map< EMatrix > Em_M(m_M.get_matrix(k), m_dim, m_dim);
+		A = X*Em_M;
 
-		for ( i = 0 ; i < num_vecs ; ++i )
-			for ( j = 0 ; j < m_dim ; ++j )
-				norm2[i + k*num_vecs] += CMath::sq(A[i + j*num_vecs]);
+		for(i = 0; i < num_vecs; ++i)
+			norm2(i + k*num_vecs) = A.row(i).array().square().sum();
+
 
 #ifdef DEBUG_QDA
 	CMath::display_matrix(A.matrix, num_vecs, m_dim, "A");
@@ -122,17 +128,17 @@ CMulticlassLabels* CQDA::apply_multiclass(CFeatures* data)
 	for ( i = 0 ; i < num_vecs ; ++i )
 		for ( k = 0 ; k < m_num_classes ; ++k )
 		{
-			norm2[i + k*num_vecs] += m_slog[k];
-			norm2[i + k*num_vecs] *= -0.5;
+			norm2(i + k*num_vecs) += m_slog[k];
+			norm2(i + k*num_vecs) *= -0.5;
 		}
 
 	CMulticlassLabels* out = new CMulticlassLabels(num_vecs);
 
 	for ( i = 0 ; i < num_vecs ; ++i )
-		out->set_label(i, SGVector<float64_t>::arg_max(norm2.vector+i, num_vecs, m_num_classes));
+		out->set_label(i, SGVector<float64_t>::arg_max(norm2.data()+i, num_vecs, m_num_classes));
 
 #ifdef DEBUG_QDA
-	CMath::display_matrix(norm2.vector, num_vecs, m_num_classes, "norm2");
+	CMath::display_matrix(norm2.data(), num_vecs, m_num_classes, "norm2");
 	CMath::display_vector(out->get_labels().vector, num_vecs, "Labels");
 #endif
 
@@ -152,6 +158,7 @@ bool CQDA::train_machine(CFeatures* data)
 	}
 	if ( !m_features )
 		SG_ERROR("No features allocated in QDA training\n")
+
 	SGVector< int32_t > train_labels = ((CMulticlassLabels*) m_labels)->get_int_labels();
 	if ( !train_labels.vector )
 		SG_ERROR("No train_labels allocated in QDA training\n")
@@ -161,6 +168,7 @@ bool CQDA::train_machine(CFeatures* data)
 	m_num_classes = ((CMulticlassLabels*) m_labels)->get_num_classes();
 	m_dim = m_features->get_dim_feature_space();
 	int32_t num_vec  = m_features->get_num_vectors();
+	// Replace train_lables.vlen
 	if ( num_vec != train_labels.vlen )
 		SG_ERROR("Dimension mismatch between features and labels in QDA training")
 
@@ -223,27 +231,24 @@ bool CQDA::train_machine(CFeatures* data)
 	float64_t* vec;
 	for ( k = 0 ; k < m_num_classes ; ++k )
 	{
-		SGMatrix< float64_t > buffer(class_nums[k], m_dim);
+		EMatrix buffer(class_nums[k], m_dim);
+		Eigen::Map< EVector > Em_means(m_means.get_column_vector(k), m_dim);
 		for ( i = 0 ; i < class_nums[k] ; ++i )
 		{
 			vec = rf->get_feature_vector(class_idxs[k*num_vec + i], vlen, vfree);
 			ASSERT(vec)
 
-			for ( j = 0 ; j < vlen ; ++j )
-			{
-				m_means[k*m_dim + j] += vec[j];
-				buffer[i + j*class_nums[k]] = vec[j];
-			}
+			Eigen::Map< EVector > Evec(vec, vlen);
+			Em_means += Evec;
+			buffer.row(i) = Evec;
 
 			rf->free_feature_vector(vec, class_idxs[k*num_vec + i], vfree);
 		}
 
-		for ( j = 0 ; j < m_dim ; ++j )
-			m_means[k*m_dim + j] /= class_nums[k];
+		Em_means /= class_nums[k];
 
 		for ( i = 0 ; i < class_nums[k] ; ++i )
-			for ( j = 0 ; j < m_dim ; ++j )
-				buffer[i + j*class_nums[k]] -= m_means[k*m_dim + j];
+			buffer.row(i) -= Em_means;
 
 		/* calling external lib, buffer = U * S * V^T, U is not interesting here */
 		char jobu = 'N', jobvt = 'A';
@@ -253,31 +258,42 @@ bool CQDA::train_machine(CFeatures* data)
 		float64_t * col = scalings.get_column_vector(k);
 		float64_t * rot_mat = rotations.get_matrix(k);
 
-		wrap_dgesvd(jobu, jobvt, m, n, buffer.matrix, lda, col, NULL, ldu,
+
+		// Faster than Eigen::JacobiSVD
+		wrap_dgesvd(jobu, jobvt, m, n, buffer.data(), lda, col, NULL, ldu,
 			rot_mat, ldvt, &info);
+			
+
+		/*
+		Eigen::JacobiSVD< Eigen::Matrix< float64_t, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor > > svdSolver(buffer, Eigen::ComputeFullV);
+		memcpy(col, svdSolver.singularValues().data(), m);
+		memcpy(rot_mat, svdSolver.matrixV().data(), n*n);
+		*/
+
 		ASSERT(info == 0)
-		buffer=SGMatrix<float64_t>();
 
 		SGVector<float64_t>::vector_multiply(col, col, col, m_dim);
 		SGVector<float64_t>::scale_vector(1.0/(m-1), col, m_dim);
 		rotations.transpose_matrix(k);
 
+
+
 		if ( m_store_covs )
 		{
-			SGMatrix< float64_t > M(n ,n);
+			Eigen::Map< EMatrix > EM(SGVector<float64_t>::clone_vector(rot_mat, n*n), n, n);
 
-			M.matrix = SGVector<float64_t>::clone_vector(rot_mat, n*n);
+			Eigen::Map< EArray > Escalings(scalings.get_column_vector(k), m_dim);
 			for ( i = 0 ; i < m_dim ; ++i )
-				for ( j = 0 ; j < m_dim ; ++j )
-					M[i + j*m_dim] *= scalings[k*m_dim + j];
+					EM.row(i) = ( (EM.row(i).array()) * Escalings ).matrix();
 
-			cblas_dgemm(CblasColMajor, CblasNoTrans, CblasTrans, n, n, n, 1.0,
-				M.matrix, n, rot_mat, n, 0.0, m_covs.get_matrix(k), n);
+			Eigen::Map< EMatrix > Em_covs(m_covs.get_matrix(k), n, n);
+			Eigen::Map< EMatrix > Erot_mat(rot_mat, n, n);
+
+			Em_covs = EM*Erot_mat;
 		}
 	}
 
 	/* Computation of terms required for classification */
-
 	SGVector< float32_t > sinvsqrt(m_dim);
 
 	// M_dims will be freed in m_M.destroy_ndarray()
