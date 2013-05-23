@@ -14,7 +14,6 @@
 #include <shogun/base/SGObject.h>
 #include <shogun/labels/RegressionLabels.h>
 
-
 namespace shogun
 {
 
@@ -26,7 +25,6 @@ enum ELikelihoodModelType
 	LT_STUDENTST = 20
 };
 
-
 /** @brief The Likelihood Model base class.
  *
  *  The Likelihood model computes approximately the
@@ -36,9 +34,7 @@ enum ELikelihoodModelType
  */
 class CLikelihoodModel : public CSGObject
 {
-
 public:
-
 	/*Constructor*/
 	CLikelihoodModel();
 
@@ -70,7 +66,7 @@ public:
 	  *
 	  * @return model type NONE
 	 */
-	virtual ELikelihoodModelType get_model_type() {return LT_NONE;}
+	virtual ELikelihoodModelType get_model_type() { return LT_NONE; }
 
 	/** get log likelihood log(P(y|f)) with respect
 	 *  to location f
@@ -82,7 +78,6 @@ public:
 	 */
 	virtual float64_t get_log_probability_f(CRegressionLabels* labels,
 			SGVector<float64_t> f) = 0;
-
 
 	/** get derivative of log likelihood log(P(y|f)) with respect
 	 *  to location f
@@ -150,8 +145,6 @@ public:
 	virtual SGVector<float64_t> get_third_derivative(CRegressionLabels* labels,
 			TParameter* param, CSGObject* obj, SGVector<float64_t> function) = 0;
 };
-
-
 }
 #endif /* HAVE_EIGEN3 */
 #endif /* CLIKELIHOODMODEL_H_ */
