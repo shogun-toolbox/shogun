@@ -9,7 +9,6 @@ test_dir = '../../../tests/integration/tests'
 blacklist = ("__init__.py",
 		"classifier_libsvm_minimal_modular.py",
 		"classifier_multiclassocas_modular.py",
-		"converter_tdistributedstochasticneighborembedding_modular.py",
 		"modelselection_grid_search_kernel.py",
 		"serialization_string_kernels_modular.py",
 		"kernel_fisher_modular.py",
