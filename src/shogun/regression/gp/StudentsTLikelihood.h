@@ -27,9 +27,7 @@ namespace shogun
  */
 class CStudentsTLikelihood: public CLikelihoodModel
 {
-
 public:
-
 	/** default constructor */
 	CStudentsTLikelihood();
 
@@ -54,19 +52,24 @@ public:
 	 *
 	 * @return noise variance
 	 */
-	float64_t get_sigma() {return m_sigma;}
+	float64_t get_sigma() { return m_sigma; }
 
 	/** Sets the noise variance
 	 *
-	 * @param s noise variance
+	 * @param sigma noise variance
 	 */
-	void set_sigma(float64_t s) {m_sigma = s;}
+	void set_sigma(float64_t sigma)
+	{
+		REQUIRE(sigma>0.0, "%s::set_sigma(): Standard deviation "
+			"must be greater than zero\n", get_name())
+		m_sigma=sigma;
+	}
 
 	/** get degrees of freedom
 	 *
 	 * @return degrees of freedom
 	 */
-	float64_t get_degrees_freedom() {return m_df;}
+	float64_t get_degrees_freedom() { return m_df; }
 
 	/** sets degrees of freedom
 	 *
@@ -104,8 +107,7 @@ public:
 	  *
 	  * @return model type Student's T
 	 */
-	virtual ELikelihoodModelType get_model_type() {return LT_STUDENTST;}
-
+	virtual ELikelihoodModelType get_model_type() { return LT_STUDENTST; }
 
 	/** get log likelihood log(P(y|f)) with respect
 	 *  to location f
@@ -117,7 +119,6 @@ public:
 	 */
 	virtual float64_t get_log_probability_f(CRegressionLabels* labels,
 			SGVector<float64_t> f);
-
 
 	/** get derivative of log likelihood log(P(y|f)) with respect
 	 *  to location f
@@ -192,11 +193,9 @@ private:
 	/** Degrees of Freedom */
 	float64_t m_df;
 
-	/** Initialize function*/
-	void init(float64_t sigma, float64_t df);
-
+	/** Initialize function */
+	void init();
 };
-
 }
 #endif /* HAVE_EIGEN3 */
 #endif /* CStudentsTLIKELIHOOD_H_ */
