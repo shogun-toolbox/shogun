@@ -161,7 +161,7 @@ private:
 
 		if (upper - lower > 1)
 		{
-			int i = (int) ((double)rand() / RAND_MAX * (upper - lower - 1)) + lower;
+			int i = (int) (tapkee::uniform_random() * (upper - lower - 1)) + lower;
 			std::swap(items[lower], items[i]);
 
 			int median = (upper + lower) / 2;

@@ -129,7 +129,7 @@ public:
 			else {      for(int i = 0; i < row_P[N]; i++) val_P[i] *= 12.0; }
 
 			// Initialize solution (randomly)
-			for(int i = 0; i < N * no_dims; i++) Y[i] = randn() * .0001;
+			for(int i = 0; i < N * no_dims; i++) Y[i] = tapkee::gaussian_random() * .0001;
 		}
 
 		{
@@ -777,19 +777,6 @@ private:
 		free(dataSums); dataSums = NULL;
 	}
 
-	double randn()
-	{
-		double x, y, radius;
-		do {
-			x = 2 * (rand() / ((double) RAND_MAX + 1)) - 1;
-			y = 2 * (rand() / ((double) RAND_MAX + 1)) - 1;
-			radius = (x * x) + (y * y);
-		} while((radius >= 1.0) || (radius == 0.0));
-		radius = sqrt(-2 * log(radius) / radius);
-		x *= radius;
-		y *= radius;
-		return x;
-	}
 };
 
 }

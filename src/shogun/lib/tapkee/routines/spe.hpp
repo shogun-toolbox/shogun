@@ -11,10 +11,6 @@
 #include <shogun/lib/tapkee/utils/time.hpp>
 /* End of Tapkee includes */
 
-#include <algorithm>
-#include <ctime>
-#include <math.h>
-
 namespace tapkee
 {
 namespace tapkee_internal
@@ -52,8 +48,6 @@ DenseMatrix spe_embedding(RandomAccessIterator begin, RandomAccessIterator end,
 		alpha = 1.0 / max * std::sqrt(2.0);
 
 	// Random embedding initialization, Y is the short for embedding_feature_matrix
-	// TODO handle this somewhere else
-	std::srand(static_cast<unsigned int>(std::time(0)));
 	DenseMatrix Y = (DenseMatrix::Random(target_dimension,N)
 		       + DenseMatrix::Ones(target_dimension,N)) / 2;
 	// Auxiliary diffference embedding feature matrix
@@ -93,7 +87,7 @@ DenseMatrix spe_embedding(RandomAccessIterator begin, RandomAccessIterator end,
 	for (IndexType i=0; i<max_iter; ++i)
 	{
 		// Shuffle to select the vectors to update in this iteration
-		std::random_shuffle(indices.begin(),indices.end());
+		tapkee::random_shuffle(indices.begin(),indices.end());
 
 		ind1 = indices.begin();
 		ind2 = indices.begin()+nupdates;
@@ -117,7 +111,7 @@ DenseMatrix spe_embedding(RandomAccessIterator begin, RandomAccessIterator end,
 			// Generate pseudo-random indices and select final indices
 			for(int j=0; j<nupdates; ++j)
 			{
-				IndexType r = static_cast<IndexType>(floor(std::rand()*1.0/RAND_MAX*(k-1)) + k*j);
+				IndexType r = static_cast<IndexType>(floor(tapkee::uniform_random()*(k-1)) + k*j);
 				indices[nupdates+j] = ind1Neighbors[r];
 			}
 		}

@@ -22,11 +22,14 @@ namespace tapkee
 namespace tapkee_internal
 {
 
-const ScalarType max_number_of_iterations_without_improvement = 20;
-const ScalarType multiplier_treshold = 0.01;
-const ScalarType weight_for_adjusted_point = 10.0;
-const ScalarType learning_rate_grow_factor = 1.1;
-const ScalarType learning_rate_shrink_factor = 0.9;
+namespace 
+{
+	const ScalarType max_number_of_iterations_without_improvement = 20;
+	const ScalarType multiplier_treshold = 0.01;
+	const ScalarType weight_for_adjusted_point = 10.0;
+	const ScalarType learning_rate_grow_factor = 1.1;
+	const ScalarType learning_rate_shrink_factor = 0.9;
+}
 
 /** @brief Data needed to compute error function
  */ 
@@ -60,12 +63,14 @@ struct DataForErrorFunc
 	const ScalarType average_distance;
 };
 
-template<class DistanceCallback>
-SparseMatrix neighbors_distances_matrix(const Neighbors& neighbors, const DistanceCallback& callback,
-										ScalarType& average_distance)
+template<class RandomAccessIterator, class DistanceCallback>
+SparseMatrix neighbors_distances_matrix(RandomAccessIterator begin, RandomAccessIterator end, 
+                                        const Neighbors& neighbors, DistanceCallback callback,
+                                        ScalarType& average_distance)
 {
 	const IndexType k = neighbors[0].size();
 	const IndexType n = neighbors.size();
+	assert((end-begin)==n);
 	SparseTriplets sparse_triplets;
 	sparse_triplets.reserve(k*n);
 	average_distance = 0;
@@ -76,7 +81,7 @@ SparseMatrix neighbors_distances_matrix(const Neighbors& neighbors, const Distan
 		const LocalNeighbors& current_neighbors = neighbors[i];
 		for (IndexType j = 0; j < k; ++j)
 		{
-			current_distance = callback.distance(i, current_neighbors[j]);
+			current_distance = callback.distance(begin[i], begin[current_neighbors[j]]);
 			average_distance += current_distance;
 			SparseTriplet triplet(i, current_neighbors[j], current_distance);
 			sparse_triplets.push_back(triplet);
@@ -249,91 +254,95 @@ IndexType adjust_point_at_index(const IndexType index, DenseMatrix& data,
 	return n_steps;
 }
 
-template <class DistanceCallback>
-void manifold_sculpting_embed(DenseMatrix& data, const IndexType target_dimension,
-									const Neighbors& neighbors, const DistanceCallback& callback, 
-									const IndexType max_iteration, const ScalarType squishingRate)
+template <class RandomAccessIterator, class DistanceCallback>
+void manifold_sculpting_embed(RandomAccessIterator begin, RandomAccessIterator end,
+                              DenseMatrix& data, IndexType target_dimension,
+                              const Neighbors& neighbors, DistanceCallback callback, 
+                              IndexType max_iteration, ScalarType squishing_rate)
 {
 	/* Step 1: Get initial distances to each neighbor and initial
 	 * angles between the point Pi, each neighbor Nij, and the most
 	 * collinear neighbor of Nij.
 	 */
 	ScalarType initial_average_distance;
-	SparseMatrix distances_to_neighbors = neighbors_distances_matrix(neighbors, callback, initial_average_distance);
+	SparseMatrix distances_to_neighbors = 
+		neighbors_distances_matrix(begin, end, neighbors, callback, initial_average_distance);
 	SparseMatrixNeighborsPair angles_and_neighbors =
-					angles_matrix_and_neighbors(neighbors, data);
+		angles_matrix_and_neighbors(neighbors, data);
+
 	/* Step 2: Optionally preprocess the data using PCA
 	 * (skipped for now).
 	 */
-
 	ScalarType no_improvement_counter = 0, normal_counter = 0;
-	ScalarType current_multiplier = squishingRate;
+	ScalarType current_multiplier = squishing_rate;
 	ScalarType learning_rate = initial_average_distance;
 	ScalarType best_error = DBL_MAX, current_error, point_error;
-	std::srand(static_cast<unsigned int>(std::time(NULL)));
 	/* Step 3: Do until no improvement is made for some period
 	 * (or until max_iteration number is reached):
 	 */
 	while (((no_improvement_counter++ < max_number_of_iterations_without_improvement)
-	 		|| (current_multiplier >  multiplier_treshold))
-	 		&& (normal_counter++ < max_iteration))
+			|| (current_multiplier >  multiplier_treshold))
+			&& (normal_counter++ < max_iteration))
 	{
-	 	/* Step 3a: Scale the data in non-preserved dimensions
-	 	 * by a factor of squishingRate.
-	 	 */
-	 	data.bottomRows(data.rows() - target_dimension) *= squishingRate;
-	 	while ( average_neighbor_distance(data, neighbors) < initial_average_distance)
-	 	{
-	 		data.topRows(target_dimension) /= squishingRate;
-	 	}
-	 	current_multiplier *= squishingRate;
-	 	/* Step 3b: Restore the previously computed relationships
-	 	 * (distances to neighbors and angles to ...) by adjusting
-	 	 * data points in first target_dimension dimensions.
-	 	 */
-	 	/* Start adjusting from a random point */
-	 	IndexType start_point_index = std::rand() % data.cols();
-	 	std::deque<IndexType> points_to_adjust;
-	 	points_to_adjust.push_back(start_point_index);
-	 	ScalarType steps_made = 0;
-	 	current_error = 0;
-	 	std::set<IndexType> adjusted_points;
+		/* Step 3a: Scale the data in non-preserved dimensions
+		 * by a factor of squishing_rate.
+		 */
+		data.bottomRows(data.rows() - target_dimension) *= squishing_rate;
+		while (average_neighbor_distance(data, neighbors) < initial_average_distance)
+		{
+			data.topRows(target_dimension) /= squishing_rate;
+		}
+		current_multiplier *= squishing_rate;
 
-	 	while (!points_to_adjust.empty())
-	 	{
-	 		IndexType current_point_index = points_to_adjust.front();
-	 		points_to_adjust.pop_front();
-	 		if (adjusted_points.count(current_point_index) == 0)
-	 		{
-			 	DataForErrorFunc error_func_data = {
-			 		distances_to_neighbors,
-			 		angles_and_neighbors.first,
-			 		neighbors,
-			 		angles_and_neighbors.second,
-			 		adjusted_points,
-			 		initial_average_distance
-			 	};
-	 			adjust_point_at_index(current_point_index, data, target_dimension,
-	 								learning_rate, error_func_data, point_error);
-	 			current_error += point_error;
-	 			/* Insert all neighbors into deque */
-	 			std::copy(neighbors[current_point_index].begin(), 
-	 					neighbors[current_point_index].end(),
-	 					std::back_inserter(points_to_adjust));
-	 			adjusted_points.insert(current_point_index);
-	 		}
-	 	}
+		/* Step 3b: Restore the previously computed relationships
+		 * (distances to neighbors and angles to ...) by adjusting
+		 * data points in first target_dimension dimensions.
+		 */
+		/* Start adjusting from a random point */
+		IndexType start_point_index = std::rand() % data.cols();
+		std::deque<IndexType> points_to_adjust;
+		points_to_adjust.push_back(start_point_index);
+		ScalarType steps_made = 0;
+		current_error = 0;
+		std::set<IndexType> adjusted_points;
 
-	 	if (steps_made > data.cols())
-	 		learning_rate *= learning_rate_grow_factor;
-	 	else
-	 		learning_rate *= learning_rate_shrink_factor;
-	 	if (current_error < best_error)
-	 	{
-	 		best_error = current_error;
-	 		no_improvement_counter = 0;
-	 	}
+		while (!points_to_adjust.empty())
+		{
+			IndexType current_point_index = points_to_adjust.front();
+			points_to_adjust.pop_front();
+			if (adjusted_points.count(current_point_index) == 0)
+			{
+			DataForErrorFunc error_func_data = {
+					distances_to_neighbors,
+					angles_and_neighbors.first,
+					neighbors,
+					angles_and_neighbors.second,
+					adjusted_points,
+					initial_average_distance
+				};
+				adjust_point_at_index(current_point_index, data, target_dimension,
+									learning_rate, error_func_data, point_error);
+				current_error += point_error;
+				/* Insert all neighbors into deque */
+				std::copy(neighbors[current_point_index].begin(), 
+				          neighbors[current_point_index].end(),
+				          std::back_inserter(points_to_adjust));
+				adjusted_points.insert(current_point_index);
+			}
+		}
+
+		if (steps_made > data.cols())
+			learning_rate *= learning_rate_grow_factor;
+		else
+			learning_rate *= learning_rate_shrink_factor;
+
+		if (current_error < best_error)
+		{
+			best_error = current_error;
+			no_improvement_counter = 0;
+		}
 	}
+
 	data.conservativeResize(target_dimension, Eigen::NoChange);
 	data.transposeInPlace();
 }

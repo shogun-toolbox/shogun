@@ -31,7 +31,9 @@ const ParametersSet defaults = (
 	tapkee::keywords::progress_function = tapkee::keywords::by_default,
 	tapkee::keywords::cancel_function = tapkee::keywords::by_default,
 	tapkee::keywords::sne_perplexity = tapkee::keywords::by_default,
+	tapkee::keywords::squishing_rate = tapkee::keywords::by_default,
 	tapkee::keywords::sne_theta = tapkee::keywords::by_default);
+	
 }
 
 }

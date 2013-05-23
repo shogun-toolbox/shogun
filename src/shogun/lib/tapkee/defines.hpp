@@ -26,6 +26,7 @@
 #include <shogun/lib/tapkee/defines/keywords.hpp>
 #include <shogun/lib/tapkee/defines/stdtypes.hpp>
 #include <shogun/lib/tapkee/defines/synonyms.hpp>
+#include <shogun/lib/tapkee/defines/random.hpp>
 #include <shogun/lib/tapkee/projection.hpp>
 /* End of Tapkee includes */
 

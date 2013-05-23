@@ -24,10 +24,7 @@ DenseMatrix gaussian_projection_matrix(IndexType target_dimension, IndexType cur
 	{
 		for (IndexType j=0; j<current_dimension; ++j)
 		{
-			ScalarType v1 = (ScalarType)(rand()+1.f)/((float)RAND_MAX+2.f);
-			ScalarType v2 = (ScalarType)(rand()+1.f)/((float)RAND_MAX+2.f);
-			ScalarType len = sqrt(-2.f*log(v1));
-			projection_matrix(i,j) = len*cos(2.f*M_PI*v2)/sqrt(target_dimension);
+			projection_matrix(i,j) = tapkee::gaussian_random()/sqrt(target_dimension);
 		}
 	}
 

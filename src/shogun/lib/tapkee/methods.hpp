@@ -497,15 +497,15 @@ private:
 	TapkeeOutput embedManifoldSculpting()
 	{
 		squishing_rate.checked()
-		.inRange(static_cast<ScalarType>(0.0), static_cast<ScalarType>(1.0));
+			.inRange(static_cast<ScalarType>(0.0),
+			         static_cast<ScalarType>(1.0));
 
 		DenseMatrix embedding =
 			dense_matrix_from_features(features, begin, end);
 
-		Neighbors neighbors = find_neighbors(neighbors_method,begin,end,plain_distance,
-		                                     n_neighbors,check_connectivity);
+		Neighbors neighbors = findNeighborsWith(plain_distance);
 
-		manifold_sculpting_embed(embedding, target_dimension, neighbors, distance, max_iteration, squishing_rate);
+		manifold_sculpting_embed(begin, end, embedding, target_dimension, neighbors, distance, max_iteration, squishing_rate);
 
 		return TapkeeOutput(embedding, tapkee::ProjectingFunction());	
 	}

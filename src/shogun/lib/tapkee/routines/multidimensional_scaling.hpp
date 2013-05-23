@@ -11,8 +11,6 @@
 #include <shogun/lib/tapkee/utils/time.hpp>
 /* End of Tapkee includes */
 
-#include <algorithm>
-
 namespace tapkee
 {
 namespace tapkee_internal
@@ -25,7 +23,7 @@ Landmarks select_landmarks_random(RandomAccessIterator begin, RandomAccessIterat
 	landmarks.reserve(end-begin);
 	for (RandomAccessIterator iter=begin; iter!=end; ++iter)
 		landmarks.push_back(iter-begin);
-	std::random_shuffle(landmarks.begin(),landmarks.end());
+	tapkee::random_shuffle(landmarks.begin(),landmarks.end());
 	landmarks.erase(landmarks.begin() + static_cast<IndexType>(landmarks.size()*ratio),landmarks.end());
 	return landmarks;
 }
