@@ -25,21 +25,24 @@ using namespace Eigen;
 
 CStudentsTLikelihood::CStudentsTLikelihood() : CLikelihoodModel()
 {
-	init(0.01, 3);
+	init();
 }
 
 CStudentsTLikelihood::CStudentsTLikelihood(float64_t sigma, float64_t df) : CLikelihoodModel()
 {
-	init(sigma, df);
+	REQUIRE(sigma>0.0, "%s::CStudentsTLikelihood(): Standard deviation "
+			"must be greater than zero\n", get_name())
+	REQUIRE(df>1.0, "%s::CStudentsTLikelihood(): Number of degrees of "
+			"freedom must be greater than one\n", get_name())
+	init();
+	m_sigma=sigma;
+	m_df=df;
 }
 
-void CStudentsTLikelihood::init(float64_t sigma, float64_t df)
+void CStudentsTLikelihood::init()
 {
-	REQUIRE(df>1.0, "%s::init(): Number of degrees of "
-			"freedom must be greater than one\n", get_name())
-	m_df=df;
-	m_sigma = sigma;
-
+	m_sigma=1.0;
+	m_df=3.0;
 	SG_ADD(&m_df, "df", "Degrees of Freedom.", MS_AVAILABLE);
 	SG_ADD(&m_sigma, "sigma", "Observation Noise.", MS_AVAILABLE);
 }

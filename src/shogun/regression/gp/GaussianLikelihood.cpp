@@ -24,13 +24,15 @@ CGaussianLikelihood::CGaussianLikelihood() : CLikelihoodModel()
 
 CGaussianLikelihood::CGaussianLikelihood(float64_t sigma) : CLikelihoodModel()
 {
+	REQUIRE(sigma>0.0, "%s::CGaussianLikelihood(): Standard deviation "
+			"must be greater than zero\n", get_name())
 	init();
 	m_sigma=sigma;
 }
 
 void CGaussianLikelihood::init()
 {
-	m_sigma = 1;
+	m_sigma=1.0;
 	SG_ADD(&m_sigma, "sigma", "Observation Noise.", MS_AVAILABLE);
 }
 

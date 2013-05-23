@@ -25,7 +25,6 @@ namespace shogun
  */
 class CGaussianLikelihood: public CLikelihoodModel
 {
-
 public:
 	/** Constructor*/
 	CGaussianLikelihood();
@@ -48,13 +47,18 @@ public:
 	 *
 	 * @return noise variance
 	 */
-	float64_t get_sigma() {return m_sigma;}
+	float64_t get_sigma() { return m_sigma; }
 
 	/** Sets the noise variance
 	 *
-	 * @param s noise variance
+	 * @param sigma noise variance
 	 */
-	void set_sigma(float64_t s) {m_sigma = s;}
+	void set_sigma(float64_t sigma)
+	{
+		REQUIRE(sigma>0.0, "%s::set_sigma(): Standard deviation "
+			"must be greater than zero\n", get_name())
+		m_sigma=sigma;
+	}
 
 	/** helper method used to specialize a base class instance
 	 *
@@ -81,7 +85,7 @@ public:
 	  *
 	  * @return model type Gaussian
 	 */
-	virtual ELikelihoodModelType get_model_type() {return LT_GAUSSIAN;}
+	virtual ELikelihoodModelType get_model_type() { return LT_GAUSSIAN; }
 
 	/** get log likelihood log(P(y|f)) with respect
 	 *  to location f
@@ -164,10 +168,9 @@ private:
 	/** Observation noise sigma */
 	float64_t m_sigma;
 
-	/*Initialize function*/
+	/** Initialize function */
 	void init();
 };
-
 }
 #endif /* HAVE_EIGEN3 */
 #endif /* CGAUSSIANLIKELIHOOD_H_ */
