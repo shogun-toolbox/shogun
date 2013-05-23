@@ -1,16 +1,22 @@
 #!/usr/bin/env python
 from tools.load import LoadMatrix
+from numpy import random
 
 lm=LoadMatrix()
 data = lm.load_numbers('../data/fm_train_real.dat')
 
 parameter_list = [[data]]
 
-def converter_tdistributedstochasticneighborembedding_modular(data):
+def converter_tdistributedstochasticneighborembedding_modular(data, seed=1):
 	try:
 		from shogun.Features import RealFeatures
 		from shogun.Converter import TDistributedStochasticNeighborEmbedding
+		from shogun.Mathematics import Math_init_random
 		
+		# reproducible results
+		Math_init_random(seed)
+		random.seed(seed)	
+
 		features = RealFeatures(data)
 			
 		converter = TDistributedStochasticNeighborEmbedding()
