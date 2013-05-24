@@ -13,7 +13,7 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_LAPACK
+#ifdef HAVE_EIGEN3
 
 #include <shogun/features/DotFeatures.h>
 #include <shogun/features/DenseFeatures.h>
@@ -189,5 +189,5 @@ class CQDA : public CNativeMulticlassMachine
 }; /* class QDA */
 }  /* namespace shogun */
 
-#endif /* HAVE_LAPACK */
+#endif /* HAVE_EIGEN3 */
 #endif /* _QDA_H__ */

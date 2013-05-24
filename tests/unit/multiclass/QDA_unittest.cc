@@ -1,7 +1,7 @@
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/DataGenerator.h>
-#include <shogun/multiclass/MCLDA.h>
+#include <shogun/multiclass/QDA.h>
 #include <gtest/gtest.h>
 #ifdef HAVE_EIGEN3
 
@@ -11,7 +11,7 @@
 
 using namespace shogun;
 
-TEST(MCLDA, train_and_apply)
+TEST(QDA, train_and_apply)
 {
 	SGVector< float64_t > lab(CLASSES*NUM);
 	SGMatrix< float64_t > feat(DIMS, CLASSES*NUM);
@@ -24,11 +24,11 @@ TEST(MCLDA, train_and_apply)
 	CMulticlassLabels* labels = new CMulticlassLabels(lab);
 	CDenseFeatures< float64_t >* features = new CDenseFeatures< float64_t >(feat);
 
-	CMCLDA* lda = new CMCLDA(features, labels);
-	SG_REF(lda);
-	lda->train();
+	CQDA* qda = new CQDA(features, labels);
+	SG_REF(qda);
+	qda->train();
 
-	CMulticlassLabels* output=CLabelsFactory::to_multiclass(lda->apply());
+	CMulticlassLabels* output=CLabelsFactory::to_multiclass(qda->apply());
 	SG_REF(output);
 
 	// Test
@@ -36,6 +36,6 @@ TEST(MCLDA, train_and_apply)
 		EXPECT_EQ(output->get_label(i), labels->get_label(i));
 
 	SG_UNREF(output);
-	SG_UNREF(lda);
+	SG_UNREF(qda);
 }
 #endif //HAVE_EIGEN3

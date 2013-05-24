@@ -18,12 +18,13 @@
 
 using namespace shogun;
 
-#define	NUM  50
+#define NUM  50
 #define DIMS 2
 #define CLASSES 2
 
 void test()
 {
+#ifdef HAVE_EIGEN3
 	SGVector< float64_t > lab(CLASSES*NUM);
 	SGMatrix< float64_t > feat(DIMS, CLASSES*NUM);
 
@@ -51,6 +52,7 @@ void test()
 	// Free memory
 	SG_UNREF(output);
 	SG_UNREF(qda);
+#endif
 }
 
 int main(int argc, char ** argv)
