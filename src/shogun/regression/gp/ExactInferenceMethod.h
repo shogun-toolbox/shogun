@@ -17,8 +17,6 @@
 namespace shogun
 {
 
-class CInferenceMethod;
-
 /** @brief The Gaussian Exact Form Inference Method
  *
  *  This inference method computes the Gaussian Method
@@ -44,9 +42,7 @@ class CInferenceMethod;
  */
 class CExactInferenceMethod: public CInferenceMethod
 {
-
 public:
-
 	/** Default Constructor */
 	CExactInferenceMethod();
 
@@ -95,7 +91,6 @@ public:
 	 * 	where \f$\mu\f$ is the mean and \f$K\f$ is the prior covariance matrix
 	 */
 	virtual SGVector<float64_t> get_alpha();
-
 
 	/** get Cholesky Decomposition Matrix
 	 *
@@ -167,16 +162,11 @@ protected:
 	virtual void update_all();
 
 private:
-
 	/** Check if members of object are valid
 	 * for inference
 	 */
 	void check_members();
-
-	/** Kernel matrix with noise */
-	SGMatrix<float64_t> m_kern_with_noise;
 };
-
 }
 #endif // HAVE_EIGEN3
 
