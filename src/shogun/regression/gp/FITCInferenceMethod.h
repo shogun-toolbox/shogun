@@ -39,9 +39,7 @@ namespace shogun
  */
 class CFITCInferenceMethod: public CInferenceMethod
 {
-
 public:
-
 	/** Default Constructor*/
 	CFITCInferenceMethod();
 
@@ -92,7 +90,6 @@ public:
 	 * 	where \f$\mu\f$ is the mean and K is the prior covariance matrix
 	 */
 	virtual SGVector<float64_t> get_alpha();
-
 
 	/** get Cholesky Decomposition Matrix
 	 *
@@ -168,14 +165,10 @@ private:
 	void init();
 
 private:
-
 	/** Check if members of object are valid
 	 * for inference
 	 */
 	void check_members();
-
-	/*Kernel matrix with noise*/
-	SGMatrix<float64_t> m_kern_with_noise;
 
 	/*noise of the latent variables*/
 	float64_t m_ind_noise;
@@ -220,7 +213,6 @@ private:
 	 */
 	SGVector<float64_t> m_be;
 };
-
 }
 #endif // HAVE_EIGEN3
 

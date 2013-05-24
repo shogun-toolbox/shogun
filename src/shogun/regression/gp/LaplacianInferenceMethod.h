@@ -45,9 +45,7 @@ namespace shogun
  */
 class CLaplacianInferenceMethod: public CInferenceMethod
 {
-
 public:
-
 	/** Default Constructor*/
 	CLaplacianInferenceMethod();
 
@@ -96,7 +94,6 @@ public:
 	 * 	where \f$\mu\f$ is the mean and K is the prior covariance matrix
 	 */
 	virtual SGVector<float64_t> get_alpha();
-
 
 	/** get Cholesky Decomposition Matrix
 	 *
@@ -220,7 +217,6 @@ private:
 	void init();
 
 private:
-
 	/** Check if members of object are valid
 	 * for inference
 	 */
@@ -271,7 +267,6 @@ private:
 	/*log likelihood*/
 	float64_t lp;
 };
-
 }
 #endif // HAVE_EIGEN3
 

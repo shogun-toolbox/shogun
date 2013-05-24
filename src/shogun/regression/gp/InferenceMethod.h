@@ -31,9 +31,7 @@ namespace shogun
  */
 class CInferenceMethod : public CDifferentiableFunction
 {
-  
 public:
-
 	/** Default Constructor
 	 *
 	 */
@@ -166,7 +164,7 @@ public:
 	 *
 	 * @return likelihood
 	 */
-	CLikelihoodModel* get_model() {SG_REF(m_model); return m_model; }
+	CLikelihoodModel* get_model() { SG_REF(m_model); return m_model; }
 
 	/**set likelihood model
 	 *
@@ -202,9 +200,7 @@ public:
 		return m_latent_features;
 	}
 
-
 protected:
-
 	/** Update alpha matrix */
 	virtual void update_alpha() {}
 
@@ -221,7 +217,6 @@ private:
 	void init();
 
 protected:
-
 	/**Covariance Function*/
 	CKernel* m_kernel;
 
@@ -276,9 +271,7 @@ protected:
 
 	/** Kernel matrix from latent features */
 	SGMatrix<float64_t> m_latent_matrix;
-
 };
-
 }
 #endif /* HAVE_EIGEN3 */
-#endif /* CInferenceMethod_H_ */
+#endif /* CINFERENCEMETHOD_H_ */
