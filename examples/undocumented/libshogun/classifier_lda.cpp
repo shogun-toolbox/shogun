@@ -23,7 +23,7 @@
 
 using namespace shogun;
 
-#define	NUM  50
+#define NUM  50
 #define DIMS 2
 #define CLASSES 2
 
