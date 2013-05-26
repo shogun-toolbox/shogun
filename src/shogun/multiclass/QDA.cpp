@@ -133,17 +133,15 @@ CMulticlassLabels* CQDA::apply_multiclass(CFeatures* data)
 			norm2[i + k*num_vecs] *= -0.5;
 		}
 
+#ifdef DEBUG_QDA
+	SG_PRINT("\n>>> Displaying norm2 ...\n")
+	SGMatrix< float64_t >::display_matrix(norm2.data(), num_vecs, m_num_classes);
+#endif
+
 	CMulticlassLabels* out = new CMulticlassLabels(num_vecs);
 
 	for (int i = 0 ; i < num_vecs; i++)
 		out->set_label(i, SGVector<float64_t>::arg_max(norm2.data()+i, num_vecs, m_num_classes));
-
-#ifdef DEBUG_QDA
-	SG_PRINT("\n>>> Displaying norm2 ...\n")
-	SGMatrix< float64_t >::display_matrix(norm2.data(), num_vecs, m_num_classes);
-	SG_PRINT("\n>>> Displaying out ...\n")
-	SGVector< float64_t >::display_vector(out->get_labels().vector, num_vecs);
-#endif
 
 	return out;
 }
@@ -270,15 +268,15 @@ bool CQDA::train_machine(CFeatures* data)
 
 		if (m_store_covs)
 		{
-			Eigen::Map< EMatrix > EM(SGVector<float64_t>::clone_vector(rot_mat, m_dim*m_dim), m_dim, m_dim);
-			Eigen::Map< EArray > Escalings(scalings.get_column_vector(k), m_dim);
+			SGMatrix< float64_t > M(m_dim ,m_dim);
+			EMatrix MEig = Map<EMatrix>(rot_mat,m_dim,m_dim);
 			for (int i = 0; i < m_dim; i++)
-				EM.row(i) = ( (EM.row(i).array()) * Escalings ).matrix();
-
-			Eigen::Map< EMatrix > Em_covs(m_covs.get_matrix(k), m_dim, m_dim);
-			Eigen::Map< EMatrix > Erot_mat(rot_mat, m_dim, m_dim);
-
-			Em_covs = EM*Erot_mat;
+				for (int j = 0; j < m_dim; j++)
+					M(i,j)*=scalings[k*m_dim + j];
+			EMatrix rotE = Map<EMatrix>(rot_mat,m_dim,m_dim);
+			EMatrix resE(m_dim,m_dim);
+			resE = MEig * rotE.transpose();
+			memcpy(m_covs.get_matrix(k),resE.data(),m_dim*m_dim*sizeof(float64_t));
 		}
 	}
 
