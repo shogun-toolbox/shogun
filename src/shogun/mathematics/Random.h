@@ -86,36 +86,87 @@ namespace shogun
 				return random_64() & 0x7fffffffffffffffl;
 			}
 
+
+			/** generate an unsigned 64bit integer in the range
+			 * [min_value, max_value] (closed interval!)
+			 *
+			 * @param min_value minimum value
+			 * @param max_value maximum value
+			 * @return random number
+			 */
 			inline uint64_t random(uint64_t min_value, uint64_t max_value)
 			{
 				return min_value + random_64() % (max_value-min_value+1);
 			}
 
+			/** generate an signed 64bit integer in the range
+			 * [min_value, max_value] (closed interval!)
+			 *
+			 * @param min_value minimum value
+			 * @param max_value maximum value
+			 * @return random number
+			 */
 			inline int64_t random(int64_t min_value, int64_t max_value)
 			{
 				return min_value + random_s64() % (max_value-min_value+1);
 			}
 
+			/** generate an unsigned signed 32bit integer in the range
+			 * [min_value, max_value] (closed interval!)
+			 *
+			 * @param min_value minimum value
+			 * @param max_value maximum value
+			 * @return random number
+			 */
 			inline uint32_t random(uint32_t min_value, uint32_t max_value)
 			{
 				return min_value + random_32() % (max_value-min_value+1);
 			}
 
+			/** generate an signed 32bit integer in the range
+			 * [min_value, max_value] (closed interval!)
+			 *
+			 * @param min_value minimum value
+			 * @param max_value maximum value
+			 * @return random number
+			 */
 			inline int32_t random(int32_t min_value, int32_t max_value)
 			{
 				return min_value + random_s32() % (max_value-min_value+1);
 			}
 
+			/** generate an 32bit floating point number in the range
+			 * [min_value, max_value] (closed interval!)
+			 *
+			 * @param min_value minimum value
+			 * @param max_value maximum value
+			 * @return random number
+			 */
 			inline float32_t random(float32_t min_value, float32_t max_value)
 			{
 				return min_value + ((max_value-min_value) * random_close());
 			}
 
+			/** generate an 64bit floating point number in the range
+			 * [min_value, max_value] (closed interval!)
+			 *
+			 * @param min_value minimum value
+			 * @param max_value maximum value
+			 * @return random number
+			 */
 			inline float64_t random(float64_t min_value, float64_t max_value)
 			{
 				return min_value + ((max_value-min_value) * random_close());
 			}
 
+			/** generate an 96-128bit floating point number (depending on the
+			 * size of floatmax_t) in the range
+			 * [min_value, max_value] (closed interval!)
+			 *
+			 * @param min_value minimum value
+			 * @param max_value maximum value
+			 * @return random number
+			 */
 			inline floatmax_t random(floatmax_t min_value, floatmax_t max_value)
 			{
 				return min_value + ((max_value-min_value) * random_close());
