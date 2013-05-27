@@ -112,7 +112,7 @@ SGVector<float64_t> CMMDKernelSelectionComb::solve_optimization(
 
 	if (!one_pos)
 	{
-		SG_WARNING("%CMMDKernelSelectionComb::solve_optimization(): all mmd "
+		SG_WARNING("CMMDKernelSelectionComb::solve_optimization(): all mmd "
 				"estimates are negative. This is techically possible, although "
 				"extremely rare. Consider using different kernels. "
 				"This combination will lead to a bad two-sample test. Since any"
