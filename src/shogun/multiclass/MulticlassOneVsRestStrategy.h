@@ -91,7 +91,8 @@ public:
 	/** rescale multiclass outputs according to the selected heuristic 
 	 * this function only being called with OVA_SOFTMAX heuristic
 	 * @param outputs a vector of output from each machine (in that order)
-	 * @param sig_params a vector of sigmoid parameters w.r.t binary machines
+	 * @param As fitted sigmoid parameters a one for each machine
+	 * @param Bs fitted sigmoid parameters b one for each machine
 	 */
 	virtual void rescale_outputs(SGVector<float64_t> outputs,
 			const SGVector<float64_t> As, const SGVector<float64_t> Bs);
@@ -104,7 +105,8 @@ protected:
 
 	/** OVA softmax heuristic 
 	 * @param outputs a vector of output from each machine (in that order)
-	 * @param sig_params a vector of sigmoid parameters w.r.t binary machines
+	 * @param As fitted sigmoid parameters a one for each machine
+	 * @param Bs fitted sigmoid parameters b one for each machine
 	 */
 	void rescale_heuris_softmax(SGVector<float64_t> outputs,
 			const SGVector<float64_t> As, const SGVector<float64_t> Bs);
