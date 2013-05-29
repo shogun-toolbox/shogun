@@ -3,7 +3,8 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
+ * Written (W) 2013 Soumyajit De
  * Written (W) 2012 Fernando José Iglesias García
  * Written (W) 2010,2012 Soeren Sonnenburg
  * Copyright (C) 2010 Berlin Institute of Technology
@@ -573,6 +574,12 @@ template<class T> class SGVector : public SGReferencedData
 		void tan();
 		/// hyperbolic tangent of vector elements
 		void tanh();
+
+		/** real part of a complex64_t vector */
+		SGVector<float64_t> get_real();
+
+		/** imag part of a complex64_t vector */
+		SGVector<float64_t> get_imag();
 
 	protected:
 		/** needs to be overridden to copy data */

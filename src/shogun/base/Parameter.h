@@ -374,6 +374,13 @@ public:
 	 * @param name name of parameter
 	 * @param description description of parameter
 	 */
+	void add(complex64_t* param, const char* name,
+			 const char* description="");
+	/** add param
+	 * @param param parameter itself
+	 * @param name name of parameter
+	 * @param description description of parameter
+	 */
 	void add(CSGObject** param,
 			 const char* name, const char* description="");
 	/** add param
@@ -558,6 +565,13 @@ public:
 	 */
 	void add(SGSparseVector<floatmax_t>* param, const char* name,
 			 const char* description="");
+	/** add param
+	 * @param param parameter itself
+	 * @param name name of parameter
+	 * @param description description of parameter
+	 */
+	void add(SGSparseVector<complex64_t>* param, const char* name,
+			 const char* description="");
 
 	/* ************************************************************ */
 	/* Vector wrappers  */
@@ -665,6 +679,14 @@ public:
 	 * @param description description of parameter
 	 */
 	void add_vector(floatmax_t** param, index_t* length,
+					const char* name, const char* description="");
+	/** add vector param
+	 * @param param parameter vector itself
+	 * @param length length of vector
+	 * @param name name of parameter
+	 * @param description description of parameter
+	 */
+	void add_vector(complex64_t** param, index_t* length,
 					const char* name, const char* description="");
 	/** add vector param
 	 * @param param parameter vector itself
@@ -882,6 +904,14 @@ public:
 	 */
 	void add_vector(SGSparseVector<floatmax_t>** param, index_t* length,
 					const char* name, const char* description="");
+	/** add vector param
+	 * @param param parameter vector itself
+	 * @param length length of vector
+	 * @param name name of parameter
+	 * @param description description of parameter
+	 */
+	void add_vector(SGSparseVector<complex64_t>** param, index_t* length,
+					const char* name, const char* description="");
 
 
 	/** add vector param
@@ -974,6 +1004,13 @@ public:
 	 * @param description description of parameter
 	 */
 	void add(SGVector<floatmax_t>* param, const char* name,
+					const char* description="");
+	/** add vector param
+	 * @param param parameter vector itself
+	 * @param name name of parameter
+	 * @param description description of parameter
+	 */
+	void add(SGVector<complex64_t>* param, const char* name,
 					const char* description="");
 	/** add vector param
 	 * @param param parameter vector itself
@@ -1164,6 +1201,13 @@ public:
 	 */
 	void add(SGVector<SGSparseVector<floatmax_t> >* param,
 					const char* name, const char* description="");
+	/** add vector param
+	 * @param param parameter vector itself
+	 * @param name name of parameter
+	 * @param description description of parameter
+	 */
+	void add(SGVector<SGSparseVector<complex64_t> >* param,
+					const char* name, const char* description="");
 
 	/* ************************************************************ */
 	/* Matrix wrappers  */
@@ -1296,6 +1340,16 @@ public:
 	 * @param description description of parameter
 	 */
 	void add_matrix(floatmax_t** param,
+					index_t* length_y, index_t* length_x,
+					const char* name, const char* description="");
+	/** add matrix param
+	 * @param param parameter matrix itself
+	 * @param length_y y size of matrix
+	 * @param length_x x size of matrix
+	 * @param name name of parameter
+	 * @param description description of parameter
+	 */
+	void add_matrix(complex64_t** param,
 					index_t* length_y, index_t* length_x,
 					const char* name, const char* description="");
 	/** add matrix param
@@ -1570,6 +1624,16 @@ public:
 					const char* name, const char* description="");
 	/** add matrix param
 	 * @param param parameter matrix itself
+	 * @param length_y y size of matrix
+	 * @param length_x x size of matrix
+	 * @param name name of parameter
+	 * @param description description of parameter
+	 */
+	void add_matrix(SGSparseVector<complex64_t>** param,
+					index_t* length_y, index_t* length_x,
+					const char* name, const char* description="");
+	/** add matrix param
+	 * @param param parameter matrix itself
 	 * @param name name of parameter
 	 * @param description description of parameter
 	 */
@@ -1658,6 +1722,13 @@ public:
 	 * @param description description of parameter
 	 */
 	void add(SGMatrix<floatmax_t>* param, const char* name,
+					const char* description="");
+	/** add matrix param
+	 * @param param parameter matrix itself
+	 * @param name name of parameter
+	 * @param description description of parameter
+	 */
+	void add(SGMatrix<complex64_t>* param, const char* name,
 					const char* description="");
 	/** add matrix param
 	 * @param param parameter matrix itself
@@ -1847,6 +1918,13 @@ public:
 	 * @param description description of parameter
 	 */
 	void add(SGMatrix<SGSparseVector<floatmax_t> >* param,
+					const char* name, const char* description="");
+	/** add matrix param
+	 * @param param parameter matrix itself
+	 * @param name name of parameter
+	 * @param description description of parameter
+	 */
+	void add(SGMatrix<SGSparseVector<complex64_t> >* param,
 					const char* name, const char* description="");
 
 protected:

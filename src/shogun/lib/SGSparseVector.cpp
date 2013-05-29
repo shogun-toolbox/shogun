@@ -103,9 +103,18 @@ template<class T> void SGSparseVector<T>::save(CFile* saver)
 	saver->set_sparse_vector(features, num_feat_entries);
 	SG_RESET_LOCALE;
 }
-		
 
+template <>
+void SGSparseVector<complex64_t>::load(CFile* loader)
+{
+	SG_SERROR("SGSparseVector::load():: Not supported for complex64_t\n");
+}
 
+template <>
+void SGSparseVector<complex64_t>::save(CFile* saver)
+{
+	SG_SERROR("SGSparseVector::save():: Not supported for complex64_t\n");
+}
 
 template <class T>
 void SGSparseVector<T>::copy_data(const SGReferencedData& orig)
@@ -207,5 +216,6 @@ template class SGSparseVector<uint64_t>;
 template class SGSparseVector<float32_t>;
 template class SGSparseVector<float64_t>;
 template class SGSparseVector<floatmax_t>;
+template class SGSparseVector<complex64_t>;
 }
 

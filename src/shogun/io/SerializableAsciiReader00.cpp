@@ -83,6 +83,13 @@ SerializableAsciiReader00::read_scalar_wrapped(
 		if (fscanf(m_file->m_fstream, "%Lg", (floatmax_t*) param)
 			!= 1) return false;
 		break;
+	case PT_COMPLEX64:
+		float64_t c_real, c_imag;
+		if (fscanf(m_file->m_fstream, "(%lg,%lg)", &c_real, &c_imag) 
+			!= 2) return false;
+		((complex64_t*) param)->real(c_real);
+		((complex64_t*) param)->imag(c_imag);
+		break;
 	case PT_SGOBJECT:
 		SG_ERROR("read_scalar_wrapped(): Implementation error during"
 				 " reading AsciiFile!");

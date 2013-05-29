@@ -221,6 +221,11 @@ CSerializableXmlFile::write_scalar_wrapped(
 		if (snprintf(buf, STRING_LEN, "%.16Lg", *(floatmax_t*)
 					 param) <= 0) return false;
 		break;
+	case PT_COMPLEX64:
+		if (snprintf(buf, STRING_LEN, "(%.16lg,%.16lg)", 
+				((complex64_t*) param)->real(),((complex64_t*) param)->imag()
+				) <= 0) return false;
+		break;
 	case PT_SGOBJECT:
 		SG_ERROR("write_scalar_wrapped(): Implementation error during"
 				 " writing XmlFile!");
