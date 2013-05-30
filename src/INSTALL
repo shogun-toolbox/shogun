@@ -6,8 +6,8 @@ On most platforms (Linux,MacOSX,cygwin) it is sufficient to issue
 make
 sudo make install
 
-which will build the shogun standalone version cmdline_static, and following
-shogun interfaces: r_static, matlab_static, python_static,
+which will build the shogun standalone version cmdline_static, and the
+following shogun interfaces: r_static, matlab_static, python_static,
 octave_static and octave_modular, python_modular, r_modular, java_modular
 and csharp_modular. Finally it will also install shogun.
 
@@ -83,7 +83,7 @@ make
 
 a shogun executable can be found in interfaces/cmdline_static
 
-In order to the test the shogun standalone binary, you can run the following
+In order to test the shogun standalone binary, you can run the following
 commands from the project root directory:
 
 cd examples/documented/cmdline_static
@@ -104,8 +104,8 @@ sudo make install
 a sg.oct file should be created. as a test start octave in the
 examples/documented/octave_static/ directory and type
 
-addpath('../../../src/interfaces/octave_static/')
-kernel_chi2
+addpath('../../../src/interfaces/octave_static/graphical')
+svr_regression
 
 matlab
 ======
@@ -123,8 +123,8 @@ a sg.mexglx (or sg.mexa64 or sg.mexmac etc file should be created in
 interfaces/matlab_static/). As a test start matlab in the
 examples/documented/matlab_static directory and type
 
-addpath('../../../src/interfaces/matlab_static')
-kernel_chi2
+addpath('../../../src/interfaces/matlab_static/graphical')
+svr_regression
 
 For permanent use you could add the following line to your matlab/startup.m 
 
@@ -160,10 +160,10 @@ then do a
 make
 
 A sg.so file should be created in the src/interfaces/python_static directory:
-To test whether it is working change to examples/documented/python_static and
-run:
+To test whether it is working change to examples/documented/python_static/graphical
+and run:
 
-PYTHONPATH=path_to_shogun/src/interfaces/python_static/ python kernel_chi2.py
+PYTHONPATH=path_to_shogun/src/interfaces/python_static/ python svm_classification.py
 
 eierlegendewollmichsau (elwms) interface
 ========================================
