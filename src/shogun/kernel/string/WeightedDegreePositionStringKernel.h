@@ -73,8 +73,8 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		 * @param mkl_stepsize MKL stepsize
 		 */
 		CWeightedDegreePositionStringKernel(
-			int32_t size, float64_t* weights, int32_t degree,
-			int32_t max_mismatch, int32_t* shift, int32_t shift_len,
+			int32_t size, SGVector<float64_t> weights, int32_t degree,
+			int32_t max_mismatch, SGVector<int32_t> shifts,
 			int32_t mkl_stepsize=1);
 
 		/** constructor

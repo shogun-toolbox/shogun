@@ -74,7 +74,7 @@ CWeightedDegreePositionStringKernel::CWeightedDegreePositionStringKernel(
 }
 
 CWeightedDegreePositionStringKernel::CWeightedDegreePositionStringKernel(
-	int32_t size, float64_t* w, int32_t d, int32_t mm, int32_t* s, int32_t sl,
+	int32_t size, SGVector<float64_t> w, int32_t d, int32_t mm, SGVector<int32_t> s,
 	int32_t mkls)
 : CStringKernel<char>(size)
 {
@@ -94,7 +94,7 @@ CWeightedDegreePositionStringKernel::CWeightedDegreePositionStringKernel(
 	for (int32_t i=0; i<d*(1+max_mismatch); i++)
 		weights[i]=w[i];
 
-	set_shifts(SGVector<int32_t>(SGVector<int32_t>::clone_vector(s,sl), sl));
+	set_shifts(s);
 }
 
 CWeightedDegreePositionStringKernel::CWeightedDegreePositionStringKernel(
