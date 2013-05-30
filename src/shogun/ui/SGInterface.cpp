@@ -4721,11 +4721,18 @@ bool CSGInterface::cmd_load_classifier()
 
 	bool success=ui_classifier->load(filename, type);
 
+	if (dynamic_cast<CKernelMachine*>(ui_classifier->get_classifier()))
+	{
+		CKernelMachine* kernel_machine = dynamic_cast<CKernelMachine*>(ui_classifier->get_classifier());
+		ui_features->set_train_features(kernel_machine->get_kernel()->get_lhs());
+		ui_features->set_test_features(kernel_machine->get_kernel()->get_rhs());
+		ui_kernel->set_kernel(kernel_machine->get_kernel());
+	}
+
 	SG_FREE(filename);
 	SG_FREE(type);
 	return success;
 }
-
 
 bool CSGInterface::cmd_get_num_svms()
 {
