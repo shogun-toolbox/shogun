@@ -35,6 +35,8 @@ configure.log
 
 
 # /doc/
+/doc/Doxyfile_en
+/doc/Doxyfile_cn
 /doc/html
 /doc/html_cn
 /doc/pages/Configure.generated
