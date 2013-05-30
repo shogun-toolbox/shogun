@@ -1147,6 +1147,7 @@ CLabels* CGUIClassifier::classify_kernelmachine()
 
 	bool success=true;
 
+	REQUIRE(ui->ui_kernel->get_kernel(), "No kernel set");
 	if (ui->ui_kernel->get_kernel()->get_kernel_type()!=K_CUSTOM)
 	{
 		if (ui->ui_kernel->get_kernel()->get_kernel_type()==K_COMBINED
