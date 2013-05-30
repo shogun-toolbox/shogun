@@ -523,15 +523,15 @@ check_gmock()
 	echocheck "Google C++ Mocking Framework"
 	if test "$_gmock" = yes || test "$_gmock" = auto
 	then
-		if test -e "$GMOCK_DIR/src/gmock-all.cc";
+		if test -e "/usr/include/gmock/gmock.h"
+		then
+			COMPFLAGS_GMOCK_CPP='-I/usr/include'
+		elif test -e "$GMOCK_DIR/src/gmock-all.cc";
 		then
 			GMOCK_HEADER_PATH="$GMOCK_DIR/include"
 			if test -e "$GMOCK_HEADER_PATH/gmock/gmock.h"
 			then
 				COMPFLAGS_GMOCK_CPP="-I$GMOCK_HEADER_PATH"
-			elif test -e "/usr/include/gmock/gmock.h"
-			then
-				COMPFLAGS_GMOCK_CPP='-I/usr/include'
 			else
 				if test "$_gmock" = yes
 				then
