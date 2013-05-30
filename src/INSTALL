@@ -6,9 +6,15 @@ On most platforms (Linux,MacOSX,cygwin) it is sufficient to issue
 make
 sudo make install
 
-which will build shogun for the r_static, matlab_static, python_static,
-octave_static and octave_modular, python_modular, r_modular and
-java_modular interfaces and later install it.
+which will build the shogun standalone version cmdline_static, and following
+shogun interfaces: r_static, matlab_static, python_static,
+octave_static and octave_modular, python_modular, r_modular, java_modular
+and csharp_modular. Finally it will also install shogun.
+
+If you prefer to not run make install, you should instead include the shogun
+library in your path:
+
+export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:path_to_shogun/src/shogun/
 
 Often you are just interested in one language and we always recommend to
 use the more powerful modular interfaces.
@@ -75,7 +81,13 @@ cd src
 ./configure --interfaces=cmdline_static
 make
 
-a shogun executable can be found in cmdline 
+a shogun executable can be found in interfaces/cmdline_static
+
+In order to the test the shogun standalone binary, you can run the following
+commands from the project root directory:
+
+cd examples/documented/cmdline_static
+../../../src/interfaces/cmdline_static/shogun classifier_liblinear.sg
 
 octave
 ======
@@ -87,13 +99,13 @@ then do a
 
 ./configure --interfaces=octave_static
 make
-make install
+sudo make install
 
-a sg.oct file should be created. as a test start octave in the src/ directory
-and type
+a sg.oct file should be created. as a test start octave in the
+examples/documented/octave_static/ directory and type
 
-addpath('../examples/documented/octave/graphical')
-svr_regression
+addpath('../../../src/interfaces/octave_static/')
+kernel_chi2
 
 matlab
 ======
@@ -105,24 +117,18 @@ then do a
 
 ./configure --interfaces=matlab_static
 make
-make install
+sudo make install
 
-a sg.mexglx (or sg.mexa64 or sg.mexmac etc file should be created). As a test
-start matlab in the src/matlab directory
-and type
+a sg.mexglx (or sg.mexa64 or sg.mexmac etc file should be created in
+interfaces/matlab_static/). As a test start matlab in the
+examples/documented/matlab_static directory and type
 
-addpath('../examples/documented/matlab/graphical')
-svr_regression
+addpath('../../../src/interfaces/matlab_static')
+kernel_chi2
 
 For permanent use you could add the following line to your matlab/startup.m 
 
-    addpath('path_to_shogun/trunk/src/matlab');
-
-In case you want to omit the make install step you could run matlab (in gui
-mode if you want) with 
-
-	export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:path_to_shogun/trunk/src/libshogun
-	matlab -desktop
+    addpath('path_to_shogun/src/interfaces/matlab_static');
 
 R
 =
@@ -134,7 +140,7 @@ then do the usual
 
 ./configure --interfaces=r_static
 make
-make install
+sudo make install
 
 python
 ======
@@ -153,15 +159,17 @@ then do a
 ./configure --interfaces=python_static
 make
 
-A sg.so file should be created in the src/ directory:
-To test whether it is working try
-PYTHONPATH=`pwd` python ../examples/documented/python/graphical/svm_classification.py
+A sg.so file should be created in the src/interfaces/python_static directory:
+To test whether it is working change to examples/documented/python_static and
+run:
+
+PYTHONPATH=path_to_shogun/src/interfaces/python_static/ python kernel_chi2.py
 
 eierlegendewollmichsau (elwms) interface
 ========================================
 
 This is a .so file that works with R,python,matlab,octave all in one. To compile
- you should have at least python and some other interface enabled:
+you should have at least python and some other interface enabled:
 
 cd src
 ./configure --interfaces=octave_static,matlab_static,r_static,python_static,elwms_static
@@ -181,9 +189,9 @@ object oriented python/swig interface:
 proceed as for the python interface but now in addition install the swig package and
 configure+compile shogun with:
 
-  ./configure --interfaces=python_modular
-  make
-  sudo make install
+./configure --interfaces=python_modular
+make
+sudo make install
 
 to test if it is working try python ../examples/documented/python_modular/graphical/svm.py
 
