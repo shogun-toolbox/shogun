@@ -303,8 +303,6 @@ CKernel* CGUIKernel::create_weighteddegreepositionstring(
 	else
 		SG_DEBUG("created WeightedDegreePositionStringKernel with size %d, order %d, max_mismatch %d, length %d, center %d, step %f.\n", kern, size, order, max_mismatch, length, center, step)
 
-	SG_FREE(weights);
-	SG_FREE(shifts);
 	return kern;
 }
 
@@ -314,7 +312,7 @@ CKernel* CGUIKernel::create_weighteddegreepositionstring3(
 {
 	float64_t* weights=get_weights(order, max_mismatch);
 
-	CKernel* kern=new CWeightedDegreePositionStringKernel(size, SGVector<float64_t>(weights, order*(1+max_mismatch)), order, max_mismatch, SGVector<int32_t>(shifts, length).clone(), mkl_stepsize);
+	CKernel* kern=new CWeightedDegreePositionStringKernel(size, SGVector<float64_t>(weights, order*(1+max_mismatch)), order, max_mismatch, SGVector<int32_t>(shifts, length, false).clone(), mkl_stepsize);
 	kern->set_normalizer(new CIdentityKernelNormalizer());
 
 	SG_DEBUG("created WeightedDegreePositionStringKernel (%p) with size %d, order %d, max_mismatch %d, length %d and position_weights (MKL stepsize: %d).\n", kern, size, order, max_mismatch, length, mkl_stepsize)
@@ -328,7 +326,6 @@ CKernel* CGUIKernel::create_weighteddegreepositionstring3(
 	((CWeightedDegreePositionStringKernel*) kern)->
 		set_position_weights(SGVector<float64_t>(position_weights, length));
 
-	SG_FREE(weights);
 	return kern;
 }
 
@@ -338,14 +335,13 @@ CKernel* CGUIKernel::create_weighteddegreepositionstring2(
 {
 	float64_t* weights=get_weights(order, max_mismatch);
 
-	CKernel* kern=new CWeightedDegreePositionStringKernel(size, SGVector<float64_t>(weights, order*(1+max_mismatch)), order, max_mismatch, SGVector<int32_t>(shifts, length).clone());
+	CKernel* kern=new CWeightedDegreePositionStringKernel(size, SGVector<float64_t>(weights, order*(1+max_mismatch)), order, max_mismatch, SGVector<int32_t>(shifts, length, false).clone());
 	if (!use_normalization)
 		kern->set_normalizer(new CIdentityKernelNormalizer());
 
 
 	SG_DEBUG("created WeightedDegreePositionStringKernel (%p) with size %d, order %d, max_mismatch %d, length %d, use_normalization %d.\n", kern, size, order, max_mismatch, length, use_normalization)
 
-	SG_FREE(weights);
 	return kern;
 }
 
