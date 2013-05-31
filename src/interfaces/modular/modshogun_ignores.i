@@ -39,6 +39,7 @@
 %ignore shogun::CMulticlassStrategy::rescale_outputs(SGVector<float64_t> outputs, const SGVector<float64_t> As, const SGVector<float64_t> Bs);
 %ignore shogun::CMulticlassOneVsRestStrategy::rescale_outputs(SGVector<float64_t> outputs, const SGVector<float64_t> As, const SGVector<float64_t> Bs);
 %ignore shogun::CKernelMeanMatching::CKernelMeanMatching(CKernel* kernel, SGVector<index_t> training_indices, SGVector<index_t> test_indices);
+%ignore shogun::CWeightedDegreePositionStringKernel::CWeightedDegreePositionStringKernel(int32_t size,SGVector<float64_t> w,int32_t d,int32_t mm,SGVector<int32_t> s,int32_t mkls);
 #endif
 
 %ignore shogun::SGVector::display_vector;
