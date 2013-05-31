@@ -40,6 +40,7 @@
 %ignore shogun::CMulticlassOneVsRestStrategy::rescale_outputs(SGVector<float64_t> outputs, const SGVector<float64_t> As, const SGVector<float64_t> Bs);
 %ignore shogun::CKernelMeanMatching::CKernelMeanMatching(CKernel* kernel, SGVector<index_t> training_indices, SGVector<index_t> test_indices);
 %ignore shogun::CWeightedDegreePositionStringKernel::CWeightedDegreePositionStringKernel(int32_t size,SGVector<float64_t> weights,int32_t degree,int32_t max_mismatch,SGVector<int32_t> shifts,int32_t mkl_stepsize);
+%ignore shogun::CWeightedDegreePositionStringKernel::CWeightedDegreePositionStringKernel(int32_t size,SGVector<float64_t> weights,int32_t degree,int32_t max_mismatch,SGVector<int32_t> shifts);
 #endif
 
 %ignore shogun::SGVector::display_vector;
