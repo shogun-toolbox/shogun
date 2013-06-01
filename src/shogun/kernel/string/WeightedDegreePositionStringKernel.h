@@ -68,8 +68,7 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		 * @param weights weights
 		 * @param degree degree
 		 * @param max_mismatch maximum mismatch
-		 * @param shift position shifts
-		 * @param shift_len number of shifts
+		 * @param shifts position shifts
 		 * @param mkl_stepsize MKL stepsize
 		 */
 		CWeightedDegreePositionStringKernel(
