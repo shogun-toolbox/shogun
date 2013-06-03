@@ -165,6 +165,7 @@ TSGDataType::sizeof_stype() const
 		case PT_FLOAT32: return sizeof (SGString<float32_t>);
 		case PT_FLOAT64: return sizeof (SGString<float64_t>);
 		case PT_FLOATMAX: return sizeof (SGString<floatmax_t>);
+		case PT_COMPLEX64: return -1;
 		case PT_SGOBJECT: return -1;
 		}
 		break;
@@ -183,6 +184,7 @@ TSGDataType::sizeof_stype() const
 		case PT_FLOAT32: return sizeof (SGSparseVector<float32_t>);
 		case PT_FLOAT64: return sizeof (SGSparseVector<float64_t>);
 		case PT_FLOATMAX: return sizeof (SGSparseVector<floatmax_t>);
+		case PT_COMPLEX64: return sizeof (SGSparseVector<complex64_t>);
 		case PT_SGOBJECT: return -1;
 		}
 		break;
@@ -208,6 +210,7 @@ TSGDataType::sizeof_ptype() const
 	case PT_FLOAT32: return sizeof (float32_t);
 	case PT_FLOAT64: return sizeof (float64_t);
 	case PT_FLOATMAX: return sizeof (floatmax_t);
+	case PT_COMPLEX64: return sizeof (complex64_t);
 	case PT_SGOBJECT: return sizeof (CSGObject*);
 	}
 
@@ -231,6 +234,7 @@ TSGDataType::sizeof_sparseentry(EPrimitiveType ptype)
 	case PT_FLOAT32: return sizeof (SGSparseVectorEntry<float32_t>);
 	case PT_FLOAT64: return sizeof (SGSparseVectorEntry<float64_t>);
 	case PT_FLOATMAX: return sizeof (SGSparseVectorEntry<floatmax_t>);
+	case PT_COMPLEX64: return sizeof (SGSparseVectorEntry<complex64_t>);
 	case PT_SGOBJECT: return -1;
 	}
 
@@ -258,6 +262,7 @@ TSGDataType::offset_sparseentry(EPrimitiveType ptype)
 	case PT_FLOAT32: result = ENTRY_OFFSET(x, float32_t); break;
 	case PT_FLOAT64: result = ENTRY_OFFSET(x, float64_t); break;
 	case PT_FLOATMAX: result = ENTRY_OFFSET(x, floatmax_t); break;
+	case PT_COMPLEX64: result = ENTRY_OFFSET(x, complex64_t); break;
 	case PT_SGOBJECT: return -1;
 	}
 
@@ -306,6 +311,7 @@ TSGDataType::ptype_to_string(char* dest, EPrimitiveType ptype,
 	case PT_FLOAT32: strncpy(p, "float32", n); break;
 	case PT_FLOAT64: strncpy(p, "float64", n); break;
 	case PT_FLOATMAX: strncpy(p, "floatmax", n); break;
+	case PT_COMPLEX64: strncpy(p, "complex64", n); break;
 	case PT_SGOBJECT: strncpy(p, "SGSerializable*", n); break;
 	}
 }
@@ -339,6 +345,8 @@ TSGDataType::string_to_ptype(EPrimitiveType* ptype, const char* str)
 		*ptype = PT_FLOAT64; return true; }
 	if (strcmp(str, "floatmax") == 0) {
 		*ptype = PT_FLOATMAX; return true; }
+	if (strcmp(str, "complex64") == 0) {
+		*ptype = PT_COMPLEX64; return true; }
 	if (strcmp(str, "SGSerializable*") == 0) {
 		*ptype = PT_SGOBJECT; return true; }
 
@@ -347,7 +355,7 @@ TSGDataType::string_to_ptype(EPrimitiveType* ptype, const char* str)
 	case PT_BOOL: case PT_CHAR: case PT_INT8: case PT_UINT8:
 	case PT_INT16: case PT_UINT16: case PT_INT32: case PT_UINT32:
 	case PT_INT64: case PT_UINT64: case PT_FLOAT32: case PT_FLOAT64:
-	case PT_FLOATMAX: case PT_SGOBJECT: break;
+	case PT_FLOATMAX: case PT_COMPLEX64: case PT_SGOBJECT: break;
 	}
 
 	return false;

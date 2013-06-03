@@ -81,6 +81,10 @@ SerializableJsonReader00::read_scalar_wrapped(
 		if (!json_object_is_type(m, json_type_double)) return false;
 		*(floatmax_t*) param = json_object_get_double(m);
 		break;
+	case PT_COMPLEX64:
+		SG_ERROR("write_scalar_wrapped(): Implementation error during"
+				 " writing JsonFile!");
+		break;
 	case PT_SGOBJECT:
 		SG_ERROR("write_scalar_wrapped(): Implementation error during"
 				 " writing JsonFile!");

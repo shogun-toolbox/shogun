@@ -4,6 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
+ * Written (W) 2013 Soumyajit De
  * Written (W) 2012 Fernando José Iglesias García
  * Written (W) 2011 Siddharth Kherada
  * Written (W) 2011 Justin Patera
@@ -128,6 +129,43 @@ template <class T1, class T2> struct thread_qsort
 };
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
+#define COMPLEX64_ERROR_ONEARG(function)	\
+static inline complex64_t function(complex64_t a)	\
+{	\
+	SG_SERROR("CMath::%s():: Not supported for complex64_t\n",\
+		#function);\
+	return complex64_t(0.0, 0.0);	\
+}	
+
+#define COMPLEX64_ERROR_TWOARGS(function)	\
+static inline complex64_t function(complex64_t a, complex64_t b)	\
+{	\
+	SG_SERROR("CMath::%s():: Not supported for complex64_t\n",\
+		#function);\
+	return complex64_t(0.0, 0.0);	\
+}	
+
+#define COMPLEX64_ERROR_THREEARGS(function)	\
+static inline complex64_t function(complex64_t a, complex64_t b, complex64_t c)	\
+{	\
+	SG_SERROR("CMath::%s():: Not supported for complex64_t\n",\
+		#function);\
+	return complex64_t(0.0, 0.0);	\
+}	
+
+#define COMPLEX64_STDMATH(function)	\
+static inline complex64_t function(complex64_t a)	\
+{	\
+	return std::function(a);	\
+}	
+
+#define COMPLEX64_ERROR_SORT(function)	\
+static void function(complex64_t* output, int32_t b)	\
+{	\
+	SG_SERROR("CMath::%s():: Not supported for complex64_t\n",\
+		#function);\
+}	
+
 namespace shogun
 {
 	/** random number generator */
@@ -160,12 +198,18 @@ class CMath : public CSGObject
 				return (a<=b) ? a : b;
 			}
 
+		/// min not implemented for complex64_t, returns (0.0)+i(0.0) instead
+		COMPLEX64_ERROR_TWOARGS(min)
+
 		///return the maximum of two integers
 		template <class T>
 			static inline T max(T a, T b)
 			{
 				return (a>=b) ? a : b;
 			}
+
+		/// max not implemented for complex64_t, returns (0.0)+i(0.0) instead
+		COMPLEX64_ERROR_TWOARGS(max)
 
 		///return the value clamped to interval [lb,ub]
 		template <class T>
@@ -178,6 +222,9 @@ class CMath : public CSGObject
 				else
 					return value;
 			}
+
+		/// clamp not implemented for complex64_t, returns (0.0)+i(0.0) instead
+		COMPLEX64_ERROR_THREEARGS(clamp)
 
 		///return the absolute value of a number
 		template <class T>
@@ -192,6 +239,12 @@ class CMath : public CSGObject
 				else
 					return -a;
 			}
+
+		///return the absolute value of a complex number
+		static inline float64_t abs(complex64_t a)
+		{
+			return std::abs(a);
+		}
 		//@}
 
 		/**@name misc functions */
@@ -220,6 +273,9 @@ class CMath : public CSGObject
 					return 0;
 				else return (a<0) ? (-1) : (+1);
 			}
+
+		/// signum not implemented for complex64_t, returns (0.0)+i(0.0) instead
+		COMPLEX64_ERROR_ONEARG(sign)
 
 		/// swap e.g. floats a and b
 		template <class T>
@@ -261,6 +317,9 @@ class CMath : public CSGObject
 			return ::sqrt(x);
 #endif
 		}
+
+		/// x^0.5, x being a complex64_t
+		COMPLEX64_STDMATH(sqrt)
 
 		/// x^-0.5
 		static inline float32_t invsqrt(float32_t x)
@@ -329,10 +388,34 @@ class CMath : public CSGObject
 			return ::pow((double) x, (double) n);
 		}
 
+		/// x^n, x or n being a complex64_t
+		static inline complex64_t pow(complex64_t x, int32_t n)
+		{
+			return std::pow(x, n);
+		}
+
+		static inline complex64_t pow(complex64_t x, complex64_t n)
+		{
+			return std::pow(x, n);
+		}
+
+		static inline complex64_t pow(complex64_t x, float64_t n)
+		{
+			return std::pow(x, n);
+		}
+
+		static inline complex64_t pow(float64_t x, complex64_t n)
+		{
+			return std::pow(x, n);
+		}
+
 		static inline float64_t exp(float64_t x)
 		{
 			return ::exp((double) x);
 		}
+
+		/// exp(x), x being a complex64_t
+		COMPLEX64_STDMATH(exp)
 
 		/** @return tangens of input */
 		static inline float64_t tan(float64_t x)
@@ -340,11 +423,17 @@ class CMath : public CSGObject
 			return ::tan((double) x);
 		}
 
+		/// tan(x), x being a complex64_t
+		COMPLEX64_STDMATH(tan)
+
 		/** @return arcus tangens of input */
 		static inline float64_t atan(float64_t x)
 		{
 			return ::atan((double) x);
 		}
+
+		/// atan(x), x being a complex64_t not implemented
+		COMPLEX64_ERROR_ONEARG(atan)
 
 		/** @return arcus tangens of input */
 		static inline float64_t atan2(float64_t x, float64_t y)
@@ -352,16 +441,25 @@ class CMath : public CSGObject
 			return ::atan2((double) x, (double) y);
 		}
 
+		/// atan2(x), x being a complex64_t not implemented
+		COMPLEX64_ERROR_ONEARG(atan2)
+
 		/** @return tangens hyperbolicus of input */
 		static inline float64_t tanh(float64_t x)
 		{
 			return ::tanh((double) x);
 		}
 
+		/// tanh(x), x being a complex64_t
+		COMPLEX64_STDMATH(tanh)
+
 		static inline float64_t log10(float64_t v)
 		{
 			return ::log(v)/::log(10.0);
 		}
+
+		/// log10(x), x being a complex64_t
+		COMPLEX64_STDMATH(log10)
 
 		static inline float64_t log2(float64_t v)
 		{
@@ -377,6 +475,9 @@ class CMath : public CSGObject
 			return ::log(v);
 		}
 
+		/// log(x), x being a complex64_t
+		COMPLEX64_STDMATH(log)
+
 		static inline index_t floor_log(index_t n)
 		{
 			index_t i;
@@ -391,30 +492,48 @@ class CMath : public CSGObject
 			return ::sin(x);
 		}
 
+		/// sin(x), x being a complex64_t
+		COMPLEX64_STDMATH(sin)
+
 		static inline float64_t asin(float64_t x)
 		{
 			return ::asin(x);
 		}
 
+		/// asin(x), x being a complex64_t not implemented
+		COMPLEX64_ERROR_ONEARG(asin)
+
 		static inline float64_t sinh(float64_t x)
 		{
-			return ::asinh(x);
+			return ::asinh(x);	//TODO is this correct?
 		}
+
+		/// sinh(x), x being a complex64_t
+		COMPLEX64_STDMATH(sinh)
 
 		static inline float64_t cos(float64_t x)
 		{
 			return ::cos(x);
 		}
 
+		/// cos(x), x being a complex64_t
+		COMPLEX64_STDMATH(cos)
+
 		static inline float64_t acos(float64_t x)
 		{
 			return ::acos(x);
 		}
 
+		/// acos(x), x being a complex64_t not implemented
+		COMPLEX64_ERROR_ONEARG(acos)
+
 		static inline float64_t cosh(float64_t x)
 		{
 			return ::cosh(x);
 		}
+
+		/// cosh(x), x being a complex64_t
+		COMPLEX64_STDMATH(cosh)
 
 
 		static float64_t area_under_curve(float64_t* xy, int32_t len, bool reversed)
@@ -567,6 +686,14 @@ class CMath : public CSGObject
 				return nnz;
 			}
 
+		static int32_t get_num_nonzero(complex64_t* vec, int32_t len)
+		{
+				int32_t nnz=0;
+				for (index_t i=0; i<len; ++i)
+					nnz+=vec[i]!=0.0;
+				return nnz;
+		}
+
 		static inline int64_t nchoosek(int32_t n, int32_t k)
 		{
 			int64_t res=1;
@@ -633,6 +760,9 @@ class CMath : public CSGObject
 				if (size-left> 1)
 					qsort(&output[left],size-left);
 			}
+		
+		/// qsort not implemented for comple64_t
+		COMPLEX64_ERROR_SORT(qsort)
 
 		/** performs insertion sort of an array output of length size
 		 * it is sorted from in ascending (for type T) */
@@ -652,12 +782,18 @@ class CMath : public CSGObject
 				}
 			}
 
+		/// insertion_sort not implemented for comple64_t
+		COMPLEX64_ERROR_SORT(insertion_sort)
+
 		/** performs a in-place radix sort in ascending order */
 		template <class T>
 			inline static void radix_sort(T* array, int32_t size)
 			{
 				radix_sort_helper(array,size,0);
 			}
+
+		/// radix_sort not implemented for comple64_t
+		COMPLEX64_ERROR_SORT(radix_sort)
 
 		/*
 		 * Inline function to extract the byte at position p (from left)
@@ -669,6 +805,13 @@ class CMath : public CSGObject
 			{
 				return (word >> (sizeof(T)-p-1) * 8) & 0xff;
 			}
+
+		/// byte not implemented for complex64_t
+		static inline uint8_t byte(complex64_t word, uint16_t p)
+		{
+			SG_SERROR("CMath::byte():: Not supported for complex64_t\n");
+			return uint8_t(0);
+		}
 
 		template <class T>
 			static void radix_sort_helper(T* array, int32_t size, uint16_t i)
@@ -769,6 +912,12 @@ class CMath : public CSGObject
 				}
 			}
 
+		/// radix_sort_helper not implemented for complex64_t
+		static void radix_sort_helper(complex64_t* array, int32_t size, uint16_t i)
+		{
+			SG_SERROR("CMath::radix_sort_helper():: Not supported for complex64_t\n");
+		}
+
 		/** Performs a quicksort on an array of pointers.
 		 * It is sorted from in ascending (for type T)
 		 *
@@ -817,6 +966,12 @@ class CMath : public CSGObject
 					qsort(&vector[left],length-left);
 			}
 
+		/// qsort not implemented for complex64_t
+		static void qsort(complex64_t** vector, index_t length)
+		{
+			SG_SERROR("CMath::qsort():: Not supported for complex64_t\n");
+		}
+
 		/// display bits (useful for debugging)
 		template <class T> static void display_bits(T word, int32_t width=8*sizeof(T))
 		{
@@ -836,6 +991,13 @@ class CMath : public CSGObject
 			}
 		}
 
+		/// disply_bits not implemented for complex64_t
+		static void display_bits(complex64_t word,
+			int32_t width=8*sizeof(complex64_t))
+		{
+			SG_SERROR("CMath::display_bits():: Not supported for complex64_t\n");
+		}
+
 		/** performs a quicksort on an array output of length size
 		 * it is sorted in ascending order
 		 * (for type T1) and returns the index (type T2)
@@ -843,6 +1005,13 @@ class CMath : public CSGObject
 		 */
 		template <class T1,class T2>
 			static void qsort_index(T1* output, T2* index, uint32_t size);
+
+		/// qsort_index not implemented for complex64_t
+		template <class T>
+			static void qsort_index(complex64_t* output, T* index, uint32_t size)
+			{
+				SG_SERROR("CMath::qsort_index():: Not supported for complex64_t\n");
+			}
 
 		/** performs a quicksort on an array output of length size
 		 * it is sorted in descending order
@@ -852,6 +1021,15 @@ class CMath : public CSGObject
 		template <class T1,class T2>
 			static void qsort_backward_index(
 				T1* output, T2* index, int32_t size);
+
+		/// qsort_backword_index not implemented for complex64_t
+		template <class T>
+			static void qsort_backword_index(
+				complex64_t* output, T* index, uint32_t size)
+			{
+				SG_SERROR("CMath::qsort_backword_index():: \
+					Not supported for complex64_t\n");
+			}
 
 		/** performs a quicksort on an array output of length size
 		 * it is sorted in ascending order
@@ -874,6 +1052,14 @@ class CMath : public CSGObject
 				parallel_qsort_index<T1,T2>(&t);
 			}
 
+		/// parallel_qsort_index not implemented for complex64_t
+		template <class T>
+			inline static void parallel_qsort_index(complex64_t* output, T* index,
+				uint32_t size, int32_t n_threads, int32_t limit=0)
+			{
+				SG_SERROR("CMath::parallel_qsort_index():: Not supported for complex64_t\n");
+			}
+
 
 		template <class T1,class T2>
 			static void* parallel_qsort_index(void* p);
@@ -884,12 +1070,24 @@ class CMath : public CSGObject
 		template <class T>
 			static void min(float64_t* output, T* index, int32_t size);
 
+		/// complex64_t cannot be used as index
+		static void min(float64_t* output, complex64_t* index, int32_t size)
+		{
+			SG_SERROR("CMath::min():: Not supported for complex64_t\n");
+		}
+
 		/* finds the n smallest elements in output and puts these elements as the
 		   first n elements  */
 		template <class T>
 			static void nmin(
 				float64_t* output, T* index, int32_t size, int32_t n);
 
+		/// complex64_t cannot be used as index
+		static void nmin(float64_t* output, complex64_t* index,
+			int32_t size, int32_t n)
+		{
+			SG_SERROR("CMath::nmin():: Not supported for complex64_t\n");
+		}
 
 
 
@@ -919,6 +1117,13 @@ class CMath : public CSGObject
 				return start;
 			}
 
+		/// binary_search_helper not implemented for complex64_t
+		static int32_t binary_search_helper(complex64_t* output, int32_t size, complex64_t elem)
+		{
+			SG_SERROR("CMath::binary_search_helper():: Not supported for complex64_t\n");
+			return int32_t(0);
+		}
+
 		/* finds an element in a sorted array via binary search
 		 *     * returns -1 if not found */
 		template <class T>
@@ -929,6 +1134,14 @@ class CMath : public CSGObject
 					return ind;
 				return -1;
 			}
+
+		/// binary_search not implemented for complex64_t
+		static inline int32_t binary_search(complex64_t* output, int32_t size, complex64_t elem)
+		{
+			SG_SERROR("CMath::binary_search():: Not supported for complex64_t\n");
+			return int32_t(-1);
+		}
+
 
 		/* Finds an element in a sorted array of pointers via binary search
 		 * Every element is dereferenced once before being compared
@@ -968,6 +1181,13 @@ class CMath : public CSGObject
 				return -1;
 			}
 
+		/// binary_search not implemented for complex64_t
+		static inline int32_t binary_search(complex64_t** vector, index_t length, complex64_t* elem)
+		{
+			SG_SERROR("CMath::binary_search():: Not supported for complex64_t\n");
+			return int32_t(-1);
+		}
+
 		template <class T>
 			static int32_t binary_search_max_lower_equal(
 				T* output, int32_t size, T elem)
@@ -981,6 +1201,15 @@ class CMath : public CSGObject
 				return -1;
 			}
 
+		/// binary_search_max_lower_equal not implemented for complex64_t
+		static int32_t binary_search_max_lower_equal(complex64_t* output,
+			int32_t size, complex64_t elem)
+		{
+			SG_SERROR("CMath::binary_search_max_lower_equal():: \
+				Not supported for complex64_t\n");
+			return int32_t(-1);
+		}
+
 		/// align two sequences seq1 & seq2 of length l1 and l2 using gapCost
 		/// return alignment cost
 		static float64_t Align(
@@ -988,6 +1217,18 @@ class CMath : public CSGObject
 
 
 		//@}
+		
+		/// returns real part of a complex64_t number
+		static float64_t real(complex64_t c)
+		{
+			return c.real();
+		}
+
+		/// returns imag part of a complex64_t number
+		static float64_t imag(complex64_t c)
+		{
+			return c.imag();
+		}
 
 		/// returns number generator seed
 		inline static uint32_t get_seed()
@@ -1384,4 +1625,9 @@ void CMath::min(float64_t* output, T* index, int32_t size)
 	swap(index[0], index[min_index]);
 }
 }
-#endif
+#undef COMPLEX64_ERROR_ONEARG
+#undef COMPLEX64_ERROR_TWOARGS
+#undef COMPLEX64_ERROR_THREEARGS
+#undef COMPLEX64_STDMATH
+#undef COMPLEX64_ERROR_SORT
+#endif /** __MATHEMATICS_H_ */

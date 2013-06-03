@@ -191,6 +191,10 @@ CSerializableJsonFile::write_scalar_wrapped(
 		push_object(json_object_new_double(
 						(double) *(floatmax_t*) param));
 		break;
+	case PT_COMPLEX64:
+		SG_ERROR("write_scalar_wrapped(): Implementation error during"
+				 " writing JsonFile!");
+		break;
 	case PT_SGOBJECT:
 		SG_ERROR("write_scalar_wrapped(): Implementation error during"
 				 " writing JsonFile!");
