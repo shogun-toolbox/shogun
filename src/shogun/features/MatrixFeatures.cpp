@@ -117,7 +117,7 @@ template< class ST > void CMatrixFeatures< ST >::get_feature_vector_col(
 }
 
 template< class ST > void CMatrixFeatures< ST >::set_feature_vector(
-		SGMatrix< ST > const & vec,
+		SGMatrix< ST > const vec,
 		int32_t num)
 {
 	if ( num < 0 || num >= get_num_vectors() )

@@ -39,6 +39,9 @@ CStructuredModel::CStructuredModel(
 		CStructuredLabels* labels)
 : CSGObject()
 {
+#ifdef USE_SWIG_DIRECTORS
+	m_use_director_risk=false;
+#endif
 	init();
 
 	m_features = features;
@@ -55,6 +58,7 @@ CStructuredModel::~CStructuredModel()
 }
 
 void CStructuredModel::init_opt(
+		float64_t regularization,
 		SGMatrix< float64_t > & A,
 		SGVector< float64_t > a,
 		SGMatrix< float64_t > B,
@@ -142,6 +146,11 @@ void CStructuredModel::init()
 
 	m_features = NULL;
 	m_labels   = NULL;
+}
+
+void CStructuredModel::init_training()
+{
+	// Nothing to do here
 }
 
 bool CStructuredModel::check_training_setup() const

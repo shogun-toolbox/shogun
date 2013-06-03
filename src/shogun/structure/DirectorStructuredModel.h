@@ -98,7 +98,12 @@ IGNORE_IN_CLASSLIST class CDirectorStructuredModel : public CStructuredModel
 		 * @param ub
 		 * @param C
 		 */
-		virtual void init_opt(SGMatrix< float64_t > & A,  SGVector< float64_t > a, SGMatrix< float64_t > B,  SGVector< float64_t > & b, SGVector< float64_t > lb, SGVector< float64_t > ub, SGMatrix < float64_t >  & C);
+		virtual void init_opt(
+				float64_t regularization,
+				SGMatrix< float64_t > & A,  SGVector< float64_t > a,
+				SGMatrix< float64_t > B,  SGVector< float64_t > & b,
+				SGVector< float64_t > lb, SGVector< float64_t > ub,
+				SGMatrix < float64_t > & C);
 		
 		using CStructuredModel::director_risk;
 
@@ -106,6 +111,9 @@ IGNORE_IN_CLASSLIST class CDirectorStructuredModel : public CStructuredModel
 
 		/** @return name of SGSerializable */
 		virtual const char* get_name() const { return "DirectorStructuredModel"; }
+
+		/** initializes the part of the model that needs to be used during training. */
+		virtual void init_training();
 
 }; /* class CDirectorStructuredModel */
 } /* namespace shogun */

@@ -109,6 +109,7 @@ class CStructuredModel : public CSGObject
 		 * @param C
 		 */
 		virtual void init_opt(
+				float64_t regularization,
 				SGMatrix< float64_t > & A,  SGVector< float64_t > a,
 				SGMatrix< float64_t > B,  SGVector< float64_t > & b,
 				SGVector< float64_t > lb, SGVector< float64_t > ub,
@@ -207,6 +208,12 @@ class CStructuredModel : public CSGObject
 
 		/** @return name of SGSerializable */
 		virtual const char* get_name() const { return "StructuredModel"; }
+
+		/** initializes the part of the model that needs to be used during training.
+		 * In this class this method is empty and it can be re-implemented for any
+		 * particular StructuredModel
+		 */
+		virtual void init_training();
 
 		/**
 		 * method to be called from a SO machine before training

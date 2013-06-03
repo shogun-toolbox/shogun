@@ -88,6 +88,24 @@ template<class T> class SGVector : public SGReferencedData
 		 */
 		static T* randperm(int32_t n);
 
+		/** Returns a vector with n linearly spaced elements between start and end.
+		 *
+		 * @param start beginning of the interval to divide
+		 * @param end upper bound of the interval to divide
+		 * @param n number of elements used to divide the interval
+		 * @return vector with linearly spaced elements within the interval
+		 */
+		static SGVector<float64_t> linspace_vec(T start, T end, int32_t n);
+
+		/** Returns an array with n linearly spaced elements between start and end.
+		 *
+		 * @param start beginning of the interval to divide
+		 * @param end upper bound of the interval to divide
+		 * @param n number of elements used to divide the interval
+		 * @return array with linearly spaced elements within the interval
+		 */
+		static float64_t* linspace(T start, T end, int32_t n);
+
 		/** For a sorted (ascending) vector, gets the index after the first
 		 * element that is smaller than the given one
 		 *

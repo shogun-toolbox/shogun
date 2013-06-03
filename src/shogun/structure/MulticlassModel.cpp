@@ -146,6 +146,7 @@ float64_t CMulticlassModel::delta_loss(float64_t y1, float64_t y2)
 }
 
 void CMulticlassModel::init_opt(
+		float64_t regularization,
 		SGMatrix< float64_t > & A,
 		SGVector< float64_t > a,
 		SGMatrix< float64_t > B,
@@ -154,7 +155,7 @@ void CMulticlassModel::init_opt(
 		SGVector< float64_t > ub,
 		SGMatrix< float64_t > & C)
 {
-	C = SGMatrix< float64_t >::create_identity_matrix(get_dim(), 1);
+	C = SGMatrix< float64_t >::create_identity_matrix(get_dim(), regularization);
 }
 
 void CMulticlassModel::init()

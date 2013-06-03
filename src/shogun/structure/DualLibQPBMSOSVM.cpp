@@ -88,6 +88,8 @@ bool CDualLibQPBMSOSVM::train_machine(CFeatures* data)
 	if (data)
 		set_features(data);
 
+	// Initialize the model for training
+	m_model->init_training();
 	// call the solver
 	switch(m_solver)
 	{

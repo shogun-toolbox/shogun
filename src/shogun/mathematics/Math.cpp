@@ -183,3 +183,16 @@ float64_t CMath::Align(
   // return the final cost
   return actCost;
 }
+
+void CMath::linspace(float64_t* output, float64_t start, float64_t end, int32_t n)
+{
+	float64_t delta = (end-start) / (n-1);
+	float64_t v = start;
+	index_t i = 0;
+	while ( v <= end )
+	{
+		output[i++] = v;
+		v += delta;
+	}
+	output[n-1] = end;
+}

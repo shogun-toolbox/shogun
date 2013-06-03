@@ -67,3 +67,9 @@ void CStructuredOutputMachine::register_parameters()
 	SG_ADD((CSGObject**)&m_model, "m_model", "Structured model", MS_NOT_AVAILABLE);
 	SG_ADD((CSGObject**)&m_loss, "m_loss", "Structured loss", MS_NOT_AVAILABLE);
 }
+
+void CStructuredOutputMachine::set_labels(CLabels* lab)
+{
+	CMachine::set_labels(lab);
+	m_model->set_labels(CLabelsFactory::to_structured(lab));
+}

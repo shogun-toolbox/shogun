@@ -33,7 +33,7 @@ CSequenceLabels::CSequenceLabels(SGVector< int32_t > labels, int32_t label_lengt
 
 	for ( int32_t i = 0 ; i < labels.vlen ; i += label_length )
 	{
-		add_label(SGVector< int32_t >(
+		add_vector_label(SGVector< int32_t >(
 			SGVector< int32_t >::clone_vector(labels.vector+i, label_length),
 			label_length));
 	}
@@ -43,7 +43,7 @@ CSequenceLabels::~CSequenceLabels()
 {
 }
 
-void CSequenceLabels::add_label(SGVector< int32_t > label)
+void CSequenceLabels::add_vector_label(SGVector< int32_t > label)
 {
 	CStructuredLabels::add_label( new CSequence(label) );
 }

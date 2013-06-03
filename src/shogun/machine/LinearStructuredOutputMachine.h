@@ -69,6 +69,12 @@ class CLinearStructuredOutputMachine : public CStructuredOutputMachine
 		 */
 		virtual CStructuredLabels* apply_structured(CFeatures* data = NULL);
 
+		/** Stores feature data of underlying model. Does nothing because
+		 * Linear machines store the normal vector of the separating hyperplane
+		 * and therefore the model anyway
+		 */
+		virtual void store_model_features();
+
 		/** @return object name */
 		virtual const char* get_name() const 
 		{ 
