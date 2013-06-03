@@ -37,6 +37,10 @@ CPrimalMosekSOSVM::CPrimalMosekSOSVM(
 void CPrimalMosekSOSVM::init()
 {
 	SG_ADD(&m_slacks, "m_slacks", "Slacks vector", MS_NOT_AVAILABLE);
+	//FIXME model selection available for SO machines
+	SG_ADD(&m_regularization, "m_regularization", "Regularization constant", MS_NOT_AVAILABLE);
+
+	m_regularization = 1.0;
 }
 
 CPrimalMosekSOSVM::~CPrimalMosekSOSVM()
@@ -81,7 +85,9 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 	// Initialize the terms of the optimization problem
 	SGMatrix< float64_t > A, B, C;
 	SGVector< float64_t > a, b, lb, ub;
-	m_model->init_opt(A, a, B, b, lb, ub, C);
+	m_model->init_opt(m_regularization, A, a, B, b, lb, ub, C);
+
+	SG_DEBUG("Regularization used in PrimalMosekSOSVM equal to %.2f.\n", m_regularization);
 
 	// Input terms of the problem that do not change between iterations
 	if ( mosek->init_sosvm(M, N, num_aux, num_aux_con, C, lb, ub, A, b) != MSK_RES_OK )
@@ -117,6 +123,7 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 	CResultSet* cur_res     = NULL;
 	CList*      cur_list    = NULL;
 	bool        exception   = false;
+	index_t     iteration   = 0;
 
 	SGVector< float64_t > sol(M+num_aux+N);
 	sol.zero();
@@ -125,7 +132,8 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 
 	do 
 	{
-		SG_DEBUG("Cutting plane training with num_con=%d and old_num_con=%d.\n", num_con, old_num_con);
+		SG_DEBUG("Iteration #%d: Cutting plane training with num_con=%d and old_num_con=%d.\n",
+				iteration, num_con, old_num_con);
 
 		old_num_con = num_con;
 
@@ -134,7 +142,6 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 			// Predict the result of the ith training example
 			result = m_model->argmax(m_w, i);
 
-			SG_DEBUG("loss %f %f.\n", compute_loss_arg(result),  m_loss->loss( compute_loss_arg(result)) )
 			// Compute the loss associated with the prediction
 			slack = m_loss->loss( compute_loss_arg(result) );
 			cur_list = (CList*) results->get_element(i);
@@ -188,7 +195,7 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 		}
 
 		// Solve the QP
-		SG_DEBUG("Entering mosek QP solver.\n");
+		SG_DEBUG("Entering Mosek QP solver.\n");
 
 		mosek->optimize(sol);
 		for ( int32_t i = 0 ; i < M+num_aux+N ; ++i )
@@ -200,6 +207,9 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 			else
 				m_slacks[i-M-num_aux] = sol[i];
 		}
+
+		SG_DEBUG("QP solved. The primal objective value is %.4f.\n", mosek->get_primal_objective_value());
+		++iteration;
 
 	} while ( old_num_con != num_con && ! exception );
 
@@ -260,6 +270,11 @@ float64_t CPrimalMosekSOSVM::compute_primal_objective() const
 EMachineType CPrimalMosekSOSVM::get_classifier_type()
 {
 	return CT_PRIMALMOSEKSOSVM;
+}
+
+void CPrimalMosekSOSVM::set_regularization(float64_t C)
+{
+	m_regularization = C;
 }
 
 #endif /* USE_MOSEK */

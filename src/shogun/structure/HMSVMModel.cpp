@@ -48,15 +48,15 @@ CHMSVMModel::~CHMSVMModel()
 
 int32_t CHMSVMModel::get_dim() const
 {
-	// Shorthands for the number of states, the matrix features and their dimension
-	int32_t S = m_state_model->get_num_states();
+	// Shorthand for the number of free states
+	int32_t free_states = ((CSequenceLabels*) m_labels)->get_num_states();
 	CMatrixFeatures< float64_t >* mf = (CMatrixFeatures< float64_t >*) m_features;
 	int32_t D = mf->get_num_features();
 
 	if ( m_use_plifs )
-		return S*(S + D*m_num_plif_nodes);
+		return free_states*(free_states + D*m_num_plif_nodes);
 	else
-		return S*(S + D*m_num_obs);
+		return free_states*(free_states + D*m_num_obs);
 }
 
 SGVector< float64_t > CHMSVMModel::get_joint_feature_vector(
@@ -82,7 +82,9 @@ SGVector< float64_t > CHMSVMModel::get_joint_feature_vector(
 		m_transmission_weights(state_seq[i],state_seq[i+1]) += 1;
 
 	SGMatrix< float64_t > obs = mf->get_feature_vector(feat_idx);
-	ASSERT(obs.num_rows == D && obs.num_cols == state_seq.vlen)
+	REQUIRE(obs.num_rows == D && obs.num_cols == state_seq.vlen,
+		"obs.num_rows (%d) != D (%d) OR obs.num_cols (%d) != state_seq.vlen (%d)\n",
+		obs.num_rows, D, obs.num_cols, state_seq.vlen)
 	m_emission_weights.zero();
 	index_t aux_idx, weight_idx;
 
@@ -105,12 +107,6 @@ SGVector< float64_t > CHMSVMModel::get_joint_feature_vector(
 	else	// Use PLiFs
 	{
 		int32_t S = m_state_model->get_num_states();
-		CPlif* plif;
-		float64_t* limits;
-		// The observation value
-		float64_t value;
-		// The number of supporting points smaller or equal than value
-		int32_t count;
 
 		for ( int32_t f = 0 ; f < D ; ++f )
 		{
@@ -118,10 +114,12 @@ SGVector< float64_t > CHMSVMModel::get_joint_feature_vector(
 
 			for ( int32_t j = 0 ; j < state_seq.vlen ; ++j )
 			{
-				plif = (CPlif*) m_plif_matrix->get_element(S*f + state_seq[j]);
-				limits = plif->get_plif_limits();
-				count = 0;
-				value = obs(f,j);
+				CPlif* plif = (CPlif*) m_plif_matrix->get_element(S*f + state_seq[j]);
+				float64_t* limits = plif->get_plif_limits();
+				// The number of supporting points smaller or equal than value
+				int32_t count = 0;
+				// The observation value
+				float64_t value = obs(f,j);
 
 				for ( int32_t i = 0 ; i < m_num_plif_nodes ; ++i )
 				{
@@ -214,17 +212,16 @@ CResultSet* CHMSVMModel::argmax(
 	{
 		m_state_model->reshape_emission_params(m_plif_matrix, w, D, m_num_plif_nodes);
 
-		CPlif* plif;
-		for ( int32_t f = 0 ; f < D ; ++f )
+		for ( int32_t i = 0 ; i < T ; ++i )
 		{
-			for ( int32_t s = 0 ; s < S ; ++s )
+			for ( int32_t f = 0 ; f < D ; ++f )
 			{
-				plif = (CPlif*) m_plif_matrix->get_element(S*f + s);
-
-				for ( int32_t i = 0 ; i < T ; ++i )
+				for ( int32_t s = 0 ; s < S ; ++s )
+				{
+					CPlif* plif = (CPlif*) m_plif_matrix->get_element(S*f + s);
 					E(s,i) += plif->lookup( x(f,i) );
-
-				SG_UNREF(plif);
+					SG_UNREF(plif);
+				}
 			}
 		}
 	}
@@ -353,6 +350,7 @@ float64_t CHMSVMModel::delta_loss(CStructuredData* y1, CStructuredData* y2)
 }
 
 void CHMSVMModel::init_opt(
+		float64_t regularization,
 		SGMatrix< float64_t > & A,
 		SGVector< float64_t > a,
 		SGMatrix< float64_t > B,
@@ -361,8 +359,7 @@ void CHMSVMModel::init_opt(
 		SGVector< float64_t > ub,
 		SGMatrix< float64_t > & C)
 {
-	// Shorthand for the number of free states (i.e. states that have all their
-	// parameters learnt)
+	// Shorthand for the number of free states (i.e. states for which parameters are learnt)
 	int32_t S = ((CSequenceLabels*) m_labels)->get_num_states();
 	// Shorthand for the number of features of the feature vector
 	int32_t D = ((CMatrixFeatures< float64_t >*) m_features)->get_num_features();
@@ -370,10 +367,10 @@ void CHMSVMModel::init_opt(
 	// Monotonicity constraints for feature scoring functions
 	SGVector< int32_t > monotonicity = m_state_model->get_monotonicity(S,D);
 
-	// Quadratic regularizer
+	// Quadratic regularization
 
-	float64_t C_small  =  5.0;
-	float64_t C_smooth = 10.0;
+	float64_t C_small = regularization;
+	float64_t C_smooth = 0.02*regularization;
 	// TODO change the representation of C to sparse matrix
 	C = SGMatrix< float64_t >(get_dim()+m_num_aux, get_dim()+m_num_aux);
 	C.zero();
@@ -592,4 +589,20 @@ void CHMSVMModel::init_training()
 			}
 		}
 	}
+}
+
+SGMatrix< float64_t > CHMSVMModel::get_transmission_weights() const
+{
+	return m_transmission_weights;
+}
+
+SGVector< float64_t > CHMSVMModel::get_emission_weights() const
+{
+	return m_emission_weights;
+}
+
+CStateModel* CHMSVMModel::get_state_model() const
+{
+	SG_REF(m_state_model);
+	return m_state_model;
 }

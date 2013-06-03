@@ -24,11 +24,11 @@ int main(int argc, char ** argv)
 
 	// No need for ref_counting in SGVector since the data is allocated
 	// during compilation time
-	labels->add_label(SGVector< int32_t >(lab1, 4, false));
-	labels->add_label(SGVector< int32_t >(lab2, 4, false));
-	labels->add_label(SGVector< int32_t >(lab3, 4, false));
-	labels->add_label(SGVector< int32_t >(lab4, 4, false));
-	labels->add_label(SGVector< int32_t >(lab5, 4, false));
+	labels->add_vector_label(SGVector< int32_t >(lab1, 4, false));
+	labels->add_vector_label(SGVector< int32_t >(lab2, 4, false));
+	labels->add_vector_label(SGVector< int32_t >(lab3, 4, false));
+	labels->add_vector_label(SGVector< int32_t >(lab4, 4, false));
+	labels->add_vector_label(SGVector< int32_t >(lab5, 4, false));
 
 	// Create features
 	CMatrixFeatures< float64_t >* features = new CMatrixFeatures< float64_t >(5, 3);

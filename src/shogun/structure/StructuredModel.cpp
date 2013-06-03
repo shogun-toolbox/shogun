@@ -58,6 +58,7 @@ CStructuredModel::~CStructuredModel()
 }
 
 void CStructuredModel::init_opt(
+		float64_t regularization,
 		SGMatrix< float64_t > & A,
 		SGVector< float64_t > a,
 		SGMatrix< float64_t > B,

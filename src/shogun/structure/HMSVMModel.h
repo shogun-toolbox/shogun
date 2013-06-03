@@ -100,6 +100,7 @@ class CHMSVMModel : public CStructuredModel
 		 * @param C
 		 */
 		virtual void init_opt(
+				float64_t regularization,
 				SGMatrix< float64_t > & A,  SGVector< float64_t > a,
 				SGMatrix< float64_t > B,  SGVector< float64_t > & b,
 				SGVector< float64_t > lb, SGVector< float64_t > ub,
@@ -117,7 +118,7 @@ class CHMSVMModel : public CStructuredModel
 		 * implement smoothness regularization between adjacent emission
 		 * scores via constraints.
 		 *
-		 * return the number of auxiliary variables
+		 * @return the number of auxiliary variables
 		 */
 		virtual int32_t get_num_aux() const;
 
@@ -126,7 +127,7 @@ class CHMSVMModel : public CStructuredModel
 		 * optimization problem. These constraints are used to implement
 		 * smoothness regularization between adjacent emission scores.
 		 *
-		 * return the number of auxiliary constraints
+		 * @return the number of auxiliary constraints
 		 */
 		virtual int32_t get_num_aux_con() const;
 
@@ -142,6 +143,24 @@ class CHMSVMModel : public CStructuredModel
 		 * automatically selects the supporting points based on the feature values
 		 */
 		virtual void init_training();
+
+		/** get transmission weights
+		 *
+		 * @return vector with the transmission weights
+		 */
+		SGMatrix< float64_t > get_transmission_weights() const;
+
+		/** get emission weights
+		 *
+		 * @return vector with the emission weights
+		 */
+		SGVector< float64_t > get_emission_weights() const;
+
+		/** get state model
+		 *
+		 * @return model with the description of the states
+		 */
+		CStateModel* get_state_model() const;
 
 	private:
 		/* internal initialization */

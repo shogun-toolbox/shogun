@@ -68,6 +68,12 @@ class CPrimalMosekSOSVM : public CLinearStructuredOutputMachine
 		 */
 		virtual EMachineType get_classifier_type();
 
+		/** set regularization constant C
+		 *
+		 * @param C regularization constant
+		 */
+		void set_regularization(float64_t C);
+
 	protected:
 		/** train primal SO-SVM
 		 *
@@ -124,6 +130,9 @@ class CPrimalMosekSOSVM : public CLinearStructuredOutputMachine
 
 		/** primal objective value */
 		float64_t po_value;
+
+		/** regularization constant */
+		float64_t m_regularization;
 
 }; /* class CPrimalMosekSOSVM */
 

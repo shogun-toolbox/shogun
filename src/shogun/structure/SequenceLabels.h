@@ -109,7 +109,7 @@ class CSequenceLabels : public CStructuredLabels
 		 *
 		 * @param label label to add
 		 */
-		void add_label(SGVector< int32_t > label);
+		void add_vector_label(SGVector< int32_t > label);
 
 		/** get the number of states
 		 *

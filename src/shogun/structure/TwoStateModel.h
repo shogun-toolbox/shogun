@@ -112,13 +112,12 @@ class CTwoStateModel : public CStateModel
 		/**
 		 * reshapes the transition and emission weights into a vector (the joint
 		 * feature vector so it will be possible to take the dot product with the
-		 * weight vector)
+		 * weight vector). Version with the joint feature vector as parameter by
+		 * reference
 		 *
 		 * @param psi output vector
-		 * @param transmission_weights counts of the state transitions for a state
-		 * sequence
-		 * @param emission_weights counts of the emission scores for a state
-		 * sequence and a feature vector
+		 * @param transmission_weights counts of the state transitions for a state sequence
+		 * @param emission_weights counts of the emission scores for a state sequence and a feature vector
 		 * @param num_feats number of features
 		 * @param num_obs number of emission scores per feature and state
 		 */
@@ -126,6 +125,21 @@ class CTwoStateModel : public CStateModel
 				SGMatrix< float64_t > transmission_weights,
 				SGVector< float64_t > emission_weights,
 				int32_t num_feats, int32_t num_obs) const;
+
+		/**
+		 * reshapes the transition and emission weights into a vector (the joint
+		 * feature vector so it will be possible to take the dot product with the
+		 * weight vector). Version returning the joint feature vector
+		 *
+		 * @param transmission_weights counts of the state transitions for a state sequence
+		 * @param emission_weights counts of the emission scores for a state sequence and a feature vector
+		 * @param num_feats number of features
+		 * @param num_obs number of emission scores per feature and state
+		 *
+		 * @return psi output vector
+		 */
+		virtual SGVector< float64_t > weights_to_vector(SGMatrix< float64_t > transmission_weights,
+				SGVector< float64_t > emission_weights, int32_t num_feats, int32_t num_obs) const;
 
 		/**
 		 * specify monotonicity constraints for feature scoring functions. The

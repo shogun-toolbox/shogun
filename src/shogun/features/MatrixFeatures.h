@@ -109,7 +109,7 @@ template< class ST > class CMatrixFeatures : public CFeatures
 		 * @param vec feature vector
 		 * @param num index of vector to set
 		 */
-		void set_feature_vector(SGMatrix< ST > const & vec, int32_t num);
+		void set_feature_vector(SGMatrix< ST > const vec, int32_t num);
 
 		/** get features
 		 *

@@ -73,6 +73,12 @@ class CStructuredOutputMachine : public CMachine
 			return "StructuredOutputMachine";
 		}
 
+		/** set labels
+		 *
+		 * @param lab labels
+		 */
+		virtual void set_labels(CLabels* lab);
+
 	private:
 		/** register class members */
 		void register_parameters();

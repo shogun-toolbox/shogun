@@ -221,6 +221,16 @@ void CTwoStateModel::weights_to_vector(SGVector< float64_t >& psi,
 
 }
 
+SGVector< float64_t > CTwoStateModel::weights_to_vector(SGMatrix< float64_t > transmission_weights,
+		SGVector< float64_t > emission_weights, int32_t num_feats, int32_t num_obs) const
+{
+	int32_t num_free_states = 2;
+	SGVector< float64_t > vec(num_free_states*(num_free_states + num_feats*num_obs));
+	vec.zero();
+	weights_to_vector(vec, transmission_weights, emission_weights, num_feats, num_obs);
+	return vec;
+}
+
 SGVector< int32_t > CTwoStateModel::get_monotonicity(int32_t num_free_states,
 		int32_t num_feats) const
 {
@@ -280,7 +290,7 @@ CHMSVMModel* CTwoStateModel::simulate_data(int32_t num_exm, int32_t exm_len,
 			}
 		}
 
-		labels->add_label(lab);
+		labels->add_vector_label(lab);
 	}
 
 	// Generate features by
