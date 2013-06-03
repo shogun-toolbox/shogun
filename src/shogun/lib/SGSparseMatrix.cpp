@@ -50,6 +50,12 @@ void SGSparseMatrix<T>::load(CFile* loader)
 	SG_RESET_LOCALE;
 }
 
+template<>
+void SGSparseMatrix<complex64_t>::load(CFile* loader)
+{
+	SG_SERROR("SGSparseMatrix::load():: Not supported for complex64_t");
+}
+
 template<class T>
 void SGSparseMatrix<T>::save(CFile* saver)
 {
@@ -59,7 +65,12 @@ void SGSparseMatrix<T>::save(CFile* saver)
 	saver->set_sparse_matrix(sparse_matrix, num_features, num_vectors);
 	SG_RESET_LOCALE;
 }
-		
+
+template<>
+void SGSparseMatrix<complex64_t>::save(CFile* saver)
+{
+	SG_SERROR("SGSparseMatrix::save():: Not supported for complex64_t");
+}
 
 template <class T>
 void SGSparseMatrix<T>::copy_data(const SGReferencedData& orig)
@@ -98,4 +109,5 @@ template class SGSparseMatrix<uint64_t>;
 template class SGSparseMatrix<float32_t>;
 template class SGSparseMatrix<float64_t>;
 template class SGSparseMatrix<floatmax_t>;
+template class SGSparseMatrix<complex64_t>;
 }

@@ -10,7 +10,7 @@
 
 class_str='class'
 types=["BOOL", "CHAR", "INT8", "UINT8", "INT16", "UINT16", "INT32", "UINT32",
-		"INT64", "UINT64", "FLOAT32", "FLOAT64", "FLOATMAX"] 
+		"INT64", "UINT64", "FLOAT32", "FLOAT64", "FLOATMAX", "COMPLEX64"]
 config_tests=["HAVE_HDF5", "HAVE_JSON", "HAVE_XML", "HAVE_LAPACK", "USE_CPLEX",
 	"USE_SVMLIGHT", "USE_GLPK", "USE_LZO", "USE_GZIP", "USE_BZIP2", "USE_LZMA",
 	"USE_MOSEK", "HAVE_EIGEN3"]
@@ -113,7 +113,10 @@ def get_template_definitions(classes):
 				suffix=''
 			else:
 				suffix='_t'
-			d.append("\t\tcase PT_%s: return new C%s<%s%s>();\n" % (t,c,t.lower(),suffix))
+			if t=='COMPLEX64':
+				d.append("\t\tcase PT_COMPLEX64: return NULL;\n")
+			else:
+				d.append("\t\tcase PT_%s: return new C%s<%s%s>();\n" % (t,c,t.lower(),suffix))
 		d.append("\t\tcase PT_SGOBJECT: return NULL;\n\t}\n\treturn NULL;\n}")
 		definitions.append(''.join(d))
 	return definitions
