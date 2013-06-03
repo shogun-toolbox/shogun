@@ -12,7 +12,6 @@
 #include <shogun/base/init.h>
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/features/DenseFeatures.h>
-#include <shogun/features/CombinedDotFeatures.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/regression/gp/ExactInferenceMethod.h>

@@ -6,7 +6,6 @@ from shogun.Features import StringCharFeatures, RealFeatures, CombinedFeatures, 
 from shogun.Features import DNA, PROTEIN, Labels
 from shogun.Kernel import WeightedDegreeStringKernel, CombinedKernel, WeightedCommWordStringKernel, WeightedDegreePositionStringKernel
 from shogun.Features import StringCharFeatures, DNA, StringWordFeatures, CombinedFeatures
-from shogun.Features import CombinedDotFeatures, HashedWDFeatures, HashedWDFeaturesTransposed, WDFeatures, ImplicitWeightedSpecFeatures, StringByteFeatures
 
 from shogun.IO import MSG_DEBUG
 from shogun.Features import RealFeatures, BinaryLabels, DNA, Alphabet
