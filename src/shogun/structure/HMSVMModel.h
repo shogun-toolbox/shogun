@@ -38,8 +38,9 @@ class CHMSVMModel : public CStructuredModel
 		 * @param labels sequence labels
 		 * @param smt internal state representation
 		 * @param num_obs number of observations
+		 * @param use_plifs whether to model the observations using PLiFs
 		 */
-		CHMSVMModel(CFeatures* features, CStructuredLabels* labels, EStateModelType smt, int32_t num_obs);
+		CHMSVMModel(CFeatures* features, CStructuredLabels* labels, EStateModelType smt, int32_t num_obs=0, bool use_plifs=false);
 
 		/** destructor */
 		virtual ~CHMSVMModel();
@@ -99,6 +100,7 @@ class CHMSVMModel : public CStructuredModel
 		 * @param C
 		 */
 		virtual void init_opt(
+				float64_t regularization,
 				SGMatrix< float64_t > & A,  SGVector< float64_t > a,
 				SGMatrix< float64_t > B,  SGVector< float64_t > & b,
 				SGVector< float64_t > lb, SGVector< float64_t > ub,
@@ -116,7 +118,7 @@ class CHMSVMModel : public CStructuredModel
 		 * implement smoothness regularization between adjacent emission
 		 * scores via constraints.
 		 *
-		 * return the number of auxiliary variables
+		 * @return the number of auxiliary variables
 		 */
 		virtual int32_t get_num_aux() const;
 
@@ -125,19 +127,47 @@ class CHMSVMModel : public CStructuredModel
 		 * optimization problem. These constraints are used to implement
 		 * smoothness regularization between adjacent emission scores.
 		 *
-		 * return the number of auxiliary constraints
+		 * @return the number of auxiliary constraints
 		 */
 		virtual int32_t get_num_aux_con() const;
+
+		/** setter for use_plifs
+		 *
+		 * @param use_plifs whether PLiFs shall be used
+		 */
+		void set_use_plifs(bool use_plifs);
+
+		/**
+		 * initializes the emission and transmission vectors of weights used in Viterbi
+		 * decoding. In case PLiFs are used, it also initializes the matrix of PLiFs and
+		 * automatically selects the supporting points based on the feature values
+		 */
+		virtual void init_training();
+
+		/** get transmission weights
+		 *
+		 * @return vector with the transmission weights
+		 */
+		SGMatrix< float64_t > get_transmission_weights() const;
+
+		/** get emission weights
+		 *
+		 * @return vector with the emission weights
+		 */
+		SGVector< float64_t > get_emission_weights() const;
+
+		/** get state model
+		 *
+		 * @return model with the description of the states
+		 */
+		CStateModel* get_state_model() const;
 
 	private:
 		/* internal initialization */
 		void init();
 
 	private:
-		/** the number of states */
-		int32_t m_num_states;
-
-		/** the number of observations */
+		/** in case of discrete observations, the cardinality of the space of observations */
 		int32_t m_num_obs;
 
 		/** the number of auxiliary variables */
@@ -151,6 +181,15 @@ class CHMSVMModel : public CStructuredModel
 
 		/** emission weights used in Viterbi */
 		SGVector< float64_t > m_emission_weights;
+
+		/** number of supporting points for each PLiF */
+		int32_t m_num_plif_nodes;
+
+		/** PLiF matrix of dimensions (num_states, num_features) */
+		CDynamicObjectArray* m_plif_matrix;
+
+		/** whether to use PLiFs. Otherwise, the observations must be discrete and finite */
+		bool m_use_plifs;
 
 }; /* class CHMSVMModel */
 

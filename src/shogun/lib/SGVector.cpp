@@ -994,7 +994,7 @@ template<class T> void SGVector<T>::save(CFile* saver)
 	saver->set_vector(vector, vlen);
 	SG_RESET_LOCALE;
 }
-		
+
 #define MATHOP(op)								\
 template <class T> void SGVector<T>::op()		\
 {												\
@@ -1028,6 +1028,21 @@ template <class T> void SGVector<T>::pow(T q)
 {
 	for (int32_t i=0; i<vlen; i++)
 		vector[i]=(T) CMath::pow((double) vector[i], (double) q);
+}
+
+template <class T>
+SGVector<float64_t> SGVector<T>::linspace_vec(T start, T end, int32_t n)
+{
+	return SGVector<float64_t>(linspace(start, end, n), n);
+}
+
+template <class T>
+float64_t* SGVector<T>::linspace(T start, T end, int32_t n)
+{
+	float64_t* output = SG_MALLOC(float64_t, n);
+	CMath::linspace(output, start, end, n);
+
+	return output;
 }
 
 template class SGVector<bool>;
