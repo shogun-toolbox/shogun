@@ -15,12 +15,11 @@
  * ARPREC with "./configure 'CXX c++ -fPIC'" in order to link.
  */
 
-#ifndef __JACOBI_ELLIPTIC_FUNCTIONS_H_
-#define __JACOBI_ELLIPTIC_FUNCTIONS_H_
+#ifndef JACOBI_ELLIPTIC_FUNCTIONS_H_
+#define JACOBI_ELLIPTIC_FUNCTIONS_H_
 
 #include <shogun/lib/config.h>
 #include <shogun/base/SGObject.h>
-#include <complex>
 #include <limits>
 #include <math.h>
 
@@ -40,11 +39,11 @@ namespace shogun
  * =\int_{0}^{\varphi}\frac{d\theta}{\sqrt{(1-m^{2}sin^{2}\theta)}}
  * \f]
  * where \f$k=sin\varphi\f$, \f$t=sin\theta\f$ and parameter \f$m, 0\le m
- * \le 1\f$ is called modulus. There main Jacobi elliptic functions are defined
+ * \le 1\f$ is called modulus. Three main Jacobi elliptic functions are defined
  * as \f$sn(u,m)=k=sin\theta\f$, \f$cn(u,m)=cos\theta=\sqrt{1-sn(u,m)^{2}}\f$
  * and \f$dn(u,m)=\sqrt{1-m^{2}sn(u,m)^{2}}\f$.
  * For \f$k=1\f$, i.e. \f$\varphi=\frac{\pi}{2}\f$, \f$u(1,m)=K(m)\f$ is known
- * as the complete elliptic integral of first kind. Similarly, \f$u(1,m))=
+ * as the complete elliptic integral of first kind. Similarly, \f$u(1,m'))=
  * K'(m')\f$, \f$m'=\sqrt{1-m^{2}}\f$ is called the complementary complete
  * elliptic integral of first kind. Jacobi functions are double periodic with
  * quardratic periods \f$K\f$ and \f$K'\f$.
@@ -60,7 +59,7 @@ class CJacobiEllipticFunctions: public CSGObject
 	typedef mp_complex Complex;
 #else
 	typedef float64_t Real;
-	typedef std::complex<Real> Complex;
+	typedef complex64_t Complex;
 #endif //HAVE_ARPREC
 private:
 	static inline Real compute_quarter_period(Real b)
@@ -102,7 +101,7 @@ public:
 	 * @param Kp the quarter period (to be computed) on the Imaginary axis
 	 * computed
 	 */
-	static void ellKKP(Real L, Real &K, Real &Kp);
+	static void ellipKKp(Real L, Real &K, Real &Kp);
 
 	/** Computes three main Jacobi elliptic functions, \f$sn(u,m)\f$,
 	 * \f$cn(u,m)\f$ and \f$dn(u,m)\f$ (see class description).
@@ -112,42 +111,42 @@ public:
 	 * @param cn Jacobi elliptic function cn(u,m)
 	 * @param dn Jacobi elliptic function dn(u,m)
 	 */
-	static void ellPJC(Complex u, Real m, Complex &sn, Complex &cn, Complex &dn);
+	static void ellipJC(Complex u, Real m, Complex &sn, Complex &cn,
+		Complex &dn);
 
 #ifdef HAVE_ARPREC
-	/** Wrapper method for ellKKP if ARPREC is present (for high precision)
+	/** Wrapper method for ellipKKp if ARPREC is present (for high precision)
 	 * @param L
 	 * @param K the quarter period (to be computed) on the Real axis
 	 * @param Kp the quarter period (to be computed) on the Imaginary axis
 	 * computed
 	 */
-	static void ellKKP(float64_t L, float64_t &K, float64_t &Kp)
+	static void ellipKKp(float64_t L, float64_t &K, float64_t &Kp)
 	{
 		mp::mp_init(100, NULL, true);
 		mp_real _K, _Kp;
-		ellKKP(mp_real(L), _K, _Kp);
+		ellipKKp(mp_real(L), _K, _Kp);
 		K=dble(_K);
 		Kp=dble(_Kp);
 		mp::mp_finalize();
 	}
 	
-	/** Wrapper method for ellPJC if ARPREC is present (for high precision)
+	/** Wrapper method for ellipJC if ARPREC is present (for high precision)
 	 * @param u the elliptic integral of the first kind \f$u(k,m)\f$
 	 * @param m the modulus parameter, \f$0\le m \le 1\f$
 	 * @param sn Jacobi elliptic function sn(u,m)
 	 * @param cn Jacobi elliptic function cn(u,m)
 	 * @param dn Jacobi elliptic function dn(u,m)
 	 */
-	static void ellPJC(std::complex<float64_t> u, float64_t m, 
-		std::complex<float64_t> &sn, std::complex<float64_t> &cn, 
-		std::complex<float64_t> &dn)
+	static void ellipJC(complex64_t u, float64_t m,
+		complex64_t &sn, complex64_t &cn, complex64_t &dn)
 	{
 		mp::mp_init(100, NULL, true);
 		mp_complex _sn, _cn, _dn;
-		ellPJC(mp_complex(u.real(),u.imag()), mp_real(m), _sn, _cn, _dn);
-		sn=std::complex<float64_t>(dble(_sn.real),dble(_sn.imag));
-		cn=std::complex<float64_t>(dble(_cn.real),dble(_cn.imag));
-		dn=std::complex<float64_t>(dble(_dn.real),dble(_dn.imag));
+		ellipJC(mp_complex(u.real(),u.imag()), mp_real(m), _sn, _cn, _dn);
+		sn=complex64_t(dble(_sn.real),dble(_sn.imag));
+		cn=complex64_t(dble(_cn.real),dble(_cn.imag));
+		dn=complex64_t(dble(_dn.real),dble(_dn.imag));
 		mp::mp_finalize();
 	}
 #endif //HAVE_ARPREC
@@ -161,4 +160,4 @@ public:
 
 }
 
-#endif /* __JACOBI_ELLIPTIC_FUNCTIONS_H_ */
+#endif /* JACOBI_ELLIPTIC_FUNCTIONS_H_ */

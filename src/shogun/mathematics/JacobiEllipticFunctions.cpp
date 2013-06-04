@@ -10,14 +10,15 @@
  * (few parts rewritten and adjusted for shogun)
  */
 
+#include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/JacobiEllipticFunctions.h>
 
 using namespace shogun;
 
-void CJacobiEllipticFunctions::ellKKP(Real L, Real &K, Real &Kp)
+void CJacobiEllipticFunctions::ellipKKp(Real L, Real &K, Real &Kp)
 {
 	REQUIRE(L>=0.0,
-		"CJacobiEllipticFunctions::ellKKP(): \
+		"CJacobiEllipticFunctions::ellipKKp(): \
 		Parameter L should be non-negative\n");
 #ifdef HAVE_ARPREC
 	const Real eps=Real(std::numeric_limits<float64_t>::epsilon());
@@ -54,10 +55,10 @@ void CJacobiEllipticFunctions::ellKKP(Real L, Real &K, Real &Kp)
 }
 
 void CJacobiEllipticFunctions
-	::ellPJC(Complex u, Real m, Complex &sn, Complex &cn, Complex &dn)
+	::ellipJC(Complex u, Real m, Complex &sn, Complex &cn, Complex &dn)
 {
 	REQUIRE(m>=0.0 && m<=1.0,
-		"CJacobiEllipticFunctions::ellPJC(): \
+		"CJacobiEllipticFunctions::ellipJC(): \
 		Parameter m should be >=0 and <=1\n");
 
 #ifdef HAVE_ARPREC
@@ -68,23 +69,23 @@ void CJacobiEllipticFunctions
 	if (m>=(1.0-eps))
 	{
 #ifdef HAVE_ARPREC
-		std::complex<float64_t> _u(dble(u.real),dble(u.imag));
-		std::complex<float64_t> t=tanh(_u);
-		std::complex<float64_t> b=cosh(_u);
-		std::complex<float64_t> twon=b*sinh(_u);
-		std::complex<float64_t> ai=0.25*(1.0-dble(m));
-		std::complex<float64_t> _sn=t+ai*(twon-_u)/(b*b);
-		std::complex<float64_t> phi=1.0/b;
-		std::complex<float64_t> _cn=phi-ai*(twon-_u);
-		std::complex<float64_t> _dn=phi+ai*(twon+_u);
+		complex64_t _u(dble(u.real),dble(u.imag));
+		complex64_t t=CMath::tanh(_u);
+		complex64_t b=CMath::cosh(_u);
+		complex64_t twon=b*CMath::sinh(_u);
+		complex64_t ai=0.25*(1.0-dble(m));
+		complex64_t _sn=t+ai*(twon-_u)/(b*b);
+		complex64_t phi=1.0/b;
+		complex64_t _cn=phi-ai*(twon-_u);
+		complex64_t _dn=phi+ai*(twon+_u);
 		sn=mp_complex(_sn.real(),_sn.imag());
 		cn=mp_complex(_cn.real(),_cn.imag());
 		dn=mp_complex(_dn.real(),_dn.imag());
 #else
-		Complex t=tanh(u);
-		Complex b=cosh(u);
+		Complex t=CMath::tanh(u);
+		Complex b=CMath::cosh(u);
 		Complex ai=0.25*(1.0-m);
-		Complex twon=b*sinh(u);
+		Complex twon=b*CMath::sinh(u);
 		sn=t+ai*(twon-u)/(b*b);
 		Complex phi=Real(1.0)/b;
 		ai*=t*phi;
