@@ -724,7 +724,7 @@ class CMath : public CSGObject
 		template <class T>
 			static void qsort(T* output, int32_t size)
 			{
-				if (size==1)
+				if (size<=1)
 					return;
 
 				if (size==2)
