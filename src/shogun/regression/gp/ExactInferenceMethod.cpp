@@ -4,13 +4,16 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
+ * Written (W) 2013 Roman Votyakov
  * Copyright (C) 2012 Jacob Walker
+ * Copyright (C) 2013 Roman Votyakov
  *
  * Code adapted from Gaussian Process Machine Learning Toolbox
  * http://www.gaussianprocess.org/gpml/code/matlab/doc/
- *
  */
+
 #include <shogun/lib/config.h>
+
 #ifdef HAVE_EIGEN3
 
 #include <shogun/regression/gp/ExactInferenceMethod.h>
@@ -19,11 +22,11 @@
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/features/CombinedFeatures.h>
+
+#include <shogun/mathematics/eigen3.h>
+
 using namespace shogun;
-
-#include <Eigen/Dense>
 using namespace Eigen;
-
 
 CExactInferenceMethod::CExactInferenceMethod() : CInferenceMethod()
 {
@@ -44,10 +47,6 @@ CExactInferenceMethod::~CExactInferenceMethod()
 
 void CExactInferenceMethod::update_all()
 {
-	if (m_labels)
-		m_label_vector =
-				((CRegressionLabels*) m_labels)->get_labels().clone();
-
 	if (m_features && m_features->has_property(FP_DOT) && m_features->get_num_vectors())
 		m_feature_matrix =
 				((CDotFeatures*)m_features)->get_computed_dot_feature_matrix();
@@ -63,8 +62,6 @@ void CExactInferenceMethod::update_all()
 
 		SG_UNREF(feat);
 	}
-
-	update_data_means();
 
 	if (m_kernel)
 		update_train_kernel();
@@ -139,7 +136,7 @@ get_marginal_likelihood_derivatives(CMap<TParameter*,
 {
 	check_members();
 
-	if(update_parameter_hash())
+	if (update_parameter_hash())
 		update_all();
 
 	// get the sigma variable from the Gaussian likelihood model
@@ -157,12 +154,13 @@ get_marginal_likelihood_derivatives(CMap<TParameter*,
 	eigen_Q=eigen_L.triangularView<Upper>().solve(eigen_Q);
 
 	// divide Q by sigma^2
-	eigen_Q/=(sigma*sigma);
+	eigen_Q/=CMath::sq(sigma);
 
 	// create eigen representation of alpha and compute Q = Q - alpha * alpha'
 	Map<VectorXd> eigen_alpha(m_alpha.vector, m_alpha.vlen);
 	eigen_Q-=eigen_alpha*eigen_alpha.transpose();
 
+	// build parameter dictionary for kernel and mean
 	m_kernel->build_parameter_dictionary(para_dict);
 	m_mean->build_parameter_dictionary(para_dict);
 
@@ -173,8 +171,7 @@ get_marginal_likelihood_derivatives(CMap<TParameter*,
 
 	for (index_t i = 0; i < para_dict.get_num_elements(); i++)
 	{
-		shogun::CMapNode<TParameter*, CSGObject*>* node =
-				para_dict.get_node_ptr(i);
+		CMapNode<TParameter*, CSGObject*>* node=para_dict.get_node_ptr(i);
 
 		TParameter* param = node->key;
 		CSGObject* obj = node->data;
@@ -213,7 +210,7 @@ get_marginal_likelihood_derivatives(CMap<TParameter*,
 			if (deriv.num_cols*deriv.num_rows > 0)
 			{
 				Map<MatrixXd> eigen_deriv(deriv.matrix, deriv.num_rows, deriv.num_cols);
-				MatrixXd eigen_S=eigen_Q.cwiseProduct(eigen_deriv)*m_scale*m_scale;
+				MatrixXd eigen_S=eigen_Q.cwiseProduct(eigen_deriv)*CMath::sq(m_scale);
 				variables[g]=eigen_S.sum()/2.0;
 				deriv_found = true;
 			}
@@ -246,7 +243,7 @@ get_marginal_likelihood_derivatives(CMap<TParameter*,
 	param = m_model->m_model_selection_parameters->get_parameter(index);
 
 	SGVector<float64_t> vsigma(1);
-	vsigma[0]=(sigma*sigma)*eigen_Q.trace();
+	vsigma[0]=CMath::sq(sigma)*eigen_Q.trace();
 
 	gradient.add(param, vsigma);
 	para_dict.add(param, m_model);
@@ -256,7 +253,7 @@ get_marginal_likelihood_derivatives(CMap<TParameter*,
 
 SGVector<float64_t> CExactInferenceMethod::get_diagonal_vector()
 {
-	if(update_parameter_hash())
+	if (update_parameter_hash())
 		update_all();
 
 	check_members();
@@ -266,41 +263,45 @@ SGVector<float64_t> CExactInferenceMethod::get_diagonal_vector()
 	float64_t sigma=lik->get_sigma();
 	SG_UNREF(lik);
 
-	SGVector<float64_t> result =
-			SGVector<float64_t>(m_features->get_num_vectors());
-
-	result.fill_vector(result.vector, m_features->get_num_vectors(),
-			1.0/sigma);
+	// compute diagonal vector: sW=1/sigma
+	SGVector<float64_t> result(m_features->get_num_vectors());
+	result.fill_vector(result.vector, m_features->get_num_vectors(), 1.0/sigma);
 
 	return result;
 }
 
 float64_t CExactInferenceMethod::get_negative_marginal_likelihood()
 {
-	if(update_parameter_hash())
+	if (update_parameter_hash())
 		update_all();
-
-	float64_t result;
-
-	result = m_label_vector.dot(m_label_vector.vector, m_alpha.vector,
-			m_label_vector.vlen)/2.0;
 
 	// get the sigma variable from the Gaussian likelihood model
 	CGaussianLikelihood* lik=CGaussianLikelihood::obtain_from_generic(m_model);
 	float64_t sigma=lik->get_sigma();
 	SG_UNREF(lik);
 
-	for (int i = 0; i < m_L.num_rows; i++)
-		result += CMath::log(m_L(i,i));
+	// create eigen representation of alpha and L
+	Map<VectorXd> eigen_alpha(m_alpha.vector, m_alpha.vlen);
+	Map<MatrixXd> eigen_L(m_L.matrix, m_L.num_rows, m_L.num_cols);
 
-	result+=m_L.num_rows*CMath::log(2*CMath::PI*sigma*sigma)/2.0;
+	// get labels and mean vectors and create eigen representation
+	SGVector<float64_t> y=((CRegressionLabels*) m_labels)->get_labels();
+	Map<VectorXd> eigen_y(y.vector, y.vlen);
+	SGVector<float64_t> m=m_mean->get_mean_vector(m_feature_matrix);
+	Map<VectorXd> eigen_m(m.vector, m.vlen);
+
+	// compute negative log of the marginal likelihood:
+	// nlZ=(y-m)'*alpha/2+sum(log(diag(L)))+n*log(2*pi*sigma^2)/2
+	float64_t result=(eigen_y-eigen_m).dot(eigen_alpha)/2.0+
+		eigen_L.diagonal().array().log().sum()+m_L.num_rows*
+		CMath::log(2*CMath::PI*CMath::sq(sigma))/2.0;
 
 	return result;
 }
 
 SGVector<float64_t> CExactInferenceMethod::get_alpha()
 {
-	if(update_parameter_hash())
+	if (update_parameter_hash())
 		update_all();
 
 	return SGVector<float64_t>(m_alpha);
@@ -308,7 +309,7 @@ SGVector<float64_t> CExactInferenceMethod::get_alpha()
 
 SGMatrix<float64_t> CExactInferenceMethod::get_cholesky()
 {
-	if(update_parameter_hash())
+	if (update_parameter_hash())
 		update_all();
 
 	return SGMatrix<float64_t>(m_L);
@@ -317,13 +318,8 @@ SGMatrix<float64_t> CExactInferenceMethod::get_cholesky()
 void CExactInferenceMethod::update_train_kernel()
 {
 	m_kernel->cleanup();
-
 	m_kernel->init(m_features, m_features);
-
-	//K(X, X)
-	SGMatrix<float64_t> kernel_matrix = m_kernel->get_kernel_matrix();
-
-	m_ktrtr=kernel_matrix.clone();
+	m_ktrtr=m_kernel->get_kernel_matrix();
 }
 
 void CExactInferenceMethod::update_chol()
@@ -335,9 +331,6 @@ void CExactInferenceMethod::update_chol()
 	float64_t sigma=lik->get_sigma();
 	SG_UNREF(lik);
 
-	/* noise */
-	float64_t noise=(m_scale*m_scale)/(sigma*sigma);
-
 	/* check whether to allocate cholesky memory */
 	if (!m_L.matrix || m_L.num_rows!=m_ktrtr.num_rows)
 		m_L=SGMatrix<float64_t>(m_ktrtr.num_rows, m_ktrtr.num_cols);
@@ -345,8 +338,8 @@ void CExactInferenceMethod::update_chol()
 	/* creates views on kernel and cholesky matrix and perform cholesky */
 	Map<MatrixXd> K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
 	Map<MatrixXd> L(m_L.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
-	LLT<MatrixXd> llt;
-	llt.compute(K*noise+MatrixXd::Identity(m_ktrtr.num_rows, m_ktrtr.num_cols));
+	LLT<MatrixXd> llt(K*CMath::sq(m_scale)/CMath::sq(sigma)+
+		MatrixXd::Identity(m_ktrtr.num_rows, m_ktrtr.num_cols));
 	L=llt.matrixU();
 }
 
@@ -357,21 +350,23 @@ void CExactInferenceMethod::update_alpha()
 	float64_t sigma=lik->get_sigma();
 	SG_UNREF(lik);
 
-	for (int i = 0; i < m_label_vector.vlen; i++)
-		m_label_vector[i] = m_label_vector[i] - m_data_means[i];
+	// get labels and mean vector and create eigen representation
+	SGVector<float64_t> y=((CRegressionLabels*) m_labels)->get_labels();
+	Map<VectorXd> eigen_y(y.vector, y.vlen);
+	SGVector<float64_t> m=m_mean->get_mean_vector(m_feature_matrix);
+	Map<VectorXd> eigen_m(m.vector, m.vlen);
 
-	m_alpha = SGVector<float64_t>(m_label_vector.vlen);
+	m_alpha=SGVector<float64_t>(y.vlen);
 
-	/* creates views on cholesky matrix, labels, and alpha and solve system
+	/* creates views on cholesky matrix and alpha and solve system
 	 * (L * L^T) * a = y for a */
 	Map<VectorXd> a(m_alpha.vector, m_alpha.vlen);
-	Map<VectorXd> y(m_label_vector.vector, m_label_vector.vlen);
 	Map<MatrixXd> L(m_L.matrix, m_L.num_rows, m_L.num_cols);
 
-	a=L.triangularView<Upper>().adjoint().solve(y);
+	a=L.triangularView<Upper>().adjoint().solve(eigen_y-eigen_m);
 	a=L.triangularView<Upper>().solve(a);
 
-	a/=(sigma*sigma);
+	a/=CMath::sq(sigma);
 }
 
 #endif // HAVE_EIGEN3

@@ -52,8 +52,6 @@ void test()
 	lik->set_sigma(1);
 	CExactInferenceMethod* inf=new CExactInferenceMethod(kernel, feat_train,
 			mean, label_train, lik);
-	CFeatures* latent=inf->get_latent_features();
-	SG_UNREF(latent);
 	CGaussianProcessRegression* gpr=new CGaussianProcessRegression(inf,
 			feat_train, label_train);
 
