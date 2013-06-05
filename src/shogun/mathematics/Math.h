@@ -243,7 +243,9 @@ class CMath : public CSGObject
 		///return the absolute value of a complex number
 		static inline float64_t abs(complex64_t a)
 		{
-			return std::abs(a);
+			float64_t a_real=a.real();
+			float64_t a_imag=a.imag();
+			return (CMath::sqrt(a_real*a_real+a_imag*a_imag));
 		}
 		//@}
 
