@@ -242,4 +242,13 @@ TEST(SGVectorTest,complex64_tests)
 		EXPECT_NEAR(a[i].real(), 2.03272300701966557313, 1E-15);
 		EXPECT_NEAR(a[i].imag(), -3.05189779915179970615, 1E-15);
 	}
+
+	a.set_const(complex64_t(1.0, 2.0));
+	SGVector<float64_t> a_real=a.get_real();
+	SGVector<float64_t> a_imag=a.get_imag();
+	for (index_t i=0; i<a.vlen; ++i)
+	{
+		EXPECT_NEAR(a_real[i], 1.0, 1E-15);
+		EXPECT_NEAR(a_imag[i], 2.0, 1E-15);
+	}
 }

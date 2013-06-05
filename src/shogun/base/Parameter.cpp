@@ -1818,9 +1818,8 @@ TParameter::delete_cont()
 			case PT_FLOATMAX:
 				SG_FREE(*(SGString<floatmax_t>**) m_parameter); break;
 			case PT_COMPLEX64:
-				SG_SERROR("TParameter::delete_cont(): Implementation "
-						 "error: Could not delete "
-						 "String<complex64>");
+				SG_SERROR("TParameter::delete_cont(): Parameters of strings"
+						" of complex64_t are not supported");
 				break;
 			case PT_SGOBJECT:
 				SG_SERROR("TParameter::delete_cont(): Implementation "
