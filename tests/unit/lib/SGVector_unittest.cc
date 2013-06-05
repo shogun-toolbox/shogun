@@ -196,7 +196,7 @@ TEST(SGVectorTest,complex64_tests)
 	}
 	a.permute();
 	complex64_t sum=SGVector<complex64_t>::sum_abs(a.vector, 1);
-	EXPECT_NEAR(sum.real(), 15.62049935181330795331, 1E-15);
+	EXPECT_NEAR(sum.real(), 15.62049935181330878825, 1E-15);
 	EXPECT_NEAR(sum.imag(), 0.0, 1E-15);
 
 	SGVector<index_t> res=a.find(complex64_t(10.0, 12.0));
