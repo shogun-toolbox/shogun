@@ -4,17 +4,19 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
+ * Written (W) 2013 Roman Votyakov
  * Copyright (C) 2012 Jacob Walker
+ * Copyright (C) 2013 Roman Votyakov
  *
- *  * Code adapted from Gaussian Process Machine Learning Toolbox
+ * Code adapted from Gaussian Process Machine Learning Toolbox
  * http://www.gaussianprocess.org/gpml/code/matlab/doc/
- *
  */
 
 #ifndef CFITCINFERENCEMETHOD_H_
 #define CFITCINFERENCEMETHOD_H_
 
 #include <shogun/lib/config.h>
+
 #ifdef HAVE_EIGEN3
 
 #include <shogun/regression/gp/InferenceMethod.h>
@@ -22,8 +24,7 @@
 namespace shogun
 {
 
-/** @brief The Fully Independent Conditional Training
- *  Inference Method
+/** @brief The Fully Independent Conditional Training Inference Method.
  *
  *  This inference method computes the Cholesky and
  *  Alpha vectors approximately with the help of latent
@@ -35,99 +36,132 @@ namespace shogun
  *  in the GPML toolbox
  *
  *  The Gaussian Likelihood Function must be used for this inference method.
- *
  */
 class CFITCInferenceMethod: public CInferenceMethod
 {
 public:
-	/** Default Constructor*/
+	/** default constructor */
 	CFITCInferenceMethod();
 
-	/** Constructor
+	/** constructor
+	 *
 	 * @param kernel covariance function
 	 * @param features features to use in inference
 	 * @param mean mean function
 	 * @param labels labels of the features
-	 * @param model Likelihood model to use
+	 * @param model likelihood model to use
 	 * @param latent_features features to use
 	 */
 	CFITCInferenceMethod(CKernel* kernel, CFeatures* features,
 			CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model,
 			CFeatures* latent_features);
 
-	/** Destructor*/
 	virtual ~CFITCInferenceMethod();
 
-	/** get Negative Log Marginal Likelihood
+	/** return what type of inference we are
 	 *
-	 * @return The Negative Log of the Marginal Likelihood function:
+	 * @return inference type FITC
+	 */
+	virtual EInferenceType get_inference_type() { return INF_FITC; }
+
+	/** returns the name of the inference method
+	 *
+	 * @return name FITC
+	 */
+	virtual const char* get_name() const { return "FITCInferenceMethod"; }
+
+	/** helper method used to specialize a base class instance
+	 *
+	 * @param inference inference method
+	 * @return casted CFITCInferenceMethod object
+	 */
+	static CFITCInferenceMethod* obtain_from_generic(CInferenceMethod* inference);
+
+	/** set latent features
+	 *
+	 * @param feat features to set
+	 */
+	virtual void set_latent_features(CFeatures* feat);
+
+	/** get latent features
+	 *
+	 * @return features
+	 */
+	virtual CFeatures* get_latent_features()
+	{
+		SG_REF(m_latent_features);
+		return m_latent_features;
+	}
+
+	/** get negative log marginal likelihood
+	 *
+	 * @return the negative log of the marginal likelihood function:
+	 *
 	 * \f[
 	 *	  -log(p(y|X, \theta))
-	 *	  Where y are the labels, X are the features,
-	 *	  and \theta represent hyperparameters
 	 * \f]
+	 *
+	 * where \f$y\f$ are the labels, \f$X\f$ are the features,
+	 * and \f$\theta\f$ represent hyperparameters.
 	 */
 	virtual float64_t get_negative_marginal_likelihood();
 
-	/** get Log Marginal Likelihood Gradient
+	/** get log marginal likelihood gradient
 	 *
-	 * @return Vector of the  Marginal Likelihood Function Gradient
-	 *         with respect to hyperparameters
+	 * @return vector of the  marginal likelihood function gradient
+	 * with respect to hyperparameters:
+	 *
 	 * \f[
 	 *	 -\frac{\partial {log(p(y|X, \theta))}}{\partial \theta}
 	 * \f]
+	 *
+	 * where \f$y\f$ are the labels, \f$X\f$ are the features,
+	 * and \f$\theta\f$ represent hyperparameters.
 	 */
 	virtual CMap<TParameter*, SGVector<float64_t> > get_marginal_likelihood_derivatives(
 			CMap<TParameter*, CSGObject*>& para_dict);
 
-	/** get Alpha Matrix
+	/** get alpha vector
 	 *
-	 * @return Matrix to compute posterior mean of Gaussian Process:
+	 * @return vector to compute posterior mean of Gaussian Process:
+	 *
 	 * \f[
 	 *		\mu = K\alpha
 	 * \f]
 	 *
-	 * 	where \f$\mu\f$ is the mean and K is the prior covariance matrix
+	 * where \f$\mu\f$ is the mean and \f$K\f$ is the prior covariance matrix.
 	 */
 	virtual SGVector<float64_t> get_alpha();
 
-	/** get Cholesky Decomposition Matrix
+	/** get Cholesky decomposition matrix
 	 *
-	 * @return Cholesky Decomposition of Matrix:
+	 * @return Cholesky decomposition of matrix:
+	 *
 	 * \f[
 	 *		 L = Cholesky(sW*K*sW+I)
 	 * \f]
 	 *
-	 * 	Where K is the prior covariance matrix, sW is the matrix returned by
-	 * 	get_cholesky(), and I is the identity matrix.
+	 * where \f$K\f$ is the prior covariance matrix, \f$sW\f$ is the vector returned by
+	 * get_diagonal_vector(), and \f$I\f$ is the identity matrix.
 	 */
 	virtual SGMatrix<float64_t> get_cholesky();
 
-	/** get Diagonal Vector
+	/** get diagonal vector
 	 *
-	 * @return Diagonal of matrix used to calculate posterior covariance matrix
+	 * @return diagonal of matrix used to calculate posterior covariance matrix
+	 *
 	 * \f[
-	 *	    Cov = (K^{-1}+D^{2})^{-1}}
+	 *	    Cov = (K^{-1}+sW^{2})^{-1}
 	 * \f]
 	 *
-	 *  Where Cov is the posterior covariance matrix, K is
-	 *  the prior covariance matrix, and D is the diagonal matrix
+	 * where \f$Cov\f$ is the posterior covariance matrix, \f$K\f$ is
+	 * the prior covariance matrix, and \f$sW\f$ is the diagonal vector.
 	 */
 	virtual SGVector<float64_t> get_diagonal_vector();
 
-	/** Returns the name of the SGSerializable instance.  It MUST BE
-	 *  the CLASS NAME without the prefixed `C'.
+	/** get the gradient
 	 *
-	 * @return name of the SGSerializable
-	 */
-	virtual const char* get_name() const
-	{
-		return "FITCInferenceMethod";
-	}
-
-	/** Get the gradient
-	 *
-	 * @return Map of gradient. Keys are names of parameters, values are
+	 * @return map of gradient: keys are names of parameters, values are
 	 * values of derivative with respect to that parameter.
 	 */
 	virtual CMap<TParameter*, SGVector<float64_t> > get_gradient(
@@ -136,9 +170,9 @@ public:
 		return get_marginal_likelihood_derivatives(para_dict);
 	}
 
-	/** Get the function value
+	/** get the function value
 	 *
-	 * @return Vector that represents the function value
+	 * @return vector that represents the function value
 	 */
 	virtual SGVector<float64_t> get_quantity()
 	{
@@ -161,7 +195,6 @@ protected:
 	virtual void update_all();
 
 private:
-
 	void init();
 
 private:
@@ -169,6 +202,12 @@ private:
 	 * for inference
 	 */
 	void check_members();
+
+	/** latent features for approximation */
+	CFeatures* m_latent_features;
+
+	/** kernel matrix from latent features */
+	SGMatrix<float64_t> m_latent_matrix;
 
 	/*noise of the latent variables*/
 	float64_t m_ind_noise;
@@ -215,5 +254,4 @@ private:
 };
 }
 #endif // HAVE_EIGEN3
-
 #endif /* CFITCINFERENCEMETHOD_H_ */

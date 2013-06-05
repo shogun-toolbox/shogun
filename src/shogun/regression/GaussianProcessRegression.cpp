@@ -12,6 +12,7 @@
  */
 
 #include <shogun/lib/config.h>
+
 #ifdef HAVE_EIGEN3
 
 #include <shogun/io/SGIO.h>
@@ -20,9 +21,12 @@
 #include <shogun/kernel/Kernel.h>
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/features/CombinedFeatures.h>
+#include <shogun/regression/gp/FITCInferenceMethod.h>
+
 using namespace shogun;
 
 #include <Eigen/Dense>
+
 using namespace Eigen;
 
 CGaussianProcessRegression::CGaussianProcessRegression()
@@ -68,10 +72,12 @@ void CGaussianProcessRegression::update_kernel_matrices()
 
 		/* set training data to latent features if exist, otherwise
 		 * training features */
-		CFeatures* latent_features = m_method->get_latent_features();
-		if (latent_features)
+		if (m_method->get_inference_type()==INF_FITC)
 		{
+			CFITCInferenceMethod* inf=CFITCInferenceMethod::obtain_from_generic(m_method);
+			CFeatures* latent_features=inf->get_latent_features();
 			kernel->init(latent_features, m_data);
+			SG_UNREF(inf);
 			SG_UNREF(latent_features);
 		}
 		else

@@ -4,17 +4,19 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
+ * Written (W) 2013 Roman Votyakov
  * Copyright (C) 2012 Jacob Walker
+ * Copyright (C) 2013 Roman Votyakov
  *
  * Code adapted from Gaussian Process Machine Learning Toolbox
  * http://www.gaussianprocess.org/gpml/code/matlab/doc/
- *
  */
 
 #ifndef CLAPLACIANINFERENCEMETHOD_H_
 #define CLAPLACIANINFERENCEMETHOD_H_
 
 #include <shogun/lib/config.h>
+
 #ifdef HAVE_EIGEN3
 
 #include <shogun/regression/gp/InferenceMethod.h>
@@ -22,8 +24,7 @@
 namespace shogun
 {
 
-/** @brief The Laplace Approximation
- *  Inference Method
+/** @brief The Laplace Approximation Inference Method.
  *
  *  This inference method approximates the
  *  posterior likelihood function by using
@@ -36,20 +37,17 @@ namespace shogun
  *  Transactions on Pattern Analysis and Machine Intelligence,
  *  Volume 20, Number 12, Pages 1342-1351.
  *
- *
- *
  *  This specific implementation was adapted from the infLaplace.m file
  *  in the GPML toolbox
- *
- *
  */
 class CLaplacianInferenceMethod: public CInferenceMethod
 {
 public:
-	/** Default Constructor*/
+	/** default constructor */
 	CLaplacianInferenceMethod();
 
-	/** Constructor
+	/** constructor
+	 *
 	 * @param kernel covariance function
 	 * @param features features to use in inference
 	 * @param mean mean function
@@ -59,79 +57,89 @@ public:
 	CLaplacianInferenceMethod(CKernel* kernel, CFeatures* features,
 			CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model);
 
-	/** Destructor*/
 	virtual ~CLaplacianInferenceMethod();
 
-	/** get Negative Log Marginal Likelihood
+	/** return what type of inference we are
 	 *
-	 * @return The Negative Log of the Marginal Likelihood function:
+	 * @return inference type LAPLACIAN
+	 */
+	virtual EInferenceType get_inference_type() { return INF_LAPLACIAN; }
+
+	/** returns the name of the inference method
+	 *
+	 * @return name Laplacian
+	 */
+	virtual const char* get_name() const { return "LaplacianInferenceMethod"; }
+
+	/** get negative log marginal likelihood
+	 *
+	 * @return the negative log of the marginal likelihood function:
+	 *
 	 * \f[
 	 *	  -log(p(y|X, \theta))
-	 *	  Where y are the labels, X are the features,
-	 *	  and \theta represent hyperparameters
 	 * \f]
+	 *
+	 * where \f$y\f$ are the labels, \f$X\f$ are the features,
+	 * and \f$\theta\f$ represent hyperparameters.
 	 */
 	virtual float64_t get_negative_marginal_likelihood();
 
-	/** get Log Marginal Likelihood Gradient
+	/** get log marginal likelihood gradient
 	 *
-	 * @return Vector of the  Marginal Likelihood Function Gradient
-	 *         with respect to hyperparameters
+	 * @return vector of the  marginal likelihood function gradient
+	 * with respect to hyperparameters:
+	 *
 	 * \f[
 	 *	 -\frac{\partial {log(p(y|X, \theta))}}{\partial \theta}
 	 * \f]
+	 *
+	 * where \f$y\f$ are the labels, \f$X\f$ are the features,
+	 * and \f$\theta\f$ represent hyperparameters.
 	 */
 	virtual CMap<TParameter*, SGVector<float64_t> >
 		get_marginal_likelihood_derivatives(CMap<TParameter*, CSGObject*>& para_dict);
 
-	/** get Alpha Matrix
+	/** get alpha vector
 	 *
-	 * @return Matrix to compute posterior mean of Gaussian Process:
+	 * @return vector to compute posterior mean of Gaussian Process:
+	 *
 	 * \f[
 	 *		\mu = K\alpha
 	 * \f]
 	 *
-	 * 	where \f$\mu\f$ is the mean and K is the prior covariance matrix
+	 * where \f$\mu\f$ is the mean and \f$K\f$ is the prior covariance matrix.
 	 */
 	virtual SGVector<float64_t> get_alpha();
 
-	/** get Cholesky Decomposition Matrix
+	/** get Cholesky decomposition matrix
 	 *
-	 * @return Cholesky Decomposition of Matrix:
+	 * @return Cholesky decomposition of matrix:
+	 *
 	 * \f[
 	 *		 L = Cholesky(sW*K*sW+I)
 	 * \f]
 	 *
-	 * 	Where K is the prior covariance matrix, sW is the matrix returned by
-	 * 	get_cholesky(), and I is the identity matrix.
+	 * where \f$K\f$ is the prior covariance matrix, \f$sW\f$ is the vector returned by
+	 * get_diagonal_vector(), and \f$I\f$ is the identity matrix.
 	 */
 	virtual SGMatrix<float64_t> get_cholesky();
 
-	/** get Diagonal Vector
+	/** get diagonal vector
 	 *
-	 * @return Diagonal of matrix used to calculate posterior covariance matrix
+	 * @return diagonal of matrix used to calculate posterior covariance matrix
+	 *
 	 * \f[
-	 *	    Cov = (K^{-1}+D^{2})^{-1}}
+	 *	    Cov = (K^{-1}+sW^{2})^{-1}
 	 * \f]
 	 *
-	 *  Where Cov is the posterior covariance matrix, K is
-	 *  the prior covariance matrix, and D is the diagonal matrix
+	 * where \f$Cov\f$ is the posterior covariance matrix, \f$K\f$ is
+	 * the prior covariance matrix, and \f$sW\f$ is the diagonal vector.
 	 */
 	virtual SGVector<float64_t> get_diagonal_vector();
 
-	/** Returns the name of the SGSerializable instance.  It MUST BE
-	 *  the CLASS NAME without the prefixed `C'.
+	/** get the gradient
 	 *
-	 * @return name of the SGSerializable
-	 */
-	virtual const char* get_name() const
-	{
-		return "LaplacianInferenceMethod";
-	}
-
-	/** Get the gradient
-	 *
-	 * @return Map of gradient. Keys are names of parameters, values are
+	 * @return map of gradient: keys are names of parameters, values are
 	 * values of derivative with respect to that parameter.
 	 */
 	virtual CMap<TParameter*, SGVector<float64_t> > get_gradient(
@@ -140,9 +148,9 @@ public:
 		return get_marginal_likelihood_derivatives(para_dict);
 	}
 
-	/** Get the function value
+	/** get the function value
 	 *
-	 * @return Vector that represents the function value
+	 * @return vector that represents the function value
 	 */
 	virtual SGVector<float64_t> get_quantity()
 	{
@@ -151,69 +159,68 @@ public:
 		return result;
 	}
 
-	/** Get tolerance for Newton Iterations
+	/** get tolerance for newton iterations
 	 *
-	 * @return Tolerance for Newton Iterations
+	 * @return tolerance for newton iterations
 	 */
 	virtual float64_t get_newton_tolerance() { return m_tolerance; }
 
-	/** Set tolerance for Newton Iterations
+	/** set tolerance for newton iterations
 	 *
-	 * @param tol Tolerance for Newton Iterations
+	 * @param tol tolerance for newton iterations to set
 	 */
 	virtual void set_newton_tolerance(float64_t tol) { m_tolerance=tol; }
 
-	/** Get tolerance for Brent's Minimization Method
-	 *
-	 * @return tolerance for Brent's Minimization Method
-	 */
-	virtual float64_t get_minimization_tolerance() { return m_opt_tolerance; }
-
-	/** Set tolerance for Brent's Minimization Method
-	 *
-	 * @param tol tolerance for Brent's Minimization Method
-	 */
-	virtual void set_minimization_tolerance(float64_t tol) { m_opt_tolerance=tol; }
-
-	/** Get max iterations for Brent's Minimization Method
-	 *
-	 * @return max iterations for Brent's Minimization Method
-	 */
-	virtual int32_t get_minimization_iterations() { return m_max; }
-
-	/** Set max iterations for Brent's Minimization Method
-	 *
-	 * @param itr max iterations for Brent's Minimization Method
-	 */
-	virtual void set_minimization_tolerance(int32_t itr) { m_max=itr; }
-
-	/** Get max Newton iterations
+	/** get max Newton iterations
 	 *
 	 * @return max Newton iterations
 	 */
 	virtual int32_t get_newton_iterations() { return m_max_itr; }
 
-	/** Set max Newton iterations
+	/** set max Newton iterations
 	 *
 	 * @param itr max Newton iterations
 	 */
-	virtual void set_newton_tolerance(int32_t itr) { m_max_itr=itr; }
+	virtual void set_newton_iterations(int32_t itr) { m_max_itr=itr; }
+
+	/** get tolerance for Brent's minimization method
+	 *
+	 * @return tolerance for Brent's minimization method
+	 */
+	virtual float64_t get_minimization_tolerance() { return m_opt_tolerance; }
+
+	/** set tolerance for Brent's minimization method
+	 *
+	 * @param tol tolerance for Brent's minimization method
+	 */
+	virtual void set_minimization_tolerance(float64_t tol) { m_opt_tolerance=tol; }
+
+	/** get max iterations for Brent's minimization method
+	 *
+	 * @return max iterations for Brent's minimization method
+	 */
+	virtual int32_t get_minimization_iterations() { return m_max; }
+
+	/** set max iterations for Brent's minimization method
+	 *
+	 * @param itr max iterations for Brent's minimization method
+	 */
+	virtual void set_minimization_iterations(int32_t itr) { m_max=itr; }
 
 protected:
-	/** Update alpha matrix */
+	/** update alpha matrix */
 	virtual void update_alpha();
 
-	/** Update cholesky Matrix.*/
+	/** update cholesky matrix */
 	virtual void update_chol();
 
-	/** Update train kernel matrix */
+	/** update train kernel matrix */
 	virtual void update_train_kernel();
 
-	/** Update data means */
+	/** update data all matrices */
 	virtual void update_all();
 
 private:
-
 	void init();
 
 private:
@@ -222,16 +229,16 @@ private:
 	 */
 	void check_members();
 
-	/*Amount of tolerance for Newton's Iterations*/
+	/** amount of tolerance for Newton's iterations */
 	float64_t m_tolerance;
 
-	/*Amount of tolerance for Brent's Minimization Method*/
+	/** amount of tolerance for Brent's minimization method */
 	float64_t m_opt_tolerance;
 
-	/*Max iterations for Brent's Minimization Method*/
+	/** max iterations for Brent's minimization method */
 	float64_t m_max;
 
-	/*Max Newton Iterations*/
+	/** max Newton iterations */
 	index_t m_max_itr;
 
 	/*Eigen version of alpha vector*/
@@ -269,5 +276,4 @@ private:
 };
 }
 #endif // HAVE_EIGEN3
-
 #endif /* CLAPLACIANINFERENCEMETHOD_H_ */
