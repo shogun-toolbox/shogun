@@ -8,6 +8,7 @@
  */
 
 #include <shogun/lib/common.h>
+#include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/Math.h>
 #include <gtest/gtest.h>
 
@@ -34,6 +35,12 @@ TEST(CMath, complex_test)
 	result=CMath::pow(a, 0.25);
 	EXPECT_NEAR(result.real(), 1.63179612745502011784, 1E-15);
 	EXPECT_NEAR(result.imag(), 0.36321314829455331186, 1E-15);
+	result=CMath::pow(1.5, a);
+	EXPECT_NEAR(result.real(), -5.76473627294186652392, 1E-15);
+	EXPECT_NEAR(result.imag(), 4.94296012182258248657, 1E-15);
+	result=CMath::pow(a, a/10.0);
+	EXPECT_NEAR(result.real(), -0.16575427581944451871, 1E-15);
+	EXPECT_NEAR(result.imag(), 1.64382444391412629869, 1E-15);
 
 	result=CMath::sin(a);
 	EXPECT_NEAR(result.real(), -193.43002005693958267329, 1E-15);
@@ -55,4 +62,11 @@ TEST(CMath, complex_test)
 	result=CMath::tanh(a);
 	EXPECT_NEAR(result.real(), 0.99992337992770763400, 1E-15);
 	EXPECT_NEAR(result.imag(), -0.00004871701269270740, 1E-15);
+
+	SGVector<complex64_t> vec(10);
+	for (index_t i=0; i<10; ++i)
+	{
+		vec[i]=i%2==0? a : complex64_t(0.0);
+	}
+	EXPECT_EQ(CMath::get_num_nonzero(vec.vector, 10), 5);
 }

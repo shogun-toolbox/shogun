@@ -82,12 +82,12 @@ SerializableJsonReader00::read_scalar_wrapped(
 		*(floatmax_t*) param = json_object_get_double(m);
 		break;
 	case PT_COMPLEX64:
-		SG_ERROR("write_scalar_wrapped(): Implementation error during"
-				 " writing JsonFile!");
+		SG_ERROR("read_scalar_wrapped(): Not supported for complex64_t"
+				 " for reading from JsonFile!");
 		break;
 	case PT_SGOBJECT:
-		SG_ERROR("write_scalar_wrapped(): Implementation error during"
-				 " writing JsonFile!");
+		SG_ERROR("read_scalar_wrapped(): Implementation error during"
+				 " reading JsonFile!");
 		return false;
 	}
 

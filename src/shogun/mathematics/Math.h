@@ -507,7 +507,7 @@ class CMath : public CSGObject
 
 		static inline float64_t sinh(float64_t x)
 		{
-			return ::asinh(x);	//TODO is this correct?
+			return ::sinh(x);
 		}
 
 		/// sinh(x), x being a complex64_t
