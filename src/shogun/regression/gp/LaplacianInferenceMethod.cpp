@@ -4,12 +4,13 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
+ * Written (W) 2013 Roman Votyakov
  * Copyright (C) 2012 Jacob Walker
+ * Copyright (C) 2013 Roman Votyakov
  *
  * Code adapted from Gaussian Process Machine Learning Toolbox
  * http://www.gaussianprocess.org/gpml/code/matlab/doc/
  * This code specifically adapted from infLaplace.m
- *
  */
 
 #include <shogun/lib/config.h>
@@ -23,8 +24,9 @@
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/features/CombinedFeatures.h>
-#include <shogun/mathematics/eigen3.h>
+
 #include <shogun/lib/external/brent.h>
+#include <shogun/mathematics/eigen3.h>
 
 using namespace shogun;
 using namespace Eigen;
@@ -91,7 +93,6 @@ CLaplacianInferenceMethod::CLaplacianInferenceMethod(CKernel* kern,
 
 void CLaplacianInferenceMethod::init()
 {
-	m_latent_features = NULL;
 	m_max_itr = 30;
 	m_opt_tolerance = 1e-6;
 	m_tolerance = 1e-8;
@@ -104,10 +105,6 @@ CLaplacianInferenceMethod::~CLaplacianInferenceMethod()
 
 void CLaplacianInferenceMethod::update_all()
 {
-	if (m_labels)
-		m_label_vector =
-				((CRegressionLabels*) m_labels)->get_labels().clone();
-
 	if (m_features && m_features->has_property(FP_DOT)
 			&& m_features->get_num_vectors())
 	{
@@ -126,8 +123,6 @@ void CLaplacianInferenceMethod::update_all()
 
 		SG_UNREF(feat);
 	}
-
-	update_data_means();
 
 	if (m_kernel)
 		update_train_kernel();
@@ -196,7 +191,7 @@ get_marginal_likelihood_derivatives(CMap<TParameter*,
 {
 	check_members();
 
-	if(update_parameter_hash())
+	if (update_parameter_hash())
 		update_all();
 
 	// create eigen representation of W, sW, dlp, d3lp, K, temp_alpha and L
@@ -365,7 +360,7 @@ SGVector<float64_t> CLaplacianInferenceMethod::get_diagonal_vector()
 
 float64_t CLaplacianInferenceMethod::get_negative_marginal_likelihood()
 {
-	if(update_parameter_hash())
+	if (update_parameter_hash())
 		update_all();
 
 	// create eigen representations alpha, f, W, mean vectors
@@ -402,7 +397,7 @@ float64_t CLaplacianInferenceMethod::get_negative_marginal_likelihood()
 
 SGVector<float64_t> CLaplacianInferenceMethod::get_alpha()
 {
-	if(update_parameter_hash())
+	if (update_parameter_hash())
 		update_all();
 
 	SGVector<float64_t> result(m_alpha);
@@ -411,7 +406,7 @@ SGVector<float64_t> CLaplacianInferenceMethod::get_alpha()
 
 SGMatrix<float64_t> CLaplacianInferenceMethod::get_cholesky()
 {
-	if(update_parameter_hash())
+	if (update_parameter_hash())
 		update_all();
 
 	SGMatrix<float64_t> result(m_L);
@@ -421,13 +416,8 @@ SGMatrix<float64_t> CLaplacianInferenceMethod::get_cholesky()
 void CLaplacianInferenceMethod::update_train_kernel()
 {
 	m_kernel->cleanup();
-
 	m_kernel->init(m_features, m_features);
-
-	//K(X, X)
-	SGMatrix<float64_t> kernel_matrix = m_kernel->get_kernel_matrix();
-
-	m_ktrtr=kernel_matrix.clone();
+	m_ktrtr=m_kernel->get_kernel_matrix();
 }
 
 void CLaplacianInferenceMethod::update_chol()
