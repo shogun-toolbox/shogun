@@ -104,6 +104,7 @@ TEST(Serialization, liblinear)
 	CBinaryLabels* pred = CLabelsFactory::to_binary(liblin->apply(test_feats));
 	for (int i = 0; i < num_samples; ++i)
 		EXPECT_EQ(ground_truth->get_int_label(i), pred->get_int_label(i));
+	SG_UNREF(pred);
 
 	/* save liblin */
 	const char* filename="trained_liblin.txt";
