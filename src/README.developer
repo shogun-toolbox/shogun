@@ -388,6 +388,12 @@ and clone it. Remember to set the upstream remote to the main repo by:
 
 git remote add upstream git://github.com/shogun-toolbox/shogun.git
 
+Its recommended to create local branches, which are linked to branches from
+your remote repository.  This will make "push" and "pull" work as expected:
+
+git checkout --track origin/master
+git checkout --track origin/develop
+
 Each time you want to develop new feature / fix a bug / etc consider creating
 new branch using:
 
@@ -397,16 +403,22 @@ While being on new_feature_name branch, develop your code, commit things and do
 everything you want.
 
 Once your feature is ready (please consider larger commits that keep shogun in
-compileable state), rebase your new_feature_name branch on upstream/master
+compileable state), rebase your new_feature_name branch on upstream/develop
 with:
 
 git fetch upstream
-git checkout master
-git rebase upstream/master
+git checkout develop
+git rebase upstream/develop
 git checkout new_feature_name
-git rebase master
+git rebase develop
 
-and send a pull request.
+Now you can push it to your origin repository:
+
+git push
+
+And finally send a pull request (PR) to the develop branch of the shogun 
+repository in github.
+
 
 - Why rebasing?
 
