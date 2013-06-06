@@ -308,7 +308,7 @@ void CSVRLight::svr_learn()
 					 learn_parm->epsilon_a))
 				upsupvecnum++;
 		}
-		SG_INFO("Number of SV: %ld (including %ld at upper bound)\n",
+		SG_INFO("Number of SV: %d (including %d at upper bound)\n",
 				model->sv_num-1,upsupvecnum);
 	}
 
