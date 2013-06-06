@@ -953,7 +953,7 @@ void SGMatrix<complex64_t>::save(CFile* saver)
 template<class T>
 SGVector<T> SGMatrix<T>::get_row_vector(index_t row) const
 {
-	SGVector<T> rowv(num_cols, false);
+	SGVector<T> rowv(num_cols);
 	for (index_t i = 0; i < num_cols; i++)
 	{
 		rowv[i] = matrix[i*num_rows+row];
