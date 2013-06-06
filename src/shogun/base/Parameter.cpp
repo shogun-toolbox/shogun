@@ -3306,6 +3306,30 @@ bool TParameter::compare_ptype(EPrimitiveType ptype, void* data1, void* data2,
 	return true;
 }
 
+bool TParameter::copy_ptype(EPrimitiveType ptype, void* source, void* target)
+{
+	SG_SDEBUG("entering TParameter::copy_ptype()\n");
+
+	if (ptype!=PT_SGOBJECT)
+	{
+		SG_SDEBUG("Copying numerical ptype\n");
+		/* ptypes point to data directly, assume that they are allocated */
+
+		/* this is the working assumption for numerical scalars */
+		ASSERT(source && target);
+
+		size_t num_bytes=TSGDataType::sizeof_ptype(ptype);
+		memcpy(target, source, num_bytes);
+	}
+	else
+	{
+		SG_SNOTIMPLEMENTED;
+	}
+
+	SG_SDEBUG("leaving TParameter::copy_ptype(): Copy successful\n");
+	return true;
+}
+
 bool TParameter::compare_stype(EStructType stype, EPrimitiveType ptype,
 		size_t size_ptype, void* data1, void* data2, floatmax_t accuracy)
 {

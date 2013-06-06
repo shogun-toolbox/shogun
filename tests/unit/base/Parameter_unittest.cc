@@ -606,3 +606,107 @@ TEST(TParameter,equals_sparse_scalar_equal)
 	SG_UNREF(s1);
 	SG_UNREF(s2);
 }
+
+TEST(TParameter,copy_ptype_BOOL)
+{
+	bool a=true;
+	bool b=false;
+	EXPECT_TRUE(TParameter::copy_ptype(PT_BOOL, &a, &b));
+	EXPECT_EQ(a, b);
+}
+
+TEST(TParameter,copy_ptype_CHAR)
+{
+	char a=1;
+	char b=2;
+	EXPECT_TRUE(TParameter::copy_ptype(PT_CHAR, &a, &b));
+	EXPECT_EQ(a, b);
+}
+
+TEST(TParameter,copy_ptype_INT8)
+{
+	int8_t a=1;
+	int8_t b=2;
+	EXPECT_TRUE(TParameter::copy_ptype(PT_INT8, &a, &b));
+	EXPECT_EQ(a, b);
+}
+
+TEST(TParameter,copy_ptype_UINT8)
+{
+	uint8_t a=1;
+	uint8_t b=2;
+	EXPECT_TRUE(TParameter::copy_ptype(PT_UINT8, &a, &b));
+	EXPECT_EQ(a, b);
+}
+
+TEST(TParameter,copy_ptype_INT16)
+{
+	int16_t a=1;
+	int16_t b=2;
+	EXPECT_TRUE(TParameter::copy_ptype(PT_INT16, &a, &b));
+	EXPECT_EQ(a, b);
+}
+
+TEST(TParameter,copy_ptype_UINT16)
+{
+	uint16_t a=1;
+	uint16_t b=2;
+	EXPECT_TRUE(TParameter::copy_ptype(PT_UINT16, &a, &b));
+	EXPECT_EQ(a, b);
+}
+
+TEST(TParameter,copy_ptype_INT32)
+{
+	int32_t a=1;
+	int32_t b=2;
+	EXPECT_TRUE(TParameter::copy_ptype(PT_INT32, &a, &b));
+	EXPECT_EQ(a, b);
+}
+
+TEST(TParameter,copy_ptype_UINT32)
+{
+	uint32_t a=1;
+	uint32_t b=2;
+	EXPECT_TRUE(TParameter::copy_ptype(PT_UINT32, &a, &b));
+	EXPECT_EQ(a, b);
+}
+
+TEST(TParameter,copy_ptype_INT64)
+{
+	int64_t a=1;
+	int64_t b=2;
+	EXPECT_TRUE(TParameter::copy_ptype(PT_INT64, &a, &b));
+	EXPECT_EQ(a, b);
+}
+
+TEST(TParameter,copy_ptype_UINT64)
+{
+	uint64_t a=1;
+	uint64_t b=2;
+	EXPECT_TRUE(TParameter::copy_ptype(PT_UINT64, &a, &b));
+	EXPECT_EQ(a, b);
+}
+
+TEST(TParameter,copy_ptype_FLOAT32)
+{
+	float32_t a=1;
+	float32_t b=2;
+	EXPECT_TRUE(TParameter::copy_ptype(PT_FLOAT32, &a, &b));
+	EXPECT_EQ(a, b);
+}
+
+TEST(TParameter,copy_ptype_FLOAT64)
+{
+	float64_t a=1;
+	float64_t b=2;
+	EXPECT_TRUE(TParameter::copy_ptype(PT_FLOAT64, &a, &b));
+	EXPECT_EQ(a, b);
+}
+
+TEST(TParameter,copy_ptype_FLOATMAX)
+{
+	floatmax_t a=1;
+	floatmax_t b=2;
+	EXPECT_TRUE(TParameter::copy_ptype(PT_FLOATMAX, &a, &b));
+	EXPECT_EQ(a, b);
+}

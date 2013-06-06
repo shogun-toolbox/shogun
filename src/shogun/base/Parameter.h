@@ -100,6 +100,8 @@ struct TParameter
 	static bool compare_ptype(EPrimitiveType ptype, void* data1, void* data2,
 			floatmax_t accuracy=0.0);
 
+	static bool copy_ptype(EPrimitiveType ptype, void* source, void* target);
+
 	/** Given two pointers to a string element of a given primitive-type, this
 	 * method compares the values up to a given accuracy.
 	 *
