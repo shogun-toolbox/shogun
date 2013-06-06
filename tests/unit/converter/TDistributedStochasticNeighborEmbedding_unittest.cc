@@ -34,6 +34,8 @@ TEST(TDistributedStochasticNeighborEmbeddingTest,basic)
 	EXPECT_EQ(high_dimensional_features->get_num_vectors(),low_dimensional_features->get_num_vectors());
 
 	SG_UNREF(embedder);
+	SG_UNREF(high_dimensional_features);
+	SG_UNREF(low_dimensional_features);
 }
 
 #endif
