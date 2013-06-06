@@ -37,6 +37,7 @@ TEST(Random, fill_array_uint32)
 	uint32_t t = 2228230814U;
 	SGVector<uint32_t> rv(2*SFMT_N32+1);
 	prng->fill_array(rv.vector, rv.vlen);
+	SG_UNREF(prng);
 	
 	EXPECT_EQ(t, rv[SFMT_N32]);
 }
