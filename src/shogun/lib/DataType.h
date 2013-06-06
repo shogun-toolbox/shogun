@@ -129,6 +129,9 @@ struct TSGDataType
 	/** size of ptype */
 	size_t sizeof_ptype() const;
 
+	static size_t sizeof_ptype(EPrimitiveType ptype);
+	static size_t sizeof_stype(EStructType stype, EPrimitiveType ptype);
+
 	/** size of sparse entry
 	 * @param ptype
 	 */
