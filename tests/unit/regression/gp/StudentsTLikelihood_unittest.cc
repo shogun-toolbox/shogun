@@ -53,6 +53,7 @@ TEST(StudentsTLikelihood,get_log_probability_f)
 
 	// clean up
 	SG_UNREF(likelihood);
+	SG_UNREF(labels);
 }
 
 TEST(StudentsTLikelihood,get_log_probability_derivative_f)
@@ -107,6 +108,7 @@ TEST(StudentsTLikelihood,get_log_probability_derivative_f)
 
 	// clean up
 	SG_UNREF(likelihood);
+	SG_UNREF(labels);
 }
 
 TEST(StudentsTLikelihood,get_first_derivative)
@@ -163,6 +165,7 @@ TEST(StudentsTLikelihood,get_first_derivative)
 
 	// clean up
 	SG_UNREF(likelihood);
+	SG_UNREF(labels);
 }
 
 TEST(StudentsTLikelihood,get_second_derivative)
@@ -219,6 +222,7 @@ TEST(StudentsTLikelihood,get_second_derivative)
 
 	// clean up
 	SG_UNREF(likelihood);
+	SG_UNREF(labels);
 }
 
 TEST(StudentsTLikelihood,get_third_derivative)
@@ -275,6 +279,7 @@ TEST(StudentsTLikelihood,get_third_derivative)
 
 	// clean up
 	SG_UNREF(likelihood);
+	SG_UNREF(labels);
 }
 
 #endif // HAVE_EIGEN3
