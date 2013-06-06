@@ -2974,7 +2974,7 @@ bool TParameter::equals(TParameter* other, float64_t accuracy)
 		{
 			SG_SDEBUG("CT_SCALAR\n");
 			if (!TParameter::compare_stype(m_datatype.m_stype,
-					m_datatype.m_ptype, m_datatype.sizeof_ptype(), m_parameter,
+					m_datatype.m_ptype, m_parameter,
 					other->m_parameter,
 					accuracy))
 			{
@@ -2999,8 +2999,7 @@ bool TParameter::equals(TParameter* other, float64_t accuracy)
 				void* pointer_b=&((*(char**)other->m_parameter)[x]);
 
 				if (!TParameter::compare_stype(m_datatype.m_stype,
-						m_datatype.m_ptype, m_datatype.sizeof_ptype(),
-						pointer_a, pointer_b, accuracy))
+						m_datatype.m_ptype, pointer_a, pointer_b, accuracy))
 				{
 					SG_SDEBUG("leaving TParameter::equals(): vector element "
 							"differes\n");
@@ -3030,8 +3029,7 @@ bool TParameter::equals(TParameter* other, float64_t accuracy)
 				void* pointer_b=&((*(char**)other->m_parameter)[x]);
 
 				if (!TParameter::compare_stype(m_datatype.m_stype,
-						m_datatype.m_ptype, m_datatype.sizeof_ptype(),
-						pointer_a, pointer_b, accuracy))
+						m_datatype.m_ptype, pointer_a, pointer_b, accuracy))
 				{
 					SG_SDEBUG("leaving TParameter::equals(): vector element "
 							"differes\n");
@@ -3323,7 +3321,12 @@ bool TParameter::copy_ptype(EPrimitiveType ptype, void* source, void* target)
 	}
 	else
 	{
-		SG_SNOTIMPLEMENTED;
+//		/* object can either be NULL or not. If not, SG_UNREF */
+//		if (target)
+//			SG_UNREF(target);
+//
+//		target=(CSGObject*)source->clone();
+		return false;
 	}
 
 	SG_SDEBUG("leaving TParameter::copy_ptype(): Copy successful\n");
@@ -3331,9 +3334,11 @@ bool TParameter::copy_ptype(EPrimitiveType ptype, void* source, void* target)
 }
 
 bool TParameter::compare_stype(EStructType stype, EPrimitiveType ptype,
-		size_t size_ptype, void* data1, void* data2, floatmax_t accuracy)
+		void* data1, void* data2, floatmax_t accuracy)
 {
 	SG_SDEBUG("entering TParameter::compare_stype()\n");
+
+	size_t size_ptype=TSGDataType::sizeof_ptype(ptype);
 
 	/* Avoid comparing NULL */
 	if (!data1 && !data2)
@@ -3443,5 +3448,40 @@ bool TParameter::compare_stype(EStructType stype, EPrimitiveType ptype,
 	}
 
 	SG_SDEBUG("leaving TParameter::compare_stype(): Data were equal\n");
+	return true;
+}
+
+bool TParameter::copy_stype(EStructType stype, EPrimitiveType ptype,
+		void* data1, void* data2)
+{
+	SG_SDEBUG("entering TParameter::copy_stype()\n");
+
+	switch (stype)
+	{
+		case ST_NONE:
+		{
+			SG_SDEBUG("ST_NONE\n");
+			return TParameter::copy_ptype(ptype, data1, data2);
+			break;
+		}
+		case ST_STRING:
+		{
+			return false;
+			break;
+		}
+		case ST_SPARSE:
+		{
+			return false;
+			break;
+		}
+		default:
+		{
+			SG_SERROR("TParameter::copy_stype(): Undefined struct type\n");
+			return false;
+			break;
+		}
+	}
+
+	SG_SDEBUG("leaving TParameter::copy_stype(): Copy successful\n");
 	return true;
 }

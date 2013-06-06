@@ -613,6 +613,7 @@ TEST(TParameter,copy_ptype_BOOL)
 	bool b=false;
 	EXPECT_TRUE(TParameter::copy_ptype(PT_BOOL, &a, &b));
 	EXPECT_EQ(a, b);
+	EXPECT_EQ(b, 1);
 }
 
 TEST(TParameter,copy_ptype_CHAR)
@@ -621,6 +622,7 @@ TEST(TParameter,copy_ptype_CHAR)
 	char b=2;
 	EXPECT_TRUE(TParameter::copy_ptype(PT_CHAR, &a, &b));
 	EXPECT_EQ(a, b);
+	EXPECT_EQ(b, 1);
 }
 
 TEST(TParameter,copy_ptype_INT8)
@@ -629,6 +631,7 @@ TEST(TParameter,copy_ptype_INT8)
 	int8_t b=2;
 	EXPECT_TRUE(TParameter::copy_ptype(PT_INT8, &a, &b));
 	EXPECT_EQ(a, b);
+	EXPECT_EQ(b, 1);
 }
 
 TEST(TParameter,copy_ptype_UINT8)
@@ -645,6 +648,7 @@ TEST(TParameter,copy_ptype_INT16)
 	int16_t b=2;
 	EXPECT_TRUE(TParameter::copy_ptype(PT_INT16, &a, &b));
 	EXPECT_EQ(a, b);
+	EXPECT_EQ(b, 1);
 }
 
 TEST(TParameter,copy_ptype_UINT16)
@@ -661,6 +665,7 @@ TEST(TParameter,copy_ptype_INT32)
 	int32_t b=2;
 	EXPECT_TRUE(TParameter::copy_ptype(PT_INT32, &a, &b));
 	EXPECT_EQ(a, b);
+	EXPECT_EQ(b, 1);
 }
 
 TEST(TParameter,copy_ptype_UINT32)
@@ -677,6 +682,7 @@ TEST(TParameter,copy_ptype_INT64)
 	int64_t b=2;
 	EXPECT_TRUE(TParameter::copy_ptype(PT_INT64, &a, &b));
 	EXPECT_EQ(a, b);
+	EXPECT_EQ(b, 1);
 }
 
 TEST(TParameter,copy_ptype_UINT64)
@@ -693,6 +699,7 @@ TEST(TParameter,copy_ptype_FLOAT32)
 	float32_t b=2;
 	EXPECT_TRUE(TParameter::copy_ptype(PT_FLOAT32, &a, &b));
 	EXPECT_EQ(a, b);
+	EXPECT_EQ(b, 1);
 }
 
 TEST(TParameter,copy_ptype_FLOAT64)
@@ -701,6 +708,7 @@ TEST(TParameter,copy_ptype_FLOAT64)
 	float64_t b=2;
 	EXPECT_TRUE(TParameter::copy_ptype(PT_FLOAT64, &a, &b));
 	EXPECT_EQ(a, b);
+	EXPECT_EQ(b, 1);
 }
 
 TEST(TParameter,copy_ptype_FLOATMAX)
@@ -709,4 +717,22 @@ TEST(TParameter,copy_ptype_FLOATMAX)
 	floatmax_t b=2;
 	EXPECT_TRUE(TParameter::copy_ptype(PT_FLOATMAX, &a, &b));
 	EXPECT_EQ(a, b);
+	EXPECT_EQ(b, 1);
+}
+
+TEST(TParameter,copy_stype_NONE)
+{
+	int32_t a=1;
+	int32_t b=2;
+
+	TSGDataType type(CT_SCALAR, ST_NONE, PT_INT32);
+	TParameter* param1=new TParameter(&type, &a, "", "");
+	TParameter* param2=new TParameter(&type, &b, "", "");
+
+	EXPECT_TRUE(TParameter::copy_stype(ST_NONE, PT_INT32, param1->m_parameter, param2->m_parameter));
+	EXPECT_EQ(a,b);
+	EXPECT_EQ(b, 1);
+
+	delete param1;
+	delete param2;
 }
