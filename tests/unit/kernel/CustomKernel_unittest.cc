@@ -101,6 +101,7 @@ TEST(CustomKernelTest,add_row_subset_constructor)
 			EXPECT_EQ(main_subset_matrix(i, j), main_subset_copy_matrix(i, j));
 	}
 
+	SG_UNREF(main_subset_copy);
 	SG_UNREF(gaussian);
 	SG_UNREF(main_kernel);
 	SG_UNREF(copy);
