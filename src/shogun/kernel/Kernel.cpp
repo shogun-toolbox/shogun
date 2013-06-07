@@ -964,6 +964,7 @@ void CKernel::init()
 	rhs=NULL;
 	num_lhs=0;
 	num_rhs=0;
+	lhs_equals_rhs=false;
 	combined_kernel_weight=1;
 	optimization_initialized=false;
 	opt_type=FASTBUTMEMHUNGRY;
