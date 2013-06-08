@@ -304,7 +304,7 @@ class CLibLinearMTL : public CLinearMachine
         void init();
 
 		void solve_l2r_l1l2_svc(
-			const problem *prob, double eps, double Cp, double Cn);
+			const liblinear_problem *prob, double eps, double Cp, double Cn);
 
 
 	protected:

@@ -49,7 +49,7 @@ extern "C" {
 #endif
 
 /** problem */
-struct problem
+struct liblinear_problem
 {
 	/** l */
 	int32_t l;
@@ -64,7 +64,7 @@ struct problem
 };
 
 /** parameter */
-struct parameter
+struct liblinear_parameter
 {
 	/** solver type */
 	int32_t solver_type;
@@ -83,10 +83,10 @@ struct parameter
 };
 
 /** model */
-struct model
+struct liblinear_model
 {
 	/** parameter */
-	struct parameter param;
+	struct liblinear_parameter param;
 	/** number of classes */
 	int32_t nr_class;
 	/** number of features */
@@ -99,8 +99,8 @@ struct model
 	float64_t bias;
 };
 
-void destroy_model(struct model *model_);
-void destroy_param(struct parameter *param);
+void destroy_model(struct liblinear_model *model_);
+void destroy_param(struct liblinear_parameter *param);
 #ifdef __cplusplus
 }
 #endif
@@ -115,7 +115,7 @@ public:
 	 * @param Cp Cp
 	 * @param Cn Cn
 	 */
-	l2loss_svm_fun(const problem *prob, float64_t Cp, float64_t Cn);
+	l2loss_svm_fun(const liblinear_problem *prob, float64_t Cp, float64_t Cn);
 	~l2loss_svm_fun();
 
 	/** fun
@@ -155,7 +155,7 @@ private:
 	float64_t *D;
 	int32_t *I;
 	int32_t sizeI;
-	const problem *prob;
+	const liblinear_problem *prob;
 };
 
 /** class l2r_lr_fun */
@@ -168,7 +168,7 @@ public:
 	 * @param Cp Cp
 	 * @param Cn Cn
 	 */
-	l2r_lr_fun(const problem *prob, float64_t* C);
+	l2r_lr_fun(const liblinear_problem *prob, float64_t* C);
 	~l2r_lr_fun();
 
 	/** fun
@@ -201,13 +201,13 @@ private:
 	float64_t *C;
 	float64_t *z;
 	float64_t *D;
-	const problem *m_prob;
+	const liblinear_problem *m_prob;
 };
 
 class l2r_l2_svc_fun : public function
 {
 public:
-	l2r_l2_svc_fun(const problem *prob, float64_t* Cs);
+	l2r_l2_svc_fun(const liblinear_problem *prob, float64_t* Cs);
 	~l2r_l2_svc_fun();
 
 	double fun(double *w);
@@ -226,13 +226,13 @@ protected:
 	double *D;
 	int *I;
 	int sizeI;
-	const problem *m_prob;
+	const liblinear_problem *m_prob;
 };
 
 class l2r_l2_svr_fun: public l2r_l2_svc_fun
 {
 public:
-	l2r_l2_svr_fun(const problem *prob, double *Cs, double p);
+	l2r_l2_svr_fun(const liblinear_problem *prob, double *Cs, double p);
 
 	double fun(double *w);
 	void grad(double *w, double *g);
@@ -296,7 +296,7 @@ struct mcsvm_state
 class Solver_MCSVM_CS
 {
 	public:
-		Solver_MCSVM_CS(const problem *prob, int nr_class, double *C,
+		Solver_MCSVM_CS(const liblinear_problem *prob, int nr_class, double *C,
 		                double *w0, double eps, int max_iter,
 		                double train_time, mcsvm_state* given_state);
 		~Solver_MCSVM_CS();
@@ -311,7 +311,7 @@ class Solver_MCSVM_CS
 		double eps;
 		double max_train_time;
 		double* w0;
-		const problem *prob;
+		const liblinear_problem *prob;
 		mcsvm_state* state;
 };
 

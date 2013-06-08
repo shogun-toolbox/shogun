@@ -120,7 +120,7 @@ bool CLibLinear::train_machine(CFeatures* data)
 	else
 		w=SGVector<float64_t>(num_feat);
 
-	problem prob;
+	liblinear_problem prob;
 	if (use_bias)
 	{
 		prob.n=w.vlen+1;
@@ -250,7 +250,7 @@ bool CLibLinear::train_machine(CFeatures* data)
 // To support weights for instances, use GETI(i) (i)
 
 void CLibLinear::solve_l2r_l1l2_svc(
-			const problem *prob, double eps, double Cp, double Cn, LIBLINEAR_SOLVER_TYPE st)
+			const liblinear_problem *prob, double eps, double Cp, double Cn, LIBLINEAR_SOLVER_TYPE st)
 {
 	int l = prob->l;
 	int w_size = prob->n;
@@ -450,7 +450,7 @@ void CLibLinear::solve_l2r_l1l2_svc(
 // To support weights for instances, use GETI(i) (i)
 
 void CLibLinear::solve_l1r_l2_svc(
-	problem *prob_col, double eps, double Cp, double Cn)
+	liblinear_problem *prob_col, double eps, double Cp, double Cn)
 {
 	int l = prob_col->l;
 	int w_size = prob_col->n;
@@ -796,7 +796,7 @@ void CLibLinear::solve_l1r_l2_svc(
 // To support weights for instances, use GETI(i) (i)
 
 void CLibLinear::solve_l1r_lr(
-	const problem *prob_col, double eps,
+	const liblinear_problem *prob_col, double eps,
 	double Cp, double Cn)
 {
 	int l = prob_col->l;
@@ -1167,7 +1167,7 @@ void CLibLinear::solve_l1r_lr(
 #define GETI(i) (y[i]+1)
 // To support weights for instances, use GETI(i) (i)
 
-void CLibLinear::solve_l2r_lr_dual(const problem *prob, double eps, double Cp, double Cn)
+void CLibLinear::solve_l2r_lr_dual(const liblinear_problem *prob, double eps, double Cp, double Cn)
 {
 	int l = prob->l;
 	int w_size = prob->n;

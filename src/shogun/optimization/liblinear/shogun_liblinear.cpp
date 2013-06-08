@@ -46,7 +46,7 @@
 
 using namespace shogun;
 
-l2r_lr_fun::l2r_lr_fun(const problem *p, float64_t* Cs)
+l2r_lr_fun::l2r_lr_fun(const liblinear_problem *p, float64_t* Cs)
 {
 	int l=p->l;
 
@@ -161,7 +161,7 @@ void l2r_lr_fun::XTv(double *v, double *res_XTv)
 	}
 }
 
-l2r_l2_svc_fun::l2r_l2_svc_fun(const problem *p, double* Cs)
+l2r_l2_svc_fun::l2r_l2_svc_fun(const liblinear_problem *p, double* Cs)
 {
 	int l=p->l;
 
@@ -299,7 +299,7 @@ void l2r_l2_svc_fun::subXTv(double *v, double *XTv)
 	}
 }
 
-l2r_l2_svr_fun::l2r_l2_svr_fun(const problem *prob, double *Cs, double p):
+l2r_l2_svr_fun::l2r_l2_svr_fun(const liblinear_problem *prob, double *Cs, double p):
 	l2r_l2_svc_fun(prob, Cs)
 {
 	m_p = p;
@@ -387,7 +387,7 @@ void l2r_l2_svr_fun::grad(double *w, double *g)
 #define GETI(i) (prob->y[i])
 // To support weights for instances, use GETI(i) (i)
 
-Solver_MCSVM_CS::Solver_MCSVM_CS(const problem *p, int n_class,
+Solver_MCSVM_CS::Solver_MCSVM_CS(const liblinear_problem *p, int n_class,
                                  double *weighted_C, double *w0_reg,
                                  double epsilon, int max_it, double max_time,
                                  mcsvm_state* given_state)
@@ -695,14 +695,14 @@ void Solver_MCSVM_CS::solve()
 // Interface functions
 //
 
-void destroy_model(struct model *model_)
+void destroy_model(struct liblinear_model *model_)
 {
 	SG_FREE(model_->w);
 	SG_FREE(model_->label);
 	SG_FREE(model_);
 }
 
-void destroy_param(parameter* param)
+void destroy_param(liblinear_parameter* param)
 {
 	SG_FREE(param->weight_label);
 	SG_FREE(param->weight);

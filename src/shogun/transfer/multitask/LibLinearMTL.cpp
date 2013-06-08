@@ -103,7 +103,7 @@ bool CLibLinearMTL::train_machine(CFeatures* data)
 	else
 		training_w=SG_MALLOC(float64_t, num_feat+0);
 
-	problem prob;
+	liblinear_problem prob;
 	if (use_bias)
 	{
 		prob.n=num_feat+1;
@@ -181,7 +181,7 @@ bool CLibLinearMTL::train_machine(CFeatures* data)
 // To support weights for instances, use GETI(i) (i)
 
 
-void CLibLinearMTL::solve_l2r_l1l2_svc(const problem *prob, double eps, double Cp, double Cn)
+void CLibLinearMTL::solve_l2r_l1l2_svc(const liblinear_problem *prob, double eps, double Cp, double Cn)
 {
 
 

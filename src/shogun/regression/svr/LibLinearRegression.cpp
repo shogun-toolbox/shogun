@@ -81,7 +81,7 @@ bool CLibLinearRegression::train_machine(CFeatures* data)
 	else
 		w=SGVector<float64_t>(num_feat);
 
-	problem prob;
+	liblinear_problem prob;
 	if (m_use_bias)
 	{
 		prob.n=w.vlen+1;
@@ -154,7 +154,7 @@ bool CLibLinearRegression::train_machine(CFeatures* data)
 #define GETI(i) (0)
 // To support weights for instances, use GETI(i) (i)
 
-void CLibLinearRegression::solve_l2r_l1l2_svr(const problem *prob)
+void CLibLinearRegression::solve_l2r_l1l2_svr(const liblinear_problem *prob)
 {
 	int l = prob->l;
 	double C = m_C;
