@@ -4,14 +4,14 @@ FILE(GLOB_RECURSE LIBSHOGUN_SRC *.${EXT_SRC_CPP} *.${EXT_SRC_C})
 FILE(GLOB_RECURSE LIBSHOGUN_HEADERS *.${EXT_SRC_HEADER})
 FILE(GLOB_RECURSE LIBSHOGUN_SRC_TMP *.${EXT_CPP_TMP})
 
-add_library(shogun SHARED ${LIBSHOGUN_SRC})
+add_library(shogun SHARED ${LIBSHOGUN_SRC} lib/config.h)
 
 # Generate versionstring.h
 ADD_CUSTOM_TARGET(
     version
-    ${CMAKE_COMMAND} -D SRC=${CMAKE_SOURCE_DIR}/versionstring.h.in
+    ${CMAKE_COMMAND} -D SRC=${CMAKE_CURRENT_SOURCE_DIR}/lib/versionstring.h.in
                      -D DST=${CMAKE_CURRENT_SOURCE_DIR}/lib/versionstring.h
-                     -D ROOT_DIR=${CMAKE_SOURCE_DIR}/../
+                     -D ROOT_DIR=${CMAKE_SOURCE_DIR}
                      -P ${CMAKE_MODULE_PATH}/version.cmake
     COMMENT "Generating version header"
 )
@@ -30,9 +30,11 @@ FOREACH(template ${LIBSHOGUN_SRC_TMP})
       WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
       COMMENT "Generating ${generated_cpp}"
   )
-  ADD_CUSTOM_TARGET(${generated_target} DEPENDS ${generated_cpp})
+  ADD_CUSTOM_TARGET(${generated_target} DEPENDS ${generated_cpp} version)
   add_dependencies(shogun ${generated_target})
 ENDFOREACH()
+
+CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/lib/config.h.in ${CMAKE_CURRENT_SOURCE_DIR}/lib/config.h)
 
 set_target_properties(shogun PROPERTIES VERSION ${LIBSHOGUNVER} SOVERSION ${LIBSHOGUNSO})
 target_link_libraries(shogun ${POSTLINKFLAGS})

@@ -30,7 +30,7 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
 ENDIF()
 
 ############### VERSION #####################
-FILE(STRINGS "@CMAKE_CURRENT_SOURCE_DIR@/NEWS" NEWS LIMIT_COUNT 5)
+FILE(STRINGS "@CMAKE_SOURCE_DIR@/src/NEWS" NEWS LIMIT_COUNT 5)
 STRING(REGEX REPLACE ".*SHOGUN Release version ([0-9.]*).*" "\\1" VERSION "${NEWS}")
 STRING(REGEX REPLACE ".*SHOGUN Release version.*\\(libshogun ([0-9.]*).*" "\\1" LIBSHOGUNVER "${NEWS}")
 STRING(REGEX REPLACE ".*SHOGUN Release version.*\\(libshogun ([0-9]*).*" "\\1" LIBSHOGUNSO "${NEWS}")
@@ -267,7 +267,7 @@ IF (SWIG_FOUND)
 	FIND_PACKAGE(PythonLibs)
 	IF (PYTHONLIBS_FOUND)
 		SET(PythonModular ON)
-		add_subdirectory(interfaces/python_modular)
+		#add_subdirectory(interfaces/python_modular)
 
 	ENDIF()
 
@@ -350,16 +350,17 @@ IF (SVMLight)
 ENDIF()
 
 # Find GTEST and GMOCK frameworks
-
-add_subdirectory(../tests/unit)
-
-
+SET(GOOGLE_MOCK_SOURCE_DIR "A" CACHE PATH "Path to the GMock source")
+IF ("${GOOGLE_MOCK_SOURCE_DIR}" STREQUAL "" OR NOT EXISTS "${GOOGLE_MOCK_SOURCE_DIR}/CMakeLists.txt")
+	MESSAGE("Unit testing is disabled")
+ELSE()
+	enable_testing()
+	add_subdirectory(tests/unit)
+ENDIF()
 
 # save configuration options
 SET(CONFIGURE_OPTIONS "TODO")
 SET(COMPFLAGS_CPP "TODO")
 SET(LINKFLAGS "TODO")
 
-CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/config.h.in ${CMAKE_CURRENT_SOURCE_DIR}/shogun/lib/config.h)
-
-add_subdirectory(shogun)
+add_subdirectory(src/shogun)
