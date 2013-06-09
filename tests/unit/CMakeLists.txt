@@ -7,8 +7,8 @@ FILE(GLOB_RECURSE UNITTEST_SRC *_unittest.cc)
 ADD_EXECUTABLE(shogun-unit-test EXCLUDE_FROM_ALL ${UNITTEST_SRC})
 target_link_libraries(shogun-unit-test shogun gmock gtest)
 
-ADD_CUSTOM_TARGET(unit-test 
+ADD_CUSTOM_TARGET(unit-tests 
 	COMMAND ./shogun-unit-test
 	DEPENDS shogun-unit-test)
 
-add_test(unit-test shogun-unit-test)
+add_test(unit-tests shogun-unit-test)

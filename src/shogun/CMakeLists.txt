@@ -30,7 +30,7 @@ FOREACH(template ${LIBSHOGUN_SRC_TMP})
       WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
       COMMENT "Generating ${generated_cpp}"
   )
-  ADD_CUSTOM_TARGET(${generated_target} DEPENDS ${generated_cpp} version)
+  ADD_CUSTOM_TARGET(${generated_target} DEPENDS ${generated_cpp})
   add_dependencies(shogun ${generated_target})
 ENDFOREACH()
 
