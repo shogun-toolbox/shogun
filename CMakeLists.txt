@@ -182,6 +182,11 @@ IF (CMAKE_USE_PTHREADS_INIT)
 ENDIF()
 
 FIND_PACKAGE(OpenMP)
+if (OPENMP_FOUND)
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
+endif()
 
 FIND_PACKAGE(PkgConfig)
 
@@ -267,7 +272,7 @@ IF (SWIG_FOUND)
 	FIND_PACKAGE(PythonLibs)
 	IF (PYTHONLIBS_FOUND)
 		SET(PythonModular ON)
-		#add_subdirectory(interfaces/python_modular)
+		add_subdirectory(src/interfaces/python_modular)
 
 	ENDIF()
 
@@ -350,7 +355,7 @@ IF (SVMLight)
 ENDIF()
 
 # Find GTEST and GMOCK frameworks
-SET(GOOGLE_MOCK_SOURCE_DIR "A" CACHE PATH "Path to the GMock source")
+SET(GOOGLE_MOCK_SOURCE_DIR "" CACHE PATH "Path to the GMock source")
 IF ("${GOOGLE_MOCK_SOURCE_DIR}" STREQUAL "" OR NOT EXISTS "${GOOGLE_MOCK_SOURCE_DIR}/CMakeLists.txt")
 	MESSAGE("Unit testing is disabled")
 ELSE()

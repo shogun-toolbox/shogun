@@ -12,34 +12,32 @@ notifications:
     template:
       - "it's %{author}'s turn to pay the next round of drinks for the massacre he caused in %{repository}: %{build_url}"
 env:
- - INTERFACES=" --gmock=`pwd`/shogun-toolbox/shogun/gmock-1.6.0 --gtest=`pwd`/shogun-toolbox/shogun/gmock-1.6.0/gtest" EXTRA_PACKAGES="valgrind python-jinja2"
- - INTERFACES=python_static EXTRA_PACKAGES="python-numpy-dev python-dev"
- - INTERFACES=python_modular EXTRA_PACKAGES="python-numpy-dev python-dev python-scipy swig2.0"
- - INTERFACES=r_modular EXTRA_PACKAGES="r-base-core swig2.0"
- - INTERFACES=java_modular EXTRA_PACKAGES="openjdk-6-jdk jblas ant swig2.0"
- - INTERFACES="ruby_modular --ruby=ruby1.8" EXTRA_PACKAGES="ruby ruby-dev ruby-narray swig2.0"
- - INTERFACES=csharp_modular EXTRA_PACKAGES="mono-devel mono-gmcs cli-common-dev swig2.0"
- - INTERFACES=lua_modular EXTRA_PACKAGES="lua5.1 liblua5.1-0-dev swig2.0"
+ - CMAKE_OPTIONS="-DGOOGLE_MOCK_SOURCE_DIR=`pwd`/shogun-toolbox/shogun/gmock-1.6.0" EXTRA_PACKAGES="valgrind"
+ - CMAKE_OPTIONS="-DPythonModular=ON" EXTRA_PACKAGES="python-numpy-dev python-dev python-scipy swig2.0"
+ - CMAKE_OPTIONS="-DRModular=ON" EXTRA_PACKAGES="r-base-core swig2.0"
+ - CMAKE_OPTIONS="-DJavaModular=ON" EXTRA_PACKAGES="openjdk-6-jdk jblas ant swig2.0"
+ - CMAKE_OPTIONS="-DRubyModular=ON" EXTRA_PACKAGES="ruby ruby-dev ruby-narray swig2.0"
+ - CMAKE_OPTIONS="-DCSharpModular=ON" EXTRA_PACKAGES="mono-devel mono-gmcs cli-common-dev swig2.0"
+ - CMAKE_OPTIONS="-DLuaModular=ON" EXTRA_PACKAGES="lua5.1 liblua5.1-0-dev swig2.0"
 matrix:
   exclude:
     - compiler: gcc
-      env: INTERFACES=python_static EXTRA_PACKAGES="python-numpy-dev python-dev"
+      env: CMAKE_OPTIONS=python_static EXTRA_PACKAGES="python-numpy-dev python-dev"
     - compiler: gcc
-      env: INTERFACES=python_modular EXTRA_PACKAGES="python-numpy-dev python-dev python-scipy swig2.0"
+      env: CMAKE_OPTIONS=python_modular EXTRA_PACKAGES="python-numpy-dev python-dev python-scipy swig2.0"
     - compiler: gcc
-      env: INTERFACES=r_modular EXTRA_PACKAGES="r-base-core swig2.0"
+      env: CMAKE_OPTIONS=r_modular EXTRA_PACKAGES="r-base-core swig2.0"
     - compiler: gcc
-      env: INTERFACES=java_modular EXTRA_PACKAGES="openjdk-6-jdk jblas ant swig2.0"
+      env: CMAKE_OPTIONS=java_modular EXTRA_PACKAGES="openjdk-6-jdk jblas ant swig2.0"
     - compiler: gcc
-      env: INTERFACES="ruby_modular --ruby=ruby1.8" EXTRA_PACKAGES="ruby ruby-dev ruby-narray swig2.0"
+      env: CMAKE_OPTIONS="ruby_modular --ruby=ruby1.8" EXTRA_PACKAGES="ruby ruby-dev ruby-narray swig2.0"
     - compiler: gcc
-      env: INTERFACES=csharp_modular EXTRA_PACKAGES="mono-devel mono-gmcs cli-common-dev swig2.0"
+      env: CMAKE_OPTIONS=csharp_modular EXTRA_PACKAGES="mono-devel mono-gmcs cli-common-dev swig2.0"
     - compiler: gcc
-      env: INTERFACES=lua_modular EXTRA_PACKAGES="lua5.1 liblua5.1-0-dev swig2.0"
+      env: CMAKE_OPTIONS=lua_modular EXTRA_PACKAGES="lua5.1 liblua5.1-0-dev swig2.0"
 before_install:
  - sudo apt-get update -qq
- - sudo apt-get install -qq cdbs libeigen3-dev libarpack2-dev libatlas-base-dev libblas-dev libglpk-dev libhdf5-serial-dev swig zlib1g-dev libxml2-dev libreadline6-dev libreadline-dev libsnappy-dev liblzo2-dev liblzma-dev liblapack-dev gdb $EXTRA_PACKAGES
+ - sudo apt-get install -qq cdbs libeigen3-dev libarpack2-dev libatlas-base-dev libblas-dev libglpk-dev libhdf5-serial-dev libjson0-dev swig zlib1g-dev libxml2-dev libreadline6-dev libreadline-dev libsnappy-dev liblzo2-dev liblzma-dev liblapack-dev gdb cmake $EXTRA_PACKAGES
  - wget http://googlemock.googlecode.com/files/gmock-1.6.0.zip && unzip gmock-1.6.0.zip
- - wget --no-check-certificate https://github.com/json-c/json-c/archive/json-c-0.11-20130402.zip && unzip json-c-0.11-20130402.zip && cd json-c-json-c-0.11-20130402 && ./configure && make && sudo make install && cd ..
-before_script: cd ./src
-script: ./configure --disable-optimization --interfaces=$INTERFACES && make -j 4 && sudo make install && make tests && make unit-tests
+before_script: mkdir build && cd build
+script: cmake $CMAKE_OPTIONS .. && make -j 4 && sudo make install && make tests && make unit-tests
