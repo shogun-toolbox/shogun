@@ -5,7 +5,7 @@
 # $ make
 
 project(shogun)
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 2.8.8)
 
 ################# VARIABLES #####################
 SET(EXT_SRC_HEADER "h")
@@ -24,7 +24,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 ################ COMPILER #######################
 # g++ version needs to be => 4.3
 IF(CMAKE_COMPILER_IS_GNUCXX)
-	IF(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "4.3.0")
+	IF("${CMAKE_CXX_COMPILER_VERSION}" VERSION_LESS "4.3.0")
 		MESSAGE(FATAL_ERROR "g++ version is too old")
 	ENDIF()
 ENDIF()
@@ -272,7 +272,7 @@ IF (SWIG_FOUND)
 	FIND_PACKAGE(PythonLibs)
 	IF (PYTHONLIBS_FOUND)
 		SET(PythonModular ON)
-		add_subdirectory(src/interfaces/python_modular)
+		#add_subdirectory(src/interfaces/python_modular)
 
 	ENDIF()
 
