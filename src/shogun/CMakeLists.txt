@@ -4,7 +4,7 @@ FILE(GLOB_RECURSE LIBSHOGUN_SRC *.${EXT_SRC_CPP} *.${EXT_SRC_C})
 FILE(GLOB_RECURSE LIBSHOGUN_HEADERS *.${EXT_SRC_HEADER})
 FILE(GLOB_RECURSE LIBSHOGUN_SRC_TMP *.${EXT_CPP_TMP})
 
-add_library(shogun SHARED ${LIBSHOGUN_SRC} lib/config.h)
+add_library(shogun SHARED ${LIBSHOGUN_SRC} lib/config.h base/class_list.cpp)
 
 # Generate versionstring.h
 ADD_CUSTOM_TARGET(
@@ -41,6 +41,7 @@ target_link_libraries(shogun ${POSTLINKFLAGS})
 
 INSTALL(DIRECTORY ./ DESTINATION include/shogun
         FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp")
+
 INSTALL(TARGETS shogun 
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib
