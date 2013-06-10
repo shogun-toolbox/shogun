@@ -293,13 +293,6 @@ class CMachine : public CSGObject
 			return PT_BINARY;
 		}
 
-		/** clone */
-		virtual CMachine* clone()
-		{
-			SG_NOTIMPLEMENTED
-			return NULL;
-		}
-
 		virtual const char* get_name() const { return "Machine"; }
 
 	protected:

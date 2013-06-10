@@ -27,8 +27,6 @@
 %rename(MultitaskTraceLogisticRegression) CMultitaskTraceLogisticRegression;
 %rename(MultitaskClusteredLogisticRegression) CMultitaskClusteredLogisticRegression;
 
-%rename(MultitaskCompositeMachine) CMultitaskCompositeMachine;
-
 %rename(MultitaskROCEvaluation) CMultitaskROCEvaluation;
 
 %rename(LibLinearMTL) CLibLinearMTL;
@@ -58,8 +56,6 @@
 %include <shogun/transfer/multitask/MultitaskL12LogisticRegression.h>
 %include <shogun/transfer/multitask/MultitaskTraceLogisticRegression.h>
 %include <shogun/transfer/multitask/MultitaskClusteredLogisticRegression.h>
-
-%include <shogun/transfer/multitask/MultitaskCompositeMachine.h>
 
 %include <shogun/transfer/multitask/MultitaskROCEvaluation.h>
 

@@ -7,7 +7,6 @@
  #include <shogun/transfer/multitask/MultitaskKernelPlifNormalizer.h>
 
  #include <shogun/transfer/multitask/LibLinearMTL.h>
- #include <shogun/transfer/multitask/MultitaskCompositeMachine.h>
  #include <shogun/transfer/multitask/Task.h>
  #include <shogun/transfer/multitask/TaskRelation.h>
  #include <shogun/transfer/multitask/TaskTree.h>

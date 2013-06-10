@@ -115,11 +115,6 @@ CDotFeatures* CLinearMachine::get_features()
 	return features;
 }
 
-CMachine* CLinearMachine::clone()
-{
-	return new CLinearMachine(this);
-}
-
 void CLinearMachine::store_model_features()
 {
 }

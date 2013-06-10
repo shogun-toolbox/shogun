@@ -284,9 +284,6 @@ class CKernelMachine : public CMachine
 		/** @return whether machine supports locking */
 		virtual bool supports_locking() const;
 
-		/** clone */
-		virtual CMachine* clone();
-
 	protected:
 
 		/** apply get outputs 

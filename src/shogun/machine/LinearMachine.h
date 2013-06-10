@@ -132,9 +132,6 @@ class CLinearMachine : public CMachine
 		 */
 		virtual const char* get_name() const { return "LinearMachine"; }
 
-		/** clone */
-		virtual CMachine* clone();
-
 	protected:
 
 		/** apply get outputs
