@@ -119,6 +119,17 @@ TEST(CombinedDotFeaturesTest, nnz_features)
 		data_2[i] = -i;
 		data_3[i] = 2*i;
 	}
+	/* the concatenation of the first vector of the matrices gives:
+	 * 0, 1, 2, 0, -1, -2, 0, 2, 4
+	 * and so the non-zero features are 1, 2, -1, -2, 2, 4.
+	 */
+	SGVector<float64_t> nnz(6);
+	nnz[0] = 1;
+	nnz[1] = 2;
+	nnz[2] = -1;
+	nnz[3] = -2;
+	nnz[4] = 2;
+	nnz[5] = 4;
 	
 	CCombinedDotFeatures* comb_feat = new CCombinedDotFeatures();
 	CSparseFeatures<float64_t>* feat_1 = new CSparseFeatures<float64_t>(data_1);
@@ -129,11 +140,14 @@ TEST(CombinedDotFeaturesTest, nnz_features)
 	comb_feat->append_feature_obj(feat_3);
 
 	EXPECT_EQ(comb_feat->get_nnz_features_for_vector(0), 6);
-	SG_SPRINT("Before feat_1\n");
-	void* it1=feat_1->get_feature_iterator(0);
-	feat_1->free_feature_iterator(it1);
-	SG_SPRINT("Before first\n");
-	void* itcomb = comb_feat->get_feature_iterator(1);
+	
+	float64_t value=0;
+	int32_t index=0;
+	index_t nnz_index=0;
+	void* itcomb = comb_feat->get_feature_iterator(0);
+	while (comb_feat->get_next_feature(index, value, itcomb))
+		ASSERT_EQ(nnz[nnz_index++], value);
+
 	comb_feat->free_feature_iterator(itcomb);
 	SG_UNREF(comb_feat);
 }
