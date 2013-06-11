@@ -254,6 +254,7 @@ void CCombinedDotFeatures::free_feature_iterator(void* iterator)
 		combined_feature_iterator* it = (combined_feature_iterator*) iterator;
 		if (it->iterator && it->f)
 			it->f->free_feature_iterator(it->iterator);
+		SG_UNREF(it->f);
 		SG_FREE(it);
 	}
 }

@@ -22,6 +22,7 @@ namespace shogun
 
 template <class T> class SGSparseVector;
 class CFile;
+class CRegressionLabels;
 
 /** @brief template class SGSparseMatrix */
 template <class T> class SGSparseMatrix : public SGReferencedData
@@ -70,6 +71,11 @@ template <class T> class SGSparseMatrix : public SGReferencedData
 		 * @param loader File object via which to load data
 		 */
 		void load(CFile* loader);
+
+		SGSparseMatrix<T> get_transposed();
+		CRegressionLabels* load_svmlight_file(char* fname, bool do_sort_features);
+		bool write_svmlight_file(char* fname, CRegressionLabels* label);
+		void sort_features();
 
 		/** save sparse matrix to file
 		 *

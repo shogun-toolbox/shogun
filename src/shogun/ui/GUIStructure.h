@@ -107,8 +107,8 @@ class CGUIStructure : public CSGObject
 			SG_FREE(m_feature_matrix_sparse1);
 			SG_FREE(m_feature_matrix_sparse2);
 
-			m_feature_matrix_sparse1 = new CSparseFeatures<float64_t>(f1, dims[0], dims[1], true) ;
-			m_feature_matrix_sparse2 = new CSparseFeatures<float64_t>(f2, dims[0], dims[1], true) ;
+			m_feature_matrix_sparse1 = new CSparseFeatures<float64_t>(SGSparseMatrix<float64_t>(f1, dims[0], dims[1], true));
+			m_feature_matrix_sparse2 = new CSparseFeatures<float64_t>(SGSparseMatrix<float64_t>(f2, dims[0], dims[1], true));
 
 			return true;
 		}

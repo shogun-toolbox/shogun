@@ -63,17 +63,6 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		CSparseFeatures(int32_t size=0);
 
 		/** convenience constructor that creates sparse features from
-		 * the ones passed as argument
-		 *
-		 * @param src dense feature matrix
-		 * @param num_feat number of features
-		 * @param num_vec number of vectors
-		 * @param copy true to copy feature matrix
-		 */
-		CSparseFeatures(SGSparseVector<ST>* src,
-				int32_t num_feat, int32_t num_vec,bool copy=false);
-
-		/** convenience constructor that creates sparse features from
 		 * sparse features
 		 *
 		 * @param sparse sparse matrix
@@ -127,16 +116,6 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 * @return sum of features that match dimension index and 0 if none is found
 		 */
 		ST get_feature(int32_t num, int32_t index);
-
-		/** converts a sparse feature vector into a dense one
-		  * preprocessed compute_feature_vector
-		  * caller cleans up
-		  *
-		  * @param num index of feature vector
-		  * @param len length is returned by reference
-		  * @return dense feature vector
-		  */
-		ST* get_full_feature_vector(int32_t num, int32_t& len);
 
 		/** get the fully expanded dense feature vector num
 		  *
@@ -290,13 +269,13 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 *
 		 * @return number of feature vectors
 		 */
-		virtual int32_t  get_num_vectors() const;
+		virtual int32_t get_num_vectors() const;
 
 		/** get number of features
 		 *
 		 * @return number of features
 		 */
-		int32_t  get_num_features();
+		int32_t get_num_features() const;
 
 		/** set number of features
 		 *
@@ -523,14 +502,8 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 
 	protected:
 
-		/// total number of vectors
-		int32_t num_vectors;
-
-		/// total number of features
-		int32_t num_features;
-
 		/// array of sparse vectors of size num_vectors
-		SGSparseVector<ST>* sparse_feature_matrix;
+		SGSparseMatrix<ST> sparse_feature_matrix;
 
 		/** feature cache */
 		CCache< SGSparseVectorEntry<ST> >* feature_cache;

@@ -1,6 +1,6 @@
 SHOGUNSRCTOP=../../src
-VALGRINDOPTS=
-#VALGRINDOPTS=--leak-check=full
+#VALGRINDOPTS=
+VALGRINDOPTS=--leak-check=full
 
 ifeq ($(SHOGUNSRCTOP)/.config,$(wildcard $(SHOGUNSRCTOP)/.config))
 CONFIGPATH = $(SHOGUNSRCTOP)

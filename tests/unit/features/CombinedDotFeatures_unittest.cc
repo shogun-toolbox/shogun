@@ -109,7 +109,7 @@ TEST(CombinedDotFeaturesTest, dot_products)
 }
 
 TEST(CombinedDotFeaturesTest, nnz_features)
-{/*
+{
 	SGMatrix<float64_t> data_1(3,2);
 	SGMatrix<float64_t> data_2(3,2);
 	SGMatrix<float64_t> data_3(3,2);
@@ -130,8 +130,10 @@ TEST(CombinedDotFeaturesTest, nnz_features)
 
 	EXPECT_EQ(comb_feat->get_nnz_features_for_vector(0), 6);
 	SG_SPRINT("Before feat_1\n");
-	feat_1->get_feature_iterator(0);
+	void* it1=feat_1->get_feature_iterator(0);
+	feat_1->free_feature_iterator(it1);
 	SG_SPRINT("Before first\n");
-	void* it = comb_feat->get_feature_iterator(1);*/
-	
+	void* itcomb = comb_feat->get_feature_iterator(1);
+	comb_feat->free_feature_iterator(itcomb);
+	SG_UNREF(comb_feat);
 }
