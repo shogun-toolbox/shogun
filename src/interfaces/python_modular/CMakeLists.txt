@@ -1,6 +1,5 @@
 include_directories(${CMAKE_SOURCE_DIR}/src)
 
-# create symlinks to ../modular/* files
 set(modular_files)
 
 FILE(GLOB_RECURSE MODULAR_FILES ${COMMON_MODULAR_SRC_DIR}/*.i)
@@ -15,8 +14,7 @@ FOREACH(file ${MODULAR_FILES})
 ENDFOREACH()
 
 ADD_CUSTOM_TARGET(modular_interface 
-	DEPENDS ${modular_files} 
-	COMMENT "") 
+	DEPENDS ${modular_files}) 
 
 INCLUDE(${SWIG_USE_FILE})
 INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_PATH})
