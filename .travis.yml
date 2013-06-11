@@ -30,7 +30,7 @@ matrix:
     - compiler: gcc
       env: CMAKE_OPTIONS="-DJavaModular=ON" EXTRA_PACKAGES="openjdk-6-jdk jblas ant swig2.0"
     - compiler: gcc
-      env: CMAKE_OPTIONS="-DRubyModular=ON" --ruby=ruby1.8" EXTRA_PACKAGES="ruby ruby-dev ruby-narray swig2.0"
+      env: CMAKE_OPTIONS="-DRubyModular=ON" EXTRA_PACKAGES="ruby ruby-dev ruby-narray swig2.0"
     - compiler: gcc
       env: CMAKE_OPTIONS="-DCSharpModular=ON" EXTRA_PACKAGES="mono-devel mono-gmcs cli-common-dev swig2.0"
     - compiler: gcc
