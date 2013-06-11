@@ -1,25 +1,22 @@
 include_directories(${CMAKE_SOURCE_DIR}/src)
 
 # create symlinks to ../modular/* files
-set(modular_symlinks)
-set(extra_clean_files)
+set(modular_files)
 
-IF(WIN32)
-	MESSAGE(FATAL_ERROR "symlinks are not supported on windows. probably copying is the conly solution")
-ELSE()
-	FILE(GLOB_RECURSE MODULAR_FILES ${CMAKE_SOURCE_DIR}/src/interfaces/modular/*)
-	FOREACH(file ${MODULAR_FILES})
-		STRING(REGEX REPLACE ".*/(.*)$" "\\1" fname "${file}")
-		list(APPEND modular_symlinks ${fname})
-		ADD_CUSTOM_COMMAND(OUTPUT ${fname}
-			COMMAND "${CMAKE_COMMAND}" -E create_symlink ${file} ${CMAKE_CURRENT_SOURCE_DIR}/${fname}
-		)
-		list(APPEND extra_clean_files "${CMAKE_CURRENT_SOURCE_DIR}/${fname}")
-	ENDFOREACH()
-ENDIF()
+FILE(GLOB_RECURSE MODULAR_FILES ${COMMON_MODULAR_SRC_DIR}/*.i)
+FILE(GLOB_RECURSE PYTHON_MODULAR_FILES *.i)
+LIST(APPEND MODULAR_FILES ${PYTHON_MODULAR_FILES})
+FOREACH(file ${MODULAR_FILES})
+	STRING(REGEX REPLACE ".*/(.*)$" "\\1" fname "${file}")
+	list(APPEND modular_files ${fname})
+	ADD_CUSTOM_COMMAND(OUTPUT ${fname}
+		COMMAND "${CMAKE_COMMAND}" -E copy_if_different ${file} ${fname}
+	)
+ENDFOREACH()
 
-ADD_CUSTOM_TARGET(create_modular_symlinks DEPENDS ${modular_symlinks})
-SET_DIRECTORY_PROPERTIES(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${extra_clean_files}")
+ADD_CUSTOM_TARGET(modular_interface 
+	DEPENDS ${modular_files} 
+	COMMENT "") 
 
 INCLUDE(${SWIG_USE_FILE})
 INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_PATH})
@@ -29,7 +26,29 @@ SET_SOURCE_FILES_PROPERTIES(modshogun.i PROPERTIES CPLUSPLUS ON)
 SET_SOURCE_FILES_PROPERTIES(modshogun.i PROPERTIES SWIG_FLAGS ${TARGET_SWIGFLAGS})
 SWIG_ADD_MODULE(modshogun python modshogun.i sg_print_functions.cpp)
 SWIG_LINK_LIBRARIES(modshogun ${PYTHON_LIBRARIES} shogun)
-ADD_DEPENDENCIES(_modshogun create_modular_symlinks)
+ADD_DEPENDENCIES(_modshogun modular_interface)
+
+IF(DOXYGEN_FOUND)
+	configure_file(${COMMON_MODULAR_SRC_DIR}/modshogun.doxy.in modshogun.doxy)
+
+	ADD_CUSTOM_COMMAND( 
+    	OUTPUT    modshogun
+    	COMMAND   ${DOXYGEN_EXECUTABLE}
+    	ARGS	  modshogun.doxy
+    	COMMENT   "Generating doxygen doc"
+	)
+
+	ADD_CUSTOM_COMMAND( 
+    	OUTPUT    modshogun_doxygen.i
+    	COMMAND   ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/src/.doxy2swig.py
+    	ARGS	  --quiet --no-function-definition modshogun/doxygen_xml/index.xml modshogun_doxygen.i
+    	DEPENDS   modshogun
+	)
+	ADD_CUSTOM_TARGET(doxy2swig DEPENDS modshogun_doxygen.i)
+	ADD_DEPENDENCIES(_modshogun doxy2swig)
+ELSE()
+
+ENDIF()
 
 SET(PYTHON_SITE_PACKGES_INSTALL_DIR lib/python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR})
 IF (${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}.${PYTHON_VERSION_PATCH} VERSION_GREATER "2.6.2")

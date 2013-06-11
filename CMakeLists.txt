@@ -20,6 +20,9 @@ SET(EXT_CPP_TMP "${EXT_SRC_CPP}.templ")
 SET(EXT_CPP_SH "${EXT_SRC_CPP}.sh")
 SET(EXT_CPP_PY "${EXT_SRC_CPP}.py")
 
+SET(LIBSHOGUN_SRC_DIR ${CMAKE_SOURCE_DIR}/src/shogun)
+SET(COMMON_MODULAR_SRC_DIR ${CMAKE_SOURCE_DIR}/src/interfaces/modular/)
+
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 
 ################ COMPILER #######################
