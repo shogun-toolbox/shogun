@@ -108,6 +108,12 @@ struct TSGDataType
 	 */
 	bool equals(TSGDataType other);
 
+	/** Compares the content of the data types, excluding the length fields
+	 * @return other type to compare with
+	 * @return true if equals, false otherwise
+	 */
+	bool equals_without_length(TSGDataType other);
+
 	/** equality */
 	bool operator==(const TSGDataType& a);
 	/** inequality
@@ -128,6 +134,9 @@ struct TSGDataType
 	size_t sizeof_stype() const;
 	/** size of ptype */
 	size_t sizeof_ptype() const;
+
+	static size_t sizeof_ptype(EPrimitiveType ptype);
+	static size_t sizeof_stype(EStructType stype, EPrimitiveType ptype);
 
 	/** size of sparse entry
 	 * @param ptype

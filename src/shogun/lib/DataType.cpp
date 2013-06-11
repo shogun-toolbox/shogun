@@ -54,28 +54,42 @@ TSGDataType::operator==(const TSGDataType& a)
 	return result;
 }
 
-bool TSGDataType::equals(TSGDataType other)
+bool TSGDataType::equals_without_length(TSGDataType other)
 {
-	SG_SDEBUG("entering TSGDataType::equals()\n");
-
 	if (m_ctype!=other.m_ctype)
 	{
-		SG_SDEBUG("leaving TSGDataType::equals(): container types are "
+		SG_SDEBUG("leaving TSGDataType::equals_wihtout_length(): container types are "
 				"different\n");
 		return false;
 	}
 
 	if (m_stype!=other.m_stype)
 	{
-		SG_SDEBUG("leaving TSGDataType::equals(): struct types are "
+		SG_SDEBUG("leaving TSGDataType::equals_wihtout_length(): struct types are "
 				"different\n");
 		return false;
 	}
 
 	if (m_ptype!=other.m_ptype)
 	{
-		SG_SDEBUG("leaving TSGDataType::equals(): primitive types are "
+		SG_SDEBUG("leaving TSGDataType::equals_wihtout_length(): primitive types are "
 				"different\n");
+		return false;
+	}
+
+	SG_SDEBUG("leaving TSGDataType::equals_wihtout_length(): data types "
+			"without lengths are equal\n");
+	return true;
+}
+
+bool TSGDataType::equals(TSGDataType other)
+{
+	SG_SDEBUG("entering TSGDataType::equals()\n");
+
+	if (!equals_without_length(other))
+	{
+		SG_SDEBUG("leaving TSGDataType::equals(): Data types without lengths "
+				"are not equal\n");
 		return false;
 	}
 
@@ -148,10 +162,22 @@ TSGDataType::to_string(char* dest, size_t n) const
 size_t
 TSGDataType::sizeof_stype() const
 {
-	switch (m_stype) {
-	case ST_NONE: return sizeof_ptype();
+	return sizeof_stype(m_stype, m_ptype);
+}
+
+size_t
+TSGDataType::sizeof_ptype() const
+{
+	return sizeof_ptype(m_ptype);
+}
+
+size_t
+TSGDataType::sizeof_stype(EStructType stype, EPrimitiveType ptype)
+{
+	switch (stype) {
+	case ST_NONE: return sizeof_ptype(ptype);
 	case ST_STRING:
-		switch (m_ptype) {
+		switch (ptype) {
 		case PT_BOOL: return sizeof (SGString<bool>);
 		case PT_CHAR: return sizeof (SGString<char>);
 		case PT_INT8: return sizeof (SGString<int8_t>);
@@ -176,7 +202,7 @@ TSGDataType::sizeof_stype() const
 		}
 		break;
 	case ST_SPARSE:
-		switch (m_ptype) {
+		switch (ptype) {
 		case PT_BOOL: return sizeof (SGSparseVector<bool>);
 		case PT_CHAR: return sizeof (SGSparseVector<char>);
 		case PT_INT8: return sizeof (SGSparseVector<int8_t>);
@@ -200,9 +226,9 @@ TSGDataType::sizeof_stype() const
 }
 
 size_t
-TSGDataType::sizeof_ptype() const
+TSGDataType::sizeof_ptype(EPrimitiveType ptype)
 {
-	switch (m_ptype) {
+	switch (ptype) {
 	case PT_BOOL: return sizeof (bool);
 	case PT_CHAR: return sizeof (char);
 	case PT_INT8: return sizeof (int8_t);

@@ -85,6 +85,8 @@ enum EModelSelectionAvailability {
  * -# parallel - to determine the number of used CPUs for a method (cf. Parallel)
  * -# io - to output messages and general i/o (cf. IO)
  * -# version - to provide version information of the shogun version used (cf. Version)
+ *
+ * All objects can be cloned and compared (deep copy, recursively)
  */
 class CSGObject
 {
@@ -431,6 +433,16 @@ public:
 	 * @return true if all parameters were equal, false if not
 	 */
 	virtual bool equals(CSGObject* other, float64_t accuracy=0.0);
+
+	/** Creates a clone of the current object. This is done via recursively
+	 * traversing all parameters, which corresponds to a ceep copy.
+	 * Calling equals on the cloned object always returns true although none
+	 * of the memory of both objects overlaps.
+	 *
+	 * @return an identical copy of the given object, which is disjoint in memory.
+	 * NULL if the clone fails. Note that the returned objects is SG_REF'ed
+	 */
+	virtual CSGObject* clone();
 
 private:
 	void set_global_objects();

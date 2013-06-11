@@ -115,8 +115,14 @@ struct TParameter
 	 * @return whether the data was equal
 	 */
 	static bool compare_stype(EStructType stype, EPrimitiveType ptype,
-			size_t size_ptype, void* data1, void* data2,
-			floatmax_t accuracy=0.0);
+			void* data1, void* data2, floatmax_t accuracy=0.0);
+
+	static bool copy_ptype(EPrimitiveType ptype, void* source, void* target);
+	static bool copy_stype(EStructType stype, EPrimitiveType ptype,
+				void* source, void* target);
+	bool copy(TParameter* target);
+
+
 
 	/** operator for comparison, (by string m_name) */
 	bool operator==(const TParameter& other) const;

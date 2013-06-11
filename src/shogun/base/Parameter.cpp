@@ -2974,7 +2974,7 @@ bool TParameter::equals(TParameter* other, float64_t accuracy)
 		{
 			SG_SDEBUG("CT_SCALAR\n");
 			if (!TParameter::compare_stype(m_datatype.m_stype,
-					m_datatype.m_ptype, m_datatype.sizeof_ptype(), m_parameter,
+					m_datatype.m_ptype, m_parameter,
 					other->m_parameter,
 					accuracy))
 			{
@@ -2999,8 +2999,7 @@ bool TParameter::equals(TParameter* other, float64_t accuracy)
 				void* pointer_b=&((*(char**)other->m_parameter)[x]);
 
 				if (!TParameter::compare_stype(m_datatype.m_stype,
-						m_datatype.m_ptype, m_datatype.sizeof_ptype(),
-						pointer_a, pointer_b, accuracy))
+						m_datatype.m_ptype, pointer_a, pointer_b, accuracy))
 				{
 					SG_SDEBUG("leaving TParameter::equals(): vector element "
 							"differes\n");
@@ -3030,8 +3029,7 @@ bool TParameter::equals(TParameter* other, float64_t accuracy)
 				void* pointer_b=&((*(char**)other->m_parameter)[x]);
 
 				if (!TParameter::compare_stype(m_datatype.m_stype,
-						m_datatype.m_ptype, m_datatype.sizeof_ptype(),
-						pointer_a, pointer_b, accuracy))
+						m_datatype.m_ptype, pointer_a, pointer_b, accuracy))
 				{
 					SG_SDEBUG("leaving TParameter::equals(): vector element "
 							"differes\n");
@@ -3306,10 +3304,156 @@ bool TParameter::compare_ptype(EPrimitiveType ptype, void* data1, void* data2,
 	return true;
 }
 
+bool TParameter::copy_ptype(EPrimitiveType ptype, void* source, void* target)
+{
+	SG_SDEBUG("entering TParameter::copy_ptype()\n");
+
+	/* rather than using memcpy, use the cumbersome way here and cast all types.
+	 * This makes it so much easier to debug code.
+	 * Copy full stype if this is too slow */
+	switch (ptype)
+	{
+	case PT_BOOL:
+	{
+		*((bool*)target)=*((bool*)source);
+		SG_SDEBUG("after copy of ptype PT_BOOL: source %d, target %d\n",
+				*((bool*)source), *((bool*)target));
+		break;
+	}
+	case PT_CHAR:
+	{
+		*((char*)target)=*((char*)source);
+		SG_SDEBUG("after copy of ptype PT_CHAR: source %c, target %c\n",
+				*((char*)source), *((char*)target));
+		break;
+	}
+	case PT_INT8:
+	{
+		*((int8_t*)target)=*((int8_t*)source);
+		SG_SDEBUG("after copy of ptype PT_INT8: source %d, target %d\n",
+				*((int8_t*)source), *((int8_t*)target));
+		break;
+	}
+	case PT_UINT8:
+	{
+		*((uint8_t*)target)=*((uint8_t*)source);
+		SG_SDEBUG("after copy of ptype PT_UINT8: source %d, target %d\n",
+				*((uint8_t*)source), *((uint8_t*)target));
+		break;
+	}
+	case PT_INT16:
+	{
+		*((int16_t*)target)=*((int16_t*)source);
+		SG_SDEBUG("after copy of ptype PT_INT16: source %d, target %d\n",
+				*((int16_t*)source), *((int16_t*)target));
+		break;
+	}
+	case PT_UINT16:
+	{
+		*((uint16_t*)target)=*((uint16_t*)source);
+		SG_SDEBUG("after copy of ptype PT_UINT16: source %d, target %d\n",
+				*((uint16_t*)source), *((uint16_t*)target));
+		break;
+	}
+	case PT_INT32:
+	{
+		*((int32_t*)target)=*((int32_t*)source);
+		SG_SDEBUG("after copy of ptype PT_INT32: source %d, target %d\n",
+				*((int32_t*)source), *((int32_t*)target));
+		break;
+	}
+	case PT_UINT32:
+	{
+		*((uint32_t*)target)=*((uint32_t*)source);
+		SG_SDEBUG("after copy of ptype PT_UINT32: source %d, target %d\n",
+				*((uint32_t*)source), *((uint32_t*)target));
+		break;
+	}
+	case PT_INT64:
+	{
+		*((int64_t*)target)=*((int64_t*)source);
+		SG_SDEBUG("after copy of ptype PT_INT64: source %d, target %d\n",
+				*((int64_t*)source), *((int64_t*)target));
+		break;
+	}
+	case PT_UINT64:
+	{
+		*((uint64_t*)target)=*((uint64_t*)source);
+		SG_SDEBUG("after copy of ptype PT_UINT64: source %d, target %d\n",
+				*((uint64_t*)source), *((uint64_t*)target));
+		break;
+	}
+	case PT_FLOAT32:
+	{
+		*((float32_t*)target)=*((float32_t*)source);
+		SG_SDEBUG("after copy of ptype PT_FLOAT32: source %f, target %f\n",
+				*((float32_t*)source), *((float32_t*)target));
+		break;
+	}
+	case PT_FLOAT64:
+	{
+		*((float64_t*)target)=*((float64_t*)source);
+		SG_SDEBUG("after copy of ptype PT_FLOAT64: source %f, target %f\n",
+				*((float64_t*)source), *((float64_t*)target));
+		break;
+	}
+	case PT_FLOATMAX:
+	{
+		*((floatmax_t*)target)=*((floatmax_t*)source);
+		SG_SDEBUG("after copy of ptype PT_FLOATMAX: source %f, target %f\n",
+				*((floatmax_t*)source), *((floatmax_t*)target));
+		break;
+	}
+	case PT_COMPLEX64:
+	{
+		*((complex64_t*)target)=*((complex64_t*)source);
+		SG_SDEBUG("after copy of ptype PT_COMPLEX64: "
+				"source real %f, target real %f,"
+				"source imag %f, target imag %f,"
+				"\n",
+				((complex64_t*)source)->real(), ((complex64_t*)target)->real(),
+				((complex64_t*)source)->imag(), ((complex64_t*)target)->imag());
+		break;
+	}
+	case PT_SGOBJECT:
+	{
+		CSGObject* casted1=*((CSGObject**)source);
+		CSGObject* casted2=*((CSGObject**)target);
+
+		/* important not to call methods on NULL */
+		if (!casted1 && ! casted2)
+		{
+			SG_SDEBUG("leaving TParameter::copy_ptype(): Both SGObjects are NULL\n");
+			return true;
+		}
+
+		/* make sure to not call NULL methods */
+		if (casted1)
+		{
+			/* in case of overwriting old objects */
+			SG_UNREF(*((CSGObject**)target));
+			*((CSGObject**)target) = casted1->clone();
+		}
+
+		break;
+	}
+	default:
+		SG_SERROR("TParameter::compare_ptype(): Encountered unknown primitive"
+				"-type: %d\n", ptype);
+		return false;
+		break;
+	}
+
+	SG_SDEBUG("leaving TParameter::copy_ptype(): Copy successful\n");
+	return true;
+}
+
 bool TParameter::compare_stype(EStructType stype, EPrimitiveType ptype,
-		size_t size_ptype, void* data1, void* data2, floatmax_t accuracy)
+		void* data1, void* data2, floatmax_t accuracy)
 {
 	SG_SDEBUG("entering TParameter::compare_stype()\n");
+
+	size_t size_ptype=TSGDataType::sizeof_ptype(ptype);
 
 	/* Avoid comparing NULL */
 	if (!data1 && !data2)
@@ -3373,7 +3517,17 @@ bool TParameter::compare_stype(EStructType stype, EPrimitiveType ptype,
 						pointer2, accuracy))
 				{
 					SG_SDEBUG("leaving TParameter::compare_stype(): Data of"
-							" string element is different\n");
+							" sparse vector element is different\n");
+					return false;
+				}
+
+				/* also compare feature indices */
+				if (cur2->feat_index!=cur1->feat_index)
+				{
+					SG_SDEBUG("leaving TParameter::compare_stype(): Feature "
+							"index of sparse vector element is different. "
+							"source: %d, target: %d\n",
+							cur1->feat_index, cur2->feat_index);
 					return false;
 				}
 			}
@@ -3419,5 +3573,325 @@ bool TParameter::compare_stype(EStructType stype, EPrimitiveType ptype,
 	}
 
 	SG_SDEBUG("leaving TParameter::compare_stype(): Data were equal\n");
+	return true;
+}
+
+bool TParameter::copy_stype(EStructType stype, EPrimitiveType ptype,
+		void* source, void* target)
+{
+	SG_SDEBUG("entering TParameter::copy_stype()\n");
+	size_t size_ptype=TSGDataType::sizeof_ptype(ptype);
+
+	/* Heiko Strathmann: While I know that copying the stypes string and sparse
+	 * element wise is slower than doing the full things, it is way easier to
+	 * program and to debug since I already made sure that copy_ptype works as
+	 * intended. In addition, strings and vectors of SGObjects can be treated
+	 * recursively this way (we dont have cases for this currently, June 2013,
+	 * but they can be added without having to modify this code)
+	 *
+	 * Therefore, this code is very close to the the equals code for
+	 * stypes. If it turns out to be too slow (which I doubt), stypes can be
+	 * copied with memcpy over the full memory blocks */
+
+	switch (stype)
+	{
+		case ST_NONE:
+		{
+			SG_SDEBUG("ST_NONE\n");
+			return TParameter::copy_ptype(ptype, source, target);
+			break;
+		}
+		case ST_STRING:
+		{
+			SG_SDEBUG("ST_STRING\n");
+			SGString<char>* source_ptr = (SGString<char>*) source;
+			SGString<char>* target_ptr = (SGString<char>*) target;
+
+			if (source_ptr->slen != target_ptr->slen)
+			{
+				SG_SDEBUG("string lengths different (source: %d vs target: %d),"
+						" freeing memory.\n", source_ptr->slen, target_ptr->slen);
+
+				/* if string have different lengths, free data and make equal */
+				SG_FREE(target_ptr->string);
+				target_ptr->string=NULL;
+				target_ptr->slen=0;
+			}
+
+			if (!target_ptr->string)
+			{
+				/* allocate memory if data is NULL */
+				size_t num_bytes=source_ptr->slen * size_ptype;
+
+				SG_SDEBUG("target string data NULL, allocating %d bytes.\n",
+						num_bytes);
+				target_ptr->string=SG_MALLOC(char, num_bytes);
+				target_ptr->slen=source_ptr->slen;
+			}
+
+			SG_SDEBUG("Copying strings\n");
+			for (index_t i=0; i<source_ptr->slen; ++i)
+			{
+				SG_SDEBUG("Copying string element %d at offset %d\n", i,
+						i*size_ptype);
+				void* pointer1=source_ptr->string+i*size_ptype;
+				void* pointer2=target_ptr->string+i*size_ptype;
+
+				if (!TParameter::copy_ptype(ptype, pointer1, pointer2))
+				{
+					SG_SDEBUG("leaving TParameter::copy_stype(): Copy of string"
+							" element failed.\n");
+					return false;
+				}
+			}
+			break;
+		}
+		case ST_SPARSE:
+		{
+			SG_SDEBUG("ST_SPARSE\n");
+			SGSparseVector<char>* source_ptr = (SGSparseVector<char>*) source;
+			SGSparseVector<char>* target_ptr = (SGSparseVector<char>*) target;
+
+			if (source_ptr->num_feat_entries != target_ptr->num_feat_entries)
+			{
+				SG_SDEBUG("sparse vector lengths different (source: %d vs target: %d),"
+						" freeing memory.\n",
+						source_ptr->num_feat_entries, target_ptr->num_feat_entries);
+
+				/* if string have different lengths, free data and make equal */
+				SG_FREE(target_ptr->features);
+				target_ptr->features=NULL;
+				target_ptr->num_feat_entries=0;
+			}
+
+			if (!target_ptr->features)
+			{
+				/* allocate memory if data is NULL */
+				size_t num_bytes=source_ptr->num_feat_entries *
+						TSGDataType::sizeof_sparseentry(ptype);
+
+				SG_SDEBUG("target sparse data NULL, allocating %d bytes.\n",
+						num_bytes);
+				target_ptr->features=(SGSparseVectorEntry<char>*)SG_MALLOC(char, num_bytes);
+				target_ptr->num_feat_entries=source_ptr->num_feat_entries;
+			}
+
+			SG_SDEBUG("Copying sparse vectors\n");
+			for (index_t i=0; i<source_ptr->num_feat_entries; ++i)
+			{
+				SG_SDEBUG("Copying sparse entry %d at offset %d\n", i,
+						i*TSGDataType::sizeof_sparseentry(ptype));
+
+				SGSparseVectorEntry<char>* cur1 = (SGSparseVectorEntry<char>*)
+								((char*) source_ptr->features + i*TSGDataType
+										 ::sizeof_sparseentry(ptype));
+				SGSparseVectorEntry<char>* cur2 = (SGSparseVectorEntry<char>*)
+								((char*) target_ptr->features + i*TSGDataType
+										 ::sizeof_sparseentry(ptype));
+
+				/* sparse entries have an offset of the enty pointer depending
+				 * on type. Since I cast everything down to char, I need to remove
+				 * the char offset and add the offset of the ptype */
+				index_t char_offset=TSGDataType::offset_sparseentry(PT_CHAR);
+				index_t ptype_offset=TSGDataType::offset_sparseentry(ptype);
+				void* pointer1=&(cur1->entry)-char_offset+ptype_offset;
+				void* pointer2=&(cur2->entry)-char_offset+ptype_offset;
+
+				if (!TParameter::copy_ptype(ptype, pointer1, pointer2))
+				{
+					SG_SDEBUG("leaving TParameter::copy_stype(): Copy of sparse"
+							" vector element failed\n");
+					return false;
+				}
+
+				/* afterwards, copy feature indices, wich are the data before
+				 * the avove offeet */
+				cur2->feat_index=cur1->feat_index;
+			}
+			break;
+		}
+		default:
+		{
+			SG_SERROR("TParameter::copy_stype(): Undefined struct type\n");
+			return false;
+			break;
+		}
+	}
+
+	SG_SDEBUG("leaving TParameter::copy_stype(): Copy successful\n");
+	return true;
+}
+
+bool TParameter::copy(TParameter* target)
+{
+	SG_SDEBUG("entering TParameter::copy()\n");
+
+	if (!target)
+	{
+		SG_SDEBUG("leaving TParameter::copy(): other parameter is NULL\n");
+		return false;
+	}
+
+	if (!m_parameter)
+	{
+		SG_SDEBUG("leaving TParameter::copy(): m_parameter of source is NULL\n");
+		return false;
+	}
+
+	if (!target->m_parameter)
+	{
+		SG_SDEBUG("leaving TParameter::copy(): m_parameter of target is NULL\n");
+		return false;
+	}
+
+	if (strcmp(m_name, target->m_name))
+	{
+		SG_SDEBUG("leaving TParameter::copy(): name \"%s\" is different from"
+				" target parameter's "
+				"name \"%s\"\n", m_name, target->m_name);
+		return false;
+	}
+
+	SG_SDEBUG("Comparing datatypes without length\n");
+	if (!(m_datatype.equals_without_length(target->m_datatype)))
+	{
+		SG_SDEBUG("leaving TParameter::copy(): type of \"%s\" is different "
+				"from target parameter's \"%s\" type\n", m_name, target->m_name);
+		return false;
+	}
+
+	switch (m_datatype.m_ctype)
+	{
+		case CT_SCALAR:
+		{
+			SG_SDEBUG("CT_SCALAR\n");
+			if (!TParameter::copy_stype(m_datatype.m_stype,
+					m_datatype.m_ptype, m_parameter,
+					target->m_parameter))
+			{
+				SG_SDEBUG("leaving TParameter::copy(): scalar data copy error\n");
+				return false;
+			}
+			break;
+		}
+		case CT_VECTOR: case CT_SGVECTOR:
+		{
+			SG_SDEBUG("CT_VECTOR or CT_SGVECTOR\n");
+
+			/* if sizes are different or memory is not allocated, do that */
+			if (!m_datatype.equals(target->m_datatype))
+			{
+				SG_SDEBUG("changing size of target vector and freeing memory\n");
+				/* first case: different sizes, free target memory */
+				SG_FREE(*(char**)target->m_parameter);
+				*(char**)target->m_parameter=NULL;
+
+			}
+
+			/* check whether target m_parameter data contains NULL, if yes, create */
+			if (*(char**)target->m_parameter==NULL)
+			{
+				SG_SDEBUG("allocating memory for target vector\n");
+				size_t num_bytes=*m_datatype.m_length_y * m_datatype.sizeof_stype();
+				*(char**)target->m_parameter=SG_MALLOC(char, num_bytes);
+
+				/* use length of source */
+				*target->m_datatype.m_length_y=*m_datatype.m_length_y;
+			}
+
+			/* now start actual copying, assume that sizes are equal and memory
+			 * is there */
+			ASSERT(m_datatype.equals(target->m_datatype));
+
+			/* x is number of processed bytes */
+			index_t x=0;
+			SG_SDEBUG("length_y: %d\n", *m_datatype.m_length_y)
+			for (index_t i=0; i<*m_datatype.m_length_y; ++i)
+			{
+				SG_SDEBUG("copying element %d which is %d byes from start\n",
+						i, x);
+
+				void* pointer_a=&((*(char**)m_parameter)[x]);
+				void* pointer_b=&((*(char**)target->m_parameter)[x]);
+
+				if (!TParameter::copy_stype(m_datatype.m_stype,
+						m_datatype.m_ptype, pointer_a, pointer_b))
+				{
+					SG_SDEBUG("leaving TParameter::copy(): vector element "
+							"copy error\n");
+					return false;
+				}
+
+				x=x+(m_datatype.sizeof_ptype());
+			}
+
+			break;
+		}
+		case CT_MATRIX: case CT_SGMATRIX:
+		{
+			SG_SDEBUG("CT_MATRIX or CT_SGMATRIX\n");
+
+			/* if sizes are different or memory is not allocated, do that */
+			if (!m_datatype.equals(target->m_datatype))
+			{
+				SG_SDEBUG("changing size of target vector and freeing memory\n");
+				/* first case: different sizes, free target memory */
+				SG_FREE(*(char**)target->m_parameter);
+				*(char**)target->m_parameter=NULL;
+			}
+
+			/* check whether target m_parameter data contains NULL, if yes, create */
+			if (*(char**)target->m_parameter==NULL)
+			{
+				SG_SDEBUG("allocating memory for target vector\n");
+				size_t num_bytes=*m_datatype.m_length_y *
+						(*m_datatype.m_length_y) * m_datatype.sizeof_stype();
+				*(char**)target->m_parameter=SG_MALLOC(char, num_bytes);
+
+				/* use length of source */
+				*target->m_datatype.m_length_y=*m_datatype.m_length_y;
+				*target->m_datatype.m_length_x=*m_datatype.m_length_x;
+			}
+
+			/* now start actual copying, assume that sizes are equal and memory
+			 * is there */
+			ASSERT(m_datatype.equals(target->m_datatype));
+
+			/* x is number of processed bytes */
+			index_t x=0;
+			SG_SDEBUG("length_y: %d\n", *m_datatype.m_length_y)
+			SG_SDEBUG("length_x: %d\n", *m_datatype.m_length_x)
+			int64_t length=(*m_datatype.m_length_y) * (*m_datatype.m_length_x);
+			for (index_t i=0; i<length; ++i)
+			{
+				SG_SDEBUG("copying element %d which is %d byes from start\n",
+						i, x);
+
+				void* pointer_a=&((*(char**)m_parameter)[x]);
+				void* pointer_b=&((*(char**)target->m_parameter)[x]);
+
+				if (!TParameter::copy_stype(m_datatype.m_stype,
+						m_datatype.m_ptype, pointer_a, pointer_b))
+				{
+					SG_SDEBUG("leaving TParameter::copy(): vector element "
+							"differes\n");
+					return false;
+				}
+
+				x=x+(m_datatype.sizeof_ptype());
+			}
+
+			break;
+		}
+		case CT_NDARRAY:
+		{
+			SG_SDEBUG("CT_NDARRAY\n");
+			SG_SERROR("TParameter::copy(): Not yet implemented for "
+					"CT_NDARRAY!\n");
+			break;
+		}
+	}
+
+	SG_SDEBUG("leaving TParameter::copy(): Copy successful\n");
 	return true;
 }
