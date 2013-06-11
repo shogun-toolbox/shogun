@@ -119,7 +119,10 @@ struct TParameter
 
 	static bool copy_ptype(EPrimitiveType ptype, void* source, void* target);
 	static bool copy_stype(EStructType stype, EPrimitiveType ptype,
-				void* data1, void* data2);
+				void* source, void* target);
+	bool copy(TParameter* target);
+
+
 
 	/** operator for comparison, (by string m_name) */
 	bool operator==(const TParameter& other) const;

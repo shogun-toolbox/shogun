@@ -11,6 +11,7 @@
 		- Added an "equals" method to all Shogun objects that recursively
 		  compares all registered parameters with those of another instance -- 
 		  up to a specified accuracy.
+		- Added a "clone" method to all Shogun objects that creates a deep copy
 		- Multiclass LDA. Thanks to Kevin Hughes.
 	* Bugfixes:
 		- Fix json serialization.

@@ -54,28 +54,42 @@ TSGDataType::operator==(const TSGDataType& a)
 	return result;
 }
 
-bool TSGDataType::equals(TSGDataType other)
+bool TSGDataType::equals_without_length(TSGDataType other)
 {
-	SG_SDEBUG("entering TSGDataType::equals()\n");
-
 	if (m_ctype!=other.m_ctype)
 	{
-		SG_SDEBUG("leaving TSGDataType::equals(): container types are "
+		SG_SDEBUG("leaving TSGDataType::equals_wihtout_length(): container types are "
 				"different\n");
 		return false;
 	}
 
 	if (m_stype!=other.m_stype)
 	{
-		SG_SDEBUG("leaving TSGDataType::equals(): struct types are "
+		SG_SDEBUG("leaving TSGDataType::equals_wihtout_length(): struct types are "
 				"different\n");
 		return false;
 	}
 
 	if (m_ptype!=other.m_ptype)
 	{
-		SG_SDEBUG("leaving TSGDataType::equals(): primitive types are "
+		SG_SDEBUG("leaving TSGDataType::equals_wihtout_length(): primitive types are "
 				"different\n");
+		return false;
+	}
+
+	SG_SDEBUG("leaving TSGDataType::equals_wihtout_length(): data types "
+			"without lengths are equal\n");
+	return true;
+}
+
+bool TSGDataType::equals(TSGDataType other)
+{
+	SG_SDEBUG("entering TSGDataType::equals()\n");
+
+	if (!equals_without_length(other))
+	{
+		SG_SDEBUG("leaving TSGDataType::equals(): Data types without lengths "
+				"are not equal\n");
 		return false;
 	}
 

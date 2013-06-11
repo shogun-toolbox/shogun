@@ -108,6 +108,12 @@ struct TSGDataType
 	 */
 	bool equals(TSGDataType other);
 
+	/** Compares the content of the data types, excluding the length fields
+	 * @return other type to compare with
+	 * @return true if equals, false otherwise
+	 */
+	bool equals_without_length(TSGDataType other);
+
 	/** equality */
 	bool operator==(const TSGDataType& a);
 	/** inequality
