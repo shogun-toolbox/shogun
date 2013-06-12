@@ -117,3 +117,7 @@ examples/undocumented/python_modular/*
 
 # /tests
 /tests/unit/shogun-unit-test
+
+# cmake
+/CMakeFiles/
+CMakeCache.txt
