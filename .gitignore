@@ -124,3 +124,7 @@ examples/undocumented/python_modular/*
 /tests/unit/*.hdf5
 /tests/unit/*.json
 /tests/unit/combined_kernel.weights
+
+# cmake
+/CMakeFiles/
+CMakeCache.txt
