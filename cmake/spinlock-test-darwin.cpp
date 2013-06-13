@@ -2,7 +2,7 @@
 
 int main()
 {
-	volatile OSSpinlock lock;
-	OSSpinlockTry(&lock);
+	volatile OSSpinLock lock;
+	OSSpinLockTry(&lock);
 	return 0;
 }
