@@ -78,25 +78,21 @@ namespace shogun
 CLaplacianInferenceMethod::CLaplacianInferenceMethod() : CInferenceMethod()
 {
 	init();
-	update_all();
-	update_parameter_hash();
 }
 
-CLaplacianInferenceMethod::CLaplacianInferenceMethod(CKernel* kern,
-		CFeatures* feat,
+CLaplacianInferenceMethod::CLaplacianInferenceMethod(CKernel* kern,	CFeatures* feat,
 		CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod) :
 		CInferenceMethod(kern, feat, m, lab, mod)
 {
 	init();
-	update_all();
 }
 
 void CLaplacianInferenceMethod::init()
 {
-	m_max_itr = 30;
-	m_opt_tolerance = 1e-6;
-	m_tolerance = 1e-8;
-	m_max = 5;
+	m_iter=20;
+	m_tolerance=1e-6;
+	m_opt_tolerance=1e-10;
+	m_opt_max=10;
 }
 
 CLaplacianInferenceMethod::~CLaplacianInferenceMethod()
@@ -105,92 +101,59 @@ CLaplacianInferenceMethod::~CLaplacianInferenceMethod()
 
 void CLaplacianInferenceMethod::update_all()
 {
-	if (m_features && m_features->has_property(FP_DOT)
-			&& m_features->get_num_vectors())
-	{
-		m_feature_matrix =
-				((CDotFeatures*)m_features)->get_computed_dot_feature_matrix();
+	check_members();
 
-	}
-	else if (m_features && m_features->get_feature_class() == C_COMBINED)
-	{
-		CDotFeatures* feat =
-				(CDotFeatures*)((CCombinedFeatures*)m_features)->
-				get_first_feature_obj();
+	// update feature matrix
+	CFeatures* feat=m_features;
 
-		if (feat->get_num_vectors())
-			m_feature_matrix = feat->get_computed_dot_feature_matrix();
+	if (m_features->get_feature_class()==C_COMBINED)
+		feat=((CCombinedFeatures*)m_features)->get_first_feature_obj();
+	else
+		SG_REF(m_features);
 
-		SG_UNREF(feat);
-	}
+	m_feature_matrix=((CDotFeatures*)feat)->get_computed_dot_feature_matrix();
 
-	if (m_kernel)
-		update_train_kernel();
+	SG_UNREF(feat);
 
-	if (m_ktrtr.num_cols*m_ktrtr.num_rows)
-	{
-		update_alpha();
-		update_chol();
-	}
+	update_train_kernel();
+	update_alpha();
+	update_chol();
 }
 
 void CLaplacianInferenceMethod::check_members()
 {
-	if (!m_labels)
-		SG_ERROR("No labels set\n")
+	REQUIRE(m_features, "Training features must be attached\n")
+	REQUIRE(m_features->get_num_vectors(),
+		"Number of training features must be greater than zero\n")
+	REQUIRE(m_labels, "Labels must be attached\n")
+	REQUIRE(m_labels->get_label_type()==LT_REGRESSION,
+		"Labels must be type of CRegressionLabels\n")
+	REQUIRE(m_labels->get_num_labels(),
+			"Number of labels must be greater than zero\n")
+	REQUIRE(m_labels->get_num_labels()==m_features->get_num_vectors(),
+		"Number of training vectors must match number of labels\n")
+	REQUIRE(m_kernel, "Kernel must be assigned\n")
+	REQUIRE(m_mean, "Mean function must be assigned\n")
 
-	if (m_labels->get_label_type() != LT_REGRESSION)
-		SG_ERROR("Expected RegressionLabels\n")
+	CFeatures* feat=m_features;
 
-	if (!m_features)
-		SG_ERROR("No features set!\n")
-
-	if (m_labels->get_num_labels() != m_features->get_num_vectors())
-		SG_ERROR("Number of training vectors does not match number of labels\n")
-
-	if(m_features->get_feature_class() == C_COMBINED)
-	{
-		CDotFeatures* feat =
-				(CDotFeatures*)((CCombinedFeatures*)m_features)->
-				get_first_feature_obj();
-
-		if (!feat->has_property(FP_DOT))
-			SG_ERROR("Specified features are not of type CFeatures\n")
-
-		if (feat->get_feature_class() != C_DENSE)
-			SG_ERROR("Expected Simple Features\n")
-
-		if (feat->get_feature_type() != F_DREAL)
-			SG_ERROR("Expected Real Features\n")
-
-		SG_UNREF(feat);
-	}
+	if (m_features->get_feature_class()==C_COMBINED)
+		feat=((CCombinedFeatures*)m_features)->get_first_feature_obj();
 	else
-	{
-		if (!m_features->has_property(FP_DOT))
-			SG_ERROR("Specified features are not of type CFeatures\n")
+		SG_REF(m_features);
 
-		if (m_features->get_feature_class() != C_DENSE)
-			SG_ERROR("Expected Simple Features\n")
+	REQUIRE(feat->has_property(FP_DOT),
+			"Training features must be type of CFeatures\n")
+	REQUIRE(feat->get_feature_class()==C_DENSE, "Training features must be dense\n")
+	REQUIRE(feat->get_feature_type()==F_DREAL, "Training features must be real\n")
 
-		if (m_features->get_feature_type() != F_DREAL)
-			SG_ERROR("Expected Real Features\n")
-	}
-
-	if (!m_kernel)
-		SG_ERROR("No kernel assigned!\n")
-
-	if (!m_mean)
-		SG_ERROR("No mean function assigned!\n")
-
+	SG_UNREF(feat);
 }
 
 CMap<TParameter*, SGVector<float64_t> > CLaplacianInferenceMethod::
 get_marginal_likelihood_derivatives(CMap<TParameter*,
 		CSGObject*>& para_dict)
 {
-	check_members();
-
 	if (update_parameter_hash())
 		update_all();
 
@@ -354,6 +317,9 @@ get_marginal_likelihood_derivatives(CMap<TParameter*,
 
 SGVector<float64_t> CLaplacianInferenceMethod::get_diagonal_vector()
 {
+	if (update_parameter_hash())
+		update_all();
+
 	SGVector<float64_t> result(sW);
 	return result;
 }
@@ -363,11 +329,12 @@ float64_t CLaplacianInferenceMethod::get_negative_marginal_likelihood()
 	if (update_parameter_hash())
 		update_all();
 
-	// create eigen representations alpha, f, W, mean vectors
+	// create eigen representations alpha, f, W, mean vectors, L
 	Map<VectorXd> eigen_temp_alpha(temp_alpha.vector, temp_alpha.vlen);
 	Map<VectorXd> eigen_function(function.vector, function.vlen);
 	Map<VectorXd> eigen_W(W.vector, W.vlen);
 	Map<VectorXd> eigen_m_means(m_means.vector, m_means.vlen);
+	Map<MatrixXd> eigen_L(m_L.matrix, m_L.num_rows, m_L.num_cols);
 
 	float64_t result;
 
@@ -384,12 +351,8 @@ float64_t CLaplacianInferenceMethod::get_negative_marginal_likelihood()
 	}
 	else
 	{
-		float64_t sum = 0;
-
-		for (index_t i = 0; i < m_L.num_rows; i++)
-			sum += log(m_L(i,i));
-
-		result=eigen_temp_alpha.dot(eigen_function-eigen_m_means)/2.0-lp+sum;
+		result=eigen_temp_alpha.dot(eigen_function-eigen_m_means)/2.0-lp+
+			eigen_L.diagonal().array().log().sum();
 	}
 
 	return result;
@@ -422,8 +385,6 @@ void CLaplacianInferenceMethod::update_train_kernel()
 
 void CLaplacianInferenceMethod::update_chol()
 {
-	check_members();
-
 	Map<VectorXd> eigen_W(W.vector, W.vlen);
 
 	// create eigen representation of kernel matrix
@@ -477,7 +438,7 @@ void CLaplacianInferenceMethod::update_alpha()
 	function=SGVector<float64_t>(m_means.vlen);
 	Map<VectorXd> eigen_function(function.vector, function.vlen);
 
-	if (m_alpha.vlen != m_labels->get_num_labels())
+	if (temp_alpha.vlen!=m_labels->get_num_labels())
 	{
 		// set alpha a zero vector
 		temp_alpha=SGVector<float64_t>(m_labels->get_num_labels());
@@ -534,15 +495,15 @@ void CLaplacianInferenceMethod::update_alpha()
 	sW=SGVector<float64_t>(W.vlen);
 	Map<VectorXd> eigen_sW(sW.vector, sW.vlen);
 
-	index_t itr = 0;
+	index_t iter=0;
 
-	while (Psi_Old - Psi_New > m_tolerance && itr < m_max_itr)
+	while (Psi_Old-Psi_New>m_tolerance && iter<m_iter)
 	{
 		Map<VectorXd> eigen_W(W.vector, W.vlen);
 		Map<VectorXd> eigen_dlp(dlp.vector, dlp.vlen);
 
 		Psi_Old = Psi_New;
-		itr++;
+		iter++;
 
 		if (eigen_W.minCoeff() < 0)
 		{
@@ -589,7 +550,8 @@ void CLaplacianInferenceMethod::update_alpha()
 		func.lik = m_model;
 		func.lab = (CRegressionLabels*)m_labels;
 
-		local_min(0, m_max, m_opt_tolerance, func, Psi_New);
+		float64_t x;
+		Psi_New=local_min(0, m_opt_max, m_opt_tolerance, func, x);
 	}
 
 	// compute f = K * alpha + m

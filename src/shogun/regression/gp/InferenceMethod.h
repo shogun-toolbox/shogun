@@ -210,13 +210,16 @@ public:
 
 protected:
 	/** update alpha matrix */
-	virtual void update_alpha() {}
+	virtual void update_alpha()=0;
 
 	/** update cholesky matrix */
-	virtual void update_chol() {}
+	virtual void update_chol()=0;
 
 	/** update train kernel matrix */
-	virtual void update_train_kernel() {}
+	virtual void update_train_kernel()=0;
+
+	/** update all matrices */
+	virtual void update_all()=0;
 
 private:
 	void init();
