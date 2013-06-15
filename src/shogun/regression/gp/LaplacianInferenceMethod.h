@@ -175,13 +175,13 @@ public:
 	 *
 	 * @return max Newton iterations
 	 */
-	virtual int32_t get_newton_iterations() { return m_max_itr; }
+	virtual int32_t get_newton_iterations() { return m_iter; }
 
 	/** set max Newton iterations
 	 *
-	 * @param itr max Newton iterations
+	 * @param iter max Newton iterations
 	 */
-	virtual void set_newton_iterations(int32_t itr) { m_max_itr=itr; }
+	virtual void set_newton_iterations(int32_t iter) { m_iter=iter; }
 
 	/** get tolerance for Brent's minimization method
 	 *
@@ -195,17 +195,17 @@ public:
 	 */
 	virtual void set_minimization_tolerance(float64_t tol) { m_opt_tolerance=tol; }
 
-	/** get max iterations for Brent's minimization method
+	/** get max for Brent's minimization method
 	 *
-	 * @return max iterations for Brent's minimization method
+	 * @return max for Brent's minimization method
 	 */
-	virtual int32_t get_minimization_iterations() { return m_max; }
+	virtual float64_t get_minimization_max() { return m_opt_max; }
 
-	/** set max iterations for Brent's minimization method
+	/** set max for Brent's minimization method
 	 *
-	 * @param itr max iterations for Brent's minimization method
+	 * @param iter max for Brent's minimization method
 	 */
-	virtual void set_minimization_iterations(int32_t itr) { m_max=itr; }
+	virtual void set_minimization_max(float64_t max) { m_opt_max=max; }
 
 protected:
 	/** update alpha matrix */
@@ -232,14 +232,14 @@ private:
 	/** amount of tolerance for Newton's iterations */
 	float64_t m_tolerance;
 
+	/** max Newton's iterations */
+	index_t m_iter;
+
 	/** amount of tolerance for Brent's minimization method */
 	float64_t m_opt_tolerance;
 
 	/** max iterations for Brent's minimization method */
-	float64_t m_max;
-
-	/** max Newton iterations */
-	index_t m_max_itr;
+	float64_t m_opt_max;
 
 	/*Eigen version of alpha vector*/
 	SGVector<float64_t> temp_alpha;

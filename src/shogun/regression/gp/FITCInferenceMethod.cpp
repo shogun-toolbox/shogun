@@ -31,8 +31,6 @@ using namespace Eigen;
 CFITCInferenceMethod::CFITCInferenceMethod() : CInferenceMethod()
 {
 	init();
-	update_all();
-	update_parameter_hash();
 }
 
 CFITCInferenceMethod::CFITCInferenceMethod(CKernel* kern, CFeatures* feat,
@@ -41,7 +39,6 @@ CFITCInferenceMethod::CFITCInferenceMethod(CKernel* kern, CFeatures* feat,
 {
 	init();
 	set_latent_features(lat);
-	update_all();
 }
 
 void CFITCInferenceMethod::init()
@@ -49,8 +46,8 @@ void CFITCInferenceMethod::init()
 	SG_ADD((CSGObject**)&m_latent_features, "latent_features", "latent Features",
 		MS_NOT_AVAILABLE);
 
-	m_latent_features = NULL;
-	m_ind_noise = 1e-10;
+	m_latent_features=NULL;
+	m_ind_noise=1e-10;
 }
 
 CFITCInferenceMethod::~CFITCInferenceMethod()
@@ -75,181 +72,96 @@ void CFITCInferenceMethod::set_latent_features(CFeatures* feat)
 	SG_REF(feat);
 	SG_UNREF(m_latent_features);
 	m_latent_features=feat;
+}
 
-	if (m_latent_features && m_latent_features->has_property(FP_DOT) && m_latent_features->get_num_vectors())
-		m_latent_matrix =
-				((CDotFeatures*)m_latent_features)->get_computed_dot_feature_matrix();
+void CFITCInferenceMethod::update_all()
+{
+	check_members();
 
-	else if (m_latent_features && m_latent_features->get_feature_class() == C_COMBINED)
-	{
-		CDotFeatures* subfeat =
-				(CDotFeatures*)((CCombinedFeatures*)m_latent_features)->
-				get_first_feature_obj();
+	// update feature matrix
+	CFeatures* feat=m_features;
 
-		if (m_latent_features->get_num_vectors())
-			m_latent_matrix = subfeat->get_computed_dot_feature_matrix();
+	if (m_features->get_feature_class()==C_COMBINED)
+		feat=((CCombinedFeatures*)m_features)->get_first_feature_obj();
+	else
+		SG_REF(m_features);
 
-		SG_UNREF(subfeat);
-	}
+	m_feature_matrix=((CDotFeatures*)feat)->get_computed_dot_feature_matrix();
+
+	SG_UNREF(feat);
+
+	// update latent matrix
+	feat=m_latent_features;
+
+	if (m_latent_features->get_feature_class()==C_COMBINED)
+		feat=((CCombinedFeatures*)m_latent_features)->get_first_feature_obj();
+	else
+		SG_REF(m_latent_features);
+
+	m_latent_matrix=((CDotFeatures*)feat)->get_computed_dot_feature_matrix();
+
+	SG_UNREF(feat);
 
 	update_train_kernel();
 	update_chol();
 	update_alpha();
 }
 
-void CFITCInferenceMethod::update_all()
-{
-	if (m_features && m_features->has_property(FP_DOT)
-			&& m_features->get_num_vectors())
-	{
-		m_feature_matrix =
-				((CDotFeatures*)m_features)->get_computed_dot_feature_matrix();
-	}
-
-	else if (m_features && m_features->get_feature_class() == C_COMBINED)
-	{
-		CDotFeatures* feat =
-				(CDotFeatures*)((CCombinedFeatures*)m_features)->
-				get_first_feature_obj();
-
-		if (feat->get_num_vectors())
-			m_feature_matrix = feat->get_computed_dot_feature_matrix();
-
-		SG_UNREF(feat);
-	}
-
-	if (m_latent_features && m_latent_features->has_property(FP_DOT) &&
-			m_latent_features->get_num_vectors())
-	{
-		m_latent_matrix =
-				((CDotFeatures*)m_latent_features)->
-				get_computed_dot_feature_matrix();
-	}
-
-	else if (m_latent_features &&
-			m_latent_features->get_feature_class() == C_COMBINED)
-	{
-		CDotFeatures* subfeat =
-				(CDotFeatures*)((CCombinedFeatures*)m_latent_features)->
-				get_first_feature_obj();
-
-		if (m_latent_features->get_num_vectors())
-			m_latent_matrix = subfeat->get_computed_dot_feature_matrix();
-
-		SG_UNREF(subfeat);
-	}
-
-	if (m_kernel)
-		update_train_kernel();
-
-	if (m_ktrtr.num_cols*m_ktrtr.num_rows &&
-			m_kuu.num_rows*m_kuu.num_cols &&
-			m_ktru.num_cols*m_ktru.num_rows)
-	{
-		update_chol();
-		update_alpha();
-	}
-}
-
 void CFITCInferenceMethod::check_members()
 {
-	if (!m_labels)
-		SG_ERROR("No labels set\n")
+	REQUIRE(m_model->get_model_type()==LT_GAUSSIAN,
+		"FITC inference method can only use Gaussian likelihood function\n")
+	REQUIRE(m_features, "Training features must be attached\n")
+	REQUIRE(m_features->get_num_vectors(),
+		"Number of training features must be greater than zero\n")
+	REQUIRE(m_latent_features, "Latent features must be attached\n")
+	REQUIRE(m_latent_features->get_num_vectors(),
+			"Number of latent features must be greater than zero\n")
+	REQUIRE(m_latent_matrix.num_rows==m_feature_matrix.num_rows,
+			"Regular and latent features must match in dimensionality!\n")
+	REQUIRE(m_labels, "Labels must be attached\n")
+	REQUIRE(m_labels->get_label_type()==LT_REGRESSION,
+		"Labels must be type of CRegressionLabels\n")
+	REQUIRE(m_labels->get_num_labels(),
+			"Number of labels must be greater than zero\n")
+	REQUIRE(m_labels->get_num_labels()==m_features->get_num_vectors(),
+		"Number of training vectors must match number of labels\n")
+	REQUIRE(m_kernel, "Kernel must be assigned\n")
+	REQUIRE(m_mean, "Mean function must be assigned\n")
 
-	if (m_labels->get_label_type() != LT_REGRESSION)
-		SG_ERROR("Expected RegressionLabels\n")
+	CFeatures* feat=m_features;
 
-	if (!m_features)
-		SG_ERROR("No features set!\n")
-
-	if (!m_latent_features)
-		SG_ERROR("No latent features set!\n")
-
-	if (m_labels->get_num_labels() != m_features->get_num_vectors())
-		SG_ERROR("Number of training vectors does not match number of labels\n")
-
-	if(m_features->get_feature_class() == C_COMBINED)
-	{
-		CDotFeatures* feat =
-				(CDotFeatures*)((CCombinedFeatures*)m_features)->
-				get_first_feature_obj();
-
-		if (!feat->has_property(FP_DOT))
-			SG_ERROR("Specified features are not of type CFeatures\n")
-
-		if (feat->get_feature_class() != C_DENSE)
-			SG_ERROR("Expected Simple Features\n")
-
-		if (feat->get_feature_type() != F_DREAL)
-			SG_ERROR("Expected Real Features\n")
-
-		SG_UNREF(feat);
-	}
-
+	if (m_features->get_feature_class()==C_COMBINED)
+		feat=((CCombinedFeatures*)m_features)->get_first_feature_obj();
 	else
-	{
-		if (!m_features->has_property(FP_DOT))
-			SG_ERROR("Specified features are not of type CFeatures\n")
+		SG_REF(m_features);
 
-		if (m_features->get_feature_class() != C_DENSE)
-			SG_ERROR("Expected Simple Features\n")
+	REQUIRE(feat->has_property(FP_DOT),
+			"Training features must be type of CFeatures\n")
+	REQUIRE(feat->get_feature_class()==C_DENSE, "Training features must be dense\n")
+	REQUIRE(feat->get_feature_type()==F_DREAL, "Training features must be real\n")
 
-		if (m_features->get_feature_type() != F_DREAL)
-			SG_ERROR("Expected Real Features\n")
-	}
+	SG_UNREF(feat);
 
-	if(m_latent_features->get_feature_class() == C_COMBINED)
-	{
-		CDotFeatures* feat =
-				(CDotFeatures*)((CCombinedFeatures*)m_latent_features)->
-				get_first_feature_obj();
+	feat=m_latent_features;
 
-		if (!feat->has_property(FP_DOT))
-			SG_ERROR("Specified features are not of type CFeatures\n")
-
-		if (feat->get_feature_class() != C_DENSE)
-			SG_ERROR("Expected Simple Features\n")
-
-		if (feat->get_feature_type() != F_DREAL)
-			SG_ERROR("Expected Real Features\n")
-
-		SG_UNREF(feat);
-	}
-
+	if (m_latent_features->get_feature_class()==C_COMBINED)
+		feat=((CCombinedFeatures*)m_latent_features)->get_first_feature_obj();
 	else
-	{
-		if (!m_latent_features->has_property(FP_DOT))
-			SG_ERROR("Specified features are not of type CFeatures\n")
+		SG_REF(m_latent_features);
 
-		if (m_latent_features->get_feature_class() != C_DENSE)
-			SG_ERROR("Expected Simple Features\n")
+	REQUIRE(feat->has_property(FP_DOT),
+			"Latent features must be type of CFeatures\n")
+	REQUIRE(feat->get_feature_class()==C_DENSE, "Latent features must be dense\n")
+	REQUIRE(feat->get_feature_type()==F_DREAL, "Latent features must be real\n")
 
-		if (m_latent_features->get_feature_type() != F_DREAL)
-			SG_ERROR("Expected Real Features\n")
-	}
-
-	if (m_latent_matrix.num_rows != m_feature_matrix.num_rows)
-		SG_ERROR("Regular and Latent Features do not match in dimensionality!\n")
-
-	if (!m_kernel)
-		SG_ERROR("No kernel assigned!\n")
-
-	if (!m_mean)
-		SG_ERROR("No mean function assigned!\n")
-
-	if (m_model->get_model_type() != LT_GAUSSIAN)
-	{
-		SG_ERROR("FITC Inference Method can only use " \
-				"Gaussian Likelihood Function.\n");
-	}
+	SG_UNREF(feat);
 }
 
 CMap<TParameter*, SGVector<float64_t> > CFITCInferenceMethod::
 get_marginal_likelihood_derivatives(CMap<TParameter*,
 		CSGObject*>& para_dict)
 {
-	check_members();
-
 	if (update_parameter_hash())
 		update_all();
 
@@ -605,7 +517,17 @@ get_marginal_likelihood_derivatives(CMap<TParameter*,
 
 SGVector<float64_t> CFITCInferenceMethod::get_diagonal_vector()
 {
-	SGVector<float64_t> result;
+	if (update_parameter_hash())
+		update_all();
+
+	// get the sigma variable from the Gaussian likelihood model
+	CGaussianLikelihood* lik=CGaussianLikelihood::obtain_from_generic(m_model);
+	float64_t sigma=lik->get_sigma();
+	SG_UNREF(lik);
+
+	// compute diagonal vector: sW=1/sigma
+	SGVector<float64_t> result(m_features->get_num_vectors());
+	result.fill_vector(result.vector, m_features->get_num_vectors(), 1.0/sigma);
 
 	return result;
 }
@@ -672,8 +594,6 @@ void CFITCInferenceMethod::update_train_kernel()
 
 void CFITCInferenceMethod::update_chol()
 {
-	check_members();
-
 	// get the sigma variable from the Gaussian likelihood model
 	CGaussianLikelihood* lik=CGaussianLikelihood::obtain_from_generic(m_model);
 	float64_t sigma=lik->get_sigma();

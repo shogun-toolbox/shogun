@@ -30,15 +30,12 @@ using namespace Eigen;
 
 CExactInferenceMethod::CExactInferenceMethod() : CInferenceMethod()
 {
-	update_all();
-	update_parameter_hash();
 }
 
 CExactInferenceMethod::CExactInferenceMethod(CKernel* kern, CFeatures* feat,
 		CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod) :
 		CInferenceMethod(kern, feat, m, lab, mod)
 {
-	update_all();
 }
 
 CExactInferenceMethod::~CExactInferenceMethod()
@@ -47,95 +44,61 @@ CExactInferenceMethod::~CExactInferenceMethod()
 
 void CExactInferenceMethod::update_all()
 {
-	if (m_features && m_features->has_property(FP_DOT) && m_features->get_num_vectors())
-		m_feature_matrix =
-				((CDotFeatures*)m_features)->get_computed_dot_feature_matrix();
+	check_members();
 
-	else if (m_features && m_features->get_feature_class() == C_COMBINED)
-	{
-		CDotFeatures* feat =
-				(CDotFeatures*)((CCombinedFeatures*)m_features)->
-				get_first_feature_obj();
+	// update feature matrix
+	CFeatures* feat=m_features;
 
-		if (feat->get_num_vectors())
-			m_feature_matrix = feat->get_computed_dot_feature_matrix();
+	if (m_features->get_feature_class()==C_COMBINED)
+		feat=((CCombinedFeatures*)m_features)->get_first_feature_obj();
+	else
+		SG_REF(m_features);
 
-		SG_UNREF(feat);
-	}
+	m_feature_matrix=((CDotFeatures*)feat)->get_computed_dot_feature_matrix();
 
-	if (m_kernel)
-		update_train_kernel();
+	SG_UNREF(feat);
 
-	if (m_ktrtr.num_cols*m_ktrtr.num_rows)
-	{
-		update_chol();
-		update_alpha();
-	}
+	update_train_kernel();
+	update_chol();
+	update_alpha();
 }
 
 void CExactInferenceMethod::check_members()
 {
-	if (!m_labels)
-		SG_ERROR("No labels set\n")
+	REQUIRE(m_model->get_model_type()==LT_GAUSSIAN,
+		"Exact inference method can only use Gaussian likelihood function\n")
+	REQUIRE(m_features, "Trainig features must be attached\n")
+	REQUIRE(m_features->get_num_vectors(),
+		"Number of training features must be greater than zero\n")
+	REQUIRE(m_labels, "Labels must be attached\n")
+	REQUIRE(m_labels->get_label_type()==LT_REGRESSION,
+		"Labels must be type of CRegressionLabels\n")
+	REQUIRE(m_labels->get_num_labels(),
+			"Number of labels must be greater than zero\n")
+	REQUIRE(m_labels->get_num_labels()==m_features->get_num_vectors(),
+		"Number of training vectors must match number of labels\n")
+	REQUIRE(m_kernel, "Kernel must be assigned\n")
+	REQUIRE(m_mean, "Mean function must be assigned\n")
 
-	if (m_labels->get_label_type() != LT_REGRESSION)
-		SG_ERROR("Expected RegressionLabels\n")
+	CFeatures* feat=m_features;
 
-	if (!m_features)
-		SG_ERROR("No features set!\n")
-
-	if (m_labels->get_num_labels() != m_features->get_num_vectors())
-		SG_ERROR("Number of training vectors does not match number of labels\n")
-
-	if(m_features->get_feature_class() == C_COMBINED)
-	{
-		CDotFeatures* feat =
-				(CDotFeatures*)((CCombinedFeatures*)m_features)->
-				get_first_feature_obj();
-
-		if (!feat->has_property(FP_DOT))
-			SG_ERROR("Specified features are not of type CFeatures\n")
-
-		if (feat->get_feature_class() != C_DENSE)
-			SG_ERROR("Expected Simple Features\n")
-
-		if (feat->get_feature_type() != F_DREAL)
-			SG_ERROR("Expected Real Features\n")
-
-		SG_UNREF(feat);
-	}
-
+	if (m_features->get_feature_class()==C_COMBINED)
+		feat=((CCombinedFeatures*)m_features)->get_first_feature_obj();
 	else
-	{
-		if (!m_features->has_property(FP_DOT))
-			SG_ERROR("Specified features are not of type CFeatures\n")
+		SG_REF(m_features);
 
-		if (m_features->get_feature_class() != C_DENSE)
-			SG_ERROR("Expected Simple Features\n")
+	REQUIRE(feat->has_property(FP_DOT),
+			"Training features must be type of CFeatures\n")
+	REQUIRE(feat->get_feature_class()==C_DENSE, "Training features must be dense\n")
+	REQUIRE(feat->get_feature_type()==F_DREAL, "Training features must be real\n")
 
-		if (m_features->get_feature_type() != F_DREAL)
-			SG_ERROR("Expected Real Features\n")
-	}
-
-	if (!m_kernel)
-		SG_ERROR("No kernel assigned!\n")
-
-	if (!m_mean)
-		SG_ERROR("No mean function assigned!\n")
-
-	if (m_model->get_model_type() != LT_GAUSSIAN)
-	{
-		SG_ERROR("Exact Inference Method can only use " \
-				"Gaussian Likelihood Function.\n");
-	}
+	SG_UNREF(feat);
 }
 
 CMap<TParameter*, SGVector<float64_t> > CExactInferenceMethod::
 get_marginal_likelihood_derivatives(CMap<TParameter*,
 		CSGObject*>& para_dict)
 {
-	check_members();
-
 	if (update_parameter_hash())
 		update_all();
 
@@ -256,8 +219,6 @@ SGVector<float64_t> CExactInferenceMethod::get_diagonal_vector()
 	if (update_parameter_hash())
 		update_all();
 
-	check_members();
-
 	// get the sigma variable from the Gaussian likelihood model
 	CGaussianLikelihood* lik=CGaussianLikelihood::obtain_from_generic(m_model);
 	float64_t sigma=lik->get_sigma();
@@ -324,8 +285,6 @@ void CExactInferenceMethod::update_train_kernel()
 
 void CExactInferenceMethod::update_chol()
 {
-	check_members();
-
 	// get the sigma variable from the Gaussian likelihood model
 	CGaussianLikelihood* lik=CGaussianLikelihood::obtain_from_generic(m_model);
 	float64_t sigma=lik->get_sigma();
