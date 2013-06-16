@@ -45,7 +45,7 @@ char SGIO::directory_name[FBUFSIZE];
 
 SGIO::SGIO()
 : target(stdout), last_progress_time(0), progress_start_time(0),
-	last_progress(1), show_progress(false), show_file_and_line(false),
+	last_progress(1), show_progress(false), show_file_and_line(true),
 	syntax_highlight(true), loglevel(MSG_WARN), refcount(0)
 {
 }
@@ -74,7 +74,8 @@ void SGIO::message(EMessageType prio, const char* file,
 
 		if (show_file_and_line && line>=0)
 		{
-			snprintf(s, sizeof(str)-len, "In file %s line %d: ", file, line);
+//			snprintf(s, sizeof(str)-len, "%s:%d: ", file, line);
+			snprintf(s, sizeof(str)-len, "%s: ", __PRETTY_FUNCTION__);
 			len=strlen(str);
 			s=str+len;
 		}
