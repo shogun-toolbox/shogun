@@ -53,14 +53,12 @@ class CDualLibQPBMSOSVM : public CLinearStructuredOutputMachine
 		/** constructor
 		 *
 		 * @param model 		Structured Model
-		 * @param loss			Loss function
 		 * @param labs			Structured labels
 		 * @param _lambda		Regularization constant
 		 * @param W				initial solution of weight vector
 		 */
 		CDualLibQPBMSOSVM(
 				CStructuredModel* 		model,
-				CLossFunction* 			loss,
 				CStructuredLabels* 		labs,
 				float64_t 				_lambda,
 				SGVector< float64_t > 	W=0);

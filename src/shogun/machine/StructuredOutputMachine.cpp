@@ -13,19 +13,17 @@
 using namespace shogun;
 
 CStructuredOutputMachine::CStructuredOutputMachine()
-: CMachine(), m_model(NULL), m_loss(NULL)
+: CMachine(), m_model(NULL)
 {
 	register_parameters();
 }
 
 CStructuredOutputMachine::CStructuredOutputMachine(
 		CStructuredModel*  model,
-		CLossFunction*     loss,
 		CStructuredLabels* labs)
-: CMachine(), m_model(model), m_loss(loss)
+: CMachine(), m_model(model)
 {
 	SG_REF(m_model);
-	SG_REF(m_loss);
 	set_labels(labs);
 	register_parameters();
 }
@@ -33,7 +31,6 @@ CStructuredOutputMachine::CStructuredOutputMachine(
 CStructuredOutputMachine::~CStructuredOutputMachine()
 {
 	SG_UNREF(m_model);
-	SG_UNREF(m_loss);
 }
 
 void CStructuredOutputMachine::set_model(CStructuredModel* model)
@@ -49,23 +46,9 @@ CStructuredModel* CStructuredOutputMachine::get_model() const
 	return m_model;
 }
 
-void CStructuredOutputMachine::set_loss(CLossFunction* loss)
-{
-	SG_UNREF(m_loss);
-	SG_REF(loss);
-	m_loss = loss;
-}
-
-CLossFunction* CStructuredOutputMachine::get_loss() const
-{
-	SG_REF(m_loss);
-	return m_loss;
-}
-
 void CStructuredOutputMachine::register_parameters()
 {
 	SG_ADD((CSGObject**)&m_model, "m_model", "Structured model", MS_NOT_AVAILABLE);
-	SG_ADD((CSGObject**)&m_loss, "m_loss", "Structured loss", MS_NOT_AVAILABLE);
 }
 
 void CStructuredOutputMachine::set_labels(CLabels* lab)

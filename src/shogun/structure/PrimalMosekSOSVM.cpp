@@ -19,7 +19,7 @@ using namespace shogun;
 
 CPrimalMosekSOSVM::CPrimalMosekSOSVM()
 : CLinearStructuredOutputMachine(),
-	po_value(0.0)
+	m_surrogate_loss(NULL), po_value(0.0) 
 {
 	init();
 }
@@ -28,9 +28,10 @@ CPrimalMosekSOSVM::CPrimalMosekSOSVM(
 		CStructuredModel*  model,
 		CLossFunction*     loss,
 		CStructuredLabels* labs)
-: CLinearStructuredOutputMachine(model, loss, labs),
-	po_value(0.0)
+: CLinearStructuredOutputMachine(model, labs),
+	m_surrogate_loss(loss), po_value(0.0) 
 {
+	SG_REF(m_surrogate_loss);
 	init();
 }
 
@@ -39,12 +40,14 @@ void CPrimalMosekSOSVM::init()
 	SG_ADD(&m_slacks, "m_slacks", "Slacks vector", MS_NOT_AVAILABLE);
 	//FIXME model selection available for SO machines
 	SG_ADD(&m_regularization, "m_regularization", "Regularization constant", MS_NOT_AVAILABLE);
+	SG_ADD((CSGObject**)&m_surrogate_loss, "m_surrogate_loss", "Surrogate loss", MS_NOT_AVAILABLE);
 
 	m_regularization = 1.0;
 }
 
 CPrimalMosekSOSVM::~CPrimalMosekSOSVM()
 {
+	SG_UNREF(m_surrogate_loss);
 }
 
 bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
@@ -143,7 +146,7 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 			result = m_model->argmax(m_w, i);
 
 			// Compute the loss associated with the prediction
-			slack = m_loss->loss( compute_loss_arg(result) );
+			slack = m_surrogate_loss->loss( compute_loss_arg(result) );
 			cur_list = (CList*) results->get_element(i);
 
 			// Update the list of constraints
@@ -157,7 +160,7 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 				while ( cur_res != NULL )
 				{
 					max_slack = CMath::max(max_slack,
-							m_loss->loss( compute_loss_arg(cur_res) ));
+							m_surrogate_loss->loss( compute_loss_arg(cur_res) ));
 
 					SG_UNREF(cur_res);
 					cur_res = (CResultSet*) cur_list->get_next_element();
@@ -275,6 +278,19 @@ EMachineType CPrimalMosekSOSVM::get_classifier_type()
 void CPrimalMosekSOSVM::set_regularization(float64_t C)
 {
 	m_regularization = C;
+}
+
+void CPrimalMosekSOSVM::set_surrogate_loss(CLossFunction* loss)
+{
+	SG_UNREF(m_surrogate_loss);
+	SG_REF(loss);
+	m_surrogate_loss = loss;
+}
+
+CLossFunction* CPrimalMosekSOSVM::get_surrogate_loss() const
+{
+	SG_REF(m_surrogate_loss);
+	return m_surrogate_loss;
 }
 
 #endif /* USE_MOSEK */
