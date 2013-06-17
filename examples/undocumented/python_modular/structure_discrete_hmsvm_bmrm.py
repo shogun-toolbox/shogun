@@ -10,7 +10,6 @@ parameter_list=[[data_dict]]
 
 def structure_discrete_hmsvm_bmrm (m_data_dict=data_dict):
 	from shogun.Features   import RealMatrixFeatures
-	from shogun.Loss       import HingeLoss
 	from shogun.Structure  import SequenceLabels, HMSVMModel, Sequence, TwoStateModel, SMT_TWO_STATE
 	from shogun.Evaluation import StructuredAccuracy
 	from shogun.Structure  import DualLibQPBMSOSVM
@@ -23,11 +22,10 @@ def structure_discrete_hmsvm_bmrm (m_data_dict=data_dict):
 	labels = SequenceLabels(labels_array, 250, 500, 2)
 	features = RealMatrixFeatures(m_data_dict['signal'].astype(float), 250, 500)
 
-	loss = HingeLoss()
 	num_obs = 4	# given by the data file used
 	model = HMSVMModel(features, labels, SMT_TWO_STATE, num_obs)
 
-	sosvm = DualLibQPBMSOSVM(model, loss, labels, 5000.0)
+	sosvm = DualLibQPBMSOSVM(model, labels, 5000.0)
 	sosvm.train()
 	#print sosvm.get_w()
 

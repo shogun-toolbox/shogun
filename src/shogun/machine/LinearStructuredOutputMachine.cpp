@@ -21,9 +21,8 @@ CLinearStructuredOutputMachine::CLinearStructuredOutputMachine()
 
 CLinearStructuredOutputMachine::CLinearStructuredOutputMachine(
 		CStructuredModel*  model, 
-		CLossFunction*     loss, 
 		CStructuredLabels* labs)
-: CStructuredOutputMachine(model, loss, labs)
+: CStructuredOutputMachine(model, labs)
 {
 	register_parameters();
 }

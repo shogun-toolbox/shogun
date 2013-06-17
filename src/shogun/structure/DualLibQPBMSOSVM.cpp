@@ -23,11 +23,10 @@ CDualLibQPBMSOSVM::CDualLibQPBMSOSVM()
 
 CDualLibQPBMSOSVM::CDualLibQPBMSOSVM(
 		CStructuredModel*   	model,
-		CLossFunction*      	loss,
 		CStructuredLabels*  	labs,
 		float64_t           	_lambda,
 		SGVector< float64_t >	W)
- : CLinearStructuredOutputMachine(model, loss, labs)
+ : CLinearStructuredOutputMachine(model, labs)
 {
 	set_TolRel(0.001);
 	set_TolAbs(0.0);

@@ -14,7 +14,6 @@
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/labels/StructuredLabels.h>
 #include <shogun/lib/common.h>
-#include <shogun/loss/HingeLoss.h>
 #include <shogun/machine/LinearMulticlassMachine.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/multiclass/MulticlassOneVsRestStrategy.h>
@@ -200,14 +199,10 @@ int main(int argc, char * argv[])
 	// Create structured model
 	CMulticlassModel* model = new CMulticlassModel(features, labels);
 
-	// Create loss function
-	CHingeLoss* loss = new CHingeLoss();
-
 	// Create SO-SVM
 	CDualLibQPBMSOSVM* sosvm =
 		new CDualLibQPBMSOSVM(
 				model,
-				loss,
 				labels,
 				lambda);
 	SG_REF(sosvm);

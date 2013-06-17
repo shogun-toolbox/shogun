@@ -24,7 +24,7 @@ CCCSOSVM::CCCSOSVM()
 }
 
 CCCSOSVM::CCCSOSVM(CStructuredModel* model, SGVector<float64_t> w)
-	: CLinearStructuredOutputMachine(model, NULL, model->get_labels())
+	: CLinearStructuredOutputMachine(model, model->get_labels())
 {
 	init();
 

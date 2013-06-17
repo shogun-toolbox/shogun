@@ -111,7 +111,7 @@ int main(int argc, char ** argv)
 
 	// Create SO-SVM
 	CPrimalMosekSOSVM* sosvm = new CPrimalMosekSOSVM(model, loss, labels);
-	CDualLibQPBMSOSVM* bundle = new CDualLibQPBMSOSVM(model, loss, labels, 1000);
+	CDualLibQPBMSOSVM* bundle = new CDualLibQPBMSOSVM(model, labels, 1000);
 	bundle->set_verbose(false);
 	SG_REF(sosvm);
 	SG_REF(bundle);
