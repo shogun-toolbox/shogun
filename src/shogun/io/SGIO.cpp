@@ -60,7 +60,7 @@ SGIO::SGIO(const SGIO& orig)
 {
 }
 
-void SGIO::message(EMessageType prio, const char* file,
+void SGIO::message(EMessageType prio, const char* function, const char* file,
 		int32_t line, const char *fmt, ... ) const
 {
 	const char* msg_intro=get_msg_intro(prio);
@@ -77,7 +77,7 @@ void SGIO::message(EMessageType prio, const char* file,
 			case MSG_NONE:
 				break;
 			case MSG_FUNCTION:
-				snprintf(s, sizeof(str)-len, "%s: ", __PRETTY_FUNCTION__);
+				snprintf(s, sizeof(str)-len, "%s: ", function);
 				len=strlen(str);
 				s=str+len;
 				break;
@@ -179,12 +179,12 @@ void SGIO::progress(
 	if (estimate>120)
 	{
 		snprintf(str, sizeof(str), "%%s %%%d.%df%%%%    %%1.1f minutes remaining    %%1.1f minutes total    \r",decimals+3, decimals);
-		message(MSG_MESSAGEONLY, "", -1, str, prefix, v, estimate/60, total_estimate/60);
+		message(MSG_MESSAGEONLY, "", "", -1, str, prefix, v, estimate/60, total_estimate/60);
 	}
 	else
 	{
 		snprintf(str, sizeof(str), "%%s %%%d.%df%%%%    %%1.1f seconds remaining    %%1.1f seconds total    \r",decimals+3, decimals);
-		message(MSG_MESSAGEONLY, "", -1, str, prefix, v, estimate, total_estimate);
+		message(MSG_MESSAGEONLY, "", "", -1, str, prefix, v, estimate, total_estimate);
 	}
 
     fflush(target);
@@ -230,12 +230,12 @@ void SGIO::absolute_progress(
 	if (estimate>120)
 	{
 		snprintf(str, sizeof(str), "%%s %%%d.%df    %%1.1f minutes remaining    %%1.1f minutes total    \r",decimals+3, decimals);
-		message(MSG_MESSAGEONLY, "", -1, str, prefix, current_val, estimate/60, total_estimate/60);
+		message(MSG_MESSAGEONLY, "", "", -1, str, prefix, current_val, estimate/60, total_estimate/60);
 	}
 	else
 	{
 		snprintf(str, sizeof(str), "%%s %%%d.%df    %%1.1f seconds remaining    %%1.1f seconds total    \r",decimals+3, decimals);
-		message(MSG_MESSAGEONLY, "", -1, str, prefix, current_val, estimate, total_estimate);
+		message(MSG_MESSAGEONLY, "", "", -1, str, prefix, current_val, estimate, total_estimate);
 	}
 
     fflush(target);
@@ -246,7 +246,7 @@ void SGIO::done()
 	if (!show_progress)
 		return;
 
-	message(MSG_INFO, "", -1, "done.\n");
+	message(MSG_INFO, "", "", -1, "done.\n");
 }
 
 char* SGIO::skip_spaces(char* str)
