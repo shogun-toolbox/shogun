@@ -45,7 +45,7 @@ char SGIO::directory_name[FBUFSIZE];
 
 SGIO::SGIO()
 : target(stdout), last_progress_time(0), progress_start_time(0),
-	last_progress(1), show_progress(false), show_file_and_line(false),
+	last_progress(1), show_progress(false), location_info(MSG_FUNCTION),
 	syntax_highlight(true), loglevel(MSG_WARN), refcount(0)
 {
 }
@@ -54,7 +54,7 @@ SGIO::SGIO(const SGIO& orig)
 : target(orig.get_target()), last_progress_time(0),
 	progress_start_time(0), last_progress(1),
 	show_progress(orig.get_show_progress()),
-	show_file_and_line(orig.get_show_file_and_line()),
+	location_info(orig.get_location_info()),
 	syntax_highlight(orig.get_syntax_highlight()),
 	loglevel(orig.get_loglevel()), refcount(0)
 {
@@ -72,11 +72,20 @@ void SGIO::message(EMessageType prio, const char* file,
 		int len=strlen(msg_intro);
 		char* s=str+len;
 
-		if (show_file_and_line && line>=0)
+		switch (location_info) 
 		{
-			snprintf(s, sizeof(str)-len, "In file %s line %d: ", file, line);
-			len=strlen(str);
-			s=str+len;
+			case MSG_NONE:
+				break;
+			case MSG_FUNCTION:
+				snprintf(s, sizeof(str)-len, "%s: ", __PRETTY_FUNCTION__);
+				len=strlen(str);
+				s=str+len;
+				break;
+			case MSG_LINE_AND_FILE:
+				snprintf(s, sizeof(str)-len, "In file %s line %d: ", file, line);
+				len=strlen(str);
+				s=str+len;
+				break;
 		}
 
 		va_list list;

@@ -54,6 +54,12 @@ enum EMessageType
 	MSG_MESSAGEONLY=9
 };
 
+enum EMessageLocation
+{
+	MSG_NONE=0,
+	MSG_FUNCTION=1,
+	MSG_LINE_AND_FILE=2
+};
 
 #define NUM_LOG_LEVELS 10
 #define FBUFSIZE 4096
@@ -254,13 +260,11 @@ class SGIO
 			return show_progress;
 		}
 
-		/** get show file and line
-		 *
-		 * @return if file and line should prefix messages
+		/** show location where printing occurs
 		 */
-		inline bool get_show_file_and_line() const
+		inline EMessageLocation get_location_info() const
 		{
-			return show_file_and_line;
+			return location_info;
 		}
 
 		/** get syntax highlight
@@ -393,22 +397,17 @@ class SGIO
 				sg_io->disable_progress();
 		}
 
-		/** enable displaying of file and line when printing messages*/
-		inline void enable_file_and_line()
+		/** enable displaying of file and line when printing messages etc
+		 *
+		 * @param location location info (none, function, ...)
+		 *
+		 */
+		inline void set_location_info(EMessageLocation location)
 		{
-			show_file_and_line=true;
+			location_info = location;
 
 			if (sg_io!=this)
-				sg_io->enable_file_and_line();
-		}
-
-		/** disable displaying of file and line when printing messages*/
-		inline void disable_file_and_line()
-		{
-			show_file_and_line=false;
-
-			if (sg_io!=this)
-				sg_io->disable_file_and_line();
+				sg_io->set_location_info(location);
 		}
 
 		/** enable syntax highlighting */
@@ -582,8 +581,8 @@ class SGIO
 		/** if progress bar shall be shown */
 		bool show_progress;
 		/** if each print function should append filename and linenumber of
-		 * where the print occurs */
-		bool show_file_and_line;
+		 * where the print occurs etc */
+		EMessageLocation location_info;
 		/** whether syntax highlighting is enabled */
 		bool syntax_highlight;
 
