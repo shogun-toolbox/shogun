@@ -10,7 +10,6 @@
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/labels/RegressionLabels.h>
 #ifdef HAVE_EIGEN3
-#include <shogun/labels/RegressionLabels.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/regression/GaussianProcessRegression.h>
@@ -24,6 +23,7 @@
 
 using namespace shogun;
 
+#ifdef HAVE_EIGEN3
 TEST(SGObject,equals_same)
 {
 	CGaussianKernel* kernel=new CGaussianKernel();
@@ -47,6 +47,7 @@ TEST(SGObject,equals_NULL_parameter)
 	SG_UNREF(mmd);
 	SG_UNREF(mmd2);
 }
+#endif //HAVE_EIGEN3
 
 TEST(SGObject,equals_null)
 {
@@ -79,6 +80,7 @@ TEST(SGObject,equals_DynamicObjectArray_equal)
 	SG_UNREF(array2);
 }
 
+#ifdef HAVE_EIGEN3
 TEST(SGObject,equals_DynamicObjectArray_equal_after_resize)
 {
 	CDynamicObjectArray* array1=new CDynamicObjectArray();
@@ -109,7 +111,6 @@ TEST(SGObject,equals_DynamicObjectArray_different)
 	SG_UNREF(array2);
 }
 
-#ifdef HAVE_EIGEN3
 TEST(SGObject,equals_complex_equal)
 {
 	/* create some easy regression data: 1d noisy sine wave */
