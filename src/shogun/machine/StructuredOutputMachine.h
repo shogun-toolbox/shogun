@@ -14,13 +14,11 @@
 #include <shogun/labels/StructuredLabels.h>
 #include <shogun/lib/StructuredData.h>
 #include <shogun/machine/Machine.h>
-#include <shogun/loss/LossFunction.h>
 #include <shogun/structure/StructuredModel.h>
 
 namespace shogun
 {
 class CStructuredModel;
-class CLossFunction;
 
 /** TODO doc */
 class CStructuredOutputMachine : public CMachine
@@ -35,10 +33,9 @@ class CStructuredOutputMachine : public CMachine
 		/** standard constructor
 		 *
 		 * @param model structured model with application specific functions
-		 * @param loss loss function
 		 * @param labs structured labels
 		 */
-		CStructuredOutputMachine(CStructuredModel* model, CLossFunction* loss, CStructuredLabels* labs);
+		CStructuredOutputMachine(CStructuredModel* model, CStructuredLabels* labs);
 
 		/** destructor */
 		virtual ~CStructuredOutputMachine();
@@ -54,18 +51,6 @@ class CStructuredOutputMachine : public CMachine
 		 * @return structured model
 		 */
 		CStructuredModel* get_model() const;
-
-		/** set loss function
-		 *
-		 * @param loss loss function to set
-		 */
-		void set_loss(CLossFunction* loss);
-
-		/** get loss function
-		 *
-		 * @return loss function
-		 */
-		CLossFunction* get_loss() const;
 
 		/** @return object name */
 		virtual const char* get_name() const
@@ -86,9 +71,6 @@ class CStructuredOutputMachine : public CMachine
 	protected:
 		/** the model that contains the application dependent modules */
 		CStructuredModel* m_model;
-
-		/** the general loss function */
-		CLossFunction* m_loss;
 
 
 }; /* class CStructuredOutputMachine */

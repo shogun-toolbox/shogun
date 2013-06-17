@@ -4,13 +4,11 @@ parameter_list=[[100, 250, 10, 2]]
 
 def structure_plif_hmsvm_bmrm (num_examples, example_length, num_features, num_noise_features):
 	from shogun.Features   import RealMatrixFeatures
-	from shogun.Loss       import HingeLoss
 	from shogun.Structure  import TwoStateModel, DualLibQPBMSOSVM
 	from shogun.Evaluation import StructuredAccuracy
 
 	model = TwoStateModel.simulate_data(num_examples, example_length, num_features, num_noise_features)
-	loss = HingeLoss()
-	sosvm = DualLibQPBMSOSVM(model, loss, model.get_labels(), 5000.0)
+	sosvm = DualLibQPBMSOSVM(model, model.get_labels(), 5000.0)
 
 	sosvm.train()
 	#print sosvm.get_w()
