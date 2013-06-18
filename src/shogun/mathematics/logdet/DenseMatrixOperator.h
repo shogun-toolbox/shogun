@@ -18,7 +18,12 @@ namespace shogun
 template<class T> class SGVector;
 template<class T> class SGMatrix;
 
-/** @brief Class that represents a dense-matrix linear operator */
+/** @brief Class that represents a dense-matrix linear operator.
+ * It computes matrix-vector product \f$Ax\f$ in its apply method,
+ * \f$A\in\mathbb{C}^{m\times n},A:\mathbb{C}^{n}\rightarrow \mathbb{C}^{m}\f$
+ * being the matrix operator and \f$x\in\mathbb{C}^{n}\f$ being the vector.
+ * The result is a vector \f$y\in\mathbb{C}^{m}\f$.
+ */
 template<class T> class CDenseMatrixOperator : public CLinearOperator<T>
 {
 public:
