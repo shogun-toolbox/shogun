@@ -3279,10 +3279,11 @@ check_json()
 {
 	if test "$_json" = yes || test "$_json" = auto
 	then
-		_cflags="`get_cflags '' libjson json json-c`"
-		_lflags="`get_lflags '-ljson' libjson json json-c`"
+		_cflags="`get_cflags '' json-c`"
+		_lflags="`get_lflags '' json-c`"
 		cat > $TMPC << EOF
 #include <json.h>
+#include <json_c_version.h>
 int main(void)
 {
 	json_object* x = json_object_new_object();
@@ -3300,7 +3301,7 @@ EOF
 			POSTLINKFLAGS="$POSTLINKFLAGS $_lflags"
 			echores "yes"
 		else
-			echores "no"
+			echores "no (json-c >= 0.11)"
 		fi
 	fi
 }
