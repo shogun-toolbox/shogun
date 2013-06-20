@@ -69,7 +69,7 @@ enum EDistanceType
  * Currently distance inherited from the CDistance class should be
  * symmetric.
  *
- * The simpliest example of a distance function is the euclidean
+ * The simplest example of a distance function is the Euclidean
  * distance: @see CEuclideanDistance
  *
  * In the means of Shogun toolbox the distance function is defined
@@ -98,41 +98,7 @@ class CDistance : public CSGObject
 		  * @param idx_b feature vector b at idx_b
 		  * @return distance value
 		 */
-		virtual float64_t distance(int32_t idx_a, int32_t idx_b)
-		{
-			if (idx_a < 0 || idx_b <0)
-				return 0;
-
-			ASSERT(lhs)
-			ASSERT(rhs)
-
-			if (lhs==rhs)
-			{
-				int32_t num_vectors = lhs->get_num_vectors();
-
-				if (idx_a>=num_vectors)
-					idx_a=2*num_vectors-1-idx_a;
-
-				if (idx_b>=num_vectors)
-					idx_b=2*num_vectors-1-idx_b;
-			}
-
-			ASSERT(idx_a<lhs->get_num_vectors())
-			ASSERT(idx_b<rhs->get_num_vectors())
-
-			if (precompute_matrix && (precomputed_matrix==NULL) && (lhs==rhs))
-				do_precompute_matrix() ;
-
-			if (precompute_matrix && (precomputed_matrix!=NULL))
-			{
-				if (idx_a>=idx_b)
-					return precomputed_matrix[idx_a*(idx_a+1)/2+idx_b] ;
-				else
-					return precomputed_matrix[idx_b*(idx_b+1)/2+idx_a] ;
-			}
-
-			return compute(idx_a, idx_b);
-		}
+		virtual float64_t distance(int32_t idx_a, int32_t idx_b);
 
 		/** get distance function for lhs feature vector a
 		 *  and rhs feature vector b. The computation of the
@@ -152,7 +118,6 @@ class CDistance : public CSGObject
 			return distance(idx_a, idx_b);
 		}
 
-			
 		/** get distance matrix
 		 *
 		 * @return computed distance matrix (needs to be cleaned up)

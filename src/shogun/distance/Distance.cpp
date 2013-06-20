@@ -184,6 +184,44 @@ CFeatures* CDistance::replace_lhs(CFeatures* l)
 	return tmp;
 }
 
+float64_t CDistance::distance(int32_t idx_a, int32_t idx_b)
+{
+	REQUIRE(idx_a >= 0 && idx_b >= 0, "In CDistance::distance(int32_t,int32_t), idx_a and "
+			"idx_b must be positive, %d and %d given instead\n", idx_a, idx_b)
+
+	ASSERT(lhs)
+	ASSERT(rhs)
+
+	if (lhs==rhs)
+	{
+		int32_t num_vectors = lhs->get_num_vectors();
+
+		if (idx_a>=num_vectors)
+			idx_a=2*num_vectors-1-idx_a;
+
+		if (idx_b>=num_vectors)
+			idx_b=2*num_vectors-1-idx_b;
+	}
+
+	REQUIRE(idx_a < lhs->get_num_vectors() && idx_b < rhs->get_num_vectors(),
+			"In CDistance::distance(int32_t,int32_t), idx_a and idx_b must be less than "
+			"the number of vectors, but %d >= %d or %d >= %d\n",
+			idx_a, lhs->get_num_vectors(), idx_b, rhs->get_num_vectors())
+
+	if (precompute_matrix && (precomputed_matrix==NULL) && (lhs==rhs))
+		do_precompute_matrix() ;
+
+	if (precompute_matrix && (precomputed_matrix!=NULL))
+	{
+		if (idx_a>=idx_b)
+			return precomputed_matrix[idx_a*(idx_a+1)/2+idx_b] ;
+		else
+			return precomputed_matrix[idx_b*(idx_b+1)/2+idx_a] ;
+	}
+
+	return compute(idx_a, idx_b);
+}
+
 void CDistance::do_precompute_matrix()
 {
 	int32_t num_left=lhs->get_num_vectors();
