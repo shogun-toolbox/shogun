@@ -302,29 +302,7 @@ class CCustomDistance: public CDistance
 		 * @return if setting was successful
 		 */
 		template <class T>
-		bool set_full_distance_matrix_from_full_generic(
-			const T* dm, int32_t rows, int32_t cols)
-		{
-			cleanup_custom();
-			SG_DEBUG("using custom distance of size %dx%d\n", rows,cols)
-
-			dmatrix= SG_MALLOC(float32_t, rows*cols);
-
-			upper_diagonal=false;
-			num_rows=rows;
-			num_cols=cols;
-
-			for (int32_t row=0; row<num_rows; row++)
-			{
-				for (int32_t col=0; col<num_cols; col++)
-				{
-					dmatrix[row * num_cols + col]=dm[col*num_rows+row];
-				}
-			}
-
-			dummy_init(rows, cols);
-			return true;
-		}
+		bool set_full_distance_matrix_from_full_generic(const T* dm, int32_t rows, int32_t cols);
 
 		/** get number of vectors of lhs features
 		 *
@@ -360,29 +338,7 @@ class CCustomDistance: public CDistance
 		 * @param col col
 		 * @return computed distance function
 		 */
-		virtual float64_t compute(int32_t row, int32_t col)
-		{
-			ASSERT(dmatrix)
-
-			if (upper_diagonal)
-			{
-				if (row <= col)
-				{
-					int64_t r=row;
-					return dmatrix[r*num_cols - r*(r+1)/2 + col];
-				}
-				else
-				{
-					int64_t c=col;
-					return dmatrix[c*num_cols - c*(c+1)/2 + row];
-				}
-			}
-			else
-			{
-				int64_t r=row;
-				return dmatrix[r*num_cols+col];
-			}
-		}
+		virtual float64_t compute(int32_t row, int32_t col);
 
 	private:
 		void init();
