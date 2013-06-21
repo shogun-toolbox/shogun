@@ -111,6 +111,7 @@ TARGETS = basic_minimal \
   		  base_migration_new_buggy \
   		  regression_libsvr \
   		  classifier_multiclass_prob_heuristics \
+		  streaming_onlineliblinear \
   		  
 
 all: $(TARGETS)
