@@ -20,14 +20,16 @@
 #include <shogun/lib/computation/job/ScalarResult.h>
 #include <shogun/lib/computation/job/StoreScalarAggregator.h>
 #include <shogun/lib/computation/job/DenseExactLogJob.h>
+#include <shogun/lib/computation/engine/SerialComputationEngine.h>
 #include <shogun/mathematics/Statistics.h>
 #include <gtest/gtest.h>
 
 using namespace Eigen;
 using namespace shogun;
 
-TEST(DenseExactLogJob, log_det)
+TEST(SerialComputationEngine, dense_log_det)
 {
+	CSerialComputationEngine e;
 	const index_t size=2;
 
 	// create the matrix whose log-det has to be found
@@ -57,9 +59,13 @@ TEST(DenseExactLogJob, log_det)
 		CDenseExactLogJob *job=new CDenseExactLogJob((CJobResultAggregator*)agg,
 			log_op, s);
 		SG_REF(job);
-		job->compute();
+		// submit the job to the computation engine
+		e.submit_job(job);
 		SG_UNREF(job);
 	}
+	
+	// wait for all the jobs to be computed in the computation engine
+	e.wait_for_all();
 	// its really important we call finalize before getting the final result
 	agg->finalize();
 
