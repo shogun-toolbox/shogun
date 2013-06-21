@@ -54,11 +54,11 @@ TEST(DenseExactLogJob, log_det)
 		SGVector<float64_t> s(size);
 		s.set_const(0.0);
 		s[i]=1.0;
-		CDenseExactLogJob *job=new CDenseExactLogJob((CJobResultAggregator*)agg);
-		job->set_operator(log_op);
-		job->set_vector(s);
+		CDenseExactLogJob *job=new CDenseExactLogJob((CJobResultAggregator*)agg,
+			log_op, s);
+		SG_REF(job);
 		job->compute();
-		delete job;
+		SG_UNREF(job);
 	}
 	// its really important we call finalize before getting the final result
 	agg->finalize();
@@ -66,7 +66,7 @@ TEST(DenseExactLogJob, log_det)
 	CScalarResult<float64_t>* r=dynamic_cast<CScalarResult<float64_t>*>
 		(agg->get_final_result());
 	
-	EXPECT_NEAR(r->get_result(), CStatistics::log_det(mat), 1E-16);
+	EXPECT_NEAR(r->get_result(), CStatistics::log_det(mat), 1E-15);
 
 	SG_UNREF(log_op);
 	SG_UNREF(agg);

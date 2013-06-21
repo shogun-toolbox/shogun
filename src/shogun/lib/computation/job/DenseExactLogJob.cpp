@@ -28,9 +28,11 @@ CDenseExactLogJob::CDenseExactLogJob()
 	SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 }
 
-CDenseExactLogJob::CDenseExactLogJob(CJobResultAggregator* aggregator)
-	: CIndependentJob(aggregator), m_log_operator(NULL)
+CDenseExactLogJob::CDenseExactLogJob(CJobResultAggregator* aggregator,
+	CDenseMatrixOperator<float64_t>* log_operator, SGVector<float64_t> vector)
+	: CIndependentJob(aggregator), m_log_operator(log_operator), m_vector(vector)
 {
+	SG_REF(m_log_operator);
 	SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 }
 
@@ -64,28 +66,9 @@ SGVector<float64_t> CDenseExactLogJob::get_vector() const
 	return m_vector;
 }
 
-void CDenseExactLogJob::set_vector(SGVector<float64_t> vec)
-{
-	m_vector=vec;
-}
-
 CDenseMatrixOperator<float64_t>* CDenseExactLogJob::get_operator() const
 {
 	return m_log_operator;
-}
-
-void CDenseExactLogJob::set_operator(CDenseMatrixOperator<float64_t>* op)
-{
-	// DEBUG COMMENT: SG_REF should increase here!!
-	// Its important that we first increase the refcount and then
-	// decrease it. Param might be same, for example, and unref-ing it
-	// first may accidentally delete it!
-	// The following is surely a weird way, but works!
-	CDenseMatrixOperator<float64_t>* old_op=m_log_operator;
-	SG_UNREF(m_log_operator);
-	m_log_operator=op;
-	SG_REF(m_log_operator);
-	SG_UNREF(old_op);
 }
 
 }
