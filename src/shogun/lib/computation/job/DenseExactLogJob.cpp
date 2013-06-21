@@ -30,7 +30,9 @@ CDenseExactLogJob::CDenseExactLogJob()
 
 CDenseExactLogJob::CDenseExactLogJob(CJobResultAggregator* aggregator,
 	CDenseMatrixOperator<float64_t>* log_operator, SGVector<float64_t> vector)
-	: CIndependentJob(aggregator), m_log_operator(log_operator), m_vector(vector)
+	: CIndependentJob(aggregator),
+	  m_log_operator(log_operator),
+	  m_vector(vector)
 {
 	SG_REF(m_log_operator);
 	SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
