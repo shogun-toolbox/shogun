@@ -41,7 +41,7 @@ public:
 	}
 	
 	/** abstract method that submits the jobs to the engine
-	 * @param the job to be computed
+	 * @param job the job to be computed
 	 */
 	virtual void submit_job(CIndependentJob* job) = 0;
 

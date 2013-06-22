@@ -25,14 +25,16 @@ namespace shogun
 class CIndependentJob : public CSGObject
 {
 public:
-	/** default constructor, no args */
+	/** default constructor*/
 	CIndependentJob()
 	: CSGObject(), m_aggregator(NULL)
 	{
 		SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 	}
 
-	/** default constructor, one arg */
+	/** constructor
+	 * @param aggregator the job result aggregator for the current job
+	 */
 	CIndependentJob(CJobResultAggregator* aggregator)
 	: CSGObject(), m_aggregator(aggregator)
 	{

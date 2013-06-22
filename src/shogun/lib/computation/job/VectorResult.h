@@ -23,14 +23,16 @@ template<class T> class SGVector;
 template<class T> class CVectorResult : public CJobResult
 {
 public:
-	/** default constructor, no args */
+	/** default constructor */
 	CVectorResult()
 	: CJobResult()
 	{
 		SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 	}
 
-	/** default constructor, one args */
+	/** constructor
+	 * @param result the vector result
+	 */
 	CVectorResult(SGVector<T> result)
 	: CJobResult(), m_result(result)
 	{
