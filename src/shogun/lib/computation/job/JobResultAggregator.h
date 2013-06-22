@@ -40,7 +40,7 @@ public:
 
 	/** abstract method that submits the result of an independent job, and
 	 * computes the aggregation with the previously submitted result
-	 * @param the result of an independent job
+	 * @param result the result of an independent job
 	 */
 	virtual void submit_result(CJobResult* result) = 0;
 

@@ -27,10 +27,12 @@ template<class T> class SGMatrix;
 template<class T> class CDenseMatrixOperator : public CLinearOperator<T>
 {
 public:
-	/** default constructor, no args */
+	/** default constructor */
 	CDenseMatrixOperator();
 
-	/** default constructor, one args */
+	/** constructor
+	 * @param op the dense matrix to be used as the linear operator
+	 */
 	CDenseMatrixOperator(SGMatrix<T> op);
 
 	/** destructor */

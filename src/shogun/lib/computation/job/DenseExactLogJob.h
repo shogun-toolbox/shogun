@@ -26,10 +26,14 @@ template<class T> class CDenseMatrixOperator;
 class CDenseExactLogJob : public CIndependentJob
 {
 public:
-	/** default constructor, no args */
+	/** default constructor */
 	CDenseExactLogJob();
 
-	/** default constructor, three args */
+	/** constructor
+	 * @param aggregator the job result aggregator for this job
+	 * @param log_operator the dense matrix operator to be applied to the vector
+	 * @param vector the sample vector to which operator is to be applied
+	 */
 	CDenseExactLogJob(CJobResultAggregator* aggregator,
 		CDenseMatrixOperator<float64_t>* log_operator, SGVector<float64_t> vector);
 
@@ -39,10 +43,10 @@ public:
 	/** implementation of compute method for the job */
 	virtual void compute();
 
-	/** get the vector */
+	/** @return the vector */
 	SGVector<float64_t> get_vector() const;
 
-	/** get the linear operator */
+	/** @return the linear operator */
 	CDenseMatrixOperator<float64_t>* get_operator() const;
 
 	/** @return object name */

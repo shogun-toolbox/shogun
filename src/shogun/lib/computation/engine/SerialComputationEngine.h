@@ -30,7 +30,7 @@ public:
 
 	/** method that calls the job's compute method in each call, therefore
 	 * blocks until the its computation is done
-	 * @param the job to be computed
+	 * @param job the job to be computed
 	 */
 	virtual void submit_job(CIndependentJob* job);
 	

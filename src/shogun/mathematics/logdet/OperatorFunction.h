@@ -38,7 +38,7 @@ class CJobResultAggregator;
 template<class T> class COperatorFunction : public CSGObject
 {
 public:
-	/** default constructor, no args */
+	/** default constructor */
 	COperatorFunction()
 	: CSGObject(),
 	  m_linear_operator(NULL),
@@ -48,7 +48,11 @@ public:
 		SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 	}
 
-	/** default constructor, three args */
+	/** constructor
+	 * @param op the linear operator of this operator function
+	 * @param engine the computation engine for the independent jobs
+	 * @param type the type of the operator function (sqrt, log, etc)
+	 */
 	COperatorFunction(CLinearOperator<T>* op,
 		CIndependentComputationEngine* engine,
 		EOperatorFunction type=OF_UNDEFINED)
@@ -70,7 +74,7 @@ public:
 		SG_GCDEBUG("%s destroyed (%p)\n", this->get_name(), this)
 	}
 
-	/** get the operator */
+	/** @return the operator */
 	CLinearOperator<T>* get_operator() const
 	{
 		return m_linear_operator;
@@ -87,7 +91,7 @@ public:
 	 * with all those jobs, hands over the responsility of those to the
 	 * computation engine and then returns the aggregator for collecting the
 	 * job results
-	 * @param the vector for which a new computation job has to be created
+	 * @param sample the vector for which new computation job(s) are to be created
 	 * @return the array of generated independent jobs
 	 */
 	virtual CJobResultAggregator* submit_jobs(SGVector<T> sample) = 0;

@@ -25,7 +25,7 @@ template<class T> class CScalarResult;
 template<class T> class CStoreScalarAggregator : public CJobResultAggregator
 {
 public:
-	/** default constructor, no args */
+	/** default constructor */
 	CStoreScalarAggregator();
 
 	/** destructor */
@@ -33,7 +33,7 @@ public:
 
 	/** method that submits the result (scalar) of an independent job, and
 	 * computes the aggregation with the previously submitted result
-	 * @param the result of an independent job
+	 * @param result the result of an independent job
 	 */
 	virtual void submit_result(CJobResult* result);
 
