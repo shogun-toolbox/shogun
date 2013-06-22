@@ -29,7 +29,9 @@ public:
 		SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 	}
 
-	/** default constructor, one args */
+	/** constructor
+	 * @param result the scalar result
+	 */
 	CScalarResult(const T& result)
 	: CJobResult(), m_result(result)
 	{

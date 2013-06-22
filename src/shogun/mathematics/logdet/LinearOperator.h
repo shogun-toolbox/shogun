@@ -22,14 +22,16 @@ template<class T> class SGVector;
 template<class T> class CLinearOperator : public CSGObject
 {
 public:
-	/** default constructor, no args */
+	/** default constructor */
 	CLinearOperator()
 	: CSGObject(), dim(0)
 	{
 		SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 	}
 
-	/** default constructor, one arg */
+	/** constructor
+	 * @param _dim dimension of the vector on which the operator can be applied
+	 */
 	CLinearOperator(index_t _dim)
 	: CSGObject(), dim(_dim)
 	{

@@ -29,10 +29,13 @@ class CIndependentComputationEngine;
 class CDenseMatrixExactLog : public COperatorFunction<float64_t>
 {
 public:
-	/** default constructor, no args */
+	/** default constructor */
 	CDenseMatrixExactLog();
 
-	/** default constructor, two args */
+	/** constructor
+	 * @param op the dense matrix linear operator for this operator function
+	 * @param engine the computation engine for the independent jobs
+	 */
 	CDenseMatrixExactLog(CDenseMatrixOperator<float64_t>* op,
 		CIndependentComputationEngine* engine);
 
@@ -48,7 +51,7 @@ public:
 	/** method that creates a scalar job result aggregator, then creates one
 	 * job per sample, attaches the aggregator with it, and submits the job to
 	 * computation engine and then returns the aggregator
-	 * @param the vector for which a new computation job has to be created
+	 * @param sample the vector for which a new computation job has to be created
 	 * @return the array of generated independent jobs
 	 */
 	virtual CJobResultAggregator* submit_jobs(SGVector<float64_t> sample);
