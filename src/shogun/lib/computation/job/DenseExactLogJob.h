@@ -29,8 +29,9 @@ public:
 	/** default constructor, no args */
 	CDenseExactLogJob();
 
-	/** default constructor, one arg */
-	CDenseExactLogJob(CJobResultAggregator* aggregator);
+	/** default constructor, three args */
+	CDenseExactLogJob(CJobResultAggregator* aggregator,
+		CDenseMatrixOperator<float64_t>* log_operator, SGVector<float64_t> vector);
 
 	/** destructor */
 	virtual ~CDenseExactLogJob();
@@ -41,14 +42,8 @@ public:
 	/** get the vector */
 	SGVector<float64_t> get_vector() const;
 
-	/** set the vector */
-	void set_vector(SGVector<float64_t> vec);
-
 	/** get the linear operator */
 	CDenseMatrixOperator<float64_t>* get_operator() const;
-
-	/** set the linear operator */
-	void set_operator(CDenseMatrixOperator<float64_t>* op);
 
 	/** @return object name */
 	virtual const char* get_name() const
