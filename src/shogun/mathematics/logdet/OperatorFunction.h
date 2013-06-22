@@ -1,0 +1,127 @@
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * Written (W) 2013 Soumyajit De
+ */
+
+#ifndef OPERATOR_FUNCTION_H_
+#define OPERATOR_FUNCTION_H_
+
+#include <shogun/lib/config.h>
+#include <shogun/base/SGObject.h>
+#include <shogun/mathematics/logdet/LinearOperator.h>
+#include <shogun/lib/computation/engine/IndependentComputationEngine.h>
+
+namespace shogun
+{
+
+/** linear operator function types */
+enum EOperatorFunction
+{
+	OF_SQRT=0,
+	OF_LOG=1,
+	OF_POLY=2,
+	OF_UNDEFINED=3
+};
+
+template<class T> class SGVector;
+class CJobResultAggregator;
+
+/** @brief Abstract template base class for computing \f$s^{T} f(C) s\f$ for a
+ * linear operator C and a vector s. submit_jobs method creates a bunch of jobs
+ * needed to solve for this particular \f$s\f$ and attaches one unique job
+ * aggregator to each of them, then submits them all to the computation engine.
+ */
+template<class T> class COperatorFunction : public CSGObject
+{
+public:
+	/** default constructor, no args */
+	COperatorFunction()
+	: CSGObject(),
+	  m_linear_operator(NULL),
+	  m_computation_engine(NULL),
+	  m_function_type(OF_UNDEFINED)
+	{
+		SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
+	}
+
+	/** default constructor, three args */
+	COperatorFunction(CLinearOperator<T>* op,
+		CIndependentComputationEngine* engine,
+		EOperatorFunction type=OF_UNDEFINED)
+	: CSGObject(),
+	  m_linear_operator(op),
+	  m_computation_engine(engine),
+	  m_function_type(type)
+	{
+		SG_REF(m_linear_operator);
+		SG_REF(m_computation_engine);
+		SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
+	}
+
+	/** destructor */
+	virtual ~COperatorFunction()
+	{
+		SG_UNREF(m_linear_operator);
+		SG_UNREF(m_computation_engine);
+		SG_GCDEBUG("%s destroyed (%p)\n", this->get_name(), this)
+	}
+
+	/** get the operator */
+	CLinearOperator<T>* get_operator() const
+	{
+		return m_linear_operator;
+	}
+
+	/** abstract init method that must be called before using submit jobs
+	 * for performing preliminary computations that are necessary for the
+	 * rest of the computation jobs
+	 */
+	virtual void init() = 0;
+
+	/** abstract method that creates a job result aggregator, then creates a
+	 * number of jobs based on its implementation, attaches the aggregator
+	 * with all those jobs, hands over the responsility of those to the
+	 * computation engine and then returns the aggregator for collecting the
+	 * job results
+	 * @param the vector for which a new computation job has to be created
+	 * @return the array of generated independent jobs
+	 */
+	virtual CJobResultAggregator* submit_jobs(SGVector<T> sample) = 0;
+
+	/** @return object name */
+	virtual const char* get_name() const
+	{
+		return "COperatorFunction";
+	}
+protected:
+	/** the linear operator */
+	CLinearOperator<T>* m_linear_operator;
+
+	/** the computation engine */
+	CIndependentComputationEngine* m_computation_engine;
+
+	/** the linear operator function type */
+	const EOperatorFunction m_function_type;
+};
+
+template class COperatorFunction<bool>;
+template class COperatorFunction<char>;
+template class COperatorFunction<int8_t>;
+template class COperatorFunction<uint8_t>;
+template class COperatorFunction<int16_t>;
+template class COperatorFunction<uint16_t>;
+template class COperatorFunction<int32_t>;
+template class COperatorFunction<uint32_t>;
+template class COperatorFunction<int64_t>;
+template class COperatorFunction<uint64_t>;
+template class COperatorFunction<float32_t>;
+template class COperatorFunction<float64_t>;
+template class COperatorFunction<floatmax_t>;
+template class COperatorFunction<complex64_t>;
+}
+
+#endif // OPERATOR_FUCNTION_H_
