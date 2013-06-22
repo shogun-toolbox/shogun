@@ -13,8 +13,8 @@
 
 #include <shogun/lib/common.h>
 
-#include <shogun/io/StreamingAsciiFile.h>
-#include <shogun/features/StreamingDenseFeatures.h>
+#include <shogun/io/streaming/StreamingAsciiFile.h>
+#include <shogun/features/streaming/StreamingDenseFeatures.h>
 #include <shogun/classifier/svm/OnlineLibLinear.h>
 
 using namespace shogun;
@@ -30,7 +30,7 @@ int main()
 
 	// The bool value is true if examples are labelled.
 	// 1024 is a good standard value for the number of examples for the parser to hold at a time.
-	CStreamingDenseFeatures<float64_t>* train_features = new CStreamingDenseFeatures<float64_t>(train_file, true, 1024);
+	CStreamingDenseFeatures<float32_t>* train_features = new CStreamingDenseFeatures<float32_t>(train_file, true, 1024);
 	SG_REF(train_features);
 
 	// Create an OnlineLiblinear object from the features. The first parameter is 'C'.
@@ -57,6 +57,7 @@ int main()
 		SG_SPRINT("For example %d, predicted label is %f.\n", i, test_labels->get_label(i));
 
 	SG_UNREF(test_features);
+	SG_UNREF(test_labels);
 	SG_UNREF(test_file);
 	SG_UNREF(train_features);
 	SG_UNREF(train_file);
