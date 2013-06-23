@@ -106,11 +106,8 @@ int main(int argc, char ** argv)
 	// Create structured model
 	CMulticlassModel* model = new CMulticlassModel(features, labels);
 
-	// Create loss function
-	CHingeLoss* loss = new CHingeLoss();
-
 	// Create SO-SVM
-	CPrimalMosekSOSVM* sosvm = new CPrimalMosekSOSVM(model, loss, labels);
+	CPrimalMosekSOSVM* sosvm = new CPrimalMosekSOSVM(model, labels);
 	CDualLibQPBMSOSVM* bundle = new CDualLibQPBMSOSVM(model, labels, 1000);
 	bundle->set_verbose(false);
 	SG_REF(sosvm);

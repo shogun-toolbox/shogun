@@ -17,9 +17,9 @@ int main(int argc, char ** argv)
 	CStructuredLabels* labels = model->get_labels();
 	CFeatures* features = model->get_features();
 
-	CHingeLoss* loss = new CHingeLoss();
+	// CHingeLoss* loss = new CHingeLoss();
 
-	CPrimalMosekSOSVM* sosvm = new CPrimalMosekSOSVM(model, loss, labels);
+	CPrimalMosekSOSVM* sosvm = new CPrimalMosekSOSVM(model, labels);
 	SG_REF(sosvm);
 
 	sosvm->train();

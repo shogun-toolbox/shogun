@@ -92,7 +92,7 @@ class CMulticlassModel : public CStructuredModel
 		 * @param ub
 		 * @param C
 		 */
-		virtual void init_opt(
+		virtual void init_primal_opt(
 				float64_t regularization,
 				SGMatrix< float64_t > & A,  SGVector< float64_t > a,
 				SGMatrix< float64_t > B,  SGVector< float64_t > & b,
@@ -101,37 +101,6 @@ class CMulticlassModel : public CStructuredModel
 
 		/** @return name of SGSerializable */
 		virtual const char* get_name() const { return "MulticlassModel"; }
-
-		/** implements risk function for multiclass SO-SVM
-		 *
-		 * Implementation of risk function for structured output multiclass SVM.
-		 *
-		 * The value of the risk is evaluated as
-		 *
-		 * \f[
-		 * R({\bf w}) = \sum_{i=1}^{m} \max_{y \in \mathcal{Y}} \left[ \ell(y_i, y)
-		 * + \langle {\bf w}, \Psi(x_i, y) - \Psi(x_i, y_i)  \rangle  \right]
-		 * \f]
-		 *
-		 * The subgradient is by Danskin's theorem given as
-		 *
-		 * \f[
-		 * R'({\bf w}) = \sum_{i=1}^{m} \Psi(x_i, \hat{y}_i) - \Psi(x_i, y_i),
-		 * \f]
-		 *
-		 * where \f$ \hat{y}_i \f$ is the most violated label, i.e.
-		 *
-		 * \f[
-		 * \hat{y}_i = \arg\max_{y \in \mathcal{Y}} \left[ \ell(y_i, y)
-		 * + \langle {\bf w}, \Psi(x_i, y)  \rangle \right]
-		 * \f]
-		 *
-		 * @param subgrad Subgradient computed at given point W
-		 * @param W Given weight vector
-		 * @param info Helper info for multiple cutting plane models algorithm
-		 * @return Value of the computed risk at given point W
-		 */
-		virtual float64_t risk(float64_t* subgrad, float64_t* W, TMultipleCPinfo* info=0);
 
 	private:
 		void init();

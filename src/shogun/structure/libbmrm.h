@@ -11,12 +11,12 @@
  * Implementation of the BMRM solver
  *--------------------------------------------------------------------- */
 
-#include <shogun/lib/common.h>
-#include <shogun/structure/StructuredModel.h>
-#include <shogun/structure/BmrmStatistics.h>
-
 #ifndef libbmrm_h
 #define libbmrm_h
+
+#include <shogun/lib/common.h>
+#include <shogun/structure/BmrmStatistics.h>
+#include <shogun/structure/DualLibQPBMSOSVM.h>
 
 #define LIBBMRM_PLUS_INF (-log(0.0))
 #define LIBBMRM_CALLOC(x, y) calloc(x, y)
@@ -125,7 +125,7 @@ inline uint32_t find_free_idx(bool *map, uint32_t size)
 
 /** Standard BMRM Solver for Structured Output Learning
  *
- * @param model			Pointer to user defined CStructuredModel
+ * @param machine		Pointer to the BMRM machine	
  * @param W				Weight vector
  * @param TolRel		Relative tolerance
  * @param TolAbs		Absolute tolerance
@@ -142,17 +142,17 @@ inline uint32_t find_free_idx(bool *map, uint32_t size)
  * @return Structure with BMRM algorithm result
  */
 BmrmStatistics svm_bmrm_solver(
-		CStructuredModel *model,
-		float64_t        *W,
-		float64_t        TolRel,
-		float64_t        TolAbs,
-		float64_t        _lambda,
-		uint32_t         _BufSize,
-		bool             cleanICP,
-		uint32_t         cleanAfter,
-		float64_t        K,
-		uint32_t         Tmax,
-		bool             verbose
+		CDualLibQPBMSOSVM  *machine, 
+		float64_t          *W,
+		float64_t          TolRel,
+		float64_t          TolAbs,
+		float64_t          _lambda,
+		uint32_t           _BufSize,
+		bool               cleanICP,
+		uint32_t           cleanAfter,
+		float64_t          K,
+		uint32_t           Tmax,
+		bool               verbose
 		);
 
 }

@@ -32,7 +32,7 @@ static const float64_t *get_col( uint32_t i)
 }
 
 BmrmStatistics svm_ppbm_solver(
-		CStructuredModel* model,
+		CDualLibQPBMSOSVM *machine, 
 		float64_t*      W,
 		float64_t       TolRel,
 		float64_t       TolAbs,
@@ -53,7 +53,7 @@ BmrmStatistics svm_ppbm_solver(
 	floatmax_t rsum, sq_norm_W, sq_norm_Wdiff, sq_norm_prevW, eps;
 	uint32_t *I, *I2, *I_start, *I_good;
 	uint8_t S=1;
-	uint32_t nDim=model->get_dim();
+	uint32_t nDim=machine->get_model()->get_dim();
 	uint32_t qp_cnt=0;
 	bmrm_ll *CPList_head, *CPList_tail, *cp_ptr, *cp_ptr2, *cp_list=NULL;
 	float64_t *A_1=NULL, *A_2=NULL;
@@ -172,7 +172,7 @@ BmrmStatistics svm_ppbm_solver(
 	ppbmrm.hist_wdist.resize_vector(BufSize);
 
 	/* Iinitial solution */
-	R = model->risk(subgrad, W);
+	R = machine->risk(subgrad, W);
 
 	ppbmrm.nCP=0;
 	ppbmrm.nIter=0;
@@ -508,7 +508,7 @@ BmrmStatistics svm_ppbm_solver(
 		}
 
 		/* risk and subgradient computation */
-		R = model->risk(subgrad, W);
+		R = machine->risk(subgrad, W);
 		add_cutting_plane(&CPList_tail, map, A,
 				find_free_idx(map, BufSize), subgrad, nDim);
 

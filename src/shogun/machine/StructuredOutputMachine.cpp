@@ -13,7 +13,7 @@
 using namespace shogun;
 
 CStructuredOutputMachine::CStructuredOutputMachine()
-: CMachine(), m_model(NULL)
+: CMachine(), m_model(NULL), m_surrogate_loss(NULL)
 {
 	register_parameters();
 }
@@ -21,7 +21,7 @@ CStructuredOutputMachine::CStructuredOutputMachine()
 CStructuredOutputMachine::CStructuredOutputMachine(
 		CStructuredModel*  model,
 		CStructuredLabels* labs)
-: CMachine(), m_model(model)
+: CMachine(), m_model(model), m_surrogate_loss(NULL)
 {
 	SG_REF(m_model);
 	set_labels(labs);
@@ -49,10 +49,121 @@ CStructuredModel* CStructuredOutputMachine::get_model() const
 void CStructuredOutputMachine::register_parameters()
 {
 	SG_ADD((CSGObject**)&m_model, "m_model", "Structured model", MS_NOT_AVAILABLE);
+	SG_ADD((CSGObject**)&m_surrogate_loss, "m_surrogate_loss", "Surrogate loss", MS_NOT_AVAILABLE);
 }
 
 void CStructuredOutputMachine::set_labels(CLabels* lab)
 {
 	CMachine::set_labels(lab);
 	m_model->set_labels(CLabelsFactory::to_structured(lab));
+}
+
+void CStructuredOutputMachine::set_features(CFeatures* f)
+{
+	m_model->set_features(f);
+}
+
+CFeatures* CStructuredOutputMachine::get_features() const
+{
+	return m_model->get_features();
+}
+
+void CStructuredOutputMachine::set_surrogate_loss(CLossFunction* loss)
+{
+	SG_UNREF(m_surrogate_loss);
+	SG_REF(loss);
+	m_surrogate_loss = loss;
+}
+
+CLossFunction* CStructuredOutputMachine::get_surrogate_loss() const
+{
+	SG_REF(m_surrogate_loss);
+	return m_surrogate_loss;
+}
+
+float64_t CStructuredOutputMachine::risk_nslack_margin_rescale(float64_t* subgrad, float64_t* W, TMultipleCPinfo* info)
+{
+	int32_t dim = m_model->get_dim();
+	
+	int32_t from=0, to=0;
+	if (info)
+	{
+		from = info->m_from;
+		to = (info->m_N == 0) ? get_features()->get_num_vectors() : from+info->m_N;
+	}
+	else
+	{
+		from = 0;
+		to = get_features()->get_num_vectors();
+	}
+
+	float64_t R = 0.0;
+	for (int32_t i=0; i<dim; i++)
+		subgrad[i] = 0;
+
+	for (int32_t i=from; i<to; i++)
+	{
+		CResultSet* result = m_model->argmax(SGVector<float64_t>(W,dim,false), i, true);
+		SGVector<float64_t> psi_pred = result->psi_pred;
+		SGVector<float64_t> psi_truth = result->psi_truth;
+		SGVector<float64_t>::vec1_plus_scalar_times_vec2(subgrad, 1.0, psi_pred.vector, dim);
+		SGVector<float64_t>::vec1_plus_scalar_times_vec2(subgrad, -1.0, psi_truth.vector, dim);
+		R += result->score;
+		SG_UNREF(result);
+	}
+
+	return R;
+}
+
+float64_t CStructuredOutputMachine::risk_nslack_slack_rescale(float64_t* subgrad, float64_t* W, TMultipleCPinfo* info)
+{
+	SG_ERROR("%s::risk_nslack_slack_rescale() has not been implemented!\n", get_name());
+	return 0.0;
+}
+
+float64_t CStructuredOutputMachine::risk_1slack_margin_rescale(float64_t* subgrad, float64_t* W, TMultipleCPinfo* info)
+{
+	SG_ERROR("%s::risk_1slack_margin_rescale() has not been implemented!\n", get_name());
+	return 0.0;
+}
+
+float64_t CStructuredOutputMachine::risk_1slack_slack_rescale(float64_t* subgrad, float64_t* W, TMultipleCPinfo* info)
+{
+	SG_ERROR("%s::risk_1slack_slack_rescale() has not been implemented!\n", get_name());
+	return 0.0;
+}
+
+float64_t CStructuredOutputMachine::risk_customized_formulation(float64_t* subgrad, float64_t* W, TMultipleCPinfo* info)
+{
+	SG_ERROR("%s::risk_customized_formulation() has not been implemented!\n", get_name());
+	return 0.0;
+}
+
+float64_t CStructuredOutputMachine::risk(float64_t* subgrad, float64_t* W, 
+		TMultipleCPinfo* info, EStructRiskType rtype)
+{
+	float64_t ret = 0.0;
+	switch(rtype)
+	{
+		case N_SLACK_MARGIN_RESCALING:
+			ret = risk_nslack_margin_rescale(subgrad, W, info);
+			break;
+		case N_SLACK_SLACK_RESCALING:
+			ret = risk_nslack_slack_rescale(subgrad, W, info);
+			break;
+		case ONE_SLACK_MARGIN_RESCALING:
+			ret = risk_1slack_margin_rescale(subgrad, W, info);
+			break;
+		case ONE_SLACK_SLACK_RESCALING:
+			ret = risk_1slack_slack_rescale(subgrad, W, info);
+			break;
+		case CUSTOMIZED_RISK:
+			ret = risk_customized_formulation(subgrad, W, info);
+			break;
+		default:
+			SG_ERROR("%s::risk(): cannot recognize the risk type!\n", get_name());
+			ret = -1;
+			break;
+	}
+	return ret;
 }

@@ -40,7 +40,7 @@ IGNORE_IN_CLASSLIST struct line_search_res
 
 inline static line_search_res zoom
 (
- CStructuredModel* model,
+ CDualLibQPBMSOSVM *machine, 
  float64_t lambda,
  float64_t a_lo,
  float64_t a_hi,
@@ -90,7 +90,7 @@ inline static line_search_res zoom
 				initial_solution.vector, a_j,
 				search_dir.vector, cur_solution.vlen);
 
-		float64_t cur_fval = model->risk(cur_grad.vector, cur_solution.vector);
+		float64_t cur_fval = machine->risk(cur_grad.vector, cur_solution.vector);
 		float64_t cur_reg
 			= 0.5*lambda*cur_solution.dot(cur_solution.vector,
 					cur_solution.vector, cur_solution.vlen);
@@ -157,7 +157,7 @@ inline static line_search_res zoom
 
 inline std::vector<line_search_res> line_search_with_strong_wolfe
 (
-		CStructuredModel *model,
+		CDualLibQPBMSOSVM *machine, 
 		float64_t lambda,
 		float64_t initial_val,
 		SGVector<float64_t>& initial_solution,
@@ -196,7 +196,7 @@ inline std::vector<line_search_res> line_search_with_strong_wolfe
 		SGVector<float64_t> cur_subgrad(initial_solution.vlen);
 
 		x.add(x.vector, 1.0, initial_solution.vector, cur_a, search_dir.vector, x.vlen);
-		float64_t cur_fval = model->risk(cur_subgrad.vector, x.vector);
+		float64_t cur_fval = machine->risk(cur_subgrad.vector, x.vector);
 		float64_t cur_reg = 0.5*lambda*x.dot(x.vector, x.vector, x.vlen);
 		cur_fval += cur_reg;
 
@@ -222,7 +222,7 @@ inline std::vector<line_search_res> line_search_with_strong_wolfe
 			)
 		{
 			ret.push_back(
-					zoom(model, lambda, prev_a, cur_a, initial_val,
+					zoom(machine, lambda, prev_a, cur_a, initial_val,
 						initial_solution, search_dir, wolfe_c1, wolfe_c2,
 						initial_lgrad, prev_fval, prev_lgrad, cur_fval, cur_lgrad)
 					);
@@ -244,7 +244,7 @@ inline std::vector<line_search_res> line_search_with_strong_wolfe
 		if (cur_lgrad >= 0)
 		{
 			ret.push_back(
-					zoom(model, lambda, cur_a, prev_a, initial_val,
+					zoom(machine, lambda, cur_a, prev_a, initial_val,
 						initial_solution, search_dir, wolfe_c1, wolfe_c2,
 						initial_lgrad, cur_fval, cur_lgrad, prev_fval, prev_lgrad)
 					);
@@ -306,22 +306,22 @@ inline void update_H(BmrmStatistics& ncbm,
 
 
 BmrmStatistics svm_ncbm_solver(
-		CStructuredModel *model,
-		float64_t        *w,
-		float64_t        TolRel,
-		float64_t        TolAbs,
-		float64_t        _lambda,
-		uint32_t         _BufSize,
-		bool             cleanICP,
-		uint32_t         cleanAfter,
-		bool             is_convex,
-		bool             line_search,
-		bool             verbose
+		CDualLibQPBMSOSVM *machine, 
+		float64_t         *w,
+		float64_t         TolRel,
+		float64_t         TolAbs,
+		float64_t         _lambda,
+		uint32_t          _BufSize,
+		bool              cleanICP,
+		uint32_t          cleanAfter,
+		bool              is_convex,
+		bool              line_search,
+		bool              verbose
 		)
 {
 	BmrmStatistics ncbm;
 	libqp_state_T qp_exitflag={0, 0, 0, 0};
-	int32_t w_dim = model->get_dim();
+	int32_t w_dim = machine->get_model()->get_dim();
 
 	maxCPs = _BufSize;
 
@@ -401,7 +401,7 @@ BmrmStatistics svm_ncbm_solver(
 	SGVector<float64_t> cur_w(w_dim);
 	memcpy(cur_w.vector, w, sizeof(float64_t)*w_dim);
 
-	float64_t cur_risk = model->risk(cur_subgrad.vector, cur_w.vector);
+	float64_t cur_risk = machine->risk(cur_subgrad.vector, cur_w.vector);
 	bias[0] = -cur_risk;
 	best_Fp = 0.5*_lambda*cur_w.dot(cur_w.vector, cur_w.vector, cur_w.vlen) + cur_risk;
 	best_risk = cur_risk;
@@ -534,7 +534,7 @@ BmrmStatistics svm_ncbm_solver(
 		std::vector<line_search_res> wbest_candidates;
 		if (!line_search)
 		{
-			cur_risk = model->risk(cur_subgrad.vector, cur_w.vector);
+			cur_risk = machine->risk(cur_subgrad.vector, cur_w.vector);
 
 			add_cutting_plane(&CPList_tail, map, A.matrix,
 					find_free_idx(map, maxCPs), cur_subgrad.vector, w_dim);
@@ -574,7 +574,7 @@ BmrmStatistics svm_ncbm_solver(
 
 			/* line search */
 			std::vector<line_search_res> ls_res
-				= line_search_with_strong_wolfe(model, _lambda, best_Fp, best_w, best_subgrad, search_dir, astart);
+				= line_search_with_strong_wolfe(machine, _lambda, best_Fp, best_w, best_subgrad, search_dir, astart);
 
 			if (ls_res[0].fval != ls_res[1].fval)
 			{
@@ -607,7 +607,7 @@ BmrmStatistics svm_ncbm_solver(
 
 			if ((best_Fp <= ls_res[1].fval) && (astart != 1))
 			{
-				cur_risk = model->risk(cur_subgrad.vector, cur_w.vector);
+				cur_risk = machine->risk(cur_subgrad.vector, cur_w.vector);
 
 				add_cutting_plane(&CPList_tail, map, A.matrix,
 							find_free_idx(map, maxCPs), cur_subgrad.vector, w_dim);

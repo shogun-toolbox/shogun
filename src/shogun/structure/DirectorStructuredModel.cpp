@@ -53,7 +53,7 @@ bool CDirectorStructuredModel::check_training_setup() const
 	return false;
 }
 
-void CDirectorStructuredModel::init_opt(
+void CDirectorStructuredModel::init_primal_opt(
 		float64_t regularization,
 		SGMatrix< float64_t > & A,
 		SGVector< float64_t > a,
@@ -63,7 +63,7 @@ void CDirectorStructuredModel::init_opt(
 		SGVector< float64_t > ub,
 		SGMatrix< float64_t > & C)
 {
-	SG_ERROR("Please implemement init_opt(regularization,A,a,B,b,lb,ub,C) in your target language before use\n")
+	SG_ERROR("Please implemement init_primal_opt(regularization,A,a,B,b,lb,ub,C) in your target language before use\n")
 }
 
 void CDirectorStructuredModel::init_training()

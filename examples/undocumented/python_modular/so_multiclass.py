@@ -28,7 +28,6 @@ parameter_list = [[traindat,label_traindat]]
 def so_multiclass (fm_train_real=traindat,label_train_multiclass=label_traindat):
 	try:
 		from shogun.Features 	import RealFeatures
-		from shogun.Loss     	import HingeLoss
 		from shogun.Structure	import MulticlassModel, MulticlassSOLabels, PrimalMosekSOSVM, RealNumber
 	except ImportError:
 		print("Mosek not available")
@@ -38,8 +37,7 @@ def so_multiclass (fm_train_real=traindat,label_train_multiclass=label_traindat)
 	features = RealFeatures(fm_train_real.T)
 
 	model = MulticlassModel(features, labels)
-	loss = HingeLoss()
-	sosvm = PrimalMosekSOSVM(model, loss, labels)
+	sosvm = PrimalMosekSOSVM(model, labels)
 	sosvm.train()
 
 	out = sosvm.apply()

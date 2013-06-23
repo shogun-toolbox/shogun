@@ -32,7 +32,7 @@ static const float64_t *get_col( uint32_t i)
 }
 
 BmrmStatistics svm_p3bm_solver(
-		CStructuredModel* model,
+		CDualLibQPBMSOSVM *machine, 
 		float64_t*      W,
 		float64_t       TolRel,
 		float64_t       TolAbs,
@@ -60,7 +60,7 @@ BmrmStatistics svm_p3bm_solver(
 	bool *map=NULL, tuneAlpha=true, flag=true;
 	bool alphaChanged=false, isThereGoodSolution=false;
 	TMultipleCPinfo **info=NULL;
-	uint32_t nDim=model->get_dim();
+	uint32_t nDim=machine->get_model()->get_dim();
 	uint32_t to=0, N=0, cp_i=0;
 
 	CTime ttime;
@@ -120,7 +120,7 @@ BmrmStatistics svm_p3bm_solver(
 
 	info= (TMultipleCPinfo**) LIBBMRM_CALLOC(cp_models, sizeof(TMultipleCPinfo*));
 
-	int32_t num_feats = model->get_features()->get_num_vectors();
+	int32_t num_feats = machine->get_model()->get_features()->get_num_vectors();
 
 	/* CP cleanup variables */
 	ICP_stats icp_stats;
@@ -202,7 +202,7 @@ BmrmStatistics svm_p3bm_solver(
 	p3bmrm.hist_wdist.resize_vector(BufSize);
 
 	/* Iinitial solution */
-	Rt[0] = model->risk(subgrad_t[0], W, info[0]);
+	Rt[0] = machine->risk(subgrad_t[0], W, info[0]);
 
 	p3bmrm.nCP=0;
 	p3bmrm.nIter=0;
@@ -222,7 +222,7 @@ BmrmStatistics svm_p3bm_solver(
 
 	for (uint32_t p=1; p<cp_models; ++p)
 	{
-		Rt[p] = model->risk(subgrad_t[p], W, info[p]);
+		Rt[p] = machine->risk(subgrad_t[p], W, info[p]);
 		b[p]=SGVector<float64_t>::dot(subgrad_t[p], W, nDim) - Rt[p];
 		add_cutting_plane(&CPList_tail, map, A, find_free_idx(map, BufSize), subgrad_t[p], nDim);
 	}
@@ -554,7 +554,7 @@ BmrmStatistics svm_p3bm_solver(
 
 		for (uint32_t p=0; p<cp_models; ++p)
 		{
-			Rt[p] = model->risk(subgrad_t[p], W, info[p]);
+			Rt[p] = machine->risk(subgrad_t[p], W, info[p]);
 			b[p3bmrm.nCP+p] = SGVector<float64_t>::dot(subgrad_t[p], W, nDim) - Rt[p];
 			add_cutting_plane(&CPList_tail, map, A, find_free_idx(map, BufSize), subgrad_t[p], nDim);
 			R+=Rt[p];
