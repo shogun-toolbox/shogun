@@ -9,15 +9,9 @@
  * Copyright (C) 2013 Roman Votyakov
  */
 
-#include <shogun/regression/gp/InferenceMethod.h>
+#include <shogun/machine/gp/InferenceMethod.h>
 
 #ifdef HAVE_EIGEN3
-
-#include <shogun/mathematics/lapack.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/labels/RegressionLabels.h>
-#include <shogun/kernel/GaussianKernel.h>
-#include <shogun/features/CombinedFeatures.h>
 
 using namespace shogun;
 

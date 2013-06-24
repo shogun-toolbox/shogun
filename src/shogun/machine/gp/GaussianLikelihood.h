@@ -4,49 +4,48 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
+ * Written (W) 2013 Roman Votyakov
  * Copyright (C) 2012 Jacob Walker
- *
- * Code adapted from the GPML Toolbox:
- * http://www.gaussianprocess.org/gpml/code/matlab/doc/
- *
+ * Copyright (C) 2013 Roman Votyakov
  */
 
-#ifndef CSTUDENTSTLIKELIHOOD_H_
-#define CSTUDENTSTLIKELIHOOD_H_
+#ifndef CGAUSSIANLIKELIHOOD_H_
+#define CGAUSSIANLIKELIHOOD_H_
+
 #include <shogun/lib/config.h>
+
 #ifdef HAVE_EIGEN3
-#include <shogun/regression/gp/LikelihoodModel.h>
+
+#include <shogun/machine/gp/LikelihoodModel.h>
 
 namespace shogun
 {
 
-/** @brief This is the class that models a likelihood model
- * with a Student's T Distribution. The parameters include
- * degrees of freedom as well as a sigma scale parameter.
+/** @brief This is the class that models a Gaussian Likelihood
+ *
+ * In this case, P(y|f) is normally distributed with mean f and
+ * variance \f$\sigma\f$
  *
  */
-class CStudentsTLikelihood: public CLikelihoodModel
+class CGaussianLikelihood: public CLikelihoodModel
 {
 public:
-	/** default constructor */
-	CStudentsTLikelihood();
+	/** Constructor*/
+	CGaussianLikelihood();
 
-	/** constructor
-	 *
-	 * @param sigma noise variance
-	 * @param df degrees of freedom
-	 */
-	CStudentsTLikelihood(float64_t sigma, float64_t df);
+	/** Constructor
+	 * @param sigma noise parameter */
+	CGaussianLikelihood(float64_t sigma);
 
-	/** destructor */
-	virtual ~CStudentsTLikelihood();
+	/** Destructor*/
+	virtual ~CGaussianLikelihood();
 
 	/** Returns the name of the SGSerializable instance.  It MUST BE
 	 *  the CLASS NAME without the prefixed `C'.
 	 *
 	 * @return name of the SGSerializable
 	 */
-	virtual const char* get_name() const { return "StudentsTLikelihood"; }
+	virtual const char* get_name() const { return "GaussianLikelihood"; }
 
 	/** Returns the noise variance
 	 *
@@ -65,33 +64,16 @@ public:
 		m_sigma=sigma;
 	}
 
-	/** get degrees of freedom
-	 *
-	 * @return degrees of freedom
-	 */
-	float64_t get_degrees_freedom() { return m_df; }
-
-	/** sets degrees of freedom
-	 *
-	 * @param df degrees of freedom
-	 */
-	void set_degrees_freedom(float64_t df)
-	{
-		REQUIRE(df>1.0, "%s::set_degrees_freedom(): Number of degrees of "
-				"freedom must be greater than one\n", get_name())
-		m_df=df;
-	}
-
 	/** helper method used to specialize a base class instance
 	 *
 	 * @param likelihood likelihood model
-	 * @return casted CStudentsTLikelihood object
+	 * @return casted CGaussianLikelihood object
 	 */
-	static CStudentsTLikelihood* obtain_from_generic(CLikelihoodModel* likelihood);
+	static CGaussianLikelihood* obtain_from_generic(CLikelihoodModel* likelihood);
 
 	/** Evaluate means
 	 *
-	 * @param means Vector of means calculated by inference method
+	 * @param means vector of means calculated by inference method
 	 * @return Final means evaluated by likelihood function
 	 */
 	virtual SGVector<float64_t> evaluate_means(SGVector<float64_t>& means);
@@ -105,9 +87,9 @@ public:
 
 	/** get model type
 	  *
-	  * @return model type Student's T
+	  * @return model type Gaussian
 	 */
-	virtual ELikelihoodModelType get_model_type() { return LT_STUDENTST; }
+	virtual ELikelihoodModelType get_model_type() { return LT_GAUSSIAN; }
 
 	/** get log likelihood log(P(y|f)) with respect
 	 *  to location f
@@ -186,16 +168,19 @@ public:
 	virtual SGVector<float64_t> get_third_derivative(CRegressionLabels* labels,
 			TParameter* param, CSGObject* obj, SGVector<float64_t> function);
 
+	/** return wether Gaussian likelihood function supports regression
+	 *
+	 * @return true
+	 */
+	virtual bool supports_regression() { return true; }
+
 private:
 	/** Observation noise sigma */
 	float64_t m_sigma;
-
-	/** Degrees of Freedom */
-	float64_t m_df;
 
 	/** Initialize function */
 	void init();
 };
 }
 #endif /* HAVE_EIGEN3 */
-#endif /* CStudentsTLIKELIHOOD_H_ */
+#endif /* CGAUSSIANLIKELIHOOD_H_ */

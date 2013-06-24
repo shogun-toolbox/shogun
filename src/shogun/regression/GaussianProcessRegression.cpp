@@ -4,320 +4,286 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
+ * Written (W) 2013 Roman Votyakov
  * Copyright (C) 2012 Jacob Walker
+ * Copyright (C) 2013 Roman Votyakov
  *
  * Code adapted from Gaussian Process Machine Learning Toolbox
  * http://www.gaussianprocess.org/gpml/code/matlab/doc/
- *
  */
 
 #include <shogun/lib/config.h>
 
 #ifdef HAVE_EIGEN3
 
-#include <shogun/io/SGIO.h>
 #include <shogun/regression/GaussianProcessRegression.h>
+#include <shogun/io/SGIO.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/kernel/Kernel.h>
-#include <shogun/labels/RegressionLabels.h>
 #include <shogun/features/CombinedFeatures.h>
-#include <shogun/regression/gp/FITCInferenceMethod.h>
+#include <shogun/features/Features.h>
+#include <shogun/machine/gp/FITCInferenceMethod.h>
+
+#include <shogun/mathematics/eigen3.h>
 
 using namespace shogun;
-
-#include <Eigen/Dense>
-
 using namespace Eigen;
 
-CGaussianProcessRegression::CGaussianProcessRegression()
-: CMachine()
+CGaussianProcessRegression::CGaussianProcessRegression() : CGaussianProcessMachine()
 {
-	init();
 }
 
-CGaussianProcessRegression::CGaussianProcessRegression(CInferenceMethod* inf, CFeatures* data, CLabels* lab)
-: CMachine()
+CGaussianProcessRegression::CGaussianProcessRegression(CInferenceMethod* method)
+	: CGaussianProcessMachine(method)
 {
-	init();
-
-	set_labels(lab);
-	set_features(data);
-	set_method(inf);
+	// set labels
+	m_labels=method->get_labels();
 }
 
-void CGaussianProcessRegression::init()
+CGaussianProcessRegression::~CGaussianProcessRegression()
 {
-
-	m_features = NULL;
-	m_method = NULL;
-	m_data = NULL;
-	m_return = GP_RETURN_MEANS;
-
-	SG_ADD((CSGObject**) &m_features, "features", "Feature object.",
-	    MS_NOT_AVAILABLE);
-	SG_ADD((CSGObject**) &m_method, "inference_method", "Inference Method.",
-	    MS_AVAILABLE);
-}
-
-void CGaussianProcessRegression::update_kernel_matrices()
-{
-	CKernel* kernel = NULL;
-
-	if (m_method)
-		kernel = m_method->get_kernel();
-
-	if (kernel)
-	{
-		float64_t m_scale = m_method->get_scale();
-
-		/* set training data to latent features if exist, otherwise
-		 * training features */
-		if (m_method->get_inference_type()==INF_FITC)
-		{
-			CFITCInferenceMethod* inf=CFITCInferenceMethod::obtain_from_generic(m_method);
-			CFeatures* latent_features=inf->get_latent_features();
-			kernel->init(latent_features, m_data);
-			SG_UNREF(inf);
-			SG_UNREF(latent_features);
-		}
-		else
-		{
-			CFeatures* features=m_method->get_features();
-			kernel->init(features, m_data);
-			SG_UNREF(features);
-		}
-
-		//K(X_train, X_test)
-		m_k_trts = kernel->get_kernel_matrix();
-
-		for (index_t i = 0; i < m_k_trts.num_rows; i++)
-		{
-			for (index_t j = 0; j < m_k_trts.num_cols; j++)
-				m_k_trts(i,j) *= (m_scale*m_scale);
-		}
-
-		kernel->init(m_data, m_data);
-		m_k_tsts = kernel->get_kernel_matrix();
-
-		for (index_t i = 0; i < m_k_tsts.num_rows; i++)
-		{
-			for (index_t j = 0; j < m_k_tsts.num_cols; j++)
-				m_k_tsts(i,j) *= (m_scale*m_scale);
-		}
-
-		kernel->remove_lhs_and_rhs();
-
-		SG_UNREF(kernel);
-	}
 }
 
 CRegressionLabels* CGaussianProcessRegression::apply_regression(CFeatures* data)
 {
+	// check wether given combination of inference method and likelihood function
+	// supprorts regression
+	REQUIRE(m_method, "Inference method must be attached\n")
+	CLikelihoodModel* lik=m_method->get_model();
+	REQUIRE(m_method->supports_regression(), "%s with %s doesn't support regression\n",
+			m_method->get_name(), lik->get_name())
+	SG_UNREF(lik);
 
-	if (data)
+	CRegressionLabels* result;
+
+	// if regression data equals to NULL, then apply regression on training features
+	if (!data)
 	{
-		if (data->get_feature_class() == C_COMBINED)
+		CFeatures* feat;
+
+		// use latent features for FITC inference method
+		if (m_method->get_inference_type()==INF_FITC)
 		{
-			SG_WARNING("%s::apply_regression(): This only works for combined"
-						" features which all share the same underlying object!\n",
-						get_name());
-
-			CDotFeatures* feat =
-					(CDotFeatures*)((CCombinedFeatures*)data)->
-					get_first_feature_obj();
-
-			if (!feat->has_property(FP_DOT))
-				SG_ERROR("Specified features are not of type CFeatures\n")
-
-			if (feat->get_feature_class() != C_DENSE)
-				SG_ERROR("Expected Dense Features\n")
-
-			if (feat->get_feature_type() != F_DREAL)
-				SG_ERROR("Expected Real Features\n")
-
-			SG_UNREF(feat);
+			CFITCInferenceMethod* fitc_method=CFITCInferenceMethod::obtain_from_generic(m_method);
+			feat=fitc_method->get_latent_features();
+			SG_UNREF(fitc_method);
 		}
-
 		else
-		{
-			if (!data->has_property(FP_DOT))
-				SG_ERROR("Specified features are not of type CFeatures\n")
+			feat=m_method->get_features();
 
-			if (data->get_feature_class() != C_DENSE)
-				SG_ERROR("Expected Simple Features\n")
+		result=new CRegressionLabels(get_mean_vector(feat));
 
-			if (data->get_feature_type() != F_DREAL)
-				SG_ERROR("Expected Real Features\n")
-		}
-
-		SG_REF(data);
-		SG_UNREF(m_data);
-		m_data = (CFeatures*)data;
-		update_kernel_matrices();
+		SG_UNREF(feat);
 	}
-
-	else if (!m_data)
-		SG_ERROR("No testing features!\n")
-
-	else if (update_parameter_hash())
-		update_kernel_matrices();
-
-	if (m_return == GP_RETURN_COV)
-	{
-		CRegressionLabels* result =
-				new CRegressionLabels(get_covariance_vector());
-
-		return result;
-	}
-
-	if (m_return == GP_RETURN_MEANS)
-	{
-		CRegressionLabels* result =
-				new CRegressionLabels(get_mean_vector());
-
-		return result;
-	}
-
 	else
 	{
-
-		SGVector<float64_t> mean_vector = get_mean_vector();
-		SGVector<float64_t> cov_vector = get_covariance_vector();
-
-		index_t size = mean_vector.vlen+cov_vector.vlen;
-
-		SGVector<float64_t> result_vector(size);
-
-		for (index_t i = 0; i < size; i++)
-		{
-			if (i < mean_vector.vlen)
-				result_vector[i] = mean_vector[i];
-			else
-				result_vector[i] = cov_vector[i-mean_vector.vlen];
-		}
-
-		CRegressionLabels* result =
-				new CRegressionLabels(result_vector);
-
-		return result;
+		result=new CRegressionLabels(get_mean_vector(data));
 	}
 
+	return result;
 }
 
 bool CGaussianProcessRegression::train_machine(CFeatures* data)
 {
-	return false;
+	// check wether given combination of inference method and likelihood function
+	// supprorts regression
+	REQUIRE(m_method, "Inference method must be attached\n")
+	CLikelihoodModel* lik=m_method->get_model();
+	REQUIRE(m_method->supports_regression(), "%s with %s doesn't support regression\n",
+			m_method->get_name(), lik->get_name())
+	SG_UNREF(lik);
+
+	if (data)
+	{
+		// set latent features for FITC inference method
+		if (m_method->get_inference_type()==INF_FITC)
+		{
+			CFITCInferenceMethod* fitc_method=CFITCInferenceMethod::obtain_from_generic(m_method);
+			fitc_method->set_latent_features(data);
+			SG_UNREF(fitc_method);
+		}
+		else
+			m_method->set_features(data);
+	}
+
+	// perform inference
+	m_method->update_all();
+
+	return true;
 }
 
-
-SGVector<float64_t> CGaussianProcessRegression::get_mean_vector()
+SGVector<float64_t> CGaussianProcessRegression::get_mean_vector(CFeatures* data)
 {
+	// check wether given combination of inference method and likelihood function
+	// supprorts regression
+	REQUIRE(m_method, "Inference method must be attached\n")
+	CLikelihoodModel* lik=m_method->get_model();
+	REQUIRE(m_method->supports_regression(), "%s with %s doesn't support regression\n",
+			m_method->get_name(), lik->get_name())
+	SG_UNREF(lik);
 
-	SGVector<float64_t> alpha = m_method->get_alpha();
+	// check testing features
+	REQUIRE(data, "Testing features can not be NULL\n")
+	REQUIRE(data->has_property(FP_DOT),
+			"Testing features must be type of CFeatures\n")
+	REQUIRE(data->get_feature_class()==C_DENSE, "Testing features must be dense\n")
+	REQUIRE(data->get_feature_type()==F_DREAL, "Testing features must be real\n")
 
-	CMeanFunction* mean_function = m_method->get_mean();
+	CFeatures* feat;
 
-	SGMatrix<float64_t> features;
-	if(m_data->get_feature_class() == C_COMBINED)
+	// use latent features for FITC inference method
+	if (m_method->get_inference_type()==INF_FITC)
+	{
+		CFITCInferenceMethod* fitc_method=CFITCInferenceMethod::obtain_from_generic(m_method);
+		feat=fitc_method->get_latent_features();
+		SG_UNREF(fitc_method);
+	}
+	else
+		feat=m_method->get_features();
+
+	// get kernel and compute kernel matrix: K(feat, data)*scale^2
+	CKernel* kernel=m_method->get_kernel();
+	kernel->init(feat, data);
+
+	// get kernel matrix and create eigen representation of it
+	SGMatrix<float64_t> k_trts=kernel->get_kernel_matrix();
+	Map<MatrixXd> eigen_Ks(k_trts.matrix, k_trts.num_rows, k_trts.num_cols);
+
+	// compute Ks=Ks*scale^2
+	eigen_Ks*=CMath::sq(m_method->get_scale());
+
+	// cleanup
+	SG_UNREF(feat);
+	SG_UNREF(kernel);
+
+	if (data->get_feature_class()==C_COMBINED)
 	{
 		SG_WARNING("%s::get_mean_vector(): This only works for combined"
-				" features which all share the same underlying object!\n",
-				get_name());
-		features = ((CDotFeatures*)((CCombinedFeatures*)m_data)->
-									get_first_feature_obj())->
-											get_computed_dot_feature_matrix();
+			" features which all share the same underlying object!\n",
+			get_name())
+		data=((CCombinedFeatures*)data)->get_first_feature_obj();
 	}
-
 	else
-	{
-		features = ((CDotFeatures*)m_data)->
-			get_computed_dot_feature_matrix();
-	}
+		SG_REF(data);
 
-	REQUIRE(mean_function, "%s::get_mean_vector(): Mean function is NULL!\n",
-			get_name());
+	// compute feature matrix
+	SGMatrix<float64_t> feature_matrix=((CDotFeatures*)data)->get_computed_dot_feature_matrix();
+	SG_UNREF(data);
 
-	SGVector<float64_t> means = mean_function->get_mean_vector(features);
-	SGVector< float64_t > result_vector(features.num_cols);
+	// get alpha and create eigen representation of it
+	SGVector<float64_t> alpha=m_method->get_alpha();
+	Map<VectorXd> eigen_alpha(alpha.vector, alpha.vlen);
 
-	/* create eigen3 views an multiply */
-	Map<MatrixXd> K(m_k_trts.matrix, m_k_trts.num_rows, m_k_trts.num_cols);
-	Map<VectorXd> a(alpha.vector, alpha.vlen);
-	Map<VectorXd> r(result_vector.vector, result_vector.vlen);
-	r=K.transpose()*a;
-
-	for (index_t i = 0; i < result_vector.vlen; i++)
-		result_vector[i] += means[i];
-
-	CLikelihoodModel* lik = m_method->get_model();
-
-	result_vector = lik->evaluate_means(result_vector);
-
-	SG_UNREF(lik);
+	// get mean and create eigen representation of it
+	CMeanFunction* mean_function=m_method->get_mean();
+	SGVector<float64_t> m=mean_function->get_mean_vector(feature_matrix);
+	Map<VectorXd> eigen_m(m.vector, m.vlen);
 	SG_UNREF(mean_function);
 
-	return result_vector;
+	// compute mean: mu=Ks'*alpha+m
+	SGVector<float64_t> mu(m.vlen);
+	Map<VectorXd> eigen_mu(mu.vector, mu.vlen);
+	eigen_mu=eigen_Ks.adjoint()*eigen_alpha+eigen_m;
+
+	// evalutate mean
+	lik=m_method->get_model();
+	mu=lik->evaluate_means(mu);
+	SG_UNREF(lik);
+
+	return mu;
 }
 
-SGVector<float64_t> CGaussianProcessRegression::get_covariance_vector()
+SGVector<float64_t> CGaussianProcessRegression::get_variance_vector(CFeatures* data)
 {
-	if (!m_data)
-		SG_ERROR("No testing features!\n")
+	// check wether given combination of inference method and likelihood function
+	// supprorts regression
+	REQUIRE(m_method, "Inference method must be attached\n")
+	CLikelihoodModel* lik=m_method->get_model();
+	REQUIRE(m_method->supports_regression(), "%s with %s doesn't support regression\n",
+			m_method->get_name(), lik->get_name())
 
-	// get shogun of diagonal sigma vector and create eigen representation
-	SGVector<float64_t> diagonal=m_method->get_diagonal_vector();
-	Map<VectorXd> eigen_diagonal(diagonal.vector, diagonal.vlen);
+	// check testing features
+	REQUIRE(data, "Testing features can not be NULL\n")
+	REQUIRE(data->has_property(FP_DOT),
+			"Testing features must be type of CFeatures\n")
+	REQUIRE(data->get_feature_class()==C_DENSE, "Testing features must be dense\n")
+	REQUIRE(data->get_feature_type()==F_DREAL, "Testing features must be real\n")
+
+	CFeatures* feat;
+
+	// use latent features for FITC inference method
+	if (m_method->get_inference_type()==INF_FITC)
+	{
+		CFITCInferenceMethod* fitc_method=CFITCInferenceMethod::obtain_from_generic(m_method);
+		feat=fitc_method->get_latent_features();
+		SG_UNREF(fitc_method);
+	}
+	else
+		feat=m_method->get_features();
+
+	SG_REF(data);
+
+	// get kernel and compute kernel matrix: K(data, data)*scale^2
+	CKernel* kernel=m_method->get_kernel();
+	kernel->init(data, data);
+
+	// get kernel matrix and create eigen representation of it
+	SGMatrix<float64_t> k_tsts=kernel->get_kernel_matrix();
+	Map<MatrixXd> eigen_Kss(k_tsts.matrix, k_tsts.num_rows, k_tsts.num_cols);
+
+	// compute Kss=Kss*scale^2
+	eigen_Kss*=CMath::sq(m_method->get_scale());
+
+	kernel->cleanup();
+
+	// compute kernel matrix: K(feat, data)*scale^2
+	kernel->init(feat, data);
+
+	// get kernel matrix and create eigen representation of it
+	SGMatrix<float64_t> k_trts=kernel->get_kernel_matrix();
+	Map<MatrixXd> eigen_Ks(k_trts.matrix, k_trts.num_rows, k_trts.num_cols);
+
+	// compute Ks=Ks*scale^2
+	eigen_Ks*=CMath::sq(m_method->get_scale());
+
+	// cleanup
+	SG_UNREF(kernel);
+	SG_UNREF(feat);
+	SG_UNREF(data);
 
 	// get shogun representation of cholesky and create eigen representation
 	SGMatrix<float64_t> L=m_method->get_cholesky();
 	Map<MatrixXd> eigen_L(L.matrix, L.num_rows, L.num_cols);
 
-	// create eigen representation of K(train, tests) kernel matrix
-	Map<MatrixXd> eigen_Ks(m_k_trts.matrix, m_k_trts.num_rows, m_k_trts.num_cols);
+	// result variance vector
+	SGVector<float64_t> s2(k_tsts.num_cols);
+	Map<VectorXd> eigen_s2(s2.vector, s2.vlen);
 
-	// variance vector
-	SGVector<float64_t> s2(m_k_tsts.num_cols);
-
-	if (diagonal.vlen>0)
+	if (eigen_L.isUpperTriangular())
 	{
-		// solve L' * V = diagonal * Ks and compute V.^2
+		// get shogun of diagonal sigma vector and create eigen representation
+		SGVector<float64_t> sW=m_method->get_diagonal_vector();
+		Map<VectorXd> eigen_sW(sW.vector, sW.vlen);
+
+		// solve L' * V = sW * Ks and compute V.^2
 		MatrixXd eigen_V=eigen_L.triangularView<Upper>().adjoint().solve(
-			eigen_diagonal.asDiagonal()*eigen_Ks);
+			eigen_sW.asDiagonal()*eigen_Ks);
 		MatrixXd eigen_sV=eigen_V.cwiseProduct(eigen_V);
 
-		VectorXd eigen_diagonal2=eigen_sV.colwise().sum();
-
-		for (index_t i=0; i<m_k_tsts.num_cols; i++)
-			s2[i]=m_k_tsts(i,i)-eigen_diagonal2[i];
+		eigen_s2=eigen_Kss.diagonal()-eigen_sV.colwise().sum().adjoint();
 	}
 	else
 	{
 		// M = Ks .* (L * Ks)
 		MatrixXd eigen_M=eigen_Ks.cwiseProduct(eigen_L*eigen_Ks);
-
-		VectorXd eigen_diagonal2=eigen_M.colwise().sum();
-
-		for (index_t i=0; i<m_k_tsts.num_cols; i++)
-			s2[i]=m_k_tsts(i,i)+eigen_diagonal2[i];
+		eigen_s2=eigen_Kss.diagonal()+eigen_M.colwise().sum().adjoint();
 	}
 
-	CLikelihoodModel* lik=m_method->get_model();
+	// evalutate variance
 	s2=lik->evaluate_variances(s2);
 	SG_UNREF(lik);
 
 	return s2;
-}
-
-CGaussianProcessRegression::~CGaussianProcessRegression()
-{
-	SG_UNREF(m_features);
-	SG_UNREF(m_method);
-	SG_UNREF(m_data);
-}
-
-void CGaussianProcessRegression::set_kernel(CKernel* k)
-{
-	m_method->set_kernel(k);
 }
 
 bool CGaussianProcessRegression::load(FILE* srcfile)
@@ -327,15 +293,11 @@ bool CGaussianProcessRegression::load(FILE* srcfile)
 	return false;
 }
 
-CKernel* CGaussianProcessRegression::get_kernel()
-{
-	return m_method->get_kernel();
-}
-
 bool CGaussianProcessRegression::save(FILE* dstfile)
 {
 	SG_SET_LOCALE_C;
 	SG_RESET_LOCALE;
 	return false;
 }
+
 #endif

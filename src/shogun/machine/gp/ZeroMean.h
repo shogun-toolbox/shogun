@@ -10,7 +10,7 @@
 #ifndef CZEROMEAN_H_
 #define CZEROMEAN_H_
 
-#include <shogun/regression/gp/MeanFunction.h>
+#include <shogun/machine/gp/MeanFunction.h>
 
 namespace shogun
 {

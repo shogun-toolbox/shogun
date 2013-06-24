@@ -4,11 +4,15 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
+ * Written (W) 2013 Roman Votyakov
  * Copyright (C) 2012 Jacob Walker
+ * Copyright (C) 2013 Roman Votyakov
  */
 
-#include <shogun/regression/gp/GaussianLikelihood.h>
+#include <shogun/machine/gp/GaussianLikelihood.h>
+
 #ifdef HAVE_EIGEN3
+
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/modelselection/ParameterCombination.h>
 #include <shogun/mathematics/Math.h>

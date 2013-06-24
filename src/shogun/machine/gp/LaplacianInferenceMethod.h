@@ -19,7 +19,7 @@
 
 #ifdef HAVE_EIGEN3
 
-#include <shogun/regression/gp/InferenceMethod.h>
+#include <shogun/machine/gp/InferenceMethod.h>
 
 namespace shogun
 {
@@ -207,6 +207,29 @@ public:
 	 */
 	virtual void set_minimization_max(float64_t max) { m_opt_max=max; }
 
+	/**
+	 * @return wether combination of Laplace approximation inference method and
+	 * given likelihood function supports regression
+	 */
+	virtual bool supports_regression()
+	{
+		check_members();
+		return m_model->supports_regression();
+	}
+
+	/**
+	 * @return wether combination of Laplace approximation inference method and
+	 * given likelihood function supports binary classification
+	 */
+	virtual bool supports_binary()
+	{
+		check_members();
+		return m_model->supports_binary();
+	}
+
+	/** update data all matrices */
+	virtual void update_all();
+
 protected:
 	/** update alpha matrix */
 	virtual void update_alpha();
@@ -216,9 +239,6 @@ protected:
 
 	/** update train kernel matrix */
 	virtual void update_train_kernel();
-
-	/** update data all matrices */
-	virtual void update_all();
 
 private:
 	void init();
