@@ -6,16 +6,19 @@
  #include <shogun/regression/KernelRidgeRegression.h>
  #include <shogun/regression/LinearRidgeRegression.h>
  #include <shogun/regression/LeastSquaresRegression.h>
- #include <shogun/regression/gp/LikelihoodModel.h>
- #include <shogun/regression/gp/GaussianLikelihood.h>
- #include <shogun/regression/gp/StudentsTLikelihood.h>
- #include <shogun/regression/gp/MeanFunction.h>
- #include <shogun/regression/gp/ZeroMean.h>
- #include <shogun/regression/gp/InferenceMethod.h>
- #include <shogun/regression/gp/ExactInferenceMethod.h>
- #include <shogun/regression/gp/LaplacianInferenceMethod.h>
- #include <shogun/regression/gp/FITCInferenceMethod.h>
+#ifdef HAVE_EIGEN3
+ #include <shogun/machine/GaussianProcessMachine.h>
+ #include <shogun/machine/gp/LikelihoodModel.h>
+ #include <shogun/machine/gp/GaussianLikelihood.h>
+ #include <shogun/machine/gp/StudentsTLikelihood.h>
+ #include <shogun/machine/gp/MeanFunction.h>
+ #include <shogun/machine/gp/ZeroMean.h>
+ #include <shogun/machine/gp/InferenceMethod.h>
+ #include <shogun/machine/gp/ExactInferenceMethod.h>
+ #include <shogun/machine/gp/LaplacianInferenceMethod.h>
+ #include <shogun/machine/gp/FITCInferenceMethod.h>
  #include <shogun/regression/GaussianProcessRegression.h>
+#endif //HAVE_EIGEN3
  #include <shogun/regression/LeastAngleRegression.h>
  #include <shogun/classifier/svm/SVM.h>
  #include <shogun/classifier/svm/LibSVM.h>

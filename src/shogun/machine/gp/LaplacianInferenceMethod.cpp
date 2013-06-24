@@ -17,9 +17,9 @@
 
 #ifdef HAVE_EIGEN3
 
-#include <shogun/regression/gp/LaplacianInferenceMethod.h>
-#include <shogun/regression/gp/GaussianLikelihood.h>
-#include <shogun/regression/gp/StudentsTLikelihood.h>
+#include <shogun/machine/gp/LaplacianInferenceMethod.h>
+#include <shogun/machine/gp/GaussianLikelihood.h>
+#include <shogun/machine/gp/StudentsTLikelihood.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/kernel/GaussianKernel.h>
@@ -126,8 +126,6 @@ void CLaplacianInferenceMethod::check_members()
 	REQUIRE(m_features->get_num_vectors(),
 		"Number of training features must be greater than zero\n")
 	REQUIRE(m_labels, "Labels must be attached\n")
-	REQUIRE(m_labels->get_label_type()==LT_REGRESSION,
-		"Labels must be type of CRegressionLabels\n")
 	REQUIRE(m_labels->get_num_labels(),
 			"Number of labels must be greater than zero\n")
 	REQUIRE(m_labels->get_num_labels()==m_features->get_num_vectors(),

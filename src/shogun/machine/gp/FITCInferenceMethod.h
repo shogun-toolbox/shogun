@@ -19,7 +19,7 @@
 
 #ifdef HAVE_EIGEN3
 
-#include <shogun/regression/gp/InferenceMethod.h>
+#include <shogun/machine/gp/InferenceMethod.h>
 
 namespace shogun
 {
@@ -181,6 +181,19 @@ public:
 		return result;
 	}
 
+	/**
+	 * @return wether combination of FITC inference method and given likelihood
+	 * function supports regression
+	 */
+	virtual bool supports_regression()
+	{
+		check_members();
+		return m_model->supports_regression();
+	}
+
+	/** Update all matrices */
+	virtual void update_all();
+
 protected:
 	/** Update alpha matrix */
 	virtual void update_alpha();
@@ -190,9 +203,6 @@ protected:
 
 	/** Update train kernel matrix */
 	virtual void update_train_kernel();
-
-	/** Update data means */
-	virtual void update_all();
 
 private:
 	void init();

@@ -7,23 +7,27 @@
  * Copyright (C) 2012 Jacob Walker
  */
 
-#include <shogun/regression/gp/MeanFunction.h>
+#include <shogun/machine/gp/ZeroMean.h>
 
 using namespace shogun;
 
-CMeanFunction::CMeanFunction()
+CZeroMean::CZeroMean() : CMeanFunction()
 {
 
 }
 
-CMeanFunction::~CMeanFunction()
+CZeroMean::~CZeroMean()
 {
 
 }
 
-SGVector<float64_t> CMeanFunction::get_parameter_derivative(TParameter* param,
-		CSGObject* obj, SGMatrix<float64_t>& data, index_t index)
+SGVector<float64_t> CZeroMean::get_mean_vector(SGMatrix<float64_t>& data)
 {
-	return SGVector<float64_t>();
+	SGVector<float64_t> result(data.num_cols);
+
+	for (index_t i = 0; i < result.vlen; i++)
+		result[i] = 0;
+
+	return result;
 }
 

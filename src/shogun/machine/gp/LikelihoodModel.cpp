@@ -4,10 +4,13 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
+ * Written (W) 2013 Roman Votyakov
  * Copyright (C) 2012 Jacob Walker
+ * Copyright (C) 2013 Roman Votyakov
  */
 
-#include <shogun/regression/gp/LikelihoodModel.h>
+#include <shogun/machine/gp/LikelihoodModel.h>
+
 #ifdef HAVE_EIGEN3
 
 using namespace shogun;
@@ -28,4 +31,5 @@ float64_t CLikelihoodModel::get_parameter_derivative(const char* param_name)
 
 	return 0;
 }
+
 #endif /* HAVE_EIGEN3 */
