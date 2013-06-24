@@ -1,13 +1,23 @@
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Written (W) 2013 Roman Votyakov
+ */
+
 #include <shogun/lib/config.h>
+
 #ifdef HAVE_EIGEN3
 
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/kernel/GaussianKernel.h>
-#include <shogun/regression/gp/ExactInferenceMethod.h>
-#include <shogun/regression/gp/ZeroMean.h>
+#include <shogun/machine/gp/ExactInferenceMethod.h>
+#include <shogun/machine/gp/ZeroMean.h>
 #include <shogun/evaluation/GradientResult.h>
-#include <shogun/regression/gp/GaussianLikelihood.h>
+#include <shogun/machine/gp/GaussianLikelihood.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;
@@ -49,14 +59,10 @@ TEST(ExactInferenceMethod,get_cholesky)
 			mean, label_train, lik);
 
 	/* do some checks against gpml toolbox*/
-
-	/*
-L =
-
-   1.414213562373095   0.386132930109494   0.062877078699608
-                   0   1.360478357154224   0.383538270389077
-                   0                   0   1.359759121359794
-    */
+	// L =
+	// 1.414213562373095   0.386132930109494   0.062877078699608
+	//                 0   1.360478357154224   0.383538270389077
+	//                 0                   0   1.359759121359794
 	SGMatrix<float64_t> L=inf->get_cholesky();
 	EXPECT_LE(CMath::abs(L(0,0)-1.414213562373095), 10E-15);
 	EXPECT_LE(CMath::abs(L(0,1)-0.386132930109494), 10E-15);
@@ -109,11 +115,10 @@ TEST(ExactInferenceMethod,get_alpha)
 
 	/* do some checks against gpml toolbox*/
 
-	/* alpha =
-
-  -0.121668320184276
-   0.396533145765454
-   0.301389368713216 */
+	// alpha =
+	// -0.121668320184276
+	// 0.396533145765454
+	// 0.301389368713216
 	SGVector<float64_t> alpha=inf->get_alpha();
 	EXPECT_LE(CMath::abs(alpha[0]+0.121668320184276), 10E-15);
 	EXPECT_LE(CMath::abs(alpha[1]-0.396533145765454), 10E-15);
@@ -159,10 +164,8 @@ TEST(ExactInferenceMethod,get_negative_marginal_likelihood)
 			mean, label_train, lik);
 
 	/* do some checks against gpml toolbox*/
-
-	/* nlZ =
-
-   4.017065867797999 */
+	// nlZ =
+	// 4.017065867797999
 	float64_t nml=inf->get_negative_marginal_likelihood();
 	EXPECT_LE(CMath::abs(nml-4.017065867797999), 10E-15);
 

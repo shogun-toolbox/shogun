@@ -7,7 +7,7 @@
  * Written (W) 2009 Soeren Sonnenburg
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
- 
+
 /* Remove C Prefix */
 %rename(Regression) CRegression;
 %rename(KernelRidgeRegression) CKernelRidgeRegression;
@@ -29,22 +29,25 @@
 %rename(SVRLight) CSVRLight;
 #endif //USE_SVMLIGHT
 
-/* Include Class Headers to make them visible from within the target language */
+#ifdef HAVE_EIGEN3
+%include <shogun/machine/gp/LikelihoodModel.h>
+%include <shogun/machine/gp/GaussianLikelihood.h>
+%include <shogun/machine/gp/StudentsTLikelihood.h>
+%include <shogun/machine/gp/MeanFunction.h>
+%include <shogun/machine/gp/ZeroMean.h>
+%include <shogun/machine/gp/InferenceMethod.h>
+%include <shogun/machine/gp/ExactInferenceMethod.h>
+%include <shogun/machine/gp/LaplacianInferenceMethod.h>
+%include <shogun/machine/gp/FITCInferenceMethod.h>
+%include <shogun/machine/GaussianProcessMachine.h>
 %include <shogun/regression/GaussianProcessRegression.h>
-%include <shogun/regression/gp/LikelihoodModel.h>
-%include <shogun/regression/gp/GaussianLikelihood.h>
-%include <shogun/regression/gp/StudentsTLikelihood.h>
-%include <shogun/regression/gp/MeanFunction.h>
-%include <shogun/regression/gp/ZeroMean.h>
+#endif //HAVE_EIGEN3
+
+/* Include Class Headers to make them visible from within the target language */
 %include <shogun/regression/Regression.h>
 %include <shogun/regression/KernelRidgeRegression.h>
 %include <shogun/regression/LinearRidgeRegression.h>
 %include <shogun/regression/LeastSquaresRegression.h>
-%include <shogun/regression/gp/InferenceMethod.h>
-%include <shogun/regression/gp/ExactInferenceMethod.h>
-%include <shogun/regression/gp/LaplacianInferenceMethod.h>
-%include <shogun/regression/gp/FITCInferenceMethod.h>
-%include <shogun/regression/GaussianProcessRegression.h>
 %include <shogun/regression/LeastAngleRegression.h>
 %include <shogun/regression/svr/LibSVR.h>
 %include <shogun/regression/svr/LibLinearRegression.h>

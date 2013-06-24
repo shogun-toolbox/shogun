@@ -4,15 +4,18 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
+ * Written (W) 2013 Roman Votyakov
  * Copyright (C) 2012 Jacob Walker
+ * Copyright (C) 2013 Roman Votyakov
  *
  * Adapted from the GPML toolbox, specifically likT.m
  * http://www.gaussianprocess.org/gpml/code/matlab/doc/
- *
  */
 
-#include <shogun/regression/gp/StudentsTLikelihood.h>
+#include <shogun/machine/gp/StudentsTLikelihood.h>
+
 #ifdef HAVE_EIGEN3
+
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/modelselection/ParameterCombination.h>
 #include <shogun/mathematics/Statistics.h>

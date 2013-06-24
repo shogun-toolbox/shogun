@@ -16,7 +16,7 @@
 
 #ifdef HAVE_EIGEN3
 
-#include <shogun/regression/gp/InferenceMethod.h>
+#include <shogun/machine/gp/InferenceMethod.h>
 
 namespace shogun
 {
@@ -160,6 +160,19 @@ public:
 		return result;
 	}
 
+	/**
+	 * @return wether combination of exact inference method and given likelihood
+	 * function supports regression
+	 */
+	virtual bool supports_regression()
+	{
+		check_members();
+		return m_model->supports_regression();
+	}
+
+	/** update all matrices */
+	virtual void update_all();
+
 protected:
 	/** update alpha matrix */
 	virtual void update_alpha();
@@ -169,9 +182,6 @@ protected:
 
 	/** update kernel matrix */
 	virtual void update_train_kernel();
-
-	/** update all matrices */
-	virtual void update_all();
 
 private:
 	/** Check if members of object are valid

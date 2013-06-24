@@ -4,13 +4,18 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
+ * Written (W) 2013 Roman Votyakov
  * Copyright (C) 2012 Jacob Walker
+ * Copyright (C) 2013 Roman Votyakov
  */
 
 #ifndef CLIKELIHOODMODEL_H_
 #define CLIKELIHOODMODEL_H_
+
 #include <shogun/lib/config.h>
+
 #ifdef HAVE_EIGEN3
+
 #include <shogun/base/SGObject.h>
 #include <shogun/labels/RegressionLabels.h>
 
@@ -30,7 +35,6 @@ enum ELikelihoodModelType
  *  The Likelihood model computes approximately the
  *  distribution P(y|f), where y are the labels, and f
  *  is the prediction function.
- *
  */
 class CLikelihoodModel : public CSGObject
 {
@@ -144,6 +148,24 @@ public:
 	 */
 	virtual SGVector<float64_t> get_third_derivative(CRegressionLabels* labels,
 			TParameter* param, CSGObject* obj, SGVector<float64_t> function) = 0;
+
+	/** return wether likelihood function supports regression
+	 *
+	 * @return false
+	 */
+	virtual bool supports_regression() { return false; }
+
+	/** return wether likelihood function supports binary classification
+	 *
+	 * @return false
+	 */
+	virtual bool supports_binary() { return false; }
+
+	/** return wether likelihood function supports multiclass classification
+	 *
+	 * @return false
+	 */
+	virtual bool supports_multiclass() { return false; }
 };
 }
 #endif /* HAVE_EIGEN3 */

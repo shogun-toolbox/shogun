@@ -20,8 +20,8 @@
 #include <shogun/base/SGObject.h>
 #include <shogun/features/DotFeatures.h>
 #include <shogun/labels/Labels.h>
-#include <shogun/regression/gp/LikelihoodModel.h>
-#include <shogun/regression/gp/MeanFunction.h>
+#include <shogun/machine/gp/LikelihoodModel.h>
+#include <shogun/machine/gp/MeanFunction.h>
 #include <shogun/evaluation/DifferentiableFunction.h>
 #include <shogun/labels/RegressionLabels.h>
 
@@ -208,6 +208,30 @@ public:
 	 */
 	virtual float64_t get_scale() { return m_scale; }
 
+	/** wether combination of inference method and
+	 * given likelihood function supports regression
+	 *
+	 * @return false
+	 */
+	virtual bool supports_regression() { return false; }
+
+	/** wether combination of inference method and
+	 * given likelihood function supports binary classification
+	 *
+	 * @return false
+	 */
+	virtual bool supports_binary() { return false; }
+
+	/** wether combination of inference method and
+	 * given likelihood function supports multiclass classification
+	 *
+	 * @return false
+	 */
+	virtual bool supports_multiclass() { return false; }
+
+	/** update all matrices */
+	virtual void update_all()=0;
+
 protected:
 	/** update alpha matrix */
 	virtual void update_alpha()=0;
@@ -217,9 +241,6 @@ protected:
 
 	/** update train kernel matrix */
 	virtual void update_train_kernel()=0;
-
-	/** update all matrices */
-	virtual void update_all()=0;
 
 private:
 	void init();
