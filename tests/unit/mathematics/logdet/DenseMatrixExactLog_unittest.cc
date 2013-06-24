@@ -50,8 +50,8 @@ TEST(DenseMatrixExactLog, dense_log_det)
 	CDenseMatrixExactLog *op_func=new CDenseMatrixExactLog(op, e);
 	SG_REF(op_func);
 
-	// its really important we call the init on the operato function
-	op_func->init();
+	// its really important we call the precompute on the operato function
+	op_func->precompute();
 
 	// for storing the aggregators that submit_jobs return
 	CDynamicObjectArray aggregators;

@@ -29,7 +29,9 @@ public:
 	/** default constructor */
 	CDenseExactLogJob();
 
-	/** constructor
+	/** 
+	 * constructor
+	 *
 	 * @param aggregator the job result aggregator for this job
 	 * @param log_operator the dense matrix operator to be applied to the vector
 	 * @param vector the sample vector to which operator is to be applied
@@ -61,6 +63,10 @@ private:
 
 	/** the trace-sample */
 	SGVector<float64_t> m_vector;
+
+private:
+	/** initialize with default values and register params */
+	void init();
 };
 
 }

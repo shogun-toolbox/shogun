@@ -12,6 +12,7 @@
 
 #include <shogun/lib/config.h>
 #include <shogun/lib/computation/job/JobResult.h>
+#include <shogun/base/Parameter.h>
 
 namespace shogun
 {
@@ -22,19 +23,27 @@ namespace shogun
 template<class T> class CScalarResult : public CJobResult
 {
 public:
-	/** default constructor, no args */
+	/** default constructor */
 	CScalarResult()
-	: CJobResult(), m_result(static_cast<T>(0))
+	: CJobResult()
 	{
+		init();
+
 		SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 	}
 
-	/** constructor
+	/** 
+	 * constructor
+	 *
 	 * @param result the scalar result
 	 */
 	CScalarResult(const T& result)
-	: CJobResult(), m_result(result)
+	: CJobResult()
 	{
+		init();
+
+		m_result=result;
+
 		SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 	}
 
@@ -59,6 +68,16 @@ public:
 protected:
 	/** the scalar result */
 	T m_result;
+
+private:
+	/** initialize with default values and register params */
+	void init()
+	{
+		m_result=static_cast<T>(0);
+
+		SG_ADD(&m_result, "scalar_result", "Scalar result of a computation job",
+			MS_NOT_AVAILABLE);
+	}
 };
 
 template class CScalarResult<bool>;

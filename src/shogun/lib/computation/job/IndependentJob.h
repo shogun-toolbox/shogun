@@ -12,6 +12,7 @@
 
 #include <shogun/lib/config.h>
 #include <shogun/base/SGObject.h>
+#include <shogun/base/Parameter.h>
 #include <shogun/lib/computation/job/JobResultAggregator.h>
 
 namespace shogun
@@ -27,18 +28,26 @@ class CIndependentJob : public CSGObject
 public:
 	/** default constructor*/
 	CIndependentJob()
-	: CSGObject(), m_aggregator(NULL)
+	: CSGObject()
 	{
+		init();
+
 		SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 	}
 
-	/** constructor
+	/** 
+	 * constructor
+	 *
 	 * @param aggregator the job result aggregator for the current job
 	 */
 	CIndependentJob(CJobResultAggregator* aggregator)
 	: CSGObject(), m_aggregator(aggregator)
 	{
+		init();
+
+		m_aggregator=aggregator;
 		SG_REF(m_aggregator);
+
 		SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 	}
 
@@ -46,10 +55,12 @@ public:
 	virtual ~CIndependentJob()
 	{
 		SG_UNREF(m_aggregator);
+
 		SG_GCDEBUG("%s destroyed (%p)\n", this->get_name(), this)
 	}
 
-	/** abstract compute method that computes the job, creates a CJobResult,
+	/** 
+	 * abstract compute method that computes the job, creates a CJobResult,
 	 * submits the result to the job result aggregator
 	 */
 	virtual void compute() = 0;
@@ -62,6 +73,16 @@ public:
 protected:
 	/** the job result aggregator for the current job */
 	CJobResultAggregator* m_aggregator;
+
+private:
+	/** initialize with default values and register params */
+	void init()
+	{
+		m_aggregator=NULL;
+
+		SG_ADD((CSGObject**)&m_aggregator, "job_result_aggregator",
+			"Job result aggregator for current job", MS_NOT_AVAILABLE);
+	}
 };
 
 }

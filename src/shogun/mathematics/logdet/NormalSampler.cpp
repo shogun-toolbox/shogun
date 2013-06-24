@@ -8,7 +8,7 @@
  */
 #include <shogun/lib/common.h>
 #include <shogun/lib/SGVector.h>
-#include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/Random.h>
 #include <shogun/mathematics/logdet/NormalSampler.h>
 
 namespace shogun
@@ -31,7 +31,7 @@ CNormalSampler::~CNormalSampler()
 	SG_GCDEBUG("%s destroyed (%p)\n", this->get_name(), this)
 }
 
-void CNormalSampler::init()
+void CNormalSampler::precompute()
 {
 	m_num_samples=1;
 }
@@ -44,7 +44,7 @@ SGVector<float64_t> CNormalSampler::sample(index_t idx) const
 	else
 	{
 		for (index_t i=0; i<m_dimension; ++i)
-			s[i]=CMath::randn_double();
+			s[i]=sg_rand->std_normal_distrib();
 	}
 	return s;
 }

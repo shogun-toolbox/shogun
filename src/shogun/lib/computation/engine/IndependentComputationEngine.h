@@ -40,7 +40,9 @@ public:
 		SG_GCDEBUG("%s destroyed (%p)\n", this->get_name(), this)
 	}
 	
-	/** abstract method that submits the jobs to the engine
+	/** 
+	 * abstract method that submits the jobs to the engine
+	 * 
 	 * @param job the job to be computed
 	 */
 	virtual void submit_job(CIndependentJob* job) = 0;

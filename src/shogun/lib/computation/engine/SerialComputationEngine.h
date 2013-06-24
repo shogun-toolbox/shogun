@@ -28,13 +28,16 @@ public:
 	/** destructor */
 	virtual ~CSerialComputationEngine();
 
-	/** method that calls the job's compute method in each call, therefore
+	/** 
+	 * method that calls the job's compute method in each call, therefore
 	 * blocks until the its computation is done
+	 *
 	 * @param job the job to be computed
 	 */
 	virtual void submit_job(CIndependentJob* job);
 	
-	/** method that returns when all the jobs computed, in this case it does
+	/** 
+	 * method that returns when all the jobs computed, in this case it does
 	 * nothing
 	 */
 	virtual void wait_for_all();

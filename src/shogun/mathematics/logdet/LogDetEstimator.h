@@ -11,6 +11,7 @@
 
 #include <shogun/lib/config.h>
 #include <shogun/base/SGObject.h>
+#include <shogun/base/Parameter.h>
 
 namespace shogun
 {
@@ -33,7 +34,9 @@ public:
 	/** default constructor */
 	CLogDetEstimator();
 
-	/** constructor
+	/** 
+	 * constructor
+	 *
 	 * @param sampler the trace sampler
 	 * @param op_func the operator function
 	 * @param engine the independent computation engine
@@ -45,15 +48,19 @@ public:
 	/** destructor */
 	virtual ~CLogDetEstimator();
 
-	/** method that gives num_estimates number of log-det estimates with running
+	/** 
+	 * method that gives num_estimates number of log-det estimates with running
 	 * averaging of the estimates
+	 *
 	 * @param num_estimates the number of log-det estimates to be computed
 	 * @return the log-det estimates
 	 */
 	SGVector<float64_t> sample(index_t num_estimates);
 
-	/** method that gives num_estimates number of log-det estimates without any
+	/** 
+	 * method that gives num_estimates number of log-det estimates without any
 	 * averaging of the estimates
+	 *
 	 * @param num_estimates the number of log-det estimates to be computed
 	 * @return the log-det estimates
 	 */
@@ -74,6 +81,9 @@ private:
 
 	/** the computation engine for the independent jobs */
 	CIndependentComputationEngine* m_computation_engine;
+
+	/** initialize with default values and register params */
+	void init();
 };
 
 }

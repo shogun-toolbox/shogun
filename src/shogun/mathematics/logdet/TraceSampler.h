@@ -11,6 +11,7 @@
 
 #include <shogun/lib/config.h>
 #include <shogun/base/SGObject.h>
+#include <shogun/base/Parameter.h>
 
 namespace shogun
 {
@@ -24,17 +25,25 @@ class CTraceSampler : public CSGObject
 public:
 	/** default constructor */
 	CTraceSampler()
-	: CSGObject(), m_dimension(0), m_num_samples(0)
+	: CSGObject(),
+	  m_dimension(0)
 	{
+		init();
+
 		SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 	}
 
-	/** constructor
+	/** 
+	 * constructor
+	 *
 	 * @param dimension the dimension of the sample vectors
 	 */
 	CTraceSampler(index_t dimension)
-	: CSGObject(), m_dimension(dimension), m_num_samples(0)
+	: CSGObject(),
+	  m_dimension(dimension)
 	{
+		init();
+
 		SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 	}
 
@@ -44,16 +53,19 @@ public:
 		SG_GCDEBUG("%s destroyed (%p)\n", this->get_name(), this)
 	}
 
-	/** abstract method that generates the samples
+	/** 
+	 * abstract method that generates the samples
+	 *
  	 * @param idx the index which determines which sample to draw
 	 * @return the sample vector
  	 */
 	virtual SGVector<float64_t> sample(index_t idx) const = 0;
 
-	/** abstract method for initializing the sampler, number of samples etc,
+	/**
+	 * abstract method for initializing the sampler, number of samples etc,
 	 * must be called before sample
 	 */
-	virtual void init() = 0;
+	virtual void precompute() = 0;
 
 	/** @return the number of samples */
 	virtual const index_t get_num_samples() const
@@ -72,6 +84,16 @@ public:
 protected:
 	/** the number of samples this sampler will generate, set by implementation */
 	index_t m_num_samples;
+
+private:
+	/** initialize with default values and register params */
+	void init()
+	{
+		m_num_samples=0;
+
+		SG_ADD(&m_num_samples, "num_samples",
+			"Number of samples this sampler can generate", MS_NOT_AVAILABLE);
+	}
 };
 
 }

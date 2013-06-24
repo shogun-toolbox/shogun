@@ -30,7 +30,9 @@ public:
 	/** default constructor */
 	CDenseMatrixOperator();
 
-	/** constructor
+	/** 
+	 * constructor
+	 *
 	 * @param op the dense matrix to be used as the linear operator
 	 */
 	CDenseMatrixOperator(SGMatrix<T> op);
@@ -38,7 +40,9 @@ public:
 	/** destructor */
 	~CDenseMatrixOperator();
 
-	/** method that applies the dense-matrix linear operator to a vector
+	/** 
+	 * method that applies the dense-matrix linear operator to a vector
+	 *
 	 * @param b the vector to which the linear operator applies
 	 * @return the result vector
 	 */
@@ -56,6 +60,7 @@ public:
 private:
 	/** the dense matrix operator */
 	const SGMatrix<T> m_operator;
+
 };
 
 }
