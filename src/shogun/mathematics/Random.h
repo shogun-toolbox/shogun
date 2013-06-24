@@ -73,7 +73,7 @@ namespace shogun
 			 */
 			inline int32_t random_s32() const
 			{
-				return random_32() & 0x7fffffff;
+				return random_32() & ((uint32_t(-1)<<1)>>1);
 			}
 
 			/**
@@ -83,7 +83,7 @@ namespace shogun
 			 */			
 			int64_t random_s64() const
 			{
-				return random_64() & 0x7fffffffffffffffl;
+				return random_64() & ((uint64_t(-1)<<1)>>1);
 			}
 
 
