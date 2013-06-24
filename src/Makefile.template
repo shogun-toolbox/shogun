@@ -672,7 +672,7 @@ ifeq (makedepend,$(MAKEDEPEND))
 else #gcc -MM
 	@echo 'Generating dependencies'
 	@find $(SRCDIR) -name "*.$(EXT_SRC_C)" -o -name "*.$(EXT_SRC_CPP)" \
-	-exec $(MAKEDEPEND) $(COMPFLAGS_C) $(INCLUDES) {} -MT {}.o \; >.depend
+	-exec $(MAKEDEPEND) $(COMPFLAGS_CPP) $(INCLUDES) {} -MT {}.o \; >.depend
 	@( find . -name "*.$(EXT_INP_SWIG)" | cut -c 3- ; find $(CONFIGPATH)/shogun/ -name "*.h"  ) | \
 	 		sed 's#/[/]*#/#g' | \
 			$(PYTHON) $(CONFIGPATH)/.generate_link_dependencies.py "$(PRE_LIB_SWIG_TEMPLATE)" \
