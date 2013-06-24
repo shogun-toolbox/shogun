@@ -2960,6 +2960,7 @@ EOF
 	HAVE_SSE2='#define HAVE_SSE2 1'
 	COMPFLAGS_C="$COMPFLAGS_C -msse2"
 	COMPFLAGS_CPP="$COMPFLAGS_CPP -msse2"
+	COMPFLAGS_SWIG_CPP="$COMPFLAGS_SWIG_CPP -msse2"
   fi
   echores "$_builtin_vector"
 fi
