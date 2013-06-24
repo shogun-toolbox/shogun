@@ -302,7 +302,28 @@ class CCustomDistance: public CDistance
 		 * @return if setting was successful
 		 */
 		template <class T>
-		bool set_full_distance_matrix_from_full_generic(const T* dm, int32_t rows, int32_t cols);
+		bool set_full_distance_matrix_from_full_generic(const T* dm, int32_t rows, int32_t cols)
+		{
+			cleanup_custom();
+			SG_DEBUG("using custom distance of size %dx%d\n", rows,cols)
+
+			dmatrix=SG_MALLOC(float32_t, rows*cols);
+
+			upper_diagonal=false;
+			num_rows=rows;
+			num_cols=cols;
+
+			for (int32_t row=0; row<num_rows; row++)
+			{
+				for (int32_t col=0; col<num_cols; col++)
+				{
+					dmatrix[row * num_cols + col]=dm[col*num_rows+row];
+				}
+			}
+
+			dummy_init(rows, cols);
+			return true;
+		}
 
 		/** get number of vectors of lhs features
 		 *
