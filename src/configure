@@ -2958,6 +2958,8 @@ EOF
   if test "$_builtin_vector" = yes ; then
   	DEFINES="$DEFINES -DHAVE_SSE2"
 	HAVE_SSE2='#define HAVE_SSE2 1'
+	COMPFLAGS_C="$COMPFLAGS_C -msse2"
+	COMPFLAGS_CPP="$COMPFLAGS_CPP -msse2"
   fi
   echores "$_builtin_vector"
 fi
