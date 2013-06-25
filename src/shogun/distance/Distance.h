@@ -49,7 +49,8 @@ enum EDistanceType
 	D_CUSTOM = 160,
 	D_ATTENUATEDEUCLIDEAN = 170,
 	D_MAHALANOBIS = 180,
-	D_DIRECTOR = 190
+	D_DIRECTOR = 190,
+	D_CUSTOMMAHALANOBIS = 200
 };
 
 
@@ -305,7 +306,7 @@ class CDistance : public CSGObject
 		/// compute distance function for features a and b
 		/// idx_{a,b} denote the index of the feature vectors
 		/// in the corresponding feature object
-		virtual float64_t compute(int32_t x, int32_t y)=0;
+		virtual float64_t compute(int32_t idx_a, int32_t idx_b)=0;
 
 		/// matrix precomputation
 		void do_precompute_matrix();
