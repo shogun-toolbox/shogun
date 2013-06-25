@@ -21,7 +21,9 @@ then
 	prefix="svn_r"
 elif test -d ../../.git
 then
-	branch_point=$(git merge-base master HEAD)
+
+	branch=`git branch | grep '^*' | awk '{ print $2}'`
+	branch_point=$(git merge-base $branch HEAD)
 	dateinfo=$(git show --pretty='format:%ai' $branch_point | head -1)
 
 	year=$(echo $dateinfo | cut -f 1 -d '-')
