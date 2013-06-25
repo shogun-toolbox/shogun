@@ -74,7 +74,6 @@ class CKNN : public CDistanceMachine
 		 * @return classifier type KNN
 		 */
 		virtual EMachineType get_classifier_type() { return CT_KNN; }
-		//inline EDistanceType get_distance_type() { return DT_KNN;}
 
 		/** classify objects
 		 *
