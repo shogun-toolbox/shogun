@@ -59,14 +59,11 @@ SGVector<complex64_t> CDirectLinearSolverComplex::solve(
 	Map<VectorXcd> map_b(b.vector, b.vlen);
 	Map<VectorXcd> map_x(x.vector, x.vlen);
 
-	// rank checking for LLT
-	FullPivLU<MatrixXcd> lu(map_A);
-	bool full_rank=lu.rank()==mat_A.num_cols;
-
 	switch (m_type)
 	{
 	case DS_LLT:
-		if (full_rank)
+		// rank checking for LLT
+		if (map_A.fullPivLu().rank()==mat_A.num_cols)
 			map_x=map_A.llt().solve(map_b);
 		else
 			SG_WARNING("Matrix is not full rank!\n");
