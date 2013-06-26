@@ -7,10 +7,10 @@
  * Written (W) 2013 Soumyajit De
  */
 
-#include <shogun/lib/common.h>
-#include <shogun/mathematics/logdet/DenseMatrixOperator.h>
+#include <shogun/lib/config.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
+#include <shogun/mathematics/logdet/DenseMatrixOperator.h>
 
 #ifdef HAVE_EIGEN3
 #include <shogun/mathematics/eigen3.h>
@@ -30,7 +30,8 @@ CDenseMatrixOperator<T>::CDenseMatrixOperator()
 
 template<class T>
 CDenseMatrixOperator<T>::CDenseMatrixOperator(SGMatrix<T> op)
-	: CLinearOperator<T>(op.num_cols), m_operator(op)
+	: CLinearOperator<T>(op.num_cols),
+	  m_operator(op)
 	{
 		SG_SGCDEBUG("%s created (%p)\n", this->get_name(), this);
 	}

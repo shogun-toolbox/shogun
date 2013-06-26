@@ -13,6 +13,7 @@
 #include <shogun/lib/config.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/computation/job/JobResult.h>
+#include <shogun/base/Parameter.h>
 
 namespace shogun
 {
@@ -26,8 +27,10 @@ class CJobResultAggregator : public CSGObject
 public:
 	/** default constructor */
 	CJobResultAggregator()
-	: CSGObject(), m_result(NULL)
+	: CSGObject()
 	{
+		init();
+
 		SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 	}
 
@@ -35,16 +38,20 @@ public:
 	virtual ~CJobResultAggregator()
 	{
 		SG_UNREF(m_result);
+
 		SG_GCDEBUG("%s destroyed (%p)\n", this->get_name(), this)
 	}
 
-	/** abstract method that submits the result of an independent job, and
+	/** 
+	 * abstract method that submits the result of an independent job, and
 	 * computes the aggregation with the previously submitted result
+	 *
 	 * @param result the result of an independent job
 	 */
 	virtual void submit_result(CJobResult* result) = 0;
 
-	/** abstract method that finalizes the aggregation and computes the result,
+	/** 
+	 * abstract method that finalizes the aggregation and computes the result,
 	 * its necessary to call finalize before getting the final result
 	 */
 	virtual void finalize() = 0;
@@ -63,6 +70,16 @@ public:
 protected:
 	/** the final job result */
 	CJobResult* m_result;
+
+private:
+	/** initialize with default values and register params */
+	void init()
+	{
+		m_result=NULL;
+
+		SG_ADD((CSGObject**)&m_result, "final_result",
+			"Aggregation of computation job results", MS_NOT_AVAILABLE);
+	}
 };
 
 }

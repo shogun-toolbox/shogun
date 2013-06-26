@@ -22,11 +22,11 @@ using namespace Eigen;
 TEST(NormalSampler, sample)
 {
 	const index_t dimension=2;
-	const index_t num_samples=1000;
+	const index_t num_samples=5000;
 	SGMatrix<float64_t> samples(num_samples, dimension);
 
 	CNormalSampler sampler(dimension);
-	sampler.init();
+	sampler.precompute();
 	for (index_t i=0; i<num_samples; ++i)
 	{
 		SGVector<float64_t> s=sampler.sample(0);

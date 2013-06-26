@@ -24,23 +24,28 @@ template<class T> class CLinearOperator : public CSGObject
 public:
 	/** default constructor */
 	CLinearOperator()
-	: CSGObject(), dim(0)
+	: CSGObject(),
+	  m_dimension(0)
 	{
 		SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 	}
 
-	/** constructor
-	 * @param _dim dimension of the vector on which the operator can be applied
+	/** 
+	 * constructor
+	 *
+	 * @param dimension dimension of the vector on which the operator can be applied
 	 */
-	CLinearOperator(index_t _dim)
-	: CSGObject(), dim(_dim)
+	CLinearOperator(index_t dimension)
+	: CSGObject(),
+	  m_dimension(dimension)
 	{
 		SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 	}
 
 	/** copy constructor */
 	CLinearOperator(const CLinearOperator<T>& orig)
-	: CSGObject(orig), dim(orig.get_dim())
+	: CSGObject(orig),
+	  m_dimension(orig.m_dimension)
 	{
 		SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 	}
@@ -51,13 +56,15 @@ public:
 		SG_GCDEBUG("%s destroyed (%p)\n", this->get_name(), this)
 	}
 
-	/** getter for the dimension */
+	/** @return the dimension on which the linear operator can apply */
 	const index_t get_dim() const
 	{
-		return dim;
+		return m_dimension;
 	}
 
-	/** abstract method that applies the linear operator to a vector
+	/** 
+	 * abstract method that applies the linear operator to a vector
+	 *
 	 * @param b the vector to which the linear operator applies
 	 * @return the result vector
 	 */
@@ -70,7 +77,8 @@ public:
 	}
 protected:
 	/** the dimension of vector on which the linear operator can apply */
-	const index_t dim;
+	const index_t m_dimension;
+
 };
 
 template class CLinearOperator<bool>;

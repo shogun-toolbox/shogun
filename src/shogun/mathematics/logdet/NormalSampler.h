@@ -38,8 +38,8 @@ public:
  	 */
 	virtual SGVector<float64_t> sample(index_t idx) const;
 
-	/** init method that sets the num_samples of the base */
-	virtual void init();
+	/** precompute method that sets the num_samples of the base */
+	virtual void precompute();
 
 	/** @return object name */
 	virtual const char* get_name() const

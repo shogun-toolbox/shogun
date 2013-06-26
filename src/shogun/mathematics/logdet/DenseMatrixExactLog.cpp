@@ -35,10 +35,11 @@ CDenseMatrixExactLog::CDenseMatrixExactLog()
 	SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 }
 
-CDenseMatrixExactLog::CDenseMatrixExactLog(CDenseMatrixOperator<float64_t>* op,
+CDenseMatrixExactLog::CDenseMatrixExactLog(
+	CDenseMatrixOperator<float64_t>* op,
 	CIndependentComputationEngine* engine)
-	: COperatorFunction<float64_t>((CLinearOperator<float64_t>*)op,
-	  engine, OF_LOG)
+	: COperatorFunction<float64_t>(
+		(CLinearOperator<float64_t>*)op, engine, OF_LOG)
 {
 	SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 }
@@ -49,7 +50,7 @@ CDenseMatrixExactLog::~CDenseMatrixExactLog()
 }
 
 #if EIGEN_VERSION_AT_LEAST(3,1,0)
-void CDenseMatrixExactLog::init()
+void CDenseMatrixExactLog::precompute()
 {
 	SG_DEBUG("Entering...\n");
 
@@ -58,7 +59,6 @@ void CDenseMatrixExactLog::init()
 		=dynamic_cast<CDenseMatrixOperator<float64_t>*>(m_linear_operator);
 	REQUIRE(op, "Operator not an instance of DenseMatrixOperator!\n");
 	SGMatrix<float64_t> m=op->get_matrix_operator();
-	//SG_UNREF(op);
 
 	// compute log(C) using Eigen3
 	Map<MatrixXd> mat(m.matrix, m.num_rows, m.num_cols);
@@ -75,7 +75,7 @@ void CDenseMatrixExactLog::init()
 	SG_DEBUG("Leaving...\n");
 }
 #else
-void CDenseMatrixExactLog::init()
+void CDenseMatrixExactLog::precompute()
 {
 	SG_WARNING("Eigen3.1.0 or later required!\n")
 }
@@ -92,8 +92,10 @@ CJobResultAggregator* CDenseMatrixExactLog::submit_jobs(SGVector<float64_t>
 	CDenseExactLogJob* job=new CDenseExactLogJob(agg, 
 		dynamic_cast<CDenseMatrixOperator<float64_t>*>(m_linear_operator), sample);
 	SG_REF(job);
-	// we can safely unref the job here, computation engine takes it from here
+	// sanity check
+	REQUIRE(m_computation_engine, "Computation engine is NULL\n");
 	m_computation_engine->submit_job(job);
+	// we can safely unref the job here, computation engine takes it from here
 	SG_UNREF(job);
 
 	SG_DEBUG("Leaving...\n");
