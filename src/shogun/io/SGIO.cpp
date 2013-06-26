@@ -45,7 +45,7 @@ char SGIO::directory_name[FBUFSIZE];
 
 SGIO::SGIO()
 : target(stdout), last_progress_time(0), progress_start_time(0),
-	last_progress(1), show_progress(false), location_info(MSG_FUNCTION),
+	last_progress(1), show_progress(false), location_info(MSG_NONE),
 	syntax_highlight(true), loglevel(MSG_WARN), refcount(0)
 {
 }
