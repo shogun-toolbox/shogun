@@ -28,7 +28,10 @@ CSerialComputationEngine::~CSerialComputationEngine()
 void CSerialComputationEngine::submit_job(CIndependentJob* job)
 {
 	SG_DEBUG("Entering. The job is being computed!\n");
+
+	REQUIRE(job, "Job to be computed is NULL\n");
 	job->compute();
+
 	SG_DEBUG("The job is computed. Leaving!\n");
 }
 

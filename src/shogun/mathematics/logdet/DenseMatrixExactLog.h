@@ -32,7 +32,9 @@ public:
 	/** default constructor */
 	CDenseMatrixExactLog();
 
-	/** constructor
+	/** 
+	 * constructor
+	 *
 	 * @param op the dense matrix linear operator for this operator function
 	 * @param engine the computation engine for the independent jobs
 	 */
@@ -42,15 +44,18 @@ public:
 	/** destructor */
 	virtual ~CDenseMatrixExactLog();
 
-	/** init method that computes the log of the linear operator using Eigen3,
-	 * creates a new linear operator and sets that as the operator to apply to
-	 * vectors for this operator function
+	/** 
+	 * precompute method that computes the log of the linear operator using 
+	 * Eigen3, creates a new linear operator and sets that as the operator to 
+	 * apply to vectors for this operator function
 	 */
-	virtual void init();
+	virtual void precompute();
 
-	/** method that creates a scalar job result aggregator, then creates one
+	/** 
+	 * method that creates a scalar job result aggregator, then creates one
 	 * job per sample, attaches the aggregator with it, and submits the job to
 	 * computation engine and then returns the aggregator
+	 *
 	 * @param sample the vector for which a new computation job has to be created
 	 * @return the array of generated independent jobs
 	 */

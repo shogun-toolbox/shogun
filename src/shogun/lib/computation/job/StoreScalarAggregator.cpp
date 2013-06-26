@@ -7,7 +7,7 @@
  * Written (W) 2013 Soumyajit De
  */
 
-#include <shogun/lib/common.h>
+#include <shogun/lib/config.h>
 #include <shogun/lib/computation/job/ScalarResult.h>
 #include <shogun/lib/computation/job/StoreScalarAggregator.h>
 
@@ -15,9 +15,20 @@ namespace shogun
 {
 template<class T>
 CStoreScalarAggregator<T>::CStoreScalarAggregator()
-	: CJobResultAggregator(), m_aggregate(static_cast<T>(0))
+	: CJobResultAggregator()
 	{
+		init();
+
 		SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
+	}
+
+template<class T>
+void CStoreScalarAggregator<T>::init()
+	{
+		m_aggregate=static_cast<T>(0);
+
+		SG_ADD(&m_aggregate, "current_aggregate",
+			"Aggregation of computation job results", MS_NOT_AVAILABLE);
 	}
 
 template<class T>
@@ -32,7 +43,6 @@ void CStoreScalarAggregator<T>::submit_result(CJobResult* result)
 		SG_GCDEBUG("Entering ...\n")
 
 		// check for proper typecast
-		// DEBUG COMMENT : the following does NOT increase refcount of result
 		CScalarResult<T>* new_result=dynamic_cast<CScalarResult<T>*>(result);
 		if (!new_result)
 			SG_ERROR("result is not of CScalarResult type!\n");

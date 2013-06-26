@@ -117,3 +117,6 @@ examples/undocumented/python_modular/*
 
 # /tests
 /tests/unit/shogun-unit-test
+/tests/unit/*.txt
+/tests/unit/*.xml
+/tests/unit/*.hdf5

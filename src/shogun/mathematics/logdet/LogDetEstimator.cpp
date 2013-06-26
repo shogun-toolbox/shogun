@@ -21,26 +21,46 @@ namespace shogun
 {
 
 CLogDetEstimator::CLogDetEstimator()
-	: CSGObject(),
-	m_trace_sampler(NULL),
-	m_operator_log(NULL),
-	m_computation_engine(NULL)
+	: CSGObject()
 {
+	init();
+
 	SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 }
 
 CLogDetEstimator::CLogDetEstimator(CTraceSampler* trace_sampler,
 	COperatorFunction<float64_t>* operator_log,
 	CIndependentComputationEngine* computation_engine)
-	: CSGObject(),
-	m_trace_sampler(trace_sampler),
-	m_operator_log(operator_log),
-	m_computation_engine(computation_engine)
+	: CSGObject()
 {
+	init();
+
+	m_trace_sampler=trace_sampler;
 	SG_REF(m_trace_sampler);
+
+	m_operator_log=operator_log;
 	SG_REF(m_operator_log);
+
+	m_computation_engine=computation_engine;
 	SG_REF(m_computation_engine);
+
 	SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
+}
+
+void CLogDetEstimator::init()
+{
+	m_trace_sampler=NULL;
+	m_operator_log=NULL;
+	m_computation_engine=NULL;
+
+	SG_ADD((CSGObject**)&m_trace_sampler, "trace_sampler",
+		"Trace sampler for the log operator", MS_NOT_AVAILABLE);
+
+	SG_ADD((CSGObject**)&m_operator_log, "operator_log",
+		"The log operator function", MS_NOT_AVAILABLE);
+
+	SG_ADD((CSGObject**)&m_computation_engine, "computation_engine",
+		"The computation engine for the jobs", MS_NOT_AVAILABLE);
 }
 
 CLogDetEstimator::~CLogDetEstimator()
@@ -48,36 +68,21 @@ CLogDetEstimator::~CLogDetEstimator()
 	SG_UNREF(m_trace_sampler);
 	SG_UNREF(m_operator_log);
 	SG_UNREF(m_computation_engine);
+
 	SG_GCDEBUG("%s destroyed (%p)\n", this->get_name(), this)
 }
 
 SGVector<float64_t> CLogDetEstimator::sample(index_t num_estimates)
 {
-	SGVector<float64_t> samples(num_estimates);
-	SGMatrix<float64_t> all_estimates=sample_without_averaging(num_estimates);
-	
-	index_t num_trace_samples=m_trace_sampler->get_num_samples();
-	// compute column-wise average for all estimates
-	for (register index_t i=0; i<num_estimates; ++i)
-	{
-		register float64_t estimate=0.0;
-		for (index_t j=0; j<num_trace_samples; ++j)
-			estimate+=all_estimates(j, i);
-		samples[i]=estimate/num_trace_samples;
-	}
-	return samples;
-}
-
-SGMatrix<float64_t> CLogDetEstimator::sample_without_averaging(index_t
-	num_estimates)
-{
 	SG_DEBUG("Entering...\n")
 	
-	// call the init of operator function to compure necessary prerequisites
-	m_operator_log->init();
+	REQUIRE(m_operator_log, "Operator function is NULL\n");
+	// call the precompute of operator function to compute the prerequisites
+	m_operator_log->precompute();
 
-	// call the init of the sampler
-	m_trace_sampler->init();
+	REQUIRE(m_trace_sampler, "Trace sampler is NULL\n");
+	// call the precompute of the sampler
+	m_trace_sampler->precompute();
 
 	// for storing the aggregators that submit_jobs return
 	CDynamicObjectArray aggregators;
@@ -96,6 +101,81 @@ SGMatrix<float64_t> CLogDetEstimator::sample_without_averaging(index_t
 		}
 	}
 
+	REQUIRE(m_computation_engine, "Computation engine is NULL\n");
+	// wait for all the jobs to be completed
+	m_computation_engine->wait_for_all();
+
+	// the samples vector which stores the estimates with averaging
+	SGVector<float64_t> samples(num_estimates);
+
+	// use the aggregators to find the final result
+	int32_t num_aggregates=aggregators.get_num_elements();
+	float64_t result=0.0;
+	for (int32_t i=0; i<num_aggregates; ++i)
+	{
+		CJobResultAggregator* agg=dynamic_cast<CJobResultAggregator*>
+			(aggregators.get_element(i));
+		if (!agg)
+			SG_ERROR("Element is not CJobResultAggregator type!\n");
+
+		// call finalize on all the aggregators
+		agg->finalize();
+		CScalarResult<float64_t>* r=dynamic_cast<CScalarResult<float64_t>*>
+			(agg->get_final_result());
+		if (!r)
+			SG_ERROR("Result is not CScalarResult type!\n");
+
+		// its important that we don't just unref the result here
+		index_t idx_row=i%num_trace_samples;
+		index_t idx_col=i/num_trace_samples;
+		result+=r->get_result();
+		if (idx_row==num_trace_samples-1)
+		{
+			samples[idx_col]=result/num_trace_samples;
+			result=0.0;
+		}
+
+		SG_UNREF(agg);
+	}
+
+	// clear all aggregators
+	aggregators.clear_array();
+
+	SG_DEBUG("Leaving...\n")
+	return samples;
+}
+
+SGMatrix<float64_t> CLogDetEstimator::sample_without_averaging(
+	index_t num_estimates)
+{
+	SG_DEBUG("Entering...\n")
+	
+	REQUIRE(m_operator_log, "Operator function is NULL\n");
+	// call the precompute of operator function to compute all prerequisites
+	m_operator_log->precompute();
+
+	REQUIRE(m_trace_sampler, "Trace sampler is NULL\n");
+	// call the precompute of the sampler
+	m_trace_sampler->precompute();
+
+	// for storing the aggregators that submit_jobs return
+	CDynamicObjectArray aggregators;
+	index_t num_trace_samples=m_trace_sampler->get_num_samples();
+
+	for (register index_t i=0; i<num_estimates; ++i)
+	{
+		for (register index_t j=0; j<num_trace_samples; ++j)
+		{
+			// get the trace sampler vector
+			SGVector<float64_t> s=m_trace_sampler->sample(j);
+			// create jobs with the sample vector and store the aggregator
+			CJobResultAggregator* agg=m_operator_log->submit_jobs(s);
+			aggregators.append_element(agg);
+			SG_UNREF(agg);
+		}
+	}
+	
+	REQUIRE(m_computation_engine, "Computation engine is NULL\n");
 	// wait for all the jobs to be completed
 	m_computation_engine->wait_for_all();
 

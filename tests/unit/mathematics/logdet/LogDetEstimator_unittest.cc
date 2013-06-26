@@ -45,7 +45,7 @@ TEST(LogDetEstimator, sample)
 	SG_REF(trace_sampler);
 
 	CLogDetEstimator estimator(trace_sampler, op_func, e);
-	const index_t num_estimates=1000;
+	const index_t num_estimates=5000;
 	SGVector<float64_t> estimates=estimator.sample(num_estimates);
 	
 	float64_t result=0.0;
