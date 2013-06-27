@@ -127,3 +127,26 @@ TEST(CMath, float64_tests)
 	}
 	EXPECT_EQ(CMath::get_num_nonzero(vec.vector, 10), 4);
 }
+
+TEST(CMath, linspace_test)
+{
+	// Number of points used to divide the interval
+	int32_t n = 100;
+	// Start and end of the interval
+	float64_t start = 0.0, end = 1.0;
+
+	SGVector<float64_t> vec(100);
+	CMath::linspace(vec.vector, start, end, n);
+
+	// The first and last elements are tested outside the loop, because
+	// linspace sets them directly using the arguments
+	EXPECT_EQ(vec[0], start);
+	EXPECT_EQ(vec[n-1], end);
+
+	float64_t val = start;
+	for (index_t i = 1; i < n-1; ++i)
+	{
+		val += (end-start)/(n-1);
+		EXPECT_EQ(vec[i], val);
+	}
+}
