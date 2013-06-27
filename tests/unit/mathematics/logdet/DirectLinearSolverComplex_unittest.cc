@@ -124,4 +124,31 @@ TEST(DirectLinearSolverComplex, solve_QR_FULLPERM)
 	SG_UNREF(A);
 }
 
+TEST(DirectLinearSolverComplex, solve_LLT)
+{
+	const index_t size=2;
+	SGMatrix<complex64_t> m(size, size);
+	// LLT doesn't work on non-symmetric matrices
+	m(0,0)=complex64_t(2.0, 0.0);
+	m(0,1)=complex64_t(1.0, 0.0);
+	m(1,0)=complex64_t(1.0, 0.0);
+	m(1,1)=complex64_t(2.5, 0.0);
+
+	CDenseMatrixOperator<complex64_t>* A=new CDenseMatrixOperator<complex64_t>(m);
+	SG_REF(A);
+	SGVector<complex64_t> b(size);
+	b.set_const(complex64_t(1.0));
+
+	CDirectLinearSolverComplex solver(DS_LLT);
+	SGVector<complex64_t> x=solver.solve((CLinearOperator<complex64_t>*)A, b);
+
+	SGVector<complex64_t> bp=A->apply(x);
+	Map<VectorXcd> map_b(b.vector, b.vlen);
+	Map<VectorXcd> map_bp(bp.vector, bp.vlen);
+
+	EXPECT_NEAR((map_b-map_bp).norm()/map_b.norm(), 0.0, 1E-15);
+
+	SG_UNREF(A);
+}
+
 #endif //HAVE_EIGEN3
