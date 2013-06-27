@@ -43,8 +43,6 @@ CDirectLinearSolverComplex::~CDirectLinearSolverComplex()
 SGVector<complex64_t> CDirectLinearSolverComplex::solve(
 		CLinearOperator<complex64_t>* A, SGVector<complex64_t> b)
 {
-	SG_DEBUG("Entering..\n");
-
 	SGVector<complex64_t> x(b.vlen);
 
 	REQUIRE(A, "Operator is NULL!\n");
@@ -62,11 +60,14 @@ SGVector<complex64_t> CDirectLinearSolverComplex::solve(
 	switch (m_type)
 	{
 	case DS_LLT:
-		// rank checking for LLT
-		if (map_A.fullPivLu().rank()==mat_A.num_cols)
-			map_x=map_A.llt().solve(map_b);
-		else
-			SG_WARNING("Matrix is not full rank!\n");
+		{
+			LLT<MatrixXcd> llt(map_A);
+			map_x=llt.solve(map_b);
+			
+			// checking for success
+			if (llt.info()==NumericalIssue)
+				SG_WARNING("Matrix is not Hermitian positive definite!\n");
+		}
 		break;
 	case DS_QR_NOPERM:
 		map_x=map_A.householderQr().solve(map_b);
@@ -80,9 +81,8 @@ SGVector<complex64_t> CDirectLinearSolverComplex::solve(
 	case DS_SVD:
 		map_x=map_A.jacobiSvd(ComputeThinU|ComputeThinV).solve(map_b);
 		break;
-	};
+	}
 
-	SG_DEBUG("Leaving..\n");
 	return x;
 }
 

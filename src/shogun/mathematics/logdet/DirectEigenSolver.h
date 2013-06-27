@@ -16,7 +16,7 @@
 
 namespace shogun
 {
-template<class T> class CLinearOperator;
+template<class T> class CDenseMatrixOperator;
 
 /** @brief Class that computes eigenvalues of a real valued, self-adjoint
  * dense matrix linear operator using Eigen3
@@ -27,16 +27,22 @@ public:
 	/** default constructor */
 	CDirectEigenSolver();
 
+	/** 
+	 * constructor
+	 * 
+	 * @param linear_operator self-adjoint dense-matrix linear operator whose
+	 * eigenvalues have to be found
+	 */
+	CDirectEigenSolver(CDenseMatrixOperator<float64_t>* linear_operator);
+
 	/** destructor */
 	virtual ~CDirectEigenSolver();
 
 	/** 
 	 * compute method for computing eigenvalues of a real valued dense matrix
 	 * linear operator
-	 *
-	 * @param A the linear operator whose eigenvalues are to be computed
 	 */
-	virtual void compute(CLinearOperator<float64_t>* A);
+	virtual void compute();
 
 	/** @return object name */
 	virtual const char* get_name() const

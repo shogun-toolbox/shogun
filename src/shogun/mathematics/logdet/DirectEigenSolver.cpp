@@ -20,6 +20,14 @@ namespace shogun
 {
 
 CDirectEigenSolver::CDirectEigenSolver()
+	: CEigenSolver()
+{
+	SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
+}
+
+CDirectEigenSolver::CDirectEigenSolver(
+	CDenseMatrixOperator<float64_t>* linear_operator)
+	: CEigenSolver((CLinearOperator<float64_t>*)linear_operator)
 {
 	SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 }
@@ -29,10 +37,10 @@ CDirectEigenSolver::~CDirectEigenSolver()
 	SG_GCDEBUG("%s destroyed (%p)\n", this->get_name(), this)
 }
 
-void CDirectEigenSolver::compute(CLinearOperator<float64_t>* A)
+void CDirectEigenSolver::compute()
 {
 	CDenseMatrixOperator<float64_t>* op
-		=dynamic_cast<CDenseMatrixOperator<float64_t>*>(A);
+		=dynamic_cast<CDenseMatrixOperator<float64_t>*>(m_linear_operator);
 	REQUIRE(op, "Linear operator is not of CDenseMatrixOperator type!\n");
 
 	SGMatrix<float64_t> m=op->get_matrix_operator();

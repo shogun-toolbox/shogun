@@ -11,10 +11,10 @@
 
 #include <shogun/lib/config.h>
 #include <shogun/base/Parameter.h>
+#include <shogun/mathematics/logdet/LinearOperator.h>
 
 namespace shogun
 {
-template<class T> class CLinearOperator;
 
 /** @brief Abstract base class that provides an abstract compute method for
  * computing eigenvalues of a real valued, self-adjoint linear operator. It 
@@ -32,19 +32,35 @@ public:
 		SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 	}
 
+	/** 
+	 * constructor
+	 *
+	 * @param linear_operator real valued self-adjoint linear operator
+	 * whose eigenvalues have to be found
+	 */
+	CEigenSolver(CLinearOperator<float64_t>* linear_operator)
+	: CSGObject()
+	{
+		init();
+		
+		m_linear_operator=linear_operator;
+		SG_REF(m_linear_operator);
+
+		SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
+	}
 	/** destructor */
 	virtual ~CEigenSolver()
 	{
+		SG_UNREF(m_linear_operator);
+
 		SG_GCDEBUG("%s destroyed (%p)\n", this->get_name(), this)
 	}
 
 	/** 
 	 * abstract compute method for computing eigenvalues of a real
 	 * valued linear operator
-	 *
-	 * @param A the linear operator whose eigenvalues are to be computed
 	 */
-	virtual void compute(CLinearOperator<float64_t>* A) = 0;
+	virtual void compute() = 0;
 
 	/** @return min eigenvalue of a real valued self-adjoint linear operator */
 	const float64_t get_min_eigenvalue() const
@@ -70,12 +86,16 @@ protected:
 	/** max eigenvalue */
 	float64_t	m_max_eigenvalue;
 
+	/** the linear solver whose eigenvalues have to be found */
+	CLinearOperator<float64_t>* m_linear_operator;
+
 private:
 	/** initialize with default values and register params */
 	void init()
 	{
 		m_min_eigenvalue=0.0;
 		m_max_eigenvalue=0.0;
+		m_linear_operator=NULL;
 	
 		SG_ADD(&m_min_eigenvalue, "min_eigenvalue",
 			"Minimum eigenvalue of a real valued self-adjoint linear operator",
@@ -83,6 +103,10 @@ private:
 
 		SG_ADD(&m_max_eigenvalue, "max_eigenvalue",
 			"Maximum eigenvalue of a real valued self-adjoint linear operator",
+			MS_NOT_AVAILABLE);
+
+		SG_ADD((CSGObject**)&m_linear_operator, "linear_operator",
+			"Self-adjoint linear operator",
 			MS_NOT_AVAILABLE);
 	}
 };
