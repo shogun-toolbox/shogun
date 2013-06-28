@@ -10,7 +10,6 @@ parameter_list=[[data_dict]]
 
 def structure_discrete_hmsvm_mosek (m_data_dict=data_dict):
 	from shogun.Features   import RealMatrixFeatures
-	from shogun.Loss       import HingeLoss
 	from shogun.Structure  import SequenceLabels, HMSVMModel, Sequence, TwoStateModel, SMT_TWO_STATE
 	from shogun.Evaluation import StructuredAccuracy
 
@@ -28,11 +27,10 @@ def structure_discrete_hmsvm_mosek (m_data_dict=data_dict):
 	labels = SequenceLabels(labels_array, 250, 500, 2)
 	features = RealMatrixFeatures(m_data_dict['signal'].astype(float), 250, 500)
 
-	loss = HingeLoss()
 	num_obs = 4	# given by the data file used
 	model = HMSVMModel(features, labels, SMT_TWO_STATE, num_obs)
 
-	sosvm = PrimalMosekSOSVM(model, loss, labels)
+	sosvm = PrimalMosekSOSVM(model, labels)
 	sosvm.train()
 	#print(sosvm.get_w())
 

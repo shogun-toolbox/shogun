@@ -13,7 +13,6 @@
 
 #ifdef USE_MOSEK
 
-#include <shogun/loss/LossFunction.h>
 #include <shogun/machine/LinearStructuredOutputMachine.h>
 #include <shogun/mathematics/Mosek.h>
 
@@ -39,10 +38,9 @@ class CPrimalMosekSOSVM : public CLinearStructuredOutputMachine
 		/** standard constructor
 		 *
 		 * @param model structured model with application specific functions
-		 * @param loss structured loss function
 		 * @param labs structured labels
 		 */
-		CPrimalMosekSOSVM(CStructuredModel* model, CLossFunction* loss, CStructuredLabels* labs);
+		CPrimalMosekSOSVM(CStructuredModel* model, CStructuredLabels* labs);
 
 		/** destructor */
 		~CPrimalMosekSOSVM();
@@ -73,18 +71,6 @@ class CPrimalMosekSOSVM : public CLinearStructuredOutputMachine
 		 * @param C regularization constant
 		 */
 		void set_regularization(float64_t C);
-
-		/** set loss function
-		 *
-		 * @param loss loss function to set
-		 */
-		void set_surrogate_loss(CLossFunction* loss);
-
-		/** get loss function
-		 *
-		 * @return loss function
-		 */
-		CLossFunction* get_surrogate_loss() const;
 
 	protected:
 		/** train primal SO-SVM
@@ -137,9 +123,6 @@ class CPrimalMosekSOSVM : public CLinearStructuredOutputMachine
 		bool add_constraint(CMosek* mosek, CResultSet* result, index_t con_idx, index_t train_idx) const;
 
 	private:
-		/** the surrogate loss */
-		CLossFunction* m_surrogate_loss;
-
 		/** slack variables associated to each training example */
 		SGVector< float64_t > m_slacks;
 

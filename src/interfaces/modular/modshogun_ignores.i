@@ -31,10 +31,9 @@
 
 
 #ifdef SWIGCSHARP
-%ignore shogun::CStructuredModel::director_risk;
 %ignore shogun::CKernelMachine::CKernelMachine(CKernel* k, const SGVector<float64_t> alphas, const SGVector<int32_t> svs, float64_t b);
 %ignore shogun::SGMatrix::matrix_multiply;
-%ignore shogun::CStructuredModel::init_opt;
+%ignore shogun::CStructuredModel::init_primal_opt;
 %ignore shogun::CIndexBlockTree::CIndexBlockTree(SGVector<float64_t> G, SGVector<float64_t> ind_t);
 %ignore shogun::CMulticlassStrategy::rescale_outputs(SGVector<float64_t> outputs, const SGVector<float64_t> As, const SGVector<float64_t> Bs);
 %ignore shogun::CMulticlassOneVsRestStrategy::rescale_outputs(SGVector<float64_t> outputs, const SGVector<float64_t> As, const SGVector<float64_t> Bs);
