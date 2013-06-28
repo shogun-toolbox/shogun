@@ -120,3 +120,5 @@ examples/undocumented/python_modular/*
 /tests/unit/*.txt
 /tests/unit/*.xml
 /tests/unit/*.hdf5
+/tests/unit/*.json
+/tests/unit/combined_kernel.weights

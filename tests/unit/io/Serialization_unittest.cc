@@ -1684,7 +1684,7 @@ TEST(Serialization, Hd5f_vector_equal_FLOAT64)
 	TParameter* param1=new TParameter(&type, &a.vector, "param", "");
 	TParameter* param2=new TParameter(&type, &b.vector, "param", "");
 
-	const char* filename="float64_sgvec_param.hfd5";
+	const char* filename="float64_sgvec_param.hdf5";
 	// save parameter to a hdf5 file
 	CSerializableHdf5File *file=new CSerializableHdf5File(filename, 'w');
 	param1->save(file);
