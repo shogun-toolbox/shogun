@@ -31,6 +31,7 @@ CStructuredOutputMachine::CStructuredOutputMachine(
 CStructuredOutputMachine::~CStructuredOutputMachine()
 {
 	SG_UNREF(m_model);
+	SG_UNREF(m_surrogate_loss);
 }
 
 void CStructuredOutputMachine::set_model(CStructuredModel* model)
