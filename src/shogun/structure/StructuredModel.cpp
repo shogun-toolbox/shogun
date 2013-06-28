@@ -28,9 +28,6 @@ const char* CResultSet::get_name() const
 
 CStructuredModel::CStructuredModel() : CSGObject()
 {
-#ifdef USE_SWIG_DIRECTORS
-	m_use_director_risk=false;
-#endif
 	init();
 }
 
@@ -39,9 +36,6 @@ CStructuredModel::CStructuredModel(
 		CStructuredLabels* labels)
 : CSGObject()
 {
-#ifdef USE_SWIG_DIRECTORS
-	m_use_director_risk=false;
-#endif
 	init();
 
 	m_features = features;
@@ -57,7 +51,7 @@ CStructuredModel::~CStructuredModel()
 	SG_UNREF(m_features);
 }
 
-void CStructuredModel::init_opt(
+void CStructuredModel::init_primal_opt(
 		float64_t regularization,
 		SGMatrix< float64_t > & A,
 		SGVector< float64_t > a,
@@ -67,7 +61,7 @@ void CStructuredModel::init_opt(
 		SGVector< float64_t > ub,
 		SGMatrix< float64_t > & C)
 {
-	SG_ERROR("init_opt is not implemented for %s!\n", get_name())
+	SG_ERROR("init_primal_opt is not implemented for %s!\n", get_name())
 }
 
 void CStructuredModel::set_labels(CStructuredLabels* labels)
@@ -169,49 +163,3 @@ int32_t CStructuredModel::get_num_aux_con() const
 	return 0;
 }
 
-#ifdef USE_SWIG_DIRECTORS
-float64_t CStructuredModel::director_risk(SGVector<float64_t> subgrad, SGVector<float64_t> W, TMultipleCPinfo info)
-{
-	SG_NOTIMPLEMENTED
-	return -1;
-}
-#endif
-
-float64_t CStructuredModel::risk(float64_t* subgrad, float64_t* W, TMultipleCPinfo* info)
-{
-	int32_t dim = this->get_dim();
-	
-#ifdef USE_SWIG_DIRECTORS
-	if (m_use_director_risk)
-		return director_risk(SGVector<float64_t>(subgrad,dim,false),SGVector<float64_t>(W,dim,false),info ? *info : TMultipleCPinfo(0,m_features->get_num_vectors()));
-#endif
-	
-	int32_t from=0, to=0;
-	if (info)
-	{
-		from = info->m_from;
-		to = (info->m_N == 0) ? m_features->get_num_vectors() : from+info->m_N;
-	}
-	else
-	{
-		from = 0;
-		to = m_features->get_num_vectors();
-	}
-
-	float64_t R = 0.0;
-	for (int32_t i=0; i<dim; i++)
-		subgrad[i] = 0;
-
-	for (int32_t i=from; i<to; i++)
-	{
-		CResultSet* result = this->argmax(SGVector<float64_t>(W,dim,false), i, true);
-		SGVector<float64_t> psi_pred = result->psi_pred;
-		SGVector<float64_t> psi_truth = result->psi_truth;
-		SGVector<float64_t>::vec1_plus_scalar_times_vec2(subgrad, 1.0, psi_pred.vector, dim);
-		SGVector<float64_t>::vec1_plus_scalar_times_vec2(subgrad, -1.0, psi_truth.vector, dim);
-		R += result->score;
-		SG_UNREF(result);
-	}
-
-	return R;
-}

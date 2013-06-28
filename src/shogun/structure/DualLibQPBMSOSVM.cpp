@@ -9,6 +9,7 @@
  */
 
 #include <shogun/structure/DualLibQPBMSOSVM.h>
+#include <shogun/structure/libbmrm.h>
 #include <shogun/structure/libppbm.h>
 #include <shogun/structure/libp3bm.h>
 #include <shogun/structure/libncbm.h>
@@ -93,22 +94,22 @@ bool CDualLibQPBMSOSVM::train_machine(CFeatures* data)
 	switch(m_solver)
 	{
 		case BMRM:
-			m_result=svm_bmrm_solver(m_model, m_w.vector, m_TolRel, m_TolAbs,
+			m_result=svm_bmrm_solver(this, m_w.vector, m_TolRel, m_TolAbs,
 					m_lambda, m_BufSize, m_cleanICP, m_cleanAfter, m_K, m_Tmax,
 					m_verbose);
 			break;
 		case PPBMRM:
-			m_result=svm_ppbm_solver(m_model, m_w.vector, m_TolRel, m_TolAbs,
+			m_result=svm_ppbm_solver(this, m_w.vector, m_TolRel, m_TolAbs,
 					m_lambda, m_BufSize, m_cleanICP, m_cleanAfter, m_K, m_Tmax,
 					m_verbose);
 			break;
 		case P3BMRM:
-			m_result=svm_p3bm_solver(m_model, m_w.vector, m_TolRel, m_TolAbs,
+			m_result=svm_p3bm_solver(this, m_w.vector, m_TolRel, m_TolAbs,
 					m_lambda, m_BufSize, m_cleanICP, m_cleanAfter, m_K, m_Tmax,
 					m_cp_models, m_verbose);
 			break;
 		case NCBM:
-			m_result=svm_ncbm_solver(m_model, m_w.vector, m_TolRel, m_TolAbs,
+			m_result=svm_ncbm_solver(this, m_w.vector, m_TolRel, m_TolAbs,
 					m_lambda, m_BufSize, m_cleanICP, m_cleanAfter, true /* convex */,
 					true /* use line search*/, m_verbose);
 	}

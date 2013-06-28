@@ -12,7 +12,6 @@
 #define _DUALLIBQPBMSOSVM__H__
 
 #include <shogun/machine/LinearStructuredOutputMachine.h>
-#include <shogun/structure/libbmrm.h>
 #include <shogun/features/DotFeatures.h>
 
 namespace shogun

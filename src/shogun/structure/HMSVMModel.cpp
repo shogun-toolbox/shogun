@@ -349,7 +349,7 @@ float64_t CHMSVMModel::delta_loss(CStructuredData* y1, CStructuredData* y2)
 	return m_state_model->loss(seq1, seq2);
 }
 
-void CHMSVMModel::init_opt(
+void CHMSVMModel::init_primal_opt(
 		float64_t regularization,
 		SGMatrix< float64_t > & A,
 		SGVector< float64_t > a,

@@ -99,7 +99,7 @@ class CHMSVMModel : public CStructuredModel
 		 * @param ub
 		 * @param C
 		 */
-		virtual void init_opt(
+		virtual void init_primal_opt(
 				float64_t regularization,
 				SGMatrix< float64_t > & A,  SGVector< float64_t > a,
 				SGMatrix< float64_t > B,  SGVector< float64_t > & b,

@@ -11,17 +11,17 @@
  * Implementation of the Proximal Point Bundle Method solver
  *--------------------------------------------------------------------- */
 
-#include <shogun/lib/common.h>
-#include <shogun/structure/libbmrm.h>
-
 #ifndef libppbm_h
 #define libppbm_h
+
+#include <shogun/lib/common.h>
+#include <shogun/structure/libbmrm.h>
 
 namespace shogun
 {
 	/** Proximal Point BMRM Solver for Structured Output Learning
 	 *
-	 * @param model			Pointer to user defined CStructuredModel
+ 	 * @param machine		Pointer to the BMRM machine	
 	 * @param W				Weight vector
 	 * @param TolRel		Relative tolerance
 	 * @param TolAbs		Absolute tolerance
@@ -37,7 +37,7 @@ namespace shogun
 	 * @return Structure with BMRM algorithm result
 	 */
 	BmrmStatistics svm_ppbm_solver(
-			CStructuredModel *model,
+			CDualLibQPBMSOSVM  *machine, 
 			float64_t   	*W,
 			float64_t   	TolRel,
 			float64_t   	TolAbs,
