@@ -23,16 +23,27 @@ namespace shogun
 
 template<class T>
 CDenseMatrixOperator<T>::CDenseMatrixOperator()
-	: CLinearOperator<T>()
+	: CMatrixOperator<T>()
 	{
 		SG_SGCDEBUG("%s created (%p)\n", this->get_name(), this);
 	}
 
 template<class T>
 CDenseMatrixOperator<T>::CDenseMatrixOperator(SGMatrix<T> op)
-	: CLinearOperator<T>(op.num_cols),
+	: CMatrixOperator<T>(op.num_cols),
 	  m_operator(op)
 	{
+		SG_SGCDEBUG("%s created (%p)\n", this->get_name(), this);
+	}
+
+template<class T>
+CDenseMatrixOperator<T>::CDenseMatrixOperator(const CDenseMatrixOperator<T>&
+		orig)
+	: CMatrixOperator<T>(orig.get_dim())
+	{
+		SGMatrix<T> orig_m=orig.m_operator;
+		m_operator=orig_m.clone();
+
 		SG_SGCDEBUG("%s created (%p)\n", this->get_name(), this);
 	}
 
@@ -49,6 +60,43 @@ SGMatrix<T> CDenseMatrixOperator<T>::get_matrix_operator() const
 	}
 
 #ifdef HAVE_EIGEN3
+template<class T>
+SGVector<T> CDenseMatrixOperator<T>::get_diagonal() const
+	{
+		REQUIRE(m_operator.matrix, "Operator not initialized!\n");
+
+		typedef Matrix<T, Dynamic, 1> VectorXt;
+		typedef Matrix<T, Dynamic, Dynamic> MatrixXt;
+
+		Map<MatrixXt> _op(m_operator.matrix, m_operator.num_rows,
+			m_operator.num_cols);
+
+		SGVector<T> diag(static_cast<int32_t>(_op.diagonalSize()));
+		Map<VectorXt> _diag(diag.vector, diag.vlen);
+		_diag=_op.diagonal();
+
+		return diag;
+	}
+
+template<class T>
+void CDenseMatrixOperator<T>::set_diagonal(SGVector<T> diag)
+	{
+		REQUIRE(m_operator.matrix, "Operator not initialized!\n");
+		REQUIRE(diag.vector, "Diagonal not initialized!\n");
+
+		typedef Matrix<T, Dynamic, 1> VectorXt;
+		typedef Matrix<T, Dynamic, Dynamic> MatrixXt;
+
+		Map<MatrixXt> _op(m_operator.matrix, m_operator.num_rows,
+			m_operator.num_cols);
+
+		REQUIRE(static_cast<int32_t>(_op.diagonalSize())==diag.vlen,
+			"Dimension mismatch!\n");
+
+		Map<VectorXt> _diag(diag.vector, diag.vlen);
+		_op.diagonal()=_diag;
+	}
+
 template<class T>
 SGVector<T> CDenseMatrixOperator<T>::apply(SGVector<T> b) const
 	{
@@ -91,6 +139,20 @@ SGVector<T> CDenseMatrixOperator<T>::apply(SGVector<T> b) const
 	{
 		SG_SWARNING("Eigen3 required!\n");
 		return b;
+	}
+
+template<class T>
+SGVector<T> CDenseMatrixOperator<T>::get_diagonal() const
+	{
+		SGVector<T> diag(m_operator.num_rows);
+		SG_SWARNING("Eigen3 required!\n");
+		return diag;
+	}
+
+template<class T>
+void CDenseMatrixOperator<T>::set_diagonal(SGVector<T> diag)
+	{
+		SG_SWARNING("Eigen3 required!\n");
 	}
 #endif // HAVE_EIGEN3
 

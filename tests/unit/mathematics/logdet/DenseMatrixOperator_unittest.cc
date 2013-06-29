@@ -79,4 +79,35 @@ TEST(DenseMatrixOperator, apply)
 	}
 }
 
+TEST(DenseMatrixOperator, shift_apply)
+{
+	const index_t size=5;
+	SGVector<complex64_t> b(size);
+	b.set_const(complex64_t(0.25, 0.5));
+
+	// complex64_t, fixed matrix	
+	SGMatrix<complex64_t> m(size, size);
+	m.set_const(complex64_t(0.5, 0.0));
+
+	// shifting the diagonal via interface
+	CDenseMatrixOperator<complex64_t> op(m);
+	SGVector<complex64_t> diag=op.get_diagonal();
+	for (index_t i=0; i<diag.vlen; ++i)
+		diag[i].imag()-=0.75;
+	op.set_diagonal(diag);
+	
+	SGVector<complex64_t> r1=op.apply(b);
+	Map<VectorXcd> map_r1(r1.vector, r1.vlen);
+
+	// shifting the diagonal directly via matrix
+	m.set_const(complex64_t(0.5, 0.0));
+	for (index_t i=0; i<size; ++i)
+		m(i,i).imag()-=0.75;
+
+	SGVector<complex64_t> r2=op.apply(b);
+	Map<VectorXcd> map_r2(r2.vector, r2.vlen);
+
+	EXPECT_NEAR(map_r1.norm(), map_r2.norm(), 1E-15);
+}
+
 #endif // HAVE_EIGEN3
