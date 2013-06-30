@@ -21,25 +21,29 @@
 namespace shogun
 {
 
-/** @brief The Gaussian Exact Form Inference Method.
+/** @brief The Gaussian exact form inference method class.
  *
- *  This inference method computes the Gaussian Method
- *  exactly using matrix equations.
- *  \f[
- *  	 L = cholesky(K + \sigma^{2}I)
- *  \f]
+ * This inference method computes the Gaussian Method exactly using
+ * matrix equations.
  *
- *	L is the cholesky decomposition of K, the covariance matrix, plus
- *	a diagonal matrix with entries \f$\sigma\f$, the observation noise.
+ * \f[
+ * 	 L = cholesky(K + \sigma^{2}I)
+ * \f]
  *
- *  \f[
- *  	\boldsymbol{\alpha} = L^{T} \backslash(L \backslash \boldsymbol{y}})
- *  \f]
+ * \f$L\f$ is the cholesky decomposition of \f$K\f$, the covariance
+ * matrix, plus a diagonal matrix with entries \f$\sigma^{2}\f$, the
+ * observation noise.
  *
- *  Where \f$L\f$ is the matrix mentioned above, \f$\boldsymbol{y}\f$ are the labels, and
- *  \f$\backslash\f$ is an operator (\f$x = A \backslash B\f$ means \f$Ax=B\f$.)
+ * \f[
+ * 	\boldsymbol{\alpha} = L^{T} \backslash(L \backslash \boldsymbol{y}})
+ * \f]
  *
- *  The Gaussian Likelihood Function must be used for this inference method.
+ * where \f$L\f$ is the matrix mentioned above, \f$\boldsymbol{y}\f$
+ * are the labels, and \f$\backslash\f$ is an operator (\f$x = A
+ * \backslash B\f$ means \f$Ax=B\f$.)
+ *
+ * NOTE: The Gaussian Likelihood Function must be used for this
+ * inference method.
  */
 class CExactInferenceMethod: public CInferenceMethod
 {
@@ -80,22 +84,22 @@ public:
 	 *	  -log(p(y|X, \theta))
 	 * \f]
 	 *
-	 * where \f$y\f$ are the labels, \f$X\f$ are the features,
-	 * and \f$\theta\f$ represent hyperparameters.
+	 * where \f$y\f$ are the labels, \f$X\f$ are the features, and
+	 * \f$\theta\f$ represent hyperparameters.
 	 */
 	virtual float64_t get_negative_marginal_likelihood();
 
 	/** get log marginal likelihood gradient
 	 *
-	 * @return vector of the  marginal likelihood function gradient
+	 * @return vector of the marginal likelihood function gradient
 	 * with respect to hyperparameters:
 	 *
 	 * \f[
 	 *	 -\frac{\partial {log(p(y|X, \theta))}}{\partial \theta}
 	 * \f]
 	 *
-	 * where \f$y\f$ are the labels, \f$X\f$ are the features,
-	 * and \f$\theta\f$ represent hyperparameters.
+	 * where \f$y\f$ are the labels, \f$X\f$ are the features, and
+	 * \f$\theta\f$ represent hyperparameters.
 	 */
 	virtual CMap<TParameter*, SGVector<float64_t> > get_marginal_likelihood_derivatives(
 			CMap<TParameter*, CSGObject*>& para_dict);
@@ -108,7 +112,8 @@ public:
 	 *		\mu = K\alpha
 	 * \f]
 	 *
-	 * where \f$\mu\f$ is the mean and \f$K\f$ is the prior covariance matrix.
+	 * where \f$\mu\f$ is the mean and \f$K\f$ is the prior covariance
+	 * matrix.
 	 */
 	virtual SGVector<float64_t> get_alpha();
 
@@ -120,28 +125,31 @@ public:
 	 *		 L = Cholesky(sW*K*sW+I)
 	 * \f]
 	 *
-	 * where \f$K\f$ is the prior covariance matrix, \f$sW\f$ is the vector returned by
-	 * get_diagonal_vector(), and \f$I\f$ is the identity matrix.
+	 * where \f$K\f$ is the prior covariance matrix, \f$sW\f$ is the
+	 * vector returned by get_diagonal_vector(), and \f$I\f$ is the
+	 * identity matrix.
 	 */
 	virtual SGMatrix<float64_t> get_cholesky();
 
 	/** get diagonal vector
 	 *
-	 * @return diagonal of matrix used to calculate posterior covariance matrix
+	 * @return diagonal of matrix used to calculate posterior
+	 * covariance matrix
 	 *
 	 * \f[
 	 *	    Cov = (K^{-1}+sW^{2})^{-1}
 	 * \f]
 	 *
 	 * where \f$Cov\f$ is the posterior covariance matrix, \f$K\f$ is
-	 * the prior covariance matrix, and \f$sW\f$ is the diagonal vector.
+	 * the prior covariance matrix, and \f$sW\f$ is the diagonal
+	 * vector.
 	 */
 	virtual SGVector<float64_t> get_diagonal_vector();
 
 	/** get the gradient
 	 *
-	 * @return map of gradient: keys are names of parameters, values are
-	 * values of derivative with respect to that parameter.
+	 * @return map of gradient: keys are names of parameters, values
+	 * are values of derivative with respect to that parameter.
 	 */
 	virtual CMap<TParameter*, SGVector<float64_t> > get_gradient(
 			CMap<TParameter*, CSGObject*>& para_dict)
@@ -161,8 +169,8 @@ public:
 	}
 
 	/**
-	 * @return wether combination of exact inference method and given likelihood
-	 * function supports regression
+	 * @return whether combination of exact inference method and given
+	 * likelihood function supports regression
 	 */
 	virtual bool supports_regression()
 	{
@@ -184,9 +192,7 @@ protected:
 	virtual void update_train_kernel();
 
 private:
-	/** Check if members of object are valid
-	 * for inference
-	 */
+	/** check if members of object are valid for inference */
 	void check_members();
 };
 }

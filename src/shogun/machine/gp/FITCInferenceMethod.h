@@ -24,18 +24,19 @@
 namespace shogun
 {
 
-/** @brief The Fully Independent Conditional Training Inference Method.
+/** @brief The Fully Independent Conditional Training inference
+ * method class.
  *
- *  This inference method computes the Cholesky and
- *  Alpha vectors approximately with the help of latent
- *  variables. For more details, see "Sparse Gaussian Process
- *  using Pseudo-inputs", Edward Snelson, Zoubin Ghahramani,
- *  NIPS 18, MIT Press, 2005.
+ * This inference method computes the Cholesky and Alpha vectors
+ * approximately with the help of latent variables. For more details,
+ * see "Sparse Gaussian Process using Pseudo-inputs", Edward Snelson,
+ * Zoubin Ghahramani, NIPS 18, MIT Press, 2005.
  *
- *  This specific implementation was inspired by the infFITC.m file
- *  in the GPML toolbox
+ * This specific implementation was inspired by the infFITC.m file in
+ * the GPML toolbox.
  *
- *  The Gaussian Likelihood Function must be used for this inference method.
+ * NOTE: The Gaussian Likelihood Function must be used for this
+ * inference method.
  */
 class CFITCInferenceMethod: public CInferenceMethod
 {
@@ -101,22 +102,22 @@ public:
 	 *	  -log(p(y|X, \theta))
 	 * \f]
 	 *
-	 * where \f$y\f$ are the labels, \f$X\f$ are the features,
-	 * and \f$\theta\f$ represent hyperparameters.
+	 * where \f$y\f$ are the labels, \f$X\f$ are the features, and
+	 * \f$\theta\f$ represent hyperparameters.
 	 */
 	virtual float64_t get_negative_marginal_likelihood();
 
 	/** get log marginal likelihood gradient
 	 *
-	 * @return vector of the  marginal likelihood function gradient
+	 * @return vector of the marginal likelihood function gradient
 	 * with respect to hyperparameters:
 	 *
 	 * \f[
 	 *	 -\frac{\partial {log(p(y|X, \theta))}}{\partial \theta}
 	 * \f]
 	 *
-	 * where \f$y\f$ are the labels, \f$X\f$ are the features,
-	 * and \f$\theta\f$ represent hyperparameters.
+	 * where \f$y\f$ are the labels, \f$X\f$ are the features, and
+	 * \f$\theta\f$ represent hyperparameters.
 	 */
 	virtual CMap<TParameter*, SGVector<float64_t> > get_marginal_likelihood_derivatives(
 			CMap<TParameter*, CSGObject*>& para_dict);
@@ -129,7 +130,8 @@ public:
 	 *		\mu = K\alpha
 	 * \f]
 	 *
-	 * where \f$\mu\f$ is the mean and \f$K\f$ is the prior covariance matrix.
+	 * where \f$\mu\f$ is the mean and \f$K\f$ is the prior covariance
+	 * matrix.
 	 */
 	virtual SGVector<float64_t> get_alpha();
 
@@ -141,28 +143,31 @@ public:
 	 *		 L = Cholesky(sW*K*sW+I)
 	 * \f]
 	 *
-	 * where \f$K\f$ is the prior covariance matrix, \f$sW\f$ is the vector returned by
-	 * get_diagonal_vector(), and \f$I\f$ is the identity matrix.
+	 * where \f$K\f$ is the prior covariance matrix, \f$sW\f$ is the
+	 * vector returned by get_diagonal_vector(), and \f$I\f$ is the
+	 * identity matrix.
 	 */
 	virtual SGMatrix<float64_t> get_cholesky();
 
 	/** get diagonal vector
 	 *
-	 * @return diagonal of matrix used to calculate posterior covariance matrix
+	 * @return diagonal of matrix used to calculate posterior
+	 * covariance matrix:
 	 *
 	 * \f[
 	 *	    Cov = (K^{-1}+sW^{2})^{-1}
 	 * \f]
 	 *
 	 * where \f$Cov\f$ is the posterior covariance matrix, \f$K\f$ is
-	 * the prior covariance matrix, and \f$sW\f$ is the diagonal vector.
+	 * the prior covariance matrix, and \f$sW\f$ is the diagonal
+	 * vector.
 	 */
 	virtual SGVector<float64_t> get_diagonal_vector();
 
 	/** get the gradient
 	 *
-	 * @return map of gradient: keys are names of parameters, values are
-	 * values of derivative with respect to that parameter.
+	 * @return map of gradient: keys are names of parameters, values
+	 * are values of derivative with respect to that parameter.
 	 */
 	virtual CMap<TParameter*, SGVector<float64_t> > get_gradient(
 			CMap<TParameter*, CSGObject*>& para_dict)
@@ -182,8 +187,8 @@ public:
 	}
 
 	/**
-	 * @return wether combination of FITC inference method and given likelihood
-	 * function supports regression
+	 * @return whether combination of FITC inference method and given
+	 * likelihood function supports regression
 	 */
 	virtual bool supports_regression()
 	{
@@ -191,26 +196,24 @@ public:
 		return m_model->supports_regression();
 	}
 
-	/** Update all matrices */
+	/** update all matrices */
 	virtual void update_all();
 
 protected:
-	/** Update alpha matrix */
+	/** update alpha matrix */
 	virtual void update_alpha();
 
-	/** Update cholesky Matrix.*/
+	/** update cholesky Matrix.*/
 	virtual void update_chol();
 
-	/** Update train kernel matrix */
+	/** update train kernel matrix */
 	virtual void update_train_kernel();
 
 private:
 	void init();
 
 private:
-	/** Check if members of object are valid
-	 * for inference
-	 */
+	/** check if members of object are valid for inference */
 	void check_members();
 
 	/** latent features for approximation */
@@ -219,47 +222,33 @@ private:
 	/** kernel matrix from latent features */
 	SGMatrix<float64_t> m_latent_matrix;
 
-	/*noise of the latent variables*/
+	/** noise of the latent variables */
 	float64_t m_ind_noise;
 
-	/*Cholesky of Covariance of
-	 * latent features
-	 */
+	/** Cholesky of covariance of latent features */
 	SGMatrix<float64_t> m_chol_uu;
 
-	/*Cholesky of Covariance of
-	 * latent features
-	 * and training features
+	/** Cholesky of covariance of latent features and training
+	 * features
 	 */
 	SGMatrix<float64_t> m_chol_utr;
 
-	/* Covariance matrix of latent
-	 * features
-	 */
+	/** covariance matrix of latent features */
 	SGMatrix<float64_t> m_kuu;
 
-	/* Covariance matrix of latent
-	 * features and training features
-	 */
+	/** covariance matrix of latent features and training features */
 	SGMatrix<float64_t> m_ktru;
 
-	/* Diagonal of Training
-	 * kernel matrix + noise
-	 * - diagonal of the matrix
-	 * (m_chol_uu^{-1}*m_ktru)*
-	 * (m_chol_uu^(-1)*m_ktru)'
-	 * = V*V'
+	/** diagonal of training kernel matrix + noise - diagonal of
+	 * the matrix (m_chol_uu^{-1}*m_ktru)* (m_chol_uu^(-1)*m_ktru)' =
+	 * V*V'
 	 */
 	SGVector<float64_t> m_dg;
 
-	/*Labels adjusted for
-	 * noise and means
-	 */
+	/** labels adjusted for noise and means */
 	SGVector<float64_t> m_r;
 
-	/* Solves the equation
-	 * V*r = m_chol_utr
-	 */
+	/** solves the equation V * r = m_chol_utr */
 	SGVector<float64_t> m_be;
 };
 }

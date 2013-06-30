@@ -24,10 +24,15 @@
 namespace shogun
 {
 
-/** @brief This is the class that models a likelihood model
- * with a Student's T Distribution. The parameters include
- * degrees of freedom as well as a sigma scale parameter.
+/** @brief Class that models a Student's-t likelihood.
  *
+ * \f[
+ * p(y|f)=\prod_{i=1}^{n} \frac{\Gamma(\frac{\nu+1}{2})} {\Gamma(\frac{\nu}{2})\sqrt{\nu\pi}\sigma}
+ * \left(1+\frac{(y_i-f_i)^2}{\nu\sigma^2} \right)^{-\frac{\nu+1}{2}}
+ * \f]
+ *
+ * The hyperparameters of the Student's t-likelihood model are
+ * \f$\sigma\f$ - scale parameter, and \f$\nu\f$ - degrees of freedom.
  */
 class CStudentsTLikelihood: public CLikelihoodModel
 {
@@ -42,30 +47,27 @@ public:
 	 */
 	CStudentsTLikelihood(float64_t sigma, float64_t df);
 
-	/** destructor */
 	virtual ~CStudentsTLikelihood();
 
-	/** Returns the name of the SGSerializable instance.  It MUST BE
-	 *  the CLASS NAME without the prefixed `C'.
+	/** returns the name of the likelihood model
 	 *
-	 * @return name of the SGSerializable
+	 * @return name StudentsTLikelihood
 	 */
 	virtual const char* get_name() const { return "StudentsTLikelihood"; }
 
-	/** Returns the noise variance
+	/** returns the scale paramter
 	 *
-	 * @return noise variance
+	 * @return scale parameter
 	 */
 	float64_t get_sigma() { return m_sigma; }
 
-	/** Sets the noise variance
+	/** sets the scale parameter
 	 *
-	 * @param sigma noise variance
+	 * @param sigma scale parameter
 	 */
 	void set_sigma(float64_t sigma)
 	{
-		REQUIRE(sigma>0.0, "%s::set_sigma(): Standard deviation "
-			"must be greater than zero\n", get_name())
+		REQUIRE(sigma>0.0, "Scale parameter must be greater than zero\n")
 		m_sigma=sigma;
 	}
 
@@ -75,14 +77,13 @@ public:
 	 */
 	float64_t get_degrees_freedom() { return m_df; }
 
-	/** sets degrees of freedom
+	/** set degrees of freedom
 	 *
 	 * @param df degrees of freedom
 	 */
 	void set_degrees_freedom(float64_t df)
 	{
-		REQUIRE(df>1.0, "%s::set_degrees_freedom(): Number of degrees of "
-				"freedom must be greater than one\n", get_name())
+		REQUIRE(df>1.0, "Number of degrees of freedom must be greater than one\n")
 		m_df=df;
 	}
 
@@ -93,119 +94,111 @@ public:
 	 */
 	static CStudentsTLikelihood* obtain_from_generic(CLikelihoodModel* likelihood);
 
-	/** Evaluate means
+	/** evaluate means
 	 *
-	 * @param means Vector of means calculated by inference method
-	 * @return Final means evaluated by likelihood function
+	 * @param means vector of means calculated by inference method
+	 * @return final means evaluated by likelihood function
 	 */
 	virtual SGVector<float64_t> evaluate_means(SGVector<float64_t>& means);
 
-	/** Evaluate variances
+	/** evaluate variances
 	 *
-	 * @param vars Vector of variances calculated by inference method
-	 * @return Final variances evaluated by likelihood function
+	 * @param vars vector of variances calculated by inference method
+	 * @return final variances evaluated by likelihood function
 	 */
 	virtual SGVector<float64_t> evaluate_variances(SGVector<float64_t>& vars);
 
 	/** get model type
-	  *
-	  * @return model type Student's T
+	 *
+	 * @return model type Student's-t
 	 */
 	virtual ELikelihoodModelType get_model_type() { return LT_STUDENTST; }
 
-	/** get log likelihood log(P(y|f)) with respect
-	 *  to location f
+	/** get log likelihood \f$log(P(y|f))\f$
 	 *
-	 *  @param labels labels used
-	 *  @param f location
+	 * @param labels labels used
+	 * @param f function location
 	 *
-	 *  @return log likelihood
+	 * @return log likelihood
 	 */
 	virtual float64_t get_log_probability_f(CRegressionLabels* labels,
 			SGVector<float64_t> f);
 
-	/** get derivative of log likelihood log(P(y|f)) with respect
-	 *  to location f
+	/** get derivative of log likelihood \f$log(P(y|f))\f$ with
+	 * respect to function location \f$f\f$
 	 *
-	 *  @param labels labels used
-	 *  @param f location
-	 *  @param i index, choices are 1, 2, and 3
-	 *  for first, second, and third derivatives
-	 *  respectively
+	 * @param labels labels used
+	 * @param f function location
+	 * @param i index, choices are 1, 2, and 3 for first, second, and
+	 * third derivatives respectively
 	 *
-	 *  @return derivative
+	 * @return derivative
 	 */
 	virtual SGVector<float64_t> get_log_probability_derivative_f(
 			CRegressionLabels* labels, SGVector<float64_t> f, index_t i);
 
-	/** get derivative of log likelihood log(P(y|f))
-	 *  with respect to given parameter
+	/** get derivative of log likelihood \f$log(P(y|f))\f$ with
+	 * respect to given parameter
 	 *
-	 *  @param labels labels used
-	 *  @param param parameter
-	 *  @param obj pointer to object to make sure we
-	 *  have the right parameter
-	 *  @param function function location
+	 * @param labels labels used
+	 * @param param parameter
+	 * @param obj pointer to object to make sure we have the right
+	 * parameter
+	 * @param function function location
 	 *
-	 *  @return derivative
+	 * @return derivative
 	 */
 	virtual SGVector<float64_t> get_first_derivative(CRegressionLabels* labels,
 			TParameter* param, CSGObject* obj, SGVector<float64_t> function);
 
-	/** get derivative of the first derivative
-	 *  of log likelihood with respect to function
-	 *  location, i.e.
+	/** get derivative of the first derivative of log likelihood with
+	 * respect to function location, i.e. \f$\frac{\partial
+	 * log(P(y|f))}{\partial f}\f$ with respect to given parameter
 	 *
-	 *  \f$\frac{\partial}log(P(y|f))}{\partial{f}}\f$
+	 * @param labels labels used
+	 * @param param parameter
+	 * @param obj pointer to object to make sure we have the right
+	 * parameter
+	 * @param function function location
 	 *
-	 *  with respect to given parameter
-	 *
-	 *  @param labels labels used
-	 *  @param param parameter
-	 *  @param obj pointer to object to make sure we
-	 *  have the right parameter
-	 *  @param function function location
-	 *
-	 *  @return derivative
+	 * @return derivative
 	 */
 	virtual SGVector<float64_t> get_second_derivative(CRegressionLabels* labels,
 			TParameter* param, CSGObject* obj, SGVector<float64_t> function);
 
-	/** get derivative of the second derivative
-	 *  of log likelihood with respect to function
-	 *  location, i.e.
+	/** get derivative of the second derivative of log likelihood with
+	 * respect to function location, i.e. \f$\frac{\partial^{2}
+	 * log(P(y|f))}{\partial f^{2}}\f$ with respect to given
+	 * parameter
 	 *
-	 *  \f$\frac{\partial^{2}log(P(y|f))}{\partial{f^{2}}}\f$
+	 * @param labels labels used
+	 * @param param parameter
+	 * @param obj pointer to object to make sure we have the right
+	 * parameter
+	 * @param function function location
 	 *
-	 *  with respect to given parameter
-	 *
-	 *  @param labels labels used
-	 *  @param param parameter
-	 *  @param obj pointer to object to make sure we
-	 *  have the right parameter
-	 *  @param function function location
-	 *
-	 *  @return derivative
+	 * @return derivative
 	 */
 	virtual SGVector<float64_t> get_third_derivative(CRegressionLabels* labels,
 			TParameter* param, CSGObject* obj, SGVector<float64_t> function);
 
-	/** return wether Student's likelihood function supports regression
+	/** return whether Student's likelihood function supports
+	 * regression
 	 *
 	 * @return true
 	 */
 	virtual bool supports_regression() { return true; }
 
 private:
-	/** Observation noise sigma */
+	/** initialize function */
+	void init();
+
+	/** scale parameter */
 	float64_t m_sigma;
 
-	/** Degrees of Freedom */
+	/** degrees of freedom */
 	float64_t m_df;
-
-	/** Initialize function */
-	void init();
 };
 }
 #endif /* HAVE_EIGEN3 */
-#endif /* CStudentsTLIKELIHOOD_H_ */
+#endif /* CSTUDENTSTLIKELIHOOD_H_ */

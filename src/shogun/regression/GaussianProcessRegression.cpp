@@ -12,16 +12,15 @@
  * http://www.gaussianprocess.org/gpml/code/matlab/doc/
  */
 
-#include <shogun/lib/config.h>
+#include <shogun/regression/GaussianProcessRegression.h>
 
 #ifdef HAVE_EIGEN3
 
-#include <shogun/regression/GaussianProcessRegression.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/features/CombinedFeatures.h>
-#include <shogun/features/Features.h>
+#include <shogun/features/DotFeatures.h>
 #include <shogun/machine/gp/FITCInferenceMethod.h>
 
 #include <shogun/mathematics/eigen3.h>
@@ -46,8 +45,8 @@ CGaussianProcessRegression::~CGaussianProcessRegression()
 
 CRegressionLabels* CGaussianProcessRegression::apply_regression(CFeatures* data)
 {
-	// check wether given combination of inference method and likelihood function
-	// supprorts regression
+	// check whether given combination of inference method and likelihood function
+	// supports regression
 	REQUIRE(m_method, "Inference method must be attached\n")
 	CLikelihoodModel* lik=m_method->get_model();
 	REQUIRE(m_method->supports_regression(), "%s with %s doesn't support regression\n",
@@ -85,8 +84,8 @@ CRegressionLabels* CGaussianProcessRegression::apply_regression(CFeatures* data)
 
 bool CGaussianProcessRegression::train_machine(CFeatures* data)
 {
-	// check wether given combination of inference method and likelihood function
-	// supprorts regression
+	// check whether given combination of inference method and likelihood function
+	// supports regression
 	REQUIRE(m_method, "Inference method must be attached\n")
 	CLikelihoodModel* lik=m_method->get_model();
 	REQUIRE(m_method->supports_regression(), "%s with %s doesn't support regression\n",
@@ -114,8 +113,8 @@ bool CGaussianProcessRegression::train_machine(CFeatures* data)
 
 SGVector<float64_t> CGaussianProcessRegression::get_mean_vector(CFeatures* data)
 {
-	// check wether given combination of inference method and likelihood function
-	// supprorts regression
+	// check whether given combination of inference method and likelihood function
+	// supports regression
 	REQUIRE(m_method, "Inference method must be attached\n")
 	CLikelihoodModel* lik=m_method->get_model();
 	REQUIRE(m_method->supports_regression(), "%s with %s doesn't support regression\n",
@@ -185,7 +184,7 @@ SGVector<float64_t> CGaussianProcessRegression::get_mean_vector(CFeatures* data)
 	Map<VectorXd> eigen_mu(mu.vector, mu.vlen);
 	eigen_mu=eigen_Ks.adjoint()*eigen_alpha+eigen_m;
 
-	// evalutate mean
+	// evaluate mean
 	lik=m_method->get_model();
 	mu=lik->evaluate_means(mu);
 	SG_UNREF(lik);
@@ -195,8 +194,8 @@ SGVector<float64_t> CGaussianProcessRegression::get_mean_vector(CFeatures* data)
 
 SGVector<float64_t> CGaussianProcessRegression::get_variance_vector(CFeatures* data)
 {
-	// check wether given combination of inference method and likelihood function
-	// supprorts regression
+	// check whether given combination of inference method and likelihood function
+	// supports regression
 	REQUIRE(m_method, "Inference method must be attached\n")
 	CLikelihoodModel* lik=m_method->get_model();
 	REQUIRE(m_method->supports_regression(), "%s with %s doesn't support regression\n",
@@ -279,7 +278,7 @@ SGVector<float64_t> CGaussianProcessRegression::get_variance_vector(CFeatures* d
 		eigen_s2=eigen_Kss.diagonal()+eigen_M.colwise().sum().adjoint();
 	}
 
-	// evalutate variance
+	// evaluate variance
 	s2=lik->evaluate_variances(s2);
 	SG_UNREF(lik);
 

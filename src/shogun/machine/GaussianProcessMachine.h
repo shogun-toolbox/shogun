@@ -5,7 +5,6 @@
  * (at your option) any later version.
  *
  * Written (W) 2013 Roman Votyakov
- * Copyright (C) 2013 Roman Votyakov
  */
 
 #ifndef _GAUSSIANPROCESSMACHINE_H_
@@ -20,9 +19,16 @@
 namespace shogun
 {
 
-/** TODO: insert documentation
+/** @brief A base class for Gaussian Processes.
  *
+ * Instead of a distribution over weights, the GP specifies a
+ * distribution over functions:
  *
+ * \f[
+ * f(x) \sim GP(m(x), k(x,x'))
+ * \f]
+ *
+ * where \f$m(x)\f$ - mean function, \f$k(x, x')\f$ - covariance function.
  */
 class CGaussianProcessMachine : public CMachine
 {
@@ -60,8 +66,8 @@ public:
 	 */
 	void set_inference_method(CInferenceMethod* method)
 	{
-		SG_UNREF(m_method);
 		SG_REF(method);
+		SG_UNREF(m_method);
 		m_method=method;
 	}
 

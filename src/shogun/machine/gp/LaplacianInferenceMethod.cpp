@@ -13,17 +13,16 @@
  * This code specifically adapted from infLaplace.m
  */
 
-#include <shogun/lib/config.h>
+#include <shogun/machine/gp/LaplacianInferenceMethod.h>
 
 #ifdef HAVE_EIGEN3
 
-#include <shogun/machine/gp/LaplacianInferenceMethod.h>
 #include <shogun/machine/gp/GaussianLikelihood.h>
 #include <shogun/machine/gp/StudentsTLikelihood.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/labels/RegressionLabels.h>
-#include <shogun/kernel/GaussianKernel.h>
 #include <shogun/features/CombinedFeatures.h>
+#include <shogun/features/DotFeatures.h>
 
 #include <shogun/lib/external/brent.h>
 #include <shogun/mathematics/eigen3.h>
@@ -33,9 +32,7 @@ using namespace Eigen;
 
 namespace shogun
 {
-	/*Wrapper class used for the Brent minimizer
-	 *
-	 */
+	/** Wrapper class used for the Brent minimizer. */
 	class CPsiLine : public func_base
 	{
 	public:
@@ -60,7 +57,7 @@ namespace shogun
 			(*alpha)=start_alpha+x*dalpha;
 			eigen_f=K*(*alpha)*CMath::sq(scale)+eigen_m;
 
-			// get first and secod derivatives of log likelihood
+			// get first and second derivatives of log likelihood
 			(*dlp)=lik->get_log_probability_derivative_f(lab, (*f), 1);
 
 			(*W)=lik->get_log_probability_derivative_f(lab, (*f), 2);
@@ -533,7 +530,7 @@ void CLaplacianInferenceMethod::update_alpha()
 		VectorXd dalpha=b-eigen_sW.cwiseProduct(
 			L.solve(eigen_sW.cwiseProduct(eigen_ktrtr*b*CMath::sq(m_scale))))-eigen_temp_alpha;
 
-		// perfom Brent's optimization
+		// perform Brent's optimization
 		CPsiLine func;
 
 		func.scale = m_scale;

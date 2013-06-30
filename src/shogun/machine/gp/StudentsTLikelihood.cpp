@@ -16,11 +16,8 @@
 
 #ifdef HAVE_EIGEN3
 
-#include <shogun/mathematics/eigen3.h>
-#include <shogun/modelselection/ParameterCombination.h>
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/base/Parameter.h>
 #include <shogun/mathematics/eigen3.h>
 
 using namespace shogun;
@@ -33,10 +30,9 @@ CStudentsTLikelihood::CStudentsTLikelihood() : CLikelihoodModel()
 
 CStudentsTLikelihood::CStudentsTLikelihood(float64_t sigma, float64_t df) : CLikelihoodModel()
 {
-	REQUIRE(sigma>0.0, "%s::CStudentsTLikelihood(): Standard deviation "
-			"must be greater than zero\n", get_name())
-	REQUIRE(df>1.0, "%s::CStudentsTLikelihood(): Number of degrees of "
-			"freedom must be greater than one\n", get_name())
+	REQUIRE(sigma>0.0, "Scale parameter must be greater than zero\n")
+	REQUIRE(df>1.0, "Number of degrees of freedom must be greater than one\n")
+
 	init();
 	m_sigma=sigma;
 	m_df=df;
@@ -47,7 +43,7 @@ void CStudentsTLikelihood::init()
 	m_sigma=1.0;
 	m_df=3.0;
 	SG_ADD(&m_df, "df", "Degrees of Freedom.", MS_AVAILABLE);
-	SG_ADD(&m_sigma, "sigma", "Observation Noise.", MS_AVAILABLE);
+	SG_ADD(&m_sigma, "sigma", "Scale Parameter.", MS_AVAILABLE);
 }
 
 CStudentsTLikelihood::~CStudentsTLikelihood()
@@ -315,4 +311,4 @@ SGVector<float64_t> CStudentsTLikelihood::get_third_derivative(
 	return r;
 }
 
-#endif //HAVE_EIGEN3
+#endif // HAVE_EIGEN3

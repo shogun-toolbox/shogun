@@ -5,7 +5,6 @@
  * (at your option) any later version.
  *
  * Written (W) 2013 Roman Votyakov
- * Copyright (C) 2013 Roman Votyakov
  */
 
 #include <shogun/lib/config.h>
