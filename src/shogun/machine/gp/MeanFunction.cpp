@@ -13,12 +13,10 @@ using namespace shogun;
 
 CMeanFunction::CMeanFunction()
 {
-
 }
 
 CMeanFunction::~CMeanFunction()
 {
-
 }
 
 SGVector<float64_t> CMeanFunction::get_parameter_derivative(TParameter* param,

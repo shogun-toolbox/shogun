@@ -12,18 +12,13 @@
 #ifndef CINFERENCEMETHOD_H_
 #define CINFERENCEMETHOD_H_
 
-#include <shogun/lib/config.h>
-
-#ifdef HAVE_EIGEN3
-
 #include <shogun/kernel/Kernel.h>
 #include <shogun/base/SGObject.h>
-#include <shogun/features/DotFeatures.h>
+#include <shogun/features/Features.h>
 #include <shogun/labels/Labels.h>
 #include <shogun/machine/gp/LikelihoodModel.h>
 #include <shogun/machine/gp/MeanFunction.h>
 #include <shogun/evaluation/DifferentiableFunction.h>
-#include <shogun/labels/RegressionLabels.h>
 
 namespace shogun
 {
@@ -39,8 +34,8 @@ enum EInferenceType
 
 /** @brief The Inference Method base class.
  *
- *  The Inference Method computes (approximately) the
- *  posterior distribution for a given Gaussian Process.
+ * The Inference Method computes (approximately) the posterior
+ * distribution for a given Gaussian Process.
  */
 class CInferenceMethod : public CDifferentiableFunction
 {
@@ -61,39 +56,37 @@ public:
 
 	virtual ~CInferenceMethod();
 
-	/** return what type of inference we are, e.g.
-	 * exact, FITC, Laplacian, etc.
-	 *
-	 * abstract base mathod
+	/** return what type of inference we are, e.g. exact, FITC,
+	 * Laplacian, etc.
 	 *
 	 * @return inference type
 	 */
-	virtual EInferenceType get_inference_type()=0;
+	virtual EInferenceType get_inference_type() { return INF_NONE; }
 
 	/** get negative log marginal likelihood
 	 *
 	 * @return the negative log of the marginal likelihood function:
 	 *
 	 * \f[
-	 *	  -log(p(y|X, \theta))
+	 * -log(p(y|X, \theta))
 	 * \f]
 	 *
-	 * where \f$y\f$ are the labels, \f$X\f$ are the features,
-	 * and \f$\theta\f$ represent hyperparameters.
+	 * where \f$y\f$ are the labels, \f$X\f$ are the features, and
+	 * \f$\theta\f$ represent hyperparameters.
 	 */
 	virtual float64_t get_negative_marginal_likelihood()=0;
 
 	/** get log marginal likelihood gradient
 	 *
-	 * @return vector of the  marginal likelihood function gradient
+	 * @return vector of the marginal likelihood function gradient
 	 * with respect to hyperparameters:
 	 *
 	 * \f[
-	 *	 -\frac{\partial {log(p(y|X, \theta))}}{\partial \theta}
+	 * -\frac{\partial log(p(y|X, \theta))}{\partial \theta}
 	 * \f]
 	 *
-	 * where \f$y\f$ are the labels, \f$X\f$ are the features,
-	 * and \f$\theta\f$ represent hyperparameters.
+	 * where \f$y\f$ are the labels, \f$X\f$ are the features, and
+	 * \f$\theta\f$ represent hyperparameters.
 	 */
 	virtual CMap<TParameter*, SGVector<float64_t> >	get_marginal_likelihood_derivatives(
 		CMap<TParameter*, CSGObject*>& para_dict)=0;
@@ -103,10 +96,11 @@ public:
 	 * @return vector to compute posterior mean of Gaussian Process:
 	 *
 	 * \f[
-	 *		\mu = K\alpha
+	 * \mu = K\alpha
 	 * \f]
 	 *
-	 * where \f$\mu\f$ is the mean and \f$K\f$ is the prior covariance matrix.
+	 * where \f$\mu\f$ is the mean and \f$K\f$ is the prior covariance
+	 * matrix.
 	 */
 	virtual SGVector<float64_t> get_alpha()=0;
 
@@ -115,24 +109,27 @@ public:
 	 * @return Cholesky decomposition of matrix:
 	 *
 	 * \f[
-	 *		 L = Cholesky(sW*K*sW+I)
+	 * L = cholesky(sW*K*sW+I)
 	 * \f]
 	 *
-	 * where \f$K\f$ is the prior covariance matrix, \f$sW\f$ is the vector returned by
-	 * get_diagonal_vector(), and \f$I\f$ is the identity matrix.
+	 * where \f$K\f$ is the prior covariance matrix, \f$sW\f$ is the
+	 * vector returned by get_diagonal_vector(), and \f$I\f$ is the
+	 * identity matrix.
 	 */
 	virtual SGMatrix<float64_t> get_cholesky()=0;
 
 	/** get diagonal vector
 	 *
-	 * @return diagonal of matrix used to calculate posterior covariance matrix
+	 * @return diagonal of matrix used to calculate posterior
+	 * covariance matrix:
 	 *
 	 * \f[
-	 *	    Cov = (K^{-1}+sW^{2})^{-1}
+	 * Cov = (K^{-1}+sW^{2})^{-1}
 	 * \f]
 	 *
 	 * where \f$Cov\f$ is the posterior covariance matrix, \f$K\f$ is
-	 * the prior covariance matrix, and \f$sW\f$ is the diagonal vector.
+	 * the prior covariance matrix, and \f$sW\f$ is the diagonal
+	 * vector.
 	 */
 	virtual SGVector<float64_t> get_diagonal_vector()=0;
 
@@ -208,22 +205,22 @@ public:
 	 */
 	virtual float64_t get_scale() { return m_scale; }
 
-	/** wether combination of inference method and
-	 * given likelihood function supports regression
+	/** whether combination of inference method and given likelihood
+	 * function supports regression
 	 *
 	 * @return false
 	 */
 	virtual bool supports_regression() { return false; }
 
-	/** wether combination of inference method and
-	 * given likelihood function supports binary classification
+	/** whether combination of inference method and given likelihood
+	 * function supports binary classification
 	 *
 	 * @return false
 	 */
 	virtual bool supports_binary() { return false; }
 
-	/** wether combination of inference method and
-	 * given likelihood function supports multiclass classification
+	/** whether combination of inference method and given likelihood
+	 * function supports multiclass classification
 	 *
 	 * @return false
 	 */
@@ -252,14 +249,7 @@ protected:
 	/** mean function */
 	CMeanFunction* m_mean;
 
-	/** likelihood function to use:
-	 *
-	 * \f[
-	 *   p(y|f)
-	 * \f]
-	 *
-	 * where y are the labels and f is the prediction function
-	 */
+	/** likelihood function to use */
 	CLikelihoodModel* m_model;
 
 	/** features to use */
@@ -271,14 +261,10 @@ protected:
 	/** feature matrix */
 	SGMatrix<float64_t> m_feature_matrix;
 
-	/** alpha matrix used in process mean calculation */
+	/** alpha vector used in process mean calculation */
 	SGVector<float64_t> m_alpha;
 
-	/** Lower triangle Cholesky decomposition of
-	 *  feature matrix
-	 *
-	 *  Heiko Strathmann: In fact this is the upper triangular factor
-	 */
+	/** upper triangular factor of Cholesky decomposition */
 	SGMatrix<float64_t> m_L;
 
 	/** kernel scale */
@@ -288,5 +274,4 @@ protected:
 	SGMatrix<float64_t> m_ktrtr;
 };
 }
-#endif /* HAVE_EIGEN3 */
 #endif /* CINFERENCEMETHOD_H_ */

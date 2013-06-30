@@ -5,7 +5,6 @@
  * (at your option) any later version.
  *
  * Written (W) 2013 Roman Votyakov
- * Copyright (C) 2013 Roman Votyakov
  */
 
 #ifndef _GAUSSIANPROCESSBINARYCLASSIFICATION_H_
@@ -20,9 +19,8 @@
 namespace shogun
 {
 
-/** TODO: insert documentation
- *
- *
+/** @brief Class GaussianProcessBinaryClassification implements binary
+ * classification based on Gaussian Processes.
  */
 class CGaussianProcessBinaryClassification : public CGaussianProcessMachine
 {
@@ -67,20 +65,6 @@ public:
 		return "GaussianProcessBinaryClassification";
 	}
 
-	/** load from file
-	 *
-	 * @param srcfile file to load from
-	 * @return if loading was successful
-	 */
-	virtual bool load(FILE* srcfile);
-
-	/** save to file
-	 *
-	 * @param dstfile file to save to
-	 * @return if saving was successful
-	 */
-	virtual bool save(FILE* dstfile);
-
 protected:
 	/** train classifier
 	 *
@@ -90,11 +74,11 @@ protected:
 	 */
 	virtual bool train_machine(CFeatures* data=NULL);
 
-	/** check wether training labels are valid for classification
+	/** check whether training labels are valid for classification
 	 *
 	 * @param lab training labels
 	 *
-	 * @return wether training labels are valid for classification
+	 * @return whether training labels are valid for classification
 	 */
 	virtual bool is_label_valid(CLabels *lab) const
 	{

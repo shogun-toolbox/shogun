@@ -16,49 +16,41 @@
 
 namespace shogun {
 
-/** @brief Mean Function base class.
+/** @brief Mean function base class.
  *
- *  The Mean Function Class takes the mean
- *  of data used for Gaussian Process Regression.
- *  It also includes the derivatives of the
- *  specified function.
- *
+ * The Mean Function Class takes the mean of data used for Gaussian
+ * Process Regression. It also includes the derivatives of the
+ * specified function.
  */
-class CMeanFunction: public shogun::CSGObject
+class CMeanFunction: public CSGObject
 {
-
 public:
-
-	/*Constructor*/
+	/** constructor */
 	CMeanFunction();
 
-	/*Destructor*/
 	virtual ~CMeanFunction();
 
-	/** Returns the mean of the specified data
+	/** returns the mean of the specified data
 	 *
 	 * @param data points arranged in a matrix with rows
 	 * representing the number of features
 	 *
-	 * @return Mean of feature vectors
+	 * @return mean of feature vectors
 	 */
-	virtual SGVector<float64_t> get_mean_vector(SGMatrix<float64_t>& data) = 0;
+	virtual SGVector<float64_t> get_mean_vector(SGMatrix<float64_t>& data)=0;
 
-	/** Returns the derivative of the mean function
+	/** returns the derivative of the mean function
 	 *
 	 * @param param parameter
 	 * @param obj object that owns parameter
-	 * @param data points arranged in a matrix with rows representing the
-	 * number of features
+	 * @param data points arranged in a matrix with rows representing
+	 * the number of features
 	 * @param index of value if parameter is a vector
 	 *
 	 * @return derivative of mean function with respect to parameter
 	 */
 	virtual SGVector<float64_t> get_parameter_derivative(TParameter* param,
 			CSGObject* obj, SGMatrix<float64_t>& data, index_t index = -1);
-
 };
-
 }
-
 #endif /* CMEANFUNCTION_H_ */

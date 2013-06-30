@@ -21,46 +21,49 @@
 namespace shogun
 {
 
-/** @brief This is the class that models a Gaussian Likelihood
+/** @brief Class that models Gaussian likelihood.
  *
- * In this case, P(y|f) is normally distributed with mean f and
- * variance \f$\sigma\f$
+ * \f[
+ * p(y|f)=\prod_{i=1}^n\frac{1} {\sqrt{2\pi\sigma^2}}
+ * exp\left(-\frac{(y_i-f_i)^2}{2\sigma^2}\right)
+ * \f]
  *
+ * The hyperparameter of the Gaussian likelihood model is standard
+ * deviation: \f$\sigma\f$.
  */
 class CGaussianLikelihood: public CLikelihoodModel
 {
 public:
-	/** Constructor*/
+	/** default constructor */
 	CGaussianLikelihood();
 
-	/** Constructor
-	 * @param sigma noise parameter */
+	/** constructor
+	 *
+	 * @param sigma observation noise
+	 */
 	CGaussianLikelihood(float64_t sigma);
 
-	/** Destructor*/
 	virtual ~CGaussianLikelihood();
 
-	/** Returns the name of the SGSerializable instance.  It MUST BE
-	 *  the CLASS NAME without the prefixed `C'.
+	/** returns the name of the likelihood model
 	 *
-	 * @return name of the SGSerializable
+	 * @return name GaussianLikelihood
 	 */
 	virtual const char* get_name() const { return "GaussianLikelihood"; }
 
-	/** Returns the noise variance
+	/** returns the noise standard deviation
 	 *
-	 * @return noise variance
+	 * @return noise standard deviation
 	 */
 	float64_t get_sigma() { return m_sigma; }
 
-	/** Sets the noise variance
+	/** sets the noise standard deviation
 	 *
-	 * @param sigma noise variance
+	 * @param sigma noise standard deviation
 	 */
 	void set_sigma(float64_t sigma)
 	{
-		REQUIRE(sigma>0.0, "%s::set_sigma(): Standard deviation "
-			"must be greater than zero\n", get_name())
+		REQUIRE(sigma>0.0, "Standard deviation must be greater than zero\n")
 		m_sigma=sigma;
 	}
 
@@ -71,115 +74,106 @@ public:
 	 */
 	static CGaussianLikelihood* obtain_from_generic(CLikelihoodModel* likelihood);
 
-	/** Evaluate means
+	/** evaluate means
 	 *
 	 * @param means vector of means calculated by inference method
-	 * @return Final means evaluated by likelihood function
+	 * @return final means evaluated by likelihood function
 	 */
 	virtual SGVector<float64_t> evaluate_means(SGVector<float64_t>& means);
 
-	/** Evaluate variances
+	/** evaluate variances
 	 *
-	 * @param vars Vector of variances calculated by inference method
-	 * @return Final variances evaluated by likelihood function
+	 * @param vars vector of variances calculated by inference method
+	 * @return final variances evaluated by likelihood function
 	 */
 	virtual SGVector<float64_t> evaluate_variances(SGVector<float64_t>& vars);
 
 	/** get model type
-	  *
-	  * @return model type Gaussian
+	 *
+	 * @return model type Gaussian
 	 */
 	virtual ELikelihoodModelType get_model_type() { return LT_GAUSSIAN; }
 
-	/** get log likelihood log(P(y|f)) with respect
-	 *  to location f
+	/** get log likelihood \f$log(P(y|f))\f$
 	 *
-	 *  @param labels labels used
-	 *  @param f location
+	 * @param labels labels used
+	 * @param f function location
 	 *
-	 *  @return log likelihood
+	 * @return log likelihood
 	 */
 	virtual float64_t get_log_probability_f(CRegressionLabels* labels,
 			SGVector<float64_t> f);
 
-	/** get derivative of log likelihood log(P(y|f)) with respect
-	 *  to location f
+	/** get derivative of log likelihood \f$log(P(y|f))\f$ with
+	 * respect to function location \f$f\f$
 	 *
-	 *  @param labels labels used
-	 *  @param f location
-	 *  @param i index, choices are 1, 2, and 3
-	 *  for first, second, and third derivatives
-	 *  respectively
+	 * @param labels labels used
+	 * @param f function location
+	 * @param i index, choices are 1, 2, and 3 for first, second, and
+	 * third derivatives respectively
 	 *
-	 *  @return derivative
+	 * @return derivative
 	 */
 	virtual SGVector<float64_t> get_log_probability_derivative_f(
 			CRegressionLabels* labels, SGVector<float64_t> f, index_t i);
 
-	/** get derivative of log likelihood log(P(y|f))
-	 *  with respect to given parameter
+	/** get derivative of log likelihood \f$log(P(y|f))\f$ with
+	 * respect to given parameter
 	 *
-	 *  @param labels labels used
-	 *  @param param parameter
-	 *  @param obj pointer to object to make sure we
-	 *  have the right parameter
-	 *  @param function function location
+	 * @param labels labels used
+	 * @param param parameter
+	 * @param obj pointer to object to make sure we have the right
+	 * parameter
+	 * @param function function location
 	 *
-	 *  @return derivative
+	 * @return derivative
 	 */
 	virtual SGVector<float64_t> get_first_derivative(CRegressionLabels* labels,
 			TParameter* param, CSGObject* obj, SGVector<float64_t> function);
 
-	/** get derivative of the first derivative
-	 *  of log likelihood with respect to function
-	 *  location, i.e.
+	/** get derivative of the first derivative of log likelihood with
+	 * respect to function location, i.e. \f$\frac{\partial
+	 * log(P(y|f))}{\partial f}\f$ with respect to given parameter
 	 *
-	 *  \f$\frac{\partial}log(P(y|f))}{\partial{f}}\f$
+	 * @param labels labels used
+	 * @param param parameter
+	 * @param obj pointer to object to make sure we have the right
+	 * parameter
+	 * @param function function location
 	 *
-	 *  with respect to given parameter
-	 *
-	 *  @param labels labels used
-	 *  @param param parameter
-	 *  @param obj pointer to object to make sure we
-	 *  have the right parameter
-	 *  @param function function location
-	 *
-	 *  @return derivative
+	 * @return derivative
 	 */
 	virtual SGVector<float64_t> get_second_derivative(CRegressionLabels* labels,
 			TParameter* param, CSGObject* obj, SGVector<float64_t> function);
 
-	/** get derivative of the second derivative
-	 *  of log likelihood with respect to function
-	 *  location, i.e.
+	/** get derivative of the second derivative of log likelihood with
+	 * respect to function location, i.e. \f$\frac{\partial^{2}
+	 * log(P(y|f))}{\partial f^{2}}\f$ with respect to given
+	 * parameter
 	 *
-	 *  \f$\frac{\partial^{2}log(P(y|f))}{\partial{f^{2}}}\f$
+	 * @param labels labels used
+	 * @param param parameter
+	 * @param obj pointer to object to make sure we have the right
+	 * parameter
+	 * @param function function location
 	 *
-	 *  with respect to given parameter
-	 *
-	 *  @param labels labels used
-	 *  @param param parameter
-	 *  @param obj pointer to object to make sure we
-	 *  have the right parameter
-	 *  @param function function location
-	 *
-	 *  @return derivative
+	 * @return derivative
 	 */
 	virtual SGVector<float64_t> get_third_derivative(CRegressionLabels* labels,
 			TParameter* param, CSGObject* obj, SGVector<float64_t> function);
 
-	/** return wether Gaussian likelihood function supports regression
+	/** return whether Gaussian likelihood function supports regression
 	 *
 	 * @return true
 	 */
 	virtual bool supports_regression() { return true; }
 
 private:
-	/** Observation noise sigma */
-	float64_t m_sigma;
-
-	/** Initialize function */
+	/** initialize function */
 	void init();
+
+	/** standard deviation */
+	float64_t m_sigma;
 };
 }
 #endif /* HAVE_EIGEN3 */
