@@ -18,10 +18,11 @@ TEST(HashedDocConverterTest, apply_single_vector)
 	SGVector<uint32_t> hashed_rep(new_dim_size);
 
 	SGVector<uint32_t>::fill_vector(hashed_rep, new_dim_size, 0);
+	const int32_t seed = 0xdeadbeaf;
 	uint32_t hash = 0;
 	for (index_t i=0; i<num_tokens; i++)
 	{
-		hash = CHash::MurmurHash3((uint8_t*) words[i], sizes[i], hash);
+		hash = CHash::MurmurHash3((uint8_t*) words[i], sizes[i], seed);
 		hash = hash & ((1 << 4) - 1);
 		hashed_rep[hash]++;
 	}

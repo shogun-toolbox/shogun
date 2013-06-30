@@ -13,6 +13,7 @@
 #include <shogun/lib/Hash.h>
 #include <shogun/lib/DynamicArray.h>
 #include <shogun/features/StringFeatures.h>
+#include <shogun/features/HashedDocDotFeatures.h>
 #include <shogun/mathematics/Math.h>
 
 
@@ -95,20 +96,15 @@ SGSparseVector<uint32_t> CHashedDocConverter::apply(SGVector<char> document)
 	const int32_t array_size = 1024*1024;
 	CDynamicArray<uint32_t> hashed_indices(array_size);
 
+	const int32_t seed = 0xdeadbeaf;
 	tokenizer->set_text(document);
 	index_t token_start = 0;
-	uint32_t hash = 0;
 	while (tokenizer->has_next())
 	{
-		index_t next_token_idx = tokenizer->next_token_idx(token_start);
-		char* token = SG_MALLOC(char, next_token_idx-token_start);
-		for (index_t i=token_start; i<next_token_idx; i++)
-			token[i-token_start] = document[i];
-		
-		hash = CHash::MurmurHash3((uint8_t*) token, next_token_idx-token_start, hash);
-		hash = hash & ((1 << num_bits) - 1);
-		hashed_indices.push_back(hash);
-		SG_FREE(token);
+		index_t next_token_idx = tokenizer->next_token_idx(token_start);		
+		uint32_t hashed_idx = CHashedDocDotFeatures::calculate_token_hash(
+				&document.vector[token_start], next_token_idx-token_start, num_bits, seed);
+		hashed_indices.push_back(hashed_idx);
 	}
 
 	CMath::qsort(hashed_indices.get_array(), hashed_indices.get_num_elements());
