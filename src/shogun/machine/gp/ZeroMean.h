@@ -15,41 +15,32 @@
 namespace shogun
 {
 
-/** @brief Zero Mean Function
+/** @brief The zero mean function class.
  *
- *	Simple mean function that assumes a mean
- *	of zero.
- *
+ * Simple mean function that assumes a mean of zero.
  */
 class CZeroMean: public CMeanFunction
 {
-
 public:
-
-	/*Constructor*/
+	/** constructor */
 	CZeroMean();
 
-	/*Destructor*/
 	virtual ~CZeroMean();
 
-	/** Returns the name of the SGSerializable instance.  It MUST BE
-	 *  the CLASS NAME without the prefixed `C'.
+	/** returns name of the mean function
 	 *
-	 * @return name of the SGSerializable
+	 * @return name ZeroMean
 	 */
 	virtual const char* get_name() const { return "ZeroMean"; }
 
-	/** Returns the mean of the specified data
+	/** returns the mean of the specified data
 	 *
 	 * @param data points arranged in a matrix with rows representing
 	 * the number of features
 	 *
-	 * @return Mean of feature vectors
+	 * @return mean of feature vectors
 	 */
 	virtual SGVector<float64_t> get_mean_vector(SGMatrix<float64_t>& data);
-
 };
-
 }
-
 #endif /* CZEROMEAN_H_ */

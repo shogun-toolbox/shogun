@@ -11,8 +11,6 @@
 
 #include <shogun/machine/gp/InferenceMethod.h>
 
-#ifdef HAVE_EIGEN3
-
 using namespace shogun;
 
 CInferenceMethod::CInferenceMethod()
@@ -98,5 +96,3 @@ void CInferenceMethod::set_scale(float64_t s)
 {
 	m_scale=s;
 }
-
-#endif /* HAVE_EIGEN3 */

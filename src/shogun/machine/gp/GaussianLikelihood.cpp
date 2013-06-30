@@ -13,10 +13,8 @@
 
 #ifdef HAVE_EIGEN3
 
-#include <shogun/mathematics/eigen3.h>
-#include <shogun/modelselection/ParameterCombination.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/base/Parameter.h>
+#include <shogun/mathematics/eigen3.h>
 
 using namespace shogun;
 using namespace Eigen;
@@ -28,8 +26,7 @@ CGaussianLikelihood::CGaussianLikelihood() : CLikelihoodModel()
 
 CGaussianLikelihood::CGaussianLikelihood(float64_t sigma) : CLikelihoodModel()
 {
-	REQUIRE(sigma>0.0, "%s::CGaussianLikelihood(): Standard deviation "
-			"must be greater than zero\n", get_name())
+	REQUIRE(sigma>0.0, "Standard deviation must be greater than zero\n")
 	init();
 	m_sigma=sigma;
 }

@@ -5,7 +5,6 @@
  * (at your option) any later version.
  *
  * Written (W) 2013 Roman Votyakov
- * Copyright (C) 2013 Roman Votyakov
  */
 
 #include <shogun/lib/config.h>
@@ -44,20 +43,6 @@ CBinaryLabels* CGaussianProcessBinaryClassification::apply_binary(CFeatures* dat
 bool CGaussianProcessBinaryClassification::train_machine(CFeatures* data)
 {
 	SG_NOTIMPLEMENTED
-	return false;
-}
-
-bool CGaussianProcessBinaryClassification::load(FILE* srcfile)
-{
-	SG_SET_LOCALE_C;
-	SG_RESET_LOCALE;
-	return false;
-}
-
-bool CGaussianProcessBinaryClassification::save(FILE* dstfile)
-{
-	SG_SET_LOCALE_C;
-	SG_RESET_LOCALE;
 	return false;
 }
 

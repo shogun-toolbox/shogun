@@ -24,21 +24,19 @@
 namespace shogun
 {
 
-/** @brief The Laplace Approximation Inference Method.
+/** @brief The Laplace approximation inference method class.
  *
- *  This inference method approximates the
- *  posterior likelihood function by using
- *  Laplace's method. Here, we compute a Gaussian
- *  approximation to the posterior via a
- *  Taylor expansion around the maximum of the posterior
- *  likelihood function. For more details, see "Bayesian
- *  Classification with Gaussian Processes" by Christopher K.I
- *  Williams and David Barber, published 1998 in the IEEE
- *  Transactions on Pattern Analysis and Machine Intelligence,
- *  Volume 20, Number 12, Pages 1342-1351.
+ * This inference method approximates the posterior likelihood
+ * function by using Laplace's method. Here, we compute a Gaussian
+ * approximation to the posterior via a Taylor expansion around the
+ * maximum of the posterior likelihood function. For more details, see
+ * "Bayesian Classification with Gaussian Processes" by Christopher
+ * K.I Williams and David Barber, published 1998 in the IEEE
+ * Transactions on Pattern Analysis and Machine Intelligence, Volume
+ * 20, Number 12, Pages 1342-1351.
  *
- *  This specific implementation was adapted from the infLaplace.m file
- *  in the GPML toolbox
+ * This specific implementation was adapted from the infLaplace.m file
+ * in the GPML toolbox.
  */
 class CLaplacianInferenceMethod: public CInferenceMethod
 {
@@ -79,22 +77,22 @@ public:
 	 *	  -log(p(y|X, \theta))
 	 * \f]
 	 *
-	 * where \f$y\f$ are the labels, \f$X\f$ are the features,
-	 * and \f$\theta\f$ represent hyperparameters.
+	 * where \f$y\f$ are the labels, \f$X\f$ are the features, and
+	 * \f$\theta\f$ represent hyperparameters.
 	 */
 	virtual float64_t get_negative_marginal_likelihood();
 
 	/** get log marginal likelihood gradient
 	 *
-	 * @return vector of the  marginal likelihood function gradient
+	 * @return vector of the marginal likelihood function gradient
 	 * with respect to hyperparameters:
 	 *
 	 * \f[
 	 *	 -\frac{\partial {log(p(y|X, \theta))}}{\partial \theta}
 	 * \f]
 	 *
-	 * where \f$y\f$ are the labels, \f$X\f$ are the features,
-	 * and \f$\theta\f$ represent hyperparameters.
+	 * where \f$y\f$ are the labels, \f$X\f$ are the features, and
+	 * \f$\theta\f$ represent hyperparameters.
 	 */
 	virtual CMap<TParameter*, SGVector<float64_t> >
 		get_marginal_likelihood_derivatives(CMap<TParameter*, CSGObject*>& para_dict);
@@ -107,7 +105,8 @@ public:
 	 *		\mu = K\alpha
 	 * \f]
 	 *
-	 * where \f$\mu\f$ is the mean and \f$K\f$ is the prior covariance matrix.
+	 * where \f$\mu\f$ is the mean and \f$K\f$ is the prior covariance
+	 * matrix.
 	 */
 	virtual SGVector<float64_t> get_alpha();
 
@@ -119,28 +118,31 @@ public:
 	 *		 L = Cholesky(sW*K*sW+I)
 	 * \f]
 	 *
-	 * where \f$K\f$ is the prior covariance matrix, \f$sW\f$ is the vector returned by
-	 * get_diagonal_vector(), and \f$I\f$ is the identity matrix.
+	 * where \f$K\f$ is the prior covariance matrix, \f$sW\f$ is the
+	 * vector returned by get_diagonal_vector(), and \f$I\f$ is the
+	 * identity matrix.
 	 */
 	virtual SGMatrix<float64_t> get_cholesky();
 
 	/** get diagonal vector
 	 *
-	 * @return diagonal of matrix used to calculate posterior covariance matrix
+	 * @return diagonal of matrix used to calculate posterior
+	 * covariance matrix:
 	 *
 	 * \f[
 	 *	    Cov = (K^{-1}+sW^{2})^{-1}
 	 * \f]
 	 *
 	 * where \f$Cov\f$ is the posterior covariance matrix, \f$K\f$ is
-	 * the prior covariance matrix, and \f$sW\f$ is the diagonal vector.
+	 * the prior covariance matrix, and \f$sW\f$ is the diagonal
+	 * vector.
 	 */
 	virtual SGVector<float64_t> get_diagonal_vector();
 
 	/** get the gradient
 	 *
-	 * @return map of gradient: keys are names of parameters, values are
-	 * values of derivative with respect to that parameter.
+	 * @return map of gradient: keys are names of parameters, values
+	 * are values of derivative with respect to that parameter.
 	 */
 	virtual CMap<TParameter*, SGVector<float64_t> > get_gradient(
 			CMap<TParameter*, CSGObject*>& para_dict)
@@ -208,8 +210,8 @@ public:
 	virtual void set_minimization_max(float64_t max) { m_opt_max=max; }
 
 	/**
-	 * @return wether combination of Laplace approximation inference method and
-	 * given likelihood function supports regression
+	 * @return whether combination of Laplace approximation inference
+	 * method and given likelihood function supports regression
 	 */
 	virtual bool supports_regression()
 	{
@@ -218,8 +220,9 @@ public:
 	}
 
 	/**
-	 * @return wether combination of Laplace approximation inference method and
-	 * given likelihood function supports binary classification
+	 * @return whether combination of Laplace approximation inference
+	 * method and given likelihood function supports binary
+	 * classification
 	 */
 	virtual bool supports_binary()
 	{
@@ -244,9 +247,7 @@ private:
 	void init();
 
 private:
-	/** Check if members of object are valid
-	 * for inference
-	 */
+	/** check if members of object are valid for inference */
 	void check_members();
 
 	/** amount of tolerance for Newton's iterations */
@@ -261,37 +262,37 @@ private:
 	/** max iterations for Brent's minimization method */
 	float64_t m_opt_max;
 
-	/*Eigen version of alpha vector*/
+	/** alpha vector */
 	SGVector<float64_t> temp_alpha;
 
-	/*Function Location*/
+	/** function location */
 	SGVector<float64_t> function;
 
-	/*Noise Matrix*/
+	/** noise matrix */
 	SGVector<float64_t> W;
 
-	/*Square root of W*/
+	/** square root of W */
 	SGVector<float64_t> sW;
 
-	/*Eigen version of means vector*/
+	/** means vector */
 	SGVector<float64_t> m_means;
 
-	/*Derivative of log likelihood with respect
-	 * to function location
+	/** derivative of log likelihood with respect to function
+	 * location
 	 */
 	SGVector<float64_t> dlp;
 
-	/*Second derivative of log likelihood with respect
-	 * to function location
+	/** second derivative of log likelihood with respect to function
+	 * location
 	 */
 	SGVector<float64_t> d2lp;
 
-	/*Third derivative of log likelihood with respect
-	 * to function location
+	/** third derivative of log likelihood with respect to function
+	 * location
 	 */
 	SGVector<float64_t> d3lp;
 
-	/*log likelihood*/
+	/** log likelihood */
 	float64_t lp;
 };
 }

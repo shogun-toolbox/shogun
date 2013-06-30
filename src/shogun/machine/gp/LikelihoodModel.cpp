@@ -11,8 +11,6 @@
 
 #include <shogun/machine/gp/LikelihoodModel.h>
 
-#ifdef HAVE_EIGEN3
-
 using namespace shogun;
 
 CLikelihoodModel::CLikelihoodModel()
@@ -22,14 +20,3 @@ CLikelihoodModel::CLikelihoodModel()
 CLikelihoodModel::~CLikelihoodModel()
 {
 }
-
-float64_t CLikelihoodModel::get_parameter_derivative(const char* param_name)
-{
-	SG_ERROR("Derivative with respect to parameter %s " \
-			"not implemented in likelihood model (%s).",
-			param_name, get_name());
-
-	return 0;
-}
-
-#endif /* HAVE_EIGEN3 */

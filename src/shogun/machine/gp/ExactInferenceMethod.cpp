@@ -12,16 +12,15 @@
  * http://www.gaussianprocess.org/gpml/code/matlab/doc/
  */
 
-#include <shogun/lib/config.h>
+#include <shogun/machine/gp/ExactInferenceMethod.h>
 
 #ifdef HAVE_EIGEN3
 
-#include <shogun/machine/gp/ExactInferenceMethod.h>
 #include <shogun/machine/gp/GaussianLikelihood.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/labels/RegressionLabels.h>
-#include <shogun/kernel/GaussianKernel.h>
 #include <shogun/features/CombinedFeatures.h>
+#include <shogun/features/DotFeatures.h>
 
 #include <shogun/mathematics/eigen3.h>
 
@@ -67,7 +66,7 @@ void CExactInferenceMethod::check_members()
 {
 	REQUIRE(m_model->get_model_type()==LT_GAUSSIAN,
 		"Exact inference method can only use Gaussian likelihood function\n")
-	REQUIRE(m_features, "Trainig features must be attached\n")
+	REQUIRE(m_features, "Training features must be attached\n")
 	REQUIRE(m_features->get_num_vectors(),
 		"Number of training features must be greater than zero\n")
 	REQUIRE(m_labels, "Labels must be attached\n")

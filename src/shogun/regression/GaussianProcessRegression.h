@@ -28,9 +28,8 @@ class CInferenceMethod;
 class CFeatures;
 class CLabels;
 
-/** @brief Class GaussianProcessRegression implements Gaussian Process
- * Regression. Instead of a distribution over weights, the GP specifies
- * a distribution over functions.
+/** @brief Class GaussianProcessRegression implements regression based
+ * on Gaussian Processes.
  */
 class CGaussianProcessRegression : public CGaussianProcessMachine
 {
@@ -106,11 +105,11 @@ protected:
 	 */
 	virtual bool train_machine(CFeatures* data=NULL);
 
-	/** check wether training labels are valid for regression
+	/** check whether training labels are valid for regression
 	 *
 	 * @param lab training labels
 	 *
-	 * @return wether training labels are valid for regression
+	 * @return whether training labels are valid for regression
 	 */
 	virtual bool is_label_valid(CLabels *lab) const
 	{
