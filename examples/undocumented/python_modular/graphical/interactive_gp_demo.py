@@ -221,11 +221,10 @@ class Form(QMainWindow):
         x_test = array([linspace(self.xmin,self.xmax, self.nTest.text())])
         feat_test=RealFeatures(x_test)
         
-        gp = GaussianProcessRegression(inf, feat_train, labels);
-        gp.set_return_type(GaussianProcessRegression.GP_RETURN_COV);
-        covariance = gp.apply_regression(feat_test);
-        gp.set_return_type(GaussianProcessRegression.GP_RETURN_MEANS);
-        predictions = gp.apply_regression();
+        gp = GaussianProcessRegression(inf)
+        gp.train()
+        covariance = gp.get_variance_vector(feat_test)
+        predictions = gp.get_mean_vector(feat_test)
         
         #print "x_test"
         #print feat_test.get_feature_matrix()
@@ -243,13 +242,13 @@ class Form(QMainWindow):
         self.axes.set_ylim((self.ymin,self.ymax))
         self.axes.hold(True)
         x_test=feat_test.get_feature_matrix()[0]
-        self.axes.plot(x_test, predictions.get_labels(), 'b-x')
+        self.axes.plot(x_test, predictions, 'b-x')
         #self.axes.plot(x_test, labels.get_labels(), 'ro')
         self.axes.plot(self.x, self.y, 'ro')
         #self.axes.plot(feat_test.get_feature_matrix()[0], predictions.get_labels()-3*sqrt(covariance.get_labels()))
         #self.axes.plot(feat_test.get_feature_matrix()[0], predictions.get_labels()+3*sqrt(covariance.get_labels()))
-        upper = predictions.get_labels()+3*sqrt(covariance.get_labels())
-        lower = predictions.get_labels()-3*sqrt(covariance.get_labels())
+        upper = predictions+3*sqrt(covariance)
+        lower = predictions-3*sqrt(covariance)
         self.axes.fill_between(x_test, lower, upper, color='grey')
         self.axes.hold(False)
         self.canvas.draw()
