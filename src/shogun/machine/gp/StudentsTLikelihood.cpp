@@ -77,8 +77,10 @@ SGVector<float64_t> CStudentsTLikelihood::evaluate_variances(
 	if (m_df<2.0)
 		eigen_result=CMath::INFTY*VectorXd::Ones(result.vlen);
 	else
+	{
 		eigen_result+=CMath::sq(m_sigma)*m_df/(m_df-2.0)*
 			VectorXd::Ones(result.vlen);
+	}
 
 	return result;
 }
@@ -111,7 +113,7 @@ float64_t CStudentsTLikelihood::get_log_probability_f(CLabels* lab,
 	return eigen_r.sum();
 }
 
-SGVector<float64_t>  CStudentsTLikelihood::get_log_probability_derivative_f(
+SGVector<float64_t> CStudentsTLikelihood::get_log_probability_derivative_f(
 	CLabels* lab, SGVector<float64_t> func, index_t i)
 {
 	REQUIRE(lab->get_label_type()==LT_REGRESSION,
@@ -170,11 +172,11 @@ SGVector<float64_t> CStudentsTLikelihood::get_first_derivative(CLabels* lab,
 	REQUIRE(lab->get_label_type()==LT_REGRESSION,
 		"Labels must be type of CRegressionLabels\n")
 
-	SGVector<float64_t> r(func.vlen);
-	Map<VectorXd> eigen_r(r.vector, r.vlen);
-
 	if (obj==this)
 	{
+		SGVector<float64_t> r(func.vlen);
+		Map<VectorXd> eigen_r(r.vector, r.vlen);
+
 		Map<VectorXd> eigen_f(func.vector, func.vlen);
 
 		SGVector<float64_t> y=((CRegressionLabels*)lab)->get_labels();
@@ -214,9 +216,7 @@ SGVector<float64_t> CStudentsTLikelihood::get_first_derivative(CLabels* lab,
 		}
 	}
 
-	r[0]=CMath::INFTY;
-
-	return r;
+	return SGVector<float64_t>();
 }
 
 SGVector<float64_t> CStudentsTLikelihood::get_second_derivative(CLabels* lab,
@@ -225,11 +225,11 @@ SGVector<float64_t> CStudentsTLikelihood::get_second_derivative(CLabels* lab,
 	REQUIRE(lab->get_label_type()==LT_REGRESSION,
 		"Labels must be type of CRegressionLabels\n")
 
-	SGVector<float64_t> r(func.vlen);
-	Map<VectorXd> eigen_r(r.vector, r.vlen);
-
 	if (obj==this)
 	{
+		SGVector<float64_t> r(func.vlen);
+		Map<VectorXd> eigen_r(r.vector, r.vlen);
+
 		Map<VectorXd> eigen_f(func.vector, func.vlen);
 
 		SGVector<float64_t> y=((CRegressionLabels*)lab)->get_labels();
@@ -263,9 +263,7 @@ SGVector<float64_t> CStudentsTLikelihood::get_second_derivative(CLabels* lab,
 		}
 	}
 
-	r[0]=CMath::INFTY;
-
-	return r;
+	return SGVector<float64_t>();
 }
 
 SGVector<float64_t> CStudentsTLikelihood::get_third_derivative(CLabels* lab,
@@ -274,11 +272,11 @@ SGVector<float64_t> CStudentsTLikelihood::get_third_derivative(CLabels* lab,
 	REQUIRE(lab->get_label_type()==LT_REGRESSION,
 		"Labels must be type of CRegressionLabels\n")
 
-	SGVector<float64_t> r(func.vlen);
-	Map<VectorXd> eigen_r(r.vector, r.vlen);
-
 	if (obj==this)
 	{
+		SGVector<float64_t> r(func.vlen);
+		Map<VectorXd> eigen_r(r.vector, r.vlen);
+
 		Map<VectorXd> eigen_f(func.vector, func.vlen);
 
 		SGVector<float64_t> y=((CRegressionLabels*)lab)->get_labels();
@@ -317,9 +315,7 @@ SGVector<float64_t> CStudentsTLikelihood::get_third_derivative(CLabels* lab,
 		}
 	}
 
-	r[0] = CMath::INFTY;
-
-	return r;
+	return SGVector<float64_t>();
 }
 
 #endif // HAVE_EIGEN3
