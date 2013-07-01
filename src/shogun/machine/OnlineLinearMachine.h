@@ -87,7 +87,10 @@ class COnlineLinearMachine : public CMachine
 		 */
 		virtual SGVector<float32_t> get_w()
 		{
-			return SGVector<float32_t>(w, w_dim);
+			float32_t * dst_w = SG_MALLOC(float32_t, w_dim);
+			for (int32_t i=0; i<w_dim; i++)
+				dst_w[i]=w[i];
+			return SGVector<float32_t>(dst_w, w_dim);
 		}
 
 		/** set w
