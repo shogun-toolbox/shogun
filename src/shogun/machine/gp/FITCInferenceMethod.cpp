@@ -121,6 +121,8 @@ void CFITCInferenceMethod::check_members()
 	REQUIRE(m_labels, "Labels must be attached\n")
 	REQUIRE(m_labels->get_num_labels(),
 			"Number of labels must be greater than zero\n")
+	REQUIRE(m_labels->get_label_type()==LT_REGRESSION,
+		"Labels must be type of CRegressionLabels\n")
 	REQUIRE(m_labels->get_num_labels()==m_features->get_num_vectors(),
 		"Number of training vectors must match number of labels\n")
 	REQUIRE(m_kernel, "Kernel must be assigned\n")

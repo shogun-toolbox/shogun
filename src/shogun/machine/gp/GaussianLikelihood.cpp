@@ -13,6 +13,7 @@
 
 #ifdef HAVE_EIGEN3
 
+#include <shogun/labels/RegressionLabels.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
 
@@ -41,16 +42,15 @@ CGaussianLikelihood::~CGaussianLikelihood()
 {
 }
 
-CGaussianLikelihood* CGaussianLikelihood::obtain_from_generic(CLikelihoodModel* likelihood)
+CGaussianLikelihood* CGaussianLikelihood::obtain_from_generic(CLikelihoodModel* lik)
 {
-	ASSERT(likelihood!=NULL);
+	ASSERT(lik!=NULL);
 
-	if (likelihood->get_model_type()!=LT_GAUSSIAN)
-		SG_SERROR("CGaussianLikelihood::obtain_from_generic(): provided likelihood is "
-			"not of type CGaussianLikelihood!\n")
+	if (lik->get_model_type()!=LT_GAUSSIAN)
+		SG_SERROR("Provided likelihood is not of type CGaussianLikelihood!\n")
 
-	SG_REF(likelihood);
-	return (CGaussianLikelihood*)likelihood;
+	SG_REF(lik);
+	return (CGaussianLikelihood*)lik;
 }
 
 SGVector<float64_t> CGaussianLikelihood::evaluate_means(
@@ -63,26 +63,29 @@ SGVector<float64_t> CGaussianLikelihood::evaluate_variances(
 		SGVector<float64_t>& vars)
 {
 	SGVector<float64_t> result(vars);
+	Map<VectorXd> eigen_result(result.vector, result.vlen);
 
-	for (index_t i=0; i<result.vlen; i++)
-		result[i]+=CMath::sq(m_sigma);
+	eigen_result+=CMath::sq(m_sigma)*VectorXd::Ones(result.vlen);
 
 	return result;
 }
 
-float64_t CGaussianLikelihood::get_log_probability_f(CRegressionLabels* labels,
-		SGVector<float64_t> m_function)
+float64_t CGaussianLikelihood::get_log_probability_f(CLabels* lab,
+		SGVector<float64_t> func)
 {
-	Map<VectorXd> eigen_function(m_function.vector, m_function.vlen);
+	REQUIRE(lab->get_label_type()==LT_REGRESSION,
+		"Labels must be type of CRegressionLabels\n")
 
-	SGVector<float64_t> result(m_function.vlen);
+	Map<VectorXd> eigen_f(func.vector, func.vlen);
+
+	SGVector<float64_t> result(func.vlen);
 	Map<VectorXd> eigen_result(result.vector, result.vlen);
 
-	SGVector<float64_t> y=labels->get_labels();
+	SGVector<float64_t> y=((CRegressionLabels*)lab)->get_labels();
 	Map<VectorXd> eigen_y(y.vector, y.vlen);
 
 	// compute log probability: lp=-(y-f).^2./sigma^2/2-log(2*pi*sigma^2)/2
-	eigen_result=eigen_y-eigen_function;
+	eigen_result=eigen_y-eigen_f;
 	eigen_result=-eigen_result.cwiseProduct(eigen_result)/(2*CMath::sq(m_sigma))-
 		VectorXd::Ones(result.vlen)*log(2*CMath::PI*CMath::sq(m_sigma))/2.0;
 
@@ -90,27 +93,30 @@ float64_t CGaussianLikelihood::get_log_probability_f(CRegressionLabels* labels,
 }
 
 SGVector<float64_t> CGaussianLikelihood::get_log_probability_derivative_f(
-		CRegressionLabels* labels, SGVector<float64_t> m_function, index_t j)
+		CLabels* lab, SGVector<float64_t> func, index_t i)
 {
-	Map<VectorXd> eigen_function(m_function.vector, m_function.vlen);
+	REQUIRE(lab->get_label_type()==LT_REGRESSION,
+		"Labels must be type of CRegressionLabels\n")
 
-	SGVector<float64_t> result(m_function.vlen);
+	Map<VectorXd> eigen_f(func.vector, func.vlen);
+
+	SGVector<float64_t> result(func.vlen);
 	Map<VectorXd> eigen_result(result.vector, result.vlen);
 
-	SGVector<float64_t> y=labels->get_labels();
+	SGVector<float64_t> y=((CRegressionLabels*)lab)->get_labels();
 	Map<VectorXd> eigen_y(y.vector, y.vlen);
 
 	// set result=y-f
-	eigen_result=eigen_y-eigen_function;
+	eigen_result=eigen_y-eigen_f;
 
 	// compute derivatives of log probability wrt f
-	if (j == 1)
+	if (i == 1)
 		eigen_result/=CMath::sq(m_sigma);
 
-	else if (j == 2)
+	else if (i == 2)
 		eigen_result=-VectorXd::Ones(result.vlen)/CMath::sq(m_sigma);
 
-	else if (j == 3)
+	else if (i == 3)
 		eigen_result=VectorXd::Zero(result.vlen);
 
 	else
@@ -119,12 +125,15 @@ SGVector<float64_t> CGaussianLikelihood::get_log_probability_derivative_f(
 	return result;
 }
 
-SGVector<float64_t> CGaussianLikelihood::get_first_derivative(CRegressionLabels* labels,
-		TParameter* param,  CSGObject* obj, SGVector<float64_t> m_function)
+SGVector<float64_t> CGaussianLikelihood::get_first_derivative(CLabels* lab,
+		TParameter* param,  CSGObject* obj, SGVector<float64_t> func)
 {
-	Map<VectorXd> eigen_function(m_function.vector, m_function.vlen);
+	REQUIRE(lab->get_label_type()==LT_REGRESSION,
+		"Labels must be type of CRegressionLabels\n")
 
-	SGVector<float64_t> result(m_function.vlen);
+	Map<VectorXd> eigen_f(func.vector, func.vlen);
+
+	SGVector<float64_t> result(func.vlen);
 	Map<VectorXd> eigen_result(result.vector, result.vlen);
 
 	if (strcmp(param->m_name, "sigma") || obj != this)
@@ -133,24 +142,27 @@ SGVector<float64_t> CGaussianLikelihood::get_first_derivative(CRegressionLabels*
 		return result;
 	}
 
-	SGVector<float64_t> y=labels->get_labels();
+	SGVector<float64_t> y=((CRegressionLabels*)lab)->get_labels();
 	Map<VectorXd> eigen_y(y.vector, y.vlen);
 
 	// compute derivative of log probability wrt sigma:
 	// lp_dsigma=(y-f).^2/sigma^2-1
-	eigen_result=eigen_y-eigen_function;
+	eigen_result=eigen_y-eigen_f;
 	eigen_result=eigen_result.cwiseProduct(eigen_result)/CMath::sq(m_sigma);
 	eigen_result-=VectorXd::Ones(result.vlen);
 
 	return result;
 }
 
-SGVector<float64_t> CGaussianLikelihood::get_second_derivative(CRegressionLabels* labels,
-		TParameter* param,  CSGObject* obj, SGVector<float64_t> m_function)
+SGVector<float64_t> CGaussianLikelihood::get_second_derivative(CLabels* lab,
+		TParameter* param,  CSGObject* obj, SGVector<float64_t> func)
 {
-	Map<VectorXd> eigen_function(m_function.vector, m_function.vlen);
+	REQUIRE(lab->get_label_type()==LT_REGRESSION,
+		"Labels must be type of CRegressionLabels\n")
 
-	SGVector<float64_t> result(m_function.vlen);
+	Map<VectorXd> eigen_f(func.vector, func.vlen);
+
+	SGVector<float64_t> result(func.vlen);
 	Map<VectorXd> eigen_result(result.vector, result.vlen);
 
 	if (strcmp(param->m_name, "sigma") || obj != this)
@@ -159,22 +171,25 @@ SGVector<float64_t> CGaussianLikelihood::get_second_derivative(CRegressionLabels
 		return result;
 	}
 
-	SGVector<float64_t> y=labels->get_labels();
+	SGVector<float64_t> y=((CRegressionLabels*)lab)->get_labels();
 	Map<VectorXd> eigen_y(y.vector, y.vlen);
 
 	// compute derivative of the first derivative of log probability wrt sigma:
 	// dlp_dsigma=2*(f-y)/sigma^2
-	eigen_result=2*(eigen_function-eigen_y)/CMath::sq(m_sigma);
+	eigen_result=2*(eigen_f-eigen_y)/CMath::sq(m_sigma);
 
 	return result;
 }
 
-SGVector<float64_t> CGaussianLikelihood::get_third_derivative(CRegressionLabels* labels,
-		TParameter* param, CSGObject* obj, SGVector<float64_t> m_function)
+SGVector<float64_t> CGaussianLikelihood::get_third_derivative(CLabels* lab,
+		TParameter* param, CSGObject* obj, SGVector<float64_t> func)
 {
-	Map<VectorXd> eigen_function(m_function.vector, m_function.vlen);
+	REQUIRE(lab->get_label_type()==LT_REGRESSION,
+		"Labels must be type of CRegressionLabels\n")
 
-	SGVector<float64_t> result(m_function.vlen);
+	Map<VectorXd> eigen_f(func.vector, func.vlen);
+
+	SGVector<float64_t> result(func.vlen);
 	Map<VectorXd> eigen_result(result.vector, result.vlen);
 
 	if (strcmp(param->m_name, "sigma") || obj != this)
