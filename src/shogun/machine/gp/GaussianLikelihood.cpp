@@ -136,11 +136,8 @@ SGVector<float64_t> CGaussianLikelihood::get_first_derivative(CLabels* lab,
 	SGVector<float64_t> result(func.vlen);
 	Map<VectorXd> eigen_result(result.vector, result.vlen);
 
-	if (strcmp(param->m_name, "sigma") || obj != this)
-	{
-		result[0] = CMath::INFTY;
-		return result;
-	}
+	if (strcmp(param->m_name, "sigma") || obj!=this)
+		return SGVector<float64_t>();
 
 	SGVector<float64_t> y=((CRegressionLabels*)lab)->get_labels();
 	Map<VectorXd> eigen_y(y.vector, y.vlen);
@@ -160,16 +157,13 @@ SGVector<float64_t> CGaussianLikelihood::get_second_derivative(CLabels* lab,
 	REQUIRE(lab->get_label_type()==LT_REGRESSION,
 		"Labels must be type of CRegressionLabels\n")
 
+	if (strcmp(param->m_name, "sigma") || obj!=this)
+		return SGVector<float64_t>();
+
 	Map<VectorXd> eigen_f(func.vector, func.vlen);
 
 	SGVector<float64_t> result(func.vlen);
 	Map<VectorXd> eigen_result(result.vector, result.vlen);
-
-	if (strcmp(param->m_name, "sigma") || obj != this)
-	{
-		result[0] = CMath::INFTY;
-		return result;
-	}
 
 	SGVector<float64_t> y=((CRegressionLabels*)lab)->get_labels();
 	Map<VectorXd> eigen_y(y.vector, y.vlen);
@@ -187,16 +181,13 @@ SGVector<float64_t> CGaussianLikelihood::get_third_derivative(CLabels* lab,
 	REQUIRE(lab->get_label_type()==LT_REGRESSION,
 		"Labels must be type of CRegressionLabels\n")
 
+	if (strcmp(param->m_name, "sigma") || obj!=this)
+		return SGVector<float64_t>();
+
 	Map<VectorXd> eigen_f(func.vector, func.vlen);
 
 	SGVector<float64_t> result(func.vlen);
 	Map<VectorXd> eigen_result(result.vector, result.vlen);
-
-	if (strcmp(param->m_name, "sigma") || obj != this)
-	{
-		result[0] = CMath::INFTY;
-		return result;
-	}
 
 	// compute derivative of the second derivative of log probability wrt sigma:
 	// d2lp_dsigma=1/sigma^2

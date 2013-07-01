@@ -263,7 +263,7 @@ get_marginal_likelihood_derivatives(CMap<TParameter*,
 					eigen_mean_deriv-eigen_ktrtr*(Z*eigen_mean_deriv)*CMath::sq(m_scale));
 				deriv_found = true;
 			}
-			else if ((lik_first_deriv[0]+lik_second_deriv[0]+lik_third_deriv[0])!=CMath::INFTY)
+			else if (lik_first_deriv.vlen && lik_second_deriv.vlen && lik_third_deriv.vlen)
 			{
 				Map<VectorXd> eigen_fd(lik_first_deriv.vector, lik_first_deriv.vlen);
 				Map<VectorXd> eigen_sd(lik_second_deriv.vector, lik_second_deriv.vlen);
