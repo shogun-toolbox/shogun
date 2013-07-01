@@ -17,10 +17,8 @@
 
 #ifdef HAVE_EIGEN3
 
-#include <shogun/machine/gp/GaussianLikelihood.h>
 #include <shogun/machine/gp/StudentsTLikelihood.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/labels/RegressionLabels.h>
 #include <shogun/features/CombinedFeatures.h>
 #include <shogun/features/DotFeatures.h>
 
@@ -32,7 +30,7 @@ using namespace Eigen;
 
 namespace shogun
 {
-	/** Wrapper class used for the Brent minimizer. */
+	/** @brief Wrapper class used for the Brent minimizer. */
 	class CPsiLine : public func_base
 	{
 	public:
@@ -46,7 +44,7 @@ namespace shogun
 		SGVector<float64_t>* f;
 		SGVector<float64_t>* m;
 		CLikelihoodModel* lik;
-		CRegressionLabels* lab;
+		CLabels* lab;
 
 		virtual double operator() (double x)
 		{
@@ -206,8 +204,7 @@ get_marginal_likelihood_derivatives(CMap<TParameter*,
 
 	for (index_t i = 0; i < para_dict.get_num_elements(); i++)
 	{
-		shogun::CMapNode<TParameter*, CSGObject*>* node =
-				para_dict.get_node_ptr(i);
+		CMapNode<TParameter*, CSGObject*>* node=para_dict.get_node_ptr(i);
 
 		TParameter* param = node->key;
 		CSGObject* obj = node->data;
@@ -227,11 +224,11 @@ get_marginal_likelihood_derivatives(CMap<TParameter*,
 		{
 			SGMatrix<float64_t> deriv=m_kernel->get_parameter_gradient(param, obj);
 			SGVector<float64_t> lik_first_deriv=m_model->get_first_derivative(
-				(CRegressionLabels*)m_labels, param, obj, function);
+				m_labels, param, obj, function);
 			SGVector<float64_t> lik_second_deriv=m_model->get_second_derivative(
-				(CRegressionLabels*)m_labels, param, obj, function);
+				m_labels, param, obj, function);
 			SGVector<float64_t> lik_third_deriv=m_model->get_third_derivative(
-				(CRegressionLabels*)m_labels, param, obj, function);
+				m_labels, param, obj, function);
 			SGVector<float64_t> mean_deriv;
 
 			if (param->m_datatype.m_ctype == CT_VECTOR ||
@@ -443,12 +440,10 @@ void CLaplacianInferenceMethod::update_alpha()
 		eigen_function=eigen_m_means;
 
 		// compute W = -d2lp
-		W = m_model->get_log_probability_derivative_f(
-			(CRegressionLabels*)m_labels, function, 2);
+		W=m_model->get_log_probability_derivative_f(m_labels, function, 2);
 		W.scale(-1.0);
 
-		Psi_New = -m_model->get_log_probability_f(
-			(CRegressionLabels*)m_labels, function);
+		Psi_New=-m_model->get_log_probability_f(m_labels, function);
 	}
 	else
 	{
@@ -458,33 +453,27 @@ void CLaplacianInferenceMethod::update_alpha()
 		eigen_function=eigen_ktrtr*CMath::sq(m_scale)*eigen_temp_alpha+eigen_m_means;
 
 		// compute W = -d2lp
-		W = m_model->get_log_probability_derivative_f(
-			(CRegressionLabels*)m_labels, function, 2);
+		W=m_model->get_log_probability_derivative_f(m_labels, function, 2);
 		W.scale(-1.0);
 
-		Psi_New = eigen_temp_alpha.dot(eigen_function-eigen_m_means)/2.0 -
-			m_model->get_log_probability_f((CRegressionLabels*)m_labels, function);
+		Psi_New=eigen_temp_alpha.dot(eigen_function-eigen_m_means)/2.0-
+			m_model->get_log_probability_f(m_labels, function);
 
-		Psi_Def = -m_model->get_log_probability_f(
-			(CRegressionLabels*)m_labels, m_means);
+		Psi_Def=-m_model->get_log_probability_f(m_labels, m_means);
 
 		// if default is better, then use it
 		if (Psi_Def < Psi_New)
 		{
 			temp_alpha.zero();
-
 			eigen_function=eigen_m_means;
-
-			Psi_New = -m_model->get_log_probability_f(
-				(CRegressionLabels*)m_labels, function);
+			Psi_New=-m_model->get_log_probability_f(m_labels, function);
 		}
 	}
 
 	Map<VectorXd> eigen_temp_alpha(temp_alpha.vector, temp_alpha.vlen);
 
 	// get first derivative of log probability function
-	dlp = m_model->get_log_probability_derivative_f(
-		(CRegressionLabels*)m_labels, function, 1);
+	dlp=m_model->get_log_probability_derivative_f(m_labels, function, 1);
 
 	// create shogun and eigen representation of sW
 	sW=SGVector<float64_t>(W.vlen);
@@ -543,7 +532,7 @@ void CLaplacianInferenceMethod::update_alpha()
 		func.m = &m_means;
 		func.W = &W;
 		func.lik = m_model;
-		func.lab = (CRegressionLabels*)m_labels;
+		func.lab = m_labels;
 
 		float64_t x;
 		Psi_New=local_min(0, m_opt_max, m_opt_tolerance, func, x);
@@ -553,17 +542,12 @@ void CLaplacianInferenceMethod::update_alpha()
 	eigen_function=eigen_ktrtr*CMath::sq(m_scale)*eigen_temp_alpha+eigen_m_means;
 
 	// get log probability
-	lp = m_model->get_log_probability_f((CRegressionLabels*)m_labels, function);
+	lp=m_model->get_log_probability_f(m_labels, function);
 
 	// get log probability derivatives
-	dlp = m_model->get_log_probability_derivative_f(
-		(CRegressionLabels*)m_labels, function, 1);
-
-	d2lp = m_model->get_log_probability_derivative_f(
-		(CRegressionLabels*)m_labels, function, 2);
-
-	d3lp = m_model->get_log_probability_derivative_f(
-		(CRegressionLabels*)m_labels, function, 3);
+	dlp=m_model->get_log_probability_derivative_f(m_labels, function, 1);
+	d2lp=m_model->get_log_probability_derivative_f(m_labels, function, 2);
+	d3lp=m_model->get_log_probability_derivative_f(m_labels, function, 3);
 
 	// W = -d2lp
 	W = d2lp.clone();

@@ -69,10 +69,10 @@ public:
 
 	/** helper method used to specialize a base class instance
 	 *
-	 * @param likelihood likelihood model
+	 * @param lik likelihood model
 	 * @return casted CGaussianLikelihood object
 	 */
-	static CGaussianLikelihood* obtain_from_generic(CLikelihoodModel* likelihood);
+	static CGaussianLikelihood* obtain_from_generic(CLikelihoodModel* lik);
 
 	/** evaluate means
 	 *
@@ -96,71 +96,71 @@ public:
 
 	/** get log likelihood \f$log(P(y|f))\f$
 	 *
-	 * @param labels labels used
-	 * @param f function location
+	 * @param lab labels used
+	 * @param func function location
 	 *
 	 * @return log likelihood
 	 */
-	virtual float64_t get_log_probability_f(CRegressionLabels* labels,
-			SGVector<float64_t> f);
+	virtual float64_t get_log_probability_f(CLabels* lab,
+			SGVector<float64_t> func);
 
 	/** get derivative of log likelihood \f$log(P(y|f))\f$ with
 	 * respect to function location \f$f\f$
 	 *
-	 * @param labels labels used
-	 * @param f function location
+	 * @param lab labels used
+	 * @param func function location
 	 * @param i index, choices are 1, 2, and 3 for first, second, and
 	 * third derivatives respectively
 	 *
 	 * @return derivative
 	 */
 	virtual SGVector<float64_t> get_log_probability_derivative_f(
-			CRegressionLabels* labels, SGVector<float64_t> f, index_t i);
+			CLabels* lab, SGVector<float64_t> func, index_t i);
 
 	/** get derivative of log likelihood \f$log(P(y|f))\f$ with
 	 * respect to given parameter
 	 *
-	 * @param labels labels used
+	 * @param lab labels used
 	 * @param param parameter
 	 * @param obj pointer to object to make sure we have the right
 	 * parameter
-	 * @param function function location
+	 * @param func function location
 	 *
 	 * @return derivative
 	 */
-	virtual SGVector<float64_t> get_first_derivative(CRegressionLabels* labels,
-			TParameter* param, CSGObject* obj, SGVector<float64_t> function);
+	virtual SGVector<float64_t> get_first_derivative(CLabels* lab,
+			TParameter* param, CSGObject* obj, SGVector<float64_t> func);
 
 	/** get derivative of the first derivative of log likelihood with
 	 * respect to function location, i.e. \f$\frac{\partial
 	 * log(P(y|f))}{\partial f}\f$ with respect to given parameter
 	 *
-	 * @param labels labels used
+	 * @param lab labels used
 	 * @param param parameter
 	 * @param obj pointer to object to make sure we have the right
 	 * parameter
-	 * @param function function location
+	 * @param func function location
 	 *
 	 * @return derivative
 	 */
-	virtual SGVector<float64_t> get_second_derivative(CRegressionLabels* labels,
-			TParameter* param, CSGObject* obj, SGVector<float64_t> function);
+	virtual SGVector<float64_t> get_second_derivative(CLabels* lab,
+			TParameter* param, CSGObject* obj, SGVector<float64_t> func);
 
 	/** get derivative of the second derivative of log likelihood with
 	 * respect to function location, i.e. \f$\frac{\partial^{2}
 	 * log(P(y|f))}{\partial f^{2}}\f$ with respect to given
 	 * parameter
 	 *
-	 * @param labels labels used
+	 * @param lab labels used
 	 * @param param parameter
 	 * @param obj pointer to object to make sure we have the right
 	 * parameter
-	 * @param function function location
+	 * @param func function location
 	 *
 	 * @return derivative
 	 */
-	virtual SGVector<float64_t> get_third_derivative(CRegressionLabels* labels,
-			TParameter* param, CSGObject* obj, SGVector<float64_t> function);
+	virtual SGVector<float64_t> get_third_derivative(CLabels* lab,
+			TParameter* param, CSGObject* obj, SGVector<float64_t> func);
 
 	/** return whether Gaussian likelihood function supports regression
 	 *
