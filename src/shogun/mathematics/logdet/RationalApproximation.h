@@ -43,8 +43,8 @@ class CEigenSolver;
  * 5/2012, NTNU.
  *
  * [2] Nicholas Hale, Nicholas J. Higham and Lloyd N. Trefethen (2008).
- * Computing Aα , log(A) and related matrix functions by contour integrals.
- * SIAM Journal of Numerical Analysis, 46:2505-2523
+ * Computing \f$A^{\alpha}\f$ , \f$log(A)\f$ and related matrix functions by
+ * contour integrals. SIAM Journal of Numerical Analysis, 46:2505-2523
  *
  * Note: The implementation of compute_weights_shifts_const function has been
  * adapted from KRYLSTAT (Copyright 2011 by Erlend Aune <erlenda@math.ntnu.no>)
