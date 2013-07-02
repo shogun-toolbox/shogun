@@ -11,12 +11,12 @@
 #define VECTOR_RESULT_H_
 
 #include <shogun/lib/config.h>
+#include <shogun/lib/SGVector.h>
 #include <shogun/lib/computation/job/JobResult.h>
+#include <shogun/base/Parameter.h>
 
 namespace shogun
 {
-template<class T> class SGVector;
-
 /** @brief Base class that stores the result of an independent job
  * when the result is a vector.
  */
@@ -60,6 +60,14 @@ public:
 protected:
 	/** the vector result */
 	SGVector<T> m_result;
+
+private:
+	/** initialize with default values and register params */
+	void init()
+	{
+		SG_ADD((SGVector<T>*)&m_result, "result",
+			"The result vector", MS_NOT_AVAILABLE);
+	}
 };
 
 template class CVectorResult<bool>;

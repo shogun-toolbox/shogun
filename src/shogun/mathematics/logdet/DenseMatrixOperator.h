@@ -11,7 +11,7 @@
 #define DENSE_MATRIX_OPERATOR_H_
 
 #include <shogun/lib/config.h>
-#include <shogun/mathematics/logdet/LinearOperator.h>
+#include <shogun/mathematics/logdet/MatrixOperator.h>
 
 namespace shogun
 {
@@ -24,7 +24,7 @@ template<class T> class SGMatrix;
  * being the matrix operator and \f$x\in\mathbb{C}^{n}\f$ being the vector.
  * The result is a vector \f$y\in\mathbb{C}^{m}\f$.
  */
-template<class T> class CDenseMatrixOperator : public CLinearOperator<T>
+template<class T> class CDenseMatrixOperator : public CMatrixOperator<T>
 {
 public:
 	/** default constructor */
@@ -37,6 +37,13 @@ public:
 	 */
 	CDenseMatrixOperator(SGMatrix<T> op);
 
+	/**
+	 * copy constructor for creating a deep copy
+	 *
+	 * @param orig original dense matrix operator
+	 */
+	CDenseMatrixOperator(const CDenseMatrixOperator<T>& orig);
+
 	/** destructor */
 	~CDenseMatrixOperator();
 
@@ -47,6 +54,20 @@ public:
 	 * @return the result vector
 	 */
 	virtual SGVector<T> apply(SGVector<T> b) const;
+
+	/**
+	 * method that sets the main diagonal of the matrix
+	 *
+	 * @param diag the diagonal to be set
+	 */
+	virtual void set_diagonal(SGVector<T> diag);
+
+	/**
+	 * method that returns the main diagonal of the matrix
+	 *
+	 * @return the diagonal
+	 */
+	virtual SGVector<T> get_diagonal() const;
 
 	/** @return the dense matrix operator */
 	SGMatrix<T> get_matrix_operator() const;
@@ -59,10 +80,10 @@ public:
 
 private:
 	/** the dense matrix operator */
-	const SGMatrix<T> m_operator;
+	SGMatrix<T> m_operator;
 
 };
 
 }
 
-#endif // LINEAR_OPERATOR_H_
+#endif // DENSE_MATRIX_OPERATOR_H_
