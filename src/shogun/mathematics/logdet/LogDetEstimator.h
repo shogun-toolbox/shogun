@@ -37,9 +37,9 @@ public:
 	/** 
 	 * constructor
 	 *
-	 * @param sampler the trace sampler
-	 * @param op_func the operator function
-	 * @param engine the independent computation engine
+	 * @param trace_sampler the trace sampler
+	 * @param operator_log the operator function
+	 * @param computation_engine the independent computation engine
 	 */
 	CLogDetEstimator(CTraceSampler* trace_sampler,
 		COperatorFunction<float64_t>* operator_log,
