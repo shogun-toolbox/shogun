@@ -1,4 +1,4 @@
-#include <JADiag.h>
+#include "JADiag.h"
 
 #include <shogun/base/init.h>
 #include <shogun/lib/common.h>
@@ -16,7 +16,7 @@ using namespace shogun;
 void jadiagw(double c[], double w[], int *ptn, int *ptm, double a[],
 	         double *logdet, double *decr, double *result);
 
-SGMatrix<float64_t> CJADiag::diagonalize(SGNDArray<float64_t> &C, SGMatrix<float64_t> *V0,
+SGMatrix<float64_t> CJADiag::diagonalize(SGNDArray<float64_t> &C, SGMatrix<float64_t> V0,
 						double eps, int itermax)
 {
 	int L = C.dims[2];
@@ -25,9 +25,9 @@ SGMatrix<float64_t> CJADiag::diagonalize(SGNDArray<float64_t> &C, SGMatrix<float
 	double logdet = log(5.184e17);
 	
 	SGMatrix<float64_t> V;
-	if(V0 != NULL)
+	if(V0.num_rows != 0)
 	{
-		V = V0->clone();
+		V = V0.clone();
 	}
 	else
 	{	

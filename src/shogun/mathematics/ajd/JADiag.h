@@ -12,7 +12,7 @@
 #ifndef JADIAG_H_
 #define JADIAG_H_
 
-#include <ApproxJointDiagonalizer.h>
+#include "ApproxJointDiagonalizer.h"
 
 #include <shogun/lib/common.h>
 #include <shogun/base/SGObject.h>
@@ -50,7 +50,7 @@ class CJADiag : public CApproxJointDiagonalizer
 		 * @return V the matrix the best diagonalizes C 
 		 */
 		static SGMatrix<float64_t> diagonalize(SGNDArray<float64_t> &C,
-       							SGMatrix<float64_t> *V0=NULL,
+       							SGMatrix<float64_t> V0= SGMatrix<float64_t>(NULL,0,0),
 							double eps=CMath::MACHINE_EPSILON,
 							int itermax=200);
 
@@ -62,7 +62,7 @@ class CJADiag : public CApproxJointDiagonalizer
 		 * @return V the matrix the best diagonalizes C 
 		 */
 		virtual SGMatrix<float64_t> compute(SGNDArray<float64_t> &C,
-						   SGMatrix<float64_t> *V0=NULL,
+						   SGMatrix<float64_t> V0= SGMatrix<float64_t>(NULL,0,0),
 						   double eps=CMath::MACHINE_EPSILON,
 						   int itermax=200)
 		{
