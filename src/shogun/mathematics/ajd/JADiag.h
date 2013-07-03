@@ -41,23 +41,23 @@ class CJADiag : public CApproxJointDiagonalizer
 		}
 	
 		/** Computes the matrix V that best diagonalizes C 
-		 * @param C, the set of matrices to be diagonalized
-		 * @param V0, an extimate of the matrix V
-		 * @param eps, machine epsilon or desired epsilon
-		 * @param itermax, maximum number of iterations
-		 * @return V, the matrix the best diagonalizes C 
+		 * @param C the set of matrices to be diagonalized
+		 * @param V0 an estimate of the matrix V
+		 * @param eps machine epsilon or desired epsilon
+		 * @param itermax maximum number of iterations
+		 * @return V the matrix the best diagonalizes C 
 		 */
 		static SGMatrix<float64_t> diagonalize(SGNDArray<float64_t> &C,
        							SGMatrix<float64_t> *V0=NULL,
 							double eps=std::numeric_limits<double>::epsilon(),
-							int itermax=200));
+							int itermax=200);
 
 		/** Computes the matrix V that best diagonalizes C 
-		 * @param C, the set of matrices to be diagonalized
-		 * @param V0, an extimate of the matrix V
-		 * @param eps, machine epsilon or desired epsilon
-		 * @param itermax, maximum number of iterations
-		 * @return V, the matrix the best diagonalizes C 
+		 * @param C the set of matrices to be diagonalized
+		 * @param V0 an estimate of the matrix V
+		 * @param eps machine epsilon or desired epsilon
+		 * @param itermax maximum number of iterations
+		 * @return V the matrix the best diagonalizes C 
 		 */
 		virtual SGMatrix<float64_t> compute(SGNDArray<float64_t> &C,
 						   SGMatrix<float64_t> *V0=NULL,

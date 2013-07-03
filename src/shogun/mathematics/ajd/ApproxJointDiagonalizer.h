@@ -26,8 +26,8 @@ namespace shogun
  * Approximate Joint Diagonalizer (AJD) interface.
  * 
  * AJD finds the matrix V that best diagonalizes
- * a set {C1 ... Ck} of real valued symmetric
- * NxN matrices - V*C*VT
+ * a set \f${C^1 ... C^k}\f$ of real valued symmetric
+ * \f$NxN\f$ matrices - \f$V*C*V^T\f$
  */
 class CApproxJointDiagonalizer : public CSGObject
 {
@@ -44,11 +44,11 @@ class CApproxJointDiagonalizer : public CSGObject
 		}
 	
 		/** Computes the matrix V that best diagonalizes C 
-		 * @param C, the set of matrices to be diagonalized
-		 * @param V0, an extimate of the matrix V
-		 * @param eps, machine epsilon or desired epsilon
-		 * @param itermax, maximum number of iterations
-		 * @return V, the matrix the best diagonalizes C 
+		 * @param C the set of matrices to be diagonalized
+		 * @param V0 an estimate of the matrix V
+		 * @param eps machine epsilon or desired epsilon
+		 * @param itermax maximum number of iterations
+		 * @return V the matrix the best diagonalizes C 
 		 */
 		virtual SGMatrix<float64_t> compute(SGNDArray<float64_t> &C,
 						   SGMatrix<float64_t> *V0=NULL,
@@ -56,7 +56,7 @@ class CApproxJointDiagonalizer : public CSGObject
 						   int itermax=200) = 0;
 
 		/** return the matrix V that best diagonalizes C */
-		SGMatrix<float64_t> V()
+		SGMatrix<float64_t> get_V()
 		{
 			return m_V;
 		}
