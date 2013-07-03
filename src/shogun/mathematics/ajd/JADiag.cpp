@@ -1,4 +1,4 @@
-#include "JADiag.h"
+#include <JADiag.h>
 
 #include <shogun/base/init.h>
 #include <shogun/lib/common.h>

@@ -17,7 +17,7 @@
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGNDArray.h>
 
-#include <limits>
+#include <shogun/mathematics/Math.h>
 
 namespace shogun
 {
@@ -52,7 +52,7 @@ class CApproxJointDiagonalizer : public CSGObject
 		 */
 		virtual SGMatrix<float64_t> compute(SGNDArray<float64_t> &C,
 						   SGMatrix<float64_t> *V0=NULL,
-						   double eps=std::numeric_limits<double>::epsilon(),
+						   double eps=CMath::MACHINE_EPSILON,
 						   int itermax=200) = 0;
 
 		/** return the matrix V that best diagonalizes C */

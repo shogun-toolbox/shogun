@@ -12,14 +12,14 @@
 #ifndef JADIAG_H_
 #define JADIAG_H_
 
-#include "ApproxJointDiagonalizer.h"
+#include <ApproxJointDiagonalizer.h>
 
 #include <shogun/lib/common.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGNDArray.h>
 
-#include <limits>
+#include <shogun/mathematics/Math.h>
 
 namespace shogun
 {
@@ -51,7 +51,7 @@ class CJADiag : public CApproxJointDiagonalizer
 		 */
 		static SGMatrix<float64_t> diagonalize(SGNDArray<float64_t> &C,
        							SGMatrix<float64_t> *V0=NULL,
-							double eps=std::numeric_limits<double>::epsilon(),
+							double eps=CMath::MACHINE_EPSILON,
 							int itermax=200);
 
 		/** Computes the matrix V that best diagonalizes C 
@@ -63,7 +63,7 @@ class CJADiag : public CApproxJointDiagonalizer
 		 */
 		virtual SGMatrix<float64_t> compute(SGNDArray<float64_t> &C,
 						   SGMatrix<float64_t> *V0=NULL,
-						   double eps=std::numeric_limits<double>::epsilon(),
+						   double eps=CMath::MACHINE_EPSILON,
 						   int itermax=200)
 		{
 			m_V = diagonalize(C,V0,eps,itermax);
