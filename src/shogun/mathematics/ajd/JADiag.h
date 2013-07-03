@@ -12,6 +12,8 @@
 #ifndef JADIAG_H_
 #define JADIAG_H_
 
+#include "ApproxJointDiagonalizer.h"
+
 #include <shogun/lib/common.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/SGMatrix.h>
@@ -67,6 +69,9 @@ class CJADiag : public CApproxJointDiagonalizer
 			m_V = diagonalize(C,V0,eps,itermax);
 			return m_V;	
 		}
+
+		/** @return object name */
+		virtual const char* get_name() const { return "JADiag"; }
 };
 }
 #endif //JADIAG_H_ 

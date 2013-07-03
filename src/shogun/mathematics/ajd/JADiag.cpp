@@ -16,7 +16,7 @@ using namespace shogun;
 void jadiagw(double c[], double w[], int *ptn, int *ptm, double a[],
 	         double *logdet, double *decr, double *result);
 
-static SGMatrix<float64_t> CJADiag::diagonalize(SGNDArray<float64_t> &C, SGMatrix<float64_t> *V0,
+SGMatrix<float64_t> CJADiag::diagonalize(SGNDArray<float64_t> &C, SGMatrix<float64_t> *V0,
 						double eps, int itermax)
 {
 	int L = C.dims[2];
@@ -46,7 +46,7 @@ static SGMatrix<float64_t> CJADiag::diagonalize(SGNDArray<float64_t> &C, SGMatri
 		ctot.block(0,i*d,d,d) = Ci;
 	}
 	
-	double crit;
+	std::vector<double> crit;
 	int iter = 0;
 	
 	while(decr > eps && iter < itermax)
@@ -65,6 +65,7 @@ static SGMatrix<float64_t> CJADiag::diagonalize(SGNDArray<float64_t> &C, SGMatri
 				&decr,
 				&result);			
 		
+		crit.push_back(result);
 		iter = iter + 1;
 	}
 	
@@ -82,11 +83,11 @@ void jadiagw(double c[], double w[], int *ptn, int *ptm, double a[],
 {
 	int n = *ptn;
 	int m = *ptm;
-	int	i1,j1;
+	//int	i1,j1;
 	int	n2 = n*n, mn2 = m*n2,
 	i, ic, ii, ij, j, jc, jj, k, k0;
 	double  sumweigh, p2, q1, p, q,
-	alpha, beta, gamma, a12, a21, tiny, det;
+	alpha, beta, gamma, a12, a21, /*tiny,*/ det;
 	register double tmp1, tmp2, tmp, weigh;
 
 	for (sumweigh = 0, i = 0; i < m; i++)
