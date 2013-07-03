@@ -53,16 +53,16 @@ CGaussianLikelihood* CGaussianLikelihood::obtain_from_generic(CLikelihoodModel* 
 	return (CGaussianLikelihood*)lik;
 }
 
-SGVector<float64_t> CGaussianLikelihood::evaluate_means(
-		SGVector<float64_t>& means)
+SGVector<float64_t> CGaussianLikelihood::evaluate_means(SGVector<float64_t> mu,
+		SGVector<float64_t> s2)
 {
-	return SGVector<float64_t>(means);
+	return SGVector<float64_t>(mu);
 }
 
-SGVector<float64_t> CGaussianLikelihood::evaluate_variances(
-		SGVector<float64_t>& vars)
+SGVector<float64_t> CGaussianLikelihood::evaluate_variances(SGVector<float64_t> mu,
+		SGVector<float64_t> s2)
 {
-	SGVector<float64_t> result(vars);
+	SGVector<float64_t> result(s2);
 	Map<VectorXd> eigen_result(result.vector, result.vlen);
 
 	eigen_result+=CMath::sq(m_sigma)*VectorXd::Ones(result.vlen);

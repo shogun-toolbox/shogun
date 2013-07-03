@@ -50,6 +50,26 @@ public:
 	 */
 	virtual const char* get_name() const { return "GaussianProcessMachine"; }
 
+	/** return a mean \f$\mu\f$ of a Gaussian distribution
+	 * \f$N(\mu,\sigma^2)\f$, which is an approximation to the
+	 * posterior marginal \f$p(f_*|x_*,x,y)\f$.
+	 *
+	 * @param data testing features
+	 *
+	 * @return posterior means
+	 */
+	SGVector<float64_t> get_posterior_means(CFeatures* data);
+
+	/** return a variance \f$\sigma^2\f$ of a Gaussian distribution
+	 * \f$N(\mu,\sigma^2)\f$, which is an approximation to the
+	 * posterior marginal \f$p(f_*|x_*,x,y)\f$.
+	 *
+	 * @param data testing features
+	 *
+	 * @return posterior variances
+	 */
+	SGVector<float64_t> get_posterior_variances(CFeatures* data);
+
 	/** get inference method
 	 *
 	 * @return inference method, which is used by Gaussian process machine
