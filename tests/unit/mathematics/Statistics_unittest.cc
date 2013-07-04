@@ -297,4 +297,25 @@ TEST(Statistics, dlgamma)
 	EXPECT_NEAR(psi, 2.531311127723, 1e-12);
 }
 
+TEST(Statistics, lnormal_cdf)
+{
+	float64_t lphi=CStatistics::lnormal_cdf(-20);
+	EXPECT_NEAR(lphi, -203.917155, 1e-6);
+
+	lphi=CStatistics::lnormal_cdf(-3.4);
+	EXPECT_NEAR(lphi, -7.995637, 1e-6);
+
+	lphi=CStatistics::lnormal_cdf(-0.3);
+	EXPECT_NEAR(lphi, -0.962102, 1e-6);
+
+	lphi=CStatistics::lnormal_cdf(0.7);
+	EXPECT_NEAR(lphi, -0.277023, 1e-6);
+
+	lphi=CStatistics::lnormal_cdf(10.0);
+	EXPECT_NEAR(lphi, 0.0, 1e-6);
+
+	lphi=CStatistics::lnormal_cdf(20.0);
+	EXPECT_NEAR(lphi, 0.0, 1e-6);
+}
+
 #endif // HAVE_EIGEN3
