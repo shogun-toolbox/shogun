@@ -19,8 +19,10 @@ TEST(DelimiterTokenizerTest, tokenization)
 	while (tokenizer->has_next())
 	{
 		index_t token_end = tokenizer->next_token_idx(token_start);
-		char token[token_end-token_start+1];
+		if (token_end==token_start)
+			continue;
 
+		char token[token_end-token_start+1];
 		for (index_t i=token_start; i<token_end; i++)
 		{
 			token[i-token_start] = text[i];
