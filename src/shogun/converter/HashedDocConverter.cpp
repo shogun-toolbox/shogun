@@ -58,6 +58,7 @@ void CHashedDocConverter::init(CTokenizer* tzer, int32_t d)
 	else
 		tokenizer = tzer;
 
+	SG_REF(tokenizer);
 	SG_ADD(&dim, "dim", "Dimension of target feature space",
 		MS_NOT_AVAILABLE);
 	SG_ADD(&num_bits, "num_bits", "Number of bits of the hash",

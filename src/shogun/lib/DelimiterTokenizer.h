@@ -68,12 +68,15 @@ public:
 	 *  as the delimiters for the tokenization process;
 	 */
 	void init_for_whitespace();
+
+	CDelimiterTokenizer* get_copy();
+
 private:
 	void init();
 
 public:
 	/* delimiters */
-	bool delimiters[256];
+	SGVector<bool> delimiters;
 
 protected:
 	/* index of last token */

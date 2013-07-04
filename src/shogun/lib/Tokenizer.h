@@ -22,7 +22,7 @@ template<class T> class SGVector;
 
 /** @brief The class CTokenizer acts as a base class in order
  * to implement tokenizers. Sub-classes must implement
- * the methods has_next() and next_token_idx().
+ * the methods has_next(), next_token_idx() and get_copy().
  */
 class CTokenizer: public CSGObject
 {
@@ -56,6 +56,12 @@ public:
 	 * @return token's ending index (inclusive)
 	 */
 	virtual index_t next_token_idx(index_t& start)=0;
+
+	/** Creates a copy of the appropriate runtime 
+	 * instance of a CTokenizer subclass 
+	 * Needs to be overriden
+	 */
+	virtual CTokenizer* get_copy()=0;
 
 private:
 	void init();

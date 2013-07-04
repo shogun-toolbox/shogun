@@ -58,4 +58,10 @@ index_t CNGramTokenizer::next_token_idx(index_t& start)
 	start = last_idx++;
 	return start + n;	
 }
+
+CNGramTokenizer* CNGramTokenizer::get_copy()
+{
+	CNGramTokenizer* t = new CNGramTokenizer(n);
+	return t;
+}
 }
