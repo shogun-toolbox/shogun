@@ -201,7 +201,7 @@ public:
 	 */
 	static float64_t inverse_student_t(int32_t k, float64_t p);
 
-	/** Inverse of imcomplete beta integral
+	/** Inverse of incomplete beta integral
 	 *
 	 * Given \f$y\f$, the function finds \f$x\f$ such that
 	 *
@@ -341,7 +341,7 @@ public:
 	 */
 	static float64_t inverse_gamma_cdf(float64_t p, float64_t a, float64_t b);
 
-	/** Inverse of complemented imcomplete gamma integral
+	/** Inverse of complemented incomplete gamma integral
 	 *
 	 * Given \f$p\f$, the function finds \f$x\f$ such that
 	 *
@@ -376,6 +376,16 @@ public:
 	 * Custom variance added by Heiko Strathmann
 	 */
 	static float64_t normal_cdf(float64_t x, float64_t std_dev=1);
+
+	/** return logarithm of normal_cdf(x). This method uses asymptotic
+	 * expansion for x < -10.0.
+	 *
+	 * @param x real value
+	 * @param std_dev standard deviation
+	 *
+	 * @return \f$log(normal_cdf(x))\f$
+	 */
+	static float64_t lnormal_cdf(float64_t x);
 
 	/** Error function
 	 *
