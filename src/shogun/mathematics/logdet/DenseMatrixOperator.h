@@ -11,6 +11,8 @@
 #define DENSE_MATRIX_OPERATOR_H_
 
 #include <shogun/lib/config.h>
+
+#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/logdet/MatrixOperator.h>
 
 namespace shogun
@@ -26,6 +28,9 @@ template<class T> class SGMatrix;
  */
 template<class T> class CDenseMatrixOperator : public CMatrixOperator<T>
 {
+/** this class has support for complex64_t */
+typedef bool supports_complex64_t;
+
 public:
 	/** default constructor */
 	CDenseMatrixOperator();
@@ -36,13 +41,6 @@ public:
 	 * @param op the dense matrix to be used as the linear operator
 	 */
 	CDenseMatrixOperator(SGMatrix<T> op);
-
-	/**
-	 * copy constructor for creating a deep copy
-	 *
-	 * @param orig original dense matrix operator
-	 */
-	CDenseMatrixOperator(const CDenseMatrixOperator<T>& orig);
 
 	/** destructor */
 	~CDenseMatrixOperator();
@@ -75,15 +73,19 @@ public:
 	/** @return object name */
 	virtual const char* get_name() const
 	{
-		return "CDenseMatrixOperator";
+		return "DenseMatrixOperator";
 	}
 
 private:
 	/** the dense matrix operator */
 	SGMatrix<T> m_operator;
 
+	/** initialize with default values and register params */
+	void init();
+
 };
 
 }
 
+#endif // HAVE_EIGEN3
 #endif // DENSE_MATRIX_OPERATOR_H_

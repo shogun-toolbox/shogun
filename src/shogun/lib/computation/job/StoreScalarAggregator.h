@@ -24,6 +24,9 @@ template<class T> class CScalarResult;
  */
 template<class T> class CStoreScalarAggregator : public CJobResultAggregator
 {
+/** this class supports complex */
+typedef bool supports_complex64_t;
+
 public:
 	/** default constructor */
 	CStoreScalarAggregator();
@@ -48,7 +51,7 @@ public:
 	/** @return object name */
 	virtual const char* get_name() const
 	{
-		return "CStoreScalarAggregator";
+		return "StoreScalarAggregator";
 	}
 private:
 	/** the aggregation */

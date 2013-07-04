@@ -67,7 +67,7 @@ void CRationalApproximationIndividualJob::init()
 	SG_ADD((CSGObject**)&m_operator, "shifted_operator",
 		"Shifted linear operator", MS_NOT_AVAILABLE);
 
-	SG_ADD((SGVector<complex64_t>*)&m_vector, "trace_sample",
+	SG_ADD(&m_vector, "trace_sample",
 		"Sample vector to apply linear operator on", MS_NOT_AVAILABLE);
 
 	SG_ADD(&m_weight, "complex_weight",

@@ -1,6 +1,6 @@
 /*
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General turalPublic License as published by
+ * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  * 
@@ -46,7 +46,7 @@ SGVector<complex64_t> CDirectLinearSolverComplex::solve(
 	SGVector<complex64_t> x(b.vlen);
 
 	REQUIRE(A, "Operator is NULL!\n");
-	REQUIRE(A->get_dim()==b.vlen, "Dimension mismatch!\n");
+	REQUIRE(A->get_dimension()==b.vlen, "Dimension mismatch!\n");
 
 	CDenseMatrixOperator<complex64_t> *op=
 		dynamic_cast<CDenseMatrixOperator<complex64_t>*>(A);

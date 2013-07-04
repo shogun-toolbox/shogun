@@ -101,7 +101,8 @@ CJobResultAggregator* CLogRationalApproximationIndividual::submit_jobs(
 	for (index_t i=0; i<m_num_shifts; ++i)
 	{
 		// create a deep copy of the operator
-		CDenseMatrixOperator<complex64_t>* shifted_op(complex_op);
+		CDenseMatrixOperator<complex64_t>* shifted_op
+			=dynamic_cast<CDenseMatrixOperator<complex64_t>*>(complex_op->clone());
 
 		// move the shift inside the operator
 		// (see CRationalApproximation)
@@ -123,6 +124,8 @@ CJobResultAggregator* CLogRationalApproximationIndividual::submit_jobs(
 
 		// we can safely unref the job here, computation engine takes it from here
 		SG_UNREF(job);
+		// its important that we unref it here
+		SG_UNREF(shifted_op);
 	}
 	SG_UNREF(complex_op);
 

@@ -22,6 +22,9 @@ namespace shogun
  */
 template<class T> class CScalarResult : public CJobResult
 {
+/** this class supports complex */
+typedef bool supports_complex64_t;
+
 public:
 	/** default constructor */
 	CScalarResult()
@@ -56,7 +59,7 @@ public:
 	/** @return object name */
 	virtual const char* get_name() const
 	{
-		return "CScalarResult";
+		return "ScalarResult";
 	}
 
 	/** @return the job result */
@@ -74,6 +77,8 @@ private:
 	void init()
 	{
 		m_result=static_cast<T>(0);
+
+		set_generic<T>();
 
 		SG_ADD(&m_result, "scalar_result", "Scalar result of a computation job",
 			MS_NOT_AVAILABLE);

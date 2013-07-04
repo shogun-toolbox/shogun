@@ -27,6 +27,8 @@ void CStoreScalarAggregator<T>::init()
 	{
 		m_aggregate=static_cast<T>(0);
 
+		set_generic<T>();
+
 		SG_ADD(&m_aggregate, "current_aggregate",
 			"Aggregation of computation job results", MS_NOT_AVAILABLE);
 	}

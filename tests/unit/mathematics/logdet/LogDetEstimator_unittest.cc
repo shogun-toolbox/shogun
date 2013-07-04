@@ -90,7 +90,7 @@ TEST(LogDetEstimator, sample_ratapp)
 
 	CLogRationalApproximationIndividual *op_func
 		=new CLogRationalApproximationIndividual(
-			op, e, eig_solver, (CLinearSolver<complex64_t>*)linear_solver, 4);
+			op, e, eig_solver, (CLinearSolver<complex64_t>*)linear_solver, 8);
 	SG_REF(op_func);
 	
 	CNormalSampler* trace_sampler=new CNormalSampler(size);

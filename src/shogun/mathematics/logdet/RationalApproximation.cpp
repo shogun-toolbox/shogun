@@ -67,12 +67,10 @@ void CRationalApproximation::init()
 	SG_ADD((CSGObject**)&m_eigen_solver, "eigen_solver",
 		"Eigen solver for computing extremal eigenvalues", MS_NOT_AVAILABLE);
 
-	SG_ADD((SGVector<complex64_t>*)&m_shifts, "complex_shifts",
-		"Complex shifts in the linear system",
+	SG_ADD(&m_shifts, "complex_shifts", "Complex shifts in the linear system",
 		MS_NOT_AVAILABLE);
 
-	SG_ADD((SGVector<complex64_t>*)&m_weights, "complex_weights",
-		"Complex weights of the linear system",
+	SG_ADD(&m_weights, "complex_weights", "Complex weights of the linear system",
 		MS_NOT_AVAILABLE);
 
 	SG_ADD(&m_constant_multiplier, "constant_multiplier",

@@ -6,6 +6,7 @@
  * 
  * Written (W) 2013 Soumyajit De
  */
+
 #ifndef DIRECT_LINEAR_SOLVER_COMPLEX_H_
 #define DIRECT_LINEAR_SOLVER_COMPLEX_H_
 
@@ -59,7 +60,7 @@ public:
 	/** @return object name */
 	virtual const char* get_name() const
 	{
-		return "CDirectLinearSolverComplex";
+		return "DirectLinearSolverComplex";
 	}
 
 private:
