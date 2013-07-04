@@ -46,12 +46,7 @@ const char* CDelimiterTokenizer::get_name() const
 
 bool CDelimiterTokenizer::has_next()
 {
-	for (index_t i=last_idx; i<text.size(); i++)
-	{
-		if (!delimiters[(uint8_t) text[i]])
-			return true;
-	}
-	return false; 
+	return last_idx<text.size();
 }
 
 void CDelimiterTokenizer::init_for_whitespace()
@@ -63,19 +58,18 @@ void CDelimiterTokenizer::init_for_whitespace()
 
 index_t CDelimiterTokenizer::next_token_idx(index_t& start)
 {
-	while (delimiters[(uint8_t) text[last_idx]])
-	{
-		last_idx++;
-	}
 	start = last_idx;
- 
-	for (last_idx=start+1; last_idx<text.size(); last_idx++)
+ 	
+	if (delimiters[(uint8_t) text[start]]==0)
 	{
-		if (delimiters[(uint8_t) text[last_idx]])
-			break;
+		for (last_idx=start+1; last_idx<text.size(); last_idx++)
+		{
+			if (delimiters[(uint8_t) text[last_idx]])
+				break;
+		}
 	}
 
-	return last_idx;
+	return last_idx++;
 }
 
 CDelimiterTokenizer* CDelimiterTokenizer::get_copy()
