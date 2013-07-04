@@ -95,7 +95,7 @@ ocas_return_value_T svm_ocas_solver_nnw(
 
   float64_t max_cp_norm;
   float64_t max_b;
-  float64_t _C[2];
+  float64_t Cs[2];
   uint8_t S[2];
 
   ocas_start_time = get_time();
@@ -215,8 +215,8 @@ ocas_return_value_T svm_ocas_solver_nnw(
   }
 
   /* initial cutting planes implementing the non-negativity constraints on W*/
-  _C[0]=10000000.0;
-  _C[1]=C;
+  Cs[0]=10000000.0;
+  Cs[1]=C;
   S[0]=1;
   S[1]=1;
   for(i=0; i < num_nnw; i++)
@@ -292,11 +292,11 @@ ocas_return_value_T svm_ocas_solver_nnw(
     start_time = get_time();
 
     /* compute upper bound on sum of dual variables associated with the positivity constraints */
-    _C[0] = sqrt((float64_t)nData)*(sqrt(C)*sqrt(max_b) + C*max_cp_norm);
+    Cs[0] = sqrt((float64_t)nData)*(sqrt(C)*sqrt(max_b) + C*max_cp_norm);
 
 /*    qp_exitflag = libqp_splx_solver(&get_col, diag_H, b, &C, I, &S, alpha,
                                   ocas.nCutPlanes, QPSolverMaxIter, 0.0, QPSolverTolRel, -LIBOCAS_PLUS_INF,0);*/
-    qp_exitflag = libqp_splx_solver(&get_col, diag_H, b, _C, I, S, alpha,
+    qp_exitflag = libqp_splx_solver(&get_col, diag_H, b, Cs, I, S, alpha,
                                   ocas.nCutPlanes, QPSolverMaxIter, 0.0, QPSolverTolRel, -LIBOCAS_PLUS_INF,0);
 
     ocas.qp_exitflag = qp_exitflag.exitflag;
