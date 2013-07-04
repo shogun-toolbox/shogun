@@ -27,7 +27,7 @@ SGMatrix<float64_t> CJADiag::diagonalize(SGNDArray<float64_t> &C, SGMatrix<float
 	double logdet = log(5.184e17);
 	
 	SGMatrix<float64_t> V;
-	if(V0.num_rows != 0)
+	if (V0.num_rows != 0)
 	{
 		V = V0.clone();
 	}
@@ -42,7 +42,7 @@ SGMatrix<float64_t> CJADiag::diagonalize(SGNDArray<float64_t> &C, SGMatrix<float
 	w.setOnes();
 	
 	EMatrix ctot(d, d*L);
-	for(int i = 0; i < L; i++)
+	for (int i = 0; i < L; i++)
 	{
 		Eigen::Map<EMatrix> Ci(C.get_matrix(i),d,d);
 		ctot.block(0,i*d,d,d) = Ci;
@@ -51,7 +51,7 @@ SGMatrix<float64_t> CJADiag::diagonalize(SGNDArray<float64_t> &C, SGMatrix<float
 	std::vector<double> crit;
 	int iter = 0;
 	
-	while(decr > eps && iter < itermax)
+	while (decr > eps && iter < itermax)
 	{		
 		if(logdet == 0)// is NA
 		{
@@ -71,7 +71,7 @@ SGMatrix<float64_t> CJADiag::diagonalize(SGNDArray<float64_t> &C, SGMatrix<float
 		iter = iter + 1;
 	}
 	
-	if(iter == itermax)
+	if (iter == itermax)
 	{
 		SG_SERROR("Convergence not reached\n")
 	}

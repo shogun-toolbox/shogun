@@ -10,7 +10,7 @@
 
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
-#include <shogun/mathematics/ajd/JADiag.h>
+#include <shogun/mathematics/ajd/FFDiag.h>
 
 using namespace Eigen;
 
@@ -19,15 +19,16 @@ typedef Matrix< float64_t, Dynamic, 1, ColMajor > EVector;
 
 using namespace shogun;
 
+
 /*
 Function that tests if a Matrix is a permutation matrix
 */
 namespace {
 bool is_permutation_matrix(EMatrix &mat)
 {
-	// scale
+	// scale	
 	mat *= 100;
-	
+
 	// round
 	for (int i = 0; i < mat.rows(); i++)
 	{
@@ -38,8 +39,8 @@ bool is_permutation_matrix(EMatrix &mat)
 			else
 				mat(i,j) = 0.0;
 		}
-	}
-	
+	}	
+
 	// Debug print
 	//std::cout << mat << std::endl;
 
@@ -75,7 +76,7 @@ bool is_permutation_matrix(EMatrix &mat)
 }
 }
 
-TEST(CJADiag, diagonalize)
+TEST(CFFDiag, diagonalize)
 {
 	// Generating diagonal matrices
 	index_t * C_dims = SG_MALLOC(index_t, 3);
@@ -92,7 +93,7 @@ TEST(CJADiag, diagonalize)
 		tmp.setIdentity();
 		
 		for (int j = 0; j < C_dims[0]; j++)
-		{			
+		{
 			tmp(j,j) *= CMath::abs(CMath::random(1,5)); 
 		}
 	}
@@ -109,7 +110,7 @@ TEST(CJADiag, diagonalize)
 	}	
 
 	/** Diagonalize **/
-	SGMatrix<float64_t> V = CJADiag::diagonalize(C);
+	SGMatrix<float64_t> V = CFFDiag::diagonalize(C);
 
 	// Test output size
 	EXPECT_EQ(V.num_rows, C_dims[0]);
