@@ -25,8 +25,7 @@ class CTraceSampler : public CSGObject
 public:
 	/** default constructor */
 	CTraceSampler()
-	: CSGObject(),
-	  m_dimension(0)
+	: CSGObject()
 	{
 		init();
 
@@ -39,10 +38,11 @@ public:
 	 * @param dimension the dimension of the sample vectors
 	 */
 	CTraceSampler(index_t dimension)
-	: CSGObject(),
-	  m_dimension(dimension)
+	: CSGObject()
 	{
 		init();
+
+		m_dimension=dimension;
 
 		SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 	}
@@ -73,15 +73,22 @@ public:
 		return m_num_samples;
 	}
 
+	/** @return the number of samples */
+	virtual const index_t get_dimension() const
+	{
+		return m_dimension;
+	}
+
 	/** @return object name */
 	virtual const char* get_name() const
 	{
-		return "CTraceSampler";
+		return "TraceSampler";
 	}
 
-	/** the dimension of the sample vectors */
-	const index_t m_dimension;
 protected:
+	/** the dimension of the sample vectors */
+	index_t m_dimension;
+
 	/** the number of samples this sampler will generate, set by implementation */
 	index_t m_num_samples;
 
@@ -90,9 +97,13 @@ private:
 	void init()
 	{
 		m_num_samples=0;
+		m_dimension=0;
 
 		SG_ADD(&m_num_samples, "num_samples",
 			"Number of samples this sampler can generate", MS_NOT_AVAILABLE);
+
+		SG_ADD(&m_dimension, "sample_dimension",
+			"Dimension of samples this sampler can generate", MS_NOT_AVAILABLE);
 	}
 };
 

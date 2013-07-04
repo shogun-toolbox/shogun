@@ -54,7 +54,7 @@ public:
 	/** @return object name */
 	virtual const char* get_name() const
 	{
-		return "CDenseExactLogJob";
+		return "DenseExactLogJob";
 	}
 
 private:
@@ -64,7 +64,6 @@ private:
 	/** the trace-sample */
 	SGVector<float64_t> m_vector;
 
-private:
 	/** initialize with default values and register params */
 	void init();
 };

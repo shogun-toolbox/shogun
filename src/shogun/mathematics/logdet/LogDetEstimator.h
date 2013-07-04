@@ -69,7 +69,7 @@ public:
 	/** @return object name */
 	virtual const char* get_name() const
 	{
-		return "CLogDetEstimator";
+		return "LogDetEstimator";
 	}
 
 private:

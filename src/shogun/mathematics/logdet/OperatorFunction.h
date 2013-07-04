@@ -110,7 +110,7 @@ public:
 	/** @return object name */
 	virtual const char* get_name() const
 	{
-		return "COperatorFunction";
+		return "OperatorFunction";
 	}
 protected:
 	/** the linear operator */

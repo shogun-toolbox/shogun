@@ -22,6 +22,9 @@ namespace shogun
  */
 template<class T> class CVectorResult : public CJobResult
 {
+/** this class supports complex */
+typedef bool supports_complex64_t;
+
 public:
 	/** default constructor */
 	CVectorResult()
@@ -48,7 +51,7 @@ public:
 	/** @return object name */
 	virtual const char* get_name() const
 	{
-		return "CVectorResult";
+		return "VectorResult";
 	}
 
 	/** @return the job result */
@@ -65,7 +68,9 @@ private:
 	/** initialize with default values and register params */
 	void init()
 	{
-		SG_ADD((SGVector<T>*)&m_result, "result",
+		set_generic<T>();
+
+		SG_ADD(&m_result, "result",
 			"The result vector", MS_NOT_AVAILABLE);
 	}
 };

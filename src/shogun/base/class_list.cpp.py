@@ -103,7 +103,7 @@ def get_definitions(classes):
 		definitions.append(d)
 	return definitions
 
-def get_template_definitions(classes):
+def get_template_definitions(classes, supports_complex):
 	definitions=[]
 	for c in classes:
 		d=[]
@@ -113,7 +113,7 @@ def get_template_definitions(classes):
 				suffix=''
 			else:
 				suffix='_t'
-			if t=='COMPLEX64':
+			if t=='COMPLEX64' and not supports_complex:
 				d.append("\t\tcase PT_COMPLEX64: return NULL;\n")
 			else:
 				d.append("\t\tcase PT_%s: return new C%s<%s%s>();\n" % (t,c,t.lower(),suffix))
@@ -148,10 +148,18 @@ def extract_block(c, lines, start_line, stop_line, start_sym, stop_sym):
 
 	return block_start,block_stop
 
-def test_candidate(c, lines, line_nr):
+def check_complex_supported_class(line):
+	l=filter(lambda y:y if y!='' else None,\
+		line.strip().replace('\t',' ').split(' '))
+	supported=len(l)==3 and l[0]=='typedef' and l[1]=='bool'\
+		and l[2]=='supports_complex64_t;'
+	return supported
+
+def test_candidate(c, lines, line_nr, supports_complex):
 	start,stop=extract_block(c, lines, line_nr, len(lines), '{','}')
 	if stop<line_nr:
 		return False, line_nr+1
+	complex_supported=False
 	for line_nr in range(start, stop):
 		line=lines[line_nr]
 		if line.find('virtual')!=-1:
@@ -163,11 +171,18 @@ def test_candidate(c, lines, line_nr):
 					line=lines[line_nr]
 					if check_abstract_class(line):
 						return False, stop
+		if line.find('supports_complex64_t')!=-1:
+			if check_complex_supported_class(line):
+				complex_supported=True
+				if not supports_complex:
+					return False, stop
+	if supports_complex and not complex_supported:
+		return False, stop
 
 	return True, stop
 
 
-def extract_classes(HEADERS, template, blacklist):
+def extract_classes(HEADERS, template, blacklist, supports_complex):
 	"""
 	Search in headers for non-template/non-abstract class-names starting
 	with `C'.
@@ -199,7 +214,7 @@ def extract_classes(HEADERS, template, blacklist):
 				if line.find(class_str)!=-1:
 					c=extract_class_name(lines, line_nr, None, blacklist)
 			if c:
-				ok, line_nr=test_candidate(c, lines, line_nr)
+				ok, line_nr=test_candidate(c, lines, line_nr, supports_complex)
 				if ok:
 					classes.append(c)
 				continue
@@ -255,15 +270,18 @@ if __name__=='__main__':
 
 	blacklist = get_blacklist()
 
-	classes = extract_classes(HEADERS, False, blacklist)
-	template_classes = extract_classes(HEADERS, True, blacklist)
-	includes = get_includes(classes+template_classes)
+	classes = extract_classes(HEADERS, False, blacklist, False)
+	template_classes = extract_classes(HEADERS, True, blacklist, False)
+	complex_template_classes = extract_classes(HEADERS, True, blacklist, True)
+	includes = get_includes(classes+template_classes+complex_template_classes)
 	definitions = get_definitions(classes)
-	template_definitions = get_template_definitions(template_classes)
-	struct = get_struct(classes+template_classes)
+	template_definitions = get_template_definitions(template_classes, False)
+	complex_template_definitions = get_template_definitions(complex_template_classes, True)
+	struct = get_struct(classes+template_classes+complex_template_classes)
 	substitutes = {'includes': includes,
 		'definitions' :definitions,
 		'template_definitions' : template_definitions,
+		'complex_template_definitions' : complex_template_definitions,
 		'struct' : struct
 		}
 

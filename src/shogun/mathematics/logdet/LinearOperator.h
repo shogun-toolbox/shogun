@@ -11,6 +11,7 @@
 
 #include <shogun/lib/config.h>
 #include <shogun/base/SGObject.h>
+#include <shogun/base/Parameter.h>
 
 namespace shogun
 {
@@ -24,9 +25,10 @@ template<class T> class CLinearOperator : public CSGObject
 public:
 	/** default constructor */
 	CLinearOperator()
-	: CSGObject(),
-	  m_dimension(0)
+	: CSGObject()
 	{
+		init();
+
 		SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 	}
 
@@ -36,17 +38,12 @@ public:
 	 * @param dimension dimension of the vector on which the operator can be applied
 	 */
 	CLinearOperator(index_t dimension)
-	: CSGObject(),
-	  m_dimension(dimension)
+	: CSGObject()
 	{
-		SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
-	}
+		init();
+	
+		m_dimension=dimension;
 
-	/** copy constructor */
-	CLinearOperator(const CLinearOperator<T>& orig)
-	: CSGObject(orig),
-	  m_dimension(orig.m_dimension)
-	{
 		SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 	}
 
@@ -57,7 +54,7 @@ public:
 	}
 
 	/** @return the dimension on which the linear operator can apply */
-	const index_t get_dim() const
+	const index_t get_dimension() const
 	{
 		return m_dimension;
 	}
@@ -73,11 +70,22 @@ public:
 	/** @return object name */
 	virtual const char* get_name() const
 	{
-		return "CLinearOperator";
+		return "LinearOperator";
 	}
 protected:
 	/** the dimension of vector on which the linear operator can apply */
-	const index_t m_dimension;
+	index_t m_dimension;
+
+private:
+	/** initialize with default values and register params */
+	void init()
+	{
+		m_dimension=0;
+
+		SG_ADD(&m_dimension, "dimension",
+			"Dimension of the vector on which linear operator can apply",
+			MS_NOT_AVAILABLE);
+	}
 
 };
 

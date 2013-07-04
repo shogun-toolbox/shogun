@@ -59,7 +59,7 @@ public:
 	/** @return object name */
 	virtual const char* get_name() const
 	{
-		return "CIndividualJobResultAggregator";
+		return "IndividualJobResultAggregator";
 	}
 private:
 	/** the linear operator */

@@ -68,7 +68,7 @@ public:
 	/** @return object name */
 	virtual const char* get_name() const
 	{
-		return "CIndependentJob";
+		return "IndependentJob";
 	}
 protected:
 	/** the job result aggregator for the current job */

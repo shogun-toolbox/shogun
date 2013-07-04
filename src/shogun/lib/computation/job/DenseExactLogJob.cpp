@@ -51,7 +51,7 @@ void CDenseExactLogJob::init()
 	SG_ADD((CSGObject**)&m_log_operator, "log_operator",
 		"Log of linear operator", MS_NOT_AVAILABLE);
 
-	SG_ADD((SGVector<float64_t>*)&m_vector, "trace_sample",
+	SG_ADD(&m_vector, "trace_sample",
 		"Sample vector to apply linear operator on", MS_NOT_AVAILABLE);
 }
 

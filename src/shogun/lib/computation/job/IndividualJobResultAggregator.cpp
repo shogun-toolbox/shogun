@@ -51,7 +51,7 @@ void CIndividualJobResultAggregator::init()
 {
 	m_linear_operator=NULL;
 
-	SG_ADD((SGVector<float64_t>*)&m_vector, "sample_vector",
+	SG_ADD(&m_vector, "sample_vector",
 		"The sample vector to perform final dot product", MS_NOT_AVAILABLE);
 
 	SG_ADD((CSGObject**)&m_linear_operator, "linear_operator",

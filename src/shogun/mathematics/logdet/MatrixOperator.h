@@ -15,7 +15,6 @@
 
 namespace shogun
 {
-template<class T> class SGVector;
 
 /** @brief Abstract base class that represents a matrix linear operator.
  * It provides an interface to computes matrix-vector product \f$Ax\f$
@@ -73,7 +72,7 @@ public:
 	/** @return object name */
 	virtual const char* get_name() const
 	{
-		return "CMatrixOperator";
+		return "MatrixOperator";
 	}
 
 };
