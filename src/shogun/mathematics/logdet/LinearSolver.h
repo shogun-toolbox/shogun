@@ -10,6 +10,7 @@
 #define LINEAR_SOLVER_H_
 
 #include <shogun/lib/config.h>
+#include <shogun/base/SGObject.h>
 
 namespace shogun
 {
@@ -48,7 +49,7 @@ public:
 	/** @return object name */
 	virtual const char* get_name() const
 	{
-		return "CLinearSolver";
+		return "LinearSolver";
 	}
 
 };

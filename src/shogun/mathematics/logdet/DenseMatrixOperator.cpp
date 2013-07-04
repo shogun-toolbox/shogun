@@ -8,15 +8,15 @@
  */
 
 #include <shogun/lib/config.h>
-#include <shogun/lib/SGVector.h>
-#include <shogun/lib/SGMatrix.h>
-#include <shogun/mathematics/logdet/DenseMatrixOperator.h>
 
 #ifdef HAVE_EIGEN3
+#include <shogun/lib/SGVector.h>
+#include <shogun/lib/SGMatrix.h>
+#include <shogun/base/Parameter.h>
 #include <shogun/mathematics/eigen3.h>
+#include <shogun/mathematics/logdet/DenseMatrixOperator.h>
 
 using namespace Eigen;
-#endif // HAVE_EIGEN3
 
 namespace shogun
 {
@@ -25,6 +25,8 @@ template<class T>
 CDenseMatrixOperator<T>::CDenseMatrixOperator()
 	: CMatrixOperator<T>()
 	{
+		init();
+
 		SG_SGCDEBUG("%s created (%p)\n", this->get_name(), this);
 	}
 
@@ -33,18 +35,18 @@ CDenseMatrixOperator<T>::CDenseMatrixOperator(SGMatrix<T> op)
 	: CMatrixOperator<T>(op.num_cols),
 	  m_operator(op)
 	{
+		init();
+
 		SG_SGCDEBUG("%s created (%p)\n", this->get_name(), this);
 	}
 
 template<class T>
-CDenseMatrixOperator<T>::CDenseMatrixOperator(const CDenseMatrixOperator<T>&
-		orig)
-	: CMatrixOperator<T>(orig.get_dim())
+void CDenseMatrixOperator<T>::init()
 	{
-		SGMatrix<T> orig_m=orig.m_operator;
-		m_operator=orig_m.clone();
+		CSGObject::set_generic<T>();
 
-		SG_SGCDEBUG("%s created (%p)\n", this->get_name(), this);
+		CSGObject::m_parameters->add(&m_operator, "dense_matrix",
+			"The dense matrix of the linear operator");
 	}
 
 template<class T>
@@ -59,7 +61,6 @@ SGMatrix<T> CDenseMatrixOperator<T>::get_matrix_operator() const
 		return m_operator;
 	}
 
-#ifdef HAVE_EIGEN3
 template<class T>
 SGVector<T> CDenseMatrixOperator<T>::get_diagonal() const
 	{
@@ -101,7 +102,7 @@ template<class T>
 SGVector<T> CDenseMatrixOperator<T>::apply(SGVector<T> b) const
 	{
 		REQUIRE(m_operator.matrix, "Operator not initialized!\n");
-		REQUIRE(this->get_dim()==b.vlen,
+		REQUIRE(CLinearOperator<T>::m_dimension==b.vlen,
 			"Number of rows of vector must be equal to the "
 			"number of cols of the operator!\n");
 
@@ -133,29 +134,6 @@ UNDEFINED(int8_t)
 UNDEFINED(uint8_t)
 #undef UNDEFINED
 
-#else
-template<class T>
-SGVector<T> CDenseMatrixOperator<T>::apply(SGVector<T> b) const
-	{
-		SG_SWARNING("Eigen3 required!\n");
-		return b;
-	}
-
-template<class T>
-SGVector<T> CDenseMatrixOperator<T>::get_diagonal() const
-	{
-		SGVector<T> diag(m_operator.num_rows);
-		SG_SWARNING("Eigen3 required!\n");
-		return diag;
-	}
-
-template<class T>
-void CDenseMatrixOperator<T>::set_diagonal(SGVector<T> diag)
-	{
-		SG_SWARNING("Eigen3 required!\n");
-	}
-#endif // HAVE_EIGEN3
-
 template class CDenseMatrixOperator<bool>;
 template class CDenseMatrixOperator<char>;
 template class CDenseMatrixOperator<int8_t>;
@@ -171,3 +149,4 @@ template class CDenseMatrixOperator<float64_t>;
 template class CDenseMatrixOperator<floatmax_t>;
 template class CDenseMatrixOperator<complex64_t>;
 }
+#endif // HAVE_EIGEN3

@@ -44,7 +44,7 @@ public:
 	/** @return object name */
 	virtual const char* get_name() const
 	{
-		return "CNormalSampler";
+		return "NormalSampler";
 	}
 };
 

@@ -65,7 +65,7 @@ public:
 	/** @return object name */
 	virtual const char* get_name() const
 	{
-		return "CJobResultAggregator";
+		return "JobResultAggregator";
 	}
 protected:
 	/** the final job result */

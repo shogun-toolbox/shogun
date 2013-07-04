@@ -49,7 +49,7 @@ void CDirectEigenSolver::compute()
 	// compute the eigenvalues with Eigen3
 	SelfAdjointEigenSolver<MatrixXd> eig_solver(map_m);
 	m_min_eigenvalue=eig_solver.eigenvalues()[0];
-	m_max_eigenvalue=eig_solver.eigenvalues()[op->get_dim()-1];
+	m_max_eigenvalue=eig_solver.eigenvalues()[op->get_dimension()-1];
 }
 
 }

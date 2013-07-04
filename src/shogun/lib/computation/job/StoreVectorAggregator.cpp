@@ -39,7 +39,7 @@ CStoreVectorAggregator<T>::CStoreVectorAggregator(index_t dimension)
 template<class T>
 void CStoreVectorAggregator<T>::init()
 	{
-		SG_ADD((SGVector<T>*)&m_aggregate, "current_aggregate",
+		SG_ADD(&m_aggregate, "current_aggregate",
 			"Aggregation of computation job results", MS_NOT_AVAILABLE);
 	}
 

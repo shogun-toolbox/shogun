@@ -102,6 +102,11 @@ namespace shogun
 		m_generic = PT_FLOATMAX;
 	}
 
+	template<> void CSGObject::set_generic<complex64_t>()
+	{
+		m_generic = PT_COMPLEX64;
+	}
+
 } /* namespace shogun  */
 
 using namespace shogun;
@@ -1332,6 +1337,8 @@ CSGObject* CSGObject::clone()
 	SG_DEBUG("constructing an empty instance of %s\n", get_name());
 	CSGObject* copy=new_sgserializable(get_name(), this->m_generic);
 	SG_REF(copy);
+
+	ASSERT(copy);
 
 	for (index_t i=0; i<m_parameters->get_num_parameters(); ++i)
 	{

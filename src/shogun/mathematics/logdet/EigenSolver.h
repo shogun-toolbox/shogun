@@ -77,7 +77,7 @@ public:
 	/** @return object name */
 	virtual const char* get_name() const
 	{
-		return "CEigenSolver";
+		return "EigenSolver";
 	}
 protected:
 	/** min eigenvalue */
