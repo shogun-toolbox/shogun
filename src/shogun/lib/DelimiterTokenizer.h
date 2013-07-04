@@ -22,7 +22,6 @@ class CTokenizer;
  *  One can set the delimiters to use by setting to 1 the appropriate
  *  index of the public field delimiters. Eg. to set as delimiter the
  *  character ':', one should do: tokenizer->delimiters[':'] = 1;
- *  Also, note that consecutive delimiters will be skipped.
  */
 class CDelimiterTokenizer: public CTokenizer
 {
@@ -51,6 +50,8 @@ public:
 
 	/** Method that returns the indices, start and end, of
 	 *  the next token in line.
+	 *  If next_token starts with a delimiter, it returns the same indices
+	 *	as start and end.
 	 *
 	 * @param start token's starting index
 	 * @return token's ending index (exclusive)
