@@ -63,6 +63,8 @@ public:
 	 */
     virtual const char* get_name() const;
 
+	virtual CNGramTokenizer* get_copy();
+
 private:
 	void init();
 

@@ -14,7 +14,7 @@
 namespace shogun
 {
 
-CDelimiterTokenizer::CDelimiterTokenizer()
+CDelimiterTokenizer::CDelimiterTokenizer() : delimiters(256)
 {
 	last_idx = 0;
 	init();
@@ -22,6 +22,7 @@ CDelimiterTokenizer::CDelimiterTokenizer()
 CDelimiterTokenizer::CDelimiterTokenizer(const CDelimiterTokenizer& orig)
 {
 	CTokenizer::set_text(orig.text);
+	delimiters = orig.delimiters;
 	init();
 }
 
@@ -29,7 +30,7 @@ void CDelimiterTokenizer::init()
 {
 	SG_ADD(&last_idx, "last_idx", "Index of last token",
 		MS_NOT_AVAILABLE);
-	memset(delimiters, 0, sizeof (delimiters));
+	SGVector<bool>::fill_vector(delimiters, 256, 0);
 }
 
 void CDelimiterTokenizer::set_text(SGVector<char> txt)
@@ -55,7 +56,7 @@ bool CDelimiterTokenizer::has_next()
 
 void CDelimiterTokenizer::init_for_whitespace()
 {
-	memset(delimiters, 0, sizeof (delimiters));
+	SGVector<bool>::fill_vector(delimiters, 256, 0);
 	delimiters[' '] = 1;
 	delimiters['\t'] = 1;
 }
@@ -75,5 +76,12 @@ index_t CDelimiterTokenizer::next_token_idx(index_t& start)
 	}
 
 	return last_idx;
+}
+
+CDelimiterTokenizer* CDelimiterTokenizer::get_copy()
+{
+	CDelimiterTokenizer* t = new CDelimiterTokenizer();
+	t->delimiters = delimiters;
+	return t;
 }
 }

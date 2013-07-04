@@ -94,19 +94,20 @@ float64_t CHashedDocDotFeatures::dense_dot(int32_t vec_idx1, const float64_t* ve
 	SGVector<char> sv = doc_collection->get_feature_vector(vec_idx1);
 
 	float64_t result = 0;
+	CTokenizer* local_tzer = tokenizer->get_copy();
 
 	const int32_t seed = 0xdeadbeaf;
-	tokenizer->set_text(sv);
+	local_tzer->set_text(sv);
 	index_t start = 0;
-	while (tokenizer->has_next())
+	while (local_tzer->has_next())
 	{
-		index_t end = tokenizer->next_token_idx(start);
+		index_t end = local_tzer->next_token_idx(start);
 		uint32_t hashed_idx = calculate_token_hash(&sv.vector[start], end-start, num_bits, seed);
 		result += vec2[hashed_idx];
 	}
 
 	doc_collection->free_feature_vector(sv, vec_idx1);
-
+	SG_UNREF(local_tzer);
 	return result;
 }
 
@@ -119,18 +120,20 @@ void CHashedDocDotFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1,
 		alpha = CMath::abs(alpha);
 
 	SGVector<char> sv = doc_collection->get_feature_vector(vec_idx1);
-	
+	CTokenizer* local_tzer = tokenizer->get_copy();
+
 	const int32_t seed = 0xdeadbeaf;
 	index_t start = 0;
-	tokenizer->set_text(sv);
-	while (tokenizer->has_next())
+	local_tzer->set_text(sv);
+	while (local_tzer->has_next())
 	{
-		index_t end = tokenizer->next_token_idx(start);
+		index_t end = local_tzer->next_token_idx(start);
 		uint32_t hashed_idx = calculate_token_hash(&sv.vector[start], end-start, num_bits, seed);
 		vec2[hashed_idx] += alpha;
 	}
 	
 	doc_collection->free_feature_vector(sv, vec_idx1);
+	SG_UNREF(local_tzer);
 }
 
 uint32_t CHashedDocDotFeatures::calculate_token_hash(char* token, 
