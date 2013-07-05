@@ -1013,30 +1013,38 @@ test_lua()
 		POSTLINKFLAGS_LUA="`pkg-config --libs lua$LV 2>/dev/null`"
 		LUA_EXTENSIONS_INSTALL_DIR="`pkg-config lua$LV --define-variable prefix=$_prefix --variable INSTALL_CMOD`"
 
-		if test -z "$INCLUDES_LUA" ; then
+		if test -n "$INCLUDES_LUA" ; then
 			INCLUDES_LUA="`pkg-config --cflags-only-I lua 2>/dev/null`"
-		fi
-		if test -z "$POSTLINKFLAGS_LUA" ; then
-			POSTLINKFLAGS_LUA="`pkg-config --libs lua 2>/dev/null`"
-		fi
-		if test -z "$LUA_EXTENSIONS_INSTALL_DIR" ; then
-			LUA_EXTENSIONS_INSTALL_DIR="`pkg-config lua --define-variable prefix=$_prefix --variable INSTALL_CMOD`"
-		fi
 
+			if test -z "$POSTLINKFLAGS_LUA" ; then
+				POSTLINKFLAGS_LUA="`pkg-config --libs lua 2>/dev/null`"
+			fi
+			if test -z "$LUA_EXTENSIONS_INSTALL_DIR" ; then
+				LUA_EXTENSIONS_INSTALL_DIR="`pkg-config lua --define-variable prefix=$_prefix --variable INSTALL_CMOD`"
+			fi
 
-		if test -z "$INCLUDES_LUA" ; then
-			INCLUDES_LUA="-I/usr/include/lua${LV} -I/usr/local/include/lua${LV}"
-		fi
-		if test -z "$POSTLINKFLAGS_LUA" ; then
-			POSTLINKFLAGS_LUA="-llua${LV}"
-		fi
+			if test -z "$INCLUDES_LUA" ; then
+				INCLUDES_LUA="-I/usr/include/lua${LV} -I/usr/local/include/lua${LV}"
+			fi
+			if test -z "$POSTLINKFLAGS_LUA" ; then
+				POSTLINKFLAGS_LUA="-llua${LV}"
+			fi
 
-		POSTLINKFLAGS_LUA="$POSTLINKFLAGS_LUA --shared"
-		echores "${LUAVER}"
+			POSTLINKFLAGS_LUA="$POSTLINKFLAGS_LUA --shared"
+			echores "${LUAVER}"
+		else 
+			if test "_lua_modular" = yes
+			then
+				die "lua development files (headers) are missed"
+			else
+				echores "not detected"
+				_lua_modular=no
+			fi
+		fi
 	else
 		if test "$_lua_modular" = yes
 		then
-			die "lua/lua development files missing"
+			die "lua missed"
 		else
 			echores "not detected"
 			_lua_modular=no
