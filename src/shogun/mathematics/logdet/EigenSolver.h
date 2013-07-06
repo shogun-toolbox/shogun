@@ -81,10 +81,10 @@ public:
 	}
 protected:
 	/** min eigenvalue */
-	float64_t	m_min_eigenvalue;
+	float64_t m_min_eigenvalue;
 
 	/** max eigenvalue */
-	float64_t	m_max_eigenvalue;
+	float64_t m_max_eigenvalue;
 
 	/** the linear solver whose eigenvalues have to be found */
 	CLinearOperator<float64_t>* m_linear_operator;
