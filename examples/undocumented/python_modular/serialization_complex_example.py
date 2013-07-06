@@ -16,8 +16,11 @@ def serialization_complex_example (num=5, dist=1, dim=10, C=2.0, width=10):
 	from shogun.Features import RealFeatures, MulticlassLabels
 	from shogun.Classifier import GMNPSVM
 	from shogun.Kernel import GaussianKernel
-	from shogun.IO import SerializableHdf5File,SerializableAsciiFile, \
-			SerializableJsonFile,SerializableXmlFile,MSG_DEBUG
+	try:
+		from shogun.IO import SerializableHdf5File,SerializableAsciiFile, \
+				SerializableJsonFile,SerializableXmlFile,MSG_DEBUG
+	except ImportError:
+		return
 	from shogun.Preprocessor import NormOne, LogPlusOne
 
 	seed(17)
