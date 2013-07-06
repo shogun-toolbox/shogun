@@ -26,7 +26,6 @@
 
 #ifdef HAVE_EIGEN3
 #include <shogun/mathematics/eigen3.h>
-#include <shogun/mathematics/eigen3.cpp>
 using namespace Eigen;
 #endif //HAVE_EIGEN3
 
