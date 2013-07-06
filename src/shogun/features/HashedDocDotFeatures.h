@@ -32,10 +32,11 @@ public:
 	 * @param hash_bits the number of bits of the hash. Means a dimension of size 2^(hash_bits).
 	 * @param docs the document collection
 	 * @param tzer the tokenizer to use on the documents
+	 * @param normalize whether or not to normalize the result of the dot products
 	 * @param size cache size
 	 */
 	CHashedDocDotFeatures(int32_t hash_bits=0, CStringFeatures<char>* docs=NULL, 
-			CTokenizer* tzer=NULL, int32_t size=0);
+			CTokenizer* tzer=NULL, bool normalize=1, int32_t size=0);
 
 	/** copy constructor */
 	CHashedDocDotFeatures(const CHashedDocDotFeatures& orig);
@@ -178,7 +179,8 @@ public:
 			int32_t num_bits, uint32_t seed);
 
 private:
-	void init(int32_t hash_bits, CStringFeatures<char>* docs, CTokenizer* tzer);
+	void init(int32_t hash_bits, CStringFeatures<char>* docs, CTokenizer* tzer, 
+		bool normalize);
 
 protected:
 	/** the document collection*/
@@ -189,6 +191,9 @@ protected:
 
 	/** tokenizer */
 	CTokenizer* tokenizer;
+
+	/** if should normalize the dot product results */
+	bool should_normalize;
 };
 }
 

@@ -16,23 +16,25 @@
 namespace shogun
 {
 CHashedDocDotFeatures::CHashedDocDotFeatures(int32_t hash_bits, CStringFeatures<char>* docs, 
-	CTokenizer* tzer, int32_t size) : CDotFeatures(size)
+	CTokenizer* tzer, bool normalize, int32_t size) : CDotFeatures(size)
 {
-	init(hash_bits, docs, tzer);
+	init(hash_bits, docs, tzer, normalize);
 }
 
 CHashedDocDotFeatures::CHashedDocDotFeatures(const CHashedDocDotFeatures& orig)
 : CDotFeatures(orig)
 {
-	init(orig.num_bits, orig.doc_collection, orig.tokenizer);
+	init(orig.num_bits, orig.doc_collection, orig.tokenizer, orig.should_normalize);
 }
 
-void CHashedDocDotFeatures::init(int32_t hash_bits, CStringFeatures<char>* docs, CTokenizer* tzer)
+void CHashedDocDotFeatures::init(int32_t hash_bits, CStringFeatures<char>* docs, 
+	CTokenizer* tzer, bool normalize)
 {
 	num_bits = hash_bits;
 
 	doc_collection = docs;
 	tokenizer = tzer;
+	should_normalize = normalize;
 
 	if (!tokenizer)
 	{
@@ -44,6 +46,8 @@ void CHashedDocDotFeatures::init(int32_t hash_bits, CStringFeatures<char>* docs,
 	SG_ADD((CSGObject**) &doc_collection, "doc_collection", "Document collection",
 			MS_NOT_AVAILABLE);
 	SG_ADD((CSGObject**) &tokenizer, "tokenizer", "Document tokenizer",
+			MS_NOT_AVAILABLE);
+	SG_ADD(&should_normalize, "should_normalize", "Normalize or not the dot products",
 			MS_NOT_AVAILABLE);
 
 	SG_REF(doc_collection);
@@ -80,7 +84,8 @@ float64_t CHashedDocDotFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t
 	hddf->doc_collection->free_feature_vector(sv2, vec_idx2);
 	SG_UNREF(converter);
 
-	return result;
+	const float64_t norm_const = 1.0/(sv1.size()*sv2.size());
+	return should_normalize ? result * norm_const : result;
 }
 
 float64_t CHashedDocDotFeatures::dense_dot_sgvec(int32_t vec_idx1, const SGVector<float64_t> vec2)
@@ -105,10 +110,11 @@ float64_t CHashedDocDotFeatures::dense_dot(int32_t vec_idx1, const float64_t* ve
 		uint32_t hashed_idx = calculate_token_hash(&sv.vector[start], end-start, num_bits, seed);
 		result += vec2[hashed_idx];
 	}
-
 	doc_collection->free_feature_vector(sv, vec_idx1);
 	SG_UNREF(local_tzer);
-	return result;
+
+	float64_t n_const = 1.0/sv.size();
+	return should_normalize ? result * n_const : result;
 }
 
 void CHashedDocDotFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1,
@@ -122,6 +128,7 @@ void CHashedDocDotFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1,
 	SGVector<char> sv = doc_collection->get_feature_vector(vec_idx1);
 	CTokenizer* local_tzer = tokenizer->get_copy();
 
+	const float64_t value = should_normalize ? alpha/sv.size() : alpha;
 	const int32_t seed = 0xdeadbeaf;
 	index_t start = 0;
 	local_tzer->set_text(sv);
@@ -129,7 +136,7 @@ void CHashedDocDotFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1,
 	{
 		index_t end = local_tzer->next_token_idx(start);
 		uint32_t hashed_idx = calculate_token_hash(&sv.vector[start], end-start, num_bits, seed);
-		vec2[hashed_idx] += alpha;
+		vec2[hashed_idx] += value;
 	}
 	
 	doc_collection->free_feature_vector(sv, vec_idx1);
