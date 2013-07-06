@@ -51,15 +51,20 @@ bool CDelimiterTokenizer::has_next()
 
 void CDelimiterTokenizer::init_for_whitespace()
 {
-	SGVector<bool>::fill_vector(delimiters, 256, 0);
+	clear_delimiters();
 	delimiters[' '] = 1;
 	delimiters['\t'] = 1;
+}
+
+void CDelimiterTokenizer::clear_delimiters()
+{
+	memset(delimiters, 0, sizeof (delimiters));
 }
 
 index_t CDelimiterTokenizer::next_token_idx(index_t& start)
 {
 	start = last_idx;
- 	
+
 	if (delimiters[(uint8_t) text[start]]==0)
 	{
 		for (last_idx=start+1; last_idx<text.size(); last_idx++)

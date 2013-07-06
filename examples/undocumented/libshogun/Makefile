@@ -112,7 +112,8 @@ TARGETS = basic_minimal \
   		  regression_libsvr \
   		  classifier_multiclass_prob_heuristics \
 		  streaming_onlineliblinear \
-  		  
+		  io_linereader \
+		  library_circularbuffer \
 
 all: $(TARGETS)
 
