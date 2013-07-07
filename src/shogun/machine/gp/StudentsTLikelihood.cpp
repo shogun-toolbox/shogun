@@ -85,7 +85,7 @@ SGVector<float64_t> CStudentsTLikelihood::evaluate_variances(SGVector<float64_t>
 	return result;
 }
 
-float64_t CStudentsTLikelihood::get_log_probability_f(CLabels* lab,
+SGVector<float64_t> CStudentsTLikelihood::get_log_probability_f(CLabels* lab,
 		SGVector<float64_t> func)
 {
 	REQUIRE(lab->get_label_type()==LT_REGRESSION,
@@ -110,7 +110,7 @@ float64_t CStudentsTLikelihood::get_log_probability_f(CLabels* lab,
 	eigen_r=eigen_lZ-(m_df+1)*
 		(eigen_r+VectorXd::Ones(r.vlen)).array().log().matrix()/2.0;
 
-	return eigen_r.sum();
+	return r;
 }
 
 SGVector<float64_t> CStudentsTLikelihood::get_log_probability_derivative_f(

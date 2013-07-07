@@ -19,7 +19,7 @@
 
 using namespace shogun;
 
-TEST(StudentsTLikelihood,get_log_probability_f)
+TEST(StudentsTLikelihood,get_log_probability_f_sum)
 {
 	// create some easy data:
 	// f(x) approximately equals to (x^3 + sin(x)^2)/10, y = f(x) + noise
@@ -46,7 +46,7 @@ TEST(StudentsTLikelihood,get_log_probability_f)
 	// Stundent's-t likelihood with sigma = 0.17, df = 3
 	CStudentsTLikelihood* likelihood=new CStudentsTLikelihood(0.17, 3);
 
-	float64_t lp=likelihood->get_log_probability_f(labels, func);
+	float64_t lp=SGVector<float64_t>::sum(likelihood->get_log_probability_f(labels, func));
 
 	// comparison of log likelihood with result from GPML package
 	EXPECT_NEAR(lp, 2.8647, 1E-4);

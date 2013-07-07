@@ -62,8 +62,8 @@ namespace shogun
 			W->scale(-1.0);
 
 			// compute psi=alpha'*(f-m)/2-lp
-			float64_t result = (*alpha).dot(eigen_f-eigen_m)/2.0-
-				lik->get_log_probability_f(lab, *f);
+			float64_t result = (*alpha).dot(eigen_f-eigen_m)/2.0
+				-SGVector<float64_t>::sum(lik->get_log_probability_f(lab, *f));
 
 			return result;
 		}
@@ -443,7 +443,7 @@ void CLaplacianInferenceMethod::update_alpha()
 		W=m_model->get_log_probability_derivative_f(m_labels, function, 2);
 		W.scale(-1.0);
 
-		Psi_New=-m_model->get_log_probability_f(m_labels, function);
+		Psi_New=-SGVector<float64_t>::sum(m_model->get_log_probability_f(m_labels, function));
 	}
 	else
 	{
@@ -457,16 +457,16 @@ void CLaplacianInferenceMethod::update_alpha()
 		W.scale(-1.0);
 
 		Psi_New=eigen_temp_alpha.dot(eigen_function-eigen_m_means)/2.0-
-			m_model->get_log_probability_f(m_labels, function);
+			SGVector<float64_t>::sum(m_model->get_log_probability_f(m_labels, function));
 
-		Psi_Def=-m_model->get_log_probability_f(m_labels, m_means);
+		Psi_Def=-SGVector<float64_t>::sum(m_model->get_log_probability_f(m_labels, m_means));
 
 		// if default is better, then use it
 		if (Psi_Def < Psi_New)
 		{
 			temp_alpha.zero();
 			eigen_function=eigen_m_means;
-			Psi_New=-m_model->get_log_probability_f(m_labels, function);
+			Psi_New=-SGVector<float64_t>::sum(m_model->get_log_probability_f(m_labels, function));
 		}
 	}
 
@@ -542,7 +542,7 @@ void CLaplacianInferenceMethod::update_alpha()
 	eigen_function=eigen_ktrtr*CMath::sq(m_scale)*eigen_temp_alpha+eigen_m_means;
 
 	// get log probability
-	lp=m_model->get_log_probability_f(m_labels, function);
+	lp=SGVector<float64_t>::sum(m_model->get_log_probability_f(m_labels, function));
 
 	// get log probability derivatives
 	dlp=m_model->get_log_probability_derivative_f(m_labels, function, 1);

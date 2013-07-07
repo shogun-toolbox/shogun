@@ -105,7 +105,7 @@ public:
 	 *
 	 * @return log likelihood
 	 */
-	virtual float64_t get_log_probability_f(CLabels* lab,
+	virtual SGVector<float64_t> get_log_probability_f(CLabels* lab,
 			SGVector<float64_t> func);
 
 	/** get derivative of log likelihood \f$log(P(y|f))\f$ with
