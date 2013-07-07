@@ -23,7 +23,9 @@ enum ELikelihoodModelType
 {
 	LT_NONE = 0,
 	LT_GAUSSIAN = 10,
-	LT_STUDENTST = 20
+	LT_STUDENTST = 20,
+	LT_LOGIT = 30,
+	LT_PROBIT = 40
 };
 
 /** @brief The Likelihood model base class.
@@ -71,7 +73,7 @@ public:
 	 *
 	 * @return log likelihood
 	 */
-	virtual float64_t get_log_probability_f(CLabels* lab,
+	virtual SGVector<float64_t> get_log_probability_f(CLabels* lab,
 			SGVector<float64_t> func)=0;
 
 	/** get derivative of log likelihood \f$log(P(y|f))\f$ with
@@ -118,8 +120,7 @@ public:
 
 	/** get derivative of the second derivative of log likelihood with
 	 * respect to function location, i.e. \f$\frac{\partial^{2}
-	 * log(P(y|f))}{\partial f^{2}}\f$ with respect to given
-	 * parameter
+	 * log(P(y|f))}{\partial f^{2}}\f$ with respect to given parameter
 	 *
 	 * @param lab labels used
 	 * @param param parameter

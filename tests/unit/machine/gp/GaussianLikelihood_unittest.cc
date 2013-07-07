@@ -19,7 +19,7 @@
 
 using namespace shogun;
 
-TEST(GaussianLikelihood,get_log_probability_f)
+TEST(GaussianLikelihood,get_log_probability_f_sum)
 {
 	// create some easy data:
 	// f(x) approximately equals to (x^3 + sin(x)^2)/10, y = f(x) + noise
@@ -46,7 +46,7 @@ TEST(GaussianLikelihood,get_log_probability_f)
 	// Gaussian likelihood with sigma = 0.13
 	CGaussianLikelihood* likelihood=new CGaussianLikelihood(0.13);
 
-	float64_t lp=likelihood->get_log_probability_f(labels, func);
+	float64_t lp=SGVector<float64_t>::sum(likelihood->get_log_probability_f(labels, func));
 
 	// comparison of log likelihood with result from GPML package
 	EXPECT_NEAR(lp, 4.2428, 1E-4);
