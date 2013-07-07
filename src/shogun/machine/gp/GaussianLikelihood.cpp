@@ -70,7 +70,7 @@ SGVector<float64_t> CGaussianLikelihood::evaluate_variances(SGVector<float64_t> 
 	return result;
 }
 
-float64_t CGaussianLikelihood::get_log_probability_f(CLabels* lab,
+SGVector<float64_t> CGaussianLikelihood::get_log_probability_f(CLabels* lab,
 		SGVector<float64_t> func)
 {
 	REQUIRE(lab->get_label_type()==LT_REGRESSION,
@@ -89,7 +89,7 @@ float64_t CGaussianLikelihood::get_log_probability_f(CLabels* lab,
 	eigen_result=-eigen_result.cwiseProduct(eigen_result)/(2*CMath::sq(m_sigma))-
 		VectorXd::Ones(result.vlen)*log(2*CMath::PI*CMath::sq(m_sigma))/2.0;
 
-	return eigen_result.sum();
+	return result;
 }
 
 SGVector<float64_t> CGaussianLikelihood::get_log_probability_derivative_f(
