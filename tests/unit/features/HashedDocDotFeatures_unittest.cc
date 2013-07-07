@@ -50,7 +50,7 @@ TEST(HashedDocDotFeaturesTest, computed_features_test)
 
 	CStringFeatures<char>* doc_collection = new CStringFeatures<char>(list, RAWBYTE);
 	CHashedDocDotFeatures* hddf = new CHashedDocDotFeatures(hash_bits, doc_collection,
-			tokenizer);
+			tokenizer, false);
 
 	CHashedDocConverter* converter = new CHashedDocConverter(tokenizer, dimension);
 	
@@ -104,7 +104,7 @@ TEST(HashedDocDotFeaturesTest, dense_dot_test)
 
 	CStringFeatures<char>* doc_collection = new CStringFeatures<char>(list, RAWBYTE);
 	CHashedDocDotFeatures* hddf = new CHashedDocDotFeatures(hash_bits, doc_collection,
-			tokenizer);
+			tokenizer, false);
 	
 	CHashedDocConverter* converter = new CHashedDocConverter(tokenizer, dimension);
 	CSparseFeatures<uint32_t>* converted_docs = (CSparseFeatures<uint32_t>* ) converter->apply(doc_collection);
