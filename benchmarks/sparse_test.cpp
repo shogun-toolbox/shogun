@@ -10,12 +10,12 @@
 #include <shogun/lib/common.h>
 
 #ifdef HAVE_EIGEN3
+#include <shogun/lib/Time.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGSparseMatrix.h>
 #include <shogun/lib/SGSparseVector.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
-#include <time.h>
 
 using namespace shogun;
 using namespace Eigen;
@@ -24,6 +24,7 @@ SGVector<float64_t> sg_m_apply(SGSparseMatrix<float64_t> m, SGVector<float64_t> 
 {
 	SGVector<float64_t> r(v.vlen);
 	ASSERT(v.vlen==m.num_vectors);
+#pragma omp parallel for
 	for (index_t i=0; i<m.num_vectors; ++i)
 		r[i]=m[i].dense_dot(1.0, v.vector, v.vlen, 0.0);
 
@@ -41,7 +42,7 @@ int main(int argc, char** argv)
 	SGVector<float64_t> v(size);
 	v.set_const(1.0);
 	Map<VectorXd> map_v(v.vector, v.vlen);
-	clock_t start, end;
+	CTime time;
 
 	SG_SPRINT("time\tshogun (s)\teigen3 (s)\n\n");
 	for (index_t t=0; t<times; ++t)
@@ -87,12 +88,10 @@ int main(int argc, char** argv)
 		SGVector<float64_t> r(size);
 
 		// sg starts
-		start=clock();
+		time.start();
 		for (index_t i=0; i<n; ++i)
 			r=sg_m_apply(sg_m, v);
-		end=clock();
-
-		float64_t sg_time=static_cast<float64_t>(end-start)/CLOCKS_PER_SEC;
+		float64_t sg_time = time.cur_time_diff();
 
 		Map<VectorXd> map_r(r.vector, r.vlen);
 		float64_t sg_norm=map_r.norm();
@@ -104,18 +103,16 @@ int main(int argc, char** argv)
 		VectorXd eig_r(size);
 
 		// eigen3 starts
-		start=clock();
+		time.start();
 		for (index_t i=0; i<n; ++i)
 			eig_r=eig_m*map_v;
-		end=clock();
 
-		float64_t eig_time=static_cast<float64_t>(end-start)/CLOCKS_PER_SEC;
-
+		float64_t eig_time = time.cur_time_diff();
 		float64_t eig_norm=eig_r.norm();
 //#endif // RUN_EIGEN
 
 		SG_SPRINT("%d\t%lf\t%lf\n", t, sg_time, eig_time);
-		ASSERT(sg_time>eig_time);
+		//ASSERT(sg_time>eig_time);
 		ASSERT(CMath::abs(sg_norm-eig_norm)<=CMath::MACHINE_EPSILON)
 
 		SG_FREE(vec);
