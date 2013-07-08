@@ -8,15 +8,19 @@
  */
 
 #include <shogun/lib/config.h>
+
 #ifdef HAVE_EIGEN3
 
 #include <shogun/labels/RegressionLabels.h>
+#include <shogun/labels/BinaryLabels.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/machine/gp/LaplacianInferenceMethod.h>
 #include <shogun/machine/gp/ZeroMean.h>
 #include <shogun/machine/gp/GaussianLikelihood.h>
 #include <shogun/machine/gp/StudentsTLikelihood.h>
+#include <shogun/machine/gp/LogitLikelihood.h>
+#include <shogun/machine/gp/ProbitLikelihood.h>
 #include <shogun/evaluation/GradientResult.h>
 #include <gtest/gtest.h>
 
@@ -55,8 +59,8 @@ TEST(LaplacianInferenceMethod,get_cholesky_gaussian_likelihood)
 	CGaussianLikelihood* likelihood=new CGaussianLikelihood();
 
 	// specify GP regression with Laplacian inference
-	CLaplacianInferenceMethod* inf=new CLaplacianInferenceMethod(kernel, features_train,
-			mean, labels_train, likelihood);
+	CLaplacianInferenceMethod* inf=new CLaplacianInferenceMethod(kernel,
+		features_train,	mean, labels_train, likelihood);
 
 	// comparison of posterior cholesky with result from GPML package:
 	// L =
@@ -134,8 +138,8 @@ TEST(LaplacianInferenceMethod,get_cholesky_t_likelihood)
 	CStudentsTLikelihood* likelihood=new CStudentsTLikelihood(1, 3);
 
 	// specify GP regression with Laplacian inference
-	CLaplacianInferenceMethod* inf=new CLaplacianInferenceMethod(kernel, features_train,
-			mean, labels_train, likelihood);
+	CLaplacianInferenceMethod* inf=new CLaplacianInferenceMethod(kernel,
+		features_train,	mean, labels_train, likelihood);
 
 	// comparison of posterior cholesky with result from GPML package:
 	// L =
@@ -180,6 +184,175 @@ TEST(LaplacianInferenceMethod,get_cholesky_t_likelihood)
 	SG_UNREF(inf);
 }
 
+TEST(LaplacianInferenceMethod,get_cholesky_logit_likelihood)
+{
+	// create some easy classification data:
+	// y=sign(sqrt(x1.^2+x2.^2)-1)
+	index_t n=5;
+
+	SGMatrix<float64_t> feat_train(2, n);
+	SGVector<float64_t> lab_train(n);
+
+	feat_train(0, 0)=0.8822936;
+	feat_train(0, 1)=-0.7160792;
+	feat_train(0, 2)=0.9178174;
+	feat_train(0, 3)=-0.0135544;
+	feat_train(0, 4)=-0.5275911;
+
+	feat_train(1, 0)=-0.9597321;
+	feat_train(1, 1)=0.0231289;
+	feat_train(1, 2)=0.8284935;
+	feat_train(1, 3)=0.0023812;
+	feat_train(1, 4)=-0.7218931;
+
+	lab_train[0]=1.0;
+	lab_train[1]=-1.0;
+	lab_train[2]=1.0;
+	lab_train[3]=-1.0;
+	lab_train[4]=-1.0;
+
+	// shogun representation of features and labels
+	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
+	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
+
+	// choose Gaussian kernel with sigma = 2 and zero mean function
+	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
+	CZeroMean* mean=new CZeroMean();
+
+	// logit likelihood
+	CLogitLikelihood* likelihood=new CLogitLikelihood();
+
+	// specify GP classification with Laplacian inference
+	CLaplacianInferenceMethod* inf=new CLaplacianInferenceMethod(kernel,
+		features_train,	mean, labels_train, likelihood);
+
+	// comparison of posterior cholesky with result from GPML package:
+	// L =
+	// 1.11695   0.03594   0.04463   0.09123   0.07623
+	// 0.00000   1.10397   0.03866   0.15833   0.14793
+	// 0.00000   0.00000   1.11470   0.09049   0.01420
+	// 0.00000   0.00000   0.00000   1.09297   0.11357
+	// 0.00000   0.00000   0.00000   0.00000   1.08875
+	SGMatrix<float64_t> L=inf->get_cholesky();
+
+	EXPECT_NEAR(L(0,0), 1.11695, 1E-5);
+	EXPECT_NEAR(L(0,1), 0.03594, 1E-5);
+	EXPECT_NEAR(L(0,2), 0.04463, 1E-5);
+	EXPECT_NEAR(L(0,3), 0.09123, 1E-5);
+	EXPECT_NEAR(L(0,4), 0.07623, 1E-5);
+
+	EXPECT_NEAR(L(1,0), 0.00000, 1E-5);
+	EXPECT_NEAR(L(1,1), 1.10397, 1E-5);
+	EXPECT_NEAR(L(1,2), 0.03866, 1E-5);
+	EXPECT_NEAR(L(1,3), 0.15833, 1E-5);
+	EXPECT_NEAR(L(1,4), 0.14793, 1E-5);
+
+	EXPECT_NEAR(L(2,0), 0.00000, 1E-5);
+	EXPECT_NEAR(L(2,1), 0.00000, 1E-5);
+	EXPECT_NEAR(L(2,2), 1.11470, 1E-5);
+	EXPECT_NEAR(L(2,3), 0.09049, 1E-5);
+	EXPECT_NEAR(L(2,4), 0.01420, 1E-5);
+
+	EXPECT_NEAR(L(3,0), 0.00000, 1E-5);
+	EXPECT_NEAR(L(3,1), 0.00000, 1E-5);
+	EXPECT_NEAR(L(3,2), 0.00000, 1E-5);
+	EXPECT_NEAR(L(3,3), 1.09297, 1E-5);
+	EXPECT_NEAR(L(3,4), 0.11357, 1E-5);
+
+	EXPECT_NEAR(L(4,0), 0.00000, 1E-5);
+	EXPECT_NEAR(L(4,1), 0.00000, 1E-5);
+	EXPECT_NEAR(L(4,2), 0.00000, 1E-5);
+	EXPECT_NEAR(L(4,3), 0.00000, 1E-5);
+	EXPECT_NEAR(L(4,4), 1.08875, 1E-5);
+
+	// clean up
+	SG_UNREF(inf);
+}
+
+TEST(LaplacianInferenceMethod,get_cholesky_probit_likelihood)
+{
+	// create some easy random classification data
+	index_t n=5;
+
+	SGMatrix<float64_t> feat_train(2, n);
+	SGVector<float64_t> lab_train(n);
+
+	feat_train(0, 0)=-1.07932;
+	feat_train(0, 1)=1.15768;
+	feat_train(0, 2)=3.26631;
+	feat_train(0, 3)=1.79009;
+	feat_train(0, 4)=-3.66051;
+
+	feat_train(1, 0)=-1.83544;
+	feat_train(1, 1)=2.91702;
+	feat_train(1, 2)=-3.85663;
+	feat_train(1, 3)=0.11949;
+	feat_train(1, 4)=1.75159;
+
+	lab_train[0]=-1.0;
+	lab_train[1]=1.0;
+	lab_train[2]=1.0;
+	lab_train[3]=1.0;
+	lab_train[4]=-1.0;
+
+	// shogun representation of features and labels
+	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
+	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
+
+	// choose Gaussian kernel with sigma = 2 and zero mean function
+	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
+	CZeroMean* mean=new CZeroMean();
+
+	// probit likelihood
+	CProbitLikelihood* likelihood=new CProbitLikelihood();
+
+	// specify GP classification with Laplacian inference
+	CLaplacianInferenceMethod* inf=new CLaplacianInferenceMethod(kernel,
+		features_train,	mean, labels_train, likelihood);
+
+	// comparison of posterior cholesky with result from GPML package:
+	// L =
+	// 1.22980   0.00000   0.00000   0.00100   0.00002
+	// 0.00000   1.22911   0.00000   0.00680   0.00000
+	// 0.00000   0.00000   1.22970   0.00005  -0.00000
+	// 0.00000   0.00000   0.00000   1.22917   0.00000
+	// 0.00000   0.00000   0.00000   0.00000   1.22971
+	SGMatrix<float64_t> L=inf->get_cholesky();
+
+	EXPECT_NEAR(L(0,0), 1.22980, 1E-5);
+	EXPECT_NEAR(L(0,1), 0.00000, 1E-5);
+	EXPECT_NEAR(L(0,2), 0.00000, 1E-5);
+	EXPECT_NEAR(L(0,3), 0.00100, 1E-5);
+	EXPECT_NEAR(L(0,4), 0.00002, 1E-5);
+
+	EXPECT_NEAR(L(1,0), 0.00000, 1E-5);
+	EXPECT_NEAR(L(1,1), 1.22911, 1E-5);
+	EXPECT_NEAR(L(1,2), 0.00000, 1E-5);
+	EXPECT_NEAR(L(1,3), 0.00680, 1E-5);
+	EXPECT_NEAR(L(1,4), 0.00000, 1E-5);
+
+	EXPECT_NEAR(L(2,0), 0.00000, 1E-5);
+	EXPECT_NEAR(L(2,1), 0.00000, 1E-5);
+	EXPECT_NEAR(L(2,2), 1.22970, 1E-5);
+	EXPECT_NEAR(L(2,3), 0.00005, 1E-5);
+	EXPECT_NEAR(L(2,4), 0.00000, 1E-5);
+
+	EXPECT_NEAR(L(3,0), 0.00000, 1E-5);
+	EXPECT_NEAR(L(3,1), 0.00000, 1E-5);
+	EXPECT_NEAR(L(3,2), 0.00000, 1E-5);
+	EXPECT_NEAR(L(3,3), 1.22917, 1E-5);
+	EXPECT_NEAR(L(3,4), 0.00000, 1E-5);
+
+	EXPECT_NEAR(L(4,0), 0.00000, 1E-5);
+	EXPECT_NEAR(L(4,1), 0.00000, 1E-5);
+	EXPECT_NEAR(L(4,2), 0.00000, 1E-5);
+	EXPECT_NEAR(L(4,3), 0.00000, 1E-5);
+	EXPECT_NEAR(L(4,4), 1.22971, 1E-5);
+
+	// clean up
+	SG_UNREF(inf);
+}
+
 TEST(LaplacianInferenceMethod,get_alpha_gaussian_likelihood)
 {
 	// create some easy regression data:
@@ -213,8 +386,8 @@ TEST(LaplacianInferenceMethod,get_alpha_gaussian_likelihood)
 	CGaussianLikelihood* likelihood=new CGaussianLikelihood();
 
 	// specify GP regression with Laplacian inference
-	CLaplacianInferenceMethod* inf=new CLaplacianInferenceMethod(kernel, features_train,
-			mean, labels_train, likelihood);
+	CLaplacianInferenceMethod* inf=new CLaplacianInferenceMethod(kernel,
+		features_train,	mean, labels_train, likelihood);
 
 	// comparison of posterior alpha with result from GPML package:
 	// alpha =
@@ -268,8 +441,8 @@ TEST(LaplacianInferenceMethod,get_alpha_t_likelihood)
 	CStudentsTLikelihood* likelihood=new CStudentsTLikelihood(1, 3);
 
 	// specify GP regression with Laplacian inference
-	CLaplacianInferenceMethod* inf=new CLaplacianInferenceMethod(kernel, features_train,
-			mean, labels_train, likelihood);
+	CLaplacianInferenceMethod* inf=new CLaplacianInferenceMethod(kernel,
+		features_train,	mean, labels_train, likelihood);
 
 	// comparison of posterior alpha with result from GPML package:
 	// alpha =
@@ -285,6 +458,127 @@ TEST(LaplacianInferenceMethod,get_alpha_t_likelihood)
 	EXPECT_NEAR(alpha[2], 0.291186, 1E-6);
 	EXPECT_NEAR(alpha[3], 0.414107, 1E-6);
 	EXPECT_NEAR(alpha[4], 0.710853, 1E-6);
+
+	// clean up
+	SG_UNREF(inf);
+}
+
+TEST(LaplacianInferenceMethod,get_alpha_logit_likelihood)
+{
+	// create some easy classification data:
+	// y=sign(sqrt(x1.^2+x2.^2)-1)
+	index_t n=5;
+
+	SGMatrix<float64_t> feat_train(2, n);
+	SGVector<float64_t> lab_train(n);
+
+	feat_train(0, 0)=0.8822936;
+	feat_train(0, 1)=-0.7160792;
+	feat_train(0, 2)=0.9178174;
+	feat_train(0, 3)=-0.0135544;
+	feat_train(0, 4)=-0.5275911;
+
+	feat_train(1, 0)=-0.9597321;
+	feat_train(1, 1)=0.0231289;
+	feat_train(1, 2)=0.8284935;
+	feat_train(1, 3)=0.0023812;
+	feat_train(1, 4)=-0.7218931;
+
+	lab_train[0]=1.0;
+	lab_train[1]=-1.0;
+	lab_train[2]=1.0;
+	lab_train[3]=-1.0;
+	lab_train[4]=-1.0;
+
+	// shogun representation of features and labels
+	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
+	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
+
+	// choose Gaussian kernel with sigma = 2 and zero mean function
+	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
+	CZeroMean* mean=new CZeroMean();
+
+	// logit likelihood
+	CLogitLikelihood* likelihood=new CLogitLikelihood();
+
+	// specify GP classification with Laplacian inference
+	CLaplacianInferenceMethod* inf=new CLaplacianInferenceMethod(kernel,
+		features_train,	mean, labels_train, likelihood);
+
+	// comparison of posterior alpha with result from GPML package:
+	// alpha =
+	// 0.45082
+	// -0.32691
+	// 0.43705
+	// -0.38239
+	// -0.34563
+	SGVector<float64_t> alpha=inf->get_alpha();
+
+	EXPECT_NEAR(alpha[0], 0.45082, 1E-5);
+	EXPECT_NEAR(alpha[1], -0.32691, 1E-5);
+	EXPECT_NEAR(alpha[2], 0.43705, 1E-5);
+	EXPECT_NEAR(alpha[3], -0.38239, 1E-5);
+	EXPECT_NEAR(alpha[4], -0.34563, 1E-5);
+
+	// clean up
+	SG_UNREF(inf);
+}
+
+TEST(LaplacianInferenceMethod,get_alpha_probit_likelihood)
+{
+	// create some easy random classification data
+	index_t n=5;
+
+	SGMatrix<float64_t> feat_train(2, n);
+	SGVector<float64_t> lab_train(n);
+
+	feat_train(0, 0)=-1.07932;
+	feat_train(0, 1)=1.15768;
+	feat_train(0, 2)=3.26631;
+	feat_train(0, 3)=1.79009;
+	feat_train(0, 4)=-3.66051;
+
+	feat_train(1, 0)=-1.83544;
+	feat_train(1, 1)=2.91702;
+	feat_train(1, 2)=-3.85663;
+	feat_train(1, 3)=0.11949;
+	feat_train(1, 4)=1.75159;
+
+	lab_train[0]=-1.0;
+	lab_train[1]=1.0;
+	lab_train[2]=1.0;
+	lab_train[3]=1.0;
+	lab_train[4]=-1.0;
+
+	// shogun representation of features and labels
+	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
+	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
+
+	// choose Gaussian kernel with sigma = 2 and zero mean function
+	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
+	CZeroMean* mean=new CZeroMean();
+
+	// probit likelihood
+	CProbitLikelihood* likelihood=new CProbitLikelihood();
+
+	// specify GP classification with Laplacian inference
+	CLaplacianInferenceMethod* inf=new CLaplacianInferenceMethod(kernel,
+		features_train,	mean, labels_train, likelihood);
+
+	// comparison of posterior alpha with result from GPML package:
+	// alpha =
+	// -0.50646
+	// 0.50327
+	// 0.50604
+	// 0.50366
+	// -0.50605
+	SGVector<float64_t> alpha=inf->get_alpha();
+
+	EXPECT_NEAR(alpha[0], -0.50646, 1E-5);
+	EXPECT_NEAR(alpha[1], 0.50327, 1E-5);
+	EXPECT_NEAR(alpha[2], 0.50604, 1E-5);
+	EXPECT_NEAR(alpha[3], 0.50366, 1E-5);
+	EXPECT_NEAR(alpha[4], -0.50605, 1E-5);
 
 	// clean up
 	SG_UNREF(inf);
@@ -323,8 +617,8 @@ TEST(LaplacianInferenceMethod,get_negative_marginal_likelihood_gaussian_likeliho
 	CGaussianLikelihood* likelihood=new CGaussianLikelihood();
 
 	// specify GP regression with Laplacian inference
-	CLaplacianInferenceMethod* inf=new CLaplacianInferenceMethod(kernel, features_train,
-			mean, labels_train, likelihood);
+	CLaplacianInferenceMethod* inf=new CLaplacianInferenceMethod(kernel,
+		features_train,	mean, labels_train, likelihood);
 
 	// comparison of posterior negative marginal likelihood with
 	// result from GPML package:
@@ -371,8 +665,8 @@ TEST(LaplacianInferenceMethod,get_negative_marginal_likelihood_t_likelihood)
 	CStudentsTLikelihood* likelihood=new CStudentsTLikelihood(1, 3);
 
 	// specify GP regression with Laplacian inference
-	CLaplacianInferenceMethod* inf=new CLaplacianInferenceMethod(kernel, features_train,
-			mean, labels_train, likelihood);
+	CLaplacianInferenceMethod* inf=new CLaplacianInferenceMethod(kernel,
+		features_train,	mean, labels_train, likelihood);
 
 	// comparison of posterior negative marginal likelihood with
 	// result from GPML package:
@@ -381,6 +675,113 @@ TEST(LaplacianInferenceMethod,get_negative_marginal_likelihood_t_likelihood)
 	float64_t nml=inf->get_negative_marginal_likelihood();
 
 	EXPECT_NEAR(nml, 7.4892, 1E-4);
+
+	// clean up
+	SG_UNREF(inf);
+}
+
+TEST(LaplacianInferenceMethod,get_negative_marginal_likelihood_logit_likelihood)
+{
+	// create some easy classification data:
+	// y=sign(sqrt(x1.^2+x2.^2)-1)
+	index_t n=5;
+
+	SGMatrix<float64_t> feat_train(2, n);
+	SGVector<float64_t> lab_train(n);
+
+	feat_train(0, 0)=0.8822936;
+	feat_train(0, 1)=-0.7160792;
+	feat_train(0, 2)=0.9178174;
+	feat_train(0, 3)=-0.0135544;
+	feat_train(0, 4)=-0.5275911;
+
+	feat_train(1, 0)=-0.9597321;
+	feat_train(1, 1)=0.0231289;
+	feat_train(1, 2)=0.8284935;
+	feat_train(1, 3)=0.0023812;
+	feat_train(1, 4)=-0.7218931;
+
+	lab_train[0]=1.0;
+	lab_train[1]=-1.0;
+	lab_train[2]=1.0;
+	lab_train[3]=-1.0;
+	lab_train[4]=-1.0;
+
+	// shogun representation of features and labels
+	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
+	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
+
+	// choose Gaussian kernel with sigma = 2 and zero mean function
+	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
+	CZeroMean* mean=new CZeroMean();
+
+	// logit likelihood
+	CLogitLikelihood* likelihood=new CLogitLikelihood();
+
+	// specify GP classification with Laplacian inference
+	CLaplacianInferenceMethod* inf=new CLaplacianInferenceMethod(kernel,
+		features_train,	mean, labels_train, likelihood);
+
+	// comparison of posterior negative marginal likelihood with
+	// result from GPML package:
+	// nlZ =
+	// 3.3876
+	float64_t nml=inf->get_negative_marginal_likelihood();
+
+	EXPECT_NEAR(nml, 3.3876, 1E-4);
+
+	// clean up
+	SG_UNREF(inf);
+}
+
+TEST(LaplacianInferenceMethod,get_negative_marginal_likelihood_probit_likelihood)
+{
+	// create some easy random classification data
+	index_t n=5;
+
+	SGMatrix<float64_t> feat_train(2, n);
+	SGVector<float64_t> lab_train(n);
+
+	feat_train(0, 0)=-1.07932;
+	feat_train(0, 1)=1.15768;
+	feat_train(0, 2)=3.26631;
+	feat_train(0, 3)=1.79009;
+	feat_train(0, 4)=-3.66051;
+
+	feat_train(1, 0)=-1.83544;
+	feat_train(1, 1)=2.91702;
+	feat_train(1, 2)=-3.85663;
+	feat_train(1, 3)=0.11949;
+	feat_train(1, 4)=1.75159;
+
+	lab_train[0]=-1.0;
+	lab_train[1]=1.0;
+	lab_train[2]=1.0;
+	lab_train[3]=1.0;
+	lab_train[4]=-1.0;
+
+	// shogun representation of features and labels
+	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
+	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
+
+	// choose Gaussian kernel with sigma = 2 and zero mean function
+	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
+	CZeroMean* mean=new CZeroMean();
+
+	// probit likelihood
+	CProbitLikelihood* likelihood=new CProbitLikelihood();
+
+	// specify GP classification with Laplacian inference
+	CLaplacianInferenceMethod* inf=new CLaplacianInferenceMethod(kernel,
+		features_train,	mean, labels_train, likelihood);
+
+	// comparison of posterior negative marginal likelihood with
+	// result from GPML package:
+	// nlZ =
+	// 3.4990
+	float64_t nml=inf->get_negative_marginal_likelihood();
+
+	EXPECT_NEAR(nml, 3.4990, 1E-4);
 
 	// clean up
 	SG_UNREF(inf);
@@ -421,10 +822,10 @@ TEST(LaplacianInferenceMethod,get_marginal_likelihood_derivatives_gaussian_likel
 	CGaussianLikelihood* liklihood=new CGaussianLikelihood(0.25);
 
 	// specify GP regression with Laplacian inference
-	CLaplacianInferenceMethod* inf=new CLaplacianInferenceMethod(kernel, features_train,
-		mean, labels_train, liklihood);
+	CLaplacianInferenceMethod* inf=new CLaplacianInferenceMethod(kernel,
+		features_train,	mean, labels_train, liklihood);
 
-	CGradientResult* result = new CGradientResult();
+	CGradientResult* result=new CGradientResult();
 
 	result->total_variables=3;
 	result->gradient=inf->get_marginal_likelihood_derivatives(result->parameter_dictionary);
@@ -482,10 +883,10 @@ TEST(LaplacianInferenceMethod,get_marginal_likelihood_derivatives_t_likelihood)
 	CStudentsTLikelihood* liklihood=new CStudentsTLikelihood(0.25, 3);
 
 	// specify GP regression with exact inference
-	CLaplacianInferenceMethod* inf=new CLaplacianInferenceMethod(kernel, features_train,
-		mean, labels_train, liklihood);
+	CLaplacianInferenceMethod* inf=new CLaplacianInferenceMethod(kernel,
+		features_train,	mean, labels_train, liklihood);
 
-	CGradientResult* result = new CGradientResult();
+	CGradientResult* result=new CGradientResult();
 
 	result->total_variables=4;
 	result->gradient=inf->get_marginal_likelihood_derivatives(result->parameter_dictionary);
@@ -507,6 +908,131 @@ TEST(LaplacianInferenceMethod,get_marginal_likelihood_derivatives_t_likelihood)
 	EXPECT_NEAR(dnlZ_sigma, -0.15567, 1E-5);
 	EXPECT_NEAR(dnlZ_ell, -0.84364, 1E-5);
 	EXPECT_NEAR(dnlZ_sf2, -0.30177, 1E-5);
+
+	// clean up
+	SG_UNREF(result);
+	SG_UNREF(inf);
+}
+
+TEST(LaplacianInferenceMethod,get_marginal_likelihood_derivatives_logit_likelihood)
+{
+	// create some easy classification data:
+	// y=sign(sqrt(x1.^2+x2.^2)-1)
+	index_t n=5;
+
+	SGMatrix<float64_t> feat_train(2, n);
+	SGVector<float64_t> lab_train(n);
+
+	feat_train(0, 0)=0.8822936;
+	feat_train(0, 1)=-0.7160792;
+	feat_train(0, 2)=0.9178174;
+	feat_train(0, 3)=-0.0135544;
+	feat_train(0, 4)=-0.5275911;
+
+	feat_train(1, 0)=-0.9597321;
+	feat_train(1, 1)=0.0231289;
+	feat_train(1, 2)=0.8284935;
+	feat_train(1, 3)=0.0023812;
+	feat_train(1, 4)=-0.7218931;
+
+	lab_train[0]=1.0;
+	lab_train[1]=-1.0;
+	lab_train[2]=1.0;
+	lab_train[3]=-1.0;
+	lab_train[4]=-1.0;
+
+	// shogun representation of features and labels
+	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
+	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
+
+	// choose Gaussian kernel with sigma = 2 and zero mean function
+	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
+	CZeroMean* mean=new CZeroMean();
+
+	// logit likelihood
+	CLogitLikelihood* likelihood=new CLogitLikelihood();
+
+	// specify GP classification with Laplacian inference
+	CLaplacianInferenceMethod* inf=new CLaplacianInferenceMethod(kernel,
+			features_train,	mean, labels_train, likelihood);
+
+	CGradientResult* result=new CGradientResult();
+
+	result->total_variables=2;
+	result->gradient=inf->get_marginal_likelihood_derivatives(result->parameter_dictionary);
+
+	float64_t dnlZ_ell=4*(*result->gradient.get_element_ptr(0))[0];
+	float64_t dnlZ_sf2=(*result->gradient.get_element_ptr(1))[0];
+
+	// comparison of partial derivatives of negative marginal likelihood with
+	// result from GPML package:
+	// cov =
+	// 0.266464
+	// -0.068637
+	EXPECT_NEAR(dnlZ_ell, 0.266464, 1E-6);
+	EXPECT_NEAR(dnlZ_sf2, -0.068637, 1E-6);
+
+	// clean up
+	SG_UNREF(result);
+	SG_UNREF(inf);
+}
+
+TEST(LaplacianInferenceMethod,get_marginal_likelihood_derivatives_probit_likelihood)
+{
+	// create some easy random classification data
+	index_t n=5;
+
+	SGMatrix<float64_t> feat_train(2, n);
+	SGVector<float64_t> lab_train(n);
+
+	feat_train(0, 0)=-1.07932;
+	feat_train(0, 1)=1.15768;
+	feat_train(0, 2)=3.26631;
+	feat_train(0, 3)=1.79009;
+	feat_train(0, 4)=-3.66051;
+
+	feat_train(1, 0)=-1.83544;
+	feat_train(1, 1)=2.91702;
+	feat_train(1, 2)=-3.85663;
+	feat_train(1, 3)=0.11949;
+	feat_train(1, 4)=1.75159;
+
+	lab_train[0]=-1.0;
+	lab_train[1]=1.0;
+	lab_train[2]=1.0;
+	lab_train[3]=1.0;
+	lab_train[4]=-1.0;
+
+	// shogun representation of features and labels
+	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
+	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
+
+	// choose Gaussian kernel with sigma = 2 and zero mean function
+	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
+	CZeroMean* mean=new CZeroMean();
+
+	// probit likelihood
+	CProbitLikelihood* likelihood=new CProbitLikelihood();
+
+	// specify GP classification with Laplacian inference
+	CLaplacianInferenceMethod* inf=new CLaplacianInferenceMethod(kernel,
+			features_train,	mean, labels_train, likelihood);
+
+	CGradientResult* result=new CGradientResult();
+
+	result->total_variables=2;
+	result->gradient=inf->get_marginal_likelihood_derivatives(result->parameter_dictionary);
+
+	float64_t dnlZ_ell=4*(*result->gradient.get_element_ptr(0))[0];
+	float64_t dnlZ_sf2=(*result->gradient.get_element_ptr(1))[0];
+
+	// comparison of partial derivatives of negative marginal likelihood with
+	// result from GPML package:
+	// cov =
+	// -0.034178
+	// 0.108246
+	EXPECT_NEAR(dnlZ_ell, -0.034178, 1E-6);
+	EXPECT_NEAR(dnlZ_sf2, 0.108246, 1E-6);
 
 	// clean up
 	SG_UNREF(result);
