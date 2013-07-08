@@ -16,4 +16,5 @@
 #include <shogun/converter/FactorAnalysis.h>
 #include <shogun/converter/TDistributedStochasticNeighborEmbedding.h>
 #include <shogun/converter/ManifoldSculpting.h>
+#include <shogun/converter/ica/Jade.h>
 %}
