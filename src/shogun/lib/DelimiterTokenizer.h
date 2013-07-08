@@ -26,8 +26,11 @@ class CTokenizer;
 class CDelimiterTokenizer: public CTokenizer
 {
 public:
-	/* default constructor */
-	CDelimiterTokenizer();
+	/** default constructor 
+	 *
+	 * @param skip_delimiters whether to skip consecutive delimiters or not
+	 */
+	CDelimiterTokenizer(bool skip_delimiters = false);
 
 	/* copy constructor */
 	CDelimiterTokenizer(const CDelimiterTokenizer& orig);
@@ -50,8 +53,8 @@ public:
 
 	/** Method that returns the indices, start and end, of
 	 *  the next token in line.
-	 *  If next_token starts with a delimiter, it returns the same indices
-	 *	as start and end.
+	 *  If next_token starts with a delimiter and skip_consecutive_delimiters is false,
+	 *  it returns the same indices for start and end.
 	 *
 	 * @param start token's starting index
 	 * @return token's ending index (exclusive)
@@ -72,8 +75,20 @@ public:
 
 	CDelimiterTokenizer* get_copy();
 
-	/** */
+	/** Resets the delimiters */
 	void clear_delimiters();
+
+	/** Get skip_consecutive_delimiters
+	 *
+	 * @return if skip consecutive delimiters is set
+	 */
+	bool get_skip_delimiters() const;
+	
+	/** set value for skip_consecutive_delimiters
+	 *
+	 * @param skip_delimiters whether to skip or not consecutive delimiters
+	 */
+	void set_skip_delimiters(bool skip_delimiters);
 
 private:
 	void init();
@@ -85,6 +100,9 @@ public:
 protected:
 	/* index of last token */
 	index_t last_idx;
+
+	/** whether to skip consecutive delimiters or not */
+	bool skip_consecutive_delimiters;
 };
 }
 #endif	/* _WHITESPACETOKENIZER__H__ */
