@@ -75,6 +75,17 @@ class CKNN : public CDistanceMachine
 		 */
 		virtual EMachineType get_classifier_type() { return CT_KNN; }
 
+		/**
+		 * for each example in the rhs features of the distance member, find the m_k
+		 * nearest neighbors among the vectors in the lhs features
+		 *
+		 * @return matrix with indices to the nearest neighbors, the dimensions of the
+		 * matrix are k rows and n columns, where n is the number of feature vectors in rhs;
+		 * among the nearest neighbors, the closest are in the first row, and the furthest
+		 * in the last one
+		 */
+		SGMatrix<int32_t> nearest_neighbors();
+
 		/** classify objects
 		 *
 		 * @param data (test)data to be classified
