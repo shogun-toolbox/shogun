@@ -64,6 +64,12 @@
 %rename(DirectorLinearMachine) CDirectorLinearMachine;
 %rename(DirectorKernelMachine) CDirectorKernelMachine;
 
+#ifdef HAVE_EIGEN3
+%rename(ProbitLikelihood) CProbitLikelihood;
+%rename(LogitLikelihood) CLogitLikelihood;
+%rename(GaussianProcessBinaryClassification) CGaussianProcessBinaryClassification;
+#endif //HAVE_EIGEN3
+
 /* These functions return new Objects */
 %newobject apply();
 %newobject apply(CFeatures* data);
@@ -84,7 +90,7 @@
 %include <shogun/classifier/svm/LibLinear.h>
 %include <shogun/classifier/svm/LibSVM.h>
 %include <shogun/classifier/svm/LibSVMOneClass.h>
-%include <shogun/classifier/LPBoost.h> 
+%include <shogun/classifier/LPBoost.h>
 %include <shogun/classifier/LPM.h>
 %include <shogun/classifier/svm/MPDSVM.h>
 %include <shogun/classifier/svm/OnlineSVMSGD.h>
@@ -96,7 +102,7 @@
 %include <shogun/classifier/svm/SVMSGD.h>
 %include <shogun/classifier/svm/SGDQN.h>
 %include <shogun/classifier/svm/WDSVMOcas.h>
-%include <shogun/classifier/PluginEstimate.h> 
+%include <shogun/classifier/PluginEstimate.h>
 %include <shogun/classifier/mkl/MKL.h>
 %include <shogun/classifier/mkl/MKLClassification.h>
 %include <shogun/classifier/mkl/MKLOneClass.h>
@@ -105,6 +111,14 @@
 %include <shogun/classifier/FeatureBlockLogisticRegression.h>
 %include <shogun/machine/DirectorLinearMachine.h>
 %include <shogun/machine/DirectorKernelMachine.h>
+
+#ifdef HAVE_EIGEN3
+%include <shogun/machine/GaussianProcessMachine.h>
+%include <shogun/machine/gp/LikelihoodModel.h>
+%include <shogun/machine/gp/ProbitLikelihood.h>
+%include <shogun/machine/gp/LogitLikelihood.h>
+%include <shogun/classifier/GaussianProcessBinaryClassification.h>
+#endif //HAVE_EIGEN3
 
 #ifdef USE_SVMLIGHT
 
