@@ -377,11 +377,18 @@ public:
 	 */
 	static float64_t normal_cdf(float64_t x, float64_t std_dev=1);
 
-	/** return logarithm of normal_cdf(x). This method uses asymptotic
-	 * expansion for x < -10.0.
+	/** returns logarithm of the cumulative distribution function
+	 * (CDF) of Gaussian distribution \f$N(0, 1)\f$:
+	 *
+	 * \f[
+	 * \text{lnormal\_cdf}(x)=log\left(\frac{1}{2}+
+	 * \frac{1}{2}\text{error\_function}(\frac{x}{\sqrt{2}})\right)
+	 * \f]
+	 *
+	 * This method uses asymptotic expansion for \f$x<-10.0\f$,
+	 * otherwise it returns \f$log(\text{normal_cdf}(x))\f$.
 	 *
 	 * @param x real value
-	 * @param std_dev standard deviation
 	 *
 	 * @return \f$log(normal_cdf(x))\f$
 	 */

@@ -62,14 +62,22 @@ CStudentsTLikelihood* CStudentsTLikelihood::obtain_from_generic(CLikelihoodModel
 	return (CStudentsTLikelihood*)lik;
 }
 
+SGVector<float64_t> CStudentsTLikelihood::evaluate_log_probabilities(SGVector<float64_t> mu,
+		SGVector<float64_t> s2, CLabels* lab)
+{
+	SG_NOTIMPLEMENTED // since we have not something for integral evaluation yet
+
+	return SGVector<float64_t>();
+}
+
 SGVector<float64_t> CStudentsTLikelihood::evaluate_means(SGVector<float64_t> mu,
-		SGVector<float64_t> s2)
+		SGVector<float64_t> s2, CLabels* lab)
 {
 	return SGVector<float64_t>(mu);
 }
 
 SGVector<float64_t> CStudentsTLikelihood::evaluate_variances(SGVector<float64_t> mu,
-		SGVector<float64_t> s2)
+		SGVector<float64_t> s2, CLabels* lab)
 {
 	SGVector<float64_t> result(s2);
 	Map<VectorXd> eigen_result(result.vector, result.vlen);
@@ -88,8 +96,12 @@ SGVector<float64_t> CStudentsTLikelihood::evaluate_variances(SGVector<float64_t>
 SGVector<float64_t> CStudentsTLikelihood::get_log_probability_f(CLabels* lab,
 		SGVector<float64_t> func)
 {
+	// check the parameters
+	REQUIRE(lab, "Labels are required (lab should not be NULL)\n")
 	REQUIRE(lab->get_label_type()==LT_REGRESSION,
 		"Labels must be type of CRegressionLabels\n")
+	REQUIRE(lab->get_num_labels()==func.vlen, "Number of labels must match " \
+			"length of the function vector\n")
 
 	Map<VectorXd> eigen_f(func.vector, func.vlen);
 
@@ -116,8 +128,13 @@ SGVector<float64_t> CStudentsTLikelihood::get_log_probability_f(CLabels* lab,
 SGVector<float64_t> CStudentsTLikelihood::get_log_probability_derivative_f(
 	CLabels* lab, SGVector<float64_t> func, index_t i)
 {
+	// check the parameters
+	REQUIRE(lab, "Labels are required (lab should not be NULL)\n")
 	REQUIRE(lab->get_label_type()==LT_REGRESSION,
 		"Labels must be type of CRegressionLabels\n")
+	REQUIRE(lab->get_num_labels()==func.vlen, "Number of labels must match " \
+			"length of the function vector\n")
+	REQUIRE(i>=1 && i<=3, "Index for derivative should be 1, 2 or 3\n")
 
 	Map<VectorXd> eigen_f(func.vector, func.vlen);
 
@@ -158,10 +175,6 @@ SGVector<float64_t> CStudentsTLikelihood::get_log_probability_derivative_f(
 		eigen_r=(m_df+1)*2*eigen_r.cwiseProduct(c).cwiseQuotient(
 			a2.cwiseProduct(a));
 	}
-	else
-	{
-		SG_ERROR("Invalid index for derivative\n")
-	}
 
 	return r;
 }
@@ -169,8 +182,12 @@ SGVector<float64_t> CStudentsTLikelihood::get_log_probability_derivative_f(
 SGVector<float64_t> CStudentsTLikelihood::get_first_derivative(CLabels* lab,
 		TParameter* param, CSGObject* obj, SGVector<float64_t> func)
 {
+	// check the parameters
+	REQUIRE(lab, "Labels are required (lab should not be NULL)\n")
 	REQUIRE(lab->get_label_type()==LT_REGRESSION,
 		"Labels must be type of CRegressionLabels\n")
+	REQUIRE(lab->get_num_labels()==func.vlen, "Number of labels must match " \
+			"length of the function vector\n")
 
 	if (obj==this)
 	{
@@ -222,8 +239,12 @@ SGVector<float64_t> CStudentsTLikelihood::get_first_derivative(CLabels* lab,
 SGVector<float64_t> CStudentsTLikelihood::get_second_derivative(CLabels* lab,
 		TParameter* param, CSGObject* obj, SGVector<float64_t> func)
 {
+	// check the parameters
+	REQUIRE(lab, "Labels are required (lab should not be NULL)\n")
 	REQUIRE(lab->get_label_type()==LT_REGRESSION,
 		"Labels must be type of CRegressionLabels\n")
+	REQUIRE(lab->get_num_labels()==func.vlen, "Number of labels must match " \
+			"length of the function vector\n")
 
 	if (obj==this)
 	{
@@ -269,8 +290,12 @@ SGVector<float64_t> CStudentsTLikelihood::get_second_derivative(CLabels* lab,
 SGVector<float64_t> CStudentsTLikelihood::get_third_derivative(CLabels* lab,
 		TParameter* param, CSGObject* obj, SGVector<float64_t> func)
 {
+	// check the parameters
+	REQUIRE(lab, "Labels are required (lab should not be NULL)\n")
 	REQUIRE(lab->get_label_type()==LT_REGRESSION,
 		"Labels must be type of CRegressionLabels\n")
+	REQUIRE(lab->get_num_labels()==func.vlen, "Number of labels must match " \
+			"length of the function vector\n")
 
 	if (obj==this)
 	{
