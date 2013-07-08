@@ -42,23 +42,72 @@ public:
 
 	virtual ~CLikelihoodModel();
 
-	/** evaluate means
+	/** returns the logarithm of the predictive density of \f$y_*\f$:
 	 *
-	 * @param mu vector of means calculated by inference method
-	 * @param s2 vector of variances calculated by inference method
+	 * \f[
+	 * log(p(y_*|X,y,x_*)) = log\left(\int p(y_*|f_*)
+	 * p(f_*|X,y,x_*) df_*\right)
+	 * \f]
+	 *
+	 * which approximately equals to
+	 *
+	 * \f[
+	 * log\left(\int p(y_*|f_*) N(f*|\mu,\sigma^2) df*\right)
+	 * \f]
+	 *
+	 * where normal distribution \f$N(\mu,\sigma^2)\f$ is an
+	 * approximation to the posterior marginal \f$p(f_*|X,y,x_*)\f$
+	 *
+	 * NOTE: if lab equals to NULL, then each \f$y_*\f$ equals to one.
+	 *
+	 * @param mu posterior mean of a Gaussian distribution
+	 * \f$N(\mu,\sigma^2)\f$, which is an approximation to the
+	 * posterior marginal \f$p(f_*|X,y,x_*)\f$
+	 * @param s2 posterior variance of a Gaussian distribution
+	 * \f$N(\mu,\sigma^2)\f$, which is an approximation to the
+	 * posterior marginal \f$p(f_*|X,y,x_*)\f$
+	 * @param lab labels \f$y_*\f$. NOTE: if lab equals to NULL, then
+	 * each \f$y_*\f$ equals to one.
+	 *
+	 * @return \f$log(p(y_*|X, y, x*))\f$ for each label \f$y_*\f$
+	 */
+	virtual SGVector<float64_t> evaluate_log_probabilities(SGVector<float64_t> mu,
+			SGVector<float64_t> s2, CLabels* lab=NULL)=0;
+
+	/** returns mean of the predictive marginal \f$p(y_*|X,y,x_*)\f$
+	 *
+	 * NOTE: if lab equals to NULL, then each \f$y_*\f$ equals to one.
+	 *
+	 * @param mu posterior mean of a Gaussian distribution
+	 * \f$N(\mu,\sigma^2)\f$, which is an approximation to the
+	 * posterior marginal \f$p(f_*|X,y,x_*)\f$
+	 * @param s2 posterior variance of a Gaussian distribution
+	 * \f$N(\mu,\sigma^2)\f$, which is an approximation to the
+	 * posterior marginal \f$p(f_*|X,y,x_*)\f$
+	 * @param lab labels \f$y_*\f$
+	 *
 	 * @return final means evaluated by likelihood function
 	 */
 	virtual SGVector<float64_t> evaluate_means(SGVector<float64_t> mu,
-			SGVector<float64_t> s2)=0;
+			SGVector<float64_t> s2, CLabels* lab=NULL)=0;
 
-	/** evaluate variances
+	/** returns variance of the predictive marginal
+	 * \f$p(y_*|X,y,x_*)\f$
 	 *
-	 * @param mu vector of means calculated by inference method
-	 * @param s2 vector of variances calculated by inference method
+	 * NOTE: if lab equals to NULL, then each \f$y_*\f$ equals to one.
+	 *
+	 * @param mu posterior mean of a Gaussian distribution
+	 * \f$N(\mu,\sigma^2)\f$, which is an approximation to the
+	 * posterior marginal \f$p(f_*|X,y,x_*)\f$
+	 * @param s2 posterior variance of a Gaussian distribution
+	 * \f$N(\mu,\sigma^2)\f$, which is an approximation to the
+	 * posterior marginal \f$p(f_*|X,y,x_*)\f$
+	 * @param lab labels \f$y_*\f$
+	 *
 	 * @return final variances evaluated by likelihood function
 	 */
 	virtual SGVector<float64_t> evaluate_variances(SGVector<float64_t> mu,
-			SGVector<float64_t> s2)=0;
+			SGVector<float64_t> s2, CLabels* lab=NULL)=0;
 
 	/** get model type
 	  *
@@ -66,17 +115,21 @@ public:
 	 */
 	virtual ELikelihoodModelType get_model_type() { return LT_NONE; }
 
-	/** get log likelihood \f$log(P(y|f))\f$
+	/** returns the logarithm of the point-wise likelihood
+	 * \f$log(p(y_i|f_i))\f$ for each label \f$y_i\f$.
 	 *
-	 * @param lab labels used
-	 * @param func function location
+	 * One can evaluate log-likelihood like: \f$log(p(y|f)) =
+	 * \sum_{i=1}^{n} log(p(y_i|f_i))\f$
 	 *
-	 * @return log likelihood
+	 * @param lab labels \f$y_i\f$
+	 * @param func values of the function \f$f_i\f$
+	 *
+	 * @return logarithm of the point-wise likelihood
 	 */
 	virtual SGVector<float64_t> get_log_probability_f(CLabels* lab,
 			SGVector<float64_t> func)=0;
 
-	/** get derivative of log likelihood \f$log(P(y|f))\f$ with
+	/** get derivative of log likelihood \f$log(p(y|f))\f$ with
 	 * respect to location function \f$f\f$
 	 *
 	 * @param lab labels used
@@ -89,7 +142,7 @@ public:
 	virtual SGVector<float64_t> get_log_probability_derivative_f(
 			CLabels* lab, SGVector<float64_t> func, index_t i)=0;
 
-	/** get derivative of log likelihood \f$log(P(y|f))\f$ with
+	/** get derivative of log likelihood \f$log(p(y|f))\f$ with
 	 * respect to given parameter
 	 *
 	 * @param lab labels used
@@ -105,7 +158,7 @@ public:
 
 	/** get derivative of the first derivative of log likelihood with
 	 * respect to function location, i.e. \f$\frac{\partial
-	 * log(P(y|f))}{\partial f}\f$ with respect to given parameter
+	 * log(p(y|f))}{\partial f}\f$ with respect to given parameter
 	 *
 	 * @param lab labels used
 	 * @param param parameter
@@ -120,7 +173,7 @@ public:
 
 	/** get derivative of the second derivative of log likelihood with
 	 * respect to function location, i.e. \f$\frac{\partial^{2}
-	 * log(P(y|f))}{\partial f^{2}}\f$ with respect to given parameter
+	 * log(p(y|f))}{\partial f^{2}}\f$ with respect to given parameter
 	 *
 	 * @param lab labels used
 	 * @param param parameter
