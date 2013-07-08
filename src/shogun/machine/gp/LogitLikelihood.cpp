@@ -93,7 +93,8 @@ SGVector<float64_t> CLogitLikelihood::get_log_probability_derivative_f(
 	Map<VectorXd> eigen_r(r.vector, r.vlen);
 
 	// compute s(f)=1./(1+exp(-f))
-	VectorXd eigen_s=1.0/(1.0+(-eigen_f).array().exp());
+	VectorXd eigen_s=(VectorXd::Ones(func.vlen)).cwiseQuotient((1.0+
+		(-eigen_f).array().exp()).matrix());
 
 	// compute derivatives of log probability wrt f
 	if (i == 1)
