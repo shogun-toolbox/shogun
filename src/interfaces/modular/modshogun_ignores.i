@@ -34,9 +34,18 @@
 %ignore shogun::CLikelihoodModel::evaluate_means;
 %ignore shogun::CStudentsTLikelihood::evaluate_means;
 %ignore shogun::CGaussianLikelihood::evaluate_means;
+%ignore shogun::CLogitLikelihood::evaluate_means;
+%ignore shogun::CProbitLikelihood::evaluate_means;
 %ignore shogun::CLikelihoodModel::evaluate_variances;
 %ignore shogun::CStudentsTLikelihood::evaluate_variances;
 %ignore shogun::CGaussianLikelihood::evaluate_variances;
+%ignore shogun::CLogitLikelihood::evaluate_variances;
+%ignore shogun::CProbitLikelihood::evaluate_variances;
+%ignore shogun::CLikelihoodModel::evaluate_log_probabilities;
+%ignore shogun::CStudentsTLikelihood::evaluate_log_probabilities;
+%ignore shogun::CGaussianLikelihood::evaluate_log_probabilities;
+%ignore shogun::CLogitLikelihood::evaluate_log_probabilities;
+%ignore shogun::CProbitLikelihood::evaluate_log_probabilities;
 %ignore shogun::CKernelMachine::CKernelMachine(CKernel* k, const SGVector<float64_t> alphas, const SGVector<int32_t> svs, float64_t b);
 %ignore shogun::SGMatrix::matrix_multiply;
 %ignore shogun::CStructuredModel::init_primal_opt;

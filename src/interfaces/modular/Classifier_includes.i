@@ -9,7 +9,7 @@
  #include <shogun/classifier/svm/LibSVMOneClass.h>
  #include <shogun/machine/LinearMachine.h>
  #include <shogun/machine/OnlineLinearMachine.h>
- #include <shogun/classifier/LPBoost.h> 
+ #include <shogun/classifier/LPBoost.h>
  #include <shogun/classifier/LPM.h>
  #include <shogun/classifier/svm/MPDSVM.h>
  #include <shogun/classifier/svm/OnlineSVMSGD.h>
@@ -23,18 +23,27 @@
  #include <shogun/classifier/svm/SVMSGD.h>
  #include <shogun/classifier/svm/SGDQN.h>
  #include <shogun/classifier/svm/WDSVMOcas.h>
- #include <shogun/classifier/PluginEstimate.h> 
+ #include <shogun/classifier/PluginEstimate.h>
  #include <shogun/classifier/mkl/MKL.h>
  #include <shogun/classifier/mkl/MKLClassification.h>
  #include <shogun/classifier/mkl/MKLOneClass.h>
  #include <shogun/classifier/vw/VowpalWabbit.h>
  #include <shogun/classifier/svm/NewtonSVM.h>
-
+#ifdef HAVE_EIGEN3
+ #include <shogun/machine/GaussianProcessMachine.h>
+ #include <shogun/machine/gp/LikelihoodModel.h>
+ #include <shogun/machine/gp/MeanFunction.h>
+ #include <shogun/machine/gp/ZeroMean.h>
+ #include <shogun/machine/gp/InferenceMethod.h>
+ #include <shogun/machine/gp/LaplacianInferenceMethod.h>
+ #include <shogun/machine/gp/ProbitLikelihood.h>
+ #include <shogun/machine/gp/LogitLikelihood.h>
+ #include <shogun/classifier/GaussianProcessBinaryClassification.h>
+#endif //HAVE_EIGEN3
 #ifdef USE_SVMLIGHT
  #include <shogun/classifier/svm/SVMLight.h>
  #include <shogun/classifier/svm/SVMLightOneClass.h>
 #endif //USE_SVMLIGHT
-
  #include <shogun/classifier/FeatureBlockLogisticRegression.h>
  #include <shogun/machine/DirectorLinearMachine.h>
  #include <shogun/machine/DirectorKernelMachine.h>
