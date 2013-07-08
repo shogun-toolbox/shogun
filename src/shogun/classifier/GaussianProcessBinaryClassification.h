@@ -39,13 +39,39 @@ public:
 
 	virtual ~CGaussianProcessBinaryClassification();
 
-	/** apply machine to data in means of binary classification problem
+	/** apply machine to data in means of binary classification
+	 * problem
 	 *
 	 * @param data (test) data to be classified
 	 *
 	 * @return classified labels
 	 */
 	virtual CBinaryLabels* apply_binary(CFeatures* data=NULL);
+
+	/** returns a vector of of the posterior predictive means
+	 *
+	 * @param data (test) data to be classified
+	 *
+	 * @return mean vector
+	 */
+	SGVector<float64_t> get_mean_vector(CFeatures* data);
+
+	/** returns a vector of the posterior predictive variances
+	 *
+	 * @param data (test) data to be classified
+	 *
+	 * @return variance vector
+	 */
+	SGVector<float64_t> get_variance_vector(CFeatures* data);
+
+	/** returns probabilities \f$p(y_*=1)$ for each (test) feature
+	 * \f$x_*\f$
+	 *
+	 * @param data (test) data to be classified
+	 *
+	 * @return vector of probabilities
+	 */
+	SGVector<float64_t> get_probabilities(CFeatures* data);
 
 	/** get classifier type
 	 *
