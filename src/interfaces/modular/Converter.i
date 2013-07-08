@@ -24,6 +24,7 @@
 %rename(FactorAnalysis) CFactorAnalysis;
 %rename (TDistributedStochasticNeighborEmbedding) CTDistributedStochasticNeighborEmbedding;
 %rename (ManifoldSculpting) CManifoldSculpting;
+%rename (Jade) CJade;
 
 %newobject shogun::CEmbeddingConverter::apply;
 %newobject shogun::*::embed_kernel;
@@ -46,3 +47,4 @@
 %include <shogun/converter/FactorAnalysis.h>
 %include <shogun/converter/TDistributedStochasticNeighborEmbedding.h>
 %include <shogun/converter/ManifoldSculpting.h>
+%include <shogun/converter/ica/Jade.h>
