@@ -123,10 +123,10 @@ SGMatrix<int32_t> CKNN::nearest_neighbors()
 	{
 		SG_PROGRESS(i, 0, n)
 
-		//lhs idx 0..n-1 (i.e., all train examples) and rhs idx i
+		//lhs idx 0..num train examples-1 (i.e., all train examples) and rhs idx i
 		distances_lhs(dists,0,m_train_labels.vlen-1,i);
 
-		//fill in an array with 0, 1,2, ..., num train examples
+		//fill in an array with 0..num train examples-1
 		for (int32_t j=0; j<m_train_labels.vlen; j++)
 			train_idxs[j]=j;
 
