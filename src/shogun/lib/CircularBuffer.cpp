@@ -15,17 +15,18 @@
 using namespace shogun;
 
 CCircularBuffer::CCircularBuffer()
-	: m_buffer(), m_begin_pos(NULL), m_end_pos(NULL),
-	m_finder_pos(NULL), m_bytes_available(0), m_bytes_count(0),
-	m_tokenizer(NULL)
+	: m_buffer(), m_tokenizer(NULL),
+	m_begin_pos(NULL), m_end_pos(NULL), m_finder_pos(NULL),
+	m_bytes_available(0), m_bytes_count(0)
 {
 
 }
 
 CCircularBuffer::CCircularBuffer(int32_t buffer_size)
-	: m_buffer(buffer_size), m_begin_pos(m_buffer.vector), m_end_pos(m_begin_pos),
-	m_finder_pos(m_begin_pos), m_bytes_available(m_buffer.vlen), m_bytes_count(0),
-	m_tokenizer(NULL)
+	: m_buffer(buffer_size), m_tokenizer(NULL),
+	m_begin_pos(m_buffer.vector), m_end_pos(m_begin_pos), m_finder_pos(m_begin_pos),
+	m_bytes_available(m_buffer.vlen), m_bytes_count(0)
+	
 {
 
 }
@@ -235,6 +236,11 @@ void CCircularBuffer::clear()
 	m_bytes_count=0;
 }
 
+void CCircularBuffer::debug_print()
+{
+	SGVector<char>::display_vector(m_buffer);
+}
+
 int32_t CCircularBuffer::append_chunk(const char* source, int32_t source_size,
 					bool from_buffer_begin)
 {
@@ -259,11 +265,10 @@ int32_t CCircularBuffer::append_chunk(const char* source, int32_t source_size,
 int32_t CCircularBuffer::append_chunk(FILE* source, int32_t source_size,
 					bool from_buffer_begin)
 {	
-	if (from_buffer_begin)
-		m_end_pos=m_buffer.vector;
-
 	int32_t actually_read=fread(m_end_pos, sizeof(char), source_size, source);
 
+	if (from_buffer_begin && actually_read==source_size)
+		m_end_pos=m_buffer.vector;
 	move_pointer(&m_end_pos, m_end_pos+actually_read);
 
 	m_bytes_available-=actually_read;
@@ -297,7 +302,6 @@ void CCircularBuffer::detach_chunk(char** dest, int32_t* dest_size, int32_t dest
 		m_begin_pos=m_buffer.vector;
 
 	memcpy(*dest+dest_offset, m_begin_pos, num_bytes);
-
 	move_pointer(&m_begin_pos, m_begin_pos+num_bytes);
 	m_finder_pos=m_begin_pos;
 

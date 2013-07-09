@@ -35,15 +35,13 @@ TEST(LineReaderTest, read_yourself)
 {
 	
 	SGVector<char> strings[max_num_lines];
+	SGVector<char> temp_string(max_line_length);
 	int lines_count;
-
-	char* temp=NULL;
-	size_t temp_size=0;
 	
 	CLineReader* reader;
 
 	FILE* fin=fopen("io/LineReader_unittest.cc", "r");
-	reader=new CLineReader(fin, max_line_length);
+	reader=new CLineReader(max_line_length, fin);
 	EXPECT_TRUE(reader->has_next_line());
 
 	// read all strings from source code using LineReader
@@ -58,11 +56,12 @@ TEST(LineReaderTest, read_yourself)
 	// and check it on equality
 	rewind(fin);
 	lines_count=0;
-	while (getline(&temp, &temp_size, fin)!=-1)
+
+	while (fgets(temp_string.vector, temp_string.vlen, fin)!=NULL)	
 	{
 		for (int i=0; i<strings[lines_count].vlen; i++)
 		{
-			EXPECT_EQ(temp[i], strings[lines_count].vector[i]);
+			EXPECT_EQ(temp_string.vector[i], strings[lines_count].vector[i]);
 		}
 		lines_count++;
 	}
