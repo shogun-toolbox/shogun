@@ -296,7 +296,7 @@ void CExactInferenceMethod::update_chol()
 	/* creates views on kernel and cholesky matrix and perform cholesky */
 	Map<MatrixXd> K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
 	Map<MatrixXd> L(m_L.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
-	LLT<MatrixXd> llt(K*CMath::sq(m_scale)/CMath::sq(sigma)+
+	LLT<MatrixXd> llt(K*(CMath::sq(m_scale)/CMath::sq(sigma))+
 		MatrixXd::Identity(m_ktrtr.num_rows, m_ktrtr.num_cols));
 	L=llt.matrixU();
 }
