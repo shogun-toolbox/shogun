@@ -196,7 +196,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 * @return sparse matrix
 		 *
 		 */
-        SGSparseMatrix<ST> get_sparse_feature_matrix();
+		SGSparseMatrix<ST> get_sparse_feature_matrix();
 
 		/** get a transposed copy of the features
 		 *

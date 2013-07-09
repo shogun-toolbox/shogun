@@ -640,6 +640,109 @@ TEST(TParameter,equals_sparse_scalar_equal_different_index)
 	SG_UNREF(s2);
 }
 
+TEST(TParameter,equals_sparse_matrix_data_different)
+{
+	SGMatrix<float64_t> a(2,2);
+	a.set_const(1);
+
+	SGMatrix<float64_t> b(2,2);
+	b.set_const(1);
+	b(1,1)=1.11;
+
+	float64_t accuracy=0.1;
+
+	CSparseFeatures<float64_t>* s1=new CSparseFeatures<float64_t>(a);
+	CSparseFeatures<float64_t>* s2=new CSparseFeatures<float64_t>(b);
+
+	SGSparseMatrix<float64_t> mat1=s1->get_sparse_feature_matrix();
+	SGSparseMatrix<float64_t> mat2=s2->get_sparse_feature_matrix();
+
+	TSGDataType type(CT_SGMATRIX, ST_SPARSE, PT_FLOAT64,
+		&mat1.num_vectors, &mat1.num_features);
+	TParameter* param1=new TParameter(&type, &mat1.sparse_matrix, "", "");
+	TParameter* param2=new TParameter(&type, &mat2.sparse_matrix, "", "");
+
+	EXPECT_FALSE(param1->equals(param2, accuracy));
+
+	delete param1;
+	delete param2;
+	SG_UNREF(s1);
+	SG_UNREF(s2);
+}
+
+TEST(TParameter,equals_sparse_matrix_param_null)
+{
+	SGMatrix<floatmax_t> a(2,2);
+	a.set_const(1);
+
+	float64_t accuracy=0.1;
+
+	CSparseFeatures<floatmax_t>* s1=new CSparseFeatures<floatmax_t>(a);
+
+	SGSparseMatrix<floatmax_t> mat1=s1->get_sparse_feature_matrix();
+
+	TSGDataType type(CT_SGMATRIX, ST_SPARSE, PT_FLOATMAX,
+		&mat1.num_vectors, &mat1.num_features);
+	TParameter* param1=new TParameter(&type, &mat1.sparse_matrix, "", "");
+	TParameter* param2=new TParameter(&type, NULL, "", "");
+
+	EXPECT_FALSE(param1->equals(param2, accuracy));
+
+	delete param1;
+	delete param2;
+	SG_UNREF(s1);
+}
+
+TEST(TParameter,equals_sparse_matrix_one_matrix_null)
+{
+	SGMatrix<floatmax_t> a(2,2);
+	a.set_const(1);
+
+	float64_t accuracy=0.1;
+
+	CSparseFeatures<floatmax_t>* s1=new CSparseFeatures<floatmax_t>(a);
+	SGSparseMatrix<floatmax_t> mat1=s1->get_sparse_feature_matrix();
+	SGSparseMatrix<floatmax_t> mat2(2,2);
+
+	TSGDataType type(CT_SGMATRIX, ST_SPARSE, PT_FLOATMAX,
+		&mat1.num_vectors, &mat1.num_features);
+	TParameter* param1=new TParameter(&type, &mat1.sparse_matrix, "", "");
+	TParameter* param2=new TParameter(&type, &mat2.sparse_matrix, "", "");
+
+	EXPECT_FALSE(param1->equals(param2, accuracy));
+
+	delete param1;
+	delete param2;
+	SG_UNREF(s1);
+}
+
+TEST(TParameter,equals_sparse_matrix_equal)
+{
+	SGMatrix<uint8_t> a(2,2);
+	a.set_const(1);
+
+	SGMatrix<uint8_t> b(2,2);
+	b.set_const(1);
+
+	CSparseFeatures<uint8_t>* s1=new CSparseFeatures<uint8_t>(a);
+	CSparseFeatures<uint8_t>* s2=new CSparseFeatures<uint8_t>(b);
+
+	SGSparseMatrix<uint8_t> mat1=s1->get_sparse_feature_matrix();
+	SGSparseMatrix<uint8_t> mat2=s2->get_sparse_feature_matrix();
+
+	TSGDataType type(CT_SGMATRIX, ST_SPARSE, PT_UINT8,
+		&mat1.num_vectors, &mat1.num_features);
+	TParameter* param1=new TParameter(&type, &mat1.sparse_matrix, "", "");
+	TParameter* param2=new TParameter(&type, &mat2.sparse_matrix, "", "");
+
+	EXPECT_TRUE(param1->equals(param2));
+
+	delete param1;
+	delete param2;
+	SG_UNREF(s1);
+	SG_UNREF(s2);
+}
+
 TEST(TParameter,copy_ptype_BOOL)
 {
 	bool a=true;
@@ -1347,4 +1450,132 @@ TEST(TParameter,copy_SPARSE_SCALAR_source_and_target_empty)
 	s2->free_sparse_feature_vector(0);
 	SG_UNREF(s1);
 	SG_UNREF(s2);
+}
+
+TEST(TParameter,copy_SGMATRIX_SPARSE_same_size)
+{
+	SGMatrix<float64_t> a(2,2);
+	SGMatrix<float64_t> b(2,2);
+
+	a.set_const(1);
+	b.set_const(2);
+
+	float64_t accuracy=0.1;
+
+	CSparseFeatures<float64_t>* s1=new CSparseFeatures<float64_t>(a);
+	CSparseFeatures<float64_t>* s2=new CSparseFeatures<float64_t>(b);
+
+	SGSparseMatrix<float64_t> mat1=s1->get_sparse_feature_matrix();
+	SGSparseMatrix<float64_t> mat2=s2->get_sparse_feature_matrix();
+
+	TSGDataType type(CT_SGMATRIX, ST_SPARSE, PT_FLOAT64,
+		&mat1.num_vectors, &mat1.num_features);
+	TParameter* param1=new TParameter(&type, &mat1.sparse_matrix, "", "");
+	TParameter* param2=new TParameter(&type, &mat2.sparse_matrix, "", "");
+
+	EXPECT_FALSE(param1->equals(param2, accuracy));
+	EXPECT_TRUE(param1->copy(param2));
+	EXPECT_TRUE(param1->equals(param2, accuracy));
+
+	EXPECT_EQ(mat1[0].num_feat_entries, mat2[0].num_feat_entries);
+	EXPECT_EQ(mat1[0].features[0].feat_index, mat2[0].features[0].feat_index);
+	EXPECT_EQ(mat1[0].features[1].feat_index, mat2[0].features[1].feat_index);
+	EXPECT_EQ(mat1[0].features[0].entry, mat2[0].features[0].entry);
+	EXPECT_EQ(mat1[0].features[1].entry, mat2[0].features[1].entry);
+	EXPECT_EQ(mat1[1].num_feat_entries, mat2[1].num_feat_entries);
+	EXPECT_EQ(mat1[1].features[0].feat_index, mat2[1].features[0].feat_index);
+	EXPECT_EQ(mat1[1].features[1].feat_index, mat2[1].features[1].feat_index);
+	EXPECT_EQ(mat1[1].features[0].entry, mat2[1].features[0].entry);
+	EXPECT_EQ(mat1[1].features[1].entry, mat2[1].features[1].entry);
+
+	delete param1;
+	delete param2;
+	SG_UNREF(s1);
+	SG_UNREF(s2);
+}
+
+TEST(TParameter,copy_SGMATRIX_SPARSE_different_size)
+{
+	SGMatrix<float64_t> a(2,2);
+	SGMatrix<float64_t> b(2,3);
+
+	a.set_const(1);
+	b.set_const(2);
+
+	float64_t accuracy=0.1;
+
+	CSparseFeatures<float64_t>* s1=new CSparseFeatures<float64_t>(a);
+	CSparseFeatures<float64_t>* s2=new CSparseFeatures<float64_t>(b);
+
+	SGSparseMatrix<float64_t> mat1=s1->get_sparse_feature_matrix();
+	SGSparseMatrix<float64_t> mat2=s2->get_sparse_feature_matrix();
+
+	TSGDataType type(CT_SGMATRIX, ST_SPARSE, PT_FLOAT64,
+		&mat1.num_vectors, &mat1.num_features);
+	TParameter* param1=new TParameter(&type, &mat1.sparse_matrix, "", "");
+	TParameter* param2=new TParameter(&type, &mat2.sparse_matrix, "", "");
+
+	EXPECT_FALSE(param1->equals(param2, accuracy));
+	EXPECT_TRUE(param1->copy(param2));
+	EXPECT_TRUE(param1->equals(param2, accuracy));
+
+	EXPECT_EQ(mat1[0].num_feat_entries, mat2[0].num_feat_entries);
+	EXPECT_EQ(mat1[0].features[0].feat_index, mat2[0].features[0].feat_index);
+	EXPECT_EQ(mat1[0].features[1].feat_index, mat2[0].features[1].feat_index);
+	EXPECT_EQ(mat1[0].features[0].entry, mat2[0].features[0].entry);
+	EXPECT_EQ(mat1[0].features[1].entry, mat2[0].features[1].entry);
+	EXPECT_EQ(mat1[1].num_feat_entries, mat2[1].num_feat_entries);
+	EXPECT_EQ(mat1[1].features[0].feat_index, mat2[1].features[0].feat_index);
+	EXPECT_EQ(mat1[1].features[1].feat_index, mat2[1].features[1].feat_index);
+	EXPECT_EQ(mat1[1].features[0].entry, mat2[1].features[0].entry);
+	EXPECT_EQ(mat1[1].features[1].entry, mat2[1].features[1].entry);
+
+	delete param1;
+	delete param2;
+	SG_UNREF(s1);
+	SG_UNREF(s2);
+}
+
+TEST(TParameter,copy_SGMATRIX_SPARSE_target_empty)
+{
+	SGMatrix<float64_t> a(2,2);
+
+	a.set_const(1);
+
+	float64_t accuracy=0.1;
+
+	CSparseFeatures<float64_t>* s1=new CSparseFeatures<float64_t>(a);
+	SGSparseMatrix<float64_t> mat1=s1->get_sparse_feature_matrix();
+	SGSparseMatrix<float64_t> mat2(2,2);
+
+	TSGDataType type(CT_SGMATRIX, ST_SPARSE, PT_FLOAT64,
+		&mat1.num_vectors, &mat1.num_features);
+	TParameter* param1=new TParameter(&type, &mat1.sparse_matrix, "", "");
+	TParameter* param2=new TParameter(&type, &mat2.sparse_matrix, "", "");
+
+	EXPECT_FALSE(param1->equals(param2, accuracy));
+	EXPECT_TRUE(param1->copy(param2));
+	EXPECT_TRUE(param1->equals(param2, accuracy));
+
+	delete param1;
+	delete param2;
+	SG_UNREF(s1);
+}
+
+TEST(TParameter,copy_SGMATRIX_SPARSE_source_and_target_empty)
+{
+	float64_t accuracy=0.1;
+
+	SGSparseMatrix<float64_t> mat1(2,2);
+	SGSparseMatrix<float64_t> mat2(2,2);
+	TSGDataType type(CT_SGMATRIX, ST_SPARSE, PT_FLOAT64,
+		&mat1.num_vectors, &mat1.num_features);
+	TParameter* param1=new TParameter(&type, &mat1.sparse_matrix, "", "");
+	TParameter* param2=new TParameter(&type, &mat2.sparse_matrix, "", "");
+
+	EXPECT_TRUE(param1->copy(param2));
+	EXPECT_TRUE(param1->equals(param2, accuracy));
+
+	delete param1;
+	delete param2;
 }
