@@ -28,7 +28,7 @@ public:
 	 *
 	 * @param stream readable stream
 	 */
-	CLineReader(FILE* stream);
+	CLineReader(FILE* stream, char delimiter='\n');
 
 	/** create object associated with the stream to read
 	 * and specify maximum length of a string that can be read
@@ -36,25 +36,33 @@ public:
 	 * @param stream readable stream
 	 * @param buffer_size size of internal buffer
 	 */
-	CLineReader(FILE* stream, int32_t max_string_length);
+	CLineReader(int32_t max_string_length, FILE* stream, char delimiter='\n');
 
 	/** deconstructor */
 	~CLineReader();
 	
 	/** check for next line in the stream
-	 * this method can read data from the stream and
-	 * there is no warranty that after reading the caret will 
-	 * set at the beginning of a new line
 	 *
 	 * @return true if there is next line, false - otherwise
 	 */
 	bool has_next_line();
 
-	/** get read line from the buffer into SGVector
+	/** get line from the buffer into SGVector
+	 * there is no warranty that after reading the caret will 
+	 * set at the beginning of a new line
 	 *
 	 * @return SGVector that contains line
 	 */
 	SGVector<char> get_next_line();
+
+	/** set delimiter active for tokenizing 
+	 *
+	 * @param delimiter delimiter
+	 */
+	void set_delimiter(char delimiter);
+
+	/** clear all delimiters */
+	void clear_delimiters();
 
 	/** @return object name */
 	virtual const char* get_name() const { return "CLineReader"; }
@@ -64,7 +72,7 @@ private:
 	 *
 	 * @return length of line
  	 */
-	int32_t read_line(char delimiter);
+	int32_t read_line();
 
 	/** copy chars into SGVector from source
 	 *
