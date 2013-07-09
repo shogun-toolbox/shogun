@@ -47,6 +47,7 @@ int main(int, char*[])
 	knn->train();
 	// Apply classifier
 	CMulticlassLabels* output = CLabelsFactory::to_multiclass( knn->apply() );
+	SGMatrix<int32_t> multiple_k_output = knn->classify_for_multiple_k();
 	
 	// Free memory
 	SG_UNREF(knn)

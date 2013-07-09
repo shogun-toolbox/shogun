@@ -342,21 +342,10 @@ SGMatrix<int32_t> CKNN::classify_for_multiple_k()
 
 	int32_t* output=SG_MALLOC(int32_t, m_k*num_lab);
 
-	float64_t* dists;
-	int32_t* train_lab;
-	//distances to train data and working buffer of m_train_labels
-	if ( ! m_use_covertree )
-	{
-		dists=SG_MALLOC(float64_t, m_train_labels.vlen);
-		train_lab=SG_MALLOC(int32_t, m_train_labels.vlen);
-	}
-	else
-	{
-		dists=SG_MALLOC(float64_t, m_k);
-		train_lab=SG_MALLOC(int32_t, m_k);
-	}
+	//working buffer of m_train_labels
+	int32_t* train_lab=SG_MALLOC(int32_t, m_k);
 
-	///histogram of classes and returned output
+	//histogram of classes and returned output
 	int32_t* classes=SG_MALLOC(int32_t, m_num_classes);
 	
 	SG_INFO("%d test examples\n", num_lab)
@@ -364,46 +353,23 @@ SGMatrix<int32_t> CKNN::classify_for_multiple_k()
 
 	if ( ! m_use_covertree )
 	{
+		//get the k nearest neighbors of each example
+		SGMatrix<int32_t> NN = nearest_neighbors();
+
 		for (int32_t i=0; i<num_lab && (!CSignal::cancel_computations()); i++)
 		{
-			SG_PROGRESS(i, 0, num_lab)
-
-			// lhs idx 1..n and rhs idx i
-			distances_lhs(dists,0,m_train_labels.vlen-1,i);
-			for (int32_t j=0; j<m_train_labels.vlen; j++)
-				train_lab[j]=m_train_labels.vector[j];
-
-			//sort the distance vector for test example j to all train examples
-			//classes[1..k] then holds the classes for minimum distance
-			CMath::qsort_index(dists, train_lab, m_train_labels.vlen);
-
-			//compute histogram of class outputs of the first k nearest 
-			//neighbours
-			for (int32_t j=0; j<m_num_classes; j++)
-				classes[j]=0;
-
+			//write the labels of the k nearest neighbors from theirs indices
 			for (int32_t j=0; j<m_k; j++)
-			{
-				classes[train_lab[j]]++;
+				train_lab[j] = m_train_labels[ NN(j,i) ];
 
-				//choose the class that got 'outputted' most often
-				int32_t out_idx=0;
-				int32_t out_max=0;
-
-				for (int32_t c=0; c<m_num_classes; c++)
-				{
-					if (out_max< classes[c])
-					{
-						out_idx= c;
-						out_max= classes[c];
-					}
-				}
-				output[j*num_lab+i]=out_idx+m_min_label;
-			}
+			choose_class_for_multiple_k(output+i, classes, train_lab, num_lab);
 		}
 	}
-	else
+	else	// Use cover tree
 	{
+		//allocation for distances to nearest neighbors
+		float64_t* dists=SG_MALLOC(float64_t, m_k);
+
 		// From the sets of features (lhs and rhs) stored in distance,
 		// build arrays of cover tree points
 		v_array< CJLCoverTreePoint > set_of_points  = 
@@ -441,36 +407,15 @@ SGMatrix<int32_t> CKNN::classify_for_multiple_k()
 			// Now we get the indices to the neighbors sorted by distance
 			CMath::qsort_index(dists, train_lab, m_k);
 
-			//compute histogram of class outputs of the first k nearest 
-			//neighbours
-			for (int32_t j=0; j<m_num_classes; j++)
-				classes[j]=0;
-
-			for (int32_t j=0; j<m_k; j++)
-			{
-				classes[train_lab[j]]++;
-
-				//choose the class that got 'outputted' most often
-				int32_t out_idx=0;
-				int32_t out_max=0;
-
-				for (int32_t c=0; c<m_num_classes; c++)
-				{
-					if (out_max< classes[c])
-					{
-						out_idx= c;
-						out_max= classes[c];
-					}
-				}
-				output[j*num_lab+res[i][0].m_index]=out_idx+m_min_label;
-			}
-
+			choose_class_for_multiple_k(output+res[i][0].m_index, classes,
+					train_lab, num_lab);
 		}
+
+		SG_FREE(dists);
 	}
 
 	SG_FREE(train_lab);
 	SG_FREE(classes);
-	SG_FREE(dists);
 
 	return SGMatrix<int32_t>(output,num_lab,m_k,true);
 }
@@ -540,4 +485,30 @@ int32_t CKNN::choose_class(float64_t* classes, int32_t* train_lab)
 	}
 
 	return out_idx;
+}
+
+void CKNN::choose_class_for_multiple_k(int32_t* output, int32_t* classes, int32_t* train_lab, int32_t step)
+{
+	//compute histogram of class outputs of the first k nearest neighbours
+	memset(classes, 0, sizeof(int32_t)*m_num_classes);
+
+	for (int32_t j=0; j<m_k; j++)
+	{
+		classes[train_lab[j]]++;
+
+		//choose the class that got 'outputted' most often
+		int32_t out_idx=0;
+		int32_t out_max=0;
+
+		for (int32_t c=0; c<m_num_classes; c++)
+		{
+			if (out_max< classes[c])
+			{
+				out_idx= c;
+				out_max= classes[c];
+			}
+		}
+
+		output[j*step]=out_idx+m_min_label;
+	}
 }
