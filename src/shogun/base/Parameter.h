@@ -16,6 +16,7 @@
 #include <shogun/lib/DataType.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
+#include <shogun/lib/SGSparseMatrix.h>
 #include <shogun/io/SerializableFile.h>
 #include <shogun/base/DynArray.h>
 
@@ -1933,6 +1934,111 @@ public:
 	void add(SGMatrix<SGSparseVector<complex64_t> >* param,
 					const char* name, const char* description="");
 
+	/** add matrix param
+	 * @param param parameter matrix itself
+	 * @param name name of parameter
+	 * @param description description of parameter
+	 */
+	void add(SGSparseMatrix<bool>* param,
+					const char* name, const char* description="");
+	/** add matrix param
+	 * @param param parameter matrix itself
+	 * @param name name of parameter
+	 * @param description description of parameter
+	 */
+	void add(SGSparseMatrix<char>* param,
+					const char* name, const char* description="");
+	/** add matrix param
+	 * @param param parameter matrix itself
+	 * @param name name of parameter
+	 * @param description description of parameter
+	 */
+	void add(SGSparseMatrix<int8_t>* param,
+					const char* name, const char* description="");
+	/** add matrix param
+	 * @param param parameter matrix itself
+	 * @param name name of parameter
+	 * @param description description of parameter
+	 */
+	void add(SGSparseMatrix<uint8_t>* param,
+					const char* name, const char* description="");
+	/** add matrix param
+	 * @param param parameter matrix itself
+	 * @param name name of parameter
+	 * @param description description of parameter
+	 */
+	void add(SGSparseMatrix<int16_t>* param,
+					const char* name, const char* description="");
+	/** add matrix param
+	 * @param param parameter matrix itself
+	 * @param name name of parameter
+	 * @param description description of parameter
+	 */
+	void add(SGSparseMatrix<uint16_t>* param,
+					const char* name, const char* description="");
+	/** add matrix param
+	 * @param param parameter matrix itself
+	 * @param name name of parameter
+	 * @param description description of parameter
+	 */
+	void add(SGSparseMatrix<int32_t>* param,
+					const char* name, const char* description="");
+	/** add matrix param
+	 * @param param parameter matrix itself
+	 * @param name name of parameter
+	 * @param description description of parameter
+	 */
+	void add(SGSparseMatrix<uint32_t>* param,
+					const char* name, const char* description="");
+	/** add matrix param
+	 * @param param parameter matrix itself
+	 * @param name name of parameter
+	 * @param description description of parameter
+	 */
+	void add(SGSparseMatrix<int64_t>* param,
+					const char* name, const char* description="");
+	/** add matrix param
+	 * @param param parameter matrix itself
+	 * @param name name of parameter
+	 * @param description description of parameter
+	 */
+	void add(SGSparseMatrix<uint64_t>* param,
+					const char* name, const char* description="");
+	/** add matrix param
+	 * @param param parameter matrix itself
+	 * @param name name of parameter
+	 * @param description description of parameter
+	 */
+	void add(SGSparseMatrix<float32_t>* param,
+					const char* name, const char* description="");
+	/** add matrix param
+	 * @param param parameter matrix itself
+	 * @param name name of parameter
+	 * @param description description of parameter
+	 */
+	void add(SGSparseMatrix<float64_t>* param,
+					const char* name, const char* description="");
+	/** add matrix param
+	 * @param param parameter matrix itself
+	 * @param name name of parameter
+	 * @param description description of parameter
+	 */
+	void add(SGSparseMatrix<floatmax_t>* param,
+					const char* name, const char* description="");
+	/** add matrix param
+	 * @param param parameter matrix itself
+	 * @param name name of parameter
+	 * @param description description of parameter
+	 */
+	void add(SGSparseMatrix<complex64_t>* param,
+					const char* name, const char* description="");
+	/** add matrix param
+	 * @param param parameter matrix itself
+	 * @param name name of parameter
+	 * @param description description of parameter
+	 */
+	void add(SGSparseMatrix<CSGObject*>* param,
+					const char* name, const char* description="");
 protected:
 
 	/** array of parameters */

@@ -1643,6 +1643,127 @@ void Parameter::add(SGMatrix<SGSparseVector<complex64_t> >* param,
 			&param->num_cols);
 	add_type(&type, &param->matrix, name, description);
 }
+
+void Parameter::add(SGSparseMatrix<bool>* param,
+		const char* name, const char* description)
+{
+	TSGDataType type(CT_SGMATRIX, ST_SPARSE, PT_BOOL, &param->num_vectors,
+			&param->num_features);
+	add_type(&type, &param->sparse_matrix, name, description);
+}
+
+void Parameter::add(SGSparseMatrix<char>* param,
+		const char* name, const char* description)
+{
+	TSGDataType type(CT_SGMATRIX, ST_SPARSE, PT_CHAR, &param->num_vectors,
+			&param->num_features);
+	add_type(&type, &param->sparse_matrix, name, description);
+}
+
+void Parameter::add(SGSparseMatrix<int8_t>* param,
+		const char* name, const char* description)
+{
+	TSGDataType type(CT_SGMATRIX, ST_SPARSE, PT_INT8, &param->num_vectors,
+			&param->num_features);
+	add_type(&type, &param->sparse_matrix, name, description);
+}
+
+void Parameter::add(SGSparseMatrix<uint8_t>* param,
+		const char* name, const char* description)
+{
+	TSGDataType type(CT_SGMATRIX, ST_SPARSE, PT_UINT8, &param->num_vectors,
+			&param->num_features);
+	add_type(&type, &param->sparse_matrix, name, description);
+}
+
+void Parameter::add(SGSparseMatrix<int16_t>* param,
+		const char* name, const char* description)
+{
+	TSGDataType type(CT_SGMATRIX, ST_SPARSE, PT_INT16, &param->num_vectors,
+			&param->num_features);
+	add_type(&type, &param->sparse_matrix, name, description);
+}
+
+void Parameter::add(SGSparseMatrix<uint16_t>* param,
+		const char* name, const char* description)
+{
+	TSGDataType type(CT_SGMATRIX, ST_SPARSE, PT_UINT16, &param->num_vectors,
+			&param->num_features);
+	add_type(&type, &param->sparse_matrix, name, description);
+}
+
+void Parameter::add(SGSparseMatrix<int32_t>* param,
+		const char* name, const char* description)
+{
+	TSGDataType type(CT_SGMATRIX, ST_SPARSE, PT_INT32, &param->num_vectors,
+			&param->num_features);
+	add_type(&type, &param->sparse_matrix, name, description);
+}
+
+void Parameter::add(SGSparseMatrix<uint32_t>* param,
+		const char* name, const char* description)
+{
+	TSGDataType type(CT_SGMATRIX, ST_SPARSE, PT_UINT32, &param->num_vectors,
+			&param->num_features);
+	add_type(&type, &param->sparse_matrix, name, description);
+}
+
+void Parameter::add(SGSparseMatrix<int64_t>* param,
+		const char* name, const char* description)
+{
+	TSGDataType type(CT_SGMATRIX, ST_SPARSE, PT_INT64, &param->num_vectors,
+			&param->num_features);
+	add_type(&type, &param->sparse_matrix, name, description);
+}
+
+void Parameter::add(SGSparseMatrix<uint64_t>* param,
+		const char* name, const char* description)
+{
+	TSGDataType type(CT_SGMATRIX, ST_SPARSE, PT_UINT64, &param->num_vectors,
+			&param->num_features);
+	add_type(&type, &param->sparse_matrix, name, description);
+}
+
+void Parameter::add(SGSparseMatrix<float32_t>* param,
+		const char* name, const char* description)
+{
+	TSGDataType type(CT_SGMATRIX, ST_SPARSE, PT_FLOAT32, &param->num_vectors,
+			&param->num_features);
+	add_type(&type, &param->sparse_matrix, name, description);
+}
+
+void Parameter::add(SGSparseMatrix<float64_t>* param,
+		const char* name, const char* description)
+{
+	TSGDataType type(CT_SGMATRIX, ST_SPARSE, PT_FLOAT64, &param->num_vectors,
+			&param->num_features);
+	add_type(&type, &param->sparse_matrix, name, description);
+}
+
+void Parameter::add(SGSparseMatrix<floatmax_t>* param,
+		const char* name, const char* description)
+{
+	TSGDataType type(CT_SGMATRIX, ST_SPARSE, PT_FLOATMAX, &param->num_vectors,
+			&param->num_features);
+	add_type(&type, &param->sparse_matrix, name, description);
+}
+
+void Parameter::add(SGSparseMatrix<complex64_t>* param,
+		const char* name, const char* description)
+{
+	TSGDataType type(CT_SGMATRIX, ST_SPARSE, PT_COMPLEX64, &param->num_vectors,
+			&param->num_features);
+	add_type(&type, &param->sparse_matrix, name, description);
+}
+
+void Parameter::add(SGSparseMatrix<CSGObject*>* param,
+		const char* name, const char* description)
+{
+	TSGDataType type(CT_SGMATRIX, ST_SPARSE, PT_SGOBJECT, &param->num_vectors,
+			&param->num_features);
+	add_type(&type, &param->sparse_matrix, name, description);
+}
+
 /* **************************************************************** */
 /* End of wrappers  */
 
@@ -3019,7 +3140,17 @@ bool TParameter::equals(TParameter* other, float64_t accuracy)
 			index_t x=0;
 			SG_SDEBUG("length_y: %d\n", *m_datatype.m_length_y)
 			SG_SDEBUG("length_x: %d\n", *m_datatype.m_length_x)
-			int64_t length=(*m_datatype.m_length_y) * (*m_datatype.m_length_x);
+			int64_t length=0;
+			
+			/* For ST_SPARSE, we just need to loop over the rows and compare_stype
+			 * does the comparison for one whole row vector at once. For ST_NONE,
+			 * however, we need to loop over all elements.
+			 */
+			if (m_datatype.m_stype==ST_SPARSE)
+				length=(*m_datatype.m_length_y);
+			else
+				length=(*m_datatype.m_length_y) * (*m_datatype.m_length_x);
+
 			for (index_t i=0; i<length; ++i)
 			{
 				SG_SDEBUG("comparing element %d which is %d byes from start\n",
@@ -3036,7 +3167,11 @@ bool TParameter::equals(TParameter* other, float64_t accuracy)
 					return false;
 				}
 
-				x=x+(m_datatype.sizeof_ptype());
+				/* For ST_SPARSE, the iteration is on the pointer of SGSparseVectors */
+				if (m_datatype.m_stype==ST_SPARSE)
+					x=x+(m_datatype.sizeof_stype());
+				else
+					x=x+(m_datatype.sizeof_ptype());
 			}
 
 			break;
@@ -3844,7 +3979,12 @@ bool TParameter::copy(TParameter* target)
 			if (*(char**)target->m_parameter==NULL)
 			{
 				SG_SDEBUG("allocating memory for target vector\n");
-				size_t num_bytes=*m_datatype.m_length_y *
+				size_t num_bytes=0;
+				/* for ST_SPARSE allocate only for a vector of m_length_y */
+				if (m_datatype.m_stype==ST_SPARSE)
+					num_bytes=*m_datatype.m_length_y * m_datatype.sizeof_stype();
+				else
+					num_bytes=*m_datatype.m_length_y *
 						(*m_datatype.m_length_y) * m_datatype.sizeof_stype();
 				*(char**)target->m_parameter=SG_MALLOC(char, num_bytes);
 
@@ -3861,7 +4001,12 @@ bool TParameter::copy(TParameter* target)
 			index_t x=0;
 			SG_SDEBUG("length_y: %d\n", *m_datatype.m_length_y)
 			SG_SDEBUG("length_x: %d\n", *m_datatype.m_length_x)
-			int64_t length=(*m_datatype.m_length_y) * (*m_datatype.m_length_x);
+			int64_t length=0;
+			/* for ST_SPARSE allocate iterate over a vector of m_length_y */
+			if (m_datatype.m_stype==ST_SPARSE)
+				length=(*m_datatype.m_length_y);
+			else
+				length=(*m_datatype.m_length_y) * (*m_datatype.m_length_x);
 			for (index_t i=0; i<length; ++i)
 			{
 				SG_SDEBUG("copying element %d which is %d byes from start\n",
@@ -3878,7 +4023,11 @@ bool TParameter::copy(TParameter* target)
 					return false;
 				}
 
-				x=x+(m_datatype.sizeof_ptype());
+				/* For ST_SPARSE, the iteration is on the pointer of SGSparseVectors */
+				if (m_datatype.m_stype==ST_SPARSE)
+					x=x+(m_datatype.sizeof_stype());
+				else
+					x=x+(m_datatype.sizeof_ptype());
 			}
 
 			break;
