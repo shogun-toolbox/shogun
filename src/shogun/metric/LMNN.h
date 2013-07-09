@@ -11,11 +11,13 @@
 #ifndef LMNN_H_
 #define LMNN_H_
 
+#include <shogun/lib/config.h>
+
 #ifdef HAVE_EIGEN3
 
 #include <shogun/base/SGObject.h>
 #include <shogun/distance/CustomMahalanobisDistance.h>
-#include <shogun/features/Features.h>
+#include <shogun/features/DenseFeatures.h>
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/lib/SGMatrix.h>
 
@@ -39,8 +41,9 @@ class CLMNN : public CSGObject
 		 *
 		 * @param features feature vectors
 		 * @param labels labels of the features
+		 * @param k number of target neighbours per example
 		 */
-		CLMNN(CFeatures* features, CMulticlassLabels* labels);
+		CLMNN(CDenseFeatures<float64_t>* features, CMulticlassLabels* labels, int32_t k);
 
 		/** destructor */
 		virtual ~CLMNN();
@@ -71,6 +74,66 @@ class CLMNN : public CSGObject
 		 */
 		CCustomMahalanobisDistance* get_distance() const;
 
+		/** get the number of target neighbours per example
+		 *
+		 * @return number of neighbours per example
+		 */
+		int32_t get_k() const;
+
+		/** set the number of target neighbours per example
+		 *
+		 * @param k the number of target neighbours per example
+		 */
+		void set_k(const int32_t k);
+
+		/** get regularization
+		 *
+		 * @return regularization strength
+		 */
+		float64_t get_regularization() const;
+
+		/** set regularization
+		 *
+		 * @param regularization regularization strength to set
+		 */
+		void set_regularization(const float64_t regularization);
+
+		/** get step size
+		 *
+		 * @return step size
+		 */
+		float64_t get_stepsize() const;
+
+		/** set step size
+		 *
+		 * @param stepsize step size to set
+		 */
+		void set_stepsize(const float64_t stepsize);
+
+		/** get maximum number of iterations
+		 *
+		 * @return maximum number of iterations
+		 */
+		uint32_t get_maxiter() const;
+
+		/** set maximum number of iterations
+		 *
+		 * @param maximum number of iterations to set
+		 */
+		void set_maxiter(const uint32_t maxiter);
+
+		/** get number of iterations between exact impostors search
+		 *
+		 * @return iterations between exact impostors search
+		 */
+		uint32_t get_correction() const;
+
+		/** set number of iterations between exact impostors search
+		 *
+		 * @param correction iterations between exact impostors search
+		 */
+		void set_correction(const uint32_t correction);
+
 	private:
 		/** register parameters */
 		void init();
@@ -84,6 +147,31 @@ class CLMNN : public CSGObject
 
 		/** training labels */
 		CLabels* m_labels;
+
+		/**
+		 * trade-off between pull and push forces in the objective.
+		 * Its default value is 0.5
+		 */
+		float64_t m_regularization;
+
+		/** number of target neighbours to use per training example */
+		int32_t m_k;
+
+		/**
+		 * learning rate or step size used in gradient descent.
+		 * Its deafult value is 1e-07.
+		 */
+		float64_t m_stepsize;
+
+		/** maximum number of iterations. Its default value is 1000. */
+		uint32_t m_maxiter;
+
+		/**
+		 * number of iterations between exact computation of impostors.
+		 * Its default value is 15
+		 */
+		uint32_t m_correction;
+
 
 }; /* class CLMNN */
 
