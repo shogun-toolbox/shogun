@@ -93,6 +93,9 @@ public:
 	/** clear buffer */
 	void clear();
 
+	/** */
+	void debug_print();
+
 	/** @return object name */
 	virtual const char* get_name() const { return "CCircularBuffer"; }
 

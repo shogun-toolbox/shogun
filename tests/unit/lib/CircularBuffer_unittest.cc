@@ -118,4 +118,5 @@ TEST(CircularBufferTest, stress_test)
 	EXPECT_EQ(0, buffer->num_bytes_contained());
 
 	SG_UNREF(buffer);
+	SG_UNREF(tokenizer);
 }

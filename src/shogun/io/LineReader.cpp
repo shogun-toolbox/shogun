@@ -18,21 +18,21 @@ CLineReader::CLineReader()
 	m_buffer=new CCircularBuffer(0);
 }
 
-CLineReader::CLineReader(FILE* stream)
+CLineReader::CLineReader(FILE* stream, char delimiter)
 	: m_stream(stream), m_max_line_length(10*1024*1024), m_next_line_length(-1)
 {
 	m_buffer=new CCircularBuffer(m_max_line_length);
 	m_tokenizer=new CDelimiterTokenizer();
-	m_tokenizer->delimiters['\n']=1;
+	m_tokenizer->delimiters[delimiter]=1;
 	m_buffer->set_tokenizer(m_tokenizer);
 }
 
-CLineReader::CLineReader(FILE* stream, int32_t max_line_length)
+CLineReader::CLineReader(int32_t max_line_length, FILE* stream, char delimiter)
 	: m_stream(stream), m_max_line_length(max_line_length), m_next_line_length(-1)
 {
 	m_buffer=new CCircularBuffer(m_max_line_length);
 	m_tokenizer=new CDelimiterTokenizer();
-	m_tokenizer->delimiters['\n']=1;
+	m_tokenizer->delimiters[delimiter]=1;
 	m_buffer->set_tokenizer(m_tokenizer);
 }
 
@@ -56,7 +56,7 @@ bool CLineReader::has_next_line()
 		return false;
 	}
 
-	if (feof(m_stream) && m_buffer->num_bytes_contained()==0)
+	if (feof(m_stream) && m_buffer->num_bytes_contained()<=0)
 		return false; // nothing to read
 
 	return true;	
@@ -64,9 +64,9 @@ bool CLineReader::has_next_line()
 
 SGVector<char> CLineReader::get_next_line()
 {
-	SGVector<char> line;
-	
-	m_next_line_length=read_line('\n');
+	SGVector<char> line;	
+
+	m_next_line_length=read_line();
 	if (m_next_line_length==-1)
 		line=SGVector<char>();
 	else
@@ -75,7 +75,17 @@ SGVector<char> CLineReader::get_next_line()
 	return line;
 }
 
-int32_t CLineReader::read_line(char delimiter)
+void CLineReader::set_delimiter(char delimiter)
+{
+	m_tokenizer->delimiters[delimiter]=1;
+}
+
+void CLineReader::clear_delimiters()
+{
+	m_tokenizer->clear_delimiters();
+}
+
+int32_t CLineReader::read_line()
 {
 	int32_t line_end=0;
 	int32_t bytes_to_skip=0;
@@ -86,11 +96,7 @@ int32_t CLineReader::read_line(char delimiter)
 		line_end+=m_buffer->next_token_idx(bytes_to_skip)-bytes_to_skip;
 
 		if (m_buffer->num_bytes_contained()!=0 && line_end<m_buffer->num_bytes_contained())
-		{
 			return line_end;
-			//m_buffer->skip_characters(bytes_to_skip);
-			//return line_end-bytes_to_skip;
-		}
 		else if (m_buffer->available()==0)
 			return -1; // we need some limit in case file does not contain delimiter
 
@@ -102,7 +108,11 @@ int32_t CLineReader::read_line(char delimiter)
 		else
 			bytes_to_read=m_max_line_length;
 
-		m_buffer->push(m_stream, bytes_to_read);		
+		if (feof(m_stream))
+			return line_end;
+		else
+			m_buffer->push(m_stream, bytes_to_read);		
+		
 		if (ferror(m_stream))
 		{
 			SG_ERROR("Error reading file");
