@@ -40,6 +40,9 @@ class CMKLClassification : public CMKL
 		 */
 		virtual float64_t compute_sum_alpha();
 
+		/** @return object name */
+		virtual const char* get_name() const { return "MKLClassification"; }
+
 	protected:
 		/** check run before starting training (to e.g. check if labeling is
 		 * two-class labeling in classification case

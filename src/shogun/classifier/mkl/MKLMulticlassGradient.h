@@ -77,10 +77,7 @@ public:
 	virtual void computeweights(std::vector<float64_t> & weights2);
 
 	/** @return object name */
-	virtual const char* get_name() const
-	{
-      return "MKLMulticlassGradient";
-	}
+	virtual const char* get_name() const { return "MKLMulticlassGradient"; }
 
 	/** sets p-norm parameter for MKL
 	*	 @param norm the MKL norm
