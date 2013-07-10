@@ -20,6 +20,8 @@
 %rename(StudentsTLikelihood) CStudentsTLikelihood;
 %rename(ZeroMean) CZeroMean;
 %rename(GaussianProcessRegression) CGaussianProcessRegression;
+%rename(GaussianProcessBinaryClassification) CGaussianProcessBinaryClassification;
+%rename(ProbitLikelihood) CProbitLikelihood;
 %rename(LeastAngleRegression) CLeastAngleRegression;
 %rename(LibSVR) CLibSVR;
 %rename(LibLinearRegression) CLibLinearRegression;
@@ -41,6 +43,9 @@
 %include <shogun/machine/gp/FITCInferenceMethod.h>
 %include <shogun/machine/GaussianProcessMachine.h>
 %include <shogun/regression/GaussianProcessRegression.h>
+%include <shogun/classifier/GaussianProcessBinaryClassification.h>
+%include <shogun/machine/gp/ProbitLikelihood.h>
+
 #endif //HAVE_EIGEN3
 
 /* Include Class Headers to make them visible from within the target language */

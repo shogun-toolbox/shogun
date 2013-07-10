@@ -18,6 +18,8 @@
  #include <shogun/machine/gp/LaplacianInferenceMethod.h>
  #include <shogun/machine/gp/FITCInferenceMethod.h>
  #include <shogun/regression/GaussianProcessRegression.h>
+ #include <shogun/classifier/GaussianProcessBinaryClassification.h>
+ #include <shogun/machine/gp/ProbitLikelihood.h>
 #endif //HAVE_EIGEN3
  #include <shogun/regression/LeastAngleRegression.h>
  #include <shogun/classifier/svm/SVM.h>
