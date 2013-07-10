@@ -64,7 +64,6 @@
 %ignore shogun::bmrm_ll;
 %ignore shogun::TMultipleCPinfo;
 %ignore refcount_t;
-%ignore cleanup;
 %ignore QP;
 %ignore ConsensusEntry;
 %ignore DNATrie;
