@@ -10,7 +10,8 @@ data         - shogun data sets (required for some examples / applications -
 doc          - documentation (to be built using doxygen)
 examples     - example files for all interfaces
 applications - applications of shogun
-testsuite    - the shogun test suite
+benchmarks   - speed benchmarks
+tests        - unit and integration tests
 
 Current build status of master: http://shogun-toolbox.org/buildbot/waterfall
 Travis CI checks https://travis-ci.org/shogun-toolbox/shogun
