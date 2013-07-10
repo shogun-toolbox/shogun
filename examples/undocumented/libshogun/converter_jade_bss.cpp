@@ -32,18 +32,30 @@ using namespace shogun;
 void test()
 {
 	// Generate sample data	
-	int FS = 4000;
-	EVector t(FS+1, true);
-	t.setLinSpaced(FS+1,0,1);
+	CMath::init_random(0); 
+	int n_samples = 2000;
+	EVector time(n_samples, true);
+	time.setLinSpaced(n_samples,0,10);
 
 	// Source Signals
-	EMatrix S(2,FS+1);
-	for(int i = 0; i < FS+1; i++)
+	EMatrix S(2,n_samples);
+	for(int i = 0; i < n_samples; i++)
 	{
-		S(0,i) = sin(2*M_PI*55*t[i]);
-		S(1,i) = cos(2*M_PI*100*t[i]);
+		// Sin wave
+		S(0,i) = sin(2*time[0,i]);
+		S(0,i) += 0.2*CMath::randn_double(); 
+		
+		// Square wave
+		S(1,i) = sin(3*time[0,i]) < 0 ? -1 : 1;
+		S(1,i) += 0.2*CMath::randn_double();
 	}
 	
+	// Standardize data
+	EVector avg = S.rowwise().sum() / n_samples;
+	EVector std = ((S.colwise() - avg).array().pow(2).rowwise().sum() / n_samples).array().sqrt();
+	for(int i = 0; i < n_samples; i++)
+		S.col(i) = S.col(i).cwiseQuotient(std);
+
 	// Mixing Matrix
 	EMatrix A(2,2);
 	A(0,0) = 1;    A(0,1) = 0.85;
@@ -53,8 +65,8 @@ void test()
 	std::cout << A << std::endl << std::endl;
 
 	// Mix signals
-	SGMatrix<float64_t> X(2,FS+1);
-	Eigen::Map<EMatrix> EX(X.matrix,2,FS+1);
+	SGMatrix<float64_t> X(2,n_samples);
+	Eigen::Map<EMatrix> EX(X.matrix,2,n_samples);
 	EX = A * S;
 	CDenseFeatures< float64_t >* mixed_signals = new CDenseFeatures< float64_t >(X);
 
@@ -73,7 +85,7 @@ void test()
 	std::cout << est_EA << std::endl << std::endl;
 
 	// Separation error
-	Eigen::Map<EMatrix> ES (((CDenseFeatures<float64_t>*)signals)->get_feature_matrix().matrix,2,FS+1);	
+	Eigen::Map<EMatrix> ES (((CDenseFeatures<float64_t>*)signals)->get_feature_matrix().matrix,2,n_samples);	
 	double sep_error = (S-ES).array().abs().sum();
 
 	std::cout << "Separation error: " << sep_error << std::endl;
