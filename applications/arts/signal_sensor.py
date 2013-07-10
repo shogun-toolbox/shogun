@@ -204,14 +204,10 @@ class SignalSensor(object):
             sys.stderr.write("..done\n")
 
             self.svm.set_kernel(self.kernel)
-            lab_out = self.svm.apply()
+            lab_out = self.svm.apply().get_values()
 
-            # work around problem with get_labels()
-            tmp_out = [lab_out.get_label(idx) for idx in range(0, lab_out.get_num_labels())]
-            assert(len(tmp_out) > 0)
-            out.extend(tmp_out)
-
-            print "len out", len(out)
+            assert(len(lab_out) > 0)
+            out.extend(lab_out)
 
             # increment chunk
             start = stop

@@ -79,7 +79,7 @@ class svm_splice_model(object):
 			self.wd_kernel.init(self.traindat, t)
 
 			self.wd_kernel.io.enable_progress()
-			l=self.svm.apply().get_labels()
+			l=self.svm.apply().get_values()
 			self.wd_kernel.cleanup()
 			sys.stdout.write("\n...done...\n")
 
@@ -120,7 +120,7 @@ class svm_splice_model(object):
 		del t
 
 		self.wd_kernel.io.enable_progress()
-		l=self.svm.apply().get_labels()
+		l=self.svm.apply().get_values()
 		self.wd_kernel.cleanup()
 		sys.stdout.write("\n...done...\n")
 		return l
