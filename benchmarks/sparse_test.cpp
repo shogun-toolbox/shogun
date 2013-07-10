@@ -16,23 +16,96 @@
 #include <shogun/lib/SGSparseVector.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
+#include <pthread.h>
 
 using namespace shogun;
 using namespace Eigen;
+
+struct APPLY_THREAD_PARAM
+{
+	int32_t start;
+	int32_t stop;
+	float64_t* result;
+	float64_t* vec;
+	int32_t len;
+	SGSparseVector<float64_t>* sm;
+};
+
+
+int32_t get_nnz(SGSparseMatrix<float64_t> m)
+{
+
+	int32_t nnz=0;
+	int32_t n=m.num_vectors;
+
+	for (int i=0; i<n; i++)
+	{
+		nnz+=m[i].num_feat_entries;
+	}
+	return nnz;
+}
+
+static void* dot_helper(void* p)
+{
+	APPLY_THREAD_PARAM* par=(APPLY_THREAD_PARAM*) p;
+	float64_t* r = par->result;
+	SGSparseVector<float64_t>* m=par->sm;
+	float64_t* vec = par->vec;
+	int32_t len = par->len;
+	int32_t start = par->start;
+	int32_t stop = par->stop;
+
+	for (index_t i=start; i<stop; ++i)
+		r[i]=m[i].dense_dot(1.0, vec, len, 0.0);
+}
+
 
 SGVector<float64_t> sg_m_apply(SGSparseMatrix<float64_t> m, SGVector<float64_t> v)
 {
 	SGVector<float64_t> r(v.vlen);
 	ASSERT(v.vlen==m.num_vectors);
-#pragma omp parallel for
-	for (index_t i=0; i<m.num_vectors; ++i)
-		r[i]=m[i].dense_dot(1.0, v.vector, v.vlen, 0.0);
+
+	int num_threads=8;
+	pthread_t* threads = SG_MALLOC(pthread_t, num_threads-1);
+	APPLY_THREAD_PARAM* params = SG_MALLOC(APPLY_THREAD_PARAM, num_threads);
+	int32_t step= m.num_vectors/num_threads;
+
+	int32_t start=0;
+	int32_t stop=m.num_vectors;
+	int32_t t;
+
+	for (t=0; t<num_threads-1; t++)
+	{
+		params[t].start = start+t*step;
+		params[t].stop = start+(t+1)*step;
+		params[t].result = r.vector;
+		params[t].sm=m.sparse_matrix;
+		params[t].vec=v.vector;
+		params[t].len=v.vlen;
+		pthread_create(&threads[t], NULL,
+				dot_helper, (void*)&params[t]);
+	}
+
+	params[t].start = start+t*step;
+	params[t].stop = stop;
+	params[t].result = r.vector;
+	params[t].sm=m.sparse_matrix;
+	params[t].vec=v.vector;
+	params[t].len=v.vlen;
+	dot_helper((void*) &params[t]);
+
+	for (t=0; t<num_threads-1; t++)
+		pthread_join(threads[t], NULL);
+
+	SG_FREE(params);
+	SG_FREE(threads);
 
 	return r;
 }
 
 int main(int argc, char** argv)
 {
+	Eigen::initParallel();
 	init_shogun_with_defaults();
 	//sg_io->set_loglevel(MSG_GCDEBUG);
 
@@ -43,6 +116,7 @@ int main(int argc, char** argv)
 	v.set_const(1.0);
 	Map<VectorXd> map_v(v.vector, v.vlen);
 	CTime time;
+	CMath::init_random(17);
 
 	SG_SPRINT("time\tshogun (s)\teigen3 (s)\n\n");
 	for (index_t t=0; t<times; ++t)
@@ -71,21 +145,31 @@ int main(int argc, char** argv)
 		Entry** rest=SG_MALLOC(Entry*, size-1);
 		for (index_t i=0; i<size-1; ++i)
 		{
+			int num=40;
 			// the first col
-			rest[i]=SG_MALLOC(Entry, 2);
-			rest[i][0].feat_index=0; 
-			rest[i][0].entry=0.01;
+			rest[i]=SG_MALLOC(Entry, num);
 
-			// the diagonal element
-			rest[i][1].feat_index=i+1; 
-			rest[i][1].entry=1.836593;
+			for (int j=0; j<i && j<num; j++)
+			{
+				rest[i][j].feat_index=j; 
+				rest[i][j].entry=0.01+j;
+			}
+
+			if (i>num) 
+			{
+				//// the diagonal element
+				rest[i][num-1].feat_index=i+1; 
+				rest[i][num-1].entry=1.836593;
+			}
 
 			vec[i+1].features=rest[i];
-			vec[i+1].num_feat_entries=2;
+			vec[i+1].num_feat_entries=num;
 
 			sg_m[i+1]=vec[i+1].get();
 		}
 		SGVector<float64_t> r(size);
+
+		SG_SPRINT("nnz=%d\n", get_nnz(sg_m));
 
 		// sg starts
 		time.start();
