@@ -66,6 +66,20 @@ template <class T> class SGSparseMatrix : public SGReferencedData
 			return *this;
 		}
 
+		/* compute sparse-matrix dense-vector multiplication
+		 * @param v the dense-vector to be multiplied with
+		 * @return the result vector \f$Q*v\f$, Q being this sparse matrix
+		 */
+		const SGVector<T> operator*(SGVector<T> v) const
+		{
+			SGVector<T> result(num_vectors);
+			ASSERT(v.vlen==num_features);
+			for (index_t i=0; i<num_vectors; ++i)
+				result[i]=sparse_matrix[i].dense_dot(1.0, v.vector, v.vlen, 0.0);
+
+			return result;
+		}
+
 		/** load sparse matrix from file
 		 *
 		 * @param loader File object via which to load data

@@ -113,7 +113,7 @@ SGVector<T> CDenseMatrixOperator<T>::apply(SGVector<T> b) const
 		Map<MatrixXt> _op(m_operator.matrix, m_operator.num_rows,
 			m_operator.num_cols);
 	
-		SGVector<T> result(b.vlen);
+		SGVector<T> result(m_operator.num_rows);
 		Map<VectorXt> _result(result.vector, result.vlen);
 		_result=_op*_b;
 
