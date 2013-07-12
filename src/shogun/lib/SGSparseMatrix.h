@@ -73,7 +73,8 @@ template <class T> class SGSparseMatrix : public SGReferencedData
 		const SGVector<T> operator*(SGVector<T> v) const
 		{
 			SGVector<T> result(num_vectors);
-			ASSERT(v.vlen==num_features);
+			REQUIRE(v.vlen==num_features,
+				"Dimension mismatch!\n");
 			for (index_t i=0; i<num_vectors; ++i)
 				result[i]=sparse_matrix[i].dense_dot(1.0, v.vector, v.vlen, 0.0);
 
