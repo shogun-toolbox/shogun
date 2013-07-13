@@ -45,7 +45,7 @@ valgrind-per-module: shogun-unit-test
 	 xargs -I{} valgrind $(VALGRINDOPTS) ./shogun-unit-test --gtest_filter={}\*
 
 %$(EXT_OBJ_TEST): %$(EXT_SRC_TEST)
-	@$(COMP_CPP) -I$(SHOGUNSRCTOP) $(COMPFLAGS_CPP) $(COMPFLAGS_GTEST_CPP) $(COMPFLAGS_GMOCK_CPP) $(DEFINES) -c $(INCLUDES) -o $@ $<
+	@$(COMP_CPP) -Werror -I$(SHOGUNSRCTOP) $(COMPFLAGS_CPP) $(COMPFLAGS_GTEST_CPP) $(COMPFLAGS_GMOCK_CPP) $(DEFINES) -c $(INCLUDES) -o $@ $<
 	@echo 'Compiling $@'
 
 clean:
