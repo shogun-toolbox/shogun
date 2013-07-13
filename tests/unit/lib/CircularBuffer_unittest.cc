@@ -45,7 +45,7 @@ TEST(CircularBufferTest, push_pop)
 	int result;
 
 	CCircularBuffer* buffer;
-	SGVector<char> test_string("CircularBuffer", 14, false);
+	SGVector<char> test_string((char*)"CircularBuffer", 14, false);
 	SGVector<char> tmp_string;
 
 	// default constructor
@@ -90,7 +90,7 @@ TEST(CircularBufferTest, stress_test)
 	CDelimiterTokenizer* tokenizer;
 
 	SGVector<char> tmp_string;
-	SGVector<char> test_string("all your bayes are belong to us! ", 33, false);
+	SGVector<char> test_string((char*)"all your bayes are belong to us! ", 33, false);
 
 	buffer=new CCircularBuffer(buffer_size);
 	tokenizer=new CDelimiterTokenizer();
