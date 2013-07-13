@@ -341,8 +341,6 @@ TEST(Random, random_std_normal_quantiles)
 		counts[idx]++;
 	}
 
-	counts.display_vector();
-
 	SG_UNREF(rand);
 
 	for (index_t i=0; i<counts.vlen; ++i)
