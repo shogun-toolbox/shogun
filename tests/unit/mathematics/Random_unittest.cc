@@ -3,6 +3,7 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/external/SFMT/SFMT.h>
 #include <shogun/lib/external/dSFMT/dSFMT.h>
+#include <shogun/mathematics/Statistics.h>
 #include <shogun/lib/SGVector.h>
 #include <gtest/gtest.h>
 #include <stdio.h>
@@ -323,4 +324,27 @@ TEST(Random, random_float64_range2)
 	}
 	EXPECT_GE(max, 0.99999);
 	EXPECT_LE(min, 0.00001);
+}
+
+TEST(Random, random_std_normal_quantiles)
+{
+	CRandom* rand=new CRandom();
+
+	int64_t m=50000000;
+	SGVector<int64_t> counts(10);
+	counts.zero();
+
+	for (int64_t i=0; i<m; ++i)
+	{
+		float64_t quantile=CStatistics::normal_cdf(rand->std_normal_distrib(), 1);
+		index_t idx=(int32_t)(quantile*counts.vlen);
+		counts[idx]++;
+	}
+
+	counts.display_vector();
+
+	SG_UNREF(rand);
+
+	for (index_t i=0; i<counts.vlen; ++i)
+		EXPECT_NEAR(counts[i], m/counts.vlen, 7500);
 }
