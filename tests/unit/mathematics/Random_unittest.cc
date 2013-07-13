@@ -19,7 +19,7 @@ const uint32_t array_len=23;
 
 TEST(Random, uint32_t)
 {
-	CRandom* prng = new CRandom();
+	CRandom* prng = new CRandom(12345);
 	uint32_t r = prng->random_32();
 	SG_UNREF(prng);
 	EXPECT_EQ(1811630862U, r);
@@ -27,7 +27,7 @@ TEST(Random, uint32_t)
 
 TEST(Random, uint64_t)
 {
-	CRandom* prng = new CRandom();
+	CRandom* prng = new CRandom(12345);
 	uint64_t r = prng->random_64();
 	SG_UNREF(prng);
 	EXPECT_EQ(18328733385137801998U, r);
@@ -35,7 +35,7 @@ TEST(Random, uint64_t)
 
 TEST(Random, fill_array_uint32)
 {
-	CRandom* prng = new CRandom();
+	CRandom* prng = new CRandom(12345);
 	uint32_t t = 2228230814U;
 	SGVector<uint32_t> rv(2*SFMT_N32+1);
 	prng->fill_array(rv.vector, rv.vlen);
@@ -47,7 +47,7 @@ TEST(Random, fill_array_uint32)
 #ifdef HAVE_SSE2
 TEST(Random, fill_array_uint32_simd)
 {
-	CRandom* prng = new CRandom();
+	CRandom* prng = new CRandom(12345);
 	uint32_t t = 2228230814U;
 	SGVector<uint32_t> rv(2*SFMT_N32);
 	prng->fill_array(rv.vector, rv.vlen);
@@ -59,7 +59,7 @@ TEST(Random, fill_array_uint32_simd)
 
 TEST(Random, fill_array_uint64)
 {
-	CRandom* prng = new CRandom();
+	CRandom* prng = new CRandom(12345);
 	uint64_t t = 9564086722318310046U;
 	SGVector<uint64_t> rv(2*SFMT_N64+1);
 	prng->fill_array(rv.vector, rv.vlen);
@@ -71,7 +71,7 @@ TEST(Random, fill_array_uint64)
 #ifdef HAVE_SSE2
 TEST(Random, fill_array_uint64_simd)
 {
-	CRandom* prng = new CRandom();
+	CRandom* prng = new CRandom(12345);
 	uint64_t t = 9564086722318310046U;
 	SGVector<uint64_t> rv(2*SFMT_N64);
 	prng->fill_array(rv.vector, rv.vlen);
@@ -83,7 +83,7 @@ TEST(Random, fill_array_uint64_simd)
 
 TEST(Random, fill_array_oc)
 {
-	CRandom* prng = new CRandom();
+	CRandom* prng = new CRandom(12345);
 	float64_t t = 0.25551924513287405;
 	SGVector<float64_t> rv(2*dsfmt_get_min_array_size()+1);
 	prng->fill_array_oc(rv.vector, rv.vlen);
@@ -95,7 +95,7 @@ TEST(Random, fill_array_oc)
 #ifdef HAVE_SSE2
 TEST(Random, fill_array_oc_simd)
 {
-	CRandom* prng = new CRandom();
+	CRandom* prng = new CRandom(12345);
 	float64_t t = 0.25551924513287405;
 	SGVector<float64_t> rv(2*dsfmt_get_min_array_size());
 	prng->fill_array_oc(rv.vector, rv.vlen);
@@ -107,7 +107,7 @@ TEST(Random, fill_array_oc_simd)
 
 TEST(Random, normal_distrib)
 {
-	CRandom* prng = new CRandom();
+	CRandom* prng = new CRandom(12345);
 	float64_t t = 75.567130769021162;
 	float64_t r = prng->normal_distrib(100.0, 10.0);
 	SG_UNREF(prng);
