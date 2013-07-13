@@ -149,8 +149,8 @@ def extract_block(c, lines, start_line, stop_line, start_sym, stop_sym):
 	return block_start,block_stop
 
 def check_complex_supported_class(line):
-	l=filter(lambda y:y if y!='' else None,\
-		line.strip().replace('\t',' ').split(' '))
+	l=list(filter(lambda y:y if y!='' else None,\
+		line.strip().replace('\t',' ').split(' ')))
 	supported=len(l)==3 and l[0]=='typedef' and l[1]=='bool'\
 		and l[2]=='supports_complex64_t;'
 	return supported
