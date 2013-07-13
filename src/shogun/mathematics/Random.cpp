@@ -12,11 +12,12 @@
 #include <shogun/base/Parameter.h>
 #include <shogun/lib/external/SFMT/SFMT.h>
 #include <shogun/lib/external/dSFMT/dSFMT.h>
+#include <shogun/lib/Time.h>
 
 using namespace shogun;
 
 CRandom::CRandom()
- : m_seed(12345),
+ : m_seed((uint32_t)CTime::get_curtime()*100),
  m_sfmt_32(NULL),
  m_sfmt_64(NULL),
  m_dsfmt(NULL)
