@@ -5,7 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 2013 Soumyajit De
- * Written (W) 2012 Fernando José Iglesias García
+ * Written (W) 2012 Fernando Jose Iglesias Garcia
  * Written (W) 2011 Siddharth Kherada
  * Written (W) 2011 Justin Patera
  * Written (W) 2011 Alesis Novik
@@ -1413,7 +1413,7 @@ void* CMath::parallel_qsort_index(void* p)
 		struct thread_qsort<T1,T2>* ps=(thread_qsort<T1,T2>*) p;
 		T1* output=ps->output;
 		T2* index=ps->index;
-		uint32_t size=ps->size;
+		int32_t size=ps->size;
 		int32_t* qsort_threads=ps->qsort_threads;
 		int32_t sort_limit=ps->sort_limit;
 		int32_t num_threads=ps->num_threads;
