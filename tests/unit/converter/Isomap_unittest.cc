@@ -171,7 +171,7 @@ std::set<index_t> get_neighbors_indices(CDistance* distance_object, index_t feat
 
 void check_similarity_of_sets(const std::set<index_t>& first_set,const std::set<index_t>& second_set, float64_t min_similarity_level)
 {
-	index_t total_elements_count = first_set.size();
+	size_t total_elements_count = first_set.size();
 	ASSERT_EQ(total_elements_count, second_set.size()) << "Can not compare sets of different size.";
 	ASSERT_LE(min_similarity_level, 1.0) << "Similarity level can not be greater than 1.";
 	ASSERT_GE(min_similarity_level, 0) << "Similarity level can not be less than 0.";
