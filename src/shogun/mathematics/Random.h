@@ -15,8 +15,9 @@
 #include <shogun/lib/config.h>
 #include <limits>
 
-#include <shogun/lib/external/SFMT/SFMT.h>
-#include <shogun/lib/external/dSFMT/dSFMT.h>
+/* opaque pointers */
+struct SFMT_T;
+struct DSFMT_T;
 
 namespace shogun
 {
@@ -275,19 +276,7 @@ namespace shogun
 			 *
 			 * @param seed seed for the PRNG
 			 */
-			 inline void reinit(uint32_t seed)
-			 {
-#ifdef HAVE_PTHREAD
-			 	PTHREAD_LOCK(&m_state_lock);
-#endif
-			 	m_seed = seed;
-		 		sfmt_init_gen_rand(m_sfmt_32, m_seed);
-		 		sfmt_init_gen_rand(m_sfmt_64, m_seed);
-		 		dsfmt_init_gen_rand(m_dsfmt, m_seed);
-#ifdef HAVE_PTHREAD
-			 	PTHREAD_UNLOCK(&m_state_lock);
-#endif
-			 }
+			 void reinit(uint32_t seed);
 
 			/**
 			 * Sample from the distribution tail (defined as having x >= R).
@@ -311,13 +300,13 @@ namespace shogun
 			uint32_t m_seed;
 
 			/** SFMT struct for 32-bit random */
-			sfmt_t* m_sfmt_32;
+			SFMT_T* m_sfmt_32;
 
 			/** SFMT struct for 64-bit random */
-			sfmt_t* m_sfmt_64;
+			SFMT_T* m_sfmt_64;
 
 			/** dSFMT struct */
-			dsfmt_t* m_dsfmt;
+			DSFMT_T* m_dsfmt;
 
 			/** Number of blocks */
 			int32_t m_blockCount; //= 128;

@@ -1,6 +1,8 @@
 #include <shogun/lib/config.h>
 #include <shogun/mathematics/Random.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/lib/external/SFMT/SFMT.h>
+#include <shogun/lib/external/dSFMT/dSFMT.h>
 #include <shogun/lib/SGVector.h>
 #include <gtest/gtest.h>
 #include <stdio.h>
