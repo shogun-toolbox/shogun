@@ -21,7 +21,7 @@ TEST(BinaryLabels,scores_to_probabilities)
 	for (index_t i=0; i<labels->get_num_labels(); ++i)
 		labels->set_value(i%2==0 ? 1 : -1, i);
 
-	labels->get_values().display_vector("scores");
+	//labels->get_values().display_vector("scores");
 	// call with 0,0 to make the method compute sigmoid parameters itself
 	// g-test somehow does not allow std parameters
 	labels->scores_to_probabilities(0,0);
