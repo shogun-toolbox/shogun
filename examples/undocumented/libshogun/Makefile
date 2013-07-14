@@ -58,7 +58,6 @@ TARGETS = basic_minimal \
 		  features_dense_real_modular \
 		  features_subset_stack \
 		  features_subset_simple_features \
-		  features_subset_sparse_features \
 		  features_copy_subset_simple_features \
 		  features_copy_subset_sparse_features \
 		  labels_binary_fit_sigmoid \
