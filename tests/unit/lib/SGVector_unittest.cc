@@ -252,3 +252,41 @@ TEST(SGVectorTest,complex64_tests)
 		EXPECT_NEAR(a_imag[i], 2.0, 1E-14);
 	}
 }
+
+TEST(SGVectorTest,equals_equal)
+{
+	SGVector<float64_t> a(3);
+	SGVector<float64_t> b(3);
+	a[0]=0;
+	a[1]=1;
+	a[2]=2;
+	b[0]=0;
+	b[1]=1;
+	b[2]=2;
+	
+	EXPECT_TRUE(a.equals(b));
+}
+
+TEST(SGVectorTest,equals_different)
+{
+	SGVector<float64_t> a(3);
+	SGVector<float64_t> b(3);
+	a[0]=0;
+	a[1]=1;
+	a[2]=2;
+	b[0]=0;
+	b[1]=1;
+	b[2]=3;
+	
+	EXPECT_FALSE(a.equals(b));
+}
+
+TEST(SGVectorTest,equals_different_size)
+{
+	SGVector<float64_t> a(3);
+	SGVector<float64_t> b(2);
+	a.zero();
+	b.zero();
+	
+	EXPECT_FALSE(a.equals(b));
+}

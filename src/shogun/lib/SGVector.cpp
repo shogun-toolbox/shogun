@@ -4,6 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
+ * Written (W) 2011-2013 Heiko Strathmann
  * Written (W) 2013 Soumyajit De
  * Written (W) 2012 Fernando José Iglesias García
  * Written (W) 2010,2012 Soeren Sonnenburg
@@ -351,6 +352,21 @@ void SGVector<T>::free_data()
 	SG_FREE(vector);
 	vector=NULL;
 	vlen=0;
+}
+
+template<class T>
+bool SGVector<T>::equals(SGVector<T>& other)
+{
+	if (other.vlen!=vlen)
+		return false;
+
+	for (index_t i=0; i<vlen; ++i)
+	{
+		if (other.vector[i]!=vector[i])
+			return false;
+	}
+
+	return true;
 }
 
 template<class T>

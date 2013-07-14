@@ -200,7 +200,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 
 		/** get a transposed copy of the features
 		 *
-		 * possible with subset
+		 * not possible with subset
 		 *
 		 * @return transposed copy
 		 */
