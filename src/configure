@@ -1293,6 +1293,7 @@ mingw32() { issystem "MINGW32" ; return "$?" ; }
 morphos() { issystem "MorphOS" ; return "$?" ; }
 win32()   { cygwin || mingw32  ; return "$?" ; }
 beos()    { issystem "BEOS"    ; return "$?" ; }
+debian()  { test -f /etc/debian_version || (lsb_release -i | grep -iqE '(ubuntu|debian)')  ; return "$?" ; }
 
 # arch test boolean functions
 # x86/x86pc is used by QNX
@@ -1812,10 +1813,9 @@ set_install_dirs() {
 	python_major=`$PYTHON -V 2>&1 | cut -f 2 -d ' ' | cut -f 1 -d '.'`
 	python_minor=`$PYTHON -V 2>&1 | cut -f 2 -d ' ' | cut -f 2 -d '.'`
 	if test -z "$_pydir" ; then
-		if (test "$python_major" -ge 2 && test "$python_minor" -ge 6) || (test "$python_major" -ge 3) ; then
+		_pydir="`$PYTHON -c 'import sys; print(\"python\"+sys.version[0:3])'`/site-packages"
+		if debian && ((test "$python_major" -ge 2 && test "$python_minor" -ge 6) || (test "$python_major" -ge 3)) ; then
 			_pydir="`$PYTHON -c 'import sys; print(\"python\"+sys.version[0:3])'`/dist-packages"
-		else
-			_pydir="`$PYTHON -c 'import sys; print(\"python\"+sys.version[0:3])'`/site-packages"
 		fi
 	fi
 	if test -z "$_pldir" ; then
