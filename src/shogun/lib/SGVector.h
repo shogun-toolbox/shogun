@@ -4,8 +4,9 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  * 
+ * Written (W) 2011-2013 Heiko Strathmann
  * Written (W) 2013 Soumyajit De
- * Written (W) 2012 Fernando José Iglesias García
+ * Written (W) 2012 Fernando Jose Iglesias Garcia
  * Written (W) 2010,2012 Soeren Sonnenburg
  * Copyright (C) 2010 Berlin Institute of Technology
  * Copyright (C) 2012 Soeren Sonnenburg
@@ -236,6 +237,13 @@ template<class T> class SGVector : public SGReferencedData
 			add(x);
 			return *this;
 		}
+
+		/** equals method up to precision for vectors (element-wise)
+		 * @param other vector to compare with
+		 * @return false if any element differs or if sizes are different,
+		 * true otherwise
+		 */
+		bool equals(SGVector<T>& other);
 
 		/** permute vector */
 		static void permute_vector(SGVector<T> vec);

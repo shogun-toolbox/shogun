@@ -4,7 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2012 Fernando José Iglesias García
+ * Written (W) 2011-2013 Heiko Strathmann
+ * Written (W) 2012 Fernando Jose Iglesias Garcia
  * Written (W) 2010,2012 Soeren Sonnenburg
  * Copyright (C) 2010 Berlin Institute of Technology
  * Copyright (C) 2012 Soeren Sonnenburg
