@@ -330,7 +330,7 @@ TEST(Random, random_std_normal_quantiles)
 {
 	CRandom* rand=new CRandom();
 
-	int64_t m=50000000;
+	int64_t m=10000000;
 	SGVector<int64_t> counts(10);
 	counts.zero();
 
@@ -344,5 +344,5 @@ TEST(Random, random_std_normal_quantiles)
 	SG_UNREF(rand);
 
 	for (index_t i=0; i<counts.vlen; ++i)
-		EXPECT_NEAR(counts[i], m/counts.vlen, 7500);
+		EXPECT_NEAR(counts[i], m/counts.vlen, m/counts.vlen/200);
 }
