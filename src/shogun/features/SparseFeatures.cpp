@@ -230,6 +230,13 @@ template<class ST> void CSparseFeatures<ST>::add_to_dense_vec(float64_t alpha, i
 	free_sparse_feature_vector(num);
 }
 
+template<>
+void CSparseFeatures<complex64_t>::add_to_dense_vec(float64_t alpha,
+	int32_t num, float64_t* vec, int32_t dim, bool abs_val)
+{
+	SG_NOTIMPLEMENTED;
+}
+
 template<class ST> void CSparseFeatures<ST>::free_sparse_feature_vector(int32_t num)
 {
 	if (feature_cache)
@@ -321,7 +328,7 @@ template<class ST> bool CSparseFeatures<ST>::set_full_feature_matrix(SGMatrix<ST
 			num_feat_entries[i]=0;
 			for (int32_t j=0; j<num_feat; j++)
 			{
-				if (src[i*((int64_t) num_feat) + j] != 0)
+				if (src[i*((int64_t) num_feat) + j] != static_cast<ST>(0))
 					num_feat_entries[i]++;
 			}
 		}
@@ -338,7 +345,7 @@ template<class ST> bool CSparseFeatures<ST>::set_full_feature_matrix(SGMatrix<ST
 				{
 					int64_t pos= i*num_feat + j;
 
-					if (src[pos] != 0)
+					if (src[pos] != static_cast<ST>(0))
 					{
 						sparse_feature_matrix[i].features[sparse_feat_idx].entry=src[pos];
 						sparse_feature_matrix[i].features[sparse_feat_idx].feat_index=j;
@@ -393,6 +400,12 @@ template<class ST> bool CSparseFeatures<ST>::obtain_from_simple(CDenseFeatures<S
 	ASSERT(fm.matrix && fm.num_cols>0 && fm.num_rows>0)
 
 	return set_full_feature_matrix(fm);
+}
+
+template<> bool CSparseFeatures<complex64_t>::obtain_from_simple(CDenseFeatures<complex64_t>* sf)
+{
+	SG_NOTIMPLEMENTED;
+	return false;
 }
 
 template<class ST> int32_t  CSparseFeatures<ST>::get_num_vectors() const
@@ -452,6 +465,12 @@ template<class ST> float64_t* CSparseFeatures<ST>::compute_squared(float64_t* sq
 		free_feature_vector(i);
 	}
 
+	return sq;
+}
+
+template<> float64_t* CSparseFeatures<complex64_t>::compute_squared(float64_t* sq)
+{
+	SG_NOTIMPLEMENTED;
 	return sq;
 }
 
@@ -537,6 +556,14 @@ template<class ST> float64_t CSparseFeatures<ST>::dot(int32_t vec_idx1,
 
 	return result;
 }
+
+template<> float64_t CSparseFeatures<complex64_t>::dot(int32_t vec_idx1,
+		CDotFeatures* df, int32_t vec_idx2)
+{
+	SG_NOTIMPLEMENTED;
+	return 0.0;
+}
+
 template<class ST> float64_t CSparseFeatures<ST>::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
 {
 	ASSERT(vec2)
@@ -558,6 +585,13 @@ template<class ST> float64_t CSparseFeatures<ST>::dense_dot(int32_t vec_idx1, co
 	free_sparse_feature_vector(vec_idx1);
 
 	return result;
+}
+
+template<> float64_t CSparseFeatures<complex64_t>::dense_dot(int32_t vec_idx1,
+	const float64_t* vec2, int32_t vec2_len)
+{
+	SG_NOTIMPLEMENTED;
+	return 0.0;
 }
 
 template<class ST> void* CSparseFeatures<ST>::get_feature_iterator(int32_t vector_index)
@@ -591,6 +625,13 @@ template<class ST> bool CSparseFeatures<ST>::get_next_feature(int32_t& index, fl
 	value=(float64_t) it->sv.features[i].entry;
 
 	return true;
+}
+
+template<> bool CSparseFeatures<complex64_t>::get_next_feature(int32_t& index,
+	float64_t& value, void* iterator)
+{
+	SG_NOTIMPLEMENTED;
+	return false;
 }
 
 template<class ST> void CSparseFeatures<ST>::free_feature_iterator(void* iterator)
@@ -676,6 +717,7 @@ GET_FEATURE_TYPE(uint64_t, F_ULONG)
 GET_FEATURE_TYPE(float32_t, F_SHORTREAL)
 GET_FEATURE_TYPE(float64_t, F_DREAL)
 GET_FEATURE_TYPE(floatmax_t, F_LONGREAL)
+GET_FEATURE_TYPE(complex64_t, F_ANY)
 #undef GET_FEATURE_TYPE
 
 #define LOAD(fname, sg_type)											\
@@ -731,6 +773,15 @@ WRITE(set_sparse_matrix, float64_t)
 WRITE(set_sparse_matrix, floatmax_t)
 #undef WRITE
 
+#define UNDEFINED(fname, type)	\
+template<> void CSparseFeatures<type>::fname(CFile* f)	\
+{	\
+	SG_NOTIMPLEMENTED;	\
+}
+UNDEFINED(load, complex64_t)
+UNDEFINED(save, complex64_t)
+#undef UNDEFINED
+
 template class CSparseFeatures<bool>;
 template class CSparseFeatures<char>;
 template class CSparseFeatures<int8_t>;
@@ -744,4 +795,5 @@ template class CSparseFeatures<uint64_t>;
 template class CSparseFeatures<float32_t>;
 template class CSparseFeatures<float64_t>;
 template class CSparseFeatures<floatmax_t>;
+template class CSparseFeatures<complex64_t>;
 }

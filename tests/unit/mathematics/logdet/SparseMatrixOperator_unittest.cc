@@ -33,7 +33,7 @@ TEST(SparseMatrixOperator, symmetric_apply)
 
 	CSparseFeatures<float64_t> feat(m);
 	SGSparseMatrix<float64_t> mat=feat.get_sparse_feature_matrix();
-	CSparseMatrixOperator<float64_t> op(mat);
+	CSparseMatrixOperator<float64_t, float64_t> op(mat);
 
 	SGVector<float64_t> b(size);
 	b.set_const(0.25);
@@ -67,7 +67,7 @@ TEST(SparseMatrixOperator, asymmetric_apply)
 
 	CSparseFeatures<float64_t> feat(m);
 	SGSparseMatrix<float64_t> mat=feat.get_sparse_feature_matrix();
-	CSparseMatrixOperator<float64_t> op(mat);
+	CSparseMatrixOperator<float64_t, float64_t> op(mat);
 
 	SGVector<float64_t> b(size*10);
 	b.set_const(0.25);
@@ -98,7 +98,7 @@ TEST(SparseMatrixOperator, get_set_diagonal_no_alloc)
 
 	CSparseFeatures<float64_t> feat(m);
 	SGSparseMatrix<float64_t> mat=feat.get_sparse_feature_matrix();
-	CSparseMatrixOperator<float64_t> op(mat);
+	CSparseMatrixOperator<float64_t, float64_t> op(mat);
 
 	// get the old diagonal and check if it works fine
 	SGVector<float64_t> old_diag=op.get_diagonal();
@@ -131,7 +131,7 @@ TEST(SparseMatrixOperator, get_set_diagonal_realloc)
 
 	CSparseFeatures<float64_t> feat(m);
 	SGSparseMatrix<float64_t> mat=feat.get_sparse_feature_matrix();
-	CSparseMatrixOperator<float64_t> op(mat);
+	CSparseMatrixOperator<float64_t, float64_t> op(mat);
 
 	// get the old diagonal and check if it works fine
 	SGVector<float64_t> old_diag=op.get_diagonal();

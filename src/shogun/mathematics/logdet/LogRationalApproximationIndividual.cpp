@@ -35,7 +35,7 @@ CLogRationalApproximationIndividual::CLogRationalApproximationIndividual(
 	CDenseMatrixOperator<float64_t>* linear_operator,
 	CIndependentComputationEngine* computation_engine,
 	CEigenSolver* eigen_solver, 
-	CLinearSolver<complex64_t>* linear_solver,
+	CLinearSolver<complex64_t, float64_t>* linear_solver,
 	index_t num_shifts)
 	: CRationalApproximation(linear_operator, computation_engine,
 	  eigen_solver, num_shifts, OF_LOG)
@@ -66,8 +66,10 @@ CLogRationalApproximationIndividual::~CLogRationalApproximationIndividual()
 CJobResultAggregator* CLogRationalApproximationIndividual::submit_jobs(
 	SGVector<float64_t> sample)
 {
+	SG_DEBUG("OperatorFunction::submit_jobs(): Entering..\n");
 	REQUIRE(sample.vector, "Sample is not initialized!\n");
 	REQUIRE(m_linear_operator, "Operator is not initialized!\n");
+	REQUIRE(m_computation_engine, "Computation engine is NULL\n");
 
 	// create the aggregator with sample, and the multiplier
 	CIndividualJobResultAggregator* agg=new CIndividualJobResultAggregator(
@@ -87,22 +89,16 @@ CJobResultAggregator* CLogRationalApproximationIndividual::submit_jobs(
 		for (index_t j=0; j<m.num_rows; ++j)
 			complex_m(j,i)=complex64_t(m(j,i));
 	}
-	CDenseMatrixOperator<complex64_t>* complex_op
-		=new CDenseMatrixOperator<complex64_t>(complex_m);
+	CDenseMatrixOperator<complex64_t, float64_t>* complex_op
+		=new CDenseMatrixOperator<complex64_t, float64_t>(complex_m);
 	SG_REF(complex_op);
-
-	// make a complex copy of the sample for solving the linear
-	// system with complex linear operator
-	SGVector<complex64_t> s(sample.vlen);
-	for (index_t i=0; i<s.vlen; ++i)
-		s[i]=complex64_t(sample[i]);
 
 	// create num_shifts number of jobs for current sample vector
 	for (index_t i=0; i<m_num_shifts; ++i)
 	{
 		// create a deep copy of the operator
-		CDenseMatrixOperator<complex64_t>* shifted_op
-			=dynamic_cast<CDenseMatrixOperator<complex64_t>*>(complex_op->clone());
+		CDenseMatrixOperator<complex64_t, float64_t>* shifted_op
+			=new CDenseMatrixOperator<complex64_t, float64_t>(complex_op);
 
 		// move the shift inside the operator
 		// (see CRationalApproximation)
@@ -114,21 +110,17 @@ CJobResultAggregator* CLogRationalApproximationIndividual::submit_jobs(
 		// create a job and submit to the engine
 		CRationalApproximationIndividualJob* job
 			=new CRationalApproximationIndividualJob(agg, m_linear_solver, 
-			shifted_op, s, m_weights[i]);
+				shifted_op, sample, m_weights[i]);
 		SG_REF(job);
-
-		// sanity check
-		REQUIRE(m_computation_engine, "Computation engine is NULL\n");
 
 		m_computation_engine->submit_job(job);
 
 		// we can safely unref the job here, computation engine takes it from here
 		SG_UNREF(job);
-		// its important that we unref it here
-		SG_UNREF(shifted_op);
 	}
 	SG_UNREF(complex_op);
 
+	SG_DEBUG("OperatorFunction::submit_jobs(): Leaving..\n");
 	return agg;
 }
 

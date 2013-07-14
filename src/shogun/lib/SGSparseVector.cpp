@@ -57,6 +57,63 @@ T SGSparseVector<T>::dense_dot(T alpha, T* vec, int32_t dim, T b)
 	return result;
 }
 
+template <> template <>
+float64_t SGSparseVector<float64_t>::dense_dot(int32_t* vec, int32_t dim)
+{
+	ASSERT(vec)
+	float64_t result(0.0);
+
+	if (features)
+	{
+		for (int32_t i=0; i<num_feat_entries; i++)
+		{
+			if (features[i].feat_index<dim)
+				result+=vec[features[i].feat_index]*features[i].entry;
+		}
+	}
+
+	return result;
+}
+
+template <> template <>
+complex64_t SGSparseVector<complex64_t>::dense_dot(float64_t* vec, int32_t dim)
+{
+	ASSERT(vec)
+	complex64_t result(0.0);
+
+	if (features)
+	{
+		for (int32_t i=0; i<num_feat_entries; i++)
+		{
+			if (features[i].feat_index<dim)
+				result+=vec[features[i].feat_index]*features[i].entry;
+		}
+	}
+
+	return result;
+}
+
+template <> template <>
+complex64_t SGSparseVector<complex64_t>::dense_dot(int32_t* vec, int32_t dim)
+{
+	ASSERT(vec)
+	complex64_t result(0.0);
+
+	if (features)
+	{
+		for (int32_t i=0; i<num_feat_entries; i++)
+		{
+			if (features[i].feat_index<dim)
+			{
+				result+=static_cast<complex64_t>(vec[features[i].feat_index])
+					*features[i].entry;
+			}
+		}
+	}
+
+	return result;
+}
+
 template <class T>
 T SGSparseVector<T>::sparse_dot(const SGSparseVector<T>& v)
 {

@@ -18,8 +18,8 @@
 namespace shogun
 {
 template<class T> class SGVector;
-template<class T> class CLinearOperator;
-template<class T> class CLinearSolver;
+template<class T, class ST> class CLinearOperator;
+template<class T, class ST> class CLinearSolver;
 
 /** @brief Implementation of independent job that solves one of the family
  * of shifted systems in rational approximation of linear operator function
@@ -45,9 +45,9 @@ public:
 	 * vector after solving the linear-system
 	 */
 	CRationalApproximationIndividualJob(CJobResultAggregator* aggregator,
-		CLinearSolver<complex64_t>* linear_solver,
-		CLinearOperator<complex64_t>* linear_operator,
-		SGVector<complex64_t> vector, complex64_t weight);
+		CLinearSolver<complex64_t, float64_t>* linear_solver,
+		CLinearOperator<complex64_t, float64_t>* linear_operator,
+		SGVector<float64_t> vector, complex64_t weight);
 
 	/** destructor */
 	virtual ~CRationalApproximationIndividualJob();
@@ -63,13 +63,13 @@ public:
 
 private:
 	/** the shifted operator for linear system to be solved */
-	CLinearOperator<complex64_t>* m_operator;
+	CLinearOperator<complex64_t, float64_t>* m_operator;
 
 	/** the vector of the system to be solved */
-	SGVector<complex64_t> m_vector;
+	SGVector<float64_t> m_vector;
 
 	/** the complex linear solver for solving systems */
-	CLinearSolver<complex64_t>* m_linear_solver;
+	CLinearSolver<complex64_t, float64_t>* m_linear_solver;
 
 	/** the weight to be multiplied with the solution vector */
 	complex64_t m_weight;

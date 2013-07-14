@@ -40,6 +40,39 @@ SGSparseMatrix<T>::~SGSparseMatrix()
 	unref();
 }
 
+template <> template <>
+const SGVector<complex64_t> SGSparseMatrix<complex64_t>::operator*(
+	SGVector<float64_t> v) const
+{
+	SGVector<complex64_t> result(num_vectors);
+	REQUIRE(v.vlen==num_features, "Dimension mismatch!\n");
+	for (index_t i=0; i<num_vectors; ++i)
+		result[i]=sparse_matrix[i].dense_dot(v.vector, v.vlen);
+	return result;
+}
+
+template <> template <>
+const SGVector<complex64_t> SGSparseMatrix<complex64_t>::operator*(
+	SGVector<int32_t> v) const
+{
+	SGVector<complex64_t> result(num_vectors);
+	REQUIRE(v.vlen==num_features, "Dimension mismatch!\n");
+	for (index_t i=0; i<num_vectors; ++i)
+		result[i]=sparse_matrix[i].dense_dot(v.vector, v.vlen);
+	return result;
+}
+
+template <> template <>
+const SGVector<float64_t> SGSparseMatrix<float64_t>::operator*(
+	SGVector<int32_t> v) const
+{
+	SGVector<float64_t> result(num_vectors);
+	REQUIRE(v.vlen==num_features, "Dimension mismatch!\n");
+	for (index_t i=0; i<num_vectors; ++i)
+		result[i]=sparse_matrix[i].dense_dot(v.vector, v.vlen);
+	return result;
+}
+
 template<class T>
 void SGSparseMatrix<T>::load(CFile* loader)
 {

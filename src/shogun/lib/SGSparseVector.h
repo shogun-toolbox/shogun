@@ -72,6 +72,15 @@ public:
 	 */
 	T dense_dot(T alpha, T* vec, int32_t dim, T b);
 
+	/** compute the dot product between dense weights and a sparse feature vector
+	 * sparse^T * w
+	 *
+	 * @param vec dense vector to compute dot product with
+	 * @param dim length of the dense vector
+	 * @return dot product between dense weights and a sparse feature vector
+	 */
+	template<typename ST> T dense_dot(ST* vec, int32_t dim);
+
 	/** compute the dot product between current sparse vector and a given
 	 * sparse vector.
 	 * sparse_a^T * sparse_b

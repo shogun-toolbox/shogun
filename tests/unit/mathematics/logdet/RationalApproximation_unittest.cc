@@ -40,7 +40,7 @@ TEST(RationalApproximation, precompute)
 	m(1,0)=1.0;
 	m(1,1)=3.0;
 
-	CDenseMatrixOperator<float64_t>* op=new CDenseMatrixOperator<float64_t>(m);
+	CDenseMatrixOperator<float64_t, float64_t>* op=new CDenseMatrixOperator<float64_t, float64_t>(m);
 	SG_REF(op);
 
 	CDirectEigenSolver* eig_solver=new CDirectEigenSolver(op);
@@ -51,7 +51,7 @@ TEST(RationalApproximation, precompute)
 
 	CLogRationalApproximationIndividual *op_func
 		=new CLogRationalApproximationIndividual(
-			op, e, eig_solver, (CLinearSolver<complex64_t>*)linear_solver, 5);
+			op, e, eig_solver, (CLinearSolver<complex64_t, float64_t>*)linear_solver, 5);
 	SG_REF(op_func);
 
 	op_func->precompute();
@@ -112,7 +112,7 @@ TEST(RationalApproximation, trace_accuracy)
 	}
 
 	// create the operator
-	CDenseMatrixOperator<float64_t>* op=new CDenseMatrixOperator<float64_t>(m);
+	CDenseMatrixOperator<float64_t, float64_t>* op=new CDenseMatrixOperator<float64_t, float64_t>(m);
 	SG_REF(op);
 
 	// create the eigen solver for finding max/min eigenvalues
@@ -201,4 +201,5 @@ TEST(RationalApproximation, trace_accuracy)
 	SG_UNREF(e);
 	SG_UNREF(op);
 }
+
 #endif // HAVE_EIGEN3

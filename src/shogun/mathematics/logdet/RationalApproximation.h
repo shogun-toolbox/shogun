@@ -17,7 +17,7 @@ namespace shogun
 {
 
 template<class T> class SGVector;
-template<class T> class CLinearOperator;
+template<class T, class ST> class CLinearOperator;
 class CIndependentComputationEngine;
 class CJobResultAggregator;
 class CEigenSolver;

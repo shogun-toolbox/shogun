@@ -19,8 +19,8 @@ namespace shogun
 {
 
 template<class T> class SGVector;
-template<class T> class CDenseMatrixOperator;
-template<class T> class CLinearSolver;
+template<class T, class ST> class CDenseMatrixOperator;
+template<class T, class ST> class CLinearSolver;
 class CJobResultAggregator;
 class CIndependentComputationEngine;
 
@@ -50,10 +50,10 @@ public:
 	 * of discretization of the contour integral
 	 */
 	CLogRationalApproximationIndividual(
-		CDenseMatrixOperator<float64_t>* linear_operator,
+		CDenseMatrixOperator<float64_t, float64_t>* linear_operator,
 		CIndependentComputationEngine* computation_engine,
 		CEigenSolver* eigen_solver,
-		CLinearSolver<complex64_t>* linear_solver,
+		CLinearSolver<complex64_t, float64_t>* linear_solver,
 		index_t num_shifts);
 
 	/** destructor */
@@ -78,7 +78,7 @@ public:
 
 private:
 	/** the linear solver for solving complex systems */
-	CLinearSolver<complex64_t>* m_linear_solver;
+	CLinearSolver<complex64_t, float64_t>* m_linear_solver;
 
 	/** initialize with default values and register params */
 	void init();
