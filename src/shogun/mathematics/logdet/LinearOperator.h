@@ -20,7 +20,7 @@ template<class T> class SGVector;
 /** @brief Abstract template base class that represents a linear operator,
  *  e.g. a matrix
  */
-template<class T> class CLinearOperator : public CSGObject
+template<class T, class ST=T> class CLinearOperator : public CSGObject
 {
 public:
 	/** default constructor */
@@ -65,7 +65,7 @@ public:
 	 * @param b the vector to which the linear operator applies
 	 * @return the result vector
 	 */
-	virtual SGVector<T> apply(SGVector<T> b) const = 0;
+	virtual SGVector<T> apply(SGVector<ST> b) const = 0;
 
 	/** @return object name */
 	virtual const char* get_name() const
@@ -103,6 +103,7 @@ template class CLinearOperator<float32_t>;
 template class CLinearOperator<float64_t>;
 template class CLinearOperator<floatmax_t>;
 template class CLinearOperator<complex64_t>;
+template class CLinearOperator<complex64_t, float64_t>;
 }
 
 #endif // LINEAR_OPERATOR_H_

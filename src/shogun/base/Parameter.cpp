@@ -3986,7 +3986,7 @@ bool TParameter::copy(TParameter* target)
 				else
 					num_bytes=*m_datatype.m_length_y *
 						(*m_datatype.m_length_y) * m_datatype.sizeof_stype();
-				*(char**)target->m_parameter=SG_CALLOC(char, num_bytes);
+				*(char**)target->m_parameter=SG_MALLOC(char, num_bytes);
 
 				/* use length of source */
 				*target->m_datatype.m_length_y=*m_datatype.m_length_y;

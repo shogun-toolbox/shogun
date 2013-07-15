@@ -26,7 +26,8 @@ template<class T> class SGMatrix;
  * being the matrix operator and \f$x\in\mathbb{C}^{n}\f$ being the vector.
  * The result is a vector \f$y\in\mathbb{C}^{m}\f$.
  */
-template<class T> class CDenseMatrixOperator : public CMatrixOperator<T>
+template<class T, class ST=T> class CDenseMatrixOperator
+	: public CMatrixOperator<T, ST>
 {
 /** this class has support for complex64_t */
 typedef bool supports_complex64_t;
@@ -42,6 +43,13 @@ public:
 	 */
 	CDenseMatrixOperator(SGMatrix<T> op);
 
+	/** 
+	 * copy constructor that creates a deep copy
+	 *
+	 * @param orig the original dense matrix operator
+	 */
+	CDenseMatrixOperator(const CDenseMatrixOperator<T, ST>* orig);
+
 	/** destructor */
 	~CDenseMatrixOperator();
 
@@ -51,7 +59,7 @@ public:
 	 * @param b the vector to which the linear operator applies
 	 * @return the result vector
 	 */
-	virtual SGVector<T> apply(SGVector<T> b) const;
+	virtual SGVector<T> apply(SGVector<ST> b) const;
 
 	/**
 	 * method that sets the main diagonal of the matrix
