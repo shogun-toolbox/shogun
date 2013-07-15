@@ -155,7 +155,6 @@ void CStreamingFileFromDenseFeatures<T>::get_vector(T*& vector,
 
 	vector=sg_vector.vector;
 	num_feat=sg_vector.vlen;
-	;
 	vector_num++;
 
 }
