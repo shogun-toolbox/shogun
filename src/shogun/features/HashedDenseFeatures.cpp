@@ -11,10 +11,11 @@
 #include <shogun/features/HashedDenseFeatures.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/lib/Hash.h>
+#include <shogun/lib/DynamicArray.h>
 #include <shogun/io/SGIO.h>
+#include <shogun/mathematics/Math.h>
 
 #include <string.h>
-#include <iostream>
 
 using namespace shogun;
 
@@ -102,28 +103,11 @@ float64_t CHashedDenseFeatures<ST>::dot(int32_t vec_idx1, CDotFeatures* df,
 
 	CHashedDenseFeatures<ST>* feats = (CHashedDenseFeatures<ST>* ) df;
 	ASSERT(feats->get_dim_feature_space() == get_dim_feature_space())
-	SGVector<ST> vec_1 = dense_feats->get_feature_vector(vec_idx1);
-	SGVector<ST> vec_2 = feats->dense_feats->get_feature_vector(vec_idx2);
 
-	SGVector<ST> h_vec_1(dim);
-	SGVector<ST> h_vec_2(dim);
-	
-	SGVector<ST>::fill_vector(h_vec_1, dim, 0);
-	SGVector<ST>::fill_vector(h_vec_2, dim, 0);
+	SGSparseVector<uint32_t> vec_1 = get_hashed_feature_vector(vec_idx1);
+	SGSparseVector<uint32_t> vec_2 = feats->get_hashed_feature_vector(vec_idx2);
 
-	for (index_t i=0; i<vec_1.vlen; i++)
-	{
-		uint32_t h_idx = CHash::MurmurHash3((uint8_t* ) &vec_1[i], sizeof (ST), i);
-		h_vec_1[h_idx%dim]++;
-		h_idx = CHash::MurmurHash3((uint8_t* ) &vec_2[i], sizeof (ST), i);
-		h_vec_2[h_idx%dim]++;
-		
-	}
-
-	float64_t result = SGVector<ST>::dot(h_vec_1.vector, h_vec_2.vector, dim);
-	
-	dense_feats->free_feature_vector(vec_1, vec_idx1);
-	feats->dense_feats->free_feature_vector(vec_2, vec_idx2);
+	float64_t result = vec_1.sparse_dot(vec_2);
 	
 	return result;	
 }
@@ -211,6 +195,56 @@ template <class ST>
 int32_t CHashedDenseFeatures<ST>::get_num_vectors() const
 {
 	return dense_feats->get_num_vectors();
+}
+
+template <class ST>
+SGSparseVector<uint32_t> CHashedDenseFeatures<ST>::get_hashed_feature_vector(int32_t vec_idx)
+{
+	SGVector<ST> vec = dense_feats->get_feature_vector(vec_idx);
+	SGSparseVector<uint32_t> hashed_vec = CHashedDenseFeatures<ST>::get_hashed_vector(
+			vec, dim);
+	dense_feats->free_feature_vector(vec, vec_idx);
+	return hashed_vec;
+}
+
+template <class ST>
+SGSparseVector<uint32_t> CHashedDenseFeatures<ST>::get_hashed_vector(SGVector<ST> vec, int32_t dim)
+{
+	CDynamicArray<ST> indices(vec.size());
+	for (index_t i=0; i<vec.size(); i++)
+	{
+		uint32_t hash = CHash::MurmurHash3((uint8_t* ) &vec[i], sizeof (ST), i);
+		indices.append_element(hash % dim);
+	}
+
+	CMath::qsort(indices.get_array(), indices.get_num_elements());
+
+	int32_t num_different_indices = 0;
+	for(index_t i=0; i<indices.get_num_elements(); i++)
+	{
+		num_different_indices++;
+		while ( (i+1 < indices.get_num_elements()) &&
+				(indices[i+1] == indices[i]) )
+			i++;
+	}
+
+	SGSparseVector<uint32_t> hashed_vector(num_different_indices);
+
+	int32_t sparse_feat_index = 0;
+	for (index_t i=0; i<indices.get_num_elements(); i++)
+	{
+		int32_t count = 1;
+		while ( (i+1 < indices.get_num_elements()) &&
+				(indices[i+1] == indices[i]) )
+		{
+			count++;
+			i++;
+		}
+		hashed_vector.features[sparse_feat_index].feat_index = indices[i];
+		hashed_vector.features[sparse_feat_index++].entry = count;
+	}
+
+	return hashed_vector;
 }
 
 template class CHashedDenseFeatures<bool>;
