@@ -12,7 +12,7 @@ notifications:
     template:
       - "it's %{author}'s turn to pay the next round of drinks for the massacre he caused in %{repository}: %{build_url}"
 env:
- - INTERFACES=" --gmock=`pwd`/shogun-toolbox/shogun/gmock-1.6.0 --gtest=`pwd`/shogun-toolbox/shogun/gmock-1.6.0/gtest" EXTRA_PACKAGES="valgrind"
+ - INTERFACES=" --gmock=`pwd`/shogun-toolbox/shogun/gmock-1.6.0 --gtest=`pwd`/shogun-toolbox/shogun/gmock-1.6.0/gtest" EXTRA_PACKAGES="valgrind python-jinja2"
  - INTERFACES=python_static EXTRA_PACKAGES="python-numpy-dev python-dev"
  - INTERFACES=python_modular EXTRA_PACKAGES="python-numpy-dev python-dev python-scipy swig2.0"
  - INTERFACES=r_modular EXTRA_PACKAGES="r-base-core swig2.0"

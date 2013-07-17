@@ -1,0 +1,22 @@
+/*
+ * THIS IS A GENERATED FILE!  DO NOT CHANGE THIS FILE!  CHANGE THE
+ * CORRESPONDING LIBSHOGUN FILE, PLEASE!
+ */
+
+#include <shogun/base/SGObject.h>
+#include <shogun/base/class_list.h>
+#include <gtest/gtest.h>
+
+using namespace shogun;
+
+{% for class in class_list %}
+TEST(SGObject,clone_equals_{{class}})
+{
+	CSGObject* object = new_sgserializable("{{class}}", PT_NOT_GENERIC);
+	ASSERT_TRUE(object != NULL);
+	CSGObject* clone = object->clone();
+	EXPECT_TRUE(object->equals(clone));
+	SG_UNREF(object);
+	SG_UNREF(clone);
+}
+{% endfor %}

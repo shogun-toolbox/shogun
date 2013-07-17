@@ -12,6 +12,9 @@ all:
 endif
 
 TESTSRCFILES = $(shell find $(SRCDIR) -name "*$(EXT_SRC_TEST)")
+TMPFILES	 = $(shell find $(SRCDIR) -name "*.cc.jinja2")
+SRCTMPFILES  = $(TMPFILES:.cc.jinja2=.cc)
+TESTSRCFILES += $(SRCTMPFILES)
 TESTOBJFILES = $(patsubst %$(EXT_SRC_TEST),%$(EXT_OBJ_TEST), $(TESTSRCFILES))
 
 gtest-all.o: $(GTEST_DIR)/src/gtest-all.cc
@@ -45,9 +48,14 @@ valgrind-per-module: shogun-unit-test
 	 xargs -I{} valgrind $(VALGRINDOPTS) ./shogun-unit-test --gtest_filter={}\*
 
 %$(EXT_OBJ_TEST): %$(EXT_SRC_TEST)
-	@$(COMP_CPP) -Werror -I$(SHOGUNSRCTOP) $(COMPFLAGS_CPP) $(COMPFLAGS_GTEST_CPP) $(COMPFLAGS_GMOCK_CPP) $(DEFINES) -c $(INCLUDES) -o $@ $<
+	@$(COMP_CPP) -I$(SHOGUNSRCTOP) $(COMPFLAGS_CPP) $(COMPFLAGS_GTEST_CPP) $(COMPFLAGS_GMOCK_CPP) $(DEFINES) -c $(INCLUDES) -o $@ $<
 	@echo 'Compiling $@'
+	@test -f $<.jinja2 && rm -f $< || true
+
+%$(EXT_SRC_TEST):
+	@echo Generating $@
+	@python2.7 $@.py $@.jinja2
 
 clean:
-	@rm -f ./shogun-unit-test libgmock.a gmock-all.o gtest-all.o $(TESTOBJFILES)
+	@rm -f ./shogun-unit-test libgmock.a gmock-all.o gtest-all.o $(TESTOBJFILES) $(SRCTMPFILES)
 	@echo 'Removing compiled binaries'
