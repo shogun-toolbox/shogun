@@ -8,8 +8,7 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
 
-#include <shogun/converter/ica/Jade.h>
-#include <shogun/evaluation/ica/PermutationMatrix.h>
+#include <shogun/converter/ica/SOBI.h>
 
 using namespace Eigen;
 
@@ -18,7 +17,7 @@ typedef Matrix< float64_t, Dynamic, 1, ColMajor > EVector;
 
 using namespace shogun;
 
-TEST(CJade, blind_source_separation)
+TEST(CSOBI, blind_source_separation)
 {
 	// Generate sample data	
 	int FS = 4000;
@@ -45,22 +44,18 @@ TEST(CJade, blind_source_separation)
 	CDenseFeatures< float64_t >* mixed_signals = new CDenseFeatures< float64_t >(X);
 
 	// Separate
-	CJade* jade = new CJade();
-	SG_REF(jade);
-	CFeatures* signals = jade->apply(mixed_signals);
+	CSOBI* sobi = new CSOBI();
+	SG_REF(sobi);
+	CFeatures* signals = sobi->apply(mixed_signals);
 	SG_REF(signals);
 
-	// Close to a permutation matrix (with random scales)
-	Eigen::Map<EMatrix> EA(jade->get_mixing_matrix().matrix,2,2);
-	SGMatrix<float64_t> P(2,2);
-	Eigen::Map<EMatrix> EP(P.matrix,2,2);
-	EP = EA.inverse() * A;
+	// Separation error
+	Eigen::Map<EMatrix> ES (((CDenseFeatures<float64_t>*)signals)->get_feature_matrix().matrix,2,FS+1);
+	double sep_error = (S-ES).array().abs().sum();
+	
+	EXPECT_LE(sep_error, 1e-6);
 
-	// Test if output is correct
-	bool isperm = is_permutation_matrix(P);
-	EXPECT_EQ(isperm,true);
-
-	SG_UNREF(jade);
+	SG_UNREF(sobi);
 	SG_UNREF(signals);
 }
 
