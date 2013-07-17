@@ -18,6 +18,8 @@ def get_class_list_content():
     f.close()
     return content
 
+def isvalid(sho_class):
+    return not sho_class.startswith('CGUI')
 
 def get_class_list(class_list_content):
     import re
@@ -36,8 +38,11 @@ def get_class_list(class_list_content):
                     in_class_list = False
                     continue
                 result = re.match(r"{\"(?P<sho_class>\w+)\"", l[0])
+                
                 if result:
-                    class_list.append(result.group('sho_class'))
+                    sho_class=result.group('sho_class')
+                    if isvalid(sho_class):
+                        class_list.append(sho_class)
     return class_list
 
 templateLoader = jinja2.FileSystemLoader(searchpath="./")
