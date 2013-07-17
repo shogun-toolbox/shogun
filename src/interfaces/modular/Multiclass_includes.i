@@ -51,5 +51,6 @@
  #include <shogun/multiclass/ConjugateIndex.h>
  #include <shogun/multiclass/GaussianNaiveBayes.h>
  #include <shogun/multiclass/QDA.h>
+ #include <shogun/multiclass/MCLDA.h>
  #include <shogun/multiclass/ShareBoost.h>
 %}
