@@ -31,7 +31,7 @@ enum EDirectSolverType
 /** @brief Class that provides a solve method for complex dense-matrix
  * linear systems
  */
-class CDirectLinearSolverComplex : public CLinearSolver<complex64_t>
+class CDirectLinearSolverComplex : public CLinearSolver<complex64_t, float64_t>
 {
 public:
 	/** default constructor */
@@ -55,7 +55,7 @@ public:
 	 * @return the solution vector
 	 */
 	virtual SGVector<complex64_t> solve(
-		CLinearOperator<complex64_t>* A, SGVector<complex64_t> b);
+		CLinearOperator<complex64_t, float64_t>* A, SGVector<float64_t> b);
 
 	/** @return object name */
 	virtual const char* get_name() const

@@ -34,12 +34,13 @@ TEST(RationalApproximationIndividualJob, compute)
 	mi(0,1)=0.0;
 	mi(1,0)=0.0;
 	mi(1,1)=1.0;
-	CDenseMatrixOperator<float64_t>* identity
-		=new CDenseMatrixOperator<float64_t>(mi);
+	CDenseMatrixOperator<float64_t, float64_t>* identity
+		=new CDenseMatrixOperator<float64_t, float64_t>(mi);
 	SG_REF(identity);
 
 	SG_SDEBUG("creating op\n");
-	CDenseMatrixOperator<complex64_t>* op=new CDenseMatrixOperator<complex64_t>(m);
+	CDenseMatrixOperator<complex64_t, float64_t>* op
+		=new CDenseMatrixOperator<complex64_t, float64_t>(m);
 	SG_REF(op);
 	
 	const float64_t const_multiplier=2.0;
@@ -55,14 +56,9 @@ TEST(RationalApproximationIndividualJob, compute)
 	CDirectLinearSolverComplex* solver=new CDirectLinearSolverComplex();
 	SG_REF(solver);
 
-	// creating job
-	SGVector<complex64_t> complex_s(size);
-	for (index_t i=0; i<s.vlen; ++i)
-		complex_s[i]=s[i];
-
 	CRationalApproximationIndividualJob* job
 		=new CRationalApproximationIndividualJob(agg, 
-		(CLinearSolver<complex64_t>*)solver, op, complex_s, weight);
+			(CLinearSolver<complex64_t, float64_t>*)solver, op, s, weight);
 	SG_REF(job);
 	job->compute();
 	SG_UNREF(job);
