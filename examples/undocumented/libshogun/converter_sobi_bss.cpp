@@ -20,7 +20,7 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
 
-#include <shogun/converter/ica/Jade.h>
+#include <shogun/converter/ica/SOBI.h>
 
 using namespace Eigen;
 
@@ -58,8 +58,8 @@ void test()
 
 	// Mixing Matrix
 	EMatrix A(2,2);
-	A(0,0) = 1;    A(0,1) = 0.85;
-	A(1,0) = 0.55;  A(1,1) = 1;
+	A(0,0) = 1;    A(0,1) = 0.5;
+	A(1,0) = 0.5;  A(1,1) = 1;
 
 	std::cout << "Mixing Matrix:" << std::endl;
 	std::cout << A << std::endl << std::endl;
@@ -71,14 +71,14 @@ void test()
 	CDenseFeatures< float64_t >* mixed_signals = new CDenseFeatures< float64_t >(X);
 
 	// Separate
-	CJade* jade = new CJade();
-	SG_REF(jade);
+	CSOBI* sobi = new CSOBI();
+	SG_REF(sobi);
 
-	CFeatures* signals = jade->apply(mixed_signals);
+	CFeatures* signals = sobi->apply(mixed_signals);
 	SG_REF(signals);
 
 	// Estimated Mixing Matrix	
-	SGMatrix<float64_t> est_A = jade->get_mixing_matrix();
+	SGMatrix<float64_t> est_A = sobi->get_mixing_matrix();
 	Eigen::Map<EMatrix> est_EA(est_A.matrix, 2,2);
 		
 	std::cout << "Estimated Mixing Matrix:" << std::endl;
@@ -90,7 +90,7 @@ void test()
 
 	std::cout << "Separation error: " << sep_error << std::endl;
 
-	SG_UNREF(jade);
+	SG_UNREF(sobi);
 	SG_UNREF(signals);
 	return;
 }

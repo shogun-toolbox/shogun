@@ -25,6 +25,7 @@
 %rename (TDistributedStochasticNeighborEmbedding) CTDistributedStochasticNeighborEmbedding;
 %rename (ManifoldSculpting) CManifoldSculpting;
 %rename (Jade) CJade;
+%rename (SOBI) CSOBI;
 
 %newobject shogun::CEmbeddingConverter::apply;
 %newobject shogun::*::embed_kernel;
@@ -48,3 +49,4 @@
 %include <shogun/converter/TDistributedStochasticNeighborEmbedding.h>
 %include <shogun/converter/ManifoldSculpting.h>
 %include <shogun/converter/ica/Jade.h>
+%include <shogun/converter/ica/SOBI.h>
