@@ -7,8 +7,8 @@
  * Written (W) 2013 Kevin Hughes
  */
 
-#ifndef JADE_H_
-#define JADE_H_
+#ifndef SOBI_H_
+#define SOBI_H_
 
 #include <shogun/lib/config.h>
 #ifdef HAVE_EIGEN3
@@ -20,27 +20,28 @@ namespace shogun
 
 class CFeatures;
 
-/** @brief class Jade
+/** @brief class SOBI
  * 
- * Implements the JADE algorithm for Independent
- * Component Analysis (ICA) and Blind Source
- * Separation (BSS).
+ * Implements the Second Order Blind Identification (SOBI) 
+ * algorithm for Independent Component Analysis (ICA) and 
+ * Blind Source Separation (BSS). This algorithm is also 
+ * sometime refered to as Temporal Decorrelation Separation
+ * (TDSep).
  * 
- * Cardoso, J. F., & Souloumiac, A. (1993). 
- * Blind beamforming for non-Gaussian signals. 
- * In IEE Proceedings F (Radar and Signal Processing) 
- * (Vol. 140, No. 6, pp. 362-370). IET Digital Library.
+ * Belouchrani, A., Abed-Meraim, K., Cardoso, J. F., & Moulines, E. (1997). 
+ * A blind source separation technique using second-order statistics. 
+ * Signal Processing, IEEE Transactions on, 45(2), 434-444.
  * 
  */
-class CJade: public CConverter
+class CSOBI: public CConverter
 {
 	public:
 		
 		/** constructor */
-		CJade();
+		CSOBI();
 
 		/** destructor */
-		virtual ~CJade();
+		virtual ~CSOBI();
 
 		/** apply to features
 		 * @param features to embed
@@ -48,12 +49,22 @@ class CJade: public CConverter
 		 */
 		virtual CFeatures* apply(CFeatures* features);
 
+		/** getter for tau parameter
+		 * @return tau vector
+		 */
+		SGVector<float64_t> get_tau() const;
+
+		/** setter for tau parameter
+		 * @param tau vector
+		 */
+		void set_tau(SGVector<float64_t> tau);
+
 		/** getter for mixing_matrix
 		 * @return mixing_matrix
 		 */
 		SGMatrix<float64_t> get_mixing_matrix() const;
 
-		virtual const char* get_name() const { return "Jade"; };
+		virtual const char* get_name() const { return "SOBI"; };
 
 	protected:
 
@@ -62,8 +73,9 @@ class CJade: public CConverter
 
 	private:
 		
+		SGVector<float64_t> m_tau;
 		SGMatrix<float64_t> m_mixing_matrix;
 };	
 }
 #endif // HAVE_EIGEN3
-#endif // JADE
+#endif // SOBI

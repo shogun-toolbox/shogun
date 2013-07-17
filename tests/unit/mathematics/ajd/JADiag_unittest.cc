@@ -12,68 +12,14 @@
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/ajd/JADiag.h>
 
+#include <shogun/evaluation/ica/PermutationMatrix.h>
+
 using namespace Eigen;
 
 typedef Matrix< float64_t, Dynamic, Dynamic, ColMajor > EMatrix;
 typedef Matrix< float64_t, Dynamic, 1, ColMajor > EVector;
 
 using namespace shogun;
-
-/*
-Function that tests if a Matrix is a permutation matrix
-*/
-namespace {
-bool is_permutation_matrix(EMatrix &mat)
-{
-	// scale
-	mat *= 100;
-	
-	// round
-	for (int i = 0; i < mat.rows(); i++)
-	{
-		for (int j = 0; j < mat.cols(); j++)
-		{
-			if (CMath::abs(CMath::round(mat(i,j))) >= 1.0)
-				mat(i,j) = 1.0;
-			else
-				mat(i,j) = 0.0;
-		}
-	}
-	
-	// Debug print
-	//std::cout << mat << std::endl;
-
-	// check only a single 1 per row
-	for (int i = 0; i < mat.rows(); i++)
-	{
-		int num_ones = 0;
-		for (int j = 0; j < mat.cols(); j++)
-		{
-			if (mat(i,j) >= 1.0)
-				num_ones++;
-		}
-
-		if (num_ones != 1)
-			return false;
-	}
-	
-	// check only a single 1 per col
-	for (int j = 0; j < mat.cols(); j++)
-	{
-		int num_ones = 0;
-		for (int i = 0; i < mat.rows(); i++)
-		{
-			if (mat(i,j) >= 1.0)
-				num_ones++; 
-		}
-		
-		if (num_ones != 1)
-			return false;
-	}
-	
-	return true;
-}
-}
 
 TEST(CJADiag, diagonalize)
 {
@@ -117,10 +63,12 @@ TEST(CJADiag, diagonalize)
 
 	// Close to a permutation matrix (with random scales)
 	Eigen::Map<EMatrix> EV(V.matrix,C_dims[0], C_dims[1]);
-	EMatrix perm = EV * A;
+	SGMatrix<float64_t> P(C_dims[0],C_dims[1]);
+	Eigen::Map<EMatrix> EP(P.matrix,C_dims[0], C_dims[1]);
+	EP = EV * A;
 
 	// Test if output is correct
-	bool isperm = is_permutation_matrix(perm);
+	bool isperm = is_permutation_matrix(P);
 	EXPECT_EQ(isperm,true);
 }
 

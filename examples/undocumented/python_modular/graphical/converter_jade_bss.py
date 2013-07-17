@@ -30,7 +30,7 @@ S /= S.std(axis=0)
 S = S.T
 
 # Mixing Matrix
-A = np.array([[1, 1], [0.5, 2]])
+A = np.array([[1, 0.5], [0.5, 1]])
 
 # Mix Signals
 X = np.dot(A,S)

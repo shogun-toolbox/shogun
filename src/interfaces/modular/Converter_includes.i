@@ -17,4 +17,5 @@
 #include <shogun/converter/TDistributedStochasticNeighborEmbedding.h>
 #include <shogun/converter/ManifoldSculpting.h>
 #include <shogun/converter/ica/Jade.h>
+#include <shogun/converter/ica/SOBI.h>
 %}
