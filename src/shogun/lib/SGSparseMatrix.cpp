@@ -45,9 +45,10 @@ const SGVector<complex64_t> SGSparseMatrix<complex64_t>::operator*(
 	SGVector<float64_t> v) const
 {
 	SGVector<complex64_t> result(num_vectors);
-	REQUIRE(v.vlen==num_features, "Dimension mismatch!\n");
+	REQUIRE(v.vlen==num_features,
+		"Number of rows of vector should be equal to the number of cols of the matrix!\n");
 	for (index_t i=0; i<num_vectors; ++i)
-		result[i]=sparse_matrix[i].dense_dot(v.vector, v.vlen);
+		result[i]=sparse_matrix[i].dense_dot(v);
 	return result;
 }
 
@@ -56,9 +57,10 @@ const SGVector<complex64_t> SGSparseMatrix<complex64_t>::operator*(
 	SGVector<int32_t> v) const
 {
 	SGVector<complex64_t> result(num_vectors);
-	REQUIRE(v.vlen==num_features, "Dimension mismatch!\n");
+	REQUIRE(v.vlen==num_features,
+		"Number of rows of vector should be equal to the number of cols of the matrix!\n");
 	for (index_t i=0; i<num_vectors; ++i)
-		result[i]=sparse_matrix[i].dense_dot(v.vector, v.vlen);
+		result[i]=sparse_matrix[i].dense_dot(v);
 	return result;
 }
 
@@ -67,9 +69,10 @@ const SGVector<float64_t> SGSparseMatrix<float64_t>::operator*(
 	SGVector<int32_t> v) const
 {
 	SGVector<float64_t> result(num_vectors);
-	REQUIRE(v.vlen==num_features, "Dimension mismatch!\n");
+	REQUIRE(v.vlen==num_features,
+		"Number of rows of vector should be equal to the number of cols of the matrix!\n");
 	for (index_t i=0; i<num_vectors; ++i)
-		result[i]=sparse_matrix[i].dense_dot(v.vector, v.vlen);
+		result[i]=sparse_matrix[i].dense_dot(v);
 	return result;
 }
 

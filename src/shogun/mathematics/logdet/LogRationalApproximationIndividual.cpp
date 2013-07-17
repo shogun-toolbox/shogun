@@ -89,9 +89,7 @@ CJobResultAggregator* CLogRationalApproximationIndividual::submit_jobs(
 		for (index_t j=0; j<m.num_rows; ++j)
 			complex_m(j,i)=complex64_t(m(j,i));
 	}
-	CDenseMatrixOperator<complex64_t, float64_t>* complex_op
-		=new CDenseMatrixOperator<complex64_t, float64_t>(complex_m);
-	SG_REF(complex_op);
+	CDenseMatrixOperator<complex64_t, float64_t> complex_op(complex_m);
 
 	// create num_shifts number of jobs for current sample vector
 	for (index_t i=0; i<m_num_shifts; ++i)
@@ -118,7 +116,6 @@ CJobResultAggregator* CLogRationalApproximationIndividual::submit_jobs(
 		// we can safely unref the job here, computation engine takes it from here
 		SG_UNREF(job);
 	}
-	SG_UNREF(complex_op);
 
 	SG_DEBUG("OperatorFunction::submit_jobs(): Leaving..\n");
 	return agg;

@@ -42,16 +42,16 @@ CDenseMatrixOperator<T, ST>::CDenseMatrixOperator(SGMatrix<T> op)
 
 template<class T, class ST>
 CDenseMatrixOperator<T, ST>::CDenseMatrixOperator(
-	const CDenseMatrixOperator<T, ST>* orig)
-	: CMatrixOperator<T, ST>(orig->get_dimension())
+	const CDenseMatrixOperator<T, ST>& orig)
+	: CMatrixOperator<T, ST>(orig.get_dimension())
 	{
 		init();
 
-		m_operator=SGMatrix<T>(orig->m_operator.num_rows, orig->m_operator.num_cols);
+		m_operator=SGMatrix<T>(orig.m_operator.num_rows, orig.m_operator.num_cols);
 		for (index_t i=0; i<m_operator.num_cols; ++i)
 		{
 			for (index_t j=0; j<m_operator.num_rows; ++j)
-				m_operator(j,i)=orig->m_operator(j,i);
+				m_operator(j,i)=orig.m_operator(j,i);
 		}
 
 		SG_SGCDEBUG("%s deep copy created (%p)\n", this->get_name(), this);

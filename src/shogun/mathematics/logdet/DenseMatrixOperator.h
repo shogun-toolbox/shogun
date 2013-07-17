@@ -48,7 +48,7 @@ public:
 	 *
 	 * @param orig the original dense matrix operator
 	 */
-	CDenseMatrixOperator(const CDenseMatrixOperator<T, ST>* orig);
+	CDenseMatrixOperator(const CDenseMatrixOperator<T, ST>& orig);
 
 	/** destructor */
 	~CDenseMatrixOperator();
