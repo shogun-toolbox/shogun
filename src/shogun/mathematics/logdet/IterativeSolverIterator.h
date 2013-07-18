@@ -24,14 +24,14 @@ namespace shogun
  * @brief struct that contains current state of the iteration for iterative
  * linear solvers
  */
-template<class T> struct _IterInfo
+typedef struct _IterInfo
 {
 	/** norm of current residual */
-	T residual_norm;
+	float64_t residual_norm;
 
 	/** iteration count */
 	int64_t iteration_count;
-};
+} IterInfo;
 
 /**
  * @brief template class that is used as an iterator for an iterative
@@ -45,19 +45,27 @@ template<class T> class IterativeSolverIterator
 {
 
 typedef Matrix<T, Dynamic, 1> VectorXt;
-typedef struct _IterInfo<T> IterInfo;
 
 public:
-	/** default constructor */
+	/**
+	 * constructor
+	 *
+	 * tolerence of the solver is absolute_tolerence + relative_tolerence * ||b||
+	 *
+	 * @param b the vector of the linear system Ax=b
+	 * @param max_iteration_limit maximum iteration limit
+	 * @param relative_tolerence relative tolerence of the iterative method
+	 * @param absolute_tolerence absolute tolerence of the iterative method
+	 */
 	IterativeSolverIterator(const VectorXt& b,
 		int64_t max_iteration_limit=1000,
-		T relative_tolerence=static_cast<T>(1E-5),
-		T absolute_tolerence=static_cast<T>(1E-5))
+		float64_t relative_tolerence=1E-5,
+		float64_t absolute_tolerence=1E-5)
 	: m_max_iteration_limit(max_iteration_limit),
 		m_tolerence(absolute_tolerence+relative_tolerence*b.norm()),
 		m_success(false)
 	{
-		m_iter_info.residual_norm=std::numeric_limits<T>::max();
+		m_iter_info.residual_norm=std::numeric_limits<float64_t>::max();
 		m_iter_info.iteration_count=0;
 	}
 
@@ -74,7 +82,7 @@ public:
 		m_iter_info.residual_norm=residual.norm();
 
 		m_success=m_iter_info.residual_norm < m_tolerence;
-		return m_success ||	m_iter_info.iteration_count > m_max_iteration_limit;
+		return m_success || m_iter_info.iteration_count > m_max_iteration_limit;
 	}
 
 	/** @return current iteration info */
@@ -84,8 +92,11 @@ public:
 	}
 
 	/** @return success status */
-	const bool succeeded() const
+	const bool succeeded(const VectorXt& residual)
 	{
+		m_iter_info.residual_norm=residual.norm();
+
+		m_success=m_iter_info.residual_norm < m_tolerence;
 		return m_success;
 	}
 
@@ -103,7 +114,7 @@ private:
 	const int64_t m_max_iteration_limit;
 
 	/* tolerence of the iterative solver */
-	const T m_tolerence;
+	const float64_t m_tolerence;
 
 	/** true if converged successfully, false otherwise */
 	bool m_success;

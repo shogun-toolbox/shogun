@@ -56,25 +56,25 @@ public:
 	}
 
 	/** set relative tolerence */
-	void set_relative_tolerence(T relative_tolerence)
+	void set_relative_tolerence(float64_t relative_tolerence)
 	{
 		m_relative_tolerence=relative_tolerence;
 	}
 
 	/** @return relative tolerence */
-	const T get_relative_tolerence() const
+	const float64_t get_relative_tolerence() const
 	{
 		return m_relative_tolerence;
 	}
 
 	/** set absolute tolerence */
-	void set_absolute_tolerence(T absolute_tolerence)
+	void set_absolute_tolerence(float64_t absolute_tolerence)
 	{
 		m_absolute_tolerence=absolute_tolerence;
 	}
 
 	/** @return absolute tolerence */
-	const T get_absolute_tolerence() const
+	const float64_t get_absolute_tolerence() const
 	{
 		return m_absolute_tolerence;
 	}
@@ -86,14 +86,15 @@ public:
 	}
 
 protected:
+
 	/** iteration limit for conjugate gradient */
 	int64_t m_max_iteration_limit;
 
 	/** relative tolerence */
-	T m_relative_tolerence;
+	float64_t m_relative_tolerence;
 
 	/** absolute tolerence */
-	T m_absolute_tolerence;
+	float64_t m_absolute_tolerence;
 
 private:
 	/** initialize with default values and register params */

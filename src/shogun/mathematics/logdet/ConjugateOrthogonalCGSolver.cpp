@@ -13,8 +13,9 @@
 
 #include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/eigen3.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/logdet/LinearOperator.h>
-#include <shogun/mathematics/logdet/ConjugateGradientSolver.h>
+#include <shogun/mathematics/logdet/ConjugateOrthogonalCGSolver.h>
 #include <shogun/mathematics/logdet/IterativeSolverIterator.h>
 
 using namespace Eigen;
@@ -22,64 +23,64 @@ using namespace Eigen;
 namespace shogun
 {
 
-CConjugateGradientSolver::CConjugateGradientSolver()
-	: CIterativeLinearSolver<float64_t>()
+CConjugateOrthogonalCGSolver::CConjugateOrthogonalCGSolver()
+	: CIterativeLinearSolver<complex64_t>()
 {
 	SG_GCDEBUG("%s created (%p)\n", this->get_name(), this);
 }
 
-CConjugateGradientSolver::~CConjugateGradientSolver()
+CConjugateOrthogonalCGSolver::~CConjugateOrthogonalCGSolver()
 {
 	SG_GCDEBUG("%s destroyed (%p)\n", this->get_name(), this);
 }
 
-SGVector<float64_t> CConjugateGradientSolver::solve(
-	CLinearOperator<float64_t>* A, SGVector<float64_t> b)
+SGVector<complex64_t> CConjugateOrthogonalCGSolver::solve(
+	CLinearOperator<complex64_t, complex64_t>* A, SGVector<complex64_t> b)
 {
-	SG_DEBUG("CConjugateGradientSolve::solve(): Entering..\n");
+	SG_DEBUG("CConjugateOrthogonalCGSolve::solve(): Entering..\n");
 
 	// sanity check
 	REQUIRE(A, "Operator is NULL!\n");
 	REQUIRE(A->get_dimension()==b.vlen, "Dimension mismatch!\n");
 
 	// the final solution vector, initial guess is 0
-	SGVector<float64_t> result(b.vlen);
+	SGVector<complex64_t> result(b.vlen);
 	result.set_const(0.0);
 
 	// the rest of the part hinges on eigen3 for computing norms
-	Map<VectorXd> x(result.vector, result.vlen);
-	Map<VectorXd> b_map(b.vector, b.vlen);
+	Map<VectorXcd> x(result.vector, result.vlen);
+	Map<VectorXcd> b_map(b.vector, b.vlen);
 
 	// direction vector
-	SGVector<float64_t> p_(result.vlen);
-	Map<VectorXd> p(p_.vector, p_.vlen);
+	SGVector<complex64_t> p_(result.vlen);
+	Map<VectorXcd> p(p_.vector, p_.vlen);
 
 	// residual r_i=b-Ax_i, here x_0=[0], so r_0=b
-	VectorXd r=b_map;
+	VectorXcd r=b_map;
 
 	// initial direction is same as residual
 	p=r;
 
 	// the iterator for this iterative solver
-	IterativeSolverIterator<float64_t> it(b_map, m_max_iteration_limit,
+	IterativeSolverIterator<complex64_t> it(b_map, m_max_iteration_limit,
 		m_relative_tolerence, m_absolute_tolerence);
 
 	// CG iteration begins
-	float64_t r_norm2=r.dot(r);
+	float64_t r_norm2=(r.dot(r)).real();
 
 	for (it.begin(r); !it.end(r); ++it)
 	{
 		// apply linear operator to the direction vector
-		SGVector<float64_t> Ap_=A->apply(p_);
-		Map<VectorXd> Ap(Ap_.vector, Ap_.vlen);
+		SGVector<complex64_t> Ap_=A->apply(p_);
+		Map<VectorXcd> Ap(Ap_.vector, Ap_.vlen);
 
 		// compute p^{T}Ap, if zero, failure
-		float64_t p_dot_Ap=p.dot(Ap);
-		if (p_dot_Ap==0.0)
+		complex64_t p_T_times_Ap=p.transpose()*Ap;
+		if (p_T_times_Ap==0.0)
 			break;
 
 		// compute the alpha parameter of CG
-		float64_t alpha=r_norm2/p_dot_Ap;
+		complex64_t alpha=r_norm2/p_T_times_Ap;
 
 		// update the solution vector and residual
 		// x_{i}=x_{i-1}+\alpha_{i}p
@@ -89,7 +90,7 @@ SGVector<float64_t> CConjugateGradientSolver::solve(
 		r-=alpha*Ap;
 
 		// compute new ||r||_{2}, if zero, converged
-		float64_t r_norm2_i=r.dot(r);
+		float64_t r_norm2_i=(r.dot(r)).real();
 		if (r_norm2_i==0.0)
 			break;
 
@@ -109,7 +110,7 @@ SGVector<float64_t> CConjugateGradientSolver::solve(
 	else
 		SG_WARNING("Did not converge!\n");
 
-	SG_DEBUG("CConjugateGradientSolve::solve(): Leaving..\n");
+	SG_DEBUG("CConjugateOrthogonalCGSolve::solve(): Leaving..\n");
 	return result;
 }
 
