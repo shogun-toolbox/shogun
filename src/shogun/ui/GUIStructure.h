@@ -29,7 +29,7 @@ class CGUIStructure : public CSGObject
 {
 	public:
 		/** constructor */
-		CGUIStructure() {};
+		CGUIStructure();
 		/** constructor
 		 * @param interface
 		 */
@@ -249,6 +249,9 @@ class CGUIStructure : public CSGObject
 
 		/** @return object name */
 		virtual const char* get_name() const { return "GUIStructure"; }
+
+	private:
+		void init();
 
 	protected:
 		/** ui */

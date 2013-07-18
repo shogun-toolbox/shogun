@@ -27,7 +27,7 @@ class CGUIHMM : public CSGObject
 {
 	public:
 		/** constructor */
-		CGUIHMM() { };
+		CGUIHMM();
 		/** constructor
 		 * @param interface
 		 */
@@ -155,6 +155,9 @@ class CGUIHMM : public CSGObject
 
 		/** @return object name */
 		virtual const char* get_name() const { return "GUIHMM"; }
+
+	private:
+		void init();
 
 	protected:
 		/** converge

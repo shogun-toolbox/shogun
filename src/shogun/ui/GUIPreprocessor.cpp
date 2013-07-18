@@ -36,15 +36,28 @@
 
 using namespace shogun;
 
-CGUIPreprocessor::CGUIPreprocessor(CSGInterface* ui_)
-: CSGObject(), ui(ui_)
+CGUIPreprocessor::CGUIPreprocessor()
 {
-	preprocs=new CList(true);
+	init();
+}
+
+CGUIPreprocessor::CGUIPreprocessor(CSGInterface* ui_)
+: CSGObject()
+{
+	ui=ui_;
+	SG_REF(ui);
 }
 
 CGUIPreprocessor::~CGUIPreprocessor()
 {
 	SG_UNREF(preprocs);
+	SG_UNREF(ui);
+}
+
+void CGUIPreprocessor::init()
+{
+	preprocs=new CList(true);
+	ui=NULL;
 }
 
 CPreprocessor* CGUIPreprocessor::create_prunevarsubmean(bool divide_by_std)
