@@ -240,9 +240,16 @@ float32_t CVowpalWabbit::predict_and_finalize(VwExample* ex)
 void CVowpalWabbit::init(CStreamingVwFeatures* feat)
 {
 	features = feat;
-	env = feat->get_env();
+
+	if (feat)
+		env = feat->get_env();
+	else
+	{
+		env=new CVwEnvironment();
+		SG_REF(env);
+	}
+
 	reg = new CVwRegressor(env);
-	SG_REF(env);
 	SG_REF(reg);
 
 	quiet = true;
