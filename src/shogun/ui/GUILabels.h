@@ -25,7 +25,7 @@ class CGUILabels : public CSGObject
 {
 	public:
 		/** constructor */
-		CGUILabels() {};
+		CGUILabels();
 		/** constructor
 		 * @param interface
 		 */
@@ -67,6 +67,9 @@ class CGUILabels : public CSGObject
 
 		/** @return object name */
 		virtual const char* get_name() const { return "GUILabels"; }
+
+	private:
+		void init();
 
 	protected:
 		/** ui */

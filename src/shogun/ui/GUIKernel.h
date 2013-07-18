@@ -25,7 +25,7 @@ class CGUIKernel : public CSGObject
 {
  public:
  	/** constructor */
-	CGUIKernel() { };
+	CGUIKernel();
 	/** constructor
 	 * @param interface
 	 */
@@ -170,6 +170,9 @@ class CGUIKernel : public CSGObject
 
 	/** @return object name */
 	virtual const char* get_name() const { return "GUIKernel"; }
+
+ private:
+	void init();
 
  protected:
  	/** kernel */

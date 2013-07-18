@@ -25,10 +25,7 @@ class CGUIConverter : public CSGObject
 {
 	public:
 		/** constructor */
-		CGUIConverter()
-		{
-
-		};
+		CGUIConverter();
 
 		/** constructor
 		 * @param interface
@@ -63,7 +60,10 @@ class CGUIConverter : public CSGObject
 		~CGUIConverter();
 
 		/** @return object name */
-		virtual const char* get_name() const { return "GUIPreprocessor"; }
+		virtual const char* get_name() const { return "GUIConverter"; }
+
+	private:
+		void init();
 
 	protected:
 
