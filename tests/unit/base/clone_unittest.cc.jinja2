@@ -9,7 +9,7 @@
 
 using namespace shogun;
 
-{% for class in class_list %}
+{% for class in classes %}
 TEST(SGObject,clone_equals_{{class}})
 {
 	CSGObject* object = new_sgserializable("{{class}}", PT_NOT_GENERIC);
@@ -20,3 +20,18 @@ TEST(SGObject,clone_equals_{{class}})
 	SG_UNREF(clone);
 }
 {% endfor %}
+
+{% for class in template_classes %}
+{% for type in types %}
+TEST(SGObject,clone_equals_{{class}}_{{type}})
+{
+	CSGObject* object = new_sgserializable("{{class}}", {{type}});
+	ASSERT_TRUE(object != NULL);
+	CSGObject* clone = object->clone();
+	EXPECT_TRUE(object->equals(clone));
+	SG_UNREF(object);
+	SG_UNREF(clone);
+}
+{% endfor %}
+{% endfor %}
+

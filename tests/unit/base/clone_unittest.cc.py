@@ -18,13 +18,14 @@ def get_class_list_content():
     f.close()
     return content
 
-def isvalid(sho_class):
-    return not sho_class.startswith('CGUI')
+def is_valid(sho_class):
+    return not sho_class.startswith('CGUI') and not sho_class.startswith('GUI')
 
 def get_class_list(class_list_content):
     import re
     in_class_list = False
-    class_list = []
+    classes = []
+    template_classes = []
     for line in class_list_content:
             if line == '\n':
                 continue
@@ -41,9 +42,13 @@ def get_class_list(class_list_content):
                 
                 if result:
                     sho_class=result.group('sho_class')
-                    if isvalid(sho_class):
-                        class_list.append(sho_class)
-    return class_list
+                    if is_valid(sho_class):
+                        print l[1]
+                        if l[1] == 'SHOGUN_BASIC_CLASS':
+                            classes.append(sho_class)
+                        if l[1] == 'SHOGUN_TEMPLATE_CLASS':
+                            template_classes.append(sho_class)
+    return classes, template_classes
 
 templateLoader = jinja2.FileSystemLoader(searchpath="./")
 templateEnv = jinja2.Environment(loader=templateLoader)
@@ -54,9 +59,12 @@ template = templateEnv.get_template(TEMPLATE_FILE)
 # get the content of class_list.cpp
 class_list_content = get_class_list_content()
 
-CLASS_LIST = get_class_list(class_list_content)
+classes, template_classes = get_class_list(class_list_content)
 
-templateVars = { "class_list" : CLASS_LIST}
+types = ['PT_BOOL', 'PT_CHAR', 'PT_INT8', 'PT_UINT8', 'PT_INT16', 'PT_UINT16', 'PT_INT32',
+         'PT_UINT32', 'PT_INT64', 'PT_UINT64', 'PT_FLOAT32', 'PT_FLOAT64', 'PT_FLOATMAX']
+
+templateVars = {"classes" : classes, "template_classes" : template_classes, "types" : types}
 
 outputText = template.render(templateVars)
 

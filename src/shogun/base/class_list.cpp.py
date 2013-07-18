@@ -15,6 +15,9 @@ config_tests=["HAVE_HDF5", "HAVE_JSON", "HAVE_XML", "HAVE_LAPACK", "USE_CPLEX",
 	"USE_SVMLIGHT", "USE_GLPK", "USE_LZO", "USE_GZIP", "USE_BZIP2", "USE_LZMA",
 	"USE_MOSEK", "HAVE_EIGEN3"]
 
+SHOGUN_TEMPLATE_CLASS = "SHOGUN_TEMPLATE_CLASS"
+SHOGUN_BASIC_CLASS = "SHOGUN_BASIC_CLASS"
+
 def check_class(line):
 	if not (line.find('public')==-1 and
 			line.find('private')==-1 and
@@ -78,7 +81,7 @@ def get_includes(classes):
 	except ImportError:
 	    from io import BytesIO
 	cmd=["find", ".", "-false"]
-	for c in classes:
+	for c,t in classes:
 		cmd.extend(["-o", "-name", "%s.h" % c])
 	p = Popen(cmd, stdout=PIPE)
 
@@ -98,16 +101,18 @@ def get_includes(classes):
 
 def get_definitions(classes):
 	definitions=[]
-	for c in classes:
-		d="static CSGObject* __new_C%s(EPrimitiveType g) { return g == PT_NOT_GENERIC? new C%s(): NULL; }" % (c,c)
+	definitions.append("#define %s" % SHOGUN_TEMPLATE_CLASS)
+	definitions.append("#define %s" % SHOGUN_BASIC_CLASS)
+	for c,t in classes:
+		d="static %s CSGObject* __new_C%s(EPrimitiveType g) { return g == PT_NOT_GENERIC? new C%s(): NULL; }" % (SHOGUN_BASIC_CLASS,c,c)
 		definitions.append(d)
 	return definitions
 
 def get_template_definitions(classes, supports_complex):
 	definitions=[]
-	for c in classes:
+	for c,t in classes:
 		d=[]
-		d.append("static CSGObject* __new_C%s(EPrimitiveType g)\n{\n\tswitch (g)\n\t{\n" % c)
+		d.append("static %s CSGObject* __new_C%s(EPrimitiveType g)\n{\n\tswitch (g)\n\t{\n" % (SHOGUN_TEMPLATE_CLASS,c))
 		for t in types:
 			if t in ('BOOL','CHAR'):
 				suffix=''
@@ -123,8 +128,12 @@ def get_template_definitions(classes, supports_complex):
 
 def get_struct(classes):
 	struct=[]
-	for c in classes:
-		s='{"%s", __new_C%s},' % (c,c)
+	for c,template in classes:
+		prefix = SHOGUN_BASIC_CLASS
+		if template:
+			prefix = SHOGUN_TEMPLATE_CLASS
+
+		s='{"%s", %s __new_C%s},' % (c,prefix,c)
 		struct.append(s)
 	return struct
 
@@ -216,7 +225,7 @@ def extract_classes(HEADERS, template, blacklist, supports_complex):
 			if c:
 				ok, line_nr=test_candidate(c, lines, line_nr, supports_complex)
 				if ok:
-					classes.append(c)
+					classes.append((c,template))
 				continue
 
 			line_nr+=1
