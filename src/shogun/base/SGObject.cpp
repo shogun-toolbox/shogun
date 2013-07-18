@@ -1336,6 +1336,7 @@ CSGObject* CSGObject::clone()
 
 	SG_DEBUG("constructing an empty instance of %s\n", get_name());
 	CSGObject* copy=new_sgserializable(get_name(), this->m_generic);
+
 	SG_REF(copy);
 
 	REQUIRE(copy, "Could not create empty instance of \"%s\". The reason for "
