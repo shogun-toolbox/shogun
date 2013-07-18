@@ -59,7 +59,6 @@ bool CBesselKernel::init(CFeatures* l, CFeatures* r)
 void CBesselKernel::init()
 {
 	SG_ADD(&order, "order", "Kernel order.", MS_AVAILABLE);
-	SG_ADD(&width, "width", "Kernel width.", MS_AVAILABLE);
 	SG_ADD(&degree, "degree", "Kernel degree.", MS_AVAILABLE);
 	SG_ADD((CSGObject**) &distance, "distance", "Distance to be used.",
 	    MS_AVAILABLE);
