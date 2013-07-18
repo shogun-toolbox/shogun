@@ -112,14 +112,14 @@ class CDistanceMachine : public CMachine
 		virtual void store_model_features();
 
 		/**
-		 * pthread function for compute distance values
+		 * thread function for computing distance values
 		 *
 		 * @param p thread parameter
 		 */
 		static void* run_distance_thread_lhs(void* p);
 
 		/**
-		 * pthread function for compute distance values
+		 * thread function for computing distance values
 		 *
 		 * @param p thread parameter
 		 */

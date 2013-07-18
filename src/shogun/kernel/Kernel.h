@@ -123,33 +123,6 @@ enum EKernelProperty
 	KP_BATCHEVALUATION = 4  // Kernels that can on the fly generate normals in linadd and more quickly/memory efficient process batches instead of single examples
 };
 
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-/** kernel thread parameters */
-template <class T> struct K_THREAD_PARAM
-{
-	/** kernel */
-	CKernel* kernel;
-	/** start (unit row) */
-	int32_t start;
-	/** end (unit row) */
-	int32_t end;
-	/** start (unit number of elements) */
-	int32_t total_start;
-	/** end (unit number of elements) */
-	int32_t total_end;
-	/** m */
-	int32_t m;
-	/** n */
-	int32_t n;
-	/** result */
-	T* result;
-	/** kernel matrix k(i,j)=k(j,i) */
-	bool symmetric;
-	/** output progress */
-	bool verbose;
-};
-#endif
-
 class CSVM;
 
 /** @brief The Kernel base class.
@@ -314,101 +287,7 @@ class CKernel : public CSGObject
 		 *
 		 * @return the kernel matrix
 		 */
-		template <class T>
-		SGMatrix<T> get_kernel_matrix()
-		{
-			T* result = NULL;
-
-			REQUIRE(has_features(), "no features assigned to kernel\n")
-
-			int32_t m=get_num_vec_lhs();
-			int32_t n=get_num_vec_rhs();
-
-			int64_t total_num = int64_t(m)*n;
-
-			// if lhs == rhs and sizes match assume k(i,j)=k(j,i)
-			bool symmetric= (lhs && lhs==rhs && m==n);
-
-			SG_DEBUG("returning kernel matrix of size %dx%d\n", m, n)
-
-			result=SG_MALLOC(T, total_num);
-
-			int32_t num_threads=parallel->get_num_threads();
-			if (num_threads < 2)
-			{
-				K_THREAD_PARAM<T> params;
-				params.kernel=this;
-				params.result=result;
-				params.start=0;
-				params.end=m;
-				params.total_start=0;
-				params.total_end=total_num;
-				params.n=n;
-				params.m=m;
-				params.symmetric=symmetric;
-				params.verbose=true;
-				get_kernel_matrix_helper<T>((void*) &params);
-			}
-			else
-			{
-				pthread_t* threads = SG_MALLOC(pthread_t, num_threads-1);
-				K_THREAD_PARAM<T>* params = SG_MALLOC(K_THREAD_PARAM<T>, num_threads);
-				int64_t step= total_num/num_threads;
-
-				int32_t t;
-
-				num_threads--;
-				for (t=0; t<num_threads; t++)
-				{
-					params[t].kernel = this;
-					params[t].result = result;
-					params[t].start = compute_row_start(t*step, n, symmetric);
-					params[t].end = compute_row_start((t+1)*step, n, symmetric);
-					params[t].total_start=t*step;
-					params[t].total_end=(t+1)*step;
-					params[t].n=n;
-					params[t].m=m;
-					params[t].symmetric=symmetric;
-					params[t].verbose=false;
-
-					int code=pthread_create(&threads[t], NULL,
-							CKernel::get_kernel_matrix_helper<T>, (void*)&params[t]);
-
-					if (code != 0)
-					{
-						SG_WARNING("Thread creation failed (thread %d of %d) "
-								"with error:'%s'\n",t, num_threads, strerror(code));
-						num_threads=t;
-						break;
-					}
-				}
-
-				params[t].kernel = this;
-				params[t].result = result;
-				params[t].start = compute_row_start(t*step, n, symmetric);
-				params[t].end = m;
-				params[t].total_start=t*step;
-				params[t].total_end=total_num;
-				params[t].n=n;
-				params[t].m=m;
-				params[t].symmetric=symmetric;
-				params[t].verbose=true;
-				get_kernel_matrix_helper<T>(&params[t]);
-
-				for (t=0; t<num_threads; t++)
-				{
-					if (pthread_join(threads[t], NULL) != 0)
-						SG_WARNING("pthread_join of thread %d/%d failed\n", t, num_threads)
-				}
-
-				SG_FREE(params);
-				SG_FREE(threads);
-			}
-
-			SG_DONE()
-
-			return SGMatrix<T>(result,m,n,true);
-		}
+		template <class T> SGMatrix<T> get_kernel_matrix();
 
 
 		/** initialize kernel
@@ -879,56 +758,7 @@ class CKernel : public CSGObject
 		 *
 		 * @param p thread parameters
 		 */
-		template <class T>
-		static void* get_kernel_matrix_helper(void* p)
-		{
-			K_THREAD_PARAM<T>* params= (K_THREAD_PARAM<T>*) p;
-			int32_t i_start=params->start;
-			int32_t i_end=params->end;
-			CKernel* k=params->kernel;
-			T* result=params->result;
-			bool symmetric=params->symmetric;
-			int32_t n=params->n;
-			int32_t m=params->m;
-			bool verbose=params->verbose;
-			int64_t total_start=params->total_start;
-			int64_t total_end=params->total_end;
-			int64_t total=total_start;
-
-			for (int32_t i=i_start; i<i_end; i++)
-			{
-				int32_t j_start=0;
-
-				if (symmetric)
-					j_start=i;
-
-				for (int32_t j=j_start; j<n; j++)
-				{
-					float64_t v=k->kernel(i,j);
-					result[i+j*m]=v;
-
-					if (symmetric && i!=j)
-						result[j+i*m]=v;
-
-					if (verbose)
-					{
-						total++;
-
-						if (symmetric && i!=j)
-							total++;
-
-						if (total%100 == 0)
-							SG_OBJ_PROGRESS(k, total, total_start, total_end)
-
-						if (CSignal::cancel_computations())
-							break;
-					}
-				}
-
-			}
-
-			return NULL;
-		}
+		template <class T> static void* get_kernel_matrix_helper(void* p);
 
 		/** Can (optionally) be overridden to post-initialize some member
 		 *  variables which are not PARAMETER::ADD'ed.  Make sure that at

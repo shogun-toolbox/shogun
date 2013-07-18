@@ -46,7 +46,7 @@ class CDistance;
  * By default euclidean distance is used (with parallel
  * instance replaced by preprocessor's one).
  *
- * Faster landmark approximation is parallel using pthreads.
+ * Faster landmark approximation is parallel using posix threads.
  * As for choice of landmark number it should be at least 3 for
  * proper triangulation. For reasonable embedding accuracy greater
  * values (30%-50% of total examples number) is pretty good for the
