@@ -74,7 +74,7 @@ template <class T> class SGSparseMatrix : public SGReferencedData
 		{
 			SGVector<T> result(num_vectors);
 			REQUIRE(v.vlen==num_features,
-				"Dimension mismatch!\n");
+				"Number of rows of vector should be equal to the number of cols of the matrix!\n");
 			for (index_t i=0; i<num_vectors; ++i)
 				result[i]=sparse_matrix[i].dense_dot(1.0, v.vector, v.vlen, 0.0);
 
