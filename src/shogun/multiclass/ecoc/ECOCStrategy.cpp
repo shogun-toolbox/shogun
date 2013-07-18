@@ -14,17 +14,19 @@
 
 using namespace shogun;
 
-CECOCStrategy::CECOCStrategy()
+CECOCStrategy::CECOCStrategy() : CMulticlassStrategy()
 {
     init();
 }
 
 CECOCStrategy::CECOCStrategy(CECOCEncoder *encoder, CECOCDecoder *decoder)
-    :m_encoder(encoder), m_decoder(decoder)
+    : CMulticlassStrategy()
 {
     init();
     m_encoder=encoder;
     m_decoder=decoder;
+    SG_REF(m_encoder);
+    SG_REF(decoder);
 }
 
 void CECOCStrategy::init()
