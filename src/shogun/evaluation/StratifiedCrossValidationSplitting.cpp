@@ -16,7 +16,7 @@
 using namespace shogun;
 
 CStratifiedCrossValidationSplitting::CStratifiedCrossValidationSplitting() :
-	CSplittingStrategy(0, 0)
+	CSplittingStrategy()
 {
 }
 

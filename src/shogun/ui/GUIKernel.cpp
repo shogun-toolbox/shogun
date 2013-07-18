@@ -63,14 +63,30 @@
 using namespace shogun;
 
 CGUIKernel::CGUIKernel(CSGInterface* ui_)
-: CSGObject(), ui(ui_)
+: CSGObject()
 {
+	init();
+
+	ui=ui_;
+	SG_REF(ui);
+}
+
+CGUIKernel::CGUIKernel()
+{
+	init();
+}
+
+void CGUIKernel::init()
+{
+	ui=NULL;
 	kernel=NULL;
+	initialized=false;
 }
 
 CGUIKernel::~CGUIKernel()
 {
 	SG_UNREF(kernel);
+	SG_UNREF(ui);
 }
 
 CKernel* CGUIKernel::get_kernel()

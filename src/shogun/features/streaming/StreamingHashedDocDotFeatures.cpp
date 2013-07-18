@@ -50,6 +50,8 @@ void CStreamingHashedDocDotFeatures::init(CStreamingFile* file, bool is_labelled
 		SG_REF(tokenizer);
 		converter = new CHashedDocConverter(tzer, CMath::pow(2, bits));
 	}
+	else
+		converter=NULL;
 
 	SG_ADD(&num_bits, "num_bits", "Number of bits for hash", MS_NOT_AVAILABLE);
 	SG_ADD((CSGObject** ) &tokenizer, "tokenizer", "The tokenizer used on the documents",
@@ -65,7 +67,7 @@ void CStreamingHashedDocDotFeatures::init(CStreamingFile* file, bool is_labelled
 		seekable = false;
 	}
 	else
-		file = NULL;
+		working_file = NULL;
 
 	set_read_functions();
 	parser.set_free_vector_after_release(false);

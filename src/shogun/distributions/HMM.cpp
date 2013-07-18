@@ -146,6 +146,26 @@ CHMM::CHMM()
 	M=0;
 	model=NULL;
 	status=false;
+	p_observations=NULL;
+	trans_list_forward_cnt=NULL;
+	trans_list_backward_cnt=NULL;
+	trans_list_forward=NULL;
+	trans_list_backward=NULL;
+	trans_list_forward_val=NULL;
+	iterations=150;
+	epsilon=1e-4;
+	conv_it=5;
+	path=NULL;
+	arrayN1=NULL;
+	arrayN2=NULL;
+	reused_caches=false;
+	transition_matrix_a=NULL;
+	observation_matrix_b=NULL;
+	initial_state_distribution_p=NULL;
+	end_state_distribution_q=NULL;
+	alpha_cache.table=NULL;
+	beta_cache.table=NULL;
+	states_per_observation_psi=NULL;
 }
 
 CHMM::CHMM(CHMM* h)

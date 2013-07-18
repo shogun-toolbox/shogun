@@ -14,6 +14,7 @@ using namespace shogun;
 CStreamingVwCacheFile::CStreamingVwCacheFile()
 	: CStreamingFile()
 {
+	buf=NULL;
 	init(C_NATIVE);
 }
 
@@ -90,7 +91,10 @@ void CStreamingVwCacheFile::init(EVwCacheType cache_type)
 	switch (cache_type)
 	{
 	case C_NATIVE:
-		cache_reader = new CVwNativeCacheReader(buf->working_file, env);
+		if (buf)
+			cache_reader = new CVwNativeCacheReader(buf->working_file, env);
+		else
+			cache_reader=NULL;
 		return;
 	case C_PROTOBUF:
 		SG_ERROR("Protocol buffers cache support is not implemented yet!\n")

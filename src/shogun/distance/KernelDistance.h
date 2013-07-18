@@ -90,7 +90,7 @@ class CKernelDistance: public CDistance
 		/** clean up kernel
 		 *
 		 */
-		virtual void cleanup() { return kernel->cleanup(); }
+		virtual void cleanup() { if (kernel) kernel->cleanup(); }
 
 	protected:
 		/** compute kernel function for features a and b

@@ -25,7 +25,7 @@ class CGUIClassifier : public CSGObject
 {
 	public:
 		/** constructor */
-		CGUIClassifier() { };
+		CGUIClassifier();
 		/** constructor
 		 * @param interface
 		 */
@@ -224,6 +224,9 @@ class CGUIClassifier : public CSGObject
 
 		/** @return object name */
 		virtual const char* get_name() const { return "GUIClassifier"; }
+
+	private:
+		void init();
 
 	protected:
 		/** ui */
