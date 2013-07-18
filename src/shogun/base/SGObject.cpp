@@ -1340,7 +1340,7 @@ CSGObject* CSGObject::clone()
 
 	REQUIRE(copy, "Could not create empty instance of \"%s\". The reason for "
 			"this usually is that get_name() of the class returns something "
-			"wrong.\n");
+			"wrong.\n", get_name());
 
 	for (index_t i=0; i<m_parameters->get_num_parameters(); ++i)
 	{
