@@ -9,6 +9,19 @@
 
 using namespace shogun;
 
+namespace shogun {
+/** refcount structure */
+struct refcount_t 
+{
+	/** reference count */
+	int32_t rc;
+#ifdef HAVE_PTHREAD
+	/** lock for thread safety */
+	PTHREAD_LOCK_T lock;
+#endif
+};
+}
+
 SGReferencedData::SGReferencedData(bool ref_counting) : m_refcount(NULL)
 { 
 	if (ref_counting)
