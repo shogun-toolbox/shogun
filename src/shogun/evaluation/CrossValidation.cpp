@@ -20,7 +20,7 @@
 
 using namespace shogun;
 
-CCrossValidation::CCrossValidation()
+CCrossValidation::CCrossValidation() : CMachineEvaluation()
 {
 	init();
 }

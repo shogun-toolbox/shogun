@@ -18,10 +18,26 @@
 
 using namespace shogun;
 
-CGUIFeatures::CGUIFeatures(CSGInterface* ui_)
-: CSGObject(), ui(ui_), train_features(NULL), test_features(NULL),
-	ref_features(NULL)
+CGUIFeatures::CGUIFeatures()
 {
+	init();
+}
+
+CGUIFeatures::CGUIFeatures(CSGInterface* ui_)
+: CSGObject()
+{
+	init();
+
+	ui=ui_;
+	SG_REF(ui);
+}
+
+void CGUIFeatures::init()
+{
+	ui=NULL;
+	train_features=NULL;
+	test_features=NULL;
+	ref_features=NULL;
 }
 
 CGUIFeatures::~CGUIFeatures()
@@ -29,6 +45,7 @@ CGUIFeatures::~CGUIFeatures()
 	SG_UNREF(train_features);
 	SG_UNREF(test_features);
 	SG_UNREF(ref_features);
+	SG_UNREF(ui);
 }
 
 void CGUIFeatures::invalidate_train()

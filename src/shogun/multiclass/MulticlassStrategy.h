@@ -145,6 +145,7 @@ public:
 	 */
 	virtual void rescale_outputs(SGVector<float64_t> outputs)
 	{
+		SG_NOTIMPLEMENTED
 	}	
 
 	/** rescale multiclass outputs according to the selected heuristic 
@@ -157,11 +158,12 @@ public:
 	virtual void rescale_outputs(SGVector<float64_t> outputs,
 			const SGVector<float64_t> As, const SGVector<float64_t> Bs)
 	{
+		SG_NOTIMPLEMENTED
 	}	
 
 private:
 	/** initialize variables which will be called by all constructors */
-	void register_parameters();
+	void init();
 
 protected:
 

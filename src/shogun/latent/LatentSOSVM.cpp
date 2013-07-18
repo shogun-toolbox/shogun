@@ -17,6 +17,7 @@ CLatentSOSVM::CLatentSOSVM()
 	: CLinearLatentMachine()
 {
 	register_parameters();
+	m_so_solver=NULL;
 }
 
 CLatentSOSVM::CLatentSOSVM(CLatentModel* model, CLinearStructuredOutputMachine* so_solver, float64_t C)

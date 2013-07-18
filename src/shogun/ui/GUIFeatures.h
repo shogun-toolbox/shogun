@@ -44,7 +44,7 @@ class CGUIFeatures : public CSGObject
 
 	public:
 		/** constructor */
-		CGUIFeatures() {};
+		CGUIFeatures();
 		/** constructor
 		 * @param interface
 		 */
@@ -222,6 +222,9 @@ class CGUIFeatures : public CSGObject
 
 		/** @return object name */
 		virtual const char* get_name() const { return "GUIFeatures"; }
+
+	private:
+		void init();
 
 	protected:
 		/** ui */

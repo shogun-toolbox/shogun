@@ -93,10 +93,10 @@ void CMachineEvaluation::init()
 			"Used splitting strategy", MS_NOT_AVAILABLE);
 	SG_ADD((CSGObject**)&m_evaluation_criterion, "evaluation_criterion",
 			"Used evaluation criterion", MS_NOT_AVAILABLE);
-	SG_ADD((CSGObject**)&m_do_unlock, "do_unlock",
+	SG_ADD(&m_do_unlock, "do_unlock",
 			"Whether machine should be unlocked after evaluation",
 			MS_NOT_AVAILABLE);
-	SG_ADD((CSGObject**)&m_autolock, "m_autolock",
+	SG_ADD(&m_autolock, "m_autolock",
 			"Whether machine should automatically try to be locked before ",
 			MS_NOT_AVAILABLE);
 
