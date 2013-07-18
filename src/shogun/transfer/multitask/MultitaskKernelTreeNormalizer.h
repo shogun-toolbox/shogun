@@ -92,7 +92,7 @@ public:
     /** @return object name */
     virtual const char *get_name() const
     {
-        return "CNode";
+        return "Node";
     }
 
     /** @return boolean indicating, whether this node is a leaf */
@@ -323,7 +323,7 @@ public:
 	/** @return object name */
 	virtual const char* get_name() const
 	{
-		return "CTaxonomy";
+		return "Taxonomy";
 	}
 
 	/** @return mapping from name to id */

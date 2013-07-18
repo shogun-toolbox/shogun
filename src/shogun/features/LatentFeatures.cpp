@@ -15,6 +15,8 @@ using namespace shogun;
 CLatentFeatures::CLatentFeatures()
 {
 	init();
+	m_samples = new CDynamicObjectArray(10);
+	SG_REF(m_samples);
 }
 
 CLatentFeatures::CLatentFeatures(int32_t num_samples)
@@ -77,7 +79,8 @@ CData* CLatentFeatures::get_sample(index_t idx)
 
 void CLatentFeatures::init()
 {
-	m_parameters->add((CSGObject**) &m_samples, "samples", "Array of examples");
+	SG_ADD((CSGObject**) &m_samples, "samples", "Array of examples",
+			MS_NOT_AVAILABLE);
 }
 
 CLatentFeatures* CLatentFeatures::obtain_from_generic(CFeatures* base_feats)

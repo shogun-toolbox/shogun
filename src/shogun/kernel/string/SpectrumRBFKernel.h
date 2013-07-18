@@ -129,8 +129,6 @@ class CSpectrumRBFKernel: public CStringKernel<char>
 		 */
 		float64_t compute(int32_t idx_a, int32_t idx_b);
 
-		/** remove lhs from kernel */
-		virtual void remove_lhs();
 		/** register the parameters */
 		virtual void register_param();
 		/** register the alphabet */
@@ -145,9 +143,7 @@ class CSpectrumRBFKernel: public CStringKernel<char>
 		/** maximum mismatch */
 		int32_t max_mismatch;
 		/**  128x128 scalar product matrix */
-		float64_t* AA_matrix ;
-		/** length of the AA_matrix -- for registration*/
-		int32_t AA_matrix_length;
+		SGMatrix<float64_t> AA_matrix ;
 		/** width of Gaussian*/
 		float64_t width;
 

@@ -95,7 +95,7 @@ public:
 	}
 
 	/** return the name of a kernel */
-	virtual const char* get_name() const { return "PyramidoverChi2"; }
+	virtual const char* get_name() const { return "PyramidChi2"; }
 
 
 	/** sets parameters, see also constructor
