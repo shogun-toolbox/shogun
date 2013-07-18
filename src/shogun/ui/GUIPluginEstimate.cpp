@@ -18,15 +18,30 @@
 
 using namespace shogun;
 
-CGUIPluginEstimate::CGUIPluginEstimate(CSGInterface* ui_)
-: CSGObject(), ui(ui_), estimator(NULL),
-	pos_pseudo(1e-10), neg_pseudo(1e-10)
+CGUIPluginEstimate::CGUIPluginEstimate() : CSGObject()
 {
+	init();
+}
+
+CGUIPluginEstimate::CGUIPluginEstimate(CSGInterface* ui_)
+: CSGObject()
+{
+	init();
+
+	ui=ui_;
 }
 
 CGUIPluginEstimate::~CGUIPluginEstimate()
 {
 	SG_UNREF(estimator);
+}
+
+void CGUIPluginEstimate::init()
+{
+	ui=NULL;
+	estimator=NULL;
+	pos_pseudo=1e-10;
+	neg_pseudo=1e-10;
 }
 
 bool CGUIPluginEstimate::new_estimator(float64_t pos, float64_t neg)
