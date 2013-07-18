@@ -73,7 +73,7 @@ public:
 	/**
 	 * @return name of kernel
 	 */
-	virtual const char* get_name() const { return "Multiquadric"; }
+	virtual const char* get_name() const { return "MultiquadricKernel"; }
 
 	/** getter for coef parameter
 	 *  @return kernel parameter coefficient
