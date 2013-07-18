@@ -18,7 +18,7 @@ using namespace shogun;
 CGradientEvaluation::CGradientEvaluation() : CMachineEvaluation(NULL,
 		NULL, NULL, NULL, NULL, true)
 {
-
+	init();
 }
 
 CGradientEvaluation::CGradientEvaluation(CMachine* machine, CFeatures* features,
