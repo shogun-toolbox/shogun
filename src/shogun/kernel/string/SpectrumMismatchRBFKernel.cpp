@@ -88,7 +88,7 @@ bool CSpectrumMismatchRBFKernel::init(CFeatures* l, CFeatures* r)
 	alphabet=sf_l->get_alphabet();
 	CAlphabet* ralphabet=sf_r->get_alphabet();
 
-	if (!((alphabet->get_alphabet()==DNA)||(alphabet->get_alphabet()==RNA)))
+	if (!((alphabet->get_alphabet()==DNA) || (alphabet->get_alphabet()==RNA)))
 		properties&=((uint64_t)(-1))^(KP_LINADD|KP_BATCHEVALUATION);
 
 	ASSERT(ralphabet->get_alphabet()==alphabet->get_alphabet())
@@ -278,7 +278,7 @@ bool CSpectrumMismatchRBFKernel::set_AA_matrix(float64_t* AA_matrix_,
 {
 	if (AA_matrix_)
 	{
-		if (nr!=128||nc!=128)
+		if (nr!=128 || nc!=128)
 			SG_ERROR("AA_matrix should be of shape 128x128\n")
 
 		AA_matrix=SGMatrix<float64_t>(nc, nr);
