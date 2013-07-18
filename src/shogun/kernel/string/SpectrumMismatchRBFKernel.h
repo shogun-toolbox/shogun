@@ -200,9 +200,7 @@ class CSpectrumMismatchRBFKernel: public CStringKernel<char>
 		/** maximum mismatch */
 		int32_t max_mismatch;
 		/**  128x128 scalar product matrix */
-		float64_t* AA_matrix;
-		/** length of the AA_matrix -- for registration */
-		int32_t AA_matrix_length;
+		SGMatrix<float64_t> AA_matrix;
 		/** width of Gaussian*/
 		float64_t width;
 
@@ -210,7 +208,7 @@ class CSpectrumMismatchRBFKernel: public CStringKernel<char>
 		bool initialized;
 
 		/** kernel matrix */
-		CDynamicArray<float64_t> kernel_matrix ; // 2d
+		CDynamicArray<float64_t>* kernel_matrix ; // 2d
 		/** kernel matrix length */
 		int32_t kernel_matrix_length;
 		/** target letter 0 */
