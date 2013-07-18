@@ -29,6 +29,11 @@ namespace shogun
 /** @brief Class JADiag
  *
  * An Approximate Joint Diagonalizer (AJD) Implementation
+ * 
+ * Pham, D. T., & Cardoso, J. F. (2001). 
+ * Blind separation of instantaneous mixtures of nonstationary sources. 
+ * Signal Processing, IEEE Transactions on, 49(9), 1837-1848.
+ *
  */
 class CJADiag : public CApproxJointDiagonalizer
 {

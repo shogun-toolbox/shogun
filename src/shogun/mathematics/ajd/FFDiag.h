@@ -29,6 +29,12 @@ namespace shogun
 /** @brief Class FFDiag
  *
  * An Approximate Joint Diagonalizer (AJD) Implementation
+ * 
+ * Ziehe, A., Laskov, P., Nolte, G., & Müller, K. R. (2004). 
+ * A fast algorithm for joint diagonalization with non-orthogonal transformations 
+ * and its application to blind source separation. 
+ * The Journal of Machine Learning Research, 5, 777-800.
+ * 
  */
 class CFFDiag : public CApproxJointDiagonalizer
 {

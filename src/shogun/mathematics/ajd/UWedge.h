@@ -26,9 +26,14 @@
 namespace shogun
 {
 
-/** @brief Class FFDiag
+/** @brief Class UWedge
  *
  * An Approximate Joint Diagonalizer (AJD) Implementation
+ * 
+ * Tichavsky, P., & Yeredor, A. (2009). 
+ * Fast approximate joint diagonalization incorporating weight matrices. 
+ * Signal Processing, IEEE Transactions on, 57(3), 878-891.
+ * 
  */
 class CUWedge : public CApproxJointDiagonalizer
 {
