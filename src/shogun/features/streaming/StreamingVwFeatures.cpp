@@ -41,7 +41,8 @@ CStreamingVwFeatures::CStreamingVwFeatures(CStreamingVwCacheFile* file,
 
 CStreamingVwFeatures::~CStreamingVwFeatures()
 {
-	parser.end_parser();
+	if (parser.is_running())
+		parser.end_parser();
 	SG_UNREF(env);
 }
 
@@ -140,6 +141,7 @@ void CStreamingVwFeatures::init()
 	seekable=false;
 	current_length=-1;
 	current_example=NULL;
+	env=NULL;
 
 	example_count = 0;
 }
