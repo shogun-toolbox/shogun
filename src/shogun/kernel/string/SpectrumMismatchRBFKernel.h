@@ -182,8 +182,6 @@ class CSpectrumMismatchRBFKernel: public CStringKernel<char>
 		 */
 		float64_t compute(int32_t idx_a, int32_t idx_b);
 
-		/** remove lhs from kernel */
-		virtual void remove_lhs();
 		/** register the parameters
 		 */
 		virtual void register_params();
