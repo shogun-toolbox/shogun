@@ -1,4 +1,5 @@
 #include <shogun/lib/SGSparseVector.h>
+#include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/io/File.h>
 
@@ -58,7 +59,7 @@ T SGSparseVector<T>::dense_dot(T alpha, T* vec, int32_t dim, T b)
 }
 
 template <> template <>
-float64_t SGSparseVector<float64_t>::dense_dot(int32_t* vec, int32_t dim)
+float64_t SGSparseVector<float64_t>::dense_dot(SGVector<int32_t> vec)
 {
 	ASSERT(vec)
 	float64_t result(0.0);
@@ -67,7 +68,7 @@ float64_t SGSparseVector<float64_t>::dense_dot(int32_t* vec, int32_t dim)
 	{
 		for (int32_t i=0; i<num_feat_entries; i++)
 		{
-			if (features[i].feat_index<dim)
+			if (features[i].feat_index<vec.vlen)
 				result+=vec[features[i].feat_index]*features[i].entry;
 		}
 	}
@@ -76,7 +77,7 @@ float64_t SGSparseVector<float64_t>::dense_dot(int32_t* vec, int32_t dim)
 }
 
 template <> template <>
-complex64_t SGSparseVector<complex64_t>::dense_dot(float64_t* vec, int32_t dim)
+complex64_t SGSparseVector<complex64_t>::dense_dot(SGVector<float64_t> vec)
 {
 	ASSERT(vec)
 	complex64_t result(0.0);
@@ -85,7 +86,7 @@ complex64_t SGSparseVector<complex64_t>::dense_dot(float64_t* vec, int32_t dim)
 	{
 		for (int32_t i=0; i<num_feat_entries; i++)
 		{
-			if (features[i].feat_index<dim)
+			if (features[i].feat_index<vec.vlen)
 				result+=vec[features[i].feat_index]*features[i].entry;
 		}
 	}
@@ -94,7 +95,7 @@ complex64_t SGSparseVector<complex64_t>::dense_dot(float64_t* vec, int32_t dim)
 }
 
 template <> template <>
-complex64_t SGSparseVector<complex64_t>::dense_dot(int32_t* vec, int32_t dim)
+complex64_t SGSparseVector<complex64_t>::dense_dot(SGVector<int32_t> vec)
 {
 	ASSERT(vec)
 	complex64_t result(0.0);
@@ -103,7 +104,7 @@ complex64_t SGSparseVector<complex64_t>::dense_dot(int32_t* vec, int32_t dim)
 	{
 		for (int32_t i=0; i<num_feat_entries; i++)
 		{
-			if (features[i].feat_index<dim)
+			if (features[i].feat_index<vec.vlen)
 			{
 				result+=static_cast<complex64_t>(vec[features[i].feat_index])
 					*features[i].entry;
