@@ -20,7 +20,31 @@ using namespace shogun;
 CRealFileFeatures::CRealFileFeatures()
 {
 	SG_UNSTABLE("CRealFileFeatures::CRealFileFeatures()", "\n")
+	init();
+}
 
+CRealFileFeatures::CRealFileFeatures(int32_t size, char* fname)
+: CDenseFeatures<float64_t>(size)
+{
+	init();
+
+	working_file=fopen(fname, "r");
+	working_filename=strdup(fname);
+	ASSERT(working_file)
+	status=load_base_data();
+}
+
+CRealFileFeatures::CRealFileFeatures(int32_t size, FILE* file)
+: CDenseFeatures<float64_t>(size)
+{
+	init();
+
+	ASSERT(working_file)
+	status=load_base_data();
+}
+
+void CRealFileFeatures::init()
+{
 	working_file=NULL;
 	working_filename=strdup("");
 	intlen=0;
@@ -30,34 +54,8 @@ CRealFileFeatures::CRealFileFeatures()
 	preprocd=0;
 	labels=NULL;
 	status=false;
-}
 
-CRealFileFeatures::CRealFileFeatures(int32_t size, char* fname)
-: CDenseFeatures<float64_t>(size)
-{
-	working_file=fopen(fname, "r");
-	working_filename=strdup(fname);
-	ASSERT(working_file)
-	intlen=0;
-	doublelen=0;
-	endian=0;
-	fourcc=0;
-	preprocd=0;
-	labels=NULL;
-	status=load_base_data();
-}
-
-CRealFileFeatures::CRealFileFeatures(int32_t size, FILE* file)
-: CDenseFeatures<float64_t>(size), working_file(file), working_filename(NULL)
-{
-	ASSERT(working_file)
-	intlen=0;
-	doublelen=0;
-	endian=0;
-	fourcc=0;
-	preprocd=0;
-	labels=NULL;
-	status=load_base_data();
+	unset_generic();
 }
 
 CRealFileFeatures::~CRealFileFeatures()
