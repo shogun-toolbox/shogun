@@ -29,11 +29,9 @@ CIterativeLinearSolver<T, ST>::CIterativeLinearSolver()
 template <class T, class ST>
 void CIterativeLinearSolver<T, ST>::init()
 	{
-		CSGObject::set_generic<T>();
-
 		m_max_iteration_limit=1000;
-		m_relative_tolerence=static_cast<T>(1E-5);
-		m_absolute_tolerence=static_cast<T>(1E-5);
+		m_relative_tolerence=1E-5;
+		m_absolute_tolerence=1E-5;
 
 		CSGObject::m_parameters->add(&m_max_iteration_limit, "max_iteration_limit",
 			"Maximum number of iteration for the solver");
