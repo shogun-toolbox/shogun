@@ -9,8 +9,8 @@
  * Thanks to Andreas Ziehe and Cedric Gouy-Pailler
  */
 
-#ifndef JADIAG_H_
-#define JADIAG_H_
+#ifndef UWEDGE_H_
+#define UWEDGE_H_
 
 #ifdef HAVE_EIGEN3
 
@@ -26,26 +26,26 @@
 namespace shogun
 {
 
-/** @brief Class JADiag
+/** @brief Class UWedge
  *
  * An Approximate Joint Diagonalizer (AJD) Implementation
  * 
- * Pham, D. T., & Cardoso, J. F. (2001). 
- * Blind separation of instantaneous mixtures of nonstationary sources. 
- * Signal Processing, IEEE Transactions on, 49(9), 1837-1848.
- *
+ * Tichavsky, P., & Yeredor, A. (2009). 
+ * Fast approximate joint diagonalization incorporating weight matrices. 
+ * Signal Processing, IEEE Transactions on, 57(3), 878-891.
+ * 
  */
-class CJADiag : public CApproxJointDiagonalizer
+class CUWedge : public CApproxJointDiagonalizer
 {
 	public:
 	
 		/** constructor */
-		CJADiag()
+		CUWedge()
 		{
 		};
 
 		/** destructor */
-		virtual ~CJADiag()
+		virtual ~CUWedge()
 		{
 		}
 	
@@ -78,8 +78,8 @@ class CJADiag : public CApproxJointDiagonalizer
 		}
 
 		/** @return object name */
-		virtual const char* get_name() const { return "JADiag"; }
+		virtual const char* get_name() const { return "UWedge"; }
 };
 }
 #endif //HAVE_EIGEN3
-#endif //JADIAG_H_ 
+#endif //UWEDGE_H_ 
