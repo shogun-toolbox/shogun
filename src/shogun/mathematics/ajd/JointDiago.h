@@ -9,8 +9,8 @@
  * Thanks to Andreas Ziehe and Cedric Gouy-Pailler
  */
 
-#ifndef FFDIAG_H_
-#define FFDIAG_H_
+#ifndef JOINTDIAGO_H_
+#define JOINTDIAGO_H_
 
 #include <shogun/lib/config.h>
 
@@ -22,27 +22,27 @@
 namespace shogun
 {
 
-/** @brief Class FFDiag
+/** @brief Class JointDiago
  *
  * An Approximate Joint Diagonalizer (AJD) Implementation
  * 
- * Ziehe, A., Laskov, P., Nolte, G., & Müller, K. R. (2004). 
- * A fast algorithm for joint diagonalization with non-orthogonal transformations 
- * and its application to blind source separation. 
- * The Journal of Machine Learning Research, 5, 777-800.
- * 
+ * Cardoso, J. F., & Souloumiac, A. (1993). 
+ * Blind beamforming for non-Gaussian signals. 
+ * In IEE Proceedings F (Radar and Signal Processing) 
+ * (Vol. 140, No. 6, pp. 362-370). IET Digital Library.
+ *
  */
-class CFFDiag : public CApproxJointDiagonalizer
+class CJointDiago : public CApproxJointDiagonalizer
 {
 	public:
 	
 		/** constructor */
-		CFFDiag()
+		CJointDiago()
 		{
 		};
 
 		/** destructor */
-		virtual ~CFFDiag()
+		virtual ~CJointDiago()
 		{
 		}
 	
@@ -75,8 +75,8 @@ class CFFDiag : public CApproxJointDiagonalizer
 		}
 
 		/** @return object name */
-		virtual const char* get_name() const { return "FFDiag"; }
+		virtual const char* get_name() const { return "JADiag"; }
 };
 }
 #endif //HAVE_EIGEN3
-#endif //FFDIAG_H_ 
+#endif //JOINTDIAGO_H_ 

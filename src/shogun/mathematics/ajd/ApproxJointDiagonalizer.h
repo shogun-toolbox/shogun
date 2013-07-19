@@ -12,12 +12,14 @@
 #ifndef APPROXJOINTDIAGONALIZER_H_
 #define APPROXJOINTDIAGONALIZER_H_
 
+#include <shogun/lib/config.h>
+
 #ifdef HAVE_EIGEN3
 
 #include <shogun/lib/common.h>
-#include <shogun/base/SGObject.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGNDArray.h>
+#include <shogun/base/SGObject.h>
 
 #include <shogun/mathematics/Math.h>
 
@@ -50,7 +52,7 @@ class CApproxJointDiagonalizer : public CSGObject
 		 * @param V0 an estimate of the matrix V
 		 * @param eps machine epsilon or desired epsilon
 		 * @param itermax maximum number of iterations
-		 * @return V the matrix the best diagonalizes C 
+		 * @return V the matrix that best diagonalizes C 
 		 */
 		virtual SGMatrix<float64_t> compute(SGNDArray<float64_t> &C,
 						   SGMatrix<float64_t> V0= SGMatrix<float64_t>(NULL,0,0),

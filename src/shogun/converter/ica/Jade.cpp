@@ -15,7 +15,7 @@
 
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
-#include <shogun/mathematics/ajd/JADiag.h>
+#include <shogun/mathematics/ajd/JointDiago.h>
 
 using namespace Eigen;
 
@@ -116,13 +116,13 @@ CFeatures* CJade::apply(CFeatures* features)
 	}
 	
 	// Diagonalize
-	SGMatrix<float64_t> Q = CJADiag::diagonalize(M);
+	SGMatrix<float64_t> Q = CJointDiago::diagonalize(M);
 	Eigen::Map<EMatrix> EQ(Q.matrix,m,m);
 
 	// Compute Mixing Matrix
 	m_mixing_matrix = SGMatrix<float64_t>(m,m);
 	Eigen::Map<EMatrix> C(m_mixing_matrix.matrix,n,n);
-	C = EQ.inverse() * B;
+	C = EQ * B;
 
 	// Unmix
 	EX = C * EX;
