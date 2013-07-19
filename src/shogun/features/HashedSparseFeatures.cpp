@@ -9,6 +9,7 @@
  */
 
 #include <shogun/features/HashedSparseFeatures.h>
+#include <shogun/features/HashedDenseFeatures.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/lib/Hash.h>
 #include <shogun/io/SGIO.h>
@@ -91,7 +92,18 @@ template <class ST>
 SGSparseVector<uint32_t> CHashedSparseFeatures<ST>::get_hashed_feature_vector(
 	int32_t vec_idx) const
 {
-	SGSparseVector<ST> vec = sparse_feats->get_sparse_feature_vector(vec_idx);
+	return CHashedSparseFeatures<ST>::hash_vector(sparse_feats->get_sparse_feature_vector(vec_idx), dim);
+}
+
+template <class ST>
+SGSparseVector<uint32_t> CHashedSparseFeatures<ST>::hash_vector(SGVector<ST> vec, int32_t dim)
+{
+	return CHashedDenseFeatures<ST>::get_hashed_vector(vec, dim);
+}
+
+template <class ST>
+SGSparseVector<uint32_t> CHashedSparseFeatures<ST>::hash_vector(SGSparseVector<ST> vec, int32_t dim)
+{
 	CDynamicArray<index_t> indices(vec.num_feat_entries);
 	for (index_t i=0; i<vec.num_feat_entries; i++)
 	{

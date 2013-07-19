@@ -32,37 +32,37 @@ public:
 	 *
 	 * @param size cache size
 	 */
-	CHashedSparseFeatures (int32_t size=0);
+	CHashedSparseFeatures(int32_t size=0);
 
 	/** constructor
 	 *
 	 * @param feats	the sparse features to use as a base
 	 * @param d new feature space dimension
 	 */
-	CHashedSparseFeatures (CSparseFeatures<ST>* feats, int32_t d);
+	CHashedSparseFeatures(CSparseFeatures<ST>* feats, int32_t d);
 
 	/** constructor
 	 *
 	 * @param matrix feature matrix
 	 * @param d new feature space dimension
 	 */
-	CHashedSparseFeatures (SGSparseMatrix<ST> matrix, int32_t d);
+	CHashedSparseFeatures(SGSparseMatrix<ST> matrix, int32_t d);
 
 	/** constructor loading features from file
 	 *
 	 * @param loader File object via which to load data
 	 * @param d new feature space dimension
 	 */
-	CHashedSparseFeatures (CFile* loader, int32_t d);
+	CHashedSparseFeatures(CFile* loader, int32_t d);
 	
 	/** copy constructor */
-	CHashedSparseFeatures (const CHashedSparseFeatures & orig);
+	CHashedSparseFeatures(const CHashedSparseFeatures & orig);
 
 	/** duplicate */
 	virtual CFeatures* duplicate() const;
 
 	/** destructor */
-	virtual ~CHashedSparseFeatures ();
+	virtual ~CHashedSparseFeatures();
 
 	/** obtain the dimensionality of the feature space
 	 *
@@ -178,6 +178,22 @@ public:
 	 */
 	SGSparseVector<uint32_t> get_hashed_feature_vector(int32_t vec_idx) const;
 
+	/** Get the hashed representation of the given vector
+	 *
+	 * @param vec the vector to hash
+	 * @param dim the dimension of the new feature space
+	 * @return the hashed representation of the vector vec
+	 */
+	static SGSparseVector<uint32_t> hash_vector(SGVector<ST> vec, int32_t dim);
+
+
+	/** Get the hashed representation of the given sparse vector
+	 *
+	 * @param vec the vector to hash
+	 * @param dim the dimension of the hashed target space
+	 * @return the hashed representation of the vector vec
+	 */
+	static SGSparseVector<uint32_t> hash_vector(SGSparseVector<ST> vec, int32_t dim);
 protected:
 	void init(CSparseFeatures<ST>* feats, int32_t d);
 
