@@ -84,8 +84,7 @@ float64_t CHashedDocDotFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t
 	hddf->doc_collection->free_feature_vector(sv2, vec_idx2);
 	SG_UNREF(converter);
 
-	const float64_t norm_const = 1.0/(sv1.size()*sv2.size());
-	return should_normalize ? result * norm_const : result;
+	return should_normalize ? result / CMath::sqrt((float64_t) sv1.size() * sv2.size()) : result;
 }
 
 float64_t CHashedDocDotFeatures::dense_dot_sgvec(int32_t vec_idx1, const SGVector<float64_t> vec2)
@@ -113,8 +112,7 @@ float64_t CHashedDocDotFeatures::dense_dot(int32_t vec_idx1, const float64_t* ve
 	doc_collection->free_feature_vector(sv, vec_idx1);
 	SG_UNREF(local_tzer);
 
-	float64_t n_const = 1.0/sv.size();
-	return should_normalize ? result * n_const : result;
+	return should_normalize ? result / CMath::sqrt((float64_t) sv.size()) : result;
 }
 
 void CHashedDocDotFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1,
@@ -128,7 +126,7 @@ void CHashedDocDotFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1,
 	SGVector<char> sv = doc_collection->get_feature_vector(vec_idx1);
 	CTokenizer* local_tzer = tokenizer->get_copy();
 
-	const float64_t value = should_normalize ? alpha/sv.size() : alpha;
+	const float64_t value = should_normalize ? alpha / CMath::sqrt((float64_t) sv.size()) : alpha;
 	const int32_t seed = 0xdeadbeaf;
 	index_t start = 0;
 	local_tzer->set_text(sv);
