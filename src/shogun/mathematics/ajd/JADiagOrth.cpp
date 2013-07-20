@@ -15,9 +15,9 @@ typedef Matrix< float64_t, Dynamic, Dynamic, ColMajor > EMatrix;
 using namespace shogun;
 
 double givens_stack(double *A, int M, int K, int p, int q);
-void LeftRotStack(double *A, int M, int N, int K, int p, int q, double c, double s);
-void RightRotStack(double *A, int M, int N, int K, int p, int q, double c, double s);
-void LeftRotSimple(double *A, int m, int n, int p, int q, double c, double s);
+void left_rot_stack(double *A, int M, int N, int K, int p, int q, double c, double s);
+void right_rot_stack(double *A, int M, int N, int K, int p, int q, double c, double s);
+void left_rot_simple(double *A, int m, int n, int p, int q, double c, double s);
 
 SGMatrix<float64_t> CJADiagOrth::diagonalize(SGNDArray<float64_t> &C, SGMatrix<float64_t> V0,
 						double eps, int itermax)
@@ -54,9 +54,9 @@ SGMatrix<float64_t> CJADiagOrth::diagonalize(SGNDArray<float64_t> &C, SGMatrix<f
                 {  
                     double c = cos(theta);
                     double s = sin(theta);
-                    LeftRotStack (C.array, m, m, L, p, q, c, s);  
-	                RightRotStack(C.array, m, m, L, p, q, c, s);  
-	                LeftRotSimple(V.matrix, m, m, p, q, c, s);
+                    left_rot_stack (C.array, m, m, L, p, q, c, s);  
+	                right_rot_stack(C.array, m, m, L, p, q, c, s);  
+	                left_rot_simple(V.matrix, m, m, p, q, c, s);
                     rots++;
                     more = true;
                 }
@@ -103,7 +103,7 @@ double givens_stack(double *A, int M, int K, int p, int q)
    Ak(mxn) --> R * Ak(mxn) where R rotates the (p,q) rows R =[ c -s ; s c ]  
    and Ak is the k-th matrix in the stack
 */
-void LeftRotStack(double *A, int M, int N, int K, int p, int q, double c, double s )
+void left_rot_stack(double *A, int M, int N, int K, int p, int q, double c, double s )
 {
     int k, ix, iy, cpt;
     int MN = M*N;
@@ -124,7 +124,7 @@ void LeftRotStack(double *A, int M, int N, int K, int p, int q, double c, double
 
 /* Ak(mxn) --> Ak(mxn) x R where R rotates the (p,q) columns R =[ c s ; -s c ] 
    and Ak is the k-th M*N matrix in the stack */
-void RightRotStack(double *A, int M, int N, int K, int p, int q, double c, double s ) 
+void right_rot_stack(double *A, int M, int N, int K, int p, int q, double c, double s ) 
 { 
     int k, ix, iy, cpt, kMN; 
     int pM = p*M;
@@ -146,7 +146,7 @@ void RightRotStack(double *A, int M, int N, int K, int p, int q, double c, doubl
 /* 
    A(mxn) --> R * A(mxn) where R=[ c -s ; s c ]   rotates the (p,q) rows of R 
 */
-void LeftRotSimple(double *A, int m, int n, int p, int q, double c, double s)
+void left_rot_simple(double *A, int m, int n, int p, int q, double c, double s)
 {
     int ix = p;
     int iy = q;
