@@ -1,6 +1,6 @@
 #ifdef HAVE_EIGEN3
 
-#include <shogun/mathematics/ajd/JointDiago.h>
+#include <shogun/mathematics/ajd/JADiagOrth.h>
 
 #include <shogun/base/init.h>
 
@@ -19,7 +19,7 @@ void LeftRotStack(double *A, int M, int N, int K, int p, int q, double c, double
 void RightRotStack(double *A, int M, int N, int K, int p, int q, double c, double s);
 void LeftRotSimple(double *A, int m, int n, int p, int q, double c, double s);
 
-SGMatrix<float64_t> CJointDiago::diagonalize(SGNDArray<float64_t> &C, SGMatrix<float64_t> V0,
+SGMatrix<float64_t> CJADiagOrth::diagonalize(SGNDArray<float64_t> &C, SGMatrix<float64_t> V0,
 						double eps, int itermax)
 {
 	int m = C.dims[0];

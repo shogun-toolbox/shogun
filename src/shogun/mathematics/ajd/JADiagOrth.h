@@ -9,8 +9,8 @@
  * Thanks to Andreas Ziehe and Cedric Gouy-Pailler
  */
 
-#ifndef JOINTDIAGO_H_
-#define JOINTDIAGO_H_
+#ifndef JADIAGORTH_H_
+#define JADIAGORTH_H_
 
 #include <shogun/lib/config.h>
 
@@ -22,7 +22,7 @@
 namespace shogun
 {
 
-/** @brief Class JointDiago
+/** @brief Class JADiagOrth
  *
  * An Approximate Joint Diagonalizer (AJD) Implementation
  * 
@@ -32,17 +32,17 @@ namespace shogun
  * (Vol. 140, No. 6, pp. 362-370). IET Digital Library.
  *
  */
-class CJointDiago : public CApproxJointDiagonalizer
+class CJADiagOrth : public CApproxJointDiagonalizer
 {
 	public:
 	
 		/** constructor */
-		CJointDiago()
+		CJADiagOrth()
 		{
 		};
 
 		/** destructor */
-		virtual ~CJointDiago()
+		virtual ~CJADiagOrth()
 		{
 		}
 	
@@ -79,4 +79,4 @@ class CJointDiago : public CApproxJointDiagonalizer
 };
 }
 #endif //HAVE_EIGEN3
-#endif //JOINTDIAGO_H_ 
+#endif //JADIAGORTH_H_ 
