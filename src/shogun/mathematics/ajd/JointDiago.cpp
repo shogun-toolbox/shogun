@@ -14,7 +14,7 @@ typedef Matrix< float64_t, Dynamic, Dynamic, ColMajor > EMatrix;
 
 using namespace shogun;
 
-double GivensStack(double *A, int M, int K, int p, int q);
+double givens_stack(double *A, int M, int K, int p, int q);
 void LeftRotStack(double *A, int M, int N, int K, int p, int q, double c, double s);
 void RightRotStack(double *A, int M, int N, int K, int p, int q, double c, double s);
 void LeftRotSimple(double *A, int m, int n, int p, int q, double c, double s);
@@ -38,19 +38,19 @@ SGMatrix<float64_t> CJointDiago::diagonalize(SGNDArray<float64_t> &C, SGMatrix<f
 	bool more = true;
 	int rots = 0;
 
-	while(more)
+	while (more)
 	{
         more = false;
 
-        for(int p = 0; p < m; p++)
+        for (int p = 0; p < m; p++)
         {
-            for(int q = p+1; q < m; q++)
+            for (int q = p+1; q < m; q++)
             {
                 // computation of Givens angle
-                double theta = GivensStack(C.array, m, L, p, q);
+                double theta = givens_stack(C.array, m, L, p, q);
 
                 // Givens update
-                if(fabs(theta) > eps)
+                if (fabs(theta) > eps)
                 {  
                     double c = cos(theta);
                     double s = sin(theta);
@@ -68,7 +68,7 @@ SGMatrix<float64_t> CJointDiago::diagonalize(SGNDArray<float64_t> &C, SGMatrix<f
 }
 
 /* Givens angle for the pair (p,q) of a stack of K M*M matrices */
-double GivensStack(double *A, int M, int K, int p, int q)
+double givens_stack(double *A, int M, int K, int p, int q)
 {
     int k;
     double diff_on, sum_off, ton, toff;
@@ -133,7 +133,7 @@ void RightRotStack(double *A, int M, int N, int K, int p, int q, double c, doubl
 
     for (k=0, kMN=0; k<K; k++, kMN+=M*N)
     {
-        for ( cpt=0, ix=pM+kMN, iy=qM+kMN; cpt<M; cpt++) 
+        for (cpt=0, ix=pM+kMN, iy=qM+kMN; cpt<M; cpt++) 
         { 
             nx = A[ix]; 
             ny = A[iy]; 
