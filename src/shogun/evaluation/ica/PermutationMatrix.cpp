@@ -1,5 +1,7 @@
 #include "PermutationMatrix.h"
 
+#ifdef HAVE_EIGEN3
+
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
 
@@ -62,3 +64,4 @@ bool is_permutation_matrix(SGMatrix<float64_t> m)
 	
 	return true;
 }
+#endif //HAVE_EIGEN3

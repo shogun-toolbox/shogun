@@ -54,7 +54,7 @@ TEST(CJade, blind_source_separation)
 	Eigen::Map<EMatrix> EA(jade->get_mixing_matrix().matrix,2,2);
 	SGMatrix<float64_t> P(2,2);
 	Eigen::Map<EMatrix> EP(P.matrix,2,2);
-	EP = EA.inverse() * A;
+	EP = EA * A;
 
 	// Test if output is correct
 	bool isperm = is_permutation_matrix(P);

@@ -3,7 +3,6 @@
 #include <shogun/mathematics/ajd/FFDiag.h>
 
 #include <shogun/base/init.h>
-#include <shogun/lib/common.h>
 
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
@@ -45,9 +44,7 @@ SGMatrix<float64_t> CFFDiag::diagonalize(SGNDArray<float64_t> &C0, SGMatrix<floa
 	
 	double inum = 0;
 	double df = 1;
-	
 	std::vector<double> crit;
-	
 	while (df > eps && inum < itermax)
 	{
 		EMatrix W = EMatrix::Zero(n,n);
