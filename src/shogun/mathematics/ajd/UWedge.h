@@ -54,7 +54,7 @@ class CUWedge : public CApproxJointDiagonalizer
 		 */
 		static SGMatrix<float64_t> diagonalize(SGNDArray<float64_t> &C,
        							SGMatrix<float64_t> V0= SGMatrix<float64_t>(NULL,0,0),
-							double eps=CMath::MACHINE_EPSILON,
+							double eps=1e-12,
 							int itermax=200);
 
 		/** Computes the matrix V that best diagonalizes C 
@@ -66,7 +66,7 @@ class CUWedge : public CApproxJointDiagonalizer
 		 */
 		virtual SGMatrix<float64_t> compute(SGNDArray<float64_t> &C,
 						   SGMatrix<float64_t> V0= SGMatrix<float64_t>(NULL,0,0),
-						   double eps=CMath::MACHINE_EPSILON,
+						   double eps=1e-12,
 						   int itermax=200)
 		{
 			m_V = diagonalize(C,V0,eps,itermax);

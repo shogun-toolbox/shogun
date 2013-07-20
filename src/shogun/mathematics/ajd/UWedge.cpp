@@ -29,10 +29,31 @@ SGMatrix<float64_t> CUWedge::diagonalize(SGNDArray<float64_t> &C, SGMatrix<float
 	{	
 		Eigen::Map<EMatrix> C0(C.get_matrix(0),d,d);
 		EigenSolver<EMatrix> eig;
-		eig.compute(C0);					
+		eig.compute(C0);
+		
+		// sort eigenvectors
+		EMatrix eigenvectors = eig.pseudoEigenvectors();
+		EMatrix eigenvalues = eig.pseudoEigenvalueMatrix();
+		
+		bool swap = false;
+		do
+		{
+			swap = false;
+			for (int j = 1; j < d; j++)
+			{
+				if ( eigenvalues(j,j) > eigenvalues(j-1,j-1) )
+				{
+					std::swap(eigenvalues(j,j),eigenvalues(j-1,j-1));
+					eigenvectors.col(j).swap(eigenvectors.col(j-1));
+					swap = true;	
+				}						
+			}
+		
+		} while(swap);
+							
 		V = SGMatrix<float64_t>::create_identity_matrix(d,1);
 		Eigen::Map<EMatrix> EV(V.matrix, d,d);
-		EV = eig.pseudoEigenvalueMatrix().cwiseAbs().cwiseSqrt().inverse() * eig.pseudoEigenvectors().transpose();
+		EV = eigenvalues.cwiseAbs().cwiseSqrt().inverse() * eigenvectors.transpose();
 	}
 	Eigen::Map<EMatrix> EV(V.matrix, d,d);	
 	
@@ -46,7 +67,7 @@ SGMatrix<float64_t> CUWedge::diagonalize(SGNDArray<float64_t> &C, SGMatrix<float
 	EMatrix Rs(d,L);
 	std::vector<double> crit;
 	crit.push_back(0.0);
-	for(int l = 0; l < L; l++)
+	for (int l = 0; l < L; l++)
 	{
 		Eigen::Map<EMatrix> Ci(C.get_matrix(l),d,d);
 		Eigen::Map<EMatrix> Csi(Cs.get_matrix(l),d,d);
@@ -63,10 +84,10 @@ SGMatrix<float64_t> CUWedge::diagonalize(SGNDArray<float64_t> &C, SGMatrix<float
 		EMatrix B = Rs * Rs.transpose();
 		
 		EMatrix C1 = EMatrix::Zero(d,d);
-		for(int id = 0; id < d; id++)
+		for (int id = 0; id < d; id++)
 		{
 			// rowSums
-			for(int l = 0; l < L; l++)
+			for (int l = 0; l < L; l++)
 			{
 				Eigen::Map<EMatrix> Csi(Cs.get_matrix(l),d,d);
 				C1.row(id) += Csi.row(id) * Rs(id,l);
@@ -83,7 +104,7 @@ SGMatrix<float64_t> CUWedge::diagonalize(SGNDArray<float64_t> &C, SGMatrix<float
 		EV = aux * EV;
 
 		crit.push_back(0.0);
-		for(int l = 0; l < L; l++)
+		for (int l = 0; l < L; l++)
 		{
 			Eigen::Map<EMatrix> Ci(C.get_matrix(l),d,d);
 			Eigen::Map<EMatrix> Csi(Cs.get_matrix(l),d,d);	
@@ -96,7 +117,7 @@ SGMatrix<float64_t> CUWedge::diagonalize(SGNDArray<float64_t> &C, SGMatrix<float
 		iter++;
 	}
 	
-	if(iter == itermax)
+	if (iter == itermax)
 	{
 		SG_SERROR("Convergence not reached\n")
 	}
