@@ -12,15 +12,11 @@
 #ifndef UWEDGE_H_
 #define UWEDGE_H_
 
+#include <shogun/lib/config.h>
+
 #ifdef HAVE_EIGEN3
 
 #include <shogun/mathematics/ajd/ApproxJointDiagonalizer.h>
-
-#include <shogun/lib/common.h>
-#include <shogun/base/SGObject.h>
-#include <shogun/lib/SGMatrix.h>
-#include <shogun/lib/SGNDArray.h>
-
 #include <shogun/mathematics/Math.h>
 
 namespace shogun
@@ -54,11 +50,11 @@ class CUWedge : public CApproxJointDiagonalizer
 		 * @param V0 an estimate of the matrix V
 		 * @param eps machine epsilon or desired epsilon
 		 * @param itermax maximum number of iterations
-		 * @return V the matrix the best diagonalizes C 
+		 * @return V the matrix that best diagonalizes C 
 		 */
 		static SGMatrix<float64_t> diagonalize(SGNDArray<float64_t> &C,
        							SGMatrix<float64_t> V0= SGMatrix<float64_t>(NULL,0,0),
-							double eps=CMath::MACHINE_EPSILON,
+							double eps=1e-12,
 							int itermax=200);
 
 		/** Computes the matrix V that best diagonalizes C 
@@ -66,11 +62,11 @@ class CUWedge : public CApproxJointDiagonalizer
 		 * @param V0 an estimate of the matrix V
 		 * @param eps machine epsilon or desired epsilon
 		 * @param itermax maximum number of iterations
-		 * @return V the matrix the best diagonalizes C 
+		 * @return V the matrix that best diagonalizes C 
 		 */
 		virtual SGMatrix<float64_t> compute(SGNDArray<float64_t> &C,
 						   SGMatrix<float64_t> V0= SGMatrix<float64_t>(NULL,0,0),
-						   double eps=CMath::MACHINE_EPSILON,
+						   double eps=1e-12,
 						   int itermax=200)
 		{
 			m_V = diagonalize(C,V0,eps,itermax);

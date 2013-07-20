@@ -3,7 +3,6 @@
 #include <shogun/mathematics/ajd/JADiag.h>
 
 #include <shogun/base/init.h>
-#include <shogun/lib/common.h>
 
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
@@ -21,10 +20,27 @@ void jadiagw(double c[], double w[], int *ptn, int *ptm, double a[],
 SGMatrix<float64_t> CJADiag::diagonalize(SGNDArray<float64_t> &C, SGMatrix<float64_t> V0,
 						double eps, int itermax)
 {
-	int L = C.dims[2];
 	int d = C.dims[0];
-	double decr = 1;
-	double logdet = log(5.184e17);
+	int L = C.dims[2];
+
+	// check that the input matrices are pos def
+	for (int i = 0; i < L; i++)
+	{
+		Eigen::Map<EMatrix> Ci(C.get_matrix(i),d,d);
+	
+		EigenSolver<EMatrix> eig;
+		eig.compute(Ci);
+
+		EMatrix D = eig.pseudoEigenvalueMatrix();
+
+		for (int j = 0; j < d; j++)
+		{
+			if (D(j,j) < 0)
+			{
+				SG_SERROR("Input Matrix %d is not Positive-definite\n", i)
+			}
+		}		
+	}
 	
 	SGMatrix<float64_t> V;
 	if (V0.num_rows != 0)
@@ -36,8 +52,6 @@ SGMatrix<float64_t> CJADiag::diagonalize(SGNDArray<float64_t> &C, SGMatrix<float
 		V = SGMatrix<float64_t>::create_identity_matrix(d,1);
 	}
 	
-	double result = 0;
-	
 	EVector w(L);
 	w.setOnes();
 	
@@ -47,10 +61,12 @@ SGMatrix<float64_t> CJADiag::diagonalize(SGNDArray<float64_t> &C, SGMatrix<float
 		Eigen::Map<EMatrix> Ci(C.get_matrix(i),d,d);
 		ctot.block(0,i*d,d,d) = Ci;
 	}
-	
-	std::vector<double> crit;
+		
 	int iter = 0;
-	
+	double decr = 1;
+	double logdet = log(5.184e17);
+	double result = 0;
+	std::vector<double> crit;
 	while (decr > eps && iter < itermax)
 	{		
 		if(logdet == 0)// is NA

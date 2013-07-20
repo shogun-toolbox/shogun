@@ -12,15 +12,11 @@
 #ifndef JADIAG_H_
 #define JADIAG_H_
 
+#include <shogun/lib/config.h>
+
 #ifdef HAVE_EIGEN3
 
 #include <shogun/mathematics/ajd/ApproxJointDiagonalizer.h>
-
-#include <shogun/lib/common.h>
-#include <shogun/base/SGObject.h>
-#include <shogun/lib/SGMatrix.h>
-#include <shogun/lib/SGNDArray.h>
-
 #include <shogun/mathematics/Math.h>
 
 namespace shogun
@@ -29,6 +25,7 @@ namespace shogun
 /** @brief Class JADiag
  *
  * An Approximate Joint Diagonalizer (AJD) Implementation
+ * Assumes the matrices are Positive-definite 
  * 
  * Pham, D. T., & Cardoso, J. F. (2001). 
  * Blind separation of instantaneous mixtures of nonstationary sources. 
@@ -54,7 +51,7 @@ class CJADiag : public CApproxJointDiagonalizer
 		 * @param V0 an estimate of the matrix V
 		 * @param eps machine epsilon or desired epsilon
 		 * @param itermax maximum number of iterations
-		 * @return V the matrix the best diagonalizes C 
+		 * @return V the matrix that best diagonalizes C 
 		 */
 		static SGMatrix<float64_t> diagonalize(SGNDArray<float64_t> &C,
        							SGMatrix<float64_t> V0= SGMatrix<float64_t>(NULL,0,0),
@@ -66,7 +63,7 @@ class CJADiag : public CApproxJointDiagonalizer
 		 * @param V0 an estimate of the matrix V
 		 * @param eps machine epsilon or desired epsilon
 		 * @param itermax maximum number of iterations
-		 * @return V the matrix the best diagonalizes C 
+		 * @return V the matrix that best diagonalizes C 
 		 */
 		virtual SGMatrix<float64_t> compute(SGNDArray<float64_t> &C,
 						   SGMatrix<float64_t> V0= SGMatrix<float64_t>(NULL,0,0),
