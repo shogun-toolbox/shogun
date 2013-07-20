@@ -1,24 +1,19 @@
 #include <shogun/lib/common.h>
 #include <shogun/lib/SGReferencedData.h>
 #include <shogun/io/SGIO.h>
-#include <shogun/base/Parallel.h>
-
-#ifdef HAVE_PTHREAD
-#include <pthread.h>
-#endif
+#include <shogun/lib/Lock.h>
 
 using namespace shogun;
 
 namespace shogun {
 /** refcount structure */
-struct refcount_t 
+class RefCount 
 {
+public:
+	RefCount() : rc(0) {};
 	/** reference count */
 	int32_t rc;
-#ifdef HAVE_PTHREAD
-	/** lock for thread safety */
-	PTHREAD_LOCK_T lock;
-#endif
+	CLock lock;
 };
 }
 
@@ -26,10 +21,7 @@ SGReferencedData::SGReferencedData(bool ref_counting) : m_refcount(NULL)
 { 
 	if (ref_counting)
 	{
-		m_refcount = SG_CALLOC(refcount_t, 1);
-#ifdef HAVE_PTHREAD
-		PTHREAD_LOCK_INIT(&m_refcount->lock);
-#endif
+		m_refcount = new RefCount();
 	}
 
 	ref();
@@ -62,13 +54,9 @@ int32_t SGReferencedData::ref_count()
 	if (m_refcount == NULL)
 		return -1;
 
-#ifdef HAVE_PTHREAD
-	PTHREAD_LOCK(&m_refcount->lock);
-#endif
+	m_refcount->lock.lock();
 	int32_t c = m_refcount->rc;
-#ifdef HAVE_PTHREAD
-	PTHREAD_UNLOCK(&m_refcount->lock);
-#endif 
+	m_refcount->lock.unlock();
 
 #ifdef DEBUG_SGVECTOR
 	SG_SGCDEBUG("ref_count(): refcount %d, data %p\n", c, this)
@@ -93,13 +81,9 @@ int32_t SGReferencedData::ref()
 		return -1;
 	}
 
-#ifdef HAVE_PTHREAD
-	PTHREAD_LOCK(&m_refcount->lock);
-#endif
+	m_refcount->lock.lock();
 	int32_t c = ++(m_refcount->rc);
-#ifdef HAVE_PTHREAD
-	PTHREAD_UNLOCK(&m_refcount->lock);
-#endif 
+	m_refcount->lock.unlock();
 #ifdef DEBUG_SGVECTOR
 	SG_SGCDEBUG("ref() refcount %ld data %p increased\n", c, this)
 #endif
@@ -120,23 +104,16 @@ int32_t SGReferencedData::unref()
 		return -1;
 	}
 
-#ifdef HAVE_PTHREAD
-	PTHREAD_LOCK(&m_refcount->lock);
-#endif
+	m_refcount->lock.lock();
 	int32_t c = --(m_refcount->rc);
-#ifdef HAVE_PTHREAD
-	PTHREAD_UNLOCK(&m_refcount->lock);
-#endif 
+	m_refcount->lock.unlock();
 	if (c<=0)
 	{
 #ifdef DEBUG_SGVECTOR
 		SG_SGCDEBUG("unref() refcount %d data %p destroying\n", c, this)
 #endif
 		free_data();
-#ifdef HAVE_PTHREAD
-	PTHREAD_LOCK_DESTROY(&m_refcount->lock);
-#endif
-		SG_FREE(m_refcount);
+		delete m_refcount;
 		m_refcount=NULL;
 		return 0;
 	}

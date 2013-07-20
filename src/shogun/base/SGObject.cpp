@@ -19,6 +19,7 @@
 #include <shogun/base/ParameterMap.h>
 #include <shogun/base/DynArray.h>
 #include <shogun/lib/Map.h>
+#include <shogun/lib/Lock.h>
 
 #include "class_list.h"
 
@@ -130,9 +131,6 @@ CSGObject::~CSGObject()
 {
 	SG_GCDEBUG("SGObject destroyed (%p)\n", this)
 
-#ifdef HAVE_PTHREAD
-	PTHREAD_LOCK_DESTROY(&m_ref_lock);
-#endif
 	unset_global_objects();
 	delete m_parameters;
 	delete m_model_selection_parameters;
@@ -143,51 +141,37 @@ CSGObject::~CSGObject()
 
 int32_t CSGObject::ref()
 {
-#ifdef HAVE_PTHREAD
-		PTHREAD_LOCK(&m_ref_lock);
-#endif //HAVE_PTHREAD
-		++m_refcount;
-		int32_t count=m_refcount;
-#ifdef HAVE_PTHREAD
-		PTHREAD_UNLOCK(&m_ref_lock);
-#endif //HAVE_PTHREAD
-		SG_GCDEBUG("ref() refcount %ld obj %s (%p) increased\n", count, this->get_name(), this)
-		return m_refcount;
+	m_ref_lock.lock();
+	++m_refcount;
+	int32_t count=m_refcount;
+	m_ref_lock.unlock();
+	SG_GCDEBUG("ref() refcount %ld obj %s (%p) increased\n", count, this->get_name(), this)
+	return m_refcount;
 }
 
 int32_t CSGObject::ref_count()
 {
-#ifdef HAVE_PTHREAD
-	PTHREAD_LOCK(&m_ref_lock);
-#endif //HAVE_PTHREAD
+	m_ref_lock.lock();
 	int32_t count=m_refcount;
-#ifdef HAVE_PTHREAD
-	PTHREAD_UNLOCK(&m_ref_lock);
-#endif //HAVE_PTHREAD
+	m_ref_lock.unlock();
 	SG_GCDEBUG("ref_count(): refcount %d, obj %s (%p)\n", count, this->get_name(), this)
 	return count;
 }
 
 int32_t CSGObject::unref()
 {
-#ifdef HAVE_PTHREAD
-	PTHREAD_LOCK(&m_ref_lock);
-#endif //HAVE_PTHREAD
+	m_ref_lock.lock();
 	if (m_refcount==0 || --m_refcount==0)
 	{
 		SG_GCDEBUG("unref() refcount %ld, obj %s (%p) destroying\n", m_refcount, this->get_name(), this)
-#ifdef HAVE_PTHREAD
-		PTHREAD_UNLOCK(&m_ref_lock);
-#endif //HAVE_PTHREAD
+		m_ref_lock.unlock();
 		delete this;
 		return 0;
 	}
 	else
 	{
 		SG_GCDEBUG("unref() refcount %ld obj %s (%p) decreased\n", m_refcount, this->get_name(), this)
-#ifdef HAVE_PTHREAD
-		PTHREAD_UNLOCK(&m_ref_lock);
-#endif //HAVE_PTHREAD
+		m_ref_lock.unlock();
 		return m_refcount;
 	}
 }
@@ -1062,10 +1046,6 @@ extern CMap<void*, shogun::MemoryBlock>* sg_mallocs;
 
 void CSGObject::init()
 {
-#ifdef HAVE_PTHREAD
-	PTHREAD_LOCK_INIT(&m_ref_lock);
-#endif
-
 #ifdef TRACE_MEMORY_ALLOCS
 	if (sg_mallocs)
 	{

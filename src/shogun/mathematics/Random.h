@@ -13,6 +13,7 @@
 
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/config.h>
+#include <shogun/lib/Lock.h>
 #include <limits>
 
 /* opaque pointers */
@@ -21,6 +22,7 @@ struct DSFMT_T;
 
 namespace shogun
 {
+	class CLock;
 	/** @brief: Pseudo random number geneartor
 	 *
 	 * It is based on SIMD oriented Fast Mersenne Twister(SFMT) pseudorandom
@@ -333,11 +335,8 @@ namespace shogun
         	 */
  			uint32_t* m_xComp;
 
-#ifdef HAVE_PTHREAD
 			/** state lock */
-			PTHREAD_LOCK_T m_state_lock;
-#endif
-
+			CLock m_state_lock;
 	};
 }
 

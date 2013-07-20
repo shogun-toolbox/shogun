@@ -22,11 +22,8 @@
 #include <shogun/base/Version.h>
 
 #include <shogun/io/SGIO.h>
+#include <shogun/lib/Lock.h>
 
-
-#ifdef HAVE_PTHREAD
-#include <pthread.h>
-#endif //HAVE_PTHREAD
 
 /** \namespace shogun
  * @brief all of classes and functions are contained in the shogun namespace
@@ -40,6 +37,7 @@ class Parameter;
 class ParameterMap;
 class SGParamInfo;
 class CSerializableFile;
+class CLock;
 
 template <class T, class K> class CMap;
 
@@ -517,10 +515,7 @@ private:
 	bool m_save_post_called;
 
 	int32_t m_refcount;
-
-#ifdef HAVE_PTHREAD
-	PTHREAD_LOCK_T m_ref_lock;
-#endif //HAVE_PTHREAD
+	CLock m_ref_lock;
 };
 }
 #endif // __SGOBJECT_H__

@@ -13,7 +13,7 @@
 
 namespace shogun
 {
-struct refcount_t;
+class RefCount;
 
 /** @brief shogun reference count managed data */
 class SGReferencedData
@@ -70,7 +70,7 @@ class SGReferencedData
 	private:
 
 		/** reference counter */
-		refcount_t* m_refcount;
+		RefCount* m_refcount;
 };
 }
 #endif // __SGREFERENCED_DATA_H__

@@ -13,6 +13,7 @@
 #include <shogun/lib/external/SFMT/SFMT.h>
 #include <shogun/lib/external/dSFMT/dSFMT.h>
 #include <shogun/lib/Time.h>
+#include <shogun/lib/Lock.h>
 
 using namespace shogun;
 
@@ -114,9 +115,6 @@ void CRandom::init()
 	m_sfmt_32 = SG_MALLOC(sfmt_t, 1);
 	m_sfmt_64 = SG_MALLOC(sfmt_t, 1);
 	m_dsfmt = SG_MALLOC(dsfmt_t, 1);
-#ifdef HAVE_PTHREAD	
-	PTHREAD_LOCK_INIT(&m_state_lock);
-#endif
 	reinit(m_seed);
 }
 
@@ -297,15 +295,11 @@ float64_t CRandom::GaussianPdfDenormInv(float64_t y) const
 
 void CRandom::reinit(uint32_t seed)
 {
-#ifdef HAVE_PTHREAD
-	PTHREAD_LOCK(&m_state_lock);
-#endif
+	m_state_lock.lock();
 	m_seed = seed;
 	sfmt_init_gen_rand(m_sfmt_32, m_seed);
 	sfmt_init_gen_rand(m_sfmt_64, m_seed);
 	dsfmt_init_gen_rand(m_dsfmt, m_seed);
-#ifdef HAVE_PTHREAD
-	PTHREAD_UNLOCK(&m_state_lock);
-#endif
+	m_state_lock.unlock();
 }
 

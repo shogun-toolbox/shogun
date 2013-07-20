@@ -15,11 +15,6 @@
 #include <shogun/base/SGObject.h>
 #include <shogun/io/SGIO.h>
 
-#ifdef USE_LZO
-#include <lzo/lzoconf.h>
-#include <lzo/lzo1x.h>
-#endif
-
 namespace shogun
 {
 	/** compression type */
@@ -35,9 +30,11 @@ namespace shogun
 
 
 	/** @brief Compression library for compressing and decompressing buffers using
-	 * one of the standard compression algorithms, LZO, GZIP, BZIP2 or LZMA.
+	 * one of the standard compression algorithms:
 	 *
-	 * The general recommendation is to use LZO whenever lightweight compression
+	 *   LZO, GZIP, BZIP2 or LZMA, SNAPPY.
+	 *
+	 * The general recommendation is to use SNAPPY or LZO whenever lightweight compression
 	 * is sufficient but high i/o throughputs are needed (at 1/2 the speed of memcpy).
 	 *
 	 * If size is all that matters use LZMA (which especially when compressing

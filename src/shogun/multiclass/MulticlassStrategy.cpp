@@ -34,7 +34,7 @@ void CMulticlassStrategy::init()
 	m_rejection_strategy=NULL;
 	m_train_labels=NULL;
 	m_orig_labels=NULL;
-	m_train_iter=NULL;
+	m_train_iter=0;
 	m_prob_heuris=PROB_HEURIS_NONE;
 	m_num_classes=0;
 

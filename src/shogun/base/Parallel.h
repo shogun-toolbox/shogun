@@ -15,32 +15,6 @@
 #include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>
 
-#ifdef HAVE_PTHREAD
-#ifdef USE_SPINLOCKS
-#ifdef DARWIN
-#include <libkern/OSAtomic.h>
-
-	#define PTHREAD_LOCK_T OSSpinLock
-	#define PTHREAD_LOCK_INIT(lock) *lock = OS_SPINLOCK_INIT
-	#define PTHREAD_LOCK_DESTROY(lock)
-	#define PTHREAD_LOCK(lock) OSSpinLockLock(lock)
-	#define PTHREAD_UNLOCK(lock) OSSpinLockUnlock(lock)
-#else
-	#define PTHREAD_LOCK_T pthread_spinlock_t
-	#define PTHREAD_LOCK_INIT(lock) pthread_spin_init(lock, 0)
-	#define PTHREAD_LOCK_DESTROY(lock) pthread_spin_destroy(lock)
-	#define PTHREAD_LOCK(lock) pthread_spin_lock(lock)
-	#define PTHREAD_UNLOCK(lock) pthread_spin_unlock(lock)
-#endif
-#else
-	#define PTHREAD_LOCK_T pthread_mutex_t
-	#define PTHREAD_LOCK_INIT(lock) pthread_mutex_init(lock, NULL)
-	#define PTHREAD_LOCK_DESTROY(lock) pthread_mutex_destroy(lock)
-	#define PTHREAD_LOCK(lock) pthread_mutex_lock(lock)
-	#define PTHREAD_UNLOCK(lock) pthread_mutex_unlock(lock)
-#endif
-#endif
-
 namespace shogun
 {
 /** @brief Class Parallel provides helper functions for multithreading.
