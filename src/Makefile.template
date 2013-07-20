@@ -122,6 +122,7 @@ ORELPATH=$(shell python $(CONFIGPATH)/.relpath.py $(DESTDIR)$(OCTDIR) $(DESTDIR)
 RRELPATH=$(shell python $(CONFIGPATH)/.relpath.py $(DESTDIR)$(RDIR)/elwms/libs $(DESTDIR)$(LIBDIR)/shogun)
 PLRELPATH=$(shell python $(CONFIGPATH)/.relpath.py $(DESTDIR)$(PLDIR) $(DESTDIR)$(LIBDIR)/Shogun)
 
+ABSCONFIGPATH=$(shell readlink -f "$(CONFIGPATH)")
 
 foo: 
 	echo $(SWIGLIBFILES)
@@ -335,15 +336,15 @@ check-examples: check-examples-template
 run-testsuite-libshogun:
 	true
 check-examples-libshogun:
-	cd $(CONFIGPATH)/../examples/undocumented/libshogun && $(MAKE) clean && \
+	cd $(ABSCONFIGPATH)/../examples/undocumented/libshogun && $(MAKE) clean && \
 		CC=$(COMP_CPP) \
 		GDB=gdb \
 		GDBOPTS="-x ../../../src/.gdb" \
 		LIBRARY_PATH="$(LIBRARY_PATH)" \
-		LIB_PATH="$(DESTDIR)$(LIBDIR)" \
-		INC_PATH="$(DESTDIR)$(INCDIR)" \
+		LIB_PATH="$(ABSCONFIGPATH)/shogun" \
+		INC_PATH="$(ABSCONFIGPATH)" \
 		LIBS="$(LINKFLAGS) -lshogun" \
-		$(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR):$$$(LIBRARY_PATH) \
+		$(LIBRARY_PATH)=$$LIB_PATH:$$$(LIBRARY_PATH) \
 		INCLUDES="$(INCLUDES)" \
 		MAKE="$(MAKE)" ./check.sh
 
@@ -374,12 +375,12 @@ check-examples-r_static:
 
 run-testsuite-cmdline_static:
 	cd $(CONFIGPATH)/../tests/integration/cmdline_static && \
-		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
-		PATH="$(DESTDIR)$(BINDIR):$$PATH"  ./test_all.sh )
+		( $(LIBRARY_PATH)=$(ABSCONFIGPATH)/shogun \
+		PATH="$(ABSCONFIGPATH)/interfaces/cmdline_static::$$PATH"  ./test_all.sh )
 check-examples-cmdline_static:
 	cd $(CONFIGPATH)/../examples/undocumented/cmdline_static && \
-		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
-		PATH="$(DESTDIR)$(BINDIR):$$PATH"  ./check.sh )
+		( $(LIBRARY_PATH)=$(ABSCONFIGPATH)/shogun \
+		PATH="$(ABSCONFIGPATH)/interfaces/cmdline_static:$$PATH"  ./check.sh )
 
 run-testsuite-octave_static:
 	cd $(CONFIGPATH)/../tests/integration/octave_static && \
