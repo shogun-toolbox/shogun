@@ -8,6 +8,7 @@
  * Copyright (C) 2008-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
+#include <shogun/lib/config.h>
 #include <shogun/lib/ShogunException.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/Map.h>
@@ -80,7 +81,11 @@ void MemoryBlock::set_sgobject()
 }
 #endif
 
+#ifdef HAVE_CXX11
 void* operator new(size_t size)
+#else
+void* operator new(size_t size) throw (std::bad_alloc)
+#endif
 {
 	void *p=malloc(size);
 #ifdef TRACE_MEMORY_ALLOCS
@@ -111,7 +116,11 @@ void operator delete(void *p) throw()
 	free(p);
 }
 
+#ifdef HAVE_CXX11
 void* operator new[](size_t size)
+#else
+void* operator new[](size_t size) throw(std::bad_alloc)
+#endif
 {
 	void *p=malloc(size);
 #ifdef TRACE_MEMORY_ALLOCS
