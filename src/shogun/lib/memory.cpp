@@ -13,6 +13,7 @@
 #include <shogun/lib/Map.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGSparseVector.h>
+#include <shogun/lib/SGMatrix.h>
 #include <shogun/base/SGObject.h>
 
 using namespace shogun;
@@ -79,7 +80,7 @@ void MemoryBlock::set_sgobject()
 }
 #endif
 
-void* operator new(size_t size) throw (std::bad_alloc)
+void* operator new(size_t size)
 {
 	void *p=malloc(size);
 #ifdef TRACE_MEMORY_ALLOCS
@@ -110,7 +111,7 @@ void operator delete(void *p) throw()
 	free(p);
 }
 
-void* operator new[](size_t size) throw(std::bad_alloc)
+void* operator new[](size_t size)
 {
 	void *p=malloc(size);
 #ifdef TRACE_MEMORY_ALLOCS
@@ -350,5 +351,20 @@ SG_SPECIALIZED_MALLOC(SGSparseVector<float32_t>)
 SG_SPECIALIZED_MALLOC(SGSparseVector<float64_t>)
 SG_SPECIALIZED_MALLOC(SGSparseVector<floatmax_t>)
 SG_SPECIALIZED_MALLOC(SGSparseVector<complex64_t>)
+
+SG_SPECIALIZED_MALLOC(SGMatrix<bool>)
+SG_SPECIALIZED_MALLOC(SGMatrix<char>)
+SG_SPECIALIZED_MALLOC(SGMatrix<int8_t>)
+SG_SPECIALIZED_MALLOC(SGMatrix<uint8_t>)
+SG_SPECIALIZED_MALLOC(SGMatrix<int16_t>)
+SG_SPECIALIZED_MALLOC(SGMatrix<uint16_t>)
+SG_SPECIALIZED_MALLOC(SGMatrix<int32_t>)
+SG_SPECIALIZED_MALLOC(SGMatrix<uint32_t>)
+SG_SPECIALIZED_MALLOC(SGMatrix<int64_t>)
+SG_SPECIALIZED_MALLOC(SGMatrix<uint64_t>)
+SG_SPECIALIZED_MALLOC(SGMatrix<float32_t>)
+SG_SPECIALIZED_MALLOC(SGMatrix<float64_t>)
+SG_SPECIALIZED_MALLOC(SGMatrix<floatmax_t>)
+SG_SPECIALIZED_MALLOC(SGMatrix<complex64_t>)
 #undef SG_SPECIALIZED_MALLOC
 }

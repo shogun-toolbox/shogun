@@ -29,9 +29,6 @@ SGMatrixList<T>::SGMatrixList(int32_t nmats, bool ref_counting)
 : SGReferencedData(ref_counting), num_matrices(nmats)
 {
 	matrix_list = SG_MALLOC(SGMatrix<T>, nmats);
-	// Call to SGMatrix default constructor in-place
-	for ( int32_t i = 0 ; i < nmats ; ++i )
-		new (&matrix_list[i]) SGMatrix<T>();
 }
 
 template <class T>
@@ -63,24 +60,9 @@ void SGMatrixList<T>::init_data()
 template <class T>
 void SGMatrixList<T>::free_data()
 {
-	cleanup_matrices();
 	SG_FREE(matrix_list);
 	num_matrices = 0;
 	matrix_list = NULL;
-}
-
-template <class T>
-void SGMatrixList<T>::cleanup_matrices()
-{
-	if ( matrix_list && num_matrices )
-	{
-		for ( int32_t i = 0 ; i < num_matrices ; ++i )
-		{
-			// Explicit call to the destructor required
-			// due to the use of in-place constructors
-			matrix_list[i].~SGMatrix<T>();
-		}
-	}
 }
 
 template <class T>

@@ -46,6 +46,7 @@
 
 
 /// workaround a bug in std cmath
+#ifndef HAVE_CXX11
 #ifdef _GLIBCXX_CMATH
 #if _GLIBCXX_USE_C99_MATH
 #if !_GLIBCXX_USE_C99_FP_MACROS_DYNAMIC
@@ -66,6 +67,7 @@
   using std::islessequal;
   using std::islessgreater;
   using std::isunordered;
+#endif
 #endif
 #endif
 #endif

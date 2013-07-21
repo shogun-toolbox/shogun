@@ -83,10 +83,6 @@ template<class T> class SGMatrixList : public SGReferencedData
 		/** free data */
 		virtual void free_data();
 	
-	private:
-		/** helper method of free_data */
-		void cleanup_matrices();
-
 	public:
 		/** matrix list */
 		SGMatrix<T>* matrix_list;

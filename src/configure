@@ -518,6 +518,32 @@ EOF
 	LINK=$COMP_CPP
 }
 
+check_cxx11()
+{
+cat > $TMPCXX << EOF
+#include <stdio.h>
+#include <atomic>
+ 
+int main(int argc, char** argv) 
+{
+    volatile std::atomic<int> x;
+    x.store(0);
+ 
+    printf("%d %d\n", x.load(), sizeof(x));
+	return 0;
+}
+EOF
+
+	echocheck "C++11 Atomic Integer"
+	if cxx_check -std=c++11
+	then
+			COMPFLAGS_CPP="$COMPFLAGS_CPP -std=c++11"
+			HAVE_CXX11='#define HAVE_CXX11 1'
+			DEFINES="$DEFINES -DHAVE_CXX11"
+	fi
+}
+
+
 check_gmock()
 {
 	echocheck "Google C++ Mocking Framework"
@@ -5492,6 +5518,7 @@ $HAVE_LGAMMAL
 $HAVE_SQRTL
 $HAVE_LOG2
 $HAVE_JBLAS
+$HAVE_CXX11
 $HAVE_UJMP
 $USE_SPINLOCKS
 $USE_LOGCACHE
@@ -5614,6 +5641,7 @@ detect_ldd
 detect_cc
 determine_system_name
 check_fpic
+check_cxx11
 check_makedepend
 check_python
 check_pkg_config

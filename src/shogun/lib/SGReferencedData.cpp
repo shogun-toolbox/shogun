@@ -3,6 +3,10 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/Lock.h>
 
+#ifdef HAVE_CXX11
+#include <atomic>
+#endif
+
 using namespace shogun;
 
 namespace shogun {
@@ -12,8 +16,12 @@ class RefCount
 public:
 	RefCount() : rc(0) {};
 	/** reference count */
+#ifdef HAVE_CXX11
+    volatile std::atomic<int> rc;
+#else
 	int32_t rc;
 	CLock lock;
+#endif
 };
 }
 
@@ -54,9 +62,13 @@ int32_t SGReferencedData::ref_count()
 	if (m_refcount == NULL)
 		return -1;
 
+#ifdef HAVE_CXX11
+	int32_t c = m_refcount->rc.load();
+#else
 	m_refcount->lock.lock();
 	int32_t c = m_refcount->rc;
 	m_refcount->lock.unlock();
+#endif
 
 #ifdef DEBUG_SGVECTOR
 	SG_SGCDEBUG("ref_count(): refcount %d, data %p\n", c, this)
@@ -81,9 +93,13 @@ int32_t SGReferencedData::ref()
 		return -1;
 	}
 
+#ifdef HAVE_CXX11
+	int32_t c = m_refcount->rc.fetch_add(1)+1;
+#else
 	m_refcount->lock.lock();
 	int32_t c = ++(m_refcount->rc);
 	m_refcount->lock.unlock();
+#endif
 #ifdef DEBUG_SGVECTOR
 	SG_SGCDEBUG("ref() refcount %ld data %p increased\n", c, this)
 #endif
@@ -104,9 +120,13 @@ int32_t SGReferencedData::unref()
 		return -1;
 	}
 
+#ifdef HAVE_CXX11
+	int32_t c = m_refcount->rc.fetch_sub(1)-1;
+#else
 	m_refcount->lock.lock();
 	int32_t c = --(m_refcount->rc);
 	m_refcount->lock.unlock();
+#endif
 	if (c<=0)
 	{
 #ifdef DEBUG_SGVECTOR
