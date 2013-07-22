@@ -44,7 +44,7 @@ public:
 	 * @param b the vector of the system
 	 * @return the solution vector
 	 */
-	virtual SGVector<T> solve(CLinearOperator<T, ST>* A, SGVector<ST> b) = 0;
+	virtual SGVector<T> solve(CLinearOperator<T, T>* A, SGVector<ST> b) = 0;
 
 	/** @return object name */
 	virtual const char* get_name() const

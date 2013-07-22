@@ -24,7 +24,7 @@ namespace shogun
 {
 
 CConjugateOrthogonalCGSolver::CConjugateOrthogonalCGSolver()
-	: CIterativeLinearSolver<complex64_t>()
+	: CIterativeLinearSolver<complex64_t, float64_t>()
 {
 	SG_GCDEBUG("%s created (%p)\n", this->get_name(), this);
 }
@@ -35,13 +35,14 @@ CConjugateOrthogonalCGSolver::~CConjugateOrthogonalCGSolver()
 }
 
 SGVector<complex64_t> CConjugateOrthogonalCGSolver::solve(
-	CLinearOperator<complex64_t, complex64_t>* A, SGVector<complex64_t> b)
+	CLinearOperator<complex64_t>* A, SGVector<float64_t> b)
 {
 	SG_DEBUG("CConjugateOrthogonalCGSolve::solve(): Entering..\n");
 
 	// sanity check
 	REQUIRE(A, "Operator is NULL!\n");
-	REQUIRE(A->get_dimension()==b.vlen, "Dimension mismatch!\n");
+	REQUIRE(A->get_dimension()==b.vlen, "Dimension mismatch!\n, %d vs %d",
+		A->get_dimension(), b.vlen);
 
 	// the final solution vector, initial guess is 0
 	SGVector<complex64_t> result(b.vlen);
@@ -49,20 +50,20 @@ SGVector<complex64_t> CConjugateOrthogonalCGSolver::solve(
 
 	// the rest of the part hinges on eigen3 for computing norms
 	Map<VectorXcd> x(result.vector, result.vlen);
-	Map<VectorXcd> b_map(b.vector, b.vlen);
+	Map<VectorXd> b_map(b.vector, b.vlen);
 
 	// direction vector
 	SGVector<complex64_t> p_(result.vlen);
 	Map<VectorXcd> p(p_.vector, p_.vlen);
 
 	// residual r_i=b-Ax_i, here x_0=[0], so r_0=b
-	VectorXcd r=b_map;
+	VectorXcd r=b_map.cast<complex64_t>();
 
 	// initial direction is same as residual
 	p=r;
 
 	// the iterator for this iterative solver
-	IterativeSolverIterator<complex64_t> it(b_map, m_max_iteration_limit,
+	IterativeSolverIterator<complex64_t> it(r, m_max_iteration_limit,
 		m_relative_tolerence, m_absolute_tolerence);
 
 	// CG iteration begins

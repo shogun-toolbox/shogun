@@ -35,7 +35,7 @@ TEST(ConjugateOrthogonalCGSolver, solve)
 		m(i,i)=complex64_t(i+1, i+1);
 
 	// constant vector of the system
-	SGVector<complex64_t> b(size);
+	SGVector<float64_t> b(size);
 	b.set_const(0.5);
 	
 	// Creating sparse system to solve with COCG
@@ -50,16 +50,12 @@ TEST(ConjugateOrthogonalCGSolver, solve)
 	SGVector<complex64_t> x_cg=cocg_linear_solver.solve(A, b);
 
 	// Creating dense system to solve with direct solver
-	CDenseMatrixOperator<complex64_t, float64_t>* B
-		=new CDenseMatrixOperator<complex64_t, float64_t>(m);
-
-	// constant vector of the system
-	SGVector<float64_t> c(size);
-	c.set_const(0.5);
+	CDenseMatrixOperator<complex64_t, complex64_t>* B
+		=new CDenseMatrixOperator<complex64_t>(m);
 
 	// Solve with direct triangular solver
 	CDirectLinearSolverComplex direct_linear_solver;
-	SGVector<complex64_t> x_direct=direct_linear_solver.solve(B, c);
+	SGVector<complex64_t> x_direct=direct_linear_solver.solve(B, b);
 
 	Map<VectorXcd> map_x_cg(x_cg.vector, x_cg.vlen);
 	Map<VectorXcd> map_x_direct(x_direct.vector, x_direct.vlen);
