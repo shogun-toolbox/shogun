@@ -17,8 +17,7 @@
 
 #include <string.h>
 
-using namespace shogun;
-
+namespace shogun {
 template <class ST>
 CHashedDenseFeatures<ST>::CHashedDenseFeatures(int32_t size)
 : CDotFeatures(size)
@@ -260,3 +259,4 @@ template class CHashedDenseFeatures<uint64_t>;
 template class CHashedDenseFeatures<float32_t>;
 template class CHashedDenseFeatures<float64_t>;
 template class CHashedDenseFeatures<floatmax_t>;
+}

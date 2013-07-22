@@ -19,7 +19,7 @@
 #include <string.h>
 #include <iostream>
 
-using namespace shogun;
+namespace shogun {
 
 template <class ST>
 CHashedSparseFeatures<ST>::CHashedSparseFeatures(int32_t size)
@@ -258,3 +258,4 @@ template class CHashedSparseFeatures <uint64_t>;
 template class CHashedSparseFeatures <float32_t>;
 template class CHashedSparseFeatures <float64_t>;
 template class CHashedSparseFeatures <floatmax_t>;
+}
