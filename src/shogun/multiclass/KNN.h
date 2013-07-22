@@ -84,7 +84,7 @@ class CKNN : public CDistanceMachine
 		 * among the nearest neighbors, the closest are in the first row, and the furthest
 		 * in the last one
 		 */
-		SGMatrix<int32_t> nearest_neighbors();
+		SGMatrix<index_t> nearest_neighbors();
 
 		/** classify objects
 		 *
