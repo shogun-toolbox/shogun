@@ -535,11 +535,13 @@ int main(int argc, char** argv)
 EOF
 
 	echocheck "C++11 Atomic Integer"
-	if cxx_check -std=c++11
+	if cxx_check -Werror -std=c++11
 	then
 			COMPFLAGS_CPP="$COMPFLAGS_CPP -std=c++11"
 			HAVE_CXX11='#define HAVE_CXX11 1'
 			DEFINES="$DEFINES -DHAVE_CXX11"
+	else
+		echores "no"
 	fi
 }
 
