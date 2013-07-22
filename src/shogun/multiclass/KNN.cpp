@@ -107,16 +107,16 @@ bool CKNN::train_machine(CFeatures* data)
 	return true;
 }
 
-SGMatrix<int32_t> CKNN::nearest_neighbors()
+SGMatrix<index_t> CKNN::nearest_neighbors()
 {
 	//number of examples to which kNN is applied
 	int32_t n=distance->get_num_vec_rhs();
 	//distances to train data
 	float64_t* dists=SG_MALLOC(float64_t, m_train_labels.vlen);
 	//indices to train data
-	int32_t* train_idxs=SG_MALLOC(int32_t, m_train_labels.vlen);
+	index_t* train_idxs=SG_MALLOC(index_t, m_train_labels.vlen);
 	//pre-allocation of the nearest neighbors
-	SGMatrix<int32_t> NN(m_k, n);
+	SGMatrix<index_t> NN(m_k, n);
 
 	//for each test example
 	for (int32_t i=0; i<n && (!CSignal::cancel_computations()); i++)
@@ -186,7 +186,7 @@ CMulticlassLabels* CKNN::apply_multiclass(CFeatures* data)
 	if ( ! m_use_covertree )
 	{
 		//get the k nearest neighbors of each example
-		SGMatrix<int32_t> NN = nearest_neighbors();
+		SGMatrix<index_t> NN = nearest_neighbors();
 
 		//from the indices to the nearest neighbors, compute the class labels
 		for (int32_t i=0; i<num_lab && (!CSignal::cancel_computations()); i++)
@@ -354,7 +354,7 @@ SGMatrix<int32_t> CKNN::classify_for_multiple_k()
 	if ( ! m_use_covertree )
 	{
 		//get the k nearest neighbors of each example
-		SGMatrix<int32_t> NN = nearest_neighbors();
+		SGMatrix<index_t> NN = nearest_neighbors();
 
 		for (int32_t i=0; i<num_lab && (!CSignal::cancel_computations()); i++)
 		{
