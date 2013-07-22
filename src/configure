@@ -529,7 +529,7 @@ int main(int argc, char** argv)
     volatile std::atomic<int> x;
     x.store(0);
  
-    printf("%d %d\n", x.load(), sizeof(x));
+	printf("%d %d\n", (int) x.load(), (int) sizeof(x));
 	return 0;
 }
 EOF
@@ -537,6 +537,7 @@ EOF
 	echocheck "C++11 Atomic Integer"
 	if cxx_check -Werror -std=c++11
 	then
+			echores "yes"
 			COMPFLAGS_CPP="$COMPFLAGS_CPP -std=c++11"
 			HAVE_CXX11='#define HAVE_CXX11 1'
 			DEFINES="$DEFINES -DHAVE_CXX11"
