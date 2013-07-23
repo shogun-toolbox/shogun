@@ -21,12 +21,12 @@ def get_class_list_content():
 def is_valid(sho_class):
     ignores = ['CSet', 'CParseBuffer', 'CTreeMachine']
     if sho_class.startswith('CGUI'):
-        return false
+        return False
     if sho_class.startswith('GUI'):
-        return false
+        return False
     if sho_class in ignores:
-        return false
-    return true
+        return False
+    return True
 
 def get_class_list(class_list_content):
     import re
