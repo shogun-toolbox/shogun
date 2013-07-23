@@ -89,7 +89,7 @@ void* CPolyFeatures::get_feature_iterator(int32_t vector_index)
 bool CPolyFeatures::get_next_feature(int32_t& index, float64_t& value, void* iterator)
 {
 	SG_NOTIMPLEMENTED
-	return NULL;
+	return false;
 }
 
 void CPolyFeatures::free_feature_iterator(void* iterator)
