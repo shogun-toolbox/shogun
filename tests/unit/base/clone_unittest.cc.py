@@ -19,9 +19,7 @@ def get_class_list_content():
     return content
 
 def is_valid(sho_class):
-    ignores = ['CSet', 'CParseBuffer', 'CTreeMachine']
-    if sho_class.startswith('CGUI'):
-        return False
+    ignores = ['Set', 'ParseBuffer', 'TreeMachine']
     if sho_class.startswith('GUI'):
         return False
     if sho_class in ignores:
@@ -50,7 +48,7 @@ def get_class_list(class_list_content):
                 if result:
                     sho_class=result.group('sho_class')
                     if is_valid(sho_class):
-                        print l[1]
+                        #print l[1]
                         if l[1] == 'SHOGUN_BASIC_CLASS':
                             classes.append(sho_class)
                         if l[1] == 'SHOGUN_TEMPLATE_CLASS':
