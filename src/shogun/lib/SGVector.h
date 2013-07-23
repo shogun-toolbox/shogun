@@ -21,6 +21,7 @@
 namespace shogun
 {
 	template <class T> class SGSparseVector;
+	template <class T> class SGMatrix;
 	class CFile;
 
 /** @brief shogun vector */
@@ -588,6 +589,18 @@ template<class T> class SGVector : public SGReferencedData
 
 		/** imag part of a complex64_t vector */
 		SGVector<float64_t> get_imag();
+
+		/** create SGMatrix from linear vector
+		 * 
+		 * @param vector source vector
+		 * @param nrows number of rows
+		 * @param ncols number of cols
+		 * @param fortran_order order of stroing matrix in linear vector
+		 * 	true - column-major order (FORTRAN, MATLAB, R)
+		 *	false - row-major order (C, Python)
+		 * @return matrix
+		 */
+		static SGMatrix<T> convert_to_matrix(SGVector<T> vector, index_t nrows, index_t ncols, bool fortran_order);
 
 	protected:
 		/** needs to be overridden to copy data */
