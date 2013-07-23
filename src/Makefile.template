@@ -363,7 +363,6 @@ run-testsuite-python_static:
 	cd $(CONFIGPATH)/../tests/integration/python_static && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) PYTHON=$(PYTHON) \
 		PYTHONPATH="$(DESTDIR)$(PYDIR)" ./test_all.sh	)
-
 check-examples-python_static:
 	cd $(CONFIGPATH)/../examples/undocumented/python_static && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) PYTHON=$(PYTHON) \
@@ -401,7 +400,6 @@ run-testsuite-matlab_static:
 	cd $(CONFIGPATH)/../tests/integration/matlab_static && \
 		( ln -sf $(CONFIGPATH)/../src/matlab/$(TEMPLATE_TARGET) ; \
 		$(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) ./test_all.sh - matlab)
-
 check-examples-matlab_static:
 	cd $(CONFIGPATH)/../examples/undocumented/matlab_static && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
@@ -414,7 +412,6 @@ run-testsuite-python_modular:
 	cd $(CONFIGPATH)/../tests/integration/python_modular && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
 		PYTHONPATH="$(DESTDIR)$(PYDIR)" $(PYTHON) tester.py  )
-
 check-examples-python_modular:
 	cd $(CONFIGPATH)/../examples/undocumented/python_modular && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) PYTHON=$(PYTHON) \
@@ -430,7 +427,6 @@ run-testsuite-perl_modular:
 	$(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) PERLPATH="$(DESTDIR)$(PLDIR)" \
 	$(LIBRARY_PATH)="/usr/src/shogun/src/interfaces/perl_modular:/usr/src/shogun/src/shogun" \
 	./tester.pl)
-
 check-examples-perl_modular:
 	cd $(CONFIGPATH)/../examples/undocumented/perl_modular && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) PERL=$(PERL) \
