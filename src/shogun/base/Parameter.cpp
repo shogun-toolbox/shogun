@@ -3923,11 +3923,12 @@ bool TParameter::copy(TParameter* target)
 
 			}
 
-			/* check whether target m_parameter data contains NULL, if yes, create */
-			if (*(char**)target->m_parameter==NULL)
+			/* check whether target m_parameter data contains NULL, if yes
+			 * create if the length is non-zero */
+			if (*(char**)target->m_parameter==NULL && *m_datatype.m_length_y>0)
 			{
-				SG_SDEBUG("allocating memory for target vector\n");
 				size_t num_bytes=*m_datatype.m_length_y * m_datatype.sizeof_stype();
+				SG_SDEBUG("allocating %d bytes memory for target vector\n", num_bytes);
 				*(char**)target->m_parameter=SG_MALLOC(char, num_bytes);
 
 				/* use length of source */
