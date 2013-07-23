@@ -274,7 +274,8 @@ template<class ST> SGMatrix<ST> CSparseFeatures<ST>::get_full_feature_matrix()
 	SGMatrix<ST> full(get_num_features(), get_num_vectors());
 	full.zero();
 
-	SG_INFO("converting sparse features to full feature matrix of %ld x %ld entries\n", sparse_feature_matrix.num_vectors, get_num_features())
+	SG_INFO("converting sparse features to full feature matrix of %d x %d"
+			" entries\n", sparse_feature_matrix.num_vectors, get_num_features())
 
 	for (int32_t v=0; v<full.num_cols; v++)
 	{
