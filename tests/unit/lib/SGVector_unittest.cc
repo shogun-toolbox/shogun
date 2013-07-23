@@ -1,4 +1,5 @@
 #include <shogun/lib/SGVector.h>
+#include <shogun/lib/SGMatrix.h>
 #include <shogun/mathematics/Math.h>
 #include <gtest/gtest.h>
 
@@ -116,7 +117,7 @@ TEST(SGVectorTest,misc)
 {
 	SGVector<float64_t> a(10);
 	a.random(-1024.0, 1024.0);
-	
+
 	/* test, min, max, sum */
 	int arg_max = 0, arg_max_abs = 0;
 	float64_t min = 1025, max = -1025, sum = 0.0, max_abs = -1, sum_abs = 0.0;
@@ -137,7 +138,7 @@ TEST(SGVectorTest,misc)
 		if (a[i] < min)
 			min = a[i];
 	}
-	
+
 	EXPECT_EQ(min, SGVector<float64_t>::min(a.vector,a.vlen));
 	EXPECT_EQ(max, SGVector<float64_t>::max(a.vector,a.vlen));
 	EXPECT_EQ(arg_max, SGVector<float64_t>::arg_max(a.vector,1, a.vlen, NULL));
@@ -263,7 +264,7 @@ TEST(SGVectorTest,equals_equal)
 	b[0]=0;
 	b[1]=1;
 	b[2]=2;
-	
+
 	EXPECT_TRUE(a.equals(b));
 }
 
@@ -277,7 +278,7 @@ TEST(SGVectorTest,equals_different)
 	b[0]=0;
 	b[1]=1;
 	b[2]=3;
-	
+
 	EXPECT_FALSE(a.equals(b));
 }
 
@@ -287,6 +288,33 @@ TEST(SGVectorTest,equals_different_size)
 	SGVector<float64_t> b(2);
 	a.zero();
 	b.zero();
-	
+
 	EXPECT_FALSE(a.equals(b));
+}
+
+TEST(SGVectorTest, convert_to_matrix)
+{
+	index_t len=6;
+	index_t nrows=2;
+	index_t ncols=3;
+	int32_t c_order_memory[]={1, 2, 3, 4, 5, 6};
+	int32_t fortran_order_memory[]={1, 4, 2, 5, 3, 6};
+
+	SGVector<int32_t> vector;
+	SGMatrix<int32_t> a;
+	SGMatrix<int32_t> b;
+
+	vector=SGVector<int32_t>(c_order_memory, len, false);
+	a=SGVector<int32_t>::convert_to_matrix(vector, nrows, ncols, false);
+
+	vector=SGVector<int32_t>(fortran_order_memory, len, false);
+	b=SGVector<int32_t>::convert_to_matrix(vector, nrows, ncols, true);
+
+	for (index_t i=0; i<nrows; i++)
+	{
+		for (index_t j=0; j<ncols; j++)
+		{
+			EXPECT_EQ(a(i, j), b(i, j));
+		}
+	}
 }
