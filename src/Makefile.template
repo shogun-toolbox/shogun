@@ -313,6 +313,9 @@ install-octave_modular: $(TEMPLATE_TARGET)
 	for i in $(SWIGLIBFILES) ; do echo $$i | sed -e 's=.*/==' -e 's/\.oct/;/' \
 		>>$(DESTDIR)$(OCTDIR)/shogun/init_shogun.m; done
 
+install-octave_modular-local: $(TEMPLATE_TARGET)
+	make OCTDIR=$(ABSCONFIGPATH)/interfaces/octave_modular/library install-octave_modular
+
 install-java_modular: $(TEMPLATE_TARGET)
 	install -d -m755 "$(DESTDIR)$(PREFIX)/share/java"
 	install -d -m755 "$(DESTDIR)$(LIBDIR)/jni"
@@ -365,18 +368,18 @@ run-testsuite-python_static:
 		PYTHONPATH="$(DESTDIR)$(PYDIR)" ./test_all.sh	)
 check-examples-python_static:
 	cd $(CONFIGPATH)/../examples/undocumented/python_static && \
-		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) PYTHON=$(PYTHON) \
+		( $(LIBRARY_PATH)=$(ABSCONFIGPATH)/shogun PYTHON=$(PYTHON) \
 		GDB="gdb -x ../../../src/.gdb --args" \
-		PYTHONPATH="$(DESTDIR)$(PYDIR)" ./check.sh	)
+		PYTHONPATH="$(ABSCONFIGPATH)/interfaces/python_static" ./check.sh )
 
 run-testsuite-r_static:
 	cd $(CONFIGPATH)/../tests/integration/r_static && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
 		R_LIBS="$(DESTDIR)$(RDIR)" ./test_all.sh )
-check-examples-r_static:
+check-examples-r_static: install-r_static-local
 	cd $(CONFIGPATH)/../examples/undocumented/r_static && \
-		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
-		R_LIBS="$(DESTDIR)$(RDIR)" ./check.sh )
+		( $(LIBRARY_PATH)=$(ABSCONFIGPATH)/shogun \
+		R_LIBS="$(ABSCONFIGPATH)/interfaces/r_static/library/" ./check.sh )
 
 run-testsuite-cmdline_static:
 	cd $(CONFIGPATH)/../tests/integration/cmdline_static && \
@@ -393,8 +396,8 @@ run-testsuite-octave_static:
 		OCTAVE_PATH="$(DESTDIR)$(OCTDIR):" ./test_all.sh - octave )
 check-examples-octave_static:
 	cd $(CONFIGPATH)/../examples/undocumented/octave_static && \
-		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
-		OCTAVE_PATH="$(DESTDIR)$(OCTDIR):" ./check.sh )
+		( $(LIBRARY_PATH)=$(ABSCONFIGPATH)/shogun \
+		OCTAVE_PATH="$(ABSCONFIGPATH)/interfaces/octave_static" ./check.sh )
 
 run-testsuite-matlab_static:
 	cd $(CONFIGPATH)/../tests/integration/matlab_static && \
@@ -402,8 +405,8 @@ run-testsuite-matlab_static:
 		$(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) ./test_all.sh - matlab)
 check-examples-matlab_static:
 	cd $(CONFIGPATH)/../examples/undocumented/matlab_static && \
-		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
-		OCTAVE_PATH="$(DESTDIR)$(OCTDIR)" ./check.sh )
+		( $(LIBRARY_PATH)=$(ABSCONFIGPATH)/shogun \
+		OCTAVE_PATH="$(ABSCONFIGPATH)/interfaces/octave_static" ./check.sh )
 
 run-testsuite-python_modular:
 	cd $(CONFIGPATH)/../tests/integration/python_modular && \
@@ -412,11 +415,11 @@ run-testsuite-python_modular:
 	cd $(CONFIGPATH)/../tests/integration/python_modular && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
 		PYTHONPATH="$(DESTDIR)$(PYDIR)" $(PYTHON) tester.py  )
-check-examples-python_modular:
+check-examples-python_modular: install-python_modular-local
 	cd $(CONFIGPATH)/../examples/undocumented/python_modular && \
-		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) PYTHON=$(PYTHON) \
+		( $(LIBRARY_PATH)=$(ABSCONFIGPATH)/shogun PYTHON=$(PYTHON) \
 		GDB="gdb -x ../../../src/.gdb --args" \
-		PYTHONPATH="$(DESTDIR)$(PYDIR)" ./check.sh    )
+		PYTHONPATH="$(ABSCONFIGPATH)/interfaces/python_modular/library" ./check.sh )
 
 run-testsuite-perl_modular:
 	cd $(CONFIGPATH)/../tests/integration/perl_modular && (\
@@ -429,8 +432,8 @@ run-testsuite-perl_modular:
 	./tester.pl)
 check-examples-perl_modular:
 	cd $(CONFIGPATH)/../examples/undocumented/perl_modular && \
-		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) PERL=$(PERL) \
-		PERLPATH="$(DESTDIR)$(PLDIR)" ./check.sh    )
+		( $(LIBRARY_PATH)=$(ABSCONFIGPATH)/shogun PERL=$(PERL) \
+		PERLPATH="$(ABSCONFIGPATH)/interfaces/perl_modular/library" ./check.sh )
 
 run-testsuite-java_modular:
 #TODO
@@ -452,25 +455,25 @@ run-testsuite-r_modular:
 		R_LIBS="$(DESTDIR)$(RDIR)" ./test_all.sh )
 check-examples-r_modular:
 	-cd $(CONFIGPATH)/../examples/undocumented/r_modular && \
-		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
-		R_LIBS="$(DESTDIR)$(RDIR)" ./check.sh )
+		( $(LIBRARY_PATH)=$(ABSCONFIGPATH)/shogun \
+		R_LIBS="$(ABSCONFIGPATH)/interfaces/r_modular/library" ./check.sh )
 
 run-testsuite-octave_modular:
 	cd $(CONFIGPATH)/../tests/integration/octave_modular && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
 		OCTAVE_PATH="$(DESTDIR)$(OCTDIR)/shogun:" ./test_all.sh )
-check-examples-octave_modular:
+check-examples-octave_modular: install-octave_modular-local
 	cd $(CONFIGPATH)/../examples/undocumented/octave_modular && \
-		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
-		OCTAVE_PATH="$(DESTDIR)$(OCTDIR)/shogun:" ./check.sh )
+		( $(LIBRARY_PATH)=$(ABSCONFIGPATH)/shogun \
+		OCTAVE_PATH="$(ABSCONFIGPATH)/interfaces/octave_modular/library/shogun:" ./check.sh )
 
 run-testsuite-lua_modular:
 #TODO
 
 check-examples-lua_modular:
 	cd $(CONFIGPATH)/../examples/undocumented/lua_modular && \
-		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
-		LUA_CPATH="$(DESTDIR)$(LUA_EXTENSIONS_INSTALL_DIR)/?.so" ./check.sh )
+		( $(LIBRARY_PATH)=$(ABSCONFIGPATH)/shogun \
+		LUA_CPATH="$(ABSCONFIGPATH)/interfaces/lua_modular/library" ./check.sh )
 
 run-testsuite-ruby_modular:
 #TODO
