@@ -23,32 +23,15 @@
 
 using namespace shogun;
 
-CGUILabels::CGUILabels()
-{
-	init();
-}
-
 CGUILabels::CGUILabels(CSGInterface* ui_)
-: CSGObject()
+: CSGObject(), ui(ui_), train_labels(NULL), test_labels(NULL)
 {
-	init();
-
-	ui=ui_;
-	SG_REF(ui);
 }
 
 CGUILabels::~CGUILabels()
 {
 	SG_UNREF(train_labels);
 	SG_UNREF(test_labels);
-	SG_UNREF(ui);
-}
-
-void CGUILabels::init()
-{
-	ui=NULL;
-	train_labels=NULL;
-	test_labels=NULL;
 }
 
 bool CGUILabels::load(char* filename, char* target)

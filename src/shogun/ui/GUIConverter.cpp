@@ -30,30 +30,15 @@
 
 using namespace shogun;
 
-CGUIConverter::CGUIConverter()
-{
-	init();
-}
-
 CGUIConverter::CGUIConverter(CSGInterface* ui)
-: CSGObject()
+: CSGObject(), m_ui(ui)
 {
-	init();
-
-	m_ui=ui;
-	SG_REF(m_ui);
+	m_converter = NULL;
 }
 
 CGUIConverter::~CGUIConverter()
 {
 	SG_UNREF(m_converter);
-	SG_UNREF(m_ui);
-}
-
-void CGUIConverter::init()
-{
-	m_converter=NULL;
-	m_ui=NULL;
 }
 
 bool CGUIConverter::create_locallylinearembedding(int32_t k)
