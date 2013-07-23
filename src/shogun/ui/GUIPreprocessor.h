@@ -26,7 +26,7 @@ class CGUIPreprocessor : public CSGObject
 {
 	public:
 		/** constructor */
-		CGUIPreprocessor();
+		CGUIPreprocessor() { };
 		/** constructor
 		 * @param interface
 		 */
@@ -56,9 +56,6 @@ class CGUIPreprocessor : public CSGObject
 
 		/** @return object name */
 		virtual const char* get_name() const { return "GUIPreprocessor"; }
-
-	private:
-		void init();
 
 	protected:
 		/** preprocess features
