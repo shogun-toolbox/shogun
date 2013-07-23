@@ -41,9 +41,11 @@ void CSparseMatrixOperator<T, ST>::init()
 	{
 		CSGObject::set_generic<T>();
 
-		CSGObject::m_parameters->add(&m_operator,
-			"sparse_matrix",
-			"The sparse matrix of the linear operator");
+		CSGObject::m_parameters->add_vector(&m_operator.sparse_matrix,
+				&m_operator.num_vectors, "sparse_matrix",
+				"The sparse matrix of the linear operator.");
+		CSGObject::m_parameters->add(&m_operator.num_features,
+				"m_operator.num_features", "Number of features.");
 	}
 
 template<class T, class ST>
