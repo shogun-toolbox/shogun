@@ -26,7 +26,8 @@ CStreamingStringFeatures<T>::CStreamingStringFeatures(CStreamingFile* file,
 template <class T>
 CStreamingStringFeatures<T>::~CStreamingStringFeatures()
 {
-	parser.end_parser();
+	if (parser.is_running())
+		parser.end_parser();
 	SG_UNREF(alphabet);
 }
 
@@ -142,6 +143,8 @@ void CStreamingStringFeatures<T>::init()
 	current_length=-1;
 	current_sgstring.string=current_string;
 	current_sgstring.slen=current_length;
+
+	set_generic<T>();
 }
 
 template <class T>

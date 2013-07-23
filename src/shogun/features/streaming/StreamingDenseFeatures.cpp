@@ -189,6 +189,8 @@ void CStreamingDenseFeatures<T>::init()
 	/* needed to prevent double free memory errors */
 	current_vector.vector=NULL;
 	current_vector.vlen=-1;
+
+	set_generic<T>();
 }
 
 template<class T>

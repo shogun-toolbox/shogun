@@ -204,6 +204,12 @@ class CMulticlassSVM : public CKernelMulticlassMachine
 		 */
 		void set_batch_computation_enabled(bool enable) { svm_proto()->set_batch_computation_enabled(enable); }
 
+		/** @return name of SGSerializable */
+		virtual const char* get_name() const
+		{
+			return "MulticlassSVM";
+		}
+
 	protected:
 
 		/** casts m_machine to SVM */

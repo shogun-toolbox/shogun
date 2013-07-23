@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2012 Fernando José Iglesias García
- * Copyright (C) 2012 Fernando José Iglesias García
+ * Written (W) 2012 Fernando Jose Iglesias Garcia
+ * Copyright (C) 2012 Fernando Jose Iglesias Garcia
  */
 
 #include <shogun/features/MatrixFeatures.h>
@@ -155,6 +155,8 @@ template< class ST > void CMatrixFeatures< ST >::init()
 
 	m_num_vectors  = 0;
 	m_num_features = 0;
+
+	set_generic<ST>();
 }
 
 template< class ST > void CMatrixFeatures< ST >::cleanup()

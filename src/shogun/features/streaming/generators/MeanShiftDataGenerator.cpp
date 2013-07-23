@@ -53,6 +53,8 @@ void CMeanShiftDataGenerator::init()
 	m_dimension=0;
 	m_mean_shift=0;
 	m_dimension_shift=0;
+
+	unset_generic();
 }
 
 bool CMeanShiftDataGenerator::get_next_example()

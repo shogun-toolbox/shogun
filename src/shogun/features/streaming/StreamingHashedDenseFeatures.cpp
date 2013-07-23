@@ -69,6 +69,8 @@ void CStreamingHashedDenseFeatures<ST>::init(CStreamingFile* file, bool is_label
 
 	set_read_functions();
 	parser.set_free_vector_after_release(false);
+
+	set_generic<ST>();
 }
 
 template <class ST>

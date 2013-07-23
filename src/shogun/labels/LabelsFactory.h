@@ -65,7 +65,7 @@ public:
 	static CMulticlassMultipleOutputLabels* to_multiclass_multiple_output(CLabels* base_labels);
 
     /** @return object name */
-    virtual const char* get_name() const { return "CLabelsFactory"; }
+    virtual const char* get_name() const { return "LabelsFactory"; }
 };
 
 }

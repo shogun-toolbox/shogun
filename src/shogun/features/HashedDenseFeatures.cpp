@@ -64,6 +64,8 @@ void CHashedDenseFeatures<ST>::init(CDenseFeatures<ST>* feats, int32_t d)
 	SG_ADD(&dim, "dim", "Dimension of new feature space", MS_NOT_AVAILABLE);
 	SG_ADD((CSGObject** ) &dense_feats, "dense_feats", "Dense features to work on",
 		MS_NOT_AVAILABLE);
+
+	set_generic<ST>();
 }
 
 template <class ST>

@@ -16,22 +16,23 @@
 using namespace shogun;
 
 CMulticlassSVM::CMulticlassSVM()
-	:CKernelMulticlassMachine(new CMulticlassOneVsRestStrategy(), NULL, new CSVM(0), NULL), m_C(0)
+	:CKernelMulticlassMachine(new CMulticlassOneVsRestStrategy(), NULL, new CSVM(0), NULL)
 {
 	init();
 }
 
 CMulticlassSVM::CMulticlassSVM(CMulticlassStrategy *strategy)
-	:CKernelMulticlassMachine(strategy, NULL, new CSVM(0), NULL), m_C(0)
+	:CKernelMulticlassMachine(strategy, NULL, new CSVM(0), NULL)
 {
 	init();
 }
 
 CMulticlassSVM::CMulticlassSVM(
 	CMulticlassStrategy *strategy, float64_t C, CKernel* k, CLabels* lab)
-	: CKernelMulticlassMachine(strategy, k, new CSVM(C, k, lab), lab), m_C(C)
+	: CKernelMulticlassMachine(strategy, k, new CSVM(C, k, lab), lab)
 {
 	init();
+	m_C=C;
 }
 
 CMulticlassSVM::~CMulticlassSVM()
@@ -41,6 +42,7 @@ CMulticlassSVM::~CMulticlassSVM()
 void CMulticlassSVM::init()
 {
 	SG_ADD(&m_C, "C", "C regularization constant",MS_AVAILABLE);
+	m_C=0;
 }
 
 bool CMulticlassSVM::create_multiclass_svm(int32_t num_classes)

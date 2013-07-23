@@ -26,11 +26,11 @@ template<class ST> class CDenseSubsetFeatures: public CDotFeatures
 {
 public:
     /** default constructor */
-	CDenseSubsetFeatures():m_fea(NULL) {}
+	CDenseSubsetFeatures():m_fea(NULL) { set_generic<ST>(); }
 
 	/** constructor */
 	CDenseSubsetFeatures(CDenseFeatures<ST> *fea, SGVector<int32_t> idx)
-		:m_fea(fea), m_idx(idx) { SG_REF(m_fea); }
+		:m_fea(fea), m_idx(idx) { SG_REF(m_fea); set_generic<ST>(); }
 
     /** destructor */
 	virtual ~CDenseSubsetFeatures() { SG_UNREF(m_fea); }

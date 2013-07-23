@@ -1370,7 +1370,7 @@ class CMath : public CSGObject
 				//@}
 
 				/** @return object name */
-				virtual const char* get_name() const { return "Mathematics"; }
+				virtual const char* get_name() const { return "Math"; }
 	public:
 				/**@name constants*/
 				//@{
