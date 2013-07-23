@@ -17,42 +17,18 @@
 
 using namespace shogun;
 
-CGUIStructure::CGUIStructure()
-{
-	init();
-}
-
 CGUIStructure::CGUIStructure(CSGInterface* ui_)
-: CSGObject()
+: ui(ui_), m_dp(NULL), m_feature_matrix(NULL),
+  m_feature_matrix_sparse1(NULL), m_feature_matrix_sparse2(NULL),
+  m_feature_dims(NULL), m_num_positions(0), m_all_positions(0),
+  m_content_svm_weights(0), m_num_svm_weights(0),
+  m_orf_info(NULL), m_use_orf(true), m_mod_words(NULL)
 {
-	init();
-
-	ui=ui_;
-	SG_REF(ui);
-}
-
-void CGUIStructure::init()
-{
-	ui=NULL;
-	m_dp=NULL;
-	m_feature_matrix=NULL;
-	m_feature_matrix_sparse1=NULL;
-	m_feature_matrix_sparse2=NULL;
-	m_feature_dims=0;
-	m_num_positions=0;
-	m_all_positions=0;
-	m_content_svm_weights=0;
-	m_num_svm_weights=0;
-	m_orf_info=NULL;
-	m_use_orf=true;
-	m_mod_words=NULL;
-
-	m_plif_matrix=new CPlifMatrix();
-	SG_REF(m_plif_matrix);
+  m_plif_matrix=new CPlifMatrix();
+  SG_REF(m_plif_matrix);
 }
 
 CGUIStructure::~CGUIStructure()
 {
 	SG_UNREF(m_plif_matrix);
-	SG_UNREF(ui);
 }
