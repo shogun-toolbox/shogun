@@ -176,7 +176,7 @@ public:
 	 *
 	 * @param vec_idx the index of the vector
 	 */
-	SGSparseVector<uint32_t> get_hashed_feature_vector(int32_t vec_idx) const;
+	SGSparseVector<ST> get_hashed_feature_vector(int32_t vec_idx) const;
 
 	/** Get the hashed representation of the given vector
 	 *
@@ -184,7 +184,7 @@ public:
 	 * @param dim the dimension of the new feature space
 	 * @return the hashed representation of the vector vec
 	 */
-	static SGSparseVector<uint32_t> hash_vector(SGVector<ST> vec, int32_t dim);
+	static SGSparseVector<ST> hash_vector(SGVector<ST> vec, int32_t dim);
 
 
 	/** Get the hashed representation of the given sparse vector
@@ -193,7 +193,7 @@ public:
 	 * @param dim the dimension of the hashed target space
 	 * @return the hashed representation of the vector vec
 	 */
-	static SGSparseVector<uint32_t> hash_vector(SGSparseVector<ST> vec, int32_t dim);
+	static SGSparseVector<ST> hash_vector(SGSparseVector<ST> vec, int32_t dim);
 protected:
 	void init(CSparseFeatures<ST>* feats, int32_t d);
 

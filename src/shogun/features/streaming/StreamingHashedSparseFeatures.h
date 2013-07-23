@@ -199,7 +199,7 @@ public:
 	 * 
 	 * @return a SGSparseVector representing the hashed version of the string last read
 	 */
-	SGSparseVector<uint32_t> get_vector();
+	SGSparseVector<ST> get_vector();
 
 private:
 	void init(CStreamingFile* file, bool is_labelled, int32_t size,
@@ -211,7 +211,7 @@ protected:
 	int32_t dim;
 
 	/** Current example */
-	SGSparseVector<uint32_t> current_vector;
+	SGSparseVector<ST> current_vector;
 
 	/** The parser */
 	CInputParser<SGSparseVectorEntry<ST> > parser;

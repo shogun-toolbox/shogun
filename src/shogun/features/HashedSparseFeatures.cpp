@@ -91,53 +91,47 @@ int32_t CHashedSparseFeatures<ST>::get_dim_feature_space() const
 }
 
 template <class ST>
-SGSparseVector<uint32_t> CHashedSparseFeatures<ST>::get_hashed_feature_vector(
+SGSparseVector<ST> CHashedSparseFeatures<ST>::get_hashed_feature_vector(
 	int32_t vec_idx) const
 {
 	return CHashedSparseFeatures<ST>::hash_vector(sparse_feats->get_sparse_feature_vector(vec_idx), dim);
 }
 
 template <class ST>
-SGSparseVector<uint32_t> CHashedSparseFeatures<ST>::hash_vector(SGVector<ST> vec, int32_t dim)
+SGSparseVector<ST> CHashedSparseFeatures<ST>::hash_vector(SGVector<ST> vec, int32_t dim)
 {
-	return CHashedDenseFeatures<ST>::get_hashed_vector(vec, dim);
+	return CHashedDenseFeatures<ST>::hash_vector(vec, dim);
 }
 
 template <class ST>
-SGSparseVector<uint32_t> CHashedSparseFeatures<ST>::hash_vector(SGSparseVector<ST> vec, int32_t dim)
+SGSparseVector<ST> CHashedSparseFeatures<ST>::hash_vector(SGSparseVector<ST> vec, int32_t dim)
 {
-	CDynamicArray<index_t> indices(vec.num_feat_entries);
+	SGVector<ST> h_vec(dim);
+	SGVector<ST>::fill_vector(h_vec, dim, 0);
 	for (index_t i=0; i<vec.num_feat_entries; i++)
 	{
-		uint32_t h = CHash::MurmurHash3((uint8_t* ) &vec.features[i].entry, sizeof (ST),
+		uint32_t h = CHash::MurmurHash3((uint8_t* ) &vec.features[i].feat_index, sizeof (index_t),
 						vec.features[i].feat_index);
-		indices.append_element(h%dim);
+		h_vec[h % dim] += vec.features[i].entry;
 	}
 
-	CMath::qsort(indices.get_array(), indices.get_num_elements());
-
-	int32_t different_indices = 0;
-	for (index_t i=0; i<indices.get_num_elements(); i++)
+	int32_t num_nnz_features = 0; 
+	for (index_t i=0; i<dim; i++)
 	{
-		different_indices++;
-		while ( (i+1 < indices.get_num_elements()) &&
-				(indices[i+1] == indices[i]) )
-			i++;
+		if (h_vec[i]!=0)
+			num_nnz_features++;
 	}
 
-	SGSparseVector<uint32_t> sv(different_indices);
-	int32_t sparse_index = 0;
-	for (index_t i=0; i<indices.get_num_elements(); i++)
+	SGSparseVector<ST> sv(num_nnz_features);
+
+	int32_t sparse_index = 0;	
+	for (index_t i=0; i<dim; i++)
 	{
-		int32_t count = 1;
-		while ( (i+1 < indices.get_num_elements()) &&
-				(indices[i+1] == indices[i]) )
+		if (h_vec[i]!=0)
 		{
-			count++;
-			i++;
+			sv.features[sparse_index].entry = h_vec[i];
+			sv.features[sparse_index++].feat_index = i;
 		}
-		sv.features[sparse_index].entry = count;
-		sv.features[sparse_index++].feat_index = indices[i];
 	}
 
 	return sv;
@@ -153,8 +147,8 @@ float64_t CHashedSparseFeatures<ST>::dot(int32_t vec_idx1, CDotFeatures* df,
 	ASSERT(strcmp(df->get_name(), get_name())==0)
 	
 	CHashedSparseFeatures<ST>* feats = (CHashedSparseFeatures<ST>* ) df;
-	SGSparseVector<uint32_t> vec_1 = get_hashed_feature_vector(vec_idx1);
-	SGSparseVector<uint32_t> vec_2 = feats->get_hashed_feature_vector(vec_idx2);
+	SGSparseVector<ST> vec_1 = get_hashed_feature_vector(vec_idx1);
+	SGSparseVector<ST> vec_2 = feats->get_hashed_feature_vector(vec_idx2);
 
 	float64_t result = vec_1.sparse_dot(vec_2); 
 	return result;	
@@ -171,9 +165,10 @@ float64_t CHashedSparseFeatures<ST>::dense_dot(int32_t vec_idx1, const float64_t
 	float64_t result = 0;
 	for (index_t i=0; i<vec.num_feat_entries; i++)
 	{
-		uint32_t h_idx = CHash::MurmurHash3((uint8_t* ) &vec.features[i].entry, sizeof (ST),
+		uint32_t h_idx = CHash::MurmurHash3((uint8_t* ) &vec.features[i].feat_index, sizeof (index_t),
 					   vec.features[i].feat_index);
-		result += vec2[h_idx%dim];
+		h_idx = h_idx % dim;
+		result += vec2[h_idx] * vec.features[i].entry;
 	}
 
 	sparse_feats ->free_feature_vector(vec_idx1);
@@ -191,9 +186,9 @@ void CHashedSparseFeatures<ST>::add_to_dense_vec(float64_t alpha, int32_t vec_id
 
 	for (index_t i=0; i<vec.num_feat_entries; i++)
 	{
-		uint32_t h_idx = CHash::MurmurHash3((uint8_t* ) &vec.features[i].entry, sizeof (ST),
+		uint32_t h_idx = CHash::MurmurHash3((uint8_t* ) &vec.features[i].feat_index, sizeof (index_t),
 					   vec.features[i].feat_index);
-		vec2[h_idx%dim] += val;
+		vec2[h_idx%dim] += val * vec.features[i].entry;
 	}
 	sparse_feats ->free_feature_vector(vec_idx1);	
 }
