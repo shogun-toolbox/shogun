@@ -35,6 +35,8 @@ template <class T> class CSimpleFile : public CSGObject
 			file=NULL;
 			filename=strdup("");
 			status = false;
+
+			set_generic<T>();
 		}
 
 		/** constructor
