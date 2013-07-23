@@ -103,6 +103,11 @@ namespace shogun
 		m_generic = PT_FLOATMAX;
 	}
 
+	template<> void CSGObject::set_generic<CSGObject*>()
+	{
+		m_generic = PT_SGOBJECT;
+	}
+
 	template<> void CSGObject::set_generic<complex64_t>()
 	{
 		m_generic = PT_COMPLEX64;
