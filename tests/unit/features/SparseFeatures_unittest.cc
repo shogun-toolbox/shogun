@@ -271,7 +271,7 @@ TEST(SparseFeaturesTest,subset_get_full_feature_matrix_smaller)
 
 	CSparseFeatures<int32_t>* features=new CSparseFeatures<int32_t>(data);
 
-	SGVector<index_t> subset_idx(3);
+	SGVector<index_t> subset_idx(2);
 	subset_idx[0]=2;
 	subset_idx[1]=1;
 
@@ -285,7 +285,7 @@ TEST(SparseFeaturesTest,subset_get_full_feature_matrix_smaller)
 	EXPECT_EQ(mat.num_cols, subset_idx.vlen);
 	for (index_t i=0; i<data.num_rows; ++i)
 	{
-		for (index_t j=0; j<data.num_cols; ++j)
+		for (index_t j=0; j<subset_idx.vlen; ++j)
 			EXPECT_EQ(mat(i,j), data(i,subset_idx[j]));
 	}
 
@@ -373,7 +373,7 @@ TEST(SparseFeaturesTest,subset_get_full_feature_vector_smaller)
 
 	CSparseFeatures<int32_t>* features=new CSparseFeatures<int32_t>(data);
 
-	SGVector<index_t> subset_idx(3);
+	SGVector<index_t> subset_idx(2);
 	subset_idx[0]=0;
 	subset_idx[1]=2;
 
