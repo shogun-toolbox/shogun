@@ -169,7 +169,7 @@ public:
 	}
 
 	/** @return object name */
-	virtual const char* get_name() const { return "LARS"; }
+	virtual const char* get_name() const { return "LeastAngleRegression"; }
 
 protected:
 	virtual bool train_machine(CFeatures* data=NULL);

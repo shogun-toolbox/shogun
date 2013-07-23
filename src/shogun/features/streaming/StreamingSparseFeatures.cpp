@@ -36,7 +36,8 @@ CStreamingSparseFeatures<T>::~CStreamingSparseFeatures()
 	current_sgvector.features=NULL;
 	current_sgvector.num_feat_entries=0;
 
-	parser.end_parser();
+	if (parser.is_running())
+		parser.end_parser();
 }
 
 template <class T>
@@ -369,6 +370,8 @@ void CStreamingSparseFeatures<T>::init()
 	current_length=-1;
 	current_vec_index=0;
 	current_num_features=-1;
+
+	set_generic<T>();
 }
 
 template <class T>

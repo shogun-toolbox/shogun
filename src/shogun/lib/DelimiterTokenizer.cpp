@@ -45,7 +45,7 @@ void CDelimiterTokenizer::set_text(SGVector<char> txt)
 
 const char* CDelimiterTokenizer::get_name() const
 {
-    return "WhiteSpaceTokenizer";
+    return "DelimiterTokenizer";
 }
 
 bool CDelimiterTokenizer::has_next()

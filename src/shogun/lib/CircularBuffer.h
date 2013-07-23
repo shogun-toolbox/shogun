@@ -97,7 +97,7 @@ public:
 	void debug_print();
 
 	/** @return object name */
-	virtual const char* get_name() const { return "CCircularBuffer"; }
+	virtual const char* get_name() const { return "CircularBuffer"; }
 
 private:
 	/** append memory block to buffer */

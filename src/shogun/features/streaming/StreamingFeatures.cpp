@@ -16,6 +16,7 @@ using namespace shogun;
 
 CStreamingFeatures::CStreamingFeatures() : CFeatures()
 {
+	working_file=NULL;
 }
 
 CStreamingFeatures::~CStreamingFeatures()

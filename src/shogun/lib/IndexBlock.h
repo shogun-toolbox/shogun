@@ -52,7 +52,7 @@ public:
 	void set_weight(float64_t weight) { m_weight = weight; }
 
 	/** get name */
-	virtual const char* get_name() const { return "Task"; };
+	virtual const char* get_name() const { return "IndexBlock"; };
 
 	/** get subtasks */
 	CList* get_sub_blocks();

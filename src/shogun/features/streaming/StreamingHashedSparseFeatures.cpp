@@ -70,6 +70,8 @@ void CStreamingHashedSparseFeatures<ST>::init(CStreamingFile* file, bool is_labe
 
 	set_read_functions();
 	parser.set_free_vector_after_release(false);
+
+	set_generic<ST>();
 }
 
 template <class ST>
