@@ -41,15 +41,15 @@ CDirectLinearSolverComplex::~CDirectLinearSolverComplex()
 }
 
 SGVector<complex64_t> CDirectLinearSolverComplex::solve(
-		CLinearOperator<complex64_t, float64_t>* A, SGVector<float64_t> b)
+		CLinearOperator<complex64_t>* A, SGVector<float64_t> b)
 {
 	SGVector<complex64_t> x(b.vlen);
 
 	REQUIRE(A, "Operator is NULL!\n");
 	REQUIRE(A->get_dimension()==b.vlen, "Dimension mismatch!\n");
 
-	CDenseMatrixOperator<complex64_t, float64_t> *op=
-		dynamic_cast<CDenseMatrixOperator<complex64_t, float64_t>*>(A);
+	CDenseMatrixOperator<complex64_t> *op=
+		dynamic_cast<CDenseMatrixOperator<complex64_t>*>(A);
 	REQUIRE(op, "Operator is not CDenseMatrixOperator<complex64_t, float64_t> type!\n");
 
 	SGMatrix<complex64_t> mat_A=op->get_matrix_operator();
