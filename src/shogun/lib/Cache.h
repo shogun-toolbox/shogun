@@ -53,6 +53,8 @@ template<class T> class CCache : public CSGObject
 		cache_is_full=false;
 		nr_cache_lines=0;
 		entry_size=0;
+
+		set_generic<T>();
 	}
 
 	/** constructor
@@ -107,6 +109,8 @@ template<class T> class CCache : public CSGObject
 		//reserve the very last cache line
 		//as scratch buffer
 		nr_cache_lines--;
+
+		set_generic<T>();
 	}
 
 	virtual ~CCache()

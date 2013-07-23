@@ -30,6 +30,7 @@ public:
 	CVectorResult()
 	: CJobResult()
 	{
+		init();
 		SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 	}
 
@@ -39,6 +40,7 @@ public:
 	CVectorResult(SGVector<T> result)
 	: CJobResult(), m_result(result)
 	{
+		init();
 		SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 	}
 

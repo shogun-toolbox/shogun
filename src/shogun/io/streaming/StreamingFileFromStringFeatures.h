@@ -132,6 +132,8 @@ void CStreamingFileFromStringFeatures<T>::init(CStringFeatures<T>* feat)
 {
 	vector_num=0;
 	features = feat;
+
+	set_generic<T>();
 }
 
 /* Functions to return the vector from the StringFeatures object */

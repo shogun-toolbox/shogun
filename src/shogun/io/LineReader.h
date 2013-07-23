@@ -65,7 +65,7 @@ public:
 	void clear_delimiters();
 
 	/** @return object name */
-	virtual const char* get_name() const { return "CLineReader"; }
+	virtual const char* get_name() const { return "LineReader"; }
 
 private:
 	/** read one line into buffer

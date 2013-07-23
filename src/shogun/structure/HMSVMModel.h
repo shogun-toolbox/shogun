@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2012 Fernando José Iglesias García
- * Copyright (C) 2012 Fernando José Iglesias García
+ * Written (W) 2012 Fernando Jose Iglesias Garcia
+ * Copyright (C) 2012 Fernando Jose Iglesias Garcia
  */
 
 #ifndef _HMSVM_MODEL__H__
@@ -161,6 +161,12 @@ class CHMSVMModel : public CStructuredModel
 		 * @return model with the description of the states
 		 */
 		CStateModel* get_state_model() const;
+
+		/** return the SGSerializable's name
+		 *
+		 * @return name Gaussian
+		 */
+		virtual const char* get_name() const { return "HMSVMModel"; }
 
 	private:
 		/* internal initialization */

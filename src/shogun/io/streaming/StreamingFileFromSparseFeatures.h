@@ -133,6 +133,8 @@ void CStreamingFileFromSparseFeatures<T>::init(CSparseFeatures<T>* feat)
 	features = feat;
 	SG_REF(features);
 	vector_num=0;
+
+	set_generic<T>();
 }
 
 /* Functions to return the vector from the SparseFeatures object */

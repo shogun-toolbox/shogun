@@ -35,6 +35,8 @@ template <class T> class CBinaryStream : public CSGObject
             m_fname=NULL;
 			fd = NULL;
 			length = 0;
+
+			set_generic<T>();
 		}
 
 		/** constructor
@@ -49,6 +51,7 @@ template <class T> class CBinaryStream : public CSGObject
 		{
 			/* open_stream(bs.m_fname, bs.rw); */
 			SG_NOTIMPLEMENTED
+			set_generic<T>();
 		}
 
 
@@ -60,6 +63,7 @@ template <class T> class CBinaryStream : public CSGObject
         {
 			open_stream(bs.m_fname, bs.rw);
             ASSERT(length==bs.length)
+			set_generic<T>();
         }
 
 
