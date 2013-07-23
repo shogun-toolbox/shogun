@@ -409,6 +409,12 @@ run-testsuite-python_modular:
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
 		PYTHONPATH="$(DESTDIR)$(PYDIR)" $(PYTHON) tester.py  )
 
+check-examples-python_modular:
+	cd $(CONFIGPATH)/../examples/undocumented/python_modular && \
+		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) PYTHON=$(PYTHON) \
+		GDB="gdb -x ../../../src/.gdb --args" \
+		PYTHONPATH="$(DESTDIR)$(PYDIR)" ./check.sh    )
+
 run-testsuite-perl_modular:
 	cd $(CONFIGPATH)/../tests/integration/perl_modular && (\
 	 $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) PERL=$(PERL) PERLPATH="$(DESTDIR)$(PLDIR)" 	\
@@ -418,12 +424,6 @@ run-testsuite-perl_modular:
 	$(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) PERLPATH="$(DESTDIR)$(PLDIR)" \
 	$(LIBRARY_PATH)="/usr/src/shogun/src/interfaces/perl_modular:/usr/src/shogun/src/shogun" \
 	./tester.pl)
-
-check-examples-python_modular:
-	cd $(CONFIGPATH)/../examples/undocumented/python_modular && \
-		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) PYTHON=$(PYTHON) \
-		GDB="gdb -x ../../../src/.gdb --args" \
-		PYTHONPATH="$(DESTDIR)$(PYDIR)" ./check.sh    )
 
 check-examples-perl_modular:
 	cd $(CONFIGPATH)/../examples/undocumented/perl_modular && \
