@@ -93,7 +93,13 @@ TEST(DenseMatrixOperator, shift_apply)
 	CDenseMatrixOperator<complex64_t, float64_t> op(m);
 	SGVector<complex64_t> diag=op.get_diagonal();
 	for (index_t i=0; i<diag.vlen; ++i)
+	{
+#ifdef HAVE_CXX11
+		diag[i].imag(diag[i].imag()-0.75);
+#else
 		diag[i].imag()-=0.75;
+#endif
+	}
 	op.set_diagonal(diag);
 	
 	SGVector<complex64_t> r1=op.apply(b);
@@ -102,7 +108,13 @@ TEST(DenseMatrixOperator, shift_apply)
 	// shifting the diagonal directly via matrix
 	m.set_const(complex64_t(0.5, 0.0));
 	for (index_t i=0; i<size; ++i)
+	{
+#ifdef HAVE_CXX11
+		m(i,i).imag(m(i,i).imag()-0.75);
+#else
 		m(i,i).imag()-=0.75;
+#endif
+	}
 
 	SGVector<complex64_t> r2=op.apply(b);
 	Map<VectorXcd> map_r2(r2.vector, r2.vlen);
