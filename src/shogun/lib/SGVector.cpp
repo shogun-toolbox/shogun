@@ -14,6 +14,7 @@
 
 #include <shogun/lib/config.h>
 #include <shogun/lib/SGVector.h>
+#include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGSparseVector.h>
 #include <shogun/lib/SGReferencedData.h>
 #include <shogun/io/File.h>
@@ -1324,6 +1325,39 @@ template <class T> SGVector<float64_t> SGVector<T>::get_imag()
 	for (int32_t i=0; i<vlen; i++)
 		imag[i]=CMath::imag(vector[i]);
 	return imag;
+}
+
+template <class T> 
+SGMatrix<T> SGVector<T>::convert_to_matrix(SGVector<T> vector, 
+	index_t nrows, index_t ncols, bool fortran_order)
+{
+	if (nrows*ncols>vector.size())
+		SG_SERROR("SGVector::convert_to_matrix():: Dimensions mismatch\n");
+
+	SGMatrix<T> result(nrows, ncols);
+
+	if (fortran_order)
+	{
+		for (index_t i=0; i<ncols; i++)
+		{
+			for (index_t j=0; j<nrows; j++)
+			{
+				result(j, i)=vector[j+i*nrows];
+			}
+		}
+	}
+	else
+	{
+		for (index_t i=0; i<nrows; i++)
+		{
+			for (index_t j=0; j<ncols; j++)
+			{
+				result(i, j)=vector[j+i*ncols];
+			}
+		}
+	}
+
+	return result;
 }
 
 #define UNDEFINED(function, type)	\
