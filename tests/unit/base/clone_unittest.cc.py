@@ -19,7 +19,14 @@ def get_class_list_content():
     return content
 
 def is_valid(sho_class):
-    return not sho_class.startswith('CGUI') and not sho_class.startswith('GUI')
+    ignores = ['CSet', 'CParseBuffer', 'CTreeMachine']
+    if sho_class.startswith('CGUI'):
+        return false
+    if sho_class.startswith('GUI'):
+        return false
+    if sho_class in ignores:
+        return false
+    return true
 
 def get_class_list(class_list_content):
     import re
