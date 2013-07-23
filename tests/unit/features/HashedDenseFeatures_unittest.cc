@@ -129,3 +129,49 @@ TEST(HashedDenseFeaturesTest, add_to_dense)
 
 	SG_UNREF(h_feats);
 }
+
+TEST(HashedDenseFeaturesTest, static_quadratic_test)
+{
+	index_t n=3;
+	index_t dim=10;
+
+	SGMatrix<float64_t> data(dim,n);
+	for (index_t i=0; i<n; i++)
+	{
+		for (index_t j=0; j<dim; j++)
+			data(j,i) = j + i * dim;
+	}
+
+	int32_t hashing_dim = 8;
+
+	for (index_t i=0; i<n; i++)
+	{
+		float64_t* vec = data.get_column_vector(i);
+		SGVector<uint32_t> hashed_vec(hashing_dim);
+		SGVector<uint32_t>::fill_vector(hashed_vec.vector, hashed_vec.vlen, 0);
+		for (index_t j=0; j<dim; j++)
+		{
+			uint32_t hash = CHash::MurmurHash3((uint8_t* ) &vec[j], sizeof (float64_t), j);
+			hashed_vec[hash % hashing_dim]++;
+		}
+
+		for (index_t j=0; j<dim; j++)
+			for (index_t k=j; k<dim; k++)
+			{
+				float64_t value = vec[j] * vec[k];
+				uint8_t hash = CHash::MurmurHash3((uint8_t* ) &value, sizeof (float64_t), k+j);
+				hashed_vec[hash % hashing_dim]++;
+			}
+
+		SGSparseVector<uint32_t> hashed_vec_2 = CHashedDenseFeatures<float64_t>::hash_vector(
+				SGVector<float64_t>(vec, dim, false), hashing_dim, true);
+		
+		int32_t dense_idx = 0;
+		for (index_t j=0; j<hashed_vec_2.num_feat_entries; j++)
+		{
+			while (dense_idx < hashed_vec_2.features[j].feat_index)
+				EXPECT_EQ(hashed_vec[dense_idx++], 0);
+			EXPECT_EQ(hashed_vec_2.features[j].entry, hashed_vec[dense_idx++]);
+		}
+	}
+}

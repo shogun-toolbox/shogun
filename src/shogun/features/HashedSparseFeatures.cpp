@@ -98,7 +98,7 @@ SGSparseVector<uint32_t> CHashedSparseFeatures<ST>::get_hashed_feature_vector(
 template <class ST>
 SGSparseVector<uint32_t> CHashedSparseFeatures<ST>::hash_vector(SGVector<ST> vec, int32_t dim)
 {
-	return CHashedDenseFeatures<ST>::get_hashed_vector(vec, dim);
+	return CHashedDenseFeatures<ST>::hash_vector(vec, dim);
 }
 
 template <class ST>
@@ -213,7 +213,7 @@ bool CHashedSparseFeatures<ST>::get_next_feature(int32_t& index, float64_t& valu
 	void* iterator)
 {
 	SG_NOTIMPLEMENTED;
-	return NULL;
+	return false;
 }
 template <class ST>
 void CHashedSparseFeatures<ST>::free_feature_iterator(void* iterator)
