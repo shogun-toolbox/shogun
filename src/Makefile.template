@@ -223,6 +223,9 @@ install-r_static: $(TEMPLATE_TARGET)
 	install -m644 $(CONFIGPATH)/../examples/documented/r_static/*.R $(CONFIGPATH)/../examples/documented/r_static/graphical/*.R $(DESTDIR)$(RDIR)/sg/demo
 	$(CONFIGPATH)/.r-install.sh $(DESTDIR)$(RDIR) sg $(EXT_LIB) $(SAVERDS)
 
+install-r_static-local:
+	make RDIR=$(ABSCONFIGPATH)/interfaces/r_static/library install-r_static
+
 install-elwms_static: $(TEMPLATE_TARGET)
 #one .so file
 ifneq ($(ELWMS_STATIC_TARGET),)
@@ -276,6 +279,9 @@ install-python_modular: $(TEMPLATE_TARGET)
 		echo "\"$$i\"," >> "$(DESTDIR)$(PYDIR)/shogun/__init__.py" ;\
 	done
 	echo ']' >> "$(DESTDIR)$(PYDIR)/shogun/__init__.py"
+
+install-python_modular-local: $(TEMPLATE_TARGET)
+	make PYDIR=$(ABSCONFIGPATH)/interfaces/python_modular/library install-python_modular
 
 install-perl_modular: $(TEMPLATE_TARGET)
 	install -d -m755 "$(DESTDIR)$(PLDIR)/shogun"
