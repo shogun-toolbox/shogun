@@ -42,6 +42,8 @@ template <class T> class CMemoryMappedFile : public CSGObject
 			address = NULL;
 			rw = 'r';
 			last_written_byte = 0;
+
+			set_generic<T>();
 		}
 
 		/** constructor
@@ -101,6 +103,8 @@ template <class T> class CMemoryMappedFile : public CSGObject
 			address = mmap(NULL, length, mmap_prot, mmap_flags, fd, 0);
 			if (address == MAP_FAILED)
 				SG_ERROR("Error mapping file")
+
+				set_generic<T>();
 		}
 
 		/** destructor */
