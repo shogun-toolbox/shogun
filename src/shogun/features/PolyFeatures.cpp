@@ -11,6 +11,7 @@ CPolyFeatures::CPolyFeatures() :CDotFeatures()
 	m_multi_index=NULL;
 	m_multinomial_coefficients=NULL;
 	m_normalization_values=NULL;
+	m_output_dimensions=0;
 
 	register_parameters();
 }

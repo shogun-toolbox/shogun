@@ -16,6 +16,7 @@ CLineReader::CLineReader()
 	: m_stream(NULL), m_max_line_length(0), m_next_line_length(-1)
 {
 	m_buffer=new CCircularBuffer(0);
+	m_tokenizer=NULL;
 }
 
 CLineReader::CLineReader(FILE* stream, char delimiter)
