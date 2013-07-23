@@ -164,7 +164,7 @@ bool CHashedDenseFeatures<ST>::get_next_feature(int32_t& index, float64_t& value
 	void* iterator)
 {
 	SG_NOTIMPLEMENTED;
-	return NULL;
+	return false;
 }
 template <class ST>
 void CHashedDenseFeatures<ST>::free_feature_iterator(void* iterator)

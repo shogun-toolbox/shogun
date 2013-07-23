@@ -99,7 +99,7 @@ void* CSparsePolyFeatures::get_feature_iterator(int32_t vector_index)
 bool CSparsePolyFeatures::get_next_feature(int32_t& index, float64_t& value, void* iterator)
 {
 	SG_NOTIMPLEMENTED
-	return NULL;
+	return false;
 }
 
 void CSparsePolyFeatures::free_feature_iterator(void* iterator)

@@ -287,7 +287,7 @@ bool CHashedWDFeatures::get_next_feature(int32_t& index, float64_t& value,
 		void* iterator)
 {
 	SG_NOTIMPLEMENTED
-	return NULL;
+	return false;
 }
 
 void CHashedWDFeatures::free_feature_iterator(void* iterator)

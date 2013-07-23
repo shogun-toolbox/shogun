@@ -213,7 +213,7 @@ bool CHashedSparseFeatures<ST>::get_next_feature(int32_t& index, float64_t& valu
 	void* iterator)
 {
 	SG_NOTIMPLEMENTED;
-	return NULL;
+	return false;
 }
 template <class ST>
 void CHashedSparseFeatures<ST>::free_feature_iterator(void* iterator)
