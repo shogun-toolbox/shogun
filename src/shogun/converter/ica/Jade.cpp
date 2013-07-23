@@ -17,6 +17,8 @@
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/ajd/JADiagOrth.h>
 
+#include <iostream>
+
 using namespace Eigen;
 
 typedef Matrix< float64_t, Dynamic, 1, ColMajor > EVector;
@@ -56,21 +58,53 @@ CFeatures* CJade::apply(CFeatures* features)
 
 	Eigen::Map<EMatrix> EX(X.matrix,n,T);
 
-	// Mean center x
-	EMatrix SPX = EX.rowwise() - (EX.colwise().sum() / T);
+	// Mean center X
+	EVector mean = 	(EX.rowwise().sum() / (float)T);	
+	EMatrix SPX = EX.colwise() - mean;
 
-	EMatrix cov = (SPX * SPX.transpose()) / T;
+	EMatrix cov = (SPX * SPX.transpose()) / (float)T;
+
+	std::cout << "cov" << std::endl;
+	std::cout << cov << std::endl;
 
 	// Whitening & Projection onto signal subspace
 	EigenSolver<EMatrix> eig;
 	eig.compute(cov);
 
+	EMatrix eigenvectors = eig.pseudoEigenvectors();
+	EMatrix eigenvalues = eig.pseudoEigenvalueMatrix();
+	
+	bool swap = false;
+	do
+	{
+		swap = false;
+		for(int j = 1; j < n; j++)
+		{
+			if( eigenvalues(j,j) < eigenvalues(j-1,j-1) )
+			{
+				std::swap(eigenvalues(j,j),eigenvalues(j-1,j-1));
+				eigenvectors.col(j).swap(eigenvectors.col(j-1));
+				swap = true;	
+			}						
+		}
+	
+	} while(swap);
+
+	std::cout << "eigenvectors" << std::endl;
+	std::cout << eigenvectors << std::endl;
+	
+	std::cout << "eigenvalues" << std::endl;	
+	std::cout << eigenvalues << std::endl;
+
 	// PCA
-	EMatrix B = eig.pseudoEigenvectors().transpose();
+	EMatrix B = eigenvectors;
 
 	// Scaling
-	EMatrix scales = eig.pseudoEigenvalueMatrix().cwiseSqrt();
-	B = scales.inverse() * B;
+	EVector scales = eigenvalues.diagonal().cwiseSqrt();
+	B = scales.cwiseInverse().asDiagonal() * B;
+
+	std::cout << "whitener" << std::endl;	
+	std::cout << B << std::endl;
 
 	// Sphering
 	SPX = B * SPX;
@@ -88,7 +122,7 @@ CFeatures* CJade::apply(CFeatures* features)
 
 	for(int im = 0; im < m; im++)
 	{
-		Xim = SPX.row(im);		
+		Xim = SPX.row(im);	
 		Xijm = Xim.cwiseProduct(Xim);
 		Qij = SPX.cwiseProduct(Xijm.replicate(1,m).transpose()) * SPX.transpose() / (float)T - R - 2*R.col(im)*R.col(im).transpose();
 		CM.block(0,Range,m,m) = Qij;
@@ -97,11 +131,14 @@ CFeatures* CJade::apply(CFeatures* features)
 		{
 			Xjm = SPX.row(jm);
 			Xijm = Xim.cwiseProduct(Xjm);
-			Qij = sqrt(2) * SPX.cwiseProduct(Xijm.replicate(1,m).transpose()) * SPX.transpose() / (float)T - R.col(im)*R.col(jm).transpose() - R.col(jm)*R.col(im).transpose();
-			CM.block(0,Range,m,m) = Qij;
+			Qij =SPX.cwiseProduct(Xijm.replicate(1,m).transpose()) * SPX.transpose() / (float)T - R.col(im)*R.col(jm).transpose() - R.col(jm)*R.col(im).transpose();
+			CM.block(0,Range,m,m) =  sqrt(2)*Qij;
 			Range = Range + m;	
 		}
 	}
+
+	std::cout << "cumulatant matrics" << std::endl;
+	std::cout << CM << std::endl;
 
 	index_t * M_dims = SG_MALLOC(index_t, 3);
 	M_dims[0] = m;
@@ -118,14 +155,57 @@ CFeatures* CJade::apply(CFeatures* features)
 	// Diagonalize
 	SGMatrix<float64_t> Q = CJADiagOrth::diagonalize(M);
 	Eigen::Map<EMatrix> EQ(Q.matrix,m,m);
+	EQ = -1 * EQ.inverse();
+	
+	std::cout << "diagonalizer" << std::endl;
+	std::cout << EQ << std::endl;
+	
+	// A separating matrix
+	SGMatrix<float64_t> sep_matrix = SGMatrix<float64_t>(m,m);
+	Eigen::Map<EMatrix> C(sep_matrix.matrix,m,m);
+	C = EQ.transpose() * B;
 
-	// Compute Mixing Matrix
-	m_mixing_matrix = SGMatrix<float64_t>(m,m);
-	Eigen::Map<EMatrix> C(m_mixing_matrix.matrix,n,n);
-	C = EQ * B;
+	// sort
+	EVector A = (B.inverse()*EQ).cwiseAbs2().colwise().sum();
+	swap = false;
+	do
+	{
+		swap = false;
+		for(int j = 1; j < n; j++)
+		{
+			if( A(j) < A(j-1) )
+			{
+				std::swap(A(j),A(j-1));
+				C.col(j).swap(C.col(j-1));
+				swap = true;	
+			}						
+		}
+	
+	} while(swap);
+
+	for(int j = 0; j < m/2; j++)
+		C.row(j).swap( C.row(m-1-j) ); 
+
+	// Fix signs
+	EVector signs = EVector::Zero(m);
+	for(int i = 0; i < m; i++)
+	{
+		if( C(i,0) < 0 )
+			signs(i) = -1;
+		else
+			signs(i) = 1;
+	}
+	C = signs.asDiagonal() * C;
+
+	std::cout << "un mixing matrix" << std::endl;
+	std::cout << C << std::endl;
 
 	// Unmix
 	EX = C * EX;
+	
+	m_mixing_matrix = SGMatrix<float64_t>(m,m);
+	Eigen::Map<EMatrix> Emixing_matrix(m_mixing_matrix.matrix,m,m);
+	Emixing_matrix = C.inverse();
 	
 	return features;
 }
