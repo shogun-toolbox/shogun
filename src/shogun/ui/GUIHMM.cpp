@@ -23,21 +23,8 @@
 
 using namespace shogun;
 
-CGUIHMM::CGUIHMM()
-{
-	init();
-}
-
 CGUIHMM::CGUIHMM(CSGInterface* ui_)
-: CSGObject()
-{
-	init();
-
-	ui=ui_;
-	SG_REF(ui);
-}
-
-void CGUIHMM::init()
+: CSGObject(), ui(ui_)
 {
 	working=NULL;
 
@@ -47,13 +34,11 @@ void CGUIHMM::init()
 
 	PSEUDO=1e-10;
 	M=4;
-	ui=NULL;
 }
 
 CGUIHMM::~CGUIHMM()
 {
 	SG_UNREF(working);
-	SG_UNREF(ui);
 }
 
 bool CGUIHMM::new_hmm(int32_t n, int32_t m)

@@ -66,31 +66,9 @@
 
 using namespace shogun;
 
-CGUIClassifier::CGUIClassifier()
-{
-	init();
-}
-
 CGUIClassifier::CGUIClassifier(CSGInterface* ui_)
-: CSGObject()
+: CSGObject(), ui(ui_)
 {
-	init();
-
-	ui=ui_;
-	SG_REF(ui);
-}
-
-CGUIClassifier::~CGUIClassifier()
-{
-	SG_UNREF(classifier);
-	SG_UNREF(constraint_generator);
-	SG_UNREF(ui);
-}
-
-void CGUIClassifier::init()
-{
-	ui=NULL;
-
 	constraint_generator=NULL;
 	classifier=NULL;
 	max_train_time=0;
@@ -125,6 +103,12 @@ void CGUIClassifier::init()
 	krr_tau=1;
 
 	solver_type=ST_AUTO;
+}
+
+CGUIClassifier::~CGUIClassifier()
+{
+	SG_UNREF(classifier);
+	SG_UNREF(constraint_generator);
 }
 
 bool CGUIClassifier::new_classifier(char* name, int32_t d, int32_t from_d)
