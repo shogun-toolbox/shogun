@@ -39,8 +39,8 @@ TEST(RationalApproximationIndividualJob, compute)
 	SG_REF(identity);
 
 	SG_SDEBUG("creating op\n");
-	CDenseMatrixOperator<complex64_t, float64_t>* op
-		=new CDenseMatrixOperator<complex64_t, float64_t>(m);
+	CDenseMatrixOperator<complex64_t, complex64_t>* op
+		=new CDenseMatrixOperator<complex64_t>(m);
 	SG_REF(op);
 	
 	const float64_t const_multiplier=2.0;

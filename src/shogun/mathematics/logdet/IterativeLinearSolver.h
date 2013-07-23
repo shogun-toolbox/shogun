@@ -25,7 +25,6 @@ namespace shogun
  */
 template<class T, class ST=T> class CIterativeLinearSolver : public CLinearSolver<T, ST>
 {
-typedef bool supports_complex64_t;
 
 public:
 	/** default constructor */
@@ -41,7 +40,7 @@ public:
 	 * @param b the vector of the system
 	 * @return the solution vector
 	 */
-	virtual SGVector<T> solve(CLinearOperator<T, ST>* A, SGVector<ST> b) = 0;
+	virtual SGVector<T> solve(CLinearOperator<T, T>* A, SGVector<ST> b) = 0;
 
 	/** set maximum iteration limit */
 	void set_iteration_limit(int64_t iteration_limit)
@@ -82,7 +81,7 @@ public:
 	/** @return object name */
 	virtual const char* get_name() const
 	{
-		return "CIterativeLinearSolver";
+		return "IterativeLinearSolver";
 	}
 
 protected:

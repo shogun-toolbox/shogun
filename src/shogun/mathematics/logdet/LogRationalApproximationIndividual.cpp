@@ -89,14 +89,14 @@ CJobResultAggregator* CLogRationalApproximationIndividual::submit_jobs(
 		for (index_t j=0; j<m.num_rows; ++j)
 			complex_m(j,i)=complex64_t(m(j,i));
 	}
-	CDenseMatrixOperator<complex64_t, float64_t> complex_op(complex_m);
+	CDenseMatrixOperator<complex64_t> complex_op(complex_m);
 
 	// create num_shifts number of jobs for current sample vector
 	for (index_t i=0; i<m_num_shifts; ++i)
 	{
 		// create a deep copy of the operator
-		CDenseMatrixOperator<complex64_t, float64_t>* shifted_op
-			=new CDenseMatrixOperator<complex64_t, float64_t>(complex_op);
+		CDenseMatrixOperator<complex64_t, complex64_t>* shifted_op
+			=new CDenseMatrixOperator<complex64_t>(complex_op);
 
 		// move the shift inside the operator
 		// (see CRationalApproximation)
