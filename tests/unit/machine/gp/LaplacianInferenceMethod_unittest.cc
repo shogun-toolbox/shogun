@@ -1039,4 +1039,135 @@ TEST(LaplacianInferenceMethod,get_marginal_likelihood_derivatives_probit_likelih
 	SG_UNREF(inf);
 }
 
+TEST(LaplacianInferenceMethod,get_posterior_approximation_mean_probit_likelihood)
+{
+	// create some easy random classification data
+	index_t n=5;
+
+	SGMatrix<float64_t> feat_train(2, n);
+	SGVector<float64_t> lab_train(n);
+
+	feat_train(0, 0)=-1.07932;
+	feat_train(0, 1)=1.15768;
+	feat_train(0, 2)=3.26631;
+	feat_train(0, 3)=1.79009;
+	feat_train(0, 4)=-3.66051;
+
+	feat_train(1, 0)=-1.83544;
+	feat_train(1, 1)=2.91702;
+	feat_train(1, 2)=-3.85663;
+	feat_train(1, 3)=0.11949;
+	feat_train(1, 4)=1.75159;
+
+	lab_train[0]=-1.0;
+	lab_train[1]=1.0;
+	lab_train[2]=1.0;
+	lab_train[3]=1.0;
+	lab_train[4]=-1.0;
+
+	// shogun representation of features and labels
+	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
+	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
+
+	// choose Gaussian kernel with sigma = 2 and zero mean function
+	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
+	CZeroMean* mean=new CZeroMean();
+
+	// probit likelihood
+	CProbitLikelihood* likelihood=new CProbitLikelihood();
+
+	// specify GP classification with Laplacian inference
+	CLaplacianInferenceMethod* inf=new CLaplacianInferenceMethod(kernel,
+			features_train,	mean, labels_train, likelihood);
+
+	// comparison of the mode with result from GPML package
+	SGVector<float64_t> approx_mean=inf->get_posterior_approximation_mean();
+	EXPECT_NEAR(approx_mean[0], -0.50527, 1E-5);
+	EXPECT_NEAR(approx_mean[1], 0.51150, 1E-5);
+	EXPECT_NEAR(approx_mean[2], 0.50609, 1E-5);
+	EXPECT_NEAR(approx_mean[3], 0.51073, 1E-5);
+	EXPECT_NEAR(approx_mean[4], -0.50607, 1E-5);
+
+	// clean up
+	SG_UNREF(inf);
+}
+
+TEST(LaplacianInferenceMethod,get_posterior_approximation_covariance_probit_likelihood)
+{
+	// create some easy random classification data
+	index_t n=5;
+
+	SGMatrix<float64_t> feat_train(2, n);
+	SGVector<float64_t> lab_train(n);
+
+	feat_train(0, 0)=-1.07932;
+	feat_train(0, 1)=1.15768;
+	feat_train(0, 2)=3.26631;
+	feat_train(0, 3)=1.79009;
+	feat_train(0, 4)=-3.66051;
+
+	feat_train(1, 0)=-1.83544;
+	feat_train(1, 1)=2.91702;
+	feat_train(1, 2)=-3.85663;
+	feat_train(1, 3)=0.11949;
+	feat_train(1, 4)=1.75159;
+
+	lab_train[0]=-1.0;
+	lab_train[1]=1.0;
+	lab_train[2]=1.0;
+	lab_train[3]=1.0;
+	lab_train[4]=-1.0;
+
+	// shogun representation of features and labels
+	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
+	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
+
+	// choose Gaussian kernel with sigma = 2 and zero mean function
+	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
+	CZeroMean* mean=new CZeroMean();
+
+	// probit likelihood
+	CProbitLikelihood* likelihood=new CProbitLikelihood();
+
+	// specify GP classification with Laplacian inference
+	CLaplacianInferenceMethod* inf=new CLaplacianInferenceMethod(kernel,
+			features_train,	mean, labels_train, likelihood);
+
+	SGMatrix<float64_t> approx_cov=inf->get_posterior_approximation_covariance();
+
+	// comparison of the covariance with result from GPML package
+	EXPECT_NEAR(approx_cov(0,0), 6.6120e-01, 1E-5);
+	EXPECT_NEAR(approx_cov(0,1), -5.3908e-06, 1E-5);
+	EXPECT_NEAR(approx_cov(0,2), 4.4528e-06, 1E-5);
+	EXPECT_NEAR(approx_cov(0,3), 1.0552e-03, 1E-5);
+	EXPECT_NEAR(approx_cov(0,4), 2.5118e-05, 1E-5);
+
+	EXPECT_NEAR(approx_cov(1,0), -5.3908e-06, 1E-5);
+	EXPECT_NEAR(approx_cov(1,1), 6.6190e-01, 1E-5);
+	EXPECT_NEAR(approx_cov(1,2), -3.0048e-07, 1E-5);
+	EXPECT_NEAR(approx_cov(1,3), 7.1667e-03, 1E-5);
+	EXPECT_NEAR(approx_cov(1,4), 2.0193e-06, 1E-5);
+
+	EXPECT_NEAR(approx_cov(2,0), 4.4528e-06, 1E-5);
+	EXPECT_NEAR(approx_cov(2,1), -3.0048e-07, 1E-5);
+	EXPECT_NEAR(approx_cov(2,2), 6.6130e-01, 1E-5);
+	EXPECT_NEAR(approx_cov(2,3), 5.4317e-05, 1E-5);
+	EXPECT_NEAR(approx_cov(2,4), -8.7921e-11, 1E-5);
+
+	EXPECT_NEAR(approx_cov(3,0), 1.0552e-03, 1E-5);
+	EXPECT_NEAR(approx_cov(3,1), 7.1667e-03, 1E-5);
+	EXPECT_NEAR(approx_cov(3,2), 5.4317e-05, 1E-5);
+	EXPECT_NEAR(approx_cov(3,3), 6.6181e-01, 1E-5);
+	EXPECT_NEAR(approx_cov(3,4), 9.1741e-09, 1E-5);
+
+	EXPECT_NEAR(approx_cov(4,0), 2.5118e-05, 1E-5);
+	EXPECT_NEAR(approx_cov(4,1), 2.0193e-06, 1E-5);
+	EXPECT_NEAR(approx_cov(4,2), -8.7921e-11, 1E-5);
+	EXPECT_NEAR(approx_cov(4,3), 9.1741e-09, 1E-5);
+	EXPECT_NEAR(approx_cov(4,4), 6.6130e-01, 1E-5);
+
+	// clean up
+	SG_UNREF(inf);
+}
+
 #endif // HAVE_EIGEN3
