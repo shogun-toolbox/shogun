@@ -100,7 +100,7 @@ SGSparseVector<uint32_t> CHashedSparseFeatures<ST>::get_hashed_feature_vector(
 template <class ST>
 SGSparseVector<uint32_t> CHashedSparseFeatures<ST>::hash_vector(SGVector<ST> vec, int32_t dim)
 {
-	return CHashedDenseFeatures<ST>::get_hashed_vector(vec, dim);
+	return CHashedDenseFeatures<ST>::hash_vector(vec, dim);
 }
 
 template <class ST>

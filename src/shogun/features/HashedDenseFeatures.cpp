@@ -19,48 +19,58 @@
 
 namespace shogun {
 template <class ST>
-CHashedDenseFeatures<ST>::CHashedDenseFeatures(int32_t size)
+CHashedDenseFeatures<ST>::CHashedDenseFeatures(int32_t size, bool use_quadr, bool keep_lin_terms)
 : CDotFeatures(size)
 {
-	init(NULL, 0);
+	init(NULL, 0, use_quadr, keep_lin_terms);
 }
 
 template <class ST>
-CHashedDenseFeatures<ST>::CHashedDenseFeatures(CDenseFeatures<ST>* feats, int32_t d)
- : CDotFeatures()
+CHashedDenseFeatures<ST>::CHashedDenseFeatures(CDenseFeatures<ST>* feats, int32_t d,
+	bool use_quadr, bool keep_lin_terms) : CDotFeatures()
 {
-	init(feats, d);
+	init(feats, d, use_quadr, keep_lin_terms);
 }
 
 template <class ST>
-CHashedDenseFeatures<ST>::CHashedDenseFeatures(SGMatrix<ST> matrix, int32_t d)
-: CDotFeatures()
+CHashedDenseFeatures<ST>::CHashedDenseFeatures(SGMatrix<ST> matrix, int32_t d, bool use_quadr,
+	bool keep_lin_terms) : CDotFeatures()
 {
 	CDenseFeatures<ST>* feats = new CDenseFeatures<ST>(matrix);
-	init(feats, d);
+	init(feats, d, use_quadr, keep_lin_terms);
 }
 
 template <class ST>
 CHashedDenseFeatures<ST>::CHashedDenseFeatures(ST* src, int32_t num_feat, int32_t num_vec,
-	int32_t d) : CDotFeatures()
+	int32_t d, bool use_quadr, bool keep_lin_terms) : CDotFeatures()
 {
 	CDenseFeatures<ST>* feats = new CDenseFeatures<ST>(src, num_feat, num_vec);
-	init(feats, d);
+	init(feats, d, use_quadr, keep_lin_terms);
 }
 
 template <class ST>
-CHashedDenseFeatures<ST>::CHashedDenseFeatures(CFile* loader, int32_t d)
-: CDotFeatures(loader)
+CHashedDenseFeatures<ST>::CHashedDenseFeatures(CFile* loader, int32_t d, bool use_quadr,
+	bool keep_lin_terms) : CDotFeatures(loader)
 {
-	init(NULL, d);
+	CDenseFeatures<ST>* feats = new CDenseFeatures<ST>();
+	feats->load(loader);
+	init(feats, d, use_quadr, keep_lin_terms);
 }
 
 template <class ST>
-void CHashedDenseFeatures<ST>::init(CDenseFeatures<ST>* feats, int32_t d)
+void CHashedDenseFeatures<ST>::init(CDenseFeatures<ST>* feats, int32_t d, bool use_quadr,
+	bool keep_lin_terms)
 {
 	dim = d;
 	dense_feats = feats;
 	SG_REF(dense_feats);
+	use_quadratic = use_quadr;
+	keep_linear_terms = keep_lin_terms;
+
+	SG_ADD(&use_quadratic, "use_quadratic", "Whether to use quadratic features",
+		MS_NOT_AVAILABLE);
+	SG_ADD(&keep_linear_terms, "keep_linear_terms", "Whether to keep the linear terms or not",
+		MS_NOT_AVAILABLE);
 	SG_ADD(&dim, "dim", "Dimension of new feature space", MS_NOT_AVAILABLE);
 	SG_ADD((CSGObject** ) &dense_feats, "dense_feats", "Dense features to work on",
 		MS_NOT_AVAILABLE);
@@ -72,7 +82,7 @@ template <class ST>
 CHashedDenseFeatures<ST>::CHashedDenseFeatures(const CHashedDenseFeatures& orig)
 : CDotFeatures(orig)
 {
-	init(orig.dense_feats, orig.dim);
+	init(orig.dense_feats, orig.dim, orig.use_quadratic, orig.keep_linear_terms);
 }
 
 template <class ST>
@@ -109,7 +119,7 @@ float64_t CHashedDenseFeatures<ST>::dot(int32_t vec_idx1, CDotFeatures* df,
 	SGSparseVector<uint32_t> vec_2 = feats->get_hashed_feature_vector(vec_idx2);
 
 	float64_t result = vec_1.sparse_dot(vec_2);
-	
+//	result /= (float64_t) vec_1.num_feat_entries * vec_2.num_feat_entries;	
 	return result;	
 }
 
@@ -122,13 +132,24 @@ float64_t CHashedDenseFeatures<ST>::dense_dot(int32_t vec_idx1, const float64_t*
 	SGVector<ST> vec = dense_feats->get_feature_vector(vec_idx1);
 
 	float64_t result = 0;
-	for (index_t i=0; i<vec.vlen; i++)
-	{
-		uint32_t h_idx = CHash::MurmurHash3((uint8_t* ) &vec[i], sizeof (ST), i);
-		result += vec2[h_idx%dim];
-	}
+	if ( (!use_quadratic) || (use_quadratic && keep_linear_terms))
+		for (index_t i=0; i<vec.vlen; i++)
+		{
+			uint32_t h_idx = CHash::MurmurHash3((uint8_t* ) &vec[i], sizeof (ST), i);
+			result += vec2[h_idx % dim];
+		}
 
+	if (use_quadratic)
+		for (index_t i=0; i<vec.size(); i++)
+			for (index_t j=i; j<vec.size(); j++)
+			{
+				ST value = (i != j) ? 2 * vec[i] * vec[j] : vec[i] * vec[j];
+				uint32_t h_idx = CHash::MurmurHash3((uint8_t* ) &value, sizeof (ST), i+j);
+				result += vec2[h_idx % dim];
+			}
+	
 	dense_feats->free_feature_vector(vec, vec_idx1);
+//	result /= (float64_t) vec.size() * (vec.size()+1) / 2;
 	return result;
 }
 
@@ -137,15 +158,26 @@ void CHashedDenseFeatures<ST>::add_to_dense_vec(float64_t alpha, int32_t vec_idx
 	float64_t* vec2, int32_t vec2_len, bool abs_val)
 {
 	float64_t val = abs_val ? CMath::abs(alpha) : alpha;
+//	val /=  (float64_t) vec2_len * (vec2_len+1) / 2;
 	ASSERT(vec2_len == dim)
 	
 	SGVector<ST> vec = dense_feats->get_feature_vector(vec_idx1);
+	if ( (!use_quadratic) || (use_quadratic && keep_linear_terms))
+		for (index_t i=0; i<vec.vlen; i++)
+		{
+			uint32_t h_idx = CHash::MurmurHash3((uint8_t* ) &vec[i], sizeof (ST), i);
+			vec2[h_idx % dim] += val;
+		}
 
-	for (index_t i=0; i<vec.vlen; i++)
-	{
-		uint32_t h_idx = CHash::MurmurHash3((uint8_t* ) &vec[i], sizeof (ST), i);
-		vec2[h_idx%dim] += val;
-	}
+	if (use_quadratic)
+		for (index_t i=0; i<vec.size(); i++)
+			for (index_t j=i; j<vec.size(); j++)
+			{
+				ST value = (i != j) ? 2 * vec[i] * vec[j] : vec[i] * vec[j];
+				uint32_t h_idx = CHash::MurmurHash3((uint8_t* ) &value, sizeof (ST), i+j);
+				vec2[h_idx % dim] += val;
+			}
+
 	dense_feats->free_feature_vector(vec, vec_idx1);	
 }
 
@@ -202,21 +234,32 @@ template <class ST>
 SGSparseVector<uint32_t> CHashedDenseFeatures<ST>::get_hashed_feature_vector(int32_t vec_idx)
 {
 	SGVector<ST> vec = dense_feats->get_feature_vector(vec_idx);
-	SGSparseVector<uint32_t> hashed_vec = CHashedDenseFeatures<ST>::get_hashed_vector(
-			vec, dim);
+	SGSparseVector<uint32_t> hashed_vec = CHashedDenseFeatures<ST>::hash_vector(
+			vec, dim, use_quadratic);
 	dense_feats->free_feature_vector(vec, vec_idx);
 	return hashed_vec;
 }
 
 template <class ST>
-SGSparseVector<uint32_t> CHashedDenseFeatures<ST>::get_hashed_vector(SGVector<ST> vec, int32_t dim)
+SGSparseVector<uint32_t> CHashedDenseFeatures<ST>::hash_vector(SGVector<ST> vec, int32_t dim,
+	bool use_quadr, bool keep_lin_terms)
 {
 	CDynamicArray<ST> indices(vec.size());
-	for (index_t i=0; i<vec.size(); i++)
-	{
-		uint32_t hash = CHash::MurmurHash3((uint8_t* ) &vec[i], sizeof (ST), i);
-		indices.append_element(hash % dim);
-	}
+	if ( (!use_quadr) || (use_quadr && keep_lin_terms) ) 
+		for (index_t i=0; i<vec.size(); i++)
+		{
+			uint32_t hash = CHash::MurmurHash3((uint8_t* ) &vec[i], sizeof (ST), i);
+			indices.append_element(hash % dim);
+		}
+
+	if (use_quadr)
+		for (index_t i=0; i<vec.size(); i++)
+			for (index_t j=i; j<vec.size(); j++)
+			{
+				ST value = (i != j) ? 2 * vec[i] * vec[j] : vec[i] * vec[j];
+				uint32_t hash = CHash::MurmurHash3((uint8_t* ) &value, sizeof (ST), i+j);
+				indices.append_element(hash % dim);	
+			}
 
 	CMath::qsort(indices.get_array(), indices.get_num_elements());
 
