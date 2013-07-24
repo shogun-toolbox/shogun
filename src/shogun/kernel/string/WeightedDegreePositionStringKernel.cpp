@@ -1889,6 +1889,8 @@ void CWeightedDegreePositionStringKernel::load_serializable_post() throw (Shogun
 void CWeightedDegreePositionStringKernel::init()
 {
 	weights=NULL;
+	weights_length=0;
+	weights_degree=0;
 	position_weights=NULL;
 	position_weights_len=0;
 
