@@ -44,35 +44,6 @@
 #undef log2
 #endif
 
-
-/// workaround a bug in std cmath
-#ifndef HAVE_CXX11
-#ifdef _GLIBCXX_CMATH
-#if _GLIBCXX_USE_C99_MATH
-#if !_GLIBCXX_USE_C99_FP_MACROS_DYNAMIC
-
-  /// Function template definitions [8.16.3].
-  using std::signbit;
-
-  using std::fpclassify;
-
-  using std::isfinite;
-  using std::isinf;
-  using std::isnan;
-  using std::isnormal;
-
-  using std::isgreater;
-  using std::isgreaterequal;
-  using std::isless;
-  using std::islessequal;
-  using std::islessgreater;
-  using std::isunordered;
-#endif
-#endif
-#endif
-#endif
-/// end of workaround a bug in std cmath
-
 #ifdef _WIN32
 #ifndef isnan
 #define isnan _isnan
