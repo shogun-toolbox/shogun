@@ -133,6 +133,38 @@ public:
 	 */
 	virtual SGVector<float64_t> get_diagonal_vector()=0;
 
+	/** returns mean vector \$f\mu\$f of the Gaussian distribution
+	 * \$fN(\mu,\Sigma)\f$, which is an approximation to the
+	 * posterior:
+	 *
+	 * \f[
+	 * p(f|y) \approx q(f|y) = N(\mu,\Sigma)
+	 * \f]
+	 *
+	 * @return mean vector
+	 */
+	virtual SGVector<float64_t> get_posterior_approximation_mean()
+	{
+		SG_ERROR("Inference method doesn't use approximation to the posterior")
+		return SGVector<float64_t>();
+	}
+
+	/** returns covariance matrix \$f\Sigma\f$ of the Gaussian
+	 * distribution \$fq(f|y)=N(\mu,\Sigma)\f$, which is an
+	 * approximation to the posterior:
+	 *
+	 * \f[
+	 * p(f|y) \approx q(f|y) = N(\mu,\Sigma)
+	 * \f]
+	 *
+	 * @return covariance matrix
+	 */
+	virtual SGMatrix<float64_t> get_posterior_approximation_covariance()
+	{
+		SG_ERROR("Inference method doesn't use approximation to the posterior")
+		return SGMatrix<float64_t>();
+	}
+
 	/** set features
 	*
 	* @param feat features to set

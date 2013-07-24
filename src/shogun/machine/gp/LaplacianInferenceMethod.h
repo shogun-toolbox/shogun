@@ -139,6 +139,40 @@ public:
 	 */
 	virtual SGVector<float64_t> get_diagonal_vector();
 
+	/** returns mean vector \$f\mu\$f of the Gaussian distribution
+	 * \$fN(\mu,\Sigma)\f$, which is an approximation to the
+	 * posterior:
+	 *
+	 * \f[
+	 * p(f|y) \approx q(f|y) = N(\mu,\Sigma)
+	 * \f]
+	 *
+	 * Mean vector is evaluated using Newton's method.
+	 *
+	 * @return mean vector
+	 */
+	virtual SGVector<float64_t> get_posterior_approximation_mean();
+
+	/** returns covariance matrix \$f\Sigma=(K^{-1}+W)^{-1}\f$ of the
+	 * Gaussian distribution \$fN(\mu,\Sigma)\f$, which is an
+	 * approximation to the posterior:
+	 *
+	 * \f[
+	 * p(f|y) \approx q(f|y) = N(\mu,\Sigma)
+	 * \f]
+	 *
+	 * Covariance matrix is evaluated using matrix inversion lemma:
+	 *
+	 * \f[
+	 * (K^{-1}+W)^{-1} = K - KW^{frac{1}{2}}B^{-1}W^{frac{1}{2}}K
+	 * \f]
+	 *
+	 * where \f$B=(W^{frac{1}{2}}*K*W^{frac{1}{2}}+I)\f$.
+	 *
+	 * @return covariance matrix
+	 */
+	virtual SGMatrix<float64_t> get_posterior_approximation_covariance();
+
 	/** get the gradient
 	 *
 	 * @return map of gradient: keys are names of parameters, values
@@ -243,6 +277,10 @@ protected:
 	/** update train kernel matrix */
 	virtual void update_train_kernel();
 
+	/** update covariance matrix of the approximation to the posterior
+	 */
+	virtual void update_approx_cov();
+
 private:
 	void init();
 
@@ -262,11 +300,11 @@ private:
 	/** max iterations for Brent's minimization method */
 	float64_t m_opt_max;
 
-	/** alpha vector */
-	SGVector<float64_t> temp_alpha;
+	/** mean vector of the approximation to the posterior */
+	SGVector<float64_t> m_approx_mean;
 
-	/** function location */
-	SGVector<float64_t> function;
+	/** covariance matrix of the approximation to the posterior */
+	SGMatrix<float64_t> m_approx_cov;
 
 	/** noise matrix */
 	SGVector<float64_t> W;
@@ -274,11 +312,7 @@ private:
 	/** square root of W */
 	SGVector<float64_t> sW;
 
-	/** means vector */
-	SGVector<float64_t> m_means;
-
-	/** derivative of log likelihood with respect to function
-	 * location
+	/** derivative of log likelihood with respect to function location
 	 */
 	SGVector<float64_t> dlp;
 
@@ -291,9 +325,6 @@ private:
 	 * location
 	 */
 	SGVector<float64_t> d3lp;
-
-	/** log likelihood */
-	float64_t lp;
 };
 }
 #endif // HAVE_EIGEN3
