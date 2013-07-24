@@ -69,7 +69,10 @@ class CJade: public CConverter
 
 	private:
 		
+		/** mixing_matrix */
 		SGMatrix<float64_t> m_mixing_matrix;
+		
+		/** cumulant_matrix */
 		SGMatrix<float64_t> m_cumulant_matrix;
 };	
 }

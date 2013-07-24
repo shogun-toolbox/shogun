@@ -69,10 +69,10 @@ CFeatures* CJade::apply(CFeatures* features)
 	Eigen::Map<EMatrix> EX(X.matrix,n,T);
 
 	// Mean center X
-	EVector mean = 	(EX.rowwise().sum() / (float)T);	
+	EVector mean = (EX.rowwise().sum() / (float64_t)T);	
 	EMatrix SPX = EX.colwise() - mean;
 
-	EMatrix cov = (SPX * SPX.transpose()) / (float)T;
+	EMatrix cov = (SPX * SPX.transpose()) / (float64_t)T;
 
 	#ifdef DEBUG_JADE
 	std::cout << "cov" << std::endl;
