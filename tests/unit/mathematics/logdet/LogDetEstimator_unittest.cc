@@ -97,7 +97,7 @@ TEST(LogDetEstimator, sample_ratapp)
 	SG_REF(trace_sampler);
 
 	CLogDetEstimator estimator(trace_sampler, op_func, e);
-	const index_t num_estimates=5000;
+	const index_t num_estimates=500;
 	SGVector<float64_t> estimates=estimator.sample(num_estimates);
 	
 	float64_t result=0.0;
@@ -105,7 +105,7 @@ TEST(LogDetEstimator, sample_ratapp)
 		result+=estimates[i];
 	result/=num_estimates;
 
-	EXPECT_NEAR(result, CStatistics::log_det(mat), 0.35);
+	EXPECT_NEAR(result, CStatistics::log_det(mat), 0.5);
 
 	SG_UNREF(trace_sampler);
 	SG_UNREF(eig_solver);
