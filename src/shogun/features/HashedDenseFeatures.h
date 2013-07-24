@@ -29,22 +29,30 @@ public:
 	/** constructor
 	 *
 	 * @param size cache size
+	 * @param use_quadr whether to use quadratic features or not
+	 * @param keep_lin_terms whether to maintain the linear terms in the computations
 	 */
-	CHashedDenseFeatures(int32_t size=0);
+	CHashedDenseFeatures(int32_t size=0, bool use_quadr = false, bool keep_lin_terms = true);
 
 	/** constructor
 	 *
 	 * @param feats	the dense features to use as a base
 	 * @param d new feature space dimension
+	 * @param use_quadr whether to use quadratic features or not
+	 * @param keep_lin_terms whether to maintain the linear terms in the computations
 	 */
-	CHashedDenseFeatures(CDenseFeatures<ST>* feats, int32_t d);
+	CHashedDenseFeatures(CDenseFeatures<ST>* feats, int32_t d, bool use_quadr = false,
+			bool keep_lin_terms = true);
 
 	/** constructor
 	 *
 	 * @param matrix feature matrix
 	 * @param d new feature space dimension
+	 * @param use_quadr whether to use quadratic features or not
+	 * @param keep_lin_terms whether to maintain the linear terms in the computations
 	 */
-	CHashedDenseFeatures(SGMatrix<ST> matrix, int32_t d);
+	CHashedDenseFeatures(SGMatrix<ST> matrix, int32_t dm, bool use_quadr = false,
+			bool keep_lin_terms = true);
 
 	/** constructor
 	 *
@@ -52,15 +60,21 @@ public:
 	 * @param num_feat number of features in matrix
 	 * @param num_vec number of vectors in matrix
 	 * @param d new feature space dimension
+	 * @param use_quadr whether to use quadratic features or not
+	 * @param keep_lin_terms whether to maintain the linear terms in the computations
 	 */
-	CHashedDenseFeatures(ST* src, int32_t num_feat, int32_t num_vec, int32_t d);
+	CHashedDenseFeatures(ST* src, int32_t num_feat, int32_t num_vec, int32_t d,
+			bool use_quadr = false, bool keep_lin_terms = true);
 
 	/** constructor loading features from file
 	 *
 	 * @param loader File object via which to load data
 	 * @param d new feature space dimension
+	 * @param use_quadr whether to use quadratic features or not
+	 * @param keep_lin_terms whether to maintain the linear terms in the computations
 	 */
-	CHashedDenseFeatures(CFile* loader, int32_t d);
+	CHashedDenseFeatures(CFile* loader, int32_t d, bool use_quadr = false,
+			bool keep_lin_terms = false);
 	
 	/** copy constructor */
 	CHashedDenseFeatures(const CHashedDenseFeatures& orig);
@@ -190,12 +204,15 @@ public:
 	 *
 	 * @param vec the vector to hash
 	 * @param dim the size of the new dimension
+	 * @param use_quadr whether to use quadratic features or not
+	 * @param keep_lin_terms whether to maintain the linear terms in the computations
 	 * @return the hashed representation
 	 */
-	static SGSparseVector<ST> hash_vector(SGVector<ST> vec, int32_t dim);
+	static SGSparseVector<ST> hash_vector(SGVector<ST> vec, int32_t dim, bool use_quadratic = false,
+			bool keep_linear_terms = true);
 
 protected:
-	void init(CDenseFeatures<ST>* feats, int32_t d);
+	void init(CDenseFeatures<ST>* feats, int32_t d, bool use_quadr, bool keep_lin_terms);
 
 protected:
 
@@ -204,6 +221,12 @@ protected:
 
 	/** new feature space dimension */
 	int32_t dim;
+
+	/** use quadratic feature or not */
+	bool use_quadratic;
+
+	/** keep linear terms or not */
+	bool keep_linear_terms;
 };
 }
 
