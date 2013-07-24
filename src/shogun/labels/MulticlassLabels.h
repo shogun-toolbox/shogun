@@ -78,7 +78,7 @@ class CMulticlassLabels : public CDenseLabels
 		 */
 		CBinaryLabels* get_binary_for_class(int32_t i);
 
-		/** get unqiue labels (new SGVector, caller has to clean up)
+		/** get unique labels (new SGVector)
 		 *
 		 * possible with subset
 		 *
