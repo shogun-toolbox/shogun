@@ -280,7 +280,7 @@ install-python_modular: $(TEMPLATE_TARGET)
 	done
 	echo ']' >> "$(DESTDIR)$(PYDIR)/shogun/__init__.py"
 
-install-python_modular-local: $(TEMPLATE_TARGET)
+install-python_modular-local:
 	make PYDIR=$(ABSCONFIGPATH)/interfaces/python_modular/library install-python_modular
 
 install-perl_modular: $(TEMPLATE_TARGET)
