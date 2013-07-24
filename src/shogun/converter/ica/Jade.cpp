@@ -119,14 +119,14 @@ CFeatures* CJade::apply(CFeatures* features)
 	EVector Xijm = EVector::Zero(m); // Temp
 	int Range = 0;
 
-	for(int im = 0; im < m; im++)
-	{
+	for (int im = 0; im < m; im++)
+	{ 
 		Xim = SPX.row(im);	
 		Xijm = Xim.cwiseProduct(Xim);
 		Qij = SPX.cwiseProduct(Xijm.replicate(1,m).transpose()) * SPX.transpose() / (float)T - R - 2*R.col(im)*R.col(im).transpose();
 		CM.block(0,Range,m,m) = Qij;
 		Range = Range + m;	
-		for(int jm = 0; jm < im; jm++)
+		for (int jm = 0; jm < im; jm++)
 		{
 			Xjm = SPX.row(jm);
 			Xijm = Xim.cwiseProduct(Xjm);
@@ -148,7 +148,7 @@ CFeatures* CJade::apply(CFeatures* features)
 	M_dims[2] = nbcm;
 	SGNDArray< float64_t > M(M_dims, 3);
 	
-	for(int i = 0; i < nbcm; i++)
+	for (int i = 0; i < nbcm; i++)
 	{
 		Eigen::Map<EMatrix> EM(M.get_matrix(i),m,m);
 		EM = CM.block(0,i*m,m,m);
@@ -175,9 +175,9 @@ CFeatures* CJade::apply(CFeatures* features)
 	do
 	{
 		swap = false;
-		for(int j = 1; j < n; j++)
+		for (int j = 1; j < n; j++)
 		{
-			if( A(j) < A(j-1) )
+			if ( A(j) < A(j-1) )
 			{
 				std::swap(A(j),A(j-1));
 				C.col(j).swap(C.col(j-1));
@@ -187,12 +187,12 @@ CFeatures* CJade::apply(CFeatures* features)
 	
 	} while(swap);
 
-	for(int j = 0; j < m/2; j++)
+	for (int j = 0; j < m/2; j++)
 		C.row(j).swap( C.row(m-1-j) ); 
 
 	// Fix Signs
 	EVector signs = EVector::Zero(m);
-	for(int i = 0; i < m; i++)
+	for (int i = 0; i < m; i++)
 	{
 		if( C(i,0) < 0 )
 			signs(i) = -1;
