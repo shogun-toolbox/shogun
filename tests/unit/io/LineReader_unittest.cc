@@ -9,10 +9,11 @@
 
 #include <shogun/base/init.h>
 #include <shogun/io/LineReader.h>
+#include <shogun/lib/DelimiterTokenizer.h>
 #include <shogun/lib/SGVector.h>
-#include <gtest/gtest.h>
 
 #include <cstring>
+#include <gtest/gtest.h>
 
 using namespace shogun;
 
@@ -22,11 +23,17 @@ const int max_num_lines = 100;
 TEST(LineReaderTest, constructor)
 {
 	CLineReader* reader;
+	CDelimiterTokenizer* tokenizer;
 
 	FILE* fin=fopen("io/LineReader_unittest.cc", "r");
-	reader=new CLineReader(fin);
-	EXPECT_TRUE(reader->has_next_line());
+
+	tokenizer=new CDelimiterTokenizer();
+	tokenizer->delimiters['\n']=1;
+
+	reader=new CLineReader(fin, tokenizer);
+	EXPECT_TRUE(reader->has_next());
 	SG_UNREF(reader);
+	SG_UNREF(tokenizer);
 
 	fclose(fin);
 }
@@ -39,16 +46,21 @@ TEST(LineReaderTest, read_yourself)
 	int lines_count;
 	
 	CLineReader* reader;
+	CDelimiterTokenizer* tokenizer;
 
 	FILE* fin=fopen("io/LineReader_unittest.cc", "r");
-	reader=new CLineReader(max_line_length, fin);
-	EXPECT_TRUE(reader->has_next_line());
+
+	tokenizer=new CDelimiterTokenizer();
+	tokenizer->delimiters['\n']=1;
+
+	reader=new CLineReader(max_line_length, fin, tokenizer);
+	EXPECT_TRUE(reader->has_next());
 
 	// read all strings from source code using LineReader
 	lines_count=0;
-	while (reader->has_next_line())
+	while (reader->has_next())
 	{
-		strings[lines_count]=reader->get_next_line();
+		strings[lines_count]=reader->read_line();
 		lines_count++;
 	}
 
@@ -66,6 +78,7 @@ TEST(LineReaderTest, read_yourself)
 		lines_count++;
 	}
 	SG_UNREF(reader);
+	SG_UNREF(tokenizer);
 
 	fclose(fin);	
 }

@@ -10,14 +10,13 @@
 #ifndef __LINE_READER_H__
 #define __LINE_READER_H__
 
-#include <shogun/base/SGObject.h>
 #include <shogun/lib/SGVector.h>
+#include <shogun/lib/Tokenizer.h>
 #include <shogun/lib/CircularBuffer.h>
 
 namespace shogun
 {
-/** @brief Class for buffered reading lines from a ascii file
- */
+/** @brief Class for buffered reading from a ascii file */
 class CLineReader : public CSGObject
 {
 public:
@@ -28,7 +27,7 @@ public:
 	 *
 	 * @param stream readable stream
 	 */
-	CLineReader(FILE* stream, char delimiter='\n');
+	CLineReader(FILE* stream, CTokenizer* tokenizer);
 
 	/** create object associated with the stream to read
 	 * and specify maximum length of a string that can be read
@@ -36,69 +35,59 @@ public:
 	 * @param stream readable stream
 	 * @param buffer_size size of internal buffer
 	 */
-	CLineReader(int32_t max_string_length, FILE* stream, char delimiter='\n');
+	CLineReader(int32_t max_string_length, FILE* stream, CTokenizer* tokenizer);
 
 	/** deconstructor */
-	~CLineReader();
+	virtual ~CLineReader();
 	
 	/** check for next line in the stream
 	 *
 	 * @return true if there is next line, false - otherwise
 	 */
-	bool has_next_line();
+	virtual bool has_next();
 
-	/** get line from the buffer into SGVector
-	 * there is no warranty that after reading the caret will 
-	 * set at the beginning of a new line
+	/** skip next line */
+	virtual void skip_line();
+
+	/** read string	*/
+	virtual SGVector<char> read_line();
+
+	/** set tokenizer
 	 *
-	 * @return SGVector that contains line
+	 * @param tokenizer tokenizer	
 	 */
-	SGVector<char> get_next_line();
-
-	/** set delimiter active for tokenizing 
-	 *
-	 * @param delimiter delimiter
-	 */
-	void set_delimiter(char delimiter);
-
-	/** clear all delimiters */
-	void clear_delimiters();
+	void set_tokenizer(CTokenizer* tokenizer);
 
 	/** @return object name */
 	virtual const char* get_name() const { return "LineReader"; }
 
 private:
-	/** read one line into buffer
-	 *
-	 * @return length of line
- 	 */
-	int32_t read_line();
+	/** class initialization */
+	void init();
 
-	/** copy chars into SGVector from source
-	 *
-	 * @param line destination string
-	 * @param line_len length of line in source
-	 * @param source source array of chars
-	 */
-	SGVector<char> copy_line(int32_t line_len);
+	/** read file into memory */
+	int32_t read(int32_t& bytes_to_skip);
+
+	/** read token from internal buffer */
+	SGVector<char> read_token(int32_t line_len);
 
 private:
 	/** internal buffer for searching */
 	CCircularBuffer* m_buffer;
 
-	/** tokenizer */
-	CDelimiterTokenizer* m_tokenizer;
+	/** */
+	CTokenizer* m_tokenizer;
 
 	/** readable stream */
-	FILE* m_stream;	
+	FILE* m_stream;
 
 	/** maximum length of a line that can be read */
-	int32_t m_max_line_length;
+	int32_t m_max_token_length;
 
 	/** length of next line in the buffer */
-	int32_t m_next_line_length;	
+	int32_t m_next_token_length;	
 };
 
 }
 
-#endif /* __LINE_READER_H__ */
+#endif /* __FILE_READER_H__ */
