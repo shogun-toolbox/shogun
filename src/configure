@@ -546,6 +546,41 @@ EOF
 	fi
 }
 
+check_rtti()
+{
+cat > $TMPCXX << EOF
+class Foo
+{
+	public:
+	Foo() {};
+	virtual void dummy() {};
+};
+class Bar
+{
+	public:
+	Bar() {};
+	virtual void dummy() {};
+};
+int main(int argc, char** argv) 
+{
+	Foo* x = new Foo();
+
+	Bar* y=dynamic_cast<Bar*>(x);
+
+	return ((void*)x)==((void*)y) ? 0 : 1;
+}
+EOF
+
+	echocheck "C++ Runtime Type Information (rtti)"
+	if cxx_check -Werror -frtti
+	then
+			echores "yes"
+			COMPFLAGS_CPP="$COMPFLAGS_CPP -frtti"
+	else
+		echores "no"
+	fi
+}
+
 
 check_gmock()
 {
@@ -5645,6 +5680,7 @@ detect_cc
 determine_system_name
 check_fpic
 check_cxx11
+check_rtti
 check_makedepend
 check_python
 check_pkg_config
