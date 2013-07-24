@@ -165,8 +165,8 @@ bool CFeatureBlockLogisticRegression::train_machine(CFeatures* data)
 			SGVector<index_t> ind = feature_group->get_SLEP_ind();
 			options.ind = ind.vector;
 			options.n_feature_blocks = ind.vlen-1;
-			if (ind[ind.vlen-1] > features->get_num_vectors())
-				SG_ERROR("Group of features covers more vectors than available\n")
+			if (ind[ind.vlen-1] > features->get_dim_feature_space())
+				SG_ERROR("Group of features covers more features than available\n")
 		
 			options.gWeight = SG_MALLOC(double, options.n_feature_blocks);
 			for (int32_t i=0; i<options.n_feature_blocks; i++)
