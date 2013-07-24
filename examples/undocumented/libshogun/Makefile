@@ -114,6 +114,7 @@ TARGETS = basic_minimal \
 		  streaming_onlineliblinear \
 		  io_linereader \
 		  library_circularbuffer \
+		  so_factorgraph \
 
 all: $(TARGETS)
 
