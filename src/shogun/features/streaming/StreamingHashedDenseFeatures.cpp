@@ -183,7 +183,7 @@ bool CStreamingHashedDenseFeatures<ST>::get_next_example()
 	if (parser.get_next_example(tmp.vector,
 		tmp.vlen, current_label))
 	{
-		current_vector = CHashedDenseFeatures<ST>::get_hashed_vector(tmp, dim);
+		current_vector = CHashedDenseFeatures<ST>::hash_vector(tmp, dim);
 		tmp.vector = NULL;
 		tmp.vlen = -1;
 		return true;
@@ -204,7 +204,7 @@ int32_t CStreamingHashedDenseFeatures<ST>::get_num_features()
 }
 
 template <class ST>
-SGSparseVector<uint32_t> CStreamingHashedDenseFeatures<ST>::get_vector()
+SGSparseVector<ST> CStreamingHashedDenseFeatures<ST>::get_vector()
 {
 	return current_vector;
 }

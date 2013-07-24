@@ -32,7 +32,6 @@ TEST(HashedSparseFeaturesTest, dot)
 	CHashedSparseFeatures<float64_t>* h_feats = new CHashedSparseFeatures<float64_t>(s_feats, hashing_dim);
 	
 	EXPECT_EQ(h_feats->get_num_vectors(), n);
-	SGSparseVector<uint32_t> sv = h_feats->get_hashed_feature_vector(0);
 
 	for (index_t i=0; i<n; i++)
 	{
@@ -43,9 +42,9 @@ TEST(HashedSparseFeaturesTest, dot)
 			if ( data(j,i) == 0 )
 				continue;
 
-			uint32_t hash = CHash::MurmurHash3((uint8_t* ) &data(j,i), sizeof (float64_t), j);
+			uint32_t hash = CHash::MurmurHash3((uint8_t* ) &j, sizeof (index_t), j);
 			hash = hash % hashing_dim;
-			tmp[hash]++;
+			tmp[hash] += data(j,i);
 		}
 		
 		float64_t dot_product = 0;
@@ -86,9 +85,9 @@ TEST(HashedSparseFeaturesTest, dense_dot)
 			if (data(j,i)==0)
 				continue;
 			
-			uint32_t hash = CHash::MurmurHash3((uint8_t* ) &data(j,i), sizeof (float64_t), j);
+			uint32_t hash = CHash::MurmurHash3((uint8_t* ) &j, sizeof (index_t), j);
 			hash = hash % hashing_dim;
-			tmp[hash]++;
+			tmp[hash] += data(j,i);
 		}
 
 		float64_t dot_product = 0;
@@ -129,9 +128,9 @@ TEST(HashedSparseFeaturesTest, add_to_dense)
 			if (data(j,i)==0)
 				continue;
 
-			uint32_t hash = CHash::MurmurHash3((uint8_t* ) &data(j,i), sizeof (float64_t), j);
+			uint32_t hash = CHash::MurmurHash3((uint8_t* ) &j, sizeof (index_t), j);
 			hash = hash % hashing_dim;
-			tmp[hash]++;
+			tmp[hash] += data(j,i);
 		}
 
 		SGVector<float64_t> tmp2(hashing_dim);

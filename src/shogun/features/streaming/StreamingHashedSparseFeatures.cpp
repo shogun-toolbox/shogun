@@ -206,7 +206,7 @@ int32_t CStreamingHashedSparseFeatures<ST>::get_num_features()
 }
 
 template <class ST>
-SGSparseVector<uint32_t> CStreamingHashedSparseFeatures<ST>::get_vector()
+SGSparseVector<ST> CStreamingHashedSparseFeatures<ST>::get_vector()
 {
 	return current_vector;
 }
