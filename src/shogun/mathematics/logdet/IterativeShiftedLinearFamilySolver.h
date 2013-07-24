@@ -31,7 +31,7 @@ template <class T, class ST> class CLinearOperator;
  * Reference: Beat Jegerlehner, Krylov space solvers for shifted linear
  * systems, 1996.
  */
-template<class T, class ST=T> class CIterativeShiftedLinearFamilySolver : public CIterativeLinearSolver<T, T>
+template<class T, class ST> class CIterativeShiftedLinearFamilySolver : public CIterativeLinearSolver<T, T>
 {
 
 public:
