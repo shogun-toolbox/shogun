@@ -19,7 +19,7 @@ def get_class_list_content():
     return content
 
 def is_valid(sho_class):
-    ignores = ['Set', 'ParseBuffer', 'TreeMachine', 'SNPStringKernel']
+    ignores = ['Set', 'ParseBuffer', 'TreeMachine', 'SNPStringKernel', 'WeightedDegreePositionStringKernel']
     if sho_class.startswith('GUI'):
         return False
     if sho_class in ignores:
