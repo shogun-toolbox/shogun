@@ -54,19 +54,7 @@ public:
 
 };
 
-template class CLinearSolver<bool>;
-template class CLinearSolver<char>;
-template class CLinearSolver<int8_t>;
-template class CLinearSolver<uint8_t>;
-template class CLinearSolver<int16_t>;
-template class CLinearSolver<uint16_t>;
-template class CLinearSolver<int32_t>;
-template class CLinearSolver<uint32_t>;
-template class CLinearSolver<int64_t>;
-template class CLinearSolver<uint64_t>;
-template class CLinearSolver<float32_t>;
 template class CLinearSolver<float64_t>;
-template class CLinearSolver<floatmax_t>;
 template class CLinearSolver<complex64_t>;
 template class CLinearSolver<complex64_t, float64_t>;
 
