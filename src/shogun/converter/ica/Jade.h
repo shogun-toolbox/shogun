@@ -20,6 +20,8 @@ namespace shogun
 
 class CFeatures;
 
+//#define DEBUG_JADE
+
 /** @brief class Jade
  * 
  * Implements the JADE algorithm for Independent
@@ -53,6 +55,11 @@ class CJade: public CConverter
 		 */
 		SGMatrix<float64_t> get_mixing_matrix() const;
 
+		/** getter for cumulant_matrix
+		 * @return cumulant_matrix
+		 */
+		SGMatrix<float64_t> get_cumulant_matrix() const;
+
 		virtual const char* get_name() const { return "Jade"; };
 
 	protected:
@@ -62,7 +69,11 @@ class CJade: public CConverter
 
 	private:
 		
+		/** mixing_matrix */
 		SGMatrix<float64_t> m_mixing_matrix;
+		
+		/** cumulant_matrix */
+		SGMatrix<float64_t> m_cumulant_matrix;
 };	
 }
 #endif // HAVE_EIGEN3
