@@ -17,7 +17,9 @@
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/ajd/JADiagOrth.h>
 
+#ifdef DEBUG_JADE
 #include <iostream>
+#endif
 
 using namespace Eigen;
 
@@ -34,7 +36,10 @@ CJade::CJade() : CConverter()
 void CJade::init()
 {
 	m_mixing_matrix = SGMatrix<float64_t>();
+	m_cumulant_matrix = SGMatrix<float64_t>();
+
 	SG_ADD(&m_mixing_matrix, "mixing_matrix", "m_mixing_matrix", MS_NOT_AVAILABLE);
+	SG_ADD(&m_cumulant_matrix, "cumulant_matrix", "m_cumulant_matrix", MS_NOT_AVAILABLE);
 }
 
 CJade::~CJade()
@@ -44,6 +49,11 @@ CJade::~CJade()
 SGMatrix<float64_t> CJade::get_mixing_matrix() const
 {
 	return m_mixing_matrix;
+}
+
+SGMatrix<float64_t> CJade::get_cumulant_matrix() const
+{
+	return m_cumulant_matrix;
 }
 
 CFeatures* CJade::apply(CFeatures* features)
@@ -64,47 +74,35 @@ CFeatures* CJade::apply(CFeatures* features)
 
 	EMatrix cov = (SPX * SPX.transpose()) / (float)T;
 
+	#ifdef DEBUG_JADE
 	std::cout << "cov" << std::endl;
 	std::cout << cov << std::endl;
+	#endif
 
 	// Whitening & Projection onto signal subspace
-	EigenSolver<EMatrix> eig;
+	SelfAdjointEigenSolver<EMatrix> eig;
 	eig.compute(cov);
 
-	EMatrix eigenvectors = eig.pseudoEigenvectors();
-	EMatrix eigenvalues = eig.pseudoEigenvalueMatrix();
-	
-	bool swap = false;
-	do
-	{
-		swap = false;
-		for(int j = 1; j < n; j++)
-		{
-			if( eigenvalues(j,j) < eigenvalues(j-1,j-1) )
-			{
-				std::swap(eigenvalues(j,j),eigenvalues(j-1,j-1));
-				eigenvectors.col(j).swap(eigenvectors.col(j-1));
-				swap = true;	
-			}						
-		}
-	
-	} while(swap);
+	EMatrix eigenvectors = eig.eigenvectors();	
+	EMatrix eigenvalues = eig.eigenvalues().asDiagonal();
 
+	#ifdef DEBUG_JADE
 	std::cout << "eigenvectors" << std::endl;
 	std::cout << eigenvectors << std::endl;
 	
 	std::cout << "eigenvalues" << std::endl;	
 	std::cout << eigenvalues << std::endl;
-
-	// PCA
-	EMatrix B = eigenvectors;
+	#endif
 
 	// Scaling
+	EMatrix B = eigenvectors.transpose();
 	EVector scales = eigenvalues.diagonal().cwiseSqrt();
 	B = scales.cwiseInverse().asDiagonal() * B;
 
+	#ifdef DEBUG_JADE
 	std::cout << "whitener" << std::endl;	
 	std::cout << B << std::endl;
+	#endif
 
 	// Sphering
 	SPX = B * SPX;
@@ -112,7 +110,8 @@ CFeatures* CJade::apply(CFeatures* features)
 	// Estimation of the cumulant matrices
 	int dimsymm = (m * ( m + 1)) / 2; // Dim. of the space of real symm matrices
 	int nbcm = dimsymm; //  number of cumulant matrices	
-	EMatrix CM = EMatrix::Zero(m,m*nbcm); // Storage for cumulant matrices
+	m_cumulant_matrix = SGMatrix<float64_t>(m,m*nbcm);	// Storage for cumulant matrices
+	Eigen::Map<EMatrix> CM(m_cumulant_matrix.matrix,m,m*nbcm); 
 	EMatrix R(m,m); R.setIdentity();
 	EMatrix Qij = EMatrix::Zero(m,m); // Temp for a cum. matrix
 	EVector Xim = EVector::Zero(m); // Temp
@@ -137,9 +136,12 @@ CFeatures* CJade::apply(CFeatures* features)
 		}
 	}
 
-	std::cout << "cumulatant matrics" << std::endl;
+	#ifdef DEBUG_JADE
+	std::cout << "cumulatant matrices" << std::endl;
 	std::cout << CM << std::endl;
+	#endif
 
+	// Stack cumulant matrix into ND Array
 	index_t * M_dims = SG_MALLOC(index_t, 3);
 	M_dims[0] = m;
 	M_dims[1] = m;
@@ -157,17 +159,19 @@ CFeatures* CJade::apply(CFeatures* features)
 	Eigen::Map<EMatrix> EQ(Q.matrix,m,m);
 	EQ = -1 * EQ.inverse();
 	
+	#ifdef DEBUG_JADE
 	std::cout << "diagonalizer" << std::endl;
 	std::cout << EQ << std::endl;
-	
-	// A separating matrix
+	#endif
+
+	// Separating matrix
 	SGMatrix<float64_t> sep_matrix = SGMatrix<float64_t>(m,m);
 	Eigen::Map<EMatrix> C(sep_matrix.matrix,m,m);
 	C = EQ.transpose() * B;
 
-	// sort
+	// Sort
 	EVector A = (B.inverse()*EQ).cwiseAbs2().colwise().sum();
-	swap = false;
+	bool swap = false;
 	do
 	{
 		swap = false;
@@ -186,7 +190,7 @@ CFeatures* CJade::apply(CFeatures* features)
 	for(int j = 0; j < m/2; j++)
 		C.row(j).swap( C.row(m-1-j) ); 
 
-	// Fix signs
+	// Fix Signs
 	EVector signs = EVector::Zero(m);
 	for(int i = 0; i < m; i++)
 	{
@@ -197,8 +201,10 @@ CFeatures* CJade::apply(CFeatures* features)
 	}
 	C = signs.asDiagonal() * C;
 
+	#ifdef DEBUG_JADE
 	std::cout << "un mixing matrix" << std::endl;
 	std::cout << C << std::endl;
+	#endif
 
 	// Unmix
 	EX = C * EX;
