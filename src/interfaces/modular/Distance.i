@@ -43,6 +43,7 @@
 %rename(TanimotoDistance) CTanimotoDistance;
 %rename(MahalanobisDistance) CMahalanobisDistance;
 %rename(DirectorDistance) CDirectorDistance;
+%rename(CustomMahalanobisDistance) CCustomMahalanobisDistance;
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/distance/Distance.h>
@@ -125,3 +126,4 @@ namespace shogun
 %include <shogun/distance/TanimotoDistance.h>
 %include <shogun/distance/MahalanobisDistance.h>
 %include <shogun/distance/DirectorDistance.h>
+%include <shogun/distance/CustomMahalanobisDistance.h>

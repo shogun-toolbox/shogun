@@ -64,6 +64,7 @@
 %include "Loss_includes.i"
 %include "Statistics_includes.i"
 %include "Latent_includes.i"
+%include "Metric_includes.i"
 
 %include "Machine.i"
 %include "SGBase.i"
@@ -87,6 +88,7 @@
 %include "Loss.i"
 %include "Statistics.i"
 %include "Latent.i"
+%include "Metric.i"
 
 #if defined(SWIGPERL)
 %include "abstract_types_extension.i"
