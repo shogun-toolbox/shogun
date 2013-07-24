@@ -184,7 +184,7 @@ public:
 	 * @param vec_idx the index of the vector
 	 * @return the hashed representation of the vector
 	 */
-	SGSparseVector<uint32_t> get_hashed_feature_vector(int32_t vec_idx);
+	SGSparseVector<ST> get_hashed_feature_vector(int32_t vec_idx);
 
 	/** returns a hashed represenation of vector vec in a new feature space of dimension dim
 	 *
@@ -192,7 +192,7 @@ public:
 	 * @param dim the size of the new dimension
 	 * @return the hashed representation
 	 */
-	static SGSparseVector<uint32_t> get_hashed_vector(SGVector<ST> vec, int32_t dim);
+	static SGSparseVector<ST> hash_vector(SGVector<ST> vec, int32_t dim);
 
 protected:
 	void init(CDenseFeatures<ST>* feats, int32_t d);

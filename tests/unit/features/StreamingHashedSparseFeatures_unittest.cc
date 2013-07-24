@@ -42,9 +42,9 @@ TEST(StreamingHashedSparseFeaturesTest, dot)
 		{
 			if (data(j,i)==0)
 				continue;
-			uint32_t hash = CHash::MurmurHash3((uint8_t* ) &data(j,i), sizeof (float64_t), j);
+			uint32_t hash = CHash::MurmurHash3((uint8_t* ) &j, sizeof (index_t), j);
 			hash = hash % hashing_dim;
-			tmp[hash]++;
+			tmp[hash] += data(j,i);
 		}
 
 		float64_t dot_product = 0;
@@ -89,9 +89,9 @@ TEST(StreamingHashedSparseFeaturesTest, dense_dot)
 		{
 			if (data(j,i)==0)
 				continue;
-			uint32_t hash = CHash::MurmurHash3((uint8_t* ) &data(j,i), sizeof (float64_t), j);
+			uint32_t hash = CHash::MurmurHash3((uint8_t* ) &j, sizeof (index_t), j);
 			hash = hash % hashing_dim;
-			tmp[hash]++;
+			tmp[hash] += data(j,i);
 		}
 
 		float64_t dot_product = 0;
@@ -134,9 +134,9 @@ TEST(StreamingHashedSparseFeaturesTest, add_to_dense)
 		{
 			if (data(j,i)==0)
 				continue;
-			uint32_t hash = CHash::MurmurHash3((uint8_t* ) &data(j,i), sizeof (float64_t), j);
+			uint32_t hash = CHash::MurmurHash3((uint8_t* ) &j, sizeof (index_t), j);
 			hash = hash % hashing_dim;
-			tmp[hash]++;
+			tmp[hash] += data(j,i);
 		}
 
 		SGVector<float64_t> tmp2(hashing_dim);
