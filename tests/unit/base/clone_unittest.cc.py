@@ -19,7 +19,12 @@ def get_class_list_content():
     return content
 
 def is_valid(sho_class):
-    ignores = ['Set', 'ParseBuffer', 'TreeMachine', 'SNPStringKernel', 'WeightedDegreePositionStringKernel']
+    """
+    This list is not for buggy classes, but rather for classes which
+    cannot be tested for clone/equals automatically due to framework
+    issues
+    """
+    ignores = ['Set', 'ParseBuffer', 'TreeMachine']
     if sho_class.startswith('GUI'):
         return False
     if sho_class in ignores:
