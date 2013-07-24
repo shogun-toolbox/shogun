@@ -133,8 +133,8 @@ public:
 	 */
 	virtual SGVector<float64_t> get_diagonal_vector()=0;
 
-	/** returns mean vector \$f\mu\$f of the Gaussian distribution
-	 * \$fN(\mu,\Sigma)\f$, which is an approximation to the
+	/** returns mean vector \f$\mu\f$ of the Gaussian distribution
+	 * \f$N(\mu,\Sigma)\f$, which is an approximation to the
 	 * posterior:
 	 *
 	 * \f[
