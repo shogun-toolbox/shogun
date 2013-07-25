@@ -17,7 +17,7 @@ using namespace shogun;
 void jadiagw(double c[], double w[], int *ptn, int *ptm, double a[],
 	         double *logdet, double *decr, double *result);
 
-SGMatrix<float64_t> CJADiag::diagonalize(SGNDArray<float64_t> &C, SGMatrix<float64_t> V0,
+SGMatrix<float64_t> CJADiag::diagonalize(SGNDArray<float64_t> C, SGMatrix<float64_t> V0,
 						double eps, int itermax)
 {
 	int d = C.dims[0];

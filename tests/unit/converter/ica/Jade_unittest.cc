@@ -61,6 +61,7 @@ TEST(CJade, blind_source_separation)
 	EXPECT_EQ(isperm,true);
 
 	SG_UNREF(jade);
+	SG_UNREF(mixed_signals);
 	SG_UNREF(signals);
 }
 
