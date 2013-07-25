@@ -1,9 +1,5 @@
 %{
 #ifdef HAVE_EIGEN3
- #include <shogun/machine/GaussianProcessMachine.h>
- 
- #include <shogun/classifier/GaussianProcessBinaryClassification.h>
- #include <shogun/regression/GaussianProcessRegression.h>
  
  #include <shogun/evaluation/DifferentiableFunction.h>
  #include <shogun/machine/gp/LikelihoodModel.h>
@@ -23,5 +19,9 @@
  
  #include <shogun/machine/gp/MeanFunction.h>
  #include <shogun/machine/gp/ZeroMean.h>
+ 
+ #include <shogun/machine/GaussianProcessMachine.h>
+ #include <shogun/classifier/GaussianProcessBinaryClassification.h>
+ #include <shogun/regression/GaussianProcessRegression.h>
 #endif //HAVE_EIGEN3
 %}
