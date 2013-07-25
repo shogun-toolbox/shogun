@@ -180,7 +180,6 @@ bool CCircularBuffer::has_next()
 	if (m_bytes_count==0)
 		return false;
 
-	int32_t tail_length=m_end_pos-m_buffer.vector;
 	int32_t head_length=m_buffer_end-m_begin_pos;
 
 	// determine position of finder pointer in memory block 
