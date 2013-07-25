@@ -402,7 +402,7 @@ void SGVector<char>::display_vector(const char* vector, int32_t n, const char* n
 	ASSERT(n>=0)
 	SG_SPRINT("%s%s=[", prefix, name)
 	for (int32_t i=0; i<n; i++)
-		SG_SPRINT("%s%d%s", prefix, vector[i], i==n-1? "" : ",")
+		SG_SPRINT("%s%c%s", prefix, vector[i], i==n-1? "" : ",")
 	SG_SPRINT("%s]\n", prefix)
 }
 
