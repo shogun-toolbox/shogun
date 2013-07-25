@@ -44,6 +44,24 @@ SGMatrixList<T>::~SGMatrixList()
 }
 
 template <class T>
+SGMatrix<T> SGMatrixList<T>::get_matrix(index_t index) const
+{
+	return matrix_list[index];
+}
+
+template <class T>
+SGMatrix<T> SGMatrixList<T>::operator[](index_t index) const
+{
+	return matrix_list[index];
+}
+
+template <class T>
+void SGMatrixList<T>::set_matrix(index_t index, const SGMatrix<T> matrix)
+{
+	matrix_list[index] = matrix;
+}
+
+template <class T>
 void SGMatrixList<T>::copy_data(const SGReferencedData &orig)
 {
 	matrix_list  = ((SGMatrixList*) (&orig))->matrix_list;
