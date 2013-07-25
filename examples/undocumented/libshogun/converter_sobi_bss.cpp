@@ -91,7 +91,9 @@ void test()
 	std::cout << "Separation error: " << sep_error << std::endl;
 
 	SG_UNREF(sobi);
+	SG_UNREF(mixed_signals);
 	SG_UNREF(signals);
+	
 	return;
 }
 

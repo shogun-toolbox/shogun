@@ -56,6 +56,7 @@ TEST(CSOBI, blind_source_separation)
 	EXPECT_LE(sep_error, 1e-6);
 
 	SG_UNREF(sobi);
+	SG_UNREF(mixed_signals);
 	SG_UNREF(signals);
 }
 
