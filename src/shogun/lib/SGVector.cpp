@@ -402,7 +402,7 @@ void SGVector<char>::display_vector(const char* vector, int32_t n, const char* n
 	ASSERT(n>=0)
 	SG_SPRINT("%s%s=[", prefix, name)
 	for (int32_t i=0; i<n; i++)
-		SG_SPRINT("%s%c%s", prefix, vector[i], i==n-1? "" : ",")
+		SG_SPRINT("%s%d%s", prefix, vector[i], i==n-1? "" : ",")
 	SG_SPRINT("%s]\n", prefix)
 }
 
@@ -413,7 +413,7 @@ void SGVector<uint8_t>::display_vector(const uint8_t* vector, int32_t n, const c
 	ASSERT(n>=0)
 	SG_SPRINT("%s%s=[", prefix, name)
 	for (int32_t i=0; i<n; i++)
-		SG_SPRINT("%s%d%s", prefix, vector[i], i==n-1? "" : ",")
+		SG_SPRINT("%s%u%s", prefix, vector[i], i==n-1? "" : ",")
 	SG_SPRINT("%s]\n", prefix)
 }
 
@@ -435,7 +435,7 @@ void SGVector<uint16_t>::display_vector(const uint16_t* vector, int32_t n, const
 	ASSERT(n>=0)
 	SG_SPRINT("%s%s=[", prefix, name)
 	for (int32_t i=0; i<n; i++)
-		SG_SPRINT("%s%d%s", prefix, vector[i], i==n-1? "" : ",")
+		SG_SPRINT("%s%u%s", prefix, vector[i], i==n-1? "" : ",")
 	SG_SPRINT("%s]\n", prefix)
 }
 
@@ -468,7 +468,7 @@ void SGVector<uint32_t>::display_vector(const uint32_t* vector, int32_t n, const
 	ASSERT(n>=0)
 	SG_SPRINT("%s%s=[", prefix, name)
 	for (int32_t i=0; i<n; i++)
-		SG_SPRINT("%s%d%s", prefix, vector[i], i==n-1? "" : ",")
+		SG_SPRINT("%s%u%s", prefix, vector[i], i==n-1? "" : ",")
 	SG_SPRINT("%s]\n", prefix)
 }
 
