@@ -243,7 +243,7 @@ TEST(FactorGraph, evaluate_energy_data_dep)
 	SG_UNREF(fac1b);
 }
 
-TEST(FactorGraph, evaluate_energy_param_data)
+TEST(FactorGraph, DISABLED_evaluate_energy_param_data)
 {
 	// Create one simple pairwise factor type
 	SGVector<int32_t> card(2);
@@ -333,7 +333,7 @@ TEST(FactorGraph, evaluate_energy_param_data)
 	SG_UNREF(fac1b);
 }
 
-TEST(FactorGraph, evaluate_energy_param_data_sparse)
+TEST(FactorGraph, DISABLED_evaluate_energy_param_data_sparse)
 {
 	// Create one simple pairwise factor type
 	SGVector<int32_t> card(2);
