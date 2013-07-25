@@ -1,3 +1,13 @@
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Written (W) 2009 Soeren Sonnenburg
+ * Written (W) 2013 Heiko Strathmann
+ */
+
 /*%warnfilter(302) apply;
 %warnfilter(302) apply_generic;*/
 #if defined(SWIGPYTHON) || defined(SWIGOCTAVE) || defined(SWIGRUBY) || defined(SWIGLUA) || defined(SWIGR)
@@ -63,6 +73,9 @@ APPLY_BINARY(CLinearMachine);
 APPLY_BINARY(CKernelMachine);
 APPLY_BINARY(CWDSVMOcas);
 APPLY_BINARY(CPluginEstimate);
+#ifdef HAVE_EIGEN3
+APPLY_BINARY(CGaussianProcessBinaryClassification);
+#endif //HAVE_EIGEN3
 
 APPLY_REGRESSION(CKernelRidgeRegression);
 APPLY_REGRESSION(CLibSVR);

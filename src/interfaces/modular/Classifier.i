@@ -5,6 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 2009 Soeren Sonnenburg
+ * Written (W) 2013 Heiko Strathmann
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
@@ -64,12 +65,6 @@
 %rename(DirectorLinearMachine) CDirectorLinearMachine;
 %rename(DirectorKernelMachine) CDirectorKernelMachine;
 
-#ifdef HAVE_EIGEN3
-%rename(ProbitLikelihood) CProbitLikelihood;
-%rename(LogitLikelihood) CLogitLikelihood;
-%rename(GaussianProcessBinaryClassification) CGaussianProcessBinaryClassification;
-#endif //HAVE_EIGEN3
-
 /* These functions return new Objects */
 %newobject apply();
 %newobject apply(CFeatures* data);
@@ -111,14 +106,6 @@
 %include <shogun/classifier/FeatureBlockLogisticRegression.h>
 %include <shogun/machine/DirectorLinearMachine.h>
 %include <shogun/machine/DirectorKernelMachine.h>
-
-#ifdef HAVE_EIGEN3
-%include <shogun/machine/GaussianProcessMachine.h>
-%include <shogun/machine/gp/LikelihoodModel.h>
-%include <shogun/machine/gp/ProbitLikelihood.h>
-%include <shogun/machine/gp/LogitLikelihood.h>
-%include <shogun/classifier/GaussianProcessBinaryClassification.h>
-#endif //HAVE_EIGEN3
 
 #ifdef USE_SVMLIGHT
 
