@@ -11,8 +11,6 @@
 #define ITERATIVE_LINEAR_SOLVER_H_
 
 #include <shogun/lib/config.h>
-
-#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/logdet/LinearSolver.h>
 
 namespace shogun
@@ -102,5 +100,4 @@ private:
 
 }
 
-#endif // HAVE_EIGEN3
 #endif // ITERATIVE_LINEAR_SOLVER_H_
