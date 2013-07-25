@@ -19,10 +19,10 @@ do
 	else
 		echo " ERROR"
 		echo "================================================================================" >>error.log
-		echo "error in $MAKE $e $CC $LIBRARY_PATH $LIB_PATH $INC_PATH $LIBS" >>error.log
+		echo "error in $MAKE $e $CC $LIBRARY_PATH $LIB_PATH $INC_PATH $LIBS $INCLUDES" >>error.log
 		echo "error in ./$e" >>error.log 2>&1
 		echo "================================================================================" >>error.log
-		$MAKE "$e" "$CC" "$LIBRARY_PATH" "$LIB_PATH" "$INC_PATH" "$LIBS" >>error.log 2>&1 && $GDB $GDBOPTS "./$e" >>error.log
+		$MAKE "$e" "$CC" "$LIBRARY_PATH" "$LIB_PATH" "$INC_PATH" "$LIBS" "$INCLUDES" >>error.log 2>&1 && $GDB $GDBOPTS "./$e" >>error.log
 		echo "================================================================================" >>error.log
 		echo >>error.log
 		echo >>error.log
