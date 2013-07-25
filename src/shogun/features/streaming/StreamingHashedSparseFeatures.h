@@ -40,9 +40,11 @@ public:
 	 * @param is_labelled Whether examples are labelled or not.
 	 * @param size Number of examples to be held in the parser's "ring".
 	 * @param d the dimensionality of the target feature space
+	 * @param use_quadr whether to use quadratic features or not
+	 * @param keep_lin_terms whether to maintain the linear terms in the computations
 	 */
 	CStreamingHashedSparseFeatures (CStreamingFile* file, bool is_labelled, int32_t size,
-			 int32_t d = 512);
+				int32_t d = 512, bool use_quadr = false, bool keep_lin_terms = true);
 
 	/**
 	 * Constructor taking a CDotFeatures object and optionally,
@@ -55,10 +57,12 @@ public:
 	 *
 	 * @param dot_features CDotFeatures object
 	 * @param d the dimensionality of the target feature space
+	 * @param use_quadr whether to use quadratic features or not
+	 * @param keep_lin_terms whether to maintain the linear terms in the computations
 	 * @param lab labels (optional)
 	 */
 	CStreamingHashedSparseFeatures (CSparseFeatures<ST>* dot_features, int32_t d = 512,
-			float64_t* lab = NULL);
+				bool use_quadr = false, bool keep_lin_terms = true, float64_t* lab = NULL);
 
 	/** Destructor */
 	virtual ~CStreamingHashedSparseFeatures ();
@@ -203,7 +207,7 @@ public:
 
 private:
 	void init(CStreamingFile* file, bool is_labelled, int32_t size,
-		int32_t d);
+		int32_t d, bool use_quadr, bool keep_lin_terms);
 
 protected:
 	
@@ -218,6 +222,12 @@ protected:
 
 	/** The current example's label */
 	float64_t current_label;
+
+	/** use quadratic feature or not */
+	bool use_quadratic;
+
+	/** keep linear terms or not */
+	bool keep_linear_terms;
 };
 }
 

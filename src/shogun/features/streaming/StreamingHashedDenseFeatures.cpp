@@ -17,19 +17,19 @@ namespace shogun
 template <class ST>
 CStreamingHashedDenseFeatures<ST>::CStreamingHashedDenseFeatures()
 {
-	init(NULL, false, 0, 0);	
+	init(NULL, false, 0, 0, false, true);
 }
 
 template <class ST>
 CStreamingHashedDenseFeatures<ST>::CStreamingHashedDenseFeatures(CStreamingFile* file,
-	bool is_labelled, int32_t size, int32_t d)
+	bool is_labelled, int32_t size, int32_t d, bool use_quadr, bool keep_lin_terms)
 {
-	init(file, is_labelled, size, d);
+	init(file, is_labelled, size, d, use_quadr, keep_lin_terms);
 }
 
 template <class ST>
 CStreamingHashedDenseFeatures<ST>::CStreamingHashedDenseFeatures(CDenseFeatures<ST>* dot_features,
-	int32_t d, float64_t* lab)
+	int32_t d, bool use_quadr, bool keep_lin_terms, float64_t* lab)
 {
 	ASSERT(dot_features);
 
@@ -38,7 +38,7 @@ CStreamingHashedDenseFeatures<ST>::CStreamingHashedDenseFeatures(CDenseFeatures<
 	bool is_labelled = (lab != NULL);
 	int32_t size = 1024;
 
-	init(file, is_labelled, size, d); 
+	init(file, is_labelled, size, d, use_quadr, keep_lin_terms); 
 
 	parser.set_free_vectors_on_destruct(false);
 	seekable=true;
@@ -51,9 +51,16 @@ CStreamingHashedDenseFeatures<ST>::~CStreamingHashedDenseFeatures()
 
 template <class ST>
 void CStreamingHashedDenseFeatures<ST>::init(CStreamingFile* file, bool is_labelled,
-	int32_t size, int32_t d)	
+	int32_t size, int32_t d, bool use_quadr, bool keep_lin_terms)
 {
 	dim = d;
+	use_quadratic = use_quadr;
+	keep_linear_terms = keep_lin_terms;
+
+	SG_ADD(&use_quadratic, "use_quadratic", "Whether to use quadratic features",
+		MS_NOT_AVAILABLE);
+	SG_ADD(&keep_linear_terms, "keep_linear_terms", "Whether to keep the linear terms or not",
+		MS_NOT_AVAILABLE);
 	SG_ADD(&dim, "dim", "Size of target dimension", MS_NOT_AVAILABLE);
 
 	has_labels = is_labelled;
@@ -183,7 +190,8 @@ bool CStreamingHashedDenseFeatures<ST>::get_next_example()
 	if (parser.get_next_example(tmp.vector,
 		tmp.vlen, current_label))
 	{
-		current_vector = CHashedDenseFeatures<ST>::hash_vector(tmp, dim);
+		current_vector = CHashedDenseFeatures<ST>::hash_vector(tmp, dim, use_quadratic,
+				keep_linear_terms);
 		tmp.vector = NULL;
 		tmp.vlen = -1;
 		return true;
