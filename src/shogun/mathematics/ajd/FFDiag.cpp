@@ -16,7 +16,7 @@ using namespace shogun;
 
 void getW(double *C, int *ptN, int *ptK, double *W);
 
-SGMatrix<float64_t> CFFDiag::diagonalize(SGNDArray<float64_t> &C0, SGMatrix<float64_t> V0,
+SGMatrix<float64_t> CFFDiag::diagonalize(const SGNDArray<float64_t> &C0, SGMatrix<float64_t> V0,
 						double eps, int itermax)
 {
 	int n = C0.dims[0];

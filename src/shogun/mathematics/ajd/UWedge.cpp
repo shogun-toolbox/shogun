@@ -14,7 +14,7 @@ typedef Matrix< float64_t, Dynamic, Dynamic, ColMajor > EMatrix;
 
 using namespace shogun;
 
-SGMatrix<float64_t> CUWedge::diagonalize(SGNDArray<float64_t> &C, SGMatrix<float64_t> V0,
+SGMatrix<float64_t> CUWedge::diagonalize(const SGNDArray<float64_t> &C, SGMatrix<float64_t> V0,
 					double eps, int itermax)
 {
 	int d = C.dims[0];
