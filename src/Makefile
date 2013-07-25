@@ -83,6 +83,16 @@ check-examples: $(PARTDEPS)
 	$(MAKE) -C shogun check-examples
 	+$(foreach part, $(PARTS), $(MAKE) -C interfaces/$(part) check-examples-$(part) &&) true
 
+LOCAL_BUILD_DIR="local-build-tmp"
+
+install-local-build:
+	$(MAKE) DESTDIR="$(shell readlink -f ".")"/"$(LOCAL_BUILD_DIR)" install
+clean-local-build:
+	@rm -rf "$(LOCAL_BUILD_DIR)"
+
+%-local-build: install-local-build
+	$(MAKE) DESTDIR="$(shell readlink -f ".")"/"$(LOCAL_BUILD_DIR)" $*
+
 doc:  $(PARTDEPS)
 	+$(foreach part, $(PARTS), $(MAKE) -C interfaces/$(part) doc-$(part) &&) true
 tutorial:
@@ -99,6 +109,7 @@ clean:  $(PARTDEPS)
 	@+$(foreach part, $(PARTS), $(MAKE) -C interfaces/$(part) $@ &&) true
 	@rm -rf configure-*.dSYM
 	@rm -f configure.log .cpuinfo .cpuinfo.c ./configure-* cplex.log examples
+	$(MAKE) clean-local-build
 
 dist:	distclean
 	rm -f $(TAR).gz
