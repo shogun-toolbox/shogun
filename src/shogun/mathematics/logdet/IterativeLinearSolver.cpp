@@ -8,9 +8,6 @@
  */
 
 #include <shogun/lib/common.h>
-
-#ifdef HAVE_EIGEN3
-
 #include <shogun/base/Parameter.h>
 #include <shogun/mathematics/logdet/IterativeLinearSolver.h>
 
@@ -49,20 +46,6 @@ CIterativeLinearSolver<T, ST>::~CIterativeLinearSolver()
 		SG_SGCDEBUG("%s destroyed (%p)\n", this->get_name(), this);
 	}
 
-template class CIterativeLinearSolver<bool>;
-template class CIterativeLinearSolver<char>;
-template class CIterativeLinearSolver<int8_t>;
-template class CIterativeLinearSolver<uint8_t>;
-template class CIterativeLinearSolver<int16_t>;
-template class CIterativeLinearSolver<uint16_t>;
-template class CIterativeLinearSolver<int32_t>;
-template class CIterativeLinearSolver<uint32_t>;
-template class CIterativeLinearSolver<int64_t>;
-template class CIterativeLinearSolver<uint64_t>;
-template class CIterativeLinearSolver<float32_t>;
 template class CIterativeLinearSolver<float64_t>;
-template class CIterativeLinearSolver<floatmax_t>;
-template class CIterativeLinearSolver<complex64_t>;
 template class CIterativeLinearSolver<complex64_t, float64_t>;
 }
-#endif // HAVE_EIGEN3
