@@ -51,7 +51,7 @@ configure.log
 /src/examples
 /src/shogun/.clang_complete
 /src/configure-*-*.c*
-
+/src/build-local
 
 # static interfaces
 /src/interfaces/cmdline_static/shogun
