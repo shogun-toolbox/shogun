@@ -9,10 +9,6 @@
 
 /* Remove C Prefix */
 #ifdef HAVE_EIGEN3
-%rename(GaussianProcessMachine) CGaussianProcessMachine;
-%rename(GaussianProcessBinaryClassification) CGaussianProcessBinaryClassification;
-%rename(GaussianProcessBinaryRegression) CGaussianProcessBinaryRegression;
-
 %rename(MeanFunction) CMeanFunction;
 %rename(ZeroMean) CZeroMean;
 
@@ -27,16 +23,16 @@
 %rename(GaussianLikelihood) CGaussianLikelihood;
 %rename(StudentsTLikelihood) CStudentsTLikelihood;
 
+%rename(GaussianProcessMachine) CGaussianProcessMachine;
+%rename(GaussianProcessBinaryClassification) CGaussianProcessBinaryClassification;
+%rename(GaussianProcessBinaryRegression) CGaussianProcessBinaryRegression;
+
 #endif //HAVE_EIGEN3
 
 /* These functions return new Objects */
 
 /* Include Class Headers to make them visible from within the target language */
 #ifdef HAVE_EIGEN3
-%include <shogun/machine/GaussianProcessMachine.h>
-%include <shogun/classifier/GaussianProcessBinaryClassification.h>
-%include <shogun/regression/GaussianProcessRegression.h>
- 
 %include <shogun/evaluation/DifferentiableFunction.h>
 %include <shogun/machine/gp/LikelihoodModel.h>
 %include <shogun/machine/gp/ProbitLikelihood.h>
@@ -52,6 +48,10 @@
 %include <shogun/machine/gp/ExactInferenceMethod.h>
 %include <shogun/machine/gp/LaplacianInferenceMethod.h>
 %include <shogun/machine/gp/FITCInferenceMethod.h>
+
+%include <shogun/machine/GaussianProcessMachine.h>
+%include <shogun/classifier/GaussianProcessBinaryClassification.h>
+%include <shogun/regression/GaussianProcessRegression.h>
  
 %include <shogun/machine/gp/MeanFunction.h>
 %include <shogun/machine/gp/ZeroMean.h>
