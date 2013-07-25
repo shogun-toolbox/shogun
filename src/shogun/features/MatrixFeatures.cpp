@@ -133,7 +133,7 @@ template< class ST > void CMatrixFeatures< ST >::set_feature_vector(
 			 "(get_num_features())\n", get_num_features());
 	}
 
-	m_features[num] = vec;
+	m_features.set_matrix(num, vec);
 }
 
 template< class ST > void CMatrixFeatures< ST >::set_features(
