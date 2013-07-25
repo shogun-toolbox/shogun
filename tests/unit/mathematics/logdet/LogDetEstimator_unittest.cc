@@ -40,7 +40,8 @@ TEST(LogDetEstimator, sample)
 	mat(1,0)=1.0;
 	mat(1,1)=3.0;
 
-	CDenseMatrixOperator<float64_t, float64_t>* op=new CDenseMatrixOperator<float64_t, float64_t>(mat);
+	CDenseMatrixOperator<float64_t, float64_t>* op
+		=new CDenseMatrixOperator<float64_t>(mat);
 	SG_REF(op);
 
 	CDenseMatrixExactLog *op_func=new CDenseMatrixExactLog(op, e);
@@ -79,7 +80,8 @@ TEST(LogDetEstimator, sample_ratapp)
 	mat(1,0)=0.5;
 	mat(1,1)=1000.0;
 
-	CDenseMatrixOperator<float64_t, float64_t>* op=new CDenseMatrixOperator<float64_t, float64_t>(mat);
+	CDenseMatrixOperator<float64_t, float64_t>* op
+		=new CDenseMatrixOperator<float64_t>(mat);
 	SG_REF(op);
 
 	CDirectEigenSolver* eig_solver=new CDirectEigenSolver(op);
@@ -90,7 +92,8 @@ TEST(LogDetEstimator, sample_ratapp)
 
 	CLogRationalApproximationIndividual *op_func
 		=new CLogRationalApproximationIndividual(
-			op, e, eig_solver, (CLinearSolver<complex64_t, float64_t>*)linear_solver, 8);
+			op, e, eig_solver,
+			(CLinearSolver<complex64_t, float64_t>*)linear_solver, 8);
 	SG_REF(op_func);
 	
 	CNormalSampler* trace_sampler=new CNormalSampler(size);
@@ -105,7 +108,7 @@ TEST(LogDetEstimator, sample_ratapp)
 		result+=estimates[i];
 	result/=num_estimates;
 
-	EXPECT_NEAR(result, CStatistics::log_det(mat), 0.5);
+	EXPECT_NEAR(result, CStatistics::log_det(mat), 2.0);
 
 	SG_UNREF(trace_sampler);
 	SG_UNREF(eig_solver);
