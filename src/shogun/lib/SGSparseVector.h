@@ -120,6 +120,15 @@ public:
 	 */
 	void save(CFile* saver);
 
+
+	/** display vector
+	 *
+	 * @param name   vector name in output
+	 * @param prefix prepend on every entry
+	 */
+	void display_vector(const char* name="vector",
+			const char* prefix="");
+
 protected:
 	virtual void copy_data(const SGReferencedData& orig);
 
