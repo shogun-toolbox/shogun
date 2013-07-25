@@ -261,6 +261,133 @@ T SGSparseVector<T>::dot_prod_symmetric(const SGSparseVector<T>& a, const SGSpar
 	return dot_prod;
 }
 
+template <>
+void SGSparseVector<bool>::display_vector(const char* name, const char* prefix)
+{
+	SG_SPRINT("%s%s=[", prefix, name);
+	for (int32_t i=0; i<num_feat_entries; i++)
+		SG_SPRINT("%s%s%d:%d", prefix, i==0 ? "" : " ", features[i].feat_index, features[i].entry ? 1 : 0);
+	SG_SPRINT("%s]\n", prefix);
+}
+
+template <>
+void SGSparseVector<char>::display_vector(const char* name, const char* prefix)
+{
+	SG_SPRINT("%s%s=[", prefix, name);
+	for (int32_t i=0; i<num_feat_entries; i++)
+		SG_SPRINT("%s%s%d:%c", prefix, i==0 ? "" : " ", features[i].feat_index, features[i].entry);
+	SG_SPRINT("%s]\n", prefix);
+}
+
+template <>
+void SGSparseVector<int8_t>::display_vector(const char* name, const char* prefix)
+{
+	SG_SPRINT("%s%s=[", prefix, name);
+	for (int32_t i=0; i<num_feat_entries; i++)
+		SG_SPRINT("%s%s%d:%d", prefix, i==0 ? "" : " ", features[i].feat_index, features[i].entry);
+	SG_SPRINT("%s]\n", prefix);
+}
+
+template <>
+void SGSparseVector<uint8_t>::display_vector(const char* name, const char* prefix)
+{
+	SG_SPRINT("%s%s=[", prefix, name);
+	for (int32_t i=0; i<num_feat_entries; i++)
+		SG_SPRINT("%s%s%d:%u", prefix, i==0 ? "" : " ", features[i].feat_index, features[i].entry);
+	SG_SPRINT("%s]\n", prefix);
+}
+
+template <>
+void SGSparseVector<int16_t>::display_vector(const char* name, const char* prefix)
+{
+	SG_SPRINT("%s%s=[", prefix, name);
+	for (int32_t i=0; i<num_feat_entries; i++)
+		SG_SPRINT("%s%s%d:%d", prefix, i==0 ? "" : " ", features[i].feat_index, features[i].entry);
+	SG_SPRINT("%s]\n", prefix);
+}
+
+template <>
+void SGSparseVector<uint16_t>::display_vector(const char* name, const char* prefix)
+{
+	SG_SPRINT("%s%s=[", prefix, name);
+	for (int32_t i=0; i<num_feat_entries; i++)
+		SG_SPRINT("%s%s%d:%u", prefix, i==0 ? "" : " ", features[i].feat_index, features[i].entry);
+	SG_SPRINT("%s]\n", prefix);
+}
+
+template <>
+void SGSparseVector<int32_t>::display_vector(const char* name, const char* prefix)
+{
+	SG_SPRINT("%s%s=[", prefix, name);
+	for (int32_t i=0; i<num_feat_entries; i++)
+		SG_SPRINT("%s%s%d:%d", prefix, i==0 ? "" : " ", features[i].feat_index, features[i].entry);
+	SG_SPRINT("%s]\n", prefix);
+}
+
+template <>
+void SGSparseVector<uint32_t>::display_vector(const char* name, const char* prefix)
+{
+	SG_SPRINT("%s%s=[", prefix, name);
+	for (int32_t i=0; i<num_feat_entries; i++)
+		SG_SPRINT("%s%s%d:%u", prefix, i==0 ? "" : " ", features[i].feat_index, features[i].entry);
+	SG_SPRINT("%s]\n", prefix);
+}
+
+template <>
+void SGSparseVector<int64_t>::display_vector(const char* name, const char* prefix)
+{
+	SG_SPRINT("%s%s=[", prefix, name);
+	for (int32_t i=0; i<num_feat_entries; i++)
+		SG_SPRINT("%s%s%d:%lld", prefix, i==0 ? "" : " ", features[i].feat_index, features[i].entry);
+	SG_SPRINT("%s]\n", prefix);
+}
+
+template <>
+void SGSparseVector<uint64_t>::display_vector(const char* name, const char* prefix)
+{
+	SG_SPRINT("%s%s=[", prefix, name);
+	for (int32_t i=0; i<num_feat_entries; i++)
+		SG_SPRINT("%s%s%d:%llu ", prefix, i==0 ? "" : " ", features[i].feat_index, features[i].entry);
+	SG_SPRINT("%s]\n", prefix);
+}
+
+template <>
+void SGSparseVector<float32_t>::display_vector(const char* name, const char* prefix)
+{
+	SG_SPRINT("%s%s=[", prefix, name);
+	for (int32_t i=0; i<num_feat_entries; i++)
+		SG_SPRINT("%s%s%d:%g", prefix, i==0 ? "" : " ", features[i].feat_index, features[i].entry);
+	SG_SPRINT("%s]\n", prefix);
+}
+
+template <>
+void SGSparseVector<float64_t>::display_vector(const char* name, const char* prefix)
+{
+	SG_SPRINT("%s%s=[", prefix, name);
+	for (int32_t i=0; i<num_feat_entries; i++)
+		SG_SPRINT("%s%s%d:%.18g", prefix, i==0 ? "" : " ", features[i].feat_index, features[i].entry);
+	SG_SPRINT("%s]\n", prefix);
+}
+
+template <>
+void SGSparseVector<floatmax_t>::display_vector(const char* name, const char* prefix)
+{
+	SG_SPRINT("%s%s=[", prefix, name);
+	for (int32_t i=0; i<num_feat_entries; i++)
+		SG_SPRINT("%s%s%d:%.36Lg", prefix, i==0 ? "" : " ", features[i].feat_index, features[i].entry);
+	SG_SPRINT("%s]\n", prefix);
+}
+
+template <>
+void SGSparseVector<complex64_t>::display_vector(const char* name, const char* prefix)
+{
+	SG_SPRINT("%s%s=[", prefix, name);
+	for (int32_t i=0; i<num_feat_entries; i++)
+		SG_SPRINT("%s%s%d:(%.18lg+i%.18lg)", prefix, i==0 ? "" : " ", features[i].feat_index,
+				features[i].entry.real(), features[i].entry.imag());
+	SG_SPRINT("%s]\n", prefix);
+}
+
 template class SGSparseVector<bool>;
 template class SGSparseVector<char>;
 template class SGSparseVector<int8_t>;
