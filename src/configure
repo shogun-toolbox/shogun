@@ -16,7 +16,7 @@ DATAVER=`grep "SHOGUN Release version" NEWS 2>&1 | head -n 1 | cut -d ',' -f 3 |
 # some hopefully reasonable defaults
 LDD=ldd
 POSTLINKCMD="true"
-MAKEDEPEND="gcc -MM"
+MAKEDEPEND=
 MAKEDEPENDOPTS=""
 SRCDIR="`dirname $0`"
 LIBRARY_PATH=LD_LIBRARY_PATH
@@ -1189,17 +1189,28 @@ check_makedepend()
 cat > $TMPC << EOF
 int main(void) { return 0; }
 EOF
-	if $MAKEDEPEND $TMPC >/dev/null 2>&1
+	for DEPGEN in $COMP_CPP g++ clang++
+	do
+		if $DEPGEN -MM $TMPC >/dev/null 2>&1
+		then
+			echores "$DEPGEN -MM"
+			MAKEDEPEND="$DEPGEN"
+			MAKEDEPENDOPTS="-MM"
+			break
+		fi
+	done
+
+	if test -z "$MAKEDEPEND"
 	then
-		echores "$MAKEDEPEND"
-	elif makedepend -f - $TMPC >/dev/null 2>&1
-	then
-		MAKEDEPEND=makedepend
-		MAKEDEPENDOPTS="-f -"
-		echores "$MAKEDEPEND"
-	else
-		echores "no"
-		die "neither gcc nor makedepend found, but required to proceed. please install gcc or xutils-dev"
+		if makedepend -f - $TMPC >/dev/null 2>&1
+		then
+			MAKEDEPEND=makedepend
+			MAKEDEPENDOPTS="-f -"
+			echores "$MAKEDEPEND"
+		else
+			echores "no"
+			die "neither gcc nor makedepend found, but required to proceed. please install gcc or xutils-dev"
+		fi
 	fi
 }
 
