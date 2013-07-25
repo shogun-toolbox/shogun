@@ -29,17 +29,7 @@
  #include <shogun/classifier/mkl/MKLOneClass.h>
  #include <shogun/classifier/vw/VowpalWabbit.h>
  #include <shogun/classifier/svm/NewtonSVM.h>
-#ifdef HAVE_EIGEN3
- #include <shogun/machine/GaussianProcessMachine.h>
- #include <shogun/machine/gp/LikelihoodModel.h>
- #include <shogun/machine/gp/MeanFunction.h>
- #include <shogun/machine/gp/ZeroMean.h>
- #include <shogun/machine/gp/InferenceMethod.h>
- #include <shogun/machine/gp/LaplacianInferenceMethod.h>
- #include <shogun/machine/gp/ProbitLikelihood.h>
- #include <shogun/machine/gp/LogitLikelihood.h>
- #include <shogun/classifier/GaussianProcessBinaryClassification.h>
-#endif //HAVE_EIGEN3
+ 
 #ifdef USE_SVMLIGHT
  #include <shogun/classifier/svm/SVMLight.h>
  #include <shogun/classifier/svm/SVMLightOneClass.h>
