@@ -8,8 +8,14 @@
 # Written (W) 2013 Viktor Gal
 # Copyright (C) 2013 Viktor Gal
 
-import jinja2
 import sys
+
+try:
+    import jinja2
+except ImportError:
+    print("Please install jinja2 for clone unit-tests");
+    sys.exit(0)
+
 
 def get_class_list_content():
     class_list_file = '../../src/shogun/base/class_list.cpp'
