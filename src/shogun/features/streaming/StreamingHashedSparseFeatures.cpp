@@ -18,19 +18,19 @@ namespace shogun
 template <class ST>
 CStreamingHashedSparseFeatures<ST>::CStreamingHashedSparseFeatures()
 {
-	init(NULL, false, 0, 0);	
+	init(NULL, false, 0, 0, false, true);	
 }
 
 template <class ST>
 CStreamingHashedSparseFeatures<ST>::CStreamingHashedSparseFeatures(CStreamingFile* file,
-	bool is_labelled, int32_t size, int32_t d)
+	bool is_labelled, int32_t size, int32_t d, bool use_quadr, bool keep_lin_terms)
 {
-	init(file, is_labelled, size, d);
+	init(file, is_labelled, size, d, use_quadr, keep_lin_terms);
 }
 
 template <class ST>
 CStreamingHashedSparseFeatures<ST>::CStreamingHashedSparseFeatures(CSparseFeatures<ST>* dot_features,
-	int32_t d, float64_t* lab)
+	int32_t d, bool use_quadr, bool keep_lin_terms, float64_t* lab)
 {
 	ASSERT(dot_features);
 
@@ -39,7 +39,7 @@ CStreamingHashedSparseFeatures<ST>::CStreamingHashedSparseFeatures(CSparseFeatur
 	bool is_labelled = (lab != NULL);
 	int32_t size = 1024;
 
-	init(file, is_labelled, size, d); 
+	init(file, is_labelled, size, d, use_quadr, keep_lin_terms); 
 
 	parser.set_free_vectors_on_destruct(false);
 	seekable=true;
@@ -52,10 +52,18 @@ CStreamingHashedSparseFeatures<ST>::~CStreamingHashedSparseFeatures()
 
 template <class ST>
 void CStreamingHashedSparseFeatures<ST>::init(CStreamingFile* file, bool is_labelled,
-	int32_t size, int32_t d)	
+	int32_t size, int32_t d, bool use_quadr, bool keep_lin_terms)	
 {
 	dim = d;
 	SG_ADD(&dim, "dim", "Size of target dimension", MS_NOT_AVAILABLE);
+
+	use_quadratic = use_quadr;
+	keep_linear_terms = keep_lin_terms;
+
+	SG_ADD(&use_quadratic, "use_quadratic", "Whether to use quadratic features",
+		MS_NOT_AVAILABLE);
+	SG_ADD(&keep_linear_terms, "keep_linear_terms", "Whether to keep the linear terms or not",
+		MS_NOT_AVAILABLE);
 
 	has_labels = is_labelled;
 	if (file)
@@ -185,7 +193,8 @@ bool CStreamingHashedSparseFeatures<ST>::get_next_example()
 	if (parser.get_next_example(tmp.features,
 		tmp.num_feat_entries, current_label))
 	{
-		current_vector = CHashedSparseFeatures<ST>::hash_vector(tmp, dim);
+		current_vector = CHashedSparseFeatures<ST>::hash_vector(tmp, dim,
+				use_quadratic, keep_linear_terms);
 		tmp.features = NULL;
 		tmp.num_feat_entries = -1;
 		return true;
