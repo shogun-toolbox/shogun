@@ -19,18 +19,11 @@ void left_rot_stack(double *A, int M, int N, int K, int p, int q, double c, doub
 void right_rot_stack(double *A, int M, int N, int K, int p, int q, double c, double s);
 void left_rot_simple(double *A, int m, int n, int p, int q, double c, double s);
 
-SGMatrix<float64_t> CJADiagOrth::diagonalize(const SGNDArray<float64_t> &C0, SGMatrix<float64_t> V0,
+SGMatrix<float64_t> CJADiagOrth::diagonalize(SGNDArray<float64_t> C, SGMatrix<float64_t> V0,
 						double eps, int itermax)
 {	
-	int m = C0.dims[0];
-	int L = C0.dims[2];	
-
-	index_t * C_dims = SG_MALLOC(index_t, 3);
-	C_dims[0] = C0.dims[0];
-	C_dims[1] = C0.dims[1];
-	C_dims[2] = C0.dims[2];
-	SGNDArray<float64_t> C(C_dims,3);
-	memcpy(C.array, C0.array, C0.dims[0]*C0.dims[1]*C0.dims[2]*sizeof(float64_t));
+	int m = C.dims[0];
+	int L = C.dims[2];
 
 	SGMatrix<float64_t> V;
 	if (V0.num_rows != 0)
