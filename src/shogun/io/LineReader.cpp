@@ -7,94 +7,125 @@
  * Written (W) 2013 Evgeniy Andreev (gsomix)
  */
 
-#include <cstdio>
 #include <shogun/io/LineReader.h>
 
 using namespace shogun;
 
 CLineReader::CLineReader()
-	: m_stream(NULL), m_max_line_length(0), m_next_line_length(-1)
 {
-	m_buffer=new CCircularBuffer(0);
-	m_tokenizer=NULL;
+	init();
+
+	m_buffer=new CCircularBuffer();
 }
 
-CLineReader::CLineReader(FILE* stream, char delimiter)
-	: m_stream(stream), m_max_line_length(10*1024*1024), m_next_line_length(-1)
+CLineReader::CLineReader(FILE* stream, CTokenizer* tokenizer)
 {
-	m_buffer=new CCircularBuffer(m_max_line_length);
-	m_tokenizer=new CDelimiterTokenizer();
-	m_tokenizer->delimiters[delimiter]=1;
-	m_buffer->set_tokenizer(m_tokenizer);
+	init();
+
+	m_stream=stream;
+	m_max_token_length=10*1024*1024;
+
+	m_buffer=new CCircularBuffer(m_max_token_length);
+	m_buffer->set_tokenizer(tokenizer);
+
+	m_tokenizer=tokenizer;
 }
 
-CLineReader::CLineReader(int32_t max_line_length, FILE* stream, char delimiter)
-	: m_stream(stream), m_max_line_length(max_line_length), m_next_line_length(-1)
+CLineReader::CLineReader(int32_t max_token_length, FILE* stream, CTokenizer* tokenizer)
 {
-	m_buffer=new CCircularBuffer(m_max_line_length);
-	m_tokenizer=new CDelimiterTokenizer();
-	m_tokenizer->delimiters[delimiter]=1;
-	m_buffer->set_tokenizer(m_tokenizer);
+	init();
+
+	m_stream=stream;
+	m_max_token_length=max_token_length;
+
+	m_buffer=new CCircularBuffer(m_max_token_length);
+	m_buffer->set_tokenizer(tokenizer);
+
+	m_tokenizer=tokenizer;
 }
 
 CLineReader::~CLineReader()
 {
-	SG_UNREF(m_tokenizer);
 	SG_UNREF(m_buffer);
 }
 
-bool CLineReader::has_next_line()
+bool CLineReader::has_next()
 {
-	if (m_stream==NULL || m_max_line_length==0)
+	if (m_stream==NULL || m_max_token_length==0 || m_tokenizer==NULL)
 	{
-		SG_ERROR("Class is not initialized");
+		SG_ERROR("CLineReader::has_next():: Class is not initialized\n");
 		return false;
 	}
 
 	if (ferror(m_stream))
 	{
-		SG_ERROR("Error reading file");
+		SG_ERROR("CLineReader::has_next():: Error reading file\n");
 		return false;
 	}
 
-	if (feof(m_stream) && m_buffer->num_bytes_contained()<=0)
+	if (feof(m_stream) && (m_buffer->num_bytes_contained()<=0 || !m_buffer->has_next()))
+	{
 		return false; // nothing to read
+	}
 
 	return true;	
 }
 
-SGVector<char> CLineReader::get_next_line()
+void CLineReader::skip_line()
+{	
+	int32_t bytes_to_skip=0;
+	m_next_token_length=read(bytes_to_skip);
+	if (m_next_token_length==-1)
+		return;
+	else
+		m_buffer->skip_characters(bytes_to_skip);
+}
+
+SGVector<char> CLineReader::read_line()
 {
 	SGVector<char> line;	
 
-	m_next_line_length=read_line();
-	if (m_next_line_length==-1)
+	int32_t bytes_to_skip=0;
+	m_next_token_length=read(bytes_to_skip);
+	if (m_next_token_length==-1)
 		line=SGVector<char>();
 	else
-		line=copy_line(m_next_line_length);
+	{
+		m_buffer->skip_characters(bytes_to_skip);
+		line=read_token(m_next_token_length-bytes_to_skip);
+	}
 
 	return line;
 }
 
-void CLineReader::set_delimiter(char delimiter)
+void CLineReader::set_tokenizer(CTokenizer* tokenizer)
 {
-	m_tokenizer->delimiters[delimiter]=1;
+	m_buffer->set_tokenizer(tokenizer);
+	m_tokenizer=tokenizer;
 }
 
-void CLineReader::clear_delimiters()
+void CLineReader::init()
 {
-	m_tokenizer->clear_delimiters();
+	m_buffer=NULL;
+	m_tokenizer=NULL;
+	m_stream=NULL;
+
+	m_max_token_length=0;
+	m_next_token_length=-1;
 }
 
-int32_t CLineReader::read_line()
+int32_t CLineReader::read(int32_t& bytes_to_skip)
 {
 	int32_t line_end=0;
-	int32_t bytes_to_skip=0;
 	int32_t bytes_to_read=0;
+	int32_t temp_bytes_to_skip=0;
 
 	while (1)
 	{
-		line_end+=m_buffer->next_token_idx(bytes_to_skip)-bytes_to_skip;
+		if (bytes_to_skip==line_end)
+			line_end=m_buffer->next_token_idx(bytes_to_skip);
+		else
+			line_end=m_buffer->next_token_idx(temp_bytes_to_skip);
 
 		if (m_buffer->num_bytes_contained()!=0 && line_end<m_buffer->num_bytes_contained())
 			return line_end;
@@ -104,10 +135,10 @@ int32_t CLineReader::read_line()
 		// if there is no delimiter in buffer
 		// try get more data from stream
 		// and write it into buffer
-		if (m_buffer->available() < m_max_line_length)
+		if (m_buffer->available() < m_max_token_length)
 			bytes_to_read=m_buffer->available();
 		else
-			bytes_to_read=m_max_line_length;
+			bytes_to_read=m_max_token_length;
 
 		if (feof(m_stream))
 			return line_end;
@@ -116,13 +147,13 @@ int32_t CLineReader::read_line()
 		
 		if (ferror(m_stream))
 		{
-			SG_ERROR("Error reading file");
+			SG_ERROR("CLineReader::read(int32_t&):: Error reading file\n");
 			return -1;
 		}
 	}	
 }
 
-SGVector<char> CLineReader::copy_line(int32_t line_len)
+SGVector<char> CLineReader::read_token(int32_t line_len)
 {
 	SGVector<char> line;
 
@@ -130,8 +161,6 @@ SGVector<char> CLineReader::copy_line(int32_t line_len)
 		line=SGVector<char>();
 	else
 		line=m_buffer->pop(line_len);
-
-	m_buffer->skip_characters(1);
 
 	return line;
 }

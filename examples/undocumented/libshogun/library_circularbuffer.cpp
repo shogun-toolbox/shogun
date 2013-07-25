@@ -1,5 +1,6 @@
 #include <shogun/base/init.h>
 #include <shogun/lib/CircularBuffer.h>
+#include <shogun/lib/DelimiterTokenizer.h>
 #include <shogun/lib/SGVector.h>
 
 #include <cstdio>
@@ -13,7 +14,7 @@ int main(int argc, char** argv)
 {
 	init_shogun_with_defaults();
 
-	SGVector<char> test_string("all your bayes are belong to us! ", 33, false);
+	SGVector<char> test_string(const_cast<char* >("all your bayes are belong to us! "), 33, false);
 
 	CCircularBuffer* buffer=new CCircularBuffer(max_line_length);
 	CDelimiterTokenizer* tokenizer=new CDelimiterTokenizer();

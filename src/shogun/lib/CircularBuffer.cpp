@@ -15,23 +15,29 @@
 using namespace shogun;
 
 CCircularBuffer::CCircularBuffer()
-	: m_buffer(), m_tokenizer(NULL),
-	m_begin_pos(NULL), m_end_pos(NULL), m_finder_pos(NULL),
-	m_bytes_available(0), m_bytes_count(0)
 {
-
+	init();
 }
 
-CCircularBuffer::CCircularBuffer(int32_t buffer_size)
-	: m_buffer(buffer_size), m_tokenizer(NULL),
-	m_begin_pos(m_buffer.vector), m_end_pos(m_begin_pos), m_finder_pos(m_begin_pos),
-	m_bytes_available(m_buffer.vlen), m_bytes_count(0)
-	
+CCircularBuffer::CCircularBuffer(int32_t buffer_size)	
 {
+	init();
 
+	m_buffer=SGVector<char>(buffer_size);
+	m_buffer_end=m_buffer.vector+m_buffer.vlen;
+
+	m_begin_pos=m_buffer.vector;
+	m_end_pos=m_begin_pos;
+
+	m_bytes_available=m_buffer.vlen;
 }
 
-void CCircularBuffer::set_tokenizer(CDelimiterTokenizer* tokenizer)
+CCircularBuffer::~CCircularBuffer()
+{
+	m_buffer=SGVector<char>();
+}
+
+void CCircularBuffer::set_tokenizer(CTokenizer* tokenizer)
 {
 	m_tokenizer=tokenizer;
 }
@@ -40,7 +46,7 @@ int32_t CCircularBuffer::push(SGVector<char> source)
 {
 	if (source.vector==NULL || source.vlen==0)
 	{
-		SG_ERROR("Invalid parameters! Source shouldn't be NULL or zero sized");
+		SG_ERROR("CCircularBuffer::push(SGVector<char>):: Invalid parameters! Source shouldn't be NULL or zero sized\n");
 		return -1;
 	}
 
@@ -84,7 +90,7 @@ int32_t CCircularBuffer::push(FILE* source, int32_t source_size)
 {
 	if (source==NULL || source_size==0)
 	{
-		SG_ERROR("Invalid parameters! Source shouldn't be NULL or zero sized");
+		SG_ERROR("CCircularBuffer::push(FILE*, int32_t):: Invalid parameters! Source shouldn't be NULL or zero sized\n");
 		return -1;
 	}
 
@@ -163,26 +169,69 @@ SGVector<char> CCircularBuffer::pop(int32_t num_bytes)
 	return result;
 }
 
+bool CCircularBuffer::has_next()
+{
+	if (m_tokenizer==NULL)
+	{
+		SG_ERROR("CCircularBuffer::has_next():: Tokenizer is not initialized\n");
+		return false;
+	}
+
+	if (m_bytes_count==0)
+		return false;
+
+	int32_t tail_length=m_end_pos-m_buffer.vector;
+	int32_t head_length=m_buffer_end-m_begin_pos;
+
+	// determine position of finder pointer in memory block 
+	if (m_last_idx<head_length)
+	{
+		if (m_end_pos>=m_begin_pos && m_bytes_available!=0)
+		{
+			return has_next_locally(m_begin_pos+m_last_idx, m_end_pos);
+		}
+		else
+		{
+			bool temp=false;
+			temp=has_next_locally(m_begin_pos+m_last_idx, m_buffer_end);
+
+			if (temp)
+				return temp;
+
+			return has_next_locally(m_buffer.vector+m_last_idx-head_length, m_end_pos);
+		}	
+	}
+	else
+	{
+		return has_next_locally(m_buffer.vector+m_last_idx-head_length, m_end_pos);
+	}
+
+	return false;
+}
+
 index_t CCircularBuffer::next_token_idx(index_t &start)
 {
 	index_t end;
 
 	if (m_tokenizer==NULL)
 	{
-		SG_ERROR("Tokenizer is not initialized");
+		SG_ERROR("CCircularBuffer::next_token_idx(index_t&):: Tokenizer is not initialized\n");
 		return 0;
 	}
 
 	if (m_bytes_count==0)
 		return m_bytes_count;
 
+	int32_t tail_length=m_end_pos-m_buffer.vector;
+	int32_t head_length=m_buffer_end-m_begin_pos;
+
 	// determine position of finder pointer in memory block 
-	if (m_finder_pos>=m_begin_pos)
+	if (m_last_idx<head_length)
 	{
 		if (m_end_pos>=m_begin_pos && m_bytes_available!=0)
 		{
-			end=next_token_idx_locally(start, m_finder_pos, m_end_pos);
-			if (m_finder_pos<=m_end_pos)
+			end=next_token_idx_locally(start, m_begin_pos+m_last_idx, m_end_pos);
+			if (end<=m_bytes_count)
 				return end;
 		}
 		else
@@ -190,27 +239,25 @@ index_t CCircularBuffer::next_token_idx(index_t &start)
 			index_t temp_start;
 
 			// in this case we should find first at end of memory block
-			int32_t bytes_to_memory_end=m_buffer.vlen-(m_begin_pos-m_buffer.vector);
-			end=next_token_idx_locally(start, m_finder_pos, m_begin_pos+bytes_to_memory_end);
+			end=next_token_idx_locally(start, m_begin_pos+m_last_idx, m_buffer_end);
 
-			if (m_finder_pos>=m_begin_pos)
+			if (end<head_length)
 				return end;
 
 			// and then at begin
-			end+=next_token_idx_locally(temp_start, m_buffer.vector, m_end_pos);
-			start+=temp_start;
+			end=next_token_idx_locally(temp_start, m_buffer.vector+m_last_idx-head_length, m_end_pos);
+
+			if (start>=head_length)
+				start=temp_start;
+
 			return end;
 		}	
 	}
 	else
-	{
-		end=next_token_idx_locally(start, m_finder_pos, m_end_pos);
-		if (m_finder_pos<=m_end_pos)
-		{
-			int32_t bytes_to_memory_end=m_buffer.vlen-(m_begin_pos-m_buffer.vector);
-			start+=bytes_to_memory_end;			
-			return end+bytes_to_memory_end;
-		}
+	{		
+		end=next_token_idx_locally(start, m_buffer.vector+m_last_idx-head_length, m_end_pos);
+		if (end-head_length<=tail_length)
+			return end;
 	}
 
 	start=0;
@@ -220,7 +267,10 @@ index_t CCircularBuffer::next_token_idx(index_t &start)
 void CCircularBuffer::skip_characters(int32_t num_chars)
 {
 	move_pointer(&m_begin_pos, m_begin_pos+num_chars);
-	m_finder_pos=m_begin_pos;
+
+	m_last_idx-=num_chars;
+	if (m_last_idx<0)
+		m_last_idx=0;
 
 	m_bytes_available+=num_chars;
 	m_bytes_count-=num_chars;	
@@ -230,15 +280,23 @@ void CCircularBuffer::clear()
 {
 	m_begin_pos=m_buffer.vector;
 	m_end_pos=m_begin_pos;
-	m_finder_pos=m_begin_pos;
 
+	m_last_idx=0;
 	m_bytes_available=m_buffer.vlen;
 	m_bytes_count=0;
 }
 
-void CCircularBuffer::debug_print()
+void CCircularBuffer::init()
 {
-	SGVector<char>::display_vector(m_buffer);
+	m_buffer_end=m_buffer.vector+m_buffer.vlen;
+	m_tokenizer=NULL;
+
+	m_begin_pos=NULL; 
+	m_end_pos=NULL;
+
+	m_last_idx=0;
+	m_bytes_available=0;
+	m_bytes_count=0;
 }
 
 int32_t CCircularBuffer::append_chunk(const char* source, int32_t source_size,
@@ -246,7 +304,8 @@ int32_t CCircularBuffer::append_chunk(const char* source, int32_t source_size,
 {
 	if (source==NULL || source_size==0)
 	{
-		SG_ERROR("Invalid parameters! Source shouldn't be NULL or zero sized");
+		SG_ERROR("CCircularBuffer::append_chunk(const char*, int32_t, bool):: Invalid parameters!\
+				Source shouldn't be NULL or zero sized\n");
 		return -1;
 	}	
 
@@ -282,7 +341,7 @@ void CCircularBuffer::detach_chunk(char** dest, int32_t* dest_size, int32_t dest
 {
 	if (dest==NULL || dest_size==NULL)
 	{
-		SG_ERROR("Invalid parameters! Pointers are NULL");
+		SG_ERROR("CCircularBuffer::detach_chunk(...):: Invalid parameters! Pointers are NULL\n");
 		return;
 	}
 	
@@ -303,31 +362,47 @@ void CCircularBuffer::detach_chunk(char** dest, int32_t* dest_size, int32_t dest
 
 	memcpy(*dest+dest_offset, m_begin_pos, num_bytes);
 	move_pointer(&m_begin_pos, m_begin_pos+num_bytes);
-	m_finder_pos=m_begin_pos;
+	
+	m_last_idx-=num_bytes;
+	if (m_last_idx<0)
+		m_last_idx=0;
 
 	m_bytes_available+=num_bytes;
 	m_bytes_count-=num_bytes;
+}
+
+bool CCircularBuffer::has_next_locally(char* part_begin, char* part_end)
+{
+	int32_t num_bytes_to_search=part_end-part_begin;
+
+	SGVector<char> buffer_part(part_begin, num_bytes_to_search, false);
+	m_tokenizer->set_text(buffer_part);
+
+	return m_tokenizer->has_next();
 }
 
 index_t CCircularBuffer::next_token_idx_locally(index_t &start, char* part_begin, char* part_end)
 {
 	index_t end=0;
 	int32_t num_bytes_to_search=part_end-part_begin;
+	if (num_bytes_to_search<=0)
+	{
+		start=0;
+		return m_last_idx;
+	}
 
 	SGVector<char> buffer_part(part_begin, num_bytes_to_search, false);
 	m_tokenizer->set_text(buffer_part);
-	if (m_tokenizer->has_next())
-	{
-		end=m_tokenizer->next_token_idx(start);
-		move_pointer(&m_finder_pos, m_finder_pos+end);
-		return end;	
-	}
+
+	end=m_tokenizer->next_token_idx(start);
+
+	start+=m_last_idx;
+	m_last_idx+=end;
+
+	if (end==num_bytes_to_search)
+		return m_last_idx;
 	else
-	{
-		start=num_bytes_to_search;
-		move_pointer(&m_finder_pos, part_end);
-		return start;
-	}
+		return m_last_idx++;
 }
 
 void CCircularBuffer::move_pointer(char** pointer, char* new_position)
