@@ -31,29 +31,40 @@ public:
 	/** constructor
 	 *
 	 * @param size cache size
+	 * @param use_quadr whether to use quadratic features or not
+	 * @param keep_lin_terms whether to maintain the linear terms in the computations
 	 */
-	CHashedSparseFeatures(int32_t size=0);
+	CHashedSparseFeatures(int32_t size=0, bool use_quadr = false, bool keep_lin_terms = true);
 
 	/** constructor
 	 *
 	 * @param feats	the sparse features to use as a base
 	 * @param d new feature space dimension
+	 * @param use_quadr whether to use quadratic features or not
+	 * @param keep_lin_terms whether to maintain the linear terms in the computations
 	 */
-	CHashedSparseFeatures(CSparseFeatures<ST>* feats, int32_t d);
+	CHashedSparseFeatures(CSparseFeatures<ST>* feats, int32_t d, bool use_quadr = false,
+			bool keep_lin_terms = true);
 
 	/** constructor
 	 *
 	 * @param matrix feature matrix
 	 * @param d new feature space dimension
+	 * @param use_quadr whether to use quadratic features or not
+	 * @param keep_lin_terms whether to maintain the linear terms in the computations
 	 */
-	CHashedSparseFeatures(SGSparseMatrix<ST> matrix, int32_t d);
+	CHashedSparseFeatures(SGSparseMatrix<ST> matrix, int32_t d, bool use_quadr = false,
+			bool keep_lin_terms = true);
 
 	/** constructor loading features from file
 	 *
 	 * @param loader File object via which to load data
 	 * @param d new feature space dimension
+	 * @param use_quadr whether to use quadratic features or not
+	 * @param keep_lin_terms whether to maintain the linear terms in the computations
 	 */
-	CHashedSparseFeatures(CFile* loader, int32_t d);
+	CHashedSparseFeatures(CFile* loader, int32_t d, bool use_quadr = false,
+			bool keep_lin_terms = true);
 	
 	/** copy constructor */
 	CHashedSparseFeatures(const CHashedSparseFeatures & orig);
@@ -182,20 +193,26 @@ public:
 	 *
 	 * @param vec the vector to hash
 	 * @param dim the dimension of the new feature space
+	 * @param use_quadratic whether to use quadratic features or not
+	 * @param keep_linear_terms whether to maintain the linear terms in the computations
 	 * @return the hashed representation of the vector vec
 	 */
-	static SGSparseVector<ST> hash_vector(SGVector<ST> vec, int32_t dim);
+	static SGSparseVector<ST> hash_vector(SGVector<ST> vec, int32_t dim,
+		bool use_quadratic = false, bool keep_linear_terms = true);
 
 
 	/** Get the hashed representation of the given sparse vector
 	 *
 	 * @param vec the vector to hash
 	 * @param dim the dimension of the hashed target space
+	 * @param use_quadr whether to use quadratic features or not
+	 * @param keep_lin_terms whether to maintain the linear terms in the computations
 	 * @return the hashed representation of the vector vec
 	 */
-	static SGSparseVector<ST> hash_vector(SGSparseVector<ST> vec, int32_t dim);
+	static SGSparseVector<ST> hash_vector(SGSparseVector<ST> vec, int32_t dim,
+		bool use_quadratic = false, bool keep_linear_terms = true);
 protected:
-	void init(CSparseFeatures<ST>* feats, int32_t d);
+	void init(CSparseFeatures<ST>* feats, int32_t d, bool use_quadr, bool keep_lin_terms);
 
 protected:
 
@@ -204,6 +221,12 @@ protected:
 
 	/** new feature space dimension */
 	int32_t dim;
+
+	/** use quadratic features */
+	bool use_quadratic;
+
+	/** keep linear terms */
+	bool keep_linear_terms;
 };
 }
 
