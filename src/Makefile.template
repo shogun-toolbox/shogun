@@ -189,7 +189,7 @@ install-cmdline_static: $(TEMPLATE_TARGET)
 	install -d -m755 $(DESTDIR)$(BINDIR)
 	install -m755 $(TEMPLATE_TARGET) $(DESTDIR)$(BINDIR)
 
-install-libshogun: $(TEMPLATE_TARGET)
+install-libshogun: $(TEMPLATE_TARGET) $(TEMPLATE_STATIC)
 	install -d -m755 $(DESTDIR)$(LIBDIR)
 	install -d -m755 "$(DESTDIR)$(INCDIR)/shogun"
 	install -m755 $(TEMPLATE_TARGET) $(DESTDIR)$(LIBDIR)
@@ -356,7 +356,6 @@ run-testsuite-python_static:
 	cd $(CONFIGPATH)/../tests/integration/python_static && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) PYTHON=$(PYTHON) \
 		PYTHONPATH="$(DESTDIR)$(PYDIR)" ./test_all.sh	)
-
 check-examples-python_static:
 	cd $(CONFIGPATH)/../examples/undocumented/python_static && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) PYTHON=$(PYTHON) \
@@ -394,7 +393,6 @@ run-testsuite-matlab_static:
 	cd $(CONFIGPATH)/../tests/integration/matlab_static && \
 		( ln -sf $(CONFIGPATH)/../src/matlab/$(TEMPLATE_TARGET) ; \
 		$(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) ./test_all.sh - matlab)
-
 check-examples-matlab_static:
 	cd $(CONFIGPATH)/../examples/undocumented/matlab_static && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
@@ -407,6 +405,11 @@ run-testsuite-python_modular:
 	cd $(CONFIGPATH)/../tests/integration/python_modular && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
 		PYTHONPATH="$(DESTDIR)$(PYDIR)" $(PYTHON) tester.py  )
+check-examples-python_modular:
+	cd $(CONFIGPATH)/../examples/undocumented/python_modular && \
+		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) PYTHON=$(PYTHON) \
+		GDB="gdb -x ../../../src/.gdb --args" \
+		PYTHONPATH="$(DESTDIR)$(PYDIR)" ./check.sh    )
 
 run-testsuite-perl_modular:
 	cd $(CONFIGPATH)/../tests/integration/perl_modular && (\
@@ -417,13 +420,6 @@ run-testsuite-perl_modular:
 	$(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) PERLPATH="$(DESTDIR)$(PLDIR)" \
 	$(LIBRARY_PATH)="/usr/src/shogun/src/interfaces/perl_modular:/usr/src/shogun/src/shogun" \
 	./tester.pl)
-
-check-examples-python_modular:
-	cd $(CONFIGPATH)/../examples/undocumented/python_modular && \
-		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) PYTHON=$(PYTHON) \
-		GDB="gdb -x ../../../src/.gdb --args" \
-		PYTHONPATH="$(DESTDIR)$(PYDIR)" ./check.sh    )
-
 check-examples-perl_modular:
 	cd $(CONFIGPATH)/../examples/undocumented/perl_modular && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) PERL=$(PERL) \
@@ -431,14 +427,12 @@ check-examples-perl_modular:
 
 run-testsuite-java_modular:
 #TODO
-
 check-examples-java_modular:
 	cd $(CONFIGPATH)/../examples/undocumented/java_modular && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) ./check.sh    )
 
 run-testsuite-csharp_modular:
 #TODO
-
 check-examples-csharp_modular:
 	cd $(CONFIGPATH)/../examples/undocumented/csharp_modular && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) ./check.sh    )
@@ -463,7 +457,6 @@ check-examples-octave_modular:
 
 run-testsuite-lua_modular:
 #TODO
-
 check-examples-lua_modular:
 	cd $(CONFIGPATH)/../examples/undocumented/lua_modular && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
@@ -471,7 +464,6 @@ check-examples-lua_modular:
 
 run-testsuite-ruby_modular:
 #TODO
-
 check-examples-ruby_modular:
 	cd $(CONFIGPATH)/../examples/undocumented/ruby_modular && \
 		( $(LIBRARY_PATH)=$(DESTDIR)$(LIBDIR) \
