@@ -21,7 +21,7 @@ TARGETS = basic_minimal \
 		  classifier_libsvm_probabilities\
 		  classifier_minimal_svm \
 		  classifier_mklmulticlass \
-  		  classifier_conjugateindex \
+		  classifier_conjugateindex \
 		  classifier_gaussiannaivebayes \
 		  classifier_multiclasslibsvm \
 		  classifier_qda \
@@ -46,7 +46,7 @@ TARGETS = basic_minimal \
 		  regression_gaussian_process_product \
 		  regression_gaussian_process_ard \
 		  regression_gaussian_process_laplace \
-  		  regression_gaussian_process_simple_exact \
+		  regression_gaussian_process_simple_exact \
 		  modelselection_model_selection_parameters_test \
 		  modelselection_parameter_tree \
 		  modelselection_apply_parameter_tree \
@@ -54,7 +54,7 @@ TARGETS = basic_minimal \
 		  modelselection_grid_search_kernel \
 		  modelselection_grid_search_string_kernel \
 		  modelselection_grid_search_multiclass_svm \
-  		  modelselection_combined_kernel_sub_parameters \
+		  modelselection_combined_kernel_sub_parameters \
 		  features_dense_real_modular \
 		  features_subset_stack \
 		  features_subset_simple_features \
@@ -107,10 +107,10 @@ TARGETS = basic_minimal \
 		  library_hdf5 \
 		  library_serialization \
 		  classifier_svmlight_string_features_precomputed_kernel \
-  		  classifier_mkl_svmlight_modelselection_bug \
-  		  base_migration_new_buggy \
-  		  regression_libsvr \
-  		  classifier_multiclass_prob_heuristics \
+		  classifier_mkl_svmlight_modelselection_bug \
+		  base_migration_new_buggy \
+		  regression_libsvr \
+		  classifier_multiclass_prob_heuristics \
 		  streaming_onlineliblinear \
 		  io_linereader \
 		  library_circularbuffer \
