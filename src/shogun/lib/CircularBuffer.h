@@ -12,7 +12,7 @@
 
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/SGVector.h>
-#include <shogun/lib/DelimiterTokenizer.h>
+#include <shogun/lib/Tokenizer.h>
 
 namespace shogun
 {
@@ -38,8 +38,14 @@ public:
 	 */
 	CCircularBuffer(int32_t buffer_size);
 
-	/** */
-	void set_tokenizer(CDelimiterTokenizer* tokenizer);
+	/** destructor */
+	~CCircularBuffer();
+
+	/** set tokenizer
+	 *
+	 * @param tokenizer tokenizer
+	 */
+	void set_tokenizer(CTokenizer* tokenizer);
 
 	/** push data into buffer from memory block
 	 * 
@@ -64,11 +70,19 @@ public:
 	 */
 	SGVector<char> pop(int32_t num_chars);
 
-	/** search next character in buffer from last found
+	/** returns true or false based on whether 
+	 * there exists another token in the text
 	 *
-	 * @param value character to find
-	 * @return number of bytes from buffer's begin to character	 
-	 */ 
+	 * @return if another token exists
+	 */
+	bool has_next();
+
+	/** method that returns the indices, start and end, of
+	 *  the next token in buffer
+	 *
+	 * @param start token's starting index
+	 * @return token's ending index (inclusive)
+	 */
 	index_t next_token_idx(index_t &start);
 
 	/** remove characters from buffer
@@ -93,13 +107,13 @@ public:
 	/** clear buffer */
 	void clear();
 
-	/** */
-	void debug_print();
-
 	/** @return object name */
 	virtual const char* get_name() const { return "CircularBuffer"; }
 
 private:
+	/** class initialization */
+	void init();
+
 	/** append memory block to buffer */
 	int32_t append_chunk(const char* source, int32_t source_size, 
 					bool from_buffer_begin);
@@ -112,7 +126,14 @@ private:
 	void detach_chunk(char** dest, int32_t* dest_size, int32_t dest_offset, int32_t num_bytes, 
 					bool from_buffer_begin);
 
-	/** find character in buffer, like memchr */
+	/** returns true or false based on whether 
+	 * there exists another token in the text
+	 */
+	bool has_next_locally(char* begin, char* end);
+
+	/** method that returns the indices, start and end, of
+	 *  the next token in part of buffer
+	 */
 	index_t next_token_idx_locally(index_t &start, char* begin, char* end);
 
 	/** move pointer to another position */
@@ -122,8 +143,11 @@ private:
 	/** internal memory */
 	SGVector<char> m_buffer;
 
+	/** pointer to end of buffer's memory */
+	char* m_buffer_end;
+
 	/** tokenizer */
-	CDelimiterTokenizer* m_tokenizer;
+	CTokenizer* m_tokenizer;
 
 	/** begin of buffer */	
 	char* m_begin_pos;
@@ -132,7 +156,7 @@ private:
 	char* m_end_pos;
 
 	/** position at which the search starts */
-	char* m_finder_pos;
+	index_t m_last_idx;
 
 	/** number of free bytes */
 	int32_t m_bytes_available;
