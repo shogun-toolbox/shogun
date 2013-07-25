@@ -243,7 +243,7 @@ TEST(FactorGraph, evaluate_energy_data_dep)
 	SG_UNREF(fac1b);
 }
 
-TEST(FactorGraph, DISABLED_evaluate_energy_param_data)
+TEST(FactorGraph, evaluate_energy_param_data)
 {
 	// Create one simple pairwise factor type
 	SGVector<int32_t> card(2);
@@ -309,6 +309,7 @@ TEST(FactorGraph, DISABLED_evaluate_energy_param_data)
 	marginals[3] = 0.25;
 
 	SGVector<float64_t> gradients(8);
+	gradients.zero();
 	CDynamicObjectArray* allfac = fg.get_factors();
 	//for (int32_t fi = 0; fi < allfac->get_num_elements(); fi++)
 	int32_t fi = 0;
@@ -317,6 +318,7 @@ TEST(FactorGraph, DISABLED_evaluate_energy_param_data)
 		ft->compute_gradients(marginals, gradients);
 		SG_UNREF(ft);
 	}
+	SG_UNREF(allfac);
 
 	EXPECT_NEAR(0.025, gradients[0], 1E-10);
 	EXPECT_NEAR(0.05, gradients[1], 1E-10);
@@ -333,7 +335,7 @@ TEST(FactorGraph, DISABLED_evaluate_energy_param_data)
 	SG_UNREF(fac1b);
 }
 
-TEST(FactorGraph, DISABLED_evaluate_energy_param_data_sparse)
+TEST(FactorGraph, evaluate_energy_param_data_sparse)
 {
 	// Create one simple pairwise factor type
 	SGVector<int32_t> card(2);
@@ -411,6 +413,7 @@ TEST(FactorGraph, DISABLED_evaluate_energy_param_data_sparse)
 	marginals[3] = 0.25;
 
 	SGVector<float64_t> gradients(8);
+	gradients.zero();
 	CDynamicObjectArray* allfac = fg.get_factors();
 	for (int32_t fi = 0; fi < allfac->get_num_elements(); fi++)
 	{
@@ -418,6 +421,7 @@ TEST(FactorGraph, DISABLED_evaluate_energy_param_data_sparse)
 		ft->compute_gradients(marginals, gradients);
 		SG_UNREF(ft);
 	}
+	SG_UNREF(allfac);
 
 	// factor 3
 	EXPECT_NEAR(0.225, gradients[0], 1E-10);
@@ -429,13 +433,13 @@ TEST(FactorGraph, DISABLED_evaluate_energy_param_data_sparse)
 	EXPECT_NEAR(0.225, gradients[6], 1E-10);
 	EXPECT_NEAR(0.3, gradients[7], 1E-10);
 
-	delete[] sdata;
-	delete[] sdata1;
-	delete[] sdata2;
 	SG_UNREF(factortype);
 	SG_UNREF(fac1);
 	SG_UNREF(fac1a);
 	SG_UNREF(fac1b);
 
+	//delete[] sdata;
+	//delete[] sdata1;
+	//delete[] sdata2;
 }
 

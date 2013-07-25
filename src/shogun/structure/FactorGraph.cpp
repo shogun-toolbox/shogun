@@ -13,25 +13,16 @@
 using namespace shogun;
 
 CFactorGraph::CFactorGraph() 
-	: m_factors(NULL), m_datasources(NULL)
 {
 	SG_UNSTABLE("CFactorGraph::CFactorGraph()", "\n");
 
 	register_parameters();
-
-	SG_REF(m_factors);
-	SG_REF(m_datasources);
 }
 
 CFactorGraph::CFactorGraph(SGVector<int32_t> card)
-	: m_cardinalities(card),
-	m_factors(new CDynamicObjectArray()), 
-	m_datasources(new CDynamicObjectArray())
+	: m_cardinalities(card)
 {
 	register_parameters();
-
-	SG_REF(m_factors);
-	SG_REF(m_datasources);
 }
 
 CFactorGraph::CFactorGraph(const CFactorGraph &fg)
@@ -39,6 +30,7 @@ CFactorGraph::CFactorGraph(const CFactorGraph &fg)
 	register_parameters();
 	m_cardinalities = fg.get_cardinalities();
 	// No need to unref and ref in this case
+	// TODO test if need to copy element by element
 	m_factors = fg.get_factors();
 	m_datasources = fg.get_factor_data_sources();
 }
@@ -47,6 +39,14 @@ CFactorGraph::~CFactorGraph()
 {
 	SG_UNREF(m_factors);
 	SG_UNREF(m_datasources);
+
+	if (m_factors != NULL)
+		SG_DEBUG("CFactorGraph::~CFactorGraph(): m_factors->ref_count() = %d.\n", m_factors->ref_count());
+
+	if (m_datasources != NULL)
+		SG_DEBUG("CFactorGraph::~CFactorGraph(): m_datasources->ref_count() = %d.\n", m_datasources->ref_count());
+
+	SG_DEBUG("CFactorGraph::~CFactorGraph(): this->ref_count() = %d.\n", this->ref_count());
 }
 
 void CFactorGraph::register_parameters()
@@ -54,6 +54,17 @@ void CFactorGraph::register_parameters()
 	SG_ADD(&m_cardinalities, "m_cardinalities", "Cardinalities", MS_NOT_AVAILABLE);
 	SG_ADD((CSGObject**)&m_factors, "m_factors", "Factors", MS_NOT_AVAILABLE);
 	SG_ADD((CSGObject**)&m_datasources, "m_datasources", "Factor data sources", MS_NOT_AVAILABLE);
+
+	m_factors = NULL;
+	m_datasources = NULL;
+	m_factors = new CDynamicObjectArray();
+	m_datasources = new CDynamicObjectArray();
+
+	if (m_factors != NULL)
+		SG_DEBUG("CFactorGraph::register_parameters(): m_factors->ref_count() = %d.\n", m_factors->ref_count());
+
+	SG_REF(m_factors);
+	SG_REF(m_datasources);
 }
 
 CDynamicObjectArray* CFactorGraph::get_factors() const
