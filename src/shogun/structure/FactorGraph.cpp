@@ -43,10 +43,12 @@ CFactorGraph::~CFactorGraph()
 	if (m_factors != NULL)
 		SG_DEBUG("CFactorGraph::~CFactorGraph(): m_factors->ref_count() = %d.\n", m_factors->ref_count());
 
+#ifdef USE_REFERENCE_COUNTING
 	if (m_datasources != NULL)
 		SG_DEBUG("CFactorGraph::~CFactorGraph(): m_datasources->ref_count() = %d.\n", m_datasources->ref_count());
 
 	SG_DEBUG("CFactorGraph::~CFactorGraph(): this->ref_count() = %d.\n", this->ref_count());
+#endif
 }
 
 void CFactorGraph::register_parameters()
@@ -60,8 +62,10 @@ void CFactorGraph::register_parameters()
 	m_factors = new CDynamicObjectArray();
 	m_datasources = new CDynamicObjectArray();
 
+#ifdef USE_REFERENCE_COUNTING
 	if (m_factors != NULL)
 		SG_DEBUG("CFactorGraph::register_parameters(): m_factors->ref_count() = %d.\n", m_factors->ref_count());
+#endif
 
 	SG_REF(m_factors);
 	SG_REF(m_datasources);
