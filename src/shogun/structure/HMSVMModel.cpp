@@ -320,6 +320,10 @@ CResultSet* CHMSVMModel::argmax(
 		}
 	}
 
+	REQUIRE(opt_path[T-1]!=-1, "Viterbi decoding found no possible sequence states.\n"
+			"Maybe the state model used cannot produce such sequence.\n"
+			"If using the TwoStateModel, please use sequences of length greater than two.\n");
+
 	for ( int32_t i = T-1 ; i > 0 ; --i )
 		opt_path[i-1] = trb[opt_path[i]*T + i];
 
