@@ -366,3 +366,29 @@ uint32_t SGIO::ss_length(substring s)
 {
 	return (s.end - s.start);
 }
+
+char* SGIO::concat_filename(const char* filename)
+{
+	if (snprintf(file_buffer, FBUFSIZE, "%s/%s", directory_name, filename) > FBUFSIZE)
+		SG_SERROR("filename too long")
+
+	SG_SDEBUG("filename=\"%s\"\n", file_buffer)
+	return file_buffer;
+}
+
+int SGIO::filter(CONST_DIRENT_T* d)
+{
+	if (d)
+	{
+		char* fname=concat_filename(d->d_name);
+
+		if (!access(fname, R_OK))
+		{
+			struct stat s;
+			if (!stat(fname, &s) && S_ISREG(s.st_mode))
+				return 1;
+		}
+	}
+
+	return 0;
+}

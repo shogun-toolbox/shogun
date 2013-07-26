@@ -443,35 +443,14 @@ class SGIO
 		 * @param filename new filename
 		 * @return concatenated directory and filename
 		 */
-        static inline char* concat_filename(const char* filename)
-        {
-            if (snprintf(file_buffer, FBUFSIZE, "%s/%s", directory_name, filename) > FBUFSIZE)
-                SG_SERROR("filename too long")
-            SG_SDEBUG("filename=\"%s\"\n", file_buffer)
-            return file_buffer;
-        }
+        static char* concat_filename(const char* filename);
 
 		/** filter
 		 *
 		 * @param d directory entry
 		 * @return 1 if d is a readable file
 		 */
-		static inline int filter(CONST_DIRENT_T* d)
-        {
-            if (d)
-            {
-                char* fname=concat_filename(d->d_name);
-
-                if (!access(fname, R_OK))
-                {
-                    struct stat s;
-                    if (!stat(fname, &s) && S_ISREG(s.st_mode))
-                        return 1;
-                }
-            }
-
-            return 0;
-        }
+		static int filter(CONST_DIRENT_T* d);
 
 		/**
 		 * Return a C string from the substring
