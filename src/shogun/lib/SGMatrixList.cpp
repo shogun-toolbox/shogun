@@ -92,22 +92,19 @@ SGMatrixList<T> SGMatrixList<T>::split(SGMatrix<T> matrix, int32_t num_component
 		matrix.num_cols, num_components);
 
 	int32_t new_num_cols = matrix.num_cols / num_components;
-	int32_t start;
 	SGMatrixList<T> out(num_components);
 
 	for ( int32_t i = 0 ; i < num_components ; ++i )
 	{
-		out[i] = SGMatrix<T>(matrix.num_rows, new_num_cols);
-		start = i*matrix.num_rows*new_num_cols;
+		SGMatrix<T> new_matrix = SGMatrix<T>(matrix.num_rows, new_num_cols);
 
 		for ( int32_t row = 0 ; row < matrix.num_rows ; ++row )
 		{
 			for ( int32_t col = 0 ; col < new_num_cols ; ++col )
-			{
-				out[i][col*matrix.num_rows + row] =
-					matrix[start + col*matrix.num_rows + row];
-			}
+				new_matrix(row, col) = matrix(row, i*new_num_cols + col);
 		}
+
+		out.set_matrix(i, new_matrix);
 	}
 
 	return out;
