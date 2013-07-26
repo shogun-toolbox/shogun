@@ -10,6 +10,7 @@
  */
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/common.h>
+#include <cmath>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/lapack.h>
 #include <shogun/io/SGIO.h>
@@ -195,4 +196,15 @@ void CMath::linspace(float64_t* output, float64_t start, float64_t end, int32_t 
 		v += delta;
 	}
 	output[n-1] = end;
+}
+
+
+int CMath::is_nan(double f)
+{
+	return std::isnan(f);
+}
+
+int CMath::is_infinity(double f)
+{
+	return std::isinf(f);
 }

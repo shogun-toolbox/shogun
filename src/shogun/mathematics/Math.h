@@ -1236,27 +1236,10 @@ class CMath : public CSGObject
 		}
 
 		/// checks whether a float is infinity
-		inline static int is_infinity(double f)
-		{
-#ifdef SUNOS
-			if (fpclass(f) == FP_NINF || fpclass(f) == FP_PINF)
-				return 1;
-			else
-				return 0;
-#else
-            return isinf(f);
-#endif
-		}
+		static int is_infinity(double f);
 
 		/// checks whether a float is nan
-		inline static int is_nan(double f)
-		{
-#ifdef SUNOS
-			return isnand(f);
-#else
-            return isnan(f);
-#endif
-		}
+		static int is_nan(double f);
 
 		/**@name summing functions */
 		//@{
