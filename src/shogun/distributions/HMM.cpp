@@ -163,8 +163,15 @@ CHMM::CHMM()
 	observation_matrix_b=NULL;
 	initial_state_distribution_p=NULL;
 	end_state_distribution_q=NULL;
-	alpha_cache.table=NULL;
-	beta_cache.table=NULL;
+#ifdef USE_HMMPARALLEL_STRUCTURES
+	this->alpha_cache=NULL;
+	this->beta_cache=NULL;
+#else
+	this->alpha_cache.table=NULL;
+	this->beta_cache.table=NULL;
+	this->alpha_cache.dimension=0;
+	this->beta_cache.dimension=0;
+#endif
 	states_per_observation_psi=NULL;
 }
 
