@@ -54,7 +54,7 @@ valgrind-per-module: shogun-unit-test
 
 %$(EXT_SRC_TEST):
 	@echo Generating $@
-	@python2.7 $@.py $@.jinja2
+	@$(PYTHON) $@.py $@.jinja2
 
 clean:
 	@rm -f ./shogun-unit-test libgmock.a gmock-all.o gtest-all.o $(TESTOBJFILES) $(SRCTMPFILES)
