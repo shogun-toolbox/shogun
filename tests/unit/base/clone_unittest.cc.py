@@ -8,15 +8,6 @@
 # Written (W) 2013 Viktor Gal
 # Copyright (C) 2013 Viktor Gal
 
-import sys
-
-try:
-    import jinja2
-except ImportError:
-    print("Please install jinja2 for clone unit-tests");
-    sys.exit(0)
-
-
 def get_class_list_content():
     class_list_file = '../../src/shogun/base/class_list.cpp'
     f = open(class_list_file, 'r')
@@ -66,25 +57,38 @@ def get_class_list(class_list_content):
                             template_classes.append(sho_class)
     return classes, template_classes
 
-templateLoader = jinja2.FileSystemLoader(searchpath="./")
-templateEnv = jinja2.Environment(loader=templateLoader)
+def entry(templateFile):
+    templateLoader = jinja2.FileSystemLoader(searchpath="./")
+    templateEnv = jinja2.Environment(loader=templateLoader)
 
+    template = templateEnv.get_template(templateFile)
+
+    # get the content of class_list.cpp
+    class_list_content = get_class_list_content()
+
+    classes, template_classes = get_class_list(class_list_content)
+
+    types = ['PT_BOOL', 'PT_CHAR', 'PT_INT8', 'PT_UINT8', 'PT_INT16', 'PT_UINT16', 'PT_INT32',
+             'PT_UINT32', 'PT_INT64', 'PT_UINT64', 'PT_FLOAT32', 'PT_FLOAT64', 'PT_FLOATMAX']
+
+    templateVars = {"classes" : classes, "template_classes" : template_classes, "types" : types}
+
+    return template.render(templateVars)
+
+
+import sys
 TEMPLATE_FILE = sys.argv[1]
-template = templateEnv.get_template(TEMPLATE_FILE)
 
-# get the content of class_list.cpp
-class_list_content = get_class_list_content()
-
-classes, template_classes = get_class_list(class_list_content)
-
-types = ['PT_BOOL', 'PT_CHAR', 'PT_INT8', 'PT_UINT8', 'PT_INT16', 'PT_UINT16', 'PT_INT32',
-         'PT_UINT32', 'PT_INT64', 'PT_UINT64', 'PT_FLOAT32', 'PT_FLOAT64', 'PT_FLOATMAX']
-
-templateVars = {"classes" : classes, "template_classes" : template_classes, "types" : types}
-
-outputText = template.render(templateVars)
+try:
+    import jinja2
+    outputText = entry(TEMPLATE_FILE)
+except ImportError:
+    print("Please install jinja2 for clone unit-tests");
+    outputText = ['''#include <gtest/gtest.h>
+TEST(Dummy,dummy)
+{
+}''']
 
 f = open(TEMPLATE_FILE.replace('.jinja2',''), 'w')
 f.writelines(outputText)
 f.close()
-
