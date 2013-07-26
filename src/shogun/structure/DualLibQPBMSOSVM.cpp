@@ -115,13 +115,9 @@ bool CDualLibQPBMSOSVM::train_machine(CFeatures* data)
 	}
 
 	if (m_result.exitflag==1)
-	{
 		return true;
-	}
 	else
-	{
 		return false;
-	}
 }
 
 EMachineType CDualLibQPBMSOSVM::get_classifier_type()

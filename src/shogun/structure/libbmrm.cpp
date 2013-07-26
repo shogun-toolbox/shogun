@@ -196,7 +196,9 @@ BmrmStatistics svm_bmrm_solver(
 	floatmax_t rsum, sq_norm_W, sq_norm_Wdiff=0.0;
 	uint32_t *I;
 	uint8_t S=1;
-	uint32_t nDim=machine->get_model()->get_dim();
+	CStructuredModel* model=machine->get_model();
+	uint32_t nDim=model->get_dim();
+	SG_UNREF(model);
 
 	CTime ttime;
 	float64_t tstart, tstop;

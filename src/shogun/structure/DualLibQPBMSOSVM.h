@@ -63,7 +63,7 @@ class CDualLibQPBMSOSVM : public CLinearStructuredOutputMachine
 				SGVector< float64_t > 	W=0);
 
 		/** destructor */
-		~CDualLibQPBMSOSVM();
+		virtual ~CDualLibQPBMSOSVM();
 
 		/** @return name of SGSerializable */
 		virtual const char* get_name() const { return "DualLibQPBMSOSVM"; }

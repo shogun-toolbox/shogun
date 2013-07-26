@@ -87,16 +87,18 @@ float64_t CStructuredOutputMachine::risk_nslack_margin_rescale(float64_t* subgra
 	int32_t dim = m_model->get_dim();
 	
 	int32_t from=0, to=0;
+	CFeatures* features = get_features();
 	if (info)
 	{
 		from = info->m_from;
-		to = (info->m_N == 0) ? get_features()->get_num_vectors() : from+info->m_N;
+		to = (info->m_N == 0) ? features->get_num_vectors() : from+info->m_N;
 	}
 	else
 	{
 		from = 0;
-		to = get_features()->get_num_vectors();
+		to = features->get_num_vectors();
 	}
+	SG_UNREF(features);
 
 	float64_t R = 0.0;
 	for (int32_t i=0; i<dim; i++)
