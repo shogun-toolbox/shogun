@@ -1334,16 +1334,29 @@ SGMatrix<T> SGVector<T>::convert_to_matrix(SGVector<T> vector,
 	if (nrows*ncols>vector.size())
 		SG_SERROR("SGVector::convert_to_matrix():: Dimensions mismatch\n");
 
-	SGMatrix<T> result(nrows, ncols);
+	T* data=NULL;	
+	SGVector<T>::convert_to_matrix(data, nrows, ncols, vector.vector, vector.vlen, fortran_order);
+
+	SGMatrix<T> matrix=SGMatrix<T>(data, nrows, ncols);
+	return matrix;
+}
+
+template <class T>
+void SGVector<T>::convert_to_matrix(T*& matrix, index_t nrows, index_t ncols, const T* vector, int32_t vlen, bool fortran_order)
+{
+	if (nrows*ncols>vlen)
+		SG_SERROR("SGVector::convert_to_matrix():: Dimensions mismatch\n");
+
+	if (matrix!=NULL)
+		SG_FREE(matrix);
+	matrix=SG_MALLOC(T, nrows*ncols);
 
 	if (fortran_order)
 	{
 		for (index_t i=0; i<ncols; i++)
 		{
 			for (index_t j=0; j<nrows; j++)
-			{
-				result(j, i)=vector[j+i*nrows];
-			}
+				matrix[j+i*nrows]=vector[j+i*nrows];
 		}
 	}
 	else
@@ -1351,13 +1364,9 @@ SGMatrix<T> SGVector<T>::convert_to_matrix(SGVector<T> vector,
 		for (index_t i=0; i<nrows; i++)
 		{
 			for (index_t j=0; j<ncols; j++)
-			{
-				result(i, j)=vector[j+i*ncols];
-			}
+				matrix[i+j*nrows]=vector[j+i*ncols];
 		}
 	}
-
-	return result;
 }
 
 #define UNDEFINED(function, type)	\
