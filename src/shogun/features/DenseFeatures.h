@@ -494,6 +494,11 @@ public:
 	 */
 	CFeatures* create_merged_copy(CFeatures* other);
 
+	/** helper method used to specialize a base class instance
+	 *
+	 */
+	static CDenseFeatures* obtain_from_generic(CFeatures* const base_features);
+
 	/** @return object name */
 	virtual const char* get_name() const { return "DenseFeatures"; }
 

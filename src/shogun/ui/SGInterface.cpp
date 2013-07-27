@@ -613,6 +613,11 @@ CSGInterfaceMethod sg_methods[]=
 		USAGE(N_SET_CONVERTER)
 	},
 	{
+		N_APPLY_CONVERTER,
+		(&CSGInterface::cmd_apply_converter),
+		USAGE_O(N_APPLY_CONVERTER, "conv_features")
+	},	
+	{
 		N_EMBED,
 		(&CSGInterface::cmd_embed),
 		USAGE_IO(N_EMBED,"target dim","embedding")
@@ -5366,7 +5371,20 @@ bool CSGInterface::cmd_set_converter()
 		ui_converter->create_multidimensionalscaling();
 		return true;
 	}
+	if (strmatch(type, "jade"))
+	{
+		ui_converter->create_jade();
+		return true;
+	}
 	return false;
+}
+
+bool CSGInterface::cmd_apply_converter()
+{
+	CDenseFeatures<float64_t>* conv_features = ui_converter->apply();
+	SGMatrix<float64_t> converted_mat = conv_features->get_feature_matrix();
+	set_matrix(converted_mat.matrix,converted_mat.num_rows,converted_mat.num_cols);
+	return true;	
 }
 
 bool CSGInterface::cmd_embed()
