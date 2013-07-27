@@ -4626,8 +4626,8 @@ test_elwms()
 			PARTS="$PARTS elwms_static"
 			DEFINES_ELWMS="-DHAVE_ELWMS -DR_HOME_ENV=\\\"${R_HOME}\\\" -DLIBPYTHON=\\\"libpython${PYVER}.${EXT_LIB}\\\" $DEFINES_PYTHON $DEFINES_R $DEFINES_MATLAB $DEFINES_OCTAVE"
 			INCLUDES_ELWMS="$INCLUDES_R $INCLUDES_PYTHON $INCLUDES_OCTAVE $INCLUDES_MATLAB "
-			LINKFLAGS_ELWMS="$LINKFLAGS_PYTHON `echo $LINKFLAGS_R | sed 's/-dynamiclib//g'` `echo $LINKFLAGS_MATLAB | sed 's/-Wl,--version-script,.*mexFunction.map / /g'` $LINKFLAGS_OCTAVE -ldl"
-			POSTLINKFLAGS_ELWMS="$POSTLINKFLAGS_OCTAVE"
+			LINKFLAGS_ELWMS="$LINKFLAGS_PYTHON `echo $LINKFLAGS_MATLAB | sed 's/-Wl,--version-script,.*mexFunction.map / /g'` $LINKFLAGS_OCTAVE -ldl"
+			POSTLINKFLAGS_ELWMS="$POSTLINKFLAGS_OCTAVE `echo $POSTLINKFLAGS_R | sed 's/-dynamiclib//g'`"
 
 			ELWMS_TARGET="elwms.${EXT_LIB}"
 		fi
@@ -5048,7 +5048,7 @@ test_r()
 				COMPFLAGS_C_R="$COMPFLAGS_C_R -mno-cygwin"
 				COMPFLAGS_CPP_R="$COMPFLAGS_CPP_R -mno-cygwin"
 				INCLUDES_R="$INCLUDES_R -I$RPATH/include"
-				POSTLINKFLAGS_R="$LINKFLAGS_R -L$RPATH/bin -lR -shared -mno-cygwin"
+				POSTLINKFLAGS_R="$POSTLINKFLAGS_R -L$RPATH/bin -lR -shared -mno-cygwin"
 			else
 				R_TARGET="sg.so"
 				#unset makeflags as R uses -w and that leads to screwed up R CMD config --ldflags
@@ -5056,7 +5056,7 @@ test_r()
 				COMPFLAGS_C_R="$COMPFLAGS_C_R `R CMD config CPICFLAGS`"
 				COMPFLAGS_CPP_R="$COMPFLAGS_CPP_R `R CMD config CXXPICFLAGS`"
 				INCLUDES_R="$INCLUDES_R `R CMD config --cppflags`"
-				POSTLINKFLAGS_R="$LINKFLAGS_R `R CMD config --ldflags` `R CMD config DYLIB_LDFLAGS`"
+				POSTLINKFLAGS_R="$POSTLINKFLAGS_R `R CMD config --ldflags` `R CMD config DYLIB_LDFLAGS`"
 			fi
 
 
@@ -5073,7 +5073,7 @@ static SEXP sg_helper(SEXP args)
 }
 EOF
 			echocheck "R Developer Files"
-			if cc_check $COMPFLAGS_CPP_R $INCLUDES_R $LINKFLAGS_R
+			if cc_check $COMPFLAGS_CPP_R $INCLUDES_R $POSTLINKFLAGS_R
 			then
 				echores "yes"
 				SWIGFLAGS_R_MODULAR="-c++ -r"
