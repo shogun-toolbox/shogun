@@ -20,7 +20,8 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
 
-#include <shogun/converter/ica/SOBI.h>
+#include <shogun/converter/ica/Jade.h>
+#include <shogun/evaluation/ica/PermutationMatrix.h>
 
 using namespace Eigen;
 
@@ -71,26 +72,27 @@ void test()
 	CDenseFeatures< float64_t >* mixed_signals = new CDenseFeatures< float64_t >(X);
 
 	// Separate
-	CSOBI* sobi = new CSOBI();
-	SG_REF(sobi);
+	CJade* jade = new CJade();
+	SG_REF(jade);
 
-	CFeatures* signals = sobi->apply(mixed_signals);
+	CFeatures* signals = jade->apply(mixed_signals);
 	SG_REF(signals);
 
-	// Estimated Mixing Matrix	
-	SGMatrix<float64_t> est_A = sobi->get_mixing_matrix();
-	Eigen::Map<EMatrix> est_EA(est_A.matrix, 2,2);
-		
+	// Close to a permutation matrix (with random scales)
+	Eigen::Map<EMatrix> EA(jade->get_mixing_matrix().matrix,2,2);
+	
 	std::cout << "Estimated Mixing Matrix:" << std::endl;
-	std::cout << est_EA << std::endl << std::endl;
+	std::cout << EA << std::endl << std::endl;
+	
+	SGMatrix<float64_t> P(2,2);
+	Eigen::Map<EMatrix> EP(P.matrix,2,2);
+	EP = EA.inverse() * A;
 
-	// Separation error
-	Eigen::Map<EMatrix> ES (((CDenseFeatures<float64_t>*)signals)->get_feature_matrix().matrix,2,n_samples);	
-	double sep_error = (S-ES).array().abs().sum();
+	bool isperm = is_permutation_matrix(P);
 
-	std::cout << "Separation error: " << sep_error << std::endl;
+	std::cout << "EA^-1 * A == Permuatation Matrix is: " << isperm << std::endl;
 
-	SG_UNREF(sobi);
+	SG_UNREF(jade);
 	SG_UNREF(mixed_signals);
 	SG_UNREF(signals);
 	

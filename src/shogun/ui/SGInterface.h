@@ -322,6 +322,8 @@ class CSGInterface : public CSGObject
 
 		/** create converter */
 		bool cmd_set_converter();
+		/** apply converter */
+		bool cmd_apply_converter();
 		/** embed features */
 		bool cmd_embed();
 
