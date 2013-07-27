@@ -437,9 +437,5 @@ TEST(FactorGraph, evaluate_energy_param_data_sparse)
 	SG_UNREF(fac1);
 	SG_UNREF(fac1a);
 	SG_UNREF(fac1b);
-
-	//delete[] sdata;
-	//delete[] sdata1;
-	//delete[] sdata2;
 }
 
