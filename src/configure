@@ -5048,7 +5048,7 @@ test_r()
 				COMPFLAGS_C_R="$COMPFLAGS_C_R -mno-cygwin"
 				COMPFLAGS_CPP_R="$COMPFLAGS_CPP_R -mno-cygwin"
 				INCLUDES_R="$INCLUDES_R -I$RPATH/include"
-				LINKFLAGS_R="$LINKFLAGS_R -L$RPATH/bin -lR -shared -mno-cygwin"
+				POSTLINKFLAGS_R="$LINKFLAGS_R -L$RPATH/bin -lR -shared -mno-cygwin"
 			else
 				R_TARGET="sg.so"
 				#unset makeflags as R uses -w and that leads to screwed up R CMD config --ldflags
@@ -5056,7 +5056,7 @@ test_r()
 				COMPFLAGS_C_R="$COMPFLAGS_C_R `R CMD config CPICFLAGS`"
 				COMPFLAGS_CPP_R="$COMPFLAGS_CPP_R `R CMD config CXXPICFLAGS`"
 				INCLUDES_R="$INCLUDES_R `R CMD config --cppflags`"
-				LINKFLAGS_R="$LINKFLAGS_R `R CMD config --ldflags` `R CMD config DYLIB_LDFLAGS`"
+				POSTLINKFLAGS_R="$LINKFLAGS_R `R CMD config --ldflags` `R CMD config DYLIB_LDFLAGS`"
 			fi
 
 
