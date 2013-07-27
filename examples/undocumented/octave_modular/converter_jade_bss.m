@@ -30,11 +30,9 @@ mixed_signals = RealFeatures(X);
 % Separating
 jade = Jade();
 signals = jade.apply(mixed_signals);
-%S_ = signals.get_feature_matrix(); % need to figure out how to get this data in octave properly
+signals = RealFeatures.obtain_from_generic(signals);
+S_ = signals.get_feature_matrix();
 A_ = jade.get_mixing_matrix()
-
-% Un Mix
-S_ = inv(A_) * X;
 
 % Plot
 figure();

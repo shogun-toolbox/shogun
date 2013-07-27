@@ -1050,6 +1050,13 @@ void CDenseFeatures<ST>::save(CFile* writer)
 	feature_matrix.save(writer);
 }
 
+template< class ST > CDenseFeatures< ST >* CDenseFeatures< ST >::obtain_from_generic(CFeatures* const base_features)
+{
+	REQUIRE(base_features->get_feature_class() == C_DENSE,
+			"base_features must be of dynamic type CDenseFeatures\n")
+
+	return (CDenseFeatures< ST >*) base_features;
+}
 
 template class CDenseFeatures<bool>;
 template class CDenseFeatures<char>;
