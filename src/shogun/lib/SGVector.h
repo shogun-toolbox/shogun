@@ -602,6 +602,21 @@ template<class T> class SGVector : public SGReferencedData
 		 */
 		static SGMatrix<T> convert_to_matrix(SGVector<T> vector, index_t nrows, index_t ncols, bool fortran_order);
 
+
+		/** create matrix from linear vector
+		 * 
+		 * @param matrix destination memory
+		 * @param nrows number of rows
+		 * @param ncols number of cols
+		 * @param vector source vector
+		 * @param vlen lenght of source vector
+		 * @param fortran_order order of stroing matrix in linear vector
+		 * 	true - column-major order (FORTRAN, MATLAB, R)
+		 *	false - row-major order (C, Python)
+		 * @return matrix
+		 */
+		static void convert_to_matrix(T*& matrix, index_t nrows, index_t ncols, const T* vector, int32_t vlen, bool fortran_order);
+
 	protected:
 		/** needs to be overridden to copy data */
 		virtual void copy_data(const SGReferencedData &orig);
