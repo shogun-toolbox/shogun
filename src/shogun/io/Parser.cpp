@@ -7,6 +7,7 @@
  * Written (W) 2013 Evgeniy Andreev (gsomix)
  */
 
+#include <stdlib.h>
 #include <shogun/io/Parser.h>
 
 using namespace shogun;
