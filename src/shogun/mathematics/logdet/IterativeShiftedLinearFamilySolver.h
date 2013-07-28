@@ -21,10 +21,10 @@ template <class T, class ST> class CLinearOperator;
 /** 
  * @brief abstract template base for CG based solvers to the solution of 
  * shifted linear systems of the form \f$(A+\sigma)x=b\f$ for several values
- * of \$f\sigma\f$ simultaneously, using only as many matrix-vector operations
+ * of \f$\sigma\f$ simultaneously, using only as many matrix-vector operations
  * as the solution of a single system requires. This class adds another
  * interface to the basic iterative linear solver that takes the shifts,
- * \$f\sigma\f$, and also weights, \f$\alpha\f$, and returns the summation
+ * \f$\sigma\f$, and also weights, \f$\alpha\f$, and returns the summation
  * \f$\sum_{i} \alpha_{i}x_{i}\f$, where \f$x_{i}\f$ is the solution of the
  * system \f$(A+\sigma_{i})x_{i}=b\f$.
  *
@@ -78,8 +78,8 @@ protected:
 	 * -\zeta^{\sigma}_{n}+\zeta^{\sigma}_{n-1}\beta_{n-1}(1-\sigma\beta_{n}}\f$
 	 * [see Jergerlehner, eq 2.44]
 	 *
-	 * @param zeta_sh_old \f$\zeta^{\sigma}_{n-1} shifted params
-	 * @param zeta_sh_cur \f$\zeta^{\sigma}_{n} shifted params
+	 * @param zeta_sh_old \f$\zeta^{\sigma}_{n-1}\f$ shifted params
+	 * @param zeta_sh_cur \f$\zeta^{\sigma}_{n}\f$ shifted params
 	 * @param shifts \f$\sigma\f$ shifts
 	 * @param beta_old \f$\beta_{n-1}\f$, non-shifted
 	 * @param beta_cur \f$\beta_{n}\f$, non-shifted
@@ -94,8 +94,8 @@ protected:
 	 * compute \f$\beta^{\sigma}_{n}\f$ as \f$\beta_{n}\frac{\zeta^{\sigma}_{n+1}}
 	 * {\zeta^{\sigma}_{n}}\f$
 	 *
-	 * @param zeta_sh_new \f$\zeta^{\sigma}_{n+1} shifted params
-	 * @param zeta_sh_cur \f$\zeta^{\sigma}_{n} shifted params
+	 * @param zeta_sh_new \f$\zeta^{\sigma}_{n+1}\f$ shifted params
+	 * @param zeta_sh_cur \f$\zeta^{\sigma}_{n}\f$ shifted params
 	 * @param beta_cur \f$\beta_{n}\f$, non-shifted
 	 * @param beta_sh \f$\beta^{\sigma}_{n}\f$, to be computed
 	 */
@@ -106,8 +106,8 @@ protected:
 	 * compute \f$alpha^{\sigma}_{n}\f$ as \f$\alpha_{n}\frac{\zeta^{\sigma}
 	 * _{n}\beta^{\sigma}_{n-1}}{\zeta^{\sigma}_{n-1}\beta_{n-1}}\f$
 	 *
-	 * @param zeta_sh_cur \f$\zeta^{\sigma}_{n} shifted params
-	 * @param zeta_sh_old \f$\zeta^{\sigma}_{n-1} shifted params
+	 * @param zeta_sh_cur \f$\zeta^{\sigma}_{n}\f$ shifted params
+	 * @param zeta_sh_old \f$\zeta^{\sigma}_{n-1}\f$ shifted params
 	 * @param beta_sh \f$\beta^{\sigma}_{n}\f$, shifted params
 	 * @param beta \f$\beta_{n}\f$, non-shifted
 	 * @param alpha \f$\alpha_{n}\f$, non-shifted
