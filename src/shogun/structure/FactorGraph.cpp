@@ -40,10 +40,10 @@ CFactorGraph::~CFactorGraph()
 	SG_UNREF(m_factors);
 	SG_UNREF(m_datasources);
 
+#ifdef USE_REFERENCE_COUNTING
 	if (m_factors != NULL)
 		SG_DEBUG("CFactorGraph::~CFactorGraph(): m_factors->ref_count() = %d.\n", m_factors->ref_count());
 
-#ifdef USE_REFERENCE_COUNTING
 	if (m_datasources != NULL)
 		SG_DEBUG("CFactorGraph::~CFactorGraph(): m_datasources->ref_count() = %d.\n", m_datasources->ref_count());
 
