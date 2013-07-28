@@ -109,7 +109,7 @@ class CLMNNImpl
 		static void gradient_step(Eigen::MatrixXd& L, const Eigen::MatrixXd& G, float64_t stepsize);
 
 		/** compute LMNN objective */
-		static float64_t compute_objective(const CDenseFeatures<float64_t>* x, const Eigen::MatrixXd& L, const OuterProductsMatrixType& C, const SGMatrix<index_t> target_nn, const ImpostorsSetType& Nc, float64_t mu);
+		static float64_t compute_objective(const Eigen::MatrixXd& G, const Eigen::MatrixXd& L);
 
 		/** correct step size depending on the last fluctuation of the objective */
 		static void correct_stepsize(float64_t& stepsize, const SGVector<float64_t> obj, const uint32_t iter);

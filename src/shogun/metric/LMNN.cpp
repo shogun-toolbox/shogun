@@ -97,8 +97,7 @@ void CLMNN::train(SGMatrix<float64_t> init_transform)
 
 		// Compute objective
 		SG_DEBUG("Computing objective.\n")
-		obj[iter] = CLMNNImpl::compute_objective(x, L, outer_products, target_nn,
-				cur_impostors, m_regularization);
+		obj[iter] = CLMNNImpl::compute_objective(L, gradient);
 
 		// Correct step size
 		CLMNNImpl::correct_stepsize(stepsize, obj, iter);
