@@ -113,7 +113,7 @@ private:
 	/** maximum iteration limit */
 	const int64_t m_max_iteration_limit;
 
-	/* tolerence of the iterative solver */
+	/** tolerence of the iterative solver */
 	const float64_t m_tolerence;
 
 	/** true if converged successfully, false otherwise */
