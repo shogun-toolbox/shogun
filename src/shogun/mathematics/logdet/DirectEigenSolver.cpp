@@ -26,8 +26,8 @@ CDirectEigenSolver::CDirectEigenSolver()
 }
 
 CDirectEigenSolver::CDirectEigenSolver(
-	CDenseMatrixOperator<float64_t>* linear_operator)
-	: CEigenSolver((CLinearOperator<float64_t>*)linear_operator)
+	CDenseMatrixOperator<float64_t, float64_t>* linear_operator)
+	: CEigenSolver((CLinearOperator<float64_t, float64_t>*)linear_operator)
 {
 	SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 }

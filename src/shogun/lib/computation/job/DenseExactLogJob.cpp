@@ -31,7 +31,8 @@ CDenseExactLogJob::CDenseExactLogJob()
 }
 
 CDenseExactLogJob::CDenseExactLogJob(CJobResultAggregator* aggregator,
-	CDenseMatrixOperator<float64_t>* log_operator, SGVector<float64_t> vector)
+	CDenseMatrixOperator<float64_t, float64_t>* log_operator,
+	SGVector<float64_t> vector)
 	: CIndependentJob(aggregator)
 {
 	init();

@@ -32,7 +32,7 @@ CLogRationalApproximationIndividual::CLogRationalApproximationIndividual()
 }
 
 CLogRationalApproximationIndividual::CLogRationalApproximationIndividual(
-	CDenseMatrixOperator<float64_t>* linear_operator,
+	CDenseMatrixOperator<float64_t, float64_t>* linear_operator,
 	CIndependentComputationEngine* computation_engine,
 	CEigenSolver* eigen_solver, 
 	CLinearSolver<complex64_t, float64_t>* linear_solver,
