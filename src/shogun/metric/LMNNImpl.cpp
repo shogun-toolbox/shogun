@@ -245,36 +245,12 @@ void CLMNNImpl::gradient_step(MatrixXd& L, const MatrixXd& G, float64_t stepsize
 	L -= stepsize*(2*L*G);
 }
 
-float64_t CLMNNImpl::compute_objective(const CDenseFeatures<float64_t>* x, const MatrixXd& L,
-		const OuterProductsMatrixType& C, const SGMatrix<index_t> target_nn,
-		const ImpostorsSetType& Nc, float64_t regularization)
+float64_t CLMNNImpl::compute_objective(const MatrixXd& L, const MatrixXd& G)
 {
-	// get the number of examples from data
-	int32_t n = x->get_num_vectors();
-	// get the number of target neighbors per example (k) from the arguments
-	int32_t k = target_nn.num_rows;
-	// initialize the objective
-	float64_t obj = 0;
 	// pre-compute the Mahalanobis distance matrix
 	MatrixXd M = L.transpose()*L;
-
-	// add pull contributions to the objective
-	for (int32_t i = 0; i < n; ++i) // for each training example
-	{
-		for (int32_t j = 0; j < k; ++j) // for each target neighbor
-			obj += (1-regularization)*TRACE(M,C[i][ target_nn(j,i) ]);
-	}
-
-	// add push contributions to the objective
-	for (ImpostorsSetType::iterator it = Nc.begin(); it != Nc.end(); ++it) // for each possible impostor
-	{
-		double hinge = 1 + TRACE(M,C[it->example][it->target]) - TRACE(M,C[it->example][it->impostor]);
-
-		if (hinge > 0)
-			obj += regularization*hinge;
-	}
-
-	return obj;
+	// compute objective
+	return TRACE(M,G);
 }
 
 void CLMNNImpl::correct_stepsize(float64_t& stepsize, const SGVector<float64_t> obj, const uint32_t iter)
