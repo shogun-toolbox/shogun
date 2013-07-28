@@ -74,6 +74,9 @@ void wrap_dsyevr(char jobz, char uplo, int n, double *a, int lda, int il, int iu
                  double *eigenvalues, double *eigenvectors, int *info);
 void wrap_dsygvx(int itype, char jobz, char uplo, int n, double *a, int lda, double *b,
                  int ldb, int il, int iu, double *eigenvalues, double *eigenvectors, int *info);
+void wrap_dstemr(char jobz, char range, int n, double* d__, double *e, double vl, double vu,
+		int il,	int iu, int* m, double* w, double* z__, int ldz, int nzc, int *isuppz,
+		int tryrac, int *info);
 #endif
 }
 
@@ -99,6 +102,9 @@ int dpotrs_(const char*, int*, int*, double*, int*, double*, int*, int*);
 int dsygvx_(int*, const char*, const char*, const char*, int*, double*, int*,
             double*, int*, double* , double*, int*, int*, double*,
             int*, double*, double*, int*, double*, int*, int*, int*, int*);
+int dstemr_(char*, char*, int*, double*, double*, double*, double*, int*, 
+	int*, int*, double*, double*, int*, int*, int*, int*, double*, 
+	int*, int*, int*, int*);
 #endif
 }
 
