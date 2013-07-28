@@ -122,10 +122,6 @@ get_hmm <- function() .External("$2","get_hmm",PACKAGE="$2")
 
 .onLoad <- function(lib, pkg) .First.lib(lib,pkg)
 .onUnload <- function(lib) .Last.lib(lib)
-
-# a nice banner
-#
-.onAttach <- function(lib, pkg) cat(paste("\nWelcome! This is SHOGUN version $VERSION\n"))
 EOF
 
 # R-MODULAR
@@ -133,7 +129,7 @@ else
 echo "Installing modular shogun interface for R"
 
 cat >"$1/$2/NAMESPACE" <<EOF
-export( shogun )
+useDynLib(modshogun, .registration = TRUE)
 EOF
 
 cat >"$1/$2/R/$2" <<EOF
@@ -149,7 +145,7 @@ EOF
 
 for f in *.so
 do
-	echo "library.dynam(\"`basename $f`\", pkg, lib)" >> "$1/$2/R/$2"
+	echo "library.dynam(\"`basename $f .so`\", pkg, lib)" >> "$1/$2/R/$2"
 done
 
 for f in *.RData
@@ -178,9 +174,5 @@ cat >>"$1/$2/R/$2" <<EOF
 #
 .onLoad <- function(lib, pkg) .First.lib(lib,pkg)
 .onUnload <- function(lib) .Last.lib(lib)
-
-# a nice banner
-#
-.onAttach <- function() cat(paste("\nWelcome! This is SHOGUN version $VERSION\n"))
 EOF
 fi

@@ -289,14 +289,14 @@ install-perl_modular: $(TEMPLATE_TARGET)
 	done
 
 install-r_modular: $(TEMPLATE_TARGET)
-	install -d -m755 $(DESTDIR)$(RDIR)/shogun/demo
-	install -d -m755 $(DESTDIR)$(RDIR)/shogun/libs
-	install -d -m755 $(DESTDIR)$(RDIR)/shogun/Meta
-	install -d -m755 $(DESTDIR)$(RDIR)/shogun/R
-	install -m644 $(CONFIGPATH)/../examples/documented/r_modular/*.R $(DESTDIR)$(RDIR)/shogun/demo
-	install -m755 *.$(EXT_LIB) $(DESTDIR)$(RDIR)/shogun/libs
-	install -m755 *.RData $(DESTDIR)$(RDIR)/shogun/R
-	$(CONFIGPATH)/.r-install.sh $(DESTDIR)$(RDIR) shogun $(EXT_LIB)
+	install -d -m755 $(DESTDIR)$(RDIR)/modshogun/demo
+	install -d -m755 $(DESTDIR)$(RDIR)/modshogun/libs
+	install -d -m755 $(DESTDIR)$(RDIR)/modshogun/Meta
+	install -d -m755 $(DESTDIR)$(RDIR)/modshogun/R
+	install -m644 $(CONFIGPATH)/../examples/documented/r_modular/*.R $(DESTDIR)$(RDIR)/modshogun/demo
+	install -m755 *.$(EXT_LIB) $(DESTDIR)$(RDIR)/modshogun/libs
+	install -m755 *.RData $(DESTDIR)$(RDIR)/modshogun/R
+	$(CONFIGPATH)/.r-install.sh $(DESTDIR)$(RDIR) modshogun $(EXT_LIB) $(SAVERDS)
 
 install-octave_modular: $(TEMPLATE_TARGET)
 	install -d -m755 "$(DESTDIR)$(OCTDIR)/shogun"
