@@ -32,16 +32,18 @@ public:
 	/** Constructor
 	 * Creates tokens on whitespace
 	 *
-	 * @param d dimension of target feature space
+	 * @param hash_bits the number of bits of the hash. Means a dimension of size 2^(hash_bits).
+	 * @param normalize whether to normalize vectors or not
 	 */
-	CHashedDocConverter(int32_t d);
+	CHashedDocConverter(int32_t hash_bits, bool normalize = false);
 
 	/** Constructor
 	 *
 	 * @param tzer the tokenizer to use
-	 * @param d dimension of target feature space
+	 * @param hash_bits the number of bits of the hash. Means a dimension of size 2^(hash_bits).
+	 * @param normalize whether to normalize vectors or not
 	 */
-	CHashedDocConverter(CTokenizer* tzer, int32_t d);
+	CHashedDocConverter(CTokenizer* tzer, int32_t hash_bits, bool normalize = false);
 
 	/** Destructor */
 	virtual ~CHashedDocConverter();
@@ -53,14 +55,14 @@ public:
 	 */
 	virtual CFeatures* apply(CFeatures* features);
 
-	SGSparseVector<uint32_t> apply(SGVector<char> document);
+	SGSparseVector<float64_t> apply(SGVector<char> document);
 
 	virtual const char* get_name() const;
 
 protected:
 	
 	/** init */
-	void init(CTokenizer* tzer, int32_t d);
+	void init(CTokenizer* tzer, int32_t d, bool normalize);
 
 protected:
 
@@ -70,8 +72,8 @@ protected:
 	/** the tokenizer */
 	CTokenizer* tokenizer;
 
-	/** target dimension */
-	int32_t dim;
+	/** whether to normalize or not */
+	bool should_normalize;
 };
 }
 

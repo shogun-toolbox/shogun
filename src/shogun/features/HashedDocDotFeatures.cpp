@@ -75,16 +75,17 @@ float64_t CHashedDocDotFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t
 	SGVector<char> sv1 = doc_collection->get_feature_vector(vec_idx1);
 	SGVector<char> sv2 = hddf->doc_collection->get_feature_vector(vec_idx2);
 
-	CHashedDocConverter* converter = new CHashedDocConverter(tokenizer, CMath::pow(2,num_bits));
-	SGSparseVector<uint32_t> cv1 = converter->apply(sv1);
-	SGSparseVector<uint32_t> cv2 = converter->apply(sv2);
-	float64_t result = SGSparseVector<uint32_t>::sparse_dot(cv1,cv2);
+	CHashedDocConverter* converter = new CHashedDocConverter(tokenizer, num_bits,
+			should_normalize);
+	SGSparseVector<float64_t> cv1 = converter->apply(sv1);
+	SGSparseVector<float64_t> cv2 = converter->apply(sv2);
+	float64_t result = SGSparseVector<float64_t>::sparse_dot(cv1,cv2);
 
 	doc_collection->free_feature_vector(sv1, vec_idx1);
 	hddf->doc_collection->free_feature_vector(sv2, vec_idx2);
 	SG_UNREF(converter);
 
-	return should_normalize ? result / CMath::sqrt((float64_t) sv1.size() * sv2.size()) : result;
+	return result;
 }
 
 float64_t CHashedDocDotFeatures::dense_dot_sgvec(int32_t vec_idx1, const SGVector<float64_t> vec2)

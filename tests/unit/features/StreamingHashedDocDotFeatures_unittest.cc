@@ -44,7 +44,7 @@ TEST(StreamingHashedDocFeaturesTest, example_reading)
 	tokenizer->delimiters['\''] = 1;
 	tokenizer->delimiters[','] = 1;
 
-	CHashedDocConverter* converter = new CHashedDocConverter(tokenizer, 32); // 32 = 2^5
+	CHashedDocConverter* converter = new CHashedDocConverter(tokenizer, 5, false);
 	CStringFeatures<char>* doc_collection = new CStringFeatures<char>(list, RAWBYTE);
 	CStreamingHashedDocDotFeatures* feats = new CStreamingHashedDocDotFeatures(doc_collection,
 			tokenizer, 5);
@@ -53,11 +53,11 @@ TEST(StreamingHashedDocFeaturesTest, example_reading)
 	feats->start_parser();
 	while (feats->get_next_example())
 	{
-		SGSparseVector<uint32_t> example = feats->get_vector();
+		SGSparseVector<float64_t> example = feats->get_vector();
 
 		SGVector<char> tmp(list.strings[i].string, list.strings[i].slen, false);
 		tmp.vector = list.strings[i].string;
-		SGSparseVector<uint32_t> converted_doc = converter->apply(tmp);
+		SGSparseVector<float64_t> converted_doc = converter->apply(tmp);
 		
 		EXPECT_EQ(example.num_feat_entries, converted_doc.num_feat_entries);
 
@@ -103,7 +103,7 @@ TEST(StreamingHashedDocFeaturesTest, dot_tests)
 	tokenizer->delimiters['\''] = 1;
 	tokenizer->delimiters[','] = 1;
 
-	CHashedDocConverter* converter = new CHashedDocConverter(tokenizer, 32); // 32 = 2^5
+	CHashedDocConverter* converter = new CHashedDocConverter(tokenizer, 5, false);
 	CStringFeatures<char>* doc_collection = new CStringFeatures<char>(list, RAWBYTE);
 	CStreamingHashedDocDotFeatures* feats = new CStreamingHashedDocDotFeatures(doc_collection,
 			tokenizer, 5);
@@ -119,7 +119,7 @@ TEST(StreamingHashedDocFeaturesTest, dot_tests)
 		/** Dense dot test */
 		SGVector<char> tmp(list.strings[i].string, list.strings[i].slen, false);
 		tmp.vector = list.strings[i].string;
-		SGSparseVector<uint32_t> converted_doc = converter->apply(tmp);
+		SGSparseVector<float64_t> converted_doc = converter->apply(tmp);
 		
 		float32_t tmp_res = 0;
 		for (index_t j=0; j<converted_doc.num_feat_entries; j++)
@@ -128,7 +128,7 @@ TEST(StreamingHashedDocFeaturesTest, dot_tests)
 		EXPECT_EQ(tmp_res, feats->dense_dot(dense_vec.vector, dense_vec.vlen));
 
 		/** Add to dense test */
-		SGSparseVector<uint32_t> example = feats->get_vector();
+		SGSparseVector<float64_t> example = feats->get_vector();
 		SGVector<float32_t> dense_vec2(32);
 		for (index_t j=0; j<32; j++)
 			dense_vec2[j] = dense_vec[j];
