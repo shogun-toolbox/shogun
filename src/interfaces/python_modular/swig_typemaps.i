@@ -26,6 +26,7 @@
 %{
 #include <stdio.h>
 #include <shogun/lib/DataType.h>
+#include <shogun/lib/memory.h>
 
 #undef _POSIX_C_SOURCE
 extern "C" {
@@ -85,13 +86,6 @@ static const char* typecode_string(int typecode) {
         return user_def;
     else
         return type_names[typecode];
-}
-
-static void* get_copy(void* src, size_t len)
-{
-    void* copy=SG_MALLOC(uint8_t, len);
-    memcpy(copy, src, len);
-    return copy;
 }
 
 /* Given a PyArrayObject, check to see if it is contiguous.  If so,

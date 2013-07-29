@@ -17,6 +17,8 @@
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/base/SGObject.h>
 
+#include <string.h>
+
 using namespace shogun;
 
 #ifdef TRACE_MEMORY_ALLOCS
@@ -376,4 +378,11 @@ SG_SPECIALIZED_MALLOC(SGMatrix<float64_t>)
 SG_SPECIALIZED_MALLOC(SGMatrix<floatmax_t>)
 SG_SPECIALIZED_MALLOC(SGMatrix<complex64_t>)
 #undef SG_SPECIALIZED_MALLOC
+}
+
+void* shogun::get_copy(void* src, size_t len)
+{
+	void* copy=SG_MALLOC(uint8_t, len);
+	memcpy(copy, src, len);
+	return copy;
 }
