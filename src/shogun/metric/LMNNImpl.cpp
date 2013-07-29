@@ -138,7 +138,7 @@ OuterProductsMatrixType CLMNNImpl::compute_outer_products(CDenseFeatures<float64
 	int32_t n = x->get_num_vectors();
 	// get the number of features
 	int32_t d = x->get_num_features();
-	// map the feature matrix (each column is a feture vector) to an Eigen matrix
+	// map the feature matrix (each column is a feature vector) to an Eigen matrix
 	Map<const MatrixXd> X(x->get_feature_matrix().matrix, d, n);
 	// outer products matrix allocation
 	//FIXME avoid computing the n^2 elements
@@ -159,19 +159,24 @@ OuterProductsMatrixType CLMNNImpl::compute_outer_products(CDenseFeatures<float64
 	return C;
 }
 
-MatrixXd CLMNNImpl::sum_outer_products(const OuterProductsMatrixType& C,
-		const SGMatrix<index_t> target_nn)
+MatrixXd CLMNNImpl::sum_outer_products(CDenseFeatures<float64_t>* x, const SGMatrix<index_t> target_nn)
 {
-	// initialize the sum of outer products (sop); assume there is at least
-	// one element in C, which must be, otherwise LMNN is applied to zero examples 
-	MatrixXd sop(C[0][0].rows(), C[0][0].cols());
+	// get the number of features
+	int32_t d = x->get_num_features();
+	// initialize the sum of outer products (sop)
+	MatrixXd sop(d,d);
 	sop.setZero();
+	// map the feature matrix (each column is a feature vector) to an Eigen matrix
+	Map<const MatrixXd> X(x->get_feature_matrix().matrix, d, x->get_num_vectors());
 
 	// sum the outer products stored in C using the indices specified in target_nn
 	for (index_t i = 0; i < target_nn.num_cols; ++i)
 	{
 		for (index_t j = 0; j < target_nn.num_rows; ++j)
-			sop += C[i][target_nn(j,i)];
+		{
+			VectorXd dx = X.col(i) - X.col(target_nn(j,i));
+			sop += dx*dx.transpose();
+		}
 	}
 
 	return sop;
@@ -190,7 +195,7 @@ ImpostorsSetType CLMNNImpl::find_impostors(CDenseFeatures<float64_t>* x,
 	// get the number of neighbors
 	int32_t k = target_nn.num_rows;
 
-	// map the feature matrix (each column is a feture vector) to an Eigen matrix
+	// map the feature matrix (each column is a feature vector) to an Eigen matrix
 	Map<const MatrixXd> X(x->get_feature_matrix().matrix, d, n);
 	// transform the feature vectors
 	MatrixXd LX = L*X;
@@ -221,7 +226,7 @@ ImpostorsSetType CLMNNImpl::find_impostors(CDenseFeatures<float64_t>* x,
 	return N;
 }
 
-void CLMNNImpl::update_gradient(MatrixXd& G, const OuterProductsMatrixType& C,
+void CLMNNImpl::update_gradient(CDenseFeatures<float64_t>* x, MatrixXd& G,
 		const ImpostorsSetType& Nc, const ImpostorsSetType& Np, float64_t regularization)
 {
 	// compute the difference sets
@@ -229,14 +234,25 @@ void CLMNNImpl::update_gradient(MatrixXd& G, const OuterProductsMatrixType& C,
 	set_difference(Np.begin(), Np.end(), Nc.begin(), Nc.end(), inserter(Np_Nc, Np_Nc.begin()));
 	set_difference(Nc.begin(), Nc.end(), Np.begin(), Np.end(), inserter(Nc_Np, Nc_Np.begin()));
 
+	// map the feature matrix (each column is a feature vector) to an Eigen matrix
+	Map<const MatrixXd> X(x->get_feature_matrix().matrix, x->get_num_features(), x->get_num_vectors());
+
 	// remove the gradient contributions of the impostors that were in the previous
 	// set but disappeared in the current
 	for (ImpostorsSetType::iterator it = Np_Nc.begin(); it != Np_Nc.end(); ++it)
-		G -= regularization*(C[it->example][it->target] - C[it->example][it->impostor]);
+	{
+		VectorXd dx1 = X.col(it->example) - X.col(it->target);
+		VectorXd dx2 = X.col(it->example) - X.col(it->impostor);
+		G -= regularization*(dx1*dx1.transpose() - dx2*dx2.transpose());
+	}
 
 	// add the gradient contributions of the new impostors
 	for (ImpostorsSetType::iterator it = Nc_Np.begin(); it != Nc_Np.end(); ++it)
-		G += regularization*(C[it->example][it->target] - C[it->example][it->impostor]);
+	{
+		VectorXd dx1 = X.col(it->example) - X.col(it->target);
+		VectorXd dx2 = X.col(it->example) - X.col(it->impostor);
+		G += regularization*(dx1*dx1.transpose() - dx2*dx2.transpose());
+	}
 }
 
 void CLMNNImpl::gradient_step(MatrixXd& L, const MatrixXd& G, float64_t stepsize)
