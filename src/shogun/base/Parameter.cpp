@@ -1774,8 +1774,8 @@ TParameter::TParameter(const TSGDataType* datatype, void* parameter,
 	:m_datatype(*datatype)
 {
 	m_parameter = parameter;
-	m_name = strdup(name);
-	m_description = strdup(description);
+	m_name = get_strdup(name);
+	m_description = get_strdup(description);
 	m_delete_data=false;
 	m_was_allocated_from_scratch=false;
 }

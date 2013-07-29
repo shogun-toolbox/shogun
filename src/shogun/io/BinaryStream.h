@@ -13,9 +13,9 @@
 
 #include <shogun/io/SGIO.h>
 #include <shogun/base/SGObject.h>
+#include <shogun/lib/memory.h>
 
 #include <stdio.h>
-#include <string.h>
 
 namespace shogun
 {
@@ -80,8 +80,8 @@ template <class T> class CBinaryStream : public CSGObject
 		 */
 		void open_stream(const char* fname, const char* flag="r")
 		{
-            rw=strdup(flag);
-            m_fname=strdup(fname);
+            rw=get_strdup(flag);
+            m_fname=get_strdup(fname);
 
 			fd = fopen(fname, flag);
 			if (!fd)

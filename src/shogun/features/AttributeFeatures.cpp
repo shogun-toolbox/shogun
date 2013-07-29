@@ -10,9 +10,7 @@
 
 #include <shogun/features/Features.h>
 #include <shogun/features/AttributeFeatures.h>
-
-#include <string.h>
-
+#include <shogun/lib/memory.h>
 
 using namespace shogun;
 
@@ -49,7 +47,7 @@ bool CAttributeFeatures::set_attribute(char* attr_name, CFeatures* attr_obj)
 		idx=features.get_num_elements();
 
 	T_ATTRIBUTE a;
-	a.attr_name=strdup(attr_name);
+	a.attr_name=get_strdup(attr_name);
 	a.attr_obj=attr_obj;
 
 	SG_REF(attr_obj);

@@ -12,9 +12,9 @@
 #define __PLIF_H__
 
 #include <shogun/lib/common.h>
+#include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/structure/PlifBase.h>
-#include <shogun/lib/SGVector.h>
 
 namespace shogun
 {
@@ -370,18 +370,7 @@ class CPlif: public CPlifBase
 		 *
 		 * @return name
 		 */
-		inline char* get_plif_name() const
-		{
-			if (name)
-				return name;
-			else
-			{
-				char buf[20];
-				sprintf(buf, "plif%i", id);
-				//name = strdup(buf);
-				return strdup(buf);
-			}
-		}
+		char* get_plif_name() const;
 
 		/** get do calc
 		 *

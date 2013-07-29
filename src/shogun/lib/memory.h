@@ -186,6 +186,7 @@ SG_SPECIALIZED_MALLOC(SGSparseVector<complex64_t>)
 #undef SG_SPECIALIZED_MALLOC
 
 void* get_copy(void* src, size_t len);
+char* get_strdup(const char* str);
 }
 
 #endif // DOXYGEN_SHOULD_SKIP_THIS

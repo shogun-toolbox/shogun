@@ -11,6 +11,7 @@
 #include <shogun/features/RealFileFeatures.h>
 #include <shogun/features/Features.h>
 #include <shogun/io/SGIO.h>
+#include <shogun/lib/memory.h>
 
 #include <stdio.h>
 #include <string.h>
@@ -29,7 +30,7 @@ CRealFileFeatures::CRealFileFeatures(int32_t size, char* fname)
 	init();
 
 	working_file=fopen(fname, "r");
-	working_filename=strdup(fname);
+	working_filename=get_strdup(fname);
 	ASSERT(working_file)
 	status=load_base_data();
 }
@@ -46,7 +47,7 @@ CRealFileFeatures::CRealFileFeatures(int32_t size, FILE* file)
 void CRealFileFeatures::init()
 {
 	working_file=NULL;
-	working_filename=strdup("");
+	working_filename=get_strdup("");
 	intlen=0;
 	doublelen=0;
 	endian=0;
@@ -68,7 +69,7 @@ CRealFileFeatures::CRealFileFeatures(const CRealFileFeatures & orig)
 : CDenseFeatures<float64_t>(orig), working_file(orig.working_file), status(orig.status)
 {
 	if (orig.working_filename)
-		working_filename=strdup(orig.working_filename);
+		working_filename=get_strdup(orig.working_filename);
 	if (orig.labels && get_num_vectors())
 	{
 		labels=SG_MALLOC(int32_t, get_num_vectors());

@@ -10,6 +10,7 @@
 
 #include <shogun/base/ParameterMap.h>
 #include <shogun/base/Parameter.h>
+#include <shogun/lib/memory.h>
 #include <shogun/mathematics/Math.h>
 
 using namespace shogun;
@@ -26,7 +27,7 @@ SGParamInfo::SGParamInfo()
 SGParamInfo::SGParamInfo(const SGParamInfo& orig)
 {
 	/* copy name if existent */
-	m_name=orig.m_name ? strdup(orig.m_name) : NULL;
+	m_name=get_strdup(orig.m_name);
 
 	m_ctype=orig.m_ctype;
 	m_stype=orig.m_stype;
@@ -38,7 +39,7 @@ SGParamInfo::SGParamInfo(const char* name, EContainerType ctype,
 		EStructType stype, EPrimitiveType ptype, int32_t param_version)
 {
 	/* copy name if existent */
-	m_name=name ? strdup(name) : NULL;
+	m_name=get_strdup(name);
 
 	m_ctype=ctype;
 	m_stype=stype;
@@ -49,7 +50,7 @@ SGParamInfo::SGParamInfo(const char* name, EContainerType ctype,
 SGParamInfo::SGParamInfo(const TParameter* param, int32_t param_version)
 {
 	/* copy name if existent */
-	m_name=param->m_name ? strdup(param->m_name) : NULL;
+	m_name=get_strdup(param->m_name);
 
 	TSGDataType type=param->m_datatype;
 	m_ctype=type.m_ctype;

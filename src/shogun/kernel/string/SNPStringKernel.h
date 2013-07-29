@@ -12,6 +12,7 @@
 #define _SNPSTRINGKERNEL_H___
 
 #include <shogun/lib/common.h>
+#include <shogun/lib/memory.h>
 #include <shogun/kernel/string/StringKernel.h>
 
 namespace shogun
@@ -88,7 +89,7 @@ class CSNPStringKernel: public CStringKernel<char>
 		 */
 		void set_minor_base_string(const char* str)
 		{
-			m_str_min=strdup(str);
+			m_str_min=get_strdup(str);
 		}
 
 		/** set the base string for major aleles
@@ -97,7 +98,7 @@ class CSNPStringKernel: public CStringKernel<char>
 		 */
 		void set_major_base_string(const char* str)
 		{
-			m_str_maj=strdup(str);
+			m_str_maj=get_strdup(str);
 		}
 
 		/** get the base string for minor aleles

@@ -16,6 +16,7 @@
 #include <string.h>
 #include <hdf5.h>
 
+#include <shogun/lib/memory.h>
 #include <shogun/io/HDF5File.h>
 
 #include <shogun/features/StringFeatures.h>
@@ -456,7 +457,7 @@ void CHDF5File::get_dims(hid_t dataset, int32_t*& dims, int32_t& ndims, int64_t&
 
 void CHDF5File::create_group_hierarchy()
 {
-	char* vname=strdup(variable_name);
+	char* vname=get_strdup(variable_name);
 	int32_t vlen=strlen(vname);
 	for (int32_t i=0; i<vlen; i++)
 	{

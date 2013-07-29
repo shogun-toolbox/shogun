@@ -11,6 +11,7 @@
 #include <shogun/features/SNPFeatures.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/features/Alphabet.h>
+#include <shogun/lib/memory.h>
 
 using namespace shogun;
 
@@ -104,12 +105,12 @@ float64_t CSNPFeatures::get_normalization_const()
 
 void CSNPFeatures::set_minor_base_string(const char* str)
 {
-	m_str_min=(uint8_t*) strdup(str);
+	m_str_min=(uint8_t*) get_strdup(str);
 }
 
 void CSNPFeatures::set_major_base_string(const char* str)
 {
-	m_str_maj=(uint8_t*) strdup(str);
+	m_str_maj=(uint8_t*) get_strdup(str);
 }
 
 char* CSNPFeatures::get_minor_base_string()

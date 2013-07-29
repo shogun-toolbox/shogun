@@ -386,3 +386,11 @@ void* shogun::get_copy(void* src, size_t len)
 	memcpy(copy, src, len);
 	return copy;
 }
+
+char* shogun::get_strdup(const char* str)
+{
+	if (!str)
+		return NULL;
+
+	return (char*) get_copy((void*) str, strlen(str)+1);
+}

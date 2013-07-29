@@ -10,11 +10,11 @@
 
 
 #include <stdio.h>
-#include <string.h>
 
 #include <shogun/lib/config.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/structure/Plif.h>
+#include <shogun/lib/memory.h>
 
 //#define PLIF_DEBUG
 
@@ -97,8 +97,19 @@ void CPlif::init_penalty_struct_cache()
 void CPlif::set_plif_name(char *p_name)
 {
 	SG_FREE(name);
-	name=SG_MALLOC(char, strlen(p_name)+3);
-	strcpy(name,p_name) ;
+	name=get_strdup(p_name);
+}
+
+char* CPlif::get_plif_name() const
+{
+	if (name)
+		return name;
+	else
+	{
+		char buf[20];
+		sprintf(buf, "plif%i", id);
+		return get_strdup(buf);
+	}
 }
 
 void CPlif::delete_penalty_struct(CPlif** PEN, int32_t P)
