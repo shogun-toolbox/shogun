@@ -16,14 +16,6 @@
 %{
 #include <shogun/lib/DataType.h>
 
-    //PTZ121010 doesnot think we need this since already called in the swig interface...
-    static void* get_copy(void* src, size_t len)
-    {
-        void* copy = SG_MALLOC(uint8_t, len);
-        memcpy(copy, src, len);
-        return copy;
-    }
-
     /* OUT typemaps */
     /****************/
     template <class type>
