@@ -44,6 +44,9 @@ public:
 	/** read string	*/
 	virtual SGVector<char> read_string();
 
+	/** read zero-terminated string */
+	virtual SGVector<char> read_cstring();
+
 	/** read one of the several base data types. */
 	//@{
 	virtual bool read_bool();

@@ -19,16 +19,18 @@ CCSVFile::CCSVFile()
 	init();
 }
 
-CCSVFile::CCSVFile(FILE* f, const char* name, char delimiter, char quote) :
+CCSVFile::CCSVFile(FILE* f, const char* name) :
 	CFile(f, name)
 {
-	init(delimiter, quote);
+	init();
+	m_line_reader=new CLineReader(file, m_line_tokenizer);
 }
 
-CCSVFile::CCSVFile(const char* fname, char rw, const char* name, char delimiter, char quote) :
+CCSVFile::CCSVFile(const char* fname, char rw, const char* name) :
 	CFile(fname, rw, name)
 {
-	init(delimiter, quote);
+	init();
+	m_line_reader=new CLineReader(file, m_line_tokenizer);
 }
 
 CCSVFile::~CCSVFile()
@@ -39,14 +41,17 @@ CCSVFile::~CCSVFile()
 	SG_UNREF(m_line_reader);
 }
 
-void CCSVFile::set_fortran_order()
+void CCSVFile::set_order(csv_data_order order)
 {
-	m_fortran_order=true;
+	m_order=order;
 }
 
-void CCSVFile::set_c_order()
+void CCSVFile::set_delimiter(char delimiter)
 {
-	m_fortran_order=false;
+	m_tokenizer->delimiters[m_delimiter]=0;
+	
+	m_delimiter=delimiter;
+	m_tokenizer->delimiters[m_delimiter]=1;
 }
 
 void CCSVFile::skip_lines(int32_t num_lines)
@@ -57,18 +62,10 @@ void CCSVFile::skip_lines(int32_t num_lines)
 
 void CCSVFile::init()
 {
-	m_tokenizer=new CDelimiterTokenizer();
-	m_line_tokenizer=new CDelimiterTokenizer();
-	m_parser=new CParser();
-	m_line_reader=new CLineReader();
-}
-
-void CCSVFile::init(char delimiter, char quote)
-{
-	m_delimiter=delimiter;
+	m_order=FORTRAN_ORDER;
 
 	m_tokenizer=new CDelimiterTokenizer(true);
-	m_tokenizer->delimiters[delimiter]=1;
+	m_tokenizer->delimiters[m_delimiter]=1;
 	m_tokenizer->delimiters[' ']=1;
 
 	m_line_tokenizer=new CDelimiterTokenizer(true);
@@ -77,7 +74,7 @@ void CCSVFile::init(char delimiter, char quote)
 	m_parser=new CParser();
 	m_parser->set_tokenizer(m_tokenizer);
 
-	m_line_reader=new CLineReader(file, m_line_tokenizer);	
+	m_line_reader=new CLineReader();
 }
 
 #define GET_VECTOR(fname, read_func, sg_type) \
@@ -150,7 +147,7 @@ void CCSVFile::fname(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec) \
 		nlines++; \
 	} \
 	\
-	if (m_fortran_order) \
+	if (m_order==FORTRAN_ORDER) \
 	{ \
 		num_feat=nlines; \
 		num_vec=ntokens; \
@@ -188,24 +185,24 @@ void CCSVFile::fname(const sg_type* vector, int32_t len) \
 	fprintf(file, "\n"); \
 }
 
-SET_VECTOR(set_vector, %hhd, int8_t)
-SET_VECTOR(set_vector, %hhu, uint8_t)
-SET_VECTOR(set_vector, %hhd, char)
-SET_VECTOR(set_vector, %d, int32_t)
-SET_VECTOR(set_vector, %u, uint32_t)
-SET_VECTOR(set_vector, %ld, int64_t)
-SET_VECTOR(set_vector, %lu, uint64_t)
-SET_VECTOR(set_vector, %e, float32_t)
-SET_VECTOR(set_vector, %e, float64_t)
-SET_VECTOR(set_vector, %Le, floatmax_t)
-SET_VECTOR(set_vector, %hd, int16_t)
-SET_VECTOR(set_vector, %hu, uint16_t)
+SET_VECTOR(set_vector, "%" #SCNi8, int8_t)
+SET_VECTOR(set_vector, "%" #SCNu8, uint8_t)
+SET_VECTOR(set_vector, "%" #SCNu8, char)
+SET_VECTOR(set_vector, "%" #SCNi32, int32_t)
+SET_VECTOR(set_vector, "%" #SCNu32, uint32_t)
+SET_VECTOR(set_vector, "%" #SCNi64, int64_t)
+SET_VECTOR(set_vector, "%" #SCNu64, uint64_t)
+SET_VECTOR(set_vector, %g, float32_t)
+SET_VECTOR(set_vector, %lg, float64_t)
+SET_VECTOR(set_vector, %Lg, floatmax_t)
+SET_VECTOR(set_vector, "%" #SCNi16, int16_t)
+SET_VECTOR(set_vector, "%" #SCNu16, uint16_t)
 #undef SET_VECTOR
 
 #define SET_MATRIX(fname, format, sg_type) \
 void CCSVFile::fname(const sg_type* matrix, int32_t num_feat, int32_t num_vec) \
 { \
-	if (m_fortran_order) \
+	if (m_order==FORTRAN_ORDER) \
 	{ \
 		for (int32_t i=0; i<num_feat; i++) \
 		{ \
@@ -225,16 +222,16 @@ void CCSVFile::fname(const sg_type* matrix, int32_t num_feat, int32_t num_vec) \
 	} \
 }
 
-SET_MATRIX(set_matrix, %hhd, int8_t)
-SET_MATRIX(set_matrix, %hhu, uint8_t)
-SET_MATRIX(set_matrix, %hhd, char)
-SET_MATRIX(set_matrix, %d, int32_t)
-SET_MATRIX(set_matrix, %u, uint32_t)
-SET_MATRIX(set_matrix, %ld, int64_t)
-SET_MATRIX(set_matrix, %lu, uint64_t)
-SET_MATRIX(set_matrix, %e, float32_t)
-SET_MATRIX(set_matrix, %e, float64_t)
-SET_MATRIX(set_matrix, %Le, floatmax_t)
-SET_MATRIX(set_matrix, %hd, int16_t)
-SET_MATRIX(set_matrix, %hu, uint16_t)
+SET_MATRIX(set_matrix, SCNi8, int8_t)
+SET_MATRIX(set_matrix, SCNu8, uint8_t)
+SET_MATRIX(set_matrix, SCNu8, char)
+SET_MATRIX(set_matrix, SCNi32, int32_t)
+SET_MATRIX(set_matrix, SCNu32, uint32_t)
+SET_MATRIX(set_matrix, SCNi64, int64_t)
+SET_MATRIX(set_matrix, SCNu64, uint64_t)
+SET_MATRIX(set_matrix, %g, float32_t)
+SET_MATRIX(set_matrix, %lg, float64_t)
+SET_MATRIX(set_matrix, %Lg, floatmax_t)
+SET_MATRIX(set_matrix, SCNi16, int16_t)
+SET_MATRIX(set_matrix, SCNu16, uint16_t)
 #undef SET_MATRIX

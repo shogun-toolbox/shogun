@@ -40,9 +40,10 @@ TEST(CSVFileTest, read_matrix)
 	CCSVFile* fin;
 
 	// try read in fortran order
-	fin=new CCSVFile("csvfile_test.csv",'r', NULL, '|', '"');
+	fin=new CCSVFile("csvfile_test.csv",'r', NULL);
+	fin->set_delimiter('|');
 	fin->skip_lines(2);
-	fin->set_fortran_order();
+	fin->set_order(FORTRAN_ORDER);
 
 	fin->get_matrix(tmp.matrix, tmp.num_cols, tmp.num_rows);
 	EXPECT_EQ(tmp.num_rows, nfeats);
@@ -58,9 +59,10 @@ TEST(CSVFileTest, read_matrix)
 	SG_UNREF(fin);
 
 	// try read in c order
-	fin=new CCSVFile("csvfile_test.csv",'r', NULL, '|', '"');
+	fin=new CCSVFile("csvfile_test.csv",'r', NULL);
+	fin->set_delimiter('|');
 	fin->skip_lines(2);
-	fin->set_c_order();
+	fin->set_order(C_ORDER);
 
 	fin->get_matrix(tmp.matrix, tmp.num_cols, tmp.num_rows);
 	EXPECT_EQ(tmp.num_rows, nvecs);
@@ -93,13 +95,15 @@ TEST(CSVFileTest, write_matrix)
 	SGMatrix<float64_t> tmp(true);
 
 	// try write/read in fortran order
-	fout=new CCSVFile("csvfile_test.csv",'w', NULL, '|', '"');
-	fout->set_fortran_order();
+	fout=new CCSVFile("csvfile_test.csv",'w', NULL);
+	fout->set_delimiter('|');
+	fout->set_order(FORTRAN_ORDER);
 	fout->set_matrix(fortran_order_data, nvecs, nfeats);
 	SG_UNREF(fout);
 
-	fin=new CCSVFile("csvfile_test.csv",'r', NULL, '|', '"');
-	fin->set_fortran_order();
+	fin=new CCSVFile("csvfile_test.csv",'r', NULL);
+	fin->set_delimiter('|');
+	fin->set_order(FORTRAN_ORDER);
 
 	fin->get_matrix(tmp.matrix, tmp.num_cols, tmp.num_rows);
 	EXPECT_EQ(tmp.num_rows, nfeats);
@@ -115,13 +119,15 @@ TEST(CSVFileTest, write_matrix)
 	SG_UNREF(fin);
 
 	// try write/read in c order
-	fout=new CCSVFile("csvfile_test.csv",'w', NULL, '|', '"');
-	fout->set_c_order();
+	fout=new CCSVFile("csvfile_test.csv",'w', NULL);
+	fout->set_delimiter('|');
+	fout->set_order(C_ORDER);
 	fout->set_matrix(fortran_order_data, nvecs, nfeats);
 	SG_UNREF(fout);
 
-	fin=new CCSVFile("csvfile_test.csv",'r', NULL, '|', '"');
-	fin->set_c_order();
+	fin=new CCSVFile("csvfile_test.csv",'r', NULL);
+	fin->set_delimiter('|');
+	fin->set_order(C_ORDER);
 
 	fin->get_matrix(tmp.matrix, tmp.num_cols, tmp.num_rows);
 	EXPECT_EQ(tmp.num_rows, nfeats);
