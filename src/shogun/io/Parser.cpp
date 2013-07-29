@@ -60,9 +60,26 @@ SGVector<char> CParser::read_string()
 	return result;
 }
 
+SGVector<char> CParser::read_cstring()
+{
+	index_t start=0;
+	index_t end=0;
+
+	end=m_tokenizer->next_token_idx(start);
+
+	SGVector<char> result=SGVector<char>(end-start+1);
+	for (index_t i=start; i<end; i++)
+	{
+		result[i-start]=m_text[i];
+	}
+	result[end-start]='\0';
+
+	return result;
+}
+
 bool CParser::read_bool()
 {
-	SGVector<char> token=read_string();
+	SGVector<char> token=read_cstring();
 	
 	if (token.vlen>0)
 		return (bool) strtol(token.vector, NULL, 10);
@@ -73,7 +90,7 @@ bool CParser::read_bool()
 #define READ_INT_METHOD(fname, convf, sg_type) \
 sg_type CParser::fname(int32_t base) \
 { \
-	SGVector<char> token=read_string(); \
+	SGVector<char> token=read_cstring(); \
 	\
 	if (token.vlen>0) \
 		return (sg_type) convf(token.vector, NULL, base); \
@@ -94,7 +111,7 @@ READ_INT_METHOD(read_ulong, strtoull, uint64_t)
 #define READ_REAL_METHOD(fname, convf, sg_type) \
 sg_type CParser::fname() \
 { \
-	SGVector<char> token=read_string(); \
+	SGVector<char> token=read_cstring(); \
 	\
 	if (token.vlen>0) \
 		return (sg_type) convf(token.vector, NULL); \

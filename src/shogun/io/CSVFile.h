@@ -22,6 +22,12 @@
 namespace shogun
 {
 
+enum csv_data_order
+{
+	FORTRAN_ORDER,
+	C_ORDER
+};
+
 /** @brief 
  */
 class CCSVFile : public CFile
@@ -31,19 +37,19 @@ public:
 	CCSVFile();
 
 	/** */
-	CCSVFile(FILE* f, const char* name=NULL, char delimiter=',', char quote='"');
+	CCSVFile(FILE* f, const char* name=NULL);
 
 	/** */
-	CCSVFile(const char* fname, char rw='r', const char* name=NULL, char delimiter=',', char quote='"');
+	CCSVFile(const char* fname, char rw='r', const char* name=NULL);
 
 	/** destructor */
 	virtual ~CCSVFile();
 
-	/** set column-major order for data in file */
-	void set_fortran_order();
+	/** set order for data in file */
+	void set_order(csv_data_order order);
 
-	/** set row-major order for data in file */
-	void set_c_order();
+	/** set delimiting character */
+	void set_delimiter(char delimiter);
 
 	/** skip lines
 	 *
@@ -344,9 +350,6 @@ private:
 	/** class initialization */
 	void init();
 
-	/** class initialization */
-	void init(char delimiter, char quote);
-
 private:
 	/** object for reading lines from file */
 	CLineReader* m_line_reader;
@@ -360,8 +363,8 @@ private:
 	/** tokenizer for parser */
 	CDelimiterTokenizer* m_tokenizer;
 
-	/** column-major order? */
-	bool m_fortran_order;
+	/** data order */
+	csv_data_order m_order;
 
 	/** delimiter */
 	char m_delimiter;
