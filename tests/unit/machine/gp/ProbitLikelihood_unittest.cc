@@ -17,6 +17,58 @@
 
 using namespace shogun;
 
+TEST(ProbitLikelihood,evaluate_log_probabilities)
+{
+	// create some easy data:
+	// mu(x) approximately equals to 3*sin(sin(x^2)*sin(sin(2*x)))
+	index_t n=10;
+
+	SGVector<float64_t> s2(n);
+	SGVector<float64_t> mu(n);
+
+	s2[0]=0.1;
+	s2[1]=0.2;
+	s2[2]=1.0;
+	s2[3]=0.7;
+	s2[4]=0.3;
+	s2[5]=0.1;
+	s2[6]=1.0;
+	s2[7]=0.5;
+	s2[8]=0.7;
+	s2[9]=0.4;
+
+	mu[0]=0.889099;
+	mu[1]=0.350840;
+	mu[2]=-2.116356;
+	mu[3]=-0.184742;
+	mu[4]=0.182117;
+	mu[5]=-1.108930;
+	mu[6]=-0.062437;
+	mu[7]=0.482987;
+	mu[8]=-0.149445;
+	mu[9]=0.106952;
+
+	// probit likelihood
+	CProbitLikelihood* likelihood=new CProbitLikelihood();
+
+	SGVector<float64_t> lp=likelihood->evaluate_log_probabilities(mu, s2);
+
+	// comparison of the first moment with result from GPML package
+	EXPECT_NEAR(lp[0], -0.221016102, 1E-9);
+	EXPECT_NEAR(lp[1], -0.469014056, 1E-9);
+	EXPECT_NEAR(lp[2], -2.699144260, 1E-9);
+	EXPECT_NEAR(lp[3], -0.812691857, 1E-9);
+	EXPECT_NEAR(lp[4], -0.573673124, 1E-9);
+	EXPECT_NEAR(lp[5], -1.929766885, 1E-9);
+	EXPECT_NEAR(lp[6], -0.728997040, 1E-9);
+	EXPECT_NEAR(lp[7], -0.425655555, 1E-9);
+	EXPECT_NEAR(lp[8], -0.788835673, 1E-9);
+	EXPECT_NEAR(lp[9], -0.623599250, 1E-9);
+
+	// clean up
+	SG_UNREF(likelihood);
+}
+
 TEST(ProbitLikelihood,evaluate_means)
 {
 	// create some easy data:
@@ -121,7 +173,7 @@ TEST(ProbitLikelihood,evaluate_variances)
 	SG_UNREF(likelihood);
 }
 
-TEST(ProbitLikelihood,get_log_probability_f_sum)
+TEST(ProbitLikelihood,get_log_probability_f)
 {
 	// create some easy data:
 	// f(x) approximately equals to 3*sin(sin(x^2)*sin(sin(2*x))), y = sign(f(x))
@@ -158,10 +210,19 @@ TEST(ProbitLikelihood,get_log_probability_f_sum)
 	// probit likelihood
 	CProbitLikelihood* likelihood=new CProbitLikelihood();
 
-	float64_t lp=SGVector<float64_t>::sum(likelihood->get_log_probability_f(labels, func));
+	SGVector<float64_t> lp=likelihood->get_log_probability_f(labels, func);
 
 	// comparison of log likelihood with result from GPML package
-	EXPECT_NEAR(lp, -4.147705557, 1E-9);
+	EXPECT_NEAR(lp[0], -0.2069933435, 1E-9);
+	EXPECT_NEAR(lp[1], -0.4507567536, 1E-9);
+	EXPECT_NEAR(lp[2], -0.0173061621, 1E-9);
+	EXPECT_NEAR(lp[3], -0.5563735264, 1E-9);
+	EXPECT_NEAR(lp[4], -0.5581713758, 1E-9);
+	EXPECT_NEAR(lp[5], -0.1435588605, 1E-9);
+	EXPECT_NEAR(lp[6], -0.6445616379, 1E-9);
+	EXPECT_NEAR(lp[7], -0.3776833450, 1E-9);
+	EXPECT_NEAR(lp[8], -0.5808927376, 1E-9);
+	EXPECT_NEAR(lp[9], -0.6114078142, 1E-9);
 
 	// clean up
 	SG_UNREF(likelihood);
