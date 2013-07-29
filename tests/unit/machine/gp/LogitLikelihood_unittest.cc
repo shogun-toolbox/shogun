@@ -17,7 +17,7 @@
 
 using namespace shogun;
 
-TEST(LogitLikelihood,get_log_probability_f_sum)
+TEST(LogitLikelihood,get_log_probability_f)
 {
 	// create some easy data:
 	// f(x) approximately equals to 3*sin(sin(x^2)*sin(sin(2*x))), y = sign(f(x))
@@ -54,10 +54,19 @@ TEST(LogitLikelihood,get_log_probability_f_sum)
 	// logit likelihood
 	CLogitLikelihood* likelihood=new CLogitLikelihood();
 
-	float64_t lp=SGVector<float64_t>::sum(likelihood->get_log_probability_f(labels, func));
+	SGVector<float64_t> lp=likelihood->get_log_probability_f(labels, func);
 
 	// comparison of log likelihood with result from GPML package
-	EXPECT_NEAR(lp, -4.8927, 1E-4);
+	EXPECT_NEAR(lp[0], -0.344317042879852, 1E-15);
+	EXPECT_NEAR(lp[1], -0.533034999733996, 1E-15);
+	EXPECT_NEAR(lp[2], -0.113748080981196, 1E-15);
+	EXPECT_NEAR(lp[3], -0.605036328325528, 1E-15);
+	EXPECT_NEAR(lp[4], -0.606228789118445, 1E-15);
+	EXPECT_NEAR(lp[5], -0.285112607617685, 1E-15);
+	EXPECT_NEAR(lp[6], -0.662415898798726, 1E-15);
+	EXPECT_NEAR(lp[7], -0.480534140470494, 1E-15);
+	EXPECT_NEAR(lp[8], -0.621213812513251, 1E-15);
+	EXPECT_NEAR(lp[9], -0.641100340885144, 1E-15);
 
 	// clean up
 	SG_UNREF(likelihood);

@@ -8,6 +8,7 @@
  */
 
 #include <shogun/lib/config.h>
+
 #ifdef HAVE_EIGEN3
 
 #include <shogun/base/Parameter.h>
@@ -19,7 +20,139 @@
 
 using namespace shogun;
 
-TEST(GaussianLikelihood,get_log_probability_f_sum)
+TEST(GaussianLikelihood,evaluate_log_probabilities)
+{
+	// create some easy data:
+	// mu(x) approximately equals to (x^3+sin(x)^2)/10, y=0
+	index_t n=5;
+
+	SGVector<float64_t> lab(n);
+	SGVector<float64_t> s2(n);
+	SGVector<float64_t> mu(n);
+
+	lab.set_const(0.0);
+
+	s2[0]=0.1;
+	s2[1]=0.2;
+	s2[2]=1.0;
+	s2[3]=0.7;
+	s2[4]=0.3;
+
+	mu[0]=-2.18236;
+	mu[1]=-1.30906;
+	mu[2]=-0.50885;
+	mu[3]=-0.17185;
+	mu[4]=0.00388;
+
+	// shogun representation of labels
+	CRegressionLabels* labels=new CRegressionLabels(lab);
+
+	// Gaussian likelihood with sigma = 0.13
+	CGaussianLikelihood* likelihood=new CGaussianLikelihood(0.13);
+
+	SGVector<float64_t> lp=likelihood->evaluate_log_probabilities(mu, s2, labels);
+
+	// comparison of the first moment with result from GPML package
+	EXPECT_NEAR(lp[0], -20.216529436592481, 1E-15);
+	EXPECT_NEAR(lp[1], -4.105074362196638, 1E-15);
+	EXPECT_NEAR(lp[2], -1.054630503782619, 1E-15);
+	EXPECT_NEAR(lp[3], -0.773126383739893, 1E-15);
+	EXPECT_NEAR(lp[4], -0.344377779665387, 1E-15);
+
+	// clean up
+	SG_UNREF(likelihood);
+	SG_UNREF(labels);
+}
+
+TEST(GaussianLikelihood,evaluate_means)
+{
+	// create some easy data:
+	// mu(x) approximately equals to (x^3+sin(x)^2)/10, y=0
+	index_t n=5;
+
+	SGVector<float64_t> lab(n);
+	SGVector<float64_t> s2(n);
+	SGVector<float64_t> mu(n);
+
+	lab.set_const(0.0);
+
+	s2[0]=0.1;
+	s2[1]=0.2;
+	s2[2]=1.0;
+	s2[3]=0.7;
+	s2[4]=0.3;
+
+	mu[0]=-2.18236;
+	mu[1]=-1.30906;
+	mu[2]=-0.50885;
+	mu[3]=-0.17185;
+	mu[4]=0.00388;
+
+	// shogun representation of labels
+	CRegressionLabels* labels=new CRegressionLabels(lab);
+
+	// Gaussian likelihood with sigma = 0.13
+	CGaussianLikelihood* likelihood=new CGaussianLikelihood(0.13);
+
+	mu=likelihood->evaluate_means(mu, s2, labels);
+
+	// comparison of the first moment with result from GPML package
+	EXPECT_NEAR(mu[0], -2.18236000000000008, 1E-15);
+	EXPECT_NEAR(mu[1], -1.30905999999999989, 1E-15);
+	EXPECT_NEAR(mu[2], -0.50885000000000002, 1E-15);
+	EXPECT_NEAR(mu[3], -0.17185000000000000, 1E-15);
+	EXPECT_NEAR(mu[4], 0.00388000000000000, 1E-15);
+
+	// clean up
+	SG_UNREF(likelihood);
+	SG_UNREF(labels);
+}
+
+TEST(GaussianLikelihood,evaluate_variances)
+{
+	// create some easy data:
+	// mu(x) approximately equals to (x^3+sin(x)^2)/10, y=0
+	index_t n=5;
+
+	SGVector<float64_t> lab(n);
+	SGVector<float64_t> s2(n);
+	SGVector<float64_t> mu(n);
+
+	lab.set_const(0.0);
+
+	s2[0]=0.1;
+	s2[1]=0.2;
+	s2[2]=1.0;
+	s2[3]=0.7;
+	s2[4]=0.3;
+
+	mu[0]=-2.18236;
+	mu[1]=-1.30906;
+	mu[2]=-0.50885;
+	mu[3]=-0.17185;
+	mu[4]=0.00388;
+
+	// shogun representation of labels
+	CRegressionLabels* labels=new CRegressionLabels(lab);
+
+	// Gaussian likelihood with sigma = 0.13
+	CGaussianLikelihood* likelihood=new CGaussianLikelihood(0.13);
+
+	s2=likelihood->evaluate_variances(mu, s2, labels);
+
+	// comparison of the first moment with result from GPML package
+	EXPECT_NEAR(s2[0], 0.116900000000000, 1E-15);
+	EXPECT_NEAR(s2[1], 0.216900000000000, 1E-15);
+	EXPECT_NEAR(s2[2], 1.016900000000000, 1E-15);
+	EXPECT_NEAR(s2[3], 0.716900000000000, 1E-15);
+	EXPECT_NEAR(s2[4], 0.316900000000000, 1E-15);
+
+	// clean up
+	SG_UNREF(likelihood);
+	SG_UNREF(labels);
+}
+
+TEST(GaussianLikelihood,get_log_probability_f)
 {
 	// create some easy data:
 	// f(x) approximately equals to (x^3 + sin(x)^2)/10, y = f(x) + noise
@@ -46,10 +179,14 @@ TEST(GaussianLikelihood,get_log_probability_f_sum)
 	// Gaussian likelihood with sigma = 0.13
 	CGaussianLikelihood* likelihood=new CGaussianLikelihood(0.13);
 
-	float64_t lp=SGVector<float64_t>::sum(likelihood->get_log_probability_f(labels, func));
+	SGVector<float64_t> lp=likelihood->get_log_probability_f(labels, func);
 
 	// comparison of log likelihood with result from GPML package
-	EXPECT_NEAR(lp, 4.2428, 1E-4);
+	EXPECT_NEAR(lp[0], 0.677092919582238, 1E-15);
+	EXPECT_NEAR(lp[1], 1.115906247984604, 1E-15);
+	EXPECT_NEAR(lp[2], 0.779063286446143, 1E-15);
+	EXPECT_NEAR(lp[3], 0.992445605972769, 1E-15);
+	EXPECT_NEAR(lp[4], 0.678324614848509, 1E-15);
 
 	// clean up
 	SG_UNREF(likelihood);
