@@ -149,8 +149,8 @@ public:
 		return SGVector<float64_t>();
 	}
 
-	/** returns covariance matrix \$f\Sigma\f$ of the Gaussian
-	 * distribution \$fq(f|y)=N(\mu,\Sigma)\f$, which is an
+	/** returns covariance matrix \f$\Sigma\f$ of the Gaussian
+	 * distribution \f$q(f|y)=N(\mu,\Sigma)\f$, which is an
 	 * approximation to the posterior:
 	 *
 	 * \f[
