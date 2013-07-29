@@ -119,47 +119,69 @@ TEST(LMNNImpl,compute_outer_products)
 
 TEST(LMNNImpl,sum_outer_products)
 {
-	// fill in matrix of outer products with arbitrary matrices
-	OuterProductsMatrixType op;
-	int32_t size=2;
-	op.resize(size);
-	for (int32_t i=0; i<size; i++)
-		op[i].resize(size);
-
-	for (int32_t i=0; i<size; i++)
-		for (int32_t j=0; j<size; j++)
-			op[i][j]=Eigen::MatrixXd(2,2);
-
-	op[0][0] << 1,2,3,4;
-	op[0][1] << -1,7,3,-4;
-	op[1][0] << 8,9,-5,2;
-	op[1][1] << 3,2,7,4;
+	// feature dimension
+	int32_t d=2;
+	// number of vectors
+	int32_t n=4;
+	// create features, each column is a feature vector
+	SGMatrix<float64_t> feat_mat(d,n);
+	// 1st feature vector
+	feat_mat(0,0)=0;
+	feat_mat(1,0)=0;
+	// 2nd feature vector
+	feat_mat(0,1)=0;
+	feat_mat(1,1)=-1;
+	// 3rd feature vector
+	feat_mat(0,2)=1;
+	feat_mat(1,2)=1;
+	// 4th feature vector
+	feat_mat(0,3)=-1;
+	feat_mat(1,3)=1;
+	// wrap feat_mat in Shogun features
+	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(feat_mat);
 
 	// matrix of target neighbors
-	SGMatrix<index_t> target_nn(1,2);
+	SGMatrix<index_t> target_nn(1,n);
 	target_nn(0,0)=1;
 	target_nn(0,1)=0;
+	target_nn(0,2)=3;
+	target_nn(0,3)=2;
 
-	Eigen::MatrixXd sop=CLMNNImpl::sum_outer_products(op,target_nn);
-	Eigen::MatrixXd test=op[0][1]+op[1][0];
+	// compute the sum of outer products of vector differences given by target_nn
+	Eigen::MatrixXd sop=CLMNNImpl::sum_outer_products(features,target_nn);
 
-	for (int32_t i=0; i<size; i++)
-		for (int32_t j=0; j<size; j++)
-			EXPECT_EQ(sop(i,j), test(i,j));
+	// check output dimensions
+	EXPECT_EQ(sop.rows(), d);
+	EXPECT_EQ(sop.cols(), d);
+	// check output contents
+	EXPECT_EQ(sop(0,0), 8);
+	EXPECT_EQ(sop(0,1), 0);
+	EXPECT_EQ(sop(1,0), 0);
+	EXPECT_EQ(sop(1,1), 2);
 
-	// try with another matrix of target neighbors
+	// try with another matrix of target neighbors (which does not really represent a real
+	// target neighbors matrix)
 	target_nn=SGMatrix<index_t>(1,1);
 	target_nn(0,0)=0;
-	sop=CLMNNImpl::sum_outer_products(op,target_nn);
+	sop=CLMNNImpl::sum_outer_products(features,target_nn);
 
-	for (int32_t i=0; i<size; i++)
-		for (int32_t j=0; j<size; j++)
-			EXPECT_EQ(sop(i,j), op[0][0](i,j));
+	// check output dimensions
+	EXPECT_EQ(sop.rows(), d);
+	EXPECT_EQ(sop.cols(), d);
+	// check output contents
+	for (int32_t i=0; i<d; i++)
+		for (int32_t j=0; j<d; j++)
+			EXPECT_EQ(sop(i,j), 0);
 
 	// input an empty matrix of target neighbors
-	sop=CLMNNImpl::sum_outer_products(op,SGMatrix<index_t>(0,0));
-	for (int32_t i=0; i<size; i++)
-		for (int32_t j=0; j<size; j++)
+	sop=CLMNNImpl::sum_outer_products(features,SGMatrix<index_t>(0,0));
+
+	// check output dimensions
+	EXPECT_EQ(sop.rows(), d);
+	EXPECT_EQ(sop.cols(), d);
+	// check output contents
+	for (int32_t i=0; i<d; i++)
+		for (int32_t j=0; j<d; j++)
 			EXPECT_EQ(sop(i,j), 0);
 }
 

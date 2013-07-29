@@ -97,13 +97,13 @@ class CLMNNImpl
 		static OuterProductsMatrixType compute_outer_products(CDenseFeatures<float64_t>* x);
 
 		/** sum the outer products indicated by target_nn in the matrix of outer products C */
-		static Eigen::MatrixXd sum_outer_products(const OuterProductsMatrixType& C, const SGMatrix<index_t> target_nn);
+		static Eigen::MatrixXd sum_outer_products(CDenseFeatures<float64_t>* x, const SGMatrix<index_t> target_nn);
 
 		/** find the impostors that remain after applying the transformation L */
 		static ImpostorsSetType find_impostors(CDenseFeatures<float64_t>* x, CMulticlassLabels* y, const Eigen::MatrixXd& L, const SGMatrix<index_t> target_nn, const uint32_t iter, const uint32_t correction);
 
 		/** update the gradient using the last transition in the impostors sets */
-		static void update_gradient(Eigen::MatrixXd& G, const OuterProductsMatrixType& C, const ImpostorsSetType& Nc, const ImpostorsSetType& Np, float64_t mu);
+		static void update_gradient(CDenseFeatures<float64_t>* x, Eigen::MatrixXd& G, const ImpostorsSetType& Nc, const ImpostorsSetType& Np, float64_t mu);
 
 		/** take gradient step and project onto positive semi-definite cone if necessary */
 		static void gradient_step(Eigen::MatrixXd& L, const Eigen::MatrixXd& G, float64_t stepsize);
