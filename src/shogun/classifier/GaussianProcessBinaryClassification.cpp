@@ -12,10 +12,8 @@
 #ifdef HAVE_EIGEN3
 
 #include <shogun/classifier/GaussianProcessBinaryClassification.h>
-#include <shogun/mathematics/eigen3.h>
 
 using namespace shogun;
-using namespace Eigen;
 
 CGaussianProcessBinaryClassification::CGaussianProcessBinaryClassification()
 	: CGaussianProcessMachine()
@@ -136,8 +134,7 @@ SGVector<float64_t> CGaussianProcessBinaryClassification::get_probabilities(CFea
 	SG_UNREF(lik);
 
 	// evaluate probabilities
-	Map<VectorXd> eigen_p(p.vector, p.vlen);
-	eigen_p=eigen_p.array().exp();
+	p.exp();
 
 	return p;
 }
