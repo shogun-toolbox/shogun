@@ -3227,6 +3227,29 @@ EOF
 	fi
 }
 
+check_strtold()
+{
+	cat > $TMPCXX << EOF
+#include <math.h>
+#include <stdlib.h>
+int main(int argc, char** argv)
+{
+	char* endptr;
+	long double a=strtold("3.1234567890", &endptr);
+	return (int) a;
+}
+EOF
+	echocheck "strtold() support"
+	if cxx_check -lm
+	then
+		HAVE_STRTOLD='#define HAVE_STRTOLD 1'
+		DEFINES="$DEFINES -DHAVE_STRTOLD"
+		echores "yes"
+	else
+		echores "no - resorting to strtod()"
+	fi
+}
+
 check_gammal()
 {
 	cat > $TMPCXX << EOF
@@ -5563,6 +5586,7 @@ $HAVE_ACML
 $HAVE_MKL
 $HAVE_MVEC
 $HAVE_POWL
+$HAVE_STRTOLD
 $HAVE_LGAMMAL
 $HAVE_SQRTL
 $HAVE_LOG2
@@ -5705,6 +5729,7 @@ check_datatypes
 check_wordsize
 check_math
 check_powl
+check_strtold
 check_gammal
 check_sqrtl
 check_log2
