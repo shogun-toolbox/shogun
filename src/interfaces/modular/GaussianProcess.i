@@ -25,7 +25,7 @@
 
 %rename(GaussianProcessMachine) CGaussianProcessMachine;
 %rename(GaussianProcessBinaryClassification) CGaussianProcessBinaryClassification;
-%rename(GaussianProcessBinaryRegression) CGaussianProcessBinaryRegression;
+%rename(GaussianProcessRegression) CGaussianProcessRegression;
 
 #endif //HAVE_EIGEN3
 
