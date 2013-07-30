@@ -5,6 +5,14 @@
  * (at your option) any later version.
  *
  * Written (W) 2013 Roman Votyakov
+ *
+ * The abscissae and weights for Gauss-Kronrod rules are taken form
+ * QUADPACK, which is in public domain.
+ * http://www.netlib.org/quadpack/
+ *
+ * See header file for which functions are adapted from GNU Octave,
+ * file quadgk.m: Copyright (C) 2008-2012 David Bateman under GPLv3
+ * http://www.gnu.org/software/octave/
  */
 
 #include <shogun/mathematics/Integration.h>
@@ -18,6 +26,8 @@ using namespace Eigen;
 
 namespace shogun
 {
+
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 
 /** @brief Class of the function, which is used for standard infinite
  * to finite integral transformation
@@ -233,6 +243,8 @@ private:
 	/** upper bound */
 	float64_t m_b;
 };
+
+#endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
 float64_t CIntegration::integrate_quadgk(CFunction* f, float64_t a,
 		float64_t b, float64_t abs_tol, float64_t rel_tol, uint32_t max_iter,

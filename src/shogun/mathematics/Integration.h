@@ -5,6 +5,14 @@
  * (at your option) any later version.
  *
  * Written (W) 2013 Roman Votyakov
+ *
+ * The abscissae and weights for Gauss-Kronrod rules are taken form
+ * QUADPACK, which is in public domain.
+ * http://www.netlib.org/quadpack/
+ *
+ * See method comments which functions are adapted from GNU Octave,
+ * file quadgk.m: Copyright (C) 2008-2012 David Bateman under GPLv3
+ * http://www.gnu.org/software/octave/
  */
 
 #ifndef _INTEGRATION_H_
@@ -42,6 +50,8 @@ public:
 	 * This function applies the Gauss-Kronrod 21-point integration
 	 * rule for finite bounds \f$[a, b]\f$ and 15-point rule for
 	 * infinite ones.
+	 *
+	 * Based on ideas form GNU Octave (file quadgk.m) under GPLv3.
 	 *
 	 * @param f integrable function of one variable
 	 * @param a lower bound of the domain of integration
@@ -91,6 +101,8 @@ private:
 	/** evaluate definite integral of a function and error on each
 	 * subinterval using Gauss-Kronrod quadrature formula of order n
 	 *
+	 * Adapted form GNU Octave (file quadgk.m) under GPLv3.
+	 *
 	 * @param f integrable function of one variable
 	 * @param subs subintervals of integration
 	 * @param q approximate value of definite integral of the function
@@ -109,7 +121,10 @@ private:
 	 * subinterval using Gauss-Kronrod quadrature formula of order 15.
 	 *
 	 * Gauss-Kronrod nodes, Gauss weights and Gauss-Kronrod weights
-	 * are precomuted.
+	 * are precomputed.
+	 *
+	 * The abscissae and weights for 15-point rule are taken from from
+	 * QUADPACK (file dqk15.f).
 	 *
 	 * @param f integrable function of one variable
 	 * @param subs subintervals of integration
@@ -124,7 +139,10 @@ private:
 	 * subinterval using Gauss-Kronrod quadrature formula of order 21.
 	 *
 	 * Gauss-Kronrod nodes, Gauss weights and Gauss-Kronrod weights
-	 * are precomuted.
+	 * are precomputed.
+	 *
+	 * The abscissae and weights for 21-point rule are taken from
+	 * QUADPACK (file dqk21.f).
 	 *
 	 * @param f integrable function of one variable
 	 * @param subs subintervals of integration
@@ -152,7 +170,10 @@ private:
 	/** evaluate integral \f$\int_{-\infty}^{\infty}e^{-x^2}f(x)dx\f$
 	 * using Gauss-Hermite quadrature formula of order 64.
 	 *
-	 * Gauss-Hermite nodes and Gauss-Hermite weights are precomuted.
+	 * Gauss-Hermite nodes \f$x_i\f$ and weights \f$w_i\f$ are
+	 * precomputed: \f$x_i\f$ - the i-th zero of \f$H_n(x)\f$,
+	 * \f$w_i=\frac{2^{n-1}n!\sqrt{\pi}}{n^2[H_{n-1}(x_i)]^2}\f$,
+	 * where \f$H_n(x)\f$ is physicists' Hermite polynomials.
 	 *
 	 * @param f integrable function of one variable
 	 *
