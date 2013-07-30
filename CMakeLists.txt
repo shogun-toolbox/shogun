@@ -103,6 +103,8 @@ OPTION(PerlModular "Perl Modular" OFF)
 OPTION(RubyModular "Ruby Modular" OFF)
 OPTION(CSharpModular "CSharp Modular" OFF)
 
+OPTION(MatlabStatic "Matlab Static" OFF)
+
 # SVMLight
 OPTION(USE_SVMLIGHT "SVMLight" ON)
 SET(SVMLightWarning "\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
@@ -391,17 +393,17 @@ ENDIF()
 
 # python modular
 IF (PythonModular)
-FIND_PACKAGE(PythonLibs REQUIRED)
-FIND_PACKAGE(NumPy REQUIRED)
+	FIND_PACKAGE(PythonLibs REQUIRED)
+	FIND_PACKAGE(NumPy REQUIRED)
 
-LIST(APPEND DEFINES -DHAVE_PYTHON)
-add_definitions(-DHAVE_PYTHON)
-SET(CMAKE_SWIG_FLAGS "${CMAKE_SWIG_FLAGS};-DHAVE_PYTHON")
-SET(PythonModular OFF CACHE BOOL ON)
+	LIST(APPEND DEFINES -DHAVE_PYTHON)
+	add_definitions(-DHAVE_PYTHON)
+	SET(CMAKE_SWIG_FLAGS "${CMAKE_SWIG_FLAGS};-DHAVE_PYTHON")
+	SET(PythonModular OFF CACHE BOOL ON)
 
-#custom swig flags for python modular interface
-SET(TARGET_SWIGFLAGS "-builtin\;-modern\;-modernargs")
-add_subdirectory(src/interfaces/python_modular)
+	#custom swig flags for python modular interface
+	SET(TARGET_SWIGFLAGS "-builtin\;-modern\;-modernargs")
+	add_subdirectory(src/interfaces/python_modular)
 ENDIF()
 
 # lua modular
@@ -423,8 +425,9 @@ ENDIF()
 # ruby modular
 IF (RubyModular)
 	FIND_PACKAGE(Ruby REQUIRED)
-	UNSET(TARGET_SWIGFLAGS)
+	MESSAGE(${RUBY_LIBRARY})
 	#FIND_PACKAGE(RubyNArray)
+	UNSET(TARGET_SWIGFLAGS)
 	add_subdirectory(src/interfaces/ruby_modular)
 ENDIF()
 
@@ -433,6 +436,7 @@ IF (OctaveModular)
 	FIND_PACKAGE(Octave REQUIRED)
 	UNSET(TARGET_SWIGFLAGS)
 	add_subdirectory(src/interfaces/octave_modular)
+ENDIF()
 
 # csharp modular
 IF (CSharpModular)
@@ -453,6 +457,10 @@ IF (PerlModular)
 	FIND_PACKAGE(FindPerlLibs REQUIRED)
 	UNSET(TARGET_SWIGFLAGS)
 	#add_subdirectory(src/interfaces/perl_modular)
+ENDIF()
+
+IF (MatlabStatic)
+	#add_subdirectory(src/interfaces/matlab_static)
 ENDIF()
 
 IF (SVMLight)
@@ -478,3 +486,5 @@ add_subdirectory(src/shogun)
 IF(BUILD_EXAMPLES)
 
 ENDIF()
+
+INCLUDE(CPack)
