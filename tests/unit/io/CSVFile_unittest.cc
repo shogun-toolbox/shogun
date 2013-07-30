@@ -8,6 +8,7 @@
 
 using namespace shogun;
 
+
 TEST(CSVFileTest, read_matrix)
 {
 	int32_t nlines=5;
@@ -76,6 +77,9 @@ TEST(CSVFileTest, read_matrix)
 		}
 	}
 	SG_UNREF(fin);
+
+	a=SGMatrix<float64_t>();
+	b=SGMatrix<float64_t>();
 }
 
 TEST(CSVFileTest, write_matrix_real)

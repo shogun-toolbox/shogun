@@ -34,11 +34,13 @@ CCircularBuffer::CCircularBuffer(int32_t buffer_size)
 
 CCircularBuffer::~CCircularBuffer()
 {
-	m_buffer=SGVector<char>();
+	SG_UNREF(m_tokenizer);
 }
 
 void CCircularBuffer::set_tokenizer(CTokenizer* tokenizer)
 {
+	SG_REF(tokenizer);
+	SG_UNREF(m_tokenizer);
 	m_tokenizer=tokenizer;
 }
 
@@ -287,7 +289,8 @@ void CCircularBuffer::clear()
 
 void CCircularBuffer::init()
 {
-	m_buffer_end=m_buffer.vector+m_buffer.vlen;
+	m_buffer=SGVector<char>();
+	m_buffer_end=NULL;
 	m_tokenizer=NULL;
 
 	m_begin_pos=NULL; 

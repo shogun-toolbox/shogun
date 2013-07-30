@@ -17,9 +17,11 @@ int main(int argc, char** argv)
 	SGVector<char> test_string(const_cast<char* >("all your bayes are belong to us! "), 33, false);
 
 	CCircularBuffer* buffer=new CCircularBuffer(max_line_length);
-	CDelimiterTokenizer* tokenizer=new CDelimiterTokenizer();
 
+	CDelimiterTokenizer* tokenizer=new CDelimiterTokenizer();
 	tokenizer->delimiters[' ']=1;
+	SG_REF(tokenizer);
+
 	buffer->set_tokenizer(tokenizer);
 
 	SGVector<char> tmp_string;

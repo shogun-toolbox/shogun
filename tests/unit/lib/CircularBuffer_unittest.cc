@@ -93,8 +93,11 @@ TEST(CircularBufferTest, stress_test)
 	SGVector<char> test_string((char*)"all your bayes are belong to us! ", 33, false);
 
 	buffer=new CCircularBuffer(buffer_size);
+
 	tokenizer=new CDelimiterTokenizer();
 	tokenizer->delimiters[' ']=1;
+	SG_REF(tokenizer);
+
 	buffer->set_tokenizer(tokenizer);
 
 	EXPECT_EQ(buffer_size, buffer->available());
