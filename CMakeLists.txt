@@ -70,6 +70,9 @@ IF(CMAKE_BUILD_TYPE STREQUAL "Debug")
 	#	COMPFLAGS_SWIG_CPP="-g $COMPFLAGS_SWIG_CPP"
 ENDIF()
 
+################# EXAMPLES ##################
+OPTION(BUILD_EXAMPLES "Build Examples" ON)
+
 ################# DATATYPES #################
 LIST(APPEND DEFINES -DUSE_CHAR)
 LIST(APPEND DEFINES -DUSE_BOOL)
@@ -297,7 +300,7 @@ ENDIF()
 
 # JSON
 IF (PKG_CONFIG_FOUND)
-	pkg_search_module(JSON libjson json json-c)
+	pkg_search_module(JSON libjson>=0.11 json>=0.11 json-c>=0.11)
 	IF (JSON_FOUND)
 		SET(HAVE_JSON 1)
 		LIST(APPEND DEFINES -DHAVE_JSON)
@@ -377,6 +380,8 @@ SET(CMAKE_SWIG_FLAGS "${CMAKE_SWIG_FLAGS};${DEFINES}")
 
 OPTION(USE_SWIG_DIRECTORS "" OFF)
 
+FIND_PACKAGE(Ruby)
+
 FIND_PACKAGE(SWIG 2.0.4)
 IF (SWIG_FOUND)
 	FIND_PACKAGE(PythonLibs)
@@ -398,6 +403,7 @@ IF (SWIG_FOUND)
 	FIND_PACKAGE(Java)
 	IF (Java_JAVAC_EXECUTABLE)
 		FIND_PACKAGE(JNI)
+		FIND_PACKAGE(ApacheAnt)
 		IF (JNI_FOUND)
 			SET(JavaModular OFF CACHE BOOL ON)
 			SET(TARGET_SWIGFLAGS "-package\;org.shogun")
@@ -405,10 +411,31 @@ IF (SWIG_FOUND)
 		ENDIF()
 	ENDIF()
 
-	FIND_PACKAGE(Ruby)
-	FIND_PACKAGE(Lua50)
-	FIND_PACKAGE(Matlab)
+	IF (RUBY_EXECUTABLE)
+		SET(RubyModular ON CACHE BOOL "Ruby Modular")
+		UNSET(TARGET_SWIGFLAGS)
+		#FIND_PACKAGE(RubyNArray)
+		add_subdirectory(src/interfaces/ruby_modular)
+	ENDIF()
+
+	FIND_PACKAGE(Lua51)
+	IF(LUA51_FOUND)
+		UNSET(TARGET_SWIGFLAGS)
+		add_subdirectory(src/interfaces/lua_modular)
+	ENDIF()
+		
 	FIND_PACKAGE(Octave)
+	IF(OCTAVE_LIBRARIES)
+		UNSET(TARGET_SWIGFLAGS)
+		add_subdirectory(src/interfaces/octave_modular)
+	ENDIF()
+
+	FIND_PACKAGE(CSharp)
+	IF(CSHARP_FOUND)
+		UNSET(TARGET_SWIGFLAGS)
+		add_subdirectory(src/interfaces/csharp_modular)
+	ENDIF()
+
 	#FIND_PACKAGE(R)
 ENDIF()
 
@@ -431,3 +458,7 @@ SET(COMPFLAGS_CPP "TODO")
 SET(LINKFLAGS "TODO")
 
 add_subdirectory(src/shogun)
+
+IF(BUILD_EXAMPLES)
+
+ENDIF()
