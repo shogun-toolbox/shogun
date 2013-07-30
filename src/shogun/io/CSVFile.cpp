@@ -23,14 +23,14 @@ CCSVFile::CCSVFile(FILE* f, const char* name) :
 	CFile(f, name)
 {
 	init();
-	m_line_reader=new CLineReader(file, m_line_tokenizer);
+	init_with_defaults();
 }
 
 CCSVFile::CCSVFile(const char* fname, char rw, const char* name) :
 	CFile(fname, rw, name)
 {
 	init();
-	m_line_reader=new CLineReader(file, m_line_tokenizer);
+	init_with_defaults();
 }
 
 CCSVFile::~CCSVFile()
@@ -63,18 +63,32 @@ void CCSVFile::skip_lines(int32_t num_lines)
 void CCSVFile::init()
 {
 	m_order=FORTRAN_ORDER;
+	m_delimiter=0;
+
+	m_tokenizer=NULL;
+	m_line_tokenizer=NULL;
+	m_parser=NULL;
+	m_line_reader=NULL;
+}
+
+void CCSVFile::init_with_defaults()
+{
+	m_order=FORTRAN_ORDER;
+	m_delimiter=',';
 
 	m_tokenizer=new CDelimiterTokenizer(true);
 	m_tokenizer->delimiters[m_delimiter]=1;
 	m_tokenizer->delimiters[' ']=1;
+	SG_REF(m_tokenizer);
 
 	m_line_tokenizer=new CDelimiterTokenizer(true);
 	m_line_tokenizer->delimiters['\n']=1;
+	SG_REF(m_line_tokenizer);
 
 	m_parser=new CParser();
 	m_parser->set_tokenizer(m_tokenizer);
 
-	m_line_reader=new CLineReader();
+	m_line_reader=new CLineReader(file, m_line_tokenizer);
 }
 
 #define GET_VECTOR(fname, read_func, sg_type) \
@@ -101,7 +115,6 @@ void CCSVFile::fname(sg_type*& vector, int32_t& len) \
 	{ \
 		vector[i]=m_parser->read_func(); \
 	} \
-	\
 }
 
 GET_VECTOR(get_vector, read_char, int8_t)

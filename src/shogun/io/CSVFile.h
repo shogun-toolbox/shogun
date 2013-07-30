@@ -349,6 +349,9 @@ private:
 	/** class initialization */
 	void init();
 
+	/** class initialization */
+	void init_with_defaults();
+
 private:
 	/** object for reading lines from file */
 	CLineReader* m_line_reader;

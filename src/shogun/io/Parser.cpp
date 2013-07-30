@@ -21,13 +21,18 @@ CParser::CParser(SGVector<char> text, CTokenizer* tokenizer)
 {
 	init();
 
-	set_text(text);
-	set_tokenizer(tokenizer);
+	m_text=text;
+
+	SG_REF(tokenizer);
+	m_tokenizer=tokenizer;
+
+	if (m_tokenizer!=NULL)
+		m_tokenizer->set_text(m_text);
 }
 
 CParser::~CParser()
 {
-	m_text=SGVector<char>();
+	SG_UNREF(m_tokenizer);
 }
 
 bool CParser::has_next()
@@ -131,13 +136,17 @@ READ_REAL_METHOD(read_long_real, strtod, floatmax_t)
 void CParser::set_text(SGVector<char> text)
 {
 	m_text=text;
+
 	if (m_tokenizer!=NULL)
 		m_tokenizer->set_text(m_text);
 }
 
 void CParser::set_tokenizer(CTokenizer* tokenizer)
 {
+	SG_REF(tokenizer);
+	SG_UNREF(m_tokenizer);
 	m_tokenizer=tokenizer;
+
 	if (m_tokenizer!=NULL)
 		m_tokenizer->set_text(m_text);
 }

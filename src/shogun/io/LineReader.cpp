@@ -25,10 +25,11 @@ CLineReader::CLineReader(FILE* stream, CTokenizer* tokenizer)
 	m_stream=stream;
 	m_max_token_length=10*1024*1024;
 
-	m_buffer=new CCircularBuffer(m_max_token_length);
-	m_buffer->set_tokenizer(tokenizer);
-
+	SG_REF(tokenizer);
 	m_tokenizer=tokenizer;
+
+	m_buffer=new CCircularBuffer(m_max_token_length);
+	m_buffer->set_tokenizer(m_tokenizer);
 }
 
 CLineReader::CLineReader(int32_t max_token_length, FILE* stream, CTokenizer* tokenizer)
@@ -38,14 +39,16 @@ CLineReader::CLineReader(int32_t max_token_length, FILE* stream, CTokenizer* tok
 	m_stream=stream;
 	m_max_token_length=max_token_length;
 
-	m_buffer=new CCircularBuffer(m_max_token_length);
-	m_buffer->set_tokenizer(tokenizer);
-
+	SG_REF(tokenizer);
 	m_tokenizer=tokenizer;
+
+	m_buffer=new CCircularBuffer(m_max_token_length);
+	m_buffer->set_tokenizer(m_tokenizer);
 }
 
 CLineReader::~CLineReader()
 {
+	SG_UNREF(m_tokenizer);
 	SG_UNREF(m_buffer);
 }
 
@@ -100,8 +103,11 @@ SGVector<char> CLineReader::read_line()
 
 void CLineReader::set_tokenizer(CTokenizer* tokenizer)
 {
-	m_buffer->set_tokenizer(tokenizer);
+	SG_REF(tokenizer);
+	SG_UNREF(m_tokenizer);
 	m_tokenizer=tokenizer;
+
+	m_buffer->set_tokenizer(tokenizer);
 }
 
 void CLineReader::init()
