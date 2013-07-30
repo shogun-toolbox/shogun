@@ -1,0 +1,5 @@
+include(CommonModularInterface)
+include_directories(${CMAKE_SOURCE_DIR}/src)
+INCLUDE_DIRECTORIES(${RUBY_INCLUDE_DIRS})
+
+GENERATE_MODULAR_TARGET(ruby ${CMAKE_CURRENT_SOURCE_DIR} ${RUBY_LIBRARY})

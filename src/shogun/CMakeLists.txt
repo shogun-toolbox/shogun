@@ -40,7 +40,8 @@ set_target_properties(shogun PROPERTIES VERSION ${LIBSHOGUNVER} SOVERSION ${LIBS
 target_link_libraries(shogun ${POSTLINKFLAGS})
 
 INSTALL(DIRECTORY ./ DESTINATION include/shogun
-        FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp")
+        FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp"
+        PATTERN ".settings" EXCLUDE)
 
 INSTALL(TARGETS shogun 
   LIBRARY DESTINATION lib

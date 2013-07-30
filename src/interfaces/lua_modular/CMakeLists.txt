@@ -1,0 +1,8 @@
+include(CommonModularInterface)
+include_directories(${CMAKE_SOURCE_DIR}/src)
+INCLUDE_DIRECTORIES(${LUA_INCLUDE_DIR})
+
+GENERATE_MODULAR_TARGET(lua ${CMAKE_CURRENT_SOURCE_DIR} ${LUA_LIBRARIES})
+
+INSTALL(TARGETS lua_modular
+	LIBRARY DESTINATION lib/lua/)
