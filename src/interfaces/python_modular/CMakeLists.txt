@@ -38,9 +38,11 @@ endif()
 SET(PYTHON_PACKAGES_PATH "${_PYTHON_PACKAGES_PATH}" CACHE PATH "Where to install the python packages.")
 
 INSTALL(TARGETS _python_modular 
-		DESTINATION ${PYTHON_PACKAGES_PATH})
+		DESTINATION ${PYTHON_PACKAGES_PATH}
+    COMPONENT python)
 INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/modshogun.py 
-		DESTINATION ${PYTHON_PACKAGES_PATH})
+		DESTINATION ${PYTHON_PACKAGES_PATH}
+    COMPONENT python)
 
 # create the __init.py__ files for modules and the main
 file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/__init__.py.in "from modshogun import *")
@@ -52,7 +54,8 @@ SET(MODULES Kernel Distance Features Classifier Regression Converter
 
 FOREACH(module ${MODULES})
 	INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/__init__.py 
-		DESTINATION ${PYTHON_PACKAGES_PATH}/shogun/${module})
+		DESTINATION ${PYTHON_PACKAGES_PATH}/shogun/${module}
+    COMPONENT python)
 	file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/main_init.py.in "\"${module}\",\n")
 ENDFOREACH()
 
@@ -60,4 +63,12 @@ file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/main_init.py.in "]")
 configure_file(${CMAKE_CURRENT_BINARY_DIR}/main_init.py.in main_init.py COPYONLY)
 INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/main_init.py
 	DESTINATION ${PYTHON_PACKAGES_PATH}/shogun
+  COMPONENT python
 	RENAME __init__.py)
+
+set(CPACK_COMPONENT_PYTHON_DISPLAY_NAME "Python interface" PARENT_SCOPE)
+set(CPACK_COMPONENT_PYTHON_DESCRIPTION "Python modular interface of Shogun" PARENT_SCOPE)
+set(CPACK_COMPONENT_PYTHON_GROUP "Runtime" PARENT_SCOPE)
+set(CPACK_COMPONENT_PYTHON_DEPENDS libraries PARENT_SCOPE)
+SET(CPACK_COMPONENTS_ALL ${CPACK_COMPONENTS_ALL} python PARENT_SCOPE)
+
