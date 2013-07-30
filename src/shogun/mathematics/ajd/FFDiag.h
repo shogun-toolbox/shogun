@@ -39,7 +39,7 @@ class CFFDiag : public CApproxJointDiagonalizer
 		/** constructor */
 		CFFDiag()
 		{
-		};
+		}
 
 		/** destructor */
 		virtual ~CFFDiag()

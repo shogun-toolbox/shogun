@@ -38,7 +38,7 @@ class CQDiag : public CApproxJointDiagonalizer
 		/** constructor */
 		CQDiag()
 		{
-		};
+		}
 
 		/** destructor */
 		virtual ~CQDiag()

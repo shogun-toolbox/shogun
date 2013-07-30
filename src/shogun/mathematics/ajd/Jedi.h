@@ -38,7 +38,7 @@ class CJedi : public CApproxJointDiagonalizer
 		/** constructor */
 		CJedi()
 		{
-		};
+		}
 
 		/** destructor */
 		virtual ~CJedi()

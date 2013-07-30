@@ -55,6 +55,9 @@ SGMatrix<float64_t> CJedi::diagonalize(SGNDArray<float64_t> C, SGMatrix<float64_
 		SG_SERROR("Convergence not reached\n")
 	}
 	
+	Eigen::Map<EMatrix> EV(V.matrix,d,d);
+	EV = EV.inverse();
+	
 	return V;
 }
 

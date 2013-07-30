@@ -38,11 +38,7 @@ SGMatrix<float64_t> CQDiag::diagonalize(SGNDArray<float64_t> C, SGMatrix<float64
 		}
 	}
 	
-	std::vector<double> p;
-	for (int i = 0; i < T; i++)
-	{
-		p.push_back(1.0/T);
-	}
+	std::vector<double> p(T,1.0/T);
 	
 	EMatrix C0 = EMatrix::Identity(N,N);
 	
@@ -54,6 +50,7 @@ SGMatrix<float64_t> CQDiag::diagonalize(SGNDArray<float64_t> C, SGMatrix<float64
 		P(i,N-1-i) = 1;
 	
 	std::vector<bool> issymmetric;
+	issymmetric.reserve(T);
 	for (int l = 0; l < T; l++)
 	{
 		Eigen::Map<EMatrix> Ci(C.get_matrix(l),N,N);
@@ -62,11 +59,11 @@ SGMatrix<float64_t> CQDiag::diagonalize(SGNDArray<float64_t> C, SGMatrix<float64
 		
 		if ( (Ci - Ci.transpose()).sum() > 1e-6 )
 		{
-			issymmetric.push_back(false);
+			issymmetric[l] = false;
 		}
 		else
 		{
-			issymmetric.push_back(true);
+			issymmetric[l] = true;
 		}	
 	}
 	
