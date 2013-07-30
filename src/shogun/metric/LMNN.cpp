@@ -61,12 +61,9 @@ void CLMNN::train(SGMatrix<float64_t> init_transform)
 	// Compute target or genuine neighbours
 	SG_DEBUG("Finding target nearest neighbors.\n")
 	SGMatrix<index_t> target_nn = CLMNNImpl::find_target_nn(x, y, m_k);
-	// Compute outer products between all pairs of feature vectors
-	SG_DEBUG("Computing outer products.\n")
-	OuterProductsMatrixType outer_products = CLMNNImpl::compute_outer_products(x);
 	// Initialize (sub-)gradient
 	SG_DEBUG("Summing outer products for (sub-)gradient initilization.\n")
-	MatrixXd gradient = (1-m_regularization)*CLMNNImpl::sum_outer_products(outer_products, target_nn);
+	MatrixXd gradient = (1-m_regularization)*CLMNNImpl::sum_outer_products(x, target_nn);
 	// Value of the objective function at every iteration
 	SGVector<float64_t> obj(m_maxiter);
 	// The step size is modified depending on how the objective changes, leave the
@@ -89,8 +86,7 @@ void CLMNN::train(SGMatrix<float64_t> init_transform)
 
 		// (Sub-) gradient computation
 		SG_DEBUG("Updating gradient.\n")
-		CLMNNImpl::update_gradient(gradient, outer_products, cur_impostors,
-				prev_impostors, m_regularization);
+		CLMNNImpl::update_gradient(x, gradient, cur_impostors, prev_impostors, m_regularization);
 		// Take gradient step
 		SG_DEBUG("Taking gradient step.\n")
 		CLMNNImpl::gradient_step(L, gradient, stepsize);
