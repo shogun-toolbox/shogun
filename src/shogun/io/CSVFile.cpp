@@ -180,23 +180,23 @@ void CCSVFile::fname(const sg_type* vector, int32_t len) \
 { \
 	for (int32_t i=0; i<len; i++) \
 	{ \
-		fprintf(file, #format "%c", vector[i], m_delimiter); \
+		fprintf(file, "%" format "%c", vector[i], m_delimiter); \
 	} \
 	fprintf(file, "\n"); \
 }
 
-SET_VECTOR(set_vector, "%" #SCNi8, int8_t)
-SET_VECTOR(set_vector, "%" #SCNu8, uint8_t)
-SET_VECTOR(set_vector, "%" #SCNu8, char)
-SET_VECTOR(set_vector, "%" #SCNi32, int32_t)
-SET_VECTOR(set_vector, "%" #SCNu32, uint32_t)
-SET_VECTOR(set_vector, "%" #SCNi64, int64_t)
-SET_VECTOR(set_vector, "%" #SCNu64, uint64_t)
-SET_VECTOR(set_vector, %g, float32_t)
-SET_VECTOR(set_vector, %lg, float64_t)
-SET_VECTOR(set_vector, %Lg, floatmax_t)
-SET_VECTOR(set_vector, "%" #SCNi16, int16_t)
-SET_VECTOR(set_vector, "%" #SCNu16, uint16_t)
+SET_VECTOR(set_vector, SCNi8, int8_t)
+SET_VECTOR(set_vector, SCNu8, uint8_t)
+SET_VECTOR(set_vector, SCNu8, char)
+SET_VECTOR(set_vector, SCNi32, int32_t)
+SET_VECTOR(set_vector, SCNu32, uint32_t)
+SET_VECTOR(set_vector, SCNi64, int64_t)
+SET_VECTOR(set_vector, SCNu64, uint64_t)
+SET_VECTOR(set_vector, "g", float32_t)
+SET_VECTOR(set_vector, "lg", float64_t)
+SET_VECTOR(set_vector, "Lg", floatmax_t)
+SET_VECTOR(set_vector, SCNi16, int16_t)
+SET_VECTOR(set_vector, SCNu16, uint16_t)
 #undef SET_VECTOR
 
 #define SET_MATRIX(fname, format, sg_type) \
@@ -207,7 +207,7 @@ void CCSVFile::fname(const sg_type* matrix, int32_t num_feat, int32_t num_vec) \
 		for (int32_t i=0; i<num_feat; i++) \
 		{ \
 			for (int32_t j=0; j<num_vec; j++) \
-				fprintf(file, #format "%c", matrix[j+i*num_vec], m_delimiter); \
+				fprintf(file, "%" format "%c", matrix[j+i*num_vec], m_delimiter); \
 			fprintf(file, "\n"); \
 		} \
 	} \
@@ -216,7 +216,7 @@ void CCSVFile::fname(const sg_type* matrix, int32_t num_feat, int32_t num_vec) \
 		for (int32_t i=0; i<num_vec; i++) \
 		{ \
 			for (int32_t j=0; j<num_feat; j++) \
-				fprintf(file, #format "%c", matrix[i+j*num_vec], m_delimiter); \
+				fprintf(file, "%" format "%c", matrix[i+j*num_vec], m_delimiter); \
 			fprintf(file, "\n"); \
 		} \
 	} \
@@ -229,9 +229,9 @@ SET_MATRIX(set_matrix, SCNi32, int32_t)
 SET_MATRIX(set_matrix, SCNu32, uint32_t)
 SET_MATRIX(set_matrix, SCNi64, int64_t)
 SET_MATRIX(set_matrix, SCNu64, uint64_t)
-SET_MATRIX(set_matrix, %g, float32_t)
-SET_MATRIX(set_matrix, %lg, float64_t)
-SET_MATRIX(set_matrix, %Lg, floatmax_t)
+SET_MATRIX(set_matrix, "g", float32_t)
+SET_MATRIX(set_matrix, "lg", float64_t)
+SET_MATRIX(set_matrix, "Lg", floatmax_t)
 SET_MATRIX(set_matrix, SCNi16, int16_t)
 SET_MATRIX(set_matrix, SCNu16, uint16_t)
 #undef SET_MATRIX
