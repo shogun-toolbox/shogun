@@ -47,6 +47,7 @@ namespace shogun
 {
 	template <class T> class SGVector;
 	template <class T> class SGSparseVector;
+	template <class T> class SGMatrix;
 
 #ifdef TRACE_MEMORY_ALLOCS
 void* sg_malloc(size_t size, const char* file, int line);
@@ -183,6 +184,21 @@ SG_SPECIALIZED_MALLOC(SGSparseVector<float32_t>)
 SG_SPECIALIZED_MALLOC(SGSparseVector<float64_t>)
 SG_SPECIALIZED_MALLOC(SGSparseVector<floatmax_t>)
 SG_SPECIALIZED_MALLOC(SGSparseVector<complex64_t>)
+
+SG_SPECIALIZED_MALLOC(SGMatrix<bool>)
+SG_SPECIALIZED_MALLOC(SGMatrix<char>)
+SG_SPECIALIZED_MALLOC(SGMatrix<int8_t>)
+SG_SPECIALIZED_MALLOC(SGMatrix<uint8_t>)
+SG_SPECIALIZED_MALLOC(SGMatrix<int16_t>)
+SG_SPECIALIZED_MALLOC(SGMatrix<uint16_t>)
+SG_SPECIALIZED_MALLOC(SGMatrix<int32_t>)
+SG_SPECIALIZED_MALLOC(SGMatrix<uint32_t>)
+SG_SPECIALIZED_MALLOC(SGMatrix<int64_t>)
+SG_SPECIALIZED_MALLOC(SGMatrix<uint64_t>)
+SG_SPECIALIZED_MALLOC(SGMatrix<float32_t>)
+SG_SPECIALIZED_MALLOC(SGMatrix<float64_t>)
+SG_SPECIALIZED_MALLOC(SGMatrix<floatmax_t>)
+SG_SPECIALIZED_MALLOC(SGMatrix<complex64_t>)
 #undef SG_SPECIALIZED_MALLOC
 
 void* get_copy(void* src, size_t len);
