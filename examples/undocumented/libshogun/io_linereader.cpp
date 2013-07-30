@@ -15,11 +15,12 @@ int main(int argc, char** argv)
 
 	CDelimiterTokenizer* tokenizer=new CDelimiterTokenizer();
 	tokenizer->delimiters['\n']=1;
+	SG_REF(tokenizer);
 
 	CLineReader* reader=new CLineReader(fin, tokenizer);
 
 	int lines_count=0;
-	SGVector<char> tmp_string(true);
+	SGVector<char> tmp_string;
 	while (reader->has_next())
 	{
 		tmp_string=reader->read_line();
@@ -32,8 +33,8 @@ int main(int argc, char** argv)
 	SG_SPRINT("total lines: %d\n", lines_count);
 
 	tmp_string=SGVector<char>();
-	SG_UNREF(tokenizer);
 	SG_UNREF(reader);
+	SG_UNREF(tokenizer);
 
 	fclose(fin);
 

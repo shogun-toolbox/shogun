@@ -146,14 +146,14 @@ private:
 	/** pointer to end of buffer's memory */
 	char* m_buffer_end;
 
-	/** tokenizer */
-	CTokenizer* m_tokenizer;
-
 	/** begin of buffer */	
 	char* m_begin_pos;
 
 	/** end of buffer */
 	char* m_end_pos;
+
+	/** tokenizer */
+	CTokenizer* m_tokenizer;
 
 	/** position at which the search starts */
 	index_t m_last_idx;

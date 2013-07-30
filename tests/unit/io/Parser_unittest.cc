@@ -16,6 +16,7 @@ TEST(ParserTest, tokenization)
 	CDelimiterTokenizer* tokenizer=new CDelimiterTokenizer();
 	tokenizer->init_for_whitespace();
 	tokenizer->set_skip_delimiters(true);
+	SG_REF(tokenizer);
 
 	CParser* reader=new CParser(cv, tokenizer);
 
@@ -50,6 +51,7 @@ TEST(ParserTest, tokenization_reals)
 	tokenizer->delimiters[',']=1;
 	tokenizer->delimiters['\n']=1;
 	tokenizer->set_skip_delimiters(true);
+	SG_REF(tokenizer);
 
 	CParser* reader=new CParser(cv, tokenizer);
 
