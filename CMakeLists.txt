@@ -380,63 +380,79 @@ SET(CMAKE_SWIG_FLAGS "${CMAKE_SWIG_FLAGS};${DEFINES}")
 
 OPTION(USE_SWIG_DIRECTORS "" OFF)
 
-FIND_PACKAGE(Ruby)
+# check whether any of the modular interfaces are turned ON
+IF (
+	PythonModular OR LuaModular OR RModular OR
+	OctaveModular OR JavaModular OR PerlModular OR
+	RubyModular OR CSharpModular
+   )
+	FIND_PACKAGE(SWIG 2.0.4 REQUIRED)
+ENDIF()
 
-FIND_PACKAGE(SWIG 2.0.4)
-IF (SWIG_FOUND)
-	FIND_PACKAGE(PythonLibs)
-	IF (PYTHONLIBS_FOUND)
-		FIND_PACKAGE(NumPy)
-		IF (NUMPY_FOUND)
+# python modular
+IF (PythonModular)
+FIND_PACKAGE(PythonLibs REQUIRED)
+FIND_PACKAGE(NumPy REQUIRED)
 
-			LIST(APPEND DEFINES -DHAVE_PYTHON)
-			add_definitions(-DHAVE_PYTHON)
-			SET(CMAKE_SWIG_FLAGS "${CMAKE_SWIG_FLAGS};-DHAVE_PYTHON")
-			SET(PythonModular OFF CACHE BOOL ON)
-			
-			#custom swig flags for python modular interface
-			SET(TARGET_SWIGFLAGS "-builtin\;-modern\;-modernargs")
-			add_subdirectory(src/interfaces/python_modular)
-		ENDIF()
-	ENDIF()
+LIST(APPEND DEFINES -DHAVE_PYTHON)
+add_definitions(-DHAVE_PYTHON)
+SET(CMAKE_SWIG_FLAGS "${CMAKE_SWIG_FLAGS};-DHAVE_PYTHON")
+SET(PythonModular OFF CACHE BOOL ON)
 
-	FIND_PACKAGE(Java)
-	IF (Java_JAVAC_EXECUTABLE)
-		FIND_PACKAGE(JNI)
-		FIND_PACKAGE(ApacheAnt)
-		IF (JNI_FOUND)
-			SET(JavaModular OFF CACHE BOOL ON)
-			SET(TARGET_SWIGFLAGS "-package\;org.shogun")
-			add_subdirectory(src/interfaces/java_modular)
-		ENDIF()
-	ENDIF()
+#custom swig flags for python modular interface
+SET(TARGET_SWIGFLAGS "-builtin\;-modern\;-modernargs")
+add_subdirectory(src/interfaces/python_modular)
+ENDIF()
 
-	IF (RUBY_EXECUTABLE)
-		SET(RubyModular ON CACHE BOOL "Ruby Modular")
-		UNSET(TARGET_SWIGFLAGS)
-		#FIND_PACKAGE(RubyNArray)
-		add_subdirectory(src/interfaces/ruby_modular)
-	ENDIF()
+# lua modular
+IF (LuaModular)
+	FIND_PACKAGE(Lua51 REQUIRED)
+	UNSET(TARGET_SWIGFLAGS)
+	add_subdirectory(src/interfaces/lua_modular)
+ENDIF()
 
-	FIND_PACKAGE(Lua51)
-	IF(LUA51_FOUND)
-		UNSET(TARGET_SWIGFLAGS)
-		add_subdirectory(src/interfaces/lua_modular)
-	ENDIF()
-		
-	FIND_PACKAGE(Octave)
-	IF(OCTAVE_LIBRARIES)
-		UNSET(TARGET_SWIGFLAGS)
-		add_subdirectory(src/interfaces/octave_modular)
-	ENDIF()
+# java modular
+IF (JavaModular)
+	FIND_PACKAGE(Java REQUIRED)
+	FIND_PACKAGE(JNI REQUIRED)
+	FIND_PACKAGE(ApacheAnt REQUIRED)
+	SET(TARGET_SWIGFLAGS "-package\;org.shogun")
+	add_subdirectory(src/interfaces/java_modular)
+ENDIF()
 
-	FIND_PACKAGE(CSharp)
-	IF(CSHARP_FOUND)
-		UNSET(TARGET_SWIGFLAGS)
-		add_subdirectory(src/interfaces/csharp_modular)
-	ENDIF()
+# ruby modular
+IF (RubyModular)
+	FIND_PACKAGE(Ruby REQUIRED)
+	UNSET(TARGET_SWIGFLAGS)
+	#FIND_PACKAGE(RubyNArray)
+	add_subdirectory(src/interfaces/ruby_modular)
+ENDIF()
 
-	#FIND_PACKAGE(R)
+# octave modular
+IF (OctaveModular)		
+	FIND_PACKAGE(Octave REQUIRED)
+	UNSET(TARGET_SWIGFLAGS)
+	add_subdirectory(src/interfaces/octave_modular)
+
+# csharp modular
+IF (CSharpModular)
+	FIND_PACKAGE(CSharp REQUIRED)
+	UNSET(TARGET_SWIGFLAGS)
+	add_subdirectory(src/interfaces/csharp_modular)
+ENDIF()
+
+# r modular
+IF (RModular)
+	FIND_PACKAGE(R REQUIRED)
+	UNSET(TARGET_SWIGFLAGS)
+	#add_subdirectory(src/interfaces/r_modular)
+ENDIF()
+
+# perl modular
+IF (PerlModular)
+	FIND_PACKAGE(FindPerlLibs REQUIRED)
+	UNSET(TARGET_SWIGFLAGS)
+	#add_subdirectory(src/interfaces/perl_modular)
 ENDIF()
 
 IF (SVMLight)
