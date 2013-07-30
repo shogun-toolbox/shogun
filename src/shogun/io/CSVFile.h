@@ -17,7 +17,6 @@
 #include <shogun/io/LineReader.h>
 #include <shogun/io/Parser.h>
 #include <shogun/lib/DelimiterTokenizer.h>
-#include <cstdio>
 
 namespace shogun
 {
