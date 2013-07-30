@@ -60,3 +60,5 @@
 
 #cmakedefine USE_SWIG_DIRECTORS 1
 #cmakedefine TRACE_MEMORY_ALLOCS 1
+
+#cmakedefine NARRAY_LIB "@NARRAY_LIB@"
