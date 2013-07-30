@@ -19,7 +19,7 @@ env:
  - CMAKE_OPTIONS="-DRubyModular=ON" EXTRA_PACKAGES="ruby ruby-dev ruby-narray swig2.0"
  - CMAKE_OPTIONS="-DCSharpModular=ON" EXTRA_PACKAGES="mono-devel mono-gmcs cli-common-dev swig2.0"
  - CMAKE_OPTIONS="-DLuaModular=ON" EXTRA_PACKAGES="lua5.1 liblua5.1-0-dev swig2.0"
- - CMAKE_OPTIONS="-DOctaveModular=ON" EXTRA_PACKAGES="octave liboctave-dev swig2.0"
+ - CMAKE_OPTIONS="-DOctaveModular=ON" EXTRA_PACKAGES="octave swig2.0"
 matrix:
   exclude:
     - compiler: gcc
@@ -37,7 +37,7 @@ matrix:
     - compiler: gcc
       env: CMAKE_OPTIONS="-DLuaModular=ON" EXTRA_PACKAGES="lua5.1 liblua5.1-0-dev swig2.0"
     - compiler: gcc
-      env: CMAKE_OPTIONS="-DOctaveModular=ON" EXTRA_PACKAGES="octave liboctave-dev swig2.0"
+      env: CMAKE_OPTIONS="-DOctaveModular=ON" EXTRA_PACKAGES="octave swig2.0"
 before_install:
  - sudo apt-get update -qq
  - sudo apt-get install -qq cdbs libeigen3-dev libarpack2-dev libatlas-base-dev libblas-dev libglpk-dev libhdf5-serial-dev libjson0-dev swig zlib1g-dev libxml2-dev libreadline6-dev libreadline-dev libsnappy-dev liblzo2-dev liblzma-dev liblapack-dev gdb cmake $EXTRA_PACKAGES
