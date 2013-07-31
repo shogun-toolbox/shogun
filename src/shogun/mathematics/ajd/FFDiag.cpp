@@ -93,25 +93,24 @@ void getW(float64_t *C, int *ptN, int *ptK, float64_t *W)
 {
 	int N=*ptN;
 	int K=*ptK;
-	int i,j,k;
 	int auxij,auxji,auxii,auxjj;
 	float64_t z[N][N];
 	float64_t y[N][N];
 	
-	for (i = 0; i < N; i++) 
+	for (int i = 0; i < N; i++) 
 	{
-		for (j = 0; j < N; j++) 
+		for (int j = 0; j < N; j++) 
 		{
 			z[i][j] = 0;
 			y[i][j] = 0;
 		}
 	}
 	
-	for (i = 0; i < N; i++) 
+	for (int i = 0; i < N; i++) 
 	{
-		for (j = 0; j < N; j++) 
+		for (int j = 0; j < N; j++) 
 		{
-			for (k = 0; k < K; k++) 
+			for (int k = 0; k < K; k++) 
 			{
 				auxij = N*N*k+N*i+j;
 				auxji = N*N*k+N*j+i;
@@ -123,9 +122,9 @@ void getW(float64_t *C, int *ptN, int *ptK, float64_t *W)
 		}
 	}
 	
-	for (i = 0; i < N-1; i++) 
+	for (int i = 0; i < N-1; i++) 
 	{
-		for (j = i+1; j < N; j++) 
+		for (int j = i+1; j < N; j++) 
 		{
 			auxij = N*i+j;
 			auxji = N*j+i;
