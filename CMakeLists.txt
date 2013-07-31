@@ -36,6 +36,15 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
 	ENDIF()
 ENDIF()
 
+# check for supported c++11 features
+INCLUDE(CheckCXX11Features)
+
+#SET(CMAKE_CXX_FLAGS ${CXX11_COMPILER_FLAGS})
+
+IF (HAVE_CXX11_ATOMIC)
+	LIST(APPEND DEFINES -DHAVE_CXX11_ATOMIC)
+ENDIF()
+
 ############### VERSION #####################
 FILE(STRINGS "@CMAKE_SOURCE_DIR@/src/NEWS" NEWS LIMIT_COUNT 5)
 STRING(REGEX REPLACE ".*SHOGUN Release version ([0-9.]*).*" "\\1" VERSION "${NEWS}")
@@ -402,7 +411,6 @@ IF (PythonModular)
 	LIST(APPEND DEFINES -DHAVE_PYTHON)
 	add_definitions(-DHAVE_PYTHON)
 	SET(CMAKE_SWIG_FLAGS "${CMAKE_SWIG_FLAGS};-DHAVE_PYTHON")
-	SET(PythonModular OFF CACHE BOOL ON)
 
 	#custom swig flags for python modular interface
 	SET(TARGET_SWIGFLAGS "-builtin\;-modern\;-modernargs")
@@ -411,7 +419,8 @@ ENDIF()
 
 # lua modular
 IF (LuaModular)
-	FIND_PACKAGE(Lua51 REQUIRED)
+	#FIND_PACKAGE(Lua51 REQUIRED)
+	pkg_search_module(LUA REQUIRED lua)
 	UNSET(TARGET_SWIGFLAGS)
 	add_subdirectory(src/interfaces/lua_modular)
 ENDIF()
@@ -421,6 +430,7 @@ IF (JavaModular)
 	FIND_PACKAGE(Java REQUIRED)
 	FIND_PACKAGE(JNI REQUIRED)
 	FIND_PACKAGE(ApacheAnt REQUIRED)
+	# TODO: JBlas REQUIRED!
 	SET(TARGET_SWIGFLAGS "-package\;org.shogun")
 	add_subdirectory(src/interfaces/java_modular)
 ENDIF()

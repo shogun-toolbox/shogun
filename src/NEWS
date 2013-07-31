@@ -12,6 +12,7 @@
 		  compares all registered parameters with those of another instance -- 
 		  up to a specified accuracy.
 		- Multiclass LDA. Thanks to Kevin Hughes.
+		- Changed from configure script to CMake by Viktor Gal.
 	* Bugfixes:
 		- Fix json serialization.
 		- Fixed bugs in FITC inference method that caused wrong posterior results.

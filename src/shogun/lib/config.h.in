@@ -62,3 +62,5 @@
 #cmakedefine TRACE_MEMORY_ALLOCS 1
 
 #cmakedefine NARRAY_LIB "@NARRAY_LIB@"
+
+#cmakedefine HAVE_CXX11_ATOMIC 1
