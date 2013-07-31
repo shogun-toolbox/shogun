@@ -308,18 +308,18 @@ class CPlif: public CPlifBase
 		 *
 		 * @return limits
 		 */
-		float64_t* get_plif_limits()
+		SGVector<float64_t> get_plif_limits()
 		{
-			return limits.vector;
+			return limits;
 		}
 
 		/** get plif penalty
  		 *
  		 * @return plif penalty
  		 */
-		float64_t* get_plif_penalties()
+		SGVector<float64_t> get_plif_penalties()
 		{
-			return penalties.vector;
+			return penalties;
 		}
 
 		/** set maximum value

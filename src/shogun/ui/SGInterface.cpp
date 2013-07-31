@@ -6302,8 +6302,8 @@ bool CSGInterface::cmd_get_plif_struct()
 		ids[i]=PEN[i]->get_id();
 		names[i].string = PEN[i]->get_plif_name();
 		names[i].slen = strlen(PEN[i]->get_plif_name());
-		float64_t* limits = PEN[i]->get_plif_limits();
-		float64_t* penalties = PEN[i]->get_plif_penalties();
+		SGVector<float64_t> limits = PEN[i]->get_plif_limits();
+		SGVector<float64_t> penalties = PEN[i]->get_plif_penalties();
 		for (int32_t j=0;j<M;j++)
 		{
 			all_limits[i*M+j]=limits[j];

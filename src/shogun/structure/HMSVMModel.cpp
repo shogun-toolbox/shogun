@@ -115,7 +115,7 @@ SGVector< float64_t > CHMSVMModel::get_joint_feature_vector(
 			for ( int32_t j = 0 ; j < state_seq.vlen ; ++j )
 			{
 				CPlif* plif = (CPlif*) m_plif_matrix->get_element(S*f + state_seq[j]);
-				float64_t* limits = plif->get_plif_limits();
+				SGVector<float64_t> limits = plif->get_plif_limits();
 				// The number of supporting points smaller or equal than value
 				int32_t count = 0;
 				// The observation value
