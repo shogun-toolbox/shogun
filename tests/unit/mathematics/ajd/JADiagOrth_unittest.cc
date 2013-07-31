@@ -38,10 +38,9 @@ TEST(CJADiagOrth, diagonalize)
 		Eigen::Map<EMatrix> tmp(C.get_matrix(i),C_dims[0], C_dims[1]);
 		tmp.setIdentity();
 		
-		for (int j = 0; j < C_dims[0]; j++)
-		{			
+		for (int j = 0; j < C_dims[0]; j++)		
 			tmp(j,j) *= CMath::abs(CMath::random(1,5)); 
-		}
+			
 	}
 
 	// Building a random orthonormal matrix A

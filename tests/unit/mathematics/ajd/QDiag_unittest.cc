@@ -38,9 +38,8 @@ TEST(CQDiag, diagonalize)
 		tmp.setIdentity();
 		
 		for (int j = 0; j < C_dims[0]; j++)
-		{
 			tmp(j,j) *= CMath::abs(CMath::random(1,5)); 
-		}
+
 	}
 	
 	// Mixing and demixing matrices
