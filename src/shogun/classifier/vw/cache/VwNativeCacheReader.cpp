@@ -18,13 +18,13 @@
 using namespace shogun;
 
 CVwNativeCacheReader::CVwNativeCacheReader()
-	: CVwCacheReader(), int_size(6), char_size(2)
+	: CVwCacheReader(), char_size(2)
 {
 	init();
 }
 
 CVwNativeCacheReader::CVwNativeCacheReader(char * fname, CVwEnvironment* env_to_use)
-	: CVwCacheReader(fname, env_to_use), int_size(6), char_size(2)
+	: CVwCacheReader(fname, env_to_use), char_size(2)
 {
 	init();
 	buf.use_file(fd);
@@ -32,7 +32,7 @@ CVwNativeCacheReader::CVwNativeCacheReader(char * fname, CVwEnvironment* env_to_
 }
 
 CVwNativeCacheReader::CVwNativeCacheReader(int32_t f, CVwEnvironment* env_to_use)
-	: CVwCacheReader(f, env_to_use), int_size(6), char_size(2)
+	: CVwCacheReader(f, env_to_use), char_size(2)
 {
 	init();
 	buf.use_file(fd);
