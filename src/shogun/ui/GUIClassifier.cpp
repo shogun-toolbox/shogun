@@ -129,101 +129,101 @@ bool CGUIClassifier::new_classifier(char* name, int32_t d, int32_t from_d)
 	{
 		SG_UNREF(classifier);
 		classifier= new CMulticlassLibSVM(LIBSVM_NU_SVC);
-		SG_INFO("created SVMlibsvm object for multiclass\n") 
+		SG_INFO("created SVMlibsvm object for multiclass\n")
 	}
 #ifdef USE_SVMLIGHT
 	else if (strcmp(name,"SCATTERSVM_NO_BIAS_SVMLIGHT")==0)
 	{
 		SG_UNREF(classifier);
 		classifier= new CScatterSVM(NO_BIAS_SVMLIGHT);
-		SG_INFO("created ScatterSVM NO BIAS SVMLIGHT object\n") 
+		SG_INFO("created ScatterSVM NO BIAS SVMLIGHT object\n")
 	}
 #endif //USE_SVMLIGHT
 	else if (strcmp(name,"SCATTERSVM_NO_BIAS_LIBSVM")==0)
 	{
 		SG_UNREF(classifier);
 		classifier= new CScatterSVM(NO_BIAS_LIBSVM);
-		SG_INFO("created ScatterSVM NO BIAS LIBSVM object\n") 
+		SG_INFO("created ScatterSVM NO BIAS LIBSVM object\n")
 	}
 	else if (strcmp(name,"SCATTERSVM_TESTRULE1")==0)
 	{
 		SG_UNREF(classifier);
 		classifier= new CScatterSVM(TEST_RULE1);
-		SG_INFO("created ScatterSVM TESTRULE1 object\n") 
+		SG_INFO("created ScatterSVM TESTRULE1 object\n")
 	}
 	else if (strcmp(name,"SCATTERSVM_TESTRULE2")==0)
 	{
 		SG_UNREF(classifier);
 		classifier= new CScatterSVM(TEST_RULE2);
-		SG_INFO("created ScatterSVM TESTRULE2 object\n") 
+		SG_INFO("created ScatterSVM TESTRULE2 object\n")
 	}
 	else if (strcmp(name,"LIBSVM_NU")==0)
 	{
 		SG_UNREF(classifier);
 		classifier= new CLibSVM(LIBSVM_NU_SVC);
-		SG_INFO("created SVMlibsvm object\n") 
+		SG_INFO("created SVMlibsvm object\n")
 	}
 	else if (strcmp(name,"LIBSVM")==0)
 	{
 		SG_UNREF(classifier);
 		classifier= new CLibSVM();
-		SG_INFO("created SVMlibsvm object\n") 
+		SG_INFO("created SVMlibsvm object\n")
 	}
 	else if (strcmp(name,"LARANK")==0)
 	{
 		SG_UNREF(classifier);
 		classifier= new CLaRank();
-		SG_INFO("created LaRank object\n") 
+		SG_INFO("created LaRank object\n")
 	}
 #ifdef USE_SVMLIGHT
 	else if ((strcmp(name,"LIGHT")==0) || (strcmp(name,"SVMLIGHT")==0))
 	{
 		SG_UNREF(classifier);
 		classifier= new CSVMLight();
-		SG_INFO("created SVMLight object\n") 
+		SG_INFO("created SVMLight object\n")
 	}
 	else if (strcmp(name,"SVMLIGHT_ONECLASS")==0)
 	{
 		SG_UNREF(classifier);
 		classifier= new CSVMLightOneClass();
-		SG_INFO("created SVMLightOneClass object\n") 
+		SG_INFO("created SVMLightOneClass object\n")
 	}
 	else if (strcmp(name,"SVRLIGHT")==0)
 	{
 		SG_UNREF(classifier);
 		classifier= new CSVRLight();
-		SG_INFO("created SVRLight object\n") 
+		SG_INFO("created SVRLight object\n")
 	}
 #endif //USE_SVMLIGHT
 	else if (strcmp(name,"GPBTSVM")==0)
 	{
 		SG_UNREF(classifier);
 		classifier= new CGPBTSVM();
-		SG_INFO("created GPBT-SVM object\n") 
+		SG_INFO("created GPBT-SVM object\n")
 	}
 	else if (strcmp(name,"MPDSVM")==0)
 	{
 		SG_UNREF(classifier);
 		classifier= new CMPDSVM();
-		SG_INFO("created MPD-SVM object\n") 
+		SG_INFO("created MPD-SVM object\n")
 	}
 	else if (strcmp(name,"GNPPSVM")==0)
 	{
 		SG_UNREF(classifier);
 		classifier= new CGNPPSVM();
-		SG_INFO("created GNPP-SVM object\n") 
+		SG_INFO("created GNPP-SVM object\n")
 	}
 	else if (strcmp(name,"GMNPSVM")==0)
 	{
 		SG_UNREF(classifier);
 		classifier= new CGMNPSVM();
-		SG_INFO("created GMNP-SVM object\n") 
+		SG_INFO("created GMNP-SVM object\n")
 	}
 	else if (strcmp(name,"LIBSVR")==0)
 	{
 		SG_UNREF(classifier);
 		classifier= new CLibSVR();
-		SG_INFO("created SVRlibsvm object\n") 
+		SG_INFO("created SVRlibsvm object\n")
 	}
 #ifdef HAVE_LAPACK
 	else if (strcmp(name, "KERNELRIDGEREGRESSION")==0)
@@ -238,7 +238,7 @@ bool CGUIClassifier::new_classifier(char* name, int32_t d, int32_t from_d)
 	{
 		SG_UNREF(classifier);
 		classifier= new CPerceptron();
-		SG_INFO("created Perceptron object\n") 
+		SG_INFO("created Perceptron object\n")
 	}
 #ifdef HAVE_LAPACK
 	else if (strncmp(name,"LIBLINEAR",9)==0)
@@ -248,27 +248,27 @@ bool CGUIClassifier::new_classifier(char* name, int32_t d, int32_t from_d)
 		if (strcmp(name,"LIBLINEAR_L2R_LR")==0)
 		{
 			st=L2R_LR;
-			SG_INFO("created LibLinear l2 regularized logistic regression object\n") 
+			SG_INFO("created LibLinear l2 regularized logistic regression object\n")
 		}
 		else if (strcmp(name,"LIBLINEAR_L2R_L2LOSS_SVC_DUAL")==0)
 		{
 			st=L2R_L2LOSS_SVC_DUAL;
-			SG_INFO("created LibLinear l2 regularized l2 loss SVM dual object\n") 
+			SG_INFO("created LibLinear l2 regularized l2 loss SVM dual object\n")
 		}
 		else if (strcmp(name,"LIBLINEAR_L2R_L2LOSS_SVC")==0)
 		{
 			st=L2R_L2LOSS_SVC;
-			SG_INFO("created LibLinear l2 regularized l2 loss SVM primal object\n") 
+			SG_INFO("created LibLinear l2 regularized l2 loss SVM primal object\n")
 		}
 		else if (strcmp(name,"LIBLINEAR_L1R_L2LOSS_SVC")==0)
 		{
 			st=L1R_L2LOSS_SVC;
-			SG_INFO("created LibLinear l1 regularized l2 loss SVM primal object\n") 
+			SG_INFO("created LibLinear l1 regularized l2 loss SVM primal object\n")
 		}
 		else if (strcmp(name,"LIBLINEAR_L2R_L1LOSS_SVC_DUAL")==0)
 		{
 			st=L2R_L1LOSS_SVC_DUAL;
-			SG_INFO("created LibLinear l2 regularized l1 loss dual SVM object\n") 
+			SG_INFO("created LibLinear l2 regularized l1 loss dual SVM object\n")
 		}
 		else
 			SG_ERROR("unknown liblinear type\n")
@@ -283,7 +283,7 @@ bool CGUIClassifier::new_classifier(char* name, int32_t d, int32_t from_d)
 	{
 		SG_UNREF(classifier);
 		classifier= new CLDA();
-		SG_INFO("created LDA object\n") 
+		SG_INFO("created LDA object\n")
 	}
 #endif //HAVE_LAPACK
 #ifdef USE_CPLEX
@@ -295,7 +295,7 @@ bool CGUIClassifier::new_classifier(char* name, int32_t d, int32_t from_d)
 		((CLPM*) classifier)->set_epsilon(svm_epsilon);
 		((CLPM*) classifier)->set_bias_enabled(svm_use_bias);
 		((CLPM*) classifier)->set_max_train_time(max_train_time);
-		SG_INFO("created LPM object\n") 
+		SG_INFO("created LPM object\n")
 	}
 	else if (strcmp(name,"LPBOOST")==0)
 	{
@@ -305,26 +305,26 @@ bool CGUIClassifier::new_classifier(char* name, int32_t d, int32_t from_d)
 		((CLPBoost*) classifier)->set_epsilon(svm_epsilon);
 		((CLPBoost*) classifier)->set_bias_enabled(svm_use_bias);
 		((CLPBoost*) classifier)->set_max_train_time(max_train_time);
-		SG_INFO("created LPBoost object\n") 
+		SG_INFO("created LPBoost object\n")
 	}
 #endif //USE_CPLEX
 	else if (strncmp(name,"KNN", strlen("KNN"))==0)
 	{
 		SG_UNREF(classifier);
 		classifier= new CKNN();
-		SG_INFO("created KNN object\n") 
+		SG_INFO("created KNN object\n")
 	}
 	else if (strncmp(name,"KMEANS", strlen("KMEANS"))==0)
 	{
 		SG_UNREF(classifier);
 		classifier= new CKMeans();
-		SG_INFO("created KMeans object\n") 
+		SG_INFO("created KMeans object\n")
 	}
 	else if (strncmp(name,"HIERARCHICAL", strlen("HIERARCHICAL"))==0)
 	{
 		SG_UNREF(classifier);
 		classifier= new CHierarchical();
-		SG_INFO("created Hierarchical clustering object\n") 
+		SG_INFO("created Hierarchical clustering object\n")
 	}
 	else if (strcmp(name,"SVMLIN")==0)
 	{
@@ -333,7 +333,7 @@ bool CGUIClassifier::new_classifier(char* name, int32_t d, int32_t from_d)
 		((CSVMLin*) classifier)->set_C(svm_C1, svm_C2);
 		((CSVMLin*) classifier)->set_epsilon(svm_epsilon);
 		((CSVMLin*) classifier)->set_bias_enabled(svm_use_bias);
-		SG_INFO("created SVMLin object\n") 
+		SG_INFO("created SVMLin object\n")
 	}
 	else if (strncmp(name,"WDSVMOCAS", strlen("WDSVMOCAS"))==0)
 	{
@@ -345,7 +345,7 @@ bool CGUIClassifier::new_classifier(char* name, int32_t d, int32_t from_d)
 		((CWDSVMOcas*) classifier)->set_C(svm_C1, svm_C2);
 		((CWDSVMOcas*) classifier)->set_epsilon(svm_epsilon);
 		((CWDSVMOcas*) classifier)->set_bufsize(svm_bufsize);
-		SG_INFO("created Weighted Degree Kernel SVM Ocas(OCAS) object of order %d (from order:%d)\n", d, from_d) 
+		SG_INFO("created Weighted Degree Kernel SVM Ocas(OCAS) object of order %d (from order:%d)\n", d, from_d)
 	}
 	else if (strcmp(name,"SVMOCAS")==0)
 	{
@@ -356,14 +356,14 @@ bool CGUIClassifier::new_classifier(char* name, int32_t d, int32_t from_d)
 		((CSVMOcas*) classifier)->set_epsilon(svm_epsilon);
 		((CSVMOcas*) classifier)->set_bufsize(svm_bufsize);
 		((CSVMOcas*) classifier)->set_bias_enabled(svm_use_bias);
-		SG_INFO("created SVM Ocas(OCAS) object\n") 
+		SG_INFO("created SVM Ocas(OCAS) object\n")
 	}
 	else if (strcmp(name,"SVMSGD")==0)
 	{
 		SG_UNREF(classifier);
 		classifier= new CSVMSGD(svm_C1);
 		((CSVMSGD*) classifier)->set_bias_enabled(svm_use_bias);
-		SG_INFO("created SVM SGD object\n") 
+		SG_INFO("created SVM SGD object\n")
 	}
 	else if (strcmp(name,"SVMBMRM")==0 || (strcmp(name,"SVMPERF")==0))
 	{
@@ -374,7 +374,7 @@ bool CGUIClassifier::new_classifier(char* name, int32_t d, int32_t from_d)
 		((CSVMOcas*) classifier)->set_epsilon(svm_epsilon);
 		((CSVMOcas*) classifier)->set_bufsize(svm_bufsize);
 		((CSVMOcas*) classifier)->set_bias_enabled(svm_use_bias);
-		SG_INFO("created SVM Ocas(BMRM/PERF) object\n") 
+		SG_INFO("created SVM Ocas(BMRM/PERF) object\n")
 	}
 	else if (strcmp(name,"MKL_CLASSIFICATION")==0)
 	{
@@ -524,7 +524,7 @@ bool CGUIClassifier::train_mkl()
 bool CGUIClassifier::train_svm()
 {
 	EMachineType type = classifier->get_classifier_type();
-	
+
 	if (!classifier)
 		SG_ERROR("No SVM available.\n")
 
@@ -551,7 +551,7 @@ bool CGUIClassifier::train_svm()
 		SG_ERROR("Number of train labels (%d) and training vectors (%d) differs!\n", trainlabels->get_num_labels(), num_vec)
 
 	SG_INFO("Starting SVM training on %ld vectors using C1=%lf C2=%lf epsilon=%lf\n", num_vec, svm_C1, svm_C2, svm_epsilon)
-	
+
 	if (type==CT_LARANK || type==CT_GMNPSVM || type==CT_LIBSVMMULTICLASS)
 	{
 		CMulticlassSVM* svm = (CMulticlassSVM*)classifier;
@@ -603,7 +603,7 @@ bool CGUIClassifier::train_svm()
 			((CKernelMulticlassMachine*)classifier)->set_labels(trainlabels);
 			((CKernelMulticlassMachine*)classifier)->set_kernel(kernel);
 		}
-		else 
+		else
 		{
 			if(!oneclass)
 				((CKernelMachine*)classifier)->set_labels(trainlabels);
@@ -1177,7 +1177,7 @@ CLabels* CGUIClassifier::classify_kernelmachine()
 		CKernelMulticlassMachine* kmcm = (CKernelMulticlassMachine*) classifier;
 		kmcm->set_kernel(ui->ui_kernel->get_kernel());
 	}
-	else 
+	else
 	{
 		CKernelMachine* km=(CKernelMachine*) classifier;
 		km->set_kernel(ui->ui_kernel->get_kernel());
@@ -1368,18 +1368,18 @@ CLabels* CGUIClassifier::classify_distancemachine()
 
 	if (!classifier)
 	{
-		SG_ERROR("no kernelmachine available\n") 
+		SG_ERROR("no kernelmachine available\n")
 		return NULL;
 	}
 	if (!trainfeatures)
 	{
-		SG_ERROR("no training features available\n") 
+		SG_ERROR("no training features available\n")
 		return NULL;
 	}
 
 	if (!testfeatures)
 	{
-		SG_ERROR("no test features available\n") 
+		SG_ERROR("no test features available\n")
 		return NULL;
 	}
 
@@ -1387,13 +1387,13 @@ CLabels* CGUIClassifier::classify_distancemachine()
 
 	if (!success || !ui->ui_distance->is_initialized())
 	{
-		SG_ERROR("distance not initialized\n") 
+		SG_ERROR("distance not initialized\n")
 		return NULL;
 	}
 
 	((CDistanceMachine*) classifier)->set_distance(
 		ui->ui_distance->get_distance());
-	SG_INFO("starting distance machine testing\n") 
+	SG_INFO("starting distance machine testing\n")
 	return classifier->apply();
 }
 
@@ -1404,22 +1404,22 @@ CLabels* CGUIClassifier::classify_linear()
 
 	if (!classifier)
 	{
-		SG_ERROR("no classifier available\n") 
+		SG_ERROR("no classifier available\n")
 		return NULL;
 	}
 	if (!testfeatures)
 	{
-		SG_ERROR("no test features available\n") 
+		SG_ERROR("no test features available\n")
 		return NULL;
 	}
 	if (!(testfeatures->has_property(FP_DOT)))
 	{
-		SG_ERROR("testfeatures not based on DotFeatures\n") 
+		SG_ERROR("testfeatures not based on DotFeatures\n")
 		return NULL;
 	}
 
 	((CLinearMachine*) classifier)->set_features((CDotFeatures*) testfeatures);
-	SG_INFO("starting linear classifier testing\n") 
+	SG_INFO("starting linear classifier testing\n")
 	return classifier->apply();
 }
 
@@ -1429,23 +1429,23 @@ CLabels* CGUIClassifier::classify_byte_linear()
 
 	if (!classifier)
 	{
-		SG_ERROR("no svm available\n") 
+		SG_ERROR("no svm available\n")
 		return NULL;
 	}
 	if (!testfeatures)
 	{
-		SG_ERROR("no test features available\n") 
+		SG_ERROR("no test features available\n")
 		return NULL;
 	}
 	if (testfeatures->get_feature_class() != C_STRING ||
 			testfeatures->get_feature_type() != F_BYTE )
 	{
-		SG_ERROR("testfeatures not of class STRING type BYTE\n") 
+		SG_ERROR("testfeatures not of class STRING type BYTE\n")
 		return NULL;
 	}
 
 	((CWDSVMOcas*) classifier)->set_features((CStringFeatures<uint8_t>*) testfeatures);
-	SG_INFO("starting linear classifier testing\n") 
+	SG_INFO("starting linear classifier testing\n")
 	return classifier->apply();
 }
 
@@ -1456,28 +1456,28 @@ bool CGUIClassifier::classify_example(int32_t idx, float64_t &result)
 
 	if (!classifier)
 	{
-		SG_ERROR("no svm available\n") 
+		SG_ERROR("no svm available\n")
 		return false;
 	}
 
 	if (!ui->ui_kernel->is_initialized())
 	{
-		SG_ERROR("kernel not initialized\n") 
+		SG_ERROR("kernel not initialized\n")
 		return false;
 	}
 
 	if (!ui->ui_kernel->get_kernel() ||
-			!ui->ui_kernel->get_kernel()->get_kernel_type()==K_CUSTOM)
+		ui->ui_kernel->get_kernel()->get_kernel_type()!=K_CUSTOM)
 	{
 		if (!trainfeatures)
 		{
-			SG_ERROR("no training features available\n") 
+			SG_ERROR("no training features available\n")
 			return false;
 		}
 
 		if (!testfeatures)
 		{
-			SG_ERROR("no test features available\n") 
+			SG_ERROR("no test features available\n")
 			return false;
 		}
 	}
@@ -1566,57 +1566,57 @@ bool CGUIClassifier::set_constraint_generator(char* name)
 	{
 		SG_UNREF(constraint_generator);
 		constraint_generator= new CLibSVM(LIBSVM_NU_SVC);
-		SG_INFO("created SVMlibsvm object\n") 
+		SG_INFO("created SVMlibsvm object\n")
 	}
 	else if (strcmp(name,"LIBSVM")==0)
 	{
 		SG_UNREF(constraint_generator);
 		constraint_generator= new CLibSVM();
-		SG_INFO("created SVMlibsvm object\n") 
+		SG_INFO("created SVMlibsvm object\n")
 	}
 #ifdef USE_SVMLIGHT
 	else if ((strcmp(name,"LIGHT")==0) || (strcmp(name,"SVMLIGHT")==0))
 	{
 		SG_UNREF(constraint_generator);
 		constraint_generator= new CSVMLight();
-		SG_INFO("created SVMLight object\n") 
+		SG_INFO("created SVMLight object\n")
 	}
 	else if (strcmp(name,"SVMLIGHT_ONECLASS")==0)
 	{
 		SG_UNREF(constraint_generator);
 		constraint_generator= new CSVMLightOneClass();
-		SG_INFO("created SVMLightOneClass object\n") 
+		SG_INFO("created SVMLightOneClass object\n")
 	}
 	else if (strcmp(name,"SVRLIGHT")==0)
 	{
 		SG_UNREF(constraint_generator);
 		constraint_generator= new CSVRLight();
-		SG_INFO("created SVRLight object\n") 
+		SG_INFO("created SVRLight object\n")
 	}
 #endif //USE_SVMLIGHT
 	else if (strcmp(name,"GPBTSVM")==0)
 	{
 		SG_UNREF(constraint_generator);
 		constraint_generator= new CGPBTSVM();
-		SG_INFO("created GPBT-SVM object\n") 
+		SG_INFO("created GPBT-SVM object\n")
 	}
 	else if (strcmp(name,"MPDSVM")==0)
 	{
 		SG_UNREF(constraint_generator);
 		constraint_generator= new CMPDSVM();
-		SG_INFO("created MPD-SVM object\n") 
+		SG_INFO("created MPD-SVM object\n")
 	}
 	else if (strcmp(name,"GNPPSVM")==0)
 	{
 		SG_UNREF(constraint_generator);
 		constraint_generator= new CGNPPSVM();
-		SG_INFO("created GNPP-SVM object\n") 
+		SG_INFO("created GNPP-SVM object\n")
 	}
 	else if (strcmp(name,"LIBSVR")==0)
 	{
 		SG_UNREF(constraint_generator);
 		constraint_generator= new CLibSVR();
-		SG_INFO("created SVRlibsvm object\n") 
+		SG_INFO("created SVRlibsvm object\n")
 	}
 	else
 	{

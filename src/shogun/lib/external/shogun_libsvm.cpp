@@ -342,17 +342,9 @@ private:
 	CKernel* kernel;
 	const svm_node **x;
 	float64_t *x_square;
-
-	// svm_parameter
-	const int32_t kernel_type;
-	const int32_t degree;
-	const float64_t gamma;
-	const float64_t coef0;
 };
 
 LibSVMKernel::LibSVMKernel(int32_t l, svm_node * const * x_, const svm_parameter& param)
-: kernel_type(param.kernel_type), degree(param.degree),
- gamma(param.gamma), coef0(param.coef0)
 {
 	clone(x,x_,l);
 	x_square = 0;
