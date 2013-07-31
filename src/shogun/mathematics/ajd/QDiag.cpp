@@ -58,13 +58,9 @@ SGMatrix<float64_t> CQDiag::diagonalize(SGNDArray<float64_t> C, SGMatrix<float64
 		Ci = P * Ci * P.transpose();
 		
 		if ( (Ci - Ci.transpose()).sum() > 1e-6 )
-		{
 			issymmetric[l] = false;
-		}
 		else
-		{
-			issymmetric[l] = true;
-		}	
+			issymmetric[l] = true;	
 	}
 	
 	C0 = P * C0 * P.transpose();	
@@ -172,9 +168,7 @@ SGMatrix<float64_t> CQDiag::diagonalize(SGNDArray<float64_t> C, SGMatrix<float64
 		crit.back() = crit.back() / (N*N - N);
 		
 		if (iter > 1)
-		{
 			deltacrit = CMath::abs( crit[iter] - crit[iter-1] );
-		}
 		
 		iter++;
 	}
@@ -182,9 +176,7 @@ SGMatrix<float64_t> CQDiag::diagonalize(SGNDArray<float64_t> C, SGMatrix<float64
 	EV = (P.transpose() * EV).transpose();
 	
 	if (iter == itermax)
-	{
 		SG_SERROR("Convergence not reached\n")
-	}
 	
 	return V;
 }

@@ -28,13 +28,9 @@ SGMatrix<float64_t> CJedi::diagonalize(SGNDArray<float64_t> C, SGMatrix<float64_
 
 	SGMatrix<float64_t> V;
 	if (V0.num_rows != 0)
-	{
 		V = V0.clone();
-	}
-	else
-	{						
+	else					
 		V = SGMatrix<float64_t>::create_identity_matrix(d,1);
-	}
 
 	int iter = 0;
 	double sh_max = 1;
@@ -51,9 +47,7 @@ SGMatrix<float64_t> CJedi::diagonalize(SGNDArray<float64_t> C, SGMatrix<float64_
 	}
 	
 	if (iter == itermax)
-	{
 		SG_SERROR("Convergence not reached\n")
-	}
 	
 	Eigen::Map<EMatrix> EV(V.matrix,d,d);
 	EV = EV.inverse();
@@ -75,10 +69,10 @@ void sweepjedi(double *C, int *pMatSize, int *pMatNumber,
 	for (int i=0;i<MS;i++) 
 	{
 		col_norm[i] = 0;
+		
 		for (int j=0;j<MS;j++)
-		{ 
 			col_norm[i] += A[i*MS+j]*A[i*MS+j];
-		}
+
 		col_norm[i] = sqrt(col_norm[i]);
 	}
 	
@@ -102,9 +96,7 @@ void sweepjedi(double *C, int *pMatSize, int *pMatNumber,
 		for (int i=0;i<MS;i++) 
 		{
 			for (int j=0;j<MS;j++) 
-			{
 				C[k*MS*MS+i*MS+j] *= (1/d[i])*(1/d[j]);
-			}
 		}
 	}
 }
@@ -257,16 +249,12 @@ void iterJDI(double *C, int *pMatSize, int *pMatNumber, int *ptn,int *ptm,
 	for (i=0;i<MS;i++) 
 	{
 		for (j=0,d3=0;j<MN;j++,d3+=MS*MS) 
-		{
 			C[d3+m*MS+i] = buf[i][j];
-		}
 	}	
 	for (i=0;i<MS;i++) 
 	{
 		for (j=0,d3=0;j<MN;j++,d3+=MS*MS) 
-		{
 			C[d3+n*MS+i] = C[d3+i*MS+n];
-		}
 	}
 	for (i=0;i<MN;i++) 
 	{

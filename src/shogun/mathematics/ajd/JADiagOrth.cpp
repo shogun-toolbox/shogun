@@ -27,13 +27,9 @@ SGMatrix<float64_t> CJADiagOrth::diagonalize(SGNDArray<float64_t> C, SGMatrix<fl
 
 	SGMatrix<float64_t> V;
 	if (V0.num_rows != 0)
-	{
 		V = V0.clone();
-	}
-	else
-	{					
+	else				
 		V = SGMatrix<float64_t>::create_identity_matrix(m,1);
-	}
 
 	bool more = true;
 	int rots = 0;

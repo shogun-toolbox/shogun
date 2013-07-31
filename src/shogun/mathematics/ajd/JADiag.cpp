@@ -44,13 +44,9 @@ SGMatrix<float64_t> CJADiag::diagonalize(SGNDArray<float64_t> C, SGMatrix<float6
 	
 	SGMatrix<float64_t> V;
 	if (V0.num_rows != 0)
-	{
 		V = V0.clone();
-	}
 	else
-	{	
 		V = SGMatrix<float64_t>::create_identity_matrix(d,1);
-	}
 	
 	EVector w(L);
 	w.setOnes();
@@ -88,9 +84,7 @@ SGMatrix<float64_t> CJADiag::diagonalize(SGNDArray<float64_t> C, SGMatrix<float6
 	}
 	
 	if (iter == itermax)
-	{
 		SG_SERROR("Convergence not reached\n")
-	}
 	
 	return V;
 
@@ -109,9 +103,7 @@ void jadiagw(double c[], double w[], int *ptn, int *ptm, double a[],
 	register double tmp1, tmp2, tmp, weigh;
 
 	for (sumweigh = 0, i = 0; i < m; i++)
-	{
 		sumweigh += w[i];
-	}
 
 	det = 1;
 	*decr = 0;

@@ -118,9 +118,7 @@ SGMatrix<float64_t> CUWedge::diagonalize(SGNDArray<float64_t> C, SGMatrix<float6
 	}
 	
 	if (iter == itermax)
-	{
 		SG_SERROR("Convergence not reached\n")
-	}
 	
 	return V;
 

@@ -31,13 +31,9 @@ SGMatrix<float64_t> CFFDiag::diagonalize(SGNDArray<float64_t> C0, SGMatrix<float
 	
 	SGMatrix<float64_t> V;
 	if (V0.num_rows != 0)
-	{
 		V = V0.clone();
-	}
-	else
-	{	
+	else	
 		V = SGMatrix<float64_t>::create_identity_matrix(n,1);
-	}
 	
 	EMatrix Id(n,n); Id.setIdentity();
 	Eigen::Map<EMatrix> EV(V.matrix,n,n);
@@ -87,9 +83,7 @@ SGMatrix<float64_t> CFFDiag::diagonalize(SGNDArray<float64_t> C0, SGMatrix<float
 	}
 	
 	if (inum == itermax)
-	{
 		SG_SERROR("Convergence not reached\n")
-	}
 	
 	return V;
 
