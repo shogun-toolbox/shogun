@@ -616,7 +616,7 @@ CSGInterfaceMethod sg_methods[]=
 		N_APPLY_CONVERTER,
 		(&CSGInterface::cmd_apply_converter),
 		USAGE_O(N_APPLY_CONVERTER, "conv_features")
-	},	
+	},
 	{
 		N_EMBED,
 		(&CSGInterface::cmd_embed),
@@ -4587,7 +4587,7 @@ bool CSGInterface::cmd_classify()
 		return false;
 
 	if (!ui_kernel->get_kernel() ||
-			!ui_kernel->get_kernel()->get_kernel_type()==K_CUSTOM)
+		ui_kernel->get_kernel()->get_kernel_type()!=K_CUSTOM)
 	{
 		CFeatures* feat=ui_features->get_test_features();
 		if (!feat)
@@ -5384,7 +5384,7 @@ bool CSGInterface::cmd_apply_converter()
 	CDenseFeatures<float64_t>* conv_features = ui_converter->apply();
 	SGMatrix<float64_t> converted_mat = conv_features->get_feature_matrix();
 	set_matrix(converted_mat.matrix,converted_mat.num_rows,converted_mat.num_cols);
-	return true;	
+	return true;
 }
 
 bool CSGInterface::cmd_embed()
@@ -6481,7 +6481,7 @@ bool CSGInterface::cmd_precompute_content_svms()
 	float64_t* weights;
 	get_matrix(weights, Nweights, num_svms);
 	if (Nweights!=5440)
-	  SG_PRINT("Dimension mismatch: got %i, expect %i\n", Nweights, 5440) 
+	  SG_PRINT("Dimension mismatch: got %i, expect %i\n", Nweights, 5440)
 	ui_structure->set_content_svm_weights(weights, Nweights, num_svms);
 
 	CDynProg* h = ui_structure->get_dyn_prog();
@@ -6538,7 +6538,7 @@ bool CSGInterface::cmd_set_lin_feat()
 
         if (Npos!=seq_len)
 	  {
-	    SG_ERROR("Dimension mismatch: got %i positions and (%ix%i) values\n", Npos, num_svms, seq_len) 
+	    SG_ERROR("Dimension mismatch: got %i positions and (%ix%i) values\n", Npos, num_svms, seq_len)
 
 	    SG_FREE(lin_feat);
 	    SG_FREE(seq);
@@ -6614,8 +6614,8 @@ bool CSGInterface::cmd_set_feature_matrix_sparse()
 	SGSparseVector<float64_t> *features2=NULL ;
 	get_sparse_matrix(features2, dim21, dim22);
 
-	ASSERT(dim11==dim21) 
-	ASSERT(dim12==dim22) 
+	ASSERT(dim11==dim21)
+	ASSERT(dim12==dim22)
 
 	int32_t *Dims = SG_MALLOC(int32_t, 3);
 	Dims[0]=dim11 ;
@@ -6810,7 +6810,7 @@ bool CSGInterface::cmd_best_path_trans()
 
 	if (!h->check_svm_arrays())
 	{
-		SG_ERROR("svm arrays inconsistent\n") 
+		SG_ERROR("svm arrays inconsistent\n")
 		CPlif::delete_penalty_struct(PEN, Nplif) ;
 		return false ;
 	}
@@ -6848,7 +6848,7 @@ bool CSGInterface::cmd_best_path_trans()
 
 	if (segment_loss_non_zero)
 	{
-	        SG_DEBUG("Using version with segment_loss\n") 
+	        SG_DEBUG("Using version with segment_loss\n")
 	        if (nbest==1)
 				h->compute_nbest_paths(feat_dims[2], use_orf, 1,true,false);
 	        else
@@ -6856,7 +6856,7 @@ bool CSGInterface::cmd_best_path_trans()
 	}
 	else
 	{
-	        SG_DEBUG("Using version without segment_loss\n") 
+	        SG_DEBUG("Using version without segment_loss\n")
 	        if (nbest==1)
 				h->compute_nbest_paths(feat_dims[2], use_orf, 1,false,false);
 	        else
@@ -6984,7 +6984,7 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 		h->set_a_trans_matrix(SGMatrix<float64_t>(a_trans, num_a_trans, 3)) ;
 
 	if (!h->check_svm_arrays())
-		SG_ERROR("svm arrays inconsistent\n") 
+		SG_ERROR("svm arrays inconsistent\n")
 
 	int32_t *my_path = SG_MALLOC(int32_t, Nmypos_seq+1);
 	memset(my_path, -1, Nmypos_seq*sizeof(int32_t)) ;
@@ -7042,7 +7042,7 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 	{
 		int32_t len=0 ;
 		const float64_t * deriv = PEN[id]->get_cum_derivative(len) ;
-		ASSERT(len<=max_plif_len) 
+		ASSERT(len<=max_plif_len)
 		for (int32_t j=0; j<max_plif_len; j++)
 			a_Plif_deriv.element(id, j)= deriv[j] ;
 	}

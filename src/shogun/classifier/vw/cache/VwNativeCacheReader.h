@@ -154,7 +154,6 @@ protected:
 
 private:
 	// Used while parsing
-	const vw_size_t int_size;
 	const vw_size_t char_size;
 	vw_size_t neg_1;
 	vw_size_t general;
