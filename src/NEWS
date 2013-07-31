@@ -16,7 +16,8 @@
 		- Added a new datatype, complex64_t, for complex numbers. Math functions,
 		  support for SGVector/Matrix, SGSparseVector/Matrix, and serialization
 		  with Ascii and Xml files added. [Soumyajit De].
-		- Added numerical integration stuff
+		- Added mini-framework for numerical integration in one variable. Implemented
+		  Gauss-Kronrod and Gauss-Hermite quadrature formulas.
 	* Bugfixes:
 		- Fix json serialization.
 		- Fixed bugs in FITC inference method that caused wrong posterior results.
