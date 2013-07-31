@@ -39,7 +39,7 @@ class CJADiag : public CApproxJointDiagonalizer
 		/** constructor */
 		CJADiag()
 		{
-		};
+		}
 
 		/** destructor */
 		virtual ~CJADiag()

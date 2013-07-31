@@ -18,9 +18,7 @@ bool is_permutation_matrix(SGMatrix<float64_t> m)
 		
 	// scale	
 	for(int t = 0; t < mat.cols(); t++)
-	{
 		mat.col(t) /= mat.col(t).cwiseAbs().maxCoeff();
-	}
 
 	// round
 	for (int i = 0; i < mat.rows(); i++)

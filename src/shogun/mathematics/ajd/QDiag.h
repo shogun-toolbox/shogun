@@ -9,8 +9,8 @@
  * Thanks to Andreas Ziehe and Cedric Gouy-Pailler
  */
 
-#ifndef JADIAGORTH_H_
-#define JADIAGORTH_H_
+#ifndef QDIAG_H_
+#define QDIAG_H_
 
 #include <shogun/lib/config.h>
 
@@ -22,27 +22,26 @@
 namespace shogun
 {
 
-/** @brief Class JADiagOrth
+/** @brief Class QDiag
  *
  * An Approximate Joint Diagonalizer (AJD) Implementation
  * 
- * Cardoso, J. F., & Souloumiac, A. (1993). 
- * Blind beamforming for non-Gaussian signals. 
- * In IEE Proceedings F (Radar and Signal Processing) 
- * (Vol. 140, No. 6, pp. 362-370). IET Digital Library.
- *
+ * Vollgraf, R., & Obermayer, K. (2006). 
+ * Quadratic optimization for simultaneous matrix diagonalization. 
+ * Signal Processing, IEEE Transactions on, 54(9), 3270-3278.
+ * 
  */
-class CJADiagOrth : public CApproxJointDiagonalizer
+class CQDiag : public CApproxJointDiagonalizer
 {
 	public:
 	
 		/** constructor */
-		CJADiagOrth()
+		CQDiag()
 		{
 		}
 
 		/** destructor */
-		virtual ~CJADiagOrth()
+		virtual ~CQDiag()
 		{
 		}
 	
@@ -54,7 +53,7 @@ class CJADiagOrth : public CApproxJointDiagonalizer
 		 * @return V the matrix that best diagonalizes C 
 		 */
 		static SGMatrix<float64_t> diagonalize(SGNDArray<float64_t> C,
-							SGMatrix<float64_t> V0 = SGMatrix<float64_t>(NULL,0,0),
+       							SGMatrix<float64_t> V0 = SGMatrix<float64_t>(NULL,0,0),
 							double eps=CMath::MACHINE_EPSILON,
 							int itermax=200);
 
@@ -75,8 +74,8 @@ class CJADiagOrth : public CApproxJointDiagonalizer
 		}
 
 		/** @return object name */
-		virtual const char* get_name() const { return "JADiag"; }
+		virtual const char* get_name() const { return "QDiag"; }
 };
 }
 #endif //HAVE_EIGEN3
-#endif //JADIAGORTH_H_ 
+#endif //QDIAG_H_ 

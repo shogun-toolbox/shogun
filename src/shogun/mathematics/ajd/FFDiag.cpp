@@ -14,7 +14,7 @@ typedef Matrix< float64_t, Dynamic, Dynamic, ColMajor > EMatrix;
 
 using namespace shogun;
 
-void getW(double *C, int *ptN, int *ptK, double *W);
+void getW(float64_t *C, int *ptN, int *ptK, float64_t *W);
 
 SGMatrix<float64_t> CFFDiag::diagonalize(SGNDArray<float64_t> C0, SGMatrix<float64_t> V0,
 						double eps, int itermax)
@@ -31,20 +31,16 @@ SGMatrix<float64_t> CFFDiag::diagonalize(SGNDArray<float64_t> C0, SGMatrix<float
 	
 	SGMatrix<float64_t> V;
 	if (V0.num_rows != 0)
-	{
 		V = V0.clone();
-	}
-	else
-	{	
+	else	
 		V = SGMatrix<float64_t>::create_identity_matrix(n,1);
-	}
 	
 	EMatrix Id(n,n); Id.setIdentity();
 	Eigen::Map<EMatrix> EV(V.matrix,n,n);
 	
-	double inum = 0;
-	double df = 1;
-	std::vector<double> crit;
+	float64_t inum = 0;
+	float64_t df = 1;
+	std::vector<float64_t> crit;
 	while (df > eps && inum < itermax)
 	{
 		EMatrix W = EMatrix::Zero(n,n);
@@ -70,7 +66,7 @@ SGMatrix<float64_t> CFFDiag::diagonalize(SGNDArray<float64_t> C0, SGMatrix<float
 			Ci = EV * C0i * EV.transpose();
 		}
 		
-		double f = 0;
+		float64_t f = 0;
 		for (int i = 0; i < K; i++)
 		{
 			Eigen::Map<EMatrix> C0i(C0.get_matrix(i), n, n);
@@ -87,37 +83,34 @@ SGMatrix<float64_t> CFFDiag::diagonalize(SGNDArray<float64_t> C0, SGMatrix<float
 	}
 	
 	if (inum == itermax)
-	{
 		SG_SERROR("Convergence not reached\n")
-	}
 	
 	return V;
 
 }
 
-void getW(double *C, int *ptN, int *ptK, double *W) 
+void getW(float64_t *C, int *ptN, int *ptK, float64_t *W) 
 {
 	int N=*ptN;
 	int K=*ptK;
-	int i,j,k;
 	int auxij,auxji,auxii,auxjj;
-	double z[N][N];
-	double y[N][N];
+	float64_t z[N][N];
+	float64_t y[N][N];
 	
-	for (i = 0; i < N; i++) 
+	for (int i = 0; i < N; i++) 
 	{
-		for (j = 0; j < N; j++) 
+		for (int j = 0; j < N; j++) 
 		{
 			z[i][j] = 0;
 			y[i][j] = 0;
 		}
 	}
 	
-	for (i = 0; i < N; i++) 
+	for (int i = 0; i < N; i++) 
 	{
-		for (j = 0; j < N; j++) 
+		for (int j = 0; j < N; j++) 
 		{
-			for (k = 0; k < K; k++) 
+			for (int k = 0; k < K; k++) 
 			{
 				auxij = N*N*k+N*i+j;
 				auxji = N*N*k+N*j+i;
@@ -129,9 +122,9 @@ void getW(double *C, int *ptN, int *ptK, double *W)
 		}
 	}
 	
-	for (i = 0; i < N-1; i++) 
+	for (int i = 0; i < N-1; i++) 
 	{
-		for (j = i+1; j < N; j++) 
+		for (int j = i+1; j < N; j++) 
 		{
 			auxij = N*i+j;
 			auxji = N*j+i;

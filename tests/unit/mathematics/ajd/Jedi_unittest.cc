@@ -10,9 +10,10 @@
 
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
-#include <shogun/mathematics/ajd/FFDiag.h>
+#include <shogun/mathematics/ajd/Jedi.h>
 
 #include <shogun/evaluation/ica/PermutationMatrix.h>
+#include <iostream>
 
 using namespace Eigen;
 
@@ -21,7 +22,7 @@ typedef Matrix< float64_t, Dynamic, 1, ColMajor > EVector;
 
 using namespace shogun;
 
-TEST(CFFDiag, diagonalize)
+TEST(CJedi, diagonalize)
 {
 	// Generating diagonal matrices
 	index_t * C_dims = SG_MALLOC(index_t, 3);
@@ -37,9 +38,9 @@ TEST(CFFDiag, diagonalize)
 		Eigen::Map<EMatrix> tmp(C.get_matrix(i),C_dims[0], C_dims[1]);
 		tmp.setIdentity();
 		
-		for (int j = 0; j < C_dims[0]; j++)
+		for (int j = 0; j < C_dims[0]; j++)			
 			tmp(j,j) *= CMath::abs(CMath::random(1,5)); 
-			
+
 	}
 	
 	// Mixing and demixing matrices
@@ -54,7 +55,7 @@ TEST(CFFDiag, diagonalize)
 	}	
 
 	/** Diagonalize **/
-	SGMatrix<float64_t> V = CFFDiag::diagonalize(C);
+	SGMatrix<float64_t> V = CJedi::diagonalize(C);
 
 	// Test output size
 	EXPECT_EQ(V.num_rows, C_dims[0]);
