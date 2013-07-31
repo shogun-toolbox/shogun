@@ -38,7 +38,7 @@ class CUWedge : public CApproxJointDiagonalizer
 		/** constructor */
 		CUWedge()
 		{
-		};
+		}
 
 		/** destructor */
 		virtual ~CUWedge()

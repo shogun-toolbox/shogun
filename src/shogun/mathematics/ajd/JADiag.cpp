@@ -14,8 +14,8 @@ typedef Matrix< float64_t, Dynamic, Dynamic, ColMajor > EMatrix;
 
 using namespace shogun;
 
-void jadiagw(double c[], double w[], int *ptn, int *ptm, double a[],
-	         double *logdet, double *decr, double *result);
+void jadiagw(float64_t c[], float64_t w[], int *ptn, int *ptm, float64_t a[],
+	         float64_t *logdet, float64_t *decr, float64_t *result);
 
 SGMatrix<float64_t> CJADiag::diagonalize(SGNDArray<float64_t> C, SGMatrix<float64_t> V0,
 						double eps, int itermax)
@@ -44,13 +44,9 @@ SGMatrix<float64_t> CJADiag::diagonalize(SGNDArray<float64_t> C, SGMatrix<float6
 	
 	SGMatrix<float64_t> V;
 	if (V0.num_rows != 0)
-	{
 		V = V0.clone();
-	}
 	else
-	{	
 		V = SGMatrix<float64_t>::create_identity_matrix(d,1);
-	}
 	
 	EVector w(L);
 	w.setOnes();
@@ -63,10 +59,10 @@ SGMatrix<float64_t> CJADiag::diagonalize(SGNDArray<float64_t> C, SGMatrix<float6
 	}
 		
 	int iter = 0;
-	double decr = 1;
-	double logdet = log(5.184e17);
-	double result = 0;
-	std::vector<double> crit;
+	float64_t decr = 1;
+	float64_t logdet = log(5.184e17);
+	float64_t result = 0;
+	std::vector<float64_t> crit;
 	while (decr > eps && iter < itermax)
 	{		
 		if(logdet == 0)// is NA
@@ -88,30 +84,26 @@ SGMatrix<float64_t> CJADiag::diagonalize(SGNDArray<float64_t> C, SGMatrix<float6
 	}
 	
 	if (iter == itermax)
-	{
 		SG_SERROR("Convergence not reached\n")
-	}
 	
 	return V;
 
 }
 
-void jadiagw(double c[], double w[], int *ptn, int *ptm, double a[],
-		double *logdet, double *decr, double *result)
+void jadiagw(float64_t c[], float64_t w[], int *ptn, int *ptm, float64_t a[],
+		float64_t *logdet, float64_t *decr, float64_t *result)
 {
 	int n = *ptn;
 	int m = *ptm;
 	//int	i1,j1;
 	int	n2 = n*n, mn2 = m*n2,
 	i, ic, ii, ij, j, jc, jj, k, k0;
-	double  sumweigh, p2, q1, p, q,
+	float64_t  sumweigh, p2, q1, p, q,
 	alpha, beta, gamma, a12, a21, /*tiny,*/ det;
-	register double tmp1, tmp2, tmp, weigh;
+	register float64_t tmp1, tmp2, tmp, weigh;
 
 	for (sumweigh = 0, i = 0; i < m; i++)
-	{
 		sumweigh += w[i];
-	}
 
 	det = 1;
 	*decr = 0;

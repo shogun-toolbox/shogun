@@ -10,9 +10,10 @@
 
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
-#include <shogun/mathematics/ajd/FFDiag.h>
+#include <shogun/mathematics/ajd/JADiagOrth.h>
 
 #include <shogun/evaluation/ica/PermutationMatrix.h>
+#include <iostream>
 
 using namespace Eigen;
 
@@ -21,7 +22,7 @@ typedef Matrix< float64_t, Dynamic, 1, ColMajor > EVector;
 
 using namespace shogun;
 
-TEST(CFFDiag, diagonalize)
+TEST(CJADiagOrth, diagonalize)
 {
 	// Generating diagonal matrices
 	index_t * C_dims = SG_MALLOC(index_t, 3);
@@ -37,16 +38,19 @@ TEST(CFFDiag, diagonalize)
 		Eigen::Map<EMatrix> tmp(C.get_matrix(i),C_dims[0], C_dims[1]);
 		tmp.setIdentity();
 		
-		for (int j = 0; j < C_dims[0]; j++)
+		for (int j = 0; j < C_dims[0]; j++)		
 			tmp(j,j) *= CMath::abs(CMath::random(1,5)); 
 			
 	}
-	
-	// Mixing and demixing matrices
+
+	// Building a random orthonormal matrix A
 	EMatrix B(C_dims[0], C_dims[1]); 
 	B.setRandom();
-	EMatrix A = B.inverse();
+	SelfAdjointEigenSolver<EMatrix> eig;
+	eig.compute(B+B.transpose());
+	EMatrix A = eig.eigenvectors();
 	
+	// Building a stack
 	for (int i = 0; i < C_dims[2]; i++)
 	{
 		Eigen::Map<EMatrix> Ci(C.get_matrix(i),C_dims[0], C_dims[1]);
@@ -54,7 +58,7 @@ TEST(CFFDiag, diagonalize)
 	}	
 
 	/** Diagonalize **/
-	SGMatrix<float64_t> V = CFFDiag::diagonalize(C);
+	SGMatrix<float64_t> V = CJADiagOrth::diagonalize(C);
 
 	// Test output size
 	EXPECT_EQ(V.num_rows, C_dims[0]);
@@ -64,7 +68,7 @@ TEST(CFFDiag, diagonalize)
 	Eigen::Map<EMatrix> EV(V.matrix,C_dims[0], C_dims[1]);
 	SGMatrix<float64_t> P(C_dims[0],C_dims[1]);
 	Eigen::Map<EMatrix> EP(P.matrix,C_dims[0], C_dims[1]);
-	EP = EV * A;
+	EP = (EV * A).transpose();
 
 	// Test if output is correct
 	bool isperm = is_permutation_matrix(P);
