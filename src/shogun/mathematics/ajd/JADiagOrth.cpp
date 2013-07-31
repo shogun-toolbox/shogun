@@ -14,10 +14,10 @@ typedef Matrix< float64_t, Dynamic, Dynamic, ColMajor > EMatrix;
 
 using namespace shogun;
 
-double givens_stack(double *A, int M, int K, int p, int q);
-void left_rot_stack(double *A, int M, int N, int K, int p, int q, double c, double s);
-void right_rot_stack(double *A, int M, int N, int K, int p, int q, double c, double s);
-void left_rot_simple(double *A, int m, int n, int p, int q, double c, double s);
+float64_t givens_stack(float64_t *A, int M, int K, int p, int q);
+void left_rot_stack(float64_t *A, int M, int N, int K, int p, int q, float64_t c, float64_t s);
+void right_rot_stack(float64_t *A, int M, int N, int K, int p, int q, float64_t c, float64_t s);
+void left_rot_simple(float64_t *A, int m, int n, int p, int q, float64_t c, float64_t s);
 
 SGMatrix<float64_t> CJADiagOrth::diagonalize(SGNDArray<float64_t> C, SGMatrix<float64_t> V0,
 						double eps, int itermax)
@@ -43,13 +43,13 @@ SGMatrix<float64_t> CJADiagOrth::diagonalize(SGNDArray<float64_t> C, SGMatrix<fl
 			for (int q = p+1; q < m; q++)
 			{
 				// computation of Givens angle
-				double theta = givens_stack(C.array, m, L, p, q);
+				float64_t theta = givens_stack(C.array, m, L, p, q);
 
 				// Givens update
 				if (fabs(theta) > eps)
 				{  
-					double c = cos(theta);
-					double s = sin(theta);
+					float64_t c = cos(theta);
+					float64_t s = sin(theta);
 					left_rot_stack (C.array, m, m, L, p, q, c, s);  
 					right_rot_stack(C.array, m, m, L, p, q, c, s);  
 					left_rot_simple(V.matrix, m, m, p, q, c, s);
@@ -64,14 +64,14 @@ SGMatrix<float64_t> CJADiagOrth::diagonalize(SGNDArray<float64_t> C, SGMatrix<fl
 }
 
 /* Givens angle for the pair (p,q) of a stack of K M*M matrices */
-double givens_stack(double *A, int M, int K, int p, int q)
+float64_t givens_stack(float64_t *A, int M, int K, int p, int q)
 {
 	int k;
-	double diff_on, sum_off, ton, toff;
-	double *cm; // A cumulant matrix
-	double G11 = 0.0;
-	double G12 = 0.0;
-	double G22 = 0.0;
+	float64_t diff_on, sum_off, ton, toff;
+	float64_t *cm; // A cumulant matrix
+	float64_t G11 = 0.0;
+	float64_t G12 = 0.0;
+	float64_t G22 = 0.0;
 
 	int M2 = M*M;
 	int pp = p+p*M;
@@ -99,12 +99,12 @@ double givens_stack(double *A, int M, int K, int p, int q)
    Ak(mxn) --> R * Ak(mxn) where R rotates the (p,q) rows R =[ c -s ; s c ]  
    and Ak is the k-th matrix in the stack
 */
-void left_rot_stack(double *A, int M, int N, int K, int p, int q, double c, double s )
+void left_rot_stack(float64_t *A, int M, int N, int K, int p, int q, float64_t c, float64_t s )
 {
 	int k, ix, iy, cpt;
 	int MN = M*N;
 	int kMN;
-	double nx, ny;
+	float64_t nx, ny;
 
 	for (k=0, kMN=0; k<K; k++, kMN+=MN)
 	{
@@ -120,12 +120,12 @@ void left_rot_stack(double *A, int M, int N, int K, int p, int q, double c, doub
 
 /* Ak(mxn) --> Ak(mxn) x R where R rotates the (p,q) columns R =[ c s ; -s c ] 
    and Ak is the k-th M*N matrix in the stack */
-void right_rot_stack(double *A, int M, int N, int K, int p, int q, double c, double s ) 
+void right_rot_stack(float64_t *A, int M, int N, int K, int p, int q, float64_t c, float64_t s ) 
 { 
 	int k, ix, iy, cpt, kMN; 
 	int pM = p*M;
 	int qM = q*M;
-	double nx, ny; 
+	float64_t nx, ny; 
 
 	for (k=0, kMN=0; k<K; k++, kMN+=M*N)
 	{
@@ -142,14 +142,13 @@ void right_rot_stack(double *A, int M, int N, int K, int p, int q, double c, dou
 /* 
    A(mxn) --> R * A(mxn) where R=[ c -s ; s c ]   rotates the (p,q) rows of R 
 */
-void left_rot_simple(double *A, int m, int n, int p, int q, double c, double s)
+void left_rot_simple(float64_t *A, int m, int n, int p, int q, float64_t c, float64_t s)
 {
 	int ix = p;
 	int iy = q;
-	double nx, ny;
-	int j;
+	float64_t nx, ny;
 
-	for (j=0; j<n; j++, ix+=m, iy+=m) 
+	for (int j = 0; j < n; j++, ix+=m, iy+=m) 
 	{
 		nx = A[ix];
 		ny = A[iy];

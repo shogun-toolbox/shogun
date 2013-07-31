@@ -14,7 +14,7 @@ typedef Matrix< float64_t, Dynamic, Dynamic, ColMajor > EMatrix;
 
 using namespace shogun;
 
-void getW(double *C, int *ptN, int *ptK, double *W);
+void getW(float64_t *C, int *ptN, int *ptK, float64_t *W);
 
 SGMatrix<float64_t> CFFDiag::diagonalize(SGNDArray<float64_t> C0, SGMatrix<float64_t> V0,
 						double eps, int itermax)
@@ -38,9 +38,9 @@ SGMatrix<float64_t> CFFDiag::diagonalize(SGNDArray<float64_t> C0, SGMatrix<float
 	EMatrix Id(n,n); Id.setIdentity();
 	Eigen::Map<EMatrix> EV(V.matrix,n,n);
 	
-	double inum = 0;
-	double df = 1;
-	std::vector<double> crit;
+	float64_t inum = 0;
+	float64_t df = 1;
+	std::vector<float64_t> crit;
 	while (df > eps && inum < itermax)
 	{
 		EMatrix W = EMatrix::Zero(n,n);
@@ -66,7 +66,7 @@ SGMatrix<float64_t> CFFDiag::diagonalize(SGNDArray<float64_t> C0, SGMatrix<float
 			Ci = EV * C0i * EV.transpose();
 		}
 		
-		double f = 0;
+		float64_t f = 0;
 		for (int i = 0; i < K; i++)
 		{
 			Eigen::Map<EMatrix> C0i(C0.get_matrix(i), n, n);
@@ -89,14 +89,14 @@ SGMatrix<float64_t> CFFDiag::diagonalize(SGNDArray<float64_t> C0, SGMatrix<float
 
 }
 
-void getW(double *C, int *ptN, int *ptK, double *W) 
+void getW(float64_t *C, int *ptN, int *ptK, float64_t *W) 
 {
 	int N=*ptN;
 	int K=*ptK;
 	int i,j,k;
 	int auxij,auxji,auxii,auxjj;
-	double z[N][N];
-	double y[N][N];
+	float64_t z[N][N];
+	float64_t y[N][N];
 	
 	for (i = 0; i < N; i++) 
 	{

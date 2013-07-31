@@ -32,13 +32,11 @@ SGMatrix<float64_t> CQDiag::diagonalize(SGNDArray<float64_t> C, SGMatrix<float64
 		for (int i = 0; i < N; i++)
 		{
 			for (int j = 0; j < N; j++)
-			{
 				V(i,j) = CMath::randn_double();	
-			}
 		}
 	}
 	
-	std::vector<double> p(T,1.0/T);
+	std::vector<float64_t> p(T,1.0/T);
 	
 	EMatrix C0 = EMatrix::Identity(N,N);
 	
@@ -85,11 +83,11 @@ SGMatrix<float64_t> CQDiag::diagonalize(SGNDArray<float64_t> C, SGMatrix<float64
 	}
 	
 	int iter = 0;
-	double deltacrit = 1.0;
-	std::vector<double> crit;
+	float64_t deltacrit = 1.0;
+	std::vector<float64_t> crit;
 	while ( iter < itermax && deltacrit > eps )
 	{
-		double delta_w = 0.0;
+		float64_t delta_w = 0.0;
 		
 		for (int i = 0; i < N; i++)
 		{

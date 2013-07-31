@@ -14,11 +14,11 @@ typedef Matrix< float64_t, Dynamic, Dynamic, ColMajor > EMatrix;
 
 using namespace shogun;
 
-void sweepjedi(double *C, int *pMatSize, int *pMatNumber,
-				double *s_max, double *sh_max, double *A); 
+void sweepjedi(float64_t *C, int *pMatSize, int *pMatNumber,
+				float64_t *s_max, float64_t *sh_max, float64_t *A); 
 
-void iterJDI(double *C, int *pMatSize, int *pMatNumber, int *ptn,int *ptm,
-			double *s_max, double *sh_max, double *A);
+void iterJDI(float64_t *C, int *pMatSize, int *pMatNumber, int *ptn,int *ptm,
+			float64_t *s_max, float64_t *sh_max, float64_t *A);
 
 SGMatrix<float64_t> CJedi::diagonalize(SGNDArray<float64_t> C, SGMatrix<float64_t> V0,
 						double eps, int itermax)
@@ -33,8 +33,8 @@ SGMatrix<float64_t> CJedi::diagonalize(SGNDArray<float64_t> C, SGMatrix<float64_
 		V = SGMatrix<float64_t>::create_identity_matrix(d,1);
 
 	int iter = 0;
-	double sh_max = 1;
-	double s_max = 1;
+	float64_t sh_max = 1;
+	float64_t s_max = 1;
 	while (iter < itermax && ( (sh_max>eps) || (s_max>eps) ))
 	{
 		sh_max = 0;
@@ -55,8 +55,8 @@ SGMatrix<float64_t> CJedi::diagonalize(SGNDArray<float64_t> C, SGMatrix<float64_
 	return V;
 }
 
-void sweepjedi(double *C, int *pMatSize, int *pMatNumber,
-				double *s_max, double *sh_max, double *A) 
+void sweepjedi(float64_t *C, int *pMatSize, int *pMatNumber,
+				float64_t *s_max, float64_t *sh_max, float64_t *A) 
 {
 	for (int n=2;n<=*pMatSize;n++) 
 		for (int m=1;m<n;m++) 
@@ -64,7 +64,7 @@ void sweepjedi(double *C, int *pMatSize, int *pMatNumber,
 			
 	int MS=*pMatSize;
 	int MN=*pMatNumber;
-	double col_norm[MS];
+	float64_t col_norm[MS];
 	
 	for (int i=0;i<MS;i++) 
 	{
@@ -76,13 +76,13 @@ void sweepjedi(double *C, int *pMatSize, int *pMatNumber,
 		col_norm[i] = sqrt(col_norm[i]);
 	}
 	
-	double daux=1;
-	double d[MS];
+	float64_t daux=1;
+	float64_t d[MS];
 	
 	for (int i=0;i<MS;i++) 
 		daux*=col_norm[i];
 	
-	daux=pow((double)daux,(double) 1/MS);
+	daux=pow((float64_t)daux,(float64_t) 1/MS);
 	
 	for (int i=0;i<MS;i++) 
 		d[i]=daux/col_norm[i];
@@ -101,8 +101,8 @@ void sweepjedi(double *C, int *pMatSize, int *pMatNumber,
 	}
 }
 
-void iterJDI(double *C, int *pMatSize, int *pMatNumber, int *ptn,int *ptm,
-			double *s_max, double *sh_max, double *A) 
+void iterJDI(float64_t *C, int *pMatSize, int *pMatNumber, int *ptn,int *ptm,
+			float64_t *s_max, float64_t *sh_max, float64_t *A) 
 {
 	int n=*ptn-1;
 	int m=*ptm-1;
@@ -111,9 +111,9 @@ void iterJDI(double *C, int *pMatSize, int *pMatNumber, int *ptn,int *ptm,
 	int i,j,k;
 	int d3;//d2;
 
-	double tmm[MN];
-	double tnn[MN];
-	double tmn[MN];
+	float64_t tmm[MN];
+	float64_t tnn[MN];
+	float64_t tmn[MN];
 	for (i=0,d3=0;i<MN;i++,d3+=MS*MS) 
 	{
 		tmm[i] = C[d3+m*MS+m];
@@ -122,15 +122,15 @@ void iterJDI(double *C, int *pMatSize, int *pMatNumber, int *ptn,int *ptm,
 	}
 
 	// here we evd
-	double G[MN][3];
-	double evectors[9], evalues[3];
+	float64_t G[MN][3];
+	float64_t evectors[9], evalues[3];
 	for (i=0;i<MN;i++) 
 	{
 		G[i][0] = 0.5*(tmm[i]+tnn[i]);	
 		G[i][1] = 0.5*(tmm[i]-tnn[i]);
 		G[i][2] = tmn[i];	
 	}
-	double GG[9];
+	float64_t GG[9];
 	for (i=0;i<3;i++) 
 	{
 		for (j=0;j<=i;j++) 
@@ -162,38 +162,38 @@ void iterJDI(double *C, int *pMatSize, int *pMatNumber, int *ptn,int *ptm,
 	memcpy(evectors, eigenvectors.data(), 9*sizeof(float64_t));
 	memcpy(evalues, eigenvalues.data(), 3*sizeof(float64_t));
 	
-	double tmp_evec[3],tmp_eval;
+	float64_t tmp_evec[3],tmp_eval;
 	if (fabs(evalues[1])<fabs(evalues[2])) 
 	{
 		tmp_eval = evalues[1];
 		evalues[1] = evalues[2];
 		evalues[2] = tmp_eval;
-		memcpy(tmp_evec,&evectors[3],3*sizeof(double));
-		memcpy(&evectors[3],&evectors[6],3*sizeof(double));
-		memcpy(&evectors[6],tmp_evec,3*sizeof(double));
+		memcpy(tmp_evec,&evectors[3],3*sizeof(float64_t));
+		memcpy(&evectors[3],&evectors[6],3*sizeof(float64_t));
+		memcpy(&evectors[6],tmp_evec,3*sizeof(float64_t));
 	}
 	if (fabs(evalues[0])<fabs(evalues[1])) 
 	{
 		tmp_eval = evalues[0];
 		evalues[0] = evalues[1];
 		evalues[1] = tmp_eval;
-		memcpy(tmp_evec,evectors,3*sizeof(double));
-		memcpy(evectors,&evectors[3],3*sizeof(double));
-		memcpy(&evectors[3],tmp_evec,3*sizeof(double));
+		memcpy(tmp_evec,evectors,3*sizeof(float64_t));
+		memcpy(evectors,&evectors[3],3*sizeof(float64_t));
+		memcpy(&evectors[3],tmp_evec,3*sizeof(float64_t));
 	}
 	if (fabs(evalues[1])<fabs(evalues[2])) 
 	{
 		tmp_eval = evalues[1];
 		evalues[1] = evalues[2];
 		evalues[2] = tmp_eval;
-		memcpy(tmp_evec,&evectors[3],3*sizeof(double));
-		memcpy(&evectors[3],&evectors[6],3*sizeof(double));
-		memcpy(&evectors[6],tmp_evec,3*sizeof(double));
+		memcpy(tmp_evec,&evectors[3],3*sizeof(float64_t));
+		memcpy(&evectors[3],&evectors[6],3*sizeof(float64_t));
+		memcpy(&evectors[6],tmp_evec,3*sizeof(float64_t));
 	}
 
-	double aux[9];
-	double diagaux[3];
-	double v[3];
+	float64_t aux[9];
+	float64_t diagaux[3];
+	float64_t v[3];
 	for (i=0;i<9;i++) 
 		aux[i] = evectors[i];
 	
@@ -219,20 +219,20 @@ void iterJDI(double *C, int *pMatSize, int *pMatNumber, int *ptn,int *ptm,
 		for (i=0;i<3;i++) 
 			v[i]*=-1;
 	
-	double ch = sqrt( (1+sqrt(1+v[0]*v[0]))/2 );
-	double sh = v[0]/(2*ch);
-	double c = sqrt( ( 1 + v[2]/sqrt(1+v[0]*v[0]) )/2 );
-	double s = -v[1]/( 2*c*sqrt( (1+v[0]*v[0]) ) );
+	float64_t ch = sqrt( (1+sqrt(1+v[0]*v[0]))/2 );
+	float64_t sh = v[0]/(2*ch);
+	float64_t c = sqrt( ( 1 + v[2]/sqrt(1+v[0]*v[0]) )/2 );
+	float64_t s = -v[1]/( 2*c*sqrt( (1+v[0]*v[0]) ) );
 	*s_max = std::max(*s_max,fabs(s));
 	*sh_max = std::max(*sh_max,fabs(sh));
 	
-	double rm11=c*ch - s*sh;
-	double rm12=c*sh - s*ch;
-	double rm21=c*sh + s*ch;
-	double rm22=c*ch + s*sh;
+	float64_t rm11=c*ch - s*sh;
+	float64_t rm12=c*sh - s*ch;
+	float64_t rm21=c*sh + s*ch;
+	float64_t rm22=c*ch + s*sh;
 
-	double h_slice1,h_slice2;
-	double buf[MS][MN];
+	float64_t h_slice1,h_slice2;
+	float64_t buf[MS][MN];
 	
 	for (i=0;i<MS;i++) 
 	{
@@ -264,8 +264,8 @@ void iterJDI(double *C, int *pMatSize, int *pMatNumber, int *ptn,int *ptm,
 		C[i*MS*MS+n*MS+n] = (rm12*rm12)*tmm[i]+(2*rm12*rm22)*tmn[i]+(rm22*rm22)*tnn[i];
 	}
 
-	double col1;
-	double col2;
+	float64_t col1;
+	float64_t col2;
 	
 	for (i=0;i<MS;i++) 
 	{

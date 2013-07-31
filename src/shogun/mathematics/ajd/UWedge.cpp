@@ -65,7 +65,7 @@ SGMatrix<float64_t> CUWedge::diagonalize(SGNDArray<float64_t> C, SGMatrix<float6
 	memcpy(Cs.array, C.array, Cs.dims[0]*Cs.dims[1]*Cs.dims[2]*sizeof(float64_t));
 
 	EMatrix Rs(d,L);
-	std::vector<double> crit;
+	std::vector<float64_t> crit;
 	crit.push_back(0.0);
 	for (int l = 0; l < L; l++)
 	{
@@ -77,8 +77,8 @@ SGMatrix<float64_t> CUWedge::diagonalize(SGNDArray<float64_t> C, SGMatrix<float6
 		crit.back() += Csi.cwiseAbs2().sum() - Rs.col(l).cwiseAbs2().sum();	
 	}
 	
-	double iter = 0;
-	double improve = 10;
+	float64_t iter = 0;
+	float64_t improve = 10;
 	while (improve > eps && iter < itermax)
 	{
 		EMatrix B = Rs * Rs.transpose();
