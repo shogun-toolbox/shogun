@@ -43,4 +43,4 @@ before_install:
  - sudo apt-get install -qq cdbs libeigen3-dev libarpack2-dev libatlas-base-dev libblas-dev libglpk-dev libhdf5-serial-dev libjson0-dev swig zlib1g-dev libxml2-dev libreadline6-dev libreadline-dev libsnappy-dev liblzo2-dev liblzma-dev liblapack-dev gdb cmake $EXTRA_PACKAGES
  - wget http://googlemock.googlecode.com/files/gmock-1.6.0.zip && unzip gmock-1.6.0.zip
 before_script: mkdir build && cd build
-script: cmake -DENABLE_TESTING=ON $CMAKE_OPTIONS .. && make -j 4 && sudo make install && make test && ctest -D MemoryCheck
+script: cmake -DENABLE_TESTING=ON $CMAKE_OPTIONS .. && make -j 4 && sudo make install && ctest --output-on-failure && ctest -D MemoryCheck
