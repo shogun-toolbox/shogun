@@ -9,7 +9,7 @@
  * Written (W) 2011 Siddharth Kherada
  * Written (W) 2011 Justin Patera
  * Written (W) 2011 Alesis Novik
- * Written (W) 2011-2012 Heiko Strathmann
+ * Written (W) 2011-2013 Heiko Strathmann
  * Written (W) 1999-2009 Soeren Sonnenburg
  * Written (W) 1999-2008 Gunnar Raetsch
  * Written (W) 2007 Konrad Rieck
@@ -695,6 +695,60 @@ class CMath : public CSGObject
 		 * @param n number of elements used to divide the interval
 		 */
 		static void linspace(float64_t* output, float64_t start, float64_t end, int32_t n = 100);
+
+		/** Computes \f$\log(\sum_{i=1}^n \exp(x_i))\f$ for given \f$x_i\f$
+		 * using the log-sum-exp trick which avoids numerical problems.
+		 *
+		 * @param values the vector of \f$x_i\f$
+		 * @return \f$\log(\sum_{i=1}^n \exp(x_i))\f$ for given \f$x_i\f$
+		 */
+		template <class T>
+		static T log_sum_exp(SGVector<T> values)
+		{
+			REQUIRE(values.vector, "Values are empty");
+
+			/* find minimum element index */
+			index_t min_index=0;
+			T X0=values[0];
+			if (values.vlen>1)
+			{
+				for (index_t i=1; i<values.vlen; ++i)
+				{
+					if (values[i]<X0)
+					{
+						X0=values[i];
+						min_index=i;
+					}
+				}
+			}
+
+			/* remove element from vector copy and compute log sum exp */
+			SGVector<T> values_without_X0(values.vlen-1);
+			index_t from_idx=0;
+			index_t to_idx=0;
+			for (from_idx=0; from_idx<values.vlen; ++from_idx)
+			{
+				if (from_idx!=min_index)
+				{
+					values_without_X0[to_idx]=exp(values[from_idx]-X0);
+					to_idx++;
+				}
+			}
+
+			return X0+log(SGVector<T>::sum(values_without_X0)+1);
+		}
+
+		/** Computes \f$\log(\frac{1}{n}\sum_{i=1}^n \exp(x_i))\f$ for given
+		 * \f$x_i\f$ using the log-sum-exp trick which avoids numerical problems.
+		 *
+		 * @param values the vector of \f$x_i\f$
+		 * @return \f$\log(\frac{1}{n}\sum_{i=1}^n \exp(x_i))\f$
+		 */
+		template <class T>
+		static T log_mean_exp(SGVector<T> values)
+		{
+			return log_sum_exp(values) - log(values.vlen);
+		}
 
 		/** performs a bubblesort on a given matrix a.
 		 * it is sorted in ascending order from top to bottom
