@@ -103,7 +103,3 @@ FOREACH(EXAMPLE ${EXAMPLES})
 	target_link_libraries(${EXAMPLE} shogun)
 	add_test(libshogun-${EXAMPLE} ${EXAMPLE})
 ENDFOREACH()
-
-#ADD_CUSTOM_TARGET(libshogun-examples 
-#	COMMAND ${CMAKE_CTEST_COMMAND}
-#	DEPENDS )
