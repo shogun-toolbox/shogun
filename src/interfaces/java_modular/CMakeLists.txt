@@ -2,12 +2,14 @@ include(CommonModularInterface)
 include_directories(${JNI_INCLUDE_DIRS})
 
 GENERATE_MODULAR_TARGET(java ${CMAKE_CURRENT_SOURCE_DIR} "")
+SET_TARGET_PROPERTIES(java_modular PROPERTIES OUTPUT_NAME modshogun)
 
 set(CMAKE_JAVA_TARGET_OUTPUT_NAME shogun)
 SET(CMAKE_JAVA_INCLUDE_PATH ${JBLAS})
 ADD_JAR(shogun_jar ${CMAKE_CURRENT_BINARY_DIR}/*.java)
 add_dependencies(shogun_jar java_modular)
 
+SET(JAVA_MODULAR_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR} PARENT_SCOPE)
 INSTALL(TARGETS java_modular
 	LIBRARY DESTINATION lib/jni
 	COMPONENT java)
