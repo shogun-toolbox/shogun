@@ -503,8 +503,7 @@ ENDIF()
 # save configuration options
 SET(CONFIGURE_OPTIONS "TODO")
 SET(COMPFLAGS_CPP "TODO")
-SET(LINKFLAGS "TODO")
-#SET(LINKFLAGS "${POSTLINKFLAGS}")
+SET(LINKFLAGS "${POSTLINKFLAGS}")
 
 add_subdirectory(src/shogun)
 
