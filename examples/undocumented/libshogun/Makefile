@@ -10,7 +10,7 @@ LINKFLAGS=
 CXXFLAGS=-O0 -g
 
 LIBRARY_PATH=LD_LIBRARY_PATH
-LINKFLAGS+=$(LIBS) $(LIBS_ADD) -L$(LIB_PATH) 
+LINKFLAGS+=$(LIBS) $(LIBS_ADD) -L$(LIB_PATH)
 CXXFLAGS+=-I$(INC_PATH) $(INCLUDES)
 CC=c++
 
@@ -22,6 +22,7 @@ TARGETS = basic_minimal \
 		  classifier_minimal_svm \
 		  classifier_mklmulticlass \
 		  classifier_conjugateindex \
+		  classifier_gaussian_process_binary_classification \
 		  classifier_gaussiannaivebayes \
 		  classifier_multiclasslibsvm \
 		  classifier_qda \
