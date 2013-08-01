@@ -11,7 +11,7 @@ ENDIF()
 
 # java modular
 IF (JavaModular)
-	#add_subdirectory(undocumented/java_modular)
+	add_subdirectory(undocumented/java_modular)
 ENDIF()
 
 # ruby modular
@@ -26,7 +26,7 @@ ENDIF()
 
 # csharp modular
 IF (CSharpModular)
-	#add_subdirectory(undocumented/csharp_modular)
+	add_subdirectory(undocumented/csharp_modular)
 ENDIF()
 
 # r modular
