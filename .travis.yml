@@ -44,5 +44,3 @@ before_install:
  - wget http://googlemock.googlecode.com/files/gmock-1.6.0.zip && unzip gmock-1.6.0.zip
 before_script: mkdir build && cd build
 script: cmake -DENABLE_TESTING=ON $CMAKE_OPTIONS .. && make -j 4 && sudo make install && ctest --output-on-failure
-rvm:
-  - 1.8.7
