@@ -495,9 +495,20 @@ IF (SVMLight)
 ENDIF()
 
 ################# TESTING ###################
+#TODO: finish!!!
+OPTION(BUILD_DASHBOARD_REPORTS "Set to ON to activate reporting of Shogun builds" OFF)
+IF(BUILD_DASHBOARD_REPORTS)
+	include(CTest)
+ENDIF()
+
 OPTION(ENABLE_TESTING "Enable testing" OFF)
 IF(ENABLE_TESTING)
-	enable_testing()
+	IF(NOT BUILD_DASHBOARD_REPORTS)	
+		enable_testing()
+	ENDIF()
+
+	# add integration tests
+	add_subdirectory(tests/integration)
 
 	# Find GTEST and GMOCK frameworks
 	SET(GOOGLE_MOCK_SOURCE_DIR "" CACHE PATH "Path to the GMock source")
@@ -515,7 +526,7 @@ SET(LINKFLAGS "${POSTLINKFLAGS}")
 
 add_subdirectory(src/shogun)
 
-IF(BUILD_EXAMPLES)
+IF(BUILD_EXAMPLES OR ENABLE_TESTING)
 	add_subdirectory(examples)
 ENDIF()
 
