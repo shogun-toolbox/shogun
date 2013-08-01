@@ -1,4 +1,4 @@
-include_directories(. ..)
+include_directories(${INCLUDES} . ..)
 
 FILE(GLOB_RECURSE LIBSHOGUN_SRC *.${EXT_SRC_CPP} *.${EXT_SRC_C})
 FILE(GLOB_RECURSE LIBSHOGUN_HEADERS *.${EXT_SRC_HEADER})
@@ -35,8 +35,10 @@ FOREACH(template ${LIBSHOGUN_SRC_TMP})
 ENDFOREACH()
 
 CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/lib/config.h.in ${CMAKE_CURRENT_SOURCE_DIR}/lib/config.h)
-
-set_target_properties(shogun PROPERTIES VERSION ${LIBSHOGUNVER} SOVERSION ${LIBSHOGUNSO})
+set_target_properties(shogun PROPERTIES 
+                        VERSION ${LIBSHOGUNVER}
+                        SOVERSION ${LIBSHOGUNSO}
+                        COMPILE_DEFINITIONS "${DEFINES}")
 target_link_libraries(shogun ${POSTLINKFLAGS})
 
 INSTALL(DIRECTORY ./ 

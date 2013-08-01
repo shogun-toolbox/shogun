@@ -1,20 +1,19 @@
 include(CommonModularInterface)
-include_directories(${CMAKE_SOURCE_DIR}/src)
 include_directories(${JNI_INCLUDE_DIRS})
 
 GENERATE_MODULAR_TARGET(java ${CMAKE_CURRENT_SOURCE_DIR} "")
 
-ADD_CUSTOM_COMMAND(TARGET java_modular
-				   POST_BUILD
-				   COMMAND "${CMAKE_COMMAND}" -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/build.xml ${CMAKE_CURRENT_BINARY_DIR}/build.xml
-				   COMMAND "${ANT_EXECUTABLE}" dist
-				   COMMENT "Creating shogun.jar")
+set(CMAKE_JAVA_TARGET_OUTPUT_NAME shogun)
+SET(CMAKE_JAVA_INCLUDE_PATH ${JBLAS})
+ADD_JAR(shogun_jar ${CMAKE_CURRENT_BINARY_DIR}/*.java)
+add_dependencies(shogun_jar java_modular)
 
 INSTALL(TARGETS java_modular
 	LIBRARY DESTINATION lib/jni
 	COMPONENT java)
 
-INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/shogun.jar 
+SET(SHOGUN_JAR "${CMAKE_CURRENT_BINARY_DIR}/shogun.jar" PARENT_SCOPE)
+INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/shogun.jar
 		DESTINATION share/java
 		COMPONENT java)
 
