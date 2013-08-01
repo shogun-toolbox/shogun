@@ -164,28 +164,6 @@ public:
 	 */
 	virtual SGVector<float64_t> get_diagonal_vector();
 
-	/** get the gradient
-	 *
-	 * @return map of gradient: keys are names of parameters, values
-	 * are values of derivative with respect to that parameter.
-	 */
-	virtual CMap<TParameter*, SGVector<float64_t> > get_gradient(
-			CMap<TParameter*, CSGObject*>& para_dict)
-	{
-		return get_marginal_likelihood_derivatives(para_dict);
-	}
-
-	/** get the function value
-	 *
-	 * @return vector that represents the function value
-	 */
-	virtual SGVector<float64_t> get_quantity()
-	{
-		SGVector<float64_t> result(1);
-		result[0] = get_negative_marginal_likelihood();
-		return result;
-	}
-
 	/**
 	 * @return whether combination of FITC inference method and given
 	 * likelihood function supports regression

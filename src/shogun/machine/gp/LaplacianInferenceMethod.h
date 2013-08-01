@@ -173,28 +173,6 @@ public:
 	 */
 	virtual SGMatrix<float64_t> get_posterior_approximation_covariance();
 
-	/** get the gradient
-	 *
-	 * @return map of gradient: keys are names of parameters, values
-	 * are values of derivative with respect to that parameter.
-	 */
-	virtual CMap<TParameter*, SGVector<float64_t> > get_gradient(
-			CMap<TParameter*, CSGObject*>& para_dict)
-	{
-		return get_marginal_likelihood_derivatives(para_dict);
-	}
-
-	/** get the function value
-	 *
-	 * @return vector that represents the function value
-	 */
-	virtual SGVector<float64_t> get_quantity()
-	{
-		SGVector<float64_t> result(1);
-		result[0] = get_negative_marginal_likelihood();
-		return result;
-	}
-
 	/** get tolerance for newton iterations
 	 *
 	 * @return tolerance for newton iterations
@@ -231,15 +209,15 @@ public:
 	 */
 	virtual void set_minimization_tolerance(float64_t tol) { m_opt_tolerance=tol; }
 
-	/** get max for Brent's minimization method
+	/** get maximum for Brent's minimization method
 	 *
-	 * @return max for Brent's minimization method
+	 * @return maximum for Brent's minimization method
 	 */
 	virtual float64_t get_minimization_max() { return m_opt_max; }
 
-	/** set max for Brent's minimization method
+	/** set maximum for Brent's minimization method
 	 *
-	 * @param iter max for Brent's minimization method
+	 * @param max maximum for Brent's minimization method
 	 */
 	virtual void set_minimization_max(float64_t max) { m_opt_max=max; }
 
