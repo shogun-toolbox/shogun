@@ -1,5 +1,4 @@
 include(CommonModularInterface)
-include_directories(${CMAKE_SOURCE_DIR}/src)
 
 GENERATE_MODULAR_TARGET(csharp ${CMAKE_CURRENT_SOURCE_DIR} "")
 

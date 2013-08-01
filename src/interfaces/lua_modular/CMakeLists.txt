@@ -1,7 +1,7 @@
 include(CommonModularInterface)
-include_directories(${CMAKE_SOURCE_DIR}/src)
-INCLUDE_DIRECTORIES(${LUA_INCLUDEDIR})
+include_directories(${LUA_INCLUDEDIR})
 
+MESSAGE(${LUA_LDFLAGS})
 GENERATE_MODULAR_TARGET(lua ${CMAKE_CURRENT_SOURCE_DIR} ${LUA_LDFLAGS})
 
 STRING(REGEX REPLACE "([0-9]*.[0-9]*).[0-9]*" "lib/lua/\\1" LUA_EXTENSION_DIR ${LUA_VERSION})
