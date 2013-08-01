@@ -17,13 +17,13 @@
 using namespace shogun;
 using namespace Eigen;
 
-TEST(GaussianDistribution_CF_CHOLESKY,log_pdf_single_1d)
+TEST(GaussianDistribution,log_pdf_single_1d)
 {
 	SGVector<float64_t> mean(1);
 	SGMatrix<float64_t> cov(1,1);
 	mean[0]=1;
 	cov(0,0)=2;
-	CGaussianDistribution* gauss=new CGaussianDistribution(mean,cov,CF_CHOLESKY);
+	CGaussianDistribution* gauss=new CGaussianDistribution(mean,cov);
 
 	SGVector<float64_t> x(1);
 	x[0]=0;
@@ -34,13 +34,13 @@ TEST(GaussianDistribution_CF_CHOLESKY,log_pdf_single_1d)
 	SG_UNREF(gauss);
 }
 
-TEST(GaussianDistribution_CF_CHOLESKY,log_pdf_multiple_1d)
+TEST(GaussianDistribution,log_pdf_multiple_1d)
 {
 	SGVector<float64_t> mean(1);
 	SGMatrix<float64_t> cov(1,1);
 	mean[0]=1;
 	cov(0,0)=2;
-	CGaussianDistribution* gauss=new CGaussianDistribution(mean,cov,CF_CHOLESKY);
+	CGaussianDistribution* gauss=new CGaussianDistribution(mean,cov);
 
 	SGMatrix<float64_t> x(1,2);
 	x(0,0)=0;
@@ -53,7 +53,7 @@ TEST(GaussianDistribution_CF_CHOLESKY,log_pdf_multiple_1d)
 	SG_UNREF(gauss);
 }
 
-TEST(GaussianDistribution_CF_CHOLESKY,log_pdf_single_2d)
+TEST(GaussianDistribution,log_pdf_single_2d)
 {
 	SGVector<float64_t> mean(2);
 	SGMatrix<float64_t> cov(2,2);
@@ -63,7 +63,7 @@ TEST(GaussianDistribution_CF_CHOLESKY,log_pdf_single_2d)
 	cov(0,1)=1.3;
 	cov(1,0)=1.3;
 	cov(1,1)=2.4;
-	CGaussianDistribution* gauss=new CGaussianDistribution(mean,cov,CF_CHOLESKY);
+	CGaussianDistribution* gauss=new CGaussianDistribution(mean,cov);
 
 	SGVector<float64_t> x(2);
 	x[0]=0;
@@ -75,7 +75,7 @@ TEST(GaussianDistribution_CF_CHOLESKY,log_pdf_single_2d)
 	SG_UNREF(gauss);
 }
 
-TEST(GaussianDistribution_CF_CHOLESKY,log_pdf_multiple_2d)
+TEST(GaussianDistribution,log_pdf_multiple_2d)
 {
 	SGVector<float64_t> mean(2);
 	SGMatrix<float64_t> cov(2,2);
@@ -85,7 +85,7 @@ TEST(GaussianDistribution_CF_CHOLESKY,log_pdf_multiple_2d)
 	cov(0,1)=1.3;
 	cov(1,0)=1.3;
 	cov(1,1)=2.4;
-	CGaussianDistribution* gauss=new CGaussianDistribution(mean,cov,CF_CHOLESKY);
+	CGaussianDistribution* gauss=new CGaussianDistribution(mean,cov);
 
 	SGMatrix<float64_t> x(2,2);
 	x(0,0)=1;
@@ -100,43 +100,7 @@ TEST(GaussianDistribution_CF_CHOLESKY,log_pdf_multiple_2d)
 	SG_UNREF(gauss);
 }
 
-TEST(GaussianDistribution_CF_SVD_QR,log_pdf_single_1d)
-{
-	SGVector<float64_t> mean(1);
-	SGMatrix<float64_t> cov(1,1);
-	mean[0]=1;
-	cov(0,0)=2;
-	CGaussianDistribution* gauss=new CGaussianDistribution(mean,cov,CF_SVD_QR);
-
-	SGVector<float64_t> x(1);
-	x[0]=0;
-	float64_t result=((CProbabilityDistribution*)gauss)->log_pdf(x);
-	
-	EXPECT_NEAR(result, -1.5155121234846454, 1e-15);
-
-	SG_UNREF(gauss);
-}
-
-TEST(GaussianDistribution_CF_SVD_QR,log_pdf_multiple_1d)
-{
-	SGVector<float64_t> mean(1);
-	SGMatrix<float64_t> cov(1,1);
-	mean[0]=1;
-	cov(0,0)=2;
-	CGaussianDistribution* gauss=new CGaussianDistribution(mean,cov,CF_SVD_QR);
-
-	SGMatrix<float64_t> x(1,2);
-	x(0,0)=0;
-	x(0,1)=1;
-	SGVector<float64_t> result=(gauss)->log_pdf(x);
-
-	EXPECT_NEAR(result[0], -1.5155121234846454, 1e-15);
-	EXPECT_NEAR(result[1], -1.2655121234846454, 1e-15);
-
-	SG_UNREF(gauss);
-}
-
-TEST(GaussianDistribution_CF_SVD_QR,log_pdf_single_2d)
+TEST(GaussianDistribution,sample_2d_fixed)
 {
 	SGVector<float64_t> mean(2);
 	SGMatrix<float64_t> cov(2,2);
@@ -146,54 +110,7 @@ TEST(GaussianDistribution_CF_SVD_QR,log_pdf_single_2d)
 	cov(0,1)=1.3;
 	cov(1,0)=1.3;
 	cov(1,1)=2.4;
-	CGaussianDistribution* gauss=new CGaussianDistribution(mean,cov,CF_SVD_QR);
-
-	SGVector<float64_t> x(2);
-	x[0]=0;
-	x[1]=0;
-	float64_t result=((CProbabilityDistribution*)gauss)->log_pdf(x);
-	
-	EXPECT_NEAR(result, -3.375079401517433, 1e-15);
-
-	SG_UNREF(gauss);
-}
-
-TEST(GaussianDistribution_CF_SVD_QR,log_pdf_multiple_2d)
-{
-	SGVector<float64_t> mean(2);
-	SGMatrix<float64_t> cov(2,2);
-	mean[0]=1;
-	mean[1]=2;
-	cov(0,0)=2.4;
-	cov(0,1)=1.3;
-	cov(1,0)=1.3;
-	cov(1,1)=2.4;
-	CGaussianDistribution* gauss=new CGaussianDistribution(mean,cov,CF_SVD_QR);
-
-	SGMatrix<float64_t> x(2,2);
-	x(0,0)=1;
-	x(1,0)=2;
-	x(0,1)=3;
-	x(1,1)=4;
-	SGVector<float64_t> result=(gauss)->log_pdf(x);
-	
-	EXPECT_NEAR(result[0], -2.539698566136597, 1e-15);
-	EXPECT_NEAR(result[1], -3.620779647217678, 1e-15);
-
-	SG_UNREF(gauss);
-}
-
-TEST(GaussianDistribution_CF_CHOLESKY,sample_2d_fixed)
-{
-	SGVector<float64_t> mean(2);
-	SGMatrix<float64_t> cov(2,2);
-	mean[0]=1;
-	mean[1]=2;
-	cov(0,0)=2.4;
-	cov(0,1)=1.3;
-	cov(1,0)=1.3;
-	cov(1,1)=2.4;
-	CGaussianDistribution* gauss=new CGaussianDistribution(mean,cov,CF_CHOLESKY);
+	CGaussianDistribution* gauss=new CGaussianDistribution(mean,cov);
 
 	/* fake std normal samples */
 	SGMatrix<float64_t> pre_samples(2,2);
@@ -212,36 +129,7 @@ TEST(GaussianDistribution_CF_CHOLESKY,sample_2d_fixed)
 	SG_UNREF(gauss);
 }
 
-TEST(GaussianDistribution_CF_SVD_QR,sample_2d_fixed)
-{
-	SGVector<float64_t> mean(2);
-	SGMatrix<float64_t> cov(2,2);
-	mean[0]=1;
-	mean[1]=2;
-	cov(0,0)=2.4;
-	cov(0,1)=1.3;
-	cov(1,0)=1.3;
-	cov(1,1)=2.4;
-	CGaussianDistribution* gauss=new CGaussianDistribution(mean,cov,CF_SVD_QR);
-
-	/* fake std normal samples */
-	SGMatrix<float64_t> pre_samples(2,2);
-	pre_samples(0,0)=-1.93251186;
-	pre_samples(1,0)=1.64881715;
-	pre_samples(0,1)=0.44701692;
-	pre_samples(1,1)=-1.17987856;
-	SGMatrix<float64_t> result=gauss->sample(pre_samples.num_cols, pre_samples);
-	
-	/* SVD basis is non-unique, so catch all cases here */
-	EXPECT_TRUE(CMath::abs(result(0,0)+1.9938345)<1e-7 || CMath::abs(result(0,0)+2.85129583)<1e-7);
-	EXPECT_TRUE(CMath::abs(result(0,1)-1.69251563)<1e-7 || CMath::abs(result(0,1)-2.4830301)<1e-7);
-	EXPECT_TRUE(CMath::abs(result(1,0)+1.9938345)<1e-7 || CMath::abs(result(1,0)-0.59429522)<1e-7);
-	EXPECT_TRUE(CMath::abs(result(1,1)+1.9938345)<1e-7 || CMath::abs(result(1,1)-1.73298739)<1e-7);
-	
-	SG_UNREF(gauss);
-}
-
-TEST(GaussianDistribution_CF_CHOLESKY,sample_2d)
+TEST(GaussianDistribution,sample_2d)
 {
 	SGVector<float64_t> mean(2);
 	SGMatrix<float64_t> cov(2,2);
@@ -252,34 +140,6 @@ TEST(GaussianDistribution_CF_CHOLESKY,sample_2d)
 	cov(1,0)=1.3;
 	cov(1,1)=2.4;
 	CGaussianDistribution* gauss=new CGaussianDistribution(mean,cov);
-
-	index_t num_samples=100000;
-	SGMatrix<float64_t> samples=gauss->sample(num_samples);
-	SGMatrix<float64_t> emp_cov(2,2);
-	Map<MatrixXd> eigen_samples(samples.matrix, samples.num_rows, samples.num_cols);
-	Map<MatrixXd> eigen_emp_cov(emp_cov.matrix, emp_cov.num_rows, emp_cov.num_cols);
-
-	/* center and compute empirical covariance */
-	MatrixXd centered = eigen_samples.colwise() - eigen_samples.rowwise().mean();
-	eigen_emp_cov = 1.0/(num_samples-1)*(centered * centered.transpose());
-
-	for (index_t i=0; i<cov.num_rows*cov.num_cols; ++i)
-		EXPECT_NEAR(cov.matrix[i], emp_cov.matrix[i], 1e-1);
-
-	SG_UNREF(gauss);
-}
-
-TEST(GaussianDistribution_CF_SVD_QR,sample_2d)
-{
-	SGVector<float64_t> mean(2);
-	SGMatrix<float64_t> cov(2,2);
-	mean[0]=1;
-	mean[1]=2;
-	cov(0,0)=2.4;
-	cov(0,1)=1.3;
-	cov(1,0)=1.3;
-	cov(1,1)=2.4;
-	CGaussianDistribution* gauss=new CGaussianDistribution(mean,cov,CF_SVD_QR);
 
 	index_t num_samples=100000;
 	SGMatrix<float64_t> samples=gauss->sample(num_samples);

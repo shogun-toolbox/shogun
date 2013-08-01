@@ -22,8 +22,7 @@ CGaussianDistribution::CGaussianDistribution() : CProbabilityDistribution()
 }
 
 CGaussianDistribution::CGaussianDistribution(SGVector<float64_t> mean,
-		SGMatrix<float64_t> cov,
-		ECovarianceFactorization factorization, bool cov_is_factor) :
+		SGMatrix<float64_t> cov, bool cov_is_factor) :
 				CProbabilityDistribution(mean.vlen)
 {
 	REQUIRE(cov.num_rows==cov.num_cols, "Covariance must be square but is "
@@ -35,10 +34,19 @@ CGaussianDistribution::CGaussianDistribution(SGVector<float64_t> mean,
 	init();
 
 	m_mean=mean;
-	m_factorization=factorization;
 
 	if (!cov_is_factor)
-		compute_covariance_factorization(cov, factorization);
+	{
+		Map<MatrixXd> eigen_cov(cov.matrix, cov.num_rows, cov.num_cols);
+		m_L=SGMatrix<float64_t>(cov.num_rows, cov.num_cols);
+		Map<MatrixXd> eigen_L(m_L.matrix, m_L.num_rows, m_L.num_cols);
+
+		LLT<MatrixXd> llt(eigen_cov);
+		if (llt.info()==NumericalIssue)
+			SG_ERROR("Error computing Cholesky\n");
+
+		eigen_L=llt.matrixL();
+	}
 	else
 		m_L=cov;
 }
@@ -101,30 +109,11 @@ SGVector<float64_t> CGaussianDistribution::log_pdf(SGMatrix<float64_t> samples) 
 
 	float64_t const_part=-0.5 * m_dimension * CMath::log(2 * CMath::PI);
 
-	/* log-determinant */
+	/* determinant is product of diagonal elements of triangular matrix */
 	float64_t log_det_part=0;
 	Map<MatrixXd> eigen_L(m_L.matrix, m_L.num_rows, m_L.num_cols);
-	switch (m_factorization)
-	{
-		case CF_CHOLESKY:
-		{
-			/* determinant is product of diagonal elements of triangular matrix */
-			VectorXd diag=eigen_L.diagonal();
-			log_det_part=-diag.array().log().sum();
-			break;
-		}
-		case CF_SVD_QR:
-		{
-			/* use QR for computing log-determinant, which abs(log-det R),
-			 * note that since covariance is psd, determinant is positive, so
-			 * absolute value here is fine (and necessary, since determinant
-			 * of R might be negative. */
-			Map<MatrixXd> eigen_R(m_R.matrix, m_R.num_rows, m_R.num_cols);
-			VectorXd diag=eigen_R.diagonal();
-			log_det_part=-0.5*diag.array().abs().log().sum();
-			break;
-		}
-	}
+	VectorXd diag=eigen_L.diagonal();
+	log_det_part=-diag.array().log().sum();
 
 	/* sample based part */
 	Map<MatrixXd> eigen_samples(samples.matrix, samples.num_rows,
@@ -142,27 +131,8 @@ SGVector<float64_t> CGaussianDistribution::log_pdf(SGMatrix<float64_t> samples) 
 	}
 
 	/* solve the linear system based on factorization */
-	MatrixXd solved;
-	switch (m_factorization)
-	{
-		case CF_CHOLESKY:
-		{
-			/* use triangular solver */
-			solved=eigen_L.triangularView<Lower>().solve(eigen_centred);
-			solved=eigen_L.transpose().triangularView<Upper>().solve(solved);
-			break;
-		}
-		case CF_SVD_QR:
-		{
-			/* use orthogonality of Q and triangular solver */
-			Map<MatrixXd> eigen_Q(m_Q.matrix, m_Q.num_rows, m_Q.num_cols);
-			Map<MatrixXd> eigen_R(m_R.matrix, m_R.num_rows, m_R.num_cols);
-
-			solved=eigen_Q.transpose()*eigen_centred;
-			solved=eigen_R.triangularView<Upper>().solve(solved);
-			break;
-		}
-	}
+	MatrixXd solved=eigen_L.triangularView<Lower>().solve(eigen_centred);
+	solved=eigen_L.transpose().triangularView<Upper>().solve(solved);
 
 	/* one quadratic part x^T C^-1 x for each sample x */
 	SGVector<float64_t> result(num_samples);
@@ -187,61 +157,9 @@ SGVector<float64_t> CGaussianDistribution::log_pdf(SGMatrix<float64_t> samples) 
 
 void CGaussianDistribution::init()
 {
-	m_factorization=CF_CHOLESKY;
-
 	SG_ADD(&m_mean, "mean", "Mean of the Gaussian.", MS_NOT_AVAILABLE);
 	SG_ADD(&m_L, "L", "Lower factor of covariance matrix, "
 			"depending on the factorization type.", MS_NOT_AVAILABLE);
-	SG_ADD(&m_Q, "Q", "Orthogonal Q factor of QR of covariance, if used.",
-			MS_NOT_AVAILABLE);
-	SG_ADD(&m_R, "R", "Triangular R factor of QR of covariance, if used.",
-			MS_NOT_AVAILABLE);
-	SG_ADD((machine_int_t*)&m_factorization, "factorization", "Type of the "
-			"factorization of the covariance matrix.", MS_NOT_AVAILABLE);
-}
-
-void CGaussianDistribution::compute_covariance_factorization(
-		SGMatrix<float64_t> cov, ECovarianceFactorization factorization)
-{
-	Map<MatrixXd> eigen_cov(cov.matrix, cov.num_rows, cov.num_cols);
-	m_L=SGMatrix<float64_t>(cov.num_rows, cov.num_cols);
-	Map<MatrixXd> eigen_factor(m_L.matrix, m_L.num_rows, m_L.num_cols);
-
-	switch (m_factorization)
-	{
-		case CF_CHOLESKY:
-		{
-			LLT<MatrixXd> llt(eigen_cov);
-			if (llt.info()==NumericalIssue)
-				SG_ERROR("Error computing Cholesky\n");
-
-			eigen_factor=llt.matrixL();
-			break;
-		}
-		case CF_SVD_QR:
-		{
-			JacobiSVD<MatrixXd> svd(eigen_cov, ComputeFullU);
-			MatrixXd U=svd.matrixU();
-			VectorXd s=svd.singularValues();
-
-			/* square root of covariance using all eigenvectors */
-			eigen_factor=U.array().rowwise()*s.transpose().array().sqrt();
-
-			/* QR factorization of covariance for log-pdf */
-			m_Q=SGMatrix<float64_t>(cov.num_rows, cov.num_cols);
-			m_R=SGMatrix<float64_t>(cov.num_rows, cov.num_cols);
-			Map<MatrixXd> eigen_Q(m_Q.matrix, m_Q.num_rows, m_Q.num_cols);
-			Map<MatrixXd> eigen_R(m_R.matrix, m_R.num_rows, m_R.num_cols);
-
-			ColPivHouseholderQR<MatrixXd> qr(eigen_cov);
-			eigen_Q=qr.householderQ();
-			eigen_R=qr.matrixQR().triangularView<Upper>();
-			break;
-		}
-		default:
-			SG_ERROR("Unknown factorization type: %d\n", m_factorization);
-			break;
-	}
 }
 
 #endif // HAVE_EIGEN3

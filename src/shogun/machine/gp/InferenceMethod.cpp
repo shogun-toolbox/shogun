@@ -93,14 +93,18 @@ void CInferenceMethod::check_members()
 }
 
 float64_t CInferenceMethod::get_log_ml_estimate(
-		int32_t num_importance_samples, ECovarianceFactorization factorization)
+		int32_t num_importance_samples, float64_t ridge_size)
 {
 	/* sample from Gaussian approximation to q(f|y) */
 	SGMatrix<float64_t> cov=get_posterior_approximation_covariance();
+
+	/* add ridge */
+	for (index_t i=0; i<cov.num_rows; ++i)
+		cov(i,i)+=ridge_size;
+
 	SGVector<float64_t> mean=get_posterior_approximation_mean();
 
-	CGaussianDistribution* post_approx=new CGaussianDistribution(mean, cov,
-			factorization);
+	CGaussianDistribution* post_approx=new CGaussianDistribution(mean, cov);
 	SGMatrix<float64_t> samples=post_approx->sample(num_importance_samples);
 
 	/* evaluate q(f^i|y), p(f^i|\theta), p(y|f^i), i.e.,
@@ -120,9 +124,12 @@ float64_t CInferenceMethod::get_log_ml_estimate(
 	for (index_t i=0; i<m_ktrtr.num_rows*m_ktrtr.num_cols; ++i)
 		scaled_kernel.matrix[i]*=CMath::sq(m_scale);
 
+	/* add ridge */
+	for (index_t i=0; i<cov.num_rows; ++i)
+		scaled_kernel(i,i)+=ridge_size;
+
 	CGaussianDistribution* prior=new CGaussianDistribution(
-			m_mean->get_mean_vector(m_feature_matrix), scaled_kernel,
-			factorization);
+			m_mean->get_mean_vector(m_feature_matrix), scaled_kernel);
 	SGVector<float64_t> log_pdf_prior=prior->log_pdf(samples);
 	SG_UNREF(prior);
 	prior=NULL;

@@ -20,7 +20,6 @@
 #include <shogun/machine/gp/LikelihoodModel.h>
 #include <shogun/machine/gp/MeanFunction.h>
 #include <shogun/evaluation/DifferentiableFunction.h>
-#include <shogun/distributions/classical/GaussianDistribution.h>
 
 namespace shogun
 {
@@ -342,14 +341,14 @@ public:
 	 *
 	 * @param num_importance_samples the number of importance samples \f$n\f$
 	 * from \f$ q(f|y, \theta) \f$.
-	 * @param factorization type to factorize the Gaussian covariances. Default
-	 * is Cholesky but this might be changed to SVD/QR for greater numerical
-	 * stability.
+	 * @param ridge_size scalar that is added to the diagonal of the involved
+	 * Gaussian distribution's covariance of GP prior and posterior approximation
+	 * to stabilise things. Increase if Cholesky factorization fails.
 	 * @return unbiased estimate of the  log of the marginal likelihood
 	 * function \f$ log(p(y|\theta)) \f$
 	 */
 	float64_t get_log_ml_estimate(int32_t num_importance_samples=1,
-			ECovarianceFactorization factorization=CF_CHOLESKY);
+			float64_t ridge_size=1e-15);
 
 protected:
 	/** update alpha matrix */
