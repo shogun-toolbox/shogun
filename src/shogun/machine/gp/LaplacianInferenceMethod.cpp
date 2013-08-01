@@ -409,10 +409,10 @@ void CLaplacianInferenceMethod::update_approx_cov()
 		m_approx_cov.num_cols);
 
 	MatrixXd eigen_iB=eigen_L.triangularView<Upper>().adjoint().solve(
-		eigen_K*eigen_sW.asDiagonal());
+		MatrixXd::Identity(m_L.num_rows, m_L.num_cols));
 	eigen_iB=eigen_L.triangularView<Upper>().solve(eigen_iB);
 
-	eigen_approx_cov=eigen_K-eigen_iB*eigen_sW.asDiagonal()*eigen_K;
+	eigen_approx_cov=eigen_K-eigen_K*eigen_sW.asDiagonal()*eigen_iB*eigen_sW.asDiagonal()*eigen_K;
 }
 
 void CLaplacianInferenceMethod::update_chol()
