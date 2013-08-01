@@ -47,6 +47,10 @@ IF (HAVE_CXX11_ATOMIC)
 	LIST(APPEND DEFINES HAVE_CXX11_ATOMIC)
 ENDIF()
 
+# cpu tuning params
+SET(DISABLE_OPTIMIZATIONS OFF)
+#"-march=native"
+
 ############### VERSION #####################
 FILE(STRINGS "@CMAKE_SOURCE_DIR@/src/NEWS" NEWS LIMIT_COUNT 5)
 STRING(REGEX REPLACE ".*SHOGUN Release version ([0-9.]*).*" "\\1" VERSION "${NEWS}")
@@ -56,7 +60,6 @@ STRING(REGEX REPLACE ".*SHOGUN Release version.*data ([0-9.]*).*" "\\1" DATAVER 
 STRING(REGEX REPLACE "([0-9]*).[0-9]*.[0-9]*" "\\1" SHOGUN_VERSION_MAJOR "${VERSION}")
 STRING(REGEX REPLACE "[0-9]*.([0-9]*).[0-9]*" "\\1" SHOGUN_VERSION_MINOR "${VERSION}")
 STRING(REGEX REPLACE "[0-9]*.[0-9]*.([0-9]*)" "\\1" SHOGUN_VERSION_PATCH "${VERSION}")
-
 
 # Detect OS
 IF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
@@ -491,13 +494,18 @@ IF (SVMLight)
 	MESSAGE(STATUS ${SVMLightWarning})
 ENDIF()
 
-# Find GTEST and GMOCK frameworks
-SET(GOOGLE_MOCK_SOURCE_DIR "" CACHE PATH "Path to the GMock source")
-IF ("${GOOGLE_MOCK_SOURCE_DIR}" STREQUAL "" OR NOT EXISTS "${GOOGLE_MOCK_SOURCE_DIR}/CMakeLists.txt")
-	MESSAGE("Unit testing is disabled")
-ELSE()
+################# TESTING ###################
+OPTION(ENABLE_TESTING "Enable testing" OFF)
+IF(ENABLE_TESTING)
 	enable_testing()
-	add_subdirectory(tests/unit)
+
+	# Find GTEST and GMOCK frameworks
+	SET(GOOGLE_MOCK_SOURCE_DIR "" CACHE PATH "Path to the GMock source")
+	IF ("${GOOGLE_MOCK_SOURCE_DIR}" STREQUAL "" OR NOT EXISTS "${GOOGLE_MOCK_SOURCE_DIR}/CMakeLists.txt")
+		MESSAGE("Unit testing is disabled")
+	ELSE()
+		add_subdirectory(tests/unit)
+	ENDIF()
 ENDIF()
 
 # save configuration options
