@@ -112,10 +112,12 @@ configure.log
 /examples/missing.log
 /examples/undocumented/libshogun/*
 !/examples/undocumented/libshogun/*.cpp
+!/examples/undocumented/libshogun/CMakeLists.txt
 examples/undocumented/python_modular/*
 !/examples/undocumented/libshogun/tools/
 !examples/undocumented/python_modular/graphical/
 !examples/undocumented/python_modular/*.py
+!examples/undocumented/python_modular/CMakeLists.txt
 
 # /tests
 /tests/unit/shogun-unit-test
