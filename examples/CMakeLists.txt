@@ -6,7 +6,7 @@ ENDIF()
 
 # lua modular
 IF (LuaModular)
-	#add_subdirectory(undocumented/lua_modular)
+	add_subdirectory(undocumented/lua_modular)
 ENDIF()
 
 # java modular
@@ -16,12 +16,12 @@ ENDIF()
 
 # ruby modular
 IF (RubyModular)
-	#add_subdirectory(undocumented/ruby_modular)
+	add_subdirectory(undocumented/ruby_modular)
 ENDIF()
 
 # octave modular
 IF (OctaveModular)		
-	#add_subdirectory(undocumented/octave_modular)
+	add_subdirectory(undocumented/octave_modular)
 ENDIF()
 
 # csharp modular

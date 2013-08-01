@@ -1,7 +1,6 @@
 include(CommonModularInterface)
 
 GENERATE_MODULAR_TARGET(csharp ${CMAKE_CURRENT_SOURCE_DIR} "")
-SET_TARGET_PROPERTIES(csharp_modular PROPERTIES OUTPUT_NAME modshogun)
 
 ADD_CUSTOM_COMMAND(TARGET csharp_modular
 				   POST_BUILD

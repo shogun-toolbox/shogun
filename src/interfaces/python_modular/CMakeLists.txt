@@ -2,7 +2,6 @@ include(CommonModularInterface)
 include_directories(${PYTHON_INCLUDE_PATH} ${NUMPY_INCLUDE_DIRS})
 
 GENERATE_MODULAR_TARGET(python ${CMAKE_CURRENT_SOURCE_DIR} ${PYTHON_LIBRARIES})
-SET_TARGET_PROPERTIES(_python_modular PROPERTIES OUTPUT_NAME _modshogun)
 
 # pacakges directory
 if(CMAKE_HOST_UNIX)
