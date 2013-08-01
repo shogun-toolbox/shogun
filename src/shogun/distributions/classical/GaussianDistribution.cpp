@@ -41,9 +41,29 @@ CGaussianDistribution::CGaussianDistribution(SGVector<float64_t> mean,
 		m_L=SGMatrix<float64_t>(cov.num_rows, cov.num_cols);
 		Map<MatrixXd> eigen_L(m_L.matrix, m_L.num_rows, m_L.num_cols);
 
-		LLT<MatrixXd> llt(eigen_cov);
-		if (llt.info()==NumericalIssue)
-			SG_ERROR("Error computing Cholesky\n");
+		/* try to compute Cholesky and increase ridge on diagonal otherwise */
+		LLT<MatrixXd> llt;
+		while (true)
+		{
+			llt.compute(eigen_cov);
+			if (llt.info()==NumericalIssue)
+			{
+				/* try to compute smalles eigenvalue for information */
+				SelfAdjointEigenSolver<MatrixXd> solver(eigen_cov);
+				if (solver.info() == Success)
+				{
+					VectorXd ev=solver.eigenvalues();
+					SG_WARNING("Error computing Cholesky of Gaussian's covariance. "
+							"Smallest Eigenvalue is %f. Increasing ridge by "
+							"%f\n", ev[0], CMath::abs(ev[0]))+1e-3;
+
+					for (index_t i=0; i<cov.num_rows; ++i)
+						cov(i,i)+=CMath::abs(ev[0])+1e-3;
+				}
+			}
+			else
+				break;
+		}
 
 		eigen_L=llt.matrixL();
 	}
@@ -59,7 +79,7 @@ CGaussianDistribution::~CGaussianDistribution()
 SGMatrix<float64_t> CGaussianDistribution::sample(int32_t num_samples,
 		SGMatrix<float64_t> pre_samples) const
 {
-	REQUIRE(num_samples>0, "Number of samples must be positive, but is %d\n",
+	REQUIRE(num_samples>0, "Number of samples (%d) must be positive\n",
 			num_samples);
 
 	/* use pre-allocated samples? */
