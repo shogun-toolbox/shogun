@@ -8,6 +8,7 @@
 #include <shogun/io/streaming/StreamingFileFromSparseFeatures.h>
 #include <shogun/io/streaming/StreamingFileFromDenseFeatures.h>
 #include <shogun/io/AsciiFile.h>
+#include <shogun/io/CSVFile.h>
 #include <shogun/io/streaming/StreamingAsciiFile.h>
 #include <shogun/classifier/vw/VwParser.h>
 #include <shogun/io/streaming/StreamingVwFile.h>
