@@ -102,6 +102,13 @@ float64_t CInferenceMethod::get_log_ml_estimate(
 	for (index_t i=0; i<cov.num_rows; ++i)
 		cov(i,i)+=ridge_size;
 
+	/* make symmetric */
+	for (index_t i=0; i<cov.num_rows; ++i)
+	{
+		for (index_t j=i; j<cov.num_cols; ++j)
+			cov(i,j)=0.5*cov(i,j)+cov(j,i);
+	}
+
 	SGVector<float64_t> mean=get_posterior_approximation_mean();
 
 	CGaussianDistribution* post_approx=new CGaussianDistribution(mean, cov);
@@ -127,6 +134,13 @@ float64_t CInferenceMethod::get_log_ml_estimate(
 	/* add ridge */
 	for (index_t i=0; i<cov.num_rows; ++i)
 		scaled_kernel(i,i)+=ridge_size;
+
+	/* make symmetric */
+	for (index_t i=0; i<scaled_kernel.num_rows; ++i)
+	{
+		for (index_t j=i; j<scaled_kernel.num_cols; ++j)
+			scaled_kernel(i,j)=0.5*scaled_kernel(i,j)+scaled_kernel(j,i);
+	}
 
 	CGaussianDistribution* prior=new CGaussianDistribution(
 			m_mean->get_mean_vector(m_feature_matrix), scaled_kernel);
