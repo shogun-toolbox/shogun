@@ -3,6 +3,11 @@
 	* SHOGUN Release version 2.2.0 (libshogun 14.0, data 0.6, parameter 1)
 	* This release contains several cleanups and bugfixes:
 	* Features:
+		- Added method to importance sample the (true) marginal likelihood of a
+		  Gaussian Process using a posterior approximation.
+		- Added a new class for classical probability distribution that can be
+		  sampled and whose log-pdf can be evaluated. Added the multivariate
+		  Gaussian with various numerical flavours.
 		- Added nu-SVR for LibSVR class
 		- Modelselection is now supported for parameters of sub-kernels of
 		  combined kernels in the MKL context. Thanks to Evangelos Anagnostopoulos
