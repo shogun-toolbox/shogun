@@ -9,12 +9,12 @@ set_target_properties(gtest PROPERTIES COMPILE_DEFINITIONS "${DEFINES}")
 
 FILE(GLOB_RECURSE UNITTEST_SRC *_unittest.cc)
 
-ADD_EXECUTABLE(shogun-unit-test EXCLUDE_FROM_ALL ${UNITTEST_SRC})
+ADD_EXECUTABLE(shogun-unit-test ${UNITTEST_SRC})
 target_link_libraries(shogun-unit-test shogun gmock gtest)
 set_target_properties(shogun-unit-test PROPERTIES COMPILE_DEFINITIONS "${DEFINES}")
 
 ADD_CUSTOM_TARGET(unit-tests 
-	COMMAND ./shogun-unit-test
+	COMMAND ${CMAKE_CURRENT_BINARY_DIR}/shogun-unit-test
 	DEPENDS shogun-unit-test)
 
-add_test(unit-tests shogun-unit-test)
+add_test(unit-test shogun-unit-test)
