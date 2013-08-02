@@ -1,181 +1,190 @@
-# - Try to find a version of Octave and headers/library required by the
-# used compiler. It determines the right MEX-File extension and add
-# a macro to help the build of MEX-functions.
+# - Find Octave
+# GNU Octave is a high-level interpreted language, primarily intended for numerical computations.
+# available at http://www.gnu.org/software/octave/
 #
-# This module defines:
-# OCTAVE_INCLUDE_DIR: include path for mex.h, mexproto.h
-# OCTAVE_OCTINTERP_LIBRARY: path to the library octinterp
-# OCTAVE_OCTAVE_LIBRARY: path to the library octave
-# OCTAVE_CRUFT_LIBRARY: path to the library cruft
-# OCTAVE_LIBRARIES: required libraries: octinterp, octave, cruft
-# OCTAVE_CREATE_MEX: macro to build a MEX-file
+# This module defines: 
+#  OCTAVE_EXECUTABLE           - octave interpreter
+#  OCTAVE_INCLUDE_DIRS         - include path for mex.h, mexproto.h
+#  OCTAVE_LIBRARIES            - required libraries: octinterp, octave, cruft
+#  OCTAVE_OCTINTERP_LIBRARY    - path to the library octinterp
+#  OCTAVE_OCTAVE_LIBRARY       - path to the library octave
+#  OCTAVE_CRUFT_LIBRARY        - path to the library cruft
+#  OCTAVE_VERSION_STRING       - octave version string
+#  OCTAVE_MAJOR_VERSION        - major version
+#  OCTAVE_MINOR_VERSION        - minor version
+#  OCTAVE_PATCH_VERSION        - patch version
+#  OCTAVE_OCT_FILE_DIR         - object files that will be dynamically loaded
+#  OCTAVE_OCT_LIB_DIR          - oct libraries
+#  OCTAVE_ROOT_DIR             - octave prefix
 #
-# The macro OCTAVE_CREATE_MEX requires in this order:
-# - function's name which will be called in Octave;
-# - C/C++ source files;
-# - third libraries required.
- 
-# Copyright (c) 2009-2013 Arnaud Barr� <arnaud.barre@gmail.com>
-# Redistribution and use is allowed according to the terms of the BSD license.
-# For details see the accompanying COPYING-CMAKE-SCRIPTS file.
- 
-IF(OCTAVE_ROOT AND OCTAVE_INCLUDE_DIR AND OCTAVE_LIBRARIES)
-STRING(COMPARE NOTEQUAL "${OCTAVE_ROOT}" "${OCTAVE_ROOT_LAST}" OCTAVE_CHANGED)
-	IF(OCTAVE_CHANGED)
-		SET(OCTAVE_USE_MINGW32 OCTAVE_USE_MINGW32-NOTFOUND CACHE INTERNAL "")
-		SET(OCTAVE_OCTINTERP_LIBRARY OCTAVE_OCTINTERP_LIBRARY-NOTFOUND CACHE INTERNAL "")
-		SET(OCTAVE_OCTAVE_LIBRARY OCTAVE_OCTAVE_LIBRARY-NOTFOUND CACHE INTERNAL "")
-		SET(OCTAVE_CRUFT_LIBRARY OCTAVE_CRUFT_LIBRARY-NOTFOUND CACHE INTERNAL "")
-		SET(OCTAVE_INCLUDE_DIR OCTAVE_INCLUDE_DIR-NOTFOUND CACHE INTERNAL "")
-	ELSE(OCTAVE_CHANGED)
-		# in cache already
-		SET(Octave_FIND_QUIETLY TRUE)
-	ENDIF(OCTAVE_CHANGED)
-ENDIF(OCTAVE_ROOT AND OCTAVE_INCLUDE_DIR AND OCTAVE_LIBRARIES)
- 
-SET(OCTAVE_MEXFILE_EXT mex)
- 
-IF(WIN32)
-	SET(OCTAVE_PATHS_L1 )
-	SET(OCTAVE_PATHS_L2 )
-	# Level 0
-	FILE(GLOB OCTAVE_PATHS_L0 "c:/Octave*")
-	# Level 1
-	FOREACH(_file_ ${OCTAVE_PATHS_L0})
-		FILE(GLOB OCTAVE_PATHS_TEMP "${_file_}/*")
-		SET(OCTAVE_PATHS_L1 ${OCTAVE_PATHS_L1};${OCTAVE_PATHS_TEMP})
-	ENDFOREACH(_file_ OCTAVE_PATHS_L0)
-	# Level 2
-	FOREACH(_file_ ${OCTAVE_PATHS_L1})
-		FILE(GLOB OCTAVE_PATHS_TEMP "${_file_}/*")
-		SET(OCTAVE_PATHS_L2 ${OCTAVE_PATHS_L2};${OCTAVE_PATHS_TEMP})
-	ENDFOREACH(_file_ OCTAVE_PATHS_L1)
-	# Merge levels
-	SET(OCTAVE_PATHS ${OCTAVE_PATHS_L0} ${OCTAVE_PATHS_L1} ${OCTAVE_PATHS_L2})
-	 
-	FIND_PATH(OCTAVE_ROOT "bin/octave.exe" ${OCTAVE_PATHS})
-	FIND_PATH(OCTAVE_USE_MINGW32 "bin/mingw32-make.exe" "${OCTAVE_ROOT}/mingw32")
-	 
-	IF(MSVC AND OCTAVE_USE_MINGW32)
-		MESSAGE(FATAL_ERROR
-		"You must use the generator \"MinGW Makefiles\" as the "
-		"version of Octave installed on your computer was compiled "
-		"with MinGW. You should also specify the native compiler "
-		"(GCC, G++ and GFortan) and add the path of MinGW in the "
-		"environment variable PATH. Contact the developers of the "
-		"project for more details")
-	ENDIF(MSVC AND OCTAVE_USE_MINGW32)
-	 
-	FILE(GLOB OCTAVE_INCLUDE_PATHS "${OCTAVE_ROOT}/include/octave-*/octave")
-	FILE(GLOB OCTAVE_LIBRARIES_PATHS "${OCTAVE_ROOT}/lib/octave-*")
-	IF (NOT OCTAVE_LIBRARIES_PATHS)
-		FILE(GLOB OCTAVE_LIBRARIES_PATHS "${OCTAVE_ROOT}/lib/octave/*")
-	ENDIF (NOT OCTAVE_LIBRARIES_PATHS)
-	 
-	# LIBOCTINTERP, LIBOCTAVE, LIBCRUFT names
-	SET(LIBOCTINTERP "liboctinterp")
-	SET(LIBOCTAVE "liboctave")
-	SET(LIBCRUFT "libcruft")
- 
-ELSE(WIN32)
-	IF(APPLE)
-		FILE(GLOB OCTAVE_PATHS "/Applications/Octave*")
-		FIND_PATH(OCTAVE_ROOT "Contents/Resources/bin/octave" ${OCTAVE_PATHS})
-		 
-		FILE(GLOB OCTAVE_INCLUDE_PATHS "${OCTAVE_ROOT}/Contents/Resources/include/octave-*/octave")
-		FILE(GLOB OCTAVE_LIBRARIES_PATHS "${OCTAVE_ROOT}/Contents/Resources/lib/octave-*")
-		 
-		SET(LIBOCTINTERP "liboctinterp.dylib")
-		SET(LIBOCTAVE "liboctave.dylib")
-		SET(LIBCRUFT "libcruft.dylib")
-	ELSE(APPLE)
-		FILE(GLOB OCTAVE_LOCAL_PATHS "/usr/local/lib/octave-*")
-		FILE(GLOB OCTAVE_USR_PATHS "/usr/lib/octave-*")
-		 
-		SET (OCTAVE_INCLUDE_PATHS
-			"/usr/local/include"
-			"/usr/local/include/octave"
-			"/usr/include"
-			"/usr/include/octave")
-		SET (OCTAVE_LIBRARIES_PATHS
-			"/usr/local/lib"
-			"/usr/local/lib/octave"
-			${OCTAVE_LOCAL_PATHS}
-			"/usr/lib"
-			"/usr/lib/octave"
-			${OCTAVE_USR_PATHS})
-		 
-		SET (LIBOCTINTERP "octinterp")
-		SET (LIBOCTAVE "octave")
-		SET (LIBCRUFT "cruft")
-	ENDIF(APPLE)
-ENDIF(WIN32)
- 
-FIND_LIBRARY(OCTAVE_OCTINTERP_LIBRARY
-	${LIBOCTINTERP}
-	${OCTAVE_LIBRARIES_PATHS} NO_DEFAULT_PATH
-)
-FIND_LIBRARY(OCTAVE_OCTAVE_LIBRARY
-	${LIBOCTAVE}
-	${OCTAVE_LIBRARIES_PATHS} NO_DEFAULT_PATH
-)
-FIND_LIBRARY(OCTAVE_CRUFT_LIBRARY
-	${LIBCRUFT}
-	${OCTAVE_LIBRARIES_PATHS} NO_DEFAULT_PATH
-)
-FIND_PATH(OCTAVE_INCLUDE_DIR
-	"mex.h"
-	${OCTAVE_INCLUDE_PATHS} NO_DEFAULT_PATH
-)
- 
-SET(OCTAVE_ROOT_LAST "${OCTAVE_ROOT}" CACHE INTERNAL "" FORCE)
- 
-# This is common to UNIX and Win32:
-SET(OCTAVE_LIBRARIES
-	${OCTAVE_OCTINTERP_LIBRARY}
-	${OCTAVE_OCTAVE_LIBRARY}
-	${OCTAVE_CRUFT_LIBRARY}
-	CACHE INTERNAL "Octave libraries" FORCE
-)
- 
-# Macros for building MEX-files
-MACRO(OCTAVE_EXTRACT_SOURCES_LIBRARIES sources thirdlibraries)
-	SET(${sources})
-	SET(${thirdlibraries})
-	FOREACH(_arg ${ARGN})
-		GET_FILENAME_COMPONENT(_ext ${_arg} EXT)
-		IF("${_ext}" STREQUAL "")
-			LIST(APPEND ${thirdlibraries} "${_arg}")
-		ELSE("${_ext}" STREQUAL "")
-			LIST(APPEND ${sources} "${_arg}")
-		ENDIF ("${_ext}" STREQUAL "")
-	ENDFOREACH(_arg)
-ENDMACRO(OCTAVE_EXTRACT_SOURCES_LIBRARIES)
- 
-# OCTAVE_MEX_CREATE(functionname inputfiles thridlibraries)
-MACRO(OCTAVE_MEX_CREATE functionname)
-	OCTAVE_EXTRACT_SOURCES_LIBRARIES(sources thirdlibraries ${ARGN})
-	ADD_LIBRARY(${functionname} SHARED ${sources})
-	TARGET_LINK_LIBRARIES(${functionname} ${OCTAVE_LIBRARIES} ${thirdlibraries})
-	SET_TARGET_PROPERTIES(${functionname} PROPERTIES
-		PREFIX ""
-		SUFFIX ".${OCTAVE_MEXFILE_EXT}"
-		)
-ENDMACRO(OCTAVE_MEX_CREATE)
- 
-INCLUDE(FindPackageHandleStandardArgs)
- 
-# The variable OCTAVE_ROOT is only relevant for WIN32
-IF(WIN32)
-	FIND_PACKAGE_HANDLE_STANDARD_ARGS(Octave DEFAULT_MSG OCTAVE_ROOT OCTAVE_INCLUDE_DIR OCTAVE_OCTINTERP_LIBRARY OCTAVE_OCTAVE_LIBRARY OCTAVE_CRUFT_LIBRARY)
-ELSE(WIN32)
-	FIND_PACKAGE_HANDLE_STANDARD_ARGS(Octave DEFAULT_MSG OCTAVE_INCLUDE_DIR OCTAVE_OCTINTERP_LIBRARY OCTAVE_OCTAVE_LIBRARY OCTAVE_CRUFT_LIBRARY)
-ENDIF(WIN32)
- 
-MARK_AS_ADVANCED(
-	OCTAVE_OCTINTERP_LIBRARY
-	OCTAVE_OCTAVE_LIBRARY
-	OCTAVE_CRUFT_LIBRARY
-	OCTAVE_LIBRARIES
-	OCTAVE_INCLUDE_DIR
+# The macro octave_add_oct allows to create compiled modules.
+# octave_add_oct ( target_name
+#         [SOURCES] source1 [source2 ...]
+#         [LINK_LIBRARIES  lib1 [lib2 ...]]
+#         [EXTENSION ext]
+# )
+#
+# To install it, you can the use the variable OCTAVE_OCT_FILE_DIR as follow:
+#  file ( RELATIVE_PATH PKG_OCTAVE_OCT_FILE_DIR ${OCTAVE_ROOT_DIR} ${OCTAVE_OCT_FILE_DIR} )                   
+#  install (
+#    TARGETS target_name
+#    DESTINATION ${PKG_OCTAVE_OCT_FILE_DIR}
+#  ) 
+#=============================================================================
+# Copyright 2013, Julien Schueller
+# All rights reserved.
+# 
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met: 
+# 
+# 1. Redistributions of source code must retain the above copyright notice, this
+#    list of conditions and the following disclaimer. 
+# 2. Redistributions in binary form must reproduce the above copyright notice,
+#    this list of conditions and the following disclaimer in the documentation
+#    and/or other materials provided with the distribution. 
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+# ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# The views and conclusions contained in the software and documentation are those
+# of the authors and should not be interpreted as representing official policies, 
+# either expressed or implied, of the FreeBSD Project.
+#=============================================================================
+find_program( OCTAVE_CONFIG_EXECUTABLE
+              NAMES octave-config octave-config-3.2.4
+            )
+if ( OCTAVE_CONFIG_EXECUTABLE )
+  execute_process ( COMMAND ${OCTAVE_CONFIG_EXECUTABLE} -p PREFIX
+                    OUTPUT_VARIABLE OCTAVE_ROOT_DIR
+                    OUTPUT_STRIP_TRAILING_WHITESPACE )        
+                    
+  execute_process ( COMMAND ${OCTAVE_CONFIG_EXECUTABLE} -p BINDIR
+                    OUTPUT_VARIABLE OCTAVE_BIN_PATHS
+                    OUTPUT_STRIP_TRAILING_WHITESPACE )        
+                    
+  execute_process ( COMMAND ${OCTAVE_CONFIG_EXECUTABLE} -p OCTINCLUDEDIR
+                    OUTPUT_VARIABLE OCTAVE_INCLUDE_PATHS
+                    OUTPUT_STRIP_TRAILING_WHITESPACE )                
+                    
+  execute_process ( COMMAND ${OCTAVE_CONFIG_EXECUTABLE} -p OCTLIBDIR
+                    OUTPUT_VARIABLE OCTAVE_LIBRARIES_PATHS
+                    OUTPUT_STRIP_TRAILING_WHITESPACE )                
+              
+  execute_process ( COMMAND ${OCTAVE_CONFIG_EXECUTABLE} -p OCTFILEDIR
+                    OUTPUT_VARIABLE OCTAVE_OCT_FILE_DIR
+                    OUTPUT_STRIP_TRAILING_WHITESPACE )
+                              
+  execute_process ( COMMAND ${OCTAVE_CONFIG_EXECUTABLE} -p OCTLIBDIR
+                    OUTPUT_VARIABLE OCTAVE_OCT_LIB_DIR
+                    OUTPUT_STRIP_TRAILING_WHITESPACE )
+
+  execute_process ( COMMAND ${OCTAVE_CONFIG_EXECUTABLE} -p LOCALAPIOCTFILEDIR
+	                OUTPUT_VARIABLE OCTAVE_OCT_LOCAL_API_FILE_DIR
+	                OUTPUT_STRIP_TRAILING_WHITESPACE )
+
+  execute_process ( COMMAND ${OCTAVE_CONFIG_EXECUTABLE} -p API_VERSION
+                    OUTPUT_VARIABLE OCTAVE_API_VERSION
+                    OUTPUT_STRIP_TRAILING_WHITESPACE )
+                    
+  execute_process ( COMMAND ${OCTAVE_CONFIG_EXECUTABLE} -v
+                    OUTPUT_VARIABLE OCTAVE_VERSION_STRING
+                    OUTPUT_STRIP_TRAILING_WHITESPACE )    
+                    
+  if ( OCTAVE_VERSION_STRING )                 
+    string ( REGEX REPLACE "([0-9]+)\\..*" "\\1" OCTAVE_MAJOR_VERSION ${OCTAVE_VERSION_STRING} )
+    string ( REGEX REPLACE "[0-9]+\\.([0-9]+).*" "\\1" OCTAVE_MINOR_VERSION ${OCTAVE_VERSION_STRING} )
+    string ( REGEX REPLACE "[0-9]+\\.[0-9]+\\.([0-9]+).*" "\\1" OCTAVE_PATCH_VERSION ${OCTAVE_VERSION_STRING} )               
+  endif ()                  
+endif ()
+
+find_program( OCTAVE_EXECUTABLE
+              HINTS ${OCTAVE_BIN_PATHS}
+              NAMES octave octave3.2
+            )
+find_library( OCTAVE_OCTINTERP_LIBRARY
+              NAMES octinterp liboctinterp
+              HINTS ${OCTAVE_LIBRARIES_PATHS}
+            )
+find_library( OCTAVE_OCTAVE_LIBRARY
+              NAMES octave liboctave
+              HINTS ${OCTAVE_LIBRARIES_PATHS}
+            )
+find_library( OCTAVE_CRUFT_LIBRARY
+              NAMES cruft libcruft
+              HINTS ${OCTAVE_LIBRARIES_PATHS}
+            )
+    
+set ( OCTAVE_LIBRARIES ${OCTAVE_OCTINTERP_LIBRARY} )
+list ( APPEND OCTAVE_LIBRARIES ${OCTAVE_OCTAVE_LIBRARY} ) 
+list ( APPEND OCTAVE_LIBRARIES ${OCTAVE_CRUFT_LIBRARY} ) 
+    
+find_path ( OCTAVE_INCLUDE_DIR 
+            NAMES mex.h
+            HINTS ${OCTAVE_INCLUDE_PATHS}
+          )
+    
+set ( OCTAVE_INCLUDE_DIRS ${OCTAVE_INCLUDE_DIR} )
+
+macro ( octave_add_oct FUNCTIONNAME )
+  set ( _CMD SOURCES )
+  set ( _SOURCES )
+  set ( _LINK_LIBRARIES )
+  set ( _EXTENSION )
+  set ( _OCT_EXTENSION oct )
+  foreach ( _ARG ${ARGN})
+    if ( ${_ARG} MATCHES SOURCES )
+      set ( _CMD SOURCES )
+    elseif ( ${_ARG} MATCHES LINK_LIBRARIES  )
+      set ( _CMD LINK_LIBRARIES  )
+    elseif ( ${_ARG} MATCHES EXTENSION )
+      set ( _CMD EXTENSION )
+    else ()
+      if ( ${_CMD} MATCHES SOURCES )
+        list ( APPEND _SOURCES "${_ARG}" )
+      elseif ( ${_CMD} MATCHES LINK_LIBRARIES  )
+        list ( APPEND _LINK_LIBRARIES "${_ARG}" )
+      elseif ( ${_CMD} MATCHES EXTENSION )
+        set ( _OCT_EXTENSION ${_ARG} )
+      endif ()
+    endif ()
+  endforeach ()
+  add_library ( ${FUNCTIONNAME} SHARED ${_SOURCES} )
+  target_link_libraries ( ${FUNCTIONNAME} ${OCTAVE_LIBRARIES} ${_LINK_LIBRARIES} )
+  set_target_properties ( ${FUNCTIONNAME} PROPERTIES
+    PREFIX ""
+    SUFFIX  ".${_OCT_EXTENSION}"
+  )
+endmacro ()
+
+# handle REQUIRED and QUIET options
+include ( FindPackageHandleStandardArgs )
+if ( CMAKE_VERSION LESS 2.8.3 )
+  find_package_handle_standard_args ( Octave DEFAULT_MSG OCTAVE_EXECUTABLE OCTAVE_ROOT_DIR OCTAVE_INCLUDE_DIRS OCTAVE_LIBRARIES OCTAVE_API_VERSION OCTAVE_OCT_LOCAL_API_FILE_DIR OCTAVE_VERSION_STRING )
+else ()
+  find_package_handle_standard_args ( Octave REQUIRED_VARS OCTAVE_EXECUTABLE OCTAVE_ROOT_DIR OCTAVE_INCLUDE_DIRS OCTAVE_LIBRARIES OCTAVE_API_VERSION OCTAVE_OCT_LOCAL_API_FILE_DIR VERSION_VAR OCTAVE_VERSION_STRING )
+endif ()
+
+mark_as_advanced (
+  OCTAVE_OCT_FILE_DIR
+  OCTAVE_OCT_LIB_DIR
+  OCTAVE_OCT_LOCAL_API_FILE_DIR
+  OCTAVE_OCTINTERP_LIBRARY
+  OCTAVE_OCTAVE_LIBRARY
+  OCTAVE_CRUFT_LIBRARY
+  OCTAVE_LIBRARIES
+  OCTAVE_INCLUDE_DIR
+  OCTAVE_INCLUDE_DIRS
+  OCTAVE_ROOT_DIR
+  OCTAVE_API_VERSION
+  OCTAVE_VERSION_STRING
+  OCTAVE_MAJOR_VERSION
+  OCTAVE_MINOR_VERSION
+  OCTAVE_PATCH_VERSION
 )

@@ -52,7 +52,7 @@
 
 #cmakedefine HAVE_SSE2 1
 #cmakedefine HAVE_BUILTIN_VECTOR 1
-#cmakedefine OCTAVE_APIVERSION
+#cmakedefine OCTAVE_APIVERSION @OCTAVE_APIVERSION@
 
 #cmakedefine DARWIN 1
 #cmakedefine FREEBSD 1
