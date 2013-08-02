@@ -1,10 +1,10 @@
 include(CommonModularInterface)
-include_directories(${OCTAVE_INCLUDE_DIR})
+include_directories(${OCTAVE_INCLUDE_DIRS})
 
 GENERATE_MODULAR_TARGET(octave ${CMAKE_CURRENT_SOURCE_DIR} ${OCTAVE_LIBRARIES})
 
-INSTALL(TARGETS octave_modular
-	LIBRARY DESTINATION lib
+install (TARGETS octave_modular
+    DESTINATION ${OCTAVE_OCT_LOCAL_API_FILE_DIR}
 	COMPONENT octave)
 
 set(CPACK_COMPONENT_OCTAVE_DISPLAY_NAME "OCTAVE interface" PARENT_SCOPE)
