@@ -187,13 +187,13 @@ protected:
 	/** update train kernel matrix */
 	virtual void update_train_kernel();
 
+	/** check if members of object are valid for inference */
+	virtual void check_members();
+
 private:
 	void init();
 
 private:
-	/** check if members of object are valid for inference */
-	void check_members();
-
 	/** latent features for approximation */
 	CFeatures* m_latent_features;
 

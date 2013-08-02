@@ -187,17 +187,22 @@ public:
 		return SGMatrix<float64_t>();
 	}
 
-	/** set features
-	*
-	* @param feat features to set
-	*/
-	virtual void set_features(CFeatures* feat);
-
 	/** get features
 	*
 	* @return features
 	*/
 	virtual CFeatures* get_features() {	SG_REF(m_features);	return m_features; }
+
+	/** set features
+	*
+	* @param feat features to set
+	*/
+	virtual void set_features(CFeatures* feat)
+	{
+		SG_REF(feat);
+		SG_UNREF(m_features);
+		m_features=feat;
+	}
 
 	/** get kernel
 	 *
@@ -209,7 +214,12 @@ public:
 	 *
 	 * @param kern kernel to set
 	 */
-	virtual void set_kernel(CKernel* kern);
+	virtual void set_kernel(CKernel* kern)
+	{
+		SG_REF(kern);
+		SG_UNREF(m_kernel);
+		m_kernel=kern;
+	}
 
 	/** get mean
 	 *
@@ -221,7 +231,12 @@ public:
 	 *
 	 * @param m mean function to set
 	 */
-	virtual void set_mean(CMeanFunction* m);
+	virtual void set_mean(CMeanFunction* m)
+	{
+		SG_REF(m);
+		SG_UNREF(m_mean);
+		m_mean=m;
+	}
 
 	/** get labels
 	 *
@@ -233,7 +248,12 @@ public:
 	 *
 	 * @param lab label to set
 	 */
-	virtual void set_labels(CLabels* lab);
+	virtual void set_labels(CLabels* lab)
+	{
+		SG_REF(lab);
+		SG_UNREF(m_labels);
+		m_labels=lab;
+	}
 
 	/** get likelihood model
 	 *
@@ -245,19 +265,24 @@ public:
 	 *
 	 * @param mod model to set
 	 */
-	virtual void set_model(CLikelihoodModel* mod);
-
-	/** set kernel scale
-	 *
-	 * @param s scale to be set
-	 */
-	virtual void set_scale(float64_t s);
+	virtual void set_model(CLikelihoodModel* mod)
+	{
+		SG_REF(mod);
+		SG_UNREF(m_model);
+		m_model=mod;
+	}
 
 	/** get kernel scale
 	 *
 	 * @return kernel scale
 	 */
 	virtual float64_t get_scale() { return m_scale; }
+
+	/** set kernel scale
+	 *
+	 * @param s scale to be set
+	 */
+	virtual void set_scale(float64_t s) { m_scale=s; }
 
 	/** whether combination of inference method and given likelihood
 	 * function supports regression
@@ -297,6 +322,9 @@ private:
 	void init();
 
 protected:
+	/** check if members of object are valid for inference */
+	virtual void check_members();
+
 	/** covariance function */
 	CKernel* m_kernel;
 
