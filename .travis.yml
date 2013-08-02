@@ -18,7 +18,7 @@ env:
  - CMAKE_OPTIONS="-DJavaModular=ON" EXTRA_PACKAGES="openjdk-6-jdk jblas ant swig2.0"
  - CMAKE_OPTIONS="-DRubyModular=ON" EXTRA_PACKAGES="ruby ruby-dev ruby-narray swig2.0"
  - CMAKE_OPTIONS="-DCSharpModular=ON" EXTRA_PACKAGES="mono-devel mono-gmcs cli-common-dev swig2.0"
- - CMAKE_OPTIONS="-DLuaModular=ON" EXTRA_PACKAGES="lua5.2 liblua5.2-dev swig2.0"
+ - CMAKE_OPTIONS="-DLuaModular=ON" EXTRA_PACKAGES="lua5.1 liblua5.1-0-dev swig2.0"
  - CMAKE_OPTIONS="-DOctaveModular=ON" EXTRA_PACKAGES="octave octave3.2-headers swig2.0"
 matrix:
   exclude:
@@ -35,7 +35,7 @@ matrix:
     - compiler: gcc
       env: CMAKE_OPTIONS="-DCSharpModular=ON" EXTRA_PACKAGES="mono-devel mono-gmcs cli-common-dev swig2.0"
     - compiler: gcc
-      env: CMAKE_OPTIONS="-DLuaModular=ON" EXTRA_PACKAGES="lua5.2 liblua5.2-dev swig2.0"
+      env: CMAKE_OPTIONS="-DLuaModular=ON" EXTRA_PACKAGES="lua5.1 liblua5.1-0-dev swig2.0"
     - compiler: clang
       env: CMAKE_OPTIONS="-DOctaveModular=ON" EXTRA_PACKAGES="octave octave3.2-headers swig2.0"
 before_install:

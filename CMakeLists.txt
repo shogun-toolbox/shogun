@@ -422,7 +422,7 @@ ENDIF()
 # lua modular
 IF (LuaModular)
 	#FIND_PACKAGE(Lua51 REQUIRED)
-	pkg_search_module(LUA REQUIRED lua lua5.1 lua5.2)
+	pkg_search_module(LUA REQUIRED lua<=5.1 lua5.1)
 	SET(LUA_EXECUTABLE lua)
 	UNSET(TARGET_SWIGFLAGS)
 	add_subdirectory(src/interfaces/lua_modular)
