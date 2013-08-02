@@ -54,6 +54,18 @@ CGaussianARDKernel::~CGaussianARDKernel()
 {
 }
 
+CGaussianARDKernel* CGaussianARDKernel::obtain_from_generic(CKernel* kernel)
+{
+	if (kernel->get_kernel_type()!=K_GAUSSIANARD)
+	{
+		SG_SERROR("Provided kernel is not of type CGaussianARDKernel!\n");
+	}
+
+	/* since an additional reference is returned */
+	SG_REF(kernel);
+	return (CGaussianARDKernel*)kernel;
+}
+
 float64_t CGaussianARDKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	if (!lhs || !rhs)
