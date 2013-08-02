@@ -116,34 +116,6 @@ void CLaplacianInferenceMethod::update_all()
 	update_approx_cov();
 }
 
-void CLaplacianInferenceMethod::check_members()
-{
-	REQUIRE(m_features, "Training features must be attached\n")
-	REQUIRE(m_features->get_num_vectors(),
-		"Number of training features must be greater than zero\n")
-	REQUIRE(m_labels, "Labels must be attached\n")
-	REQUIRE(m_labels->get_num_labels(),
-			"Number of labels must be greater than zero\n")
-	REQUIRE(m_labels->get_num_labels()==m_features->get_num_vectors(),
-		"Number of training vectors must match number of labels\n")
-	REQUIRE(m_kernel, "Kernel must be assigned\n")
-	REQUIRE(m_mean, "Mean function must be assigned\n")
-
-	CFeatures* feat=m_features;
-
-	if (m_features->get_feature_class()==C_COMBINED)
-		feat=((CCombinedFeatures*)m_features)->get_first_feature_obj();
-	else
-		SG_REF(m_features);
-
-	REQUIRE(feat->has_property(FP_DOT),
-			"Training features must be type of CFeatures\n")
-	REQUIRE(feat->get_feature_class()==C_DENSE, "Training features must be dense\n")
-	REQUIRE(feat->get_feature_type()==F_DREAL, "Training features must be real\n")
-
-	SG_UNREF(feat);
-}
-
 CMap<TParameter*, SGVector<float64_t> > CLaplacianInferenceMethod::
 get_marginal_likelihood_derivatives(CMap<TParameter*,
 		CSGObject*>& para_dict)
