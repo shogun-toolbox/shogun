@@ -169,9 +169,8 @@ protected:
 	/** update kernel matrix */
 	virtual void update_train_kernel();
 
-private:
 	/** check if members of object are valid for inference */
-	void check_members();
+	virtual void check_members();
 };
 }
 #endif // HAVE_EIGEN3

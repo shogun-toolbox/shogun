@@ -263,9 +263,6 @@ private:
 	void init();
 
 private:
-	/** check if members of object are valid for inference */
-	void check_members();
-
 	/** amount of tolerance for Newton's iterations */
 	float64_t m_tolerance;
 

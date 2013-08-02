@@ -10,6 +10,7 @@
  */
 
 #include <shogun/machine/gp/InferenceMethod.h>
+#include <shogun/features/CombinedFeatures.h>
 
 using namespace shogun;
 
@@ -57,42 +58,32 @@ void CInferenceMethod::init()
 	m_scale=1.0;
 }
 
-void CInferenceMethod::set_features(CFeatures* feat)
+void CInferenceMethod::check_members()
 {
-	SG_REF(feat);
-	SG_UNREF(m_features);
-	m_features=feat;
-}
+	REQUIRE(m_features, "Training features should not be NULL\n")
+	REQUIRE(m_features->get_num_vectors(),
+		"Number of training features must be greater than zero\n")
+	REQUIRE(m_labels, "Labels should not be NULL\n")
+	REQUIRE(m_labels->get_num_labels(),
+			"Number of labels must be greater than zero\n")
+	REQUIRE(m_labels->get_num_labels()==m_features->get_num_vectors(),
+		"Number of training vectors must match number of labels, which is %d, "
+		"but number of training vectors is %d\n", m_labels->get_num_labels(),
+		m_features->get_num_vectors())
+	REQUIRE(m_kernel, "Kernel should not be NULL\n")
+	REQUIRE(m_mean, "Mean function should not be NULL\n")
 
-void CInferenceMethod::set_kernel(CKernel* kern)
-{
-	SG_REF(kern);
-	SG_UNREF(m_kernel);
-	m_kernel=kern;
-}
+	CFeatures* feat=m_features;
 
-void CInferenceMethod::set_mean(CMeanFunction* m)
-{
-	SG_REF(m);
-	SG_UNREF(m_mean);
-	m_mean=m;
-}
+	if (m_features->get_feature_class()==C_COMBINED)
+		feat=((CCombinedFeatures*)m_features)->get_first_feature_obj();
+	else
+		SG_REF(m_features);
 
-void CInferenceMethod::set_labels(CLabels* lab)
-{
-	SG_REF(lab);
-	SG_UNREF(m_labels);
-	m_labels=lab;
-}
+	REQUIRE(feat->has_property(FP_DOT),
+			"Training features must be type of CFeatures\n")
+	REQUIRE(feat->get_feature_class()==C_DENSE, "Training features must be dense\n")
+	REQUIRE(feat->get_feature_type()==F_DREAL, "Training features must be real\n")
 
-void CInferenceMethod::set_model(CLikelihoodModel* mod)
-{
-	SG_REF(mod);
-	SG_UNREF(m_model);
-	m_model=mod;
-}
-
-void CInferenceMethod::set_scale(float64_t s)
-{
-	m_scale=s;
+	SG_UNREF(feat);
 }
