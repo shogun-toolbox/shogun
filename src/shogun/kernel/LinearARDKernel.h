@@ -47,6 +47,8 @@ public:
 	CLinearARDKernel(CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r,
 		int32_t size=10);
 
+
+
 	virtual ~CLinearARDKernel();
 
 	/** initialize kernel
@@ -82,20 +84,33 @@ public:
 	 */
 	virtual EFeatureType get_feature_type() { return F_DREAL; }
 
-	/**Set weight of particular feature
+	/**Set weight of particular feature/dimension
 	 *
 	 * @param w weight to set
 	 * @param i index of feature
 	 */
 	virtual void set_weight(float64_t w, index_t i);
 
-	/**Get weight of particular feature
+	/**Get weight of particular feature/dimension
 	 *
 	 * @param i index of feature
 	 *
 	 * @return weight of feature
 	 */
 	virtual float64_t get_weight(index_t i);
+
+	/** @return Current feature/dimension weights */
+	virtual SGVector<float64_t> get_weights()
+	{
+		return m_weights;
+	}
+
+	/** Setter for feature/dimension weights
+	 * @param weights weights to set */
+	virtual void set_weights(SGVector<float64_t> weights)
+	{
+		m_weights=weights;
+	}
 
 	protected:
 

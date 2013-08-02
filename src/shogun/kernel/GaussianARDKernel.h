@@ -54,6 +54,12 @@ public:
 	/** destructor */
 	virtual ~CGaussianARDKernel();
 
+	/** @param kernel is casted to CGaussianARDKernel, error if not possible
+	 * is SG_REF'ed
+	 * @return casted CGaussianARDKernel object
+	 */
+	static CGaussianARDKernel* obtain_from_generic(CKernel* kernel);
+
 	/** initialize kernel
 	 *
 	 * @param l features of left-hand side

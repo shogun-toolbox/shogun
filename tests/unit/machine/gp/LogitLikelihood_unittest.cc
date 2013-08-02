@@ -229,6 +229,65 @@ TEST(LogitLikelihood,get_log_probability_f)
 	SG_UNREF(labels);
 }
 
+TEST(LogitLikelihood,get_log_probability_f_sum_multiple)
+{
+	// create some easy data:
+	// f(x) approximately equals to 3*sin(sin(x^2)*sin(sin(2*x))), y = sign(f(x))
+	index_t n=10;
+
+	SGVector<float64_t> lab(n);
+	SGMatrix<float64_t> func(n,2);
+
+	lab[0]=1.0;
+	lab[1]=1.0;
+	lab[2]=-1.0;
+	lab[3]=-1.0;
+	lab[4]=1.0;
+	lab[5]=-1.0;
+	lab[6]=-1.0;
+	lab[7]=1.0;
+	lab[8]=-1.0;
+	lab[9]=1.0;
+
+	func(0,0)=0.889099;
+	func(1,0)=0.350840;
+	func(2,0)=-2.116356;
+	func(3,0)=-0.184742;
+	func(4,0)=0.182117;
+	func(5,0)=-1.108930;
+	func(6,0)=-0.062437;
+	func(7,0)=0.482987;
+	func(8,0)=-0.149445;
+	func(9,0)=0.106952;
+	
+	func(0,1)=0.889099;
+	func(1,1)=0.350840;
+	func(2,1)=-2.116356;
+	func(3,1)=-0.184742;
+	func(4,1)=0.182117;
+	func(5,1)=-1.108930;
+	func(6,1)=-0.062437;
+	func(7,1)=0.482987;
+	func(8,1)=-0.149445;
+	func(9,1)=0.106952;
+
+	// shogun representation of labels
+	CBinaryLabels* labels=new CBinaryLabels(lab);
+
+	// logit likelihood
+	CLogitLikelihood* likelihood=new CLogitLikelihood();
+
+	SGVector<float64_t> lp=((CLikelihoodModel*)likelihood)->get_log_probability_f(labels, func);
+
+	// comparison of log likelihood with result from GPML package
+	EXPECT_NEAR(lp[0], -4.8927, 1E-4);
+	EXPECT_NEAR(lp[1], -4.8927, 1E-4);
+
+	// clean up
+	SG_UNREF(likelihood);
+	SG_UNREF(labels);
+}
+
 TEST(LogitLikelihood,get_log_probability_derivative_f)
 {
 	// create some easy data:

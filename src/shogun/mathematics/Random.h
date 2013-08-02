@@ -250,7 +250,6 @@ namespace shogun
 			/**
 			 * Sample a normal distrbution.
 			 * Using Ziggurat algorithm
-			 * @TODO check it's correctness
 			 *
 			 * @param mu mean
 			 * @param sigma variance
@@ -261,7 +260,6 @@ namespace shogun
 			/**
 			 * Sample a standard normal distribution, 
 			 * i.e. mean = 0, var = 1.0
-			 * @TODO check it's correctness!
 			 *
 			 * @return sample from the std normal distrib
 			 */
