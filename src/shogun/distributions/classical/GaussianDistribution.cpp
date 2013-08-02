@@ -41,28 +41,18 @@ CGaussianDistribution::CGaussianDistribution(SGVector<float64_t> mean,
 		m_L=SGMatrix<float64_t>(cov.num_rows, cov.num_cols);
 		Map<MatrixXd> eigen_L(m_L.matrix, m_L.num_rows, m_L.num_cols);
 
-		/* try to compute Cholesky and increase ridge on diagonal otherwise */
-		LLT<MatrixXd> llt;
-		while (true)
+		/* compute cholesky */
+		LLT<MatrixXd> llt(eigen_cov);
+		if (llt.info()==NumericalIssue)
 		{
-			llt.compute(eigen_cov);
-			if (llt.info()==NumericalIssue)
+			/* try to compute smalles eigenvalue for information */
+			SelfAdjointEigenSolver<MatrixXd> solver(eigen_cov);
+			if (solver.info() == Success)
 			{
-				/* try to compute smalles eigenvalue for information */
-				SelfAdjointEigenSolver<MatrixXd> solver(eigen_cov);
-				if (solver.info() == Success)
-				{
-					VectorXd ev=solver.eigenvalues();
-					SG_WARNING("Error computing Cholesky of Gaussian's covariance. "
-							"Smallest Eigenvalue is %f. Increasing ridge by "
-							"%f\n", ev[0], CMath::abs(ev[0]))+1e-3;
-
-					for (index_t i=0; i<cov.num_rows; ++i)
-						cov(i,i)+=CMath::abs(ev[0])+1e-3;
-				}
+				VectorXd ev=solver.eigenvalues();
+				SG_ERROR("Error computing Cholesky of Gaussian's covariance. "
+						"Smallest Eigenvalue is %f.\n", ev[0]);
 			}
-			else
-				break;
 		}
 
 		eigen_L=llt.matrixL();
