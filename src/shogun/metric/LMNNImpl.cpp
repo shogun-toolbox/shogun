@@ -12,7 +12,6 @@
 
 #include <shogun/metric/LMNNImpl.h>
 #include <shogun/multiclass/KNN.h>
-#include <shogun/distance/EuclideanDistance.h>
 
 #include <iterator>
 
@@ -213,7 +212,7 @@ ImpostorsSetType CLMNNImpl::find_impostors(CDenseFeatures<float64_t>* x,
 			"impostors set must be greater than 0\n")
 	if ((iter % correction)==0)
 	{
-		Nexact = CLMNNImpl::find_impostors_exact(LX, sqdists, y, target_nn, n, k);
+		Nexact = CLMNNImpl::find_impostors_exact(LX, sqdists, y, target_nn, k);
 		N = Nexact;
 	}
 	else
@@ -329,25 +328,60 @@ MatrixXd CLMNNImpl::compute_sqdists(MatrixXd& LX, const SGMatrix<index_t> target
 	return sqdists;
 }
 
-ImpostorsSetType CLMNNImpl::find_impostors_exact(const MatrixXd& LX, const MatrixXd& sqdists,
-		CMulticlassLabels* y, const SGMatrix<index_t> target_nn, int32_t n, int32_t k)
+ImpostorsSetType CLMNNImpl::find_impostors_exact(MatrixXd& LX, const MatrixXd& sqdists,
+		CMulticlassLabels* y, const SGMatrix<index_t> target_nn, int32_t k)
 {
 	SG_SDEBUG("Entering CLMNNImpl::find_impostors_exact().\n")
 
 	// initialize empty impostors set
 	ImpostorsSetType N = ImpostorsSetType();
 
-	// brute force search of impostors
-	for (int32_t i = 0; i < n; ++i) // for each training example
-		for (int32_t j = 0; j < k; ++j) // for each target neighbor
-			for (int32_t l = 0; l < n; ++l)
-				if (y->get_label(i)!=y->get_label(l)) // for each possible impostor
+	// get the number of examples from data
+	int32_t n = LX.cols();
+	// get the number of features
+	int32_t d = LX.rows();
+	// create Shogun features from LX to later apply subset
+	SGMatrix<float64_t> lx_mat(LX.data(), d, n, false);
+	CDenseFeatures<float64_t>* lx = new CDenseFeatures<float64_t>(lx_mat);
+
+	// get a vector with unique label values
+	SGVector<float64_t> unique = y->get_unique_labels();
+
+	// for each label except from the largest one
+	for (index_t i = 0; i < unique.vlen-1; ++i)
+	{
+		// get the indices of the examples labelled as unique[i]
+		std::vector<index_t> iidxs = CLMNNImpl::get_examples_label(y,unique[i]);
+		// get the indices of the examples that have a larger label value, so that
+		// pairwise distances are computed once
+		std::vector<index_t> gtidxs = CLMNNImpl::get_examples_gtlabel(y,unique[i]);
+
+		// get distance with features indexed by iidxs and gtidxs separated
+		CEuclideanDistance* euclidean = CLMNNImpl::setup_distance(lx,iidxs,gtidxs);
+		euclidean->set_disable_sqrt(true);
+
+		for (int32_t j = 0; j < k; ++j)
+		{
+			for (std::size_t ii = 0; ii < iidxs.size(); ++ii)
+			{
+				for (std::size_t jj = 0; jj < gtidxs.size(); ++jj)
 				{
-					// compute the square distance to the current training example and
-					// compare with the distance plus margin to the current target neighbor	
-					if ( SUMSQCOLS(LX.col(i) - LX.col(l)).coeff(0) <= sqdists(j,i) )
-						N.insert( CImpostorNode(i, target_nn(j,i), l) );
+					// FIXME study if using upper bounded distances can be an improvement
+					float64_t distance = euclidean->distance(ii,jj);
+
+					if (distance <= sqdists(j,iidxs[ii]))
+						N.insert( CImpostorNode(iidxs[ii], target_nn(j,iidxs[ii]), gtidxs[jj]) );
+
+					if (distance <= sqdists(j,gtidxs[jj]))
+						N.insert( CImpostorNode(gtidxs[jj], target_nn(j,gtidxs[jj]), iidxs[ii]) );
 				}
+			}
+		}
+
+		SG_UNREF(euclidean);
+	}
+
+	SG_UNREF(lx);
 
 	SG_SDEBUG("Leaving CLMNNImpl::find_impostors_exact().\n")
 
@@ -381,6 +415,54 @@ ImpostorsSetType CLMNNImpl::find_impostors_approx(const MatrixXd& LX, const Matr
 	SG_SDEBUG("Leaving CLMNNImpl::find_impostors_approx().\n")
 
 	return N;
+}
+
+std::vector<index_t> CLMNNImpl::get_examples_label(CMulticlassLabels* y,
+		float64_t yi)
+{
+	// indices of the examples with label equal to yi
+	std::vector<index_t> idxs;
+
+	for (index_t i = 0; i < index_t(y->get_num_labels()); ++i)
+	{
+		if (y->get_label(i) == yi)
+			idxs.push_back(i);
+	}
+
+	return idxs;
+}
+
+std::vector<index_t> CLMNNImpl::get_examples_gtlabel(CMulticlassLabels* y,
+		float64_t yi)
+{
+	// indices of the examples with label equal greater than yi
+	std::vector<index_t> idxs;
+
+	for (index_t i = 0; i < index_t(y->get_num_labels()); ++i)
+	{
+		if (y->get_label(i) > yi)
+			idxs.push_back(i);
+	}
+
+	return idxs;
+}
+
+CEuclideanDistance* CLMNNImpl::setup_distance(CDenseFeatures<float64_t>* x,
+		std::vector<index_t>& a, std::vector<index_t>& b)
+{
+	// create new features only containing examples whose indices are in a
+	x->add_subset(SGVector<index_t>(a.data(), a.size(), false));
+	CDenseFeatures<float64_t>* afeats = new CDenseFeatures<float64_t>(x->get_feature_matrix());
+	x->remove_subset();
+
+	// create new features only containing examples whose indices are in b
+	x->add_subset(SGVector<index_t>(b.data(), b.size(), false));
+	CDenseFeatures<float64_t>* bfeats = new CDenseFeatures<float64_t>(x->get_feature_matrix());
+	x->remove_subset();
+
+	// create and return distance
+	CEuclideanDistance* euclidean = new CEuclideanDistance(afeats,bfeats);
+	return euclidean;
 }
 
 #endif /* HAVE_EIGEN3 */
