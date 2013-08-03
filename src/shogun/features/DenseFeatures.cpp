@@ -55,7 +55,7 @@ template<class ST> CDenseFeatures<ST>::CDenseFeatures(ST* src, int32_t num_feat,
 	set_feature_matrix(SGMatrix<ST>(src, num_feat, num_vec));
 }
 template<class ST> CDenseFeatures<ST>::CDenseFeatures(CFile* loader) :
-		CDotFeatures(loader)
+		CDotFeatures()
 {
 	init();
 	load(loader);
