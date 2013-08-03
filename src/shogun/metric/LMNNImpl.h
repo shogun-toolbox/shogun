@@ -19,6 +19,7 @@
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/labels/MulticlassLabels.h>
+#include <shogun/distance/EuclideanDistance.h>
 #include <Eigen/Dense>
 
 #include <set>
@@ -123,10 +124,23 @@ class CLMNNImpl
 		static Eigen::MatrixXd compute_sqdists(Eigen::MatrixXd& L, const SGMatrix<index_t> target_nn);
 
 		/** find impostors; variant computing the impostors exactly, using all the data */
-		static ImpostorsSetType find_impostors_exact(const Eigen::MatrixXd& LX, const Eigen::MatrixXd& sqdists, CMulticlassLabels* y, const SGMatrix<index_t> target_nn, int32_t n, int32_t k);
+		static ImpostorsSetType find_impostors_exact(Eigen::MatrixXd& LX, const Eigen::MatrixXd& sqdists, CMulticlassLabels* y, const SGMatrix<index_t> target_nn, int32_t k);
 
 		/** find impostors; approximate variant, using the last exact set of impostors */
 		static ImpostorsSetType find_impostors_approx(const Eigen::MatrixXd& LX, const Eigen::MatrixXd& sqdists, const ImpostorsSetType& Nexact, const SGMatrix<index_t> target_nn);
+
+		/** get the indices of the examples whose label is equal to yi */
+		static std::vector<index_t> get_examples_label(CMulticlassLabels* y, float64_t yi);
+
+		/** get the indices of the examples whose label is greater than yi */
+		static std::vector<index_t> get_examples_gtlabel(CMulticlassLabels* y, float64_t yi);
+
+		/**
+		 * create Euclidean distance where the lhs features are the features in x indexed
+		 * by the elements in a, and the rhs features are the ones indexed by b; caller
+		 * is responsible of releasing memory
+		 */
+		static CEuclideanDistance* setup_distance(CDenseFeatures<float64_t>* x, std::vector<index_t>& a, std::vector<index_t>& b);
 
 
 }; /* class CLMNNImpl */
