@@ -183,6 +183,8 @@ TEST(LMNNImpl,sum_outer_products)
 	for (int32_t i=0; i<d; i++)
 		for (int32_t j=0; j<d; j++)
 			EXPECT_EQ(sop(i,j), 0);
+
+	SG_UNREF(features);
 }
 
 TEST(LMNNImpl,find_impostors_exact)
