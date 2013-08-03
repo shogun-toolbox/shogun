@@ -62,7 +62,7 @@ void CCSVFile::skip_lines(int32_t num_lines)
 
 void CCSVFile::init()
 {
-	m_order=FORTRAN_ORDER;
+	m_order=C_ORDER;
 	m_delimiter=0;
 
 	m_tokenizer=NULL;
@@ -73,7 +73,7 @@ void CCSVFile::init()
 
 void CCSVFile::init_with_defaults()
 {
-	m_order=FORTRAN_ORDER;
+	m_order=C_ORDER;
 	m_delimiter=',';
 
 	m_tokenizer=new CDelimiterTokenizer(true);
