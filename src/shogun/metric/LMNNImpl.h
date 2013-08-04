@@ -33,7 +33,6 @@ namespace shogun
 class CImpostorNode;
 
 typedef std::set<CImpostorNode> ImpostorsSetType;
-typedef std::vector< std::vector<Eigen::MatrixXd> > OuterProductsMatrixType;
 
 /**
  * Class ImpostorNode used to represent the sets of impostors. Each of the elements
@@ -93,9 +92,6 @@ class CLMNNImpl
 		 * nearest neighbors with the same label as indicated by y
 		 */
 		static SGMatrix<index_t> find_target_nn(CDenseFeatures<float64_t>* x, CMulticlassLabels* y, int32_t k);
-
-		/** for each pair of features in x, compute their outer product */
-		static OuterProductsMatrixType compute_outer_products(CDenseFeatures<float64_t>* x);
 
 		/** sum the outer products indicated by target_nn in the matrix of outer products C */
 		static Eigen::MatrixXd sum_outer_products(CDenseFeatures<float64_t>* x, const SGMatrix<index_t> target_nn);
