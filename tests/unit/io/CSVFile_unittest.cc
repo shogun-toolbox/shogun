@@ -211,3 +211,56 @@ TEST(CSVFileTest, write_matrix_int)
 	}
 	SG_UNREF(fin);
 }
+
+TEST(CSVFileTest, write_vector_int)
+{
+	int32_t nlen=12;
+
+	int32_t data[]={1, 2, 3, 4,
+				5, 6, 7, 8,
+				9, 10, 11, 12};
+
+	CCSVFile* fin;
+	CCSVFile* fout;
+
+	SGVector<int32_t> tmp(true);
+
+	fout=new CCSVFile("csvfile_test.csv",'w', NULL);
+	fout->set_delimiter(' ');
+	fout->set_order(FORTRAN_ORDER);
+	fout->set_vector(data, nlen);
+	SG_UNREF(fout);
+
+	fin=new CCSVFile("csvfile_test.csv",'r', NULL);
+	fin->set_delimiter(' ');
+	fin->set_order(FORTRAN_ORDER);
+
+	fin->get_vector(tmp.vector, tmp.vlen);
+	EXPECT_EQ(tmp.vlen, nlen);
+
+	for (int32_t i=0; i<tmp.vlen; i++)
+	{
+		EXPECT_EQ(tmp[i], data[i]);
+	}
+	SG_UNREF(fin);
+
+	// try write/read in c order
+	fout=new CCSVFile("csvfile_test.csv",'w', NULL);
+	fout->set_delimiter(' ');
+	fout->set_order(C_ORDER);
+	fout->set_vector(data, nlen);
+	SG_UNREF(fout);
+
+	fin=new CCSVFile("csvfile_test.csv",'r', NULL);
+	fin->set_delimiter(' ');
+	fin->set_order(C_ORDER);
+
+	fin->get_vector(tmp.vector, tmp.vlen);
+	EXPECT_EQ(tmp.vlen, nlen);
+
+	for (int32_t i=0; i<tmp.vlen; i++)
+	{
+		EXPECT_EQ(tmp[i], data[i]);
+	}
+	SG_UNREF(fin);
+}
