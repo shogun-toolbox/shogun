@@ -5,6 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 2013 Roman Votyakov
+ * Written (W) 2013 Heiko Strathmann
  * Copyright (C) 2012 Jacob Walker
  * Copyright (C) 2013 Roman Votyakov
  */
@@ -115,7 +116,7 @@ public:
 	 */
 	virtual ELikelihoodModelType get_model_type() { return LT_NONE; }
 
-	/** returns the logarithm of the point-wise likelihood
+	/** Returns the logarithm of the point-wise likelihood
 	 * \f$log(p(y_i|f_i))\f$ for each label \f$y_i\f$.
 	 *
 	 * One can evaluate log-likelihood like: \f$log(p(y|f)) =
@@ -128,6 +129,21 @@ public:
 	 */
 	virtual SGVector<float64_t> get_log_probability_f(CLabels* lab,
 			SGVector<float64_t> func)=0;
+
+	/** Returns the log-likelihood
+	 * \f$log(p(y|f)) = \sum_{i=1}^{n} log(p(y_i|f_i))\f$
+	 * for each of the provided functions \f$ f \f$ in the given matrix.
+	 *
+	 * Wrapper method which calls get_log_probability_f multiple times.
+	 *
+	 * @param lab labels \f$y_i\f$
+	 * @param F values of the function \f$f_i\f$ where each column of the matrix
+	 * is one function \f$ f \f$.
+	 *
+	 * @return log-likelihood for every provided function
+	 */
+	virtual SGVector<float64_t> get_log_probability_f(CLabels* lab,
+			SGMatrix<float64_t> F);
 
 	/** get derivative of log likelihood \f$log(p(y|f))\f$ with
 	 * respect to location function \f$f\f$

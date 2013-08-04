@@ -150,3 +150,17 @@ TEST(CMath, linspace_test)
 		EXPECT_EQ(vec[i], val);
 	}
 }
+
+TEST(CMath, log_sum_exp)
+{
+	SGVector<float64_t> values(3);
+	values.range_fill();
+	EXPECT_NEAR(CMath::log_sum_exp(values), 2.4076059644443801, 1e-15);
+}
+
+TEST(CMath, log_mean_exp)
+{
+	SGVector<float64_t> values(3);
+	values.range_fill();
+	EXPECT_NEAR(CMath::log_mean_exp(values), 1.3089936757762706, 1e-15);
+}
