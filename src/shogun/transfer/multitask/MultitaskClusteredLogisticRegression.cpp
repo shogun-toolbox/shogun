@@ -120,11 +120,17 @@ bool CMultitaskClusteredLogisticRegression::train_machine(CFeatures* data)
 	options.n_clusters = m_num_clusters;
 
 #ifdef HAVE_EIGEN3
+#ifndef HAVE_CXX11
 	malsar_result_t model = malsar_clustered(
 		features, y.vector, m_rho1, m_rho2, options);
 
 	m_tasks_w = model.w;
 	m_tasks_c = model.c;
+#else
+	SG_WARNING("Clustered LR is unstable with C++11\n")
+	m_tasks_w = SGMatrix<float64_t>(((CDotFeatures*)features)->get_dim_feature_space(), options.n_tasks); 
+	m_tasks_c = SGVector<float64_t>(options.n_tasks); 
+#endif
 #else
 	SG_WARNING("Please install Eigen3 to use MultitaskClusteredLogisticRegression\n")
 	m_tasks_w = SGMatrix<float64_t>(((CDotFeatures*)features)->get_dim_feature_space(), options.n_tasks); 
