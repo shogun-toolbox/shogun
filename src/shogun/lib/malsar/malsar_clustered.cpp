@@ -10,6 +10,7 @@
 
 #include <shogun/lib/malsar/malsar_clustered.h>
 #ifdef HAVE_EIGEN3
+#ifndef HAVE_CXX11
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
 #include <iostream>
@@ -96,11 +97,8 @@ malsar_result_t malsar_clustered(
 		//internal::set_is_malloc_allowed(true);
 		SG_SDEBUG("Computing gradient\n")
 		IM = (eta*MatrixXd::Identity(n_tasks,n_tasks)+Ms);
-		// cout << "M" << endl << Ms << endl;
-		// cout << "IM" << endl << IM << endl;
 		IMsqinv = (IM*IM).inverse();
 		invEtaMWt = IM.inverse()*Ws.transpose();
-		//cout << "invEtaMWt" << endl << invEtaMWt << endl;
 		gMs.noalias() = -c*(Ws.transpose()*Ws)*IMsqinv;
 		gWs.noalias() += 2*c*invEtaMWt.transpose();
 		//internal::set_is_malloc_allowed(false);
@@ -123,8 +121,6 @@ malsar_result_t malsar_clustered(
 				features->add_to_dense_vec(b, task_idx[i], gWs.col(task).data(), n_feats);
 			}
 		}
-		//cout << "gWs" << endl << gWs << endl;
-		//cout << "gCs" << endl << gCs << endl;
 		SG_SDEBUG("Computed gradient\n")
 		
 		// add regularizer
@@ -135,20 +131,29 @@ malsar_result_t malsar_clustered(
 
 		int inner_iter = 0;
 		// line search, Armijo-Goldstein scheme
-		while (inner_iter <= 1000)
+		while (inner_iter <= 1)
 		{
 			Wzp = Ws - gWs/gamma;
 			Czp = Cs - gCs/gamma;
 			// compute singular projection of Ms - gMs/gamma with k
 			//internal::set_is_malloc_allowed(true);
-			EigenSolver<MatrixXd> eigensolver(Ms-gMs/gamma);
+			EigenSolver<MatrixXd> eigensolver;
+			eigensolver.compute(Ms-gMs/gamma, true);
+			if (eigensolver.info()!=Eigen::Success)
+				SG_SERROR("Eigendecomposition failed")
 
 			// solve problem
 			// min sum_i (s_i - s*_i)^2 s.t. sum_i s_i = k, 0<=s_i<=1
 			for (int i=0; i<n_tasks; i++) 
 			{
 				diag_H[i] = 2.0;
+				// TODO fails with C++11
+				//std::complex<MatrixXd::Scalar> eigenvalue = eigensolver.eigenvalues()[i];
+				//cout << "eigenvalue " << eigenvalue << "=" << std::real(eigenvalue) << "+i" << std::imag(eigenvalue) << endl;
 				f[i] = -2*eigensolver.eigenvalues()[i].real();
+				if (f[i]!=f[i])
+					SG_SERROR("NaN %d eigenvalue", i)
+
 				SG_SDEBUG("%dth eigenvalue %f\n",i,eigensolver.eigenvalues()[i].real())
 				a[i] = 1.0;
 				lb[i] = 0.0;
@@ -308,4 +313,5 @@ malsar_result_t malsar_clustered(
 	return malsar_result_t(tasks_w, tasks_c);
 };
 };
+#endif
 #endif
