@@ -5,6 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 2013 Roman Votyakov
+ * Written (W) 2013 Heiko Strathmann
  * Copyright (C) 2012 Jacob Walker
  * Copyright (C) 2013 Roman Votyakov
  */
@@ -36,6 +37,9 @@ enum EInferenceType
  *
  * The Inference Method computes (approximately) the posterior
  * distribution for a given Gaussian Process.
+ *
+ * It is possible to sample the (true) log-marginal likelihood on the base of
+ * any implemented approximation. See log_ml_estimate.
  */
 class CInferenceMethod : public CDifferentiableFunction
 {
@@ -79,7 +83,8 @@ public:
 	/** get log marginal likelihood gradient
 	 *
 	 * @return vector of the marginal likelihood function gradient
-	 * with respect to hyperparameters:
+	 * with respect to hyperparameters (under the current approximation
+	 * to the posterior \f$q(f|y)\approx p(f|y)\f$:
 	 *
 	 * \f[
 	 * -\frac{\partial log(p(y|X, \theta))}{\partial \theta}
@@ -167,7 +172,8 @@ public:
 	 */
 	virtual SGVector<float64_t> get_posterior_approximation_mean()
 	{
-		SG_ERROR("Inference method doesn't use approximation to the posterior")
+		SG_ERROR("Inference method doesn't use a Gaussian approximation to the"
+				" posterior")
 		return SGVector<float64_t>();
 	}
 
@@ -183,7 +189,8 @@ public:
 	 */
 	virtual SGMatrix<float64_t> get_posterior_approximation_covariance()
 	{
-		SG_ERROR("Inference method doesn't use approximation to the posterior")
+		SG_ERROR("Inference method doesn't use a gaussian approximation to the "
+				"posterior")
 		return SGMatrix<float64_t>();
 	}
 
@@ -308,6 +315,41 @@ public:
 	/** update all matrices */
 	virtual void update_all()=0;
 
+	/** Computes an unbiased estimate of the log-marginal-likelihood,
+	 *
+	 * \f[
+	 * log(p(y|X,\theta)),
+	 * \f]
+	 * where \f$y\f$ are the labels, \f$X\f$ are the features (omitted from
+	 * in the following expressions), and \f$\theta\f$ represent hyperparameters.
+	 *
+	 * This is done via an approximation to the posterior
+	 * \f$q(f|y, \theta)\approx p(f|y, \theta)\f$, which is computed by the
+	 * underlying CInferenceMethod instance (if implemented, otherwise error),
+	 * and then using an importance sample estimator
+	 *
+	 * \f[
+	 * p(y|\theta)=\int p(y|f)p(f|\theta)df
+	 * =\int p(y|f)\frac{p(f|\theta)}{q(f|y, \theta)}q(f|y, \theta)df
+	 * \approx\frac{1}{n}\sum_{i=1}^n p(y|f^{(i)})\frac{p(f^{(i)}|\theta)}{q(f^{(i)}|y, \theta)},
+	 * \f]
+	 *
+	 * where \f$ f^{(i)} \f$ are samples from the posterior approximation
+	 * \f$ q(f|y, \theta) \f$. The resulting estimator has a low variance if
+	 * \f$ q(f|y, \theta) \f$ is a good approximation. It has large variance
+	 * otherwise (while still being consistent).
+	 *
+	 * @param num_importance_samples the number of importance samples \f$n\f$
+	 * from \f$ q(f|y, \theta) \f$.
+	 * @param ridge_size scalar that is added to the diagonal of the involved
+	 * Gaussian distribution's covariance of GP prior and posterior approximation
+	 * to stabilise things. Increase if Cholesky factorization fails.
+	 * @return unbiased estimate of the  log of the marginal likelihood
+	 * function \f$ log(p(y|\theta)) \f$
+	 */
+	float64_t get_log_ml_estimate(int32_t num_importance_samples=1,
+			float64_t ridge_size=1e-15);
+
 protected:
 	/** update alpha matrix */
 	virtual void update_alpha()=0;
@@ -352,7 +394,7 @@ protected:
 	/** kernel scale */
 	float64_t m_scale;
 
-	/** kernel matrix from features */
+	/** kernel matrix from features (non-scalled by inference scalling) */
 	SGMatrix<float64_t> m_ktrtr;
 };
 }

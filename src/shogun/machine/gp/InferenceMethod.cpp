@@ -5,12 +5,16 @@
  * (at your option) any later version.
  *
  * Written (W) 2013 Roman Votyakov
+ * Written (W) 2013 Heiko Strathmann
  * Copyright (C) 2012 Jacob Walker
  * Copyright (C) 2013 Roman Votyakov
+ *
  */
 
 #include <shogun/machine/gp/InferenceMethod.h>
 #include <shogun/features/CombinedFeatures.h>
+#include <shogun/distributions/classical/GaussianDistribution.h>
+#include <shogun/mathematics/Statistics.h>
 
 using namespace shogun;
 
@@ -86,4 +90,62 @@ void CInferenceMethod::check_members()
 	REQUIRE(feat->get_feature_type()==F_DREAL, "Training features must be real\n")
 
 	SG_UNREF(feat);
+}
+
+float64_t CInferenceMethod::get_log_ml_estimate(
+		int32_t num_importance_samples, float64_t ridge_size)
+{
+	/* sample from Gaussian approximation to q(f|y) */
+	SGMatrix<float64_t> cov=get_posterior_approximation_covariance();
+
+	/* add ridge */
+	for (index_t i=0; i<cov.num_rows; ++i)
+		cov(i,i)+=ridge_size;
+
+	SGVector<float64_t> mean=get_posterior_approximation_mean();
+
+	CGaussianDistribution* post_approx=new CGaussianDistribution(mean, cov);
+	SGMatrix<float64_t> samples=post_approx->sample(num_importance_samples);
+
+	/* evaluate q(f^i|y), p(f^i|\theta), p(y|f^i), i.e.,
+	 * log pdf of approximation, prior and likelihood */
+
+	/* log pdf q(f^i|y) */
+	SGVector<float64_t> log_pdf_post_approx=post_approx->log_pdf(samples);
+
+	/* dont need gaussian anymore, free memory */
+	SG_UNREF(post_approx);
+	post_approx=NULL;
+
+	/* log pdf p(f^i|\theta) and free memory afterwise. Scale kernel before */
+	SGMatrix<float64_t> scaled_kernel(m_ktrtr.num_rows, m_ktrtr.num_cols);
+	memcpy(scaled_kernel.matrix, m_ktrtr.matrix,
+			sizeof(float64_t)*m_ktrtr.num_rows*m_ktrtr.num_cols);
+	for (index_t i=0; i<m_ktrtr.num_rows*m_ktrtr.num_cols; ++i)
+		scaled_kernel.matrix[i]*=CMath::sq(m_scale);
+
+	/* add ridge */
+	for (index_t i=0; i<cov.num_rows; ++i)
+		scaled_kernel(i,i)+=ridge_size;
+
+	CGaussianDistribution* prior=new CGaussianDistribution(
+			m_mean->get_mean_vector(m_feature_matrix), scaled_kernel);
+	SGVector<float64_t> log_pdf_prior=prior->log_pdf(samples);
+	SG_UNREF(prior);
+	prior=NULL;
+
+	/* p(y|f^i) */
+	SGVector<float64_t> log_likelihood=m_model->get_log_probability_f(
+			m_labels, samples);
+
+	/* combine probabilities */
+	ASSERT(log_likelihood.vlen==num_importance_samples);
+	ASSERT(log_likelihood.vlen==log_pdf_prior.vlen);
+	ASSERT(log_likelihood.vlen==log_pdf_post_approx.vlen);
+	SGVector<float64_t> sum(log_likelihood);
+	for (index_t i=0; i<log_likelihood.vlen; ++i)
+		sum[i]=log_likelihood[i]+log_pdf_prior[i]-log_pdf_post_approx[i];
+
+	/* use log-sum-exp (in particular, log-mean-exp) trick to combine values */
+	return CMath::log_mean_exp(sum);
 }

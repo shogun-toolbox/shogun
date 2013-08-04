@@ -41,7 +41,6 @@ CLinearARDKernel::CLinearARDKernel(CDenseFeatures<float64_t>* l,
 
 void CLinearARDKernel::init()
 {
-	m_weights = SGVector<float64_t>();
 	SG_ADD(&m_weights, "weights", "Feature Weights", MS_AVAILABLE);
 }
 
