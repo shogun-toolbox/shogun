@@ -283,7 +283,7 @@ class CKernel : public CSGObject
 			return row;
 		}
 
-		/** get kernel matrix real
+		/** get kernel matrix (templated)
 		 *
 		 * @return the kernel matrix
 		 */

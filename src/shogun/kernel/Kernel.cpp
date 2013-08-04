@@ -1069,7 +1069,7 @@ SGMatrix<T> CKernel::get_kernel_matrix()
 
 	REQUIRE(has_features(), "no features assigned to kernel\n")
 
-		int32_t m=get_num_vec_lhs();
+	int32_t m=get_num_vec_lhs();
 	int32_t n=get_num_vec_rhs();
 
 	int64_t total_num = int64_t(m)*n;
@@ -1079,7 +1079,7 @@ SGMatrix<T> CKernel::get_kernel_matrix()
 
 	SG_DEBUG("returning kernel matrix of size %dx%d\n", m, n)
 
-		result=SG_MALLOC(T, total_num);
+	result=SG_MALLOC(T, total_num);
 
 	int32_t num_threads=parallel->get_num_threads();
 	if (num_threads < 2)
