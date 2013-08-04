@@ -97,24 +97,23 @@ void CCSVFile::fname(sg_type*& vector, int32_t& len) \
 	if (!m_line_reader->has_next()) \
 		return; \
 	\
-	SGVector<char> line=m_line_reader->read_line(); \
-	m_tokenizer->set_text(line); \
+	int32_t num_feat=0; \
+	int32_t num_vec=0; \
+	get_matrix(vector, num_feat, num_vec); \
+	\
+	if (num_feat==1) \
+	{ \
+		len=num_vec; \
+		return; \
+	} \
+	\
+	if (num_vec==1) \
+	{ \
+		len=num_feat; \
+		return; \
+	} \
 	\
 	len=0; \
-	while (m_tokenizer->has_next()) \
-	{ \
-		index_t temp_start=0; \
-		m_tokenizer->next_token_idx(temp_start); \
-	\
-		len++; \
-	} \
-	\
-	m_parser->set_text(line); \
-	vector=SG_MALLOC(sg_type, len); \
-	for (int32_t i=0; i<len; i++) \
-	{ \
-		vector[i]=m_parser->read_func(); \
-	} \
 }
 
 GET_VECTOR(get_vector, read_char, int8_t)
@@ -134,28 +133,41 @@ GET_VECTOR(get_vector, read_ulong, uint64_t)
 #define GET_MATRIX(fname, read_func, sg_type) \
 void CCSVFile::fname(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec) \
 { \
-	\
 	int32_t nlines=0; \
 	int32_t ntokens=-1; \
+	int32_t len=0; \
 	\
 	int32_t last_idx=0; \
 	SGVector<sg_type> line_memory(true); \
-	SGVector<sg_type> temp(true); \
+	\
 	while(m_line_reader->has_next()) \
 	{ \
-		read_func(temp.vector, temp.vlen); \
-		if (ntokens<0) \
-			ntokens=temp.vlen; \
+		SGVector<char> line=m_line_reader->read_line(); \
+		m_tokenizer->set_text(line); \
 		\
-		if (ntokens!=temp.vlen) \
+		len=0; \
+		while (m_tokenizer->has_next()) \
+		{ \
+			index_t temp_start=0; \
+			m_tokenizer->next_token_idx(temp_start); \
+		\
+			len++; \
+		} \
+		\
+		m_parser->set_text(line); \
+		\
+		if (ntokens<0) \
+			ntokens=len; \
+		\
+		if (ntokens!=len) \
 			return; \
 		\
-		line_memory.resize_vector(last_idx+temp.vlen); \
-		for (int32_t i=0; i<temp.vlen; i++) \
+		line_memory.resize_vector(last_idx+len); \
+		for (int32_t i=0; i<len; i++) \
 		{ \
-			line_memory[i+last_idx]=temp[i]; \
+			line_memory[i+last_idx]=m_parser->read_func(); \
 		} \
-		last_idx+=temp.vlen; \
+		last_idx+=len; \
 		\
 		nlines++; \
 	} \
@@ -174,28 +186,38 @@ void CCSVFile::fname(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec) \
 	} \
 } \
 
-GET_MATRIX(get_matrix, get_vector, int8_t)
-GET_MATRIX(get_matrix, get_vector, uint8_t)
-GET_MATRIX(get_matrix, get_vector, char)
-GET_MATRIX(get_matrix, get_vector, int32_t)
-GET_MATRIX(get_matrix, get_vector, uint32_t)
-GET_MATRIX(get_matrix, get_vector, int64_t)
-GET_MATRIX(get_matrix, get_vector, uint64_t)
-GET_MATRIX(get_matrix, get_vector, float32_t)
-GET_MATRIX(get_matrix, get_vector, float64_t)
-GET_MATRIX(get_matrix, get_vector, floatmax_t)
-GET_MATRIX(get_matrix, get_vector, int16_t)
-GET_MATRIX(get_matrix, get_vector, uint16_t)
+GET_MATRIX(get_matrix, read_char, int8_t)
+GET_MATRIX(get_matrix, read_byte, uint8_t)
+GET_MATRIX(get_matrix, read_char, char)
+GET_MATRIX(get_matrix, read_int, int32_t)
+GET_MATRIX(get_matrix, read_uint, uint32_t)
+GET_MATRIX(get_matrix, read_short_real, float32_t)
+GET_MATRIX(get_matrix, read_real, float64_t)
+GET_MATRIX(get_matrix, read_long_real, floatmax_t)
+GET_MATRIX(get_matrix, read_short, int16_t)
+GET_MATRIX(get_matrix, read_word, uint16_t)
+GET_MATRIX(get_matrix, read_long, int64_t)
+GET_MATRIX(get_matrix, read_ulong, uint64_t)
 #undef GET_MATRIX
 
 #define SET_VECTOR(fname, format, sg_type) \
 void CCSVFile::fname(const sg_type* vector, int32_t len) \
 { \
-	for (int32_t i=0; i<len; i++) \
+	if (m_order==FORTRAN_ORDER) \
 	{ \
-		fprintf(file, "%" format "%c", vector[i], m_delimiter); \
+		for (int32_t i=0; i<len; i++) \
+		{ \
+			fprintf(file, "%" format "\n", vector[i]); \
+		} \
 	} \
-	fprintf(file, "\n"); \
+	else \
+	{ \
+		for (int32_t i=0; i<len; i++) \
+		{ \
+			fprintf(file, "%" format "%c", vector[i], m_delimiter); \
+		} \
+		fprintf(file, "\n"); \
+	} \
 }
 
 SET_VECTOR(set_vector, SCNi8, int8_t)
