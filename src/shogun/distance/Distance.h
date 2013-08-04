@@ -123,27 +123,40 @@ class CDistance : public CSGObject
 		 *
 		 * @return computed distance matrix (needs to be cleaned up)
 		 */
-		SGMatrix<float64_t> get_distance_matrix();
+		SGMatrix<float64_t> get_distance_matrix()
+		{
+			return get_distance_matrix<float64_t>();
+		}
 
-		/** get distance matrix real
+		/** get distance matrix (templated)
 		 *
-		 * @param m dimension m
-		 * @param n dimension n
-		 * @param target target matrix
-		 * @return target matrix
+		 * @return the distance matrix
 		 */
-		virtual float64_t* get_distance_matrix_real(
-			int32_t &m,int32_t &n, float64_t* target);
+		template <class T> SGMatrix<T> get_distance_matrix();
 
-		/** get distance matrix short real
+		/** compute row start offset for parallel kernel matrix computation
 		 *
-		 * @param m dimension m
-		 * @param n dimension n
-		 * @param target target matrix
-		 * @return target matrix
+		 * @param offs offset
+		 * @param n number of columns
+		 * @param symmetric whether matrix is symmetric
 		 */
-		virtual float32_t* get_distance_matrix_shortreal(
-			int32_t &m,int32_t &n,float32_t* target);
+		int32_t compute_row_start(int64_t offs, int32_t n, bool symmetric)
+		{
+			int32_t i_start;
+
+			if (symmetric)
+				i_start=(int32_t) CMath::floor(n-CMath::sqrt(CMath::sq((float64_t) n)-offs));
+			else
+				i_start=(int32_t) (offs/int64_t(n));
+
+			return i_start;
+		}
+
+		/** helper for computing the kernel matrix in a parallel way
+		 *
+		 * @param p thread parameters
+		 */
+		template <class T> static void* get_distance_matrix_helper(void* p);
 
 		/** init distance
 		 *

@@ -4328,13 +4328,8 @@ bool CSGInterface::cmd_get_distance_matrix()
 		if (!distance || !distance->has_features())
 			SG_ERROR("No distance defined or not initialized.\n")
 
-		int32_t num_vec_lhs=0;
-		int32_t num_vec_rhs=0;
-		float64_t* dmatrix=NULL;
-		dmatrix=distance->get_distance_matrix_real(num_vec_lhs, num_vec_rhs, dmatrix);
-
-		set_matrix(dmatrix, num_vec_lhs, num_vec_rhs);
-		SG_FREE(dmatrix);
+		SGMatrix<float64_t> dmatrix=distance->get_distance_matrix();
+		set_matrix(dmatrix.matrix, dmatrix.num_rows, dmatrix.num_cols);
 	}
 
 	return success;
