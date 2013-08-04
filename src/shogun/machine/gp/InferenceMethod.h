@@ -13,6 +13,10 @@
 #ifndef CINFERENCEMETHOD_H_
 #define CINFERENCEMETHOD_H_
 
+#include <shogun/lib/config.h>
+
+#ifdef HAVE_LAPACK
+
 #include <shogun/kernel/Kernel.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/features/Features.h>
@@ -398,4 +402,5 @@ protected:
 	SGMatrix<float64_t> m_ktrtr;
 };
 }
+#endif /* HAVE_LAPACK */
 #endif /* CINFERENCEMETHOD_H_ */

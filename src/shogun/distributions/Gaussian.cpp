@@ -303,4 +303,4 @@ SGVector<float64_t> CGaussian::sample()
 	return SGVector<float64_t>(samp, m_mean.vlen, false);//fix needed
 }
 
-#endif
+#endif // HAVE_LAPACK
