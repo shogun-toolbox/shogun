@@ -284,6 +284,27 @@ public:
 		return *this;
 	}
 
+	/** Get or set element by key
+	 *
+	 * @param key key to be looked for
+	 * @return reference exist element or new element
+	 */
+	T& operator [](const K& key)
+	{
+		int32_t index=hash(key);
+		CMapNode<K, T>* result=chain_search(index, key);
+
+		if (result!=NULL)		
+			return result->data;
+		else
+		{
+			int32_t added_index=add(key, T());
+			result=get_node_ptr(added_index);
+
+			return result->data;
+		}
+	}
+
 private:
 	/** Returns hash of key
 	 * MurmurHash used

@@ -234,3 +234,6 @@
 %ignore shogun::CSerializableFile::write_type_end;
 
 %ignore shogun::CMosek;
+
+%ignore shogun::CBeliefPropagation;
+%ignore shogun::CTreeMaxProduct;
