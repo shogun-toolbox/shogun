@@ -131,33 +131,6 @@ SGMatrix<index_t> CLMNNImpl::find_target_nn(CDenseFeatures<float64_t>* x,
 	return target_neighbors;
 }
 
-OuterProductsMatrixType CLMNNImpl::compute_outer_products(CDenseFeatures<float64_t>* x)
-{
-	// get the number of examples from data
-	int32_t n = x->get_num_vectors();
-	// get the number of features
-	int32_t d = x->get_num_features();
-	// map the feature matrix (each column is a feature vector) to an Eigen matrix
-	Map<const MatrixXd> X(x->get_feature_matrix().matrix, d, n);
-	// outer products matrix allocation
-	//FIXME avoid computing the n^2 elements
-	OuterProductsMatrixType C;
-	C.resize(n);
-	for (int32_t i = 0; i < n; ++i)
-		C[i].resize(n);
-
-	for (int32_t i = 0; i < n; ++i)
-	{
-		for (int32_t j = 0; j < n; ++j)
-		{
-			VectorXd dx = X.col(i)-X.col(j);
-			C[i][j] = dx*dx.transpose();
-		}
-	}
-
-	return C;
-}
-
 MatrixXd CLMNNImpl::sum_outer_products(CDenseFeatures<float64_t>* x, const SGMatrix<index_t> target_nn)
 {
 	// get the number of features

@@ -62,61 +62,6 @@ TEST(LMNNImpl,find_target_nn)
 	SG_UNREF(labels)
 }
 
-TEST(LMNNImpl,compute_outer_products)
-{
-	// create features, each column is a feature vector
-	SGMatrix<float64_t> feat_mat(2,2);
-	// 1st feature vector
-	feat_mat(0,0)=1;
-	feat_mat(1,0)=2;
-	// 2nd feature vector
-	feat_mat(0,1)=-3;
-	feat_mat(1,1)=4;
-	// wrap feat_mat in Shogun features
-	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(feat_mat);
-	// shorthand for the number of features
-	int32_t d=features->get_num_features();
-
-	// compute the outer products of the differences between every two pairs of
-	// feature vectors
-	OuterProductsMatrixType C=CLMNNImpl::compute_outer_products(features);
-
-	// check output dimensions
-	EXPECT_EQ(C.size(), 2);
-	for (uint32_t i=0; i<C.size(); i++)
-		EXPECT_EQ(C[i].size(), 2);
-
-	for (uint32_t i=0; i<C.size(); i++)
-		for (uint32_t j=0; j<C[i].size(); j++)
-		{
-			EXPECT_EQ(C[i][j].rows(), d);
-			EXPECT_EQ(C[i][j].cols(), d);
-		}
-
-	// check the outer products that must be zero
-	for (int32_t i=0; i<C[0][0].rows(); i++)
-		for (int32_t j=0; j<C[0][0].cols(); j++)
-		{
-			EXPECT_EQ(C[0][0](i,j), 0);
-			EXPECT_EQ(C[1][1](i,j), 0);
-		}
-
-	// check that the other two outer products are equal...
-	for (int32_t i=0; i<C[0][1].rows(); i++)
-		for (int32_t j=0; j<C[0][1].cols(); j++)
-		{
-			EXPECT_EQ(C[0][1](i,j), C[1][0](i,j));
-		}
-
-	// ...and check their results
-	EXPECT_EQ(C[0][1](0,0), 16);
-	EXPECT_EQ(C[0][1](1,0), -8);
-	EXPECT_EQ(C[0][1](0,1), -8);
-	EXPECT_EQ(C[0][1](1,1), 4);
-
-	SG_UNREF(features)
-}
-
 TEST(LMNNImpl,sum_outer_products)
 {
 	// feature dimension

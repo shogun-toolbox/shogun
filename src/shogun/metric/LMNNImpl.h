@@ -30,52 +30,47 @@
 namespace shogun
 {
 
-class CImpostorNode;
+struct CImpostorNode;
 
 typedef std::set<CImpostorNode> ImpostorsSetType;
-typedef std::vector< std::vector<Eigen::MatrixXd> > OuterProductsMatrixType;
 
 /**
- * Class ImpostorNode used to represent the sets of impostors. Each of the elements
+ * Struct ImpostorNode used to represent the sets of impostors. Each of the elements
  * in a set of impostors is an impostor node. An impostor node holds information
  * of the indices of the example, the target and the impostor.
  */
-class CImpostorNode
+struct CImpostorNode
 {
-	public:
+	/**
+	 * Standard impostor node construct
+	 *
+	 * @param ex example index
+	 * @param tar target index
+	 * @param imp impostor index
+	 */
+	CImpostorNode(index_t ex, index_t tar, index_t imp);
 
-		/**
-		 * Standard impostor node construct
-		 *
-		 * @param ex example index
-		 * @param tar target index
-		 * @param imp impostor index
-		 */
-		CImpostorNode(index_t ex, index_t tar, index_t imp);
+	/**
+	 * The index of the example defines which impostor node is larger
+	 * (the larger example index, the larger impostor node). In case
+	 * of equality, then the target index decides, and, in the event
+	 * of equality in both example and target indices. then the impostors
+	 * defines which node is largest.
+	 *
+	 * @param rhs right hand side argument of the operator
+	 * @return whether the lhs argument was smaller than the rhs, equal to,
+	 * or larger
+	 */
+	bool operator<(const CImpostorNode& rhs) const;
 
-		/**
-		 * The index of the example defines which impostor node is larger
-		 * (the larger example index, the larger impostor node). In case
-		 * of equality, then the target index decides, and, in the event
-		 * of equality in both example and target indices. then the impostors
-		 * defines which node is largest.
-		 *
-		 * @param rhs right hand side argument of the operator
-		 * @return whether the lhs argument was smaller than the rhs, equal to,
-		 * or larger
-		 */
-		bool operator<(const CImpostorNode& rhs) const;
+	/** example index */
+	index_t example;
 
-	public:
+	/** target index */
+	index_t target;
 
-		/** example index */
-		index_t example;
-
-		/** target index */
-		index_t target;
-
-		/** impostor index */
-		index_t impostor;
+	/** impostor index */
+	index_t impostor;
 };
 
 /**
@@ -93,9 +88,6 @@ class CLMNNImpl
 		 * nearest neighbors with the same label as indicated by y
 		 */
 		static SGMatrix<index_t> find_target_nn(CDenseFeatures<float64_t>* x, CMulticlassLabels* y, int32_t k);
-
-		/** for each pair of features in x, compute their outer product */
-		static OuterProductsMatrixType compute_outer_products(CDenseFeatures<float64_t>* x);
 
 		/** sum the outer products indicated by target_nn in the matrix of outer products C */
 		static Eigen::MatrixXd sum_outer_products(CDenseFeatures<float64_t>* x, const SGMatrix<index_t> target_nn);
