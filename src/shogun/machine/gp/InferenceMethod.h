@@ -15,7 +15,7 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_LAPACK
+#ifdef HAVE_EIGEN3
 
 #include <shogun/kernel/Kernel.h>
 #include <shogun/base/SGObject.h>
@@ -402,5 +402,5 @@ protected:
 	SGMatrix<float64_t> m_ktrtr;
 };
 }
-#endif /* HAVE_LAPACK */
+#endif /* HAVE_EIGEN3 */
 #endif /* CINFERENCEMETHOD_H_ */

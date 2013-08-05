@@ -12,7 +12,7 @@
  */
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_LAPACK
+#ifdef HAVE_EIGEN3
 
 #include <shogun/machine/gp/InferenceMethod.h>
 #include <shogun/features/CombinedFeatures.h>
@@ -152,4 +152,4 @@ float64_t CInferenceMethod::get_log_ml_estimate(
 	/* use log-sum-exp (in particular, log-mean-exp) trick to combine values */
 	return CMath::log_mean_exp(sum);
 }
-#endif // HAVE_LAPACK
+#endif // HAVE_EIGEN3
