@@ -6,6 +6,16 @@
 
 project(shogun)
 cmake_minimum_required(VERSION 2.8)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
+
+# CCACHE
+#OPTION(ENABLE_CCACHE "Enable ccache for compilation" OFF)
+#if(ENABLE_CCACHE)
+#	FIND_PACKAGE(CCache REQUIRED)
+#	SET(CCACHE "ccache" CACHE STRING "ccache")
+#	SET(CMAKE_C_COMPILER ${CCACHE} ${CMAKE_C_COMPILER})
+#	SET(CMAKE_CXX_COMPILER ${CCACHE} ${CMAKE_CXX_COMPILER})
+#endif()
 
 ################# VARIABLES #####################
 SET(DEFINES "SWIG_TYPE_TABLE=shogun;SHOGUN")
@@ -24,8 +34,6 @@ SET(EXT_CPP_PY "${EXT_SRC_CPP}.py")
 
 SET(LIBSHOGUN_SRC_DIR ${CMAKE_SOURCE_DIR}/src/shogun)
 SET(COMMON_MODULAR_SRC_DIR ${CMAKE_SOURCE_DIR}/src/interfaces/modular/)
-
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 ################ COMPILER #######################
 # g++ version needs to be => 4.3
 IF(CMAKE_COMPILER_IS_GNUCXX)
