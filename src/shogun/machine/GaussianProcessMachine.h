@@ -101,6 +101,13 @@ public:
 		m_method->set_labels(lab);
 	}
 
+	/** Stores feature data of underlying model.
+	 * After this method has been called, it is possible to change
+	 * the machine's feature data and call apply(), which is then performed
+	 * on the training feature data that is part of the machine's model.
+	 */
+	virtual void store_model_features() { }
+
 private:
 	void init();
 
