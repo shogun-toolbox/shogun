@@ -23,6 +23,16 @@ class CDotFeatures;
 class CHashedDocConverter;
 class CTokenizer;
 
+/** This class can be used to provide on-the-fly vectorization of a document collection. 
+ * Like in the standard Bag-of-Words representation, this class considers each document as a collection of tokens,
+ * which are then hashed into a new feature space of a specified dimension.
+ * This class is very flexible and allows the user to specify the tokenizer used to tokenize each document,
+ * specify whether the results should be normalized with regards to the sqrt of the document size, as well
+ * as to specify whether he wants to combine different tokens.
+ * The latter implements a k-skip n-grams approach, meaning that you can combine up to n tokens, while skipping up to k.
+ * Eg. for the tokens ["a", "b", "c", "d"], with n_grams = 2 and skips = 2, one would get the following combinations :
+ * ["a", "ab", "ac" (skipped 1), "ad" (skipped 2), "b", "bc", "bd" (skipped 1), "c", "cd", "d"].
+ */
 class CHashedDocDotFeatures: public CDotFeatures
 {
 public:
@@ -33,10 +43,12 @@ public:
 	 * @param docs the document collection
 	 * @param tzer the tokenizer to use on the documents
 	 * @param normalize whether or not to normalize the result of the dot products
+	 * @param n_grams max number of consecutive tokens to hash together (extra features)
+	 * @param skips max number of tokens to skip when combining tokens
 	 * @param size cache size
 	 */
 	CHashedDocDotFeatures(int32_t hash_bits=0, CStringFeatures<char>* docs=NULL, 
-			CTokenizer* tzer=NULL, bool normalize=1, int32_t size=0);
+			CTokenizer* tzer=NULL, bool normalize=true, int32_t n_grams=1, int32_t skips=0, int32_t size=0);
 
 	/** copy constructor */
 	CHashedDocDotFeatures(const CHashedDocDotFeatures& orig);
@@ -180,7 +192,7 @@ public:
 
 private:
 	void init(int32_t hash_bits, CStringFeatures<char>* docs, CTokenizer* tzer, 
-		bool normalize);
+		bool normalize, int32_t n_grams, int32_t skips);
 
 protected:
 	/** the document collection*/
@@ -194,6 +206,12 @@ protected:
 
 	/** if should normalize the dot product results */
 	bool should_normalize;
+
+	/** n for ngrams for quadratic features */
+	int32_t ngrams;
+
+	/** tokens to skip when combining tokens */
+	int32_t tokens_to_skip;
 };
 }
 
