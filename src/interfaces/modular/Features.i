@@ -50,6 +50,7 @@
 %rename(AttributeFeatures) CAttributeFeatures;
 %rename(CombinedFeatures) CCombinedFeatures;
 %rename(CombinedDotFeatures) CCombinedDotFeatures;
+%rename(HashedDocDotFeatures) CHashedDocDotFeatures;
 %rename(Labels) CLabels;
 %rename(LabelsFactory) CLabelsFactory;
 
@@ -477,6 +478,7 @@ namespace shogun
 %include <shogun/features/AttributeFeatures.h>
 %include <shogun/features/CombinedFeatures.h>
 %include <shogun/features/CombinedDotFeatures.h>
+%include <shogun/features/HashedDocDotFeatures.h>
 
 %include <shogun/labels/Labels.h>
 %include <shogun/labels/LabelsFactory.h>
