@@ -21,6 +21,9 @@
 %rename(Hash) CHash;
 %rename(StructuredData) CStructuredData;
 %rename(DynamicObjectArray) CDynamicObjectArray;
+%rename(Tokenizer) CTokenizer;
+%rename(DelimiterTokenizer) CDelimiterTokenizer;
+%rename(NGramTokenizer) CNGramTokenizer;
 
 %rename(IndexBlock) CIndexBlock;
 %rename(IndexBlockRelation) CIndexBlockRelation;
@@ -458,6 +461,9 @@ namespace shogun
 /* Hash */
 %include <shogun/lib/Hash.h>
 
+%include <shogun/lib/Tokenizer.h>
+%include <shogun/lib/DelimiterTokenizer.h>
+%include <shogun/lib/NGramTokenizer.h>
 %include <shogun/lib/Cache.h>
 %include <shogun/lib/List.h>
 %include <shogun/lib/Signal.h>

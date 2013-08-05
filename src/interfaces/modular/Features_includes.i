@@ -20,6 +20,7 @@
 #include <shogun/features/Alphabet.h>
 #include <shogun/features/CombinedFeatures.h>
 #include <shogun/features/CombinedDotFeatures.h>
+#include <shogun/features/HashedDocDotFeatures.h>
 #include <shogun/labels/Labels.h>
 #include <shogun/labels/LabelsFactory.h>
 #include <shogun/labels/DenseLabels.h>
