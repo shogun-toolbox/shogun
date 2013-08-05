@@ -27,6 +27,11 @@ CHashedDocDotFeatures::CHashedDocDotFeatures(const CHashedDocDotFeatures& orig)
 	init(orig.num_bits, orig.doc_collection, orig.tokenizer, orig.should_normalize);
 }
 
+CHashedDocDotFeatures::CHashedDocDotFeatures(CFile* loader)
+{
+	SG_NOTIMPLEMENTED;
+}
+
 void CHashedDocDotFeatures::init(int32_t hash_bits, CStringFeatures<char>* docs, 
 	CTokenizer* tzer, bool normalize)
 {
