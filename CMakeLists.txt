@@ -6,7 +6,8 @@
 
 project(shogun)
 cmake_minimum_required(VERSION 2.8)
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
+SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
+SET(CPACK_PACKAGE_CONTACT shogun@shogun-toolbox.org)
 
 # CCACHE
 #OPTION(ENABLE_CCACHE "Enable ccache for compilation" OFF)
@@ -32,6 +33,7 @@ SET(EXT_CPP_TMP "${EXT_SRC_CPP}.templ")
 SET(EXT_CPP_SH "${EXT_SRC_CPP}.sh")
 SET(EXT_CPP_PY "${EXT_SRC_CPP}.py")
 
+SET(THIRD_PARTY_DIR ${CMAKE_SOURCE_DIR}/third_party)
 SET(LIBSHOGUN_SRC_DIR ${CMAKE_SOURCE_DIR}/src/shogun)
 SET(COMMON_MODULAR_SRC_DIR ${CMAKE_SOURCE_DIR}/src/interfaces/modular/)
 ################ COMPILER #######################
@@ -56,8 +58,11 @@ IF (HAVE_CXX11_ATOMIC)
 ENDIF()
 
 # cpu tuning params
-SET(DISABLE_OPTIMIZATIONS OFF)
-#"-march=native"
+OPTION(DISABLE_OPTIMIZATIONS "Disable optimization flags" OFF)
+IF (NOT DISABLE_OPTIMIZATIONS)
+	SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=native")
+	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
+ENDIF()
 
 ############### VERSION #####################
 FILE(STRINGS "@CMAKE_SOURCE_DIR@/src/NEWS" NEWS LIMIT_COUNT 5)
@@ -79,9 +84,11 @@ ELSEIF(${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD")
 ENDIF()
 
 # Get processor type, sets MACHINE macro
-execute_process(COMMAND uname -m
-    OUTPUT_VARIABLE MACHINE_OUTPUT OUTPUT_STRIP_TRAILING_WHITESPACE)
-SET(MACHINE ${MACHINE_OUTPUT})
+IF(NOT WIN32)
+	execute_process(COMMAND uname -m
+	    OUTPUT_VARIABLE MACHINE_OUTPUT OUTPUT_STRIP_TRAILING_WHITESPACE)
+	SET(MACHINE ${MACHINE_OUTPUT})
+ENDIF()
 
 #Build type
 if( NOT CMAKE_BUILD_TYPE )
@@ -95,6 +102,7 @@ IF(CMAKE_BUILD_TYPE STREQUAL "Debug")
 	#	COMPFLAGS_SWIG_CPP="-g $COMPFLAGS_SWIG_CPP"
 ENDIF()
 
+SET(BUILD_STATIC "Build a statically linked binary" OFF)
 ################# EXAMPLES ##################
 OPTION(BUILD_EXAMPLES "Build Examples" ON)
 
@@ -516,16 +524,13 @@ IF(ENABLE_TESTING)
 		enable_testing()
 	ENDIF()
 
+	set(CTEST_OUTPUT_ON_FAILURE TRUE)
+	
 	# add integration tests
 	add_subdirectory(tests/integration)
 
-	# Find GTEST and GMOCK frameworks
-	SET(GOOGLE_MOCK_SOURCE_DIR "" CACHE PATH "Path to the GMock source")
-	IF ("${GOOGLE_MOCK_SOURCE_DIR}" STREQUAL "" OR NOT EXISTS "${GOOGLE_MOCK_SOURCE_DIR}/CMakeLists.txt")
-		MESSAGE("Unit testing is disabled")
-	ELSE()
-		add_subdirectory(tests/unit)
-	ENDIF()
+	# add unit tests
+	add_subdirectory(tests/unit)
 ENDIF()
 
 # save configuration options
