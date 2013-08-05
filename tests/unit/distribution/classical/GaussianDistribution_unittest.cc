@@ -45,7 +45,7 @@ TEST(GaussianDistribution,log_pdf_multiple_1d)
 	SGMatrix<float64_t> x(1,2);
 	x(0,0)=0;
 	x(0,1)=1;
-	SGVector<float64_t> result=(gauss)->log_pdf(x);
+	SGVector<float64_t> result=(gauss)->log_pdf_multiple(x);
 
 	EXPECT_NEAR(result[0], -1.5155121234846454, 1e-15);
 	EXPECT_NEAR(result[1], -1.2655121234846454, 1e-15);
@@ -92,7 +92,7 @@ TEST(GaussianDistribution,log_pdf_multiple_2d)
 	x(1,0)=2;
 	x(0,1)=3;
 	x(1,1)=4;
-	SGVector<float64_t> result=(gauss)->log_pdf(x);
+	SGVector<float64_t> result=(gauss)->log_pdf_multiple(x);
 	
 	EXPECT_NEAR(result[0], -2.539698566136597, 1e-15);
 	EXPECT_NEAR(result[1], -3.620779647217678, 1e-15);

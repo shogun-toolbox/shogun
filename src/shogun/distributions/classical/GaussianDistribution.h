@@ -79,7 +79,7 @@ public:
 	 * @param samples samples to compute log-pdf of (column vectors)
 	 * @return vector with log-pdfs of given samples
 	 */
-	virtual SGVector<float64_t> log_pdf(SGMatrix<float64_t> samples) const;
+	virtual SGVector<float64_t> log_pdf_multiple(SGMatrix<float64_t> samples) const;
 
 	/** @return name of the SGSerializable */
 	virtual const char* get_name() const

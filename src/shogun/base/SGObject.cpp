@@ -1176,6 +1176,7 @@ void CSGObject::get_parameter_incremental_hash(Parameter* param,
 	for (index_t i=0; i<param->get_num_parameters(); i++)
 	{
 		TParameter* p = param->get_parameter(i);
+		SG_DEBUG("Updating hash for parameter \"%s\"\n", p->m_name ? p->m_name : "(nil)");
 
 		if (!p || !p->is_valid())
 			continue;

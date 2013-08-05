@@ -82,7 +82,7 @@ void CDenseLabels::set_labels(SGVector<float64_t> v)
 SGVector<float64_t> CDenseLabels::get_labels()
 {
 	if (m_subset_stack->has_subsets())
-		SG_ERROR("get_labels() is not possible on subset")
+		return get_labels_copy();
 
 	return m_labels;
 }

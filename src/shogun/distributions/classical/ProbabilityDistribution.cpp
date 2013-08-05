@@ -51,7 +51,7 @@ SGVector<float64_t> CProbabilityDistribution::sample() const
 	return result;
 }
 
-SGVector<float64_t> CProbabilityDistribution::log_pdf(
+SGVector<float64_t> CProbabilityDistribution::log_pdf_multiple(
 		SGMatrix<float64_t> samples) const
 {
 	SG_ERROR("Not implemented in sub-class\n");
@@ -66,7 +66,7 @@ float64_t CProbabilityDistribution::log_pdf(SGVector<float64_t> single_sample) c
 
 	SGMatrix<float64_t> s(m_dimension, 1);
 	memcpy(s.matrix, single_sample.vector, m_dimension*sizeof(float64_t));
-	return log_pdf(s)[0];
+	return log_pdf_multiple(s)[0];
 }
 
 void CProbabilityDistribution::init()
