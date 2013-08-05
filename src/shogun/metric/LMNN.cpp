@@ -52,9 +52,12 @@ void CLMNN::train(SGMatrix<float64_t> init_transform)
 	CLMNNImpl::check_training_setup(m_features, m_labels, init_transform);
 
 	/// Initializations
+
 	// cast is safe, check_training_setup ensures features are dense
 	CDenseFeatures<float64_t>* x = static_cast<CDenseFeatures<float64_t>*>(m_features);
 	CMulticlassLabels* y = CLabelsFactory::to_multiclass(m_labels);
+	SG_DEBUG("%d input vectors with %d dimensions.\n", x->get_num_vectors(), x->get_num_features());
+
 	// Use Eigen matrix for the linear transform L. The Mahalanobis distance is L^T*L
 	MatrixXd L = Map<MatrixXd>(init_transform.matrix, init_transform.num_rows,
 			init_transform.num_cols);
