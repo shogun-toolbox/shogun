@@ -57,9 +57,10 @@ public:
 	 * @param samples samples to compute log-pdf of (column vectors)
 	 * @return vector with log-pdfs of given samples
 	 */
-	virtual SGVector<float64_t> log_pdf(SGMatrix<float64_t> samples) const;
+	virtual SGVector<float64_t> log_pdf_multiple(SGMatrix<float64_t> samples) const;
 
-	/** Computes the log-pdf for a single provided sample. Wrapper method.
+	/** Computes the log-pdf for a single provided sample. Wrapper method which
+	 * calls log_pdf_multiple
 	 *
 	 * @param sample sample to compute log-pdf for
 	 * @return log-pdf of the given sample

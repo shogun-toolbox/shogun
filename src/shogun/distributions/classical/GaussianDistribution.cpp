@@ -107,7 +107,7 @@ SGMatrix<float64_t> CGaussianDistribution::sample(int32_t num_samples,
 	return samples;
 }
 
-SGVector<float64_t> CGaussianDistribution::log_pdf(SGMatrix<float64_t> samples) const
+SGVector<float64_t> CGaussianDistribution::log_pdf_multiple(SGMatrix<float64_t> samples) const
 {
 	REQUIRE(samples.num_cols>0, "Number of samples must be positive, but is %d\n",
 			samples.num_cols);
