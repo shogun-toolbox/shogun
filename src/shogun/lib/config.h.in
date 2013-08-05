@@ -63,6 +63,7 @@
 
 #cmakedefine NARRAY_LIB "@NARRAY_LIB@"
 
+#cmakedefine HAVE_CXX11 1
 #cmakedefine HAVE_CXX11_ATOMIC 1
 
 #cmakedefine HAVE_JBLAS 1
