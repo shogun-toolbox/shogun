@@ -48,7 +48,7 @@ void CStreamingHashedDocDotFeatures::init(CStreamingFile* file, bool is_labelled
 	if (tokenizer)
 	{
 		SG_REF(tokenizer);
-		converter = new CHashedDocConverter(tzer, CMath::pow(2, bits));
+		converter = new CHashedDocConverter(tzer, bits, false);
 	}
 	else
 		converter=NULL;
@@ -194,7 +194,7 @@ void CStreamingHashedDocDotFeatures::set_vector_and_label_reader()
 	parser.set_read_vector_and_label(&CStreamingFile::get_string_and_label);
 }
 
-SGSparseVector<uint32_t> CStreamingHashedDocDotFeatures::get_vector()
+SGSparseVector<float64_t> CStreamingHashedDocDotFeatures::get_vector()
 {
 	return current_vector;
 }
