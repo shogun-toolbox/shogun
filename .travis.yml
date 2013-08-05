@@ -14,7 +14,7 @@ notifications:
 env:
  - CMAKE_OPTIONS="-DGOOGLE_MOCK_SOURCE_DIR=`pwd`/shogun-toolbox/shogun/gmock-1.6.0" EXTRA_PACKAGES="valgrind"
  - CMAKE_OPTIONS="-DPythonModular=ON" EXTRA_PACKAGES="python-numpy-dev python-dev python-scipy swig2.0"
- - CMAKE_OPTIONS="-DPythonModular=ON" EXTRA_PACKAGES="python3-numpy python3-dev python3-scipy swig2.0"
+ - CMAKE_OPTIONS="-DPythonModular=ON" EXTRA_PACKAGES="python3-numpy python3-dev python3-scipy swig2.0" IS_PYTHON3=1
  - CMAKE_OPTIONS="-DRModular=ON" EXTRA_PACKAGES="r-base-core swig2.0"
  - CMAKE_OPTIONS="-DJavaModular=ON" EXTRA_PACKAGES="openjdk-6-jdk jblas ant swig2.0"
  - CMAKE_OPTIONS="-DRubyModular=ON" EXTRA_PACKAGES="ruby ruby-dev ruby-narray swig2.0"
@@ -28,7 +28,7 @@ matrix:
     - compiler: gcc
       env: CMAKE_OPTIONS="-DPythonModular=ON" EXTRA_PACKAGES="python-numpy-dev python-dev python-scipy swig2.0"
     - compiler: gcc
-      env: CMAKE_OPTIONS="-DPythonModular=ON" EXTRA_PACKAGES="python3-numpy python3-dev python3-scipy swig2.0"
+      env: CMAKE_OPTIONS="-DPythonModular=ON" EXTRA_PACKAGES="python3-numpy python3-dev python3-scipy swig2.0" IS_PYTHON3=1
     - compiler: gcc
       env: CMAKE_OPTIONS="-DRModular=ON" EXTRA_PACKAGES="r-base-core swig2.0"
     - compiler: gcc
@@ -44,6 +44,8 @@ matrix:
 before_install:
  - sudo apt-get update -qq
  - sudo apt-get install -qq libbz2-dev cdbs libeigen3-dev libarpack2-dev libatlas-base-dev libblas-dev libglpk-dev libhdf5-serial-dev libjson0-dev swig zlib1g-dev libxml2-dev libreadline6-dev libreadline-dev libsnappy-dev liblzo2-dev liblzma-dev liblapack-dev gdb cmake $EXTRA_PACKAGES
- - wget http://googlemock.googlecode.com/files/gmock-1.6.0.zip && unzip gmock-1.6.0.zip
-before_script: mkdir build && cd build
+before_script: 
+  - mkdir build
+  - cd build
+  - if [ ! -z ${IS_PYTHON3} ] ; then sudo update-alternatives --set python /usr/bin/python3 ; fi
 script: cmake -DENABLE_TESTING=ON $CMAKE_OPTIONS .. && make -j 4 && sudo make install && ctest --output-on-failure
