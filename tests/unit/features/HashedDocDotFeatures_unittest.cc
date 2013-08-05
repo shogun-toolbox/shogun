@@ -40,7 +40,6 @@ TEST(HashedDocDotFeaturesTest, computed_features_test)
 	list.strings[1] = string_2;
 	list.strings[2] = string_3;
 	
-	int32_t dimension = 32;
 	int32_t hash_bits = 5; //log2(32).
 	
 	CDelimiterTokenizer* tokenizer = new CDelimiterTokenizer();
@@ -52,13 +51,13 @@ TEST(HashedDocDotFeaturesTest, computed_features_test)
 	CHashedDocDotFeatures* hddf = new CHashedDocDotFeatures(hash_bits, doc_collection,
 			tokenizer, false);
 
-	CHashedDocConverter* converter = new CHashedDocConverter(tokenizer, dimension);
+	CHashedDocConverter* converter = new CHashedDocConverter(tokenizer, hash_bits, false);
 	
-	CSparseFeatures<uint32_t>* converted_docs = (CSparseFeatures<uint32_t>* ) converter->apply(doc_collection);
+	CSparseFeatures<float64_t>* converted_docs = (CSparseFeatures<float64_t>* ) converter->apply(doc_collection);
 
 	for (index_t i=0; i<3; i++)
 	{
-		SGVector<uint32_t> c_feat_2 = converted_docs->get_full_feature_vector(i);
+		SGVector<float64_t> c_feat_2 = converted_docs->get_full_feature_vector(i);
 		SGVector<float64_t> feat_2 = hddf->get_computed_dot_feature_vector(i);
 		EXPECT_EQ(c_feat_2.size(), feat_2.size());
 
@@ -95,7 +94,7 @@ TEST(HashedDocDotFeaturesTest, dense_dot_test)
 	list.strings[2] = string_3;
 
 	int32_t dimension = 32;
-	int32_t hash_bits = 5; //log2(32)
+	int32_t hash_bits = 5;
 
 	CDelimiterTokenizer* tokenizer = new CDelimiterTokenizer();
 	tokenizer->delimiters[' '] = 1;
@@ -106,8 +105,8 @@ TEST(HashedDocDotFeaturesTest, dense_dot_test)
 	CHashedDocDotFeatures* hddf = new CHashedDocDotFeatures(hash_bits, doc_collection,
 			tokenizer, false);
 	
-	CHashedDocConverter* converter = new CHashedDocConverter(tokenizer, dimension);
-	CSparseFeatures<uint32_t>* converted_docs = (CSparseFeatures<uint32_t>* ) converter->apply(doc_collection);
+	CHashedDocConverter* converter = new CHashedDocConverter(tokenizer, hash_bits, false);
+	CSparseFeatures<float64_t>* converted_docs = (CSparseFeatures<float64_t>* ) converter->apply(doc_collection);
 
 	SGVector<float64_t> vec(dimension);
 	for (index_t i=0; i<dimension; i++)
@@ -115,7 +114,7 @@ TEST(HashedDocDotFeaturesTest, dense_dot_test)
 	
 	for (index_t i=0; i<3; i++)
 	{
-		SGVector<uint32_t> sv = converted_docs->get_full_feature_vector(i);
+		SGVector<float64_t> sv = converted_docs->get_full_feature_vector(i);
 		float64_t converter_result = 0;
 		for (index_t j=0; j<dimension; j++)
 			converter_result += sv[j] * vec[j];

@@ -205,7 +205,7 @@ public:
 	 * 
 	 * @return a SGSparseVector representing the hashed version of the string last read
 	 */
-	SGSparseVector<uint32_t> get_vector();
+	SGSparseVector<float64_t> get_vector();
 
 private:
 	void init(CStreamingFile* file, bool is_labelled, int32_t size,CTokenizer* tzer,
@@ -217,7 +217,7 @@ protected:
 	int32_t num_bits;
 
 	/** Current example */
-	SGSparseVector<uint32_t> current_vector;
+	SGSparseVector<float64_t> current_vector;
 
 	/** CTokenizer */
 	CTokenizer *tokenizer;

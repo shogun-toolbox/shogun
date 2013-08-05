@@ -23,19 +23,19 @@ namespace shogun
 {
 CHashedDocConverter::CHashedDocConverter() : CConverter()
 {
-	init(NULL, 50);
+	init(NULL, 16, false);
 }
 
-CHashedDocConverter::CHashedDocConverter(int32_t d)
+CHashedDocConverter::CHashedDocConverter(int32_t hash_bits, bool normalize)
 : CConverter()
 {
-	init(NULL, d);
+	init(NULL, hash_bits, normalize);
 }
 
 CHashedDocConverter::CHashedDocConverter(CTokenizer* tzer,
-	int32_t d) : CConverter()
+	int32_t hash_bits, bool normalize) : CConverter()
 {
-	init(tzer, d);
+	init(tzer, hash_bits, normalize);
 }
 
 CHashedDocConverter::~CHashedDocConverter()
@@ -43,10 +43,10 @@ CHashedDocConverter::~CHashedDocConverter()
 	SG_UNREF(tokenizer);
 }
 	
-void CHashedDocConverter::init(CTokenizer* tzer, int32_t d)
+void CHashedDocConverter::init(CTokenizer* tzer, int32_t hash_bits, bool normalize)
 {
-	dim = d;
-	num_bits = (int32_t) CMath::ceil(CMath::log2(d));
+	num_bits = hash_bits;
+	should_normalize = normalize;
 
 	if (tzer==NULL)
 	{
@@ -59,9 +59,9 @@ void CHashedDocConverter::init(CTokenizer* tzer, int32_t d)
 		tokenizer = tzer;
 
 	SG_REF(tokenizer);
-	SG_ADD(&dim, "dim", "Dimension of target feature space",
-		MS_NOT_AVAILABLE);
 	SG_ADD(&num_bits, "num_bits", "Number of bits of the hash",
+		MS_NOT_AVAILABLE);
+	SG_ADD(&should_normalize, "should_normalize", "Whether to normalize vectors or not",
 		MS_NOT_AVAILABLE);
 	m_parameters->add((CSGObject**) &tokenizer, "tokenizer",
 		"Tokenizer");
@@ -79,8 +79,9 @@ CFeatures* CHashedDocConverter::apply(CFeatures* features)
 		SG_ERROR("CHashedConverter::apply() : CFeatures object passed is not of type CStringFeatures.");
 
 	CStringFeatures<char>* s_features = (CStringFeatures<char>*) features;
-	
-	SGSparseMatrix<uint32_t> matrix(dim,features->get_num_vectors());
+
+	int32_t dim = CMath::pow(2, num_bits);	
+	SGSparseMatrix<float64_t> matrix(dim,features->get_num_vectors());
 	for (index_t vec_idx=0; vec_idx<s_features->get_num_vectors(); vec_idx++)
 	{
 		SGVector<char> doc = s_features->get_feature_vector(vec_idx);
@@ -88,10 +89,10 @@ CFeatures* CHashedDocConverter::apply(CFeatures* features)
 		s_features->free_feature_vector(doc, vec_idx);
 	}
 
-	return (CFeatures*) new CSparseFeatures<uint32_t>(matrix);
+	return (CFeatures*) new CSparseFeatures<float64_t>(matrix);
 }
 
-SGSparseVector<uint32_t> CHashedDocConverter::apply(SGVector<char> document)
+SGSparseVector<float64_t> CHashedDocConverter::apply(SGVector<char> document)
 {
 	ASSERT(document.size()>0)
 	const int32_t array_size = 1024*1024;
@@ -120,8 +121,9 @@ SGSparseVector<uint32_t> CHashedDocConverter::apply(SGVector<char> document)
 		}
 	}
 
-	SGSparseVector<uint32_t> sparse_doc_rep(num_nnz_features);
+	SGSparseVector<float64_t> sparse_doc_rep(num_nnz_features);
 	index_t sparse_idx = 0;
+
 	for (index_t i=0; i<hashed_indices.get_num_elements(); i++)
 	{
 		sparse_doc_rep.features[sparse_idx].feat_index = hashed_indices[i];
@@ -134,7 +136,13 @@ SGSparseVector<uint32_t> CHashedDocConverter::apply(SGVector<char> document)
 		}
 		sparse_idx++;
 	}
-	
+
+	if (should_normalize)
+	{
+		float64_t norm_const = CMath::sqrt((float64_t) document.size());
+		for (index_t i=0; i<sparse_doc_rep.num_feat_entries; i++)
+			sparse_doc_rep.features[i].entry /= norm_const; 
+	}
 	return sparse_doc_rep;
 }
 }
