@@ -524,8 +524,6 @@ IF(ENABLE_TESTING)
 		enable_testing()
 	ENDIF()
 
-	set(CTEST_OUTPUT_ON_FAILURE TRUE)
-	
 	# add integration tests
 	add_subdirectory(tests/integration)
 
