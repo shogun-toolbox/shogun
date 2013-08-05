@@ -16,6 +16,8 @@
 #  OCTAVE_OCT_FILE_DIR         - object files that will be dynamically loaded
 #  OCTAVE_OCT_LIB_DIR          - oct libraries
 #  OCTAVE_ROOT_DIR             - octave prefix
+#  OCTAVE_OCT_LOCAL_API_FILE_DIR - 
+#  OCTAVE_API_VERSION          - octave api version
 #
 # The macro octave_add_oct allows to create compiled modules.
 # octave_add_oct ( target_name
@@ -127,7 +129,7 @@ list ( APPEND OCTAVE_LIBRARIES ${OCTAVE_CRUFT_LIBRARY} )
     
 find_path ( OCTAVE_INCLUDE_DIR 
             NAMES mex.h
-            HINTS ${OCTAVE_INCLUDE_PATHS}
+            HINTS ${OCTAVE_INCLUDE_PATHS} ${OCTAVE_INCLUDE_PATHS}/octave
           )
     
 set ( OCTAVE_INCLUDE_DIRS ${OCTAVE_INCLUDE_DIR} )
