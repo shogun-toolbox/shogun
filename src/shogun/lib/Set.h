@@ -209,6 +209,20 @@ public:
 		return array->get_array();
 	}
 
+	/** get element
+	 *
+	 * (does NOT do bounds checking)
+	 *
+	 * @param index index
+	 * @return element  
+	 */
+	T get_element(int32_t index)
+	{
+		if (array->get_element(index)!=NULL)
+			return array->get_element(index)->element;
+		return T();
+	}
+
 private:
 	/** Returns hash of key
 	 * MurmurHash used

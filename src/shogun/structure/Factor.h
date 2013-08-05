@@ -123,7 +123,7 @@ public:
 	virtual const char* get_name() const { return "Factor"; }
 
 	/** @return factor type pointer */
-	const CTableFactorType* get_factor_type() const;
+	CTableFactorType* get_factor_type() const;
 
 	/** set factor type
 	 *
@@ -195,6 +195,8 @@ public:
 		SGVector<float64_t>& parameter_gradient, double mult = 1.0) const;
 
 protected:
+	int32_t m_factor_id;
+
 	CTableFactorType* m_factor_type;
 
 	SGVector<int32_t> m_var_index;
