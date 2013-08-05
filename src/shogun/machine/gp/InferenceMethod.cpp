@@ -114,7 +114,7 @@ float64_t CInferenceMethod::get_log_ml_estimate(
 	 * log pdf of approximation, prior and likelihood */
 
 	/* log pdf q(f^i|y) */
-	SGVector<float64_t> log_pdf_post_approx=post_approx->log_pdf(samples);
+	SGVector<float64_t> log_pdf_post_approx=post_approx->log_pdf_multiple(samples);
 
 	/* dont need gaussian anymore, free memory */
 	SG_UNREF(post_approx);
@@ -133,7 +133,7 @@ float64_t CInferenceMethod::get_log_ml_estimate(
 
 	CGaussianDistribution* prior=new CGaussianDistribution(
 			m_mean->get_mean_vector(m_feature_matrix), scaled_kernel);
-	SGVector<float64_t> log_pdf_prior=prior->log_pdf(samples);
+	SGVector<float64_t> log_pdf_prior=prior->log_pdf_multiple(samples);
 	SG_UNREF(prior);
 	prior=NULL;
 
