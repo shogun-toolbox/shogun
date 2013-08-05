@@ -113,11 +113,9 @@ class CDenseLabels : public CLabels
 		 */
 		int32_t get_int_label(int32_t idx);
 
-		/** get labels
+		/** Getter for labels
 		 *
-		 * not possible with subset
-		 *
-		 * @return labels
+		 * @return labels, a copy if a subset is set
 		 */
 		SGVector<float64_t> get_labels();
 
