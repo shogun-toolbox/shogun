@@ -8,6 +8,7 @@
 		- Added a new class for classical probability distribution that can be
 		  sampled and whose log-pdf can be evaluated. Added the multivariate
 		  Gaussian with various numerical flavours.
+		- Cross-validation framework works now with Gaussian Processes
 		- Added nu-SVR for LibSVR class
 		- Modelselection is now supported for parameters of sub-kernels of
 		  combined kernels in the MKL context. Thanks to Evangelos Anagnostopoulos
