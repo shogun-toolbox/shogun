@@ -138,7 +138,7 @@ float64_t CInferenceMethod::get_log_ml_estimate(
 	prior=NULL;
 
 	/* p(y|f^i) */
-	SGVector<float64_t> log_likelihood=m_model->get_log_probability_f(
+	SGVector<float64_t> log_likelihood=m_model->get_log_probability_fmatrix(
 			m_labels, samples);
 
 	/* combine probabilities */

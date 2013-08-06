@@ -18,6 +18,7 @@
 #include <shogun/mathematics/Math.h>
 #include <ctype.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 using namespace shogun;
 

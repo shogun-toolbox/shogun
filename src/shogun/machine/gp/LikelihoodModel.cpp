@@ -22,7 +22,7 @@ CLikelihoodModel::~CLikelihoodModel()
 {
 }
 
-SGVector<float64_t> CLikelihoodModel::get_log_probability_f(CLabels* lab,
+SGVector<float64_t> CLikelihoodModel::get_log_probability_fmatrix(CLabels* lab,
 		SGMatrix<float64_t> F)
 {
 	REQUIRE(lab, "Given labels are NULL!\n");

@@ -142,7 +142,7 @@ public:
 	 *
 	 * @return log-likelihood for every provided function
 	 */
-	virtual SGVector<float64_t> get_log_probability_f(CLabels* lab,
+	virtual SGVector<float64_t> get_log_probability_fmatrix(CLabels* lab,
 			SGMatrix<float64_t> F);
 
 	/** get derivative of log likelihood \f$log(p(y|f))\f$ with
