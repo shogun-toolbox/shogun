@@ -8,7 +8,7 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
 
-#include <shogun/converter/ica/SOBI.h>
+#include <shogun/converter/ica/FFSep.h>
 #include <shogun/evaluation/ica/PermutationMatrix.h>
 
 using namespace Eigen;
@@ -18,7 +18,7 @@ typedef Matrix< float64_t, Dynamic, 1, ColMajor > EVector;
 
 using namespace shogun;
 
-TEST(CSOBI, blind_source_separation)
+TEST(CFFSep, blind_source_separation)
 {
 	// Generate sample data	
 	int FS = 4000;
@@ -45,13 +45,13 @@ TEST(CSOBI, blind_source_separation)
 	CDenseFeatures< float64_t >* mixed_signals = new CDenseFeatures< float64_t >(X);
 
 	// Separate
-	CSOBI* sobi = new CSOBI();
-	SG_REF(sobi);
-	CFeatures* signals = sobi->apply(mixed_signals);
+	CFFSep* ffsep = new CFFSep();
+	SG_REF(ffsep);
+	CFeatures* signals = ffsep->apply(mixed_signals);
 	SG_REF(signals);
 
 	// Close to a permutation matrix (with random scales)
-	Eigen::Map<EMatrix> EA(sobi->get_mixing_matrix().matrix,2,2);
+	Eigen::Map<EMatrix> EA(ffsep->get_mixing_matrix().matrix,2,2);
 	SGMatrix<float64_t> P(2,2);
 	Eigen::Map<EMatrix> EP(P.matrix,2,2);
 	EP = EA.inverse() * A;
@@ -60,7 +60,7 @@ TEST(CSOBI, blind_source_separation)
 	bool isperm = is_permutation_matrix(P);
 	EXPECT_EQ(isperm,true);
 
-	SG_UNREF(sobi);
+	SG_UNREF(ffsep);
 	SG_UNREF(mixed_signals);
 	SG_UNREF(signals);
 }

@@ -24,9 +24,10 @@
 %rename(FactorAnalysis) CFactorAnalysis;
 %rename(TDistributedStochasticNeighborEmbedding) CTDistributedStochasticNeighborEmbedding;
 %rename(ManifoldSculpting) CManifoldSculpting;
+%rename(HashedDocConverter) CHashedDocConverter;
 %rename(Jade) CJade;
 %rename(SOBI) CSOBI;
-%rename(HashedDocConverter) CHashedDocConverter;
+%rename(FFSep) CFFSep;
 
 %newobject shogun::CEmbeddingConverter::apply;
 %newobject shogun::*::embed_kernel;
@@ -49,6 +50,7 @@
 %include <shogun/converter/FactorAnalysis.h>
 %include <shogun/converter/TDistributedStochasticNeighborEmbedding.h>
 %include <shogun/converter/ManifoldSculpting.h>
+%include <shogun/converter/HashedDocConverter.h>
 %include <shogun/converter/ica/Jade.h>
 %include <shogun/converter/ica/SOBI.h>
-%include <shogun/converter/HashedDocConverter.h>
+%include <shogun/converter/ica/FFSep.h>

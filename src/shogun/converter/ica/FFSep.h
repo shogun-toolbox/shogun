@@ -7,8 +7,8 @@
  * Written (W) 2013 Kevin Hughes
  */
 
-#ifndef JADE_H_
-#define JADE_H_
+#ifndef FFSEP_H_
+#define FFSEP_H_
 
 #include <shogun/lib/config.h>
 #ifdef HAVE_EIGEN3
@@ -20,29 +20,27 @@ namespace shogun
 
 class CFeatures;
 
-//#define DEBUG_JADE
-
-/** @brief class Jade
+/** @brief class FFSep
  * 
- * Implements the JADE algorithm for Independent
- * Component Analysis (ICA) and Blind Source
+ * Implements the FFSep algorithm for Independent 
+ * Component Analysis (ICA) and Blind Source 
  * Separation (BSS).
  * 
- * Cardoso, J. F., & Souloumiac, A. (1993). 
- * Blind beamforming for non-Gaussian signals. 
- * In IEE Proceedings F (Radar and Signal Processing) 
- * (Vol. 140, No. 6, pp. 362-370). IET Digital Library.
- * 
+ * Ziehe, A., Laskov, P., Nolte, G., & Müller, K. R. (2004). 
+ * A fast algorithm for joint diagonalization with non-orthogonal transformations 
+ * and its application to blind source separation. 
+ * The Journal of Machine Learning Research, 5, 777-800.
+ *
  */
-class CJade: public CConverter
+class CFFSep: public CConverter
 {
 	public:
 		
 		/** constructor */
-		CJade();
+		CFFSep();
 
 		/** destructor */
-		virtual ~CJade();
+		virtual ~CFFSep();
 
 		/** apply to features
 		 * @param features to embed
@@ -50,18 +48,23 @@ class CJade: public CConverter
 		 */
 		virtual CFeatures* apply(CFeatures* features);
 
+		/** getter for tau parameter
+		 * @return tau vector
+		 */
+		SGVector<float64_t> get_tau() const;
+
+		/** setter for tau parameter
+		 * @param tau vector
+		 */
+		void set_tau(SGVector<float64_t> tau);
+
 		/** getter for mixing_matrix
 		 * @return mixing_matrix
 		 */
 		SGMatrix<float64_t> get_mixing_matrix() const;
 
-		/** getter for cumulant_matrix
-		 * @return cumulant_matrix
-		 */
-		SGMatrix<float64_t> get_cumulant_matrix() const;
-
 		/** get name */
-		virtual const char* get_name() const { return "Jade"; };
+		virtual const char* get_name() const { return "FFSep"; };
 
 	protected:
 
@@ -70,12 +73,12 @@ class CJade: public CConverter
 
 	private:
 		
+		/** tau vector */
+		SGVector<float64_t> m_tau;
+
 		/** mixing_matrix */
 		SGMatrix<float64_t> m_mixing_matrix;
-		
-		/** cumulant_matrix */
-		SGMatrix<float64_t> m_cumulant_matrix;
 };	
 }
 #endif // HAVE_EIGEN3
-#endif // JADE
+#endif // FFSEP

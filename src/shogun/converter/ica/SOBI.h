@@ -64,6 +64,7 @@ class CSOBI: public CConverter
 		 */
 		SGMatrix<float64_t> get_mixing_matrix() const;
 
+		/** get name */
 		virtual const char* get_name() const { return "SOBI"; };
 
 	protected:
@@ -73,7 +74,10 @@ class CSOBI: public CConverter
 
 	private:
 		
+		/** tau vector */
 		SGVector<float64_t> m_tau;
+
+		/** mixing_matrix */
 		SGMatrix<float64_t> m_mixing_matrix;
 };	
 }
