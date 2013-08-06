@@ -24,8 +24,6 @@ env:
 matrix:
   exclude:
     - compiler: gcc
-      env: CMAKE_OPTIONS=python_static EXTRA_PACKAGES="python-numpy-dev python-dev"
-    - compiler: gcc
       env: CMAKE_OPTIONS="-DPythonModular=ON" EXTRA_PACKAGES="python-numpy-dev python-dev python-scipy swig2.0"
     - compiler: gcc
       env: CMAKE_OPTIONS="-DPythonModular=ON" EXTRA_PACKAGES="python3-numpy python3-dev python3-scipy swig2.0"
