@@ -277,7 +277,7 @@ TEST(LogitLikelihood,get_log_probability_f_sum_multiple)
 	// logit likelihood
 	CLogitLikelihood* likelihood=new CLogitLikelihood();
 
-	SGVector<float64_t> lp=((CLikelihoodModel*)likelihood)->get_log_probability_f(labels, func);
+	SGVector<float64_t> lp=((CLikelihoodModel*)likelihood)->get_log_probability_fmatrix(labels, func);
 
 	// comparison of log likelihood with result from GPML package
 	EXPECT_NEAR(lp[0], -4.8927, 1E-4);
