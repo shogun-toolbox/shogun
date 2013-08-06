@@ -40,9 +40,7 @@ configure.log
 /doc/html
 /doc/html_cn
 /doc/pages/Configure.generated
-/doc/pages*/ExamplesL*.mainpage
-/doc/pages*/ExamplesS*.mainpage
-/doc/pages*/ExamplesM*.mainpage
+/doc/pages*/Examples*.mainpage
 
 # /src/
 /src/shogun/lib/versionstring.h
