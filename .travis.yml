@@ -12,7 +12,7 @@ notifications:
     template:
       - "it's %{author}'s turn to pay the next round of drinks for the massacre he caused in %{repository}: %{build_url}"
 env:
- - INTERFACES=" --gmock=`pwd`/shogun-toolbox/shogun/gmock-1.6.0 --gtest=`pwd`/shogun-toolbox/shogun/gmock-1.6.0/gtest" EXTRA_PACKAGES="valgrind python-jinja2"
+ - INTERFACES=" --gmock=`pwd`/shogun-toolbox/shogun/gmock-1.6.0 --gtest=`pwd`/shogun-toolbox/shogun/gmock-1.6.0/gtest --includes=`pwd`/eigen3" EXTRA_PACKAGES="valgrind python-jinja2"
  - INTERFACES=python_static EXTRA_PACKAGES="python-numpy-dev python-dev"
  - INTERFACES=python_modular EXTRA_PACKAGES="python-numpy-dev python-dev python-scipy swig2.0"
  - INTERFACES=r_modular EXTRA_PACKAGES="r-base-core swig2.0"
@@ -38,8 +38,9 @@ matrix:
       env: INTERFACES=lua_modular EXTRA_PACKAGES="lua5.1 liblua5.1-0-dev swig2.0"
 before_install:
  - sudo apt-get update -qq
- - sudo apt-get install -qq cdbs libeigen3-dev libarpack2-dev libatlas-base-dev libblas-dev libglpk-dev libhdf5-serial-dev swig zlib1g-dev libxml2-dev libreadline6-dev libreadline-dev libsnappy-dev liblzo2-dev liblzma-dev liblapack-dev gdb $EXTRA_PACKAGES
+ - sudo apt-get install -qq cdbs libarpack2-dev libatlas-base-dev libblas-dev libglpk-dev libhdf5-serial-dev swig zlib1g-dev libxml2-dev libreadline6-dev libreadline-dev libsnappy-dev liblzo2-dev liblzma-dev liblapack-dev gdb $EXTRA_PACKAGES
  - wget http://googlemock.googlecode.com/files/gmock-1.6.0.zip && unzip gmock-1.6.0.zip
  - wget --no-check-certificate https://github.com/json-c/json-c/archive/json-c-0.11-20130402.zip && unzip json-c-0.11-20130402.zip && cd json-c-json-c-0.11-20130402 && ./configure && make && sudo make install && cd ..
+ - wget https://bitbucket.org/eigen/eigen/get/3.1.4.zip && unzip 3.1.4.zip && mv eigen-eigen-* eigen3
 before_script: cd ./src
 script: ./configure --disable-optimization --interfaces=$INTERFACES && make -j 4 && sudo make install && make tests && make unit-tests
