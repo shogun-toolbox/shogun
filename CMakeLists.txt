@@ -432,6 +432,7 @@ ENDIF()
 
 # python modular
 IF (PythonModular)
+	set(PythonLibs_FIND_VERSION ${PYTHON_VERSION_STRING})
 	FIND_PACKAGE(PythonLibs REQUIRED)
 	FIND_PACKAGE(NumPy REQUIRED)
 

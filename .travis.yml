@@ -11,38 +11,45 @@ notifications:
     on_failure: always
     template:
       - "it's %{author}'s turn to pay the next round of drinks for the massacre he caused in %{repository}: %{build_url}"
-env:
- - CMAKE_OPTIONS="-DGOOGLE_MOCK_SOURCE_DIR=`pwd`/shogun-toolbox/shogun/gmock-1.6.0" EXTRA_PACKAGES="valgrind"
- - CMAKE_OPTIONS="-DPythonModular=ON" EXTRA_PACKAGES="swig2.0" PYTHON_PKG="pip install numpy scipy --use-mirrors"
- - CMAKE_OPTIONS="-DPythonModular=ON" EXTRA_PACKAGES="swig2.0" PYTHON_PKG="source ~/virtualenv/python3.3/bin/activate && pip install numpy scipy --use-mirrors"
- - CMAKE_OPTIONS="-DRModular=ON" EXTRA_PACKAGES="r-base-core swig2.0"
- - CMAKE_OPTIONS="-DJavaModular=ON" EXTRA_PACKAGES="jblas swig2.0"
- - CMAKE_OPTIONS="-DRubyModular=ON" EXTRA_PACKAGES="ruby ruby-dev ruby-narray swig2.0"
- - CMAKE_OPTIONS="-DCSharpModular=ON" EXTRA_PACKAGES="mono-devel mono-gmcs cli-common-dev swig2.0"
- - CMAKE_OPTIONS="-DLuaModular=ON" EXTRA_PACKAGES="lua5.1 liblua5.1-0-dev swig2.0"
- - CMAKE_OPTIONS="-DOctaveModular=ON" EXTRA_PACKAGES="octave octave3.2-headers swig2.0"
 matrix:
-  exclude:
-    - compiler: gcc
-      env: CMAKE_OPTIONS="-DPythonModular=ON" EXTRA_PACKAGES="swig2.0" PYTHON_PKG="pip install numpy scipy --use-mirrors"
-    - compiler: gcc
-      env: CMAKE_OPTIONS="-DPythonModular=ON" EXTRA_PACKAGES="swig2.0" PYTHON_PKG="source ~/virtualenv/python3.3/bin/activate && pip install numpy scipy --use-mirrors"
-    - compiler: gcc
-      env: CMAKE_OPTIONS="-DRModular=ON" EXTRA_PACKAGES="r-base-core swig2.0"
-    - compiler: gcc
+  include:
+    - compiler: clang
+      python: 2.7
+      language: python
+      env: CMAKE_OPTIONS="-DPythonModular=ON" EXTRA_PACKAGES="python-scipy swig2.0"
+    - compiler: clang
+      python: 3.3
+      language: python
+      env: CMAKE_OPTIONS="-DPythonModular=ON" EXTRA_PACKAGES="python3-scipy swig2.0"
+    - compiler: clang
+      rvm: 1.8.7
+      language: ruby
+      env: CMAKE_OPTIONS="-DRubyModular=ON" CUSTOM_PKG="gem install narray" EXTRA_PACKAGES="swig2.0"
+    - compiler: clang
+      jdk: oraclejdk7
+      language: java
       env: CMAKE_OPTIONS="-DJavaModular=ON" EXTRA_PACKAGES="jblas swig2.0"
-    - compiler: gcc
-      env: CMAKE_OPTIONS="-DRubyModular=ON" EXTRA_PACKAGES="ruby ruby-dev ruby-narray swig2.0"
-    - compiler: gcc
+    - compiler: clang
       env: CMAKE_OPTIONS="-DCSharpModular=ON" EXTRA_PACKAGES="mono-devel mono-gmcs cli-common-dev swig2.0"
-    - compiler: gcc
+    - compiler: clang
       env: CMAKE_OPTIONS="-DLuaModular=ON" EXTRA_PACKAGES="lua5.1 liblua5.1-0-dev swig2.0"
     - compiler: clang
       env: CMAKE_OPTIONS="-DOctaveModular=ON" EXTRA_PACKAGES="octave octave3.2-headers swig2.0"
+    - compiler: clang
+      env: CMAKE_OPTIONS="-DRModular=ON" EXTRA_PACKAGES="r-base-core swig2.0"
+  allow_failures:
+    - compiler: clang
+      env: CMAKE_OPTIONS="-DRModular=ON" EXTRA_PACKAGES="r-base-core swig2.0"
+    - compiler: clang
+      python: 3.3
+      language: python
+      env: CMAKE_OPTIONS="-DPythonModular=ON" EXTRA_PACKAGES="python3-scipy swig2.0"
+virtualenv:
+  system_site_packages: true
 before_install:
  - sudo apt-get update -qq
  - sudo apt-get install -qq libbz2-dev cdbs libeigen3-dev libarpack2-dev libatlas-base-dev libblas-dev libglpk-dev libhdf5-serial-dev libjson0-dev swig zlib1g-dev libxml2-dev libreadline6-dev libreadline-dev libsnappy-dev liblzo2-dev liblzma-dev liblapack-dev gdb cmake $EXTRA_PACKAGES
- - if [ ! -z "${PYTHON_PKG}" ] ; then bash -c "${PYTHON_PKG}" ; fi
+ - $CUSTOM_PKG
 before_script: 
   - mkdir build
   - cd build
