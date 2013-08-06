@@ -59,7 +59,7 @@ if ( R_EXECUTABLE )
                   )
 
   execute_process ( COMMAND ${R_EXECUTABLE} CMD config --cppflags
-                    OUTPUT_VARIABLE R_INCLUDES
+                    OUTPUT_VARIABLE R_CXX_FLAGS
                     OUTPUT_STRIP_TRAILING_WHITESPACE
                   )
 
@@ -99,6 +99,6 @@ include ( FindPackageHandleStandardArgs )
 
 # handle the QUIETLY and REQUIRED arguments and set R_FOUND to TRUE if
 # all listed variables are TRUE
-find_package_handle_standard_args ( R DEFAULT_MSG R_EXECUTABLE R_LIBRARIES R_INCLUDES ${R_PACKAGES} )
+find_package_handle_standard_args ( R DEFAULT_MSG R_EXECUTABLE R_LIBRARIES R_CXX_FLAGS ${R_PACKAGES} )
 
-mark_as_advanced ( R_EXECUTABLE R_LIBRARIES R_INCLUDES ${R_PACKAGES} )
+mark_as_advanced ( R_EXECUTABLE R_LIBRARIES R_CXX_FLAGS ${R_PACKAGES} )
