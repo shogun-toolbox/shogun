@@ -58,6 +58,7 @@ SGMatrix<float64_t> CJade::get_cumulant_matrix() const
 
 CFeatures* CJade::apply(CFeatures* features)
 {
+	ASSERT(features);	
 	SG_REF(features);
 
 	SGMatrix<float64_t> X = ((CDenseFeatures<float64_t>*)features)->get_feature_matrix();

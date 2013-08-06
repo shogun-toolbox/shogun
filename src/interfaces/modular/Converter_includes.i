@@ -18,4 +18,5 @@
 #include <shogun/converter/ManifoldSculpting.h>
 #include <shogun/converter/ica/Jade.h>
 #include <shogun/converter/ica/SOBI.h>
+#include <shogun/converter/ica/FFSep.h>
 %}
