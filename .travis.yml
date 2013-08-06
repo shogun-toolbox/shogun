@@ -24,9 +24,9 @@ env:
 matrix:
   exclude:
     - compiler: gcc
-      env: CMAKE_OPTIONS="-DPythonModular=ON" EXTRA_PACKAGES="python-numpy-dev python-dev python-scipy swig2.0"
+      env: CMAKE_OPTIONS="-DPythonModular=ON" EXTRA_PACKAGES="swig2.0" PYTHON_PKG="pip install numpy scipy --use-mirrors"
     - compiler: gcc
-      env: CMAKE_OPTIONS="-DPythonModular=ON" EXTRA_PACKAGES="python3-numpy python3-dev python3-scipy swig2.0" PYTHON=python3
+      env: CMAKE_OPTIONS="-DPythonModular=ON" EXTRA_PACKAGES="swig2.0" PYTHON_PKG="source ~/virtualenv/python3.3/bin/activate && pip install numpy scipy --use-mirrors"
     - compiler: gcc
       env: CMAKE_OPTIONS="-DRModular=ON" EXTRA_PACKAGES="r-base-core swig2.0"
     - compiler: gcc
