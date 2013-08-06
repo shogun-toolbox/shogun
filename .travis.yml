@@ -48,9 +48,9 @@ virtualenv:
   system_site_packages: true
 before_install:
  - sudo apt-get update -qq
- - sudo apt-get install -qq libbz2-dev cdbs libeigen3-dev libarpack2-dev libatlas-base-dev libblas-dev libglpk-dev libhdf5-serial-dev libjson0-dev swig zlib1g-dev libxml2-dev libreadline6-dev libreadline-dev libsnappy-dev liblzo2-dev liblzma-dev liblapack-dev gdb cmake $EXTRA_PACKAGES
+ - sudo apt-get install -qq libbz2-dev cdbs libarpack2-dev libatlas-base-dev libblas-dev libglpk-dev libhdf5-serial-dev libjson0-dev swig zlib1g-dev libxml2-dev libreadline6-dev libreadline-dev libsnappy-dev liblzo2-dev liblzma-dev liblapack-dev gdb cmake $EXTRA_PACKAGES
  - $CUSTOM_PKG
 before_script: 
   - mkdir build
   - cd build
-script: cmake -DENABLE_TESTING=ON $CMAKE_OPTIONS .. && make -j 4 && sudo make install && ctest --output-on-failure
+script: cmake -DENABLE_TESTING=ON -DBUNDLE_EIGEN=ON -DBUNDLE_JSON=ON $CMAKE_OPTIONS .. && make -j 4 && sudo make install && ctest --output-on-failure
