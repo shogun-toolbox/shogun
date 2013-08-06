@@ -7,11 +7,13 @@ SET(EXAMPLES
 	classifier_minimal_svm 
 	classifier_mklmulticlass 
 	classifier_conjugateindex 
+	classifier_gaussian_process_binary_classification 
 	classifier_gaussiannaivebayes 
 	classifier_multiclasslibsvm 
 	classifier_qda 
 	classifier_lda 
 	classifier_multiclasslinearmachine 
+	classifier_knn 
 	kernel_gaussian kernel_revlin kernel_custom
 	library_dyn_int library_gc_array library_indirect_object 
 	library_hash parameter_set_from_parameters 
@@ -42,7 +44,6 @@ SET(EXAMPLES
 	features_dense_real_modular 
 	features_subset_stack 
 	features_subset_simple_features 
-	features_subset_sparse_features 
 	features_copy_subset_simple_features 
 	features_copy_subset_sparse_features 
 	labels_binary_fit_sigmoid 
@@ -96,6 +97,10 @@ SET(EXAMPLES
 	base_migration_new_buggy 
 	regression_libsvr 
 	classifier_multiclass_prob_heuristics 
+	streaming_onlineliblinear 
+	io_linereader 
+	library_circularbuffer 
+	so_factorgraph 
 )
 
 FOREACH(EXAMPLE ${EXAMPLES})
