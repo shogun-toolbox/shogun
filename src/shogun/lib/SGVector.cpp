@@ -1353,11 +1353,8 @@ void SGVector<T>::convert_to_matrix(T*& matrix, index_t nrows, index_t ncols, co
 
 	if (fortran_order)
 	{
-		for (index_t i=0; i<ncols; i++)
-		{
-			for (index_t j=0; j<nrows; j++)
-				matrix[j+i*nrows]=vector[j+i*nrows];
-		}
+		for (index_t i=0; i<ncols*nrows; i++)
+			matrix[i]=vector[i];
 	}
 	else
 	{

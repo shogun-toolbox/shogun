@@ -176,13 +176,13 @@ void CCSVFile::fname(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec) \
 	{ \
 		num_feat=nlines; \
 		num_vec=ntokens; \
-		SGVector<sg_type>::convert_to_matrix(matrix, num_vec, num_feat, line_memory.vector, line_memory.vlen, true); \
+		SGVector<sg_type>::convert_to_matrix(matrix, num_vec, num_feat, line_memory.vector, line_memory.vlen, false); \
 	} \
 	else \
 	{ \
 		num_feat=ntokens; \
 		num_vec=nlines; \
-		SGVector<sg_type>::convert_to_matrix(matrix, num_vec, num_feat, line_memory.vector, line_memory.vlen, false); \
+		SGVector<sg_type>::convert_to_matrix(matrix, num_vec, num_feat, line_memory.vector, line_memory.vlen, true); \
 	} \
 } \
 
