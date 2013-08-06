@@ -7,6 +7,7 @@
  * Written (W) 2013 Roman Votyakov
  */
 
+#ifdef HAVE_EIGEN3
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/kernel/GaussianKernel.h>
@@ -326,3 +327,4 @@ TEST(GaussianProcessBinaryClassification,get_probabilities)
 
 	SG_UNREF(gpc);
 }
+#endif /* HAVE_EIGEN3 */
