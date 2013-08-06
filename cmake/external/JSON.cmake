@@ -10,3 +10,5 @@ ExternalProject_Add(
 
 SET(JSON_INCLUDE_DIRS ${THIRD_PARTY_DIR}/include/json/json-c)
 SET(JSON_LDFLAGS ${THIRD_PARTY_DIR}/libs/json/libjson-c.a)
+
+LIST(APPEND SHOGUN_DEPENDS JSON)

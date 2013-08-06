@@ -12,3 +12,4 @@ ExternalProject_Add(
 	)
 
 SET(EIGEN_INCLUDE_DIR ${THIRD_PARTY_DIR}/include/eigen)
+LIST(APPEND SHOGUN_DEPENDS Eigen3)

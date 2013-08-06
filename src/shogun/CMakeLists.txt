@@ -41,6 +41,11 @@ set_target_properties(shogun PROPERTIES
                         COMPILE_DEFINITIONS "${DEFINES}")
 target_link_libraries(shogun ${POSTLINKFLAGS})
 
+# add bundled libraries to dependency
+if(SHOGUN_DEPENDS)
+  add_dependencies(shogun ${SHOGUN_DEPENDS})
+endif()
+
 INSTALL(DIRECTORY ./ 
         DESTINATION include/shogun
         COMPONENT headers
