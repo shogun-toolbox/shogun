@@ -503,7 +503,7 @@ ENDIF()
 IF (RModular)
 	FIND_PACKAGE(R REQUIRED)
 	UNSET(TARGET_SWIGFLAGS)
-	#add_subdirectory(src/interfaces/r_modular)
+	add_subdirectory(src/interfaces/r_modular)
 ENDIF()
 
 # perl modular

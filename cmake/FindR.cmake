@@ -1,188 +1,104 @@
-# find the R binary
-
-MESSAGE(STATUS "Looking for R executable")
-IF(NOT R_EXECUTABLE)
-FIND_PROGRAM(R_EXECUTABLE R)
-IF(R_EXECUTABLE-NOTFOUND)
-MESSAGE(FATAL_ERROR "Could NOT find R (TODO: name option)")
-ELSE(R_EXECUTABLE-NOTFOUND)
-MESSAGE(STATUS "Using R at ${R_EXECUTABLE}")
-ENDIF(R_EXECUTABLE-NOTFOUND)
-
-ENDIF(NOT R_EXECUTABLE)
-
-# find R_HOME
-
-MESSAGE(STATUS "Looking for R_HOME")
-IF(NOT R_HOME)
-EXECUTE_PROCESS(
-COMMAND ${R_EXECUTABLE} "--slave" "--no-save" "-e" "cat(R.home())"
-OUTPUT_VARIABLE R_HOME)
-ENDIF(NOT R_HOME)
-IF(NOT R_HOME)
-MESSAGE(FATAL_ERROR "Could NOT determine R_HOME (probably you misspecified the location of R)")
-ELSE(NOT R_HOME)
-MESSAGE(STATUS "R_HOME is ${R_HOME}")
-ENDIF(NOT R_HOME)
-
-# find R include dir
-
-MESSAGE(STATUS "Looking for R include files")
-IF(NOT R_INCLUDEDIR)
-IF(WIN32 OR APPLE)  # This version of the test will not work with R < 2.9.0, but the other version (in the else part) will not work on windows or apple (but we do not really need to support ancient versions of R, there).
-EXECUTE_PROCESS(
-COMMAND ${R_EXECUTABLE} "--slave" "--no-save" "-e" "cat(R.home('include'))"
-OUTPUT_VARIABLE R_INCLUDEDIR)
-ELSE(WIN32 OR APPLE)
-EXECUTE_PROCESS(
-COMMAND ${R_EXECUTABLE} CMD sh -c "echo -n $R_INCLUDE_DIR"
-OUTPUT_VARIABLE R_INCLUDEDIR)
-ENDIF(WIN32 OR APPLE)
-ELSE(NOT R_INCLUDEDIR)
-MESSAGE(STATUS "Location specified by user")
-ENDIF(NOT R_INCLUDEDIR)
-
-IF(NOT R_INCLUDEDIR)
-SET(R_INCLUDEDIR ${R_HOME}/include)
-MESSAGE(STATUS "Not findable via R. Guessing")
-ENDIF(NOT R_INCLUDEDIR)
-MESSAGE(STATUS "Include files should be at ${R_INCLUDEDIR}. Checking for R.h")
-
-IF(NOT R_H)
-FIND_FILE(R_H
-R.h
-PATHS ${R_INCLUDEDIR}
-NO_DEFAULT_PATH)
-ENDIF(NOT R_H)
-
-IF(NOT R_H)
-MESSAGE(FATAL_ERROR "Not found")
-ELSE(NOT R_H)
-MESSAGE(STATUS "Found at ${R_H}")
-GET_FILENAME_COMPONENT(R_INCLUDEDIR ${R_H}
-PATH)
-ENDIF(NOT R_H)
-
-# check for existence of libR.so
-
-IF(NOT LIBR_SO)
-       MESSAGE(STATUS "Checking for existence of R shared library")
-       FIND_LIBRARY(LIBR_SO
-R
-PATHS ${R_HOME}/lib ${R_SHAREDLIBDIR} ${R_HOME}/bin
-NO_DEFAULT_PATH)
-endif(NOT LIBR_SO)
+# -*- cmake -*-
+#
+# FindR.cmake: Try to find R
+#
+# (C) Copyright 2005-2012 EDF-EADS-Phimeca
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2.1 of the License.
+#
+# This library is distributed in the hope that it will be useful
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#
+# @author dutka
+# @date 2010-02-04 16:44:49 +0100 (Thu, 04 Feb 2010)
+# Id Makefile.am 1473 2010-02-04 15:44:49Z dutka
+#
+#
+# - Try to find R
+# Once done this will define
+#
+# R_FOUND - System has R
+# R_LIBRARIES - The libraries needed to use R
+# R_DEFINITIONS - Compiler switches required for using R
+# R_EXECUTABLE - The R interpreter
 
 
-IF(NOT LIBR_SO)
-MESSAGE(FATAL_ERROR "Not found. Make sure the location of R was detected correctly, above, and R was compiled with the --enable-shlib option")
-ELSE(NOT LIBR_SO)
-MESSAGE(STATUS "Exists at ${LIBR_SO}")
-GET_FILENAME_COMPONENT(R_SHAREDLIBDIR ${LIBR_SO}
-PATH)
-SET(R_USED_LIBS R)
-ENDIF(NOT LIBR_SO)
+if ( R_EXECUTABLE AND R_LIBRARIES )
+   # in cache already
+   set( R_FIND_QUIETLY TRUE )
+endif ( R_EXECUTABLE AND R_LIBRARIES )
+
+#IF (NOT WIN32)
+# # use pkg-config to get the directories and then use these values
+# # in the FIND_PATH() and FIND_LIBRARY() calls
+# FIND_PACKAGE(PkgConfig)
+# PKG_CHECK_MODULES(PC_R R)
+# SET(R_DEFINITIONS ${PC_R_CFLAGS_OTHER})
+#ENDIF (NOT WIN32)
+
+find_program ( R_EXECUTABLE
+               NAMES R R.exe
+               DOC "Path to the R command interpreter"
+              )
+
+get_filename_component ( _R_EXE_PATH ${R_EXECUTABLE} PATH )
+
+if ( R_EXECUTABLE )
+  execute_process ( COMMAND ${R_EXECUTABLE} RHOME
+                    OUTPUT_VARIABLE _R_HOME
+                    OUTPUT_STRIP_TRAILING_WHITESPACE
+                  )
+
+  execute_process ( COMMAND ${R_EXECUTABLE} CMD config --cppflags
+                    OUTPUT_VARIABLE R_INCLUDES
+                    OUTPUT_STRIP_TRAILING_WHITESPACE
+                  )
+
+endif ( R_EXECUTABLE )
+
+find_library ( R_LIBRARIES
+  NAMES R
+  HINTS
+  ${_R_HOME}/lib
+  ${_R_HOME}/lib/x86_64
+)
 
 
-# for at least some versions of R, we seem to have to link against -lRlapack. Else loading some
-# R packages will fail due to unresolved symbols, or we can't link against -lR.
-# However, we can't do this unconditionally,
-# as this is not available in some configurations of R
+set ( R_PACKAGES )
+if ( R_EXECUTABLE )
+  foreach ( _component ${R_FIND_COMPONENTS} )
+    if ( NOT R_${_component}_FOUND )
+    execute_process ( COMMAND echo "library(${_component})"
+                      COMMAND ${R_EXECUTABLE} --no-save --silent --no-readline --slave
+                      RESULT_VARIABLE _res
+                      OUTPUT_VARIABLE _trashout
+                      ERROR_VARIABLE _trasherr
+                    )
+    if ( NOT _res )
+      message ( STATUS "Looking for R package ${_component} - found" )
+      set ( R_${_component}_FOUND 1 CACHE INTERNAL "True if R package ${_component} is here" )
+    else ( NOT _res )
+      message ( STATUS "Looking for R package ${_component} - not found" )
+      set ( R_${_component}_FOUND 0 CACHE INTERNAL "True if R package ${_component} is here" )
+    endif ( NOT _res )
+    list ( APPEND R_PACKAGES R_${_component}_FOUND )
+    endif ( NOT R_${_component}_FOUND )
+  endforeach ( _component )
+endif ( R_EXECUTABLE )
 
-MESSAGE(STATUS "Checking whether we should link against Rlapack library")
-FIND_LIBRARY(LIBR_LAPACK
-Rlapack
-PATHS ${R_SHAREDLIBDIR}
-NO_DEFAULT_PATH)
-IF(NOT LIBR_LAPACK)
-MESSAGE(STATUS "No, it does not exist in ${R_SHAREDLIBDIR}")
-ELSE(NOT LIBR_LAPACK)
-MESSAGE(STATUS "Yes, ${LIBR_LAPACK} exists")
-SET(R_USED_LIBS ${R_USED_LIBS} Rlapack)
-IF(WIN32 OR APPLE)
-ELSE(WIN32 OR APPLE)
-# needed when linking to Rlapack on linux for some unknown reason.
-# apparently not needed on windows (let's see, when it comes back to bite us, though)
-# and compiling on windows is hard enough even without requiring libgfortran, too.
-SET(R_USED_LIBS ${R_USED_LIBS} gfortran)
-ENDIF(WIN32 OR APPLE)
-ENDIF(NOT LIBR_LAPACK)
+include ( FindPackageHandleStandardArgs )
 
-# for at least some versions of R, we seem to have to link against -lRlapack. Else loading some
-# R packages will fail due to unresolved symbols, or we can't link against -lR.
-# However, we can't do this unconditionally,
-# as this is not available in some configurations of R
+# handle the QUIETLY and REQUIRED arguments and set R_FOUND to TRUE if
+# all listed variables are TRUE
+find_package_handle_standard_args ( R DEFAULT_MSG R_EXECUTABLE R_LIBRARIES R_INCLUDES ${R_PACKAGES} )
 
-MESSAGE(STATUS "Checking whether we should link against Rblas library")
-FIND_LIBRARY(LIBR_BLAS
-Rblas
-PATHS ${R_SHAREDLIBDIR}
-NO_DEFAULT_PATH)
-IF(NOT LIBR_BLAS)
-MESSAGE(STATUS "No, it does not exist in ${R_SHAREDLIBDIR}")
-ELSE(NOT LIBR_BLAS)
-MESSAGE(STATUS "Yes, ${LIBR_BLAS} exists")
-SET(R_USED_LIBS ${R_USED_LIBS} Rblas)
-ENDIF(NOT LIBR_BLAS)
-
-# find R package library location
-IF(WIN32)
-SET(PATH_SEP ";")
-ELSE(WIN32)
-SET(PATH_SEP ":")
-ENDIF(WIN32)
-
-MESSAGE(STATUS "Checking for R package library location to use")
-IF(NOT R_LIBDIR)
-EXECUTE_PROCESS(
-COMMAND ${R_EXECUTABLE} "--slave" "--no-save" "-e" "cat(paste(unique (c(.Library.site, .Library)), collapse='${PATH_SEP}'))"
-OUTPUT_VARIABLE R_LIBDIR)
-ELSE(NOT R_LIBDIR)
-MESSAGE(STATUS "Location specified by user")
-ENDIF(NOT R_LIBDIR)
-
-# strip whitespace
-STRING(REGEX REPLACE "[ \n]+"
-"" R_LIBDIR
-"${R_LIBDIR}")
-
-# strip leading colon(s)
-STRING(REGEX REPLACE "^${PATH_SEP}+"
-"" R_LIBDIR
-"${R_LIBDIR}")
-
-# strip trailing colon(s)
-STRING(REGEX REPLACE "${PATH_SEP}+$"
-"" R_LIBDIR
-"${R_LIBDIR}")
-
-# find first path
-STRING(REGEX REPLACE "${PATH_SEP}"
-" " R_LIBDIR
-"${R_LIBDIR}")
-
-IF(NOT R_LIBDIR)
-MESSAGE(STATUS "Not reliably determined or specified. Guessing.")
-SET(R_LIBDIR ${R_HOME}/library)
-ENDIF(NOT R_LIBDIR)
-
-SET(R_LIBDIRS ${R_LIBDIR})
-SEPARATE_ARGUMENTS(R_LIBDIRS)
-
-SET(R_LIBDIR)
-FOREACH(CURRENTDIR ${R_LIBDIRS})
-IF(NOT USE_R_LIBDIR)
-IF(EXISTS ${CURRENTDIR})
-SET(R_LIBDIR ${CURRENTDIR})
-SET(USE_R_LIBDIR 1)
-ELSE(EXISTS ${CURRENTDIR})
-MESSAGE(STATUS "${CURRENTDIR} does not exist. Skipping")
-ENDIF(EXISTS ${CURRENTDIR})
-ENDIF(NOT USE_R_LIBDIR)
-ENDFOREACH(CURRENTDIR ${R_LIBDIRS})
-
-IF(NOT EXISTS ${R_LIBDIR})
-MESSAGE(FATAL_ERROR "No existing library location found")
-ELSE(NOT EXISTS ${R_LIBDIR})
-MESSAGE(STATUS "Will use ${R_LIBDIR}")
-ENDIF(NOT EXISTS ${R_LIBDIR})
+mark_as_advanced ( R_EXECUTABLE R_LIBRARIES R_INCLUDES ${R_PACKAGES} )
