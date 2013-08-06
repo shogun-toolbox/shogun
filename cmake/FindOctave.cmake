@@ -130,6 +130,7 @@ list ( APPEND OCTAVE_LIBRARIES ${OCTAVE_CRUFT_LIBRARY} )
 find_path ( OCTAVE_INCLUDE_DIR 
             NAMES mex.h
             HINTS ${OCTAVE_INCLUDE_PATHS}
+            PATH_SUFFIXES octave
           )
 
 STRING(REGEX REPLACE "(.*)/octave$" "\\1" OCTAVE_INCLUDE_DIR ${OCTAVE_INCLUDE_DIR})    
