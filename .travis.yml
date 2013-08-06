@@ -42,7 +42,7 @@ matrix:
 before_install:
  - sudo apt-get update -qq
  - sudo apt-get install -qq libbz2-dev cdbs libeigen3-dev libarpack2-dev libatlas-base-dev libblas-dev libglpk-dev libhdf5-serial-dev libjson0-dev swig zlib1g-dev libxml2-dev libreadline6-dev libreadline-dev libsnappy-dev liblzo2-dev liblzma-dev liblapack-dev gdb cmake $EXTRA_PACKAGES
- - if [ ! -z ${PYTHON_PKG} ] ; then ${PYTHON_PKG} ; fi
+ - if [ ! -z "${PYTHON_PKG}" ] ; then bash -c "${PYTHON_PKG}" ; fi
 before_script: 
   - mkdir build
   - cd build
