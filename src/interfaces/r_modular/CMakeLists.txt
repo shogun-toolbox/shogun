@@ -1,5 +1,5 @@
 include(CommonModularInterface)
-include_directories(${R_INCLUDES})
+SET(CMAKE_CXX_FLAGS "${R_CXX_FLAGS} ${CMAKE_CXX_FLAGS}")
 
 GENERATE_MODULAR_TARGET(r ${CMAKE_CURRENT_SOURCE_DIR} ${R_LIBRARIES})
 
