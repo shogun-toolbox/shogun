@@ -63,6 +63,7 @@ SGMatrix<float64_t> CFFSep::get_mixing_matrix() const
 
 CFeatures* CFFSep::apply(CFeatures* features)
 {
+	ASSERT(features);	
 	SG_REF(features);
 
 	SGMatrix<float64_t> X = ((CDenseFeatures<float64_t>*)features)->get_feature_matrix();

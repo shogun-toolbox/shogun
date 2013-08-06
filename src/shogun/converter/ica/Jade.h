@@ -60,6 +60,7 @@ class CJade: public CConverter
 		 */
 		SGMatrix<float64_t> get_cumulant_matrix() const;
 
+		/** get name */
 		virtual const char* get_name() const { return "Jade"; };
 
 	protected:
