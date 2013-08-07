@@ -89,7 +89,7 @@ class CLMNNImpl
 		 */
 		static SGMatrix<index_t> find_target_nn(CDenseFeatures<float64_t>* x, CMulticlassLabels* y, int32_t k);
 
-		/** sum the outer products indicated by target_nn in the matrix of outer products C */
+		/** sum the outer products indicated by target_nn */
 		static Eigen::MatrixXd sum_outer_products(CDenseFeatures<float64_t>* x, const SGMatrix<index_t> target_nn);
 
 		/** find the impostors that remain after applying the transformation L */
@@ -100,9 +100,6 @@ class CLMNNImpl
 
 		/** take gradient step and project onto positive semi-definite cone if necessary */
 		static void gradient_step(Eigen::MatrixXd& L, const Eigen::MatrixXd& G, float64_t stepsize);
-
-		/** compute LMNN objective */
-		static float64_t compute_objective(const Eigen::MatrixXd& G, const Eigen::MatrixXd& L);
 
 		/** correct step size depending on the last fluctuation of the objective */
 		static void correct_stepsize(float64_t& stepsize, const SGVector<float64_t> obj, const uint32_t iter);

@@ -13,6 +13,11 @@
 #include <shogun/metric/LMNN.h>
 #include <shogun/metric/LMNNImpl.h>
 
+/// useful shorthands to perform operations with Eigen matrices
+
+// trace of the product of two matrices computed fast using trace(A*B)=sum(A.*B')
+#define	TRACE(A,B)		(((A).array()*(B).transpose().array()).sum())
+
 using namespace shogun;
 using namespace Eigen;
 
@@ -94,9 +99,10 @@ void CLMNN::train(SGMatrix<float64_t> init_transform)
 		SG_DEBUG("Taking gradient step.\n")
 		CLMNNImpl::gradient_step(L, gradient, stepsize);
 
-		// Compute objective
+		// Compute the objective, trace of Mahalanobis distance matrix (L squared) times the gradient
+		// plus the number of current impostors to account for the margin
 		SG_DEBUG("Computing objective.\n")
-		obj[iter] = CLMNNImpl::compute_objective(L, gradient);
+		obj[iter] = TRACE(L.transpose()*L,gradient) + m_regularization*cur_impostors.size();
 
 		// Correct step size
 		CLMNNImpl::correct_stepsize(stepsize, obj, iter);
@@ -106,7 +112,8 @@ void CLMNN::train(SGMatrix<float64_t> init_transform)
 		// Update previous set of impostors
 		prev_impostors = cur_impostors;
 
-		SG_DEBUG("iteration=%d, objective=%.4f, stepsize=%.4E\n", iter, obj[iter-1], stepsize)
+		SG_DEBUG("iteration=%d, objective=%.4f, #impostors=%4d, stepsize=%.4E\n",
+				iter, obj[iter-1], cur_impostors.size(), stepsize)
 	}
 
 	/// Store the transformation found in the class attribute

@@ -17,8 +17,6 @@
 
 /// useful shorthands to perform operations with Eigen matrices
 
-// trace of the product of two matrices computed fast using trace(A*B)=sum(A.*B')
-#define	TRACE(A,B)		(((A).array()*(B).transpose().array()).sum())
 // column-wise sum of the squared elements of a matrix
 #define SUMSQCOLS(A)	((A).array().square().colwise().sum())
 
@@ -231,14 +229,6 @@ void CLMNNImpl::gradient_step(MatrixXd& L, const MatrixXd& G, float64_t stepsize
 {
 	// do step in L along the gradient direction (no need to project M then)
 	L -= stepsize*(2*L*G);
-}
-
-float64_t CLMNNImpl::compute_objective(const MatrixXd& L, const MatrixXd& G)
-{
-	// pre-compute the Mahalanobis distance matrix
-	MatrixXd M = L.transpose()*L;
-	// compute objective
-	return TRACE(M,G);
 }
 
 void CLMNNImpl::correct_stepsize(float64_t& stepsize, const SGVector<float64_t> obj, const uint32_t iter)
