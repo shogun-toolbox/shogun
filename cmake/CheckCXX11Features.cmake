@@ -75,7 +75,13 @@ if (_HAS_CXX11_FLAG)
         set(CXX11_COMPILER_FLAGS "-std=c++11")
     endif ()
 elseif (_HAS_CXX0X_FLAG)
-    set(CXX11_COMPILER_FLAGS "-std=c++0x")
+    # to avoid problems with variadic template handling in gcc 4.6.3
+    # with -std=c++0x mode in gmock-matchers.h
+    # error: unimplemented: cannot expand ‘Tail ...’ into a fixed-length argument list
+    # TODO: check if there's a version
+    IF("${CMAKE_CXX_COMPILER_VERSION}" VERSION_GREATER "4.6.3")
+        set(CXX11_COMPILER_FLAGS "-std=c++0x")
+    ENDIF()
 endif ()
 
 function(cxx11_check_feature FEATURE_NAME RESULT_VAR)
