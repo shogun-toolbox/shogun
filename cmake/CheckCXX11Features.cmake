@@ -81,6 +81,9 @@ elseif (_HAS_CXX0X_FLAG)
     # TODO: check if there's a version
     IF("${CMAKE_CXX_COMPILER_VERSION}" VERSION_GREATER "4.6.3")
         set(CXX11_COMPILER_FLAGS "-std=c++0x")
+    ELSE()
+        MESSAGE("Your compiler cannot expand a variadic template parameter into a fixed-length argument list.")
+        UNSET(_HAS_CXX0X_FLAG)
     ENDIF()
 endif ()
 
