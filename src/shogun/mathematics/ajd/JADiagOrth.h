@@ -54,7 +54,7 @@ class CJADiagOrth : public CApproxJointDiagonalizer
 		 * @return V the matrix that best diagonalizes C 
 		 */
 		static SGMatrix<float64_t> diagonalize(SGNDArray<float64_t> C,
-							SGMatrix<float64_t> V0 = SGMatrix<float64_t>(NULL,0,0),
+							SGMatrix<float64_t> V0 = SGMatrix<float64_t>(NULL,0,0,false),
 							double eps=CMath::MACHINE_EPSILON,
 							int itermax=200);
 
@@ -66,7 +66,7 @@ class CJADiagOrth : public CApproxJointDiagonalizer
 		 * @return V the matrix that best diagonalizes C 
 		 */
 		virtual SGMatrix<float64_t> compute(SGNDArray<float64_t> C,
-						   SGMatrix<float64_t> V0 = SGMatrix<float64_t>(NULL,0,0),
+						   SGMatrix<float64_t> V0 = SGMatrix<float64_t>(NULL,0,0,false),
 						   double eps=CMath::MACHINE_EPSILON,
 						   int itermax=200)
 		{
