@@ -37,6 +37,8 @@ matrix:
       env: CMAKE_OPTIONS="-DOctaveModular=ON" EXTRA_PACKAGES="octave octave3.2-headers swig2.0"
     - compiler: clang
       env: CMAKE_OPTIONS="-DRModular=ON" EXTRA_PACKAGES="r-base-core swig2.0" CC=clang CXX=clang++
+    - language: objective-c
+      env: OSX=1
   allow_failures:
     - compiler: clang
       env: CMAKE_OPTIONS="-DRModular=ON" EXTRA_PACKAGES="r-base-core swig2.0" CC=clang CXX=clang++
@@ -44,11 +46,13 @@ matrix:
       python: 3.3
       language: python
       env: CMAKE_OPTIONS="-DPythonModular=ON" EXTRA_PACKAGES="python3-scipy swig2.0" CC=clang CXX=clang++
+    - language: objective-c
+      env: OSX=1
 virtualenv:
   system_site_packages: true
 before_install:
- - sudo apt-get update -qq
- - sudo apt-get install -qq libbz2-dev cdbs libarpack2-dev libatlas-base-dev libblas-dev libglpk-dev libhdf5-serial-dev zlib1g-dev libxml2-dev libreadline6-dev libreadline-dev libsnappy-dev liblzo2-dev liblzma-dev liblapack-dev gdb cmake python-jinja2 $EXTRA_PACKAGES
+ - if [ -z $OSX ] ; then sudo apt-get update -qq ; else brew update ; fi
+ - if [ -z $OSX ] ; then sudo apt-get install -qq libbz2-dev cdbs libarpack2-dev libatlas-base-dev libblas-dev libglpk-dev libhdf5-serial-dev zlib1g-dev libxml2-dev libreadline6-dev libreadline-dev libsnappy-dev liblzo2-dev liblzma-dev liblapack-dev gdb cmake python-jinja2 $EXTRA_PACKAGES ; else brew install cmake ; fi
  - $CUSTOM_PKG
 before_script: 
   - mkdir build
