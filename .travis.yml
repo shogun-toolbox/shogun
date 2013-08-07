@@ -39,11 +39,11 @@ matrix:
       env: CMAKE_OPTIONS="-DRModular=ON" EXTRA_PACKAGES="r-base-core swig2.0" CC=clang CXX=clang++
   allow_failures:
     - compiler: clang
-      env: CMAKE_OPTIONS="-DRModular=ON" EXTRA_PACKAGES="r-base-core swig2.0"
+      env: CMAKE_OPTIONS="-DRModular=ON" EXTRA_PACKAGES="r-base-core swig2.0" CC=clang CXX=clang++
     - compiler: clang
       python: 3.3
       language: python
-      env: CMAKE_OPTIONS="-DPythonModular=ON" EXTRA_PACKAGES="python3-scipy swig2.0"
+      env: CMAKE_OPTIONS="-DPythonModular=ON" EXTRA_PACKAGES="python3-scipy swig2.0" CC=clang CXX=clang++
 virtualenv:
   system_site_packages: true
 before_install:

@@ -3,7 +3,7 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/Lock.h>
 
-#ifdef HAVE_CXX11
+#ifdef HAVE_CXX11_ATOMIC
 #include <atomic>
 #endif
 
@@ -16,7 +16,7 @@ class RefCount
 public:
 	RefCount() : rc(0) {};
 	/** reference count */
-#ifdef HAVE_CXX11
+#ifdef HAVE_CXX11_ATOMIC
     volatile std::atomic<int> rc;
 #else
 	int32_t rc;
@@ -62,7 +62,7 @@ int32_t SGReferencedData::ref_count()
 	if (m_refcount == NULL)
 		return -1;
 
-#ifdef HAVE_CXX11
+#ifdef HAVE_CXX11_ATOMIC
 	int32_t c = m_refcount->rc.load();
 #else
 	m_refcount->lock.lock();
@@ -93,7 +93,7 @@ int32_t SGReferencedData::ref()
 		return -1;
 	}
 
-#ifdef HAVE_CXX11
+#ifdef HAVE_CXX11_ATOMIC
 	int32_t c = m_refcount->rc.fetch_add(1)+1;
 #else
 	m_refcount->lock.lock();
@@ -120,7 +120,7 @@ int32_t SGReferencedData::unref()
 		return -1;
 	}
 
-#ifdef HAVE_CXX11
+#ifdef HAVE_CXX11_ATOMIC
 	int32_t c = m_refcount->rc.fetch_sub(1)-1;
 #else
 	m_refcount->lock.lock();
