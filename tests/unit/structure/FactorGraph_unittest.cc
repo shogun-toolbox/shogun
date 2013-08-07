@@ -15,6 +15,17 @@ using namespace std;
 
 using namespace shogun;
 
+inline int grid_to_index(int32_t x, int32_t y, int32_t w = 10)
+{
+	return x + w*y; 
+}
+
+inline void index_to_grid(int32_t index, int32_t& x, int32_t& y, int32_t w = 10)
+{
+	x = index % w;
+	y = index / w;
+}
+
 TEST(FactorGraph, compute_energies_data_indep)
 {
 	// Create one simple pairwise factor type
@@ -439,3 +450,163 @@ TEST(FactorGraph, evaluate_energy_param_data_sparse)
 	SG_UNREF(fac1b);
 }
 
+TEST(FactorGraph, structure_analysis)
+{
+	int hh = 3;
+	int ww = 3;
+
+	SGVector<int32_t> card(2);
+	card[0] = 2;
+	card[1] = 2;
+	SGVector<float64_t> w(4);
+	w[0] = 0.0; // 0,0
+	w[1] = 0.5; // 1,0
+	w[2] = 0.5; // 0,1
+	w[3] = 0.0; // 1,1
+	SGString<char> tid((char*)("pairwise"), 4);
+	CTableFactorType* factortype = new CTableFactorType(tid, card, w);
+	SG_REF(factortype);
+
+	SGVector<int32_t> vc(hh*ww);
+	SGVector<int32_t>::fill_vector(vc.vector, vc.vlen, 2);
+	CFactorGraph fg(vc);
+
+	// Add factors
+	for (int32_t x = 0; x < ww; x++)
+	{
+		for (int32_t y = 0; y < hh; y++)
+		{
+			if (x > 0)
+			{
+				SGVector<float64_t> data;
+				SGVector<int32_t> var_index(2);
+				var_index[0] = grid_to_index(x,y,ww);
+				var_index[1] = grid_to_index(x-1,y,ww);
+				CFactor* fac1 = new CFactor(factortype, var_index, data);
+				fg.add_factor(fac1);
+			}
+
+			if (x == 0 && y > 0)
+			{
+				SGVector<float64_t> data;
+				SGVector<int32_t> var_index(2);
+				var_index[0] = grid_to_index(x,y-1,ww);
+				var_index[1] = grid_to_index(x,y,ww);
+				CFactor* fac1 = new CFactor(factortype, var_index, data);
+				fg.add_factor(fac1);
+			}
+		}
+	}
+	SG_UNREF(factortype);
+
+	fg.connect_components();
+
+	EXPECT_TRUE(fg.is_acyclic_graph());
+	EXPECT_TRUE(fg.is_connected_graph());
+	EXPECT_TRUE(fg.is_tree_graph());
+	EXPECT_EQ(fg.get_num_edges(), 16);
+}
+
+TEST(FactorGraph, structure_analysis_loopy)
+{
+	int hh = 3;
+	int ww = 3;
+
+	SGVector<int32_t> card(2);
+	card[0] = 2;
+	card[1] = 2;
+	SGVector<float64_t> w(4);
+	w[0] = 0.0; // 0,0
+	w[1] = 0.5; // 1,0
+	w[2] = 0.5; // 0,1
+	w[3] = 0.0; // 1,1
+	SGString<char> tid((char*)("pairwise"), 4);
+	CTableFactorType* factortype = new CTableFactorType(tid, card, w);
+	SG_REF(factortype);
+
+	SGVector<int32_t> vc(hh*ww);
+	SGVector<int32_t>::fill_vector(vc.vector, vc.vlen, 2);
+	CFactorGraph fg(vc);
+
+	// Add factors
+	for (int32_t x = 0; x < ww; x++)
+	{
+		for (int32_t y = 0; y < hh; y++)
+		{
+			if (x > 0)
+			{
+				SGVector<float64_t> data;
+				SGVector<int32_t> var_index(2);
+				var_index[0] = grid_to_index(x,y,ww);
+				var_index[1] = grid_to_index(x-1,y,ww);
+				CFactor* fac1 = new CFactor(factortype, var_index, data);
+				fg.add_factor(fac1);
+			}
+
+			if (y > 0)
+			{
+				SGVector<float64_t> data;
+				SGVector<int32_t> var_index(2);
+				var_index[0] = grid_to_index(x,y-1,ww);
+				var_index[1] = grid_to_index(x,y,ww);
+				CFactor* fac1 = new CFactor(factortype, var_index, data);
+				fg.add_factor(fac1);
+			}
+		}
+	}
+	SG_UNREF(factortype);
+
+	fg.connect_components();
+
+	EXPECT_FALSE(fg.is_acyclic_graph());
+	EXPECT_TRUE(fg.is_connected_graph());
+	EXPECT_FALSE(fg.is_tree_graph());
+	EXPECT_EQ(fg.get_num_edges(), 24);
+}
+
+TEST(FactorGraph, structure_analysis_disconnected)
+{
+	int hh = 3;
+	int ww = 3;
+
+	SGVector<int32_t> card(2);
+	card[0] = 2;
+	card[1] = 2;
+	SGVector<float64_t> w(4);
+	w[0] = 0.0; // 0,0
+	w[1] = 0.5; // 1,0
+	w[2] = 0.5; // 0,1
+	w[3] = 0.0; // 1,1
+	SGString<char> tid((char*)("pairwise"), 4);
+	CTableFactorType* factortype = new CTableFactorType(tid, card, w);
+	SG_REF(factortype);
+
+	SGVector<int32_t> vc(hh*ww);
+	SGVector<int32_t>::fill_vector(vc.vector, vc.vlen, 2);
+	CFactorGraph fg(vc);
+
+	// Add factors
+	for (int32_t x = 0; x < ww; x++)
+	{
+		for (int32_t y = 0; y < hh; y++)
+		{
+			if (x > 0)
+			{
+				SGVector<float64_t> data;
+				SGVector<int32_t> var_index(2);
+				var_index[0] = grid_to_index(x,y,ww);
+				var_index[1] = grid_to_index(x-1,y,ww);
+				CFactor* fac1 = new CFactor(factortype, var_index, data);
+				fg.add_factor(fac1);
+			}
+		}
+	}
+	SG_UNREF(factortype);
+
+	fg.connect_components();
+
+	EXPECT_TRUE(fg.is_acyclic_graph());
+	EXPECT_FALSE(fg.is_connected_graph());
+	EXPECT_FALSE(fg.is_tree_graph());
+	EXPECT_EQ(fg.get_num_edges(), 12);
+}

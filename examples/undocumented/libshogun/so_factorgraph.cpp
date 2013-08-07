@@ -30,17 +30,17 @@ void create_grid_graph()
 	SGVector<int32_t> card(2);
 	card[0] = 2;
 	card[1] = 2;
-	SGVector<float64_t> w(8);
+	SGVector<float64_t> w(4);
 	w[0] = 0.0; // 0,0
 	w[1] = 0.5; // 1,0
 	w[2] = 0.5; // 0,1
 	w[3] = 0.0; // 1,1
-	SGString<char> tid("pairwise", 8);
+	SGString<char> tid(const_cast<char*>("pairwise"), 8);
 	CTableFactorType* factortype = new CTableFactorType(tid, card, w);
 	SG_REF(factortype);
 
 	SGVector<int32_t> vc(100);
-	vc.range_fill(2);
+	SGVector<int32_t>::fill_vector(vc.vector, vc.vlen, 2);
 	CFactorGraph fg(vc);
 
 	// Add factors
@@ -55,9 +55,7 @@ void create_grid_graph()
 				var_index[0] = grid_to_index(x,y,10);
 				var_index[1] = grid_to_index(x-1,y,10);
 				CFactor* fac1 = new CFactor(factortype, var_index, data);
-				SG_REF(fac1);
 				fg.add_factor(fac1);
-				SG_UNREF(fac1);
 			}
 
 			if (y > 0)
@@ -67,9 +65,7 @@ void create_grid_graph()
 				var_index[0] = grid_to_index(x,y-1,10);
 				var_index[1] = grid_to_index(x,y,10);
 				CFactor* fac1 = new CFactor(factortype, var_index, data);
-				SG_REF(fac1);
 				fg.add_factor(fac1);
-				SG_UNREF(fac1);
 			}
 		}
 	}
