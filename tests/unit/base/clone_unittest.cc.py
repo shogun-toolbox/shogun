@@ -8,8 +8,7 @@
 # Written (W) 2013 Viktor Gal
 # Copyright (C) 2013 Viktor Gal
 
-def get_class_list_content():
-    class_list_file = '../../src/shogun/base/class_list.cpp'
+def get_class_list_content(class_list_file):
     f = open(class_list_file, 'r')
     content = f.readlines()
     f.close()
@@ -57,14 +56,14 @@ def get_class_list(class_list_content):
                             template_classes.append(sho_class)
     return classes, template_classes
 
-def entry(templateFile):
-    templateLoader = jinja2.FileSystemLoader(searchpath="./")
+def entry(templateFile, class_list_file):
+    templateLoader = jinja2.FileSystemLoader(searchpath="/")
     templateEnv = jinja2.Environment(loader=templateLoader)
 
     template = templateEnv.get_template(templateFile)
 
     # get the content of class_list.cpp
-    class_list_content = get_class_list_content()
+    class_list_content = get_class_list_content(class_list_file)
 
     classes, template_classes = get_class_list(class_list_content)
 
@@ -75,13 +74,17 @@ def entry(templateFile):
 
     return template.render(templateVars)
 
+# execution
+# ./clone_unittest.cc.py <template file> <output file name> <extra args...>
 
 import sys
 TEMPLATE_FILE = sys.argv[1]
+output_file = sys.argv[2]
+class_list_file = sys.argv[3]
 
 try:
     import jinja2
-    outputText = entry(TEMPLATE_FILE)
+    outputText = entry(TEMPLATE_FILE, class_list_file)
 except ImportError:
     print("Please install jinja2 for clone unit-tests");
     outputText = ['''#include <gtest/gtest.h>
@@ -89,6 +92,6 @@ TEST(Dummy,dummy)
 {
 }''']
 
-f = open(TEMPLATE_FILE.replace('.jinja2',''), 'w')
+f = open(output_file, 'w')
 f.writelines(outputText)
 f.close()
