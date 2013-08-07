@@ -72,20 +72,22 @@ void SGIO::message(EMessageType prio, const char* function, const char* file,
 		int len=strlen(msg_intro);
 		char* s=str+len;
 
-		switch (location_info) 
+		/* file and line are shown for warnings and worse */
+		if (location_info==MSG_LINE_AND_FILE || prio>=MSG_WARN)
 		{
-			case MSG_NONE:
-				break;
-			case MSG_FUNCTION:
-				snprintf(s, sizeof(str)-len, "%s: ", function);
-				len=strlen(str);
-				s=str+len;
-				break;
-			case MSG_LINE_AND_FILE:
-				snprintf(s, sizeof(str)-len, "In file %s line %d: ", file, line);
-				len=strlen(str);
-				s=str+len;
-				break;
+			snprintf(s, sizeof(str)-len, "In file %s line %d: ", file, line);
+			len=strlen(str);
+			s=str+len;
+		}
+		else if (location_info==MSG_FUNCTION)
+		{
+			snprintf(s, sizeof(str)-len, "%s: ", function);
+			len=strlen(str);
+			s=str+len;
+		}
+		else if (location_info==MSG_NONE)
+		{
+			;
 		}
 
 		va_list list;
