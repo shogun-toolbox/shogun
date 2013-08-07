@@ -20,23 +20,23 @@ matrix:
     - compiler: clang
       python: 3.3
       language: python
-      env: CMAKE_OPTIONS="-DPythonModular=ON" EXTRA_PACKAGES="python3-scipy swig2.0"
+      env: CMAKE_OPTIONS="-DPythonModular=ON" EXTRA_PACKAGES="python3-scipy swig2.0" CC=clang CXX=clang++
     - compiler: clang
       rvm: 1.8.7
       language: ruby
-      env: CMAKE_OPTIONS="-DRubyModular=ON" CUSTOM_PKG="gem install narray" EXTRA_PACKAGES="swig2.0"
+      env: CMAKE_OPTIONS="-DRubyModular=ON" CUSTOM_PKG="gem install narray" EXTRA_PACKAGES="swig2.0" CC=clang CXX=clang++
     - compiler: clang
       jdk: oraclejdk7
       language: java
-      env: CMAKE_OPTIONS="-DJavaModular=ON" EXTRA_PACKAGES="jblas swig2.0"
+      env: CMAKE_OPTIONS="-DJavaModular=ON" EXTRA_PACKAGES="jblas swig2.0" CC=clang CXX=clang++
     - compiler: clang
-      env: CMAKE_OPTIONS="-DCSharpModular=ON" EXTRA_PACKAGES="mono-devel mono-gmcs cli-common-dev swig2.0"
+      env: CMAKE_OPTIONS="-DCSharpModular=ON" EXTRA_PACKAGES="mono-devel mono-gmcs cli-common-dev swig2.0" CC=clang CXX=clang++
     - compiler: clang
-      env: CMAKE_OPTIONS="-DLuaModular=ON" EXTRA_PACKAGES="lua5.1 liblua5.1-0-dev swig2.0"
+      env: CMAKE_OPTIONS="-DLuaModular=ON" EXTRA_PACKAGES="lua5.1 liblua5.1-0-dev swig2.0" CC=clang CXX=clang++
     - compiler: gcc
       env: CMAKE_OPTIONS="-DOctaveModular=ON" EXTRA_PACKAGES="octave octave3.2-headers swig2.0"
     - compiler: clang
-      env: CMAKE_OPTIONS="-DRModular=ON" EXTRA_PACKAGES="r-base-core swig2.0"
+      env: CMAKE_OPTIONS="-DRModular=ON" EXTRA_PACKAGES="r-base-core swig2.0" CC=clang CXX=clang++
   allow_failures:
     - compiler: clang
       env: CMAKE_OPTIONS="-DRModular=ON" EXTRA_PACKAGES="r-base-core swig2.0"

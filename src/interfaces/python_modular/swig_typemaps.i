@@ -118,7 +118,7 @@ static PyObject* make_contiguous(PyObject* ary, int* is_new_object,
         return NULL;
     }
 
-    if (!is_array(array))
+    if (!::is_array(array))
     {
         PyErr_SetString(PyExc_TypeError, "Object not an Array");
         *is_new_object=0;
@@ -160,7 +160,7 @@ static int is_pyvector(PyObject* obj, int typecode)
 {
     return  ((obj && !PyList_Check(obj)) &&
             (
-             is_array(obj) &&
+             ::is_array(obj) &&
              array_dimensions(obj)==1 &&
              (array_type(obj) == typecode || PyArray_EquivTypenums(array_type(obj), typecode))
             )) ? 1 : 0;
@@ -170,7 +170,7 @@ static int is_pymatrix(PyObject* obj, int typecode)
 {
     return ((obj && !PyList_Check(obj)) &&
                 (
-				 is_array(obj) &&
+				 ::is_array(obj) &&
                  array_dimensions(obj)==2 &&
                  (array_type(obj) == typecode || PyArray_EquivTypenums(array_type(obj), typecode))
                 )) ? 1 : 0;
@@ -180,7 +180,7 @@ static int is_pyarray(PyObject* obj, int typecode)
 {
     return ((obj && !PyList_Check(obj)) &&
                 (
-				 is_array(obj) &&
+				 ::is_array(obj) &&
                  (array_type(obj) == typecode || PyArray_EquivTypenums(array_type(obj), typecode))
                 )) ? 1 : 0;
 }
@@ -221,7 +221,7 @@ static int is_pystring_list(PyObject* obj, int typecode)
             }
             else
             {
-                if (!is_array(o) || array_dimensions(o)!=1 || array_type(o) != typecode)
+                if (!::is_array(o) || array_dimensions(o)!=1 || array_type(o) != typecode)
                 {
                     result=0;
                     break;
@@ -402,7 +402,7 @@ static bool string_from_strpy(SGStringList<type>& sg_strings, PyObject* obj, int
             }
             else
             {
-                if (is_array(o) && array_dimensions(o)==1 && array_type(o) == typecode)
+                if (::is_array(o) && array_dimensions(o)==1 && array_type(o) == typecode)
                 {
                     int is_new_object=0;
                     PyObject* array = make_contiguous(o, &is_new_object, 1, typecode);
@@ -537,21 +537,21 @@ static bool spmatrix_from_numpy(SGSparseMatrix<type>& sg_matrix, PyObject* obj, 
     PyObject* shape = PyObject_GetAttrString(o, "shape");
 
     /* check that types are OK */
-    if ((!is_array(indptr)) || (array_dimensions(indptr)!=1) ||
+    if ((!::is_array(indptr)) || (array_dimensions(indptr)!=1) ||
             (array_type(indptr)!=NPY_INT && array_type(indptr)!=NPY_LONG))
     {
         PyErr_SetString(PyExc_TypeError,"indptr array should be 1d int's");
         return false;
     }
 
-    if (!is_array(indices) || array_dimensions(indices)!=1 ||
+    if (!::is_array(indices) || array_dimensions(indices)!=1 ||
             (array_type(indices)!=NPY_INT && array_type(indices)!=NPY_LONG))
     {
         PyErr_SetString(PyExc_TypeError,"indices array should be 1d int's");
         return false;
     }
 
-    if (!is_array(data) || array_dimensions(data)!=1 || array_type(data) != typecode)
+    if (!::is_array(data) || array_dimensions(data)!=1 || array_type(data) != typecode)
     {
         PyErr_SetString(PyExc_TypeError,"data array should be 1d and match datatype");
         return false;
