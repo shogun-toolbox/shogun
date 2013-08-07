@@ -433,12 +433,12 @@ public:
 	virtual bool equals(CSGObject* other, float64_t accuracy=0.0);
 
 	/** Creates a clone of the current object. This is done via recursively
-	 * traversing all parameters, which corresponds to a ceep copy.
+	 * traversing all parameters, which corresponds to a deep copy.
 	 * Calling equals on the cloned object always returns true although none
 	 * of the memory of both objects overlaps.
 	 *
 	 * @return an identical copy of the given object, which is disjoint in memory.
-	 * NULL if the clone fails. Note that the returned objects is SG_REF'ed
+	 * NULL if the clone fails. Note that the returned object is SG_REF'ed
 	 */
 	virtual CSGObject* clone();
 
