@@ -16,7 +16,7 @@ matrix:
     - compiler: clang
       python: 2.7
       language: python
-      env: CMAKE_OPTIONS="-DPythonModular=ON" EXTRA_PACKAGES="python-scipy swig2.0"
+      env: CMAKE_OPTIONS="-DPythonModular=ON" EXTRA_PACKAGES="python-scipy swig2.0" CC=clang CXX=clang++
     - compiler: clang
       python: 3.3
       language: python
