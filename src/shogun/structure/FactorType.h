@@ -145,8 +145,8 @@ public:
 
 	/** infer variable state from a given index of energy table
 	 * 
-	 * @param ei The linear index. 
-	 * @param var_index The variable index of this factor:
+	 * @param ei the energy index. 
+	 * @param var_index the variable index of this factor:
 	 * @return variable state 
 	 */
 	int32_t state_from_index(int32_t ei, int32_t var_index) const;
@@ -157,6 +157,17 @@ public:
 	 * @return variable assignment
 	 */
 	SGVector<int32_t> assignment_from_index(int32_t ei) const;
+
+	/** update energy index by substituting with contribution 
+	 * from new state of a particular variable
+	 * 
+	 * @param old_ei old energy index. 
+	 * @param var_index the variable index of this factor:
+	 * @param var_state new variable state 
+	 * @return new energy index 
+	 */
+	int32_t index_from_new_state(int32_t old_ei, int32_t var_index, 
+		int32_t var_state) const;
 
 	/** energy index from a given assignment
 	 *

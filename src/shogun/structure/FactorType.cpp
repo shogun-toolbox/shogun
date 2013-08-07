@@ -151,7 +151,7 @@ CTableFactorType::~CTableFactorType()
 
 int32_t CTableFactorType::state_from_index(int32_t ei, int32_t var_index) const 
 {
-	ASSERT(var_index <= get_cardinalities().size());
+	ASSERT(var_index < get_cardinalities().size());
 	return ((ei / m_cumprod_cards[var_index]) % m_cards[var_index]);
 }
 
@@ -172,6 +172,16 @@ int32_t CTableFactorType::index_from_assignment(const SGVector<int32_t> assig) c
 		index += assig[vi] * m_cumprod_cards[vi];
 
 	return index;
+}
+
+int32_t CTableFactorType::index_from_new_state(
+	int32_t old_ei, int32_t var_index, int32_t var_state) const
+{
+	ASSERT(var_index < get_cardinalities().size());
+	ASSERT(var_state < get_cardinalities()[var_index]);
+	// subtract old contribution and add new contribution from new state
+	return (old_ei - state_from_index(old_ei, var_index) * m_cumprod_cards[var_index] 
+		+ var_state * m_cumprod_cards[var_index]);
 }
 
 int32_t CTableFactorType::index_from_universe_assignment(

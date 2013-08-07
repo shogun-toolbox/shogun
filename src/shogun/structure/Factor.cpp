@@ -91,7 +91,7 @@ CFactor::~CFactor()
 	SG_UNREF(m_data_source);
 }
 
-const CTableFactorType* CFactor::get_factor_type() const 
+CTableFactorType* CFactor::get_factor_type() const 
 {
 	SG_REF(m_factor_type);
 	return m_factor_type;
@@ -223,6 +223,7 @@ void CFactor::register_parameters()
 	SG_ADD(&m_data, "m_data", "Factor data", MS_NOT_AVAILABLE);
 	SG_ADD(&m_data_sparse, "m_data_sparse", "Sparse factor data", MS_NOT_AVAILABLE);
 	SG_ADD(&m_is_data_dep, "m_is_data_dep", "Factor is data dependent or not", MS_NOT_AVAILABLE);
+	SG_ADD(&m_factor_id, "m_factor_id", "Factor ID in the factor graph", MS_NOT_AVAILABLE);
 }
 
 CFactorDataSource::CFactorDataSource() 
