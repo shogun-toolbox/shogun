@@ -63,7 +63,13 @@ if (NOT _HAS_CXX11_FLAG)
 endif ()
 
 if (_HAS_CXX11_FLAG)
-    if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+    # apple's clang requires -stdlib=libc++ otherwise
+    # it won't find <atomic> for example.
+    # but this will break compilation on ubuntu
+    #
+    # TODO: investigate further which system requires -stdlib=libc++
+    # as well.
+    if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" AND DARWIN)
         set(CXX11_COMPILER_FLAGS "-std=c++11 -stdlib=libc++")
     else ()
         set(CXX11_COMPILER_FLAGS "-std=c++11")
