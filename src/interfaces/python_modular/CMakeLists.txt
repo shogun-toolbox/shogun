@@ -1,6 +1,11 @@
 include(CommonModularInterface)
 include_directories(${PYTHON_INCLUDE_PATH} ${NUMPY_INCLUDE_DIRS})
 
+#TODO: check for SWIG version where this bug has been applied already:
+# https://github.com/swig/swig/pull/70
+
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wnoc++11-narrowing")
+
 GENERATE_MODULAR_TARGET(python ${CMAKE_CURRENT_SOURCE_DIR} ${PYTHON_LIBRARIES})
 
 # pacakges directory
