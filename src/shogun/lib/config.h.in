@@ -23,7 +23,6 @@
 #cmakedefine HAVE_PTHREAD 1
 #cmakedefine USE_CPLEX 1
 
-#cmakedefine HAVE_MVEC 1
 #cmakedefine HAVE_POWL 1
 #cmakedefine HAVE_LGAMMAL 1
 #cmakedefine HAVE_SQRTL 1

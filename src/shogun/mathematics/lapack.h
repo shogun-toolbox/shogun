@@ -25,8 +25,7 @@ extern "C" {
 #include <mkl_cblas.h>
 #include <mkl_lapack.h>
 #elif defined(HAVE_MVEC)
-#include </System/Library/Frameworks/vecLib.framework/Headers/cblas.h>
-#include </System/Library/Frameworks/vecLib.framework/Headers/clapack.h>
+#include <Accelerate/Accelerate.h>
 #else
 #include <cblas.h>
 #endif
