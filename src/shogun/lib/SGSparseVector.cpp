@@ -144,6 +144,21 @@ T SGSparseVector<T>::sparse_dot(const SGSparseVector<T>& a, const SGSparseVector
 }
 
 template<class T>
+int32_t SGSparseVector<T>::get_num_dimensions() {
+	if (!features)
+		return 0;
+
+	int32_t dimensions = -1;
+	for (index_t i=0; i<num_feat_entries; i++) {
+		if (features[i].feat_index > dimensions) {
+			dimensions = features[i].feat_index;
+		}
+	}
+
+	return dimensions+1;
+}
+
+template<class T>
 void SGSparseVector<T>::sort_features()
 {
 	if (!num_feat_entries)
@@ -200,6 +215,22 @@ T SGSparseVector<T>::get_feature(int32_t index) {
 	}
 
 	return ret ;
+}
+
+template<class T>
+SGVector<T> SGSparseVector<T>::get_dense() {
+	SGVector<T> dense(0);
+
+	if (features) {
+		dense.resize_vector(get_num_dimensions());
+		dense.zero();
+
+		for (index_t i=0; i<num_feat_entries; i++) {
+			dense.vector[features[i].feat_index] += features[i].entry;
+		}
+	}
+
+	return dense;
 }
 
 template<class T>
