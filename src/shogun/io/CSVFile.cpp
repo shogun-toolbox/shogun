@@ -41,9 +41,9 @@ CCSVFile::~CCSVFile()
 	SG_UNREF(m_line_reader);
 }
 
-void CCSVFile::set_order(csv_data_order order)
+void CCSVFile::set_transpose(bool value)
 {
-	m_order=order;
+	is_data_transposed=value;
 }
 
 void CCSVFile::set_delimiter(char delimiter)
@@ -52,6 +52,8 @@ void CCSVFile::set_delimiter(char delimiter)
 	
 	m_delimiter=delimiter;
 	m_tokenizer->delimiters[m_delimiter]=1;
+
+	m_tokenizer->delimiters[' ']=1;
 }
 
 void CCSVFile::skip_lines(int32_t num_lines)
@@ -62,7 +64,7 @@ void CCSVFile::skip_lines(int32_t num_lines)
 
 void CCSVFile::init()
 {
-	m_order=C_ORDER;
+	is_data_transposed=false;
 	m_delimiter=0;
 
 	m_tokenizer=NULL;
@@ -73,7 +75,7 @@ void CCSVFile::init()
 
 void CCSVFile::init_with_defaults()
 {
-	m_order=C_ORDER;
+	is_data_transposed=false;
 	m_delimiter=',';
 
 	m_tokenizer=new CDelimiterTokenizer(true);
@@ -172,17 +174,17 @@ void CCSVFile::fname(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec) \
 		nlines++; \
 	} \
 	\
-	if (m_order==FORTRAN_ORDER) \
-	{ \
-		num_feat=nlines; \
-		num_vec=ntokens; \
-		SGVector<sg_type>::convert_to_matrix(matrix, num_vec, num_feat, line_memory.vector, line_memory.vlen, false); \
-	} \
-	else \
+	if (!is_data_transposed) \
 	{ \
 		num_feat=ntokens; \
 		num_vec=nlines; \
-		SGVector<sg_type>::convert_to_matrix(matrix, num_vec, num_feat, line_memory.vector, line_memory.vlen, true); \
+		SGVector<sg_type>::convert_to_matrix(matrix, num_feat, num_vec, line_memory.vector, line_memory.vlen, true); \
+	} \
+	else \
+	{ \
+		num_feat=nlines; \
+		num_vec=ntokens; \
+		SGVector<sg_type>::convert_to_matrix(matrix, num_feat, num_vec, line_memory.vector, line_memory.vlen, false); \
 	} \
 } \
 
@@ -203,7 +205,7 @@ GET_MATRIX(get_matrix, read_ulong, uint64_t)
 #define SET_VECTOR(fname, format, sg_type) \
 void CCSVFile::fname(const sg_type* vector, int32_t len) \
 { \
-	if (m_order==FORTRAN_ORDER) \
+	if (!is_data_transposed) \
 	{ \
 		for (int32_t i=0; i<len; i++) \
 		{ \
@@ -237,20 +239,20 @@ SET_VECTOR(set_vector, SCNu16, uint16_t)
 #define SET_MATRIX(fname, format, sg_type) \
 void CCSVFile::fname(const sg_type* matrix, int32_t num_feat, int32_t num_vec) \
 { \
-	if (m_order==FORTRAN_ORDER) \
+	if (!is_data_transposed) \
 	{ \
-		for (int32_t i=0; i<num_feat; i++) \
+		for (int32_t i=0; i<num_vec; i++) \
 		{ \
-			for (int32_t j=0; j<num_vec; j++) \
-				fprintf(file, "%" format "%c", matrix[j+i*num_vec], m_delimiter); \
+			for (int32_t j=0; j<num_feat; j++) \
+				fprintf(file, "%" format "%c", matrix[j+i*num_feat], m_delimiter); \
 			fprintf(file, "\n"); \
 		} \
 	} \
 	else \
 	{ \
-		for (int32_t i=0; i<num_vec; i++) \
+		for (int32_t i=0; i<num_feat; i++) \
 		{ \
-			for (int32_t j=0; j<num_feat; j++) \
+			for (int32_t j=0; j<num_vec; j++) \
 				fprintf(file, "%" format "%c", matrix[i+j*num_vec], m_delimiter); \
 			fprintf(file, "\n"); \
 		} \

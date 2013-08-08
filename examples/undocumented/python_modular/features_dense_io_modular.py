@@ -2,10 +2,9 @@
 parameter_list=[[]]
 
 def features_dense_io_modular():
-	from modshogun import RealFeatures, CSVFile, C_ORDER
+	from modshogun import RealFeatures, CSVFile
 	feats=RealFeatures()
 	f=CSVFile("../data/fm_train_real.dat","r")
-	#f.set_order(C_ORDER)
 	f.set_delimiter(" ")
 	feats.load(f)
 	return feats

@@ -21,12 +21,6 @@
 namespace shogun
 {
 
-enum csv_data_order
-{
-	FORTRAN_ORDER,
-	C_ORDER
-};
-
 /** @brief 
  */
 class CCSVFile : public CFile
@@ -45,7 +39,7 @@ public:
 	virtual ~CCSVFile();
 
 	/** set order for data in file */
-	void set_order(csv_data_order order);
+	void set_transpose(bool value);
 
 	/** set delimiting character */
 	void set_delimiter(char delimiter);
@@ -366,7 +360,7 @@ private:
 	CDelimiterTokenizer* m_tokenizer;
 
 	/** data order */
-	csv_data_order m_order;
+	bool is_data_transposed;
 
 	/** delimiter */
 	char m_delimiter;
