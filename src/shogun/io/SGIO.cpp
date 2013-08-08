@@ -73,7 +73,7 @@ void SGIO::message(EMessageType prio, const char* function, const char* file,
 		char* s=str+len;
 
 		/* file and line are shown for warnings and worse */
-		if (location_info==MSG_LINE_AND_FILE || prio>=MSG_WARN)
+		if (location_info==MSG_LINE_AND_FILE || prio==MSG_WARN || prio==MSG_ERROR)
 		{
 			snprintf(s, sizeof(str)-len, "In file %s line %d: ", file, line);
 			len=strlen(str);
