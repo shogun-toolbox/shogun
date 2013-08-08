@@ -49,7 +49,7 @@ TEST(InferenceMethod,get_log_ml_estimate_binary_logit_laplace)
 	 * and also against the approximate marginal likelihood. Since this is random,
 	 * use low accuracy. */
 	float64_t sample=inf->get_log_ml_estimate(100000);
-	EXPECT_NEAR(sample, -1.67990517588, 0.2);
+	EXPECT_NEAR(sample, -1.67990517588, 0.3);
 	EXPECT_NEAR(sample, -inf->get_negative_marginal_likelihood(), 1e-1);
 
 	SG_UNREF(inf);
