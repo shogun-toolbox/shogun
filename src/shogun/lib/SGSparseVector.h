@@ -121,6 +121,14 @@ public:
 	 */
 	T get_feature(int32_t index);
 
+	/**
+	 * get dense representation
+	 *
+	 * @param dimension of requested dense vector
+	 * @return SGVector<T>
+	 */
+	SGVector<T> get_dense(int32_t dimension);
+
 	/** load vector from file
 	 *
 	 * @param loader File object via which to load data

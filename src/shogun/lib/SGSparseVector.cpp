@@ -202,6 +202,21 @@ T SGSparseVector<T>::get_feature(int32_t index) {
 	return ret ;
 }
 
+template<class T>
+SGVector<T> SGSparseVector<T>::get_dense(int32_t dimension) {
+	SGVector<T> dense(dimension);
+	dense.zero();
+
+	if (features) {
+		for (index_t i=0; i<num_feat_entries; i++) {
+			ASSERT(features[i].feat_index < dimension);
+			dense.vector[features[i].feat_index] += features[i].entry;
+		}
+	}
+
+	return dense;
+}
+
 template<class T> void SGSparseVector<T>::load(CFile* loader)
 {
 	ASSERT(loader)

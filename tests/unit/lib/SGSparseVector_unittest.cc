@@ -125,6 +125,29 @@ TEST(SGSparseVector, sort_features_empty)
 	EXPECT_EQ(vec.num_feat_entries, 0);
 }
 
+TEST(SGSparseVector, get_dense)
+{
+	SGSparseVector<float64_t> vec(3);
+	EXPECT_EQ(vec.num_feat_entries, 3);
+
+	vec.features[0].feat_index = 3;
+	vec.features[0].entry = -3.0;
+
+	vec.features[1].feat_index = 2;
+	vec.features[1].entry = -4.0;
+
+	vec.features[2].feat_index = 3;
+	vec.features[2].entry = -6.0;
+
+	SGVector<float64_t> dense = vec.get_dense(4);
+	EXPECT_EQ(dense.size(), 4);
+
+	EXPECT_NEAR(dense[0], 0.0, 1E-19);
+	EXPECT_NEAR(dense[1], 0.0, 1E-19);
+	EXPECT_NEAR(dense[2], -4.0, 1E-19);
+	EXPECT_NEAR(dense[3], -9.0, 1E-19);
+}
+
 TEST(SGSparseVector, sort_features_one)
 {
 	SGSparseVector<float64_t> vec(1);
