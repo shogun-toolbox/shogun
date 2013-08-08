@@ -144,13 +144,16 @@ T SGSparseVector<T>::sparse_dot(const SGSparseVector<T>& a, const SGSparseVector
 }
 
 template<class T>
-int32_t SGSparseVector<T>::get_num_dimensions() {
+int32_t SGSparseVector<T>::get_num_dimensions()
+{
 	if (!features)
 		return 0;
 
 	int32_t dimensions = -1;
-	for (index_t i=0; i<num_feat_entries; i++) {
-		if (features[i].feat_index > dimensions) {
+	for (index_t i=0; i<num_feat_entries; i++)
+	{
+		if (features[i].feat_index > dimensions)
+		{
 			dimensions = features[i].feat_index;
 		}
 	}
@@ -181,15 +184,18 @@ void SGSparseVector<T>::sort_features()
 	int32_t last_index = 0;
 	sf_new[last_index] = sf_orig[orig_idx[last_index]];
 
-	for (int32_t i = 1; i < num_feat_entries; i++) {
-	        if (sf_new[last_index].feat_index == sf_orig[orig_idx[i]].feat_index) {
-	            sf_new[last_index].entry += sf_orig[orig_idx[i]].entry;
-	        }
-	        else {
-	            last_index++;
-	            sf_new[last_index] = sf_orig[orig_idx[i]];
-            }
-    }
+	for (int32_t i = 1; i < num_feat_entries; i++)
+	{
+		if (sf_new[last_index].feat_index == sf_orig[orig_idx[i]].feat_index)
+		{
+			sf_new[last_index].entry += sf_orig[orig_idx[i]].entry;
+		}
+		else
+		{
+			last_index++;
+			sf_new[last_index] = sf_orig[orig_idx[i]];
+		}
+	}
 
 	ASSERT(last_index < num_feat_entries);
 	features = SG_REALLOC(SGSparseVectorEntry<T>, sf_new, num_feat_entries, last_index+1);
@@ -205,7 +211,8 @@ void SGSparseVector<T>::sort_features()
 }
 
 template<class T>
-T SGSparseVector<T>::get_feature(int32_t index) {
+T SGSparseVector<T>::get_feature(int32_t index)
+{
 	T ret = 0;
 	if (features)
 	{
@@ -218,14 +225,17 @@ T SGSparseVector<T>::get_feature(int32_t index) {
 }
 
 template<class T>
-SGVector<T> SGSparseVector<T>::get_dense() {
-	SGVector<T> dense(0);
+SGVector<T> SGSparseVector<T>::get_dense()
+{
+	SGVector<T> dense();
 
-	if (features) {
+	if (features)
+	{
 		dense.resize_vector(get_num_dimensions());
 		dense.zero();
 
-		for (index_t i=0; i<num_feat_entries; i++) {
+		for (index_t i=0; i<num_feat_entries; i++)
+		{
 			dense.vector[features[i].feat_index] += features[i].entry;
 		}
 	}
@@ -234,12 +244,15 @@ SGVector<T> SGSparseVector<T>::get_dense() {
 }
 
 template<class T>
-SGVector<T> SGSparseVector<T>::get_dense(int32_t dimension) {
+SGVector<T> SGSparseVector<T>::get_dense(int32_t dimension)
+{
 	SGVector<T> dense(dimension);
 	dense.zero();
 
-	if (features) {
-		for (index_t i=0; i<num_feat_entries; i++) {
+	if (features)
+	{
+		for (index_t i=0; i<num_feat_entries; i++)
+		{
 			ASSERT(features[i].feat_index < dimension);
 			dense.vector[features[i].feat_index] += features[i].entry;
 		}
