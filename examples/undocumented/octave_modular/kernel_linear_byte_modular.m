@@ -1,4 +1,4 @@
-init_shogun
+modshogun
 
 addpath('tools');
 fm_train_byte=uint8(load_matrix('../data/fm_train_byte.dat'));

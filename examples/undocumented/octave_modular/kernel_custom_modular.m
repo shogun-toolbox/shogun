@@ -1,4 +1,4 @@
-init_shogun;
+modshogun;
 
 C=1;
 dim=7;

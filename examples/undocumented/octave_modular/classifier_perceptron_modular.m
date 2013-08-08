@@ -1,4 +1,4 @@
-init_shogun
+modshogun
 
 num=50;
 label_train_twoclass=[-ones(1,num/2) ones(1,num/2)];

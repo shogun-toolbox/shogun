@@ -1,4 +1,4 @@
-init_shogun
+modshogun
 
 % Explicit examples on how to use the different classifiers
 

@@ -1,4 +1,4 @@
-init_shogun
+modshogun
 
 addpath('tools');
 fm_train_word=uint16(load_matrix('../data/fm_train_word.dat'));
