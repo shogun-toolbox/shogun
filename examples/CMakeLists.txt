@@ -1,4 +1,6 @@
-add_subdirectory(undocumented/libshogun)
+IF (NOT TRAVIS_DISABLE_LIBSHOGUN_TESTS)
+	add_subdirectory(undocumented/libshogun)
+ENDIF()
 
 IF (PythonModular)
 	add_subdirectory(undocumented/python_modular)
