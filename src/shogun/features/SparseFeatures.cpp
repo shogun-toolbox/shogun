@@ -177,20 +177,9 @@ template<class ST> SGSparseVector<ST> CSparseFeatures<ST>::get_sparse_feature_ve
 
 template<class ST> ST CSparseFeatures<ST>::dense_dot(ST alpha, int32_t num, ST* vec, int32_t dim, ST b)
 {
-	ASSERT(vec)
-	ASSERT(dim==get_num_features())
-	ST result=b;
-
 	SGSparseVector<ST> sv=get_sparse_feature_vector(num);
 
-	if (sv.features)
-	{
-		for (int32_t i=0; i<sv.num_feat_entries; i++)
-		{
-			result+=alpha*vec[sv.features[i].feat_index]
-				*sv.features[i].entry;
-		}
-	}
+	ST result = sv.dense_dot(alpha,vec,dim,b);
 
 	free_sparse_feature_vector(num);
 	return result;
