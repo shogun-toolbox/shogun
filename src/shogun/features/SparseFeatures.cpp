@@ -63,19 +63,11 @@ template<class ST> CFeatures* CSparseFeatures<ST>::duplicate() const
 
 template<class ST> ST CSparseFeatures<ST>::get_feature(int32_t num, int32_t index)
 {
-	ASSERT(index>=0 && index<get_num_features())
 	ASSERT(num>=0 && num<get_num_vectors())
-
-	int32_t i;
 	SGSparseVector<ST> sv=get_sparse_feature_vector(num);
-	ST ret = 0 ;
 
-	if (sv.features)
-	{
-		for (i=0; i<sv.num_feat_entries; i++)
-			if (sv.features[i].feat_index==index)
-				ret+=sv.features[i].entry ;
-	}
+	ASSERT(index>=0 && index<get_num_features());
+	ST ret = sv.get_feature(index);
 
 	free_sparse_feature_vector(num);
 
@@ -100,7 +92,7 @@ template<class ST> SGVector<ST> CSparseFeatures<ST>::get_full_feature_vector(int
 		dense.zero();
 
 		for (int32_t i=0; i<sv.num_feat_entries; i++)
-			dense.vector[sv.features[i].feat_index]= sv.features[i].entry;
+			dense.vector[sv.features[i].feat_index] = sv.features[i].entry;
 	}
 
 	free_sparse_feature_vector(num);

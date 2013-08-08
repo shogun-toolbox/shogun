@@ -113,6 +113,14 @@ public:
 	 */
 	void sort_features();
 
+	/**
+	 * get feature value for index
+	 *
+	 * @param index
+	 * @return value
+	 */
+	T get_feature(int32_t index);
+
 	/** load vector from file
 	 *
 	 * @param loader File object via which to load data

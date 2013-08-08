@@ -189,6 +189,19 @@ void SGSparseVector<T>::sort_features()
 	SG_FREE(sf_orig);
 }
 
+template<class T>
+T SGSparseVector<T>::get_feature(int32_t index) {
+	T ret = 0;
+	if (features)
+	{
+		for (index_t i=0; i<num_feat_entries; i++)
+			if (features[i].feat_index==index)
+				ret+=features[i].entry ;
+	}
+
+	return ret ;
+}
+
 template<class T> void SGSparseVector<T>::load(CFile* loader)
 {
 	ASSERT(loader)
