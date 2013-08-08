@@ -43,6 +43,20 @@ SET(THIRD_PARTY_DIR ${CMAKE_SOURCE_DIR}/third_party)
 SET(LIBSHOGUN_SRC_DIR ${CMAKE_SOURCE_DIR}/src/shogun)
 SET(COMMON_MODULAR_SRC_DIR ${CMAKE_SOURCE_DIR}/src/interfaces/modular/)
 
+# check whether any of the modular interfaces are turned ON
+IF (
+	PythonModular OR LuaModular OR RModular OR
+	OctaveModular OR JavaModular OR PerlModular OR
+	RubyModular OR CSharpModular
+   )
+	FIND_PACKAGE(SWIG 2.0.4 REQUIRED)
+	#TODO: add ccache-swig support
+#	IF(ENABLE_CCACHE)
+#		SET(SWIG_EXECUTABLE /opt/local/bin/ccache-swig)
+#	ENDIF()
+	SET(COMPILE_MODULAR_INTERFACE 1)
+ENDIF()
+
 # Detect OS
 IF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 	SET(DARWIN 1)
@@ -50,6 +64,11 @@ ELSEIF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 	SET(LINUX 1)
 ELSEIF(${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD")
 	SET(FREEBSD 1)
+ENDIF()
+
+SET(EXT_LIB_SWIG_RUBY_MODULAR ".so")
+if(DARWIN)
+	SET(EXT_LIB_SWIG_RUBY_MODULAR ".bundle")
 ENDIF()
 
 ################ COMPILER #######################
@@ -67,9 +86,9 @@ ENDIF()
 # check for supported c++11 features
 #
 # clang with -std=c++11 and -stdlib=libc++ does not work
-# well with swig generated cxx for python
+# well with swig generated cxx
 # hence disable c++11 for this case.
-IF (NOT (DARWIN AND PythonModular))
+IF (NOT (DARWIN AND COMPILE_MODULAR_INTERFACE))
 	INCLUDE(CheckCXX11Features)
 
 	IF(_HAS_CXX11_FLAG)
@@ -466,19 +485,6 @@ ENDIF()
 SET(CMAKE_SWIG_FLAGS "${CMAKE_SWIG_FLAGS};-w473;-w454;-w312;-w325;-fvirtual")
 
 OPTION(USE_SWIG_DIRECTORS "" OFF)
-
-# check whether any of the modular interfaces are turned ON
-IF (
-	PythonModular OR LuaModular OR RModular OR
-	OctaveModular OR JavaModular OR PerlModular OR
-	RubyModular OR CSharpModular
-   )
-	FIND_PACKAGE(SWIG 2.0.4 REQUIRED)
-	#TODO: add ccache-swig support
-#	IF(ENABLE_CCACHE)
-#		SET(SWIG_EXECUTABLE /opt/local/bin/ccache-swig)
-#	ENDIF()
-ENDIF()
 
 # python modular
 IF (PythonModular)
