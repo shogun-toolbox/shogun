@@ -25,7 +25,7 @@ TEST(LineReaderTest, constructor)
 	CLineReader* reader;
 	CDelimiterTokenizer* tokenizer;
 
-	FILE* fin=fopen("io/LineReader_unittest.cc", "r");
+	FILE* fin=fopen(__FILE__, "r");
 
 	tokenizer=new CDelimiterTokenizer();
 	tokenizer->delimiters['\n']=1;
@@ -49,7 +49,7 @@ TEST(LineReaderTest, read_yourself)
 	CLineReader* reader;
 	CDelimiterTokenizer* tokenizer;
 
-	FILE* fin=fopen("io/LineReader_unittest.cc", "r");
+	FILE* fin=fopen(__FILE__, "r");
 
 	tokenizer=new CDelimiterTokenizer();
 	tokenizer->delimiters['\n']=1;
