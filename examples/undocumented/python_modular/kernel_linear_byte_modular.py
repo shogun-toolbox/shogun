@@ -1,8 +1,4 @@
 #!/usr/bin/env python
-###########################################################################
-# linear kernel on byte features
-###########################################################################
-from tools.load import LoadMatrix
 from numpy import ubyte
 lm=LoadMatrix()
 
