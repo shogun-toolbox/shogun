@@ -342,36 +342,7 @@ template<class T> void SGSparseMatrix<T>::sort_features()
 {
 	for (int32_t i=0; i<num_vectors; i++)
 	{
-		int32_t len=sparse_matrix[i].num_feat_entries;
-
-		if (!len)
-			continue;
-
-		SGSparseVectorEntry<T>* sf_orig=sparse_matrix[i].features;
-		int32_t* feat_idx=SG_MALLOC(int32_t, len);
-		int32_t* orig_idx=SG_MALLOC(int32_t, len);
-
-		for (int j=0; j<len; j++)
-		{
-			feat_idx[j]=sf_orig[j].feat_index;
-			orig_idx[j]=j;
-		}
-
-		CMath::qsort_index(feat_idx, orig_idx, len);
-
-		SGSparseVectorEntry<T>* sf_new= SG_MALLOC(SGSparseVectorEntry<T>, len);
-		for (int j=0; j<len; j++)
-			sf_new[j]=sf_orig[orig_idx[j]];
-
-		sparse_matrix[i].features=sf_new;
-
-		// sanity check
-		for (int j=0; j<len-1; j++)
-			ASSERT(sf_new[j].feat_index<sf_new[j+1].feat_index)
-
-		SG_FREE(orig_idx);
-		SG_FREE(feat_idx);
-		SG_FREE(sf_orig);
+		sparse_matrix[i].sort_features();
 	}
 }
 

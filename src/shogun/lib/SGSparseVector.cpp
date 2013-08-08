@@ -143,6 +143,39 @@ T SGSparseVector<T>::sparse_dot(const SGSparseVector<T>& a, const SGSparseVector
 	}
 }
 
+template<class T>
+void SGSparseVector<T>::sort_features()
+{
+	if (!num_feat_entries)
+		return;
+
+	SGSparseVectorEntry<T>* sf_orig=features;
+	int32_t* feat_idx=SG_MALLOC(int32_t, num_feat_entries);
+	int32_t* orig_idx=SG_MALLOC(int32_t, num_feat_entries);
+
+	for (int j=0; j<num_feat_entries; j++)
+	{
+		feat_idx[j]=sf_orig[j].feat_index;
+		orig_idx[j]=j;
+	}
+
+	CMath::qsort_index(feat_idx, orig_idx, num_feat_entries);
+
+	SGSparseVectorEntry<T>* sf_new= SG_MALLOC(SGSparseVectorEntry<T>, num_feat_entries);
+	for (int j=0; j<num_feat_entries; j++)
+		sf_new[j]=sf_orig[orig_idx[j]];
+
+	features=sf_new;
+
+	// sanity check (<= to allow duplicate indices!)
+	for (int j=0; j<num_feat_entries-1; j++)
+		ASSERT(sf_new[j].feat_index <= sf_new[j+1].feat_index)
+
+	SG_FREE(orig_idx);
+	SG_FREE(feat_idx);
+	SG_FREE(sf_orig);
+}
+
 template<class T> void SGSparseVector<T>::load(CFile* loader)
 {
 	ASSERT(loader)

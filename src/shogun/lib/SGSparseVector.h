@@ -108,6 +108,11 @@ public:
 		return *this;
 	}
 
+	/**
+	 * sort features by indices
+	 */
+	void sort_features();
+
 	/** load vector from file
 	 *
 	 * @param loader File object via which to load data
