@@ -50,8 +50,8 @@ T SGSparseVector<T>::dense_dot(T alpha, T* vec, int32_t dim, T b)
 	{
 		for (int32_t i=0; i<num_feat_entries; i++)
 		{
-			result+=alpha*vec[features[i].feat_index]
-				*features[i].entry;
+			if (features[i].feat_index<dim)
+				result+=alpha*vec[features[i].feat_index]*features[i].entry;
 		}
 	}
 
