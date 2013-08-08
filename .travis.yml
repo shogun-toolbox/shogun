@@ -11,35 +11,51 @@ notifications:
     on_failure: always
     template:
       - "it's %{author}'s turn to pay the next round of drinks for the massacre he caused in %{repository}: %{build_url}"
-env:
- - INTERFACES=" --gmock=`pwd`/shogun-toolbox/shogun/gmock-1.6.0 --gtest=`pwd`/shogun-toolbox/shogun/gmock-1.6.0/gtest" EXTRA_PACKAGES="valgrind python-jinja2"
- - INTERFACES=python_static EXTRA_PACKAGES="python-numpy-dev python-dev"
- - INTERFACES=python_modular EXTRA_PACKAGES="python-numpy-dev python-dev python-scipy swig2.0"
- - INTERFACES=r_modular EXTRA_PACKAGES="r-base-core swig2.0"
- - INTERFACES=java_modular EXTRA_PACKAGES="openjdk-6-jdk jblas ant swig2.0"
- - INTERFACES="ruby_modular --ruby=ruby1.8" EXTRA_PACKAGES="ruby ruby-dev ruby-narray swig2.0"
- - INTERFACES=csharp_modular EXTRA_PACKAGES="mono-devel mono-gmcs cli-common-dev swig2.0"
- - INTERFACES=lua_modular EXTRA_PACKAGES="lua5.1 liblua5.1-0-dev swig2.0"
 matrix:
-  exclude:
+  include:
+    - compiler: clang
+      python: 2.7
+      language: python
+      env: CMAKE_OPTIONS="-DPythonModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON" EXTRA_PACKAGES="python-scipy swig2.0" CC=clang CXX=clang++
+    - compiler: clang
+      python: 3.3
+      language: python
+      env: CMAKE_OPTIONS="-DPythonModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON" EXTRA_PACKAGES="swig2.0" CUSTOM_PKG="sudo pip install numpy" CC=clang CXX=clang++
+    - compiler: clang
+      rvm: 1.8.7
+      language: ruby
+      env: CMAKE_OPTIONS="-DRubyModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON" CUSTOM_PKG="gem install narray" EXTRA_PACKAGES="swig2.0" CC=clang CXX=clang++
+    - compiler: clang
+      jdk: oraclejdk7
+      language: java
+      env: CMAKE_OPTIONS="-DJavaModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON" EXTRA_PACKAGES="jblas swig2.0" CC=clang CXX=clang++
+    - compiler: clang
+      env: CMAKE_OPTIONS="-DCSharpModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON" EXTRA_PACKAGES="mono-devel mono-gmcs cli-common-dev swig2.0" CC=clang CXX=clang++
+    - compiler: clang
+      env: CMAKE_OPTIONS="-DLuaModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON" EXTRA_PACKAGES="lua5.1 liblua5.1-0-dev swig2.0" CC=clang CXX=clang++
     - compiler: gcc
-      env: INTERFACES=python_static EXTRA_PACKAGES="python-numpy-dev python-dev"
-    - compiler: gcc
-      env: INTERFACES=python_modular EXTRA_PACKAGES="python-numpy-dev python-dev python-scipy swig2.0"
-    - compiler: gcc
-      env: INTERFACES=r_modular EXTRA_PACKAGES="r-base-core swig2.0"
-    - compiler: gcc
-      env: INTERFACES=java_modular EXTRA_PACKAGES="openjdk-6-jdk jblas ant swig2.0"
-    - compiler: gcc
-      env: INTERFACES="ruby_modular --ruby=ruby1.8" EXTRA_PACKAGES="ruby ruby-dev ruby-narray swig2.0"
-    - compiler: gcc
-      env: INTERFACES=csharp_modular EXTRA_PACKAGES="mono-devel mono-gmcs cli-common-dev swig2.0"
-    - compiler: gcc
-      env: INTERFACES=lua_modular EXTRA_PACKAGES="lua5.1 liblua5.1-0-dev swig2.0"
+      env: CMAKE_OPTIONS="-DOctaveModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON" EXTRA_PACKAGES="octave octave3.2-headers swig2.0"
+    - compiler: clang
+      env: CMAKE_OPTIONS="-DRModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON" EXTRA_PACKAGES="r-base-core swig2.0" CC=clang CXX=clang++
+    - language: objective-c
+      env: OSX=1
+  allow_failures:
+    - compiler: clang
+      env: CMAKE_OPTIONS="-DRModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON" EXTRA_PACKAGES="r-base-core swig2.0" CC=clang CXX=clang++
+    - compiler: clang
+      python: 3.3
+      language: python
+      env: CMAKE_OPTIONS="-DPythonModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON" EXTRA_PACKAGES="swig2.0" CUSTOM_PKG="sudo pip install numpy" CC=clang CXX=clang++
+    - language: objective-c
+      env: OSX=1
+virtualenv:
+  system_site_packages: true
 before_install:
- - sudo apt-get update -qq
- - sudo apt-get install -qq cdbs libeigen3-dev libarpack2-dev libatlas-base-dev libblas-dev libglpk-dev libhdf5-serial-dev swig zlib1g-dev libxml2-dev libreadline6-dev libreadline-dev libsnappy-dev liblzo2-dev liblzma-dev liblapack-dev gdb $EXTRA_PACKAGES
- - wget http://googlemock.googlecode.com/files/gmock-1.6.0.zip && unzip gmock-1.6.0.zip
- - wget --no-check-certificate https://github.com/json-c/json-c/archive/json-c-0.11-20130402.zip && unzip json-c-0.11-20130402.zip && cd json-c-json-c-0.11-20130402 && ./configure && make && sudo make install && cd ..
-before_script: cd ./src
-script: ./configure --disable-optimization --interfaces=$INTERFACES && make -j 4 && sudo make install && make tests && make unit-tests
+ - if [ -z $OSX ] ; then sudo apt-get update -qq ; else brew update ; fi
+ - if [ -z $OSX ] ; then sudo apt-get install -qq libbz2-dev cdbs libarpack2-dev libatlas-base-dev libblas-dev libglpk-dev libhdf5-serial-dev zlib1g-dev libxml2-dev libreadline6-dev libreadline-dev libsnappy-dev liblzo2-dev liblzma-dev liblapack-dev gdb cmake python-jinja2 $EXTRA_PACKAGES ; else brew install cmake ; fi
+ - if [ $OSX ] ; then curl -O https://raw.github.com/rudix-mac/package-manager/master/rudix.py && sudo python rudix.py install rudix && sudo rudix install jinja2 ; fi
+ - $CUSTOM_PKG
+before_script: 
+  - mkdir build
+  - cd build
+script: cmake -DENABLE_TESTING=ON -DBUNDLE_EIGEN=ON -DBUNDLE_JSON=ON $CMAKE_OPTIONS .. && make -j 4 && sudo make install && ctest --output-on-failure

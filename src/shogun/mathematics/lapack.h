@@ -25,8 +25,12 @@ extern "C" {
 #include <mkl_cblas.h>
 #include <mkl_lapack.h>
 #elif defined(HAVE_MVEC)
-#include </System/Library/Frameworks/vecLib.framework/Headers/cblas.h>
-#include </System/Library/Frameworks/vecLib.framework/Headers/clapack.h>
+//FIXME: Accelerate framework's vForce.h forward declares
+// std::complex<> classes that causes major errors
+// in c++11 mode and Eigen3
+// this define basically disables the include of vForce.h
+#define __VFORCE_H 1	
+#include <Accelerate/Accelerate.h>
 #else
 #include <cblas.h>
 #endif

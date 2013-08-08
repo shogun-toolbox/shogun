@@ -1,4 +1,4 @@
-INPUT                  = ../../shogun
+INPUT                  = @LIBSHOGUN_SRC_DIR@
 OUTPUT_DIRECTORY       = modshogun
 XML_OUTPUT             = doxygen_xml
 CREATE_SUBDIRS         = NO

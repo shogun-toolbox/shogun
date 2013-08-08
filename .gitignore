@@ -40,9 +40,7 @@ configure.log
 /doc/html
 /doc/html_cn
 /doc/pages/Configure.generated
-/doc/pages*/ExamplesL*.mainpage
-/doc/pages*/ExamplesS*.mainpage
-/doc/pages*/ExamplesM*.mainpage
+/doc/pages*/Examples*.mainpage
 
 # /src/
 /src/shogun/lib/versionstring.h
@@ -112,10 +110,12 @@ configure.log
 /examples/missing.log
 /examples/undocumented/libshogun/*
 !/examples/undocumented/libshogun/*.cpp
+!/examples/undocumented/libshogun/CMakeLists.txt
 examples/undocumented/python_modular/*
 !/examples/undocumented/libshogun/tools/
 !examples/undocumented/python_modular/graphical/
 !examples/undocumented/python_modular/*.py
+!examples/undocumented/python_modular/CMakeLists.txt
 
 # /tests
 /tests/unit/shogun-unit-test
@@ -124,3 +124,7 @@ examples/undocumented/python_modular/*
 /tests/unit/*.hdf5
 /tests/unit/*.json
 /tests/unit/combined_kernel.weights
+
+# cmake
+/CMakeFiles/
+CMakeCache.txt

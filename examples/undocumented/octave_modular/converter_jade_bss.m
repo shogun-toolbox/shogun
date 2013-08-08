@@ -5,7 +5,7 @@
 %
 % Kevin Hughes 2013
 
-init_shogun
+modshogun
 
 % Generate sample data
 n_samples = 2000;

@@ -1,5 +1,5 @@
 % initialize modular shogun interface
-init_shogun
+modshogun
 
 % add path to load matrix script
 addpath('tools');

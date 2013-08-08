@@ -24,6 +24,8 @@
 		  with Ascii and Xml files added. [Soumyajit De].
 		- Added mini-framework for numerical integration in one variable. Implemented
 		  Gauss-Kronrod and Gauss-Hermite quadrature formulas.
+		- Changed from configure script to CMake by Viktor Gal.
+		- Add C++11 cmake detection scripts
 	* Bugfixes:
 		- Fix json serialization.
 		- Fixed bugs in FITC inference method that caused wrong posterior results.

@@ -1,4 +1,4 @@
-init_shogun
+modshogun
 
 addpath('tools');
 
