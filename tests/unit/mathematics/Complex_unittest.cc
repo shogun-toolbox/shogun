@@ -50,10 +50,10 @@ TEST(CMath, complex_test)
 	EXPECT_NEAR(result.imag(), -20.73540973837024026238, 1E-14);
 
 	result=CMath::cos(a);
-	EXPECT_NEAR(result.real(), 57.21909818460073893220, 1E-14);
+	EXPECT_NEAR(result.real(), 57.21909818460073893220, 1E-13);
 	EXPECT_NEAR(result.imag(), 193.42764312130648818311, 1E-13);
 	result=CMath::cosh(a);
-	EXPECT_NEAR(result.real(), 71.25418754735444792914, 1E-14);
+	EXPECT_NEAR(result.real(), 71.25418754735444792914, 1E-13);
 	EXPECT_NEAR(result.imag(), -20.73352705155264885661, 1E-14);
 
 	result=CMath::tan(a);
