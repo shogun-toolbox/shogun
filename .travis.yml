@@ -20,7 +20,7 @@ matrix:
     - compiler: clang
       python: 3.3
       language: python
-      env: CMAKE_OPTIONS="-DPythonModular=ON" EXTRA_PACKAGES="python3-scipy swig2.0" CC=clang CXX=clang++
+      env: CMAKE_OPTIONS="-DPythonModular=ON" EXTRA_PACKAGES="swig2.0" CUSTOM_PKG="sudo pip install numpy" CC=clang CXX=clang++
     - compiler: clang
       rvm: 1.8.7
       language: ruby
@@ -45,7 +45,7 @@ matrix:
     - compiler: clang
       python: 3.3
       language: python
-      env: CMAKE_OPTIONS="-DPythonModular=ON" EXTRA_PACKAGES="python3-scipy swig2.0" CC=clang CXX=clang++
+      env: CMAKE_OPTIONS="-DPythonModular=ON" EXTRA_PACKAGES="swig2.0" CUSTOM_PKG="sudo pip install numpy" CC=clang CXX=clang++
     - language: objective-c
       env: OSX=1
 virtualenv:
