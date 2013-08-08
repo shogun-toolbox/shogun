@@ -162,10 +162,23 @@ void SGSparseVector<T>::sort_features()
 	CMath::qsort_index(feat_idx, orig_idx, num_feat_entries);
 
 	SGSparseVectorEntry<T>* sf_new= SG_MALLOC(SGSparseVectorEntry<T>, num_feat_entries);
-	for (int j=0; j<num_feat_entries; j++)
-		sf_new[j]=sf_orig[orig_idx[j]];
 
-	features=sf_new;
+	int32_t last_index = 0;
+	sf_new[last_index] = sf_orig[orig_idx[last_index]];
+
+	for (int32_t i = 1; i < num_feat_entries; i++) {
+	        if (sf_new[last_index].feat_index == sf_orig[orig_idx[i]].feat_index) {
+	            sf_new[last_index].entry += sf_orig[orig_idx[i]].entry;
+	        }
+	        else {
+	            last_index++;
+	            sf_new[last_index] = sf_orig[orig_idx[i]];
+            }
+    }
+
+	ASSERT(last_index < num_feat_entries);
+	features = SG_REALLOC(SGSparseVectorEntry<T>, sf_new, num_feat_entries, last_index+1);
+	num_feat_entries = last_index+1;
 
 	// sanity check (<= to allow duplicate indices!)
 	for (int j=0; j<num_feat_entries-1; j++)
