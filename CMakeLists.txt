@@ -92,7 +92,10 @@ if( NOT CMAKE_BUILD_TYPE )
 endif()
 
 # set the flags for the build types
-SET(COMPILER_WARNINGS "-Wall -Wno-unused-parameter -Wformat -Wformat-security -Wparentheses -Wshadow -Wno-unknown-pragmas -Wno-deprecated")
+# TODO: add -Wshadow
+# currently the way we use eigen3 it produces like 10 MB sized warnings because
+# of shadowing...
+SET(COMPILER_WARNINGS "-Wall -Wno-unused-parameter -Wformat -Wformat-security -Wparentheses -Wno-unknown-pragmas -Wno-deprecated")
 SET(RELEASE_COMPILER_FLAGS "-fexpensive-optimizations -frerun-cse-after-loop -fcse-follow-jumps -finline-functions -fschedule-insns2 -fthread-jumps -fforce-addr -fstrength-reduce -funroll-loops -mfpmath=sse")
 SET(SWIG_CXX_COMPILER_FLAGS "-O0 -g")
 SET(CMAKE_C_FLAGS "${COMPILER_WARNINGS} -g ${CMAKE_C_FLAGS}")
