@@ -12,7 +12,7 @@ typedef Matrix< float64_t, Dynamic, Dynamic, ColMajor > EMatrix;
 
 using namespace shogun;
 
-double amari_index(SGMatrix<float64_t> SGW, SGMatrix<float64_t> SGA, bool standardize)
+float64_t amari_index(SGMatrix<float64_t> SGW, SGMatrix<float64_t> SGA, bool standardize)
 {
 	Eigen::Map<EMatrix> W(SGW.matrix,SGW.num_rows,SGW.num_cols);
 	Eigen::Map<EMatrix> A(SGA.matrix,SGA.num_rows,SGA.num_cols);
@@ -28,7 +28,8 @@ double amari_index(SGMatrix<float64_t> SGW, SGMatrix<float64_t> SGA, bool standa
 		
 	if (W.rows() < 2)
 		SG_SERROR("amari_index - input must be at least 2x2\n")
-		
+	
+	// normalizing both mixing matrices	
 	if (standardize)
 	{
 		for (int r = 0; r < W.rows(); r++)
@@ -63,9 +64,11 @@ double amari_index(SGMatrix<float64_t> SGW, SGMatrix<float64_t> SGA, bool standa
 		} while(swap);
 	}
 	
+	// calculating the permutation matrix
 	EMatrix P = (W * A).cwiseAbs();
 	int k = P.rows();
 	
+	// summing the error in the permutation matrix
 	EMatrix E1(k,k);
 	for (int r = 0; r < k; r++)
 		E1.row(r) = P.row(r) / P.row(r).maxCoeff();

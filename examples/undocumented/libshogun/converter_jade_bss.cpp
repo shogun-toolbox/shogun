@@ -93,7 +93,7 @@ void test()
 	bool isperm = is_permutation_matrix(P);
 	std::cout << "EA^-1 * A == Permuatation Matrix is: " << isperm << std::endl;
 
-	double amari_err = amari_index(jade->get_mixing_matrix(), mixing_matrix, true); 
+	float64_t amari_err = amari_index(jade->get_mixing_matrix(), mixing_matrix, true); 
 	std::cout << "Amari Error: " << amari_err << std::endl;
 
 	SG_UNREF(jade);
