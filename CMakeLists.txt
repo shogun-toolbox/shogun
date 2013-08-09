@@ -7,6 +7,7 @@
 project(shogun)
 cmake_minimum_required(VERSION 2.8)
 SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
+include(ShogunUtils)
 
 # CCACHE
 OPTION(ENABLE_CCACHE "Enable ccache for compilation" ON)
@@ -83,6 +84,24 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
 	ENDIF()
 ENDIF()
 
+#Build type
+if( NOT CMAKE_BUILD_TYPE )
+  set( CMAKE_BUILD_TYPE Release CACHE STRING
+       "Choose the type of build, options are: Debug Release Distribution."
+       FORCE )
+endif()
+
+# set the flags for the build types
+SET(COMPILER_WARNINGS "-Wall -Wno-unused-parameter -Wformat -Wformat-security -Wparentheses -Wshadow -Wno-unknown-pragmas -Wno-deprecated")
+SET(RELEASE_COMPILER_FLAGS "-fexpensive-optimizations -frerun-cse-after-loop -fcse-follow-jumps -finline-functions -fschedule-insns2 -fthread-jumps -fforce-addr -fstrength-reduce -funroll-loops -mfpmath=sse")
+SET(SWIG_CXX_COMPILER_FLAGS "-O0 -g")
+SET(CMAKE_C_FLAGS "${COMPILER_WARNINGS} -g ${CMAKE_C_FLAGS}")
+SET(CMAKE_CXX_FLAGS "${COMPILER_WARNINGS} -g ${CMAKE_CXX_FLAGS}")
+SET(CMAKE_C_FLAGS_RELEASE "-O3 ${RELEASE_COMPILER_FLAGS}")
+SET(CMAKE_CXX_FLAGS_RELEASE "-O3 ${RELEASE_COMPILER_FLAGS}")
+SET(CMAKE_C_FLAGS_DISTRIBUTION "-O2")
+SET(CMAKE_CXX_FLAGS_DISTRIBUTION "-O2")
+
 # check for supported c++11 features
 #
 # clang with -std=c++11 and -stdlib=libc++ does not work
@@ -95,12 +114,14 @@ IF (NOT (DARWIN AND COMPILE_MODULAR_INTERFACE))
 		LIST(APPEND DEFINES HAVE_CXX11)
 		SET(HAVE_CXX11 1)
 		SET(CMAKE_CXX_FLAGS "${CXX11_COMPILER_FLAGS} ${CMAKE_CXX_FLAGS}")
+		SET(SWIG_CXX_COMPILER_FLAGS "${CXX11_COMPILER_FLAGS} ${SWIG_CXX_COMPILER_FLAGS}")
 	ENDIF()
 
 	IF(_HAS_CXX0X_FLAG)
 		LIST(APPEND DEFINES HAVE_CXX0X)
 		SET(HAVE_CXX0X 1)
 		SET(CMAKE_CXX_FLAGS "${CXX11_COMPILER_FLAGS} ${CMAKE_CXX_FLAGS}")
+		SET(SWIG_CXX_COMPILER_FLAGS "${CXX11_COMPILER_FLAGS} ${SWIG_CXX_COMPILER_FLAGS}")
 	ENDIF()
 
 	IF (HAVE_CXX11_ATOMIC)
@@ -108,11 +129,10 @@ IF (NOT (DARWIN AND COMPILE_MODULAR_INTERFACE))
 	ENDIF()
 ENDIF()
 
-# cpu tuning params
-OPTION(DISABLE_OPTIMIZATIONS "Disable optimization flags" OFF)
-IF (NOT DISABLE_OPTIMIZATIONS)
+IF(CMAKE_BUILD_TYPE MATCHES "Release")
 	SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=native")
 	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
+	SET(SWIG_CXX_COMPILER_FLAGS "${SWIG_CXX_COMPILER_FLAGS} -march=native")
 ENDIF()
 
 ############### VERSION #####################
@@ -132,17 +152,6 @@ IF(NOT WIN32)
 	SET(MACHINE ${MACHINE_OUTPUT})
 ENDIF()
 
-#Build type
-if( NOT CMAKE_BUILD_TYPE )
-  set( CMAKE_BUILD_TYPE Debug CACHE STRING
-       "Choose the type of build, options are: Debug Release."
-       FORCE )
-endif()
-
-IF(CMAKE_BUILD_TYPE STREQUAL "Debug")
-	#		COMP_OPTS="-g $COMP_OPTS";
-	#	COMPFLAGS_SWIG_CPP="-g $COMPFLAGS_SWIG_CPP"
-ENDIF()
 
 SET(BUILD_STATIC "Build a statically linked binary" OFF)
 ################# EXAMPLES ##################
@@ -606,8 +615,9 @@ IF(ENABLE_TESTING)
 ENDIF()
 
 # save configuration options
+MergeCFLAGS()
 SET(CONFIGURE_OPTIONS "TODO")
-SET(COMPFLAGS_CPP "${CMAKE_CXX_FLAGS}")
+SET(COMPFLAGS_CPP "${MERGED_CXX_FLAGS}")
 SET(LINKFLAGS "${POSTLINKFLAGS}")
 
 add_subdirectory(src/shogun)

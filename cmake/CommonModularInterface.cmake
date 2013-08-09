@@ -6,6 +6,13 @@ foreach(D IN LISTS DEFINES)
 	SET(CMAKE_SWIG_FLAGS "${CMAKE_SWIG_FLAGS};-D${D}")
 endforeach()
 
+# set compiler SWIG generated cxx compiler flags
+SET(CMAKE_CXX_FLAGS ${SWIG_CXX_COMPILER_FLAGS})
+# unset any release or distribution flags
+# we don't want them when compiling SWIG generated source
+SET(CMAKE_CXX_FLAGS_RELEASE "")
+SET(CMAKE_CXX_FLAGS_DISTRIBUTION "")
+
 if(${MODULAR_NAME} STREQUAL "python")
 	SET(PREPEND_TARGET "_")
 endif()
