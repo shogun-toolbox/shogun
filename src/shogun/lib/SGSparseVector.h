@@ -108,6 +108,41 @@ public:
 		return *this;
 	}
 
+	/**
+	 * get number of dimensions
+	 *
+	 * @return largest feature index
+	 */
+	int32_t get_num_dimensions();
+
+	/**
+	 * sort features by indices
+	 */
+	void sort_features();
+
+	/**
+	 * get feature value for index
+	 *
+	 * @param index
+	 * @return value
+	 */
+	T get_feature(int32_t index);
+
+	/**
+	 * get dense representation of given size
+	 *
+	 * @param dimension of requested dense vector
+	 * @return SGVector<T>
+	 */
+	SGVector<T> get_dense(int32_t dimension);
+
+	/**
+	 * get shortet dense representation for sparse vector
+	 *
+	 * @return SGVector<T>
+	 */
+	SGVector<T> get_dense();
+
 	/** load vector from file
 	 *
 	 * @param loader File object via which to load data
