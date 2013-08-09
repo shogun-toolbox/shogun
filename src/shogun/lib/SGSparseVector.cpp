@@ -50,8 +50,8 @@ T SGSparseVector<T>::dense_dot(T alpha, T* vec, int32_t dim, T b)
 	{
 		for (int32_t i=0; i<num_feat_entries; i++)
 		{
-			result+=alpha*vec[features[i].feat_index]
-				*features[i].entry;
+			if (features[i].feat_index<dim)
+				result+=alpha*vec[features[i].feat_index]*features[i].entry;
 		}
 	}
 
@@ -141,6 +141,124 @@ T SGSparseVector<T>::sparse_dot(const SGSparseVector<T>& a, const SGSparseVector
 	{
 		return dot_prod_asymmetric(b, a);
 	}
+}
+
+template<class T>
+int32_t SGSparseVector<T>::get_num_dimensions()
+{
+	if (!features)
+		return 0;
+
+	int32_t dimensions = -1;
+	for (index_t i=0; i<num_feat_entries; i++)
+	{
+		if (features[i].feat_index > dimensions)
+		{
+			dimensions = features[i].feat_index;
+		}
+	}
+
+	return dimensions+1;
+}
+
+template<class T>
+void SGSparseVector<T>::sort_features()
+{
+	if (!num_feat_entries)
+		return;
+
+	SGSparseVectorEntry<T>* sf_orig=features;
+	int32_t* feat_idx=SG_MALLOC(int32_t, num_feat_entries);
+	int32_t* orig_idx=SG_MALLOC(int32_t, num_feat_entries);
+
+	for (int j=0; j<num_feat_entries; j++)
+	{
+		feat_idx[j]=sf_orig[j].feat_index;
+		orig_idx[j]=j;
+	}
+
+	CMath::qsort_index(feat_idx, orig_idx, num_feat_entries);
+
+	SGSparseVectorEntry<T>* sf_new= SG_MALLOC(SGSparseVectorEntry<T>, num_feat_entries);
+
+	int32_t last_index = 0;
+	sf_new[last_index] = sf_orig[orig_idx[last_index]];
+
+	for (int32_t i = 1; i < num_feat_entries; i++)
+	{
+		if (sf_new[last_index].feat_index == sf_orig[orig_idx[i]].feat_index)
+		{
+			sf_new[last_index].entry += sf_orig[orig_idx[i]].entry;
+		}
+		else
+		{
+			last_index++;
+			sf_new[last_index] = sf_orig[orig_idx[i]];
+		}
+	}
+
+	ASSERT(last_index < num_feat_entries);
+	features = SG_REALLOC(SGSparseVectorEntry<T>, sf_new, num_feat_entries, last_index+1);
+	num_feat_entries = last_index+1;
+
+	// sanity check (<= to allow duplicate indices!)
+	for (int j=0; j<num_feat_entries-1; j++)
+		ASSERT(sf_new[j].feat_index <= sf_new[j+1].feat_index)
+
+	SG_FREE(orig_idx);
+	SG_FREE(feat_idx);
+	SG_FREE(sf_orig);
+}
+
+template<class T>
+T SGSparseVector<T>::get_feature(int32_t index)
+{
+	T ret = 0;
+	if (features)
+	{
+		for (index_t i=0; i<num_feat_entries; i++)
+			if (features[i].feat_index==index)
+				ret+=features[i].entry ;
+	}
+
+	return ret ;
+}
+
+template<class T>
+SGVector<T> SGSparseVector<T>::get_dense()
+{
+	SGVector<T> dense();
+
+	if (features)
+	{
+		dense.resize_vector(get_num_dimensions());
+		dense.zero();
+
+		for (index_t i=0; i<num_feat_entries; i++)
+		{
+			dense.vector[features[i].feat_index] += features[i].entry;
+		}
+	}
+
+	return dense;
+}
+
+template<class T>
+SGVector<T> SGSparseVector<T>::get_dense(int32_t dimension)
+{
+	SGVector<T> dense(dimension);
+	dense.zero();
+
+	if (features)
+	{
+		for (index_t i=0; i<num_feat_entries; i++)
+		{
+			ASSERT(features[i].feat_index < dimension);
+			dense.vector[features[i].feat_index] += features[i].entry;
+		}
+	}
+
+	return dense;
 }
 
 template<class T> void SGSparseVector<T>::load(CFile* loader)
