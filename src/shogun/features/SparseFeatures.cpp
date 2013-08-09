@@ -63,10 +63,9 @@ template<class ST> CFeatures* CSparseFeatures<ST>::duplicate() const
 
 template<class ST> ST CSparseFeatures<ST>::get_feature(int32_t num, int32_t index)
 {
-	ASSERT(num>=0 && num<get_num_vectors())
-	SGSparseVector<ST> sv=get_sparse_feature_vector(num);
+	REQUIRE(index>=0 && index<get_num_features(), "get_feature(num=%d,index=%d): index exceeds [0;%d]\n", num, index, get_num_features()-1);
 
-	ASSERT(index>=0 && index<get_num_features());
+	SGSparseVector<ST> sv=get_sparse_feature_vector(num);
 	ST ret = sv.get_feature(index);
 
 	free_sparse_feature_vector(num);
@@ -75,15 +74,8 @@ template<class ST> ST CSparseFeatures<ST>::get_feature(int32_t num, int32_t inde
 
 template<class ST> SGVector<ST> CSparseFeatures<ST>::get_full_feature_vector(int32_t num)
 {
-	if (num<0 || num>=get_num_vectors())
-	{
-		SG_ERROR("Index out of bounds (number of vectors %d, you "
-				"requested %d)\n", get_num_vectors(), num);
-	}
-
 	SGSparseVector<ST> sv=get_sparse_feature_vector(num);
 	SGVector<ST> dense = sv.get_dense(get_num_features());
-
 	free_sparse_feature_vector(num);
 	return dense;
 }
@@ -98,8 +90,7 @@ template<class ST> int32_t CSparseFeatures<ST>::get_nnz_features_for_vector(int3
 
 template<class ST> SGSparseVector<ST> CSparseFeatures<ST>::get_sparse_feature_vector(int32_t num)
 {
-	ASSERT(num>=0 && num<get_num_vectors())
-
+	REQUIRE(num>=0 && num<get_num_vectors(), "get_sparse_feature_vector(num=%d): num exceeds [0;%d]\n", num, get_num_vectors()-1);
 	index_t real_num=m_subset_stack->subset_idx_conversion(num);
 
 	SGSparseVector<ST> result;
@@ -165,12 +156,10 @@ template<class ST> ST CSparseFeatures<ST>::dense_dot(ST alpha, int32_t num, ST* 
 
 template<class ST> void CSparseFeatures<ST>::add_to_dense_vec(float64_t alpha, int32_t num, float64_t* vec, int32_t dim, bool abs_val)
 {
-	ASSERT(vec)
-	if (dim!=get_num_features())
-	{
-		SG_ERROR("dimension of vec (=%d) does not match number of features (=%d)\n",
-				dim, get_num_features());
-	}
+	REQUIRE(vec, "add_to_dense_vec(num=%d,dim=%d): vec must not be NULL\n",
+			num, dim);
+	REQUIRE(dim>=get_num_features(), "add_to_dense_vec(num=%d,dim=%d): dim should contain number of features %d\n",
+			num, dim, get_num_features());
 
 	SGSparseVector<ST> sv=get_sparse_feature_vector(num);
 
@@ -534,14 +523,12 @@ template<> float64_t CSparseFeatures<complex64_t>::dot(int32_t vec_idx1,
 
 template<class ST> float64_t CSparseFeatures<ST>::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
 {
-	ASSERT(vec2)
-	if (vec2_len<get_num_features())
-	{
-		SG_ERROR("dimension of vec2 (=%d) does not match number of features (=%d)\n",
-				vec2_len, get_num_features());
-	}
-	float64_t result=0;
+	REQUIRE(vec2, "dense_dot(vec_idx1=%d,vec2_len=%d): vec2 must not be NULL\n",
+			vec_idx1, vec2_len);
+	REQUIRE(vec2_len>=get_num_features(), "dense_dot(vec_idx1=%d,vec2_len=%d): vec2_len should contain number of features %d %d\n",
+			vec_idx1, vec2_len, get_num_features());
 
+	float64_t result=0;
 	SGSparseVector<ST> sv=get_sparse_feature_vector(vec_idx1);
 
 	if (sv.features)

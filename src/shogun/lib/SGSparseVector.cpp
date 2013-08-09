@@ -197,13 +197,19 @@ void SGSparseVector<T>::sort_features()
 		}
 	}
 
-	ASSERT(last_index < num_feat_entries);
+	REQUIRE(last_index < num_feat_entries, "sort_features(): last_index=%d must not exceed num_feat_entries=%d\n",
+			last_index, num_feat_entries);
+
 	features = SG_REALLOC(SGSparseVectorEntry<T>, sf_new, num_feat_entries, last_index+1);
 	num_feat_entries = last_index+1;
 
 	// sanity check (<= to allow duplicate indices!)
 	for (int j=0; j<num_feat_entries-1; j++)
-		ASSERT(sf_new[j].feat_index <= sf_new[j+1].feat_index)
+	{
+		REQUIRE(sf_new[j].feat_index <= sf_new[j+1].feat_index,
+				"sort_features(): failed sanity check %d <= %d after sorting (comparing indices sf_new[%d] <= sf_new[%d], features=%d)\n",
+				sf_new[j].feat_index, sf_new[j+1].feat_index, j, j+1, num_feat_entries);
+	}
 
 	SG_FREE(orig_idx);
 	SG_FREE(feat_idx);
@@ -227,7 +233,7 @@ T SGSparseVector<T>::get_feature(int32_t index)
 template<class T>
 SGVector<T> SGSparseVector<T>::get_dense()
 {
-	SGVector<T> dense();
+	SGVector<T> dense;
 
 	if (features)
 	{
@@ -251,9 +257,11 @@ SGVector<T> SGSparseVector<T>::get_dense(int32_t dimension)
 
 	if (features)
 	{
+		REQUIRE(get_num_dimensions() <= dimension, "get_dense(dimension=%d): sparse dimension %d exceeds requested dimension\n",
+				dimension, get_num_dimensions());
+
 		for (index_t i=0; i<num_feat_entries; i++)
 		{
-			ASSERT(features[i].feat_index < dimension);
 			dense.vector[features[i].feat_index] += features[i].entry;
 		}
 	}
