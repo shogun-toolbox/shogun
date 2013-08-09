@@ -383,7 +383,7 @@ bool CSGObject::load_serializable(CSerializableFile* file,
 
 	if (file_version>param_version)
 	{
-		if (param_version==VERSION_PARAMETER)
+		if (param_version==Version::get_version_parameter())
 		{
 			SG_WARNING("%s%s::load_serializable(): parameter version of file "
 					"larger than the one of shogun. Try with a more recent"

@@ -12,7 +12,6 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>
-#include <shogun/lib/versionstring.h>
 #include <shogun/lib/config.h>
 
 #ifndef VERSION_H__
@@ -63,7 +62,7 @@ public:
 	/** get version minute */
 	static int32_t get_version_minute();
 
-	/** get version parameter */
+	/** get parameter serialization version */
 	static int32_t get_version_parameter();
 
 	/** get version in minutes */

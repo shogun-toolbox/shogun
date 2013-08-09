@@ -180,7 +180,7 @@ public:
 	 * @return TRUE if done, otherwise FALSE
 	 */
 	virtual bool save_serializable(CSerializableFile* file,
-			const char* prefix="", int32_t param_version=VERSION_PARAMETER);
+			const char* prefix="", int32_t param_version=Version::get_version_parameter());
 
 	/** Load this object from file.  If it will fail (returning FALSE)
 	 *  then this object will contain inconsistent data and should not
@@ -194,7 +194,7 @@ public:
 	 *  @return TRUE if done, otherwise FALSE
 	 */
 	virtual bool load_serializable(CSerializableFile* file,
-			const char* prefix="", int32_t param_version=VERSION_PARAMETER);
+			const char* prefix="", int32_t param_version=Version::get_version_parameter());
 
 	/** loads some specified parameters from a file with a specified version
 	 * The provided parameter info has a version which is recursively mapped
@@ -220,7 +220,7 @@ public:
 	 *
 	 * @param file_version parameter version of the file
 	 * @param current_version version from which mapping begins (you want to use
-	 * VERSION_PARAMETER for this in most cases)
+	 * Version::get_version_parameter() for this in most cases)
 	 * @param file file to load from
 	 * @param prefix prefix for members
 	 * @return (sorted) array of created TParameter instances with file data
@@ -463,7 +463,7 @@ private:
 	 * @return true iff successful
 	 */
 	bool save_parameter_version(CSerializableFile* file, const char* prefix="",
-			int32_t param_version=VERSION_PARAMETER);
+			int32_t param_version=Version::get_version_parameter());
 
 	/** loads the parameter version of the provided file.
 	 * @return parameter version of file, -1 if there is no such

@@ -35,7 +35,6 @@ Version::~Version()
 {
 }
 
-/** print version */
 void Version::print_version()
 {
 	SG_SPRINT("libshogun (%s/%s%d)\n\n", MACHINE, VERSION_RELEASE, version_revision)
@@ -51,86 +50,67 @@ void Version::print_version()
 	SG_SPRINT("( configure options: \"%s\" compile flags: \"%s\" link flags: \"%s\" )\n", CONFIGURE_OPTIONS, COMPFLAGS_CPP, LINKFLAGS)
 }
 
-/** get version extra */
 const char* Version::get_version_extra()
 {
 	return version_extra;
 }
 
-/** get version release */
 const char* Version::get_version_release()
 {
 	return version_release;
 }
 
-/** get version revision */
 int32_t Version::get_version_revision()
 {
 	return version_revision;
 }
 
-/** get version year */
 int32_t Version::get_version_year()
 {
 	return version_year;
 }
 
-/** get version month */
 int32_t Version::get_version_month()
 {
 	return version_month;
 }
 
-/** get version day */
 int32_t Version::get_version_day()
 {
 	return version_day;
 }
 
-/** get version hour */
 int32_t Version::get_version_hour()
 {
 	return version_hour;
 }
 
-/** get version minute */
 int32_t Version::get_version_minute()
 {
 	return version_year;
 }
 
-/** get version parameter */
 int32_t Version::get_version_parameter()
 {
 	return version_parameter;
 }
 
-/** get version in minutes */
 int64_t Version::get_version_in_minutes()
 {
 	return ((((version_year)*12 + version_month)*30 + version_day)* 24 + version_hour)*60 + version_minute;
 }
 
-/** ref object
- * @return ref count
- */
 int32_t Version::ref()
 {
 	++refcount;
 	return refcount;
 }
 
-/** ref count
- * @return ref count
- */
 int32_t Version::ref_count() const
 {
 	return refcount;
 }
 
-/** unref object
- * @return ref count
- */
 int32_t Version::unref()
 {
 	if (refcount==0 || --refcount==0)

@@ -162,7 +162,7 @@ public:
 
 	/** Not allowed for this class, throws an error */
 	virtual bool save_serializable(CSerializableFile* file,
-			const char* prefix="", int32_t param_version=VERSION_PARAMETER)
+			const char* prefix="", int32_t param_version=Version::get_version_parameter())
 	{
 		SG_ERROR("Serialization is not allowed for %s!\n", get_name())
 		return false;
@@ -170,7 +170,7 @@ public:
 
 	/** Not allowed for this class, throws an error */
 	virtual bool load_serializable(CSerializableFile* file,
-		const char* prefix="", int32_t param_version=VERSION_PARAMETER)
+		const char* prefix="", int32_t param_version=Version::get_version_parameter())
 	{
 		SG_ERROR("Serialization is not allowed for %s!\n", get_name())
 		return false;
