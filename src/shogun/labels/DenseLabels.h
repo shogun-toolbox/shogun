@@ -188,13 +188,13 @@ class CDenseLabels : public CLabels
 		 *
 		 * @return number of labels
 		 */
-		virtual int32_t get_num_labels();
+		virtual int32_t get_num_labels() const;
 
 		/** get label type
 		 *
 		 * @return label type (binary, multiclass, ...)
 		 */
-		virtual ELabelType get_label_type()=0;
+		virtual ELabelType get_label_type() const=0;
 
 	public:
 		/** label designates classify reject */

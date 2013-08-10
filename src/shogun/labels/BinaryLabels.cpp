@@ -83,7 +83,7 @@ void CBinaryLabels::ensure_valid(const char* context)
 	}
 }
 
-ELabelType CBinaryLabels::get_label_type()
+ELabelType CBinaryLabels::get_label_type() const
 {
 	return LT_BINARY;
 }

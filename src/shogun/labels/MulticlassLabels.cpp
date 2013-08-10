@@ -88,7 +88,7 @@ void CMulticlassLabels::ensure_valid(const char* context)
 	}
 }
 
-ELabelType CMulticlassLabels::get_label_type()
+ELabelType CMulticlassLabels::get_label_type() const
 {
 	return LT_MULTICLASS;
 }

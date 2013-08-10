@@ -198,7 +198,7 @@ int32_t CDenseLabels::get_int_label(int32_t idx)
 	return int32_t(m_labels.vector[real_num]);
 }
 
-int32_t CDenseLabels::get_num_labels()
+int32_t CDenseLabels::get_num_labels() const
 {
 	return m_subset_stack->has_subsets()
 			? m_subset_stack->get_size() : m_labels.vlen;
