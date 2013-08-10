@@ -297,7 +297,7 @@ public:
 	 *
 	 * @return number of features
 	 */
-	int32_t get_num_features();
+	int32_t get_num_features() const;
 
 	/** set number of features
 	 *
