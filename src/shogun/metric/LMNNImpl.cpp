@@ -351,7 +351,7 @@ ImpostorsSetType CLMNNImpl::find_impostors_exact(MatrixXd& LX, const MatrixXd& s
 	return N;
 }
 
-ImpostorsSetType CLMNNImpl::find_impostors_approx(const MatrixXd& LX, const MatrixXd& sqdists,
+ImpostorsSetType CLMNNImpl::find_impostors_approx(MatrixXd& LX, const MatrixXd& sqdists,
 		const ImpostorsSetType& Nexact, const SGMatrix<index_t> target_nn)
 {
 	SG_SDEBUG("Entering CLMNNImpl::find_impostors_approx().\n")
@@ -359,7 +359,11 @@ ImpostorsSetType CLMNNImpl::find_impostors_approx(const MatrixXd& LX, const Matr
 	// initialize empty impostors set
 	ImpostorsSetType N = ImpostorsSetType();
 
+	// compute square distances from examples to impostors
+	SGVector<float64_t> impostors_sqdists = CLMNNImpl::compute_impostors_sqdists(LX,Nexact);
+
 	// find in the exact set of impostors computed last, the triplets that remain impostors
+	index_t i = 0;
 	for (ImpostorsSetType::iterator it = Nexact.begin(); it != Nexact.end(); ++it)
 	{
 		// find in target_nn(:,it->example) the position of the target neighbor it->target
@@ -371,13 +375,43 @@ ImpostorsSetType CLMNNImpl::find_impostors_approx(const MatrixXd& LX, const Matr
 				"impostors set was not found in the target neighbours matrix. "
 				"There must be a bug in find_impostors_exact.\n")
 
-		if ( SUMSQCOLS(LX.col(it->example) - LX.col(it->impostor)).coeff(0) <= sqdists(target_idx, it->example) )
+		if ( impostors_sqdists[i++] <= sqdists(target_idx, it->example) )
 			N.insert(*it);
 	}
 
 	SG_SDEBUG("Leaving CLMNNImpl::find_impostors_approx().\n")
 
 	return N;
+}
+
+SGVector<float64_t> CLMNNImpl::compute_impostors_sqdists(MatrixXd& LX, const ImpostorsSetType& Nexact)
+{
+	// get the number of examples
+	int32_t n = LX.cols();
+	// get the number of features
+	int32_t d = LX.rows();
+	// get the number of impostors
+	size_t num_impostors = Nexact.size();
+
+	/// compute square distances to impostors
+
+	// create Shogun features from LX and distance
+	SGMatrix<float64_t> lx_mat(LX.data(), d, n, false);
+	CDenseFeatures<float64_t>* lx = new CDenseFeatures<float64_t>(lx_mat);
+	CEuclideanDistance* euclidean = new CEuclideanDistance(lx,lx);
+	euclidean->set_disable_sqrt(true);
+
+	// initialize vector of square distances
+	SGVector<float64_t> sqdists(num_impostors);
+	// compute square distances
+	index_t i = 0;
+	for (ImpostorsSetType::iterator it = Nexact.begin(); it != Nexact.end(); ++it)
+		sqdists[i++] = euclidean->distance(it->example,it->impostor);
+
+	// clean up distance
+	SG_UNREF(euclidean);
+
+	return sqdists;
 }
 
 std::vector<index_t> CLMNNImpl::get_examples_label(CMulticlassLabels* y,

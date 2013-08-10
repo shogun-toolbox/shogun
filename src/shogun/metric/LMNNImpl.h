@@ -107,16 +107,22 @@ class CLMNNImpl
 	private:
 
 		/**
-		 * compute square distances plus margin between each example and its target neighbors
+		 * compute squared distances plus margin between each example and its target neighbors
 		 * in the transformed feature space
 		 */
 		static Eigen::MatrixXd compute_sqdists(Eigen::MatrixXd& L, const SGMatrix<index_t> target_nn);
+
+		/**
+		 * compute squared distances between examples and impostors in the given impostors set
+		 * Nexact
+		 */
+		static SGVector<float64_t> compute_impostors_sqdists(Eigen::MatrixXd& L, const ImpostorsSetType& Nexact);
 
 		/** find impostors; variant computing the impostors exactly, using all the data */
 		static ImpostorsSetType find_impostors_exact(Eigen::MatrixXd& LX, const Eigen::MatrixXd& sqdists, CMulticlassLabels* y, const SGMatrix<index_t> target_nn, int32_t k);
 
 		/** find impostors; approximate variant, using the last exact set of impostors */
-		static ImpostorsSetType find_impostors_approx(const Eigen::MatrixXd& LX, const Eigen::MatrixXd& sqdists, const ImpostorsSetType& Nexact, const SGMatrix<index_t> target_nn);
+		static ImpostorsSetType find_impostors_approx(Eigen::MatrixXd& LX, const Eigen::MatrixXd& sqdists, const ImpostorsSetType& Nexact, const SGMatrix<index_t> target_nn);
 
 		/** get the indices of the examples whose label is equal to yi */
 		static std::vector<index_t> get_examples_label(CMulticlassLabels* y, float64_t yi);
