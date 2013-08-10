@@ -73,11 +73,15 @@ float64_t amari_index(SGMatrix<float64_t> SGW, SGMatrix<float64_t> SGA, bool sta
 	for (int r = 0; r < k; r++)
 		E1.row(r) = P.row(r) / P.row(r).maxCoeff();
 	
+	float64_t row_error = (E1.rowwise().sum().array()-1).sum();
+	
 	EMatrix E2(k,k);
 	for (int c = 0; c < k; c++)
 		E2.col(c) = P.col(c) / P.col(c).maxCoeff();
+	
+	float64_t col_error = (E2.colwise().sum().array()-1).sum();
 
-	return 1.0 / (float)(2*k*(k-1)) * ((E1.rowwise().sum().array()-1).sum() + (E2.colwise().sum().array()-1).sum());	
+	return 1.0 / (float)(2*k*(k-1)) * (row_error + col_error);	
 	
 }
 #endif //HAVE_EIGEN3
