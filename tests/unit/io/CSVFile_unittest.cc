@@ -1,8 +1,10 @@
 #include <shogun/io/CSVFile.h>
 #include <shogun/lib/SGVector.h>
+#include <shogun/lib/SGString.h>
 #include <shogun/lib/SGMatrix.h>
 
 #include <cstdio>
+#include <cstring>
 
 #include <gtest/gtest.h>
 
@@ -156,4 +158,40 @@ TEST(CSVFileTest, write_vector_int)
 		EXPECT_EQ(tmp[i], data[i]);
 	}
 	SG_UNREF(fin);
+}
+
+TEST(CSVFileTest, read_write_string_list)
+{
+	int32_t num_lines=5;
+	const char* text[] = {"It had to be U...", "U D transpose V", "I looked all around", "And finally found", "The SVD!"};
+
+	int32_t num_str=0;
+	int32_t max_line_len=0;
+	SGString<char>* lines_to_read;	
+
+	SGString<char>* lines_to_write=SG_MALLOC(SGString<char>, num_lines);
+	for (int32_t i=0; i<num_lines; i++)
+	{
+		lines_to_write[i].string=SG_MALLOC(char, strlen(text[i]));
+		strcpy(lines_to_write[i].string, text[i]);
+		lines_to_write[i].slen=strlen(text[i]);
+	}
+
+	CCSVFile* fin;
+	CCSVFile* fout;	
+
+	fout=new CCSVFile("csvfile_test.csv",'w', NULL);
+	fout->set_string_list(lines_to_write, num_lines);
+	SG_UNREF(fout);
+
+	fin=new CCSVFile("csvfile_test.csv",'r', NULL);
+	fin->get_string_list(lines_to_read, num_str, max_line_len);
+	EXPECT_EQ(num_str, num_lines);
+
+	for (int32_t i=0; i<num_str; i++)
+	{
+		for (int32_t j=0; j<lines_to_read[i].slen; j++)
+			EXPECT_EQ(lines_to_read[i].string[j], lines_to_write[i].string[j]);
+	}
+	SG_UNREF(fin);	
 }
