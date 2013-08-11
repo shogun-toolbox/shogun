@@ -182,40 +182,40 @@ public:
 	//@{
 	virtual void get_string_list(
 			SGString<uint8_t>*& strings, int32_t& num_str,
-			int32_t& max_string_len) { };
+			int32_t& max_string_len);
 	virtual void get_string_list(
 			SGString<int8_t>*& strings, int32_t& num_str,
-			int32_t& max_string_len) { };
+			int32_t& max_string_len);
 	virtual void get_string_list(
 			SGString<char>*& strings, int32_t& num_str,
-			int32_t& max_string_len) { };
+			int32_t& max_string_len);
 	virtual void get_string_list(
 			SGString<int32_t>*& strings, int32_t& num_str,
-			int32_t& max_string_len) { };
+			int32_t& max_string_len);
 	virtual void get_string_list(
 			SGString<uint32_t>*& strings, int32_t& num_str,
-			int32_t& max_string_len) { };
+			int32_t& max_string_len);
 	virtual void get_string_list(
 			SGString<int16_t>*& strings, int32_t& num_str,
-			int32_t& max_string_len) { };
+			int32_t& max_string_len);
 	virtual void get_string_list(
 			SGString<uint16_t>*& strings, int32_t& num_str,
-			int32_t& max_string_len) { };
+			int32_t& max_string_len);
 	virtual void get_string_list(
 			SGString<int64_t>*& strings, int32_t& num_str,
-			int32_t& max_string_len) { };
+			int32_t& max_string_len);
 	virtual void get_string_list(
 			SGString<uint64_t>*& strings, int32_t& num_str,
-			int32_t& max_string_len) { };
+			int32_t& max_string_len);
 	virtual void get_string_list(
 			SGString<float32_t>*& strings, int32_t& num_str,
-			int32_t& max_string_len) { };
+			int32_t& max_string_len);
 	virtual void get_string_list(
 			SGString<float64_t>*& strings, int32_t& num_str,
-			int32_t& max_string_len) { };
+			int32_t& max_string_len);
 	virtual void get_string_list(
 			SGString<floatmax_t>*& strings, int32_t& num_str,
-			int32_t& max_string_len) { };
+			int32_t& max_string_len);
 	//@}
 
 	/** vector access functions */
@@ -319,29 +319,29 @@ public:
 	 */
 	//@{
 	virtual void set_string_list(
-			const SGString<uint8_t>* strings, int32_t num_str) { };
+			const SGString<uint8_t>* strings, int32_t num_str);
 	virtual void set_string_list(
-			const SGString<int8_t>* strings, int32_t num_str) { };
+			const SGString<int8_t>* strings, int32_t num_str);
 	virtual void set_string_list(
-			const SGString<char>* strings, int32_t num_str) { };
+			const SGString<char>* strings, int32_t num_str);
 	virtual void set_string_list(
-			const SGString<int32_t>* strings, int32_t num_str) { };
+			const SGString<int32_t>* strings, int32_t num_str);
 	virtual void set_string_list(
-			const SGString<uint32_t>* strings, int32_t num_str) { };
+			const SGString<uint32_t>* strings, int32_t num_str);
 	virtual void set_string_list(
-			const SGString<int16_t>* strings, int32_t num_str) { };
+			const SGString<int16_t>* strings, int32_t num_str);
 	virtual void set_string_list(
-			const SGString<uint16_t>* strings, int32_t num_str) { };
+			const SGString<uint16_t>* strings, int32_t num_str);
 	virtual void set_string_list(
-			const SGString<int64_t>* strings, int32_t num_str) { };
+			const SGString<int64_t>* strings, int32_t num_str);
 	virtual void set_string_list(
-			const SGString<uint64_t>* strings, int32_t num_str) { };
+			const SGString<uint64_t>* strings, int32_t num_str);
 	virtual void set_string_list(
-			const SGString<float32_t>* strings, int32_t num_str) { };
+			const SGString<float32_t>* strings, int32_t num_str);
 	virtual void set_string_list(
-			const SGString<float64_t>* strings, int32_t num_str) { };
+			const SGString<float64_t>* strings, int32_t num_str);
 	virtual void set_string_list(
-			const SGString<floatmax_t>* strings, int32_t num_str) { };
+			const SGString<floatmax_t>* strings, int32_t num_str);
 	//@}
 
 	virtual const char* get_name() const { return "CSVFile"; }
