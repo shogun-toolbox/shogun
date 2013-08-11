@@ -90,7 +90,7 @@ class CStructuredLabels : public CLabels
 		 *
 		 * @return number of labels
 		 */
-		virtual int32_t get_num_labels();
+		virtual int32_t get_num_labels() const;
 
 		/** @return object name */
 		virtual const char* get_name() const { return "StructuredLabels"; }
@@ -99,7 +99,7 @@ class CStructuredLabels : public CLabels
 		 *
 		 * @return label type LT_STRUCTURED
 		 */
-		virtual ELabelType get_label_type() { return LT_STRUCTURED; }
+		virtual ELabelType get_label_type() const { return LT_STRUCTURED; }
 
 		/** get structured data type the labels are composed of
 		 *

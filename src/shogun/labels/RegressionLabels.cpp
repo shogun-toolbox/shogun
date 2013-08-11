@@ -20,7 +20,7 @@ CRegressionLabels::CRegressionLabels(CFile* loader) : CDenseLabels(loader)
 {
 }
 
-ELabelType CRegressionLabels::get_label_type()
+ELabelType CRegressionLabels::get_label_type() const
 {
 	return LT_REGRESSION;
 }

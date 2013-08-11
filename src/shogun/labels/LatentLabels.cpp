@@ -89,7 +89,7 @@ void CLatentLabels::ensure_valid(const char* context)
 		SG_ERROR("Non-valid LatentLabels in %s", context)
 }
 
-int32_t CLatentLabels::get_num_labels()
+int32_t CLatentLabels::get_num_labels() const
 {
 	if (!m_latent_labels || !m_labels)
 		return 0;

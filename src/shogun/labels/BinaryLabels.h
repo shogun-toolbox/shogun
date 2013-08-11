@@ -88,7 +88,7 @@ class CBinaryLabels : public CDenseLabels
 		 *
 		 * @return label type binary
 		 */
-		virtual ELabelType get_label_type();
+		virtual ELabelType get_label_type() const;
 
 		/** Converts all scores to calibrated probabilities by fitting a
 		 * sigmoid function using the method described in

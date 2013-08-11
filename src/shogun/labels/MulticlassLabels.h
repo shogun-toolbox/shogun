@@ -69,7 +69,7 @@ class CMulticlassLabels : public CDenseLabels
 		 *
 		 * @return label type multiclass
 		 */
-		virtual ELabelType get_label_type();
+		virtual ELabelType get_label_type() const;
 
 		/** returns labels containing +1 at positions with ith class
 		 *  and -1 at other positions
