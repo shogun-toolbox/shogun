@@ -292,3 +292,81 @@ SET_MATRIX(set_matrix, "Lg", floatmax_t)
 SET_MATRIX(set_matrix, SCNi16, int16_t)
 SET_MATRIX(set_matrix, SCNu16, uint16_t)
 #undef SET_MATRIX
+
+void CCSVFile::get_string_list(
+			SGString<char>*& strings, int32_t& num_str,
+			int32_t& max_string_len)
+{
+	SGVector<char> line;
+	int32_t tmp=0;
+	int32_t current_line_idx=0;
+
+	max_string_len=0;
+	strings=SG_MALLOC(SGString<char>, num_str);
+
+	skip_lines(m_num_to_skip);
+	while (m_line_reader->has_next())
+	{
+		line=m_line_reader->read_line();
+		strings[current_line_idx].string=SGVector<char>::clone_vector(line.vector, line.vlen);
+		strings[current_line_idx].slen=line.vlen;
+		if (line.vlen>max_string_len)
+			max_string_len=line.vlen;
+
+		current_line_idx++;
+	}
+
+	num_str=current_line_idx;
+}
+
+#define GET_STRING_LIST(sg_type) \
+void CCSVFile::get_string_list( \
+			SGString<sg_type>*& strings, int32_t& num_str, \
+			int32_t& max_string_len) \
+{ \
+	SG_NOTIMPLEMENTED \
+}
+
+GET_STRING_LIST(int8_t)
+GET_STRING_LIST(uint8_t)
+GET_STRING_LIST(int32_t)
+GET_STRING_LIST(uint32_t)
+GET_STRING_LIST(int64_t)
+GET_STRING_LIST(uint64_t)
+GET_STRING_LIST(float32_t)
+GET_STRING_LIST(float64_t)
+GET_STRING_LIST(floatmax_t)
+GET_STRING_LIST(int16_t)
+GET_STRING_LIST(uint16_t)
+#undef GET_STRING_LIST
+
+void CCSVFile::set_string_list(
+			const SGString<char>* strings, int32_t num_str)
+{
+	for (int32_t i=0; i<num_str; i++)
+	{
+		for (int32_t j=0; j<strings[i].slen; j++)
+			fprintf(file, "%c", strings[i].string[j]);
+		fprintf(file, "\n");
+	}
+}
+
+#define SET_STRING_LIST(sg_type) \
+void CCSVFile::set_string_list( \
+			const SGString<sg_type>* strings, int32_t num_str) \
+{ \
+	SG_NOTIMPLEMENTED \
+}
+
+SET_STRING_LIST(int8_t)
+SET_STRING_LIST(uint8_t)
+SET_STRING_LIST(int32_t)
+SET_STRING_LIST(uint32_t)
+SET_STRING_LIST(int64_t)
+SET_STRING_LIST(uint64_t)
+SET_STRING_LIST(float32_t)
+SET_STRING_LIST(float64_t)
+SET_STRING_LIST(floatmax_t)
+SET_STRING_LIST(int16_t)
+SET_STRING_LIST(uint16_t)
+#undef SET_STRING_LIST
