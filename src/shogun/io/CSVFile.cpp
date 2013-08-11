@@ -56,16 +56,47 @@ void CCSVFile::set_delimiter(char delimiter)
 	m_tokenizer->delimiters[' ']=1;
 }
 
-void CCSVFile::skip_lines(int32_t num_lines)
+void CCSVFile::set_lines_to_skip(int32_t num_lines)
 {
-	for (int32_t i=0; i<num_lines; i++)
-		m_line_reader->skip_line();
+	m_num_to_skip=num_lines;
+}
+
+int32_t CCSVFile::get_stats(int32_t& num_tokens)
+{
+	int32_t num_lines=0;
+	num_tokens=-1;
+
+	while (m_line_reader->has_next()) 
+	{
+		if (num_tokens==-1)
+		{
+			SGVector<char> line=m_line_reader->read_line();
+			m_tokenizer->set_text(line);
+			
+			num_tokens=0;
+			while (m_tokenizer->has_next())
+			{
+				index_t temp_start=0;
+				m_tokenizer->next_token_idx(temp_start);
+				
+				num_tokens++;
+			}
+		}
+		else
+			m_line_reader->skip_line();
+		
+		num_lines++;
+	}
+	m_line_reader->reset();
+
+	return num_lines;
 }
 
 void CCSVFile::init()
 {
 	is_data_transposed=false;
 	m_delimiter=0;
+	m_num_to_skip=0;
 
 	m_tokenizer=NULL;
 	m_line_tokenizer=NULL;
@@ -91,6 +122,12 @@ void CCSVFile::init_with_defaults()
 	m_parser->set_tokenizer(m_tokenizer);
 
 	m_line_reader=new CLineReader(file, m_line_tokenizer);
+}
+
+void CCSVFile::skip_lines(int32_t num_lines)
+{
+	for (int32_t i=0; i<num_lines; i++)
+		m_line_reader->skip_line();
 }
 
 #define GET_VECTOR(fname, read_func, sg_type) \
@@ -135,58 +172,45 @@ GET_VECTOR(get_vector, read_ulong, uint64_t)
 #define GET_MATRIX(fname, read_func, sg_type) \
 void CCSVFile::fname(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec) \
 { \
-	int32_t nlines=0; \
-	int32_t ntokens=-1; \
-	int32_t len=0; \
+	int32_t num_lines=0; \
+	int32_t num_tokens=-1; \
+	int32_t current_line_idx=0; \
+	SGVector<char> line; \
 	\
-	int32_t last_idx=0; \
-	SGVector<sg_type> line_memory(true); \
+	skip_lines(m_num_to_skip); \
+	num_lines=get_stats(num_tokens); \
 	\
-	while(m_line_reader->has_next()) \
+	matrix=SG_MALLOC(sg_type, num_lines*num_tokens); \
+	skip_lines(m_num_to_skip); \
+	while (m_line_reader->has_next()) \
 	{ \
-		SGVector<char> line=m_line_reader->read_line(); \
-		m_tokenizer->set_text(line); \
-		\
-		len=0; \
-		while (m_tokenizer->has_next()) \
-		{ \
-			index_t temp_start=0; \
-			m_tokenizer->next_token_idx(temp_start); \
-		\
-			len++; \
-		} \
-		\
+		line=m_line_reader->read_line(); \
 		m_parser->set_text(line); \
 		\
-		if (ntokens<0) \
-			ntokens=len; \
-		\
-		if (ntokens!=len) \
-			return; \
-		\
-		line_memory.resize_vector(last_idx+len); \
-		for (int32_t i=0; i<len; i++) \
+		for (int32_t i=0; i<num_tokens; i++) \
 		{ \
-			line_memory[i+last_idx]=m_parser->read_func(); \
+			if (!m_parser->has_next()) \
+				return; \
+			\
+			if (!is_data_transposed) \
+				matrix[i+current_line_idx*num_tokens]=m_parser->read_func(); \
+			else \
+				matrix[current_line_idx+i*num_tokens]=m_parser->read_func(); \
 		} \
-		last_idx+=len; \
-		\
-		nlines++; \
+		current_line_idx++; \
 	} \
 	\
 	if (!is_data_transposed) \
 	{ \
-		num_feat=ntokens; \
-		num_vec=nlines; \
-		SGVector<sg_type>::convert_to_matrix(matrix, num_feat, num_vec, line_memory.vector, line_memory.vlen, true); \
+		num_feat=num_tokens; \
+		num_vec=num_lines; \
 	} \
 	else \
 	{ \
-		num_feat=nlines; \
-		num_vec=ntokens; \
-		SGVector<sg_type>::convert_to_matrix(matrix, num_feat, num_vec, line_memory.vector, line_memory.vlen, false); \
+		num_feat=num_lines; \
+		num_vec=num_tokens; \
 	} \
-} \
+}
 
 GET_MATRIX(get_matrix, read_char, int8_t)
 GET_MATRIX(get_matrix, read_byte, uint8_t)
@@ -208,16 +232,12 @@ void CCSVFile::fname(const sg_type* vector, int32_t len) \
 	if (!is_data_transposed) \
 	{ \
 		for (int32_t i=0; i<len; i++) \
-		{ \
 			fprintf(file, "%" format "\n", vector[i]); \
-		} \
 	} \
 	else \
 	{ \
 		for (int32_t i=0; i<len; i++) \
-		{ \
 			fprintf(file, "%" format "%c", vector[i], m_delimiter); \
-		} \
 		fprintf(file, "\n"); \
 	} \
 }

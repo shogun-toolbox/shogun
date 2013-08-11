@@ -52,6 +52,9 @@ public:
 	/** read string	*/
 	virtual SGVector<char> read_line();
 
+	/** set position of stream to the beginning and clear buffer */
+	void reset();
+
 	/** set tokenizer
 	 *
 	 * @param tokenizer tokenizer	

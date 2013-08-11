@@ -8,7 +8,6 @@
 
 using namespace shogun;
 
-
 TEST(CSVFileTest, read_matrix)
 {
 	int32_t num_lines=5;
@@ -36,7 +35,7 @@ TEST(CSVFileTest, read_matrix)
 
 	fin=new CCSVFile("csvfile_test.csv",'r', NULL);
 	fin->set_delimiter('|');
-	fin->skip_lines(2);
+	fin->set_lines_to_skip(2);
 
 	fin->get_matrix(tmp.matrix, tmp.num_rows, tmp.num_cols);
 	EXPECT_EQ(tmp.num_rows, num_rows);
@@ -133,8 +132,8 @@ TEST(CSVFileTest, write_vector_int)
 	int32_t nlen=12;
 
 	int32_t data[]={1, 2, 3, 4,
-				5, 6, 7, 8,
-				9, 10, 11, 12};
+			5, 6, 7, 8,
+			9, 10, 11, 12};
 
 	CCSVFile* fin;
 	CCSVFile* fout;
