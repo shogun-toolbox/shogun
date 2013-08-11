@@ -22,6 +22,7 @@
 
 #include <shogun/converter/ica/Jade.h>
 #include <shogun/evaluation/ica/PermutationMatrix.h>
+#include <shogun/evaluation/ica/AmariIndex.h>
 
 using namespace Eigen;
 
@@ -58,7 +59,8 @@ void test()
 		S.col(i) = S.col(i).cwiseQuotient(std);
 
 	// Mixing Matrix
-	EMatrix A(2,2);
+	SGMatrix<float64_t> mixing_matrix(2,2);
+	Eigen::Map<EMatrix> A(mixing_matrix.matrix,2,2);
 	A(0,0) = 1;    A(0,1) = 0.5;
 	A(1,0) = 0.5;  A(1,1) = 1;
 
@@ -89,8 +91,10 @@ void test()
 	EP = EA.inverse() * A;
 
 	bool isperm = is_permutation_matrix(P);
-
 	std::cout << "EA^-1 * A == Permuatation Matrix is: " << isperm << std::endl;
+
+	float64_t amari_err = amari_index(jade->get_mixing_matrix(), mixing_matrix, true); 
+	std::cout << "Amari Error: " << amari_err << std::endl;
 
 	SG_UNREF(jade);
 	SG_UNREF(mixed_signals);
