@@ -8,6 +8,7 @@
  */
 
 #include <shogun/io/LineReader.h>
+#include <cstdio>
 
 using namespace shogun;
 
@@ -67,9 +68,7 @@ bool CLineReader::has_next()
 	}
 
 	if (feof(m_stream) && (m_buffer->num_bytes_contained()<=0 || !m_buffer->has_next()))
-	{
 		return false; // nothing to read
-	}
 
 	return true;	
 }
@@ -99,6 +98,12 @@ SGVector<char> CLineReader::read_line()
 	}
 
 	return line;
+}
+
+void CLineReader::reset()
+{
+	rewind(m_stream);
+	m_buffer->clear();
 }
 
 void CLineReader::set_tokenizer(CTokenizer* tokenizer)

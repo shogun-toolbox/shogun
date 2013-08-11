@@ -48,7 +48,14 @@ public:
 	 *
 	 * @param num_lines number of lines should be skiped	
 	 */
-	void skip_lines(int32_t num_lines);
+	void set_lines_to_skip(int32_t num_lines);
+
+	/** get statistics about file
+	 *
+	 * @param num_tokens number of tokens in first data line
+	 * @return number of data lines
+	 */
+	int32_t get_stats(int32_t& num_tokens);
 
 	/** @name Vector Access Functions
 	 *
@@ -346,6 +353,9 @@ private:
 	/** class initialization */
 	void init_with_defaults();
 
+	/** skip m_num_skipped lines */
+	void skip_lines(int32_t num_lines);
+
 private:
 	/** object for reading lines from file */
 	CLineReader* m_line_reader;
@@ -364,6 +374,9 @@ private:
 
 	/** delimiter */
 	char m_delimiter;
+
+	/** number of lines should be skipped */
+	int32_t m_num_to_skip;
 };
 
 }
