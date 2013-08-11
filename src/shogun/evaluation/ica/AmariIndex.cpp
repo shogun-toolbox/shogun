@@ -17,17 +17,10 @@ float64_t amari_index(SGMatrix<float64_t> SGW, SGMatrix<float64_t> SGA, bool sta
 	Eigen::Map<EMatrix> W(SGW.matrix,SGW.num_rows,SGW.num_cols);
 	Eigen::Map<EMatrix> A(SGA.matrix,SGA.num_rows,SGA.num_cols);
 	
-	if (W.rows() != W.cols())
-		SG_SERROR("amari_index - W must be square\n")
-	
-	if (A.rows() != A.cols())
-		SG_SERROR("amari_index - A must be square\n")
-	
-	if (W.rows() != A.rows())
-		SG_SERROR("amari_index - A and W must be the same size\n")
-		
-	if (W.rows() < 2)
-		SG_SERROR("amari_index - input must be at least 2x2\n")
+	REQUIRE(W.rows() == W.cols(), "amari_index - W must be square\n")
+	REQUIRE(A.rows() == A.cols(), "amari_index - A must be square\n")
+	REQUIRE(W.rows() == A.rows(), "amari_index - A and W must be the same size\n")
+	REQUIRE(W.rows() > 2, "amari_index - input must be at least 2x2\n")
 	
 	// normalizing both mixing matrices	
 	if (standardize)
