@@ -21,11 +21,11 @@ namespace shogun
 
 /** @brief A base class for Gaussian Processes.
  *
- * Instead of a distribution over weights, the GP specifies a
- * distribution over functions:
+ * Instead of a distribution over weights, the GP specifies a distribution over
+ * functions:
  *
  * \f[
- * f(x) \sim GP(m(x), k(x,x'))
+ * f(x) \sim \mathcal{GP} (m(x), k(x,x'))
  * \f]
  *
  * where \f$m(x)\f$ - mean function, \f$k(x, x')\f$ - covariance function.
@@ -51,7 +51,7 @@ public:
 	virtual const char* get_name() const { return "GaussianProcessMachine"; }
 
 	/** return a mean \f$\mu\f$ of a Gaussian distribution
-	 * \f$N(\mu,\sigma^2)\f$, which is an approximation to the
+	 * \f$\mathcal{N}(\mu,\sigma^2)\f$, which is an approximation to the
 	 * posterior marginal \f$p(f_*|x_*,x,y)\f$.
 	 *
 	 * @param data testing features
@@ -61,7 +61,7 @@ public:
 	SGVector<float64_t> get_posterior_means(CFeatures* data);
 
 	/** return a variance \f$\sigma^2\f$ of a Gaussian distribution
-	 * \f$N(\mu,\sigma^2)\f$, which is an approximation to the
+	 * \f$\mathcal{N}(\mu,\sigma^2)\f$, which is an approximation to the
 	 * posterior marginal \f$p(f_*|x_*,x,y)\f$.
 	 *
 	 * @param data testing features
@@ -101,10 +101,10 @@ public:
 		m_method->set_labels(lab);
 	}
 
-	/** Stores feature data of underlying model.
-	 * After this method has been called, it is possible to change
-	 * the machine's feature data and call apply(), which is then performed
-	 * on the training feature data that is part of the machine's model.
+	/** Stores feature data of underlying model. After this method has been
+	 * called, it is possible to change the machine's feature data and call
+	 * apply(), which is then performed on the training feature data that is
+	 * part of the machine's model.
 	 */
 	virtual void store_model_features() { }
 

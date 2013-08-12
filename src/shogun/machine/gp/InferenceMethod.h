@@ -39,8 +39,8 @@ enum EInferenceType
 
 /** @brief The Inference Method base class.
  *
- * The Inference Method computes (approximately) the posterior
- * distribution for a given Gaussian Process.
+ * The Inference Method computes (approximately) the posterior distribution for
+ * a given Gaussian Process.
  *
  * It is possible to sample the (true) log-marginal likelihood on the base of
  * any implemented approximation. See log_ml_estimate.
@@ -60,16 +60,15 @@ public:
 	 * @param model likelihood model to use
 	 */
 	CInferenceMethod(CKernel* kernel, CFeatures* features,
-		CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model);
+			CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model);
 
 	virtual ~CInferenceMethod();
 
-	/** return what type of inference we are, e.g. exact, FITC,
-	 * Laplacian, etc.
+	/** return what type of inference we are, e.g. exact, FITC, Laplacian, etc.
 	 *
 	 * @return inference type
 	 */
-	virtual EInferenceType get_inference_type() { return INF_NONE; }
+	virtual EInferenceType get_inference_type() const { return INF_NONE; }
 
 	/** get negative log marginal likelihood
 	 *
@@ -79,26 +78,26 @@ public:
 	 * -log(p(y|X, \theta))
 	 * \f]
 	 *
-	 * where \f$y\f$ are the labels, \f$X\f$ are the features, and
-	 * \f$\theta\f$ represent hyperparameters.
+	 * where \f$y\f$ are the labels, \f$X\f$ are the features, and \f$\theta\f$
+	 * represent hyperparameters.
 	 */
 	virtual float64_t get_negative_marginal_likelihood()=0;
 
 	/** get log marginal likelihood gradient
 	 *
-	 * @return vector of the marginal likelihood function gradient
-	 * with respect to hyperparameters (under the current approximation
-	 * to the posterior \f$q(f|y)\approx p(f|y)\f$:
+	 * @return vector of the marginal likelihood function gradient with respect
+	 * to hyperparameters (under the current approximation to the posterior
+	 * \f$q(f|y)\approx p(f|y)\f$:
 	 *
 	 * \f[
 	 * -\frac{\partial log(p(y|X, \theta))}{\partial \theta}
 	 * \f]
 	 *
-	 * where \f$y\f$ are the labels, \f$X\f$ are the features, and
-	 * \f$\theta\f$ represent hyperparameters.
+	 * where \f$y\f$ are the labels, \f$X\f$ are the features, and \f$\theta\f$
+	 * represent hyperparameters.
 	 */
 	virtual CMap<TParameter*, SGVector<float64_t> >	get_marginal_likelihood_derivatives(
-		CMap<TParameter*, CSGObject*>& para_dict)=0;
+			CMap<TParameter*, CSGObject*>& para_dict)=0;
 
 	/** get alpha vector
 	 *
@@ -108,8 +107,7 @@ public:
 	 * \mu = K\alpha
 	 * \f]
 	 *
-	 * where \f$\mu\f$ is the mean and \f$K\f$ is the prior covariance
-	 * matrix.
+	 * where \f$\mu\f$ is the mean and \f$K\f$ is the prior covariance matrix.
 	 */
 	virtual SGVector<float64_t> get_alpha()=0;
 
@@ -121,31 +119,28 @@ public:
 	 * L = cholesky(sW*K*sW+I)
 	 * \f]
 	 *
-	 * where \f$K\f$ is the prior covariance matrix, \f$sW\f$ is the
-	 * vector returned by get_diagonal_vector(), and \f$I\f$ is the
-	 * identity matrix.
+	 * where \f$K\f$ is the prior covariance matrix, \f$sW\f$ is the vector
+	 * returned by get_diagonal_vector(), and \f$I\f$ is the identity matrix.
 	 */
 	virtual SGMatrix<float64_t> get_cholesky()=0;
 
 	/** get diagonal vector
 	 *
-	 * @return diagonal of matrix used to calculate posterior
-	 * covariance matrix:
+	 * @return diagonal of matrix used to calculate posterior covariance matrix:
 	 *
 	 * \f[
 	 * Cov = (K^{-1}+sW^{2})^{-1}
 	 * \f]
 	 *
-	 * where \f$Cov\f$ is the posterior covariance matrix, \f$K\f$ is
-	 * the prior covariance matrix, and \f$sW\f$ is the diagonal
-	 * vector.
+	 * where \f$Cov\f$ is the posterior covariance matrix, \f$K\f$ is the prior
+	 * covariance matrix, and \f$sW\f$ is the diagonal vector.
 	 */
 	virtual SGVector<float64_t> get_diagonal_vector()=0;
 
 	/** get the gradient
 	 *
-	 * @return map of gradient: keys are names of parameters, values
-	 * are values of derivative with respect to that parameter.
+	 * @return map of gradient: keys are names of parameters, values are values
+	 * of derivative with respect to that parameter.
 	 */
 	virtual CMap<TParameter*, SGVector<float64_t> > get_gradient(
 			CMap<TParameter*, CSGObject*>& para_dict)
@@ -165,35 +160,35 @@ public:
 	}
 
 	/** returns mean vector \f$\mu\f$ of the Gaussian distribution
-	 * \f$N(\mu,\Sigma)\f$, which is an approximation to the
+	 * \f$\mathcal{N}(\mu,\Sigma)\f$, which is an approximation to the
 	 * posterior:
 	 *
 	 * \f[
-	 * p(f|y) \approx q(f|y) = N(\mu,\Sigma)
+	 * p(f|y) \approx q(f|y) = \mathcal{N}(\mu,\Sigma)
 	 * \f]
 	 *
 	 * @return mean vector
 	 */
 	virtual SGVector<float64_t> get_posterior_approximation_mean()
 	{
-		SG_ERROR("Inference method doesn't use a Gaussian approximation to the"
-				" posterior")
+		SG_ERROR("Inference method doesn't use a Gaussian approximation to the "
+				"posterior")
 		return SGVector<float64_t>();
 	}
 
-	/** returns covariance matrix \f$\Sigma\f$ of the Gaussian
-	 * distribution \f$q(f|y)=N(\mu,\Sigma)\f$, which is an
-	 * approximation to the posterior:
+	/** returns covariance matrix \f$\Sigma\f$ of the Gaussian distribution
+	 * \f$\mathcal{N}(\mu,\Sigma)\f$, which is an approximation to the
+	 * posterior:
 	 *
 	 * \f[
-	 * p(f|y) \approx q(f|y) = N(\mu,\Sigma)
+	 * p(f|y) \approx q(f|y) = \mathcal{N}(\mu,\Sigma)
 	 * \f]
 	 *
 	 * @return covariance matrix
 	 */
 	virtual SGMatrix<float64_t> get_posterior_approximation_covariance()
 	{
-		SG_ERROR("Inference method doesn't use a gaussian approximation to the "
+		SG_ERROR("Inference method doesn't use a Gaussian approximation to the "
 				"posterior")
 		return SGMatrix<float64_t>();
 	}
@@ -291,30 +286,30 @@ public:
 
 	/** set kernel scale
 	 *
-	 * @param s scale to be set
+	 * @param scale scale to be set
 	 */
-	virtual void set_scale(float64_t s) { m_scale=s; }
+	virtual void set_scale(float64_t scale) { m_scale=scale; }
 
-	/** whether combination of inference method and given likelihood
-	 * function supports regression
+	/** whether combination of inference method and given likelihood function
+	 * supports regression
 	 *
 	 * @return false
 	 */
-	virtual bool supports_regression() { return false; }
+	virtual bool supports_regression() const { return false; }
 
-	/** whether combination of inference method and given likelihood
-	 * function supports binary classification
+	/** whether combination of inference method and given likelihood function
+	 * supports binary classification
 	 *
 	 * @return false
 	 */
-	virtual bool supports_binary() { return false; }
+	virtual bool supports_binary() const { return false; }
 
-	/** whether combination of inference method and given likelihood
-	 * function supports multiclass classification
+	/** whether combination of inference method and given likelihood function
+	 * supports multiclass classification
 	 *
 	 * @return false
 	 */
-	virtual bool supports_multiclass() { return false; }
+	virtual bool supports_multiclass() const { return false; }
 
 	/** update all matrices */
 	virtual void update_all()=0;
@@ -324,8 +319,8 @@ public:
 	 * \f[
 	 * log(p(y|X,\theta)),
 	 * \f]
-	 * where \f$y\f$ are the labels, \f$X\f$ are the features (omitted from
-	 * in the following expressions), and \f$\theta\f$ represent hyperparameters.
+	 * where \f$y\f$ are the labels, \f$X\f$ are the features (omitted from in
+	 * the following expressions), and \f$\theta\f$ represent hyperparameters.
 	 *
 	 * This is done via an approximation to the posterior
 	 * \f$q(f|y, \theta)\approx p(f|y, \theta)\f$, which is computed by the
@@ -335,7 +330,8 @@ public:
 	 * \f[
 	 * p(y|\theta)=\int p(y|f)p(f|\theta)df
 	 * =\int p(y|f)\frac{p(f|\theta)}{q(f|y, \theta)}q(f|y, \theta)df
-	 * \approx\frac{1}{n}\sum_{i=1}^n p(y|f^{(i)})\frac{p(f^{(i)}|\theta)}{q(f^{(i)}|y, \theta)},
+	 * \approx\frac{1}{n}\sum_{i=1}^n p(y|f^{(i)})\frac{p(f^{(i)}|\theta)}
+	 * {q(f^{(i)}|y, \theta)},
 	 * \f]
 	 *
 	 * where \f$ f^{(i)} \f$ are samples from the posterior approximation
@@ -346,16 +342,21 @@ public:
 	 * @param num_importance_samples the number of importance samples \f$n\f$
 	 * from \f$ q(f|y, \theta) \f$.
 	 * @param ridge_size scalar that is added to the diagonal of the involved
-	 * Gaussian distribution's covariance of GP prior and posterior approximation
-	 * to stabilise things. Increase if Cholesky factorization fails.
-	 * @return unbiased estimate of the  log of the marginal likelihood
-	 * function \f$ log(p(y|\theta)) \f$
+	 * Gaussian distribution's covariance of GP prior and posterior
+	 * approximation to stabilise things. Increase if Cholesky factorization
+	 * fails.
+	 *
+	 * @return unbiased estimate of the log of the marginal likelihood function
+	 * \f$ log(p(y|\theta)) \f$
 	 */
 	float64_t get_log_ml_estimate(int32_t num_importance_samples=1,
 			float64_t ridge_size=1e-15);
 
 protected:
-	/** update alpha matrix */
+	/** check if members of object are valid for inference */
+	virtual void check_members() const;
+
+	/** update alpha vector */
 	virtual void update_alpha()=0;
 
 	/** update cholesky matrix */
@@ -368,9 +369,6 @@ private:
 	void init();
 
 protected:
-	/** check if members of object are valid for inference */
-	virtual void check_members();
-
 	/** covariance function */
 	CKernel* m_kernel;
 

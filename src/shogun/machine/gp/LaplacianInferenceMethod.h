@@ -26,17 +26,18 @@ namespace shogun
 
 /** @brief The Laplace approximation inference method class.
  *
- * This inference method approximates the posterior likelihood
- * function by using Laplace's method. Here, we compute a Gaussian
- * approximation to the posterior via a Taylor expansion around the
- * maximum of the posterior likelihood function. For more details, see
- * "Bayesian Classification with Gaussian Processes" by Christopher
- * K.I Williams and David Barber, published 1998 in the IEEE
- * Transactions on Pattern Analysis and Machine Intelligence, Volume
- * 20, Number 12, Pages 1342-1351.
+ * This inference method approximates the posterior likelihood function by using
+ * Laplace's method. Here, we compute a Gaussian approximation to the posterior
+ * via a Taylor expansion around the maximum of the posterior likelihood
+ * function.
  *
- * This specific implementation was adapted from the infLaplace.m file
- * in the GPML toolbox.
+ * For more details, see "Bayesian Classification with Gaussian Processes" by
+ * Christopher K.I Williams and David Barber, published 1998 in the IEEE
+ * Transactions on Pattern Analysis and Machine Intelligence, Volume 20, Number
+ * 12, Pages 1342-1351.
+ *
+ * This specific implementation was adapted from the infLaplace.m file in the
+ * GPML toolbox.
  */
 class CLaplacianInferenceMethod: public CInferenceMethod
 {
@@ -61,7 +62,7 @@ public:
 	 *
 	 * @return inference type LAPLACIAN
 	 */
-	virtual EInferenceType get_inference_type() { return INF_LAPLACIAN; }
+	virtual EInferenceType get_inference_type() const { return INF_LAPLACIAN; }
 
 	/** returns the name of the inference method
 	 *
@@ -84,18 +85,18 @@ public:
 
 	/** get log marginal likelihood gradient
 	 *
-	 * @return vector of the marginal likelihood function gradient
-	 * with respect to hyperparameters:
+	 * @return vector of the marginal likelihood function gradient with respect
+	 * to hyperparameters:
 	 *
 	 * \f[
 	 *	 -\frac{\partial {log(p(y|X, \theta))}}{\partial \theta}
 	 * \f]
 	 *
-	 * where \f$y\f$ are the labels, \f$X\f$ are the features, and
-	 * \f$\theta\f$ represent hyperparameters.
+	 * where \f$y\f$ are the labels, \f$X\f$ are the features, and \f$\theta\f$
+	 * represent hyperparameters.
 	 */
-	virtual CMap<TParameter*, SGVector<float64_t> >
-		get_marginal_likelihood_derivatives(CMap<TParameter*, CSGObject*>& para_dict);
+	virtual CMap<TParameter*, SGVector<float64_t> >	get_marginal_likelihood_derivatives(
+			CMap<TParameter*, CSGObject*>& para_dict);
 
 	/** get alpha vector
 	 *
@@ -105,8 +106,7 @@ public:
 	 *		\mu = K\alpha
 	 * \f]
 	 *
-	 * where \f$\mu\f$ is the mean and \f$K\f$ is the prior covariance
-	 * matrix.
+	 * where \f$\mu\f$ is the mean and \f$K\f$ is the prior covariance matrix.
 	 */
 	virtual SGVector<float64_t> get_alpha();
 
@@ -118,33 +118,30 @@ public:
 	 *		 L = Cholesky(sW*K*sW+I)
 	 * \f]
 	 *
-	 * where \f$K\f$ is the prior covariance matrix, \f$sW\f$ is the
-	 * vector returned by get_diagonal_vector(), and \f$I\f$ is the
-	 * identity matrix.
+	 * where \f$K\f$ is the prior covariance matrix, \f$sW\f$ is the vector
+	 * returned by get_diagonal_vector(), and \f$I\f$ is the identity matrix.
 	 */
 	virtual SGMatrix<float64_t> get_cholesky();
 
 	/** get diagonal vector
 	 *
-	 * @return diagonal of matrix used to calculate posterior
-	 * covariance matrix:
+	 * @return diagonal of matrix used to calculate posterior covariance matrix:
 	 *
 	 * \f[
 	 *	    Cov = (K^{-1}+sW^{2})^{-1}
 	 * \f]
 	 *
-	 * where \f$Cov\f$ is the posterior covariance matrix, \f$K\f$ is
-	 * the prior covariance matrix, and \f$sW\f$ is the diagonal
-	 * vector.
+	 * where \f$Cov\f$ is the posterior covariance matrix, \f$K\f$ is the prior
+	 * covariance matrix, and \f$sW\f$ is the diagonal vector.
 	 */
 	virtual SGVector<float64_t> get_diagonal_vector();
 
 	/** returns mean vector \$f\mu\$f of the Gaussian distribution
-	 * \$fN(\mu,\Sigma)\f$, which is an approximation to the
+	 * \$f\mathcal{N}(\mu,\Sigma)\f$, which is an approximation to the
 	 * posterior:
 	 *
 	 * \f[
-	 * p(f|y) \approx q(f|y) = N(\mu,\Sigma)
+	 * p(f|y) \approx q(f|y) = \mathcal{N}(f|\mu,\Sigma)
 	 * \f]
 	 *
 	 * Mean vector is evaluated using Newton's method.
@@ -153,12 +150,12 @@ public:
 	 */
 	virtual SGVector<float64_t> get_posterior_approximation_mean();
 
-	/** returns covariance matrix \$f\Sigma=(K^{-1}+W)^{-1}\f$ of the
-	 * Gaussian distribution \$fN(\mu,\Sigma)\f$, which is an
-	 * approximation to the posterior:
+	/** returns covariance matrix \$f\Sigma=(K^{-1}+W)^{-1}\f$ of the Gaussian
+	 * distribution \$f\mathcal{N}(\mu,\Sigma)\f$, which is an approximation to
+	 * the posterior:
 	 *
 	 * \f[
-	 * p(f|y) \approx q(f|y) = N(\mu,\Sigma)
+	 * p(f|y) \approx q(f|y) = \mathcal{N}(f|\mu,\Sigma)
 	 * \f]
 	 *
 	 * Covariance matrix is evaluated using matrix inversion lemma:
@@ -222,21 +219,20 @@ public:
 	virtual void set_minimization_max(float64_t max) { m_opt_max=max; }
 
 	/**
-	 * @return whether combination of Laplace approximation inference
-	 * method and given likelihood function supports regression
+	 * @return whether combination of Laplace approximation inference method and
+	 * given likelihood function supports regression
 	 */
-	virtual bool supports_regression()
+	virtual bool supports_regression() const
 	{
 		check_members();
 		return m_model->supports_regression();
 	}
 
 	/**
-	 * @return whether combination of Laplace approximation inference
-	 * method and given likelihood function supports binary
-	 * classification
+	 * @return whether combination of Laplace approximation inference method and
+	 * given likelihood function supports binary classification
 	 */
-	virtual bool supports_binary()
+	virtual bool supports_binary() const
 	{
 		check_members();
 		return m_model->supports_binary();
@@ -255,8 +251,7 @@ protected:
 	/** update train kernel matrix */
 	virtual void update_train_kernel();
 
-	/** update covariance matrix of the approximation to the posterior
-	 */
+	/** update covariance matrix of the approximation to the posterior */
 	virtual void update_approx_cov();
 
 private:
@@ -287,18 +282,13 @@ private:
 	/** square root of W */
 	SGVector<float64_t> sW;
 
-	/** derivative of log likelihood with respect to function location
-	 */
+	/** derivative of log likelihood with respect to function location */
 	SGVector<float64_t> dlp;
 
-	/** second derivative of log likelihood with respect to function
-	 * location
-	 */
+	/** second derivative of log likelihood with respect to function location */
 	SGVector<float64_t> d2lp;
 
-	/** third derivative of log likelihood with respect to function
-	 * location
-	 */
+	/** third derivative of log likelihood with respect to function location */
 	SGVector<float64_t> d3lp;
 };
 }

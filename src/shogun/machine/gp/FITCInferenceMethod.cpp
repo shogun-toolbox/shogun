@@ -33,8 +33,8 @@ CFITCInferenceMethod::CFITCInferenceMethod() : CInferenceMethod()
 }
 
 CFITCInferenceMethod::CFITCInferenceMethod(CKernel* kern, CFeatures* feat,
-		CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod, CFeatures* lat) :
-		CInferenceMethod(kern, feat, m, lab, mod)
+		CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod, CFeatures* lat)
+		: CInferenceMethod(kern, feat, m, lab, mod)
 {
 	init();
 	set_latent_features(lat);
@@ -43,7 +43,7 @@ CFITCInferenceMethod::CFITCInferenceMethod(CKernel* kern, CFeatures* feat,
 void CFITCInferenceMethod::init()
 {
 	SG_ADD((CSGObject**)&m_latent_features, "latent_features", "latent Features",
-		MS_NOT_AVAILABLE);
+			MS_NOT_AVAILABLE);
 
 	m_latent_features=NULL;
 	m_ind_noise=1e-10;
@@ -54,23 +54,16 @@ CFITCInferenceMethod::~CFITCInferenceMethod()
 	SG_UNREF(m_latent_features);
 }
 
-CFITCInferenceMethod* CFITCInferenceMethod::obtain_from_generic(CInferenceMethod* inference)
+CFITCInferenceMethod* CFITCInferenceMethod::obtain_from_generic(
+		CInferenceMethod* inference)
 {
 	ASSERT(inference!=NULL);
 
 	if (inference->get_inference_type()!=INF_FITC)
-		SG_SERROR("CFITCInferenceMethod::obtain_from_generic(): provided inference is "
-			"not of type CFITCInferenceMethod!\n")
+		SG_SERROR("Provided inference is not of type CFITCInferenceMethod!\n")
 
 	SG_REF(inference);
 	return (CFITCInferenceMethod*)inference;
-}
-
-void CFITCInferenceMethod::set_latent_features(CFeatures* feat)
-{
-	SG_REF(feat);
-	SG_UNREF(m_latent_features);
-	m_latent_features=feat;
 }
 
 void CFITCInferenceMethod::update_all()
@@ -106,7 +99,7 @@ void CFITCInferenceMethod::update_all()
 	update_alpha();
 }
 
-void CFITCInferenceMethod::check_members()
+void CFITCInferenceMethod::check_members() const
 {
 	CInferenceMethod::check_members();
 
@@ -129,14 +122,15 @@ void CFITCInferenceMethod::check_members()
 
 	REQUIRE(feat->has_property(FP_DOT),
 			"Latent features must be type of CFeatures\n")
-	REQUIRE(feat->get_feature_class()==C_DENSE, "Latent features must be dense\n")
+	REQUIRE(feat->get_feature_class()==C_DENSE,
+			"Latent features must be dense\n")
 	REQUIRE(feat->get_feature_type()==F_DREAL, "Latent features must be real\n")
 
 	SG_UNREF(feat);
 }
 
 CMap<TParameter*, SGVector<float64_t> > CFITCInferenceMethod::
-	get_marginal_likelihood_derivatives(CMap<TParameter*, CSGObject*>& para_dict)
+get_marginal_likelihood_derivatives(CMap<TParameter*, CSGObject*>& para_dict)
 {
 	if (update_parameter_hash())
 		update_all();

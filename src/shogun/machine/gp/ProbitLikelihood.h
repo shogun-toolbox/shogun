@@ -25,8 +25,8 @@ namespace shogun
  * p(y|f) = \prod_{i=1}^n normal_cdf(y_i * f_i)
  * \f]
  *
- * where \f$\text{normal_cdf}(z)\f$ - cumulative distribution function
- * (CDF) of the normal distribution \f$N(0, 1)\f$.
+ * where \f$\text{normal_cdf}(z)\f$ - cumulative distribution function (CDF) of
+ * the normal distribution \f$N(0, 1)\f$.
  */
 class CProbitLikelihood : public CLikelihoodModel
 {
@@ -55,41 +55,41 @@ public:
 	 * log\left(\int p(y_*|f_*) N(f*|\mu,\sigma^2) df*\right)
 	 * \f]
 	 *
-	 * where normal distribution \f$N(\mu,\sigma^2)\f$ is an
-	 * approximation to the posterior marginal \f$p(f_*|X,y,x_*)\f$
+	 * where normal distribution \f$N(\mu,\sigma^2)\f$ is an approximation to
+	 * the posterior marginal \f$p(f_*|X,y,x_*)\f$
 	 *
 	 * NOTE: if lab equals to NULL, then each \f$y_*\f$ equals to one.
 	 *
 	 * @param mu posterior mean of a Gaussian distribution
-	 * \f$N(\mu,\sigma^2)\f$, which is an approximation to the
-	 * posterior marginal \f$p(f_*|X,y,x_*)\f$
+	 * \f$N(\mu,\sigma^2)\f$, which is an approximation to the posterior
+	 * marginal \f$p(f_*|X,y,x_*)\f$
 	 * @param s2 posterior variance of a Gaussian distribution
-	 * \f$N(\mu,\sigma^2)\f$, which is an approximation to the
-	 * posterior marginal \f$p(f_*|X,y,x_*)\f$
+	 * \f$N(\mu,\sigma^2)\f$, which is an approximation to the posterior
+	 * marginal \f$p(f_*|X,y,x_*)\f$
 	 * @param lab labels \f$y_*\f$. NOTE: if lab equals to NULL, then each
 	 * \f$y_*\f$ equals to one.
 	 *
 	 * @return \f$log(p(y_*|X, y, x*))\f$ for each label \f$y_*\f$
 	 */
 	virtual SGVector<float64_t> evaluate_log_probabilities(SGVector<float64_t> mu,
-			SGVector<float64_t> s2, CLabels* lab=NULL);
+			SGVector<float64_t> s2, const CLabels* lab=NULL) const;
 
 	/** returns mean of the predictive marginal \f$p(y_*|X,y,x_*)\f$
 	 *
 	 * NOTE: if lab equals to NULL, then each \f$y_*\f$ equals to one.
 	 *
 	 * @param mu posterior mean of a Gaussian distribution
-	 * \f$N(\mu,\sigma^2)\f$, which is an approximation to the
-	 * posterior marginal \f$p(f_*|X,y,x_*)\f$
+	 * \f$N(\mu,\sigma^2)\f$, which is an approximation to the posterior
+	 * marginal \f$p(f_*|X,y,x_*)\f$
 	 * @param s2 posterior variance of a Gaussian distribution
-	 * \f$N(\mu,\sigma^2)\f$, which is an approximation to the
-	 * posterior marginal \f$p(f_*|X,y,x_*)\f$
+	 * \f$N(\mu,\sigma^2)\f$, which is an approximation to the posterior
+	 * marginal \f$p(f_*|X,y,x_*)\f$
 	 * @param lab labels \f$y_*\f$
 	 *
 	 * @return final means evaluated by likelihood function
 	 */
 	virtual SGVector<float64_t> evaluate_means(SGVector<float64_t> mu,
-			SGVector<float64_t> s2, CLabels* lab=NULL);
+			SGVector<float64_t> s2, const CLabels* lab=NULL) const;
 
 	/** returns variance of the predictive marginal
 	 * \f$p(y_*|X,y,x_*)\f$
@@ -97,101 +97,94 @@ public:
 	 * NOTE: if lab equals to NULL, then each \f$y_*\f$ equals to one.
 	 *
 	 * @param mu posterior mean of a Gaussian distribution
-	 * \f$N(\mu,\sigma^2)\f$, which is an approximation to the
-	 * posterior marginal \f$p(f_*|X,y,x_*)\f$
+	 * \f$N(\mu,\sigma^2)\f$, which is an approximation to the posterior
+	 * marginal \f$p(f_*|X,y,x_*)\f$
 	 * @param s2 posterior variance of a Gaussian distribution
-	 * \f$N(\mu,\sigma^2)\f$, which is an approximation to the
-	 * posterior marginal \f$p(f_*|X,y,x_*)\f$
+	 * \f$N(\mu,\sigma^2)\f$, which is an approximation to the posterior
+	 * marginal \f$p(f_*|X,y,x_*)\f$
 	 * @param lab labels \f$y_*\f$
 	 *
 	 * @return final variances evaluated by likelihood function
 	 */
 	virtual SGVector<float64_t> evaluate_variances(SGVector<float64_t> mu,
-			SGVector<float64_t> s2, CLabels* lab=NULL);
+			SGVector<float64_t> s2, const CLabels* lab=NULL) const;
 
 	/** get model type
 	 *
 	 * @return model type PROBIT
 	 */
-	virtual ELikelihoodModelType get_model_type() { return LT_PROBIT; }
+	virtual ELikelihoodModelType get_model_type() const { return LT_PROBIT; }
 
-	/** returns the logarithm of the point-wise likelihood
-	 * \f$log(p(y_i|f_i))\f$ for each label \f$y_i\f$.
+	/** returns the logarithm of the point-wise likelihood \f$log(p(y_i|f_i))\f$
+	 * for each label \f$y_i\f$.
 	 *
-	 * One can evaluate log-likelihood like: \f$log(p(y|f)) =
-	 * \sum_{i=1}^{n} log(p(y_i|f_i))\f$
+	 * One can evaluate log-likelihood like: \f$log(p(y|f)) = \sum_{i=1}^{n}
+	 * log(p(y_i|f_i))\f$
 	 *
 	 * @param lab labels \f$y_i\f$
 	 * @param func values of the function \f$f_i\f$
 	 *
 	 * @return logarithm of the point-wise likelihood
 	 */
-	virtual SGVector<float64_t> get_log_probability_f(CLabels* lab,
-			SGVector<float64_t> func);
+	virtual SGVector<float64_t> get_log_probability_f(const CLabels* lab,
+			SGVector<float64_t> func) const;
 
-	/** get derivative of log likelihood \f$log(P(y|f))\f$ with
-	 * respect to function location \f$f\f$
+	/** get derivative of log likelihood \f$log(P(y|f))\f$ with respect to
+	 * function location \f$f\f$
 	 *
 	 * @param lab labels used
 	 * @param func function location
-	 * @param i index, choices are 1, 2, and 3 for first, second, and
-	 * third derivatives respectively
+	 * @param i index, choices are 1, 2, and 3 for first, second, and third
+	 * derivatives respectively
 	 *
 	 * @return derivative
 	 */
 	virtual SGVector<float64_t> get_log_probability_derivative_f(
-			CLabels* lab, SGVector<float64_t> func, index_t i);
+			const CLabels* lab, SGVector<float64_t> func, index_t i) const;
 
-	/** get derivative of log likelihood \f$log(P(y|f))\f$ with
-	 * respect to given parameter
+	/** get derivative of log likelihood \f$log(P(y|f))\f$ with respect to given
+	 * parameter
 	 *
 	 * @param lab labels used
 	 * @param param parameter
-	 * @param obj pointer to object to make sure we have the right
-	 * parameter
 	 * @param func function location
 	 *
 	 * @return derivative
 	 */
-	virtual SGVector<float64_t> get_first_derivative(CLabels* lab,
-			TParameter* param, CSGObject* obj, SGVector<float64_t> func);
+	virtual SGVector<float64_t> get_first_derivative(const CLabels* lab,
+			const TParameter* param, SGVector<float64_t> func) const;
 
-	/** get derivative of the first derivative of log likelihood with
-	 * respect to function location, i.e. \f$\frac{\partial
-	 * log(P(y|f))}{\partial f}\f$ with respect to given parameter
+	/** get derivative of the first derivative of log likelihood with respect to
+	 * function location, i.e. \f$\frac{\partial log(P(y|f))}{\partial f}\f$
+	 * with respect to given parameter
 	 *
 	 * @param lab labels used
 	 * @param param parameter
-	 * @param obj pointer to object to make sure we have the right
-	 * parameter
 	 * @param func function location
 	 *
 	 * @return derivative
 	 */
-	virtual SGVector<float64_t> get_second_derivative(CLabels* lab,
-			TParameter* param, CSGObject* obj, SGVector<float64_t> func);
+	virtual SGVector<float64_t> get_second_derivative(const CLabels* lab,
+			const TParameter* param, SGVector<float64_t> func) const;
 
-	/** get derivative of the second derivative of log likelihood with
-	 * respect to function location, i.e. \f$\frac{\partial^{2}
-	 * log(P(y|f))}{\partial f^{2}}\f$ with respect to given parameter
+	/** get derivative of the second derivative of log likelihood with respect
+	 * to function location, i.e. \f$\frac{\partial^{2} log(P(y|f))}{\partial
+	 * f^{2}}\f$ with respect to given parameter
 	 *
 	 * @param lab labels used
 	 * @param param parameter
-	 * @param obj pointer to object to make sure we have the right
-	 * parameter
 	 * @param func function location
 	 *
 	 * @return derivative
 	 */
-	virtual SGVector<float64_t> get_third_derivative(CLabels* lab,
-			TParameter* param, CSGObject* obj, SGVector<float64_t> func);
+	virtual SGVector<float64_t> get_third_derivative(const CLabels* lab,
+			const TParameter* param, SGVector<float64_t> func) const;
 
-	/** return whether logit likelihood function supports binary
-	 * classification
+	/** return whether logit likelihood function supports binary classification
 	 *
 	 * @return true
 	 */
-	virtual bool supports_binary() { return true; }
+	virtual bool supports_binary() const { return true; }
 
 };
 }

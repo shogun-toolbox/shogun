@@ -238,9 +238,9 @@ TEST(StudentsTLikelihood,get_first_derivative)
 	TParameter* param2=likelihood->m_model_selection_parameters->get_parameter(index);
 
 	SGVector<float64_t> lp_dhyp1=likelihood->get_first_derivative(labels,
-		param1, likelihood, func);
+		param1, func);
 	SGVector<float64_t> lp_dhyp2=likelihood->get_first_derivative(labels,
-		param2, likelihood, func);
+		param2, func);
 
 	// comparison of log likelihood derivative wrt sigma and df hyperparameter
 	// with result from GPML package
@@ -295,9 +295,9 @@ TEST(StudentsTLikelihood,get_second_derivative)
 	TParameter* param2=likelihood->m_model_selection_parameters->get_parameter(index);
 
 	SGVector<float64_t> dlp_dhyp1=likelihood->get_second_derivative(labels,
-		param1, likelihood, func);
+		param1, func);
 	SGVector<float64_t> dlp_dhyp2=likelihood->get_second_derivative(labels,
-		param2, likelihood, func);
+		param2, func);
 
 	// comparison of log likelihood derivative wrt sigma and df hyperparameter
 	// with result from GPML package
@@ -352,9 +352,9 @@ TEST(StudentsTLikelihood,get_third_derivative)
 	TParameter* param2=likelihood->m_model_selection_parameters->get_parameter(index);
 
 	SGVector<float64_t> d2lp_dhyp1=likelihood->get_third_derivative(labels,
-		param1, likelihood, func);
+		param1, func);
 	SGVector<float64_t> d2lp_dhyp2=likelihood->get_third_derivative(labels,
-		param2, likelihood, func);
+		param2, func);
 
 	// comparison of log likelihood derivative wrt sigma and df hyperparameter
 	// with result from GPML package

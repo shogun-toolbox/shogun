@@ -22,8 +22,8 @@ CLikelihoodModel::~CLikelihoodModel()
 {
 }
 
-SGVector<float64_t> CLikelihoodModel::get_log_probability_fmatrix(CLabels* lab,
-		SGMatrix<float64_t> F)
+SGVector<float64_t> CLikelihoodModel::get_log_probability_fmatrix(
+		const CLabels* lab,	SGMatrix<float64_t> F) const
 {
 	REQUIRE(lab, "Given labels are NULL!\n");
 	REQUIRE(lab->get_num_labels()==F.num_rows, "Number of labels (%d) does "
