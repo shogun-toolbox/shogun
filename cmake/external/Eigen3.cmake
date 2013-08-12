@@ -1,7 +1,6 @@
+GetCompilers()
+MESSAGE(${C_COMPILER})
 include(ExternalProject)
-
-GET_COMPILERS()
-
 ExternalProject_Add(
 	Eigen3
 	PREFIX ${CMAKE_BINARY_DIR}/Eigen3

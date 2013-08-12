@@ -1,6 +1,5 @@
 MergeCFLAGS()
-
-GET_COMPILERS()
+GetCompilers()
 
 include(ExternalProject)
 ExternalProject_Add(
