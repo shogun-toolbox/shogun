@@ -1,5 +1,45 @@
-Explanation of directory content
-================================
+This is the SHOGUN machine learning toolbox.
+
+(see INSTALL for first steps on installation and running shogun)
+(see README.data for how to download example data sets accompanying shogun)
+
+INTRODUCTION
+
+The machine learning toolbox's focus is on large scale kernel methods and
+especially on Support Vector Machines (SVM)[1]. It provides a generic SVM
+object interfacing to several different SVM implementations, among them the
+state of the art LibSVM[2] and SVMlight[3].  Each of the SVMs can be
+combined with a variety of kernels. The toolbox not only provides efficient
+implementations of the most common kernels, like the Linear, Polynomial,
+Gaussian and Sigmoid Kernel but also comes with a number of recent string
+kernels as e.g. the Locality Improved[4], Fischer[5], TOP[6], Spectrum[7],
+Weighted Degree Kernel (with shifts)[8][9][10]. For the latter the efficient
+LINADD[10] optimizations are implemented.  Also SHOGUN offers the freedom of
+working with custom pre-computed kernels.  One of its key features is the
+``combined kernel'' which can be constructed by a weighted linear combination
+of a number of sub-kernels, each of which not necessarily working on the same
+domain. An optimal sub-kernel weighting can be learned using Multiple Kernel
+Learning[11][12][16].
+Currently SVM 2-class classification and regression problems can be dealt
+with. However SHOGUN also implements a number of linear methods like Linear
+Discriminant Analysis (LDA), Linear Programming Machine (LPM), (Kernel)
+Perceptrons and features algorithms to train hidden markov models.
+The input feature-objects can be dense, sparse or strings and
+of type int/short/double/char and can be converted into different feature types.
+Chains of ``preprocessors'' (e.g. substracting the mean) can be attached to
+each feature object allowing for on-the-fly pre-processing.
+
+INTERFACES
+
+SHOGUN is implemented in C++ and interfaces to Matlab(tm), R, Octave, 
+Java, C#, Ruby, Lua and Python.
+
+PLATFORMS
+
+Debian GNU/Linux, Mac OSX and WIN32/CYGWIN are supported platforms (see
+the INSTALL file for generic and platform specific installation instructions)
+
+DIRECTORY CONTENT
 
 README       - this file
 Makefile     - to create release archives
@@ -48,3 +88,97 @@ The following table depicts the status of each interface available in shogun:
 +==================+===========================================================+
 
 Visit src/README and http://www.shogun-toolbox.org/doc/en/current for further information.
+
+
+APPLICATIONS
+
+We have successfully used this toolbox to tackle the following sequence
+analysis problems: Protein Super Family classification[6],
+Splice Site Prediction[8][13][14], Interpreting the SVM Classifier[11,12],
+Splice Form Prediction[8], Alternative Splicing[9] and Promotor
+Prediction[15]. Some of them come with no less than 10
+million training examples, others with 7 billion test examples.
+
+LICENSE
+
+Except for the files classifier/svm/Optimizer.{cpp,h},
+classifier/svm/SVM_light.{cpp,h}, regression/svr/SVR_light.{cpp,h}
+and the kernel caching functions in kernel/Kernel.{cpp,h}
+which are (C) Torsten Joachims and follow a different
+licensing scheme (cf. LICENSE.SVMLight) SHOGUN is licensed under the GPL
+version 3 or any later version (cf. LICENSE).
+
+AVAILABILITY
+
+SHOGUN can be downloaded at
+	http://www.shogun-toolbox.org
+
+REFERENCES
+
+[1] C.~Cortes and V.N. Vapnik.  Support-vector networks.
+	Machine Learning, 20(3):273--297, 1995.
+
+[2] J. Liu, S. Ji, and J. Ye. SLEP: Sparse Learning with Efficient Projections. Arizona State University, 2009. 
+	http://www.public.asu.edu/~jye02/Software/SLEP.
+
+[3] C.-C. Chang and C.-J. Lin.  Libsvm: Introduction and benchmarks.
+	Technical report, Department of Computer Science and Information
+	Engineering, National Taiwan University, Taipei, 2000.
+
+[4] T.Joachims. Making large-scale SVM learning practical. In B.~Schoelkopf,
+	C.J.C. Burges, and A.J. Smola, editors, Advances in Kernel Methods -
+	Support Vector Learning, pages 169--184, Cambridge, MA, 1999. MIT Press.
+
+[5] A.Zien, G.Raetsch, S.Mika, B.Schoelkopf, T.Lengauer, and K.-R.
+	Mueller. Engineering Support Vector Machine Kernels That Recognize
+	Translation Initiation Sites. Bioinformatics, 16(9):799-807, September 2000.
+
+[6] T.S. Jaakkola and D.Haussler.Exploiting generative models in
+	discriminative classifiers. In M.S. Kearns, S.A. Solla, and D.A. Cohn,
+	editors, Advances in Neural Information Processing Systems, volume 11,
+	pages 487-493, 1999.
+
+[7] K.Tsuda, M.Kawanabe, G.Raetsch, S.Sonnenburg, and K.R. Mueller.
+	A new discriminative kernel from probabilistic models.
+	Neural Computation, 14:2397--2414, 2002.
+
+[8] C.Leslie, E.Eskin, and W.S. Noble. The spectrum kernel: A string kernel
+	for SVM protein classification. In R.B. Altman, A.K. Dunker, L.Hunter,
+	K.Lauderdale, and T.E. Klein, editors, Proceedings of the Pacific
+	Symposium on Biocomputing, pages 564-575, Kaua'i, Hawaii, 2002.
+
+[9] G.Raetsch and S.Sonnenburg. Accurate Splice Site Prediction for
+	Caenorhabditis Elegans, pages 277-298. MIT Press series on Computational
+	Molecular Biology. MIT Press, 2004.
+
+[10] G.Raetsch, S.Sonnenburg, and B.Schoelkopf. RASE: recognition of
+	alternatively spliced exons in c. elegans. Bioinformatics,
+	21:i369--i377, June 2005.
+
+[11] S.Sonnenburg, G.Raetsch, and B.Schoelkopf. Large scale genomic sequence
+	SVM classifiers. In Proceedings of the 22nd International Machine Learning
+	Conference. ACM Press, 2005.
+
+[12] S.Sonnenburg, G.Raetsch, and C.Schaefer. Learning interpretable SVMs
+	for biological sequence classification. In RECOMB 2005, LNBI 3500,
+	pages 389-407. Springer-Verlag Berlin Heidelberg, 2005.
+
+[13] G.Raetsch, S.Sonnenburg, and C.Schaefer. Learning Interpretable SVMs
+	for Biological Sequence Classification. BMC Bioinformatics, Special Issue
+	from NIPS workshop on New Problems and Methods in Computational Biology
+	Whistler, Canada, 18 December 2004, 7:(Suppl. 1):S9, March 2006.
+
+[14] S.Sonnenburg.New methods for splice site recognition. Master's thesis,
+	Humboldt University, 2002. supervised by K.-R. Mueller H.-D. Burkhard and
+	G.Raetsch.
+
+[15] S.Sonnenburg, G.Raetsch, A.Jagota, and K.-R. Mueller. New methods for
+	splice-site recognition. In Proceedings of the International Conference on
+	Artifical Neural Networks, 2002.  Copyright by Springer.
+
+[16] S.Sonnenburg, A.Zien, and G.Raetsch. ARTS: Accurate Recognition of
+	Transcription Starts in Human. 2006.
+
+[17] S.Sonnenburg, G.Raetsch, C.Schaefer, and B.Schoelkopf,Large Scale
+	Multiple Kernel Learning, Journal of Machine Learning Research, 2006,
+	K.Bennett and E.P.-Hernandez Editors
