@@ -59,7 +59,6 @@
 %rename(ScatterSVM) CScatterSVM;
 %rename(GMNPSVM) CGMNPSVM;
 %rename(KNN) CKNN;
-%rename(ConjugateIndex) CConjugateIndex;
 %rename(GaussianNaiveBayes) CGaussianNaiveBayes;
 %rename(QDA) CQDA;
 %rename(MCLDA) CMCLDA;
@@ -121,7 +120,6 @@ namespace shogun
 %include <shogun/multiclass/ScatterSVM.h>
 %include <shogun/multiclass/GMNPSVM.h>
 %include <shogun/multiclass/KNN.h>
-%include <shogun/multiclass/ConjugateIndex.h>
 %include <shogun/multiclass/GaussianNaiveBayes.h>
 %include <shogun/multiclass/QDA.h>
 %include <shogun/multiclass/MCLDA.h>

@@ -6,7 +6,6 @@ SET(EXAMPLES
 	classifier_libsvm_probabilities
 	classifier_minimal_svm 
 	classifier_mklmulticlass 
-	classifier_conjugateindex 
 	classifier_gaussian_process_binary_classification 
 	classifier_gaussiannaivebayes 
 	classifier_multiclasslibsvm 

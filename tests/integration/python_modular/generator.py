@@ -20,7 +20,6 @@ blacklist = ("__init__.py",
 		"evaluation_director_contingencytableevaluation_modular.py",
 		"distance_director_euclidean_modular.py",
 #the tests below all fail on travis but work fine on our buildbot
-		"classifier_conjugateindex_modular.py",
 		"classifier_lda_modular.py",
 		"classifier_liblinear_modular.py",
 		"classifier_svmlight_batch_linadd_modular.py",

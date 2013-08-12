@@ -67,7 +67,6 @@ APPLY_MULTICLASS(CMulticlassMachine);
 APPLY_MULTICLASS(CKernelMulticlassMachine);
 APPLY_MULTICLASS(CLinearMulticlassMachine);
 APPLY_MULTICLASS(CDistanceMachine);
-APPLY_MULTICLASS(CConjugateIndex);
 
 APPLY_BINARY(CLinearMachine);
 APPLY_BINARY(CKernelMachine);
@@ -118,7 +117,6 @@ APPLY_LATENT(CLatentSVM);
 %rename(apply_generic) CLeastSquaresRegression::apply(CFeatures* data=NULL);
 %rename(apply_generic) CLeastAngleRegression::apply(CFeatures* data=NULL);
 %rename(apply_generic) CGaussianProcessRegression::apply(CFeatures* data=NULL);
-%rename(apply_generic) CConjugateIndex::apply(CFeatures* data=NULL);
 
 %rename(apply_generic) CStructuredOutputMachine::apply(CFeatures* data=NULL);
 %rename(apply_generic) CLinearStructuredOutputMachine::apply(CFeatures* data=NULL);
