@@ -29,7 +29,9 @@ extern "C" {
 // std::complex<> classes that causes major errors
 // in c++11 mode and Eigen3
 // this define basically disables the include of vForce.h
-#define __VFORCE_H 1	
+#ifdef HAVE_CXX11
+#define __VFORCE_H 1
+#endif
 #include <Accelerate/Accelerate.h>
 #else
 #include <cblas.h>
