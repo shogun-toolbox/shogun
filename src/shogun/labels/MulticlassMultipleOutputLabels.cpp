@@ -72,7 +72,7 @@ bool CMulticlassMultipleOutputLabels::set_label(int32_t idx, SGVector<index_t> l
 		return false;
 }
 
-int32_t CMulticlassMultipleOutputLabels::get_num_labels()
+int32_t CMulticlassMultipleOutputLabels::get_num_labels() const
 {
 	return m_n_labels;
 }

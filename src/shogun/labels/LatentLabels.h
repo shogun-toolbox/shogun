@@ -81,7 +81,7 @@ namespace shogun
 			 *
 			 * @return label type (binary, multiclass, ...)
 			 */
-			virtual ELabelType get_label_type() { return LT_LATENT; }
+			virtual ELabelType get_label_type() const { return LT_LATENT; }
 
 			/** Returns the name of the SGSerializable instance.
 			 *
@@ -93,7 +93,7 @@ namespace shogun
 			 *
 			 * @return the number of labels
 			 */
-			virtual int32_t get_num_labels();
+			virtual int32_t get_num_labels() const;
 
 			/** set labels
 			 *

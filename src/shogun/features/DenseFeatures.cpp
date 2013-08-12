@@ -419,7 +419,7 @@ template<class ST> int32_t CDenseFeatures<ST>::get_num_vectors() const
 	return m_subset_stack->has_subsets() ? m_subset_stack->get_size() : num_vectors;
 }
 
-template<class ST> int32_t CDenseFeatures<ST>::get_num_features() { return num_features; }
+template<class ST> int32_t CDenseFeatures<ST>::get_num_features() const { return num_features; }
 
 template<class ST> void CDenseFeatures<ST>::set_num_features(int32_t num)
 {

@@ -73,7 +73,7 @@ bool CStructuredLabels::set_label(int32_t idx, CStructuredData* label)
 	}
 }
 
-int32_t CStructuredLabels::get_num_labels()
+int32_t CStructuredLabels::get_num_labels() const
 {
 	if ( m_labels == NULL )
 		return 0;
