@@ -1,17 +1,12 @@
 #!/usr/bin/env python
-from tools.load import LoadMatrix
-
-lm=LoadMatrix()
-data = lm.load_numbers('../data/fm_train_real.dat')
-
+data = '../data/fm_train_real.dat'
 parameter_list = [[data,20],[data,30]]
 
-def converter_hessianlocallylinearembedding_modular (data,k):
+def converter_hessianlocallylinearembedding_modular (data_fname,k):
 	try:
-		from shogun.Features import RealFeatures
-		from shogun.Converter import HessianLocallyLinearEmbedding
+		from modshogun import RealFeatures, HessianLocallyLinearEmbedding, CSVFile
 		
-		features = RealFeatures(data)
+		features = RealFeatures(CSVFile(data))
 			
 		converter = HessianLocallyLinearEmbedding()
 		converter.set_target_dim(1)

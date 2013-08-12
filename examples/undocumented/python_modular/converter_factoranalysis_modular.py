@@ -1,19 +1,13 @@
 #!/usr/bin/env python
-from tools.load import LoadMatrix
-import numpy
-
-lm=LoadMatrix()
-data = lm.load_numbers('../data/fm_train_real.dat')
-
+data = '../data/fm_train_real.dat'
 parameter_list = [[data]]
 
-def converter_factoranalysis_modular(data):
+def converter_factoranalysis_modular(data_fname):
 	try:
-		from shogun.Features import RealFeatures
-		from shogun.Converter import FactorAnalysis
-		from shogun.Distance import EuclideanDistance
+		import numpy
+		from modshogun import RealFeatures, FactorAnalysis, EuclideanDistance, CSVFile
 		
-		features = RealFeatures(data)
+		features = RealFeatures(CSVFile(data_fname))
 			
 		converter = FactorAnalysis()
 		converter.set_target_dim(2)

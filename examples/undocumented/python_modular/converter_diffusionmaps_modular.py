@@ -1,18 +1,12 @@
 #!/usr/bin/env python
-from tools.load import LoadMatrix
-
-lm=LoadMatrix()
-data = lm.load_numbers('../data/fm_train_real.dat')
-
+data = '../data/fm_train_real.dat'
 parameter_list = [[data,10],[data,20]]
 
-def converter_diffusionmaps_modular (data,t):
+def converter_diffusionmaps_modular (data_fname,t):
 	try: 
-		from shogun.Features import RealFeatures
-		from shogun.Converter import DiffusionMaps
-		from shogun.Kernel import GaussianKernel
+		from modshogun import RealFeatures, DiffusionMaps, GaussianKernel, CSVFile
 		
-		features = RealFeatures(data)
+		features = RealFeatures(CSVFile(data_fname))
 			
 		converter = DiffusionMaps()
 		converter.set_target_dim(1)
