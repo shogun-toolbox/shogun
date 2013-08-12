@@ -1,33 +1,33 @@
 GENERAL
+=======
 
-On most platforms (Linux,MacOSX,cygwin) it is sufficient to issue
+Starting from the version 2.2 Shogun uses CMake to facilitate 
+the building process. When using command line on Linux- and Unix-based 
+systems with the `make` being available the building steps are:
 
-./configure
-make
-sudo make install
+1) go to the shogun repository root
+2) do `mkdir build`
+3) do `cmake [options] ..` (or `ccmake ..` if available). It is very 
+recommended to use any of CMake GUIs (such as ccmake) if you feel unsure 
+about possible parameters and configurations. 
+4) do `make` (and `sudo make install` if needed)
 
-which will build the shogun standalone version cmdline_static, and the
-following shogun interfaces: r_static, matlab_static, python_static,
-octave_static and octave_modular, python_modular, r_modular, java_modular
-and csharp_modular. Finally it will also install shogun.
+In case you want to generate some IDE project (e.g. Eclipse CDT4 project)
+use the `-G generator-name` key. You may obtain possible generators with 
+the `cmake --help` command. For example to generate Eclipse CDT4 project
+for Shogun use the `cmake -G "Eclipse CDT4 - Unix Makefiles"`.
 
-If you prefer to not run make install, you should instead include the shogun
-library in your path:
+Sometimes you would need to clean up your build (e.g. in case of some major
+changes). The easiest way to do that is straightforward: 
+just remove the `build` directory you created before.
+
+If you prefer to not run the `make install` command, you should 
+instead include the shogun library in your path:
 
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:path_to_shogun/src/shogun/
 
 Often you are just interested in one language and we always recommend to
 use the more powerful modular interfaces.
-
-If you want specific interfaces use,
-e.g
-
-./configure --interfaces=python_static,python_modular
-
-See ./configure --help for additional options.
-
-If this does not work for you, see the SPECIFIC BUILD INSTRUCTIONS below
-
 
 SPECIAL FEATURES
 
@@ -70,7 +70,7 @@ SPECIFIC BUILD INSTRUCTIONS
 
 BUILDING ON DEBIAN GNU LINUX
 
-Python (python2.5 or python2.6) need to be installed.  To get atlas/lapack
+Python (python2.6 or python2.7) need to be installed.  To get atlas/lapack
 optimizations optionally also install the atlas3-* packages aswell as the
 lapack3-* packages.
 
