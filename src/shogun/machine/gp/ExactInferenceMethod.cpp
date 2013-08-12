@@ -62,7 +62,7 @@ void CExactInferenceMethod::update_all()
 	update_alpha();
 }
 
-void CExactInferenceMethod::check_members()
+void CExactInferenceMethod::check_members() const
 {
 	CInferenceMethod::check_members();
 
@@ -73,8 +73,7 @@ void CExactInferenceMethod::check_members()
 }
 
 CMap<TParameter*, SGVector<float64_t> > CExactInferenceMethod::
-get_marginal_likelihood_derivatives(CMap<TParameter*,
-		CSGObject*>& para_dict)
+get_marginal_likelihood_derivatives(CMap<TParameter*, CSGObject*>& para_dict)
 {
 	if (update_parameter_hash())
 		update_all();

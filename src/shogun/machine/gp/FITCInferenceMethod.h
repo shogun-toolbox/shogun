@@ -24,19 +24,18 @@
 namespace shogun
 {
 
-/** @brief The Fully Independent Conditional Training inference
- * method class.
+/** @brief The Fully Independent Conditional Training inference method class.
  *
- * This inference method computes the Cholesky and Alpha vectors
- * approximately with the help of latent variables. For more details,
- * see "Sparse Gaussian Process using Pseudo-inputs", Edward Snelson,
- * Zoubin Ghahramani, NIPS 18, MIT Press, 2005.
+ * This inference method computes the Cholesky and Alpha vectors approximately
+ * with the help of latent variables. For more details, see "Sparse Gaussian
+ * Process using Pseudo-inputs", Edward Snelson, Zoubin Ghahramani, NIPS 18, MIT
+ * Press, 2005.
  *
- * This specific implementation was inspired by the infFITC.m file in
- * the GPML toolbox.
+ * This specific implementation was inspired by the infFITC.m file in the GPML
+ * toolbox.
  *
- * NOTE: The Gaussian Likelihood Function must be used for this
- * inference method.
+ * NOTE: The Gaussian Likelihood Function must be used for this inference
+ * method.
  */
 class CFITCInferenceMethod: public CInferenceMethod
 {
@@ -63,7 +62,7 @@ public:
 	 *
 	 * @return inference type FITC
 	 */
-	virtual EInferenceType get_inference_type() { return INF_FITC; }
+	virtual EInferenceType get_inference_type() const { return INF_FITC; }
 
 	/** returns the name of the inference method
 	 *
@@ -82,7 +81,12 @@ public:
 	 *
 	 * @param feat features to set
 	 */
-	virtual void set_latent_features(CFeatures* feat);
+	virtual void set_latent_features(CFeatures* feat)
+	{
+		SG_REF(feat);
+		SG_UNREF(m_latent_features);
+		m_latent_features=feat;
+	}
 
 	/** get latent features
 	 *
@@ -102,22 +106,22 @@ public:
 	 *	  -log(p(y|X, \theta))
 	 * \f]
 	 *
-	 * where \f$y\f$ are the labels, \f$X\f$ are the features, and
-	 * \f$\theta\f$ represent hyperparameters.
+	 * where \f$y\f$ are the labels, \f$X\f$ are the features, and \f$\theta\f$
+	 * represent hyperparameters.
 	 */
 	virtual float64_t get_negative_marginal_likelihood();
 
 	/** get log marginal likelihood gradient
 	 *
-	 * @return vector of the marginal likelihood function gradient
-	 * with respect to hyperparameters:
+	 * @return vector of the marginal likelihood function gradient with respect
+	 * to hyperparameters:
 	 *
 	 * \f[
 	 *	 -\frac{\partial {log(p(y|X, \theta))}}{\partial \theta}
 	 * \f]
 	 *
-	 * where \f$y\f$ are the labels, \f$X\f$ are the features, and
-	 * \f$\theta\f$ represent hyperparameters.
+	 * where \f$y\f$ are the labels, \f$X\f$ are the features, and \f$\theta\f$
+	 * represent hyperparameters.
 	 */
 	virtual CMap<TParameter*, SGVector<float64_t> > get_marginal_likelihood_derivatives(
 			CMap<TParameter*, CSGObject*>& para_dict);
@@ -130,8 +134,7 @@ public:
 	 *		\mu = K\alpha
 	 * \f]
 	 *
-	 * where \f$\mu\f$ is the mean and \f$K\f$ is the prior covariance
-	 * matrix.
+	 * where \f$\mu\f$ is the mean and \f$K\f$ is the prior covariance matrix.
 	 */
 	virtual SGVector<float64_t> get_alpha();
 
@@ -143,32 +146,29 @@ public:
 	 *		 L = Cholesky(sW*K*sW+I)
 	 * \f]
 	 *
-	 * where \f$K\f$ is the prior covariance matrix, \f$sW\f$ is the
-	 * vector returned by get_diagonal_vector(), and \f$I\f$ is the
-	 * identity matrix.
+	 * where \f$K\f$ is the prior covariance matrix, \f$sW\f$ is the vector
+	 * returned by get_diagonal_vector(), and \f$I\f$ is the identity matrix.
 	 */
 	virtual SGMatrix<float64_t> get_cholesky();
 
 	/** get diagonal vector
 	 *
-	 * @return diagonal of matrix used to calculate posterior
-	 * covariance matrix:
+	 * @return diagonal of matrix used to calculate posterior covariance matrix:
 	 *
 	 * \f[
 	 *	    Cov = (K^{-1}+sW^{2})^{-1}
 	 * \f]
 	 *
-	 * where \f$Cov\f$ is the posterior covariance matrix, \f$K\f$ is
-	 * the prior covariance matrix, and \f$sW\f$ is the diagonal
-	 * vector.
+	 * where \f$Cov\f$ is the posterior covariance matrix, \f$K\f$ is the prior
+	 * covariance matrix, and \f$sW\f$ is the diagonal vector.
 	 */
 	virtual SGVector<float64_t> get_diagonal_vector();
 
 	/**
-	 * @return whether combination of FITC inference method and given
-	 * likelihood function supports regression
+	 * @return whether combination of FITC inference method and given likelihood
+	 * function supports regression
 	 */
-	virtual bool supports_regression()
+	virtual bool supports_regression() const
 	{
 		check_members();
 		return m_model->supports_regression();
@@ -178,6 +178,9 @@ public:
 	virtual void update_all();
 
 protected:
+	/** check if members of object are valid for inference */
+	virtual void check_members() const;
+
 	/** update alpha matrix */
 	virtual void update_alpha();
 
@@ -186,9 +189,6 @@ protected:
 
 	/** update train kernel matrix */
 	virtual void update_train_kernel();
-
-	/** check if members of object are valid for inference */
-	virtual void check_members();
 
 private:
 	void init();
@@ -206,9 +206,7 @@ private:
 	/** Cholesky of covariance of latent features */
 	SGMatrix<float64_t> m_chol_uu;
 
-	/** Cholesky of covariance of latent features and training
-	 * features
-	 */
+	/** Cholesky of covariance of latent features and training features */
 	SGMatrix<float64_t> m_chol_utr;
 
 	/** covariance matrix of latent features */
@@ -217,9 +215,8 @@ private:
 	/** covariance matrix of latent features and training features */
 	SGMatrix<float64_t> m_ktru;
 
-	/** diagonal of training kernel matrix + noise - diagonal of
-	 * the matrix (m_chol_uu^{-1}*m_ktru)* (m_chol_uu^(-1)*m_ktru)' =
-	 * V*V'
+	/** diagonal of training kernel matrix + noise - diagonal of the matrix
+	 * (m_chol_uu^{-1}*m_ktru)* (m_chol_uu^(-1)*m_ktru)' = V*V'
 	 */
 	SGVector<float64_t> m_dg;
 

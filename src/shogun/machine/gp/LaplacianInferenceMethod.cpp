@@ -30,54 +30,58 @@ using namespace Eigen;
 
 namespace shogun
 {
-	/** @brief Wrapper class used for the Brent minimizer. */
-	class CPsiLine : public func_base
+
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+
+/** Wrapper class used for the Brent minimizer */
+class CPsiLine : public func_base
+{
+public:
+	float64_t scale;
+	MatrixXd K;
+	VectorXd dalpha;
+	VectorXd start_alpha;
+	Map<VectorXd>* alpha;
+	SGVector<float64_t>* dlp;
+	SGVector<float64_t>* W;
+	SGVector<float64_t>* f;
+	SGVector<float64_t>* m;
+	CLikelihoodModel* lik;
+	CLabels* lab;
+
+	virtual double operator() (double x)
 	{
-	public:
-		float64_t scale;
-		MatrixXd K;
-		VectorXd dalpha;
-		VectorXd start_alpha;
-		Map<VectorXd>* alpha;
-		SGVector<float64_t>* dlp;
-		SGVector<float64_t>* W;
-		SGVector<float64_t>* f;
-		SGVector<float64_t>* m;
-		CLikelihoodModel* lik;
-		CLabels* lab;
+		Map<VectorXd> eigen_f(f->vector, f->vlen);
+		Map<VectorXd> eigen_m(m->vector, m->vlen);
 
-		virtual double operator() (double x)
-		{
-			Map<VectorXd> eigen_f(f->vector, f->vlen);
-			Map<VectorXd> eigen_m(m->vector, m->vlen);
+		// compute alpha=alpha+x*dalpha and f=K*alpha+m
+		(*alpha)=start_alpha+x*dalpha;
+		eigen_f=K*(*alpha)*CMath::sq(scale)+eigen_m;
 
-			// compute alpha=alpha+x*dalpha and f=K*alpha+m
-			(*alpha)=start_alpha+x*dalpha;
-			eigen_f=K*(*alpha)*CMath::sq(scale)+eigen_m;
+		// get first and second derivatives of log likelihood
+		(*dlp)=lik->get_log_probability_derivative_f(lab, (*f), 1);
 
-			// get first and second derivatives of log likelihood
-			(*dlp)=lik->get_log_probability_derivative_f(lab, (*f), 1);
+		(*W)=lik->get_log_probability_derivative_f(lab, (*f), 2);
+		W->scale(-1.0);
 
-			(*W)=lik->get_log_probability_derivative_f(lab, (*f), 2);
-			W->scale(-1.0);
+		// compute psi=alpha'*(f-m)/2-lp
+		float64_t result = (*alpha).dot(eigen_f-eigen_m)/2.0-
+			SGVector<float64_t>::sum(lik->get_log_probability_f(lab, *f));
 
-			// compute psi=alpha'*(f-m)/2-lp
-			float64_t result = (*alpha).dot(eigen_f-eigen_m)/2.0-
-				SGVector<float64_t>::sum(lik->get_log_probability_f(lab, *f));
+		return result;
+	}
+};
 
-			return result;
-		}
-	};
-}
+#endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
 CLaplacianInferenceMethod::CLaplacianInferenceMethod() : CInferenceMethod()
 {
 	init();
 }
 
-CLaplacianInferenceMethod::CLaplacianInferenceMethod(CKernel* kern,	CFeatures* feat,
-		CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod) :
-		CInferenceMethod(kern, feat, m, lab, mod)
+CLaplacianInferenceMethod::CLaplacianInferenceMethod(CKernel* kern,
+		CFeatures* feat, CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod)
+		: CInferenceMethod(kern, feat, m, lab, mod)
 {
 	init();
 }
@@ -117,8 +121,7 @@ void CLaplacianInferenceMethod::update_all()
 }
 
 CMap<TParameter*, SGVector<float64_t> > CLaplacianInferenceMethod::
-get_marginal_likelihood_derivatives(CMap<TParameter*,
-		CSGObject*>& para_dict)
+get_marginal_likelihood_derivatives(CMap<TParameter*, CSGObject*>& para_dict)
 {
 	if (update_parameter_hash())
 		update_all();
@@ -197,20 +200,24 @@ get_marginal_likelihood_derivatives(CMap<TParameter*,
 		{
 			SGMatrix<float64_t> deriv=m_kernel->get_parameter_gradient(param, obj);
 			SGVector<float64_t> lik_first_deriv=m_model->get_first_derivative(
-				m_labels, param, obj, m_approx_mean);
+				m_labels, param, m_approx_mean);
 			SGVector<float64_t> lik_second_deriv=m_model->get_second_derivative(
-				m_labels, param, obj, m_approx_mean);
+				m_labels, param, m_approx_mean);
 			SGVector<float64_t> lik_third_deriv=m_model->get_third_derivative(
-				m_labels, param, obj, m_approx_mean);
+				m_labels, param, m_approx_mean);
 			SGVector<float64_t> mean_deriv;
 
-			if (param->m_datatype.m_ctype == CT_VECTOR ||
-					param->m_datatype.m_ctype == CT_SGVECTOR)
-				mean_deriv=m_mean->get_parameter_derivative(
-					param, obj, m_feature_matrix, h);
+			if (param->m_datatype.m_ctype==CT_VECTOR ||
+					param->m_datatype.m_ctype==CT_SGVECTOR)
+			{
+				mean_deriv=m_mean->get_parameter_derivative(param, obj,
+					m_feature_matrix, h);
+			}
 			else
-				mean_deriv=m_mean->get_parameter_derivative(
-					param, obj, m_feature_matrix);
+			{
+				mean_deriv=m_mean->get_parameter_derivative(param, obj,
+					m_feature_matrix);
+			}
 
 			Map<VectorXd> eigen_mean_deriv(mean_deriv.vector, mean_deriv.vlen);
 
@@ -568,6 +575,7 @@ void CLaplacianInferenceMethod::update_alpha()
 		eigen_sW=eigen_W.cwiseSqrt();
 	else
 		eigen_sW.setZero();
+}
 }
 
 #endif // HAVE_EIGEN3

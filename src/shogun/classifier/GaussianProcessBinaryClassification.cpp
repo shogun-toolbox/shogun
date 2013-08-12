@@ -20,8 +20,8 @@ CGaussianProcessBinaryClassification::CGaussianProcessBinaryClassification()
 {
 }
 
-CGaussianProcessBinaryClassification::CGaussianProcessBinaryClassification(CInferenceMethod* method)
-	: CGaussianProcessMachine(method)
+CGaussianProcessBinaryClassification::CGaussianProcessBinaryClassification(
+		CInferenceMethod* method) : CGaussianProcessMachine(method)
 {
 	// set labels
 	m_labels=method->get_labels();
@@ -31,18 +31,19 @@ CGaussianProcessBinaryClassification::~CGaussianProcessBinaryClassification()
 {
 }
 
-CBinaryLabels* CGaussianProcessBinaryClassification::apply_binary(CFeatures* data)
+CBinaryLabels* CGaussianProcessBinaryClassification::apply_binary(
+		CFeatures* data)
 {
-	// check whether given combination of inference method and
-	// likelihood function supports classification
-	REQUIRE(m_method, "Inference method must be attached\n")
+	// check whether given combination of inference method and likelihood
+	// function supports classification
+	REQUIRE(m_method, "Inference method should not be NULL\n")
 	CLikelihoodModel* lik=m_method->get_model();
-	REQUIRE(m_method->supports_binary(), "%s with %s doesn't support classification\n",
-			m_method->get_name(), lik->get_name())
+	REQUIRE(m_method->supports_binary(), "%s with %s doesn't support "
+			"binary classification\n", m_method->get_name(), lik->get_name())
 	SG_UNREF(lik);
 
-	// if regression data equals to NULL, then apply classification on
-	// training features
+	// if regression data equals to NULL, then apply classification on training
+	// features
 	if (!data)
 		data=m_method->get_features();
 	else
@@ -56,12 +57,12 @@ CBinaryLabels* CGaussianProcessBinaryClassification::apply_binary(CFeatures* dat
 
 bool CGaussianProcessBinaryClassification::train_machine(CFeatures* data)
 {
-	// check whether given combination of inference method and
-	// likelihood function supports classification
-	REQUIRE(m_method, "Inference method must be attached\n")
+	// check whether given combination of inference method and likelihood
+	// function supports classification
+	REQUIRE(m_method, "Inference method should not be NULL\n")
 	CLikelihoodModel* lik=m_method->get_model();
-	REQUIRE(m_method->supports_binary(), "%s with %s doesn't support classification\n",
-			m_method->get_name(), lik->get_name())
+	REQUIRE(m_method->supports_binary(), "%s with %s doesn't support "
+			"binary classification\n", m_method->get_name(), lik->get_name())
 	SG_UNREF(lik);
 
 	if (data)
@@ -73,14 +74,15 @@ bool CGaussianProcessBinaryClassification::train_machine(CFeatures* data)
 	return true;
 }
 
-SGVector<float64_t> CGaussianProcessBinaryClassification::get_mean_vector(CFeatures* data)
+SGVector<float64_t> CGaussianProcessBinaryClassification::get_mean_vector(
+		CFeatures* data)
 {
-	// check whether given combination of inference method and
-	// likelihood function supports classification
-	REQUIRE(m_method, "Inference method must be attached\n")
+	// check whether given combination of inference method and likelihood
+	// function supports classification
+	REQUIRE(m_method, "Inference method should not be NULL\n")
 	CLikelihoodModel* lik=m_method->get_model();
-	REQUIRE(m_method->supports_binary(), "%s with %s doesn't support classification\n",
-			m_method->get_name(), lik->get_name())
+	REQUIRE(m_method->supports_binary(), "%s with %s doesn't support "
+			"binary classification\n", m_method->get_name(), lik->get_name())
 
 	SG_REF(data);
 	SGVector<float64_t> mu=get_posterior_means(data);
@@ -94,14 +96,15 @@ SGVector<float64_t> CGaussianProcessBinaryClassification::get_mean_vector(CFeatu
 	return mu;
 }
 
-SGVector<float64_t> CGaussianProcessBinaryClassification::get_variance_vector(CFeatures* data)
+SGVector<float64_t> CGaussianProcessBinaryClassification::get_variance_vector(
+		CFeatures* data)
 {
 	// check whether given combination of inference method and
 	// likelihood function supports classification
-	REQUIRE(m_method, "Inference method must be attached\n")
+	REQUIRE(m_method, "Inference method should not be NULL\n")
 	CLikelihoodModel* lik=m_method->get_model();
-	REQUIRE(m_method->supports_binary(), "%s with %s doesn't support classification\n",
-			m_method->get_name(), lik->get_name())
+	REQUIRE(m_method->supports_binary(), "%s with %s doesn't support "
+			"binary classification\n", m_method->get_name(), lik->get_name())
 
 	SG_REF(data);
 	SGVector<float64_t> mu=get_posterior_means(data);
@@ -115,14 +118,15 @@ SGVector<float64_t> CGaussianProcessBinaryClassification::get_variance_vector(CF
 	return s2;
 }
 
-SGVector<float64_t> CGaussianProcessBinaryClassification::get_probabilities(CFeatures* data)
+SGVector<float64_t> CGaussianProcessBinaryClassification::get_probabilities(
+		CFeatures* data)
 {
-	// check whether given combination of inference method and
-	// likelihood function supports classification
-	REQUIRE(m_method, "Inference method must be attached\n")
+	// check whether given combination of inference method and likelihood
+	// function supports classification
+	REQUIRE(m_method, "Inference method should not be NULL\n")
 	CLikelihoodModel* lik=m_method->get_model();
-	REQUIRE(m_method->supports_binary(), "%s with %s doesn't support classification\n",
-			m_method->get_name(), lik->get_name())
+	REQUIRE(m_method->supports_binary(), "%s with %s doesn't support "
+			"binary classification\n", m_method->get_name(), lik->get_name())
 
 	SG_REF(data);
 	SGVector<float64_t> mu=get_posterior_means(data);

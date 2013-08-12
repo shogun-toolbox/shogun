@@ -23,27 +23,26 @@ namespace shogun
 
 /** @brief The Gaussian exact form inference method class.
  *
- * This inference method computes the Gaussian Method exactly using
- * matrix equations.
+ * This inference method computes the Gaussian Method exactly using matrix
+ * equations.
  *
  * \f[
  * 	 L = cholesky(K + \sigma^{2}I)
  * \f]
  *
- * \f$L\f$ is the cholesky decomposition of \f$K\f$, the covariance
- * matrix, plus a diagonal matrix with entries \f$\sigma^{2}\f$, the
- * observation noise.
+ * \f$L\f$ is the cholesky decomposition of \f$K\f$, the covariance matrix, plus
+ * a diagonal matrix with entries \f$\sigma^{2}\f$, the observation noise.
  *
  * \f[
  * 	\boldsymbol{\alpha} = L^{T} \backslash(L \backslash \boldsymbol{y}})
  * \f]
  *
- * where \f$L\f$ is the matrix mentioned above, \f$\boldsymbol{y}\f$
- * are the labels, and \f$\backslash\f$ is an operator (\f$x = A
- * \backslash B\f$ means \f$Ax=B\f$.)
+ * where \f$L\f$ is the matrix mentioned above, \f$\boldsymbol{y}\f$ are the
+ * labels, and \f$\backslash\f$ is an operator (\f$x = A \backslash B\f$ means
+ * \f$Ax=B\f$.)
  *
- * NOTE: The Gaussian Likelihood Function must be used for this
- * inference method.
+ * NOTE: The Gaussian Likelihood Function must be used for this inference
+ * method.
  */
 class CExactInferenceMethod: public CInferenceMethod
 {
@@ -68,7 +67,7 @@ public:
 	 *
 	 * @return inference type EXACT
 	 */
-	virtual EInferenceType get_inference_type() { return INF_EXACT; }
+	virtual EInferenceType get_inference_type() const { return INF_EXACT; }
 
 	/** returns the name of the inference method
 	 *
@@ -84,22 +83,22 @@ public:
 	 *	  -log(p(y|X, \theta))
 	 * \f]
 	 *
-	 * where \f$y\f$ are the labels, \f$X\f$ are the features, and
-	 * \f$\theta\f$ represent hyperparameters.
+	 * where \f$y\f$ are the labels, \f$X\f$ are the features, and \f$\theta\f$
+	 * represent hyperparameters.
 	 */
 	virtual float64_t get_negative_marginal_likelihood();
 
 	/** get log marginal likelihood gradient
 	 *
-	 * @return vector of the marginal likelihood function gradient
-	 * with respect to hyperparameters:
+	 * @return vector of the marginal likelihood function gradient with respect
+	 * to hyperparameters:
 	 *
 	 * \f[
 	 *	 -\frac{\partial {log(p(y|X, \theta))}}{\partial \theta}
 	 * \f]
 	 *
-	 * where \f$y\f$ are the labels, \f$X\f$ are the features, and
-	 * \f$\theta\f$ represent hyperparameters.
+	 * where \f$y\f$ are the labels, \f$X\f$ are the features, and \f$\theta\f$
+	 * represent hyperparameters.
 	 */
 	virtual CMap<TParameter*, SGVector<float64_t> > get_marginal_likelihood_derivatives(
 			CMap<TParameter*, CSGObject*>& para_dict);
@@ -112,8 +111,7 @@ public:
 	 *		\mu = K\alpha
 	 * \f]
 	 *
-	 * where \f$\mu\f$ is the mean and \f$K\f$ is the prior covariance
-	 * matrix.
+	 * where \f$\mu\f$ is the mean and \f$K\f$ is the prior covariance matrix.
 	 */
 	virtual SGVector<float64_t> get_alpha();
 
@@ -125,24 +123,21 @@ public:
 	 *		 L = Cholesky(sW*K*sW+I)
 	 * \f]
 	 *
-	 * where \f$K\f$ is the prior covariance matrix, \f$sW\f$ is the
-	 * vector returned by get_diagonal_vector(), and \f$I\f$ is the
-	 * identity matrix.
+	 * where \f$K\f$ is the prior covariance matrix, \f$sW\f$ is the vector
+	 * returned by get_diagonal_vector(), and \f$I\f$ is the identity matrix.
 	 */
 	virtual SGMatrix<float64_t> get_cholesky();
 
 	/** get diagonal vector
 	 *
-	 * @return diagonal of matrix used to calculate posterior
-	 * covariance matrix
+	 * @return diagonal of matrix used to calculate posterior covariance matrix
 	 *
 	 * \f[
 	 *	    Cov = (K^{-1}+sW^{2})^{-1}
 	 * \f]
 	 *
-	 * where \f$Cov\f$ is the posterior covariance matrix, \f$K\f$ is
-	 * the prior covariance matrix, and \f$sW\f$ is the diagonal
-	 * vector.
+	 * where \f$Cov\f$ is the posterior covariance matrix, \f$K\f$ is the prior
+	 * covariance matrix, and \f$sW\f$ is the diagonal vector.
 	 */
 	virtual SGVector<float64_t> get_diagonal_vector();
 
@@ -150,7 +145,7 @@ public:
 	 * @return whether combination of exact inference method and given
 	 * likelihood function supports regression
 	 */
-	virtual bool supports_regression()
+	virtual bool supports_regression() const
 	{
 		check_members();
 		return m_model->supports_regression();
@@ -160,6 +155,9 @@ public:
 	virtual void update_all();
 
 protected:
+	/** check if members of object are valid for inference */
+	virtual void check_members() const;
+
 	/** update alpha matrix */
 	virtual void update_alpha();
 
@@ -168,9 +166,6 @@ protected:
 
 	/** update kernel matrix */
 	virtual void update_train_kernel();
-
-	/** check if members of object are valid for inference */
-	virtual void check_members();
 };
 }
 #endif // HAVE_EIGEN3

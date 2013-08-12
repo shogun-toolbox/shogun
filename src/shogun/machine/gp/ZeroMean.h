@@ -35,12 +35,12 @@ public:
 
 	/** returns the mean of the specified data
 	 *
-	 * @param data points arranged in a matrix with rows representing
-	 * the number of features
+	 * @param data points arranged in a matrix with rows representing the number
+	 * of features
 	 *
 	 * @return mean of feature vectors
 	 */
-	virtual SGVector<float64_t> get_mean_vector(SGMatrix<float64_t>& data);
+	virtual SGVector<float64_t> get_mean_vector(SGMatrix<float64_t> data) const;
 };
 }
 #endif /* CZEROMEAN_H_ */
