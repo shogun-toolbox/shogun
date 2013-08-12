@@ -23,6 +23,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
+#include <shogun/lib/RefCount.h>
 #include <shogun/lib/common.h>
 #include <shogun/base/init.h>
 
@@ -228,6 +229,9 @@ class SGIO
 		SGIO();
 		/** copy constructor */
 		SGIO(const SGIO& orig);
+
+		/** destructor */
+		virtual ~SGIO();
 
 		/** set loglevel
 		 *
@@ -505,36 +509,20 @@ class SGIO
 		 *
 		 * @return reference count
 		 */
-		inline int32_t ref()
-		{
-			++refcount;
-			return refcount;
-		}
+		int32_t ref();
 
 		/** display reference counter
 		 *
 		 * @return reference count
 		 */
-		inline int32_t ref_count() const
-		{
-			return refcount;
-		}
+		int32_t ref_count() const;
 
 		/** decrement reference counter and deallocate object if refcount is zero
 		 * before or after decrementing it
 		 *
 		 * @return reference count
 		 */
-		inline int32_t unref()
-		{
-			if (refcount==0 || --refcount==0)
-			{
-				delete this;
-				return 0;
-			}
-			else
-				return refcount;
-		}
+		int32_t unref();
 
 		/** @return object name */
 		inline const char* get_name() { return "SGIO"; }
@@ -580,7 +568,7 @@ class SGIO
         static char directory_name[FBUFSIZE];
 
 	private:
-		int32_t refcount;
+		RefCount* m_refcount;
 };
 }
 #endif // __SGIO_H__

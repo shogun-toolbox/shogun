@@ -13,10 +13,12 @@
 
 #include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
+#include <shogun/lib/RefCount.h>
 #include <shogun/io/SGIO.h>
 
 namespace shogun
 {
+class RefCount;
 /** @brief Class Parallel provides helper functions for multithreading.
  *
  * For example it can be used to determine the number of CPU cores in your
@@ -67,7 +69,7 @@ public:
 
 private:
 	/** ref counter */
-	int32_t refcount;
+	RefCount* m_refcount;
 
 	/** number of threads */
 	int32_t num_threads;

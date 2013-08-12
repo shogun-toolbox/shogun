@@ -9,6 +9,7 @@
  */
 
 #include <shogun/base/Version.h>
+#include <shogun/base/SGObject.h>
 #include <shogun/lib/versionstring.h>
 
 using namespace shogun;
@@ -26,13 +27,15 @@ const char Version::version_extra[128] = VERSION_EXTRA;
 const char Version::version_release[128] = VERSION_RELEASE;
 }
 
-Version::Version() : refcount(0)
+Version::Version()
 {
+	m_refcount = new RefCount();
 }
 
 
 Version::~Version()
 {
+	delete m_refcount;
 }
 
 void Version::print_version()
@@ -102,22 +105,23 @@ int64_t Version::get_version_in_minutes()
 
 int32_t Version::ref()
 {
-	++refcount;
-	return refcount;
+	return m_refcount->ref();
 }
 
 int32_t Version::ref_count() const
 {
-	return refcount;
+	return m_refcount->ref_count();
 }
 
 int32_t Version::unref()
 {
-	if (refcount==0 || --refcount==0)
+	int32_t rc = m_refcount->unref();
+
+	if (rc==0)
 	{
 		delete this;
 		return 0;
 	}
-	else
-		return refcount;
+
+	return rc;
 }
