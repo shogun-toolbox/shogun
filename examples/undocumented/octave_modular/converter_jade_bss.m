@@ -18,7 +18,7 @@ S(2,:) = sign(sin(3*time));
 S += 0.2*rand(size(S));
 
 % Standardize data
-S = S ./ std(S,0,2);
+S = S ./ (std(S,0,2) * ones(1,n_samples));
 
 % Mixing Matrix
 A = [1 0.5; 0.5 1]
