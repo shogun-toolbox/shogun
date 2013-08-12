@@ -33,7 +33,7 @@ TEST(SparseMatrixOperator, symmetric_apply)
 
 	CSparseFeatures<float64_t> feat(m);
 	SGSparseMatrix<float64_t> mat=feat.get_sparse_feature_matrix();
-	CSparseMatrixOperator<float64_t, float64_t> op(mat);
+	CSparseMatrixOperator<float64_t> op(mat);
 
 	SGVector<float64_t> b(size);
 	b.set_const(0.25);
@@ -52,7 +52,7 @@ TEST(SparseMatrixOperator, symmetric_apply)
 #endif
 }
 
-TEST(SparseMatrixOperator, symmetric_apply_complex_float)
+TEST(SparseMatrixOperator, symmetric_apply_complex)
 {
 	const index_t size=2;
 
@@ -64,9 +64,9 @@ TEST(SparseMatrixOperator, symmetric_apply_complex_float)
 
 	CSparseFeatures<complex64_t> feat(m);
 	SGSparseMatrix<complex64_t> mat=feat.get_sparse_feature_matrix();
-	CSparseMatrixOperator<complex64_t, float64_t> op(mat);
+	CSparseMatrixOperator<complex64_t> op(mat);
 
-	SGVector<float64_t> b(size);
+	SGVector<complex64_t> b(size);
 	b.set_const(0.25);
 
 	SGVector<complex64_t> result=op.apply(b);
@@ -77,9 +77,9 @@ TEST(SparseMatrixOperator, symmetric_apply_complex_float)
 #else
 	const SparseMatrix<complex64_t> &eig_m
 		=EigenSparseUtil<complex64_t>::toEigenSparse(mat);
-	Map<VectorXd> map_b(b.vector, b.vlen);
+	Map<VectorXcd> map_b(b.vector, b.vlen);
 
-	EXPECT_NEAR(map_result.norm(), (eig_m*map_b.cast<complex64_t>()).norm(), 1E-16);
+	EXPECT_NEAR(map_result.norm(), (eig_m*map_b).norm(), 1E-16);
 #endif
 }
 
@@ -98,7 +98,7 @@ TEST(SparseMatrixOperator, asymmetric_apply)
 
 	CSparseFeatures<float64_t> feat(m);
 	SGSparseMatrix<float64_t> mat=feat.get_sparse_feature_matrix();
-	CSparseMatrixOperator<float64_t, float64_t> op(mat);
+	CSparseMatrixOperator<float64_t> op(mat);
 
 	SGVector<float64_t> b(size*10);
 	b.set_const(0.25);
@@ -129,7 +129,7 @@ TEST(SparseMatrixOperator, get_set_diagonal_no_alloc)
 
 	CSparseFeatures<float64_t> feat(m);
 	SGSparseMatrix<float64_t> mat=feat.get_sparse_feature_matrix();
-	CSparseMatrixOperator<float64_t, float64_t> op(mat);
+	CSparseMatrixOperator<float64_t> op(mat);
 
 	// get the old diagonal and check if it works fine
 	SGVector<float64_t> old_diag=op.get_diagonal();
@@ -162,7 +162,7 @@ TEST(SparseMatrixOperator, get_set_diagonal_realloc)
 
 	CSparseFeatures<float64_t> feat(m);
 	SGSparseMatrix<float64_t> mat=feat.get_sparse_feature_matrix();
-	CSparseMatrixOperator<float64_t, float64_t> op(mat);
+	CSparseMatrixOperator<float64_t> op(mat);
 
 	// get the old diagonal and check if it works fine
 	SGVector<float64_t> old_diag=op.get_diagonal();
@@ -195,7 +195,7 @@ TEST(SparseMatrixOperator, get_set_diagonal_realloc_complex64)
 
 	CSparseFeatures<complex64_t> feat(m);
 	SGSparseMatrix<complex64_t> mat=feat.get_sparse_feature_matrix();
-	CSparseMatrixOperator<complex64_t, float64_t> op(mat);
+	CSparseMatrixOperator<complex64_t> op(mat);
 
 	// get the old diagonal and check if it works fine
 	SGVector<complex64_t> old_diag=op.get_diagonal();

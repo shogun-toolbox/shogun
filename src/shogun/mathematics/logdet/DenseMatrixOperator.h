@@ -26,7 +26,7 @@ template<class T> class SGMatrix;
  * being the matrix operator and \f$x\in\mathbb{C}^{n}\f$ being the vector.
  * The result is a vector \f$y\in\mathbb{C}^{m}\f$.
  */
-template<class T, class ST=T> class CDenseMatrixOperator : public CMatrixOperator<T, ST>
+template<class T> class CDenseMatrixOperator : public CMatrixOperator<T>
 {
 /** this class has support for complex64_t */
 typedef bool supports_complex64_t;
@@ -40,14 +40,14 @@ public:
 	 *
 	 * @param op the dense matrix to be used as the linear operator
 	 */
-	CDenseMatrixOperator(SGMatrix<T> op);
+	explicit CDenseMatrixOperator(SGMatrix<T> op);
 
 	/** 
 	 * copy constructor that creates a deep copy
 	 *
 	 * @param orig the original dense matrix operator
 	 */
-	CDenseMatrixOperator(const CDenseMatrixOperator<T, ST>& orig);
+	CDenseMatrixOperator(const CDenseMatrixOperator<T>& orig);
 
 	/** destructor */
 	~CDenseMatrixOperator();
@@ -58,7 +58,7 @@ public:
 	 * @param b the vector to which the linear operator applies
 	 * @return the result vector
 	 */
-	virtual SGVector<T> apply(SGVector<ST> b) const;
+	virtual SGVector<T> apply(SGVector<T> b) const;
 
 	/**
 	 * method that sets the main diagonal of the matrix
@@ -76,6 +76,25 @@ public:
 
 	/** @return the dense matrix operator */
 	SGMatrix<T> get_matrix_operator() const;
+
+	/**
+	 * create a new dense matrix operator of Scalar type
+	 */
+	template<class Scalar>
+	inline operator CDenseMatrixOperator<Scalar>*() const
+	{
+		REQUIRE(m_operator.matrix, "Matrix is not initialized!\n");
+
+		SGMatrix<Scalar> casted_m(m_operator.num_rows, m_operator.num_cols);
+		for (index_t i=0; i<m_operator.num_cols; ++i)
+		{
+			for (index_t j=0; j<m_operator.num_rows; ++j)
+				casted_m(j,i)=static_cast<Scalar>(m_operator(j,i));
+		}
+		SG_SDEBUG("DenseMatrixOperator::static_cast(): Creating casted operator!\n");
+
+		return new CDenseMatrixOperator<Scalar>(casted_m);
+	}
 
 	/** @return object name */
 	virtual const char* get_name() const

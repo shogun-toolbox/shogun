@@ -35,7 +35,7 @@ CCGMShiftedFamilySolver::~CCGMShiftedFamilySolver()
 }
 
 SGVector<float64_t> CCGMShiftedFamilySolver::solve(
-	CLinearOperator<float64_t, float64_t>* A, SGVector<float64_t> b)
+	CLinearOperator<float64_t>* A, SGVector<float64_t> b)
 {
 	SGVector<complex64_t> shifts(1);
 	shifts[0]=0.0;
@@ -46,7 +46,7 @@ SGVector<float64_t> CCGMShiftedFamilySolver::solve(
 }
 
 SGVector<complex64_t> CCGMShiftedFamilySolver::solve_shifted_weighted(
-	CLinearOperator<float64_t, float64_t>* A, SGVector<float64_t> b,
+	CLinearOperator<float64_t>* A, SGVector<float64_t> b,
 	SGVector<complex64_t> shifts, SGVector<complex64_t> weights)
 {
 	SG_DEBUG("CCGMShiftedFamilySolve::solve_shifted_weighted(): Entering..\n");

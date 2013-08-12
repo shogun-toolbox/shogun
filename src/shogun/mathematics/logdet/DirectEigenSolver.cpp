@@ -6,6 +6,7 @@
  * 
  * Written (W) 2013 Soumyajit De
  */
+
 #include <shogun/lib/config.h>
 
 #ifdef HAVE_EIGEN3
@@ -26,8 +27,8 @@ CDirectEigenSolver::CDirectEigenSolver()
 }
 
 CDirectEigenSolver::CDirectEigenSolver(
-	CDenseMatrixOperator<float64_t, float64_t>* linear_operator)
-	: CEigenSolver((CLinearOperator<float64_t, float64_t>*)linear_operator)
+	CDenseMatrixOperator<float64_t>* linear_operator)
+	: CEigenSolver((CLinearOperator<float64_t>*)linear_operator)
 {
 	SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 }

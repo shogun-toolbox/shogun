@@ -29,7 +29,7 @@ TEST(DirectLinearSolverComplex, solve_SVD)
 	m(1,0)=complex64_t(1.0, 2.0);
 	m(1,1)=complex64_t(3.0);
 
-	CDenseMatrixOperator<complex64_t, complex64_t>* A
+	CDenseMatrixOperator<complex64_t>* A
 		=new CDenseMatrixOperator<complex64_t>(m);
 
 	SGVector<float64_t> b(size);
@@ -37,7 +37,7 @@ TEST(DirectLinearSolverComplex, solve_SVD)
 
 	CDirectLinearSolverComplex solver(DS_SVD);
 	SGVector<complex64_t> x
-		=solver.solve((CLinearOperator<complex64_t, complex64_t>*)A, b);
+		=solver.solve((CLinearOperator<complex64_t>*)A, b);
 
 	SGVector<complex64_t> bp=A->apply(x);
 	Map<VectorXd> map_b(b.vector, b.vlen);
@@ -58,7 +58,7 @@ TEST(DirectLinearSolverComplex, solve_QR_NOPERM)
 	m(1,0)=complex64_t(1.0, 2.0);
 	m(1,1)=complex64_t(3.0);
 
-	CDenseMatrixOperator<complex64_t, complex64_t>* A
+	CDenseMatrixOperator<complex64_t>* A
 		=new CDenseMatrixOperator<complex64_t>(m);
 
 	SGVector<float64_t> b(size);
@@ -66,7 +66,7 @@ TEST(DirectLinearSolverComplex, solve_QR_NOPERM)
 
 	CDirectLinearSolverComplex solver(DS_QR_NOPERM);
 	SGVector<complex64_t> x
-		=solver.solve((CLinearOperator<complex64_t, complex64_t>*)A, b);
+		=solver.solve((CLinearOperator<complex64_t>*)A, b);
 
 	SGVector<complex64_t> bp=A->apply(x);
 	Map<VectorXd> map_b(b.vector, b.vlen);
@@ -87,7 +87,7 @@ TEST(DirectLinearSolverComplex, solve_QR_COLPERM)
 	m(1,0)=complex64_t(1.0, 2.0);
 	m(1,1)=complex64_t(3.0);
 
-	CDenseMatrixOperator<complex64_t, complex64_t>* A
+	CDenseMatrixOperator<complex64_t>* A
 		=new CDenseMatrixOperator<complex64_t>(m);
 
 	SGVector<float64_t> b(size);
@@ -95,7 +95,7 @@ TEST(DirectLinearSolverComplex, solve_QR_COLPERM)
 
 	CDirectLinearSolverComplex solver(DS_QR_COLPERM);
 	SGVector<complex64_t> x
-		=solver.solve((CLinearOperator<complex64_t, complex64_t>*)A, b);
+		=solver.solve((CLinearOperator<complex64_t>*)A, b);
 
 	SGVector<complex64_t> bp=A->apply(x);
 	Map<VectorXd> map_b(b.vector, b.vlen);
@@ -116,7 +116,7 @@ TEST(DirectLinearSolverComplex, solve_QR_FULLPERM)
 	m(1,0)=complex64_t(1.0, 2.0);
 	m(1,1)=complex64_t(3.0);
 
-	CDenseMatrixOperator<complex64_t, complex64_t>* A
+	CDenseMatrixOperator<complex64_t>* A
 		=new CDenseMatrixOperator<complex64_t>(m);
 
 	SGVector<float64_t> b(size);
@@ -146,7 +146,7 @@ TEST(DirectLinearSolverComplex, solve_LLT)
 	m(1,0)=complex64_t(1.0, 0.0);
 	m(1,1)=complex64_t(2.5, 0.0);
 
-	CDenseMatrixOperator<complex64_t, complex64_t>* A
+	CDenseMatrixOperator<complex64_t>* A
 		=new CDenseMatrixOperator<complex64_t>(m);
 
 	SGVector<float64_t> b(size);
@@ -154,7 +154,7 @@ TEST(DirectLinearSolverComplex, solve_LLT)
 
 	CDirectLinearSolverComplex solver(DS_LLT);
 	SGVector<complex64_t> x
-		=solver.solve((CLinearOperator<complex64_t, complex64_t>*)A, b);
+		=solver.solve((CLinearOperator<complex64_t>*)A, b);
 
 	SGVector<complex64_t> bp=A->apply(x);
 	Map<VectorXd> map_b(b.vector, b.vlen);

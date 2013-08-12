@@ -17,18 +17,18 @@
 namespace shogun
 {
 
-template<class T, class ST>
-CSparseMatrixOperator<T, ST>::CSparseMatrixOperator()
-	: CMatrixOperator<T, ST>()
+template<class T>
+CSparseMatrixOperator<T>::CSparseMatrixOperator()
+	: CMatrixOperator<T>()
 	{
 		init();
 
 		SG_SGCDEBUG("%s created (%p)\n", this->get_name(), this);
 	}
 
-template<class T, class ST>
-CSparseMatrixOperator<T, ST>::CSparseMatrixOperator(SGSparseMatrix<T> op)
-	: CMatrixOperator<T, ST>(op.num_features),
+template<class T>
+CSparseMatrixOperator<T>::CSparseMatrixOperator(SGSparseMatrix<T> op)
+	: CMatrixOperator<T>(op.num_features),
 	  m_operator(op)
 	{
 		init();
@@ -36,8 +36,37 @@ CSparseMatrixOperator<T, ST>::CSparseMatrixOperator(SGSparseMatrix<T> op)
 		SG_SGCDEBUG("%s created (%p)\n", this->get_name(), this);
 	}
 
-template<class T, class ST>
-void CSparseMatrixOperator<T, ST>::init()
+template<class T>
+CSparseMatrixOperator<T>::CSparseMatrixOperator
+	(const CSparseMatrixOperator<T>& orig)
+	: CMatrixOperator<T>(orig.get_dimension())
+	{
+		init();
+
+		typedef SGSparseVector<T> vector;
+		typedef SGSparseVectorEntry<T> entry;
+
+		m_operator=SGSparseMatrix<T>(orig.m_operator.num_vectors, orig.m_operator.num_features);
+
+		vector* rows=SG_MALLOC(vector, m_operator.num_features);
+		for (index_t i=0; i<m_operator.num_vectors; ++i)
+		{
+			entry* features=SG_MALLOC(entry, orig.m_operator[i].num_feat_entries);
+			for (index_t j=0; j<orig.m_operator[i].num_feat_entries; ++j)
+			{
+				features[j].feat_index=orig.m_operator[i].features[j].feat_index;
+				features[j].entry=orig.m_operator[i].features[j].entry;
+			}
+			rows[i].features=features;
+			rows[i].num_feat_entries=m_operator[i].num_feat_entries;
+		}
+		m_operator.sparse_matrix=rows;
+
+		SG_SGCDEBUG("%s deep copy created (%p)\n", this->get_name(), this);
+	}
+
+template<class T>
+void CSparseMatrixOperator<T>::init()
 	{
 		CSGObject::set_generic<T>();
 
@@ -48,20 +77,20 @@ void CSparseMatrixOperator<T, ST>::init()
 				"m_operator.num_features", "Number of features.");
 	}
 
-template<class T, class ST>
-CSparseMatrixOperator<T, ST>::~CSparseMatrixOperator()
+template<class T>
+CSparseMatrixOperator<T>::~CSparseMatrixOperator()
 	{
 		SG_SGCDEBUG("%s destroyed (%p)\n", this->get_name(), this);
 	}
 
-template<class T, class ST>
-SGSparseMatrix<T> CSparseMatrixOperator<T, ST>::get_matrix_operator() const
+template<class T>
+SGSparseMatrix<T> CSparseMatrixOperator<T>::get_matrix_operator() const
 	{
 		return m_operator;
 	}
 
-template<class T, class ST>
-SGVector<T> CSparseMatrixOperator<T, ST>::get_diagonal() const
+template<class T>
+SGVector<T> CSparseMatrixOperator<T>::get_diagonal() const
 	{
 		REQUIRE(m_operator.sparse_matrix, "Operator not initialized!\n");
 
@@ -86,8 +115,8 @@ SGVector<T> CSparseMatrixOperator<T, ST>::get_diagonal() const
 		return diag;
 	}
 
-template<class T, class ST>
-void CSparseMatrixOperator<T, ST>::set_diagonal(SGVector<T> diag)
+template<class T>
+void CSparseMatrixOperator<T>::set_diagonal(SGVector<T> diag)
 	{
 		REQUIRE(m_operator.sparse_matrix, "Operator not initialized!\n");
 		REQUIRE(diag.vector, "Diagonal not initialized!\n");
@@ -130,8 +159,8 @@ void CSparseMatrixOperator<T, ST>::set_diagonal(SGVector<T> diag)
 			m_operator.sort_features();
 	}
 
-template<class T, class ST>
-SGVector<T> CSparseMatrixOperator<T, ST>::apply(SGVector<ST> b) const
+template<class T>
+SGVector<T> CSparseMatrixOperator<T>::apply(SGVector<T> b) const
 	{
 		REQUIRE(m_operator.sparse_matrix, "Operator not initialized!\n");
 		REQUIRE(this->get_dimension()==b.vlen,
@@ -146,7 +175,7 @@ SGVector<T> CSparseMatrixOperator<T, ST>::apply(SGVector<ST> b) const
 
 #define UNDEFINED(type) \
 template<> \
-SGVector<type> CSparseMatrixOperator<type, type>::apply(SGVector<type> b) const \
+SGVector<type> CSparseMatrixOperator<type>::apply(SGVector<type> b) const \
 	{	\
 		SG_SERROR("Not supported for %s\n", #type);\
 		return b; \
@@ -180,6 +209,4 @@ template class CSparseMatrixOperator<float32_t>;
 template class CSparseMatrixOperator<float64_t>;
 template class CSparseMatrixOperator<floatmax_t>;
 template class CSparseMatrixOperator<complex64_t>;
-template class CSparseMatrixOperator<complex64_t, int32_t>;
-template class CSparseMatrixOperator<complex64_t, float64_t>;
 }

@@ -6,6 +6,7 @@
  * 
  * Written (W) 2013 Soumyajit De
  */
+
 #ifndef DIRECT_EIGEN_SOLVER_H_
 #define DIRECT_EIGEN_SOLVER_H_
 
@@ -16,7 +17,7 @@
 
 namespace shogun
 {
-template<class T, class ST> class CDenseMatrixOperator;
+template<class T> class CDenseMatrixOperator;
 
 /** @brief Class that computes eigenvalues of a real valued, self-adjoint
  * dense matrix linear operator using Eigen3
@@ -33,7 +34,7 @@ public:
 	 * @param linear_operator self-adjoint dense-matrix linear operator whose
 	 * eigenvalues have to be found
 	 */
-	CDirectEigenSolver(CDenseMatrixOperator<float64_t, float64_t>* linear_operator);
+	CDirectEigenSolver(CDenseMatrixOperator<float64_t>* linear_operator);
 
 	/** destructor */
 	virtual ~CDirectEigenSolver();

@@ -19,7 +19,7 @@ namespace shogun
 {
 
 template<class T> class SGVector;
-template<class T, class ST> class CDenseMatrixOperator;
+template<class T> class CMatrixOperator;
 template<class T, class ST> class CLinearSolver;
 class CJobResultAggregator;
 class CIndependentComputationEngine;
@@ -40,7 +40,7 @@ public:
 	/** 
 	 * constructor
 	 *
-	 * @param linear_operator dense-matrix linear operator of the log function
+	 * @param linear_operator matrix linear operator of the log function
 	 * @param computation_engine engine that computes the independent jobs
 	 * @param eigen_solver eigen solver for computing min and max eigenvalues
 	 * needed for computing shifts, weights and multiplier in the rational
@@ -50,7 +50,7 @@ public:
 	 * of discretization of the contour integral
 	 */
 	CLogRationalApproximationIndividual(
-		CDenseMatrixOperator<float64_t, float64_t>* linear_operator,
+		CMatrixOperator<float64_t>* linear_operator,
 		CIndependentComputationEngine* computation_engine,
 		CEigenSolver* eigen_solver,
 		CLinearSolver<complex64_t, float64_t>* linear_solver,

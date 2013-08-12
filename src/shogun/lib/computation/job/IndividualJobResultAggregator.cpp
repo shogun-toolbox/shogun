@@ -31,7 +31,7 @@ CIndividualJobResultAggregator::CIndividualJobResultAggregator()
 }
 
 CIndividualJobResultAggregator::CIndividualJobResultAggregator(
-	CLinearOperator<float64_t, float64_t>* linear_operator,
+	CLinearOperator<float64_t>* linear_operator,
 	SGVector<float64_t> vector,
 	const float64_t& const_multiplier)
 	: CStoreVectorAggregator<complex64_t>(vector.vlen),

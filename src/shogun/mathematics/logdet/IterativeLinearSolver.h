@@ -38,7 +38,7 @@ public:
 	 * @param b the vector of the system
 	 * @return the solution vector
 	 */
-	virtual SGVector<T> solve(CLinearOperator<T, T>* A, SGVector<ST> b) = 0;
+	virtual SGVector<T> solve(CLinearOperator<T>* A, SGVector<ST> b) = 0;
 
 	/** set maximum iteration limit */
 	void set_iteration_limit(int64_t iteration_limit)

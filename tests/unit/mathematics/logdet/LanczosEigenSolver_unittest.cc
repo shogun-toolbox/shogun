@@ -39,8 +39,7 @@ TEST(LanczosEigenSolver, compute)
 	SGSparseMatrix<float64_t> mat=feat.get_sparse_feature_matrix();
 	CEigenSolver* eig_solver=NULL;
 
-	CLinearOperator<float64_t, float64_t>* A
-		=new CSparseMatrixOperator<float64_t, float64_t>(mat);
+	CLinearOperator<float64_t>* A=new CSparseMatrixOperator<float64_t>(mat);
 	SG_REF(A);
 
 	eig_solver=new CLanczosEigenSolver(A);
@@ -53,8 +52,7 @@ TEST(LanczosEigenSolver, compute)
 	SG_UNREF(A);
 
 	// create dense linear operator to use with direct eigensolver
-	CDenseMatrixOperator<float64_t, float64_t>* B
-		=new CDenseMatrixOperator<float64_t, float64_t>(m);
+	CDenseMatrixOperator<float64_t>* B=new CDenseMatrixOperator<float64_t>(m);
 	SG_REF(B);
 
 	eig_solver=new CDirectEigenSolver(B);
