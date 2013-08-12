@@ -97,7 +97,11 @@ endif()
 # currently the way we use eigen3 it produces like 10 MB sized warnings because
 # of shadowing...
 SET(COMPILER_WARNINGS "-Wall -Wno-unused-parameter -Wformat -Wformat-security -Wparentheses -Wno-unknown-pragmas -Wno-deprecated")
-SET(RELEASE_COMPILER_FLAGS "-fexpensive-optimizations -frerun-cse-after-loop -fcse-follow-jumps -finline-functions -fschedule-insns2 -fthread-jumps -fforce-addr -fstrength-reduce -funroll-loops -mfpmath=sse")
+IF(CMAKE_COMPILER_IS_GNUCXX)
+	SET(RELEASE_COMPILER_FLAGS "-fexpensive-optimizations -frerun-cse-after-loop -fcse-follow-jumps -finline-functions -fschedule-insns2 -fthread-jumps -fforce-addr -fstrength-reduce -funroll-loops -mfpmath=sse")
+ELSEIF("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+	SET(RELEASE_COMPILER_FLAGS "-finline-functions -funroll-loops")	
+ENDIF()
 SET(SWIG_CXX_COMPILER_FLAGS "-O0 -g")
 SET(CMAKE_C_FLAGS "${COMPILER_WARNINGS} -g ${CMAKE_C_FLAGS}")
 SET(CMAKE_CXX_FLAGS "${COMPILER_WARNINGS} -g ${CMAKE_CXX_FLAGS}")
