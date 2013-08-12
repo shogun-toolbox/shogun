@@ -1,5 +1,5 @@
 GetCompilers()
-MESSAGE(${C_COMPILER})
+
 include(ExternalProject)
 ExternalProject_Add(
 	Eigen3

@@ -83,7 +83,7 @@ elseif (_HAS_CXX0X_FLAG)
         set(CXX11_COMPILER_FLAGS "-std=c++0x")
     ELSE()
         MESSAGE("Your compiler cannot expand a variadic template parameter into a fixed-length argument list.")
-        UNSET(_HAS_CXX0X_FLAG)
+        SET(_HAS_CXX0X_FLAG FALSE)
     ENDIF()
 endif ()
 

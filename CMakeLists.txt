@@ -141,7 +141,7 @@ IF(CMAKE_BUILD_TYPE MATCHES "Release")
 	# there's a bug on FreeBSD -march=native.
 	# for some CPU types it does not detect the right flags
 	# see: http://www.freebsd.org/cgi/query-pr.cgi?pr=178792&cat=
-	IF (NOT FREEBSD)
+	IF (NOT (FREEBSD AND ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")))
 		SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=native")
 		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
 		SET(SWIG_CXX_COMPILER_FLAGS "${SWIG_CXX_COMPILER_FLAGS} -march=native")
