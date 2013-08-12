@@ -28,8 +28,8 @@ class CInferenceMethod;
 class CFeatures;
 class CLabels;
 
-/** @brief Class GaussianProcessRegression implements regression based
- * on Gaussian Processes.
+/** @brief Class GaussianProcessRegression implements regression based on
+ * Gaussian Processes.
  */
 class CGaussianProcessRegression : public CGaussianProcessMachine
 {
@@ -81,20 +81,6 @@ public:
 	 * @return name GaussianProcessRegression
 	 */
 	virtual const char* get_name() const { return "GaussianProcessRegression"; }
-
-	/** load from file
-	 *
-	 * @param srcfile file to load from
-	 * @return if loading was successful
-	 */
-	virtual bool load(FILE* srcfile);
-
-	/** save to file
-	 *
-	 * @param dstfile file to save to
-	 * @return if saving was successful
-	 */
-	virtual bool save(FILE* dstfile);
 
 protected:
 	/** train regression

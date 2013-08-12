@@ -21,12 +21,13 @@
 
 using namespace shogun;
 
-CGaussianProcessRegression::CGaussianProcessRegression() : CGaussianProcessMachine()
+CGaussianProcessRegression::CGaussianProcessRegression()
+		: CGaussianProcessMachine()
 {
 }
 
 CGaussianProcessRegression::CGaussianProcessRegression(CInferenceMethod* method)
-	: CGaussianProcessMachine(method)
+		: CGaussianProcessMachine(method)
 {
 	// set labels
 	m_labels=method->get_labels();
@@ -38,17 +39,18 @@ CGaussianProcessRegression::~CGaussianProcessRegression()
 
 CRegressionLabels* CGaussianProcessRegression::apply_regression(CFeatures* data)
 {
-	// check whether given combination of inference method and likelihood function
-	// supports regression
-	REQUIRE(m_method, "Inference method must be attached\n")
+	// check whether given combination of inference method and likelihood
+	// function supports regression
+	REQUIRE(m_method, "Inference method should not be NULL\n")
 	CLikelihoodModel* lik=m_method->get_model();
-	REQUIRE(m_method->supports_regression(), "%s with %s doesn't support regression\n",
-			m_method->get_name(), lik->get_name())
+	REQUIRE(m_method->supports_regression(), "%s with %s doesn't support "
+			"regression\n",	m_method->get_name(), lik->get_name())
 	SG_UNREF(lik);
 
 	CRegressionLabels* result;
 
-	// if regression data equals to NULL, then apply regression on training features
+	// if regression data equals to NULL, then apply regression on training
+	// features
 	if (!data)
 	{
 		CFeatures* feat;
@@ -56,7 +58,8 @@ CRegressionLabels* CGaussianProcessRegression::apply_regression(CFeatures* data)
 		// use latent features for FITC inference method
 		if (m_method->get_inference_type()==INF_FITC)
 		{
-			CFITCInferenceMethod* fitc_method=CFITCInferenceMethod::obtain_from_generic(m_method);
+			CFITCInferenceMethod* fitc_method=
+				CFITCInferenceMethod::obtain_from_generic(m_method);
 			feat=fitc_method->get_latent_features();
 			SG_UNREF(fitc_method);
 		}
@@ -77,12 +80,12 @@ CRegressionLabels* CGaussianProcessRegression::apply_regression(CFeatures* data)
 
 bool CGaussianProcessRegression::train_machine(CFeatures* data)
 {
-	// check whether given combination of inference method and likelihood function
-	// supports regression
-	REQUIRE(m_method, "Inference method must be attached\n")
+	// check whether given combination of inference method and likelihood
+	// function supports regression
+	REQUIRE(m_method, "Inference method should not be NULL\n")
 	CLikelihoodModel* lik=m_method->get_model();
-	REQUIRE(m_method->supports_regression(), "%s with %s doesn't support regression\n",
-			m_method->get_name(), lik->get_name())
+	REQUIRE(m_method->supports_regression(), "%s with %s doesn't support "
+			"regression\n",	m_method->get_name(), lik->get_name())
 	SG_UNREF(lik);
 
 	if (data)
@@ -90,7 +93,8 @@ bool CGaussianProcessRegression::train_machine(CFeatures* data)
 		// set latent features for FITC inference method
 		if (m_method->get_inference_type()==INF_FITC)
 		{
-			CFITCInferenceMethod* fitc_method=CFITCInferenceMethod::obtain_from_generic(m_method);
+			CFITCInferenceMethod* fitc_method=
+				CFITCInferenceMethod::obtain_from_generic(m_method);
 			fitc_method->set_latent_features(data);
 			SG_UNREF(fitc_method);
 		}
@@ -106,12 +110,12 @@ bool CGaussianProcessRegression::train_machine(CFeatures* data)
 
 SGVector<float64_t> CGaussianProcessRegression::get_mean_vector(CFeatures* data)
 {
-	// check whether given combination of inference method and likelihood function
-	// supports regression
-	REQUIRE(m_method, "Inference method must be attached\n")
+	// check whether given combination of inference method and likelihood
+	// function supports regression
+	REQUIRE(m_method, "Inference method should not be NULL\n")
 	CLikelihoodModel* lik=m_method->get_model();
-	REQUIRE(m_method->supports_regression(), "%s with %s doesn't support regression\n",
-			m_method->get_name(), lik->get_name())
+	REQUIRE(m_method->supports_regression(), "%s with %s doesn't support "
+			"regression\n",	m_method->get_name(), lik->get_name())
 	SG_UNREF(lik);
 
 	SG_REF(data);
@@ -127,14 +131,15 @@ SGVector<float64_t> CGaussianProcessRegression::get_mean_vector(CFeatures* data)
 	return mu;
 }
 
-SGVector<float64_t> CGaussianProcessRegression::get_variance_vector(CFeatures* data)
+SGVector<float64_t> CGaussianProcessRegression::get_variance_vector(
+		CFeatures* data)
 {
-	// check whether given combination of inference method and likelihood function
-	// supports regression
-	REQUIRE(m_method, "Inference method must be attached\n")
+	// check whether given combination of inference method and likelihood
+	// function supports regression
+	REQUIRE(m_method, "Inference method should not be NULL\n")
 	CLikelihoodModel* lik=m_method->get_model();
-	REQUIRE(m_method->supports_regression(), "%s with %s doesn't support regression\n",
-			m_method->get_name(), lik->get_name())
+	REQUIRE(m_method->supports_regression(), "%s with %s doesn't support "
+			"regression\n",	m_method->get_name(), lik->get_name())
 
 	SG_REF(data);
 	SGVector<float64_t> mu=get_posterior_means(data);
@@ -146,20 +151,6 @@ SGVector<float64_t> CGaussianProcessRegression::get_variance_vector(CFeatures* d
 	SG_UNREF(lik);
 
 	return s2;
-}
-
-bool CGaussianProcessRegression::load(FILE* srcfile)
-{
-	SG_SET_LOCALE_C;
-	SG_RESET_LOCALE;
-	return false;
-}
-
-bool CGaussianProcessRegression::save(FILE* dstfile)
-{
-	SG_SET_LOCALE_C;
-	SG_RESET_LOCALE;
-	return false;
 }
 
 #endif

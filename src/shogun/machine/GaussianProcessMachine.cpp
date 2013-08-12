@@ -49,21 +49,24 @@ CGaussianProcessMachine::~CGaussianProcessMachine()
 
 SGVector<float64_t> CGaussianProcessMachine::get_posterior_means(CFeatures* data)
 {
-	REQUIRE(m_method, "Inference method must be attached\n")
+	REQUIRE(m_method, "Inference method should not be NULL\n")
 
 	// check testing features
 	REQUIRE(data, "Testing features can not be NULL\n")
 	REQUIRE(data->has_property(FP_DOT),
 			"Testing features must be type of CFeatures\n")
-	REQUIRE(data->get_feature_class()==C_DENSE, "Testing features must be dense\n")
-	REQUIRE(data->get_feature_type()==F_DREAL, "Testing features must be real\n")
+	REQUIRE(data->get_feature_class()==C_DENSE,
+			"Testing features must be dense\n")
+	REQUIRE(data->get_feature_type()==F_DREAL,
+			"Testing features must be real\n")
 
 	CFeatures* feat;
 
 	// use latent features for FITC inference method
 	if (m_method->get_inference_type()==INF_FITC)
 	{
-		CFITCInferenceMethod* fitc_method=CFITCInferenceMethod::obtain_from_generic(m_method);
+		CFITCInferenceMethod* fitc_method=
+			CFITCInferenceMethod::obtain_from_generic(m_method);
 		feat=fitc_method->get_latent_features();
 		SG_UNREF(fitc_method);
 	}
@@ -87,16 +90,16 @@ SGVector<float64_t> CGaussianProcessMachine::get_posterior_means(CFeatures* data
 
 	if (data->get_feature_class()==C_COMBINED)
 	{
-		SG_WARNING("%s::get_mean_vector(): This only works for combined"
-			" features which all share the same underlying object!\n",
-			get_name())
+		SG_WARNING("This only works for combined features which all share the "
+				"same underlying object\n", get_name())
 		data=((CCombinedFeatures*)data)->get_first_feature_obj();
 	}
 	else
 		SG_REF(data);
 
 	// compute feature matrix
-	SGMatrix<float64_t> feature_matrix=((CDotFeatures*)data)->get_computed_dot_feature_matrix();
+	SGMatrix<float64_t> feature_matrix=
+		((CDotFeatures*)data)->get_computed_dot_feature_matrix();
 	SG_UNREF(data);
 
 	// get alpha and create eigen representation of it
@@ -117,23 +120,27 @@ SGVector<float64_t> CGaussianProcessMachine::get_posterior_means(CFeatures* data
 	return mu;
 }
 
-SGVector<float64_t> CGaussianProcessMachine::get_posterior_variances(CFeatures* data)
+SGVector<float64_t> CGaussianProcessMachine::get_posterior_variances(
+		CFeatures* data)
 {
-	REQUIRE(m_method, "Inference method must be attached\n")
+	REQUIRE(m_method, "Inference method should not be NULL\n")
 
 	// check testing features
 	REQUIRE(data, "Testing features can not be NULL\n")
 	REQUIRE(data->has_property(FP_DOT),
 			"Testing features must be type of CFeatures\n")
-	REQUIRE(data->get_feature_class()==C_DENSE, "Testing features must be dense\n")
-	REQUIRE(data->get_feature_type()==F_DREAL, "Testing features must be real\n")
+	REQUIRE(data->get_feature_class()==C_DENSE,
+			"Testing features must be dense\n")
+	REQUIRE(data->get_feature_type()==F_DREAL,
+			"Testing features must be real\n")
 
 	CFeatures* feat;
 
 	// use latent features for FITC inference method
 	if (m_method->get_inference_type()==INF_FITC)
 	{
-		CFITCInferenceMethod* fitc_method=CFITCInferenceMethod::obtain_from_generic(m_method);
+		CFITCInferenceMethod* fitc_method=
+			CFITCInferenceMethod::obtain_from_generic(m_method);
 		feat=fitc_method->get_latent_features();
 		SG_UNREF(fitc_method);
 	}

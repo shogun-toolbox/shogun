@@ -26,25 +26,25 @@ CProbitLikelihood::~CProbitLikelihood()
 {
 }
 
-SGVector<float64_t> CProbitLikelihood::evaluate_log_probabilities(SGVector<float64_t> mu,
-		SGVector<float64_t> s2, CLabels* lab)
+SGVector<float64_t> CProbitLikelihood::evaluate_log_probabilities(
+		SGVector<float64_t> mu,	SGVector<float64_t> s2, const CLabels* lab) const
 {
 	SGVector<float64_t> y;
 
 	if (lab)
 	{
 		REQUIRE((mu.vlen==s2.vlen) && (mu.vlen==lab->get_num_labels()),
-			"Length of the vector of means (mu), length of the vector of " \
-			"variances (s2) and number of labels (lab) should be the same\n")
+				"Length of the vector of means (mu), length of the vector of "
+				"variances (s2) and number of labels (lab) should be the same\n")
 		REQUIRE(lab->get_label_type()==LT_BINARY,
-			"Labels must be type of CBinaryLabels\n")
+				"Labels must be type of CBinaryLabels\n")
 
 		y=((CBinaryLabels*)lab)->get_labels();
 	}
 	else
 	{
-		REQUIRE(mu.vlen==s2.vlen, "Length of the vector of means (mu) and " \
-			"length of the vector of variances (s2) should be the same\n")
+		REQUIRE(mu.vlen==s2.vlen, "Length of the vector of means (mu) and "
+				"length of the vector of variances (s2) should be the same\n")
 
 		y=SGVector<float64_t>(mu.vlen);
 		y.set_const(1.0);
@@ -67,14 +67,14 @@ SGVector<float64_t> CProbitLikelihood::evaluate_log_probabilities(SGVector<float
 }
 
 SGVector<float64_t> CProbitLikelihood::evaluate_means(SGVector<float64_t> mu,
-		SGVector<float64_t> s2, CLabels* lab)
+		SGVector<float64_t> s2, const CLabels* lab) const
 {
 	SGVector<float64_t> y;
 
 	if (lab)
 	{
 		REQUIRE((mu.vlen==s2.vlen) && (mu.vlen==lab->get_num_labels()),
-			"Length of the vector of means (mu), length of the vector of " \
+			"Length of the vector of means (mu), length of the vector of "
 			"variances (s2) and number of labels (lab) should be the same\n")
 		REQUIRE(lab->get_label_type()==LT_BINARY,
 			"Labels must be type of CBinaryLabels\n")
@@ -83,7 +83,7 @@ SGVector<float64_t> CProbitLikelihood::evaluate_means(SGVector<float64_t> mu,
 	}
 	else
 	{
-		REQUIRE(mu.vlen==s2.vlen, "Length of the vector of means (mu) and " \
+		REQUIRE(mu.vlen==s2.vlen, "Length of the vector of means (mu) and "
 			"length of the vector of variances (s2) should be the same\n")
 
 		y=SGVector<float64_t>(mu.vlen);
@@ -111,24 +111,24 @@ SGVector<float64_t> CProbitLikelihood::evaluate_means(SGVector<float64_t> mu,
 }
 
 SGVector<float64_t> CProbitLikelihood::evaluate_variances(SGVector<float64_t> mu,
-		SGVector<float64_t> s2, CLabels* lab)
+		SGVector<float64_t> s2, const CLabels* lab) const
 {
 	SGVector<float64_t> y;
 
 	if (lab)
 	{
 		REQUIRE((mu.vlen==s2.vlen) && (mu.vlen==lab->get_num_labels()),
-			"Length of the vector of means (mu), length of the vector of " \
-			"variances (s2) and number of labels (lab) should be the same\n")
+				"Length of the vector of means (mu), length of the vector of "
+				"variances (s2) and number of labels (lab) should be the same\n")
 		REQUIRE(lab->get_label_type()==LT_BINARY,
-			"Labels must be type of CBinaryLabels\n")
+				"Labels must be type of CBinaryLabels\n")
 
 		y=((CBinaryLabels*)lab)->get_labels();
 	}
 	else
 	{
-		REQUIRE(mu.vlen==s2.vlen, "Length of the vector of means (mu) and " \
-			"length of the vector of variances (s2) should be the same\n")
+		REQUIRE(mu.vlen==s2.vlen, "Length of the vector of means (mu) and "
+				"length of the vector of variances (s2) should be the same\n")
 
 		y=SGVector<float64_t>(mu.vlen);
 		y.set_const(1.0);
@@ -153,15 +153,15 @@ SGVector<float64_t> CProbitLikelihood::evaluate_variances(SGVector<float64_t> mu
 	return r;
 }
 
-SGVector<float64_t> CProbitLikelihood::get_log_probability_f(CLabels* lab,
-		SGVector<float64_t> func)
+SGVector<float64_t> CProbitLikelihood::get_log_probability_f(const CLabels* lab,
+		SGVector<float64_t> func) const
 {
 	// check the parameters
 	REQUIRE(lab, "Labels are required (lab should not be NULL)\n")
 	REQUIRE(lab->get_label_type()==LT_BINARY,
-		"Labels must be type of CBinaryLabels\n")
-	REQUIRE(lab->get_num_labels()==func.vlen, "Number of labels must match " \
-		"length of the function vector\n")
+			"Labels must be type of CBinaryLabels\n")
+	REQUIRE(lab->get_num_labels()==func.vlen, "Number of labels must match "
+			"length of the function vector\n")
 
 	SGVector<float64_t> y=((CBinaryLabels*)lab)->get_labels();
 	Map<VectorXd> eigen_y(y.vector, y.vlen);
@@ -181,14 +181,14 @@ SGVector<float64_t> CProbitLikelihood::get_log_probability_f(CLabels* lab,
 }
 
 SGVector<float64_t> CProbitLikelihood::get_log_probability_derivative_f(
-	CLabels* lab, SGVector<float64_t> func, index_t i)
+		const CLabels* lab, SGVector<float64_t> func, index_t i) const
 {
 	// check the parameters
 	REQUIRE(lab, "Labels are required (lab should not be NULL)\n")
 	REQUIRE(lab->get_label_type()==LT_BINARY,
-		"Labels must be type of CBinaryLabels\n")
-	REQUIRE(lab->get_num_labels()==func.vlen, "Number of labels must match " \
-		"length of the function vector\n")
+			"Labels must be type of CBinaryLabels\n")
+	REQUIRE(lab->get_num_labels()==func.vlen, "Number of labels must match "
+			"length of the function vector\n")
 	REQUIRE(i>=1 && i<=3, "Index for derivative should be 1, 2 or 3\n")
 
 	SGVector<float64_t> y=((CBinaryLabels*)lab)->get_labels();
@@ -238,20 +238,20 @@ SGVector<float64_t> CProbitLikelihood::get_log_probability_derivative_f(
 	return r;
 }
 
-SGVector<float64_t> CProbitLikelihood::get_first_derivative(CLabels* lab,
-	TParameter* param,  CSGObject* obj, SGVector<float64_t> f)
+SGVector<float64_t> CProbitLikelihood::get_first_derivative(const CLabels* lab,
+		const TParameter* param, SGVector<float64_t> func) const
 {
 	return SGVector<float64_t>();
 }
 
-SGVector<float64_t> CProbitLikelihood::get_second_derivative(CLabels* lab,
-	TParameter* param,  CSGObject* obj, SGVector<float64_t> func)
+SGVector<float64_t> CProbitLikelihood::get_second_derivative(const CLabels* lab,
+		const TParameter* param, SGVector<float64_t> func) const
 {
 	return SGVector<float64_t>();
 }
 
-SGVector<float64_t> CProbitLikelihood::get_third_derivative(CLabels* lab,
-	TParameter* param, CSGObject* obj, SGVector<float64_t> func)
+SGVector<float64_t> CProbitLikelihood::get_third_derivative(const CLabels* lab,
+		const TParameter* param, SGVector<float64_t> func) const
 {
 	return SGVector<float64_t>();
 }

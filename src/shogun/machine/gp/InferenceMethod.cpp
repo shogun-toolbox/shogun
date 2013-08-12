@@ -8,8 +8,8 @@
  * Written (W) 2013 Heiko Strathmann
  * Copyright (C) 2012 Jacob Walker
  * Copyright (C) 2013 Roman Votyakov
- *
  */
+
 #include <shogun/lib/config.h>
 
 #ifdef HAVE_EIGEN3
@@ -55,7 +55,8 @@ void CInferenceMethod::init()
 			MS_AVAILABLE);
 	SG_ADD((CSGObject**)&m_labels, "labels", "Labels", MS_NOT_AVAILABLE);
 	SG_ADD((CSGObject**)&m_features, "features", "Features", MS_NOT_AVAILABLE);
-	SG_ADD((CSGObject**)&m_mean, "mean_function", "Mean Function", MS_NOT_AVAILABLE);
+	SG_ADD((CSGObject**)&m_mean, "mean_function", "Mean Function",
+			MS_NOT_AVAILABLE);
 
 	m_kernel=NULL;
 	m_model=NULL;
@@ -65,18 +66,18 @@ void CInferenceMethod::init()
 	m_scale=1.0;
 }
 
-void CInferenceMethod::check_members()
+void CInferenceMethod::check_members() const
 {
 	REQUIRE(m_features, "Training features should not be NULL\n")
 	REQUIRE(m_features->get_num_vectors(),
-		"Number of training features must be greater than zero\n")
+			"Number of training features must be greater than zero\n")
 	REQUIRE(m_labels, "Labels should not be NULL\n")
 	REQUIRE(m_labels->get_num_labels(),
 			"Number of labels must be greater than zero\n")
 	REQUIRE(m_labels->get_num_labels()==m_features->get_num_vectors(),
-		"Number of training vectors must match number of labels, which is %d, "
-		"but number of training vectors is %d\n", m_labels->get_num_labels(),
-		m_features->get_num_vectors())
+			"Number of training vectors must match number of labels, which is "
+			"%d, but number of training vectors is %d\n",
+			m_labels->get_num_labels(),	m_features->get_num_vectors())
 	REQUIRE(m_kernel, "Kernel should not be NULL\n")
 	REQUIRE(m_mean, "Mean function should not be NULL\n")
 
@@ -89,14 +90,16 @@ void CInferenceMethod::check_members()
 
 	REQUIRE(feat->has_property(FP_DOT),
 			"Training features must be type of CFeatures\n")
-	REQUIRE(feat->get_feature_class()==C_DENSE, "Training features must be dense\n")
-	REQUIRE(feat->get_feature_type()==F_DREAL, "Training features must be real\n")
+	REQUIRE(feat->get_feature_class()==C_DENSE,
+			"Training features must be dense\n")
+	REQUIRE(feat->get_feature_type()==F_DREAL,
+			"Training features must be real\n")
 
 	SG_UNREF(feat);
 }
 
-float64_t CInferenceMethod::get_log_ml_estimate(
-		int32_t num_importance_samples, float64_t ridge_size)
+float64_t CInferenceMethod::get_log_ml_estimate(int32_t num_importance_samples,
+		float64_t ridge_size)
 {
 	/* sample from Gaussian approximation to q(f|y) */
 	SGMatrix<float64_t> cov=get_posterior_approximation_covariance();
@@ -152,4 +155,5 @@ float64_t CInferenceMethod::get_log_ml_estimate(
 	/* use log-sum-exp (in particular, log-mean-exp) trick to combine values */
 	return CMath::log_mean_exp(sum);
 }
+
 #endif // HAVE_EIGEN3

@@ -278,8 +278,8 @@ TEST(GaussianLikelihood,get_first_derivative)
 	index_t index=likelihood->get_modsel_param_index("sigma");
 	TParameter* param=likelihood->m_model_selection_parameters->get_parameter(index);
 
-	SGVector<float64_t> lp_dhyp=likelihood->get_first_derivative(labels,
-		param, likelihood, func);
+	SGVector<float64_t> lp_dhyp=likelihood->get_first_derivative(labels, param,
+		func);
 
 	// comparison of log likelihood derivative wrt sigma hyperparameter
 	// with result from GPML package
@@ -325,7 +325,7 @@ TEST(GaussianLikelihood,get_second_derivative)
 	TParameter* param=likelihood->m_model_selection_parameters->get_parameter(index);
 
 	SGVector<float64_t> dlp_dhyp=likelihood->get_second_derivative(labels,
-		param, likelihood, func);
+		param, func);
 
 	// comparison of log likelihood derivative wrt sigma hyperparameter
 	// with result from GPML package
@@ -371,7 +371,7 @@ TEST(GaussianLikelihood,get_third_derivative)
 	TParameter* param=likelihood->m_model_selection_parameters->get_parameter(index);
 
 	SGVector<float64_t> d2lp_dhyp=likelihood->get_third_derivative(labels,
-		param, likelihood, func);
+		param, func);
 
 	// comparison of log likelihood derivative wrt sigma hyperparameter
 	// with result from GPML package
