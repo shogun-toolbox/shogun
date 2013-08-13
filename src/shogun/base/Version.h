@@ -13,6 +13,7 @@
 #include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/config.h>
+#include <shogun/lib/RefCount.h>
 
 #ifndef VERSION_H__
 #define VERSION_H__
@@ -105,7 +106,7 @@ protected:
 	static const int32_t version_parameter;
 
 private:
-	int32_t refcount;
+	RefCount* m_refcount;
 };
 }
 #endif
