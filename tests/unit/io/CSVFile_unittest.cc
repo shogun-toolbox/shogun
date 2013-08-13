@@ -160,7 +160,7 @@ TEST(CSVFileTest, write_vector_int)
 	SG_UNREF(fin);
 }
 
-TEST(CSVFileTest, DISABLED_read_write_string_list)
+TEST(CSVFileTest, read_write_string_list)
 {
 	int32_t num_lines=5;
 	const char* text[] = {"It had to be U...", "U D transpose V", "I looked all around", "And finally found", "The SVD!"};
@@ -172,7 +172,7 @@ TEST(CSVFileTest, DISABLED_read_write_string_list)
 	SGString<char>* lines_to_write=SG_MALLOC(SGString<char>, num_lines);
 	for (int32_t i=0; i<num_lines; i++)
 	{
-		lines_to_write[i].string=SG_MALLOC(char, strlen(text[i]));
+		lines_to_write[i].string=SG_MALLOC(char, strlen(text[i])+1);
 		strcpy(lines_to_write[i].string, text[i]);
 		lines_to_write[i].slen=strlen(text[i]);
 	}

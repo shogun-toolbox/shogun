@@ -298,18 +298,22 @@ void CCSVFile::get_string_list(
 			int32_t& max_string_len)
 {
 	SGVector<char> line;
-	int32_t tmp=0;
 	int32_t current_line_idx=0;
+	int32_t num_tokens=0;
 
 	max_string_len=0;
+	num_str=get_stats(num_tokens);
 	strings=SG_MALLOC(SGString<char>, num_str);
 
 	skip_lines(m_num_to_skip);
 	while (m_line_reader->has_next())
 	{
 		line=m_line_reader->read_line();
-		strings[current_line_idx].string=SGVector<char>::clone_vector(line.vector, line.vlen);
 		strings[current_line_idx].slen=line.vlen;
+		strings[current_line_idx].string=SG_MALLOC(char, line.vlen);
+		for (int32_t i=0; i<line.vlen; i++)
+			strings[current_line_idx].string[i]=line[i];
+	
 		if (line.vlen>max_string_len)
 			max_string_len=line.vlen;
 
