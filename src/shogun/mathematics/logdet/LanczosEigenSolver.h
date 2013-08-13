@@ -18,7 +18,7 @@
 
 namespace shogun
 {
-template<class T, class ST> class CLinearOperator;
+template<class T> class CLinearOperator;
 
 /** @brief Class that computes eigenvalues of a real valued, self-adjoint
  * linear operator using Lanczos algorithm
@@ -35,7 +35,7 @@ public:
 	 * @param linear_operator self-adjoint linear operator whose eigenvalues 
 	 * are to be found
 	 */
-	CLanczosEigenSolver(CLinearOperator<float64_t, float64_t>* linear_operator);
+	CLanczosEigenSolver(CLinearOperator<float64_t>* linear_operator);
 
 	/** destructor */
 	virtual ~CLanczosEigenSolver();

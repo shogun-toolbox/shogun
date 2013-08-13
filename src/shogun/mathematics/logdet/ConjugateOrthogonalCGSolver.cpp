@@ -17,7 +17,6 @@
 #include <shogun/mathematics/logdet/LinearOperator.h>
 #include <shogun/mathematics/logdet/ConjugateOrthogonalCGSolver.h>
 #include <shogun/mathematics/logdet/IterativeSolverIterator.h>
-
 using namespace Eigen;
 
 namespace shogun
@@ -37,7 +36,7 @@ CConjugateOrthogonalCGSolver::~CConjugateOrthogonalCGSolver()
 SGVector<complex64_t> CConjugateOrthogonalCGSolver::solve(
 	CLinearOperator<complex64_t>* A, SGVector<float64_t> b)
 {
-	SG_DEBUG("CConjugateOrthogonalCGSolve::solve(): Entering..\n");
+	SG_DEBUG("CConjugateOrthogonalCGSolver::solve(): Entering..\n");
 
 	// sanity check
 	REQUIRE(A, "Operator is NULL!\n");
@@ -111,7 +110,7 @@ SGVector<complex64_t> CConjugateOrthogonalCGSolver::solve(
 	else
 		SG_WARNING("Did not converge!\n");
 
-	SG_DEBUG("CConjugateOrthogonalCGSolve::solve(): Leaving..\n");
+	SG_DEBUG("CConjugateOrthogonalCGSolver::solve(): Leaving..\n");
 	return result;
 }
 

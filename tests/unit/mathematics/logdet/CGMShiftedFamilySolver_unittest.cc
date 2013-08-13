@@ -42,7 +42,7 @@ TEST(CGMShiftedFamilySolver, solve_shifted_weight_noshift)
 	// Creating sparse system to solve with CG_M
 	CSparseFeatures<float64_t> feat(m);
 	SGSparseMatrix<float64_t> mat=feat.get_sparse_feature_matrix();
-	CSparseMatrixOperator<float64_t, float64_t>* A
+	CSparseMatrixOperator<float64_t>* A
 		=new CSparseMatrixOperator<float64_t>(mat);
 
 	// Solve with CG_M
@@ -88,7 +88,7 @@ TEST(CGMShiftedFamilySolver, solve_shifted_weight_real_shift)
 	// Creating sparse system to solve with CG_M
 	CSparseFeatures<float64_t> feat(m);
 	SGSparseMatrix<float64_t> mat=feat.get_sparse_feature_matrix();
-	CSparseMatrixOperator<float64_t, float64_t>* A
+	CSparseMatrixOperator<float64_t>* A
 		=new CSparseMatrixOperator<float64_t>(mat);
 
 	// Solve with CG_M
@@ -143,7 +143,7 @@ TEST(CGMShiftedFamilySolver, solve_shifted_weight_complex_shift)
 	// Creating sparse system to solve with CG_M
 	CSparseFeatures<float64_t> feat(m);
 	SGSparseMatrix<float64_t> mat=feat.get_sparse_feature_matrix();
-	CSparseMatrixOperator<float64_t, float64_t>* A
+	CSparseMatrixOperator<float64_t>* A
 		=new CSparseMatrixOperator<float64_t>(mat);
 
 	// Solve with CG_M
@@ -158,7 +158,7 @@ TEST(CGMShiftedFamilySolver, solve_shifted_weight_complex_shift)
 	for (index_t i=0; i<size; ++i)
 		m2(i,i)=m(i,i)+shift;
 
-	CDenseMatrixOperator<complex64_t, complex64_t>* B
+	CDenseMatrixOperator<complex64_t>* B
 		=new CDenseMatrixOperator<complex64_t>(m2);
 
 	CDirectLinearSolverComplex direct_solver;

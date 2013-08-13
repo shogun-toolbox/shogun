@@ -41,7 +41,7 @@ TEST(ConjugateOrthogonalCGSolver, solve)
 	// Creating sparse system to solve with COCG
 	CSparseFeatures<complex64_t> feat(m);
 	SGSparseMatrix<complex64_t> mat=feat.get_sparse_feature_matrix();
-	CSparseMatrixOperator<complex64_t, complex64_t>* A
+	CSparseMatrixOperator<complex64_t>* A
 		=new CSparseMatrixOperator<complex64_t>(mat);
 
 	// Solve with COCG
@@ -50,7 +50,7 @@ TEST(ConjugateOrthogonalCGSolver, solve)
 	SGVector<complex64_t> x_cg=cocg_linear_solver.solve(A, b);
 
 	// Creating dense system to solve with direct solver
-	CDenseMatrixOperator<complex64_t, complex64_t>* B
+	CDenseMatrixOperator<complex64_t>* B
 		=new CDenseMatrixOperator<complex64_t>(m);
 
 	// Solve with direct triangular solver

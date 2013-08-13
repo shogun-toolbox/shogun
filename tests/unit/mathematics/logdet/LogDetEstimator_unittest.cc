@@ -14,12 +14,16 @@
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
+#include <shogun/features/SparseFeatures.h>
 #include <shogun/mathematics/logdet/DenseMatrixOperator.h>
+#include <shogun/mathematics/logdet/SparseMatrixOperator.h>
 #include <shogun/mathematics/logdet/DenseMatrixExactLog.h>
 #include <shogun/mathematics/logdet/LogRationalApproximationIndividual.h>
 #include <shogun/mathematics/logdet/NormalSampler.h>
 #include <shogun/mathematics/logdet/DirectEigenSolver.h>
+#include <shogun/mathematics/logdet/LanczosEigenSolver.h>
 #include <shogun/mathematics/logdet/DirectLinearSolverComplex.h>
+#include <shogun/mathematics/logdet/ConjugateOrthogonalCGSolver.h>
 #include <shogun/mathematics/logdet/LogDetEstimator.h>
 #include <shogun/lib/computation/job/ScalarResult.h>
 #include <shogun/lib/computation/engine/SerialComputationEngine.h>
@@ -40,8 +44,7 @@ TEST(LogDetEstimator, sample)
 	mat(1,0)=1.0;
 	mat(1,1)=3.0;
 
-	CDenseMatrixOperator<float64_t, float64_t>* op
-		=new CDenseMatrixOperator<float64_t>(mat);
+	CDenseMatrixOperator<float64_t>* op=new CDenseMatrixOperator<float64_t>(mat);
 	SG_REF(op);
 
 	CDenseMatrixExactLog *op_func=new CDenseMatrixExactLog(op, e);
@@ -68,7 +71,7 @@ TEST(LogDetEstimator, sample)
 }
 #endif // EIGEN_VERSION_AT_LEAST(3,1,0)
 
-TEST(LogDetEstimator, sample_ratapp)
+TEST(LogDetEstimator, sample_ratapp_dense)
 {
 	CSerialComputationEngine* e=new CSerialComputationEngine;
 	SG_REF(e);
@@ -80,8 +83,7 @@ TEST(LogDetEstimator, sample_ratapp)
 	mat(1,0)=0.5;
 	mat(1,1)=1000.0;
 
-	CDenseMatrixOperator<float64_t, float64_t>* op
-		=new CDenseMatrixOperator<float64_t>(mat);
+	CDenseMatrixOperator<float64_t>* op=new CDenseMatrixOperator<float64_t>(mat);
 	SG_REF(op);
 
 	CDirectEigenSolver* eig_solver=new CDirectEigenSolver(op);
@@ -117,6 +119,5 @@ TEST(LogDetEstimator, sample_ratapp)
 	SG_UNREF(op);
 	SG_UNREF(e);
 }
-
 #endif // HAVE_EIGEN3
 

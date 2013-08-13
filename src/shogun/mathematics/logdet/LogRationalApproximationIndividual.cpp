@@ -15,10 +15,12 @@
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/mathematics/logdet/LinearSolver.h>
 #include <shogun/mathematics/logdet/DenseMatrixOperator.h>
+#include <shogun/mathematics/logdet/SparseMatrixOperator.h>
 #include <shogun/mathematics/logdet/LogRationalApproximationIndividual.h>
 #include <shogun/lib/computation/job/RationalApproximationIndividualJob.h>
 #include <shogun/lib/computation/job/IndividualJobResultAggregator.h>
 #include <shogun/lib/computation/engine/IndependentComputationEngine.h>
+#include <typeinfo>
 
 namespace shogun
 {
@@ -32,7 +34,7 @@ CLogRationalApproximationIndividual::CLogRationalApproximationIndividual()
 }
 
 CLogRationalApproximationIndividual::CLogRationalApproximationIndividual(
-	CDenseMatrixOperator<float64_t, float64_t>* linear_operator,
+	CMatrixOperator<float64_t>* linear_operator,
 	CIndependentComputationEngine* computation_engine,
 	CEigenSolver* eigen_solver, 
 	CLinearSolver<complex64_t, float64_t>* linear_solver,
@@ -53,7 +55,7 @@ void CLogRationalApproximationIndividual::init()
 	m_linear_solver=NULL;
 
 	SG_ADD((CSGObject**)&m_linear_solver, "linear_solver",
-		"Direct linear solver for complex systems", MS_NOT_AVAILABLE);
+		"Linear solver for complex systems", MS_NOT_AVAILABLE);
 }
 
 CLogRationalApproximationIndividual::~CLogRationalApproximationIndividual()
@@ -77,26 +79,63 @@ CJobResultAggregator* CLogRationalApproximationIndividual::submit_jobs(
 	// we don't want the aggregator to be destroyed when the job is unref-ed
 	SG_REF(agg);
 
-	// create a complex copy of the dense matrix linear operator
-	SGMatrix<float64_t> m=dynamic_cast<CDenseMatrixOperator<float64_t>*>
-		(m_linear_operator)->get_matrix_operator();
+	// this enum will save from repeated typechecking for all jobs
+	enum typeID {DENSE=1, SPARSE, UNKNOWN} operator_type=UNKNOWN;
 
-	REQUIRE(m.matrix, "Matrix is not initialized!\n");
-	
-	SGMatrix<complex64_t> complex_m(m.num_rows, m.num_cols);
-	for (index_t i=0; i<m.num_cols; ++i)
+	// create a complex copy of the matrix linear operator
+	CMatrixOperator<complex64_t>* complex_op=NULL;
+	if (typeid(*m_linear_operator)==typeid(CDenseMatrixOperator<float64_t>))
 	{
-		for (index_t j=0; j<m.num_rows; ++j)
-			complex_m(j,i)=complex64_t(m(j,i));
+		operator_type=DENSE;
+
+		CDenseMatrixOperator<float64_t>* op
+			=dynamic_cast<CDenseMatrixOperator<float64_t>*>(m_linear_operator);
+
+		REQUIRE(op->get_matrix_operator().matrix, "Matrix is not initialized!\n");
+
+		// create complex dense matrix operator
+		complex_op=static_cast<CDenseMatrixOperator<complex64_t>*>(*op);
 	}
-	CDenseMatrixOperator<complex64_t> complex_op(complex_m);
+	else if (typeid(*m_linear_operator)==typeid(CSparseMatrixOperator<float64_t>))
+	{
+		operator_type=SPARSE;
+
+		CSparseMatrixOperator<float64_t>* op
+			=dynamic_cast<CSparseMatrixOperator<float64_t>*>(m_linear_operator);
+
+		REQUIRE(op->get_matrix_operator().sparse_matrix, "Matrix is not initialized!\n");
+
+		// create complex sparse matrix operator
+		complex_op=static_cast<CSparseMatrixOperator<complex64_t>*>(*op);
+	}
+	else
+	{
+		// something weird happened
+		SG_ERROR("OperatorFunction::submit_jobs(): Unknown MatrixOperator given!\n");
+	}
 
 	// create num_shifts number of jobs for current sample vector
 	for (index_t i=0; i<m_num_shifts; ++i)
 	{
 		// create a deep copy of the operator
-		CDenseMatrixOperator<complex64_t, complex64_t>* shifted_op
-			=new CDenseMatrixOperator<complex64_t>(complex_op);
+		CMatrixOperator<complex64_t>* shifted_op=NULL;
+
+		switch(operator_type)
+		{
+		case DENSE:
+			shifted_op=new CDenseMatrixOperator<complex64_t>
+				(*dynamic_cast<CDenseMatrixOperator<complex64_t>*>(complex_op));
+			break;
+		case SPARSE:
+			shifted_op=new CSparseMatrixOperator<complex64_t>
+				(*dynamic_cast<CSparseMatrixOperator<complex64_t>*>(complex_op));
+			break;
+		default:
+			break;
+		}
+
+		REQUIRE(shifted_op, "OperatorFunction::submit_jobs():"
+			"MatrixOperator typeinfo was not detected!\n");
 
 		// move the shift inside the operator
 		// (see CRationalApproximation)
@@ -116,6 +155,8 @@ CJobResultAggregator* CLogRationalApproximationIndividual::submit_jobs(
 		// we can safely unref the job here, computation engine takes it from here
 		SG_UNREF(job);
 	}
+	
+	SG_UNREF(complex_op);
 
 	SG_DEBUG("OperatorFunction::submit_jobs(): Leaving..\n");
 	return agg;

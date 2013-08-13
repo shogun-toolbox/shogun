@@ -36,7 +36,7 @@ CDenseMatrixExactLog::CDenseMatrixExactLog()
 }
 
 CDenseMatrixExactLog::CDenseMatrixExactLog(
-	CDenseMatrixOperator<float64_t, float64_t>* op,
+	CDenseMatrixOperator<float64_t>* op,
 	CIndependentComputationEngine* engine)
 	: COperatorFunction<float64_t>(
 		(CLinearOperator<float64_t>*)op, engine, OF_LOG)

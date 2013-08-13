@@ -12,7 +12,7 @@
  * NOTE: For higher precision, the methods in this class rely on an external
  * library, ARPREC (http://crd-legacy.lbl.gov/~dhbailey/mpdist/), in absense of
  * which they fallback to shogun datatypes. To use it with shogun, configure 
- * ARPREC with "./configure 'CXX c++ -fPIC'" in order to link.
+ * ARPREC with `CXX="c++ -fPIC" ./configure' in order to link.
  */
 
 #ifndef JACOBI_ELLIPTIC_FUNCTIONS_H_

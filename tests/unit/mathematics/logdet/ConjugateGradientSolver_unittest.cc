@@ -33,7 +33,7 @@ TEST(ConjugateGradientSolver, solve)
 	CSparseFeatures<float64_t> feat(m);
 	SGSparseMatrix<float64_t> mat=feat.get_sparse_feature_matrix();
 
-	CSparseMatrixOperator<float64_t, float64_t>* A
+	CSparseMatrixOperator<float64_t>* A
 		=new CSparseMatrixOperator<float64_t>(mat);
 
 	CConjugateGradientSolver linear_solver;

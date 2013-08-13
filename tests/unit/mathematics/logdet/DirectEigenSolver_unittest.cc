@@ -25,7 +25,7 @@ TEST(DirectEigenSolver, compute)
 	m(1,0)=1.0;
 	m(1,1)=3.0;
 
-	CDenseMatrixOperator<float64_t, float64_t>* A=new CDenseMatrixOperator<float64_t, float64_t>(m);
+	CDenseMatrixOperator<float64_t>* A=new CDenseMatrixOperator<float64_t>(m);
 	SG_REF(A);
 
 	CDirectEigenSolver eig_solver(A);
