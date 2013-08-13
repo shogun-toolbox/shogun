@@ -1,43 +1,25 @@
 #include <shogun/lib/common.h>
 #include <shogun/lib/SGReferencedData.h>
 #include <shogun/io/SGIO.h>
-#include <shogun/lib/Lock.h>
 
-#ifdef HAVE_CXX11_ATOMIC
-#include <atomic>
-#endif
 
 using namespace shogun;
 
 namespace shogun {
-/** refcount structure */
-class RefCount 
-{
-public:
-	RefCount() : rc(0) {};
-	/** reference count */
-#ifdef HAVE_CXX11_ATOMIC
-    volatile std::atomic<int> rc;
-#else
-	int32_t rc;
-	CLock lock;
-#endif
-};
-}
 
 SGReferencedData::SGReferencedData(bool ref_counting) : m_refcount(NULL)
 { 
 	if (ref_counting)
 	{
-		m_refcount = new RefCount();
+		m_refcount = new RefCount(1);
 	}
 
 	ref();
 }
 
 SGReferencedData::SGReferencedData(const SGReferencedData &orig)
-	: m_refcount(orig.m_refcount)
 {
+	copy_refcount(orig);
 	ref();
 }
 
@@ -55,6 +37,7 @@ SGReferencedData& SGReferencedData::operator= (const SGReferencedData &orig)
 
 SGReferencedData::~SGReferencedData()
 {
+	delete m_refcount;
 }
 
 int32_t SGReferencedData::ref_count()
@@ -62,13 +45,7 @@ int32_t SGReferencedData::ref_count()
 	if (m_refcount == NULL)
 		return -1;
 
-#ifdef HAVE_CXX11_ATOMIC
-	int32_t c = m_refcount->rc.load();
-#else
-	m_refcount->lock.lock();
-	int32_t c = m_refcount->rc;
-	m_refcount->lock.unlock();
-#endif
+	int32_t c = m_refcount->ref_count();
 
 #ifdef DEBUG_SGVECTOR
 	SG_SGCDEBUG("ref_count(): refcount %d, data %p\n", c, this)
@@ -79,7 +56,8 @@ int32_t SGReferencedData::ref_count()
 /** copy refcount */
 void SGReferencedData::copy_refcount(const SGReferencedData &orig)
 {
-	m_refcount=orig.m_refcount;
+	m_refcount = (orig.m_refcount==NULL) ? NULL :
+		   	new RefCount(orig.m_refcount->ref_count()); 
 }
 
 /** increase reference counter
@@ -93,13 +71,8 @@ int32_t SGReferencedData::ref()
 		return -1;
 	}
 
-#ifdef HAVE_CXX11_ATOMIC
-	int32_t c = m_refcount->rc.fetch_add(1)+1;
-#else
-	m_refcount->lock.lock();
-	int32_t c = ++(m_refcount->rc);
-	m_refcount->lock.unlock();
-#endif
+	int32_t c = m_refcount->ref();
+
 #ifdef DEBUG_SGVECTOR
 	SG_SGCDEBUG("ref() refcount %ld data %p increased\n", c, this)
 #endif
@@ -120,13 +93,8 @@ int32_t SGReferencedData::unref()
 		return -1;
 	}
 
-#ifdef HAVE_CXX11_ATOMIC
-	int32_t c = m_refcount->rc.fetch_sub(1)-1;
-#else
-	m_refcount->lock.lock();
-	int32_t c = --(m_refcount->rc);
-	m_refcount->lock.unlock();
-#endif
+	int32_t c = m_refcount->unref();
+
 	if (c<=0)
 	{
 #ifdef DEBUG_SGVECTOR
@@ -146,4 +114,5 @@ int32_t SGReferencedData::unref()
 		m_refcount=NULL;
 		return c;
 	}
+}
 }

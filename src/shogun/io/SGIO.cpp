@@ -46,8 +46,9 @@ char SGIO::directory_name[FBUFSIZE];
 SGIO::SGIO()
 : target(stdout), last_progress_time(0), progress_start_time(0),
 	last_progress(1), show_progress(false), location_info(MSG_NONE),
-	syntax_highlight(true), loglevel(MSG_WARN), refcount(0)
+	syntax_highlight(true), loglevel(MSG_WARN)
 {
+	m_refcount = new RefCount();	
 }
 
 SGIO::SGIO(const SGIO& orig)
@@ -56,8 +57,9 @@ SGIO::SGIO(const SGIO& orig)
 	show_progress(orig.get_show_progress()),
 	location_info(orig.get_location_info()),
 	syntax_highlight(orig.get_syntax_highlight()),
-	loglevel(orig.get_loglevel()), refcount(0)
+	loglevel(orig.get_loglevel())
 {
+	m_refcount = new RefCount(orig.m_refcount->ref_count());	
 }
 
 void SGIO::message(EMessageType prio, const char* function, const char* file,
@@ -393,4 +395,31 @@ int SGIO::filter(CONST_DIRENT_T* d)
 	}
 
 	return 0;
+}
+
+SGIO::~SGIO()
+{
+	delete m_refcount;
+}
+
+int32_t SGIO::ref()
+{
+	return m_refcount->ref();
+}
+
+int32_t SGIO::ref_count() const
+{
+	return m_refcount->ref_count();
+}
+
+int32_t SGIO::unref()
+{
+	int32_t rc = m_refcount->unref();
+	if (rc==0)
+	{
+		delete this;
+		return 0;
+	}
+
+	return rc;
 }
