@@ -93,10 +93,7 @@ if( NOT CMAKE_BUILD_TYPE )
 endif()
 
 # set the flags for the build types
-# TODO: add -Wshadow
-# currently the way we use eigen3 it produces like 10 MB sized warnings because
-# of shadowing...
-SET(COMPILER_WARNINGS "-Wall -Wno-unused-parameter -Wformat -Wformat-security -Wparentheses -Wno-unknown-pragmas -Wno-deprecated")
+SET(COMPILER_WARNINGS "-Wall -Wno-unused-parameter -Wformat -Wformat-security -Wparentheses -Wshadow -Wno-unknown-pragmas -Wno-deprecated")
 IF(CMAKE_COMPILER_IS_GNUCXX)
 	SET(RELEASE_COMPILER_FLAGS "-fexpensive-optimizations -frerun-cse-after-loop -fcse-follow-jumps -finline-functions -fschedule-insns2 -fthread-jumps -fforce-addr -fstrength-reduce -funroll-loops -mfpmath=sse")
 ELSEIF("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
@@ -389,13 +386,13 @@ IF(BUNDLE_EIGEN)
 	include(external/Eigen3)
 	SET(HAVE_EIGEN3 1)
 	LIST(APPEND DEFINES HAVE_EIGEN3)
-	LIST(APPEND INCLUDES ${EIGEN_INCLUDE_DIR})
+	LIST(APPEND SYSTEM_INCLUDES ${EIGEN_INCLUDE_DIR})
 ELSE()
 	FIND_PACKAGE(Eigen3 3.1.2)
 	IF (EIGEN3_FOUND)
 		SET(HAVE_EIGEN3 1)
 		LIST(APPEND DEFINES HAVE_EIGEN3)
-		LIST(APPEND INCLUDES ${EIGEN_INCLUDE_DIR})
+		LIST(APPEND SYSTEM_INCLUDES ${EIGEN_INCLUDE_DIR})
 	ENDIF()
 ENDIF()
 

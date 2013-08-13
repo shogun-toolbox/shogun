@@ -19,6 +19,8 @@
 # limitations under the License.
 #
 
+find_file(CBLAS_LIBRARY NAMES libcblas.so.3 libcblas.so.3gf 
+	PATHS /usr/lib /usr/local/lib /opt/local/lib)
 find_library(CBLAS_LIBRARY NAMES cblas gslcblas HINTS $ENV{CBLASDIR}/lib $ENV{CBLASDIR}/lib64 )
 
 set(CBLAS_LIBRARIES ${CBLAS_LIBRARY} )

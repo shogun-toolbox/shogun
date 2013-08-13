@@ -6,6 +6,9 @@ endforeach()
 # Find GTEST and GMOCK frameworks
 include(external/GoogleTestNMock)
 ExternalProject_Get_Property(GoogleMock source_dir)
+if(SYSTEM_INCLUDES)
+	INCLUDE_DIRECTORIES(SYSTEM ${SYSTEM_INCLUDES})
+endif()
 include_directories(${INCLUDES} ${CMAKE_SOURCE_DIR}/src 
 		${source_dir}/include ${source_dir}/gtest/include)
 LINK_DIRECTORIES(${THIRD_PARTY_DIR}/libs/gmock)
