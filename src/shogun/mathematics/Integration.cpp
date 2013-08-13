@@ -252,10 +252,14 @@ float64_t CIntegration::integrate_quadgk(CFunction* f, float64_t a,
 {
 	// check the parameters
 	REQUIRE(f, "Integrable function should not be NULL\n")
-	REQUIRE(abs_tol>0.0, "Absolute tolerance must be positive\n")
-	REQUIRE(rel_tol>0.0, "Relative tolerance must be positive\n")
-	REQUIRE(max_iter>0, "Maximum number of iterations must be greater than 0\n")
-	REQUIRE(sn>0, "Initial number of subintervals must be greater than 0")
+	REQUIRE(abs_tol>0.0, "Absolute tolerance must be positive, but is %f\n",
+			abs_tol)
+	REQUIRE(rel_tol>0.0, "Relative tolerance must be positive, but is %f\n",
+			rel_tol)
+	REQUIRE(max_iter>0, "Maximum number of iterations must be greater than 0, "
+			"but is %d\n", max_iter)
+	REQUIRE(sn>0, "Initial number of subintervals must be greater than 0, "
+			"but is %d\n", sn)
 
 	// integral evaluation function
 	typedef void TQuadGKEvaluationFunction(CFunction* f,
@@ -348,12 +352,12 @@ float64_t CIntegration::integrate_quadgk(CFunction* f, float64_t a,
 	// number of iterations
 	uint32_t iter=1;
 
+	CDynamicArray<float64_t>* new_subs=new CDynamicArray<float64_t>();
+
 	while (err>tol && iter<max_iter)
 	{
 		// choose and bisect subintervals with estimated error, which
 		// is larger or equal to tolerance
-		CDynamicArray<float64_t>* new_subs=new CDynamicArray<float64_t>();
-
 		for (index_t i=0; i<subs->get_num_elements()/2; i++)
 		{
 			if (CMath::abs((*err_subs)[i])>=tol*CMath::abs((*subs)[2*i+1]-
@@ -377,7 +381,7 @@ float64_t CIntegration::integrate_quadgk(CFunction* f, float64_t a,
 		subs->set_array(new_subs->get_array(), new_subs->get_num_elements(),
 			new_subs->get_num_elements());
 
-		SG_UNREF(new_subs);
+		new_subs->reset_array();
 
 		// break if no new subintervals
 		if (!subs->get_num_elements())
@@ -398,10 +402,12 @@ float64_t CIntegration::integrate_quadgk(CFunction* f, float64_t a,
 		iter++;
 	}
 
+	SG_UNREF(new_subs);
+
 	if (err>tol)
 	{
-		SG_SWARNING("Error tolerance not met. Estimated error is equal to %g after "
-			"%d iterations\n", err, iter)
+		SG_SWARNING("Error tolerance not met. Estimated error is equal to %g "
+				"after %d iterations\n", err, iter)
 	}
 
 	// clean up
@@ -465,7 +471,7 @@ void CIntegration::evaluate_quadgk(CFunction* f, CDynamicArray<float64_t>* subs,
 	// compute value of definite integral on each subinterval
 	VectorXd eigen_q=((ygk*eigen_wgk.asDiagonal()).rowwise().sum()).cwiseProduct(
 		eigen_hw);
-	q->set_array(eigen_q.data(), eigen_q.size(), eigen_q.size());
+	q->set_array(eigen_q.data(), eigen_q.size());
 
 	// choose function values for Gauss nodes
 	MatrixXd yg(ygk.rows(), ygk.cols()/2);
@@ -476,7 +482,7 @@ void CIntegration::evaluate_quadgk(CFunction* f, CDynamicArray<float64_t>* subs,
 	// compute error on each subinterval
 	VectorXd eigen_err=(((yg*eigen_wg.asDiagonal()).rowwise().sum()).cwiseProduct(
 		eigen_hw)-eigen_q).array().abs();
-	err->set_array(eigen_err.data(), eigen_err.size(), eigen_err.size());
+	err->set_array(eigen_err.data(), eigen_err.size());
 }
 
 void CIntegration::evaluate_quadgk15(CFunction* f, CDynamicArray<float64_t>* subs,
