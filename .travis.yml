@@ -48,8 +48,6 @@ matrix:
       env: CMAKE_OPTIONS="-DPythonModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON" EXTRA_PACKAGES="swig2.0" CUSTOM_PKG="sudo pip install numpy" CC=clang CXX=clang++
     - language: objective-c
       env: OSX=1
-    - compiler: gcc
-      env: CMAKE_OPTIONS="-DOctaveModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON" EXTRA_PACKAGES="octave octave3.2-headers swig2.0"
 virtualenv:
   system_site_packages: true
 before_install:

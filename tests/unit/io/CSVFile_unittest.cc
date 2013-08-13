@@ -160,7 +160,7 @@ TEST(CSVFileTest, write_vector_int)
 	SG_UNREF(fin);
 }
 
-TEST(CSVFileTest, read_write_string_list)
+TEST(CSVFileTest, DISABLED_read_write_string_list)
 {
 	int32_t num_lines=5;
 	const char* text[] = {"It had to be U...", "U D transpose V", "I looked all around", "And finally found", "The SVD!"};
