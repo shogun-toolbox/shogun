@@ -19,6 +19,7 @@
 #endif
 #include <shogun/io/SerializableAsciiFile.h>
 #include <shogun/statistics/QuadraticTimeMMD.h>
+#include <pthread.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;
@@ -48,6 +49,42 @@ TEST(SGObject,equals_NULL_parameter)
 	SG_UNREF(mmd2);
 }
 #endif //HAVE_EIGEN3
+
+void* stress_test(void* args)
+{
+	CBinaryLabels* labs = (CBinaryLabels* ) args;	
+	CBinaryLabels* labs_2 = new CBinaryLabels(*labs);
+	for (index_t i=0; i<1000000; i++)
+	{
+		SG_REF(labs);
+		SG_REF(labs_2);
+		SG_UNREF(labs_2);
+		SG_UNREF(labs);
+	}
+	SG_UNREF(labs_2);
+	pthread_exit(0);
+}
+
+TEST(SGObject,ref_unref)
+{
+	CBinaryLabels* labs = new CBinaryLabels(10);
+	EXPECT_EQ(labs->ref_count(), 0);
+	SG_REF(labs);
+	EXPECT_EQ(labs->ref_count(), 1);
+
+	pthread_t* threads = new pthread_t[10];
+	for (index_t i=0; i<10; i++)
+	{
+		pthread_create(&threads[i], NULL, stress_test, static_cast<void* >(labs));
+	}
+	for (index_t i=0; i<10; i++)
+	{
+		pthread_join(threads[i], NULL);
+		//SG_UNREF(labs);
+	}
+	SG_UNREF(labs);
+	EXPECT_TRUE(labs == NULL);
+}
 
 TEST(SGObject,equals_null)
 {

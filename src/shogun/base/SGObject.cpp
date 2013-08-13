@@ -121,6 +121,7 @@ CSGObject::CSGObject()
 {
 	init();
 	set_global_objects();
+	m_refcount = new RefCount(0);
 
 	SG_GCDEBUG("SGObject created (%p)\n", this)
 }
@@ -130,6 +131,8 @@ CSGObject::CSGObject(const CSGObject& orig)
 {
 	init();
 	set_global_objects();
+	m_refcount = orig.m_refcount;
+	ref();
 }
 
 CSGObject::~CSGObject()
@@ -140,44 +143,38 @@ CSGObject::~CSGObject()
 	delete m_parameters;
 	delete m_model_selection_parameters;
 	delete m_parameter_map;
+	delete m_refcount;
 }
 
 #ifdef USE_REFERENCE_COUNTING
 
 int32_t CSGObject::ref()
 {
-	m_ref_lock.lock();
-	++m_refcount;
-	int32_t count=m_refcount;
-	m_ref_lock.unlock();
+	int32_t count = m_refcount->ref();
 	SG_GCDEBUG("ref() refcount %ld obj %s (%p) increased\n", count, this->get_name(), this)
-	return m_refcount;
+	return m_refcount->ref_count();
 }
 
 int32_t CSGObject::ref_count()
 {
-	m_ref_lock.lock();
-	int32_t count=m_refcount;
-	m_ref_lock.unlock();
+	int32_t count = m_refcount->ref_count();
 	SG_GCDEBUG("ref_count(): refcount %d, obj %s (%p)\n", count, this->get_name(), this)
-	return count;
+	return m_refcount->ref_count();
 }
 
 int32_t CSGObject::unref()
 {
-	m_ref_lock.lock();
-	if (m_refcount==0 || --m_refcount==0)
+	int32_t count = m_refcount->unref();
+	if (count<=0)
 	{
-		SG_GCDEBUG("unref() refcount %ld, obj %s (%p) destroying\n", m_refcount, this->get_name(), this)
-		m_ref_lock.unlock();
+		SG_GCDEBUG("unref() refcount %ld, obj %s (%p) destroying\n", count, this->get_name(), this)
 		delete this;
 		return 0;
 	}
 	else
 	{
-		SG_GCDEBUG("unref() refcount %ld obj %s (%p) decreased\n", m_refcount, this->get_name(), this)
-		m_ref_lock.unlock();
-		return m_refcount;
+		SG_GCDEBUG("unref() refcount %ld obj %s (%p) decreased\n", count, this->get_name(), this)
+		return m_refcount->ref_count();
 	}
 }
 #endif //USE_REFERENCE_COUNTING
@@ -1063,7 +1060,6 @@ void CSGObject::init()
 	}
 #endif
 
-	m_refcount = 0;
 	io = NULL;
 	parallel = NULL;
 	version = NULL;

@@ -17,12 +17,12 @@
 #include <shogun/lib/DataType.h>
 #include <shogun/lib/SGStringList.h>
 #include <shogun/lib/ShogunException.h>
+#include <shogun/lib/RefCount.h>
 
 #include <shogun/base/Parallel.h>
 #include <shogun/base/Version.h>
 
 #include <shogun/io/SGIO.h>
-#include <shogun/lib/Lock.h>
 
 
 /** \namespace shogun
@@ -514,8 +514,7 @@ private:
 	bool m_save_pre_called;
 	bool m_save_post_called;
 
-	int32_t m_refcount;
-	CLock m_ref_lock;
+	RefCount* m_refcount;
 };
 }
 #endif // __SGOBJECT_H__

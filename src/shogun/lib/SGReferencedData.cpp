@@ -57,8 +57,7 @@ int32_t SGReferencedData::ref_count()
 /** copy refcount */
 void SGReferencedData::copy_refcount(const SGReferencedData &orig)
 {
-	m_refcount = (orig.m_refcount==NULL) ? NULL :
-		   	new RefCount(orig.m_refcount->ref_count()); 
+	m_refcount =  orig.m_refcount;
 }
 
 /** increase reference counter
