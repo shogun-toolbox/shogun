@@ -5,7 +5,7 @@ include(ExternalProject)
 ExternalProject_Add(
 	GoogleMock
 	SVN_REPOSITORY http://googlemock.googlecode.com/svn/trunk
-	SVN_REVISION -r 441
+	SVN_REVISION -r 443
     TIMEOUT 10
 	PREFIX ${CMAKE_BINARY_DIR}/GoogleMock
 	DOWNLOAD_DIR ${THIRD_PARTY_DIR}/GoogleMock
