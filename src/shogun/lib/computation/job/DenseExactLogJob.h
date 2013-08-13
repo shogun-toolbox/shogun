@@ -18,7 +18,7 @@
 namespace shogun
 {
 template<class T> class SGVector;
-template<class T, class ST> class CDenseMatrixOperator;
+template<class T> class CDenseMatrixOperator;
 
 /** @brief Class that represents the job of applying the log of
  * a CDenseMatrixOperator on a real vector
@@ -37,7 +37,7 @@ public:
 	 * @param vector the sample vector to which operator is to be applied
 	 */
 	CDenseExactLogJob(CJobResultAggregator* aggregator,
-		CDenseMatrixOperator<float64_t, float64_t>* log_operator,
+		CDenseMatrixOperator<float64_t>* log_operator,
 		SGVector<float64_t> vector);
 
 	/** destructor */
@@ -50,7 +50,7 @@ public:
 	SGVector<float64_t> get_vector() const;
 
 	/** @return the linear operator */
-	CDenseMatrixOperator<float64_t, float64_t>* get_operator() const;
+	CDenseMatrixOperator<float64_t>* get_operator() const;
 
 	/** @return object name */
 	virtual const char* get_name() const
@@ -60,7 +60,7 @@ public:
 
 private:
 	/** the log of a CDenseMatrixOperator<float64_t> */
-	CDenseMatrixOperator<float64_t, float64_t>* m_log_operator;
+	CDenseMatrixOperator<float64_t>* m_log_operator;
 
 	/** the trace-sample */
 	SGVector<float64_t> m_vector;

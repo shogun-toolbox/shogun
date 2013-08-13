@@ -23,12 +23,12 @@ namespace shogun
  * \mathbb{C}^{n}\f$ being the vector. The result is a vector \f$y\in
  * \mathbb{C}^{m}\f$.
  */
-template<class T, class ST=T> class CMatrixOperator : public CLinearOperator<T, ST>
+template<class T> class CMatrixOperator : public CLinearOperator<T>
 {
 public:
 	/** default constructor */
 	CMatrixOperator()
-	: CLinearOperator<T, ST>()
+	: CLinearOperator<T>()
 	{
 	}
 
@@ -38,7 +38,7 @@ public:
 	 * @param dimension the dimension of the vector on which this it can apply
 	 */
 	CMatrixOperator(index_t dimension)
-	: CLinearOperator<T, ST>(dimension)
+	: CLinearOperator<T>(dimension)
 	{
 	}
 
@@ -53,7 +53,7 @@ public:
 	 * @param b the vector to which the linear operator applies
 	 * @return the result vector
 	 */
-	virtual SGVector<T> apply(SGVector<ST> b) const = 0;
+	virtual SGVector<T> apply(SGVector<T> b) const = 0;
 
 	/**
 	 * abstract method that sets the main diagonal
@@ -91,7 +91,6 @@ template class CMatrixOperator<float32_t>;
 template class CMatrixOperator<float64_t>;
 template class CMatrixOperator<floatmax_t>;
 template class CMatrixOperator<complex64_t>;
-template class CMatrixOperator<complex64_t, float64_t>;
 
 }
 

@@ -19,7 +19,7 @@ namespace shogun
 {
 
 template<class T> class SGVector;
-template<class T, class ST> class CDenseMatrixOperator;
+template<class T> class CDenseMatrixOperator;
 class CJobResultAggregator;
 class CIndependentComputationEngine;
 
@@ -38,7 +38,7 @@ public:
 	 * @param op the dense matrix linear operator for this operator function
 	 * @param engine the computation engine for the independent jobs
 	 */
-	CDenseMatrixExactLog(CDenseMatrixOperator<float64_t, float64_t>* op,
+	CDenseMatrixExactLog(CDenseMatrixOperator<float64_t>* op,
 		CIndependentComputationEngine* engine);
 
 	/** destructor */

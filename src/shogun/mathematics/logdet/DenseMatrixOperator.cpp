@@ -21,18 +21,18 @@ using namespace Eigen;
 namespace shogun
 {
 
-template<class T, class ST>
-CDenseMatrixOperator<T, ST>::CDenseMatrixOperator()
-	: CMatrixOperator<T, ST>()
+template<class T>
+CDenseMatrixOperator<T>::CDenseMatrixOperator()
+	: CMatrixOperator<T>()
 	{
 		init();
 
 		SG_SGCDEBUG("%s created (%p)\n", this->get_name(), this);
 	}
 
-template<class T, class ST>
-CDenseMatrixOperator<T, ST>::CDenseMatrixOperator(SGMatrix<T> op)
-	: CMatrixOperator<T, ST>(op.num_cols),
+template<class T>
+CDenseMatrixOperator<T>::CDenseMatrixOperator(SGMatrix<T> op)
+	: CMatrixOperator<T>(op.num_cols),
 	  m_operator(op)
 	{
 		init();
@@ -40,10 +40,10 @@ CDenseMatrixOperator<T, ST>::CDenseMatrixOperator(SGMatrix<T> op)
 		SG_SGCDEBUG("%s created (%p)\n", this->get_name(), this);
 	}
 
-template<class T, class ST>
-CDenseMatrixOperator<T, ST>::CDenseMatrixOperator(
-	const CDenseMatrixOperator<T, ST>& orig)
-	: CMatrixOperator<T, ST>(orig.get_dimension())
+template<class T>
+CDenseMatrixOperator<T>::CDenseMatrixOperator(
+	const CDenseMatrixOperator<T>& orig)
+	: CMatrixOperator<T>(orig.get_dimension())
 	{
 		init();
 
@@ -57,8 +57,8 @@ CDenseMatrixOperator<T, ST>::CDenseMatrixOperator(
 		SG_SGCDEBUG("%s deep copy created (%p)\n", this->get_name(), this);
 	}
 
-template<class T, class ST>
-void CDenseMatrixOperator<T, ST>::init()
+template<class T>
+void CDenseMatrixOperator<T>::init()
 	{
 		CSGObject::set_generic<T>();
 
@@ -66,20 +66,20 @@ void CDenseMatrixOperator<T, ST>::init()
 			"The dense matrix of the linear operator");
 	}
 
-template<class T, class ST>
-CDenseMatrixOperator<T, ST>::~CDenseMatrixOperator()
+template<class T>
+CDenseMatrixOperator<T>::~CDenseMatrixOperator()
 	{
 		SG_SGCDEBUG("%s destroyed (%p)\n", this->get_name(), this);
 	}
 
-template<class T, class ST>
-SGMatrix<T> CDenseMatrixOperator<T, ST>::get_matrix_operator() const
+template<class T>
+SGMatrix<T> CDenseMatrixOperator<T>::get_matrix_operator() const
 	{
 		return m_operator;
 	}
 
-template<class T, class ST>
-SGVector<T> CDenseMatrixOperator<T, ST>::get_diagonal() const
+template<class T>
+SGVector<T> CDenseMatrixOperator<T>::get_diagonal() const
 	{
 		REQUIRE(m_operator.matrix, "Operator not initialized!\n");
 
@@ -96,8 +96,8 @@ SGVector<T> CDenseMatrixOperator<T, ST>::get_diagonal() const
 		return diag;
 	}
 
-template<class T, class ST>
-void CDenseMatrixOperator<T, ST>::set_diagonal(SGVector<T> diag)
+template<class T>
+void CDenseMatrixOperator<T>::set_diagonal(SGVector<T> diag)
 	{
 		REQUIRE(m_operator.matrix, "Operator not initialized!\n");
 		REQUIRE(diag.vector, "Diagonal not initialized!\n");
@@ -115,19 +115,18 @@ void CDenseMatrixOperator<T, ST>::set_diagonal(SGVector<T> diag)
 		_op.diagonal()=_diag;
 	}
 
-template<class T, class ST>
-SGVector<T> CDenseMatrixOperator<T, ST>::apply(SGVector<ST> b) const
+template<class T>
+SGVector<T> CDenseMatrixOperator<T>::apply(SGVector<T> b) const
 	{
 		REQUIRE(m_operator.matrix, "Operator not initialized!\n");
 		REQUIRE(this->get_dimension()==b.vlen,
 			"Number of rows of vector must be equal to the "
 			"number of cols of the operator!\n");
 
-		typedef Matrix<ST, Dynamic, 1> VectorXst;
 		typedef Matrix<T, Dynamic, 1> VectorXt;
 		typedef Matrix<T, Dynamic, Dynamic> MatrixXt;
 
-		Map<VectorXst> _b(b.vector, b.vlen);
+		Map<VectorXt> _b(b.vector, b.vlen);
 		Map<MatrixXt> _op(m_operator.matrix, m_operator.num_rows,
 			m_operator.num_cols);
 	
@@ -140,7 +139,7 @@ SGVector<T> CDenseMatrixOperator<T, ST>::apply(SGVector<ST> b) const
 
 #define UNDEFINED(type) \
 template<> \
-SGVector<type> CDenseMatrixOperator<type, type>::apply(SGVector<type> b) const \
+SGVector<type> CDenseMatrixOperator<type>::apply(SGVector<type> b) const \
 	{	\
 		SG_SERROR("Not supported for %s\n", #type);\
 		return b; \
@@ -166,6 +165,5 @@ template class CDenseMatrixOperator<float32_t>;
 template class CDenseMatrixOperator<float64_t>;
 template class CDenseMatrixOperator<floatmax_t>;
 template class CDenseMatrixOperator<complex64_t>;
-template class CDenseMatrixOperator<complex64_t, float64_t>;
 }
 #endif // HAVE_EIGEN3

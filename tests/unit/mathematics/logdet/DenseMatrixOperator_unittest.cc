@@ -29,7 +29,7 @@ TEST(DenseMatrixOperator, apply)
 	SGMatrix<float64_t> m1(size, size);
 	m1.set_const(0.5);
 
-	CDenseMatrixOperator<float64_t, float64_t> op11(m1);
+	CDenseMatrixOperator<float64_t> op11(m1);
 	SGVector<float64_t> r1=op11.apply(b1);
 
 	for (index_t i=0; i<r1.vlen; ++i)
@@ -41,7 +41,7 @@ TEST(DenseMatrixOperator, apply)
 	typedef Matrix<float64_t, size, size> MatrixSd;
 	Map<MatrixSd> mapped1(m1.matrix, m1.num_rows, m1.num_cols);
 	mapped1=MatrixSd::Identity();
-	CDenseMatrixOperator<float64_t, float64_t> op12(m1);
+	CDenseMatrixOperator<float64_t> op12(m1);
 	r1=op12.apply(b1);
 
 	for (index_t i=0; i<r1.vlen; ++i)
@@ -56,7 +56,7 @@ TEST(DenseMatrixOperator, apply)
 	SGMatrix<complex64_t> m2(size, size);
 	m2.set_const(complex64_t(0.5, 0.25));
 
-	CDenseMatrixOperator<complex64_t, complex64_t> op21(m2);
+	CDenseMatrixOperator<complex64_t> op21(m2);
 	SGVector<complex64_t> r2=op21.apply(b2);
 
 	for (index_t i=0; i<r2.vlen; ++i)
@@ -69,7 +69,7 @@ TEST(DenseMatrixOperator, apply)
 	typedef Matrix<complex64_t, size, size> MatrixScd;
 	Map<MatrixScd> mapped2(m2.matrix, m2.num_rows, m2.num_cols);
 	mapped2=MatrixScd::Identity();
-	CDenseMatrixOperator<complex64_t, complex64_t> op22(m2);
+	CDenseMatrixOperator<complex64_t> op22(m2);
 	r2=op22.apply(b2);
 
 	for (index_t i=0; i<r2.vlen; ++i)
@@ -82,7 +82,7 @@ TEST(DenseMatrixOperator, apply)
 TEST(DenseMatrixOperator, shift_apply)
 {
 	const index_t size=5;
-	SGVector<float64_t> b(size);
+	SGVector<complex64_t> b(size);
 	b.set_const(0.25);
 
 	// complex64_t, fixed matrix	
@@ -90,7 +90,7 @@ TEST(DenseMatrixOperator, shift_apply)
 	m.set_const(complex64_t(0.5, 0.0));
 
 	// shifting the diagonal via interface
-	CDenseMatrixOperator<complex64_t, float64_t> op(m);
+	CDenseMatrixOperator<complex64_t> op(m);
 	SGVector<complex64_t> diag=op.get_diagonal();
 	for (index_t i=0; i<diag.vlen; ++i)
 	{

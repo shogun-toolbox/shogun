@@ -100,6 +100,8 @@ void CRationalApproximation::precompute()
 {
 	// compute extremal eigenvalues
 	m_eigen_solver->compute();
+	SG_DEBUG("max_eig=%.15lf\n", m_eigen_solver->get_max_eigenvalue());
+	SG_DEBUG("min_eig=%.15lf\n", m_eigen_solver->get_min_eigenvalue());
 
 	compute_shifts_weights_const();
 }

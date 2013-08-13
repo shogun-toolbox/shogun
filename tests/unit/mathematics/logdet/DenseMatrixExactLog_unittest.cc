@@ -43,7 +43,7 @@ TEST(DenseMatrixExactLog, dense_log_det)
 	mat(0,1)=1.0;
 	mat(1,0)=1.0;
 	mat(1,1)=3.0;
-	CDenseMatrixOperator<float64_t, float64_t>* op=new CDenseMatrixOperator<float64_t, float64_t>(mat);
+	CDenseMatrixOperator<float64_t>* op=new CDenseMatrixOperator<float64_t>(mat);
 	SG_REF(op);
 	
 	// create operator function with the operator and the engine to submit jobs

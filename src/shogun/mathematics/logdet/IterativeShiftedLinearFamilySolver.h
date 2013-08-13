@@ -16,7 +16,7 @@
 namespace shogun
 {
 template <class T> class SGVector;
-template <class T, class ST> class CLinearOperator;
+template <class T> class CLinearOperator;
 
 /** 
  * @brief abstract template base for CG based solvers to the solution of 
@@ -49,7 +49,7 @@ public:
 	 * @param b the vector of the system
 	 * @return the solution vector
 	 */
-	virtual SGVector<T> solve(CLinearOperator<T, T>* A, SGVector<T> b) = 0;
+	virtual SGVector<T> solve(CLinearOperator<T>* A, SGVector<T> b) = 0;
 
 	/**
 	 * abstract method that solves the shifted family of linear systems, multiples
@@ -62,7 +62,7 @@ public:
 	 * @param weights the weights to be multiplied with each solution for each
 	 * shift
 	 */
-	virtual SGVector<ST> solve_shifted_weighted(CLinearOperator<T, T>* A,
+	virtual SGVector<ST> solve_shifted_weighted(CLinearOperator<T>* A,
 		SGVector<T> b, SGVector<ST> shifts, SGVector<ST> weights) = 0;
 
 	/** @return object name */

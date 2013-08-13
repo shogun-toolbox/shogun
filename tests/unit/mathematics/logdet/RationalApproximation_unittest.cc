@@ -12,15 +12,20 @@
 #ifdef HAVE_EIGEN3
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
+#include <shogun/lib/SGSparseMatrix.h>
 #include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/lib/computation/engine/SerialComputationEngine.h>
 #include <shogun/lib/computation/job/ScalarResult.h>
 #include <shogun/lib/computation/job/IndividualJobResultAggregator.h>
 #include <shogun/lib/computation/job/RationalApproximationIndividualJob.h>
+#include <shogun/features/SparseFeatures.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/logdet/DenseMatrixOperator.h>
+#include <shogun/mathematics/logdet/SparseMatrixOperator.h>
 #include <shogun/mathematics/logdet/DirectLinearSolverComplex.h>
+#include <shogun/mathematics/logdet/ConjugateOrthogonalCGSolver.h>
 #include <shogun/mathematics/logdet/DirectEigenSolver.h>
+#include <shogun/mathematics/logdet/NormalSampler.h>
 #include <shogun/mathematics/logdet/LogRationalApproximationIndividual.h>
 #include <unsupported/Eigen/MatrixFunctions>
 #include <gtest/gtest.h>
@@ -40,7 +45,7 @@ TEST(RationalApproximation, precompute)
 	m(1,0)=1.0;
 	m(1,1)=3.0;
 
-	CDenseMatrixOperator<float64_t, float64_t>* op=new CDenseMatrixOperator<float64_t, float64_t>(m);
+	CDenseMatrixOperator<float64_t>* op=new CDenseMatrixOperator<float64_t>(m);
 	SG_REF(op);
 
 	CDirectEigenSolver* eig_solver=new CDirectEigenSolver(op);
@@ -112,7 +117,7 @@ TEST(RationalApproximation, trace_accuracy)
 	}
 
 	// create the operator
-	CDenseMatrixOperator<float64_t, float64_t>* op=new CDenseMatrixOperator<float64_t, float64_t>(m);
+	CDenseMatrixOperator<float64_t>* op=new CDenseMatrixOperator<float64_t>(m);
 	SG_REF(op);
 
 	// create the eigen solver for finding max/min eigenvalues
@@ -202,4 +207,86 @@ TEST(RationalApproximation, trace_accuracy)
 	SG_UNREF(op);
 }
 
+TEST(RationalApproximation, compare_direct_vs_cocg_accuracy)
+{
+	CSerialComputationEngine* e=new CSerialComputationEngine;
+	SG_REF(e);
+	
+	const index_t size=2;
+	SGMatrix<float64_t> m(size, size);
+	m(0,0)=1000.0;
+	m(0,1)=0.0;
+	m(1,0)=0.0;
+	m(1,1)=1005.0;
+
+	CDenseMatrixOperator<float64_t>* op=new CDenseMatrixOperator<float64_t>(m);
+	SG_REF(op);
+
+	CDirectEigenSolver* eig_solver=new CDirectEigenSolver(op);
+	SG_REF(eig_solver);
+
+	CDirectLinearSolverComplex* dense_solver=new CDirectLinearSolverComplex();
+	SG_REF(dense_solver);
+
+	CConjugateOrthogonalCGSolver *sparse_solver
+		=new CConjugateOrthogonalCGSolver();
+	sparse_solver->set_absolute_tolerence(0.001);
+	sparse_solver->set_iteration_limit(500);
+
+	CLogRationalApproximationIndividual *op_func
+		=new CLogRationalApproximationIndividual(
+			op, e, eig_solver, (CLinearSolver<complex64_t, float64_t>*)dense_solver, 4);
+	SG_REF(op_func);
+
+	op_func->precompute();
+
+	SGVector<complex64_t> shifts=op_func->get_shifts();
+
+	CNormalSampler* trace_sampler=new CNormalSampler(size);
+	trace_sampler->precompute();
+
+	// create complex copies of operators, complex_dense/sparse
+	CDenseMatrixOperator<complex64_t>* complex_dense
+		=static_cast<CDenseMatrixOperator<complex64_t>*>(*op);
+
+	for (index_t i=0; i<shifts.vlen; ++i)
+	{
+		SGVector<float64_t> sample=trace_sampler->sample(0);
+
+		CDenseMatrixOperator<complex64_t>* shifted_dense
+			=new CDenseMatrixOperator<complex64_t>(*complex_dense);
+
+		SGVector<complex64_t> diag=shifted_dense->get_diagonal();
+		for (index_t j=0; j<diag.vlen; ++j)
+			diag[j]-=shifts[i];
+	
+		shifted_dense->set_diagonal(diag);
+
+		SGMatrix<complex64_t> shifted_m=shifted_dense->get_matrix_operator();
+
+		CSparseFeatures<complex64_t> feat(shifted_m);
+		SGSparseMatrix<complex64_t> shifted_sm=feat.get_sparse_feature_matrix();
+		CSparseMatrixOperator<complex64_t>* shifted_sparse
+			=new CSparseMatrixOperator<complex64_t>(shifted_sm);
+
+		SGVector<complex64_t> xd=dense_solver->solve(shifted_dense, sample);
+		SGVector<complex64_t> xs=sparse_solver->solve(shifted_sparse, sample);
+
+		Map<VectorXcd> map_xd(xd.vector, xd.vlen);
+		Map<VectorXcd> map_xs(xs.vector, xs.vlen);
+
+		EXPECT_NEAR((map_xd-map_xs).norm(), 0.0, 0.001);
+
+		SG_UNREF(shifted_dense);
+		SG_UNREF(shifted_sparse);
+	}
+
+	SG_UNREF(complex_dense);
+	SG_UNREF(eig_solver);
+	SG_UNREF(dense_solver);
+	SG_UNREF(sparse_solver);
+	SG_UNREF(op_func);
+	SG_UNREF(e);
+	SG_UNREF(op);
+}
 #endif // HAVE_EIGEN3

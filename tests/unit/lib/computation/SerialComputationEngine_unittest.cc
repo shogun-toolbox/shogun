@@ -44,8 +44,7 @@ TEST(SerialComputationEngine, dense_log_det)
 	log_m=m.log();
 
 	// create linear operator and aggregator	
-	CDenseMatrixOperator<float64_t, float64_t>* log_op
-		=new CDenseMatrixOperator<float64_t, float64_t>(log_mat);
+	CDenseMatrixOperator<float64_t>* log_op=new CDenseMatrixOperator<float64_t>(log_mat);
 	SG_REF(log_op);
 	CStoreScalarAggregator<float64_t>* agg=new CStoreScalarAggregator<float64_t>;
 	SG_REF(agg);

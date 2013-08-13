@@ -34,13 +34,11 @@ TEST(RationalApproximationIndividualJob, compute)
 	mi(0,1)=0.0;
 	mi(1,0)=0.0;
 	mi(1,1)=1.0;
-	CDenseMatrixOperator<float64_t, float64_t>* identity
-		=new CDenseMatrixOperator<float64_t, float64_t>(mi);
+	CDenseMatrixOperator<float64_t>* identity=new CDenseMatrixOperator<float64_t>(mi);
 	SG_REF(identity);
 
 	SG_SDEBUG("creating op\n");
-	CDenseMatrixOperator<complex64_t, complex64_t>* op
-		=new CDenseMatrixOperator<complex64_t>(m);
+	CDenseMatrixOperator<complex64_t>* op=new CDenseMatrixOperator<complex64_t>(m);
 	SG_REF(op);
 	
 	const float64_t const_multiplier=2.0;
