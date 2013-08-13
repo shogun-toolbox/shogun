@@ -10,7 +10,6 @@
 #define __SGREFERENCED_DATA_H__
 
 #include <shogun/lib/common.h>
-#include <shogun/lib/RefCount.h>
 
 namespace shogun
 {

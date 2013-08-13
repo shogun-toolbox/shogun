@@ -2,6 +2,7 @@
 #include <atomic>
 #endif
 
+#include <shogun/lib/common.h>
 #include <shogun/lib/Lock.h>
 
 #ifndef _REFCOUNT__H__
