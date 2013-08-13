@@ -44,4 +44,5 @@ else ()
 endif ()
 
 mark_as_advanced(
-  Hoard_LIB
+  Hoard_LIBRARIES
+)
