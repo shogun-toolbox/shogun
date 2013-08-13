@@ -20,6 +20,7 @@
 
 namespace shogun
 {
+class RefCount;
 class IO;
 
 /** @brief Class Version provides version information.

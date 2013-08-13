@@ -23,12 +23,12 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-#include <shogun/lib/RefCount.h>
 #include <shogun/lib/common.h>
 #include <shogun/base/init.h>
 
 namespace shogun
 {
+	class RefCount;
 	class SGIO;
 	/** shogun IO */
 	extern SGIO* sg_io;

@@ -11,6 +11,7 @@
 #include <shogun/base/Version.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/versionstring.h>
+#include <shogun/lib/RefCount.h>
 
 using namespace shogun;
 

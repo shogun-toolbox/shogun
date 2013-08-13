@@ -17,6 +17,7 @@
 #include <shogun/lib/common.h>
 #include <shogun/lib/Time.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/lib/RefCount.h>
 
 #include <stdio.h>
 #include <stdarg.h>

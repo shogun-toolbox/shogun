@@ -13,7 +13,6 @@
 
 #include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
-#include <shogun/lib/RefCount.h>
 #include <shogun/io/SGIO.h>
 
 namespace shogun
