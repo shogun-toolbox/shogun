@@ -5,7 +5,7 @@ EXECUTE_PROCESS(COMMAND ${RUBY_EXECUTABLE} -r narray -e "print 'true'"
 	ERROR_QUIET)
 
 # find vendor arch dir
-EXECUTE_PROCESS(COMMAND ${RUBY_EXECUTABLE} -r rbconfig -e "print RbConfig::CONFIG['vendorarchdir']".
+EXECUTE_PROCESS(COMMAND ${RUBY_EXECUTABLE} -r rbconfig -e "print RbConfig::CONFIG['vendorarchdir']"
     OUTPUT_VARIABLE RUBY_VENDOR_ARCH_DIR
     ERROR_QUIET)
 
