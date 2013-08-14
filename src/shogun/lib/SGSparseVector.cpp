@@ -181,6 +181,7 @@ void SGSparseVector<T>::sort_features()
 
 	SGSparseVectorEntry<T>* sf_new= SG_MALLOC(SGSparseVectorEntry<T>, num_feat_entries);
 
+	// compression: merging duplicates (features with same index)
 	int32_t last_index = 0;
 	sf_new[last_index] = sf_orig[orig_idx[last_index]];
 
@@ -200,20 +201,20 @@ void SGSparseVector<T>::sort_features()
 	REQUIRE(last_index < num_feat_entries, "sort_features(): last_index=%d must not exceed num_feat_entries=%d\n",
 			last_index, num_feat_entries);
 
-	features = SG_REALLOC(SGSparseVectorEntry<T>, sf_new, num_feat_entries, last_index+1);
-	num_feat_entries = last_index+1;
-
-	// sanity check (<= to allow duplicate indices!)
-	for (int j=0; j<num_feat_entries-1; j++)
-	{
-		REQUIRE(sf_new[j].feat_index <= sf_new[j+1].feat_index,
-				"sort_features(): failed sanity check %d <= %d after sorting (comparing indices sf_new[%d] <= sf_new[%d], features=%d)\n",
-				sf_new[j].feat_index, sf_new[j+1].feat_index, j, j+1, num_feat_entries);
-	}
-
 	SG_FREE(orig_idx);
 	SG_FREE(feat_idx);
 	SG_FREE(sf_orig);
+
+	features = SG_REALLOC(SGSparseVectorEntry<T>, sf_new, num_feat_entries, last_index+1);
+	num_feat_entries = last_index+1;
+
+	// sanity check: strict sort order (assuming no duplicates)
+	for (int j=0; j<num_feat_entries-1; j++)
+	{
+		REQUIRE(features[j].feat_index < features[j+1].feat_index,
+				"sort_features(): failed sanity check %d <= %d after sorting (comparing indices sf_new[%d] <= sf_new[%d], features=%d)\n",
+				features[j].feat_index, features[j+1].feat_index, j, j+1, num_feat_entries);
+	}
 }
 
 template<class T>
@@ -267,6 +268,14 @@ SGVector<T> SGSparseVector<T>::get_dense(int32_t dimension)
 	}
 
 	return dense;
+}
+
+template<class T>
+SGSparseVector<T> SGSparseVector<T>::clone() const
+{
+	SGSparseVectorEntry <T> * copy = SG_MALLOC(SGSparseVectorEntry <T>, num_feat_entries);
+	memcpy(copy, features, num_feat_entries * sizeof(SGSparseVectorEntry <T>));
+	return SGSparseVector<T>(copy, num_feat_entries);
 }
 
 template<class T> void SGSparseVector<T>::load(CFile* loader)

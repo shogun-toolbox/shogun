@@ -143,6 +143,9 @@ public:
 	 */
 	SGVector<T> get_dense();
 
+	/** clone vector */
+	SGSparseVector<T> clone() const;
+
 	/** load vector from file
 	 *
 	 * @param loader File object via which to load data
