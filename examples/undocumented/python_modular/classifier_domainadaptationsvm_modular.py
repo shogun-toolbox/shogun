@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 import numpy
 
-from moshogun import StringCharFeatures, BinaryLabels, DNA
-from moshogun import WeightedDegreeStringKernel
-from moshogun import SVMLight, DomainAdaptationSVM, MSG_DEBUG
+from modshogun import StringCharFeatures, BinaryLabels, DNA
+from modshogun import WeightedDegreeStringKernel
+from modshogun import SVMLight, DomainAdaptationSVM, MSG_DEBUG
 
 traindna = ['CGCACGTACGTAGCTCGAT',
 		      'CGACGTAGTCGTAGTCGTA',
