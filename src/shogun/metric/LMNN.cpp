@@ -12,6 +12,7 @@
 
 #include <shogun/metric/LMNN.h>
 #include <shogun/metric/LMNNImpl.h>
+#include <shogun/mathematics/Math.h>
 
 /// useful shorthands to perform operations with Eigen matrices
 
@@ -81,9 +82,11 @@ void CLMNN::train(SGMatrix<float64_t> init_transform)
 	ImpostorsSetType exact_impostors, cur_impostors, prev_impostors;
 	// Iteration counter
 	uint32_t iter = 0;
+	// Criterion for termination
+	bool stop = false;
 
 	/// Main loop
-	while (iter < m_maxiter)
+	while (!stop)
 	{
 		SG_PROGRESS(iter, 0, m_maxiter)
 
@@ -106,6 +109,11 @@ void CLMNN::train(SGMatrix<float64_t> init_transform)
 
 		// Correct step size
 		CLMNNImpl::correct_stepsize(stepsize, obj, iter);
+
+		// Check termination criterion
+		stop = iter >= m_maxiter-1 || stepsize < m_stepsize_threshold;
+		if (iter > 0)
+			stop |= CMath::abs(obj[iter-1]-obj[iter]) < m_obj_threshold;
 
 		// Update iteration counter
 		iter = iter + 1;
@@ -161,7 +169,7 @@ int32_t CLMNN::get_k() const
 
 void CLMNN::set_k(const int32_t k)
 {
-	REQUIRE(k>0, "The number of target neighbors per example must be greater than zero\n");
+	REQUIRE(k>0, "The number of target neighbors per example must be larger than zero\n");
 	m_k = k;
 }
 
@@ -182,7 +190,20 @@ float64_t CLMNN::get_stepsize() const
 
 void CLMNN::set_stepsize(const float64_t stepsize)
 {
+	REQUIRE(stepsize>0, "The step size used in gradient descent must be larger than zero\n")
 	m_stepsize = stepsize;
+}
+
+float64_t CLMNN::get_stepsize_threshold() const
+{
+	return m_stepsize_threshold;
+}
+
+void CLMNN::set_stepsize_threshold(const float64_t stepsize_threshold)
+{
+	REQUIRE(stepsize_threshold>0,
+			"The threshold for the step size must be larger than zero\n")
+	m_stepsize_threshold = stepsize_threshold;
 }
 
 uint32_t CLMNN::get_maxiter() const
@@ -192,6 +213,7 @@ uint32_t CLMNN::get_maxiter() const
 
 void CLMNN::set_maxiter(const uint32_t maxiter)
 {
+	REQUIRE(maxiter>0, "The number of maximum iterations must be larger than zero\n")
 	m_maxiter = maxiter;
 }
 
@@ -203,6 +225,18 @@ uint32_t CLMNN::get_correction() const
 void CLMNN::set_correction(const uint32_t correction)
 {
 	m_correction = correction;
+}
+
+float64_t CLMNN::get_obj_threshold() const
+{
+	return m_obj_threshold;
+}
+
+void CLMNN::set_obj_threshold(const float64_t obj_threshold)
+{
+	REQUIRE(obj_threshold>0,
+			"The threshold for the objective must be larger than zero\n")
+	m_obj_threshold = obj_threshold;
 }
 
 void CLMNN::init()
@@ -219,18 +253,24 @@ void CLMNN::init()
 			MS_AVAILABLE)
 	SG_ADD(&m_stepsize, "m_stepsize", "Step size in gradient descent",
 			MS_NOT_AVAILABLE)
+	SG_ADD(&m_stepsize_threshold, "m_stepsize_threshold", "Step size threshold",
+			MS_NOT_AVAILABLE)
 	SG_ADD(&m_maxiter, "m_maxiter", "Maximum number of iterations",
 			MS_NOT_AVAILABLE)
 	SG_ADD(&m_correction, "m_correction",
 			"Iterations between exact impostors search", MS_NOT_AVAILABLE)
+	SG_ADD(&m_obj_threshold, "m_obj_threshold", "Objective threshold",
+			MS_NOT_AVAILABLE)
 
 	m_features = NULL;
 	m_labels = NULL;
 	m_k = 1;
 	m_regularization = 0.5;
 	m_stepsize = 1e-07;
+	m_stepsize_threshold = 1e-22;
 	m_maxiter = 1000;
 	m_correction = 15;
+	m_obj_threshold = 1e-9;
 }
 
 #endif /* HAVE_EIGEN3 */

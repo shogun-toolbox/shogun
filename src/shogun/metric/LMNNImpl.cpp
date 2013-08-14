@@ -41,7 +41,7 @@ bool CImpostorNode::operator<(const CImpostorNode& rhs) const
 		return example < rhs.example;
 }
 
-void CLMNNImpl::check_training_setup(CFeatures* features, CLabels* labels,
+void CLMNNImpl::check_training_setup(const CFeatures* features, const CLabels* labels,
 		const SGMatrix<float64_t> init_transform)
 {
 	REQUIRE(features->has_property(FP_DOT),
@@ -55,7 +55,7 @@ void CLMNNImpl::check_training_setup(CFeatures* features, CLabels* labels,
 			"Currently, LMNN supports only DenseFeatures\n")
 
 	// cast is safe, we ensure above that features are dense
-	CDenseFeatures<float64_t>* x = static_cast<CDenseFeatures<float64_t>*>(features);
+	const CDenseFeatures<float64_t>* x = static_cast<const CDenseFeatures<float64_t>*>(features);
 
 	REQUIRE(init_transform.num_rows==x->get_num_features() &&
 			init_transform.num_rows==init_transform.num_cols,

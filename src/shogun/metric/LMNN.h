@@ -110,6 +110,18 @@ class CLMNN : public CSGObject
 		 */
 		void set_stepsize(const float64_t stepsize);
 
+		/** get step size threshold
+		 *
+		 * @return step size threshold
+		 */
+		float64_t get_stepsize_threshold() const;
+
+		/** set step size threshold
+		 *
+		 * @param stepsize_threshold step size threshold to set
+		 */
+		void set_stepsize_threshold(const float64_t stepsize_threshold);
+
 		/** get maximum number of iterations
 		 *
 		 * @return maximum number of iterations
@@ -133,6 +145,18 @@ class CLMNN : public CSGObject
 		 * @param correction iterations between exact impostors search
 		 */
 		void set_correction(const uint32_t correction);
+
+		/** get objective threshold
+		 *
+		 * @return objective threshold
+		 */
+		float64_t get_obj_threshold() const;
+
+		/** set objective threshold
+		 *
+		 * @param obj_threshold objective threshold to set
+		 */
+		void set_obj_threshold(const float64_t obj_threshold);
 
 	private:
 		/** register parameters */
@@ -163,6 +187,13 @@ class CLMNN : public CSGObject
 		 */
 		float64_t m_stepsize;
 
+		/**
+		 * step size threshold; during training the step size is modified
+		 * internally, stop training if the step size is below this threshold.
+		 * Its default value is 1e-22.
+		 */
+		float64_t m_stepsize_threshold;
+
 		/** maximum number of iterations. Its default value is 1000. */
 		uint32_t m_maxiter;
 
@@ -172,6 +203,12 @@ class CLMNN : public CSGObject
 		 */
 		uint32_t m_correction;
 
+		/**
+		 * objective threshold; stop training if the difference in absolute
+		 * value of the objective function in the last two iterations is below
+		 * this threshold. Its default value is 1e-9.
+		 */
+		float64_t m_obj_threshold;
 
 }; /* class CLMNN */
 
