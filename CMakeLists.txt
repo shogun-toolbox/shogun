@@ -539,6 +539,9 @@ OPTION(USE_SWIG_DIRECTORS "" OFF)
 
 # python modular
 IF (PythonModular)
+	# find python library for the found python interpreter
+	# i.e. versions should match!
+	set(Python_ADDITIONAL_VERSIONS ${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR})
 	FIND_PACKAGE(PythonLibs REQUIRED)
 	FIND_PACKAGE(NumPy REQUIRED)
 
