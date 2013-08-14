@@ -17,7 +17,6 @@
 #include <shogun/machine/gp/LaplacianInferenceMethod.h>
 #include <shogun/machine/gp/ZeroMean.h>
 #include <shogun/machine/gp/LogitLikelihood.h>
-#include <shogun/classifier/GaussianProcessBinaryClassification.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;
@@ -45,12 +44,12 @@ TEST(InferenceMethod,get_log_ml_estimate_binary_logit_laplace)
 			features_train,	mean, labels_train, likelihood);
 	inf->set_scale(2.0);
 
-	/* sample estimate and compare against a number from my python implementation,
-	 * and also against the approximate marginal likelihood. Since this is random,
-	 * use low accuracy. */
+	/* sample estimate and compare against a number from my python
+	 * implementation, and also against the approximate marginal
+	 * likelihood. Since this is random, use low accuracy. */
 	float64_t sample=inf->get_log_ml_estimate(100000);
 	EXPECT_NEAR(sample, -1.67990517588, 0.3);
-	EXPECT_NEAR(sample, -inf->get_negative_marginal_likelihood(), 1e-1);
+	EXPECT_NEAR(sample, -inf->get_negative_marginal_likelihood(), 0.3);
 
 	SG_UNREF(inf);
 }
