@@ -270,6 +270,14 @@ SGVector<T> SGSparseVector<T>::get_dense(int32_t dimension)
 	return dense;
 }
 
+template<class T>
+SGSparseVector<T> SGSparseVector<T>::clone() const
+{
+	SGSparseVectorEntry <T> * copy = SG_MALLOC(SGSparseVectorEntry <T>, num_feat_entries);
+	memcpy(copy, features, num_feat_entries * sizeof(SGSparseVectorEntry <T>));
+	return SGSparseVector<T>(copy, num_feat_entries);
+}
+
 template<class T> void SGSparseVector<T>::load(CFile* loader)
 {
 	ASSERT(loader)

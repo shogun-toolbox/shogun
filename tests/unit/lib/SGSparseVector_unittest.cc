@@ -224,3 +224,35 @@ TEST(SGSparseVector, sort_features_duplicate)
 	EXPECT_NEAR(vec.get_feature(3), -9.0, 1E-19);
 	EXPECT_NEAR(vec.get_feature(4), -16.0, 1E-19);
 }
+
+TEST(SGSparseVector, clone)
+{
+	SGSparseVector<float64_t> vec(4);
+	EXPECT_EQ(vec.num_feat_entries, 4);
+
+	vec.features[0].feat_index = 3;
+	vec.features[0].entry = -3.0;
+
+	vec.features[1].feat_index = 2;
+	vec.features[1].entry = -4.0;
+
+	vec.features[2].feat_index = 3;
+	vec.features[2].entry = -6.0;
+
+	vec.features[3].feat_index = 4;
+	vec.features[3].entry = -16.0;
+
+	SGSparseVector<float64_t> clone = vec.clone();
+	EXPECT_EQ(vec.num_feat_entries, clone.num_feat_entries);
+	EXPECT_NE(vec.features, clone.features);
+
+	for (index_t i=0; i<clone.num_feat_entries; i++) {
+		EXPECT_EQ(vec.features[i].feat_index, vec.features[i].feat_index);
+		EXPECT_EQ(vec.features[i].entry, vec.features[i].entry);
+	}
+
+	EXPECT_EQ(vec.get_num_dimensions(), clone.get_num_dimensions());
+	for (index_t i=0; i<=vec.get_num_dimensions(); i++) {
+		EXPECT_EQ(vec.get_feature(i), clone.get_feature(i));
+	}
+}
