@@ -81,7 +81,7 @@ class CLMNNImpl
 	public:
 
 		/** check feature and label size, dimensions of the initial transform, etc */
-		static void check_training_setup(CFeatures* features, CLabels* labels, const SGMatrix<float64_t> init_transform);
+		static void check_training_setup(const CFeatures* features, const CLabels* labels, const SGMatrix<float64_t> init_transform);
 
 		/**
 		 * for each feature in x, find its target neighbors; this is, its k
