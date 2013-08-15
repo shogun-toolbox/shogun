@@ -23,9 +23,8 @@
 # Jemalloc_LIBRARIES - List of libraries when using Jemalloc.
 # Jemalloc_FOUND - True if Jemalloc found.
 
-find_path(Jemalloc_INCLUDE_DIR jemalloc/jemalloc.h NO_DEFAULT_PATH PATHS
-  ${HT_DEPENDENCY_INCLUDE_DIR}
-  /usr/include
+find_path(Jemalloc_INCLUDE_DIR jemalloc/jemalloc.h 
+  PATHS /usr/include
   /opt/local/include
   /usr/local/include
 )
@@ -34,7 +33,7 @@ set(Jemalloc_NAMES jemalloc)
 
 find_library(Jemalloc_LIBRARY NO_DEFAULT_PATH
   NAMES ${Jemalloc_NAMES}
-  PATHS ${HT_DEPENDENCY_LIB_DIR} /lib /usr/lib /usr/local/lib /opt/local/lib
+  PATHS /usr/lib /usr/local/lib /opt/local/lib
 )
 
 if (Jemalloc_INCLUDE_DIR AND Jemalloc_LIBRARY)
