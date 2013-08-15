@@ -128,3 +128,4 @@ examples/undocumented/python_modular/*
 # cmake
 /CMakeFiles/
 CMakeCache.txt
+/build
