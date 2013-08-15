@@ -175,7 +175,7 @@ public:
 	}
 
 	/** update all matrices */
-	virtual void update_all();
+	virtual void update();
 
 protected:
 	/** check if members of object are valid for inference */
@@ -196,9 +196,6 @@ private:
 private:
 	/** latent features for approximation */
 	CFeatures* m_latent_features;
-
-	/** kernel matrix from latent features */
-	SGMatrix<float64_t> m_latent_matrix;
 
 	/** noise of the latent variables */
 	float64_t m_ind_noise;

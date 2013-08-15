@@ -152,7 +152,7 @@ public:
 	}
 
 	/** update all matrices */
-	virtual void update_all();
+	virtual void update();
 
 protected:
 	/** check if members of object are valid for inference */
@@ -163,9 +163,6 @@ protected:
 
 	/** update Cholesky matrix */
 	virtual void update_chol();
-
-	/** update kernel matrix */
-	virtual void update_train_kernel();
 };
 }
 #endif // HAVE_EIGEN3

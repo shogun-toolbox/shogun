@@ -16,6 +16,7 @@
 
 #include <shogun/machine/gp/InferenceMethod.h>
 #include <shogun/features/CombinedFeatures.h>
+#include <shogun/features/DotFeatures.h>
 #include <shogun/distributions/classical/GaussianDistribution.h>
 #include <shogun/mathematics/Statistics.h>
 
@@ -66,6 +67,13 @@ void CInferenceMethod::init()
 	m_scale=1.0;
 }
 
+void CInferenceMethod::update()
+{
+	check_members();
+	update_feature_matrix();
+	update_train_kernel();
+}
+
 void CInferenceMethod::check_members() const
 {
 	REQUIRE(m_features, "Training features should not be NULL\n")
@@ -94,6 +102,27 @@ void CInferenceMethod::check_members() const
 			"Training features must be dense\n")
 	REQUIRE(feat->get_feature_type()==F_DREAL,
 			"Training features must be real\n")
+
+	SG_UNREF(feat);
+}
+
+void CInferenceMethod::update_train_kernel()
+{
+	m_kernel->cleanup();
+	m_kernel->init(m_features, m_features);
+	m_ktrtr=m_kernel->get_kernel_matrix();
+}
+
+void CInferenceMethod::update_feature_matrix()
+{
+	CFeatures* feat=m_features;
+
+	if (m_features->get_feature_class()==C_COMBINED)
+		feat=((CCombinedFeatures*)m_features)->get_first_feature_obj();
+	else
+		SG_REF(m_features);
+
+	m_feat=((CDotFeatures*)feat)->get_computed_dot_feature_matrix();
 
 	SG_UNREF(feat);
 }
@@ -135,7 +164,7 @@ float64_t CInferenceMethod::get_log_ml_estimate(int32_t num_importance_samples,
 		scaled_kernel(i,i)+=ridge_size;
 
 	CGaussianDistribution* prior=new CGaussianDistribution(
-			m_mean->get_mean_vector(m_feature_matrix), scaled_kernel);
+			m_mean->get_mean_vector(m_feat), scaled_kernel);
 	SGVector<float64_t> log_pdf_prior=prior->log_pdf_multiple(samples);
 	SG_UNREF(prior);
 	prior=NULL;

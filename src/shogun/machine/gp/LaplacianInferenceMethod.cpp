@@ -19,9 +19,6 @@
 
 #include <shogun/machine/gp/StudentsTLikelihood.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/features/CombinedFeatures.h>
-#include <shogun/features/DotFeatures.h>
-
 #include <shogun/lib/external/brent.h>
 #include <shogun/mathematics/eigen3.h>
 
@@ -98,23 +95,9 @@ CLaplacianInferenceMethod::~CLaplacianInferenceMethod()
 {
 }
 
-void CLaplacianInferenceMethod::update_all()
+void CLaplacianInferenceMethod::update()
 {
-	check_members();
-
-	// update feature matrix
-	CFeatures* feat=m_features;
-
-	if (m_features->get_feature_class()==C_COMBINED)
-		feat=((CCombinedFeatures*)m_features)->get_first_feature_obj();
-	else
-		SG_REF(m_features);
-
-	m_feature_matrix=((CDotFeatures*)feat)->get_computed_dot_feature_matrix();
-
-	SG_UNREF(feat);
-
-	update_train_kernel();
+	CInferenceMethod::update();
 	update_alpha();
 	update_chol();
 	update_approx_cov();
@@ -124,7 +107,7 @@ CMap<TParameter*, SGVector<float64_t> > CLaplacianInferenceMethod::
 get_marginal_likelihood_derivatives(CMap<TParameter*, CSGObject*>& para_dict)
 {
 	if (update_parameter_hash())
-		update_all();
+		update();
 
 	// create eigen representation of W, sW, dlp, d3lp, K, alpha and L
 	Map<VectorXd> eigen_W(W.vector, W.vlen);
@@ -209,15 +192,9 @@ get_marginal_likelihood_derivatives(CMap<TParameter*, CSGObject*>& para_dict)
 
 			if (param->m_datatype.m_ctype==CT_VECTOR ||
 					param->m_datatype.m_ctype==CT_SGVECTOR)
-			{
-				mean_deriv=m_mean->get_parameter_derivative(param, obj,
-					m_feature_matrix, h);
-			}
+				mean_deriv=m_mean->get_parameter_derivative(param, obj,	m_feat, h);
 			else
-			{
-				mean_deriv=m_mean->get_parameter_derivative(param, obj,
-					m_feature_matrix);
-			}
+				mean_deriv=m_mean->get_parameter_derivative(param, obj,	m_feat);
 
 			Map<VectorXd> eigen_mean_deriv(mean_deriv.vector, mean_deriv.vlen);
 
@@ -290,7 +267,7 @@ get_marginal_likelihood_derivatives(CMap<TParameter*, CSGObject*>& para_dict)
 SGVector<float64_t> CLaplacianInferenceMethod::get_diagonal_vector()
 {
 	if (update_parameter_hash())
-		update_all();
+		update();
 
 	SGVector<float64_t> result(sW);
 	return result;
@@ -299,7 +276,7 @@ SGVector<float64_t> CLaplacianInferenceMethod::get_diagonal_vector()
 float64_t CLaplacianInferenceMethod::get_negative_marginal_likelihood()
 {
 	if (update_parameter_hash())
-		update_all();
+		update();
 
 	// create eigen representations alpha, f, W, L
 	Map<VectorXd> eigen_alpha(m_alpha.vector, m_alpha.vlen);
@@ -308,7 +285,7 @@ float64_t CLaplacianInferenceMethod::get_negative_marginal_likelihood()
 	Map<MatrixXd> eigen_L(m_L.matrix, m_L.num_rows, m_L.num_cols);
 
 	// get mean vector and create eigen representation of it
-	SGVector<float64_t> mean=m_mean->get_mean_vector(m_feature_matrix);
+	SGVector<float64_t> mean=m_mean->get_mean_vector(m_feat);
 	Map<VectorXd> eigen_mean(mean.vector, mean.vlen);
 
 	// get log likelihood
@@ -340,7 +317,7 @@ float64_t CLaplacianInferenceMethod::get_negative_marginal_likelihood()
 SGVector<float64_t> CLaplacianInferenceMethod::get_alpha()
 {
 	if (update_parameter_hash())
-		update_all();
+		update();
 
 	SGVector<float64_t> result(m_alpha);
 	return result;
@@ -349,7 +326,7 @@ SGVector<float64_t> CLaplacianInferenceMethod::get_alpha()
 SGMatrix<float64_t> CLaplacianInferenceMethod::get_cholesky()
 {
 	if (update_parameter_hash())
-		update_all();
+		update();
 
 	return SGMatrix<float64_t>(m_L);
 }
@@ -357,7 +334,7 @@ SGMatrix<float64_t> CLaplacianInferenceMethod::get_cholesky()
 SGVector<float64_t> CLaplacianInferenceMethod::get_posterior_approximation_mean()
 {
 	if (update_parameter_hash())
-		update_all();
+		update();
 
 	return SGVector<float64_t>(m_approx_mean);
 }
@@ -365,16 +342,9 @@ SGVector<float64_t> CLaplacianInferenceMethod::get_posterior_approximation_mean(
 SGMatrix<float64_t> CLaplacianInferenceMethod::get_posterior_approximation_covariance()
 {
 	if (update_parameter_hash())
-		update_all();
+		update();
 
 	return SGMatrix<float64_t>(m_approx_cov);
-}
-
-void CLaplacianInferenceMethod::update_train_kernel()
-{
-	m_kernel->cleanup();
-	m_kernel->init(m_features, m_features);
-	m_ktrtr=m_kernel->get_kernel_matrix();
 }
 
 void CLaplacianInferenceMethod::update_approx_cov()
@@ -436,7 +406,7 @@ void CLaplacianInferenceMethod::update_alpha()
 	float64_t Psi_Def;
 
 	// get mean vector and create eigen representation of it
-	SGVector<float64_t> mean=m_mean->get_mean_vector(m_feature_matrix);
+	SGVector<float64_t> mean=m_mean->get_mean_vector(m_feat);
 	Map<VectorXd> eigen_mean(mean.vector, mean.vlen);
 
 	// create eigen representation of kernel matrix
