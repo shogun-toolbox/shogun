@@ -239,7 +239,7 @@ public:
 	}
 
 	/** update data all matrices */
-	virtual void update_all();
+	virtual void update();
 
 protected:
 	/** update alpha matrix */
@@ -247,9 +247,6 @@ protected:
 
 	/** update cholesky matrix */
 	virtual void update_chol();
-
-	/** update train kernel matrix */
-	virtual void update_train_kernel();
 
 	/** update covariance matrix of the approximation to the posterior */
 	virtual void update_approx_cov();

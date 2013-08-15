@@ -17,11 +17,8 @@
 #ifdef HAVE_EIGEN3
 
 #include <shogun/machine/gp/GaussianLikelihood.h>
-#include <shogun/mathematics/Math.h>
 #include <shogun/labels/RegressionLabels.h>
-#include <shogun/features/CombinedFeatures.h>
-#include <shogun/features/DotFeatures.h>
-
+#include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
 
 using namespace shogun;
@@ -41,23 +38,9 @@ CExactInferenceMethod::~CExactInferenceMethod()
 {
 }
 
-void CExactInferenceMethod::update_all()
+void CExactInferenceMethod::update()
 {
-	check_members();
-
-	// update feature matrix
-	CFeatures* feat=m_features;
-
-	if (m_features->get_feature_class()==C_COMBINED)
-		feat=((CCombinedFeatures*)m_features)->get_first_feature_obj();
-	else
-		SG_REF(m_features);
-
-	m_feature_matrix=((CDotFeatures*)feat)->get_computed_dot_feature_matrix();
-
-	SG_UNREF(feat);
-
-	update_train_kernel();
+	CInferenceMethod::update();
 	update_chol();
 	update_alpha();
 }
@@ -76,7 +59,7 @@ CMap<TParameter*, SGVector<float64_t> > CExactInferenceMethod::
 get_marginal_likelihood_derivatives(CMap<TParameter*, CSGObject*>& para_dict)
 {
 	if (update_parameter_hash())
-		update_all();
+		update();
 
 	// get the sigma variable from the Gaussian likelihood model
 	CGaussianLikelihood* lik=CGaussianLikelihood::obtain_from_generic(m_model);
@@ -135,13 +118,13 @@ get_marginal_likelihood_derivatives(CMap<TParameter*, CSGObject*>& para_dict)
 					param->m_datatype.m_ctype == CT_SGVECTOR)
 			{
 				deriv = m_kernel->get_parameter_gradient(param, obj, g);
-				mean_derivatives = m_mean->get_parameter_derivative(
-						param, obj, m_feature_matrix, g);
+				mean_derivatives = m_mean->get_parameter_derivative(param, obj,
+					m_feat, g);
 			}
 			else
 			{
-				mean_derivatives = m_mean->get_parameter_derivative(
-						param, obj, m_feature_matrix);
+				mean_derivatives = m_mean->get_parameter_derivative(param, obj,
+					m_feat);
 
 				deriv = m_kernel->get_parameter_gradient(param, obj);
 			}
@@ -193,7 +176,7 @@ get_marginal_likelihood_derivatives(CMap<TParameter*, CSGObject*>& para_dict)
 SGVector<float64_t> CExactInferenceMethod::get_diagonal_vector()
 {
 	if (update_parameter_hash())
-		update_all();
+		update();
 
 	// get the sigma variable from the Gaussian likelihood model
 	CGaussianLikelihood* lik=CGaussianLikelihood::obtain_from_generic(m_model);
@@ -210,7 +193,7 @@ SGVector<float64_t> CExactInferenceMethod::get_diagonal_vector()
 float64_t CExactInferenceMethod::get_negative_marginal_likelihood()
 {
 	if (update_parameter_hash())
-		update_all();
+		update();
 
 	// get the sigma variable from the Gaussian likelihood model
 	CGaussianLikelihood* lik=CGaussianLikelihood::obtain_from_generic(m_model);
@@ -224,7 +207,7 @@ float64_t CExactInferenceMethod::get_negative_marginal_likelihood()
 	// get labels and mean vectors and create eigen representation
 	SGVector<float64_t> y=((CRegressionLabels*) m_labels)->get_labels();
 	Map<VectorXd> eigen_y(y.vector, y.vlen);
-	SGVector<float64_t> m=m_mean->get_mean_vector(m_feature_matrix);
+	SGVector<float64_t> m=m_mean->get_mean_vector(m_feat);
 	Map<VectorXd> eigen_m(m.vector, m.vlen);
 
 	// compute negative log of the marginal likelihood:
@@ -239,7 +222,7 @@ float64_t CExactInferenceMethod::get_negative_marginal_likelihood()
 SGVector<float64_t> CExactInferenceMethod::get_alpha()
 {
 	if (update_parameter_hash())
-		update_all();
+		update();
 
 	return SGVector<float64_t>(m_alpha);
 }
@@ -247,16 +230,9 @@ SGVector<float64_t> CExactInferenceMethod::get_alpha()
 SGMatrix<float64_t> CExactInferenceMethod::get_cholesky()
 {
 	if (update_parameter_hash())
-		update_all();
+		update();
 
 	return SGMatrix<float64_t>(m_L);
-}
-
-void CExactInferenceMethod::update_train_kernel()
-{
-	m_kernel->cleanup();
-	m_kernel->init(m_features, m_features);
-	m_ktrtr=m_kernel->get_kernel_matrix();
 }
 
 void CExactInferenceMethod::update_chol()
@@ -288,7 +264,7 @@ void CExactInferenceMethod::update_alpha()
 	// get labels and mean vector and create eigen representation
 	SGVector<float64_t> y=((CRegressionLabels*) m_labels)->get_labels();
 	Map<VectorXd> eigen_y(y.vector, y.vlen);
-	SGVector<float64_t> m=m_mean->get_mean_vector(m_feature_matrix);
+	SGVector<float64_t> m=m_mean->get_mean_vector(m_feat);
 	Map<VectorXd> eigen_m(m.vector, m.vlen);
 
 	m_alpha=SGVector<float64_t>(y.vlen);

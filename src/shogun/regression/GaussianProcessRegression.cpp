@@ -103,7 +103,7 @@ bool CGaussianProcessRegression::train_machine(CFeatures* data)
 	}
 
 	// perform inference
-	m_method->update_all();
+	m_method->update();
 
 	return true;
 }
