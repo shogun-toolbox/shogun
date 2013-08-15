@@ -18,6 +18,7 @@ using namespace shogun;
 CStratifiedCrossValidationSplitting::CStratifiedCrossValidationSplitting() :
 	CSplittingStrategy()
 {
+	m_rng = sg_rand;
 }
 
 CStratifiedCrossValidationSplitting::CStratifiedCrossValidationSplitting(
@@ -68,6 +69,8 @@ CStratifiedCrossValidationSplitting::CStratifiedCrossValidationSplitting(
 					"subset!\n", labels_per_class.vector[i], classes.vector[i], num_subsets);
 		}
 	}
+
+	m_rng = sg_rand;
 }
 
 void CStratifiedCrossValidationSplitting::build_subsets()
@@ -119,7 +122,16 @@ void CStratifiedCrossValidationSplitting::build_subsets()
 	{
 		CDynamicArray<index_t>* current=(CDynamicArray<index_t>*)
 				label_indices.get_element(i);
-		current->shuffle();
+
+		// current->shuffle();
+		// replacement for current->shuffle() with own RNG
+		int32_t   num_elements = current->get_num_elements();
+		index_t * array        = current->get_array();
+		for (index_t jj=0; jj<=num_elements-1; ++jj) {
+			int32_t rand_ii = m_rng->random(jj, num_elements-1);
+			CMath::swap(array[jj], array[rand_ii]);
+		}
+
 		SG_UNREF(current);
 	}
 
@@ -146,5 +158,16 @@ void CStratifiedCrossValidationSplitting::build_subsets()
 	/* finally shuffle to avoid that subsets with low indices have more
 	 * elements, which happens if the number of class labels is not equal to
 	 * the number of subsets */
-	m_subset_indices->shuffle();
+
+	// m_subset_indices->shuffle();
+	// replacement for m_subset_indices->shuffle() with own RNG
+	{
+		int32_t      num_elements = m_subset_indices->get_num_elements();
+		CSGObject ** array        = m_subset_indices->get_array();
+		for (index_t jj=0; jj<=num_elements-1; ++jj) {
+			int32_t rand_ii = m_rng->random(jj, num_elements-1);
+			CMath::swap(array[jj], array[rand_ii]);
+		}
+	}
+
 }

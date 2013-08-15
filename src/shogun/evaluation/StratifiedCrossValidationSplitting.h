@@ -45,6 +45,9 @@ public:
 
 	/** implementation of the stratified cross-validation splitting strategy */
 	virtual void build_subsets();
+
+	/** custom rng if using cross validation across different threads */
+	CRandom * m_rng;
 };
 }
 
