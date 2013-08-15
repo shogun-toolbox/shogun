@@ -20,7 +20,7 @@
 namespace shogun
 {
 #define LIBOCAS_PLUS_INF (-log(0.0))
-#define LIBOCAS_CALLOC(x,y) calloc(x,y)
+#define LIBOCAS_CALLOC(x,y) SG_CALLOC(y,x)
 #define LIBOCAS_FREE(x) SG_FREE(x)
 #define LIBOCAS_INDEX(ROW,COL,NUM_ROWS) ((COL)*(NUM_ROWS)+(ROW))
 #define LIBOCAS_MIN(A,B) ((A) > (B) ? (B) : (A))

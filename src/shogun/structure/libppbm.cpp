@@ -88,32 +88,32 @@ BmrmStatistics svm_ppbm_solver(
 
 	alpha=0.0;
 
-	H= (float64_t*) LIBBMRM_CALLOC(BufSize*BufSize, sizeof(float64_t));
+	H= (float64_t*) LIBBMRM_CALLOC(BufSize*BufSize, float64_t);
 
-	A= (float64_t*) LIBBMRM_CALLOC(nDim*BufSize, sizeof(float64_t));
+	A= (float64_t*) LIBBMRM_CALLOC(nDim*BufSize, float64_t);
 
-	b= (float64_t*) LIBBMRM_CALLOC(BufSize, sizeof(float64_t));
+	b= (float64_t*) LIBBMRM_CALLOC(BufSize, float64_t);
 
-	beta= (float64_t*) LIBBMRM_CALLOC(BufSize, sizeof(float64_t));
+	beta= (float64_t*) LIBBMRM_CALLOC(BufSize, float64_t);
 
-	subgrad= (float64_t*) LIBBMRM_CALLOC(nDim, sizeof(float64_t));
+	subgrad= (float64_t*) LIBBMRM_CALLOC(nDim, float64_t);
 
-	diag_H= (float64_t*) LIBBMRM_CALLOC(BufSize, sizeof(float64_t));
+	diag_H= (float64_t*) LIBBMRM_CALLOC(BufSize, float64_t);
 
-	I= (uint32_t*) LIBBMRM_CALLOC(BufSize, sizeof(uint32_t));
+	I= (uint32_t*) LIBBMRM_CALLOC(BufSize, uint32_t);
 
 	/* structure for maintaining inactive CPs info */
 	ICP_stats icp_stats;
 	icp_stats.maxCPs = BufSize;
-	icp_stats.ICPcounter= (uint32_t*) LIBBMRM_CALLOC(BufSize, sizeof(uint32_t));
-	icp_stats.ICPs= (float64_t**) LIBBMRM_CALLOC(BufSize, sizeof(float64_t*));
-	icp_stats.ACPs= (uint32_t*) LIBBMRM_CALLOC(BufSize, sizeof(uint32_t));
+	icp_stats.ICPcounter= (uint32_t*) LIBBMRM_CALLOC(BufSize, uint32_t);
+	icp_stats.ICPs= (float64_t**) LIBBMRM_CALLOC(BufSize, float64_t*);
+	icp_stats.ACPs= (uint32_t*) LIBBMRM_CALLOC(BufSize, uint32_t);
 
-	cp_list= (bmrm_ll*) LIBBMRM_CALLOC(1, sizeof(bmrm_ll));
+	cp_list= (bmrm_ll*) LIBBMRM_CALLOC(1, bmrm_ll);
 
-	prevW= (float64_t*) LIBBMRM_CALLOC(nDim, sizeof(float64_t));
+	prevW= (float64_t*) LIBBMRM_CALLOC(nDim, float64_t);
 
-	wt= (float64_t*) LIBBMRM_CALLOC(nDim, sizeof(float64_t));
+	wt= (float64_t*) LIBBMRM_CALLOC(nDim, float64_t);
 
 	if (H==NULL || A==NULL || b==NULL || beta==NULL || subgrad==NULL ||
 			diag_H==NULL || I==NULL || icp_stats.ICPcounter==NULL ||
@@ -124,7 +124,7 @@ BmrmStatistics svm_ppbm_solver(
 		goto cleanup;
 	}
 
-	map= (bool*) LIBBMRM_CALLOC(BufSize, sizeof(bool));
+	map= (bool*) LIBBMRM_CALLOC(BufSize, bool);
 
 	if (map==NULL)
 	{
@@ -135,7 +135,7 @@ BmrmStatistics svm_ppbm_solver(
 	memset( (bool*) map, true, BufSize);
 
 	/* Temporary buffers for ICP removal */
-	icp_stats.H_buff= (float64_t*) LIBBMRM_CALLOC(BufSize*BufSize, sizeof(float64_t));
+	icp_stats.H_buff= (float64_t*) LIBBMRM_CALLOC(BufSize*BufSize, float64_t);
 
 	if (icp_stats.H_buff==NULL)
 	{
@@ -144,21 +144,21 @@ BmrmStatistics svm_ppbm_solver(
 	}
 
 	/* Temporary buffers */
-	beta_start= (float64_t*) LIBBMRM_CALLOC(BufSize, sizeof(float64_t));
+	beta_start= (float64_t*) LIBBMRM_CALLOC(BufSize, float64_t);
 
-	beta_good= (float64_t*) LIBBMRM_CALLOC(BufSize, sizeof(float64_t));
+	beta_good= (float64_t*) LIBBMRM_CALLOC(BufSize, float64_t);
 
-	b2= (float64_t*) LIBBMRM_CALLOC(BufSize, sizeof(float64_t));
+	b2= (float64_t*) LIBBMRM_CALLOC(BufSize, float64_t);
 
-	diag_H2= (float64_t*) LIBBMRM_CALLOC(BufSize, sizeof(float64_t));
+	diag_H2= (float64_t*) LIBBMRM_CALLOC(BufSize, float64_t);
 
-	H2= (float64_t*) LIBBMRM_CALLOC(BufSize*BufSize, sizeof(float64_t));
+	H2= (float64_t*) LIBBMRM_CALLOC(BufSize*BufSize, float64_t);
 
-	I_start= (uint32_t*) LIBBMRM_CALLOC(BufSize, sizeof(uint32_t));
+	I_start= (uint32_t*) LIBBMRM_CALLOC(BufSize, uint32_t);
 
-	I_good= (uint32_t*) LIBBMRM_CALLOC(BufSize, sizeof(uint32_t));
+	I_good= (uint32_t*) LIBBMRM_CALLOC(BufSize, uint32_t);
 
-	I2= (uint32_t*) LIBBMRM_CALLOC(BufSize, sizeof(uint32_t));
+	I2= (uint32_t*) LIBBMRM_CALLOC(BufSize, uint32_t);
 
 	if (beta_start==NULL || beta_good==NULL || b2==NULL || diag_H2==NULL ||
 			I_start==NULL || I_good==NULL || I2==NULL || H2==NULL)

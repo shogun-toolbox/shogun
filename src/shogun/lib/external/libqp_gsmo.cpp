@@ -129,7 +129,7 @@ libqp_state_T libqp_gsmo_solver(const float64_t* (*get_col)(uint32_t),
 	}
 
 	/* Nabla = H*x + f is gradient*/
-	Nabla = (float64_t*)LIBQP_CALLOC(n, sizeof(float64_t));
+	Nabla = (float64_t*)LIBQP_CALLOC(n, float64_t);
 	if( Nabla == NULL )
 	{
 		state.exitflag=-1;

@@ -107,7 +107,7 @@ private:
 
 Cache::Cache(int32_t l_, int64_t size_):l(l_),size(size_)
 {
-	head = (head_t *)calloc(l,sizeof(head_t));	// initialized to 0
+	head = (head_t *)SG_CALLOC(head_t, l);	// initialized to 0
 	size /= sizeof(Qfloat);
 	size -= l * sizeof(head_t) / sizeof(Qfloat);
 	size = CMath::max(size, (int64_t) 2*l);	// cache must be large enough for two columns

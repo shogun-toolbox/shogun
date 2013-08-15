@@ -19,8 +19,8 @@
 #include <shogun/structure/DualLibQPBMSOSVM.h>
 
 #define LIBBMRM_PLUS_INF (-log(0.0))
-#define LIBBMRM_CALLOC(x, y) calloc(x, y)
-#define LIBBMRM_REALLOC(x, y) realloc(x, y)
+#define LIBBMRM_CALLOC(x, y) SG_CALLOC(y, x)
+#define LIBBMRM_REALLOC(x, y) SG_REALLOC(x, y)
 #define LIBBMRM_FREE(x) SG_FREE(x)
 #define LIBBMRM_MEMCPY(x, y, z) memcpy(x, y, z)
 #define LIBBMRM_MEMMOVE(x, y, z) memmove(x, y, z)

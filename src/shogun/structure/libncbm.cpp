@@ -370,10 +370,10 @@ BmrmStatistics svm_ncbm_solver(
 	map.set_const(true);
 	ICP_stats icp_stats;
 	icp_stats.maxCPs = maxCPs;
-	icp_stats.ICPcounter = (uint32_t*) LIBBMRM_CALLOC(maxCPs, sizeof(uint32_t));
-	icp_stats.ICPs = (float64_t**) LIBBMRM_CALLOC(maxCPs, sizeof(float64_t*));
-	icp_stats.ACPs = (uint32_t*) LIBBMRM_CALLOC(maxCPs, sizeof(uint32_t));
-	icp_stats.H_buff = (float64_t*) LIBBMRM_CALLOC(maxCPs*maxCPs, sizeof(float64_t));
+	icp_stats.ICPcounter = (uint32_t*) LIBBMRM_CALLOC(maxCPs, uint32_t);
+	icp_stats.ICPs = (float64_t**) LIBBMRM_CALLOC(maxCPs, float64_t*);
+	icp_stats.ACPs = (uint32_t*) LIBBMRM_CALLOC(maxCPs, uint32_t);
+	icp_stats.H_buff = (float64_t*) LIBBMRM_CALLOC(maxCPs*maxCPs,float64_t);
 	if
 	(
 		icp_stats.ICPcounter == NULL || icp_stats.ICPs == NULL
