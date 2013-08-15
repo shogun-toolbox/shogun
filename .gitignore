@@ -129,3 +129,4 @@ examples/undocumented/python_modular/*
 /CMakeFiles/
 CMakeCache.txt
 /build
+/third_party
