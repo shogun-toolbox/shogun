@@ -93,10 +93,10 @@ void test_leaf_sets_multiplication()
 	SG_SPRINT("one set\n");
 	for (index_t i=0; i<result_simple->get_num_elements(); ++i)
 	{
-		CParameterCombination* current=(CParameterCombination*)
+		CParameterCombination* tpc=(CParameterCombination*)
 				result_simple->get_element(i);
-		current->print_tree();
-		SG_UNREF(current);
+		tpc->print_tree();
+		SG_UNREF(tpc);
 	}
 	SG_UNREF(result_simple);
 
@@ -133,10 +133,10 @@ void test_leaf_sets_multiplication()
 	SG_SPRINT("more sets\n");
 	for (index_t i=0; i<result_complex->get_num_elements(); ++i)
 	{
-		CParameterCombination* current=(CParameterCombination*)
+		CParameterCombination* tpc=(CParameterCombination*)
 				result_complex->get_element(i);
-		current->print_tree();
-		SG_UNREF(current);
+		tpc->print_tree();
+		SG_UNREF(tpc);
 	}
 	SG_UNREF(result_complex);
 
@@ -154,4 +154,3 @@ int main(int argc, char **argv)
 
 	return 0;
 }
-
