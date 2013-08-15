@@ -243,12 +243,12 @@ TEST(SGSparseVector, clone)
 	vec.features[3].entry = -16.0;
 
 	SGSparseVector<float64_t> clone = vec.clone();
-	EXPECT_EQ(vec.num_feat_entries, clone.num_feat_entries);
 	EXPECT_NE(vec.features, clone.features);
 
-	for (index_t i=0; i<clone.num_feat_entries; i++) {
-		EXPECT_EQ(vec.features[i].feat_index, vec.features[i].feat_index);
-		EXPECT_EQ(vec.features[i].entry, vec.features[i].entry);
+	EXPECT_EQ(vec.num_feat_entries, clone.num_feat_entries);
+	for (index_t i=0; i<vec.num_feat_entries; i++) {
+		EXPECT_EQ(vec.features[i].feat_index, clone.features[i].feat_index);
+		EXPECT_EQ(vec.features[i].entry, clone.features[i].entry);
 	}
 
 	EXPECT_EQ(vec.get_num_dimensions(), clone.get_num_dimensions());
