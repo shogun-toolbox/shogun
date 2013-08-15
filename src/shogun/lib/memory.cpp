@@ -19,6 +19,11 @@
 
 #include <string.h>
 
+#ifdef USE_JEMALLOC
+#include <jemalloc/jemalloc.h>
+#undef JEMALLOC_MANGLE
+#endif
+
 using namespace shogun;
 
 #ifdef TRACE_MEMORY_ALLOCS
@@ -89,7 +94,12 @@ void* operator new(size_t size)
 void* operator new(size_t size) throw (std::bad_alloc)
 #endif
 {
+#if defined(USE_JEMALLOC)
+	void *p=je_malloc(size);
+#else
 	void *p=malloc(size);
+#endif
+
 #ifdef TRACE_MEMORY_ALLOCS
 	if (sg_mallocs)
 		sg_mallocs->add(p, MemoryBlock(p,size));
@@ -115,7 +125,12 @@ void operator delete(void *p) throw()
 	if (sg_mallocs)
 		sg_mallocs->remove(p);
 #endif
+
+#if defined(USE_JEMALLOC)
+	je_free(p);
+#else
 	free(p);
+#endif
 }
 
 #ifdef HAVE_CXX11
@@ -124,7 +139,12 @@ void* operator new[](size_t size)
 void* operator new[](size_t size) throw(std::bad_alloc)
 #endif
 {
+#if defined(USE_JEMALLOC)
+	void *p=je_malloc(size);
+#else
 	void *p=malloc(size);
+#endif
+
 #ifdef TRACE_MEMORY_ALLOCS
 	if (sg_mallocs)
 		sg_mallocs->add(p, MemoryBlock(p,size));
@@ -151,7 +171,12 @@ void operator delete[](void *p) throw()
 	if (sg_mallocs)
 		sg_mallocs->remove(p);
 #endif
+
+#if defined(USE_JEMALLOC)
+	je_free(p);
+#else
 	free(p);
+#endif
 }
 
 namespace shogun
@@ -189,7 +214,12 @@ void* sg_calloc(size_t num, size_t size
 #endif
 )
 {
+#if defined(USE_JEMALLOC)
+	void* p=je_calloc(num, size);
+#else
 	void* p=calloc(num, size);
+#endif
+
 #ifdef TRACE_MEMORY_ALLOCS
 	if (sg_mallocs)
 		sg_mallocs->add(p, MemoryBlock(p,size, file, line));
@@ -218,7 +248,12 @@ void  sg_free(void* ptr)
 	if (sg_mallocs)
 		sg_mallocs->remove(ptr);
 #endif
+
+#if defined(USE_JEMALLOC)
+	je_free(ptr);
+#else
 	free(ptr);
+#endif
 }
 
 void* sg_realloc(void* ptr, size_t size
@@ -227,7 +262,11 @@ void* sg_realloc(void* ptr, size_t size
 #endif
 )
 {
+#if defined(USE_JEMALLOC)
+	void* p=je_realloc(ptr, size);
+#else
 	void* p=realloc(ptr, size);
+#endif
 
 #ifdef TRACE_MEMORY_ALLOCS
 	if (sg_mallocs)
