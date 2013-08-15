@@ -12,7 +12,7 @@ SGReferencedData::SGReferencedData(bool ref_counting) : m_refcount(NULL)
 { 
 	if (ref_counting)
 	{
-		m_refcount = new RefCount(1);
+		m_refcount = new RefCount(0);
 	}
 
 	ref();
