@@ -65,7 +65,7 @@ public:
 	 * @param sample sample to compute log-pdf for
 	 * @return log-pdf of the given sample
 	 */
-	virtual float64_t log_pdf(SGVector<float64_t> single_sample) const;
+	virtual float64_t log_pdf(SGVector<float64_t> sample) const;
 
 	/** @return name of the SGSerializable */
 	virtual const char* get_name() const=0;
