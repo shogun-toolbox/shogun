@@ -6,7 +6,7 @@ UNDOCUMENTED_EXAMPLE_DIRS = $(shell find ../examples/undocumented -type d | \
 							grep -v svn)
 DOCUMENTED_EXAMPLE_DIRS = $(patsubst ../examples/undocumented%,../examples/documented%,\
 						  $(UNDOCUMENTED_EXAMPLE_DIRS))
-MAINVERSION := $(shell awk '/Release/{print $$5;exit}' ../src/NEWS)
+MAINVERSION := $(shell awk '/Release/{print $$5;exit}' ../NEWS)
 
 
 doc: examples pages/Configure.generated Doxyfile_en Doxyfile_cn
@@ -19,8 +19,8 @@ Doxyfile_en: Doxyfile_en.in
 Doxyfile_cn: Doxyfile_cn.in
 	sed "s/PROJECT_NUMBER         = .*/PROJECT_NUMBER         = v$(MAINVERSION)/" Doxyfile_cn.in >Doxyfile_cn
 
-pages/Configure.generated:	../src/configure
-	../src/configure --help 2>&1 >$@
+pages/Configure.generated:	
+	cmake --help 2>&1 >$@
 
 doc_cn: examples_cn Doxyfile_cn
 	doxygen Doxyfile_cn
