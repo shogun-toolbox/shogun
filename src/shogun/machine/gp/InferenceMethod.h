@@ -312,7 +312,7 @@ public:
 	virtual bool supports_multiclass() const { return false; }
 
 	/** update all matrices */
-	virtual void update_all()=0;
+	virtual void update();
 
 	/** Computes an unbiased estimate of the log-marginal-likelihood,
 	 *
@@ -363,7 +363,10 @@ protected:
 	virtual void update_chol()=0;
 
 	/** update train kernel matrix */
-	virtual void update_train_kernel()=0;
+	virtual void update_train_kernel();
+
+	/** update feature matrix */
+	virtual void update_feature_matrix();
 
 private:
 	void init();
@@ -384,9 +387,6 @@ protected:
 	/** labels of features */
 	CLabels* m_labels;
 
-	/** feature matrix */
-	SGMatrix<float64_t> m_feature_matrix;
-
 	/** alpha vector used in process mean calculation */
 	SGVector<float64_t> m_alpha;
 
@@ -398,6 +398,9 @@ protected:
 
 	/** kernel matrix from features (non-scalled by inference scalling) */
 	SGMatrix<float64_t> m_ktrtr;
+
+	/** feature matrix */
+	SGMatrix<float64_t> m_feat;
 };
 }
 #endif /* HAVE_EIGEN3 */

@@ -20,8 +20,6 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/features/CombinedFeatures.h>
-#include <shogun/features/DotFeatures.h>
-
 #include <shogun/mathematics/eigen3.h>
 
 using namespace shogun;
@@ -66,35 +64,9 @@ CFITCInferenceMethod* CFITCInferenceMethod::obtain_from_generic(
 	return (CFITCInferenceMethod*)inference;
 }
 
-void CFITCInferenceMethod::update_all()
+void CFITCInferenceMethod::update()
 {
-	check_members();
-
-	// update feature matrix
-	CFeatures* feat=m_features;
-
-	if (m_features->get_feature_class()==C_COMBINED)
-		feat=((CCombinedFeatures*)m_features)->get_first_feature_obj();
-	else
-		SG_REF(m_features);
-
-	m_feature_matrix=((CDotFeatures*)feat)->get_computed_dot_feature_matrix();
-
-	SG_UNREF(feat);
-
-	// update latent matrix
-	feat=m_latent_features;
-
-	if (m_latent_features->get_feature_class()==C_COMBINED)
-		feat=((CCombinedFeatures*)m_latent_features)->get_first_feature_obj();
-	else
-		SG_REF(m_latent_features);
-
-	m_latent_matrix=((CDotFeatures*)feat)->get_computed_dot_feature_matrix();
-
-	SG_UNREF(feat);
-
-	update_train_kernel();
+	CInferenceMethod::update();
 	update_chol();
 	update_alpha();
 }
@@ -104,14 +76,12 @@ void CFITCInferenceMethod::check_members() const
 	CInferenceMethod::check_members();
 
 	REQUIRE(m_model->get_model_type()==LT_GAUSSIAN,
-		"FITC inference method can only use Gaussian likelihood function\n")
-	REQUIRE(m_labels->get_label_type()==LT_REGRESSION,
-		"Labels must be type of CRegressionLabels\n")
+			"FITC inference method can only use Gaussian likelihood function\n")
+	REQUIRE(m_labels->get_label_type()==LT_REGRESSION, "Labels must be type "
+			"of CRegressionLabels\n")
 	REQUIRE(m_latent_features, "Latent features should not be NULL\n")
 	REQUIRE(m_latent_features->get_num_vectors(),
 			"Number of latent features must be greater than zero\n")
-	REQUIRE(m_latent_matrix.num_rows==m_feature_matrix.num_rows,
-			"Regular and latent features must match in dimensionality!\n")
 
 	CFeatures* feat=m_latent_features;
 
@@ -133,7 +103,7 @@ CMap<TParameter*, SGVector<float64_t> > CFITCInferenceMethod::
 get_marginal_likelihood_derivatives(CMap<TParameter*, CSGObject*>& para_dict)
 {
 	if (update_parameter_hash())
-		update_all();
+		update();
 
 	// get the sigma variable from the Gaussian likelihood model
 	CGaussianLikelihood* lik=CGaussianLikelihood::obtain_from_generic(m_model);
@@ -162,7 +132,7 @@ get_marginal_likelihood_derivatives(CMap<TParameter*, CSGObject*>& para_dict)
 
 	SGVector<float64_t> y=((CRegressionLabels*) m_labels)->get_labels();
 	Map<VectorXd> eigen_y(y.vector, y.vlen);
-	SGVector<float64_t> m=m_mean->get_mean_vector(m_feature_matrix);
+	SGVector<float64_t> m=m_mean->get_mean_vector(m_feat);
 	Map<VectorXd> eigen_m(m.vector, m.vlen);
 
 	VectorXd al=W*(eigen_y-eigen_m).cwiseQuotient(eigen_dg);
@@ -242,7 +212,7 @@ get_marginal_likelihood_derivatives(CMap<TParameter*, CSGObject*>& para_dict)
 				m_kernel->remove_lhs_and_rhs();
 
 				mean_derivatives = m_mean->get_parameter_derivative(
-						param, obj, m_feature_matrix, g);
+						param, obj, m_feat, g);
 
 				for (index_t d = 0; d < mean_derivatives.vlen; d++)
 					mean_dev_temp[d] = mean_derivatives[d];
@@ -251,7 +221,7 @@ get_marginal_likelihood_derivatives(CMap<TParameter*, CSGObject*>& para_dict)
 			else
 			{
 				mean_derivatives = m_mean->get_parameter_derivative(
-						param, obj, m_feature_matrix);
+						param, obj, m_feat);
 
 				for (index_t d = 0; d < mean_derivatives.vlen; d++)
 					mean_dev_temp[d] = mean_derivatives[d];
@@ -488,7 +458,7 @@ get_marginal_likelihood_derivatives(CMap<TParameter*, CSGObject*>& para_dict)
 SGVector<float64_t> CFITCInferenceMethod::get_diagonal_vector()
 {
 	if (update_parameter_hash())
-		update_all();
+		update();
 
 	// get the sigma variable from the Gaussian likelihood model
 	CGaussianLikelihood* lik=CGaussianLikelihood::obtain_from_generic(m_model);
@@ -505,7 +475,7 @@ SGVector<float64_t> CFITCInferenceMethod::get_diagonal_vector()
 float64_t CFITCInferenceMethod::get_negative_marginal_likelihood()
 {
 	if (update_parameter_hash())
-		update_all();
+		update();
 
 	// create eigen representations of chol_utr, dg, r, be
     Map<MatrixXd> eigen_chol_utr(m_chol_utr.matrix, m_chol_utr.num_rows, m_chol_utr.num_cols);
@@ -525,7 +495,7 @@ float64_t CFITCInferenceMethod::get_negative_marginal_likelihood()
 SGVector<float64_t> CFITCInferenceMethod::get_alpha()
 {
 	if (update_parameter_hash())
-		update_all();
+		update();
 
 	SGVector<float64_t> result(m_alpha);
 	return result;
@@ -534,7 +504,7 @@ SGVector<float64_t> CFITCInferenceMethod::get_alpha()
 SGMatrix<float64_t> CFITCInferenceMethod::get_cholesky()
 {
 	if (update_parameter_hash())
-		update_all();
+		update();
 
 	SGMatrix<float64_t> result(m_L);
 	return result;
@@ -542,10 +512,7 @@ SGMatrix<float64_t> CFITCInferenceMethod::get_cholesky()
 
 void CFITCInferenceMethod::update_train_kernel()
 {
-	// create kernel matrix for training features
-	m_kernel->cleanup();
-	m_kernel->init(m_features, m_features);
-	m_ktrtr=m_kernel->get_kernel_matrix();
+	CInferenceMethod::update_train_kernel();
 
 	// create kernel matrix for latent features
 	m_kernel->cleanup();
@@ -615,7 +582,7 @@ void CFITCInferenceMethod::update_chol()
 	// create eigen representation of labels and mean vectors
 	SGVector<float64_t> y=((CRegressionLabels*) m_labels)->get_labels();
 	Map<VectorXd> eigen_y(y.vector, y.vlen);
-	SGVector<float64_t> m=m_mean->get_mean_vector(m_feature_matrix);
+	SGVector<float64_t> m=m_mean->get_mean_vector(m_feat);
 	Map<VectorXd> eigen_m(m.vector, m.vlen);
 
 	// compute sgrt_dg = sqrt(dg)
