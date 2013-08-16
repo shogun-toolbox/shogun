@@ -20,7 +20,7 @@
 
 using namespace shogun;
 
-TEST(GaussianLikelihood,evaluate_log_probabilities)
+TEST(GaussianLikelihood,get_predictive_log_probabilities)
 {
 	// create some easy data:
 	// mu(x) approximately equals to (x^3+sin(x)^2)/10, y=0
@@ -50,7 +50,7 @@ TEST(GaussianLikelihood,evaluate_log_probabilities)
 	// Gaussian likelihood with sigma = 0.13
 	CGaussianLikelihood* likelihood=new CGaussianLikelihood(0.13);
 
-	SGVector<float64_t> lp=likelihood->evaluate_log_probabilities(mu, s2, labels);
+	SGVector<float64_t> lp=likelihood->get_predictive_log_probabilities(mu, s2, labels);
 
 	// comparison of the first moment with result from GPML package
 	EXPECT_NEAR(lp[0], -20.216529436592481, 1E-15);
@@ -64,7 +64,7 @@ TEST(GaussianLikelihood,evaluate_log_probabilities)
 	SG_UNREF(labels);
 }
 
-TEST(GaussianLikelihood,evaluate_means)
+TEST(GaussianLikelihood,get_predictive_means)
 {
 	// create some easy data:
 	// mu(x) approximately equals to (x^3+sin(x)^2)/10, y=0
@@ -94,7 +94,7 @@ TEST(GaussianLikelihood,evaluate_means)
 	// Gaussian likelihood with sigma = 0.13
 	CGaussianLikelihood* likelihood=new CGaussianLikelihood(0.13);
 
-	mu=likelihood->evaluate_means(mu, s2, labels);
+	mu=likelihood->get_predictive_means(mu, s2, labels);
 
 	// comparison of the first moment with result from GPML package
 	EXPECT_NEAR(mu[0], -2.18236000000000008, 1E-15);
@@ -108,7 +108,7 @@ TEST(GaussianLikelihood,evaluate_means)
 	SG_UNREF(labels);
 }
 
-TEST(GaussianLikelihood,evaluate_variances)
+TEST(GaussianLikelihood,get_predictive_variances)
 {
 	// create some easy data:
 	// mu(x) approximately equals to (x^3+sin(x)^2)/10, y=0
@@ -138,7 +138,7 @@ TEST(GaussianLikelihood,evaluate_variances)
 	// Gaussian likelihood with sigma = 0.13
 	CGaussianLikelihood* likelihood=new CGaussianLikelihood(0.13);
 
-	s2=likelihood->evaluate_variances(mu, s2, labels);
+	s2=likelihood->get_predictive_variances(mu, s2, labels);
 
 	// comparison of the first moment with result from GPML package
 	EXPECT_NEAR(s2[0], 0.116900000000000, 1E-15);

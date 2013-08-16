@@ -26,7 +26,7 @@ CProbitLikelihood::~CProbitLikelihood()
 {
 }
 
-SGVector<float64_t> CProbitLikelihood::evaluate_log_probabilities(
+SGVector<float64_t> CProbitLikelihood::get_predictive_log_probabilities(
 		SGVector<float64_t> mu,	SGVector<float64_t> s2, const CLabels* lab) const
 {
 	SGVector<float64_t> y;
@@ -66,8 +66,8 @@ SGVector<float64_t> CProbitLikelihood::evaluate_log_probabilities(
 	return r;
 }
 
-SGVector<float64_t> CProbitLikelihood::evaluate_means(SGVector<float64_t> mu,
-		SGVector<float64_t> s2, const CLabels* lab) const
+SGVector<float64_t> CProbitLikelihood::get_predictive_means(
+		SGVector<float64_t> mu,	SGVector<float64_t> s2, const CLabels* lab) const
 {
 	SGVector<float64_t> y;
 
@@ -110,8 +110,8 @@ SGVector<float64_t> CProbitLikelihood::evaluate_means(SGVector<float64_t> mu,
 	return r;
 }
 
-SGVector<float64_t> CProbitLikelihood::evaluate_variances(SGVector<float64_t> mu,
-		SGVector<float64_t> s2, const CLabels* lab) const
+SGVector<float64_t> CProbitLikelihood::get_predictive_variances(
+		SGVector<float64_t> mu,	SGVector<float64_t> s2, const CLabels* lab) const
 {
 	SGVector<float64_t> y;
 

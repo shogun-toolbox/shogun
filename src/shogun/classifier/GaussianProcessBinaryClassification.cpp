@@ -90,7 +90,7 @@ SGVector<float64_t> CGaussianProcessBinaryClassification::get_mean_vector(
 	SG_UNREF(data);
 
 	// evaluate mean
-	mu=lik->evaluate_means(mu, s2);
+	mu=lik->get_predictive_means(mu, s2);
 	SG_UNREF(lik);
 
 	return mu;
@@ -112,7 +112,7 @@ SGVector<float64_t> CGaussianProcessBinaryClassification::get_variance_vector(
 	SG_UNREF(data);
 
 	// evaluate variance
-	s2=lik->evaluate_variances(mu, s2);
+	s2=lik->get_predictive_variances(mu, s2);
 	SG_UNREF(lik);
 
 	return s2;
@@ -134,7 +134,7 @@ SGVector<float64_t> CGaussianProcessBinaryClassification::get_probabilities(
 	SG_UNREF(data);
 
 	// evaluate log probabilities
-	SGVector<float64_t> p=lik->evaluate_log_probabilities(mu, s2);
+	SGVector<float64_t> p=lik->get_predictive_log_probabilities(mu, s2);
 	SG_UNREF(lik);
 
 	// evaluate probabilities

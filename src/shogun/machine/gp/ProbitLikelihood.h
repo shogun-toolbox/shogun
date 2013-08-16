@@ -45,68 +45,66 @@ public:
 	/** returns the logarithm of the predictive density of \f$y_*\f$:
 	 *
 	 * \f[
-	 * log(p(y_*|X,y,x_*)) = log\left(\int p(y_*|f_*)
-	 * p(f_*|X,y,x_*) df_*\right)
+	 * log(p(y_*|X,y,x_*)) = log\left(\int p(y_*|f_*) p(f_*|X,y,x_*) df_*\right)
 	 * \f]
 	 *
 	 * which approximately equals to
 	 *
 	 * \f[
-	 * log\left(\int p(y_*|f_*) N(f*|\mu,\sigma^2) df*\right)
+	 * log\left(\int p(y_*|f_*) \mathcal{N}(f*|\mu,\sigma^2) df*\right)
 	 * \f]
 	 *
-	 * where normal distribution \f$N(\mu,\sigma^2)\f$ is an approximation to
-	 * the posterior marginal \f$p(f_*|X,y,x_*)\f$
+	 * where normal distribution \f$\mathcal{N}(\mu,\sigma^2)\f$ is an
+	 * approximation to the posterior marginal \f$p(f_*|X,y,x_*)\f$.
 	 *
 	 * NOTE: if lab equals to NULL, then each \f$y_*\f$ equals to one.
 	 *
 	 * @param mu posterior mean of a Gaussian distribution
-	 * \f$N(\mu,\sigma^2)\f$, which is an approximation to the posterior
-	 * marginal \f$p(f_*|X,y,x_*)\f$
+	 * \f$\mathcal{N}(\mu,\sigma^2)\f$, which is an approximation to the
+	 * posterior marginal \f$p(f_*|X,y,x_*)\f$
 	 * @param s2 posterior variance of a Gaussian distribution
-	 * \f$N(\mu,\sigma^2)\f$, which is an approximation to the posterior
-	 * marginal \f$p(f_*|X,y,x_*)\f$
-	 * @param lab labels \f$y_*\f$. NOTE: if lab equals to NULL, then each
-	 * \f$y_*\f$ equals to one.
+	 * \f$\mathcal{N}(\mu,\sigma^2)\f$, which is an approximation to the
+	 * posterior marginal \f$p(f_*|X,y,x_*)\f$
+	 * @param lab labels \f$y_*\f$
 	 *
 	 * @return \f$log(p(y_*|X, y, x*))\f$ for each label \f$y_*\f$
 	 */
-	virtual SGVector<float64_t> evaluate_log_probabilities(SGVector<float64_t> mu,
-			SGVector<float64_t> s2, const CLabels* lab=NULL) const;
+	virtual SGVector<float64_t> get_predictive_log_probabilities(
+			SGVector<float64_t> mu,	SGVector<float64_t> s2,
+			const CLabels* lab=NULL) const;
 
-	/** returns mean of the predictive marginal \f$p(y_*|X,y,x_*)\f$
+	/** returns variance of the predictive marginal \f$p(y_*|X,y,x_*)\f$.
 	 *
 	 * NOTE: if lab equals to NULL, then each \f$y_*\f$ equals to one.
 	 *
 	 * @param mu posterior mean of a Gaussian distribution
-	 * \f$N(\mu,\sigma^2)\f$, which is an approximation to the posterior
-	 * marginal \f$p(f_*|X,y,x_*)\f$
+	 * \f$\mathcal{N}(\mu,\sigma^2)\f$, which is an approximation to the
+	 * posterior marginal \f$p(f_*|X,y,x_*)\f$
 	 * @param s2 posterior variance of a Gaussian distribution
-	 * \f$N(\mu,\sigma^2)\f$, which is an approximation to the posterior
-	 * marginal \f$p(f_*|X,y,x_*)\f$
-	 * @param lab labels \f$y_*\f$
-	 *
-	 * @return final means evaluated by likelihood function
-	 */
-	virtual SGVector<float64_t> evaluate_means(SGVector<float64_t> mu,
-			SGVector<float64_t> s2, const CLabels* lab=NULL) const;
-
-	/** returns variance of the predictive marginal
-	 * \f$p(y_*|X,y,x_*)\f$
-	 *
-	 * NOTE: if lab equals to NULL, then each \f$y_*\f$ equals to one.
-	 *
-	 * @param mu posterior mean of a Gaussian distribution
-	 * \f$N(\mu,\sigma^2)\f$, which is an approximation to the posterior
-	 * marginal \f$p(f_*|X,y,x_*)\f$
-	 * @param s2 posterior variance of a Gaussian distribution
-	 * \f$N(\mu,\sigma^2)\f$, which is an approximation to the posterior
-	 * marginal \f$p(f_*|X,y,x_*)\f$
+	 * \f$\mathcal{N}(\mu,\sigma^2)\f$, which is an approximation to the
+	 * posterior marginal \f$p(f_*|X,y,x_*)\f$
 	 * @param lab labels \f$y_*\f$
 	 *
 	 * @return final variances evaluated by likelihood function
 	 */
-	virtual SGVector<float64_t> evaluate_variances(SGVector<float64_t> mu,
+	virtual SGVector<float64_t> get_predictive_means(SGVector<float64_t> mu,
+			SGVector<float64_t> s2, const CLabels* lab=NULL) const;
+
+	/** returns variance of the predictive marginal \f$p(y_*|X,y,x_*)\f$.
+	 *
+	 * NOTE: if lab equals to NULL, then each \f$y_*\f$ equals to one.
+	 *
+	 * @param mu posterior mean of a Gaussian distribution
+	 * \f$\mathcal{N}(\mu,\sigma^2)\f$, which is an approximation to the
+	 * posterior marginal \f$p(f_*|X,y,x_*)\f$
+	 * @param s2 posterior variance of a Gaussian distribution
+	 * \f$\mathcal{N}(\mu,\sigma^2)\f$, which is an approximation to the
+	 * posterior marginal \f$p(f_*|X,y,x_*)\f$
+	 * @param lab labels \f$y_*\f$
+	 *
+	 * @return final variances evaluated by likelihood function
+	 */
+	virtual SGVector<float64_t> get_predictive_variances(SGVector<float64_t> mu,
 			SGVector<float64_t> s2, const CLabels* lab=NULL) const;
 
 	/** get model type

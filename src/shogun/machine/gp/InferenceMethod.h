@@ -34,7 +34,8 @@ enum EInferenceType
 	INF_NONE = 0,
 	INF_EXACT = 10,
 	INF_FITC = 20,
-	INF_LAPLACIAN = 30
+	INF_LAPLACIAN = 30,
+	INF_EP = 40
 };
 
 /** @brief The Inference Method base class.
