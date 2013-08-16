@@ -58,7 +58,7 @@ class CLMNN : public CSGObject
 		 *
 		 * @param init_transform initial linear transform
 		 */
-		void train(SGMatrix<float64_t> init_transform);
+		void train(SGMatrix<float64_t> init_transform=SGMatrix<float64_t>());
 
 		/** get the learnt linear transform (denoted L in LMNN literature typically)
 		 *

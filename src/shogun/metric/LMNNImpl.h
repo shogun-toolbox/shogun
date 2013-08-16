@@ -80,8 +80,11 @@ class CLMNNImpl
 {
 	public:
 
-		/** check feature and label size, dimensions of the initial transform, etc */
-		static void check_training_setup(const CFeatures* features, const CLabels* labels, const SGMatrix<float64_t> init_transform);
+		/**
+		 * check feature and label size, dimensions of the initial transform, etc
+		 * if the initial transform has not been initialized, do it using PCA
+		 */
+		static void check_training_setup(CFeatures* features, const CLabels* labels, SGMatrix<float64_t>& init_transform);
 
 		/**
 		 * for each feature in x, find its target neighbors; this is, its k
@@ -105,6 +108,9 @@ class CLMNNImpl
 		static void correct_stepsize(float64_t& stepsize, const SGVector<float64_t> obj, const uint32_t iter);
 
 	private:
+
+		/** initial default transform given by PCA */
+		static SGMatrix<float64_t> compute_pca_transform(CDenseFeatures<float64_t>* features);
 
 		/**
 		 * compute squared distances plus margin between each example and its target neighbors
