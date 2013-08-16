@@ -145,7 +145,7 @@ IF(CMAKE_BUILD_TYPE MATCHES "Release")
 	ENDIF()
 ENDIF()
 
-# set malloc library
+###### MALLOC LIBRARY ###########
 SET(EXTERNAL_MALLOC_CFLAGS "-fno-builtin-malloc -fno-builtin-calloc -fno-builtin-realloc -fno-builtin-free")
 if (MALLOC_REPLACEMENT MATCHES "Jemalloc")
 	include(external/Jemalloc)
@@ -293,6 +293,16 @@ LIST(APPEND DEFINES DSFMT_MEXP=${MEXP} SFMT_MEXP=${MEXP})
 OPTION(USE_REFERENCE_COUNTING "Reference Counting" ON)
 IF(USE_REFERENCE_COUNTING)
 	LIST(APPEND DEFINES USE_REFERENCE_COUNTING)
+ENDIF()
+
+OPTION(USE_LOGCACHE "Use (1+exp(x)) log cache (is much faster but less accurate)" OFF)
+IF(USE_LOGCACHE)
+	LIST(APPEND DEFINES USE_LOGCACHE)
+ENDIF()
+
+OPTION(USE_LOGSUMARRAY "Use sum array, supposed to be a bit more accurate" OFF)
+IF(USE_LOGSUMARRAY)
+	LIST(APPEND DEFINES USE_LOGSUMARRAY)
 ENDIF()
 
 ######################### LIBRARIES #########################

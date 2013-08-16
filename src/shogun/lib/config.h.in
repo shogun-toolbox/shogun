@@ -28,6 +28,8 @@
 #cmakedefine HAVE_LGAMMAL 1
 #cmakedefine HAVE_SQRTL 1
 #cmakedefine HAVE_LOG2 1
+#cmakedefine USE_LOGCACHE 1
+#cmakedefine USE_LOGSUMARRAY 1
 
 #cmakedefine USE_SPINLOCKS 1
 #cmakedefine USE_SHORTREAL_KERNELCACHE 1
