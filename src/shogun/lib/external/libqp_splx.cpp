@@ -131,7 +131,7 @@ libqp_state_T libqp_splx_solver(const float64_t* (*get_col)(uint32_t),
     m = LIBQP_MAX(m,I[i]);
 
   /* auxciliary variables for tranforming equalities to inequalities */
-  x_neq = (float64_t*) LIBQP_CALLOC(m, sizeof(float64_t));
+  x_neq = (float64_t*) LIBQP_CALLOC(m, float64_t);
   if( x_neq == NULL )
   {
 	  state.exitflag=-1;
@@ -139,7 +139,7 @@ libqp_state_T libqp_splx_solver(const float64_t* (*get_col)(uint32_t),
   }
 
   /* inx is translation table between variable index i and its contraint */
-  inx = (uint32_t*) LIBQP_CALLOC(m*n, sizeof(uint32_t));
+  inx = (uint32_t*) LIBQP_CALLOC(m*n, uint32_t);
   if( inx == NULL )
   {
 	  state.exitflag=-1;
@@ -147,7 +147,7 @@ libqp_state_T libqp_splx_solver(const float64_t* (*get_col)(uint32_t),
   }
 
   /* nk is the number of variables coupled by i-th linear constraint */
-  nk = (uint32_t*) LIBQP_CALLOC(m, sizeof(uint32_t));
+  nk = (uint32_t*) LIBQP_CALLOC(m, uint32_t);
   if( nk == NULL )
   {
 	  state.exitflag=-1;
@@ -170,7 +170,7 @@ libqp_state_T libqp_splx_solver(const float64_t* (*get_col)(uint32_t),
   }
     
   /* d = H*x + f is gradient*/
-  d = (float64_t*) LIBQP_CALLOC(n, sizeof(float64_t));
+  d = (float64_t*) LIBQP_CALLOC(n, float64_t);
   if( d == NULL )
   {
 	  state.exitflag=-1;
