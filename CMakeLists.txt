@@ -112,7 +112,7 @@ SET(CMAKE_CXX_FLAGS_DISTRIBUTION "-O2")
 # clang with -std=c++11 and -stdlib=libc++ does not work
 # well with swig generated cxx
 # hence disable c++11 for this case.
-IF (NOT (DARWIN AND COMPILE_MODULAR_INTERFACE))
+IF (NOT (CYGWIN OR (DARWIN AND COMPILE_MODULAR_INTERFACE)))
 	INCLUDE(CheckCXX11Features)
 
 	IF(_HAS_CXX11_FLAG)

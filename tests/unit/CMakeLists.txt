@@ -3,10 +3,6 @@ foreach(D IN LISTS DEFINES)
 	SET(CMAKE_DEFINITIONS "${CMAKE_DEFINITIONS} -D${D}")
 endforeach()
 
-if(CYGWIN)
-	SET(CMAKE_DEFINITIONS "${CMAKE_DEFINITIONS} -DGTEST_OS_CYGWIN")
-endif()
-
 # Find GTEST and GMOCK frameworks
 include(external/GoogleTestNMock)
 ExternalProject_Get_Property(GoogleMock source_dir)
