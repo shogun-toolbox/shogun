@@ -413,9 +413,6 @@ template <class T>
 
     free_after_release=true;
     ring_size=size;
-
-    pthread_mutex_init(&examples_state_lock, NULL);
-    pthread_cond_init(&examples_state_changed, NULL);
 }
 
 template <class T>
