@@ -125,7 +125,7 @@ SGVector<float64_t> CGaussianProcessRegression::get_mean_vector(CFeatures* data)
 
 	// evaluate mean
 	lik=m_method->get_model();
-	mu=lik->evaluate_means(mu, s2);
+	mu=lik->get_predictive_means(mu, s2);
 	SG_UNREF(lik);
 
 	return mu;
@@ -147,7 +147,7 @@ SGVector<float64_t> CGaussianProcessRegression::get_variance_vector(
 	SG_UNREF(data);
 
 	// evaluate variance
-	s2=lik->evaluate_variances(mu, s2);
+	s2=lik->get_predictive_variances(mu, s2);
 	SG_UNREF(lik);
 
 	return s2;

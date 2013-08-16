@@ -64,7 +64,7 @@ CStudentsTLikelihood* CStudentsTLikelihood::obtain_from_generic(
 	return (CStudentsTLikelihood*)lik;
 }
 
-SGVector<float64_t> CStudentsTLikelihood::evaluate_log_probabilities(
+SGVector<float64_t> CStudentsTLikelihood::get_predictive_log_probabilities(
 		SGVector<float64_t> mu,	SGVector<float64_t> s2, const CLabels* lab) const
 {
 	SG_NOTIMPLEMENTED // since we have not something for integral evaluation yet
@@ -72,13 +72,13 @@ SGVector<float64_t> CStudentsTLikelihood::evaluate_log_probabilities(
 	return SGVector<float64_t>();
 }
 
-SGVector<float64_t> CStudentsTLikelihood::evaluate_means(SGVector<float64_t> mu,
-		SGVector<float64_t> s2, const CLabels* lab) const
+SGVector<float64_t> CStudentsTLikelihood::get_predictive_means(
+		SGVector<float64_t> mu,	SGVector<float64_t> s2, const CLabels* lab) const
 {
 	return SGVector<float64_t>(mu);
 }
 
-SGVector<float64_t> CStudentsTLikelihood::evaluate_variances(
+SGVector<float64_t> CStudentsTLikelihood::get_predictive_variances(
 		SGVector<float64_t> mu,	SGVector<float64_t> s2, const CLabels* lab) const
 {
 	SGVector<float64_t> result(s2);

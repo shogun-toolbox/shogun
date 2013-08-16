@@ -44,15 +44,15 @@ public:
 
 	virtual ~CGaussianProcessMachine();
 
-	/** return name of the machine
+	/** returns name of the machine
 	 *
 	 * @return name GaussianProcessMachine
 	 */
 	virtual const char* get_name() const { return "GaussianProcessMachine"; }
 
-	/** return a mean \f$\mu\f$ of a Gaussian distribution
+	/** returns a mean \f$\mu\f$ of a Gaussian distribution
 	 * \f$\mathcal{N}(\mu,\sigma^2)\f$, which is an approximation to the
-	 * posterior marginal \f$p(f_*|x_*,x,y)\f$.
+	 * posterior marginal \f$p(f_*|X,y,x_*)\f$.
 	 *
 	 * @param data testing features
 	 *
@@ -60,9 +60,9 @@ public:
 	 */
 	SGVector<float64_t> get_posterior_means(CFeatures* data);
 
-	/** return a variance \f$\sigma^2\f$ of a Gaussian distribution
+	/** returns a variance \f$\sigma^2\f$ of a Gaussian distribution
 	 * \f$\mathcal{N}(\mu,\sigma^2)\f$, which is an approximation to the
-	 * posterior marginal \f$p(f_*|x_*,x,y)\f$.
+	 * posterior marginal \f$p(f_*|X,y,x_*)\f$.
 	 *
 	 * @param data testing features
 	 *

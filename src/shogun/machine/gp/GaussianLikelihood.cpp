@@ -54,7 +54,7 @@ CGaussianLikelihood* CGaussianLikelihood::obtain_from_generic(
 	return (CGaussianLikelihood*)lik;
 }
 
-SGVector<float64_t> CGaussianLikelihood::evaluate_log_probabilities(
+SGVector<float64_t> CGaussianLikelihood::get_predictive_log_probabilities(
 		SGVector<float64_t> mu,	SGVector<float64_t> s2, const CLabels* lab) const
 {
 	SGVector<float64_t> y;
@@ -94,13 +94,13 @@ SGVector<float64_t> CGaussianLikelihood::evaluate_log_probabilities(
 	return result;
 }
 
-SGVector<float64_t> CGaussianLikelihood::evaluate_means(SGVector<float64_t> mu,
-		SGVector<float64_t> s2, const CLabels* lab) const
+SGVector<float64_t> CGaussianLikelihood::get_predictive_means(
+		SGVector<float64_t> mu,	SGVector<float64_t> s2, const CLabels* lab) const
 {
 	return SGVector<float64_t>(mu);
 }
 
-SGVector<float64_t> CGaussianLikelihood::evaluate_variances(
+SGVector<float64_t> CGaussianLikelihood::get_predictive_variances(
 		SGVector<float64_t> mu,	SGVector<float64_t> s2, const CLabels* lab) const
 {
 	SGVector<float64_t> result(s2);
