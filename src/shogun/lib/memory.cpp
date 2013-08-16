@@ -21,6 +21,8 @@
 
 #ifdef USE_JEMALLOC
 #include <jemalloc/jemalloc.h>
+#elif USE_TCMALLOC
+#include <gperftools/tcmalloc.h>
 #endif
 
 using namespace shogun;
@@ -95,6 +97,8 @@ void* operator new(size_t size) throw (std::bad_alloc)
 {
 #if defined(USE_JEMALLOC)
 	void *p=je_malloc(size);
+#elif defined(USE_TCMALLOC)
+	void *p=tc_malloc(size);
 #else
 	void *p=malloc(size);
 #endif
@@ -127,6 +131,8 @@ void operator delete(void *p) throw()
 
 #if defined(USE_JEMALLOC)
 	je_free(p);
+#elif defined(USE_TCMALLOC)
+	tc_free(p);
 #else
 	free(p);
 #endif
@@ -140,6 +146,8 @@ void* operator new[](size_t size) throw(std::bad_alloc)
 {
 #if defined(USE_JEMALLOC)
 	void *p=je_malloc(size);
+#elif defined(USE_TCMALLOC)
+	void *p=tc_malloc(size);
 #else
 	void *p=malloc(size);
 #endif
@@ -173,6 +181,8 @@ void operator delete[](void *p) throw()
 
 #if defined(USE_JEMALLOC)
 	je_free(p);
+#elif defined(USE_TCMALLOC)
+	tc_free(p);
 #else
 	free(p);
 #endif
@@ -188,6 +198,8 @@ void* sg_malloc(size_t size
 {
 #if defined(USE_JEMALLOC)
 	void* p=je_malloc(size);
+#elif defined(USE_TCMALLOC)
+	void *p=tc_malloc(size);
 #else
 	void* p=malloc(size);
 #endif
@@ -219,6 +231,8 @@ void* sg_calloc(size_t num, size_t size
 {
 #if defined(USE_JEMALLOC)
 	void* p=je_calloc(num, size);
+#elif defined(USE_TCMALLOC)
+	void* p=tc_calloc(num, size);
 #else
 	void* p=calloc(num, size);
 #endif
@@ -254,6 +268,8 @@ void  sg_free(void* ptr)
 
 #if defined(USE_JEMALLOC)
 	je_free(ptr);
+#elif defined(USE_TCMALLOC)
+	tc_free(ptr);
 #else
 	free(ptr);
 #endif
@@ -267,6 +283,8 @@ void* sg_realloc(void* ptr, size_t size
 {
 #if defined(USE_JEMALLOC)
 	void* p=je_realloc(ptr, size);
+#elif defined(USE_TCMALLOC)
+	void* p=tc_realloc(ptr, size);
 #else
 	void* p=realloc(ptr, size);
 #endif
