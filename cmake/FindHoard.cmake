@@ -24,9 +24,9 @@
 
 set(Hoard_NAMES hoard)
 
-find_library(Hoard_LIBRARY NO_DEFAULT_PATH
+find_library(Hoard_LIBRARY
   NAMES ${Hoard_NAMES}
-  PATHS ${HT_DEPENDENCY_LIB_DIR} /lib /usr/lib /usr/local/lib /opt/local/lib
+  PATHS /usr/lib /usr/local/lib /opt/local/lib
 )
 
 if (Hoard_LIBRARY)

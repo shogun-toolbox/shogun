@@ -21,7 +21,6 @@
 
 #ifdef USE_JEMALLOC
 #include <jemalloc/jemalloc.h>
-#undef JEMALLOC_MANGLE
 #endif
 
 using namespace shogun;
@@ -187,7 +186,11 @@ void* sg_malloc(size_t size
 #endif
 )
 {
+#if defined(USE_JEMALLOC)
+	void* p=je_malloc(size);
+#else
 	void* p=malloc(size);
+#endif
 #ifdef TRACE_MEMORY_ALLOCS
 	if (sg_mallocs)
 		sg_mallocs->add(p, MemoryBlock(p,size, file, line));
