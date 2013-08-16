@@ -26,6 +26,7 @@ void print_message(FILE* target, const char* str)
 
 void test_cross_validation()
 {
+#ifdef HAVE_LAPACK
 	/* data matrix dimensions */
 	index_t num_vectors=100;
 	index_t num_features=1;
@@ -110,6 +111,7 @@ void test_cross_validation()
 	SG_UNREF(result);
 	SG_UNREF(cross);
 	SG_UNREF(features);
+#endif /* HAVE_LAPACK */
 }
 
 int main(int argc, char **argv)
