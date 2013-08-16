@@ -20,7 +20,7 @@
 
 using namespace shogun;
 
-TEST(StudentsTLikelihood,evaluate_means)
+TEST(StudentsTLikelihood,get_predictive_means)
 {
 	// create some easy data:
 	// mu(x) approximately equals to (x^3+sin(x)^2)/10, y=0
@@ -50,7 +50,7 @@ TEST(StudentsTLikelihood,evaluate_means)
 	// Stundent's-t likelihood with sigma = 0.17, df = 3
 	CStudentsTLikelihood* likelihood=new CStudentsTLikelihood(0.17, 3);
 
-	mu=likelihood->evaluate_means(mu, s2, labels);
+	mu=likelihood->get_predictive_means(mu, s2, labels);
 
 	// comparison of the first moment with result from GPML package
 	EXPECT_NEAR(mu[0], -2.18236000000000008, 1E-15);
@@ -64,7 +64,7 @@ TEST(StudentsTLikelihood,evaluate_means)
 	SG_UNREF(labels);
 }
 
-TEST(StudentsTLikelihood,evaluate_variances)
+TEST(StudentsTLikelihood,get_predictive_variances)
 {
 	// create some easy data:
 	// mu(x) approximately equals to (x^3+sin(x)^2)/10, y=0
@@ -94,7 +94,7 @@ TEST(StudentsTLikelihood,evaluate_variances)
 	// Stundent's-t likelihood with sigma = 0.17, df = 3
 	CStudentsTLikelihood* likelihood=new CStudentsTLikelihood(0.17, 3);
 
-	s2=likelihood->evaluate_variances(mu, s2, labels);
+	s2=likelihood->get_predictive_variances(mu, s2, labels);
 
 	// comparison of the first moment with result from GPML package
 	EXPECT_NEAR(s2[0], 0.186700000000000, 1E-15);

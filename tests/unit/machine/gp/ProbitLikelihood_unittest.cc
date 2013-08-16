@@ -17,7 +17,7 @@
 
 using namespace shogun;
 
-TEST(ProbitLikelihood,evaluate_log_probabilities)
+TEST(ProbitLikelihood,get_predictive_log_probabilities)
 {
 	// create some easy data:
 	// mu(x) approximately equals to 3*sin(sin(x^2)*sin(sin(2*x)))
@@ -51,7 +51,7 @@ TEST(ProbitLikelihood,evaluate_log_probabilities)
 	// probit likelihood
 	CProbitLikelihood* likelihood=new CProbitLikelihood();
 
-	SGVector<float64_t> lp=likelihood->evaluate_log_probabilities(mu, s2);
+	SGVector<float64_t> lp=likelihood->get_predictive_log_probabilities(mu, s2);
 
 	// comparison of the first moment with result from GPML package
 	EXPECT_NEAR(lp[0], -0.221016102, 1E-9);
@@ -69,7 +69,7 @@ TEST(ProbitLikelihood,evaluate_log_probabilities)
 	SG_UNREF(likelihood);
 }
 
-TEST(ProbitLikelihood,evaluate_means)
+TEST(ProbitLikelihood,get_predictive_means)
 {
 	// create some easy data:
 	// mu(x) approximately equals to 3*sin(sin(x^2)*sin(sin(2*x)))
@@ -103,7 +103,7 @@ TEST(ProbitLikelihood,evaluate_means)
 	// probit likelihood
 	CProbitLikelihood* likelihood=new CProbitLikelihood();
 
-	mu=likelihood->evaluate_means(mu, s2);
+	mu=likelihood->get_predictive_means(mu, s2);
 
 	// comparison of the first moment with result from GPML package
 	EXPECT_NEAR(mu[0], 0.603407542, 1E-9);
@@ -121,7 +121,7 @@ TEST(ProbitLikelihood,evaluate_means)
 	SG_UNREF(likelihood);
 }
 
-TEST(ProbitLikelihood,evaluate_variances)
+TEST(ProbitLikelihood,get_predictive_variances)
 {
 	// create some easy data:
 	// mu(x) approximately equals to 3*sin(sin(x^2)*sin(sin(2*x)))
@@ -155,7 +155,7 @@ TEST(ProbitLikelihood,evaluate_variances)
 	// logit likelihood
 	CProbitLikelihood* likelihood=new CProbitLikelihood();
 
-	s2=likelihood->evaluate_variances(mu, s2);
+	s2=likelihood->get_predictive_variances(mu, s2);
 
 	// comparison of the second moment with result from GPML package
 	EXPECT_NEAR(s2[0], 0.635899337, 1E-9);

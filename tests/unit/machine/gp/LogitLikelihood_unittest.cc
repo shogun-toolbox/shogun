@@ -17,7 +17,7 @@
 
 using namespace shogun;
 
-TEST(LogitLikelihood,evaluate_log_probabilities)
+TEST(LogitLikelihood,get_predictive_log_probabilities)
 {
 	// create some easy data:
 	// mu(x) approximately equals to 3*sin(sin(x^2)*sin(sin(2*x)))
@@ -51,7 +51,7 @@ TEST(LogitLikelihood,evaluate_log_probabilities)
 	// logit likelihood
 	CLogitLikelihood* likelihood=new CLogitLikelihood();
 
-	SGVector<float64_t> lp=likelihood->evaluate_log_probabilities(mu, s2);
+	SGVector<float64_t> lp=likelihood->get_predictive_log_probabilities(mu, s2);
 
 	// comparison of the first moment with result from GPML package
 	EXPECT_NEAR(lp[0], -0.350067368640123, 1E-3);
@@ -69,7 +69,7 @@ TEST(LogitLikelihood,evaluate_log_probabilities)
 	SG_UNREF(likelihood);
 }
 
-TEST(LogitLikelihood,evaluate_means)
+TEST(LogitLikelihood,get_predictive_means)
 {
 	// create some easy data:
 	// mu(x) approximately equals to 3*sin(sin(x^2)*sin(sin(2*x)))
@@ -103,7 +103,7 @@ TEST(LogitLikelihood,evaluate_means)
 	// logit likelihood
 	CLogitLikelihood* likelihood=new CLogitLikelihood();
 
-	mu=likelihood->evaluate_means(mu, s2);
+	mu=likelihood->get_predictive_means(mu, s2);
 
 	// comparison of the first moment with result from GPML package
 	EXPECT_NEAR(mu[0], 0.4092812348789756, 1E-3);
@@ -121,7 +121,7 @@ TEST(LogitLikelihood,evaluate_means)
 	SG_UNREF(likelihood);
 }
 
-TEST(LogitLikelihood,evaluate_variances)
+TEST(LogitLikelihood,get_predictive_variances)
 {
 	// create some easy data:
 	// mu(x) approximately equals to 3*sin(sin(x^2)*sin(sin(2*x)))
@@ -155,7 +155,7 @@ TEST(LogitLikelihood,evaluate_variances)
 	// logit likelihood
 	CLogitLikelihood* likelihood=new CLogitLikelihood();
 
-	s2=likelihood->evaluate_variances(mu, s2);
+	s2=likelihood->get_predictive_variances(mu, s2);
 
 	// comparison of the second moment with result from GPML package
 	EXPECT_NEAR(s2[0], 0.832488870775941, 1E-3);
@@ -259,7 +259,7 @@ TEST(LogitLikelihood,get_log_probability_f_sum_multiple)
 	func(7,0)=0.482987;
 	func(8,0)=-0.149445;
 	func(9,0)=0.106952;
-	
+
 	func(0,1)=0.889099;
 	func(1,1)=0.350840;
 	func(2,1)=-2.116356;
