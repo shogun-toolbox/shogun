@@ -20,4 +20,5 @@
 #include <shogun/converter/ica/Jade.h>
 #include <shogun/converter/ica/SOBI.h>
 #include <shogun/converter/ica/FFSep.h>
+#include <shogun/converter/ica/JediSep.h>
 %}

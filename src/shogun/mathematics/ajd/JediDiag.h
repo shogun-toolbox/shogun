@@ -9,8 +9,8 @@
  * Thanks to Andreas Ziehe and Cedric Gouy-Pailler
  */
 
-#ifndef JEDI_H_
-#define JEDI_H_
+#ifndef JEDIDIAG_H_
+#define JEDIDIAG_H_
 
 #include <shogun/lib/config.h>
 
@@ -31,17 +31,17 @@ namespace shogun
  * Signal Processing, IEEE Transactions on, 57(6), 2222-2231.
  * 
  */
-class CJedi : public CApproxJointDiagonalizer
+class CJediDiag : public CApproxJointDiagonalizer
 {
 	public:
 	
 		/** constructor */
-		CJedi()
+		CJediDiag()
 		{
 		}
 
 		/** destructor */
-		virtual ~CJedi()
+		virtual ~CJediDiag()
 		{
 		}
 	
@@ -78,4 +78,4 @@ class CJedi : public CApproxJointDiagonalizer
 };
 }
 #endif //HAVE_EIGEN3
-#endif //JEDI_H_ 
+#endif //JEDIDIAG_H_ 
