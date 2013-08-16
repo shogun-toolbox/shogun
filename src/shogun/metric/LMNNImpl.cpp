@@ -12,6 +12,8 @@
 
 #include <shogun/metric/LMNNImpl.h>
 #include <shogun/multiclass/KNN.h>
+#include <shogun/preprocessor/PruneVarSubMean.h>
+#include <shogun/preprocessor/PCA.h>
 
 #include <iterator>
 
@@ -41,8 +43,8 @@ bool CImpostorNode::operator<(const CImpostorNode& rhs) const
 		return example < rhs.example;
 }
 
-void CLMNNImpl::check_training_setup(const CFeatures* features, const CLabels* labels,
-		const SGMatrix<float64_t> init_transform)
+void CLMNNImpl::check_training_setup(CFeatures* features, const CLabels* labels,
+		SGMatrix<float64_t>& init_transform)
 {
 	REQUIRE(features->has_property(FP_DOT),
 			"LMNN can only be applied to features that support dot products\n")
@@ -55,7 +57,11 @@ void CLMNNImpl::check_training_setup(const CFeatures* features, const CLabels* l
 			"Currently, LMNN supports only DenseFeatures\n")
 
 	// cast is safe, we ensure above that features are dense
-	const CDenseFeatures<float64_t>* x = static_cast<const CDenseFeatures<float64_t>*>(features);
+	CDenseFeatures<float64_t>* x = static_cast<CDenseFeatures<float64_t>*>(features);
+
+	/// Initialize, if necessary, the initial transform
+	if (init_transform.num_rows==0)
+		init_transform = CLMNNImpl::compute_pca_transform(x);
 
 	REQUIRE(init_transform.num_rows==x->get_num_features() &&
 			init_transform.num_rows==init_transform.num_cols,
@@ -251,6 +257,32 @@ void CLMNNImpl::correct_stepsize(float64_t& stepsize, const SGVector<float64_t> 
 			stepsize *= 1.01;
 		}
 	}
+}
+
+SGMatrix<float64_t> CLMNNImpl::compute_pca_transform(CDenseFeatures<float64_t>* features)
+{
+	SG_SDEBUG("Initializing LMNN transform using PCA.\n");
+
+	// Substract the mean of the features
+	// Create clone of the features to keep the input features unmodified
+	CDenseFeatures<float64_t>* cloned_features =
+			new CDenseFeatures<float64_t>(features->get_feature_matrix().clone());
+	CPruneVarSubMean* mean_substractor =
+			new CPruneVarSubMean(false); // false to avoid variance normalization
+	mean_substractor->init(cloned_features);
+	mean_substractor->apply_to_feature_matrix(cloned_features);
+
+	// Obtain the linear transform applying PCA
+	CPCA* pca = new CPCA();
+	pca->set_target_dim(cloned_features->get_num_features());
+	pca->init(cloned_features);
+	SGMatrix<float64_t> pca_transform = pca->get_transformation_matrix();
+
+	SG_UNREF(pca);
+	SG_UNREF(mean_substractor);
+	SG_UNREF(cloned_features);
+
+	return pca_transform;
 }
 
 MatrixXd CLMNNImpl::compute_sqdists(MatrixXd& LX, const SGMatrix<index_t> target_nn)

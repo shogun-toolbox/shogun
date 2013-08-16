@@ -54,7 +54,7 @@ void CLMNN::train(SGMatrix<float64_t> init_transform)
 {
 	SG_DEBUG("Entering CLMNN::train().\n")
 
-	/// Check training data and arguments
+	/// Check training data and arguments, initializing, if necessary, init_transform
 	CLMNNImpl::check_training_setup(m_features, m_labels, init_transform);
 
 	/// Initializations
