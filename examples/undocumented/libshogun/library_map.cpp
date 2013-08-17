@@ -27,8 +27,9 @@ int main(int argc, char** argv)
 	//SG_SPRINT("Num of elements: %d\n", map->get_num_elements());
 	for (int i=0; i<SIZE; i++)
 	{
-		if (map->contains(i));
-			//SG_SPRINT("key %d contains in map with index %d and data=%s\n", 
+		if (map->contains(i))
+			;
+			//SG_SPRINT("key %d contains in map with index %d and data=%s\n",
 			//	i, map->index_of(i), map->get_element(i));
 	}
 

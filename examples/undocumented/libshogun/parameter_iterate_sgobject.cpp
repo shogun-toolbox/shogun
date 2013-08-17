@@ -67,12 +67,12 @@ int main(int argc, char** argv)
 	CLibSVM* svm=new CLibSVM(10, NULL, labels);
 
 	/* iterate over all parameter instances and set them as subkernel */
-	for (int32_t i=0; i<n; ++i)
+	for (int32_t k=0; k<n; ++k)
 	{
-		SG_SPRINT("\nkernel %d has width %f\n", i, kernels[i]->get_width());
+		SG_SPRINT("\nkernel %d has width %f\n", k, kernels[k]->get_width());
 
 		/* change kernel, old one is UNREF'ed, new one is REF'ed */
-		svm->m_parameters->set_from_parameters(parameters[i]);
+		svm->m_parameters->set_from_parameters(parameters[k]);
 
 		/* train and classify with the different kernels */
 		svm->train();

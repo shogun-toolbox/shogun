@@ -54,11 +54,11 @@ int main(int argc, char** argv)
 	CLibSVM* svm=new CLibSVM(10, kernel, labels);
 
 	/* iterate over different width parameters */
-	for (int32_t i=0; i<10; ++i)
+	for (int32_t k=0; k<10; ++k)
 	{
-		SG_SPRINT("\n\ncurrent kernel width: 2^%d=%f\n", i, CMath::pow(2.0,i));
+		SG_SPRINT("\n\ncurrent kernel width: 2^%d=%f\n", k, CMath::pow(2.0,k));
 
-		float64_t width=CMath::pow(2.0,i);
+		float64_t width=CMath::pow(2.0,k);
 
 		/* create parameter to change current kernel width */
 		Parameter* param=new Parameter();
