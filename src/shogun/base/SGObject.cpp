@@ -132,7 +132,7 @@ CSGObject::CSGObject(const CSGObject& orig)
 	init();
 	set_global_objects();
 	m_refcount = orig.m_refcount;
-	ref();
+	SG_REF(this);
 }
 
 CSGObject::~CSGObject()
@@ -147,7 +147,6 @@ CSGObject::~CSGObject()
 }
 
 #ifdef USE_REFERENCE_COUNTING
-
 int32_t CSGObject::ref()
 {
 	int32_t count = m_refcount->ref();
