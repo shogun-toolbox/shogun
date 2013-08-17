@@ -29,34 +29,6 @@
 %ignore ref;
 %ignore unref;
 
-
-#ifdef SWIGCSHARP
-%ignore shogun::CLikelihoodModel::evaluate_means;
-%ignore shogun::CStudentsTLikelihood::evaluate_means;
-%ignore shogun::CGaussianLikelihood::evaluate_means;
-%ignore shogun::CLogitLikelihood::evaluate_means;
-%ignore shogun::CProbitLikelihood::evaluate_means;
-%ignore shogun::CLikelihoodModel::evaluate_variances;
-%ignore shogun::CStudentsTLikelihood::evaluate_variances;
-%ignore shogun::CGaussianLikelihood::evaluate_variances;
-%ignore shogun::CLogitLikelihood::evaluate_variances;
-%ignore shogun::CProbitLikelihood::evaluate_variances;
-%ignore shogun::CLikelihoodModel::evaluate_log_probabilities;
-%ignore shogun::CStudentsTLikelihood::evaluate_log_probabilities;
-%ignore shogun::CGaussianLikelihood::evaluate_log_probabilities;
-%ignore shogun::CLogitLikelihood::evaluate_log_probabilities;
-%ignore shogun::CProbitLikelihood::evaluate_log_probabilities;
-%ignore shogun::CKernelMachine::CKernelMachine(CKernel* k, const SGVector<float64_t> alphas, const SGVector<int32_t> svs, float64_t b);
-%ignore shogun::SGMatrix::matrix_multiply;
-%ignore shogun::CStructuredModel::init_primal_opt;
-%ignore shogun::CIndexBlockTree::CIndexBlockTree(SGVector<float64_t> G, SGVector<float64_t> ind_t);
-%ignore shogun::CMulticlassStrategy::rescale_outputs(SGVector<float64_t> outputs, const SGVector<float64_t> As, const SGVector<float64_t> Bs);
-%ignore shogun::CMulticlassOneVsRestStrategy::rescale_outputs(SGVector<float64_t> outputs, const SGVector<float64_t> As, const SGVector<float64_t> Bs);
-%ignore shogun::CKernelMeanMatching::CKernelMeanMatching(CKernel* kernel, SGVector<index_t> training_indices, SGVector<index_t> test_indices);
-%ignore shogun::CWeightedDegreePositionStringKernel::CWeightedDegreePositionStringKernel(int32_t size,SGVector<float64_t> weights,int32_t degree,int32_t max_mismatch,SGVector<int32_t> shifts,int32_t mkl_stepsize);
-%ignore shogun::CWeightedDegreePositionStringKernel::CWeightedDegreePositionStringKernel(int32_t size,SGVector<float64_t> weights,int32_t degree,int32_t max_mismatch,SGVector<int32_t> shifts);
-#endif
-
 %ignore shogun::SGVector::display_vector;
 %ignore shogun::SGMatrix::display_matrix;
 
