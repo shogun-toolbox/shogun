@@ -72,6 +72,7 @@ TEST(Serialization,multiclass_labels)
 	SG_UNREF(labels);
 }
 
+#ifdef HAVE_LAPACK
 TEST(Serialization, liblinear)
 {
 	index_t num_samples = 50;
@@ -131,5 +132,4 @@ TEST(Serialization, liblinear)
 	SG_UNREF(test_feats);
 	SG_UNREF(pred);
 }
-
-
+#endif
