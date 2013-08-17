@@ -4,15 +4,14 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- *  Written (W) 2011 Baozeng Ding
- *
+ * Written (W) 2011 Baozeng Ding
  */
 
 %define TYPEMAP_SGVECTOR(SGTYPE, CTYPE, CSHARPTYPE)
 
-%typemap(ctype, out="CTYPE*") shogun::SGVector<SGTYPE>		%{int size, CTYPE*%}
-%typemap(imtype, out="IntPtr", inattributes="int size, [MarshalAs(UnmanagedType.LPArray)]") shogun::SGVector<SGTYPE>		%{CSHARPTYPE[]%}
-%typemap(cstype) shogun::SGVector<SGTYPE> 	%{CSHARPTYPE[]%}
+%typemap(ctype, out="CTYPE*") shogun::SGVector<SGTYPE> %{int size_$1, CTYPE*%}
+%typemap(imtype, out="IntPtr", inattributes="int size, [MarshalAs(UnmanagedType.LPArray)]") shogun::SGVector<SGTYPE> %{CSHARPTYPE[]%}
+%typemap(cstype) shogun::SGVector<SGTYPE> %{CSHARPTYPE[]%}
 
 %typemap(in) shogun::SGVector<SGTYPE> {
 	int32_t i;
@@ -20,20 +19,21 @@
 
 	if (!$input) {
 		SWIG_CSharpSetPendingException(SWIG_CSharpNullReferenceException, "null array");
-		return $null;	
+		return $null;
 	}
 
-	array = SG_MALLOC(SGTYPE, size);
+	array = SG_MALLOC(SGTYPE, size_$1);
 
 	if (!array) {
 		SWIG_CSharpSetPendingException(SWIG_CSharpOutOfMemoryException, "array memory allocation failed");
 		return $null;
 	}
-	for (i = 0; i < size; i++) {
-		array[i] = (SGTYPE)$input[i];	
+
+	for (i = 0; i < size_$1; i++) {
+		array[i] = (SGTYPE)$input[i];
 	}
-	
-	$1 = shogun::SGVector<SGTYPE>((SGTYPE *)array, size);
+
+	$1 = shogun::SGVector<SGTYPE>((SGTYPE *)array, size_$1);
 }
 
 
@@ -57,16 +57,17 @@
 
 %typemap(csin) shogun::SGVector<SGTYPE> "$csinput.Length, $csinput"
 %typemap(csout, excode=SWIGEXCODE) shogun::SGVector<SGTYPE> {
-		IntPtr ptr = $imcall;$excode
-		int[] size = new int[1];
-		Marshal.Copy(ptr, size, 0, 1);
+	IntPtr ptr = $imcall;$excode
 
-		int len = size[0];
+	int[] size = new int[1];
+	Marshal.Copy(ptr, size, 0, 1);
 
-		CSHARPTYPE[] ret = new CSHARPTYPE[len];
+	int len = size[0];
 
-		Marshal.Copy(new IntPtr(ptr.ToInt64() + Marshal.SizeOf(typeof(int))), ret, 0, len);
-		return ret;
+	CSHARPTYPE[] ret = new CSHARPTYPE[len];
+
+	Marshal.Copy(new IntPtr(ptr.ToInt64() + Marshal.SizeOf(typeof(int))), ret, 0, len);
+	return ret;
 }
 %enddef
 
@@ -88,31 +89,31 @@ TYPEMAP_SGVECTOR(float64_t, double, double)
 
 %define TYPEMAP_SGMATRIX(SGTYPE, CTYPE, CSHARPTYPE)
 
-%typemap(ctype, out="CTYPE*") shogun::SGMatrix<SGTYPE>		%{int rows, int cols, CTYPE*%}
-%typemap(imtype, out="IntPtr", inattributes="int rows, int cols, [MarshalAs(UnmanagedType.LPArray)]") shogun::SGMatrix<SGTYPE>		%{CSHARPTYPE[,]%}
-%typemap(cstype) shogun::SGMatrix<SGTYPE> 	%{CSHARPTYPE[,]%}
+%typemap(ctype, out="CTYPE*") shogun::SGMatrix<SGTYPE> %{int rows_$1, int cols_$1, CTYPE*%}
+%typemap(imtype, out="IntPtr", inattributes="int rows, int cols, [MarshalAs(UnmanagedType.LPArray)]") shogun::SGMatrix<SGTYPE> %{CSHARPTYPE[,]%}
+%typemap(cstype) shogun::SGMatrix<SGTYPE> %{CSHARPTYPE[,]%}
 
 %typemap(in) shogun::SGMatrix<SGTYPE>
 {
 	int32_t i,j;
-	SGTYPE *array;   
+	SGTYPE *array;
 
 	if (!$input) {
 		SWIG_CSharpSetPendingException(SWIG_CSharpNullReferenceException, "null array");
 		return $null;
 	}
- 
-	array = SG_MALLOC(SGTYPE, rows * cols);
+
+	array = SG_MALLOC(SGTYPE, rows_$1 * cols_$1);
 	if (!array) {
 		SWIG_CSharpSetPendingException(SWIG_CSharpOutOfMemoryException, "array memory allocation failed");
 		return $null;
 	}
 
-	for (i = 0; i < rows * cols; i++) {
+	for (i = 0; i < rows_$1 * cols_$1; i++) {
 		array[i] = (SGTYPE)$input[i];
 	}
 
-	$1 = shogun::SGMatrix<SGTYPE>(array, rows, cols, true);
+	$1 = shogun::SGMatrix<SGTYPE>(array, rows_$1, cols_$1, true);
 }
 
 %typemap(out) shogun::SGMatrix<SGTYPE>
@@ -178,9 +179,9 @@ TYPEMAP_SGMATRIX(float64_t, double, double)
 /* input/output typemap for CStringFeatures */
 %define TYPEMAP_STRINGFEATURES(SGTYPE, CTYPE, CSHARPTYPE)
 
-%typemap(ctype, out="CTYPE*") shogun::SGStringList<SGTYPE>	%{int rows, int cols, CTYPE*%}
-%typemap(imtype, out="IntPtr", inattributes="int rows, int cols, [MarshalAs(UnmanagedType.LPArray)]") shogun::SGStringList<SGTYPE>		%{CSHARPTYPE[,]%}
-%typemap(cstype) shogun::SGStringList<SGTYPE> 	%{CSHARPTYPE[,]%}
+%typemap(ctype, out="CTYPE*") shogun::SGStringList<SGTYPE> %{int rows_$1, int cols_$1, CTYPE*%}
+%typemap(imtype, out="IntPtr", inattributes="int rows, int cols, [MarshalAs(UnmanagedType.LPArray)]") shogun::SGStringList<SGTYPE> %{CSHARPTYPE[,]%}
+%typemap(cstype) shogun::SGStringList<SGTYPE> %{CSHARPTYPE[,]%}
 
 %typemap(in) shogun::SGStringList<SGTYPE> {
 	int32_t i;
@@ -192,10 +193,10 @@ TYPEMAP_SGMATRIX(float64_t, double, double)
 		return $null;
 	}
 
-	shogun::SGString<SGTYPE>* strings=SG_MALLOC(shogun::SGString<SGTYPE>, rows);
+	shogun::SGString<SGTYPE>* strings=SG_MALLOC(shogun::SGString<SGTYPE>, rows_$1);
 
-	for (i = 0; i < rows; i++) {
-		len = cols;
+	for (i = 0; i < rows_$1; i++) {
+		len = cols_$1;
 		max_len = shogun::CMath::max(len, max_len);
 
 		strings[i].slen = len;
@@ -210,7 +211,7 @@ TYPEMAP_SGMATRIX(float64_t, double, double)
 
 	SGStringList<SGTYPE> sl;
 	sl.strings=strings;
-	sl.num_strings=rows;
+	sl.num_strings=rows_$1;
 	sl.max_string_length=max_len;
 	$1 = sl;
 }
@@ -221,7 +222,7 @@ TYPEMAP_SGMATRIX(float64_t, double, double)
 	int32_t rows = $1.num_strings;
 	int32_t cols = str[0].slen;
 	int32_t len = rows * cols;
-	
+
 	CTYPE *res = SG_MALLOC(CTYPE, len + 2);
 	res[0] = rows;
 	res[1] = cols;
@@ -275,9 +276,9 @@ TYPEMAP_STRINGFEATURES(float32_t, float, float)
 TYPEMAP_STRINGFEATURES(float64_t, double, double)
 
 /* input/output typemap for SGStringList<char> */
-%typemap(ctype, out="char **") shogun::SGStringList<char>	%{int size, char **%}
-%typemap(imtype, out="IntPtr", inattributes="int size, [MarshalAs(UnmanagedType.LPArray)]") shogun::SGStringList<char>		%{string []%}
-%typemap(cstype) shogun::SGStringList<char> 	%{string []%}
+%typemap(ctype, out="char **") shogun::SGStringList<char> %{int size_$1, char **%}
+%typemap(imtype, out="IntPtr", inattributes="int size, [MarshalAs(UnmanagedType.LPArray)]") shogun::SGStringList<char> %{string []%}
+%typemap(cstype) shogun::SGStringList<char> %{string []%}
 
 %typemap(in) shogun::SGStringList<char> {
 	int32_t i;
@@ -289,9 +290,9 @@ TYPEMAP_STRINGFEATURES(float64_t, double, double)
 		return $null;
 	}
 
-	shogun::SGString<char>* strings=SG_MALLOC(shogun::SGString<char>, size);
+	shogun::SGString<char>* strings=SG_MALLOC(shogun::SGString<char>, size_$1);
 
-	for (i = 0; i < size; i++) {
+	for (i = 0; i < size_$1; i++) {
 		str = $input[i];
 		len = strlen(str);
 		max_len = shogun::CMath::max(len, max_len);
@@ -307,7 +308,7 @@ TYPEMAP_STRINGFEATURES(float64_t, double, double)
 
 	SGStringList<char> sl;
 	sl.strings = strings;
-	sl.num_strings = size;
+	sl.num_strings = size_$1;
 	sl.max_string_length = max_len;
 	$1 = sl;
 }
@@ -317,7 +318,7 @@ TYPEMAP_STRINGFEATURES(float64_t, double, double)
 	int32_t i, j;
 	int32_t size = $1.num_strings;
 	int32_t max_size = 32;
-	
+
 	char ** res = SG_MALLOC(char*, size + 1);
 	res[0] = SG_MALLOC(char, max_size);
 	sprintf(res[0], "%d", size);
@@ -332,7 +333,7 @@ TYPEMAP_STRINGFEATURES(float64_t, double, double)
 %typemap(csin) shogun::SGStringList<char> "$csinput.Length, $csinput"
 %typemap(csout, excode=SWIGEXCODE) shogun::SGStringList<char> {
 	IntPtr ptr = $imcall;$excode
-	
+
 	IntPtr[] ranks = new IntPtr[1];
 	Marshal.Copy(ptr, ranks, 0, 1);
 
@@ -345,7 +346,7 @@ TYPEMAP_STRINGFEATURES(float64_t, double, double)
 	for (int i = 0; i < size; i++) {
 			result[i] = Marshal.PtrToStringAnsi(ptrarray[i + 1]);
 	}
-	
+
 	Marshal.FreeCoTaskMem(ranks[0]);
 	Marshal.FreeCoTaskMem(ptr);
 	return result;
