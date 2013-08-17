@@ -193,8 +193,6 @@ public:
 		else if (*target==SGParamInfo("vector", CT_SGVECTOR, ST_NONE,
 				PT_INT32, 0))
 		{
-			TParameter* to_migrate=NULL;
-
 			one_to_one_migration_prepare(param_base, target, result,
 					to_migrate);
 
@@ -206,8 +204,6 @@ public:
 		else if (*target==SGParamInfo("matrix", CT_SGMATRIX, ST_NONE,
 				PT_INT32, 0))
 		{
-			TParameter* to_migrate=NULL;
-
 			one_to_one_migration_prepare(param_base, target, result,
 					to_migrate);
 
@@ -219,8 +215,6 @@ public:
 		else if (*target==SGParamInfo("matrix", CT_SGMATRIX, ST_NONE,
 				PT_FLOAT64, 1))
 		{
-			TParameter* to_migrate=NULL;
-
 			one_to_one_migration_prepare(param_base, target, result,
 					to_migrate);
 
@@ -233,8 +227,6 @@ public:
 		else if (*target==SGParamInfo("float_features", CT_SCALAR, ST_NONE,
 				PT_SGOBJECT, 1))
 		{
-			TParameter* to_migrate=NULL;
-
 			/* specify name change and thats it */
 			one_to_one_migration_prepare(param_base, target, result,
 					to_migrate, (char*) "int_features");
@@ -400,4 +392,3 @@ int main(int argc, char **argv)
 
 	return 0;
 }
-

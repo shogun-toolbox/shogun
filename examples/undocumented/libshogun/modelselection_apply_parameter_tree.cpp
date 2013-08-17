@@ -91,8 +91,8 @@ void apply_parameter_tree(CDynamicObjectArray* combinations)
 		svm->train();
 
 		/* classify on training examples */
-		for (index_t i=0; i<3; i++)
-			SG_SPRINT("output[%d]=%f\n", i, svm->apply_one(i));
+		for (index_t j=0; j<3; j++)
+			SG_SPRINT("output[%d]=%f\n", j, svm->apply_one(j));
 
 		/* unset features and SG_UNREF kernel */
 		kernel->cleanup();
@@ -140,5 +140,3 @@ int main(int argc, char **argv)
 
 	return 0;
 }
-
-
