@@ -11,14 +11,17 @@
 #ifdef HAVE_EIGEN3
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
-#include <shogun/mathematics/logdet/DenseMatrixOperator.h>
 #include <shogun/lib/computation/job/ScalarResult.h>
 #include <shogun/lib/computation/job/StoreScalarAggregator.h>
-#include <shogun/mathematics/logdet/CGMShiftedFamilySolver.h>
 #include <shogun/lib/computation/job/RationalApproximationCGMJob.h>
+#include <shogun/mathematics/eigen3.h>
+#include <shogun/mathematics/logdet/DenseMatrixOperator.h>
+#include <shogun/mathematics/logdet/DirectLinearSolverComplex.h>
+#include <shogun/mathematics/logdet/CGMShiftedFamilySolver.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;
+using namespace Eigen;
 
 TEST(RationalApproximationCGMJob, compute)
 {
@@ -47,6 +50,7 @@ TEST(RationalApproximationCGMJob, compute)
 
 	CCGMShiftedFamilySolver* linear_solver=new CCGMShiftedFamilySolver();
 	SG_REF(linear_solver);
+	linear_solver->set_iteration_limit(100);
 	CStoreScalarAggregator<float64_t>* aggregator
 		=new CStoreScalarAggregator<float64_t>();
 	SG_REF(aggregator);
@@ -62,11 +66,30 @@ TEST(RationalApproximationCGMJob, compute)
 		=dynamic_cast<CScalarResult<float64_t>*>(aggregator->get_final_result());
 	float64_t result=final_result->get_result();
 
-	EXPECT_NEAR(result, 0.02929525851272159198, 1E-15);
+	// computing the result moving the shift inside the operator
+	CDenseMatrixOperator<complex64_t>* shifted_operator
+		=static_cast<CDenseMatrixOperator<complex64_t>*>(*linear_operator);
+	SGVector<complex64_t> diag=shifted_operator->get_diagonal();
+	for (index_t i=0; i<diag.vlen; ++i)
+		diag[i]+=complex64_t(0.0, 0.01);
+	shifted_operator->set_diagonal(diag);
+	shifted_operator->get_matrix_operator().display_matrix();
+
+	CDirectLinearSolverComplex direct_solver;
+	SGVector<float64_t> soln_imag=direct_solver.solve(shifted_operator, sample).get_imag();
+	soln_imag.display_vector();
+	Map<VectorXd> As(soln_imag.vector, soln_imag.vlen);
+	As=-As;
+	soln_imag=linear_operator->apply(soln_imag);
+	Map<VectorXd> s(sample.vector, sample.vlen);
+	float direct_result=const_multiplier*s.dot(As);
+
+	EXPECT_NEAR(result, direct_result, 0.13);
 
 	SG_UNREF(job);
 	SG_UNREF(aggregator);
 	SG_UNREF(linear_operator);
+	SG_UNREF(shifted_operator);
 	SG_UNREF(linear_solver);
 }
 #endif //HAVE_EIGEN3

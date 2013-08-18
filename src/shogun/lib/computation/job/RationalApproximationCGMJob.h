@@ -40,8 +40,8 @@ public:
 	 * @param linear_solver solver for the shifted-system of this job
 	 * @param linear_operator the linear operator of the system
 	 * @param vector the sample vector of the system
-	 * @param shift the complex shifts vector in the system
-	 * @param weight the complex weights vector in the system
+	 * @param shifts the complex shifts vector in the system
+	 * @param weights the complex weights vector in the system
 	 * @param const_multiplier the constant multiplier
 	 */
 	CRationalApproximationCGMJob(CStoreScalarAggregator<float64_t>* aggregator,

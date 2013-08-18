@@ -98,6 +98,10 @@ void CRationalApproximationCGMJob::compute()
 	REQUIRE(m_vector.vector, "Vector is not set!\n");
 	REQUIRE(m_shifts.vector, "Shifts are not set!\n");
 	REQUIRE(m_weights.vector, "Weights are not set!\n");
+	REQUIRE(m_operator->get_dimension()==m_vector.vlen,
+		"Dimension mismatch! %d vs %d\n", m_operator->get_dimension(), m_vector.vlen);
+	REQUIRE(m_shifts.vlen==m_weights.vlen,
+		"Number of shifts and weights are not equal!\n");
 
 	// solve the linear system with the sample vector
 	SGVector<complex64_t> vec=m_linear_solver->solve_shifted_weighted(
