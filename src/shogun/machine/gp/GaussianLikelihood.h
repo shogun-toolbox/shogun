@@ -102,7 +102,7 @@ public:
 	 * @return \f$log(p(y_*|X, y, x*))\f$ for each label \f$y_*\f$
 	 */
 	virtual SGVector<float64_t> get_predictive_log_probabilities(
-			SGVector<float64_t> mu,	SGVector<float64_t> s2,
+			SGVector<float64_t> mu, SGVector<float64_t> s2,
 			const CLabels* lab=NULL) const;
 
 	/** returns mean of the predictive marginal \f$p(y_*|X,y,x_*)\f$.
