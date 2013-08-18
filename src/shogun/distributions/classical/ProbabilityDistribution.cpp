@@ -58,14 +58,14 @@ SGVector<float64_t> CProbabilityDistribution::log_pdf_multiple(
 	return SGVector<float64_t>();
 }
 
-float64_t CProbabilityDistribution::log_pdf(SGVector<float64_t> sample) const
+float64_t CProbabilityDistribution::log_pdf(SGVector<float64_t> sample_vec) const
 {
-	REQUIRE(sample.vlen==m_dimension, "Sample dimension (%d) does not "
-			"match dimension of distribution (%d)\n", sample.vlen,
+	REQUIRE(sample_vec.vlen==m_dimension, "Sample dimension (%d) does not "
+			"match dimension of distribution (%d)\n", sample_vec.vlen,
 			m_dimension);
 
 	SGMatrix<float64_t> s(m_dimension, 1);
-	memcpy(s.matrix, sample.vector, m_dimension*sizeof(float64_t));
+	memcpy(s.matrix, sample_vec.vector, m_dimension*sizeof(float64_t));
 	return log_pdf_multiple(s)[0];
 }
 
