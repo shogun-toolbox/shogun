@@ -75,7 +75,7 @@ public:
 	 * @return the negative log of the marginal likelihood function:
 	 *
 	 * \f[
-	 *	  -log(p(y|X, \theta))
+	 * -log(p(y|X, \theta))
 	 * \f]
 	 *
 	 * where \f$y\f$ are the labels, \f$X\f$ are the features, and
@@ -89,13 +89,13 @@ public:
 	 * to hyperparameters:
 	 *
 	 * \f[
-	 *	 -\frac{\partial {log(p(y|X, \theta))}}{\partial \theta}
+	 * -\frac{\partial {log(p(y|X, \theta))}}{\partial \theta}
 	 * \f]
 	 *
 	 * where \f$y\f$ are the labels, \f$X\f$ are the features, and \f$\theta\f$
 	 * represent hyperparameters.
 	 */
-	virtual CMap<TParameter*, SGVector<float64_t> >	get_marginal_likelihood_derivatives(
+	virtual CMap<TParameter*, SGVector<float64_t> > get_marginal_likelihood_derivatives(
 			CMap<TParameter*, CSGObject*>& para_dict);
 
 	/** get alpha vector
@@ -103,7 +103,7 @@ public:
 	 * @return vector to compute posterior mean of Gaussian Process:
 	 *
 	 * \f[
-	 *		\mu = K\alpha
+	 * \mu = K\alpha
 	 * \f]
 	 *
 	 * where \f$\mu\f$ is the mean and \f$K\f$ is the prior covariance matrix.
@@ -115,7 +115,7 @@ public:
 	 * @return Cholesky decomposition of matrix:
 	 *
 	 * \f[
-	 *		 L = Cholesky(sW*K*sW+I)
+	 * L = Cholesky(W^{\frac{1}{2}}*K*W^{\frac{1}{2}}+I)
 	 * \f]
 	 *
 	 * where \f$K\f$ is the prior covariance matrix, \f$sW\f$ is the vector
@@ -128,7 +128,7 @@ public:
 	 * @return diagonal of matrix used to calculate posterior covariance matrix:
 	 *
 	 * \f[
-	 *	    Cov = (K^{-1}+sW^{2})^{-1}
+	 * Cov = (K^{-1}+sW^{2})^{-1}
 	 * \f]
 	 *
 	 * where \f$Cov\f$ is the posterior covariance matrix, \f$K\f$ is the prior
@@ -136,22 +136,22 @@ public:
 	 */
 	virtual SGVector<float64_t> get_diagonal_vector();
 
-	/** returns mean vector \$f\mu\$f of the Gaussian distribution
-	 * \$f\mathcal{N}(\mu,\Sigma)\f$, which is an approximation to the
+	/** returns mean vector \f$\mu\f$ of the Gaussian distribution
+	 * \f$\mathcal{N}(\mu,\Sigma)\f$, which is an approximation to the
 	 * posterior:
 	 *
 	 * \f[
 	 * p(f|y) \approx q(f|y) = \mathcal{N}(f|\mu,\Sigma)
 	 * \f]
 	 *
-	 * Mean vector is evaluated using Newton's method.
+	 * Mean vector \f$\mu\f$ is evaluated using Newton's method.
 	 *
 	 * @return mean vector
 	 */
 	virtual SGVector<float64_t> get_posterior_approximation_mean();
 
-	/** returns covariance matrix \$f\Sigma=(K^{-1}+W)^{-1}\f$ of the Gaussian
-	 * distribution \$f\mathcal{N}(\mu,\Sigma)\f$, which is an approximation to
+	/** returns covariance matrix \f$\Sigma=(K^{-1}+W)^{-1}\f$ of the Gaussian
+	 * distribution \f$\mathcal{N}(\mu,\Sigma)\f$, which is an approximation to
 	 * the posterior:
 	 *
 	 * \f[
@@ -161,7 +161,7 @@ public:
 	 * Covariance matrix is evaluated using matrix inversion lemma:
 	 *
 	 * \f[
-	 * (K^{-1}+W)^{-1} = K - KW^{frac{1}{2}}B^{-1}W^{frac{1}{2}}K
+	 * (K^{-1}+W)^{-1} = K - KW^{\frac{1}{2}}B^{-1}W^{\frac{1}{2}}K
 	 * \f]
 	 *
 	 * where \f$B=(W^{frac{1}{2}}*K*W^{frac{1}{2}}+I)\f$.

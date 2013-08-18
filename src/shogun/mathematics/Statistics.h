@@ -386,11 +386,11 @@ public:
 	 * \f]
 	 *
 	 * This method uses asymptotic expansion for \f$x<-10.0\f$,
-	 * otherwise it returns \f$log(\text{normal_cdf}(x))\f$.
+	 * otherwise it returns \f$log(\text{normal\_cdf}(x))\f$.
 	 *
 	 * @param x real value
 	 *
-	 * @return \f$log(normal_cdf(x))\f$
+	 * @return \f$log(\text{normal\_cdf}(x))\f$
 	 */
 	static float64_t lnormal_cdf(float64_t x);
 
