@@ -97,7 +97,7 @@ public:
 	 * where \f$y\f$ are the labels, \f$X\f$ are the features, and \f$\theta\f$
 	 * represent hyperparameters.
 	 */
-	virtual CMap<TParameter*, SGVector<float64_t> >	get_marginal_likelihood_derivatives(
+	virtual CMap<TParameter*, SGVector<float64_t> > get_marginal_likelihood_derivatives(
 			CMap<TParameter*, CSGObject*>& para_dict)=0;
 
 	/** get alpha vector
@@ -198,7 +198,7 @@ public:
 	*
 	* @return features
 	*/
-	virtual CFeatures* get_features() {	SG_REF(m_features);	return m_features; }
+	virtual CFeatures* get_features() { SG_REF(m_features); return m_features; }
 
 	/** set features
 	*

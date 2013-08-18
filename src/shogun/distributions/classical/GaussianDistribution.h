@@ -23,7 +23,7 @@ namespace shogun
  * \f[
  * \mathcal{N}_x(\mu,\Sigma)=
  * \frac{1}{\sqrt{|2\pi\Sigma|}}
- * \exp\left(-\frac{1}{2}(x-\mu)^T\Sigma^{-1}(x-\mu\right)
+ * \exp\left(-\frac{1}{2}(x-\mu)^T\Sigma^{-1}(x-\mu)\right)
  * \f]
  *
  * The implementation represents the covariance matrix \f$\Sigma \f$, as

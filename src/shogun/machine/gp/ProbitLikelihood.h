@@ -22,11 +22,11 @@ namespace shogun
 /** @brief Class that models Probit likelihood.
  *
  * \f[
- * p(y|f) = \prod_{i=1}^n normal_cdf(y_i * f_i)
+ * p(y|f) = \prod_{i=1}^n \text{normal\_cdf}(y_i * f_i)
  * \f]
  *
- * where \f$\text{normal_cdf}(z)\f$ - cumulative distribution function (CDF) of
- * the normal distribution \f$N(0, 1)\f$.
+ * where \f$\text{normal\_cdf}(z)\f$ - cumulative distribution function (CDF) of
+ * the normal distribution \f$\mathcal{N}(0, 1)\f$.
  */
 class CProbitLikelihood : public CLikelihoodModel
 {
@@ -70,7 +70,7 @@ public:
 	 * @return \f$log(p(y_*|X, y, x*))\f$ for each label \f$y_*\f$
 	 */
 	virtual SGVector<float64_t> get_predictive_log_probabilities(
-			SGVector<float64_t> mu,	SGVector<float64_t> s2,
+			SGVector<float64_t> mu, SGVector<float64_t> s2,
 			const CLabels* lab=NULL) const;
 
 	/** returns variance of the predictive marginal \f$p(y_*|X,y,x_*)\f$.
