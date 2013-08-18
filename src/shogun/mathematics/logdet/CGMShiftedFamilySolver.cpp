@@ -49,7 +49,7 @@ SGVector<complex64_t> CCGMShiftedFamilySolver::solve_shifted_weighted(
 	CLinearOperator<float64_t>* A, SGVector<float64_t> b,
 	SGVector<complex64_t> shifts, SGVector<complex64_t> weights)
 {
-	SG_DEBUG("CCGMShiftedFamilySolve::solve_shifted_weighted(): Entering..\n");
+	SG_DEBUG("CCGMShiftedFamilySolver::solve_shifted_weighted(): Entering..\n");
 
 	// sanity check
 	REQUIRE(A, "Operator is NULL!\n");
@@ -168,7 +168,7 @@ SGVector<complex64_t> CCGMShiftedFamilySolver::solve_shifted_weighted(
 	for (index_t i=0; i<x_sh.cols(); ++i)
 		x+=x_sh.col(i)*weights[i];
 
-	SG_DEBUG("CCGMShiftedFamilySolve::solve_shifted_weighted(): Leaving..\n");
+	SG_DEBUG("CCGMShiftedFamilySolver::solve_shifted_weighted(): Leaving..\n");
 	return result;
 }
 
