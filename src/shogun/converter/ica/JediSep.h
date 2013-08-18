@@ -43,7 +43,7 @@ class CJediSep: public CConverter
 
 		/** apply to features
 		 * @param features to embed
-		 * @param embedding features
+		 * @return embedding features
 		 */
 		virtual CFeatures* apply(CFeatures* features);
 
@@ -62,7 +62,7 @@ class CJediSep: public CConverter
 		 */
 		SGMatrix<float64_t> get_mixing_matrix() const;
 
-		/** get name */
+		/** @return object name */
 		virtual const char* get_name() const { return "FFSep"; };
 
 	protected:

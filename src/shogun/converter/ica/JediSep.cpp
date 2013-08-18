@@ -63,7 +63,7 @@ SGMatrix<float64_t> CJediSep::get_mixing_matrix() const
 
 CFeatures* CJediSep::apply(CFeatures* features)
 {
-	ASSERT(features);	
+	REQUIRE(features, "features is null");	
 	SG_REF(features);
 
 	SGMatrix<float64_t> X = ((CDenseFeatures<float64_t>*)features)->get_feature_matrix();

@@ -54,8 +54,8 @@ class CJediDiag : public CApproxJointDiagonalizer
 		 */
 		static SGMatrix<float64_t> diagonalize(SGNDArray<float64_t> C,
        							SGMatrix<float64_t> V0 = SGMatrix<float64_t>(NULL,0,0,false),
-							double eps=CMath::MACHINE_EPSILON,
-							int itermax=200);
+								double eps=CMath::MACHINE_EPSILON,
+								int itermax=200);
 
 		/** Computes the matrix V that best diagonalizes C 
 		 * @param C the set of matrices to be diagonalized
