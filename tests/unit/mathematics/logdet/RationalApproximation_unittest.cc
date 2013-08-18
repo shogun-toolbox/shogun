@@ -23,10 +23,13 @@
 #include <shogun/mathematics/logdet/DenseMatrixOperator.h>
 #include <shogun/mathematics/logdet/SparseMatrixOperator.h>
 #include <shogun/mathematics/logdet/DirectLinearSolverComplex.h>
+#include <shogun/mathematics/logdet/CGMShiftedFamilySolver.h>
 #include <shogun/mathematics/logdet/ConjugateOrthogonalCGSolver.h>
 #include <shogun/mathematics/logdet/DirectEigenSolver.h>
+#include <shogun/mathematics/logdet/LanczosEigenSolver.h>
 #include <shogun/mathematics/logdet/NormalSampler.h>
 #include <shogun/mathematics/logdet/LogRationalApproximationIndividual.h>
+#include <shogun/mathematics/logdet/LogRationalApproximationCGM.h>
 #include <unsupported/Eigen/MatrixFunctions>
 #include <gtest/gtest.h>
 
@@ -285,6 +288,113 @@ TEST(RationalApproximation, compare_direct_vs_cocg_accuracy)
 	SG_UNREF(eig_solver);
 	SG_UNREF(dense_solver);
 	SG_UNREF(sparse_solver);
+	SG_UNREF(op_func);
+	SG_UNREF(e);
+	SG_UNREF(op);
+}
+
+TEST(RationalApproximation, trace_accuracy_cg_m)
+{
+	CSerialComputationEngine* e=new CSerialComputationEngine;
+	SG_REF(e);
+
+	const index_t size=5;
+	SGMatrix<float64_t> m(size, size);
+	m.set_const(0.0);
+
+	float64_t coeff=0.001;
+	for (index_t i=0; i<size; ++i)
+	{
+		m(i,i)=coeff;
+		coeff*=10;
+	}
+
+	// create the operator
+	CDenseMatrixOperator<float64_t>* op=new CDenseMatrixOperator<float64_t>(m);
+	SG_REF(op);
+
+	// create the eigen solver for finding max/min eigenvalues
+	CDirectEigenSolver* eig_solver=new CDirectEigenSolver(op);
+	SG_REF(eig_solver);
+
+	// create the direct linear solver for solving the systems that generates from
+	// rational approximation of the operator function
+	CCGMShiftedFamilySolver* linear_solver=new CCGMShiftedFamilySolver();
+	SG_REF(linear_solver);
+
+	// compute the number of shifts to assure a given accuracy
+	float64_t accuracy=1E-19;
+
+	eig_solver->compute();
+	float64_t max_eig=eig_solver->get_max_eigenvalue();
+	float64_t min_eig=eig_solver->get_min_eigenvalue();
+	float64_t pi=CMath::PI;
+
+	index_t num_shifts=static_cast<index_t>(-1.5*(CMath::log(max_eig/min_eig)+6.0)
+  	*CMath::log(accuracy)/(2.0*pi*pi));
+
+	// create the operator function that extracts the trace
+	// of the approximation of log of the linear operator
+	CLogRationalApproximationCGM *op_func
+  	=new CLogRationalApproximationCGM(op, e, eig_solver,
+		linear_solver, num_shifts);
+	SG_REF(op_func);
+
+	op_func->precompute();
+
+	// create the aggregators to contain the result aggregators
+	CDynamicObjectArray aggregators;
+
+	// extract the trace of approximation of log using basis vectors
+	for (index_t i=0; i<size; ++i)
+	{
+		SGVector<float64_t> s(size);
+		s.set_const(0.0);
+		s[i]=1.0;
+		CJobResultAggregator* agg=op_func->submit_jobs(s);
+		aggregators.append_element(agg);
+		SG_UNREF(agg);
+	}
+	// wait for all computation jobs to be computed
+	e->wait_for_all();
+
+	// use the aggregators to find the final result
+	int32_t num_aggregates=aggregators.get_num_elements();
+	float64_t result=0.0;
+	for (int32_t i=0; i<num_aggregates; ++i)
+	{
+		CJobResultAggregator* agg=dynamic_cast<CJobResultAggregator*>
+			(aggregators.get_element(i));
+
+		// call finalize on all the aggregators
+		agg->finalize();
+		CScalarResult<float64_t>* r=dynamic_cast<CScalarResult<float64_t>*>
+			(agg->get_final_result());
+
+		// its important that we don't just unref the result here
+		result+=r->get_result();
+		SG_UNREF(agg);
+	}
+
+	// clear all aggregators
+	aggregators.clear_array();
+
+#if EIGEN_VERSION_AT_LEAST(3,1,0)
+	// compute the trace of log(m) using Eigen3 that uses Schur-Parlett algorithm
+	Map<MatrixXd> eig_m(m.matrix, m.num_rows, m.num_cols);
+	float64_t trace_log_m=eig_m.log().diagonal().sum();
+#else
+	float64_t trace_log_m=-11.51292546497021618279;
+#endif // EIGEN_VERSION_AT_LEAST(3,1,0)
+
+#ifdef HAVE_ARPREC
+	EXPECT_NEAR(result, trace_log_m, 1E-13);
+#else
+	EXPECT_NEAR(result, trace_log_m, 1E-07);
+#endif
+
+	SG_UNREF(eig_solver);
+	SG_UNREF(linear_solver);
 	SG_UNREF(op_func);
 	SG_UNREF(e);
 	SG_UNREF(op);
