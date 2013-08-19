@@ -9,7 +9,7 @@ ExternalProject_Get_Property(GoogleMock source_dir)
 if(SYSTEM_INCLUDES)
 	INCLUDE_DIRECTORIES(SYSTEM ${SYSTEM_INCLUDES})
 endif()
-include_directories(${source_dir}/include ${INCLUDES} ${source_dir}/gtest/include ${CMAKE_SOURCE_DIR}/src)
+include_directories(${source_dir}/include ${INCLUDES} ${source_dir}/gtest/include ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/src)
 LINK_DIRECTORIES(${THIRD_PARTY_DIR}/libs/gmock)
 
 # Generate automatic unittest from jinja2 templates
