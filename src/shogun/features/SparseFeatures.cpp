@@ -546,7 +546,6 @@ template<class ST> float64_t CSparseFeatures<ST>::dense_dot(int32_t vec_idx1, co
 
 	if (sv.features)
 	{
-		// TODO: check should be implemented in sparse matrix class
 		REQUIRE(get_num_features() >= sv.get_num_dimensions(),
 			"sparse_matrix[%d] check failed (matrix features %d >= vector dimension %d)\n",
 			vec_idx1, get_num_features(), sv.get_num_dimensions());

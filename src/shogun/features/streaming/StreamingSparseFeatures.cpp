@@ -103,14 +103,10 @@ T CStreamingSparseFeatures<T>::sparse_dot(T alpha, SGSparseVectorEntry<T>* avec,
 	//result remains zero when one of the vectors is non existent
 	if (avec && bvec)
 	{
-		SGSparseVector<T> asv(avec, alen);
-		SGSparseVector<T> bsv(bvec, blen);
+		SGSparseVector<T> asv(avec, alen, false);
+		SGSparseVector<T> bsv(bvec, blen, false);
 
 		result=alpha*SGSparseVector<T>::sparse_dot(asv, bsv);
-
-		// prevent that SGSparseVector frees our memory
-		asv.features = NULL;
-		bsv.features = NULL;
 	}
 
 	return result;
@@ -125,11 +121,8 @@ T CStreamingSparseFeatures<T>::dense_dot(T alpha, T* vec, int32_t dim, T b)
 
 	if (current_vector)
 	{
-		SGSparseVector<T> xsv = get_vector();
+		SGSparseVector<T> xsv(current_vector, current_length, false);
 		result=xsv.dense_dot(alpha, vec, dim, b);
-
-		// prevent that SGSparseVector frees our memory
-		xsv.features = NULL;
 	}
 
 	return result;
