@@ -66,6 +66,7 @@
 %include "Latent_includes.i"
 %include "Metric_includes.i"
 %include "GaussianProcess_includes.i"
+%include "Ensemble_includes.i"
 
 %include "Machine.i"
 %include "SGBase.i"
@@ -91,6 +92,7 @@
 %include "Latent.i"
 %include "Metric.i"
 %include "GaussianProcess.i"
+%include "Ensemble.i"
 
 #if defined(SWIGPERL)
 %include "abstract_types_extension.i"
