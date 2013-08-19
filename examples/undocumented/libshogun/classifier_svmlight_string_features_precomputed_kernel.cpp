@@ -6,6 +6,8 @@
  *
  * Written (W) 2013 Heiko Strathmann
  */
+#include <shogun/lib/config.h>
+
 #include <shogun/kernel/string/DistantSegmentsKernel.h>
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/features/StringFeatures.h>
@@ -14,6 +16,7 @@
 
 using namespace shogun;
 
+#ifdef USE_SVMLIGHT
 void test_svmlight()
 {
 	/* data is random length strings with only zeros (A) or ones (B) */
@@ -191,4 +194,9 @@ int main()
 	exit_shogun();
 	return 0;
 }
-
+#else
+int main(int argc, char **argv)
+{
+	return 0;
+}
+#endif
