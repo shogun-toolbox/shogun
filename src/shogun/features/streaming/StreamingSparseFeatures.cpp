@@ -103,42 +103,14 @@ T CStreamingSparseFeatures<T>::sparse_dot(T alpha, SGSparseVectorEntry<T>* avec,
 	//result remains zero when one of the vectors is non existent
 	if (avec && bvec)
 	{
-		if (alen<=blen)
-		{
-			int32_t j=0;
-			for (int32_t i=0; i<alen; i++)
-			{
-				int32_t a_feat_idx=avec[i].feat_index;
+		SGSparseVector<T> asv(avec, alen);
+		SGSparseVector<T> bsv(bvec, blen);
 
-				while ( (j<blen) && (bvec[j].feat_index < a_feat_idx) )
-					j++;
+		result=alpha*SGSparseVector<T>::sparse_dot(asv, bsv);
 
-				if ( (j<blen) && (bvec[j].feat_index == a_feat_idx) )
-				{
-					result+= avec[i].entry * bvec[j].entry;
-					j++;
-				}
-			}
-		}
-		else
-		{
-			int32_t j=0;
-			for (int32_t i=0; i<blen; i++)
-			{
-				int32_t b_feat_idx=bvec[i].feat_index;
-
-				while ( (j<alen) && (avec[j].feat_index < b_feat_idx) )
-					j++;
-
-				if ( (j<alen) && (avec[j].feat_index == b_feat_idx) )
-				{
-					result+= bvec[i].entry * avec[j].entry;
-					j++;
-				}
-			}
-		}
-
-		result*=alpha;
+		// prevent that SGSparseVector frees our memory
+		asv.features = NULL;
+		bsv.features = NULL;
 	}
 
 	return result;
@@ -151,13 +123,13 @@ T CStreamingSparseFeatures<T>::dense_dot(T alpha, T* vec, int32_t dim, T b)
 	ASSERT(dim>=current_num_features)
 	T result=b;
 
-	int32_t num_feat=current_length;
-	SGSparseVectorEntry<T>* sv=current_vector;
-
-	if (sv)
+	if (current_vector)
 	{
-		for (int32_t i=0; i<num_feat; i++)
-			result+=alpha*vec[sv[i].feat_index]*sv[i].entry;
+		SGSparseVector<T> xsv = get_vector();
+		result=xsv.dense_dot(alpha, vec, dim, b);
+
+		// prevent that SGSparseVector frees our memory
+		xsv.features = NULL;
 	}
 
 	return result;
