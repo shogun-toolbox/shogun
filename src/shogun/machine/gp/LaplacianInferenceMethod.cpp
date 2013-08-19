@@ -355,13 +355,17 @@ void CLaplacianInferenceMethod::update_approx_cov()
 
 	m_approx_cov=SGMatrix<float64_t>(m_ktrtr.num_rows, m_ktrtr.num_cols);
 	Map<MatrixXd> eigen_approx_cov(m_approx_cov.matrix, m_approx_cov.num_rows,
-		m_approx_cov.num_cols);
+			m_approx_cov.num_cols);
 
-	MatrixXd eigen_iB=eigen_L.triangularView<Upper>().adjoint().solve(
-		MatrixXd::Identity(m_L.num_rows, m_L.num_cols));
-	eigen_iB=eigen_L.triangularView<Upper>().solve(eigen_iB);
+	// compute V = L^(-1) * W^(1/2) * K, using upper triangular factor L^T
+	MatrixXd eigen_V=eigen_L.triangularView<Upper>().adjoint().solve(
+			eigen_sW.asDiagonal()*eigen_K*CMath::sq(m_scale));
 
-	eigen_approx_cov=eigen_K-eigen_K*eigen_sW.asDiagonal()*eigen_iB*eigen_sW.asDiagonal()*eigen_K;
+	// compute covariance matrix of the posterior:
+	// Sigma = K - K * W^(1/2) * (L * L^T)^(-1) * W^(1/2) * K =
+	// K - (K * W^(1/2)) * (L^T)^(-1) * L^(-1) * W^(1/2) * K =
+	// K - (W^(1/2) * K)^T * (L^(-1))^T * L^(-1) * W^(1/2) * K = K - V^T * V
+	eigen_approx_cov=eigen_K*CMath::sq(m_scale)-eigen_V.adjoint()*eigen_V;
 }
 
 void CLaplacianInferenceMethod::update_chol()
