@@ -413,11 +413,13 @@ bool CStreamingSparseFeatures<T>::get_next_example()
 	// Update number of features based on highest index
 	for (int32_t i=0; i<current_length; i++)
 	{
-		if (current_vector[i].feat_index > current_num_features)
+		if (current_vector[i].feat_index+1 > current_num_features)
 			current_num_features = current_vector[i].feat_index+1;
 	}
 	current_vec_index++;
 
+	ASSERT(current_num_features >= get_vector().get_num_dimensions());
+	ASSERT(current_num_features == CMath::max(current_num_features, get_vector().get_num_dimensions()));
 	return true;
 }
 

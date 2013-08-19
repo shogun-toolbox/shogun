@@ -93,14 +93,13 @@ template<class ST> SGSparseVector<ST> CSparseFeatures<ST>::get_sparse_feature_ve
 	REQUIRE(num>=0 && num<get_num_vectors(), "get_sparse_feature_vector(num=%d): num exceeds [0;%d]\n", num, get_num_vectors()-1);
 	index_t real_num=m_subset_stack->subset_idx_conversion(num);
 
-	SGSparseVector<ST> result;
-
 	if (sparse_feature_matrix.sparse_matrix)
 	{
 		return sparse_feature_matrix[real_num];
 	}
 	else
 	{
+		SGSparseVector<ST> result;
 		if (feature_cache)
 		{
 			result.features=feature_cache->lock_entry(num);
@@ -223,6 +222,14 @@ template<class ST> void CSparseFeatures<ST>::set_sparse_feature_matrix(SGSparseM
 		SG_ERROR("Not allowed with subset\n");
 
 	sparse_feature_matrix=sm;
+
+	// TODO: check should be implemented in sparse matrix class
+	for (int32_t j=0; j<get_num_vectors(); j++) {
+		SGSparseVector<ST> sv=get_sparse_feature_vector(j);
+		REQUIRE(get_num_features() >= sv.get_num_dimensions(),
+			"sparse_matrix[%d] check failed (matrix features %d >= vector dimension %d)",
+			j, get_num_features(), sv.get_num_dimensions());
+	}
 }
 
 template<class ST> SGMatrix<ST> CSparseFeatures<ST>::get_full_feature_matrix()
@@ -533,6 +540,15 @@ template<class ST> float64_t CSparseFeatures<ST>::dense_dot(int32_t vec_idx1, co
 
 	if (sv.features)
 	{
+		// TODO: check should be implemented in sparse matrix class
+		REQUIRE(get_num_features() >= sv.get_num_dimensions(),
+			"sparse_matrix[%d] check failed (matrix features %d >= vector dimension %d)",
+			vec_idx1, get_num_features(), sv.get_num_dimensions());
+
+		REQUIRE(vec2_len >= sv.get_num_dimensions(),
+			"sparse_matrix[%d] check failed (dense vector dimension %d >= vector dimension %d)",
+			vec_idx1, vec2_len, sv.get_num_dimensions());
+
 		for (int32_t i=0; i<sv.num_feat_entries; i++)
 			result+=vec2[sv.features[i].feat_index]*sv.features[i].entry;
 	}
