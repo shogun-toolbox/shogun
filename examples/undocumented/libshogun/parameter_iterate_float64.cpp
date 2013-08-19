@@ -23,11 +23,11 @@ void print_message(FILE* target, const char* str)
 	fprintf(target, "%s", str);
 }
 
-/* number of features and their dimension */
-int32_t n=6;
-
 int main(int argc, char** argv)
 {
+	/* number of features and their dimension */
+	const int32_t n=6;
+
 	init_shogun(&print_message);
 
 	/* create some random data */
