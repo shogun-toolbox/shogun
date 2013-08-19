@@ -63,7 +63,7 @@ class CJediSep: public CConverter
 		SGMatrix<float64_t> get_mixing_matrix() const;
 
 		/** @return object name */
-		virtual const char* get_name() const { return "FFSep"; };
+		virtual const char* get_name() const { return "JediSep"; };
 
 	protected:
 
