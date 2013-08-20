@@ -156,6 +156,7 @@ void CBinaryFile::fname(SGSparseVector<sg_type>*& matrix, int32_t& num_feat, int
 		if (fread(vec, sizeof(SGSparseVectorEntry<sg_type>), len, file)!= (size_t) len)		\
 			SG_ERROR("Failed to read sparse vector %d\n", i)							\
 		matrix[i].features=vec;															\
+		num_feat = CMath::max(num_feat, matrix[i].get_num_dimensions()); \
 	}																					\
 }
 GET_SPARSEMATRIX(get_sparse_matrix, bool, TSGDataType(CT_MATRIX, ST_NONE, PT_BOOL))
