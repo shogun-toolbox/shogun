@@ -9,8 +9,8 @@
  * Thanks to Andreas Ziehe and Cedric Gouy-Pailler
  */
 
-#ifndef JEDI_H_
-#define JEDI_H_
+#ifndef JEDIDIAG_H_
+#define JEDIDIAG_H_
 
 #include <shogun/lib/config.h>
 
@@ -31,17 +31,17 @@ namespace shogun
  * Signal Processing, IEEE Transactions on, 57(6), 2222-2231.
  * 
  */
-class CJedi : public CApproxJointDiagonalizer
+class CJediDiag : public CApproxJointDiagonalizer
 {
 	public:
 	
 		/** constructor */
-		CJedi()
+		CJediDiag()
 		{
 		}
 
 		/** destructor */
-		virtual ~CJedi()
+		virtual ~CJediDiag()
 		{
 		}
 	
@@ -54,8 +54,8 @@ class CJedi : public CApproxJointDiagonalizer
 		 */
 		static SGMatrix<float64_t> diagonalize(SGNDArray<float64_t> C,
        							SGMatrix<float64_t> V0 = SGMatrix<float64_t>(NULL,0,0,false),
-							double eps=CMath::MACHINE_EPSILON,
-							int itermax=200);
+								double eps=CMath::MACHINE_EPSILON,
+								int itermax=200);
 
 		/** Computes the matrix V that best diagonalizes C 
 		 * @param C the set of matrices to be diagonalized
@@ -74,8 +74,8 @@ class CJedi : public CApproxJointDiagonalizer
 		}
 
 		/** @return object name */
-		virtual const char* get_name() const { return "Jedi"; }
+		virtual const char* get_name() const { return "JediDiag"; }
 };
 }
 #endif //HAVE_EIGEN3
-#endif //JEDI_H_ 
+#endif //JEDIDIAG_H_ 

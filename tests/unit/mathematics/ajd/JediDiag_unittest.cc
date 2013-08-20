@@ -10,7 +10,7 @@
 
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
-#include <shogun/mathematics/ajd/Jedi.h>
+#include <shogun/mathematics/ajd/JediDiag.h>
 
 #include <shogun/evaluation/ica/PermutationMatrix.h>
 #include <iostream>
@@ -22,7 +22,7 @@ typedef Matrix< float64_t, Dynamic, 1, ColMajor > EVector;
 
 using namespace shogun;
 
-TEST(CJedi, diagonalize)
+TEST(CJediDiag, diagonalize)
 {
 	// Generating diagonal matrices
 	index_t * C_dims = SG_MALLOC(index_t, 3);
@@ -55,7 +55,7 @@ TEST(CJedi, diagonalize)
 	}	
 
 	/** Diagonalize **/
-	SGMatrix<float64_t> V = CJedi::diagonalize(C);
+	SGMatrix<float64_t> V = CJediDiag::diagonalize(C);
 
 	// Test output size
 	EXPECT_EQ(V.num_rows, C_dims[0]);
