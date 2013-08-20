@@ -1,6 +1,6 @@
 #ifdef HAVE_EIGEN3
 
-#include <shogun/mathematics/ajd/Jedi.h>
+#include <shogun/mathematics/ajd/JediDiag.h>
 
 #include <shogun/base/init.h>
 
@@ -20,7 +20,7 @@ void sweepjedi(float64_t *C, int *pMatSize, int *pMatNumber,
 void iterJDI(float64_t *C, int *pMatSize, int *pMatNumber, int *ptn,int *ptm,
 			float64_t *s_max, float64_t *sh_max, float64_t *A);
 
-SGMatrix<float64_t> CJedi::diagonalize(SGNDArray<float64_t> C, SGMatrix<float64_t> V0,
+SGMatrix<float64_t> CJediDiag::diagonalize(SGNDArray<float64_t> C, SGMatrix<float64_t> V0,
 						double eps, int itermax)
 {
 	int d = C.dims[0];

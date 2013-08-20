@@ -64,7 +64,7 @@ class CSOBI: public CConverter
 		 */
 		SGMatrix<float64_t> get_mixing_matrix() const;
 
-		/** get name */
+		/** @return object name */
 		virtual const char* get_name() const { return "SOBI"; };
 
 	protected:

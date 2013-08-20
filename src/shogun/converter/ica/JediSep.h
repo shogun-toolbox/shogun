@@ -7,8 +7,8 @@
  * Written (W) 2013 Kevin Hughes
  */
 
-#ifndef FFSEP_H_
-#define FFSEP_H_
+#ifndef JEDISEP_H_
+#define JEDISEP_H_
 
 #include <shogun/lib/config.h>
 #ifdef HAVE_EIGEN3
@@ -20,31 +20,30 @@ namespace shogun
 
 class CFeatures;
 
-/** @brief class FFSep
+/** @brief class JediSep
  * 
- * Implements the FFSep algorithm for Independent 
+ * Implements the JediSep algorithm for Independent 
  * Component Analysis (ICA) and Blind Source 
  * Separation (BSS).
  * 
- * Ziehe, A., Laskov, P., Nolte, G., & Müller, K. R. (2004). 
- * A fast algorithm for joint diagonalization with non-orthogonal transformations 
- * and its application to blind source separation. 
- * The Journal of Machine Learning Research, 5, 777-800.
+ * Souloumiac, A. (2009). 
+ * Nonorthogonal joint diagonalization by combining givens and hyperbolic rotations. 
+ * Signal Processing, IEEE Transactions on, 57(6), 2222-2231.
  *
  */
-class CFFSep: public CConverter
+class CJediSep: public CConverter
 {
 	public:
 		
 		/** constructor */
-		CFFSep();
+		CJediSep();
 
 		/** destructor */
-		virtual ~CFFSep();
+		virtual ~CJediSep();
 
 		/** apply to features
 		 * @param features to embed
-		 * @param embedding features
+		 * @return embedding features
 		 */
 		virtual CFeatures* apply(CFeatures* features);
 
@@ -64,7 +63,7 @@ class CFFSep: public CConverter
 		SGMatrix<float64_t> get_mixing_matrix() const;
 
 		/** @return object name */
-		virtual const char* get_name() const { return "FFSep"; };
+		virtual const char* get_name() const { return "JediSep"; };
 
 	protected:
 
@@ -81,4 +80,4 @@ class CFFSep: public CConverter
 };	
 }
 #endif // HAVE_EIGEN3
-#endif // FFSEP
+#endif // JEDISEP
