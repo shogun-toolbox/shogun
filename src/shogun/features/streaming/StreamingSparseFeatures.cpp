@@ -103,42 +103,10 @@ T CStreamingSparseFeatures<T>::sparse_dot(T alpha, SGSparseVectorEntry<T>* avec,
 	//result remains zero when one of the vectors is non existent
 	if (avec && bvec)
 	{
-		if (alen<=blen)
-		{
-			int32_t j=0;
-			for (int32_t i=0; i<alen; i++)
-			{
-				int32_t a_feat_idx=avec[i].feat_index;
+		SGSparseVector<T> asv(avec, alen, false);
+		SGSparseVector<T> bsv(bvec, blen, false);
 
-				while ( (j<blen) && (bvec[j].feat_index < a_feat_idx) )
-					j++;
-
-				if ( (j<blen) && (bvec[j].feat_index == a_feat_idx) )
-				{
-					result+= avec[i].entry * bvec[j].entry;
-					j++;
-				}
-			}
-		}
-		else
-		{
-			int32_t j=0;
-			for (int32_t i=0; i<blen; i++)
-			{
-				int32_t b_feat_idx=bvec[i].feat_index;
-
-				while ( (j<alen) && (avec[j].feat_index < b_feat_idx) )
-					j++;
-
-				if ( (j<alen) && (avec[j].feat_index == b_feat_idx) )
-				{
-					result+= bvec[i].entry * avec[j].entry;
-					j++;
-				}
-			}
-		}
-
-		result*=alpha;
+		result=alpha*SGSparseVector<T>::sparse_dot(asv, bsv);
 	}
 
 	return result;
@@ -151,13 +119,10 @@ T CStreamingSparseFeatures<T>::dense_dot(T alpha, T* vec, int32_t dim, T b)
 	ASSERT(dim>=current_num_features)
 	T result=b;
 
-	int32_t num_feat=current_length;
-	SGSparseVectorEntry<T>* sv=current_vector;
-
-	if (sv)
+	if (current_vector)
 	{
-		for (int32_t i=0; i<num_feat; i++)
-			result+=alpha*vec[sv[i].feat_index]*sv[i].entry;
+		SGSparseVector<T> xsv(current_vector, current_length, false);
+		result=xsv.dense_dot(alpha, vec, dim, b);
 	}
 
 	return result;
@@ -411,13 +376,10 @@ bool CStreamingSparseFeatures<T>::get_next_example()
 		return false;
 
 	// Update number of features based on highest index
-	for (int32_t i=0; i<current_length; i++)
-	{
-		if (current_vector[i].feat_index > current_num_features)
-			current_num_features = current_vector[i].feat_index+1;
-	}
-	current_vec_index++;
+	int32_t current_dimension = get_vector().get_num_dimensions();
+	current_num_features = CMath::max(current_num_features, current_dimension);
 
+	current_vec_index++;
 	return true;
 }
 

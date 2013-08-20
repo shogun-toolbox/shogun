@@ -18,10 +18,11 @@ void test()
 {
 
 	index_t num_vectors=10;
+	index_t num_dimensions=7;
 	index_t num_features=3;
 
 	/* create some sparse data */
-	SGSparseMatrix<float64_t> data=SGSparseMatrix<float64_t>(num_features,
+	SGSparseMatrix<float64_t> data=SGSparseMatrix<float64_t>(num_dimensions,
 			num_vectors);
 
 	for (index_t i=0; i<num_vectors; ++i)
