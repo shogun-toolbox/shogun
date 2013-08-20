@@ -184,8 +184,6 @@ void CBaggingMachine::init()
 	m_labels = NULL;
 	m_num_bags = 0;
 	m_bag_size = 0;
-
-	this->unset_generic();
 }
 
 void CBaggingMachine::set_combination_rule(CCombinationRule* rule)
