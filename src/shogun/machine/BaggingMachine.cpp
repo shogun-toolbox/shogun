@@ -35,11 +35,9 @@ CBaggingMachine::CBaggingMachine(CFeatures* features, CLabels* labels)
 CBaggingMachine::~CBaggingMachine()
 {
 	SG_UNREF(m_machine);
-	m_machine = NULL;
 	SG_UNREF(m_features);
-	m_features = NULL;
 	SG_UNREF(m_combination_rule);
-	m_combination_rule = NULL;
+	SG_UNREF(m_bags);
 }
 
 CBinaryLabels* CBaggingMachine::apply_binary(CFeatures* data)
@@ -78,7 +76,7 @@ SGVector<float64_t> CBaggingMachine::apply_get_outputs(CFeatures* data)
 	//#pragma omp parallel for num_threads(parallel->get_num_threads())
 	for (int32_t i = 0; i < m_num_bags; ++i)
 	{
-		CMachine* m = dynamic_cast<CMachine*>(m_bags.get_element(i));
+		CMachine* m = dynamic_cast<CMachine*>(m_bags->get_element(i));
 		CLabels* l = m->apply(data);
 		SGVector<float64_t> lv = l->get_values();
 		float64_t* bag_results = output.get_column_vector(i);
@@ -127,7 +125,7 @@ bool CBaggingMachine::train_machine(CFeatures* data)
 		c->train(m_features);
 		m_features->remove_subset();
 		m_labels->remove_subset();
-		m_bags.append_element(c);
+		m_bags->append_element(c);
 	}
 
 	return true;
@@ -179,7 +177,7 @@ void CBaggingMachine::set_machine(CMachine* machine)
 
 void CBaggingMachine::init()
 {
-	m_bags.clear_array();
+	m_bags = new CDynamicObjectArray();
 	m_machine = NULL;
 	m_features = NULL;
 	m_combination_rule = NULL;

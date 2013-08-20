@@ -119,7 +119,7 @@ namespace shogun
 
 		private:
 			/** bags array */
-			CDynamicObjectArray m_bags;
+			CDynamicObjectArray* m_bags;
 
 			/** features to train on */
 			CFeatures* m_features;
