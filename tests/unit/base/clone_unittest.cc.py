@@ -20,7 +20,7 @@ def is_valid(sho_class):
     cannot be tested for clone/equals automatically due to framework
     issues
     """
-    ignores = ['Set', 'ParseBuffer', 'TreeMachine', 'BaggingMachine']
+    ignores = ['Set', 'ParseBuffer', 'TreeMachine']
     if sho_class.startswith('GUI'):
         return False
     if sho_class in ignores:
