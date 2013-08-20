@@ -82,7 +82,7 @@ SGVector<float64_t> CBaggingMachine::apply_get_outputs(CFeatures* data)
 		CLabels* l = m->apply(data);
 		SGVector<float64_t> lv = l->get_values();
 		float64_t* bag_results = output.get_column_vector(i);
-		memcpy(bag_results, lv.vector, lv.vlen);
+		memcpy(bag_results, lv.vector, lv.vlen*sizeof(float64_t));
 
 		SG_UNREF(l);
 	}
@@ -104,11 +104,29 @@ bool CBaggingMachine::train_machine(CFeatures* data)
 		CMachine* c = dynamic_cast<CMachine*>(m_machine->clone());
 		ASSERT(c != NULL);
 		SGVector<index_t> idx(m_bag_size);
-		idx.random(0, m_features->get_num_vectors());
+		idx.random(0, m_features->get_num_vectors()-1);
+		m_labels->add_subset(idx);
+		/* TODO:
+		   if it's a binary labeling ensure that
+		   there's always samples of both classes
+		if ((m_labels->get_label_type() == LT_BINARY))
+		{
+			while (true) {
+				if (!m_labels->ensure_valid()) {
+					m_labels->remove_subset();
+					idx.random(0, m_features->get_num_vectors());
+					m_labels->add_subset(idx);
+					continue;
+				}
+				break;
+			}
+		}
+		*/
 		m_features->add_subset(idx);
 		c->set_labels(m_labels);
 		c->train(m_features);
 		m_features->remove_subset();
+		m_labels->remove_subset();
 		m_bags.append_element(c);
 	}
 
