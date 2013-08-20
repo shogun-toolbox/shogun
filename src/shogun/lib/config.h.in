@@ -18,7 +18,6 @@
 #cmakedefine HAVE_EIGEN3 1
 #cmakedefine HAVE_CATLAS 1
 #cmakedefine HAVE_ATLAS 1
-#cmakedefine HAVE_SUPERLU 1
 #cmakedefine HAVE_NLOPT 1
 #cmakedefine USE_LPSOLVE 1
 #cmakedefine HAVE_PTHREAD 1
