@@ -74,7 +74,7 @@ class CJediDiag : public CApproxJointDiagonalizer
 		}
 
 		/** @return object name */
-		virtual const char* get_name() const { return "Jedi"; }
+		virtual const char* get_name() const { return "JediDiag"; }
 };
 }
 #endif //HAVE_EIGEN3
