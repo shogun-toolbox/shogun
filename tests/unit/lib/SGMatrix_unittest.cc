@@ -1,4 +1,5 @@
 #include <shogun/lib/SGMatrix.h>
+#include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/Math.h>
 #include <gtest/gtest.h>
 
@@ -53,14 +54,14 @@ TEST(SGMatrixTest,equals_equal)
 	a(1,1)=4;
 	a(2,0)=5;
 	a(2,1)=6;
-	
+
 	b(0,0)=1;
 	b(0,1)=2;
 	b(1,0)=3;
 	b(1,1)=4;
 	b(2,0)=5;
 	b(2,1)=6;
-	
+
 	EXPECT_TRUE(a.equals(b));
 }
 
@@ -74,14 +75,14 @@ TEST(SGMatrixTest,equals_different)
 	a(1,1)=4;
 	a(2,0)=5;
 	a(2,1)=6;
-	
+
 	b(0,0)=1;
 	b(0,1)=2;
 	b(1,0)=3;
 	b(1,1)=4;
 	b(2,0)=5;
 	b(2,1)=7;
-	
+
 	EXPECT_FALSE(a.equals(b));
 }
 
@@ -91,6 +92,44 @@ TEST(SGMatrixTest,equals_different_size)
 	SGMatrix<float64_t> b(2,2);
 	a.zero();
 	b.zero();
-	
+
 	EXPECT_FALSE(a.equals(b));
+}
+
+TEST(SGMatrixTest,get_diagonal_vector_square_matrix)
+{
+	SGMatrix<int32_t> mat(3, 3);
+
+	mat(0,0)=8;
+	mat(0,1)=1;
+	mat(0,2)=6;
+	mat(1,0)=3;
+	mat(1,1)=5;
+	mat(1,2)=7;
+	mat(2,0)=4;
+	mat(2,1)=9;
+	mat(2,2)=2;
+
+	SGVector<int32_t> diag=mat.get_diagonal_vector();
+
+	EXPECT_EQ(diag[0], 8);
+	EXPECT_EQ(diag[1], 5);
+	EXPECT_EQ(diag[2], 2);
+}
+
+TEST(SGMatrixTest,get_diagonal_vector_rectangular_matrix)
+{
+	SGMatrix<int32_t> mat(3, 2);
+
+	mat(0,0)=8;
+	mat(0,1)=1;
+	mat(1,0)=3;
+	mat(1,1)=5;
+	mat(2,0)=4;
+	mat(2,1)=9;
+
+	SGVector<int32_t> diag=mat.get_diagonal_vector();
+
+	EXPECT_EQ(diag[0], 8);
+	EXPECT_EQ(diag[1], 5);
 }

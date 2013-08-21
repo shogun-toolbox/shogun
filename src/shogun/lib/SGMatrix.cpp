@@ -932,7 +932,7 @@ void SGMatrix<T>::load(CFile* loader)
 {
 	ASSERT(loader)
 	unref();
-	
+
 	SG_SET_LOCALE_C;
 	SGMatrix<T> mat;
 	loader->get_matrix(mat.matrix, mat.num_rows, mat.num_cols);
@@ -972,6 +972,20 @@ SGVector<T> SGMatrix<T>::get_row_vector(index_t row) const
 		rowv[i] = matrix[i*num_rows+row];
 	}
 	return rowv;
+}
+
+template<class T>
+SGVector<T> SGMatrix<T>::get_diagonal_vector() const
+{
+	index_t diag_vlen=CMath::min(num_cols, num_rows);
+	SGVector<T> diag(diag_vlen);
+
+	for (index_t i=0; i<diag_vlen; i++)
+	{
+		diag[i]=matrix[i*num_rows+i];
+	}
+
+	return diag;
 }
 
 template class SGMatrix<bool>;
