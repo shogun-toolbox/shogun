@@ -9,6 +9,7 @@
  */
 
 #include <shogun/structure/MAPInference.h>
+#include <shogun/structure/BeliefPropagation.h>
 
 #include <string>
 
@@ -31,8 +32,7 @@ CMAPInference::CMAPInference(CFactorGraph* fg, EMAPInferType inference_method)
 	switch(inference_method)
 	{
 		case TREE_MAX_PROD:
-			SG_ERROR("%s::CMAPInference(): TreeMaxProduct has not been implemented!\n", 
-				get_name());
+			m_infer_impl = new CTreeMaxProduct(fg);
 			break;
 		case LOOPY_MAX_PROD:
 			SG_ERROR("%s::CMAPInference(): LoopyMaxProduct has not been implemented!\n", 
