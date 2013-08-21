@@ -368,17 +368,11 @@ protected:
 	/// The current example's feature vector as an SGVector<T>
 	SGSparseVector<T> current_sgvector;
 
-	/// The current example's feature vector as an SGSparseVectorEntry<T>*.
-	SGSparseVectorEntry<T>* current_vector;
-
 	/// The current vector index
 	index_t current_vec_index;
 
 	/// The current example's label.
 	float64_t current_label;
-
-	/// Number of set indices in current example.
-	int32_t current_length;
 
 	/// Number of features in current vector (as seen so far upto the current vector)
 	int32_t current_num_features;

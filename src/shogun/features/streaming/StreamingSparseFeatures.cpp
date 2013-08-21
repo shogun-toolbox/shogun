@@ -31,11 +31,6 @@ CStreamingSparseFeatures<T>::CStreamingSparseFeatures(CStreamingFile* file,
 template <class T>
 CStreamingSparseFeatures<T>::~CStreamingSparseFeatures()
 {
-	/* needed to prevent double free memory errors */
-	/* this might result in a small memory leak... */
-	current_sgvector.features=NULL;
-	current_sgvector.num_feat_entries=0;
-
 	if (parser.is_running())
 		parser.end_parser();
 }
@@ -44,17 +39,7 @@ template <class T>
 T CStreamingSparseFeatures<T>::get_feature(int32_t index)
 {
 	ASSERT(index>=0 && index<current_num_features)
-
-	T ret=0;
-
-	if (current_vector)
-	{
-		for (int32_t i=0; i<current_length; i++)
-			if (current_vector[i].feat_index==index)
-				ret += current_vector[i].entry;
-	}
-
-	return ret;
+	return current_sgvector.get_feature(index);
 }
 
 template <class T>
@@ -117,15 +102,8 @@ T CStreamingSparseFeatures<T>::dense_dot(T alpha, T* vec, int32_t dim, T b)
 {
 	ASSERT(vec)
 	ASSERT(dim>=current_num_features)
-	T result=b;
 
-	if (current_vector)
-	{
-		SGSparseVector<T> xsv(current_vector, current_length, false);
-		result=xsv.dense_dot(alpha, vec, dim, b);
-	}
-
-	return result;
+	return current_sgvector.dense_dot(alpha, vec, dim, b);
 }
 
 template <class T>
@@ -137,6 +115,9 @@ float64_t CStreamingSparseFeatures<T>::dense_dot(const float64_t* vec2, int32_t 
 		SG_ERROR("dimension of vec2 (=%d) does not match number of features (=%d)\n",
 			 vec2_len, current_num_features);
 	}
+
+	int32_t current_length = current_sgvector.num_feat_entries;
+	SGSparseVectorEntry<T>* current_vector = current_sgvector.features;
 
 	float64_t result=0;
 	if (current_vector)
@@ -158,6 +139,9 @@ float32_t CStreamingSparseFeatures<T>::dense_dot(const float32_t* vec2, int32_t 
 			 vec2_len, current_num_features);
 	}
 
+	int32_t current_length = current_sgvector.num_feat_entries;
+	SGSparseVectorEntry<T>* current_vector = current_sgvector.features;
+
 	float32_t result=0;
 	if (current_vector)
 	{
@@ -178,8 +162,8 @@ void CStreamingSparseFeatures<T>::add_to_dense_vec(float64_t alpha, float64_t* v
 			 vec2_len, current_num_features);
 	}
 
-	SGSparseVectorEntry<T>* sv=current_vector;
-	int32_t num_feat=current_length;
+	SGSparseVectorEntry<T>* sv=current_sgvector.features;
+	int32_t num_feat=current_sgvector.num_feat_entries;
 
 	if (sv)
 	{
@@ -206,8 +190,8 @@ void CStreamingSparseFeatures<T>::add_to_dense_vec(float32_t alpha, float32_t* v
 			 vec2_len, current_num_features);
 	}
 
-	SGSparseVectorEntry<T>* sv=current_vector;
-	int32_t num_feat=current_length;
+	SGSparseVectorEntry<T>* sv=current_sgvector.features;
+	int32_t num_feat=current_sgvector.num_feat_entries;
 
 	if (sv)
 	{
@@ -227,12 +211,15 @@ void CStreamingSparseFeatures<T>::add_to_dense_vec(float32_t alpha, float32_t* v
 template <class T>
 int64_t CStreamingSparseFeatures<T>::get_num_nonzero_entries()
 {
-	return current_length;
+	return current_sgvector.num_feat_entries;
 }
 
 template <class T>
 float32_t CStreamingSparseFeatures<T>::compute_squared()
 {
+	int32_t current_length = current_sgvector.num_feat_entries;
+	SGSparseVectorEntry<T>* current_vector = current_sgvector.features;
+
 	ASSERT(current_vector)
 
 	float32_t sq=0;
@@ -246,10 +233,10 @@ float32_t CStreamingSparseFeatures<T>::compute_squared()
 template <class T>
 void CStreamingSparseFeatures<T>::sort_features()
 {
-	ASSERT(current_vector)
+	SGSparseVectorEntry<T>* sf_orig=current_sgvector.features;
+	int32_t len=current_sgvector.num_feat_entries;
 
-	SGSparseVectorEntry<T>* sf_orig=current_vector;
-	int32_t len=current_length;
+	ASSERT(sf_orig)
 
 	int32_t* feat_idx=SG_MALLOC(int32_t, len);
 	int32_t* orig_idx=SG_MALLOC(int32_t, len);
@@ -289,7 +276,7 @@ CFeatures* CStreamingSparseFeatures<T>::duplicate() const
 template <class T>
 int32_t CStreamingSparseFeatures<T>::get_num_vectors() const
 {
-	if (current_vector)
+	if (current_sgvector.features)
 		return 1;
 	return 0;
 }
@@ -331,8 +318,6 @@ template <class T>
 void CStreamingSparseFeatures<T>::init()
 {
 	working_file=NULL;
-	current_vector=NULL;
-	current_length=-1;
 	current_vec_index=0;
 	current_num_features=-1;
 
@@ -367,6 +352,9 @@ void CStreamingSparseFeatures<T>::end_parser()
 template <class T>
 bool CStreamingSparseFeatures<T>::get_next_example()
 {
+	int32_t current_length = 0;
+	SGSparseVectorEntry<T>* current_vector = NULL;
+
 	bool ret_value;
 	ret_value = (bool) parser.get_next_example(current_vector,
 						   current_length,
@@ -374,6 +362,9 @@ bool CStreamingSparseFeatures<T>::get_next_example()
 
 	if (!ret_value)
 		return false;
+
+	// ref_count disabled, because parser still owns the memory
+	current_sgvector = SGSparseVector<T>(current_vector, current_length, false);
 
 	// Update number of features based on highest index
 	int32_t current_dimension = get_vector().get_num_dimensions();
@@ -386,9 +377,6 @@ bool CStreamingSparseFeatures<T>::get_next_example()
 template <class T>
 SGSparseVector<T> CStreamingSparseFeatures<T>::get_vector()
 {
-	current_sgvector.features=current_vector;
-	current_sgvector.num_feat_entries=current_length;
-
 	return current_sgvector;
 }
 
@@ -428,7 +416,7 @@ int32_t CStreamingSparseFeatures<T>::get_num_features()
 template <class T>
 int32_t CStreamingSparseFeatures<T>::get_nnz_features_for_vector()
 {
-	return current_length;
+	return current_sgvector.num_feat_entries;
 }
 
 template <class T>
