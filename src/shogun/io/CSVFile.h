@@ -4,9 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2009 Soeren Sonnenburg
- * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
- * Copyright (C) 2010 Berlin Institute of Technology
+ * Written (W) 2013 Evgeniy Andreev (gsomix)
  */
 
 #ifndef __CSVFILE_H__
