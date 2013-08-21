@@ -61,6 +61,12 @@ template<class T> class SGMatrix : public SGReferencedData
 		 */
 		SGVector<T> get_row_vector(index_t row) const;
 
+		/** get a main diagonal vector. Matrix is not required to be square.
+		 *
+		 * @return main diagonal vector
+		 */
+		SGVector<T> get_diagonal_vector() const;
+
 		/** operator overload for matrix read only access
 		 * @param i_row
 		 * @param i_col
@@ -95,7 +101,7 @@ template<class T> class SGMatrix : public SGReferencedData
 			return matrix[index];
 		}
 
-		/** 
+		/**
 		 * get the matrix (no copying is done here)
 		 *
 		 * @return the refcount increased matrix
@@ -180,7 +186,7 @@ template<class T> class SGMatrix : public SGReferencedData
 		static double* compute_eigenvectors(double* matrix, int n, int m);
 
 		/** compute few eigenpairs of a symmetric matrix using LAPACK DSYEVR method
-		 * (Relatively Robust Representations). 
+		 * (Relatively Robust Representations).
 		 * Has at least O(n^3/3) complexity
 		 * @param matrix_ symmetric matrix
 		 * @param eigenvalues contains iu-il+1 eigenvalues in ascending order (to be free'd)
