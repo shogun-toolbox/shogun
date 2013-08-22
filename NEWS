@@ -25,13 +25,14 @@
 		- Added mini-framework for numerical integration in one variable. Implemented
 		  Gauss-Kronrod and Gauss-Hermite quadrature formulas.
 		- Changed from configure script to CMake by Viktor Gal.
-		- Add C++11 cmake detection scripts
+		- Add C++0x and C++11 cmake detection scripts
 	* Bugfixes:
 		- Fix json serialization.
 		- Fixed bugs in FITC inference method that caused wrong posterior results.
 		- Fixed bugs in GP Regression that caused negative values for the variances.
 		- Fixed two memory errors in the streaming-features framework.
 	* Cleanup and API Changes:
+		- Use common RefCount class for ReferencedData and CSGObjects.
 		- Rename HMSVMLabels to SequenceLabels
 		- Refactored method to fit a sigmoid to SVM scores, now in CStatistics,
 		  still called from CBinaryLabels.
