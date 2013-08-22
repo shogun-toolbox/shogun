@@ -4,6 +4,7 @@
 #include <shogun/lib/SGSparseVector.h>
 #include <shogun/lib/Hash.h>
 #include <shogun/lib/DelimiterTokenizer.h>
+#include <shogun/lib/NGramTokenizer.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;
@@ -90,4 +91,75 @@ TEST(HashedDocConverterTest, compare_dot_features)
 
 	SG_UNREF(converter);
 	SG_UNREF(d_feats);
+}
+
+TEST(HashedDocConverterTest, apply_quadratic_test)
+{
+	const char* doc_1 = "Shogun";
+	const char* grams[] = {"Sho", "hog", "ogu", "gun"};
+	uint32_t *hashes = SG_MALLOC(uint32_t, 4);
+
+	const int32_t seed = 0xdeadbeaf;
+	for (index_t i=0; i<4; i++)
+		hashes[i] = CHash::MurmurHash3((uint8_t* ) &grams[i][0], 3, seed);
+	
+
+	int32_t dimension = 32;
+	int32_t hash_bits = 5;
+
+	SGVector<float64_t> vec(dimension);
+	SGVector<float64_t>::fill_vector(vec.vector, vec.vlen, 0);
+
+	uint32_t val = hashes[0];
+	vec[val % dimension]++;
+
+	val = hashes[0] ^ hashes[1];
+	vec[val % dimension]++;
+
+	val = hashes[0] ^ hashes[2];
+	vec[val % dimension]++;
+
+	val = hashes[0] ^ hashes[3];
+	vec[val % dimension]++;
+
+	val = hashes[0] ^ hashes[1] ^ hashes[2];
+	vec[val % dimension]++;
+
+	val = hashes[0] ^ hashes[2] ^ hashes[3];
+	vec[val % dimension]++;
+
+	val = hashes[1];
+	vec[val % dimension]++;
+
+	val = hashes[1] ^ hashes[2];
+	vec[val % dimension]++;
+
+	val = hashes[1] ^ hashes[3];
+	vec[val % dimension]++;
+
+	val = hashes[1] ^ hashes[2] ^ hashes[3];
+	vec[val % dimension]++;
+
+	val = hashes[2];
+	vec[val % dimension]++;
+
+	val = hashes[2] ^ hashes[3];
+	vec[val % dimension]++;
+
+	val = hashes[3];
+	vec[val % dimension]++;
+
+	CNGramTokenizer* tzer = new CNGramTokenizer(3);
+	CHashedDocConverter* converter = new CHashedDocConverter(tzer, hash_bits, false, 3, 2);
+
+	SGVector<char> doc(const_cast<char* >(doc_1), 6, false);
+
+	SGSparseVector<float64_t> c_doc = converter->apply(doc);
+
+	for (index_t i=0; i<c_doc.num_feat_entries; i++)
+		EXPECT_EQ(c_doc.features[i].entry,
+					vec[c_doc.features[i].feat_index]);
+
+	SG_FREE(hashes);
+	SG_UNREF(converter);
 }
