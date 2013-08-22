@@ -76,9 +76,9 @@ CLaplacianInferenceMethod::CLaplacianInferenceMethod() : CInferenceMethod()
 	init();
 }
 
-CLaplacianInferenceMethod::CLaplacianInferenceMethod(CKernel* kern,
-		CFeatures* feat, CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod)
-		: CInferenceMethod(kern, feat, m, lab, mod)
+CLaplacianInferenceMethod::CLaplacianInferenceMethod(CKernel* kern, CFeatures* feat,
+		CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod, float64_t scale)
+		: CInferenceMethod(kern, feat, m, lab, mod, scale)
 {
 	init();
 }

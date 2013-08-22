@@ -28,7 +28,7 @@ CInferenceMethod::CInferenceMethod()
 }
 
 CInferenceMethod::CInferenceMethod(CKernel* kern, CFeatures* feat,
-		CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod)
+		CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod, float64_t scale)
 {
 	init();
 
@@ -37,6 +37,7 @@ CInferenceMethod::CInferenceMethod(CKernel* kern, CFeatures* feat,
 	set_labels(lab);
 	set_model(mod);
 	set_mean(m);
+	set_scale(scale);
 }
 
 CInferenceMethod::~CInferenceMethod()

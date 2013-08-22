@@ -51,10 +51,11 @@ public:
 	 * @param labels labels of the features
 	 * @param model likelihood model to use
 	 * @param latent_features features to use
+	 * @param scale kernel scale
 	 */
 	CFITCInferenceMethod(CKernel* kernel, CFeatures* features,
 			CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model,
-			CFeatures* latent_features);
+			CFeatures* latent_features, float64_t scale=1.0);
 
 	virtual ~CFITCInferenceMethod();
 

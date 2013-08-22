@@ -51,10 +51,11 @@ public:
 	 * @param features features to use in inference
 	 * @param mean mean function
 	 * @param labels labels of the features
-	 * @param model Likelihood model to use
+	 * @param model likelihood model to use
+	 * @param scale kernel scale
 	 */
-	CLaplacianInferenceMethod(CKernel* kernel, CFeatures* features,
-			CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model);
+	CLaplacianInferenceMethod(CKernel* kernel, CFeatures* features, CMeanFunction* mean,
+			CLabels* labels, CLikelihoodModel* model, float64_t scale=1.0);
 
 	virtual ~CLaplacianInferenceMethod();
 

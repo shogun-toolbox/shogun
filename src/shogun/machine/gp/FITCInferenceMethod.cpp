@@ -31,8 +31,8 @@ CFITCInferenceMethod::CFITCInferenceMethod() : CInferenceMethod()
 }
 
 CFITCInferenceMethod::CFITCInferenceMethod(CKernel* kern, CFeatures* feat,
-		CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod, CFeatures* lat)
-		: CInferenceMethod(kern, feat, m, lab, mod)
+		CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod, CFeatures* lat,
+		float64_t scale) : CInferenceMethod(kern, feat, m, lab, mod, scale)
 {
 	init();
 	set_latent_features(lat);

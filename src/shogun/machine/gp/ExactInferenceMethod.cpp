@@ -29,8 +29,8 @@ CExactInferenceMethod::CExactInferenceMethod() : CInferenceMethod()
 }
 
 CExactInferenceMethod::CExactInferenceMethod(CKernel* kern, CFeatures* feat,
-		CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod) :
-		CInferenceMethod(kern, feat, m, lab, mod)
+		CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod, float64_t scale)
+		: CInferenceMethod(kern, feat, m, lab, mod, scale)
 {
 }
 
