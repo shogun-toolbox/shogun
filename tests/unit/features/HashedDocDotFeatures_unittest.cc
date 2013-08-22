@@ -13,8 +13,13 @@
 #include <shogun/lib/SGStringList.h>
 #include <shogun/lib/SGString.h>
 #include <shogun/lib/DelimiterTokenizer.h>
+#include <shogun/lib/NGramTokenizer.h>
+#include <shogun/lib/Hash.h>
+#include <shogun/multiclass/MulticlassLibLinear.h>
+#include <shogun/base/init.h>
 #include <gtest/gtest.h>
 
+#include <iostream>
 using namespace shogun;
 
 TEST(HashedDocDotFeaturesTest, computed_features_test)
@@ -126,4 +131,179 @@ TEST(HashedDocDotFeaturesTest, dense_dot_test)
 	SG_UNREF(converter);
 	SG_UNREF(converted_docs);
 	SG_UNREF(hddf);
+}
+
+TEST(HashedDocDotFeaturesTest, quadratic_dense_dot)
+{
+	const char* doc_1 = "Shogun";
+	const char* grams[] = {"Sho", "hog", "ogu", "gun"};
+	uint32_t *hashes = SG_MALLOC(uint32_t, 4);
+
+	const int32_t seed = 0xdeadbeaf;
+	for (index_t i=0; i<4; i++)
+		hashes[i] = CHash::MurmurHash3((uint8_t* ) &grams[i][0], 3, seed);
+	
+
+	int32_t dimension = 32;
+	int32_t hash_bits = 5;
+
+	SGVector<float64_t> vec(dimension);
+	SGVector<float64_t>::fill_vector(vec.vector, vec.vlen, 0);
+
+	uint32_t val = hashes[0];
+	vec[val % dimension]++;
+
+	val = hashes[0] ^ hashes[1];
+	vec[val % dimension]++;
+
+	val = hashes[0] ^ hashes[2];
+	vec[val % dimension]++;
+
+	val = hashes[0] ^ hashes[3];
+	vec[val % dimension]++;
+
+	val = hashes[0] ^ hashes[1] ^ hashes[2];
+	vec[val % dimension]++;
+
+	val = hashes[0] ^ hashes[2] ^ hashes[3];
+	vec[val % dimension]++;
+
+	val = hashes[1];
+	vec[val % dimension]++;
+
+	val = hashes[1] ^ hashes[2];
+	vec[val % dimension]++;
+
+	val = hashes[1] ^ hashes[3];
+	vec[val % dimension]++;
+
+	val = hashes[1] ^ hashes[2] ^ hashes[3];
+	vec[val % dimension]++;
+
+	val = hashes[2];
+	vec[val % dimension]++;
+
+	val = hashes[2] ^ hashes[3];
+	vec[val % dimension]++;
+
+	val = hashes[3];
+	vec[val % dimension]++;
+
+	SGString<char> string_1(6);
+	for (index_t i=0; i<6; i++)
+		string_1.string[i] = doc_1[i];
+
+	SGStringList<char> list(1,6);
+	list.strings[0] = string_1;
+
+	CNGramTokenizer* tokenizer = new CNGramTokenizer(3);	
+	SG_REF(tokenizer);
+	CStringFeatures<char>* doc_collection = new CStringFeatures<char>(list, RAWBYTE);
+	CHashedDocDotFeatures* hddf = new CHashedDocDotFeatures(hash_bits, doc_collection,
+			tokenizer, false, 3, 2);
+	CHashedDocConverter* conv = new CHashedDocConverter(tokenizer, hash_bits, false, 3, 2);
+	CSparseFeatures<float64_t>* sf = (CSparseFeatures<float64_t>* ) conv->apply(doc_collection);
+	SG_UNREF(conv);
+	SGVector<float64_t> dense_vec(dimension);
+	float64_t dot_product = 0;
+	for (index_t i=0; i<dimension; i++)
+	{
+		dense_vec[i] = i;
+		dot_product += i * vec[i];
+	}
+
+	float64_t hashed_dot_product = hddf->dense_dot(0, dense_vec.vector, dense_vec.vlen);	
+	EXPECT_EQ(hashed_dot_product, dot_product);
+	float64_t sparse_dot_product = sf->dense_dot(0, dense_vec.vector, dense_vec.vlen);
+	EXPECT_EQ(sparse_dot_product, dot_product);
+
+	SG_UNREF(sf);
+	SG_UNREF(hddf);
+	SG_FREE(hashes);
+	SG_UNREF(tokenizer);
+}
+
+TEST(HashedDocDotFeaturesTest, quadratic_add_to_dense)
+{
+	const char* doc_1 = "Shogun";
+	const char* grams[] = {"Sho", "hog", "ogu", "gun"};
+	uint32_t *hashes = SG_MALLOC(uint32_t, 4);
+
+	const int32_t seed = 0xdeadbeaf;
+	for (index_t i=0; i<4; i++)
+		hashes[i] = CHash::MurmurHash3((uint8_t* ) &grams[i][0], 3, seed);
+	
+
+	int32_t dimension = 32;
+	int32_t hash_bits = 5;
+
+	SGVector<float64_t> vec(dimension);
+	SGVector<float64_t>::fill_vector(vec.vector, vec.vlen, 0);
+
+	uint32_t val = hashes[0];
+	vec[val % dimension]++;
+
+	val = hashes[0] ^ hashes[1];
+	vec[val % dimension]++;
+
+	val = hashes[0] ^ hashes[2];
+	vec[val % dimension]++;
+
+	val = hashes[0] ^ hashes[3];
+	vec[val % dimension]++;
+
+	val = hashes[0] ^ hashes[1] ^ hashes[2];
+	vec[val % dimension]++;
+
+	val = hashes[0] ^ hashes[2] ^ hashes[3];
+	vec[val % dimension]++;
+
+	val = hashes[1];
+	vec[val % dimension]++;
+
+	val = hashes[1] ^ hashes[2];
+	vec[val % dimension]++;
+
+	val = hashes[1] ^ hashes[3];
+	vec[val % dimension]++;
+
+	val = hashes[1] ^ hashes[2] ^ hashes[3];
+	vec[val % dimension]++;
+
+	val = hashes[2];
+	vec[val % dimension]++;
+
+	val = hashes[2] ^ hashes[3];
+	vec[val % dimension]++;
+
+	val = hashes[3];
+	vec[val % dimension]++;
+
+	SGString<char> string_1(6);
+	for (index_t i=0; i<6; i++)
+		string_1.string[i] = doc_1[i];
+
+	SGStringList<char> list(1,6);
+	list.strings[0] = string_1;
+
+	CNGramTokenizer* tokenizer = new CNGramTokenizer(3);	
+	CStringFeatures<char>* doc_collection = new CStringFeatures<char>(list, RAWBYTE);
+	CHashedDocDotFeatures* hddf = new CHashedDocDotFeatures(hash_bits, doc_collection,
+			tokenizer, false, 3, 2);
+
+	SGVector<float64_t> dense_vec(dimension);
+	SGVector<float64_t> dense_vec2(dimension);
+	for (index_t i=0; i<dimension; i++)
+	{
+		dense_vec[i] = i + vec[i];
+		dense_vec2[i] = i;
+	}
+
+	hddf->add_to_dense_vec(1, 0, dense_vec2.vector, dense_vec2.vlen, 0);
+	
+	for (index_t i=0; i<dimension; i++)
+		EXPECT_EQ(dense_vec[i], dense_vec2[i]);
+
+	SG_UNREF(hddf);
+	SG_FREE(hashes);
 }
