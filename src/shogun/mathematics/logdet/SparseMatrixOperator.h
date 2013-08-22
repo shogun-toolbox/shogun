@@ -20,6 +20,75 @@ namespace shogun
 template<class T> class SGVector;
 template<class T> class SGSparseMatrix;
 
+/** @brief Struct that represents the sparsity structure of the Sparse Matrix
+ * in CRS. Implementation has been adapted from Krylstat (https://github.com/
+ * Froskekongen/KRYLSTAT) library (c) Erlend Aune <erlenda@math.ntnu.no>
+ * under GPL2+
+ */
+struct SparsityStructure
+{
+	/** default constructor */
+	SparsityStructure() : m_num_rows(0), m_ptr(NULL) {}
+
+	/**
+	 * constructor
+	 * 
+	 * @param row_offsets outer index ptr in CRS
+	 * @param column_indices inner index ptr in CRS
+	 * @param num_rows number of rows
+	 */
+	SparsityStructure(index_t* row_offsets, index_t* column_indices,
+		index_t num_rows)
+	: m_num_rows(num_rows),
+		m_ptr(new int32_t*[num_rows]())
+	{
+		for (index_t i=0; i<m_num_rows; ++i)
+		{
+			index_t current_index=row_offsets[i];
+			index_t new_index=row_offsets[i+1];
+			index_t length_row=(new_index-current_index);
+
+			m_ptr[i]=new int32_t[length_row+1]();
+			m_ptr[i][0]=length_row;
+    
+			for (index_t j=1; j<=length_row; ++j)
+				m_ptr[i][j]=column_indices[current_index++];
+		}
+	}
+
+	/** destructor */
+	~SparsityStructure()
+	{
+		for (index_t i=0; i<m_num_rows; ++i)
+			delete [] m_ptr[i];
+		delete [] m_ptr;
+	}
+
+	/** display sparsity structure */
+	void display_sparsity_structure()
+	{
+		for (index_t i=0; i<m_num_rows; ++i)
+		{
+			index_t nnzs=m_ptr[i][0];
+			SG_SPRINT("Row number %d. Number of Non-zeros %d. Colums ", i, nnzs);
+			for(index_t j=1; j<=nnzs; ++j)
+			{
+				SG_SPRINT("%d", m_ptr[i][j]);
+				if (j<nnzs)
+					SG_SPRINT(", ");
+			}
+			SG_SPRINT("\n");
+		}
+	}
+
+	/** number of rows */
+	index_t m_num_rows;
+
+	/** the pointer that stores the nnz entries */
+	int32_t **m_ptr;
+};
+
+
 /** @brief Class that represents a sparse-matrix linear operator.
  * It computes matrix-vector product \f$Ax\f$ in its apply method,
  * \f$A\in\mathbb{C}^{m\times n},A:\mathbb{C}^{n}\rightarrow \mathbb{C}^{m}\f$
@@ -76,6 +145,9 @@ public:
 
 	/** @return the sparse matrix operator */
 	SGSparseMatrix<T> get_matrix_operator() const;
+
+	/** @return the sparsity structure of matrix power */
+	SparsityStructure* get_sparsity_structure(int64_t power=1) const;
 
 	/**
 	 * create a new sparse matrix operator of Scalar type

@@ -6,6 +6,7 @@
  * 
  * Written (W) 2013 Soumyajit De
  */
+
 #ifndef LOG_DET_ESTIMATOR_H_
 #define LOG_DET_ESTIMATOR_H_
 
