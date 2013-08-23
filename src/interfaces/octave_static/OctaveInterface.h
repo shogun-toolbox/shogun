@@ -4,7 +4,7 @@
 #include <shogun/lib/config.h>
 #include <shogun/lib/memory.h>
 
-#include "ui/SGInterface.h"
+#include <shogun/ui/SGInterface.h>
 
 #undef HAVE_STAT
 #include <octave/config.h>
