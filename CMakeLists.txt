@@ -654,6 +654,10 @@ IF (MatlabStatic)
 	#add_subdirectory(src/interfaces/matlab_static)
 ENDIF()
 
+IF (CmdLineStatic)
+	add_subdirectory(src/interfaces/cmdline_static)
+ENDIF()
+
 IF (SVMLight)
 	MESSAGE(STATUS ${SVMLightWarning})
 ENDIF()
