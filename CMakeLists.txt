@@ -232,6 +232,7 @@ OPTION(PythonStatic "Python Static" OFF)
 OPTION(RStatic "R Static" OFF)
 OPTION(CmdLineStatic "R Static" OFF)
 OPTION(MatlabStatic "Matlab Static" OFF)
+OPTION(OctaveStatic "Matlab Static" OFF)
 
 # SVMLight
 OPTION(USE_SVMLIGHT "SVMLight" ON)
@@ -635,13 +636,20 @@ IF (RubyModular)
 ENDIF()
 
 # octave modular
-IF (OctaveModular)		
+IF (OctaveModular OR OctaveStatic)		
 	FIND_PACKAGE(Octave 3.0 REQUIRED)
 	LIST(APPEND DEFINES HAVE_OCTAVE)
 	LIST(APPEND DEFINES "OCTAVE_APIVERSION=${OCTAVE_API_VERSION}")
 	SET(OCTAVE_APIVERSION ${OCTAVE_API_VERSION})
-	UNSET(TARGET_SWIGFLAGS)
-	add_subdirectory(src/interfaces/octave_modular)
+
+	IF(OctaveModular)
+		UNSET(TARGET_SWIGFLAGS)
+		add_subdirectory(src/interfaces/octave_modular)
+	ENDIF()
+
+	IF(OctaveStatic)
+		add_subdirectory(src/interfaces/octave_static)
+	ENDIF()
 ENDIF()
 
 # csharp modular
