@@ -681,7 +681,12 @@ IF (PerlModular)
 ENDIF()
 
 IF (MatlabStatic)
-	#add_subdirectory(src/interfaces/matlab_static)
+	FIND_PACKAGE(Matlab REQUIRED)
+	IF(MATLAB_FOUND)
+		add_subdirectory(src/interfaces/matlab_static)
+	ELSE()
+		MESSAGE(FATAL_ERROR "Could not find Matlab, which is required for compiling matlab_static interface. Try setting MATLAB_ROOT enviroment variable to the right path")
+	ENDIF()
 ENDIF()
 
 IF (CmdLineStatic)
