@@ -59,20 +59,24 @@ class CPruneVarSubMean : public CDensePreprocessor<float64_t>
 		/// return a type of preprocessor
 		virtual EPreprocessorType get_type() const { return P_PRUNEVARSUBMEAN; }
 
+	private:
+		void init();
+		void register_parameters();
+
 	protected:
 		/** idx */
-		int32_t* idx;
+		SGVector<int32_t> m_idx;
 		/** mean */
-		float64_t* mean;
+		SGVector<float64_t> m_mean;
 		/** std */
-		float64_t* std;
+		SGVector<float64_t> m_std;
 		/** num idx */
-		int32_t num_idx;
+		int32_t m_num_idx;
 		/** divide by std */
-		bool divide_by_std;
+		bool m_divide_by_std;
 
 		/// true when already initialized
-		bool initialized;
+		bool m_initialized;
 };
 }
 #endif
