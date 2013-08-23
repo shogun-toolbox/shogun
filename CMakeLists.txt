@@ -577,15 +577,15 @@ IF (PythonModular OR PythonStatic)
 
 	LIST(APPEND DEFINES HAVE_PYTHON)
 	
-	#custom swig flags for python modular interface
-	IF(${PYTHON_VERSION_MAJOR} VERSION_EQUAL 3)
-		SET(TARGET_SWIGFLAGS "-builtin\;-modern\;-modernargs\;-py3")
-		#SET(SWIG_CXX_COMPILER_FLAGS "${SWIG_CXX_COMPILER_FLAGS -DPYTHON3")
-	ELSE()
-		SET(TARGET_SWIGFLAGS "-builtin\;-modern\;-modernargs")
-	ENDIF()
-
 	IF(PythonModular)
+		#custom swig flags for python modular interface
+		IF(${PYTHON_VERSION_MAJOR} VERSION_EQUAL 3)
+			SET(TARGET_SWIGFLAGS "-builtin\;-modern\;-modernargs\;-py3")
+			#SET(SWIG_CXX_COMPILER_FLAGS "${SWIG_CXX_COMPILER_FLAGS -DPYTHON3")
+		ELSE()
+			SET(TARGET_SWIGFLAGS "-builtin\;-modern\;-modernargs")
+		ENDIF()
+
 		add_subdirectory(src/interfaces/python_modular)
 	ENDIF()
 
@@ -652,10 +652,17 @@ IF (CSharpModular)
 ENDIF()
 
 # r modular
-IF (RModular)
+IF (RModular OR RStatic)
 	FIND_PACKAGE(R REQUIRED)
-	UNSET(TARGET_SWIGFLAGS)
-	add_subdirectory(src/interfaces/r_modular)
+
+	IF (RModular)
+		UNSET(TARGET_SWIGFLAGS)
+		add_subdirectory(src/interfaces/r_modular)
+	ENDIF()
+
+	IF (RStatic)
+		add_subdirectory(src/interfaces/r_static)
+	ENDIF()
 ENDIF()
 
 # perl modular
