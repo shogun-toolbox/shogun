@@ -52,6 +52,12 @@ template <class ST> class CStringFileFeatures : public CStringFeatures<ST>
 	 */
 	virtual ~CStringFileFeatures();
 
+	/** Returns the name of the SGSerializable instance.
+	 *
+	 * @return name of the SGSerializable
+	 */
+	virtual const char* get_name() const { return "StringFileFeatures"; }
+
 	protected:
 	/** get next line from file
 	 *

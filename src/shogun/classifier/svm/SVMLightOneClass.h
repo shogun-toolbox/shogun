@@ -47,6 +47,12 @@ class CSVMLightOneClass: public CSVMLight
 		 */
 		virtual EMachineType get_classifier_type() { return CT_LIGHTONECLASS; }
 
+		/** Returns the name of the SGSerializable instance.
+		 *
+		 * @return name of the SGSerializable
+		 */
+		virtual const char* get_name() const { return "SVMLightOneClass"; }
+
 	protected:
 		/** train one class svm
 		 *

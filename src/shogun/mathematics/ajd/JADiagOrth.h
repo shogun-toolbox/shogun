@@ -75,7 +75,7 @@ class CJADiagOrth : public CApproxJointDiagonalizer
 		}
 
 		/** @return object name */
-		virtual const char* get_name() const { return "JADiag"; }
+		virtual const char* get_name() const { return "JADiagOrth"; }
 };
 }
 #endif //HAVE_EIGEN3

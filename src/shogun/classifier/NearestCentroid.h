@@ -75,6 +75,12 @@ public:
 	CDenseFeatures<float64_t>* get_centroids() const{
 		return m_centroids;
 	}
+
+	/** Returns the name of the SGSerializable instance.
+	 *
+	 * @return name of the SGSerializable
+	 */
+	virtual const char* get_name() const { return "NearestCentroid"; }
 	
 protected:
 	/** train Nearest Centroid classifier
