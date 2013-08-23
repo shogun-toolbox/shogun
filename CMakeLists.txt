@@ -748,3 +748,45 @@ set(CPACK_DEB_COMPONENT_INSTALL ON)
 set(CPACK_RPM_COMPONENT_INSTALL ON)
 
 INCLUDE(CPack)
+
+message(STATUS "===================================================================================================================")
+message(STATUS "Summary of Configuration Variables")
+get_cmake_property(_variableNames VARIABLES)
+
+foreach (_variableName ${_variableNames})
+IF ( _variableName MATCHES "_FOUND$")
+	message(STATUS "  ${_variableName}"=${${_variableName}})
+ENDIF()
+endforeach()
+
+message(STATUS "===================================================================================================================")
+message(STATUS "Enabled Interfaces")
+
+message(STATUS "  libshogun is ON")
+
+IF ( PythonModular )
+message(STATUS "  python modular is ON")
+ENDIF()
+
+IF ( OctaveModular )
+message(STATUS "  octave modular is ON")
+ENDIF()
+
+IF ( JavanModular )
+message(STATUS "  java modular is ON")
+ENDIF()
+
+IF ( PerlModular )
+message(STATUS "  perl modular is ON")
+ENDIF()
+
+IF ( RubyModular )
+message(STATUS "  ruby modular is ON")
+ENDIF()
+
+IF ( CSharpModular )
+message(STATUS "  csharp modular is ON")
+ENDIF()
+message(STATUS "===================================================================================================================")
+
+
