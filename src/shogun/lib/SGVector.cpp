@@ -682,10 +682,23 @@ void SGVector<T>::permute(T* vec, int32_t n)
 		CMath::swap(vec[i], vec[CMath::random(i, n-1)]);
 }
 
+template <class T>
+void SGVector<T>::permute(T* vec, int32_t n, CRandom * rand)
+{
+	for (int32_t i = 0; i < n; i++)
+		CMath::swap(vec[i], vec[rand->random(i, n-1)]);
+}
+
 template<class T>
 void SGVector<T>::permute()
 {
 	SGVector<T>::permute(vector, vlen);
+}
+
+template<class T>
+void SGVector<T>::permute(CRandom * rand)
+{
+        SGVector<T>::permute(vector, vlen, rand);
 }
 
 template <class T>

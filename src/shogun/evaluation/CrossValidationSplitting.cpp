@@ -16,12 +16,14 @@ using namespace shogun;
 CCrossValidationSplitting::CCrossValidationSplitting() :
 	CSplittingStrategy()
 {
+	m_rng = sg_rand;
 }
 
 CCrossValidationSplitting::CCrossValidationSplitting(
 		CLabels* labels, index_t num_subsets) :
 	CSplittingStrategy(labels, num_subsets)
 {
+	m_rng = sg_rand;
 }
 
 void CCrossValidationSplitting::build_subsets()
@@ -33,11 +35,7 @@ void CCrossValidationSplitting::build_subsets()
 	/* permute indices */
 	SGVector<index_t> indices(m_labels->get_num_labels());
 	indices.range_fill();
-	for (index_t i=0; i<indices.vlen; ++i)
-	{
-		CMath::swap(indices.vector[i],
-				indices.vector[CMath::random(0, indices.vlen-1)]);
-	}
+	indices.permute(m_rng);
 
 	index_t num_subsets=m_subset_indices->get_num_elements();
 
@@ -61,6 +59,6 @@ void CCrossValidationSplitting::build_subsets()
 
 	/* finally shuffle to avoid that subsets with low indices have more
 	 * elements, which happens if the number of class labels is not equal to
-	 * the number of subsets */
-	m_subset_indices->shuffle();
+	 * the number of subsets (external random state important for threads) */
+	m_subset_indices->shuffle(m_rng);
 }

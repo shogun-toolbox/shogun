@@ -151,6 +151,8 @@ template<class T> class SGVector : public SGReferencedData
 		/** permute */
 		static void permute(T* vec, int32_t n);
 
+		/** permute with given CRandom state */
+		static void permute(T* vec, int32_t n, CRandom * rand);
 
 		/** 
 		 * get the vector (no copying is done here)
@@ -251,6 +253,9 @@ template<class T> class SGVector : public SGReferencedData
 
 		/** create a random permutation in place */
 		void permute();
+
+		/** create a random permutation with given CRandom state */
+		void permute(CRandom * rand);
 
 		/// || x ||_2
 		static T twonorm(const T* x, int32_t len);
