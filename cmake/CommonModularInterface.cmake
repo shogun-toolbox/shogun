@@ -28,6 +28,7 @@ FOREACH(file ${MODULAR_FILES})
 	STRING(REGEX REPLACE ".*/(.*)$" "\\1" fname "${file}")
 	list(APPEND modular_files ${fname})
 	ADD_CUSTOM_COMMAND(OUTPUT ${fname}
+		DEPENDS ${file}
 		COMMAND "${CMAKE_COMMAND}" -E copy_if_different ${file} ${fname}
 		COMMENT ""
 	)
