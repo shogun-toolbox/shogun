@@ -381,8 +381,11 @@ class CDynamicObjectArray : public CSGObject
 		/** @return underlying array of pointers */
 		inline CSGObject** get_array() const { return m_array.get_array(); }
 
-		/** shuffles the array */
+		/** shuffles the array (not thread safe!) */
 		inline void shuffle() { m_array.shuffle(); }
+
+		/** shuffles the array with external random state */
+		inline void shuffle(CRandom * rand) { m_array.shuffle(rand); }
 
 		/** set array's name
 		 *

@@ -537,8 +537,11 @@ template <class T> class CDynamicArray :public CSGObject
 			return *this;
 		}
 
-		/** shuffles the array */
+		/** shuffles the array (not thread safe!) */
 		inline void shuffle() { m_array.shuffle(); }
+
+		/** shuffles the array with external random state */
+		inline void shuffle(CRandom * rand) { m_array.shuffle(rand); }
 
 		/** set array's name
 		 *
