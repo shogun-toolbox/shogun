@@ -13,18 +13,47 @@ include_directories(${source_dir}/include ${INCLUDES} ${source_dir}/gtest/includ
 LINK_DIRECTORIES(${THIRD_PARTY_DIR}/libs/gmock)
 
 # Generate automatic unittest from jinja2 templates
-FILE(GLOB_RECURSE UNITTEST_SRC_TMP RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *${EXT_SRC_TEST_TMP})
-FOREACH(template ${UNITTEST_SRC_TMP})
-	STRING(REGEX REPLACE "(.*).jinja2$" "\\1.py" script ${template})
-	STRING(REGEX REPLACE ".*/(.*).jinja2$" "\\1" out_cxx ${template})
-	
+SET(clone_unittest.cc_CMD
+	${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.py 
+	${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.jinja2 
+	clone_unittest.cc 
+	${LIBSHOGUN_SRC_DIR}/base/class_list.cpp)
+LIST(APPEND UNITTEST_TEMPLATES clone_unittest.cc)
+
+SET(SerializationAscii_unittest.cc_CMD 
+	${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.py 
+	${CMAKE_CURRENT_SOURCE_DIR}/io/SerializationAscii_unittest.cc.jinja2 
+	SerializationAscii_unittest.cc
+	${LIBSHOGUN_SRC_DIR}/base/class_list.cpp)
+LIST(APPEND UNITTEST_TEMPLATES SerializationAscii_unittest.cc)
+
+SET(SerializationJSON_unittest.cc_CMD 
+	${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.py
+	${CMAKE_CURRENT_SOURCE_DIR}/io/SerializationJSON_unittest.cc.jinja2 
+	SerializationJSON_unittest.cc 
+	${LIBSHOGUN_SRC_DIR}/base/class_list.cpp)
+LIST(APPEND UNITTEST_TEMPLATES SerializationJSON_unittest.cc)
+
+SET(SerializationXML_unittest.cc_CMD 
+	${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.py
+	${CMAKE_CURRENT_SOURCE_DIR}/io/SerializationXML_unittest.cc.jinja2 
+	SerializationXML_unittest.cc 
+	${LIBSHOGUN_SRC_DIR}/base/class_list.cpp)
+LIST(APPEND UNITTEST_TEMPLATES SerializationXML_unittest.cc)
+
+SET(SerializationHDF5_unittest.cc_CMD 
+	${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.py
+	${CMAKE_CURRENT_SOURCE_DIR}/io/SerializationHDF5_unittest.cc.jinja2 
+	SerializationHDF5_unittest.cc 
+	${LIBSHOGUN_SRC_DIR}/base/class_list.cpp)
+LIST(APPEND UNITTEST_TEMPLATES SerializationHDF5_unittest.cc)
+
+FOREACH(out_cxx ${UNITTEST_TEMPLATES})
 	ADD_CUSTOM_COMMAND(OUTPUT ${out_cxx}
-			COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/${script} 
-				${CMAKE_CURRENT_SOURCE_DIR}/${template} ${out_cxx} ${LIBSHOGUN_SRC_DIR}/base/class_list.cpp
+			COMMAND ${PYTHON_EXECUTABLE} ${${out_cxx}_CMD}
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 			COMMENT "Generating ${out_cxx}")
 	LIST(APPEND TEMPLATE_GENERATED_UNITTEST ${out_cxx})
-	UNSET(${script})
 ENDFOREACH()
 
 # collect the unittests
