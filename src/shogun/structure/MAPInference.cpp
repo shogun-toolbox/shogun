@@ -15,19 +15,18 @@
 
 using namespace shogun;
 
-CMAPInference::CMAPInference()
+CMAPInference::CMAPInference() : CSGObject()
 {
 	SG_UNSTABLE("CMAPInference::CMAPInference()", "\n");
 
 	init();
-
-	m_fg = NULL;
 }
 
 CMAPInference::CMAPInference(CFactorGraph* fg, EMAPInferType inference_method)
-	: m_fg(fg)
+	: CSGObject()
 {
 	init();
+	m_fg=fg;
 
 	switch(inference_method)
 	{
@@ -84,6 +83,8 @@ void CMAPInference::init()
 
 	m_outputs = NULL;
 	m_infer_impl = NULL;
+	m_fg=NULL;
+	m_energy=0;
 }
 
 void CMAPInference::inference()
