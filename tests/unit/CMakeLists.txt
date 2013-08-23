@@ -68,6 +68,6 @@ ADD_CUSTOM_TARGET(unit-tests
 	COMMAND ${CMAKE_CURRENT_BINARY_DIR}/shogun-unit-test
 	DEPENDS shogun-unit-test)
 
-add_test(unit-test shogun-unit-test)
+add_test(unit-test shogun-unit-test --only-on-failure)
 
 unset(CMAKE_DEFINITIONS)
