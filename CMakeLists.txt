@@ -228,6 +228,9 @@ OPTION(PerlModular "Perl Modular" OFF)
 OPTION(RubyModular "Ruby Modular" OFF)
 OPTION(CSharpModular "CSharp Modular" OFF)
 
+OPTION(PythonStatic "Python Static" OFF)
+OPTION(RStatic "R Static" OFF)
+OPTION(CmdLineStatic "R Static" OFF)
 OPTION(MatlabStatic "Matlab Static" OFF)
 
 # SVMLight
@@ -565,7 +568,7 @@ SET(CMAKE_SWIG_FLAGS "${CMAKE_SWIG_FLAGS};-w473;-w454;-w312;-w325;-fvirtual")
 OPTION(USE_SWIG_DIRECTORS "" OFF)
 
 # python modular
-IF (PythonModular)
+IF (PythonModular OR PythonStatic)
 	# find python library for the found python interpreter
 	# i.e. versions should match!
 	set(Python_ADDITIONAL_VERSIONS ${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR})
@@ -575,8 +578,20 @@ IF (PythonModular)
 	LIST(APPEND DEFINES HAVE_PYTHON)
 	
 	#custom swig flags for python modular interface
-	SET(TARGET_SWIGFLAGS "-builtin\;-modern\;-modernargs")
-	add_subdirectory(src/interfaces/python_modular)
+	IF(${PYTHON_VERSION_MAJOR} VERSION_EQUAL 3)
+		SET(TARGET_SWIGFLAGS "-builtin\;-modern\;-modernargs\;-py3")
+		#SET(SWIG_CXX_COMPILER_FLAGS "${SWIG_CXX_COMPILER_FLAGS -DPYTHON3")
+	ELSE()
+		SET(TARGET_SWIGFLAGS "-builtin\;-modern\;-modernargs")
+	ENDIF()
+
+	IF(PythonModular)
+		add_subdirectory(src/interfaces/python_modular)
+	ENDIF()
+
+	IF(PythonStatic)
+		add_subdirectory(src/interfaces/python_static)
+	ENDIF()
 ENDIF()
 
 # lua modular
