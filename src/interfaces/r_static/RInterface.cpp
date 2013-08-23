@@ -14,7 +14,7 @@ extern "C" {
 
 #include <stdlib.h>
 #include <stdio.h>
-#include "ui/SGInterface.h"
+#include <shogun/ui/SGInterface.h>
 #include <shogun/lib/ShogunException.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/base/init.h>
