@@ -12,8 +12,9 @@
 
 #include <shogun/lib/config.h>
 #ifdef HAVE_EIGEN3
-#include <shogun/converter/Converter.h>
+#include <shogun/lib/SGNDArray.h>
 #include <shogun/features/Features.h>
+#include <shogun/converter/Converter.h>
 
 namespace shogun
 {
@@ -56,7 +57,12 @@ class CJediSep: public CConverter
 		 * @param tau vector
 		 */
 		void set_tau(SGVector<float64_t> tau);
-
+		
+		/** getter for time sep cov matrices
+		 * @return cov matrices
+		 */
+		SGNDArray<float64_t> get_covs() const;
+		
 		/** getter for mixing_matrix
 		 * @return mixing_matrix
 		 */
@@ -74,7 +80,10 @@ class CJediSep: public CConverter
 		
 		/** tau vector */
 		SGVector<float64_t> m_tau;
-
+		
+		/** cov matrices */
+		SGNDArray<float64_t> m_covs;
+		
 		/** mixing_matrix */
 		SGMatrix<float64_t> m_mixing_matrix;
 };	
