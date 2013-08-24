@@ -349,6 +349,30 @@ static bool array_from_numpy(SGNDArray<type>& sg_array, PyObject* obj, int typec
 }
 
 template <class type>
+static bool array_to_numpy(PyObject* &obj, SGNDArray<type> sg_array, int typecode)
+{
+	int n = 1;	
+	npy_intp dims[sg_array.num_dims];
+	for (int i = 0; i < sg_array.num_dims; i++)
+	{
+		dims[i] = (npy_intp)sg_array.dims[i];
+		n *= sg_array.dims[i];
+	}
+
+	PyArray_Descr* descr=PyArray_DescrFromType(typecode);
+
+	if (descr)
+	{
+		void* copy=get_copy(sg_array.array, sizeof(type)*size_t(n));
+		obj = PyArray_NewFromDescr(&PyArray_Type,
+		    descr, sg_array.num_dims, dims, NULL, (void*) copy, NPY_FARRAY | NPY_WRITEABLE, NULL);
+		((PyArrayObject*) obj)->flags |= NPY_OWNDATA;
+	}
+
+	return descr!=NULL;
+}
+
+template <class type>
 static bool string_from_strpy(SGStringList<type>& sg_strings, PyObject* obj, int typecode)
 {
     PyObject* list=(PyObject*) obj;
@@ -1053,8 +1077,7 @@ TYPEMAP_OUT_SGMATRIX(PyObject,      NPY_OBJECT)
 
 /* N-dimensional input arrays */
 %define TYPEMAP_INND(type,typecode)
-%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER)
-        shogun::SGNDArray<type>
+%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) shogun::SGNDArray<type>
 {
     $1 = is_pyarray($input, typecode);
 }
@@ -1086,6 +1109,36 @@ TYPEMAP_INND(floatmax_t,    NPY_LONGDOUBLE)
 TYPEMAP_INND(PyObject,      NPY_OBJECT)
 
 #undef TYPEMAP_INND
+
+/* N-dimensional output arrays */
+%define TYPEMAP_OUTND(type,typecode)
+%typemap(out) shogun::SGNDArray<type>
+{
+    if (!array_to_numpy($result, $1, typecode))
+        SWIG_fail;
+}
+%enddef
+
+/* Define concrete examples of the TYPEMAP_OUTND macros */
+TYPEMAP_OUTND(bool,          NPY_BOOL)
+#ifdef PYTHON3 // str -> unicode for python3
+TYPEMAP_OUTND(char,          NPY_UNICODE)
+#else
+TYPEMAP_OUTND(char,          NPY_STRING)
+#endif
+TYPEMAP_OUTND(uint8_t,       NPY_UINT8)
+TYPEMAP_OUTND(int16_t,       NPY_INT16)
+TYPEMAP_OUTND(uint16_t,      NPY_UINT16)
+TYPEMAP_OUTND(int32_t,       NPY_INT32)
+TYPEMAP_OUTND(uint32_t,      NPY_UINT32)
+TYPEMAP_OUTND(int64_t,       NPY_INT64)
+TYPEMAP_OUTND(uint64_t,      NPY_UINT64)
+TYPEMAP_OUTND(float32_t,     NPY_FLOAT32)
+TYPEMAP_OUTND(float64_t,     NPY_FLOAT64)
+TYPEMAP_OUTND(floatmax_t,    NPY_LONGDOUBLE)
+TYPEMAP_OUTND(PyObject,      NPY_OBJECT)
+
+#undef TYPEMAP_OUTND
 
 /* input typemap for CStringFeatures */
 %define TYPEMAP_STRINGFEATURES_IN(type,typecode)
