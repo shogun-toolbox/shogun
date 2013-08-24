@@ -95,7 +95,7 @@ CTreeMaxProduct::~CTreeMaxProduct()
 
 void CTreeMaxProduct::init()
 {
-	m_msg_order = std::vector<MessageEdge*>(m_fg->get_num_edges(), NULL);
+	m_msg_order = std::vector<MessageEdge*>(m_fg->get_num_edges(), (MessageEdge*) NULL);
 	m_is_root = std::vector<bool>(m_fg->get_cardinalities().size(), false);
 	m_fw_msgs = std::vector< std::vector<float64_t> >(m_msg_order.size(), 
 			std::vector<float64_t>());
