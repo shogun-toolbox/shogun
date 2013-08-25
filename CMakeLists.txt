@@ -4,9 +4,8 @@
 # $ cmake ..
 # $ make
 
-SET(CMAKE_LEGACY_CYGWIN_WIN32 0) # Remove when CMake >= 2.8.4 is required
 project(shogun)
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 2.8.4)
 SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 include(ShogunUtils)
 
@@ -650,7 +649,7 @@ ENDIF()
 
 # octave modular
 IF (OctaveModular OR OctaveStatic)		
-	FIND_PACKAGE(Octave 3.0 REQUIRED)
+	FIND_PACKAGE(Octave 3.6 REQUIRED)
 	LIST(APPEND DEFINES HAVE_OCTAVE)
 	LIST(APPEND DEFINES "OCTAVE_APIVERSION=${OCTAVE_API_VERSION}")
 	SET(OCTAVE_APIVERSION ${OCTAVE_API_VERSION})
