@@ -64,6 +64,7 @@
 %rename(FeatureBlockLogisticRegression) CFeatureBlockLogisticRegression;
 %rename(DirectorLinearMachine) CDirectorLinearMachine;
 %rename(DirectorKernelMachine) CDirectorKernelMachine;
+%rename(BaggingMachine) CBaggingMachine;
 
 /* These functions return new Objects */
 %newobject apply();
@@ -106,6 +107,7 @@
 %include <shogun/classifier/FeatureBlockLogisticRegression.h>
 %include <shogun/machine/DirectorLinearMachine.h>
 %include <shogun/machine/DirectorKernelMachine.h>
+%include <shogun/machine/BaggingMachine.h>
 
 #ifdef USE_SVMLIGHT
 

@@ -37,4 +37,5 @@
  #include <shogun/classifier/FeatureBlockLogisticRegression.h>
  #include <shogun/machine/DirectorLinearMachine.h>
  #include <shogun/machine/DirectorKernelMachine.h>
+ #include <shogun/machine/BaggingMachine.h>
 %}

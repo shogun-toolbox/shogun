@@ -63,6 +63,9 @@ float64_t CWeightedMajorityVote::weighted_combine(const SGVector<float64_t>& ens
 
 	for (index_t i = 0; i < ensemble_result.vlen; ++i)
 	{
+		if (CMath::is_nan(ensemble_result[i]))
+			continue;
+		
 		it = freq.find(ensemble_result[i]);
 		if (it == freq.end())
 		{

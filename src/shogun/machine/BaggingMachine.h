@@ -13,6 +13,7 @@
 
 #include <shogun/machine/Machine.h>
 #include <shogun/ensemble/CombinationRule.h>
+#include <shogun/evaluation/Evaluation.h>
 
 namespace shogun
 {
@@ -105,6 +106,14 @@ namespace shogun
 			 */
 			virtual EMachineType get_classifier_type() { return CT_BAGGING; }
 
+			/** get out-of-bag error
+			 * CombinationRule is used for combining the predictions.
+			 *
+			 * @param eval Evaluation method to use for calculating the error
+			 * @return out-of-bag error.
+			 */
+			float64_t get_oob_error(CEvaluation* eval) const;
+
 			/** name **/
 			virtual const char* get_name() const { return "BaggingMachine"; }
 
@@ -116,6 +125,17 @@ namespace shogun
 		private:
 			void register_parameters();
 			void init();
+
+			/**
+			 * get the vector of indices for feature vectors that are out of bag
+			 *
+			 * @param in_bag vector of indices that are in bag. 
+			 * NOTE: in_bag is a randomly generated with replacement
+			 * @return 
+			 */
+			CDynamicArray<index_t>* get_oob_indices(const SGVector<index_t>& in_bag);
+
+			void clear_oob_indicies();
 
 		private:
 			/** bags array */
@@ -135,6 +155,12 @@ namespace shogun
 
 			/** combination rule to use */
 			CCombinationRule* m_combination_rule;
+
+			/** indices of all feature vectors that are out of bag */
+			SGVector<bool> m_all_oob_idx;
+
+			/** array of oob indices */
+			CDynamicObjectArray* m_oob_indices;
 	};
 }
 
