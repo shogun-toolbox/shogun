@@ -17,7 +17,9 @@
 #include <stdarg.h>
 #include <string.h>
 #include <dirent.h>
+#ifndef _WIN32
 #include <unistd.h>
+#endif
 #include <locale.h>
 
 #include <sys/types.h>
@@ -88,6 +90,10 @@ enum EMessageLocation
 #else
 #define SG_UNLIKELY(expr) expr
 #endif
+#endif
+
+#ifdef _WIN32
+#define __PRETTY_FUNCTION__ __FUNCTION__
 #endif
 
 // printf like funktions (with additional severity level)

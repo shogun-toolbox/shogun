@@ -32,12 +32,17 @@
 #include <math.h>
 #include <stdio.h>
 #include <float.h>
-#include <pthread.h>
-#include <unistd.h>
 #include <sys/types.h>
+#ifndef _WIN32
 #include <sys/time.h>
+#include <unistd.h>
+#endif
 #include <time.h>
 
+#ifdef HAVE_PTHREAD
+#include <pthread.h>
+#endif
+ 
 #ifdef SUNOS
 #include <ieeefp.h>
 #endif
