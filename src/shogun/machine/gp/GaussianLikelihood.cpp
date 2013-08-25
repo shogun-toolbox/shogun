@@ -54,46 +54,6 @@ CGaussianLikelihood* CGaussianLikelihood::obtain_from_generic(
 	return (CGaussianLikelihood*)lik;
 }
 
-SGVector<float64_t> CGaussianLikelihood::get_predictive_log_probabilities(
-		SGVector<float64_t> mu,	SGVector<float64_t> s2, const CLabels* lab) const
-{
-	SGVector<float64_t> y;
-
-	if (lab)
-	{
-		REQUIRE((mu.vlen==s2.vlen) && (mu.vlen==lab->get_num_labels()),
-				"Length of the vector of means (mu), length of the vector of "
-				"variances (s2) and number of labels (lab) should be the same\n")
-		REQUIRE(lab->get_label_type()==LT_REGRESSION,
-				"Labels must be type of CRegressionLabels\n")
-
-		y=((CRegressionLabels*)lab)->get_labels();
-	}
-	else
-	{
-		REQUIRE(mu.vlen==s2.vlen, "Length of the vector of means (mu) and "
-				"length of the vector of variances (s2) should be the same\n")
-
-		y=SGVector<float64_t>(mu.vlen);
-		y.set_const(1.0);
-	}
-
-	// create eigen representation of y, mu and s2
-	Map<VectorXd> eigen_mu(mu.vector, mu.vlen);
-	Map<VectorXd> eigen_s2(s2.vector, s2.vlen);
-	Map<VectorXd> eigen_y(y.vector, y.vlen);
-
-	SGVector<float64_t> result(mu.vlen);
-	Map<VectorXd> eigen_result(result.vector, result.vlen);
-
-	// compule lZ=-(y-mu).^2./(sn2+s2)/2-log(2*pi*(sn2+s2))/2
-	eigen_s2=eigen_s2.array()+CMath::sq(m_sigma);
-	eigen_result=-(eigen_y-eigen_mu).array().square()/(2.0*eigen_s2.array())-
-		(2.0*CMath::PI*eigen_s2.array()).log()/2.0;
-
-	return result;
-}
-
 SGVector<float64_t> CGaussianLikelihood::get_predictive_means(
 		SGVector<float64_t> mu,	SGVector<float64_t> s2, const CLabels* lab) const
 {
@@ -250,4 +210,86 @@ SGVector<float64_t> CGaussianLikelihood::get_third_derivative(const CLabels* lab
 	return result;
 }
 
-#endif //HAVE_EIGEN3
+SGVector<float64_t> CGaussianLikelihood::get_log_zeroth_moments(
+		SGVector<float64_t> mu, SGVector<float64_t> s2, const CLabels *lab) const
+{
+	SGVector<float64_t> y;
+
+	if (lab)
+	{
+		REQUIRE((mu.vlen==s2.vlen) && (mu.vlen==lab->get_num_labels()),
+				"Length of the vector of means (%d), length of the vector of "
+				"variances (%d) and number of labels (%d) should be the same\n",
+				mu.vlen, s2.vlen, lab->get_num_labels())
+		REQUIRE(lab->get_label_type()==LT_REGRESSION,
+				"Labels must be type of CRegressionLabels\n")
+
+		y=((CRegressionLabels*)lab)->get_labels();
+	}
+	else
+	{
+		REQUIRE(mu.vlen==s2.vlen, "Length of the vector of means (%d) and "
+				"length of the vector of variances (%d) should be the same\n",
+				mu.vlen, s2.vlen)
+
+		y=SGVector<float64_t>(mu.vlen);
+		y.set_const(1.0);
+	}
+
+	// create eigen representation of y, mu and s2
+	Map<VectorXd> eigen_mu(mu.vector, mu.vlen);
+	Map<VectorXd> eigen_s2(s2.vector, s2.vlen);
+	Map<VectorXd> eigen_y(y.vector, y.vlen);
+
+	SGVector<float64_t> result(mu.vlen);
+	Map<VectorXd> eigen_result(result.vector, result.vlen);
+
+	// compule lZ=-(y-mu).^2./(sn2+s2)/2-log(2*pi*(sn2+s2))/2
+	eigen_s2=eigen_s2.array()+CMath::sq(m_sigma);
+	eigen_result=-(eigen_y-eigen_mu).array().square()/(2.0*eigen_s2.array())-
+		(2.0*CMath::PI*eigen_s2.array()).log()/2.0;
+
+	return result;
+}
+
+float64_t CGaussianLikelihood::get_first_moment(SGVector<float64_t> mu,
+		SGVector<float64_t> s2, const CLabels *lab, index_t i) const
+{
+	// check the parameters
+	REQUIRE(lab, "Labels are required (lab should not be NULL)\n")
+	REQUIRE((mu.vlen==s2.vlen) && (mu.vlen==lab->get_num_labels()),
+			"Length of the vector of means (%d), length of the vector of "
+			"variances (%d) and number of labels (%d) should be the same\n",
+			mu.vlen, s2.vlen, lab->get_num_labels())
+	REQUIRE(i>=0 && i<=mu.vlen, "Index (%d) out of bounds!\n", i)
+	REQUIRE(lab->get_label_type()==LT_REGRESSION,
+			"Labels must be type of CRegressionLabels\n")
+
+	SGVector<float64_t> y=((CRegressionLabels*)lab)->get_labels();
+
+	// compute 1st moment
+	float64_t Ex=mu[i]+s2[i]*(y[i]-mu[i])/(CMath::sq(m_sigma)+s2[i]);
+
+	return Ex;
+}
+
+float64_t CGaussianLikelihood::get_second_moment(SGVector<float64_t> mu,
+		SGVector<float64_t> s2, const CLabels *lab, index_t i) const
+{
+	// check the parameters
+	REQUIRE(lab, "Labels are required (lab should not be NULL)\n")
+	REQUIRE((mu.vlen==s2.vlen) && (mu.vlen==lab->get_num_labels()),
+			"Length of the vector of means (%d), length of the vector of "
+			"variances (%d) and number of labels (%d) should be the same\n",
+			mu.vlen, s2.vlen, lab->get_num_labels())
+	REQUIRE(i>=0 && i<=mu.vlen, "Index (%d) out of bounds!\n", i)
+	REQUIRE(lab->get_label_type()==LT_REGRESSION,
+			"Labels must be type of CRegressionLabels\n")
+
+	// compute 2nd moment
+	float64_t Var=s2[i]-CMath::sq(s2[i])/(CMath::sq(m_sigma)+s2[i]);
+
+	return Var;
+}
+
+#endif /* HAVE_EIGEN3 */

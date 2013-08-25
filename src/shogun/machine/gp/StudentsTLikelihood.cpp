@@ -16,6 +16,8 @@
 
 #ifdef HAVE_EIGEN3
 
+#include <shogun/mathematics/Function.h>
+#include <shogun/mathematics/Integration.h>
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/mathematics/Math.h>
@@ -23,6 +25,221 @@
 
 using namespace shogun;
 using namespace Eigen;
+
+namespace shogun
+{
+
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+
+/** Class of the probability density function of the normal distribution */
+class CNormalPDF : public CFunction
+{
+public:
+	/** default constructor */
+	CNormalPDF()
+	{
+		m_mu=0.0;
+		m_sigma=1.0;
+	}
+
+	/** constructor
+	 *
+	 * @param mu mean
+	 * @param sigma standard deviation
+	 */
+	CNormalPDF(float64_t mu, float64_t sigma)
+	{
+		m_mu=mu;
+		m_sigma=sigma;
+	}
+
+	/** set mean
+	 *
+	 * @param mu mean to set
+	 */
+	void set_mu(float64_t mu) { m_mu=mu; }
+
+	/** set standard deviation
+	 *
+	 * @param sigma standard deviation to set
+	 */
+	void set_sigma(float64_t sigma) { m_sigma=sigma; }
+
+	/** returns value of the function at given point
+	 *
+	 * @param x argument
+	 *
+	 * @return f(x)=(1/sqrt(2*PI*sigma^2))*exp(-(x-mu)^2/(2*sigma^2))
+	 */
+	virtual float64_t operator() (float64_t x)
+	{
+		return (1.0/(CMath::sqrt(2*CMath::PI)*m_sigma))*
+			CMath::exp(-CMath::sq(x-m_mu)/(2.0*CMath::sq(m_sigma)));
+	}
+
+private:
+	/* mean */
+	float64_t m_mu;
+
+	/* standard deviation */
+	float64_t m_sigma;
+};
+
+/** Class of the probability density function of the non-standardized Student's
+ * t-distribution
+ */
+class CStudentsTPDF : public CFunction
+{
+public:
+	/** default constructor */
+	CStudentsTPDF()
+	{
+		m_sigma=1.0;
+		m_mu=0.0;
+		m_nu=3.0;
+	}
+
+	/** constructor
+	 *
+	 * @param sigma scale parameter
+	 * @param nu degrees of freedom
+	 * @param mu location parameter
+	 */
+	CStudentsTPDF(float64_t sigma, float64_t nu, float64_t mu)
+	{
+		m_sigma=sigma;
+		m_mu=mu;
+		m_nu=nu;
+	}
+
+	/** set scale
+	 *
+	 * @param sigma scale to set
+	 */
+	void set_sigma(float64_t sigma) { m_sigma=sigma; }
+
+	/** set location parameter
+	 *
+	 * @param mu location parameter to set
+	 */
+	void set_mu(float64_t mu) { m_mu=mu; }
+
+	/** set degrees of freedom
+	 *
+	 * @param nu degrees of freedom to set
+	 */
+	void set_nu(float64_t nu) { m_nu=nu; }
+
+	/** returns value of the function at given point
+	 *
+	 * @param x argument
+	 *
+	 * @return f(x)=Gamma((nu+1)/2)/(Gamma(nu/2)*sqrt(nu*pi*sigma^2))*
+	 * (1+1/nu*(x-mu)^2/sigma^2)^(-(nu+1)/2)
+	 */
+	virtual float64_t operator() (float64_t x)
+	{
+		float64_t lZ=CStatistics::lgamma((m_nu+1.0)/2.0)-CStatistics::lgamma(m_nu/2.0)-
+			CMath::log(m_nu*CMath::PI*CMath::sq(m_sigma))/2.0;
+		return CMath::exp(lZ-((m_nu+1.0)/2.0)*CMath::log(1.0+CMath::sq(x-m_mu)/
+			(m_nu*CMath::sq(m_sigma))));
+	}
+
+private:
+	/** scale parameter */
+	float64_t m_sigma;
+
+	/** location parameter */
+	float64_t m_mu;
+
+	/** degrees of freedom */
+	float64_t m_nu;
+};
+
+/** Class of the function, which is a product of two given functions */
+class CProductFunction : public CFunction
+{
+public:
+	/** constructor
+	 *
+	 * @param f f(x)
+	 * @param g g(x)
+	 */
+	CProductFunction(CFunction* f, CFunction* g)
+	{
+		SG_REF(f);
+		SG_REF(g);
+		m_f=f;
+		m_g=g;
+	}
+
+	virtual ~CProductFunction()
+	{
+		SG_UNREF(m_f);
+		SG_UNREF(m_g);
+	}
+
+	/** returns value of the function at given point
+	 *
+	 * @param x argument
+	 *
+	 * @return h(x)=f(x)*g(x)
+	 */
+	virtual float64_t operator() (float64_t x)
+	{
+		return (*m_f)(x)*(*m_g)(x);
+	}
+
+private:
+	/** function f(x) */
+	CFunction* m_f;
+	/**	function g(x) */
+	CFunction* m_g;
+};
+
+/** Class of the f(x)=x */
+class CLinearFunction : public CFunction
+{
+public:
+	/** default constructor */
+	CLinearFunction() { }
+
+	virtual ~CLinearFunction() { }
+
+	/** returns value of the function at given point
+	 *
+	 * @param x argument
+	 *
+	 * @return f(x)=x
+	 */
+	virtual float64_t operator() (float64_t x)
+	{
+		return x;
+	}
+};
+
+/** Class of the f(x)=x^2 */
+class CQuadraticFunction : public CFunction
+{
+public:
+	/** default constructor */
+	CQuadraticFunction() { }
+
+	virtual ~CQuadraticFunction() { }
+
+	/** returns value of the function at given point
+	 *
+	 * @param x argument
+	 *
+	 * @return f(x)=x^2
+	 */
+	virtual float64_t operator() (float64_t x)
+	{
+		return CMath::sq(x);
+	}
+};
+
+#endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
 CStudentsTLikelihood::CStudentsTLikelihood() : CLikelihoodModel()
 {
@@ -62,14 +279,6 @@ CStudentsTLikelihood* CStudentsTLikelihood::obtain_from_generic(
 
 	SG_REF(lik);
 	return (CStudentsTLikelihood*)lik;
-}
-
-SGVector<float64_t> CStudentsTLikelihood::get_predictive_log_probabilities(
-		SGVector<float64_t> mu,	SGVector<float64_t> s2, const CLabels* lab) const
-{
-	SG_NOTIMPLEMENTED // since we have not something for integral evaluation yet
-
-	return SGVector<float64_t>();
 }
 
 SGVector<float64_t> CStudentsTLikelihood::get_predictive_means(
@@ -273,8 +482,8 @@ SGVector<float64_t> CStudentsTLikelihood::get_second_derivative(const CLabels* l
 	}
 	else if (!strcmp(param->m_name, "sigma"))
 	{
-		// compute derivative of first derivative of log probability wrt
-		// sigma: dlp_dsigma=-(df+1)*2*df*sigma^2*r./a2
+		// compute derivative of first derivative of log probability wrt sigma:
+		// dlp_dsigma=-(df+1)*2*df*sigma^2*r./a2
 		eigen_r=-(m_df+1.0)*2*m_df*CMath::sq(m_sigma)*
 			eigen_r.cwiseQuotient(a2);
 
@@ -312,8 +521,8 @@ SGVector<float64_t> CStudentsTLikelihood::get_third_derivative(const CLabels* la
 
 	if (!strcmp(param->m_name, "df"))
 	{
-		// compute derivative of second derivative of log probability wrt
-		// df: d2lp_ddf=df*(r2.*(r2-3*sigma^2*(1+df))+df*sigma^4)./a3
+		// compute derivative of second derivative of log probability wrt df:
+		// d2lp_ddf=df*(r2.*(r2-3*sigma^2*(1+df))+df*sigma^4)./a3
 		float64_t sigma2=CMath::sq(m_sigma);
 
 		eigen_r=m_df*(eigen_r2.cwiseProduct(eigen_r2-3*sigma2*(1.0+m_df)*
@@ -326,8 +535,8 @@ SGVector<float64_t> CStudentsTLikelihood::get_third_derivative(const CLabels* la
 	}
 	else if (!strcmp(param->m_name, "sigma"))
 	{
-		// compute derivative of second derivative of log probability wrt
-		// sigma: d2lp_dsigma=(df+1)*2*df*sigma^2*(a-4*r2)./a3
+		// compute derivative of second derivative of log probability wrt sigma:
+		// d2lp_dsigma=(df+1)*2*df*sigma^2*(a-4*r2)./a3
 		eigen_r=(m_df+1.0)*2*m_df*CMath::sq(m_sigma)*
 			(a-4.0*eigen_r2).cwiseQuotient(a3);
 
@@ -337,4 +546,162 @@ SGVector<float64_t> CStudentsTLikelihood::get_third_derivative(const CLabels* la
 	return SGVector<float64_t>();
 }
 
-#endif // HAVE_EIGEN3
+SGVector<float64_t> CStudentsTLikelihood::get_log_zeroth_moments(
+		SGVector<float64_t> mu,	SGVector<float64_t> s2, const CLabels* lab) const
+{
+	SGVector<float64_t> y;
+
+	if (lab)
+	{
+		REQUIRE((mu.vlen==s2.vlen) && (mu.vlen==lab->get_num_labels()),
+				"Length of the vector of means (%d), length of the vector of "
+				"variances (%d) and number of labels (%d) should be the same\n",
+				mu.vlen, s2.vlen, lab->get_num_labels())
+		REQUIRE(lab->get_label_type()==LT_REGRESSION,
+				"Labels must be type of CRegressionLabels\n")
+
+		y=((CRegressionLabels*)lab)->get_labels();
+	}
+	else
+	{
+		REQUIRE(mu.vlen==s2.vlen, "Length of the vector of means (%d) and "
+				"length of the vector of variances (%d) should be the same\n",
+				mu.vlen, s2.vlen)
+
+		y=SGVector<float64_t>(mu.vlen);
+		y.set_const(1.0);
+	}
+
+	// create an object of normal pdf
+	CNormalPDF* f=new CNormalPDF();
+
+	// create an object of Student's t pdf
+	CStudentsTPDF* g=new CStudentsTPDF();
+
+	g->set_nu(m_df);
+	g->set_sigma(m_sigma);
+
+	// create an object of product of Student's-t pdf and normal pdf
+	CProductFunction* h=new CProductFunction(f, g);
+	SG_REF(h);
+
+	// compute probabilities using numerical integration
+	SGVector<float64_t> r(mu.vlen);
+
+	for (index_t i=0; i<mu.vlen; i++)
+	{
+		// set normal pdf parameters
+		f->set_mu(mu[i]);
+		f->set_sigma(CMath::sqrt(s2[i]));
+
+		// set Stundent's-t pdf parameters
+		g->set_mu(y[i]);
+
+		// evaluate integral on (-inf, inf)
+		r[i]=CIntegration::integrate_quadgk(h, -CMath::INFTY, mu[i])+
+			CIntegration::integrate_quadgk(h, mu[i], CMath::INFTY);
+	}
+
+	SG_UNREF(h);
+
+	r.log();
+
+	return r;
+}
+
+float64_t CStudentsTLikelihood::get_first_moment(SGVector<float64_t> mu,
+		SGVector<float64_t> s2, const CLabels *lab, index_t i) const
+{
+	// check the parameters
+	REQUIRE(lab, "Labels are required (lab should not be NULL)\n")
+	REQUIRE((mu.vlen==s2.vlen) && (mu.vlen==lab->get_num_labels()),
+			"Length of the vector of means (%d), length of the vector of "
+			"variances (%d) and number of labels (%d) should be the same\n",
+			mu.vlen, s2.vlen, lab->get_num_labels())
+	REQUIRE(i>=0 && i<=mu.vlen, "Index (%d) out of bounds!\n", i)
+	REQUIRE(lab->get_label_type()==LT_REGRESSION,
+			"Labels must be type of CRegressionLabels\n")
+
+	SGVector<float64_t> y=((CRegressionLabels*)lab)->get_labels();
+
+	// create an object of normal pdf
+	CNormalPDF* f=new CNormalPDF(mu[i], CMath::sqrt(s2[i]));
+
+	// create an object of Student's t pdf
+	CStudentsTPDF* g=new CStudentsTPDF(m_sigma, m_df, y[i]);
+
+	// create an object of h(x)=N(x|mu,sigma)*t(x|mu,sigma,nu)
+	CProductFunction* h=new CProductFunction(f, g);
+
+	// create an object of k(x)=x*N(x|mu,sigma)*t(x|mu,sigma,nu)
+	CProductFunction* k=new CProductFunction(new CLinearFunction(), h);
+	SG_REF(k);
+
+	// compute Z = \int N(x|mu,sigma)*t(x|mu,sigma,nu) dx
+	float64_t Z=CIntegration::integrate_quadgk(h, -CMath::INFTY, mu[i])+
+		CIntegration::integrate_quadgk(h, mu[i], CMath::INFTY);
+
+	// compute 1st moment:
+	// E[x] = Z^-1 * \int x*N(x|mu,sigma)*t(x|mu,sigma,nu)dx
+	float64_t Ex=(CIntegration::integrate_quadgk(k, -CMath::INFTY, mu[i])+
+			CIntegration::integrate_quadgk(k, mu[i], CMath::INFTY))/Z;
+
+	SG_UNREF(k);
+
+	return Ex;
+}
+
+float64_t CStudentsTLikelihood::get_second_moment(SGVector<float64_t> mu,
+		SGVector<float64_t> s2, const CLabels *lab, index_t i) const
+{
+	// check the parameters
+	REQUIRE(lab, "Labels are required (lab should not be NULL)\n")
+	REQUIRE((mu.vlen==s2.vlen) && (mu.vlen==lab->get_num_labels()),
+			"Length of the vector of means (%d), length of the vector of "
+			"variances (%d) and number of labels (%d) should be the same\n",
+			mu.vlen, s2.vlen, lab->get_num_labels())
+	REQUIRE(i>=0 && i<=mu.vlen, "Index (%d) out of bounds!\n", i)
+	REQUIRE(lab->get_label_type()==LT_REGRESSION,
+			"Labels must be type of CRegressionLabels\n")
+
+	SGVector<float64_t> y=((CRegressionLabels*)lab)->get_labels();
+
+	// create an object of normal pdf
+	CNormalPDF* f=new CNormalPDF(mu[i], CMath::sqrt(s2[i]));
+
+	// create an object of Student's t pdf
+	CStudentsTPDF* g=new CStudentsTPDF(m_sigma, m_df, y[i]);
+
+	// create an object of h(x)=N(x|mu,sigma)*t(x|mu,sigma,nu)
+	CProductFunction* h=new CProductFunction(f, g);
+
+	// create an object of k(x)=x*N(x|mu,sigma)*t(x|mu,sigma,nu)
+	CProductFunction* k=new CProductFunction(new CLinearFunction(), h);
+	SG_REF(k);
+
+	// create an object of p(x)=x^2*N(x|mu,sigma^2)*t(x|mu,sigma,nu)
+	CProductFunction* p=new CProductFunction(new CQuadraticFunction(), h);
+	SG_REF(p);
+
+	// compute Z = \int N(x|mu,sigma)*t(x|mu,sigma,nu) dx
+	float64_t Z=CIntegration::integrate_quadgk(h, -CMath::INFTY, mu[i])+
+		CIntegration::integrate_quadgk(h, mu[i], CMath::INFTY);
+
+	// compute 1st moment:
+	// E[x] = Z^-1 * \int x*N(x|mu,sigma)*t(x|mu,sigma,nu)dx
+	float64_t Ex=(CIntegration::integrate_quadgk(k, -CMath::INFTY, mu[i])+
+			CIntegration::integrate_quadgk(k, mu[i], CMath::INFTY))/Z;
+
+	// compute E[x^2] = Z^-1 * \int x^2*N(x|mu,sigma)*t(x|mu,sigma,nu)dx
+	float64_t Ex2=(CIntegration::integrate_quadgk(p, -CMath::INFTY, mu[i])+
+			CIntegration::integrate_quadgk(p, mu[i], CMath::INFTY))/Z;
+
+	SG_UNREF(k);
+	SG_UNREF(p);
+
+	// return 2nd moment: Var[x]=E[x^2]-E[x]^2
+	return Ex2-CMath::sq(Ex);
+}
+}
+
+#endif /* HAVE_EIGEN3 */

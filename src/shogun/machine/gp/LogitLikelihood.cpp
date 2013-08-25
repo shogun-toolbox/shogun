@@ -35,6 +35,17 @@ public:
 		m_sigma=1.0;
 	}
 
+	/** constructor
+	 *
+	 * @param mu mean
+	 * @param sigma standard deviation
+	 */
+	CNormalPDF(float64_t mu, float64_t sigma)
+	{
+		m_mu=mu;
+		m_sigma=sigma;
+	}
+
 	/** set mean
 	 *
 	 * @param mu mean to set
@@ -75,6 +86,15 @@ public:
 	CSigmoidFunction()
 	{
 		m_a=0.0;
+	}
+
+	/** constructor
+	 *
+	 * @param a slope parameter
+	 */
+	CSigmoidFunction(float64_t a)
+	{
+		m_a=a;
 	}
 
 	/** slope parameter
@@ -140,6 +160,48 @@ private:
 	CFunction* m_g;
 };
 
+/** Class of the f(x)=x */
+class CLinearFunction : public CFunction
+{
+public:
+	/** default constructor */
+	CLinearFunction() { }
+
+	virtual ~CLinearFunction() { }
+
+	/** returns value of the function at given point
+	 *
+	 * @param x argument
+	 *
+	 * @return f(x)=x
+	 */
+	virtual float64_t operator() (float64_t x)
+	{
+		return x;
+	}
+};
+
+/** Class of the f(x)=x^2 */
+class CQuadraticFunction : public CFunction
+{
+public:
+	/** default constructor */
+	CQuadraticFunction() { }
+
+	virtual ~CQuadraticFunction() { }
+
+	/** returns value of the function at given point
+	 *
+	 * @param x argument
+	 *
+	 * @return f(x)=x^2
+	 */
+	virtual float64_t operator() (float64_t x)
+	{
+		return CMath::sq(x);
+	}
+};
+
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
 CLogitLikelihood::CLogitLikelihood() : CLikelihoodModel()
@@ -150,126 +212,17 @@ CLogitLikelihood::~CLogitLikelihood()
 {
 }
 
-SGVector<float64_t> CLogitLikelihood::get_predictive_log_probabilities(
-		SGVector<float64_t> mu,	SGVector<float64_t> s2, const CLabels* lab) const
-{
-	SGVector<float64_t> y;
-
-	if (lab)
-	{
-		REQUIRE((mu.vlen==s2.vlen) && (mu.vlen==lab->get_num_labels()),
-				"Length of the vector of means (mu), length of the vector of "
-				"variances (s2) and number of labels (lab) should be the same\n")
-		REQUIRE(lab->get_label_type()==LT_BINARY,
-				"Labels must be type of CBinaryLabels\n")
-
-		y=((CBinaryLabels*)lab)->get_labels();
-	}
-	else
-	{
-		REQUIRE(mu.vlen==s2.vlen, "Length of the vector of means (mu) and "
-				"length of the vector of variances (s2) should be the same\n")
-
-		y=SGVector<float64_t>(mu.vlen);
-		y.set_const(1.0);
-	}
-
-	// create an object of normal pdf function
-	CNormalPDF* f=new CNormalPDF();
-
-	// create an object of sigmoid function
-	CSigmoidFunction* g=new CSigmoidFunction();
-
-	// create and object of product of sigmoid and normal pdf
-	// functions
-	CProductFunction* h=new CProductFunction(f, g);
-	SG_REF(h);
-
-	// compute probabilities using numerical integration
-	SGVector<float64_t> r(mu.vlen);
-
-	for (index_t i=0; i<mu.vlen; i++)
-	{
-		// set normal pdf parameters
-		f->set_mu(mu[i]);
-		f->set_sigma(CMath::sqrt(s2[i]));
-
-		// set sigmoid parameters
-		g->set_a(y[i]);
-
-		// evaluate integral on (-inf, inf)
-		r[i]=CIntegration::integrate_quadgk(h, -CMath::INFTY, mu[i])+
-			CIntegration::integrate_quadgk(h, mu[i], CMath::INFTY);
-	}
-
-	SG_UNREF(h);
-
-	r.log();
-
-	return r;
-}
-
 SGVector<float64_t> CLogitLikelihood::get_predictive_means(
 		SGVector<float64_t> mu,	SGVector<float64_t> s2, const CLabels* lab) const
 {
-	SGVector<float64_t> y;
+	SGVector<float64_t> lp=get_log_zeroth_moments(mu, s2, lab);
+	Map<VectorXd> eigen_lp(lp.vector, lp.vlen);
 
-	if (lab)
-	{
-		REQUIRE((mu.vlen==s2.vlen) && (mu.vlen==lab->get_num_labels()),
-				"Length of the vector of means (mu), length of the vector of "
-				"variances (s2) and number of labels (lab) should be the same\n")
-		REQUIRE(lab->get_label_type()==LT_BINARY,
-				"Labels must be type of CBinaryLabels\n")
-
-		y=((CBinaryLabels*)lab)->get_labels();
-	}
-	else
-	{
-		REQUIRE(mu.vlen==s2.vlen, "Length of the vector of means (mu) and "
-				"length of the vector of variances (s2) should be the same\n")
-
-		y=SGVector<float64_t>(mu.vlen);
-		y.set_const(1.0);
-	}
-
-	// create an object of normal pdf function
-	CNormalPDF* f=new CNormalPDF();
-
-	// create an object of sigmoid function
-	CSigmoidFunction* g=new CSigmoidFunction();
-
-	// create and object of product of sigmoid and normal pdf
-	// functions
-	CProductFunction* h=new CProductFunction(f, g);
-	SG_REF(h);
-
-	// compute probabilities using numerical integration
-	SGVector<float64_t> p(mu.vlen);
-
-	for (index_t i=0; i<mu.vlen; i++)
-	{
-		// set normal pdf parameters
-		f->set_mu(mu[i]);
-		f->set_sigma(CMath::sqrt(s2[i]));
-
-		// set sigmoid parameters
-		g->set_a(y[i]);
-
-		// evaluate integral on (-inf, inf)
-		p[i]=CIntegration::integrate_quadgk(h, -CMath::INFTY, mu[i])+
-			CIntegration::integrate_quadgk(h, mu[i], CMath::INFTY);
-	}
-
-	SG_UNREF(h);
-
-	Map<VectorXd> eigen_p(p.vector, p.vlen);
-
-	SGVector<float64_t> r(p.vlen);
+	SGVector<float64_t> r(lp.vlen);
 	Map<VectorXd> eigen_r(r.vector, r.vlen);
 
 	// evaluate predictive mean: ymu=2*p-1
-	eigen_r=2.0*eigen_p.array()-1.0;
+	eigen_r=2.0*eigen_lp.array().exp()-1.0;
 
 	return r;
 }
@@ -277,64 +230,14 @@ SGVector<float64_t> CLogitLikelihood::get_predictive_means(
 SGVector<float64_t> CLogitLikelihood::get_predictive_variances(
 		SGVector<float64_t> mu,	SGVector<float64_t> s2, const CLabels* lab) const
 {
-	SGVector<float64_t> y;
+	SGVector<float64_t> lp=get_log_zeroth_moments(mu, s2, lab);
+	Map<VectorXd> eigen_lp(lp.vector, lp.vlen);
 
-	if (lab)
-	{
-		REQUIRE((mu.vlen==s2.vlen) && (mu.vlen==lab->get_num_labels()),
-				"Length of the vector of means (mu), length of the vector of "
-				"variances (s2) and number of labels (lab) should be the same\n")
-		REQUIRE(lab->get_label_type()==LT_BINARY,
-				"Labels must be type of CBinaryLabels\n")
-
-		y=((CBinaryLabels*)lab)->get_labels();
-	}
-	else
-	{
-		REQUIRE(mu.vlen==s2.vlen, "Length of the vector of means (mu) and "
-				"length of the vector of variances (s2) should be the same\n")
-
-		y=SGVector<float64_t>(mu.vlen);
-		y.set_const(1.0);
-	}
-
-	// create an object of normal pdf function
-	CNormalPDF* f=new CNormalPDF();
-
-	// create an object of sigmoid function
-	CSigmoidFunction* g= new CSigmoidFunction();
-
-	// create and object of product of sigmoid and normal pdf
-	// functions
-	CProductFunction* h=new CProductFunction(f, g);
-	SG_REF(h);
-
-	// compute probabilities using numerical integration
-	SGVector<float64_t> p(mu.vlen);
-
-	for (index_t i=0; i<mu.vlen; i++)
-	{
-		// set normal pdf parameters
-		f->set_mu(mu[i]);
-		f->set_sigma(CMath::sqrt(s2[i]));
-
-		// set sigmoid parameters
-		g->set_a(y[i]);
-
-		// evaluate integral on (-inf, inf)
-		p[i]=CIntegration::integrate_quadgk(h, -CMath::INFTY, mu[i])+
-			CIntegration::integrate_quadgk(h, mu[i], CMath::INFTY);
-	}
-
-	SG_UNREF(h);
-
-	Map<VectorXd> eigen_p(p.vector, p.vlen);
-
-	SGVector<float64_t> r(p.vlen);
+	SGVector<float64_t> r(lp.vlen);
 	Map<VectorXd> eigen_r(r.vector, r.vlen);
 
 	// evaluate predictive variance: ys2=1-(2*p-1).^2
-	eigen_r=1-(2.0*eigen_p.array()-1.0).square();
+	eigen_r=1-(2.0*eigen_lp.array().exp()-1.0).square();
 
 	return r;
 }
@@ -426,6 +329,167 @@ SGVector<float64_t> CLogitLikelihood::get_third_derivative(const CLabels* lab,
 		const TParameter* param, SGVector<float64_t> func) const
 {
 	return SGVector<float64_t>();
+}
+
+SGVector<float64_t> CLogitLikelihood::get_log_zeroth_moments(
+		SGVector<float64_t> mu, SGVector<float64_t> s2, const CLabels* lab) const
+{
+	SGVector<float64_t> y;
+
+	if (lab)
+	{
+		REQUIRE((mu.vlen==s2.vlen) && (mu.vlen==lab->get_num_labels()),
+				"Length of the vector of means (%d), length of the vector of "
+				"variances (%d) and number of labels (%d) should be the same\n",
+				mu.vlen, s2.vlen, lab->get_num_labels())
+		REQUIRE(lab->get_label_type()==LT_BINARY,
+				"Labels must be type of CBinaryLabels\n")
+
+		y=((CBinaryLabels*)lab)->get_labels();
+	}
+	else
+	{
+		REQUIRE(mu.vlen==s2.vlen, "Length of the vector of means (%d) and "
+				"length of the vector of variances (%d) should be the same\n",
+				mu.vlen, s2.vlen)
+
+		y=SGVector<float64_t>(mu.vlen);
+		y.set_const(1.0);
+	}
+
+	// create an object of normal pdf function
+	CNormalPDF* f=new CNormalPDF();
+
+	// create an object of sigmoid function
+	CSigmoidFunction* g=new CSigmoidFunction();
+
+	// create an object of product of sigmoid and normal pdf functions
+	CProductFunction* h=new CProductFunction(f, g);
+	SG_REF(h);
+
+	// compute probabilities using numerical integration
+	SGVector<float64_t> r(mu.vlen);
+
+	for (index_t i=0; i<mu.vlen; i++)
+	{
+		// set normal pdf parameters
+		f->set_mu(mu[i]);
+		f->set_sigma(CMath::sqrt(s2[i]));
+
+		// set sigmoid parameters
+		g->set_a(y[i]);
+
+		// evaluate integral on (-inf, inf)
+		r[i]=CIntegration::integrate_quadgk(h, -CMath::INFTY, mu[i])+
+			CIntegration::integrate_quadgk(h, mu[i], CMath::INFTY);
+	}
+
+	SG_UNREF(h);
+
+	r.log();
+
+	return r;
+}
+
+float64_t CLogitLikelihood::get_first_moment(SGVector<float64_t> mu,
+		SGVector<float64_t> s2, const CLabels *lab,	index_t i) const
+{
+	// check the parameters
+	REQUIRE(lab, "Labels are required (lab should not be NULL)\n")
+	REQUIRE((mu.vlen==s2.vlen) && (mu.vlen==lab->get_num_labels()),
+			"Length of the vector of means (%d), length of the vector of "
+			"variances (%d) and number of labels (%d) should be the same\n",
+			mu.vlen, s2.vlen, lab->get_num_labels())
+	REQUIRE(i>=0 && i<=mu.vlen, "Index (%d) out of bounds!\n", i)
+	REQUIRE(lab->get_label_type()==LT_BINARY,
+			"Labels must be type of CBinaryLabels\n")
+
+	SGVector<float64_t> y=((CBinaryLabels*)lab)->get_labels();
+
+	// create an object of f(x)=N(x|mu,sigma^2)
+	CNormalPDF* f=new CNormalPDF(mu[i], CMath::sqrt(s2[i]));
+
+	// create an object of g(x)=sigmoid(x)
+	CSigmoidFunction* g=new CSigmoidFunction(y[i]);
+
+	// create an object of h(x)=N(x|mu,sigma^2)*sigmoid(x)
+	CProductFunction* h=new CProductFunction(f, g);
+
+	// create an object of l(x)=x
+	CLinearFunction* l=new CLinearFunction();
+
+	// create an object of k(x)=x*N(x|mu,sigma^2)*sigmoid(x)
+	CProductFunction* k=new CProductFunction(l, h);
+	SG_REF(k);
+
+	// compute Z = \int N(x|mu,sigma)*sigmoid(a*x) dx
+	float64_t Z=CIntegration::integrate_quadgk(h, -CMath::INFTY, mu[i])+
+		CIntegration::integrate_quadgk(h, mu[i], CMath::INFTY);
+
+	// compute 1st moment: E[x] = Z^-1 * \int x*N(x|mu,sigma)*sigmoid(a*x)dx
+	float64_t Ex=(CIntegration::integrate_quadgk(k, -CMath::INFTY, mu[i])+
+			CIntegration::integrate_quadgk(k, mu[i], CMath::INFTY))/Z;
+
+	SG_UNREF(k);
+
+	return Ex;
+}
+
+float64_t CLogitLikelihood::get_second_moment(SGVector<float64_t> mu,
+		SGVector<float64_t> s2, const CLabels *lab, index_t i) const
+{
+	// check the parameters
+	REQUIRE(lab, "Labels are required (lab should not be NULL)\n")
+	REQUIRE((mu.vlen==s2.vlen) && (mu.vlen==lab->get_num_labels()),
+			"Length of the vector of means (%d), length of the vector of "
+			"variances (%d) and number of labels (%d) should be the same\n",
+			mu.vlen, s2.vlen, lab->get_num_labels())
+	REQUIRE(i>=0 && i<=mu.vlen, "Index (%d) out of bounds!\n", i)
+	REQUIRE(lab->get_label_type()==LT_BINARY,
+			"Labels must be type of CBinaryLabels\n")
+
+	SGVector<float64_t> y=((CBinaryLabels*)lab)->get_labels();
+
+	// create an object of f(x)=N(x|mu,sigma^2)
+	CNormalPDF* f=new CNormalPDF(mu[i], CMath::sqrt(s2[i]));
+
+	// create an object of g(x)=sigmoid(a*x)
+	CSigmoidFunction* g=new CSigmoidFunction(y[i]);
+
+	// create an object of h(x)=N(x|mu,sigma^2)*sigmoid(a*x)
+	CProductFunction* h=new CProductFunction(f, g);
+
+	// create an object of l(x)=x
+	CLinearFunction* l=new CLinearFunction();
+
+	// create an object of k(x)=x*N(x|mu,sigma^2)*sigmoid(a*x)
+	CProductFunction* k=new CProductFunction(l, h);
+	SG_REF(k);
+
+	// create an object of q(x)=x^2
+	CQuadraticFunction* q=new CQuadraticFunction();
+
+	// create an object of p(x)=x^2*N(x|mu,sigma^2)*sigmoid(x)
+	CProductFunction* p=new CProductFunction(q, h);
+	SG_REF(p);
+
+	// compute Z = \int N(x|mu,sigma)*sigmoid(a*x) dx
+	float64_t Z=CIntegration::integrate_quadgk(h, -CMath::INFTY, mu[i])+
+		CIntegration::integrate_quadgk(h, mu[i], CMath::INFTY);
+
+	// compute 1st moment: E[x] = Z^-1 * \int x*N(x|mu,sigma)*sigmoid(a*x)dx
+	float64_t Ex=(CIntegration::integrate_quadgk(k, -CMath::INFTY, mu[i])+
+			CIntegration::integrate_quadgk(k, mu[i], CMath::INFTY))/Z;
+
+	// compute E[x^2] = Z^-1 * \int x^2*N(x|mu,sigma)*sigmoid(a*x)dx
+	float64_t Ex2=(CIntegration::integrate_quadgk(p, -CMath::INFTY, mu[i])+
+			CIntegration::integrate_quadgk(p, mu[i], CMath::INFTY))/Z;
+
+	SG_UNREF(k);
+	SG_UNREF(p);
+
+	// return 2nd moment: Var[x]=E[x^2]-E[x]^2
+	return Ex2-CMath::sq(Ex);;
 }
 }
 

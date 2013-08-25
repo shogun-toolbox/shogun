@@ -20,6 +20,50 @@
 
 using namespace shogun;
 
+TEST(StudentsTLikelihood,get_predictive_log_probabilities)
+{
+	// create some easy data:
+	// mu(x) approximately equals to (x^3+sin(x)^2)/10, y=0
+	index_t n=5;
+
+	SGVector<float64_t> lab(n);
+	SGVector<float64_t> s2(n);
+	SGVector<float64_t> mu(n);
+
+	lab.set_const(0.0);
+
+	s2[0]=0.1;
+	s2[1]=0.2;
+	s2[2]=1.0;
+	s2[3]=0.7;
+	s2[4]=0.3;
+
+	mu[0]=-2.18236;
+	mu[1]=-1.30906;
+	mu[2]=-0.50885;
+	mu[3]=-0.17185;
+	mu[4]=0.00388;
+
+	// shogun representation of labels
+	CRegressionLabels* labels=new CRegressionLabels(lab);
+
+	// Stundent's-t likelihood with sigma = 0.17, df = 3
+	CStudentsTLikelihood* likelihood=new CStudentsTLikelihood(0.17, 3);
+
+	SGVector<float64_t> lp=likelihood->get_predictive_log_probabilities(mu, s2, labels);
+
+	// comparison of the log probability moment with result from GPstuff package
+	EXPECT_NEAR(lp[0], -7.048027785472147, 1E-10);
+	EXPECT_NEAR(lp[1], -3.450707321209273, 1E-10);
+	EXPECT_NEAR(lp[2], -1.073679429165726, 1E-10);
+	EXPECT_NEAR(lp[3], -0.804586438080387, 1E-10);
+	EXPECT_NEAR(lp[4], -0.406520554213667, 1E-10);
+
+	// clean up
+	SG_UNREF(likelihood);
+	SG_UNREF(labels);
+}
+
 TEST(StudentsTLikelihood,get_predictive_means)
 {
 	// create some easy data:
@@ -375,4 +419,92 @@ TEST(StudentsTLikelihood,get_third_derivative)
 	SG_UNREF(labels);
 }
 
-#endif // HAVE_EIGEN3
+TEST(StudentsTLikelihood,get_first_moments)
+{
+	// create some easy data:
+	// mu(x) approximately equals to (x^3+sin(x)^2)/10, y=0
+	index_t n=5;
+
+	SGVector<float64_t> lab(n);
+	SGVector<float64_t> s2(n);
+	SGVector<float64_t> mu(n);
+
+	lab.set_const(0.0);
+
+	s2[0]=0.1;
+	s2[1]=0.2;
+	s2[2]=1.0;
+	s2[3]=0.7;
+	s2[4]=0.3;
+
+	mu[0]=-2.18236;
+	mu[1]=-1.30906;
+	mu[2]=-0.50885;
+	mu[3]=-0.17185;
+	mu[4]=0.00388;
+
+	// shogun representation of labels
+	CRegressionLabels* labels=new CRegressionLabels(lab);
+
+	// Stundent's-t likelihood with sigma = 0.13, df = 4
+	CStudentsTLikelihood* likelihood=new CStudentsTLikelihood(0.13, 4);
+
+	mu=likelihood->get_first_moments(mu, s2, labels);
+
+	// comparison of the first moment with result from GPstuff package
+	EXPECT_NEAR(mu[0], -1.91822633104012e+00, 1E-10);
+	EXPECT_NEAR(mu[1], -2.38637983911711e-01, 1E-10);
+	EXPECT_NEAR(mu[2], -1.51721564537775e-02, 1E-10);
+	EXPECT_NEAR(mu[3], -7.02852818764603e-03, 1E-10);
+	EXPECT_NEAR(mu[4], 3.26984704842959e-04, 1E-10);
+
+	// clean up
+	SG_UNREF(likelihood);
+	SG_UNREF(labels);
+}
+
+TEST(StudentsTLikelihood,get_second_moments)
+{
+	// create some easy data:
+	// mu(x) approximately equals to (x^3+sin(x)^2)/10, y=0
+	index_t n=5;
+
+	SGVector<float64_t> lab(n);
+	SGVector<float64_t> s2(n);
+	SGVector<float64_t> mu(n);
+
+	lab.set_const(0.0);
+
+	s2[0]=0.1;
+	s2[1]=0.2;
+	s2[2]=1.0;
+	s2[3]=0.7;
+	s2[4]=0.3;
+
+	mu[0]=-2.18236;
+	mu[1]=-1.30906;
+	mu[2]=-0.50885;
+	mu[3]=-0.17185;
+	mu[4]=0.00388;
+
+	// shogun representation of labels
+	CRegressionLabels* labels=new CRegressionLabels(lab);
+
+	// Stundent's-t likelihood with sigma = 0.13, df = 4
+	CStudentsTLikelihood* likelihood=new CStudentsTLikelihood(0.13, 4);
+
+	s2=likelihood->get_second_moments(mu, s2, labels);
+
+	// comparison of the second moment with result from GPstuff package
+	EXPECT_NEAR(s2[0], 0.1166949785176628, 1E-10);
+	EXPECT_NEAR(s2[1], 0.0821809540192921, 1E-10);
+	EXPECT_NEAR(s2[2], 0.0301390579119477, 1E-10);
+	EXPECT_NEAR(s2[3], 0.0286878038416459, 1E-10);
+	EXPECT_NEAR(s2[4], 0.0252824052815258, 1E-10);
+
+	// clean up
+	SG_UNREF(likelihood);
+	SG_UNREF(labels);
+}
+
+#endif /* HAVE_EIGEN3 */
