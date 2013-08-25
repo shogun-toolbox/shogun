@@ -93,7 +93,12 @@ if( NOT CMAKE_BUILD_TYPE )
 endif()
 
 # set the flags for the build types
-SET(COMPILER_WARNINGS "-Wall -Wno-unused-parameter -Wformat -Wformat-security -Wparentheses -Wshadow -Wno-unknown-pragmas -Wno-deprecated")
+IF(MSVC)
+	SET(COMPILER_WARNINGS "/Wall")
+ELSE()
+	SET(COMPILER_WARNINGS "-Wall -Wno-unused-parameter -Wformat -Wformat-security -Wparentheses -Wshadow -Wno-unknown-pragmas -Wno-deprecated")
+ENDIF()
+
 IF(CMAKE_COMPILER_IS_GNUCXX)
 	SET(RELEASE_COMPILER_FLAGS "-fexpensive-optimizations -frerun-cse-after-loop -fcse-follow-jumps -finline-functions -fschedule-insns2 -fthread-jumps -fforce-addr -fstrength-reduce -funroll-loops -mfpmath=sse")
 ELSEIF("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
@@ -212,6 +217,14 @@ LIST(APPEND DEFINES USE_INT64)
 LIST(APPEND DEFINES USE_FLOAT32)
 LIST(APPEND DEFINES USE_FLOAT64)
 #LIST(APPEND DEFINES USE_FLOATMAX)
+
+IF(MSVC)
+	include(external/MSIntTypes)
+	LIST(APPEND INCLUDES ${THIRD_PARTY_DIR}/MSIntTypes)
+
+	include(external/MSDirent)
+	LIST(APPEND INCLUDES ${MSDIRENT_INCLUDE_DIR})
+ENDIF()
 
 # detect word size
 IF(CMAKE_SIZEOF_VOID_P EQUAL 8 AND NOT DARWIN)

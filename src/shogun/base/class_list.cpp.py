@@ -271,7 +271,14 @@ def get_blacklist():
 if __name__=='__main__':
 	import sys
 	TEMPL_FILE=sys.argv[1]
-	HEADERS=sys.argv[2:]
+	HEADERS=None
+	if (sys.argv[2] == "-in"):
+		# read header file list from file
+		with open(sys.argv[3]) as f:
+			content = f.readlines()
+			HEADERS = [x.strip() for x in content]
+	else:
+		HEADERS=sys.argv[2:]
 
 	blacklist = get_blacklist()
 
