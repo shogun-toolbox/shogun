@@ -14,7 +14,7 @@
 using namespace shogun;
 
 CDisjointSet::CDisjointSet()
-	: m_num_elements(-1), m_parent(), m_rank()
+	: m_num_elements(-1), m_parent(), m_rank(), m_is_connected(false)
 {
 	SG_UNSTABLE("CDisjointSet::CDisjointSet()", "\n");
 

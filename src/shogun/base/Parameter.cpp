@@ -3537,7 +3537,7 @@ bool TParameter::copy_ptype(EPrimitiveType ptype, void* source, void* target)
 	case PT_FLOATMAX:
 	{
 		*((floatmax_t*)target)=*((floatmax_t*)source);
-		SG_SDEBUG("after copy of ptype PT_FLOATMAX: source %f, target %f\n",
+		SG_SDEBUG("after copy of ptype PT_FLOATMAX: source %Lf, target %Lf\n",
 				*((floatmax_t*)source), *((floatmax_t*)target));
 		break;
 	}

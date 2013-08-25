@@ -108,6 +108,9 @@ class CFeatureBlockLogisticRegression : public CLinearMachine
 		/** register parameters */
 		void register_parameters();
 
+		/** Initializes Parameters to std values */
+		void init();
+
 	protected:
 
 		/** feature tree */

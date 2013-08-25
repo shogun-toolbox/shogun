@@ -18,28 +18,34 @@ namespace shogun
 {
 
 CFeatureBlockLogisticRegression::CFeatureBlockLogisticRegression() :
-	CLinearMachine(), 
-	m_feature_relation(NULL), m_z(0.0)
+	CLinearMachine()
 {
+	init();
 	register_parameters();
 }
 
 CFeatureBlockLogisticRegression::CFeatureBlockLogisticRegression(
      float64_t z, CDotFeatures* train_features, 
      CBinaryLabels* train_labels, CIndexBlockRelation* feature_relation) :
-	CLinearMachine(), 
-	m_feature_relation(NULL)
+	CLinearMachine()
 {
+	init();
 	set_feature_relation(feature_relation);
 	set_z(z);
-	set_q(2.0);
 	set_features(train_features);
 	set_labels(train_labels);
-	set_termination(0);
-	set_regularization(0);
-	set_tolerance(1e-3);
-	set_max_iter(1000);
 	register_parameters();
+}
+
+void CFeatureBlockLogisticRegression::init()
+{
+	m_feature_relation=NULL;
+	m_z=0.0;
+	m_q=2.0;
+	m_termination=0;
+	m_regularization=0;
+	m_tolerance=1e-3;
+	m_max_iter=1000;
 }
 
 CFeatureBlockLogisticRegression::~CFeatureBlockLogisticRegression()
@@ -66,8 +72,8 @@ CIndexBlockRelation* CFeatureBlockLogisticRegression::get_feature_relation() con
 
 void CFeatureBlockLogisticRegression::set_feature_relation(CIndexBlockRelation* feature_relation)
 {
-	SG_UNREF(m_feature_relation);
 	SG_REF(feature_relation);
+	SG_UNREF(m_feature_relation);
 	m_feature_relation = feature_relation;
 }
 
