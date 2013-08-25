@@ -41,12 +41,12 @@ LIST(APPEND UNITTEST_TEMPLATES SerializationAscii_unittest.cc)
 #	${LIBSHOGUN_SRC_DIR}/base/class_list.cpp)
 #LIST(APPEND UNITTEST_TEMPLATES SerializationXML_unittest.cc)
 #
-#SET(SerializationHDF5_unittest.cc_CMD 
-#	${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.py
-#	${CMAKE_CURRENT_SOURCE_DIR}/io/SerializationHDF5_unittest.cc.jinja2 
-#	SerializationHDF5_unittest.cc 
-#	${LIBSHOGUN_SRC_DIR}/base/class_list.cpp)
-#LIST(APPEND UNITTEST_TEMPLATES SerializationHDF5_unittest.cc)
+SET(SerializationHDF5_unittest.cc_CMD 
+	${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.py
+	${CMAKE_CURRENT_SOURCE_DIR}/io/SerializationHDF5_unittest.cc.jinja2 
+	SerializationHDF5_unittest.cc 
+	${LIBSHOGUN_SRC_DIR}/base/class_list.cpp)
+LIST(APPEND UNITTEST_TEMPLATES SerializationHDF5_unittest.cc)
 
 FOREACH(out_cxx ${UNITTEST_TEMPLATES})
 	ADD_CUSTOM_COMMAND(OUTPUT ${out_cxx}
