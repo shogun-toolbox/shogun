@@ -194,9 +194,11 @@ public:
 	void compute_gradients(const SGVector<float64_t> marginals,
 		SGVector<float64_t>& parameter_gradient, double mult = 1.0) const;
 
-protected:
-	int32_t m_factor_id;
+private:
+	/** initializes parameters */
+	void init();
 
+protected:
 	CTableFactorType* m_factor_type;
 
 	SGVector<int32_t> m_var_index;
