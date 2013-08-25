@@ -34,8 +34,9 @@ TEST(SerializationAscii, {{class}})
 	file->close();
 	SG_UNREF(file);
 
-	// check whether they are equal
-	ASSERT_TRUE(object->equals(deserializedObject));
+	// check whether they are equal, up to accuracy of lossy ASCII
+	float64_t accuracy=1e-14;
+	ASSERT_TRUE(object->equals(deserializedObject, accuracy));
 	
 	SG_UNREF(object)
 	SG_UNREF(deserializedObject);
