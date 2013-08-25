@@ -75,23 +75,19 @@ def extract_class_name(lines, line_nr, line, blacklist):
 	return c[1:]
 
 def get_includes(classes):
-	from subprocess import Popen, PIPE 
-	try:
-	    from StringIO import StringIO
-	except ImportError:
-	    from io import BytesIO
-	cmd=["find", ".", "-false"]
+	class_headers = []
 	for c,t in classes:
-		cmd.extend(["-o", "-name", "%s.h" % c])
-	p = Popen(cmd, stdout=PIPE)
+		class_headers.append(c+".h")
 
-	if sys.version_info < (3,):
-		output = StringIO(p.communicate()[0])
-	else:
-		output = BytesIO(p.communicate()[0])
-
+	import os
+	result = []
+	for root, dirs, files in os.walk("."):
+		for f in files:
+			if f in class_headers:
+				result.append(os.path.join(root, f))
+	
 	includes=[]
-	for o in output:
+	for o in result:
 		if sys.version_info > (3,):
 			tempstr = o.decode()
 			includes.append('#include "%s"' % tempstr.strip().lstrip('./'))
