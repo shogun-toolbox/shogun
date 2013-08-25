@@ -34,7 +34,7 @@ matrix:
     - compiler: clang
       env: CMAKE_OPTIONS="-DLuaModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON" EXTRA_PACKAGES="lua5.1 liblua5.1-0-dev swig2.0" CC=clang CXX=clang++
     - compiler: gcc
-      env: CMAKE_OPTIONS="-DOctaveModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON" EXTRA_PACKAGES="octave octave3.2-headers swig2.0"
+      env: CMAKE_OPTIONS="-DOctaveModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON" EXTRA_PACKAGES="octave liboctave-dev swig2.0"
     - compiler: clang
       env: CMAKE_OPTIONS="-DRModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON" EXTRA_PACKAGES="r-base-core swig2.0" CC=clang CXX=clang++
     - language: objective-c
