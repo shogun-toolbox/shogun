@@ -56,6 +56,11 @@ SGVector<float64_t> CUWedgeSep::get_tau() const
 	return m_tau;
 }
 
+SGNDArray<float64_t> CUWedgeSep::get_covs() const
+{
+	return m_covs;
+}
+
 SGMatrix<float64_t> CUWedgeSep::get_mixing_matrix() const
 {
 	return m_mixing_matrix;
@@ -79,16 +84,16 @@ CFeatures* CUWedgeSep::apply(CFeatures* features)
 	M_dims[0] = n;
 	M_dims[1] = n;
 	M_dims[2] = N;
-	SGNDArray< float64_t > M(M_dims, 3);
+	m_covs = SGNDArray< float64_t >(M_dims, 3);
 	
 	for (int t = 0; t < N; t++)
 	{
-		Eigen::Map<EMatrix> EM(M.get_matrix(t),n,n);
+		Eigen::Map<EMatrix> EM(m_covs.get_matrix(t),n,n);
 		EM = cor(EX,m_tau[t]);
 	}
 
 	// Diagonalize
-	SGMatrix<float64_t> Q = CUWedge::diagonalize(M);
+	SGMatrix<float64_t> Q = CUWedge::diagonalize(m_covs);
 	Eigen::Map<EMatrix> EQ(Q.matrix,n,n);
 	
 	// Compute Mixing Matrix
