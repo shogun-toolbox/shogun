@@ -44,3 +44,8 @@ ENDIF()
 IF (MatlabStatic)
 	#add_subdirectory(undocumented/matlab_static)
 ENDIF()
+
+IF (CmdLineStatic)
+	add_subdirectory(undocumented/cmdline_static)
+ENDIF()
+
