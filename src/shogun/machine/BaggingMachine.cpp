@@ -120,8 +120,8 @@ bool CBaggingMachine::train_machine(CFeatures* data)
 	m_all_oob_idx.zero();
 
 	SG_UNREF(m_oob_indices);
-	m_oob_indices = new CDynamicObjectArray(m_num_bags);
-
+	m_oob_indices = new CDynamicObjectArray();
+	
 	/*
 	  TODO: enable multi-threaded learning. This requires views support
 		on CFeatures 
@@ -158,7 +158,7 @@ bool CBaggingMachine::train_machine(CFeatures* data)
 
 		// get out of bag indexes
 		CDynamicArray<index_t>* oob = get_oob_indices(idx);
-		m_oob_indices->set_element(oob, i);
+		m_oob_indices->push_back(oob);
 
 		// add trained machine to bag array
 		m_bags->append_element(c);

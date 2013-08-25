@@ -33,6 +33,9 @@ TEST(BaggingMachine, mock_train)
 	ON_CALL(mm, train_machine(_))
 		.WillByDefault(Return(true));
 
+	ON_CALL(features, get_num_vectors())
+		.WillByDefault(Return(100));
+
 	{
 		InSequence s;
 		for (int i = 0; i < num_bags; i++) {
@@ -40,9 +43,9 @@ TEST(BaggingMachine, mock_train)
 				.Times(1)
 				.WillRepeatedly(Return(&mm));
 
-			EXPECT_CALL(features, get_num_vectors())
+			EXPECT_CALL(mm, train_machine(_))
 				.Times(1)
-				.WillRepeatedly(Return(100));
+				.WillRepeatedly(Return(true));
 		}
 	}
 
