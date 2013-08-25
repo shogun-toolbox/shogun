@@ -20,12 +20,12 @@ SET(clone_unittest.cc_CMD
 	${LIBSHOGUN_SRC_DIR}/base/class_list.cpp)
 LIST(APPEND UNITTEST_TEMPLATES clone_unittest.cc)
 
-#SET(SerializationAscii_unittest.cc_CMD
-#	${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.py 
-#	${CMAKE_CURRENT_SOURCE_DIR}/io/SerializationAscii_unittest.cc.jinja2 
-#	SerializationAscii_unittest.cc
-#	${LIBSHOGUN_SRC_DIR}/base/class_list.cpp)
-#LIST(APPEND UNITTEST_TEMPLATES SerializationAscii_unittest.cc)
+SET(SerializationAscii_unittest.cc_CMD
+	${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.py 
+	${CMAKE_CURRENT_SOURCE_DIR}/io/SerializationAscii_unittest.cc.jinja2 
+	SerializationAscii_unittest.cc
+	${LIBSHOGUN_SRC_DIR}/base/class_list.cpp)
+LIST(APPEND UNITTEST_TEMPLATES SerializationAscii_unittest.cc)
 #
 #SET(SerializationJSON_unittest.cc_CMD 
 #	${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.py
