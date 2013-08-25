@@ -74,37 +74,6 @@ public:
 	 */
 	static CGaussianLikelihood* obtain_from_generic(CLikelihoodModel* lik);
 
-	/** returns the logarithm of the predictive density of \f$y_*\f$:
-	 *
-	 * \f[
-	 * log(p(y_*|X,y,x_*)) = log\left(\int p(y_*|f_*) p(f_*|X,y,x_*) df_*\right)
-	 * \f]
-	 *
-	 * which approximately equals to
-	 *
-	 * \f[
-	 * log\left(\int p(y_*|f_*) \mathcal{N}(f*|\mu,\sigma^2) df*\right)
-	 * \f]
-	 *
-	 * where normal distribution \f$\mathcal{N}(\mu,\sigma^2)\f$ is an
-	 * approximation to the posterior marginal \f$p(f_*|X,y,x_*)\f$.
-	 *
-	 * NOTE: if lab equals to NULL, then each \f$y_*\f$ equals to one.
-	 *
-	 * @param mu posterior mean of a Gaussian distribution
-	 * \f$\mathcal{N}(\mu,\sigma^2)\f$, which is an approximation to the
-	 * posterior marginal \f$p(f_*|X,y,x_*)\f$
-	 * @param s2 posterior variance of a Gaussian distribution
-	 * \f$\mathcal{N}(\mu,\sigma^2)\f$, which is an approximation to the
-	 * posterior marginal \f$p(f_*|X,y,x_*)\f$
-	 * @param lab labels \f$y_*\f$
-	 *
-	 * @return \f$log(p(y_*|X, y, x*))\f$ for each label \f$y_*\f$
-	 */
-	virtual SGVector<float64_t> get_predictive_log_probabilities(
-			SGVector<float64_t> mu, SGVector<float64_t> s2,
-			const CLabels* lab=NULL) const;
-
 	/** returns mean of the predictive marginal \f$p(y_*|X,y,x_*)\f$.
 	 *
 	 * NOTE: if lab equals to NULL, then each \f$y_*\f$ equals to one.
@@ -210,6 +179,59 @@ public:
 	 */
 	virtual SGVector<float64_t> get_third_derivative(const CLabels* lab,
 			const TParameter* param, SGVector<float64_t> func) const;
+
+	/** returns the zeroth moment of a given (unnormalized) probability
+	 * distribution:
+	 *
+	 * \f[
+	 * log(Z_i) = log\left(\int p(y_i|f_i) \mathcal{N}(f_i|\mu,\sigma^2)
+	 * df_i\right)
+	 * \f]
+	 *
+	 * for each \f$f_i\f$.
+	 *
+	 * @param mu mean of the \f$\mathcal{N}(f_i|\mu,\sigma^2)\f$
+	 * @param s2 variance of the \f$\mathcal{N}(f_i|\mu,\sigma^2)\f$
+	 * @param lab labels \f$y_i\f$
+	 *
+	 * @return log zeroth moments \f$log(Z_i)\f$
+	 */
+	virtual SGVector<float64_t> get_log_zeroth_moments(SGVector<float64_t> mu,
+			SGVector<float64_t> s2, const CLabels* lab) const;
+
+	/** returns the first moment of a given (unnormalized) probability
+	 * distribution \f$q(f_i) = Z_i^-1
+	 * p(y_i|f_i)\mathcal{N}(f_i|\mu,\sigma^2)\f$, where \f$ Z_i=\int
+	 * p(y_i|f_i)\mathcal{N}(f_i|\mu,\sigma^2) df_i\f$.
+	 *
+	 * This method is useful for EP local likelihood approximation.
+	 *
+	 * @param mu mean of the \f$\mathcal{N}(f_i|\mu,\sigma^2)\f$
+	 * @param s2 variance of the \f$\mathcal{N}(f_i|\mu,\sigma^2)\f$
+	 * @param lab labels \f$y_i\f$
+	 * @param i index i
+	 *
+	 * @return first moment of \f$q(f_i)\f$
+	 */
+	virtual float64_t get_first_moment(SGVector<float64_t> mu,
+			SGVector<float64_t> s2, const CLabels* lab, index_t i) const;
+
+	/** returns the second moment of a given (unnormalized) probability
+	 * distribution \f$q(f_i) = Z_i^-1
+	 * p(y_i|f_i)\mathcal{N}(f_i|\mu,\sigma^2)\f$, where \f$ Z_i=\int
+	 * p(y_i|f_i)\mathcal{N}(f_i|\mu,\sigma^2) df_i\f$.
+	 *
+	 * This method is useful for EP local likelihood approximation.
+	 *
+	 * @param mu mean of the \f$\mathcal{N}(f_i|\mu,\sigma^2)\f$
+	 * @param s2 variance of the \f$\mathcal{N}(f_i|\mu,\sigma^2)\f$
+	 * @param lab labels \f$y_i\f$
+	 * @param i index i
+	 *
+	 * @return the second moment of \f$q(f_i)\f$
+	 */
+	virtual float64_t get_second_moment(SGVector<float64_t> mu,
+			SGVector<float64_t> s2, const CLabels* lab, index_t i) const;
 
 	/** return whether Gaussian likelihood function supports regression
 	 *
