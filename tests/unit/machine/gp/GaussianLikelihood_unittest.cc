@@ -52,7 +52,7 @@ TEST(GaussianLikelihood,get_predictive_log_probabilities)
 
 	SGVector<float64_t> lp=likelihood->get_predictive_log_probabilities(mu, s2, labels);
 
-	// comparison of the first moment with result from GPML package
+	// comparison of the log probabilities with result from GPML package
 	EXPECT_NEAR(lp[0], -20.216529436592481, 1E-15);
 	EXPECT_NEAR(lp[1], -4.105074362196638, 1E-15);
 	EXPECT_NEAR(lp[2], -1.054630503782619, 1E-15);
@@ -386,4 +386,92 @@ TEST(GaussianLikelihood,get_third_derivative)
 	SG_UNREF(labels);
 }
 
-#endif // HAVE_EIGEN3
+TEST(GaussianLikelihood,get_first_moments)
+{
+	// create some easy data:
+	// mu(x) approximately equals to (x^3+sin(x)^2)/10, y=0
+	index_t n=5;
+
+	SGVector<float64_t> lab(n);
+	SGVector<float64_t> s2(n);
+	SGVector<float64_t> mu(n);
+
+	lab.set_const(0.0);
+
+	s2[0]=0.1;
+	s2[1]=0.2;
+	s2[2]=1.0;
+	s2[3]=0.7;
+	s2[4]=0.3;
+
+	mu[0]=-2.18236;
+	mu[1]=-1.30906;
+	mu[2]=-0.50885;
+	mu[3]=-0.17185;
+	mu[4]=0.00388;
+
+	// shogun representation of labels
+	CRegressionLabels* labels=new CRegressionLabels(lab);
+
+	// Gaussian likelihood with sigma = 0.13
+	CGaussianLikelihood* likelihood=new CGaussianLikelihood(0.13);
+
+	mu=likelihood->get_first_moments(mu, s2, labels);
+
+	// comparison of the first moment with result from GPML package
+	EXPECT_NEAR(mu[0], -3.15499435414885e-01, 1E-15);
+	EXPECT_NEAR(mu[1], -1.01996837252190e-01, 1E-15);
+	EXPECT_NEAR(mu[2], -8.45664765463661e-03, 1E-15);
+	EXPECT_NEAR(mu[3], -4.05114381364208e-03, 1E-15);
+	EXPECT_NEAR(mu[4], 2.06917008520038e-04, 1E-15);
+
+	// clean up
+	SG_UNREF(likelihood);
+	SG_UNREF(labels);
+}
+
+TEST(GaussianLikelihood,get_second_moments)
+{
+	// create some easy data:
+	// mu(x) approximately equals to (x^3+sin(x)^2)/10, y=0
+	index_t n=5;
+
+	SGVector<float64_t> lab(n);
+	SGVector<float64_t> s2(n);
+	SGVector<float64_t> mu(n);
+
+	lab.set_const(0.0);
+
+	s2[0]=0.1;
+	s2[1]=0.2;
+	s2[2]=1.0;
+	s2[3]=0.7;
+	s2[4]=0.3;
+
+	mu[0]=-2.18236;
+	mu[1]=-1.30906;
+	mu[2]=-0.50885;
+	mu[3]=-0.17185;
+	mu[4]=0.00388;
+
+	// shogun representation of labels
+	CRegressionLabels* labels=new CRegressionLabels(lab);
+
+	// Gaussian likelihood with sigma = 0.13
+	CGaussianLikelihood* likelihood=new CGaussianLikelihood(0.13);
+
+	s2=likelihood->get_second_moments(mu, s2, labels);
+
+	// comparison of the second moment with result from GPML package
+	EXPECT_NEAR(s2[0], 0.0144568006843456, 1E-15);
+	EXPECT_NEAR(s2[1], 0.0155832180728446, 1E-15);
+	EXPECT_NEAR(s2[2], 0.0166191365916019, 1E-15);
+	EXPECT_NEAR(s2[3], 0.0165016041288882, 1E-15);
+	EXPECT_NEAR(s2[4], 0.0159987377721679, 1E-15);
+
+	// clean up
+	SG_UNREF(likelihood);
+	SG_UNREF(labels);
+}
+
+#endif /* HAVE_EIGEN3 */

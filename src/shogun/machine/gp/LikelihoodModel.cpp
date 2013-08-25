@@ -22,6 +22,12 @@ CLikelihoodModel::~CLikelihoodModel()
 {
 }
 
+SGVector<float64_t> CLikelihoodModel::get_predictive_log_probabilities(
+		SGVector<float64_t> mu, SGVector<float64_t> s2, const CLabels *lab)
+{
+	return get_log_zeroth_moments(mu, s2, lab);
+}
+
 SGVector<float64_t> CLikelihoodModel::get_log_probability_fmatrix(
 		const CLabels* lab,	SGMatrix<float64_t> F) const
 {
@@ -39,6 +45,40 @@ SGVector<float64_t> CLikelihoodModel::get_log_probability_fmatrix(
 		SGVector<float64_t> f(&F.matrix[i*F.num_rows], F.num_rows, false);
 		result[i]=SGVector<float64_t>::sum(get_log_probability_f(lab, f));
 	}
+
+	return result;
+}
+
+SGVector<float64_t> CLikelihoodModel::get_first_moments(SGVector<float64_t> mu,
+		SGVector<float64_t> s2, const CLabels* lab) const
+{
+	REQUIRE(lab, "Labels are required (lab should not be NULL)\n")
+	REQUIRE((mu.vlen==s2.vlen) && (mu.vlen==lab->get_num_labels()),
+			"Length of the vector of means (%d), length of the vector of "
+			"variances (%d) and number of labels (%d) should be the same\n",
+			mu.vlen, s2.vlen, lab->get_num_labels())
+
+	SGVector<float64_t> result(mu.vlen);
+
+	for (index_t i=0; i<mu.vlen; i++)
+		result[i]=get_first_moment(mu, s2, lab, i);
+
+	return result;
+}
+
+SGVector<float64_t> CLikelihoodModel::get_second_moments(SGVector<float64_t> mu,
+		SGVector<float64_t> s2, const CLabels* lab) const
+{
+	REQUIRE(lab, "Labels are required (lab should not be NULL)\n")
+	REQUIRE((mu.vlen==s2.vlen) && (mu.vlen==lab->get_num_labels()),
+			"Length of the vector of means (%d), length of the vector of "
+			"variances (%d) and number of labels (%d) should be the same\n",
+			mu.vlen, s2.vlen, lab->get_num_labels())
+
+	SGVector<float64_t> result(mu.vlen);
+
+	for (index_t i=0; i<mu.vlen; i++)
+		result[i]=get_second_moment(mu, s2, lab, i);
 
 	return result;
 }

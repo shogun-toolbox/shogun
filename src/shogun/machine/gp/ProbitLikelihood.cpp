@@ -26,86 +26,17 @@ CProbitLikelihood::~CProbitLikelihood()
 {
 }
 
-SGVector<float64_t> CProbitLikelihood::get_predictive_log_probabilities(
-		SGVector<float64_t> mu,	SGVector<float64_t> s2, const CLabels* lab) const
-{
-	SGVector<float64_t> y;
-
-	if (lab)
-	{
-		REQUIRE((mu.vlen==s2.vlen) && (mu.vlen==lab->get_num_labels()),
-				"Length of the vector of means (mu), length of the vector of "
-				"variances (s2) and number of labels (lab) should be the same\n")
-		REQUIRE(lab->get_label_type()==LT_BINARY,
-				"Labels must be type of CBinaryLabels\n")
-
-		y=((CBinaryLabels*)lab)->get_labels();
-	}
-	else
-	{
-		REQUIRE(mu.vlen==s2.vlen, "Length of the vector of means (mu) and "
-				"length of the vector of variances (s2) should be the same\n")
-
-		y=SGVector<float64_t>(mu.vlen);
-		y.set_const(1.0);
-	}
-
-	Map<VectorXd> eigen_y(y.vector, y.vlen);
-	Map<VectorXd> eigen_mu(mu.vector, mu.vlen);
-	Map<VectorXd> eigen_s2(s2.vector, s2.vlen);
-
-	SGVector<float64_t> r(y.vlen);
-	Map<VectorXd> eigen_r(r.vector, r.vlen);
-
-	// compute: lp=log(normal_cdf((mu.*y)./sqrt(1+sigma^2)))
-	eigen_r=eigen_mu.array()*eigen_y.array()/((1.0+eigen_s2.array()).sqrt());
-
-	for (index_t i=0; i<eigen_r.size(); i++)
-		eigen_r[i]=CStatistics::lnormal_cdf(eigen_r[i]);
-
-	return r;
-}
-
 SGVector<float64_t> CProbitLikelihood::get_predictive_means(
 		SGVector<float64_t> mu,	SGVector<float64_t> s2, const CLabels* lab) const
 {
-	SGVector<float64_t> y;
+	SGVector<float64_t> lp=get_log_zeroth_moments(mu, s2, lab);
+	Map<VectorXd> eigen_lp(lp.vector, lp.vlen);
 
-	if (lab)
-	{
-		REQUIRE((mu.vlen==s2.vlen) && (mu.vlen==lab->get_num_labels()),
-			"Length of the vector of means (mu), length of the vector of "
-			"variances (s2) and number of labels (lab) should be the same\n")
-		REQUIRE(lab->get_label_type()==LT_BINARY,
-			"Labels must be type of CBinaryLabels\n")
-
-		y=((CBinaryLabels*)lab)->get_labels();
-	}
-	else
-	{
-		REQUIRE(mu.vlen==s2.vlen, "Length of the vector of means (mu) and "
-			"length of the vector of variances (s2) should be the same\n")
-
-		y=SGVector<float64_t>(mu.vlen);
-		y.set_const(1.0);
-	}
-
-	Map<VectorXd> eigen_y(y.vector, y.vlen);
-	Map<VectorXd> eigen_mu(mu.vector, mu.vlen);
-	Map<VectorXd> eigen_s2(s2.vector, s2.vlen);
-
-	// compute: p=normal_cdf((mu.*y)./sqrt(1+sigma^2))
-	VectorXd eigen_p=eigen_mu.array()*eigen_y.array()/
-		((1.0+eigen_s2.array()).sqrt());
-
-	for (index_t i=0; i<eigen_p.size(); i++)
-		eigen_p[i]=CStatistics::normal_cdf(eigen_p[i]);
-
-	SGVector<float64_t> r(y.vlen);
+	SGVector<float64_t> r(lp.vlen);
 	Map<VectorXd> eigen_r(r.vector, r.vlen);
 
 	// evaluate predictive mean: ymu=2*p-1
-	eigen_r=2.0*eigen_p.array()-1.0;
+	eigen_r=2.0*eigen_lp.array().exp()-1.0;
 
 	return r;
 }
@@ -113,42 +44,14 @@ SGVector<float64_t> CProbitLikelihood::get_predictive_means(
 SGVector<float64_t> CProbitLikelihood::get_predictive_variances(
 		SGVector<float64_t> mu,	SGVector<float64_t> s2, const CLabels* lab) const
 {
-	SGVector<float64_t> y;
+	SGVector<float64_t> lp=get_log_zeroth_moments(mu, s2, lab);
+	Map<VectorXd> eigen_lp(lp.vector, lp.vlen);
 
-	if (lab)
-	{
-		REQUIRE((mu.vlen==s2.vlen) && (mu.vlen==lab->get_num_labels()),
-				"Length of the vector of means (mu), length of the vector of "
-				"variances (s2) and number of labels (lab) should be the same\n")
-		REQUIRE(lab->get_label_type()==LT_BINARY,
-				"Labels must be type of CBinaryLabels\n")
-
-		y=((CBinaryLabels*)lab)->get_labels();
-	}
-	else
-	{
-		REQUIRE(mu.vlen==s2.vlen, "Length of the vector of means (mu) and "
-				"length of the vector of variances (s2) should be the same\n")
-
-		y=SGVector<float64_t>(mu.vlen);
-		y.set_const(1.0);
-	}
-
-	Map<VectorXd> eigen_y(y.vector, y.vlen);
-	Map<VectorXd> eigen_mu(mu.vector, mu.vlen);
-	Map<VectorXd> eigen_s2(s2.vector, s2.vlen);
-
-	VectorXd eigen_p=eigen_mu.array()*eigen_y.array()/
-		((1.0+eigen_s2.array()).sqrt());
-
-	for (index_t i=0; i<eigen_p.size(); i++)
-		eigen_p[i]=CStatistics::normal_cdf(eigen_p[i]);
-
-	SGVector<float64_t> r(y.vlen);
+	SGVector<float64_t> r(lp.vlen);
 	Map<VectorXd> eigen_r(r.vector, r.vlen);
 
 	// evaluate predictive variance: ys2=1-(2*p-1).^2
-	eigen_r=1-(2.0*eigen_p.array()-1.0).square();
+	eigen_r=1-(2.0*eigen_lp.array().exp()-1.0).square();
 
 	return r;
 }
@@ -254,6 +157,110 @@ SGVector<float64_t> CProbitLikelihood::get_third_derivative(const CLabels* lab,
 		const TParameter* param, SGVector<float64_t> func) const
 {
 	return SGVector<float64_t>();
+}
+
+SGVector<float64_t> CProbitLikelihood::get_log_zeroth_moments(
+		SGVector<float64_t> mu,	SGVector<float64_t> s2, const CLabels* lab) const
+{
+	SGVector<float64_t> y;
+
+	if (lab)
+	{
+		REQUIRE((mu.vlen==s2.vlen) && (mu.vlen==lab->get_num_labels()),
+				"Length of the vector of means (%d), length of the vector of "
+				"variances (%d) and number of labels (%d) should be the same\n",
+				mu.vlen, s2.vlen, lab->get_num_labels())
+		REQUIRE(lab->get_label_type()==LT_BINARY,
+				"Labels must be type of CBinaryLabels\n")
+
+		y=((CBinaryLabels*)lab)->get_labels();
+	}
+	else
+	{
+		REQUIRE(mu.vlen==s2.vlen, "Length of the vector of means (%d) and "
+				"length of the vector of variances (%d) should be the same\n",
+				mu.vlen, s2.vlen)
+
+		y=SGVector<float64_t>(mu.vlen);
+		y.set_const(1.0);
+	}
+
+	Map<VectorXd> eigen_y(y.vector, y.vlen);
+	Map<VectorXd> eigen_mu(mu.vector, mu.vlen);
+	Map<VectorXd> eigen_s2(s2.vector, s2.vlen);
+
+	SGVector<float64_t> r(y.vlen);
+	Map<VectorXd> eigen_r(r.vector, r.vlen);
+
+	// compute: lp=log(normal_cdf((mu.*y)./sqrt(1+sigma^2)))
+	eigen_r=eigen_mu.array()*eigen_y.array()/((1.0+eigen_s2.array()).sqrt());
+
+	for (index_t i=0; i<eigen_r.size(); i++)
+		eigen_r[i]=CStatistics::lnormal_cdf(eigen_r[i]);
+
+	return r;
+}
+
+float64_t CProbitLikelihood::get_first_moment(SGVector<float64_t> mu,
+		SGVector<float64_t> s2, const CLabels *lab, index_t i) const
+{
+	// check the parameters
+	REQUIRE(lab, "Labels are required (lab should not be NULL)\n")
+	REQUIRE((mu.vlen==s2.vlen) && (mu.vlen==lab->get_num_labels()),
+			"Length of the vector of means (%d), length of the vector of "
+			"variances (%d) and number of labels (%d) should be the same\n",
+			mu.vlen, s2.vlen, lab->get_num_labels())
+	REQUIRE(i>=0 && i<=mu.vlen, "Index (%d) out of bounds!\n", i)
+	REQUIRE(lab->get_label_type()==LT_BINARY,
+			"Labels must be type of CBinaryLabels\n")
+
+	SGVector<float64_t> y=((CBinaryLabels*)lab)->get_labels();
+
+	float64_t z=y[i]*mu[i]/CMath::sqrt(1.0+s2[i]);
+
+	// compute ncdf=normal_cdf(z)
+	float64_t ncdf=CStatistics::normal_cdf(z);
+
+	// compute npdf=normal_pdf(z)=(1/sqrt(2*pi))*exp(-z.^2/2)
+	float64_t npdf=(1.0/CMath::sqrt(2.0*CMath::PI))*CMath::exp(-0.5*CMath::sq(z));
+
+	// compute the 1st moment: E[x] = mu + (y*s2*N(z))/(Phi(z)*sqrt(1+s2))
+	float64_t Ex=mu[i]+(npdf/ncdf)*(y[i]*s2[i])/CMath::sqrt(1.0+s2[i]);
+
+	return Ex;
+}
+
+float64_t CProbitLikelihood::get_second_moment(SGVector<float64_t> mu,
+		SGVector<float64_t> s2, const CLabels *lab, index_t i) const
+{
+	// check the parameters
+	REQUIRE(lab, "Labels are required (lab should not be NULL)\n")
+	REQUIRE((mu.vlen==s2.vlen) && (mu.vlen==lab->get_num_labels()),
+			"Length of the vector of means (%d), length of the vector of "
+			"variances (%d) and number of labels (%d) should be the same\n",
+			mu.vlen, s2.vlen, lab->get_num_labels())
+	REQUIRE(i>=0 && i<=mu.vlen, "Index (%d) out of bounds!\n", i)
+	REQUIRE(lab->get_label_type()==LT_BINARY,
+			"Labels must be type of CBinaryLabels\n")
+
+	SGVector<float64_t> y=((CBinaryLabels*)lab)->get_labels();
+
+	float64_t z=y[i]*mu[i]/CMath::sqrt(1.0+s2[i]);
+
+	// compute ncdf=normal_cdf(z)
+	float64_t ncdf=CStatistics::normal_cdf(z);
+
+	// compute npdf=normal_pdf(z)=(1/sqrt(2*pi))*exp(-z.^2/2)
+	float64_t npdf=(1.0/CMath::sqrt(2.0*CMath::PI))*CMath::exp(-0.5*CMath::sq(z));
+
+	SGVector<float64_t> r(y.vlen);
+	Map<VectorXd> eigen_r(r.vector, r.vlen);
+
+	// compute the 2nd moment:
+	// Var[x] = s2 - (s2^2*N(z))/((1+s2)*Phi(z))*(z+N(z)/Phi(z))
+	float64_t Var=s2[i]-(CMath::sq(s2[i])/(1.0+s2[i]))*(npdf/ncdf)*(z+(npdf/ncdf));
+
+	return Var;
 }
 
 #endif /* HAVE_EIGEN3 */

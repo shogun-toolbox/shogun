@@ -53,7 +53,7 @@ TEST(ProbitLikelihood,get_predictive_log_probabilities)
 
 	SGVector<float64_t> lp=likelihood->get_predictive_log_probabilities(mu, s2);
 
-	// comparison of the first moment with result from GPML package
+	// comparison of the log probability with result from GPML package
 	EXPECT_NEAR(lp[0], -0.221016102, 1E-9);
 	EXPECT_NEAR(lp[1], -0.469014056, 1E-9);
 	EXPECT_NEAR(lp[2], -2.699144260, 1E-9);
@@ -303,6 +303,124 @@ TEST(ProbitLikelihood,get_log_probability_derivative_f)
 	EXPECT_NEAR(d3lp[7], 0.269474219, 1E-9);
 	EXPECT_NEAR(d3lp[8], -0.235025555, 1E-9);
 	EXPECT_NEAR(d3lp[9], 0.230230621, 1E-9);
+
+	// clean up
+	SG_UNREF(likelihood);
+	SG_UNREF(labels);
+}
+
+TEST(ProbitLikelihood,get_first_moments)
+{
+	// create some easy data:
+	// mu(x) approximately equals to 3*sin(sin(x^2)*sin(sin(2*x)))
+	index_t n=10;
+
+	SGVector<float64_t> lab(n);
+	SGVector<float64_t> s2(n);
+	SGVector<float64_t> mu(n);
+
+	lab.set_const(1.0);
+
+	s2[0]=0.1;
+	s2[1]=0.2;
+	s2[2]=1.0;
+	s2[3]=0.7;
+	s2[4]=0.3;
+	s2[5]=0.1;
+	s2[6]=1.0;
+	s2[7]=0.5;
+	s2[8]=0.7;
+	s2[9]=0.4;
+
+	mu[0]=0.889099;
+	mu[1]=0.350840;
+	mu[2]=-2.116356;
+	mu[3]=-0.184742;
+	mu[4]=0.182117;
+	mu[5]=-1.108930;
+	mu[6]=-0.062437;
+	mu[7]=0.482987;
+	mu[8]=-0.149445;
+	mu[9]=0.106952;
+
+	// shogun representation of labels
+	CBinaryLabels* labels=new CBinaryLabels(lab);
+
+	// probit likelihood
+	CProbitLikelihood* likelihood=new CProbitLikelihood();
+
+	mu=likelihood->get_first_moments(mu, s2, labels);
+
+	// comparison of the first moment with result from GPstuff package
+	EXPECT_NEAR(mu[0], 0.922223587528548, 1E-10);
+	EXPECT_NEAR(mu[1], 0.461442771893249, 1E-10);
+	EXPECT_NEAR(mu[2], -0.747614837845594, 1E-10);
+	EXPECT_NEAR(mu[3], 0.293196189957756, 1E-10);
+	EXPECT_NEAR(mu[4], 0.366051285301334, 1E-10);
+	EXPECT_NEAR(mu[5], -0.959118595310375, 1E-10);
+	EXPECT_NEAR(mu[6], 0.521775976041116, 1E-10);
+	EXPECT_NEAR(mu[7], 0.713621395240100, 1E-10);
+	EXPECT_NEAR(mu[8], 0.318848193810383, 1E-10);
+	EXPECT_NEAR(mu[9], 0.357538428547672, 1E-10);
+
+	// clean up
+	SG_UNREF(likelihood);
+	SG_UNREF(labels);
+}
+
+TEST(ProbitLikelihood,get_second_moments)
+{
+	// create some easy data:
+	// mu(x) approximately equals to 3*sin(sin(x^2)*sin(sin(2*x)))
+	index_t n=10;
+
+	SGVector<float64_t> lab(n);
+	SGVector<float64_t> s2(n);
+	SGVector<float64_t> mu(n);
+
+	lab.set_const(1.0);
+
+	s2[0]=0.1;
+	s2[1]=0.2;
+	s2[2]=1.0;
+	s2[3]=0.7;
+	s2[4]=0.3;
+	s2[5]=0.1;
+	s2[6]=1.0;
+	s2[7]=0.5;
+	s2[8]=0.7;
+	s2[9]=0.4;
+
+	mu[0]=0.889099;
+	mu[1]=0.350840;
+	mu[2]=-2.116356;
+	mu[3]=-0.184742;
+	mu[4]=0.182117;
+	mu[5]=-1.108930;
+	mu[6]=-0.062437;
+	mu[7]=0.482987;
+	mu[8]=-0.149445;
+	mu[9]=0.106952;
+
+	// shogun representation of labels
+	CBinaryLabels* labels=new CBinaryLabels(lab);
+
+	// probit likelihood
+	CProbitLikelihood* likelihood=new CProbitLikelihood();
+
+	s2=likelihood->get_second_moments(mu, s2, labels);
+
+	// comparison of the second moment with result from GPstuff package
+	EXPECT_NEAR(s2[0], 0.0962253946422413, 1E-10);
+	EXPECT_NEAR(s2[1], 0.1812997141010253, 1E-10);
+	EXPECT_NEAR(s2[2], 0.5749194165104299, 1E-10);
+	EXPECT_NEAR(s2[3], 0.5079319571460353, 1E-10);
+	EXPECT_NEAR(s2[4], 0.2584379724823283, 1E-10);
+	EXPECT_NEAR(s2[5], 0.0926593031160547, 1E-10);
+	EXPECT_NEAR(s2[6], 0.6769334514177224, 1E-10);
+	EXPECT_NEAR(s2[7], 0.4096766375142901, 1E-10);
+	EXPECT_NEAR(s2[8], 0.5095184572451623, 1E-10);
+	EXPECT_NEAR(s2[9], 0.3295490933402853, 1E-10);
 
 	// clean up
 	SG_UNREF(likelihood);
