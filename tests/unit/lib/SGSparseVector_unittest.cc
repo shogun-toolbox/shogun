@@ -212,13 +212,10 @@ TEST(SGSparseVector, sort_features_deduplicate_realloc)
 	EXPECT_NE(vec.features, features_ptr);
 }
 
-// using to much new c++11 features - need to fix the build first
-#ifdef HAVE_CXX11
 std::vector< std::pair< SGSparseVector<float64_t>,SGSparseVector<float64_t> > >
 create_sort_features_mock_vectors()
 {
 	std::vector< std::pair< SGSparseVector<float64_t>,SGSparseVector<float64_t> > > test_cases;
-	
 
 	{
 		SGSparseVector<float64_t> before(1);
@@ -231,8 +228,7 @@ create_sort_features_mock_vectors()
 		after.features[0].feat_index = 1;
 		after.features[0].entry = +1.0;
 
-		auto p = std::make_pair(before, after);
-		test_cases.push_back(p);
+		test_cases.push_back(std::make_pair(before, after));
 	}
 
 	{
@@ -243,8 +239,7 @@ create_sort_features_mock_vectors()
 
 		SGSparseVector<float64_t> after(0);
 
-		auto p = std::make_pair(before, after);
-		test_cases.push_back(p);
+		test_cases.push_back(std::make_pair(before, after));
 	}
 
 	{
@@ -272,8 +267,7 @@ create_sort_features_mock_vectors()
 		after.features[0].feat_index = 1;
 		after.features[0].entry = +1.0;
 
-		auto p = std::make_pair(before, after);
-		test_cases.push_back(p);
+		test_cases.push_back(std::make_pair(before, after));
 	}
 
 	{
@@ -299,8 +293,7 @@ create_sort_features_mock_vectors()
 		after.features[2].feat_index = 4;
 		after.features[2].entry      = -16.0;
 
-		auto p = std::make_pair(before, after);
-		test_cases.push_back(p);
+		test_cases.push_back(std::make_pair(before, after));
 	}
 
 	{
@@ -322,8 +315,7 @@ create_sort_features_mock_vectors()
 		after.features[1].feat_index = 3;
 		after.features[1].entry      = 3;
 
-		auto p = std::make_pair(before, after);
-		test_cases.push_back(p);
+		test_cases.push_back(std::make_pair(before, after));
 	}
 
 	{
@@ -349,13 +341,14 @@ create_sort_features_mock_vectors()
 		after.features[2].feat_index = 3;
 		after.features[2].entry      = 3;
 
-		auto p = std::make_pair(before, after);
-		test_cases.push_back(p);
+		test_cases.push_back(std::make_pair(before, after));
 	}
 
 	return test_cases;
 }
 
+// using to much new c++11 features - need to fix the build first
+#ifdef HAVE_CXX11
 TEST(SGSparseVector, clone_loop)
 {
 	auto test_cases = create_sort_features_mock_vectors();
