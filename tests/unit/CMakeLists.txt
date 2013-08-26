@@ -34,13 +34,13 @@ LIST(APPEND UNITTEST_TEMPLATES SerializationAscii_unittest.cc)
 #	${LIBSHOGUN_SRC_DIR}/base/class_list.cpp)
 #LIST(APPEND UNITTEST_TEMPLATES SerializationJSON_unittest.cc)
 #
-#SET(SerializationXML_unittest.cc_CMD 
-#	${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.py
-#	${CMAKE_CURRENT_SOURCE_DIR}/io/SerializationXML_unittest.cc.jinja2 
-#	SerializationXML_unittest.cc 
-#	${LIBSHOGUN_SRC_DIR}/base/class_list.cpp)
-#LIST(APPEND UNITTEST_TEMPLATES SerializationXML_unittest.cc)
-#
+SET(SerializationXML_unittest.cc_CMD 
+	${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.py
+	${CMAKE_CURRENT_SOURCE_DIR}/io/SerializationXML_unittest.cc.jinja2 
+	SerializationXML_unittest.cc 
+	${LIBSHOGUN_SRC_DIR}/base/class_list.cpp)
+LIST(APPEND UNITTEST_TEMPLATES SerializationXML_unittest.cc)
+
 SET(SerializationHDF5_unittest.cc_CMD 
 	${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.py
 	${CMAKE_CURRENT_SOURCE_DIR}/io/SerializationHDF5_unittest.cc.jinja2 
