@@ -233,38 +233,13 @@ float32_t CStreamingSparseFeatures<T>::compute_squared()
 template <class T>
 void CStreamingSparseFeatures<T>::sort_features()
 {
-	SGSparseVectorEntry<T>* sf_orig=current_sgvector.features;
-	int32_t len=current_sgvector.num_feat_entries;
+	SGSparseVectorEntry<T>* old_ptr = current_sgvector.features;
 
-	ASSERT(sf_orig)
-
-	int32_t* feat_idx=SG_MALLOC(int32_t, len);
-	int32_t* orig_idx=SG_MALLOC(int32_t, len);
-
-	for (int32_t i=0; i<len; i++)
-	{
-		feat_idx[i]=sf_orig[i].feat_index;
-		orig_idx[i]=i;
-	}
-
-	CMath::qsort_index(feat_idx, orig_idx, len);
-
-	SGSparseVectorEntry<T>* sf_new=SG_MALLOC(SGSparseVectorEntry<T>, len);
-
-	for (int32_t i=0; i<len; i++)
-		sf_new[i]=sf_orig[orig_idx[i]];
-
-	// sanity check
-	for (int32_t i=0; i<len-1; i++)
-		ASSERT(sf_new[i].feat_index<sf_new[i+1].feat_index)
-
-	// Copy new vector back to original
-	for (int32_t i=0; i<len; i++)
-		sf_orig[i]=sf_new[i];
-
-	SG_FREE(orig_idx);
-	SG_FREE(feat_idx);
-	SG_FREE(sf_new);
+	// setting false to disallow reallocation
+	// and guarantee stable get_vector().features pointer
+	get_vector().sort_features(true);
+	
+	ASSERT(old_ptr == current_sgvector.features);
 }
 
 template <class T>

@@ -116,9 +116,14 @@ public:
 	int32_t get_num_dimensions();
 
 	/**
-	 * sort features by indices
+	 * sort features by indices  (Setting stable_pointer=true to
+	 * guarantee that pointer features does not change. On the
+	 * other hand, stable_pointer=false can shrink the vector if
+	 * possible.)
+	 *
+	 * @param stable_pointer (default false) enforce stable pointer
 	 */
-	void sort_features();
+	void sort_features(bool stable_pointer = false);
 
 	/**
 	 * get feature value for index

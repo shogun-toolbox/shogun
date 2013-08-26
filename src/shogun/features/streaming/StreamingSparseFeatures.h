@@ -291,8 +291,8 @@ public:
 
 	/**
 	 * Ensure features of the current vector are in ascending order.
-	 * It modifies the current_vector in-place, though a temporary
-	 * vector is created and later freed.
+	 * It modifies the current_sgvector in-place and does not change
+	 * the reference in current_sgvector.features.
 	 */
 	void sort_features();
 
