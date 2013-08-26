@@ -12,6 +12,8 @@
 #include <shogun/lib/SGSparseVector.h>
 #include <gtest/gtest.h>
 
+#include <vector>
+
 using namespace shogun;
 
 TEST(SGSparseVector, dense_dot_complex64_float64)
@@ -212,13 +214,10 @@ TEST(SGSparseVector, sort_features_deduplicate_realloc)
 	EXPECT_NE(vec.features, features_ptr);
 }
 
-// using to much new c++11 features - need to fix the build first
-#ifdef HAVE_CXX11
 std::vector< std::pair< SGSparseVector<float64_t>,SGSparseVector<float64_t> > >
 create_sort_features_mock_vectors()
 {
 	std::vector< std::pair< SGSparseVector<float64_t>,SGSparseVector<float64_t> > > test_cases;
-	
 
 	{
 		SGSparseVector<float64_t> before(1);
@@ -231,8 +230,7 @@ create_sort_features_mock_vectors()
 		after.features[0].feat_index = 1;
 		after.features[0].entry = +1.0;
 
-		auto p = std::make_pair(before, after);
-		test_cases.push_back(p);
+		test_cases.push_back(std::make_pair(before, after));
 	}
 
 	{
@@ -243,8 +241,7 @@ create_sort_features_mock_vectors()
 
 		SGSparseVector<float64_t> after(0);
 
-		auto p = std::make_pair(before, after);
-		test_cases.push_back(p);
+		test_cases.push_back(std::make_pair(before, after));
 	}
 
 	{
@@ -272,8 +269,7 @@ create_sort_features_mock_vectors()
 		after.features[0].feat_index = 1;
 		after.features[0].entry = +1.0;
 
-		auto p = std::make_pair(before, after);
-		test_cases.push_back(p);
+		test_cases.push_back(std::make_pair(before, after));
 	}
 
 	{
@@ -299,8 +295,7 @@ create_sort_features_mock_vectors()
 		after.features[2].feat_index = 4;
 		after.features[2].entry      = -16.0;
 
-		auto p = std::make_pair(before, after);
-		test_cases.push_back(p);
+		test_cases.push_back(std::make_pair(before, after));
 	}
 
 	{
@@ -322,8 +317,7 @@ create_sort_features_mock_vectors()
 		after.features[1].feat_index = 3;
 		after.features[1].entry      = 3;
 
-		auto p = std::make_pair(before, after);
-		test_cases.push_back(p);
+		test_cases.push_back(std::make_pair(before, after));
 	}
 
 	{
@@ -349,8 +343,7 @@ create_sort_features_mock_vectors()
 		after.features[2].feat_index = 3;
 		after.features[2].entry      = 3;
 
-		auto p = std::make_pair(before, after);
-		test_cases.push_back(p);
+		test_cases.push_back(std::make_pair(before, after));
 	}
 
 	return test_cases;
@@ -358,11 +351,13 @@ create_sort_features_mock_vectors()
 
 TEST(SGSparseVector, clone_loop)
 {
-	auto test_cases = create_sort_features_mock_vectors();
+	std::vector< std::pair< SGSparseVector<float64_t>,SGSparseVector<float64_t> > > test_cases = create_sort_features_mock_vectors();
 
-	for (auto &test_case : test_cases) {
-		auto expected = test_case.first;
-		auto result   = expected.clone();
+	for (uint32_t i=0; i < test_cases.size(); i++) {
+		std::pair< SGSparseVector<float64_t>,SGSparseVector<float64_t> > test_case = test_cases[i];
+
+		SGSparseVector<float64_t> expected = test_case.first;
+		SGSparseVector<float64_t> result   = expected.clone();
 
 		EXPECT_EQ(expected.num_feat_entries, result.num_feat_entries);
 		EXPECT_TRUE(NULL != result.features);
@@ -370,8 +365,8 @@ TEST(SGSparseVector, clone_loop)
 
 		ASSERT_EQ(expected.num_feat_entries, result.num_feat_entries);
 		for (int32_t idx=0; idx<expected.num_feat_entries; idx++) {
-			 auto rfeat = result.features[idx];
-			 auto efeat = expected.features[idx];
+			 SGSparseVectorEntry<float64_t> rfeat = result.features[idx];
+			 SGSparseVectorEntry<float64_t> efeat = expected.features[idx];
 
 			 EXPECT_EQ(efeat.feat_index, rfeat.feat_index);
 			 EXPECT_NEAR(efeat.entry, rfeat.entry, 1E-19);
@@ -391,20 +386,17 @@ TEST(SGSparseVector, sort_features_loop)
 {
 	// testing with and without realloc to be sure
 	for (int32_t r=0; r<2; r++) {
-		auto test_cases = create_sort_features_mock_vectors();
-		for (auto &test_case : test_cases) {
-			bool stable_pointer = (r==1);
-				printf("stable: %s\n", stable_pointer ? "true" : "false");
+		std::vector< std::pair< SGSparseVector<float64_t>,SGSparseVector<float64_t> > > test_cases = create_sort_features_mock_vectors();
+		bool stable_pointer = (r==1);
 
-			auto result = test_case.first; // .clone();
-			result.display_vector("before");
+		for (uint32_t i=0; i < test_cases.size(); i++) {
+			std::pair< SGSparseVector<float64_t>,SGSparseVector<float64_t> > test_case = test_cases[i];
+
+			SGSparseVector<float64_t> result = test_case.first.clone();
+			SGSparseVector<float64_t> expected = test_case.second; // .clone();
 
 			const SGSparseVectorEntry<float64_t>* fptr = result.features;
-			result.sort_features(realloc);
-			result.display_vector("after");
-
-			auto expected = test_case.second.clone();
-			expected.display_vector("expected");
+			result.sort_features(stable_pointer);
 
 			// we really rely that the pointers don't change
 			if (stable_pointer) {
@@ -413,8 +405,8 @@ TEST(SGSparseVector, sort_features_loop)
 
 			ASSERT_EQ(expected.num_feat_entries, result.num_feat_entries);
 			for (int32_t idx=0; idx<result.num_feat_entries; idx++) {
-				auto vfeat = result.features[idx];
-				auto efeat = expected.features[idx];
+				SGSparseVectorEntry<float64_t> vfeat = result.features[idx];
+				SGSparseVectorEntry<float64_t> efeat = expected.features[idx];
 
 				EXPECT_EQ(efeat.feat_index, vfeat.feat_index);
 				EXPECT_NEAR(efeat.entry, vfeat.entry, 1E-19);
@@ -427,9 +419,6 @@ TEST(SGSparseVector, sort_features_loop)
 					result.get_feature(fidx),
 					1E-19);
 			}
-
-			printf("\n");
 		}
 	}
 }
-#endif
