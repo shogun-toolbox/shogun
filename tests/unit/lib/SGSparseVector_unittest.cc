@@ -212,10 +212,13 @@ TEST(SGSparseVector, sort_features_deduplicate_realloc)
 	EXPECT_NE(vec.features, features_ptr);
 }
 
-std::vector<std::pair<SGSparseVector<float64_t>,SGSparseVector<float64_t>>>
+// using to much new c++11 features - need to fix the build first
+#ifdef HAVE_CXX11
+std::vector< std::pair< SGSparseVector<float64_t>,SGSparseVector<float64_t> > >
 create_sort_features_mock_vectors()
 {
-	std::vector<std::pair<SGSparseVector<float64_t>,SGSparseVector<float64_t>>> test_cases;
+	std::vector< std::pair< SGSparseVector<float64_t>,SGSparseVector<float64_t> > > test_cases;
+	
 
 	{
 		SGSparseVector<float64_t> before(1);
@@ -429,3 +432,4 @@ TEST(SGSparseVector, sort_features_loop)
 		}
 	}
 }
+#endif
