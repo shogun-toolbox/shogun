@@ -392,7 +392,7 @@ void CSpectrumRBFKernel::register_param()
 	SG_ADD(&width, "width", "width of Gaussian", MS_AVAILABLE);
 	SG_ADD(&nof_sequences, "nof_sequences", "length of the sequence",
 	    MS_NOT_AVAILABLE);
-	m_parameters->add_vector(&sequences, &nof_sequences, "the sequences as a part of profile");
+	m_parameters->add_vector(&sequences, &nof_sequences, "sequences", "the sequences as a part of profile");
 	SG_ADD(&max_sequence_length,
 	    "max_sequence_length", "max length of the sequence", MS_NOT_AVAILABLE);
 }

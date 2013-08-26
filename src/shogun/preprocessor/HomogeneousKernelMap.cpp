@@ -354,10 +354,10 @@ void CHomogeneousKernelMap::register_params()
 	SG_ADD((machine_int_t*) &m_window, "window", "Window type to use.",MS_AVAILABLE);
 	SG_ADD(&m_gamma, "gamma", "Homogeneity order.",MS_AVAILABLE);
 	SG_ADD(&m_period, "period", "Approximation order",MS_NOT_AVAILABLE);
-	SG_ADD(&m_numSubdivisions, "numSubdivisions", "The number of sublevels",MS_NOT_AVAILABLE);
+	SG_ADD(&m_numSubdivisions, "num_subdivisions", "The number of sublevels",MS_NOT_AVAILABLE);
 	SG_ADD(&m_subdivision, "subdivision", "subdivision.",MS_NOT_AVAILABLE);
 	SG_ADD(&m_order, "order", "The order",MS_AVAILABLE);
-	SG_ADD(&m_minExponent, "minExponent", "Minimum exponent",MS_NOT_AVAILABLE);
-	SG_ADD(&m_maxExponent, "maxExponent", "Maximum exponent",MS_NOT_AVAILABLE);
+	SG_ADD(&m_minExponent, "min_exponent", "Minimum exponent",MS_NOT_AVAILABLE);
+	SG_ADD(&m_maxExponent, "max_exponent", "Maximum exponent",MS_NOT_AVAILABLE);
 	SG_ADD(&m_table, "table", "Lookup-table",MS_NOT_AVAILABLE);
 }
