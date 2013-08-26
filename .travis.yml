@@ -51,7 +51,7 @@ matrix:
 virtualenv:
   system_site_packages: true
 before_install:
- - if [ -z $OSX ] ; then sudo apt-add-repository -y ppa:dr-graef/octave-3.6.precise; sudo apt-get update -qq ; else brew update ; fi
+ - if [ -z $OSX ] ; then sudo apt-add-repository -y ppa:dr-graef/octave-3.6.precise; sudo sudo add-apt-repository -y ppa:dr-graef/pure.precise ; sudo apt-get update -qq ; else brew update ; fi
  - if [ -z $OSX ] ; then sudo apt-get install -qq libbz2-dev cdbs libarpack2-dev libatlas-base-dev libblas-dev libglpk-dev libhdf5-serial-dev zlib1g-dev libxml2-dev libreadline6-dev libreadline-dev libsnappy-dev liblzo2-dev liblzma-dev liblapack-dev gdb cmake python-jinja2 $EXTRA_PACKAGES ; else brew install cmake ; fi
  - if [ $OSX ] ; then curl -O https://raw.github.com/rudix-mac/package-manager/master/rudix.py && sudo python rudix.py install rudix && sudo rudix install jinja2 ; fi
  - $CUSTOM_PKG
