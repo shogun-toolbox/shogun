@@ -172,87 +172,260 @@ TEST(SGSparseVector, get_dense_shortest)
 	EXPECT_NEAR(dense[3], -9.0, 1E-19);
 }
 
-TEST(SGSparseVector, sort_features_one)
+TEST(SGSparseVector, sort_features_deduplicate_no_realloc)
 {
-	SGSparseVector<float64_t> vec(1);
-	EXPECT_EQ(vec.num_feat_entries, 1);
+        const int32_t vlen = 1024*1024;
 
-	vec.features[0].feat_index = 1;
-	vec.features[0].entry = +1.0;
+	SGSparseVector<float64_t> vec(vlen);
+	EXPECT_EQ(vlen, vec.num_feat_entries);
 
-	vec.sort_features();
-	EXPECT_EQ(vec.num_feat_entries, 1);
-
-	EXPECT_EQ(vec.features[0].feat_index, 1);
-	EXPECT_NEAR(vec.features[0].entry, +1.0, 1E-19);
-}
-
-TEST(SGSparseVector, sort_features_duplicate)
-{
-	SGSparseVector<float64_t> vec(4);
-	EXPECT_EQ(vec.num_feat_entries, 4);
-
-	vec.features[0].feat_index = 3;
-	vec.features[0].entry = -3.0;
-
-	vec.features[1].feat_index = 2;
-	vec.features[1].entry = -4.0;
-
-	vec.features[2].feat_index = 3;
-	vec.features[2].entry = -6.0;
-
-	vec.features[3].feat_index = 4;
-	vec.features[3].entry = -16.0;
-
-	EXPECT_NEAR(vec.get_feature(2), -4.0, 1E-19);
-	EXPECT_NEAR(vec.get_feature(3), -9.0, 1E-19);
-	EXPECT_NEAR(vec.get_feature(4), -16.0, 1E-19);
-
-	vec.sort_features();
-	EXPECT_EQ(vec.num_feat_entries, 3);
-
-	EXPECT_EQ(vec.features[0].feat_index, 2);
-	EXPECT_NEAR(vec.features[0].entry, -4.0, 1E-19);
-
-	EXPECT_EQ(vec.features[1].feat_index, 3);
-	EXPECT_NEAR(vec.features[1].entry, -9.0, 1E-19);
-
-	EXPECT_EQ(vec.features[2].feat_index, 4);
-	EXPECT_NEAR(vec.features[2].entry, -16.0, 1E-19);
-
-	EXPECT_NEAR(vec.get_feature(2), -4.0, 1E-19);
-	EXPECT_NEAR(vec.get_feature(3), -9.0, 1E-19);
-	EXPECT_NEAR(vec.get_feature(4), -16.0, 1E-19);
-}
-
-TEST(SGSparseVector, clone)
-{
-	SGSparseVector<float64_t> vec(4);
-	EXPECT_EQ(vec.num_feat_entries, 4);
-
-	vec.features[0].feat_index = 3;
-	vec.features[0].entry = -3.0;
-
-	vec.features[1].feat_index = 2;
-	vec.features[1].entry = -4.0;
-
-	vec.features[2].feat_index = 3;
-	vec.features[2].entry = -6.0;
-
-	vec.features[3].feat_index = 4;
-	vec.features[3].entry = -16.0;
-
-	SGSparseVector<float64_t> clone = vec.clone();
-	EXPECT_NE(vec.features, clone.features);
-
-	EXPECT_EQ(vec.num_feat_entries, clone.num_feat_entries);
-	for (index_t i=0; i<vec.num_feat_entries; i++) {
-		EXPECT_EQ(vec.features[i].feat_index, clone.features[i].feat_index);
-		EXPECT_EQ(vec.features[i].entry, clone.features[i].entry);
+	for (int32_t i=0; i<vlen; i++) {
+	        vec.features[i].feat_index = 0;
+	        vec.features[i].entry = 0.0;
 	}
 
-	EXPECT_EQ(vec.get_num_dimensions(), clone.get_num_dimensions());
-	for (index_t i=0; i<=vec.get_num_dimensions(); i++) {
-		EXPECT_EQ(vec.get_feature(i), clone.get_feature(i));
+	SGSparseVectorEntry<float64_t>* features_ptr = vec.features;
+
+	vec.sort_features(true);
+
+	EXPECT_EQ(vec.num_feat_entries, 0);
+	EXPECT_EQ(vec.features, features_ptr);
+}
+
+TEST(SGSparseVector, sort_features_deduplicate_realloc)
+{
+        const int32_t vlen = 1024*1024;
+
+	SGSparseVector<float64_t> vec(vlen);
+	EXPECT_EQ(vlen, vec.num_feat_entries);
+
+	for (int32_t i=0; i<vlen; i++) {
+	        vec.features[i].feat_index = 0;
+	        vec.features[i].entry = 0.0;
+	}
+
+	SGSparseVectorEntry<float64_t>* features_ptr = vec.features;
+
+	vec.sort_features(false);
+
+	EXPECT_EQ(vec.num_feat_entries, 0);
+	EXPECT_NE(vec.features, features_ptr);
+}
+
+std::vector<std::pair<SGSparseVector<float64_t>,SGSparseVector<float64_t>>>
+create_sort_features_mock_vectors()
+{
+	std::vector<std::pair<SGSparseVector<float64_t>,SGSparseVector<float64_t>>> test_cases;
+
+	{
+		SGSparseVector<float64_t> before(1);
+
+		before.features[0].feat_index = 1;
+		before.features[0].entry = +1.0;
+
+		SGSparseVector<float64_t> after(1);
+
+		after.features[0].feat_index = 1;
+		after.features[0].entry = +1.0;
+
+		auto p = std::make_pair(before, after);
+		test_cases.push_back(p);
+	}
+
+	{
+		SGSparseVector<float64_t> before(1);
+
+		before.features[0].feat_index = 1;
+		before.features[0].entry = 0.0;
+
+		SGSparseVector<float64_t> after(0);
+
+		auto p = std::make_pair(before, after);
+		test_cases.push_back(p);
+	}
+
+	{
+		SGSparseVector<float64_t> before(8);
+
+		before.features[0].feat_index = 1;
+		before.features[0].entry = +0.0;
+		before.features[1].feat_index = 3;
+		before.features[1].entry = +1.0;
+		before.features[2].feat_index = 5;
+		before.features[2].entry = +0.0;
+		before.features[3].feat_index = 4;
+		before.features[3].entry = +0.0;
+		before.features[4].feat_index = 3;
+		before.features[4].entry = -1.0;
+		before.features[5].feat_index = 3;
+		before.features[5].entry = +0.0;
+		before.features[6].feat_index = 1;
+		before.features[6].entry = +1.0;
+		before.features[7].feat_index = 1;
+		before.features[7].entry = +0.0;
+
+		SGSparseVector<float64_t> after(1);
+
+		after.features[0].feat_index = 1;
+		after.features[0].entry = +1.0;
+
+		auto p = std::make_pair(before, after);
+		test_cases.push_back(p);
+	}
+
+	{
+		SGSparseVector<float64_t> before(5);
+
+		before.features[0].feat_index = 3;
+		before.features[0].entry = -3.0;
+		before.features[1].feat_index = 2;
+		before.features[1].entry = -4.0;
+		before.features[2].feat_index = 3;
+		before.features[2].entry = -6.0;
+		before.features[3].feat_index = 4;
+		before.features[3].entry = -16.0;
+		before.features[4].feat_index = 1;
+		before.features[4].entry = 0.0;
+
+		SGSparseVector<float64_t> after(3);
+
+		after.features[0].feat_index = 2;
+		after.features[0].entry      = -4.0;
+		after.features[1].feat_index = 3;
+		after.features[1].entry      = -9.0;
+		after.features[2].feat_index = 4;
+		after.features[2].entry      = -16.0;
+
+		auto p = std::make_pair(before, after);
+		test_cases.push_back(p);
+	}
+
+	{
+		// before=[3:3 2:2]
+		// after=[3:6]
+		// expected=[2:2 3:3]
+
+		SGSparseVector<float64_t> before(2);
+
+		before.features[0].feat_index = 3;
+		before.features[0].entry      = 3;
+		before.features[1].feat_index = 2;
+		before.features[1].entry      = 2;
+
+		SGSparseVector<float64_t> after(2);
+
+		after.features[0].feat_index = 2;
+		after.features[0].entry      = 2;
+		after.features[1].feat_index = 3;
+		after.features[1].entry      = 3;
+
+		auto p = std::make_pair(before, after);
+		test_cases.push_back(p);
+	}
+
+	{
+		// before=[3:3 2:2 1:1]
+		// after=[3:3 2:2 3:3]
+		// expected=[1:1 2:2 3:3]
+
+		SGSparseVector<float64_t> before(3);
+
+		before.features[0].feat_index = 3;
+		before.features[0].entry      = 3;
+		before.features[1].feat_index = 2;
+		before.features[1].entry      = 2;
+		before.features[2].feat_index = 1;
+		before.features[2].entry      = 1;
+
+		SGSparseVector<float64_t> after(3);
+
+		after.features[0].feat_index = 1;
+		after.features[0].entry      = 1;
+		after.features[1].feat_index = 2;
+		after.features[1].entry      = 2;
+		after.features[2].feat_index = 3;
+		after.features[2].entry      = 3;
+
+		auto p = std::make_pair(before, after);
+		test_cases.push_back(p);
+	}
+
+	return test_cases;
+}
+
+TEST(SGSparseVector, clone_loop)
+{
+	auto test_cases = create_sort_features_mock_vectors();
+
+	for (auto &test_case : test_cases) {
+		auto expected = test_case.first;
+		auto result   = expected.clone();
+
+		EXPECT_EQ(expected.num_feat_entries, result.num_feat_entries);
+		EXPECT_TRUE(NULL != result.features);
+		EXPECT_NE(expected.features, result.features);
+
+		ASSERT_EQ(expected.num_feat_entries, result.num_feat_entries);
+		for (int32_t idx=0; idx<expected.num_feat_entries; idx++) {
+			 auto rfeat = result.features[idx];
+			 auto efeat = expected.features[idx];
+
+			 EXPECT_EQ(efeat.feat_index, rfeat.feat_index);
+			 EXPECT_NEAR(efeat.entry, rfeat.entry, 1E-19);
+		}
+
+		EXPECT_EQ(expected.get_num_dimensions(), result.get_num_dimensions());
+		for (int32_t fidx=0; fidx<expected.get_num_dimensions()+1; fidx++) {
+			 EXPECT_NEAR(
+				 expected.get_feature(fidx),
+				 result.get_feature(fidx),
+				 1E-19);
+		}
+	}
+}
+
+TEST(SGSparseVector, sort_features_loop)
+{
+	// testing with and without realloc to be sure
+	for (int32_t r=0; r<2; r++) {
+		auto test_cases = create_sort_features_mock_vectors();
+		for (auto &test_case : test_cases) {
+			bool stable_pointer = (r==1);
+				printf("stable: %s\n", stable_pointer ? "true" : "false");
+
+			auto result = test_case.first; // .clone();
+			result.display_vector("before");
+
+			const SGSparseVectorEntry<float64_t>* fptr = result.features;
+			result.sort_features(realloc);
+			result.display_vector("after");
+
+			auto expected = test_case.second.clone();
+			expected.display_vector("expected");
+
+			// we really rely that the pointers don't change
+			if (stable_pointer) {
+				ASSERT_EQ(fptr, result.features);
+			}
+
+			ASSERT_EQ(expected.num_feat_entries, result.num_feat_entries);
+			for (int32_t idx=0; idx<result.num_feat_entries; idx++) {
+				auto vfeat = result.features[idx];
+				auto efeat = expected.features[idx];
+
+				EXPECT_EQ(efeat.feat_index, vfeat.feat_index);
+				EXPECT_NEAR(efeat.entry, vfeat.entry, 1E-19);
+			}
+
+			EXPECT_EQ(expected.get_num_dimensions(), result.get_num_dimensions());
+			for (int32_t fidx=0; fidx<result.get_num_dimensions()+1; fidx++) {
+				EXPECT_NEAR(
+					expected.get_feature(fidx),
+					result.get_feature(fidx),
+					1E-19);
+			}
+
+			printf("\n");
+		}
 	}
 }

@@ -162,59 +162,87 @@ int32_t SGSparseVector<T>::get_num_dimensions()
 }
 
 template<class T>
-void SGSparseVector<T>::sort_features()
+void SGSparseVector<T>::sort_features(bool stable_pointer)
 {
 	if (!num_feat_entries)
 		return;
 
-	SGSparseVectorEntry<T>* sf_orig=features;
-	int32_t* feat_idx=SG_MALLOC(int32_t, num_feat_entries);
-	int32_t* orig_idx=SG_MALLOC(int32_t, num_feat_entries);
+	// remember old pointer to enforce quarantee
+	const SGSparseVectorEntry<T>* old_features_ptr = features;
 
-	for (int j=0; j<num_feat_entries; j++)
+	int32_t* feat_idx=SG_MALLOC(int32_t, num_feat_entries);
+	for (index_t j=0; j<num_feat_entries; j++)
 	{
-		feat_idx[j]=sf_orig[j].feat_index;
-		orig_idx[j]=j;
+		feat_idx[j]=features[j].feat_index;
 	}
 
-	CMath::qsort_index(feat_idx, orig_idx, num_feat_entries);
+	CMath::qsort_index(feat_idx, features, num_feat_entries);
+	SG_FREE(feat_idx);
 
-	SGSparseVectorEntry<T>* sf_new= SG_MALLOC(SGSparseVectorEntry<T>, num_feat_entries);
-
-	// compression: merging duplicates (features with same index)
-	int32_t last_index = 0;
-	sf_new[last_index] = sf_orig[orig_idx[last_index]];
-
-	for (int32_t i = 1; i < num_feat_entries; i++)
+	for (index_t j=1; j<num_feat_entries; j++)
 	{
-		if (sf_new[last_index].feat_index == sf_orig[orig_idx[i]].feat_index)
+		REQUIRE(features[j-1].feat_index <= features[j].feat_index,
+				"sort_features(): failed sanity check %d <= %d after sorting (comparing indices features[%d] <= features[%d], features=%d)\n",
+				features[j-1].feat_index, features[j].feat_index, j-1, j, num_feat_entries);
+	}
+
+	// compression: removing zero-entries and merging features with same index
+	int32_t last_index = 0;
+	for (index_t j=1; j<num_feat_entries; j++)
+	{
+		// always true, but kept for future changes
+		REQUIRE(last_index < j,
+			"sort_features(): target index %d must not exceed source index j=%d",
+			last_index, j);
+		REQUIRE(features[last_index].feat_index <= features[j].feat_index,
+			"sort_features(): failed sanity check %d = features[%d].feat_index <= features[%d].feat_index = %d\n",
+			features[last_index].feat_index, last_index, j, features[j].feat_index);
+
+		// merging of features with same index
+		if (features[last_index].feat_index == features[j].feat_index)
 		{
-			sf_new[last_index].entry += sf_orig[orig_idx[i]].entry;
+			features[last_index].entry += features[j].entry;
+			continue;
 		}
-		else
+
+		// only skip to next element if current one is not zero
+		if (features[last_index].entry != 0.0)
 		{
 			last_index++;
-			sf_new[last_index] = sf_orig[orig_idx[i]];
 		}
+
+		features[last_index] = features[j];
 	}
 
-	REQUIRE(last_index < num_feat_entries, "sort_features(): last_index=%d must not exceed num_feat_entries=%d\n",
-			last_index, num_feat_entries);
-
-	SG_FREE(orig_idx);
-	SG_FREE(feat_idx);
-	SG_FREE(sf_orig);
-
-	features = SG_REALLOC(SGSparseVectorEntry<T>, sf_new, num_feat_entries, last_index+1);
-	num_feat_entries = last_index+1;
-
-	// sanity check: strict sort order (assuming no duplicates)
-	for (int j=0; j<num_feat_entries-1; j++)
+	// remove single first element if zero (not caught by loop)
+	if (features[last_index].entry == 0.0)
 	{
-		REQUIRE(features[j].feat_index < features[j+1].feat_index,
-				"sort_features(): failed sanity check %d <= %d after sorting (comparing indices sf_new[%d] <= sf_new[%d], features=%d)\n",
-				features[j].feat_index, features[j+1].feat_index, j, j+1, num_feat_entries);
+		last_index--;
 	}
+
+	int32_t new_feat_count = last_index+1;
+	ASSERT(new_feat_count <= num_feat_entries);
+
+	// shrinking vector
+	if (!stable_pointer)
+	{
+		SG_SINFO("shrinking vector from %d to %d\n", num_feat_entries, new_feat_count);
+		features = SG_REALLOC(SGSparseVectorEntry<T>, features, num_feat_entries, new_feat_count);
+	}
+	num_feat_entries = new_feat_count;
+
+	for (index_t j=1; j<num_feat_entries; j++)
+	{
+		REQUIRE(features[j-1].feat_index < features[j].feat_index,
+				"sort_features(): failed sanity check %d < %d after sorting (comparing indices features[%d] < features[%d], features=%d)\n",
+				features[j-1].feat_index, features[j].feat_index, j-1, j, num_feat_entries);
+	}
+
+	// compare with old pointer to enforce quarantee
+	if (stable_pointer) {
+		ASSERT(old_features_ptr == features);
+	}
+	return;
 }
 
 template<class T>
