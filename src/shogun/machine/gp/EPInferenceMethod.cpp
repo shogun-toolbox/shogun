@@ -272,7 +272,7 @@ void CEPInferenceMethod::update_alpha()
 	Map<VectorXd> eigen_sttau(m_sttau.vector, m_sttau.vlen);
 	Map<MatrixXd> eigen_L(m_L.matrix, m_L.num_rows, m_L.num_cols);
 
-	// reate shogun and eigen representation of the alpha vector
+	// create shogun and eigen representation of the alpha vector
 	CREATE_SGVECTOR(m_alpha, m_tnu.vlen, float64_t);
 	Map<VectorXd> eigen_alpha(m_alpha.vector, m_alpha.vlen);
 
