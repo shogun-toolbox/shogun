@@ -217,8 +217,8 @@ TYPEMAP_INND(is_uint8_type, uint8NDArray, uint8_array_value, uint8_t, uint8_t, "
 TYPEMAP_INND(is_char_matrix, charNDArray, char_matrix_value, char, char, "Char")
 TYPEMAP_INND(is_int32_type, int32NDArray, int32_array_value, int32_t, int32_t, "Integer")
 TYPEMAP_INND(is_int16_type, int16NDArray, int16_array_value, int16_t, int16_t, "Short")
-TYPEMAP_INND(is_single_type, NDArray, matrix_value, float32_t, float32_t, "Single Precision")
-TYPEMAP_INND(is_double_type, NDArray, matrix_value, float64_t, float64_t, "Double Precision")
+TYPEMAP_INND(is_single_type, NDArray, array_value, float32_t, float32_t, "Single Precision")
+TYPEMAP_INND(is_double_type, NDArray, array_value, float64_t, float64_t, "Double Precision")
 TYPEMAP_INND(is_uint16_type, uint16NDArray, uint16_array_value, uint16_t, uint16_t, "Word")
 #undef TYPEMAP_INND
 
