@@ -2694,6 +2694,16 @@ Parameter::add_type(const TSGDataType* type, void* param,
 	if (name == NULL || *name == '\0')
 		SG_SERROR("FATAL: Parameter::add_type(): `name' is empty!\n")
 
+	for (size_t i=0; i<strlen(name); ++i)
+	{
+		if (!std::isalnum(name[i]) && name[i]!='_' && name[i]!='.')
+		{
+			SG_SERROR("Character %d of parameter with name \"%s\" is illegal "
+					"(only alnum or underscore is allowed)\n",
+					i, name);
+		}
+	}
+
 	for (int32_t i=0; i<get_num_parameters(); i++)
 		if (strcmp(m_params.get_element(i)->m_name, name) == 0)
 			SG_SERROR("FATAL: Parameter::add_type(): "
