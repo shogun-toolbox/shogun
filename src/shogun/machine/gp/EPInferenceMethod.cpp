@@ -194,7 +194,7 @@ void CEPInferenceMethod::update()
 	SGVector<float64_t> s2_n(n);
 
 	float64_t nlZ_old=CMath::INFTY;
-	int32_t sweep=0;
+	uint32_t sweep=0;
 
 	while ((CMath::abs(m_nlZ-nlZ_old)>m_tol && sweep<m_max_sweep) ||
 			sweep<m_min_sweep)
