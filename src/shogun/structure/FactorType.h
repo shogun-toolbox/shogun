@@ -97,7 +97,7 @@ protected:
 	void init_card();
 
 private:
-	void register_parameters();
+	void init();
 
 protected:
 	SGString<char> m_type_id;

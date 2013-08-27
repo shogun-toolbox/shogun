@@ -15,7 +15,7 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/features/Features.h>
 #include <shogun/structure/Factor.h>
-#include <shogun/structure/FactorGraphLabels.h>
+#include <shogun/labels/FactorGraphLabels.h>
 #include <shogun/structure/DisjointSet.h>
 
 namespace shogun 

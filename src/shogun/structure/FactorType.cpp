@@ -13,24 +13,26 @@
 
 using namespace shogun;
 
-CFactorType::CFactorType()
+CFactorType::CFactorType() : CSGObject()
 {
 	SG_UNSTABLE("CFactorType::CFactorType()", "\n");
 
-	register_parameters();
-	m_data_size = 0;
-	m_prod_card = 0;
+	init();
 }
 
 CFactorType::CFactorType(
 	const SGString<char> id, 
 	const SGVector<int32_t> card,
 	const SGVector<float64_t> w)
-	: m_type_id(id), m_cards(card), m_w(w)
+	: CSGObject()
 {
-	ASSERT(m_cards.size() > 0);
-	register_parameters();
+	init();
+	m_type_id = id;
+	m_w = w;
+	m_cards = card;
 	init_card();
+
+	ASSERT(m_cards.size() > 0);
 
 	if (m_w.size() == 0) 
 	{
@@ -50,15 +52,18 @@ CFactorType::~CFactorType()
 {
 }
 
-void CFactorType::register_parameters()
+void CFactorType::init()
 {
-	SG_ADD(&m_type_id, "m_type_id", "Factor type name", MS_NOT_AVAILABLE);
-	SG_ADD(&m_cards, "m_cards", "Cardinalities", MS_NOT_AVAILABLE);
-	SG_ADD(&m_cumprod_cards, "m_cumprod_cards", "Cumulative product of cardinalities", MS_NOT_AVAILABLE);
-	SG_ADD(&m_prod_card, "m_prod_card", "Product of cardinalities", MS_NOT_AVAILABLE);
-	SG_ADD(&m_w, "m_w", "Factor parameters", MS_NOT_AVAILABLE);
-	SG_ADD(&m_data_size, "m_data_size", "Size of data vector", MS_NOT_AVAILABLE);
-	SG_ADD(&m_map_params, "m_map_params", "Map indices in global model parameters", MS_NOT_AVAILABLE);
+	SG_ADD(&m_type_id, "type_id", "Factor type name", MS_NOT_AVAILABLE);
+	SG_ADD(&m_cards, "cards", "Cardinalities", MS_NOT_AVAILABLE);
+	SG_ADD(&m_cumprod_cards, "cumprod_cards", "Cumulative product of cardinalities", MS_NOT_AVAILABLE);
+	SG_ADD(&m_prod_card, "prod_card", "Product of cardinalities", MS_NOT_AVAILABLE);
+	SG_ADD(&m_w, "w", "Factor parameters", MS_NOT_AVAILABLE);
+	SG_ADD(&m_data_size, "data_size", "Size of data vector", MS_NOT_AVAILABLE);
+	SG_ADD(&m_map_params, "map_params", "Map indices in global model parameters", MS_NOT_AVAILABLE);
+
+	m_data_size = 0;
+	m_prod_card = 0;
 }
 
 const char* CFactorType::get_type_id() const 

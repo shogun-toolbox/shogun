@@ -15,19 +15,20 @@
 
 using namespace shogun;
 
-CMAPInference::CMAPInference()
+CMAPInference::CMAPInference() : CSGObject()
 {
 	SG_UNSTABLE("CMAPInference::CMAPInference()", "\n");
 
 	init();
-
-	m_fg = NULL;
 }
 
 CMAPInference::CMAPInference(CFactorGraph* fg, EMAPInferType inference_method)
-	: m_fg(fg)
+	: CSGObject()
 {
 	init();
+	m_fg = fg;
+
+	REQUIRE(fg != NULL, "%s::CMAPInference(): fg cannot be NULL!\n", get_name());
 
 	switch(inference_method)
 	{
@@ -77,13 +78,15 @@ CMAPInference::~CMAPInference()
 
 void CMAPInference::init()
 {
-	SG_ADD((CSGObject**)&m_fg, "m_fg", "factor graph", MS_NOT_AVAILABLE);
-	SG_ADD((CSGObject**)&m_outputs, "m_outputs", "Structured outputs", MS_NOT_AVAILABLE);
-	SG_ADD((CSGObject**)&m_infer_impl, "m_infer_impl", "Inference implementation", MS_NOT_AVAILABLE);
-	SG_ADD(&m_energy, "m_energy", "Minimized energy", MS_NOT_AVAILABLE);
+	SG_ADD((CSGObject**)&m_fg, "fg", "factor graph", MS_NOT_AVAILABLE);
+	SG_ADD((CSGObject**)&m_outputs, "outputs", "Structured outputs", MS_NOT_AVAILABLE);
+	SG_ADD((CSGObject**)&m_infer_impl, "infer_impl", "Inference implementation", MS_NOT_AVAILABLE);
+	SG_ADD(&m_energy, "energy", "Minimized energy", MS_NOT_AVAILABLE);
 
 	m_outputs = NULL;
 	m_infer_impl = NULL;
+	m_fg = NULL;
+	m_energy = 0;
 }
 
 void CMAPInference::inference()
@@ -110,17 +113,16 @@ float64_t CMAPInference::get_energy() const
 
 //-----------------------------------------------------------------
 
-CMAPInferImpl::CMAPInferImpl() 
+CMAPInferImpl::CMAPInferImpl() : CSGObject()
 { 
 	register_parameters();
-
-	m_fg = NULL;
 }
 
 CMAPInferImpl::CMAPInferImpl(CFactorGraph* fg) 
-	: m_fg(fg) 
+	: CSGObject()
 { 
 	register_parameters();
+	m_fg = fg;
 }
 
 CMAPInferImpl::~CMAPInferImpl() 
@@ -131,5 +133,7 @@ void CMAPInferImpl::register_parameters()
 {
 	SG_ADD((CSGObject**)&m_fg, "m_fg", 
 		"Factor graph pointer", MS_NOT_AVAILABLE);
+
+	m_fg = NULL;
 }
 

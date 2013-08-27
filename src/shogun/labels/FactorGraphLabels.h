@@ -75,9 +75,8 @@ class CFactorGraphLabels : public CStructuredLabels
 		/** standard constructor
 		 *
 		 * @param num_labels number of labels
-		 * @param num_states number of states
 		 */
-		CFactorGraphLabels(int32_t num_labels, int32_t num_states);
+		CFactorGraphLabels(int32_t num_labels);
 
 		/** destructor */
 		virtual ~CFactorGraphLabels();
@@ -85,18 +84,9 @@ class CFactorGraphLabels : public CStructuredLabels
 		/** @return object name */
 		virtual const char* get_name() const { return "FactorGraphLabels"; }
 
-		/** get the number of states
-		 *
-		 * @return the number of states
-		 */
-		inline int32_t get_num_states() const { return m_num_states; };
-
 	private:
 		/** internal initialization */
 		void init();
-
-	private:
-		int32_t m_num_states;
 
 }; /* CFactorGraphLabels */
 
