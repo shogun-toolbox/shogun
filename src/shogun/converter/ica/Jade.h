@@ -12,7 +12,7 @@
 
 #include <shogun/lib/config.h>
 #ifdef HAVE_EIGEN3
-#include <shogun/converter/Converter.h>
+#include <shogun/converter/ica/ICAConverter.h>
 #include <shogun/features/Features.h>
 
 namespace shogun
@@ -34,7 +34,7 @@ class CFeatures;
  * (Vol. 140, No. 6, pp. 362-370). IET Digital Library.
  * 
  */
-class CJade: public CConverter
+class CJade: public CICAConverter
 {
 	public:
 		
@@ -50,11 +50,6 @@ class CJade: public CConverter
 		 */
 		virtual CFeatures* apply(CFeatures* features);
 
-		/** getter for mixing_matrix
-		 * @return mixing_matrix
-		 */
-		SGMatrix<float64_t> get_mixing_matrix() const;
-
 		/** getter for cumulant_matrix
 		 * @return cumulant_matrix
 		 */
@@ -69,9 +64,6 @@ class CJade: public CConverter
 		void init();
 
 	private:
-		
-		/** mixing_matrix */
-		SGMatrix<float64_t> m_mixing_matrix;
 		
 		/** cumulant_matrix */
 		SGMatrix<float64_t> m_cumulant_matrix;
