@@ -1,7 +1,11 @@
+# getting a list of possible interfaces to enable:
+grep -E "OPTION.*(Modular|Static)" CMakeLists.txt
+
+
 # setup cmake for developers (debugging symbols on, optimization off, etc.):
 mkdir build-debug
 cd build-debug
-cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTING=ON -DCMAKE_INSTALL_PREFIX="$BUILDDIR/install" ..
+cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTING=ON -DTRACE_MEMORY_ALLOCS=OFF -DPythonModular=ON -DCMAKE_INSTALL_PREFIX="$BUILDDIR/install" ..
 
 
 # setup cmake for building the final binaries (debugging off, optimization on):
