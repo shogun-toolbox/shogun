@@ -24,10 +24,10 @@ void print_message(FILE* target, const char* str)
 }
 
 /* number of features and their dimension, number of kernels */
-const int32_t n=7;
-
 int main(int argc, char** argv)
 {
+	const int32_t n=7;
+
 	init_shogun(&print_message);
 
 	/* create some random data and hand it to each kernel */
