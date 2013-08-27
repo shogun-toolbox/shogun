@@ -239,7 +239,7 @@ TYPEMAP_INND(is_uint16_type, uint16NDArray, uint16_array_value, uint16_t, uint16
         vdims(i) = (int32_t)dims[i];
     }
 
-    oct_type mat = oct_type(dim_vector(vdims));
+    oct_type mat = oct_type(vdims);
 
     for (int32_t i=0; i<n; i++)
         mat(i) = (if_type) array[i];

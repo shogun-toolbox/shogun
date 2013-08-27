@@ -545,7 +545,7 @@ void COctaveInterface::function_name(const SGString<sg_type>* strings, int32_t n
 	if (!strings)																	\
 		SG_ERROR("Given strings are invalid.\n")									\
 																					\
-	Cell c= Cell(dim_vector(num_str));												\
+	Cell c= Cell(dim_vector(1,num_str));											\
 	if (c.nelem()!=num_str)															\
 		SG_ERROR("Couldn't create Cell Array of %d strings.\n", num_str)			\
 																					\
