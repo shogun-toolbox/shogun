@@ -14,7 +14,7 @@
 #ifdef HAVE_EIGEN3
 #include <shogun/lib/SGNDArray.h>
 #include <shogun/features/Features.h>
-#include <shogun/converter/Converter.h>
+#include <shogun/converter/ica/ICAConverter.h>
 
 namespace shogun
 {
@@ -34,7 +34,7 @@ class CFeatures;
  * Signal Processing, IEEE Transactions on, 45(2), 434-444.
  * 
  */
-class CSOBI: public CConverter
+class CSOBI: public CICAConverter
 {
 	public:
 		
@@ -65,11 +65,6 @@ class CSOBI: public CConverter
 		 */
 		SGNDArray<float64_t> get_covs() const;
 
-		/** getter for mixing_matrix
-		 * @return mixing_matrix
-		 */
-		SGMatrix<float64_t> get_mixing_matrix() const;
-
 		/** @return object name */
 		virtual const char* get_name() const { return "SOBI"; };
 
@@ -85,9 +80,6 @@ class CSOBI: public CConverter
 		
 		/** cov matrices */
 		SGNDArray<float64_t> m_covs;
-
-		/** mixing_matrix */
-		SGMatrix<float64_t> m_mixing_matrix;
 };	
 }
 #endif // HAVE_EIGEN3

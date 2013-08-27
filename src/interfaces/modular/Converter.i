@@ -25,6 +25,7 @@
 %rename(TDistributedStochasticNeighborEmbedding) CTDistributedStochasticNeighborEmbedding;
 %rename(ManifoldSculpting) CManifoldSculpting;
 %rename(HashedDocConverter) CHashedDocConverter;
+%rename(ICAConverter) CICAConverter;
 %rename(Jade) CJade;
 %rename(SOBI) CSOBI;
 %rename(FFSep) CFFSep;
@@ -53,6 +54,7 @@
 %include <shogun/converter/TDistributedStochasticNeighborEmbedding.h>
 %include <shogun/converter/ManifoldSculpting.h>
 %include <shogun/converter/HashedDocConverter.h>
+%include <shogun/converter/ica/ICAConverter.h>
 %include <shogun/converter/ica/Jade.h>
 %include <shogun/converter/ica/SOBI.h>
 %include <shogun/converter/ica/FFSep.h>

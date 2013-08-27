@@ -26,7 +26,7 @@ using namespace shogun;
 
 namespace { EMatrix cor(EMatrix x, int tau = 0, bool mean_flag = true); };
 
-CSOBI::CSOBI() : CConverter()
+CSOBI::CSOBI() : CICAConverter()
 {
 	m_tau = SGVector<float64_t>(4); 
 	m_tau[0]=0; m_tau[1]=1; m_tau[2]=2; m_tau[3]=3;
@@ -36,10 +36,7 @@ CSOBI::CSOBI() : CConverter()
 
 void CSOBI::init()
 {
-	m_mixing_matrix = SGMatrix<float64_t>();
-	
 	SG_ADD(&m_tau, "tau", "tau vector", MS_AVAILABLE);
-	SG_ADD(&m_mixing_matrix, "mixing_matrix", "m_mixing_matrix", MS_NOT_AVAILABLE);
 }
 
 CSOBI::~CSOBI()
@@ -59,11 +56,6 @@ SGVector<float64_t> CSOBI::get_tau() const
 SGNDArray<float64_t> CSOBI::get_covs() const
 {
 	return m_covs;
-}
-
-SGMatrix<float64_t> CSOBI::get_mixing_matrix() const
-{
-	return m_mixing_matrix;
 }
 
 CFeatures* CSOBI::apply(CFeatures* features)
