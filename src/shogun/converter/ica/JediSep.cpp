@@ -26,7 +26,7 @@ using namespace shogun;
 
 namespace { EMatrix cor(EMatrix x, int tau = 0, bool mean_flag = true); };
 
-CJediSep::CJediSep() : CConverter()
+CJediSep::CJediSep() : CICAConverter()
 {
 	m_tau = SGVector<float64_t>(4); 
 	m_tau[0]=0; m_tau[1]=1; m_tau[2]=2; m_tau[3]=3;
@@ -36,10 +36,7 @@ CJediSep::CJediSep() : CConverter()
 
 void CJediSep::init()
 {
-	m_mixing_matrix = SGMatrix<float64_t>();
-	
 	SG_ADD(&m_tau, "tau", "tau vector", MS_AVAILABLE);
-	SG_ADD(&m_mixing_matrix, "mixing_matrix", "m_mixing_matrix", MS_NOT_AVAILABLE);
 }
 
 CJediSep::~CJediSep()
@@ -59,11 +56,6 @@ SGVector<float64_t> CJediSep::get_tau() const
 SGNDArray<float64_t> CJediSep::get_covs() const
 {
 	return m_covs;
-}
-
-SGMatrix<float64_t> CJediSep::get_mixing_matrix() const
-{
-	return m_mixing_matrix;
 }
 
 CFeatures* CJediSep::apply(CFeatures* features)

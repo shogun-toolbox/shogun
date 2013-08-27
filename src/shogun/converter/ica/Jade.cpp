@@ -28,27 +28,19 @@ typedef Matrix< float64_t, Dynamic, Dynamic, ColMajor > EMatrix;
 
 using namespace shogun;
 
-CJade::CJade() : CConverter()
+CJade::CJade() : CICAConverter()
 {	
 	init();
 }
 
 void CJade::init()
 {
-	m_mixing_matrix = SGMatrix<float64_t>();
 	m_cumulant_matrix = SGMatrix<float64_t>();
-
-	SG_ADD(&m_mixing_matrix, "mixing_matrix", "m_mixing_matrix", MS_NOT_AVAILABLE);
 	SG_ADD(&m_cumulant_matrix, "cumulant_matrix", "m_cumulant_matrix", MS_NOT_AVAILABLE);
 }
 
 CJade::~CJade()
 {
-}
-
-SGMatrix<float64_t> CJade::get_mixing_matrix() const
-{
-	return m_mixing_matrix;
 }
 
 SGMatrix<float64_t> CJade::get_cumulant_matrix() const
