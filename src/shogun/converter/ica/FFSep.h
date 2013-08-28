@@ -44,8 +44,7 @@ class CFFSep: public CICAConverter
 		virtual ~CFFSep();
 
 		/** apply to features
-		 * @param features to embed
-		 * @param embedding features
+		 * @param features
 		 */
 		virtual CFeatures* apply(CFeatures* features);
 

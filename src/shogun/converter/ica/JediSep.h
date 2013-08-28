@@ -43,8 +43,7 @@ class CJediSep: public CICAConverter
 		virtual ~CJediSep();
 
 		/** apply to features
-		 * @param features to embed
-		 * @return embedding features
+		 * @param features
 		 */
 		virtual CFeatures* apply(CFeatures* features);
 

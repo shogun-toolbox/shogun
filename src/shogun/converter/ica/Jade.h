@@ -45,8 +45,7 @@ class CJade: public CICAConverter
 		virtual ~CJade();
 
 		/** apply to features
-		 * @param features to embed
-		 * @param embedding features
+		 * @param features
 		 */
 		virtual CFeatures* apply(CFeatures* features);
 

@@ -20,7 +20,9 @@ namespace shogun
 
 class CFeatures;
 
-/** @brief class ICAConverter */
+/** @brief class ICAConverter 
+ * Base class for ICA algorithms
+ */
 class CICAConverter: public CConverter
 {
 	public:
@@ -32,15 +34,41 @@ class CICAConverter: public CConverter
 		virtual ~CICAConverter();
 
 		/** apply to features
-		 * @param features to embed
-		 * @param embedding features
+		 * @param features
 		 */
 		virtual CFeatures* apply(CFeatures* features) = 0;
+
+		/** setter for mixing matrix, if the mixing matrix is set it will be
+		 * used as an initial guess if supported by the algorithm
+		 * @param mixing matrix
+		 */
+		void set_mixing_matrix(SGMatrix<float64_t>mixing_matrix);
 
 		/** getter for mixing_matrix
 		 * @return mixing_matrix
 		 */
 		SGMatrix<float64_t> get_mixing_matrix() const;
+
+		/** setter for max_iter, the maximum number of iterations 
+		 * the ICA algorithm will perform if supported
+		 * @param iter
+		 */
+		void set_max_iter(int iter);
+		
+		/** getter for max_iter
+		 * @return max_iter
+		 */
+		int get_max_iter() const;
+		
+		/** setter for tol, the convergence tolerance if supported
+		 * @param tol
+		 */
+		void set_tol(float64_t tol);
+
+		/** getter for tol
+		 * @return tol
+		 */
+		float64_t get_tol() const;
 
 		/** @return object name */
 		virtual const char* get_name() const { return "ICAConverter"; };
@@ -52,6 +80,12 @@ class CICAConverter: public CConverter
 		
 		/** mixing_matrix */
 		SGMatrix<float64_t> m_mixing_matrix;
+
+		/** max_iter */
+		int max_iter;
+		
+		/** tol */
+		float64_t tol;
 };	
 }
 #endif // HAVE_EIGEN3

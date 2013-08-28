@@ -30,7 +30,7 @@ SGMatrix<float64_t> CFFDiag::diagonalize(SGNDArray<float64_t> C0, SGMatrix<float
 	memcpy(C.array, C0.array, C0.dims[0]*C0.dims[1]*C0.dims[2]*sizeof(float64_t));
 	
 	SGMatrix<float64_t> V;
-	if (V0.num_rows != 0)
+	if (V0.num_rows == n && V0.num_cols == n)
 		V = V0.clone();
 	else	
 		V = SGMatrix<float64_t>::create_identity_matrix(n,1);

@@ -27,7 +27,7 @@ SGMatrix<float64_t> CJediDiag::diagonalize(SGNDArray<float64_t> C, SGMatrix<floa
 	int L = C.dims[2];
 
 	SGMatrix<float64_t> V;
-	if (V0.num_rows != 0)
+	if (V0.num_rows == d && V0.num_cols == d)
 		V = V0.clone();
 	else					
 		V = SGMatrix<float64_t>::create_identity_matrix(d,1);

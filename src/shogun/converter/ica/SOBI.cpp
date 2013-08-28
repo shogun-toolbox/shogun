@@ -27,15 +27,17 @@ using namespace shogun;
 namespace { EMatrix cor(EMatrix x, int tau = 0, bool mean_flag = true); };
 
 CSOBI::CSOBI() : CICAConverter()
-{
-	m_tau = SGVector<float64_t>(4); 
-	m_tau[0]=0; m_tau[1]=1; m_tau[2]=2; m_tau[3]=3;
-		
+{	
 	init();
 }
 
 void CSOBI::init()
 {
+	m_tau = SGVector<float64_t>(4); 
+	m_tau[0]=0; m_tau[1]=1; m_tau[2]=2; m_tau[3]=3;
+	
+	m_covs = SGNDArray<float64_t>();
+	
 	SG_ADD(&m_tau, "tau", "tau vector", MS_AVAILABLE);
 }
 

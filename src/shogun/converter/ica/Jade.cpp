@@ -144,7 +144,7 @@ CFeatures* CJade::apply(CFeatures* features)
 	}
 	
 	// Diagonalize
-	SGMatrix<float64_t> Q = CJADiagOrth::diagonalize(M);
+	SGMatrix<float64_t> Q = CJADiagOrth::diagonalize(M, m_mixing_matrix, tol, max_iter);
 	Eigen::Map<EMatrix> EQ(Q.matrix,m,m);
 	EQ = -1 * EQ.inverse();
 	

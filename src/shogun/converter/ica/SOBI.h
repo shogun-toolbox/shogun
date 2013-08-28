@@ -45,8 +45,7 @@ class CSOBI: public CICAConverter
 		virtual ~CSOBI();
 
 		/** apply to features
-		 * @param features to embed
-		 * @param embedding features
+		 * @param features
 		 */
 		virtual CFeatures* apply(CFeatures* features);
 
