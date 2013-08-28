@@ -9,28 +9,24 @@
 
 #include <shogun/evaluation/GradientEvaluation.h>
 #include <shogun/evaluation/GradientResult.h>
-#include <shogun/evaluation/Evaluation.h>
-#include <shogun/evaluation/EvaluationResult.h>
-
 
 using namespace shogun;
 
-CGradientEvaluation::CGradientEvaluation() : CMachineEvaluation(NULL,
-		NULL, NULL, NULL, NULL, true)
+CGradientEvaluation::CGradientEvaluation() : CMachineEvaluation()
 {
 	init();
 }
 
 CGradientEvaluation::CGradientEvaluation(CMachine* machine, CFeatures* features,
 		CLabels* labels, CEvaluation* evaluation_crit, bool autolock) :
-		CMachineEvaluation(machine, features, labels, NULL, evaluation_crit, true)
+		CMachineEvaluation(machine, features, labels, NULL, evaluation_crit, autolock)
 {
 	init();
 }
 
 void CGradientEvaluation::init()
 {
-	m_diff = NULL;
+	m_diff=NULL;
 
 	SG_ADD((CSGObject**)&m_diff, "differentiable_function",
 			"Differentiable Function", MS_NOT_AVAILABLE);
@@ -43,26 +39,19 @@ CGradientEvaluation::~CGradientEvaluation()
 
 CEvaluationResult* CGradientEvaluation::evaluate()
 {
-	CGradientResult* result = new CGradientResult();
+	CGradientResult* result=new CGradientResult();
 
-	SGVector<float64_t> quan = m_diff->get_quantity();
+	result->gradient=m_diff->get_gradient(result->parameter_dictionary);
+	result->quantity=m_diff->get_quantity();
+	result->total_variables=0;
 
-	result->gradient = m_diff->get_gradient(result->parameter_dictionary);
-
-	result->quantity = quan.clone();
-
-	result->total_variables = 0;
-
-	for (index_t i = 0; i < result->gradient.get_num_elements(); i++)
+	for (index_t i=0; i<result->gradient.get_num_elements(); i++)
 	{
-		shogun::CMapNode<TParameter*, SGVector<float64_t> >* node =
-				result->gradient.get_node_ptr(i);
-
-		result->total_variables += node->data.vlen;
+		CMapNode<TParameter*, SGVector<float64_t> >* node=
+			result->gradient.get_node_ptr(i);
+		result->total_variables+=node->data.vlen;
 	}
-
 
 	SG_REF(result);
 	return result;
 }
-
