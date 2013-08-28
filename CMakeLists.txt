@@ -242,9 +242,9 @@ OPTION(CSharpModular "CSharp Modular" OFF)
 
 OPTION(PythonStatic "Python Static" OFF)
 OPTION(RStatic "R Static" OFF)
-OPTION(CmdLineStatic "R Static" OFF)
+OPTION(CmdLineStatic "CmdLine Static" OFF)
 OPTION(MatlabStatic "Matlab Static" OFF)
-OPTION(OctaveStatic "Matlab Static" OFF)
+OPTION(OctaveStatic "Octave Static" OFF)
 
 # SVMLight
 OPTION(USE_SVMLIGHT "SVMLight" ON)
@@ -839,6 +839,12 @@ ENDIF()
 
 message(STATUS "")
 message(STATUS "Enabled legacy interfaces")
+IF ( CmdLineStatic )
+	message(STATUS "  cmdline static is ON")
+ELSE()
+	message(STATUS "  cmdline static is OFF   - enable with -DCmdLineStatic=ON")
+ENDIF()
+
 IF ( PythonStatic )
 	message(STATUS "  python static is ON")
 ELSE()
