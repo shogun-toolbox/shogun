@@ -50,14 +50,14 @@ public:
 	/** read one of the several base data types. */
 	//@{
 	virtual bool read_bool();
-	virtual char read_char(int32_t base=10);
-	virtual uint8_t read_byte(int32_t base=10);
-	virtual int16_t read_short(int32_t base=10);
-	virtual uint16_t read_word(int32_t base=10);
-	virtual int32_t read_int(int32_t base=10);
-	virtual uint32_t read_uint(int32_t base=10);
-	virtual int64_t read_long(int32_t base=10);
-	virtual uint64_t read_ulong(int32_t base=10);
+	virtual char read_char();
+	virtual uint8_t read_byte();
+	virtual int16_t read_short();
+	virtual uint16_t read_word();
+	virtual int32_t read_int();
+	virtual uint32_t read_uint();
+	virtual int64_t read_long();
+	virtual uint64_t read_ulong();
 	virtual float32_t read_short_real();
 	virtual float64_t read_real();
 	virtual floatmax_t read_long_real();

@@ -180,6 +180,8 @@ void CCSVFile::fname(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec) \
 	skip_lines(m_num_to_skip); \
 	num_lines=get_stats(num_tokens); \
 	\
+	SG_SET_LOCALE_C; \
+	\
 	matrix=SG_MALLOC(sg_type, num_lines*num_tokens); \
 	skip_lines(m_num_to_skip); \
 	while (m_line_reader->has_next()) \
@@ -199,6 +201,8 @@ void CCSVFile::fname(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec) \
 		} \
 		current_line_idx++; \
 	} \
+	\
+	SG_RESET_LOCALE; \
 	\
 	if (!is_data_transposed) \
 	{ \
@@ -229,6 +233,8 @@ GET_MATRIX(get_matrix, read_ulong, uint64_t)
 #define SET_VECTOR(fname, format, sg_type) \
 void CCSVFile::fname(const sg_type* vector, int32_t len) \
 { \
+	SG_SET_LOCALE_C; \
+	\
 	if (!is_data_transposed) \
 	{ \
 		for (int32_t i=0; i<len; i++) \
@@ -240,6 +246,8 @@ void CCSVFile::fname(const sg_type* vector, int32_t len) \
 			fprintf(file, "%" format "%c", vector[i], m_delimiter); \
 		fprintf(file, "\n"); \
 	} \
+	\
+	SG_RESET_LOCALE; \
 }
 
 SET_VECTOR(set_vector, SCNi8, int8_t)
@@ -259,6 +267,8 @@ SET_VECTOR(set_vector, SCNu16, uint16_t)
 #define SET_MATRIX(fname, format, sg_type) \
 void CCSVFile::fname(const sg_type* matrix, int32_t num_feat, int32_t num_vec) \
 { \
+	SG_SET_LOCALE_C; \
+	\
 	if (!is_data_transposed) \
 	{ \
 		for (int32_t i=0; i<num_vec; i++) \
@@ -277,6 +287,8 @@ void CCSVFile::fname(const sg_type* matrix, int32_t num_feat, int32_t num_vec) \
 			fprintf(file, "\n"); \
 		} \
 	} \
+	\
+	SG_RESET_LOCALE; \
 }
 
 SET_MATRIX(set_matrix, SCNi8, int8_t)
