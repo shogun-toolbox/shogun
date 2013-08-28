@@ -180,10 +180,7 @@ void CEPInferenceMethod::update()
 	}
 
 	// create vector of the random permutation
-	SGVector<index_t> randperm(n);
-
-	for (index_t i=0; i<n; i++)
-		randperm[i]=i;
+	SGVector<index_t> randperm=SGVector<index_t>::randperm_vec(n);
 
 	// cavity tau and nu vectors
 	SGVector<float64_t> tau_n(n);
@@ -202,11 +199,13 @@ void CEPInferenceMethod::update()
 		nlZ_old=m_nlZ;
 		sweep++;
 
-		// choose random order
+		// shuffle random permutation
 		randperm.permute();
 
-		for (index_t j=0, i=randperm[0]; j<n; j++, i=randperm[j])
+		for (index_t j=0; j<n; j++)
 		{
+			index_t i=randperm[j];
+
 			// find cavity paramters
 			tau_n[i]=1.0/m_Sigma(i,i)-m_ttau[i];
 			nu_n[i]=m_mu[i]/m_Sigma(i,i)+mean[i]*tau_n[i]-m_tnu[i];
