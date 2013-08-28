@@ -7,30 +7,27 @@
  * Copyright (C) 2012 Jacob Walker
  */
 
-
 #ifndef CGRADIENTEVALUATION_H_
 #define CGRADIENTEVALUATION_H_
 
 #include <shogun/evaluation/MachineEvaluation.h>
 #include <shogun/evaluation/DifferentiableFunction.h>
-#include <shogun/evaluation/GradientResult.h>
+#include <shogun/evaluation/EvaluationResult.h>
 
 namespace shogun
 {
-/** @brief GradientEvaluation evaluates a machine using
- * its associated differentiable function for the function
- * value and its gradient with respect to parameters.
- */
 
+/** @brief Class evaluates a machine using its associated differentiable
+ * function for the function value and its gradient with respect to parameters.
+ */
 class CGradientEvaluation: public CMachineEvaluation
 {
-
 public:
-
-	/*Constructor*/
+	/** default constructor */
 	CGradientEvaluation();
 
 	/** constructor
+	 *
 	 * @param machine learning machine to use
 	 * @param features features to use for cross-validation
 	 * @param labels labels that correspond to the features
@@ -38,60 +35,50 @@ public:
 	 * @param autolock whether machine should be auto-locked before evaluation
 	 */
 	CGradientEvaluation(CMachine* machine, CFeatures* features, CLabels* labels,
-			CEvaluation* evaluation_criterion, bool autolock = true);
+			CEvaluation* evaluation_criterion, bool autolock=true);
 
-	/*Destructor*/
 	virtual ~CGradientEvaluation();
 
-	/** Returns the name of the SGSerializable instance.  It MUST BE
-	 *  the CLASS NAME without the prefixed `C'.
+	/** returns the name of the machine evaluation
 	 *
-	 *  @return name of the SGSerializable
+	 *  @return name GradientEvaluation
 	 */
-	virtual const char* get_name() const
-	{
-		return "GradientEvaluation";
-	}
+	virtual const char* get_name() const { return "GradientEvaluation"; }
 
-	/*Evaluates differentiable function for value
-	 * and derivative.
+	/** evaluates differentiable function for value and derivative.
 	 *
-	 * @return GradientResult containing value and
-	 * gradient
+	 * @return GradientResult containing value and gradient
 	 */
 	virtual CEvaluationResult* evaluate();
 
-	/** set Differentiable Function
+	/** set differentiable function
 	*
-	* @param d Differentiable Function
+	* @param diff differentiable function
 	*/
-	inline void set_function(CDifferentiableFunction* d)
+	inline void set_function(CDifferentiableFunction* diff)
 	{
-		SG_REF(d);
+		SG_REF(diff);
 		SG_UNREF(m_diff);
-		m_diff = d;
-	};
+		m_diff=diff;
+	}
 
-	/** get Differentiable Function
+	/** get differentiable function
 	*
-	* @return Differentiable Function
+	* @return differentiable function
 	*/
 	inline CDifferentiableFunction* get_function()
 	{
 		SG_REF(m_diff);
 		return m_diff;
-	};
+	}
 
 private:
-
-	/*Initializer*/
+	/** initialses and registers parameters */
 	void init();
 
 private:
-
+	/** differentiable function */
 	CDifferentiableFunction* m_diff;
 };
-
-} /* namespace shogun */
-
+}
 #endif /* CGRADIENTEVALUATION_H_ */
