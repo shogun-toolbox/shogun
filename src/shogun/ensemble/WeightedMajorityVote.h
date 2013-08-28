@@ -22,7 +22,7 @@ namespace shogun
 	 * For a given feature vector the combined value is going to be:
 	 * \f[
 	 *	 label = max_{j=0..C} \sum_{i=0}^{N} w_i d_{i,j}
-	 * \$f]
+	 * \f]
 	 * where \f$N\f$ is the number of Machines in the ensemble
 	 * \f$w_i\f$ is the weight of ith Machine
 	 * \f$d_{i,j}\f$ decision of the ith Machine for jth class.
