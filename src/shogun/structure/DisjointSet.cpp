@@ -14,26 +14,31 @@
 using namespace shogun;
 
 CDisjointSet::CDisjointSet()
-	: m_num_elements(-1), m_parent(), m_rank()
+	: CSGObject()
 {
 	SG_UNSTABLE("CDisjointSet::CDisjointSet()", "\n");
 
-	register_parameters();
+	init();
 }
 
 CDisjointSet::CDisjointSet(int32_t num_elements)
-	: m_num_elements(num_elements), m_parent(num_elements), m_rank(num_elements),
-	m_is_connected(false)
+	: CSGObject()
 {
-	register_parameters();
+	init();
+	m_num_elements = num_elements;
+	m_parent = SGVector<int32_t>(num_elements);
+	m_rank = SGVector<int32_t>(num_elements);
 }
 
-void CDisjointSet::register_parameters()
+void CDisjointSet::init()
 {
-	SG_ADD(&m_num_elements, "m_num_elements", "Number of elements", MS_NOT_AVAILABLE);
-	SG_ADD(&m_parent, "m_parent", "Parent pointers", MS_NOT_AVAILABLE);
-	SG_ADD(&m_rank, "m_rank", "Rank of each element", MS_NOT_AVAILABLE);
-	SG_ADD(&m_is_connected, "m_is_connected", "Whether disjoint sets have been linked", MS_NOT_AVAILABLE);
+	SG_ADD(&m_num_elements, "num_elements", "Number of elements", MS_NOT_AVAILABLE);
+	SG_ADD(&m_parent, "parent", "Parent pointers", MS_NOT_AVAILABLE);
+	SG_ADD(&m_rank, "rank", "Rank of each element", MS_NOT_AVAILABLE);
+	SG_ADD(&m_is_connected, "is_connected", "Whether disjoint sets have been linked", MS_NOT_AVAILABLE);
+
+	m_is_connected = false;
+	m_num_elements = -1;
 }
 
 void CDisjointSet::make_sets()

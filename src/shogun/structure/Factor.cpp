@@ -13,27 +13,24 @@
 
 using namespace shogun;
 
-CFactor::CFactor()
-	: m_factor_type(NULL), m_data_source(NULL) 
+CFactor::CFactor() : CSGObject()
 {
 	SG_UNSTABLE("CFactor::CFactor()", "\n");
-	register_parameters();
-	m_is_data_dep = false;
-
-	SG_REF(m_factor_type);
-	SG_REF(m_data_source);
+	init();
 }
 
 CFactor::CFactor(CTableFactorType* ftype,
 	SGVector<int32_t> var_index,
-	SGVector<float64_t> data)
-	: m_factor_type(ftype), m_var_index(var_index), 
-	m_data_source(NULL), m_data(data), m_is_data_dep(true)
+	SGVector<float64_t> data) : CSGObject()
 {
+	init();
+	m_factor_type = ftype;
+	m_var_index = var_index;
+	m_data = data;
+	m_is_data_dep = true;
+
 	ASSERT(ftype != NULL);
 	ASSERT(ftype->get_cardinalities().size() == m_var_index.size());
-
-	register_parameters();
 
 	if (m_data.size() == 0)
 		m_is_data_dep = false;
@@ -47,14 +44,16 @@ CFactor::CFactor(CTableFactorType* ftype,
 
 CFactor::CFactor(CTableFactorType* ftype,
 	SGVector<int32_t> var_index,
-	SGSparseVector<float64_t> data_sparse)
-	: m_factor_type(ftype), m_var_index(var_index), 
-	m_data_source(NULL), m_data_sparse(data_sparse), m_is_data_dep(true) 
+	SGSparseVector<float64_t> data_sparse) : CSGObject()
 {
+	init();
+	m_factor_type = ftype;
+	m_var_index = var_index;
+	m_data_sparse = data_sparse;
+	m_is_data_dep = true;
+
 	ASSERT(ftype != NULL);
 	ASSERT(ftype->get_cardinalities().size() == m_var_index.size());
-
-	register_parameters();
 
 	if (m_data_sparse.num_feat_entries == 0)
 		m_is_data_dep = false;
@@ -68,15 +67,17 @@ CFactor::CFactor(CTableFactorType* ftype,
 
 CFactor::CFactor(CTableFactorType* ftype,
 	SGVector<int32_t> var_index,
-	CFactorDataSource* data_source)
-	: m_factor_type(ftype), m_var_index(var_index), 
-	m_data_source(data_source), m_is_data_dep(true) 
+	CFactorDataSource* data_source) : CSGObject()
 {
+	init();
+	m_factor_type = ftype;
+	m_var_index = var_index;
+	m_data_source = data_source;
+	m_is_data_dep = true;
+
 	ASSERT(ftype != NULL);
 	ASSERT(ftype->get_cardinalities().size() == m_var_index.size());
 	ASSERT(data_source != NULL);
-
-	register_parameters();
 
 	if (ftype->is_table())
 		m_energies.resize_vector(ftype->get_prodcardinalities());
@@ -214,33 +215,38 @@ void CFactor::compute_gradients(
 		m_factor_type->compute_gradients(H_sparse, marginals, parameter_gradient, mult);
 }
 
-void CFactor::register_parameters()
+void CFactor::init()
 {
-	SG_ADD((CSGObject**)&m_factor_type, "m_type_name", "Factor type name", MS_NOT_AVAILABLE);
-	SG_ADD(&m_var_index, "m_var_index", "Factor variable index", MS_NOT_AVAILABLE);
-	SG_ADD(&m_energies, "m_energies", "Factor energies", MS_NOT_AVAILABLE);
-	SG_ADD((CSGObject**)&m_data_source, "m_data_source", "Factor data source", MS_NOT_AVAILABLE);
-	SG_ADD(&m_data, "m_data", "Factor data", MS_NOT_AVAILABLE);
-	SG_ADD(&m_data_sparse, "m_data_sparse", "Sparse factor data", MS_NOT_AVAILABLE);
-	SG_ADD(&m_is_data_dep, "m_is_data_dep", "Factor is data dependent or not", MS_NOT_AVAILABLE);
-	SG_ADD(&m_factor_id, "m_factor_id", "Factor ID in the factor graph", MS_NOT_AVAILABLE);
+	SG_ADD((CSGObject**)&m_factor_type, "type_name", "Factor type name", MS_NOT_AVAILABLE);
+	SG_ADD(&m_var_index, "var_index", "Factor variable index", MS_NOT_AVAILABLE);
+	SG_ADD(&m_energies, "energies", "Factor energies", MS_NOT_AVAILABLE);
+	SG_ADD((CSGObject**)&m_data_source, "data_source", "Factor data source", MS_NOT_AVAILABLE);
+	SG_ADD(&m_data, "data", "Factor data", MS_NOT_AVAILABLE);
+	SG_ADD(&m_data_sparse, "data_sparse", "Sparse factor data", MS_NOT_AVAILABLE);
+	SG_ADD(&m_is_data_dep, "is_data_dep", "Factor is data dependent or not", MS_NOT_AVAILABLE);
+
+	m_factor_type=NULL;
+	m_data_source=NULL;
+	m_is_data_dep = false;
 }
 
-CFactorDataSource::CFactorDataSource() 
+CFactorDataSource::CFactorDataSource() : CSGObject()
 {
-	register_parameters();
+	init();
 }
 
 CFactorDataSource::CFactorDataSource(const SGVector<float64_t> dense)
-	: m_dense(dense) 
+	: CSGObject()
 {
-	register_parameters();
+	init();
+	m_dense = dense;
 }
 
 CFactorDataSource::CFactorDataSource(const SGSparseVector<float64_t> sparse)
-	: m_sparse(sparse)
+	: CSGObject()
 {
-	register_parameters();
+	init();
+	m_sparse = sparse;
 }
 
 CFactorDataSource::~CFactorDataSource() 
@@ -273,9 +279,9 @@ void CFactorDataSource::set_data_sparse(SGSparseVectorEntry<float64_t>* sparse,
 	m_sparse = SGSparseVector<float64_t>(sparse, dlen);
 }
 
-void CFactorDataSource::register_parameters()
+void CFactorDataSource::init()
 {
-	SG_ADD(&m_dense, "m_dense", "Shared data", MS_NOT_AVAILABLE);
-	SG_ADD(&m_sparse, "m_sparse", "Shared sparse data", MS_NOT_AVAILABLE);
+	SG_ADD(&m_dense, "dense", "Shared data", MS_NOT_AVAILABLE);
+	SG_ADD(&m_sparse, "sparse", "Shared sparse data", MS_NOT_AVAILABLE);
 }
 

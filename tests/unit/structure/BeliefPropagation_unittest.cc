@@ -8,7 +8,7 @@
 #include <shogun/structure/FactorGraph.h>
 #include <shogun/structure/FactorType.h>
 #include <shogun/structure/Factor.h>
-#include <shogun/structure/FactorGraphLabels.h>
+#include <shogun/labels/FactorGraphLabels.h>
 #include <shogun/structure/MAPInference.h>
 #include <gtest/gtest.h>
 
