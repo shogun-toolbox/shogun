@@ -58,4 +58,4 @@ before_install:
 before_script: 
   - mkdir build
   - cd build
-script: cmake -DENABLE_TESTING=ON -DBUNDLE_EIGEN=ON -DBUNDLE_JSON=ON $CMAKE_OPTIONS .. && make -j 4 && sudo make install && ctest --output-on-failure
+script: cmake -DENABLE_TESTING=ON -DBUNDLE_EIGEN=ON -DBUNDLE_JSON=ON -DBUNDLE_NLOPT=ON $CMAKE_OPTIONS .. && make -j 4 && sudo make install && ctest --output-on-failure
