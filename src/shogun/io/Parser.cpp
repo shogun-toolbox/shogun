@@ -87,28 +87,22 @@ bool CParser::read_bool()
 	SGVector<char> token=read_cstring();
 	
 	if (token.vlen>0)
-		return (bool) strtol(token.vector, NULL, 10);
+		return (bool) strtod(token.vector, NULL);
 	else
 		return (bool) 0L;
 }
 
 #define READ_INT_METHOD(fname, convf, sg_type) \
-sg_type CParser::fname(int32_t base) \
+sg_type CParser::fname() \
 { \
 	SGVector<char> token=read_cstring(); \
 	\
 	if (token.vlen>0) \
-		return (sg_type) convf(token.vector, NULL, base); \
+		return (sg_type) convf(token.vector, NULL, 10); \
 	else \
 		return (sg_type) 0L; \
 }
 
-READ_INT_METHOD(read_char, strtol, char)
-READ_INT_METHOD(read_byte, strtoul, uint8_t)
-READ_INT_METHOD(read_short, strtol, int16_t)
-READ_INT_METHOD(read_word, strtoul, uint16_t)
-READ_INT_METHOD(read_int, strtol, int32_t)
-READ_INT_METHOD(read_uint, strtoul, uint32_t)
 READ_INT_METHOD(read_long, strtoll, int64_t)
 READ_INT_METHOD(read_ulong, strtoull, uint64_t)
 #undef READ_INT_METHOD
@@ -123,6 +117,13 @@ sg_type CParser::fname() \
 	else \
 		return (sg_type) 0L; \
 }
+
+READ_REAL_METHOD(read_char, strtod, char)
+READ_REAL_METHOD(read_byte, strtod, uint8_t)
+READ_REAL_METHOD(read_short, strtod, int16_t)
+READ_REAL_METHOD(read_word, strtod, uint16_t)
+READ_REAL_METHOD(read_int, strtod, int32_t)
+READ_REAL_METHOD(read_uint, strtod, uint32_t)
 
 READ_REAL_METHOD(read_short_real, strtod, float32_t)
 READ_REAL_METHOD(read_real, strtod, float64_t)
