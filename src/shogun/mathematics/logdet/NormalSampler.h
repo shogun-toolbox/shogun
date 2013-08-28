@@ -6,6 +6,7 @@
  * 
  * Written (W) 2013 Soumyajit De
  */
+
 #ifndef NORMAL_SAMPLER_H_
 #define NORMAL_SAMPLER_H_
 

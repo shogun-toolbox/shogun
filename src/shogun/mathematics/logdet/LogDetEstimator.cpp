@@ -6,6 +6,7 @@
  * 
  * Written (W) 2013 Soumyajit De
  */
+
 #include <shogun/lib/common.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
@@ -92,9 +93,9 @@ SGVector<float64_t> CLogDetEstimator::sample(index_t num_estimates)
 	CDynamicObjectArray aggregators;
 	index_t num_trace_samples=m_trace_sampler->get_num_samples();
 
-	for (register index_t i=0; i<num_estimates; ++i)
+	for (index_t i=0; i<num_estimates; ++i)
 	{
-		for (register index_t j=0; j<num_trace_samples; ++j)
+		for (index_t j=0; j<num_trace_samples; ++j)
 		{
 			// get the trace sampler vector
 			SGVector<float64_t> s=m_trace_sampler->sample(j);

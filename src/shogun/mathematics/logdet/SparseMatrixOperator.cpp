@@ -13,6 +13,7 @@
 #include <shogun/lib/SGSparseVector.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/mathematics/logdet/SparseMatrixOperator.h>
+#include <shogun/mathematics/eigen3.h>
 
 namespace shogun
 {
@@ -88,6 +89,77 @@ SGSparseMatrix<T> CSparseMatrixOperator<T>::get_matrix_operator() const
 	{
 		return m_operator;
 	}
+
+#ifdef HAVE_EIGEN3
+template<class T>
+SparsityStructure* CSparseMatrixOperator<T>::get_sparsity_structure(
+	int64_t power) const
+	{
+		REQUIRE(power>0, "matrix-power is non-positive!\n");
+
+		// create casted operator in bool for capturing the sparsity
+		CSparseMatrixOperator<bool>* sp_str
+			=static_cast<CSparseMatrixOperator<bool>*>(*this);
+
+		// eigen3 map for this sparse matrix in which we compute current power
+		Eigen::SparseMatrix<bool> current_power
+			=EigenSparseUtil<bool>::toEigenSparse(sp_str->get_matrix_operator());
+
+		// final power of the matrix goes into this one
+		Eigen::SparseMatrix<bool> matrix_power;
+
+		// compute matrix power with O(log(n)) matrix-multiplication!
+		// traverse the bits of the power and compute the powers of 2 which
+		// makes up this number. in the process multiply these to get the result
+		bool lsb=true;
+		while (power)
+		{
+			// if the current bit is on, it should contribute to the final result
+			if (1 & power)
+			{
+				if (lsb)
+				{
+					// if seeing a 1 for the first time, then this should be the first
+					// power we should consider
+					matrix_power=current_power;
+					lsb=false;
+				}
+				else
+					matrix_power=matrix_power*current_power;
+			}
+			power=power>>1;
+
+			// save unnecessary matrix-multiplication
+			if (power)
+				current_power=current_power*current_power;
+		}
+
+		// create the sparsity structure using the final power
+		int32_t* outerIndexPtr=const_cast<int32_t*>(matrix_power.outerIndexPtr());
+		int32_t* innerIndexPtr=const_cast<int32_t*>(matrix_power.innerIndexPtr());
+
+		SG_UNREF(sp_str);
+
+		return new SparsityStructure(outerIndexPtr, innerIndexPtr,
+			matrix_power.rows());
+	}
+#else
+template<class T>
+SparsityStructure* CSparseMatrixOperator<T>::get_sparsity_structure(
+	int64_t power) const
+	{
+		SG_SWARNING("Eigen3 required\n");
+		return new SparsityStructure();
+	}
+#endif // HAVE_EIGEN3
+
+template<> \
+SparsityStructure* CSparseMatrixOperator<complex64_t>
+	::get_sparsity_structure(int64_t power) const
+  {
+    SG_SERROR("Not supported for complex64_t\n");
+    return new SparsityStructure();
+  }
 
 template<class T>
 SGVector<T> CSparseMatrixOperator<T>::get_diagonal() const

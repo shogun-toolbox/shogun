@@ -217,4 +217,57 @@ TEST(SparseMatrixOperator, get_set_diagonal_realloc_complex64)
 
 	EXPECT_NEAR(map_diag.norm(), map_new_diag.norm(), 1E-16);
 }
+
+TEST(SparseMatrixOperator, get_sparsity_structure)
+{
+	const int size=9;
+	const int max_pow=10;
+
+	SGMatrix<double> m(size, size);
+
+	m.set_const(0.0);
+	for (int i=0; i<size; ++i)
+		m(i,i)=2.0; 
+	for (int i=0; i<size; i+=4) 
+		m(i,size-1)=2.0;
+	for (int i=0; i<size; i+=4) 
+		m(size-1,i)=2.0;
+
+	CSparseFeatures<double> feat(m);
+	SGSparseMatrix<double> sm=feat.get_sparse_feature_matrix();
+	CSparseMatrixOperator<double> op(sm);
+	CSparseMatrixOperator<bool>* b_op
+		=static_cast<CSparseMatrixOperator<bool>*>(op);
+
+	SparseMatrix<bool, RowMajor, int> sp
+		=EigenSparseUtil<bool>::toEigenSparse(b_op->get_matrix_operator());
+	SparseMatrix<double, RowMajor, int> sm2
+		=EigenSparseUtil<double>::toEigenSparse(sm);
+
+	// compute direct matrix power and then the sparsity structure
+	for (int i=2; i<=max_pow; ++i)
+		sp=sp*sm2;
+
+	int32_t* outerIndexPtr=const_cast<int32_t*>(sp.outerIndexPtr());
+	int32_t* innerIndexPtr=const_cast<int32_t*>(sp.innerIndexPtr());
+
+	SparsityStructure* sp_struct1
+		=new SparsityStructure(outerIndexPtr, innerIndexPtr, sp.cols());
+
+	// compute the sparsity structure using the method added in 
+	// sparse matrix operator
+	SparsityStructure* sp_struct2=op.get_sparsity_structure(max_pow);
+
+	for (index_t i=0; i<sp_struct2->m_num_rows; ++i)
+	{
+		index_t nnzs=sp_struct2->m_ptr[i][0];
+		EXPECT_EQ(nnzs, sp_struct1->m_ptr[i][0]);
+		for(index_t j=1; j<=nnzs; ++j)
+			EXPECT_EQ(sp_struct1->m_ptr[i][j], sp_struct2->m_ptr[i][j]);
+	}
+
+	SG_UNREF(b_op);
+	delete sp_struct1;
+	delete sp_struct2;
+}
 #endif // HAVE_EIGEN3
