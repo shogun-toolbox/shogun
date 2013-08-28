@@ -12,39 +12,28 @@
 
 #include <shogun/evaluation/EvaluationResult.h>
 #include <shogun/lib/Map.h>
-#include <shogun/lib/SGString.h>
 
 namespace shogun
 {
 
-/** @brief GradientResult is a container class
- * that returns results from GradientEvaluation.
- * It contains the function value as well as its
- * gradient.
- *  */
-class CGradientResult: public CEvaluationResult
+/** @brief Container class that returns results from GradientEvaluation. It
+ * contains the function value as well as its gradient.
+ */
+class CGradientResult : public CEvaluationResult
 {
-
 public:
+	/** default constructor */
+	CGradientResult() : CEvaluationResult() { }
 
-	/*Constructor*/
-	CGradientResult();
+	virtual ~CGradientResult() { }
 
-	/*Destructor*/
-	virtual ~CGradientResult();
-
-	/** Returns the name of the SGSerializable instance.  It MUST BE
-	 *  the CLASS NAME without the prefixed `C'.
+	/** returns the name of the evaluation result
 	 *
-	 *  @return name of the SGSerializable
+	 *  @return name GradientResult
 	 */
-	virtual const char* get_name() const
-	{
-		return "GradientResult";
-	}
+	virtual const char* get_name() const { return "GradientResult"; }
 
 	/** return what type of result we are.
-	 *
 	 *
 	 * @return result type
 	 */
@@ -53,54 +42,63 @@ public:
 		return GRADIENTEVALUATION_RESULT;
 	}
 
-	/** Function value*/
-	SGVector<float64_t> quantity;
-
-	/** Function Gradient*/
-	CMap<TParameter*, SGVector<float64_t> > gradient;
-
-	/** Which objects do the gradient parameters belong to?*/
-	CMap<TParameter*, CSGObject*>  parameter_dictionary;
-
-	/** Total number of variables represented by the gradient*/
-	index_t total_variables;
-
-	/** Prints the function value
-	 * and gradient contained in the object.
-	 */
-	void print_result()
+	/** prints the function value and gradient contained in the object */
+	virtual void print_result()
 	{
+		// print quantity
 		SG_SPRINT("Quantity: [")
 
 		for (index_t i=0; i<quantity.vlen-1; i++)
 			SG_SPRINT("%f, ", quantity[i])
 
-		SG_SPRINT("%f", quantity[quantity.vlen-1])
+		if (quantity.vlen>0)
+			SG_SPRINT("%f", quantity[quantity.vlen-1])
 
 		SG_SPRINT("] ")
 
+		// print gradient wrt parameters
 		SG_SPRINT("Gradient: [")
 
-		for (index_t i = 0; i < gradient.get_num_elements(); i++)
+		for (index_t i=0; i<gradient.get_num_elements(); i++)
 		{
-			char* name = gradient.get_node_ptr(i)->key->m_name;
+			// get parameter name
+			const char* name=gradient.get_node_ptr(i)->key->m_name;
+
+			// get gradient wrt parameter
+			SGVector<float64_t> grad=*(gradient.get_element_ptr(i));
 
 			SG_PRINT("%s: ", name)
-			for (index_t j = 0; j < gradient.get_element_ptr(i)->vlen-1; j++)
-				SG_SPRINT("%f, ", name, (*gradient.get_element_ptr(i))[j])
+
+			for (index_t j=0; j<grad.vlen-1; j++)
+				SG_SPRINT("%f, ", grad[j])
 
 			if (i==gradient.get_num_elements()-1)
-				SG_PRINT("%f", (*gradient.get_element_ptr(i))[gradient.get_element_ptr(i)->vlen-1])
+			{
+				if (grad.vlen>0)
+					SG_PRINT("%f", grad[grad.vlen-1])
+			}
 			else
-				SG_PRINT("%f; ", (*gradient.get_element_ptr(i))[gradient.get_element_ptr(i)->vlen-1])
+			{
+				if (grad.vlen>0)
+					SG_PRINT("%f; ", grad[grad.vlen-1])
+			}
 		}
+
 		SG_SPRINT("]\n")
-
 		SG_SPRINT("Total Variables: %i\n", total_variables)
-
 	}
+
+	/** function value */
+	SGVector<float64_t> quantity;
+
+	/** function gradient */
+	CMap<TParameter*, SGVector<float64_t> > gradient;
+
+	/** which objects do the gradient parameters belong to? */
+	CMap<TParameter*, CSGObject*>  parameter_dictionary;
+
+	/** total number of variables represented by the gradient */
+	index_t total_variables;
 };
-
-} /* namespace shogun */
-
+}
 #endif /* CGRADIENTRESULT_H_ */
