@@ -115,6 +115,8 @@ void CLibSVMFile::get_sparse_matrix(SGSparseVector<sg_type>*& matrix, int32_t& n
 	if (load_labels) \
 		labels=SG_MALLOC(float64_t, num_vec); \
 	\
+	SG_SET_LOCALE_C; \
+	\
 	while (m_line_reader->has_next()) \
 	{ \
 		num_entries=0; \
@@ -157,6 +159,8 @@ void CLibSVMFile::get_sparse_matrix(SGSparseVector<sg_type>*& matrix, int32_t& n
 		current_line_ind++; \
 		SG_PROGRESS(current_line_ind, 0, num_vec, 1, "LOADING:\t") \
 	} \
+	\
+	SG_RESET_LOCALE; \
 	\
 	SG_INFO("file successfully read\n") \
 }
@@ -203,6 +207,8 @@ void CLibSVMFile::set_sparse_matrix( \
 			const SGSparseVector<sg_type>* matrix, int32_t num_feat, int32_t num_vec, \
 			const float64_t* labels) \
 { \
+	SG_SET_LOCALE_C; \
+	\
 	for (int32_t i=0; i<num_vec; i++) \
 	{ \
 		if (labels!=NULL) \
@@ -217,6 +223,8 @@ void CLibSVMFile::set_sparse_matrix( \
 		} \
 		fprintf(file, "\n"); \
 	} \
+	\
+	SG_RESET_LOCALE; \
 }
 
 SET_LABELED_SPARSE_MATRIX(SCNi32, bool)

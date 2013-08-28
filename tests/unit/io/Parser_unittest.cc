@@ -55,6 +55,8 @@ TEST(ParserTest, tokenization_reals)
 
 	CParser* reader=new CParser(cv, tokenizer);
 
+	SG_SET_LOCALE_C;
+
 	float64_t tmp=0;
 	int32_t num_tokens=0;
 	while (reader->has_next())
@@ -64,6 +66,8 @@ TEST(ParserTest, tokenization_reals)
 		num_tokens++;
 	}
 	EXPECT_EQ(num_tokens, ntokens);
+
+	SG_RESET_LOCALE;
 
 	SG_UNREF(reader);
 	SG_UNREF(tokenizer);
