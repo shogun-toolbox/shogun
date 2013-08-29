@@ -66,6 +66,11 @@ protected:
 	SGVector< int32_t > m_observed_state;
 };
 
+
+/** @brief Class FactorGraphLabels used e.g. in the application of Structured Output
+ * (SO) learning with the FactorGraphModel. Each of the labels is represented by a
+ * graph. Each label is of type CFactorGraphObservation and all of them are stored in
+ * a CDynamicObjectArray. */
 class CFactorGraphLabels : public CStructuredLabels
 {
 	public:

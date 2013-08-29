@@ -61,12 +61,10 @@ public:
 	 */
 	int32_t push(FILE* source, int32_t source_size);
 
-	/** read and remove data from buffer 
+	/** remove characters from buffer
 	 *	
-	 * @param dest destination memory block
-	 * @param dest_size size of dest
-	 * @param num_bytes number bytes to read
-	 * @return number of bytes read
+	 * @param num_chars number of characters that should be removed
+	 * @return characters removed
 	 */
 	SGVector<char> pop(int32_t num_chars);
 

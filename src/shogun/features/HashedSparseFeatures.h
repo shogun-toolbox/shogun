@@ -205,12 +205,13 @@ public:
 	 *
 	 * @param vec the vector to hash
 	 * @param dim the dimension of the hashed target space
-	 * @param use_quadr whether to use quadratic features or not
+	 * @param use_quadratic whether to use quadratic features or not
 	 * @param keep_lin_terms whether to maintain the linear terms in the computations
 	 * @return the hashed representation of the vector vec
 	 */
 	static SGSparseVector<ST> hash_vector(SGSparseVector<ST> vec, int32_t dim,
 		bool use_quadratic = false, bool keep_linear_terms = true);
+
 protected:
 	void init(CSparseFeatures<ST>* feats, int32_t d, bool use_quadr, bool keep_lin_terms);
 

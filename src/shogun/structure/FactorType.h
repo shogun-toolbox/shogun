@@ -18,7 +18,7 @@
 namespace shogun
 {
 
-/* @brief Class CFactorType defines the way of factor parameterization
+/** @brief Class CFactorType defines the way of factor parameterization
  */
 class CFactorType : public CSGObject
 {
@@ -52,7 +52,7 @@ public:
 	/** set factor type id
 	 *
 	 * @param tid_str a string 
-	 * @param length of tid_str
+	 * @param slen of tid_str
 	 */
 	virtual void set_type_id(char* tid_str, int32_t slen);
 
@@ -100,11 +100,16 @@ private:
 	void init();
 
 protected:
+	/** type identifer */
 	SGString<char> m_type_id;
 
 	/** variable information */
 	SGVector<int32_t> m_cards;
+
+	/** the cumulative product of cardinalities */
 	SGVector<int32_t> m_cumprod_cards;
+
+	/** product of cardinalities */
 	int32_t m_prod_card;
 
 	/** data information */
@@ -112,11 +117,12 @@ protected:
 
 	/** factor paramters */
 	SGVector<float64_t> m_w;
+
 	/** indices to model parameters of FactorGraphModel */
 	SGVector<int32_t> m_map_params;
 };
 
-/* @brief Class CTableFactorType the way that store assignments of variables
+/** @brief Class CTableFactorType the way that store assignments of variables
  * and energies in a table or a multi-array
  */
 class CTableFactorType : public CFactorType
@@ -179,7 +185,7 @@ public:
 	/** energy index in the table of a factor given an universe assignment
 	 *
 	 * @param assig variable assignments
-	 * @param variable indices of that particular factor
+	 * @param var_index variable indices of that particular factor
 	 * @return energy index
 	 */
 	int32_t index_from_universe_assignment(const SGVector<int32_t> assig,
@@ -195,7 +201,7 @@ public:
 
 	/** Compute energy values from parameters for a specific factor.
 	 *
-	 * @param factor_data sparse factor data 
+	 * @param factor_data_sparse sparse factor data
 	 * @param energies forwarded energy table
 	 */
 	virtual void compute_energies(const SGSparseVector<float64_t> factor_data_sparse,
@@ -214,7 +220,7 @@ public:
 
 	/** compute parameter gradient from marginals and factor data
 	 *
-	 * @param factor_data sparse factor data 
+	 * @param factor_data_sparse sparse factor data
 	 * @param marginals marginal distribution of the factor
 	 * @param parameter_gradient gradient of factor parameters
 	 * @param mult multiplier

@@ -62,7 +62,7 @@ public:
 	/** Computes the log-pdf for a single provided sample. Wrapper method which
 	 * calls log_pdf_multiple
 	 *
-	 * @param sample sample to compute log-pdf for
+	 * @param sample sample_vec to compute log-pdf for
 	 * @return log-pdf of the given sample
 	 */
 	virtual float64_t log_pdf(SGVector<float64_t> sample_vec) const;

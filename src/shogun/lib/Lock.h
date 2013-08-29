@@ -10,6 +10,7 @@
 #define __LOCK_H__
 namespace shogun
 {
+/** @brief Class Lock used for synchronization in concurrent programs. */
 class CLock
 {
 public:

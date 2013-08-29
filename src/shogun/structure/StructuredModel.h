@@ -100,12 +100,13 @@ class CStructuredModel : public CSGObject
 
 		/** initialize the optimization problem for primal solver 
 		 *
+		 * @param regularization regularization strength
 		 * @param A  is [-dPsi(y) | -I_N ] with M+N columns => max. M+1 nnz per row 
 		 * @param a
 		 * @param B
 		 * @param b  upper bounds of the constraints, Ax <= b
-		 * @param lb lower bounds for w
-		 * @param ub upper bounds for w
+		 * @param lb lower bound for the weight vector
+		 * @param ub upper bound for the weight vector
 		 * @param C  regularization matrix, w'Cw
 		 */
 		virtual void init_primal_opt(

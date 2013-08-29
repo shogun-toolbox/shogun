@@ -19,7 +19,7 @@
 namespace shogun 
 {
 
-/* @brief Class CFactorDataSource Source for factor data.
+/** @brief Class CFactorDataSource Source for factor data.
  * In some cases, the same data can be shared by many factors.
  */
 class CFactorDataSource : public CSGObject
@@ -81,13 +81,14 @@ private:
 	SGSparseVector<float64_t> m_sparse;
 };
 
-/* @brief Class CFactor A factor is defined on a clique in the factor graph. 
+/** @brief Class CFactor A factor is defined on a clique in the factor graph.
  * Each factor can have its own data, either dense, sparse or shared data.
  * Note that currently this class is table factor oriented. 
  */
 class CFactor : public CSGObject
 {
 public:
+	/** default constructor */
 	CFactor();
 
 	/** Constructor

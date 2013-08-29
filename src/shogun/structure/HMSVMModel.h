@@ -91,13 +91,15 @@ class CHMSVMModel : public CStructuredModel
 
 		/** initialize the optimization problem
 		 *
-		 * @param A
+		 * @param regularization regularization strength
+		 * @param A  is [-dPsi(y) | -I_N ] with M+N columns => max. M+1 nnz per row
 		 * @param a
 		 * @param B
-		 * @param b
-		 * @param lb
-		 * @param ub
-		 * @param C
+		 * @param b rhs of the equality constraints
+		 * @param b  upper bounds of the constraints, Ax <= b
+		 * @param lb lower bound for the weight vector
+		 * @param ub upper bound for the weight vector
+		 * @param C  regularization matrix, w'Cw
 		 */
 		virtual void init_primal_opt(
 				float64_t regularization,
