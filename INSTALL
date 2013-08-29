@@ -1,7 +1,7 @@
 GENERAL
 =======
 
-Starting from the version 2.2 Shogun uses CMake to facilitate 
+Starting from the version 3.0 Shogun uses CMake to facilitate 
 the building process. When using command line on Linux- and Unix-based 
 systems with the `make` being available the building steps are:
 
@@ -38,47 +38,92 @@ for 1-norm MKL, p-norm MKL with p>1 will work nonetheless.
 REQUIREMENTS
 
 The standard linux utils like bash, grep, test, sed, cut, awk, ldd, uname gcc
-g++ and cat, python (debian package: python2.5, python2.6) are required
-for the ./configure to work.
+g++ and cat, python (debian package: python2.7) are required
+for the cmake to work.
 
 To compile the R interface you need to have the R developer files 
 (debian package r-base-dev) installed.
 
 To compile the octave interface you need to have the octave developer files 
-(debian package octave3.0-headers) installed.
+(debian package liboctave-dev) installed.
 
 To compile the java interface you need to have the java developer files 
-(debian package openjdk-6-jdk) installed.
+(debian package openjdk-6-jdk or openjdk-7-jdk) installed.
 
 To compile the python interface you need to have the python developer files
-installed (debian packages python2.5-dev or python2.6-dev) and numpy
+installed (debian packages python2.7-dev or python3.X-dev) and numpy
 version 1.x installed (debian package python-numpy) installed.
 
-Optionally you will need atlas and lapack (debian packages lapack3-dev, 
-atlas3-headers atlas3-base-dev or atlas3-altivec-dev atlas3-sse2-dev)
-installed. Note that atlas/lapack is only supported under linux (high
-performance computing should be done under linux only anyway). In case
-atlas/lapack is unavailable, don't worry most of shogun will work without,
-though slightly slower versions are used. For standard 1-norm
-multiple kernel learning (MKL) the GNU Linear Programming Kit (GLPK) version at
-least 4.29 or CPLEX is required. If you want to build the html documentation or
-python online help you will need doxygen version 1.6.0 or higher.
+Optionally you will need atlas, lapack and eigen3 (debian packages lapack3-dev, 
+atlas3-headers atlas3-base-dev, libeigen3-dev) installed. Note that
+atlas/lapack is only supported under linux and osx (high performance computing
+should be done under linux only anyway). In case atlas/lapack is unavailable,
+don't worry most of shogun will work without, though slightly slower versions
+are used. For standard 1-norm multiple kernel learning (MKL) the GNU Linear
+Programming Kit (GLPK) version at least 4.29 or CPLEX is required. If you want
+to build the html documentation or python online help you will need doxygen
+version 1.6.0 or higher.
+
+For the interfaces to compile you will need swig.
 
 
-SPECIFIC BUILD INSTRUCTIONS
+SPECIFIC BUILD INSTRUCTIONS FOR MODULAR INTERFACES
 
+object oriented python/swig interface:
+======================================
+  mkdir build && cd build
+  ./cmake -DPythonModular=ON ..
+  make
+  sudo make install
 
-BUILDING ON DEBIAN GNU LINUX
+to test if it is working try python examples/documented/python_modular/graphical/svm.py
 
-Python (python2.6 or python2.7) need to be installed.  To get atlas/lapack
-optimizations optionally also install the atlas3-* packages aswell as the
-lapack3-* packages.
+object oriented octave/swig interface:
+======================================
+
+do all of the above you did for octave but now in addition install the swig
+package and configure+compile shogun with:
+
+  mkdir build && cd build
+  ./cmake -DOctaveModular=ON ..
+  make
+  sudo make install
+
+to test if it is working try octave examples/documented/octave_modular/libsvm.m
+
+object oriented r/swig interface:
+======================================
+
+note that this interface is pre-alpha quality
+
+  mkdir build && cd build
+  ./cmake -DRModular=ON ..
+  make
+  sudo make install
+
+to test if it is working try R  examples/documented/r_modular/all_classifier.R
+
+object oriented java/swig interface:
+======================================
+
+  mkdir build && cd build
+  ./cmake -DJavaModular=ON ..
+  make
+  make install
+
+to test if it is working try 
+export CLASSPATH=/usr/share/java/jblas.jar:SHOGUNDIR/src/java_modular/shogun.jar:.
+export LD_LIBRARY_PATH=SHOGUNDIR/src/shogun:SHOGUNDIR/src/java_modular
+javac ../examples/documented/java_modular/classifier_libsvm_minimal_modular.java
+and java classifier_libsvm_minimal_modular
+
+SPECIFIC BUILD INSTRUCTIONS FOR LEGACY STATIC INTERFACES
 
 standalone:
 ===========
 
-cd src
-./configure --interfaces=cmdline_static
+mkdir build && cd build
+./cmake -DCmdLineStatic=ON ..
 make
 
 a shogun executable can be found in interfaces/cmdline_static
@@ -93,11 +138,12 @@ octave
 ======
 
 To compile the octave interface you need to have the octave developer files 
-(debian package octave3.2-headers or octave3.0-headers).
+(debian package liboctave-dev).
 
 then do a
 
-./configure --interfaces=octave_static
+mkdir build && cd build
+./cmake -DOctaveStatic=ON ..
 make
 sudo make install
 
@@ -182,268 +228,6 @@ All examples from
 examples/documented/{r_static,python_static,matlab_static,octave_static}/*
 should work plus the ones in examples/documented/elwms_static/
 (that allows lang -> python subcommands).
-
-object oriented python/swig interface:
-======================================
-
-proceed as for the python interface but now in addition install the swig package and
-configure+compile shogun with:
-
-./configure --interfaces=python_modular
-make
-sudo make install
-
-to test if it is working try python ../examples/documented/python_modular/graphical/svm.py
-
-BUILDING ON MACOSX
-
-python:
-=======
-Get the precompiled binary packages
-python, matplotlib, NumPy and wxPython from http://pythonmac.org/packages/py24-fat/index.html
-
-Note: On powerpc archs don't use gcc-4.0 / gcc-4.1 as it will fail with an internal compiler
-error. Try gcc-4.2 instead or disable optimization (using -O0).
-Furthermore there it *may* happen that compiling hangs with an error in
- /usr/include/architecture/ppc/math.h:513.
- 
-A workaround is to uncomment this in math.h:
-
- typedef struct __complex_s {
-        double Real;
-        double Imag;
- } __complex_t;
- 
-Also make sure you don't mix python versions (i.e. python2.5 and python2.6) on build/runtime.
-You can specify the python version as a argument to configure, e.g.: --python=python2.7
-
-./configure --interface=python_static
-make
-
-to test if it is working try:
-
-PYTHONPATH=`pwd` python ../examples/documented/python/graphical/svm_classification.py
-
-object oriented python/swig interface:
-======================================
-Follow the above instructions for python. Then use homebrew/fink/darwinports to install swig.
-
-./configure --interfaces=python-modular
-make
-sudo make install
-
-to test if it is working try python ../examples/documented/python_modular/graphical/svm.py
-
-octave:
-=======
-Use fink/darwinports to install octave. For intel-macs octave currently is only in the
-unstable repository + it has to be compiled from source. Also note that g77
- got replaced by gfortran, so you might need to do a fink install gcc4 first (which takes
- an endless amount time to compile).
-
-then do:
-
-./configure --interfaces=octave_modular
-make
-
-a sg.oct file should be created. as a test start octave in the src/ directory
-and type
-
-addpath('../examples/documented/octave/graphical')
-svr_regression
-
-standalone:
-===========
-cd src
-./configure --interfaces=cmdline_modular
-make
-make install
-
-The shogun executable can be found in /usr/local/bin/shogun and the libraries in
-/usr/local/lib/libshogun*.
-
-R:
-==
-Install the full R package (e.g. the 93MB R-2.4.0.dmg image from
-http://cran.r-project.org/bin/macosx/ )
-
-then do the usual
-
-./configure --interfaces=r_modular
-make
-make install
-
-After starting the R aqua gui, choose File->Source File and select the
-../examples/documented/r/graphical/svm_classification.R example
-
-If that does not work out (send us a bug report) and also please try the following:
-
-Enter the src/ directory and do:
-
-./configure --interfaces=r_modular
-make
-make install
-(if that fails attach the configure.log in the bug report)
-
-a sg.so file should be created. To test if that file is OK try in the
-r/ directory:
-
-LD_LIBRARY_PATH=../libshogun R
->> dyn.load('sg.so')
-sg <- function(...) .External("sg",...,PACKAGE="sg")
-sg('help')
-
-if that was still working go to the shogun/R directory and try
-make clean
-make
-
-if a .tar.gz is successfully created, then the R CMD INSTALL <file>.tar.gz
-should go through.
-
-matlab:
-=======
-
-BUILDING ON WINDOWS / CYGWIN
-
-	install cygwin 1.7 or later 
-
-R:
-==
-I did not try the long and painful way of compiling R to get etc/Makeconf etc.
-to be setup correctly. Thus the usual R CMD INSTALL <pkg> won't work (help welcome).
-
-Instead install the R package from cran (i.e. using the R-2.4.0-win32.exe
-		installer from http://cran.r-project.org/bin/windows/base/ )
-
-Enter the src/ directory and do:
-
-./configure --interfaces=r_modular
-(if that fails attach the configure.log in the bug report)
-make
-
-a sg.dll file should be created. To test if that file is OK try in the
-src/ directory:
-
-R
->> dyn.load('sg.dll')
-sg <- function(...) .External("sg",...,PACKAGE="sg")
-sg('help')
-
-Instead of using library(sg) in your .R scripts you now have to use 
-
-dyn.load('<path_to_shogun>/sg.dll')
-sg <- function(...) .External("sg",...,PACKAGE="sg").
-
-After this modification, The examples in examples/documented/r/ should all work. To get
-them to go start the R gui, choose File->Source R Code and select 
-../examples/documented/r/graphical/svr_regression.R  (as this example has no other package dependencies).
-
-matlab:
-=======
-	cd src
-	./configure --interfaces=matlab_static
-	make
-
-	a sg.dll can be found in src/matlab
-
-	startup matlab and type sg('help') 
-
-standalone:
-===========
-
-	cd src
-	./configure
-	make
-	make install
-
-	a shogun.exe can be found in src/cmdline
-
-
-octave:
-=======
-
-	install octave and octave-headers
-	cd src
-	./configure --interfaces=octave_static
-	make
-	make install
-
-	a sg.oct file can be found in src/octave
-	try
-
-	cd src/octave
-	LD_LIBRARY_PATH=../libshogun octave
-	addpath('../examples/documented/octave/graphical')
-	svr_regression
-
-
-python:
-=======
-
-  install python2.5 and numpy >1.0
-  
-  now compile shogun:
-	./configure --interfaces=python_static
-	make
-	make install
-
-  this will create a sg.dll in the src/python dir
-
-  to test if it is working, try:
-	 cd src
-	 LD_LIBRARY_PATH=./libshogun PYTHONPATH=./python python ../examples/documented/python/graphical/svm_classification.py
-
-object oriented python/swig interface:
-======================================
-
-do all of the above you did for python but now in addition install the swig
-package and configure+compile shogun with:
-
- ./configure --interfaces=python_modular
-  make
-  make install
-
-to test if it is working try python ../examples/documented/python_modular/graphical/svm.py
-
-object oriented octave/swig interface:
-======================================
-
-do all of the above you did for octave but now in addition install the swig
-package and configure+compile shogun with:
-
- ./configure --interfaces=octave_modular
-  make
-  make install
-
-to test if it is working try octave ../examples/documented/octave_modular/libsvm.m
-
-object oriented r/swig interface:
-======================================
-
-do all of the above you did for R but now in addition install the swig
-package and configure+compile shogun with:
-
- ./configure --interfaces=r_modular
-  make
-  make install
-
-to test if it is working try octave ../examples/documented/r_modular/all_classifier.R
-
-object oriented java/swig interface:
-======================================
-
-do all of the above you did for java but now in addition install the swig
-package and configure+compile shogun with:
-
- ./configure --interfaces=java_modular
-  make
-  make install
-
-to test if it is working try 
-export CLASSPATH=/usr/share/java/jblas.jar:SHOGUNDIR/src/java_modular/shogun.jar:.
-export LD_LIBRARY_PATH=SHOGUNDIR/src/libshogun:SHOGUNDIR/src/java_modular
-javac ../examples/documented/java_modular/classifier_libsvm_minimal_modular.java
-and java classifier_libsvm_minimal_modular
 
 PROBLEMS
 
