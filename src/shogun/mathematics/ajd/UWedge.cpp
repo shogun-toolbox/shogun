@@ -21,7 +21,7 @@ SGMatrix<float64_t> CUWedge::diagonalize(SGNDArray<float64_t> C, SGMatrix<float6
 	int L = C.dims[2];
 	
 	SGMatrix<float64_t> V;
-	if (V0.num_rows != 0)
+	if (V0.num_rows == d && V0.num_cols == d)
 	{
 		V = V0.clone();
 	}

@@ -43,7 +43,7 @@ SGMatrix<float64_t> CJADiag::diagonalize(SGNDArray<float64_t> C, SGMatrix<float6
 	}
 	
 	SGMatrix<float64_t> V;
-	if (V0.num_rows != 0)
+	if (V0.num_rows == d && V0.num_cols == d)
 		V = V0.clone();
 	else
 		V = SGMatrix<float64_t>::create_identity_matrix(d,1);
