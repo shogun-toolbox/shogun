@@ -89,21 +89,6 @@ private:
 	}
 
 };
-
-template class CLinearOperator<bool>;
-template class CLinearOperator<char>;
-template class CLinearOperator<int8_t>;
-template class CLinearOperator<uint8_t>;
-template class CLinearOperator<int16_t>;
-template class CLinearOperator<uint16_t>;
-template class CLinearOperator<int32_t>;
-template class CLinearOperator<uint32_t>;
-template class CLinearOperator<int64_t>;
-template class CLinearOperator<uint64_t>;
-template class CLinearOperator<float32_t>;
-template class CLinearOperator<float64_t>;
-template class CLinearOperator<floatmax_t>;
-template class CLinearOperator<complex64_t>;
 }
 
 #endif // LINEAR_OPERATOR_H_
