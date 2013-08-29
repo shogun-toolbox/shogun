@@ -43,7 +43,7 @@ class CUWedgeSep: public CICAConverter
 		virtual ~CUWedgeSep();
 
 		/** apply to features
-		 * @param features
+		 * @param features features to embed
 		 */
 		virtual CFeatures* apply(CFeatures* features);
 
