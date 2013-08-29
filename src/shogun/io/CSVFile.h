@@ -19,7 +19,8 @@
 namespace shogun
 {
 
-/** @brief 
+/** @brief Class CSVFile used to read data from comma-separated values (CSV)
+ * files. See http://en.wikipedia.org/wiki/Comma-separated_values.
  */
 class CCSVFile : public CFile
 {
@@ -27,19 +28,34 @@ public:
 	/** default constructor */
 	CCSVFile();
 
-	/** */
+	/** constructor
+	 *
+	 * @param f already opened file
+	 * @param name variable name (e.g. "x" or "/path/to/x")
+	 */
 	CCSVFile(FILE* f, const char* name=NULL);
 
-	/** */
+	/** constructor
+	 *
+	 * @param fname filename to open
+	 * @param rw mode, 'r' or 'w'
+	 * @param name variable name (e.g. "x" or "/path/to/x")
+	 */
 	CCSVFile(const char* fname, char rw='r', const char* name=NULL);
 
 	/** destructor */
 	virtual ~CCSVFile();
 
-	/** set order for data in file */
+	/** set order for data in file
+	 *
+	 * @param value whether the data should be regarded as transposed
+	 */
 	void set_transpose(bool value);
 
-	/** set delimiting character */
+	/** set delimiting character
+	 *
+	 * @param delimiter the character used as delimiter
+	 */
 	void set_delimiter(char delimiter);
 
 	/** skip lines

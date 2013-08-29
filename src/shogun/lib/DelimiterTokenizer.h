@@ -68,7 +68,7 @@ public:
 	 */
 	virtual const char* get_name() const;
 
-	/** Makes the tokenizer to use ' ' or '\t'
+	/** Makes the tokenizer to use ' ' or '\\t'
 	 *  as the delimiters for the tokenization process;
 	 */
 	void init_for_whitespace();
