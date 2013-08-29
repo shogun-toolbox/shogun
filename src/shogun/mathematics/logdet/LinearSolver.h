@@ -54,11 +54,6 @@ public:
 	}
 
 };
-
-template class CLinearSolver<float64_t>;
-template class CLinearSolver<complex64_t>;
-template class CLinearSolver<complex64_t, float64_t>;
-
 }
 
 #endif // LINEAR_SOLVER_H_
