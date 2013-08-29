@@ -101,7 +101,7 @@ public:
 
 private:
 	/** register parameters */
-	void register_parameters();
+	void init();
 
 private:
 	/** number of elements */

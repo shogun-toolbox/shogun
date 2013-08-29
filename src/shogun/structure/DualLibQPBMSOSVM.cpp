@@ -29,17 +29,8 @@ CDualLibQPBMSOSVM::CDualLibQPBMSOSVM(
 		SGVector< float64_t >	W)
  : CLinearStructuredOutputMachine(model, labs)
 {
-	set_TolRel(0.001);
-	set_TolAbs(0.0);
-	set_BufSize(1000);
+	init();
 	set_lambda(_lambda);
-	set_cleanICP(true);
-	set_cleanAfter(10);
-	set_K(0.4);
-	set_Tmax(100);
-	set_cp_models(1);
-	set_verbose(false);
-	set_solver(BMRM);
 
 	// get dimension of w
 	uint32_t nDim=this->m_model->get_dim();
@@ -55,8 +46,6 @@ CDualLibQPBMSOSVM::CDualLibQPBMSOSVM(
 	{
 		set_w(W);
 	}
-
-	init();
 }
 
 CDualLibQPBMSOSVM::~CDualLibQPBMSOSVM()
@@ -81,6 +70,18 @@ void CDualLibQPBMSOSVM::init()
 	SG_ADD(&m_cp_models, "m_cp_models", "Number of cutting plane models",
 			MS_AVAILABLE);
 	SG_ADD(&m_verbose, "m_verbose", "Verbosity flag", MS_NOT_AVAILABLE);
+
+	set_TolRel(0.001);
+	set_TolAbs(0.0);
+	set_BufSize(1000);
+	set_lambda(0.0);
+	set_cleanICP(true);
+	set_cleanAfter(10);
+	set_K(0.4);
+	set_Tmax(100);
+	set_cp_models(1);
+	set_verbose(false);
+	set_solver(BMRM);
 }
 
 bool CDualLibQPBMSOSVM::train_machine(CFeatures* data)

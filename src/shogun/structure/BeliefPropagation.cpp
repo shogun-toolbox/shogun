@@ -19,6 +19,7 @@
 using namespace shogun;
 
 CBeliefPropagation::CBeliefPropagation()
+	: CMAPInferImpl()
 {
 	SG_UNSTABLE("CBeliefPropagation::CBeliefPropagation()", "\n");
 }
@@ -41,6 +42,7 @@ float64_t CBeliefPropagation::inference(SGVector<int32_t> assignment)
 // -----------------------------------------------------------------
 
 CTreeMaxProduct::CTreeMaxProduct()
+	: CBeliefPropagation()
 {
 	SG_UNSTABLE("CTreeMaxProduct::CTreeMaxProduct()", "\n");
 

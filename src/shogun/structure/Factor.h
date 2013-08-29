@@ -70,13 +70,14 @@ public:
 		int32_t dlen);
 
 private:
-
-	void register_parameters();
+	/** register parameters */
+	void init();
 
 private:
-
+	/** dense data */
 	SGVector<float64_t> m_dense;
 
+	/** sparse data */
 	SGSparseVector<float64_t> m_sparse;
 };
 
@@ -195,10 +196,10 @@ public:
 		SGVector<float64_t>& parameter_gradient, double mult = 1.0) const;
 
 protected:
-	int32_t m_factor_id;
-
+	/** factor type */
 	CTableFactorType* m_factor_type;
 
+	/** variable indices */
 	SGVector<int32_t> m_var_index;
 
 	/** energy table */ 
@@ -207,14 +208,18 @@ protected:
 	/** shared data */
 	CFactorDataSource* m_data_source;
 
+	/** dense data */
 	SGVector<float64_t> m_data;
 
+	/** sparse data */
 	SGSparseVector<float64_t> m_data_sparse;
 
+	/** whether the factor is data dependent */
 	bool m_is_data_dep;
 
 private:
-	void register_parameters();
+	/** register & init parameters */
+	void init();
 };
 
 }
