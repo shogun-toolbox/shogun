@@ -10,8 +10,8 @@
 
 #include <shogun/mathematics/logdet/OperatorFunction.h>
 
-using namespace shogun;
-
+namespace shogun
+{
 template class COperatorFunction<bool>;
 template class COperatorFunction<char>;
 template class COperatorFunction<int8_t>;
@@ -26,3 +26,4 @@ template class COperatorFunction<float32_t>;
 template class COperatorFunction<float64_t>;
 template class COperatorFunction<floatmax_t>;
 template class COperatorFunction<complex64_t>;
+}

@@ -10,8 +10,8 @@
 
 #include <shogun/mathematics/logdet/LinearOperator.h>
 
-using namespace shogun;
-
+namespace shogun
+{
 template class CLinearOperator<bool>;
 template class CLinearOperator<char>;
 template class CLinearOperator<int8_t>;
@@ -26,3 +26,4 @@ template class CLinearOperator<float32_t>;
 template class CLinearOperator<float64_t>;
 template class CLinearOperator<floatmax_t>;
 template class CLinearOperator<complex64_t>;
+}

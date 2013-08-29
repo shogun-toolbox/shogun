@@ -10,8 +10,9 @@
 
 #include <shogun/mathematics/logdet/LinearSolver.h>
 
-using namespace shogun;
-
+namespace shogun
+{
 template class CLinearSolver<float64_t>;
 template class CLinearSolver<complex64_t>;
 template class CLinearSolver<complex64_t, float64_t>;
+}
