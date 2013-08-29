@@ -137,21 +137,6 @@ private:
 			"Computation engine for the jobs this will generate", MS_NOT_AVAILABLE);
 	}
 };
-
-template class COperatorFunction<bool>;
-template class COperatorFunction<char>;
-template class COperatorFunction<int8_t>;
-template class COperatorFunction<uint8_t>;
-template class COperatorFunction<int16_t>;
-template class COperatorFunction<uint16_t>;
-template class COperatorFunction<int32_t>;
-template class COperatorFunction<uint32_t>;
-template class COperatorFunction<int64_t>;
-template class COperatorFunction<uint64_t>;
-template class COperatorFunction<float32_t>;
-template class COperatorFunction<float64_t>;
-template class COperatorFunction<floatmax_t>;
-template class COperatorFunction<complex64_t>;
 }
 
 #endif // OPERATOR_FUCNTION_H_

@@ -76,22 +76,6 @@ public:
 	}
 
 };
-
-template class CMatrixOperator<bool>;
-template class CMatrixOperator<char>;
-template class CMatrixOperator<int8_t>;
-template class CMatrixOperator<uint8_t>;
-template class CMatrixOperator<int16_t>;
-template class CMatrixOperator<uint16_t>;
-template class CMatrixOperator<int32_t>;
-template class CMatrixOperator<uint32_t>;
-template class CMatrixOperator<int64_t>;
-template class CMatrixOperator<uint64_t>;
-template class CMatrixOperator<float32_t>;
-template class CMatrixOperator<float64_t>;
-template class CMatrixOperator<floatmax_t>;
-template class CMatrixOperator<complex64_t>;
-
 }
 
 #endif // MATRIX_OPERATOR_H_
