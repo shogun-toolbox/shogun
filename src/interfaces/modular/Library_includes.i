@@ -29,4 +29,6 @@
 #include <shogun/lib/Tokenizer.h>
 #include <shogun/lib/DelimiterTokenizer.h>
 #include <shogun/lib/NGramTokenizer.h>
+#include <shogun/lib/computation/engine/IndependentComputationEngine.h>
+#include <shogun/lib/computation/engine/SerialComputationEngine.h>
 %}

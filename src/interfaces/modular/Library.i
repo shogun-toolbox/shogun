@@ -5,6 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 2009 Soeren Sonnenburg
+ * Written (W) 2013 Heiko Strathmann 
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  * Copyright (c) 2012 Evgeniy Andreev (gsomix)
  */
@@ -30,6 +31,10 @@
 %rename(IndexBlockGroup) CIndexBlockGroup;
 %rename(IndexBlockTree) CIndexBlockTree;
 %rename(Data) CData;
+
+%rename(IndependentComputationEngine) CIndependentComputationEngine;
+%rename(SerialComputationEngine) CSerialComputationEngine;
+
 
 %ignore RADIX_STACK_SIZE;
 %ignore NUMTRAPPEDSIGS;
@@ -478,3 +483,5 @@ namespace shogun
 %include <shogun/lib/IndexBlockGroup.h>
 %include <shogun/lib/IndexBlockTree.h>
 %include <shogun/lib/Data.h>
+%include <shogun/lib/computation/engine/IndependentComputationEngine.h>
+%include <shogun/lib/computation/engine/SerialComputationEngine.h>
