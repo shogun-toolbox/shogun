@@ -231,10 +231,30 @@ void CLMNNImpl::update_gradient(CDenseFeatures<float64_t>* x, MatrixXd& G,
 	}
 }
 
-void CLMNNImpl::gradient_step(MatrixXd& L, const MatrixXd& G, float64_t stepsize)
+void CLMNNImpl::gradient_step(MatrixXd& L, const MatrixXd& G, float64_t stepsize, bool diagonal)
 {
-	// do step in L along the gradient direction (no need to project M then)
-	L -= stepsize*(2*L*G);
+	if (diagonal)
+	{
+		// compute M as the square of L
+		MatrixXd M = L.transpose()*L;
+		// do step in M along the gradient direction
+		M -= stepsize*G;
+		// keep only the elements in the diagonal of M
+		VectorXd m = M.diagonal();
+
+		VectorXd zero;
+		zero.resize(m.size());
+		zero.setZero();
+
+		// return to representation in L
+		VectorXd l = m.array().max(zero.array()).array().sqrt();
+		L = l.asDiagonal();
+	}
+	else
+	{
+		// do step in L along the gradient direction (no need to project M then)
+		L -= stepsize*(2*L*G);
+	}
 }
 
 void CLMNNImpl::correct_stepsize(float64_t& stepsize, const SGVector<float64_t> obj, const uint32_t iter)

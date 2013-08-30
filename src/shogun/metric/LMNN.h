@@ -158,6 +158,18 @@ class CLMNN : public CSGObject
 		 */
 		void set_obj_threshold(const float64_t obj_threshold);
 
+		/** get whether the linear transform will be diagonal
+		 *
+		 * @return whether the linear transform will be diagonal
+		 */
+		bool get_diagonal() const;
+
+		/** set whether the linear transform will be diagonal
+		 *
+		 * @param diagonal whether the linear transform will be diagonal
+		 */
+		void set_diagonal(const bool diagonal);
+
 	private:
 		/** register parameters */
 		void init();
@@ -209,6 +221,12 @@ class CLMNN : public CSGObject
 		 * this threshold. Its default value is 1e-9.
 		 */
 		float64_t m_obj_threshold;
+
+		/**
+		 * whether m_linear_transform is forced to be diagonal (useful to
+		 * perform feature selection). Its default value is false.
+		 */
+		bool m_diagonal;
 
 }; /* class CLMNN */
 
