@@ -102,7 +102,7 @@ class CLMNNImpl
 		static void update_gradient(CDenseFeatures<float64_t>* x, Eigen::MatrixXd& G, const ImpostorsSetType& Nc, const ImpostorsSetType& Np, float64_t mu);
 
 		/** take gradient step and project onto positive semi-definite cone if necessary */
-		static void gradient_step(Eigen::MatrixXd& L, const Eigen::MatrixXd& G, float64_t stepsize);
+		static void gradient_step(Eigen::MatrixXd& L, const Eigen::MatrixXd& G, float64_t stepsize, bool diagonal);
 
 		/** correct step size depending on the last fluctuation of the objective */
 		static void correct_stepsize(float64_t& stepsize, const SGVector<float64_t> obj, const uint32_t iter);

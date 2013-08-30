@@ -100,7 +100,7 @@ void CLMNN::train(SGMatrix<float64_t> init_transform)
 		CLMNNImpl::update_gradient(x, gradient, cur_impostors, prev_impostors, m_regularization);
 		// Take gradient step
 		SG_DEBUG("Taking gradient step.\n")
-		CLMNNImpl::gradient_step(L, gradient, stepsize);
+		CLMNNImpl::gradient_step(L, gradient, stepsize, m_diagonal);
 
 		// Compute the objective, trace of Mahalanobis distance matrix (L squared) times the gradient
 		// plus the number of current impostors to account for the margin
@@ -239,6 +239,16 @@ void CLMNN::set_obj_threshold(const float64_t obj_threshold)
 	m_obj_threshold = obj_threshold;
 }
 
+bool CLMNN::get_diagonal() const
+{
+	return m_diagonal;
+}
+
+void CLMNN::set_diagonal(const bool diagonal)
+{
+	m_diagonal = diagonal;
+}
+
 void CLMNN::init()
 {
 	SG_ADD(&m_linear_transform, "m_linear_transform",
@@ -261,6 +271,7 @@ void CLMNN::init()
 			"Iterations between exact impostors search", MS_NOT_AVAILABLE)
 	SG_ADD(&m_obj_threshold, "m_obj_threshold", "Objective threshold",
 			MS_NOT_AVAILABLE)
+	SG_ADD(&m_diagonal, "m_diagonal", "Diagonal transformation", MS_NOT_AVAILABLE);
 
 	m_features = NULL;
 	m_labels = NULL;
@@ -271,6 +282,7 @@ void CLMNN::init()
 	m_maxiter = 1000;
 	m_correction = 15;
 	m_obj_threshold = 1e-9;
+	m_diagonal = false;
 }
 
 #endif /* HAVE_EIGEN3 */
