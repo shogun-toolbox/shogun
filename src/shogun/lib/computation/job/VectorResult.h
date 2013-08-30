@@ -76,22 +76,6 @@ private:
 			"The result vector", MS_NOT_AVAILABLE);
 	}
 };
-
-template class CVectorResult<bool>;
-template class CVectorResult<char>;
-template class CVectorResult<int8_t>;
-template class CVectorResult<uint8_t>;
-template class CVectorResult<int16_t>;
-template class CVectorResult<uint16_t>;
-template class CVectorResult<int32_t>;
-template class CVectorResult<uint32_t>;
-template class CVectorResult<int64_t>;
-template class CVectorResult<uint64_t>;
-template class CVectorResult<float32_t>;
-template class CVectorResult<float64_t>;
-template class CVectorResult<floatmax_t>;
-template class CVectorResult<complex64_t>;
-
 }
 
 #endif // VECTOR_RESULT_H_
