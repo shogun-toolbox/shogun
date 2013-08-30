@@ -161,12 +161,13 @@ To compile the matlab interface you need to have matlab installed in the path
 
 then do a
 
-./configure --interfaces=matlab_static
+mkdir build && cd build
+./cmake -DMatlabStatic=ON ..
 make
 sudo make install
 
 a sg.mexglx (or sg.mexa64 or sg.mexmac etc file should be created in
-interfaces/matlab_static/). As a test start matlab in the
+src/interfaces/matlab_static/). As a test start matlab in the
 examples/documented/matlab_static directory and type
 
 addpath('../../../src/interfaces/matlab_static/graphical')
@@ -184,7 +185,8 @@ To compile the R interface you need to have the R developer files
 
 then do the usual 
 
-./configure --interfaces=r_static
+mkdir build && cd build
+./cmake -DRStatic=ON ..
 make
 sudo make install
 
@@ -192,18 +194,13 @@ python
 ======
 
 To compile the python interface you need to have numpy version 1.x installed 
-(debian package python-numpy and python-numpy-ext) and optionally for plotting
-python-matplotlib installed. When using matplotlib, make sure you use numpy as
-the underlying numeric toolkit, i.e. you have the line 
+(debian package python-numpy) and optionally for plotting
+python-matplotlib installed.
 
-numerix      : numpy
-
-in your /etc/matplotlibrc
-
-
-then do a
-./configure --interfaces=python_static
+mkdir build && cd build
+./cmake -DPythonStatic=ON ..
 make
+sudo make install
 
 A sg.so file should be created in the src/interfaces/python_static directory:
 To test whether it is working change to examples/documented/python_static/graphical
@@ -217,11 +214,13 @@ eierlegendewollmichsau (elwms) interface
 This is a .so file that works with R,python,matlab,octave all in one. To compile
 you should have at least python and some other interface enabled:
 
-cd src
-./configure --interfaces=octave_static,matlab_static,r_static,python_static,elwms_static
+mkdir build && cd build
+./cmake -DElwmsStatic=ON ..
 make
-cd interfaces/elwms_static
+sudo make install
 
+
+cd src/interfaces/elwms_static
 LD_LIBRARY_PATH=/path/to/octave/lib:/path/to/matlab/libs octave 
 
 All examples from
@@ -232,8 +231,6 @@ should work plus the ones in examples/documented/elwms_static/
 PROBLEMS
 
 In case header files or libraries are not at standard locations one needs
-to manually adjust the libray/include paths using --includes or --libs
-(see configure --help for additional options) 
-
-The current mingw version in cygwin is out of date - so R and matlab won't work
-until mingw is updated to gcc 4.X.
+to manually adjust the libray/include paths. This can be done with
+-DCMAKE_INCLUDE_PATH=/my/include/path (for includes) and -DCMAKE_LIBRARY_PATH=/my/library/path .
+A good reference for that is http://cmake.org/Wiki/CMake_Useful_Variables .
