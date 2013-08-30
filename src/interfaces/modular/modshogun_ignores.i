@@ -40,6 +40,7 @@
 %ignore ConsensusEntry;
 %ignore DNATrie;
 %ignore Model;
+%ignore SparsityStructure;
 
 #if !defined(SWIGPERL)
 /*%rename("%s") *::LatentModel; */
