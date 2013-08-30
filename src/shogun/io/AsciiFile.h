@@ -409,7 +409,7 @@ private:
 	template <class T> void append_item(DynArray<T>* items, char* ptr_data, char* ptr_item);
 
 protected:
-	/* IOBuffer through which the file can be read */
+	/** IOBuffer through which the file can be read */
 	CIOBuffer buf;
 };
 }

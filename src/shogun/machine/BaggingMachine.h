@@ -31,7 +31,7 @@ namespace shogun
 			 * constructor
 			 *
 			 * @param features training features
-			 * @param labals training labels
+			 * @param labels training labels
 			 */
 			CBaggingMachine(CFeatures* features, CLabels* labels);
 

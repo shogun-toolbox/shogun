@@ -80,6 +80,7 @@ public:
 	static void generate_ngram_hashes(CDynamicArray<uint32_t>* hashes, CDynamicArray<index_t>* ngram_hashes,
 			int32_t num_bits, int32_t ngrams, int32_t tokens_to_skip);
 
+	/** @return object name */
 	virtual const char* get_name() const;
 
 protected:

@@ -47,7 +47,7 @@ public:
 	/** constructor
 	 *
 	 * @param matrix feature matrix
-	 * @param d new feature space dimension
+	 * @param dm new feature space dimension
 	 * @param use_quadr whether to use quadratic features or not
 	 * @param keep_lin_terms whether to maintain the linear terms in the computations
 	 */
@@ -204,7 +204,7 @@ public:
 	 *
 	 * @param vec the vector to hash
 	 * @param dim the size of the new dimension
-	 * @param use_quadr whether to use quadratic features or not
+	 * @param use_quadratic whether to use quadratic features or not
 	 * @param keep_lin_terms whether to maintain the linear terms in the computations
 	 * @return the hashed representation
 	 */

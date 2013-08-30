@@ -75,7 +75,6 @@ class CTwoStateModel : public CStateModel
 		 * @param plif_matrix matrix of PLiFs outputted
 		 * @param w the weight vector
 		 * @param num_feats number of features
-		 * @param num_obs number of emission scores per feature and state
 		 * @param num_plif_nodes number of nodes in the PLiFs
 		 */
 		virtual void reshape_emission_params(CDynamicObjectArray* plif_matrix,
