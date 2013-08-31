@@ -40,7 +40,7 @@ public:
 	}
 
 	/** @return whether criterion has to be maximized or minimized */
-	virtual EEvaluationDirection get_evaluation_direction()
+	virtual EEvaluationDirection get_evaluation_direction() const
 	{
 		return m_direction;
 	}

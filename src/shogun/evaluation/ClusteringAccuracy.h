@@ -38,7 +38,7 @@ public:
 	virtual float64_t evaluate(CLabels* predicted, CLabels* ground_truth);
 
 	/** @return whether criterium has to be maximized or minimized */
-	virtual EEvaluationDirection get_evaluation_direction()
+	virtual EEvaluationDirection get_evaluation_direction() const
 	{
 		return ED_MINIMIZE;
 	}
@@ -57,4 +57,3 @@ public:
 } // namespace shogun
 
 #endif /* end of include guard: __CLUSTERINGACCURACY_H__ */
-
