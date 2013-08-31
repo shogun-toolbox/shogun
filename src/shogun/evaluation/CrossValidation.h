@@ -51,10 +51,9 @@ class CCrossValidationResult : public CEvaluationResult
 
 		/** return what type of result we are.
 		 *
-		 *
 		 * @return result type
 		 */
-		virtual EEvaluationResultType get_result_type()
+		virtual EEvaluationResultType get_result_type() const
 		{
 			return CROSSVALIDATION_RESULT;
 		}
@@ -178,7 +177,7 @@ public:
 
 	/** appends given cross validation output instance
 	 * to the list of listeners
-	 * 
+	 *
 	 * @param cross_validation_output given cross validation output
 	 */
 	void add_cross_validation_output(

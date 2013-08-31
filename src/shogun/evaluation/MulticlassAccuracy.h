@@ -59,7 +59,7 @@ public:
 	 */
 	static SGMatrix<int32_t> get_confusion_matrix(CLabels* predicted, CLabels* ground_truth);
 
-	inline EEvaluationDirection get_evaluation_direction()
+	inline EEvaluationDirection get_evaluation_direction() const
 	{
 		return ED_MAXIMIZE;
 	}

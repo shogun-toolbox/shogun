@@ -27,7 +27,7 @@ class CPRCEvaluation: public CBinaryClassEvaluation
 public:
 	/** constructor */
 	CPRCEvaluation() :
-		CBinaryClassEvaluation(), m_computed(false) 
+		CBinaryClassEvaluation(), m_computed(false)
 	{
 		m_PRC_graph = SGMatrix<float64_t>();
 		m_thresholds = SGVector<float64_t>();
@@ -47,7 +47,7 @@ public:
 	 */
 	virtual float64_t evaluate(CLabels* predicted, CLabels* ground_truth);
 
-	inline EEvaluationDirection get_evaluation_direction()
+	inline EEvaluationDirection get_evaluation_direction() const
 	{
 		return ED_MAXIMIZE;
 	}
