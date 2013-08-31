@@ -7,6 +7,10 @@
  * Written (W) 2013 Roman Votyakov
  */
 
+#include <shogun/lib/config.h>
+
+#ifdef HAVE_EIGEN3
+
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/mathematics/Function.h>
@@ -263,7 +267,6 @@ private:
 	float64_t m_sigma;
 };
 
-#ifdef HAVE_EIGEN3
 TEST(Integration,integrate_quadgk_simple_function)
 {
 	// create object of the simple function
@@ -561,4 +564,5 @@ TEST(Integration,integrate_quadgh_product_students_t_pdf_normal_pdf)
 	// clean up
 	SG_UNREF(g);
 }
+
 #endif /* HAVE_EIGEN3 */

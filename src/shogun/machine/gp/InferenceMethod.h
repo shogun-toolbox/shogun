@@ -283,7 +283,7 @@ public:
 	 *
 	 * @return kernel scale
 	 */
-	virtual float64_t get_scale() { return m_scale; }
+	virtual float64_t get_scale() const { return m_scale; }
 
 	/** set kernel scale
 	 *
