@@ -4,7 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Copyright (C) 2012 Sergey Lisitsyn 
+ * Copyright (C) 2012 Sergey Lisitsyn
  */
 
 #ifndef MULTITASKROCEVALUATION_H_
@@ -59,9 +59,9 @@ public:
 		SG_REF(m_task_relation);
 		return m_task_relation;
 	}
-	
+
 	/** set absolute indices of labels to be evaluated next
-	 * used by multitask evaluations 
+	 * used by multitask evaluations
 	 *
 	 * @param indices indices
 	 */
@@ -78,7 +78,7 @@ public:
 	virtual float64_t evaluate(CLabels* predicted, CLabels* ground_truth);
 
 	/** get evaluation direction */
-	virtual EEvaluationDirection get_evaluation_direction()
+	virtual EEvaluationDirection get_evaluation_direction() const
 	{
 		return ED_MAXIMIZE;
 	}

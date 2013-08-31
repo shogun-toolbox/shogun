@@ -33,11 +33,28 @@ public:
 	 */
 	virtual const char* get_name() const { return "GradientResult"; }
 
+	/** helper method used to specialize a base class instance
+	 *
+	 * @param eval_result evaluation result
+	 *
+	 * @return casted CGradientResult object
+	 */
+	static CGradientResult* obtain_from_generic(CEvaluationResult* eval_result)
+	{
+		ASSERT(eval_result);
+
+		REQUIRE(eval_result->get_result_type()==GRADIENTEVALUATION_RESULT,
+				"Provided evaluation result is not of type CGradientResult!\n")
+
+		SG_REF(eval_result);
+		return (CGradientResult*) eval_result;
+	}
+
 	/** return what type of result we are.
 	 *
 	 * @return result type
 	 */
-	virtual EEvaluationResultType get_result_type()
+	virtual EEvaluationResultType get_result_type() const
 	{
 		return GRADIENTEVALUATION_RESULT;
 	}
@@ -61,26 +78,33 @@ public:
 
 		for (index_t i=0; i<gradient.get_num_elements(); i++)
 		{
+			CMapNode<TParameter*, SGVector<float64_t> >* param_node=
+				gradient.get_node_ptr(i);
+
 			// get parameter name
-			const char* name=gradient.get_node_ptr(i)->key->m_name;
+			const char* param_name=param_node->key->m_name;
+
+			// get object name
+			const char* object_name=
+				parameter_dictionary.get_element(param_node->key)->get_name();
 
 			// get gradient wrt parameter
-			SGVector<float64_t> grad=*(gradient.get_element_ptr(i));
+			SGVector<float64_t> param_gradient=param_node->data;
 
-			SG_PRINT("%s: ", name)
+			SG_PRINT("%s.%s: ", object_name, param_name)
 
-			for (index_t j=0; j<grad.vlen-1; j++)
-				SG_SPRINT("%f, ", grad[j])
+			for (index_t j=0; j<param_gradient.vlen-1; j++)
+				SG_SPRINT("%f, ", param_gradient[j])
 
 			if (i==gradient.get_num_elements()-1)
 			{
-				if (grad.vlen>0)
-					SG_PRINT("%f", grad[grad.vlen-1])
+				if (param_gradient.vlen>0)
+					SG_PRINT("%f", param_gradient[param_gradient.vlen-1])
 			}
 			else
 			{
-				if (grad.vlen>0)
-					SG_PRINT("%f; ", grad[grad.vlen-1])
+				if (param_gradient.vlen>0)
+					SG_PRINT("%f; ", param_gradient[param_gradient.vlen-1])
 			}
 		}
 
@@ -98,7 +122,7 @@ public:
 	CMap<TParameter*, CSGObject*>  parameter_dictionary;
 
 	/** total number of variables represented by the gradient */
-	index_t total_variables;
+	uint32_t total_variables;
 };
 }
 #endif /* CGRADIENTRESULT_H_ */
