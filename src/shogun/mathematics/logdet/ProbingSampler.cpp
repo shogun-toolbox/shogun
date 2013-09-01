@@ -173,7 +173,7 @@ void CProbingSampler::precompute()
 	}
 
 	Map<VectorXi> probe(m_probing_vector.vector, m_probing_vector.vlen);
-	m_num_samples=probe.maxCoeff();
+	m_num_samples=probe.maxCoeff()+1;
 
 	delete sp_str;
 	delete Color;
