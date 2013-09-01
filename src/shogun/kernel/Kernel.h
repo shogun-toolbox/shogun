@@ -669,7 +669,7 @@ class CKernel : public CSGObject
 		 * @return subkernel weights
 		 */
 		virtual const float64_t* get_subkernel_weights(int32_t& num_weights);
-		
+
 		/** get subkernel weights (swig compatible)
 		 *
 		 * @return subkernel weights
@@ -684,14 +684,13 @@ class CKernel : public CSGObject
 
 		/** return derivative with respect to specified parameter
 		 *
-		 * @param  param the parameter
-		 * @param obj the object that owns the parameter
+		 * @param param the parameter
 		 * @param index the index of the element if parameter is a vector
 		 *
 		 * @return gradient with respect to parameter
 		 */
 		virtual SGMatrix<float64_t> get_parameter_gradient(TParameter* param,
-				CSGObject* obj, index_t index = -1);
+				index_t index=-1);
 
 		/** Obtains a kernel from a generic SGObject with error checking. Note
 		 * that if passing NULL, result will be NULL

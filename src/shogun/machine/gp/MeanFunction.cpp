@@ -20,7 +20,7 @@ CMeanFunction::~CMeanFunction()
 }
 
 SGVector<float64_t> CMeanFunction::get_parameter_derivative(TParameter* param,
-		CSGObject* obj, SGMatrix<float64_t> data, index_t index)
+		SGMatrix<float64_t> data, index_t index)
 {
 	return SGVector<float64_t>();
 }

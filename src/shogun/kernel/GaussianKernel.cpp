@@ -20,22 +20,19 @@
 
 using namespace shogun;
 
-CGaussianKernel::CGaussianKernel()
-	: CDotKernel()
+CGaussianKernel::CGaussianKernel() : CDotKernel()
 {
 	init();
 }
 
-CGaussianKernel::CGaussianKernel(int32_t size, float64_t w)
-: CDotKernel(size)
+CGaussianKernel::CGaussianKernel(int32_t size, float64_t w) : CDotKernel(size)
 {
 	init();
 	set_width(w);
 }
 
-CGaussianKernel::CGaussianKernel(
-	CDotFeatures* l, CDotFeatures* r, float64_t w, int32_t size)
-: CDotKernel(size)
+CGaussianKernel::CGaussianKernel(CDotFeatures* l, CDotFeatures* r,
+		float64_t w, int32_t size) : CDotKernel(size)
 {
 	init();
 	set_width(w);
@@ -151,35 +148,31 @@ void CGaussianKernel::precompute_squared()
 }
 
 SGMatrix<float64_t> CGaussianKernel::get_parameter_gradient(TParameter* param,
-		CSGObject* obj, index_t index)
+		index_t index)
 {
-
-	if (strcmp(param->m_name, "width") == 0 && obj == this)
+	if (!strcmp(param->m_name, "width"))
 	{
-		SGMatrix<float64_t> derivative = SGMatrix<float64_t>(num_lhs, num_rhs);
+		SGMatrix<float64_t> derivative=SGMatrix<float64_t>(num_lhs, num_rhs);
 
-		for (int j = 0; j < num_lhs; j++)
-		{
-			for (int k = 0; k < num_rhs; k++)
+		for (int j=0; j<num_lhs; j++)
+			for (int k=0; k<num_rhs; k++)
 			{
-				float64_t element = sq_lhs[j]+sq_rhs[k]-2*CDotKernel::compute(j,k);
-				derivative(j,k) = exp(-element/width)*element/(width*width);
+				float64_t element=sq_lhs[j]+sq_rhs[k]-2*CDotKernel::compute(j,k);
+				derivative(j,k)=exp(-element/width)*element/(width*width);
 			}
-		}
 
 		return derivative;
 	}
-
 	else
 	{
-		return SGMatrix<float64_t>(0,0);
+		return SGMatrix<float64_t>();
 	}
 }
 
 void CGaussianKernel::init()
 {
 	set_width(1.0);
-	set_compact_enabled(false);	
+	set_compact_enabled(false);
 	sq_lhs=NULL;
 	sq_rhs=NULL;
 	SG_ADD(&width, "width", "Kernel width.", MS_AVAILABLE);

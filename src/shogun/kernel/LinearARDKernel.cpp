@@ -4,10 +4,9 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * (W) 2012 Jacob Walker
+ * Written (W) 2012 Jacob Walker
  *
  * Adapted from WeightedDegreeRBFKernel.cpp
- *
  */
 
 #include <shogun/lib/common.h>
@@ -17,23 +16,19 @@
 
 using namespace shogun;
 
-CLinearARDKernel::CLinearARDKernel()
-: CDotKernel()
+CLinearARDKernel::CLinearARDKernel() : CDotKernel()
 {
 	init();
 }
 
 
-CLinearARDKernel::CLinearARDKernel(int32_t size)
-: CDotKernel(size)
+CLinearARDKernel::CLinearARDKernel(int32_t size) : CDotKernel(size)
 {
 	init();
 }
 
 CLinearARDKernel::CLinearARDKernel(CDenseFeatures<float64_t>* l,
-		CDenseFeatures<float64_t>* r,
-		int32_t size)
-: CDotKernel(size)
+		CDenseFeatures<float64_t>* r, int32_t size)	: CDotKernel(size)
 {
 	init();
 	init(l,r);
@@ -127,12 +122,12 @@ float64_t CLinearARDKernel::compute(int32_t idx_a, int32_t idx_b)
 }
 
 SGMatrix<float64_t> CLinearARDKernel::get_parameter_gradient(TParameter* param,
-		CSGObject* obj, index_t index)
+		index_t index)
 {
 	if (!lhs || !rhs)
 		SG_ERROR("Features not set!\n")
 
-	if (!strcmp(param->m_name, "weights") && obj == this)
+	if (!strcmp(param->m_name, "weights"))
 	{
 		SGMatrix<float64_t> derivative(num_lhs, num_rhs);
 
@@ -157,5 +152,3 @@ SGMatrix<float64_t> CLinearARDKernel::get_parameter_gradient(TParameter* param,
 	else
 		return SGMatrix<float64_t>();
 }
-
-

@@ -47,9 +47,9 @@ CCombinedKernel::CCombinedKernel(int32_t size, bool asw)
 	init();
 
 	if (append_subkernel_weights)
-		SG_INFO("(subkernel weights are appended)\n") 
+		SG_INFO("(subkernel weights are appended)\n")
 
-	SG_INFO("Combined kernel created (%p)\n", this) 
+	SG_INFO("Combined kernel created (%p)\n", this)
 }
 
 CCombinedKernel::~CCombinedKernel()
@@ -109,8 +109,8 @@ bool CCombinedKernel::init(CFeatures* l, CFeatures* r)
 		k = get_kernel(k_idx);
 
 		if (!k)
-			SG_ERROR("Kernel at position %d is NULL\n", k_idx);	
-		
+			SG_ERROR("Kernel at position %d is NULL\n", k_idx);
+
 		// skip over features - the custom kernel does not need any
 		if (k->get_kernel_type() != K_CUSTOM)
 		{
@@ -129,7 +129,7 @@ bool CCombinedKernel::init(CFeatures* l, CFeatures* r)
 			result=k->init(lf,rf);
 			SG_UNREF(lf);
 			SG_UNREF(rf);
-			
+
 			if (!result)
 				break;
 		}
@@ -782,75 +782,68 @@ void CCombinedKernel::init()
 }
 
 SGMatrix<float64_t> CCombinedKernel::get_parameter_gradient(TParameter* param,
-		CSGObject* obj, index_t index)
+		index_t index)
 {
-	SGMatrix<float64_t> result(0,0);
+	SGMatrix<float64_t> result;
 
-	if (strcmp(param->m_name, "combined_kernel_weight") == 0)
+	if (!strcmp(param->m_name, "combined_kernel_weight"))
 	{
 		if (append_subkernel_weights)
 		{
 			for (index_t k_idx=0; k_idx<get_num_kernels(); k_idx++)
 			{
-				CKernel* k = get_kernel(k_idx);
-				result = k->get_parameter_gradient(param, obj, index);
+				CKernel* k=get_kernel(k_idx);
+				result=k->get_parameter_gradient(param, index);
 
 				SG_UNREF(k);
 
-				if (result.num_cols*result.num_rows > 0)
+				if (result.num_cols*result.num_rows>0)
 					return result;
 			}
 		}
-
 		else
 		{
 			for (index_t k_idx=0; k_idx<get_num_kernels(); k_idx++)
 			{
-				CKernel* k = get_kernel(k_idx);
-				if(obj == k)
-				{
-					result = k->get_kernel_matrix();
-					SG_UNREF(k);
-					return result;
-				}
+				CKernel* k=get_kernel(k_idx);
+				result=k->get_kernel_matrix();
 
 				SG_UNREF(k);
+
+				return result;
 			}
 		}
 	}
-
 	else
 	{
 		float64_t coeff;
 		for (index_t k_idx=0; k_idx<get_num_kernels(); k_idx++)
 		{
-			CKernel* k = get_kernel(k_idx);
-			SGMatrix<float64_t> derivative =
-					k->get_parameter_gradient(param, obj, index);
+			CKernel* k=get_kernel(k_idx);
+			SGMatrix<float64_t> derivative=
+					k->get_parameter_gradient(param, index);
 
-			coeff = 1.0;
+			coeff=1.0;
 
 			if (!append_subkernel_weights)
-				coeff = k->get_combined_kernel_weight();
+				coeff=k->get_combined_kernel_weight();
 
-
-			for (index_t g = 0; g < derivative.num_rows; g++)
+			for (index_t g=0; g<derivative.num_rows; g++)
 			{
-				for (index_t h = 0; h < derivative.num_cols; h++)
-					derivative(g,h) *= coeff;
+				for (index_t h=0; h<derivative.num_cols; h++)
+					derivative(g,h)*=coeff;
 			}
 
-			if (derivative.num_cols*derivative.num_rows > 0)
+			if (derivative.num_cols*derivative.num_rows>0)
 			{
-				if (result.num_cols == 0 && result.num_rows == 0)
-					result = derivative;
-
+				if (result.num_cols==0 && result.num_rows==0)
+					result=derivative;
 				else
 				{
-					for (index_t g = 0; g < derivative.num_rows; g++)
+					for (index_t g=0; g<derivative.num_rows; g++)
 					{
-						for (index_t h = 0; h < derivative.num_cols; h++)
-							result(g,h) += derivative(g,h);
+						for (index_t h=0; h<derivative.num_cols; h++)
+							result(g,h)+=derivative(g,h);
 					}
 				}
 			}
@@ -885,7 +878,7 @@ CList* CCombinedKernel::combine_kernels(CList* kernel_list)
 
 	if (kernel_list->get_num_elements()==0)
 		return return_list;
-	
+
 	int32_t num_combinations = 1;
 	int32_t list_index = 0;
 
@@ -931,7 +924,7 @@ CList* CCombinedKernel::combine_kernels(CList* kernel_list)
 	/* kernel index in the list */
 	index_t kernel_index = 0;
 
-	/* here we duplicate the first list in the following form 
+	/* here we duplicate the first list in the following form
 	*  a,b,c,d,   a,b,c,d  ......   a,b,c,d  ---- for  a total of num_combinations elements
 	*/
 	EKernelType prev_kernel_type = K_UNKNOWN;
@@ -947,12 +940,12 @@ CList* CCombinedKernel::combine_kernels(CList* kernel_list)
 			SG_SERROR("CCombinedKernel::combine_kernels() : Sub-list in position "
 					"0 contains different types of kernels\n");
 		}
-		
+
 		prev_kernel_type = c_kernel->get_kernel_type();
 
 		for (index_t index=kernel_index; index<num_combinations; index+=c_list->get_num_elements())
 		{
-			CCombinedKernel* comb_kernel = 
+			CCombinedKernel* comb_kernel =
 					dynamic_cast<CCombinedKernel* >(kernel_array.get_element(index));
 			comb_kernel->append_kernel(c_kernel);
 			SG_UNREF(comb_kernel);
@@ -968,8 +961,8 @@ CList* CCombinedKernel::combine_kernels(CList* kernel_list)
 	/* how often each kernel of the sub-list must appear */
 	int32_t freq = c_list->get_num_elements();
 
-	/* in this loop we replicate each kernel freq times 
-	*  until we assign to all the CombinedKernels a sub-kernel from this list 
+	/* in this loop we replicate each kernel freq times
+	*  until we assign to all the CombinedKernels a sub-kernel from this list
 	*  That is for num_combinations */
 	list = kernel_list->get_next_element();
 	list_index = 1;
@@ -1000,7 +993,7 @@ CList* CCombinedKernel::combine_kernels(CList* kernel_list)
 				/* inserts freq consecutives times the current kernel */
 				for (index_t index=0; index<freq; ++index)
 				{
-					CCombinedKernel* comb_kernel = 
+					CCombinedKernel* comb_kernel =
 							dynamic_cast<CCombinedKernel* >(kernel_array.get_element(base+index));
 					comb_kernel->append_kernel(c_kernel);
 					SG_UNREF(comb_kernel);

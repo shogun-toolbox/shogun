@@ -171,11 +171,7 @@ get_marginal_likelihood_derivatives(CMap<TParameter*, CSGObject*>& para_dict)
 
 	for (index_t i = 0; i < para_dict.get_num_elements(); i++)
 	{
-		shogun::CMapNode<TParameter*, CSGObject*>* node =
-				para_dict.get_node_ptr(i);
-
-		TParameter* param = node->key;
-		CSGObject* obj = node->data;
+		TParameter* param = para_dict.get_node_ptr(i)->key;
 
 		index_t length = 1;
 
@@ -201,39 +197,38 @@ get_marginal_likelihood_derivatives(CMap<TParameter*, CSGObject*>& para_dict)
 					param->m_datatype.m_ctype == CT_SGVECTOR)
 			{
 				m_kernel->init(m_features, m_features);
-				deriv = m_kernel->get_parameter_gradient(param, obj);
+				deriv = m_kernel->get_parameter_gradient(param);
 
 				m_kernel->init(m_latent_features, m_features);
-				derivtru = m_kernel->get_parameter_gradient(param, obj);
+				derivtru = m_kernel->get_parameter_gradient(param);
 
 				m_kernel->init(m_latent_features, m_latent_features);
-				derivuu = m_kernel->get_parameter_gradient(param, obj);
+				derivuu = m_kernel->get_parameter_gradient(param);
 
 				m_kernel->remove_lhs_and_rhs();
 
 				mean_derivatives = m_mean->get_parameter_derivative(
-						param, obj, m_feat, g);
+						param, m_feat, g);
 
 				for (index_t d = 0; d < mean_derivatives.vlen; d++)
 					mean_dev_temp[d] = mean_derivatives[d];
 			}
-
 			else
 			{
 				mean_derivatives = m_mean->get_parameter_derivative(
-						param, obj, m_feat);
+						param, m_feat);
 
 				for (index_t d = 0; d < mean_derivatives.vlen; d++)
 					mean_dev_temp[d] = mean_derivatives[d];
 
 				m_kernel->init(m_features, m_features);
-				deriv = m_kernel->get_parameter_gradient(param, obj);
+				deriv = m_kernel->get_parameter_gradient(param);
 
 				m_kernel->init(m_latent_features, m_features);
-				derivtru = m_kernel->get_parameter_gradient(param, obj);
+				derivtru = m_kernel->get_parameter_gradient(param);
 
 				m_kernel->init(m_latent_features, m_latent_features);
-				derivuu = m_kernel->get_parameter_gradient(param, obj);
+				derivuu = m_kernel->get_parameter_gradient(param);
 
 				m_kernel->remove_lhs_and_rhs();
 			}

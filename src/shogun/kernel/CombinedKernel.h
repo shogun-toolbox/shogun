@@ -221,9 +221,9 @@ class CCombinedKernel : public CKernel
 		}
 
 		/** get number of contained kernels
-		 * 
+		 *
 		 * @return number of contained kernels
-		 */ 
+		 */
 		int32_t get_num_kernels()
 		{
 			return kernel_array->get_num_elements();
@@ -270,11 +270,13 @@ class CCombinedKernel : public CKernel
 		 */
 		virtual float64_t compute_optimized(int32_t idx);
 
-		/** computes output for a batch of examples in an optimized fashion (favorable if kernel supports it,
-		 * i.e. has KP_BATCHEVALUATION.
-		 * to the outputvector target (of length num_vec elements) the output for the examples enumerated
-		 * in vec_idx are added. therefore make sure that it is initialized with ZERO. the following num_suppvec,
-		 * IDX, alphas arguments are the number of support vectors, their indices and weights
+		/** computes output for a batch of examples in an optimized fashion
+		 * (favorable if kernel supports it, i.e. has KP_BATCHEVALUATION.  to
+		 * the outputvector target (of length num_vec elements) the output for
+		 * the examples enumerated in vec_idx are added. therefore make sure
+		 * that it is initialized with ZERO. the following num_suppvec, IDX,
+		 * alphas arguments are the number of support vectors, their indices and
+		 * weights
 		 */
 		virtual void compute_batch(
 			int32_t num_vec, int32_t* vec_idx, float64_t* target,
@@ -293,7 +295,8 @@ class CCombinedKernel : public CKernel
 		 */
 		static void* compute_kernel_helper(void* p);
 
-		/** emulates batch computation, via linadd optimization w^t x or even down to sum_i alpha_i K(x_i,x)
+		/** emulates batch computation, via linadd optimization w^t x or even
+		 * down to sum_i alpha_i K(x_i,x)
 		 *
 		 * @param k kernel
 		 * @param num_vec number of vectors
@@ -365,13 +368,12 @@ class CCombinedKernel : public CKernel
 		/** return derivative with respect to specified parameter
 		 *
 		 * @param param the parameter
-		 * @param obj the object that owns the parameter
 		 * @param index the index of the element if parameter is a vector
 		 *
 		 * @return gradient with respect to parameter
 		 */
 		SGMatrix<float64_t> get_parameter_gradient(TParameter* param,
-				CSGObject* obj, index_t index);
+				index_t index=-1);
 
 		/** Get the Kernel array
 		 *
@@ -383,10 +385,12 @@ class CCombinedKernel : public CKernel
 			return kernel_array;
 		}
 
-		/** Returns a list of all the different CombinedKernels produced by the cross-product between the kernel lists 
-		*	The returned list performs reference counting on the contained CombinedKernels.
+		/** Returns a list of all the different CombinedKernels produced by the
+		* cross-product between the kernel lists The returned list performs
+		* reference counting on the contained CombinedKernels.
 		*
-		* @param kernel_list a list of lists of kernels. Each sub-list must contain kernels of the same type
+		* @param kernel_list a list of lists of kernels. Each sub-list must
+		* contain kernels of the same type
 		*
 		* @return a list of CombinedKernels.
 		*/
