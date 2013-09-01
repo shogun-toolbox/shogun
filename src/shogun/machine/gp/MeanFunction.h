@@ -41,7 +41,6 @@ public:
 	/** returns the derivative of the mean function
 	 *
 	 * @param param parameter
-	 * @param obj object that owns parameter
 	 * @param data points arranged in a matrix with rows representing the number
 	 * of features
 	 * @param index of value if parameter is a vector
@@ -49,7 +48,7 @@ public:
 	 * @return derivative of mean function with respect to parameter
 	 */
 	virtual SGVector<float64_t> get_parameter_derivative(TParameter* param,
-			CSGObject* obj, SGMatrix<float64_t> data, index_t index = -1);
+			SGMatrix<float64_t> data, index_t index=-1);
 };
 }
 #endif /* CMEANFUNCTION_H_ */

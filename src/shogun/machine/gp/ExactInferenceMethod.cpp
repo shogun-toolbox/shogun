@@ -86,61 +86,55 @@ get_marginal_likelihood_derivatives(CMap<TParameter*, CSGObject*>& para_dict)
 	m_kernel->build_parameter_dictionary(para_dict);
 	m_mean->build_parameter_dictionary(para_dict);
 
-	//This will be the vector we return
+	// this will be the vector we return
 	CMap<TParameter*, SGVector<float64_t> > gradient(
 			3+para_dict.get_num_elements(),
 			3+para_dict.get_num_elements());
 
-	for (index_t i = 0; i < para_dict.get_num_elements(); i++)
+	for (index_t i=0; i<para_dict.get_num_elements(); i++)
 	{
-		CMapNode<TParameter*, CSGObject*>* node=para_dict.get_node_ptr(i);
+		TParameter* param=para_dict.get_node_ptr(i)->key;
 
-		TParameter* param = node->key;
-		CSGObject* obj = node->data;
-
-		index_t length = 1;
+		index_t length=1;
 
 		if ((param->m_datatype.m_ctype== CT_VECTOR ||
 				param->m_datatype.m_ctype == CT_SGVECTOR) &&
 				param->m_datatype.m_length_y != NULL)
-			length = *(param->m_datatype.m_length_y);
+			length=*(param->m_datatype.m_length_y);
 
 		SGVector<float64_t> variables(length);
 
-		bool deriv_found = false;
+		bool deriv_found=false;
 
-		for (index_t g = 0; g < length; g++)
+		for (index_t g=0; g<length; g++)
 		{
 			SGMatrix<float64_t> deriv;
 			SGVector<float64_t> mean_derivatives;
 
-			if (param->m_datatype.m_ctype == CT_VECTOR ||
-					param->m_datatype.m_ctype == CT_SGVECTOR)
+			if (param->m_datatype.m_ctype==CT_VECTOR ||
+					param->m_datatype.m_ctype==CT_SGVECTOR)
 			{
-				deriv = m_kernel->get_parameter_gradient(param, obj, g);
-				mean_derivatives = m_mean->get_parameter_derivative(param, obj,
-					m_feat, g);
+				deriv=m_kernel->get_parameter_gradient(param, g);
+				mean_derivatives=m_mean->get_parameter_derivative(param, m_feat, g);
 			}
 			else
 			{
-				mean_derivatives = m_mean->get_parameter_derivative(param, obj,
-					m_feat);
-
-				deriv = m_kernel->get_parameter_gradient(param, obj);
+				deriv=m_kernel->get_parameter_gradient(param);
+				mean_derivatives=m_mean->get_parameter_derivative(param, m_feat);
 			}
 
-			if (deriv.num_cols*deriv.num_rows > 0)
+			if (deriv.num_cols*deriv.num_rows>0)
 			{
 				Map<MatrixXd> eigen_deriv(deriv.matrix, deriv.num_rows, deriv.num_cols);
 				MatrixXd eigen_S=eigen_Q.cwiseProduct(eigen_deriv)*CMath::sq(m_scale);
 				variables[g]=eigen_S.sum()/2.0;
-				deriv_found = true;
+				deriv_found=true;
 			}
-			else if (mean_derivatives.vlen > 0)
+			else if (mean_derivatives.vlen>0)
 			{
 				variables[g]=mean_derivatives.dot(mean_derivatives.vector,
 						m_alpha.vector, m_alpha.vlen);
-				deriv_found = true;
+				deriv_found=true;
 			}
 		}
 
@@ -149,8 +143,8 @@ get_marginal_likelihood_derivatives(CMap<TParameter*, CSGObject*>& para_dict)
 	}
 
 	TParameter* param;
-	index_t index = get_modsel_param_index("scale");
-	param = m_model_selection_parameters->get_parameter(index);
+	index_t index=get_modsel_param_index("scale");
+	param=m_model_selection_parameters->get_parameter(index);
 
 	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
 	MatrixXd eigen_S=eigen_Q.cwiseProduct(eigen_K)*m_scale*2.0;
@@ -161,8 +155,8 @@ get_marginal_likelihood_derivatives(CMap<TParameter*, CSGObject*>& para_dict)
 	gradient.add(param, vscale);
 	para_dict.add(param, this);
 
-	index = m_model->get_modsel_param_index("sigma");
-	param = m_model->m_model_selection_parameters->get_parameter(index);
+	index=m_model->get_modsel_param_index("sigma");
+	param=m_model->m_model_selection_parameters->get_parameter(index);
 
 	SGVector<float64_t> vsigma(1);
 	vsigma[0]=CMath::sq(sigma)*eigen_Q.trace();
