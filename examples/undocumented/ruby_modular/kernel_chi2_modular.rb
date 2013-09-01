@@ -1,6 +1,9 @@
+require 'nmatrix'
 require 'modshogun'
 require 'pp'
-require 'load'
+
+require_relative 'load'
+
 ###########################################################################
 # chi2 kernel
 ###########################################################################
