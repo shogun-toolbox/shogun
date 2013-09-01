@@ -2,7 +2,6 @@
 #include <shogun/base/init.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGSparseVector.h>
-#include <shogun/lib/SGString.h>
 #include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/structure/FactorGraph.h>
 #include <shogun/structure/FactorType.h>
@@ -37,7 +36,7 @@ TEST(FactorGraph, compute_energies_data_indep)
 	w[1] = 0.2;
 	w[2] = -0.2;
 	w[3] = 1.0;
-	SGString<char> tid(const_cast<char*>("pairwise"), 8);
+	int32_t tid = 0;
 	CTableFactorType* factortype = new CTableFactorType(tid, card, w);
 	SG_REF(factortype);
 
@@ -100,7 +99,7 @@ TEST(FactorGraph, evaluate_energy_data_indep)
 	w[1] = 0.3;
 	w[2] = 0.2;
 	w[3] = 0.0;
-	SGString<char> tid(const_cast<char*>("pairwise"), 8);
+	int32_t tid = 0;
 	CTableFactorType* factortype = new CTableFactorType(tid, card, w);
 	SG_REF(factortype);
 
@@ -109,14 +108,14 @@ TEST(FactorGraph, evaluate_energy_data_indep)
 	SGVector<float64_t> w1(2);
 	w1[0] = 0.1;
 	w1[1] = 0.7;
-	SGString<char> tid1(const_cast<char*>("unary1"), 6);
+	int32_t tid1 = 1;
 	CTableFactorType* factortype1a = new CTableFactorType(tid1, card1, w1);
 	SG_REF(factortype1a);
 
 	SGVector<float64_t> w2(2);
 	w2[0] = 0.3;
 	w2[1] = 0.6;
-	SGString<char> tid2(const_cast<char*>("unary2"), 6);
+	int32_t tid2 = 2;
 	CTableFactorType* factortype1b = new CTableFactorType(tid2, card1, w2);
 	SG_REF(factortype1b);
 
@@ -180,13 +179,13 @@ TEST(FactorGraph, evaluate_energy_data_dep)
 	SGVector<int32_t> card(2);
 	card[0] = 2;
 	card[1] = 2;
-	SGString<char> tid(const_cast<char*>("pairwise"), 8);
+	int32_t tid = 0;
 	CTableFactorType* factortype = new CTableFactorType(tid, card);
 	SG_REF(factortype);
 
 	SGVector<int32_t> card1(1);
 	card1[0] = 2;
-	SGString<char> tid1(const_cast<char*>("unary"), 5);
+	int32_t tid1 = 1;
 	CTableFactorType* factortype1a = new CTableFactorType(tid1, card1);
 	SG_REF(factortype1a);
 
@@ -269,7 +268,7 @@ TEST(FactorGraph, evaluate_energy_param_data)
 	w[5] = 0.6;
 	w[6] = -0.2; // 1,1
 	w[7] = 0.75;
-	SGString<char> tid(const_cast<char*>("pairwise"), 8);
+	int32_t tid = 0;
 	CTableFactorType* factortype = new CTableFactorType(tid, card, w);
 	SG_REF(factortype);
 
@@ -361,7 +360,7 @@ TEST(FactorGraph, evaluate_energy_param_data_sparse)
 	w[5] = 0.6;
 	w[6] = -0.2; // 1,1
 	w[7] = 0.75;
-	SGString<char> tid(const_cast<char*>("pairwise"), 8);
+	int32_t tid = 0;
 	CTableFactorType* factortype = new CTableFactorType(tid, card, w);
 	SG_REF(factortype);
 
@@ -463,7 +462,7 @@ TEST(FactorGraph, structure_analysis)
 	w[1] = 0.5; // 1,0
 	w[2] = 0.5; // 0,1
 	w[3] = 0.0; // 1,1
-	SGString<char> tid((char*)("pairwise"), 4);
+	int32_t tid = 0;
 	CTableFactorType* factortype = new CTableFactorType(tid, card, w);
 	SG_REF(factortype);
 
@@ -520,7 +519,7 @@ TEST(FactorGraph, structure_analysis_loopy)
 	w[1] = 0.5; // 1,0
 	w[2] = 0.5; // 0,1
 	w[3] = 0.0; // 1,1
-	SGString<char> tid((char*)("pairwise"), 4);
+	int32_t tid = 0;
 	CTableFactorType* factortype = new CTableFactorType(tid, card, w);
 	SG_REF(factortype);
 
@@ -577,7 +576,7 @@ TEST(FactorGraph, structure_analysis_disconnected)
 	w[1] = 0.5; // 1,0
 	w[2] = 0.5; // 0,1
 	w[3] = 0.0; // 1,1
-	SGString<char> tid((char*)("pairwise"), 4);
+	int32_t tid = 0;
 	CTableFactorType* factortype = new CTableFactorType(tid, card, w);
 	SG_REF(factortype);
 

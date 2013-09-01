@@ -13,7 +13,6 @@
 
 #include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/lib/SGVector.h>
-#include <shogun/features/Features.h>
 #include <shogun/structure/Factor.h>
 #include <shogun/labels/FactorGraphLabels.h>
 #include <shogun/structure/DisjointSet.h>
@@ -23,7 +22,7 @@ namespace shogun
 
 /** @brief Class CFactorGraph a factor graph is a structured input in general 
  */
-class CFactorGraph : public CFeatures
+class CFactorGraph : public CSGObject
 {
 
 public:
@@ -65,6 +64,9 @@ public:
 	/** @return all the shared data */
 	CDynamicObjectArray* get_factor_data_sources() const;
 
+	/** @return number of factors */
+	int32_t get_num_factors() const;
+
 	/** @return cardinalities */
 	SGVector<int32_t> get_cardinalities() const;
 
@@ -89,23 +91,17 @@ public:
 	 */
 	float64_t evaluate_energy(const CFactorGraphObservation* obs) const;
 
-	/** @return copy of factor graph */
-	virtual CFactorGraph* duplicate() const;
-
-	/** @return feature tyep */
-	virtual EFeatureType get_feature_type() const {return F_ANY;}
-
-	/** @return feature class */
-	virtual EFeatureClass get_feature_class() const {return C_ANY;}
-
-	/** @return number of factors */
-	virtual int32_t get_num_vectors() const;
+	/** @return energy table for the graph */
+	SGVector<float64_t> evaluate_energies() const;
 
 	/** @return disjoint set */
 	CDisjointSet* get_disjoint_set() const;
 
 	/** @return number of edges */
 	int32_t get_num_edges() const;
+
+	/** @return number of variable nodes */
+	int32_t get_num_vars() const;
 
 	/** connect graph nodes by performing union-find algorithm 
 	 * NOTE: make sure call this func before performing inference 

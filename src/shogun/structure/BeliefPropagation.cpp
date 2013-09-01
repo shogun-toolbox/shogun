@@ -254,6 +254,7 @@ void CTreeMaxProduct::bottom_up_pass()
 	{
 		SG_DEBUG("mi = %d, mtype: %d %d -> %d\n", mi, 
 			m_msg_order[mi]->mtype, m_msg_order[mi]->child, m_msg_order[mi]->parent);
+
 		if (m_msg_order[mi]->mtype == VAR_TO_FAC) // var -> factor
 		{
 			uint32_t var_id = m_msg_order[mi]->child;
@@ -397,6 +398,7 @@ void CTreeMaxProduct::top_down_pass()
 	{
 		SG_DEBUG("mi = %d, mtype: %d %d <- %d\n", mi, 
 			m_msg_order[mi]->mtype, m_msg_order[mi]->child, m_msg_order[mi]->parent);
+
 		if (m_msg_order[mi]->mtype == FAC_TO_VAR) // factor <- var
 		{
 			int32_t fac_id = m_msg_order[mi]->child;

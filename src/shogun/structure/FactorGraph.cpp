@@ -13,6 +13,7 @@
 using namespace shogun;
 
 CFactorGraph::CFactorGraph() 
+	: CSGObject()
 {
 	SG_UNSTABLE("CFactorGraph::CFactorGraph()", "\n");
 
@@ -21,13 +22,15 @@ CFactorGraph::CFactorGraph()
 }
 
 CFactorGraph::CFactorGraph(SGVector<int32_t> card)
-	: m_cardinalities(card)
+	: CSGObject()
 {
+	m_cardinalities = card;
 	register_parameters();
 	init();
 }
 
 CFactorGraph::CFactorGraph(const CFactorGraph &fg)
+	: CSGObject()
 {
 	register_parameters();
 	m_cardinalities = fg.get_cardinalities();
@@ -115,6 +118,11 @@ CDynamicObjectArray* CFactorGraph::get_factor_data_sources() const
 	return m_datasources;
 }
 
+int32_t CFactorGraph::get_num_factors() const
+{
+	return m_factors->get_num_elements();
+}
+
 SGVector<int32_t> CFactorGraph::get_cardinalities() const
 {
 	return m_cardinalities;
@@ -136,9 +144,9 @@ int32_t CFactorGraph::get_num_edges() const
 	return m_num_edges;
 }
 
-int32_t CFactorGraph::get_num_vectors() const
+int32_t CFactorGraph::get_num_vars() const
 {
-	return m_factors->get_num_elements();
+	return m_cardinalities.size();
 }
 
 void CFactorGraph::compute_energies() 
@@ -170,9 +178,32 @@ float64_t CFactorGraph::evaluate_energy(const CFactorGraphObservation* obs) cons
 	return evaluate_energy(obs->get_data());
 }
 
-CFactorGraph* CFactorGraph::duplicate() const
+SGVector<float64_t> CFactorGraph::evaluate_energies() const
 {
-	return new CFactorGraph(*this);
+	int num_assig = 1;
+	SGVector<int32_t> cumprod_cards(m_cardinalities.size());
+	for (int32_t n = 0; n < m_cardinalities.size(); ++n) 
+	{
+		cumprod_cards[n] = num_assig;
+		num_assig *= m_cardinalities[n];
+	}
+
+	SGVector<float64_t> etable(num_assig);
+	for (int32_t ei = 0; ei < num_assig; ++ei)
+	{
+		SGVector<int32_t> assig(m_cardinalities.size());
+		for (int32_t vi = 0; vi < m_cardinalities.size(); ++vi) 
+			assig[vi] = (ei / cumprod_cards[vi]) % m_cardinalities[vi];
+
+		etable[ei] = evaluate_energy(assig);
+
+		for (int32_t vi = 0; vi < m_cardinalities.size(); ++vi) 
+			SG_SPRINT("%d ", assig[vi]);
+
+		SG_SPRINT("| %f\n", etable[ei]);
+	}
+
+	return etable;
 }
 
 void CFactorGraph::connect_components()
