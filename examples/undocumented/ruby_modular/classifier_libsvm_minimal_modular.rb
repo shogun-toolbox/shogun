@@ -1,35 +1,35 @@
+require 'nmatrix'
 require 'modshogun'
-require 'load'
-require 'narray'
+require 'pp'
 
-@num = 1000
-@dist = 1
-@width = 2.1
-C = 1
+require_relative 'load'
 
-puts "generating training data"
-traindata_real = gen_rand_ary @num
-testdata_real = gen_rand_ary @num
+traindat = LoadMatrix.load_numbers('../data/fm_train_real.dat')
+testdat = LoadMatrix.load_numbers('../data/fm_test_real.dat')
+label_traindat = LoadMatrix.load_labels('../data/label_train_twoclass.dat')
 
-puts "generating labels"
-trainlab = gen_ones_vec @num
-testlab = gen_ones_vec @num
+parameter_list = [[traindat,testdat,label_traindat,2.1,1]]
 
-puts "doing feature stuff"
-feats_train = Modshogun::RealFeatures.new
-feats_train.set_feature_matrix traindata_real
-feats_test = Modshogun::RealFeatures.new
-feats_test.set_feature_matrix testdata_real
-kernel = Modshogun::GaussianKernel.new feats_train, feats_train, @width
+def classifier_libsvm_minimal_modular (fm_train_real=traindat,fm_test_real=testdat,label_train_twoclass=label_traindat,width=2.1,c=1)
 
-puts "labeling stuff"
-labels = Modshogun::BinaryLabels.new
-labels.set_labels trainlab
-svm = Modshogun::LibSVM.new C, kernel, labels
-svm.train
+	feats_train = Modshogun::RealFeatures.new 
+	feats_train.set_feature_matrix(fm_train_real)
+	feats_test = Modshogun::RealFeatures.new
+	feats_test.set_feature_matrix(fm_test_real)
+	
+	kernel = Modshogun::GaussianKernel.new feats_train, feats_train, width
 
-puts "the grand finale"
-kernel.init feats_train, feats_test
-out = svm.apply.get_labels
-testerr = mean out.sign.eql_items? testlab
-puts testerr
+	labels = Modshogun::BinaryLabels.new label_train_twoclass
+	svm = Modshogun::LibSVM.new c, kernel, labels
+	svm.train
+
+	kernel.init feats_train, feats_test
+	out = svm.apply.get_labels()
+	
+	return out
+end
+
+if __FILE__ == $0
+	puts 'LibSVM Minimal'
+	pp classifier_libsvm_minimal_modular(*parameter_list[0])
+end

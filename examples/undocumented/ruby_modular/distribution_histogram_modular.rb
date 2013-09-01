@@ -1,6 +1,8 @@
+require 'nmatrix'
 require 'modshogun'
 require 'pp'
-require 'load'
+
+require_relative 'load'
 
 traindna = LoadMatrix.load_dna('../data/fm_train_dna.dat')
 
