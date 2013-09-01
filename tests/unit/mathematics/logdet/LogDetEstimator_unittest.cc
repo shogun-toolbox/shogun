@@ -11,15 +11,19 @@
 
 #ifdef HAVE_EIGEN3
 #include <shogun/mathematics/eigen3.h>
+#include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/Random.h>
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
+#include <shogun/lib/SGSparseMatrix.h>
 #include <shogun/features/SparseFeatures.h>
 #include <shogun/mathematics/logdet/DenseMatrixOperator.h>
 #include <shogun/mathematics/logdet/SparseMatrixOperator.h>
 #include <shogun/mathematics/logdet/DenseMatrixExactLog.h>
 #include <shogun/mathematics/logdet/LogRationalApproximationIndividual.h>
 #include <shogun/mathematics/logdet/NormalSampler.h>
+#include <shogun/mathematics/logdet/ProbingSampler.h>
 #include <shogun/mathematics/logdet/DirectEigenSolver.h>
 #include <shogun/mathematics/logdet/LanczosEigenSolver.h>
 #include <shogun/mathematics/logdet/DirectLinearSolverComplex.h>
@@ -119,5 +123,92 @@ TEST(LogDetEstimator, sample_ratapp_dense)
 	SG_UNREF(op);
 	SG_UNREF(e);
 }
-#endif // HAVE_EIGEN3
 
+#ifdef HAVE_COLPACK
+TEST(LogDetEstimator, sample_ratapp_probing_sampler)
+{
+	CSerialComputationEngine* e=new CSerialComputationEngine;
+	SG_REF(e);
+	
+	const index_t size=16;
+	SGMatrix<float64_t> mat(size, size);
+	mat.set_const(0.0);
+	for (index_t i=0; i<size; ++i)
+	{
+		float64_t value=CMath::abs(sg_rand->std_normal_distrib())*1000;
+		mat(i,i)=value<1.0?10.0:value;
+	}
+
+	mat(0,5)=mat(5,0)=1.0;
+	mat(0,7)=mat(7,0)=1.0;
+	mat(0,11)=mat(11,0)=1.0;
+	mat(1,8)=mat(8,1)=1.0;
+	mat(1,10)=mat(10,1)=1.0;
+	mat(1,11)=mat(11,1)=1.0;
+	mat(1,12)=mat(12,1)=1.0;
+	mat(2,8)=mat(8,2)=1.0;
+	mat(2,11)=mat(11,2)=1.0;
+	mat(2,13)=mat(13,2)=1.0;
+	mat(2,14)=mat(14,2)=1.0;
+	mat(3,8)=mat(8,3)=1.0;
+	mat(3,12)=mat(12,3)=1.0;
+	mat(3,15)=mat(15,3)=1.0;
+	mat(4,8)=mat(8,4)=1.0;
+	mat(4,14)=mat(14,4)=1.0;
+	mat(4,15)=mat(15,4)=1.0;
+	mat(5,11)=mat(11,5)=1.0;
+	mat(5,10)=mat(10,5)=1.0;
+	mat(6,10)=mat(10,6)=1.0;
+	mat(6,12)=mat(12,6)=1.0;
+	mat(7,11)=mat(11,7)=1.0;
+	mat(7,13)=mat(13,7)=1.0;
+	mat(8,11)=mat(11,8)=1.0;
+	mat(8,15)=mat(15,8)=1.0;
+	mat(9,13)=mat(13,9)=1.0;
+	mat(9,14)=mat(14,9)=1.0;
+
+	float64_t actual_result=CStatistics::log_det(mat);
+
+	CSparseFeatures<float64_t> feat(mat);
+	SGSparseMatrix<float64_t> sm=feat.get_sparse_feature_matrix();
+
+	CSparseMatrixOperator<float64_t>* op=new CSparseMatrixOperator<float64_t>(sm);
+	SG_REF(op);
+	CDenseMatrixOperator<float64_t>* opd=new CDenseMatrixOperator<float64_t>(mat);
+	SG_REF(opd);
+
+	CLanczosEigenSolver* eig_solver=new CLanczosEigenSolver(op);
+	SG_REF(eig_solver);
+
+	CDirectLinearSolverComplex* linear_solver=new CDirectLinearSolverComplex();
+	SG_REF(linear_solver);
+
+	CLogRationalApproximationIndividual *op_func
+		=new CLogRationalApproximationIndividual
+		(opd, e, eig_solver, (CLinearSolver<complex64_t, float64_t>*)linear_solver, 20);
+	SG_REF(op_func);
+
+	CProbingSampler* trace_sampler=new CProbingSampler(op, 1, NATURAL, DISTANCE_TWO);
+	SG_REF(trace_sampler);
+
+	CLogDetEstimator estimator(trace_sampler, op_func, e);
+	const index_t num_estimates=10;
+	SGVector<float64_t> estimates=estimator.sample(num_estimates);
+
+	float64_t result=0.0;
+	for (index_t i=0; i<num_estimates; ++i)
+		result+=estimates[i];
+	result/=num_estimates;
+
+	EXPECT_NEAR(result, actual_result, 1E-3);
+
+	SG_UNREF(trace_sampler);
+	SG_UNREF(eig_solver);
+	SG_UNREF(linear_solver);
+	SG_UNREF(op_func);
+	SG_UNREF(op);
+	SG_UNREF(opd);
+	SG_UNREF(e);
+}
+#endif // HAVE_COLPACK
+#endif // HAVE_EIGEN3

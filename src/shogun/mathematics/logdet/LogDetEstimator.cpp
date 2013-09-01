@@ -136,7 +136,7 @@ SGVector<float64_t> CLogDetEstimator::sample(index_t num_estimates)
 		result+=r->get_result();
 		if (idx_row==num_trace_samples-1)
 		{
-			samples[idx_col]=result/num_trace_samples;
+			samples[idx_col]=result;
 			result=0.0;
 		}
 
@@ -167,9 +167,9 @@ SGMatrix<float64_t> CLogDetEstimator::sample_without_averaging(
 	CDynamicObjectArray aggregators;
 	index_t num_trace_samples=m_trace_sampler->get_num_samples();
 
-	for (register index_t i=0; i<num_estimates; ++i)
+	for (index_t i=0; i<num_estimates; ++i)
 	{
-		for (register index_t j=0; j<num_trace_samples; ++j)
+		for (index_t j=0; j<num_trace_samples; ++j)
 		{
 			// get the trace sampler vector
 			SGVector<float64_t> s=m_trace_sampler->sample(j);
