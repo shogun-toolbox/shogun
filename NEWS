@@ -26,12 +26,21 @@
 		  Gauss-Kronrod and Gauss-Hermite quadrature formulas.
 		- Changed from configure script to CMake by Viktor Gal.
 		- Add C++0x and C++11 cmake detection scripts
+		- Add LMNN support.
+		- Add various ICA algorithms.
+		- Add Random Fourier Dot Features
+		- Add HashedDocDotFeatures and HashedDocConverter
+		- Add LBPyrDotFeatures
+		- ND-Array typmap support for python and octave modular.
 	* Bugfixes:
 		- Fix json serialization.
 		- Fixed bugs in FITC inference method that caused wrong posterior results.
 		- Fixed bugs in GP Regression that caused negative values for the variances.
 		- Fixed two memory errors in the streaming-features framework.
 	* Cleanup and API Changes:
+		- Switch compile system to cmake
+		- SGSparseVector/Matrix are now derived from SGReferenceData and thus refcounted.
+		- Move README and INSTALL files to top level directory.
 		- Use common RefCount class for ReferencedData and CSGObjects.
 		- Rename HMSVMLabels to SequenceLabels
 		- Refactored method to fit a sigmoid to SVM scores, now in CStatistics,
