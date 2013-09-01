@@ -17,8 +17,8 @@
 
 namespace shogun
 {
-/** @brief An experimental kernel inspired by the WeightedDegreePositionStringKernel
- * and the Gaussian kernel.
+/** @brief An experimental kernel inspired by the
+ * WeightedDegreePositionStringKernel and the Gaussian kernel.
  *
  * It is computed as
  *
@@ -30,9 +30,10 @@ namespace shogun
 						   \exp(-\frac{||{\bf x}_{[sS_{\mathrm{step}}:|{\bf x}|]}-{\bf x'}_{[1:|{\bf x}|-sS_{\mathrm{step}}]}||^2}{\tau}) +
  * \f]
  *
- * where \f$\tau\f$ is the kernel width. The idea is to shift the dimensions of the input vectors against eachother.
- * \f$S_{\mathrm{step}}\f$ is the step size (parameter shift_step) of the shifts and
- * \f$S_{\mathrm{max}}\f$ (parameter max_shift) is the maximal shift.
+ * where \f$\tau\f$ is the kernel width. The idea is to shift the dimensions of
+ * the input vectors against eachother. \f$S_{\mathrm{step}}\f$ is the step size
+ * (parameter shift_step) of the shifts and \f$S_{\mathrm{max}}\f$ (parameter
+ * max_shift) is the maximal shift.
  */
 class CGaussianShiftKernel: public CGaussianKernel
 {
@@ -64,6 +65,17 @@ class CGaussianShiftKernel: public CGaussianKernel
 			CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r,
 			float64_t width, int32_t max_shift, int32_t shift_step,
 			int32_t size=10);
+
+		/** initialize kernel
+		 *
+		 * @param l features of left-hand side
+		 * @param r features of right-hand side
+		 * @return if initializing was successful
+		 */
+		virtual bool init(CFeatures* l, CFeatures* r)
+		{
+			return CGaussianKernel::init(l,r);
+		}
 
 		virtual ~CGaussianShiftKernel();
 

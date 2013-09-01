@@ -979,7 +979,7 @@ void CKernel::init()
 }
 
 SGMatrix<float64_t> CKernel::get_parameter_gradient(TParameter* param,
-		CSGObject* obj, index_t index)
+		index_t index)
 {
 	return SGMatrix<float64_t>();
 }

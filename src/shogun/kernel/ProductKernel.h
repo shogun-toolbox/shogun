@@ -5,7 +5,7 @@
  * (at your option) any later version.
  *
  * Copyright (C) 2012 Jacob Walker
- * 
+ *
  * Code adapted from CCombinedKernel
  */
 
@@ -24,19 +24,17 @@ namespace shogun
 class CFeatures;
 class CCombinedFeatures;
 class CDynamicObjectArray;
-/**
- * @brief The Product kernel is used to combine a number of kernels into a
+
+/** @brief The Product kernel is used to combine a number of kernels into a
  * single ProductKernel object by element multiplication.
  *
  * It keeps pointers to the multiplied sub-kernels \f$k_m({\bf x}, {\bf x'})\f$
  *
- *
  * It is defined as:
  *
  * \f[
- *     k_{product}({\bf x}, {\bf x'}) = \prod_{m=1}^M k_m({\bf x}, {\bf x'})
+ * k_{product}({\bf x}, {\bf x'}) = \prod_{m=1}^M k_m({\bf x}, {\bf x'})
  * \f]
- *
  */
 class CProductKernel : public CKernel
 {
@@ -44,7 +42,6 @@ class CProductKernel : public CKernel
 		/** constructor
 		 *
 		 * @param size cache size
-		 * 
 		 */
 		CProductKernel(int32_t size=10);
 
@@ -65,28 +62,19 @@ class CProductKernel : public CKernel
 		 *
 		 * @return kernel type PRODUCT
 		 */
-		virtual EKernelType get_kernel_type()
-		{
-			return K_PRODUCT;
-		}
+		virtual EKernelType get_kernel_type() { return K_PRODUCT; }
 
 		/** return feature type the kernel can deal with
 		 *
 		 * @return feature type UNKNOWN
 		 */
-		virtual EFeatureType get_feature_type()
-		{
-			return F_UNKNOWN;
-		}
+		virtual EFeatureType get_feature_type() { return F_UNKNOWN; }
 
 		/** return feature class the kernel can deal with
 		 *
 		 * @return feature class COMBINED
 		 */
-		virtual EFeatureClass get_feature_class()
-		{
-			return C_COMBINED;
-		}
+		virtual EFeatureClass get_feature_class() { return C_COMBINED; }
 
 		/** return the kernel's name
 		 *
@@ -140,9 +128,8 @@ class CProductKernel : public CKernel
 
 			int32_t n = get_num_subkernels();
 			kernel_array->push_back(k);
-			return n+1==get_num_subkernels();		
+			return n+1==get_num_subkernels();
 		}
-
 
 		/** delete kernel at position idx
 		 *
@@ -153,7 +140,6 @@ class CProductKernel : public CKernel
 		{
 			return kernel_array->delete_element(idx);
 		}
-
 
 		/** get number of subkernels
 		 *
@@ -188,7 +174,7 @@ class CProductKernel : public CKernel
 		/** casts kernel to combined kernel
 		 * @param n kernel to cast
 		 */
-		CProductKernel* KernelToProductKernel(shogun::CKernel* n)
+		CProductKernel* KernelToProductKernel(CKernel* n)
 		{
 			return dynamic_cast<CProductKernel*>(n);
 		}
@@ -196,19 +182,22 @@ class CProductKernel : public CKernel
 		/** return derivative with respect to specified parameter
 		 *
 		 * @param  param the parameter
-		 * @param obj the object that owns the parameter
 		 * @param index the index of the element if parameter is a vector
 		 *
 		 * @return gradient with respect to parameter
 		 */
 		SGMatrix<float64_t> get_parameter_gradient(TParameter* param,
-				CSGObject* obj, index_t index);
+				index_t index=-1);
 
 		/** Get the Kernel array
 		 *
 		 * @return kernel array
 		 */
-		inline CDynamicObjectArray* get_array() {SG_REF(kernel_array); return kernel_array;}
+		inline CDynamicObjectArray* get_array()
+		{
+			SG_REF(kernel_array);
+			return kernel_array;
+		}
 
 	protected:
 		/** compute kernel function

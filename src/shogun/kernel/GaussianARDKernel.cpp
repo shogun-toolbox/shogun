@@ -4,10 +4,9 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * (W) 2012 Jacob Walker
+ * Written (W) 2012 Jacob Walker
  *
  * Adapted from WeightedDegreeRBFKernel.cpp
- *
  */
 
 #include <shogun/lib/common.h>
@@ -17,23 +16,21 @@
 
 using namespace shogun;
 
-CGaussianARDKernel::CGaussianARDKernel()
-: CLinearARDKernel()
+CGaussianARDKernel::CGaussianARDKernel() : CLinearARDKernel()
 {
 	init();
 }
 
 
 CGaussianARDKernel::CGaussianARDKernel(int32_t size, float64_t width)
-: CLinearARDKernel(size), m_width(width)
+		: CLinearARDKernel(size), m_width(width)
 {
 	init();
 }
 
 CGaussianARDKernel::CGaussianARDKernel(CDenseFeatures<float64_t>* l,
-		CDenseFeatures<float64_t>* r,
-		int32_t size, float64_t width)
-: CLinearARDKernel(size), m_width(width)
+		CDenseFeatures<float64_t>* r, int32_t size, float64_t width)
+		: CLinearARDKernel(size), m_width(width)
 {
 	init();
 }
@@ -88,12 +85,12 @@ float64_t CGaussianARDKernel::compute(int32_t idx_a, int32_t idx_b)
 }
 
 SGMatrix<float64_t> CGaussianARDKernel::get_parameter_gradient(TParameter* param,
-		CSGObject* obj, index_t index)
+		index_t index)
 {
 	if (!lhs || !rhs)
 		SG_ERROR("Features not set!\n")
 
-	if (!strcmp(param->m_name, "weights") && obj == this)
+	if (!strcmp(param->m_name, "weights"))
 	{
 		SGMatrix<float64_t> derivative = get_kernel_matrix();
 
@@ -120,8 +117,7 @@ SGMatrix<float64_t> CGaussianARDKernel::get_parameter_gradient(TParameter* param
 
 		return derivative;
 	}
-
-	else if (!strcmp(param->m_name, "width") && obj == this)
+	else if (!strcmp(param->m_name, "width"))
 	{
 		SGMatrix<float64_t> derivative(num_lhs, num_rhs);
 
@@ -149,8 +145,6 @@ SGMatrix<float64_t> CGaussianARDKernel::get_parameter_gradient(TParameter* param
 
 		return derivative;
 	}
-
-
 	else
 		return SGMatrix<float64_t>();
 }

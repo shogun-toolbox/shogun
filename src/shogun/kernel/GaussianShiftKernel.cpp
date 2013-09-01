@@ -34,7 +34,7 @@ CGaussianShiftKernel::CGaussianShiftKernel(
 : CGaussianKernel(l, r, w, size), max_shift(ms), shift_step(ss)
 {
 	init();
-	CGaussianKernel::init(l,r);
+	init(l,r);
 }
 
 CGaussianShiftKernel::~CGaussianShiftKernel()
@@ -82,4 +82,3 @@ void CGaussianShiftKernel::init()
 	SG_ADD(&max_shift, "max_shift", "Maximum shift.", MS_AVAILABLE);
 	SG_ADD(&shift_step, "shift_step", "Shift stepsize.", MS_AVAILABLE);
 }
-
