@@ -4,6 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
+ * Written (W) 2013 Thoralf Klein
  * Written (W) 2011-2013 Heiko Strathmann
  * Written (W) 2013 Soumyajit De
  * Written (W) 2012 Fernando José Iglesias García
@@ -200,6 +201,28 @@ SGVector<index_t> SGVector<complex64_t>::argsort()
 	SG_SERROR("SGVector::argsort():: Not supported for complex64_t\n");
 	SGVector<index_t> idx(vlen);
 	return idx;
+}
+
+template <class T>
+bool SGVector<T>::is_sorted() const
+{
+        if (vlen < 2)
+              return true;
+
+        for(int32_t i=1; i<vlen; i++)
+        {
+              if (vector[i-1] > vector[i])
+                    return false;
+        }
+
+        return true;
+}
+
+template <>
+bool SGVector<complex64_t>::is_sorted() const
+{
+	SG_SERROR("SGVector::is_sorted():: Not supported for complex64_t\n");
+	return false;
 }
 
 template <class T>
