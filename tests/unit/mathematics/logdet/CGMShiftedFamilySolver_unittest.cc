@@ -33,7 +33,7 @@ TEST(CGMShiftedFamilySolver, solve_shifted_weight_noshift)
 
 	// diagonal Hermintian matrix
 	for (index_t i=0; i<size; ++i)
-		m(i,i)=i+1;
+		m(i,i)=CMath::pow(2, i);
 
 	// constant vector of the system
 	SGVector<float64_t> b(size);
@@ -56,7 +56,7 @@ TEST(CGMShiftedFamilySolver, solve_shifted_weight_noshift)
 	Map<VectorXd> x_sh_map(x_sh.vector, x_sh.vlen);
 	Map<VectorXd> x_map(x.vector, x.vlen);
 
-	EXPECT_NEAR((x_sh_map-x_map).norm(), 0.0, 1E-14);
+	EXPECT_NEAR((x_sh_map-x_map).norm(), 0.0, 1E-15);
 
 	SG_UNREF(A);
 }
@@ -69,14 +69,14 @@ TEST(CGMShiftedFamilySolver, solve_shifted_weight_real_shift)
 
 	// diagonal Hermintian matrix
 	for (index_t i=0; i<size; ++i)
-		m(i,i)=i+1;
+		m(i,i)=CMath::pow(2, i);
 
 	// constant vector of the system
 	SGVector<float64_t> b(size);
-	b.set_const(0.5);
+	b.set_const(1.0);
 
 	// shifts
-	float64_t shift=0.01;
+	float64_t shift=100;
 
 	SGVector<complex64_t> shifts(1);
 	shifts.set_const(shift);
@@ -111,7 +111,7 @@ TEST(CGMShiftedFamilySolver, solve_shifted_weight_real_shift)
 	Map<VectorXcd> x_sh_map(x_sh.vector, x_sh.vlen);
 	Map<VectorXd> x_map(x.vector, x.vlen);
 
-	EXPECT_NEAR((x_sh_map-x_map.cast<complex64_t>()).norm(), 0.0, 0.01);
+	EXPECT_NEAR((x_sh_map-x_map.cast<complex64_t>()).norm(), 0.0, 1E-7);
 
 	SG_UNREF(A);
 }
@@ -124,14 +124,14 @@ TEST(CGMShiftedFamilySolver, solve_shifted_weight_complex_shift)
 
 	// diagonal Hermintian matrix
 	for (index_t i=0; i<size; ++i)
-		m(i,i)=i+1;
+		m(i,i)=CMath::pow(2, i);
 
 	// constant vector of the system
 	SGVector<float64_t> b(size);
 	b.set_const(0.5);
 
 	// shifts
-	complex64_t shift(0.0, 0.01);
+	complex64_t shift(0.0, 100.0);
 
 	SGVector<complex64_t> shifts(1);
 	shifts.set_const(shift);
@@ -148,7 +148,6 @@ TEST(CGMShiftedFamilySolver, solve_shifted_weight_complex_shift)
 
 	// Solve with CG_M
 	CCGMShiftedFamilySolver cg_m_linear_solver;
-	cg_m_linear_solver.set_iteration_limit(10000);
 	SGVector<complex64_t> x_sh
 		=cg_m_linear_solver.solve_shifted_weighted(A, b, shifts, weights);
 
@@ -167,7 +166,7 @@ TEST(CGMShiftedFamilySolver, solve_shifted_weight_complex_shift)
 	Map<VectorXcd> x_sh_map(x_sh.vector, x_sh.vlen);
 	Map<VectorXcd> x_map(x.vector, x.vlen);
 
-	EXPECT_NEAR((x_sh_map-x_map).norm(), 0.0, 0.13);
+	EXPECT_NEAR((x_sh_map-x_map).norm(), 0.0, 1E-15);
 
 	SG_UNREF(A);
 	SG_UNREF(B);
