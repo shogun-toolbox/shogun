@@ -157,9 +157,7 @@ get_marginal_likelihood_derivatives(CMap<TParameter*, CSGObject*>& para_dict)
 	m_mean->build_parameter_dictionary(para_dict);
 	m_model->build_parameter_dictionary(para_dict);
 
-	CMap<TParameter*, SGVector<float64_t> > gradient(
-			3+para_dict.get_num_elements(),
-			3+para_dict.get_num_elements());
+	CMap<TParameter*, SGVector<float64_t> > gradient;
 
 	for (index_t i=0; i<para_dict.get_num_elements(); i++)
 	{
@@ -236,9 +234,8 @@ get_marginal_likelihood_derivatives(CMap<TParameter*, CSGObject*>& para_dict)
 			gradient.add(param, variables);
 	}
 
-	TParameter* param;
-	index_t index=get_modsel_param_index("scale");
-	param=m_model_selection_parameters->get_parameter(index);
+	TParameter* param=m_model_selection_parameters->get_parameter("scale");
+	para_dict.add(param, this);
 
 	SGVector<float64_t> scale(1);
 
@@ -256,7 +253,6 @@ get_marginal_likelihood_derivatives(CMap<TParameter*, CSGObject*>& para_dict)
 	scale[0]=scale[0]-dfhat.transpose()*(b-eigen_ktrtr*(Z*b)*CMath::sq(m_scale));
 
 	gradient.add(param, scale);
-	para_dict.add(param, this);
 
 	return gradient;
 }

@@ -40,7 +40,7 @@ CFITCInferenceMethod::CFITCInferenceMethod(CKernel* kern, CFeatures* feat,
 
 void CFITCInferenceMethod::init()
 {
-	SG_ADD((CSGObject**)&m_latent_features, "latent_features", "latent Features",
+	SG_ADD((CSGObject**)&m_latent_features, "latent_features", "Latent features",
 			MS_NOT_AVAILABLE);
 
 	m_latent_features=NULL;
@@ -165,9 +165,7 @@ get_marginal_likelihood_derivatives(CMap<TParameter*, CSGObject*>& para_dict)
 	m_mean->build_parameter_dictionary(para_dict);
 
 	//This will be the vector we return
-	CMap<TParameter*, SGVector<float64_t> > gradient(
-			3+para_dict.get_num_elements(),
-			3+para_dict.get_num_elements());
+	CMap<TParameter*, SGVector<float64_t> > gradient;
 
 	for (index_t i = 0; i < para_dict.get_num_elements(); i++)
 	{
@@ -548,19 +546,19 @@ void CFITCInferenceMethod::update_chol()
 	eigen_chol_uu=Luu.matrixU();
 
 	// solve Luu' * V = Ktru, and calculate sV = V.^2
-	MatrixXd V = eigen_chol_uu.triangularView<Upper>().adjoint().solve(eigen_ktru);
-	MatrixXd sV = V.cwiseProduct(V);
+	MatrixXd V=eigen_chol_uu.triangularView<Upper>().adjoint().solve(eigen_ktru);
+	MatrixXd sV=V.cwiseProduct(V);
 
 	// create shogun and eigen3 representation of
 	// dg = diag(K) + sn2 - diag(Q), and also compute idg = 1/dg
-	m_dg = SGVector<float64_t>(m_ktrtr.num_cols);
+	m_dg=SGVector<float64_t>(m_ktrtr.num_cols);
 	Map<VectorXd> eigen_dg(m_dg.vector, m_dg.vlen);
 	VectorXd eigen_idg(m_dg.vlen);
 
-	for (index_t i = 0; i < m_ktrtr.num_cols; i++)
+	for (index_t i=0; i<m_ktrtr.num_cols; i++)
 	{
 		eigen_dg[i]=m_ktrtr(i,i)*m_scale*m_scale+sigma*sigma-sV.col(i).sum();
-		eigen_idg[i] = 1.0 / eigen_dg[i];
+		eigen_idg[i]=1.0/eigen_dg[i];
 	}
 
 	// solve Lu' * Lu = V * diag(idg) * V' + I
@@ -569,7 +567,7 @@ void CFITCInferenceMethod::update_chol()
 
 	// create shogun and eigen3 representation of cholesky of covariance of
     // training features Luu (m_chol_utr and eigen_chol_utr)
-	m_chol_utr = SGMatrix<float64_t>(Lu.rows(),	Lu.cols());
+	m_chol_utr=SGMatrix<float64_t>(Lu.rows(), Lu.cols());
 	Map<MatrixXd> eigen_chol_utr(m_chol_utr.matrix, m_chol_utr.num_rows,
 		m_chol_utr.num_rows);
 	eigen_chol_utr = Lu.matrixU();
@@ -599,11 +597,11 @@ void CFITCInferenceMethod::update_chol()
 		V*eigen_r.cwiseQuotient(sqrt_dg));
 
 	// compute iKuu
-	MatrixXd iKuu = Luu.solve(MatrixXd::Identity(m_kuu.num_rows, m_kuu.num_cols));
+	MatrixXd iKuu=Luu.solve(MatrixXd::Identity(m_kuu.num_rows, m_kuu.num_cols));
 
 	// create shogun and eigen3 representation of posterior cholesky
 	MatrixXd eigen_prod=eigen_chol_utr*eigen_chol_uu;
-	m_L = SGMatrix<float64_t>(m_kuu.num_rows, m_kuu.num_cols);
+	m_L=SGMatrix<float64_t>(m_kuu.num_rows, m_kuu.num_cols);
 	Map<MatrixXd> eigen_chol(m_L.matrix, m_L.num_rows, m_L.num_cols);
 
 	eigen_chol=eigen_prod.triangularView<Upper>().adjoint().solve(
@@ -621,7 +619,7 @@ void CFITCInferenceMethod::update_alpha()
 
 	// create shogun and eigen representations of alpha
 	// and solve Luu * Lu * alpha = be
-	m_alpha = SGVector<float64_t>(m_chol_uu.num_rows);
+	m_alpha=SGVector<float64_t>(m_chol_uu.num_rows);
 	Map<VectorXd> eigen_alpha(m_alpha.vector, m_alpha.vlen);
 
 	eigen_alpha=eigen_chol_utr.triangularView<Upper>().solve(eigen_be);

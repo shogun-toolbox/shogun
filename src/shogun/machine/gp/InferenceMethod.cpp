@@ -54,10 +54,9 @@ void CInferenceMethod::init()
 	SG_ADD(&m_scale, "scale", "Kernel Scale", MS_AVAILABLE);
 	SG_ADD((CSGObject**)&m_model, "likelihood_model", "Likelihood model",
 			MS_AVAILABLE);
+	SG_ADD((CSGObject**)&m_mean, "mean_function", "Mean function", MS_AVAILABLE);
 	SG_ADD((CSGObject**)&m_labels, "labels", "Labels", MS_NOT_AVAILABLE);
 	SG_ADD((CSGObject**)&m_features, "features", "Features", MS_NOT_AVAILABLE);
-	SG_ADD((CSGObject**)&m_mean, "mean_function", "Mean Function",
-			MS_NOT_AVAILABLE);
 
 	m_kernel=NULL;
 	m_model=NULL;
@@ -85,7 +84,7 @@ void CInferenceMethod::check_members() const
 	REQUIRE(m_labels->get_num_labels()==m_features->get_num_vectors(),
 			"Number of training vectors must match number of labels, which is "
 			"%d, but number of training vectors is %d\n",
-			m_labels->get_num_labels(),	m_features->get_num_vectors())
+			m_labels->get_num_labels(), m_features->get_num_vectors())
 	REQUIRE(m_kernel, "Kernel should not be NULL\n")
 	REQUIRE(m_mean, "Mean function should not be NULL\n")
 
