@@ -35,7 +35,7 @@ CGaussianLikelihood::CGaussianLikelihood(float64_t sigma) : CLikelihoodModel()
 void CGaussianLikelihood::init()
 {
 	m_sigma=1.0;
-	SG_ADD(&m_sigma, "sigma", "Observation Noise.", MS_AVAILABLE);
+	SG_ADD(&m_sigma, "sigma", "Observation noise", MS_AVAILABLE);
 }
 
 CGaussianLikelihood::~CGaussianLikelihood()
@@ -55,13 +55,13 @@ CGaussianLikelihood* CGaussianLikelihood::obtain_from_generic(
 }
 
 SGVector<float64_t> CGaussianLikelihood::get_predictive_means(
-		SGVector<float64_t> mu,	SGVector<float64_t> s2, const CLabels* lab) const
+		SGVector<float64_t> mu, SGVector<float64_t> s2, const CLabels* lab) const
 {
 	return SGVector<float64_t>(mu);
 }
 
 SGVector<float64_t> CGaussianLikelihood::get_predictive_variances(
-		SGVector<float64_t> mu,	SGVector<float64_t> s2, const CLabels* lab) const
+		SGVector<float64_t> mu, SGVector<float64_t> s2, const CLabels* lab) const
 {
 	SGVector<float64_t> result(s2);
 	Map<VectorXd> eigen_result(result.vector, result.vlen);
