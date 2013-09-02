@@ -73,11 +73,9 @@ TEST(RationalApproximationCGMJob, compute)
 	for (index_t i=0; i<diag.vlen; ++i)
 		diag[i]+=complex64_t(0.0, 0.01);
 	shifted_operator->set_diagonal(diag);
-	shifted_operator->get_matrix_operator().display_matrix();
 
 	CDirectLinearSolverComplex direct_solver;
 	SGVector<float64_t> soln_imag=direct_solver.solve(shifted_operator, sample).get_imag();
-	soln_imag.display_vector();
 	Map<VectorXd> As(soln_imag.vector, soln_imag.vlen);
 	As=-As;
 	soln_imag=linear_operator->apply(soln_imag);

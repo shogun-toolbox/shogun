@@ -75,7 +75,7 @@ TEST(ProbingSampler, get_probing_vector)
 	Map<VectorXi> eig_sg_probing(sg_probing.vector, sg_probing.vlen);
 
 	// should be same
-	EXPECT_NEAR((eig_probing-eig_sg_probing).norm(), 0.0, 1E-15);
+	EXPECT_NEAR((eig_probing-eig_sg_probing).cast<float64_t>().norm(), 0.0, 1E-15);
 
 	SG_UNREF(sampler);
 	SG_UNREF(op);
