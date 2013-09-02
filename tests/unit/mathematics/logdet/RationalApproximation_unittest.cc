@@ -140,14 +140,11 @@ TEST(RationalApproximation, trace_accuracy)
 	float64_t min_eig=eig_solver->get_min_eigenvalue();
 	float64_t pi=CMath::PI;
 
-	index_t num_shifts=static_cast<index_t>(-1.5*(CMath::log(max_eig/min_eig)+6.0)
-  	*CMath::log(accuracy)/(2.0*pi*pi));
-
 	// create the operator function that extracts the trace
 	// of the approximation of log of the linear operator
 	CLogRationalApproximationIndividual *op_func
   	=new CLogRationalApproximationIndividual(
-			op, e, eig_solver, linear_solver, num_shifts);
+			op, e, eig_solver, linear_solver, accuracy);
 	SG_REF(op_func);
 
 	op_func->precompute();
