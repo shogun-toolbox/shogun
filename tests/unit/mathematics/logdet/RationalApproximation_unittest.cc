@@ -135,11 +135,6 @@ TEST(RationalApproximation, trace_accuracy)
 	// compute the number of shifts to assure a given accuracy
 	float64_t accuracy=1E-19;
 
-	eig_solver->compute();
-	float64_t max_eig=eig_solver->get_max_eigenvalue();
-	float64_t min_eig=eig_solver->get_min_eigenvalue();
-	float64_t pi=CMath::PI;
-
 	// create the operator function that extracts the trace
 	// of the approximation of log of the linear operator
 	CLogRationalApproximationIndividual *op_func
@@ -320,19 +315,11 @@ TEST(RationalApproximation, trace_accuracy_cg_m)
 	// compute the number of shifts to assure a given accuracy
 	float64_t accuracy=1E-19;
 
-	eig_solver->compute();
-	float64_t max_eig=eig_solver->get_max_eigenvalue();
-	float64_t min_eig=eig_solver->get_min_eigenvalue();
-	float64_t pi=CMath::PI;
-
-	index_t num_shifts=static_cast<index_t>(-1.5*(CMath::log(max_eig/min_eig)+6.0)
-  	*CMath::log(accuracy)/(2.0*pi*pi));
-
 	// create the operator function that extracts the trace
 	// of the approximation of log of the linear operator
 	CLogRationalApproximationCGM *op_func
   	=new CLogRationalApproximationCGM(op, e, eig_solver,
-		linear_solver, num_shifts);
+		linear_solver, accuracy);
 	SG_REF(op_func);
 
 	op_func->precompute();
