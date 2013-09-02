@@ -82,7 +82,7 @@ public:
 		m_iter_info.residual_norm=residual.norm();
 
 		m_success=m_iter_info.residual_norm < m_tolerence;
-		return m_success || m_iter_info.iteration_count > m_max_iteration_limit;
+		return m_success || m_iter_info.iteration_count >= m_max_iteration_limit;
 	}
 
 	/** @return current iteration info */

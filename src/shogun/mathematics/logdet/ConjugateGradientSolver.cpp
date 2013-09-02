@@ -94,7 +94,7 @@ SGVector<float64_t> CConjugateGradientSolver::solve(
 			break;
 
 		// compute the beta parameter of CG
-		float64_t beta=r_norm2/r_norm2_i;
+		float64_t beta=r_norm2_i/r_norm2;
 
 		// update direction, and ||r||_{2}
 		r_norm2=r_norm2_i;

@@ -133,23 +133,29 @@ SGVector<complex64_t> CCGMShiftedFamilySolver::solve_shifted_weighted(
 			break;
 
 		// compute the alpha parameter of CG_M
-		alpha=r_norm2/r_norm2_i;
+		alpha=r_norm2_i/r_norm2;
 
 		// update ||r||_{2}
 		r_norm2=r_norm2_i;
 
-		// update parameters
-		zeta_sh_old=zeta_sh_cur;
-		zeta_sh_cur=zeta_sh_new;
-		beta_old=beta;
-
 		// update direction
 		p=r+alpha*p;
 
-		compute_alpha_sh(zeta_sh_cur, zeta_sh_old, beta_sh, beta, alpha, alpha_sh);
+		compute_alpha_sh(zeta_sh_new, zeta_sh_cur, beta_sh, beta, alpha, alpha_sh);
 
 		for (index_t i=0; i<shifts.vlen; ++i)
-			p_sh.col(i)=zeta_sh_cur[i]*r+alpha_sh[i]*p_sh.col(i);
+		{		
+			p_sh.col(i)*=alpha_sh[i];
+			p_sh.col(i)+=zeta_sh_new[i]*r;
+		}
+
+		// update parameters
+		for (index_t i=0; i<shifts.vlen; ++i)
+		{
+			zeta_sh_old[i]=zeta_sh_cur[i];
+			zeta_sh_cur[i]=zeta_sh_new[i];
+		}
+		beta_old=beta;
 	}
 
 	if (it.succeeded(r))
