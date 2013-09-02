@@ -37,23 +37,6 @@ CLogRationalApproximationCGM::CLogRationalApproximationCGM()
 CLogRationalApproximationCGM::CLogRationalApproximationCGM(
 	CLinearOperator<float64_t>* linear_operator,
 	CIndependentComputationEngine* computation_engine,
-	CEigenSolver* eigen_solver, 
-	CCGMShiftedFamilySolver* linear_solver,
-	index_t num_shifts)
-	: CRationalApproximation(linear_operator, computation_engine,
-	  eigen_solver, num_shifts, OF_LOG)
-{
-	init();
-
-	m_linear_solver=linear_solver;
-	SG_REF(m_linear_solver);
-	
-	SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
-}
-
-CLogRationalApproximationCGM::CLogRationalApproximationCGM(
-	CLinearOperator<float64_t>* linear_operator,
-	CIndependentComputationEngine* computation_engine,
 	CEigenSolver* eigen_solver,
 	CCGMShiftedFamilySolver* linear_solver,
 	float64_t desired_accuracy)

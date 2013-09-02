@@ -37,25 +37,6 @@ public:
 	/** default constructor */
 	CLogRationalApproximationIndividual();
 
-	/** 
-	 * Constructor. Number of shifts is specified.
-	 *
-	 * @param linear_operator matrix linear operator of the log function
-	 * @param computation_engine engine that computes the independent jobs
-	 * @param eigen_solver eigen solver for computing min and max eigenvalues
-	 * needed for computing shifts, weights and multiplier in the rational
-	 * approximation
-	 * @param linear_solver linear solver for solving complex systems
-	 * @param num_shifts number of contour points in the quadrature rule of
-	 * of discretization of the contour integral
-	 */
-	CLogRationalApproximationIndividual(
-		CMatrixOperator<float64_t>* linear_operator,
-		CIndependentComputationEngine* computation_engine,
-		CEigenSolver* eigen_solver,
-		CLinearSolver<complex64_t, float64_t>* linear_solver,
-		index_t num_shifts);
-
 	/**
 	 * Constructor. Number of shifts will be computed using a specified accuracy.
 	 *

@@ -61,6 +61,7 @@ TEST(RationalApproximation, precompute)
 		=new CLogRationalApproximationIndividual(
 			op, e, eig_solver, (CLinearSolver<complex64_t, float64_t>*)linear_solver, 5);
 	SG_REF(op_func);
+	op_func->set_num_shifts(5);
 
 	op_func->precompute();
 
@@ -230,6 +231,7 @@ TEST(RationalApproximation, compare_direct_vs_cocg_accuracy)
 		=new CLogRationalApproximationIndividual(
 			op, e, eig_solver, (CLinearSolver<complex64_t, float64_t>*)dense_solver, 4);
 	SG_REF(op_func);
+	op_func->set_num_shifts(4);
 
 	op_func->precompute();
 

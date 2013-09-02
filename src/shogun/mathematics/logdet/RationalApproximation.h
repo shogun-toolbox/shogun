@@ -38,8 +38,14 @@ class CEigenSolver;
  * and \f$\eta\in\mathbb{R}\f$ is the constant multiplier, equals to
  * \f$\frac{-8K(\lambda_{m}\lambda_{M})^{\frac{1}{4}}}{k\pi N}\f$.
  *
- * Offers a method to compute the number of shifts automatically to reach a
- * previously specified bound on the approximation error.
+ * The number of shifts is automatically computed based on a previously
+ * specified accuracy \f$\epsilon\f$ using the error bound
+ * \f[
+ * 	  -1.5\left(\log\left(
+ * 	  \frac{\lambda_\text{max}}{\lambda_\text{min}}\right)+6.0
+ * 	  \right)\frac{\log(\epsilon)}{2\pi^2}.
+ * \f]
+ * It can also manually be set.
  *
  * Reference:
  * [1] Aune, E., D. Simpson, and J. Eidsvik (2012). Parameter estimation
@@ -59,25 +65,6 @@ class CRationalApproximation : public COperatorFunction<float64_t>
 public:
 	/** default constructor */
 	CRationalApproximation();
-
-	/** 
-	 * Constructor. Number of shifts is specified.
-	 *
-	 * @param linear_operator real valued linear operator for this operator
-	 * function
-	 * @param computation_engine engine that computes the independent jobs
-	 * @param eigen_solver eigen solver for computing min and max eigenvalues
-	 * needed for computing shifts, weights and constant multiplier
-	 * @param num_shifts number of contour points in the quadrature rule of
-	 * of discretization of the contour integral
-	 * @param function_type operator function type
-	 */
-	CRationalApproximation(
-		CLinearOperator<float64_t>* linear_operator,
-		CIndependentComputationEngine* computation_engine,
-		CEigenSolver* eigen_solver,
-		index_t num_shifts,
-		EOperatorFunction function_type);
 
 	/**
 	 * Constructor. Number of shifts will be computed using a specified accuracy.
@@ -111,7 +98,7 @@ public:
 	 */
 	virtual void precompute();
 
-	/** Sets the number of shifts from the previously set accuracy \f$\epsilon\f$
+	/** Computes the number of shifts from the current set accuracy \f$\epsilon\f$
 	 * using
 	 * \f[
 	 * 	  -1.5\left(\log\left(
@@ -119,8 +106,10 @@ public:
 	 * 	  \right)\frac{\log(\epsilon)}{2\pi^2},
 	 * \f]
 	 *
+	 * @return number of shift to reach the above error bound
+	 *
 	 */
-	void set_shifts_from_accuracy();
+	int32_t compute_num_shifts_from_accuracy();
 
 	/** 
 	 * abstract method that creates a job result aggregator, then creates a
@@ -169,7 +158,7 @@ protected:
 	float64_t m_constant_multiplier;
 
 	/** number of shifts */
-	index_t m_num_shifts;
+	int32_t m_num_shifts;
 
 	/** desired accuracy from which number of shifts might be computed */
 	float64_t m_desired_accuracy;

@@ -34,25 +34,6 @@ CRationalApproximation::CRationalApproximation(
 	CLinearOperator<float64_t>* linear_operator,
 	CIndependentComputationEngine* computation_engine,
 	CEigenSolver* eigen_solver,
-	index_t num_shifts,
-	EOperatorFunction function_type)
-	: COperatorFunction<float64_t>(linear_operator, computation_engine,
-	  function_type)
-{
-	init();
-
-	m_eigen_solver=eigen_solver;
-	SG_REF(m_eigen_solver);
-
-	m_num_shifts=num_shifts;
-
-	SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
-}
-
-CRationalApproximation::CRationalApproximation(
-	CLinearOperator<float64_t>* linear_operator,
-	CIndependentComputationEngine* computation_engine,
-	CEigenSolver* eigen_solver,
 	float64_t desired_accuracy,
 	EOperatorFunction function_type)
 	: COperatorFunction<float64_t>(linear_operator, computation_engine,
@@ -131,14 +112,14 @@ void CRationalApproximation::precompute()
 	SG_DEBUG("max_eig=%.15lf\n", m_eigen_solver->get_max_eigenvalue());
 	SG_DEBUG("min_eig=%.15lf\n", m_eigen_solver->get_min_eigenvalue());
 
-	// compute number of shifts from accuracy if shifts are not set
+	// compute number of shifts from accuracy if shifts are not set yet
 	if (m_num_shifts==0)
-		set_shifts_from_accuracy();
+		m_num_shifts=compute_num_shifts_from_accuracy();
 
 	compute_shifts_weights_const();
 }
 
-void CRationalApproximation::set_shifts_from_accuracy()
+int32_t CRationalApproximation::compute_num_shifts_from_accuracy()
 {
 	REQUIRE(m_desired_accuracy>0, "Desired accuracy must be positive but is %f\n",
 			m_desired_accuracy);
@@ -148,7 +129,7 @@ void CRationalApproximation::set_shifts_from_accuracy()
 
 	float64_t log_cond_number=CMath::log(max_eig)-CMath::log(min_eig);
 	float64_t two_pi_sq=2.0*M_PI*M_PI;
-	m_num_shifts=static_cast<index_t>(-1.5*(log_cond_number+6.0)
+	return static_cast<index_t>(-1.5*(log_cond_number+6.0)
 	  	*CMath::log(m_desired_accuracy)/two_pi_sq);
 }
 
