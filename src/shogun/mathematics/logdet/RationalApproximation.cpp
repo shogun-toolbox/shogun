@@ -5,6 +5,7 @@
  * (at your option) any later version.
  * 
  * Written (W) 2013 Soumyajit De
+ * Written (W) 2013 Heiko Strathmann
  */
 
 #include <shogun/lib/config.h>
