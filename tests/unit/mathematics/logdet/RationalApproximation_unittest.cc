@@ -233,8 +233,6 @@ TEST(RationalApproximation, compare_direct_vs_cocg_accuracy)
 
 	CConjugateOrthogonalCGSolver *sparse_solver
 		=new CConjugateOrthogonalCGSolver();
-	sparse_solver->set_absolute_tolerence(0.001);
-	sparse_solver->set_iteration_limit(500);
 
 	CLogRationalApproximationIndividual *op_func
 		=new CLogRationalApproximationIndividual(
@@ -278,7 +276,7 @@ TEST(RationalApproximation, compare_direct_vs_cocg_accuracy)
 		Map<VectorXcd> map_xd(xd.vector, xd.vlen);
 		Map<VectorXcd> map_xs(xs.vector, xs.vlen);
 
-		EXPECT_NEAR((map_xd-map_xs).norm(), 0.0, 0.001);
+		EXPECT_NEAR((map_xd-map_xs).norm(), 0.0, 0.01);
 
 		SG_UNREF(shifted_dense);
 		SG_UNREF(shifted_sparse);

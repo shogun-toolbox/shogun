@@ -86,9 +86,9 @@ protected:
 	 * @param alpha \f$\alpha\f$ non-shifted
 	 * @param zeta_sh_new \f$\zeta^{\sigma}_{n+1}\f$ to be computed
 	 */
-	void compute_zeta_sh_new(SGVector<ST> zeta_sh_old,
-		SGVector<ST> zeta_sh_cur, SGVector<ST> shifts,
-		T beta_old, T beta_cur, T alpha, SGVector<ST>& zeta_sh_new);
+	void compute_zeta_sh_new(const SGVector<ST>& zeta_sh_old,
+		const SGVector<ST>& zeta_sh_cur, const SGVector<ST>& shifts,
+		const T& beta_old, const T& beta_cur, const T& alpha, SGVector<ST>& zeta_sh_new);
 
 	/**
 	 * compute \f$\beta^{\sigma}_{n}\f$ as \f$\beta_{n}\frac{\zeta^{\sigma}_{n+1}}
@@ -99,8 +99,8 @@ protected:
 	 * @param beta_cur \f$\beta_{n}\f$, non-shifted
 	 * @param beta_sh \f$\beta^{\sigma}_{n}\f$, to be computed
 	 */
-	void compute_beta_sh(SGVector<ST> zeta_sh_new,
-		SGVector<ST> zeta_sh_cur, T beta_cur, SGVector<ST>& beta_sh);
+	void compute_beta_sh(const SGVector<ST>& zeta_sh_new,
+		const SGVector<ST>& zeta_sh_cur, const T& beta_cur, SGVector<ST>& beta_sh);
 
 	/**
 	 * compute \f$alpha^{\sigma}_{n}\f$ as \f$\alpha_{n}\frac{\zeta^{\sigma}
@@ -108,14 +108,14 @@ protected:
 	 *
 	 * @param zeta_sh_cur \f$\zeta^{\sigma}_{n}\f$ shifted params
 	 * @param zeta_sh_old \f$\zeta^{\sigma}_{n-1}\f$ shifted params
-	 * @param beta_sh \f$\beta^{\sigma}_{n}\f$, shifted params
-	 * @param beta \f$\beta_{n}\f$, non-shifted
+	 * @param beta_sh_old \f$\beta^{\sigma}_{n-1}\f$, shifted params
+	 * @param beta_old \f$\beta_{n-1}\f$, non-shifted
 	 * @param alpha \f$\alpha_{n}\f$, non-shifted
 	 * @param alpha_sh \f$\alpha^{\sigma}_{n}\f$, to be computed
 	 */
-	void compute_alpha_sh(SGVector<ST> zeta_sh_cur,
-		SGVector<ST> zeta_sh_old, SGVector<ST> beta_sh,
-		T beta, T alpha, SGVector<ST>& alpha_sh);
+	void compute_alpha_sh(const SGVector<ST>& zeta_sh_cur,
+		const SGVector<ST>& zeta_sh_old, const SGVector<ST>& beta_sh_old,
+		const T& beta_old, const T& alpha, SGVector<ST>& alpha_sh);
 
 };
 
