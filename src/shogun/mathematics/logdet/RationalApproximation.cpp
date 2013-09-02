@@ -45,8 +45,24 @@ CRationalApproximation::CRationalApproximation(
 
 	m_num_shifts=num_shifts;
 
-	m_shifts=SGVector<complex64_t>(m_num_shifts);
-	m_weights=SGVector<complex64_t>(m_num_shifts);
+	SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
+}
+
+CRationalApproximation::CRationalApproximation(
+	CLinearOperator<float64_t>* linear_operator,
+	CIndependentComputationEngine* computation_engine,
+	CEigenSolver* eigen_solver,
+	float64_t desired_accuracy,
+	EOperatorFunction function_type)
+	: COperatorFunction<float64_t>(linear_operator, computation_engine,
+	  function_type)
+{
+	init();
+
+	m_eigen_solver=eigen_solver;
+	SG_REF(m_eigen_solver);
+
+	m_desired_accuracy=desired_accuracy;
 
 	SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 }
@@ -63,6 +79,7 @@ void CRationalApproximation::init()
 	m_eigen_solver=NULL;
 	m_constant_multiplier=0.0;
 	m_num_shifts=0;
+	m_desired_accuracy=0.0;
 
 	SG_ADD((CSGObject**)&m_eigen_solver, "eigen_solver",
 		"Eigen solver for computing extremal eigenvalues", MS_NOT_AVAILABLE);
@@ -96,6 +113,16 @@ float64_t CRationalApproximation::get_constant_multiplier() const
 	return m_constant_multiplier;
 }
 
+index_t CRationalApproximation::get_num_shifts() const
+{
+	return m_num_shifts;
+}
+
+void CRationalApproximation::set_num_shifts(index_t num_shifts)
+{
+	m_num_shifts=num_shifts;
+}
+
 void CRationalApproximation::precompute()
 {
 	// compute extremal eigenvalues
@@ -103,7 +130,24 @@ void CRationalApproximation::precompute()
 	SG_DEBUG("max_eig=%.15lf\n", m_eigen_solver->get_max_eigenvalue());
 	SG_DEBUG("min_eig=%.15lf\n", m_eigen_solver->get_min_eigenvalue());
 
+	// compute number of shifts from accuracy if shifts are not set
+	if (m_num_shifts==0)
+		set_shifts_from_accuracy();
+
 	compute_shifts_weights_const();
+}
+
+void CRationalApproximation::set_shifts_from_accuracy()
+{
+	REQUIRE(m_desired_accuracy>0, "Desired accuracy must be positive\n");
+
+	float64_t max_eig=m_eigen_solver->get_max_eigenvalue();
+	float64_t min_eig=m_eigen_solver->get_min_eigenvalue();
+
+	float64_t log_cond_number=CMath::log(max_eig)-CMath::log(min_eig);
+	float64_t two_pi_sq=2.0*M_PI*M_PI;
+	m_num_shifts=static_cast<index_t>(-1.5*(log_cond_number+6.0)
+	  	*CMath::log(m_desired_accuracy)/two_pi_sq);
 }
 
 void CRationalApproximation::compute_shifts_weights_const()
@@ -137,6 +181,10 @@ void CRationalApproximation::compute_shifts_weights_const()
 	// using conformal mapping of the quadrature rule for discretization of the
 	// contour integral
 	float64_t m=CMath::sq(k);
+
+	// allocate memory for shifts
+	m_shifts=SGVector<complex64_t>(m_num_shifts);
+	m_weights=SGVector<complex64_t>(m_num_shifts);
 
 	for (index_t i=0; i<m_num_shifts; ++i)
 	{
