@@ -130,6 +130,12 @@ template<class T> class SGVector : public SGReferencedData
 		 */
 		SGVector<index_t> argsort();
 
+		/** check if vector is sorted
+		 *
+		 * @return true if vector is sorted, false otherwise
+		 */
+		bool is_sorted() const;
+
 		/** clone vector */
 		SGVector<T> clone() const;
 

@@ -318,3 +318,67 @@ TEST(SGVectorTest, convert_to_matrix)
 		}
 	}
 }
+
+TEST(SGVectorTest,qsort)
+{
+	SGVector<index_t> v(4);
+	v[0]=12;
+	v[1]=1;
+	v[2]=7;
+	v[3]=9;
+
+	v.qsort();
+
+	EXPECT_EQ(v.vlen, 4);
+	EXPECT_EQ(v[0], 1);
+	EXPECT_EQ(v[1], 7);
+	EXPECT_EQ(v[2], 9);
+	EXPECT_EQ(v[3], 12);
+}
+
+TEST(SGVectorTest,is_sorted)
+{
+	SGVector<index_t> v(4);
+	v[0]=12;
+	v[1]=1;
+	v[2]=7;
+	v[3]=9;
+
+	EXPECT_EQ(v.is_sorted(), false);
+	v.qsort();
+
+	EXPECT_EQ(v.is_sorted(), true);
+}
+
+TEST(SGVectorTest,is_sorted_0)
+{
+	SGVector<index_t> v(0);
+
+	EXPECT_EQ(v.is_sorted(), true);
+	v.qsort();
+
+	EXPECT_EQ(v.is_sorted(), true);
+}
+
+TEST(SGVectorTest,is_sorted_1)
+{
+	SGVector<index_t> v(1);
+	v[0]=12;
+
+	EXPECT_EQ(v.is_sorted(), true);
+	v.qsort();
+
+	EXPECT_EQ(v.is_sorted(), true);
+}
+
+TEST(SGVectorTest,is_sorted_2)
+{
+	SGVector<index_t> v(2);
+	v[0]=12;
+	v[1]=1;
+
+	EXPECT_EQ(v.is_sorted(), false);
+	v.qsort();
+
+	EXPECT_EQ(v.is_sorted(), true);
+}
