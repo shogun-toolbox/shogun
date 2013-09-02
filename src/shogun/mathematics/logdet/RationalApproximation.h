@@ -79,7 +79,7 @@ public:
 		EOperatorFunction function_type);
 
 	/**
-	 * Constructor. Number of shifts is computed using a given accuracy.
+	 * Constructor. Number of shifts will be computed using a specified accuracy.
 	 *
 	 * @param linear_operator real valued linear operator for this operator
 	 * function
@@ -87,9 +87,7 @@ public:
 	 * @param eigen_solver eigen solver for computing min and max eigenvalues
 	 * needed for computing shifts, weights and constant multiplier
 	 * @param desired_accuracy desired error bound on approximation. Computes
-	 * the number
-	 * of shifts automatically
-	 * of discretization of the contour integral
+	 * the number of shifts automatically
 	 * @param function_type operator function type
 	 */
 	CRationalApproximation(
