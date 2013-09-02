@@ -10,8 +10,8 @@ parameter_list = [[traindat,testdat,label_traindat,0.9,1,6],[traindat,testdat,la
 
 def classifier_svmsgd_modular (fm_train_real=traindat,fm_test_real=testdat,label_train_twoclass=label_traindat,C=0.9,num_threads=1,num_iter=5):
 
-	from shogun.Features import RealFeatures, SparseRealFeatures, BinaryLabels
-	from shogun.Classifier import SVMSGD
+	from modshogun import RealFeatures, SparseRealFeatures, BinaryLabels
+	from modshogun import SVMSGD
 
 	realfeat=RealFeatures(fm_train_real)
 	feats_train=SparseRealFeatures()

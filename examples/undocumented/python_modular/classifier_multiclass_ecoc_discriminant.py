@@ -6,9 +6,9 @@ from tools.multiclass_shared import prepare_data
 parameter_list = [[traindat,testdat,label_traindat,label_testdat,2.1,1,1e-5],[traindat,testdat,label_traindat,label_testdat,2.2,1,1e-5]]
 
 def classifier_multiclass_ecoc_discriminant (fm_train_real=traindat,fm_test_real=testdat,label_train_multiclass=label_traindat,label_test_multiclass=label_testdat,lawidth=2.1,C=1,epsilon=1e-5):
-    from shogun.Features import RealFeatures, MulticlassLabels
-    from shogun.Classifier import LibLinear, L2R_L2LOSS_SVC, LinearMulticlassMachine
-    from shogun.Classifier import ECOCStrategy, ECOCDiscriminantEncoder, ECOCHDDecoder
+    from modshogun import RealFeatures, MulticlassLabels
+    from modshogun import LibLinear, L2R_L2LOSS_SVC, LinearMulticlassMachine
+    from modshogun import ECOCStrategy, ECOCDiscriminantEncoder, ECOCHDDecoder
 
     feats_train = RealFeatures(fm_train_real)
     feats_test  = RealFeatures(fm_test_real)
@@ -32,7 +32,7 @@ def classifier_multiclass_ecoc_discriminant (fm_train_real=traindat,fm_test_real
     out = label_pred.get_labels()
 
     if label_test_multiclass is not None:
-        from shogun.Evaluation import MulticlassAccuracy
+        from modshogun import MulticlassAccuracy
         labels_test = MulticlassLabels(label_test_multiclass)
         evaluator = MulticlassAccuracy()
         acc = evaluator.evaluate(label_pred, labels_test)

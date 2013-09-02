@@ -7,13 +7,13 @@ testdat = lm.load_numbers('../data/fm_test_real.dat')
 
 parameter_list = [[traindat,testdat,1.5,10],[traindat,testdat,1.5,10]]
 
-from shogun.Library import Math_init_random;
+from modshogun import Math_init_random;
 Math_init_random(12345);
 
 def preprocessor_randomfouriergausspreproc_modular (fm_train_real=traindat,fm_test_real=testdat,width=1.4,size_cache=10):
-	from shogun.Kernel import Chi2Kernel
-	from shogun.Features import RealFeatures
-	from shogun.Preprocessor import RandomFourierGaussPreproc
+	from modshogun import Chi2Kernel
+	from modshogun import RealFeatures
+	from modshogun import RandomFourierGaussPreproc
 
 	feats_train=RealFeatures(fm_train_real)
 	feats_test=RealFeatures(fm_test_real)

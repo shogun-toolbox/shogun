@@ -13,9 +13,9 @@ parameter_list = [[traindat,testdat,label_traindat,label_testdat,2.1,1,1e-5]]
 def classifier_multiclass_ecoc (fm_train_real=traindat,fm_test_real=testdat,label_train_multiclass=label_traindat,label_test_multiclass=label_testdat,lawidth=2.1,C=1,epsilon=1e-5):
 
 	import shogun.Classifier as Classifier
-	from shogun.Classifier import ECOCStrategy, LibLinear, L2R_L2LOSS_SVC, LinearMulticlassMachine
-	from shogun.Evaluation import MulticlassAccuracy
-	from shogun.Features import RealFeatures, MulticlassLabels
+	from modshogun import ECOCStrategy, LibLinear, L2R_L2LOSS_SVC, LinearMulticlassMachine
+	from modshogun import MulticlassAccuracy
+	from modshogun import RealFeatures, MulticlassLabels
 
 	def nonabstract_class(name):
 		try:

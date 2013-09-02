@@ -3,12 +3,12 @@
 parameter_list=[[100, 250, 10, 2]]
 
 def structure_plif_hmsvm_mosek (num_examples, example_length, num_features, num_noise_features):
-	from shogun.Features   import RealMatrixFeatures
-	from shogun.Structure  import TwoStateModel
-	from shogun.Evaluation import StructuredAccuracy
+	from modshogun   import RealMatrixFeatures
+	from modshogun  import TwoStateModel
+	from modshogun import StructuredAccuracy
 
 	try:
-		from shogun.Structure import PrimalMosekSOSVM
+		from modshogun import PrimalMosekSOSVM
 	except ImportError:
 		print("Mosek not available")
 		return

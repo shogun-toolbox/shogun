@@ -11,9 +11,9 @@ label_traindat = lm.load_labels('../data/label_train_twoclass.dat')
 parameter_list = [[traindat,testdat,label_traindat,2.1,1]]
 
 def classifier_libsvm_minimal_modular (fm_train_real=traindat,fm_test_real=testdat,label_train_twoclass=label_traindat,width=2.1,C=1):
-	from shogun.Features import RealFeatures, BinaryLabels
-	from shogun.Classifier import LibSVM
-	from shogun.Kernel import GaussianKernel
+	from modshogun import RealFeatures, BinaryLabels
+	from modshogun import LibSVM
+	from modshogun import GaussianKernel
 
 	feats_train=RealFeatures(fm_train_real);
 	feats_test=RealFeatures(fm_test_real);

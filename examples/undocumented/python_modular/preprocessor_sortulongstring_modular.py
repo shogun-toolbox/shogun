@@ -9,9 +9,9 @@ parameter_list = [[traindna,testdna,4,0,False,False],[traindna,testdna,3,0,False
 
 def preprocessor_sortulongstring_modular (fm_train_dna=traindna,fm_test_dna=testdna,order=3,gap=0,reverse=False,use_sign=False):
 
-	from shogun.Kernel import CommUlongStringKernel
-	from shogun.Features import StringCharFeatures, StringUlongFeatures, DNA
-	from shogun.Preprocessor import SortUlongString
+	from modshogun import CommUlongStringKernel
+	from modshogun import StringCharFeatures, StringUlongFeatures, DNA
+	from modshogun import SortUlongString
 
 
 	charfeat=StringCharFeatures(DNA)

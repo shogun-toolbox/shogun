@@ -9,9 +9,9 @@ parameter_list = [[traindna,testdna,3,0,False,False],[traindna,testdna,3,0,False
 
 def preprocessor_sortwordstring_modular (fm_train_dna=traindna,fm_test_dna=testdna,order=3,gap=0,reverse=False,use_sign=False):
 
-	from shogun.Kernel import CommWordStringKernel
-	from shogun.Features import StringCharFeatures, StringWordFeatures, DNA
-	from shogun.Preprocessor import SortWordString
+	from modshogun import CommWordStringKernel
+	from modshogun import StringCharFeatures, StringWordFeatures, DNA
+	from modshogun import SortWordString
 
 	charfeat=StringCharFeatures(fm_train_dna, DNA)
 	feats_train=StringWordFeatures(charfeat.get_alphabet())

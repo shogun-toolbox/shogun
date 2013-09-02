@@ -6,9 +6,9 @@ parameter_list=[[1, 0.1,20,100,6,10,0.5,1, 1], [2,0.2,20,100,6,10,0.5,1, 2]]
 def regression_libsvr_modular (svm_c=1, svr_param=0.1, n=100,n_test=100, \
 		x_range=6,x_range_test=10,noise_var=0.5,width=1, seed=1):
 
-	from shogun.Features import RegressionLabels, RealFeatures
-	from shogun.Kernel import GaussianKernel
-	from shogun.Regression import LibSVR, LIBSVR_NU_SVR, LIBSVR_EPSILON_SVR
+	from modshogun import RegressionLabels, RealFeatures
+	from modshogun import GaussianKernel
+	from modshogun import LibSVR, LIBSVR_NU_SVR, LIBSVR_EPSILON_SVR
 
 	# reproducable results
 	random.seed(seed)

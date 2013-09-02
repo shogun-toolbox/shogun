@@ -9,10 +9,10 @@ data_dict = scipy.io.loadmat('../data/hmsvm_data_large_integer.mat', struct_as_r
 parameter_list=[[data_dict]]
 
 def structure_discrete_hmsvm_bmrm (m_data_dict=data_dict):
-	from shogun.Features   import RealMatrixFeatures
-	from shogun.Structure  import SequenceLabels, HMSVMModel, Sequence, TwoStateModel, SMT_TWO_STATE
-	from shogun.Evaluation import StructuredAccuracy
-	from shogun.Structure  import DualLibQPBMSOSVM
+	from modshogun   import RealMatrixFeatures
+	from modshogun  import SequenceLabels, HMSVMModel, Sequence, TwoStateModel, SMT_TWO_STATE
+	from modshogun import StructuredAccuracy
+	from modshogun  import DualLibQPBMSOSVM
 
 	labels_array = m_data_dict['label'][0]
 

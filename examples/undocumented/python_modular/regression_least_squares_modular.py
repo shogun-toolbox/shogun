@@ -16,9 +16,9 @@ parameter_list = [[traindat,testdat,label_traindat]]
 
 def regression_least_squares_modular (fm_train=traindat,fm_test=testdat,label_train=label_traindat,tau=1e-6):
 
-	from shogun.Features import RegressionLabels, RealFeatures
-	from shogun.Kernel import GaussianKernel
-	from shogun.Regression import LeastSquaresRegression
+	from modshogun import RegressionLabels, RealFeatures
+	from modshogun import GaussianKernel
+	from modshogun import LeastSquaresRegression
 
 	ls=LeastSquaresRegression(RealFeatures(traindat), RegressionLabels(label_train))
 	ls.train()

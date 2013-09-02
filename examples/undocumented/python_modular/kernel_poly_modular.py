@@ -8,8 +8,8 @@ parameter_list = [[traindat,testdat,4,False,True],[traindat,testdat,5,False,True
 
 def kernel_poly_modular (fm_train_real=traindat,fm_test_real=testdat,degree=4,inhomogene=False,
 	use_normalization=True):
-	from shogun.Features import RealFeatures
-	from shogun.Kernel import PolyKernel
+	from modshogun import RealFeatures
+	from modshogun import PolyKernel
 
 	feats_train=RealFeatures(fm_train_real)
 	feats_test=RealFeatures(fm_test_real)

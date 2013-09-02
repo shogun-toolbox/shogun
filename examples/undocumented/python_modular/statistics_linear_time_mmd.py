@@ -12,13 +12,13 @@ from numpy import *
 parameter_list = [[1000,2,0.5]]
 
 def statistics_linear_time_mmd (n,dim,difference):
-	from shogun.Features import RealFeatures
-	from shogun.Features import MeanShiftDataGenerator
-	from shogun.Kernel import GaussianKernel
-	from shogun.Statistics import LinearTimeMMD
-	from shogun.Statistics import BOOTSTRAP, MMD1_GAUSSIAN
-	from shogun.Distance import EuclideanDistance
-	from shogun.Mathematics import Statistics, Math
+	from modshogun import RealFeatures
+	from modshogun import MeanShiftDataGenerator
+	from modshogun import GaussianKernel
+	from modshogun import LinearTimeMMD
+	from modshogun import BOOTSTRAP, MMD1_GAUSSIAN
+	from modshogun import EuclideanDistance
+	from modshogun import Statistics, Math
 
 	# init seed for reproducability
 	Math.init_random(1)

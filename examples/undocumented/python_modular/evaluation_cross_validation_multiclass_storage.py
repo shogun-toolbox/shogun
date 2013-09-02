@@ -23,16 +23,16 @@ label_traindat=concatenate((zeros(num_vectors), ones(num_vectors)));
 parameter_list = [[traindat,label_traindat]]
 
 def evaluation_cross_validation_multiclass_storage (traindat=traindat, label_traindat=label_traindat):
-    from shogun.Evaluation import CrossValidation, CrossValidationResult
-    from shogun.Evaluation import CrossValidationPrintOutput
-    from shogun.Evaluation import CrossValidationMKLStorage, CrossValidationMulticlassStorage
-    from shogun.Evaluation import MulticlassAccuracy, F1Measure
-    from shogun.Evaluation import StratifiedCrossValidationSplitting
-    from shogun.Features import MulticlassLabels
-    from shogun.Features import RealFeatures, CombinedFeatures
-    from shogun.Kernel import GaussianKernel, CombinedKernel
-    from shogun.Classifier import MKLMulticlass
-    from shogun.Mathematics import Statistics, MSG_DEBUG, Math
+    from modshogun import CrossValidation, CrossValidationResult
+    from modshogun import CrossValidationPrintOutput
+    from modshogun import CrossValidationMKLStorage, CrossValidationMulticlassStorage
+    from modshogun import MulticlassAccuracy, F1Measure
+    from modshogun import StratifiedCrossValidationSplitting
+    from modshogun import MulticlassLabels
+    from modshogun import RealFeatures, CombinedFeatures
+    from modshogun import GaussianKernel, CombinedKernel
+    from modshogun import MKLMulticlass
+    from modshogun import Statistics, MSG_DEBUG, Math
     
     Math.init_random(1)
 

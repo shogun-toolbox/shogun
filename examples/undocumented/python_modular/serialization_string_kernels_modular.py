@@ -1,16 +1,16 @@
 #!/usr/bin/env python
 
-from shogun.Kernel import WeightedDegreeStringKernel, LinearKernel, PolyKernel, GaussianKernel, CTaxonomy
-from shogun.Kernel import CombinedKernel, WeightedDegreeRBFKernel
-from shogun.Features import StringCharFeatures, RealFeatures, CombinedFeatures, StringWordFeatures, SortWordString
-from shogun.Features import DNA, PROTEIN, Labels
-from shogun.Kernel import WeightedDegreeStringKernel, CombinedKernel, WeightedCommWordStringKernel, WeightedDegreePositionStringKernel
-from shogun.Features import StringCharFeatures, DNA, StringWordFeatures, CombinedFeatures
+from modshogun import WeightedDegreeStringKernel, LinearKernel, PolyKernel, GaussianKernel, CTaxonomy
+from modshogun import CombinedKernel, WeightedDegreeRBFKernel
+from modshogun import StringCharFeatures, RealFeatures, CombinedFeatures, StringWordFeatures, SortWordString
+from modshogun import DNA, PROTEIN, Labels
+from modshogun import WeightedDegreeStringKernel, CombinedKernel, WeightedCommWordStringKernel, WeightedDegreePositionStringKernel
+from modshogun import StringCharFeatures, DNA, StringWordFeatures, CombinedFeatures
 
-from shogun.IO import MSG_DEBUG
-from shogun.Features import RealFeatures, BinaryLabels, DNA, Alphabet
-from shogun.Kernel import WeightedDegreeStringKernel, GaussianKernel
-from shogun.Classifier import SVMLight
+from modshogun import MSG_DEBUG
+from modshogun import RealFeatures, BinaryLabels, DNA, Alphabet
+from modshogun import WeightedDegreeStringKernel, GaussianKernel
+from modshogun import SVMLight
 from numpy import concatenate, ones
 from numpy.random import randn, seed
 import numpy

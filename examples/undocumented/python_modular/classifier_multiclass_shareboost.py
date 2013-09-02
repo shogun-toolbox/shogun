@@ -6,8 +6,8 @@ from tools.multiclass_shared import prepare_data
 parameter_list = [[traindat,testdat,label_traindat,label_testdat,2.1,1,1e-5],[traindat,testdat,label_traindat,label_testdat,2.2,1,1e-5]]
 
 def classifier_multiclass_shareboost (fm_train_real=traindat,fm_test_real=testdat,label_train_multiclass=label_traindat,label_test_multiclass=label_testdat,lawidth=2.1,C=1,epsilon=1e-5):
-    from shogun.Features import RealFeatures, RealSubsetFeatures, MulticlassLabels
-    from shogun.Classifier import ShareBoost
+    from modshogun import RealFeatures, RealSubsetFeatures, MulticlassLabels
+    from modshogun import ShareBoost
 
     #print('Working on a problem of %d features and %d samples' % fm_train_real.shape)
 
@@ -25,7 +25,7 @@ def classifier_multiclass_shareboost (fm_train_real=traindat,fm_test_real=testda
     out = label_pred.get_labels()
 
     if label_test_multiclass is not None:
-        from shogun.Evaluation import MulticlassAccuracy
+        from modshogun import MulticlassAccuracy
         labels_test = MulticlassLabels(label_test_multiclass)
         evaluator = MulticlassAccuracy()
         acc = evaluator.evaluate(label_pred, labels_test)

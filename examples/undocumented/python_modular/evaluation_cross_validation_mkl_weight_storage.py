@@ -22,16 +22,16 @@ label_traindat=concatenate((-ones(num_vectors), ones(num_vectors)));
 parameter_list = [[traindat,label_traindat]]
 
 def evaluation_cross_validation_mkl_weight_storage(traindat=traindat, label_traindat=label_traindat):
-    from shogun.Evaluation import CrossValidation, CrossValidationResult
-    from shogun.Evaluation import CrossValidationPrintOutput
-    from shogun.Evaluation import CrossValidationMKLStorage
-    from shogun.Evaluation import ContingencyTableEvaluation, ACCURACY
-    from shogun.Evaluation import StratifiedCrossValidationSplitting
-    from shogun.Features import BinaryLabels
-    from shogun.Features import RealFeatures, CombinedFeatures
-    from shogun.Kernel import GaussianKernel, CombinedKernel
-    from shogun.Classifier import LibSVM, MKLClassification
-    from shogun.Mathematics import Statistics
+    from modshogun import CrossValidation, CrossValidationResult
+    from modshogun import CrossValidationPrintOutput
+    from modshogun import CrossValidationMKLStorage
+    from modshogun import ContingencyTableEvaluation, ACCURACY
+    from modshogun import StratifiedCrossValidationSplitting
+    from modshogun import BinaryLabels
+    from modshogun import RealFeatures, CombinedFeatures
+    from modshogun import GaussianKernel, CombinedKernel
+    from modshogun import LibSVM, MKLClassification
+    from modshogun import Statistics
 
     # training data, combined features all on same data
     features=RealFeatures(traindat)

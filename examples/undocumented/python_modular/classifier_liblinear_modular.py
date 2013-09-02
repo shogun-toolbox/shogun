@@ -11,9 +11,9 @@ parameter_list = [[traindat,testdat,label_traindat,0.9,1e-3],[traindat,testdat,l
 def classifier_liblinear_modular (fm_train_real, fm_test_real,
 		label_train_twoclass, C, epsilon):
 
-	from shogun.Features import RealFeatures, SparseRealFeatures, BinaryLabels
-	from shogun.Classifier import LibLinear, L2R_L2LOSS_SVC_DUAL
-	from shogun.Mathematics import Math_init_random
+	from modshogun import RealFeatures, SparseRealFeatures, BinaryLabels
+	from modshogun import LibLinear, L2R_L2LOSS_SVC_DUAL
+	from modshogun import Math_init_random
 	Math_init_random(17)
 
 	feats_train=RealFeatures(fm_train_real)

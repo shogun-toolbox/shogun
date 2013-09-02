@@ -14,13 +14,13 @@ from math import pi
 parameter_list = [[250,3,3]]
 
 def statistics_hsic (n, difference, angle):
-	from shogun.Features import RealFeatures
-	from shogun.Features import DataGenerator
-	from shogun.Kernel import GaussianKernel
-	from shogun.Statistics import HSIC
-	from shogun.Statistics import BOOTSTRAP, HSIC_GAMMA
-	from shogun.Distance import EuclideanDistance
-	from shogun.Mathematics import Math, Statistics, IntVector
+	from modshogun import RealFeatures
+	from modshogun import DataGenerator
+	from modshogun import GaussianKernel
+	from modshogun import HSIC
+	from modshogun import BOOTSTRAP, HSIC_GAMMA
+	from modshogun import EuclideanDistance
+	from modshogun import Math, Statistics, IntVector
 	
 	# init seed for reproducability
 	Math.init_random(1)

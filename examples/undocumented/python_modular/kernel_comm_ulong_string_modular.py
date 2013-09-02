@@ -8,9 +8,9 @@ parameter_list = [[traindat,testdat,3,0,False ],[traindat,testdat,4,0,False]]
 
 def kernel_comm_ulong_string_modular (fm_train_dna=traindat,fm_test_dna=testdat, order=3, gap=0, reverse = False):
 
-	from shogun.Kernel import CommUlongStringKernel
-	from shogun.Features import StringUlongFeatures, StringCharFeatures, DNA
-	from shogun.Preprocessor import SortUlongString
+	from modshogun import CommUlongStringKernel
+	from modshogun import StringUlongFeatures, StringCharFeatures, DNA
+	from modshogun import SortUlongString
 
 	charfeat=StringCharFeatures(DNA)
 	charfeat.set_features(fm_train_dna)

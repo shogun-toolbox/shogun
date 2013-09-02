@@ -10,9 +10,9 @@ parameter_list = [[20,100,6,10,0.5,1, 0.5,1], [20,100,6,10,0.5,1, 2,2]]
 def regression_kernel_ridge_modular (n=100,n_test=100, \
 		x_range=6,x_range_test=10,noise_var=0.5,width=1, tau=1e-6, seed=1):
 
-	from shogun.Features import RegressionLabels, RealFeatures
-	from shogun.Kernel import GaussianKernel
-	from shogun.Regression import KernelRidgeRegression
+	from modshogun import RegressionLabels, RealFeatures
+	from modshogun import GaussianKernel
+	from modshogun import KernelRidgeRegression
 
 	# reproducable results
 	random.seed(seed)

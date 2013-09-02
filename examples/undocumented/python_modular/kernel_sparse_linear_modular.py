@@ -8,8 +8,8 @@ testdat = lm.load_numbers('../data/fm_test_real.dat')
 parameter_list = [[traindat,testdat,1.1],[traindat,testdat,1.2]]
 
 def kernel_sparse_linear_modular (fm_train_real=traindat,fm_test_real=testdat,scale=1.1):
-	from shogun.Features import SparseRealFeatures
-	from shogun.Kernel import LinearKernel, AvgDiagKernelNormalizer
+	from modshogun import SparseRealFeatures
+	from modshogun import LinearKernel, AvgDiagKernelNormalizer
 
 	feats_train=SparseRealFeatures(fm_train_real)
 	feats_test=SparseRealFeatures(fm_test_real)

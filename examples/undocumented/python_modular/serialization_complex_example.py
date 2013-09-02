@@ -13,15 +13,15 @@ def serialization_complex_example (num=5, dist=1, dim=10, C=2.0, width=10):
 	import os
 	from numpy import concatenate, zeros, ones
 	from numpy.random import randn, seed
-	from shogun.Features import RealFeatures, MulticlassLabels
-	from shogun.Classifier import GMNPSVM
-	from shogun.Kernel import GaussianKernel
+	from modshogun import RealFeatures, MulticlassLabels
+	from modshogun import GMNPSVM
+	from modshogun import GaussianKernel
 	try:
-		from shogun.IO import SerializableHdf5File,SerializableAsciiFile, \
+		from modshogun import SerializableHdf5File,SerializableAsciiFile, \
 				SerializableJsonFile,SerializableXmlFile,MSG_DEBUG
 	except ImportError:
 		return
-	from shogun.Preprocessor import NormOne, LogPlusOne
+	from modshogun import NormOne, LogPlusOne
 
 	seed(17)
 

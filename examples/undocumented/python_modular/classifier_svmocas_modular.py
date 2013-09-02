@@ -10,8 +10,8 @@ parameter_list = [[traindat,testdat,label_traindat,0.9,1e-5,1],[traindat,testdat
 
 def classifier_svmocas_modular (fm_train_real=traindat,fm_test_real=testdat,label_train_twoclass=label_traindat,C=0.9,epsilon=1e-5,num_threads=1):
 
-	from shogun.Features import RealFeatures, SparseRealFeatures, BinaryLabels
-	from shogun.Classifier import SVMOcas
+	from modshogun import RealFeatures, SparseRealFeatures, BinaryLabels
+	from modshogun import SVMOcas
 
 	realfeat=RealFeatures(fm_train_real)
 	feats_train=SparseRealFeatures()

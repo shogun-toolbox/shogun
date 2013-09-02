@@ -3,9 +3,9 @@
 parameter_list=[[100, 250, 10, 2]]
 
 def structure_plif_hmsvm_bmrm (num_examples, example_length, num_features, num_noise_features):
-	from shogun.Features   import RealMatrixFeatures
-	from shogun.Structure  import TwoStateModel, DualLibQPBMSOSVM
-	from shogun.Evaluation import StructuredAccuracy
+	from modshogun   import RealMatrixFeatures
+	from modshogun  import TwoStateModel, DualLibQPBMSOSVM
+	from modshogun import StructuredAccuracy
 
 	model = TwoStateModel.simulate_data(num_examples, example_length, num_features, num_noise_features)
 	sosvm = DualLibQPBMSOSVM(model, model.get_labels(), 5000.0)

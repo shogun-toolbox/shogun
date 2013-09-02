@@ -13,16 +13,16 @@ from numpy import *
 parameter_list = [[1000,10,5,3,pi/4, "opt"], [1000,10,5,3,pi/4, "max"], [1000,10,5,3,pi/4, "median"]]
 
 def statistics_mmd_kernel_selection_single(m,distance,stretch,num_blobs,angle,selection_method):
-	from shogun.Features import RealFeatures
-	from shogun.Features import GaussianBlobsDataGenerator
-	from shogun.Kernel import GaussianKernel, CombinedKernel
-	from shogun.Statistics import LinearTimeMMD
-	from shogun.Statistics import MMDKernelSelectionMedian
-	from shogun.Statistics import MMDKernelSelectionMax
-	from shogun.Statistics import MMDKernelSelectionOpt
-	from shogun.Statistics import BOOTSTRAP, MMD1_GAUSSIAN
-	from shogun.Distance import EuclideanDistance
-	from shogun.Mathematics import Statistics, Math
+	from modshogun import RealFeatures
+	from modshogun import GaussianBlobsDataGenerator
+	from modshogun import GaussianKernel, CombinedKernel
+	from modshogun import LinearTimeMMD
+	from modshogun import MMDKernelSelectionMedian
+	from modshogun import MMDKernelSelectionMax
+	from modshogun import MMDKernelSelectionOpt
+	from modshogun import BOOTSTRAP, MMD1_GAUSSIAN
+	from modshogun import EuclideanDistance
+	from modshogun import Statistics, Math
 
 	# init seed for reproducability
 	Math.init_random(1)

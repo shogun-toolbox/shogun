@@ -12,10 +12,10 @@ parameter_list = [[traindat,3],[traindat,4]]
 
 def clustering_kmeans_modular (fm_train=traindat,k=3):
 
-	from shogun.Distance import EuclideanDistance
-	from shogun.Features import RealFeatures
-	from shogun.Clustering import KMeans
-	from shogun.Mathematics import Math_init_random
+	from modshogun import EuclideanDistance
+	from modshogun import RealFeatures
+	from modshogun import KMeans
+	from modshogun import Math_init_random
 	Math_init_random(17)
 
 	feats_train=RealFeatures(fm_train)

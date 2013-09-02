@@ -9,8 +9,8 @@ parameter_list = [[traindat,testdat],[traindat,testdat]]
 
 def distance_jensen_modular (fm_train_real=traindat,fm_test_real=testdat):
 
-	from shogun.Features import RealFeatures
-	from shogun.Distance import JensenMetric
+	from modshogun import RealFeatures
+	from modshogun import JensenMetric
 
 	feats_train=RealFeatures(fm_train_real)
 	feats_test=RealFeatures(fm_test_real)

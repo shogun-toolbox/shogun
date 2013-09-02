@@ -3,7 +3,7 @@ parameter_list=[['../data/train_sparsereal.light']]
 
 def features_read_svmlight_format_modular (fname):
 	import os
-	from shogun.Features import SparseRealFeatures
+	from modshogun import SparseRealFeatures
 
 	f=SparseRealFeatures()
 	lab=f.load_svmlight_file(fname)

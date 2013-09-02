@@ -7,9 +7,9 @@ data = lm.load_numbers('../data/fm_train_real.dat')
 parameter_list = [[data, 0.01, 1.0], [data, 0.05, 2.0]]
 
 def preprocessor_kernelpca_modular (data, threshold, width):
-	from shogun.Features import RealFeatures
-	from shogun.Preprocessor import KernelPCA
-	from shogun.Kernel import GaussianKernel
+	from modshogun import RealFeatures
+	from modshogun import KernelPCA
+	from modshogun import GaussianKernel
 	
 	features = RealFeatures(data)
 	

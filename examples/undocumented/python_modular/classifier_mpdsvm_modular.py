@@ -10,9 +10,9 @@ parameter_list = [[traindat,testdat,label_traindat,1,1e-5],[traindat,testdat,lab
 
 def classifier_mpdsvm_modular (fm_train_real=traindat,fm_test_real=testdat,label_train_twoclass=label_traindat,C=1,epsilon=1e-5):
 
-	from shogun.Features import RealFeatures, BinaryLabels
-	from shogun.Kernel import GaussianKernel
-	from shogun.Classifier import MPDSVM
+	from modshogun import RealFeatures, BinaryLabels
+	from modshogun import GaussianKernel
+	from modshogun import MPDSVM
 
 	feats_train=RealFeatures(fm_train_real)
 	feats_test=RealFeatures(fm_test_real)

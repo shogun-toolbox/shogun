@@ -4,7 +4,7 @@ parameter_list = [[data,20],[data,30]]
 
 def converter_linearlocaltangentspacealignment_modular (data_fname,k):
 	try:
-		from shogun.Features import RealFeatures, LinearLocalTangentSpaceAlignment, CSVFile
+		from modshogun import RealFeatures, LinearLocalTangentSpaceAlignment, CSVFile
 		
 		features = RealFeatures(CSVFile(data_fname))
 			

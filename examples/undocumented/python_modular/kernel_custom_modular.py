@@ -7,8 +7,8 @@ parameter_list=[[7],[8]]
 def kernel_custom_modular (dim=7):
 	from numpy.random import rand, seed
 	from numpy import array, float32
-	from shogun.Features import RealFeatures
-	from shogun.Kernel import CustomKernel
+	from modshogun import RealFeatures
+	from modshogun import CustomKernel
 
 	seed(17)
 	data=rand(dim, dim)

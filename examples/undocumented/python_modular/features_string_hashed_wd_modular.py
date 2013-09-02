@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from shogun.Features import LongIntFeatures
+from modshogun import LongIntFeatures
 from numpy import array, int64, all
 
 # create dense matrix A
@@ -12,8 +12,8 @@ def features_string_hashed_wd_modular (A=matrix,order=3,start_order=1,hash_bits=
     a=LongIntFeatures(A)
     
     from numpy import array, uint8
-    from shogun.Features import HashedWDFeatures, StringByteFeatures, RAWDNA
-    from shogun.IO import MSG_DEBUG
+    from modshogun import HashedWDFeatures, StringByteFeatures, RAWDNA
+    from modshogun import MSG_DEBUG
 
     x=[array([0,1,2,3,0,1,2,3,3,2,2,1,1],dtype=uint8)]
     from_order=order

@@ -10,8 +10,8 @@ testdna = lm.load_dna('../data/fm_test_dna.dat')
  
 parameter_list = [[traindat,testdat,traindna,testdna],[traindat,testdat,traindna,testdna]]
 def kernel_combined_modular (fm_train_real=traindat,fm_test_real=testdat,fm_train_dna=traindna,fm_test_dna=testdna ):
-	from shogun.Kernel import CombinedKernel, GaussianKernel, FixedDegreeStringKernel, LocalAlignmentStringKernel
-	from shogun.Features import RealFeatures, StringCharFeatures, CombinedFeatures, DNA
+	from modshogun import CombinedKernel, GaussianKernel, FixedDegreeStringKernel, LocalAlignmentStringKernel
+	from modshogun import RealFeatures, StringCharFeatures, CombinedFeatures, DNA
 
 	kernel=CombinedKernel()
 	feats_train=CombinedFeatures()

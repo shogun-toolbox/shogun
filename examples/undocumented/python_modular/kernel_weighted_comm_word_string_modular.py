@@ -7,9 +7,9 @@ testdat = lm.load_dna('../data/fm_test_dna.dat')
 parameter_list = [[traindat,testdat],[traindat,testdat]]
 
 def kernel_weighted_comm_word_string_modular (fm_train_dna=traindat,fm_test_dna=testdat,order=3,gap=0,reverse=True ):
-	from shogun.Kernel import WeightedCommWordStringKernel
-	from shogun.Features import StringWordFeatures, StringCharFeatures, DNA
-	from shogun.Preprocessor import SortWordString
+	from modshogun import WeightedCommWordStringKernel
+	from modshogun import StringWordFeatures, StringCharFeatures, DNA
+	from modshogun import SortWordString
 
 	charfeat=StringCharFeatures(fm_train_dna, DNA)
 	feats_train=StringWordFeatures(charfeat.get_alphabet())

@@ -9,8 +9,8 @@ parameter_list = [[traindat,testdat,3],[traindat,testdat,4]]
 
 def distance_minkowski_modular (fm_train_real=traindat,fm_test_real=testdat,k=3):
 
-	from shogun.Features import RealFeatures
-	from shogun.Distance import MinkowskiMetric
+	from modshogun import RealFeatures
+	from modshogun import MinkowskiMetric
 
 	feats_train=RealFeatures(fm_train_real)
 	feats_test=RealFeatures(fm_test_real)

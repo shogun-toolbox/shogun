@@ -9,9 +9,9 @@ parameter_list=[[traindat,testdat,label_traindat,3,0,False],[traindat,testdat,la
 
 def kernel_histogram_word_string_modular (fm_train_dna=traindat,fm_test_dna=testdat,label_train_dna=label_traindat,order=3,gap=0,reverse=False):
 
-	from shogun.Features import StringCharFeatures, StringWordFeatures, DNA, BinaryLabels
-	from shogun.Kernel import HistogramWordStringKernel
-	from shogun.Classifier import PluginEstimate#, MSG_DEBUG
+	from modshogun import StringCharFeatures, StringWordFeatures, DNA, BinaryLabels
+	from modshogun import HistogramWordStringKernel
+	from modshogun import PluginEstimate#, MSG_DEBUG
 
 	reverse = reverse
 	charfeat=StringCharFeatures(DNA)

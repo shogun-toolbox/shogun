@@ -5,9 +5,9 @@ strings=['example document 1','example document 2','example document 3','example
 parameter_list=[[strings]]
 
 def converter_hasheddoc_modular(strings):
-	from shogun.Features import SparseRealFeatures, RAWBYTE, StringCharFeatures, Features, HashedDocDotFeatures
-	from shogun.Library import NGramTokenizer
-	from shogun.Converter import HashedDocConverter
+	from modshogun import SparseRealFeatures, RAWBYTE, StringCharFeatures, Features, HashedDocDotFeatures
+	from modshogun import NGramTokenizer
+	from modshogun import HashedDocConverter
 	from numpy import array
 
 	#create string features

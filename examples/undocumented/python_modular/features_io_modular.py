@@ -8,9 +8,9 @@ parameter_list=[[data,label]]
 
 def features_io_modular (fm_train_real, label_train_twoclass):
 	import numpy
-	from shogun.Features import SparseRealFeatures, RealFeatures, MulticlassLabels
-	from shogun.Kernel import GaussianKernel
-	from shogun.IO import AsciiFile, BinaryFile, HDF5File
+	from modshogun import SparseRealFeatures, RealFeatures, MulticlassLabels
+	from modshogun import GaussianKernel
+	from modshogun import AsciiFile, BinaryFile, HDF5File
 
 	feats=SparseRealFeatures(fm_train_real)
 	feats2=SparseRealFeatures()

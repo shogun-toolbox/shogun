@@ -8,8 +8,8 @@ parameter_list = [[traindat,testdat,2,True,3,0,False],[traindat,testdat,2,True,3
 
 def kernel_poly_match_word_string_modular (fm_train_dna=traindat,fm_test_dna=testdat,
 degree=2,inhomogene=True,order=3,gap=0,reverse=False):
-	from shogun.Kernel import PolyMatchWordStringKernel
-	from shogun.Features import StringWordFeatures, StringCharFeatures, DNA
+	from modshogun import PolyMatchWordStringKernel
+	from modshogun import StringWordFeatures, StringCharFeatures, DNA
 
 
 

@@ -24,14 +24,14 @@ parameter_list = [[traindat,testdat,label_traindat,2.1,1,1e-5,1e-2], \
 
 def modelselection_grid_search_krr_modular (fm_train=traindat,fm_test=testdat,label_train=label_traindat,\
 				       width=2.1,C=1,epsilon=1e-5,tube_epsilon=1e-2):
-    from shogun.Evaluation import CrossValidation, CrossValidationResult
-    from shogun.Evaluation import MeanSquaredError
-    from shogun.Evaluation import CrossValidationSplitting
-    from shogun.Features import RegressionLabels
-    from shogun.Features import RealFeatures
-    from shogun.Regression import KernelRidgeRegression
-    from shogun.ModelSelection import GridSearchModelSelection
-    from shogun.ModelSelection import ModelSelectionParameters
+    from modshogun import CrossValidation, CrossValidationResult
+    from modshogun import MeanSquaredError
+    from modshogun import CrossValidationSplitting
+    from modshogun import RegressionLabels
+    from modshogun import RealFeatures
+    from modshogun import KernelRidgeRegression
+    from modshogun import GridSearchModelSelection
+    from modshogun import ModelSelectionParameters
 
     # training data
     features_train=RealFeatures(traindat)
@@ -98,9 +98,9 @@ def modelselection_grid_search_krr_modular (fm_train=traindat,fm_test=testdat,la
 
 # creates all the parameters to optimize
 def create_param_tree():
-    from shogun.ModelSelection import ModelSelectionParameters, R_EXP, R_LINEAR
-    from shogun.ModelSelection import ParameterCombination
-    from shogun.Kernel import GaussianKernel, PolyKernel
+    from modshogun import ModelSelectionParameters, R_EXP, R_LINEAR
+    from modshogun import ParameterCombination
+    from modshogun import GaussianKernel, PolyKernel
     root=ModelSelectionParameters()
 
     tau=ModelSelectionParameters("tau")

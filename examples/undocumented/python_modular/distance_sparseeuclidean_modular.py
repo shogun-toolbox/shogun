@@ -8,8 +8,8 @@ testdat = lm.load_numbers('../data/fm_test_real.dat')
 parameter_list = [[traindat,testdat],[traindat,testdat]]
 
 def distance_sparseeuclidean_modular (fm_train_real=traindat,fm_test_real=testdat):
-	from shogun.Features import RealFeatures, SparseRealFeatures
-	from shogun.Distance import SparseEuclideanDistance
+	from modshogun import RealFeatures, SparseRealFeatures
+	from modshogun import SparseEuclideanDistance
 
 	realfeat=RealFeatures(fm_train_real)
 	feats_train=SparseRealFeatures()

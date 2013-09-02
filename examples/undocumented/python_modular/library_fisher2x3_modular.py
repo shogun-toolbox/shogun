@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 from numpy import *
-from shogun.Mathematics import *
+from modshogun import *
 
 x=array([[20.0,15,15],[10,20,20]])
 y=array([[21.0,21,18],[19,19,22]])

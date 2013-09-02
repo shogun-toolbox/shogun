@@ -8,8 +8,8 @@ parameter_list = [[traindna,3,0,False],[traindna,4,0,False]]
 
 def distribution_linearhmm_modular (fm_dna=traindna,order=3,gap=0,reverse=False):
 
-	from shogun.Features import StringWordFeatures, StringCharFeatures, DNA
-	from shogun.Distribution import LinearHMM
+	from modshogun import StringWordFeatures, StringCharFeatures, DNA
+	from modshogun import LinearHMM
 
 	charfeat=StringCharFeatures(DNA)
 	charfeat.set_features(fm_dna)

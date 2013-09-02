@@ -10,10 +10,10 @@ label_traindat = lm.load_labels('../data/label_train_multiclass.dat')
 parameter_list = [[traindat, label_traindat]]
 
 def evaluation_multiclassovrevaluation_modular (traindat, label_traindat):
-	from shogun.Features import MulticlassLabels
-	from shogun.Evaluation import MulticlassOVREvaluation,ROCEvaluation
+	from modshogun import MulticlassLabels
+	from modshogun import MulticlassOVREvaluation,ROCEvaluation
 	from modshogun import MulticlassLibLinear,RealFeatures,ContingencyTableEvaluation,ACCURACY
-	from shogun.Mathematics import Math
+	from modshogun import Math
 	
 	Math.init_random(1)
 

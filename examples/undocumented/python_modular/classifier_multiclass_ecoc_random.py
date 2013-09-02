@@ -20,15 +20,15 @@ else:
     label_traindat = lm.load_labels('../data/label_train_multiclass.dat')
     label_testdat = None
 
-from shogun.Library import Math_init_random;
+from modshogun import Math_init_random;
 Math_init_random(12345);
 
 parameter_list = [[traindat,testdat,label_traindat,label_testdat,2.1,1,1e-5],[traindat,testdat,label_traindat,label_testdat,2.2,1,1e-5]]
 
 def classifier_multiclass_ecoc_random (fm_train_real=traindat,fm_test_real=testdat,label_train_multiclass=label_traindat,label_test_multiclass=label_testdat,lawidth=2.1,C=1,epsilon=1e-5):
-    from shogun.Features import RealFeatures, MulticlassLabels
-    from shogun.Classifier import LibLinear, L2R_L2LOSS_SVC, LinearMulticlassMachine
-    from shogun.Classifier import ECOCStrategy, ECOCRandomSparseEncoder, ECOCRandomDenseEncoder, ECOCHDDecoder
+    from modshogun import RealFeatures, MulticlassLabels
+    from modshogun import LibLinear, L2R_L2LOSS_SVC, LinearMulticlassMachine
+    from modshogun import ECOCStrategy, ECOCRandomSparseEncoder, ECOCRandomDenseEncoder, ECOCHDDecoder
 
     feats_train = RealFeatures(fm_train_real)
     feats_test  = RealFeatures(fm_test_real)
@@ -53,7 +53,7 @@ def classifier_multiclass_ecoc_random (fm_train_real=traindat,fm_test_real=testd
     out_sparse = label_sparse.get_labels()
 
     if label_test_multiclass is not None:
-        from shogun.Evaluation import MulticlassAccuracy
+        from modshogun import MulticlassAccuracy
         labels_test = MulticlassLabels(label_test_multiclass)
         evaluator = MulticlassAccuracy()
         acc_dense = evaluator.evaluate(label_dense, labels_test)

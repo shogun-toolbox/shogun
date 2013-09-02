@@ -5,11 +5,11 @@ from numpy import random
 parameter_list = [[10,3]]
 
 def statistics_kmm (n,d):
-	from shogun.Features import RealFeatures
-	from shogun.Features import DataGenerator
-	from shogun.Kernel import GaussianKernel, MSG_DEBUG
-	from shogun.Statistics import KernelMeanMatching
-	from shogun.Mathematics import Math
+	from modshogun import RealFeatures
+	from modshogun import DataGenerator
+	from modshogun import GaussianKernel, MSG_DEBUG
+	from modshogun import KernelMeanMatching
+	from modshogun import Math
 
 	# init seed for reproducability
 	Math.init_random(1)
