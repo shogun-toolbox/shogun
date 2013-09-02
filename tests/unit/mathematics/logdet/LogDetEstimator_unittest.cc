@@ -100,8 +100,9 @@ TEST(LogDetEstimator, sample_ratapp_dense)
 	CLogRationalApproximationIndividual *op_func
 		=new CLogRationalApproximationIndividual(
 			op, e, eig_solver,
-			(CLinearSolver<complex64_t, float64_t>*)linear_solver, 8);
+			(CLinearSolver<complex64_t, float64_t>*)linear_solver, 0);
 	SG_REF(op_func);
+	op_func->set_num_shifts(8);
 	
 	CNormalSampler* trace_sampler=new CNormalSampler(size);
 	SG_REF(trace_sampler);
@@ -186,8 +187,9 @@ TEST(LogDetEstimator, sample_ratapp_probing_sampler)
 
 	CLogRationalApproximationIndividual *op_func
 		=new CLogRationalApproximationIndividual
-		(opd, e, eig_solver, (CLinearSolver<complex64_t, float64_t>*)linear_solver, 20);
+		(opd, e, eig_solver, (CLinearSolver<complex64_t, float64_t>*)linear_solver, 0);
 	SG_REF(op_func);
+	op_func->set_num_shifts(20);
 
 	CProbingSampler* trace_sampler=new CProbingSampler(op, 1, NATURAL, DISTANCE_TWO);
 	SG_REF(trace_sampler);
@@ -269,8 +271,9 @@ TEST(LogDetEstimator, sample_ratapp_probing_sampler_cgm)
 	SG_REF(linear_solver);
 
 	CLogRationalApproximationCGM *op_func
-		=new CLogRationalApproximationCGM(op, e, eig_solver, linear_solver, 20);
+		=new CLogRationalApproximationCGM(op, e, eig_solver, linear_solver, 0);
 	SG_REF(op_func);
+	op_func->set_num_shifts(20);
 
 	CProbingSampler* trace_sampler=new CProbingSampler(op, 1, NATURAL, DISTANCE_TWO);
 	SG_REF(trace_sampler);
