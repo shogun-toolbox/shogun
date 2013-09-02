@@ -139,7 +139,8 @@ void CRationalApproximation::precompute()
 
 void CRationalApproximation::set_shifts_from_accuracy()
 {
-	REQUIRE(m_desired_accuracy>0, "Desired accuracy must be positive\n");
+	REQUIRE(m_desired_accuracy>0, "Desired accuracy must be positive but is %f\n",
+			m_desired_accuracy);
 
 	float64_t max_eig=m_eigen_solver->get_max_eigenvalue();
 	float64_t min_eig=m_eigen_solver->get_min_eigenvalue();
