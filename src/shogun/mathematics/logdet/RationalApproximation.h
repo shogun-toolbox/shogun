@@ -5,6 +5,7 @@
  * (at your option) any later version.
  * 
  * Written (W) 2013 Soumyajit De
+ * Written (W) 2013 Heiko Strathmann
  */
 
 #ifndef RATIONAL_APPROXIMATION_H_
@@ -37,6 +38,15 @@ class CEigenSolver;
  * and \f$\eta\in\mathbb{R}\f$ is the constant multiplier, equals to
  * \f$\frac{-8K(\lambda_{m}\lambda_{M})^{\frac{1}{4}}}{k\pi N}\f$.
  *
+ * The number of shifts is automatically computed based on a previously
+ * specified accuracy \f$\epsilon\f$ using the error bound
+ * \f[
+ * 	  -1.5\left(\log\left(
+ * 	  \frac{\lambda_\text{max}}{\lambda_\text{min}}\right)+6.0
+ * 	  \right)\frac{\log(\epsilon)}{2\pi^2}.
+ * \f]
+ * It can also manually be set.
+ *
  * Reference:
  * [1] Aune, E., D. Simpson, and J. Eidsvik (2012). Parameter estimation
  * in high dimensional gaussian distributions. Technical Report Statistics
@@ -56,23 +66,23 @@ public:
 	/** default constructor */
 	CRationalApproximation();
 
-	/** 
-	 * constructor
+	/**
+	 * Constructor. Number of shifts will be computed using a specified accuracy.
 	 *
 	 * @param linear_operator real valued linear operator for this operator
 	 * function
 	 * @param computation_engine engine that computes the independent jobs
 	 * @param eigen_solver eigen solver for computing min and max eigenvalues
 	 * needed for computing shifts, weights and constant multiplier
-	 * @param num_shifts number of contour points in the quadrature rule of
-	 * of discretization of the contour integral
+	 * @param desired_accuracy desired error bound on approximation. Computes
+	 * the number of shifts automatically
 	 * @param function_type operator function type
 	 */
 	CRationalApproximation(
 		CLinearOperator<float64_t>* linear_operator,
 		CIndependentComputationEngine* computation_engine,
 		CEigenSolver* eigen_solver,
-		index_t num_shifts,
+		float64_t desired_accuracy,
 		EOperatorFunction function_type);
 
 	/** destructor */
@@ -82,8 +92,24 @@ public:
 	 * precompute method that computes extremal eigenvalues using the eigensolver
 	 * and then computes complex shifts, weights and constant multiplier coming
 	 * from rational approximation of operator function times vector
+	 *
+	 * Automatically computes the number of shifts if they have not been
+	 * specified or are zero using set_shifts_from_accuracy().
 	 */
 	virtual void precompute();
+
+	/** Computes the number of shifts from the current set accuracy \f$\epsilon\f$
+	 * using
+	 * \f[
+	 * 	  -1.5\left(\log\left(
+	 * 	  \frac{\lambda_\text{max}}{\lambda_\text{min}}\right)+6.0
+	 * 	  \right)\frac{\log(\epsilon)}{2\pi^2},
+	 * \f]
+	 *
+	 * @return number of shift to reach the above error bound
+	 *
+	 */
+	int32_t compute_num_shifts_from_accuracy();
 
 	/** 
 	 * abstract method that creates a job result aggregator, then creates a
@@ -106,6 +132,12 @@ public:
 	/** @return constant multiplier */
 	float64_t get_constant_multiplier() const;
 
+	/** @return number of shifts */
+	index_t get_num_shifts() const;
+
+	/** @param num_shifts number of shifts */
+	void set_num_shifts(index_t num_shifts);
+
 	/** @return object name */
 	virtual const char* get_name() const
 	{
@@ -126,7 +158,10 @@ protected:
 	float64_t m_constant_multiplier;
 
 	/** number of shifts */
-	index_t m_num_shifts;
+	int32_t m_num_shifts;
+
+	/** desired accuracy from which number of shifts might be computed */
+	float64_t m_desired_accuracy;
 
 private:
 	/** initializes with default values and registers params */

@@ -36,8 +36,8 @@ public:
 	/** default constructor */
 	CLogRationalApproximationCGM();
 
-	/** 
-	 * constructor
+	/**
+	 * Constructor. Number of shifts will be computed using a specified accuracy.
 	 *
 	 * @param linear_operator linear operator of the log operator function
 	 * @param computation_engine engine that computes the independent jobs
@@ -45,15 +45,15 @@ public:
 	 * needed for computing shifts, weights and multiplier in the rational
 	 * approximation
 	 * @param linear_solver linear solver for solving shifted system family
-	 * @param num_shifts number of contour points in the quadrature rule of
-	 * of discretization of the contour integral
+	 * @param desired_accuracy desired error bound on approximation. Computes
+	 * the number of shifts automatically
 	 */
 	CLogRationalApproximationCGM(
 		CLinearOperator<float64_t>* linear_operator,
 		CIndependentComputationEngine* computation_engine,
 		CEigenSolver* eigen_solver,
 		CCGMShiftedFamilySolver* linear_solver,
-		index_t num_shifts);
+		float64_t desired_accuracy);
 
 	/** destructor */
 	virtual ~CLogRationalApproximationCGM();
