@@ -4,7 +4,7 @@ import pylab
 from numpy import ones, array, double, meshgrid, reshape, linspace, \
 	concatenate, ravel, pi, sinc
 from numpy.random import randn, rand
-from shogun.Features import BinaryLabels, RegressionLabels, RealFeatures, SparseRealFeatures
+from modshogun import BinaryLabels, RegressionLabels, RealFeatures, SparseRealFeatures
 
 QUITKEY='q'
 NUM_EXAMPLES=100

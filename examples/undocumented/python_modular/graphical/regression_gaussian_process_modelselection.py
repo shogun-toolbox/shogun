@@ -8,10 +8,10 @@ parameter_list=[[20,100,10,10,0.25,1, 1], [20,100,6,10,0.5,1, 2]]
 def regression_gaussian_process_modelselection (n=100,n_test=100, \
 		x_range=6,x_range_test=10,noise_var=0.5,width=1, seed=1):
 		
-	from shogun.Features import RealFeatures, RegressionLabels
-	from shogun.Kernel import GaussianKernel
-	from shogun.ModelSelection import GradientModelSelection, ModelSelectionParameters, R_LINEAR
-	from shogun.Regression import GaussianLikelihood, ZeroMean, \
+	from modshogun import RealFeatures, RegressionLabels
+	from modshogun import GaussianKernel
+	from modshogun import GradientModelSelection, ModelSelectionParameters, R_LINEAR
+	from modshogun import GaussianLikelihood, ZeroMean, \
 				ExactInferenceMethod, GaussianProcessRegression, GradientCriterion, \
 				GradientEvaluation
 		

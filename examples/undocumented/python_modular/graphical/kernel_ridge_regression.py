@@ -1,9 +1,9 @@
 from pylab import figure,pcolor,scatter,contour,colorbar,show,subplot,plot,connect
 from numpy import array,meshgrid,reshape,linspace,min,max
 from numpy import concatenate,transpose,ravel
-from shogun.Features import *
-from shogun.Regression import *
-from shogun.Kernel import *
+from modshogun import *
+from modshogun import *
+from modshogun import *
 import util
 
 util.set_title('KernelRidgeRegression')

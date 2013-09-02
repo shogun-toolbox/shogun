@@ -1,8 +1,8 @@
 from pylab import figure,pcolor,scatter,contour,colorbar,show,subplot,plot,connect,axis
 from numpy.random import randn
-from shogun.Features import *
-from shogun.Classifier import *
-from shogun.Kernel import *
+from modshogun import *
+from modshogun import *
+from modshogun import *
 import util
 
 util.set_title('SVM')

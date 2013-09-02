@@ -17,9 +17,9 @@ from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg as NavigationToolbar
 from matplotlib.figure import Figure
 
-from shogun.Features import *
-from shogun.Classifier import *
-from shogun.Kernel import *
+from modshogun import *
+from modshogun import *
+from modshogun import *
 
 class Form(QMainWindow):
     def __init__(self, parent=None):

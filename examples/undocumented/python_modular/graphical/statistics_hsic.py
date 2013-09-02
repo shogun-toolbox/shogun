@@ -10,13 +10,13 @@ from numpy import *
 from pylab import *
 from scipy import *
 
-from shogun.Features import RealFeatures
-from shogun.Features import DataGenerator
-from shogun.Kernel import GaussianKernel
-from shogun.Statistics import HSIC
-from shogun.Statistics import BOOTSTRAP, HSIC_GAMMA
-from shogun.Distance import EuclideanDistance
-from shogun.Mathematics import Statistics, Math
+from modshogun import RealFeatures
+from modshogun import DataGenerator
+from modshogun import GaussianKernel
+from modshogun import HSIC
+from modshogun import BOOTSTRAP, HSIC_GAMMA
+from modshogun import EuclideanDistance
+from modshogun import Statistics, Math
 
 # for nice plotting that fits into our shogun tutorial
 import latex_plot_inits

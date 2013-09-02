@@ -1,6 +1,6 @@
-from shogun.Features import RealFeatures
-from shogun.Features import MulticlassLabels
-from shogun.Classifier import MCLDA
+from modshogun import RealFeatures
+from modshogun import MulticlassLabels
+from modshogun import MCLDA
 from pylab import pcolor, contour, colorbar, connect, show, plot, axis
 
 import numpy as np

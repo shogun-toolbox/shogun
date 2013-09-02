@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from numpy.random import rand, randn, permutation, multivariate_normal
 
-from shogun.Classifier import BinaryLabels, RealFeatures, IndexBlock, IndexBlockGroup, FeatureBlockLogisticRegression
+from modshogun import BinaryLabels, RealFeatures, IndexBlock, IndexBlockGroup, FeatureBlockLogisticRegression
 
 
 def generate_synthetic_logistic_data(n, p, L, blk_nnz, gcov, nstd):

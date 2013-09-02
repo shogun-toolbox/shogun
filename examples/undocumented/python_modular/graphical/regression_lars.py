@@ -3,9 +3,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from shogun.Features import RegressionLabels, RealFeatures
-from shogun.Regression import LeastAngleRegression, LinearRidgeRegression, LeastSquaresRegression
-from shogun.Evaluation import MeanSquaredError
+from modshogun import RegressionLabels, RealFeatures
+from modshogun import LeastAngleRegression, LinearRidgeRegression, LeastSquaresRegression
+from modshogun import MeanSquaredError
 
 # we compare LASSO with ordinary least-squares (OLE)
 # in the ideal case, the MSE of OLE should coincide

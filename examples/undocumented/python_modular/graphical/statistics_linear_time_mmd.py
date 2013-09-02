@@ -10,13 +10,13 @@ from numpy import *
 from pylab import *
 from scipy import *
 
-from shogun.Features import RealFeatures
-from shogun.Features import MeanShiftDataGenerator
-from shogun.Kernel import GaussianKernel, CombinedKernel
-from shogun.Statistics import LinearTimeMMD, MMDKernelSelectionOpt
-from shogun.Statistics import BOOTSTRAP, MMD1_GAUSSIAN
-from shogun.Distance import EuclideanDistance
-from shogun.Mathematics import Statistics, Math
+from modshogun import RealFeatures
+from modshogun import MeanShiftDataGenerator
+from modshogun import GaussianKernel, CombinedKernel
+from modshogun import LinearTimeMMD, MMDKernelSelectionOpt
+from modshogun import BOOTSTRAP, MMD1_GAUSSIAN
+from modshogun import EuclideanDistance
+from modshogun import Statistics, Math
 
 # for nice plotting that fits into our shogun tutorial
 import latex_plot_inits

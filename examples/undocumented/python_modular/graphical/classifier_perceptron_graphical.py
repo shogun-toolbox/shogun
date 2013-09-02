@@ -7,8 +7,8 @@ import latex_plot_inits
 parameter_list = [[20, 5, 1., 1000, 1, None, 5], [100, 5, 1., 1000, 1, None, 10]]
 
 def classifier_perceptron_graphical(n=100, distance=5, learn_rate=1., max_iter=1000, num_threads=1, seed=None, nperceptrons=5):
-	from shogun.Features import RealFeatures, BinaryLabels
-	from shogun.Classifier import Perceptron
+	from modshogun import RealFeatures, BinaryLabels
+	from modshogun import Perceptron
 	from modshogun import MSG_INFO
 
 	# 2D data

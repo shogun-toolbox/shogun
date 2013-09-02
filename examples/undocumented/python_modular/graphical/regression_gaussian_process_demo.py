@@ -6,17 +6,17 @@
 ###########################################################################
 from numpy import *
 from numpy.random import randn
-from shogun.Features import *
-from shogun.Classifier import *
-from shogun.Kernel import *
-from shogun.Regression import *
+from modshogun import *
+from modshogun import *
+from modshogun import *
+from modshogun import *
 import pylab as PL
 import matplotlib
 import logging as LG
 import scipy as SP
-from shogun.ModelSelection import GradientModelSelection
-from shogun.ModelSelection import ModelSelectionParameters, R_EXP, R_LINEAR
-from shogun.ModelSelection import ParameterCombination
+from modshogun import GradientModelSelection
+from modshogun import ModelSelectionParameters, R_EXP, R_LINEAR
+from modshogun import ParameterCombination
 
 
 
