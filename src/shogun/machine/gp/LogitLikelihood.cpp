@@ -213,7 +213,7 @@ CLogitLikelihood::~CLogitLikelihood()
 }
 
 SGVector<float64_t> CLogitLikelihood::get_predictive_means(
-		SGVector<float64_t> mu,	SGVector<float64_t> s2, const CLabels* lab) const
+		SGVector<float64_t> mu, SGVector<float64_t> s2, const CLabels* lab) const
 {
 	SGVector<float64_t> lp=get_log_zeroth_moments(mu, s2, lab);
 	Map<VectorXd> eigen_lp(lp.vector, lp.vlen);
@@ -228,7 +228,7 @@ SGVector<float64_t> CLogitLikelihood::get_predictive_means(
 }
 
 SGVector<float64_t> CLogitLikelihood::get_predictive_variances(
-		SGVector<float64_t> mu,	SGVector<float64_t> s2, const CLabels* lab) const
+		SGVector<float64_t> mu, SGVector<float64_t> s2, const CLabels* lab) const
 {
 	SGVector<float64_t> lp=get_log_zeroth_moments(mu, s2, lab);
 	Map<VectorXd> eigen_lp(lp.vector, lp.vlen);
@@ -392,7 +392,7 @@ SGVector<float64_t> CLogitLikelihood::get_log_zeroth_moments(
 }
 
 float64_t CLogitLikelihood::get_first_moment(SGVector<float64_t> mu,
-		SGVector<float64_t> s2, const CLabels *lab,	index_t i) const
+		SGVector<float64_t> s2, const CLabels *lab, index_t i) const
 {
 	// check the parameters
 	REQUIRE(lab, "Labels are required (lab should not be NULL)\n")

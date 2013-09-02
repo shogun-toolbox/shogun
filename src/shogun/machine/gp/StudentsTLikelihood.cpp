@@ -261,8 +261,8 @@ void CStudentsTLikelihood::init()
 {
 	m_sigma=1.0;
 	m_df=3.0;
-	SG_ADD(&m_df, "df", "Degrees of Freedom.", MS_AVAILABLE);
-	SG_ADD(&m_sigma, "sigma", "Scale Parameter.", MS_AVAILABLE);
+	SG_ADD(&m_df, "df", "Degrees of freedom", MS_AVAILABLE);
+	SG_ADD(&m_sigma, "sigma", "Scale parameter", MS_AVAILABLE);
 }
 
 CStudentsTLikelihood::~CStudentsTLikelihood()
@@ -282,13 +282,13 @@ CStudentsTLikelihood* CStudentsTLikelihood::obtain_from_generic(
 }
 
 SGVector<float64_t> CStudentsTLikelihood::get_predictive_means(
-		SGVector<float64_t> mu,	SGVector<float64_t> s2, const CLabels* lab) const
+		SGVector<float64_t> mu, SGVector<float64_t> s2, const CLabels* lab) const
 {
 	return SGVector<float64_t>(mu);
 }
 
 SGVector<float64_t> CStudentsTLikelihood::get_predictive_variances(
-		SGVector<float64_t> mu,	SGVector<float64_t> s2, const CLabels* lab) const
+		SGVector<float64_t> mu, SGVector<float64_t> s2, const CLabels* lab) const
 {
 	SGVector<float64_t> result(s2);
 	Map<VectorXd> eigen_result(result.vector, result.vlen);
@@ -547,7 +547,7 @@ SGVector<float64_t> CStudentsTLikelihood::get_third_derivative(const CLabels* la
 }
 
 SGVector<float64_t> CStudentsTLikelihood::get_log_zeroth_moments(
-		SGVector<float64_t> mu,	SGVector<float64_t> s2, const CLabels* lab) const
+		SGVector<float64_t> mu, SGVector<float64_t> s2, const CLabels* lab) const
 {
 	SGVector<float64_t> y;
 

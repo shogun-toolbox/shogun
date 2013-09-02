@@ -22,6 +22,6 @@ CZeroMean::~CZeroMean()
 SGVector<float64_t> CZeroMean::get_mean_vector(SGMatrix<float64_t> data) const
 {
 	SGVector<float64_t> result(data.num_cols);
-	result.set_const(0.0);
+	result.zero();
 	return result;
 }

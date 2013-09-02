@@ -27,7 +27,7 @@ CProbitLikelihood::~CProbitLikelihood()
 }
 
 SGVector<float64_t> CProbitLikelihood::get_predictive_means(
-		SGVector<float64_t> mu,	SGVector<float64_t> s2, const CLabels* lab) const
+		SGVector<float64_t> mu, SGVector<float64_t> s2, const CLabels* lab) const
 {
 	SGVector<float64_t> lp=get_log_zeroth_moments(mu, s2, lab);
 	Map<VectorXd> eigen_lp(lp.vector, lp.vlen);
@@ -42,7 +42,7 @@ SGVector<float64_t> CProbitLikelihood::get_predictive_means(
 }
 
 SGVector<float64_t> CProbitLikelihood::get_predictive_variances(
-		SGVector<float64_t> mu,	SGVector<float64_t> s2, const CLabels* lab) const
+		SGVector<float64_t> mu, SGVector<float64_t> s2, const CLabels* lab) const
 {
 	SGVector<float64_t> lp=get_log_zeroth_moments(mu, s2, lab);
 	Map<VectorXd> eigen_lp(lp.vector, lp.vlen);
@@ -160,7 +160,7 @@ SGVector<float64_t> CProbitLikelihood::get_third_derivative(const CLabels* lab,
 }
 
 SGVector<float64_t> CProbitLikelihood::get_log_zeroth_moments(
-		SGVector<float64_t> mu,	SGVector<float64_t> s2, const CLabels* lab) const
+		SGVector<float64_t> mu, SGVector<float64_t> s2, const CLabels* lab) const
 {
 	SGVector<float64_t> y;
 

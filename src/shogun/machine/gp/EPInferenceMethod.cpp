@@ -28,17 +28,17 @@ using namespace shogun;
 using namespace Eigen;
 
 // try to use previously allocated memory for SGVector
-#define CREATE_SGVECTOR(vec, len, sg_type)		\
-	{											\
-		if (!vec.vector || vec.vlen!=len)		\
-			vec=SGVector<sg_type>(len);			\
+#define CREATE_SGVECTOR(vec, len, sg_type) \
+	{ \
+		if (!vec.vector || vec.vlen!=len) \
+			vec=SGVector<sg_type>(len); \
 	}
 
 // try to use previously allocated memory for SGMatrix
-#define CREATE_SGMATRIX(mat, rows, cols, sg_type)						\
-	{																	\
-		if (!mat.matrix || mat.num_rows!=rows || mat.num_cols!=cols)	\
-			mat=SGMatrix<sg_type>(rows, cols);							\
+#define CREATE_SGMATRIX(mat, rows, cols, sg_type) \
+	{ \
+		if (!mat.matrix || mat.num_rows!=rows || mat.num_cols!=cols) \
+			mat=SGMatrix<sg_type>(rows, cols); \
 	}
 
 CEPInferenceMethod::CEPInferenceMethod()
@@ -316,7 +316,7 @@ void CEPInferenceMethod::update_approx_cov()
 	// create shogun and eigen representation of the approximate covariance
 	// matrix
 	CREATE_SGMATRIX(m_Sigma, m_ktrtr.num_rows, m_ktrtr.num_cols, float64_t);
-	Map<MatrixXd> eigen_Sigma(m_Sigma.matrix, m_Sigma.num_rows,	m_Sigma.num_cols);
+	Map<MatrixXd> eigen_Sigma(m_Sigma.matrix, m_Sigma.num_rows, m_Sigma.num_cols);
 
 	// compute V = L^(-1) * tS^(1/2) * K, using upper triangular factor L^T
 	MatrixXd eigen_V=eigen_L.triangularView<Upper>().adjoint().solve(
@@ -332,7 +332,7 @@ void CEPInferenceMethod::update_approx_cov()
 void CEPInferenceMethod::update_approx_mean()
 {
 	// create eigen representation of posterior covariance matrix and tnu
-	Map<MatrixXd> eigen_Sigma(m_Sigma.matrix, m_Sigma.num_rows,	m_Sigma.num_cols);
+	Map<MatrixXd> eigen_Sigma(m_Sigma.matrix, m_Sigma.num_rows, m_Sigma.num_cols);
 	Map<VectorXd> eigen_tnu(m_tnu.vector, m_tnu.vlen);
 
 	// create shogun and eigen representation of the approximate mean vector
@@ -346,7 +346,7 @@ void CEPInferenceMethod::update_approx_mean()
 void CEPInferenceMethod::update_negative_ml()
 {
 	// create eigen representation of Sigma, L, mu, tnu, ttau
-	Map<MatrixXd> eigen_Sigma(m_Sigma.matrix, m_Sigma.num_rows,	m_Sigma.num_cols);
+	Map<MatrixXd> eigen_Sigma(m_Sigma.matrix, m_Sigma.num_rows, m_Sigma.num_cols);
 	Map<MatrixXd> eigen_L(m_L.matrix, m_L.num_rows, m_L.num_cols);
 	Map<VectorXd> eigen_mu(m_mu.vector, m_mu.vlen);
 	Map<VectorXd> eigen_tnu(m_tnu.vector, m_tnu.vlen);
@@ -362,7 +362,7 @@ void CEPInferenceMethod::update_negative_ml()
 
 	// compute vector of cavity parameter nu_n
 	VectorXd eigen_nu_n=eigen_mu.cwiseQuotient(eigen_Sigma.diagonal())-
-	 	eigen_tnu+eigen_m.cwiseProduct(eigen_tau_n);
+		eigen_tnu+eigen_m.cwiseProduct(eigen_tau_n);
 
 	// compute cavity mean: mu_n=nu_n/tau_n
 	SGVector<float64_t> mu_n(m_ttau.vlen);
