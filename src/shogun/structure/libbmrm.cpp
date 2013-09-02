@@ -16,6 +16,9 @@
 #include <shogun/lib/Time.h>
 #include <shogun/io/SGIO.h>
 
+#include <climits>
+#include <limits>
+
 namespace shogun
 {
 static const uint32_t QPSolverMaxIter=0xFFFFFFFF;
@@ -235,7 +238,15 @@ BmrmStatistics svm_bmrm_solver(
 		goto cleanup;
 	}
 
-	A= (float64_t*) LIBBMRM_CALLOC(nDim*BufSize, float64_t);
+	ASSERT(nDim > 0);
+	ASSERT(BufSize > 0);
+	REQUIRE(BufSize < (std::numeric_limits<size_t>::max() / nDim),
+		"overflow: %u * %u > %u -- biggest possible BufSize=%u or nDim=%u\n",
+		BufSize, nDim, std::numeric_limits<size_t>::max(),
+		(std::numeric_limits<size_t>::max() / nDim),
+		(std::numeric_limits<size_t>::max() / BufSize));
+
+	A= (float64_t*) LIBBMRM_CALLOC(size_t(nDim)*size_t(BufSize), float64_t);
 
 	if (A==NULL)
 	{
