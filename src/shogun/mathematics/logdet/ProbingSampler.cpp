@@ -181,21 +181,21 @@ void CProbingSampler::precompute()
 
 SGVector<float64_t> CProbingSampler::sample(index_t idx) const
 {
+	REQUIRE(idx<m_num_samples, "Given index (%d) must be smaller than "
+			"number of samples to draw (%d)\n", idx, m_num_samples);
+
 	SGVector<float64_t> s(m_dimension);
 	s.set_const(0.0);
-	if (idx>=m_num_samples)
-		SG_WARNING("idx should be less than %d\n", m_num_samples)
-	else
+
+	for (index_t i=0; i<m_dimension; ++i)
 	{
-		for (index_t i=0; i<m_dimension; ++i)
+		if (m_probing_vector[i]==idx)
 		{
-			if (m_probing_vector[i]==idx)
-			{
-				float64_t x=sg_rand->std_normal_distrib();
-				s[i]=(x>0)-(x<0);
-			}
+			float64_t x=sg_rand->std_normal_distrib();
+			s[i]=(x>0)-(x<0);
 		}
 	}
+
 	return s;
 }
 
