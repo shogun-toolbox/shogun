@@ -117,7 +117,7 @@ void CProbingSampler::init()
 	m_matrix_operator=NULL;
 	m_power=1;
 
-	SG_ADD(&m_probing_vector, "probing_vector", "the probing vector generated"
+	SG_ADD(&m_coloring_vector, "coloring_vector", "the coloring vector generated"
 		" from coloring", MS_NOT_AVAILABLE);
 
 	SG_ADD(&m_power, "matrix-power", "power of the sparse-matrix for coloring",
@@ -130,7 +130,7 @@ void CProbingSampler::init()
 		MS_NOT_AVAILABLE);
 
 	SG_ADD((CSGObject**)&m_matrix_operator, "matrix-operator",
-		"the sparse-matrix linear opeator for probing", MS_NOT_AVAILABLE);
+		"the sparse-matrix linear opeator for coloring", MS_NOT_AVAILABLE);
 }
 
 CProbingSampler::~CProbingSampler()
@@ -140,14 +140,14 @@ CProbingSampler::~CProbingSampler()
 	SG_GCDEBUG("%s destroyed (%p)\n", this->get_name(), this)
 }
 
-SGVector<int32_t> CProbingSampler::get_probing_vector() const
+SGVector<int32_t> CProbingSampler::get_coloring_vector() const
 {
-	return m_probing_vector;
+	return m_coloring_vector;
 }
 
 void CProbingSampler::precompute()
 {
-	// do coloring things here and save the probing vector
+	// do coloring things here and save the coloring vector
 	SparsityStructure* sp_str=m_matrix_operator->get_sparsity_structure(m_power);
 
 	GraphColoringInterface* Color
@@ -163,17 +163,17 @@ void CProbingSampler::precompute()
 	REQUIRE(vi_VertexColors.size()==static_cast<uint32_t>(m_dimension),
 		"dimension mismatch, %d vs %d!\n", vi_VertexColors.size(), m_dimension);
 
-	m_probing_vector=SGVector<int32_t>(vi_VertexColors.size());
+	m_coloring_vector=SGVector<int32_t>(vi_VertexColors.size());
 
 	for (std::vector<int32_t>::iterator it=vi_VertexColors.begin();
 		it!=vi_VertexColors.end(); it++)
 	{
 		index_t i=static_cast<index_t>(std::distance(vi_VertexColors.begin(), it));
-		m_probing_vector[i]=*it;
+		m_coloring_vector[i]=*it;
 	}
 
-	Map<VectorXi> probe(m_probing_vector.vector, m_probing_vector.vlen);
-	m_num_samples=probe.maxCoeff()+1;
+	Map<VectorXi> colors(m_coloring_vector.vector, m_coloring_vector.vlen);
+	m_num_samples=colors.maxCoeff()+1;
 
 	delete sp_str;
 	delete Color;
@@ -189,7 +189,7 @@ SGVector<float64_t> CProbingSampler::sample(index_t idx) const
 
 	for (index_t i=0; i<m_dimension; ++i)
 	{
-		if (m_probing_vector[i]==idx)
+		if (m_coloring_vector[i]==idx)
 		{
 			float64_t x=sg_rand->std_normal_distrib();
 			s[i]=(x>0)-(x<0);
