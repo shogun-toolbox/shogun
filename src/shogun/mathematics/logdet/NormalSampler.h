@@ -34,7 +34,7 @@ public:
 	virtual ~CNormalSampler();
 
 	/** method that generates the samples
- 	 * @param idx the index
+ 	 * @param idx the index (this is effectively ignored)
 	 * @return the sample vector
  	 */
 	virtual SGVector<float64_t> sample(index_t idx) const;

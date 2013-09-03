@@ -75,8 +75,6 @@ CLogDetEstimator::~CLogDetEstimator()
 
 SGVector<float64_t> CLogDetEstimator::sample(index_t num_estimates)
 {
-	SG_DEBUG("Entering...\n")
-	
 	REQUIRE(m_operator_log, "Operator function is NULL\n");
 	// call the precompute of operator function to compute the prerequisites
 	m_operator_log->precompute();
@@ -90,7 +88,7 @@ SGVector<float64_t> CLogDetEstimator::sample(index_t num_estimates)
 		"Dimension of the operator and sample doesn't match!\n");
 
 	// for storing the aggregators that submit_jobs return
-	CDynamicObjectArray aggregators;
+	CDynamicObjectArray* aggregators=new CDynamicObjectArray();
 	index_t num_trace_samples=m_trace_sampler->get_num_samples();
 
 	for (index_t i=0; i<num_estimates; ++i)
@@ -101,7 +99,7 @@ SGVector<float64_t> CLogDetEstimator::sample(index_t num_estimates)
 			SGVector<float64_t> s=m_trace_sampler->sample(j);
 			// create jobs with the sample vector and store the aggregator
 			CJobResultAggregator* agg=m_operator_log->submit_jobs(s);
-			aggregators.append_element(agg);
+			aggregators->append_element(agg);
 			SG_UNREF(agg);
 		}
 	}
@@ -112,41 +110,41 @@ SGVector<float64_t> CLogDetEstimator::sample(index_t num_estimates)
 
 	// the samples vector which stores the estimates with averaging
 	SGVector<float64_t> samples(num_estimates);
+	samples.zero();
 
 	// use the aggregators to find the final result
-	int32_t num_aggregates=aggregators.get_num_elements();
-	float64_t result=0.0;
+	// use the same order as job submission to combine results
+	int32_t num_aggregates=aggregators->get_num_elements();
+	index_t idx_row=0;
+	index_t idx_col=0;
 	for (int32_t i=0; i<num_aggregates; ++i)
 	{
+		// this cast is safe due to above way of building the array
 		CJobResultAggregator* agg=dynamic_cast<CJobResultAggregator*>
-			(aggregators.get_element(i));
-		if (!agg)
-			SG_ERROR("Element is not CJobResultAggregator type!\n");
+			(aggregators->get_element(i));
+		ASSERT(agg);
 
-		// call finalize on all the aggregators
+		// call finalize on all the aggregators, cast is safe again
 		agg->finalize();
 		CScalarResult<float64_t>* r=dynamic_cast<CScalarResult<float64_t>*>
 			(agg->get_final_result());
-		if (!r)
-			SG_ERROR("Result is not CScalarResult type!\n");
+		ASSERT(r);
 
-		// its important that we don't just unref the result here
-		index_t idx_row=i%num_trace_samples;
-		index_t idx_col=i/num_trace_samples;
-		result+=r->get_result();
-		if (idx_row==num_trace_samples-1)
+		// iterate through indices, group results in the same way as jobs
+		samples[idx_col]+=r->get_result();
+		idx_row++;
+		if (idx_row>=num_trace_samples)
 		{
-			samples[idx_col]=result;
-			result=0.0;
+			idx_row=0;
+			idx_col++;
 		}
 
 		SG_UNREF(agg);
 	}
 
 	// clear all aggregators
-	aggregators.clear_array();
+	SG_UNREF(aggregators)
 
-	SG_DEBUG("Leaving...\n")
 	return samples;
 }
 
