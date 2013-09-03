@@ -35,6 +35,7 @@
 #include <gtest/gtest.h>
 
 using namespace shogun;
+using namespace Eigen;
 
 #if EIGEN_VERSION_AT_LEAST(3,1,0)
 TEST(LogDetEstimator, sample)
@@ -88,6 +89,7 @@ TEST(LogDetEstimator, sample_ratapp_dense)
 	mat(1,0)=0.5;
 	mat(1,1)=1000.0;
 
+	float64_t accuracy=1E-15;
 	CDenseMatrixOperator<float64_t>* op=new CDenseMatrixOperator<float64_t>(mat);
 	SG_REF(op);
 
@@ -100,9 +102,8 @@ TEST(LogDetEstimator, sample_ratapp_dense)
 	CLogRationalApproximationIndividual *op_func
 		=new CLogRationalApproximationIndividual(
 			op, e, eig_solver,
-			(CLinearSolver<complex64_t, float64_t>*)linear_solver, 0);
+			(CLinearSolver<complex64_t, float64_t>*)linear_solver, accuracy);
 	SG_REF(op_func);
-	op_func->set_num_shifts(8);
 	
 	CNormalSampler* trace_sampler=new CNormalSampler(size);
 	SG_REF(trace_sampler);
@@ -170,6 +171,7 @@ TEST(LogDetEstimator, sample_ratapp_probing_sampler)
 	mat(9,14)=mat(14,9)=1.0;
 
 	float64_t actual_result=CStatistics::log_det(mat);
+	float64_t accuracy=1E-15;
 
 	CSparseFeatures<float64_t> feat(mat);
 	SGSparseMatrix<float64_t> sm=feat.get_sparse_feature_matrix();
@@ -187,9 +189,8 @@ TEST(LogDetEstimator, sample_ratapp_probing_sampler)
 
 	CLogRationalApproximationIndividual *op_func
 		=new CLogRationalApproximationIndividual
-		(opd, e, eig_solver, (CLinearSolver<complex64_t, float64_t>*)linear_solver, 0);
+		(opd, e, eig_solver, (CLinearSolver<complex64_t, float64_t>*)linear_solver, accuracy);
 	SG_REF(op_func);
-	op_func->set_num_shifts(20);
 
 	CProbingSampler* trace_sampler=new CProbingSampler(op, 1, NATURAL, DISTANCE_TWO);
 	SG_REF(trace_sampler);
@@ -257,6 +258,7 @@ TEST(LogDetEstimator, sample_ratapp_probing_sampler_cgm)
 	mat(9,14)=mat(14,9)=1.0;
 
 	float64_t actual_result=CStatistics::log_det(mat);
+	float64_t accuracy=1E-15;
 
 	CSparseFeatures<float64_t> feat(mat);
 	SGSparseMatrix<float64_t> sm=feat.get_sparse_feature_matrix();
@@ -271,9 +273,8 @@ TEST(LogDetEstimator, sample_ratapp_probing_sampler_cgm)
 	SG_REF(linear_solver);
 
 	CLogRationalApproximationCGM *op_func
-		=new CLogRationalApproximationCGM(op, e, eig_solver, linear_solver, 0);
+		=new CLogRationalApproximationCGM(op, e, eig_solver, linear_solver, accuracy);
 	SG_REF(op_func);
-	op_func->set_num_shifts(20);
 
 	CProbingSampler* trace_sampler=new CProbingSampler(op, 1, NATURAL, DISTANCE_TWO);
 	SG_REF(trace_sampler);
@@ -288,6 +289,65 @@ TEST(LogDetEstimator, sample_ratapp_probing_sampler_cgm)
 	result/=num_estimates;
 
 	EXPECT_NEAR(result, actual_result, 1E-3);
+
+	SG_UNREF(trace_sampler);
+	SG_UNREF(eig_solver);
+	SG_UNREF(linear_solver);
+	SG_UNREF(op_func);
+	SG_UNREF(op);
+	SG_UNREF(e);
+}
+
+TEST(LogDetEstimator, sample_ratapp_big_diag_matrix)
+{
+	CSerialComputationEngine* e=new CSerialComputationEngine;
+	SG_REF(e);
+
+	float64_t difficulty=2;
+	float64_t accuracy=1E-15;
+	float64_t min_eigenvalue=0.001;
+
+	// create a sparse matrix	
+	const index_t size=10000;
+	SGSparseMatrix<float64_t> sm(size, size);
+	CSparseMatrixOperator<float64_t>* op=new CSparseMatrixOperator<float64_t>(sm);
+	SG_REF(op);
+
+	// set its diagonal
+	SGVector<float64_t> diag(size);
+	for (index_t i=0; i<size; ++i)
+	{
+		diag[i]=CMath::pow(CMath::abs(sg_rand->std_normal_distrib()), difficulty)
+			+min_eigenvalue;
+	}
+	op->set_diagonal(diag);
+
+	CLanczosEigenSolver* eig_solver=new CLanczosEigenSolver(op);
+	SG_REF(eig_solver);
+
+	CCGMShiftedFamilySolver* linear_solver=new CCGMShiftedFamilySolver();
+	SG_REF(linear_solver);
+
+	CLogRationalApproximationCGM *op_func
+		=new CLogRationalApproximationCGM(op, e, eig_solver, linear_solver, accuracy);
+	SG_REF(op_func);
+
+	CProbingSampler* trace_sampler=new CProbingSampler(op);
+	SG_REF(trace_sampler);
+
+	CLogDetEstimator estimator(trace_sampler, op_func, e);
+	const index_t num_estimates=1;
+	SGVector<float64_t> estimates=estimator.sample(num_estimates);
+
+	float64_t result=0.0;
+	for (index_t i=0; i<num_estimates; ++i)
+		result+=estimates[i];
+	result/=num_estimates;
+
+	// test the log-det samples
+	sm=op->get_matrix_operator();
+	float64_t actual_result=CStatistics::log_det(sm);
+	EXPECT_NEAR(result, actual_result, 1E-2);
 
 	SG_UNREF(trace_sampler);
 	SG_UNREF(eig_solver);

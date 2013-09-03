@@ -78,6 +78,9 @@ void CRationalApproximation::init()
 
 	SG_ADD(&m_num_shifts, "num_shifts",
 		"Number of shifts in the quadrature rule", MS_NOT_AVAILABLE);
+
+	SG_ADD(&m_desired_accuracy, "desired_accuracy",
+		"Desired accuracy of the rational approximation", MS_NOT_AVAILABLE);
 }
 
 SGVector<complex64_t> CRationalApproximation::get_shifts() const

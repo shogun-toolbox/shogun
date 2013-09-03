@@ -70,13 +70,13 @@ public:
 	 */
 	CProbingSampler(CSparseMatrixOperator<float64_t>* matrix_operator,
 		int64_t power=1, EOrderingVariant ordering=NATURAL,
-		EColoringVariant coloring=DISTANCE_ONE);
+		EColoringVariant coloring=DISTANCE_TWO);
 
 	/** destructor */
 	virtual ~CProbingSampler();
 
-	/** @return the probing vector */
-	SGVector<int32_t> get_probing_vector() const;
+	/** @return the coloring vector */
+	SGVector<int32_t> get_coloring_vector() const;
 
 	/** 
 	 * method that generates the samples
@@ -102,8 +102,8 @@ private:
 	/** power of the matrix */
 	int64_t m_power;
 
-	/** probing vecotr */
-	SGVector<int32_t> m_probing_vector;
+	/** coloring vector */
+	SGVector<int32_t> m_coloring_vector;
 
 	/** ordering variant */
 	SGString<char> m_ordering;
