@@ -53,7 +53,7 @@ applications - applications of shogun
 benchmarks   - speed benchmarks
 tests        - unit and integration tests
 
-Current build status of master: http://shogun-toolbox.org/buildbot/waterfall
+Current build status of master: http://buildbot.shogun-toolbox.org/waterfall
 Travis CI checks https://travis-ci.org/shogun-toolbox/shogun
 
 
