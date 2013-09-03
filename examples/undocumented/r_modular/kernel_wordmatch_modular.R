@@ -1,4 +1,4 @@
-library(shogun)
+library(modshogun)
 
 # Explicit examples on how to use the different kernels
 

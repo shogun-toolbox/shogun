@@ -1,4 +1,4 @@
-library(shogun)
+library(modshogun)
 
 fm_train_byte <- as.matrix(read.table('../data/fm_train_byte'))
 fm_test_byte <- as.matrix(read.table('../data/fm_test_byte'))

@@ -1,4 +1,4 @@
-library(shogun)
+library(modshogun)
 
 fm_train_dna <- as.matrix(read.table('../data/fm_train_dna.dat'))
 fm_test_dna <- as.matrix(read.table('../data/fm_test_dna.dat'))
