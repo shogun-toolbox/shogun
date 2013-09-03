@@ -39,14 +39,12 @@ void CNormalSampler::precompute()
 
 SGVector<float64_t> CNormalSampler::sample(index_t idx) const
 {
+	// ignore idx since it doesnt matter, all samples are independent
 	SGVector<float64_t> s(m_dimension);
-	if (idx>=m_num_samples)
-		SG_WARNING("idx should be less than %d\n", m_num_samples)
-	else
-	{
-		for (index_t i=0; i<m_dimension; ++i)
-			s[i]=sg_rand->std_normal_distrib();
-	}
+
+	for (index_t i=0; i<m_dimension; ++i)
+		s[i]=sg_rand->std_normal_distrib();
+
 	return s;
 }
 
