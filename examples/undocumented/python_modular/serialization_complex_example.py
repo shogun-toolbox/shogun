@@ -3,11 +3,7 @@ parameter_list=[[10,0.3,2, 1.0, 0.1]]
 
 def check_status(status,suffix):
 	# silent...
-	assert(status)
-	#if  status:
-	#	print("OK reading/writing %s\n" % suffix)
-	#else:
-	#	print("ERROR reading/writing %s\n" % suffix)
+	assert(status, "ERROR reading/writing status:%s/suffic:%s\n" % (status,suffix))
 
 def serialization_complex_example (num=5, dist=1, dim=10, C=2.0, width=10):
 	import os

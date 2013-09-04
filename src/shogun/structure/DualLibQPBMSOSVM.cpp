@@ -38,12 +38,12 @@ CDualLibQPBMSOSVM::CDualLibQPBMSOSVM(
 	// Check for initial solution
 	if (W.vlen==0)
 	{
-		m_w=SGVector< float64_t >(nDim);
-
-		m_w.zero();
+		set_w(SGVector< float64_t >(nDim));
+		get_w().zero();
 	}
 	else
 	{
+		ASSERT(W.size() == nDim);
 		set_w(W);
 	}
 }
@@ -113,6 +113,8 @@ bool CDualLibQPBMSOSVM::train_machine(CFeatures* data)
 			m_result=svm_ncbm_solver(this, m_w.vector, m_TolRel, m_TolAbs,
 					m_lambda, m_BufSize, m_cleanICP, m_cleanAfter, true /* convex */,
 					true /* use line search*/, m_verbose);
+		default:
+			SG_ERROR("CDualLibQPBMSOSVM: m_solver=%d is not supported", m_solver);
 	}
 
 	if (m_result.exitflag==1)
