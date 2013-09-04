@@ -30,8 +30,6 @@ CLogRationalApproximationCGM::CLogRationalApproximationCGM()
 	: CRationalApproximation(NULL, NULL, NULL, 0, OF_LOG)
 {
 	init();
-
-	SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 }
 
 CLogRationalApproximationCGM::CLogRationalApproximationCGM(
@@ -47,8 +45,6 @@ CLogRationalApproximationCGM::CLogRationalApproximationCGM(
 
 	m_linear_solver=linear_solver;
 	SG_REF(m_linear_solver);
-
-	SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 }
 
 void CLogRationalApproximationCGM::init()
@@ -65,14 +61,12 @@ void CLogRationalApproximationCGM::init()
 CLogRationalApproximationCGM::~CLogRationalApproximationCGM()
 {
 	SG_UNREF(m_linear_solver);
-
-	SG_GCDEBUG("%s destroyed (%p)\n", this->get_name(), this)
 }
 
 CJobResultAggregator* CLogRationalApproximationCGM::submit_jobs(
 	SGVector<float64_t> sample)
 {
-	SG_DEBUG("OperatorFunction::submit_jobs(): Entering..\n");
+	SG_DEBUG("Entering\n");
 	REQUIRE(sample.vector, "Sample is not initialized!\n");
 	REQUIRE(m_linear_operator, "Operator is not initialized!\n");
 	REQUIRE(m_computation_engine, "Computation engine is NULL\n");
@@ -103,7 +97,7 @@ CJobResultAggregator* CLogRationalApproximationCGM::submit_jobs(
 	// we can safely unref the job here, computation engine takes it from here
 	SG_UNREF(job);
 	
-	SG_DEBUG("OperatorFunction::submit_jobs(): Leaving..\n");
+	SG_DEBUG("Leaving\n");
 	return agg;
 }
 

@@ -119,6 +119,7 @@ void CRationalApproximation::precompute()
 	if (m_num_shifts==0)
 		m_num_shifts=compute_num_shifts_from_accuracy();
 
+	SG_DEBUG("Computing %d shifts\n", m_num_shifts);
 	compute_shifts_weights_const();
 }
 
@@ -132,8 +133,11 @@ int32_t CRationalApproximation::compute_num_shifts_from_accuracy()
 
 	float64_t log_cond_number=CMath::log(max_eig)-CMath::log(min_eig);
 	float64_t two_pi_sq=2.0*M_PI*M_PI;
-	return static_cast<index_t>(-1.5*(log_cond_number+6.0)
-	  	*CMath::log(m_desired_accuracy)/two_pi_sq);
+
+	int32_t num_shifts=static_cast<index_t>(-1.5*(log_cond_number+6.0)
+		  	*CMath::log(m_desired_accuracy)/two_pi_sq);
+
+	return num_shifts;
 }
 
 void CRationalApproximation::compute_shifts_weights_const()

@@ -18,8 +18,6 @@ CStoreScalarAggregator<T>::CStoreScalarAggregator()
 	: CJobResultAggregator()
 	{
 		init();
-
-		SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 	}
 
 template<class T>
@@ -36,13 +34,12 @@ void CStoreScalarAggregator<T>::init()
 template<class T>
 CStoreScalarAggregator<T>::~CStoreScalarAggregator()
 	{
-		SG_GCDEBUG("%s destroyed (%p)\n", this->get_name(), this)
 	}
 
 template<class T>
 void CStoreScalarAggregator<T>::submit_result(CJobResult* result)
 	{
-		SG_GCDEBUG("Entering ...\n")
+		SG_GCDEBUG("Entering\n")
 
 		// check for proper typecast
 		CScalarResult<T>* new_result=dynamic_cast<CScalarResult<T>*>(result);
@@ -51,7 +48,7 @@ void CStoreScalarAggregator<T>::submit_result(CJobResult* result)
 		// aggregate it with previous
 		m_aggregate+=new_result->get_result();
 
-		SG_GCDEBUG("Leaving ...\n")
+		SG_GCDEBUG("Leaving\n")
 	}
 
 template<>

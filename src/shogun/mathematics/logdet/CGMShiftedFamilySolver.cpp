@@ -26,12 +26,10 @@ namespace shogun
 CCGMShiftedFamilySolver::CCGMShiftedFamilySolver()
 	: CIterativeShiftedLinearFamilySolver<float64_t, complex64_t>()
 {
-	SG_GCDEBUG("%s created (%p)\n", this->get_name(), this);
 }
 
 CCGMShiftedFamilySolver::~CCGMShiftedFamilySolver()
 {
-	SG_GCDEBUG("%s destroyed (%p)\n", this->get_name(), this);
 }
 
 SGVector<float64_t> CCGMShiftedFamilySolver::solve(
@@ -49,7 +47,7 @@ SGVector<complex64_t> CCGMShiftedFamilySolver::solve_shifted_weighted(
 	CLinearOperator<float64_t>* A, SGVector<float64_t> b,
 	SGVector<complex64_t> shifts, SGVector<complex64_t> weights)
 {
-	SG_DEBUG("CCGMShiftedFamilySolver::solve_shifted_weighted(): Entering..\n");
+	SG_DEBUG("Entering\n");
 
 	// sanity check
 	REQUIRE(A, "Operator is NULL!\n");
@@ -101,6 +99,11 @@ SGVector<complex64_t> CCGMShiftedFamilySolver::solve_shifted_weighted(
 	// CG iteration begins
 	for (it.begin(r); !it.end(r); ++it)
 	{
+
+		SG_DEBUG("CG iteration %d, residual norm %f\n",
+				it.get_iter_info().iteration_count,
+				it.get_iter_info().residual_norm);
+
 		// apply linear operator to the direction vector
 		SGVector<float64_t> Ap_=A->apply(p_);
 		Map<VectorXd> Ap(Ap_.vector, Ap_.vlen);
@@ -174,7 +177,7 @@ SGVector<complex64_t> CCGMShiftedFamilySolver::solve_shifted_weighted(
 	for (index_t i=0; i<x_sh.cols(); ++i)
 		x+=x_sh.col(i)*weights[i];
 
-	SG_DEBUG("CCGMShiftedFamilySolver::solve_shifted_weighted(): Leaving..\n");
+	SG_DEBUG("Leaving\n");
 	return result;
 }
 

@@ -19,13 +19,11 @@ template <class T, class ST>
 CIterativeShiftedLinearFamilySolver<T, ST>::CIterativeShiftedLinearFamilySolver()
 	: CIterativeLinearSolver<T, T>()
 	{
-		SG_SGCDEBUG("%s created (%p)\n", this->get_name(), this);
 	}
 
 template <class T, class ST>
 CIterativeShiftedLinearFamilySolver<T, ST>::~CIterativeShiftedLinearFamilySolver()
 	{
-		SG_SGCDEBUG("%s destroyed (%p)\n", this->get_name(), this);
 	}
 
 template <class T, class ST>

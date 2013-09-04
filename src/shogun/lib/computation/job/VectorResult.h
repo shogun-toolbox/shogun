@@ -31,7 +31,6 @@ public:
 	: CJobResult()
 	{
 		init();
-		SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 	}
 
 	/** constructor
@@ -41,13 +40,11 @@ public:
 	: CJobResult(), m_result(result)
 	{
 		init();
-		SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 	}
 
 	/** destructor */
 	virtual ~CVectorResult()
 	{
-		SG_GCDEBUG("%s destroyed (%p)\n", this->get_name(), this)
 	}
 
 	/** @return object name */

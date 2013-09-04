@@ -46,8 +46,6 @@ public:
 	  m_function_type(OF_UNDEFINED)
 	{
 		init();
-
-		SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 	}
 
 	/** 
@@ -70,8 +68,6 @@ public:
 
 		m_computation_engine=engine;
 		SG_REF(m_computation_engine);
-
-		SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 	}
 
 	/** destructor */
@@ -79,8 +75,6 @@ public:
 	{
 		SG_UNREF(m_linear_operator);
 		SG_UNREF(m_computation_engine);
-
-		SG_GCDEBUG("%s destroyed (%p)\n", this->get_name(), this)
 	}
 
 	/** @return the operator */

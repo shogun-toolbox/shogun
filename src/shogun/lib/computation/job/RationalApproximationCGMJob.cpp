@@ -27,8 +27,6 @@ CRationalApproximationCGMJob::CRationalApproximationCGMJob()
 	: CIndependentJob()
 {
 	init();
-
-	SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 }
 
 CRationalApproximationCGMJob::CRationalApproximationCGMJob(
@@ -54,8 +52,6 @@ CRationalApproximationCGMJob::CRationalApproximationCGMJob(
 	m_shifts=shifts;
 	m_weights=weights;
 	m_const_multiplier=const_multiplier;
-
-	SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 }
 
 void CRationalApproximationCGMJob::init()
@@ -87,12 +83,12 @@ CRationalApproximationCGMJob::~CRationalApproximationCGMJob()
 {
 	SG_UNREF(m_linear_solver);
 	SG_UNREF(m_operator);
-
-	SG_GCDEBUG("%s destroyed (%p)\n", this->get_name(), this)
 }
 
 void CRationalApproximationCGMJob::compute()
 {
+	SG_DEBUG("Entering\n");
+
 	REQUIRE(m_aggregator, "Job result aggregator is not set!\n");
 	REQUIRE(m_operator, "Operator is not set!\n");
 	REQUIRE(m_vector.vector, "Vector is not set!\n");
@@ -129,6 +125,8 @@ void CRationalApproximationCGMJob::compute()
 	m_aggregator->submit_result(final_result);
 
 	SG_UNREF(final_result);
+
+	SG_DEBUG("Leaving\n");
 }
 
 }

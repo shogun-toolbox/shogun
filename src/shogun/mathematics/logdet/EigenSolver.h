@@ -28,8 +28,6 @@ public:
 	: CSGObject()
 	{
 		init();
-
-		SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 	}
 
 	/** 
@@ -45,15 +43,11 @@ public:
 		
 		m_linear_operator=linear_operator;
 		SG_REF(m_linear_operator);
-
-		SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 	}
 	/** destructor */
 	virtual ~CEigenSolver()
 	{
 		SG_UNREF(m_linear_operator);
-
-		SG_GCDEBUG("%s destroyed (%p)\n", this->get_name(), this)
 	}
 
 	/** 

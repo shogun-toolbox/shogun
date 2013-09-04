@@ -31,8 +31,6 @@ public:
 	: CSGObject()
 	{
 		init();
-
-		SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 	}
 
 	/** 
@@ -47,16 +45,12 @@ public:
 
 		m_aggregator=aggregator;
 		SG_REF(m_aggregator);
-
-		SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 	}
 
 	/** destructor */
 	virtual ~CIndependentJob()
 	{
 		SG_UNREF(m_aggregator);
-
-		SG_GCDEBUG("%s destroyed (%p)\n", this->get_name(), this)
 	}
 
 	/** 

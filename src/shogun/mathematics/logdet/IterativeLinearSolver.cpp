@@ -19,8 +19,6 @@ CIterativeLinearSolver<T, ST>::CIterativeLinearSolver()
 	: CLinearSolver<T, ST>()
 	{
 		init();
-
-		SG_SGCDEBUG("%s created (%p)\n", this->get_name(), this);
 	}
 
 template <class T, class ST>
@@ -43,7 +41,6 @@ void CIterativeLinearSolver<T, ST>::init()
 template <class T, class ST>
 CIterativeLinearSolver<T, ST>::~CIterativeLinearSolver()
 	{
-		SG_SGCDEBUG("%s destroyed (%p)\n", this->get_name(), this);
 	}
 
 template class CIterativeLinearSolver<float64_t>;
