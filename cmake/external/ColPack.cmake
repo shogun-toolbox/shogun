@@ -8,7 +8,7 @@ ExternalProject_Add(
 	CONFIGURE_COMMAND rm <SOURCE_DIR>/config.status && <SOURCE_DIR>/configure --includedir=${THIRD_PARTY_DIR}/include/ColPack --libdir=${THIRD_PARTY_DIR}/libs/ColPack --disable-shared --with-pic
 	)
 
-SET(JSON_INCLUDE_DIRS ${THIRD_PARTY_DIR}/include/ColPack)
-SET(JSON_LDFLAGS ${THIRD_PARTY_DIR}/libs/libColPack.a)
+SET(COLPACK_INCLUDE_DIRS ${THIRD_PARTY_DIR}/include/ColPack)
+SET(COLPACK_LDFLAGS ${THIRD_PARTY_DIR}/libs/libColPack.a)
 
 LIST(APPEND SHOGUN_DEPENDS COLPACK)
