@@ -7,8 +7,7 @@ parameter_list = [[traindat,testdat,label_traindat,2.1,1,1e-5],[traindat,testdat
 
 def classifier_gmnpsvm_modular (train_fname=traindat,test_fname=testdat,label_fname=label_traindat,width=2.1,C=1,epsilon=1e-5):
 	from modshogun import RealFeatures, MulticlassLabels
-	from modshogun import GaussianKernel
-	from modshogun import GMNPSVM
+	from modshogun import GaussianKernel, GMNPSVM, CSVFile
 
 	feats_train=RealFeatures(CSVFile(train_fname))
 	feats_test=RealFeatures(CSVFile(test_fname))

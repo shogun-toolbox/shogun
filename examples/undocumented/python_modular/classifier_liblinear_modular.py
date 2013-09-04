@@ -10,7 +10,7 @@ def classifier_liblinear_modular (train_fname, test_fname,
 
 	from modshogun import RealFeatures, SparseRealFeatures, BinaryLabels
 	from modshogun import LibLinear, L2R_L2LOSS_SVC_DUAL
-	from modshogun import Math_init_random
+	from modshogun import Math_init_random, CSVFile
 	Math_init_random(17)
 
 	feats_train=RealFeatures(CSVFile(train_fname))

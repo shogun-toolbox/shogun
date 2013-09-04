@@ -7,7 +7,7 @@ parameter_list = [[traindat,testdat,label_traindat,3,1],[traindat,testdat,label_
 
 def classifier_lda_modular (train_fname=traindat,test_fname=testdat,label_fname=label_traindat,gamma=3,num_threads=1):
 	from modshogun import RealFeatures, BinaryLabels
-	from modshogun import LDA
+	from modshogun import LDA, CSVFile
 
 	feats_train=RealFeatures(fm_train_real)
 	feats_test=RealFeatures(fm_test_real)
