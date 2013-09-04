@@ -175,8 +175,6 @@ public:
 		}
 		casted_m.sparse_matrix=rows;
 
-		SG_SDEBUG("SparseMatrixOperator::static_cast(): Creating casted operator!\n");
-
 		return new CSparseMatrixOperator<Scalar>(casted_m);
 	}
 

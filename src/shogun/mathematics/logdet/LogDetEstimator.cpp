@@ -92,7 +92,8 @@ SGVector<float64_t> CLogDetEstimator::sample(index_t num_estimates)
 	{
 		for (index_t j=0; j<num_trace_samples; ++j)
 		{
-			SG_DEBUG("Creating job for estimate %d, trace sample %d\n", i, j);
+			SG_DEBUG("Creating job for estimate %d, trace sample %d/%d\n", i, j,
+					num_trace_samples);
 			// get the trace sampler vector
 			SGVector<float64_t> s=m_trace_sampler->sample(j);
 			// create jobs with the sample vector and store the aggregator

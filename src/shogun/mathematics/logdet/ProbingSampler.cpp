@@ -33,8 +33,6 @@ namespace shogun
 CProbingSampler::CProbingSampler() : CTraceSampler()
 {
 	init();
-
-	SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 }
 
 CProbingSampler::CProbingSampler(
@@ -108,8 +106,6 @@ CProbingSampler::CProbingSampler(
 	memcpy(m_coloring.string, str_coloring.data(), str_coloring.size());
 
 	SG_REF(m_matrix_operator);
-
-	SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 }
 
 void CProbingSampler::init()
@@ -136,8 +132,6 @@ void CProbingSampler::init()
 CProbingSampler::~CProbingSampler()
 {
 	SG_UNREF(m_matrix_operator);
-
-	SG_GCDEBUG("%s destroyed (%p)\n", this->get_name(), this)
 }
 
 SGVector<int32_t> CProbingSampler::get_coloring_vector() const
@@ -147,6 +141,7 @@ SGVector<int32_t> CProbingSampler::get_coloring_vector() const
 
 void CProbingSampler::precompute()
 {
+	SG_DEBUG("Entering\n");
 	// do coloring things here and save the coloring vector
 	SparsityStructure* sp_str=m_matrix_operator->get_sparsity_structure(m_power);
 
@@ -174,9 +169,13 @@ void CProbingSampler::precompute()
 
 	Map<VectorXi> colors(m_coloring_vector.vector, m_coloring_vector.vlen);
 	m_num_samples=colors.maxCoeff()+1;
+	SG_DEBUG("Using %d samples (aka colours) for probing trace sampler\n",
+			m_num_samples);
 
 	delete sp_str;
 	delete Color;
+
+	SG_DEBUG("Leaving\n");
 }
 
 SGVector<float64_t> CProbingSampler::sample(index_t idx) const
