@@ -113,6 +113,7 @@ bool CDualLibQPBMSOSVM::train_machine(CFeatures* data)
 			m_result=svm_ncbm_solver(this, m_w.vector, m_TolRel, m_TolAbs,
 					m_lambda, m_BufSize, m_cleanICP, m_cleanAfter, true /* convex */,
 					true /* use line search*/, m_verbose);
+			break;
 		default:
 			SG_ERROR("CDualLibQPBMSOSVM: m_solver=%d is not supported", m_solver);
 	}
