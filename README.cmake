@@ -5,7 +5,7 @@ grep -E "OPTION.*(Modular|Static)" CMakeLists.txt
 # setup cmake for developers (debugging symbols on, optimization off, etc.):
 mkdir build-debug
 cd build-debug
-cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTING=ON -DTRACE_MEMORY_ALLOCS=OFF -DPythonModular=ON -DCMAKE_INSTALL_PREFIX="$BUILDDIR/install" ..
+cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTING=ON -DTRACE_MEMORY_ALLOCS=OFF -DPythonModular=ON -DBUILD_DASHBOARD_REPORTS=ON -DCMAKE_INSTALL_PREFIX="$BUILDDIR/install" ..
 
 
 # setup cmake for building the final binaries (debugging off, optimization on):
@@ -25,3 +25,9 @@ make -j test # compile and run all tests and examples
 make -j shogun # only compiling libshogun
 make -j shogun-unit-test # build unit test binary
 make -j unit-tests # build and run unit tests
+
+
+# testing/debugging
+ctest -D ExperimentalMemCheck # runs all tests with valgrind (depends on -DBUILD_DASHBOARD_REPORTS=ON)
+cd tests/unit && valgrind --leak-check=full ./shogun-unit-test --gtest_filter=EPInferenceMethod.get_cholesky_probit_likelihood
+cd tests/unit && valgrind --leak-check=full ./shogun-unit-test --gtest_filter=EPInferenceMethod.*

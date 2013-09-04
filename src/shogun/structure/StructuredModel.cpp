@@ -38,11 +38,8 @@ CStructuredModel::CStructuredModel(
 {
 	init();
 
-	m_features = features;
-	m_labels   = labels;
-
-	SG_REF(features);
-	SG_REF(labels);
+	set_labels(labels);
+	set_features(features);
 }
 
 CStructuredModel::~CStructuredModel()
