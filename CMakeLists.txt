@@ -927,8 +927,8 @@ message(STATUS "To install shogun to ${CMAKE_INSTALL_PREFIX} type")
 message(STATUS "  make install")
 message(STATUS "")
 message(STATUS "or to install to a custom directory")
-message(STATUS "  make install -DCMAKE_INSTALL_PREFIX=/my/special/path")
-
+message(STATUS "  make install DESTDIR=/my/special/path")
+message(STATUS "  (or rerun cmake with -DCMAKE_INSTALL_PREFIX=/my/special/path) to just change the prefix")
 message(STATUS "===================================================================================================================")
 
 
