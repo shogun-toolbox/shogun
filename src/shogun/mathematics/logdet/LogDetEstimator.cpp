@@ -25,8 +25,6 @@ CLogDetEstimator::CLogDetEstimator()
 	: CSGObject()
 {
 	init();
-
-	SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 }
 
 CLogDetEstimator::CLogDetEstimator(CTraceSampler* trace_sampler,
@@ -44,8 +42,6 @@ CLogDetEstimator::CLogDetEstimator(CTraceSampler* trace_sampler,
 
 	m_computation_engine=computation_engine;
 	SG_REF(m_computation_engine);
-
-	SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 }
 
 void CLogDetEstimator::init()
@@ -69,12 +65,13 @@ CLogDetEstimator::~CLogDetEstimator()
 	SG_UNREF(m_trace_sampler);
 	SG_UNREF(m_operator_log);
 	SG_UNREF(m_computation_engine);
-
-	SG_GCDEBUG("%s destroyed (%p)\n", this->get_name(), this)
 }
 
 SGVector<float64_t> CLogDetEstimator::sample(index_t num_estimates)
 {
+	SG_DEBUG("Entering\n");
+	SG_DEBUG("Computing %d log-det estimates\n", num_estimates);
+
 	REQUIRE(m_operator_log, "Operator function is NULL\n");
 	// call the precompute of operator function to compute the prerequisites
 	m_operator_log->precompute();
@@ -95,6 +92,7 @@ SGVector<float64_t> CLogDetEstimator::sample(index_t num_estimates)
 	{
 		for (index_t j=0; j<num_trace_samples; ++j)
 		{
+			SG_DEBUG("Creating job for estimate %d, trace sample %d\n", i, j);
 			// get the trace sampler vector
 			SGVector<float64_t> s=m_trace_sampler->sample(j);
 			// create jobs with the sample vector and store the aggregator
@@ -105,8 +103,11 @@ SGVector<float64_t> CLogDetEstimator::sample(index_t num_estimates)
 	}
 
 	REQUIRE(m_computation_engine, "Computation engine is NULL\n");
+
 	// wait for all the jobs to be completed
+	SG_DEBUG("Waiting for jobs to finish\n");
 	m_computation_engine->wait_for_all();
+	SG_DEBUG("All jobs finished, aggregating results\n");
 
 	// the samples vector which stores the estimates with averaging
 	SGVector<float64_t> samples(num_estimates);
@@ -144,6 +145,8 @@ SGVector<float64_t> CLogDetEstimator::sample(index_t num_estimates)
 
 	// clear all aggregators
 	SG_UNREF(aggregators)
+
+	SG_DEBUG("Finished computing %d log-det estimates\n", num_estimates);
 
 	return samples;
 }
@@ -212,7 +215,7 @@ SGMatrix<float64_t> CLogDetEstimator::sample_without_averaging(
 	// clear all aggregators
 	aggregators.clear_array();
 
-	SG_DEBUG("Leaving...\n")
+	SG_DEBUG("Leaving\n")
 	return samples;
 }
 

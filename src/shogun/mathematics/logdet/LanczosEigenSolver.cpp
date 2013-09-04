@@ -29,8 +29,6 @@ CLanczosEigenSolver::CLanczosEigenSolver()
 	: CEigenSolver()
 {
 	init();
-
-	SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 }
 
 CLanczosEigenSolver::CLanczosEigenSolver(
@@ -38,8 +36,6 @@ CLanczosEigenSolver::CLanczosEigenSolver(
 	: CEigenSolver(linear_operator)
 {
 	init();
-
-	SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 }
 
 void CLanczosEigenSolver::init()
@@ -60,12 +56,11 @@ void CLanczosEigenSolver::init()
 
 CLanczosEigenSolver::~CLanczosEigenSolver()
 {
-	SG_GCDEBUG("%s destroyed (%p)\n", this->get_name(), this)
 }
 
 void CLanczosEigenSolver::compute()
 {
-	SG_DEBUG("CLanczosEigenSolver::solve(): Entering..\n");
+	SG_DEBUG("Entering\n");
 
 	REQUIRE(m_linear_operator, "Operator is NULL!\n");
 
@@ -94,6 +89,10 @@ void CLanczosEigenSolver::compute()
 	// CG iteration begins
 	for (it.begin(v_i); !it.end(v_i); ++it)
 	{
+		SG_DEBUG("CG iteration %d, residual norm %f\n",
+				it.get_iter_info().iteration_count,
+				it.get_iter_info().residual_norm);
+
 		// apply linear operator to the direction vector
 		w_=m_linear_operator->apply(v_);
 		Map<VectorXd> w_i(w_.vector, w_.vlen);
@@ -144,7 +143,7 @@ void CLanczosEigenSolver::compute()
 	else
 		SG_WARNING("Some error occured while computing eigenvalues!\n");	
 
-	SG_DEBUG("CLanczosEigenSolver::solve(): Leaving..\n");
+	SG_DEBUG("Leaving\n");
 }
 
 }
