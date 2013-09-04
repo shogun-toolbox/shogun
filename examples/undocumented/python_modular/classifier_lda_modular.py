@@ -1,14 +1,11 @@
 #!/usr/bin/env python
-from tools.load import LoadMatrix
-lm=LoadMatrix()
-
-traindat = lm.load_numbers('../data/fm_train_real.dat')
-testdat = lm.load_numbers('../data/fm_test_real.dat')
-label_traindat = lm.load_labels('../data/label_train_twoclass.dat')
+traindat = '../data/fm_train_real.dat'
+testdat = '../data/fm_test_real.dat'
+label_traindat = '../data/label_train_multiclass.dat'
 
 parameter_list = [[traindat,testdat,label_traindat,3,1],[traindat,testdat,label_traindat,4,1]]
 
-def classifier_lda_modular (fm_train_real=traindat,fm_test_real=testdat,label_train_twoclass=label_traindat,gamma=3,num_threads=1):
+def classifier_lda_modular (train_fname=traindat,test_fname=testdat,label_fname=label_traindat,gamma=3,num_threads=1):
 	from modshogun import RealFeatures, BinaryLabels
 	from modshogun import LDA
 
@@ -23,8 +20,8 @@ def classifier_lda_modular (fm_train_real=traindat,fm_test_real=testdat,label_tr
 	lda.get_bias()
 	lda.get_w()
 	lda.set_features(feats_test)
-	lda.apply().get_labels()
-	return lda,lda.apply().get_labels()
+	predictions = lda.apply().get_labels()
+	return lda,predictions
 
 if __name__=='__main__':
 	print('LDA')
