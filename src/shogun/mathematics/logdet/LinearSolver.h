@@ -29,13 +29,11 @@ public:
 	CLinearSolver()
 	: CSGObject()
 	{
-		SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 	}
 
 	/** destructor */
 	virtual ~CLinearSolver()
 	{
-		SG_GCDEBUG("%s destroyed (%p)\n", this->get_name(), this)
 	}
 
 	/** 

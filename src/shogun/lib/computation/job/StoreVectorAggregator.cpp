@@ -20,7 +20,6 @@ CStoreVectorAggregator<T>::CStoreVectorAggregator()
 	: CJobResultAggregator()
 	{
 		init();
-
 		SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 	}
 
@@ -32,8 +31,6 @@ CStoreVectorAggregator<T>::CStoreVectorAggregator(index_t dimension)
 
 		m_aggregate=SGVector<T>(dimension);
 		m_aggregate.set_const(static_cast<T>(0));
-
-		SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 	}
 
 template<class T>
@@ -46,13 +43,12 @@ void CStoreVectorAggregator<T>::init()
 template<class T>
 CStoreVectorAggregator<T>::~CStoreVectorAggregator()
 	{
-		SG_GCDEBUG("%s destroyed (%p)\n", this->get_name(), this)
 	}
 
 template<class T>
 void CStoreVectorAggregator<T>::submit_result(CJobResult* result)
 	{
-		SG_GCDEBUG("Entering ...\n")
+		SG_GCDEBUG("Entering\n")
 
 		// check for proper typecast
 		CVectorResult<T>* new_result=dynamic_cast<CVectorResult<T>*>(result);
@@ -61,7 +57,7 @@ void CStoreVectorAggregator<T>::submit_result(CJobResult* result)
 		// aggregate it with previous
 		m_aggregate+=new_result->get_result();
 
-		SG_GCDEBUG("Leaving ...\n")
+		SG_GCDEBUG("Leaving\n")
 	}
 
 template<>
