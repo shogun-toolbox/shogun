@@ -58,62 +58,29 @@ T SGSparseVector<T>::dense_dot(T alpha, T* vec, int32_t dim, T b)
 	return result;
 }
 
-template <> template <>
-float64_t SGSparseVector<float64_t>::dense_dot(SGVector<int32_t> vec)
+template <class T>
+template <typename ST>
+T SGSparseVector<T>::dense_dot(SGVector<ST> vec)
 {
 	ASSERT(vec)
-	float64_t result(0.0);
+	T result(0.0);
 
 	if (features)
 	{
 		for (int32_t i=0; i<num_feat_entries; i++)
 		{
 			if (features[i].feat_index<vec.vlen)
-				result+=vec[features[i].feat_index]*features[i].entry;
-		}
-	}
-
-	return result;
-}
-
-template <> template <>
-complex64_t SGSparseVector<complex64_t>::dense_dot(SGVector<float64_t> vec)
-{
-	ASSERT(vec)
-	complex64_t result(0.0);
-
-	if (features)
-	{
-		for (int32_t i=0; i<num_feat_entries; i++)
-		{
-			if (features[i].feat_index<vec.vlen)
-				result+=vec[features[i].feat_index]*features[i].entry;
-		}
-	}
-
-	return result;
-}
-
-template <> template <>
-complex64_t SGSparseVector<complex64_t>::dense_dot(SGVector<int32_t> vec)
-{
-	ASSERT(vec)
-	complex64_t result(0.0);
-
-	if (features)
-	{
-		for (int32_t i=0; i<num_feat_entries; i++)
-		{
-			if (features[i].feat_index<vec.vlen)
-			{
-				result+=static_cast<complex64_t>(vec[features[i].feat_index])
+				result+=static_cast<T>(vec[features[i].feat_index])
 					*features[i].entry;
-			}
 		}
 	}
 
 	return result;
 }
+
+template complex64_t SGSparseVector<complex64_t>::dense_dot<float64_t>(SGVector<float64_t>);
+template complex64_t SGSparseVector<complex64_t>::dense_dot<int32_t>(SGVector<int32_t> vec);
+template float64_t SGSparseVector<float64_t>::dense_dot<int32_t>(SGVector<int32_t> vec);
 
 template <class T>
 T SGSparseVector<T>::sparse_dot(const SGSparseVector<T>& v)
