@@ -700,9 +700,9 @@ void R_init_sg(DllInfo *info)
    R_FortranMethodDef fortranMethods[] = { {NULL, NULL, 0} };
    
 #ifdef HAVE_ELWMS
-   R_ExternalMethodDef externalMethods[] = { {"elwms", (void*(*)()) &Rsg, 1}, {NULL, NULL, 0} };
+   R_ExternalMethodDef externalMethods[] = { {"elwms", (void*(*)()) &Rsg, -1}, {NULL, NULL, 0} };
 #else
-   R_ExternalMethodDef externalMethods[] = { {"sg", (void*(*)()) &Rsg, 1}, {NULL, NULL, 0} };
+   R_ExternalMethodDef externalMethods[] = { {"sg", (void*(*)()) &Rsg, -1}, {NULL, NULL, 0} };
 #endif
    R_CallMethodDef callMethods[] = { {NULL, NULL, 0} };
 
