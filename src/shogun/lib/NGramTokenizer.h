@@ -29,10 +29,13 @@ public:
 	 */
     CNGramTokenizer(int32_t ns=3);
 
-    /* copy constructor */
+    /** copy constructor 
+	 * 
+	 * @param orig the original NGramTokenizer
+	 */
     CNGramTokenizer(const CNGramTokenizer& orig);
 
-    /* destructor */
+    /** destructor */
     virtual ~CNGramTokenizer() {}
 
 	/** Set the char array that requires tokenization
@@ -70,10 +73,10 @@ private:
 
 protected:
 	
-	/* n-grams' size */
+	/** n-grams' size */
 	int32_t n;
 
-	/* last index returned */
+	/** last index returned */
 	index_t last_idx;
 };
 }
