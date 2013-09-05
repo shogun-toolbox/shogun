@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 traindat = '../data/fm_train_real.dat'
 testdat = '../data/fm_test_real.dat'
-label_traindat = '../data/label_train_multiclass.dat'
+label_traindat = '../data/label_train_twoclass.dat'
 
 parameter_list = [[traindat,testdat,label_traindat,0.9,1e-3],[traindat,testdat,label_traindat,0.8,1e-2]]
 
 def classifier_liblinear_modular (train_fname, test_fname,
-		label_traindat, C, epsilon):
+		label_fname, C, epsilon):
 
 	from modshogun import RealFeatures, SparseRealFeatures, BinaryLabels
 	from modshogun import LibLinear, L2R_L2LOSS_SVC_DUAL
