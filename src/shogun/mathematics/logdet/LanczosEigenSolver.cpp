@@ -62,6 +62,12 @@ void CLanczosEigenSolver::compute()
 {
 	SG_DEBUG("Entering\n");
 
+	if (m_is_computed_min && m_is_computed_max)
+	{
+		SG_DEBUG("Minimum/maximum eigenvalues are already computed, exiting\n");
+		return;
+	}
+
 	REQUIRE(m_linear_operator, "Operator is NULL!\n");
 
 	// vector v_0
@@ -123,25 +129,40 @@ void CLanczosEigenSolver::compute()
 	std::vector<float64_t> alpha_orig=alpha;
 	std::vector<float64_t> beta_orig=beta;
 
-	// computing min eigenvalue
-	wrap_dstemr('N', 'I', alpha.size(), &alpha[0], &beta[0],
-		0.0, 0.0, 1, 1, &M, w.vector, NULL, 1, 1, NULL, 0.0, &info);
-
-	m_min_eigenvalue=w[0];
-
-	// computing max eigenvalue
-	wrap_dstemr('N', 'I', alpha_orig.size(), &alpha_orig[0], &beta_orig[0],
-		0.0, 0.0, w.vlen, w.vlen, &M, w.vector, NULL, 1, 1, NULL, 0.0, &info);
-
-	m_max_eigenvalue=w[0];
-
-	if (info==0)
+	if (!m_is_computed_min)
 	{
-		SG_DEBUG("Iteration took %ld times, residual norm=%.20lf\n",
-		it.get_iter_info().iteration_count, it.get_iter_info().residual_norm);
+		// computing min eigenvalue
+		wrap_dstemr('N', 'I', alpha.size(), &alpha[0], &beta[0],
+			0.0, 0.0, 1, 1, &M, w.vector, NULL, 1, 1, NULL, 0.0, &info);
+
+		if (info==0)
+		{
+			SG_DEBUG("Iteration took %ld times, residual norm=%.20lf\n",
+			it.get_iter_info().iteration_count, it.get_iter_info().residual_norm);
+			
+			m_min_eigenvalue=w[0];
+			m_is_computed_min=true;
+		}
+		else
+			SG_WARNING("Some error occured while computing eigenvalues!\n");
 	}
-	else
-		SG_WARNING("Some error occured while computing eigenvalues!\n");	
+
+	if (!m_is_computed_max)
+	{
+		// computing max eigenvalue
+		wrap_dstemr('N', 'I', alpha_orig.size(), &alpha_orig[0], &beta_orig[0],
+			0.0, 0.0, w.vlen, w.vlen, &M, w.vector, NULL, 1, 1, NULL, 0.0, &info);
+
+		if (info==0)
+		{
+			SG_DEBUG("Iteration took %ld times, residual norm=%.20lf\n",
+			it.get_iter_info().iteration_count, it.get_iter_info().residual_norm);
+			m_max_eigenvalue=w[0];
+			m_is_computed_max=true;
+		}
+		else
+			SG_WARNING("Some error occured while computing eigenvalues!\n");
+	}
 
 	SG_DEBUG("Leaving\n");
 }

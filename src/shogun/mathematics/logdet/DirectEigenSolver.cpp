@@ -40,6 +40,12 @@ CDirectEigenSolver::~CDirectEigenSolver()
 
 void CDirectEigenSolver::compute()
 {
+	if (m_is_computed_min && m_is_computed_max)
+	{
+		SG_DEBUG("Minimum/maximum eigenvalues are already computed, exiting\n");
+		return;
+	}
+
 	CDenseMatrixOperator<float64_t>* op
 		=dynamic_cast<CDenseMatrixOperator<float64_t>*>(m_linear_operator);
 	REQUIRE(op, "Linear operator is not of CDenseMatrixOperator type!\n");
@@ -51,6 +57,9 @@ void CDirectEigenSolver::compute()
 	SelfAdjointEigenSolver<MatrixXd> eig_solver(map_m);
 	m_min_eigenvalue=eig_solver.eigenvalues()[0];
 	m_max_eigenvalue=eig_solver.eigenvalues()[op->get_dimension()-1];
+
+	m_is_computed_min=true;
+	m_is_computed_max=false;
 }
 
 }
