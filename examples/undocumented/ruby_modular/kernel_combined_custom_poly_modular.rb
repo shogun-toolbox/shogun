@@ -1,10 +1,13 @@
+require 'nmatrix'
 require 'modshogun'
 require 'pp'
-require 'load'
+
+require_relative 'load'
 
 traindat = LoadMatrix.load_numbers('../data/fm_train_real.dat')
 testdat = LoadMatrix.load_numbers('../data/fm_test_real.dat')
 label_traindat = LoadMatrix.load_labels('../data/label_train_twoclass.dat')
+
 parameter_list= [[traindat,testdat,label_traindat],[traindat,testdat,label_traindat]]
 
 
