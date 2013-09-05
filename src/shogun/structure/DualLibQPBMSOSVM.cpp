@@ -33,7 +33,7 @@ CDualLibQPBMSOSVM::CDualLibQPBMSOSVM(
 	set_lambda(_lambda);
 
 	// get dimension of w
-	uint32_t nDim=this->m_model->get_dim();
+	int32_t nDim=this->m_model->get_dim();
 
 	// Check for initial solution
 	if (W.vlen==0)
