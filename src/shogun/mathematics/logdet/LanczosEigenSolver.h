@@ -99,6 +99,7 @@ private:
 
 	/** register params and initialize with default values */
 	void init();
+
 };
 
 }
