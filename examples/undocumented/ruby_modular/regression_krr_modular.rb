@@ -1,9 +1,6 @@
-require 'nmatrix'
 require 'modshogun'
 require 'pp'
-
-require_relative 'load'
-
+require 'load'
 ###########################################################################
 # kernel ridge regression
 ###########################################################################

@@ -1,8 +1,6 @@
-require 'nmatrix'
 require 'modshogun'
+require 'load'
 require 'pp'
-
-require_relative 'load'
 
 #
 # This program is free software; you can redistribute it and/or modify

@@ -1,4 +1,3 @@
-require 'nmatrix'
 require 'modshogun'
 require 'pp'
 

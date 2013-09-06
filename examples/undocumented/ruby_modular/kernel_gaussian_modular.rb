@@ -1,8 +1,7 @@
-require 'nmatrix'
+require 'narray'
 require 'modshogun'
+require 'load'
 require 'pp'
-
-require_relative 'load'
 
 traindat = LoadMatrix.load_numbers('../data/fm_train_real.dat')
 testdat = LoadMatrix.load_numbers('../data/fm_test_real.dat')
