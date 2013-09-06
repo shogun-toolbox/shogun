@@ -443,7 +443,7 @@ class CMKL : public CSVM
 		 *
 		 * @return if in good status
 		 */
-		bool check_lpx_status(LPX *lp);
+		bool check_glp_status(glp_prob *lp);
 #endif
 
 	protected:
@@ -493,7 +493,10 @@ class CMKL : public CSVM
 
 #ifdef USE_GLPK
 		/** lp */
-		LPX* lp_glpk;
+		glp_prob* lp_glpk;
+
+		/** lp parameters */
+		glp_smcp* lp_glpk_parm;
 #endif
 		/** if lp is initialized */
 		bool lp_initialized ;
