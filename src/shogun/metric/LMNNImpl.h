@@ -14,6 +14,7 @@
 #include <shogun/lib/config.h>
 
 #ifdef HAVE_EIGEN3
+#ifdef HAVE_LAPACK
 
 #include <shogun/lib/common.h>
 #include <shogun/lib/SGMatrix.h>
@@ -150,6 +151,7 @@ class CLMNNImpl
 
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
+#endif /* HAVE_LAPACK */
 #endif /* HAVE_EIGEN3 */
 
 #endif /* _LMNNIMPL_H_ */

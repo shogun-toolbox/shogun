@@ -9,6 +9,7 @@
  */
 
 #ifdef HAVE_EIGEN3
+#ifdef HAVE_LAPACK
 
 #include <shogun/metric/LMNNImpl.h>
 #include <shogun/multiclass/KNN.h>
@@ -514,4 +515,5 @@ CEuclideanDistance* CLMNNImpl::setup_distance(CDenseFeatures<float64_t>* x,
 	return euclidean;
 }
 
+#endif /* HAVE_LAPACK */
 #endif /* HAVE_EIGEN3 */
