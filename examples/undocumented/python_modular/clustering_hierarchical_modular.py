@@ -1,19 +1,12 @@
 #!/usr/bin/env python
-from tools.load import LoadMatrix
-lm=LoadMatrix()
-
-traindat = lm.load_numbers('../data/fm_train_real.dat')
+traindat = '../data/fm_train_real.dat'
 
 parameter_list = [[traindat,3],[traindat,4]]
 
 def clustering_hierarchical_modular (fm_train=traindat,merges=3):
+	from modshogun import EuclideanDistance, RealFeatures, Hierarchical, CSVFile
 
-	from modshogun import EuclideanDistance
-	from modshogun import RealFeatures
-	from modshogun import Hierarchical
-
-
-	feats_train=RealFeatures(fm_train)
+	feats_train=RealFeatures(CSVFile(train_fname))
 	distance=EuclideanDistance(feats_train, feats_train)
 
 	hierarchical=Hierarchical(merges, distance)

@@ -16,10 +16,9 @@ def classifier_lda_modular (train_fname=traindat,test_fname=testdat,label_fname=
 	lda=LDA(gamma, feats_train, labels)
 	lda.train()
 
-	lda.get_bias()
-	lda.get_w()
-	lda.set_features(feats_test)
-	predictions = lda.apply().get_labels()
+	bias=lda.get_bias()
+	w=lda.get_w()
+	predictions = lda.apply(feats_test).get_labels()
 	return lda,predictions
 
 if __name__=='__main__':
