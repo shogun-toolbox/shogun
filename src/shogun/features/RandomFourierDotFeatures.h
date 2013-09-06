@@ -215,7 +215,7 @@ public:
 	/** Generates num_samples vectors of length dim from the probability distribution
 	 * computed from the fourier transform of the specified kernel.
 	 *
-	 * @param num samples the number of vectors to create
+	 * @param num_samples the number of vectors to create
 	 * @param dim the dimension of the vectors
 	 * @param kernel the kernel to approximate
 	 * @param params kernel parameters (see kernel's description in KernelName to see what each kernel expects)
@@ -225,7 +225,7 @@ public:
 	static SGMatrix<float64_t> generate_random_w(int32_t num_samples, int32_t dim, KernelName kernel,
 			SGVector<float64_t> params);
 
-protected:
+private:
 	void init(CDotFeatures* feats, int32_t num_samples, SGMatrix<float64_t> ww,
 			SGVector<float64_t> bb);
 
