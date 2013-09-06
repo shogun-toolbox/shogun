@@ -85,7 +85,7 @@ def get_includes(classes):
 		for f in files:
 			if f in class_headers:
 				result.append(os.path.join(root, f))
-	
+
 	includes=[]
 	for o in result:
 		if sys.version_info > (3,):
@@ -171,7 +171,7 @@ def test_candidate(c, lines, line_nr, supports_complex):
 			if check_abstract_class(line):
 				return False, stop
 			else:
-				vstart,vstop=extract_block(c, lines, line_nr, len(lines), '(',')')
+				vstart,vstop=extract_block(c, lines, line_nr, stop, '(',')')
 				for line_nr in range(vstart, vstop):
 					line=lines[line_nr]
 					if check_abstract_class(line):
@@ -240,8 +240,8 @@ def write_templated_file(fname, substitutes):
 				for s in substitutes.keys():
 					if l==s:
 						f.write('\n'.join(substitutes[s]))
-					continue			
-			else:		
+					continue
+			else:
 				for s in substitutes.iterkeys():
 					if l==s:
 						f.write('\n'.join(substitutes[s]))
@@ -267,7 +267,7 @@ def get_blacklist():
 		if not cfg in config:
 			blacklist[cfg]=1
 	return blacklist
-		
+
 if __name__=='__main__':
 	import sys
 	TEMPL_FILE=sys.argv[1]
