@@ -76,7 +76,6 @@ APPLY_BINARY(CPluginEstimate);
 APPLY_BINARY(CGaussianProcessBinaryClassification);
 #endif //HAVE_EIGEN3
 
-APPLY_REGRESSION(CKernelRidgeRegression);
 APPLY_REGRESSION(CLibSVR);
 APPLY_REGRESSION(CSVRLight);
 APPLY_REGRESSION(CMKLRegression);
