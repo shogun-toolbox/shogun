@@ -32,10 +32,13 @@ public:
 	 */
 	CDelimiterTokenizer(bool skip_delimiters = false);
 
-	/* copy constructor */
+	/** copy constructor 
+	 *
+	 * @param orig the original DelimiterTokenizer
+	 */
 	CDelimiterTokenizer(const CDelimiterTokenizer& orig);
 
-	/* destructor */
+	/** destructor */
 	virtual ~CDelimiterTokenizer() {}
 
 	/** Set the char array that requires tokenization
@@ -62,9 +65,9 @@ public:
 	virtual index_t next_token_idx(index_t& start);
 
 	/** Returns the name of the SGSerializable instance.  It MUST BE
-	 *  the CLASS NAME without the prefixed `C'.
+	 * the CLASS NAME without the prefixed 'C'.
 	 *
-	 *  @return name of the SGSerializable
+	 * @return name of the SGSerializable
 	 */
 	virtual const char* get_name() const;
 
@@ -94,11 +97,11 @@ private:
 	void init();
 
 public:
-	/* delimiters */
+	/** delimiters */
 	SGVector<bool> delimiters;
 
 protected:
-	/* index of last token */
+	/** index of last token */
 	index_t last_idx;
 
 	/** whether to skip consecutive delimiters or not */

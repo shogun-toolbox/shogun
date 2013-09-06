@@ -45,6 +45,8 @@ public:
     volatile std::atomic<int> rc;
 #else
 	int32_t rc;
+
+	/** the lock */
 	CLock lock;
 #endif
 };

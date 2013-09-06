@@ -23,6 +23,17 @@ class CTokenizer;
 class CConverter;
 template<class T> class CSparseFeatures;
 
+/** @brief This class can be used to convert a document collection contained in a CStringFeatures<char>
+ * object where each document is stored as a single vector into a hashed Bag-of-Words representation.
+ * Like in the standard Bag-of-Words representation, this class considers each document as a collection of tokens,
+ * which are then hashed into a new feature space of a specified dimension.
+ * This class is very flexible and allows the user to specify the tokenizer used to tokenize each document,
+ * specify whether the results should be normalized with regards to the sqrt of the document size, as well
+ * as to specify whether he wants to combine different tokens.
+ * The latter implements a k-skip n-grams approach, meaning that you can combine up to n tokens, while skipping up to k.
+ * Eg. for the tokens ["a", "b", "c", "d"], with n_grams = 2 and skips = 2, one would get the following combinations :
+ * ["a", "ab", "ac" (skipped 1), "ad" (skipped 2), "b", "bc", "bd" (skipped 1), "c", "cd", "d"].
+ */
 class CHashedDocConverter : public CConverter
 {
 public:
