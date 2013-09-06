@@ -7,6 +7,8 @@ mkdir build-debug
 cd build-debug
 cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTING=ON -DTRACE_MEMORY_ALLOCS=OFF -DPythonModular=ON -DBUILD_DASHBOARD_REPORTS=ON -DCMAKE_INSTALL_PREFIX="$BUILDDIR/install" ..
 
+# specify a different swig executable
+cmake -DSWIG_EXECUTABLE=/usr/bin/swig2.0
 
 # setup cmake for building the final binaries (debugging off, optimization on):
 mkdir build-release
