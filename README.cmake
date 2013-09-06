@@ -33,3 +33,7 @@ make -j unit-tests # build and run unit tests
 ctest -D ExperimentalMemCheck # runs all tests with valgrind (depends on -DBUILD_DASHBOARD_REPORTS=ON)
 cd tests/unit && valgrind --leak-check=full ./shogun-unit-test --gtest_filter=EPInferenceMethod.get_cholesky_probit_likelihood
 cd tests/unit && valgrind --leak-check=full ./shogun-unit-test --gtest_filter=EPInferenceMethod.*
+
+# specify a different compiler (from CMake FAQ http://www.cmake.org/Wiki/CMake_FAQ "How do I use a different compiler?")
+# You might have to delete the build directory or clear the cmake cache otherwise for this to work
+CC=/path/to/gcc CXX=/path/to/g++ cmake ..
