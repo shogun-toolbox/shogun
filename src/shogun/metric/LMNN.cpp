@@ -9,6 +9,7 @@
  */
 
 #ifdef HAVE_EIGEN3
+#ifdef HAVE_LAPACK
 
 #include <shogun/metric/LMNN.h>
 #include <shogun/metric/LMNNImpl.h>
@@ -285,4 +286,5 @@ void CLMNN::init()
 	m_diagonal = false;
 }
 
+#endif /* HAVE_LAPACK */
 #endif /* HAVE_EIGEN3 */

@@ -14,6 +14,7 @@
 #include <shogun/lib/config.h>
 
 #ifdef HAVE_EIGEN3
+#ifdef HAVE_LAPACK
 
 #include <shogun/base/SGObject.h>
 #include <shogun/distance/CustomMahalanobisDistance.h>
@@ -232,6 +233,7 @@ class CLMNN : public CSGObject
 
 } /* namespace shogun */
 
+#endif /* HAVE_LAPACK */
 #endif /* HAVE_EIGEN3 */
 
 #endif /* LMNN_H_ */

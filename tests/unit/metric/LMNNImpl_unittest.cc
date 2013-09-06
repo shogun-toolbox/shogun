@@ -15,6 +15,7 @@
 using namespace shogun;
 
 #ifdef HAVE_EIGEN3
+#ifdef HAVE_LAPACK
 
 TEST(LMNNImpl,find_target_nn)
 {
@@ -191,4 +192,5 @@ TEST(LMNNImpl,find_impostors_exact)
 	SG_UNREF(labels)
 }
 
+#endif /* HAVE_LAPACK */
 #endif /* HAVE_EIGEN3 */
