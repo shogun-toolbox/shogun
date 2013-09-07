@@ -37,3 +37,6 @@ cd tests/unit && valgrind --leak-check=full ./shogun-unit-test --gtest_filter=EP
 # specify a different compiler (from CMake FAQ http://www.cmake.org/Wiki/CMake_FAQ "How do I use a different compiler?")
 # You might have to delete the build directory or clear the cmake cache otherwise for this to work
 CC=/path/to/gcc CXX=/path/to/g++ cmake ..
+
+# use a custom python installation for python bindings (here 2.7.1 installed in path/to/python
+cmake -DPYTHON_INCLUDE_DIR=/path/to/python/include/python2.7 -DPYTHON_LIBRARY=path/to/python/python-2.7.1/lib/python2.7 ..
