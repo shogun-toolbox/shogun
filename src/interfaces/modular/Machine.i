@@ -76,14 +76,15 @@ APPLY_BINARY(CPluginEstimate);
 APPLY_BINARY(CGaussianProcessBinaryClassification);
 #endif //HAVE_EIGEN3
 
-APPLY_REGRESSION(CKernelRidgeRegression);
 APPLY_REGRESSION(CLibSVR);
 APPLY_REGRESSION(CSVRLight);
 APPLY_REGRESSION(CMKLRegression);
+#ifdef HAVE_LAPACK
 APPLY_REGRESSION(CKernelRidgeRegression);
 APPLY_REGRESSION(CLinearRidgeRegression);
 APPLY_REGRESSION(CLeastSquaresRegression);
 APPLY_REGRESSION(CLeastAngleRegression);
+#endif
 #ifdef HAVE_EIGEN3
 APPLY_REGRESSION(CGaussianProcessRegression);
 #endif //HAVE_EIGEN3
@@ -112,10 +113,12 @@ APPLY_LATENT(CLatentSVM);
 %rename(apply_generic) CSVRLight::apply(CFeatures* data=NULL);
 %rename(apply_generic) CLibSVR::apply(CFeatures* data=NULL);
 %rename(apply_generic) CMKLRegression::apply(CFeatures* data=NULL);
+#ifdef HAVE_LAPACK
 %rename(apply_generic) CKernelRidgeRegression::apply(CFeatures* data=NULL);
 %rename(apply_generic) CLinearRidgeRegression::apply(CFeatures* data=NULL);
 %rename(apply_generic) CLeastSquaresRegression::apply(CFeatures* data=NULL);
 %rename(apply_generic) CLeastAngleRegression::apply(CFeatures* data=NULL);
+#endif
 %rename(apply_generic) CGaussianProcessRegression::apply(CFeatures* data=NULL);
 
 %rename(apply_generic) CStructuredOutputMachine::apply(CFeatures* data=NULL);

@@ -28,13 +28,13 @@ void CIterativeLinearSolver<T, ST>::init()
 		m_relative_tolerence=1E-5;
 		m_absolute_tolerence=1E-5;
 
-		CSGObject::m_parameters->add(&m_max_iteration_limit, "max_iteration_limit",
+		this->m_parameters->add(&m_max_iteration_limit, "max_iteration_limit",
 			"Maximum number of iteration for the solver");
 
-		CSGObject::m_parameters->add(&m_relative_tolerence, "relative_tolerence",
+		this->m_parameters->add(&m_relative_tolerence, "relative_tolerence",
 			"Relative tolerence of solver");
 
-		CSGObject::m_parameters->add(&m_absolute_tolerence, "absolute_tolerence",
+		this->m_parameters->add(&m_absolute_tolerence, "absolute_tolerence",
 			"Absolute tolerence of solver");
 	}
 

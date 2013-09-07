@@ -23,8 +23,6 @@ CSparseMatrixOperator<T>::CSparseMatrixOperator()
 	: CMatrixOperator<T>()
 	{
 		init();
-
-		SG_SGCDEBUG("%s created (%p)\n", this->get_name(), this);
 	}
 
 template<class T>
@@ -33,8 +31,6 @@ CSparseMatrixOperator<T>::CSparseMatrixOperator(SGSparseMatrix<T> op)
 	  m_operator(op)
 	{
 		init();
-
-		SG_SGCDEBUG("%s created (%p)\n", this->get_name(), this);
 	}
 
 template<class T>
@@ -71,17 +67,16 @@ void CSparseMatrixOperator<T>::init()
 	{
 		CSGObject::set_generic<T>();
 
-		CSGObject::m_parameters->add_vector(&m_operator.sparse_matrix,
+		this->m_parameters->add_vector(&m_operator.sparse_matrix,
 				&m_operator.num_vectors, "sparse_matrix",
 				"The sparse matrix of the linear operator.");
-		CSGObject::m_parameters->add(&m_operator.num_features,
+		this->m_parameters->add(&m_operator.num_features,
 				"m_operator.num_features", "Number of features.");
 	}
 
 template<class T>
 CSparseMatrixOperator<T>::~CSparseMatrixOperator()
 	{
-		SG_SGCDEBUG("%s destroyed (%p)\n", this->get_name(), this);
 	}
 
 template<class T>
