@@ -11,6 +11,7 @@
 
 using namespace shogun;
 
+#ifdef HAVE_LAPACK
 TEST(MCLDA, train_and_apply)
 {
 	SGVector< float64_t > lab(CLASSES*NUM);
@@ -38,4 +39,5 @@ TEST(MCLDA, train_and_apply)
 	SG_UNREF(output);
 	SG_UNREF(lda);
 }
-#endif //HAVE_EIGEN3
+#endif // HAVE_LAPACK
+#endif // HAVE_EIGEN3

@@ -18,6 +18,8 @@
 
 using namespace shogun;
 
+#ifdef HAVE_LAPACK
+
 bool is_equal(float64_t a, float64_t b, float64_t eps)
 {
 	return CMath::abs(a-b)<=eps;
@@ -187,6 +189,7 @@ void test_lapack()
 	delete[] double_eigenvalues;
 	delete[] double_matrix;
 }
+#endif // HAVE_LAPACK
 
 int main(int argc, char** argv)
 {
@@ -201,7 +204,7 @@ int main(int argc, char** argv)
 
 	SG_SPRINT("matrix_multiply\n");
 	test_matrix_multiply();
-#endif
+#endif // HAVE_LAPACK
 
 	exit_shogun();
 	return 0;
