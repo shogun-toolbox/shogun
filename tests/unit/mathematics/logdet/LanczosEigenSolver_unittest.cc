@@ -109,5 +109,28 @@ TEST(LanczosEigenSolver, compute_big_diag_matrix)
 	SG_UNREF(eig_solver);
 	SG_UNREF(op);
 }
+
+TEST(LanczosEigenSolver, set_eigenvalues_externally)
+{
+	const index_t size=2;
+	SGMatrix<float64_t> m(size, size);
+	m(0,0)=1;
+	m(1,1)=2;
+	CDenseMatrixOperator<float64_t>* A=new CDenseMatrixOperator<float64_t>(m);
+	SG_REF(A);
+	float64_t min_eigenvalue=0.0001;
+	float64_t max_eigenvalue=100000.0;
+	CLanczosEigenSolver* eig_solver=new CLanczosEigenSolver(A);
+	eig_solver->set_min_eigenvalue(min_eigenvalue);
+	eig_solver->set_max_eigenvalue(max_eigenvalue);
+	
+	eig_solver->compute();
+	EXPECT_NEAR(eig_solver->get_min_eigenvalue(), min_eigenvalue, 1E-16);
+	EXPECT_NEAR(eig_solver->get_max_eigenvalue(), max_eigenvalue, 1E-16);
+
+	SG_UNREF(eig_solver);
+	SG_UNREF(A);
+}
 #endif // HAVE_EIGEN3
 #endif // HAVE_LAPACK
+

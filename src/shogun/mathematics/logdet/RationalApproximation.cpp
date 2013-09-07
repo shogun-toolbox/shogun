@@ -115,6 +115,9 @@ void CRationalApproximation::precompute()
 	SG_DEBUG("max_eig=%.15lf\n", m_eigen_solver->get_max_eigenvalue());
 	SG_DEBUG("min_eig=%.15lf\n", m_eigen_solver->get_min_eigenvalue());
 
+	REQUIRE(m_eigen_solver->get_min_eigenvalue()>0,
+		"Minimum eigenvalue is negative, please provide a Hermitian matrix\n");
+
 	// compute number of shifts from accuracy if shifts are not set yet
 	if (m_num_shifts==0)
 		m_num_shifts=compute_num_shifts_from_accuracy();

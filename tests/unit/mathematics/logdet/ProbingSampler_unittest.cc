@@ -16,6 +16,7 @@
 #include <shogun/lib/SGSparseMatrix.h>
 #include <shogun/features/SparseFeatures.h>
 #include <shogun/mathematics/eigen3.h>
+#include <shogun/mathematics/Statistics.h>
 #include <shogun/mathematics/logdet/SparseMatrixOperator.h>
 #include <shogun/mathematics/logdet/ProbingSampler.h>
 #include <ColPack/ColPackHeaders.h>
@@ -122,6 +123,35 @@ TEST(ProbingSampler, probing_samples_big_diag_matrix)
 
 	SG_UNREF(trace_sampler);
 	SG_UNREF(op);
+}
+
+TEST(ProbingSampler, mean_variance)
+{
+	const index_t size=1000;
+	SGMatrix<float64_t> m(size, size);
+	m.set_const(0.0);
+
+	for (index_t i=0; i<size; ++i)
+		m(i,i)=1;
+	for (index_t i=0; i<size-1; ++i)
+		m(i,i+1)=1;
+	for (index_t i=0; i<size-1; ++i)
+		m(i+1,i)=1;
+
+	CSparseFeatures<float64_t>* feat=new CSparseFeatures<float64_t>(m);
+	SGSparseMatrix<float64_t> sm=feat->get_sparse_feature_matrix();
+	CSparseMatrixOperator<float64_t>* A=new CSparseMatrixOperator<float64_t>(sm);
+
+	CProbingSampler* trace_sampler=new CProbingSampler(A);
+	trace_sampler->precompute();
+
+	index_t num_samples=trace_sampler->get_num_samples();	
+	for (index_t i=0; i<num_samples; ++i)
+	{
+		const SGVector<float64_t>& sample=trace_sampler->sample(i);
+		EXPECT_NEAR(CStatistics::mean(sample), 0.0, 0.1);
+		EXPECT_NEAR(CStatistics::variance(sample), 1.0/num_samples, 0.01);
+	}
 }
 #endif // HAVE_EIGEN3
 #endif // HAVE_COLPACK
