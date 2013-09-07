@@ -17,6 +17,7 @@
 #include <shogun/mathematics/logdet/LogRationalApproximationCGM.h>
 
 #include <shogun/mathematics/logdet/LinearSolver.h>
+include <shogun/mathematics/logdet/DirectSparseLinearSolver.h>
 #include <shogun/mathematics/logdet/IterativeLinearSolver.h>
 #include <shogun/mathematics/logdet/IterativeShiftedLinearFamilySolver.h>
 #include <shogun/mathematics/logdet/CGMShiftedFamilySolver.h>
