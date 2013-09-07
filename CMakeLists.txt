@@ -120,9 +120,10 @@ IF(ENABLE_COVERAGE)
 	IF (NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
 		MESSAGE(WARNING "Code coverage results with an optimised (non-Debug) build may be misleading")
 	ENDIF()
-	SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fprofile-arcs -ftest-coverage")
-	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
-	LINK_LIBRARIES(gcov)
+	SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} --coverage")
+	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --coverage")
+	SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --coverage")
+	SET(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} --coverage")
 ENDIF()
 
 # check for supported c++11 features
