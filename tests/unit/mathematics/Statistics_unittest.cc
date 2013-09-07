@@ -142,15 +142,19 @@ TEST(Statistics, sample_from_gaussian_dense1)
 
 	// calculate the sample mean and covariance
 	SGVector<float64_t> s_mean=CStatistics::matrix_mean(samples);
+#ifdef HAVE_LAPACK
 	SGMatrix<float64_t> s_cov=CStatistics::covariance_matrix(samples);
-	Map<VectorXd> s_mu(s_mean.vector, s_mean.vlen);
 	Map<MatrixXd> s_c(s_cov.matrix, s_cov.num_rows, s_cov.num_cols);
+#endif // HAVE_LAPACK
+	Map<VectorXd> s_mu(s_mean.vector, s_mean.vlen);
 
-	ASSERT_EQ(mu.rows(), s_mu.rows());
+#ifdef HAVE_LAPACK
 	ASSERT_EQ(c.rows(), s_c.rows());
 	ASSERT_EQ(c.cols(), s_c.cols());
-	EXPECT_NEAR((s_mu-mu).norm(), 0.0, 0.5);
 	EXPECT_NEAR((s_c-c).norm(), 0.0, 1.0);
+#endif // HAVE_LAPACK
+	ASSERT_EQ(mu.rows(), s_mu.rows());
+	EXPECT_NEAR((s_mu-mu).norm(), 0.0, 0.5);
 
 }
 
@@ -178,15 +182,19 @@ TEST(Statistics, sample_from_gaussian_dense2)
 
 	// calculate the sample mean and covariance
 	SGVector<float64_t> s_mean=CStatistics::matrix_mean(samples);
+#ifdef HAVE_LAPACK
 	SGMatrix<float64_t> s_cov=CStatistics::covariance_matrix(samples);
-	Map<VectorXd> s_mu(s_mean.vector, s_mean.vlen);
 	Map<MatrixXd> s_c(s_cov.matrix, s_cov.num_rows, s_cov.num_cols);
+#endif // HAVE_LAPACK
+	Map<VectorXd> s_mu(s_mean.vector, s_mean.vlen);
 
-	ASSERT_EQ(mu.rows(), s_mu.rows());
+#ifdef HAVE_LAPACK
 	ASSERT_EQ(c.rows(), s_c.rows());
 	ASSERT_EQ(c.cols(), s_c.cols());
-	EXPECT_NEAR((s_mu-mu).norm(), 0.0, 0.5);
 	EXPECT_NEAR((s_c-c.inverse()).norm(), 0.0, 5.0);
+#endif // HAVE_LAPACK
+	ASSERT_EQ(mu.rows(), s_mu.rows());
+	EXPECT_NEAR((s_mu-mu).norm(), 0.0, 0.5);
 
 }
 
@@ -239,9 +247,11 @@ TEST(Statistics, sample_from_gaussian_sparse1)
 
 	// calculate the sample mean and covariance
 	SGVector<float64_t> s_mean=CStatistics::matrix_mean(samples);
+#ifdef HAVE_LAPACK
 	SGMatrix<float64_t> s_cov=CStatistics::covariance_matrix(samples);
-	Map<VectorXd> s_mu(s_mean.vector, s_mean.vlen);
 	Map<MatrixXd> s_c(s_cov.matrix, s_cov.num_rows, s_cov.num_cols);
+#endif // HAVE_LAPACK
+	Map<VectorXd> s_mu(s_mean.vector, s_mean.vlen);
 
 	// create a similar dense cov matrix as of the original one
 	// for calculating the norm of the difference
@@ -253,7 +263,9 @@ TEST(Statistics, sample_from_gaussian_sparse1)
 	}
 
 	EXPECT_NEAR((s_mu-mu).norm(), 0.0, 0.5);
+#ifdef HAVE_LAPACK
 	EXPECT_NEAR((d_cov-s_c).norm(), 0.0, 2.5);
+#endif // HAVE_LAPACK
 
 	SG_FREE(vec);
 	SG_FREE(rest);

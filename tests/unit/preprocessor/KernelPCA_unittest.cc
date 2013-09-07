@@ -15,6 +15,7 @@
 using ::testing::Test;
 using namespace shogun;
 
+#ifdef HAVE_LAPACK
 TEST(KernelPCA, DISABLED_apply_to_feature_matrix_input)
 {
 	float64_t data[] = {1, 1, 1,
@@ -47,3 +48,4 @@ TEST(KernelPCA, DISABLED_apply_to_feature_matrix_input)
 	for (index_t i = 0; i < num_features * num_vectors; ++i)
 		EXPECT_LE(CMath::abs(embedding.matrix[i] - s * resdata[i]), 1E-6);
 }
+#endif // HAVE_LAPACK

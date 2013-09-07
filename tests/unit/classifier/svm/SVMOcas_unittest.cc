@@ -5,6 +5,7 @@
 
 using namespace shogun;
 
+#ifdef HAVE_LAPACK
 TEST(SVMOcasTest,train)
 {
 	index_t num_samples = 50;
@@ -47,4 +48,5 @@ TEST(SVMOcasTest,train)
 	SG_UNREF(test_feats);
 	SG_UNREF(pred);
 }
+#endif // HAVE_LAPACK
 
