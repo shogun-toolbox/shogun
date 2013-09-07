@@ -641,7 +641,7 @@ IF (PythonModular OR PythonStatic)
 		#custom swig flags for python modular interface
 		IF(${PYTHON_VERSION_MAJOR} VERSION_EQUAL 3)
 			SET(TARGET_SWIGFLAGS "-builtin\;-modern\;-modernargs\;-py3")
-			#SET(SWIG_CXX_COMPILER_FLAGS "${SWIG_CXX_COMPILER_FLAGS -DPYTHON3")
+			LIST(APPEND DEFINES PYTHON3)
 		ELSE()
 			SET(TARGET_SWIGFLAGS "-builtin\;-modern\;-modernargs")
 		ENDIF()
