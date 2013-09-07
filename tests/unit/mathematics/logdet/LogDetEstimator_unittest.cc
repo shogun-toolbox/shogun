@@ -356,5 +356,72 @@ TEST(LogDetEstimator, sample_ratapp_big_diag_matrix)
 	SG_UNREF(op);
 	SG_UNREF(e);
 }
+
+TEST(LogDetEstimator, sample_ratapp_big_matrix)
+{
+	CSerialComputationEngine* e=new CSerialComputationEngine;
+	SG_REF(e);
+
+	float64_t difficulty=2;
+	float64_t accuracy=1E-15;
+	float64_t min_eigenvalue=0.001;
+
+	// create a sparse matrix	
+	const index_t size=10000;
+	SGSparseMatrix<float64_t> sm(size, size);
+
+	// set its diagonal
+	SGVector<float64_t> diag(size);
+	for (index_t i=0; i<size; ++i)
+	{
+		sm(i,i)=CMath::pow(CMath::abs(sg_rand->std_normal_distrib()), difficulty)
+			+min_eigenvalue;
+	}
+	// set its subdiagonal
+	float64_t entry=min_eigenvalue/2;
+	for (index_t i=0; i<size-1; ++i)
+	{
+		sm(i,i+1)=entry;
+		sm(i+1,i)=entry;
+	}
+
+	CSparseMatrixOperator<float64_t>* op=new CSparseMatrixOperator<float64_t>(sm);
+	SG_REF(op);
+
+	CLanczosEigenSolver* eig_solver=new CLanczosEigenSolver(op);
+	SG_REF(eig_solver);
+
+	CCGMShiftedFamilySolver* linear_solver=new CCGMShiftedFamilySolver();
+	linear_solver->set_iteration_limit(2000);
+	SG_REF(linear_solver);
+
+	CLogRationalApproximationCGM *op_func
+		=new CLogRationalApproximationCGM(op, e, eig_solver, linear_solver, accuracy);
+	SG_REF(op_func);
+
+	CProbingSampler* trace_sampler=new CProbingSampler(op);
+	SG_REF(trace_sampler);
+
+	CLogDetEstimator estimator(trace_sampler, op_func, e);
+	const index_t num_estimates=1;
+	SGVector<float64_t> estimates=estimator.sample(num_estimates);
+
+	float64_t result=0.0;
+	for (index_t i=0; i<num_estimates; ++i)
+		result+=estimates[i];
+	result/=num_estimates;
+
+	// test the log-det samples
+	sm=op->get_matrix_operator();
+	float64_t actual_result=CStatistics::log_det(sm);
+	EXPECT_NEAR(result, actual_result, 0.01);
+
+	SG_UNREF(trace_sampler);
+	SG_UNREF(eig_solver);
+	SG_UNREF(linear_solver);
+	SG_UNREF(op_func);
+	SG_UNREF(op);
+	SG_UNREF(e);
+}
 #endif // HAVE_COLPACK
 #endif // HAVE_EIGEN3
