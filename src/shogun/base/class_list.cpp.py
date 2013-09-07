@@ -88,11 +88,7 @@ def get_includes(classes):
 
 	includes=[]
 	for o in result:
-		if sys.version_info > (3,):
-			tempstr = o.decode()
-			includes.append('#include "%s"' % tempstr.strip().lstrip('./'))
-		else:
-			includes.append('#include "%s"' % o.strip().lstrip('./'))
+		includes.append('#include "%s"' % o.strip().lstrip('./'))
 	return includes
 
 def get_definitions(classes):
