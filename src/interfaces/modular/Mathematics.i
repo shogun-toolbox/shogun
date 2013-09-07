@@ -90,7 +90,7 @@ namespace shogun
 %rename(LanczosEigenSolver) CLanczosEigenSolver;
 
 %rename(LogDetEstimator) CLogDetEstimator;
-#endif
+#endif // HAVE_EIGEN3
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/mathematics/Math.h>
