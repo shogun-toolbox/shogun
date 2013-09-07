@@ -128,6 +128,7 @@ TEST(LogDetEstimator, sample_ratapp_dense)
 }
 
 #ifdef HAVE_COLPACK
+#ifdef HAVE_LAPACK
 TEST(LogDetEstimator, sample_ratapp_probing_sampler)
 {
 	CSerialComputationEngine* e=new CSerialComputationEngine;
@@ -423,5 +424,6 @@ TEST(LogDetEstimator, sample_ratapp_big_matrix)
 	SG_UNREF(op);
 	SG_UNREF(e);
 }
+#endif // HAVE_LAPACK
 #endif // HAVE_COLPACK
 #endif // HAVE_EIGEN3

@@ -19,6 +19,7 @@
 using namespace shogun;
 using namespace Eigen;
 
+#ifdef HAVE_LAPACK
 TEST(NormalSampler, sample)
 {
 	const index_t dimension=2;
@@ -43,5 +44,7 @@ TEST(NormalSampler, sample)
 	EXPECT_NEAR((map_cov-MatrixXd::Identity(dimension, dimension)).norm(),
 		0.0, 0.1);
 }
+#endif // HAVE_LAPACK
+
 #endif // HAVE_EIGEN3
 

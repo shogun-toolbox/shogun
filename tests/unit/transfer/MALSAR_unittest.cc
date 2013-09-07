@@ -14,6 +14,7 @@ using namespace shogun;
 typedef std::pair<CDotFeatures*, CDotFeatures*> SplittedFeatures;
 typedef std::pair<SplittedFeatures, CBinaryLabels*> SplittedDataset;
 
+#ifdef HAVE_LAPACK
 SplittedDataset generate_data()
 {
 	index_t num_samples = 50;
@@ -80,4 +81,5 @@ TEST(MalsarTraceTest, train)
 	EXPECT_EQ(task_group, mtlr->get_task_relation());
 	mtlr->train();
 }
+#endif // HAVE_LAPACK
 

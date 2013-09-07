@@ -7,6 +7,7 @@ using namespace shogun;
 
 #ifdef HAVE_EIGEN3
 
+#ifdef HAVE_LAPACK
 /* Basic test for manifold sculpting, that just checks that it works anyhow */
 TEST(ManifoldSculptingTest,DISABLED_basic)
 {
@@ -33,5 +34,6 @@ TEST(ManifoldSculptingTest,DISABLED_basic)
 	SG_UNREF(embedder);
 	SG_UNREF(high_dimensional_features);
 }
+#endif // HAVE_LAPACK
 
 #endif

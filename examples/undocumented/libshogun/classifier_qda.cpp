@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2012 Fernando José Iglesias García
- * Copyright (C) 2012 Fernando José Iglesias García
+ * Written (W) 2012 Fernando Jose Iglesias Garcia
+ * Copyright (C) 2012 Fernando Jose Iglesias Garcia
  */
 
 #include <shogun/base/init.h>
@@ -25,6 +25,7 @@ using namespace shogun;
 void test()
 {
 #ifdef HAVE_EIGEN3
+#ifdef HAVE_LAPACK
 	SGVector< float64_t > lab(CLASSES*NUM);
 	SGMatrix< float64_t > feat(DIMS, CLASSES*NUM);
 
@@ -52,7 +53,8 @@ void test()
 	// Free memory
 	SG_UNREF(output);
 	SG_UNREF(qda);
-#endif
+#endif // HAVE_LAPACK
+#endif // HAVE_EIGEN3
 }
 
 int main(int argc, char ** argv)
