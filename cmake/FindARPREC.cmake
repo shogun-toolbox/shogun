@@ -7,7 +7,7 @@ include (FindPackageHandleStandardArgs)
 if (CMAKE_VERSION LESS 2.8.3)
   find_package_handle_standard_args (ARPREC DEFAULT_MSG ARPREC_LIBRARIES ARPREC_INCLUDE_DIR)
 else ()
-  find_package_handle_standard_args (ColPack REQUIRED_VARS ARPREC_LIBRARIES ARPREC_INCLUDE_DIR)
+  find_package_handle_standard_args (ARPREC REQUIRED_VARS ARPREC_LIBRARIES ARPREC_INCLUDE_DIR)
 endif ()
 
 mark_as_advanced(ARPREC_INCLUDE_DIR ARPREC_LIBRARIES)
