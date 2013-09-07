@@ -51,10 +51,11 @@ IF (
 	RubyModular OR CSharpModular
    )
 	FIND_PACKAGE(SWIG 2.0.4 REQUIRED)
-	#TODO: add ccache-swig support
-#	IF(ENABLE_CCACHE)
-#		SET(SWIG_EXECUTABLE /opt/local/bin/ccache-swig)
-#	ENDIF()
+	# use our own UseSWIG.cmake in order to be able to enable ccache-swig 
+	SET(SWIG_USE_FILE ${CMAKE_SOURCE_DIR}/cmake/UseSWIG.cmake)
+	IF(ENABLE_CCACHE AND CCACHE_SWIG)
+		SET(CCACHE_SWIG_EXECUTABLE ${CCACHE_SWIG})
+	ENDIF()
 	SET(COMPILE_MODULAR_INTERFACE 1)
 ENDIF()
 

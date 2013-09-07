@@ -1,6 +1,9 @@
 find_program(CCACHE
              NAMES ccache)
 
+find_program(CCACHE_SWIG
+             NAMES ccache-swig)
+
 # handle REQUIRED and QUIET options
 include(FindPackageHandleStandardArgs)
 if (CMAKE_VERSION LESS 2.8.3)
@@ -18,4 +21,5 @@ endif()
 mark_as_advanced (
 	CCACHE
 	CCACHE_FLAGS
+	CCACHE_SWIG
 )
