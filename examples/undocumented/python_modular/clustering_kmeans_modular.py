@@ -7,7 +7,7 @@ def clustering_kmeans_modular (fm_train=traindat,k=3):
 	from modshogun import EuclideanDistance, RealFeatures, KMeans, Math_init_random, CSVFile
 	Math_init_random(17)
 
-	feats_train=RealFeatures(CSVFile(train_fname))
+	feats_train=RealFeatures(CSVFile(fm_train))
 	distance=EuclideanDistance(feats_train, feats_train)
 
 	kmeans=KMeans(k, distance)

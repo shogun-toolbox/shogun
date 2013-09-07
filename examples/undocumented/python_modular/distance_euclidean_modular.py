@@ -6,7 +6,7 @@ parameter_list = [[traindat,traindat],[traindat,testdat]]
 
 def distance_euclidean_modular(train_fname=traindat,test_fname=testdat):
 
-	from modshogun import RealFeatures, EuclideanDistance
+	from modshogun import RealFeatures, EuclideanDistance, CSVFile
 
 	feats_train=RealFeatures(CSVFile(train_fname))
 	feats_test=RealFeatures(CSVFile(test_fname))

@@ -19,7 +19,7 @@ def classifier_svmsgd_modular (train_fname=traindat,test_fname=testdat,label_fna
 	svm.train()
 
 	bias=svm.get_bias()
-	w=w.get_w()
+	w=svm.get_w()
 	predictions = svm.apply(feats_test)
 	return predictions, svm, predictions.get_labels()
 

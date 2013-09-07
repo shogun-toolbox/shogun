@@ -10,12 +10,9 @@ def classifier_qda_modular (train_fname=traindat, test_fname=testdat, label_fnam
 	from modshogun import RealFeatures, MulticlassLabels
 	from modshogun import QDA, CSVFile
 
-	feats_train = RealFeatures(fm_train_real)
-	feats_test  = RealFeatures(fm_test_real)
-
 	feats_train=RealFeatures(CSVFile(train_fname))
 	feats_test=RealFeatures(CSVFile(test_fname))
-	labels=BinaryLabels(CSVFile(label_fname))
+	labels=MulticlassLabels(CSVFile(label_fname))
 
 	qda = QDA(feats_train, labels, tolerance, store_covs)
 	qda.train()
