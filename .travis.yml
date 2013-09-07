@@ -14,7 +14,7 @@ notifications:
 matrix:
   include:
     - compiler: gcc
-      env: CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=Debug -DENABLE_COVERAGE=ON" CUSTOM_PKG="pip install cpp-coveralls --use-mirrors"
+      env: CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=Debug -DENABLE_COVERAGE=ON" CUSTOM_PKG="sudo pip install cpp-coveralls --use-mirrors"
     - compiler: clang
       python: 2.7
       language: python
