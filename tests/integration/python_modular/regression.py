@@ -25,8 +25,8 @@ def _evaluate (indata):
 			name = 'KernelRidgeRegression'
 		
 		rfun=eval(name)
-	except NameError, e:
-		print "%s is disabled/unavailable!"%indata[prefix+'name']
+	except NameError as e:
+		print("%s is disabled/unavailable!"%indata[prefix+'name'])
 		return False
 
 	labels=RegressionLabels(double(indata[prefix+'labels']))
@@ -39,7 +39,7 @@ def _evaluate (indata):
 		return False
 
 	regression.parallel.set_num_threads(indata[prefix+'num_threads'])
-	if indata.has_key(prefix+'tube_epsilon'):
+	if prefix+'tube_epsilon' in indata:
 		regression.set_tube_epsilon(indata[prefix+'tube_epsilon'])
 
 	regression.train()
@@ -47,13 +47,13 @@ def _evaluate (indata):
 	alphas=0
 	bias=0
 	sv=0
-	if indata.has_key(prefix+'bias'):
+	if prefix+'bias' in indata:
 		bias=abs(regression.get_bias()-indata[prefix+'bias'])
-	if indata.has_key(prefix+'alphas'):
+	if prefix+'alphas' in indata:
 		for item in regression.get_alphas().tolist():
 			alphas+=item
 		alphas=abs(alphas-indata[prefix+'alphas'])
-	if indata.has_key(prefix+'support_vectors'):
+	if prefix+'support_vectors' in indata:
 		for item in inregression.get_support_vectors().tolist():
 			sv+=item
 		sv=abs(sv-indata[prefix+'support_vectors'])

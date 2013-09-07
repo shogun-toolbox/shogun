@@ -21,7 +21,7 @@ def _evaluate (indata, prefix):
 	kfun=eval(indata[prefix+'name']+'Kernel')
 	kargs=util.get_args(indata, prefix)
 	kernel=kfun(*kargs)
-	if indata.has_key(prefix+'normalizer'):
+	if prefix+'normalizer' in indata:
 		kernel.set_normalizer(eval(indata[prefix+'normalizer']+'()'))
 
 	kernel.init(feats['train'], feats['train'])
@@ -49,19 +49,19 @@ def _get_subkernels (indata, prefix):
 		try:
 			num=key[len_prefix]
 		except ValueError:
-			raise ValueError, 'Cannot find number for subkernel: "%s"!' % data
+			raise ValueError('Cannot find number for subkernel: "%s"!' % data)
 
 		# get item's name
 		name=key[len_prefix+2:]
 
 		# append new item
-		if not subkernels.has_key(num):
+		if num not in subkernels:
 			subkernels[num]={}
 		subkernels[num][name]=indata[key]
 
 	# got all necessary information in new structure, now create a kernel
 	# object for each subkernel
-	for num, data in subkernels.iteritems():
+	for num, data in subkernels.items():
 		fun=eval(data['name']+'Kernel')
 		args=util.get_args(data, '')
 		subkernels[num]['kernel']=fun(*args)
@@ -74,7 +74,7 @@ def _evaluate_combined (indata, prefix):
 	feats={'train':CombinedFeatures(), 'test':CombinedFeatures()}
 
 	subkernels=_get_subkernels(indata, prefix)
-	for subk in subkernels.itervalues():
+	for subk in subkernels.values():
 		feats_subk=util.get_features(subk, '')
 		feats['train'].append_feature_obj(feats_subk['train'])
 		feats['test'].append_feature_obj(feats_subk['test'])
@@ -120,8 +120,8 @@ def _evaluate_custom (indata, prefix):
 	}
 
 	symdata=indata[prefix+'symdata']
-	lowertriangle=array([symdata[(x,y)] for x in xrange(symdata.shape[1])
-		for y in xrange(symdata.shape[0]) if y<=x])
+	lowertriangle=array([symdata[(x,y)] for x in range(symdata.shape[1])
+		for y in range(symdata.shape[0]) if y<=x])
 	kernel=CustomKernel()
 	kernel.set_triangle_kernel_matrix_from_triangle(lowertriangle)
 	triangletriangle=max(abs(
@@ -209,7 +209,7 @@ def _evaluate_top_fisher (indata, prefix):
 
 def test (indata):
 	prefix='topfk_'
-	if indata.has_key(prefix+'name'):
+	if prefix+'name' in indata:
 		return _evaluate_top_fisher(indata, prefix)
 
 	prefix='kernel_'

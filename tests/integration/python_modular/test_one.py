@@ -27,7 +27,7 @@ def _get_name_fun (fnam):
 			break
 
 	if module is None:
-		print 'Module required for %s not supported yet!' % fnam
+		print('Module required for %s not supported yet!' % fnam)
 		return None
 
 	return module+'.test'
@@ -35,8 +35,8 @@ def _get_name_fun (fnam):
 def _test_mfile (fnam):
 	try:
 		mfile=open(fnam, mode='r')
-	except IOError, e:
-		print e
+	except IOError as e:
+		print(e)
 		return False
 	
 	indata={}

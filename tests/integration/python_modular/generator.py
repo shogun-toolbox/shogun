@@ -83,22 +83,22 @@ def generator(tests):
 			mod, mod_name = get_test_mod(t)
 		except TypeError:
 			continue
-		except Exception, e:
-			print t, e
+		except Exception as e:
+			print(t, e)
 			continue
 		fname = ""
 
-		print "%-60s" % mod_name,
+		print("%-60s" % mod_name, end=' ')
 		#print "%+60s" % "...",
 		try:
-			for i in xrange(len(mod.parameter_list)):
+			for i in range(len(mod.parameter_list)):
 				fname = get_fname(mod_name, i)
 				a = run_test(mod, mod_name, i)
 				pickle.dump(a,file(fname, "w"))
-			print "OK"
-		except Exception, e:
-			print "ERROR generating '%s' using '%s'" % (fname,t)
-			print e
+			print("OK")
+		except Exception as e:
+			print("ERROR generating '%s' using '%s'" % (fname,t))
+			print(e)
 			continue
 
 if __name__=='__main__':

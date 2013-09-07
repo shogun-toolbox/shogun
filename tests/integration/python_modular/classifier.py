@@ -36,15 +36,15 @@ def _get_machine (indata, prefix, feats):
 
 
 def _get_results_alpha_and_sv(indata, prefix, classifier):
-	if not indata.has_key(prefix+'alpha_sum') and \
-		not indata.has_key(prefix+'sv_sum'):
+	if prefix+'alpha_sum' not in indata and \
+		prefix+'sv_sum' not in indata:
 		return None, None
 
 	a=0
 	sv=0
-	if indata.has_key(prefix+'label_type') and \
+	if prefix+'label_type' in indata and \
 		indata[prefix+'label_type']=='series':
-		for i in xrange(classifier.get_num_svms()):
+		for i in range(classifier.get_num_svms()):
 			subsvm=classifier.get_svm(i)
 			for item in subsvm.get_alphas().tolist():
 				a+=item
@@ -72,7 +72,7 @@ def _get_results (indata, prefix, classifier, machine=None, feats=None):
 		'accuracy':indata[prefix+'accuracy'],
 	}
 
-	if indata.has_key(prefix+'bias'):
+	if prefix+'bias' in indata:
 		res['bias']=abs(classifier.get_bias()-indata[prefix+'bias'])
 
 	res['alphas'], res['sv']=_get_results_alpha_and_sv(
@@ -105,12 +105,12 @@ def _evaluate (indata):
 
 	try:
 		fun=eval(indata[prefix+'name'])
-	except NameError, e:
-		print "%s is disabled/unavailable!"%indata[prefix+'name']
+	except NameError as e:
+		print("%s is disabled/unavailable!"%indata[prefix+'name'])
 		return False
 
 	# cannot refactor into function, because labels is unrefed otherwise
-	if indata.has_key(prefix+'labels'):
+	if prefix+'labels' in indata:
 		labels=BinaryLabels(double(indata[prefix+'labels']))
 		if ctype=='kernel':
 			classifier=fun(indata[prefix+'C'], machine, labels)
@@ -131,28 +131,28 @@ def _evaluate (indata):
 		classifier=fun(indata[prefix+'C'], machine)
 
 	if classifier.get_name() == 'LibLinear':
-		print classifier.get_name(), "yes"
+		print(classifier.get_name(), "yes")
 		classifier.set_liblinear_solver_type(L2R_LR)
 
 	classifier.parallel.set_num_threads(indata[prefix+'num_threads'])
 	if ctype=='linear':
-		if indata.has_key(prefix+'bias'):
+		if prefix+'bias' in indata:
 			classifier.set_bias_enabled(True)
 		else:
 			classifier.set_bias_enabled(False)
 	if ctype=='perceptron':
 		classifier.set_learn_rate=indata[prefix+'learn_rate']
 		classifier.set_max_iter=indata[prefix+'max_iter']
-	if indata.has_key(prefix+'epsilon'):
+	if prefix+'epsilon' in indata:
 		try:
 			classifier.set_epsilon(indata[prefix+'epsilon'])
 		except AttributeError:
 			pass
-	if indata.has_key(prefix+'max_train_time'):
+	if prefix+'max_train_time' in indata:
 		classifier.set_max_train_time(indata[prefix+'max_train_time'])
-	if indata.has_key(prefix+'linadd_enabled'):
+	if prefix+'linadd_enabled' in indata:
 		classifier.set_linadd_enabled(indata[prefix+'linadd_enabled'])
-	if indata.has_key(prefix+'batch_enabled'):
+	if prefix+'batch_enabled' in indata:
 		classifier.set_batch_computation_enabled(indata[prefix+'batch_enabled'])
 
 	classifier.train()

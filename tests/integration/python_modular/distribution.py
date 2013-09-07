@@ -24,8 +24,8 @@ def _evaluate (indata):
 	num_examples=feats['train'].get_num_vectors()
 	num_param=distribution.get_num_model_parameters()
 	derivatives=0
-	for i in xrange(num_param):
-		for j in xrange(num_examples):
+	for i in range(num_param):
+		for j in range(num_examples):
 			val=distribution.get_log_derivative(i, j)
 			if val!=-inf and val!=nan: # only consider sparse matrix!
 				derivatives+=val
@@ -36,9 +36,9 @@ def _evaluate (indata):
 	if indata[prefix+'name']=='HMM':
 		best_path=0
 		best_path_state=0
-		for i in xrange(indata[prefix+'num_examples']):
+		for i in range(indata[prefix+'num_examples']):
 			best_path+=distribution.best_path(i)
-			for j in xrange(indata[prefix+'N']):
+			for j in range(indata[prefix+'N']):
 				best_path_state+=distribution.get_best_path_state(i, j)
 
 		best_path=abs(best_path-indata[prefix+'best_path'])

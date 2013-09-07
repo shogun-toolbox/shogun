@@ -20,7 +20,7 @@ svm.set_C(C, C)
 svm.set_epsilon(epsilon)
 svm.set_tube_epsilon(tube_epsilon)
 
-for i in xrange(3):
+for i in range(3):
 	data_train=random.rand(num_feats, num_vec)
 	data_test=random.rand(num_feats, num_vec)
 	feats_train=RealFeatures(data_train)
@@ -31,13 +31,13 @@ for i in xrange(3):
 	svm.set_labels(labels)
 
 	kernel=svm.get_kernel()
-	print "kernel cache size: %s" % (kernel.get_cache_size())
+	print("kernel cache size: %s" % (kernel.get_cache_size()))
 
 	kernel.init(feats_test, feats_test)
 	svm.train()
 
 	kernel.init(feats_train, feats_test)
-	print svm.apply().get_labels()
+	print(svm.apply().get_labels())
 
 	#kernel.remove_lhs_and_rhs()
 

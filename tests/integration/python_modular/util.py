@@ -13,12 +13,12 @@ def check_accuracy (accuracy, **kwargs):
 	acc=double(accuracy)
 	output=[]
 
-	for key, val in kwargs.iteritems():
+	for key, val in kwargs.items():
 		if val is not None:
 			output.append('%s: %e' % (key, val))
-	print ', '.join(output)+' <--- accuracy: %e' % accuracy
+	print(', '.join(output)+' <--- accuracy: %e' % accuracy)
 
-	for val in kwargs.itervalues():
+	for val in kwargs.values():
 		if val>acc:
 			return False
 
@@ -46,7 +46,7 @@ def get_args (indata, prefix=''):
 		try:
 			idx=int(i[len(ident)])
 		except ValueError:
-			raise ValueError, 'Wrong indata data %s: "%s"!' % (ident, i)
+			raise ValueError('Wrong indata data %s: "%s"!' % (ident, i))
 
 		if i.find('_distance')!=-1: # DistanceKernel
 			args[idx]=eval(indata[i]+'()')
@@ -57,7 +57,7 @@ def get_args (indata, prefix=''):
 				args[idx]=indata[i]
 
 	# weed out superfluous Nones
-	return filter(lambda arg: arg is not None, args)
+	return [arg for arg in args if arg is not None]
 
 
 def get_features(indata, prefix=''):
@@ -71,8 +71,7 @@ def get_features(indata, prefix=''):
 	elif indata[fclass]=='wd':
 		return get_feats_wd(indata, prefix)
 	else:
-		raise ValueError, \
-			'Unknown feature class %s!'%indata[prefix+'feature_class']
+		raise ValueError('Unknown feature class %s!'%indata[prefix+'feature_class'])
 
 
 def get_feats_simple (indata, prefix=''):
@@ -98,7 +97,7 @@ def get_feats_simple (indata, prefix=''):
 		ftest=eval(ftype+'Features(data_test)')
 
 	if (indata[prefix+'name'].find('Sparse')!=-1 or (
-		indata.has_key('classifier_type') and \
+		'classifier_type' in indata and \
 			indata['classifier_type']=='linear')):
 		sparse_train=eval('Sparse'+ftype+'Features()')
 		sparse_train.obtain_from_simple(ftrain)

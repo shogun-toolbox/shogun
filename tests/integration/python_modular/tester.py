@@ -44,7 +44,7 @@ def compare_dbg(a, b, tolerance):
 
 def compare_dbg_helper(a, b, tolerance):
 	if not typecheck(a,b):
-		print "Type mismatch (type(a)=%s vs type(b)=%s)" % (str(type(a)),str(type(b)))
+		print("Type mismatch (type(a)=%s vs type(b)=%s)" % (str(type(a)),str(type(b))))
 		return False
 
 	if type(a) == numpy.ndarray:
@@ -52,25 +52,25 @@ def compare_dbg_helper(a, b, tolerance):
 			if numpy.max(numpy.abs(a - b)) < tolerance:
 				return True
 			else:
-				print "Numpy Array mismatch > max_tol"
-				print a-b
+				print("Numpy Array mismatch > max_tol")
+				print(a-b)
 				return False
 		else:
 			if numpy.all(a == b):
 				return True
 			else:
-				print "Numpy Array mismatch"
-				print a-b
+				print("Numpy Array mismatch")
+				print(a-b)
 				return False
 	elif isinstance(a, modshogun.SGObject):
 		if pickle.dumps(a) == pickle.dumps(b):
 			return True
-		print "a", pickle.dumps(a)
-		print "b", pickle.dumps(b)
+		print("a", pickle.dumps(a))
+		print("b", pickle.dumps(b))
 		return False
 	elif type(a) in (tuple,list):
 		if len(a) != len(b):
-			print "Length mismatch (len(a)=%d vs len(b)=%d)" % (len(a), len(b))
+			print("Length mismatch (len(a)=%d vs len(b)=%d)" % (len(a), len(b)))
 			return False
 		for obj1, obj2 in zip(a,b):
 			if not compare_dbg(obj1, obj2, tolerance):
@@ -80,15 +80,15 @@ def compare_dbg_helper(a, b, tolerance):
 	if (a==b):
 		return True
 	else:
-		print "a!=b"
-		print "a", a
-		print "b", b
+		print("a!=b")
+		print("a", a)
+		print("b", b)
 		return False
 
 def get_fail_string(a):
 	failed_string = []
 	if type(a) in (tuple,list):
-		for i in xrange(len(a)):
+		for i in range(len(a)):
 			failed_string.append(get_fail_string(a[i]))
 	elif isinstance(a, modshogun.SGObject):
 		failed_string.append(pickle.dumps(a))
@@ -115,13 +115,13 @@ def tester(tests, cmp_method, tolerance, failures, missing):
 			n=len(mod.parameter_list)
 		except TypeError:
 			continue
-		except Exception, e:
-			print "%-60s ERROR (%s)" % (t,e)
+		except Exception as e:
+			print("%-60s ERROR (%s)" % (t,e))
 			failed.append(t)
 			continue
 		fname = ""
 
-		for i in xrange(n):
+		for i in range(n):
 			fname = get_fname(mod_name, i)
 			setting_str = "%s setting %d/%d" % (t,i+1,n)
 			try:
@@ -131,20 +131,20 @@ def tester(tests, cmp_method, tolerance, failures, missing):
 				try:
 					if cmp_method(a,b,tolerance):
 						if not failures and not missing:
-							print "%-60s OK" % setting_str
+							print("%-60s OK" % setting_str)
 					else:
 						if not missing:
 							failed.append((setting_str, get_fail_string(a), get_fail_string(b)))
-							print "%-60s ERROR" % setting_str
-				except Exception, e:
-					print setting_str, e
-			except IOError, e:
+							print("%-60s ERROR" % setting_str)
+				except Exception as e:
+					print(setting_str, e)
+			except IOError as e:
 				if not failures:
-					print "%-60s NO TEST (%s)" % (setting_str, e)
-			except Exception, e:
+					print("%-60s NO TEST (%s)" % (setting_str, e))
+			except Exception as e:
 				failed.append(setting_str)
 				if not missing:
-					print "%-60s EXCEPTION %s" % (setting_str,e)
+					print("%-60s EXCEPTION %s" % (setting_str,e))
 	return failed
 
 if __name__=='__main__':
@@ -169,16 +169,16 @@ if __name__=='__main__':
 	tests = setup_tests(args)
 	failed = tester(tests, cmp_method, opts.tolerance, opts.failures, opts.missing)
 	if failed:
-		print
-		print "The following tests failed!"
+		print()
+		print("The following tests failed!")
 		for f in failed:
-			print "\t", f[0]
+			print("\t", f[0])
 
-		print
-		print "Detailled failures:"
-		print
+		print()
+		print("Detailled failures:")
+		print()
 		for f in failed:
-			print "\t", f[0]
+			print("\t", f[0])
 			got=get_split_string(f[1])
 			expected=get_split_string(f[2])
 			#print "=== EXPECTED =========="
@@ -187,10 +187,10 @@ if __name__=='__main__':
 			#print '\n'.join(expected)
 			#print "=== GOT ==============="
 			#print '\n'.join(got)
-			print "====DIFF================"
-			print '\n'.join(difflib.unified_diff(expected, got, fromfile='expected', tofile='got'))
-			print "====EOT================"
-			print "\n\n\n"
+			print("====DIFF================")
+			print('\n'.join(difflib.unified_diff(expected, got, fromfile='expected', tofile='got')))
+			print("====EOT================")
+			print("\n\n\n")
 
 		sys.exit(1)
 	sys.exit(0)
