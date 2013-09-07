@@ -7,7 +7,7 @@
  * Written (W) 2013 Kevin Hughes
  * Copyright (C) 2013 Kevin Hughes
  *
- * Thanks to Fernando José Iglesias García (shogun) 
+ * Thanks to Fernando Jose Iglesias Garcia (shogun)
  *           and Matthieu Perrot (scikit-learn)
  */
 
@@ -29,6 +29,7 @@ using namespace shogun;
 
 void test()
 {
+#ifdef HAVE_LAPACK
 #ifdef HAVE_EIGEN3
 	SGVector< float64_t > lab(CLASSES*NUM);
 	SGMatrix< float64_t > feat(DIMS, CLASSES*NUM);
@@ -57,6 +58,7 @@ void test()
 	// Free memory
 	SG_UNREF(output);
 	SG_UNREF(lda);
+#endif
 #endif
 }
 

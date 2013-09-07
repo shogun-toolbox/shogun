@@ -62,8 +62,8 @@ void CDenseMatrixOperator<T>::init()
 	{
 		CSGObject::set_generic<T>();
 
-		CSGObject::m_parameters->add(&m_operator, "dense_matrix",
-			"The dense matrix of the linear operator");
+		this->m_parameters->add(&m_operator, "dense_matrix",
+				"The dense matrix of the linear operator");
 	}
 
 template<class T>
