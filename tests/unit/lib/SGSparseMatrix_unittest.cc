@@ -9,10 +9,10 @@
  
 #include <shogun/lib/common.h>
 
-#ifdef HAVE_EIGEN3
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGSparseVector.h>
 #include <shogun/lib/SGSparseMatrix.h>
+#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/eigen3.h>
 #include <gtest/gtest.h>
 
@@ -100,3 +100,16 @@ TEST(SGSparseMatrix, multiply_complex64_float64)
 	EXPECT_NEAR(r.norm(), 22.80350850198275836078, 1E-16);
 }
 #endif // HAVE_EIGEN3
+
+TEST(SGSparseMatrix, access_by_index)
+{
+	const index_t size=2;
+
+	SGSparseMatrix<int32_t> m(size, size);
+	for (index_t i=0; i<size; ++i)
+		m(i,i)=i+1;
+	m.sort_features();
+
+	for (index_t i=0; i<size; ++i)
+		EXPECT_EQ(m(i,i), i+1);
+}

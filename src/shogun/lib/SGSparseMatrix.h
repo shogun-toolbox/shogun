@@ -15,6 +15,7 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/lib/DataType.h>
+#include <shogun/lib/SGSparseVector.h>
 #include <shogun/lib/SGReferencedData.h>
 
 namespace shogun
@@ -87,6 +88,55 @@ template <class T> class SGSparseMatrix : public SGReferencedData
 		 * @return the result vector \f$Q*v\f$, Q being this sparse matrix
 		 */
 		template<class ST> const SGVector<T> operator*(SGVector<ST> v) const;
+
+		/** operator overload for sparse-matrix read only access
+		 * @param i_row
+		 * @param i_col
+		 */
+		inline const T operator()(index_t i_row, index_t i_col) const
+		{
+			REQUIRE(i_row>=0, "index %d negative!\n", i_row);
+			REQUIRE(i_col>=0, "index %d negative!\n", i_col);
+			REQUIRE(i_row<num_vectors, "index should be less than %d, %d provided!\n",
+				num_vectors, i_row);
+			REQUIRE(i_col<num_features, "index should be less than %d, %d provided!\n",
+				num_features, i_col);
+
+			for (index_t i=0; i<sparse_matrix[i_row].num_feat_entries; ++i)
+			{
+				if (i_col==sparse_matrix[i_row].features[i].feat_index)
+					return sparse_matrix[i_row].features[i].entry;
+			}
+			return 0;
+		}
+
+		/** operator overload for sparse-matrix r/w access
+		 * @param i_row
+		 * @param i_col
+		 */
+		inline T& operator()(index_t i_row, index_t i_col)
+		{
+			REQUIRE(i_row>=0, "index %d negative!\n", i_row);
+			REQUIRE(i_col>=0, "index %d negative!\n", i_col);
+			REQUIRE(i_row<num_vectors, "index should be less than %d, %d provided!\n",
+				num_vectors, i_row);
+			REQUIRE(i_col<num_features, "index should be less than %d, %d provided!\n",
+				num_features, i_col);
+
+			for (index_t i=0; i<sparse_matrix[i_row].num_feat_entries; ++i)
+			{
+				if (i_col==sparse_matrix[i_row].features[i].feat_index)
+					return sparse_matrix[i_row].features[i].entry;
+			}
+			index_t j=sparse_matrix[i_row].num_feat_entries;
+			sparse_matrix[i_row].num_feat_entries=j+1;
+			sparse_matrix[i_row].features=SG_REALLOC(SGSparseVectorEntry<T>,
+				sparse_matrix[i_row].features, j, j+1);
+			sparse_matrix[i_row].features[j].feat_index=i_col;
+			sparse_matrix[i_row].features[j].entry=static_cast<T>(0);
+			
+			return sparse_matrix[i_row].features[j].entry;
+		}
 
 		/** load sparse matrix from file
 		 *
