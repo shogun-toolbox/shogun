@@ -112,6 +112,19 @@ SET(CMAKE_CXX_FLAGS_RELEASE "-O3 ${RELEASE_COMPILER_FLAGS}")
 SET(CMAKE_C_FLAGS_DISTRIBUTION "-O2")
 SET(CMAKE_CXX_FLAGS_DISTRIBUTION "-O2")
 
+OPTION(ENABLE_COVERAGE "Enable code coverage" OFF)
+IF(ENABLE_COVERAGE)
+	IF(NOT CMAKE_COMPILER_IS_GNUCXX)
+		MESSAGE(FATAL_ERROR "Compiler is not GNU gcc! Aborting...")
+	ENDIF()
+	IF (NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
+		MESSAGE(WARNING "Code coverage results with an optimised (non-Debug) build may be misleading")
+	ENDIF()
+	SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fprofile-arcs -ftest-coverage")
+	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
+	LINK_LIBRARIES(gcov)
+ENDIF()
+
 # check for supported c++11 features
 #
 # clang with -std=c++11 and -stdlib=libc++ does not work

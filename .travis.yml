@@ -13,6 +13,8 @@ notifications:
       - "it's %{author}'s turn to pay the next round of drinks for the massacre he caused in %{repository}: %{build_url}"
 matrix:
   include:
+    - compiler: gcc
+      env: CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=Debug -DENABLE_COVERAGE=ON" CUSTOM_PKG="pip install cpp-coveralls --use-mirrors"
     - compiler: clang
       python: 2.7
       language: python
@@ -69,3 +71,5 @@ script:
   - make -j 4
   - sudo make install
   - ctest --output-on-failure
+after_success:
+  - coveralls --verbose
