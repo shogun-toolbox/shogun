@@ -15,6 +15,7 @@
 %rename(SparseInverseCovariance) CSparseInverseCovariance;
 
 /* Log-det framework */
+#ifdef HAVE_EIGEN3
 %rename(TraceSampler) CTraceSampler;
 %rename(NormalSampler) CNormalSampler;
 %rename(ProbingSampler) CProbingSampler;
@@ -62,6 +63,8 @@ namespace shogun
 #endif
 }
 
+%rename(DirectSparseLinearSolver) CDirectSparseLinearSolver;
+
 %include <shogun/mathematics/logdet/IterativeLinearSolver.h>
 namespace shogun
 {
@@ -87,6 +90,7 @@ namespace shogun
 %rename(LanczosEigenSolver) CLanczosEigenSolver;
 
 %rename(LogDetEstimator) CLogDetEstimator;
+#endif // HAVE_EIGEN3
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/mathematics/Math.h>
@@ -107,6 +111,7 @@ namespace shogun
 %include <shogun/mathematics/logdet/LogRationalApproximationCGM.h>
 
 %include <shogun/mathematics/logdet/LinearSolver.h>
+%include <shogun/mathematics/logdet/DirectSparseLinearSolver.h>
 %include <shogun/mathematics/logdet/IterativeLinearSolver.h>
 %include <shogun/mathematics/logdet/IterativeShiftedLinearFamilySolver.h>
 %include <shogun/mathematics/logdet/CGMShiftedFamilySolver.h>
