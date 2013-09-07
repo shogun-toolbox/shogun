@@ -20,7 +20,7 @@ matrix:
     - compiler: clang
       python: 3.3
       language: python
-      env: CMAKE_OPTIONS="-DPythonModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON" EXTRA_PACKAGES="swig2.0" CC=clang CXX=clang++ PY3=1
+      env: CMAKE_OPTIONS="-DPythonModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON" EXTRA_PACKAGES="swig2.0" CC=clang CXX=clang++
     - compiler: clang
       rvm: 1.8.7
       language: ruby
@@ -45,7 +45,7 @@ matrix:
     - compiler: clang
       python: 3.3
       language: python
-      env: CMAKE_OPTIONS="-DPythonModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON" EXTRA_PACKAGES="swig2.0" CC=clang CXX=clang++ PY3=1
+      env: CMAKE_OPTIONS="-DPythonModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON" EXTRA_PACKAGES="swig2.0" CC=clang CXX=clang++
     - language: objective-c
       env: OSX=1
 virtualenv:
@@ -55,9 +55,9 @@ before_install:
  - if [ -z $OSX ] ; then sudo apt-get install -qq libbz2-dev cdbs libarpack2-dev libatlas-base-dev libblas-dev libglpk-dev libhdf5-serial-dev zlib1g-dev libxml2-dev libreadline6-dev libreadline-dev libsnappy-dev liblzo2-dev liblzma-dev liblapack-dev gdb cmake python-jinja2 $EXTRA_PACKAGES ; else brew install cmake ; fi
  - if [ $OSX ] ; then curl -O https://raw.github.com/rudix-mac/package-manager/master/rudix.py && sudo python rudix.py install rudix && sudo rudix install jinja2 ; fi
  - $CUSTOM_PKG
- - if [ $PY3 ] ; then pip install numpy -q --use-mirrors; fi
- - if [ $PY3 ] ; then pip install scipy -q --use-mirrors; fi
- - if [ $PY3 ] ; then pip install jinja2 -q --use-mirrors; fi
+ - if [[ $TRAVIS_PYTHON_VERSION == '3.3' ]] ; then pip install -q --use-mirrors numpy ; fi
+ - if [[ $TRAVIS_PYTHON_VERSION == '3.3' ]] ; then pip install --use-mirrors jinja2 ; fi
+ - if [[ $TRAVIS_PYTHON_VERSION == '3.3' ]] ; then pip install --use-mirrors scipy ; fi
 before_script: 
   - mkdir build
   - cd build
