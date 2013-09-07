@@ -126,7 +126,7 @@ def tester(tests, cmp_method, tolerance, failures, missing):
 			setting_str = "%s setting %d/%d" % (t,i+1,n)
 			try:
 				a = run_test(mod, mod_name, i)
-				b = pickle.load(file(fname))
+				b = pickle.load(open(fname))
 
 				try:
 					if cmp_method(a,b,tolerance):

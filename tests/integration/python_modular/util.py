@@ -19,7 +19,7 @@ def check_accuracy (accuracy, **kwargs):
 	print(', '.join(output)+' <--- accuracy: %e' % accuracy)
 
 	for val in kwargs.values():
-		if val>acc:
+		if val is not None and val>acc:
 			return False
 
 	return True

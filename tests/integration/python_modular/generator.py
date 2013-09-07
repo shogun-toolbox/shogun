@@ -57,7 +57,7 @@ def setup_tests(tests=[]):
 	return tests
 
 def check_for_function(fname):
-	for l in file(fname).readlines():
+	for l in open(fname).readlines():
 		if l.startswith("def "):
 			return True
 	return False
@@ -88,13 +88,13 @@ def generator(tests):
 			continue
 		fname = ""
 
-		print("%-60s" % mod_name, end=' ')
+		print("%-60s" % mod_name)
 		#print "%+60s" % "...",
 		try:
 			for i in range(len(mod.parameter_list)):
 				fname = get_fname(mod_name, i)
 				a = run_test(mod, mod_name, i)
-				pickle.dump(a,file(fname, "w"))
+				pickle.dump(a,open(fname, "w"))
 			print("OK")
 		except Exception as e:
 			print("ERROR generating '%s' using '%s'" % (fname,t))
