@@ -72,4 +72,4 @@ script:
   - sudo make install
   - ctest --output-on-failure
 after_success:
-  - coveralls -e third_party --verbose
+  - coveralls -e third_party
