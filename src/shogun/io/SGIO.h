@@ -207,17 +207,9 @@ __FILE__ ":" func ": Unstable method!  Please report if it seems to " \
 		SG_SERROR(__VA_ARGS__)	\
 }
 
-#ifndef CLANG_ANALYZER_NORETURN
-#if __has_feature(attribute_analyzer_noreturn)
-#define CLANG_ANALYZER_NORETURN __attribute__((analyzer_noreturn))
-#else
-#define CLANG_ANALYZER_NORETURN
-#endif
-#endif
-
 /* help clang static analyzer to identify custom assertation functions */
 #ifdef __clang_analyzer__
-void _clang_fail(void) CLANG_ANALYZER_NORETURN;
+void _clang_fail(void) __attribute__((analyzer_noreturn));
 
 #undef SG_ERROR(...)
 #undef SG_SERROR(...)
