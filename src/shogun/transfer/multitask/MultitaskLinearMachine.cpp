@@ -67,8 +67,8 @@ CTaskRelation* CMultitaskLinearMachine::get_task_relation() const
 
 void CMultitaskLinearMachine::set_task_relation(CTaskRelation* task_relation)
 {
-	SG_UNREF(m_task_relation);
 	SG_REF(task_relation);
+	SG_UNREF(m_task_relation);
 	m_task_relation = task_relation;
 }
 

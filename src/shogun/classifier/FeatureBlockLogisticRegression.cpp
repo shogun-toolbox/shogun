@@ -66,8 +66,8 @@ CIndexBlockRelation* CFeatureBlockLogisticRegression::get_feature_relation() con
 
 void CFeatureBlockLogisticRegression::set_feature_relation(CIndexBlockRelation* feature_relation)
 {
-	SG_UNREF(m_feature_relation);
 	SG_REF(feature_relation);
+	SG_UNREF(m_feature_relation);
 	m_feature_relation = feature_relation;
 }
 
