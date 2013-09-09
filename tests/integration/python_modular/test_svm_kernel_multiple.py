@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
 from numpy import random
-from shogun.Classifier import LibSVM
-from shogun.Features import RealFeatures, Labels
-from shogun.Kernel import LinearKernel
+from modshogun import LibSVM
+from modshogun import RealFeatures, Labels
+from modshogun import LinearKernel
 
 
 num_feats=23

@@ -13,7 +13,7 @@ import clustering
 import distribution
 import regression
 import preprocessor
-from shogun.Library import Math_init_random
+from modshogun import Math_init_random
 
 SUPPORTED=['kernel', 'distance', 'classifier', 'clustering', 'distribution',
 	'regression', 'preprocessor']

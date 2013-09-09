@@ -3,10 +3,10 @@ Test Classifier
 """
 
 from numpy import double
-from shogun.Features import BinaryLabels
-from shogun.Kernel import *
-from shogun.Distance import *
-from shogun.Classifier import *
+from modshogun import BinaryLabels
+from modshogun import *
+from modshogun import *
+from modshogun import *
 
 import util
 

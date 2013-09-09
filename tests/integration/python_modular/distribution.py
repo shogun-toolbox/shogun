@@ -2,7 +2,7 @@
 Test Distribution
 """
 from numpy import inf, nan
-from shogun.Distribution import *
+from modshogun import *
 
 import util
 

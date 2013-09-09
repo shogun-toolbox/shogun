@@ -2,10 +2,10 @@
 Utilities for testing
 """
 
-from shogun.Features import *
-from shogun.Preprocessor import *
-from shogun.Distance import *
-from shogun.Kernel import *
+from modshogun import *
+from modshogun import *
+from modshogun import *
+from modshogun import *
 from numpy import *
 
 

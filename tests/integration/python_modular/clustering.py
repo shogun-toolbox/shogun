@@ -2,8 +2,8 @@
 Test Clustering
 """
 
-from shogun.Distance import EuclideanDistance
-from shogun.Clustering import *
+from modshogun import EuclideanDistance
+from modshogun import *
 
 import util
 

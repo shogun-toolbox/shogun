@@ -3,9 +3,9 @@ Test Regression
 """
 
 from numpy import double
-from shogun.Features import RegressionLabels
-from shogun.Kernel import *
-from shogun.Regression import *
+from modshogun import RegressionLabels
+from modshogun import *
+from modshogun import *
 
 import util
 

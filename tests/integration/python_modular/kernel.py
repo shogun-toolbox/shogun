@@ -2,12 +2,12 @@
 Test Kernel
 """
 
-from shogun.Features import *
-from shogun.Kernel import *
-from shogun.Preprocessor import *
-from shogun.Distance import *
-from shogun.Classifier import PluginEstimate
-from shogun.Distribution import HMM, BW_NORMAL
+from modshogun import *
+from modshogun import *
+from modshogun import *
+from modshogun import *
+from modshogun import PluginEstimate
+from modshogun import HMM, BW_NORMAL
 from numpy import array, ushort, ubyte, double
 
 import util
