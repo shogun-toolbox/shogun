@@ -33,3 +33,18 @@ MACRO(PrintInterfaceStatus INTERFACE_NAME INTERFACE_FLAG)
 		ENDIF ()
 	ENDIF()
 ENDMACRO()
+
+# based on compiz_discover_tests
+function (shogun_discover_tests EXECUTABLE)
+
+        add_dependencies (${EXECUTABLE}
+			discover_gtest_tests)
+
+        add_custom_command (TARGET ${EXECUTABLE}
+            POST_BUILD
+            COMMAND ${CMAKE_CURRENT_BINARY_DIR}/${EXECUTABLE} --gtest_list_tests | ${CMAKE_BINARY_DIR}/tests/unit/discover_gtest_tests ${CMAKE_CURRENT_BINARY_DIR}/${EXECUTABLE}
+            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+            COMMENT "Discovering Tests in ${EXECUTABLE}"
+            DEPENDS
+            VERBATIM)
+endfunction ()

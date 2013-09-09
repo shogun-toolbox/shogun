@@ -27,6 +27,9 @@ FOREACH(template ${UNITTEST_SRC_TMP})
 	UNSET(${script})
 ENDFOREACH()
 
+add_executable (discover_gtest_tests
+       ${CMAKE_CURRENT_SOURCE_DIR}/discover_gtest_tests.cpp)
+
 # collect the unittests
 FILE(GLOB_RECURSE UNITTEST_SRC *_unittest.cc)
 
@@ -39,6 +42,6 @@ ADD_CUSTOM_TARGET(unit-tests
 	COMMAND ${CMAKE_CURRENT_BINARY_DIR}/shogun-unit-test
 	DEPENDS shogun-unit-test)
 
-add_test(unit-test shogun-unit-test)
+shogun_discover_tests(shogun-unit-test)
 
 unset(CMAKE_DEFINITIONS)
