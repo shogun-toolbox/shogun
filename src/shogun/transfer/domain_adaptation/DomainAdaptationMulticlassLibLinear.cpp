@@ -69,8 +69,8 @@ CLinearMulticlassMachine* CDomainAdaptationMulticlassLibLinear::get_source_machi
 void CDomainAdaptationMulticlassLibLinear::set_source_machine(
 		CLinearMulticlassMachine* source_machine)
 {
-	SG_UNREF(m_source_machine);
 	SG_REF(source_machine);
+	SG_UNREF(m_source_machine);
 	m_source_machine = source_machine;
 }
 

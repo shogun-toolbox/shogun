@@ -61,10 +61,9 @@ CSGDQN::~CSGDQN()
 
 void CSGDQN::set_loss_function(CLossFunction* loss_func)
 {
-	if (loss)
-		SG_UNREF(loss);
+	SG_REF(loss_func);
+	SG_UNREF(loss);
 	loss=loss_func;
-	SG_REF(loss);
 }
 
 void CSGDQN::compute_ratio(float64_t* W,float64_t* W_1,float64_t* B,float64_t* dst,int32_t dim,float64_t lambda,float64_t loss_val)

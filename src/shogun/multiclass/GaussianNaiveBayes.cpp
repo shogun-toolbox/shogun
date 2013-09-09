@@ -55,8 +55,8 @@ void CGaussianNaiveBayes::set_features(CFeatures* features)
 	if (!features->has_property(FP_DOT))
 		SG_ERROR("Specified features are not of type CDotFeatures\n")
 
-	SG_UNREF(m_features);
 	SG_REF(features);
+	SG_UNREF(m_features);
 	m_features = (CDotFeatures*)features;
 }
 
