@@ -1,6 +1,7 @@
 #include "machine/MockMachine.h"
 #include "features/MockFeatures.h"
 #include "labels/MockLabels.h"
+#include <shogun/lib/config.h>
 #include <shogun/machine/BaggingMachine.h>
 #include <shogun/ensemble/MajorityVote.h>
 #include <gtest/gtest.h>
@@ -8,6 +9,8 @@
 using namespace shogun;
 using ::testing::Return;
 
+/** gmock REV 443 and freebsd doesn't play nicely */
+#ifndef FREEBSD
 TEST(BaggingMachine, mock_train)
 {
 	using ::testing::NiceMock;
@@ -53,3 +56,4 @@ TEST(BaggingMachine, mock_train)
 
 	SG_UNREF(bm);
 }
+#endif

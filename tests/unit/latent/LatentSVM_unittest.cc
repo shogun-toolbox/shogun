@@ -1,10 +1,13 @@
 #include "MockLatentModel.h"
+#include <shogun/lib/config.h>
 #include <shogun/latent/LatentSVM.h>
 
 using namespace shogun;
 using ::testing::Return;
 using ::testing::NiceMock;
 
+/** gmock REV 443 and freebsd doesn't play nicely */
+#ifndef FREEBSD
 TEST(LatentModel, argmax_h)
 {
 	using ::testing::AtMost;
@@ -91,4 +94,4 @@ TEST(LatentSVM, apply)
 	SG_UNREF(lsvm);
 	SG_UNREF(dense_feats);
 }
-
+#endif
