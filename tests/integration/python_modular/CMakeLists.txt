@@ -16,7 +16,7 @@ FOREACH(TEST_SRC ${PYTHON_MODULAR_INTEGRATION_TESTS})
 		message(STATUS integration-python_modular-tester-${TEST_NAME})
 	add_test(NAME integration-python_modular-tester-${TEST_NAME}
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-		COMMAND ${PYTHON_EXECUTABLE} tester.py ${TEST_SRC})
+		COMMAND ${PYTHON_EXECUTABLE} tester.py ${TEST_NAME}.py)
 	set_property(TEST integration-python_modular-tester-${TEST_NAME} PROPERTY
 		ENVIRONMENT "${PYTHON_ENV_VARS}")
 ENDFOREACH()
