@@ -65,9 +65,9 @@ IGNORE_IN_CLASSLIST template <class T> class CGCArray : public CSGObject
 		{
 			ASSERT(index>=0)
 			ASSERT(index<size)
+			SG_REF(element);
 			SG_UNREF(array[index]);
 			array[index]=element;
-			SG_REF(element);
 		}
 
 		/** read only access operator
