@@ -52,6 +52,7 @@ namespace shogun
 		C_DIRECTOR_DOT = 160,
 		C_LATENT = 170,
 		C_MATRIX = 180,
+		C_FACTOR_GRAPH = 190,
 		C_ANY = 1000
 	};
 

@@ -32,13 +32,13 @@ public:
 	 *
 	 * @param dense dense factor data
 	 */
-	CFactorDataSource(const SGVector<float64_t> dense);
+	CFactorDataSource(SGVector<float64_t> dense);
 
 	/** constructor 
 	 *
 	 * @param sparse sparse factor data
 	 */
-	CFactorDataSource(const SGSparseVector<float64_t> sparse);
+	CFactorDataSource(SGSparseVector<float64_t> sparse);
 
 	/** destructor */
 	virtual ~CFactorDataSource();
@@ -50,10 +50,10 @@ public:
 	virtual bool is_sparse() const;
 
 	/** @return dense data vector */
-	virtual const SGVector<float64_t> data() const;
+	virtual SGVector<float64_t> get_data() const;
 
 	/** @return sparse data vector */
-	virtual const SGSparseVector<float64_t> data_sparse() const;
+	virtual SGSparseVector<float64_t> get_data_sparse() const;
 
 	/** set dense data
 	 *
@@ -146,10 +146,10 @@ public:
 	const SGVector<int32_t> get_cardinalities() const;
 
 	/** @return dense factor data */
-	const SGVector<float64_t> get_data() const;
+	SGVector<float64_t> get_data() const;
 
-	/** @return sparse factor data */
-	const SGSparseVector<float64_t> get_data_sparse() const;
+	/** @return sparse factor data, note that call get_dense() to get SGVector */
+	SGSparseVector<float64_t> get_data_sparse() const;
 
 	/** set dense data
 	 *
@@ -168,15 +168,35 @@ public:
 	/** @return whether this factor has data */
 	bool is_data_dependent() const;
 
+	/** @return whether data vector is sparse */
+	bool is_data_sparse() const;
+
 	/** @return energy table which are in Matlab-linearized order: 
 	 * leftmost indices run by one.
 	 */
-	const SGVector<float64_t> get_energies() const;
+	SGVector<float64_t> get_energies() const;
 
 	/** @return energy table which are in Matlab-linearized order: 
 	 * leftmost indices run by one.
 	 */
 	SGVector<float64_t> get_energies();
+
+	/** get an entry in the energy table
+	 * @param index in the table
+	 * @return energy value
+	 */
+	float64_t get_energy(int32_t index) const;
+
+	/** set energies with new values 
+	 * @param ft_energies new energy table
+	 */
+	void set_energies(SGVector<float64_t> ft_energies);
+
+	/** set energy for a particular state
+	 * @param ei index in the energy table
+	 * @param value energy value
+	 */
+	void set_energy(int32_t ei, float64_t value);
 
 	/** evaluate energy for a given assignment 
 	 * @param state variable assignments 

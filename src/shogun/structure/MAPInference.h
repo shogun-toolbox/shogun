@@ -65,11 +65,24 @@ public:
 	/** perform inference */
 	virtual void inference();
 
+	/** perform loss-augmentation 
+	 *
+	 * @param gt an observation (states and loss weights are stored in it) 
+	 */
+	virtual void loss_augmentation(CFactorGraphObservation* gt);
+
+	/** perform loss-augmentation 
+	 *
+	 * @param states_gt ground truth states
+	 * @param weights weighted loss for each variable
+	 */
+	virtual void loss_augmentation(SGVector<int32_t> states_gt, SGVector<float64_t> loss = SGVector<float64_t>());
+
 	/** get structured outputs 
 	 *
 	 * @return CFactorGraphObservation pointer 
 	 */
-	virtual CFactorGraphObservation* get_structured_outputs() const;
+	CFactorGraphObservation* get_structured_outputs() const;
 
 	/** @return minimized energy */
 	float64_t get_energy() const;

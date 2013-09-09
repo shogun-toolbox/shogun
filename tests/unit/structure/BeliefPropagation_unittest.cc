@@ -36,7 +36,7 @@ TEST(BeliefPropagation, tree_max_product_string)
 	w[1] = 0.3; // 1,0
 	w[2] = 0.2; // 0,1
 	w[3] = 0.0; // 1,1
-	SGString<char> tid((char*)("pairwise"), 8);
+	int32_t tid = 0;
 	CTableFactorType* factortype = new CTableFactorType(tid, card, w);
 	SG_REF(factortype);
 
@@ -45,7 +45,7 @@ TEST(BeliefPropagation, tree_max_product_string)
 	SGVector<float64_t> w1(2);
 	w1[0] = 0.1;
 	w1[1] = 0.7;
-	SGString<char> tid1((char*)("unary1"), 6);
+	int32_t tid1 = 1;
 	CTableFactorType* factortype1 = new CTableFactorType(tid1, card1, w1);
 	SG_REF(factortype1);
 
@@ -54,7 +54,7 @@ TEST(BeliefPropagation, tree_max_product_string)
 	SGVector<float64_t> w2(2);
 	w2[0] = 0.3;
 	w2[1] = 0.6;
-	SGString<char> tid2((char*)("unary2"), 6);
+	int32_t tid2 = 2;
 	CTableFactorType* factortype2 = new CTableFactorType(tid2, card2, w2);
 	SG_REF(factortype2);
 
@@ -119,14 +119,14 @@ TEST(BeliefPropagation, tree_max_product_random)
 		card[0] = 2;
 		card[1] = 2;
 		SGVector<float64_t> w;
-		SGString<char> tid((char*)("pairwise"), 8);
+		int32_t tid = 0;
 		CTableFactorType* factortype = new CTableFactorType(tid, card, w);
 		SG_REF(factortype);
 
 		SGVector<int32_t> card1(1);
 		card1[0] = 2;
 		SGVector<float64_t> w1;
-		SGString<char> tid1((char*)("unary1"), 6);
+		int32_t tid1 = 1;
 		CTableFactorType* factortype1 = new CTableFactorType(tid1, card1, w1);
 		SG_REF(factortype1);
 

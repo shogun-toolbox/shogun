@@ -35,9 +35,10 @@ public:
 	/** constructor discrete labeling observation
 	 *
 	 * @param observed_state Discrete labeling of a set of variables.
+	 * @param loss_weights weighted loss for each variable
 	 */
-	CFactorGraphObservation(SGVector<int32_t> observed_state)
-		: CStructuredData(), m_observed_state(observed_state) { }
+	CFactorGraphObservation(SGVector<int32_t> observed_state, 
+		SGVector<float64_t> loss_weights = SGVector<float64_t>());
 
 	~CFactorGraphObservation() { }
 
@@ -58,12 +59,18 @@ public:
 	/** @return name of SGSerializable */
 	virtual const char* get_name() const { return "FactorGraphObservation"; }
 
-	/** returns data */
-	SGVector<int32_t> get_data() const { return m_observed_state; }
+	/** @return data */
+	SGVector<int32_t> get_data() const;
+
+	/** @return loss weights */
+	SGVector<float64_t> get_loss_weights() const;
 
 protected:
+	/** loss weights, usually for weighted hamming loss */
+	SGVector<float64_t> m_loss_weights;
 
-	SGVector< int32_t > m_observed_state;
+	/** ground truth states */
+	SGVector<int32_t> m_observed_state;
 };
 
 

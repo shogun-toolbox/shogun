@@ -13,7 +13,6 @@
 
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/SGVector.h>
-#include <shogun/lib/SGString.h>
 
 namespace shogun
 {
@@ -37,7 +36,7 @@ public:
 	 * @param card cardinalities of variables in the clique
 	 * @param w factor parameters
 	 */
-	CFactorType(const SGString<char> id, const SGVector<int32_t> card,
+	CFactorType(const int32_t id, const SGVector<int32_t> card,
 		const SGVector<float64_t> w = SGVector<float64_t>());
 
 	/** deconstructor */
@@ -47,14 +46,13 @@ public:
 	virtual const char* get_name() const { return "FactorType"; }
 
 	/** @return get factor type id */
-	virtual const char* get_type_id() const;
+	virtual int32_t get_type_id() const;
 
 	/** set factor type id
 	 *
-	 * @param tid_str a string 
-	 * @param slen of tid_str
+	 * @param id type id in CFactorGraphModel
 	 */
-	virtual void set_type_id(char* tid_str, int32_t slen);
+	virtual void set_type_id(int32_t id);
 
 	/** @return get factor parameters */
 	virtual SGVector<float64_t> get_w();
@@ -80,46 +78,41 @@ public:
 	 */
 	virtual void set_cardinalities(SGVector<int32_t> cards);
 
-	/** @return product of cardinalities */
-	virtual int32_t get_prodcardinalities() const;
+	/** get number of variables */
+	virtual int32_t get_num_vars();
 
-	/** parameters mapping to the global model parameters
-	 *
-	 * @param map indices in model parameter vector
-	 */
-	virtual void set_params_mapping(SGVector<int32_t> map);
+	/** @return number of configurations of variables */
+	virtual int32_t get_num_assignments() const;
 
 	/** @return is it a table factor type */
 	virtual bool is_table() const { return false; }
 
 protected:
-	/** initialize m_prod_card and m_cumprod_cards */
+	/** initialize m_num_assignments and m_cumprod_cards */
 	void init_card();
 
 private:
+	/** initialize parameters */
 	void init();
 
 protected:
-	/** type identifer */
-	SGString<char> m_type_id;
+	/** factor type identifier */
+	int32_t m_type_id;
 
-	/** variable information */
+	/** variable cardinalities */
 	SGVector<int32_t> m_cards;
 
 	/** the cumulative product of cardinalities */
 	SGVector<int32_t> m_cumprod_cards;
 
-	/** product of cardinalities */
-	int32_t m_prod_card;
+	/** number of state assignments (for each variable) */
+	int32_t m_num_assignments;
 
-	/** data information */
+	/** data size */
 	int32_t m_data_size;
 
 	/** factor paramters */
 	SGVector<float64_t> m_w;
-
-	/** indices to model parameters of FactorGraphModel */
-	SGVector<int32_t> m_map_params;
 };
 
 /** @brief Class CTableFactorType the way that store assignments of variables
@@ -137,7 +130,7 @@ public:
 	 * @param card cardinalities of variables in the clique
 	 * @param w factor parameters
 	 */
-	CTableFactorType(const SGString<char> id, const SGVector<int32_t> card,
+	CTableFactorType(const int32_t id, const SGVector<int32_t> card,
 		const SGVector<float64_t> w = SGVector<float64_t>());
 
 	/** deconstructor */

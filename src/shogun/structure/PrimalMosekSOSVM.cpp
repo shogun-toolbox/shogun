@@ -67,7 +67,7 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 	// Number of auxiliary constraints
 	int32_t num_aux_con = m_model->get_num_aux_con();
 	// Number of training examples
-	int32_t N = m_model->get_features()->get_num_vectors();
+	int32_t N = model_features->get_num_vectors();
 
 	SG_DEBUG("M=%d, N =%d, num_aux=%d, num_aux_con=%d.\n", M, N, num_aux, num_aux_con);
 
@@ -139,10 +139,10 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 
 		for ( int32_t i = 0 ; i < N ; ++i )
 		{
-			// Predict the result of the ith training example
+			// Predict the result of the ith training example (loss-aug)
 			result = m_model->argmax(m_w, i);
 
-			// Compute the loss associated with the prediction
+			// Compute the loss associated with the prediction (surrogate loss, max(0, \tilde{H}))
 			slack = CHingeLoss().loss( compute_loss_arg(result) );
 			cur_list = (CList*) results->get_element(i);
 
