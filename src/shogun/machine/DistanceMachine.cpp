@@ -261,8 +261,8 @@ float64_t CDistanceMachine::apply_one(int32_t num)
 
 void CDistanceMachine::set_distance(CDistance* d)
 {
-	SG_UNREF(distance);
 	SG_REF(d);
+	SG_UNREF(distance);
 	distance=d;
 }
 

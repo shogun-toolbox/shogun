@@ -106,8 +106,8 @@ int32_t CLatentLabels::get_num_labels() const
 
 void CLatentLabels::set_labels(CLabels* labels)
 {
-	SG_UNREF(m_labels);
 	SG_REF(labels);
+	SG_UNREF(m_labels);
 	m_labels = labels;
 }
 

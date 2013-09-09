@@ -701,8 +701,8 @@ bool CGUIKernel::set_kernel(CKernel* kern)
 	if (kern)
 	{
 		SG_DEBUG("deleting old kernel (%p).\n", kernel)
-		SG_UNREF(kernel);
 		SG_REF(kern);
+		SG_UNREF(kernel);
 		kernel=kern;
 		SG_DEBUG("set new kernel (%p).\n", kern)
 
