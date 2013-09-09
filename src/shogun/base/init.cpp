@@ -108,9 +108,9 @@ namespace shogun
 
 	void set_global_io(SGIO* io)
 	{
+		SG_REF(io);
 		SG_UNREF(sg_io);
 		sg_io=io;
-		SG_REF(sg_io);
 	}
 
 	SGIO* get_global_io()
@@ -121,9 +121,9 @@ namespace shogun
 
 	void set_global_parallel(Parallel* parallel)
 	{
+		SG_REF(parallel);
 		SG_UNREF(sg_parallel);
 		sg_parallel=parallel;
-		SG_REF(sg_parallel);
 	}
 
 	Parallel* get_global_parallel()
@@ -134,9 +134,9 @@ namespace shogun
 
 	void set_global_version(Version* version)
 	{
+		SG_REF(version);
 		SG_UNREF(sg_version);
 		sg_version=version;
-		SG_REF(sg_version);
 	}
 
 	Version* get_global_version()
@@ -147,9 +147,9 @@ namespace shogun
 
 	void set_global_math(CMath* math)
 	{
+		SG_REF(math);
 		SG_UNREF(sg_math);
 		sg_math=math;
-		SG_REF(sg_math);
 	}
 
 	CMath* get_global_math()
@@ -160,9 +160,9 @@ namespace shogun
 
 	void set_global_rand(CRandom* rand)
 	{
+		SG_REF(rand);
 		SG_UNREF(sg_rand);
 		sg_rand=rand;
-		SG_REF(sg_rand);
 	}
 
 	CRandom* get_global_rand()
