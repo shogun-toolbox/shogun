@@ -191,7 +191,6 @@ BmrmStatistics svm_ppbm_solver(
 	CPList_tail=cp_list;
 
 	/* Compute initial value of Fp, Fd, assuming that W is zero vector */
-	sq_norm_W=0.0;
 	sq_norm_Wdiff=0.0;
 
 	b[0] = SGVector<float64_t>::dot(subgrad, W, nDim);
@@ -347,7 +346,6 @@ BmrmStatistics svm_ppbm_solver(
 
 				for (uint32_t i=0; i<ppbmrm.nCP; ++i)
 				{
-					rsum=0.0;
 					A_1=get_cutting_plane(cp_ptr);
 					cp_ptr=cp_ptr->next;
 
@@ -453,7 +451,6 @@ BmrmStatistics svm_ppbm_solver(
 
 			for (uint32_t i=0; i<ppbmrm.nCP; ++i)
 			{
-				rsum=0.0;
 				A_1=get_cutting_plane(cp_ptr);
 				cp_ptr=cp_ptr->next;
 
