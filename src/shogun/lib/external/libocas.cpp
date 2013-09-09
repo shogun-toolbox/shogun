@@ -1109,8 +1109,10 @@ ocas_return_value_T svm_ocas_solver_difC(
 
   /* Compute initial value of Q_P assuming that W is zero vector.*/
   sq_norm_W = 0;
+/* 
   xi = nData;
-/*  ocas.Q_P = 0.5*sq_norm_W + C*xi;*/
+  ocas.Q_P = 0.5*sq_norm_W + C*xi;
+*/
   ocas.Q_D = 0;
 
   /* Compute the initial cutting plane */
@@ -1416,7 +1418,6 @@ static void findactive(float64_t *Theta, float64_t *SortedA, uint32_t *nSortedA,
 
   sort(A,B,n);
 
-  tmp = B[0];
   idx = 0;
   i = 0;
   while( i < (uint32_t)n-1 && A[i] == A[i+1])
@@ -1424,7 +1425,6 @@ static void findactive(float64_t *Theta, float64_t *SortedA, uint32_t *nSortedA,
     if( B[i+1] > B[idx] )
     {
       idx = i+1;
-      tmp = B[i+1];
     }
     i++;
   }
