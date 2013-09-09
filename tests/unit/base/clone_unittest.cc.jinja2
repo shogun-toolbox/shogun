@@ -9,8 +9,14 @@
 
 using namespace shogun;
 
+{% set ignores = ['Set', 'ParseBuffer', 'TreeMachine'] %}
+
 {% for class in classes %}
+{% if class in ignores or class.startswith('GUI') %}
+TEST(SGObject,DISABLED_clone_equals_{{class}})
+{% else %}
 TEST(SGObject,clone_equals_{{class}})
+{% endif %}
 {
 	const char* class_name="{{class}}";
 	CSGObject* object = new_sgserializable(class_name, PT_NOT_GENERIC);
@@ -39,7 +45,11 @@ TEST(SGObject,clone_equals_{{class}})
 
 {% for class in template_classes %}
 {% for type in types %}
+{% if class in ignores %}
+TEST(SGObject,DISABLED_clone_equals_{{class}}_{{type}})
+{% else %}
 TEST(SGObject,clone_equals_{{class}}_{{type}})
+{% endif %}
 {
 	const char* class_name="{{class}}";
 	CSGObject* object = new_sgserializable(class_name, {{type}});

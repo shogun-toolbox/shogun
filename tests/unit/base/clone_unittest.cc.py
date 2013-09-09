@@ -14,19 +14,6 @@ def get_class_list_content(class_list_file):
     f.close()
     return content
 
-def is_valid(sho_class):
-    """
-    This list is not for buggy classes, but rather for classes which
-    cannot be tested for clone/equals automatically due to framework
-    issues
-    """
-    ignores = ['Set', 'ParseBuffer', 'TreeMachine']
-    if sho_class.startswith('GUI'):
-        return False
-    if sho_class in ignores:
-        return False
-    return True
-
 def get_class_list(class_list_content):
     import re
     in_class_list = False
@@ -48,12 +35,11 @@ def get_class_list(class_list_content):
                 
                 if result:
                     sho_class=result.group('sho_class')
-                    if is_valid(sho_class):
-                        #print l[1]
-                        if l[1] == 'SHOGUN_BASIC_CLASS':
-                            classes.append(sho_class)
-                        if l[1] == 'SHOGUN_TEMPLATE_CLASS':
-                            template_classes.append(sho_class)
+                    #print l[1]
+                    if l[1] == 'SHOGUN_BASIC_CLASS':
+                        classes.append(sho_class)
+                    if l[1] == 'SHOGUN_TEMPLATE_CLASS':
+                        template_classes.append(sho_class)
     return classes, template_classes
 
 def entry(templateFile, class_list_file):

@@ -12,9 +12,14 @@
 using namespace shogun;
 
 #ifdef HAVE_JSON
+{% set ignores = [] %}
 
 {% for class in classes %}
+{% if class in ignores or class.startswith('GUI') %}
+TEST(SerializationJSON, DISABLED_{{class}})
+{% else %}
 TEST(SerializationJSON, {{class}})
+{% endif %}
 {
 	std::string class_name("{{class}}");
 	std::string file_template = "/tmp/" + class_name + ".XXXXXX";
@@ -24,17 +29,19 @@ TEST(SerializationJSON, {{class}})
 
 	// save object to an ascii file
 	CSerializableJsonFile *file=new CSerializableJsonFile(filename, 'w');
-	object->save_serializable(file);
+	bool save_success = object->save_serializable(file);
 	file->close();
 	SG_UNREF(file);
-
+	ASSERT_TRUE(load_success);
+	
 	// load parameter from an ascii file
 	file=new CSerializableJsonFile(filename, 'r');
 	CSGObject* deserializedObject = new_sgserializable(class_name.c_str(), PT_NOT_GENERIC);
 	ASSERT_TRUE(deserializedObject != NULL);
-	deserializedObject->load_serializable(file);
+	bool load_success = deserializedObject->load_serializable(file);
 	file->close();
 	SG_UNREF(file);
+	ASSERT_TRUE(load_success);
 
 	// check whether they are equal, up to accuracy since json is lossy
 	float64_t accuracy=1e-6;
@@ -47,7 +54,11 @@ TEST(SerializationJSON, {{class}})
 
 {% for class in template_classes %}
 {% for type in types %}
+{% if class in ignores %}
+TEST(SerializationJSON,DISABLED_{{class}}_{{type}})
+{% else %}
 TEST(SerializationJSON,{{class}}_{{type}})
+{% endif %}
 {
 	std::string class_name("{{class}}");
 	std::string file_template = "/tmp/" + class_name + "_{{type}}" + ".XXXXXX";
@@ -57,7 +68,7 @@ TEST(SerializationJSON,{{class}}_{{type}})
 
 	// save object to an ascii file
 	CSerializableJsonFile *file=new CSerializableJsonFile(filename, 'w');
-	object->save_serializable(file);
+	bool save_success = object->save_serializable(file);
 	file->close();
 	SG_UNREF(file);
 
@@ -65,9 +76,10 @@ TEST(SerializationJSON,{{class}}_{{type}})
 	file=new CSerializableJsonFile(filename, 'r');
 	CSGObject* deserializedObject = new_sgserializable(class_name.c_str(), {{type}});
 	ASSERT_TRUE(deserializedObject != NULL);
-	deserializedObject->load_serializable(file);
+	bool load_success = deserializedObject->load_serializable(file);
 	file->close();
 	SG_UNREF(file);
+	ASSERT_TRUE(load_success);
 
 	// check whether they are equal, up to accuracy since json is lossy
 	float64_t accuracy=1e-6;

@@ -13,8 +13,14 @@ using namespace shogun;
 
 #ifdef HAVE_XML
 
+{% set ignores = [] %}
+
 {% for class in classes %}
+{% if class in ignores or class.startswith('GUI') %}
+TEST(SerializationXML, DISABLED_{{class}})
+{% else %}
 TEST(SerializationXML, {{class}})
+{% endif %}
 {
 	std::string class_name("{{class}}");
 	std::string file_template = "/tmp/" + class_name + ".XXXXXX";
@@ -24,17 +30,19 @@ TEST(SerializationXML, {{class}})
 
 	// save object to an ascii file
 	CSerializableXmlFile *file=new CSerializableXmlFile(filename, 'w');
-	object->save_serializable(file);
+	bool save_success = object->save_serializable(file);
 	file->close();
 	SG_UNREF(file);
+	ASSERT_TRUE(save_success);
 
 	// load parameter from an ascii file
 	file=new CSerializableXmlFile(filename, 'r');
 	CSGObject* deserializedObject = new_sgserializable(class_name.c_str(), PT_NOT_GENERIC);
 	ASSERT_TRUE(deserializedObject != NULL);
-	deserializedObject->load_serializable(file);
+	bool load_success = deserializedObject->load_serializable(file);
 	file->close();
 	SG_UNREF(file);
+	ASSERT_TRUE(load_success);
 
 	// check whether they are equal, up to a certain accuracy, since XML is lossy
 	float64_t accuracy=1e-14;
@@ -47,7 +55,11 @@ TEST(SerializationXML, {{class}})
 
 {% for class in template_classes %}
 {% for type in types %}
+{% if class in ignores %}
+TEST(SerializationXML,DISABLED_{{class}}_{{type}})
+{% else %}
 TEST(SerializationXML,{{class}}_{{type}})
+{% endif %}
 {
 	std::string class_name("{{class}}");
 	std::string file_template = "/tmp/" + class_name + "_{{type}}" + ".XXXXXX";
@@ -57,17 +69,19 @@ TEST(SerializationXML,{{class}}_{{type}})
 
 	// save object to an ascii file
 	CSerializableXmlFile *file=new CSerializableXmlFile(filename, 'w');
-	object->save_serializable(file);
+	bool save_success = object->save_serializable(file);
 	file->close();
 	SG_UNREF(file);
+	ASSERT_TRUE(save_success);
 
 	// load parameter from an ascii file
 	file=new CSerializableXmlFile(filename, 'r');
 	CSGObject* deserializedObject = new_sgserializable(class_name.c_str(), {{type}});
 	ASSERT_TRUE(deserializedObject != NULL);
-	deserializedObject->load_serializable(file);
+	bool load_success = deserializedObject->load_serializable(file);
 	file->close();
 	SG_UNREF(file);
+	ASSERT_TRUE(load_success);
 
 	// check whether they are equal, up to a certain accuracy, since XML is lossy
 	float64_t accuracy=1e-14;
