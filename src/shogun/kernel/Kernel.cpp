@@ -486,6 +486,7 @@ void CKernel::cache_multiple_kernel_rows(int32_t* rows, int32_t num_rows)
 void CKernel::kernel_cache_shrink(
 	int32_t totdoc, int32_t numshrink, int32_t *after)
 {
+	ASSERT(totdoc > 0);
 	register int32_t i,j,jj,scount;     // 0 in after.
 	KERNELCACHE_IDX from=0,to=0;
 	int32_t *keep;
