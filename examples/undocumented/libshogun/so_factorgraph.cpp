@@ -34,7 +34,7 @@ void create_tree_graph(int hh, int ww)
 	w[1] = 0.5; // 1,0
 	w[2] = 0.5; // 0,1
 	w[3] = 0.0; // 1,1
-	SGString<char> tid(const_cast<char*>("pairwise"), 8);
+	int32_t tid = 0;
 	CTableFactorType* factortype = new CTableFactorType(tid, card, w);
 	SG_REF(factortype);
 

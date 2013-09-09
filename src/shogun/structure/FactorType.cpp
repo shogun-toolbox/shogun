@@ -21,7 +21,7 @@ CFactorType::CFactorType() : CSGObject()
 }
 
 CFactorType::CFactorType(
-	const SGString<char> id, 
+	const int32_t id, 
 	const SGVector<int32_t> card,
 	const SGVector<float64_t> w)
 	: CSGObject()
@@ -36,16 +36,13 @@ CFactorType::CFactorType(
 
 	if (m_w.size() == 0) 
 	{
-		m_data_size = m_prod_card;
+		m_data_size = m_num_assignments;
 	} 
 	else 
 	{
-		ASSERT(m_w.size() % m_prod_card == 0);
-		m_data_size = m_w.size() / m_prod_card;
+		ASSERT(m_w.size() % m_num_assignments == 0);
+		m_data_size = m_w.size() / m_num_assignments;
 	}
-
-	m_map_params.resize_vector(m_w.size());
-	m_map_params.zero();
 }
 
 CFactorType::~CFactorType() 
@@ -57,23 +54,23 @@ void CFactorType::init()
 	SG_ADD(&m_type_id, "type_id", "Factor type name", MS_NOT_AVAILABLE);
 	SG_ADD(&m_cards, "cards", "Cardinalities", MS_NOT_AVAILABLE);
 	SG_ADD(&m_cumprod_cards, "cumprod_cards", "Cumulative product of cardinalities", MS_NOT_AVAILABLE);
-	SG_ADD(&m_prod_card, "prod_card", "Product of cardinalities", MS_NOT_AVAILABLE);
+	SG_ADD(&m_num_assignments, "num_assignments", "Number of variable configurations", MS_NOT_AVAILABLE);
 	SG_ADD(&m_w, "w", "Factor parameters", MS_NOT_AVAILABLE);
 	SG_ADD(&m_data_size, "data_size", "Size of data vector", MS_NOT_AVAILABLE);
-	SG_ADD(&m_map_params, "map_params", "Map indices in global model parameters", MS_NOT_AVAILABLE);
 
+	m_type_id = 0;
 	m_data_size = 0;
-	m_prod_card = 0;
+	m_num_assignments = 0;
 }
 
-const char* CFactorType::get_type_id() const 
+int32_t CFactorType::get_type_id() const 
 {
-	return m_type_id.string;
+	return m_type_id;
 }
 
-void CFactorType::set_type_id(char* tid_str, int32_t slen)
+void CFactorType::set_type_id(int32_t id)
 {
-	m_type_id = SGString<char>(tid_str, slen);
+	m_type_id = id;
 }
 
 SGVector<float64_t> CFactorType::get_w() 
@@ -107,33 +104,33 @@ void CFactorType::set_cardinalities(SGVector<int32_t> cards)
 	init_card();
 	if (m_w.size() == 0) 
 	{
-		m_data_size = m_prod_card;
+		m_data_size = m_num_assignments;
 	} 
 	else 
 	{
-		ASSERT(m_w.size() % m_prod_card == 0);
-		m_data_size = m_w.size() / m_prod_card;
+		ASSERT(m_w.size() % m_num_assignments == 0);
+		m_data_size = m_w.size() / m_num_assignments;
 	}
 }
 
-int32_t CFactorType::get_prodcardinalities() const 
+int32_t CFactorType::get_num_vars()
 {
-	return m_prod_card;
+	return m_cards.size();
 }
 
-void CFactorType::set_params_mapping(SGVector<int32_t> map)
+int32_t CFactorType::get_num_assignments() const 
 {
-	m_map_params = map.clone();	
+	return m_num_assignments;
 }
 
 void CFactorType::init_card() 
 {
-	m_prod_card = 1;
+	m_num_assignments = 1;
 	m_cumprod_cards.resize_vector(m_cards.size());
 	for (int32_t n = 0; n < m_cards.size(); ++n) 
 	{
-		m_cumprod_cards[n] = m_prod_card;
-		m_prod_card *= m_cards[n];
+		m_cumprod_cards[n] = m_num_assignments;
+		m_num_assignments *= m_cards[n];
 	}
 }
 
@@ -143,7 +140,7 @@ CTableFactorType::CTableFactorType()
 }
 
 CTableFactorType::CTableFactorType(
-	const SGString<char> id, 
+	const int32_t id, 
 	const SGVector<int32_t> card,
 	const SGVector<float64_t> w)
 	: CFactorType(id, card, w)
@@ -201,7 +198,7 @@ int32_t CTableFactorType::index_from_universe_assignment(
 		ASSERT(assig[cur_var] <= m_cards[vi]);
 		index += assig[cur_var] * m_cumprod_cards[vi];  
 	}
-	ASSERT(index < m_prod_card);
+	ASSERT(index < m_num_assignments);
 	return index;
 }
 
@@ -209,24 +206,24 @@ void CTableFactorType::compute_energies(
 	const SGVector<float64_t> factor_data,
 	SGVector<float64_t>& energies) const 
 {
-	ASSERT(energies.size() == m_prod_card);
+	ASSERT(energies.size() == m_num_assignments);
 
 	if (factor_data.size() == 0) 
 	{
-		ASSERT(m_w.size() == m_prod_card);
+		ASSERT(m_w.size() == m_num_assignments);
 		energies = m_w.clone();
 	} 
 	else if (m_w.size() == 0) 
 	{
-		ASSERT(m_data_size == m_prod_card);
+		ASSERT(m_data_size == m_num_assignments);
 		ASSERT(factor_data.size() == m_data_size); 
 		energies = factor_data.clone();
 	} 
 	else 
 	{
-		ASSERT(m_data_size * m_prod_card == m_w.size());
+		ASSERT(m_data_size * m_num_assignments == m_w.size());
 		ASSERT(m_data_size == factor_data.size());
-		for (int32_t ei = 0; ei < m_prod_card; ++ei) 
+		for (int32_t ei = 0; ei < m_num_assignments; ++ei) 
 		{
 			float64_t energy_cur = 0.0;
 			for (int32_t di = 0; di < m_data_size; ++di)
@@ -241,17 +238,17 @@ void CTableFactorType::compute_energies(
 	const SGSparseVector<float64_t> factor_data_sparse,
 	SGVector<float64_t>& energies) const 
 {
-	ASSERT(energies.size() == m_prod_card);
+	ASSERT(energies.size() == m_num_assignments);
 	ASSERT(m_data_size >= factor_data_sparse.num_feat_entries);
 
 	if (factor_data_sparse.num_feat_entries == 0) 
 	{
-		ASSERT(m_prod_card == m_w.size());
+		ASSERT(m_num_assignments == m_w.size());
 		energies = m_w.clone();
 	} 
 	else if (m_w.size() == 0) 
 	{
-		ASSERT(m_prod_card == m_data_size);
+		ASSERT(m_num_assignments == m_data_size);
 		energies.zero();
 		SGSparseVectorEntry<float64_t>* data_ptr = factor_data_sparse.features;
 		for (int32_t n = 0; n < factor_data_sparse.num_feat_entries; ++n)
@@ -259,10 +256,10 @@ void CTableFactorType::compute_energies(
 	} 
 	else 
 	{
-		ASSERT((m_data_size * m_prod_card) == m_w.size());
+		ASSERT((m_data_size * m_num_assignments) == m_w.size());
 		SGSparseVectorEntry<float64_t>* data_ptr = factor_data_sparse.features;
 
-		for (int32_t ei = 0; ei < m_prod_card; ++ei) 
+		for (int32_t ei = 0; ei < m_num_assignments; ++ei) 
 		{
 			float64_t energy_cur = 0.0;
 			for (int32_t n = 0; n < factor_data_sparse.num_feat_entries; ++n) 
@@ -283,9 +280,9 @@ void CTableFactorType::compute_gradients(
 {
 	if (factor_data.size() == 0) 
 	{
-		ASSERT(m_prod_card == parameter_gradient.size());
+		ASSERT(m_num_assignments == parameter_gradient.size());
 		// Parameters are a simple table, gradient is simply the marginal
-		for (int32_t ei = 0; ei < m_prod_card; ++ei)
+		for (int32_t ei = 0; ei < m_num_assignments; ++ei)
 			parameter_gradient[ei] = mult * marginals[ei];
 	} 
 	else if (m_w.size() == 0) 
@@ -294,10 +291,10 @@ void CTableFactorType::compute_gradients(
 	} 
 	else 
 	{
-		ASSERT((m_data_size * m_prod_card) == parameter_gradient.size());
+		ASSERT((m_data_size * m_num_assignments) == parameter_gradient.size());
 		ASSERT(m_data_size == factor_data.size());
 		// Perform tensor outer product
-		for (int32_t ei = 0; ei < m_prod_card; ++ei) 
+		for (int32_t ei = 0; ei < m_num_assignments; ++ei) 
 		{
 			for (int32_t di = 0; di < m_data_size; ++di) 
 			{
@@ -317,9 +314,9 @@ void CTableFactorType::compute_gradients(
 	// The first two cases are the same as for the non-sparse case
 	if (factor_data_sparse.num_feat_entries == 0) 
 	{
-		ASSERT(m_prod_card == parameter_gradient.size());
+		ASSERT(m_num_assignments == parameter_gradient.size());
 		// Parameters are a simple table, gradient is simply the marginal
-		for (int32_t ei = 0; ei < m_prod_card; ++ei)
+		for (int32_t ei = 0; ei < m_num_assignments; ++ei)
 			parameter_gradient[ei] = mult * marginals[ei];
 	} 
 	else if (m_w.size() == 0) 
@@ -328,11 +325,11 @@ void CTableFactorType::compute_gradients(
 	} 
 	else 
 	{
-		ASSERT((m_data_size * m_prod_card) == parameter_gradient.size());
+		ASSERT((m_data_size * m_num_assignments) == parameter_gradient.size());
 		SGSparseVectorEntry<float64_t>* data_ptr = factor_data_sparse.features;
 
 		// Perform tensor outer product
-		for (int32_t ei = 0; ei < m_prod_card; ++ei) {
+		for (int32_t ei = 0; ei < m_num_assignments; ++ei) {
 			for (int32_t n = 0; n < factor_data_sparse.num_feat_entries; ++n) {
 				int32_t di = data_ptr[n].feat_index;
 				parameter_gradient[di + ei*m_data_size] +=
