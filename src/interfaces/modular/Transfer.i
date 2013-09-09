@@ -68,4 +68,6 @@
 %include <shogun/transfer/domain_adaptation/DomainAdaptationSVMLinear.h>
 %include <shogun/transfer/domain_adaptation/DomainAdaptationMulticlassLibLinear.h>
 
+#ifdef HAVE_LAPACK
 SERIALIZABLE_DUMMY(shogun::MappedSparseMatrix);
+#endif
