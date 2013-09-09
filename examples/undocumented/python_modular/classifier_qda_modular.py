@@ -7,8 +7,10 @@ parameter_list = [[traindat, testdat, label_traindat, 1e-4, False], \
 		  [traindat, testdat, label_traindat, 1e-4, True]]
 
 def classifier_qda_modular (train_fname=traindat, test_fname=testdat, label_fname=label_traindat, tolerance=1e-4, store_covs=False):
-	from modshogun import RealFeatures, MulticlassLabels
-	from modshogun import QDA, CSVFile
+	try:
+		from modshogun import RealFeatures, MulticlassLabels, QDA, CSVFile
+	except ImportError:
+		return
 
 	feats_train=RealFeatures(CSVFile(train_fname))
 	feats_test=RealFeatures(CSVFile(test_fname))

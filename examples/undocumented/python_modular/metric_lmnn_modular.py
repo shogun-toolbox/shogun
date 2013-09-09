@@ -7,7 +7,10 @@ label_traindat = '../data/label_train_multiclass.dat'
 parameter_list = [[traindat,testdat,label_traindat,3]]
 
 def metric_lmnn_modular(train_fname=traindat,test_fname=testdat,label_train_fname=label_traindat,k=3):
-	from modshogun import RealFeatures,MulticlassLabels,LMNN,KNN,CSVFile
+	try:
+		from modshogun import RealFeatures,MulticlassLabels,LMNN,KNN,CSVFile
+	except ImportError:
+		return
 
 	# wrap features and labels into Shogun objects
 	feats_train=RealFeatures(CSVFile(train_fname))
