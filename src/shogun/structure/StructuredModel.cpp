@@ -4,6 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
+ * Written (W) 2013 Thoralf Klein
  * Written (W) 2012 Fernando José Iglesias García
  * Copyright (C) 2012 Fernando José Iglesias García
  */
@@ -63,8 +64,8 @@ void CStructuredModel::init_primal_opt(
 
 void CStructuredModel::set_labels(CStructuredLabels* labels)
 {
-	SG_UNREF(m_labels);
 	SG_REF(labels);
+	SG_UNREF(m_labels);
 	m_labels = labels;
 }
 
@@ -76,8 +77,8 @@ CStructuredLabels* CStructuredModel::get_labels()
 
 void CStructuredModel::set_features(CFeatures* features)
 {
-	SG_UNREF(m_features);
 	SG_REF(features);
+	SG_UNREF(m_features);
 	m_features = features;
 }
 

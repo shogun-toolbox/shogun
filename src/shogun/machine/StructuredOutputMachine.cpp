@@ -4,6 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
+ * Written (W) 2013 Thoralf Klein
  * Written (W) 2012 Fernando José Iglesias García
  * Copyright (C) 2012 Fernando José Iglesias García
  */
@@ -36,8 +37,8 @@ CStructuredOutputMachine::~CStructuredOutputMachine()
 
 void CStructuredOutputMachine::set_model(CStructuredModel* model)
 {
-	SG_UNREF(m_model);
 	SG_REF(model);
+	SG_UNREF(m_model);
 	m_model = model;
 }
 
@@ -72,8 +73,8 @@ CFeatures* CStructuredOutputMachine::get_features() const
 
 void CStructuredOutputMachine::set_surrogate_loss(CLossFunction* loss)
 {
-	SG_UNREF(m_surrogate_loss);
 	SG_REF(loss);
+	SG_UNREF(m_surrogate_loss);
 	m_surrogate_loss = loss;
 }
 
