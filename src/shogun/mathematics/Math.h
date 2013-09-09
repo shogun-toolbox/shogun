@@ -4,6 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
+ * Written (W) 2013 Thoralf Klein
  * Written (W) 2013 Soumyajit De
  * Written (W) 2012 Fernando Jose Iglesias Garcia
  * Written (W) 2011 Siddharth Kherada
@@ -123,33 +124,10 @@ static inline complex64_t function(complex64_t a)	\
 	return complex64_t(0.0, 0.0);	\
 }	
 
-#define COMPLEX64_ERROR_TWOARGS(function)	\
-static inline complex64_t function(complex64_t a, complex64_t b)	\
-{	\
-	SG_SERROR("CMath::%s():: Not supported for complex64_t\n",\
-		#function);\
-	return complex64_t(0.0, 0.0);	\
-}	
-
-#define COMPLEX64_ERROR_THREEARGS(function)	\
-static inline complex64_t function(complex64_t a, complex64_t b, complex64_t c)	\
-{	\
-	SG_SERROR("CMath::%s():: Not supported for complex64_t\n",\
-		#function);\
-	return complex64_t(0.0, 0.0);	\
-}	
-
 #define COMPLEX64_STDMATH(function)	\
 static inline complex64_t function(complex64_t a)	\
 {	\
 	return std::function(a);	\
-}	
-
-#define COMPLEX64_ERROR_SORT(function)	\
-static void function(complex64_t* output, int32_t b)	\
-{	\
-	SG_SERROR("CMath::%s():: Not supported for complex64_t\n",\
-		#function);\
 }	
 
 namespace shogun
@@ -184,18 +162,12 @@ class CMath : public CSGObject
 				return (a<=b) ? a : b;
 			}
 
-		/// min not implemented for complex64_t, returns (0.0)+i(0.0) instead
-		COMPLEX64_ERROR_TWOARGS(min)
-
 		///return the maximum of two integers
 		template <class T>
 			static inline T max(T a, T b)
 			{
 				return (a>=b) ? a : b;
 			}
-
-		/// max not implemented for complex64_t, returns (0.0)+i(0.0) instead
-		COMPLEX64_ERROR_TWOARGS(max)
 
 		///return the value clamped to interval [lb,ub]
 		template <class T>
@@ -208,9 +180,6 @@ class CMath : public CSGObject
 				else
 					return value;
 			}
-
-		/// clamp not implemented for complex64_t, returns (0.0)+i(0.0) instead
-		COMPLEX64_ERROR_THREEARGS(clamp)
 
 		///return the absolute value of a number
 		template <class T>
@@ -261,9 +230,6 @@ class CMath : public CSGObject
 					return 0;
 				else return (a<0) ? (-1) : (+1);
 			}
-
-		/// signum not implemented for complex64_t, returns (0.0)+i(0.0) instead
-		COMPLEX64_ERROR_ONEARG(sign)
 
 		/// swap e.g. floats a and b
 		template <class T>
@@ -522,7 +488,6 @@ class CMath : public CSGObject
 
 		/// cosh(x), x being a complex64_t
 		COMPLEX64_STDMATH(cosh)
-
 
 		static float64_t area_under_curve(float64_t* xy, int32_t len, bool reversed)
 		{
@@ -803,9 +768,6 @@ class CMath : public CSGObject
 					qsort(&output[left],size-left);
 			}
 		
-		/// qsort not implemented for comple64_t
-		COMPLEX64_ERROR_SORT(qsort)
-
 		/** performs insertion sort of an array output of length size
 		 * it is sorted from in ascending (for type T) */
 		template <class T>
@@ -824,18 +786,12 @@ class CMath : public CSGObject
 				}
 			}
 
-		/// insertion_sort not implemented for comple64_t
-		COMPLEX64_ERROR_SORT(insertion_sort)
-
 		/** performs a in-place radix sort in ascending order */
 		template <class T>
 			inline static void radix_sort(T* array, int32_t size)
 			{
 				radix_sort_helper(array,size,0);
 			}
-
-		/// radix_sort not implemented for comple64_t
-		COMPLEX64_ERROR_SORT(radix_sort)
 
 		/*
 		 * Inline function to extract the byte at position p (from left)
@@ -1657,10 +1613,68 @@ void CMath::min(float64_t* output, T* index, int32_t size)
 	swap(output[0], output[min_index]);
 	swap(index[0], index[min_index]);
 }
+
+#define COMPLEX64_ERROR_ONEARG_T(function)	\
+template <> \
+inline complex64_t CMath::function<complex64_t>(complex64_t a)	\
+{	\
+	SG_SERROR("CMath::%s():: Not supported for complex64_t\n",\
+		#function);\
+	return complex64_t(0.0, 0.0);	\
+}	
+
+#define COMPLEX64_ERROR_TWOARGS_T(function) \
+template <> \
+inline complex64_t CMath::function<complex64_t>(complex64_t a, complex64_t b)	\
+{	\
+	SG_SERROR("CMath::%s():: Not supported for complex64_t\n",\
+		#function);\
+	return complex64_t(0.0, 0.0);	\
+}
+
+#define COMPLEX64_ERROR_THREEARGS_T(function) \
+template <> \
+inline complex64_t CMath::function<complex64_t>(complex64_t a, complex64_t b, complex64_t c)	\
+{	\
+	SG_SERROR("CMath::%s():: Not supported for complex64_t\n",\
+		#function);\
+	return complex64_t(0.0, 0.0);	\
+}
+
+#define COMPLEX64_ERROR_SORT_T(function)	\
+template <> \
+inline void CMath::function<complex64_t>(complex64_t* output, int32_t b)	\
+{	\
+	SG_SERROR("CMath::%s():: Not supported for complex64_t\n",\
+		#function);\
+}
+
+/// min not implemented for complex64_t, returns (0.0)+i(0.0) instead
+COMPLEX64_ERROR_TWOARGS_T(min)
+
+/// max not implemented for complex64_t, returns (0.0)+i(0.0) instead
+COMPLEX64_ERROR_TWOARGS_T(max)
+
+/// clamp not implemented for complex64_t, returns (0.0)+i(0.0) instead
+COMPLEX64_ERROR_THREEARGS_T(clamp)
+
+/// signum not implemented for complex64_t, returns (0.0)+i(0.0) instead
+// COMPLEX64_ERROR_ONEARG_T(sign)
+
+/// qsort not implemented for comple64_t
+COMPLEX64_ERROR_SORT_T(qsort)
+
+/// insertion_sort not implemented for comple64_t
+COMPLEX64_ERROR_SORT_T(insertion_sort)
+
+/// radix_sort not implemented for comple64_t
+COMPLEX64_ERROR_SORT_T(radix_sort)
+
 }
 #undef COMPLEX64_ERROR_ONEARG
-#undef COMPLEX64_ERROR_TWOARGS
-#undef COMPLEX64_ERROR_THREEARGS
+#undef COMPLEX64_ERROR_ONEARG_T
+#undef COMPLEX64_ERROR_TWOARGS_T
+#undef COMPLEX64_ERROR_THREEARGS_T
 #undef COMPLEX64_STDMATH
-#undef COMPLEX64_ERROR_SORT
+#undef COMPLEX64_ERROR_SORT_T
 #endif /** __MATHEMATICS_H_ */
