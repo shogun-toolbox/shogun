@@ -100,6 +100,7 @@ public:
 	 * @return rec1
 	 */
 	float64_t compute_rec1(int32_t idx_a, int32_t idx_b);
+
 	/** computer rec 2
 	 * @param idx_a
 	 * @param idx_b
@@ -117,27 +118,8 @@ protected:
 	 */
 	virtual float64_t compute(int32_t idx_a, int32_t idx_b);
 
-	/** init */
-	void init();
-
-	/** allocate arrays */
-	void allocate_arrays();
-
-	/** clean up kernel */
-	virtual void cleanup();
-
 	/** register params */
 	void register_params();
-
-	/** Can (optionally) be overridden to post-initialize some member
-	 *  variables which are not PARAMETER::ADD'ed.  Make sure that at
-	 *  first the overridden method BASE_CLASS::LOAD_SERIALIZABLE_POST
-	 *  is called.
-	 *
-	 *  @exception ShogunException Will be thrown if an error
-	 *                             occurres.
-	 */
-	virtual void load_serializable_post() throw (ShogunException);
 
 private:
 	float64_t compute_recursive1(float64_t* avec, float64_t* bvec, int32_t len);
@@ -146,18 +128,6 @@ private:
 protected:
 	/// degree parameter of kernel
 	int32_t cardinality;
-
-	/// array for compute_recursive1
-	float64_t* DP;
-	/// length of DP
-	int32_t DP_len;
-
-	/// arrays for compute_recursive2
-	float64_t* KD;
-	/// KS
-	float64_t* KS;
-	/// vec pow
-	float64_t* vec_pow;
 };
 }
 

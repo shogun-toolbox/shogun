@@ -21,11 +21,13 @@ def statistics_quadratic_time_mmd (m,dim,difference):
 	
 	# init seed for reproducability
 	Math.init_random(1)
+	random.seed(17)
 
 	# number of examples kept low in order to make things fast
 
 	# streaming data generator for mean shift distributions
 	gen_p=MeanShiftDataGenerator(0, dim);
+	#gen_p.parallel.set_num_threads(1)
 	gen_q=MeanShiftDataGenerator(difference, dim);
 
 	# stream some data from generator
