@@ -80,8 +80,8 @@ int32_t CDimensionReductionPreprocessor::get_target_dim() const
 
 void CDimensionReductionPreprocessor::set_distance(CDistance* distance)
 {
-	SG_UNREF(m_distance);
 	SG_REF(distance);
+	SG_UNREF(m_distance);
 	m_distance = distance;
 }
 
@@ -93,8 +93,8 @@ CDistance* CDimensionReductionPreprocessor::get_distance() const
 
 void CDimensionReductionPreprocessor::set_kernel(CKernel* kernel)
 {
-	SG_UNREF(m_kernel);
 	SG_REF(kernel);
+	SG_UNREF(m_kernel);
 	m_kernel = kernel;
 }
 

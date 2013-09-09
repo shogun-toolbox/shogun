@@ -101,9 +101,8 @@ bool CBaggingMachine::train_machine(CFeatures* data)
 
 	if (data)
 	{
-		SG_UNREF(m_features);
-		
 		SG_REF(data);
+		SG_UNREF(m_features);
 		m_features = data;
 
 		ASSERT(m_features->get_num_vectors() == m_labels->get_num_labels());
@@ -210,10 +209,8 @@ CMachine* CBaggingMachine::get_machine() const
 
 void CBaggingMachine::set_machine(CMachine* machine)
 {
-	SG_UNREF(m_machine);
-	m_machine = NULL;
-
 	SG_REF(machine);
+	SG_UNREF(m_machine);
 	m_machine = machine;
 }
 
@@ -232,10 +229,8 @@ void CBaggingMachine::init()
 
 void CBaggingMachine::set_combination_rule(CCombinationRule* rule)
 {
-	SG_UNREF(m_combination_rule);
-	m_combination_rule = NULL;
-
 	SG_REF(rule);
+	SG_UNREF(m_combination_rule);
 	m_combination_rule = rule;
 }
 

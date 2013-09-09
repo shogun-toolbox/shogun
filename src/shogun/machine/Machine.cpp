@@ -78,8 +78,8 @@ void CMachine::set_labels(CLabels* lab)
         if (!is_label_valid(lab))
             SG_ERROR("Invalid label for %s", get_name())
 
-	SG_UNREF(m_labels);
 	SG_REF(lab);
+	SG_UNREF(m_labels);
 	m_labels = lab;
 }
 

@@ -53,8 +53,8 @@ CLatentLabels* CLinearLatentMachine::apply_latent(CFeatures* data)
 void CLinearLatentMachine::set_model(CLatentModel* latent_model)
 {
 	ASSERT(latent_model != NULL)
-	SG_UNREF(m_model);
 	SG_REF(latent_model);
+	SG_UNREF(m_model);
 	m_model = latent_model;
 }
 

@@ -106,8 +106,8 @@ CParameterCombination* CRandomSearchModelSelection::select_model(bool print_stat
 				best_combination=(CParameterCombination*)
 						combinations->get_element(i);
 
-				SG_UNREF(best_result);
 				SG_REF(result);
+				SG_UNREF(best_result);
 				best_result = result;
 			}
 			else
@@ -127,8 +127,8 @@ CParameterCombination* CRandomSearchModelSelection::select_model(bool print_stat
 				best_combination=(CParameterCombination*)
 						combinations->get_element(i);
 
-				SG_UNREF(best_result);
 				SG_REF(result);
+				SG_UNREF(best_result);
 				best_result = result;
 			}
 			else

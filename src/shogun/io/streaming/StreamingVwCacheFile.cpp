@@ -54,11 +54,9 @@ void CStreamingVwCacheFile::get_vector_and_label(VwExample* &ex, int32_t &len, f
 
 void CStreamingVwCacheFile::set_env(CVwEnvironment* env_to_use)
 {
-	if (env)
-		SG_UNREF(env);
-
+	SG_REF(env_to_use);
+	SG_UNREF(env);
 	env = env_to_use;
-	SG_REF(env);
 
 	SG_UNREF(cache_reader);
 

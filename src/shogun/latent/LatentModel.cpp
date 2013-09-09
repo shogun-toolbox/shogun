@@ -47,8 +47,8 @@ int32_t CLatentModel::get_num_vectors() const
 
 void CLatentModel::set_labels(CLatentLabels* labs)
 {
-	SG_UNREF(m_labels);
 	SG_REF(labs);
+	SG_UNREF(m_labels);
 	m_labels = labs;
 }
 
@@ -60,8 +60,8 @@ CLatentLabels* CLatentModel::get_labels() const
 
 void CLatentModel::set_features(CLatentFeatures* feats)
 {
-	SG_UNREF(m_features);
 	SG_REF(feats);
+	SG_UNREF(m_features);
 	m_features = feats;
 }
 

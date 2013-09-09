@@ -58,8 +58,8 @@ class CPluginEstimate: public CMachine
 		 */
 		virtual void set_features(CStringFeatures<uint16_t>* feat)
 		{
-			SG_UNREF(features);
 			SG_REF(feat);
+			SG_UNREF(features);
 			features=feat;
 		}
 

@@ -59,10 +59,9 @@ COnlineSVMSGD::~COnlineSVMSGD()
 
 void COnlineSVMSGD::set_loss_function(CLossFunction* loss_func)
 {
-	if (loss)
-		SG_UNREF(loss);
+	SG_REF(loss_func);
+	SG_UNREF(loss);
 	loss=loss_func;
-	SG_REF(loss);
 }
 
 bool COnlineSVMSGD::train(CFeatures* data)

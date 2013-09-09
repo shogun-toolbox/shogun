@@ -148,8 +148,8 @@ class CDistribution : public CSGObject
 		 */
 		virtual void set_features(CFeatures* f)
 		{
-			SG_UNREF(features);
 			SG_REF(f);
+			SG_UNREF(features);
 			features=f;
 		}
 
