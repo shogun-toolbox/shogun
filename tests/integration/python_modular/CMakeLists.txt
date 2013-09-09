@@ -4,14 +4,19 @@ GET_PYTHON_ENV()
 FOREACH(TEST_SRC ${INTEGRATION_TESTS})
 	STRING(REGEX REPLACE ".*/(.*).m" "\\1" TEST_NAME ${TEST_SRC})
 	add_test(NAME integration-python_modular-${TEST_NAME}
-			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-			COMMAND ${PYTHON_EXECUTABLE} test_one.py ${TEST_SRC})
+		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+		COMMAND ${PYTHON_EXECUTABLE} test_one.py ${TEST_SRC})
 	set_property(TEST integration-python_modular-${TEST_NAME} PROPERTY
-				ENVIRONMENT "${PYTHON_ENV_VARS}")
+		ENVIRONMENT "${PYTHON_ENV_VARS}")
 ENDFOREACH()
 
-add_test(NAME integration-python_modular-tester
+FILE(GLOB PYTHON_MODULAR_INTEGRATION_TESTS tests/*.py)
+FOREACH(TEST_SRC ${PYTHON_MODULAR_INTEGRATION_TESTS})
+	STRING(REGEX REPLACE ".*/(.*).py" "\\1" TEST_NAME ${TEST_SRC})
+		message(STATUS integration-python_modular-tester-${TEST_NAME})
+	add_test(NAME integration-python_modular-tester-${TEST_NAME}
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-		COMMAND ${PYTHON_EXECUTABLE} tester.py)
-set_property(TEST integration-python_modular-tester PROPERTY
-			ENVIRONMENT "${PYTHON_ENV_VARS}")
+		COMMAND ${PYTHON_EXECUTABLE} tester.py ${TEST_SRC})
+	set_property(TEST integration-python_modular-tester-${TEST_NAME} PROPERTY
+		ENVIRONMENT "${PYTHON_ENV_VARS}")
+ENDFOREACH()

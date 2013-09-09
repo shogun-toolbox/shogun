@@ -7,16 +7,17 @@
  * Written (W) 2013 Soumyajit De
  */
  
-#include <shogun/lib/common.h>
+#include <gtest/gtest.h>
 
+#include <shogun/lib/common.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGSparseVector.h>
 #include <shogun/lib/SGSparseMatrix.h>
-#ifdef HAVE_EIGEN3
-#include <shogun/mathematics/eigen3.h>
-#include <gtest/gtest.h>
 
 using namespace shogun;
+
+#ifdef HAVE_EIGEN3
+#include <shogun/mathematics/eigen3.h>
 using namespace Eigen;
 
 TEST(SGSparseMatrix, multiply_float64_int32)
