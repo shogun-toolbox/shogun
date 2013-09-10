@@ -32,7 +32,7 @@ TEST(SerializationJSON, {{class}})
 	bool save_success = object->save_serializable(file);
 	file->close();
 	SG_UNREF(file);
-	ASSERT_TRUE(load_success);
+	ASSERT_TRUE(save_success);
 	
 	// load parameter from an ascii file
 	file=new CSerializableJsonFile(filename, 'r');
@@ -71,6 +71,7 @@ TEST(SerializationJSON,{{class}}_{{type}})
 	bool save_success = object->save_serializable(file);
 	file->close();
 	SG_UNREF(file);
+	ASSERT_TRUE(save_success);
 
 	// load parameter from an ascii file
 	file=new CSerializableJsonFile(filename, 'r');
