@@ -140,11 +140,11 @@ TEST(StreamingHashedDocFeaturesTest, dot_tests)
 			if ( (sparse_idx < example.num_feat_entries) && 
 					(example.features[sparse_idx].feat_index == j) )
 			{
-				EXPECT_EQ(dense_vec2[j], dense_vec[j] + example.features[sparse_idx].entry);
+				EXPECT_NEAR(dense_vec2[j], dense_vec[j] + example.features[sparse_idx].entry, 1e-10);
 				sparse_idx++;
 			}
 			else
-				EXPECT_EQ(dense_vec2[j], dense_vec[j]);
+				EXPECT_NEAR(dense_vec2[j], dense_vec[j], 1e-10);
 		}
 		
 		feats->release_example();
