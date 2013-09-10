@@ -19,6 +19,7 @@ blacklist = ("__init__.py",
 		"converter_tdistributedstochasticneighborembedding_modular.py",
 		"evaluation_director_contingencytableevaluation_modular.py",
 		"distance_director_euclidean_modular.py",
+		"classifier_multiclass_ecoc_random.py",
 #the tests below all fail on travis but work fine on our buildbot
 		"classifier_lda_modular.py",
 		"classifier_liblinear_modular.py",
