@@ -105,12 +105,12 @@ CFeatures* CFastICA::apply(CFeatures* features)
 		// for matching numpy/scikit-learn
 		//u.rightCols(u.cols() - 1) *= -1;
 		
-		// see (6.33) p.140
+		// see Hyvarinen (6.33) p.140
 		K = u.transpose();
 		for (int r = 0; r < K.rows(); r++)
 			K.row(r) /= d(r);
 		
-		// see (13.6) p.267 Here WX is white and data
+		// see Hyvarinen (13.6) p.267 Here WX is white and data
 		// in X has been projected onto a subspace by PCA
 		WX = K * SPX;
 		WX *= CMath::sqrt((float64_t)p);

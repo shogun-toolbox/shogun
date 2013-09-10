@@ -46,6 +46,7 @@ class CFastICA: public CICAConverter
 		virtual CFeatures* apply(CFeatures* features);
 
 		/** setter for whiten flag
+		 * whether to whiten the data or not
 		 * @param whiten
 		 */
 		void set_whiten(bool whiten);
