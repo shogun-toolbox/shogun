@@ -30,6 +30,8 @@ TEST(StructuredLabels, add_label)
   EXPECT_EQ(3, CRealNumber::obtain_from_generic(l->get_label(0))->value);
   EXPECT_EQ(7, CRealNumber::obtain_from_generic(l->get_label(1))->value);
   EXPECT_EQ(13, CRealNumber::obtain_from_generic(l->get_label(2))->value);
+
+  SG_UNREF(l);
 }
 
 TEST(StructuredLabels, set_label)
@@ -47,4 +49,6 @@ TEST(StructuredLabels, set_label)
   EXPECT_EQ(3, CRealNumber::obtain_from_generic(l->get_label(0))->value);
   EXPECT_EQ(23, CRealNumber::obtain_from_generic(l->get_label(1))->value);
   EXPECT_EQ(13, CRealNumber::obtain_from_generic(l->get_label(2))->value);
+
+  SG_UNREF(l);
 }
