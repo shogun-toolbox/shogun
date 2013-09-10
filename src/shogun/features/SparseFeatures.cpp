@@ -654,14 +654,14 @@ template<class ST> void CSparseFeatures<ST>::sort_features()
 	sparse_feature_matrix.sort_features();
 }
 
-template<class ST> CRegressionLabels* CSparseFeatures<ST>::load_svmlight_file(char* fname, bool do_sort_features) 
+template<class ST> CRegressionLabels* CSparseFeatures<ST>::load_svmlight_file(CLibSVMFile* file, bool do_sort_features) 
 {
-	return sparse_feature_matrix.load_svmlight_file(fname, do_sort_features);
+	return sparse_feature_matrix.load_svmlight_file(file, do_sort_features);
 }
 
-template<class ST> bool CSparseFeatures<ST>::write_svmlight_file(char* fname, CRegressionLabels* label)
+template<class ST> void CSparseFeatures<ST>::write_svmlight_file(CLibSVMFile* file, CRegressionLabels* label)
 {
-	return sparse_feature_matrix.write_svmlight_file(fname, label);
+	sparse_feature_matrix.write_svmlight_file(file, label);
 }
 
 template<class ST> void CSparseFeatures<ST>::init()

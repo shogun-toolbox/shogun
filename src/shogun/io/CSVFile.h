@@ -135,19 +135,19 @@ public:
 	 */
 	//@{
 	virtual void get_ndarray(
-			uint8_t*& array, int32_t*& dims, int32_t& num_dims) { };
+			uint8_t*& array, int32_t*& dims, int32_t& num_dims);
 	virtual void get_ndarray(
-			char*& array, int32_t*& dims, int32_t& num_dims) { };
+			char*& array, int32_t*& dims, int32_t& num_dims);
 	virtual void get_ndarray(
-			int32_t*& array, int32_t*& dims, int32_t& num_dims) { };
+			int32_t*& array, int32_t*& dims, int32_t& num_dims);
 	virtual void get_ndarray(
-			float32_t*& array, int32_t*& dims, int32_t& num_dims) { };
+			float32_t*& array, int32_t*& dims, int32_t& num_dims);
 	virtual void get_ndarray(
-			float64_t*& array, int32_t*& dims, int32_t& num_dims){ };
+			float64_t*& array, int32_t*& dims, int32_t& num_dims);
 	virtual void get_ndarray(
-			int16_t*& array, int32_t*& dims, int32_t& num_dims){ };
+			int16_t*& array, int32_t*& dims, int32_t& num_dims);
 	virtual void get_ndarray(
-			uint16_t*& array, int32_t*& dims, int32_t& num_dims){ };
+			uint16_t*& array, int32_t*& dims, int32_t& num_dims);
 	//@}
 
 	/** @name Sparse Matrix Access Functions
@@ -159,31 +159,31 @@ public:
 	 */
 	//@{
 	virtual void get_sparse_matrix(
-			SGSparseVector<bool>*& matrix, int32_t& num_feat, int32_t& num_vec) { };
+			SGSparseVector<bool>*& matrix, int32_t& num_feat, int32_t& num_vec);
 	virtual void get_sparse_matrix(
-			SGSparseVector<uint8_t>*& matrix, int32_t& num_feat, int32_t& num_vec) { };
+			SGSparseVector<uint8_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
 	virtual void get_sparse_matrix(
-		SGSparseVector<int8_t>*& matrix, int32_t& num_feat, int32_t& num_vec) { };
+		SGSparseVector<int8_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
 	virtual void get_sparse_matrix(
-			SGSparseVector<char>*& matrix, int32_t& num_feat, int32_t& num_vec) { };
+			SGSparseVector<char>*& matrix, int32_t& num_feat, int32_t& num_vec);
 	virtual void get_sparse_matrix(
-			SGSparseVector<int32_t>*& matrix, int32_t& num_feat, int32_t& num_vec) { };
+			SGSparseVector<int32_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
 	virtual void get_sparse_matrix(
-			SGSparseVector<uint32_t>*& matrix, int32_t& num_feat, int32_t& num_vec) { };
+			SGSparseVector<uint32_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
 	virtual void get_sparse_matrix(
-			SGSparseVector<int64_t>*& matrix, int32_t& num_feat, int32_t& num_vec) { };
+			SGSparseVector<int64_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
 	virtual void get_sparse_matrix(
-			SGSparseVector<uint64_t>*& matrix, int32_t& num_feat, int32_t& num_vec) { };
+			SGSparseVector<uint64_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
 	virtual void get_sparse_matrix(
-			SGSparseVector<int16_t>*& matrix, int32_t& num_feat, int32_t& num_vec) { };
+			SGSparseVector<int16_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
 	virtual void get_sparse_matrix(
-			SGSparseVector<uint16_t>*& matrix, int32_t& num_feat, int32_t& num_vec) { };
+			SGSparseVector<uint16_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
 	virtual void get_sparse_matrix(
-			SGSparseVector<float32_t>*& matrix, int32_t& num_feat, int32_t& num_vec) { };
+			SGSparseVector<float32_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
 	virtual void get_sparse_matrix(
-			SGSparseVector<float64_t>*& matrix, int32_t& num_feat, int32_t& num_vec) { };
+			SGSparseVector<float64_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
 	virtual void get_sparse_matrix(
-			SGSparseVector<floatmax_t>*& matrix, int32_t& num_feat, int32_t& num_vec) { };
+			SGSparseVector<floatmax_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
 	//@}
 
 	/** @name String Access Functions
@@ -297,31 +297,31 @@ public:
 	 */
 	//@{
 	virtual void set_sparse_matrix(
-			const SGSparseVector<bool>* matrix, int32_t num_feat, int32_t num_vec) { };
+			const SGSparseVector<bool>* matrix, int32_t num_feat, int32_t num_vec);
 	virtual void set_sparse_matrix(
-			const SGSparseVector<uint8_t>* matrix, int32_t num_feat, int32_t num_vec) { };
+			const SGSparseVector<uint8_t>* matrix, int32_t num_feat, int32_t num_vec);
 	virtual void set_sparse_matrix(
-			const SGSparseVector<int8_t>* matrix, int32_t num_feat, int32_t num_vec) { };
+			const SGSparseVector<int8_t>* matrix, int32_t num_feat, int32_t num_vec);
 	virtual void set_sparse_matrix(
-			const SGSparseVector<char>* matrix, int32_t num_feat, int32_t num_vec) { };
+			const SGSparseVector<char>* matrix, int32_t num_feat, int32_t num_vec);
 	virtual void set_sparse_matrix(
-			const SGSparseVector<int32_t>* matrix, int32_t num_feat, int32_t num_vec) { };
+			const SGSparseVector<int32_t>* matrix, int32_t num_feat, int32_t num_vec);
 	virtual void set_sparse_matrix(
-			const SGSparseVector<uint32_t>* matrix, int32_t num_feat, int32_t num_vec) { };
+			const SGSparseVector<uint32_t>* matrix, int32_t num_feat, int32_t num_vec);
 	virtual void set_sparse_matrix(
-			const SGSparseVector<int64_t>* matrix, int32_t num_feat, int32_t num_vec) { };
+			const SGSparseVector<int64_t>* matrix, int32_t num_feat, int32_t num_vec);
 	virtual void set_sparse_matrix(
-			const SGSparseVector<uint64_t>* matrix, int32_t num_feat, int32_t num_vec) { };
+			const SGSparseVector<uint64_t>* matrix, int32_t num_feat, int32_t num_vec);
 	virtual void set_sparse_matrix(
-			const SGSparseVector<int16_t>* matrix, int32_t num_feat, int32_t num_vec) { };
+			const SGSparseVector<int16_t>* matrix, int32_t num_feat, int32_t num_vec);
 	virtual void set_sparse_matrix(
-			const SGSparseVector<uint16_t>* matrix, int32_t num_feat, int32_t num_vec) { };
+			const SGSparseVector<uint16_t>* matrix, int32_t num_feat, int32_t num_vec);
 	virtual void set_sparse_matrix(
-			const SGSparseVector<float32_t>* matrix, int32_t num_feat, int32_t num_vec) { };
+			const SGSparseVector<float32_t>* matrix, int32_t num_feat, int32_t num_vec);
 	virtual void set_sparse_matrix(
-			const SGSparseVector<float64_t>* matrix, int32_t num_feat, int32_t num_vec) { };
+			const SGSparseVector<float64_t>* matrix, int32_t num_feat, int32_t num_vec);
 	virtual void set_sparse_matrix(
-			const SGSparseVector<floatmax_t>* matrix, int32_t num_feat, int32_t num_vec) { };
+			const SGSparseVector<floatmax_t>* matrix, int32_t num_feat, int32_t num_vec);
 	//@}
 
 	/** @name String Access Functions

@@ -51,13 +51,6 @@ public:
 	/** destructor */
 	virtual ~CLibSVMFile();
 
-	/** get statistics about file
-	 *
-	 * @param num_tokens number of tokens in first data line
-	 * @return number of data lines
-	 */
-	int32_t get_stats(int32_t& num_tokens);
-
 	/** @name Vector Access Functions
 	 *
 	 * Functions to access vectors of one of the several base data types.

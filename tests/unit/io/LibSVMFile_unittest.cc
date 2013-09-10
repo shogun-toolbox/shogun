@@ -27,11 +27,11 @@ TEST(LibSVMFileTest, io_int)
 		labels[i]=(float64_t) rand->random(-max_label_value, max_label_value);
 		for (int32_t j=0; j<data[i].num_feat_entries; j++)
 		{
-			int32_t feat_index=j*2;
+			int32_t feat_index=(j+1)*2;
 			if (feat_index>num_feat)
 				num_feat=feat_index;
 
-			data[i].features[j].feat_index=feat_index;
+			data[i].features[j].feat_index=feat_index-1;
 			data[i].features[j].entry=rand->random(0, max_entry_value);
 		}
 	}
@@ -93,11 +93,11 @@ TEST(LibSVMFileTest, io_real)
 		labels[i]=(float64_t) rand->random(-max_label_value, max_label_value);
 		for (int32_t j=0; j<data[i].num_feat_entries; j++)
 		{
-			int32_t feat_index=j*2;
+			int32_t feat_index=(j+1)*2;
 			if (feat_index>num_feat)
 				num_feat=feat_index;
 
-			data[i].features[j].feat_index=feat_index;
+			data[i].features[j].feat_index=feat_index-1;
 			data[i].features[j].entry=rand->random(0., max_entry_value);
 		}
 	}
