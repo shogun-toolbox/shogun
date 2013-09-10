@@ -364,12 +364,12 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 *
 		 * any subset is removed before
 		 *
-		 * @param fname filename to load from
+		 * @param file file to load from
 		 * @param do_sort_features if true features will be sorted to ensure they
 		 * 		 are in ascending order
 		 * @return label object with corresponding labels
 		 */
-		CRegressionLabels* load_svmlight_file(char* fname, bool do_sort_features=true);
+		CRegressionLabels* load_svmlight_file(CLibSVMFile* file, bool do_sort_features=true);
 
 		/** ensure that features occur in ascending order, only call when no
 		 * preprocessors are attached
@@ -382,11 +382,11 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 *
 		 * not possible with subset
 		 *
-		 * @param fname filename to write to
+		 * @param file file to write to
 		 * @param label Label object (number of labels must correspond to number of features)
 		 * @return true if successful
 		 */
-		bool write_svmlight_file(char* fname, CRegressionLabels* label);
+		void write_svmlight_file(CLibSVMFile* file, CRegressionLabels* label);
 
 		/** obtain the dimensionality of the feature space
 		 *

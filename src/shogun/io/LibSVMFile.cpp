@@ -152,7 +152,7 @@ void CLibSVMFile::get_sparse_matrix(SGSparseVector<sg_type>*& matrix, int32_t& n
 			if (feat_index>num_feat) \
 				num_feat=feat_index; \
 			\
-			matrix[current_line_ind].features[i].feat_index=feat_index; \
+			matrix[current_line_ind].features[i].feat_index=feat_index-1; \
 			matrix[current_line_ind].features[i].entry=entry; \
 		} \
 		\
@@ -217,7 +217,7 @@ void CLibSVMFile::set_sparse_matrix( \
 		for (int32_t j=0; j<matrix[i].num_feat_entries; j++) \
 		{ \
 			fprintf(file, "%d%c%" format " ", \
-				matrix[i].features[j].feat_index, \
+				matrix[i].features[j].feat_index+1, \
 				m_delimiter, \
 				matrix[i].features[j].entry); \
 		} \

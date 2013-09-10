@@ -13,6 +13,7 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGSparseVector.h>
 #include <shogun/lib/SGSparseMatrix.h>
+#include <shogun/labels/RegressionLabels.h>
 
 using namespace shogun;
 
@@ -113,4 +114,52 @@ TEST(SGSparseMatrix, access_by_index)
 
 	for (index_t i=0; i<size; ++i)
 		EXPECT_EQ(m(i,i), i+1);
+}
+
+TEST(SGSparseMatrix, io_libsvm)
+{
+	const int32_t size=10;
+	const int32_t num_feat=size/2;
+
+	CLibSVMFile* fin;
+	CLibSVMFile* fout;
+
+	CRegressionLabels* labels=NULL;
+	CRegressionLabels* labels_from_file=NULL;
+
+	SGSparseMatrix<float64_t> m(size, size);
+	SGSparseMatrix<float64_t> m_from_file;
+	SGVector<float64_t> raw_labels(size);
+	for (index_t i=0; i<size; ++i)
+	{
+		m.sparse_matrix[i]=SGSparseVector<float64_t>(num_feat);
+		raw_labels.vector[i]=(float64_t) (i%2);
+		for (index_t j=0; j<num_feat; ++j)
+		{
+			SGSparseVectorEntry<float64_t> entry;
+			entry.feat_index=(j+1)*2 - 1;
+			entry.entry=0.5;
+			m.sparse_matrix[i].features[j]=entry;
+		}
+	}
+
+	labels=new CRegressionLabels(raw_labels);
+
+	fout=new CLibSVMFile("SGSparseMatrix_io_libsvm_output.txt",'w', NULL);
+	m.write_svmlight_file(fout, labels);
+	SG_UNREF(fout);
+
+	fin=new CLibSVMFile("SGSparseMatrix_io_libsvm_output.txt",'r', NULL);
+	labels_from_file=m_from_file.load_svmlight_file(fin, false);
+	SG_UNREF(fin);
+
+	for (int32_t i=0; i<size; i++)
+	{
+		EXPECT_EQ(labels->get_label(i), labels_from_file->get_label(i));
+		for (index_t j=0; j<num_feat; ++j)
+		{
+			EXPECT_EQ(m[i].features[j].feat_index, m_from_file[i].features[j].feat_index);
+			EXPECT_NEAR(m[i].features[j].entry, m_from_file[i].features[j].entry, 1E-14);
+		}
+	}
 }

@@ -130,8 +130,8 @@ void CCSVFile::skip_lines(int32_t num_lines)
 		m_line_reader->skip_line();
 }
 
-#define GET_VECTOR(fname, read_func, sg_type) \
-void CCSVFile::fname(sg_type*& vector, int32_t& len) \
+#define GET_VECTOR(read_func, sg_type) \
+void CCSVFile::get_vector(sg_type*& vector, int32_t& len) \
 { \
 	if (!m_line_reader->has_next()) \
 		return; \
@@ -155,22 +155,22 @@ void CCSVFile::fname(sg_type*& vector, int32_t& len) \
 	len=0; \
 }
 
-GET_VECTOR(get_vector, read_char, int8_t)
-GET_VECTOR(get_vector, read_byte, uint8_t)
-GET_VECTOR(get_vector, read_char, char)
-GET_VECTOR(get_vector, read_int, int32_t)
-GET_VECTOR(get_vector, read_uint, uint32_t)
-GET_VECTOR(get_vector, read_short_real, float32_t)
-GET_VECTOR(get_vector, read_real, float64_t)
-GET_VECTOR(get_vector, read_long_real, floatmax_t)
-GET_VECTOR(get_vector, read_short, int16_t)
-GET_VECTOR(get_vector, read_word, uint16_t)
-GET_VECTOR(get_vector, read_long, int64_t)
-GET_VECTOR(get_vector, read_ulong, uint64_t)
+GET_VECTOR(read_char, int8_t)
+GET_VECTOR(read_byte, uint8_t)
+GET_VECTOR(read_char, char)
+GET_VECTOR(read_int, int32_t)
+GET_VECTOR(read_uint, uint32_t)
+GET_VECTOR(read_short_real, float32_t)
+GET_VECTOR(read_real, float64_t)
+GET_VECTOR(read_long_real, floatmax_t)
+GET_VECTOR(read_short, int16_t)
+GET_VECTOR(read_word, uint16_t)
+GET_VECTOR(read_long, int64_t)
+GET_VECTOR(read_ulong, uint64_t)
 #undef GET_VECTOR
 
-#define GET_MATRIX(fname, read_func, sg_type) \
-void CCSVFile::fname(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec) \
+#define GET_MATRIX(read_func, sg_type) \
+void CCSVFile::get_matrix(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec) \
 { \
 	int32_t num_lines=0; \
 	int32_t num_tokens=-1; \
@@ -216,22 +216,59 @@ void CCSVFile::fname(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec) \
 	} \
 }
 
-GET_MATRIX(get_matrix, read_char, int8_t)
-GET_MATRIX(get_matrix, read_byte, uint8_t)
-GET_MATRIX(get_matrix, read_char, char)
-GET_MATRIX(get_matrix, read_int, int32_t)
-GET_MATRIX(get_matrix, read_uint, uint32_t)
-GET_MATRIX(get_matrix, read_short_real, float32_t)
-GET_MATRIX(get_matrix, read_real, float64_t)
-GET_MATRIX(get_matrix, read_long_real, floatmax_t)
-GET_MATRIX(get_matrix, read_short, int16_t)
-GET_MATRIX(get_matrix, read_word, uint16_t)
-GET_MATRIX(get_matrix, read_long, int64_t)
-GET_MATRIX(get_matrix, read_ulong, uint64_t)
+GET_MATRIX(read_char, int8_t)
+GET_MATRIX(read_byte, uint8_t)
+GET_MATRIX(read_char, char)
+GET_MATRIX(read_int, int32_t)
+GET_MATRIX(read_uint, uint32_t)
+GET_MATRIX(read_short_real, float32_t)
+GET_MATRIX(read_real, float64_t)
+GET_MATRIX(read_long_real, floatmax_t)
+GET_MATRIX(read_short, int16_t)
+GET_MATRIX(read_word, uint16_t)
+GET_MATRIX(read_long, int64_t)
+GET_MATRIX(read_ulong, uint64_t)
 #undef GET_MATRIX
 
-#define SET_VECTOR(fname, format, sg_type) \
-void CCSVFile::fname(const sg_type* vector, int32_t len) \
+#define GET_NDARRAY(read_func, sg_type) \
+void CCSVFile::get_ndarray(sg_type*& array, int32_t*& dims, int32_t& num_dims) \
+{ \
+	SG_NOTIMPLEMENTED \
+}
+
+GET_NDARRAY(read_byte, uint8_t)
+GET_NDARRAY(read_char, char)
+GET_NDARRAY(read_int, int32_t)
+GET_NDARRAY(read_short_real, float32_t)
+GET_NDARRAY(read_real, float64_t)
+GET_NDARRAY(read_short, int16_t)
+GET_NDARRAY(read_word, uint16_t)
+#undef GET_NDARRAY
+
+#define GET_SPARSE_MATRIX(read_func, sg_type) \
+void CCSVFile::get_sparse_matrix( \
+			SGSparseVector<sg_type>*& matrix, int32_t& num_feat, int32_t& num_vec) \
+{ \
+	SG_NOTIMPLEMENTED \
+}
+
+GET_SPARSE_MATRIX(read_char, bool)
+GET_SPARSE_MATRIX(read_char, int8_t)
+GET_SPARSE_MATRIX(read_byte, uint8_t)
+GET_SPARSE_MATRIX(read_char, char)
+GET_SPARSE_MATRIX(read_int, int32_t)
+GET_SPARSE_MATRIX(read_uint, uint32_t)
+GET_SPARSE_MATRIX(read_short_real, float32_t)
+GET_SPARSE_MATRIX(read_real, float64_t)
+GET_SPARSE_MATRIX(read_long_real, floatmax_t)
+GET_SPARSE_MATRIX(read_short, int16_t)
+GET_SPARSE_MATRIX(read_word, uint16_t)
+GET_SPARSE_MATRIX(read_long, int64_t)
+GET_SPARSE_MATRIX(read_ulong, uint64_t)
+#undef GET_SPARSE_MATRIX
+
+#define SET_VECTOR(format, sg_type) \
+void CCSVFile::set_vector(const sg_type* vector, int32_t len) \
 { \
 	SG_SET_LOCALE_C; \
 	\
@@ -250,22 +287,22 @@ void CCSVFile::fname(const sg_type* vector, int32_t len) \
 	SG_RESET_LOCALE; \
 }
 
-SET_VECTOR(set_vector, SCNi8, int8_t)
-SET_VECTOR(set_vector, SCNu8, uint8_t)
-SET_VECTOR(set_vector, SCNu8, char)
-SET_VECTOR(set_vector, SCNi32, int32_t)
-SET_VECTOR(set_vector, SCNu32, uint32_t)
-SET_VECTOR(set_vector, SCNi64, int64_t)
-SET_VECTOR(set_vector, SCNu64, uint64_t)
-SET_VECTOR(set_vector, "g", float32_t)
-SET_VECTOR(set_vector, "lg", float64_t)
-SET_VECTOR(set_vector, "Lg", floatmax_t)
-SET_VECTOR(set_vector, SCNi16, int16_t)
-SET_VECTOR(set_vector, SCNu16, uint16_t)
+SET_VECTOR(SCNi8, int8_t)
+SET_VECTOR(SCNu8, uint8_t)
+SET_VECTOR(SCNu8, char)
+SET_VECTOR(SCNi32, int32_t)
+SET_VECTOR(SCNu32, uint32_t)
+SET_VECTOR(SCNi64, int64_t)
+SET_VECTOR(SCNu64, uint64_t)
+SET_VECTOR("g", float32_t)
+SET_VECTOR("lg", float64_t)
+SET_VECTOR("Lg", floatmax_t)
+SET_VECTOR(SCNi16, int16_t)
+SET_VECTOR(SCNu16, uint16_t)
 #undef SET_VECTOR
 
-#define SET_MATRIX(fname, format, sg_type) \
-void CCSVFile::fname(const sg_type* matrix, int32_t num_feat, int32_t num_vec) \
+#define SET_MATRIX(format, sg_type) \
+void CCSVFile::set_matrix(const sg_type* matrix, int32_t num_feat, int32_t num_vec) \
 { \
 	SG_SET_LOCALE_C; \
 	\
@@ -291,19 +328,41 @@ void CCSVFile::fname(const sg_type* matrix, int32_t num_feat, int32_t num_vec) \
 	SG_RESET_LOCALE; \
 }
 
-SET_MATRIX(set_matrix, SCNi8, int8_t)
-SET_MATRIX(set_matrix, SCNu8, uint8_t)
-SET_MATRIX(set_matrix, SCNu8, char)
-SET_MATRIX(set_matrix, SCNi32, int32_t)
-SET_MATRIX(set_matrix, SCNu32, uint32_t)
-SET_MATRIX(set_matrix, SCNi64, int64_t)
-SET_MATRIX(set_matrix, SCNu64, uint64_t)
-SET_MATRIX(set_matrix, "g", float32_t)
-SET_MATRIX(set_matrix, "lg", float64_t)
-SET_MATRIX(set_matrix, "Lg", floatmax_t)
-SET_MATRIX(set_matrix, SCNi16, int16_t)
-SET_MATRIX(set_matrix, SCNu16, uint16_t)
+SET_MATRIX(SCNi8, int8_t)
+SET_MATRIX(SCNu8, uint8_t)
+SET_MATRIX(SCNu8, char)
+SET_MATRIX(SCNi32, int32_t)
+SET_MATRIX(SCNu32, uint32_t)
+SET_MATRIX(SCNi64, int64_t)
+SET_MATRIX(SCNu64, uint64_t)
+SET_MATRIX("g", float32_t)
+SET_MATRIX("lg", float64_t)
+SET_MATRIX("Lg", floatmax_t)
+SET_MATRIX(SCNi16, int16_t)
+SET_MATRIX(SCNu16, uint16_t)
 #undef SET_MATRIX
+
+#define SET_SPARSE_MATRIX(format, sg_type) \
+void CCSVFile::set_sparse_matrix( \
+			const SGSparseVector<sg_type>* matrix, int32_t num_feat, int32_t num_vec) \
+{ \
+	SG_NOTIMPLEMENTED \
+}
+
+SET_SPARSE_MATRIX(SCNi8, bool)
+SET_SPARSE_MATRIX(SCNi8, int8_t)
+SET_SPARSE_MATRIX(SCNu8, uint8_t)
+SET_SPARSE_MATRIX(SCNu8, char)
+SET_SPARSE_MATRIX(SCNi32, int32_t)
+SET_SPARSE_MATRIX(SCNu32, uint32_t)
+SET_SPARSE_MATRIX(SCNi64, int64_t)
+SET_SPARSE_MATRIX(SCNu64, uint64_t)
+SET_SPARSE_MATRIX("g", float32_t)
+SET_SPARSE_MATRIX("lg", float64_t)
+SET_SPARSE_MATRIX("Lg", floatmax_t)
+SET_SPARSE_MATRIX(SCNi16, int16_t)
+SET_SPARSE_MATRIX(SCNu16, uint16_t)
+#undef SET_SPARSE_MATRIX
 
 void CCSVFile::get_string_list(
 			SGString<char>*& strings, int32_t& num_str,

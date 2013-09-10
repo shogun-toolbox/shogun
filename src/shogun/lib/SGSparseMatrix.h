@@ -17,6 +17,7 @@
 #include <shogun/lib/DataType.h>
 #include <shogun/lib/SGSparseVector.h>
 #include <shogun/lib/SGReferencedData.h>
+#include <shogun/io/LibSVMFile.h>
 
 namespace shogun
 {
@@ -144,9 +145,16 @@ template <class T> class SGSparseMatrix : public SGReferencedData
 		 */
 		void load(CFile* loader);
 
+		/** TODO add comment */
 		SGSparseMatrix<T> get_transposed();
-		CRegressionLabels* load_svmlight_file(char* fname, bool do_sort_features);
-		bool write_svmlight_file(char* fname, CRegressionLabels* label);
+
+		/** TODO add comment */
+		CRegressionLabels* load_svmlight_file(CLibSVMFile* file, bool do_sort_features);
+
+		/** TODO add comment */
+		void write_svmlight_file(CLibSVMFile* file, CRegressionLabels* labels);
+
+		/** TODO add comment */
 		void sort_features();
 
 		/** save sparse matrix to file

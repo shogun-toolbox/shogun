@@ -136,164 +136,24 @@ void SGSparseMatrix<T>::free_data()
 	num_features = 0;
 }
 
-template<class T> CRegressionLabels* SGSparseMatrix<T>::load_svmlight_file(char* fname,
+template<class T> CRegressionLabels* SGSparseMatrix<T>::load_svmlight_file(CLibSVMFile* file,
 		bool do_sort_features)
 {
-	CRegressionLabels* lab=NULL;
+	ASSERT(file)
 
-	size_t blocksize=1024*1024;
-	size_t required_blocksize=blocksize;
-	uint8_t* dummy=SG_MALLOC(uint8_t, blocksize);
-	FILE* f=fopen(fname, "ro");
+	CRegressionLabels* labels=NULL;
+	float64_t* raw_labels;
+	file->get_sparse_matrix(sparse_matrix, num_features, num_vectors,
+					raw_labels, true);
 
-	if (f)
-	{
-		free_data();
-
-		SG_SINFO("counting line numbers in file %s\n", fname)
-		size_t sz=blocksize;
-		size_t block_offs=0;
-		size_t old_block_offs=0;
-		fseek(f, 0, SEEK_END);
-		size_t fsize=ftell(f);
-		rewind(f);
-
-		while (sz == blocksize)
-		{
-			sz=fread(dummy, sizeof(uint8_t), blocksize, f);
-			for (size_t i=0; i<sz; i++)
-			{
-				block_offs++;
-				if (dummy[i]=='\n' || (i==sz-1 && sz<blocksize))
-				{
-					num_vectors++;
-					required_blocksize=CMath::max(required_blocksize, block_offs-old_block_offs+1);
-					old_block_offs=block_offs;
-				}
-			}
-			SG_SPROGRESS(block_offs, 0, fsize, 1, "COUNTING:\t")
-		}
-
-		SG_SINFO("found %d feature vectors\n", num_vectors)
-		SG_FREE(dummy);
-		blocksize=required_blocksize;
-		dummy = SG_MALLOC(uint8_t, blocksize+1); //allow setting of '\0' at EOL
-
-		lab=new CRegressionLabels(num_vectors);
-		sparse_matrix=SG_MALLOC(SGSparseVector<T>, num_vectors);
-		rewind(f);
-		sz=blocksize;
-		int32_t lines=0;
-		while (sz == blocksize)
-		{
-			sz=fread(dummy, sizeof(uint8_t), blocksize, f);
-
-			size_t old_sz=0;
-			for (size_t i=0; i<sz; i++)
-			{
-				if (i==sz-1 && dummy[i]!='\n' && sz==blocksize)
-				{
-					size_t len=i-old_sz+1;
-					uint8_t* data=&dummy[old_sz];
-
-					for (size_t j=0; j<len; j++)
-						dummy[j]=data[j];
-
-					sz=fread(dummy+len, sizeof(uint8_t), blocksize-len, f);
-					i=0;
-					old_sz=0;
-					sz+=len;
-				}
-
-				if (dummy[i]=='\n' || (i==sz-1 && sz<blocksize))
-				{
-
-					size_t len=i-old_sz;
-					uint8_t* data=&dummy[old_sz];
-
-					int32_t dims=0;
-					for (size_t j=0; j<len; j++)
-					{
-						if (data[j]==':')
-							dims++;
-					}
-
-					if (dims<=0)
-					{
-						SG_SERROR("Error in line %d - number of"
-								" dimensions is %d line is %d characters"
-								" long\n line_content:'%.*s'\n", lines,
-								dims, len, len, (const char*) data);
-					}
-
-					SGSparseVectorEntry<T>* feat=SG_MALLOC(SGSparseVectorEntry<T>, dims);
-					size_t j=0;
-					for (; j<len; j++)
-					{
-						if (data[j]==' ')
-						{
-							data[j]='\0';
-
-							lab->set_label(lines, atof((const char*) data));
-							break;
-						}
-					}
-
-					int32_t d=0;
-					j++;
-					uint8_t* start=&data[j];
-					for (; j<len; j++)
-					{
-						if (data[j]==':')
-						{
-							data[j]='\0';
-
-							feat[d].feat_index=(int32_t) atoi((const char*) start)-1;
-							num_features=CMath::max(num_features, feat[d].feat_index+1);
-
-							j++;
-							start=&data[j];
-							for (; j<len; j++)
-							{
-								if (data[j]==' ' || data[j]=='\n')
-								{
-									data[j]='\0';
-									feat[d].entry=(T) atof((const char*) start);
-									d++;
-									break;
-								}
-							}
-
-							if (j==len)
-							{
-								data[j]='\0';
-								feat[dims-1].entry=(T) atof((const char*) start);
-							}
-
-							j++;
-							start=&data[j];
-						}
-					}
-
-					sparse_matrix[lines].num_feat_entries=dims;
-					sparse_matrix[lines].features=feat;
-
-					old_sz=i+1;
-					lines++;
-					SG_SPROGRESS(lines, 0, num_vectors, 1, "LOADING:\t")
-				}
-			}
-		}
-		SG_SINFO("file successfully read\n")
-		fclose(f);
-	}
-
-	SG_FREE(dummy);
+	SGVector<float64_t> labels_data(raw_labels, num_vectors);
+	labels=new CRegressionLabels(labels_data);
+	SG_REF(labels);
 
 	if (do_sort_features)
 		sort_features();
 
-	return lab;
+	return labels;
 }
 
 template<class T> SGSparseMatrix<T> SGSparseMatrix<T>::get_transposed()
@@ -346,43 +206,23 @@ template<class T> void SGSparseMatrix<T>::sort_features()
 	}
 }
 
-template<class T> bool SGSparseMatrix<T>::write_svmlight_file(char* fname,
-		CRegressionLabels* label)
+template<class T> void SGSparseMatrix<T>::write_svmlight_file(CLibSVMFile* file,
+		CRegressionLabels* labels)
 {
-	ASSERT(label)
-	int32_t num=label->get_num_labels();
+	ASSERT(file)
+	int32_t num=labels->get_num_labels();
 	ASSERT(num>0)
 	ASSERT(num==num_vectors)
 
-	FILE* f=fopen(fname, "wb");
-
-	if (f)
-	{
-		for (int32_t i=0; i<num; i++)
-		{
-			fprintf(f, "%d ", (int32_t) label->get_int_label(i));
-
-			SGSparseVectorEntry<T>* vec = sparse_matrix[i].features;
-			int32_t num_feat = sparse_matrix[i].num_feat_entries;
-
-			for (int32_t j=0; j<num_feat; j++)
-			{
-				if (j<num_feat-1)
-					fprintf(f, "%d:%f ", (int32_t) vec[j].feat_index+1, (double) vec[j].entry);
-				else
-					fprintf(f, "%d:%f\n", (int32_t) vec[j].feat_index+1, (double) vec[j].entry);
-			}
-		}
-
-		fclose(f);
-		return true;
-	}
-	return false;
+	SGVector<float64_t> data_labels=labels->get_labels();
+	float64_t* raw_labels=data_labels.vector;
+	file->set_sparse_matrix(sparse_matrix, num_features, num_vectors,
+			raw_labels);
 }
 
-template <> bool SGSparseMatrix<complex64_t>::write_svmlight_file(char* fname, CRegressionLabels* label) { return false; }
+template <> void SGSparseMatrix<complex64_t>::write_svmlight_file(CLibSVMFile* file, CRegressionLabels* label) { }
 
-template<> CRegressionLabels* SGSparseMatrix<complex64_t>::load_svmlight_file(char* fname, bool do_sort_features) { return NULL; }
+template<> CRegressionLabels* SGSparseMatrix<complex64_t>::load_svmlight_file(CLibSVMFile* file, bool do_sort_features) { return NULL; }
 
 template class SGSparseMatrix<bool>;
 template class SGSparseMatrix<char>;
