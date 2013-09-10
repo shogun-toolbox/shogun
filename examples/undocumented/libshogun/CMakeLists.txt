@@ -92,6 +92,7 @@ SET(EXAMPLES
 	classifier_multiclass_ecoc_discriminant 
 	classifier_multiclass_ecoc_random 
 	streaming_from_dense 
+	library_mldatahdf5
 	library_hdf5 
 	library_serialization 
 	classifier_svmlight_string_features_precomputed_kernel 
