@@ -27,8 +27,8 @@ def classifier_multiclass_ecoc_random (fm_train_real=traindat,fm_test_real=testd
     from modshogun import RealFeatures, MulticlassLabels
     from modshogun import LibLinear, L2R_L2LOSS_SVC, LinearMulticlassMachine
     from modshogun import ECOCStrategy, ECOCRandomSparseEncoder, ECOCRandomDenseEncoder, ECOCHDDecoder
-	from modshogun import Math_init_random;
-	Math_init_random(12345);
+    from modshogun import Math_init_random;
+    Math_init_random(12345);
 
     feats_train = RealFeatures(fm_train_real)
     feats_test  = RealFeatures(fm_test_real)
