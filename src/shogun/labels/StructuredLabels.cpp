@@ -65,7 +65,7 @@ bool CStructuredLabels::set_label(int32_t idx, CStructuredData* label)
 
 	if ( real_idx < get_num_labels() )
 	{
-		return m_labels->insert_element(label, real_idx);
+		return m_labels->set_element(label, real_idx);
 	}
 	else
 	{
