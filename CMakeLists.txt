@@ -126,6 +126,17 @@ IF(ENABLE_COVERAGE)
 	SET(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} --coverage")
 ENDIF()
 
+OPTION(ENABLE_TSEN "Enable thread-sanitizer" OFF)
+IF(ENABLE_TSEN)
+	IF (NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
+		MESSAGE(WARNING "Thread-sanitizer results with an optimised (non-Debug) build may be misleading")
+	ENDIF()
+	SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=thread -fPIE")
+	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=thread -fPIE")
+	SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -pie")
+	SET(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -pie")
+ENDIF()
+
 # check for supported c++11 features
 #
 # clang with -std=c++11 and -stdlib=libc++ does not work
