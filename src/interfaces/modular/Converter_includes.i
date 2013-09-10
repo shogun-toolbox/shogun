@@ -23,4 +23,5 @@
 #include <shogun/converter/ica/FFSep.h>
 #include <shogun/converter/ica/JediSep.h>
 #include <shogun/converter/ica/UWedgeSep.h>
+#include <shogun/converter/ica/FastICA.h>
 %}

@@ -31,6 +31,7 @@
 %rename(FFSep) CFFSep;
 %rename(JediSep) CJediSep;
 %rename(UWedgeSep) CUWedgeSep;
+%rename(FastICA) CFastICA;
 
 %newobject shogun::CEmbeddingConverter::apply;
 %newobject shogun::*::embed_kernel;
@@ -60,3 +61,4 @@
 %include <shogun/converter/ica/FFSep.h>
 %include <shogun/converter/ica/JediSep.h>
 %include <shogun/converter/ica/UWedgeSep.h>
+%include <shogun/converter/ica/FastICA.h>
