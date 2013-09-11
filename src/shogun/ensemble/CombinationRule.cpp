@@ -13,6 +13,7 @@
 using namespace shogun;
 
 CCombinationRule::CCombinationRule()
+	: CSGObject()
 {
 
 }

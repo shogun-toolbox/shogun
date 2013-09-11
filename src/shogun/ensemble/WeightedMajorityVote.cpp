@@ -102,7 +102,7 @@ SGVector<float64_t> CWeightedMajorityVote::get_weights() const
 
 void CWeightedMajorityVote::init()
 {
-	m_weights.resize_vector(0);
+	m_weights = SGVector<float64_t>();
 }
 
 void CWeightedMajorityVote::register_parameters()

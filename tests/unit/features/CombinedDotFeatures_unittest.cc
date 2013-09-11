@@ -103,7 +103,7 @@ TEST(CombinedDotFeaturesTest, dot_products)
 	EXPECT_EQ(result, 376);
 	SG_SINFO("Completed dense_dot() testing");
 
-	delete vector;
+	delete [] vector;
 	SG_UNREF(comb_feat_1);
 	SG_UNREF(comb_feat_2);
 }
