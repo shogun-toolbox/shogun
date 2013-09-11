@@ -108,6 +108,13 @@ class CLMNNImpl
 		/** correct step size depending on the last fluctuation of the objective */
 		static void correct_stepsize(float64_t& stepsize, const SGVector<float64_t> obj, const uint32_t iter);
 
+		/**
+		 * check if the algorithm should terminate; this can happen due to e.g. convergence reached
+		 * (the step size became too small or the objective in the last iterations is roughly constant),
+		 * or maximum number of iterations reached
+		 */
+		static bool check_termination(float64_t stepsize, const SGVector<float64_t> obj, uint32_t iter, uint32_t maxiter, float64_t stepsize_threshold, float64_t obj_threshold);
+
 	private:
 
 		/** initial default transform given by PCA */
