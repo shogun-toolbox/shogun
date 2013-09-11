@@ -13,8 +13,6 @@ notifications:
       - "it's %{author}'s turn to pay the next round of drinks for the massacre he caused in %{repository}: %{build_url}"
 matrix:
   include:
-    - compiler: gcc
-      env: CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=Debug -DENABLE_COVERAGE=ON" CUSTOM_PKG="sudo pip install --use-mirrors -q cpp-coveralls"
     - compiler: clang
       python: 2.7
       language: python
@@ -68,9 +66,6 @@ before_script:
   - cd build
 script: 
   - cmake -DENABLE_TESTING=ON -DBUNDLE_EIGEN=ON -DBUNDLE_JSON=ON -DBUNDLE_NLOPT=ON $CMAKE_OPTIONS .. 
-  - make -j 4
+  - make -j 2
   - sudo make install
   - ctest --output-on-failure -j 2
-after_success:
-  - cd ..
-  - coveralls -e /usr/include -e build/GoogleMock -e build/NLopt -e build/Eigen3 -e build/JSON -e build/CMakeFiles > /dev/null
