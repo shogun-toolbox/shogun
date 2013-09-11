@@ -69,6 +69,9 @@ class CLinearMulticlassMachine : public CMulticlassMachine
 			SG_REF(f);
 			SG_UNREF(m_features);
 			m_features = f;
+
+			for (index_t i=0; i<m_machines->get_num_elements(); i++)
+				((CLinearMachine* )m_machines->get_element(i))->set_features(f);
 		}
 
 		/** get features
