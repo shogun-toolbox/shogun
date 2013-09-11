@@ -1,6 +1,9 @@
 MergeCFLAGS()
 GetCompilers()
 
+# TODO: set -fPIC only if needed
+SET(MERGED_CXX_FLAGS "${MERGED_CXX_FLAGS} -fPIC")
+
 SET (GMOCK_REVISION 443)
 include(ExternalProject)
 ExternalProject_Add(

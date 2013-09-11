@@ -56,7 +56,8 @@ CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/lib/config.h.in ${CMAKE_CURRENT_SOURC
 set_target_properties(shogun PROPERTIES 
                         VERSION ${LIBSHOGUNVER}
                         SOVERSION ${LIBSHOGUNSO}
-                        COMPILE_DEFINITIONS "${DEFINES}")
+                        COMPILE_DEFINITIONS "${DEFINES}"
+                        COMPILE_FLAGS ${SANITIZER_FLAGS})
 target_link_libraries(shogun ${POSTLINKFLAGS})
 
 # add bundled libraries to dependency

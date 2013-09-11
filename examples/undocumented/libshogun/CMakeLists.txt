@@ -107,7 +107,8 @@ SET(EXAMPLES
 
 FOREACH(EXAMPLE ${EXAMPLES})
 	add_executable(${EXAMPLE} ${CMAKE_CURRENT_SOURCE_DIR}/${EXAMPLE}.${EXT_SRC_CPP})
-	target_link_libraries(${EXAMPLE} shogun)
+	target_link_libraries(${EXAMPLE} shogun ${SANITIZER_LIBRARY})
+	set_target_properties(${EXAMPLE} PROPERTIES COMPILE_FLAGS ${SANITIZER_FLAGS})
 	add_test(libshogun-${EXAMPLE} ${CMAKE_CURRENT_BINARY_DIR}/${EXAMPLE})
 	set_property(TEST libshogun-${EXAMPLE} PROPERTY
  		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
