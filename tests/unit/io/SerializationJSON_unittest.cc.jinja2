@@ -12,7 +12,9 @@
 using namespace shogun;
 
 #ifdef HAVE_JSON
-{% set ignores = [] %}
+{% set ignores = ['RationalApproximationIndividualJob',
+	'CCSOSVM',
+	'TwoStateModel'] %}
 
 {% for class in classes %}
 {% if class in ignores or class.startswith('GUI') %}

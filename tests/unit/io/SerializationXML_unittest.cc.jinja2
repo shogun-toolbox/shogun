@@ -13,7 +13,7 @@ using namespace shogun;
 
 #ifdef HAVE_XML
 
-{% set ignores = [] %}
+{% set ignores = ['ScalarResult', 'StoreScalarAggregator'] %}
 
 {% for class in classes %}
 {% if class in ignores or class.startswith('GUI') %}
