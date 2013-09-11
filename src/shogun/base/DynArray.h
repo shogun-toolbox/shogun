@@ -351,13 +351,10 @@ template <class T> class DynArray
 			else
 				p = (T*) realloc(array, new_num_elements*sizeof(T));
 
-			if (!p)
-				return false;
-
-			array=p;
-
-			if (new_num_elements==0)
+			if (p || new_num_elements==0)
 			{
+				array=p;
+
 				//in case of shrinking we must adjust last element idx
 				if (n-1<current_num_elements-1)
 					current_num_elements=n;
