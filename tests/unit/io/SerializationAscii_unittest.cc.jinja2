@@ -1,0 +1,94 @@
+/*
+ * THIS IS A GENERATED FILE!  DO NOT CHANGE THIS FILE!  CHANGE THE
+ * CORRESPONDING TEMPLATE FILE, PLEASE!
+ */
+
+#include <shogun/base/SGObject.h>
+#include <shogun/base/class_list.h>
+#include <shogun/io/SerializableAsciiFile.h>
+#include <unistd.h>
+#include <gtest/gtest.h>
+
+using namespace shogun;
+
+{% set ignores = [] %}
+
+{% for class in classes %}
+{% if class in ignores or class.startswith('GUI') %}
+TEST(SerializationAscii, DISABLED_{{class}})
+{% else %}
+TEST(SerializationAscii, {{class}})
+{% endif %}
+{
+	std::string class_name("{{class}}");
+	std::string file_template = "/tmp/" + class_name + ".XXXXXX";
+	char* filename = mktemp(const_cast<char*>(file_template.c_str()));
+	CSGObject* object = new_sgserializable(class_name.c_str(), PT_NOT_GENERIC);
+	ASSERT_TRUE(object != NULL);
+
+	// save object to an ascii file
+	CSerializableAsciiFile *file=new CSerializableAsciiFile(filename, 'w');
+	bool save_success = object->save_serializable(file);
+	file->close();
+	SG_UNREF(file);
+	ASSERT_TRUE(save_success);
+
+	// load parameter from an ascii file
+	file=new CSerializableAsciiFile(filename, 'r');
+	CSGObject* deserializedObject = new_sgserializable(class_name.c_str(), PT_NOT_GENERIC);
+	ASSERT_TRUE(deserializedObject != NULL);
+	bool load_success = deserializedObject->load_serializable(file);
+	file->close();
+	SG_UNREF(file);
+	ASSERT_TRUE(load_success);
+
+	// check whether they are equal, up to accuracy of lossy ASCII
+	float64_t accuracy=1e-14;
+	ASSERT_TRUE(object->equals(deserializedObject, accuracy));
+	
+	SG_UNREF(object)
+	SG_UNREF(deserializedObject);
+}
+{% endfor %}
+
+{% for class in template_classes %}
+{% for type in types %}
+{% if class in ignores %}
+TEST(SerializationAscii,DISABLED_{{class}}_{{type}})
+{% else %}
+TEST(SerializationAscii,{{class}}_{{type}})
+{% endif %}
+{
+	std::string class_name("{{class}}");
+	std::string file_template = "/tmp/" + class_name + "_{{type}}" + ".XXXXXX";
+	char* filename = mktemp(const_cast<char*>(file_template.c_str()));
+	CSGObject* object = new_sgserializable(class_name.c_str(), {{type}});
+	ASSERT_TRUE(object != NULL);
+
+	// save object to an ascii file
+	CSerializableAsciiFile *file=new CSerializableAsciiFile(filename, 'w');
+	bool save_success = object->save_serializable(file);
+	file->close();
+	SG_UNREF(file);
+	ASSERT_TRUE(save_success);
+
+	// load parameter from an ascii file
+	file=new CSerializableAsciiFile(filename, 'r');
+	CSGObject* deserializedObject = new_sgserializable(class_name.c_str(), {{type}});
+	ASSERT_TRUE(deserializedObject != NULL);
+	bool load_success = deserializedObject->load_serializable(file);
+	file->close();
+	SG_UNREF(file);
+	ASSERT_TRUE(load_success);
+
+	// check whether they are equal, up to accuracy of lossy ASCII
+	float64_t accuracy=1e-14;
+	ASSERT_TRUE(object->equals(deserializedObject, accuracy));
+	
+	SG_UNREF(object)
+	SG_UNREF(deserializedObject);
+
+}
+{% endfor %}
+{% endfor %}
+

@@ -1,6 +1,6 @@
 /*
  * THIS IS A GENERATED FILE!  DO NOT CHANGE THIS FILE!  CHANGE THE
- * CORRESPONDING LIBSHOGUN FILE, PLEASE!
+ * CORRESPONDING TEMPLATE FILE, PLEASE!
  */
 
 #include <shogun/base/SGObject.h>
@@ -9,13 +9,35 @@
 
 using namespace shogun;
 
+{% set ignores = ['Set', 'ParseBuffer', 'TreeMachine'] %}
+
 {% for class in classes %}
+{% if class in ignores or class.startswith('GUI') %}
+TEST(SGObject,DISABLED_clone_equals_{{class}})
+{% else %}
 TEST(SGObject,clone_equals_{{class}})
+{% endif %}
 {
-	CSGObject* object = new_sgserializable("{{class}}", PT_NOT_GENERIC);
+	const char* class_name="{{class}}";
+	CSGObject* object = new_sgserializable(class_name, PT_NOT_GENERIC);
 	ASSERT_TRUE(object != NULL);
+
+	/* test for get_name() */
+	ASSERT_TRUE(strcmp(object->get_name(), class_name) == 0);
+
+	/* test for .equals() */
+	CSGObject* object2 = new_sgserializable(class_name, PT_NOT_GENERIC);
+	ASSERT_TRUE(object2 != NULL);
+	ASSERT_TRUE(object->equals(object2));
+	SG_UNREF(object2);
+
+	/* test for .clone() */
 	CSGObject* clone = object->clone();
+	ASSERT_TRUE(clone != NULL);
+
+	/* test for .clone() + .equals() */
 	EXPECT_TRUE(object->equals(clone));
+	
 	SG_UNREF(object);
 	SG_UNREF(clone);
 }
@@ -23,12 +45,32 @@ TEST(SGObject,clone_equals_{{class}})
 
 {% for class in template_classes %}
 {% for type in types %}
+{% if class in ignores %}
+TEST(SGObject,DISABLED_clone_equals_{{class}}_{{type}})
+{% else %}
 TEST(SGObject,clone_equals_{{class}}_{{type}})
+{% endif %}
 {
-	CSGObject* object = new_sgserializable("{{class}}", {{type}});
+	const char* class_name="{{class}}";
+	CSGObject* object = new_sgserializable(class_name, {{type}});
 	ASSERT_TRUE(object != NULL);
+
+	/* test for get_name() */
+	ASSERT_TRUE(strcmp(object->get_name(), class_name) == 0);
+
+	/* test for .equals() */
+	CSGObject* object2 = new_sgserializable(class_name, {{type}});
+	ASSERT_TRUE(object2 != NULL);
+	ASSERT_TRUE(object->equals(object2));
+	SG_UNREF(object2);
+
+	/* test for .clone() */
 	CSGObject* clone = object->clone();
+	ASSERT_TRUE(clone != NULL);
+
+	/* test for .clone() + .equals() */
 	EXPECT_TRUE(object->equals(clone));
+	
 	SG_UNREF(object);
 	SG_UNREF(clone);
 }

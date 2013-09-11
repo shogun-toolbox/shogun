@@ -7,7 +7,7 @@
  * Written (W) 2013 Kevin Hughes
  * Copyright (C) 2013 Kevin Hughes
  *
- * Thanks to Fernando José Iglesias García (shogun) 
+ * Thanks to Fernando Jose Iglesias Garcia (shogun)
  *           and Matthieu Perrot (scikit-learn)
  */
 
@@ -32,15 +32,22 @@ typedef Matrix< float64_t, Dynamic, 1, ColMajor > EVector;
 using namespace shogun;
 
 CMCLDA::CMCLDA(float64_t tolerance, bool store_cov)
-: CNativeMulticlassMachine(), m_tolerance(tolerance), m_store_cov(store_cov), m_num_classes(0), m_dim(0)
+: CNativeMulticlassMachine()
 {
 	init();
+	m_tolerance=tolerance;
+	m_store_cov=store_cov;
+
 }
 
 CMCLDA::CMCLDA(CDenseFeatures<float64_t>* traindat, CLabels* trainlab, float64_t tolerance, bool store_cov)
-: CNativeMulticlassMachine(), m_tolerance(tolerance), m_store_cov(store_cov), m_num_classes(0), m_dim(0)
+: CNativeMulticlassMachine()
 {
 	init();
+
+	m_tolerance=tolerance;
+	m_store_cov=store_cov;
+
 	set_features(traindat);
 	set_labels(trainlab);
 }
@@ -64,7 +71,11 @@ void CMCLDA::init()
 	SG_ADD(&m_rank, "m_rank", "rank", MS_NOT_AVAILABLE);
 	SG_ADD(&m_coef, "m_coef", "weight vector", MS_NOT_AVAILABLE);
 	SG_ADD(&m_intercept, "m_intercept", "intercept", MS_NOT_AVAILABLE);
+
 	m_features  = NULL;
+	m_num_classes=0;
+	m_dim=0;
+	m_rank=0;
 }
 
 void CMCLDA::cleanup()

@@ -37,7 +37,7 @@ void CMultidimensionalScaling::init()
 	    MS_NOT_AVAILABLE);
 	SG_ADD(&m_landmark, "landmark",
 	    "indicates if landmark approximation should be used", MS_NOT_AVAILABLE);
-	SG_ADD(&m_landmark_number, "landmark number",
+	SG_ADD(&m_landmark_number, "landmark_number",
 	    "the number of landmarks for approximation", MS_AVAILABLE);
 }
 

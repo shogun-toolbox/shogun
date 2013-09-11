@@ -100,7 +100,7 @@ CSerializableJsonFile::init(const char* fname)
 	case 'r':
 		buf = json_object_from_file((char*) fname);
 		if (is_error(buf)) {
-			SG_WARNING("Could not open file `%s' for reading!\n",
+			SG_ERROR("Could not open file `%s' for reading!\n",
 					   fname);
 			return;
 		}

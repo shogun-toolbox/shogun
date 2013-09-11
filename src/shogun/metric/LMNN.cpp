@@ -252,25 +252,25 @@ void CLMNN::set_diagonal(const bool diagonal)
 
 void CLMNN::init()
 {
-	SG_ADD(&m_linear_transform, "m_linear_transform",
+	SG_ADD(&m_linear_transform, "linear_transform",
 			"Linear transform in matrix form", MS_NOT_AVAILABLE)
-	SG_ADD((CSGObject**) &m_features, "m_features", "Training features",
+	SG_ADD((CSGObject**) &m_features, "features", "Training features",
 			MS_NOT_AVAILABLE)
-	SG_ADD((CSGObject**) &m_labels, "m_labels", "Training labels",
+	SG_ADD((CSGObject**) &m_labels, "labels", "Training labels",
 			MS_NOT_AVAILABLE)
-	SG_ADD(&m_k, "m_k", "Number of target neighbours per example",
+	SG_ADD(&m_k, "k", "Number of target neighbours per example",
 			MS_NOT_AVAILABLE)
-	SG_ADD(&m_regularization, "m_regularization", "Regularization",
+	SG_ADD(&m_regularization, "regularization", "Regularization",
 			MS_AVAILABLE)
-	SG_ADD(&m_stepsize, "m_stepsize", "Step size in gradient descent",
+	SG_ADD(&m_stepsize, "stepsize", "Step size in gradient descent",
 			MS_NOT_AVAILABLE)
-	SG_ADD(&m_stepsize_threshold, "m_stepsize_threshold", "Step size threshold",
+	SG_ADD(&m_stepsize_threshold, "stepsize_threshold", "Step size threshold",
 			MS_NOT_AVAILABLE)
-	SG_ADD(&m_maxiter, "m_maxiter", "Maximum number of iterations",
+	SG_ADD(&m_maxiter, "maxiter", "Maximum number of iterations",
 			MS_NOT_AVAILABLE)
-	SG_ADD(&m_correction, "m_correction",
+	SG_ADD(&m_correction, "correction",
 			"Iterations between exact impostors search", MS_NOT_AVAILABLE)
-	SG_ADD(&m_obj_threshold, "m_obj_threshold", "Objective threshold",
+	SG_ADD(&m_obj_threshold, "obj_threshold", "Objective threshold",
 			MS_NOT_AVAILABLE)
 	SG_ADD(&m_diagonal, "m_diagonal", "Diagonal transformation", MS_NOT_AVAILABLE);
 

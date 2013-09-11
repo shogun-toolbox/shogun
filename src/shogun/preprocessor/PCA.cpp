@@ -36,11 +36,11 @@ void CPCA::init()
 	m_mean_vector = SGVector<float64_t>();
 	m_eigenvalues_vector = SGVector<float64_t>();
 
-	SG_ADD(&m_transformation_matrix, "transformation matrix",
+	SG_ADD(&m_transformation_matrix, "transformation_matrix",
 	    "Transformation matrix (Eigenvectors of covariance matrix).",
 	    MS_NOT_AVAILABLE);
-	SG_ADD(&m_mean_vector, "mean vector", "Mean Vector.", MS_NOT_AVAILABLE);
-	SG_ADD(&m_eigenvalues_vector, "eigenvalues vector",
+	SG_ADD(&m_mean_vector, "mean_vector", "Mean Vector.", MS_NOT_AVAILABLE);
+	SG_ADD(&m_eigenvalues_vector, "eigenvalues_vector",
 	    "Vector with Eigenvalues.", MS_NOT_AVAILABLE);
 	SG_ADD(&m_initialized, "initalized", "True when initialized.",
 	    MS_NOT_AVAILABLE);

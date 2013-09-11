@@ -1670,6 +1670,8 @@ template<class ST> void CStringFeatures<ST>::init()
 	feature_cache=NULL;
 	symbol_mask_table=NULL;
 	symbol_mask_table_len=0;
+	num_symbols=0.0;
+	original_num_symbols=0;
 
 	m_parameters->add((CSGObject**) &alphabet, "alphabet");
 	m_parameters->add_vector(&features, &num_vectors, "features",

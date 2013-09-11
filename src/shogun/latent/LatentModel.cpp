@@ -88,8 +88,8 @@ void CLatentModel::register_parameters()
 {
 	m_parameters->add((CSGObject**) &m_features, "features", "Latent features");
 	m_parameters->add((CSGObject**) &m_labels, "labels", "Latent labels");
-	m_parameters->add((CSGObject**) &m_cached_psi, "cached psi", "Cached PSI features after argmax_h");
-	m_parameters->add(&m_do_caching, "do caching", "Indicate whether or not do PSI vector caching after argmax_h");
+	m_parameters->add((CSGObject**) &m_cached_psi, "cached_psi", "Cached PSI features after argmax_h");
+	m_parameters->add(&m_do_caching, "do_caching", "Indicate whether or not do PSI vector caching after argmax_h");
 }
 
 
