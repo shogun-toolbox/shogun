@@ -226,9 +226,10 @@ class CLMNN : public CSGObject
 		uint32_t m_correction;
 
 		/**
-		 * objective threshold; stop training if the difference in absolute
-		 * value of the objective function in the last two iterations is below
-		 * this threshold. Its default value is 1e-9.
+		 * objective threshold; stop training if the first order difference in
+		 * absolute value of the objective function in the last three iterations
+		 * is below (element-wise) this threshold times the current objective.
+		 * Its default value is 1e-9.
 		 */
 		float64_t m_obj_threshold;
 

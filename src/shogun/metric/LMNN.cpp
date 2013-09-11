@@ -79,7 +79,7 @@ void CLMNN::train(SGMatrix<float64_t> init_transform)
 	SG_DEBUG("Finding target nearest neighbors.\n")
 	SGMatrix<index_t> target_nn = CLMNNImpl::find_target_nn(x, y, m_k);
 	// Initialize (sub-)gradient
-	SG_DEBUG("Summing outer products for (sub-)gradient initilization.\n")
+	SG_DEBUG("Summing outer products for (sub-)gradient initialization.\n")
 	MatrixXd gradient = (1-m_regularization)*CLMNNImpl::sum_outer_products(x, target_nn);
 	// Value of the objective function at every iteration
 	SGVector<float64_t> obj(m_maxiter);
@@ -121,9 +121,7 @@ void CLMNN::train(SGMatrix<float64_t> init_transform)
 		CLMNNImpl::correct_stepsize(stepsize, obj, iter);
 
 		// Check termination criterion
-		stop = iter >= m_maxiter-1 || stepsize < m_stepsize_threshold;
-		if (iter > 0)
-			stop |= CMath::abs(obj[iter-1]-obj[iter]) < m_obj_threshold;
+		stop = CLMNNImpl::check_termination(stepsize, obj, iter, m_maxiter, m_stepsize_threshold, m_obj_threshold);
 
 		// Update iteration counter
 		iter = iter + 1;
