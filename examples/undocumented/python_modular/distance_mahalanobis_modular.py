@@ -1,19 +1,16 @@
 #!/usr/bin/env python
-from tools.load import LoadMatrix
-lm = LoadMatrix()
-
-traindat = lm.load_numbers('../data/fm_train_real.dat')
-testdat  = lm.load_numbers('../data/fm_test_real.dat')
+traindat = '../data/fm_train_real.dat'
+testdat = '../data/fm_test_real.dat'
 
 parameter_list = [[traindat, testdat]]
 
-def distance_mahalanobis_modular (fm_train_real = traindat, fm_test_real = testdat):
+def distance_mahalanobis_modular (train_fname = traindat, test_fname = testdat):
 
 	from modshogun import RealFeatures
 	from modshogun import MahalanobisDistance
 
-	feats_train = RealFeatures(fm_train_real)
-	feats_test  = RealFeatures(fm_test_real)
+	feats_train=RealFeatures(CSVFile(train_fname))
+	feats_test=RealFeatures(CSVFile(test_fname))
 
 	distance = MahalanobisDistance(feats_train, feats_train)
 	dm_train=distance.get_distance_matrix()
