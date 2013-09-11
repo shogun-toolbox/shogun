@@ -54,10 +54,12 @@ ENDFOREACH()
 
 CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/lib/config.h.in ${CMAKE_CURRENT_SOURCE_DIR}/lib/config.h)
 set_target_properties(shogun PROPERTIES 
-                        VERSION ${LIBSHOGUNVER}
-                        SOVERSION ${LIBSHOGUNSO}
-                        COMPILE_DEFINITIONS "${DEFINES}"
-                        COMPILE_FLAGS ${SANITIZER_FLAGS})
+                      VERSION ${LIBSHOGUNVER}
+                      SOVERSION ${LIBSHOGUNSO}
+                      COMPILE_DEFINITIONS "${DEFINES}")
+IF (SANITIZER_FLAGS)
+  set_target_properties(shogun PROPERTIES COMPILE_FLAGS ${SANITIZER_FLAGS})
+ENDIF()
 target_link_libraries(shogun ${POSTLINKFLAGS})
 
 # add bundled libraries to dependency
