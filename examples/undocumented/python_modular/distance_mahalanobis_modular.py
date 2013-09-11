@@ -6,7 +6,7 @@ parameter_list = [[traindat, testdat]]
 
 def distance_mahalanobis_modular (train_fname = traindat, test_fname = testdat):
 
-	from modshogun import RealFeatures
+	from modshogun import RealFeatures, CSVFile
 	from modshogun import MahalanobisDistance
 
 	feats_train=RealFeatures(CSVFile(train_fname))
