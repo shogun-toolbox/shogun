@@ -11,9 +11,11 @@
 #ifndef __INPUTPARSER_H__
 #define __INPUTPARSER_H__
 
+#include <shogun/lib/common.h>
+#ifdef HAVE_PTHREAD
+
 #include <shogun/io/SGIO.h>
 #include <shogun/io/streaming/StreamingFile.h>
-#include <shogun/lib/common.h>
 #include <shogun/io/streaming/ParseBuffer.h>
 #include <pthread.h>
 
@@ -670,4 +672,7 @@ template <class T> void CInputParser<T>::exit_parser()
     pthread_cancel(parse_thread);
 }
 }
+
+#endif /* HAVE_PTHREAD */
+
 #endif // __INPUTPARSER_H__

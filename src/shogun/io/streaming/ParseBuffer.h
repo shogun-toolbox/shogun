@@ -7,13 +7,14 @@
  * Written (W) 2011 Shashwat Lal Das
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
-
-#include <shogun/lib/common.h>
-#include <shogun/lib/DataType.h>
-#include <pthread.h>
-
 #ifndef __PARSEBUFFER_H__
 #define __PARSEBUFFER_H__
+
+#include <shogun/lib/common.h>
+#ifdef HAVE_PTHREAD
+
+#include <shogun/lib/DataType.h>
+#include <pthread.h>
 
 namespace shogun
 {
@@ -360,4 +361,5 @@ void CParseBuffer<T>::finalize_example(bool free_after_release)
 }
 
 }
+#endif // HAVE_PTHREAD
 #endif // __PARSEBUFFER_H__
