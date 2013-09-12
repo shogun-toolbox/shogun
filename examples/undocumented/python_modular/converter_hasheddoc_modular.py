@@ -29,15 +29,15 @@ def converter_hasheddoc_modular(strings):
 	converted_feats=converter.apply(f)
 
 	#should expect 32
-	print('Converted features\' space dimensionality is', converted_feats.get_dim_feature_space())
+	#print('Converted features\' space dimensionality is', converted_feats.get_dim_feature_space())
 	
-	print('Self dot product of string 0 with converted feats:', converted_feats.dot(0, converted_feats, 0))
+	#print('Self dot product of string 0 with converted feats:', converted_feats.dot(0, converted_feats, 0))
 
 	hashed_feats=HashedDocDotFeatures(num_bits, f, tokenizer, normalize)
 
-	print('Hashed features\' space dimensionality is', hashed_feats.get_dim_feature_space())
+	#print('Hashed features\' space dimensionality is', hashed_feats.get_dim_feature_space())
 	
-	print('Self dot product of string 0 with hashed feats:', hashed_feats.dot(0, hashed_feats, 0))
+	#print('Self dot product of string 0 with hashed feats:', hashed_feats.dot(0, hashed_feats, 0))
 
 	return converted_feats 
 

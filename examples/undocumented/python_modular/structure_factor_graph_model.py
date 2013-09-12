@@ -83,7 +83,7 @@ def structure_factor_graph_model (tr_samples = samples, tr_labels = labels, w = 
 
 	ave_loss = acc_loss / num_samples
 
-	print('Average training error is %.4f' % ave_loss)
+	#print('Average training error is %.4f' % ave_loss)
 
 if __name__ == '__main__':
 	print("Factor Graph Model")
