@@ -44,7 +44,7 @@ template<class ST> CSparseFeatures<ST>::CSparseFeatures(const CSparseFeatures & 
 	SG_REF(m_subset_stack);
 }
 template<class ST> CSparseFeatures<ST>::CSparseFeatures(CFile* loader)
-: CDotFeatures(loader), feature_cache(NULL)
+: CDotFeatures(), feature_cache(NULL)
 {
 	init();
 

@@ -112,7 +112,7 @@ template<class ST> CStringFeatures<ST>::CStringFeatures(const CStringFeatures & 
 }
 
 template<class ST> CStringFeatures<ST>::CStringFeatures(CFile* loader, EAlphabet alpha)
-: CFeatures(loader), num_vectors(0),
+: CFeatures(), num_vectors(0),
   features(NULL), single_string(NULL), length_of_single_string(0),
   max_string_length(0), order(0),
   preprocess_on_get(false), feature_cache(NULL)
