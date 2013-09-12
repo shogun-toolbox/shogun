@@ -66,8 +66,7 @@ public:
 	 * @param sparse pointer to sparse entries
 	 * @param dlen number of entries
 	 */
-	virtual void set_data_sparse(SGSparseVectorEntry<float64_t>* sparse, 
-		int32_t dlen);
+	virtual void set_data_sparse(SGSparseVectorEntry<float64_t>* sparse, int32_t dlen);
 
 private:
 	/** register parameters */
@@ -97,8 +96,7 @@ public:
 	 * @param var_index indices of variables
 	 * @param data dense data, can be empty 
 	 */
-	CFactor(CTableFactorType* ftype, SGVector<int32_t> var_index,
-		SGVector<float64_t> data = SGVector<float64_t>());
+	CFactor(CTableFactorType* ftype, SGVector<int32_t> var_index, SGVector<float64_t> data);
 
 	/** Constructor
 	 *
@@ -107,7 +105,7 @@ public:
 	 * @param data_sparse sparse data, can be empty
 	 */
 	CFactor(CTableFactorType* ftype, SGVector<int32_t> var_index,
-		SGSparseVector<float64_t> data_sparse = SGSparseVector<float64_t>());
+		SGSparseVector<float64_t> data_sparse);
 
 	/** Constructor
 	 *
@@ -116,7 +114,7 @@ public:
 	 * @param data_source common data for many factors
 	 */
 	CFactor(CTableFactorType* ftype, SGVector<int32_t> var_index,
-		CFactorDataSource* data_source = NULL);
+		CFactorDataSource* data_source);
 
 	/** deconstructor */
 	virtual ~CFactor();
@@ -162,8 +160,7 @@ public:
 	 * @param data_sparse pointer to sparse entries
 	 * @param dlen number of entries
 	 */
-	void set_data_sparse(SGSparseVectorEntry<float64_t>* data_sparse, 
-		int32_t dlen);
+	void set_data_sparse(SGSparseVectorEntry<float64_t>* data_sparse, int32_t dlen);
 
 	/** @return whether this factor has data */
 	bool is_data_dependent() const;

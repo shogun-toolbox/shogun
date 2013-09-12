@@ -207,3 +207,14 @@
 %ignore shogun::CSerializableFile::write_type_end;
 
 %ignore shogun::CMosek;
+
+%ignore shogun::CFactorType::CFactorType();
+%ignore shogun::CTableFactorType::CTableFactorType();
+%ignore shogun::CFactorDataSource::CFactorDataSource();
+%ignore shogun::CFactor::CFactor();
+%ignore shogun::CFactor::CFactor(CTableFactorType*, SGVector<int32_t>, SGSparseVector<float64_t>);
+%ignore shogun::CFactor::CFactor(CTableFactorType*, SGVector<int32_t>, CFactorDataSource*);
+%ignore shogun::CDisjointSet::CDisjointSet();
+%ignore shogun::CFactorGraph::CFactorGraph();
+%ignore shogun::CMAPInference::CMAPInference();
+%ignore shogun::CFactorGraphModel::CFactorGraphModel();

@@ -41,6 +41,18 @@
 %rename(PrimalMosekSOSVM) CPrimalMosekSOSVM;
 #endif /* USE_MOSEK */
 
+%rename(FactorType) CFactorType;
+%rename(TableFactorType) CTableFactorType;
+%rename(FactorDataSource) CFactorDataSource;
+%rename(Factor) CFactor;
+%rename(DisjointSet) CDisjointSet;
+%rename(FactorGraph) CFactorGraph;
+%rename(FactorGraphObservation) CFactorGraphObservation;
+%rename(FactorGraphLabels) CFactorGraphLabels;
+%rename(FactorGraphFeatures) CFactorGraphFeatures;
+%rename(MAPInference) CMAPInference;
+%rename(FactorGraphModel) CFactorGraphModel;
+
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/structure/PlifBase.h>
 %include <shogun/structure/Plif.h>
@@ -69,3 +81,12 @@
 #ifdef USE_MOSEK
 %include <shogun/structure/PrimalMosekSOSVM.h>
 #endif /* USE_MOSEK */
+
+%include <shogun/structure/FactorType.h>
+%include <shogun/structure/Factor.h>
+%include <shogun/structure/DisjointSet.h>
+%include <shogun/structure/FactorGraph.h>
+%include <shogun/features/FactorGraphFeatures.h>
+%include <shogun/labels/FactorGraphLabels.h>
+%include <shogun/structure/MAPInference.h>
+%include <shogun/structure/FactorGraphModel.h>

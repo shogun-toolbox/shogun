@@ -176,17 +176,18 @@ TEST(FactorGraph, evaluate_energy_data_indep)
 TEST(FactorGraph, evaluate_energy_data_dep)
 {
 	// Create one simple pairwise factor type
+	SGVector<float64_t> w;
 	SGVector<int32_t> card(2);
 	card[0] = 2;
 	card[1] = 2;
 	int32_t tid = 0;
-	CTableFactorType* factortype = new CTableFactorType(tid, card);
+	CTableFactorType* factortype = new CTableFactorType(tid, card, w);
 	SG_REF(factortype);
 
 	SGVector<int32_t> card1(1);
 	card1[0] = 2;
 	int32_t tid1 = 1;
-	CTableFactorType* factortype1a = new CTableFactorType(tid1, card1);
+	CTableFactorType* factortype1a = new CTableFactorType(tid1, card1, w);
 	SG_REF(factortype1a);
 
 	// Create a factor graph from the model: 2 binary variables
