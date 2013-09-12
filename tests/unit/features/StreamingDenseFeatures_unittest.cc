@@ -15,7 +15,7 @@
 
 using namespace shogun;
 
-TEST(StreamingDenseFeatures, example_reading)
+TEST(StreamingDenseFeaturesTest, example_reading_from_file)
 {
 	index_t n=20;
 	index_t dim=2;
@@ -55,4 +55,36 @@ TEST(StreamingDenseFeatures, example_reading)
 
 	SG_UNREF(orig_feats);
 	SG_UNREF(feats);
+}
+
+TEST(StreamingDenseFeaturesTest, example_reading_from_features)
+{
+	index_t n=20;
+	index_t dim=2;
+
+	SGMatrix<float64_t> data(dim,n);
+	for (index_t i=0; i<dim*n; ++i)
+		data.matrix[i] = sg_rand->std_normal_distrib();
+
+	CDenseFeatures<float64_t>* orig_feats=new CDenseFeatures<float64_t>(data);
+	CStreamingDenseFeatures<float64_t>* feats = new CStreamingDenseFeatures<float64_t>(orig_feats);
+
+	index_t i = 0;
+	feats->start_parser();
+	while (feats->get_next_example())
+	{
+		SGVector<float64_t> example = feats->get_vector();
+		SGVector<float64_t> expected = orig_feats->get_feature_vector(i);
+
+		ASSERT_EQ(dim, example.vlen);
+
+		for (index_t j = 0; j < dim; j++)
+			EXPECT_DOUBLE_EQ(expected.vector[j], example.vector[j]);
+
+		feats->release_example();
+		i++;
+	}
+	feats->end_parser();
+
+	SG_UNREF(orig_feats);
 }
