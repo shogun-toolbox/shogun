@@ -216,6 +216,7 @@ BmrmStatistics svm_bmrm_solver(
 	BufSize=_BufSize;
 	QPSolverTolRel=1e-9;
 
+	uint32_t histSize = BufSize;
 	H=NULL;
 	b=NULL;
 	beta=NULL;
@@ -225,7 +226,6 @@ BmrmStatistics svm_bmrm_solver(
 	I=NULL;
 	prevW=NULL;
 
-	uint32_t histSize = BufSize + 100;
 
 	H= (float64_t*) LIBBMRM_CALLOC(BufSize*BufSize, float64_t);
 
@@ -393,7 +393,6 @@ BmrmStatistics svm_bmrm_solver(
 	{
 		tstart=ttime.cur_time_diff(false);
 		bmrm.nIter++;
-		ASSERT(bmrm.nIter < histSize);
 
 		/* Update H */
 
@@ -500,10 +499,6 @@ BmrmStatistics svm_bmrm_solver(
 		if (bmrm.Fp - bmrm.Fd <= TolAbs)
 			bmrm.exitflag=2;
 
-		// next iteration would exceed histSize
-		if (bmrm.nIter+1 >= histSize)
-			bmrm.exitflag=-1;
-
 		tstop=ttime.cur_time_diff(false);
 
 		/* Verbose output */
@@ -512,7 +507,17 @@ BmrmStatistics svm_bmrm_solver(
 					bmrm.nIter, tstop-tstart, bmrm.Fp, bmrm.Fd, bmrm.Fp-bmrm.Fd,
 					(bmrm.Fp-bmrm.Fd)/bmrm.Fp, R, bmrm.nCP, bmrm.nzA, qp_exitflag.exitflag);
 
+		// iteration exceeds histSize
+		if (bmrm.nIter >= histSize)
+		{
+			histSize += BufSize;
+			bmrm.hist_Fp.resize_vector(histSize);
+			bmrm.hist_Fd.resize_vector(histSize);
+			bmrm.hist_wdist.resize_vector(histSize);
+		}
+
 		/* Keep Fp, Fd and w_dist history */
+		ASSERT(bmrm.nIter < histSize);
 		bmrm.hist_Fp[bmrm.nIter]=bmrm.Fp;
 		bmrm.hist_Fd[bmrm.nIter]=bmrm.Fd;
 		bmrm.hist_wdist[bmrm.nIter]=wdist;
