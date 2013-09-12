@@ -415,7 +415,8 @@ void CStreamingAsciiFile::get_sparse_vector(SGSparseVectorEntry<sg_type>*& vecto
 		int32_t index_start_pos=-1;										\
 		int32_t feature_start_pos;										\
 		int32_t current_feat=0;											\
-		vector=SG_MALLOC(SGSparseVectorEntry<sg_type>, num_dims);		\
+		if (len < num_dims)												\
+			vector=SG_REALLOC(SGSparseVectorEntry<sg_type>, vector, len, num_dims);	\
 		for (int32_t i=0; i<num_chars; i++)								\
 		{																\
 				if (buffer[i]==':')										\
@@ -506,7 +507,8 @@ void CStreamingAsciiFile::get_sparse_vector_and_label(SGSparseVectorEntry<sg_typ
 		int32_t feature_start_pos;										\
 		int32_t current_feat=0;											\
 		int32_t label_pos=-1;											\
-		vector=SG_MALLOC(SGSparseVectorEntry<sg_type>, num_dims);		\
+		if (len < num_dims)												\
+			vector=SG_REALLOC(SGSparseVectorEntry<sg_type>, vector, len, num_dims); \
 																		\
 		for (int32_t i=1; i<num_chars; i++)								\
 		{																\

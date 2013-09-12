@@ -532,8 +532,8 @@ template <class T> void* CInputParser<T>::main_parse_loop(void* params)
 		pthread_testcancel();
 
 		current_example = examples_ring->get_free_example();
-		current_feature_vector = current_example->fv.vector;
-		current_len = current_example->fv.vlen;
+		current_feature_vector = current_example->fv;
+		current_len = current_example->length;
 		current_label = current_example->label;
 
 		if (example_type == E_LABELLED)
@@ -551,8 +551,8 @@ template <class T> void* CInputParser<T>::main_parse_loop(void* params)
 		}
 
 		current_example->label = current_label;
-		current_example->fv.vector = current_feature_vector;
-		current_example->fv.vlen = current_len;
+		current_example->fv = current_feature_vector;
+		current_example->length = current_len;
 
 		examples_ring->copy_example(current_example);
 
@@ -637,8 +637,8 @@ template <class T> int32_t CInputParser<T>::get_next_example(T* &fv,
         }
     }
 
-    fv = ex->fv.vector;
-    length = ex->fv.vlen;
+    fv = ex->fv;
+    length = ex->length;
     label = ex->label;
 
     return 1;
