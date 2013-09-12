@@ -36,8 +36,7 @@ public:
 	 * @param card cardinalities of variables in the clique
 	 * @param w factor parameters
 	 */
-	CFactorType(const int32_t id, const SGVector<int32_t> card,
-		const SGVector<float64_t> w = SGVector<float64_t>());
+	CFactorType(int32_t id, SGVector<int32_t> card, SGVector<float64_t> w);
 
 	/** deconstructor */
 	virtual ~CFactorType();
@@ -130,8 +129,7 @@ public:
 	 * @param card cardinalities of variables in the clique
 	 * @param w factor parameters
 	 */
-	CTableFactorType(const int32_t id, const SGVector<int32_t> card,
-		const SGVector<float64_t> w = SGVector<float64_t>());
+	CTableFactorType(int32_t id, SGVector<int32_t> card, SGVector<float64_t> w);
 
 	/** deconstructor */
 	virtual ~CTableFactorType();
@@ -165,8 +163,7 @@ public:
 	 * @param var_state new variable state 
 	 * @return new energy index 
 	 */
-	int32_t index_from_new_state(int32_t old_ei, int32_t var_index, 
-		int32_t var_state) const;
+	int32_t index_from_new_state(int32_t old_ei, int32_t var_index, int32_t var_state) const;
 
 	/** energy index from a given assignment
 	 *
