@@ -29,8 +29,8 @@ CFactor::CFactor(CTableFactorType* ftype,
 	m_data = data;
 	m_is_data_dep = true;
 
-	ASSERT(ftype != NULL);
-	ASSERT(ftype->get_cardinalities().size() == m_var_index.size());
+	ASSERT(m_factor_type != NULL);
+	ASSERT(m_factor_type->get_cardinalities().size() == m_var_index.size());
 
 	if (m_data.size() == 0)
 		m_is_data_dep = false;
@@ -52,8 +52,8 @@ CFactor::CFactor(CTableFactorType* ftype,
 	m_data_sparse = data_sparse;
 	m_is_data_dep = true;
 
-	ASSERT(ftype != NULL);
-	ASSERT(ftype->get_cardinalities().size() == m_var_index.size());
+	ASSERT(m_factor_type != NULL);
+	ASSERT(m_factor_type->get_cardinalities().size() == m_var_index.size());
 
 	if (m_data_sparse.num_feat_entries == 0)
 		m_is_data_dep = false;
@@ -75,9 +75,9 @@ CFactor::CFactor(CTableFactorType* ftype,
 	m_data_source = data_source;
 	m_is_data_dep = true;
 
-	ASSERT(ftype != NULL);
-	ASSERT(ftype->get_cardinalities().size() == m_var_index.size());
-	ASSERT(data_source != NULL);
+	ASSERT(m_factor_type != NULL);
+	ASSERT(m_factor_type->get_cardinalities().size() == m_var_index.size());
+	ASSERT(m_data_source != NULL);
 
 	if (ftype->is_table())
 		m_energies.resize_vector(ftype->get_num_assignments());

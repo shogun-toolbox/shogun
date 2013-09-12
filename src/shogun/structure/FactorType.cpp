@@ -21,9 +21,9 @@ CFactorType::CFactorType() : CSGObject()
 }
 
 CFactorType::CFactorType(
-	const int32_t id, 
-	const SGVector<int32_t> card,
-	const SGVector<float64_t> w)
+	int32_t id, 
+	SGVector<int32_t> card,
+	SGVector<float64_t> w)
 	: CSGObject()
 {
 	init();
@@ -140,9 +140,9 @@ CTableFactorType::CTableFactorType()
 }
 
 CTableFactorType::CTableFactorType(
-	const int32_t id, 
-	const SGVector<int32_t> card,
-	const SGVector<float64_t> w)
+	int32_t id, 
+	SGVector<int32_t> card,
+	SGVector<float64_t> w)
 	: CFactorType(id, card, w)
 {
 }
