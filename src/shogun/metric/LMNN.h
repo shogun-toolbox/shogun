@@ -25,6 +25,9 @@
 namespace shogun
 {
 
+// Forward declaration
+class CLMNNStatistics;
+
 /**
  * @brief Class LMNN that implements the distance metric learning technique
  * Large Margin Nearest Neighbour (LMNN) described in
@@ -171,6 +174,12 @@ class CLMNN : public CSGObject
 		 */
 		void set_diagonal(const bool diagonal);
 
+		/** get LMNN training statistics
+		 *
+		 * @return LMNN training statistics
+		 */
+		CLMNNStatistics* get_statistics() const;
+
 	private:
 		/** register parameters */
 		void init();
@@ -229,7 +238,61 @@ class CLMNN : public CSGObject
 		 */
 		bool m_diagonal;
 
+		/** training statistics, @see CLMNNStatistics */
+		CLMNNStatistics* m_statistics;
+
 }; /* class CLMNN */
+
+/**
+ * @brief Class LMNNStatistics used to give access to intermediate results
+ * obtained training LMNN.
+ */
+class CLMNNStatistics : public CSGObject
+{
+	public:
+		/** default constructor */
+		CLMNNStatistics();
+
+		/** destructor */
+		virtual ~CLMNNStatistics();
+
+		/** @return name of SGSerializable */
+		virtual const char* get_name() const;
+
+		/**
+		 * resize CLMNNStatistics::obj, CLMNNStatistics::stepsize and
+		 * CLMNNStatistics::num_impostors to fit the specified number of elements
+		 *
+		 * @param size number of elements
+		 */
+		void resize(int32_t size);
+
+		/**
+		 * set objective, step size and number of impostors computed at the
+		 * specified iteration
+		 *
+		 * @param iter index to store the parameters, must be greater or equal to zero,
+		 * and less than the size
+		 * @param obj_iter objective to set
+		 * @param stepsize_iter stepsize to set
+		 * @param num_impostors_iter number of impostors to set
+		 */
+		void set(index_t iter, float64_t obj_iter, float64_t stepsize_iter, uint32_t num_impostors_iter);
+
+	private:
+		/** register parameters */
+		void init();
+
+	public:
+		/** objective function at each iteration */
+		SGVector<float64_t> obj;
+
+		/** step size at each iteration */
+		SGVector<float64_t> stepsize;
+
+		/** number of impostors at each iteration */
+		SGVector<uint32_t> num_impostors;
+};
 
 } /* namespace shogun */
 

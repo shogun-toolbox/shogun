@@ -26,6 +26,9 @@ using namespace Eigen;
 CLMNN::CLMNN()
 {
 	init();
+
+	m_statistics = new CLMNNStatistics();
+	SG_REF(m_statistics);
 }
 
 CLMNN::CLMNN(CDenseFeatures<float64_t>* features, CMulticlassLabels* labels, int32_t k)
@@ -38,12 +41,16 @@ CLMNN::CLMNN(CDenseFeatures<float64_t>* features, CMulticlassLabels* labels, int
 
 	SG_REF(m_features)
 	SG_REF(m_labels)
+
+	m_statistics = new CLMNNStatistics();
+	SG_REF(m_statistics);
 }
 
 CLMNN::~CLMNN()
 {
 	SG_UNREF(m_features)
 	SG_UNREF(m_labels)
+	SG_UNREF(m_statistics);
 }
 
 const char* CLMNN::get_name() const
@@ -85,6 +92,8 @@ void CLMNN::train(SGMatrix<float64_t> init_transform)
 	uint32_t iter = 0;
 	// Criterion for termination
 	bool stop = false;
+	// Make space for the training statistics
+	m_statistics->resize(m_maxiter);
 
 	/// Main loop
 	while (!stop)
@@ -121,9 +130,15 @@ void CLMNN::train(SGMatrix<float64_t> init_transform)
 		// Update previous set of impostors
 		prev_impostors = cur_impostors;
 
+		// Store statistics for this iteration
+		m_statistics->set(iter-1, obj[iter-1], stepsize, cur_impostors.size());
+
 		SG_DEBUG("iteration=%d, objective=%.4f, #impostors=%4d, stepsize=%.4E\n",
 				iter, obj[iter-1], cur_impostors.size(), stepsize)
 	}
+
+	// Truncate statistics in case convergence was reached in less than maxiter
+	m_statistics->resize(iter);
 
 	/// Store the transformation found in the class attribute
 	int32_t nfeats = x->get_num_features();
@@ -250,6 +265,12 @@ void CLMNN::set_diagonal(const bool diagonal)
 	m_diagonal = diagonal;
 }
 
+CLMNNStatistics* CLMNN::get_statistics() const
+{
+	SG_REF(m_statistics);
+	return m_statistics;
+}
+
 void CLMNN::init()
 {
 	SG_ADD(&m_linear_transform, "linear_transform",
@@ -273,6 +294,8 @@ void CLMNN::init()
 	SG_ADD(&m_obj_threshold, "obj_threshold", "Objective threshold",
 			MS_NOT_AVAILABLE)
 	SG_ADD(&m_diagonal, "m_diagonal", "Diagonal transformation", MS_NOT_AVAILABLE);
+	SG_ADD((CSGObject**) &m_statistics, "statistics", "Training statistics",
+			MS_NOT_AVAILABLE);
 
 	m_features = NULL;
 	m_labels = NULL;
@@ -284,6 +307,50 @@ void CLMNN::init()
 	m_correction = 15;
 	m_obj_threshold = 1e-9;
 	m_diagonal = false;
+	m_statistics = NULL;
+}
+
+CLMNNStatistics::CLMNNStatistics()
+{
+	init();
+}
+
+CLMNNStatistics::~CLMNNStatistics()
+{
+}
+
+const char* CLMNNStatistics::get_name() const
+{
+	return "LMNNStatistics";
+}
+
+void CLMNNStatistics::resize(int32_t size)
+{
+	REQUIRE(size > 0, "The new size in CLMNNStatistics::resize must be larger than zero."
+			 " Given value is %d.\n", size);
+
+	obj.resize_vector(size);
+	stepsize.resize_vector(size);
+	num_impostors.resize_vector(size);
+}
+
+void CLMNNStatistics::set(index_t iter, float64_t obj_iter, float64_t stepsize_iter,
+		uint32_t num_impostors_iter)
+{
+	REQUIRE(iter >= 0 && iter < obj.vlen, "The iteration index in CLMNNStatistics::set "
+			"must be larger or equal to zero and less than the size (%d). Given valu is %d.\n", obj.vlen, iter);
+
+	obj[iter] = obj_iter;
+	stepsize[iter] = stepsize_iter;
+	num_impostors[iter] = num_impostors_iter;
+}
+
+void CLMNNStatistics::init()
+{
+	SG_ADD(&obj, "obj", "Objective at each iteration", MS_NOT_AVAILABLE);
+	SG_ADD(&stepsize, "stepsize", "Step size at each iteration", MS_NOT_AVAILABLE);
+	SG_ADD(&num_impostors, "num_impostors", "Number of impostors at each iteration",
+			MS_NOT_AVAILABLE);
 }
 
 #endif /* HAVE_LAPACK */
