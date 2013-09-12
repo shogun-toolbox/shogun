@@ -20,7 +20,7 @@ def evaluation_cross_validation_regression (train_fname=traindat,label_fname=lab
 	from modshogun import GaussianKernel, KernelRidgeRegression, CSVFile
 
 	# training data
-	feats_train=RealFeatures(CSVFile(train_fname))
+	features=RealFeatures(CSVFile(train_fname))
 	labels=RegressionLabels(CSVFile(label_fname))
 
 	# kernel and predictor

@@ -10,7 +10,7 @@ def features_io_modular (fm_train_real, label_train_twoclass):
 	import numpy
 	from modshogun import SparseRealFeatures, RealFeatures, MulticlassLabels
 	from modshogun import GaussianKernel
-	from modshogun import CSVFile, BinaryFile, HDF5File
+	from modshogun import LibSVMFile, CSVFile, BinaryFile, HDF5File
 
 	feats=SparseRealFeatures(fm_train_real)
 	feats2=SparseRealFeatures()
@@ -18,13 +18,13 @@ def features_io_modular (fm_train_real, label_train_twoclass):
 	f=BinaryFile("fm_train_sparsereal.bin","w")
 	feats.save(f)
 
-	f=CSVFile("fm_train_sparsereal.ascii","w")
+	f=LibSVMFile("fm_train_sparsereal.ascii","w")
 	feats.save(f)
 
 	f=BinaryFile("fm_train_sparsereal.bin")
 	feats2.load(f)
 
-	f=CSVFile("fm_train_sparsereal.ascii")
+	f=LibSVMFile("fm_train_sparsereal.ascii")
 	feats2.load(f)
 
 	feats=RealFeatures(fm_train_real)
