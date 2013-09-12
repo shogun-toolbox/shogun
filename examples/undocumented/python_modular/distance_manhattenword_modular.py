@@ -1,21 +1,15 @@
 #!/usr/bin/env python
-from tools.load import LoadMatrix
-lm=LoadMatrix()
-
-traindna = lm.load_dna('../data/fm_train_dna.dat')
-testdna = lm.load_dna('../data/fm_test_dna.dat')
-testdat = lm.load_numbers('../data/fm_test_real.dat')
+traindna = '../data/fm_train_dna.dat'
+testdna = '../data/fm_test_dna.dat'
 
 parameter_list = [[traindna,testdna,testdat,3,0,False],[traindna,testdna,testdat,4,0,False]]
 
-def distance_manhattenword_modular (fm_train_dna=traindna ,fm_test_dna=testdna,fm_test_real=testdat,order=3,gap=0,reverse=False):
+def distance_manhattenword_modular (train_fname=traindna ,test_fname=testdna,order=3,gap=0,reverse=False):
 
 	from modshogun import StringCharFeatures, StringWordFeatures, DNA
-	from modshogun import SortWordString
-	from modshogun import ManhattanWordDistance
+	from modshogun import SortWordString, ManhattanWordDistance, CSVFile
 
-	charfeat=StringCharFeatures(DNA)
-	charfeat.set_features(fm_train_dna)
+	charfeat=StringCharFeatures(CSVFile(train_fname), DNA)
 	feats_train=StringWordFeatures(charfeat.get_alphabet())
 	feats_train.obtain_from_char(charfeat, order-1, order, gap, reverse)
 	preproc=SortWordString()
@@ -23,8 +17,7 @@ def distance_manhattenword_modular (fm_train_dna=traindna ,fm_test_dna=testdna,f
 	feats_train.add_preprocessor(preproc)
 	feats_train.apply_preprocessor()
 
-	charfeat=StringCharFeatures(DNA)
-	charfeat.set_features(fm_test_dna)
+	charfeat=StringCharFeatures(CSVFile(test_fname), DNA)
 	feats_test=StringWordFeatures(charfeat.get_alphabet())
 	feats_test.obtain_from_char(charfeat, order-1, order, gap, reverse)
 	feats_test.add_preprocessor(preproc)

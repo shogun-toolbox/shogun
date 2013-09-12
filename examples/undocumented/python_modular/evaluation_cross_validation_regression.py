@@ -8,29 +8,20 @@
 # Written (W) 2012 Heiko Strathmann
 # Copyright (C) 2012 Berlin Institute of Technology and Max-Planck-Society
 #
+traindat = '../data/fm_train_real.dat'
+label_traindat = '../data/label_train_twoclass.dat'
 
-from numpy import array
-from numpy.random import seed, rand
-from tools.load import LoadMatrix
-lm=LoadMatrix()
+parameter_list = [[traindat,label_traindat,0.8,1e-6],[traindat,label_traindat,0.9,1e-7]]
 
-traindat = lm.load_numbers('../data/fm_train_real.dat')
-testdat = lm.load_numbers('../data/fm_test_real.dat')
-label_traindat = lm.load_labels('../data/label_train_twoclass.dat')
-
-parameter_list = [[traindat,testdat,label_traindat,0.8,1e-6],[traindat,testdat,label_traindat,0.9,1e-7]]
-
-def evaluation_cross_validation_regression (fm_train=traindat,fm_test=testdat,label_train=label_traindat,width=0.8,tau=1e-6):
+def evaluation_cross_validation_regression (train_fname=traindat,label_fname=label_traindat,width=0.8,tau=1e-6):
     from modshogun import CrossValidation, CrossValidationResult
-    from modshogun import MeanSquaredError
-    from modshogun import CrossValidationSplitting
+    from modshogun import MeanSquaredError, CrossValidationSplitting
     from modshogun import RegressionLabels, RealFeatures
-    from modshogun import GaussianKernel
-    from modshogun import KernelRidgeRegression
+    from modshogun import GaussianKernel, KernelRidgeRegression, CSVFile
 
     # training data
-    features=RealFeatures(fm_train)
-    labels=RegressionLabels(label_train)
+	feats_train=RealFeatures(CSVFile(train_fname))
+    labels=RegressionLabels(CSVFile(label_fname))
 
     # kernel and predictor
     kernel=GaussianKernel()

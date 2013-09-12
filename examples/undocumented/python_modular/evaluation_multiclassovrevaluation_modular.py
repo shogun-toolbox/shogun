@@ -1,24 +1,18 @@
 #!/usr/bin/env python
-from tools.load import LoadMatrix
-from numpy import random
-lm=LoadMatrix()
-
-traindat = lm.load_numbers('../data/fm_train_real.dat')
-testdat  = lm.load_numbers('../data/fm_test_real.dat')
-label_traindat = lm.load_labels('../data/label_train_multiclass.dat')
+traindat = '../data/fm_train_real.dat'
+label_traindat = '../data/label_train_multiclass.dat'
 
 parameter_list = [[traindat, label_traindat]]
 
-def evaluation_multiclassovrevaluation_modular (traindat, label_traindat):
-	from modshogun import MulticlassLabels
+def evaluation_multiclassovrevaluation_modular(train_fname=traindat, label_fname=label_traindat):
 	from modshogun import MulticlassOVREvaluation,ROCEvaluation
 	from modshogun import MulticlassLibLinear,RealFeatures,ContingencyTableEvaluation,ACCURACY
-	from modshogun import Math
+	from modshogun import MulticlassLabels, Math, CSVFile
 	
 	Math.init_random(1)
 
-	ground_truth_labels = MulticlassLabels(label_traindat)
-	svm = MulticlassLibLinear(1.0,RealFeatures(traindat),MulticlassLabels(label_traindat))
+	ground_truth_labels = MulticlassLabels(CSVFile(label_fname)))
+	svm = MulticlassLibLinear(1.0,RealFeatures(CSVFile(train_fname)),ground_truth_labels)
 	svm.parallel.set_num_threads(1)
 	svm.train()
 	predicted_labels = svm.apply()
