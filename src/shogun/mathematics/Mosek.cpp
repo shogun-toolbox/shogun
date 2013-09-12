@@ -28,7 +28,13 @@ CMosek::CMosek(int32_t num_con, int32_t num_var)
 : CSGObject()
 {
 	// Create MOSEK environment
+#if (MSK_VERSION_MAJOR == 6)
 	m_rescode = MSK_makeenv(&m_env, NULL, NULL, NULL, NULL);
+#elif (MSK_VERSION_MAJOR == 7)
+	m_rescode = MSK_makeenv(&m_env, NULL);
+#else
+	#error "Unsupported Mosek version"
+#endif
 
 #ifdef DEBUG_MOSEK
 	// Direct the environment's log stream to SG_PRINT
@@ -91,9 +97,17 @@ MSKrescodee CMosek::init_sosvm(int32_t M, int32_t N,
 	m_rescode = MSK_putmaxnumanz(m_task, (M+1)*N*N);
 
 	// Append optimization variables initialized to zero
+#if (MSK_VERSION_MAJOR == 6)
 	m_rescode = MSK_append(m_task, MSK_ACC_VAR, num_var);
+#else
+	#error "Unsupported Mosek version"
+#endif
 	// Append empty constraints initialized with no bounds
+#if (MSK_VERSION_MAJOR == 6)
 	m_rescode = MSK_append(m_task, MSK_ACC_CON, num_con);
+#else
+	#error "Unsupported Mosek version"
+#endif
 	// Set the constant term in the objective equal to zero
 	m_rescode = MSK_putcfix(m_task, 0.0);
 
@@ -169,8 +183,12 @@ MSKrescodee CMosek::add_constraint_sosvm(
 	asub[idx] = dPsi.vlen + num_aux + train_idx;
 	aval[idx] = -1;
 
+#if (MSK_VERSION_MAJOR == 6)
 	m_rescode = MSK_putavec(m_task, MSK_ACC_CON, con_idx, nnz+1,
 			asub.vector, aval.vector);
+#else
+	#error "Unsupported Mosek version"
+#endif
 
 	if ( m_rescode == MSK_RES_OK )
 	{
@@ -241,9 +259,14 @@ MSKrescodee CMosek::wrapper_putaveclist(
 	if ( A.num_rows > 0 )
 		ptre[A.num_rows-1] = nnza;
 
-	MSKrescodee ret = MSK_putaveclist(task, MSK_ACC_CON, A.num_rows, sub.vector,
+	MSKrescodee ret;
+#if (MSK_VERSION_MAJOR == 6)
+	ret = MSK_putaveclist(task, MSK_ACC_CON, A.num_rows, sub.vector,
 			ptrb.vector, ptre.vector,
 			asub.vector, aval.vector);
+#else
+	#error "Unsupported Mosek version"
+#endif
 
 	REQUIRE(ret == MSK_RES_OK, "MOSEK Error in CMosek::wrapper_putaveclist(). "
 			"Enable DEBUG_MOSEK for details.\n");
@@ -336,8 +359,11 @@ MSKrescodee CMosek::optimize(SGVector< float64_t > sol)
 		// MSK_SOL_ITR: the interior solution
 		// MSK_SOL_BAS: the basic solution
 		// MSK_SOL_ITG: the integer solution
+#if (MSK_VERSION_MAJOR == 6)
 		MSK_getsolutionstatus(m_task, MSK_SOL_ITR, NULL, &solsta);
-
+#else
+	#error "Unsupported Mosek Version"
+#endif
 		switch (solsta)
 		{
 		case MSK_SOL_STA_OPTIMAL:
