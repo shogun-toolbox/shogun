@@ -10,8 +10,7 @@ def evaluation_multiclassovrevaluation_modular(train_fname=traindat, label_fname
 	from modshogun import MulticlassLabels, Math, CSVFile
 	
 	Math.init_random(1)
-
-	ground_truth_labels = MulticlassLabels(CSVFile(label_fname)))
+	ground_truth_labels = MulticlassLabels(CSVFile(label_fname))
 	svm = MulticlassLibLinear(1.0,RealFeatures(CSVFile(train_fname)),ground_truth_labels)
 	svm.parallel.set_num_threads(1)
 	svm.train()
@@ -26,9 +25,7 @@ def evaluation_multiclassovrevaluation_modular(train_fname=traindat, label_fname
 	evaluator = MulticlassOVREvaluation(binary_evaluator)
 	mean_accuracy = evaluator.evaluate(predicted_labels,ground_truth_labels)
 	#print mean_accuracy
-
 	return mean_roc, mean_accuracy, predicted_labels, svm
-
 
 if __name__=='__main__':
 	print('MulticlassOVREvaluation')

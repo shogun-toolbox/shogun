@@ -2,10 +2,9 @@
 traindna = '../data/fm_train_dna.dat'
 testdna = '../data/fm_test_dna.dat'
 
-parameter_list = [[traindna,testdna,testdat,3,0,False],[traindna,testdna,testdat,4,0,False]]
+parameter_list = [[traindna,testdna,3,0,False],[traindna,testdna,4,0,False]]
 
-def distance_manhattenword_modular (train_fname=traindna ,test_fname=testdna,order=3,gap=0,reverse=False):
-
+def distance_manhattenword_modular (train_fname=traindna,test_fname=testdna,order=3,gap=0,reverse=False):
 	from modshogun import StringCharFeatures, StringWordFeatures, DNA
 	from modshogun import SortWordString, ManhattanWordDistance, CSVFile
 
