@@ -42,6 +42,7 @@ CDomainAdaptationSVM::~CDomainAdaptationSVM()
 
 void CDomainAdaptationSVM::init(CSVM* pre_svm, float64_t B_param)
 {
+	REQUIRE(pre_svm != NULL, "Pre SVM should not be null");
 	// increase reference counts
 	SG_REF(pre_svm);
 
