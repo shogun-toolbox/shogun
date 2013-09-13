@@ -7,6 +7,7 @@
 #cmakedefine DSFMT_MEXP @DSFMT_MEXP@
 
 #cmakedefine HAVE_HDF5 1
+#cmakedefine HAVE_CURL 1
 #cmakedefine HAVE_JSON 1
 #cmakedefine HAVE_XML 1
 #cmakedefine HAVE_LARGEFILE 1
