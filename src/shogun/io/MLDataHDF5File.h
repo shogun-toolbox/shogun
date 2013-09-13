@@ -11,8 +11,7 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_HDF5
-#ifdef HAVE_CURL
+#if defined(HAVE_HDF5) && defined( HAVE_CURL)
 #include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/io/File.h>
@@ -264,7 +263,7 @@ public:
 	{
 		SG_NOTIMPLEMENTED
 	}
-    	virtual void set_vector(const float32_t*, int32_t)
+	virtual void set_vector(const float32_t*, int32_t)
 	{
 		SG_NOTIMPLEMENTED
 	}
@@ -435,7 +434,6 @@ public:
 	{
 		SG_NOTIMPLEMENTED
 	}
-                    
 	/** @return object name */
 	virtual const char* get_name() const { return "HDF5File"; }
 
@@ -474,7 +472,6 @@ protected:
 	char *fname;
 };
 }
-#endif //  HAVE_CURL
-#endif //  HAVE_HDF5
+#endif //  HAVE_CURL && HAVE_HDF5
 #endif //__HDF5_FILE_H__
 
