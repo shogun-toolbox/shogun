@@ -15,6 +15,7 @@
 #include <shogun/io/LineReader.h>
 #include <shogun/io/Parser.h>
 #include <shogun/lib/DelimiterTokenizer.h>
+#include <shogun/lib/v_array.h>
 
 namespace shogun
 {
