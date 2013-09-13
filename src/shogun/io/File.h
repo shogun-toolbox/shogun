@@ -26,7 +26,7 @@ template <class ST> struct SGSparseVectorEntry;
  *
  * A file is assumed to be a seekable raw data stream.
  *
- * \sa CAsciiFile
+ * \sa CCSVFile
  * \sa CBinaryFile
  * \sa CHDF5File
  *

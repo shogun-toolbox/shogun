@@ -1,4 +1,4 @@
-#include <shogun/io/AsciiFile.h>
+#include <shogun/io/CSVFile.h>
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/features/DenseFeatures.h>
@@ -18,7 +18,7 @@ int main(int argc, char** argv)
 	init_shogun_with_defaults();
 
 	/* dense features from matrix */
-	CAsciiFile* feature_file = new CAsciiFile(fname_feats);
+	CCSVFile* feature_file = new CCSVFile(fname_feats);
 	SGMatrix<float64_t> mat=SGMatrix<float64_t>();
 	mat.load(feature_file);
 	SG_UNREF(feature_file);
@@ -27,7 +27,7 @@ int main(int argc, char** argv)
 	SG_REF(features);
 
 	/* labels from vector */
-	CAsciiFile* label_file = new CAsciiFile(fname_labels);
+	CCSVFile* label_file = new CCSVFile(fname_labels);
 	SGVector<float64_t> label_vec;
 	label_vec.load(label_file);
 	SG_UNREF(label_file);

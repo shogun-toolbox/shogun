@@ -16,7 +16,7 @@
 
 #include <shogun/lib/config.h>
 #include <shogun/io/SGIO.h>
-#include <shogun/io/AsciiFile.h>
+#include <shogun/io/CSVFile.h>
 
 #include <shogun/distance/Distance.h>
 #include <shogun/distance/DenseDistance.h>
@@ -154,7 +154,7 @@ bool CGUIDistance::save_distance(char* param)
 	{
 		if ((sscanf(param, "%s", filename))==1)
 		{
-			CAsciiFile* file=new CAsciiFile(filename);
+			CCSVFile* file=new CCSVFile(filename);
 			try
 			{
 				distance->save(file);

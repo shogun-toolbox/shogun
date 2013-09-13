@@ -15,7 +15,7 @@
 
 #include <shogun/lib/config.h>
 #include <shogun/io/SGIO.h>
-#include <shogun/io/AsciiFile.h>
+#include <shogun/io/CSVFile.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/kernel/CombinedKernel.h>
 #include <shogun/kernel/Chi2Kernel.h>
@@ -838,7 +838,7 @@ bool CGUIKernel::save_kernel(char* filename)
 {
 	if (kernel && initialized)
 	{
-		CAsciiFile* file=new CAsciiFile(filename);
+		CCSVFile* file=new CCSVFile(filename);
 		try
 		{
 			kernel->save(file);

@@ -14,7 +14,7 @@
 
 #include <shogun/lib/config.h>
 #include <shogun/io/SGIO.h>
-#include <shogun/io/AsciiFile.h>
+#include <shogun/io/CSVFile.h>
 
 using namespace shogun;
 
@@ -68,7 +68,7 @@ bool CGUIFeatures::load(
 	SG_UNREF(*f_ptr);
 	*f_ptr=NULL;
 
-	CAsciiFile* file=new CAsciiFile(filename);
+	CCSVFile* file=new CCSVFile(filename);
 	if (strncmp(fclass, "SIMPLE", 6)==0)
 	{
 		if (strncmp(type, "REAL", 4)==0)
@@ -159,7 +159,7 @@ bool CGUIFeatures::save(char* filename, char* type, char* target)
 	{
 		try
 		{
-			CAsciiFile* file=new CAsciiFile(filename, 'w');
+			CCSVFile* file=new CCSVFile(filename, 'w');
 			if (strncmp(type, "REAL", 4)==0)
 			{
 				((CDenseFeatures<float64_t>*) (*f_ptr))->save(file);

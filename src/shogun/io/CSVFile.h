@@ -358,6 +358,16 @@ public:
 			const SGString<floatmax_t>* strings, int32_t num_str);
 	//@}
 
+	/**
+	 * Split a given substring into an array of substrings
+	 * based on a specified delimiter
+	 *
+	 * @param delim delimiter to use
+	 * @param s substring to tokenize
+	 * @param ret array of substrings, returned
+	 */
+	static void tokenize(char delim, substring s, v_array<substring> &ret);
+
 	virtual const char* get_name() const { return "CSVFile"; }
 
 private:

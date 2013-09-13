@@ -10,7 +10,7 @@
 #ifndef __STREAMING_ASCIIFILE_H__
 #define __STREAMING_ASCIIFILE_H__
 
-#include <shogun/io/AsciiFile.h>
+#include <shogun/io/CSVFile.h>
 #include <shogun/io/streaming/StreamingFile.h>
 #include <shogun/features/SparseFeatures.h>
 
@@ -18,7 +18,7 @@ namespace shogun
 {
 /** @brief Class StreamingAsciiFile to read vector-by-vector from ASCII files.
  *
- * The object must be initialized like a CAsciiFile.
+ * The object must be initialized like a CCSVFile.
  */
 class CStreamingAsciiFile: public CStreamingFile
 {

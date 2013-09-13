@@ -13,7 +13,7 @@
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/multiclass/MulticlassLibLinear.h>
 #include <shogun/io/SGIO.h>
-#include <shogun/io/AsciiFile.h>
+#include <shogun/io/CSVFile.h>
 #include <shogun/evaluation/CrossValidation.h>
 #include <shogun/evaluation/StratifiedCrossValidationSplitting.h>
 #include <shogun/evaluation/MulticlassAccuracy.h>
@@ -28,7 +28,7 @@ const char fname_labels[] = "../data/label_train_multiclass.dat";
 void test_cross_validation()
 {
 	/* dense features from matrix */
-	CAsciiFile* feature_file = new CAsciiFile(fname_feats);
+	CCSVFile* feature_file = new CCSVFile(fname_feats);
 	SGMatrix<float64_t> mat=SGMatrix<float64_t>();
 	mat.load(feature_file);
 	SG_UNREF(feature_file);
@@ -37,7 +37,7 @@ void test_cross_validation()
 	SG_REF(features);
 
 	/* labels from vector */
-	CAsciiFile* label_file = new CAsciiFile(fname_labels);
+	CCSVFile* label_file = new CCSVFile(fname_labels);
 	SGVector<float64_t> label_vec;
 	label_vec.load(label_file);
 	SG_UNREF(label_file);
