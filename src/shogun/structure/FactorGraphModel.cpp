@@ -342,7 +342,7 @@ CResultSet* CFactorGraphModel::argmax(SGVector<float64_t> w, int32_t feat_idx, b
 	CMAPInference infer_met(fg, m_inf_type);
 	if (training)
 	{
-		infer_met.loss_augmentation(y_truth); // wrong assignments -delta()
+		fg->loss_augmentation(y_truth); // wrong assignments -delta()
 
 		if (m_verbose)
 		{

@@ -202,6 +202,9 @@ void CFactor::set_energy(int32_t ei, float64_t value)
 	REQUIRE(ei >= 0 && ei < m_factor_type->get_num_assignments(), 
 		"%s::set_energy(): ei is out of index!\n", get_name());
 
+	REQUIRE(is_data_dependent(), "%s::set_energy(): \
+		energy table is fixed in data dependent factor!\n", get_name());
+
 	m_energies[ei] = value;
 }
 

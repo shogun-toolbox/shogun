@@ -9,6 +9,7 @@
  */
 
 #include <shogun/structure/FactorGraph.h>
+#include <shogun/labels/FactorGraphLabels.h>
 
 using namespace shogun;
 
@@ -256,5 +257,63 @@ bool CFactorGraph::is_connected_graph() const
 bool CFactorGraph::is_tree_graph() const
 {
 	return (m_has_cycle == false && m_dset->get_num_sets() == 1);
+}
+
+void CFactorGraph::loss_augmentation(CFactorGraphObservation* gt)
+{
+	loss_augmentation(gt->get_data(), gt->get_loss_weights());
+}
+
+void CFactorGraph::loss_augmentation(SGVector<int32_t> states_gt, SGVector<float64_t> loss)
+{
+	if (loss.size() == 0)
+	{
+		loss.resize_vector(states_gt.size());
+		SGVector<float64_t>::fill_vector(loss.vector, loss.vlen, 1.0);	
+	}
+
+	int32_t num_vars = states_gt.size();
+	ASSERT(num_vars == loss.size());
+
+	SGVector<int32_t> var_flags(num_vars);
+	var_flags.zero();
+
+	// augment loss to incorrect states in the first factor containing the variable
+	// since += L_i for each variable if it takes wrong state ever
+	// TODO: augment unary factors 
+	for (int32_t fi = 0; fi < m_factors->get_num_elements(); ++fi)
+	{
+		CFactor* fac = dynamic_cast<CFactor*>(m_factors->get_element(fi));
+		SGVector<int32_t> vars = fac->get_variables();
+		for (int32_t vi = 0; vi < vars.size(); vi++)
+		{
+			int32_t vv = vars[vi];
+			ASSERT(vv < num_vars);
+			if (var_flags[vv])
+				continue;
+
+			SGVector<float64_t> energies = fac->get_energies();
+			for (int32_t ei = 0; ei < energies.size(); ei++)
+			{
+				CTableFactorType* ftype = fac->get_factor_type();
+				int32_t vstate = ftype->state_from_index(ei, vi);
+				SG_UNREF(ftype);
+
+				if (states_gt[vv] == vstate)
+					continue;
+
+				// -delta(y_n, y_i_n)
+				fac->set_energy(ei, energies[ei] - loss[vv]);
+			}
+
+			var_flags[vv] = 1;
+		}
+
+		SG_UNREF(fac);
+	}
+
+	// make sure all variables have been checked
+	int32_t min_var = SGVector<int32_t>::min(var_flags.vector, var_flags.vlen);
+	ASSERT(min_var == 1);
 }
 
