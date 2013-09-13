@@ -137,10 +137,14 @@ template<class ST> ST* CDenseFeatures<ST>::get_feature_vector(int32_t num, int32
 			tmp_feat_before = tmp_feat_after;
 		}
 
-		memcpy(feat, tmp_feat_after, sizeof(ST) * tmp_len);
-		SG_FREE(tmp_feat_after);
+		// note: tmp_feat_after should be checked as it is used by memcpy
+		if (tmp_feat_after)
+		{
+			memcpy(feat, tmp_feat_after, sizeof(ST) * tmp_len);
+			SG_FREE(tmp_feat_after);
 
-		len = tmp_len;
+			len = tmp_len;
+		}
 	}
 	return feat;
 }
