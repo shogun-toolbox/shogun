@@ -138,11 +138,14 @@ template<class ST> SGSparseVector<ST> CSparseFeatures<ST>::get_sparse_feature_ve
 				tmp_feat_before=tmp_feat_after;
 			}
 
-			memcpy(result.features, tmp_feat_after,
-					sizeof(SGSparseVectorEntry<ST>)*tmp_len);
+			if (tmp_feat_after)
+			{
+				memcpy(result.features, tmp_feat_after,
+						sizeof(SGSparseVectorEntry<ST>)*tmp_len);
 
-			SG_FREE(tmp_feat_after);
-			result.num_feat_entries=tmp_len ;
+				SG_FREE(tmp_feat_after);
+				result.num_feat_entries=tmp_len;
+			}
 			SG_DEBUG("len: %d len2: %d\n", result.num_feat_entries, get_num_features())
 		}
 		return result ;
