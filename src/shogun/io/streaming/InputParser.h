@@ -11,9 +11,11 @@
 #ifndef __INPUTPARSER_H__
 #define __INPUTPARSER_H__
 
+#include <shogun/lib/common.h>
+#ifdef HAVE_PTHREAD
+
 #include <shogun/io/SGIO.h>
 #include <shogun/io/streaming/StreamingFile.h>
-#include <shogun/lib/common.h>
 #include <shogun/io/streaming/ParseBuffer.h>
 #include <pthread.h>
 
@@ -530,8 +532,8 @@ template <class T> void* CInputParser<T>::main_parse_loop(void* params)
 		pthread_testcancel();
 
 		current_example = examples_ring->get_free_example();
-		current_feature_vector = current_example->fv.vector;
-		current_len = current_example->fv.vlen;
+		current_feature_vector = current_example->fv;
+		current_len = current_example->length;
 		current_label = current_example->label;
 
 		if (example_type == E_LABELLED)
@@ -549,8 +551,8 @@ template <class T> void* CInputParser<T>::main_parse_loop(void* params)
 		}
 
 		current_example->label = current_label;
-		current_example->fv.vector = current_feature_vector;
-		current_example->fv.vlen = current_len;
+		current_example->fv = current_feature_vector;
+		current_example->length = current_len;
 
 		examples_ring->copy_example(current_example);
 
@@ -635,8 +637,8 @@ template <class T> int32_t CInputParser<T>::get_next_example(T* &fv,
         }
     }
 
-    fv = ex->fv.vector;
-    length = ex->fv.vlen;
+    fv = ex->fv;
+    length = ex->length;
     label = ex->label;
 
     return 1;
@@ -670,4 +672,7 @@ template <class T> void CInputParser<T>::exit_parser()
     pthread_cancel(parse_thread);
 }
 }
+
+#endif /* HAVE_PTHREAD */
+
 #endif // __INPUTPARSER_H__
