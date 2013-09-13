@@ -1,3 +1,7 @@
+#include <shogun/lib/config.h>
+#include <gtest/gtest.h>
+
+#if defined(HAVE_HDF5) && defined( HAVE_CURL)
 #include <shogun/io/MLDataHDF5File.h>
 #include <shogun/io/HDF5File.h>
 #include <shogun/lib/SGVector.h>
@@ -6,7 +10,6 @@
 
 #include <hdf5.h>
 
-#include <gtest/gtest.h>
 
 using namespace shogun;
 
@@ -43,3 +46,8 @@ TEST(MLDataHDF5File, read_matrix)
 	}
 	SG_UNREF(fin);
 }
+#else
+TEST(MLDataHDF5File, read_matrix)
+{
+}
+#endif
