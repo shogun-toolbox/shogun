@@ -42,6 +42,12 @@ public:
 	 */
 	virtual ~CStreamingAsciiFile();
 
+	/** set delimiting character
+	 *
+	 * @param delimiter the character used as delimiter
+	 */
+	void set_delimiter(char delimiter);
+
 	/**
 	 * Utility function to convert a string to a boolean value
 	 *
@@ -106,6 +112,9 @@ private:
 
 	/// Helper for parsing
 	v_array<substring> words;
+
+	/** delimiter */
+	char m_delimiter;
 };
 }
 #endif //__STREAMING_ASCIIFILE_H__

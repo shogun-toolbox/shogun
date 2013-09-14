@@ -18,12 +18,14 @@ using namespace shogun;
 CStreamingAsciiFile::CStreamingAsciiFile()
 		: CStreamingFile()
 {
-		SG_UNSTABLE("CStreamingAsciiFile::CStreamingAsciiFile()", "\n")
+	SG_UNSTABLE("CStreamingAsciiFile::CStreamingAsciiFile()", "\n")
+	m_delimiter = ' ';
 }
 
 CStreamingAsciiFile::CStreamingAsciiFile(const char* fname, char rw)
 		: CStreamingFile(fname, rw)
 {
+	m_delimiter = ' ';
 }
 
 CStreamingAsciiFile::~CStreamingAsciiFile()
@@ -128,7 +130,7 @@ GET_VECTOR(get_longreal_vector, atoi, floatmax_t)
 																			\
 				substring example_string = {line, line + num_chars};		\
 																			\
-				CCSVFile::tokenize(',', example_string, words);				\
+				CCSVFile::tokenize(m_delimiter, example_string, words);		\
 																			\
 				len = words.index();										\
 				substring* feature_start = &words[0];						\
@@ -247,7 +249,7 @@ GET_VECTOR_AND_LABEL(get_longreal_vector_and_label, atoi, floatmax_t)
 																		\
 				substring example_string = {line, line + num_chars};	\
 																		\
-				CCSVFile::tokenize(',', example_string, words);			\
+				CCSVFile::tokenize(m_delimiter, example_string, words);	\
 																		\
 				label = SGIO::float_of_substring(words[0]);				\
 																		\
@@ -591,4 +593,9 @@ void CStreamingAsciiFile::append_item(
 
 		SG_DEBUG("current %c, len %d, item %s\n", *ptr_data, len, item)
 		items->append_element(item);
+}
+
+void CStreamingAsciiFile::set_delimiter(char delimiter)
+{
+	m_delimiter = delimiter;
 }

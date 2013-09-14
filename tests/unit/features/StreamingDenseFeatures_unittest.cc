@@ -33,7 +33,9 @@ TEST(StreamingDenseFeaturesTest, example_reading_from_file)
 	SG_UNREF(saved_features);
 
 	CStreamingAsciiFile* input = new CStreamingAsciiFile(fname);
-	CStreamingDenseFeatures<float64_t>* feats = new CStreamingDenseFeatures<float64_t>(input, false, 5);
+	input->set_delimiter(',');
+	CStreamingDenseFeatures<float64_t>* feats
+		= new CStreamingDenseFeatures<float64_t>(input, false, 5);
 
 	index_t i = 0;
 	feats->start_parser();
