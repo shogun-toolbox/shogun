@@ -27,8 +27,7 @@ TEST(StreamingDenseFeaturesTest, example_reading_from_file)
 		data.matrix[i] = sg_rand->std_normal_distrib();
 
 	CDenseFeatures<float64_t>* orig_feats=new CDenseFeatures<float64_t>(data);
-	//CCSVFile* saved_features = new CCSVFile(fname, 'w');
-	CAsciiFile* saved_features = new CAsciiFile(fname, 'w');
+	CCSVFile* saved_features = new CCSVFile(fname, 'w');
 	orig_feats->save(saved_features);
 	saved_features->close();
 	SG_UNREF(saved_features);
