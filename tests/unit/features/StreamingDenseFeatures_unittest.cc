@@ -45,7 +45,7 @@ TEST(StreamingDenseFeaturesTest, example_reading_from_file)
 		ASSERT_EQ(dim, example.vlen);
 
 		for (index_t j = 0; j < dim; j++)
-			EXPECT_NEAR(expected.vector[j], example.vector[j], 1E-6);
+			EXPECT_NEAR(expected.vector[j], example.vector[j], 1E-5);
 
 		feats->release_example();
 		i++;

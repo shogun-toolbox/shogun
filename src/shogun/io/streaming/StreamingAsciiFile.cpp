@@ -128,7 +128,7 @@ GET_VECTOR(get_longreal_vector, atoi, floatmax_t)
 																			\
 				substring example_string = {line, line + num_chars};		\
 																			\
-				CCSVFile::tokenize(' ', example_string, words);			\
+				CCSVFile::tokenize(',', example_string, words);				\
 																			\
 				len = words.index();										\
 				substring* feature_start = &words[0];						\
@@ -247,7 +247,7 @@ GET_VECTOR_AND_LABEL(get_longreal_vector_and_label, atoi, floatmax_t)
 																		\
 				substring example_string = {line, line + num_chars};	\
 																		\
-				CCSVFile::tokenize(' ', example_string, words);			\
+				CCSVFile::tokenize(',', example_string, words);			\
 																		\
 				label = SGIO::float_of_substring(words[0]);				\
 																		\
