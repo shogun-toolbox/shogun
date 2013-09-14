@@ -7,9 +7,9 @@ fm_test_real <- t(as.matrix(read.table('../data/fm_test_real.dat')))
 print('GaussianShift')
 
 feats_train <- RealFeatures()
-dump <- feats_train$set_feature_matrix(feats_train, fm_train_real)
+dummy <- feats_train$set_feature_matrix(fm_train_real)
 feats_test <- RealFeatures()
-dump <- feats_test$set_feature_matrix(feats_test, fm_test_real)
+dummy <- feats_test$set_feature_matrix(fm_test_real)
 width <- 1.8
 max_shift <- as.integer(2)
 shift_step <- as.integer(1)
@@ -18,5 +18,5 @@ kernel <- GaussianShiftKernel(
 	feats_train, feats_train, width, max_shift, shift_step)
 
 km_train <- kernel$get_kernel_matrix()
-dump <- kernel$init(kernel, feats_train, feats_test)
+dump <- kernel$init(feats_train, feats_test)
 km_test <- kernel$get_kernel_matrix()
