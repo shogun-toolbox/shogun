@@ -51,7 +51,7 @@ extern "C" {
         SWIG_fail;
     }
 
-    $1 = shogun::SGVector<sg_type>((sg_type*) get_copy(r_cast(rvec), LENGTH(rvec)), LENGTH(rvec));
+    $1 = shogun::SGVector<sg_type>((sg_type*) get_copy(r_cast(rvec), sizeof(sg_type)*LENGTH(rvec)), LENGTH(rvec));
 }
 %typemap(freearg) shogun::SGVector<sg_type>
 {
@@ -103,7 +103,7 @@ TYPEMAP_OUT_SGVECTOR(INTSXP, INTEGER, uint16_t, int, "Word")
         SWIG_fail;
     }
 
-    $1 = shogun::SGMatrix<sg_type>((sg_type*) get_copy(r_cast($input), ((size_t) Rf_nrows($input))*Rf_ncols($input)), Rf_nrows($input), Rf_ncols($input));
+    $1 = shogun::SGMatrix<sg_type>((sg_type*) get_copy(r_cast($input), ((size_t) Rf_nrows($input))*Rf_ncols($input)*sizeof(sg_type)), Rf_nrows($input), Rf_ncols($input));
 }
 %typemap(freearg) shogun::SGMatrix<sg_type>
 {
