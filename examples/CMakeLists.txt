@@ -33,7 +33,7 @@ ENDIF()
 
 # r modular
 IF (RModular)
-	#add_subdirectory(undocumented/r_modular)
+	add_subdirectory(undocumented/r_modular)
 ENDIF()
 
 # perl modular
