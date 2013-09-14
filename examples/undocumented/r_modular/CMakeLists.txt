@@ -6,6 +6,6 @@ FOREACH(EXAMPLE ${R_EXAMPLES})
 			COMMAND ${R_EXECUTABLE} --no-restore --no-save --no-readline --slave -f ${EXAMPLE})
 ENDFOREACH()
 	
-install(FILES R_EXAMPLES
+install(FILES ${R_EXAMPLES}
 	DESTINATION ${R_COMPONENT_LIB_PATH}/shogun/demo
 	COMPONENT r)
