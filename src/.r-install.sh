@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-VERSION=`head -n 3 ../../NEWS | tail -n 1| awk '{ print $5 }'`
-DATE=`head -n 1 ../../NEWS | cut -f 1 -d ' '`
+VERSION=`head -n 3 ../../../../NEWS | tail -n 1| awk '{ print $5 }'`
+DATE=`head -n 1 ../../../../NEWS | cut -f 1 -d ' '`
 RVERSION=`R --slave -e "with(R.version, cat(sprintf('%s.%s', major, minor)))"`
 PLATFORM=`R --slave -e "cat(R.version\\$platform)"`
 OSTYPE=`R --slave -e "cat(.Platform\\$OS.type)"`

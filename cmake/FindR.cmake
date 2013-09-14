@@ -82,6 +82,7 @@ if ( R_EXECUTABLE )
         OUTPUT_VARIABLE R_COMPONENT_LIB_PATH
         )
   STRING(REGEX REPLACE "^\\[[0-9]\\] \"\(.*\)\"" "\\1" R_COMPONENT_LIB_PATH ${R_COMPONENT_LIB_PATH})
+  STRING(STRIP ${R_COMPONENT_LIB_PATH} R_COMPONENT_LIB_PATH)
 
   foreach ( _component ${R_FIND_COMPONENTS} )
     if ( NOT R_${_component}_FOUND )

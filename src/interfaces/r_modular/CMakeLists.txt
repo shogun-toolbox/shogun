@@ -11,11 +11,11 @@ ADD_CUSTOM_COMMAND(TARGET r_modular
 	COMMENT "Generating modshogun.RData"
 )
 
-install(FILES modshogun.so
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/modshogun.so
 	DESTINATION ${R_COMPONENT_LIB_PATH}/shogun/libs
 	COMPONENT r)
 
-install(FILES modshogun.RData
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/modshogun.RData
 	DESTINATION ${R_COMPONENT_LIB_PATH}/shogun/R
 	COMPONENT r)
 
