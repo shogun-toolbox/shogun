@@ -11,12 +11,12 @@
 #ifdef HAVE_EIGEN3
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
-#include <shogun/lib/computation/job/ScalarResult.h>
-#include <shogun/lib/computation/job/StoreScalarAggregator.h>
-#include <shogun/lib/computation/job/RationalApproximationCGMJob.h>
+#include <shogun/lib/computation/jobresult/ScalarResult.h>
+#include <shogun/lib/computation/aggregator/StoreScalarAggregator.h>
 #include <shogun/mathematics/eigen3.h>
-#include <shogun/mathematics/logdet/DenseMatrixOperator.h>
-#include <shogun/mathematics/logdet/CGMShiftedFamilySolver.h>
+#include <shogun/mathematics/linalg/linop/DenseMatrixOperator.h>
+#include <shogun/mathematics/linalg/linsolver/CGMShiftedFamilySolver.h>
+#include <shogun/mathematics/linalg/ratapprox/logdet/computation/job/RationalApproximationCGMJob.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;

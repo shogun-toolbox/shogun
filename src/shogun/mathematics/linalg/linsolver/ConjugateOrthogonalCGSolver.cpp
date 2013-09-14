@@ -66,10 +66,14 @@ SGVector<complex64_t> CConjugateOrthogonalCGSolver::solve(
 		m_relative_tolerence, m_absolute_tolerence);
 
 	// CG iteration begins
-	float64_t r_norm2=(r.dot(r)).real();
+	complex64_t r_norm2=r.transpose()*r;
 
 	for (it.begin(r); !it.end(r); ++it)
 	{
+		SG_DEBUG("CG iteration %d, residual norm %f\n",
+			it.get_iter_info().iteration_count,
+			it.get_iter_info().residual_norm);
+
 		// apply linear operator to the direction vector
 		SGVector<complex64_t> Ap_=A->apply(p_);
 		Map<VectorXcd> Ap(Ap_.vector, Ap_.vlen);
@@ -90,12 +94,12 @@ SGVector<complex64_t> CConjugateOrthogonalCGSolver::solve(
 		r-=alpha*Ap;
 
 		// compute new ||r||_{2}, if zero, converged
-		float64_t r_norm2_i=(r.dot(r)).real();
+		complex64_t r_norm2_i=r.transpose()*r;
 		if (r_norm2_i==0.0)
 			break;
 
 		// compute the beta parameter of CG
-		float64_t beta=r_norm2_i/r_norm2;
+		complex64_t beta=r_norm2_i/r_norm2;
 
 		// update direction, and ||r||_{2}
 		r_norm2=r_norm2_i;

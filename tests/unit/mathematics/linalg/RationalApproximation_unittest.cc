@@ -203,17 +203,17 @@ TEST(RationalApproximation, trace_accuracy)
 	SG_UNREF(op);
 }
 
-TEST(RationalApproximation, DISABLED_compare_direct_vs_cocg_accuracy)
+TEST(RationalApproximation, compare_direct_vs_cocg_accuracy)
 {
 	CSerialComputationEngine* e=new CSerialComputationEngine;
 	SG_REF(e);
 
 	const index_t size=2;
 	SGMatrix<float64_t> m(size, size);
-	m(0,0)=1000.0;
+	m(0,0)=1.0;
 	m(0,1)=0.0;
 	m(1,0)=0.0;
-	m(1,1)=1005.0;
+	m(1,1)=100000.0;
 
 	CDenseMatrixOperator<float64_t>* op=new CDenseMatrixOperator<float64_t>(m);
 	SG_REF(op);
@@ -270,7 +270,7 @@ TEST(RationalApproximation, DISABLED_compare_direct_vs_cocg_accuracy)
 		Map<VectorXcd> map_xd(xd.vector, xd.vlen);
 		Map<VectorXcd> map_xs(xs.vector, xs.vlen);
 
-		EXPECT_NEAR((map_xd-map_xs).norm(), 0.0, 0.01);
+		EXPECT_NEAR((map_xd-map_xs).norm(), 0.0, 1E-10);
 
 		SG_UNREF(shifted_dense);
 		SG_UNREF(shifted_sparse);

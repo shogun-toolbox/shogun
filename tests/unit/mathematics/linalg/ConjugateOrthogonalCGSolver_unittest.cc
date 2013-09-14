@@ -11,14 +11,11 @@
 
 #ifdef HAVE_EIGEN3
 #include <shogun/lib/SGVector.h>
-#include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGSparseMatrix.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/linalg/linop/SparseMatrixOperator.h>
-#include <shogun/mathematics/linalg/linop/DenseMatrixOperator.h>
-#include <shogun/mathematics/linalg/linsolver/DirectLinearSolverComplex.h>
 #include <shogun/mathematics/linalg/linsolver/ConjugateOrthogonalCGSolver.h>
-#include <shogun/features/SparseFeatures.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;
@@ -26,43 +23,39 @@ using namespace Eigen;
 
 TEST(ConjugateOrthogonalCGSolver, solve)
 {
-	const int32_t size=2;
-	SGMatrix<complex64_t> m(size, size);
-	m.set_const(0.0);
+	const int32_t size=10;
+	SGSparseMatrix<complex64_t> m(size, size);
+	CSparseMatrixOperator<complex64_t>* A=new CSparseMatrixOperator<complex64_t>(m);
 
-	// diagonal non-Hermintian matrix
+	// diagonal non-Hermintian matrix with random complex entries
+	SGVector<complex64_t> diag(size);
+	sg_rand->set_seed(100.0);
 	for (index_t i=0; i<size; ++i)
-		m(i,i)=complex64_t(i+1, i+1);
+	{
+		float64_t real=sg_rand->std_normal_distrib();
+		float64_t imag=sg_rand->std_normal_distrib();
+		diag[i]=complex64_t(real, imag);
+	}
+	A->set_diagonal(diag);
 
-	// constant vector of the system
+	// vector b of the system
 	SGVector<float64_t> b(size);
-	b.set_const(0.5);
-	
-	// Creating sparse system to solve with COCG
-	CSparseFeatures<complex64_t> feat(m);
-	SGSparseMatrix<complex64_t> mat=feat.get_sparse_feature_matrix();
-	CSparseMatrixOperator<complex64_t>* A
-		=new CSparseMatrixOperator<complex64_t>(mat);
+	for (index_t i=0; i<size; ++i)
+		b[i]=sg_rand->std_normal_distrib();
 
 	// Solve with COCG
-	CConjugateOrthogonalCGSolver cocg_linear_solver;
-	cocg_linear_solver.set_iteration_limit(5000);
-	SGVector<complex64_t> x_cg=cocg_linear_solver.solve(A, b);
+	CConjugateOrthogonalCGSolver* cocg_linear_solver
+		=new CConjugateOrthogonalCGSolver();
+	const SGVector<complex64_t>& x=cocg_linear_solver->solve(A, b);
 
-	// Creating dense system to solve with direct solver
-	CDenseMatrixOperator<complex64_t>* B
-		=new CDenseMatrixOperator<complex64_t>(m);
+	const SGVector<complex64_t>& Ax=A->apply(x);
 
-	// Solve with direct triangular solver
-	CDirectLinearSolverComplex direct_linear_solver;
-	SGVector<complex64_t> x_direct=direct_linear_solver.solve(B, b);
+	Map<VectorXd> map_b(b.vector, b.vlen);
+	Map<VectorXcd> map_Ax(Ax.vector, Ax.vlen);
 
-	Map<VectorXcd> map_x_cg(x_cg.vector, x_cg.vlen);
-	Map<VectorXcd> map_x_direct(x_direct.vector, x_direct.vlen);
-
-	EXPECT_NEAR((map_x_cg-map_x_direct).norm(), 0.0, 0.1);
-
+	EXPECT_NEAR((map_b.cast<complex64_t>()-map_Ax).norm(), 0.0, 1E-10);
+	
 	SG_UNREF(A);
-	SG_UNREF(B);
+	SG_UNREF(cocg_linear_solver);
 }
 #endif //HAVE_EIGEN3

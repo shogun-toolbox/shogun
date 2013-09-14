@@ -16,10 +16,10 @@
 #include <unsupported/Eigen/MatrixFunctions>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
-#include <shogun/mathematics/logdet/DenseMatrixOperator.h>
-#include <shogun/lib/computation/job/ScalarResult.h>
-#include <shogun/lib/computation/job/StoreScalarAggregator.h>
-#include <shogun/lib/computation/job/DenseExactLogJob.h>
+#include <shogun/mathematics/linalg/linop/DenseMatrixOperator.h>
+#include <shogun/lib/computation/jobresult/ScalarResult.h>
+#include <shogun/lib/computation/aggregator/StoreScalarAggregator.h>
+#include <shogun/mathematics/linalg/ratapprox/logdet/computation/job/DenseExactLogJob.h>
 #include <shogun/lib/computation/engine/SerialComputationEngine.h>
 #include <shogun/mathematics/Statistics.h>
 #include <gtest/gtest.h>

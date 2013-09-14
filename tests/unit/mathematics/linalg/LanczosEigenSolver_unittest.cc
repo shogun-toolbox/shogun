@@ -104,8 +104,6 @@ TEST(LanczosEigenSolver, compute_big_diag_matrix)
 	EXPECT_NEAR(actual_min_eig, computed_min_eig, 1E-4);
 	EXPECT_NEAR(actual_max_eig, computed_max_eig, 1E-4);
 
-	SG_SPRINT("%.20lf, %.20lf\n", actual_min_eig, actual_max_eig);
-
 	SG_UNREF(eig_solver);
 	SG_UNREF(op);
 }

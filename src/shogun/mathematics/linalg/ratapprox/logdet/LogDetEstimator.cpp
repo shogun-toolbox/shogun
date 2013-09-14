@@ -82,7 +82,9 @@ SGVector<float64_t> CLogDetEstimator::sample(index_t num_estimates)
 
 	REQUIRE(m_operator_log->get_operator()->get_dimension()\
 		==m_trace_sampler->get_dimension(),
-		"Dimension of the operator and sample doesn't match!\n");
+		"Mismatch in dimensions of the operator and trace-sampler, %d vs %d!\n",
+		m_operator_log->get_operator()->get_dimension(),
+		m_trace_sampler->get_dimension());
 
 	// for storing the aggregators that submit_jobs return
 	CDynamicObjectArray* aggregators=new CDynamicObjectArray();

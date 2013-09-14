@@ -10,12 +10,12 @@
 #include <shogun/lib/config.h>
 
 #ifdef HAVE_EIGEN3
-#include <shogun/mathematics/logdet/DenseMatrixOperator.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
-#include <shogun/lib/computation/job/ScalarResult.h>
-#include <shogun/lib/computation/job/VectorResult.h>
-#include <shogun/lib/computation/job/IndividualJobResultAggregator.h>
+#include <shogun/lib/computation/jobresult/ScalarResult.h>
+#include <shogun/lib/computation/jobresult/VectorResult.h>
+#include <shogun/mathematics/linalg/linop/DenseMatrixOperator.h>
+#include <shogun/mathematics/linalg/ratapprox/logdet/computation/aggregator/IndividualJobResultAggregator.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;

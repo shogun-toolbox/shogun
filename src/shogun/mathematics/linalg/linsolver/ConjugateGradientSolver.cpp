@@ -69,6 +69,10 @@ SGVector<float64_t> CConjugateGradientSolver::solve(
 
 	for (it.begin(r); !it.end(r); ++it)
 	{
+		SG_DEBUG("CG iteration %d, residual norm %f\n",
+			it.get_iter_info().iteration_count,
+			it.get_iter_info().residual_norm);
+
 		// apply linear operator to the direction vector
 		SGVector<float64_t> Ap_=A->apply(p_);
 		Map<VectorXd> Ap(Ap_.vector, Ap_.vlen);
