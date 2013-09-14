@@ -17,7 +17,7 @@ def features_io_modular(fm_train_real, label_train_twoclass)
 	feats.save(f)
 	f.close()
 
-	f=Modshogun::CSVFile.new("fm_train_sparsereal.ascii","w")
+	f=Modshogun::LibSVMFile.new("fm_train_sparsereal.ascii","w")
 	feats.save(f)
 	f.close()
 
@@ -25,7 +25,7 @@ def features_io_modular(fm_train_real, label_train_twoclass)
 	feats2.load(f)
 	f.close()
 
-	f=Modshogun::CSVFile.new("fm_train_sparsereal.ascii")
+	f=Modshogun::LibSVMFile.new("fm_train_sparsereal.ascii")
 	feats2.load(f)
 	f.close()
 

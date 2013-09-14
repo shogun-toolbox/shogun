@@ -10,6 +10,7 @@ def classifier_custom_kernel_modular(c=1,dim=7)
 	Modshogun::Math.init_random(c)
 
 	lab = (2*NArray.float(dim).random! - 1).sign
+	pp lab
 	data= NMatrix.float(dim, dim).random!
 	symdata=data*data.transpose + NMatrix.float(dim,dim).unit
     
