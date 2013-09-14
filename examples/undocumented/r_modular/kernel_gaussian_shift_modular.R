@@ -7,9 +7,9 @@ fm_test_real <- t(as.matrix(read.table('../data/fm_test_real.dat')))
 print('GaussianShift')
 
 feats_train <- RealFeatures()
-dump <- feats_train$set_features(fm_train_real)
+dump <- feats_train$set_features(feats_train, fm_train_real)
 feats_test <- RealFeatures()
-dump <- feats_test$set_features(fm_test_real)
+dump <- feats_test$set_features(feats_test, fm_test_real)
 width <- 1.8
 max_shift <- as.integer(2)
 shift_step <- as.integer(1)
