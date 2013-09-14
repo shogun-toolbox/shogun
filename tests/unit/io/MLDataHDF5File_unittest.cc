@@ -47,7 +47,7 @@ TEST(MLDataHDF5File, read_matrix)
 	SG_UNREF(fin);
 }
 #else
-TEST(MLDataHDF5File, read_matrix)
+TEST(MLDataHDF5File, DISABLED_read_matrix)
 {
 }
 #endif

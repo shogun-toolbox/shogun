@@ -338,11 +338,11 @@ public:
 	{
 		SG_NOTIMPLEMENTED
 	}
-	virtual void set_sparse_matrix(const shogun::SGSparseVector<unsigned char>*, int32_t, int32_t)
+	virtual void set_sparse_matrix(const shogun::SGSparseVector<uint8_t>*, int32_t, int32_t)
 	{
 		SG_NOTIMPLEMENTED
 	}
-	virtual void set_sparse_matrix(const shogun::SGSparseVector<signed char>*, int32_t, int32_t)
+	virtual void set_sparse_matrix(const shogun::SGSparseVector<int8_t>*, int32_t, int32_t)
 	{
 		SG_NOTIMPLEMENTED
 	}
@@ -350,87 +350,91 @@ public:
 	{
 		SG_NOTIMPLEMENTED
 	}
-	virtual void set_sparse_matrix(const shogun::SGSparseVector<int>*, int32_t, int32_t)
+	virtual void set_sparse_matrix(const shogun::SGSparseVector<int32_t>*, int32_t, int32_t)
 	{
 		SG_NOTIMPLEMENTED
 	}
-	virtual void set_sparse_matrix(const shogun::SGSparseVector<unsigned int>*, int32_t, int32_t)
+	virtual void set_sparse_matrix(const shogun::SGSparseVector<uint32_t>*, int32_t, int32_t)
 	{
 		SG_NOTIMPLEMENTED
 	}
-	virtual void set_sparse_matrix(const shogun::SGSparseVector<long int>*, int32_t, int32_t)
+	virtual void set_sparse_matrix(const shogun::SGSparseVector<int64_t>*, int32_t, int32_t)
 	{
 		SG_NOTIMPLEMENTED
 	}
-	virtual void set_sparse_matrix(const shogun::SGSparseVector<long unsigned int>*, int32_t, int32_t)
+	virtual void set_sparse_matrix(const shogun::SGSparseVector<uint64_t>*, int32_t, int32_t)
 	{ 
 		SG_NOTIMPLEMENTED
 	}
-	virtual void set_sparse_matrix(const shogun::SGSparseVector<short int>*, int32_t, int32_t)
+	virtual void set_sparse_matrix(const shogun::SGSparseVector<int16_t>*, int32_t, int32_t)
 	{
 		SG_NOTIMPLEMENTED 
 	}
-	virtual void set_sparse_matrix(const shogun::SGSparseVector<short unsigned int>*, int32_t, int32_t)
+	virtual void set_sparse_matrix(const shogun::SGSparseVector<uint16_t>*, int32_t, int32_t)
 	{
 		SG_NOTIMPLEMENTED
 	}
-	virtual void set_sparse_matrix(const shogun::SGSparseVector<float>*, int32_t, int32_t)
+	virtual void set_sparse_matrix(const shogun::SGSparseVector<float32_t>*, int32_t, int32_t)
 	{
 		SG_NOTIMPLEMENTED
 	}
-	virtual void set_sparse_matrix(const shogun::SGSparseVector<double>*, int32_t, int32_t)
+	virtual void set_sparse_matrix(const shogun::SGSparseVector<float64_t>*, int32_t, int32_t)
 	{
 		SG_NOTIMPLEMENTED
 	}
-	virtual void set_sparse_matrix(const shogun::SGSparseVector<long double>*, int32_t, int32_t)
+	virtual void set_sparse_matrix(const shogun::SGSparseVector<floatmax_t>*, int32_t, int32_t)
 	{
 		SG_NOTIMPLEMENTED
 	}
-	virtual void set_string_list(const shogun::SGString<unsigned char>*, int32_t)
+	virtual void set_string_list(const shogun::SGString<bool>*, int32_t)
 	{
 		SG_NOTIMPLEMENTED
 	}
-	virtual void set_string_list(const shogun::SGString<signed char>*, int32_t)
+	virtual void set_string_list(const shogun::SGString<uint8_t>*, int32_t)
+	{
+		SG_NOTIMPLEMENTED
+	}
+	virtual void set_string_list(const shogun::SGString<int8_t>*, int32_t)
 	{
 		SG_NOTIMPLEMENTED
 	}
 	virtual void set_string_list(const shogun::SGString<char>*, int32_t)
 	{
-		SG_NOTIMPLEMENTED
-	}
-	virtual void set_string_list(const shogun::SGString<int>*, int32_t)
-	{
 		SG_NOTIMPLEMENTED 
 	}
-	virtual void set_string_list(const shogun::SGString<unsigned int>*, int32_t)
+	virtual void set_string_list(const shogun::SGString<int32_t>*, int32_t)
 	{
 		SG_NOTIMPLEMENTED
 	}
-	virtual void set_string_list(const shogun::SGString<short int>*, int32_t)
+	virtual void set_string_list(const shogun::SGString<uint32_t>*, int32_t)
 	{
 		SG_NOTIMPLEMENTED
 	}
-	virtual void set_string_list(const shogun::SGString<short unsigned int>*, int32_t)
+	virtual void set_string_list(const shogun::SGString<int16_t>*, int32_t)
 	{
 		SG_NOTIMPLEMENTED
 	}
-	virtual void set_string_list(const shogun::SGString<long int>*, int32_t)
+	virtual void set_string_list(const shogun::SGString<uint16_t>*, int32_t)
 	{
 		SG_NOTIMPLEMENTED
 	}
-	virtual void set_string_list(const shogun::SGString<long unsigned int>*, int32_t)
+	virtual void set_string_list(const shogun::SGString<int64_t>*, int32_t)
 	{
 		SG_NOTIMPLEMENTED
 	}
-	virtual void set_string_list(const shogun::SGString<float>*, int32_t)
+	virtual void set_string_list(const shogun::SGString<uint64_t>*, int32_t)
 	{
 		SG_NOTIMPLEMENTED
 	}
-	virtual void set_string_list(const shogun::SGString<double>*, int32_t)
+	virtual void set_string_list(const shogun::SGString<float32_t>*, int32_t)
 	{
 		SG_NOTIMPLEMENTED
 	}
-	virtual void set_string_list(const shogun::SGString<long double>*, int32_t)
+	virtual void set_string_list(const shogun::SGString<float64_t>*, int32_t)
+	{
+		SG_NOTIMPLEMENTED
+	}
+	virtual void set_string_list(const shogun::SGString<floatmax_t>*, int32_t)
 	{
 		SG_NOTIMPLEMENTED
 	}
