@@ -75,6 +75,14 @@ find_library ( R_LIBRARIES
 
 set ( R_PACKAGES )
 if ( R_EXECUTABLE )
+
+  execute_process ( COMMAND echo ".libPaths()[1]"
+        COMMAND ${R_EXECUTABLE} --silent --no-readline --slave
+        RESULT_VARIABLE _res
+        OUTPUT_VARIABLE R_COMPONENT_LIB_PATH
+        )
+  STRING(REGEX REPLACE "^\\[[0-9]\\] \"\(.*\)\"" "\\1" R_COMPONENT_LIB_PATH ${R_COMPONENT_LIB_PATH})
+
   foreach ( _component ${R_FIND_COMPONENTS} )
     if ( NOT R_${_component}_FOUND )
     execute_process ( COMMAND echo "library(${_component})"
