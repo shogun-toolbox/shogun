@@ -49,7 +49,7 @@ void CCSVFile::set_transpose(bool value)
 void CCSVFile::set_delimiter(char delimiter)
 {
 	m_tokenizer->delimiters[m_delimiter]=0;
-	
+
 	m_delimiter=delimiter;
 	m_tokenizer->delimiters[m_delimiter]=1;
 
@@ -66,25 +66,23 @@ int32_t CCSVFile::get_stats(int32_t& num_tokens)
 	int32_t num_lines=0;
 	num_tokens=-1;
 
-	while (m_line_reader->has_next()) 
+	while (m_line_reader->has_next())
 	{
 		if (num_tokens==-1)
 		{
 			SGVector<char> line=m_line_reader->read_line();
 			m_tokenizer->set_text(line);
-			
+
 			num_tokens=0;
 			while (m_tokenizer->has_next())
 			{
 				index_t temp_start=0;
 				m_tokenizer->next_token_idx(temp_start);
-				
 				num_tokens++;
 			}
 		}
 		else
 			m_line_reader->skip_line();
-		
 		num_lines++;
 	}
 	m_line_reader->reset();
@@ -279,9 +277,10 @@ void CCSVFile::set_vector(const sg_type* vector, int32_t len) \
 	} \
 	else \
 	{ \
-		for (int32_t i=0; i<len; i++) \
+		int32_t i; \
+		for (i=0; i<len-1; i++) \
 			fprintf(file, "%" format "%c", vector[i], m_delimiter); \
-		fprintf(file, "\n"); \
+		fprintf(file, "%" format "\n", vector[i]); \
 	} \
 	\
 	SG_RESET_LOCALE; \
@@ -310,18 +309,20 @@ void CCSVFile::set_matrix(const sg_type* matrix, int32_t num_feat, int32_t num_v
 	{ \
 		for (int32_t i=0; i<num_vec; i++) \
 		{ \
-			for (int32_t j=0; j<num_feat; j++) \
+			int32_t j; \
+			for (j=0; j<num_feat-1; j++) \
 				fprintf(file, "%" format "%c", matrix[j+i*num_feat], m_delimiter); \
-			fprintf(file, "\n"); \
+			fprintf(file, "%" format "\n", matrix[j+i*num_feat]); \
 		} \
 	} \
 	else \
 	{ \
 		for (int32_t i=0; i<num_feat; i++) \
 		{ \
-			for (int32_t j=0; j<num_vec; j++) \
+			int32_t j; \
+			for (j=0; j<num_vec-1; j++) \
 				fprintf(file, "%" format "%c", matrix[i+j*num_vec], m_delimiter); \
-			fprintf(file, "\n"); \
+			fprintf(file, "%" format "\n", matrix[i+j*num_vec]); \
 		} \
 	} \
 	\
