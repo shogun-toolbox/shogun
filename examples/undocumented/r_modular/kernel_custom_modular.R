@@ -1,4 +1,4 @@
-library(modshogun)
+library(shogun)
 
 ## custom
 #print('Custom')

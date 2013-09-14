@@ -1,4 +1,4 @@
-library(modshogun)
+library(shogun)
 
 fm_train_cube <- as.matrix(read.table('../data/fm_train_cube.dat', colClasses=c('character')))
 
