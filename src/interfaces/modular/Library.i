@@ -483,5 +483,95 @@ namespace shogun
 %include <shogun/lib/IndexBlockGroup.h>
 %include <shogun/lib/IndexBlockTree.h>
 %include <shogun/lib/Data.h>
+
+/* Computation framework */
+
+/* Computation Engine */
+%rename (IndependentComputationEngine) CIndependentComputationEngine;
+%rename (SerialComputationEngine) CSerialComputationEngine;
+
 %include <shogun/lib/computation/engine/IndependentComputationEngine.h>
 %include <shogun/lib/computation/engine/SerialComputationEngine.h>
+
+/* Independent compution-job */
+%rename (IndependentJob) CIndepenentJob;
+%include <shogun/lib/computation/job/IndependentJob.h>
+
+/* Independent computation-job results */
+%rename (JobResult) CJobResult;
+%include <shogun/lib/computation/jobresult/JobResult.h>
+%include <shogun/lib/computation/jobresult/ScalarResult.h>
+namespace shogun
+{
+#ifdef USE_CHAR
+  %template(ScalarCharResult) CScalarResult<char>;
+#endif
+#ifdef USE_BOOL
+  %template(ScalarBoolResult) CScalarResult<bool>;
+#endif
+#ifdef USE_UINT8
+  %template(ScalarByteResult) CScalarResult<uint8_t>;
+#endif
+#ifdef USE_INT16
+  %template(ScalarShortResult) CScalarResult<int16_t>;
+#endif
+#ifdef USE_UINT16
+  %template(ScalarWordResult) CScalarResult<uint16_t>;
+#endif
+#ifdef USE_INT32
+  %template(ScalarIntResult) CScalarResult<int32_t>;
+#endif
+#ifdef USE_UINT32
+  %template(ScalarUIntResult) CScalarResult<uint32_t>;
+#endif
+#ifdef USE_INT64
+  %template(ScalarLongResult) CScalarResult<int64_t>;
+#endif
+#ifdef USE_UINT64
+  %template(ScalarULongResult) CScalarResult<uint64_t>;
+#endif
+#ifdef USE_FLOAT32
+  %template(ScalarShortRealResult) CScalarResult<float32_t>;
+#endif
+#ifdef USE_FLOAT64
+  %template(ScalarRealResult) CScalarResult<float64_t>;
+#endif
+}
+
+%include <shogun/lib/computation/jobresult/VectorResult.h>
+namespace shogun
+{
+#ifdef USE_CHAR
+  %template(VectorCharResult) CVectorResult<char>;
+#endif
+#ifdef USE_BOOL
+  %template(VectorBoolResult) CVectorResult<bool>;
+#endif
+#ifdef USE_UINT8
+  %template(VectorByteResult) CVectorResult<uint8_t>;
+#endif
+#ifdef USE_INT16
+  %template(VectorShortResult) CVectorResult<int16_t>;
+#endif
+#ifdef USE_UINT16
+  %template(VectorWordResult) CVectorResult<uint16_t>;
+#endif
+#ifdef USE_INT32
+  %template(VectorIntResult) CVectorResult<int32_t>;
+#endif
+#ifdef USE_UINT32
+  %template(VectorUIntResult) CVectorResult<uint32_t>;
+#endif
+#ifdef USE_INT64
+  %template(VectorLongResult) CVectorResult<int64_t>;
+#endif
+#ifdef USE_UINT64
+  %template(VectorULongResult) CVectorResult<uint64_t>;
+#endif
+#ifdef USE_FLOAT32
+  %template(VectorShortRealResult) CVectorResult<float32_t>;
+#endif
+#ifdef USE_FLOAT64
+  %template(VectorRealResult) CVectorResult<float64_t>;
+#endif
+}

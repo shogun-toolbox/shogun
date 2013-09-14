@@ -4,26 +4,29 @@
 #include <shogun/mathematics/SparseInverseCovariance.h>
 
 /* Log-det framework */
-#include <shogun/mathematics/logdet/TraceSampler.h>
-#include <shogun/mathematics/logdet/NormalSampler.h>
-#include <shogun/mathematics/logdet/ProbingSampler.h>
+#include <shogun/mathematics/linalg/ratapprox/tracesampler/TraceSampler.h>
+#include <shogun/mathematics/linalg/ratapprox/tracesampler/NormalSampler.h>
+#include <shogun/mathematics/linalg/ratapprox/tracesampler/ProbingSampler.h>
 
-#include <shogun/mathematics/logdet/LinearOperator.h>
-#include <shogun/mathematics/logdet/MatrixOperator.h>
-#include <shogun/mathematics/logdet/SparseMatrixOperator.h>
+#include <shogun/mathematics/linalg/linop/LinearOperator.h>
+#include <shogun/mathematics/linalg/linop/MatrixOperator.h>
+#include <shogun/mathematics/linalg/linop/SparseMatrixOperator.h>
 
-#include <shogun/mathematics/logdet/OperatorFunction.h>
-#include <shogun/mathematics/logdet/RationalApproximation.h>
-#include <shogun/mathematics/logdet/LogRationalApproximationCGM.h>
+#include <shogun/mathematics/linalg/ratapprox/opfunc/OperatorFunction.h>
+#include <shogun/mathematics/linalg/ratapprox/opfunc/RationalApproximation.h>
+#include <shogun/mathematics/linalg/ratapprox/logdet/opfunc/LogRationalApproximationIndividual.h>
+#include <shogun/mathematics/linalg/ratapprox/logdet/opfunc/LogRationalApproximationCGM.h>
 
-#include <shogun/mathematics/logdet/LinearSolver.h>
-#include <shogun/mathematics/logdet/DirectSparseLinearSolver.h>
-#include <shogun/mathematics/logdet/IterativeLinearSolver.h>
-#include <shogun/mathematics/logdet/IterativeShiftedLinearFamilySolver.h>
-#include <shogun/mathematics/logdet/CGMShiftedFamilySolver.h>
+#include <shogun/mathematics/linalg/linsolver/LinearSolver.h>
+#include <shogun/mathematics/linalg/linsolver/DirectSparseLinearSolver.h>
+#include <shogun/mathematics/linalg/linsolver/IterativeLinearSolver.h>
+#include <shogun/mathematics/linalg/linsolver/ConjugateGradientSolver.h>
+#include <shogun/mathematics/linalg/linsolver/ConjugateOrthogonalCGSolver.h>
+#include <shogun/mathematics/linalg/linsolver/IterativeShiftedLinearFamilySolver.h>
+#include <shogun/mathematics/linalg/linsolver/CGMShiftedFamilySolver.h>
 
-#include <shogun/mathematics/logdet/EigenSolver.h>
-#include <shogun/mathematics/logdet/LanczosEigenSolver.h>
+#include <shogun/mathematics/linalg/eigsolver/EigenSolver.h>
+#include <shogun/mathematics/linalg/eigsolver/LanczosEigenSolver.h>
 
-#include <shogun/mathematics/logdet/LogDetEstimator.h>
+#include <shogun/mathematics/linalg/ratapprox/logdet/LogDetEstimator.h>
 %}

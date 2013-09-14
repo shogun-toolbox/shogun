@@ -95,7 +95,6 @@ CJobResultAggregator* CLogRationalApproximationIndividual::submit_jobs(
 
 		// create complex dense matrix operator
 		complex_op=static_cast<CDenseMatrixOperator<complex64_t>*>(*op);
-		SG_DEBUG("Created casted DenseMatrixOperator\n");
 	}
 	else if (typeid(*m_linear_operator)==typeid(CSparseMatrixOperator<float64_t>))
 	{
@@ -108,7 +107,6 @@ CJobResultAggregator* CLogRationalApproximationIndividual::submit_jobs(
 
 		// create complex sparse matrix operator
 		complex_op=static_cast<CSparseMatrixOperator<complex64_t>*>(*op);
-		SG_DEBUG("Created casted SparseMatrixOperator\n");
 	}
 	else
 	{
