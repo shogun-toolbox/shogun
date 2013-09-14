@@ -4,7 +4,7 @@ SET(SWIG_CXX_COMPILER_FLAGS "${SWIG_CXX_COMPILER_FLAGS} ${R_CXX_FLAGS}")
 GENERATE_MODULAR_TARGET(r ${CMAKE_CURRENT_SOURCE_DIR} ${R_LIBRARIES})
 set_target_properties(r_modular PROPERTIES PREFIX "")
 
-ADD_CUSTOM_TARGET(TARGET r_modular
+ADD_CUSTOM_COMMAND(TARGET r_modular
 	POST_BUILD
 	COMMAND echo 'f="modshogun.R"\; fdata="modshogun.RData"\; source(f)\; save(list=ls(all=TRUE),file=fdata, compress=TRUE)\; q(save="no")' | ${R_EXECUTABLE} --silent --no-save
 	WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
