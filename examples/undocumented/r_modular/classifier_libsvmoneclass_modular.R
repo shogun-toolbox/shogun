@@ -7,9 +7,9 @@ fm_test_real <- t(as.matrix(read.table('../data/fm_test_real.dat')))
 print('LibSVMOneClass')
 
 feats_train <- RealFeatures()
-dump <- feats_train$set_features(feats_train, fm_train_real)
+dump <- feats_train$set_feature_matrix(feats_train, fm_train_real)
 feats_test <- RealFeatures()
-dump <- feats_test$set_features(feats_test, fm_test_real)
+dump <- feats_test$set_feature_matrix(feats_test, fm_test_real)
 width <- 2.1
 kernel <- GaussianKernel(feats_train, feats_train, width)
 

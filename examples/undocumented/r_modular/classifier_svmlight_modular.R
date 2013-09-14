@@ -10,9 +10,9 @@ dosvmlight <- function()
 	print('SVMLight')
 
 	feats_train <- StringCharFeatures("DNA")
-	dump <- feats_train$set_features(feats_train, fm_train_dna)
+	dump <- feats_train$set_feature_matrix(feats_train, fm_train_dna)
 	feats_test <- StringCharFeatures("DNA")
-	dump <- feats_test$set_features(feats_test, fm_test_dna)
+	dump <- feats_test$set_feature_matrix(feats_test, fm_test_dna)
 	degree <- as.integer(20)
 
 	kernel <- WeightedDegreeStringKernel(feats_train, feats_train, degree)
@@ -20,7 +20,7 @@ dosvmlight <- function()
 	C <- 1.017
 	epsilon <- 1e-5
 	num_threads <- as.integer(3)
-	labels <- Labels(as.real(label_train_dna))
+	labels <- Labels(label_train_dna)
 
 	svm <- SVMLight(C, kernel, labels)
 	dump <- svm$set_epsilon(svm, epsilon)

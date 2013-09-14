@@ -7,8 +7,10 @@ label_train_multiclass <- as.real(read.table('../data/label_train_multiclass.dat
 # gmnpsvm
 print('GMNPSVM')
 
-feats_train <- RealFeatures(fm_train_real)
+feats_train <- RealFeatures()
+dummy <- feats_train$set_feature_matrix(feats_train, fm_train_real)
 feats_test <- RealFeatures(fm_test_real)
+dummy <- feats_test$set_feature_matrix(feats_test, fm_test_real)
 width <- 2.1
 kernel <- GaussianKernel(feats_train, feats_train, width)
 
