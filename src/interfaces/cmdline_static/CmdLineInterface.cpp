@@ -4,6 +4,7 @@
 #include <shogun/lib/ShogunException.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/io/CSVFile.h>
+#include <shogun/io/LibSVMFile.h>
 #include <shogun/ui/SGInterface.h>
 
 #ifdef HAVE_READLINE
@@ -365,7 +366,7 @@ void CCmdLineInterface::get_sparse_matrix(SGSparseVector<float64_t>*& matrix, in
 	if (!filename)
 		SG_ERROR("No filename given to read SPARSE REAL matrix.\n");
 
-	CCSVFile f((char*) filename, 'r');
+	CLibSVMFile f((char*) filename, 'r');
 	f.get_sparse_matrix(matrix, num_feat, num_vec);
 }
 
