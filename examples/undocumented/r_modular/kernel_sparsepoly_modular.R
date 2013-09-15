@@ -18,8 +18,7 @@ size_cache <- as.integer(10)
 degree <- as.integer(3)
 inhomogene <- TRUE
 
-kernel <- PolyKernel(feats_train, feats_train, size_cache, degree,
-	inhomogene)
+kernel <- PolyKernel(feats_train, feats_train, degree, inhomogene)
 
 km_train <- kernel$get_kernel_matrix()
 dump <- kernel$init(feats_train, feats_test)

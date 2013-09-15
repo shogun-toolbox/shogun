@@ -16,6 +16,5 @@ feats_test <- SparseRealFeatures()
 dump <- feats_test$obtain_from_simple(feat)
 scale <- 1.1
 
-kernel <- LinearKernel()
+kernel <- LinearKernel(feats_train,feats_train)
 dump <- kernel$set_normalizer(AvgDiagKernelNormalizer(scale))
-dump <- kernel$init(feats_train, feats_train)

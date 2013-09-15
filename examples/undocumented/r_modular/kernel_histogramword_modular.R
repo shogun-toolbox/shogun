@@ -23,10 +23,11 @@ feats_test <- StringWordFeatures(charfeat$get_alphabet())
 dump <- feats_test$obtain_from_char(charfeat, start, order, gap, reverse)
 
 pie <- PluginEstimate()
-labels <- Labels(label_train_dna)
+labels <- BinaryLabels()
+labels$set_labels(label_train_dna)
 dump <- pie$set_labels(labels)
 dump <- pie$set_features(feats_train)
-dump <- pie$train(
+dump <- pie$train()
 
 kernel <- HistogramWordStringKernel(feats_train, feats_train, pie)
 km_train <- kernel$get_kernel_matrix()

@@ -12,10 +12,9 @@ feats_test <- RealFeatures()
 dummy <- feats_test$set_feature_matrix(fm_test_real)
 scale <- 1.2
 
-kernel <- LinearKernel()
+kernel <- LinearKernel(feats_train, feats_train)
 dump <- kernel$set_normalizer(AvgDiagKernelNormalizer(scale))
-dump <- kernel$init(feats_train, feats_train)
-
 km_train <- kernel$get_kernel_matrix()
-dump <- kernel$init(feats_train, feats_test)
+
+kernel <- LinearKernel(feats_train, feats_test)
 km_test <- kernel$get_kernel_matrix()

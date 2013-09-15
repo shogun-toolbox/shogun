@@ -15,17 +15,17 @@ reverse <- FALSE
 num_examples <- as.integer(2)
 
 charfeat <- StringCharFeatures("CUBE")
-dump <- charfeat$set_features(charfeat, fm_train_cube)
+dump <- charfeat$set_features(fm_train_cube)
 feats <- StringWordFeatures(charfeat$get_alphabet())
-dump <- feats$obtain_from_char(feats, charfeat, start, order, gap, reverse)
+dump <- feats$obtain_from_char(charfeat, start, order, gap, reverse)
 preproc <- SortWordString()
-dump <- preproc$init(preproc, feats)
-dump <- feats$add_preproc(feats, preproc)
-dump <- feats$apply_preproc(feats)
+dump <- preproc$init(feats)
+dump <- feats$add_preproc(preproc)
+dump <- feats$apply_preproc()
 
 hmm <- HMM(feats, N, M, pseudo)
-dump <- hmm$train(hmm)
-dump <- hmm$baum_welch_viterbi_train(hmm, "BW_NORMAL")
+dump <- hmm$train()
+dump <- hmm$baum_welch_viterbi_train("BW_NORMAL")
 
 num_examples <- feats$get_num_vectors()
 num_param <- hmm$get_num_model_parameters()
@@ -35,7 +35,7 @@ for (i in 0:(num_examples-1))
 {
 	for (j in 0:(num_param-1))
 	{
-		derivs[j,i] <- hmm$get_log_derivative(hmm, j, i)
+		derivs[j,i] <- hmm$get_log_derivative(j, i)
 	}
 }
 
@@ -44,12 +44,12 @@ best_path_state <- 0
 
 for (i in 0:(num_examples-1))
 {
-	best_path = best_path + hmm$best_path(hmm, i)
+	best_path = best_path + hmm$best_path(i)
 	for (j in 0:(N-1))
 	{
-		best_path_state = best_path_state + hmm$get_best_path_state(hmm, i, j)
+		best_path_state = best_path_state + hmm$get_best_path_state(i, j)
 	}
 }
 
-dump <- hmm$get_log_likelihood(hmm)
+dump <- hmm$get_log_likelihood()
 dump <- hmm$get_log_likelihood_sample()

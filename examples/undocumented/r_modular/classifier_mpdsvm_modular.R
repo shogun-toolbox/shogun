@@ -7,21 +7,24 @@ label_train_multiclass <- as.real(read.table('../data/label_train_multiclass.dat
 # libsvmmulticlass
 print('LibSVMMulticlass')
 
-feats_train <- RealFeatures(fm_train_real)
-feats_test <- RealFeatures(fm_test_real)
+feats_train <- RealFeatures()
+dump <- feats_train$set_feature_matrix(fm_train_real)
+feats_test <- RealFeatures()
+dump <- feats_test$set_feature_matrix(fm_test_real)
 width <- 2.1
 kernel <- GaussianKernel(feats_train, feats_train, width)
 
 C <- 1.2
 epsilon <- 1e-5
 num_threads <- as.integer(8)
-labels <- Labels(label_train_multiclass)
+labels <- MulticlassLabels()
+labels$set_labels(label_train_multiclass)
 
-svm <- LibSVMMulticlass(C, kernel, labels)
-dump <- svm$set_epsilon(svm, epsilon)
-dump <- svm$parallel$set_num_threads(svm$parallel, num_threads)
-dump <- svm$train(svm)
+svm <- MulticlassLibSVM(C, kernel, labels)
+dump <- svm$set_epsilon(epsilon)
+dump <- svm$parallel$set_num_threads(num_threads)
+dump <- svm$train()
 
-dump <- kernel$init(kernel, feats_train, feats_test)
-lab <- svm$apply(svm)
-out <- lab$get_labels(lab)
+dump <- kernel$init(feats_train, feats_test)
+lab <- svm$apply()
+out <- lab$get_labels()
