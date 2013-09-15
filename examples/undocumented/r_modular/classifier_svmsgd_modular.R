@@ -7,22 +7,25 @@ label_train_twoclass <- as.real(read.table('../data/label_train_twoclass.dat')$V
 # sgd
 print('SVMSGD')
 
-realfeat <- RealFeatures(fm_train_real)
+realfeat <- RealFeatures()
+dummy <- realfeat$set_feature_matrix(fm_train_real)
 feats_train <- SparseRealFeatures()
-dump <- feats_train$obtain_from_simple(feats_train, realfeat)
-realfeat <- RealFeatures(fm_test_real)
+dump <- feats_train$obtain_from_simple(realfeat)
+realfeat <- RealFeatures()
+dummy <- realfeat$set_feature_matrix(fm_test_real)
 feats_test <- SparseRealFeatures()
-dump <- feats_test$obtain_from_simple(feats_test, realfeat)
+dump <- feats_test$obtain_from_simple(realfeat)
 
 C <- 2.3
 num_threads <- as.integer(1)
-labels <- Labels(label_train_twoclass)
+labels <- BinaryLabels()
+labels$set_labels(label_train_twoclass)
 
 svm <- SVMSGD(C, feats_train, labels)
-#dump <- svm$io$set_loglevel(svm$io, 0)
+#dump <- svm$io$set_loglevel(0)
 #dump <- svm$set_epochs(num_iter)
-dump <- svm$train(svm)
+dump <- svm$train()
 
-dump <- svm$set_features(svm, feats_test)
-lab <- svm$apply(svm)
-out <- lab$get_labels(lab)
+dump <- svm$set_features(feats_test)
+lab <- svm$apply()
+out <- lab$get_labels()
