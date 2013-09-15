@@ -9,6 +9,7 @@
  */
 
 /* Remove C Prefix */
+%rename(LMNNStatistics) CLMNNStatistics;
 %rename(LMNN) CLMNN;
 
 /* Include Class Headers to make them visible from within the target language */
