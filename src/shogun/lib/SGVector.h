@@ -17,7 +17,6 @@
 #include <shogun/lib/DataType.h>
 #include <shogun/lib/SGReferencedData.h>
 
-
 namespace shogun
 {
 	template <class T> class SGSparseVector;
@@ -561,6 +560,14 @@ template<class T> class SGVector : public SGReferencedData
 		 * @param saver File object via which to save data
 		 */
 		void save(CFile* saver);
+
+#ifdef HAVE_PROTOBUF
+		/** */
+		void load_pb(CFile* loader);
+
+		/** */
+		void save_pb(CFile* saver);
+#endif
 
 		/// absolute value of vector elements
 		void abs();

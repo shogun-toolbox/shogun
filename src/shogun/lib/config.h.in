@@ -14,6 +14,7 @@
 #cmakedefine HAVE_DOXYGEN 1
 #cmakedefine HAVE_LAPACK 1
 #cmakedefine HAVE_MVEC 1
+#cmakedefine HAVE_PROTOBUF 1
 
 #cmakedefine HAVE_ARPACK 1
 #cmakedefine HAVE_EIGEN3 1

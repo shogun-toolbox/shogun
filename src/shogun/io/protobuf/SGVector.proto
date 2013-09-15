@@ -1,0 +1,14 @@
+package shogun;
+
+message SGVectorHeaderProto
+{
+	required uint32 vlen = 1; // length of vector
+	required uint32 num_chunks = 2;
+}
+
+message SGVectorChunkProto
+{
+	// before any chunk message size of this message
+	// should be written
+	repeated int32 data = 1;	
+}

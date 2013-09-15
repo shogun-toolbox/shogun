@@ -60,6 +60,11 @@ CFile::CFile(const char* fname, char rw, const char* name) : CSGObject()
 		set_variable_name(name);
 }
 
+int32_t CFile::get_posix_file_descriptor()
+{
+	return fileno(file);
+}
+
 void CFile::get_vector(bool*& vector, int32_t& len)
 {
 	int32_t* int_vector;

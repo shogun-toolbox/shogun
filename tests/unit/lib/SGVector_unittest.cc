@@ -1,5 +1,6 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
+#include <shogun/io/CSVFile.h>
 #include <shogun/mathematics/Math.h>
 #include <gtest/gtest.h>
 
@@ -381,4 +382,27 @@ TEST(SGVectorTest,is_sorted_2)
 	v.qsort();
 
 	EXPECT_EQ(v.is_sorted(), true);
+}
+
+TEST(SGVectorTest, protobuf)
+{
+	int32_t len=1024;
+	SGVector<int32_t> v(len);
+	CRandom* rand=new CRandom();
+	for (int32_t i=0; i<len; i++)
+		v[i]=rand->random(0, len);
+	SG_UNREF(rand);	
+
+	CCSVFile* fout=new CCSVFile("SGVectorTest_protobuf_output.pb", 'w', NULL);
+	v.save_pb(fout);
+	SG_UNREF(fout);
+
+	SGVector<int32_t> a;
+	CCSVFile* fin=new CCSVFile("SGVectorTest_protobuf_output.pb", 'r', NULL);
+	a.load_pb(fin);
+	SG_UNREF(fin);
+
+	EXPECT_EQ(v.vlen, a.vlen);
+	for (int32_t i=0; i<a.vlen; i++)
+		EXPECT_EQ(v[i], a[i]);
 }

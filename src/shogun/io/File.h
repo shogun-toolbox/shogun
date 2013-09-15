@@ -76,6 +76,12 @@ public:
 		return file;
 	}
 
+	/** get the posix file descriptor
+	 *
+	 * @return int32_t
+	 */
+	int32_t get_posix_file_descriptor();
+
 	/** set the path to the variable to be accessed
 	 *
 	 * only supported by some file interfaces like CHDF5File
