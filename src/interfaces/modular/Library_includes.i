@@ -31,4 +31,8 @@
 #include <shogun/lib/NGramTokenizer.h>
 #include <shogun/lib/computation/engine/IndependentComputationEngine.h>
 #include <shogun/lib/computation/engine/SerialComputationEngine.h>
+#include <shogun/lib/computation/job/IndependentJob.h>
+#include <shogun/lib/computation/jobresult/JobResult.h>
+#include <shogun/lib/computation/jobresult/ScalarResult.h>
+#include <shogun/lib/computation/jobresult/VectorResult.h>
 %}
