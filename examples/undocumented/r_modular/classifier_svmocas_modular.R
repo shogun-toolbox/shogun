@@ -12,7 +12,7 @@ dump <- realfeat$set_feature_matrix(fm_train_real)
 
 feats_train <- SparseRealFeatures()
 dump <- feats_train$obtain_from_simple(realfeat)
-realfeat <- RealFeatures(fm_test_real)
+realfeat <- RealFeatures()
 dump <- realfeat$set_feature_matrix(fm_test_real)
 dump <- feats_test <- SparseRealFeatures()
 feats_test$obtain_from_simple(realfeat)
