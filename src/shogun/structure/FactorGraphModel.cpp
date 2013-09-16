@@ -245,15 +245,6 @@ SGVector< float64_t > CFactorGraphModel::get_joint_feature_vector(int32_t feat_i
 	SGVector<float64_t> psi(get_dim());
 	psi.zero();
 
-	// counts of different types of factor
-	factor_counts_type fcounts;
-	for (int32_t fi = 0; fi < m_factor_types->get_num_elements(); fi++)
-	{
-		CFactorType* ft = dynamic_cast<CFactorType*>(m_factor_types->get_element(fi));
-		fcounts[ft->get_type_id()] = 0;
-		SG_UNREF(ft);
-	}
-
 	// construct unnormalized psi
 	CDynamicObjectArray* facs = fg->get_factors();
 	for (int32_t fi = 0; fi < facs->get_num_elements(); ++fi)
@@ -274,16 +265,12 @@ SGVector< float64_t > CFactorGraphModel::get_joint_feature_vector(int32_t feat_i
 		for (int32_t di = 0; di < dat_size; di++)
 			psi[w_map[ei*dat_size + di]] += dat[di];
 
-		++fcounts[id];
-
 		SG_UNREF(ftype);
 		SG_UNREF(fac);
 	}
 
 	// negation (-E(x,y) = <w,phi(x,y)>)
-	// TODO: is normalization necessary? i.e. divided by fcounts
-	for (int32_t di = 0; di < psi.vlen; di++)
-		psi[di] *= -1.0;
+	psi.scale(-1.0);
 
 	SG_UNREF(facs);
 	SG_UNREF(fg);

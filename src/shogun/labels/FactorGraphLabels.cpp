@@ -9,13 +9,10 @@ CFactorGraphObservation::CFactorGraphObservation(SGVector<int32_t> observed_stat
 	if (loss_weights.size() == 0)
 	{
 		loss_weights.resize_vector(observed_state.size());
-		SGVector<float64_t>::fill_vector(loss_weights.vector, loss_weights.vlen, 1.0);	
+		SGVector<float64_t>::fill_vector(loss_weights.vector, loss_weights.vlen, 1.0 / observed_state.size());	
 	}
 
-	REQUIRE(loss_weights.size() == observed_state.size(), "%s::CFactorGraphObservation(): \
-		loss_weights should be the same length as observed_states", get_name());
-
-	m_loss_weights = loss_weights;
+	set_loss_weights(loss_weights);
 }
 
 SGVector<int32_t> CFactorGraphObservation::get_data() const 
@@ -26,6 +23,14 @@ SGVector<int32_t> CFactorGraphObservation::get_data() const
 SGVector<float64_t> CFactorGraphObservation::get_loss_weights() const 
 { 
 	return m_loss_weights; 
+}
+
+void CFactorGraphObservation::set_loss_weights(SGVector<float64_t> loss_weights)
+{
+	REQUIRE(loss_weights.size() == m_observed_state.size(), "%s::set_loss_weights(): \
+		loss_weights should be the same length as observed_states", get_name());
+
+	m_loss_weights = loss_weights;
 }
 
 //-------------------------------------------------------------------

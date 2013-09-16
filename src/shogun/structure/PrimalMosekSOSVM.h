@@ -72,6 +72,12 @@ class CPrimalMosekSOSVM : public CLinearStructuredOutputMachine
 		 */
 		void set_regularization(float64_t C);
 
+		/** set epsilon 
+		 *
+		 * @param epsilon if slack_i > max_slack_i + epsilon, add to cutting plane set 
+		 */
+		void set_epsilon(float64_t epsilon);
+
 	protected:
 		/** train primal SO-SVM
 		 *
@@ -131,6 +137,9 @@ class CPrimalMosekSOSVM : public CLinearStructuredOutputMachine
 
 		/** regularization constant */
 		float64_t m_regularization;
+
+		/** epsilon */
+		float64_t m_epsilon;
 
 }; /* class CPrimalMosekSOSVM */
 

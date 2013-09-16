@@ -33,7 +33,7 @@ float64_t hamming_loss(SGVector<int32_t> y_truth, SGVector<int32_t> y_pred)
 		if (y_truth[i] != y_pred[i])
 			loss += 1;
 	}
-	return loss;
+	return (loss / y_truth.vlen);
 }
 
 TEST(BeliefPropagation, tree_max_product_string)
