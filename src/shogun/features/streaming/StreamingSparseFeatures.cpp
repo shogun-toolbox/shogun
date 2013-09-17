@@ -309,6 +309,7 @@ void CStreamingSparseFeatures<T>::init(CStreamingFile* file,
 	working_file = file;
 	SG_REF(working_file);
 	parser.init(file, is_labelled, size);
+	parser.set_free_vector_after_release(false);
 }
 
 template <class T>
