@@ -7,6 +7,7 @@
  * Written (W) 2013 Thoralf Klein <thoralf.klein@zib.de>
  */
 
+#include <unistd.h>
 #include <gtest/gtest.h>
 
 #include <shogun/base/init.h>
@@ -74,4 +75,7 @@ TEST(StreamingSparseFeaturesTest, parse_file)
   SG_UNREF(stream_features);
   SG_FREE(data);
   SG_FREE(labels);
+
+  int delete_success = unlink(fname);
+  ASSERT_EQ(0, delete_success);
 }
