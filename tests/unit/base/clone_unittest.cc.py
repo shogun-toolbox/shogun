@@ -72,11 +72,13 @@ try:
     import jinja2
     outputText = entry(TEMPLATE_FILE, class_list_file)
 except ImportError:
+    import os
+    basename = os.path.basename(output_file)
     print("Please install jinja2 for clone unit-tests");
     outputText = ['''#include <gtest/gtest.h>
-TEST(Dummy,dummy)
+TEST(Dummy, %s_dummy)
 {
-}''']
+}''' % (basename)]
 
 f = open(output_file, 'w')
 f.writelines(outputText)
