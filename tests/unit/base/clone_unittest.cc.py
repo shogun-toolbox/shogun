@@ -74,6 +74,7 @@ try:
 except ImportError:
     import os
     basename = os.path.basename(output_file)
+    basename = basename.replace('.cc', '')
     print("Please install jinja2 for clone unit-tests");
     outputText = ['''#include <gtest/gtest.h>
 TEST(Dummy, %s_dummy)
