@@ -5,6 +5,6 @@ regularization parameter C=1.2 and a Gaussian kernel of width 2.1 and 10MB of
 kernel cache and the precision parameter epsilon=1e-5.
 
 For more details on the MPD solver see 
- Kienzle, W. and B. Schölkopf: Training Support Vector Machines with Multiple
+ Kienzle, W. and B. SchÃ¶lkopf: Training Support Vector Machines with Multiple
  Equality Constraints. Machine Learning: ECML 2005, 182-193. (Eds.) Carbonell,
  J. G., J. Siekmann, Springer, Berlin, Germany (11 2005)
