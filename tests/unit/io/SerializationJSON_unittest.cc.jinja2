@@ -51,6 +51,9 @@ TEST(SerializationJSON, {{class}})
 	
 	SG_UNREF(object)
 	SG_UNREF(deserializedObject);
+
+	int delete_success = unlink(filename);
+	ASSERT_EQ(0, delete_success);
 }
 {% endfor %}
 
@@ -91,6 +94,8 @@ TEST(SerializationJSON,{{class}}_{{type}})
 	SG_UNREF(object)
 	SG_UNREF(deserializedObject);
 
+	int delete_success = unlink(filename);
+	ASSERT_EQ(0, delete_success);
 }
 {% endfor %}
 {% endfor %}
