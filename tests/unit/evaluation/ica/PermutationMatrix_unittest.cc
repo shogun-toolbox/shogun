@@ -14,7 +14,7 @@ TEST(PermutationMatrix, is_perm)
 	SGMatrix<float64_t> A = SGMatrix<float64_t>::create_identity_matrix(d,1);
 	
 	bool isperm = is_permutation_matrix(A);
-	EXPECT_EQ(isperm,true);
+	EXPECT_TRUE(isperm);
 }
 
 TEST(PermutationMatrix, is_not_perm)
@@ -25,7 +25,7 @@ TEST(PermutationMatrix, is_not_perm)
 	A(2,3) = 1;	
 
 	bool isperm = is_permutation_matrix(A);
-	EXPECT_EQ(isperm,false);
+	EXPECT_FALSE(isperm);
 }
 
 #endif //HAVE_EIGEN3
