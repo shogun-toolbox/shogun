@@ -56,6 +56,9 @@ TEST(StreamingDenseFeaturesTest, example_reading_from_file)
 
 	SG_UNREF(orig_feats);
 	SG_UNREF(feats);
+
+	int delete_success = unlink(fname);
+	ASSERT_EQ(0, delete_success);
 }
 
 TEST(StreamingDenseFeaturesTest, example_reading_from_features)
