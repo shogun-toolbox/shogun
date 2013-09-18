@@ -13,6 +13,7 @@
 #include <shogun/io/SerializableAsciiFile.h>
 #include <shogun/base/ParameterMap.h>
 #include <shogun/features/DenseFeatures.h>
+#include <unistd.h>
 
 using namespace shogun;
 
@@ -246,8 +247,6 @@ public:
 	}
 };
 
-const char* filename="test.txt";
-
 void check_equalness(CTestClassInt* int_instance,
 		CTestClassFloat* float_instance)
 {
@@ -314,6 +313,9 @@ void check_equalness(CTestClassInt* int_instance,
 
 void test_migration()
 {
+	char filename_tmp[] = "migration_type_conv_test.txt_XXXXXX";
+	char* filename=mktemp(filename_tmp);
+
 	/* create one instance of each class */
 	CTestClassInt* int_instance=new CTestClassInt();
 	CTestClassFloat* float_instance=new CTestClassFloat();
@@ -351,6 +353,7 @@ void test_migration()
 	SG_UNREF(int_instance);
 	SG_UNREF(float_instance);
 	SG_UNREF(file);
+	unlink(filename);
 }
 
 int main(int argc, char **argv)

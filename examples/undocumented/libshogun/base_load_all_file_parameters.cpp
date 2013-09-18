@@ -13,6 +13,7 @@
 #include <shogun/io/SerializableAsciiFile.h>
 #include <shogun/base/ParameterMap.h>
 #include <shogun/features/DenseFeatures.h>
+#include <unistd.h>
 
 using namespace shogun;
 
@@ -151,10 +152,11 @@ public:
 	virtual const char* get_name() const { return "TestClassFloat"; }
 };
 
-const char* filename="test.txt";
-
 void test_load_file_parameter()
 {
+	char filename_tmp[] = "load_all_file_test.txt_XXXXXX";
+	char* filename=mktemp(filename_tmp);
+
 	/* create one instance of each class */
 	CTestClassInt* int_instance=new CTestClassInt();
 	CTestClassFloat* float_instance=new CTestClassFloat();
@@ -260,6 +262,7 @@ void test_load_file_parameter()
 	SG_UNREF(file);
 	SG_UNREF(int_instance);
 	SG_UNREF(float_instance);
+	unlink(filename);
 }
 
 int main(int argc, char **argv)

@@ -12,6 +12,7 @@
 #include <shogun/base/Parameter.h>
 #include <shogun/io/SerializableAsciiFile.h>
 #include <shogun/base/ParameterMap.h>
+#include <unistd.h>
 
 using namespace shogun;
 
@@ -115,7 +116,8 @@ void check_equalness(CTestClassOld* old_instance,
 
 void test_migration()
 {
-	const char* filename="test.txt";
+	char filename_template[] = "migration_test.txt_XXXXX";
+	char* filename = mktemp(filename_template);
 
 	/* create one instance of each class */
 	CTestClassOld* old_instance=new CTestClassOld();
@@ -141,6 +143,7 @@ void test_migration()
 	SG_UNREF(old_instance);
 	SG_UNREF(new_instance);
 	SG_UNREF(file);
+	unlink(filename);
 }
 
 int main(int argc, char **argv)
