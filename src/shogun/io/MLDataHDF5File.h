@@ -473,7 +473,12 @@ protected:
 	hid_t h5file;
 	/** hdf5 type closest to 'bool' */
 	hid_t boolean_type;
+
+	/** filename to write the data to */
 	char *fname;
+
+	/** constructed url for the data */
+	char *mldata_url;
 };
 }
 #endif //  HAVE_CURL && HAVE_HDF5

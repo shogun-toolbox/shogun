@@ -50,13 +50,11 @@ CMLDataHDF5File::CMLDataHDF5File(char* data_name,
 	CURL *curl;
 	FILE *fp=NULL;
 
-	char *mldata_url = (char*)malloc(strlen(url_prefix)+strlen(data_name)+1);
-	*mldata_url=(char)NULL;
+	mldata_url = SG_CALLOC(char, strlen(url_prefix)+strlen(data_name)+1);
 	strcat(mldata_url, url_prefix);
 	strcat(mldata_url, data_name);
 
-	fname = (char*)malloc(strlen((char*)"/tmp/")+strlen(data_name)+strlen((char*)".h5")+1);
-	*fname=(char)NULL;
+	fname = SG_CALLOC(char, strlen((char*)"/tmp/")+strlen(data_name)+strlen((char*)".h5")+1);
 	strcat(fname, (char*) "/tmp/");
 	strcat(fname, data_name);
 	strcat(fname, (char*) ".h5");
@@ -94,6 +92,8 @@ CMLDataHDF5File::~CMLDataHDF5File()
 {
 	H5Fclose(h5file);
 	remove(fname);
+	SG_FREE(fname);
+	SG_FREE(mldata_url);
 }
 
 #define GET_VECTOR(fname, sg_type, datatype)										\
