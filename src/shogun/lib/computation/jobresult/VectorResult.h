@@ -69,7 +69,7 @@ private:
 	{
 		set_generic<T>();
 
-		SG_ADD(&m_result, "result",
+		SG_ADD(&m_result, "vector_result",
 			"The result vector", MS_NOT_AVAILABLE);
 	}
 };
