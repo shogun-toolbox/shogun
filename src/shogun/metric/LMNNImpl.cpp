@@ -280,6 +280,36 @@ void CLMNNImpl::correct_stepsize(float64_t& stepsize, const SGVector<float64_t> 
 	}
 }
 
+bool CLMNNImpl::check_termination(float64_t stepsize, const SGVector<float64_t> obj, uint32_t iter, uint32_t maxiter, float64_t stepsize_threshold, float64_t obj_threshold)
+{
+	if (iter >= maxiter-1)
+	{
+		SG_SWARNING("Maximum number of iterations reached before convergence.");
+		return true;
+	}
+
+	if (stepsize < stepsize_threshold)
+	{
+		SG_SDEBUG("Step size too small to make more progress. Convergence reached.\n");
+		return true;
+	}
+
+	if (iter >= 10)
+	{
+		for (int32_t i = 0; i < 3; ++i)
+		{
+			if (CMath::abs(obj[iter-i]-obj[iter-i-1]) >= obj_threshold)
+				return false;
+		}
+
+		SG_SDEBUG("No more progress in the objective. Convergence reached.\n");
+		return true;
+	}
+
+	// For the rest of the cases, do not stop LMNN.
+	return false;
+}
+
 SGMatrix<float64_t> CLMNNImpl::compute_pca_transform(CDenseFeatures<float64_t>* features)
 {
 	SG_SDEBUG("Initializing LMNN transform using PCA.\n");
