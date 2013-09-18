@@ -34,12 +34,14 @@ public:
 	}
 
 	/** constructor
-	 * @param result the vector result
+	 * @param vector_result the vector result
 	 */
-	CVectorResult(SGVector<T> result)
-	: CJobResult(), m_result(result)
+	CVectorResult(SGVector<T> vector_result)
+	: CJobResult()
 	{
 		init();
+
+		m_result = vector_result;
 	}
 
 	/** destructor */
