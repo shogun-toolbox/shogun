@@ -77,7 +77,7 @@ public:
 
 void test_test_class_serial()
 {
-	char filename_tmp[] = "serialization_test.txt_XXXXXX";
+	char filename_tmp[] = "serialization_test.XXXXXX";
 	char* filename=mktemp(filename_tmp);
 
 	CTestClass* to_save=new CTestClass(10, 0, 0);

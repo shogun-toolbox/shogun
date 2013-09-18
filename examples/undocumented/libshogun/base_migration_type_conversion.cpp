@@ -313,7 +313,7 @@ void check_equalness(CTestClassInt* int_instance,
 
 void test_migration()
 {
-	char filename_tmp[] = "migration_type_conv_test.txt_XXXXXX";
+	char filename_tmp[] = "migration_type_conv_test.XXXXXX";
 	char* filename=mktemp(filename_tmp);
 
 	/* create one instance of each class */

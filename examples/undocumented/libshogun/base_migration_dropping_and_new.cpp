@@ -116,7 +116,7 @@ void check_equalness(CTestClassOld* old_instance,
 
 void test_migration()
 {
-	char filename_template[] = "migration_test.txt_XXXXX";
+	char filename_template[] = "migration_dropping_test.XXXXXX";
 	char* filename = mktemp(filename_template);
 
 	/* create one instance of each class */

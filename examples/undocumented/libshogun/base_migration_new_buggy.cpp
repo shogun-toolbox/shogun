@@ -55,7 +55,7 @@ public:
 
 void test()
 {
-	char filename_tmp[] = "migration_test.txt_XXXXXX";
+	char filename_tmp[] = "migration_buggy_test.XXXXXX";
 	char* filename=mktemp(filename_tmp);
 
 	/* create one instance of each class */

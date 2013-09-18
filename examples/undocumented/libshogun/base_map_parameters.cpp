@@ -242,7 +242,7 @@ public:
 
 void test_load_file_parameter()
 {
-	char filename_tmp[] = "map_params_test.txt_XXXXXX";
+	char filename_tmp[] = "map_params_test.XXXXXX";
 	char* filename=mktemp(filename_tmp);
 
 	/* create one instance of each class */

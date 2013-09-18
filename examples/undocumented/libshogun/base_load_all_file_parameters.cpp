@@ -154,7 +154,7 @@ public:
 
 void test_load_file_parameter()
 {
-	char filename_tmp[] = "load_all_file_test.txt_XXXXXX";
+	char filename_tmp[] = "load_all_file_test.XXXXXX";
 	char* filename=mktemp(filename_tmp);
 
 	/* create one instance of each class */

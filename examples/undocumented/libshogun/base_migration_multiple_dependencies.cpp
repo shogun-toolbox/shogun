@@ -130,7 +130,7 @@ public:
 
 void test_migration()
 {
-	char filename_tmp[] = "migration_multiple_dep_test.txt_XXXXXX";
+	char filename_tmp[] = "migration_multiple_dep_test.XXXXXX";
 	char* filename=mktemp(filename_tmp);
 
 	/* create one instance of each class */
