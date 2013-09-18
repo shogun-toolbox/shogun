@@ -1,7 +1,7 @@
 library(shogun)
 
-fm_train_real <- as.matrix(read.table('../data/fm_train_real.dat'))
-fm_test_real <- as.matrix(read.table('../data/fm_test_real.dat'))
+fm_train_real <- t(as.matrix(read.table('../data/fm_train_real.dat')))
+fm_test_real <- t(as.matrix(read.table('../data/fm_test_real.dat')))
 label_train_twoclass <- as.real(read.table('../data/label_train_twoclass.dat')$V1)
 
 # svm lin
@@ -21,7 +21,6 @@ epsilon <- 1e-5
 num_threads <- as.integer(1)
 labels <- BinaryLabels()
 labels$set_labels(label_train_twoclass)
-print(labels$get_labels())
 
 svm <- SVMLin(C, feats_train, labels)
 dump <- svm$set_epsilon(epsilon)
