@@ -40,12 +40,12 @@ public:
 	 *
 	 * @param result the scalar result
 	 */
-	CScalarResult(const T& result)
+	CScalarResult(const T& scalar_result)
 	: CJobResult()
 	{
 		init();
 
-		m_result=result;
+		m_result=scalar_result;
 
 		SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 	}
