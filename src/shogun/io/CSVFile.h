@@ -38,6 +38,14 @@ public:
 
 	/** constructor
 	 *
+	 * @param fd already opened file descriptor
+	 * @param mode mode, 'r' or 'w'
+	 * @param name variable name (e.g. "x" or "/path/to/x")
+	 */
+	CCSVFile(int fd, const char* mode, const char* name=NULL);
+
+	/** constructor
+	 *
 	 * @param fname filename to open
 	 * @param rw mode, 'r' or 'w'
 	 * @param name variable name (e.g. "x" or "/path/to/x")

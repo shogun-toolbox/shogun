@@ -36,6 +36,16 @@ CFile::CFile(FILE* f, const char* name) : CSGObject()
 		set_variable_name(name);
 }
 
+CFile::CFile(int fd, const char* mode, const char* name) : CSGObject()
+{
+	file=fdopen(fd, mode);
+	filename=NULL;
+	variable_name=NULL;
+
+	if (name)
+		set_variable_name(name);
+}
+
 CFile::CFile(const char* fname, char rw, const char* name) : CSGObject()
 {
 	variable_name=NULL;
