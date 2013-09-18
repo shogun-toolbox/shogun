@@ -178,7 +178,7 @@ TEST(LMNNImpl,find_impostors_exact)
 	SGMatrix<index_t> impostors_gt(impostors_arr,3,6,false);
 
 	// check the impostor triplets
-	EXPECT_EQ(impostors.size(), impostors_gt.num_cols); // number of impostor triplets
+	EXPECT_EQ((index_t) impostors.size(), impostors_gt.num_cols); // number of impostor triplets
 
 	int32_t i=0;
 	for (ImpostorsSetType::iterator it=impostors.begin(); it!=impostors.end(); it++,i++)
