@@ -12,15 +12,16 @@
 #include <shogun/base/Parameter.h>
 #include <shogun/lib/memory.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/lib/DataType.h>
 
 using namespace shogun;
 
 SGParamInfo::SGParamInfo()
 {
 	m_name=NULL;
-	m_ctype=(EContainerType) -1;
-	m_stype=(EStructType) -1;
-	m_ptype=(EPrimitiveType) -1;
+	m_ctype=CT_UNDEFINED;
+	m_stype=ST_UNDEFINED;
+	m_ptype=PT_UNDEFINED;
 	m_param_version=-1;
 }
 
@@ -182,7 +183,7 @@ bool SGParamInfo::operator>(const SGParamInfo& other) const
 bool SGParamInfo::is_empty() const
 {
 	/* return true if this info is for empty parameter */
-	return m_ctype<0 && m_stype<0 && m_ptype<0 && !m_name;
+	return m_ctype==CT_UNDEFINED && m_stype==ST_UNDEFINED && m_ptype==PT_UNDEFINED && !m_name;
 }
 
 ParameterMapElement::ParameterMapElement()
@@ -243,7 +244,7 @@ ParameterMap::~ParameterMap()
 void ParameterMap::put(const SGParamInfo* key, const SGParamInfo* value)
 {
 	/* assert that versions do differ exactly one if mapping is non-empty */
-	if(key->m_param_version-value->m_param_version!=1)
+	if (key->m_param_version-value->m_param_version!=1)
 	{
 		if (!key->is_empty() && !value->is_empty())
 		{

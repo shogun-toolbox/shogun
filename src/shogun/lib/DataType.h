@@ -30,14 +30,16 @@ enum EContainerType
 	CT_MATRIX=2,
 	CT_NDARRAY=3,
 	CT_SGVECTOR=4,
-	CT_SGMATRIX=5
+	CT_SGMATRIX=5,
+	CT_UNDEFINED=6
 };
 
 enum EStructType
 {
 	ST_NONE=0,
 	ST_STRING=1,
-	ST_SPARSE=2
+	ST_SPARSE=2,
+	ST_UNDEFINED=3
 };
 
 enum EPrimitiveType
@@ -56,7 +58,8 @@ enum EPrimitiveType
 	PT_FLOAT64=11,
 	PT_FLOATMAX=12,
 	PT_SGOBJECT=13,
-	PT_COMPLEX64=14
+	PT_COMPLEX64=14,
+	PT_UNDEFINED=15
 };
 #endif
 
