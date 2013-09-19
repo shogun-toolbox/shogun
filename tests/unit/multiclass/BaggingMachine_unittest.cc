@@ -6,12 +6,16 @@
 #include <shogun/ensemble/MajorityVote.h>
 #include <gtest/gtest.h>
 
+#ifdef USE_REFERENCE_COUNTING
 using namespace shogun;
 using ::testing::Return;
 
 /** gmock REV 443 and freebsd doesn't play nicely */
-#ifndef FREEBSD
+#ifdef FREEBSD
+TEST(BaggingMachine, DISABLED_mock_train)
+#else
 TEST(BaggingMachine, mock_train)
+#endif
 {
 	using ::testing::NiceMock;
 	using ::testing::_;

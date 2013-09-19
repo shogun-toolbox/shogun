@@ -276,6 +276,7 @@ TEST(RationalApproximation, compare_direct_vs_cocg_accuracy)
 		SG_UNREF(shifted_sparse);
 	}
 
+	SG_UNREF(trace_sampler);
 	SG_UNREF(complex_dense);
 	SG_UNREF(eig_solver);
 	SG_UNREF(dense_solver);

@@ -44,5 +44,8 @@ TEST(DirectSparseLinearSolver, solve)
 	Map<VectorXd> map_b(b.vector, b.vlen);
 
 	EXPECT_NEAR((map_Ax-map_b).norm(), 0.0, 1E-10);
+
+	SG_UNREF(linear_solver);
+	SG_UNREF(A);
 }
 #endif // HAVE_EIGEN3

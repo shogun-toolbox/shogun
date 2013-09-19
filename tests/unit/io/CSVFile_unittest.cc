@@ -140,7 +140,7 @@ TEST(CSVFileTest, write_vector_int)
 	CCSVFile* fin;
 	CCSVFile* fout;
 
-	SGVector<int32_t> tmp(true);
+	SGVector<int32_t> tmp;
 
 	fout=new CCSVFile("csvfile_test.csv",'w', NULL);
 	fout->set_delimiter(' ');
@@ -171,11 +171,7 @@ TEST(CSVFileTest, read_write_string_list)
 
 	SGString<char>* lines_to_write=SG_MALLOC(SGString<char>, num_lines);
 	for (int32_t i=0; i<num_lines; i++)
-	{
-		lines_to_write[i].string=SG_MALLOC(char, strlen(text[i])+1);
-		strcpy(lines_to_write[i].string, text[i]);
-		lines_to_write[i].slen=strlen(text[i]);
-	}
+		lines_to_write[i] = SGString<char>((char*)text[i], strlen(text[i]), false);
 
 	CCSVFile* fin;
 	CCSVFile* fout;	
@@ -191,7 +187,12 @@ TEST(CSVFileTest, read_write_string_list)
 	for (int32_t i=0; i<num_str; i++)
 	{
 		for (int32_t j=0; j<lines_to_read[i].slen; j++)
+		{
 			EXPECT_EQ(lines_to_read[i].string[j], lines_to_write[i].string[j]);
+			lines_to_read[i].destroy_string();
+		}
 	}
-	SG_UNREF(fin);	
+	SG_UNREF(fin);
+	SG_FREE(lines_to_write);
+	SG_FREE(lines_to_read);
 }

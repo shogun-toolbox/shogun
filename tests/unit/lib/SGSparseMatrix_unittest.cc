@@ -162,4 +162,7 @@ TEST(SGSparseMatrix, io_libsvm)
 			EXPECT_NEAR(m[i].features[j].entry, m_from_file[i].features[j].entry, 1E-14);
 		}
 	}
+
+	SG_UNREF(labels);
+	SG_UNREF(labels_from_file);
 }

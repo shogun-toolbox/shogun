@@ -7,8 +7,11 @@ using ::testing::Return;
 using ::testing::NiceMock;
 
 /** gmock REV 443 and freebsd doesn't play nicely */
-#ifndef FREEBSD
+#ifdef FREEBSD
+TEST(LatentModel, DISABLED_argmax_h)
+#else
 TEST(LatentModel, argmax_h)
+#endif
 {
 	using ::testing::AtMost;
 	using ::testing::_;
@@ -34,7 +37,13 @@ TEST(LatentModel, argmax_h)
 	SG_UNREF(data);
 }
 
+#ifdef USE_REFERENCE_COUNTING
+
+#ifdef FREEBSD
+TEST(LatentSVM, DISABLED_ctor)
+#else
 TEST(LatentSVM, ctor)
+#endif
 {
 	using ::testing::AtLeast;
 	using ::testing::Exactly;
@@ -56,7 +65,11 @@ TEST(LatentSVM, ctor)
 	SG_UNREF(lsvm);
 }
 
+#ifdef FREEBSD
+TEST(LatentSVM, DISABLED_apply)
+#else
 TEST(LatentSVM, apply)
+#endif
 {
 	using ::testing::AtMost;
 	using ::testing::_;

@@ -90,5 +90,5 @@ TEST(StreamingDenseFeaturesTest, example_reading_from_features)
 	}
 	feats->end_parser();
 
-	SG_UNREF(orig_feats);
+	SG_UNREF(feats);
 }

@@ -15,6 +15,8 @@ TEST(MemoryTest,get_copy)
 
 	for (int i=0; i<len; i++)
 		EXPECT_EQ(bytes[i], copy[i]);
+
+	SG_FREE(copy);
 }
 
 TEST(MemoryTest,get_strdup)
@@ -28,6 +30,8 @@ TEST(MemoryTest,get_strdup)
 
 	for (int i=0; i<len1; i++)
 		EXPECT_EQ(str1[i], str2[i]);
+
+	SG_FREE(str2);
 }
 
 TEST(MemoryTest,SGVector)
