@@ -1863,6 +1863,9 @@ TParameter::delete_cont()
 		case CT_MATRIX: case CT_SGMATRIX:
 			old_length *= *m_datatype.m_length_x; break;
 		case CT_SCALAR: case CT_VECTOR: case CT_SGVECTOR: break;
+		case CT_UNDEFINED: default:
+			SG_SERROR("Implementation error: undefined container type\n");
+			break;
 		}
 
 		switch (m_datatype.m_stype) {
@@ -1897,6 +1900,7 @@ TParameter::delete_cont()
 			case PT_COMPLEX64:
 				SG_FREE(*(complex64_t**) m_parameter); break;
 			case PT_SGOBJECT:
+			{
 				CSGObject** buf = *(CSGObject***) m_parameter;
 
 				for (index_t i=0; i<old_length; i++)
@@ -1905,12 +1909,19 @@ TParameter::delete_cont()
 				SG_FREE(buf);
 				break;
 			}
+			case PT_UNDEFINED: default:
+				SG_SERROR("Implementation error: undefined primitive type\n");
+				break;
+			}
 			break;
 		case ST_STRING:
+		{
 			for (index_t i=0; i<old_length; i++) {
 				SGString<char>* buf = (SGString<char>*) (*(char**)
 						m_parameter + i *m_datatype.sizeof_stype());
 				if (buf->slen > 0) SG_FREE(buf->string);
+			break;
+		}
 			}
 
 			switch (m_datatype.m_ptype) {
@@ -1948,6 +1959,9 @@ TParameter::delete_cont()
 				SG_SERROR("TParameter::delete_cont(): Implementation "
 						 "error: Could not delete "
 						 "String<SGSerializable*>");
+				break;
+			case PT_UNDEFINED: default:
+				SG_SERROR("Implementation error: undefined primitive type\n");
 				break;
 			}
 			break;
@@ -1992,7 +2006,13 @@ TParameter::delete_cont()
 						 "error: Could not delete "
 						 "Sparse<SGSerializable*>");
 				break;
+			case PT_UNDEFINED: default:
+				SG_SERROR("Implementation error: undefined primitive type\n");
+				break;
 			}
+			break;
+		case ST_UNDEFINED: default:
+			SG_SERROR("Implementation error: undefined structure type\n");
 			break;
 		} /* switch (m_datatype.m_stype)  */
 	} /* if (*(void**) m_parameter != NULL)  */
@@ -2062,6 +2082,9 @@ TParameter::new_cont(SGVector<index_t> dims)
 			*(CSGObject***) m_parameter
 				= SG_CALLOC(CSGObject*, new_length);
 			break;
+		case PT_UNDEFINED: default:
+			SG_SERROR("Implementation error: undefined primitive type\n");
+			break;
 		}
 		break;
 	case ST_STRING:
@@ -2114,6 +2137,9 @@ TParameter::new_cont(SGVector<index_t> dims)
 			SG_SERROR("TParameter::new_cont(): Implementation "
 					 "error: Could not allocate "
 					 "String<SGSerializable*>");
+			break;
+		case PT_UNDEFINED: default:
+			SG_SERROR("Implementation error: undefined primitive type\n");
 			break;
 		}
 		memset(*(void**) m_parameter, 0, new_length
@@ -2169,7 +2195,13 @@ TParameter::new_cont(SGVector<index_t> dims)
 					 "error: Could not allocate "
 					 "Sparse<SGSerializable*>");
 			break;
+		case PT_UNDEFINED: default:
+			SG_SERROR("Implementation error: undefined primitive type\n");
+			break;
 		}
+		break;
+	case ST_UNDEFINED: default:
+		SG_SERROR("Implementation error: undefined structure type\n");
 		break;
 	} /* switch (m_datatype.m_stype)  */
 
@@ -2341,6 +2373,9 @@ TParameter::save_stype(CSerializableFile* file, const void* param,
 		if (!file->write_sparse_end(
 				&m_datatype, m_name, prefix, len_real)) return false;
 		break;
+	case ST_UNDEFINED: default:
+		SG_SERROR("Implementation error: undefined structure type\n");
+		break;
 	}
 
 	return true;
@@ -2404,6 +2439,9 @@ TParameter::load_stype(CSerializableFile* file, void* param,
 
 		spr_ptr->num_feat_entries = len_real;
 		break;
+	case ST_UNDEFINED: default:
+		SG_SERROR("Implementation error: undefined structure type\n");
+		break;
 	}
 
 	return true;
@@ -2428,6 +2466,7 @@ void TParameter::get_incremental_hash(
 		break;
 	}
 	case CT_VECTOR: case CT_MATRIX: case CT_SGVECTOR: case CT_SGMATRIX:
+	{
 		index_t len_real_y = 0, len_real_x = 0;
 
 		if (m_datatype.m_length_y)
@@ -2471,6 +2510,9 @@ void TParameter::get_incremental_hash(
 			break;
 
 		case CT_SCALAR: break;
+		case CT_UNDEFINED: default:
+			SG_SERROR("Implementation error: undefined container type\n");
+			break;
 		}
 		uint32_t size = (len_real_x*len_real_y)*m_datatype.sizeof_stype();
 		
@@ -2480,6 +2522,10 @@ void TParameter::get_incremental_hash(
 		
 		CHash::IncrementalMurmurHash3(
 				&hash, &carry, data, size);
+		break;
+	}
+	case CT_UNDEFINED: default:
+		SG_SERROR("Implementation error: undefined container type\n");
 		break;
 	}
 }
@@ -2510,6 +2556,7 @@ TParameter::save(CSerializableFile* file, const char* prefix)
 		if (!save_stype(file, m_parameter, prefix)) return false;
 		break;
 	case CT_VECTOR: case CT_MATRIX: case CT_SGVECTOR: case CT_SGMATRIX:
+	{
 		index_t len_real_y = 0, len_real_x = 0;
 
 		len_real_y = *m_datatype.m_length_y;
@@ -2543,6 +2590,9 @@ TParameter::save(CSerializableFile* file, const char* prefix)
 
 			break;
 		case CT_SCALAR: break;
+		case CT_UNDEFINED: default:
+			SG_SERROR("Implementation error: undefined container type\n");
+			break;
 		}
 
 		if (!file->write_cont_begin(&m_datatype, m_name, prefix,
@@ -2572,6 +2622,10 @@ TParameter::save(CSerializableFile* file, const char* prefix)
 								  len_real_y, len_real_x))
 			return false;
 
+		break;
+	}
+	case CT_UNDEFINED: default:
+		SG_SERROR("Implementation error: undefined container type\n");
 		break;
 	}
 
@@ -2604,6 +2658,7 @@ TParameter::load(CSerializableFile* file, const char* prefix)
 			break;
 
 		case CT_VECTOR: case CT_MATRIX: case CT_SGVECTOR: case CT_SGMATRIX:
+		{
 			SGVector<index_t> dims(2);
 			dims.zero();
 
@@ -2624,6 +2679,9 @@ TParameter::load(CSerializableFile* file, const char* prefix)
 					new_cont(dims);
 					break;
 				case CT_SCALAR:
+					break;
+				case CT_UNDEFINED: default:
+					SG_SERROR("Implementation error: undefined container type\n");
 					break;
 			}
 
@@ -2659,12 +2717,19 @@ TParameter::load(CSerializableFile* file, const char* prefix)
 					break;
 				case CT_SCALAR:
 					break;
+				case CT_UNDEFINED: default:
+					SG_SERROR("Implementation error: undefined container type\n");
+					break;
 			}
 
 			if (!file->read_cont_end(&m_datatype, m_name, prefix,
 						dims[1], dims[0]))
 				return false;
 
+			break;
+		}
+		case CT_UNDEFINED: default:
+			SG_SERROR("Implementation error: undefined container type\n");
 			break;
 	}
 
@@ -2944,6 +3009,9 @@ void TParameter::allocate_data_from_scratch(SGVector<index_t> dims,
 	case CT_NDARRAY:
 		SG_SNOTIMPLEMENTED
 		break;
+	case CT_UNDEFINED: default:
+		SG_SERROR("Implementation error: undefined container type\n");
+		break;
 	}
 
 	/* check if there is no data loss */
@@ -3195,6 +3263,9 @@ bool TParameter::equals(TParameter* other, float64_t accuracy)
 					"CT_NDARRAY!\n");
 			break;
 		}
+		case CT_UNDEFINED: default:
+			SG_SERROR("Implementation error: undefined container type\n");
+			break;
 	}
 
 	SG_SDEBUG("leaving TParameter::equals(): Parameters are equal\n");
@@ -4052,6 +4123,9 @@ bool TParameter::copy(TParameter* target)
 					"CT_NDARRAY!\n");
 			break;
 		}
+		case CT_UNDEFINED: default:
+			SG_SERROR("Implementation error: undefined container type\n");
+			break;
 	}
 
 	SG_SDEBUG("leaving TParameter::copy(): Copy successful\n");
