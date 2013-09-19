@@ -159,9 +159,8 @@ public:
 		typedef SGSparseVector<Scalar> vector;
 		typedef SGSparseVectorEntry<Scalar> entry;
 
-		SGSparseMatrix<Scalar> casted_m(m_operator.num_vectors, m_operator.num_features);
+		vector* rows=SG_MALLOC(vector, m_operator.num_vectors);
 
-		vector* rows=SG_MALLOC(vector, m_operator.num_features);
 		for (index_t i=0; i<m_operator.num_vectors; ++i)
 		{
 			entry* features=SG_MALLOC(entry, m_operator[i].num_feat_entries);
@@ -173,7 +172,11 @@ public:
 			rows[i].features=features;
 			rows[i].num_feat_entries=m_operator[i].num_feat_entries;
 		}
+
+		SGSparseMatrix<Scalar> casted_m;
 		casted_m.sparse_matrix=rows;
+		casted_m.num_vectors=m_operator.num_vectors;
+		casted_m.num_features= m_operator.num_features;
 
 		return new CSparseMatrixOperator<Scalar>(casted_m);
 	}
