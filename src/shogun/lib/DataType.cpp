@@ -143,13 +143,14 @@ TSGDataType::to_string(char* dest, size_t n) const
 	case CT_MATRIX: strncpy(p, "Matrix<", n); break;
 	case CT_SGMATRIX: strncpy(p, "SGMatrix<", n); break;
 	case CT_NDARRAY: strncpy(p, "N-Dimensional Array<", n); break;
-	case CT_UNDEFINED: default:
-		SG_SERROR("Implementation error: undefined container type\n");
-		break;
+	case CT_UNDEFINED: default: strncpy(p, "Undefined", n); break;
 	}
 
-	size_t np = strlen(p);
-	stype_to_string(p + np, m_stype, m_ptype, n - np - 2);
+	if (m_ctype != CT_UNDEFINED)
+	{
+		size_t np = strlen(p);
+		stype_to_string(p + np, m_stype, m_ptype, n - np - 2);
+	}
 
 	switch (m_ctype) {
 	case CT_SCALAR: break;
@@ -157,11 +158,8 @@ TSGDataType::to_string(char* dest, size_t n) const
 	case CT_SGVECTOR:
 	case CT_MATRIX:
 	case CT_SGMATRIX:
-	case CT_NDARRAY:
-		strcat(p, ">"); break;
-	case CT_UNDEFINED: default:
-		SG_SERROR("Implementation error: undefined container type\n");
-		break;
+	case CT_NDARRAY: strcat(p, ">"); break;
+	case CT_UNDEFINED: default: break;
 	}
 }
 
