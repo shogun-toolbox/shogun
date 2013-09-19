@@ -71,7 +71,11 @@ class CLinearMulticlassMachine : public CMulticlassMachine
 			m_features = f;
 
 			for (index_t i=0; i<m_machines->get_num_elements(); i++)
-				((CLinearMachine* )m_machines->get_element(i))->set_features(f);
+			{
+				CLinearMachine* machine = (CLinearMachine* )m_machines->get_element(i);
+				machine->set_features(f);
+				SG_UNREF(machine);
+			}
 		}
 
 		/** get features
