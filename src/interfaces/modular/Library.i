@@ -103,6 +103,10 @@ namespace shogun
     %template(LongRealSparseVector) SGSparseVector<floatmax_t>;
     SERIALIZABLE_DUMMY(SGSparseVector<floatmax_t>);
 #endif
+#ifdef USE_COMPLEX64
+    %template(ComplexSparseVector) SGSparseVector<complex64_t>;
+    SERIALIZABLE_DUMMY(SGSparseVector<complex64_t>);
+#endif
 #ifdef USE_BOOL
     %template(BoolSparseMatrix) SGSparseMatrix<bool>;
     SERIALIZABLE_DUMMY(SGSparseMatrix<bool>);
@@ -150,6 +154,10 @@ namespace shogun
 #ifdef USE_FLOATMAX
     %template(LongRealSparseMatrix) SGSparseMatrix<floatmax_t>;
     SERIALIZABLE_DUMMY(SGSparseMatrix<floatmax_t>);
+#endif
+#ifdef USE_COMPLEX64
+    %template(ComplexSparseMatrix) SGSparseMatrix<complex64_t>;
+    SERIALIZABLE_DUMMY(SGSparseMatrix<complex64_t>);
 #endif
 
 #ifdef USE_BOOL
@@ -305,6 +313,11 @@ namespace shogun
     %template(LongRealVector) SGVector<floatmax_t>;
     SERIALIZABLE_DUMMY(SGVector<floatmax_t>);
 #endif
+#ifdef USE_COMPLEX64
+    PROTOCOLS_SGVECTOR(ComplexVector, complex64_t, "d\0", NPY_CDOUBLE)
+    %template(ComplexVector) SGVector<complex64_t>;
+    SERIALIZABLE_DUMMY(SGVector<complex64_t>);
+#endif
 
 #ifdef USE_BOOL
     %template(BoolMatrix) SGMatrix<bool>;
@@ -353,6 +366,10 @@ namespace shogun
 #ifdef USE_FLOATMAX
     %template(LongRealMatrix) SGMatrix<floatmax_t>;
     SERIALIZABLE_DUMMY(SGMatrix<floatmax_t>);
+#endif
+#ifdef USE_COMPLEX64
+    %template(ComplexMatrix) SGMatrix<complex64_t>;
+    SERIALIZABLE_DUMMY(SGMatrix<complex64_t>);
 #endif
 
 #ifdef USE_BOOL
