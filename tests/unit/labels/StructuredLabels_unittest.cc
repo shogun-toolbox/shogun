@@ -4,7 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2013 Thoralf Klein <thoralf.klein@zib.de>
+ * Written (W) 2013 Thoralf Klein <thoralf.klein@zib.de>, Fernando J. Iglesias Garcia
  * Copyright (C) 2013 Zuse-Institute-Berlin (ZIB)
  * Copyright (C) 2013 Thoralf Klein
  */
@@ -19,36 +19,58 @@ using namespace shogun;
 
 TEST(StructuredLabels, add_label)
 {
-  int32_t num_labels = 3;
-  CStructuredLabels * l = new CStructuredLabels(num_labels);
+	int32_t num_labels = 3;
+	CStructuredLabels * l = new CStructuredLabels(num_labels);
 
-  l->add_label(new CRealNumber(3));
-  l->add_label(new CRealNumber(7));
-  l->add_label(new CRealNumber(13));
+	l->add_label(new CRealNumber(3));
+	l->add_label(new CRealNumber(7));
+	l->add_label(new CRealNumber(13));
 
-  EXPECT_EQ(3, l->get_num_labels());
-  EXPECT_EQ(3, CRealNumber::obtain_from_generic(l->get_label(0))->value);
-  EXPECT_EQ(7, CRealNumber::obtain_from_generic(l->get_label(1))->value);
-  EXPECT_EQ(13, CRealNumber::obtain_from_generic(l->get_label(2))->value);
+	CRealNumber* real_number;
 
-  SG_UNREF(l);
+	EXPECT_EQ(3, l->get_num_labels());
+
+	real_number = CRealNumber::obtain_from_generic(l->get_label(0));
+	EXPECT_EQ(3, real_number->value);
+	SG_UNREF(real_number);
+
+	real_number = CRealNumber::obtain_from_generic(l->get_label(1));
+	EXPECT_EQ(7, real_number->value);
+	SG_UNREF(real_number);
+
+	real_number = CRealNumber::obtain_from_generic(l->get_label(2));
+	EXPECT_EQ(13, real_number->value);
+	SG_UNREF(real_number);
+
+	SG_UNREF(l);
 }
 
 TEST(StructuredLabels, set_label)
 {
-  int32_t num_labels = 3;
-  CStructuredLabels * l = new CStructuredLabels(num_labels);
+	int32_t num_labels = 3;
+	CStructuredLabels * l = new CStructuredLabels(num_labels);
 
-  l->add_label(new CRealNumber(3));
-  l->add_label(new CRealNumber(7));
-  l->add_label(new CRealNumber(13));
+	l->add_label(new CRealNumber(3));
+	l->add_label(new CRealNumber(7));
+	l->add_label(new CRealNumber(13));
 
-  l->set_label(1, new CRealNumber(23));
+	l->set_label(1, new CRealNumber(23));
 
-  EXPECT_EQ(3, l->get_num_labels());
-  EXPECT_EQ(3, CRealNumber::obtain_from_generic(l->get_label(0))->value);
-  EXPECT_EQ(23, CRealNumber::obtain_from_generic(l->get_label(1))->value);
-  EXPECT_EQ(13, CRealNumber::obtain_from_generic(l->get_label(2))->value);
+	CRealNumber* real_number;
 
-  SG_UNREF(l);
+	EXPECT_EQ(3, l->get_num_labels());
+
+	real_number = CRealNumber::obtain_from_generic(l->get_label(0));
+	EXPECT_EQ(3, real_number->value);
+	SG_UNREF(real_number);
+
+	real_number = CRealNumber::obtain_from_generic(l->get_label(1));
+	EXPECT_EQ(23, real_number->value);
+	SG_UNREF(real_number);
+
+	real_number = CRealNumber::obtain_from_generic(l->get_label(2));
+	EXPECT_EQ(13, real_number->value);
+	SG_UNREF(real_number);
+
+	SG_UNREF(l);
 }
