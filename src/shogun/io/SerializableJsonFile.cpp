@@ -192,13 +192,15 @@ CSerializableJsonFile::write_scalar_wrapped(
 						(double) *(floatmax_t*) param));
 		break;
 	case PT_COMPLEX64:
-		SG_ERROR("write_scalar_wrapped(): Not supported for complex64_t"
-				 " for writing into JsonFile!");
+		SG_ERROR("Not supported for complex64_t for writing into JsonFile!");
 		break;
 	case PT_SGOBJECT:
-		SG_ERROR("write_scalar_wrapped(): Implementation error during"
-				 " writing JsonFile!");
+		SG_ERROR("Implementation error during writing JsonFile!");
 		return false;
+	case PT_UNDEFINED: default:
+		SG_ERROR("Implementation error: undefined primitive type\n");
+		return false;
+		break;
 	}
 
 	if (is_error(m_stack_stream.back()))

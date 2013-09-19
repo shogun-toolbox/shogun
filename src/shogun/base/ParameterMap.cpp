@@ -12,15 +12,16 @@
 #include <shogun/base/Parameter.h>
 #include <shogun/lib/memory.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/lib/DataType.h>
 
 using namespace shogun;
 
 SGParamInfo::SGParamInfo()
 {
 	m_name=NULL;
-	m_ctype=(EContainerType) -1;
-	m_stype=(EStructType) -1;
-	m_ptype=(EPrimitiveType) -1;
+	m_ctype=CT_UNDEFINED;
+	m_stype=ST_UNDEFINED;
+	m_ptype=PT_UNDEFINED;
 	m_param_version=-1;
 }
 

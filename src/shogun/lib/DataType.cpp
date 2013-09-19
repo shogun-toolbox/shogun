@@ -143,6 +143,9 @@ TSGDataType::to_string(char* dest, size_t n) const
 	case CT_MATRIX: strncpy(p, "Matrix<", n); break;
 	case CT_SGMATRIX: strncpy(p, "SGMatrix<", n); break;
 	case CT_NDARRAY: strncpy(p, "N-Dimensional Array<", n); break;
+	case CT_UNDEFINED: default:
+		SG_SERROR("Implementation error: undefined container type\n");
+		break;
 	}
 
 	size_t np = strlen(p);
@@ -156,6 +159,9 @@ TSGDataType::to_string(char* dest, size_t n) const
 	case CT_SGMATRIX:
 	case CT_NDARRAY:
 		strcat(p, ">"); break;
+	case CT_UNDEFINED: default:
+		SG_SERROR("Implementation error: undefined container type\n");
+		break;
 	}
 }
 
@@ -199,6 +205,9 @@ TSGDataType::sizeof_stype(EStructType stype, EPrimitiveType ptype)
 			SG_SWARNING("TGSDataType::sizeof_stype(): Strings are"
 				" not supported for SGObject\n");
 			return -1;
+		case PT_UNDEFINED: default:
+			SG_SERROR("Implementation error: undefined primitive type\n");
+			break;
 		}
 		break;
 	case ST_SPARSE:
@@ -218,7 +227,13 @@ TSGDataType::sizeof_stype(EStructType stype, EPrimitiveType ptype)
 		case PT_FLOATMAX: return sizeof (SGSparseVector<floatmax_t>);
 		case PT_COMPLEX64: return sizeof (SGSparseVector<complex64_t>);
 		case PT_SGOBJECT: return -1;
+		case PT_UNDEFINED: default:
+			SG_SERROR("Implementation error: undefined primitive type\n");
+			break;
 		}
+		break;
+	case ST_UNDEFINED: default:
+		SG_SERROR("Implementation error: undefined structure type\n");
 		break;
 	}
 
@@ -244,6 +259,9 @@ TSGDataType::sizeof_ptype(EPrimitiveType ptype)
 	case PT_FLOATMAX: return sizeof (floatmax_t);
 	case PT_COMPLEX64: return sizeof (complex64_t);
 	case PT_SGOBJECT: return sizeof (CSGObject*);
+	case PT_UNDEFINED: default:
+		SG_SERROR("Implementation error: undefined primitive type\n");
+		break;
 	}
 
 	return -1;
@@ -268,6 +286,9 @@ TSGDataType::sizeof_sparseentry(EPrimitiveType ptype)
 	case PT_FLOATMAX: return sizeof (SGSparseVectorEntry<floatmax_t>);
 	case PT_COMPLEX64: return sizeof (SGSparseVectorEntry<complex64_t>);
 	case PT_SGOBJECT: return -1;
+	case PT_UNDEFINED: default:
+		SG_SERROR("Implementation error: undefined primitive type\n");
+		break;
 	}
 
 	return -1;
@@ -296,6 +317,9 @@ TSGDataType::offset_sparseentry(EPrimitiveType ptype)
 	case PT_FLOATMAX: result = ENTRY_OFFSET(x, floatmax_t); break;
 	case PT_COMPLEX64: result = ENTRY_OFFSET(x, complex64_t); break;
 	case PT_SGOBJECT: return -1;
+	case PT_UNDEFINED: default:
+		SG_SERROR("Implementation error: undefined primitive type\n");
+		break;
 	}
 
 	return result;
@@ -311,6 +335,9 @@ TSGDataType::stype_to_string(char* dest, EStructType stype,
 	case ST_NONE: strncpy(p, "", n); break;
 	case ST_STRING: strncpy(p, "String<", n); break;
 	case ST_SPARSE: strncpy(p, "Sparse<", n); break;
+	case ST_UNDEFINED: default:
+		SG_SERROR("Implementation error: undefined structure type\n");
+		break;
 	}
 
 	size_t np = strlen(p);
@@ -320,6 +347,9 @@ TSGDataType::stype_to_string(char* dest, EStructType stype,
 	case ST_NONE: break;
 	case ST_STRING: case ST_SPARSE:
 		strcat(p, ">"); break;
+	case ST_UNDEFINED: default:
+		SG_SERROR("Implementation error: undefined structure type\n");
+		break;
 	}
 }
 
@@ -345,6 +375,9 @@ TSGDataType::ptype_to_string(char* dest, EPrimitiveType ptype,
 	case PT_FLOATMAX: strncpy(p, "floatmax", n); break;
 	case PT_COMPLEX64: strncpy(p, "complex64", n); break;
 	case PT_SGOBJECT: strncpy(p, "SGSerializable*", n); break;
+	case PT_UNDEFINED: default:
+		SG_SERROR("Implementation error: undefined primitive type\n");
+		break;
 	}
 }
 
@@ -388,6 +421,9 @@ TSGDataType::string_to_ptype(EPrimitiveType* ptype, const char* str)
 	case PT_INT16: case PT_UINT16: case PT_INT32: case PT_UINT32:
 	case PT_INT64: case PT_UINT64: case PT_FLOAT32: case PT_FLOAT64:
 	case PT_FLOATMAX: case PT_COMPLEX64: case PT_SGOBJECT: break;
+	case PT_UNDEFINED: default:
+		SG_SERROR("Implementation error: undefined primitive type\n");
+		break;
 	}
 
 	return false;
@@ -409,6 +445,9 @@ size_t TSGDataType::get_size()
 				return 0;
 
 			return get_num_elements()*sizeof_sparseentry(m_ptype);
+		case ST_UNDEFINED: default:
+			SG_SERROR("Implementation error: undefined structure type\n");
+			break;
 	}
 
 	return 0;
@@ -427,6 +466,9 @@ int64_t TSGDataType::get_num_elements()
 			return (*m_length_y)*(*m_length_x);
 		case CT_NDARRAY:
 			SG_SNOTIMPLEMENTED
+		case CT_UNDEFINED: default:
+			SG_SERROR("Implementation error: undefined container type\n");
+			break;
 	}
 	return 0;
 }
