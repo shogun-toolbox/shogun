@@ -11,6 +11,7 @@
 #include <shogun/mathematics/linalg/linop/LinearOperator.h>
 #include <shogun/mathematics/linalg/linop/MatrixOperator.h>
 #include <shogun/mathematics/linalg/linop/SparseMatrixOperator.h>
+#include <shogun/mathematics/linalg/linop/DenseMatrixOperator.h>
 
 #include <shogun/mathematics/linalg/ratapprox/opfunc/OperatorFunction.h>
 #include <shogun/mathematics/linalg/ratapprox/opfunc/RationalApproximation.h>
