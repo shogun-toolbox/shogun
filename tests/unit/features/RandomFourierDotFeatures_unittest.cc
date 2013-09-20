@@ -1,6 +1,4 @@
 #include <shogun/features/RandomFourierDotFeatures.h>
-#include <shogun/kernel/GaussianKernel.h>
-#include <shogun/kernel/normalizer/IdentityKernelNormalizer.h>
 
 #include <gtest/gtest.h>
 
@@ -12,14 +10,13 @@ TEST(RandomFourierDotFeatures, dot_test)
 	int32_t vecs = 5;
 	int32_t D = 100;
 
-	SGVector<float64_t> b(D);
-	SGMatrix<float64_t> w(num_dims,D);
+	SGMatrix<float64_t> w(num_dims+1,D);
 	
 	for (index_t i=0; i<D; i++)
 	{
 		for (index_t j=0; j<num_dims; j++)
 			w(j,i) = i+j;
-		b[i] = 1;
+		w(num_dims,i) = 1;
 	}
 	
 	SGMatrix<int32_t> data(num_dims, vecs);
@@ -30,8 +27,10 @@ TEST(RandomFourierDotFeatures, dot_test)
 	}
 
 	CDenseFeatures<int32_t>* d_feats = new CDenseFeatures<int32_t>(data);
+	SGVector<float64_t> params(1);
+	params[0] = 8;
 	CRandomFourierDotFeatures* r_feats = new CRandomFourierDotFeatures(
-			d_feats, D, w, b);
+			d_feats, D, GAUSSIAN, params, w);
 
 	SGMatrix<float64_t> cross_dot_matrix(vecs, vecs);
 	for (index_t i=0; i<vecs; i++)
@@ -62,7 +61,7 @@ TEST(RandomFourierDotFeatures, dot_test)
 	for (index_t i=0; i<5; i++)
 	{
 		for (index_t j=0; j<5; j++)
-			EXPECT_TRUE(CMath::abs(precomputed_mat(i,j) - cross_dot_matrix(i,j)) < e);
+			EXPECT_NEAR(precomputed_mat(i,j), cross_dot_matrix(i,j), e);
 	}
 	SG_UNREF(r_feats);
 }
@@ -73,14 +72,13 @@ TEST(RandomFourierDotFeatures, dense_dot_test)
 	int32_t vecs = 5;
 	int32_t D = 100;
 
-	SGVector<float64_t> b(D);
-	SGMatrix<float64_t> w(num_dims,D);
+	SGMatrix<float64_t> w(num_dims+1,D);
 	
 	for (index_t i=0; i<D; i++)
 	{
 		for (index_t j=0; j<num_dims; j++)
 			w(j,i) = i+j;
-		b[i] = 1;
+		w(num_dims,i) = 1;
 	}
 	
 	SGMatrix<int32_t> data(num_dims, vecs);
@@ -91,8 +89,10 @@ TEST(RandomFourierDotFeatures, dense_dot_test)
 	}
 
 	CDenseFeatures<int32_t>* d_feats = new CDenseFeatures<int32_t>(data);
+	SGVector<float64_t> params(1);
+	params[0] = 8;
 	CRandomFourierDotFeatures* r_feats = new CRandomFourierDotFeatures(
-			d_feats, D, w, b);
+			d_feats, D, GAUSSIAN, params, w);
 
 	SGMatrix<float64_t> cross_dot_matrix(vecs, vecs);
 	for (index_t i=0; i<vecs; i++)
@@ -112,7 +112,7 @@ TEST(RandomFourierDotFeatures, dense_dot_test)
 		SGVector<float64_t> ones(D);
 		SGVector<float64_t>::fill_vector(ones.vector, ones.vlen, 1);	
 		float64_t dot = r_feats->dense_dot(i, ones.vector, ones.vlen);
-		EXPECT_TRUE(CMath::abs(dot - vec[i]) < e);
+		EXPECT_NEAR(dot, vec[i], e);
 	}
 	SG_UNREF(r_feats);
 }
@@ -123,14 +123,13 @@ TEST(RandomFourierDotFeatures, add_to_dense_test)
 	int32_t vecs = 5;
 	int32_t D = 100;
 
-	SGVector<float64_t> b(D);
-	SGMatrix<float64_t> w(num_dims,D);
+	SGMatrix<float64_t> w(num_dims+1,D);
 	
 	for (index_t i=0; i<D; i++)
 	{
 		for (index_t j=0; j<num_dims; j++)
 			w(j,i) = i+j;
-		b[i] = 1;
+		w(num_dims,i) = 1;
 	}
 	
 	SGMatrix<int32_t> data(num_dims, vecs);
@@ -141,8 +140,10 @@ TEST(RandomFourierDotFeatures, add_to_dense_test)
 	}
 
 	CDenseFeatures<int32_t>* d_feats = new CDenseFeatures<int32_t>(data);
+	SGVector<float64_t> params(1);
+	params[0] = 8;
 	CRandomFourierDotFeatures* r_feats = new CRandomFourierDotFeatures(
-			d_feats, D, w, b);
+			d_feats, D, GAUSSIAN, params, w);
 
 	SGMatrix<float64_t> cross_dot_matrix(vecs, vecs);
 	for (index_t i=0; i<vecs; i++)
@@ -165,7 +166,8 @@ TEST(RandomFourierDotFeatures, add_to_dense_test)
 		float64_t sum = 0;
 		for (index_t j=0; j<D; j++)
 			sum += zeros[j];
-		EXPECT_TRUE(CMath::abs(sum - vec[i]) < e);
+		EXPECT_NEAR(sum, vec[i], e);
 	}
 	SG_UNREF(r_feats);
 }
+
