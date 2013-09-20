@@ -163,7 +163,7 @@ SGVector<complex64_t> CCGMShiftedFamilySolver::solve_shifted_weighted(
 
 	if (it.succeeded(r))
 	{
-		SG_DEBUG("Iteration took %ld times, residual norm=%.20lf\n",
+		SG_INFO("Iteration took %ld times, residual norm=%.20lf\n",
 			it.get_iter_info().iteration_count, it.get_iter_info().residual_norm);
 	}
 	else
