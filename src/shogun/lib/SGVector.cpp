@@ -20,6 +20,12 @@
 #include <shogun/lib/SGReferencedData.h>
 #include <shogun/io/File.h>
 
+#ifdef HAVE_PROTOBUF
+#include <shogun/io/protobuf/SGVector.pb.h>
+#include <google/protobuf/io/zero_copy_stream_impl.h>
+#include <google/protobuf/io/coded_stream.h>
+#endif
+
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/lapack.h>
 #include <algorithm>
@@ -58,6 +64,8 @@ void SGVector<complex64_t>::function(complex64_t a, complex64_t b,\
 	SG_SERROR("SGVector::%s():: Not supported for complex64_t\n",\
 		#function);\
 }
+
+using namespace google::protobuf::io;
 
 namespace shogun {
 
@@ -1246,6 +1254,77 @@ void SGVector<complex64_t>::save(CFile* saver)
 	SG_SERROR("SGVector::save():: Not supported for complex64_t\n");
 }
 
+#ifdef HAVE_PROTOBUF
+template<class T>
+void SGVector<T>::load_pb(CFile* loader)
+{
+	SG_SERROR("SGVector::load_pb():: Not supported\n");
+}
+
+template<class T>
+void SGVector<T>::save_pb(CFile* saver)
+{
+	SG_SERROR("SGVector::save_pb():: Not supported\n");
+}
+
+template<>
+void SGVector<int32_t>::load_pb(CFile* loader)
+{
+	ZeroCopyInputStream* raw_input=new FileInputStream(loader->get_posix_file_descriptor());
+	CodedInputStream* coded_input=new CodedInputStream(raw_input);
+
+	SGVectorHeaderProto header;
+	SGVectorChunkProto chunk;
+
+	CodedInputStream::Limit current_limit;
+
+	uint32_t header_size=0;
+	coded_input->ReadVarint32(&header_size);
+	current_limit=coded_input->PushLimit(header_size);
+	header.ParseFromCodedStream(coded_input);
+	coded_input->PopLimit(current_limit);
+
+	uint32_t chunk_size=0;
+	coded_input->ReadVarint32(&chunk_size);
+	current_limit=coded_input->PushLimit(chunk_size);
+	chunk.ParseFromCodedStream(coded_input);
+	coded_input->PopLimit(current_limit);
+	
+	vlen=header.vlen();
+	vector=SG_MALLOC(int32_t, vlen);
+	for (int32_t i=0; i<vlen; i++)
+	{
+		vector[i]=chunk.data(i);
+	}
+
+	delete coded_input;
+	delete raw_input;
+}
+
+template<>
+void SGVector<int32_t>::save_pb(CFile* saver)
+{
+	ZeroCopyOutputStream* raw_output=new FileOutputStream(saver->get_posix_file_descriptor());
+	CodedOutputStream* coded_output=new CodedOutputStream(raw_output);
+
+	SGVectorHeaderProto header;
+	header.set_vlen(vlen);
+	header.set_num_chunks(1);
+
+	SGVectorChunkProto chunk;
+	for (int32_t i=0; i<vlen; i++)
+		chunk.add_data(vector[i]);
+
+	coded_output->WriteVarint32(header.ByteSize());
+	header.SerializeToCodedStream(coded_output);
+
+	coded_output->WriteVarint32(chunk.ByteSize());
+	chunk.SerializeToCodedStream(coded_output);
+
+	delete coded_output;
+	delete raw_output;
+}
+#endif
 
 #define MATHOP(op)								\
 template <class T> void SGVector<T>::op()		\
