@@ -65,6 +65,7 @@ void* stress_test(void* args)
 	pthread_exit(0);
 }
 
+#ifdef USE_REFERENCE_COUNTING
 TEST(SGObject,ref_unref)
 {
 	CBinaryLabels* labs = new CBinaryLabels(10);
@@ -85,6 +86,7 @@ TEST(SGObject,ref_unref)
 	SG_UNREF(labs);
 	EXPECT_TRUE(labs == NULL);
 }
+#endif
 
 TEST(SGObject,equals_null)
 {
