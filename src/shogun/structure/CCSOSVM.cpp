@@ -108,7 +108,13 @@ int32_t CCCSOSVM::mosek_qp_optimize(float64_t** G, float64_t* delta, float64_t* 
 	buc[0] = m_C;
 
 	/* create mosek environment */
+#if (MSK_VERSION_MAJOR == 6)
 	r = MSK_makeenv(&env, NULL, NULL, NULL, NULL);
+#elif (MSK_VERSION_MAJOR == 7)
+	r = MSK_makeenv(&env, NULL);
+#else
+	#error "Unsupported Mosek version"
+#endif
 
 	/* check return code */
 	if (r==MSK_RES_OK)

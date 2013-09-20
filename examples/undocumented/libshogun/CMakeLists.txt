@@ -106,6 +106,10 @@ SET(EXAMPLES
 	so_factorgraph 
 )
 
+IF (USE_MOSEK)
+	LIST(APPEND EXAMPLES so_fg_model so_multiclass)
+ENDIF ()
+
 FOREACH(EXAMPLE ${EXAMPLES})
 	add_executable(${EXAMPLE} ${CMAKE_CURRENT_SOURCE_DIR}/${EXAMPLE}.${EXT_SRC_CPP})
 	target_link_libraries(${EXAMPLE} shogun ${SANITIZER_LIBRARY})
