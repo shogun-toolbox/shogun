@@ -99,12 +99,16 @@ MSKrescodee CMosek::init_sosvm(int32_t M, int32_t N,
 	// Append optimization variables initialized to zero
 #if (MSK_VERSION_MAJOR == 6)
 	m_rescode = MSK_append(m_task, MSK_ACC_VAR, num_var);
+#elif (MSK_VERSION_MAJOR == 7)
+	m_rescode = MSK_appendvars(m_task, num_var);
 #else
 	#error "Unsupported Mosek version"
 #endif
 	// Append empty constraints initialized with no bounds
 #if (MSK_VERSION_MAJOR == 6)
 	m_rescode = MSK_append(m_task, MSK_ACC_CON, num_con);
+#elif (MSK_VERSION_MAJOR == 7)
+	m_rescode = MSK_appendcons(m_task, num_con);
 #else
 	#error "Unsupported Mosek version"
 #endif
@@ -186,6 +190,8 @@ MSKrescodee CMosek::add_constraint_sosvm(
 #if (MSK_VERSION_MAJOR == 6)
 	m_rescode = MSK_putavec(m_task, MSK_ACC_CON, con_idx, nnz+1,
 			asub.vector, aval.vector);
+#elif (MSK_VERSION_MAJOR == 7)
+	m_rescode = MSK_putarow(m_task, con_idx, nnz+1, asub.vector, aval.vector);
 #else
 	#error "Unsupported Mosek version"
 #endif
@@ -263,6 +269,9 @@ MSKrescodee CMosek::wrapper_putaveclist(
 #if (MSK_VERSION_MAJOR == 6)
 	ret = MSK_putaveclist(task, MSK_ACC_CON, A.num_rows, sub.vector,
 			ptrb.vector, ptre.vector,
+			asub.vector, aval.vector);
+#elif (MSK_VERSION_MAJOR == 7)
+	ret = MSK_putarowlist(task, A.num_rows, sub.vector, ptrb.vector, ptre.vector,
 			asub.vector, aval.vector);
 #else
 	#error "Unsupported Mosek version"
@@ -361,6 +370,8 @@ MSKrescodee CMosek::optimize(SGVector< float64_t > sol)
 		// MSK_SOL_ITG: the integer solution
 #if (MSK_VERSION_MAJOR == 6)
 		MSK_getsolutionstatus(m_task, MSK_SOL_ITR, NULL, &solsta);
+#elif (MSK_VERSION_MAJOR == 7)
+		MSK_getsolsta(m_task, MSK_SOL_ITR, &solsta);
 #else
 	#error "Unsupported Mosek Version"
 #endif
