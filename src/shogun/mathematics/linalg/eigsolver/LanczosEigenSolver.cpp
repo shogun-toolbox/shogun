@@ -137,7 +137,7 @@ void CLanczosEigenSolver::compute()
 
 		if (info==0)
 		{
-			SG_DEBUG("Iteration took %ld times, residual norm=%.20lf\n",
+			SG_INFO("Iteration took %ld times, residual norm=%.20lf\n",
 			it.get_iter_info().iteration_count, it.get_iter_info().residual_norm);
 			
 			m_min_eigenvalue=w[0];
@@ -155,7 +155,7 @@ void CLanczosEigenSolver::compute()
 
 		if (info==0)
 		{
-			SG_DEBUG("Iteration took %ld times, residual norm=%.20lf\n",
+			SG_INFO("Iteration took %ld times, residual norm=%.20lf\n",
 			it.get_iter_info().iteration_count, it.get_iter_info().residual_norm);
 			m_max_eigenvalue=w[0];
 			m_is_computed_max=true;

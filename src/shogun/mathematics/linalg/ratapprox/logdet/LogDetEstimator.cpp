@@ -70,7 +70,7 @@ CLogDetEstimator::~CLogDetEstimator()
 SGVector<float64_t> CLogDetEstimator::sample(index_t num_estimates)
 {
 	SG_DEBUG("Entering\n");
-	SG_DEBUG("Computing %d log-det estimates\n", num_estimates);
+	SG_INFO("Computing %d log-det estimates\n", num_estimates);
 
 	REQUIRE(m_operator_log, "Operator function is NULL\n");
 	// call the precompute of operator function to compute the prerequisites
@@ -94,6 +94,9 @@ SGVector<float64_t> CLogDetEstimator::sample(index_t num_estimates)
 	{
 		for (index_t j=0; j<num_trace_samples; ++j)
 		{
+			SG_INFO("Computing log-determinant trace sample %d/%d\n", j,
+					num_trace_samples);
+
 			SG_DEBUG("Creating job for estimate %d, trace sample %d/%d\n", i, j,
 					num_trace_samples);
 			// get the trace sampler vector
@@ -108,9 +111,9 @@ SGVector<float64_t> CLogDetEstimator::sample(index_t num_estimates)
 	REQUIRE(m_computation_engine, "Computation engine is NULL\n");
 
 	// wait for all the jobs to be completed
-	SG_DEBUG("Waiting for jobs to finish\n");
+	SG_INFO("Waiting for jobs to finish\n");
 	m_computation_engine->wait_for_all();
-	SG_DEBUG("All jobs finished, aggregating results\n");
+	SG_INFO("All jobs finished, aggregating results\n");
 
 	// the samples vector which stores the estimates with averaging
 	SGVector<float64_t> samples(num_estimates);
@@ -149,8 +152,9 @@ SGVector<float64_t> CLogDetEstimator::sample(index_t num_estimates)
 	// clear all aggregators
 	SG_UNREF(aggregators)
 
-	SG_DEBUG("Finished computing %d log-det estimates\n", num_estimates);
+	SG_INFO("Finished computing %d log-det estimates\n", num_estimates);
 
+	SG_DEBUG("Leaving\n");
 	return samples;
 }
 

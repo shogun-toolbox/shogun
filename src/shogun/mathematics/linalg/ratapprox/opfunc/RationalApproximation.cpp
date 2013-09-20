@@ -112,8 +112,8 @@ void CRationalApproximation::precompute()
 {
 	// compute extremal eigenvalues
 	m_eigen_solver->compute();
-	SG_DEBUG("max_eig=%.15lf\n", m_eigen_solver->get_max_eigenvalue());
-	SG_DEBUG("min_eig=%.15lf\n", m_eigen_solver->get_min_eigenvalue());
+	SG_INFO("max_eig=%.15lf\n", m_eigen_solver->get_max_eigenvalue());
+	SG_INFO("min_eig=%.15lf\n", m_eigen_solver->get_min_eigenvalue());
 
 	REQUIRE(m_eigen_solver->get_min_eigenvalue()>0,
 		"Minimum eigenvalue is negative, please provide a Hermitian matrix\n");
@@ -122,7 +122,7 @@ void CRationalApproximation::precompute()
 	if (m_num_shifts==0)
 		m_num_shifts=compute_num_shifts_from_accuracy();
 
-	SG_DEBUG("Computing %d shifts\n", m_num_shifts);
+	SG_INFO("Computing %d shifts\n", m_num_shifts);
 	compute_shifts_weights_const();
 }
 
