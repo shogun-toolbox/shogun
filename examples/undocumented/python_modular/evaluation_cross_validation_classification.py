@@ -38,7 +38,7 @@ def evaluation_cross_validation_classification (traindat=traindat, label_trainda
 
     # splitting strategy for 5 fold cross-validation (for classification its better
     # to use "StratifiedCrossValidation", but the standard
-    # "StratifiedCrossValidationSplitting" is also available
+    # "CrossValidationSplitting" is also available
     splitting_strategy=StratifiedCrossValidationSplitting(labels, 5)
 
     # evaluation method
