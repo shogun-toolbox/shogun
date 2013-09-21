@@ -24,23 +24,19 @@
 #include <shogun/evaluation/ica/PermutationMatrix.h>
 #include <shogun/evaluation/ica/AmariIndex.h>
 
-using namespace Eigen;
-
-typedef Matrix< float64_t, Dynamic, Dynamic, ColMajor > EMatrix;
-typedef Matrix< float64_t, Dynamic, 1, ColMajor > EVector;
-
 using namespace shogun;
+using namespace Eigen;
 
 void test()
 {
 	// Generate sample data	
 	CMath::init_random(0); 
 	int n_samples = 2000;
-	EVector time(n_samples, true);
+	VectorXd time(n_samples, true);
 	time.setLinSpaced(n_samples,0,10);
 
 	// Source Signals
-	EMatrix S(2,n_samples);
+	MatrixXd S(2,n_samples);
 	for(int i = 0; i < n_samples; i++)
 	{
 		// Sin wave
@@ -53,14 +49,14 @@ void test()
 	}
 	
 	// Standardize data
-	EVector avg = S.rowwise().sum() / n_samples;
-	EVector std = ((S.colwise() - avg).array().pow(2).rowwise().sum() / n_samples).array().sqrt();
+	VectorXd avg = S.rowwise().sum() / n_samples;
+	VectorXd std = ((S.colwise() - avg).array().pow(2).rowwise().sum() / n_samples).array().sqrt();
 	for(int i = 0; i < n_samples; i++)
 		S.col(i) = S.col(i).cwiseQuotient(std);
 
 	// Mixing Matrix
 	SGMatrix<float64_t> mixing_matrix(2,2);
-	Eigen::Map<EMatrix> A(mixing_matrix.matrix,2,2);
+	Map<MatrixXd> A(mixing_matrix.matrix,2,2);
 	A(0,0) = 1;    A(0,1) = 0.5;
 	A(1,0) = 0.5;  A(1,1) = 1;
 
@@ -69,7 +65,7 @@ void test()
 
 	// Mix signals
 	SGMatrix<float64_t> X(2,n_samples);
-	Eigen::Map<EMatrix> EX(X.matrix,2,n_samples);
+	Map<MatrixXd> EX(X.matrix,2,n_samples);
 	EX = A * S;
 	CDenseFeatures< float64_t >* mixed_signals = new CDenseFeatures< float64_t >(X);
 
@@ -81,13 +77,13 @@ void test()
 	SG_REF(signals);
 
 	// Close to a permutation matrix (with random scales)
-	Eigen::Map<EMatrix> EA(jade->get_mixing_matrix().matrix,2,2);
+	Map<MatrixXd> EA(jade->get_mixing_matrix().matrix,2,2);
 	
 	std::cout << "Estimated Mixing Matrix:" << std::endl;
 	std::cout << EA << std::endl << std::endl;
 	
 	SGMatrix<float64_t> P(2,2);
-	Eigen::Map<EMatrix> EP(P.matrix,2,2);
+	Eigen::Map<MatrixXd> EP(P.matrix,2,2);
 	EP = EA.inverse() * A;
 
 	bool isperm = is_permutation_matrix(P);

@@ -7,12 +7,8 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
 
-using namespace Eigen;
-
-typedef Matrix< float64_t, Dynamic, 1, ColMajor > EVector;
-typedef Matrix< float64_t, Dynamic, Dynamic, ColMajor > EMatrix;
-
 using namespace shogun;
+using namespace Eigen;
 
 void jadiagw(float64_t c[], float64_t w[], int *ptn, int *ptm, float64_t a[],
 	         float64_t *logdet, float64_t *decr, float64_t *result);
@@ -26,12 +22,12 @@ SGMatrix<float64_t> CJADiag::diagonalize(SGNDArray<float64_t> C, SGMatrix<float6
 	// check that the input matrices are pos def
 	for (int i = 0; i < L; i++)
 	{
-		Eigen::Map<EMatrix> Ci(C.get_matrix(i),d,d);
+		Map<MatrixXd> Ci(C.get_matrix(i),d,d);
 	
-		EigenSolver<EMatrix> eig;
+		EigenSolver<MatrixXd> eig;
 		eig.compute(Ci);
 
-		EMatrix D = eig.pseudoEigenvalueMatrix();
+		MatrixXd D = eig.pseudoEigenvalueMatrix();
 
 		for (int j = 0; j < d; j++)
 		{
@@ -48,13 +44,13 @@ SGMatrix<float64_t> CJADiag::diagonalize(SGNDArray<float64_t> C, SGMatrix<float6
 	else
 		V = SGMatrix<float64_t>::create_identity_matrix(d,1);
 	
-	EVector w(L);
+	VectorXd w(L);
 	w.setOnes();
 	
-	EMatrix ctot(d, d*L);
+	MatrixXd ctot(d, d*L);
 	for (int i = 0; i < L; i++)
 	{
-		Eigen::Map<EMatrix> Ci(C.get_matrix(i),d,d);
+		Map<MatrixXd> Ci(C.get_matrix(i),d,d);
 		ctot.block(0,i*d,d,d) = Ci;
 	}
 		
