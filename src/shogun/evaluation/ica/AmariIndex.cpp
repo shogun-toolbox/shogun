@@ -5,22 +5,18 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
 
-using namespace Eigen;
-
-typedef Matrix< float64_t, Dynamic, 1, ColMajor > EVector;
-typedef Matrix< float64_t, Dynamic, Dynamic, ColMajor > EMatrix;
-
 using namespace shogun;
+using namespace Eigen;
 
 float64_t amari_index(SGMatrix<float64_t> SGW, SGMatrix<float64_t> SGA, bool standardize)
 {
-	Eigen::Map<EMatrix> W(SGW.matrix,SGW.num_rows,SGW.num_cols);
-	Eigen::Map<EMatrix> A(SGA.matrix,SGA.num_rows,SGA.num_cols);
+	Map<MatrixXd> W(SGW.matrix,SGW.num_rows,SGW.num_cols);
+	Map<MatrixXd> A(SGA.matrix,SGA.num_rows,SGA.num_cols);
 	
 	REQUIRE(W.rows() == W.cols(), "amari_index - W must be square\n")
 	REQUIRE(A.rows() == A.cols(), "amari_index - A must be square\n")
 	REQUIRE(W.rows() == A.rows(), "amari_index - A and W must be the same size\n")
-	REQUIRE(W.rows() > 2, "amari_index - input must be at least 2x2\n")
+	REQUIRE(W.rows() >= 2, "amari_index - input must be at least 2x2\n")
 	
 	// normalizing both mixing matrices	
 	if (standardize)
@@ -58,17 +54,17 @@ float64_t amari_index(SGMatrix<float64_t> SGW, SGMatrix<float64_t> SGA, bool sta
 	}
 	
 	// calculating the permutation matrix
-	EMatrix P = (W * A).cwiseAbs();
+	MatrixXd P = (W * A).cwiseAbs();
 	int k = P.rows();
 	
 	// summing the error in the permutation matrix
-	EMatrix E1(k,k);
+	MatrixXd E1(k,k);
 	for (int r = 0; r < k; r++)
 		E1.row(r) = P.row(r) / P.row(r).maxCoeff();
 	
 	float64_t row_error = (E1.rowwise().sum().array()-1).sum();
 	
-	EMatrix E2(k,k);
+	MatrixXd E2(k,k);
 	for (int c = 0; c < k; c++)
 		E2.col(c) = P.col(c) / P.col(c).maxCoeff();
 	

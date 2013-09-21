@@ -67,7 +67,8 @@ SET(EXAMPLES
 	converter_hessianlocallylinearembedding 
 	converter_kernellocallylinearembedding 
 	converter_multidimensionalscaling 
-	converter_isomap 
+	converter_isomap
+	converter_jade_bss  
 	converter_diffusionmaps 
 	converter_laplacianeigenmaps 
 	converter_neighborhoodpreservingembedding 

@@ -24,12 +24,8 @@
 
 #include <shogun/mathematics/eigen3.h>
 
-using namespace Eigen;
-
-typedef Matrix< float64_t, Dynamic, Dynamic, ColMajor > EMatrix;
-typedef Matrix< float64_t, Dynamic, 1, ColMajor > EVector;
-
 using namespace shogun;
+using namespace Eigen;
 
 CMCLDA::CMCLDA(float64_t tolerance, bool store_cov)
 : CNativeMulticlassMachine()
@@ -103,18 +99,18 @@ CMulticlassLabels* CMCLDA::apply_multiclass(CFeatures* data)
 	// collect features into a matrix
 	CDenseFeatures< float64_t >* rf = (CDenseFeatures< float64_t >*) m_features;
 	
-	EMatrix X(num_vecs, m_dim);
+	MatrixXd X(num_vecs, m_dim);
 
 	int32_t vlen;
 	bool vfree;
 	float64_t* vec;
-	Eigen::Map< EVector > Em_xbar(m_xbar, m_dim);
+	Map< VectorXd > Em_xbar(m_xbar, m_dim);
 	for (int i = 0; i < num_vecs; i++)
 	{
 		vec = rf->get_feature_vector(i, vlen, vfree);
 		ASSERT(vec)
 
-		Eigen::Map< EVector > Evec(vec, vlen);
+		Map< VectorXd > Evec(vec, vlen);
 
 		X.row(i) = Evec - Em_xbar;
 
@@ -127,8 +123,8 @@ CMulticlassLabels* CMCLDA::apply_multiclass(CFeatures* data)
 #endif
 
 	// center and scale data
-	EMatrix Xs(num_vecs, m_rank);
-	Eigen::Map< EMatrix > Em_scalings(m_scalings.matrix, m_dim, m_rank);
+	MatrixXd Xs(num_vecs, m_rank);
+	Map< MatrixXd > Em_scalings(m_scalings.matrix, m_dim, m_rank);
 	Xs = X*Em_scalings;
 
 #ifdef DEBUG_MCLDA
@@ -137,9 +133,9 @@ CMulticlassLabels* CMCLDA::apply_multiclass(CFeatures* data)
 #endif
 
 	// decision function
-	EMatrix d(num_vecs, m_num_classes);
-	Eigen::Map< EMatrix > Em_coef(m_coef.matrix, m_num_classes, m_rank);
-	Eigen::Map< EVector > Em_intercept(m_intercept.vector, m_num_classes);
+	MatrixXd d(num_vecs, m_num_classes);
+	Map< MatrixXd > Em_coef(m_coef.matrix, m_num_classes, m_rank);
+	Map< VectorXd > Em_intercept(m_intercept.vector, m_num_classes);
 	d = (Xs*Em_coef.transpose()).rowwise() + Em_intercept.transpose();
 
 #ifdef DEBUG_MCLDA
@@ -225,7 +221,7 @@ bool CMCLDA::train_machine(CFeatures* data)
 	m_means = SGMatrix< float64_t >(m_dim, m_num_classes, true);
 
 	// matrix of all samples
-	EMatrix X =  MatrixXd::Zero(num_vec, m_dim);
+	MatrixXd X =  MatrixXd::Zero(num_vec, m_dim);
 	int32_t iX = 0;
 
 	m_means.zero();
@@ -237,14 +233,14 @@ bool CMCLDA::train_machine(CFeatures* data)
 	for (int k = 0; k < m_num_classes; k++)
 	{
 		// gather all the samples for class k into buffer and calculate the mean of class k
-		EMatrix buffer(class_nums[k], m_dim);
-		Eigen::Map< EVector > Em_mean(m_means.get_column_vector(k), m_dim);
+		MatrixXd buffer(class_nums[k], m_dim);
+		Map< VectorXd > Em_mean(m_means.get_column_vector(k), m_dim);
 		for (int i = 0; i < class_nums[k]; i++)
 		{
 			vec = rf->get_feature_vector(class_idxs[k*num_vec + i], vlen, vfree);
 			ASSERT(vec)
 
-			Eigen::Map< EVector > Evec(vec, vlen);
+			Map< VectorXd > Evec(vec, vlen);
 			Em_mean += Evec;
 			buffer.row(i) = Evec;
 
@@ -264,7 +260,7 @@ bool CMCLDA::train_machine(CFeatures* data)
 		if (m_store_cov)
 		{
 			// calc cov = buffer.T * buffer
-			Eigen::Map< EMatrix > Em_cov_k(covs.get_matrix(k), m_dim, m_dim); 
+			Map< MatrixXd > Em_cov_k(covs.get_matrix(k), m_dim, m_dim); 
 			Em_cov_k = buffer.transpose() * buffer;
 		}
 	}
@@ -278,11 +274,11 @@ bool CMCLDA::train_machine(CFeatures* data)
 	{
 		m_cov = SGMatrix< float64_t >(m_dim, m_dim, true);
 		m_cov.zero();
-		Eigen::Map< EMatrix > Em_cov(m_cov.matrix, m_dim, m_dim);
+		Map< MatrixXd > Em_cov(m_cov.matrix, m_dim, m_dim);
 
 		for (int k = 0; k < m_num_classes; k++)
 		{
-			Eigen::Map< EMatrix > Em_cov_k(covs.get_matrix(k), m_dim, m_dim);
+			Map< MatrixXd > Em_cov_k(covs.get_matrix(k), m_dim, m_dim);
 			Em_cov += Em_cov_k;
 		}
 
@@ -303,11 +299,11 @@ bool CMCLDA::train_machine(CFeatures* data)
 	// std-dev of X
 	m_xbar = SGVector< float64_t >(m_dim);
 	m_xbar.zero();
-	Eigen::Map< EVector > Em_xbar(m_xbar.vector, m_dim);
+	Map< VectorXd > Em_xbar(m_xbar.vector, m_dim);
 	Em_xbar = X.colwise().sum();
 	Em_xbar /= num_vec;
 
-	EVector std = VectorXd::Zero(m_dim);
+	VectorXd std = VectorXd::Zero(m_dim);
 	std = (X.rowwise() - Em_xbar.transpose()).array().pow(2).colwise().sum();
 	std = std.array() / num_vec;
 
@@ -332,10 +328,10 @@ bool CMCLDA::train_machine(CFeatures* data)
 
 
 	// SVD of centered (within)scaled data
-	EVector S(m_dim);
-	EMatrix V(m_dim, m_dim);
+	VectorXd S(m_dim);
+	MatrixXd V(m_dim, m_dim);
 	
-	Eigen::JacobiSVD<EMatrix> eSvd;
+	Eigen::JacobiSVD<MatrixXd> eSvd;
 	eSvd.compute(X,Eigen::ComputeFullV);
 	memcpy(S.data(), eSvd.singularValues().data(), m_dim*sizeof(float64_t));
 	memcpy(V.data(), eSvd.matrixV().data(), m_dim*m_dim*sizeof(float64_t));
@@ -350,7 +346,7 @@ bool CMCLDA::train_machine(CFeatures* data)
 	if (rank < m_dim)
 		SG_ERROR("Warning: Variables are collinear\n")
 
-	EMatrix scalings(m_dim, rank);
+	MatrixXd scalings(m_dim, rank);
 	for (int i = 0; i < m_dim; i++)
 		for (int j = 0; j < rank; j++)
 			scalings(i,j) = V(j,i) / std[j] / S[j];
@@ -364,8 +360,8 @@ bool CMCLDA::train_machine(CFeatures* data)
 	// 3) Between variance scaling
 
 	// Xc = m_means dot scalings
-	EMatrix Xc(m_num_classes, rank);
-	Eigen::Map< EMatrix > Em_means(m_means.matrix, m_dim, m_num_classes);
+	MatrixXd Xc(m_num_classes, rank);
+	Map< MatrixXd > Em_means(m_means.matrix, m_dim, m_num_classes);
 	Xc = (Em_means.transpose()*scalings);
 
 	for (int i = 0; i < m_num_classes; i++)
@@ -374,8 +370,8 @@ bool CMCLDA::train_machine(CFeatures* data)
 	// Centers are living in a space with n_classes-1 dim (maximum)
 	// Use svd to find projection in the space spanned by the
 	// (n_classes) centers
-	S = EVector(rank);
-	V = EMatrix(rank, rank);
+	S = VectorXd(rank);
+	V = MatrixXd(rank, rank);
 
 	eSvd.compute(Xc,Eigen::ComputeFullV);
 	memcpy(S.data(), eSvd.singularValues().data(), rank*sizeof(float64_t));
@@ -389,7 +385,7 @@ bool CMCLDA::train_machine(CFeatures* data)
 
 	// compose the scalings
 	m_scalings  = SGMatrix< float64_t >(rank, m_rank);
-	Eigen::Map< EMatrix > Em_scalings(m_scalings.matrix, rank, m_rank); 
+	Map< MatrixXd > Em_scalings(m_scalings.matrix, rank, m_rank); 
 	Em_scalings = scalings * V.leftCols(m_rank);
 
 #ifdef DEBUG_MCLDA
@@ -398,11 +394,11 @@ bool CMCLDA::train_machine(CFeatures* data)
 #endif
 
 	// weight vectors / centroids
-	EMatrix meansc(m_dim, m_num_classes);
+	MatrixXd meansc(m_dim, m_num_classes);
 	meansc = Em_means.colwise() - Em_xbar;
 
 	m_coef = SGMatrix< float64_t >(m_num_classes, m_rank);
-	Eigen::Map< EMatrix > Em_coef(m_coef.matrix, m_num_classes, m_rank);
+	Map< MatrixXd > Em_coef(m_coef.matrix, m_num_classes, m_rank);
 	Em_coef = meansc.transpose() * Em_scalings;
 
 #ifdef DEBUG_MCLDA
