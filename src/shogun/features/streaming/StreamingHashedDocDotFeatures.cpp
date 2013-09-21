@@ -18,12 +18,12 @@ CStreamingHashedDocDotFeatures::CStreamingHashedDocDotFeatures(CStreamingFile* f
 	bool is_labelled, int32_t size,	CTokenizer* tzer, int32_t bits)
 : CStreamingDotFeatures()
 {
-	init(file, is_labelled, size, tzer, bits);
+	init(file, is_labelled, size, tzer, bits, true, 1, 0);
 }
 
 CStreamingHashedDocDotFeatures::CStreamingHashedDocDotFeatures() : CStreamingDotFeatures()
 {
-	init(NULL, false, 0, NULL, 0);
+	init(NULL, false, 0, NULL, 0, false, 1, 0);
 }
 
 CStreamingHashedDocDotFeatures::CStreamingHashedDocDotFeatures(
@@ -35,20 +35,20 @@ CStreamingHashedDocDotFeatures::CStreamingHashedDocDotFeatures(
 	bool is_labelled = (lab != NULL);
 	int32_t size=1024;
 
-	init(file, is_labelled, size, tzer, bits);
+	init(file, is_labelled, size, tzer, bits, true, 1, 0);
 	
 	parser.set_free_vectors_on_destruct(false);
 	seekable= true;
 }
 void CStreamingHashedDocDotFeatures::init(CStreamingFile* file, bool is_labelled,
-	int32_t size, CTokenizer* tzer, int32_t bits)
+	int32_t size, CTokenizer* tzer, int32_t bits, bool normalize, int32_t n_grams, int32_t skips)
 {
 	num_bits = bits;
 	tokenizer = tzer;
 	if (tokenizer)
 	{
 		SG_REF(tokenizer);
-		converter = new CHashedDocConverter(tzer, bits, false);
+		converter = new CHashedDocConverter(tzer, bits, normalize, n_grams, skips);
 	}
 	else
 		converter=NULL;
@@ -197,4 +197,14 @@ void CStreamingHashedDocDotFeatures::set_vector_and_label_reader()
 SGSparseVector<float64_t> CStreamingHashedDocDotFeatures::get_vector()
 {
 	return current_vector;
+}
+
+void CStreamingHashedDocDotFeatures::set_normalization(bool normalize)
+{
+	converter->set_normalization(normalize);
+}
+
+void CStreamingHashedDocDotFeatures::set_k_skip_n_grams(int32_t k, int32_t n)
+{
+	converter->set_k_skip_n_grams(k, n);
 }
