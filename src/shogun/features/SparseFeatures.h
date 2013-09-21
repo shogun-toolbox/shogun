@@ -19,6 +19,7 @@
 #include <shogun/lib/SGSparseMatrix.h>
 #include <shogun/lib/Cache.h>
 #include <shogun/io/File.h>
+#include <shogun/io/LibSVMFile.h>
 
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/features/Features.h>
@@ -29,6 +30,7 @@ namespace shogun
 {
 
 class CFile;
+class CLibSVMFile;
 class CRegressionLabels;
 class CFeatures;
 class CDotFeatures;
@@ -245,7 +247,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 *
 		 * @param full full feature matrix
 		 */
-		virtual bool set_full_feature_matrix(SGMatrix<ST> full);
+		virtual void set_full_feature_matrix(SGMatrix<ST> full);
 
 		/** apply preprocessor
 		 *
@@ -261,9 +263,8 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 * subset on input is ignored, subset of this instance is removed
 		 *
 		 * @param sf simple features
-		 * @return if obtaining was successful
 		 */
-		bool obtain_from_simple(CDenseFeatures<ST>* sf);
+		void obtain_from_simple(CDenseFeatures<ST>* sf);
 
 		/** get number of feature vectors, possibly of subset
 		 *
@@ -352,6 +353,15 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 */
 		void load(CFile* loader);
 
+		/** load features from file
+		 *
+		 * any subset is removed before
+		 *
+		 * @param loader File object to load data from
+		 * @return label vector
+		 */
+		SGVector<float64_t> load_with_labels(CLibSVMFile* loader);
+
 		/** save features to file
 		 *
 		 * not possible with subset
@@ -360,16 +370,14 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 */
 		void save(CFile* writer);
 
-		/** load features from file
+		/** save features to file
 		 *
-		 * any subset is removed before
+		 * not possible with subset
 		 *
-		 * @param file file to load from
-		 * @param do_sort_features if true features will be sorted to ensure they
-		 * 		 are in ascending order
-		 * @return label object with corresponding labels
+		 * @param writer File object to write data to
+		 * @labels vector with labels to write out
 		 */
-		CRegressionLabels* load_svmlight_file(CLibSVMFile* file, bool do_sort_features=true);
+		void save_with_labels(CLibSVMFile* writer, SGVector<float64_t> labels);
 
 		/** ensure that features occur in ascending order, only call when no
 		 * preprocessors are attached
@@ -377,16 +385,6 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 * not possiblwe with subset
 		 * */
 		void sort_features();
-
-		/** write features to file using svm light format
-		 *
-		 * not possible with subset
-		 *
-		 * @param file file to write to
-		 * @param label Label object (number of labels must correspond to number of features)
-		 * @return true if successful
-		 */
-		void write_svmlight_file(CLibSVMFile* file, CRegressionLabels* label);
 
 		/** obtain the dimensionality of the feature space
 		 *

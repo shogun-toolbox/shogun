@@ -276,68 +276,11 @@ template<class ST> void CSparseFeatures<ST>::free_sparse_feature_matrix()
 	sparse_feature_matrix=SGSparseMatrix<ST>();
 }
 
-template<class ST> bool CSparseFeatures<ST>::set_full_feature_matrix(SGMatrix<ST> full)
+template<class ST> void CSparseFeatures<ST>::set_full_feature_matrix(SGMatrix<ST> full)
 {
 	remove_all_subsets();
-
-	ST* src=full.matrix;
-	int32_t num_feat=full.num_rows;
-	int32_t num_vec=full.num_cols;
-
 	free_sparse_feature_matrix();
-	bool result=true;
-
-	SG_INFO("converting dense feature matrix to sparse one\n")
-	int32_t* num_feat_entries=SG_MALLOC(int, num_vec);
-
-	if (num_feat_entries)
-	{
-		int64_t num_total_entries=0;
-
-		// count nr of non sparse features
-		for (int32_t i=0; i<num_vec; i++)
-		{
-			num_feat_entries[i]=0;
-			for (int32_t j=0; j<num_feat; j++)
-			{
-				if (src[i*((int64_t) num_feat) + j] != static_cast<ST>(0))
-					num_feat_entries[i]++;
-			}
-		}
-
-		if (num_vec>0)
-		{
-			sparse_feature_matrix=SGSparseMatrix<ST>(num_feat, num_vec);
-			for (int32_t i=0; i< num_vec; i++)
-			{
-				sparse_feature_matrix[i] =SGSparseVector<ST>(num_feat_entries[i]);
-				int32_t sparse_feat_idx=0;
-
-				for (int32_t j=0; j< num_feat; j++)
-				{
-					int64_t pos= i*num_feat + j;
-
-					if (src[pos] != static_cast<ST>(0))
-					{
-						sparse_feature_matrix[i].features[sparse_feat_idx].entry=src[pos];
-						sparse_feature_matrix[i].features[sparse_feat_idx].feat_index=j;
-						sparse_feat_idx++;
-						num_total_entries++;
-					}
-				}
-			}
-
-			SG_INFO("sparse feature matrix has %ld entries (full matrix had %ld, sparsity %2.2f%%)\n",
-					num_total_entries, int64_t(num_feat)*num_vec, (100.0*num_total_entries)/(int64_t(num_feat)*num_vec));
-		}
-		else
-		{
-			SG_ERROR("huh ? zero size matrix given ?\n")
-			result=false;
-		}
-	}
-	SG_FREE(num_feat_entries);
-	return result;
+	sparse_feature_matrix.from_dense(full);
 }
 
 template<class ST> bool CSparseFeatures<ST>::apply_preprocessor(bool force_preprocessing)
@@ -366,18 +309,16 @@ template<class ST> bool CSparseFeatures<ST>::apply_preprocessor(bool force_prepr
 	}
 }
 
-template<class ST> bool CSparseFeatures<ST>::obtain_from_simple(CDenseFeatures<ST>* sf)
+template<class ST> void CSparseFeatures<ST>::obtain_from_simple(CDenseFeatures<ST>* sf)
 {
 	SGMatrix<ST> fm=sf->get_feature_matrix();
 	ASSERT(fm.matrix && fm.num_cols>0 && fm.num_rows>0)
-
-	return set_full_feature_matrix(fm);
+	set_full_feature_matrix(fm);
 }
 
-template<> bool CSparseFeatures<complex64_t>::obtain_from_simple(CDenseFeatures<complex64_t>* sf)
+template<> void CSparseFeatures<complex64_t>::obtain_from_simple(CDenseFeatures<complex64_t>* sf)
 {
 	SG_NOTIMPLEMENTED;
-	return false;
 }
 
 template<class ST> int32_t  CSparseFeatures<ST>::get_num_vectors() const
@@ -657,16 +598,6 @@ template<class ST> void CSparseFeatures<ST>::sort_features()
 	sparse_feature_matrix.sort_features();
 }
 
-template<class ST> CRegressionLabels* CSparseFeatures<ST>::load_svmlight_file(CLibSVMFile* file, bool do_sort_features) 
-{
-	return sparse_feature_matrix.load_svmlight_file(file, do_sort_features);
-}
-
-template<class ST> void CSparseFeatures<ST>::write_svmlight_file(CLibSVMFile* file, CRegressionLabels* label)
-{
-	sparse_feature_matrix.write_svmlight_file(file, label);
-}
-
 template<class ST> void CSparseFeatures<ST>::init()
 {
 	set_generic<ST>();
@@ -699,67 +630,37 @@ GET_FEATURE_TYPE(floatmax_t, F_LONGREAL)
 GET_FEATURE_TYPE(complex64_t, F_ANY)
 #undef GET_FEATURE_TYPE
 
-#define LOAD(fname, sg_type)											\
-template<> void CSparseFeatures<sg_type>::load(CFile* loader)			\
-{																		\
-	remove_all_subsets();												\
-	SG_SET_LOCALE_C;													\
-	ASSERT(loader)														\
-	SGSparseVector<sg_type>* matrix=NULL;								\
-	int32_t num_feat=0;													\
-	int32_t num_vec=0;													\
-	loader->fname(matrix, num_feat, num_vec);							\
-	set_sparse_feature_matrix(SGSparseMatrix<sg_type>(matrix, num_feat, num_vec));				\
-	SG_RESET_LOCALE;													\
+template<class ST> void CSparseFeatures<ST>::load(CFile* loader)
+{
+	remove_all_subsets();
+	ASSERT(loader)
+	free_sparse_feature_matrix();
+	sparse_feature_matrix.load(loader);
 }
-LOAD(get_sparse_matrix, bool)
-LOAD(get_sparse_matrix, char)
-LOAD(get_sparse_matrix, uint8_t)
-LOAD(get_sparse_matrix, int8_t)
-LOAD(get_sparse_matrix, int16_t)
-LOAD(get_sparse_matrix, uint16_t)
-LOAD(get_sparse_matrix, int32_t)
-LOAD(get_sparse_matrix, uint32_t)
-LOAD(get_sparse_matrix, int64_t)
-LOAD(get_sparse_matrix, uint64_t)
-LOAD(get_sparse_matrix, float32_t)
-LOAD(get_sparse_matrix, float64_t)
-LOAD(get_sparse_matrix, floatmax_t)
-#undef LOAD
 
-#define WRITE(fname, sg_type)											\
-template<> void CSparseFeatures<sg_type>::save(CFile* writer)			\
-{																		\
-	if (m_subset_stack->has_subsets())									\
-	SG_ERROR("Not allowed with subset\n");								\
-	SG_SET_LOCALE_C;													\
-	ASSERT(writer)														\
-	writer->fname(sparse_feature_matrix.sparse_matrix, sparse_feature_matrix.num_features, sparse_feature_matrix.num_vectors);	\
-	SG_RESET_LOCALE;													\
+template<class ST> SGVector<float64_t> CSparseFeatures<ST>::load_with_labels(CLibSVMFile* loader)
+{
+	remove_all_subsets();
+	ASSERT(loader)
+	free_sparse_feature_matrix();
+	return sparse_feature_matrix.load_with_labels(loader);
 }
-WRITE(set_sparse_matrix, bool)
-WRITE(set_sparse_matrix, char)
-WRITE(set_sparse_matrix, uint8_t)
-WRITE(set_sparse_matrix, int8_t)
-WRITE(set_sparse_matrix, int16_t)
-WRITE(set_sparse_matrix, uint16_t)
-WRITE(set_sparse_matrix, int32_t)
-WRITE(set_sparse_matrix, uint32_t)
-WRITE(set_sparse_matrix, int64_t)
-WRITE(set_sparse_matrix, uint64_t)
-WRITE(set_sparse_matrix, float32_t)
-WRITE(set_sparse_matrix, float64_t)
-WRITE(set_sparse_matrix, floatmax_t)
-#undef WRITE
 
-#define UNDEFINED(fname, type)	\
-template<> void CSparseFeatures<type>::fname(CFile* f)	\
-{	\
-	SG_NOTIMPLEMENTED;	\
+template<class ST> void CSparseFeatures<ST>::save(CFile* writer)
+{
+	if (m_subset_stack->has_subsets())
+		SG_ERROR("Not allowed with subset\n");
+	ASSERT(writer)
+	sparse_feature_matrix.save(writer);
 }
-UNDEFINED(load, complex64_t)
-UNDEFINED(save, complex64_t)
-#undef UNDEFINED
+
+template<class ST> void CSparseFeatures<ST>::save_with_labels(CLibSVMFile* writer, SGVector<float64_t> labels)
+{
+	if (m_subset_stack->has_subsets())
+		SG_ERROR("Not allowed with subset\n");
+	ASSERT(writer)
+	sparse_feature_matrix.save_with_labels(writer, labels);
+}
 
 template class CSparseFeatures<bool>;
 template class CSparseFeatures<char>;

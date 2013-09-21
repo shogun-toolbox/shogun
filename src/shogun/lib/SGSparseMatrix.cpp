@@ -1,7 +1,9 @@
+#include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGSparseMatrix.h>
 #include <shogun/lib/SGSparseVector.h>
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/io/File.h>
+#include <shogun/io/SGIO.h>
 
 namespace shogun {
 
@@ -26,6 +28,12 @@ SGSparseMatrix<T>::SGSparseMatrix(index_t num_feat, index_t num_vec, bool ref_co
 	num_vectors(num_vec), num_features(num_feat)
 {
 	sparse_matrix=SG_MALLOC(SGSparseVector<T>, num_vectors);
+}
+
+template <class T>
+SGSparseMatrix<T>::SGSparseMatrix(SGMatrix<T> dense) : SGReferencedData()
+{
+	from_dense(dense);
 }
 
 template <class T>
@@ -96,6 +104,25 @@ void SGSparseMatrix<complex64_t>::load(CFile* loader)
 	SG_SERROR("SGSparseMatrix::load():: Not supported for complex64_t");
 }
 
+template<class T> SGVector<float64_t> SGSparseMatrix<T>::load_with_labels(CLibSVMFile* file, bool do_sort_features)
+{
+	ASSERT(file)
+
+	float64_t* raw_labels;
+	file->get_sparse_matrix(sparse_matrix, num_features, num_vectors,
+					raw_labels, true);
+
+	SGVector<float64_t> labels(raw_labels, num_vectors);
+
+	if (do_sort_features)
+		sort_features();
+
+	return labels;
+}
+
+template<> SGVector<float64_t> SGSparseMatrix<complex64_t>::load_with_labels(CLibSVMFile* file, bool do_sort_features) { return SGVector<float64_t>(); }
+
+
 template<class T>
 void SGSparseMatrix<T>::save(CFile* saver)
 {
@@ -111,6 +138,22 @@ void SGSparseMatrix<complex64_t>::save(CFile* saver)
 {
 	SG_SERROR("SGSparseMatrix::save():: Not supported for complex64_t");
 }
+
+template<class T> void SGSparseMatrix<T>::save_with_labels(CLibSVMFile* file,
+		SGVector<float64_t> labels)
+{
+	ASSERT(file)
+	int32_t num=labels.vlen;
+	ASSERT(num>0)
+	ASSERT(num==num_vectors)
+
+	float64_t* raw_labels=labels.vector;
+	file->set_sparse_matrix(sparse_matrix, num_features, num_vectors,
+			raw_labels);
+}
+
+template <> void SGSparseMatrix<complex64_t>::save_with_labels(CLibSVMFile* saver, SGVector<float64_t> labels) { }
+
 
 template <class T>
 void SGSparseMatrix<T>::copy_data(const SGReferencedData& orig)
@@ -134,26 +177,6 @@ void SGSparseMatrix<T>::free_data()
 	SG_FREE(sparse_matrix);
 	num_vectors = 0;
 	num_features = 0;
-}
-
-template<class T> CRegressionLabels* SGSparseMatrix<T>::load_svmlight_file(CLibSVMFile* file,
-		bool do_sort_features)
-{
-	ASSERT(file)
-
-	CRegressionLabels* labels=NULL;
-	float64_t* raw_labels;
-	file->get_sparse_matrix(sparse_matrix, num_features, num_vectors,
-					raw_labels, true);
-
-	SGVector<float64_t> labels_data(raw_labels, num_vectors);
-	labels=new CRegressionLabels(labels_data);
-	SG_REF(labels);
-
-	if (do_sort_features)
-		sort_features();
-
-	return labels;
 }
 
 template<class T> SGSparseMatrix<T> SGSparseMatrix<T>::get_transposed()
@@ -206,23 +229,58 @@ template<class T> void SGSparseMatrix<T>::sort_features()
 	}
 }
 
-template<class T> void SGSparseMatrix<T>::write_svmlight_file(CLibSVMFile* file,
-		CRegressionLabels* labels)
+template<class T> void SGSparseMatrix<T>::from_dense(SGMatrix<T> full)
 {
-	ASSERT(file)
-	int32_t num=labels->get_num_labels();
-	ASSERT(num>0)
-	ASSERT(num==num_vectors)
+	T* src=full.matrix;
+	int32_t num_feat=full.num_rows;
+	int32_t num_vec=full.num_cols;
 
-	SGVector<float64_t> data_labels=labels->get_labels();
-	float64_t* raw_labels=data_labels.vector;
-	file->set_sparse_matrix(sparse_matrix, num_features, num_vectors,
-			raw_labels);
+	REQUIRE(num_vec>0, "Matrix should have > 0 vectors!\n");
+
+	SG_SINFO("converting dense feature matrix to sparse one\n")
+		int32_t* num_feat_entries=SG_MALLOC(int, num_vec);
+
+
+	int64_t num_total_entries=0;
+
+	// count nr of non sparse features
+	for (int32_t i=0; i<num_vec; i++)
+	{
+		num_feat_entries[i]=0;
+		for (int32_t j=0; j<num_feat; j++)
+		{
+			if (src[i*((int64_t) num_feat) + j] != static_cast<T>(0))
+				num_feat_entries[i]++;
+		}
+	}
+
+	num_features=num_feat;
+	num_vectors=num_vec;
+	sparse_matrix=SG_MALLOC(SGSparseVector<T>,num_vec);
+
+	for (int32_t i=0; i< num_vec; i++)
+	{
+		sparse_matrix[i]=SGSparseVector<T>(num_feat_entries[i]);
+		int32_t sparse_feat_idx=0;
+
+		for (int32_t j=0; j< num_feat; j++)
+		{
+			int64_t pos= i*num_feat + j;
+
+			if (src[pos] != static_cast<T>(0))
+			{
+				sparse_matrix[i].features[sparse_feat_idx].entry=src[pos];
+				sparse_matrix[i].features[sparse_feat_idx].feat_index=j;
+				sparse_feat_idx++;
+				num_total_entries++;
+			}
+		}
+	}
+
+	SG_SINFO("sparse feature matrix has %ld entries (full matrix had %ld, sparsity %2.2f%%)\n",
+			num_total_entries, int64_t(num_feat)*num_vec, (100.0*num_total_entries)/(int64_t(num_feat)*num_vec));
+	SG_FREE(num_feat_entries);
 }
-
-template <> void SGSparseMatrix<complex64_t>::write_svmlight_file(CLibSVMFile* file, CRegressionLabels* label) { }
-
-template<> CRegressionLabels* SGSparseMatrix<complex64_t>::load_svmlight_file(CLibSVMFile* file, bool do_sort_features) { return NULL; }
 
 template class SGSparseMatrix<bool>;
 template class SGSparseMatrix<char>;

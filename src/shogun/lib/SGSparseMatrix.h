@@ -23,7 +23,9 @@ namespace shogun
 {
 
 template <class T> class SGSparseVector;
+template<class T> class SGMatrix;
 class CFile;
+class CLibSVMFile;
 class CRegressionLabels;
 
 /** @brief template class SGSparseMatrix */
@@ -39,6 +41,12 @@ template <class T> class SGSparseMatrix : public SGReferencedData
 
 		/** constructor to create new matrix in memory */
 		SGSparseMatrix(index_t num_feat, index_t num_vec, bool ref_counting=true);
+
+		/** constructor to create new sparse matrix from a dense one
+		 *
+		 * @param dense dense matrix to be converted
+		 */
+		SGSparseMatrix(SGMatrix<T> dense);
 
 		/** copy constructor */
 		SGSparseMatrix(const SGSparseMatrix &orig);
@@ -145,23 +153,35 @@ template <class T> class SGSparseMatrix : public SGReferencedData
 		 */
 		void load(CFile* loader);
 
-		/** TODO add comment */
-		SGSparseMatrix<T> get_transposed();
-
-		/** TODO add comment */
-		CRegressionLabels* load_svmlight_file(CLibSVMFile* file, bool do_sort_features);
-
-		/** TODO add comment */
-		void write_svmlight_file(CLibSVMFile* file, CRegressionLabels* labels);
-
-		/** TODO add comment */
-		void sort_features();
+		/** load sparse matrix from libsvm file together with labels
+		 *
+		 * @param the libsvm file
+		 * @param whether to sort the vector indices (such that they are in
+		 * ascending order) after loading
+		 * @return label vector
+		 */
+		SGVector<float64_t> load_with_labels(CLibSVMFile* libsvm_file, bool do_sort_features=true);
 
 		/** save sparse matrix to file
 		 *
 		 * @param saver File object via which to save data
 		 */
 		void save(CFile* saver);
+
+		/** save sparse matrix together with labels to file
+		 *
+		 * @param saver File object via which to save data
+		 * @param labels label vector
+		 */
+		void save_with_labels(CLibSVMFile* saver, SGVector<float64_t> labels);
+
+		/** return the transposed of the sparse matrix */
+		SGSparseMatrix<T> get_transposed();
+
+		void from_dense(SGMatrix<T> full);
+
+		/** sort the indices of the sparse matrix such that they are in ascending order */
+		void sort_features();
 
 protected:
 
