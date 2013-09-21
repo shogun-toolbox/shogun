@@ -21,12 +21,8 @@
 #include <iostream>
 #endif
 
-using namespace Eigen;
-
-typedef Matrix< float64_t, Dynamic, 1, ColMajor > EVector;
-typedef Matrix< float64_t, Dynamic, Dynamic, ColMajor > EMatrix;
-
 using namespace shogun;
+using namespace Eigen;
 
 CJade::CJade() : CICAConverter()
 {	
@@ -59,13 +55,13 @@ CFeatures* CJade::apply(CFeatures* features)
 	int T = X.num_cols;
 	int m = n;
 
-	Eigen::Map<EMatrix> EX(X.matrix,n,T);
+	Map<MatrixXd> EX(X.matrix,n,T);
 
 	// Mean center X
-	EVector mean = (EX.rowwise().sum() / (float64_t)T);	
-	EMatrix SPX = EX.colwise() - mean;
+	VectorXd mean = (EX.rowwise().sum() / (float64_t)T);	
+	MatrixXd SPX = EX.colwise() - mean;
 
-	EMatrix cov = (SPX * SPX.transpose()) / (float64_t)T;
+	MatrixXd cov = (SPX * SPX.transpose()) / (float64_t)T;
 
 	#ifdef DEBUG_JADE
 	std::cout << "cov" << std::endl;
@@ -73,7 +69,7 @@ CFeatures* CJade::apply(CFeatures* features)
 	#endif
 
 	// Whitening & Projection onto signal subspace
-	SelfAdjointEigenSolver<EMatrix> eig;
+	SelfAdjointEigenSolver<MatrixXd> eig;
 	eig.compute(cov);
 
 	#ifdef DEBUG_JADE
@@ -85,8 +81,8 @@ CFeatures* CJade::apply(CFeatures* features)
 	#endif
 
 	// Scaling
-	EVector scales = eig.eigenvalues().cwiseSqrt();
-	EMatrix B = scales.cwiseInverse().asDiagonal() * eig.eigenvectors().transpose();
+	VectorXd scales = eig.eigenvalues().cwiseSqrt();
+	MatrixXd B = scales.cwiseInverse().asDiagonal() * eig.eigenvectors().transpose();
 
 	#ifdef DEBUG_JADE
 	std::cout << "whitener" << std::endl;	
@@ -100,12 +96,12 @@ CFeatures* CJade::apply(CFeatures* features)
 	int dimsymm = (m * ( m + 1)) / 2; // Dim. of the space of real symm matrices
 	int nbcm = dimsymm; //  number of cumulant matrices	
 	m_cumulant_matrix = SGMatrix<float64_t>(m,m*nbcm);	// Storage for cumulant matrices
-	Eigen::Map<EMatrix> CM(m_cumulant_matrix.matrix,m,m*nbcm); 
-	EMatrix R(m,m); R.setIdentity();
-	EMatrix Qij = EMatrix::Zero(m,m); // Temp for a cum. matrix
-	EVector Xim = EVector::Zero(m); // Temp
-	EVector Xjm = EVector::Zero(m); // Temp
-	EVector Xijm = EVector::Zero(m); // Temp
+	Map<MatrixXd> CM(m_cumulant_matrix.matrix,m,m*nbcm); 
+	MatrixXd R(m,m); R.setIdentity();
+	MatrixXd Qij = MatrixXd::Zero(m,m); // Temp for a cum. matrix
+	VectorXd Xim = VectorXd::Zero(m); // Temp
+	VectorXd Xjm = VectorXd::Zero(m); // Temp
+	VectorXd Xijm = VectorXd::Zero(m); // Temp
 	int Range = 0;
 
 	for (int im = 0; im < m; im++)
@@ -139,13 +135,13 @@ CFeatures* CJade::apply(CFeatures* features)
 	
 	for (int i = 0; i < nbcm; i++)
 	{
-		Eigen::Map<EMatrix> EM(M.get_matrix(i),m,m);
+		Map<MatrixXd> EM(M.get_matrix(i),m,m);
 		EM = CM.block(0,i*m,m,m);
 	}
 	
 	// Diagonalize
 	SGMatrix<float64_t> Q = CJADiagOrth::diagonalize(M, m_mixing_matrix, tol, max_iter);
-	Eigen::Map<EMatrix> EQ(Q.matrix,m,m);
+	Map<MatrixXd> EQ(Q.matrix,m,m);
 	EQ = -1 * EQ.inverse();
 	
 	#ifdef DEBUG_JADE
@@ -155,11 +151,11 @@ CFeatures* CJade::apply(CFeatures* features)
 
 	// Separating matrix
 	SGMatrix<float64_t> sep_matrix = SGMatrix<float64_t>(m,m);
-	Eigen::Map<EMatrix> C(sep_matrix.matrix,m,m);
+	Map<MatrixXd> C(sep_matrix.matrix,m,m);
 	C = EQ.transpose() * B;
 
 	// Sort
-	EVector A = (B.inverse()*EQ).cwiseAbs2().colwise().sum();
+	VectorXd A = (B.inverse()*EQ).cwiseAbs2().colwise().sum();
 	bool swap = false;
 	do
 	{
@@ -180,7 +176,7 @@ CFeatures* CJade::apply(CFeatures* features)
 		C.row(j).swap( C.row(m-1-j) ); 
 
 	// Fix Signs
-	EVector signs = EVector::Zero(m);
+	VectorXd signs = VectorXd::Zero(m);
 	for (int i = 0; i < m; i++)
 	{
 		if( C(i,0) < 0 )
@@ -199,7 +195,7 @@ CFeatures* CJade::apply(CFeatures* features)
 	EX = C * EX;
 	
 	m_mixing_matrix = SGMatrix<float64_t>(m,m);
-	Eigen::Map<EMatrix> Emixing_matrix(m_mixing_matrix.matrix,m,m);
+	Map<MatrixXd> Emixing_matrix(m_mixing_matrix.matrix,m,m);
 	Emixing_matrix = C.inverse();
 	
 	return features;

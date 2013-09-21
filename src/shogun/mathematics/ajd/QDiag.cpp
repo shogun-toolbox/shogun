@@ -7,12 +7,8 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
 
-using namespace Eigen;
-
-typedef Matrix< float64_t, Dynamic, 1, ColMajor > EVector;
-typedef Matrix< float64_t, Dynamic, Dynamic, ColMajor > EMatrix;
-
 using namespace shogun;
+using namespace Eigen;
 
 SGMatrix<float64_t> CQDiag::diagonalize(SGNDArray<float64_t> C, SGMatrix<float64_t> V0,
 						double eps, int itermax)
@@ -38,12 +34,12 @@ SGMatrix<float64_t> CQDiag::diagonalize(SGNDArray<float64_t> C, SGMatrix<float64
 	
 	std::vector<float64_t> p(T,1.0/T);
 	
-	EMatrix C0 = EMatrix::Identity(N,N);
+	MatrixXd C0 = MatrixXd::Identity(N,N);
 	
-	Eigen::Map<EMatrix> EV(V.matrix,N,N);
-	EV = EV * EVector::Ones(EV.rows()).cwiseQuotient((EV.transpose() * C0 * EV).cwiseSqrt().diagonal()).asDiagonal();	
+	Map<MatrixXd> EV(V.matrix,N,N);
+	EV = EV * VectorXd::Ones(EV.rows()).cwiseQuotient((EV.transpose() * C0 * EV).cwiseSqrt().diagonal()).asDiagonal();	
 	
-	EMatrix P = EMatrix::Zero(N,N);
+	MatrixXd P = MatrixXd::Zero(N,N);
 	for (int i = 0; i < N; i++)
 		P(i,N-1-i) = 1;
 	
@@ -51,7 +47,7 @@ SGMatrix<float64_t> CQDiag::diagonalize(SGNDArray<float64_t> C, SGMatrix<float64
 	issymmetric.reserve(T);
 	for (int l = 0; l < T; l++)
 	{
-		Eigen::Map<EMatrix> Ci(C.get_matrix(l),N,N);
+		Map<MatrixXd> Ci(C.get_matrix(l),N,N);
 		
 		Ci = P * Ci * P.transpose();
 		
@@ -65,11 +61,11 @@ SGMatrix<float64_t> CQDiag::diagonalize(SGNDArray<float64_t> C, SGMatrix<float64
 	EV = P * EV;
 	
 	// initialisations for OKN^3
-	EMatrix D = EMatrix::Zero(N,N);
+	MatrixXd D = MatrixXd::Zero(N,N);
 	for (int t = 0; t < T; t++)
 	{
-		Eigen::Map<EMatrix> Ci(C.get_matrix(t),N,N);
-		EMatrix M1 = Ci * EV;
+		Map<MatrixXd> Ci(C.get_matrix(t),N,N);
+		MatrixXd M1 = Ci * EV;
 		
 		if (issymmetric[t])
 		{
@@ -77,7 +73,7 @@ SGMatrix<float64_t> CQDiag::diagonalize(SGNDArray<float64_t> C, SGMatrix<float64
 		}
 		else
 		{
-			EMatrix M2 = Ci.transpose() * EV;
+			MatrixXd M2 = Ci.transpose() * EV;
 			D = D + p[t] * (M1*M1.transpose() + M2*M2.transpose());
 		}
 	}
@@ -91,12 +87,12 @@ SGMatrix<float64_t> CQDiag::diagonalize(SGNDArray<float64_t> C, SGMatrix<float64
 		
 		for (int i = 0; i < N; i++)
 		{
-			EVector w = EV.col(i); 
+			VectorXd w = EV.col(i); 
 			
 			for (int t = 0; t < T; t++)
 			{
-				Eigen::Map<EMatrix> Ci(C.get_matrix(t),N,N);
-				EVector m1 = Ci * w;
+				Map<MatrixXd> Ci(C.get_matrix(t),N,N);
+				VectorXd m1 = Ci * w;
 				
 				if (issymmetric[t])
 				{
@@ -104,17 +100,17 @@ SGMatrix<float64_t> CQDiag::diagonalize(SGNDArray<float64_t> C, SGMatrix<float64
 				}
 				else
 				{
-					EVector m2 = Ci.transpose() * w;
+					VectorXd m2 = Ci.transpose() * w;
 					D = D - p[t] * (m1*m1.transpose() + m2*m2.transpose());
 				}
 			}
 			
-			EigenSolver<EMatrix> eig;
+			EigenSolver<MatrixXd> eig;
 			eig.compute(D);
 			
 			// sort eigenvectors
-			EMatrix eigenvectors = eig.pseudoEigenvectors();
-			EVector eigenvalues = eig.pseudoEigenvalueMatrix().diagonal();
+			MatrixXd eigenvectors = eig.pseudoEigenvectors();
+			VectorXd eigenvalues = eig.pseudoEigenvalueMatrix().diagonal();
 			
 			bool swap = false;
 			do
@@ -132,21 +128,21 @@ SGMatrix<float64_t> CQDiag::diagonalize(SGNDArray<float64_t> C, SGMatrix<float64
 			
 			} while(swap);
 			
-			EVector w_new = eigenvectors.col(N-1);
+			VectorXd w_new = eigenvectors.col(N-1);
 			delta_w = std::max(delta_w, std::min(sqrt((w-w_new).cwiseAbs2().sum()), sqrt((w+w_new).cwiseAbs2().sum())));
 
 			for (int t = 0; t < T; t++)
 			{
-				Eigen::Map<EMatrix> Ci(C.get_matrix(t),N,N);
+				Map<MatrixXd> Ci(C.get_matrix(t),N,N);
 				
-				EVector m1 = Ci * w_new;
+				VectorXd m1 = Ci * w_new;
 				if (issymmetric[t])
 				{
 					D = D + 2*p[t] * m1 * m1.transpose();
 				}
 				else
 				{
-					EVector m2 = Ci.transpose() * w_new;
+					VectorXd m2 = Ci.transpose() * w_new;
 					D = D + p[t] * (m1*m1.transpose() + m2*m2.transpose());
 				}	
 			}		
@@ -158,9 +154,9 @@ SGMatrix<float64_t> CQDiag::diagonalize(SGNDArray<float64_t> C, SGMatrix<float64
 		EV = EV * (EV.transpose() * C0 * EV).diagonal().cwiseSqrt().asDiagonal().inverse(); 
 		for (int t = 0; t < T; t++)
 		{
-			Eigen::Map<EMatrix> Ci(C.get_matrix(t),N,N);
-			EMatrix eD = EV.transpose() * Ci * EV;
-			eD.diagonal() = EVector::Zero(eD.rows());
+			Map<MatrixXd> Ci(C.get_matrix(t),N,N);
+			MatrixXd eD = EV.transpose() * Ci * EV;
+			eD.diagonal() = VectorXd::Zero(eD.rows());
 			crit.back() = crit.back() + p[t]*eD.cwiseAbs2().sum();
 		}
 		crit.back() = crit.back() / (N*N - N);

@@ -5,16 +5,12 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
 
-using namespace Eigen;
-
-typedef Matrix< float64_t, Dynamic, 1, ColMajor > EVector;
-typedef Matrix< float64_t, Dynamic, Dynamic, ColMajor > EMatrix;
-
 using namespace shogun;
+using namespace Eigen;
 
 bool is_permutation_matrix(SGMatrix<float64_t> m)
 {
-	Eigen::Map<EMatrix> mat(m.matrix,m.num_rows,m.num_cols);
+	Map<MatrixXd> mat(m.matrix,m.num_rows,m.num_cols);
 		
 	// scale	
 	for(int t = 0; t < mat.cols(); t++)

@@ -21,13 +21,8 @@
 
 #include <shogun/mathematics/eigen3.h>
 
-using namespace Eigen;
-
-typedef Matrix< float64_t, Dynamic, Dynamic, ColMajor > EMatrix;
-typedef Matrix< float64_t, Dynamic, 1, ColMajor > EVector;
-typedef Array< float64_t, Dynamic, 1 > EArray;
-
 using namespace shogun;
+using namespace Eigen;
 
 CQDA::CQDA(float64_t tolerance, bool store_covs)
 : CNativeMulticlassMachine(), m_tolerance(tolerance), 
@@ -90,9 +85,9 @@ CMulticlassLabels* CQDA::apply_multiclass(CFeatures* data)
 
 	CDenseFeatures< float64_t >* rf = (CDenseFeatures< float64_t >*) m_features;
 
-	EMatrix X(num_vecs, m_dim);
-	EMatrix A(num_vecs, m_dim);
-	EVector norm2(num_vecs*m_num_classes);
+	MatrixXd X(num_vecs, m_dim);
+	MatrixXd A(num_vecs, m_dim);
+	VectorXd norm2(num_vecs*m_num_classes);
 	norm2.setZero();
 
 	int32_t vlen;
@@ -106,15 +101,15 @@ CMulticlassLabels* CQDA::apply_multiclass(CFeatures* data)
 			vec = rf->get_feature_vector(i, vlen, vfree);
 			ASSERT(vec)
 
-			Eigen::Map< EVector > Evec(vec,vlen);
-			Eigen::Map< EVector > Em_means_col(m_means.get_column_vector(k), m_dim);
+			Map< VectorXd > Evec(vec,vlen);
+			Map< VectorXd > Em_means_col(m_means.get_column_vector(k), m_dim);
 
 			X.row(i) = Evec - Em_means_col;
 
 			rf->free_feature_vector(vec, i, vfree);
 		}
 
-		Eigen::Map< EMatrix > Em_M(m_M.get_matrix(k), m_dim, m_dim);
+		Map< MatrixXd > Em_M(m_M.get_matrix(k), m_dim, m_dim);
 		A = X*Em_M;
 
 		for (int i = 0; i < num_vecs; i++)
@@ -234,14 +229,14 @@ bool CQDA::train_machine(CFeatures* data)
 	float64_t* vec;
 	for (int k = 0; k < m_num_classes; k++)
 	{
-		EMatrix buffer(class_nums[k], m_dim);
-		Eigen::Map< EVector > Em_means(m_means.get_column_vector(k), m_dim);
+		MatrixXd buffer(class_nums[k], m_dim);
+		Map< VectorXd > Em_means(m_means.get_column_vector(k), m_dim);
 		for (int i = 0; i < class_nums[k]; i++)
 		{
 			vec = rf->get_feature_vector(class_idxs[k*num_vec + i], vlen, vfree);
 			ASSERT(vec)
 
-			Eigen::Map< EVector > Evec(vec, vlen);
+			Map< VectorXd > Evec(vec, vlen);
 			Em_means += Evec;
 			buffer.row(i) = Evec;
 
@@ -257,7 +252,7 @@ bool CQDA::train_machine(CFeatures* data)
 		float64_t * col = scalings.get_column_vector(k);
 		float64_t * rot_mat = rotations.get_matrix(k);
 
-		Eigen::JacobiSVD<EMatrix> eSvd;
+		Eigen::JacobiSVD<MatrixXd> eSvd;
 		eSvd.compute(buffer,Eigen::ComputeFullV);
 		memcpy(col, eSvd.singularValues().data(), m_dim*sizeof(float64_t));
 		memcpy(rot_mat, eSvd.matrixV().data(), m_dim*m_dim*sizeof(float64_t));
@@ -269,12 +264,12 @@ bool CQDA::train_machine(CFeatures* data)
 		if (m_store_covs)
 		{
 			SGMatrix< float64_t > M(m_dim ,m_dim);
-			EMatrix MEig = Map<EMatrix>(rot_mat,m_dim,m_dim);
+			MatrixXd MEig = Map<MatrixXd>(rot_mat,m_dim,m_dim);
 			for (int i = 0; i < m_dim; i++)
 				for (int j = 0; j < m_dim; j++)
 					M(i,j)*=scalings[k*m_dim + j];
-			EMatrix rotE = Map<EMatrix>(rot_mat,m_dim,m_dim);
-			EMatrix resE(m_dim,m_dim);
+			MatrixXd rotE = Map<MatrixXd>(rot_mat,m_dim,m_dim);
+			MatrixXd resE(m_dim,m_dim);
 			resE = MEig * rotE.transpose();
 			memcpy(m_covs.get_matrix(k),resE.data(),m_dim*m_dim*sizeof(float64_t));
 		}

@@ -17,20 +17,16 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
 
-using namespace Eigen;
-
-typedef Matrix< float64_t, Dynamic, 1, ColMajor > EVector;
-typedef Matrix< float64_t, Dynamic, Dynamic, ColMajor > EMatrix;
-
 using namespace shogun;
+using namespace Eigen;
 
 namespace {
 
-	EMatrix sym_decorrelation(EMatrix W)
+	MatrixXd sym_decorrelation(MatrixXd W)
 	{
-		EMatrix K = W * W.transpose();
+		MatrixXd K = W * W.transpose();
 		
-		SelfAdjointEigenSolver<EMatrix> eig;
+		SelfAdjointEigenSolver<MatrixXd> eig;
 		eig.compute(K);
 		
 		return ((eig.eigenvectors() * eig.eigenvalues().cwiseSqrt().asDiagonal().inverse()) * eig.eigenvectors().transpose()) * W;
@@ -86,21 +82,21 @@ CFeatures* CFastICA::apply(CFeatures* features)
 	int p = X.num_cols;
 	int m = n;
 
-	Eigen::Map<EMatrix> EX(X.matrix,n,p);
+	Map<MatrixXd> EX(X.matrix,n,p);
 
 	// Whiten
-	EMatrix K;
-	EMatrix WX;
+	MatrixXd K;
+	MatrixXd WX;
 	if (whiten)
 	{
-		EVector mean = (EX.rowwise().sum() / (float64_t)p);	
-		EMatrix SPX = EX.colwise() - mean;
+		VectorXd mean = (EX.rowwise().sum() / (float64_t)p);	
+		MatrixXd SPX = EX.colwise() - mean;
 		
-		Eigen::JacobiSVD<EMatrix> svd;
+		Eigen::JacobiSVD<MatrixXd> svd;
 		svd.compute(SPX, Eigen::ComputeThinU);
 		
-		EMatrix u = svd.matrixU();
-		EMatrix d = svd.singularValues();
+		MatrixXd u = svd.matrixU();
+		MatrixXd d = svd.singularValues();
 		
 		// for matching numpy/scikit-learn
 		//u.rightCols(u.cols() - 1) *= -1;
@@ -132,7 +128,7 @@ CFeatures* CFastICA::apply(CFeatures* features)
 		}
 	}
 	
-	Eigen::Map<EMatrix> W(m_mixing_matrix.matrix, m, m);
+	Map<MatrixXd> W(m_mixing_matrix.matrix, m, m);
 
 	W = sym_decorrelation(W);
 
@@ -140,12 +136,12 @@ CFeatures* CFastICA::apply(CFeatures* features)
 	float64_t lim = tol+1;
 	while (lim > tol && iter < max_iter)
 	{
-		EMatrix wtx = W * WX;
+		MatrixXd wtx = W * WX;
 		
-		EMatrix gwtx = wtx.unaryExpr(std::ptr_fun(&gx));
-		EMatrix g_wtx = wtx.unaryExpr(std::ptr_fun(&g_x));
+		MatrixXd gwtx = wtx.unaryExpr(std::ptr_fun(&gx));
+		MatrixXd g_wtx = wtx.unaryExpr(std::ptr_fun(&g_x));
 		
-		EMatrix W1 = (gwtx * WX.transpose()) / (float64_t)p - (g_wtx.rowwise().sum()/(float64_t)p).asDiagonal() * W;
+		MatrixXd W1 = (gwtx * WX.transpose()) / (float64_t)p - (g_wtx.rowwise().sum()/(float64_t)p).asDiagonal() * W;
 		
 		W1 = sym_decorrelation(W1);
 		

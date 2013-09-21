@@ -7,12 +7,8 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
 
-using namespace Eigen;
-
-typedef Matrix< float64_t, Dynamic, 1, ColMajor > EVector;
-typedef Matrix< float64_t, Dynamic, Dynamic, ColMajor > EMatrix;
-
 using namespace shogun;
+using namespace Eigen;
 
 void sweepjedi(float64_t *C, int *pMatSize, int *pMatNumber,
 				float64_t *s_max, float64_t *sh_max, float64_t *A); 
@@ -49,7 +45,7 @@ SGMatrix<float64_t> CJediDiag::diagonalize(SGNDArray<float64_t> C, SGMatrix<floa
 	if (iter == itermax)
 		SG_SERROR("Convergence not reached\n")
 	
-	Eigen::Map<EMatrix> EV(V.matrix,d,d);
+	Map<MatrixXd> EV(V.matrix,d,d);
 	EV = EV.inverse();
 	
 	return V;
@@ -145,13 +141,13 @@ void iterJDI(float64_t *C, int *pMatSize, int *pMatNumber, int *ptn,int *ptm,
 	for (int i = 0; i < 3; i++) 
 		GG[3*i] *= -1;
 	
-	Eigen::Map<EMatrix> EGG(GG,3,3);
+	Map<MatrixXd> EGG(GG,3,3);
 	
-	EigenSolver<EMatrix> eig;
+	EigenSolver<MatrixXd> eig;
 	eig.compute(EGG);
 	
-	EMatrix eigenvectors = eig.pseudoEigenvectors();
-	EVector eigenvalues = eig.pseudoEigenvalueMatrix().diagonal();
+	MatrixXd eigenvectors = eig.pseudoEigenvectors();
+	VectorXd eigenvalues = eig.pseudoEigenvalueMatrix().diagonal();
 	
 	eigenvectors.col(0) = eigenvectors.col(0).normalized();
 	eigenvectors.col(1) = eigenvectors.col(1).normalized();

@@ -7,12 +7,8 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
 
-using namespace Eigen;
-
-typedef Matrix< float64_t, Dynamic, 1, ColMajor > EVector;
-typedef Matrix< float64_t, Dynamic, Dynamic, ColMajor > EMatrix;
-
 using namespace shogun;
+using namespace Eigen;
 
 float64_t givens_stack(float64_t *A, int M, int K, int p, int q);
 void left_rot_stack(float64_t *A, int M, int N, int K, int p, int q, float64_t c, float64_t s);

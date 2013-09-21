@@ -17,14 +17,10 @@
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/ajd/JediDiag.h>
 
+using namespace shogun;
 using namespace Eigen;
 
-typedef Matrix< float64_t, Dynamic, 1, ColMajor > EVector;
-typedef Matrix< float64_t, Dynamic, Dynamic, ColMajor > EMatrix;
-
-using namespace shogun;
-
-namespace { EMatrix cor(EMatrix x, int tau = 0, bool mean_flag = true); };
+namespace { MatrixXd cor(MatrixXd x, int tau = 0, bool mean_flag = true); };
 
 CJediSep::CJediSep() : CICAConverter()
 {		
@@ -71,7 +67,7 @@ CFeatures* CJediSep::apply(CFeatures* features)
 	int m = X.num_cols;
 	int N = m_tau.vlen;
 
-	Eigen::Map<EMatrix> EX(X.matrix,n,m);	
+	Map<MatrixXd> EX(X.matrix,n,m);	
 
 	// Compute Correlation Matrices
 	index_t * M_dims = SG_MALLOC(index_t, 3);
@@ -82,17 +78,17 @@ CFeatures* CJediSep::apply(CFeatures* features)
 	
 	for (int t = 0; t < N; t++)
 	{
-		Eigen::Map<EMatrix> EM(m_covs.get_matrix(t),n,n);
+		Map<MatrixXd> EM(m_covs.get_matrix(t),n,n);
 		EM = cor(EX,m_tau[t]);
 	}
 
 	// Diagonalize
 	SGMatrix<float64_t> Q = CJediDiag::diagonalize(m_covs, m_mixing_matrix, tol, max_iter);
-	Eigen::Map<EMatrix> EQ(Q.matrix,n,n);
+	Map<MatrixXd> EQ(Q.matrix,n,n);
 	
 	// Compute Mixing Matrix
 	m_mixing_matrix = SGMatrix<float64_t>(n,n);	
-	Eigen::Map<EMatrix> C(m_mixing_matrix.matrix,n,n);
+	Map<MatrixXd> C(m_mixing_matrix.matrix,n,n);
 	C = EQ.inverse();
 
 	// Normalize Estimated Mixing Matrix
@@ -108,7 +104,7 @@ CFeatures* CJediSep::apply(CFeatures* features)
 // Computing time delayed correlation matrix
 namespace 
 {
-	EMatrix cor(EMatrix x, int tau, bool mean_flag)
+	MatrixXd cor(MatrixXd x, int tau, bool mean_flag)
 	{	
 		int m = x.rows();
 		int n = x.cols();
@@ -116,17 +112,17 @@ namespace
 		// Center the data
 		if ( mean_flag )
 		{		
-			EVector mean = x.rowwise().sum();
+			VectorXd mean = x.rowwise().sum();
 			mean /= n;
 			x = x.colwise() - mean;
 		}
 
 		// Time-delayed Signal Matrix
-		EMatrix L = x.leftCols(n-tau);
-		EMatrix R = x.rightCols(n-tau);
+		MatrixXd L = x.leftCols(n-tau);
+		MatrixXd R = x.rightCols(n-tau);
 
 		// Compute Correlations
-		EMatrix K(m,m);
+		MatrixXd K(m,m);
 		K = (L * R.transpose()) / (n-tau);
 
 		// Symmetrize

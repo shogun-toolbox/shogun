@@ -7,12 +7,8 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
 
-using namespace Eigen;
-
-typedef Matrix< float64_t, Dynamic, 1, ColMajor > EVector;
-typedef Matrix< float64_t, Dynamic, Dynamic, ColMajor > EMatrix;
-
 using namespace shogun;
+using namespace Eigen;
 
 void getW(float64_t *C, int *ptN, int *ptK, float64_t *W);
 
@@ -35,15 +31,15 @@ SGMatrix<float64_t> CFFDiag::diagonalize(SGNDArray<float64_t> C0, SGMatrix<float
 	else	
 		V = SGMatrix<float64_t>::create_identity_matrix(n,1);
 	
-	EMatrix Id(n,n); Id.setIdentity();
-	Eigen::Map<EMatrix> EV(V.matrix,n,n);
+	MatrixXd Id(n,n); Id.setIdentity();
+	Map<MatrixXd> EV(V.matrix,n,n);
 	
 	float64_t inum = 0;
 	float64_t df = 1;
 	std::vector<float64_t> crit;
 	while (df > eps && inum < itermax)
 	{
-		EMatrix W = EMatrix::Zero(n,n);
+		MatrixXd W = MatrixXd::Zero(n,n);
 
 		getW(C.get_matrix(0),
 			 &n, &K,
@@ -55,22 +51,22 @@ SGMatrix<float64_t> CFFDiag::diagonalize(SGNDArray<float64_t> C0, SGMatrix<float
 		W /= pow(2,s);
 		
 		EV = (Id+W) * EV;
-		EMatrix d = EMatrix::Zero(EV.rows(),EV.cols());
-		d.diagonal() = EVector::Ones(EV.diagonalSize()).cwiseQuotient((EV * EV.transpose()).diagonal().cwiseSqrt());
+		MatrixXd d = MatrixXd::Zero(EV.rows(),EV.cols());
+		d.diagonal() = VectorXd::Ones(EV.diagonalSize()).cwiseQuotient((EV * EV.transpose()).diagonal().cwiseSqrt());
 		EV = d * EV;
 
 		for (int i = 0; i < K; i++)
 		{
-			Eigen::Map<EMatrix> Ci(C.get_matrix(i), n, n);
-			Eigen::Map<EMatrix> C0i(C0.get_matrix(i), n, n);
+			Map<MatrixXd> Ci(C.get_matrix(i), n, n);
+			Map<MatrixXd> C0i(C0.get_matrix(i), n, n);
 			Ci = EV * C0i * EV.transpose();
 		}
 		
 		float64_t f = 0;
 		for (int i = 0; i < K; i++)
 		{
-			Eigen::Map<EMatrix> C0i(C0.get_matrix(i), n, n);
-			EMatrix F = EV * C0i * EV.transpose();
+			Map<MatrixXd> C0i(C0.get_matrix(i), n, n);
+			MatrixXd F = EV * C0i * EV.transpose();
 			f += (F.transpose() * F).diagonal().sum() - F.array().pow(2).matrix().diagonal().sum();
 		}
 		
