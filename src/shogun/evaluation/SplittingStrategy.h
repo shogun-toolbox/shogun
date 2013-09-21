@@ -58,7 +58,7 @@ public:
 	 *
 	 * @param subset_idx subset index of the to be generated vector indices
 	 * @return newly created vector of subset indices of the specified
-	 * subset is written here. do not forget to free_vector
+	 * subset is written here.
 	 *
 	 * Error if there are no index sets
 	 */
@@ -69,7 +69,7 @@ public:
 	 *
 	 * @param subset_idx subset index of the to be generated inverse indices
 	 * @return newly created vector of the subset's inverse indices is
-	 * written here. do not forget to free_vector
+	 * written here.
 	 *
 	 * Error if there are no index sets
 	 */
