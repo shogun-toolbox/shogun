@@ -8,6 +8,7 @@
 #include <shogun/lib/SGString.h>
 #include <shogun/lib/SGMatrix.h>
 
+#include <unistd.h>
 #include <hdf5.h>
 
 
@@ -24,14 +25,15 @@ TEST(MLDataHDF5File, read_matrix)
 
 	SGMatrix<float64_t> a=SGMatrix<float64_t>(data, num_rows, num_cols, false);
 
-	CHDF5File* fout=new CHDF5File((char*)"/tmp/read_matrix",'w', (char*)"/data/data");
+	char* fname = mktemp(strdup("/tmp/read_matrix.XXXXXX"));
+	CHDF5File* fout=new CHDF5File(fname,'w', (char*)"/data/data");
 	fout->set_matrix(data, num_rows, num_cols);
 	SG_UNREF(fout);
 
 	SGMatrix<float64_t> tmp(true);
 	CMLDataHDF5File* fin;
 
-	fin=new CMLDataHDF5File((char*)"read_matrix", "/data/data", "file:///tmp/");
+	fin=new CMLDataHDF5File(&fname[5], "/data/data", "file:///tmp/");
 
 	fin->get_matrix(tmp.matrix, tmp.num_rows, tmp.num_cols);
 	EXPECT_EQ(tmp.num_rows, num_rows);
@@ -45,6 +47,7 @@ TEST(MLDataHDF5File, read_matrix)
 		}
 	}
 	SG_UNREF(fin);
+	unlink(fname);
 }
 #else
 TEST(MLDataHDF5File, DISABLED_read_matrix)
