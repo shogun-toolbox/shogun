@@ -28,7 +28,8 @@ def compare(a, b, tolerance):
 		else:
 			return numpy.all(a == b)
 	elif isinstance(a, modshogun.SGObject):
-		return pickle.dumps(a) == pickle.dumps(b)
+		#return pickle.dumps(a) == pickle.dumps(b) # old binary way to compare
+		return a.equals(b, 1e-15)
 	elif type(a) in (tuple,list):
 		if len(a) != len(b): return False
 		for obj1, obj2 in zip(a,b):
