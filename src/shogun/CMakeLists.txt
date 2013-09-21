@@ -15,6 +15,7 @@ ADD_CUSTOM_TARGET(
     ${CMAKE_COMMAND} -D SRC=${CMAKE_CURRENT_SOURCE_DIR}/lib/versionstring.h.in
                      -D DST=${CMAKE_CURRENT_SOURCE_DIR}/lib/versionstring.h
                      -D ROOT_DIR=${CMAKE_SOURCE_DIR}
+                     -D PYTHON_EXECUTABLE=${PYTHON_EXECUTABLE}
                      -P ${CMAKE_MODULE_PATH}/version.cmake
     COMMENT "Generating version header"
 )
