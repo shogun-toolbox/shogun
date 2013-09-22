@@ -37,6 +37,9 @@ public:
 	/** default constructor */
 	CCGMShiftedFamilySolver();
 
+	/** one arg constructor */
+	CCGMShiftedFamilySolver(bool store_residuals);
+
 	/** destructor */
 	virtual ~CCGMShiftedFamilySolver();
 

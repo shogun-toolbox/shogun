@@ -28,6 +28,9 @@ public:
 	/** default constructor */
 	CIterativeLinearSolver();
 
+	/** one arg constructor */
+	CIterativeLinearSolver(bool store_residuals);
+
 	/** destructor */
 	virtual ~CIterativeLinearSolver();
 
@@ -41,13 +44,18 @@ public:
 	virtual SGVector<T> solve(CLinearOperator<T>* A, SGVector<ST> b) = 0;
 
 	/** set maximum iteration limit */
-	void set_iteration_limit(int64_t iteration_limit)
+	void set_iteration_limit(index_t iteration_limit)
 	{
 		m_max_iteration_limit=iteration_limit;
+		if (m_store_residuals)
+		{
+			m_residuals=SGVector<float64_t>(m_max_iteration_limit);
+			m_residuals.set_const(0.0);
+		}
 	}
 
 	/** @return maximum iteration limit */
-	const int64_t get_iteration_limit() const
+	const index_t get_iteration_limit() const
 	{
 		return m_max_iteration_limit;
 	}
@@ -76,6 +84,12 @@ public:
 		return m_absolute_tolerence;
 	}
 
+	/** @return the residuals */
+	SGVector<float64_t> get_residuals() const
+	{
+		return m_residuals;
+	}
+
 	/** @return object name */
 	virtual const char* get_name() const
 	{
@@ -85,7 +99,7 @@ public:
 protected:
 
 	/** iteration limit for conjugate gradient */
-	int64_t m_max_iteration_limit;
+	index_t m_max_iteration_limit;
 
 	/** relative tolerence */
 	float64_t m_relative_tolerence;
@@ -93,9 +107,15 @@ protected:
 	/** absolute tolerence */
 	float64_t m_absolute_tolerence;
 
+	/** the residuals */
+	SGVector<float64_t> m_residuals;
+
+	/** whether to store the residuals */
+	bool m_store_residuals;
 private:
 	/** initialize with default values and register params */
 	void init();
+
 };
 
 }

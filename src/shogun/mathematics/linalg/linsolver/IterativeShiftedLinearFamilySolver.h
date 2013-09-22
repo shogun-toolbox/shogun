@@ -38,6 +38,9 @@ public:
 	/** default constructor */
 	CIterativeShiftedLinearFamilySolver();
 
+	/** one arg constructor */
+	CIterativeShiftedLinearFamilySolver(bool store_residuals);
+
 	/** destructor */
 	virtual ~CIterativeShiftedLinearFamilySolver();
 
