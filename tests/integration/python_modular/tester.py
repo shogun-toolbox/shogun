@@ -32,7 +32,8 @@ def compare(a, b, tolerance):
 		#return pickle.dumps(a) == pickle.dumps(b)
 		
 		# new, parameter framework based comparison up to tolerance
-		return a.equals(b, tolerance)
+		shogun_tolerance = 1e-5 if tolerance is None else tolerance
+		return a.equals(b, shogun_tolerance)			
 	elif type(a) in (tuple,list):
 		if len(a) != len(b): return False
 		for obj1, obj2 in zip(a,b):
