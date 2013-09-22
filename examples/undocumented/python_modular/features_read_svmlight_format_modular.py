@@ -7,8 +7,8 @@ def features_read_svmlight_format_modular (fname):
 	from modshogun import LibSVMFile
 
 	f=SparseRealFeatures()
-	lab=f.load_svmlight_file(LibSVMFile(fname))
-	f.write_svmlight_file(LibSVMFile('testwrite.light', 'w'), lab)
+	lab=f.load_with_labels(LibSVMFile(fname))
+	f.save_with_labels(LibSVMFile('testwrite.light', 'w'), lab)
 #	os.unlink('testwrite.light')
 
 if __name__=='__main__':
