@@ -275,16 +275,13 @@ TEST(StudentsTLikelihood,get_first_derivative)
 	// Stundent's-t likelihood with sigma = 0.17, df = 3
 	CStudentsTLikelihood* likelihood=new CStudentsTLikelihood(0.17, 3);
 
-	index_t index=likelihood->get_modsel_param_index("sigma");
-	TParameter* param1=likelihood->m_model_selection_parameters->get_parameter(index);
+	TParameter* param1=likelihood->m_model_selection_parameters->get_parameter("sigma");
+	TParameter* param2=likelihood->m_model_selection_parameters->get_parameter("df");
 
-	index=likelihood->get_modsel_param_index("df");
-	TParameter* param2=likelihood->m_model_selection_parameters->get_parameter(index);
-
-	SGVector<float64_t> lp_dhyp1=likelihood->get_first_derivative(labels,
-		param1, func);
-	SGVector<float64_t> lp_dhyp2=likelihood->get_first_derivative(labels,
-		param2, func);
+	SGVector<float64_t> lp_dhyp1=likelihood->get_first_derivative(labels, func,
+			param1);
+	SGVector<float64_t> lp_dhyp2=likelihood->get_first_derivative(labels, func,
+			param2);
 
 	// comparison of log likelihood derivative wrt sigma and df hyperparameter
 	// with result from GPML package
@@ -332,16 +329,13 @@ TEST(StudentsTLikelihood,get_second_derivative)
 	// Stundent's-t likelihood with sigma = 0.17, df = 3
 	CStudentsTLikelihood* likelihood=new CStudentsTLikelihood(0.17, 3);
 
-	index_t index=likelihood->get_modsel_param_index("sigma");
-	TParameter* param1=likelihood->m_model_selection_parameters->get_parameter(index);
-
-	index=likelihood->get_modsel_param_index("df");
-	TParameter* param2=likelihood->m_model_selection_parameters->get_parameter(index);
+	TParameter* param1=likelihood->m_model_selection_parameters->get_parameter("sigma");
+	TParameter* param2=likelihood->m_model_selection_parameters->get_parameter("df");
 
 	SGVector<float64_t> dlp_dhyp1=likelihood->get_second_derivative(labels,
-		param1, func);
+			func, param1);
 	SGVector<float64_t> dlp_dhyp2=likelihood->get_second_derivative(labels,
-		param2, func);
+			func, param2);
 
 	// comparison of log likelihood derivative wrt sigma and df hyperparameter
 	// with result from GPML package
@@ -389,16 +383,13 @@ TEST(StudentsTLikelihood,get_third_derivative)
 	// Stundent's-t likelihood with sigma = 0.17, df = 3
 	CStudentsTLikelihood* likelihood=new CStudentsTLikelihood(0.17, 3);
 
-	index_t index=likelihood->get_modsel_param_index("sigma");
-	TParameter* param1=likelihood->m_model_selection_parameters->get_parameter(index);
-
-	index=likelihood->get_modsel_param_index("df");
-	TParameter* param2=likelihood->m_model_selection_parameters->get_parameter(index);
+	TParameter* param1=likelihood->m_model_selection_parameters->get_parameter("sigma");
+	TParameter* param2=likelihood->m_model_selection_parameters->get_parameter("df");
 
 	SGVector<float64_t> d2lp_dhyp1=likelihood->get_third_derivative(labels,
-		param1, func);
+			func, param1);
 	SGVector<float64_t> d2lp_dhyp2=likelihood->get_third_derivative(labels,
-		param2, func);
+			func, param2);
 
 	// comparison of log likelihood derivative wrt sigma and df hyperparameter
 	// with result from GPML package

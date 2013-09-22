@@ -64,25 +64,12 @@ void CEPInferenceMethod::init()
 	m_tol=1e-4;
 }
 
-float64_t CEPInferenceMethod::get_negative_marginal_likelihood()
+float64_t CEPInferenceMethod::get_negative_log_marginal_likelihood()
 {
 	if (update_parameter_hash())
 		update();
 
 	return m_nlZ;
-}
-
-CMap<TParameter*, SGVector<float64_t> > CEPInferenceMethod::
-get_marginal_likelihood_derivatives(CMap<TParameter*, CSGObject*>& para_dict)
-{
-	if (update_parameter_hash())
-		update();
-
-	CMap<TParameter*, SGVector<float64_t> > result(0, 0);
-
-	SG_NOTIMPLEMENTED
-
-	return result;
 }
 
 SGVector<float64_t> CEPInferenceMethod::get_alpha()
@@ -261,6 +248,9 @@ void CEPInferenceMethod::update()
 
 	// update vector alpha
 	update_alpha();
+
+	// update matrices to compute derivatives
+	update_deriv();
 }
 
 void CEPInferenceMethod::update_alpha()
@@ -397,6 +387,96 @@ void CEPInferenceMethod::update_negative_ml()
 
 	// compute nlZ=nlZ_part1+nlZ_part2+nlZ_part3
 	m_nlZ=nlZ_part1+nlZ_part2+nlZ_part3;
+}
+
+void CEPInferenceMethod::update_deriv()
+{
+	// create eigen representation of L, sstau, alpha
+	Map<MatrixXd> eigen_L(m_L.matrix, m_L.num_rows, m_L.num_cols);
+	Map<VectorXd> eigen_sttau(m_sttau.vector, m_sttau.vlen);
+	Map<VectorXd> eigen_alpha(m_alpha.vector, m_alpha.vlen);
+
+	// create shogun and eigen representation of F
+	m_F=SGMatrix<float64_t>(m_L.num_rows, m_L.num_cols);
+	Map<MatrixXd> eigen_F(m_F.matrix, m_F.num_rows, m_F.num_cols);
+
+	// solve L*L^T * V = diag(sqrt(ttau))
+	MatrixXd V=eigen_L.triangularView<Upper>().adjoint().solve(
+			MatrixXd(eigen_sttau.asDiagonal()));
+	V=eigen_L.triangularView<Upper>().solve(V);
+
+	// compute F=alpha*alpha'-repmat(sW,1,n).*solve_chol(L,diag(sW))
+	eigen_F=eigen_alpha*eigen_alpha.adjoint()-eigen_sttau.asDiagonal()*V;
+}
+
+SGVector<float64_t> CEPInferenceMethod::get_derivative_wrt_inference_method(
+		const TParameter* param)
+{
+	REQUIRE(!strcmp(param->m_name, "scale"), "Can't compute derivative of "
+			"the nagative log marginal likelihood wrt %s.%s parameter\n",
+			get_name(), param->m_name)
+
+	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
+	Map<MatrixXd> eigen_F(m_F.matrix, m_F.num_rows, m_F.num_cols);
+
+	SGVector<float64_t> result(1);
+
+	// compute derivative wrt kernel scale: dnlZ=-sum(F.*K*scale*2)/2
+	result[0]=-(eigen_F.cwiseProduct(eigen_K)*m_scale*2.0).sum()/2.0;
+
+	return result;
+}
+
+SGVector<float64_t> CEPInferenceMethod::get_derivative_wrt_likelihood_model(
+		const TParameter* param)
+{
+	SG_NOTIMPLEMENTED
+	return SGVector<float64_t>();
+}
+
+SGVector<float64_t> CEPInferenceMethod::get_derivative_wrt_kernel(
+		const TParameter* param)
+{
+	// create eigen representation of the matrix Q
+	Map<MatrixXd> eigen_F(m_F.matrix, m_F.num_rows, m_F.num_cols);
+
+	SGVector<float64_t> result;
+
+	if (param->m_datatype.m_ctype==CT_VECTOR ||
+			param->m_datatype.m_ctype==CT_SGVECTOR)
+	{
+		REQUIRE(param->m_datatype.m_length_y,
+				"Length of the parameter %s should not be NULL\n", param->m_name)
+		result=SGVector<float64_t>(*(param->m_datatype.m_length_y));
+	}
+	else
+	{
+		result=SGVector<float64_t>(1);
+	}
+
+	for (index_t i=0; i<result.vlen; i++)
+	{
+		SGMatrix<float64_t> dK;
+
+		if (result.vlen==1)
+			dK=m_kernel->get_parameter_gradient(param);
+		else
+			dK=m_kernel->get_parameter_gradient(param, i);
+
+		Map<MatrixXd> eigen_dK(dK.matrix, dK.num_rows, dK.num_cols);
+
+		// compute derivative wrt kernel parameter: dnlZ=-sum(F.*dK*scale^2)/2.0
+		result[i]=-(eigen_F.cwiseProduct(eigen_dK)*CMath::sq(m_scale)).sum()/2.0;
+	}
+
+	return result;
+}
+
+SGVector<float64_t> CEPInferenceMethod::get_derivative_wrt_mean(
+		const TParameter* param)
+{
+	SG_NOTIMPLEMENTED
+	return SGVector<float64_t>();
 }
 
 #endif /* HAVE_EIGEN3 */

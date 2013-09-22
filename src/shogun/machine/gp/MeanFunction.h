@@ -11,23 +11,25 @@
 #define CMEANFUNCTION_H_
 
 #include <shogun/base/SGObject.h>
+#include <shogun/base/Parameter.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
 
-namespace shogun {
+namespace shogun
+{
 
-/** @brief Mean function base class.
+/** @brief An abstract class of the mean function.
  *
- * The Mean Function Class takes the mean of data used for Gaussian Process
- * Regression. It also includes the derivatives of the specified function.
+ * This class takes the mean of data used for Gaussian Process Regression. It
+ * also includes the derivatives of the specified function.
  */
-class CMeanFunction: public CSGObject
+class CMeanFunction : public CSGObject
 {
 public:
 	/** constructor */
-	CMeanFunction();
+	CMeanFunction() { }
 
-	virtual ~CMeanFunction();
+	virtual ~CMeanFunction() { }
 
 	/** returns the mean of the specified data
 	 *
@@ -40,15 +42,19 @@ public:
 
 	/** returns the derivative of the mean function
 	 *
-	 * @param param parameter
 	 * @param data points arranged in a matrix with rows representing the number
 	 * of features
+	 * @param param parameter
 	 * @param index of value if parameter is a vector
 	 *
 	 * @return derivative of mean function with respect to parameter
 	 */
-	virtual SGVector<float64_t> get_parameter_derivative(TParameter* param,
-			SGMatrix<float64_t> data, index_t index=-1);
+	virtual SGVector<float64_t> get_parameter_derivative(SGMatrix<float64_t> data,
+			const TParameter* param, index_t index=-1)
+	{
+		SG_ERROR("Can't compute derivative wrt %s parameter\n", param->m_name)
+		return SGVector<float64_t>();
+	}
 };
 }
 #endif /* CMEANFUNCTION_H_ */

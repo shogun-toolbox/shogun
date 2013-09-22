@@ -689,8 +689,12 @@ class CKernel : public CSGObject
 		 *
 		 * @return gradient with respect to parameter
 		 */
-		virtual SGMatrix<float64_t> get_parameter_gradient(TParameter* param,
-				index_t index=-1);
+		virtual SGMatrix<float64_t> get_parameter_gradient(
+				const TParameter* param, index_t index=-1)
+		{
+			SG_ERROR("Can't compute derivative wrt %s parameter\n", param->m_name)
+			return SGMatrix<float64_t>();
+		}
 
 		/** Obtains a kernel from a generic SGObject with error checking. Note
 		 * that if passing NULL, result will be NULL

@@ -43,6 +43,7 @@ void CExactInferenceMethod::update()
 	CInferenceMethod::update();
 	update_chol();
 	update_alpha();
+	update_deriv();
 }
 
 void CExactInferenceMethod::check_members() const
@@ -53,113 +54,6 @@ void CExactInferenceMethod::check_members() const
 		"Exact inference method can only use Gaussian likelihood function\n")
 	REQUIRE(m_labels->get_label_type()==LT_REGRESSION,
 		"Labels must be type of CRegressionLabels\n")
-}
-
-CMap<TParameter*, SGVector<float64_t> > CExactInferenceMethod::
-get_marginal_likelihood_derivatives(CMap<TParameter*, CSGObject*>& para_dict)
-{
-	if (update_parameter_hash())
-		update();
-
-	// get the sigma variable from the Gaussian likelihood model
-	CGaussianLikelihood* lik=CGaussianLikelihood::obtain_from_generic(m_model);
-	float64_t sigma=lik->get_sigma();
-	SG_UNREF(lik);
-
-	// create eigen representation of derivative matrix and cholesky
-	MatrixXd eigen_Q(m_L.num_rows, m_L.num_cols);
-	Map<MatrixXd> eigen_L(m_L.matrix, m_L.num_rows, m_L.num_cols);
-
-	// solve L * L' * Q = I
-	eigen_Q=eigen_L.triangularView<Upper>().adjoint().solve(
-		MatrixXd::Identity(m_L.num_rows, m_L.num_cols));
-	eigen_Q=eigen_L.triangularView<Upper>().solve(eigen_Q);
-
-	// divide Q by sigma^2
-	eigen_Q/=CMath::sq(sigma);
-
-	// create eigen representation of alpha and compute Q = Q - alpha * alpha'
-	Map<VectorXd> eigen_alpha(m_alpha.vector, m_alpha.vlen);
-	eigen_Q-=eigen_alpha*eigen_alpha.transpose();
-
-	// build parameter dictionary for kernel and mean
-	m_kernel->build_parameter_dictionary(para_dict);
-	m_mean->build_parameter_dictionary(para_dict);
-
-	// this will be the vector we return
-	CMap<TParameter*, SGVector<float64_t> > gradient;
-
-	for (index_t i=0; i<para_dict.get_num_elements(); i++)
-	{
-		TParameter* param=para_dict.get_node_ptr(i)->key;
-
-		index_t length=1;
-
-		if ((param->m_datatype.m_ctype==CT_VECTOR ||
-				param->m_datatype.m_ctype==CT_SGVECTOR) &&
-				param->m_datatype.m_length_y!=NULL)
-			length=*(param->m_datatype.m_length_y);
-
-		SGVector<float64_t> variables(length);
-
-		bool deriv_found=false;
-
-		for (index_t g=0; g<length; g++)
-		{
-			SGMatrix<float64_t> deriv;
-			SGVector<float64_t> mean_derivatives;
-
-			if (param->m_datatype.m_ctype==CT_VECTOR ||
-					param->m_datatype.m_ctype==CT_SGVECTOR)
-			{
-				deriv=m_kernel->get_parameter_gradient(param, g);
-				mean_derivatives=m_mean->get_parameter_derivative(param, m_feat, g);
-			}
-			else
-			{
-				deriv=m_kernel->get_parameter_gradient(param);
-				mean_derivatives=m_mean->get_parameter_derivative(param, m_feat);
-			}
-
-			if (deriv.num_cols*deriv.num_rows>0)
-			{
-				Map<MatrixXd> eigen_deriv(deriv.matrix, deriv.num_rows, deriv.num_cols);
-				MatrixXd eigen_S=eigen_Q.cwiseProduct(eigen_deriv)*CMath::sq(m_scale);
-				variables[g]=eigen_S.sum()/2.0;
-				deriv_found=true;
-			}
-			else if (mean_derivatives.vlen>0)
-			{
-				variables[g]=mean_derivatives.dot(mean_derivatives.vector,
-						m_alpha.vector, m_alpha.vlen);
-				deriv_found=true;
-			}
-		}
-
-		if (deriv_found)
-			gradient.add(param, variables);
-	}
-
-	TParameter* param=m_model_selection_parameters->get_parameter("scale");
-	para_dict.add(param, this);
-
-	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
-	MatrixXd eigen_S=eigen_Q.cwiseProduct(eigen_K)*m_scale*2.0;
-
-	SGVector<float64_t> vscale(1);
-	vscale[0]=eigen_S.sum()/2.0;
-
-	gradient.add(param, vscale);
-
-	param=m_model->m_model_selection_parameters->get_parameter("sigma");
-	para_dict.add(param, m_model);
-
-	SGVector<float64_t> vsigma(1);
-	vsigma[0]=CMath::sq(sigma)*eigen_Q.trace();
-
-	gradient.add(param, vsigma);
-
-	return gradient;
 }
 
 SGVector<float64_t> CExactInferenceMethod::get_diagonal_vector()
@@ -179,7 +73,7 @@ SGVector<float64_t> CExactInferenceMethod::get_diagonal_vector()
 	return result;
 }
 
-float64_t CExactInferenceMethod::get_negative_marginal_likelihood()
+float64_t CExactInferenceMethod::get_negative_log_marginal_likelihood()
 {
 	if (update_parameter_hash())
 		update();
@@ -269,4 +163,149 @@ void CExactInferenceMethod::update_alpha()
 	a/=CMath::sq(sigma);
 }
 
-#endif // HAVE_EIGEN3
+void CExactInferenceMethod::update_deriv()
+{
+	// get the sigma variable from the Gaussian likelihood model
+	CGaussianLikelihood* lik=CGaussianLikelihood::obtain_from_generic(m_model);
+	float64_t sigma=lik->get_sigma();
+	SG_UNREF(lik);
+
+	// create eigen representation of derivative matrix and cholesky
+	Map<MatrixXd> eigen_L(m_L.matrix, m_L.num_rows, m_L.num_cols);
+	Map<VectorXd> eigen_alpha(m_alpha.vector, m_alpha.vlen);
+
+	m_Q=SGMatrix<float64_t>(m_L.num_rows, m_L.num_cols);
+	Map<MatrixXd> eigen_Q(m_Q.matrix, m_Q.num_rows, m_Q.num_cols);
+
+	// solve L * L' * Q = I
+	eigen_Q=eigen_L.triangularView<Upper>().adjoint().solve(
+		MatrixXd::Identity(m_L.num_rows, m_L.num_cols));
+	eigen_Q=eigen_L.triangularView<Upper>().solve(eigen_Q);
+
+	// divide Q by sigma^2
+	eigen_Q/=CMath::sq(sigma);
+
+	// create eigen representation of alpha and compute Q=Q-alpha*alpha'
+	eigen_Q-=eigen_alpha*eigen_alpha.transpose();
+}
+
+SGVector<float64_t> CExactInferenceMethod::get_derivative_wrt_inference_method(
+		const TParameter* param)
+{
+	REQUIRE(!strcmp(param->m_name, "scale"), "Can't compute derivative of "
+			"the nagative log marginal likelihood wrt %s.%s parameter\n",
+			get_name(), param->m_name)
+
+	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
+	Map<MatrixXd> eigen_Q(m_Q.matrix, m_Q.num_rows, m_Q.num_cols);
+
+	SGVector<float64_t> result(1);
+
+	// compute derivative wrt kernel scale: dnlZ=sum(Q.*K*scale*2)/2
+	result[0]=(eigen_Q.cwiseProduct(eigen_K)*m_scale*2.0).sum()/2.0;
+
+	return result;
+}
+
+SGVector<float64_t> CExactInferenceMethod::get_derivative_wrt_likelihood_model(
+		const TParameter* param)
+{
+	REQUIRE(!strcmp(param->m_name, "sigma"), "Can't compute derivative of "
+			"the nagative log marginal likelihood wrt %s.%s parameter\n",
+			m_model->get_name(), param->m_name)
+
+	// get the sigma variable from the Gaussian likelihood model
+	CGaussianLikelihood* lik=CGaussianLikelihood::obtain_from_generic(m_model);
+	float64_t sigma=lik->get_sigma();
+	SG_UNREF(lik);
+
+	// create eigen representation of the matrix Q
+	Map<MatrixXd> eigen_Q(m_Q.matrix, m_Q.num_rows, m_Q.num_cols);
+
+	SGVector<float64_t> result(1);
+
+	// compute derivative wrt likelihood model parameter sigma:
+	// dnlZ=sigma^2*trace(Q)
+	result[0]=CMath::sq(sigma)*eigen_Q.trace();
+
+	return result;
+}
+
+SGVector<float64_t> CExactInferenceMethod::get_derivative_wrt_kernel(
+		const TParameter* param)
+{
+	// create eigen representation of the matrix Q
+	Map<MatrixXd> eigen_Q(m_Q.matrix, m_Q.num_rows, m_Q.num_cols);
+
+	SGVector<float64_t> result;
+
+	if (param->m_datatype.m_ctype==CT_VECTOR ||
+			param->m_datatype.m_ctype==CT_SGVECTOR)
+	{
+		REQUIRE(param->m_datatype.m_length_y,
+				"Length of the parameter %s should not be NULL\n", param->m_name)
+		result=SGVector<float64_t>(*(param->m_datatype.m_length_y));
+	}
+	else
+	{
+		result=SGVector<float64_t>(1);
+	}
+
+	for (index_t i=0; i<result.vlen; i++)
+	{
+		SGMatrix<float64_t> dK;
+
+		if (result.vlen==1)
+			dK=m_kernel->get_parameter_gradient(param);
+		else
+			dK=m_kernel->get_parameter_gradient(param, i);
+
+		Map<MatrixXd> eigen_dK(dK.matrix, dK.num_rows, dK.num_cols);
+
+		// compute derivative wrt kernel parameter: dnlZ=sum(Q.*dK*scale)/2.0
+		result[i]=(eigen_Q.cwiseProduct(eigen_dK)*CMath::sq(m_scale)).sum()/2.0;
+	}
+
+	return result;
+}
+
+SGVector<float64_t> CExactInferenceMethod::get_derivative_wrt_mean(
+		const TParameter* param)
+{
+	// create eigen representation of alpha vector
+	Map<VectorXd> eigen_alpha(m_alpha.vector, m_alpha.vlen);
+
+	SGVector<float64_t> result;
+
+	if (param->m_datatype.m_ctype==CT_VECTOR ||
+			param->m_datatype.m_ctype==CT_SGVECTOR)
+	{
+		REQUIRE(param->m_datatype.m_length_y,
+				"Length of the parameter %s should not be NULL\n", param->m_name)
+
+		result=SGVector<float64_t>(*(param->m_datatype.m_length_y));
+	}
+	else
+	{
+		result=SGVector<float64_t>(1);
+	}
+
+	for (index_t i=0; i<result.vlen; i++)
+	{
+		SGVector<float64_t> dmu;
+
+		if (result.vlen==1)
+			dmu=m_mean->get_parameter_derivative(m_feat, param);
+		else
+			dmu=m_mean->get_parameter_derivative(m_feat, param, i);
+
+		Map<VectorXd> eigen_dmu(dmu.vector, dmu.vlen);
+
+		// compute derivative wrt mean parameter: dnlZ=-dmu'*alpha
+		result[i]=-eigen_dmu.dot(eigen_alpha);
+	}
+
+	return result;
+}
+
+#endif /* HAVE_EIGEN3 */

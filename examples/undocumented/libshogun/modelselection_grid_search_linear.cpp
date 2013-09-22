@@ -88,7 +88,7 @@ int main(int argc, char **argv)
 
 	/* handles all of the above structures in memory */
 	CGridSearchModelSelection* grid_search=new CGridSearchModelSelection(
-			param_tree, cross);
+			cross, param_tree);
 
 	/* set autolocking to false to get rid of warnings */
 	cross->set_autolock(false);
@@ -114,4 +114,3 @@ int main(int argc, char **argv)
 
 	return 0;
 }
-

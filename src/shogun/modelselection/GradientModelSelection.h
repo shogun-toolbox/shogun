@@ -4,135 +4,102 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
+ * Written (W) 2013 Roman Votyakov
  * Copyright (C) 2012 Jacob Walker
  */
 
 #ifndef CGRADIENTMODELSELECTION_H_
 #define CGRADIENTMODELSELECTION_H_
 
-#include <shogun/modelselection/ParameterCombination.h>
-#include <shogun/modelselection/ModelSelection.h>
-#include <shogun/base/DynArray.h>
-#include <shogun/evaluation/GradientResult.h>
+#include <shogun/lib/config.h>
 
+#ifdef HAVE_NLOPT
+
+#include <shogun/modelselection/ModelSelection.h>
+#include <shogun/modelselection/ParameterCombination.h>
 
 namespace shogun
 {
 
-/**
- * @brief Model selection class which searches for the best model by a gradient-
- * search.
+/** @brief Model selection class which searches for the best model by a
+ * gradient-search.
  */
-class CGradientModelSelection: public CModelSelection
+class CGradientModelSelection : public CModelSelection
 {
-
 public:
-
-	/** constructor
-	 * @param model_parameters Parameters
-	 * @param machine_eval Machine Evaluation Object
-	 */
-	CGradientModelSelection(CModelSelectionParameters* model_parameters,
-			CMachineEvaluation* machine_eval);
-
-	/**Default Constructor*/
+	/** default constructor */
 	CGradientModelSelection();
 
-	/**Destructor*/
+	/** constructor
+	 *
+	 * NOTE: if model_parameters is NULL, then gradient model selection is
+	 * performed on all parameters of the machine.
+	 *
+	 * @param machine_eval machine evaluation object
+	 * @param model_parameters parameters
+	 */
+	CGradientModelSelection(CMachineEvaluation* machine_eval,
+			CModelSelectionParameters* model_parameters=NULL);
+
 	virtual ~CGradientModelSelection();
 
-	/**
-	 * method to select model via gradient search
+	/** method to select model via gradient search
 	 *
 	 * @param print_state if true, the output is verbose
+	 *
 	 * @return best combination of model parameters
 	 */
 	virtual CParameterCombination* select_model(bool print_state=false);
 
-	/** Returns the name of the SGSerializable instance.  It MUST BE
-	 *  the CLASS NAME without the prefixed `C'.
+	/** returns the name of the model selection object
 	 *
-	 *  @return name of the SGSerializable
+	 *  @return name GradientModelSelection
 	 */
-	virtual const char* get_name() const {return "GradientModelSelection";}
+	virtual const char* get_name() const { return "GradientModelSelection"; }
 
-	/** Set the maximum evaluations used in the optimization algorithm
+	/** set the maximum number of evaluations used in the optimization algorithm
 	 *
-	 * @param m max evaluations
+	 * @param max_evaluations maximum number of evaluations
 	 */
-	void set_max_evaluations(int m) {m_max_evaluations = m;}
+	void set_max_evaluations(uint32_t max_evaluations)
+	{
+		m_max_evaluations=max_evaluations;
+	}
 
-	/** Get the maximum evaluations used in the optimization algorithm
+	/** get the maximum number evaluations used in the optimization algorithm
 	 *
 	 * @return number of maximum evaluations
 	 */
-	int get_max_evaluations() {return m_max_evaluations;}
+	uint32_t get_max_evaluations() const { return m_max_evaluations; }
 
-	/** Set the minimum level of gradient tolerance used in the
-	 * optimization algorithm
+	/** set the minimum level of gradient tolerance used in the optimization
+	 * algorithm
 	 *
-	 * @param t tolerance level
+	 * @param grad_tolerance tolerance level
 	 */
-	void set_grad_tolerance(float64_t t) {m_grad_tolerance = t;}
+	void set_grad_tolerance(float64_t grad_tolerance)
+	{
+		m_grad_tolerance=grad_tolerance;
+	}
 
-	/** Get the minimum level of gradient tolerance used in the
-	 * optimization algorithm
+	/** get the minimum level of gradient tolerance used in the optimization
+	 * algorithm
 	 *
 	 * @return tolerance level
 	 */
-	float64_t get_grad_tolerance() {return m_grad_tolerance;}
+	float64_t get_grad_tolerance() const { return m_grad_tolerance; }
 
 private:
-
-	/** nlopt callback function wrapper
-	 *
-	 * @param n number of parameters
-	 *
-	 * @param x vector of parameter values
-	 *
-	 * @param grad vector of gradient values with
-	 * respect to parameter
-	 *
-	 * @param func_data data needed for the callback function. In this case,
-	 * its a nlopt_package
-	 *
-	 * @return function value
-	 */
-	static double nlopt_function(unsigned n, const double *x, double *grad,
-			void *func_data);
-
-	void test_gradients();
-
-	/** Initialize object*/
+	/** initialize object */
 	void init();
 
 protected:
+	/** maximum number of evaluations used in optimization algorithm */
+	uint32_t m_max_evaluations;
 
-	/** @brief
-	 *  struct used for nlopt callback function*/
-	struct nlopt_package
-	{
-		/** Pointer to Machine Evaluation */
-		shogun::CMachineEvaluation* m_machine_eval;
-
-		/** Pointer to current combination */
-		shogun::CParameterCombination* m_current_combination;
-
-		/** Do we want to print the state? */
-		bool print_state;
-	};
-
-	/** Maximum number of evaluations used in optimization algorithm */
-	int m_max_evaluations;
-
-	/** Gradient tolerance used in optimization algorithm */
+	/** gradient tolerance used in optimization algorithm */
 	float64_t m_grad_tolerance;
-
-	/** Parameter combination tree*/
-	CParameterCombination* m_current_combination;
-
 };
-
 }
-
+#endif /* HAVE_NLOPT */
 #endif /* CGRADIENTMODELSELECTION_H_ */

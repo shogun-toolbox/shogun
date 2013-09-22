@@ -8,7 +8,10 @@
  */
 
 #include <shogun/lib/config.h>
-#if defined(HAVE_EIGEN3) && defined(HAVE_NLOPT)
+
+// temporally disabled, since API was changed
+#if defined(HAVE_EIGEN3) && defined(HAVE_NLOPT) && 0
+
 #include <shogun/base/init.h>
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/features/DenseFeatures.h>

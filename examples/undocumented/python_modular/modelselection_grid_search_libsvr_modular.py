@@ -41,11 +41,11 @@ def modelselection_grid_search_libsvr_modular (fm_train=traindat,fm_test=testdat
 
     # kernel
     kernel=GaussianKernel(features_train, features_train, width)
-    
+
     # print all parameter available for modelselection
     # Dont worry if yours is not included but, write to the mailing list
     #kernel.print_modsel_params()
-    
+
     labels=RegressionLabels(label_train)
 
     # predictor
@@ -63,19 +63,19 @@ def modelselection_grid_search_libsvr_modular (fm_train=traindat,fm_test=testdat
     # cross-validation instance
     cross_validation=CrossValidation(predictor, features_train, labels,
 	    splitting_strategy, evaluation_criterium)
-	
+
     # (optional) repeat x-val 10 times
     cross_validation.set_num_runs(10)
 
-    # (optional) request 95% confidence intervals for results (not actually needed
-    # for this toy example)
+    # (optional) request 95% confidence intervals for results (not actually
+    # needed for this toy example)
     cross_validation.set_conf_int_alpha(0.05)
 
     # print all parameter available for modelselection
     # Dont worry if yours is not included but, write to the mailing list
     #predictor.print_modsel_params()
 
-    # build parameter tree to select C1 and C2 
+    # build parameter tree to select C1 and C2
     param_tree_root=ModelSelectionParameters()
     c1=ModelSelectionParameters("C1");
     param_tree_root.append_child(c1)
@@ -86,14 +86,13 @@ def modelselection_grid_search_libsvr_modular (fm_train=traindat,fm_test=testdat
     c2.build_values(-2.0, 2.0, R_EXP);
 
     # model selection instance
-    model_selection=GridSearchModelSelection(param_tree_root,
-	    cross_validation)
+    model_selection=GridSearchModelSelection(cross_validation, param_tree_root)
 
     # perform model selection with selected methods
     #print "performing model selection of"
     #print "parameter tree"
     #param_tree_root.print_tree()
-    
+
     #print "starting model selection"
     # print the current parameter combination, if no parameter nothing is printed
     print_state=False

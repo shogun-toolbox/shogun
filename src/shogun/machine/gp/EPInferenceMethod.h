@@ -73,22 +73,7 @@ public:
 	 *
 	 * @return negative log marginal likelihood
 	 */
-	virtual float64_t get_negative_marginal_likelihood();
-
-	/** returns vector of the marginal likelihood function gradient with respect
-	 * to hyperparameters:
-	 *
-	 * \f[
-	 * -\frac{\partial {log(p(y|X, \theta))}}{\partial \theta}
-	 * \f]
-	 *
-	 * where \f$y\f$ are the labels, \f$X\f$ are the features, and \f$\theta\f$
-	 * represent hyperparameters.
-	 *
-	 * @return vector of the marginal likelihood function gradient
-	 */
-	virtual CMap<TParameter*, SGVector<float64_t> >	get_marginal_likelihood_derivatives(
-			CMap<TParameter*, CSGObject*>& para_dict);
+	virtual float64_t get_negative_log_marginal_likelihood();
 
 	/** returns vector to compute posterior mean of Gaussian Process under EP
 	 * approximation:
@@ -251,6 +236,51 @@ protected:
 	/** update negative marginal likelihood */
 	virtual void update_negative_ml();
 
+	/** update matrices which are required to compute negative log marginal
+	 * likelihood derivatives wrt hyperparameter
+	 */
+	virtual void update_deriv();
+
+	/** returns derivative of negative log marginal likelihood wrt parameter of
+	 * CInferenceMethod class
+	 *
+	 * @param param parameter of CInferenceMethod class
+	 *
+	 * @return derivative of negative log marginal likelihood
+	 */
+	virtual SGVector<float64_t> get_derivative_wrt_inference_method(
+			const TParameter* param);
+
+	/** returns derivative of negative log marginal likelihood wrt parameter of
+	 * likelihood model
+	 *
+	 * @param param parameter of given likelihood model
+	 *
+	 * @return derivative of negative log marginal likelihood
+	 */
+	virtual SGVector<float64_t> get_derivative_wrt_likelihood_model(
+			const TParameter* param);
+
+	/** returns derivative of negative log marginal likelihood wrt kernel's
+	 * parameter
+	 *
+	 * @param param parameter of given kernel
+	 *
+	 * @return derivative of negative log marginal likelihood
+	 */
+	virtual SGVector<float64_t> get_derivative_wrt_kernel(
+			const TParameter* param);
+
+	/** returns derivative of negative log marginal likelihood wrt mean
+	 * function's parameter
+	 *
+	 * @param param parameter of given mean function
+	 *
+	 * @return derivative of negative log marginal likelihood
+	 */
+	virtual SGVector<float64_t> get_derivative_wrt_mean(
+			const TParameter* param);
+
 private:
 	void init();
 
@@ -285,6 +315,8 @@ private:
 
 	/** maximum number of sweeps over all variables */
 	uint32_t m_max_sweep;
+
+	SGMatrix<float64_t> m_F;
 };
 }
 #endif /* HAVE_EIGEN3 */

@@ -20,8 +20,8 @@ CModelSelection::CModelSelection()
 	init();
 }
 
-CModelSelection::CModelSelection(CModelSelectionParameters* model_parameters,
-		CMachineEvaluation* machine_eval)
+CModelSelection::CModelSelection(CMachineEvaluation* machine_eval,
+	CModelSelectionParameters* model_parameters)
 {
 	init();
 

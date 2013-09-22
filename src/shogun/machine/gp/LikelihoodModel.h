@@ -22,11 +22,11 @@ namespace shogun
 /** type of likelihood model */
 enum ELikelihoodModelType
 {
-	LT_NONE = 0,
-	LT_GAUSSIAN = 10,
-	LT_STUDENTST = 20,
-	LT_LOGIT = 30,
-	LT_PROBIT = 40
+	LT_NONE=0,
+	LT_GAUSSIAN=10,
+	LT_STUDENTST=20,
+	LT_LOGIT=30,
+	LT_PROBIT=40
 };
 
 /** @brief The Likelihood model base class.
@@ -159,39 +159,52 @@ public:
 	 * parameter
 	 *
 	 * @param lab labels used
-	 * @param param parameter
 	 * @param func function location
+	 * @param param parameter
 	 *
 	 * @return derivative
 	 */
 	virtual SGVector<float64_t> get_first_derivative(const CLabels* lab,
-			const TParameter* param, SGVector<float64_t> func) const=0;
+			SGVector<float64_t> func, const TParameter* param) const
+	{
+		SG_ERROR("Can't compute derivative wrt %s parameter\n", param->m_name)
+		return SGVector<float64_t>();
+	}
+
 
 	/** get derivative of the first derivative of log likelihood with respect to
 	 * function location, i.e. \f$\frac{\partial log(p(y|f))}{\partial f}\f$
 	 * with respect to given parameter
 	 *
 	 * @param lab labels used
-	 * @param param parameter
 	 * @param func function location
+	 * @param param parameter
 	 *
 	 * @return derivative
 	 */
 	virtual SGVector<float64_t> get_second_derivative(const CLabels* lab,
-			const TParameter* param, SGVector<float64_t> func) const=0;
+			SGVector<float64_t> func, const TParameter* param) const
+	{
+		SG_ERROR("Can't compute derivative wrt %s parameter\n", param->m_name)
+		return SGVector<float64_t>();
+	}
 
 	/** get derivative of the second derivative of log likelihood with respect
 	 * to function location, i.e. \f$\frac{\partial^{2} log(p(y|f))}{\partial
 	 * f^{2}}\f$ with respect to given parameter
 	 *
 	 * @param lab labels used
-	 * @param param parameter
 	 * @param func function location
+	 * @param param parameter
 	 *
 	 * @return derivative
 	 */
 	virtual SGVector<float64_t> get_third_derivative(const CLabels* lab,
-			const TParameter* param, SGVector<float64_t> func) const=0;
+			SGVector<float64_t> func, const TParameter* param) const
+	{
+		SG_ERROR("Can't compute derivative wrt %s parameter\n", param->m_name)
+		return SGVector<float64_t>();
+	}
 
 	/** returns the zeroth moment of a given (unnormalized) probability
 	 * distribution:
