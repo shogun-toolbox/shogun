@@ -38,6 +38,9 @@ public:
 	/** default constructor */
 	CConjugateOrthogonalCGSolver();
 
+	/** one arg constructor */
+	CConjugateOrthogonalCGSolver(bool store_residuals);
+
 	/** destructor */
 	virtual ~CConjugateOrthogonalCGSolver();
 

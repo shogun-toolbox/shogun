@@ -12,6 +12,7 @@
 #ifdef HAVE_EIGEN3
 
 #include <shogun/lib/SGVector.h>
+#include <shogun/lib/Time.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/linalg/linop/LinearOperator.h>
@@ -24,6 +25,12 @@ namespace shogun
 
 CConjugateOrthogonalCGSolver::CConjugateOrthogonalCGSolver()
 	: CIterativeLinearSolver<complex64_t, float64_t>()
+{
+	SG_GCDEBUG("%s created (%p)\n", this->get_name(), this);
+}
+
+CConjugateOrthogonalCGSolver::CConjugateOrthogonalCGSolver(bool store_residuals)
+	: CIterativeLinearSolver<complex64_t, float64_t>(store_residuals)
 {
 	SG_GCDEBUG("%s created (%p)\n", this->get_name(), this);
 }
@@ -65,6 +72,14 @@ SGVector<complex64_t> CConjugateOrthogonalCGSolver::solve(
 	IterativeSolverIterator<complex64_t> it(r, m_max_iteration_limit,
 		m_relative_tolerence, m_absolute_tolerence);
 
+	// start the timer
+	CTime time;
+	time.start();
+
+	// set the residuals to zero
+	if (m_store_residuals)
+		m_residuals.set_const(0.0);
+
 	// CG iteration begins
 	complex64_t r_norm2=r.transpose()*r;
 
@@ -73,6 +88,12 @@ SGVector<complex64_t> CConjugateOrthogonalCGSolver::solve(
 		SG_DEBUG("CG iteration %d, residual norm %f\n",
 			it.get_iter_info().iteration_count,
 			it.get_iter_info().residual_norm);
+
+		if (m_store_residuals)
+		{
+			m_residuals[it.get_iter_info().iteration_count]
+				=it.get_iter_info().residual_norm;
+		}
 
 		// apply linear operator to the direction vector
 		SGVector<complex64_t> Ap_=A->apply(p_);
@@ -106,13 +127,13 @@ SGVector<complex64_t> CConjugateOrthogonalCGSolver::solve(
 		p=r+beta*p;
 	}
 
-	if (it.succeeded(r))
-	{
-		SG_DEBUG("Iteration took %ld times, residual norm=%.20lf\n",
-			it.get_iter_info().iteration_count, it.get_iter_info().residual_norm);
-	}
-	else
+	float64_t elapsed=time.cur_time_diff();
+
+	if (!it.succeeded(r))
 		SG_WARNING("Did not converge!\n");
+
+	SG_INFO("Iteration took %ld times, residual norm=%.20lf, time elapsed=%lf\n",
+		it.get_iter_info().iteration_count, it.get_iter_info().residual_norm, elapsed);
 
 	SG_DEBUG("CConjugateOrthogonalCGSolver::solve(): Leaving..\n");
 	return result;

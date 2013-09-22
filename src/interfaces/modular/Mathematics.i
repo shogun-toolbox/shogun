@@ -93,6 +93,9 @@ namespace shogun
 }
 
 %rename(DirectSparseLinearSolver) CDirectSparseLinearSolver;
+#ifdef USE_COMPLEX64
+  %rename(DirectLinearSolverComplex) CDirectLinearSolverComplex;
+#endif
 
 %include <shogun/mathematics/linalg/linsolver/IterativeLinearSolver.h>
 namespace shogun
@@ -146,6 +149,7 @@ namespace shogun
 
 %include <shogun/mathematics/linalg/linsolver/LinearSolver.h>
 %include <shogun/mathematics/linalg/linsolver/DirectSparseLinearSolver.h>
+%include <shogun/mathematics/linalg/linsolver/DirectLinearSolverComplex.h>
 %include <shogun/mathematics/linalg/linsolver/IterativeLinearSolver.h>
 %include <shogun/mathematics/linalg/linsolver/ConjugateGradientSolver.h>
 %include <shogun/mathematics/linalg/linsolver/ConjugateOrthogonalCGSolver.h>

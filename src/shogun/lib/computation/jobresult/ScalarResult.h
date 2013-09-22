@@ -38,7 +38,7 @@ public:
 	/** 
 	 * constructor
 	 *
-	 * @param result the scalar result
+	 * @param scalar_result the scalar result
 	 */
 	CScalarResult(const T& scalar_result)
 	: CJobResult()

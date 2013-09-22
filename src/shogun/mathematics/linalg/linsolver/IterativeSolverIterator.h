@@ -30,7 +30,7 @@ typedef struct _IterInfo
 	float64_t residual_norm;
 
 	/** iteration count */
-	int64_t iteration_count;
+	index_t iteration_count;
 } IterInfo;
 
 /**
@@ -58,7 +58,7 @@ public:
 	 * @param absolute_tolerence absolute tolerence of the iterative method
 	 */
 	IterativeSolverIterator(const VectorXt& b,
-		int64_t max_iteration_limit=1000,
+		index_t max_iteration_limit=1000,
 		float64_t relative_tolerence=1E-5,
 		float64_t absolute_tolerence=1E-5)
 	: m_max_iteration_limit(max_iteration_limit),
@@ -111,7 +111,7 @@ private:
 	IterInfo m_iter_info;
 
 	/** maximum iteration limit */
-	const int64_t m_max_iteration_limit;
+	const index_t m_max_iteration_limit;
 
 	/** tolerence of the iterative solver */
 	const float64_t m_tolerence;

@@ -22,6 +22,13 @@ CIterativeShiftedLinearFamilySolver<T, ST>::CIterativeShiftedLinearFamilySolver(
 	}
 
 template <class T, class ST>
+CIterativeShiftedLinearFamilySolver<T, ST>
+	::CIterativeShiftedLinearFamilySolver(bool store_residuals)
+	: CIterativeLinearSolver<T, T>(store_residuals)
+	{
+	}
+
+template <class T, class ST>
 CIterativeShiftedLinearFamilySolver<T, ST>::~CIterativeShiftedLinearFamilySolver()
 	{
 	}

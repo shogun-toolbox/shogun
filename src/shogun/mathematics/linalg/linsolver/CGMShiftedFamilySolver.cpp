@@ -12,6 +12,7 @@
 #ifdef HAVE_EIGEN3
 
 #include <shogun/lib/SGVector.h>
+#include <shogun/lib/Time.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/linalg/linop/LinearOperator.h>
@@ -25,6 +26,11 @@ namespace shogun
 
 CCGMShiftedFamilySolver::CCGMShiftedFamilySolver()
 	: CIterativeShiftedLinearFamilySolver<float64_t, complex64_t>()
+{
+}
+
+CCGMShiftedFamilySolver::CCGMShiftedFamilySolver(bool store_residuals)
+	: CIterativeShiftedLinearFamilySolver<float64_t, complex64_t>(store_residuals)
 {
 }
 
@@ -96,6 +102,14 @@ SGVector<complex64_t> CCGMShiftedFamilySolver::solve_shifted_weighted(
 	IterativeSolverIterator<float64_t> it(r, m_max_iteration_limit,
 		m_relative_tolerence, m_absolute_tolerence);
 
+	// start the timer
+	CTime time;
+	time.start();
+
+	// set the residuals to zero
+	if (m_store_residuals)
+		m_residuals.set_const(0.0);
+
 	// CG iteration begins
 	for (it.begin(r); !it.end(r); ++it)
 	{
@@ -103,6 +117,12 @@ SGVector<complex64_t> CCGMShiftedFamilySolver::solve_shifted_weighted(
 		SG_DEBUG("CG iteration %d, residual norm %f\n",
 				it.get_iter_info().iteration_count,
 				it.get_iter_info().residual_norm);
+
+		if (m_store_residuals)
+		{
+			m_residuals[it.get_iter_info().iteration_count]
+				=it.get_iter_info().residual_norm;
+		}
 
 		// apply linear operator to the direction vector
 		SGVector<float64_t> Ap_=A->apply(p_);
@@ -161,13 +181,13 @@ SGVector<complex64_t> CCGMShiftedFamilySolver::solve_shifted_weighted(
 		beta_old=beta;
 	}
 
-	if (it.succeeded(r))
-	{
-		SG_INFO("Iteration took %ld times, residual norm=%.20lf\n",
-			it.get_iter_info().iteration_count, it.get_iter_info().residual_norm);
-	}
-	else
+	float64_t elapsed=time.cur_time_diff();
+
+	if (!it.succeeded(r))
 		SG_WARNING("Did not converge!\n");
+
+	SG_INFO("Iteration took %ld times, residual norm=%.20lf, time elapsed=%lf\n",
+		it.get_iter_info().iteration_count, it.get_iter_info().residual_norm, elapsed);
 
 	// compute the final result vector multiplied by weights
 	SGVector<complex64_t> result(b.vlen);

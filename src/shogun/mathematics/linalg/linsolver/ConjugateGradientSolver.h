@@ -32,6 +32,9 @@ public:
 	/** default constructor */
 	CConjugateGradientSolver();
 
+	/** one arg constructor */
+	CConjugateGradientSolver(bool store_residuals);
+
 	/** destructor */
 	virtual ~CConjugateGradientSolver();
 
