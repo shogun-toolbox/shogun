@@ -264,38 +264,47 @@ namespace shogun
 #endif
 
 #ifdef USE_BOOL
+    PROTOCOLS_SGVECTOR(BoolVector, bool, "?\0", NPY_BOOL)
     %template(BoolVector) SGVector<bool>;
     SERIALIZABLE_DUMMY(SGVector<bool>);
 #endif
 #ifdef USE_CHAR
+    PROTOCOLS_SGVECTOR(CharVector, char, "c\0", NPY_STRING)
     %template(CharVector) SGVector<char>;
     SERIALIZABLE_DUMMY(SGVector<char>);
 #endif
 #ifdef USE_UINT8
+    PROTOCOLS_SGVECTOR(ByteVector, uint8_t, "B\0", NPY_UINT8)
     %template(ByteVector) SGVector<uint8_t>;
     SERIALIZABLE_DUMMY(SGVector<uint8_t>);
 #endif
 #ifdef USE_UINT16
+    PROTOCOLS_SGVECTOR(WordVector, uint16_t, "H\0", NPY_UINT16)
     %template(WordVector) SGVector<uint16_t>;
     SERIALIZABLE_DUMMY(SGVector<uint16_t>);
 #endif
 #ifdef USE_INT16
+    PROTOCOLS_SGVECTOR(ShortVector, int16_t, "h\0", NPY_INT16)
     %template(ShortVector) SGVector<int16_t>;
     SERIALIZABLE_DUMMY(SGVector<int16_t>);
 #endif
 #ifdef USE_INT32
+    PROTOCOLS_SGVECTOR(IntVector, int32_t, "i\0", NPY_INT32)
     %template(IntVector)  SGVector<int32_t>;
     SERIALIZABLE_DUMMY(SGVector<int32_t>);
 #endif
 #ifdef USE_UINT32
+    PROTOCOLS_SGVECTOR(UIntVector, uint32_t, "I\0", NPY_UINT32)
     %template(UIntVector)  SGVector<uint32_t>;
     SERIALIZABLE_DUMMY(SGVector<uint32_t>);
 #endif
 #ifdef USE_INT64
+    PROTOCOLS_SGVECTOR(LongIntVector, int64_t, "l\0", NPY_INT64)
     %template(LongIntVector)  SGVector<int64_t>;
     SERIALIZABLE_DUMMY(SGVector<int64_t>);
 #endif
 #ifdef USE_UINT64
+    PROTOCOLS_SGVECTOR(ULongIntVector, int64_t, "L\0", NPY_UINT64)
     %template(ULongIntVector)  SGVector<uint64_t>;
     SERIALIZABLE_DUMMY(SGVector<uint64_t>);
 #endif
