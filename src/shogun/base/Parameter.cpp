@@ -3168,7 +3168,7 @@ bool TParameter::equals(TParameter* other, float64_t accuracy)
 		return false;
 	}
 
-	SG_SDEBUG("Comparing stype\n");
+	SG_SDEBUG("Comparing ctype\n");
 	switch (m_datatype.m_ctype)
 	{
 		case CT_SCALAR:
@@ -3207,7 +3207,7 @@ bool TParameter::equals(TParameter* other, float64_t accuracy)
 					return false;
 				}
 
-				x=x+(m_datatype.sizeof_ptype());
+				x=x+(m_datatype.sizeof_stype());
 			}
 
 			break;
@@ -3251,7 +3251,7 @@ bool TParameter::equals(TParameter* other, float64_t accuracy)
 				if (m_datatype.m_stype==ST_SPARSE)
 					x=x+(m_datatype.sizeof_stype());
 				else
-					x=x+(m_datatype.sizeof_ptype());
+					x=x+(m_datatype.sizeof_stype());
 			}
 
 			break;
