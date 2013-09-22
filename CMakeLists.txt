@@ -871,7 +871,6 @@ ENDIF()
 OPTION(ENABLE_TESTING "Enable testing" OFF)
 OPTION(TRAVIS_DISABLE_UNIT_TESTS "Disable unit testing to speed up jobs on travis-ci" OFF)
 OPTION(TRAVIS_DISABLE_LIBSHOGUN_TESTS "Disable libshogun tests to speed up jobs on travis-ci" OFF)
-OPTION(TRAVIS_DISABLE_INTEGRATION_TESTS "Disable integration tests to speed up jobs on travis-ci" OFF)
 IF(ENABLE_TESTING)
 	FIND_PACKAGE(Jinja2)
 	IF(NOT BUILD_DASHBOARD_REPORTS)	
@@ -879,9 +878,8 @@ IF(ENABLE_TESTING)
 	ENDIF()
 
 	# add integration tests
-	if (NOT TRAVIS_DISABLE_INTEGRATION_TESTS)
-		add_subdirectory(tests/integration)
-	ENDIF()
+	add_subdirectory(tests/integration)
+	
 
 	# add unit tests
 	IF (NOT TRAVIS_DISABLE_UNIT_TESTS)

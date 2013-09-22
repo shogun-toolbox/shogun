@@ -417,6 +417,208 @@ TEST(TParameter,equals_vector_equal2)
 	delete param2;
 }
 
+TEST(TParameter,equals_VECTOR_STRING_FLOAT64_equal)
+{
+	// this tests whether equals works on vectors of string of non-char type
+	// which is a quite tricky case
+	index_t a_len=2;
+	index_t b_len=2;
+
+	SGString<float64_t>* a=SG_MALLOC(SGString<float64_t>, a_len);
+	SGString<float64_t>* b=SG_MALLOC(SGString<float64_t>, b_len);
+
+	index_t slen=2;
+	float64_t* string1=SG_MALLOC(float64_t, slen);
+	string1[0]=1.0;
+	string1[1]=2.0;
+
+	float64_t* string2=SG_MALLOC(float64_t, slen);
+	string2[0]=3.0;
+	string2[1]=4.0;
+
+	a[0].string=string1;
+	a[0].slen=slen;
+	a[0].do_free=false;
+	a[1].string=string2;
+	a[1].slen=slen;
+	a[1].do_free=false;
+
+	b[0].string=string1;
+	b[0].slen=slen;
+	b[0].do_free=false;
+	b[1].string=string2;
+	b[1].slen=slen;
+	b[1].do_free=false;
+
+	TSGDataType type_a(CT_VECTOR, ST_STRING, PT_FLOAT64, &a_len);
+	TSGDataType type_b(CT_VECTOR, ST_STRING, PT_FLOAT64, &b_len);
+
+	TParameter* param1=new TParameter(&type_a, &a, "", "");
+	TParameter* param2=new TParameter(&type_b, &b, "", "");
+
+	EXPECT_TRUE(param1->equals(param2));
+
+	delete param1;
+	delete param2;
+
+	SG_FREE(a);
+	SG_FREE(b);
+	SG_FREE(string1);
+	SG_FREE(string2);
+}
+
+TEST(TParameter,equals_VECTOR_STRING_FLOAT64_different)
+{
+	// this tests whether equals works on vectors of string of non-char type
+	// which is a quite tricky case
+	index_t a_len=2;
+	index_t b_len=2;
+
+	SGString<float64_t>* a=SG_MALLOC(SGString<float64_t>, a_len);
+	SGString<float64_t>* b=SG_MALLOC(SGString<float64_t>, b_len);
+
+	index_t slen=2;
+	float64_t* string1=SG_MALLOC(float64_t, slen);
+	string1[0]=1.0;
+	string1[1]=2.0;
+
+	float64_t* string2=SG_MALLOC(float64_t, slen);
+	string2[0]=3.0;
+	string2[1]=4.0;
+
+	a[0].string=string1;
+	a[0].slen=slen;
+	a[0].do_free=false;
+	a[1].string=string1;
+	a[1].slen=slen;
+	a[1].do_free=false;
+
+	b[0].string=string1;
+	b[0].slen=slen;
+	b[0].do_free=false;
+	b[1].string=string2;
+	b[1].slen=slen;
+	b[1].do_free=false;
+
+	TSGDataType type_a(CT_VECTOR, ST_STRING, PT_FLOAT64, &a_len);
+	TSGDataType type_b(CT_VECTOR, ST_STRING, PT_FLOAT64, &b_len);
+
+	TParameter* param1=new TParameter(&type_a, &a, "", "");
+	TParameter* param2=new TParameter(&type_b, &b, "", "");
+
+	EXPECT_FALSE(param1->equals(param2));
+
+	delete param1;
+	delete param2;
+
+	SG_FREE(a);
+	SG_FREE(b);
+	SG_FREE(string1);
+	SG_FREE(string2);
+}
+
+TEST(TParameter,equals_MATRIX_STRING_FLOAT64_equal)
+{
+	index_t a_len=2;
+	index_t b_len=2;
+
+	SGString<float64_t>* a=SG_MALLOC(SGString<float64_t>, a_len);
+	SGString<float64_t>* b=SG_MALLOC(SGString<float64_t>, b_len);
+
+	index_t slen=2;
+	float64_t* string1=SG_MALLOC(float64_t, slen);
+	string1[0]=1.0;
+	string1[1]=2.0;
+
+	float64_t* string2=SG_MALLOC(float64_t, slen);
+	string2[0]=3.0;
+	string2[1]=4.0;
+
+	a[0].string=string1;
+	a[0].slen=slen;
+	a[0].do_free=false;
+	a[1].string=string2;
+	a[1].slen=slen;
+	a[1].do_free=false;
+
+	b[0].string=string1;
+	b[0].slen=slen;
+	b[0].do_free=false;
+	b[1].string=string2;
+	b[1].slen=slen;
+	b[1].do_free=false;
+
+	// mimic a matrix with one row
+	index_t len_y=1;
+
+	TSGDataType type_a(CT_MATRIX, ST_STRING, PT_FLOAT64, &len_y, &a_len);
+	TSGDataType type_b(CT_MATRIX, ST_STRING, PT_FLOAT64, &len_y, &b_len);
+
+	TParameter* param1=new TParameter(&type_a, &a, "", "");
+	TParameter* param2=new TParameter(&type_b, &b, "", "");
+
+	EXPECT_TRUE(param1->equals(param2));
+
+	delete param1;
+	delete param2;
+
+	SG_FREE(a);
+	SG_FREE(b);
+	SG_FREE(string1);
+	SG_FREE(string2);
+}
+
+TEST(TParameter,equals_MATRIX_STRING_FLOAT64_different)
+{
+	index_t a_len=2;
+	index_t b_len=2;
+
+	SGString<float64_t>* a=SG_MALLOC(SGString<float64_t>, a_len);
+	SGString<float64_t>* b=SG_MALLOC(SGString<float64_t>, b_len);
+
+	index_t slen=2;
+	float64_t* string1=SG_MALLOC(float64_t, slen);
+	string1[0]=1.0;
+	string1[1]=2.0;
+
+	float64_t* string2=SG_MALLOC(float64_t, slen);
+	string2[0]=3.0;
+	string2[1]=4.0;
+
+	a[0].string=string1;
+	a[0].slen=slen;
+	a[0].do_free=false;
+	a[1].string=string2;
+	a[1].slen=slen;
+	a[1].do_free=false;
+
+	b[0].string=string1;
+	b[0].slen=slen;
+	b[0].do_free=false;
+	b[1].string=string1;
+	b[1].slen=slen;
+	b[1].do_free=false;
+
+	// mimic a matrix with one row
+	index_t len_y=1;
+
+	TSGDataType type_a(CT_MATRIX, ST_STRING, PT_FLOAT64, &len_y, &a_len);
+	TSGDataType type_b(CT_MATRIX, ST_STRING, PT_FLOAT64, &len_y, &b_len);
+
+	TParameter* param1=new TParameter(&type_a, &a, "", "");
+	TParameter* param2=new TParameter(&type_b, &b, "", "");
+
+	EXPECT_FALSE(param1->equals(param2));
+
+	delete param1;
+	delete param2;
+
+	SG_FREE(a);
+	SG_FREE(b);
+	SG_FREE(string1);
+	SG_FREE(string2);
+}
+
 TEST(TParameter,equals_matrix_different1)
 {
 	SGMatrix<float64_t> a(2,2);
