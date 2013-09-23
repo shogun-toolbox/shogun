@@ -1,0 +1,30 @@
+package shogun;
+
+// Header for all kind of serialized data
+//
+// Format of serialized data in byte file:
+//
+// <size of ShogunVersion message - big endian uint32>
+// <ShogunVersion message>
+//
+// <size of data Header - big endian uint32>
+// <Header message>
+//
+// <size of next message - big endian uint32>
+// <data message, e.g. Int32Chunk>
+//
+// ...
+//
+message ShogunVersion
+{
+	required int32 version = 1;
+	required SGDataType data_type = 2;
+
+	enum SGDataType
+	{
+		VECTOR=1;
+		MATRIX=2;
+		SPARSE_VECTOR=3;
+		SPARSE_MATRIX=4;
+	}
+}

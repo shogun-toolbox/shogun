@@ -1,0 +1,31 @@
+package shogun;
+
+message Int32Chunk
+{
+	repeated int32 data=1 [packed=true]; 
+}
+
+message UInt32Chunk
+{
+	repeated uint32 data=1 [packed=true];
+}
+
+message Int64Chunk
+{
+	repeated int64 data=1 [packed=true];
+}
+
+message UInt64Chunk
+{
+	repeated uint64 data=1 [packed=true];
+}
+
+message Float32Chunk
+{
+	repeated float data=1 [packed=true];
+}
+
+message Float64Chunk
+{
+	repeated double data=1 [packed=true];
+}

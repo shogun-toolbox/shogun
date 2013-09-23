@@ -1,0 +1,14 @@
+package shogun;
+
+message VectorHeader
+{
+	required uint64 len=1;
+	required uint32 num_messages=2;
+}
+
+message MatrixHeader
+{
+	required uint64 num_cols=1;
+	required uint64 num_rows=2;
+	required uint32 num_messages=3;
+}
