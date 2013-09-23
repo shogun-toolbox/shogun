@@ -89,9 +89,19 @@ TEST(GradientModelSelection,select_model_exact_inference)
 	CParameterCombination* best_comb=grad_search->select_model(false);
 	best_comb->apply_to_machine(gpr);
 
-	// compare with result from GPML toolbox
+	// compare negative log marginal likelihood with result from GPML toolbox
 	float64_t nlZ=inf->get_negative_log_marginal_likelihood();
-	EXPECT_NEAR(nlZ, 5.862416, 1E-2);
+	EXPECT_NEAR(nlZ, 5.862416, 1E-6);
+
+	// get hyperparameters
+	float64_t scale=inf->get_scale();
+	float64_t width=kernel->get_width();
+	float64_t sigma=lik->get_sigma();
+
+	// compare hyperparameters with result from GPML toolbox
+	EXPECT_NEAR(scale, 0.833180109059697, 1E-2);
+	EXPECT_NEAR(width, 0.190931901479123, 1E-2);
+	EXPECT_NEAR(sigma, 4.25456324418582e-04, 1E-2);
 
 	// cleanup
 	SG_UNREF(grad_search);
@@ -157,7 +167,7 @@ TEST(GradientModelSelection,select_model_ep_inference)
 	CParameterCombination* best_comb=grad_search->select_model(false);
 	best_comb->apply_to_machine(gpc);
 
-	// compare with result from GPML toolbox
+	// compare negative log marginal likelihood with result from GPML toolbox
 	float64_t nlZ=inf->get_negative_log_marginal_likelihood();
 	EXPECT_NEAR(nlZ, 3.334009, 1E-3);
 
