@@ -24,8 +24,14 @@ class CTokenizer;
 class CHashedDocConverter;
  
 /** @brief This class implements streaming features for a document collection.
- * Each document is considered an example and its tokens are hashed into a
- * smalled dimension. 
+ * Like in the standard Bag-of-Words representation, this class considers each document as a collection of tokens,
+ * which are then hashed into a new feature space of a specified dimension.
+ * This class is very flexible and allows the user to specify the tokenizer used to tokenize each document,
+ * specify whether the results should be normalized with regards to the sqrt of the document size, as well
+ * as to specify whether he wants to combine different tokens.
+ * The latter implements a k-skip n-grams approach, meaning that you can combine up to n tokens, while skipping up to k.
+ * Eg. for the tokens ["a", "b", "c", "d"], with n_grams = 2 and skips = 2, one would get the following combinations :
+ * ["a", "ab", "ac" (skipped 1), "ad" (skipped 2), "b", "bc", "bd" (skipped 1), "c", "cd", "d"].
  *
  * The current example is stored as a combination of current_vector
  * and current_label. Call get_next_example() followed by get_current_vector()
@@ -39,6 +45,8 @@ public:
 
 	/**
 	 * Constructor with input information passed.
+	 * Will use normalization and no quadratic features by default, user should
+	 * use the set_normalization() and set_k_skip_n_gram() methods to change that.
 	 *
 	 * @param file CStreamingFile to take input from.
 	 * @param is_labelled Whether examples are labelled or not.
@@ -47,11 +55,13 @@ public:
 	 * @param bits the number of bits of the new dimension (means a dimension of size 2^bits)
 	 */
 	CStreamingHashedDocDotFeatures(CStreamingFile* file, bool is_labelled, int32_t size,
-			 CTokenizer* tzer, int32_t bits=20);
+			CTokenizer* tzer, int32_t bits=20);
 
 	/**
 	 * Constructor taking a CDotFeatures object and optionally,
 	 * labels, as args.
+	 * Will use normalization and no quadratic features by default, user should
+	 * use the set_normalization() and set_k_skip_n_gram() methods to change that.
 	 *
 	 * The derived class should implement it so that the
 	 * Streaming*Features class uses the DotFeatures object as the
@@ -64,7 +74,7 @@ public:
 	 * @param lab labels (optional)
 	 */
 	CStreamingHashedDocDotFeatures(CStringFeatures<char>* dot_features,CTokenizer* tzer,
-			 int32_t bits=20, float64_t* lab=NULL);
+			int32_t bits=20, float64_t* lab=NULL);
 
 	/** Destructor */
 	virtual ~CStreamingHashedDocDotFeatures();
@@ -207,9 +217,24 @@ public:
 	 */
 	SGSparseVector<float64_t> get_vector();
 
+	/** specify whether hashed vector should be normalized or not
+	 *
+	 * @param normalize  whether to normalize
+	 */
+	void set_normalization(bool normalize);
+
+	/** Method used to specify the parameters for the quadratic
+	 * approach of k-skip n-grams. See class description for more 
+	 * details and an example.
+	 *
+	 * @param k the max number of allowed skips
+	 * @param n the max number of tokens to combine
+	 */
+	void set_k_skip_n_grams(int32_t k, int32_t n);
+
 private:
-	void init(CStreamingFile* file, bool is_labelled, int32_t size,CTokenizer* tzer,
-		int32_t bits);
+	void init(CStreamingFile* file, bool is_labelled, int32_t size, CTokenizer* tzer,
+		int32_t bits, bool normalize, int32_t n_grams, int32_t skips);
 
 protected:
 	

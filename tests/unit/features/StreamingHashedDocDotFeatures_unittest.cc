@@ -44,7 +44,7 @@ TEST(StreamingHashedDocFeaturesTest, example_reading)
 	tokenizer->delimiters['\''] = 1;
 	tokenizer->delimiters[','] = 1;
 
-	CHashedDocConverter* converter = new CHashedDocConverter(tokenizer, 5, false);
+	CHashedDocConverter* converter = new CHashedDocConverter(tokenizer, 5, true);
 	CStringFeatures<char>* doc_collection = new CStringFeatures<char>(list, RAWBYTE);
 	CStreamingHashedDocDotFeatures* feats = new CStreamingHashedDocDotFeatures(doc_collection,
 			tokenizer, 5);
@@ -103,7 +103,7 @@ TEST(StreamingHashedDocFeaturesTest, dot_tests)
 	tokenizer->delimiters['\''] = 1;
 	tokenizer->delimiters[','] = 1;
 
-	CHashedDocConverter* converter = new CHashedDocConverter(tokenizer, 5, false);
+	CHashedDocConverter* converter = new CHashedDocConverter(tokenizer, 5, true);
 	CStringFeatures<char>* doc_collection = new CStringFeatures<char>(list, RAWBYTE);
 	CStreamingHashedDocDotFeatures* feats = new CStreamingHashedDocDotFeatures(doc_collection,
 			tokenizer, 5);
@@ -111,7 +111,7 @@ TEST(StreamingHashedDocFeaturesTest, dot_tests)
 
 	SGVector<float32_t> dense_vec(32);
 	for (index_t j=0; j<32; j++)
-		dense_vec[j] = CMath::random();
+		dense_vec[j] = CMath::random(0.0, 1.0);
 
 	index_t i = 0;
 	while (feats->get_next_example())
@@ -125,7 +125,7 @@ TEST(StreamingHashedDocFeaturesTest, dot_tests)
 		for (index_t j=0; j<converted_doc.num_feat_entries; j++)
 			tmp_res += dense_vec[converted_doc.features[j].feat_index] * converted_doc.features[j].entry;
 
-		EXPECT_EQ(tmp_res, feats->dense_dot(dense_vec.vector, dense_vec.vlen));
+		EXPECT_NEAR(tmp_res, feats->dense_dot(dense_vec.vector, dense_vec.vlen), 1e-7);
 
 		/** Add to dense test */
 		SGSparseVector<float64_t> example = feats->get_vector();
@@ -140,11 +140,11 @@ TEST(StreamingHashedDocFeaturesTest, dot_tests)
 			if ( (sparse_idx < example.num_feat_entries) && 
 					(example.features[sparse_idx].feat_index == j) )
 			{
-				EXPECT_NEAR(dense_vec2[j], dense_vec[j] + example.features[sparse_idx].entry, 1e-10);
+				EXPECT_NEAR(dense_vec2[j], dense_vec[j] + example.features[sparse_idx].entry, 1e-7);
 				sparse_idx++;
 			}
 			else
-				EXPECT_NEAR(dense_vec2[j], dense_vec[j], 1e-10);
+				EXPECT_NEAR(dense_vec2[j], dense_vec[j], 1e-7);
 		}
 		
 		feats->release_example();
