@@ -232,14 +232,14 @@ void CProductKernel::init()
 	kernel_array=new CDynamicObjectArray();
 	SG_REF(kernel_array);
 
-	SG_ADD((CSGObject**) &kernel_array, "kernel_array", "Array of kernels.",
+	SG_ADD((CSGObject**) &kernel_array, "kernel_array", "Array of kernels",
 	    MS_AVAILABLE);
-	SG_ADD(&initialized, "initialized", "Whether kernel is ready to be used.",
+	SG_ADD(&initialized, "initialized", "Whether kernel is ready to be used",
 	    MS_NOT_AVAILABLE);
 }
 
-SGMatrix<float64_t> CProductKernel::get_parameter_gradient(TParameter* param,
-		index_t index)
+SGMatrix<float64_t> CProductKernel::get_parameter_gradient(
+		const TParameter* param, index_t index)
 {
 	CKernel* k=get_kernel(0);
 	SGMatrix<float64_t> temp_kernel=k->get_kernel_matrix();
@@ -257,7 +257,7 @@ SGMatrix<float64_t> CProductKernel::get_parameter_gradient(TParameter* param,
 	{
 		k=get_kernel(k_idx);
 		SGMatrix<float64_t> cur_matrix=k->get_kernel_matrix();
-		SGMatrix<float64_t> derivative =
+		SGMatrix<float64_t> derivative=
 			k->get_parameter_gradient(param, index);
 
 		if (derivative.num_cols*derivative.num_rows > 0)
@@ -268,7 +268,6 @@ SGMatrix<float64_t> CProductKernel::get_parameter_gradient(TParameter* param,
 				for (index_t h=0; h<derivative.num_cols; h++)
 					temp_kernel(g,h)*=derivative(g,h);
 			}
-
 		}
 		else
 		{

@@ -141,24 +141,6 @@ SGVector<float64_t> CProbitLikelihood::get_log_probability_derivative_f(
 	return r;
 }
 
-SGVector<float64_t> CProbitLikelihood::get_first_derivative(const CLabels* lab,
-		const TParameter* param, SGVector<float64_t> func) const
-{
-	return SGVector<float64_t>();
-}
-
-SGVector<float64_t> CProbitLikelihood::get_second_derivative(const CLabels* lab,
-		const TParameter* param, SGVector<float64_t> func) const
-{
-	return SGVector<float64_t>();
-}
-
-SGVector<float64_t> CProbitLikelihood::get_third_derivative(const CLabels* lab,
-		const TParameter* param, SGVector<float64_t> func) const
-{
-	return SGVector<float64_t>();
-}
-
 SGVector<float64_t> CProbitLikelihood::get_log_zeroth_moments(
 		SGVector<float64_t> mu, SGVector<float64_t> s2, const CLabels* lab) const
 {

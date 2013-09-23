@@ -261,8 +261,8 @@ void CStudentsTLikelihood::init()
 {
 	m_sigma=1.0;
 	m_df=3.0;
-	SG_ADD(&m_df, "df", "Degrees of freedom", MS_AVAILABLE);
-	SG_ADD(&m_sigma, "sigma", "Scale parameter", MS_AVAILABLE);
+	SG_ADD(&m_df, "df", "Degrees of freedom", MS_AVAILABLE, GRADIENT_AVAILABLE);
+	SG_ADD(&m_sigma, "sigma", "Scale parameter", MS_AVAILABLE, GRADIENT_AVAILABLE);
 }
 
 CStudentsTLikelihood::~CStudentsTLikelihood()
@@ -391,7 +391,7 @@ SGVector<float64_t> CStudentsTLikelihood::get_log_probability_derivative_f(
 }
 
 SGVector<float64_t> CStudentsTLikelihood::get_first_derivative(const CLabels* lab,
-		const TParameter* param, SGVector<float64_t> func) const
+		SGVector<float64_t> func, const TParameter* param) const
 {
 	// check the parameters
 	REQUIRE(lab, "Labels are required (lab should not be NULL)\n")
@@ -445,7 +445,7 @@ SGVector<float64_t> CStudentsTLikelihood::get_first_derivative(const CLabels* la
 }
 
 SGVector<float64_t> CStudentsTLikelihood::get_second_derivative(const CLabels* lab,
-		const TParameter* param, SGVector<float64_t> func) const
+		SGVector<float64_t> func, const TParameter* param) const
 {
 	// check the parameters
 	REQUIRE(lab, "Labels are required (lab should not be NULL)\n")
@@ -494,7 +494,7 @@ SGVector<float64_t> CStudentsTLikelihood::get_second_derivative(const CLabels* l
 }
 
 SGVector<float64_t> CStudentsTLikelihood::get_third_derivative(const CLabels* lab,
-		const TParameter* param, SGVector<float64_t> func) const
+		SGVector<float64_t> func, const TParameter* param) const
 {
 	// check the parameters
 	REQUIRE(lab, "Labels are required (lab should not be NULL)\n")

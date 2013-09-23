@@ -35,7 +35,7 @@ CGaussianLikelihood::CGaussianLikelihood(float64_t sigma) : CLikelihoodModel()
 void CGaussianLikelihood::init()
 {
 	m_sigma=1.0;
-	SG_ADD(&m_sigma, "sigma", "Observation noise", MS_AVAILABLE);
+	SG_ADD(&m_sigma, "sigma", "Observation noise", MS_AVAILABLE, GRADIENT_AVAILABLE);
 }
 
 CGaussianLikelihood::~CGaussianLikelihood()
@@ -131,7 +131,7 @@ SGVector<float64_t> CGaussianLikelihood::get_log_probability_derivative_f(
 }
 
 SGVector<float64_t> CGaussianLikelihood::get_first_derivative(const CLabels* lab,
-		const TParameter* param, SGVector<float64_t> func) const
+		SGVector<float64_t> func, const TParameter* param) const
 {
 	REQUIRE(lab, "Labels are required (lab should not be NULL)\n")
 	REQUIRE(lab->get_label_type()==LT_REGRESSION,
@@ -160,7 +160,7 @@ SGVector<float64_t> CGaussianLikelihood::get_first_derivative(const CLabels* lab
 }
 
 SGVector<float64_t> CGaussianLikelihood::get_second_derivative(const CLabels* lab,
-		const TParameter* param, SGVector<float64_t> func) const
+		SGVector<float64_t> func, const TParameter* param) const
 {
 	REQUIRE(lab, "Labels are required (lab should not be NULL)\n")
 	REQUIRE(lab->get_label_type()==LT_REGRESSION,
@@ -187,7 +187,7 @@ SGVector<float64_t> CGaussianLikelihood::get_second_derivative(const CLabels* la
 }
 
 SGVector<float64_t> CGaussianLikelihood::get_third_derivative(const CLabels* lab,
-		const TParameter* param, SGVector<float64_t> func) const
+		SGVector<float64_t> func, const TParameter* param) const
 {
 	REQUIRE(lab, "Labels are required (lab should not be NULL)\n")
 	REQUIRE(lab->get_label_type()==LT_REGRESSION,

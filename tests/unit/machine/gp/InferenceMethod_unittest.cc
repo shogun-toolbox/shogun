@@ -21,7 +21,7 @@
 
 using namespace shogun;
 
-TEST(InferenceMethod,get_log_ml_estimate_binary_logit_laplace)
+TEST(InferenceMethod,get_marginal_likelihood_estimate_logit_laplace)
 {
 	index_t n=2;
 	index_t d=1;
@@ -47,9 +47,9 @@ TEST(InferenceMethod,get_log_ml_estimate_binary_logit_laplace)
 	/* sample estimate and compare against a number from my python
 	 * implementation, and also against the approximate marginal
 	 * likelihood. Since this is random, use low accuracy. */
-	float64_t sample=inf->get_log_ml_estimate(100000);
+	float64_t sample=inf->get_marginal_likelihood_estimate(100000);
 	EXPECT_NEAR(sample, -1.67990517588, 0.3);
-	EXPECT_NEAR(sample, -inf->get_negative_marginal_likelihood(), 0.3);
+	EXPECT_NEAR(sample, -inf->get_negative_log_marginal_likelihood(), 0.3);
 
 	SG_UNREF(inf);
 }

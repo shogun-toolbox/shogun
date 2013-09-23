@@ -32,7 +32,7 @@ def modelselection_grid_search_liblinear_modular (traindat=traindat, label_train
     from modshogun import RealFeatures
     from modshogun import LibLinear, L2R_L2LOSS_SVC
 
-    # build parameter tree to select C1 and C2 
+    # build parameter tree to select C1 and C2
     param_tree_root=ModelSelectionParameters()
     c1=ModelSelectionParameters("C1");
     param_tree_root.append_child(c1)
@@ -65,8 +65,7 @@ def modelselection_grid_search_liblinear_modular (traindat=traindat, label_train
     cross_validation.set_autolock(False)
 
     # model selection instance
-    model_selection=GridSearchModelSelection(param_tree_root,
-	    cross_validation) 
+    model_selection=GridSearchModelSelection(cross_validation, param_tree_root)
 
     # perform model selection with selected methods
     #print "performing model selection of"

@@ -55,7 +55,7 @@ def modelselection_grid_search_krr_modular (fm_train=traindat,fm_test=testdat,la
     # cross-validation instance
     cross_validation=CrossValidation(predictor, features_train, labels,
 	    splitting_strategy, evaluation_criterium)
-	
+
     # (optional) repeat x-val 10 times
     cross_validation.set_num_runs(10)
 
@@ -71,18 +71,17 @@ def modelselection_grid_search_krr_modular (fm_train=traindat,fm_test=testdat,la
     param_tree_root=create_param_tree()
 
     # model selection instance
-    model_selection=GridSearchModelSelection(param_tree_root,
-	    cross_validation)
+    model_selection=GridSearchModelSelection(cross_validation, param_tree_root)
 
     # perform model selection with selected methods
     #print "performing model selection of"
     #print "parameter tree:"
     #param_tree_root.print_tree()
-    
+
     #print "starting model selection"
     # print the current parameter combination, if no parameter nothing is printed
     print_state=False
-    
+
     best_parameters=model_selection.select_model(print_state)
 
     # print best parameters
@@ -116,11 +115,11 @@ def create_param_tree():
 
     # gaussian kernel with width
     gaussian_kernel=GaussianKernel()
-    
+
     # print all parameter available for modelselection
     # Dont worry if yours is not included but, write to the mailing list
     #gaussian_kernel.print_modsel_params()
-    
+
     param_gaussian_kernel=ModelSelectionParameters("kernel", gaussian_kernel)
     gaussian_kernel_width=ModelSelectionParameters("width");
     gaussian_kernel_width.build_values(5.0, 8.0, R_EXP, 1.0, 2.0)
@@ -129,11 +128,11 @@ def create_param_tree():
 
     # polynomial kernel with degree
     poly_kernel=PolyKernel()
-    
+
     # print all parameter available for modelselection
     # Dont worry if yours is not included but, write to the mailing list
     #poly_kernel.print_modsel_params()
-    
+
     param_poly_kernel=ModelSelectionParameters("kernel", poly_kernel)
 
     root.append_child(param_poly_kernel)

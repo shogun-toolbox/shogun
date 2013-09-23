@@ -141,7 +141,7 @@ int main(int argc, char **argv)
 
 	/* handles all of the above structures in memory */
 	CGridSearchModelSelection* grid_search=new CGridSearchModelSelection(
-			param_tree, cross);
+			cross, param_tree);
 
 	bool print_state=true;
 	CParameterCombination* best_combination=grid_search->select_model(
@@ -168,10 +168,10 @@ int main(int argc, char **argv)
 	best_combination->apply_to_machine(classifier);
 	SG_UNREF(result);
 	result=(CCrossValidationResult*)cross->evaluate();
-	
+
 	if (result->get_result_type() != CROSSVALIDATION_RESULT)
 		SG_SERROR("Evaluation result is not of type CCrossValidationResult!");
-	
+
 	SG_SPRINT("result (unlocked): ");
 
 	/* clean up destroy result parameter */
@@ -183,4 +183,3 @@ int main(int argc, char **argv)
 
 	return 0;
 }
-

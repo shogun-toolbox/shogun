@@ -8,6 +8,7 @@
  */
 
 #include <shogun/lib/config.h>
+
 #ifdef HAVE_EIGEN3
 
 #include <shogun/labels/RegressionLabels.h>
@@ -16,7 +17,6 @@
 #include <shogun/machine/gp/FITCInferenceMethod.h>
 #include <shogun/machine/gp/ZeroMean.h>
 #include <shogun/machine/gp/GaussianLikelihood.h>
-#include <shogun/evaluation/GradientResult.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;
@@ -64,7 +64,7 @@ TEST(FITCInferenceMethod,get_cholesky)
 	// Gaussian likelihood with sigma = 0.1
 	CGaussianLikelihood* liklihood=new CGaussianLikelihood(0.1);
 
-	// specify GP regression with Laplacian inference
+	// specify GP regression with FITC inference
 	CFITCInferenceMethod* inf=new CFITCInferenceMethod(kernel, features_train,
 		   mean, labels_train, liklihood, latent_features_train);
 
@@ -167,7 +167,7 @@ TEST(FITCInferenceMethod,get_alpha)
 	// Gaussian likelihood with sigma = 0.1
 	CGaussianLikelihood* liklihood=new CGaussianLikelihood(0.1);
 
-	// specify GP regression with Laplacian inference
+	// specify GP regression with FITC inference
 	CFITCInferenceMethod* inf=new CFITCInferenceMethod(kernel, features_train,
 		   mean, labels_train, liklihood, latent_features_train);
 
@@ -192,7 +192,7 @@ TEST(FITCInferenceMethod,get_alpha)
 	SG_UNREF(inf);
 }
 
-TEST(FITCInferenceMethod,get_negative_marginal_likelihood)
+TEST(FITCInferenceMethod,get_negative_log_marginal_likelihood)
 {
 	// create some easy regression data with latent features:
 	// y approximately equals to x^sin(x)
@@ -235,7 +235,7 @@ TEST(FITCInferenceMethod,get_negative_marginal_likelihood)
 	// Gaussian likelihood with sigma = 0.1
 	CGaussianLikelihood* liklihood=new CGaussianLikelihood(0.1);
 
-	// specify GP regression with Laplacian inference
+	// specify GP regression with FITC inference
 	CFITCInferenceMethod* inf=new CFITCInferenceMethod(kernel, features_train,
 		   mean, labels_train, liklihood, latent_features_train);
 
@@ -243,7 +243,7 @@ TEST(FITCInferenceMethod,get_negative_marginal_likelihood)
 	// result from GPML package:
 	// nlZ =
 	// 0.84354
-	float64_t nml=inf->get_negative_marginal_likelihood();
+	float64_t nml=inf->get_negative_log_marginal_likelihood();
 
 	EXPECT_NEAR(nml, 0.84354, 1E-5);
 
@@ -292,23 +292,31 @@ TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives)
 	CZeroMean* mean=new CZeroMean();
 
 	// Gaussian likelihood with sigma = 0.1
-	CGaussianLikelihood* likelihood=new CGaussianLikelihood(0.1);
+	CGaussianLikelihood* lik=new CGaussianLikelihood(0.1);
 
-	// specify GP regression with Laplacian inference
+	// specify GP regression with FITC inference
 	CFITCInferenceMethod* inf=new CFITCInferenceMethod(kernel, features_train,
-		mean, labels_train, likelihood, latent_features_train);
+		mean, labels_train, lik, latent_features_train);
 
-	CGradientResult* result = new CGradientResult();
+	// build parameter dictionary
+	CMap<TParameter*, CSGObject*>* parameter_dictionary=new CMap<TParameter*, CSGObject*>();
+	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
-	result->total_variables=3;
-	result->gradient=inf->get_marginal_likelihood_derivatives(result->parameter_dictionary);
+	// compute derivatives wrt parameters
+	CMap<TParameter*, SGVector<float64_t> >* gradient=
+		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
-	float64_t dnlZ_ell=4*(*result->gradient.get_element_ptr(0))[0];
-	float64_t dnlZ_sf2=(*result->gradient.get_element_ptr(1))[0];
-	float64_t dnlZ_lik=(*result->gradient.get_element_ptr(2))[0];
+	// get parameters to compute derivatives
+	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("width");
+	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("scale");
+	TParameter* sigma_param=lik->m_gradient_parameters->get_parameter("sigma");
 
-	// comparison of partial derivatives of negative marginal likelihood with
-	// result from GPML package:
+	float64_t dnlZ_ell=4*(gradient->get_element(width_param))[0];
+	float64_t dnlZ_sf2=(gradient->get_element(scale_param))[0];
+	float64_t dnlZ_lik=(gradient->get_element(sigma_param))[0];
+
+	// comparison of partial derivatives of negative log marginal likelihood
+	// with result from GPML package:
 	// lik =  2.1930
 	// cov =
 	// -1.67233
@@ -318,8 +326,9 @@ TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives)
 	EXPECT_NEAR(dnlZ_sf2, 0.55979, 1E-5);
 
 	// clean up
-	SG_UNREF(result);
+	SG_UNREF(gradient);
+	SG_UNREF(parameter_dictionary);
 	SG_UNREF(inf);
 }
 
-#endif
+#endif /* HAVE_EIGEN3 */

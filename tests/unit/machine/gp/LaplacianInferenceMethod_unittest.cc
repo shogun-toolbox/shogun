@@ -21,7 +21,6 @@
 #include <shogun/machine/gp/StudentsTLikelihood.h>
 #include <shogun/machine/gp/LogitLikelihood.h>
 #include <shogun/machine/gp/ProbitLikelihood.h>
-#include <shogun/evaluation/GradientResult.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;
@@ -624,7 +623,7 @@ TEST(LaplacianInferenceMethod,get_negative_marginal_likelihood_gaussian_likeliho
 	// result from GPML package:
 	// nlZ =
 	// 6.8615
-	float64_t nml=inf->get_negative_marginal_likelihood();
+	float64_t nml=inf->get_negative_log_marginal_likelihood();
 
 	EXPECT_NEAR(nml, 6.8615, 1E-4);
 
@@ -672,7 +671,7 @@ TEST(LaplacianInferenceMethod,get_negative_marginal_likelihood_t_likelihood)
 	// result from GPML package:
 	// nlZ =
 	// 7.4892
-	float64_t nml=inf->get_negative_marginal_likelihood();
+	float64_t nml=inf->get_negative_log_marginal_likelihood();
 
 	EXPECT_NEAR(nml, 7.4892, 1E-4);
 
@@ -726,7 +725,7 @@ TEST(LaplacianInferenceMethod,get_negative_marginal_likelihood_logit_likelihood)
 	// result from GPML package:
 	// nlZ =
 	// 3.3876
-	float64_t nml=inf->get_negative_marginal_likelihood();
+	float64_t nml=inf->get_negative_log_marginal_likelihood();
 
 	EXPECT_NEAR(nml, 3.3876, 1E-4);
 
@@ -779,7 +778,7 @@ TEST(LaplacianInferenceMethod,get_negative_marginal_likelihood_probit_likelihood
 	// result from GPML package:
 	// nlZ =
 	// 3.4990
-	float64_t nml=inf->get_negative_marginal_likelihood();
+	float64_t nml=inf->get_negative_log_marginal_likelihood();
 
 	EXPECT_NEAR(nml, 3.4990, 1E-4);
 
@@ -819,20 +818,28 @@ TEST(LaplacianInferenceMethod,get_marginal_likelihood_derivatives_gaussian_likel
 	CZeroMean* mean=new CZeroMean();
 
 	// Gaussian likelihood with sigma = 0.25
-	CGaussianLikelihood* liklihood=new CGaussianLikelihood(0.25);
+	CGaussianLikelihood* lik=new CGaussianLikelihood(0.25);
 
 	// specify GP regression with Laplacian inference
 	CLaplacianInferenceMethod* inf=new CLaplacianInferenceMethod(kernel,
-		features_train,	mean, labels_train, liklihood);
+		features_train,	mean, labels_train, lik);
 
-	CGradientResult* result=new CGradientResult();
+	// build parameter dictionary
+	CMap<TParameter*, CSGObject*>* parameter_dictionary=new CMap<TParameter*, CSGObject*>();
+	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
-	result->total_variables=3;
-	result->gradient=inf->get_marginal_likelihood_derivatives(result->parameter_dictionary);
+	// compute derivatives wrt parameters
+	CMap<TParameter*, SGVector<float64_t> >* gradient=
+		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
-	float64_t dnlZ_ell=4*ell*ell*(*result->gradient.get_element_ptr(0))[0];
-	float64_t dnlZ_lik=(*result->gradient.get_element_ptr(1))[0];
-	float64_t dnlZ_sf2=(*result->gradient.get_element_ptr(2))[0];
+	// get parameters to compute derivatives
+	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("width");
+	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("scale");
+	TParameter* sigma_param=lik->m_gradient_parameters->get_parameter("sigma");
+
+	float64_t dnlZ_ell=4*ell*ell*(gradient->get_element(width_param))[0];
+	float64_t dnlZ_lik=(gradient->get_element(sigma_param))[0];
+	float64_t dnlZ_sf2=(gradient->get_element(scale_param))[0];
 
 	// comparison of partial derivatives of negative marginal likelihood with
 	// result from GPML package:
@@ -845,7 +852,8 @@ TEST(LaplacianInferenceMethod,get_marginal_likelihood_derivatives_gaussian_likel
 	EXPECT_NEAR(dnlZ_sf2, -0.57052, 1E-5);
 
 	// clean up
-	SG_UNREF(result);
+	SG_UNREF(gradient);
+	SG_UNREF(parameter_dictionary);
 	SG_UNREF(inf);
 }
 
@@ -880,21 +888,30 @@ TEST(LaplacianInferenceMethod,get_marginal_likelihood_derivatives_t_likelihood)
 	CZeroMean* mean=new CZeroMean();
 
 	// Student's-T likelihood with sigma = 0.25, df = 3
-	CStudentsTLikelihood* liklihood=new CStudentsTLikelihood(0.25, 3);
+	CStudentsTLikelihood* lik=new CStudentsTLikelihood(0.25, 3);
 
 	// specify GP regression with exact inference
 	CLaplacianInferenceMethod* inf=new CLaplacianInferenceMethod(kernel,
-		features_train,	mean, labels_train, liklihood);
+		features_train,	mean, labels_train, lik);
 
-	CGradientResult* result=new CGradientResult();
+	// build parameter dictionary
+	CMap<TParameter*, CSGObject*>* parameter_dictionary=new CMap<TParameter*, CSGObject*>();
+	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
-	result->total_variables=4;
-	result->gradient=inf->get_marginal_likelihood_derivatives(result->parameter_dictionary);
+	// compute derivatives wrt parameters
+	CMap<TParameter*, SGVector<float64_t> >* gradient=
+		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
-	float64_t dnlZ_ell=4*ell*ell*(*result->gradient.get_element_ptr(0))[0];
-	float64_t dnlZ_df=(*result->gradient.get_element_ptr(1))[0];
-	float64_t dnlZ_sigma=(*result->gradient.get_element_ptr(2))[0];
-	float64_t dnlZ_sf2=(*result->gradient.get_element_ptr(3))[0];
+	// get parameters to compute derivatives
+	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("width");
+	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("scale");
+	TParameter* sigma_param=lik->m_gradient_parameters->get_parameter("sigma");
+	TParameter* df_param=lik->m_gradient_parameters->get_parameter("df");
+
+	float64_t dnlZ_ell=4*ell*ell*(gradient->get_element(width_param))[0];
+	float64_t dnlZ_df=(gradient->get_element(df_param))[0];
+	float64_t dnlZ_sigma=(gradient->get_element(sigma_param))[0];
+	float64_t dnlZ_sf2=(gradient->get_element(scale_param))[0];
 
 	// comparison of partial derivatives of negative marginal likelihood with
 	// result from GPML package:
@@ -910,7 +927,8 @@ TEST(LaplacianInferenceMethod,get_marginal_likelihood_derivatives_t_likelihood)
 	EXPECT_NEAR(dnlZ_sf2, -0.30177, 1E-5);
 
 	// clean up
-	SG_UNREF(result);
+	SG_UNREF(gradient);
+	SG_UNREF(parameter_dictionary);
 	SG_UNREF(inf);
 }
 
@@ -956,13 +974,20 @@ TEST(LaplacianInferenceMethod,get_marginal_likelihood_derivatives_logit_likeliho
 	CLaplacianInferenceMethod* inf=new CLaplacianInferenceMethod(kernel,
 			features_train,	mean, labels_train, likelihood);
 
-	CGradientResult* result=new CGradientResult();
+	// build parameter dictionary
+	CMap<TParameter*, CSGObject*>* parameter_dictionary=new CMap<TParameter*, CSGObject*>();
+	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
-	result->total_variables=2;
-	result->gradient=inf->get_marginal_likelihood_derivatives(result->parameter_dictionary);
+	// compute derivatives wrt parameters
+	CMap<TParameter*, SGVector<float64_t> >* gradient=
+		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
-	float64_t dnlZ_ell=4*(*result->gradient.get_element_ptr(0))[0];
-	float64_t dnlZ_sf2=(*result->gradient.get_element_ptr(1))[0];
+	// get parameters to compute derivatives
+	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("width");
+	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("scale");
+
+	float64_t dnlZ_ell=4*(gradient->get_element(width_param))[0];
+	float64_t dnlZ_sf2=(gradient->get_element(scale_param))[0];
 
 	// comparison of partial derivatives of negative marginal likelihood with
 	// result from GPML package:
@@ -973,7 +998,8 @@ TEST(LaplacianInferenceMethod,get_marginal_likelihood_derivatives_logit_likeliho
 	EXPECT_NEAR(dnlZ_sf2, -0.068637, 1E-6);
 
 	// clean up
-	SG_UNREF(result);
+	SG_UNREF(gradient);
+	SG_UNREF(parameter_dictionary);
 	SG_UNREF(inf);
 }
 
@@ -1018,13 +1044,20 @@ TEST(LaplacianInferenceMethod,get_marginal_likelihood_derivatives_probit_likelih
 	CLaplacianInferenceMethod* inf=new CLaplacianInferenceMethod(kernel,
 			features_train,	mean, labels_train, likelihood);
 
-	CGradientResult* result=new CGradientResult();
+	// build parameter dictionary
+	CMap<TParameter*, CSGObject*>* parameter_dictionary=new CMap<TParameter*, CSGObject*>();
+	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
-	result->total_variables=2;
-	result->gradient=inf->get_marginal_likelihood_derivatives(result->parameter_dictionary);
+	// compute derivatives wrt parameters
+	CMap<TParameter*, SGVector<float64_t> >* gradient=
+		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
-	float64_t dnlZ_ell=4*(*result->gradient.get_element_ptr(0))[0];
-	float64_t dnlZ_sf2=(*result->gradient.get_element_ptr(1))[0];
+	// get parameters to compute derivatives
+	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("width");
+	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("scale");
+
+	float64_t dnlZ_ell=4*(gradient->get_element(width_param))[0];
+	float64_t dnlZ_sf2=(gradient->get_element(scale_param))[0];
 
 	// comparison of partial derivatives of negative marginal likelihood with
 	// result from GPML package:
@@ -1035,7 +1068,8 @@ TEST(LaplacianInferenceMethod,get_marginal_likelihood_derivatives_probit_likelih
 	EXPECT_NEAR(dnlZ_sf2, 0.108246, 1E-6);
 
 	// clean up
-	SG_UNREF(result);
+	SG_UNREF(gradient);
+	SG_UNREF(parameter_dictionary);
 	SG_UNREF(inf);
 }
 
@@ -1170,4 +1204,4 @@ TEST(LaplacianInferenceMethod,get_posterior_approximation_covariance_probit_like
 	SG_UNREF(inf);
 }
 
-#endif // HAVE_EIGEN3
+#endif /* HAVE_EIGEN3 */

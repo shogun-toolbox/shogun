@@ -131,8 +131,8 @@ class CGaussianKernel: public CDotKernel
 		 *
 		 * @return gradient with respect to parameter
 		 */
-		virtual SGMatrix<float64_t> get_parameter_gradient(TParameter* param,
-				index_t index=-1);
+		virtual SGMatrix<float64_t> get_parameter_gradient(
+				const TParameter* param, index_t index=-1);
 
 	protected:
 		/** compute kernel function for features a and b

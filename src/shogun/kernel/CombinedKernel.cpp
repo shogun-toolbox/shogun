@@ -781,8 +781,8 @@ void CCombinedKernel::init()
 	    MS_NOT_AVAILABLE);
 }
 
-SGMatrix<float64_t> CCombinedKernel::get_parameter_gradient(TParameter* param,
-		index_t index)
+SGMatrix<float64_t> CCombinedKernel::get_parameter_gradient(
+		const TParameter* param, index_t index)
 {
 	SGMatrix<float64_t> result;
 

@@ -82,7 +82,7 @@ def modelselection_grid_search_kernel (num_subsets, num_vectors, dim_vectors):
 	# init seed for reproducability
 	Math.init_random(1)
 	random.seed(1);
-	
+
 	# create some (non-sense) data
 	matrix=random.rand(dim_vectors, num_vectors)
 
@@ -116,7 +116,7 @@ def modelselection_grid_search_kernel (num_subsets, num_vectors, dim_vectors):
 	param_tree=create_param_tree()
 	#param_tree.print_tree()
 
-	grid_search=GridSearchModelSelection(param_tree, cross)
+	grid_search=GridSearchModelSelection(cross, param_tree)
 
 	print_state=False
 	best_combination=grid_search.select_model(print_state)
@@ -133,7 +133,7 @@ def modelselection_grid_search_kernel (num_subsets, num_vectors, dim_vectors):
 	#print "result mean:", casted.mean
 
 	return classifier,result,casted.mean
-	
+
 if __name__=='__main__':
 	print('ModelselectionGridSearchKernel')
 	modelselection_grid_search_kernel(*parameter_list[0])

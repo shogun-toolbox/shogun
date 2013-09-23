@@ -275,14 +275,13 @@ TEST(GaussianLikelihood,get_first_derivative)
 	// Gaussian likelihood with sigma = 0.13
 	CGaussianLikelihood* likelihood=new CGaussianLikelihood(0.13);
 
-	index_t index=likelihood->get_modsel_param_index("sigma");
-	TParameter* param=likelihood->m_model_selection_parameters->get_parameter(index);
+	TParameter* param=likelihood->m_model_selection_parameters->get_parameter("sigma");
 
-	SGVector<float64_t> lp_dhyp=likelihood->get_first_derivative(labels, param,
-		func);
+	SGVector<float64_t> lp_dhyp=likelihood->get_first_derivative(labels, func,
+			param);
 
-	// comparison of log likelihood derivative wrt sigma hyperparameter
-	// with result from GPML package
+	// comparison of log likelihood derivative wrt sigma hyperparameter with
+	// result from GPML package
 	EXPECT_NEAR(lp_dhyp[0], -0.11162, 1E-5);
 	EXPECT_NEAR(lp_dhyp[1], -0.98925, 1E-5);
 	EXPECT_NEAR(lp_dhyp[2], -0.31556, 1E-5);
@@ -321,11 +320,10 @@ TEST(GaussianLikelihood,get_second_derivative)
 	// Gaussian likelihood with sigma = 0.13
 	CGaussianLikelihood* likelihood=new CGaussianLikelihood(0.13);
 
-	index_t index=likelihood->get_modsel_param_index("sigma");
-	TParameter* param=likelihood->m_model_selection_parameters->get_parameter(index);
+	TParameter* param=likelihood->m_model_selection_parameters->get_parameter("sigma");
 
-	SGVector<float64_t> dlp_dhyp=likelihood->get_second_derivative(labels,
-		param, func);
+	SGVector<float64_t> dlp_dhyp=likelihood->get_second_derivative(labels, func,
+			param);
 
 	// comparison of log likelihood derivative wrt sigma hyperparameter
 	// with result from GPML package
@@ -367,11 +365,10 @@ TEST(GaussianLikelihood,get_third_derivative)
 	// Gaussian likelihood with sigma = 0.13
 	CGaussianLikelihood* likelihood=new CGaussianLikelihood(0.13);
 
-	index_t index=likelihood->get_modsel_param_index("sigma");
-	TParameter* param=likelihood->m_model_selection_parameters->get_parameter(index);
+	TParameter* param=likelihood->m_model_selection_parameters->get_parameter("sigma");
 
-	SGVector<float64_t> d2lp_dhyp=likelihood->get_third_derivative(labels,
-		param, func);
+	SGVector<float64_t> d2lp_dhyp=likelihood->get_third_derivative(labels, func,
+			param);
 
 	// comparison of log likelihood derivative wrt sigma hyperparameter
 	// with result from GPML package
