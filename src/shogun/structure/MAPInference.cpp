@@ -10,8 +10,7 @@
 
 #include <shogun/structure/MAPInference.h>
 #include <shogun/structure/BeliefPropagation.h>
-
-#include <string>
+#include <shogun/labels/FactorGraphLabels.h>
 
 using namespace shogun;
 
@@ -95,8 +94,11 @@ void CMAPInference::inference()
 	assignment.zero();
 	m_energy = m_infer_impl->inference(assignment);
 
+	// create structured output, with default normalized hamming loss
 	SG_UNREF(m_outputs);
-	m_outputs = new CFactorGraphObservation(assignment); // already ref() in constructor
+	SGVector<float64_t> loss_weights(m_fg->get_num_vars());
+	SGVector<float64_t>::fill_vector(loss_weights.vector, loss_weights.vlen, 1.0 / loss_weights.vlen);
+	m_outputs = new CFactorGraphObservation(assignment, loss_weights); // already ref() in constructor
 	SG_REF(m_outputs);
 }
 

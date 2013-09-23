@@ -36,11 +36,13 @@ CPrimalMosekSOSVM::CPrimalMosekSOSVM(
 
 void CPrimalMosekSOSVM::init()
 {
-	SG_ADD(&m_slacks, "m_slacks", "Slacks vector", MS_NOT_AVAILABLE);
+	SG_ADD(&m_slacks, "slacks", "Slacks vector", MS_NOT_AVAILABLE);
 	//FIXME model selection available for SO machines
-	SG_ADD(&m_regularization, "m_regularization", "Regularization constant", MS_NOT_AVAILABLE);
+	SG_ADD(&m_regularization, "regularization", "Regularization constant", MS_NOT_AVAILABLE);
+	SG_ADD(&m_epsilon, "epsilon", "Violation tolerance", MS_NOT_AVAILABLE);
 
 	m_regularization = 1.0;
+	m_epsilon = 0.0;
 }
 
 CPrimalMosekSOSVM::~CPrimalMosekSOSVM()
@@ -163,7 +165,7 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 					cur_res = (CResultSet*) cur_list->get_next_element();
 				}
 
-				if ( slack > max_slack )
+				if ( slack > max_slack + m_epsilon )
 				{
 					// The current training example is a
 					// violated constraint
@@ -209,6 +211,7 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 		}
 
 		SG_DEBUG("QP solved. The primal objective value is %.4f.\n", mosek->get_primal_objective_value());
+
 		++iteration;
 
 	} while ( old_num_con != num_con && ! exception );
@@ -275,6 +278,11 @@ EMachineType CPrimalMosekSOSVM::get_classifier_type()
 void CPrimalMosekSOSVM::set_regularization(float64_t C)
 {
 	m_regularization = C;
+}
+
+void CPrimalMosekSOSVM::set_epsilon(float64_t epsilon) 
+{ 
+	m_epsilon = epsilon; 
 }
 
 #endif /* USE_MOSEK */

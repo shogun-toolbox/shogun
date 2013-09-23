@@ -269,7 +269,7 @@ void CFactorGraph::loss_augmentation(SGVector<int32_t> states_gt, SGVector<float
 	if (loss.size() == 0)
 	{
 		loss.resize_vector(states_gt.size());
-		SGVector<float64_t>::fill_vector(loss.vector, loss.vlen, 1.0);	
+		SGVector<float64_t>::fill_vector(loss.vector, loss.vlen, 1.0 / states_gt.size());	
 	}
 
 	int32_t num_vars = states_gt.size();
