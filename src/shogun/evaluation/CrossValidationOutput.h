@@ -24,7 +24,7 @@ class CEvaluation;
 
 /** @brief Class for managing individual folds in cross-validation.
  *
- * In often is desired to print/save informations that occur during individual
+ * It is often desired to print/save informations that occur during individual
  * folds in cross-validation, such as indices, parameters of underlying
  * machine etc. This abstract base class might be called from the
  * CCrossValidation class after each fold in order to collect these things.
