@@ -33,7 +33,17 @@ def compare(a, b, tolerance):
 		
 		# new, parameter framework based comparison up to tolerance
 		shogun_tolerance = 1e-5 if tolerance is None else tolerance
-		return a.equals(b, shogun_tolerance)			
+		result = a.equals(b, shogun_tolerance)
+		
+		# print debug output in case of failure
+		if not result:
+			print "Equals failed with debug output"
+			old_loglevel=a.io.get_loglevel()
+			a.io.set_loglevel(1)
+			a.equals(b, shogun_tolerance)
+			a.io.set_loglevel(old_loglevel)
+			
+		return result
 	elif type(a) in (tuple,list):
 		if len(a) != len(b): return False
 		for obj1, obj2 in zip(a,b):
