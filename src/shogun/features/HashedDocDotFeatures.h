@@ -23,7 +23,7 @@ class CDotFeatures;
 class CHashedDocConverter;
 class CTokenizer;
 
-/** This class can be used to provide on-the-fly vectorization of a document collection. 
+/** @brief This class can be used to provide on-the-fly vectorization of a document collection. 
  * Like in the standard Bag-of-Words representation, this class considers each document as a collection of tokens,
  * which are then hashed into a new feature space of a specified dimension.
  * This class is very flexible and allows the user to specify the tokenizer used to tokenize each document,

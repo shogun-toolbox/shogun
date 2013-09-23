@@ -229,4 +229,15 @@ int32_t CHashedDocConverter::count_distinct_indices(CDynamicArray<uint32_t>& has
 	}
 	return num_nnz_features;	
 }
+
+void CHashedDocConverter::set_normalization(bool normalize)
+{
+	should_normalize = normalize;
+}
+
+void CHashedDocConverter::set_k_skip_n_grams(int32_t k, int32_t n)
+{
+	tokens_to_skip = k;
+	ngrams = n;
+}
 }

@@ -94,6 +94,20 @@ public:
 	/** @return object name */
 	virtual const char* get_name() const;
 
+	/** specify whether hashed vector should be normalized or not
+	 *
+	 * @param normalize  whether to normalize
+	 */
+	void set_normalization(bool normalize);
+
+	/** Method used to specify the parameters for the quadratic
+	 * approach of k-skip n-grams. See class description for more 
+	 * details and an example.
+	 *
+	 * @param k the max number of allowed skips
+	 * @param n the max number of tokens to combine
+	 */
+	void set_k_skip_n_grams(int32_t k, int32_t n);
 protected:
 	
 	/** init */
