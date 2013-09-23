@@ -170,7 +170,7 @@ CGradientModelSelection::~CGradientModelSelection()
 void CGradientModelSelection::init()
 {
 	m_max_evaluations=1000;
-	m_grad_tolerance=1e-4;
+	m_grad_tolerance=1e-6;
 
 	SG_ADD(&m_grad_tolerance, "gradient_tolerance",	"Gradient tolerance",
 			MS_NOT_AVAILABLE);
