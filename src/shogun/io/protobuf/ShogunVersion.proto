@@ -26,5 +26,6 @@ message ShogunVersion
 		MATRIX=2;
 		SPARSE_VECTOR=3;
 		SPARSE_MATRIX=4;
+		STRING_LIST=5;
 	}
 }
