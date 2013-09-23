@@ -14,7 +14,10 @@
 #include <shogun/structure/MulticlassModel.h>
 #include <shogun/structure/PrimalMosekSOSVM.h>
 #include <shogun/structure/DualLibQPBMSOSVM.h>
+#include <shogun/structure/StochasticSOSVM.h>
 #include <shogun/lib/Time.h>
+
+#include <stdio.h>
 
 using namespace shogun;
 
@@ -108,19 +111,26 @@ int main(int argc, char ** argv)
 
 	// Create SO-SVM
 	CPrimalMosekSOSVM* sosvm = new CPrimalMosekSOSVM(model, labels);
-	CDualLibQPBMSOSVM* bundle = new CDualLibQPBMSOSVM(model, labels, 1000);
+	CDualLibQPBMSOSVM* bundle = new CDualLibQPBMSOSVM(model, labels, 100);
+	CStochasticSOSVM* sgd = new CStochasticSOSVM(model, labels);
 	bundle->set_verbose(false);
 	SG_REF(sosvm);
 	SG_REF(bundle);
+	SG_REF(sgd);
 
 	CTime start;
-	float64_t t1;
 	sosvm->train();
-	SG_SPRINT(">>>> PrimalMosekSOSVM trained in %9.4f\n", (t1 = start.cur_time_diff(false)));
+	float64_t t1 = start.cur_time_diff(false);
 	bundle->train();
-	SG_SPRINT(">>>> BMRM trained in %9.4f\n", start.cur_time_diff(false)-t1);
+	float64_t t2 = start.cur_time_diff(false);
+	sgd->train();
+	float64_t t3 = start.cur_time_diff(false);
+	SG_SPRINT(">>>> PrimalMosekSOSVM trained in %9.4f\n", t1);
+	SG_SPRINT(">>>> BMRM trained in %9.4f\n", t2-t1);
+	SG_SPRINT(">>>> SGD trained in %9.4f\n", t3-t2);
 	CStructuredLabels* out = CLabelsFactory::to_structured(sosvm->apply());
 	CStructuredLabels* bout = CLabelsFactory::to_structured(bundle->apply());
+	CStructuredLabels* sout = CLabelsFactory::to_structured(sgd->apply());
 
 	// Create liblinear svm classifier with L2-regularized L2-loss
 	CLibLinear* svm = new CLibLinear(L2R_L2LOSS_SVC);
@@ -162,6 +172,7 @@ int main(int argc, char ** argv)
 
 	SG_SPRINT("SO-SVM: %5.2f%\n", 100.0*structured_evaluator->evaluate(out, labels));
 	SG_SPRINT("BMRM:   %5.2f%\n", 100.0*structured_evaluator->evaluate(bout, labels));
+	SG_SPRINT("SGD:   %5.2f%\n", 100.0*structured_evaluator->evaluate(sout, labels));
 	SG_SPRINT("MC:     %5.2f%\n", 100.0*multiclass_evaluator->evaluate(mout, mlabels));
 
 	// Free memory
@@ -169,8 +180,10 @@ int main(int argc, char ** argv)
 	SG_UNREF(structured_evaluator);
 	SG_UNREF(mout);
 	SG_UNREF(mc_svm);
+	SG_UNREF(sgd);
 	SG_UNREF(bundle);
 	SG_UNREF(sosvm);
+	SG_UNREF(sout);
 	SG_UNREF(bout);
 	SG_UNREF(out);
 	exit_shogun();

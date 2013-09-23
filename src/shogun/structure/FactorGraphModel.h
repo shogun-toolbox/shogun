@@ -38,6 +38,8 @@ public:
 	 * @param features pointer to structured inputs
 	 * @param labels pointer to structured outputs
 	 * @param inf_type MAP inference type, default is tree max-product inference
+	 * @param verbose whether output verbose information, such as energy table, slack variables etc. 
+	 * NOTE: do NOT set this up when training with large data, massive printing will crash the program
 	 */
 	CFactorGraphModel(CFeatures* features, CStructuredLabels* labels, 
 		EMAPInferType inf_type = TREE_MAX_PROD, bool verbose = false);

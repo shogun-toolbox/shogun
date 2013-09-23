@@ -97,9 +97,10 @@ parameter_list = [[samples,labels,w_all,ftype_all]]
 def structure_factor_graph_model(tr_samples = samples, tr_labels = labels, w = w_all, ftype = ftype_all):
 	from modshogun import FactorGraphModel, MAPInference, TREE_MAX_PROD
 	from modshogun import DualLibQPBMSOSVM, LabelsFactory
+	from modshogun import StochasticSOSVM, SOSVMHelper
 
 	# create model
-	model = FactorGraphModel(tr_samples, tr_labels, TREE_MAX_PROD, True)
+	model = FactorGraphModel(tr_samples, tr_labels, TREE_MAX_PROD, False)
 	w_truth = [w[0].copy(), w[1].copy(), w[2].copy()]
 	w[0] = np.zeros(8)
 	w[1] = np.zeros(4)
@@ -111,8 +112,9 @@ def structure_factor_graph_model(tr_samples = samples, tr_labels = labels, w = w
 	model.add_factor_type(ftype[1])
 	model.add_factor_type(ftype[2])
 
-	# training
+	# --- training with BMRM ---
 	bmrm = DualLibQPBMSOSVM(model, tr_labels, 0.01)
+	bmrm.set_verbose(False)
 	bmrm.train()
 	#print 'learned weights:'
 	#print bmrm.get_w()
@@ -130,7 +132,7 @@ def structure_factor_graph_model(tr_samples = samples, tr_labels = labels, w = w
 
 	ave_loss = acc_loss / num_samples
 
-	#print('Average training error is %.4f' % ave_loss)
+	#print('BMRM: Average training error is %.4f' % ave_loss)
 
 	# show primal objs and dual objs
 	from modshogun import BmrmStatistics
@@ -140,6 +142,18 @@ def structure_factor_graph_model(tr_samples = samples, tr_labels = labels, w = w
 	#print Fps
 	#print Fds
 	#print Fps - Fds
+
+	# --- training with SGD ---
+	sgd = StochasticSOSVM(model, tr_labels, True, True)
+	sgd.set_lambda(0.01)
+	sgd.train()
+
+	# evaluation
+	#print('SGD: Average training error is %.4f' % SOSVMHelper.average_loss(sgd.get_w(), model))
+	#hp = sgd.get_helper()
+	#print hp.get_primal_values()
+	#print hp.get_eff_passes()
+	#print hp.get_train_errors()
 
 if __name__ == '__main__':
 	print("Factor Graph Model")

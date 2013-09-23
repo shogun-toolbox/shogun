@@ -160,4 +160,3 @@ int32_t CStructuredModel::get_num_aux_con() const
 {
 	return 0;
 }
-
