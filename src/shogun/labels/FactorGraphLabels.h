@@ -38,7 +38,7 @@ public:
 	 * @param loss_weights weighted loss for each variable
 	 */
 	CFactorGraphObservation(SGVector<int32_t> observed_state, 
-		SGVector<float64_t> loss_weights = SGVector<float64_t>());
+		SGVector<float64_t> loss_weights);
 
 	~CFactorGraphObservation() { }
 
@@ -64,6 +64,12 @@ public:
 
 	/** @return loss weights */
 	SGVector<float64_t> get_loss_weights() const;
+
+	/** set loss weights 
+	 *
+	 * @param loss_weights weights for weighted hamming loss
+	 */
+	void set_loss_weights(SGVector<float64_t> loss_weights);
 
 protected:
 	/** loss weights, usually for weighted hamming loss */
