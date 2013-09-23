@@ -11,12 +11,14 @@
 
 #include <shogun/base/init.h>
 #include <shogun/lib/common.h>
-#include <shogun/features/DenseFeatures.h>
 
 #include <iostream>
 
+using namespace shogun;
+
 #ifdef HAVE_EIGEN3
 
+#include <shogun/features/DenseFeatures.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
 
@@ -24,7 +26,6 @@
 #include <shogun/evaluation/ica/PermutationMatrix.h>
 #include <shogun/evaluation/ica/AmariIndex.h>
 
-using namespace shogun;
 using namespace Eigen;
 
 void test()
@@ -99,15 +100,16 @@ void test()
 	return;
 }
 
+#endif // HAVE_EIGEN3
+
 int main(int argc, char ** argv)
 {
 	init_shogun_with_defaults();
 
+#ifdef HAVE_EIGEN3
 	test();
-
+#endif // HAVE_EIGEN3
 	exit_shogun();
 
 	return 0;
 }
-
-#endif //HAVE_EIGEN3
