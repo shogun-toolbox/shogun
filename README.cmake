@@ -1,6 +1,8 @@
 # getting a list of possible interfaces to enable:
 grep -E "OPTION.*(Modular|Static)" CMakeLists.txt
 
+# if eigen3 or json-c are missing use the following to download and compile these dependencies
+cmake -DBUNDLE_EIGEN=ON -DBUNDLE_JSON=ON
 
 # setup cmake for developers (debugging symbols on, optimization off, etc.):
 mkdir build-debug
