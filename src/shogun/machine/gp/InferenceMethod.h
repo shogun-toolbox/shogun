@@ -31,11 +31,11 @@ namespace shogun
 /** inference type */
 enum EInferenceType
 {
-	INF_NONE = 0,
-	INF_EXACT = 10,
-	INF_FITC = 20,
-	INF_LAPLACIAN = 30,
-	INF_EP = 40
+	INF_NONE=0,
+	INF_EXACT=10,
+	INF_FITC=20,
+	INF_LAPLACIAN=30,
+	INF_EP=40
 };
 
 /** @brief The Inference Method base class.
@@ -82,7 +82,45 @@ public:
 	 * where \f$y\f$ are the labels, \f$X\f$ are the features, and \f$\theta\f$
 	 * represent hyperparameters.
 	 */
-	virtual float64_t get_negative_marginal_likelihood()=0;
+	virtual float64_t get_negative_log_marginal_likelihood()=0;
+
+	/** Computes an unbiased estimate of the log-marginal-likelihood,
+	 *
+	 * \f[
+	 * log(p(y|X,\theta)),
+	 * \f]
+	 * where \f$y\f$ are the labels, \f$X\f$ are the features (omitted from in
+	 * the following expressions), and \f$\theta\f$ represent hyperparameters.
+	 *
+	 * This is done via an approximation to the posterior
+	 * \f$q(f|y, \theta)\approx p(f|y, \theta)\f$, which is computed by the
+	 * underlying CInferenceMethod instance (if implemented, otherwise error),
+	 * and then using an importance sample estimator
+	 *
+	 * \f[
+	 * p(y|\theta)=\int p(y|f)p(f|\theta)df
+	 * =\int p(y|f)\frac{p(f|\theta)}{q(f|y, \theta)}q(f|y, \theta)df
+	 * \approx\frac{1}{n}\sum_{i=1}^n p(y|f^{(i)})\frac{p(f^{(i)}|\theta)}
+	 * {q(f^{(i)}|y, \theta)},
+	 * \f]
+	 *
+	 * where \f$ f^{(i)} \f$ are samples from the posterior approximation
+	 * \f$ q(f|y, \theta) \f$. The resulting estimator has a low variance if
+	 * \f$ q(f|y, \theta) \f$ is a good approximation. It has large variance
+	 * otherwise (while still being consistent).
+	 *
+	 * @param num_importance_samples the number of importance samples \f$n\f$
+	 * from \f$ q(f|y, \theta) \f$.
+	 * @param ridge_size scalar that is added to the diagonal of the involved
+	 * Gaussian distribution's covariance of GP prior and posterior
+	 * approximation to stabilise things. Increase if Cholesky factorization
+	 * fails.
+	 *
+	 * @return unbiased estimate of the log of the marginal likelihood function
+	 * \f$ log(p(y|\theta)) \f$
+	 */
+	float64_t get_marginal_likelihood_estimate(int32_t num_importance_samples=1,
+			float64_t ridge_size=1e-15);
 
 	/** get log marginal likelihood gradient
 	 *
@@ -97,8 +135,8 @@ public:
 	 * where \f$y\f$ are the labels, \f$X\f$ are the features, and \f$\theta\f$
 	 * represent hyperparameters.
 	 */
-	virtual CMap<TParameter*, SGVector<float64_t> > get_marginal_likelihood_derivatives(
-			CMap<TParameter*, CSGObject*>& para_dict)=0;
+	virtual CMap<TParameter*, SGVector<float64_t> >* get_negative_log_marginal_likelihood_derivatives(
+			CMap<TParameter*, CSGObject*>* parameters);
 
 	/** get alpha vector
 	 *
@@ -138,28 +176,6 @@ public:
 	 */
 	virtual SGVector<float64_t> get_diagonal_vector()=0;
 
-	/** get the gradient
-	 *
-	 * @return map of gradient: keys are names of parameters, values are values
-	 * of derivative with respect to that parameter.
-	 */
-	virtual CMap<TParameter*, SGVector<float64_t> > get_gradient(
-			CMap<TParameter*, CSGObject*>& para_dict)
-	{
-		return get_marginal_likelihood_derivatives(para_dict);
-	}
-
-	/** get the function value
-	 *
-	 * @return vector that represents the function value
-	 */
-	virtual SGVector<float64_t> get_quantity()
-	{
-		SGVector<float64_t> result(1);
-		result[0]=get_negative_marginal_likelihood();
-		return result;
-	}
-
 	/** returns mean vector \f$\mu\f$ of the Gaussian distribution
 	 * \f$\mathcal{N}(\mu,\Sigma)\f$, which is an approximation to the
 	 * posterior:
@@ -192,6 +208,30 @@ public:
 		SG_ERROR("Inference method doesn't use a Gaussian approximation to the "
 				"posterior")
 		return SGMatrix<float64_t>();
+	}
+
+	/** get the gradient
+	 *
+	 * @param parameters parameter's dictionary
+	 *
+	 * @return map of gradient. Keys are names of parameters, values are values
+	 * of derivative with respect to that parameter.
+	 */
+	virtual CMap<TParameter*, SGVector<float64_t> >* get_gradient(
+			CMap<TParameter*, CSGObject*>* parameters)
+	{
+        return get_negative_log_marginal_likelihood_derivatives(parameters);
+	}
+
+	/** get the function value
+	 *
+	 * @return vector that represents the function value
+	 */
+	virtual SGVector<float64_t> get_value()
+	{
+		SGVector<float64_t> result(1);
+		result[0]=get_negative_log_marginal_likelihood();
+		return result;
 	}
 
 	/** get features
@@ -315,44 +355,6 @@ public:
 	/** update all matrices */
 	virtual void update();
 
-	/** Computes an unbiased estimate of the log-marginal-likelihood,
-	 *
-	 * \f[
-	 * log(p(y|X,\theta)),
-	 * \f]
-	 * where \f$y\f$ are the labels, \f$X\f$ are the features (omitted from in
-	 * the following expressions), and \f$\theta\f$ represent hyperparameters.
-	 *
-	 * This is done via an approximation to the posterior
-	 * \f$q(f|y, \theta)\approx p(f|y, \theta)\f$, which is computed by the
-	 * underlying CInferenceMethod instance (if implemented, otherwise error),
-	 * and then using an importance sample estimator
-	 *
-	 * \f[
-	 * p(y|\theta)=\int p(y|f)p(f|\theta)df
-	 * =\int p(y|f)\frac{p(f|\theta)}{q(f|y, \theta)}q(f|y, \theta)df
-	 * \approx\frac{1}{n}\sum_{i=1}^n p(y|f^{(i)})\frac{p(f^{(i)}|\theta)}
-	 * {q(f^{(i)}|y, \theta)},
-	 * \f]
-	 *
-	 * where \f$ f^{(i)} \f$ are samples from the posterior approximation
-	 * \f$ q(f|y, \theta) \f$. The resulting estimator has a low variance if
-	 * \f$ q(f|y, \theta) \f$ is a good approximation. It has large variance
-	 * otherwise (while still being consistent).
-	 *
-	 * @param num_importance_samples the number of importance samples \f$n\f$
-	 * from \f$ q(f|y, \theta) \f$.
-	 * @param ridge_size scalar that is added to the diagonal of the involved
-	 * Gaussian distribution's covariance of GP prior and posterior
-	 * approximation to stabilise things. Increase if Cholesky factorization
-	 * fails.
-	 *
-	 * @return unbiased estimate of the log of the marginal likelihood function
-	 * \f$ log(p(y|\theta)) \f$
-	 */
-	float64_t get_log_ml_estimate(int32_t num_importance_samples=1,
-			float64_t ridge_size=1e-15);
-
 protected:
 	/** check if members of object are valid for inference */
 	virtual void check_members() const;
@@ -363,11 +365,61 @@ protected:
 	/** update cholesky matrix */
 	virtual void update_chol()=0;
 
+	/** update matrices which are required to compute negative log marginal
+	 * likelihood derivatives wrt hyperparameter
+	 */
+	virtual void update_deriv()=0;
+
 	/** update train kernel matrix */
 	virtual void update_train_kernel();
 
 	/** update feature matrix */
 	virtual void update_feature_matrix();
+
+	/** returns derivative of negative log marginal likelihood wrt parameter of
+	 * CInferenceMethod class
+	 *
+	 * @param param parameter of CInferenceMethod class
+	 *
+	 * @return derivative of negative log marginal likelihood
+	 */
+	virtual SGVector<float64_t> get_derivative_wrt_inference_method(
+			const TParameter* param)=0;
+
+	/** returns derivative of negative log marginal likelihood wrt parameter of
+	 * likelihood model
+	 *
+	 * @param param parameter of given likelihood model
+	 *
+	 * @return derivative of negative log marginal likelihood
+	 */
+	virtual SGVector<float64_t> get_derivative_wrt_likelihood_model(
+			const TParameter* param)=0;
+
+	/** returns derivative of negative log marginal likelihood wrt kernel's
+	 * parameter
+	 *
+	 * @param param parameter of given kernel
+	 *
+	 * @return derivative of negative log marginal likelihood
+	 */
+	virtual SGVector<float64_t> get_derivative_wrt_kernel(
+			const TParameter* param)=0;
+
+	/** returns derivative of negative log marginal likelihood wrt mean
+	 * function's parameter
+	 *
+	 * @param param parameter of given mean function
+	 *
+	 * @return derivative of negative log marginal likelihood
+	 */
+	virtual SGVector<float64_t> get_derivative_wrt_mean(
+			const TParameter* param)=0;
+
+	/** pthread helper method to compute negative log marginal likelihood
+	 * derivatives wrt hyperparameter
+	 */
+	static void* get_derivative_helper(void* p);
 
 private:
 	void init();

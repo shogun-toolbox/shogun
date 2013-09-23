@@ -80,7 +80,7 @@ public:
 	 *
 	 * @return gradient with respect to parameter
 	 */
-	virtual SGMatrix<float64_t> get_parameter_gradient(TParameter* param,
+	virtual SGMatrix<float64_t> get_parameter_gradient(const TParameter* param,
 			index_t index=-1);
 
 protected:

@@ -980,12 +980,6 @@ void CKernel::init()
 	set_normalizer(new CIdentityKernelNormalizer());
 }
 
-SGMatrix<float64_t> CKernel::get_parameter_gradient(TParameter* param,
-		index_t index)
-{
-	return SGMatrix<float64_t>();
-}
-
 namespace shogun
 {
 /** kernel thread parameters */

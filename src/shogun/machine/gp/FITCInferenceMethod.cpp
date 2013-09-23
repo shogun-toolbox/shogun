@@ -69,6 +69,7 @@ void CFITCInferenceMethod::update()
 	CInferenceMethod::update();
 	update_chol();
 	update_alpha();
+	update_deriv();
 }
 
 void CFITCInferenceMethod::check_members() const
@@ -99,355 +100,6 @@ void CFITCInferenceMethod::check_members() const
 	SG_UNREF(feat);
 }
 
-CMap<TParameter*, SGVector<float64_t> > CFITCInferenceMethod::
-get_marginal_likelihood_derivatives(CMap<TParameter*, CSGObject*>& para_dict)
-{
-	if (update_parameter_hash())
-		update();
-
-	// get the sigma variable from the Gaussian likelihood model
-	CGaussianLikelihood* lik=CGaussianLikelihood::obtain_from_generic(m_model);
-	float64_t sigma=lik->get_sigma();
-	SG_UNREF(lik);
-
-	Map<MatrixXd> eigen_ktru(m_ktru.matrix, m_ktru.num_rows, m_ktru.num_cols);
-
-	MatrixXd W = eigen_ktru;
-
-	Map<VectorXd> eigen_dg(m_dg.vector, m_dg.vlen);
-
-	for (index_t j = 0; j < eigen_ktru.rows(); j++)
-	{
-		for (index_t i = 0; i < eigen_ktru.cols(); i++)
-			W(i,j) = eigen_ktru(i,j) / sqrt(eigen_dg[j]);
-	}
-
-	Map<MatrixXd> eigen_uu(m_kuu.matrix, m_kuu.num_rows, m_kuu.num_cols);
-	LLT<MatrixXd> CholW(eigen_uu + W*W.transpose() +
-			m_ind_noise*MatrixXd::Identity(eigen_uu.rows(), eigen_uu.cols()));
-	W = CholW.matrixL();
-
-
-	W = W.colPivHouseholderQr().solve(eigen_ktru);
-
-	SGVector<float64_t> y=((CRegressionLabels*) m_labels)->get_labels();
-	Map<VectorXd> eigen_y(y.vector, y.vlen);
-	SGVector<float64_t> m=m_mean->get_mean_vector(m_feat);
-	Map<VectorXd> eigen_m(m.vector, m.vlen);
-
-	VectorXd al=W*(eigen_y-eigen_m).cwiseQuotient(eigen_dg);
-
-	al = W.transpose()*al;
-
-	al=(eigen_y-eigen_m)-al;
-
-	al = al.cwiseQuotient(eigen_dg);
-
-	MatrixXd iKuu = eigen_uu.selfadjointView<Eigen::Upper>().llt()
-					.solve(MatrixXd::Identity(eigen_uu.rows(), eigen_uu.cols()));
-
-	MatrixXd B = iKuu*eigen_ktru;
-
-	MatrixXd Wdg = W;
-
-	for (index_t j = 0; j < eigen_ktru.rows(); j++)
-	{
-		for (index_t i = 0; i < eigen_ktru.cols(); i++)
-			Wdg(i,j) = Wdg(i,j) / eigen_dg[j];
-	}
-
-	VectorXd w = B*al;
-
-	VectorXd sum(1);
-	sum[0] = 0;
-
-	m_kernel->build_parameter_dictionary(para_dict);
-	m_mean->build_parameter_dictionary(para_dict);
-
-	//This will be the vector we return
-	CMap<TParameter*, SGVector<float64_t> > gradient;
-
-	for (index_t i = 0; i < para_dict.get_num_elements(); i++)
-	{
-		TParameter* param = para_dict.get_node_ptr(i)->key;
-
-		index_t length = 1;
-
-		if ((param->m_datatype.m_ctype== CT_VECTOR ||
-				param->m_datatype.m_ctype == CT_SGVECTOR) &&
-				param->m_datatype.m_length_y != NULL)
-			length = *(param->m_datatype.m_length_y);
-
-		SGVector<float64_t> variables(length);
-
-		bool deriv_found = false;
-
-		for (index_t g = 0; g < length; g++)
-		{
-
-			SGMatrix<float64_t> deriv;
-			SGMatrix<float64_t> derivtru;
-			SGMatrix<float64_t> derivuu;
-			SGVector<float64_t> mean_derivatives;
-			VectorXd mean_dev_temp;
-
-			if (param->m_datatype.m_ctype == CT_VECTOR ||
-					param->m_datatype.m_ctype == CT_SGVECTOR)
-			{
-				m_kernel->init(m_features, m_features);
-				deriv = m_kernel->get_parameter_gradient(param);
-
-				m_kernel->init(m_latent_features, m_features);
-				derivtru = m_kernel->get_parameter_gradient(param);
-
-				m_kernel->init(m_latent_features, m_latent_features);
-				derivuu = m_kernel->get_parameter_gradient(param);
-
-				m_kernel->remove_lhs_and_rhs();
-
-				mean_derivatives = m_mean->get_parameter_derivative(
-						param, m_feat, g);
-
-				for (index_t d = 0; d < mean_derivatives.vlen; d++)
-					mean_dev_temp[d] = mean_derivatives[d];
-			}
-			else
-			{
-				mean_derivatives = m_mean->get_parameter_derivative(
-						param, m_feat);
-
-				for (index_t d = 0; d < mean_derivatives.vlen; d++)
-					mean_dev_temp[d] = mean_derivatives[d];
-
-				m_kernel->init(m_features, m_features);
-				deriv = m_kernel->get_parameter_gradient(param);
-
-				m_kernel->init(m_latent_features, m_features);
-				derivtru = m_kernel->get_parameter_gradient(param);
-
-				m_kernel->init(m_latent_features, m_latent_features);
-				derivuu = m_kernel->get_parameter_gradient(param);
-
-				m_kernel->remove_lhs_and_rhs();
-			}
-
-			sum[0] = 0;
-
-
-			if (deriv.num_cols*deriv.num_rows > 0)
-			{
-				MatrixXd ddiagKi(deriv.num_cols, deriv.num_rows);
-				MatrixXd dKuui(derivuu.num_cols, derivuu.num_rows);
-				MatrixXd dKui(derivtru.num_cols, derivtru.num_rows);
-
-				for (index_t d = 0; d < deriv.num_rows; d++)
-				{
-					for (index_t s = 0; s < deriv.num_cols; s++)
-						ddiagKi(d,s) = deriv(d,s)*m_scale*m_scale;
-				}
-
-				for (index_t d = 0; d < derivuu.num_rows; d++)
-				{
-					for (index_t s = 0; s < derivuu.num_cols; s++)
-						dKuui(d,s) = derivuu(d,s)*m_scale*m_scale;
-				}
-
-				for (index_t d = 0; d < derivtru.num_rows; d++)
-				{
-					for (index_t s = 0; s < derivtru.num_cols; s++)
-						dKui(d,s) = derivtru(d,s)*m_scale*m_scale;
-				}
-
-				MatrixXd R = 2*dKui-dKuui*B;
-				MatrixXd v = ddiagKi;
-				MatrixXd temp = R.cwiseProduct(B);
-
-				for (index_t d = 0; d < ddiagKi.rows(); d++)
-					v(d,d) = v(d,d) - temp.col(d).sum();
-
-				sum = sum + ddiagKi.diagonal().transpose()*
-						VectorXd::Ones(eigen_dg.rows()).cwiseQuotient(eigen_dg);
-
-				sum = sum + w.transpose()*(dKuui*w-2*(dKui*al));
-
-				sum = sum - al.transpose()*(v.diagonal().cwiseProduct(al));
-
-				MatrixXd Wdg_temp = Wdg.cwiseProduct(Wdg);
-
-				VectorXd Wdg_sum(Wdg.rows());
-
-				for (index_t d = 0; d < Wdg.rows(); d++)
-					Wdg_sum[d] = Wdg_temp.col(d).sum();
-
-				sum = sum - v.diagonal().transpose()*Wdg_sum;
-
-				Wdg_temp = (R*Wdg.transpose()).cwiseProduct(B*Wdg.transpose());
-
-				sum[0] = sum[0] - Wdg_temp.sum();
-
-				sum /= 2.0;
-
-				variables[g] = sum[0];
-				deriv_found = true;
-			}
-
-			else if (mean_derivatives.vlen > 0)
-			{
-				sum = mean_dev_temp*al;
-				variables[g] = sum[0];
-				deriv_found = true;
-			}
-
-
-		}
-
-		if (deriv_found)
-			gradient.add(param, variables);
-
-	}
-
-	//Here we take the kernel scale derivative.
-	{
-		TParameter* param;
-		index_t index = get_modsel_param_index("scale");
-		param = m_model_selection_parameters->get_parameter(index);
-
-		SGVector<float64_t> variables(1);
-
-		SGMatrix<float64_t> deriv;
-		SGMatrix<float64_t> derivtru;
-		SGMatrix<float64_t> derivuu;
-
-		m_kernel->init(m_features, m_features);
-		deriv = m_kernel->get_kernel_matrix();
-
-		m_kernel->init(m_latent_features, m_features);
-		derivtru = m_kernel->get_kernel_matrix();
-
-		m_kernel->init(m_latent_features, m_latent_features);
-		derivuu = m_kernel->get_kernel_matrix();
-
-		m_kernel->remove_lhs_and_rhs();
-
-		MatrixXd ddiagKi(deriv.num_cols, deriv.num_rows);
-		MatrixXd dKuui(derivuu.num_cols, derivuu.num_rows);
-		MatrixXd dKui(derivtru.num_cols, derivtru.num_rows);
-
-		for (index_t d = 0; d < deriv.num_rows; d++)
-		{
-			for (index_t s = 0; s < deriv.num_cols; s++)
-				ddiagKi(d,s) = deriv(d,s)*m_scale*2.0;
-		}
-
-		for (index_t d = 0; d < derivuu.num_rows; d++)
-		{
-			for (index_t s = 0; s < derivuu.num_cols; s++)
-				dKuui(d,s) = derivuu(d,s)*m_scale*2.0;
-		}
-
-		for (index_t d = 0; d < derivtru.num_rows; d++)
-		{
-			for (index_t s = 0; s < derivtru.num_cols; s++)
-				dKui(d,s) = derivtru(d,s)*m_scale*2.0;
-		}
-
-		MatrixXd R = 2*dKui-dKuui*B;
-		MatrixXd v = ddiagKi;
-		MatrixXd temp = R.cwiseProduct(B);
-
-		for (index_t d = 0; d < ddiagKi.rows(); d++)
-			v(d,d) = v(d,d) - temp.col(d).sum();
-
-		sum = sum + ddiagKi.diagonal().transpose()*
-
-				VectorXd::Ones(eigen_dg.rows()).cwiseQuotient(eigen_dg);
-
-		sum = sum + w.transpose()*(dKuui*w-2*(dKui*al));
-
-		sum = sum - al.transpose()*(v.diagonal().cwiseProduct(al));
-
-		MatrixXd Wdg_temp = Wdg.cwiseProduct(Wdg);
-
-		VectorXd Wdg_sum(Wdg.rows());
-
-		for (index_t d = 0; d < Wdg.rows(); d++)
-			Wdg_sum[d] = Wdg_temp.col(d).sum();
-
-		sum = sum - v.diagonal().transpose()*Wdg_sum;
-
-		Wdg_temp = (R*Wdg.transpose()).cwiseProduct(B*Wdg.transpose());
-
-		sum[0] = sum[0] - Wdg_temp.sum();
-
-		sum /= 2.0;
-
-		variables[0] = sum[0];
-
-		gradient.add(param, variables);
-		para_dict.add(param, this);
-
-	}
-
-	TParameter* param;
-	index_t index;
-
-	index = m_model->get_modsel_param_index("sigma");
-	param = m_model->m_model_selection_parameters->get_parameter(index);
-
-	sum[0] = 0;
-
-	MatrixXd W_temp = W.cwiseProduct(W);
-	VectorXd W_sum(W_temp.rows());
-
-	for (index_t d = 0; d < W_sum.rows(); d++)
-		W_sum[d] = W_temp.col(d).sum();
-
-	W_sum = W_sum.cwiseQuotient(eigen_dg.cwiseProduct(eigen_dg));
-
-	sum[0] = W_sum.sum();
-
-	sum = sum + al.transpose()*al;
-
-	sum[0] = VectorXd::Ones(eigen_dg.rows()).cwiseQuotient(eigen_dg).sum() - sum[0];
-
-	sum = sum*sigma*sigma;
-	float64_t dKuui = 2.0*m_ind_noise;
-
-	MatrixXd R = -dKuui*B;
-
-	MatrixXd temp = R.cwiseProduct(B);
-	VectorXd v(temp.rows());
-
-	for (index_t d = 0; d < temp.rows(); d++)
-		v[d] = temp.col(d).sum();
-
-	sum = sum + (w.transpose()*dKuui*w)/2.0;
-
-	sum = sum - al.transpose()*(v.cwiseProduct(al))/2.0;
-
-	MatrixXd Wdg_temp = Wdg.cwiseProduct(Wdg);
-	VectorXd Wdg_sum(Wdg.rows());
-
-	for (index_t d = 0; d < Wdg.rows(); d++)
-		Wdg_sum[d] = Wdg_temp.col(d).sum();
-
-	sum = sum - v.transpose()*Wdg_sum/2.0;
-
-
-	Wdg_temp = (R*Wdg.transpose()).cwiseProduct(B*Wdg.transpose());
-
-	sum[0] = sum[0] - Wdg_temp.sum()/2.0;
-
-	SGVector<float64_t> vsigma(1);
-
-	vsigma[0] = sum[0];
-	gradient.add(param, vsigma);
-	para_dict.add(param, m_model);
-
-	return gradient;
-
-}
-
 SGVector<float64_t> CFITCInferenceMethod::get_diagonal_vector()
 {
 	if (update_parameter_hash())
@@ -465,13 +117,14 @@ SGVector<float64_t> CFITCInferenceMethod::get_diagonal_vector()
 	return result;
 }
 
-float64_t CFITCInferenceMethod::get_negative_marginal_likelihood()
+float64_t CFITCInferenceMethod::get_negative_log_marginal_likelihood()
 {
 	if (update_parameter_hash())
 		update();
 
 	// create eigen representations of chol_utr, dg, r, be
-    Map<MatrixXd> eigen_chol_utr(m_chol_utr.matrix, m_chol_utr.num_rows, m_chol_utr.num_cols);
+    Map<MatrixXd> eigen_chol_utr(m_chol_utr.matrix, m_chol_utr.num_rows,
+			m_chol_utr.num_cols);
 	Map<VectorXd> eigen_dg(m_dg.vector, m_dg.vlen);
 	Map<VectorXd> eigen_r(m_r.vector, m_r.vlen);
 	Map<VectorXd> eigen_be(m_be.vector, m_be.vlen);
@@ -579,10 +232,7 @@ void CFITCInferenceMethod::update_chol()
 	Map<VectorXd> eigen_m(m.vector, m.vlen);
 
 	// compute sgrt_dg = sqrt(dg)
-	VectorXd sqrt_dg(m_ktrtr.num_cols);
-
-	for (index_t i=0; i<m_dg.vlen; i++)
-		sqrt_dg[i]=sqrt(m_dg[i]);
+	VectorXd sqrt_dg=eigen_dg.array().sqrt();
 
 	// create shogun and eigen3 representation of labels adjusted for
 	// noise and means (m_r)
@@ -626,4 +276,262 @@ void CFITCInferenceMethod::update_alpha()
 	eigen_alpha=eigen_chol_uu.triangularView<Upper>().solve(eigen_alpha);
 }
 
-#endif // HAVE_EIGEN3
+void CFITCInferenceMethod::update_deriv()
+{
+	// create eigen representation of Ktru, Lu, Luu, dg, be
+	Map<MatrixXd> eigen_Ktru(m_ktru.matrix, m_ktru.num_rows, m_ktru.num_cols);
+	Map<MatrixXd> eigen_Lu(m_chol_utr.matrix, m_chol_utr.num_rows,
+			m_chol_utr.num_cols);
+	Map<MatrixXd> eigen_Luu(m_chol_uu.matrix, m_chol_uu.num_rows,
+			m_chol_uu.num_cols);
+	Map<VectorXd> eigen_dg(m_dg.vector, m_dg.vlen);
+	Map<VectorXd> eigen_be(m_be.vector, m_be.vlen);
+
+	// get and create eigen representation of labels
+	SGVector<float64_t> y=((CRegressionLabels*) m_labels)->get_labels();
+	Map<VectorXd> eigen_y(y.vector, y.vlen);
+
+	// get and create eigen representation of mean vector
+	SGVector<float64_t> m=m_mean->get_mean_vector(m_feat);
+	Map<VectorXd> eigen_m(m.vector, m.vlen);
+
+	// compute V=inv(Luu')*Ku
+	MatrixXd V=eigen_Luu.triangularView<Upper>().adjoint().solve(eigen_Ktru);
+
+	// create shogun and eigen representation of al
+	m_al=SGVector<float64_t>(m.vlen);
+	Map<VectorXd> eigen_al(m_al.vector, m_al.vlen);
+
+	// compute al=(Kt+sn2*eye(n))\y
+	eigen_al=((eigen_y-eigen_m)-(V.adjoint()*
+		eigen_Lu.triangularView<Upper>().solve(eigen_be))).cwiseQuotient(eigen_dg);
+
+	// compute inv(Kuu+snu2*I)=iKuu
+	MatrixXd iKuu=eigen_Luu.triangularView<Upper>().adjoint().solve(
+			MatrixXd::Identity(m_kuu.num_rows, m_kuu.num_cols));
+	iKuu=eigen_Luu.triangularView<Upper>().solve(iKuu);
+
+	// create shogun and eigen representation of B
+	m_B=SGMatrix<float64_t>(m_ktru.num_rows, m_ktru.num_cols);
+	Map<MatrixXd> eigen_B(m_B.matrix, m_B.num_rows, m_B.num_cols);
+
+	eigen_B=iKuu*eigen_Ktru;
+
+	// create shogun and eigen representation of w
+	m_w=SGVector<float64_t>(m_al.vlen);
+	Map<VectorXd> eigen_w(m_w.vector, m_w.vlen);
+
+	eigen_w=eigen_B*eigen_al;
+
+	// create shogun and eigen representation of W
+	m_W=SGMatrix<float64_t>(m_chol_utr.num_rows, m_chol_utr.num_cols);
+	Map<MatrixXd> eigen_W(m_W.matrix, m_W.num_rows, m_W.num_cols);
+
+	// compute W=Lu'\(V./repmat(g_sn2',nu,1))
+	eigen_W=eigen_Lu.triangularView<Upper>().adjoint().solve(V*VectorXd::Ones(
+		m_dg.vlen).cwiseQuotient(eigen_dg).asDiagonal());
+}
+
+SGVector<float64_t> CFITCInferenceMethod::get_derivative_wrt_inference_method(
+		const TParameter* param)
+{
+	REQUIRE(!strcmp(param->m_name, "scale"), "Can't compute derivative of "
+			"the nagative log marginal likelihood wrt %s.%s parameter\n",
+			get_name(), param->m_name)
+
+	// create eigen representation of dg, al, B, W, w
+	Map<VectorXd> eigen_dg(m_dg.vector, m_dg.vlen);
+	Map<VectorXd> eigen_al(m_al.vector, m_al.vlen);
+	Map<VectorXd> eigen_w(m_w.vector, m_w.vlen);
+	Map<MatrixXd> eigen_B(m_B.matrix, m_B.num_rows, m_B.num_cols);
+	Map<MatrixXd> eigen_W(m_W.matrix, m_W.num_rows, m_W.num_cols);
+
+	// clone kernel matrices
+	SGVector<float64_t> deriv_trtr=m_ktrtr.get_diagonal_vector();
+	SGMatrix<float64_t> deriv_uu=m_kuu.clone();
+	SGMatrix<float64_t> deriv_tru=m_ktru.clone();
+
+	// create eigen representation of kernel matrices
+	Map<VectorXd> ddiagKi(deriv_trtr.vector, deriv_trtr.vlen);
+	Map<MatrixXd> dKuui(deriv_uu.matrix, deriv_uu.num_cols, deriv_uu.num_rows);
+	Map<MatrixXd> dKui(deriv_tru.matrix, deriv_tru.num_cols, deriv_tru.num_rows);
+
+	// compute derivatives wrt scale for each kernel matrix
+	ddiagKi*=m_scale*2.0;
+	dKuui*=m_scale*2.0;
+	dKui*=m_scale*2.0;
+
+	// compute R=2*dKui-dKuui*B
+	MatrixXd R=2*dKui-dKuui*eigen_B;
+
+	// compute v=ddiagKi-sum(R.*B, 1)'
+	VectorXd v=ddiagKi-R.cwiseProduct(eigen_B).colwise().sum().adjoint();
+
+	SGVector<float64_t> result(1);
+
+	// compute dnlZ=(ddiagKi'*(1./g_sn2)+w'*(dKuui*w-2*(dKui*al))-al'*(v.*al)-
+	// sum(W.*W,1)*v- sum(sum((R*W').*(B*W'))))/2;
+	result[0]=(ddiagKi.dot(VectorXd::Ones(m_dg.vlen).cwiseQuotient(eigen_dg))+
+			eigen_w.dot(dKuui*eigen_w-2*(dKui*eigen_al))-
+			eigen_al.dot(v.cwiseProduct(eigen_al))-
+			eigen_W.cwiseProduct(eigen_W).colwise().sum().dot(v)-
+			(R*eigen_W.adjoint()).cwiseProduct(eigen_B*eigen_W.adjoint()).sum())/2.0;
+
+	return result;
+}
+
+SGVector<float64_t> CFITCInferenceMethod::get_derivative_wrt_likelihood_model(
+		const TParameter* param)
+{
+	REQUIRE(!strcmp(param->m_name, "sigma"), "Can't compute derivative of "
+			"the nagative log marginal likelihood wrt %s.%s parameter\n",
+			m_model->get_name(), param->m_name)
+
+	// create eigen representation of dg, al, w, W and B
+	Map<VectorXd> eigen_dg(m_dg.vector, m_dg.vlen);
+	Map<VectorXd> eigen_al(m_al.vector, m_al.vlen);
+	Map<VectorXd> eigen_w(m_w.vector, m_w.vlen);
+	Map<MatrixXd> eigen_W(m_W.matrix, m_W.num_rows, m_W.num_cols);
+	Map<MatrixXd> eigen_B(m_B.matrix, m_B.num_rows, m_B.num_cols);
+
+	// get the sigma variable from the Gaussian likelihood model
+	CGaussianLikelihood* lik=CGaussianLikelihood::obtain_from_generic(m_model);
+	float64_t sigma=lik->get_sigma();
+	SG_UNREF(lik);
+
+	SGVector<float64_t> result(1);
+
+	result[0]=CMath::sq(sigma)*(VectorXd::Ones(m_dg.vlen).cwiseQuotient(
+		eigen_dg).sum()-eigen_W.cwiseProduct(eigen_W).sum()-eigen_al.dot(eigen_al));
+
+	float64_t dKuui=2.0*m_ind_noise;
+	MatrixXd R=-dKuui*eigen_B;
+	VectorXd v=-R.cwiseProduct(eigen_B).colwise().sum().adjoint();
+
+	result[0]=result[0]+((eigen_w.dot(dKuui*eigen_w))-eigen_al.dot(
+		v.cwiseProduct(eigen_al))-eigen_W.cwiseProduct(eigen_W).colwise().sum().dot(v)-
+		(R*eigen_W.adjoint()).cwiseProduct(eigen_B*eigen_W.adjoint()).sum())/2.0;
+
+	return result;
+}
+
+SGVector<float64_t> CFITCInferenceMethod::get_derivative_wrt_kernel(
+		const TParameter* param)
+{
+	// create eigen representation of dg, al, w, W, B
+	Map<VectorXd> eigen_dg(m_dg.vector, m_dg.vlen);
+	Map<VectorXd> eigen_al(m_al.vector, m_al.vlen);
+	Map<VectorXd> eigen_w(m_w.vector, m_w.vlen);
+	Map<MatrixXd> eigen_W(m_W.matrix, m_W.num_rows, m_W.num_cols);
+	Map<MatrixXd> eigen_B(m_B.matrix, m_B.num_rows, m_B.num_cols);
+
+	SGVector<float64_t> result;
+
+	if (param->m_datatype.m_ctype==CT_VECTOR ||
+			param->m_datatype.m_ctype==CT_SGVECTOR)
+	{
+		REQUIRE(param->m_datatype.m_length_y,
+				"Length of the parameter %s should not be NULL\n", param->m_name)
+			result=SGVector<float64_t>(*(param->m_datatype.m_length_y));
+	}
+	else
+	{
+		result=SGVector<float64_t>(1);
+	}
+
+	for (index_t i=0; i<result.vlen; i++)
+	{
+		SGVector<float64_t> deriv_trtr;
+		SGMatrix<float64_t> deriv_uu;
+		SGMatrix<float64_t> deriv_tru;
+
+		if (result.vlen==1)
+		{
+			m_kernel->init(m_features, m_features);
+			deriv_trtr=m_kernel->get_parameter_gradient(param).get_diagonal_vector();
+
+			m_kernel->init(m_latent_features, m_latent_features);
+			deriv_uu=m_kernel->get_parameter_gradient(param);
+
+			m_kernel->init(m_latent_features, m_features);
+			deriv_tru=m_kernel->get_parameter_gradient(param);
+		}
+		else
+		{
+			m_kernel->init(m_features, m_features);
+			deriv_trtr=m_kernel->get_parameter_gradient(param, i).get_diagonal_vector();
+
+			m_kernel->init(m_latent_features, m_latent_features);
+			deriv_uu=m_kernel->get_parameter_gradient(param, i);
+
+			m_kernel->init(m_latent_features, m_features);
+			deriv_tru=m_kernel->get_parameter_gradient(param, i);
+		}
+
+		m_kernel->cleanup();
+
+		// create eigen representation of derivatives
+		Map<VectorXd> ddiagKi(deriv_trtr.vector, deriv_trtr.vlen);
+		Map<MatrixXd> dKuui(deriv_uu.matrix, deriv_uu.num_rows,
+				deriv_uu.num_cols);
+		Map<MatrixXd> dKui(deriv_tru.matrix, deriv_tru.num_rows,
+				deriv_tru.num_cols);
+
+		// compute R=2*dKui-dKuui*B
+		MatrixXd R=2*dKui-dKuui*eigen_B;
+
+		// compute v=ddiagKi-sum(R.*B, 1)'
+		VectorXd v=ddiagKi-R.cwiseProduct(eigen_B).colwise().sum().adjoint();
+
+		// compute dnlZ=(ddiagKi'*(1./g_sn2)+w'*(dKuui*w-2*(dKui*al))-al'*
+		// (v.*al)-sum(W.*W,1)*v- sum(sum((R*W').*(B*W'))))/2;
+		result[i]=(ddiagKi.dot(VectorXd::Ones(m_dg.vlen).cwiseQuotient(eigen_dg))+
+				eigen_w.dot(dKuui*eigen_w-2*(dKui*eigen_al))-
+				eigen_al.dot(v.cwiseProduct(eigen_al))-
+				eigen_W.cwiseProduct(eigen_W).colwise().sum().dot(v)-
+				(R*eigen_W.adjoint()).cwiseProduct(eigen_B*eigen_W.adjoint()).sum())/2.0;
+	}
+
+	return result;
+}
+
+SGVector<float64_t> CFITCInferenceMethod::get_derivative_wrt_mean(
+		const TParameter* param)
+{
+	// create eigen representation of al vector
+	Map<VectorXd> eigen_al(m_al.vector, m_al.vlen);
+
+	SGVector<float64_t> result;
+
+	if (param->m_datatype.m_ctype==CT_VECTOR ||
+			param->m_datatype.m_ctype==CT_SGVECTOR)
+	{
+		REQUIRE(param->m_datatype.m_length_y,
+				"Length of the parameter %s should not be NULL\n", param->m_name)
+
+		result=SGVector<float64_t>(*(param->m_datatype.m_length_y));
+	}
+	else
+	{
+		result=SGVector<float64_t>(1);
+	}
+
+	for (index_t i=0; i<result.vlen; i++)
+	{
+		SGVector<float64_t> dmu;
+
+		if (result.vlen==1)
+			dmu=m_mean->get_parameter_derivative(m_feat, param);
+		else
+			dmu=m_mean->get_parameter_derivative(m_feat, param, i);
+
+		Map<VectorXd> eigen_dmu(dmu.vector, dmu.vlen);
+
+		// compute dnlZ=-dm'*al
+		result[i]=-eigen_dmu.dot(eigen_al);
+	}
+
+	return result;
+}
+
+#endif /* HAVE_EIGEN3 */

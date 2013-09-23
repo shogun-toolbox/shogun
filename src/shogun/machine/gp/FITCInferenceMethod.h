@@ -109,22 +109,7 @@ public:
 	 * where \f$y\f$ are the labels, \f$X\f$ are the features, and \f$\theta\f$
 	 * represent hyperparameters.
 	 */
-	virtual float64_t get_negative_marginal_likelihood();
-
-	/** get log marginal likelihood gradient
-	 *
-	 * @return vector of the marginal likelihood function gradient with respect
-	 * to hyperparameters:
-	 *
-	 * \f[
-	 * -\frac{\partial {log(p(y|X, \theta))}}{\partial \theta}
-	 * \f]
-	 *
-	 * where \f$y\f$ are the labels, \f$X\f$ are the features, and \f$\theta\f$
-	 * represent hyperparameters.
-	 */
-	virtual CMap<TParameter*, SGVector<float64_t> > get_marginal_likelihood_derivatives(
-			CMap<TParameter*, CSGObject*>& para_dict);
+	virtual float64_t get_negative_log_marginal_likelihood();
 
 	/** get alpha vector
 	 *
@@ -190,6 +175,51 @@ protected:
 	/** update train kernel matrix */
 	virtual void update_train_kernel();
 
+	/** update matrices which are required to compute negative log marginal
+	 * likelihood derivatives wrt hyperparameter
+	 */
+	virtual void update_deriv();
+
+	/** returns derivative of negative log marginal likelihood wrt parameter of
+	 * CInferenceMethod class
+	 *
+	 * @param param parameter of CInferenceMethod class
+	 *
+	 * @return derivative of negative log marginal likelihood
+	 */
+	virtual SGVector<float64_t> get_derivative_wrt_inference_method(
+			const TParameter* param);
+
+	/** returns derivative of negative log marginal likelihood wrt parameter of
+	 * likelihood model
+	 *
+	 * @param param parameter of given likelihood model
+	 *
+	 * @return derivative of negative log marginal likelihood
+	 */
+	virtual SGVector<float64_t> get_derivative_wrt_likelihood_model(
+			const TParameter* param);
+
+	/** returns derivative of negative log marginal likelihood wrt kernel's
+	 * parameter
+	 *
+	 * @param param parameter of given kernel
+	 *
+	 * @return derivative of negative log marginal likelihood
+	 */
+	virtual SGVector<float64_t> get_derivative_wrt_kernel(
+			const TParameter* param);
+
+	/** returns derivative of negative log marginal likelihood wrt mean
+	 * function's parameter
+	 *
+	 * @param param parameter of given mean function
+	 *
+	 * @return derivative of negative log marginal likelihood
+	 */
+	virtual SGVector<float64_t> get_derivative_wrt_mean(
+			const TParameter* param);
+
 private:
 	void init();
 
@@ -222,7 +252,15 @@ private:
 
 	/** solves the equation V * r = m_chol_utr */
 	SGVector<float64_t> m_be;
+
+	SGVector<float64_t> m_al;
+
+	SGMatrix<float64_t> m_B;
+
+	SGVector<float64_t> m_w;
+
+	SGMatrix<float64_t> m_W;
 };
 }
-#endif // HAVE_EIGEN3
+#endif /* HAVE_EIGEN3 */
 #endif /* CFITCINFERENCEMETHOD_H_ */

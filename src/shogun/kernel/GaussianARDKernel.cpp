@@ -42,9 +42,9 @@ bool CGaussianARDKernel::init(CFeatures* l, CFeatures* r)
 
 void CGaussianARDKernel::init()
 {
-	m_width = 2.0;
+	m_width=1.0;
 
-	SG_ADD(&m_width, "width", "Kernel Width", MS_AVAILABLE);
+	SG_ADD(&m_width, "width", "Kernel width", MS_AVAILABLE, GRADIENT_AVAILABLE);
 }
 
 CGaussianARDKernel::~CGaussianARDKernel()
@@ -65,16 +65,15 @@ CGaussianARDKernel* CGaussianARDKernel::obtain_from_generic(CKernel* kernel)
 
 float64_t CGaussianARDKernel::compute(int32_t idx_a, int32_t idx_b)
 {
-	if (!lhs || !rhs)
-		SG_ERROR("Features not set!\n")
+	REQUIRE(lhs && rhs, "Features not set!\n")
 
-	SGVector<float64_t> avec
-		= ((CDenseFeatures<float64_t>*) lhs)->get_feature_vector(idx_a);
-	SGVector<float64_t> bvec
-		= ((CDenseFeatures<float64_t>*) rhs)->get_feature_vector(idx_b);
+	SGVector<float64_t> avec=
+			((CDenseFeatures<float64_t>*) lhs)->get_feature_vector(idx_a);
+	SGVector<float64_t> bvec=
+		((CDenseFeatures<float64_t>*) rhs)->get_feature_vector(idx_b);
 
-	REQUIRE(avec.vlen==bvec.vlen, "Number of Right and Left Hand "\
-			"Features Must be the Same./n");
+	REQUIRE(avec.vlen==bvec.vlen, "Number of right and left hand "
+			"features must be the same\n");
 
 	float64_t result=0;
 
@@ -84,34 +83,32 @@ float64_t CGaussianARDKernel::compute(int32_t idx_a, int32_t idx_b)
 	return CMath::exp(-result/m_width);
 }
 
-SGMatrix<float64_t> CGaussianARDKernel::get_parameter_gradient(TParameter* param,
-		index_t index)
+SGMatrix<float64_t> CGaussianARDKernel::get_parameter_gradient(
+		const TParameter* param, index_t index)
 {
-	if (!lhs || !rhs)
-		SG_ERROR("Features not set!\n")
+	REQUIRE(lhs && rhs, "Features not set!\n")
 
 	if (!strcmp(param->m_name, "weights"))
 	{
-		SGMatrix<float64_t> derivative = get_kernel_matrix();
+		SGMatrix<float64_t> derivative=get_kernel_matrix();
 
-		for (index_t j = 0; j < num_lhs; j++)
+		for (index_t j=0; j<num_lhs; j++)
 		{
-			for (index_t k = 0; k < num_rhs; k++)
+			for (index_t k=0; k<num_rhs; k++)
 			{
-				SGVector<float64_t> avec
-					= ((CDenseFeatures<float64_t>*) lhs)->get_feature_vector(j);
-				SGVector<float64_t> bvec
-					= ((CDenseFeatures<float64_t>*) rhs)->get_feature_vector(k);
+				SGVector<float64_t> avec=
+					((CDenseFeatures<float64_t>*) lhs)->get_feature_vector(j);
+				SGVector<float64_t> bvec=
+					((CDenseFeatures<float64_t>*) rhs)->get_feature_vector(k);
 
-				REQUIRE(avec.vlen==bvec.vlen, "Number of Right and Left Hand "\
-						"Features Must be the Same./n");
+				REQUIRE(avec.vlen==bvec.vlen, "Number of right and left hand "
+						"features must be the same\n");
 
-				float64_t element = compute(j,k);
-				float64_t product =
-						CMath::pow((avec[index]-bvec[index]), 2)
+				float64_t element=compute(j,k);
+				float64_t product=CMath::pow((avec[index]-bvec[index]), 2)
 						*(m_weights[index]/m_width);
 
-				derivative(j,k) = -2*element*product;
+				derivative(j,k)=-2*element*product;
 			}
 		}
 
@@ -121,24 +118,24 @@ SGMatrix<float64_t> CGaussianARDKernel::get_parameter_gradient(TParameter* param
 	{
 		SGMatrix<float64_t> derivative(num_lhs, num_rhs);
 
-		for (index_t j = 0; j < num_lhs; j++)
+		for (index_t j=0; j<num_lhs; j++)
 		{
-			for (index_t k = 0; k < num_rhs; k++)
+			for (index_t k=0; k<num_rhs; k++)
 			{
-				SGVector<float64_t> avec
-					= ((CDenseFeatures<float64_t>*) lhs)->get_feature_vector(j);
-				SGVector<float64_t> bvec
-					= ((CDenseFeatures<float64_t>*) rhs)->get_feature_vector(k);
+				SGVector<float64_t> avec=
+					((CDenseFeatures<float64_t>*) lhs)->get_feature_vector(j);
+				SGVector<float64_t> bvec=
+					((CDenseFeatures<float64_t>*) rhs)->get_feature_vector(k);
 
-				REQUIRE(avec.vlen==bvec.vlen, "Number of Right and Left Hand "\
-						"Features Must be the Same./n");
+				REQUIRE(avec.vlen==bvec.vlen, "Number of right and left hand "
+						"features must be the same\n");
 
 				float64_t result=0;
 
-				for (index_t i = 0; i < avec.vlen; i++)
-					result += CMath::pow((avec[i]-bvec[i])*m_weights[i], 2);
+				for (index_t i=0; i<avec.vlen; i++)
+					result+=CMath::pow((avec[i]-bvec[i])*m_weights[i], 2);
 
-				derivative(j,k) = CMath::exp(-result/m_width)*
+				derivative(j,k)=CMath::exp(-result/m_width)*
 						result/(m_width*m_width);
 			}
 		}
@@ -146,5 +143,8 @@ SGMatrix<float64_t> CGaussianARDKernel::get_parameter_gradient(TParameter* param
 		return derivative;
 	}
 	else
+	{
+		SG_ERROR("Can't compute derivative wrt %s parameter\n", param->m_name);
 		return SGMatrix<float64_t>();
+	}
 }

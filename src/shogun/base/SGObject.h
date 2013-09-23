@@ -59,11 +59,30 @@ template <class T> class DynArray;
 /*******************************************************************************
  * Macros for registering parameters/model selection parameters
  ******************************************************************************/
-#define SG_ADD(param, name, description, ms_available) {\
+
+#define VA_NARGS_IMPL(_1, _2, _3, _4, _5, N, ...) N
+#define VA_NARGS(...) VA_NARGS_IMPL(__VA_ARGS__, 5, 4, 3, 2, 1)
+
+#define VARARG_IMPL2(base, count, ...) base##count(__VA_ARGS__)
+#define VARARG_IMPL(base, count, ...) VARARG_IMPL2(base, count, __VA_ARGS__)
+#define VARARG(base, ...) VARARG_IMPL(base, VA_NARGS(__VA_ARGS__), __VA_ARGS__)
+
+#define SG_ADD4(param, name, description, ms_available) {\
 		m_parameters->add(param, name, description);\
 		if (ms_available)\
 			m_model_selection_parameters->add(param, name, description);\
 }
+
+#define SG_ADD5(param, name, description, ms_available, gradient_available) {\
+		m_parameters->add(param, name, description);\
+		if (ms_available)\
+			m_model_selection_parameters->add(param, name, description);\
+		if (gradient_available)\
+			m_gradient_parameters->add(param, name, description);\
+}
+
+#define SG_ADD(...) VARARG(SG_ADD, __VA_ARGS__)
+
 /*******************************************************************************
  * End of macros for registering parameters/model selection parameters
  ******************************************************************************/
@@ -72,6 +91,13 @@ template <class T> class DynArray;
 enum EModelSelectionAvailability {
 	MS_NOT_AVAILABLE=0,
 	MS_AVAILABLE=1,
+};
+
+/** gradient availability */
+enum EGradientAvailability
+{
+	GRADIENT_NOT_AVAILABLE=0,
+	GRADIENT_AVAILABLE=1
 };
 
 /** @brief Class SGObject is the base class of all shogun objects.
@@ -311,9 +337,8 @@ public:
 	 *  parameters to the objects that own them.
 	 *
 	 * @param dict dictionary of parameters to be built.
-	 *
 	 */
-	void build_parameter_dictionary(CMap<TParameter*, CSGObject*>& dict);
+	void build_gradient_parameter_dictionary(CMap<TParameter*, CSGObject*>* dict);
 
 #ifdef TRACE_MEMORY_ALLOCS
 	static void list_memory_allocs()
@@ -499,6 +524,9 @@ public:
 
 	/** model selection parameters */
 	Parameter* m_model_selection_parameters;
+
+	/** parameters wrt which we can compute gradients */
+	Parameter* m_gradient_parameters;
 
 	/** map for different parameter versions */
 	ParameterMap* m_parameter_map;

@@ -4,6 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
+ * Written (W) 2013 Roman Votyakov
  * Copyright (C) 2012 Jacob Walker
  */
 
@@ -76,9 +77,15 @@ private:
 	/** initialses and registers parameters */
 	void init();
 
+	/** updates parameter dictionary of differentiable function */
+	void update_parameter_dictionary();
+
 private:
 	/** differentiable function */
 	CDifferentiableFunction* m_diff;
+
+	/** parameter dictionary of differentiable function */
+	CMap<TParameter*, CSGObject*>*  m_parameter_dictionary;
 };
 }
 #endif /* CGRADIENTEVALUATION_H_ */

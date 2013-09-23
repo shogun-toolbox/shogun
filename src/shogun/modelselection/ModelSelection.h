@@ -34,11 +34,11 @@ public:
 
 	/** constructor
 	 *
-	 * @param model_parameters parameter tree with model parameters to optimize
 	 * @param machine_eval object that computes the actual evaluation
+	 * @param model_parameters parameter tree with model parameters to optimize
 	 */
-	CModelSelection(CModelSelectionParameters* model_parameters,
-			CMachineEvaluation* machine_eval);
+	CModelSelection(CMachineEvaluation* machine_eval,
+			CModelSelectionParameters* model_parameters);
 
 	/** destructor */
 	virtual ~CModelSelection();

@@ -101,160 +101,7 @@ void CLaplacianInferenceMethod::update()
 	update_alpha();
 	update_chol();
 	update_approx_cov();
-}
-
-CMap<TParameter*, SGVector<float64_t> > CLaplacianInferenceMethod::
-get_marginal_likelihood_derivatives(CMap<TParameter*, CSGObject*>& para_dict)
-{
-	if (update_parameter_hash())
-		update();
-
-	// create eigen representation of W, sW, dlp, d3lp, K, alpha and L
-	Map<VectorXd> eigen_W(W.vector, W.vlen);
-	Map<VectorXd> eigen_sW(sW.vector, sW.vlen);
-	Map<VectorXd> eigen_dlp(dlp.vector, dlp.vlen);
-	Map<VectorXd> eigen_d3lp(d3lp.vector, d3lp.vlen);
-	Map<MatrixXd> eigen_ktrtr(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
-	Map<VectorXd> eigen_alpha(m_alpha.vector, m_alpha.vlen);
-	Map<MatrixXd> eigen_L(m_L.matrix, m_L.num_rows, m_L.num_cols);
-
-	MatrixXd Z;
-	VectorXd g;
-
-	if (eigen_W.minCoeff()<0)
-	{
-		Z=-eigen_L;
-
-		// compute iA = (I + K * diag(W))^-1
-		FullPivLU<MatrixXd> lu(MatrixXd::Identity(m_ktrtr.num_rows, m_ktrtr.num_cols)+
-			eigen_ktrtr*CMath::sq(m_scale)*eigen_W.asDiagonal());
-		MatrixXd iA=lu.inverse();
-
-		// compute derivative ln|L'*L| wrt W: g=sum(iA.*K,2)/2
-		g=(iA.cwiseProduct(eigen_ktrtr*CMath::sq(m_scale))).rowwise().sum()/2.0;
-	}
-	else
-	{
-		// solve L'*L*Z=diag(sW) and compute Z=diag(sW)*Z
-		Z=eigen_L.triangularView<Upper>().adjoint().solve(
-			MatrixXd(eigen_sW.asDiagonal()));
-		Z=eigen_L.triangularView<Upper>().solve(Z);
-		Z=eigen_sW.asDiagonal()*Z;
-
-		// solve L'*C=diag(sW)*K
-		MatrixXd C=eigen_L.triangularView<Upper>().adjoint().solve(
-			eigen_sW.asDiagonal()*eigen_ktrtr*CMath::sq(m_scale));
-
-		// compute derivative ln|L'*L| wrt W: g=(diag(K)-sum(C.^2,1)')/2
-		VectorXd sum=(C.cwiseProduct(C)).colwise().sum();
-		g=(eigen_ktrtr.diagonal()*CMath::sq(m_scale)-sum)/2.0;
-	}
-
-	// compute derivative of nlZ wrt fhat
-	VectorXd dfhat=g.cwiseProduct(eigen_d3lp);
-
-	m_kernel->build_parameter_dictionary(para_dict);
-	m_mean->build_parameter_dictionary(para_dict);
-	m_model->build_parameter_dictionary(para_dict);
-
-	CMap<TParameter*, SGVector<float64_t> > gradient;
-
-	for (index_t i=0; i<para_dict.get_num_elements(); i++)
-	{
-		TParameter* param=para_dict.get_node_ptr(i)->key;
-
-		index_t length=1;
-
-		if ((param->m_datatype.m_ctype== CT_VECTOR ||
-				param->m_datatype.m_ctype == CT_SGVECTOR) &&
-				param->m_datatype.m_length_y != NULL)
-			length=*(param->m_datatype.m_length_y);
-
-		SGVector<float64_t> variables(length);
-
-		bool deriv_found=false;
-
-		for (index_t h=0; h<length; h++)
-		{
-			SGMatrix<float64_t> deriv=m_kernel->get_parameter_gradient(param);
-			SGVector<float64_t> lik_first_deriv=m_model->get_first_derivative(
-				m_labels, param, m_approx_mean);
-			SGVector<float64_t> lik_second_deriv=m_model->get_second_derivative(
-				m_labels, param, m_approx_mean);
-			SGVector<float64_t> lik_third_deriv=m_model->get_third_derivative(
-				m_labels, param, m_approx_mean);
-			SGVector<float64_t> mean_deriv;
-
-			if (param->m_datatype.m_ctype==CT_VECTOR ||
-					param->m_datatype.m_ctype==CT_SGVECTOR)
-				mean_deriv=m_mean->get_parameter_derivative(param, m_feat, h);
-			else
-				mean_deriv=m_mean->get_parameter_derivative(param, m_feat);
-
-			Map<VectorXd> eigen_mean_deriv(mean_deriv.vector, mean_deriv.vlen);
-
-			if (deriv.num_cols*deriv.num_rows>0)
-			{
-				Map<MatrixXd> dK(deriv.matrix, deriv.num_cols, deriv.num_rows);
-
-				// compute dnlZ=sum(sum(Z.*dK))/2-alpha'*dK*alpha/2
-				variables[h]=(Z.cwiseProduct(dK)).sum()/2.0-
-					(eigen_alpha.transpose()*dK).dot(eigen_alpha)/2.0;
-
-				// compute b=dK*dlp
-				VectorXd b=dK*eigen_dlp;
-
-				// compute dnlZ=dnlZ-dfhat'*(b-K*(Z*b))
-				variables[h]=variables[h]-dfhat.dot(b-eigen_ktrtr*(Z*b)*CMath::sq(m_scale));
-				deriv_found=true;
-			}
-			else if (mean_deriv.vlen>0)
-			{
-				// compute dnlZ=-alpha'*dm-dfhat'*(dm-K*(Z*dm))
-				variables[h]=-eigen_alpha.dot(eigen_mean_deriv)-dfhat.dot(
-					eigen_mean_deriv-eigen_ktrtr*(Z*eigen_mean_deriv)*CMath::sq(m_scale));
-				deriv_found=true;
-			}
-			else if (lik_first_deriv.vlen && lik_second_deriv.vlen && lik_third_deriv.vlen)
-			{
-				Map<VectorXd> eigen_fd(lik_first_deriv.vector, lik_first_deriv.vlen);
-				Map<VectorXd> eigen_sd(lik_second_deriv.vector, lik_second_deriv.vlen);
-				Map<VectorXd> eigen_td(lik_third_deriv.vector, lik_third_deriv.vlen);
-
-				VectorXd b=eigen_ktrtr*eigen_sd;
-
-				// compute dnlZ=-g'*d2lp_dhyp-sum(lp_dhyp)-dfhat'*(b-K*(Z*b))
-				variables[h]=-g.dot(eigen_td)-eigen_fd.sum()-
-					dfhat.dot(b-eigen_ktrtr*(Z*b)*CMath::sq(m_scale));
-				deriv_found=true;
-			}
-		}
-
-		if (deriv_found)
-			gradient.add(param, variables);
-	}
-
-	TParameter* param=m_model_selection_parameters->get_parameter("scale");
-	para_dict.add(param, this);
-
-	SGVector<float64_t> scale(1);
-
-	// compute derivative K wrt scale
-	MatrixXd dK=eigen_ktrtr*m_scale*2.0;
-
-	// compute dnlZ=sum(sum(Z.*dK))/2-alpha'*dK*alpha/2
-	scale[0]=(Z.cwiseProduct(dK)).sum()/2.0-
-		(eigen_alpha.transpose()*dK).dot(eigen_alpha)/2.0;
-
-	// compute b=dK*dlp
-	VectorXd b=dK*eigen_dlp;
-
-	// compute dnlZ=dnlZ-dfhat'*(b-K*(Z*b))
-	scale[0]=scale[0]-dfhat.transpose()*(b-eigen_ktrtr*(Z*b)*CMath::sq(m_scale));
-
-	gradient.add(param, scale);
-
-	return gradient;
+	update_deriv();
 }
 
 SGVector<float64_t> CLaplacianInferenceMethod::get_diagonal_vector()
@@ -262,11 +109,10 @@ SGVector<float64_t> CLaplacianInferenceMethod::get_diagonal_vector()
 	if (update_parameter_hash())
 		update();
 
-	SGVector<float64_t> result(sW);
-	return result;
+	return SGVector<float64_t>(sW);
 }
 
-float64_t CLaplacianInferenceMethod::get_negative_marginal_likelihood()
+float64_t CLaplacianInferenceMethod::get_negative_log_marginal_likelihood()
 {
 	if (update_parameter_hash())
 		update();
@@ -532,17 +378,232 @@ void CLaplacianInferenceMethod::update_alpha()
 	d3lp=m_model->get_log_probability_derivative_f(m_labels, m_approx_mean, 3);
 
 	// W = -d2lp
-	W = d2lp.clone();
+	W=d2lp.clone();
 	W.scale(-1.0);
 
 	// compute sW
 	Map<VectorXd> eigen_W(W.vector, W.vlen);
 
-	if (eigen_W.minCoeff() > 0)
+	if (eigen_W.minCoeff()>0)
 		eigen_sW=eigen_W.cwiseSqrt();
 	else
 		eigen_sW.setZero();
 }
+
+void CLaplacianInferenceMethod::update_deriv()
+{
+	// create eigen representation of W, sW, dlp, d3lp, K, alpha and L
+	Map<VectorXd> eigen_W(W.vector, W.vlen);
+	Map<VectorXd> eigen_sW(sW.vector, sW.vlen);
+	Map<VectorXd> eigen_dlp(dlp.vector, dlp.vlen);
+	Map<VectorXd> eigen_d3lp(d3lp.vector, d3lp.vlen);
+	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
+	Map<VectorXd> eigen_alpha(m_alpha.vector, m_alpha.vlen);
+	Map<MatrixXd> eigen_L(m_L.matrix, m_L.num_rows, m_L.num_cols);
+
+	// create shogun and eigen representation of matrix Z
+	m_Z=SGMatrix<float64_t>(m_L.num_rows, m_L.num_cols);
+	Map<MatrixXd> eigen_Z(m_Z.matrix, m_Z.num_rows, m_Z.num_cols);
+
+	// create shogun and eigen representation of the vector g
+	m_g=SGVector<float64_t>(m_Z.num_rows);
+	Map<VectorXd> eigen_g(m_g.vector, m_g.vlen);
+
+	if (eigen_W.minCoeff()<0)
+	{
+		eigen_Z=-eigen_L;
+
+		// compute iA = (I + K * diag(W))^-1
+		FullPivLU<MatrixXd> lu(MatrixXd::Identity(m_ktrtr.num_rows, m_ktrtr.num_cols)+
+				eigen_K*CMath::sq(m_scale)*eigen_W.asDiagonal());
+		MatrixXd iA=lu.inverse();
+
+		// compute derivative ln|L'*L| wrt W: g=sum(iA.*K,2)/2
+		eigen_g=(iA.cwiseProduct(eigen_K*CMath::sq(m_scale))).rowwise().sum()/2.0;
+	}
+	else
+	{
+		// solve L'*L*Z=diag(sW) and compute Z=diag(sW)*Z
+		eigen_Z=eigen_L.triangularView<Upper>().adjoint().solve(
+				MatrixXd(eigen_sW.asDiagonal()));
+		eigen_Z=eigen_L.triangularView<Upper>().solve(eigen_Z);
+		eigen_Z=eigen_sW.asDiagonal()*eigen_Z;
+
+		// solve L'*C=diag(sW)*K
+		MatrixXd C=eigen_L.triangularView<Upper>().adjoint().solve(
+				eigen_sW.asDiagonal()*eigen_K*CMath::sq(m_scale));
+
+		// compute derivative ln|L'*L| wrt W: g=(diag(K)-sum(C.^2,1)')/2
+		eigen_g=(eigen_K.diagonal()*CMath::sq(m_scale)-
+				(C.cwiseProduct(C)).colwise().sum().adjoint())/2.0;
+	}
+
+	// create shogun and eigen representation of the vector dfhat
+	m_dfhat=SGVector<float64_t>(m_g.vlen);
+	Map<VectorXd> eigen_dfhat(m_dfhat.vector, m_dfhat.vlen);
+
+	// compute derivative of nlZ wrt fhat
+	eigen_dfhat=eigen_g.cwiseProduct(eigen_d3lp);
 }
 
-#endif // HAVE_EIGEN3
+SGVector<float64_t> CLaplacianInferenceMethod::get_derivative_wrt_inference_method(
+		const TParameter* param)
+{
+	REQUIRE(!strcmp(param->m_name, "scale"), "Can't compute derivative of "
+			"the nagative log marginal likelihood wrt %s.%s parameter\n",
+			get_name(), param->m_name)
+
+	// create eigen representation of K, Z, dfhat, dlp and alpha
+	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
+	Map<MatrixXd> eigen_Z(m_Z.matrix, m_Z.num_rows, m_Z.num_cols);
+	Map<VectorXd> eigen_dfhat(m_dfhat.vector, m_dfhat.vlen);
+	Map<VectorXd> eigen_dlp(dlp.vector, dlp.vlen);
+	Map<VectorXd> eigen_alpha(m_alpha.vector, m_alpha.vlen);
+
+	SGVector<float64_t> result(1);
+
+	// compute derivative K wrt scale
+	MatrixXd dK=eigen_K*m_scale*2.0;
+
+	// compute dnlZ=sum(sum(Z.*dK))/2-alpha'*dK*alpha/2
+	result[0]=(eigen_Z.cwiseProduct(dK)).sum()/2.0-
+		(eigen_alpha.adjoint()*dK).dot(eigen_alpha)/2.0;
+
+	// compute b=dK*dlp
+	VectorXd b=dK*eigen_dlp;
+
+	// compute dnlZ=dnlZ-dfhat'*(b-K*(Z*b))
+	result[0]=result[0]-eigen_dfhat.dot(b-eigen_K*CMath::sq(m_scale)*(eigen_Z*b));
+
+	return result;
+}
+
+SGVector<float64_t> CLaplacianInferenceMethod::get_derivative_wrt_likelihood_model(
+		const TParameter* param)
+{
+	// create eigen representation of K, Z, g and dfhat
+	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
+	Map<MatrixXd> eigen_Z(m_Z.matrix, m_Z.num_rows, m_Z.num_cols);
+	Map<VectorXd> eigen_g(m_g.vector, m_g.vlen);
+	Map<VectorXd> eigen_dfhat(m_dfhat.vector, m_dfhat.vlen);
+
+	// get derivatives wrt likelihood model parameters
+	SGVector<float64_t> lp_dhyp=m_model->get_first_derivative(m_labels,
+			m_approx_mean, param);
+	SGVector<float64_t> dlp_dhyp=m_model->get_second_derivative(m_labels,
+			m_approx_mean, param);
+	SGVector<float64_t> d2lp_dhyp=m_model->get_third_derivative(m_labels,
+			m_approx_mean, param);
+
+	// create eigen representation of the derivatives
+	Map<VectorXd> eigen_lp_dhyp(lp_dhyp.vector, lp_dhyp.vlen);
+	Map<VectorXd> eigen_dlp_dhyp(dlp_dhyp.vector, dlp_dhyp.vlen);
+	Map<VectorXd> eigen_d2lp_dhyp(d2lp_dhyp.vector, d2lp_dhyp.vlen);
+
+	SGVector<float64_t> result(1);
+
+	// compute b vector
+	VectorXd b=eigen_K*eigen_dlp_dhyp;
+
+	// compute dnlZ=-g'*d2lp_dhyp-sum(lp_dhyp)-dfhat'*(b-K*(Z*b))
+	result[0]=-eigen_g.dot(eigen_d2lp_dhyp)-eigen_lp_dhyp.sum()-
+		eigen_dfhat.dot(b-eigen_K*CMath::sq(m_scale)*(eigen_Z*b));
+
+	return result;
+}
+
+SGVector<float64_t> CLaplacianInferenceMethod::get_derivative_wrt_kernel(
+		const TParameter* param)
+{
+	// create eigen representation of K, Z, dfhat, dlp and alpha
+	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
+	Map<MatrixXd> eigen_Z(m_Z.matrix, m_Z.num_rows, m_Z.num_cols);
+	Map<VectorXd> eigen_dfhat(m_dfhat.vector, m_dfhat.vlen);
+	Map<VectorXd> eigen_dlp(dlp.vector, dlp.vlen);
+	Map<VectorXd> eigen_alpha(m_alpha.vector, m_alpha.vlen);
+
+	SGVector<float64_t> result;
+
+	if (param->m_datatype.m_ctype==CT_VECTOR ||
+			param->m_datatype.m_ctype==CT_SGVECTOR)
+	{
+		REQUIRE(param->m_datatype.m_length_y,
+				"Length of the parameter %s should not be NULL\n", param->m_name)
+		result=SGVector<float64_t>(*(param->m_datatype.m_length_y));
+	}
+	else
+	{
+		result=SGVector<float64_t>(1);
+	}
+
+	for (index_t i=0; i<result.vlen; i++)
+	{
+		SGMatrix<float64_t> dK;
+
+		if (result.vlen==1)
+			dK=m_kernel->get_parameter_gradient(param);
+		else
+			dK=m_kernel->get_parameter_gradient(param, i);
+
+		Map<MatrixXd> eigen_dK(dK.matrix, dK.num_cols, dK.num_rows);
+
+		// compute dnlZ=sum(sum(Z.*dK))/2-alpha'*dK*alpha/2
+		result[i]=(eigen_Z.cwiseProduct(eigen_dK)).sum()/2.0-
+			(eigen_alpha.adjoint()*eigen_dK).dot(eigen_alpha)/2.0;
+
+		// compute b=dK*dlp
+		VectorXd b=eigen_dK*eigen_dlp;
+
+		// compute dnlZ=dnlZ-dfhat'*(b-K*(Z*b))
+		result[i]=result[i]-eigen_dfhat.dot(b-eigen_K*CMath::sq(m_scale)*
+				(eigen_Z*b));
+	}
+
+	return result;
+}
+
+SGVector<float64_t> CLaplacianInferenceMethod::get_derivative_wrt_mean(
+		const TParameter* param)
+{
+	// create eigen representation of K, Z, dfhat and alpha
+	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
+	Map<MatrixXd> eigen_Z(m_Z.matrix, m_Z.num_rows, m_Z.num_cols);
+	Map<VectorXd> eigen_dfhat(m_dfhat.vector, m_dfhat.vlen);
+	Map<VectorXd> eigen_alpha(m_alpha.vector, m_alpha.vlen);
+
+	SGVector<float64_t> result;
+
+	if (param->m_datatype.m_ctype==CT_VECTOR ||
+			param->m_datatype.m_ctype==CT_SGVECTOR)
+	{
+		REQUIRE(param->m_datatype.m_length_y,
+				"Length of the parameter %s should not be NULL\n", param->m_name)
+
+		result=SGVector<float64_t>(*(param->m_datatype.m_length_y));
+	}
+	else
+	{
+		result=SGVector<float64_t>(1);
+	}
+
+	for (index_t i=0; i<result.vlen; i++)
+	{
+		SGVector<float64_t> dmu;
+
+		if (result.vlen==1)
+			dmu=m_mean->get_parameter_derivative(m_feat, param);
+		else
+			dmu=m_mean->get_parameter_derivative(m_feat, param, i);
+
+		Map<VectorXd> eigen_dmu(dmu.vector, dmu.vlen);
+
+		// compute dnlZ=-alpha'*dm-dfhat'*(dm-K*(Z*dm))
+		result[i]=-eigen_alpha.dot(eigen_dmu)-eigen_dfhat.dot(eigen_dmu-
+				eigen_K*CMath::sq(m_scale)*(eigen_Z*eigen_dmu));
+	}
+
+	return result;
+}
+}
+
+#endif /* HAVE_EIGEN3 */

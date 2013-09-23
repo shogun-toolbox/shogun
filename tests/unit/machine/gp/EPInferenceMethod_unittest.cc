@@ -17,7 +17,6 @@
 #include <shogun/machine/gp/EPInferenceMethod.h>
 #include <shogun/machine/gp/ZeroMean.h>
 #include <shogun/machine/gp/ProbitLikelihood.h>
-#include <shogun/evaluation/GradientResult.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;
@@ -144,7 +143,7 @@ TEST(EPInferenceMethod,get_negative_marginal_likelihood_probit_likelihood)
 	inf->set_scale(1.5);
 
 	// comparison of negative marginal likelihood with result from GPML package
-	float64_t nlZ=inf->get_negative_marginal_likelihood();
+	float64_t nlZ=inf->get_negative_log_marginal_likelihood();
 
 	EXPECT_NEAR(nlZ, 3.38359489001561, 1E-3);
 
@@ -208,7 +207,72 @@ TEST(EPInferenceMethod,get_alpha_probit_likelihood)
 
 TEST(EPInferenceMethod,get_marginal_likelihood_derivatives_probit_likelihood)
 {
-	// not implemented yet
+	// create some easy random classification data
+	index_t n=5;
+
+	SGMatrix<float64_t> feat_train(2, n);
+	SGVector<float64_t> lab_train(n);
+
+	feat_train(0,0)=-1.07932;
+	feat_train(0,1)=1.15768;
+	feat_train(0,2)=3.26631;
+	feat_train(0,3)=1.79009;
+	feat_train(0,4)=-3.66051;
+
+	feat_train(1,0)=-1.83544;
+	feat_train(1,1)=2.91702;
+	feat_train(1,2)=-3.85663;
+	feat_train(1,3)=0.11949;
+	feat_train(1,4)=1.75159;
+
+	lab_train[0]=-1.0;
+	lab_train[1]=1.0;
+	lab_train[2]=1.0;
+	lab_train[3]=1.0;
+	lab_train[4]=-1.0;
+
+	// shogun representation of features and labels
+	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
+	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
+
+	float64_t ell=2.0;
+
+	// choose Gaussian kernel with width = 2*2^2 and zero mean function
+	CGaussianKernel* kernel=new CGaussianKernel(10, 2*CMath::sq(ell));
+	CZeroMean* mean=new CZeroMean();
+
+	// probit likelihood
+	CProbitLikelihood* likelihood=new CProbitLikelihood();
+
+	// specify GP classification with EP inference and kernel scale=1.5
+	CEPInferenceMethod* inf=new CEPInferenceMethod(kernel, features_train, mean,
+			labels_train, likelihood);
+	inf->set_scale(1.5);
+
+	// build parameter dictionary
+	CMap<TParameter*, CSGObject*>* parameter_dictionary=new CMap<TParameter*, CSGObject*>();
+	inf->build_gradient_parameter_dictionary(parameter_dictionary);
+
+	// compute derivatives wrt parameters
+	CMap<TParameter*, SGVector<float64_t> >* gradient=
+		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
+
+	// get parameters to compute derivatives
+	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("width");
+	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("scale");
+
+	float64_t dnlZ_ell=4*ell*ell*(gradient->get_element(width_param))[0];
+	float64_t dnlZ_sf2=1.5*(gradient->get_element(scale_param))[0];
+
+	// comparison of partial derivatives of negative marginal likelihood with
+	// result from GPML package:
+	EXPECT_NEAR(dnlZ_ell, -0.0551896689012401, 1E-3);
+	EXPECT_NEAR(dnlZ_sf2, -0.0535698533526804, 1E-3);
+
+	// clean up
+	SG_UNREF(gradient);
+	SG_UNREF(parameter_dictionary);
+	SG_UNREF(inf);
 }
 
 TEST(EPInferenceMethod, get_posterior_approximation_mean_probit_likelihood)

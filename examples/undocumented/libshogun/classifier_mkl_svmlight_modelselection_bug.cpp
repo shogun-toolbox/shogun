@@ -121,7 +121,7 @@ void test()
 
 	/* handles all of the above structures in memory */
 	CGridSearchModelSelection* grid_search=new CGridSearchModelSelection(
-			param_tree, cross);
+			cross, param_tree);
 
 	bool print_state=true;
 	CParameterCombination* best_combination=grid_search->select_model(
@@ -155,4 +155,3 @@ int main(int argc, char **argv)
 
 	return 0;
 }
-

@@ -16,7 +16,6 @@
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/machine/gp/ExactInferenceMethod.h>
 #include <shogun/machine/gp/ZeroMean.h>
-#include <shogun/evaluation/GradientResult.h>
 #include <shogun/machine/gp/GaussianLikelihood.h>
 #include <gtest/gtest.h>
 
@@ -166,13 +165,13 @@ TEST(ExactInferenceMethod,get_negative_marginal_likelihood)
 	/* do some checks against gpml toolbox*/
 	// nlZ =
 	// 4.017065867797999
-	float64_t nml=inf->get_negative_marginal_likelihood();
+	float64_t nml=inf->get_negative_log_marginal_likelihood();
 	EXPECT_LE(CMath::abs(nml-4.017065867797999), 10E-15);
 
 	SG_UNREF(inf);
 }
 
-TEST(ExactInferenceMethod,get_marginal_likelihood_derivatives)
+TEST(ExactInferenceMethod,get_negative_log_marginal_likelihood_derivatives)
 {
 	// create some easy regression data: 1d noisy sine wave
 	index_t ntr=5;
@@ -196,30 +195,40 @@ TEST(ExactInferenceMethod,get_marginal_likelihood_derivatives)
 	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
 	CRegressionLabels* labels_train=new CRegressionLabels(lab_train);
 
-	float64_t ell = 0.1;
+	float64_t ell=0.1;
 
 	// choose Gaussian kernel with width = 2 * ell^2 = 0.02 and zero mean function
 	CGaussianKernel* kernel=new CGaussianKernel(10, 2*ell*ell);
+
 	CZeroMean* mean=new CZeroMean();
 
 	// Gaussian likelihood with sigma = 0.25
-	CGaussianLikelihood* liklihood=new CGaussianLikelihood(0.25);
+	CGaussianLikelihood* lik=new CGaussianLikelihood(0.25);
 
 	// specify GP regression with exact inference
 	CExactInferenceMethod* inf=new CExactInferenceMethod(kernel, features_train,
-			mean, labels_train, liklihood);
+			mean, labels_train, lik);
 
-	CGradientResult* result = new CGradientResult();
+	// build parameter dictionary
+	CMap<TParameter*, CSGObject*>* parameter_dictionary=new CMap<TParameter*, CSGObject*>();
+	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
-	result->total_variables=3;
-	result->gradient=inf->get_marginal_likelihood_derivatives(result->parameter_dictionary);
+	// compute derivatives wrt parameters
+	CMap<TParameter*, SGVector<float64_t> >* gradient=
+		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
-	// in GPML package: dK(i,j)/dell = sf2 * exp(-(x(i) - x(j))^2/(2*ell^2)) * (x(i) - x(j))^2 / (ell^2),
-	// but in SHOGUN we compute: dK(i,j)/dw = sf2 * exp(-(x(i) - x(j))^2/w) * (x(i) - x(j))^2 / (w^2),
-	// so if w = 2 * ell^2, then dK(i,j)/dell = 4 * ell^2 * dK(i,j)/dw.
-	float64_t dnlZ_ell=4*ell*ell*(*result->gradient.get_element_ptr(0))[0];
-	float64_t dnlZ_sf2=(*result->gradient.get_element_ptr(1))[0];
-	float64_t dnlZ_lik=(*result->gradient.get_element_ptr(2))[0];
+	// get parameters to compute derivatives
+	TParameter* width_param=kernel->m_gradient_parameters->get_parameter("width");
+	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("scale");
+	TParameter* sigma_param=lik->m_gradient_parameters->get_parameter("sigma");
+
+	// in GPML package: dK(i,j)/dell = sf2 * exp(-(x(i) - x(j))^2/(2*ell^2)) *
+	// (x(i) - x(j))^2 / (ell^2), but in SHOGUN we compute: dK(i,j)/dw = sf2 *
+	// exp(-(x(i) - x(j))^2/w) * (x(i) - x(j))^2 / (w^2), so if w = 2 * ell^2,
+	// then dK(i,j)/dell = 4 * ell^2 * dK(i,j)/dw.
+	float64_t dnlZ_ell=4*ell*ell*(gradient->get_element(width_param))[0];
+	float64_t dnlZ_sf2=(gradient->get_element(scale_param))[0];
+	float64_t dnlZ_lik=(gradient->get_element(sigma_param))[0];
 
 	// comparison of partial derivatives of negative marginal likelihood with
 	// result from GPML package:
@@ -231,8 +240,9 @@ TEST(ExactInferenceMethod,get_marginal_likelihood_derivatives)
 	EXPECT_NEAR(dnlZ_ell, -0.015133, 1E-6);
 	EXPECT_NEAR(dnlZ_sf2, 1.699483, 1E-6);
 
-	SG_UNREF(result);
+	SG_UNREF(gradient);
+	SG_UNREF(parameter_dictionary);
 	SG_UNREF(inf);
 }
 
-#endif // HAVE_EIGEN3
+#endif /* HAVE_EIGEN3 */

@@ -147,9 +147,11 @@ void CGaussianKernel::precompute_squared()
 		precompute_squared_helper(sq_rhs, (CDotFeatures*) rhs);
 }
 
-SGMatrix<float64_t> CGaussianKernel::get_parameter_gradient(TParameter* param,
-		index_t index)
+SGMatrix<float64_t> CGaussianKernel::get_parameter_gradient(
+		const TParameter* param, index_t index)
 {
+	REQUIRE(lhs && rhs, "Features not set!\n")
+
 	if (!strcmp(param->m_name, "width"))
 	{
 		SGMatrix<float64_t> derivative=SGMatrix<float64_t>(num_lhs, num_rhs);
@@ -165,6 +167,7 @@ SGMatrix<float64_t> CGaussianKernel::get_parameter_gradient(TParameter* param,
 	}
 	else
 	{
+		SG_ERROR("Can't compute derivative wrt %s parameter\n", param->m_name);
 		return SGMatrix<float64_t>();
 	}
 }
@@ -175,6 +178,6 @@ void CGaussianKernel::init()
 	set_compact_enabled(false);
 	sq_lhs=NULL;
 	sq_rhs=NULL;
-	SG_ADD(&width, "width", "Kernel width.", MS_AVAILABLE);
-	SG_ADD(&m_compact, "compact", "Compact Enabled Option.", MS_AVAILABLE);
+	SG_ADD(&width, "width", "Kernel width", MS_AVAILABLE, GRADIENT_AVAILABLE);
+	SG_ADD(&m_compact, "compact", "Compact enabled option", MS_AVAILABLE);
 }
