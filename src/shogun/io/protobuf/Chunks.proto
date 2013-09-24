@@ -1,5 +1,10 @@
 package shogun;
 
+message BoolChunk
+{
+	repeated bool data=1 [packed=true];
+}
+
 message Int32Chunk
 {
 	repeated int32 data=1 [packed=true]; 

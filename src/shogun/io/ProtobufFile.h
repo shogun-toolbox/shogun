@@ -368,6 +368,7 @@ private:
 	//@{
 	VectorHeader read_vector_header();
 	MatrixHeader read_matrix_header();
+	SparseMatrixHeader read_sparse_matrix_header();
 	StringListHeader read_string_list_header();
 	//@}
 
@@ -377,33 +378,65 @@ private:
 	void write_matrix_header(int32_t num_feat, int32_t num_vec, int32_t num_messages);
 	//@}
 
+	/** write sparse matrix header with information
+	 * about length of each sparse vector (row)
+	 */
+	//@{
+	void write_sparse_matrix_header(
+			const SGSparseVector<bool>* matrix, int32_t num_feat, int32_t num_vec);
+	void write_sparse_matrix_header(
+			const SGSparseVector<uint8_t>* matrix, int32_t num_feat, int32_t num_vec);
+	void write_sparse_matrix_header(
+			const SGSparseVector<int8_t>* matrix, int32_t num_feat, int32_t num_vec);
+	void write_sparse_matrix_header(
+			const SGSparseVector<char>* matrix, int32_t num_feat, int32_t num_vec);
+	void write_sparse_matrix_header(
+			const SGSparseVector<int32_t>* matrix, int32_t num_feat, int32_t num_vec);
+	void write_sparse_matrix_header(
+			const SGSparseVector<uint32_t>* matrix, int32_t num_feat, int32_t num_vec);
+	void write_sparse_matrix_header(
+			const SGSparseVector<float64_t>* matrix, int32_t num_feat, int32_t num_vec);
+	void write_sparse_matrix_header(
+			const SGSparseVector<float32_t>* matrix, int32_t num_feat, int32_t num_vec);
+	void write_sparse_matrix_header(
+			const SGSparseVector<floatmax_t>* matrix, int32_t num_feat, int32_t num_vec);
+	void write_sparse_matrix_header(
+			const SGSparseVector<int16_t>* matrix, int32_t num_feat, int32_t num_vec);
+	void write_sparse_matrix_header(
+			const SGSparseVector<uint16_t>* matrix, int32_t num_feat, int32_t num_vec);
+	void write_sparse_matrix_header(
+			const SGSparseVector<int64_t>* matrix, int32_t num_feat, int32_t num_vec);
+	void write_sparse_matrix_header(
+			const SGSparseVector<uint64_t>* matrix, int32_t num_feat, int32_t num_vec);
+	//@}
+
 	/** write string list header with information
 	 * about length of each string
 	 */
 	//@{
-	uint64_t write_string_list_header(
+	void write_string_list_header(
 			const SGString<uint8_t>* strings, int32_t num_str);
-	uint64_t write_string_list_header(
+	void write_string_list_header(
 			const SGString<int8_t>* strings, int32_t num_str);
-	uint64_t write_string_list_header(
+	void write_string_list_header(
 			const SGString<char>* strings, int32_t num_str);
-	uint64_t write_string_list_header(
+	void write_string_list_header(
 			const SGString<int32_t>* strings, int32_t num_str);
-	uint64_t write_string_list_header(
+	void write_string_list_header(
 			const SGString<uint32_t>* strings, int32_t num_str);
-	uint64_t write_string_list_header(
+	void write_string_list_header(
 			const SGString<float64_t>* strings, int32_t num_str);
-	uint64_t write_string_list_header(
+	void write_string_list_header(
 			const SGString<float32_t>* strings, int32_t num_str);
-	uint64_t write_string_list_header(
+	void write_string_list_header(
 			const SGString<floatmax_t>* strings, int32_t num_str);
-	uint64_t write_string_list_header(
+	void write_string_list_header(
 			const SGString<int16_t>* strings, int32_t num_str);
-	uint64_t write_string_list_header(
+	void write_string_list_header(
 			const SGString<uint16_t>* strings, int32_t num_str);
-	uint64_t write_string_list_header(
+	void write_string_list_header(
 			const SGString<int64_t>* strings, int32_t num_str);
-	uint64_t write_string_list_header(
+	void write_string_list_header(
 			const SGString<uint64_t>* strings, int32_t num_str);
 	//@}
 
@@ -452,6 +485,66 @@ private:
 	//@}
 
 	//@{
+	void read_sparse_matrix(SGSparseVector<bool>*& matrix, 
+			const SparseMatrixHeader& data_header);
+	void read_sparse_matrix(SGSparseVector<uint8_t>*& matrix, 
+			const SparseMatrixHeader& data_header);
+	void read_sparse_matrix(SGSparseVector<int8_t>*& matrix, 
+			const SparseMatrixHeader& data_header);
+	void read_sparse_matrix(SGSparseVector<char>*& matrix, 
+			const SparseMatrixHeader& data_header);
+	void read_sparse_matrix(SGSparseVector<int32_t>*& matrix, 
+			const SparseMatrixHeader& data_header);
+	void read_sparse_matrix(SGSparseVector<uint32_t>*& matrix, 
+			const SparseMatrixHeader& data_header);
+	void read_sparse_matrix(SGSparseVector<int16_t>*& matrix, 
+			const SparseMatrixHeader& data_header);
+	void read_sparse_matrix(SGSparseVector<uint16_t>*& matrix, 
+			const SparseMatrixHeader& data_header);
+	void read_sparse_matrix(SGSparseVector<int64_t>*& matrix, 
+			const SparseMatrixHeader& data_header);
+	void read_sparse_matrix(SGSparseVector<uint64_t>*& matrix, 
+			const SparseMatrixHeader& data_header);
+	void read_sparse_matrix(SGSparseVector<float32_t>*& matrix, 
+			const SparseMatrixHeader& data_header);
+	void read_sparse_matrix(SGSparseVector<float64_t>*& matrix, 
+			const SparseMatrixHeader& data_header);
+	void read_sparse_matrix(SGSparseVector<floatmax_t>*& matrix, 
+			const SparseMatrixHeader& data_header);
+	//@}
+
+	/**
+	 */
+	//@{
+	void write_sparse_matrix(
+			const SGSparseVector<bool>* matrix, int32_t num_vec);
+	void write_sparse_matrix(
+			const SGSparseVector<uint8_t>* matrix, int32_t num_vec);
+	void write_sparse_matrix(
+			const SGSparseVector<int8_t>* matrix, int32_t num_vec);
+	void write_sparse_matrix(
+			const SGSparseVector<char>* matrix, int32_t num_vec);
+	void write_sparse_matrix(
+			const SGSparseVector<int32_t>* matrix, int32_t num_vec);
+	void write_sparse_matrix(
+			const SGSparseVector<uint32_t>* matrix, int32_t num_vec);
+	void write_sparse_matrix(
+			const SGSparseVector<int16_t>* matrix, int32_t num_vec);
+	void write_sparse_matrix(
+			const SGSparseVector<uint16_t>* matrix, int32_t num_vec);
+	void write_sparse_matrix(
+			const SGSparseVector<int64_t>* matrix, int32_t num_vec);
+	void write_sparse_matrix(
+			const SGSparseVector<uint64_t>* matrix, int32_t num_vec);
+	void write_sparse_matrix(
+			const SGSparseVector<float32_t>* matrix, int32_t num_vec);
+	void write_sparse_matrix(
+			const SGSparseVector<float64_t>* matrix, int32_t num_vec);
+	void write_sparse_matrix(
+			const SGSparseVector<floatmax_t>* matrix, int32_t num_vec);
+	//@}
+
+	//@{
 	void read_string_list(SGString<uint8_t>*& strings, 
 			const StringListHeader& data_header);
 	void read_string_list(SGString<int8_t>*& strings, 
@@ -478,38 +571,33 @@ private:
 			const StringListHeader& data_header);
 	//@}
 
-	/** @name String Access Functions
-	 *
-	 * Functions to access strings of one of the several base data types.
-	 * These functions are used when writing variable length datatypes
-	 * like strings to a file. Here num_str denotes the number of strings
-	 * and strings is a pointer to a string structure.
+	/** 
 	 */
 	//@{
-	void write_string_list(const SGString<uint8_t>* strings, 
-			int32_t num_str, int32_t num_messages);
-	void write_string_list(const SGString<int8_t>* strings, 
-			int32_t num_str, int32_t num_messages);
-	void write_string_list(const SGString<char>* strings, 
-			int32_t num_str, int32_t num_messages);
-	void write_string_list(const SGString<int32_t>* strings, 
-			int32_t num_str, int32_t num_messages);
-	void write_string_list(const SGString<uint32_t>* strings, 
-			int32_t num_str, int32_t num_messages);
-	void write_string_list(const SGString<int16_t>* strings, 
-			int32_t num_str, int32_t num_messages);
-	void write_string_list(const SGString<uint16_t>* strings, 
-			int32_t num_str, int32_t num_messages);
-	void write_string_list(const SGString<int64_t>* strings, 
-			int32_t num_str, int32_t num_messages);
-	void write_string_list(const SGString<uint64_t>* strings, 
-			int32_t num_str, int32_t num_messages);
-	void write_string_list(const SGString<float32_t>* strings, 
-			int32_t num_str, int32_t num_messages);
-	void write_string_list(const SGString<float64_t>* strings, 
-			int32_t num_str, int32_t num_messages);
-	void write_string_list(const SGString<floatmax_t>* strings, 
-			int32_t num_str, int32_t num_messages);
+	void write_string_list(
+			const SGString<uint8_t>* strings, int32_t num_str);
+	void write_string_list(
+			const SGString<int8_t>* strings, int32_t num_str);
+	void write_string_list(
+			const SGString<char>* strings, int32_t num_str);
+	void write_string_list(
+			const SGString<int32_t>* strings, int32_t num_str);
+	void write_string_list(
+			const SGString<uint32_t>* strings, int32_t num_str);
+	void write_string_list(
+			const SGString<int16_t>* strings, int32_t num_str);
+	void write_string_list(
+			const SGString<uint16_t>* strings, int32_t num_str);
+	void write_string_list(
+			const SGString<int64_t>* strings, int32_t num_str);
+	void write_string_list(
+			const SGString<uint64_t>* strings, int32_t num_str);
+	void write_string_list(
+			const SGString<float32_t>* strings, int32_t num_str);
+	void write_string_list(
+			const SGString<float64_t>* strings, int32_t num_str);
+	void write_string_list(
+			const SGString<floatmax_t>* strings, int32_t num_str);
 	//@}
 
 private:
