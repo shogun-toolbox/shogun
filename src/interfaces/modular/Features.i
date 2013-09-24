@@ -51,6 +51,8 @@
 %rename(CombinedFeatures) CCombinedFeatures;
 %rename(CombinedDotFeatures) CCombinedDotFeatures;
 %rename(HashedDocDotFeatures) CHashedDocDotFeatures;
+%rename(RandomKitchenSinksDotFeatures) CRandomKitchenSinksDotFeatures;
+%rename(RandomFourierDotFeatures) CRandomFourierDotFeatures;
 %rename(Labels) CLabels;
 %rename(LabelsFactory) CLabelsFactory;
 
@@ -479,6 +481,8 @@ namespace shogun
 %include <shogun/features/CombinedFeatures.h>
 %include <shogun/features/CombinedDotFeatures.h>
 %include <shogun/features/HashedDocDotFeatures.h>
+%include <shogun/features/RandomKitchenSinksDotFeatures.h>
+%include <shogun/features/RandomFourierDotFeatures.h>
 
 %include <shogun/labels/Labels.h>
 %include <shogun/labels/LabelsFactory.h>
