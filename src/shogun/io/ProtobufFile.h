@@ -356,7 +356,7 @@ private:
 	uint32_t read_big_endian_uint(uint8_t* array, uint32_t size);
 
 	/** compute number of messages for storing data */
-	int32_t compute_num_messages(int32_t len, int32_t sizeof_type) const;
+	int32_t compute_num_messages(uint64_t len, int32_t sizeof_type) const;
 
 	/** read global header */
 	void read_and_validate_global_header(ShogunVersion_SGDataType type);
@@ -368,12 +368,43 @@ private:
 	//@{
 	VectorHeader read_vector_header();
 	MatrixHeader read_matrix_header();
+	StringListHeader read_string_list_header();
 	//@}
 
 	/** write data type headers */
 	//@{
 	void write_vector_header(int32_t len, int32_t num_messages);
 	void write_matrix_header(int32_t num_feat, int32_t num_vec, int32_t num_messages);
+	//@}
+
+	/** write string list header with information
+	 * about length of each string
+	 */
+	//@{
+	uint64_t write_string_list_header(
+			const SGString<uint8_t>* strings, int32_t num_str);
+	uint64_t write_string_list_header(
+			const SGString<int8_t>* strings, int32_t num_str);
+	uint64_t write_string_list_header(
+			const SGString<char>* strings, int32_t num_str);
+	uint64_t write_string_list_header(
+			const SGString<int32_t>* strings, int32_t num_str);
+	uint64_t write_string_list_header(
+			const SGString<uint32_t>* strings, int32_t num_str);
+	uint64_t write_string_list_header(
+			const SGString<float64_t>* strings, int32_t num_str);
+	uint64_t write_string_list_header(
+			const SGString<float32_t>* strings, int32_t num_str);
+	uint64_t write_string_list_header(
+			const SGString<floatmax_t>* strings, int32_t num_str);
+	uint64_t write_string_list_header(
+			const SGString<int16_t>* strings, int32_t num_str);
+	uint64_t write_string_list_header(
+			const SGString<uint16_t>* strings, int32_t num_str);
+	uint64_t write_string_list_header(
+			const SGString<int64_t>* strings, int32_t num_str);
+	uint64_t write_string_list_header(
+			const SGString<uint64_t>* strings, int32_t num_str);
 	//@}
 
 	/** read message */
@@ -387,18 +418,18 @@ private:
 	 * Read chunks from protobuf binary file
 	 */
 	//@{
-	virtual void read_memory_block(uint8_t*& vector, int32_t len, int32_t num_messages);
-	virtual void read_memory_block(int8_t*& vector, int32_t len, int32_t num_messages);
-	virtual void read_memory_block(char*& vector, int32_t len, int32_t num_messages);
-	virtual void read_memory_block(int32_t*& vector, int32_t len, int32_t num_messages);
-	virtual void read_memory_block(uint32_t*& vector, int32_t len, int32_t num_messages);
-	virtual void read_memory_block(float64_t*& vector, int32_t len, int32_t num_messages);
-	virtual void read_memory_block(float32_t*& vector, int32_t len, int32_t num_messages);
-	virtual void read_memory_block(floatmax_t*& vector, int32_t len, int32_t num_messages);
-	virtual void read_memory_block(int16_t*& vector, int32_t len, int32_t num_messages);
-	virtual void read_memory_block(uint16_t*& vector, int32_t len, int32_t num_messages);
-	virtual void read_memory_block(int64_t*& vector, int32_t len, int32_t num_messages);
-	virtual void read_memory_block(uint64_t*& vector, int32_t len, int32_t num_messages);
+	void read_memory_block(uint8_t*& vector, uint64_t len, int32_t num_messages);
+	void read_memory_block(int8_t*& vector, uint64_t len, int32_t num_messages);
+	void read_memory_block(char*& vector, uint64_t len, int32_t num_messages);
+	void read_memory_block(int32_t*& vector, uint64_t len, int32_t num_messages);
+	void read_memory_block(uint32_t*& vector, uint64_t len, int32_t num_messages);
+	void read_memory_block(float64_t*& vector, uint64_t len, int32_t num_messages);
+	void read_memory_block(float32_t*& vector, uint64_t len, int32_t num_messages);
+	void read_memory_block(floatmax_t*& vector, uint64_t len, int32_t num_messages);
+	void read_memory_block(int16_t*& vector, uint64_t len, int32_t num_messages);
+	void read_memory_block(uint16_t*& vector, uint64_t len, int32_t num_messages);
+	void read_memory_block(int64_t*& vector, uint64_t len, int32_t num_messages);
+	void read_memory_block(uint64_t*& vector, uint64_t len, int32_t num_messages);
 	//@}
 
 	/** @name Memory Block Access Functions
@@ -406,18 +437,79 @@ private:
 	 * Write chunks to protobuf binary file
 	 */
 	//@{
-	virtual void write_memory_block(const int8_t* vector, int32_t len, int32_t num_messages);
-	virtual void write_memory_block(const uint8_t* vector, int32_t len, int32_t num_messages);
-	virtual void write_memory_block(const char* vector, int32_t len, int32_t num_messages);
-	virtual void write_memory_block(const int32_t* vector, int32_t len, int32_t num_messages);
-	virtual void write_memory_block(const uint32_t* vector, int32_t len, int32_t num_messages);
-	virtual void write_memory_block(const float32_t* vector, int32_t len, int32_t num_messages);
-	virtual void write_memory_block(const float64_t* vector, int32_t len, int32_t num_messages);
-	virtual void write_memory_block(const floatmax_t* vector, int32_t len, int32_t num_messages);
-	virtual void write_memory_block(const int16_t* vector, int32_t len, int32_t num_messages);
-	virtual void write_memory_block(const uint16_t* vector, int32_t len, int32_t num_messages);
-	virtual void write_memory_block(const int64_t* vector, int32_t len, int32_t num_messages);
-	virtual void write_memory_block(const uint64_t* vector, int32_t len, int32_t num_messages);
+	void write_memory_block(const int8_t* vector, uint64_t len, int32_t num_messages);
+	void write_memory_block(const uint8_t* vector, uint64_t len, int32_t num_messages);
+	void write_memory_block(const char* vector, uint64_t len, int32_t num_messages);
+	void write_memory_block(const int32_t* vector, uint64_t len, int32_t num_messages);
+	void write_memory_block(const uint32_t* vector, uint64_t len, int32_t num_messages);
+	void write_memory_block(const float32_t* vector, uint64_t len, int32_t num_messages);
+	void write_memory_block(const float64_t* vector, uint64_t len, int32_t num_messages);
+	void write_memory_block(const floatmax_t* vector, uint64_t len, int32_t num_messages);
+	void write_memory_block(const int16_t* vector, uint64_t len, int32_t num_messages);
+	void write_memory_block(const uint16_t* vector, uint64_t len, int32_t num_messages);
+	void write_memory_block(const int64_t* vector, uint64_t len, int32_t num_messages);
+	void write_memory_block(const uint64_t* vector, uint64_t len, int32_t num_messages);
+	//@}
+
+	//@{
+	void read_string_list(SGString<uint8_t>*& strings, 
+			const StringListHeader& data_header);
+	void read_string_list(SGString<int8_t>*& strings, 
+			const StringListHeader& data_header);
+	void read_string_list(SGString<char>*& strings, 
+			const StringListHeader& data_header);
+	void read_string_list(SGString<int32_t>*& strings, 
+			const StringListHeader& data_header);
+	void read_string_list(SGString<uint32_t>*& strings, 
+			const StringListHeader& data_header);
+	void read_string_list(SGString<int16_t>*& strings, 
+			const StringListHeader& data_header);
+	void read_string_list(SGString<uint16_t>*& strings, 
+			const StringListHeader& data_header);
+	void read_string_list(SGString<int64_t>*& strings, 
+			const StringListHeader& data_header);
+	void read_string_list(SGString<uint64_t>*& strings, 
+			const StringListHeader& data_header);
+	void read_string_list(SGString<float32_t>*& strings, 
+			const StringListHeader& data_header);
+	void read_string_list(SGString<float64_t>*& strings, 
+			const StringListHeader& data_header);
+	void read_string_list(SGString<floatmax_t>*& strings, 
+			const StringListHeader& data_header);
+	//@}
+
+	/** @name String Access Functions
+	 *
+	 * Functions to access strings of one of the several base data types.
+	 * These functions are used when writing variable length datatypes
+	 * like strings to a file. Here num_str denotes the number of strings
+	 * and strings is a pointer to a string structure.
+	 */
+	//@{
+	void write_string_list(const SGString<uint8_t>* strings, 
+			int32_t num_str, int32_t num_messages);
+	void write_string_list(const SGString<int8_t>* strings, 
+			int32_t num_str, int32_t num_messages);
+	void write_string_list(const SGString<char>* strings, 
+			int32_t num_str, int32_t num_messages);
+	void write_string_list(const SGString<int32_t>* strings, 
+			int32_t num_str, int32_t num_messages);
+	void write_string_list(const SGString<uint32_t>* strings, 
+			int32_t num_str, int32_t num_messages);
+	void write_string_list(const SGString<int16_t>* strings, 
+			int32_t num_str, int32_t num_messages);
+	void write_string_list(const SGString<uint16_t>* strings, 
+			int32_t num_str, int32_t num_messages);
+	void write_string_list(const SGString<int64_t>* strings, 
+			int32_t num_str, int32_t num_messages);
+	void write_string_list(const SGString<uint64_t>* strings, 
+			int32_t num_str, int32_t num_messages);
+	void write_string_list(const SGString<float32_t>* strings, 
+			int32_t num_str, int32_t num_messages);
+	void write_string_list(const SGString<float64_t>* strings, 
+			int32_t num_str, int32_t num_messages);
+	void write_string_list(const SGString<floatmax_t>* strings, 
+			int32_t num_str, int32_t num_messages);
 	//@}
 
 private:

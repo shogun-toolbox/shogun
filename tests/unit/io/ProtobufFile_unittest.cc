@@ -146,4 +146,46 @@ TEST(ProtobufFileTest, matrix_float64)
 	unlink("ProtobufFileTest_float64_output.txt");
 }
 
+TEST(ProtobufFileTest, string_list_char)
+{
+	CRandom* rand=new CRandom();
+
+	int32_t num_str=1024;
+	int32_t max_string_len=1024;
+	SGString<char>* strings=SG_MALLOC(SGString<char>, num_str);
+	for (int32_t i=0; i<num_str; i++)
+	{
+	 	strings[i]=SGString<char>((int32_t) rand->random(1, max_string_len));
+	 	for (int32_t j=0; j<strings[i].slen; j++)
+	 		strings[i].string[j]=(char) rand->random(0, 255);
+	}
+
+	CProtobufFile* fin;
+	CProtobufFile* fout;
+
+	fout=new CProtobufFile("ProtobufFileTest_char_output.txt",'w', NULL);
+	fout->set_string_list(strings, num_str);
+	SG_UNREF(fout);
+
+	SGString<char>* data_from_file=NULL;
+	int32_t num_str_from_file=0;
+	int32_t max_string_len_from_file=0;
+	fin=new CProtobufFile("ProtobufFileTest_char_output.txt",'r', NULL);
+	fin->get_string_list(data_from_file, num_str_from_file, max_string_len_from_file);
+	EXPECT_EQ(num_str_from_file, num_str);
+
+	for (int32_t i=0; i<num_str; i++)
+	{
+	 	for (int32_t j=0; j<strings[i].slen; j++)
+	 		EXPECT_EQ(strings[i].string[j], data_from_file[i].string[j]);
+	}
+
+	SG_UNREF(fin);
+	SG_UNREF(rand);
+
+	SG_FREE(strings);
+	SG_FREE(data_from_file);
+	unlink("ProtobufFileTest_char_output.txt");
+}
+
 #endif /* HAVE_PROTOBUF */
