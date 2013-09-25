@@ -14,8 +14,6 @@
 #include <shogun/machine/GaussianProcessMachine.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/kernel/Kernel.h>
-#include <shogun/features/CombinedFeatures.h>
-#include <shogun/features/DotFeatures.h>
 #include <shogun/machine/gp/FITCInferenceMethod.h>
 
 #include <shogun/mathematics/eigen3.h>
@@ -51,15 +49,6 @@ SGVector<float64_t> CGaussianProcessMachine::get_posterior_means(CFeatures* data
 {
 	REQUIRE(m_method, "Inference method should not be NULL\n")
 
-	// check testing features
-	REQUIRE(data, "Testing features can not be NULL\n")
-	REQUIRE(data->has_property(FP_DOT),
-			"Testing features must be type of CFeatures\n")
-	REQUIRE(data->get_feature_class()==C_DENSE,
-			"Testing features must be dense\n")
-	REQUIRE(data->get_feature_type()==F_DREAL,
-			"Testing features must be real\n")
-
 	CFeatures* feat;
 
 	// use latent features for FITC inference method
@@ -88,27 +77,13 @@ SGVector<float64_t> CGaussianProcessMachine::get_posterior_means(CFeatures* data
 	SG_UNREF(feat);
 	SG_UNREF(kernel);
 
-	if (data->get_feature_class()==C_COMBINED)
-	{
-		SG_WARNING("This only works for combined features which all share the "
-				"same underlying object\n", get_name())
-		data=((CCombinedFeatures*)data)->get_first_feature_obj();
-	}
-	else
-		SG_REF(data);
-
-	// compute feature matrix
-	SGMatrix<float64_t> feature_matrix=
-		((CDotFeatures*)data)->get_computed_dot_feature_matrix();
-	SG_UNREF(data);
-
 	// get alpha and create eigen representation of it
 	SGVector<float64_t> alpha=m_method->get_alpha();
 	Map<VectorXd> eigen_alpha(alpha.vector, alpha.vlen);
 
 	// get mean and create eigen representation of it
 	CMeanFunction* mean_function=m_method->get_mean();
-	SGVector<float64_t> m=mean_function->get_mean_vector(feature_matrix);
+	SGVector<float64_t> m=mean_function->get_mean_vector(data);
 	Map<VectorXd> eigen_m(m.vector, m.vlen);
 	SG_UNREF(mean_function);
 
@@ -124,15 +99,6 @@ SGVector<float64_t> CGaussianProcessMachine::get_posterior_variances(
 		CFeatures* data)
 {
 	REQUIRE(m_method, "Inference method should not be NULL\n")
-
-	// check testing features
-	REQUIRE(data, "Testing features can not be NULL\n")
-	REQUIRE(data->has_property(FP_DOT),
-			"Testing features must be type of CFeatures\n")
-	REQUIRE(data->get_feature_class()==C_DENSE,
-			"Testing features must be dense\n")
-	REQUIRE(data->get_feature_type()==F_DREAL,
-			"Testing features must be real\n")
 
 	CFeatures* feat;
 

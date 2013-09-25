@@ -44,6 +44,8 @@ void CExactInferenceMethod::update()
 	update_chol();
 	update_alpha();
 	update_deriv();
+	update_mean();
+	update_cov();
 }
 
 void CExactInferenceMethod::check_members() const
@@ -90,7 +92,7 @@ float64_t CExactInferenceMethod::get_negative_log_marginal_likelihood()
 	// get labels and mean vectors and create eigen representation
 	SGVector<float64_t> y=((CRegressionLabels*) m_labels)->get_labels();
 	Map<VectorXd> eigen_y(y.vector, y.vlen);
-	SGVector<float64_t> m=m_mean->get_mean_vector(m_feat);
+	SGVector<float64_t> m=m_mean->get_mean_vector(m_features);
 	Map<VectorXd> eigen_m(m.vector, m.vlen);
 
 	// compute negative log of the marginal likelihood:
@@ -116,6 +118,22 @@ SGMatrix<float64_t> CExactInferenceMethod::get_cholesky()
 		update();
 
 	return SGMatrix<float64_t>(m_L);
+}
+
+SGVector<float64_t> CExactInferenceMethod::get_posterior_mean()
+{
+	if (update_parameter_hash())
+		update();
+
+	return SGVector<float64_t>(m_mu);
+}
+
+SGMatrix<float64_t> CExactInferenceMethod::get_posterior_covariance()
+{
+	if (update_parameter_hash())
+		update();
+
+	return SGMatrix<float64_t>(m_Sigma);
 }
 
 void CExactInferenceMethod::update_chol()
@@ -147,7 +165,7 @@ void CExactInferenceMethod::update_alpha()
 	// get labels and mean vector and create eigen representation
 	SGVector<float64_t> y=((CRegressionLabels*) m_labels)->get_labels();
 	Map<VectorXd> eigen_y(y.vector, y.vlen);
-	SGVector<float64_t> m=m_mean->get_mean_vector(m_feat);
+	SGVector<float64_t> m=m_mean->get_mean_vector(m_features);
 	Map<VectorXd> eigen_m(m.vector, m.vlen);
 
 	m_alpha=SGVector<float64_t>(y.vlen);
@@ -161,6 +179,42 @@ void CExactInferenceMethod::update_alpha()
 	a=L.triangularView<Upper>().solve(a);
 
 	a/=CMath::sq(sigma);
+}
+
+void CExactInferenceMethod::update_mean()
+{
+	// create eigen representataion of kernel matrix and alpha
+	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
+	Map<VectorXd> eigen_alpha(m_alpha.vector, m_alpha.vlen);
+
+	// get mean and create eigen representation of it
+	SGVector<float64_t> m=m_mean->get_mean_vector(m_features);
+	Map<VectorXd> eigen_m(m.vector, m.vlen);
+
+	m_mu=SGVector<float64_t>(m.vlen);
+	Map<VectorXd> eigen_mu(m_mu.vector, m_mu.vlen);
+
+	// compute mean: mu=K'*alpha+m
+	eigen_mu=eigen_K*CMath::sq(m_scale)*eigen_alpha+eigen_m;
+}
+
+void CExactInferenceMethod::update_cov()
+{
+	// create eigen representataion of upper triangular factor L^T and kernel
+	// matrix
+	Map<MatrixXd> eigen_L(m_L.matrix, m_L.num_rows, m_L.num_cols);
+	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
+
+	m_Sigma=SGMatrix<float64_t>(m_ktrtr.num_rows, m_ktrtr.num_cols);
+	Map<MatrixXd> eigen_Sigma(m_Sigma.matrix, m_Sigma.num_rows,
+			m_Sigma.num_cols);
+
+	// compute V = L^(-1) * K, using upper triangular factor L^T
+	MatrixXd eigen_V=eigen_L.triangularView<Upper>().adjoint().solve(
+			eigen_K*CMath::sq(m_scale));
+
+	// compute covariance matrix of the posterior: Sigma = K - V^T * V
+	eigen_Sigma=eigen_K*CMath::sq(m_scale)-eigen_V.adjoint()*eigen_V;
 }
 
 void CExactInferenceMethod::update_deriv()
@@ -295,9 +349,9 @@ SGVector<float64_t> CExactInferenceMethod::get_derivative_wrt_mean(
 		SGVector<float64_t> dmu;
 
 		if (result.vlen==1)
-			dmu=m_mean->get_parameter_derivative(m_feat, param);
+			dmu=m_mean->get_parameter_derivative(m_features, param);
 		else
-			dmu=m_mean->get_parameter_derivative(m_feat, param, i);
+			dmu=m_mean->get_parameter_derivative(m_features, param, i);
 
 		Map<VectorXd> eigen_dmu(dmu.vector, dmu.vlen);
 

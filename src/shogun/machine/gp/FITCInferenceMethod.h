@@ -149,6 +149,40 @@ public:
 	 */
 	virtual SGVector<float64_t> get_diagonal_vector();
 
+	/** returns mean vector \f$\mu\f$ of the Gaussian distribution
+	 * \f$\mathcal{N}(\mu,\Sigma)\f$, which is an approximation to the
+	 * posterior:
+	 *
+	 * \f[
+	 * p(f|y) \approx q(f|y) = \mathcal{N}(\mu,\Sigma)
+	 * \f]
+	 *
+	 * in case if particular inference method doesn't compute posterior
+	 * \f$p(f|y)\f$ exactly, and it returns covariance matrix \f$\Sigma\f$ of
+	 * the posterior Gaussian distribution \f$\mathcal{N}(\mu,\Sigma)\f$
+	 * otherwise.
+	 *
+	 * @return mean vector
+	 */
+	virtual SGVector<float64_t> get_posterior_mean();
+
+	/** returns covariance matrix \f$\Sigma\f$ of the Gaussian distribution
+	 * \f$\mathcal{N}(\mu,\Sigma)\f$, which is an approximation to the
+	 * posterior:
+	 *
+	 * \f[
+	 * p(f|y) \approx q(f|y) = \mathcal{N}(\mu,\Sigma)
+	 * \f]
+	 *
+	 * in case if particular inference method doesn't compute posterior
+	 * \f$p(f|y)\f$ exactly, and it returns covariance matrix \f$\Sigma\f$ of
+	 * the posterior Gaussian distribution \f$\mathcal{N}(\mu,\Sigma)\f$
+	 * otherwise.
+	 *
+	 * @return covariance matrix
+	 */
+	virtual SGMatrix<float64_t> get_posterior_covariance();
+
 	/**
 	 * @return whether combination of FITC inference method and given likelihood
 	 * function supports regression
