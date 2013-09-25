@@ -119,17 +119,17 @@ float64_t CLaplacianInferenceMethod::get_negative_log_marginal_likelihood()
 
 	// create eigen representations alpha, f, W, L
 	Map<VectorXd> eigen_alpha(m_alpha.vector, m_alpha.vlen);
-	Map<VectorXd> eigen_approx_mean(m_approx_mean.vector, m_approx_mean.vlen);
+	Map<VectorXd> eigen_mu(m_mu.vector, m_mu.vlen);
 	Map<VectorXd> eigen_W(W.vector, W.vlen);
 	Map<MatrixXd> eigen_L(m_L.matrix, m_L.num_rows, m_L.num_cols);
 
 	// get mean vector and create eigen representation of it
-	SGVector<float64_t> mean=m_mean->get_mean_vector(m_feat);
+	SGVector<float64_t> mean=m_mean->get_mean_vector(m_features);
 	Map<VectorXd> eigen_mean(mean.vector, mean.vlen);
 
 	// get log likelihood
 	float64_t lp=SGVector<float64_t>::sum(m_model->get_log_probability_f(m_labels,
-		m_approx_mean));
+		m_mu));
 
 	float64_t result;
 
@@ -141,12 +141,12 @@ float64_t CLaplacianInferenceMethod::get_negative_log_marginal_likelihood()
 		FullPivLU<MatrixXd> lu(MatrixXd::Identity(m_ktrtr.num_rows, m_ktrtr.num_cols)+
 			eigen_ktrtr*CMath::sq(m_scale)*eigen_sW.asDiagonal());
 
-		result=(eigen_alpha.dot(eigen_approx_mean-eigen_mean))/2.0-
+		result=(eigen_alpha.dot(eigen_mu-eigen_mean))/2.0-
 			lp+log(lu.determinant())/2.0;
 	}
 	else
 	{
-		result=eigen_alpha.dot(eigen_approx_mean-eigen_mean)/2.0-lp+
+		result=eigen_alpha.dot(eigen_mu-eigen_mean)/2.0-lp+
 			eigen_L.diagonal().array().log().sum();
 	}
 
@@ -170,20 +170,20 @@ SGMatrix<float64_t> CLaplacianInferenceMethod::get_cholesky()
 	return SGMatrix<float64_t>(m_L);
 }
 
-SGVector<float64_t> CLaplacianInferenceMethod::get_posterior_approximation_mean()
+SGVector<float64_t> CLaplacianInferenceMethod::get_posterior_mean()
 {
 	if (update_parameter_hash())
 		update();
 
-	return SGVector<float64_t>(m_approx_mean);
+	return SGVector<float64_t>(m_mu);
 }
 
-SGMatrix<float64_t> CLaplacianInferenceMethod::get_posterior_approximation_covariance()
+SGMatrix<float64_t> CLaplacianInferenceMethod::get_posterior_covariance()
 {
 	if (update_parameter_hash())
 		update();
 
-	return SGMatrix<float64_t>(m_approx_cov);
+	return SGMatrix<float64_t>(m_Sigma);
 }
 
 void CLaplacianInferenceMethod::update_approx_cov()
@@ -192,9 +192,8 @@ void CLaplacianInferenceMethod::update_approx_cov()
 	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
 	Map<VectorXd> eigen_sW(sW.vector, sW.vlen);
 
-	m_approx_cov=SGMatrix<float64_t>(m_ktrtr.num_rows, m_ktrtr.num_cols);
-	Map<MatrixXd> eigen_approx_cov(m_approx_cov.matrix, m_approx_cov.num_rows,
-			m_approx_cov.num_cols);
+	m_Sigma=SGMatrix<float64_t>(m_ktrtr.num_rows, m_ktrtr.num_cols);
+	Map<MatrixXd> eigen_Sigma(m_Sigma.matrix, m_Sigma.num_rows,	m_Sigma.num_cols);
 
 	// compute V = L^(-1) * W^(1/2) * K, using upper triangular factor L^T
 	MatrixXd eigen_V=eigen_L.triangularView<Upper>().adjoint().solve(
@@ -204,7 +203,7 @@ void CLaplacianInferenceMethod::update_approx_cov()
 	// Sigma = K - K * W^(1/2) * (L * L^T)^(-1) * W^(1/2) * K =
 	// K - (K * W^(1/2)) * (L^T)^(-1) * L^(-1) * W^(1/2) * K =
 	// K - (W^(1/2) * K)^T * (L^(-1))^T * L^(-1) * W^(1/2) * K = K - V^T * V
-	eigen_approx_cov=eigen_K*CMath::sq(m_scale)-eigen_V.adjoint()*eigen_V;
+	eigen_Sigma=eigen_K*CMath::sq(m_scale)-eigen_V.adjoint()*eigen_V;
 }
 
 void CLaplacianInferenceMethod::update_chol()
@@ -249,15 +248,15 @@ void CLaplacianInferenceMethod::update_alpha()
 	float64_t Psi_Def;
 
 	// get mean vector and create eigen representation of it
-	SGVector<float64_t> mean=m_mean->get_mean_vector(m_feat);
+	SGVector<float64_t> mean=m_mean->get_mean_vector(m_features);
 	Map<VectorXd> eigen_mean(mean.vector, mean.vlen);
 
 	// create eigen representation of kernel matrix
 	Map<MatrixXd> eigen_ktrtr(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
 
 	// create shogun and eigen representation of function vector
-	m_approx_mean=SGVector<float64_t>(mean.vlen);
-	Map<VectorXd> eigen_approx_mean(m_approx_mean, m_approx_mean.vlen);
+	m_mu=SGVector<float64_t>(mean.vlen);
+	Map<VectorXd> eigen_mu(m_mu, m_mu.vlen);
 
 	if (m_alpha.vlen!=m_labels->get_num_labels())
 	{
@@ -266,28 +265,28 @@ void CLaplacianInferenceMethod::update_alpha()
 		m_alpha.zero();
 
 		// f = mean, if length of alpha and length of y doesn't match
-		eigen_approx_mean=eigen_mean;
+		eigen_mu=eigen_mean;
 
 		// compute W = -d2lp
-		W=m_model->get_log_probability_derivative_f(m_labels, m_approx_mean, 2);
+		W=m_model->get_log_probability_derivative_f(m_labels, m_mu, 2);
 		W.scale(-1.0);
 
 		Psi_New=-SGVector<float64_t>::sum(m_model->get_log_probability_f(
-			m_labels, m_approx_mean));
+			m_labels, m_mu));
 	}
 	else
 	{
 		Map<VectorXd> eigen_alpha(m_alpha.vector, m_alpha.vlen);
 
 		// compute f = K * alpha + m
-		eigen_approx_mean=eigen_ktrtr*CMath::sq(m_scale)*eigen_alpha+eigen_mean;
+		eigen_mu=eigen_ktrtr*CMath::sq(m_scale)*eigen_alpha+eigen_mean;
 
 		// compute W = -d2lp
-		W=m_model->get_log_probability_derivative_f(m_labels, m_approx_mean, 2);
+		W=m_model->get_log_probability_derivative_f(m_labels, m_mu, 2);
 		W.scale(-1.0);
 
-		Psi_New=eigen_alpha.dot(eigen_approx_mean-eigen_mean)/2.0-
-			SGVector<float64_t>::sum(m_model->get_log_probability_f(m_labels, m_approx_mean));
+		Psi_New=eigen_alpha.dot(eigen_mu-eigen_mean)/2.0-
+			SGVector<float64_t>::sum(m_model->get_log_probability_f(m_labels, m_mu));
 
 		Psi_Def=-SGVector<float64_t>::sum(m_model->get_log_probability_f(m_labels, mean));
 
@@ -295,16 +294,16 @@ void CLaplacianInferenceMethod::update_alpha()
 		if (Psi_Def < Psi_New)
 		{
 			m_alpha.zero();
-			eigen_approx_mean=eigen_mean;
+			eigen_mu=eigen_mean;
 			Psi_New=-SGVector<float64_t>::sum(m_model->get_log_probability_f(
-				m_labels, m_approx_mean));
+				m_labels, m_mu));
 		}
 	}
 
 	Map<VectorXd> eigen_alpha(m_alpha.vector, m_alpha.vlen);
 
 	// get first derivative of log probability function
-	dlp=m_model->get_log_probability_derivative_f(m_labels, m_approx_mean, 1);
+	dlp=m_model->get_log_probability_derivative_f(m_labels, m_mu, 1);
 
 	// create shogun and eigen representation of sW
 	sW=SGVector<float64_t>(W.vlen);
@@ -345,7 +344,7 @@ void CLaplacianInferenceMethod::update_alpha()
 		LLT<MatrixXd> L((eigen_sW*eigen_sW.transpose()).cwiseProduct(eigen_ktrtr*CMath::sq(m_scale))+
 			MatrixXd::Identity(m_ktrtr.num_rows, m_ktrtr.num_cols));
 
-		VectorXd b=eigen_W.cwiseProduct(eigen_approx_mean - eigen_mean)+eigen_dlp;
+		VectorXd b=eigen_W.cwiseProduct(eigen_mu - eigen_mean)+eigen_dlp;
 
 		VectorXd dalpha=b-eigen_sW.cwiseProduct(
 			L.solve(eigen_sW.cwiseProduct(eigen_ktrtr*b*CMath::sq(m_scale))))-eigen_alpha;
@@ -359,7 +358,7 @@ void CLaplacianInferenceMethod::update_alpha()
 		func.start_alpha=eigen_alpha;
 		func.alpha=&eigen_alpha;
 		func.dlp=&dlp;
-		func.f=&m_approx_mean;
+		func.f=&m_mu;
 		func.m=&mean;
 		func.W=&W;
 		func.lik=m_model;
@@ -370,12 +369,12 @@ void CLaplacianInferenceMethod::update_alpha()
 	}
 
 	// compute f = K * alpha + m
-	eigen_approx_mean=eigen_ktrtr*CMath::sq(m_scale)*eigen_alpha+eigen_mean;
+	eigen_mu=eigen_ktrtr*CMath::sq(m_scale)*eigen_alpha+eigen_mean;
 
 	// get log probability derivatives
-	dlp=m_model->get_log_probability_derivative_f(m_labels, m_approx_mean, 1);
-	d2lp=m_model->get_log_probability_derivative_f(m_labels, m_approx_mean, 2);
-	d3lp=m_model->get_log_probability_derivative_f(m_labels, m_approx_mean, 3);
+	dlp=m_model->get_log_probability_derivative_f(m_labels, m_mu, 1);
+	d2lp=m_model->get_log_probability_derivative_f(m_labels, m_mu, 2);
+	d3lp=m_model->get_log_probability_derivative_f(m_labels, m_mu, 3);
 
 	// W = -d2lp
 	W=d2lp.clone();
@@ -489,11 +488,11 @@ SGVector<float64_t> CLaplacianInferenceMethod::get_derivative_wrt_likelihood_mod
 
 	// get derivatives wrt likelihood model parameters
 	SGVector<float64_t> lp_dhyp=m_model->get_first_derivative(m_labels,
-			m_approx_mean, param);
+			m_mu, param);
 	SGVector<float64_t> dlp_dhyp=m_model->get_second_derivative(m_labels,
-			m_approx_mean, param);
+			m_mu, param);
 	SGVector<float64_t> d2lp_dhyp=m_model->get_third_derivative(m_labels,
-			m_approx_mean, param);
+			m_mu, param);
 
 	// create eigen representation of the derivatives
 	Map<VectorXd> eigen_lp_dhyp(lp_dhyp.vector, lp_dhyp.vlen);
@@ -591,9 +590,9 @@ SGVector<float64_t> CLaplacianInferenceMethod::get_derivative_wrt_mean(
 		SGVector<float64_t> dmu;
 
 		if (result.vlen==1)
-			dmu=m_mean->get_parameter_derivative(m_feat, param);
+			dmu=m_mean->get_parameter_derivative(m_features, param);
 		else
-			dmu=m_mean->get_parameter_derivative(m_feat, param, i);
+			dmu=m_mean->get_parameter_derivative(m_features, param, i);
 
 		Map<VectorXd> eigen_dmu(dmu.vector, dmu.vlen);
 

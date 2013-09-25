@@ -19,7 +19,6 @@
 #include <shogun/machine/gp/GaussianLikelihood.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/labels/RegressionLabels.h>
-#include <shogun/features/CombinedFeatures.h>
 #include <shogun/mathematics/eigen3.h>
 
 using namespace shogun;
@@ -83,21 +82,6 @@ void CFITCInferenceMethod::check_members() const
 	REQUIRE(m_latent_features, "Latent features should not be NULL\n")
 	REQUIRE(m_latent_features->get_num_vectors(),
 			"Number of latent features must be greater than zero\n")
-
-	CFeatures* feat=m_latent_features;
-
-	if (m_latent_features->get_feature_class()==C_COMBINED)
-		feat=((CCombinedFeatures*)m_latent_features)->get_first_feature_obj();
-	else
-		SG_REF(m_latent_features);
-
-	REQUIRE(feat->has_property(FP_DOT),
-			"Latent features must be type of CFeatures\n")
-	REQUIRE(feat->get_feature_class()==C_DENSE,
-			"Latent features must be dense\n")
-	REQUIRE(feat->get_feature_type()==F_DREAL, "Latent features must be real\n")
-
-	SG_UNREF(feat);
 }
 
 SGVector<float64_t> CFITCInferenceMethod::get_diagonal_vector()
@@ -154,6 +138,18 @@ SGMatrix<float64_t> CFITCInferenceMethod::get_cholesky()
 
 	SGMatrix<float64_t> result(m_L);
 	return result;
+}
+
+SGVector<float64_t> CFITCInferenceMethod::get_posterior_mean()
+{
+	SG_NOTIMPLEMENTED
+	return SGVector<float64_t>();
+}
+
+SGMatrix<float64_t> CFITCInferenceMethod::get_posterior_covariance()
+{
+	SG_NOTIMPLEMENTED
+	return SGMatrix<float64_t>();
 }
 
 void CFITCInferenceMethod::update_train_kernel()
@@ -228,7 +224,7 @@ void CFITCInferenceMethod::update_chol()
 	// create eigen representation of labels and mean vectors
 	SGVector<float64_t> y=((CRegressionLabels*) m_labels)->get_labels();
 	Map<VectorXd> eigen_y(y.vector, y.vlen);
-	SGVector<float64_t> m=m_mean->get_mean_vector(m_feat);
+	SGVector<float64_t> m=m_mean->get_mean_vector(m_features);
 	Map<VectorXd> eigen_m(m.vector, m.vlen);
 
 	// compute sgrt_dg = sqrt(dg)
@@ -292,7 +288,7 @@ void CFITCInferenceMethod::update_deriv()
 	Map<VectorXd> eigen_y(y.vector, y.vlen);
 
 	// get and create eigen representation of mean vector
-	SGVector<float64_t> m=m_mean->get_mean_vector(m_feat);
+	SGVector<float64_t> m=m_mean->get_mean_vector(m_features);
 	Map<VectorXd> eigen_m(m.vector, m.vlen);
 
 	// compute V=inv(Luu')*Ku
@@ -521,9 +517,9 @@ SGVector<float64_t> CFITCInferenceMethod::get_derivative_wrt_mean(
 		SGVector<float64_t> dmu;
 
 		if (result.vlen==1)
-			dmu=m_mean->get_parameter_derivative(m_feat, param);
+			dmu=m_mean->get_parameter_derivative(m_features, param);
 		else
-			dmu=m_mean->get_parameter_derivative(m_feat, param, i);
+			dmu=m_mean->get_parameter_derivative(m_features, param, i);
 
 		Map<VectorXd> eigen_dmu(dmu.vector, dmu.vlen);
 

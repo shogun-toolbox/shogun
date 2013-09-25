@@ -96,7 +96,7 @@ SGVector<float64_t> CEPInferenceMethod::get_diagonal_vector()
 	return SGVector<float64_t>(m_sttau);
 }
 
-SGVector<float64_t> CEPInferenceMethod::get_posterior_approximation_mean()
+SGVector<float64_t> CEPInferenceMethod::get_posterior_mean()
 {
 	if (update_parameter_hash())
 		update();
@@ -104,7 +104,7 @@ SGVector<float64_t> CEPInferenceMethod::get_posterior_approximation_mean()
 	return SGVector<float64_t>(m_mu);
 }
 
-SGMatrix<float64_t> CEPInferenceMethod::get_posterior_approximation_covariance()
+SGMatrix<float64_t> CEPInferenceMethod::get_posterior_covariance()
 {
 	if (update_parameter_hash())
 		update();
@@ -130,7 +130,7 @@ void CEPInferenceMethod::update()
 	}
 
 	// get mean vector
-	SGVector<float64_t> mean=m_mean->get_mean_vector(m_feat);
+	SGVector<float64_t> mean=m_mean->get_mean_vector(m_features);
 
 	// get and scale diagonal of the kernel matrix
 	SGVector<float64_t> ktrtr_diag=m_ktrtr.get_diagonal_vector();
@@ -343,7 +343,7 @@ void CEPInferenceMethod::update_negative_ml()
 	Map<VectorXd> eigen_ttau(m_ttau.vector, m_ttau.vlen);
 
 	// get and create eigen representation of the mean vector
-	SGVector<float64_t> m=m_mean->get_mean_vector(m_feat);
+	SGVector<float64_t> m=m_mean->get_mean_vector(m_features);
 	Map<VectorXd> eigen_m(m.vector, m.vlen);
 
 	// compute vector of cavity parameter tau_n

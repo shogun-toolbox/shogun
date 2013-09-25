@@ -4,6 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
+ * Written (W) 2013 Roman Votyakov
  * Copyright (C) 2012 Jacob Walker
  */
 
@@ -12,8 +13,7 @@
 
 #include <shogun/base/SGObject.h>
 #include <shogun/base/Parameter.h>
-#include <shogun/lib/SGMatrix.h>
-#include <shogun/lib/SGVector.h>
+#include <shogun/features/Features.h>
 
 namespace shogun
 {
@@ -33,23 +33,21 @@ public:
 
 	/** returns the mean of the specified data
 	 *
-	 * @param data points arranged in a matrix with rows representing the number
-	 * of features
+	 * @param features features to compute mean function
 	 *
 	 * @return mean of feature vectors
 	 */
-	virtual SGVector<float64_t> get_mean_vector(SGMatrix<float64_t> data) const=0;
+	virtual SGVector<float64_t> get_mean_vector(const CFeatures* features) const=0;
 
 	/** returns the derivative of the mean function
 	 *
-	 * @param data points arranged in a matrix with rows representing the number
-	 * of features
+	 * @param features features to compute mean function
 	 * @param param parameter
 	 * @param index of value if parameter is a vector
 	 *
 	 * @return derivative of mean function with respect to parameter
 	 */
-	virtual SGVector<float64_t> get_parameter_derivative(SGMatrix<float64_t> data,
+	virtual SGVector<float64_t> get_parameter_derivative(const CFeatures* features,
 			const TParameter* param, index_t index=-1)
 	{
 		SG_ERROR("Can't compute derivative wrt %s parameter\n", param->m_name)

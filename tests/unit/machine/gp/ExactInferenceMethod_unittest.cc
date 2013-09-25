@@ -245,4 +245,129 @@ TEST(ExactInferenceMethod,get_negative_log_marginal_likelihood_derivatives)
 	SG_UNREF(inf);
 }
 
+TEST(ExactInferenceMethod,get_posterior_mean)
+{
+	// create some easy regression data: 1d noisy sine wave
+	index_t ntr=5;
+
+	SGMatrix<float64_t> feat_train(1, ntr);
+	SGVector<float64_t> lab_train(ntr);
+
+	feat_train[0]=1.25107;
+	feat_train[1]=2.16097;
+	feat_train[2]=0.00034;
+	feat_train[3]=0.90699;
+	feat_train[4]=0.44026;
+
+	lab_train[0]=0.39635;
+	lab_train[1]=0.00358;
+	lab_train[2]=-1.18139;
+	lab_train[3]=1.35533;
+	lab_train[4]=-0.08232;
+
+	// shogun representation of features and labels
+	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
+	CRegressionLabels* labels_train=new CRegressionLabels(lab_train);
+
+	// choose Gaussian kernel with width = 2 * ell^2 = 0.02 and zero mean
+	// function
+	CGaussianKernel* kernel=new CGaussianKernel(10, 0.02);
+	CZeroMean* mean=new CZeroMean();
+
+	// Gaussian likelihood with sigma = 0.25
+	CGaussianLikelihood* lik=new CGaussianLikelihood(0.25);
+
+	// specify GP regression with exact inference
+	CExactInferenceMethod* inf=new CExactInferenceMethod(kernel, features_train,
+			mean, labels_train, lik);
+	inf->set_scale(0.8);
+
+	// comparison of posterior mean with result from GPML package
+	SGVector<float64_t> mu=inf->get_posterior_mean();
+
+	EXPECT_NEAR(mu[0], 0.36138244503573730, 1E-15);
+	EXPECT_NEAR(mu[1], 0.00326149466192171, 1E-15);
+	EXPECT_NEAR(mu[2], -1.07628454651757055, 1E-15);
+	EXPECT_NEAR(mu[3], 1.23483449459758354, 1E-15);
+	EXPECT_NEAR(mu[4], -0.07500012155336166, 1E-15);
+
+	// clean up
+	SG_UNREF(inf);
+}
+
+TEST(ExactInferenceMethod,get_posterior_covariance)
+{
+	// create some easy regression data: 1d noisy sine wave
+	index_t ntr=5;
+
+	SGMatrix<float64_t> feat_train(1, ntr);
+	SGVector<float64_t> lab_train(ntr);
+
+	feat_train[0]=1.25107;
+	feat_train[1]=2.16097;
+	feat_train[2]=0.00034;
+	feat_train[3]=0.90699;
+	feat_train[4]=0.44026;
+
+	lab_train[0]=0.39635;
+	lab_train[1]=0.00358;
+	lab_train[2]=-1.18139;
+	lab_train[3]=1.35533;
+	lab_train[4]=-0.08232;
+
+	// shogun representation of features and labels
+	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
+	CRegressionLabels* labels_train=new CRegressionLabels(lab_train);
+
+	// choose Gaussian kernel with width = 2 * ell^2 = 0.02 and zero mean
+	// function
+	CGaussianKernel* kernel=new CGaussianKernel(10, 0.02);
+	CZeroMean* mean=new CZeroMean();
+
+	// Gaussian likelihood with sigma = 0.25
+	CGaussianLikelihood* lik=new CGaussianLikelihood(0.25);
+
+	// specify GP regression with exact inference
+	CExactInferenceMethod* inf=new CExactInferenceMethod(kernel, features_train,
+			mean, labels_train, lik);
+	inf->set_scale(0.8);
+
+	// comparison of posterior approximation covariance with result from GPML
+	// package
+	SGMatrix<float64_t> Sigma=inf->get_posterior_covariance();
+
+	EXPECT_NEAR(Sigma(0,0), 6.03558716779569e-01, 1E-15);
+	EXPECT_NEAR(Sigma(0,1), 6.31493961602982e-19, 1E-15);
+	EXPECT_NEAR(Sigma(0,2), 8.24248696877457e-16, 1E-15);
+	EXPECT_NEAR(Sigma(0,3), 1.61269208627034e-03, 1E-15);
+	EXPECT_NEAR(Sigma(0,4), -1.44168641713900e-11, 1E-15);
+
+	EXPECT_NEAR(Sigma(1,0), 6.31493961602982e-19, 1E-15);
+	EXPECT_NEAR(Sigma(1,1), 6.03558718861210e-01, 1E-15);
+	EXPECT_NEAR(Sigma(1,2), -7.89915715089744e-34, 1E-15);
+	EXPECT_NEAR(Sigma(1,3), -8.15123749995260e-25, 1E-15);
+	EXPECT_NEAR(Sigma(1,4), 1.38193977359810e-29, 1E-15);
+
+	EXPECT_NEAR(Sigma(2,0), 8.24248696877457e-16, 1E-15);
+	EXPECT_NEAR(Sigma(2,1), -7.89915715089744e-34, 1E-15);
+	EXPECT_NEAR(Sigma(2,2), 6.03558718860075e-01, 1E-15);
+	EXPECT_NEAR(Sigma(2,3), -3.36784805037017e-13, 1E-15);
+	EXPECT_NEAR(Sigma(2,4), 3.76650331606094e-05, 1E-15);
+
+	EXPECT_NEAR(Sigma(3,0), 1.61269208627034e-03, 1E-15);
+	EXPECT_NEAR(Sigma(3,1), -8.15123749995260e-25, 1E-15);
+	EXPECT_NEAR(Sigma(3,2), -3.36784805037017e-13, 1E-15);
+	EXPECT_NEAR(Sigma(3,3), 6.03558716779469e-01, 1E-15);
+	EXPECT_NEAR(Sigma(3,4), 1.11715217566074e-05, 1E-15);
+
+	EXPECT_NEAR(Sigma(4,0), -1.44168641713900e-11, 1E-15);
+	EXPECT_NEAR(Sigma(4,1), 1.38193977359810e-29, 1E-15);
+	EXPECT_NEAR(Sigma(4,2), 3.76650331606094e-05, 1E-15);
+	EXPECT_NEAR(Sigma(4,3), 1.11715217566074e-05, 1E-15);
+	EXPECT_NEAR(Sigma(4,4), 6.03558718859975e-01, 1E-15);
+
+	// clean up
+	SG_UNREF(inf);
+}
+
 #endif /* HAVE_EIGEN3 */

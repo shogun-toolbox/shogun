@@ -126,6 +126,28 @@ public:
 	 */
 	virtual SGVector<float64_t> get_diagonal_vector();
 
+	/** returns mean vector \f$\mu\f$ of the posterior Gaussian distribution
+	 * \f$\mathcal{N}(\mu,\Sigma)\f$
+	 *
+	 * \f[
+	 * p(f|y) = \mathcal{N}(\mu,\Sigma)
+	 * \f]
+	 *
+	 * @return mean vector
+	 */
+	virtual SGVector<float64_t> get_posterior_mean();
+
+	/** returns covariance matrix \f$\Sigma\f$ of the posterior Gaussian
+	 * distribution \f$\mathcal{N}(\mu,\Sigma)\f$
+	 *
+	 * \f[
+	 * p(f|y) = \mathcal{N}(\mu,\Sigma)
+	 * \f]
+	 *
+	 * @return covariance matrix
+	 */
+	virtual SGMatrix<float64_t> get_posterior_covariance();
+
 	/**
 	 * @return whether combination of exact inference method and given
 	 * likelihood function supports regression
@@ -148,6 +170,12 @@ protected:
 
 	/** update Cholesky matrix */
 	virtual void update_chol();
+
+	/** update mean vector of the posterior Gaussian */
+	virtual void update_mean();
+
+	/** update covariance matrix of the posterior Gaussian */
+	virtual void update_cov();
 
 	/** update matrices which are required to compute negative log marginal
 	 * likelihood derivatives wrt hyperparameter
@@ -195,6 +223,12 @@ protected:
 			const TParameter* param);
 
 private:
+	/** covariance matrix of the the posterior Gaussian distribution */
+	SGMatrix<float64_t> m_Sigma;
+
+	/** mean vector of the the posterior Gaussian distribution */
+	SGVector<float64_t> m_mu;
+
 	SGMatrix<float64_t> m_Q;
 };
 }

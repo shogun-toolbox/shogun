@@ -133,7 +133,7 @@ public:
 	 *
 	 * @return mean vector
 	 */
-	virtual SGVector<float64_t> get_posterior_approximation_mean();
+	virtual SGVector<float64_t> get_posterior_mean();
 
 	/** returns covariance matrix \f$\Sigma=(K^{-1}+W)^{-1}\f$ of the Gaussian
 	 * distribution \f$\mathcal{N}(\mu,\Sigma)\f$, which is an approximation to
@@ -153,7 +153,7 @@ public:
 	 *
 	 * @return covariance matrix
 	 */
-	virtual SGMatrix<float64_t> get_posterior_approximation_covariance();
+	virtual SGMatrix<float64_t> get_posterior_covariance();
 
 	/** get tolerance for newton iterations
 	 *
@@ -298,10 +298,10 @@ private:
 	float64_t m_opt_max;
 
 	/** mean vector of the approximation to the posterior */
-	SGVector<float64_t> m_approx_mean;
+	SGVector<float64_t> m_mu;
 
 	/** covariance matrix of the approximation to the posterior */
-	SGMatrix<float64_t> m_approx_cov;
+	SGMatrix<float64_t> m_Sigma;
 
 	/** noise matrix */
 	SGVector<float64_t> W;
