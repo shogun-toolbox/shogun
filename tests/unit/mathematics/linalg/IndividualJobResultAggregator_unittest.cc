@@ -23,8 +23,8 @@ using namespace shogun;
 TEST(IndividualJobResultAggregator, finalize)
 {
 	const index_t size=2;
-	SGVector<complex64_t> result_vector(size);
-	result_vector.set_const(complex64_t(0.0, 1.0));
+	SGVector<complex128_t> result_vector(size);
+	result_vector.set_const(complex128_t(0.0, 1.0));
 
 	SGMatrix<float64_t> m(size, size);
 	m(0,0)=1.0;
@@ -34,8 +34,8 @@ TEST(IndividualJobResultAggregator, finalize)
 	CDenseMatrixOperator<float64_t>* op=new CDenseMatrixOperator<float64_t>(m);
 	SG_REF(op);
 
-	CVectorResult<complex64_t> *job_result
-		=new CVectorResult<complex64_t>(result_vector);
+	CVectorResult<complex128_t> *job_result
+		=new CVectorResult<complex128_t>(result_vector);
 	SG_REF(job_result);
 
 	SGVector<float64_t> sample(size);

@@ -100,10 +100,10 @@ void SGMatrix<T>::zero()
 }
 
 template <>
-void SGMatrix<complex64_t>::zero()
+void SGMatrix<complex128_t>::zero()
 {
 	if (matrix && (num_rows*num_cols))
-		set_const(complex64_t(0.0));
+		set_const(complex128_t(0.0));
 }
 
 template <class T>
@@ -120,10 +120,10 @@ T SGMatrix<T>::max_single()
 }
 
 template <>
-complex64_t SGMatrix<complex64_t>::max_single()
+complex128_t SGMatrix<complex128_t>::max_single()
 {
-	SG_SERROR("SGMatrix::max_single():: Not supported for complex64_t\n");
-	return complex64_t(0.0);
+	SG_SERROR("SGMatrix::max_single():: Not supported for complex128_t\n");
+	return complex128_t(0.0);
 }
 
 template <class T>
@@ -509,8 +509,8 @@ void SGMatrix<floatmax_t>::display_matrix(
 }
 
 template <>
-void SGMatrix<complex64_t>::display_matrix(
-	const complex64_t* matrix, int32_t rows, int32_t cols, const char* name,
+void SGMatrix<complex128_t>::display_matrix(
+	const complex128_t* matrix, int32_t rows, int32_t cols, const char* name,
 	const char* prefix)
 {
 	ASSERT(rows>=0 && cols>=0)
@@ -690,13 +690,13 @@ SGMatrix<floatmax_t> SGMatrix<floatmax_t>::create_identity_matrix(index_t size, 
 }
 
 template <>
-SGMatrix<complex64_t> SGMatrix<complex64_t>::create_identity_matrix(index_t size, complex64_t scale)
+SGMatrix<complex128_t> SGMatrix<complex128_t>::create_identity_matrix(index_t size, complex128_t scale)
 {
-	SGMatrix<complex64_t> I(size, size);
+	SGMatrix<complex128_t> I(size, size);
 	for (index_t i=0; i<size; ++i)
 	{
 		for (index_t j=0; j<size; ++j)
-			I(i,j)=i==j ? scale : complex64_t(0.0);
+			I(i,j)=i==j ? scale : complex128_t(0.0);
 	}
 
 	return I;
@@ -943,9 +943,9 @@ void SGMatrix<T>::load(CFile* loader)
 }
 
 template<>
-void SGMatrix<complex64_t>::load(CFile* loader)
+void SGMatrix<complex128_t>::load(CFile* loader)
 {
-	SG_SERROR("SGMatrix::load():: Not supported for complex64_t\n");
+	SG_SERROR("SGMatrix::load():: Not supported for complex128_t\n");
 }
 
 template<class T>
@@ -958,9 +958,9 @@ void SGMatrix<T>::save(CFile* writer)
 }
 
 template<>
-void SGMatrix<complex64_t>::save(CFile* saver)
+void SGMatrix<complex128_t>::save(CFile* saver)
 {
-	SG_SERROR("SGMatrix::save():: Not supported for complex64_t\n");
+	SG_SERROR("SGMatrix::save():: Not supported for complex128_t\n");
 }
 
 template<class T>
@@ -1001,5 +1001,5 @@ template class SGMatrix<uint64_t>;
 template class SGMatrix<float32_t>;
 template class SGMatrix<float64_t>;
 template class SGMatrix<floatmax_t>;
-template class SGMatrix<complex64_t>;
+template class SGMatrix<complex128_t>;
 }

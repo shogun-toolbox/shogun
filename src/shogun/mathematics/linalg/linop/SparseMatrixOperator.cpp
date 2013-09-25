@@ -149,10 +149,10 @@ SparsityStructure* CSparseMatrixOperator<T>::get_sparsity_structure(
 #endif // HAVE_EIGEN3
 
 template<> \
-SparsityStructure* CSparseMatrixOperator<complex64_t>
+SparsityStructure* CSparseMatrixOperator<complex128_t>
 	::get_sparsity_structure(int64_t power) const
   {
-    SG_SERROR("Not supported for complex64_t\n");
+    SG_SERROR("Not supported for complex128_t\n");
     return new SparsityStructure();
   }
 
@@ -275,5 +275,5 @@ template class CSparseMatrixOperator<uint64_t>;
 template class CSparseMatrixOperator<float32_t>;
 template class CSparseMatrixOperator<float64_t>;
 template class CSparseMatrixOperator<floatmax_t>;
-template class CSparseMatrixOperator<complex64_t>;
+template class CSparseMatrixOperator<complex128_t>;
 }

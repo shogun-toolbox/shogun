@@ -29,16 +29,16 @@ TEST(MatrixOperator, cast_dense_double_complex)
 
 	CDenseMatrixOperator<float64_t>* orig_op
 		=new CDenseMatrixOperator<float64_t>(m);
-	CDenseMatrixOperator<complex64_t>* casted_op
-		=static_cast<CDenseMatrixOperator<complex64_t>*>(*orig_op);
+	CDenseMatrixOperator<complex128_t>* casted_op
+		=static_cast<CDenseMatrixOperator<complex128_t>*>(*orig_op);
 
 	SGMatrix<float64_t> orig_m=orig_op->get_matrix_operator();
-	SGMatrix<complex64_t> casted_m=casted_op->get_matrix_operator();
+	SGMatrix<complex128_t> casted_m=casted_op->get_matrix_operator();
 
 	Map<MatrixXd> eig_orig(orig_m.matrix, orig_m.num_rows, orig_m.num_cols);
 	Map<MatrixXcd> eig_casted(casted_m.matrix, casted_m.num_rows, casted_m.num_cols);
 	
-	EXPECT_NEAR((eig_orig.cast<complex64_t>()-eig_casted).norm(), 0.0, 1E-15);
+	EXPECT_NEAR((eig_orig.cast<complex128_t>()-eig_casted).norm(), 0.0, 1E-15);
 
 	SG_UNREF(orig_op);
 	SG_UNREF(casted_op);
@@ -58,12 +58,12 @@ TEST(MatrixOperator, cast_sparse_double_complex)
 
 	CSparseMatrixOperator<float64_t>* orig_op
 		=new CSparseMatrixOperator<float64_t>(sm);
-	CSparseMatrixOperator<complex64_t>* casted_op
-		=static_cast<CSparseMatrixOperator<complex64_t>*>(*orig_op);
+	CSparseMatrixOperator<complex128_t>* casted_op
+		=static_cast<CSparseMatrixOperator<complex128_t>*>(*orig_op);
 
-	SGSparseMatrix<complex64_t> casted_m=casted_op->get_matrix_operator();
-	const SparseMatrix<complex64_t>& eig_casted
-		=EigenSparseUtil<complex64_t>::toEigenSparse(casted_m);
+	SGSparseMatrix<complex128_t> casted_m=casted_op->get_matrix_operator();
+	const SparseMatrix<complex128_t>& eig_casted
+		=EigenSparseUtil<complex128_t>::toEigenSparse(casted_m);
 
 	Map<MatrixXd> eig_orig(m.matrix, m.num_rows, m.num_cols);
 

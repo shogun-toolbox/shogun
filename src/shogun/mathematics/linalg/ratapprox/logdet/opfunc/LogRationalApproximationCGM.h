@@ -79,7 +79,7 @@ private:
 	CCGMShiftedFamilySolver* m_linear_solver;
 
 	/** negated shifts to pass to CG-M linear solver */
-	SGVector<complex64_t> m_negated_shifts;
+	SGVector<complex128_t> m_negated_shifts;
 
 	/** initialize with default values and register params */
 	void init();

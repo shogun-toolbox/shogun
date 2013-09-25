@@ -23,27 +23,27 @@ using namespace Eigen;
 TEST(DirectLinearSolverComplex, solve_SVD)
 {
 	const index_t size=2;
-	SGMatrix<complex64_t> m(size, size);
-	m(0,0)=complex64_t(2.0);
-	m(0,1)=complex64_t(1.0, 2.0);
-	m(1,0)=complex64_t(1.0, 2.0);
-	m(1,1)=complex64_t(3.0);
+	SGMatrix<complex128_t> m(size, size);
+	m(0,0)=complex128_t(2.0);
+	m(0,1)=complex128_t(1.0, 2.0);
+	m(1,0)=complex128_t(1.0, 2.0);
+	m(1,1)=complex128_t(3.0);
 
-	CDenseMatrixOperator<complex64_t>* A
-		=new CDenseMatrixOperator<complex64_t>(m);
+	CDenseMatrixOperator<complex128_t>* A
+		=new CDenseMatrixOperator<complex128_t>(m);
 
 	SGVector<float64_t> b(size);
 	b.set_const(1.0);
 
 	CDirectLinearSolverComplex solver(DS_SVD);
-	SGVector<complex64_t> x
-		=solver.solve((CLinearOperator<complex64_t>*)A, b);
+	SGVector<complex128_t> x
+		=solver.solve((CLinearOperator<complex128_t>*)A, b);
 
-	SGVector<complex64_t> bp=A->apply(x);
+	SGVector<complex128_t> bp=A->apply(x);
 	Map<VectorXd> map_b(b.vector, b.vlen);
 	Map<VectorXcd> map_bp(bp.vector, bp.vlen);
 
-	EXPECT_NEAR((map_b.cast<complex64_t>()-map_bp).norm()/map_b.norm(),
+	EXPECT_NEAR((map_b.cast<complex128_t>()-map_bp).norm()/map_b.norm(),
 		0.0, 1E-15);
 
 	SG_UNREF(A);
@@ -52,27 +52,27 @@ TEST(DirectLinearSolverComplex, solve_SVD)
 TEST(DirectLinearSolverComplex, solve_QR_NOPERM)
 {
 	const index_t size=2;
-	SGMatrix<complex64_t> m(size, size);
-	m(0,0)=complex64_t(2.0);
-	m(0,1)=complex64_t(1.0, 2.0);
-	m(1,0)=complex64_t(1.0, 2.0);
-	m(1,1)=complex64_t(3.0);
+	SGMatrix<complex128_t> m(size, size);
+	m(0,0)=complex128_t(2.0);
+	m(0,1)=complex128_t(1.0, 2.0);
+	m(1,0)=complex128_t(1.0, 2.0);
+	m(1,1)=complex128_t(3.0);
 
-	CDenseMatrixOperator<complex64_t>* A
-		=new CDenseMatrixOperator<complex64_t>(m);
+	CDenseMatrixOperator<complex128_t>* A
+		=new CDenseMatrixOperator<complex128_t>(m);
 
 	SGVector<float64_t> b(size);
 	b.set_const(1.0);
 
 	CDirectLinearSolverComplex solver(DS_QR_NOPERM);
-	SGVector<complex64_t> x
-		=solver.solve((CLinearOperator<complex64_t>*)A, b);
+	SGVector<complex128_t> x
+		=solver.solve((CLinearOperator<complex128_t>*)A, b);
 
-	SGVector<complex64_t> bp=A->apply(x);
+	SGVector<complex128_t> bp=A->apply(x);
 	Map<VectorXd> map_b(b.vector, b.vlen);
 	Map<VectorXcd> map_bp(bp.vector, bp.vlen);
 
-	EXPECT_NEAR((map_b.cast<complex64_t>()-map_bp).norm()/map_b.norm(),
+	EXPECT_NEAR((map_b.cast<complex128_t>()-map_bp).norm()/map_b.norm(),
 		0.0, 1E-15);
 
 	SG_UNREF(A);
@@ -81,27 +81,27 @@ TEST(DirectLinearSolverComplex, solve_QR_NOPERM)
 TEST(DirectLinearSolverComplex, solve_QR_COLPERM)
 {
 	const index_t size=2;
-	SGMatrix<complex64_t> m(size, size);
-	m(0,0)=complex64_t(2.0);
-	m(0,1)=complex64_t(1.0, 2.0);
-	m(1,0)=complex64_t(1.0, 2.0);
-	m(1,1)=complex64_t(3.0);
+	SGMatrix<complex128_t> m(size, size);
+	m(0,0)=complex128_t(2.0);
+	m(0,1)=complex128_t(1.0, 2.0);
+	m(1,0)=complex128_t(1.0, 2.0);
+	m(1,1)=complex128_t(3.0);
 
-	CDenseMatrixOperator<complex64_t>* A
-		=new CDenseMatrixOperator<complex64_t>(m);
+	CDenseMatrixOperator<complex128_t>* A
+		=new CDenseMatrixOperator<complex128_t>(m);
 
 	SGVector<float64_t> b(size);
 	b.set_const(1.0);
 
 	CDirectLinearSolverComplex solver(DS_QR_COLPERM);
-	SGVector<complex64_t> x
-		=solver.solve((CLinearOperator<complex64_t>*)A, b);
+	SGVector<complex128_t> x
+		=solver.solve((CLinearOperator<complex128_t>*)A, b);
 
-	SGVector<complex64_t> bp=A->apply(x);
+	SGVector<complex128_t> bp=A->apply(x);
 	Map<VectorXd> map_b(b.vector, b.vlen);
 	Map<VectorXcd> map_bp(bp.vector, bp.vlen);
 
-	EXPECT_NEAR((map_b.cast<complex64_t>()-map_bp).norm()/map_b.norm(),
+	EXPECT_NEAR((map_b.cast<complex128_t>()-map_bp).norm()/map_b.norm(),
 		0.0, 1E-15);
 
 	SG_UNREF(A);
@@ -110,27 +110,27 @@ TEST(DirectLinearSolverComplex, solve_QR_COLPERM)
 TEST(DirectLinearSolverComplex, solve_QR_FULLPERM)
 {
 	const index_t size=2;
-	SGMatrix<complex64_t> m(size, size);
-	m(0,0)=complex64_t(2.0);
-	m(0,1)=complex64_t(1.0, 2.0);
-	m(1,0)=complex64_t(1.0, 2.0);
-	m(1,1)=complex64_t(3.0);
+	SGMatrix<complex128_t> m(size, size);
+	m(0,0)=complex128_t(2.0);
+	m(0,1)=complex128_t(1.0, 2.0);
+	m(1,0)=complex128_t(1.0, 2.0);
+	m(1,1)=complex128_t(3.0);
 
-	CDenseMatrixOperator<complex64_t>* A
-		=new CDenseMatrixOperator<complex64_t>(m);
+	CDenseMatrixOperator<complex128_t>* A
+		=new CDenseMatrixOperator<complex128_t>(m);
 
 	SGVector<float64_t> b(size);
 	b.set_const(1.0);
 
 	CDirectLinearSolverComplex solver(DS_QR_FULLPERM);
-	SGVector<complex64_t> x
-		=solver.solve((CLinearOperator<complex64_t>*)A, b);
+	SGVector<complex128_t> x
+		=solver.solve((CLinearOperator<complex128_t>*)A, b);
 
-	SGVector<complex64_t> bp=A->apply(x);
+	SGVector<complex128_t> bp=A->apply(x);
 	Map<VectorXd> map_b(b.vector, b.vlen);
 	Map<VectorXcd> map_bp(bp.vector, bp.vlen);
 
-	EXPECT_NEAR((map_b.cast<complex64_t>()-map_bp).norm()/map_b.norm(),
+	EXPECT_NEAR((map_b.cast<complex128_t>()-map_bp).norm()/map_b.norm(),
 		0.0, 1E-15);
 
 	SG_UNREF(A);
@@ -139,28 +139,28 @@ TEST(DirectLinearSolverComplex, solve_QR_FULLPERM)
 TEST(DirectLinearSolverComplex, solve_LLT)
 {
 	const index_t size=2;
-	SGMatrix<complex64_t> m(size, size);
+	SGMatrix<complex128_t> m(size, size);
 	// LLT doesn't work on non-symmetric matrices
-	m(0,0)=complex64_t(2.0, 0.0);
-	m(0,1)=complex64_t(1.0, 0.0);
-	m(1,0)=complex64_t(1.0, 0.0);
-	m(1,1)=complex64_t(2.5, 0.0);
+	m(0,0)=complex128_t(2.0, 0.0);
+	m(0,1)=complex128_t(1.0, 0.0);
+	m(1,0)=complex128_t(1.0, 0.0);
+	m(1,1)=complex128_t(2.5, 0.0);
 
-	CDenseMatrixOperator<complex64_t>* A
-		=new CDenseMatrixOperator<complex64_t>(m);
+	CDenseMatrixOperator<complex128_t>* A
+		=new CDenseMatrixOperator<complex128_t>(m);
 
 	SGVector<float64_t> b(size);
 	b.set_const(1.0);
 
 	CDirectLinearSolverComplex solver(DS_LLT);
-	SGVector<complex64_t> x
-		=solver.solve((CLinearOperator<complex64_t>*)A, b);
+	SGVector<complex128_t> x
+		=solver.solve((CLinearOperator<complex128_t>*)A, b);
 
-	SGVector<complex64_t> bp=A->apply(x);
+	SGVector<complex128_t> bp=A->apply(x);
 	Map<VectorXd> map_b(b.vector, b.vlen);
 	Map<VectorXcd> map_bp(bp.vector, bp.vlen);
 
-	EXPECT_NEAR((map_b.cast<complex64_t>()-map_bp).norm()/map_b.norm(),
+	EXPECT_NEAR((map_b.cast<complex128_t>()-map_bp).norm()/map_b.norm(),
 		0.0, 1E-15);
 
 	SG_UNREF(A);

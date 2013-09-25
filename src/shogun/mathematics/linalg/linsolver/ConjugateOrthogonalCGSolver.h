@@ -31,7 +31,7 @@ template<class T> class SGVector;
  * No. 2, March 1990
  */
 class CConjugateOrthogonalCGSolver
- : public CIterativeLinearSolver<complex64_t, float64_t>
+ : public CIterativeLinearSolver<complex128_t, float64_t>
 {
 
 public:
@@ -51,8 +51,7 @@ public:
 	 * @param b the vector of the system
 	 * @return the solution vector
 	 */
-	virtual SGVector<complex64_t> solve(CLinearOperator<complex64_t>* A,
-
+	virtual SGVector<complex128_t> solve(CLinearOperator<complex128_t>* A,
 		SGVector<float64_t> b);
 
 	/** @return object name */

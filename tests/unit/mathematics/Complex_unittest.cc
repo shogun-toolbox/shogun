@@ -16,7 +16,7 @@ using namespace shogun;
 
 TEST(CMath, complex_test)
 {
-	complex64_t a(5.0, 6.0), result;
+	complex128_t a(5.0, 6.0), result;
 
 	EXPECT_NEAR(CMath::abs(a), 7.81024967590665439412, 1E-14);
 	result=CMath::log(a);
@@ -63,10 +63,10 @@ TEST(CMath, complex_test)
 	EXPECT_NEAR(result.real(), 0.99992337992770763400, 1E-14);
 	EXPECT_NEAR(result.imag(), -0.00004871701269270740, 1E-14);
 
-	SGVector<complex64_t> vec(10);
+	SGVector<complex128_t> vec(10);
 	for (index_t i=0; i<10; ++i)
 	{
-		vec[i]=i%2==0? a : complex64_t(0.0);
+		vec[i]=i%2==0? a : complex128_t(0.0);
 	}
 	EXPECT_EQ(CMath::get_num_nonzero(vec.vector, 10), 5);
 }

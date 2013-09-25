@@ -10,7 +10,7 @@
 
 class_str='class'
 types=["BOOL", "CHAR", "INT8", "UINT8", "INT16", "UINT16", "INT32", "UINT32",
-		"INT64", "UINT64", "FLOAT32", "FLOAT64", "FLOATMAX", "COMPLEX64"]
+		"INT64", "UINT64", "FLOAT32", "FLOAT64", "FLOATMAX", "COMPLEX128"]
 config_tests=["HAVE_HDF5", "HAVE_JSON", "HAVE_XML", "HAVE_LAPACK", "USE_CPLEX",
 	"USE_SVMLIGHT", "USE_GLPK", "USE_LZO", "USE_GZIP", "USE_BZIP2", "USE_LZMA",
 	"USE_MOSEK", "HAVE_EIGEN3", "HAVE_COLPACK", "HAVE_NLOPT", "HAVE_PROTOBUF"]
@@ -110,8 +110,8 @@ def get_template_definitions(classes, supports_complex):
 				suffix=''
 			else:
 				suffix='_t'
-			if t=='COMPLEX64' and not supports_complex:
-				d.append("\t\tcase PT_COMPLEX64: return NULL;\n")
+			if t=='COMPLEX128' and not supports_complex:
+				d.append("\t\tcase PT_COMPLEX128: return NULL;\n")
 			else:
 				d.append("\t\tcase PT_%s: return new C%s<%s%s>();\n" % (t,c,t.lower(),suffix))
 		d.append("\t\tcase PT_SGOBJECT: return NULL;\n\t}\n\treturn NULL;\n}")
@@ -153,7 +153,7 @@ def check_complex_supported_class(line):
 	l=list(filter(lambda y:y if y!='' else None,\
 		line.strip().replace('\t',' ').split(' ')))
 	supported=len(l)==3 and l[0]=='typedef' and l[1]=='bool'\
-		and l[2]=='supports_complex64_t;'
+		and l[2]=='supports_complex128_t;'
 	return supported
 
 def test_candidate(c, lines, line_nr, supports_complex):
@@ -172,7 +172,7 @@ def test_candidate(c, lines, line_nr, supports_complex):
 					line=lines[line_nr]
 					if check_abstract_class(line):
 						return False, stop
-		if line.find('supports_complex64_t')!=-1:
+		if line.find('supports_complex128_t')!=-1:
 			if check_complex_supported_class(line):
 				complex_supported=True
 				if not supports_complex:

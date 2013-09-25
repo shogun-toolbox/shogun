@@ -164,6 +164,6 @@ template class CDenseMatrixOperator<uint64_t>;
 template class CDenseMatrixOperator<float32_t>;
 template class CDenseMatrixOperator<float64_t>;
 template class CDenseMatrixOperator<floatmax_t>;
-template class CDenseMatrixOperator<complex64_t>;
+template class CDenseMatrixOperator<complex128_t>;
 }
 #endif // HAVE_EIGEN3

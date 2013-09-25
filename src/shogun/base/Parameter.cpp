@@ -115,9 +115,9 @@ Parameter::add(floatmax_t* param, const char* name,
 }
 
 void
-Parameter::add(complex64_t* param, const char* name,
+Parameter::add(complex128_t* param, const char* name,
 			   const char* description) {
-	TSGDataType type(CT_SCALAR, ST_NONE, PT_COMPLEX64);
+	TSGDataType type(CT_SCALAR, ST_NONE, PT_COMPLEX128);
 	add_type(&type, param, name, description);
 }
 
@@ -311,9 +311,9 @@ Parameter::add(SGSparseVector<floatmax_t>* param, const char* name,
 }
 
 void
-Parameter::add(SGSparseVector<complex64_t>* param, const char* name,
+Parameter::add(SGSparseVector<complex128_t>* param, const char* name,
 			   const char* description) {
-	TSGDataType type(CT_SCALAR, ST_SPARSE, PT_COMPLEX64);
+	TSGDataType type(CT_SCALAR, ST_SPARSE, PT_COMPLEX128);
 	add_type(&type, param, name, description);
 }
 
@@ -426,9 +426,9 @@ Parameter::add_vector(
 
 void
 Parameter::add_vector(
-	complex64_t** param, index_t* length, const char* name,
+	complex128_t** param, index_t* length, const char* name,
 	const char* description) {
-	TSGDataType type(CT_VECTOR, ST_NONE, PT_COMPLEX64, length);
+	TSGDataType type(CT_VECTOR, ST_NONE, PT_COMPLEX128, length);
 	add_type(&type, param, name, description);
 }
 
@@ -623,9 +623,9 @@ Parameter::add_vector(SGSparseVector<floatmax_t>** param, index_t* length,
 }
 
 void
-Parameter::add_vector(SGSparseVector<complex64_t>** param, index_t* length,
+Parameter::add_vector(SGSparseVector<complex128_t>** param, index_t* length,
 					  const char* name, const char* description) {
-	TSGDataType type(CT_VECTOR, ST_SPARSE, PT_COMPLEX64, length);
+	TSGDataType type(CT_VECTOR, ST_SPARSE, PT_COMPLEX128, length);
 	add_type(&type, param, name, description);
 }
 
@@ -723,10 +723,10 @@ void Parameter::add(SGVector<floatmax_t>* param, const char* name,
 	add_type(&type, &param->vector, name, description);
 }
 
-void Parameter::add(SGVector<complex64_t>* param, const char* name,
+void Parameter::add(SGVector<complex128_t>* param, const char* name,
 		const char* description)
 {
-	TSGDataType type(CT_SGVECTOR, ST_NONE, PT_COMPLEX64, &param->vlen);
+	TSGDataType type(CT_SGVECTOR, ST_NONE, PT_COMPLEX128, &param->vlen);
 	add_type(&type, &param->vector, name, description);
 }
 
@@ -919,10 +919,10 @@ void Parameter::add(SGVector<SGSparseVector<floatmax_t> >* param,
 	add_type(&type, &param->vector, name, description);
 }
 
-void Parameter::add(SGVector<SGSparseVector<complex64_t> >* param,
+void Parameter::add(SGVector<SGSparseVector<complex128_t> >* param,
 		const char* name, const char* description)
 {
-	TSGDataType type(CT_SGVECTOR, ST_SPARSE, PT_COMPLEX64, &param->vlen);
+	TSGDataType type(CT_SGVECTOR, ST_SPARSE, PT_COMPLEX128, &param->vlen);
 	add_type(&type, &param->vector, name, description);
 }
 
@@ -1048,9 +1048,9 @@ Parameter::add_matrix(
 
 void
 Parameter::add_matrix(
-	complex64_t** param, index_t* length_y, index_t* length_x,
+	complex128_t** param, index_t* length_y, index_t* length_x,
 	const char* name, const char* description) {
-	TSGDataType type(CT_MATRIX, ST_NONE, PT_COMPLEX64, length_y,
+	TSGDataType type(CT_MATRIX, ST_NONE, PT_COMPLEX128, length_y,
 					 length_x);
 	add_type(&type, param, name, description);
 }
@@ -1299,10 +1299,10 @@ Parameter::add_matrix(SGSparseVector<floatmax_t>** param,
 }
 
 void
-Parameter::add_matrix(SGSparseVector<complex64_t>** param,
+Parameter::add_matrix(SGSparseVector<complex128_t>** param,
 					  index_t* length_y, index_t* length_x,
 					  const char* name, const char* description) {
-	TSGDataType type(CT_MATRIX, ST_SPARSE, PT_COMPLEX64, length_y,
+	TSGDataType type(CT_MATRIX, ST_SPARSE, PT_COMPLEX128, length_y,
 					 length_x);
 	add_type(&type, param, name, description);
 }
@@ -1414,10 +1414,10 @@ void Parameter::add(SGMatrix<floatmax_t>* param, const char* name,
 	add_type(&type, &param->matrix, name, description);
 }
 
-void Parameter::add(SGMatrix<complex64_t>* param, const char* name,
+void Parameter::add(SGMatrix<complex128_t>* param, const char* name,
 		const char* description)
 {
-	TSGDataType type(CT_SGMATRIX, ST_NONE, PT_COMPLEX64, &param->num_rows,
+	TSGDataType type(CT_SGMATRIX, ST_NONE, PT_COMPLEX128, &param->num_rows,
 			&param->num_cols);
 	add_type(&type, &param->matrix, name, description);
 }
@@ -1638,10 +1638,10 @@ void Parameter::add(SGMatrix<SGSparseVector<floatmax_t> >* param,
 	add_type(&type, &param->matrix, name, description);
 }
 
-void Parameter::add(SGMatrix<SGSparseVector<complex64_t> >* param,
+void Parameter::add(SGMatrix<SGSparseVector<complex128_t> >* param,
 		const char* name, const char* description)
 {
-	TSGDataType type(CT_SGMATRIX, ST_SPARSE, PT_COMPLEX64, &param->num_rows,
+	TSGDataType type(CT_SGMATRIX, ST_SPARSE, PT_COMPLEX128, &param->num_rows,
 			&param->num_cols);
 	add_type(&type, &param->matrix, name, description);
 }
@@ -1750,10 +1750,10 @@ void Parameter::add(SGSparseMatrix<floatmax_t>* param,
 	add_type(&type, &param->sparse_matrix, name, description);
 }
 
-void Parameter::add(SGSparseMatrix<complex64_t>* param,
+void Parameter::add(SGSparseMatrix<complex128_t>* param,
 		const char* name, const char* description)
 {
-	TSGDataType type(CT_SGMATRIX, ST_SPARSE, PT_COMPLEX64, &param->num_vectors,
+	TSGDataType type(CT_SGMATRIX, ST_SPARSE, PT_COMPLEX128, &param->num_vectors,
 			&param->num_features);
 	add_type(&type, &param->sparse_matrix, name, description);
 }
@@ -1897,8 +1897,8 @@ TParameter::delete_cont()
 				SG_FREE(*(float64_t**) m_parameter); break;
 			case PT_FLOATMAX:
 				SG_FREE(*(floatmax_t**) m_parameter); break;
-			case PT_COMPLEX64:
-				SG_FREE(*(complex64_t**) m_parameter); break;
+			case PT_COMPLEX128:
+				SG_FREE(*(complex128_t**) m_parameter); break;
 			case PT_SGOBJECT:
 			{
 				CSGObject** buf = *(CSGObject***) m_parameter;
@@ -1951,9 +1951,9 @@ TParameter::delete_cont()
 				SG_FREE(*(SGString<float64_t>**) m_parameter); break;
 			case PT_FLOATMAX:
 				SG_FREE(*(SGString<floatmax_t>**) m_parameter); break;
-			case PT_COMPLEX64:
+			case PT_COMPLEX128:
 				SG_SERROR("TParameter::delete_cont(): Parameters of strings"
-						" of complex64_t are not supported");
+						" of complex128_t are not supported");
 				break;
 			case PT_SGOBJECT:
 				SG_SERROR("TParameter::delete_cont(): Implementation "
@@ -1999,8 +1999,8 @@ TParameter::delete_cont()
 				SG_FREE(*(SGSparseVector<float64_t>**) m_parameter); break;
 			case PT_FLOATMAX:
 				SG_FREE(*(SGSparseVector<floatmax_t>**) m_parameter); break;
-			case PT_COMPLEX64:
-				SG_FREE(*(SGSparseVector<complex64_t>**) m_parameter); break;
+			case PT_COMPLEX128:
+				SG_FREE(*(SGSparseVector<complex128_t>**) m_parameter); break;
 			case PT_SGOBJECT:
 				SG_SERROR("TParameter::delete_cont(): Implementation "
 						 "error: Could not delete "
@@ -2075,9 +2075,9 @@ TParameter::new_cont(SGVector<index_t> dims)
 		case PT_FLOATMAX:
 			*(floatmax_t**) m_parameter
 				= SG_MALLOC(floatmax_t, new_length); break;
-		case PT_COMPLEX64:
-			*(complex64_t**) m_parameter
-				= SG_MALLOC(complex64_t, new_length); break;
+		case PT_COMPLEX128:
+			*(complex128_t**) m_parameter
+				= SG_MALLOC(complex128_t, new_length); break;
 		case PT_SGOBJECT:
 			*(CSGObject***) m_parameter
 				= SG_CALLOC(CSGObject*, new_length);
@@ -2128,10 +2128,10 @@ TParameter::new_cont(SGVector<index_t> dims)
 		case PT_FLOATMAX:
 			*(SGString<floatmax_t>**) m_parameter
 				= SG_MALLOC(SGString<floatmax_t>, new_length); break;
-		case PT_COMPLEX64:
+		case PT_COMPLEX128:
 			SG_SERROR("TParameter::new_cont(): Implementation "
 					 "error: Could not allocate "
-					 "String<complex64>");
+					 "String<complex128>");
 			break;
 		case PT_SGOBJECT:
 			SG_SERROR("TParameter::new_cont(): Implementation "
@@ -2187,9 +2187,9 @@ TParameter::new_cont(SGVector<index_t> dims)
 		case PT_FLOATMAX:
 			*(SGSparseVector<floatmax_t>**) m_parameter
 				= SG_MALLOC(SGSparseVector<floatmax_t>, new_length); break;
-		case PT_COMPLEX64:
-			*(SGSparseVector<complex64_t>**) m_parameter
-				= SG_MALLOC(SGSparseVector<complex64_t>, new_length); break;
+		case PT_COMPLEX128:
+			*(SGSparseVector<complex128_t>**) m_parameter
+				= SG_MALLOC(SGSparseVector<complex128_t>, new_length); break;
 		case PT_SGOBJECT:
 			SG_SERROR("TParameter::new_cont(): Implementation "
 					 "error: Could not allocate "
@@ -3461,16 +3461,16 @@ bool TParameter::compare_ptype(EPrimitiveType ptype, void* data1, void* data2,
 		}
 		break;
 	}
-	case PT_COMPLEX64:
+	case PT_COMPLEX128:
 	{
-		float64_t casted1_real=((complex64_t*)data1)->real();
-		float64_t casted1_imag=((complex64_t*)data1)->imag();
-		float64_t casted2_real=((complex64_t*)data2)->real();
-		float64_t casted2_imag=((complex64_t*)data2)->imag();
+		float64_t casted1_real=((complex128_t*)data1)->real();
+		float64_t casted1_imag=((complex128_t*)data1)->imag();
+		float64_t casted2_real=((complex128_t*)data2)->real();
+		float64_t casted2_imag=((complex128_t*)data2)->imag();
 		if (CMath::abs(casted1_real-casted2_real)>accuracy ||
 			CMath::abs(casted1_imag-casted2_imag)>accuracy)
 		{
-			SG_SDEBUG("leaving TParameter::compare_ptype(): PT_COMPLEX64: "
+			SG_SDEBUG("leaving TParameter::compare_ptype(): PT_COMPLEX128: "
 					"data1=%f+i%f, data2=%f+i%f\n", 
 					casted1_real, casted1_imag,
 					casted2_real, casted2_imag);
@@ -3622,15 +3622,15 @@ bool TParameter::copy_ptype(EPrimitiveType ptype, void* source, void* target)
 				*((floatmax_t*)source), *((floatmax_t*)target));
 		break;
 	}
-	case PT_COMPLEX64:
+	case PT_COMPLEX128:
 	{
-		*((complex64_t*)target)=*((complex64_t*)source);
-		SG_SDEBUG("after copy of ptype PT_COMPLEX64: "
+		*((complex128_t*)target)=*((complex128_t*)source);
+		SG_SDEBUG("after copy of ptype PT_COMPLEX128: "
 				"source real %f, target real %f,"
 				"source imag %f, target imag %f,"
 				"\n",
-				((complex64_t*)source)->real(), ((complex64_t*)target)->real(),
-				((complex64_t*)source)->imag(), ((complex64_t*)target)->imag());
+				((complex128_t*)source)->real(), ((complex128_t*)target)->real(),
+				((complex128_t*)source)->imag(), ((complex128_t*)target)->imag());
 		break;
 	}
 	case PT_SGOBJECT:

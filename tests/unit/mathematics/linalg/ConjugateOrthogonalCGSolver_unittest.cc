@@ -24,17 +24,17 @@ using namespace Eigen;
 TEST(ConjugateOrthogonalCGSolver, solve)
 {
 	const int32_t size=10;
-	SGSparseMatrix<complex64_t> m(size, size);
-	CSparseMatrixOperator<complex64_t>* A=new CSparseMatrixOperator<complex64_t>(m);
+	SGSparseMatrix<complex128_t> m(size, size);
+	CSparseMatrixOperator<complex128_t>* A=new CSparseMatrixOperator<complex128_t>(m);
 
 	// diagonal non-Hermintian matrix with random complex entries
-	SGVector<complex64_t> diag(size);
+	SGVector<complex128_t> diag(size);
 	sg_rand->set_seed(100.0);
 	for (index_t i=0; i<size; ++i)
 	{
 		float64_t real=sg_rand->std_normal_distrib();
 		float64_t imag=sg_rand->std_normal_distrib();
-		diag[i]=complex64_t(real, imag);
+		diag[i]=complex128_t(real, imag);
 	}
 	A->set_diagonal(diag);
 
@@ -46,14 +46,14 @@ TEST(ConjugateOrthogonalCGSolver, solve)
 	// Solve with COCG
 	CConjugateOrthogonalCGSolver* cocg_linear_solver
 		=new CConjugateOrthogonalCGSolver();
-	const SGVector<complex64_t>& x=cocg_linear_solver->solve(A, b);
+	const SGVector<complex128_t>& x=cocg_linear_solver->solve(A, b);
 
-	const SGVector<complex64_t>& Ax=A->apply(x);
+	const SGVector<complex128_t>& Ax=A->apply(x);
 
 	Map<VectorXd> map_b(b.vector, b.vlen);
 	Map<VectorXcd> map_Ax(Ax.vector, Ax.vlen);
 
-	EXPECT_NEAR((map_b.cast<complex64_t>()-map_Ax).norm(), 0.0, 1E-10);
+	EXPECT_NEAR((map_b.cast<complex128_t>()-map_Ax).norm(), 0.0, 1E-10);
 	
 	SG_UNREF(A);
 	SG_UNREF(cocg_linear_solver);

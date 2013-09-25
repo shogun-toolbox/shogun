@@ -221,9 +221,9 @@ CSerializableXmlFile::write_scalar_wrapped(
 		if (snprintf(buf, STRING_LEN, "%.16Lg", *(floatmax_t*)
 					 param) <= 0) return false;
 		break;
-	case PT_COMPLEX64:
+	case PT_COMPLEX128:
 		if (snprintf(buf, STRING_LEN, "(%.16lg,%.16lg)", 
-				((complex64_t*) param)->real(),((complex64_t*) param)->imag()
+				((complex128_t*) param)->real(),((complex128_t*) param)->imag()
 				) <= 0) return false;
 		break;
 	case PT_SGOBJECT:

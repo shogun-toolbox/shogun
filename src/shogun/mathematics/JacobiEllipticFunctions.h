@@ -59,7 +59,7 @@ class CJacobiEllipticFunctions: public CSGObject
 	typedef mp_complex Complex;
 #else
 	typedef float64_t Real;
-	typedef complex64_t Complex;
+	typedef complex128_t Complex;
 #endif //HAVE_ARPREC
 private:
 	static inline Real compute_quarter_period(Real b)
@@ -138,15 +138,15 @@ public:
 	 * @param cn Jacobi elliptic function cn(u,m)
 	 * @param dn Jacobi elliptic function dn(u,m)
 	 */
-	static void ellipJC(complex64_t u, float64_t m,
-		complex64_t &sn, complex64_t &cn, complex64_t &dn)
+	static void ellipJC(complex128_t u, float64_t m,
+		complex128_t &sn, complex128_t &cn, complex128_t &dn)
 	{
 		mp::mp_init(100, NULL, true);
 		mp_complex _sn, _cn, _dn;
 		ellipJC(mp_complex(u.real(),u.imag()), mp_real(m), _sn, _cn, _dn);
-		sn=complex64_t(dble(_sn.real),dble(_sn.imag));
-		cn=complex64_t(dble(_cn.real),dble(_cn.imag));
-		dn=complex64_t(dble(_dn.real),dble(_dn.imag));
+		sn=complex128_t(dble(_sn.real),dble(_sn.imag));
+		cn=complex128_t(dble(_cn.real),dble(_cn.imag));
+		dn=complex128_t(dble(_dn.real),dble(_dn.imag));
 		mp::mp_finalize();
 	}
 #endif //HAVE_ARPREC

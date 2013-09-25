@@ -47,8 +47,8 @@ public:
 	CRationalApproximationCGMJob(CStoreScalarAggregator<float64_t>* aggregator,
 		CCGMShiftedFamilySolver* linear_solver,
 		CLinearOperator<float64_t>* linear_operator,
-		SGVector<float64_t> vector, SGVector<complex64_t> shifts,
-		SGVector<complex64_t> weights, float64_t const_multiplier);
+		SGVector<float64_t> vector, SGVector<complex128_t> shifts,
+		SGVector<complex128_t> weights, float64_t const_multiplier);
 
 	/** destructor */
 	virtual ~CRationalApproximationCGMJob();
@@ -73,10 +73,10 @@ private:
 	CCGMShiftedFamilySolver* m_linear_solver;
 
 	/** the shifts in the systems to be solved */
-	SGVector<complex64_t> m_shifts;
+	SGVector<complex128_t> m_shifts;
 
 	/** the weights to be multiplied with each solution per shift */
-	SGVector<complex64_t> m_weights;
+	SGVector<complex128_t> m_weights;
 
 	/** the constant multiplier */
 	float64_t m_const_multiplier;

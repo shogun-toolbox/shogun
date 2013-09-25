@@ -83,12 +83,12 @@ void CRationalApproximation::init()
 		"Desired accuracy of the rational approximation", MS_NOT_AVAILABLE);
 }
 
-SGVector<complex64_t> CRationalApproximation::get_shifts() const
+SGVector<complex128_t> CRationalApproximation::get_shifts() const
 {
 	return m_shifts;
 }
 
-SGVector<complex64_t> CRationalApproximation::get_weights() const
+SGVector<complex128_t> CRationalApproximation::get_weights() const
 {
 	return m_weights;
 }
@@ -176,18 +176,18 @@ void CRationalApproximation::compute_shifts_weights_const()
 	float64_t m=CMath::sq(k);
 
 	// allocate memory for shifts
-	m_shifts=SGVector<complex64_t>(m_num_shifts);
-	m_weights=SGVector<complex64_t>(m_num_shifts);
+	m_shifts=SGVector<complex128_t>(m_num_shifts);
+	m_weights=SGVector<complex128_t>(m_num_shifts);
 
 	for (index_t i=0; i<m_num_shifts; ++i)
 	{
-		complex64_t t=complex64_t(0.0, 0.5*Kp)-K+(0.5+i)*2*K/m_num_shifts;
+		complex128_t t=complex128_t(0.0, 0.5*Kp)-K+(0.5+i)*2*K/m_num_shifts;
 
-		complex64_t sn, cn, dn;
+		complex128_t sn, cn, dn;
 		CJacobiEllipticFunctions::ellipJC(t, m, sn, cn, dn);
 
-		complex64_t w=m_mult*(1.0+k*sn)/(1.0-k*sn);
-		complex64_t dzdt=cn*dn/CMath::sq(1.0/k-sn);
+		complex128_t w=m_mult*(1.0+k*sn)/(1.0-k*sn);
+		complex128_t dzdt=cn*dn/CMath::sq(1.0/k-sn);
 
 		// compute shifts and weights as per Hale et. al. (2008) [2]
 		m_shifts[i]=CMath::sq(w);
@@ -202,11 +202,11 @@ void CRationalApproximation::compute_shifts_weights_const()
 			break;
 		case OF_POLY:
 			SG_NOTIMPLEMENTED
-			m_weights[i]=complex64_t(0.0);
+			m_weights[i]=complex128_t(0.0);
 			break;
 		case OF_UNDEFINED:
 			SG_WARNING("Operator function is undefined!\n")
-			m_weights[i]=complex64_t(0.0);
+			m_weights[i]=complex128_t(0.0);
 			break;
 		}
 	}

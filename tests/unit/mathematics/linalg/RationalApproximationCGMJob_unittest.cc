@@ -39,10 +39,10 @@ TEST(RationalApproximationCGMJob, compute)
 	SGVector<float64_t> sample(size);
 	sample.set_const(0.5);
 
-	SGVector<complex64_t> shifts(1);
-	shifts[0]=complex64_t(0.0, 0.01);
+	SGVector<complex128_t> shifts(1);
+	shifts[0]=complex128_t(0.0, 0.01);
 
-	SGVector<complex64_t> weights(1);
+	SGVector<complex128_t> weights(1);
 	weights[0]=1.0;
 
 	float const_multiplier=1.0;

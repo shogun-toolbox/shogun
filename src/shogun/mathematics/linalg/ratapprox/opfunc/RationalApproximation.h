@@ -124,10 +124,10 @@ public:
 	virtual CJobResultAggregator* submit_jobs(SGVector<float64_t> sample) = 0;
 
 	/** @return shifts */
-	SGVector<complex64_t> get_shifts() const;
+	SGVector<complex128_t> get_shifts() const;
 
 	/** @return weights */
-	SGVector<complex64_t> get_weights() const;
+	SGVector<complex128_t> get_weights() const;
 
 	/** @return constant multiplier */
 	float64_t get_constant_multiplier() const;
@@ -149,10 +149,10 @@ protected:
 	CEigenSolver* m_eigen_solver;
 
 	/** complex shifts in the systems coming from rational approximation */
-	SGVector<complex64_t> m_shifts;
+	SGVector<complex128_t> m_shifts;
 
 	/** complex weights in the systems coming from rational approximation */
-	SGVector<complex64_t> m_weights;
+	SGVector<complex128_t> m_weights;
 
 	/** constant multiplier  */
 	float64_t m_constant_multiplier;

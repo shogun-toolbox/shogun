@@ -47,20 +47,20 @@ TEST(SGSparseMatrix, multiply_float64_int32)
 	EXPECT_NEAR(r.norm(), 12.64911064067351809115, 1E-16);
 }
 
-TEST(SGSparseMatrix, multiply_complex64_int32)
+TEST(SGSparseMatrix, multiply_complex128_int32)
 {
 	const int32_t size=10;
 	const int32_t num_feat=size/2;
 
-	SGSparseMatrix<complex64_t> m(size, size);
+	SGSparseMatrix<complex128_t> m(size, size);
 	for (index_t i=0; i<size; ++i)
 	{
-		m.sparse_matrix[i]=SGSparseVector<complex64_t>(num_feat);
+		m.sparse_matrix[i]=SGSparseVector<complex128_t>(num_feat);
 		for (index_t j=0; j<num_feat; ++j)
 		{
-			SGSparseVectorEntry<complex64_t> entry;
+			SGSparseVectorEntry<complex128_t> entry;
 			entry.feat_index=(j+1)*2;
-			entry.entry=complex64_t(0.5, 0.75);
+			entry.entry=complex128_t(0.5, 0.75);
 			m.sparse_matrix[i].features[j]=entry;
 		}
 	}
@@ -68,26 +68,26 @@ TEST(SGSparseMatrix, multiply_complex64_int32)
 	SGVector<int32_t> v(size);
 	v.set_const(2);
 
-	SGVector<complex64_t> result=m*v;
+	SGVector<complex128_t> result=m*v;
 	Map<VectorXcd> r(result.vector, result.vlen);
 
 	EXPECT_NEAR(r.norm(), 22.80350850198275836078, 1E-16);
 }
 
-TEST(SGSparseMatrix, multiply_complex64_float64)
+TEST(SGSparseMatrix, multiply_complex128_float64)
 {
 	const int32_t size=10;
 	const int32_t num_feat=size/2;
 
-	SGSparseMatrix<complex64_t> m(size, size);
+	SGSparseMatrix<complex128_t> m(size, size);
 	for (index_t i=0; i<size; ++i)
 	{
-		m.sparse_matrix[i]=SGSparseVector<complex64_t>(num_feat);
+		m.sparse_matrix[i]=SGSparseVector<complex128_t>(num_feat);
 		for (index_t j=0; j<num_feat; ++j)
 		{
-			SGSparseVectorEntry<complex64_t> entry;
+			SGSparseVectorEntry<complex128_t> entry;
 			entry.feat_index=(j+1)*2;
-			entry.entry=complex64_t(0.5, 0.75);
+			entry.entry=complex128_t(0.5, 0.75);
 			m.sparse_matrix[i].features[j]=entry;
 		}
 	}
@@ -95,7 +95,7 @@ TEST(SGSparseMatrix, multiply_complex64_float64)
 	SGVector<float64_t> v(size);
 	v.set_const(2);
 
-	SGVector<complex64_t> result=m*v;
+	SGVector<complex128_t> result=m*v;
 	Map<VectorXcd> r(result.vector, result.vlen);
 
 	EXPECT_NEAR(r.norm(), 22.80350850198275836078, 1E-16);

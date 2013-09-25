@@ -152,9 +152,9 @@ CSerializableAsciiFile::write_scalar_wrapped(
 		if (fprintf(m_fstream, "%.16Lg", *(floatmax_t*) param) <= 0)
 			return false;
 		break;
-	case PT_COMPLEX64:
+	case PT_COMPLEX128:
 		if (fprintf(m_fstream, "(%.16lg,%.16lg)",
-			((complex64_t*) param)->real(),((complex64_t*) param)->imag()) <= 0)
+			((complex128_t*) param)->real(),((complex128_t*) param)->imag()) <= 0)
 			return false;
 		break;
 	case PT_SGOBJECT:

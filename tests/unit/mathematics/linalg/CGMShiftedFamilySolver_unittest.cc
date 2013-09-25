@@ -78,11 +78,11 @@ TEST(CGMShiftedFamilySolver, solve_shifted_weight_real_shift)
 	// shifts
 	float64_t shift=100;
 
-	SGVector<complex64_t> shifts(1);
+	SGVector<complex128_t> shifts(1);
 	shifts.set_const(shift);
 
 	// weights
-	SGVector<complex64_t> weights(1);
+	SGVector<complex128_t> weights(1);
 	weights.set_const(1.0);
 	
 	// Creating sparse system to solve with CG_M
@@ -93,7 +93,7 @@ TEST(CGMShiftedFamilySolver, solve_shifted_weight_real_shift)
 
 	// Solve with CG_M
 	CCGMShiftedFamilySolver cg_m_linear_solver;
-	SGVector<complex64_t> x_sh
+	SGVector<complex128_t> x_sh
 		=cg_m_linear_solver.solve_shifted_weighted(A, b, shifts, weights);
 
 	// checking with plain CG solver since number of shifts is 1
@@ -111,7 +111,7 @@ TEST(CGMShiftedFamilySolver, solve_shifted_weight_real_shift)
 	Map<VectorXcd> x_sh_map(x_sh.vector, x_sh.vlen);
 	Map<VectorXd> x_map(x.vector, x.vlen);
 
-	EXPECT_NEAR((x_sh_map-x_map.cast<complex64_t>()).norm(), 0.0, 1E-7);
+	EXPECT_NEAR((x_sh_map-x_map.cast<complex128_t>()).norm(), 0.0, 1E-7);
 
 	SG_UNREF(A);
 }
@@ -131,13 +131,13 @@ TEST(CGMShiftedFamilySolver, solve_shifted_weight_complex_shift)
 	b.set_const(0.5);
 
 	// shifts
-	complex64_t shift(0.0, 100.0);
+	complex128_t shift(0.0, 100.0);
 
-	SGVector<complex64_t> shifts(1);
+	SGVector<complex128_t> shifts(1);
 	shifts.set_const(shift);
 
 	// weights
-	SGVector<complex64_t> weights(1);
+	SGVector<complex128_t> weights(1);
 	weights.set_const(1.0);
 	
 	// Creating sparse system to solve with CG_M
@@ -148,20 +148,20 @@ TEST(CGMShiftedFamilySolver, solve_shifted_weight_complex_shift)
 
 	// Solve with CG_M
 	CCGMShiftedFamilySolver cg_m_linear_solver;
-	SGVector<complex64_t> x_sh
+	SGVector<complex128_t> x_sh
 		=cg_m_linear_solver.solve_shifted_weighted(A, b, shifts, weights);
 
 	// checking with triangular solver since number of shifts is 1
-	SGMatrix<complex64_t> m2(size, size);
+	SGMatrix<complex128_t> m2(size, size);
 	m2.set_const(0.0);
 	for (index_t i=0; i<size; ++i)
 		m2(i,i)=m(i,i)+shift;
 
-	CDenseMatrixOperator<complex64_t>* B
-		=new CDenseMatrixOperator<complex64_t>(m2);
+	CDenseMatrixOperator<complex128_t>* B
+		=new CDenseMatrixOperator<complex128_t>(m2);
 
 	CDirectLinearSolverComplex direct_solver;
-	SGVector<complex64_t> x=direct_solver.solve(B, b);
+	SGVector<complex128_t> x=direct_solver.solve(B, b);
 
 	Map<VectorXcd> x_sh_map(x_sh.vector, x_sh.vlen);
 	Map<VectorXcd> x_map(x.vector, x.vlen);

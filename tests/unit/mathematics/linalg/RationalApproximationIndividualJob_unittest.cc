@@ -24,11 +24,11 @@ using namespace shogun;
 TEST(RationalApproximationIndividualJob, compute_direct)
 {
 	const index_t size=2;
-	SGMatrix<complex64_t> m(size, size);
-	m(0,0)=complex64_t(2.0, 1.0);
-	m(0,1)=complex64_t(1.0);
-	m(1,0)=complex64_t(1.0);
-	m(1,1)=complex64_t(3.0, 1.0);
+	SGMatrix<complex128_t> m(size, size);
+	m(0,0)=complex128_t(2.0, 1.0);
+	m(0,1)=complex128_t(1.0);
+	m(1,0)=complex128_t(1.0);
+	m(1,1)=complex128_t(3.0, 1.0);
 
 	SGMatrix<float64_t> mi(size, size);
 	mi(0,0)=1.0;
@@ -39,11 +39,11 @@ TEST(RationalApproximationIndividualJob, compute_direct)
 	SG_REF(identity);
 
 	SG_SDEBUG("creating op\n");
-	CDenseMatrixOperator<complex64_t>* op=new CDenseMatrixOperator<complex64_t>(m);
+	CDenseMatrixOperator<complex128_t>* op=new CDenseMatrixOperator<complex128_t>(m);
 	SG_REF(op);
 	
 	const float64_t const_multiplier=2.0;
-	const complex64_t weight=complex64_t(1.0, 1.0);
+	const complex128_t weight=complex128_t(1.0, 1.0);
 	SGVector<float64_t> s(size);
 	s.set_const(1.0);
 	// creating aggregator
@@ -57,7 +57,7 @@ TEST(RationalApproximationIndividualJob, compute_direct)
 
 	CRationalApproximationIndividualJob* job
 		=new CRationalApproximationIndividualJob(agg, 
-			(CLinearSolver<complex64_t, float64_t>*)solver, op, s, weight);
+			(CLinearSolver<complex128_t, float64_t>*)solver, op, s, weight);
 	SG_REF(job);
 	job->compute();
 	SG_UNREF(job);
@@ -76,11 +76,11 @@ TEST(RationalApproximationIndividualJob, compute_direct)
 TEST(RationalApproximationIndividualJob, compute_cocg)
 {
 	const index_t size=2;
-	SGMatrix<complex64_t> m(size, size);
-	m(0,0)=complex64_t(2.0, 1.0);
-	m(0,1)=complex64_t(1.0);
-	m(1,0)=complex64_t(1.0);
-	m(1,1)=complex64_t(3.0, 1.0);
+	SGMatrix<complex128_t> m(size, size);
+	m(0,0)=complex128_t(2.0, 1.0);
+	m(0,1)=complex128_t(1.0);
+	m(1,0)=complex128_t(1.0);
+	m(1,1)=complex128_t(3.0, 1.0);
 
 	SGMatrix<float64_t> mi(size, size);
 	mi(0,0)=1.0;
@@ -91,11 +91,11 @@ TEST(RationalApproximationIndividualJob, compute_cocg)
 	SG_REF(identity);
 
 	SG_SDEBUG("creating op\n");
-	CDenseMatrixOperator<complex64_t>* op=new CDenseMatrixOperator<complex64_t>(m);
+	CDenseMatrixOperator<complex128_t>* op=new CDenseMatrixOperator<complex128_t>(m);
 	SG_REF(op);
 	
 	const float64_t const_multiplier=2.0;
-	const complex64_t weight=complex64_t(1.0, 1.0);
+	const complex128_t weight=complex128_t(1.0, 1.0);
 	SGVector<float64_t> s(size);
 	s.set_const(1.0);
 	// creating aggregator
@@ -109,7 +109,7 @@ TEST(RationalApproximationIndividualJob, compute_cocg)
 
 	CRationalApproximationIndividualJob* job
 		=new CRationalApproximationIndividualJob(agg, 
-			(CLinearSolver<complex64_t, float64_t>*)solver, op, s, weight);
+			(CLinearSolver<complex128_t, float64_t>*)solver, op, s, weight);
 	SG_REF(job);
 	job->compute();
 	SG_UNREF(job);

@@ -173,11 +173,11 @@ TEST(SGVectorTest,misc)
 		EXPECT_DOUBLE_EQ(d[i],b[i]+1.3*b[i]);
 }
 
-TEST(SGVectorTest,complex64_tests)
+TEST(SGVectorTest,complex128_tests)
 {
-	SGVector<complex64_t> a(10);
-	a.set_const(complex64_t(5.0, 6.0));
-	SGVector<complex64_t> b=a.clone();
+	SGVector<complex128_t> a(10);
+	a.set_const(complex128_t(5.0, 6.0));
+	SGVector<complex128_t> b=a.clone();
 
 	// test ::operator+ and []
 	a=a+b;
@@ -188,23 +188,23 @@ TEST(SGVectorTest,complex64_tests)
 	}
 
 	// test ::misc
-	SGVector<complex64_t>::vec1_plus_scalar_times_vec2(a.vector,
-		complex64_t(0.0, 0.0), b.vector, a.vlen);
+	SGVector<complex128_t>::vec1_plus_scalar_times_vec2(a.vector,
+		complex128_t(0.0, 0.0), b.vector, a.vlen);
 	for (index_t i=0; i<a.vlen; ++i)
 	{
 		EXPECT_NEAR(a[i].real(), 10.0, 1E-14);
 		EXPECT_NEAR(a[i].imag(), 12.0, 1E-14);
 	}
 	a.permute();
-	complex64_t sum=SGVector<complex64_t>::sum_abs(a.vector, 1);
+	complex128_t sum=SGVector<complex128_t>::sum_abs(a.vector, 1);
 	EXPECT_NEAR(sum.real(), 15.62049935181330878825, 1E-14);
 	EXPECT_NEAR(sum.imag(), 0.0, 1E-14);
 
-	SGVector<index_t> res=a.find(complex64_t(10.0, 12.0));
+	SGVector<index_t> res=a.find(complex128_t(10.0, 12.0));
 	for (index_t i=0; i<res.vlen; ++i)
 		EXPECT_EQ(res[i], i);
 
-	a.scale(complex64_t(1.0));
+	a.scale(complex128_t(1.0));
 	for (index_t i=0; i<a.vlen; ++i)
 	{
 		EXPECT_NEAR(a[i].real(), 10.0, 1E-14);
@@ -212,15 +212,15 @@ TEST(SGVectorTest,complex64_tests)
 	}
 
 	// tests ::norm
-	float64_t norm1=SGVector<complex64_t>::onenorm(a.vector, 1);
+	float64_t norm1=SGVector<complex128_t>::onenorm(a.vector, 1);
 	EXPECT_NEAR(norm1, 15.62049935181330795331, 1E-14);
 
-	complex64_t norm2=SGVector<complex64_t>::twonorm(a.vector, 1);
+	complex128_t norm2=SGVector<complex128_t>::twonorm(a.vector, 1);
 	EXPECT_NEAR(norm2.real(), 10.0, 1E-14);
 	EXPECT_NEAR(norm2.imag(), 12.0, 1E-14);
 
 	// tests ::maths
-	a.set_const(complex64_t(1.0, 2.0));
+	a.set_const(complex128_t(1.0, 2.0));
 	a.abs();
 	for (index_t i=0; i<a.vlen; ++i)
 	{
@@ -228,7 +228,7 @@ TEST(SGVectorTest,complex64_tests)
 		EXPECT_NEAR(a[i].imag(), 0.0, 1E-14);
 	}
 
-	a.set_const(complex64_t(1.0, 2.0));
+	a.set_const(complex128_t(1.0, 2.0));
 	a.sin();
 	for (index_t i=0; i<a.vlen; ++i)
 	{
@@ -236,7 +236,7 @@ TEST(SGVectorTest,complex64_tests)
 		EXPECT_NEAR(a[i].imag(), 1.95960104142160607132, 1E-14);
 	}
 
-	a.set_const(complex64_t(1.0, 2.0));
+	a.set_const(complex128_t(1.0, 2.0));
 	a.cos();
 	for (index_t i=0; i<a.vlen; ++i)
 	{
@@ -244,7 +244,7 @@ TEST(SGVectorTest,complex64_tests)
 		EXPECT_NEAR(a[i].imag(), -3.05189779915179970615, 1E-14);
 	}
 
-	a.set_const(complex64_t(1.0, 2.0));
+	a.set_const(complex128_t(1.0, 2.0));
 	SGVector<float64_t> a_real=a.get_real();
 	SGVector<float64_t> a_imag=a.get_imag();
 	for (index_t i=0; i<a.vlen; ++i)

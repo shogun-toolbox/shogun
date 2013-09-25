@@ -108,9 +108,9 @@ namespace shogun
 		m_generic = PT_SGOBJECT;
 	}
 
-	template<> void CSGObject::set_generic<complex64_t>()
+	template<> void CSGObject::set_generic<complex128_t>()
 	{
-		m_generic = PT_COMPLEX64;
+		m_generic = PT_COMPLEX128;
 	}
 
 } /* namespace shogun  */

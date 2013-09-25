@@ -78,8 +78,8 @@ T SGSparseVector<T>::dense_dot(SGVector<ST> vec)
 	return result;
 }
 
-template complex64_t SGSparseVector<complex64_t>::dense_dot<float64_t>(SGVector<float64_t>);
-template complex64_t SGSparseVector<complex64_t>::dense_dot<int32_t>(SGVector<int32_t> vec);
+template complex128_t SGSparseVector<complex128_t>::dense_dot<float64_t>(SGVector<float64_t>);
+template complex128_t SGSparseVector<complex128_t>::dense_dot<int32_t>(SGVector<int32_t> vec);
 template float64_t SGSparseVector<float64_t>::dense_dot<int32_t>(SGVector<int32_t> vec);
 
 template <class T>
@@ -293,15 +293,15 @@ template<class T> void SGSparseVector<T>::save(CFile* saver)
 }
 
 template <>
-void SGSparseVector<complex64_t>::load(CFile* loader)
+void SGSparseVector<complex128_t>::load(CFile* loader)
 {
-	SG_SERROR("SGSparseVector::load():: Not supported for complex64_t\n");
+	SG_SERROR("SGSparseVector::load():: Not supported for complex128_t\n");
 }
 
 template <>
-void SGSparseVector<complex64_t>::save(CFile* saver)
+void SGSparseVector<complex128_t>::save(CFile* saver)
 {
-	SG_SERROR("SGSparseVector::save():: Not supported for complex64_t\n");
+	SG_SERROR("SGSparseVector::save():: Not supported for complex128_t\n");
 }
 
 template <class T>
@@ -509,7 +509,7 @@ void SGSparseVector<floatmax_t>::display_vector(const char* name, const char* pr
 }
 
 template <>
-void SGSparseVector<complex64_t>::display_vector(const char* name, const char* prefix)
+void SGSparseVector<complex128_t>::display_vector(const char* name, const char* prefix)
 {
 	SG_SPRINT("%s%s=[", prefix, name);
 	for (int32_t i=0; i<num_feat_entries; i++)
@@ -531,6 +531,6 @@ template class SGSparseVector<uint64_t>;
 template class SGSparseVector<float32_t>;
 template class SGSparseVector<float64_t>;
 template class SGSparseVector<floatmax_t>;
-template class SGSparseVector<complex64_t>;
+template class SGSparseVector<complex128_t>;
 }
 

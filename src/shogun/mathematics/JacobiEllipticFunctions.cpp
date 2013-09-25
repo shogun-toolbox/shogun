@@ -69,15 +69,15 @@ void CJacobiEllipticFunctions
 	if (m>=(1.0-eps))
 	{
 #ifdef HAVE_ARPREC
-		complex64_t _u(dble(u.real),dble(u.imag));
-		complex64_t t=CMath::tanh(_u);
-		complex64_t b=CMath::cosh(_u);
-		complex64_t twon=b*CMath::sinh(_u);
-		complex64_t ai=0.25*(1.0-dble(m));
-		complex64_t _sn=t+ai*(twon-_u)/(b*b);
-		complex64_t phi=1.0/b;
-		complex64_t _cn=phi-ai*(twon-_u);
-		complex64_t _dn=phi+ai*(twon+_u);
+		complex128_t _u(dble(u.real),dble(u.imag));
+		complex128_t t=CMath::tanh(_u);
+		complex128_t b=CMath::cosh(_u);
+		complex128_t twon=b*CMath::sinh(_u);
+		complex128_t ai=0.25*(1.0-dble(m));
+		complex128_t _sn=t+ai*(twon-_u)/(b*b);
+		complex128_t phi=1.0/b;
+		complex128_t _cn=phi-ai*(twon-_u);
+		complex128_t _dn=phi+ai*(twon+_u);
 		sn=mp_complex(_sn.real(),_sn.imag());
 		cn=mp_complex(_cn.real(),_cn.imag());
 		dn=mp_complex(_dn.real(),_dn.imag());

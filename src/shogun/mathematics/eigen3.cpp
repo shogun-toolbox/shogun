@@ -68,6 +68,6 @@ SparseMatrix<T> EigenSparseUtil<T>::toEigenSparse(SGSparseMatrix<T> sg_matrix)
 
 template class EigenSparseUtil<bool>;
 template class EigenSparseUtil<float64_t>;
-template class EigenSparseUtil<complex64_t>;
+template class EigenSparseUtil<complex128_t>;
 }
 #endif //HAVE_EIGEN3

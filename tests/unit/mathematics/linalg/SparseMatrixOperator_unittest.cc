@@ -56,27 +56,27 @@ TEST(SparseMatrixOperator, symmetric_apply_complex)
 {
 	const index_t size=2;
 
-	SGMatrix<complex64_t> m(size, size);
-	m.set_const(complex64_t(0.0));
-	m(0,0)=complex64_t(1.0);
-	m(0,1)=complex64_t(0.01);
-	m(1,1)=complex64_t(2.0);
+	SGMatrix<complex128_t> m(size, size);
+	m.set_const(complex128_t(0.0));
+	m(0,0)=complex128_t(1.0);
+	m(0,1)=complex128_t(0.01);
+	m(1,1)=complex128_t(2.0);
 
-	CSparseFeatures<complex64_t> feat(m);
-	SGSparseMatrix<complex64_t> mat=feat.get_sparse_feature_matrix();
-	CSparseMatrixOperator<complex64_t> op(mat);
+	CSparseFeatures<complex128_t> feat(m);
+	SGSparseMatrix<complex128_t> mat=feat.get_sparse_feature_matrix();
+	CSparseMatrixOperator<complex128_t> op(mat);
 
-	SGVector<complex64_t> b(size);
+	SGVector<complex128_t> b(size);
 	b.set_const(0.25);
 
-	SGVector<complex64_t> result=op.apply(b);
+	SGVector<complex128_t> result=op.apply(b);
 	Map<VectorXcd> map_result(result.vector, result.vlen);
 
 #ifdef EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
 	EXPECT_NEAR(map_result.norm(), 0.56125417593101246, 1E-16);
 #else
-	const SparseMatrix<complex64_t> &eig_m
-		=EigenSparseUtil<complex64_t>::toEigenSparse(mat);
+	const SparseMatrix<complex128_t> &eig_m
+		=EigenSparseUtil<complex128_t>::toEigenSparse(mat);
 	Map<VectorXcd> map_b(b.vector, b.vlen);
 
 	EXPECT_NEAR(map_result.norm(), (eig_m*map_b).norm(), 1E-16);
@@ -184,33 +184,33 @@ TEST(SparseMatrixOperator, get_set_diagonal_realloc)
 	EXPECT_NEAR(map_diag.norm(), map_new_diag.norm(), 1E-16);
 }
 
-TEST(SparseMatrixOperator, get_set_diagonal_realloc_complex64)
+TEST(SparseMatrixOperator, get_set_diagonal_realloc_complex128)
 {
 	const index_t size=2;
 
-	SGMatrix<complex64_t> m(size, size);
-	m.set_const(complex64_t(0.0));
-	m(0,1)=complex64_t(0.01);
-	m(1,1)=complex64_t(2.0);
+	SGMatrix<complex128_t> m(size, size);
+	m.set_const(complex128_t(0.0));
+	m(0,1)=complex128_t(0.01);
+	m(1,1)=complex128_t(2.0);
 
-	CSparseFeatures<complex64_t> feat(m);
-	SGSparseMatrix<complex64_t> mat=feat.get_sparse_feature_matrix();
-	CSparseMatrixOperator<complex64_t> op(mat);
+	CSparseFeatures<complex128_t> feat(m);
+	SGSparseMatrix<complex128_t> mat=feat.get_sparse_feature_matrix();
+	CSparseMatrixOperator<complex128_t> op(mat);
 
 	// get the old diagonal and check if it works fine
-	SGVector<complex64_t> old_diag=op.get_diagonal();
+	SGVector<complex128_t> old_diag=op.get_diagonal();
 	Map<VectorXcd> map_old_diag(old_diag.vector, old_diag.vlen);
 	VectorXcd eig_old_diag(size);
-	eig_old_diag(0)=complex64_t(0.0);
-	eig_old_diag(1)=complex64_t(2.0);
+	eig_old_diag(0)=complex128_t(0.0);
+	eig_old_diag(1)=complex128_t(2.0);
 
 	EXPECT_NEAR(map_old_diag.norm(), eig_old_diag.norm(), 1E-16);
 
 	// set the new diagonal and check if it works fine
-	SGVector<complex64_t> diag(size);
-	diag.set_const(complex64_t(3.0));
+	SGVector<complex128_t> diag(size);
+	diag.set_const(complex128_t(3.0));
 	op.set_diagonal(diag);
-	SGVector<complex64_t> new_diag=op.get_diagonal();
+	SGVector<complex128_t> new_diag=op.get_diagonal();
 	
 	Map<VectorXcd> map_diag(diag.vector, diag.vlen);
 	Map<VectorXcd> map_new_diag(new_diag.vector, new_diag.vlen);

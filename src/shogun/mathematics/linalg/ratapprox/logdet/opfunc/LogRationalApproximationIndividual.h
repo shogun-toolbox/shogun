@@ -53,7 +53,7 @@ public:
 		CMatrixOperator<float64_t>* linear_operator,
 		CIndependentComputationEngine* computation_engine,
 		CEigenSolver* eigen_solver,
-		CLinearSolver<complex64_t, float64_t>* linear_solver,
+		CLinearSolver<complex128_t, float64_t>* linear_solver,
 		float64_t desired_accuracy);
 
 	/** destructor */
@@ -78,7 +78,7 @@ public:
 
 private:
 	/** the linear solver for solving complex systems */
-	CLinearSolver<complex64_t, float64_t>* m_linear_solver;
+	CLinearSolver<complex128_t, float64_t>* m_linear_solver;
 
 	/** initialize with default values and register params */
 	void init();

@@ -397,16 +397,16 @@ TEST(Serialization, Ascii_scalar_equal_FLOATMAX)
 	delete param2;
 }
 
-TEST(Serialization, Ascii_scalar_equal_COMPLEX64)
+TEST(Serialization, Ascii_scalar_equal_COMPLEX128)
 {
-	complex64_t a(1.7126587125, 2.7126587125);
-	complex64_t b(0.0, 0.0);
+	complex128_t a(1.7126587125, 2.7126587125);
+	complex128_t b(0.0, 0.0);
 
 	TSGDataType type(CT_SCALAR, ST_NONE, PT_FLOAT64);
 	TParameter* param1=new TParameter(&type, &a, "param", "");
 	TParameter* param2=new TParameter(&type, &b, "param", "");
 
-	const char* filename="complex64_param.txt";
+	const char* filename="complex128_param.txt";
 	// save parameter to an ascii file
 	CSerializableAsciiFile *file=new CSerializableAsciiFile(filename, 'w');
 	param1->save(file);
@@ -460,19 +460,19 @@ TEST(Serialization, Ascii_vector_equal_FLOAT64)
 	delete param2;
 }
 
-TEST(Serialization, Ascii_vector_equal_COMPLEX64)
+TEST(Serialization, Ascii_vector_equal_COMPLEX128)
 {
-	SGVector<complex64_t> a(2);
-	SGVector<complex64_t> b(2);
+	SGVector<complex128_t> a(2);
+	SGVector<complex128_t> b(2);
 
-	a.set_const(complex64_t(1.14263158, 2.83645548));
+	a.set_const(complex128_t(1.14263158, 2.83645548));
 	b.zero();
 
-	TSGDataType type(CT_SGVECTOR, ST_NONE, PT_COMPLEX64, &a.vlen);
+	TSGDataType type(CT_SGVECTOR, ST_NONE, PT_COMPLEX128, &a.vlen);
 	TParameter* param1=new TParameter(&type, &a.vector, "param", "");
 	TParameter* param2=new TParameter(&type, &b.vector, "param", "");
 
-	const char* filename="complex64_sgvec_param.txt";
+	const char* filename="complex128_sgvec_param.txt";
 	// save parameter to an ascii file
 	CSerializableAsciiFile *file=new CSerializableAsciiFile(filename, 'w');
 	param1->save(file);
@@ -526,19 +526,19 @@ TEST(Serialization, Ascii_matrix_equal_FLOAT64)
 	delete param2;
 }
 
-TEST(Serialization, Ascii_matrix_equal_COMPLEX64)
+TEST(Serialization, Ascii_matrix_equal_COMPLEX128)
 {
-	SGMatrix<complex64_t> a(2, 2);
-	SGMatrix<complex64_t> b(2, 2);
+	SGMatrix<complex128_t> a(2, 2);
+	SGMatrix<complex128_t> b(2, 2);
 
-	a.set_const(complex64_t(1.14263158, 2.435754));
+	a.set_const(complex128_t(1.14263158, 2.435754));
 	b.zero();
 
-	TSGDataType type(CT_SGMATRIX, ST_NONE, PT_COMPLEX64, &a.num_rows, &a.num_cols);
+	TSGDataType type(CT_SGMATRIX, ST_NONE, PT_COMPLEX128, &a.num_rows, &a.num_cols);
 	TParameter* param1=new TParameter(&type, &a.matrix, "param", "");
 	TParameter* param2=new TParameter(&type, &b.matrix, "param", "");
 
-	const char* filename="complex64_sgmat_param.txt";
+	const char* filename="complex128_sgmat_param.txt";
 	// save parameter to an ascii file
 	CSerializableAsciiFile *file=new CSerializableAsciiFile(filename, 'w');
 	param1->save(file);
@@ -1127,16 +1127,16 @@ TEST(Serialization, Xml_scalar_equal_FLOATMAX)
 	delete param2;
 }
 
-TEST(Serialization, Xml_scalar_equal_COMPLEX64)
+TEST(Serialization, Xml_scalar_equal_COMPLEX128)
 {
-	complex64_t a(1.7126587125, 1.7126587125);
-	complex64_t b(0.0);
+	complex128_t a(1.7126587125, 1.7126587125);
+	complex128_t b(0.0);
 
-	TSGDataType type(CT_SCALAR, ST_NONE, PT_COMPLEX64);
+	TSGDataType type(CT_SCALAR, ST_NONE, PT_COMPLEX128);
 	TParameter* param1=new TParameter(&type, &a, "param", "");
 	TParameter* param2=new TParameter(&type, &b, "param", "");
 
-	const char* filename="complex64_param.xml";
+	const char* filename="complex128_param.xml";
 	// save parameter to a xml file
 	CSerializableXmlFile *file=new CSerializableXmlFile(filename, 'w');
 	param1->save(file);
@@ -1190,19 +1190,19 @@ TEST(Serialization, Xml_vector_equal_FLOAT64)
 	delete param2;
 }
 
-TEST(Serialization, Xml_vector_equal_COMPLEX64)
+TEST(Serialization, Xml_vector_equal_COMPLEX128)
 {
-	SGVector<complex64_t> a(2);
-	SGVector<complex64_t> b(2);
+	SGVector<complex128_t> a(2);
+	SGVector<complex128_t> b(2);
 
-	a.set_const(complex64_t(1.14263158, 2.83645548));
+	a.set_const(complex128_t(1.14263158, 2.83645548));
 	b.zero();
 
-	TSGDataType type(CT_SGVECTOR, ST_NONE, PT_COMPLEX64, &a.vlen);
+	TSGDataType type(CT_SGVECTOR, ST_NONE, PT_COMPLEX128, &a.vlen);
 	TParameter* param1=new TParameter(&type, &a.vector, "param", "");
 	TParameter* param2=new TParameter(&type, &b.vector, "param", "");
 
-	const char* filename="complex64_sgvec_param.xml";
+	const char* filename="complex128_sgvec_param.xml";
 	// save parameter to a xml file
 	CSerializableXmlFile *file=new CSerializableXmlFile(filename, 'w');
 	param1->save(file);
@@ -1256,19 +1256,19 @@ TEST(Serialization, Xml_matrix_equal_FLOAT64)
 	delete param2;
 }
 
-TEST(Serialization, Xml_matrix_equal_COMPLEX64)
+TEST(Serialization, Xml_matrix_equal_COMPLEX128)
 {
-	SGMatrix<complex64_t> a(2, 2);
-	SGMatrix<complex64_t> b(2, 2);
+	SGMatrix<complex128_t> a(2, 2);
+	SGMatrix<complex128_t> b(2, 2);
 
-	a.set_const(complex64_t(1.14263158, 2.435754));
+	a.set_const(complex128_t(1.14263158, 2.435754));
 	b.zero();
 
-	TSGDataType type(CT_SGMATRIX, ST_NONE, PT_COMPLEX64, &a.num_rows, &a.num_cols);
+	TSGDataType type(CT_SGMATRIX, ST_NONE, PT_COMPLEX128, &a.num_rows, &a.num_cols);
 	TParameter* param1=new TParameter(&type, &a.matrix, "param", "");
 	TParameter* param2=new TParameter(&type, &b.matrix, "param", "");
 
-	const char* filename="complex64_sgmat_param.xml";
+	const char* filename="complex128_sgmat_param.xml";
 	// save parameter to a xml file
 	CSerializableXmlFile *file=new CSerializableXmlFile(filename, 'w');
 	param1->save(file);

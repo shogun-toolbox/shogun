@@ -28,7 +28,7 @@ template<class T> class CLinearOperator;
  * the sample vector, multiplies with the constant multiplier (see 
  * CRationalApproximation) and stores the result as CScalarResult
  */
-class CIndividualJobResultAggregator : public CStoreVectorAggregator<complex64_t>
+class CIndividualJobResultAggregator : public CStoreVectorAggregator<complex128_t>
 {
 public:
 	/** default constructor */

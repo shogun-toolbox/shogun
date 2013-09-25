@@ -26,5 +26,5 @@ template class CScalarResult<uint64_t>;
 template class CScalarResult<float32_t>;
 template class CScalarResult<float64_t>;
 template class CScalarResult<floatmax_t>;
-template class CScalarResult<complex64_t>;
+template class CScalarResult<complex128_t>;
 }

@@ -34,8 +34,8 @@ CRationalApproximationCGMJob::CRationalApproximationCGMJob(
 	CCGMShiftedFamilySolver* linear_solver,
 	CLinearOperator<float64_t>* linear_operator,
 	SGVector<float64_t> vector,
-	SGVector<complex64_t> shifts,
-	SGVector<complex64_t> weights,
+	SGVector<complex128_t> shifts,
+	SGVector<complex128_t> weights,
 	float64_t const_multiplier)
 	: CIndependentJob((CJobResultAggregator*)aggregator)
 {
@@ -100,7 +100,7 @@ void CRationalApproximationCGMJob::compute()
 		"Number of shifts and weights are not equal!\n");
 
 	// solve the linear system with the sample vector
-	SGVector<complex64_t> vec=m_linear_solver->solve_shifted_weighted(
+	SGVector<complex128_t> vec=m_linear_solver->solve_shifted_weighted(
 		m_operator, m_vector, m_shifts, m_weights);
 
 	// Take negative (see CRationalApproximation for the formula)
