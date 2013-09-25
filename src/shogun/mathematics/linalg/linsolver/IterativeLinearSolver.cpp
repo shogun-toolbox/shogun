@@ -64,5 +64,5 @@ CIterativeLinearSolver<T, ST>::~CIterativeLinearSolver()
 	}
 
 template class CIterativeLinearSolver<float64_t>;
-template class CIterativeLinearSolver<complex64_t, float64_t>;
+template class CIterativeLinearSolver<complex128_t, float64_t>;
 }

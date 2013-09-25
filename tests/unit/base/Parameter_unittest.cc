@@ -120,14 +120,14 @@ TEST(TParameter,compare_ptype_null2)
 
 TEST(TParameter,compare_ptype_null3)
 {
-	complex64_t a(0.0);
-	EXPECT_FALSE(TParameter::compare_ptype(PT_COMPLEX64, &a, NULL));
+	complex128_t a(0.0);
+	EXPECT_FALSE(TParameter::compare_ptype(PT_COMPLEX128, &a, NULL));
 }
 
 TEST(TParameter,compare_ptype_null4)
 {
-	complex64_t a(0.0);
-	EXPECT_FALSE(TParameter::compare_ptype(PT_COMPLEX64, NULL, &a));
+	complex128_t a(0.0);
+	EXPECT_FALSE(TParameter::compare_ptype(PT_COMPLEX128, NULL, &a));
 }
 
 TEST(TParameter,compare_ptype_BOOL)
@@ -221,11 +221,11 @@ TEST(TParameter,compare_ptype_FLOATMAX)
 	EXPECT_FALSE(TParameter::compare_ptype(PT_FLOATMAX, &a, &b));
 }
 
-TEST(TParameter,compare_ptype_COMPLEX64)
+TEST(TParameter,compare_ptype_COMPLEX128)
 {
-	complex64_t a(1.0);
-	complex64_t b(2.0);
-	EXPECT_FALSE(TParameter::compare_ptype(PT_COMPLEX64, &a, &b));
+	complex128_t a(1.0);
+	complex128_t b(2.0);
+	EXPECT_FALSE(TParameter::compare_ptype(PT_COMPLEX128, &a, &b));
 }
 
 TEST(TParameter,compare_ptype_SGOBJECT)
@@ -272,11 +272,11 @@ TEST(TParameter,equals_scalar_different2)
 
 TEST(TParameter,equals_scalar_different3)
 {
-	complex64_t a(1.0, 1.0);
-	complex64_t b(1.5, 1.5);
+	complex128_t a(1.0, 1.0);
+	complex128_t b(1.5, 1.5);
 	float64_t accuracy=0.2;
 
-	TSGDataType type(CT_SCALAR, ST_NONE, PT_COMPLEX64);
+	TSGDataType type(CT_SCALAR, ST_NONE, PT_COMPLEX128);
 	TParameter* param1=new TParameter(&type, &a, "", "");
 	TParameter* param2=new TParameter(&type, &b, "", "");
 
@@ -319,11 +319,11 @@ TEST(TParameter,equals_scalar_equal2)
 
 TEST(TParameter,equals_scalar_equal3)
 {
-	complex64_t a(1.0, 1.0);
-	complex64_t b(1.2, 1.2);
+	complex128_t a(1.0, 1.0);
+	complex128_t b(1.2, 1.2);
 	float64_t accuracy=0.2;
 
-	TSGDataType type(CT_SCALAR, ST_NONE, PT_COMPLEX64);
+	TSGDataType type(CT_SCALAR, ST_NONE, PT_COMPLEX128);
 	TParameter* param1=new TParameter(&type, &a, "", "");
 	TParameter* param2=new TParameter(&type, &b, "", "");
 
@@ -356,16 +356,16 @@ TEST(TParameter,equals_vector_different1)
 
 TEST(TParameter,equals_vector_different2)
 {
-	SGVector<complex64_t> a(2);
-	SGVector<complex64_t> b(2);
+	SGVector<complex128_t> a(2);
+	SGVector<complex128_t> b(2);
 	float64_t accuracy=0.1;
 
-	a[0]=complex64_t(1.0, 1.0);
-	b[0]=complex64_t(1.0, 1.0);
-	a[1]=complex64_t(1.0, 1.0);
-	b[1]=complex64_t(1.11, 1.11);
+	a[0]=complex128_t(1.0, 1.0);
+	b[0]=complex128_t(1.0, 1.0);
+	a[1]=complex128_t(1.0, 1.0);
+	b[1]=complex128_t(1.11, 1.11);
 
-	TSGDataType type(CT_SGVECTOR, ST_NONE, PT_COMPLEX64, &a.vlen);
+	TSGDataType type(CT_SGVECTOR, ST_NONE, PT_COMPLEX128, &a.vlen);
 	TParameter* param1=new TParameter(&type, &a.vector, "", "");
 	TParameter* param2=new TParameter(&type, &b.vector, "", "");
 
@@ -398,16 +398,16 @@ TEST(TParameter,equals_vector_equal1)
 
 TEST(TParameter,equals_vector_equal2)
 {
-	SGVector<complex64_t> a(2);
-	SGVector<complex64_t> b(2);
+	SGVector<complex128_t> a(2);
+	SGVector<complex128_t> b(2);
 	float64_t accuracy=0.1;
 
-	a[0]=complex64_t(1.0, 1.0);
-	b[0]=complex64_t(1.0, 1.0);
-	a[1]=complex64_t(1.0, 1.0);
-	b[1]=complex64_t(1.01, 1.01);
+	a[0]=complex128_t(1.0, 1.0);
+	b[0]=complex128_t(1.0, 1.0);
+	a[1]=complex128_t(1.0, 1.0);
+	b[1]=complex128_t(1.01, 1.01);
 
-	TSGDataType type(CT_SGVECTOR, ST_NONE, PT_COMPLEX64, &a.vlen);
+	TSGDataType type(CT_SGVECTOR, ST_NONE, PT_COMPLEX128, &a.vlen);
 	TParameter* param1=new TParameter(&type, &a.vector, "", "");
 	TParameter* param2=new TParameter(&type, &b.vector, "", "");
 
@@ -641,15 +641,15 @@ TEST(TParameter,equals_matrix_different1)
 
 TEST(TParameter,equals_matrix_different2)
 {
-	SGMatrix<complex64_t> a(2,2);
-	SGMatrix<complex64_t> b(2,2);
+	SGMatrix<complex128_t> a(2,2);
+	SGMatrix<complex128_t> b(2,2);
 	float64_t accuracy=0.1;
 
-	a.set_const(complex64_t(1.0, 1.0));
-	b.set_const(complex64_t(1.0, 1.0));
-	b(1,1)=complex64_t(1.11, 1.11);
+	a.set_const(complex128_t(1.0, 1.0));
+	b.set_const(complex128_t(1.0, 1.0));
+	b(1,1)=complex128_t(1.11, 1.11);
 
-	TSGDataType type(CT_SGMATRIX, ST_NONE, PT_COMPLEX64, &a.num_rows, &a.num_cols);
+	TSGDataType type(CT_SGMATRIX, ST_NONE, PT_COMPLEX128, &a.num_rows, &a.num_cols);
 	TParameter* param1=new TParameter(&type, &a.matrix, "", "");
 	TParameter* param2=new TParameter(&type, &b.matrix, "", "");
 
@@ -681,15 +681,15 @@ TEST(TParameter,equals_matrix_equal1)
 
 TEST(TParameter,equals_matrix_equal2)
 {
-	SGMatrix<complex64_t> a(2,2);
-	SGMatrix<complex64_t> b(2,2);
+	SGMatrix<complex128_t> a(2,2);
+	SGMatrix<complex128_t> b(2,2);
 	float64_t accuracy=0.1;
 
-	a.set_const(complex64_t(1.0, 1.0));
-	b.set_const(complex64_t(1.0, 1.0));
-	b(1,1)=complex64_t(1.01, 1.01);
+	a.set_const(complex128_t(1.0, 1.0));
+	b.set_const(complex128_t(1.0, 1.0));
+	b(1,1)=complex128_t(1.01, 1.01);
 
-	TSGDataType type(CT_SGMATRIX, ST_NONE, PT_COMPLEX64, &a.num_rows, &a.num_cols);
+	TSGDataType type(CT_SGMATRIX, ST_NONE, PT_COMPLEX128, &a.num_rows, &a.num_cols);
 	TParameter* param1=new TParameter(&type, &a.matrix, "", "");
 	TParameter* param2=new TParameter(&type, &b.matrix, "", "");
 
@@ -1058,13 +1058,13 @@ TEST(TParameter,copy_ptype_FLOATMAX)
 	EXPECT_EQ(b, 1);
 }
 
-TEST(TParameter,copy_ptype_COMPLEX64)
+TEST(TParameter,copy_ptype_COMPLEX128)
 {
-	complex64_t a(1.0, 1.0);
-	complex64_t b(2.0, 2.0);
-	EXPECT_TRUE(TParameter::copy_ptype(PT_COMPLEX64, &a, &b));
+	complex128_t a(1.0, 1.0);
+	complex128_t b(2.0, 2.0);
+	EXPECT_TRUE(TParameter::copy_ptype(PT_COMPLEX128, &a, &b));
 	EXPECT_EQ(a, b);
-	EXPECT_EQ(b, complex64_t(1.0,1.0));
+	EXPECT_EQ(b, complex128_t(1.0,1.0));
 }
 
 TEST(TParameter,copy_stype_NONE)

@@ -19,7 +19,7 @@
 		  up to a specified accuracy.
 		- Added a "clone" method to all Shogun objects that creates a deep copy
 		- Multiclass LDA. Thanks to Kevin Hughes.
-		- Added a new datatype, complex64_t, for complex numbers. Math functions,
+		- Added a new datatype, complex128_t, for complex numbers. Math functions,
 		  support for SGVector/Matrix, SGSparseVector/Matrix, and serialization
 		  with Ascii and Xml files added. [Soumyajit De].
 		- Added mini-framework for numerical integration in one variable. Implemented

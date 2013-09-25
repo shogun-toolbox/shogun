@@ -59,33 +59,33 @@ TEST(RationalApproximation, precompute)
 
 	CLogRationalApproximationIndividual *op_func
 		=new CLogRationalApproximationIndividual(
-			op, e, eig_solver, (CLinearSolver<complex64_t, float64_t>*)linear_solver, 0);
+			op, e, eig_solver, (CLinearSolver<complex128_t, float64_t>*)linear_solver, 0);
 	SG_REF(op_func);
 	op_func->set_num_shifts(5);
 
 	op_func->precompute();
 
-	SGVector<complex64_t> shifts=op_func->get_shifts();
-	SGVector<complex64_t> weights=op_func->get_weights();
+	SGVector<complex128_t> shifts=op_func->get_shifts();
+	SGVector<complex128_t> weights=op_func->get_weights();
 	float64_t const_multiplier=op_func->get_constant_multiplier();
 
 	Map<VectorXcd> map_shifts(shifts.vector, shifts.vlen);
 	Map<VectorXcd> map_weights(weights.vector, weights.vlen);
 
 	// reference values are generated using KRYLSTAT	
-	SGVector<complex64_t> ref_shifts(5);
-	ref_shifts[0]=complex64_t(0.51827127849765364243, 0.23609847245566201179);
-	ref_shifts[1]=complex64_t(0.44961096840887382342, 0.86844451701724056925);
-	ref_shifts[2]=complex64_t(0.52786404500042061194, 2.17286896751640146164);
-	ref_shifts[3]=complex64_t(2.35067127618097071462, 4.54043100490560203042);
-	ref_shifts[4]=complex64_t(7.98944200008961935566, 3.63959017266438733529);
+	SGVector<complex128_t> ref_shifts(5);
+	ref_shifts[0]=complex128_t(0.51827127849765364243, 0.23609847245566201179);
+	ref_shifts[1]=complex128_t(0.44961096840887382342, 0.86844451701724056925);
+	ref_shifts[2]=complex128_t(0.52786404500042061194, 2.17286896751640146164);
+	ref_shifts[3]=complex128_t(2.35067127618097071462, 4.54043100490560203042);
+	ref_shifts[4]=complex128_t(7.98944200008961935566, 3.63959017266438733529);
 	Map<VectorXcd> map_ref_shifts(ref_shifts.vector, ref_shifts.vlen);
-	SGVector<complex64_t> ref_weights(5);
-	ref_weights[0]=complex64_t(-0.01647563566875611188, -0.01058494296357846871);
-	ref_weights[1]=complex64_t(-0.01690640878366324318, 0.02513114861539664235);
-	ref_weights[2]=complex64_t(0.02229379592072704488, 0.03691476590076240433);
-	ref_weights[3]=complex64_t(0.05440205028428418688, 0.00100377381669515997);
-	ref_weights[4]=complex64_t(0.03177788684575824640, -0.05246446606420653719);
+	SGVector<complex128_t> ref_weights(5);
+	ref_weights[0]=complex128_t(-0.01647563566875611188, -0.01058494296357846871);
+	ref_weights[1]=complex128_t(-0.01690640878366324318, 0.02513114861539664235);
+	ref_weights[2]=complex128_t(0.02229379592072704488, 0.03691476590076240433);
+	ref_weights[3]=complex128_t(0.05440205028428418688, 0.00100377381669515997);
+	ref_weights[4]=complex128_t(0.03177788684575824640, -0.05246446606420653719);
 	Map<VectorXcd> map_ref_weights(ref_weights.vector, ref_weights.vlen);
 	
 #ifdef HAVE_ARPREC
@@ -229,43 +229,43 @@ TEST(RationalApproximation, compare_direct_vs_cocg_accuracy)
 
 	CLogRationalApproximationIndividual *op_func
 		=new CLogRationalApproximationIndividual(
-			op, e, eig_solver, (CLinearSolver<complex64_t, float64_t>*)dense_solver, 0);
+			op, e, eig_solver, (CLinearSolver<complex128_t, float64_t>*)dense_solver, 0);
 	SG_REF(op_func);
 	op_func->set_num_shifts(4);
 
 	op_func->precompute();
 
-	SGVector<complex64_t> shifts=op_func->get_shifts();
+	SGVector<complex128_t> shifts=op_func->get_shifts();
 
 	CNormalSampler* trace_sampler=new CNormalSampler(size);
 	trace_sampler->precompute();
 
 	// create complex copies of operators, complex_dense/sparse
-	CDenseMatrixOperator<complex64_t>* complex_dense
-		=static_cast<CDenseMatrixOperator<complex64_t>*>(*op);
+	CDenseMatrixOperator<complex128_t>* complex_dense
+		=static_cast<CDenseMatrixOperator<complex128_t>*>(*op);
 
 	for (index_t i=0; i<shifts.vlen; ++i)
 	{
 		SGVector<float64_t> sample=trace_sampler->sample(0);
 
-		CDenseMatrixOperator<complex64_t>* shifted_dense
-			=new CDenseMatrixOperator<complex64_t>(*complex_dense);
+		CDenseMatrixOperator<complex128_t>* shifted_dense
+			=new CDenseMatrixOperator<complex128_t>(*complex_dense);
 
-		SGVector<complex64_t> diag=shifted_dense->get_diagonal();
+		SGVector<complex128_t> diag=shifted_dense->get_diagonal();
 		for (index_t j=0; j<diag.vlen; ++j)
 			diag[j]-=shifts[i];
 
 		shifted_dense->set_diagonal(diag);
 
-		SGMatrix<complex64_t> shifted_m=shifted_dense->get_matrix_operator();
+		SGMatrix<complex128_t> shifted_m=shifted_dense->get_matrix_operator();
 
-		CSparseFeatures<complex64_t> feat(shifted_m);
-		SGSparseMatrix<complex64_t> shifted_sm=feat.get_sparse_feature_matrix();
-		CSparseMatrixOperator<complex64_t>* shifted_sparse
-			=new CSparseMatrixOperator<complex64_t>(shifted_sm);
+		CSparseFeatures<complex128_t> feat(shifted_m);
+		SGSparseMatrix<complex128_t> shifted_sm=feat.get_sparse_feature_matrix();
+		CSparseMatrixOperator<complex128_t>* shifted_sparse
+			=new CSparseMatrixOperator<complex128_t>(shifted_sm);
 
-		SGVector<complex64_t> xd=dense_solver->solve(shifted_dense, sample);
-		SGVector<complex64_t> xs=sparse_solver->solve(shifted_sparse, sample);
+		SGVector<complex128_t> xd=dense_solver->solve(shifted_dense, sample);
+		SGVector<complex128_t> xs=sparse_solver->solve(shifted_sparse, sample);
 
 		Map<VectorXcd> map_xd(xd.vector, xd.vlen);
 		Map<VectorXcd> map_xs(xs.vector, xs.vlen);

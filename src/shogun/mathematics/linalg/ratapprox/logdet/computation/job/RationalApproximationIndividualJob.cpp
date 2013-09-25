@@ -34,10 +34,10 @@ CRationalApproximationIndividualJob::CRationalApproximationIndividualJob()
 
 CRationalApproximationIndividualJob::CRationalApproximationIndividualJob(
 	CJobResultAggregator* aggregator,
-	CLinearSolver<complex64_t, float64_t>* linear_solver,
-	CLinearOperator<complex64_t>* linear_operator,
+	CLinearSolver<complex128_t, float64_t>* linear_solver,
+	CLinearOperator<complex128_t>* linear_operator,
 	SGVector<float64_t> vector,
-	complex64_t weight)
+	complex128_t weight)
 	: CIndependentJob(aggregator)
 {
 	init();
@@ -59,7 +59,7 @@ void CRationalApproximationIndividualJob::init()
 {
 	m_linear_solver=NULL;
 	m_operator=NULL;
-	m_weight=complex64_t(0.0);
+	m_weight=complex128_t(0.0);
 
 	SG_ADD((CSGObject**)&m_linear_solver, "linear_solver",
 		"Linear solver for complex system", MS_NOT_AVAILABLE);
@@ -89,7 +89,7 @@ void CRationalApproximationIndividualJob::compute()
 	REQUIRE(m_vector.vector, "Vector is not set!\n");
 
 	// solve the linear system with the sample vector
-	SGVector<complex64_t> vec=m_linear_solver->solve(m_operator, m_vector);
+	SGVector<complex128_t> vec=m_linear_solver->solve(m_operator, m_vector);
 
 	// multiply with the weight using Eigen3 and take negative
 	// (see CRationalApproximation for the formula)
@@ -98,7 +98,7 @@ void CRationalApproximationIndividualJob::compute()
 	v=-v;
 
 	// set as a vector result and submit to the aggregator
-	CVectorResult<complex64_t>* result=new CVectorResult<complex64_t>(vec);
+	CVectorResult<complex128_t>* result=new CVectorResult<complex128_t>(vec);
 	SG_REF(result);
 
 	m_aggregator->submit_result(result);

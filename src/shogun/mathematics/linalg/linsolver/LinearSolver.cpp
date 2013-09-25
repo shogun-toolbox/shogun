@@ -13,6 +13,6 @@
 namespace shogun
 {
 template class CLinearSolver<float64_t>;
-template class CLinearSolver<complex64_t>;
-template class CLinearSolver<complex64_t, float64_t>;
+template class CLinearSolver<complex128_t>;
+template class CLinearSolver<complex128_t, float64_t>;
 }

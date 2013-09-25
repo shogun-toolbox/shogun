@@ -49,10 +49,10 @@ SGSparseMatrix<T>::~SGSparseMatrix()
 }
 
 template <> template <>
-const SGVector<complex64_t> SGSparseMatrix<complex64_t>::operator*(
+const SGVector<complex128_t> SGSparseMatrix<complex128_t>::operator*(
 	SGVector<float64_t> v) const
 {
-	SGVector<complex64_t> result(num_vectors);
+	SGVector<complex128_t> result(num_vectors);
 	REQUIRE(v.vlen==num_features,
 		"Dimension mismatch! %d vs %d\n",
 		v.vlen, num_features);
@@ -62,10 +62,10 @@ const SGVector<complex64_t> SGSparseMatrix<complex64_t>::operator*(
 }
 
 template <> template <>
-const SGVector<complex64_t> SGSparseMatrix<complex64_t>::operator*(
+const SGVector<complex128_t> SGSparseMatrix<complex128_t>::operator*(
 	SGVector<int32_t> v) const
 {
-	SGVector<complex64_t> result(num_vectors);
+	SGVector<complex128_t> result(num_vectors);
 	REQUIRE(v.vlen==num_features,
 		"Dimension mismatch! %d vs %d\n",
 		v.vlen, num_features);
@@ -99,9 +99,9 @@ void SGSparseMatrix<T>::load(CFile* loader)
 }
 
 template<>
-void SGSparseMatrix<complex64_t>::load(CFile* loader)
+void SGSparseMatrix<complex128_t>::load(CFile* loader)
 {
-	SG_SERROR("SGSparseMatrix::load():: Not supported for complex64_t");
+	SG_SERROR("SGSparseMatrix::load():: Not supported for complex128_t");
 }
 
 template<class T> SGVector<float64_t> SGSparseMatrix<T>::load_with_labels(CLibSVMFile* file, bool do_sort_features)
@@ -120,7 +120,7 @@ template<class T> SGVector<float64_t> SGSparseMatrix<T>::load_with_labels(CLibSV
 	return labels;
 }
 
-template<> SGVector<float64_t> SGSparseMatrix<complex64_t>::load_with_labels(CLibSVMFile* file, bool do_sort_features) { return SGVector<float64_t>(); }
+template<> SGVector<float64_t> SGSparseMatrix<complex128_t>::load_with_labels(CLibSVMFile* file, bool do_sort_features) { return SGVector<float64_t>(); }
 
 
 template<class T>
@@ -134,9 +134,9 @@ void SGSparseMatrix<T>::save(CFile* saver)
 }
 
 template<>
-void SGSparseMatrix<complex64_t>::save(CFile* saver)
+void SGSparseMatrix<complex128_t>::save(CFile* saver)
 {
-	SG_SERROR("SGSparseMatrix::save():: Not supported for complex64_t");
+	SG_SERROR("SGSparseMatrix::save():: Not supported for complex128_t");
 }
 
 template<class T> void SGSparseMatrix<T>::save_with_labels(CLibSVMFile* file,
@@ -152,7 +152,7 @@ template<class T> void SGSparseMatrix<T>::save_with_labels(CLibSVMFile* file,
 			raw_labels);
 }
 
-template <> void SGSparseMatrix<complex64_t>::save_with_labels(CLibSVMFile* saver, SGVector<float64_t> labels) { }
+template <> void SGSparseMatrix<complex128_t>::save_with_labels(CLibSVMFile* saver, SGVector<float64_t> labels) { }
 
 
 template <class T>
@@ -295,5 +295,5 @@ template class SGSparseMatrix<uint64_t>;
 template class SGSparseMatrix<float32_t>;
 template class SGSparseMatrix<float64_t>;
 template class SGSparseMatrix<floatmax_t>;
-template class SGSparseMatrix<complex64_t>;
+template class SGSparseMatrix<complex128_t>;
 }

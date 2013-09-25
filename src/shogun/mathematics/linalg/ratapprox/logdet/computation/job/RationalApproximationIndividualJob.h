@@ -45,9 +45,9 @@ public:
 	 * vector after solving the linear-system
 	 */
 	CRationalApproximationIndividualJob(CJobResultAggregator* aggregator,
-		CLinearSolver<complex64_t, float64_t>* linear_solver,
-		CLinearOperator<complex64_t>* linear_operator,
-		SGVector<float64_t> vector, complex64_t weight);
+		CLinearSolver<complex128_t, float64_t>* linear_solver,
+		CLinearOperator<complex128_t>* linear_operator,
+		SGVector<float64_t> vector, complex128_t weight);
 
 	/** destructor */
 	virtual ~CRationalApproximationIndividualJob();
@@ -63,16 +63,16 @@ public:
 
 private:
 	/** the shifted operator for linear system to be solved */
-	CLinearOperator<complex64_t>* m_operator;
+	CLinearOperator<complex128_t>* m_operator;
 
 	/** the vector of the system to be solved */
 	SGVector<float64_t> m_vector;
 
 	/** the complex linear solver for solving systems */
-	CLinearSolver<complex64_t, float64_t>* m_linear_solver;
+	CLinearSolver<complex128_t, float64_t>* m_linear_solver;
 
 	/** the weight to be multiplied with the solution vector */
-	complex64_t m_weight;
+	complex128_t m_weight;
 
 	/** initialize with default values and register params */
 	void init();

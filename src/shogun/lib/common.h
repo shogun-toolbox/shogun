@@ -62,7 +62,7 @@ typedef int32_t index_t;
 /** complex type */
 #include <complex>
 
-typedef std::complex<float64_t> complex64_t;
+typedef std::complex<float64_t> complex128_t;
 
 #include <shogun/lib/memory.h>
 #endif //__COMMON_H__

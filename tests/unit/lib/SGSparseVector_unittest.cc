@@ -16,46 +16,46 @@
 
 using namespace shogun;
 
-TEST(SGSparseVector, dense_dot_complex64_float64)
+TEST(SGSparseVector, dense_dot_complex128_float64)
 {
 	const int32_t size=10;
 	const int32_t num_feat=size/2;
 
-	SGSparseVector<complex64_t> vec(num_feat);
+	SGSparseVector<complex128_t> vec(num_feat);
 	for (index_t i=0; i<vec.num_feat_entries; ++i)
 	{
-		SGSparseVectorEntry<complex64_t> entry;
+		SGSparseVectorEntry<complex128_t> entry;
 		entry.feat_index=(i+1)*2;
-		entry.entry=complex64_t(0.5, 0.75);
+		entry.entry=complex128_t(0.5, 0.75);
 		vec.features[i]=entry;
 	}
 
 	SGVector<float64_t> v(size);
 	v.set_const(1.5);
 
-	complex64_t dot=vec.dense_dot(v);
+	complex128_t dot=vec.dense_dot(v);
 	EXPECT_NEAR(dot.real(), 3.0, 1E-19);
 	EXPECT_NEAR(dot.imag(), 4.5, 1E-19);
 }
 
-TEST(SGSparseVector, dense_dot_complex64_int32)
+TEST(SGSparseVector, dense_dot_complex128_int32)
 {
 	const int32_t size=10;
 	const int32_t num_feat=size/2;
 
-	SGSparseVector<complex64_t> vec(num_feat);
+	SGSparseVector<complex128_t> vec(num_feat);
 	for (index_t i=0; i<vec.num_feat_entries; ++i)
 	{
-		SGSparseVectorEntry<complex64_t> entry;
+		SGSparseVectorEntry<complex128_t> entry;
 		entry.feat_index=(i+1)*2;
-		entry.entry=complex64_t(0.5, 0.75);
+		entry.entry=complex128_t(0.5, 0.75);
 		vec.features[i]=entry;
 	}
 
 	SGVector<int32_t> v(size);
 	v.set_const(1);
 
-	complex64_t dot=vec.dense_dot(v);
+	complex128_t dot=vec.dense_dot(v);
 	EXPECT_NEAR(dot.real(), 2.0, 1E-19);
 	EXPECT_NEAR(dot.imag(), 3.0, 1E-19);
 }

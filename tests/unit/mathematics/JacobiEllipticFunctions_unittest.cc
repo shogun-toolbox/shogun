@@ -19,7 +19,7 @@
 using namespace shogun;
 
 typedef float64_t Real;
-typedef complex64_t Complex;
+typedef complex128_t Complex;
 
 TEST(JacobiEllipticFunctions, ellipKKp)
 {

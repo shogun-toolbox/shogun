@@ -92,16 +92,16 @@ SerializableXmlReader00::read_scalar_wrapped(
 		if (sscanf(buf, "%Lg", (floatmax_t*) param) != 1)
 			result = false;
 		break;
-	case PT_COMPLEX64:
+	case PT_COMPLEX128:
 		float64_t c_real, c_imag;
 		if (sscanf(buf, "(%lg,%lg)", &c_real, &c_imag) != 2)
 			result = false;
 #ifdef HAVE_CXX11
-		((complex64_t*) param)->real(c_real);
-		((complex64_t*) param)->imag(c_imag);
+		((complex128_t*) param)->real(c_real);
+		((complex128_t*) param)->imag(c_imag);
 #else
-		((complex64_t*) param)->real()=c_real;
-		((complex64_t*) param)->imag()=c_imag;
+		((complex128_t*) param)->real()=c_real;
+		((complex128_t*) param)->imag()=c_imag;
 #endif
 		break;
 	case PT_SGOBJECT:

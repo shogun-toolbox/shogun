@@ -23,7 +23,7 @@ namespace shogun
 template<class T> class CScalarResult : public CJobResult
 {
 /** this class supports complex */
-typedef bool supports_complex64_t;
+typedef bool supports_complex128_t;
 
 public:
 	/** default constructor */

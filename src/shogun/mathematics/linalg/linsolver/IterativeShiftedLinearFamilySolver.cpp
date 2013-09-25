@@ -96,5 +96,5 @@ void CIterativeShiftedLinearFamilySolver<T, ST>::compute_alpha_sh(
 	}
 
 template class CIterativeShiftedLinearFamilySolver<float64_t>;
-template class CIterativeShiftedLinearFamilySolver<float64_t, complex64_t>;
+template class CIterativeShiftedLinearFamilySolver<float64_t, complex128_t>;
 }

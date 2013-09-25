@@ -25,5 +25,5 @@ template class CLinearOperator<uint64_t>;
 template class CLinearOperator<float32_t>;
 template class CLinearOperator<float64_t>;
 template class CLinearOperator<floatmax_t>;
-template class CLinearOperator<complex64_t>;
+template class CLinearOperator<complex128_t>;
 }

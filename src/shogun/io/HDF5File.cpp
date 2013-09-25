@@ -415,8 +415,8 @@ hid_t CHDF5File::get_compatible_type(H5T_class_t t_class,
 			case PT_FLOAT32: return H5T_NATIVE_FLOAT;
 			case PT_FLOAT64: return H5T_NATIVE_DOUBLE;
 			case PT_FLOATMAX: return H5T_NATIVE_LDOUBLE;
-			case PT_COMPLEX64:
-				SG_ERROR("complex64_t not compatible with HDF5File!");
+			case PT_COMPLEX128:
+				SG_ERROR("complex128_t not compatible with HDF5File!");
 				return -1;
 			case PT_SGOBJECT:
 				SG_ERROR("Implementation error during writing "

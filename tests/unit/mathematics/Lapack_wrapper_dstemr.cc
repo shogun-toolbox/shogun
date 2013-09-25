@@ -57,7 +57,7 @@ TEST(Lapack_wrapper, dstemr)
 	VectorXcd eigenvals=m.eigenvalues();
 	Map<VectorXd> map(w.vector, w.vlen);
 
-	EXPECT_NEAR((map.cast<complex64_t>()-eigenvals).norm(), 0.0, 1E-10);
+	EXPECT_NEAR((map.cast<complex128_t>()-eigenvals).norm(), 0.0, 1E-10);
 }
 #endif // HAVE_ATLAS
 #endif // HAVE_EIGEN3

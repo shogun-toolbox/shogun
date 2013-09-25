@@ -25,5 +25,5 @@ template class CVectorResult<uint64_t>;
 template class CVectorResult<float32_t>;
 template class CVectorResult<float64_t>;
 template class CVectorResult<floatmax_t>;
-template class CVectorResult<complex64_t>;
+template class CVectorResult<complex128_t>;
 }

@@ -30,7 +30,7 @@ template<class T> class SGVector;
  * written by Erlend Aune, under GPL2+
  */
 class CCGMShiftedFamilySolver
- : public CIterativeShiftedLinearFamilySolver<float64_t, complex64_t>
+ : public CIterativeShiftedLinearFamilySolver<float64_t, complex128_t>
 {
 
 public:
@@ -64,9 +64,9 @@ public:
 	 * @param weights the weights to be multiplied with each solution for each
 	 * shift
 	 */
-	virtual SGVector<complex64_t> solve_shifted_weighted(
+	virtual SGVector<complex128_t> solve_shifted_weighted(
 		CLinearOperator<float64_t>* A, SGVector<float64_t> b,
-		SGVector<complex64_t> shifts, SGVector<complex64_t> weights);
+		SGVector<complex128_t> shifts, SGVector<complex128_t> weights);
 
 	/** @return object name */
 	virtual const char* get_name() const

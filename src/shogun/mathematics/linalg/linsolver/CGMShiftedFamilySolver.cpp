@@ -25,12 +25,12 @@ namespace shogun
 {
 
 CCGMShiftedFamilySolver::CCGMShiftedFamilySolver()
-	: CIterativeShiftedLinearFamilySolver<float64_t, complex64_t>()
+	: CIterativeShiftedLinearFamilySolver<float64_t, complex128_t>()
 {
 }
 
 CCGMShiftedFamilySolver::CCGMShiftedFamilySolver(bool store_residuals)
-	: CIterativeShiftedLinearFamilySolver<float64_t, complex64_t>(store_residuals)
+	: CIterativeShiftedLinearFamilySolver<float64_t, complex128_t>(store_residuals)
 {
 }
 
@@ -41,17 +41,17 @@ CCGMShiftedFamilySolver::~CCGMShiftedFamilySolver()
 SGVector<float64_t> CCGMShiftedFamilySolver::solve(
 	CLinearOperator<float64_t>* A, SGVector<float64_t> b)
 {
-	SGVector<complex64_t> shifts(1);
+	SGVector<complex128_t> shifts(1);
 	shifts[0]=0.0;
-	SGVector<complex64_t> weights(1);
+	SGVector<complex128_t> weights(1);
 	weights[0]=1.0;
 
 	return solve_shifted_weighted(A, b, shifts, weights).get_real();
 }
 
-SGVector<complex64_t> CCGMShiftedFamilySolver::solve_shifted_weighted(
+SGVector<complex128_t> CCGMShiftedFamilySolver::solve_shifted_weighted(
 	CLinearOperator<float64_t>* A, SGVector<float64_t> b,
-	SGVector<complex64_t> shifts, SGVector<complex64_t> weights)
+	SGVector<complex128_t> shifts, SGVector<complex128_t> weights)
 {
 	SG_DEBUG("Entering\n");
 
@@ -80,7 +80,7 @@ SGVector<complex64_t> CCGMShiftedFamilySolver::solve_shifted_weighted(
 
 	// initial direction is same as residual
 	p=r;
-	p_sh=r.replicate(1, shifts.vlen).cast<complex64_t>();
+	p_sh=r.replicate(1, shifts.vlen).cast<complex128_t>();
 
 	// non shifted initializers
 	float64_t r_norm2=r.dot(r);
@@ -88,11 +88,11 @@ SGVector<complex64_t> CCGMShiftedFamilySolver::solve_shifted_weighted(
 	float64_t alpha=1.0;
 
 	// shifted quantities
-	SGVector<complex64_t> alpha_sh(shifts.vlen);
-	SGVector<complex64_t> beta_sh(shifts.vlen);
-	SGVector<complex64_t> zeta_sh_old(shifts.vlen);
-	SGVector<complex64_t> zeta_sh_cur(shifts.vlen);
-	SGVector<complex64_t> zeta_sh_new(shifts.vlen);
+	SGVector<complex128_t> alpha_sh(shifts.vlen);
+	SGVector<complex128_t> beta_sh(shifts.vlen);
+	SGVector<complex128_t> zeta_sh_old(shifts.vlen);
+	SGVector<complex128_t> zeta_sh_cur(shifts.vlen);
+	SGVector<complex128_t> zeta_sh_new(shifts.vlen);
 
 	// shifted initializers
 	zeta_sh_old.set_const(1.0);
@@ -190,7 +190,7 @@ SGVector<complex64_t> CCGMShiftedFamilySolver::solve_shifted_weighted(
 		it.get_iter_info().iteration_count, it.get_iter_info().residual_norm, elapsed);
 
 	// compute the final result vector multiplied by weights
-	SGVector<complex64_t> result(b.vlen);
+	SGVector<complex128_t> result(b.vlen);
 	result.set_const(0.0);
 	Map<VectorXcd> x(result.vector, result.vlen);
 

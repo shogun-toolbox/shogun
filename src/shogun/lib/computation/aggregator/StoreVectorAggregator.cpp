@@ -85,5 +85,5 @@ template class CStoreVectorAggregator<uint64_t>;
 template class CStoreVectorAggregator<float32_t>;
 template class CStoreVectorAggregator<float64_t>;
 template class CStoreVectorAggregator<floatmax_t>;
-template class CStoreVectorAggregator<complex64_t>;
+template class CStoreVectorAggregator<complex128_t>;
 }

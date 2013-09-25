@@ -25,5 +25,5 @@ template class COperatorFunction<uint64_t>;
 template class COperatorFunction<float32_t>;
 template class COperatorFunction<float64_t>;
 template class COperatorFunction<floatmax_t>;
-template class COperatorFunction<complex64_t>;
+template class COperatorFunction<complex128_t>;
 }

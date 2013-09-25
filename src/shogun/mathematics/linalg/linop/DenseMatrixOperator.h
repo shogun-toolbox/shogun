@@ -28,8 +28,8 @@ template<class T> class SGMatrix;
  */
 template<class T> class CDenseMatrixOperator : public CMatrixOperator<T>
 {
-/** this class has support for complex64_t */
-typedef bool supports_complex64_t;
+/** this class has support for complex128_t */
+typedef bool supports_complex128_t;
 
 public:
 	/** default constructor */

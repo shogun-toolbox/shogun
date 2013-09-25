@@ -83,5 +83,5 @@ template class CStoreScalarAggregator<uint64_t>;
 template class CStoreScalarAggregator<float32_t>;
 template class CStoreScalarAggregator<float64_t>;
 template class CStoreScalarAggregator<floatmax_t>;
-template class CStoreScalarAggregator<complex64_t>;
+template class CStoreScalarAggregator<complex128_t>;
 }
