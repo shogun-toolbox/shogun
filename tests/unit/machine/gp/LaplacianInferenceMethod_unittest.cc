@@ -1073,7 +1073,7 @@ TEST(LaplacianInferenceMethod,get_marginal_likelihood_derivatives_probit_likelih
 	SG_UNREF(inf);
 }
 
-TEST(LaplacianInferenceMethod,get_posterior_approximation_mean_probit_likelihood)
+TEST(LaplacianInferenceMethod,get_posterior_mean_probit_likelihood)
 {
 	// create some easy random classification data
 	index_t n=5;
@@ -1115,7 +1115,7 @@ TEST(LaplacianInferenceMethod,get_posterior_approximation_mean_probit_likelihood
 			features_train,	mean, labels_train, likelihood);
 
 	// comparison of the mode with result from GPML package
-	SGVector<float64_t> approx_mean=inf->get_posterior_approximation_mean();
+	SGVector<float64_t> approx_mean=inf->get_posterior_mean();
 	EXPECT_NEAR(approx_mean[0], -0.50527, 1E-5);
 	EXPECT_NEAR(approx_mean[1], 0.51150, 1E-5);
 	EXPECT_NEAR(approx_mean[2], 0.50609, 1E-5);
@@ -1126,7 +1126,7 @@ TEST(LaplacianInferenceMethod,get_posterior_approximation_mean_probit_likelihood
 	SG_UNREF(inf);
 }
 
-TEST(LaplacianInferenceMethod,get_posterior_approximation_covariance_probit_likelihood)
+TEST(LaplacianInferenceMethod,get_posterior_covariance_probit_likelihood)
 {
 	// create some easy random classification data
 	index_t n=5;
@@ -1167,7 +1167,7 @@ TEST(LaplacianInferenceMethod,get_posterior_approximation_covariance_probit_like
 	CLaplacianInferenceMethod* inf=new CLaplacianInferenceMethod(kernel,
 			features_train,	mean, labels_train, likelihood);
 
-	SGMatrix<float64_t> approx_cov=inf->get_posterior_approximation_covariance();
+	SGMatrix<float64_t> approx_cov=inf->get_posterior_covariance();
 
 	// comparison of the covariance with result from GPML package
 	EXPECT_NEAR(approx_cov(0,0), 6.6120e-01, 1E-5);

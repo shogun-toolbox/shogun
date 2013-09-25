@@ -148,7 +148,7 @@ public:
 	 *
 	 * @return mean vector \f$\mu\f$
 	 */
-	virtual SGVector<float64_t> get_posterior_approximation_mean();
+	virtual SGVector<float64_t> get_posterior_mean();
 
 	/** returns covariance matrix \f$\Sigma=(K^{-1}+\tilde{S})^{-1}\f$ of the
 	 * Gaussian distribution \f$\mathcal{N}(\mu,\Sigma)\f$, which is an
@@ -169,7 +169,7 @@ public:
 	 *
 	 * @return covariance matrix \f$\Sigma\f$
 	 */
-	virtual SGMatrix<float64_t> get_posterior_approximation_covariance();
+	virtual SGMatrix<float64_t> get_posterior_covariance();
 
 	/** returns tolerance of the EP approximation
 	 *

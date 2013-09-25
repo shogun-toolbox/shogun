@@ -17,8 +17,8 @@
 
 #ifdef HAVE_EIGEN3
 
-#include <shogun/kernel/Kernel.h>
 #include <shogun/base/SGObject.h>
+#include <shogun/kernel/Kernel.h>
 #include <shogun/features/Features.h>
 #include <shogun/labels/Labels.h>
 #include <shogun/machine/gp/LikelihoodModel.h>
@@ -184,14 +184,14 @@ public:
 	 * p(f|y) \approx q(f|y) = \mathcal{N}(\mu,\Sigma)
 	 * \f]
 	 *
+	 * in case if particular inference method doesn't compute posterior
+	 * \f$p(f|y)\f$ exactly, and it returns covariance matrix \f$\Sigma\f$ of
+	 * the posterior Gaussian distribution \f$\mathcal{N}(\mu,\Sigma)\f$
+	 * otherwise.
+	 *
 	 * @return mean vector
 	 */
-	virtual SGVector<float64_t> get_posterior_approximation_mean()
-	{
-		SG_ERROR("Inference method doesn't use a Gaussian approximation to the "
-				"posterior")
-		return SGVector<float64_t>();
-	}
+	virtual SGVector<float64_t> get_posterior_mean()=0;
 
 	/** returns covariance matrix \f$\Sigma\f$ of the Gaussian distribution
 	 * \f$\mathcal{N}(\mu,\Sigma)\f$, which is an approximation to the
@@ -201,14 +201,14 @@ public:
 	 * p(f|y) \approx q(f|y) = \mathcal{N}(\mu,\Sigma)
 	 * \f]
 	 *
+	 * in case if particular inference method doesn't compute posterior
+	 * \f$p(f|y)\f$ exactly, and it returns covariance matrix \f$\Sigma\f$ of
+	 * the posterior Gaussian distribution \f$\mathcal{N}(\mu,\Sigma)\f$
+	 * otherwise.
+	 *
 	 * @return covariance matrix
 	 */
-	virtual SGMatrix<float64_t> get_posterior_approximation_covariance()
-	{
-		SG_ERROR("Inference method doesn't use a Gaussian approximation to the "
-				"posterior")
-		return SGMatrix<float64_t>();
-	}
+	virtual SGMatrix<float64_t> get_posterior_covariance()=0;
 
 	/** get the gradient
 	 *
@@ -373,9 +373,6 @@ protected:
 	/** update train kernel matrix */
 	virtual void update_train_kernel();
 
-	/** update feature matrix */
-	virtual void update_feature_matrix();
-
 	/** returns derivative of negative log marginal likelihood wrt parameter of
 	 * CInferenceMethod class
 	 *
@@ -451,9 +448,6 @@ protected:
 
 	/** kernel matrix from features (non-scalled by inference scalling) */
 	SGMatrix<float64_t> m_ktrtr;
-
-	/** feature matrix */
-	SGMatrix<float64_t> m_feat;
 };
 }
 #endif /* HAVE_EIGEN3 */

@@ -275,7 +275,7 @@ TEST(EPInferenceMethod,get_marginal_likelihood_derivatives_probit_likelihood)
 	SG_UNREF(inf);
 }
 
-TEST(EPInferenceMethod, get_posterior_approximation_mean_probit_likelihood)
+TEST(EPInferenceMethod, get_posterior_mean_probit_likelihood)
 {
 	// create some easy random classification data
 	index_t n=5;
@@ -318,7 +318,7 @@ TEST(EPInferenceMethod, get_posterior_approximation_mean_probit_likelihood)
 	inf->set_scale(1.5);
 
 	// comparison of posterior approximation mean with result from GPML package
-	SGVector<float64_t> mu=inf->get_posterior_approximation_mean();
+	SGVector<float64_t> mu=inf->get_posterior_mean();
 
 	EXPECT_NEAR(mu[0], -0.882471450365118, 1E-3);
 	EXPECT_NEAR(mu[1], 1.132570041978009, 1E-3);
@@ -330,7 +330,7 @@ TEST(EPInferenceMethod, get_posterior_approximation_mean_probit_likelihood)
 	SG_UNREF(inf);
 }
 
-TEST(EPInferenceMethod, get_posterior_approximation_covariance_probit_likelihood)
+TEST(EPInferenceMethod, get_posterior_covariance_probit_likelihood)
 {
 	// create some easy random classification data
 	index_t n=5;
@@ -374,7 +374,7 @@ TEST(EPInferenceMethod, get_posterior_approximation_covariance_probit_likelihood
 
 	// comparison of posterior approximation covariance with result from GPML
 	// package
-	SGMatrix<float64_t> Sigma=inf->get_posterior_approximation_covariance();
+	SGMatrix<float64_t> Sigma=inf->get_posterior_covariance();
 
 	EXPECT_NEAR(Sigma(0,0), 1.20274103263760379, 1E-3);
 	EXPECT_NEAR(Sigma(0,1), -0.00260850144375850, 1E-3);

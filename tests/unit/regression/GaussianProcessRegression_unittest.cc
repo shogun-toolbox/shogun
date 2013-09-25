@@ -407,4 +407,61 @@ TEST(GaussianProcessRegression, get_variance_vector_2)
 	SG_UNREF(gpr);
 }
 
+TEST(GaussianProcessRegression,apply_regression_scaled_kernel)
+{
+	// create some easy regression data: 1d noisy sine wave
+	index_t ntr=5;
+
+	SGMatrix<float64_t> feat_train(1, ntr);
+	SGVector<float64_t> lab_train(ntr);
+
+	feat_train[0]=1.25107;
+	feat_train[1]=2.16097;
+	feat_train[2]=0.00034;
+	feat_train[3]=0.90699;
+	feat_train[4]=0.44026;
+
+	lab_train[0]=0.39635;
+	lab_train[1]=0.00358;
+	lab_train[2]=-1.18139;
+	lab_train[3]=1.35533;
+	lab_train[4]=-0.08232;
+
+	// shogun representation of features and labels
+	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
+	CRegressionLabels* labels_train=new CRegressionLabels(lab_train);
+
+	// choose Gaussian kernel with width = 2 * ell^2 = 0.02 and zero mean
+	// function
+	CGaussianKernel* kernel=new CGaussianKernel(10, 0.02);
+	CZeroMean* mean=new CZeroMean();
+
+	// Gaussian likelihood with sigma = 0.25
+	CGaussianLikelihood* lik=new CGaussianLikelihood(0.25);
+
+	// specify GP regression with exact inference
+	CExactInferenceMethod* inf=new CExactInferenceMethod(kernel, features_train,
+			mean, labels_train, lik);
+	inf->set_scale(0.8);
+
+	// create GPR and train
+	CGaussianProcessRegression* gpr=new CGaussianProcessRegression(inf);
+	gpr->train();
+
+	// apply regression to train features
+	CRegressionLabels* predictions=gpr->apply_regression();
+
+	// comparison of predictions with result from GPML package
+	SGVector<float64_t> mu=predictions->get_labels();
+
+	EXPECT_NEAR(mu[0], 0.36138244503573730, 1E-15);
+	EXPECT_NEAR(mu[1], 0.00326149466192171, 1E-15);
+	EXPECT_NEAR(mu[2], -1.07628454651757055, 1E-15);
+	EXPECT_NEAR(mu[3], 1.23483449459758354, 1E-15);
+	EXPECT_NEAR(mu[4], -0.07500012155336166, 1E-15);
+
+	SG_UNREF(predictions);
+	SG_UNREF(gpr);
+}
+
 #endif

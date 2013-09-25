@@ -15,8 +15,6 @@
 #ifdef HAVE_EIGEN3
 
 #include <shogun/machine/gp/InferenceMethod.h>
-#include <shogun/features/CombinedFeatures.h>
-#include <shogun/features/DotFeatures.h>
 #include <shogun/distributions/classical/GaussianDistribution.h>
 #include <shogun/mathematics/Statistics.h>
 
@@ -84,13 +82,13 @@ float64_t CInferenceMethod::get_marginal_likelihood_estimate(
 		int32_t num_importance_samples, float64_t ridge_size)
 {
 	/* sample from Gaussian approximation to q(f|y) */
-	SGMatrix<float64_t> cov=get_posterior_approximation_covariance();
+	SGMatrix<float64_t> cov=get_posterior_covariance();
 
 	/* add ridge */
 	for (index_t i=0; i<cov.num_rows; ++i)
 		cov(i,i)+=ridge_size;
 
-	SGVector<float64_t> mean=get_posterior_approximation_mean();
+	SGVector<float64_t> mean=get_posterior_mean();
 
 	CGaussianDistribution* post_approx=new CGaussianDistribution(mean, cov);
 	SGMatrix<float64_t> samples=post_approx->sample(num_importance_samples);
@@ -117,7 +115,7 @@ float64_t CInferenceMethod::get_marginal_likelihood_estimate(
 		scaled_kernel(i,i)+=ridge_size;
 
 	CGaussianDistribution* prior=new CGaussianDistribution(
-			m_mean->get_mean_vector(m_feat), scaled_kernel);
+			m_mean->get_mean_vector(m_features), scaled_kernel);
 	SGVector<float64_t> log_pdf_prior=prior->log_pdf_multiple(samples);
 	SG_UNREF(prior);
 	prior=NULL;
@@ -249,7 +247,6 @@ void* CInferenceMethod::get_derivative_helper(void *p)
 void CInferenceMethod::update()
 {
 	check_members();
-	update_feature_matrix();
 	update_train_kernel();
 }
 
@@ -267,22 +264,6 @@ void CInferenceMethod::check_members() const
 			m_labels->get_num_labels(), m_features->get_num_vectors())
 	REQUIRE(m_kernel, "Kernel should not be NULL\n")
 	REQUIRE(m_mean, "Mean function should not be NULL\n")
-
-	CFeatures* feat=m_features;
-
-	if (m_features->get_feature_class()==C_COMBINED)
-		feat=((CCombinedFeatures*)m_features)->get_first_feature_obj();
-	else
-		SG_REF(m_features);
-
-	REQUIRE(feat->has_property(FP_DOT),
-			"Training features must be type of CFeatures\n")
-	REQUIRE(feat->get_feature_class()==C_DENSE,
-			"Training features must be dense\n")
-	REQUIRE(feat->get_feature_type()==F_DREAL,
-			"Training features must be real\n")
-
-	SG_UNREF(feat);
 }
 
 void CInferenceMethod::update_train_kernel()
@@ -290,20 +271,6 @@ void CInferenceMethod::update_train_kernel()
 	m_kernel->cleanup();
 	m_kernel->init(m_features, m_features);
 	m_ktrtr=m_kernel->get_kernel_matrix();
-}
-
-void CInferenceMethod::update_feature_matrix()
-{
-	CFeatures* feat=m_features;
-
-	if (m_features->get_feature_class()==C_COMBINED)
-		feat=((CCombinedFeatures*)m_features)->get_first_feature_obj();
-	else
-		SG_REF(m_features);
-
-	m_feat=((CDotFeatures*)feat)->get_computed_dot_feature_matrix();
-
-	SG_UNREF(feat);
 }
 
 #endif /* HAVE_EIGEN3 */

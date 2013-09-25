@@ -4,6 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
+ * Written (W) 2013 Roman Votyakov
  * Copyright (C) 2012 Jacob Walker
  */
 
@@ -19,7 +20,7 @@ namespace shogun
  *
  * Simple mean function that assumes a mean of zero.
  */
-class CZeroMean: public CMeanFunction
+class CZeroMean : public CMeanFunction
 {
 public:
 	/** constructor */
@@ -40,7 +41,7 @@ public:
 	 *
 	 * @return mean of feature vectors
 	 */
-	virtual SGVector<float64_t> get_mean_vector(SGMatrix<float64_t> data) const;
+	virtual SGVector<float64_t> get_mean_vector(const CFeatures* features) const;
 };
 }
 #endif /* CZEROMEAN_H_ */
