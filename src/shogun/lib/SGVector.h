@@ -595,10 +595,10 @@ template<class T> class SGVector : public SGReferencedData
 		/// hyperbolic tangent of vector elements
 		void tanh();
 
-		/** real part of a complex64_t vector */
+		/** real part of a complex128_t vector */
 		SGVector<float64_t> get_real();
 
-		/** imag part of a complex64_t vector */
+		/** imag part of a complex128_t vector */
 		SGVector<float64_t> get_imag();
 
 		/** create SGMatrix from linear vector

@@ -22,7 +22,7 @@ using namespace Eigen;
 namespace shogun
 {
 CIndividualJobResultAggregator::CIndividualJobResultAggregator()
-	: CStoreVectorAggregator<complex64_t>(),
+	: CStoreVectorAggregator<complex128_t>(),
 	  m_const_multiplier(0.0)
 {
 	init();
@@ -34,7 +34,7 @@ CIndividualJobResultAggregator::CIndividualJobResultAggregator(
 	CLinearOperator<float64_t>* linear_operator,
 	SGVector<float64_t> vector,
 	const float64_t& const_multiplier)
-	: CStoreVectorAggregator<complex64_t>(vector.vlen),
+	: CStoreVectorAggregator<complex128_t>(vector.vlen),
 	  m_const_multiplier(const_multiplier)
 {
 	init();

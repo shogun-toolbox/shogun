@@ -37,7 +37,7 @@ CLogRationalApproximationIndividual::CLogRationalApproximationIndividual(
 	CMatrixOperator<float64_t>* linear_operator,
 	CIndependentComputationEngine* computation_engine,
 	CEigenSolver* eigen_solver,
-	CLinearSolver<complex64_t, float64_t>* linear_solver,
+	CLinearSolver<complex128_t, float64_t>* linear_solver,
 	float64_t desired_accuracy)
 	: CRationalApproximation(linear_operator, computation_engine,
 	  eigen_solver, desired_accuracy, OF_LOG)
@@ -83,7 +83,7 @@ CJobResultAggregator* CLogRationalApproximationIndividual::submit_jobs(
 	enum typeID {DENSE=1, SPARSE, UNKNOWN} operator_type=UNKNOWN;
 
 	// create a complex copy of the matrix linear operator
-	CMatrixOperator<complex64_t>* complex_op=NULL;
+	CMatrixOperator<complex128_t>* complex_op=NULL;
 	if (typeid(*m_linear_operator)==typeid(CDenseMatrixOperator<float64_t>))
 	{
 		operator_type=DENSE;
@@ -94,7 +94,7 @@ CJobResultAggregator* CLogRationalApproximationIndividual::submit_jobs(
 		REQUIRE(op->get_matrix_operator().matrix, "Matrix is not initialized!\n");
 
 		// create complex dense matrix operator
-		complex_op=static_cast<CDenseMatrixOperator<complex64_t>*>(*op);
+		complex_op=static_cast<CDenseMatrixOperator<complex128_t>*>(*op);
 	}
 	else if (typeid(*m_linear_operator)==typeid(CSparseMatrixOperator<float64_t>))
 	{
@@ -106,7 +106,7 @@ CJobResultAggregator* CLogRationalApproximationIndividual::submit_jobs(
 		REQUIRE(op->get_matrix_operator().sparse_matrix, "Matrix is not initialized!\n");
 
 		// create complex sparse matrix operator
-		complex_op=static_cast<CSparseMatrixOperator<complex64_t>*>(*op);
+		complex_op=static_cast<CSparseMatrixOperator<complex128_t>*>(*op);
 	}
 	else
 	{
@@ -118,17 +118,17 @@ CJobResultAggregator* CLogRationalApproximationIndividual::submit_jobs(
 	for (index_t i=0; i<m_num_shifts; ++i)
 	{
 		// create a deep copy of the operator
-		CMatrixOperator<complex64_t>* shifted_op=NULL;
+		CMatrixOperator<complex128_t>* shifted_op=NULL;
 
 		switch(operator_type)
 		{
 		case DENSE:
-			shifted_op=new CDenseMatrixOperator<complex64_t>
-				(*dynamic_cast<CDenseMatrixOperator<complex64_t>*>(complex_op));
+			shifted_op=new CDenseMatrixOperator<complex128_t>
+				(*dynamic_cast<CDenseMatrixOperator<complex128_t>*>(complex_op));
 			break;
 		case SPARSE:
-			shifted_op=new CSparseMatrixOperator<complex64_t>
-				(*dynamic_cast<CSparseMatrixOperator<complex64_t>*>(complex_op));
+			shifted_op=new CSparseMatrixOperator<complex128_t>
+				(*dynamic_cast<CSparseMatrixOperator<complex128_t>*>(complex_op));
 			break;
 		default:
 			break;
@@ -139,7 +139,7 @@ CJobResultAggregator* CLogRationalApproximationIndividual::submit_jobs(
 
 		// move the shift inside the operator
 		// (see CRationalApproximation)
-		SGVector<complex64_t> diag=shifted_op->get_diagonal();
+		SGVector<complex128_t> diag=shifted_op->get_diagonal();
 		for (index_t j=0; j<diag.vlen; ++j)
 			diag[j]-=m_shifts[i];
 		shifted_op->set_diagonal(diag);

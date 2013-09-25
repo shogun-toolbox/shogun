@@ -29,8 +29,8 @@ namespace shogun
 #ifdef USE_FLOAT64
     %template(RealLinearOperator) CLinearOperator<float64_t>;
 #endif
-#ifdef USE_COMPLEX64
-    %template(ComplexLinearOperator) CLinearOperator<complex64_t>;
+#ifdef USE_COMPLEX128
+    %template(ComplexLinearOperator) CLinearOperator<complex128_t>;
 #endif
 }
 
@@ -40,8 +40,8 @@ namespace shogun
 #ifdef USE_FLOAT64
     %template(RealMatrixOperator) CMatrixOperator<float64_t>;
 #endif
-#ifdef USE_COMPLEX64
-    %template(ComplexMatrixOperator) CMatrixOperator<complex64_t>;
+#ifdef USE_COMPLEX128
+    %template(ComplexMatrixOperator) CMatrixOperator<complex128_t>;
 #endif
 }
 
@@ -51,8 +51,8 @@ namespace shogun
 #ifdef USE_FLOAT64
     %template(RealSparseMatrixOperator) CSparseMatrixOperator<float64_t>;
 #endif
-#ifdef USE_COMPLEX64
-    %template(ComplexSparseMatrixOperator) CSparseMatrixOperator<complex64_t>;
+#ifdef USE_COMPLEX128
+    %template(ComplexSparseMatrixOperator) CSparseMatrixOperator<complex128_t>;
 #endif
 }
 
@@ -62,8 +62,8 @@ namespace shogun
 #ifdef USE_FLOAT64
     %template(RealDenseMatrixOperator) CDenseMatrixOperator<float64_t>;
 #endif
-#ifdef USE_COMPLEX64
-    %template(ComplexDenseMatrixOperator) CDenseMatrixOperator<complex64_t>;
+#ifdef USE_COMPLEX128
+    %template(ComplexDenseMatrixOperator) CDenseMatrixOperator<complex128_t>;
 #endif
 }
 
@@ -87,13 +87,13 @@ namespace shogun
 #if defined(USE_FLOAT64)
     %template(RealLinearSolver) CLinearSolver<float64_t,float64_t>;
 #endif
-#if defined(USE_FLOAT64) && defined(USE_COMPLEX64)
-    %template(ComplexRealLinearSolver) CLinearSolver<complex64_t,float64_t>;
+#if defined(USE_FLOAT64) && defined(USE_COMPLEX128)
+    %template(ComplexRealLinearSolver) CLinearSolver<complex128_t,float64_t>;
 #endif
 }
 
 %rename(DirectSparseLinearSolver) CDirectSparseLinearSolver;
-#ifdef USE_COMPLEX64
+#ifdef USE_COMPLEX128
   %rename(DirectLinearSolverComplex) CDirectLinearSolverComplex;
 #endif
 
@@ -103,8 +103,8 @@ namespace shogun
 #if defined(USE_FLOAT64)
     %template(RealIterativeLinearSolver) CIterativeLinearSolver<float64_t,float64_t>;
 #endif
-#if defined(USE_FLOAT64) && defined(USE_COMPLEX64)
-    %template(ComplexRealIterativeLinearSolver) CIterativeLinearSolver<complex64_t,float64_t>;
+#if defined(USE_FLOAT64) && defined(USE_COMPLEX128)
+    %template(ComplexRealIterativeLinearSolver) CIterativeLinearSolver<complex128_t,float64_t>;
 #endif
 }
 
@@ -114,8 +114,8 @@ namespace shogun
 %include <shogun/mathematics/linalg/linsolver/IterativeShiftedLinearFamilySolver.h>
 namespace shogun
 {
-#if defined(USE_FLOAT64) && defined(USE_COMPLEX64)
-    %template(RealComplexIterativeShiftedLinearSolver) CIterativeShiftedLinearFamilySolver<float64_t,complex64_t>;
+#if defined(USE_FLOAT64) && defined(USE_COMPLEX128)
+    %template(RealComplexIterativeShiftedLinearSolver) CIterativeShiftedLinearFamilySolver<float64_t,complex128_t>;
 #endif
 }
 

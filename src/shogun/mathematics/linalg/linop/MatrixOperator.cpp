@@ -25,5 +25,5 @@ template class CMatrixOperator<uint64_t>;
 template class CMatrixOperator<float32_t>;
 template class CMatrixOperator<float64_t>;
 template class CMatrixOperator<floatmax_t>;
-template class CMatrixOperator<complex64_t>;
+template class CMatrixOperator<complex128_t>;
 }

@@ -84,16 +84,16 @@ SerializableAsciiReader00::read_scalar_wrapped(
 		if (fscanf(m_file->m_fstream, "%Lg", (floatmax_t*) param)
 			!= 1) return false;
 		break;
-	case PT_COMPLEX64:
+	case PT_COMPLEX128:
 		float64_t c_real, c_imag;
 		if (fscanf(m_file->m_fstream, "(%lg,%lg)", &c_real, &c_imag) 
 			!= 2) return false;
 #ifdef HAVE_CXX11
-		((complex64_t*) param)->real(c_real);
-		((complex64_t*) param)->imag(c_imag);
+		((complex128_t*) param)->real(c_real);
+		((complex128_t*) param)->imag(c_imag);
 #else
-		((complex64_t*) param)->real()=c_real;
-		((complex64_t*) param)->imag()=c_imag;
+		((complex128_t*) param)->real()=c_real;
+		((complex128_t*) param)->imag()=c_imag;
 #endif
 		break;
 	case PT_SGOBJECT:

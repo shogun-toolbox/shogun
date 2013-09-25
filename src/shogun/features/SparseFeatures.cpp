@@ -194,7 +194,7 @@ template<class ST> void CSparseFeatures<ST>::add_to_dense_vec(float64_t alpha, i
 }
 
 template<>
-void CSparseFeatures<complex64_t>::add_to_dense_vec(float64_t alpha,
+void CSparseFeatures<complex128_t>::add_to_dense_vec(float64_t alpha,
 	int32_t num, float64_t* vec, int32_t dim, bool abs_val)
 {
 	SG_NOTIMPLEMENTED;
@@ -316,7 +316,7 @@ template<class ST> void CSparseFeatures<ST>::obtain_from_simple(CDenseFeatures<S
 	set_full_feature_matrix(fm);
 }
 
-template<> void CSparseFeatures<complex64_t>::obtain_from_simple(CDenseFeatures<complex64_t>* sf)
+template<> void CSparseFeatures<complex128_t>::obtain_from_simple(CDenseFeatures<complex128_t>* sf)
 {
 	SG_NOTIMPLEMENTED;
 }
@@ -381,7 +381,7 @@ template<class ST> float64_t* CSparseFeatures<ST>::compute_squared(float64_t* sq
 	return sq;
 }
 
-template<> float64_t* CSparseFeatures<complex64_t>::compute_squared(float64_t* sq)
+template<> float64_t* CSparseFeatures<complex128_t>::compute_squared(float64_t* sq)
 {
 	SG_NOTIMPLEMENTED;
 	return sq;
@@ -470,7 +470,7 @@ template<class ST> float64_t CSparseFeatures<ST>::dot(int32_t vec_idx1,
 	return result;
 }
 
-template<> float64_t CSparseFeatures<complex64_t>::dot(int32_t vec_idx1,
+template<> float64_t CSparseFeatures<complex128_t>::dot(int32_t vec_idx1,
 		CDotFeatures* df, int32_t vec_idx2)
 {
 	SG_NOTIMPLEMENTED;
@@ -507,7 +507,7 @@ template<class ST> float64_t CSparseFeatures<ST>::dense_dot(int32_t vec_idx1, co
 	return result;
 }
 
-template<> float64_t CSparseFeatures<complex64_t>::dense_dot(int32_t vec_idx1,
+template<> float64_t CSparseFeatures<complex128_t>::dense_dot(int32_t vec_idx1,
 	const float64_t* vec2, int32_t vec2_len)
 {
 	SG_NOTIMPLEMENTED;
@@ -547,7 +547,7 @@ template<class ST> bool CSparseFeatures<ST>::get_next_feature(int32_t& index, fl
 	return true;
 }
 
-template<> bool CSparseFeatures<complex64_t>::get_next_feature(int32_t& index,
+template<> bool CSparseFeatures<complex128_t>::get_next_feature(int32_t& index,
 	float64_t& value, void* iterator)
 {
 	SG_NOTIMPLEMENTED;
@@ -627,7 +627,7 @@ GET_FEATURE_TYPE(uint64_t, F_ULONG)
 GET_FEATURE_TYPE(float32_t, F_SHORTREAL)
 GET_FEATURE_TYPE(float64_t, F_DREAL)
 GET_FEATURE_TYPE(floatmax_t, F_LONGREAL)
-GET_FEATURE_TYPE(complex64_t, F_ANY)
+GET_FEATURE_TYPE(complex128_t, F_ANY)
 #undef GET_FEATURE_TYPE
 
 template<class ST> void CSparseFeatures<ST>::load(CFile* loader)
@@ -675,5 +675,5 @@ template class CSparseFeatures<uint64_t>;
 template class CSparseFeatures<float32_t>;
 template class CSparseFeatures<float64_t>;
 template class CSparseFeatures<floatmax_t>;
-template class CSparseFeatures<complex64_t>;
+template class CSparseFeatures<complex128_t>;
 }

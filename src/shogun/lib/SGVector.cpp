@@ -26,36 +26,36 @@
 
 #include <shogun/mathematics/eigen3.h>
 
-#define COMPLEX64_ERROR_NOARG(function) \
+#define COMPLEX128_ERROR_NOARG(function) \
 template <> \
-void SGVector<complex64_t>::function() \
+void SGVector<complex128_t>::function() \
 { \
-	SG_SERROR("SGVector::%s():: Not supported for complex64_t\n",\
+	SG_SERROR("SGVector::%s():: Not supported for complex128_t\n",\
 		#function);\
 }
 
-#define COMPLEX64_ERROR_ONEARG(function) \
+#define COMPLEX128_ERROR_ONEARG(function) \
 template <> \
-void SGVector<complex64_t>::function(complex64_t a) \
+void SGVector<complex128_t>::function(complex128_t a) \
 { \
-	SG_SERROR("SGVector::%s():: Not supported for complex64_t\n",\
+	SG_SERROR("SGVector::%s():: Not supported for complex128_t\n",\
 		#function);\
 }
 
-#define COMPLEX64_ERROR_TWOARGS(function) \
+#define COMPLEX128_ERROR_TWOARGS(function) \
 template <> \
-void SGVector<complex64_t>::function(complex64_t a, complex64_t b) \
+void SGVector<complex128_t>::function(complex128_t a, complex128_t b) \
 { \
-	SG_SERROR("SGVector::%s():: Not supported for complex64_t\n",\
+	SG_SERROR("SGVector::%s():: Not supported for complex128_t\n",\
 		#function);\
 }
 
-#define COMPLEX64_ERROR_THREEARGS(function) \
+#define COMPLEX128_ERROR_THREEARGS(function) \
 template <> \
-void SGVector<complex64_t>::function(complex64_t a, complex64_t b,\
-	complex64_t c) \
+void SGVector<complex128_t>::function(complex128_t a, complex128_t b,\
+	complex128_t c) \
 { \
-	SG_SERROR("SGVector::%s():: Not supported for complex64_t\n",\
+	SG_SERROR("SGVector::%s():: Not supported for complex128_t\n",\
 		#function);\
 }
 
@@ -106,10 +106,10 @@ void SGVector<T>::zero()
 }
 
 template <>
-void SGVector<complex64_t>::zero()
+void SGVector<complex128_t>::zero()
 {
 	if (vector && vlen)
-		set_const(complex64_t(0.0));
+		set_const(complex128_t(0.0));
 }
 
 template<class T>
@@ -139,7 +139,7 @@ void SGVector<T>::range_fill(T start)
 	range_fill_vector(vector, vlen, start);
 }
 
-COMPLEX64_ERROR_ONEARG(range_fill)
+COMPLEX128_ERROR_ONEARG(range_fill)
 
 template<class T>
 void SGVector<T>::random(T min_value, T max_value)
@@ -147,7 +147,7 @@ void SGVector<T>::random(T min_value, T max_value)
 	random_vector(vector, vlen, min_value, max_value);
 }
 
-COMPLEX64_ERROR_TWOARGS(random)
+COMPLEX128_ERROR_TWOARGS(random)
 
 template<class T>
 void SGVector<T>::randperm()
@@ -155,7 +155,7 @@ void SGVector<T>::randperm()
 	randperm(vector, vlen);
 }
 
-COMPLEX64_ERROR_NOARG(randperm)
+COMPLEX128_ERROR_NOARG(randperm)
 
 template <class T>
 void SGVector<T>::qsort()
@@ -163,7 +163,7 @@ void SGVector<T>::qsort()
 	CMath::qsort<T>(vector, vlen);
 }
 
-COMPLEX64_ERROR_NOARG(qsort)
+COMPLEX128_ERROR_NOARG(qsort)
 
 /** Helper functor for the function argsort */
 template<class T>
@@ -196,9 +196,9 @@ SGVector<index_t> SGVector<T>::argsort()
 }
 
 template <>
-SGVector<index_t> SGVector<complex64_t>::argsort()
+SGVector<index_t> SGVector<complex128_t>::argsort()
 {
-	SG_SERROR("SGVector::argsort():: Not supported for complex64_t\n");
+	SG_SERROR("SGVector::argsort():: Not supported for complex128_t\n");
 	SGVector<index_t> idx(vlen);
 	return idx;
 }
@@ -219,9 +219,9 @@ bool SGVector<T>::is_sorted() const
 }
 
 template <>
-bool SGVector<complex64_t>::is_sorted() const
+bool SGVector<complex128_t>::is_sorted() const
 {
-	SG_SERROR("SGVector::is_sorted():: Not supported for complex64_t\n");
+	SG_SERROR("SGVector::is_sorted():: Not supported for complex128_t\n");
 	return false;
 }
 
@@ -238,10 +238,10 @@ index_t SGVector<T>::find_position_to_insert(T element)
 }
 
 template <>
-index_t SGVector<complex64_t>::find_position_to_insert(complex64_t element)
+index_t SGVector<complex128_t>::find_position_to_insert(complex128_t element)
 {
 	SG_SERROR("SGVector::find_position_to_insert():: \
-		Not supported for complex64_t\n");
+		Not supported for complex128_t\n");
 	return index_t(-1);
 }
 
@@ -274,11 +274,11 @@ void SGVector<T>::range_fill_vector(T* vec, int32_t len, T start)
 }
 
 template <>
-void SGVector<complex64_t>::range_fill_vector(complex64_t* vec,
-	int32_t len, complex64_t start)
+void SGVector<complex128_t>::range_fill_vector(complex128_t* vec,
+	int32_t len, complex128_t start)
 {
 	SG_SERROR("SGVector::range_fill_vector():: \
-		Not supported for complex64_t\n");
+		Not supported for complex128_t\n");
 }
 
 template<class T>
@@ -555,7 +555,7 @@ void SGVector<floatmax_t>::display_vector(const floatmax_t* vector, int32_t n,
 }
 
 template <>
-void SGVector<complex64_t>::display_vector(const complex64_t* vector, int32_t n,
+void SGVector<complex128_t>::display_vector(const complex128_t* vector, int32_t n,
 		const char* name, const char* prefix)
 {
 	ASSERT(n>=0)
@@ -646,8 +646,8 @@ template <class T>
 	}
 
 template <>
-void SGVector<complex64_t>::random_vector(complex64_t* vec, int32_t len,
-	complex64_t min_value, complex64_t max_value)
+void SGVector<complex128_t>::random_vector(complex128_t* vec, int32_t len,
+	complex128_t min_value, complex128_t max_value)
 {
 	SG_SNOTIMPLEMENTED
 }
@@ -659,10 +659,10 @@ SGVector<T> SGVector<T>::randperm_vec(int32_t n)
 }
 
 template <>
-SGVector<complex64_t> SGVector<complex64_t>::randperm_vec(int32_t n)
+SGVector<complex128_t> SGVector<complex128_t>::randperm_vec(int32_t n)
 {
 	SG_SNOTIMPLEMENTED
-	SGVector<complex64_t> perm(n);
+	SGVector<complex128_t> perm(n);
 	return perm;
 }
 
@@ -676,10 +676,10 @@ T* SGVector<T>::randperm(int32_t n)
 }
 
 template <>
-complex64_t* SGVector<complex64_t>::randperm(int32_t n)
+complex128_t* SGVector<complex128_t>::randperm(int32_t n)
 {
 	SG_SNOTIMPLEMENTED
-	SGVector<complex64_t> perm(n);
+	SGVector<complex128_t> perm(n);
 	return perm.vector;
 }
 
@@ -692,7 +692,7 @@ void SGVector<T>::randperm(T* perm, int32_t n)
 }
 
 template <>
-void SGVector<complex64_t>::randperm(complex64_t* perm, int32_t n)
+void SGVector<complex128_t>::randperm(complex128_t* perm, int32_t n)
 {
 	SG_SNOTIMPLEMENTED
 }
@@ -861,9 +861,9 @@ floatmax_t SGVector<floatmax_t>::twonorm(const floatmax_t* x, int32_t len)
 }
 
 template <>
-complex64_t SGVector<complex64_t>::twonorm(const complex64_t* x, int32_t len)
+complex128_t SGVector<complex128_t>::twonorm(const complex128_t* x, int32_t len)
 {
-	complex64_t result(0.0);
+	complex128_t result(0.0);
 	for (int32_t i=0; i<len; i++)
 		result+=x[i]*x[i];
 
@@ -892,10 +892,10 @@ T SGVector<T>::qsq(T* x, int32_t len, float64_t q)
 }
 
 template <>
-complex64_t SGVector<complex64_t>::qsq(complex64_t* x, int32_t len, float64_t q)
+complex128_t SGVector<complex128_t>::qsq(complex128_t* x, int32_t len, float64_t q)
 {
 	SG_SNOTIMPLEMENTED
-	return complex64_t(0.0);
+	return complex128_t(0.0);
 }
 
 /// || x ||_q
@@ -907,10 +907,10 @@ T SGVector<T>::qnorm(T* x, int32_t len, float64_t q)
 }
 
 template <>
-complex64_t SGVector<complex64_t>::qnorm(complex64_t* x, int32_t len, float64_t q)
+complex128_t SGVector<complex128_t>::qnorm(complex128_t* x, int32_t len, float64_t q)
 {
 	SG_SNOTIMPLEMENTED
-	return complex64_t(0.0);
+	return complex128_t(0.0);
 }
 
 /** @return min(vec) */
@@ -962,10 +962,10 @@ T SGVector<T>::max_abs(T* vec, int32_t len)
 }
 
 template <>
-complex64_t SGVector<complex64_t>::max_abs(complex64_t* vec, int32_t len)
+complex128_t SGVector<complex128_t>::max_abs(complex128_t* vec, int32_t len)
 {
 	SG_SNOTIMPLEMENTED
-	return complex64_t(0.0);
+	return complex128_t(0.0);
 }
 
 /** @return max(vec) */
@@ -1028,11 +1028,11 @@ int32_t SGVector<T>::arg_max_abs(T * vec, int32_t inc, int32_t len, T * maxv_ptr
 }
 
 template <>
-int32_t SGVector<complex64_t>::arg_max_abs(complex64_t * vec, int32_t inc,
-	int32_t len, complex64_t * maxv_ptr)
+int32_t SGVector<complex128_t>::arg_max_abs(complex128_t * vec, int32_t inc,
+	int32_t len, complex128_t * maxv_ptr)
 {
 	int32_t maxIdx = 0;
-	SG_SERROR("SGVector::arg_max_abs():: Not supported for complex64_t\n");
+	SG_SERROR("SGVector::arg_max_abs():: Not supported for complex128_t\n");
 	return maxIdx;
 }
 
@@ -1057,11 +1057,11 @@ int32_t SGVector<T>::arg_max(T * vec, int32_t inc, int32_t len, T * maxv_ptr)
 }
 
 template <>
-int32_t SGVector<complex64_t>::arg_max(complex64_t * vec, int32_t inc,
-	int32_t len, complex64_t * maxv_ptr)
+int32_t SGVector<complex128_t>::arg_max(complex128_t * vec, int32_t inc,
+	int32_t len, complex128_t * maxv_ptr)
 {
 	int32_t maxIdx=0;
-	SG_SERROR("SGVector::arg_max():: Not supported for complex64_t\n");
+	SG_SERROR("SGVector::arg_max():: Not supported for complex128_t\n");
 	return maxIdx;
 }
 
@@ -1088,11 +1088,11 @@ int32_t SGVector<T>::arg_min(T * vec, int32_t inc, int32_t len, T * minv_ptr)
 }
 
 template <>
-int32_t SGVector<complex64_t>::arg_min(complex64_t * vec, int32_t inc,
-	int32_t len, complex64_t * minv_ptr)
+int32_t SGVector<complex128_t>::arg_min(complex128_t * vec, int32_t inc,
+	int32_t len, complex128_t * minv_ptr)
 {
 	int32_t minIdx=0;
-	SG_SERROR("SGVector::arg_min():: Not supported for complex64_t\n");
+	SG_SERROR("SGVector::arg_min():: Not supported for complex128_t\n");
 	return minIdx;
 }
 
@@ -1147,10 +1147,10 @@ int32_t SGVector<T>::unique(T* output, int32_t size)
 }
 
 template <>
-int32_t SGVector<complex64_t>::unique(complex64_t* output, int32_t size)
+int32_t SGVector<complex128_t>::unique(complex128_t* output, int32_t size)
 {
 	int32_t j=0;
-	SG_SERROR("SGVector::unique():: Not supported for complex64_t\n");
+	SG_SERROR("SGVector::unique():: Not supported for complex128_t\n");
 	return j;
 }
 
@@ -1205,7 +1205,7 @@ template<class T> float64_t SGVector<T>::mean() const
 }
 
 template <>
-float64_t SGVector<complex64_t>::mean() const
+float64_t SGVector<complex128_t>::mean() const
 {
 	SG_SNOTIMPLEMENTED
 	return float64_t(0.0);
@@ -1226,9 +1226,9 @@ template<class T> void SGVector<T>::load(CFile* loader)
 }
 
 template<>
-void SGVector<complex64_t>::load(CFile* loader)
+void SGVector<complex128_t>::load(CFile* loader)
 {
-	SG_SERROR("SGVector::load():: Not supported for complex64_t\n");
+	SG_SERROR("SGVector::load():: Not supported for complex128_t\n");
 }
 
 template<class T> void SGVector<T>::save(CFile* saver)
@@ -1241,9 +1241,9 @@ template<class T> void SGVector<T>::save(CFile* saver)
 }
 
 template<>
-void SGVector<complex64_t>::save(CFile* saver)
+void SGVector<complex128_t>::save(CFile* saver)
 {
-	SG_SERROR("SGVector::save():: Not supported for complex64_t\n");
+	SG_SERROR("SGVector::save():: Not supported for complex128_t\n");
 }
 
 
@@ -1270,38 +1270,38 @@ MATHOP(tan)
 MATHOP(tanh)
 #undef MATHOP
 
-#define COMPLEX64_MATHOP(op)								\
+#define COMPLEX128_MATHOP(op)								\
 template <>\
-void SGVector<complex64_t>::op()		\
+void SGVector<complex128_t>::op()		\
 {												\
 	for (int32_t i=0; i<vlen; i++)				\
-		vector[i]=complex64_t(CMath::op(vector[i]));		\
+		vector[i]=complex128_t(CMath::op(vector[i]));		\
 }
 
-COMPLEX64_MATHOP(abs)
-COMPLEX64_MATHOP(sin)
-COMPLEX64_MATHOP(cos)
-COMPLEX64_MATHOP(tan)
-COMPLEX64_MATHOP(sinh)
-COMPLEX64_MATHOP(cosh)
-COMPLEX64_MATHOP(tanh)
-COMPLEX64_MATHOP(exp)
-COMPLEX64_MATHOP(log)
-COMPLEX64_MATHOP(log10)
-COMPLEX64_MATHOP(sqrt)
-#undef COMPLEX64_MATHOP
+COMPLEX128_MATHOP(abs)
+COMPLEX128_MATHOP(sin)
+COMPLEX128_MATHOP(cos)
+COMPLEX128_MATHOP(tan)
+COMPLEX128_MATHOP(sinh)
+COMPLEX128_MATHOP(cosh)
+COMPLEX128_MATHOP(tanh)
+COMPLEX128_MATHOP(exp)
+COMPLEX128_MATHOP(log)
+COMPLEX128_MATHOP(log10)
+COMPLEX128_MATHOP(sqrt)
+#undef COMPLEX128_MATHOP
 
-#define COMPLEX64_MATHOP_NOTIMPLEMENTED(op)								\
+#define COMPLEX128_MATHOP_NOTIMPLEMENTED(op)								\
 template <>\
-void SGVector<complex64_t>::op()		\
+void SGVector<complex128_t>::op()		\
 {												\
-	SG_SERROR("SGVector::%s():: Not supported for complex64_t\n",#op);\
+	SG_SERROR("SGVector::%s():: Not supported for complex128_t\n",#op);\
 }
 
-COMPLEX64_MATHOP_NOTIMPLEMENTED(asin)
-COMPLEX64_MATHOP_NOTIMPLEMENTED(acos)
-COMPLEX64_MATHOP_NOTIMPLEMENTED(atan)
-#undef COMPLEX64_MATHOP_NOTIMPLEMENTED
+COMPLEX128_MATHOP_NOTIMPLEMENTED(asin)
+COMPLEX128_MATHOP_NOTIMPLEMENTED(acos)
+COMPLEX128_MATHOP_NOTIMPLEMENTED(atan)
+#undef COMPLEX128_MATHOP_NOTIMPLEMENTED
 
 template <class T> void SGVector<T>::atan2(T x)
 {
@@ -1309,7 +1309,7 @@ template <class T> void SGVector<T>::atan2(T x)
 		vector[i]=CMath::atan2(vector[i], x);
 }
 
-COMPLEX64_ERROR_ONEARG(atan2)
+COMPLEX128_ERROR_ONEARG(atan2)
 
 template <class T> void SGVector<T>::pow(T q)
 {
@@ -1333,15 +1333,15 @@ float64_t* SGVector<T>::linspace(T start, T end, int32_t n)
 }
 
 template <>
-float64_t* SGVector<complex64_t>::linspace(complex64_t start, complex64_t end, int32_t n)
+float64_t* SGVector<complex128_t>::linspace(complex128_t start, complex128_t end, int32_t n)
 {
 	float64_t* output = SG_MALLOC(float64_t, n);
-	SG_SERROR("SGVector::linspace():: Not supported for complex64_t\n");
+	SG_SERROR("SGVector::linspace():: Not supported for complex128_t\n");
 	return output;
 }
 
 template <>
-void SGVector<complex64_t>::pow(complex64_t q)
+void SGVector<complex128_t>::pow(complex128_t q)
 {
 	for (int32_t i=0; i<vlen; i++)
 		vector[i]=CMath::pow(vector[i], q);
@@ -1453,10 +1453,10 @@ template class SGVector<uint64_t>;
 template class SGVector<float32_t>;
 template class SGVector<float64_t>;
 template class SGVector<floatmax_t>;
-template class SGVector<complex64_t>;
+template class SGVector<complex128_t>;
 }
 
-#undef COMPLEX64_ERROR_NOARG
-#undef COMPLEX64_ERROR_ONEARG
-#undef COMPLEX64_ERROR_TWOARGS
-#undef COMPLEX64_ERROR_THREEARGS
+#undef COMPLEX128_ERROR_NOARG
+#undef COMPLEX128_ERROR_ONEARG
+#undef COMPLEX128_ERROR_TWOARGS
+#undef COMPLEX128_ERROR_THREEARGS

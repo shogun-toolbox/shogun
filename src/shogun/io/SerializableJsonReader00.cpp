@@ -81,8 +81,8 @@ SerializableJsonReader00::read_scalar_wrapped(
 		if (!json_object_is_type(m, json_type_double)) return false;
 		*(floatmax_t*) param = json_object_get_double(m);
 		break;
-	case PT_COMPLEX64:
-		SG_ERROR("read_scalar_wrapped(): Not supported for complex64_t"
+	case PT_COMPLEX128:
+		SG_ERROR("read_scalar_wrapped(): Not supported for complex128_t"
 				 " for reading from JsonFile!");
 		break;
 	case PT_SGOBJECT:

@@ -381,7 +381,7 @@ public:
 	 * @param name name of parameter
 	 * @param description description of parameter
 	 */
-	void add(complex64_t* param, const char* name,
+	void add(complex128_t* param, const char* name,
 			 const char* description="");
 	/** add param
 	 * @param param parameter itself
@@ -577,7 +577,7 @@ public:
 	 * @param name name of parameter
 	 * @param description description of parameter
 	 */
-	void add(SGSparseVector<complex64_t>* param, const char* name,
+	void add(SGSparseVector<complex128_t>* param, const char* name,
 			 const char* description="");
 
 	/* ************************************************************ */
@@ -693,7 +693,7 @@ public:
 	 * @param name name of parameter
 	 * @param description description of parameter
 	 */
-	void add_vector(complex64_t** param, index_t* length,
+	void add_vector(complex128_t** param, index_t* length,
 					const char* name, const char* description="");
 	/** add vector param
 	 * @param param parameter vector itself
@@ -917,7 +917,7 @@ public:
 	 * @param name name of parameter
 	 * @param description description of parameter
 	 */
-	void add_vector(SGSparseVector<complex64_t>** param, index_t* length,
+	void add_vector(SGSparseVector<complex128_t>** param, index_t* length,
 					const char* name, const char* description="");
 
 
@@ -1017,7 +1017,7 @@ public:
 	 * @param name name of parameter
 	 * @param description description of parameter
 	 */
-	void add(SGVector<complex64_t>* param, const char* name,
+	void add(SGVector<complex128_t>* param, const char* name,
 					const char* description="");
 	/** add vector param
 	 * @param param parameter vector itself
@@ -1213,7 +1213,7 @@ public:
 	 * @param name name of parameter
 	 * @param description description of parameter
 	 */
-	void add(SGVector<SGSparseVector<complex64_t> >* param,
+	void add(SGVector<SGSparseVector<complex128_t> >* param,
 					const char* name, const char* description="");
 
 	/* ************************************************************ */
@@ -1356,7 +1356,7 @@ public:
 	 * @param name name of parameter
 	 * @param description description of parameter
 	 */
-	void add_matrix(complex64_t** param,
+	void add_matrix(complex128_t** param,
 					index_t* length_y, index_t* length_x,
 					const char* name, const char* description="");
 	/** add matrix param
@@ -1636,7 +1636,7 @@ public:
 	 * @param name name of parameter
 	 * @param description description of parameter
 	 */
-	void add_matrix(SGSparseVector<complex64_t>** param,
+	void add_matrix(SGSparseVector<complex128_t>** param,
 					index_t* length_y, index_t* length_x,
 					const char* name, const char* description="");
 	/** add matrix param
@@ -1735,7 +1735,7 @@ public:
 	 * @param name name of parameter
 	 * @param description description of parameter
 	 */
-	void add(SGMatrix<complex64_t>* param, const char* name,
+	void add(SGMatrix<complex128_t>* param, const char* name,
 					const char* description="");
 	/** add matrix param
 	 * @param param parameter matrix itself
@@ -1931,7 +1931,7 @@ public:
 	 * @param name name of parameter
 	 * @param description description of parameter
 	 */
-	void add(SGMatrix<SGSparseVector<complex64_t> >* param,
+	void add(SGMatrix<SGSparseVector<complex128_t> >* param,
 					const char* name, const char* description="");
 
 	/** add matrix param
@@ -2030,7 +2030,7 @@ public:
 	 * @param name name of parameter
 	 * @param description description of parameter
 	 */
-	void add(SGSparseMatrix<complex64_t>* param,
+	void add(SGSparseMatrix<complex128_t>* param,
 					const char* name, const char* description="");
 	/** add matrix param
 	 * @param param parameter matrix itself

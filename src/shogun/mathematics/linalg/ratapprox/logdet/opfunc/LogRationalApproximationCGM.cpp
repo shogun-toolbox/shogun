@@ -79,7 +79,7 @@ CJobResultAggregator* CLogRationalApproximationCGM::submit_jobs(
 	// we need to take the negation of the shifts for this case
 	if (m_negated_shifts.vector==NULL)
 	{
-		m_negated_shifts=SGVector<complex64_t>(m_shifts.vlen);
+		m_negated_shifts=SGVector<complex128_t>(m_shifts.vlen);
 		Map<VectorXcd> shifts(m_shifts.vector, m_shifts.vlen);
 		Map<VectorXcd> negated_shifts(m_negated_shifts.vector, m_negated_shifts.vlen);
 		negated_shifts=-shifts;

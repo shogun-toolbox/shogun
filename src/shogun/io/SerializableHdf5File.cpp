@@ -105,7 +105,7 @@ CSerializableHdf5File::ptype2hdf5(EPrimitiveType ptype)
 	case PT_FLOAT32: return H5T_NATIVE_FLOAT; break;
 	case PT_FLOAT64: return H5T_NATIVE_DOUBLE; break;
 	case PT_FLOATMAX: return H5T_NATIVE_LDOUBLE; break;
-	case PT_COMPLEX64: return NOT_OPEN; break;
+	case PT_COMPLEX128: return NOT_OPEN; break;
 	case PT_SGOBJECT: return NOT_OPEN; break;
 	}
 

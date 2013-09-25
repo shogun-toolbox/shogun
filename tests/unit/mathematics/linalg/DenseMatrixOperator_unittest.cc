@@ -49,15 +49,15 @@ TEST(DenseMatrixOperator, apply)
 		EXPECT_NEAR(r1[i], 0.25, 1E-16);
 	}
 
-	SGVector<complex64_t> b2(size);
-	b2.set_const(complex64_t(0.25, 1.0));
+	SGVector<complex128_t> b2(size);
+	b2.set_const(complex128_t(0.25, 1.0));
 
-	// complex64_t, fixed matrix	
-	SGMatrix<complex64_t> m2(size, size);
-	m2.set_const(complex64_t(0.5, 0.25));
+	// complex128_t, fixed matrix	
+	SGMatrix<complex128_t> m2(size, size);
+	m2.set_const(complex128_t(0.5, 0.25));
 
-	CDenseMatrixOperator<complex64_t> op21(m2);
-	SGVector<complex64_t> r2=op21.apply(b2);
+	CDenseMatrixOperator<complex128_t> op21(m2);
+	SGVector<complex128_t> r2=op21.apply(b2);
 
 	for (index_t i=0; i<r2.vlen; ++i)
 	{
@@ -65,11 +65,11 @@ TEST(DenseMatrixOperator, apply)
 		EXPECT_NEAR(r2[i].imag(), 2.8125, 1E-16);
 	}
 
-	// complex64_t, identity matrix
-	typedef Matrix<complex64_t, size, size> MatrixScd;
+	// complex128_t, identity matrix
+	typedef Matrix<complex128_t, size, size> MatrixScd;
 	Map<MatrixScd> mapped2(m2.matrix, m2.num_rows, m2.num_cols);
 	mapped2=MatrixScd::Identity();
-	CDenseMatrixOperator<complex64_t> op22(m2);
+	CDenseMatrixOperator<complex128_t> op22(m2);
 	r2=op22.apply(b2);
 
 	for (index_t i=0; i<r2.vlen; ++i)
@@ -82,16 +82,16 @@ TEST(DenseMatrixOperator, apply)
 TEST(DenseMatrixOperator, shift_apply)
 {
 	const index_t size=5;
-	SGVector<complex64_t> b(size);
+	SGVector<complex128_t> b(size);
 	b.set_const(0.25);
 
-	// complex64_t, fixed matrix	
-	SGMatrix<complex64_t> m(size, size);
-	m.set_const(complex64_t(0.5, 0.0));
+	// complex128_t, fixed matrix	
+	SGMatrix<complex128_t> m(size, size);
+	m.set_const(complex128_t(0.5, 0.0));
 
 	// shifting the diagonal via interface
-	CDenseMatrixOperator<complex64_t> op(m);
-	SGVector<complex64_t> diag=op.get_diagonal();
+	CDenseMatrixOperator<complex128_t> op(m);
+	SGVector<complex128_t> diag=op.get_diagonal();
 	for (index_t i=0; i<diag.vlen; ++i)
 	{
 #ifdef HAVE_CXX11
@@ -102,11 +102,11 @@ TEST(DenseMatrixOperator, shift_apply)
 	}
 	op.set_diagonal(diag);
 	
-	SGVector<complex64_t> r1=op.apply(b);
+	SGVector<complex128_t> r1=op.apply(b);
 	Map<VectorXcd> map_r1(r1.vector, r1.vlen);
 
 	// shifting the diagonal directly via matrix
-	m.set_const(complex64_t(0.5, 0.0));
+	m.set_const(complex128_t(0.5, 0.0));
 	for (index_t i=0; i<size; ++i)
 	{
 #ifdef HAVE_CXX11
@@ -116,7 +116,7 @@ TEST(DenseMatrixOperator, shift_apply)
 #endif
 	}
 
-	SGVector<complex64_t> r2=op.apply(b);
+	SGVector<complex128_t> r2=op.apply(b);
 	Map<VectorXcd> map_r2(r2.vector, r2.vlen);
 
 	EXPECT_NEAR(map_r1.norm(), map_r2.norm(), 1E-15);
