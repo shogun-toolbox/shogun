@@ -33,3 +33,45 @@
    fun:pthread_create@@GLIBC_*
    obj:*/usr/*lib*/libgomp.so*
 }
+
+{
+   libxml strange leaks 64-bit
+   Memcheck:Leak
+   fun:calloc
+   fun:_dlerror_run
+   fun:dlopen@@GLIBC_2.2.5
+   obj:/lib/x86_64-linux-gnu/liblzma.so.5.0.0
+   fun:lzma_auto_decoder
+   obj:/usr/lib/x86_64-linux-gnu/libxml2.so.2.8.0
+   fun:__libxml2_xzread
+   obj:/usr/lib/x86_64-linux-gnu/libxml2.so.2.8.0
+   fun:xmlParserInputBufferGrow
+   fun:xmlParserInputGrow
+   obj:/usr/lib/x86_64-linux-gnu/libxml2.so.2.8.0
+   fun:xmlParseDocument
+   obj:/usr/lib/x86_64-linux-gnu/libxml2.so.2.8.0
+   fun:*
+}
+
+{
+   libxml strange leaks 2 64-bit
+   Memcheck:Leak
+   fun:malloc
+   fun:_dl_signal_error
+   fun:_dl_open
+   fun:dlopen_doit
+   fun:_dl_catch_error
+   fun:_dlerror_run
+   fun:dlopen@@GLIBC_2.2.5
+   obj:/lib/x86_64-linux-gnu/liblzma.so.5.0.0
+   fun:lzma_auto_decoder
+   obj:/usr/lib/x86_64-linux-gnu/libxml2.so.2.8.0
+   fun:__libxml2_xzread
+   obj:/usr/lib/x86_64-linux-gnu/libxml2.so.2.8.0
+   fun:xmlParserInputBufferGrow
+   fun:xmlParserInputGrow
+   obj:/usr/lib/x86_64-linux-gnu/libxml2.so.2.8.0
+   fun:xmlParseDocument
+   obj:/usr/lib/x86_64-linux-gnu/libxml2.so.2.8.0
+   fun:*
+}

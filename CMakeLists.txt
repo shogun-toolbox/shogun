@@ -873,6 +873,8 @@ ENDIF()
 #TODO: finish!!!
 OPTION(BUILD_DASHBOARD_REPORTS "Set to ON to activate reporting of Shogun builds" OFF)
 IF(BUILD_DASHBOARD_REPORTS)
+	file(TO_CMAKE_PATH "${CMAKE_SOURCE_DIR}/configs/valgrind.supp" VALGRIND_SUPPRESSION_FILE)
+	SET(MEMORYCHECK_SUPPRESSIONS_FILE ${VALGRIND_SUPPRESSION_FILE} CACHE FILEPATH "File that contains suppressions for the memory checker")
 	include(CTest)
 ENDIF()
 
