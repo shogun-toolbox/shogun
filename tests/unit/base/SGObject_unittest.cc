@@ -85,6 +85,7 @@ TEST(SGObject,ref_unref)
 	}
 	SG_UNREF(labs);
 	EXPECT_TRUE(labs == NULL);
+	delete [] threads;
 }
 #endif
 
