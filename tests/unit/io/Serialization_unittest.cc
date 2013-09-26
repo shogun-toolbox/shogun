@@ -921,7 +921,7 @@ TEST(Serialization, Xml_scalar_equal_UINT16)
 	delete param2;
 }
 
-TEST(Serialization, Xml_scalar_equal_INT132)
+TEST(Serialization, Xml_scalar_equal_INT32)
 {
 	int32_t a=1;
 	int32_t b=2;

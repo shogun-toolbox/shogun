@@ -1027,6 +1027,9 @@ SEARCHENGINE           = YES
 
 SERVER_BASED_SEARCH    = NO
 
+USE_MATHJAX            = YES
+MATHJAX_RELPATH        = http://www.mathjax.org/mathjax
+
 #---------------------------------------------------------------------------
 # configuration options related to the LaTeX output
 #---------------------------------------------------------------------------
