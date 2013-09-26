@@ -30,7 +30,7 @@ enum EQuadraticMMDType
  * The MMD is the distance of two probability distributions \f$p\f$ and \f$q\f$
  * in a RKHS
  * \f[
- * \text{MMD}}[\mathcal{F},p,q]^2=\textbf{E}_{x,x'}\left[ k(x,x')\right]-
+ * \text{MMD}[\mathcal{F},p,q]^2=\textbf{E}_{x,x'}\left[ k(x,x')\right]-
  * 2\textbf{E}_{x,y}\left[ k(x,y)\right]
  * +\textbf{E}_{y,y'}\left[ k(y,y')\right]=||\mu_p - \mu_q||^2_\mathcal{F}
  * \f]
