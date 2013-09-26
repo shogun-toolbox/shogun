@@ -26,12 +26,12 @@ TEST(ProtobufFileTest, vector_int32)
 	CProtobufFile* fin;
 	CProtobufFile* fout;
 
-	fout=new CProtobufFile("ProtobufFileTest_int32_output.txt",'w', NULL);
+	fout=new CProtobufFile("ProtobufFileTest_vector_int32_output.txt",'w', NULL);
 	fout->set_vector(data.vector, len);
 	SG_UNREF(fout);
 
 	SGVector<int32_t> data_from_file(true);
-	fin=new CProtobufFile("ProtobufFileTest_int32_output.txt",'r', NULL);
+	fin=new CProtobufFile("ProtobufFileTest_vector_int32_output.txt",'r', NULL);
 	fin->get_vector(data_from_file.vector, data_from_file.vlen);
 	EXPECT_EQ(data_from_file.vlen, len);
 
@@ -41,7 +41,7 @@ TEST(ProtobufFileTest, vector_int32)
 	}
 	SG_UNREF(fin);
 	SG_UNREF(rand);
-	unlink("ProtobufFileTest_int32_output.txt");
+	unlink("ProtobufFileTest_vector_int32_output.txt");
 }
 
 TEST(ProtobufFileTest, vector_float64)
@@ -56,12 +56,12 @@ TEST(ProtobufFileTest, vector_float64)
 	CProtobufFile* fin;
 	CProtobufFile* fout;
 
-	fout=new CProtobufFile("ProtobufFileTest_float64_output.txt",'w', NULL);
+	fout=new CProtobufFile("ProtobufFileTest_vector_float64_output.txt",'w', NULL);
 	fout->set_vector(data.vector, len);
 	SG_UNREF(fout);
 
 	SGVector<float64_t> data_from_file(true);
-	fin=new CProtobufFile("ProtobufFileTest_float64_output.txt",'r', NULL);
+	fin=new CProtobufFile("ProtobufFileTest_vector_float64_output.txt",'r', NULL);
 	fin->get_vector(data_from_file.vector, data_from_file.vlen);
 	EXPECT_EQ(data_from_file.vlen, len);
 
@@ -71,7 +71,7 @@ TEST(ProtobufFileTest, vector_float64)
 	}
 	SG_UNREF(fin);
 	SG_UNREF(rand);
-	unlink("ProtobufFileTest_float64_output.txt");
+	unlink("ProtobufFileTest_vector_float64_output.txt");
 }
 
 TEST(ProtobufFileTest, matrix_int32)
@@ -90,12 +90,12 @@ TEST(ProtobufFileTest, matrix_int32)
 	CProtobufFile* fin;
 	CProtobufFile* fout;
 
-	fout=new CProtobufFile("ProtobufFileTest_int32_output.txt",'w', NULL);
+	fout=new CProtobufFile("ProtobufFileTest_matrix_int32_output.txt",'w', NULL);
 	fout->set_matrix(data.matrix, num_cols, num_rows);
 	SG_UNREF(fout);
 
 	SGMatrix<int32_t> data_from_file(true);
-	fin=new CProtobufFile("ProtobufFileTest_int32_output.txt",'r', NULL);
+	fin=new CProtobufFile("ProtobufFileTest_matrix_int32_output.txt",'r', NULL);
 	fin->get_matrix(data_from_file.matrix, data_from_file.num_cols, data_from_file.num_rows);
 	EXPECT_EQ(data_from_file.num_rows, num_rows);
 	EXPECT_EQ(data_from_file.num_cols, num_cols);
@@ -108,7 +108,7 @@ TEST(ProtobufFileTest, matrix_int32)
 
 	SG_UNREF(fin);
 	SG_UNREF(rand);
-	unlink("ProtobufFileTest_int32_output.txt");
+	unlink("ProtobufFileTest_matrix_int32_output.txt");
 }
 
 TEST(ProtobufFileTest, matrix_float64)
@@ -127,12 +127,12 @@ TEST(ProtobufFileTest, matrix_float64)
 	CProtobufFile* fin;
 	CProtobufFile* fout;
 
-	fout=new CProtobufFile("ProtobufFileTest_int32_output.txt",'w', NULL);
+	fout=new CProtobufFile("ProtobufFileTest_matrix_float64_output.txt",'w', NULL);
 	fout->set_matrix(data.matrix, num_cols, num_rows);
 	SG_UNREF(fout);
 
 	SGMatrix<float64_t> data_from_file(true);
-	fin=new CProtobufFile("ProtobufFileTest_int32_output.txt",'r', NULL);
+	fin=new CProtobufFile("ProtobufFileTest_matrix_float64_output.txt",'r', NULL);
 	fin->get_matrix(data_from_file.matrix, data_from_file.num_cols, data_from_file.num_rows);
 	EXPECT_EQ(data_from_file.num_rows, num_rows);
 	EXPECT_EQ(data_from_file.num_cols, num_cols);
@@ -145,16 +145,16 @@ TEST(ProtobufFileTest, matrix_float64)
 
 	SG_UNREF(fin);
 	SG_UNREF(rand);
-	unlink("ProtobufFileTest_float64_output.txt");
+	unlink("ProtobufFileTest_matrix_float64_output.txt");
 }
 
 TEST(ProtobufFileTest, sparse_matrix_int32)
 {
-	int32_t max_num_entries=20;
+	int32_t max_num_entries=512;
 	int32_t max_entry_value=1024;
 	CRandom* rand=new CRandom();
 
-	int32_t num_vec=10;
+	int32_t num_vec=1024;
 	int32_t num_feat=0;
 
 	SGSparseVector<int32_t>* data=SG_MALLOC(SGSparseVector<int32_t>, num_vec);
@@ -176,11 +176,11 @@ TEST(ProtobufFileTest, sparse_matrix_int32)
 	int32_t num_feat_from_file=0;
 	SGSparseVector<int32_t>* data_from_file;
 
-	CProtobufFile* fout=new CProtobufFile("ProtobufFileTest_int32_output.txt", 'w', NULL);
+	CProtobufFile* fout=new CProtobufFile("ProtobufFileTest_sparse_matrix_int32_output.txt", 'w', NULL);
 	fout->set_sparse_matrix(data, num_feat, num_vec);
 	SG_UNREF(fout);
 
-	CProtobufFile* fin=new CProtobufFile("ProtobufFileTest_int32_output.txt", 'r', NULL);
+	CProtobufFile* fin=new CProtobufFile("ProtobufFileTest_sparse_matrix_int32_output.txt", 'r', NULL);
 	fin->get_sparse_matrix(data_from_file, num_feat_from_file, num_vec_from_file);
 
 	EXPECT_EQ(num_vec_from_file, num_vec);
@@ -203,7 +203,65 @@ TEST(ProtobufFileTest, sparse_matrix_int32)
 	SG_FREE(data);
 	SG_FREE(data_from_file);
 
-	unlink("ProtobufFileTest_int32_output.txt");
+	unlink("ProtobufFileTest_sparse_matrix_int32_output.txt");
+}
+
+TEST(ProtobufFileTest, sparse_matrix_float64)
+{
+	int32_t max_num_entries=512;
+	int32_t max_entry_value=1024;
+	CRandom* rand=new CRandom();
+
+	int32_t num_vec=1024;
+	int32_t num_feat=0;
+
+	SGSparseVector<float64_t>* data=SG_MALLOC(SGSparseVector<float64_t>, num_vec);
+	for (int32_t i=0; i<num_vec; i++)
+	{
+		data[i]=SGSparseVector<float64_t>(rand->random(0, max_num_entries));
+		for (int32_t j=0; j<data[i].num_feat_entries; j++)
+		{
+			int32_t feat_index=(j+1)*2;
+			if (feat_index>num_feat)
+				num_feat=feat_index;
+
+			data[i].features[j].feat_index=feat_index-1;
+			data[i].features[j].entry=rand->random(0., 1.);
+		}
+	}
+
+	int32_t num_vec_from_file=0;
+	int32_t num_feat_from_file=0;
+	SGSparseVector<float64_t>* data_from_file;
+
+	CProtobufFile* fout=new CProtobufFile("ProtobufFileTest_sparse_matrix_float64_output.txt", 'w', NULL);
+	fout->set_sparse_matrix(data, num_feat, num_vec);
+	SG_UNREF(fout);
+
+	CProtobufFile* fin=new CProtobufFile("ProtobufFileTest_sparse_matrix_float64_output.txt", 'r', NULL);
+	fin->get_sparse_matrix(data_from_file, num_feat_from_file, num_vec_from_file);
+
+	EXPECT_EQ(num_vec_from_file, num_vec);
+	EXPECT_EQ(num_feat_from_file, num_feat);
+	for (int32_t i=0; i<num_vec; i++)
+	{
+		for (int32_t j=0; j<data[i].num_feat_entries; j++)
+		{
+			EXPECT_EQ(data[i].features[j].feat_index, 
+					data_from_file[i].features[j].feat_index);
+
+			EXPECT_NEAR(data[i].features[j].entry, 
+					data_from_file[i].features[j].entry, 1E-14);
+		}
+	}
+
+	SG_UNREF(fin);
+	SG_UNREF(rand);
+
+	SG_FREE(data);
+	SG_FREE(data_from_file);
+
+	unlink("ProtobufFileTest_sparse_matrix_float64_output.txt");
 }
 
 TEST(ProtobufFileTest, DISABLED_string_list_char)
@@ -223,14 +281,14 @@ TEST(ProtobufFileTest, DISABLED_string_list_char)
 	CProtobufFile* fin;
 	CProtobufFile* fout;
 
-	fout=new CProtobufFile("ProtobufFileTest_char_output.txt",'w', NULL);
+	fout=new CProtobufFile("ProtobufFileTest_string_list_char_output.txt",'w', NULL);
 	fout->set_string_list(strings, num_str);
 	SG_UNREF(fout);
 
 	SGString<char>* data_from_file=NULL;
 	int32_t num_str_from_file=0;
 	int32_t max_string_len_from_file=0;
-	fin=new CProtobufFile("ProtobufFileTest_char_output.txt",'r', NULL);
+	fin=new CProtobufFile("ProtobufFileTest_string_list_char_output.txt",'r', NULL);
 	fin->get_string_list(data_from_file, num_str_from_file, max_string_len_from_file);
 	EXPECT_EQ(num_str_from_file, num_str);
 
@@ -245,7 +303,7 @@ TEST(ProtobufFileTest, DISABLED_string_list_char)
 
 	SG_FREE(strings);
 	SG_FREE(data_from_file);
-	unlink("ProtobufFileTest_char_output.txt");
+	unlink("ProtobufFileTest_string_list_char_output.txt");
 }
 
 #endif /* HAVE_PROTOBUF */

@@ -9,14 +9,14 @@
 
 using namespace shogun;
 
-TEST(LibSVMFileTest, io_int)
+TEST(LibSVMFileTest, sparse_matrix_int32)
 {
-	int32_t max_num_entries=20;
+	int32_t max_num_entries=512;
 	int32_t max_label_value=1;
 	int32_t max_entry_value=1024;
 	CRandom* rand=new CRandom();
 
-	int32_t num_vec=10;
+	int32_t num_vec=1024;
 	int32_t num_feat=0;
 
 	SGSparseVector<int32_t>* data=SG_MALLOC(SGSparseVector<int32_t>, num_vec);
@@ -41,11 +41,11 @@ TEST(LibSVMFileTest, io_int)
 	SGSparseVector<int32_t>* data_from_file;
 	float64_t* labels_from_file;
 
-	CLibSVMFile* fout=new CLibSVMFile("LibSVMFileTest_io_int_output.txt", 'w', NULL);
+	CLibSVMFile* fout=new CLibSVMFile("LibSVMFileTest_sparse_matrix_int32_output.txt", 'w', NULL);
 	fout->set_sparse_matrix(data, num_feat, num_vec, labels);
 	SG_UNREF(fout);
 
-	CLibSVMFile* fin=new CLibSVMFile("LibSVMFileTest_io_int_output.txt", 'r', NULL);
+	CLibSVMFile* fin=new CLibSVMFile("LibSVMFileTest_sparse_matrix_int32_output.txt", 'r', NULL);
 	fin->get_sparse_matrix(data_from_file, num_feat_from_file, num_vec_from_file, 
 				labels_from_file);
 
@@ -53,7 +53,7 @@ TEST(LibSVMFileTest, io_int)
 	EXPECT_EQ(num_feat_from_file, num_feat);
 	for (int32_t i=0; i<num_vec; i++)
 	{
-		EXPECT_EQ(labels[i], labels_from_file[i]);
+		EXPECT_NEAR(labels[i], labels_from_file[i], 1E-14);
 		for (int32_t j=0; j<data[i].num_feat_entries; j++)
 		{
 			EXPECT_EQ(data[i].features[j].feat_index, 
@@ -63,26 +63,25 @@ TEST(LibSVMFileTest, io_int)
 					data_from_file[i].features[j].entry);
 		}
 	}
-
 	SG_UNREF(fin);
 
 	SG_UNREF(rand);
-
 	SG_FREE(data);
 	SG_FREE(labels);
-
 	SG_FREE(data_from_file);
 	SG_FREE(labels_from_file);
+
+	unlink("LibSVMFileTest_sparse_matrix_int32_output.txt");
 }
 
-TEST(LibSVMFileTest, io_real)
+TEST(LibSVMFileTest, sparse_matrix_float64)
 {
-	int32_t max_num_entries=20;
+	int32_t max_num_entries=512;
 	int32_t max_label_value=1;
-	float64_t max_entry_value=1;
+	float64_t max_entry_value=1024;
 	CRandom* rand=new CRandom();
 
-	int32_t num_vec=10;
+	int32_t num_vec=1024;
 	int32_t num_feat=0;
 
 	SGSparseVector<float64_t>* data=SG_MALLOC(SGSparseVector<float64_t>, num_vec);
@@ -98,7 +97,7 @@ TEST(LibSVMFileTest, io_real)
 				num_feat=feat_index;
 
 			data[i].features[j].feat_index=feat_index-1;
-			data[i].features[j].entry=rand->random(0., max_entry_value);
+			data[i].features[j].entry=rand->random(0., 1.);
 		}
 	}
 
@@ -107,11 +106,11 @@ TEST(LibSVMFileTest, io_real)
 	SGSparseVector<float64_t>* data_from_file;
 	float64_t* labels_from_file;
 
-	CLibSVMFile* fout=new CLibSVMFile("LibSVMFileTest_io_real_output.txt", 'w', NULL);
+	CLibSVMFile* fout=new CLibSVMFile("LibSVMFileTest_sparse_matrix_float64_output.txt", 'w', NULL);
 	fout->set_sparse_matrix(data, num_feat, num_vec, labels);
 	SG_UNREF(fout);
 
-	CLibSVMFile* fin=new CLibSVMFile("LibSVMFileTest_io_real_output.txt", 'r', NULL);
+	CLibSVMFile* fin=new CLibSVMFile("LibSVMFileTest_sparse_matrix_float64_output.txt", 'r', NULL);
 	fin->get_sparse_matrix(data_from_file, num_feat_from_file, num_vec_from_file, 
 				labels_from_file);
 
@@ -119,7 +118,7 @@ TEST(LibSVMFileTest, io_real)
 	EXPECT_EQ(num_feat_from_file, num_feat);
 	for (int32_t i=0; i<num_vec; i++)
 	{
-		EXPECT_EQ(labels[i], labels_from_file[i]);
+		EXPECT_NEAR(labels[i], labels_from_file[i], 1E-14);
 		for (int32_t j=0; j<data[i].num_feat_entries; j++)
 		{
 			EXPECT_EQ(data[i].features[j].feat_index, 
@@ -136,4 +135,5 @@ TEST(LibSVMFileTest, io_real)
 	SG_FREE(labels);
 	SG_FREE(data_from_file);
 	SG_FREE(labels_from_file);
+	unlink("LibSVMFileTest_sparse_matrix_float64_output.txt");
 }

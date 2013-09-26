@@ -10,157 +10,149 @@
 
 using namespace shogun;
 
-TEST(CSVFileTest, read_matrix)
+TEST(CSVFileTest, vector_int32)
 {
-	int32_t num_lines=5;
+	CRandom* rand=new CRandom();
 
-	int32_t num_rows=4;
-	int32_t num_cols=3;
-	const char* lines[]={"Header (should be skipped)", "Not header (should be skipped too)",
-				"1.0000|1.0001|1.0002|1.0003",
-				"1.0004|1.0005|1.0006|1.0007",
-				"1.0008|1.0009|1.0010|1.0011"};
-
-	float64_t data[]={1.0000, 1.0001, 1.0002, 1.0003,
-				1.0004, 1.0005, 1.0006, 1.0007,
-				1.0008, 1.0009, 1.0010, 1.0011};
-
-	SGMatrix<float64_t> a=SGMatrix<float64_t>(data, num_rows, num_cols, false);
-
-	FILE* fout=fopen("csvfile_test.csv","w");
-	for (int32_t i=0; i<num_lines; i++)
-		fprintf(fout, "%s\n", lines[i]);
-	fclose(fout);
-
-	SGMatrix<float64_t> tmp(true);
-	CCSVFile* fin;
-
-	fin=new CCSVFile("csvfile_test.csv",'r', NULL);
-	fin->set_delimiter('|');
-	fin->set_lines_to_skip(2);
-
-	fin->get_matrix(tmp.matrix, tmp.num_rows, tmp.num_cols);
-	EXPECT_EQ(tmp.num_rows, num_rows);
-	EXPECT_EQ(tmp.num_cols, num_cols);
-
-	for (int32_t i=0; i<tmp.num_rows; i++)
-	{
-		for (int32_t j=0; j<tmp.num_cols; j++)
-		{
-			EXPECT_EQ(tmp(i, j), a(i, j));
-		}
-	}
-	SG_UNREF(fin);
-}
-
-TEST(CSVFileTest, write_matrix_real)
-{
-	int32_t num_rows=4;
-	int32_t num_cols=3;
-
-	float64_t data[]={1.0000, 1.0001, 1.0002, 1.0003,
-				1.0004, 1.0005, 1.0006, 1.0007,
-				1.0008, 1.0009, 1.0010, 1.0011};
-
-	SGMatrix<float64_t> a=SGMatrix<float64_t>(data, num_rows, num_cols, false);
+	int32_t len=512*512;
+	SGVector<int32_t> data(len);
+	for (int32_t i=0; i<len; i++)
+		data[i]=(int32_t) rand->random(0, len);
 
 	CCSVFile* fin;
 	CCSVFile* fout;
 
-	SGMatrix<float64_t> tmp(true);
-
-	fout=new CCSVFile("csvfile_test.csv",'w', NULL);
-	fout->set_delimiter('|');
-	fout->set_matrix(data, num_rows, num_cols);
-	SG_UNREF(fout);
-
-	fin=new CCSVFile("csvfile_test.csv",'r', NULL);
-	fin->set_delimiter('|');
-
-	fin->get_matrix(tmp.matrix, tmp.num_rows, tmp.num_cols);
-	EXPECT_EQ(tmp.num_rows, num_rows);
-	EXPECT_EQ(tmp.num_cols, num_cols);
-
-	for (int32_t i=0; i<tmp.num_rows; i++)
-	{
-		for (int32_t j=0; j<tmp.num_cols; j++)
-		{
-			EXPECT_EQ(tmp(i, j), a(i, j));
-		}
-	}
-	SG_UNREF(fin);
-}
-
-TEST(CSVFileTest, write_matrix_int)
-{
-	int32_t num_rows=4;
-	int32_t num_cols=3;
-
-	int32_t data[]={1, 2, 3, 4,
-				5, 6, 7, 8,
-				9, 10, 11, 12};
-
-	SGMatrix<int32_t> a=SGMatrix<int32_t>(data, num_rows, num_cols, false);
-
-	CCSVFile* fin;
-	CCSVFile* fout;
-
-	SGMatrix<int32_t> tmp(true);
-
-	fout=new CCSVFile("csvfile_test.csv",'w', NULL);
-	fout->set_delimiter('|');
-	fout->set_matrix(data, num_rows, num_cols);
-	SG_UNREF(fout);
-
-	fin=new CCSVFile("csvfile_test.csv",'r', NULL);
-	fin->set_delimiter('|');
-
-	fin->get_matrix(tmp.matrix, tmp.num_rows, tmp.num_cols);
-	EXPECT_EQ(tmp.num_rows, num_rows);
-	EXPECT_EQ(tmp.num_cols, num_cols);
-
-	for (int32_t i=0; i<tmp.num_rows; i++)
-	{
-		for (int32_t j=0; j<tmp.num_cols; j++)
-		{
-			EXPECT_EQ(tmp(i, j), a(i, j));
-		}
-	}
-	SG_UNREF(fin);
-}
-
-TEST(CSVFileTest, write_vector_int)
-{
-	int32_t nlen=12;
-
-	int32_t data[]={1, 2, 3, 4,
-			5, 6, 7, 8,
-			9, 10, 11, 12};
-
-	CCSVFile* fin;
-	CCSVFile* fout;
-
-	SGVector<int32_t> tmp;
-
-	fout=new CCSVFile("csvfile_test.csv",'w', NULL);
+	fout=new CCSVFile("CSVFileTest_vector_int32_output.txt",'w', NULL);
 	fout->set_delimiter(' ');
-	fout->set_vector(data, nlen);
+	fout->set_vector(data.vector, len);
 	SG_UNREF(fout);
 
-	fin=new CCSVFile("csvfile_test.csv",'r', NULL);
+	SGVector<int32_t> data_from_file(true);
+	fin=new CCSVFile("CSVFileTest_vector_int32_output.txt",'r', NULL);
 	fin->set_delimiter(' ');
+	fin->get_vector(data_from_file.vector, data_from_file.vlen);
+	EXPECT_EQ(data_from_file.vlen, len);
 
-	fin->get_vector(tmp.vector, tmp.vlen);
-	EXPECT_EQ(tmp.vlen, nlen);
-
-	for (int32_t i=0; i<tmp.vlen; i++)
+	for (int32_t i=0; i<data_from_file.vlen; i++)
 	{
-		EXPECT_EQ(tmp[i], data[i]);
+		EXPECT_EQ(data_from_file[i], data[i]);
 	}
 	SG_UNREF(fin);
+	SG_UNREF(rand);
+	unlink("CSVFileTest_vector_int32_output.txt");
 }
 
-TEST(CSVFileTest, read_write_string_list)
+TEST(CSVFileTest, vector_float64)
+{
+	CRandom* rand=new CRandom();
+
+	int32_t len=128*128;
+	SGVector<float64_t> data(len);
+	for (int32_t i=0; i<len; i++)
+		data[i]=(float64_t) rand->random(0., 1.);
+
+	CCSVFile* fin;
+	CCSVFile* fout;
+
+	fout=new CCSVFile("CSVFileTest_vector_float64_output.txt",'w', NULL);
+	fout->set_delimiter(' ');
+	fout->set_vector(data.vector, len);
+	SG_UNREF(fout);
+
+	SGVector<float64_t> data_from_file(true);
+	fin=new CCSVFile("CSVFileTest_vector_float64_output.txt",'r', NULL);
+	fin->set_delimiter(' ');
+	fin->get_vector(data_from_file.vector, data_from_file.vlen);
+	EXPECT_EQ(data_from_file.vlen, len);
+
+	for (int32_t i=0; i<data_from_file.vlen; i++)
+	{
+		EXPECT_NEAR(data_from_file[i], data[i], 1E-14);
+	}
+	SG_UNREF(fin);
+	SG_UNREF(rand);
+	unlink("CSVFileTest_vector_float64_output.txt");
+}
+
+TEST(CSVFileTest, matrix_int32)
+{
+	CRandom* rand=new CRandom();
+
+	int32_t num_rows=512;
+	int32_t num_cols=512;
+	SGMatrix<int32_t> data(num_rows, num_cols);
+	for (int32_t i=0; i<num_rows; i++)
+	{
+		for (int32_t j=0; j<num_cols; j++)
+			data(i, j)=(int32_t) rand->random(0, num_rows);
+	}
+
+	CCSVFile* fin;
+	CCSVFile* fout;
+
+	fout=new CCSVFile("CSVFileTest_matrix_int32_output.txt",'w', NULL);
+	fout->set_delimiter('|');
+	fout->set_matrix(data.matrix, num_cols, num_rows);
+	SG_UNREF(fout);
+
+	SGMatrix<float64_t> data_from_file(true);
+	fin=new CCSVFile("CSVFileTest_matrix_int32_output.txt",'r', NULL);
+	fin->set_delimiter('|');
+	fin->get_matrix(data_from_file.matrix, data_from_file.num_cols, data_from_file.num_rows);
+	EXPECT_EQ(data_from_file.num_rows, num_rows);
+	EXPECT_EQ(data_from_file.num_cols, num_cols);
+
+	for (int32_t i=0; i<num_rows; i++)
+	{
+		for (int32_t j=0; j<num_cols; j++)
+			EXPECT_EQ(data_from_file(i, j), data(i, j));
+	}
+
+	SG_UNREF(fin);
+	SG_UNREF(rand);
+	unlink("CSVFileTest_matrix_int32_output.txt");
+}
+
+TEST(CSVFileTest, matrix_float64)
+{
+	CRandom* rand=new CRandom();
+
+	int32_t num_rows=128;
+	int32_t num_cols=128;
+	SGMatrix<float64_t> data(num_rows, num_cols);
+	for (int32_t i=0; i<num_rows; i++)
+	{
+		for (int32_t j=0; j<num_cols; j++)
+			data(i, j)=(float64_t) rand->random(0., 1.);
+	}
+
+	CCSVFile* fin;
+	CCSVFile* fout;
+
+	fout=new CCSVFile("CSVFileTest_matrix_float64_output.txt",'w', NULL);
+	fout->set_delimiter('|');
+	fout->set_matrix(data.matrix, num_cols, num_rows);
+	SG_UNREF(fout);
+
+	SGMatrix<float64_t> data_from_file(true);
+	fin=new CCSVFile("CSVFileTest_matrix_float64_output.txt",'r', NULL);
+	fin->set_delimiter('|');
+	fin->get_matrix(data_from_file.matrix, data_from_file.num_cols, data_from_file.num_rows);
+	EXPECT_EQ(data_from_file.num_rows, num_rows);
+	EXPECT_EQ(data_from_file.num_cols, num_cols);
+
+	for (int32_t i=0; i<num_rows; i++)
+	{
+		for (int32_t j=0; j<num_cols; j++)
+			EXPECT_NEAR(data_from_file(i, j), data(i, j), 1E-14);
+	}
+
+	SG_UNREF(fin);
+	SG_UNREF(rand);
+	unlink("CSVFileTest_matrix_float64_output.txt");
+}
+
+TEST(CSVFileTest, string_list_char)
 {
 	int32_t num_lines=5;
 	const char* text[] = {"It had to be U...", "U D transpose V", "I looked all around", "And finally found", "The SVD!"};
@@ -176,11 +168,11 @@ TEST(CSVFileTest, read_write_string_list)
 	CCSVFile* fin;
 	CCSVFile* fout;	
 
-	fout=new CCSVFile("csvfile_test.csv",'w', NULL);
+	fout=new CCSVFile("CSVFileTest_string_list_char_output.txt",'w', NULL);
 	fout->set_string_list(lines_to_write, num_lines);
 	SG_UNREF(fout);
 
-	fin=new CCSVFile("csvfile_test.csv",'r', NULL);
+	fin=new CCSVFile("CSVFileTest_string_list_char_output.txt",'r', NULL);
 	fin->get_string_list(lines_to_read, num_str, max_line_len);
 	EXPECT_EQ(num_str, num_lines);
 
@@ -195,4 +187,5 @@ TEST(CSVFileTest, read_write_string_list)
 	SG_UNREF(fin);
 	SG_FREE(lines_to_write);
 	SG_FREE(lines_to_read);
+	unlink("CSVFileTest_string_list_char_output.txt");
 }
