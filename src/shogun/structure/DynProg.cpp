@@ -183,6 +183,7 @@ CDynProg::~CDynProg()
 	SG_UNREF(m_seq_sparse1);
 	SG_UNREF(m_seq_sparse2);
 	SG_UNREF(m_plif_matrices);
+	SG_UNREF(m_seg_loss_obj);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

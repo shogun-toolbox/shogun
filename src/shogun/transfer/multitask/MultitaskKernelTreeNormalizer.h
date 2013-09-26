@@ -38,6 +38,12 @@ public:
         node_id = 0;
     }
 
+    virtual ~CNode()
+    {
+    	for (size_t i = 0; i < children.size(); i++)
+    		delete children[i];
+    }
+
     /** get a list of all ancestors of this node
      *  @return set of CNodes
 	 */
@@ -149,6 +155,15 @@ public:
 
 		name2id = std::map<std::string, int32_t>();
 		name2id["root"] = 0;
+	}
+
+	virtual ~CTaxonomy()
+	{
+		for (size_t i = 0; i < nodes.size(); i++)
+			delete nodes[i];
+		nodes.clear();
+		name2id.clear();
+		task_histogram.clear();
 	}
 
 	/**

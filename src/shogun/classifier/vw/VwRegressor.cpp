@@ -36,6 +36,8 @@ CVwRegressor::CVwRegressor(CVwEnvironment* env_to_use)
 
 CVwRegressor::~CVwRegressor()
 {
+	// TODO: the number of weight_vectors depends on num_threads
+	SG_FREE(weight_vectors[0]);
 	SG_FREE(weight_vectors);
 	SG_UNREF(loss);
 	SG_UNREF(env);
