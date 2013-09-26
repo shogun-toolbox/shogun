@@ -64,8 +64,9 @@ def modelselection_grid_search_libsvr_modular (fm_train=traindat,fm_test=testdat
     cross_validation=CrossValidation(predictor, features_train, labels,
 	    splitting_strategy, evaluation_criterium)
 
-    # (optional) repeat x-val 10 times
-    cross_validation.set_num_runs(10)
+#	 (optional) repeat x-val (set larger to get better estimates, at least two
+    # for confidence intervals)
+    cross_validation.set_num_runs(2)
 
     # (optional) request 95% confidence intervals for results (not actually
     # needed for this toy example)
@@ -79,11 +80,11 @@ def modelselection_grid_search_libsvr_modular (fm_train=traindat,fm_test=testdat
     param_tree_root=ModelSelectionParameters()
     c1=ModelSelectionParameters("C1");
     param_tree_root.append_child(c1)
-    c1.build_values(-2.0, 2.0, R_EXP);
+    c1.build_values(-1.0, 0.0, R_EXP);
 
     c2=ModelSelectionParameters("C2");
     param_tree_root.append_child(c2);
-    c2.build_values(-2.0, 2.0, R_EXP);
+    c2.build_values(-1.0, 0.0, R_EXP);
 
     # model selection instance
     model_selection=GridSearchModelSelection(cross_validation, param_tree_root)

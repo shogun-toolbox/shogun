@@ -6,7 +6,7 @@ from scipy.io import mmread
 # Loading an example sparse matrix of dimension 479x479, real, unsymmetric
 mtx=mmread('../data/../logdet/west0479.mtx.gz')
 
-parameter_list=[[mtx,10000,6000,1]]
+parameter_list=[[mtx,100,60,1]]
 
 def mathematics_logdet (matrix=mtx,max_iter_eig=1000,max_iter_lin=1000,num_samples=1):
 

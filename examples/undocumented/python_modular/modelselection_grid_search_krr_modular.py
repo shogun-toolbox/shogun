@@ -56,8 +56,9 @@ def modelselection_grid_search_krr_modular (fm_train=traindat,fm_test=testdat,la
     cross_validation=CrossValidation(predictor, features_train, labels,
 	    splitting_strategy, evaluation_criterium)
 
-    # (optional) repeat x-val 10 times
-    cross_validation.set_num_runs(10)
+    # (optional) repeat x-val (set larger to get better estimates, at least two
+    # for confidence intervals)
+    cross_validation.set_num_runs(2)
 
     # (optional) request 95% confidence intervals for results (not actually needed
     # for this toy example)
@@ -122,7 +123,7 @@ def create_param_tree():
 
     param_gaussian_kernel=ModelSelectionParameters("kernel", gaussian_kernel)
     gaussian_kernel_width=ModelSelectionParameters("width");
-    gaussian_kernel_width.build_values(5.0, 8.0, R_EXP, 1.0, 2.0)
+    gaussian_kernel_width.build_values(5.0, 6.0, R_EXP, 1.0, 2.0)
     param_gaussian_kernel.append_child(gaussian_kernel_width)
     root.append_child(param_gaussian_kernel)
 
