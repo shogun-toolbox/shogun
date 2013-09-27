@@ -77,7 +77,7 @@ TEST(LanczosEigenSolver, compute_big_diag_matrix)
 	float64_t min_eigenvalue=0.0001;
 
 	// create a sparse matrix	
-	const index_t size=10000;
+	const index_t size=100;
 	SGSparseMatrix<float64_t> sm(size, size);
 	CSparseMatrixOperator<float64_t>* op=new CSparseMatrixOperator<float64_t>(sm);
 	SG_REF(op);
