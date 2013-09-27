@@ -77,8 +77,8 @@ public:
 protected:
 	/**
 	 * compute \f$\zeta^{\sigma}_{n+1}\f$ as \f$\frac{\zeta^{\sigma}_{n}
-	 * \zeta^{\sigma}_{n-1}\beta_{n-1}}{\beta_{n}\alpha{n}(\zeta^{\sigma}_{n-1}
-	 * -\zeta^{\sigma}_{n}+\zeta^{\sigma}_{n-1}\beta_{n-1}(1-\sigma\beta_{n}}\f$
+	 * \zeta^{\sigma}_{n-1}\beta_{n-1}}{\beta_{n}\alpha_{n}(\zeta^{\sigma}_{n-1}
+	 * -\zeta^{\sigma}_{n})+\zeta^{\sigma}_{n-1}\beta_{n-1}(1-\sigma\beta_{n}})\f$
 	 * [see Jergerlehner, eq 2.44]
 	 *
 	 * @param zeta_sh_old \f$\zeta^{\sigma}_{n-1}\f$ shifted params
@@ -106,7 +106,7 @@ protected:
 		const SGVector<ST>& zeta_sh_cur, const T& beta_cur, SGVector<ST>& beta_sh);
 
 	/**
-	 * compute \f$alpha^{\sigma}_{n}\f$ as \f$\alpha_{n}\frac{\zeta^{\sigma}
+	 * compute \f$\alpha^{\sigma}_{n}\f$ as \f$\alpha_{n}\frac{\zeta^{\sigma}
 	 * _{n}\beta^{\sigma}_{n-1}}{\zeta^{\sigma}_{n-1}\beta_{n-1}}\f$
 	 *
 	 * @param zeta_sh_cur \f$\zeta^{\sigma}_{n}\f$ shifted params
