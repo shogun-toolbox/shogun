@@ -89,6 +89,8 @@ TEST(LogDetEstimator, sample_ratapp_dense)
 	mat(1,0)=0.5;
 	mat(1,1)=1000.0;
 
+	sg_rand->set_seed(1);
+
 	float64_t accuracy=1E-5;
 	CDenseMatrixOperator<float64_t>* op=new CDenseMatrixOperator<float64_t>(mat);
 	SG_REF(op);
