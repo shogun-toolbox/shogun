@@ -27,6 +27,9 @@
  #include <shogun/structure/PrimalMosekSOSVM.h>
 #endif /* USE_MOSEK */
 
+ #include <shogun/structure/SOSVMHelper.h>
+ #include <shogun/structure/StochasticSOSVM.h>
+
  #include <shogun/structure/FactorType.h>
  #include <shogun/structure/Factor.h>
  #include <shogun/structure/DisjointSet.h>

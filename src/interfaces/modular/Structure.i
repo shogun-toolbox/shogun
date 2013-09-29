@@ -41,6 +41,9 @@
 %rename(PrimalMosekSOSVM) CPrimalMosekSOSVM;
 #endif /* USE_MOSEK */
 
+%rename(SOSVMHelper) CSOSVMHelper;
+%rename(StochasticSOSVM) CStochasticSOSVM;
+
 %rename(FactorType) CFactorType;
 %rename(TableFactorType) CTableFactorType;
 %rename(FactorDataSource) CFactorDataSource;
@@ -81,6 +84,9 @@
 #ifdef USE_MOSEK
 %include <shogun/structure/PrimalMosekSOSVM.h>
 #endif /* USE_MOSEK */
+
+%include <shogun/structure/SOSVMHelper.h>
+%include <shogun/structure/StochasticSOSVM.h>
 
 %include <shogun/structure/FactorType.h>
 %include <shogun/structure/Factor.h>
