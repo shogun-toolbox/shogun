@@ -127,7 +127,7 @@ public:
 	/** perform loss-augmentation 
 	 *
 	 * @param states_gt ground truth states
-	 * @param weights weighted loss for each variable
+	 * @param loss weighted loss for each variable
 	 */
 	virtual void loss_augmentation(SGVector<int32_t> states_gt, \
 		SGVector<float64_t> loss = SGVector<float64_t>());
