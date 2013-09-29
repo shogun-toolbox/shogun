@@ -154,8 +154,9 @@ void CCommUlongStringKernel::add_to_normal(int32_t vec_idx, float64_t weight)
 
 	if (vec && len>0)
 	{
-		uint64_t* dic= SG_MALLOC(uint64_t, len+dictionary.get_num_elements());
-		float64_t* dic_weights= SG_MALLOC(float64_t, len+dictionary.get_num_elements());
+		int32_t max_len = len+dictionary.vlen;
+		SGVector<uint64_t> dic(max_len);
+		SGVector<float64_t> dic_weights(max_len);
 
 		if (use_sign)
 		{
@@ -169,7 +170,7 @@ void CCommUlongStringKernel::add_to_normal(int32_t vec_idx, float64_t weight)
 
 			merge_dictionaries(t, j, k, vec, dic, dic_weights, weight, vec_idx);
 
-			while (k<dictionary.get_num_elements())
+			while (k<dictionary.vlen)
 			{
 				dic[t]=dictionary[k];
 				dic_weights[t]=dictionary_weights[k];
@@ -190,7 +191,7 @@ void CCommUlongStringKernel::add_to_normal(int32_t vec_idx, float64_t weight)
 
 			merge_dictionaries(t, j, k, vec, dic, dic_weights, weight*(j-last_j), vec_idx);
 
-			while (k<dictionary.get_num_elements())
+			while (k<dictionary.vlen)
 			{
 				dic[t]=dictionary[k];
 				dic_weights[t]=dictionary_weights[k];
@@ -199,8 +200,10 @@ void CCommUlongStringKernel::add_to_normal(int32_t vec_idx, float64_t weight)
 			}
 		}
 
-		dictionary.set_array(dic, t, len+dictionary.get_num_elements());
-		dictionary_weights.set_array(dic_weights, t, len+dictionary.get_num_elements());
+		dic.resize_vector(t);
+		dic_weights.resize_vector(t);
+		dictionary = dic;
+		dictionary_weights = dic_weights;
 	}
 	((CStringFeatures<uint64_t>*) lhs)->free_feature_vector(vec, vec_idx, free_vec);
 
@@ -209,8 +212,8 @@ void CCommUlongStringKernel::add_to_normal(int32_t vec_idx, float64_t weight)
 
 void CCommUlongStringKernel::clear_normal()
 {
-	dictionary.resize_array(0);
-	dictionary_weights.resize_array(0);
+	dictionary.resize_vector(0);
+	dictionary_weights.resize_vector(0);
 	set_is_initialized(false);
 }
 
@@ -279,7 +282,7 @@ float64_t CCommUlongStringKernel::compute_optimized(int32_t i)
 				if (avec[j]==avec[j-1])
 					continue;
 
-				int32_t idx = CMath::binary_search_max_lower_equal(&(dictionary.get_array()[old_idx]), dictionary.get_num_elements()-old_idx, avec[j-1]);
+				int32_t idx = CMath::binary_search_max_lower_equal(&(dictionary[old_idx]), dictionary.vlen-old_idx, avec[j-1]);
 
 				if (idx!=-1)
 				{
@@ -290,7 +293,7 @@ float64_t CCommUlongStringKernel::compute_optimized(int32_t i)
 				}
 			}
 
-			int32_t idx = CMath::binary_search(&(dictionary.get_array()[old_idx]), dictionary.get_num_elements()-old_idx, avec[alen-1]);
+			int32_t idx = CMath::binary_search(&(dictionary[old_idx]), dictionary.vlen-old_idx, avec[alen-1]);
 			if (idx!=-1)
 				result += dictionary_weights[idx+old_idx];
 		}
@@ -301,7 +304,7 @@ float64_t CCommUlongStringKernel::compute_optimized(int32_t i)
 				if (avec[j]==avec[j-1])
 					continue;
 
-				int32_t idx = CMath::binary_search_max_lower_equal(&(dictionary.get_array()[old_idx]), dictionary.get_num_elements()-old_idx, avec[j-1]);
+				int32_t idx = CMath::binary_search_max_lower_equal(&(dictionary[old_idx]), dictionary.vlen-old_idx, avec[j-1]);
 
 				if (idx!=-1)
 				{
@@ -314,7 +317,7 @@ float64_t CCommUlongStringKernel::compute_optimized(int32_t i)
 				last_j = j;
 			}
 
-			int32_t idx = CMath::binary_search(&(dictionary.get_array()[old_idx]), dictionary.get_num_elements()-old_idx, avec[alen-1]);
+			int32_t idx = CMath::binary_search(&(dictionary[old_idx]), dictionary.vlen-old_idx, avec[alen-1]);
 			if (idx!=-1)
 				result += dictionary_weights[idx+old_idx]*(alen-last_j);
 		}
