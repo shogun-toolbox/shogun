@@ -41,7 +41,7 @@
 #cmakedefine USE_HMMDEBUG 1
 #cmakedefine USE_HMMCACHE 1
 #cmakedefine USE_HMMPARALLEL 1
-#cmakedefine USE_HMMPARALLELSTRUCTURES 1
+#cmakedefine USE_HMMPARALLEL_STRUCTURES 1
 
 #cmakedefine USE_PATHDEBUG 1
 
