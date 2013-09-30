@@ -152,6 +152,10 @@ TEST(ProbingSampler, mean_variance)
 		EXPECT_NEAR(CStatistics::mean(sample), 0.0, 0.1);
 		EXPECT_NEAR(CStatistics::variance(sample), 1.0/num_samples, 0.01);
 	}
+
+	SG_UNREF(feat);
+	SG_UNREF(A);
+	SG_UNREF(trace_sampler);
 }
 #endif // HAVE_EIGEN3
 #endif // HAVE_COLPACK
