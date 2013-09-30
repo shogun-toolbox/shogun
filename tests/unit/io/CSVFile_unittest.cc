@@ -27,7 +27,7 @@ TEST(CSVFileTest, vector_int32)
 	fout->set_vector(data.vector, len);
 	SG_UNREF(fout);
 
-	SGVector<int32_t> data_from_file(true);
+	SGVector<int32_t> data_from_file;
 	fin=new CCSVFile("CSVFileTest_vector_int32_output.txt",'r', NULL);
 	fin->set_delimiter(' ');
 	fin->get_vector(data_from_file.vector, data_from_file.vlen);
@@ -59,7 +59,7 @@ TEST(CSVFileTest, vector_float64)
 	fout->set_vector(data.vector, len);
 	SG_UNREF(fout);
 
-	SGVector<float64_t> data_from_file(true);
+	SGVector<float64_t> data_from_file;
 	fin=new CCSVFile("CSVFileTest_vector_float64_output.txt",'r', NULL);
 	fin->set_delimiter(' ');
 	fin->get_vector(data_from_file.vector, data_from_file.vlen);
