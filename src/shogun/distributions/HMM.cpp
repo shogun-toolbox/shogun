@@ -546,20 +546,23 @@ bool CHMM::alloc_state_dependend_arrays()
 void CHMM::free_state_dependend_arrays()
 {
 #ifdef USE_HMMPARALLEL_STRUCTURES
-	for (int32_t i=0; i<parallel->get_num_threads(); i++)
+	if (arrayN1 && arrayN2)
 	{
-		SG_FREE(arrayN1[i]);
-		SG_FREE(arrayN2[i]);
+		for (int32_t i=0; i<parallel->get_num_threads(); i++)
+		{
+			SG_FREE(arrayN1[i]);
+			SG_FREE(arrayN2[i]);
 
-		arrayN1[i]=NULL;
-		arrayN2[i]=NULL;
+			arrayN1[i]=NULL;
+			arrayN2[i]=NULL;
+		}
 	}
-#else
+#endif
 	SG_FREE(arrayN1);
 	SG_FREE(arrayN2);
 	arrayN1=NULL;
 	arrayN2=NULL;
-#endif
+
 	if (observation_matrix_b)
 	{
 		SG_FREE(transition_matrix_A);
