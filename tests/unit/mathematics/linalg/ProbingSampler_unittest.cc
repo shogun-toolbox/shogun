@@ -154,7 +154,6 @@ TEST(ProbingSampler, mean_variance)
 	}
 
 	SG_UNREF(feat);
-	SG_UNREF(A);
 	SG_UNREF(trace_sampler);
 }
 #endif // HAVE_EIGEN3
