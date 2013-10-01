@@ -75,6 +75,12 @@ public:
 	/** destructor */
 	virtual ~CProbingSampler();
 
+	/** 
+	 * set the coloring vector
+	 * @param coloring_vector the coloring vector
+	 */
+	void set_coloring_vector(SGVector<int32_t> coloring_vector);
+
 	/** @return the coloring vector */
 	SGVector<int32_t> get_coloring_vector() const;
 
@@ -106,10 +112,13 @@ private:
 	SGVector<int32_t> m_coloring_vector;
 
 	/** ordering variant */
-	SGString<char> m_ordering;
+	EOrderingVariant m_ordering;
 
 	/** coloring variant */
-	SGString<char> m_coloring;
+	EColoringVariant m_coloring;
+
+	/** flag to avoid repeated precompute */
+	bool m_is_precomputed;
 
 	/** initialize with default values and register params */
 	void init();
