@@ -419,6 +419,7 @@ hid_t CHDF5File::get_compatible_type(H5T_class_t t_class,
 				SG_ERROR("complex128_t not compatible with HDF5File!");
 				return -1;
 			case PT_SGOBJECT:
+			case PT_UNDEFINED:
 				SG_ERROR("Implementation error during writing "
 						 "HDF5File!");
 				return -1;

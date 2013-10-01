@@ -86,6 +86,7 @@ SerializableJsonReader00::read_scalar_wrapped(
 				 " for reading from JsonFile!");
 		break;
 	case PT_SGOBJECT:
+	case PT_UNDEFINED:
 		SG_ERROR("read_scalar_wrapped(): Implementation error during"
 				 " reading JsonFile!");
 		return false;
