@@ -44,6 +44,8 @@ SerializableHdf5Reader00::read_scalar_wrapped(
 	case ST_SPARSE:
 		if (m->sub_y != 0) return true;
 		break;
+	case ST_UNDEFINED:
+		return false;
 	}
 
 	hid_t mem_type_id;
@@ -63,6 +65,8 @@ SerializableHdf5Reader00::read_scalar_wrapped(
 		if (H5Dread(m->dset, m->dtype, H5S_ALL, H5S_ALL,
 					H5P_DEFAULT, m->sparse_ptr) < 0) return false;
 		break;
+	case ST_UNDEFINED:
+		return false;
 	}
 
 	if (H5Tclose(mem_type_id) < 0) return false;

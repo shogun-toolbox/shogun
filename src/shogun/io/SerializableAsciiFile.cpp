@@ -157,6 +157,7 @@ CSerializableAsciiFile::write_scalar_wrapped(
 			((complex128_t*) param)->real(),((complex128_t*) param)->imag()) <= 0)
 			return false;
 		break;
+	case PT_UNDEFINED:
 	case PT_SGOBJECT:
 		SG_ERROR("write_scalar_wrapped(): Implementation error during"
 				 " writing AsciiFile!");
@@ -174,10 +175,6 @@ CSerializableAsciiFile::write_cont_begin_wrapped(
 	case CT_NDARRAY:
 		SG_NOTIMPLEMENTED
 		break;
-	case CT_SCALAR:
-		SG_ERROR("write_cont_begin_wrapped(): Implementation error "
-				 "during writing AsciiFile!");
-		return false;
 	case CT_VECTOR: case CT_SGVECTOR:
 		if (fprintf(m_fstream, "%" PRIi32 " %c", len_real_y,
 					CHAR_CONT_BEGIN) <= 0)
@@ -188,6 +185,11 @@ CSerializableAsciiFile::write_cont_begin_wrapped(
 					len_real_y, len_real_x, CHAR_CONT_BEGIN) <= 0)
 			return false;
 		break;
+	case CT_UNDEFINED:
+	case CT_SCALAR:
+		SG_ERROR("write_cont_begin_wrapped(): Implementation error "
+				 "during writing AsciiFile!");
+		return false;
 	}
 
 	return true;

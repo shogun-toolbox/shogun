@@ -78,7 +78,6 @@ TEST(LibSVMFileTest, sparse_matrix_float64)
 {
 	int32_t max_num_entries=512;
 	int32_t max_label_value=1;
-	float64_t max_entry_value=1024;
 	CRandom* rand=new CRandom();
 
 	int32_t num_vec=1024;

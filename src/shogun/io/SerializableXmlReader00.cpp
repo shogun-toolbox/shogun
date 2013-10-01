@@ -104,6 +104,7 @@ SerializableXmlReader00::read_scalar_wrapped(
 		((complex128_t*) param)->imag()=c_imag;
 #endif
 		break;
+	case PT_UNDEFINED:
 	case PT_SGOBJECT:
 		SG_ERROR("read_scalar_wrapped(): Implementation error during"
 				 " reading XmlFile!");
@@ -139,8 +140,9 @@ SerializableXmlReader00::read_cont_begin_wrapped(
 			if (*len_read_y != (index_t) xmlChildElementCount(cur))
 				return false;
 		}
-
 		break;
+	case CT_UNDEFINED:
+		SG_ERROR("type undefined\n");
 	}
 
 	return true;
@@ -274,6 +276,8 @@ SerializableXmlReader00::read_item_begin_wrapped(
 			return true;
 		}
 		break;
+	case CT_UNDEFINED:
+		SG_ERROR("type undefined\n");
 	}
 
 	if (!m_file->next_node(BAD_CAST STR_ITEM)) return false;

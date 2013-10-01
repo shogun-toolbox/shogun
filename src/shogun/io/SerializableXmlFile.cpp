@@ -226,6 +226,7 @@ CSerializableXmlFile::write_scalar_wrapped(
 				((complex128_t*) param)->real(),((complex128_t*) param)->imag()
 				) <= 0) return false;
 		break;
+	case PT_UNDEFINED:
 	case PT_SGOBJECT:
 		SG_ERROR("write_scalar_wrapped(): Implementation error during"
 				 " writing XmlFile!");

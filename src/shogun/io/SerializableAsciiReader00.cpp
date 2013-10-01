@@ -96,6 +96,7 @@ SerializableAsciiReader00::read_scalar_wrapped(
 		((complex128_t*) param)->imag()=c_imag;
 #endif
 		break;
+	case PT_UNDEFINED:
 	case PT_SGOBJECT:
 		SG_ERROR("read_scalar_wrapped(): Implementation error during"
 				 " reading AsciiFile!");
@@ -112,10 +113,6 @@ SerializableAsciiReader00::read_cont_begin_wrapped(
 	switch (type->m_ctype) {
 	case CT_NDARRAY:
 		SG_NOTIMPLEMENTED
-	case CT_SCALAR:
-		SG_ERROR("read_cont_begin_wrapped(): Implementation error "
-				 "during writing AsciiFile!");
-		return false;
 	case CT_VECTOR: case CT_SGVECTOR:
 		if (fscanf(m_file->m_fstream, "%" SCNi32 " ", len_read_y) != 1)
 			return false;
@@ -126,6 +123,11 @@ SerializableAsciiReader00::read_cont_begin_wrapped(
 				   len_read_y, len_read_x) != 2)
 			return false;
 		break;
+	case CT_UNDEFINED:
+	case CT_SCALAR:
+		SG_ERROR("read_cont_begin_wrapped(): Implementation error "
+				 "during writing AsciiFile!");
+		return false;
 	}
 
 	if (fgetc(m_file->m_fstream) != CHAR_CONT_BEGIN) return false;

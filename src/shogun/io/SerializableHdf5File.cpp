@@ -107,6 +107,9 @@ CSerializableHdf5File::ptype2hdf5(EPrimitiveType ptype)
 	case PT_FLOATMAX: return H5T_NATIVE_LDOUBLE; break;
 	case PT_COMPLEX128: return NOT_OPEN; break;
 	case PT_SGOBJECT: return NOT_OPEN; break;
+	case PT_UNDEFINED:
+		SG_SERROR("Type undefined\n"); 
+		return NOT_OPEN;
 	}
 
 	return NOT_OPEN;
@@ -152,6 +155,7 @@ CSerializableHdf5File::isequal_stype2hdf5(EStructType stype,
 
 	bool to_close = false;
 	switch (stype) {
+	case ST_UNDEFINED:
 	case ST_NONE: break;
 	case ST_STRING:
 		to_close = true; pbuf = H5Tvlen_create(pbuf); break;
