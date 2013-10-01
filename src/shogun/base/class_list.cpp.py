@@ -114,7 +114,8 @@ def get_template_definitions(classes, supports_complex):
 				d.append("\t\tcase PT_COMPLEX128: return NULL;\n")
 			else:
 				d.append("\t\tcase PT_%s: return new C%s<%s%s>();\n" % (t,c,t.lower(),suffix))
-		d.append("\t\tcase PT_SGOBJECT: return NULL;\n\t}\n\treturn NULL;\n}")
+		d.append("\t\tcase PT_SGOBJECT:\n")
+		d.append("\t\tcase PT_UNDEFINED: return NULL;\n\t}\n\treturn NULL;\n}")
 		definitions.append(''.join(d))
 	return definitions
 

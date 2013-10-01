@@ -41,11 +41,11 @@ void test()
 	for(int i = 0; i < n_samples; i++)
 	{
 		// Sin wave
-		S(0,i) = sin(2*time[0,i]);
+		S(0,i) = sin(2*time(0,i));
 		S(0,i) += 0.2*CMath::randn_double(); 
 		
 		// Square wave
-		S(1,i) = sin(3*time[0,i]) < 0 ? -1 : 1;
+		S(1,i) = sin(3*time(0,i)) < 0 ? -1 : 1;
 		S(1,i) += 0.2*CMath::randn_double();
 	}
 	
