@@ -43,7 +43,16 @@ TSGDataType::TSGDataType(EContainerType ctype, EStructType stype,
 bool
 TSGDataType::operator==(const TSGDataType& a)
 {
-	bool result = m_ctype == a.m_ctype && m_stype == a.m_stype
+	/* handle CT_SG* and SG_* ambiguity */
+	bool ctype_equal=false;
+	if ((m_ctype==CT_VECTOR && a.m_ctype==CT_SGVECTOR) ||
+			(m_ctype==CT_SGVECTOR && a.m_ctype==CT_VECTOR) ||
+			(m_ctype==CT_MATRIX && a.m_ctype==CT_SGMATRIX) ||
+			(m_ctype==CT_SGMATRIX && a.m_ctype==CT_MATRIX) ||
+			(m_ctype==a.m_ctype))
+		ctype_equal=true;
+
+	bool result = ctype_equal && m_stype == a.m_stype
 		&& m_ptype == a.m_ptype;
 
 	result &= m_length_y != NULL && a.m_length_y != NULL
