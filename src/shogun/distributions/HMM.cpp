@@ -425,14 +425,16 @@ CHMM::~CHMM()
 	if (!reused_caches)
 	{
 #ifdef USE_HMMPARALLEL_STRUCTURES
-		for (int32_t i=0; i<parallel->get_num_threads(); i++)
+		if (alpha_cache && beta_cache)
 		{
-			SG_FREE(alpha_cache[i].table);
-			SG_FREE(beta_cache[i].table);
-			alpha_cache[i].table=NULL;
-			beta_cache[i].table=NULL;
+			for (int32_t i=0; i<parallel->get_num_threads(); i++)
+			{
+				SG_FREE(alpha_cache[i].table);
+				SG_FREE(beta_cache[i].table);
+				alpha_cache[i].table=NULL;
+				beta_cache[i].table=NULL;
+			}
 		}
-
 		SG_FREE(alpha_cache);
 		SG_FREE(beta_cache);
 		alpha_cache=NULL;
@@ -451,8 +453,11 @@ CHMM::~CHMM()
 #ifdef USE_LOGSUMARRAY
 #ifdef USE_HMMPARALLEL_STRUCTURES
 	{
-		for (int32_t i=0; i<parallel->get_num_threads(); i++)
-			SG_FREE(arrayS[i]);
+		if (arrayS)
+		{
+			for (int32_t i=0; i<parallel->get_num_threads(); i++)
+				SG_FREE(arrayS[i]);
+		}
 		SG_FREE(arrayS);
 	} ;
 #else //USE_HMMPARALLEL_STRUCTURES
@@ -465,8 +470,11 @@ CHMM::~CHMM()
 #ifdef USE_HMMPARALLEL_STRUCTURES
 		SG_FREE(path_prob_updated);
 		SG_FREE(path_prob_dimension);
-		for (int32_t i=0; i<parallel->get_num_threads(); i++)
-			SG_FREE(path[i]);
+		if (path)
+		{
+			for (int32_t i=0; i<parallel->get_num_threads(); i++)
+				SG_FREE(path[i]);
+		}
 #endif //USE_HMMPARALLEL_STRUCTURES
 		SG_FREE(path);
 	}
