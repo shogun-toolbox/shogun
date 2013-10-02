@@ -44,9 +44,68 @@ CProbingSampler::CProbingSampler(
 
 	m_power=power;
 	m_matrix_operator=matrix_operator;
+	m_ordering=ordering;
+	m_coloring=coloring;
+
+	SG_REF(m_matrix_operator);
+}
+
+void CProbingSampler::init()
+{
+	m_matrix_operator=NULL;
+	m_power=1;
+	m_ordering=NATURAL;
+	m_coloring=DISTANCE_TWO;
+	m_is_precomputed=false;
+
+	SG_ADD(&m_coloring_vector, "coloring_vector", "the coloring vector generated"
+		" from coloring", MS_NOT_AVAILABLE);
+
+	SG_ADD(&m_power, "matrix_power", "power of the sparse-matrix for coloring",
+		MS_NOT_AVAILABLE);
+
+	SG_ADD(&m_is_precomputed, "is_precomputed",
+		"flag that is true if already precomputed", MS_NOT_AVAILABLE);
+
+	SG_ADD((CSGObject**)&m_matrix_operator, "matrix_operator",
+		"the sparse-matrix linear opeator for coloring", MS_NOT_AVAILABLE);
+}
+
+CProbingSampler::~CProbingSampler()
+{
+	SG_UNREF(m_matrix_operator);
+}
+
+void CProbingSampler::set_coloring_vector(SGVector<int32_t> coloring_vector)
+{
+	m_coloring_vector=coloring_vector;
+	m_is_precomputed=true;
+}
+
+SGVector<int32_t> CProbingSampler::get_coloring_vector() const
+{
+	return m_coloring_vector;
+}
+
+void CProbingSampler::precompute()
+{
+	SG_DEBUG("Entering\n");
+
+	// if already precomputed, nothing to do
+	if (m_is_precomputed)
+	{
+		SG_DEBUG("Coloring vector already computed! Exiting!\n");
+		return;
+	}	
+
+	// do coloring things here and save the coloring vector
+	SparsityStructure* sp_str=m_matrix_operator->get_sparsity_structure(m_power);
+
+	GraphColoringInterface* Color
+		=new GraphColoringInterface(SRC_MEM_ADOLC, sp_str->m_ptr, sp_str->m_num_rows);
 
 	std::string str_ordering;
-	switch(ordering)
+	switch(m_ordering)
 	{
 	case NATURAL:
 		str_ordering="NATURAL";
@@ -78,7 +137,7 @@ CProbingSampler::CProbingSampler(
 	}
 
 	std::string str_coloring;
-	switch(coloring)
+	switch(m_coloring)
 	{
 	case DISTANCE_ONE:
 		str_coloring="DISTANCE_ONE";
@@ -100,57 +159,7 @@ CProbingSampler::CProbingSampler(
 		break;
 	}
 
-	m_ordering=SGString<char>(index_t(str_ordering.size()));
-	m_coloring=SGString<char>(index_t(str_coloring.size()));
-	memcpy(m_ordering.string, str_ordering.data(), str_ordering.size());
-	memcpy(m_coloring.string, str_coloring.data(), str_coloring.size());
-
-	SG_REF(m_matrix_operator);
-}
-
-void CProbingSampler::init()
-{
-	m_matrix_operator=NULL;
-	m_power=1;
-
-	SG_ADD(&m_coloring_vector, "coloring_vector", "the coloring vector generated"
-		" from coloring", MS_NOT_AVAILABLE);
-
-	SG_ADD(&m_power, "matrix_power", "power of the sparse-matrix for coloring",
-		MS_NOT_AVAILABLE);
-
-	SG_ADD(&m_ordering, "ordering_variant", "ordering variant for coloring",
-		MS_NOT_AVAILABLE);
-
-	SG_ADD(&m_coloring, "coloring_variant", "coloring variant for coloring",
-		MS_NOT_AVAILABLE);
-
-	SG_ADD((CSGObject**)&m_matrix_operator, "matrix_operator",
-		"the sparse-matrix linear opeator for coloring", MS_NOT_AVAILABLE);
-}
-
-CProbingSampler::~CProbingSampler()
-{
-	SG_UNREF(m_matrix_operator);
-}
-
-SGVector<int32_t> CProbingSampler::get_coloring_vector() const
-{
-	return m_coloring_vector;
-}
-
-void CProbingSampler::precompute()
-{
-	SG_DEBUG("Entering\n");
-	// do coloring things here and save the coloring vector
-	SparsityStructure* sp_str=m_matrix_operator->get_sparsity_structure(m_power);
-
-	GraphColoringInterface* Color
-		=new GraphColoringInterface(SRC_MEM_ADOLC, sp_str->m_ptr, sp_str->m_num_rows);
-
-	std::string ordering(m_ordering.string, m_ordering.slen);
-	std::string coloring(m_coloring.string, m_coloring.slen);
-	Color->Coloring(ordering, coloring);
+	Color->Coloring(str_ordering, str_coloring);
 
 	std::vector<int32_t> vi_VertexColors;
 	Color->GetVertexColors(vi_VertexColors);
@@ -174,6 +183,9 @@ void CProbingSampler::precompute()
 
 	delete sp_str;
 	delete Color;
+
+	// set the precomputed flag true
+	m_is_precomputed=true;
 
 	SG_DEBUG("Leaving\n");
 }
