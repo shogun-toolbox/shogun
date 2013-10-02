@@ -156,7 +156,7 @@ template <class T> class SGSparseMatrix : public SGReferencedData
 		/** load sparse matrix from libsvm file together with labels
 		 *
 		 * @param libsvm_file the libsvm file
-		 * @param do_sort_featureswhether to sort the vector indices (such that they are in
+		 * @param do_sort_features whether to sort the vector indices (such that they are in
 		 * ascending order) after loading
 		 * @return label vector
 		 */

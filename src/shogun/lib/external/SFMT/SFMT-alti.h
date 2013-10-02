@@ -1,4 +1,6 @@
 #pragma once
+#ifndef SFMT_ALTI_H
+#define SFMT_ALTI_H
 /**
  * @file SFMT-alti.h
  *
@@ -14,10 +16,6 @@
  * The new BSD License is applied to this software.
  * see LICENSE.txt
  */
-
-#ifndef SFMT_ALTI_H
-#define SFMT_ALTI_H
-
 inline static vector unsigned int vec_recursion(vector unsigned int a,
 						vector unsigned int b,
 						vector unsigned int c,
@@ -89,8 +87,9 @@ void sfmt_gen_rand_all(sfmt_t * sfmt) {
  * This function fills the user-specified array with pseudorandom
  * integers.
  *
+ * @param sfmt the internal state of the rng
  * @param array an 128-bit array to be filled by pseudorandom numbers.
- * @param size number of 128-bit pesudorandom numbers to be generated.
+ * @param size number of 128-bit pseudorandom numbers to be generated.
  */
 inline static void gen_rand_array(sfmt_t * sfmt, w128_t *array, int size) {
     int i, j;

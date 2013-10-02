@@ -31,11 +31,13 @@ struct VwConditionalProbabilityTreeNodeData
 	VwConditionalProbabilityTreeNodeData():label(-1), p_right(0) {}
 };
 
+/* define shortcut for the node type */
+typedef CTreeMachineNode<VwConditionalProbabilityTreeNodeData> node_t;
+
 /** Conditional Probability Tree using Vowpal Wabbit for base machine. */
 class CVwConditionalProbabilityTree: public CTreeMachine<VwConditionalProbabilityTreeNodeData>
 {
 public:
-	typedef CTreeMachineNode<VwConditionalProbabilityTreeNodeData> node_t;
 
     /** constructor */
 	CVwConditionalProbabilityTree(int32_t num_passes=1)
