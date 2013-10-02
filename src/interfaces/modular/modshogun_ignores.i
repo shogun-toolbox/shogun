@@ -21,6 +21,7 @@
 %ignore *::operator unsigned long*;
 %ignore *::operator float*;
 %ignore *::operator double*;
+%ignore *::operator std::complex<double>*;
 
 #ifdef SWIGJAVA
 %ignore SGIO;
