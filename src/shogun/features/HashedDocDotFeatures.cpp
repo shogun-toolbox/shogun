@@ -113,57 +113,73 @@ float64_t CHashedDocDotFeatures::dense_dot_sgvec(int32_t vec_idx1, const SGVecto
 float64_t CHashedDocDotFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
 {
 	ASSERT(vec2_len == CMath::pow(2,num_bits))
+
 	SGVector<char> sv = doc_collection->get_feature_vector(vec_idx1);
 
-	CDynamicArray<uint32_t>* hashes = new CDynamicArray<uint32_t>(ngrams);
-	CDynamicArray<index_t>* hashed_indices = new CDynamicArray<index_t>(ngrams*(ngrams+1)/2*(1+tokens_to_skip));
+	/** this vector will maintain the current n+k active tokens
+	 * in a circular manner */ 
+	SGVector<uint32_t> hashes(ngrams+tokens_to_skip);
+	index_t hashes_start = 0;
+	index_t hashes_end = 0;
+	int32_t len = hashes.vlen - 1;
+
+	/** the combinations generated from the current active tokens will be
+	 * stored here to avoid creating new objects */
+	SGVector<index_t> hashed_indices((ngrams-1)*(tokens_to_skip+1) + 1);
 
 	float64_t result = 0;
 	CTokenizer* local_tzer = tokenizer->get_copy();
 
+	/** Reading n+k-1 tokens */
 	const int32_t seed = 0xdeadbeaf;
 	local_tzer->set_text(sv);
 	index_t start = 0;
-	int32_t n = 0;
-	while (n<ngrams-1+tokens_to_skip && local_tzer->has_next())
+	while (hashes_end<ngrams-1+tokens_to_skip && local_tzer->has_next())
 	{
 		index_t end = local_tzer->next_token_idx(start);
 		uint32_t token_hash = CHash::MurmurHash3((uint8_t* ) &sv.vector[start], end-start, seed);
-		hashes->append_element(token_hash);
-		n++;
+		hashes[hashes_end++] = token_hash;
 	}
 
+	/** Reading token and storing indices to hashed_indices */
 	while (local_tzer->has_next())
 	{
 		index_t end = local_tzer->next_token_idx(start);
 		uint32_t token_hash = CHash::MurmurHash3((uint8_t* ) &sv.vector[start], end-start, seed);
-		hashes->append_element(token_hash);
-		CHashedDocConverter::generate_ngram_hashes(hashes, hashed_indices, num_bits, ngrams,
-				tokens_to_skip);
+		hashes[hashes_end] = token_hash;
 
-		for (index_t i=0; i<hashed_indices->get_num_elements(); i++)
-			result += vec2[hashed_indices->get_element(i)];
+		CHashedDocConverter::generate_ngram_hashes(hashes, hashes_start, len, hashed_indices,
+				num_bits, ngrams, tokens_to_skip);
 
-		hashes->delete_element(0);
+		for (index_t i=0; i<hashed_indices.vlen; i++)
+			result += vec2[hashed_indices[i]];
+
+		hashes_start++;
+		hashes_end++;
+		if (hashes_end==hashes.vlen)
+			hashes_end = 0;
+		if (hashes_start==hashes.vlen)
+			hashes_start = 0;
 	}
 
 	if (ngrams>1)
 	{
-		while (hashes->get_num_elements()>0)
+		while (hashes_start!=hashes_end)
 		{
-			CHashedDocConverter::generate_ngram_hashes(hashes, hashed_indices, num_bits, ngrams,
-					tokens_to_skip);
+			len--;
+			index_t max_idx = CHashedDocConverter::generate_ngram_hashes(hashes, hashes_start,
+					len, hashed_indices, num_bits, ngrams, tokens_to_skip);
 
-			for (index_t i=0; i<hashed_indices->get_num_elements(); i++)
-				result += vec2[hashed_indices->get_element(i)];
+			for (index_t i=0; i<max_idx; i++)
+				result += vec2[hashed_indices[i]];
 
-			hashes->delete_element(0);
+			hashes_start++;
+			if (hashes_start==hashes.vlen)
+				hashes_start = 0;
 		}
 	}
 	doc_collection->free_feature_vector(sv, vec_idx1);
 	SG_UNREF(local_tzer);
-	SG_UNREF(hashes);
-	SG_UNREF(hashed_indices);
 	return should_normalize ? result / CMath::sqrt((float64_t) sv.size()) : result;
 }
 
@@ -178,55 +194,69 @@ void CHashedDocDotFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1,
 	SGVector<char> sv = doc_collection->get_feature_vector(vec_idx1);
 	const float64_t value = should_normalize ? alpha / CMath::sqrt((float64_t) sv.size()) : alpha;
 
-	CDynamicArray<uint32_t>* hashes = new CDynamicArray<uint32_t>(ngrams);
-	CDynamicArray<index_t>* hashed_indices = new CDynamicArray<index_t>((ngrams+1)*ngrams/2*(tokens_to_skip+1));
+	/** this vector will maintain the current n+k active tokens
+	 * in a circular manner */ 
+	SGVector<uint32_t> hashes(ngrams+tokens_to_skip);
+	index_t hashes_start = 0;
+	index_t hashes_end = 0;
+	index_t len = hashes.vlen - 1;
+
+	/** the combinations generated from the current active tokens will be
+	 * stored here to avoid creating new objects */
+	SGVector<index_t> hashed_indices((ngrams-1)*(tokens_to_skip+1) + 1);
 
 	CTokenizer* local_tzer = tokenizer->get_copy();
 
+	/** Reading n+k-1 tokens */
 	const int32_t seed = 0xdeadbeaf;
 	local_tzer->set_text(sv);
 	index_t start = 0;
-	int32_t n = 0;
-	while (n<ngrams-1+tokens_to_skip && local_tzer->has_next())
+	while (hashes_end<ngrams-1+tokens_to_skip && local_tzer->has_next())
 	{
 		index_t end = local_tzer->next_token_idx(start);
 		uint32_t token_hash = CHash::MurmurHash3((uint8_t* ) &sv.vector[start], end-start, seed);
-		hashes->append_element(token_hash);
-		n++;
+		hashes[hashes_end++] = token_hash;
 	}
 
 	while (local_tzer->has_next())
 	{
 		index_t end = local_tzer->next_token_idx(start);
 		uint32_t token_hash = CHash::MurmurHash3((uint8_t* ) &sv.vector[start], end-start, seed);
-		hashes->append_element(token_hash);
-		CHashedDocConverter::generate_ngram_hashes(hashes, hashed_indices, num_bits, ngrams,
-				tokens_to_skip);
+		hashes[hashes_end] = token_hash;
 
-		for (index_t i=0; i<hashed_indices->get_num_elements(); i++)
-			vec2[hashed_indices->get_element(i)] += value;	
+		CHashedDocConverter::generate_ngram_hashes(hashes, hashes_start, len, hashed_indices,
+				num_bits, ngrams, tokens_to_skip);
 
-		hashes->delete_element(0);
+		for (index_t i=0; i<hashed_indices.vlen; i++)
+			vec2[hashed_indices[i]] += value;	
+
+		hashes_start++;
+		hashes_end++;
+		if (hashes_end==hashes.vlen)
+			hashes_end = 0;
+		if (hashes_start==hashes.vlen)
+			hashes_start = 0;
 	}
 
 	if (ngrams>1)
 	{
-		while (hashes->get_num_elements()>0)
+		while (hashes_start!=hashes_end)
 		{
-			CHashedDocConverter::generate_ngram_hashes(hashes, hashed_indices, num_bits, ngrams,
-					tokens_to_skip);
+			len--;
+			index_t max_idx = CHashedDocConverter::generate_ngram_hashes(hashes,
+					hashes_start, len, hashed_indices, num_bits, ngrams, tokens_to_skip);
 		
-			for (index_t i=0; i<hashed_indices->get_num_elements(); i++)
-				vec2[hashed_indices->get_element(i)] += value;
+			for (index_t i=0; i<max_idx; i++)
+				vec2[hashed_indices[i]] += value;
 
-			hashes->delete_element(0);
+			hashes_start++;
+			if (hashes_start==hashes.vlen)
+				hashes_start = 0;
 		}
 	}
 	
 	doc_collection->free_feature_vector(sv, vec_idx1);
 	SG_UNREF(local_tzer);
-	SG_UNREF(hashes);
-	SG_UNREF(hashed_indices);
 }
 
 uint32_t CHashedDocDotFeatures::calculate_token_hash(char* token, 

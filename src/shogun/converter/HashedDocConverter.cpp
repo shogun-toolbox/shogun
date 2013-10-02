@@ -16,7 +16,6 @@
 #include <shogun/features/HashedDocDotFeatures.h>
 #include <shogun/mathematics/Math.h>
 
-
 using namespace shogun;
 
 namespace shogun
@@ -103,23 +102,30 @@ SGSparseVector<float64_t> CHashedDocConverter::apply(SGVector<char> document)
 {
 	ASSERT(document.size()>0)
 	const int32_t array_size = 1024*1024;
+	/** the array will contain all the hashes generated from the tokens */
 	CDynamicArray<uint32_t> hashed_indices(array_size);
-	CDynamicArray<uint32_t>* cached_hashes = new CDynamicArray<uint32_t>(ngrams);
-	CDynamicArray<index_t>* ngram_indices = new CDynamicArray<index_t>(ngrams*(ngrams+1)/2*(1+tokens_to_skip));
 
+	/** this vector will maintain the current n+k active tokens
+	 * in a circular manner */ 
+	SGVector<uint32_t> cached_hashes(ngrams+tokens_to_skip);
+	index_t hashes_start = 0;
+	index_t hashes_end = 0;
+	int32_t len = cached_hashes.vlen - 1;
+
+	/** the combinations generated from the current active tokens will be
+	 * stored here to avoid creating new objects */
+	SGVector<index_t> ngram_indices((ngrams-1)*(tokens_to_skip+1) + 1);
+
+	/** Reading n+s-1 tokens */
 	const int32_t seed = 0xdeadbeaf;
 	tokenizer->set_text(document);
 	index_t token_start = 0;
-	int32_t n = 0;
-
-	/** Reading n+s-1 tokens */
-	while (n<ngrams-1+tokens_to_skip && tokenizer->has_next())
+	while (hashes_end<ngrams-1+tokens_to_skip && tokenizer->has_next())
 	{
 		index_t end = tokenizer->next_token_idx(token_start);
 		uint32_t token_hash = CHash::MurmurHash3((uint8_t* ) &document.vector[token_start],
 				end-token_start, seed);
-		cached_hashes->append_element(token_hash);
-		n++;
+		cached_hashes[hashes_end++] = token_hash;
 	}
 
 	/** Reading token and storing index to hashed_indices */
@@ -128,32 +134,39 @@ SGSparseVector<float64_t> CHashedDocConverter::apply(SGVector<char> document)
 		index_t end = tokenizer->next_token_idx(token_start);
 		uint32_t token_hash = CHash::MurmurHash3((uint8_t* ) &document.vector[token_start],
 				end-token_start, seed);
-		cached_hashes->append_element(token_hash);
-		CHashedDocConverter::generate_ngram_hashes(cached_hashes, ngram_indices, num_bits,
-				ngrams, tokens_to_skip);
+		cached_hashes[hashes_end] = token_hash;
 
-		for (index_t i=0; i<ngram_indices->get_num_elements(); i++)
-			hashed_indices.append_element(ngram_indices->get_element(i));
+		CHashedDocConverter::generate_ngram_hashes(cached_hashes, hashes_start, len,
+				ngram_indices, num_bits, ngrams, tokens_to_skip);
 
-		cached_hashes->delete_element(0);
+		for (index_t i=0; i<ngram_indices.vlen; i++)
+			hashed_indices.append_element(ngram_indices[i]);
+
+		hashes_start++;
+		hashes_end++;
+		if (hashes_end==cached_hashes.vlen)
+			hashes_end = 0;
+		if (hashes_start==cached_hashes.vlen)
+			hashes_start = 0;
 	}
 
 	/** For remaining combinations */
 	if (ngrams>1)
 	{
-		while (cached_hashes->get_num_elements()>0)
+		while (hashes_start!=hashes_end)
 		{
-			CHashedDocConverter::generate_ngram_hashes(cached_hashes, ngram_indices, num_bits,
-					ngrams, tokens_to_skip);
+			len--;
+			index_t max_idx = CHashedDocConverter::generate_ngram_hashes(cached_hashes, hashes_start,
+					len, ngram_indices, num_bits, ngrams, tokens_to_skip);
 
-			for (index_t i=0; i<ngram_indices->get_num_elements(); i++)
-				hashed_indices.append_element(ngram_indices->get_element(i));
+			for (index_t i=0; i<max_idx; i++)
+				hashed_indices.append_element(ngram_indices[i]);
 
-			cached_hashes->delete_element(0);
+			hashes_start++;
+			if (hashes_start==cached_hashes.vlen)
+				hashes_start = 0;
 		}
 	}
-	SG_UNREF(cached_hashes);
-	SG_UNREF(ngram_indices);
 
 	SGSparseVector<float64_t> sparse_doc_rep = create_hashed_representation(hashed_indices);	
 
@@ -189,27 +202,27 @@ SGSparseVector<float64_t> CHashedDocConverter::create_hashed_representation(CDyn
 	return sparse_doc_rep;
 }
 
-void CHashedDocConverter::generate_ngram_hashes(CDynamicArray<uint32_t>* hashes,
-	CDynamicArray<index_t>* ngram_hashes, int32_t num_bits, int32_t ngrams, int32_t tokens_to_skip)
+index_t CHashedDocConverter::generate_ngram_hashes(SGVector<uint32_t>& hashes, index_t hashes_start,
+	index_t len, SGVector<index_t>& ngram_hashes, int32_t num_bits, int32_t ngrams, int32_t tokens_to_skip)
 {
-	while (ngram_hashes->get_num_elements()>0)
-		ngram_hashes->delete_element(0);
+	index_t h_idx = 0;
+	ngram_hashes[h_idx++] = hashes[hashes_start] & ((1 << num_bits) -1);
 
-	ngram_hashes->append_element(hashes->get_element(0) & ((1 << num_bits) -1));
 	for (index_t n=1; n<ngrams; n++)
 	{
 		for (index_t s=0; s<=tokens_to_skip; s++)
 		{
-			if ( n+s >= hashes->get_num_elements())
+			if ( n+s > len)
 				break;
 
-			uint32_t ngram_hash = hashes->get_element(0);
-			for (index_t i=1+s; i<=n+s; i++)
-				ngram_hash = ngram_hash ^ hashes->get_element(i);
+			uint32_t ngram_hash = hashes[hashes_start];
+			for (index_t i=hashes_start+1+s; i<=hashes_start+n+s; i++)
+				ngram_hash = ngram_hash ^ hashes[i % hashes.vlen];
 			ngram_hash = ngram_hash & ((1 << num_bits) - 1);
-			ngram_hashes->append_element(ngram_hash);
+			ngram_hashes[h_idx++] = ngram_hash;
 		}
 	}
+	return h_idx;
 }
 
 int32_t CHashedDocConverter::count_distinct_indices(CDynamicArray<uint32_t>& hashed_indices)
