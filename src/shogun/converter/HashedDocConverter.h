@@ -78,18 +78,26 @@ public:
 	 */
 	SGSparseVector<float64_t> apply(SGVector<char> document);
 
-	/** Generate all the k-skip ngram combinations for the tokens in the CDynArray hashes
-	 * and then hash limit them to a specific dimension
+	/** Generates all the k-skip n-grams combinations for the pre-hashed tokens in hashes,
+	 * starting from hashes[hashes_start] and going up to hashes[1+len] in a circular manner. 
+	 * The generated tokens (maximun (n-1)(k+1)+1) are stored in ngram_hashes. The number of 
+	 * created tokens is returned in case fewer tokens are generated
+	 * (due to a smaller len than the size of hashes).
+	 * See class description for more information on k-skip n-grams.
 	 *
-	 * @param hashes the hashes of the tokens to combine as k-skip ngrams
-	 * @param ngram_hashes the dynamic array in which to store the created indices
+	 * @param hashes the hashes of the tokens to combine as k-skip n-grams
+	 * @param hashes_start the index in hashes to consider as the starting point
+	 * @param len the maximum allowed number of tokens to reach in a circular manner, starting from hashes_start
+	 * @param ngram_hashes the vector where to store the generated hashes. Must have been created to be able to
+	 * store at most (n-1)(k+1)+1 tokens.
 	 * @param num_bits the dimension in which to limit the hashed indices (means a dimension of size 2^num_bits) 
-	 * @param ngrams the max number of tokens to combine
-	 * @param tokens_to_skip the max number of tokens to skip when combining (starting always from the second one)
-	 * @return an array containing the hashed indices of the combined tokens
+	 * @param ngrams the n in k-skip n-grams or the max number of tokens to combine
+	 * @param tokens_to_skip the k in k-skip n-grams or the max number of tokens to skip when 
+	 * combining
+	 * @return the number of generated tokens
 	 */
-	static void generate_ngram_hashes(CDynamicArray<uint32_t>* hashes, CDynamicArray<index_t>* ngram_hashes,
-			int32_t num_bits, int32_t ngrams, int32_t tokens_to_skip);
+	static index_t generate_ngram_hashes(SGVector<uint32_t>& hashes, index_t hashes_start, index_t len,
+			SGVector<index_t>& ngram_hashes, int32_t num_bits, int32_t ngrams, int32_t tokens_to_skip);
 
 	/** @return object name */
 	virtual const char* get_name() const;
