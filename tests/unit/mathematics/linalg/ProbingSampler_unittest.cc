@@ -32,8 +32,7 @@ TEST(ProbingSampler, get_coloring_vector)
 	const int32_t size=9;
 	const int32_t max_pow=10;
 
-	SGMatrix<float64_t> m(size, size);
-	m.set_const(0.0);
+	SGSparseMatrix<float64_t> m(size, size);
 	for (int32_t i=0; i<size; ++i)
 		m(i,i)=2.0;
 
@@ -43,10 +42,8 @@ TEST(ProbingSampler, get_coloring_vector)
 	for (int32_t i=0; i<size; i+=4)
 		m(size-1,i)=2.0;
 
-	CSparseFeatures<float64_t> feat(m);
-	SGSparseMatrix<float64_t> sm=feat.get_sparse_feature_matrix();
 	CSparseMatrixOperator<float64_t>* op
-		=new CSparseMatrixOperator<float64_t>(sm);
+		=new CSparseMatrixOperator<float64_t>(m);
 	SG_REF(op);
 
 	// get the sparsity structure and use coloring to get coloring
@@ -78,9 +75,10 @@ TEST(ProbingSampler, get_coloring_vector)
 	// should be same
 	EXPECT_NEAR((eig_coloring-eig_sg_coloring).cast<float64_t>().norm(), 0.0, 1E-15);
 
+	delete Color;
+	delete sp_str;
 	SG_UNREF(sampler);
 	SG_UNREF(op);
-	delete Color;
 }
 
 TEST(ProbingSampler, probing_samples_big_diag_matrix)
@@ -128,8 +126,7 @@ TEST(ProbingSampler, probing_samples_big_diag_matrix)
 TEST(ProbingSampler, mean_variance)
 {
 	const index_t size=1000;
-	SGMatrix<float64_t> m(size, size);
-	m.set_const(0.0);
+	SGSparseMatrix<float64_t> m(size, size);
 
 	for (index_t i=0; i<size; ++i)
 		m(i,i)=1;
@@ -138,9 +135,8 @@ TEST(ProbingSampler, mean_variance)
 	for (index_t i=0; i<size-1; ++i)
 		m(i+1,i)=1;
 
-	CSparseFeatures<float64_t>* feat=new CSparseFeatures<float64_t>(m);
-	SGSparseMatrix<float64_t> sm=feat->get_sparse_feature_matrix();
-	CSparseMatrixOperator<float64_t>* A=new CSparseMatrixOperator<float64_t>(sm);
+	CSparseMatrixOperator<float64_t>* A=new CSparseMatrixOperator<float64_t>(m);
+	SG_REF(A);
 
 	CProbingSampler* trace_sampler=new CProbingSampler(A);
 	trace_sampler->precompute();
@@ -153,8 +149,8 @@ TEST(ProbingSampler, mean_variance)
 		EXPECT_NEAR(CStatistics::variance(sample), 1.0/num_samples, 0.01);
 	}
 
-	SG_UNREF(feat);
 	SG_UNREF(trace_sampler);
+	SG_UNREF(A);
 }
 #endif // HAVE_EIGEN3
 #endif // HAVE_COLPACK
