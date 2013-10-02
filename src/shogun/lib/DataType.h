@@ -138,7 +138,20 @@ struct TSGDataType
 	/** size of ptype */
 	size_t sizeof_ptype() const;
 
+	/** get the size of the primitive type ptype
+	 *
+	 * @param ptype the primitive type
+	 * @return its size
+	 */
 	static size_t sizeof_ptype(EPrimitiveType ptype);
+
+	/** get the size of the structured type stype that internally uses the
+	 * primitive type ptype as type
+	 *
+	 * @param stype the structured type
+	 * @param ptype the primitive type
+	 * @return its size
+	 */
 	static size_t sizeof_stype(EStructType stype, EPrimitiveType ptype);
 
 	/** size of sparse entry

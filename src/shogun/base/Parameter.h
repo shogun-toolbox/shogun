@@ -109,7 +109,6 @@ struct TParameter
 	 *
 	 * @param stype string type of both data
 	 * @param ptype primitive type of both data
-	 * @param size_ptype size of primitive type in bytes
 	 * @param data1 pointer 1
 	 * @param data2 pointer 2
 	 * @param accuracy accuracy to compare
@@ -118,9 +117,28 @@ struct TParameter
 	static bool compare_stype(EStructType stype, EPrimitiveType ptype,
 			void* data1, void* data2, floatmax_t accuracy=0.0);
 
+	/** copy primitive type from source to target
+	 *
+	 * @param ptype the primitive type
+	 * @param source from where to copy
+	 * @param target where to copy to
+	 */
 	static bool copy_ptype(EPrimitiveType ptype, void* source, void* target);
+
+	/** copy structured type from source to target
+	 *
+	 * @param stype the structured type
+	 * @param ptype the primitive type that the structured objects use
+	 * @param source from where to copy
+	 * @param target where to copy to
+	 */
 	static bool copy_stype(EStructType stype, EPrimitiveType ptype,
 				void* source, void* target);
+
+	/** copy this to parameter target
+	 *
+	 * @param target where this should be copied to
+	 */
 	bool copy(TParameter* target);
 
 

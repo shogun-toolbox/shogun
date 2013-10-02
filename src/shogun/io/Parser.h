@@ -71,7 +71,7 @@ public:
 
 	/** set the char array that requires tokenization
 	 *
-	 * @param txt the text to tokenize
+	 * @param text the text to tokenize
 	 */
 	void set_text(SGVector<char> text);
 

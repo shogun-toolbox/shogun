@@ -375,7 +375,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 * not possible with subset
 		 *
 		 * @param writer File object to write data to
-		 * @labels vector with labels to write out
+		 * @param labels vector with labels to write out
 		 */
 		void save_with_labels(CLibSVMFile* writer, SGVector<float64_t> labels);
 

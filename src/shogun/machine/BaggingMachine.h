@@ -120,6 +120,12 @@ namespace shogun
 		protected:
 			virtual bool train_machine(CFeatures* data=NULL);
 
+			/** helper function for the apply_{regression,..} functions that
+			 * computes the output
+			 *
+			 * @param data the data to compute the output for
+			 * @return predictions
+			 */
 			SGVector<float64_t> apply_get_outputs(CFeatures* data);
 
 		private:

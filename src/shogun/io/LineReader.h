@@ -26,14 +26,16 @@ public:
 	/** create object associated with the stream to read
 	 *
 	 * @param stream readable stream
+	 * @param tokenizer enabling to parse different ascii file formats (.csv, ...)
 	 */
 	CLineReader(FILE* stream, CTokenizer* tokenizer);
 
 	/** create object associated with the stream to read
 	 * and specify maximum length of a string that can be read
 	 *
+	 * @param max_string_length the maximum string length a line is allowed to have
 	 * @param stream readable stream
-	 * @param buffer_size size of internal buffer
+	 * @param tokenizer enabling to parse different ascii file formats (.csv, ...)
 	 */
 	CLineReader(int32_t max_string_length, FILE* stream, CTokenizer* tokenizer);
 

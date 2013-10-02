@@ -57,6 +57,9 @@ enum EMessageType
 	MSG_MESSAGEONLY=9
 };
 
+/** The io functions can optionally prepend the function name or the line from
+ * where the print occurred.
+ */
 enum EMessageLocation
 {
 	MSG_NONE=0,
@@ -303,6 +306,7 @@ class SGIO
 		 * from (use -1 in line to disable this)
 		 *
 		 * @param prio message priority
+		 * @param function the function name from where the message is called
 		 * @param file file name from where the message is called
 		 * @param line line number from where the message is called
 		 * @param fmt format string

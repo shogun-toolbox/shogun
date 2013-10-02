@@ -155,8 +155,8 @@ template <class T> class SGSparseMatrix : public SGReferencedData
 
 		/** load sparse matrix from libsvm file together with labels
 		 *
-		 * @param the libsvm file
-		 * @param whether to sort the vector indices (such that they are in
+		 * @param libsvm_file the libsvm file
+		 * @param do_sort_featureswhether to sort the vector indices (such that they are in
 		 * ascending order) after loading
 		 * @return label vector
 		 */
@@ -178,6 +178,10 @@ template <class T> class SGSparseMatrix : public SGReferencedData
 		/** return the transposed of the sparse matrix */
 		SGSparseMatrix<T> get_transposed();
 
+		/** create a sparse matrix from a dense one
+		 *
+		 * @param full the dense matrix to create the sparse one from
+		 */
 		void from_dense(SGMatrix<T> full);
 
 		/** sort the indices of the sparse matrix such that they are in ascending order */

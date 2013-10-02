@@ -36,7 +36,7 @@ public:
 
 	/** returns the mean of the specified data
 	 *
-	 * @param data points arranged in a matrix with rows representing the number
+	 * @param features data points arranged in a matrix with rows representing the number
 	 * of features
 	 *
 	 * @return mean of feature vectors
