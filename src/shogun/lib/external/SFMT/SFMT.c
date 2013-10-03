@@ -28,9 +28,6 @@ extern "C" {
 #if defined(__BIG_ENDIAN__) && !defined(__amd64) && !defined(BIG_ENDIAN64)
 #define BIG_ENDIAN64 1
 #endif
-#if defined(HAVE_ALTIVEC) && !defined(BIG_ENDIAN64)
-#define BIG_ENDIAN64 1
-#endif
 #if defined(ONLY64) && !defined(BIG_ENDIAN64)
   #if defined(__GNUC__)
     #error "-DONLY64 must be specified with -DBIG_ENDIAN64"
@@ -55,9 +52,7 @@ static void period_certification(sfmt_t * sfmt);
 inline static void swap(w128_t *array, int size);
 #endif
 
-#if defined(HAVE_ALTIVEC)
-  #include <shogun/lib/external/SFMT/SFMT-alti.h>
-#elif defined(HAVE_SSE2)
+#if defined(HAVE_SSE2)
   #include <shogun/lib/external/SFMT/SFMT-sse2.h>
 #endif
 
@@ -75,7 +70,7 @@ inline static int idxof(int i) {
 }
 #endif
 
-#if (!defined(HAVE_ALTIVEC)) && (!defined(HAVE_SSE2))
+#if !defined(HAVE_SSE2)
 /**
  * This function fills the user-specified array with pseudorandom
  * integers.
@@ -120,7 +115,7 @@ inline static void gen_rand_array(sfmt_t * sfmt, w128_t *array, int size) {
 }
 #endif
 
-#if defined(BIG_ENDIAN64) && !defined(ONLY64) && !defined(HAVE_ALTIVEC)
+#if defined(BIG_ENDIAN64) && !defined(ONLY64)
 inline static void swap(w128_t *array, int size) {
     int i;
     uint32_t x, y;
@@ -226,7 +221,7 @@ int sfmt_get_min_array_size64(sfmt_t * sfmt) {
     return SFMT_N64;
 }
 
-#if !defined(HAVE_SSE2) && !defined(HAVE_ALTIVEC)
+#if !defined(HAVE_SSE2)
 /**
  * This function fills the internal state array with pseudorandom
  * integers.

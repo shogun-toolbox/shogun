@@ -70,17 +70,7 @@ extern "C" {
 /*------------------------------------------
   128-bit SIMD like data type for standard C
   ------------------------------------------*/
-#if defined(HAVE_ALTIVEC)
-  #if !defined(__APPLE__)
-    #include <altivec.h>
-  #endif
-/** 128-bit data structure */
-union W128_T {
-    vector unsigned int s;
-    uint32_t u[4];
-    uint64_t u64[2];
-};
-#elif defined(HAVE_SSE2)
+#if defined(HAVE_SSE2)
   #include <emmintrin.h>
 
 /** 128-bit data structure */
