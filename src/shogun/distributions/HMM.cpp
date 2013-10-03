@@ -163,9 +163,14 @@ CHMM::CHMM()
 	observation_matrix_b=NULL;
 	initial_state_distribution_p=NULL;
 	end_state_distribution_q=NULL;
+#ifdef USE_LOGSUMARRAY
+	arrayS = NULL;
+#endif
 #ifdef USE_HMMPARALLEL_STRUCTURES
 	this->alpha_cache=NULL;
 	this->beta_cache=NULL;
+	path_prob_updated = NULL;
+	path_prob_dimension = NULL;
 #else
 	this->alpha_cache.table=NULL;
 	this->beta_cache.table=NULL;
@@ -173,6 +178,7 @@ CHMM::CHMM()
 	this->beta_cache.dimension=0;
 #endif
 	states_per_observation_psi=NULL;
+	mem_initialized = false;
 }
 
 CHMM::CHMM(CHMM* h)
@@ -425,7 +431,7 @@ CHMM::~CHMM()
 	if (!reused_caches)
 	{
 #ifdef USE_HMMPARALLEL_STRUCTURES
-		if (alpha_cache && beta_cache)
+		if (mem_initialized)
 		{
 			for (int32_t i=0; i<parallel->get_num_threads(); i++)
 			{
@@ -453,7 +459,7 @@ CHMM::~CHMM()
 #ifdef USE_LOGSUMARRAY
 #ifdef USE_HMMPARALLEL_STRUCTURES
 	{
-		if (arrayS)
+		if (mem_initialized)
 		{
 			for (int32_t i=0; i<parallel->get_num_threads(); i++)
 				SG_FREE(arrayS[i]);
@@ -468,10 +474,10 @@ CHMM::~CHMM()
 	if (!reused_caches)
 	{
 #ifdef USE_HMMPARALLEL_STRUCTURES
-		SG_FREE(path_prob_updated);
-		SG_FREE(path_prob_dimension);
-		if (path)
+		if (mem_initialized)
 		{
+			SG_FREE(path_prob_updated);
+			SG_FREE(path_prob_dimension);
 			for (int32_t i=0; i<parallel->get_num_threads(); i++)
 				SG_FREE(path[i]);
 		}
