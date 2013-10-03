@@ -13,6 +13,7 @@
 
 #include <shogun/machine/LinearStructuredOutputMachine.h>
 #include <shogun/features/DotFeatures.h>
+#include <shogun/structure/BmrmStatistics.h>
 
 namespace shogun
 {
@@ -180,18 +181,6 @@ class CDualLibQPBMSOSVM : public CLinearStructuredOutputMachine
 		 */
 		inline uint32_t get_cp_models() { return m_cp_models; }
 
-		/** set verbose
-		 *
-		 * @param verbose 	Flag enabling/disabling screen output
-		 */
-		inline void set_verbose(bool verbose) { m_verbose=verbose; }
-
-		/** get verbose
-		 *
-		 * @return Status of screen output (enabled/disabled)
-		 */
-		inline bool get_verbose() { return m_verbose; }
-
 		/** get bmrm result
 		 *
 		 * @return Result returned from Bundle Method algorithm
@@ -267,9 +256,6 @@ class CDualLibQPBMSOSVM : public CLinearStructuredOutputMachine
 
 		/** number of cutting plane models */
 		uint32_t m_cp_models;
-
-		/** verbose */
-		bool m_verbose;
 
 		/** BMRM result */
 		BmrmStatistics m_result;

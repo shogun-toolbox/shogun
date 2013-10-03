@@ -13,7 +13,6 @@
 
 #include <shogun/lib/SGVector.h>
 #include <shogun/machine/LinearStructuredOutputMachine.h>
-#include <shogun/structure/SOSVMHelper.h>
 
 namespace shogun
 {
@@ -40,11 +39,10 @@ public:
 	 * @param model structured model with application specific functions
 	 * @param labs structured labels
 	 * @param do_weighted_averaging whether mix w with previous average weights
-	 * @param debug whether compute debug information, such as primal value, duality gap etc.
+	 * @param verbose whether compute debug information, such as primal value, duality gap etc.
 	 */
 	CStochasticSOSVM(CStructuredModel* model, CStructuredLabels* labs, 
-		bool do_weighted_averaging = true,
-		bool debug = false);
+		bool do_weighted_averaging = true, bool verbose = false);
 
 	/** destructor */
 	~CStochasticSOSVM();
@@ -94,9 +92,6 @@ public:
 	 */
 	void set_rand_seed(uint32_t rand_seed);
 
-	/** @return training progress helper */
-	CSOSVMHelper* get_helper() const; 
-
 protected:
 	/** train primal SO-SVM
 	 *
@@ -116,20 +111,11 @@ private:
 	/** Number of passes through the data (default: 50) */
 	int32_t m_num_iter;
 
-	/** Whether to use weighted averaging of the iterates 
-	 * Recommended -- it made a big difference in test error in 
-	 * our experiments (default: 1)
-	 */
+	/** Whether to use weighted averaging of the iterates */
 	bool m_do_weighted_averaging;
 
 	/** random seed */
 	uint32_t m_rand_seed;
-
-	/** Whether to track the primal objective, dual objective, 
-	 * and training error, which makes the code about 3x
-	 * slower given the extra two passes through data (default: 0)
-	 */
-	bool m_debug;
 
 	/** If set to 0, the algorithm computes the objective after each full
 	 * pass trough the data. If in (0,100) logging happens at a
@@ -138,9 +124,6 @@ private:
 	 * costly the computations will be!
 	 */
 	int32_t m_debug_multiplier;
-
-	/** Primal objective, duality gap etc as the algorithm progresses */
-	CSOSVMHelper* m_progress;
 
 }; /* CStochasticSOSVM */
 

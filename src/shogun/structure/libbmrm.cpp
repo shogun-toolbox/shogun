@@ -198,7 +198,7 @@ BmrmStatistics svm_bmrm_solver(
 	uint8_t S=1;
 	CStructuredModel* model=machine->get_model();
 	uint32_t nDim=model->get_dim();
-	SG_UNREF(model);
+	CSOSVMHelper* helper = NULL;
 
 	CTime ttime;
 	float64_t tstart, tstop;
@@ -379,6 +379,9 @@ BmrmStatistics svm_bmrm_solver(
 	bmrm.hist_Fd[0]=bmrm.Fd;
 	bmrm.hist_wdist[0]=0.0;
 
+	if (verbose)
+		helper = machine->get_helper();
+
 	/* main loop */
 
 	while (bmrm.exitflag==0)
@@ -524,7 +527,22 @@ BmrmStatistics svm_bmrm_solver(
 		{
 			clean_icp(&icp_stats, bmrm, &CPList_head, &CPList_tail, H, diag_H, beta, map, cleanAfter, b, I);
 		}
+
+		/* Debug: compute objective and training error */
+		if (verbose)
+		{
+			SGVector<float64_t> w_debug(W, nDim, false);
+			float64_t primal = CSOSVMHelper::primal_objective(w_debug, model, _lambda);
+			float64_t train_error = CSOSVMHelper::average_loss(w_debug, model);
+			helper->add_debug_info(primal, bmrm.nIter, train_error);
+		}
 	} /* end of main loop */
+
+	if (verbose)
+	{
+		helper->terminate();
+		SG_UNREF(helper);
+	}
 
 	bmrm.hist_Fp.resize_vector(bmrm.nIter);
 	bmrm.hist_Fd.resize_vector(bmrm.nIter);
@@ -560,6 +578,8 @@ cleanup:
 
 	if (cp_list)
 		LIBBMRM_FREE(cp_list);
+
+	SG_UNREF(model);
 
 	return(bmrm);
 }

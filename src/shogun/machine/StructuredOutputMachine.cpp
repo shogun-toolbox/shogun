@@ -4,6 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
+ * Written (W) 2013 Shell Hu
  * Written (W) 2013 Thoralf Klein
  * Written (W) 2012 Fernando José Iglesias García
  * Copyright (C) 2012 Fernando José Iglesias García
@@ -33,6 +34,7 @@ CStructuredOutputMachine::~CStructuredOutputMachine()
 {
 	SG_UNREF(m_model);
 	SG_UNREF(m_surrogate_loss);
+	SG_UNREF(m_helper);
 }
 
 void CStructuredOutputMachine::set_model(CStructuredModel* model)
@@ -52,6 +54,11 @@ void CStructuredOutputMachine::register_parameters()
 {
 	SG_ADD((CSGObject**)&m_model, "m_model", "Structured model", MS_NOT_AVAILABLE);
 	SG_ADD((CSGObject**)&m_surrogate_loss, "m_surrogate_loss", "Surrogate loss", MS_NOT_AVAILABLE);
+	SG_ADD(&m_verbose, "verbose", "Verbosity flag", MS_NOT_AVAILABLE);
+	SG_ADD((CSGObject**)&m_helper, "helper", "Training helper", MS_NOT_AVAILABLE);
+
+	m_verbose = false;
+	m_helper = NULL;
 }
 
 void CStructuredOutputMachine::set_labels(CLabels* lab)
@@ -171,4 +178,26 @@ float64_t CStructuredOutputMachine::risk(float64_t* subgrad, float64_t* W,
 			break;
 	}
 	return ret;
+}
+
+CSOSVMHelper* CStructuredOutputMachine::get_helper() const
+{
+	if (m_helper == NULL)
+	{
+		SG_ERROR("%s::get_helper(): no helper has been created!"
+			"Please set verbose before training!\n", get_name());
+	}
+
+	SG_REF(m_helper);
+	return m_helper;
+}
+
+void CStructuredOutputMachine::set_verbose(bool verbose) 
+{ 
+	m_verbose = verbose; 
+}
+
+bool CStructuredOutputMachine::get_verbose() const 
+{ 
+	return m_verbose; 
 }
