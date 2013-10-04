@@ -26,7 +26,7 @@ int main (int argc, char **argv)
 
 	while (getline (cin, line))
 	{
-		if (line.find (" ") != 0)
+		if ((line.find (" ") != 0) && (line[0] != '0'))
 			testCases.push_back(line.substr(0, line.size()-1));
 	}
 
