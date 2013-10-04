@@ -173,11 +173,6 @@ public:
 	 */
 	SGVector<float64_t> get_energies() const;
 
-	/** @return energy table which are in Matlab-linearized order: 
-	 * leftmost indices run by one.
-	 */
-	SGVector<float64_t> get_energies();
-
 	/** get an entry in the energy table
 	 * @param index in the table
 	 * @return energy value

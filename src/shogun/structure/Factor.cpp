@@ -172,18 +172,6 @@ SGVector<float64_t> CFactor::get_energies() const
 	return m_energies;
 }
 
-SGVector<float64_t> CFactor::get_energies() 
-{
-	if (is_data_dependent() == false && m_energies.size() == 0) 
-	{
-		SGVector<float64_t> ft_energies 
-			= const_cast<CTableFactorType*>(m_factor_type)->get_w();
-		ASSERT(ft_energies.size() == m_factor_type->get_num_assignments());
-		return ft_energies;
-	}
-	return m_energies;
-}
-
 float64_t CFactor::get_energy(int32_t index) const
 {
 	return get_energies()[index]; // note for data indep, we get m_w not m_energies
