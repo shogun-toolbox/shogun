@@ -60,7 +60,9 @@ BmrmStatistics svm_p3bm_solver(
 	bool *map=NULL, tuneAlpha=true, flag=true;
 	bool alphaChanged=false, isThereGoodSolution=false;
 	TMultipleCPinfo **info=NULL;
-	uint32_t nDim=machine->get_model()->get_dim();
+	CStructuredModel* model=machine->get_model();
+	CSOSVMHelper* helper = NULL;
+	uint32_t nDim=model->get_dim();
 	uint32_t to=0, N=0, cp_i=0;
 
 	CTime ttime;
@@ -120,7 +122,9 @@ BmrmStatistics svm_p3bm_solver(
 
 	info= (TMultipleCPinfo**) LIBBMRM_CALLOC(cp_models, TMultipleCPinfo*);
 
-	int32_t num_feats = machine->get_model()->get_features()->get_num_vectors();
+	CFeatures* features = model->get_features();
+	int32_t num_feats = features->get_num_vectors();
+	SG_UNREF(features);
 
 	/* CP cleanup variables */
 	ICP_stats icp_stats;
@@ -263,6 +267,9 @@ BmrmStatistics svm_p3bm_solver(
 	if (verbose)
 		SG_SPRINT("%4d: tim=%.3lf, Fp=%lf, Fd=%lf, R=%lf, K=%lf, CPmodels=%d\n",
 				p3bmrm.nIter, tstop-tstart, p3bmrm.Fp, p3bmrm.Fd, R, K, cp_models);
+
+	if (verbose)
+		helper = machine->get_helper();
 
 	/* main loop */
 	while (p3bmrm.exitflag==0)
@@ -644,7 +651,22 @@ BmrmStatistics svm_p3bm_solver(
 					&CPList_tail, H, diag_H, beta, map,
 					cleanAfter, b, I, cp_models);
 		}
+
+		/* Debug: compute objective and training error */
+		if (verbose)
+		{
+			SGVector<float64_t> w_debug(W, nDim, false);
+			float64_t primal = CSOSVMHelper::primal_objective(w_debug, model, _lambda);
+			float64_t train_error = CSOSVMHelper::average_loss(w_debug, model);
+			helper->add_debug_info(primal, p3bmrm.nIter, train_error);
+		}
 	} /* end of main loop */
+
+	if (verbose)
+	{
+		helper->terminate();
+		SG_UNREF(helper);
+	}
 
 	p3bmrm.hist_Fp.resize_vector(p3bmrm.nIter);
 	p3bmrm.hist_Fd.resize_vector(p3bmrm.nIter);
@@ -700,6 +722,8 @@ cleanup:
 
 	LIBBMRM_FREE(subgrad_t);
 	LIBBMRM_FREE(info);
+
+	SG_UNREF(model);
 
 	return(p3bmrm);
 }

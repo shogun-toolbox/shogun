@@ -7,10 +7,6 @@
  #include <shogun/structure/IntronList.h>
  #include <shogun/structure/SegmentLoss.h>
 
- #include <shogun/machine/StructuredOutputMachine.h>
- #include <shogun/machine/LinearStructuredOutputMachine.h>
- #include <shogun/machine/KernelStructuredOutputMachine.h>
-
  #include <shogun/structure/BmrmStatistics.h>
  #include <shogun/structure/StructuredModel.h>
  #include <shogun/structure/MulticlassModel.h>
@@ -21,14 +17,6 @@
  #include <shogun/structure/StateModel.h>
  #include <shogun/structure/TwoStateModel.h>
  #include <shogun/structure/DirectorStructuredModel.h>
- #include <shogun/structure/DualLibQPBMSOSVM.h>
-
-#ifdef USE_MOSEK
- #include <shogun/structure/PrimalMosekSOSVM.h>
-#endif /* USE_MOSEK */
-
- #include <shogun/structure/SOSVMHelper.h>
- #include <shogun/structure/StochasticSOSVM.h>
 
  #include <shogun/structure/FactorType.h>
  #include <shogun/structure/Factor.h>
@@ -38,5 +26,18 @@
  #include <shogun/labels/FactorGraphLabels.h>
  #include <shogun/structure/MAPInference.h>
  #include <shogun/structure/FactorGraphModel.h>
+
+ #include <shogun/structure/SOSVMHelper.h>
+ #include <shogun/machine/StructuredOutputMachine.h>
+ #include <shogun/machine/LinearStructuredOutputMachine.h>
+ #include <shogun/machine/KernelStructuredOutputMachine.h>
+
+ #include <shogun/structure/DualLibQPBMSOSVM.h>
+
+#ifdef USE_MOSEK
+ #include <shogun/structure/PrimalMosekSOSVM.h>
+#endif /* USE_MOSEK */
+
+ #include <shogun/structure/StochasticSOSVM.h>
 %}
 

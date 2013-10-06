@@ -18,19 +18,13 @@ CStochasticSOSVM::CStochasticSOSVM()
 : CLinearStructuredOutputMachine()
 {
 	init();
-
-	if (m_debug)
-	{
-		m_progress = new CSOSVMHelper();
-		SG_REF(m_progress);
-	}
 }
 
 CStochasticSOSVM::CStochasticSOSVM(
 		CStructuredModel*  model,
 		CStructuredLabels* labs,
 		bool do_weighted_averaging,
-		bool debug)
+		bool verbose)
 : CLinearStructuredOutputMachine(model, labs)
 {
 	REQUIRE(model != NULL && labs != NULL, 
@@ -42,37 +36,26 @@ CStochasticSOSVM::CStochasticSOSVM(
 	init();
 	m_lambda = 1.0 / labs->get_num_labels();
 	m_do_weighted_averaging = do_weighted_averaging;
-	m_debug = debug;
-
-	if (m_debug)
-	{
-		m_progress = new CSOSVMHelper();
-		SG_REF(m_progress);
-	}
+	m_verbose = verbose;
 }
 
 void CStochasticSOSVM::init()
 {
 	SG_ADD(&m_lambda, "lambda", "Regularization constant", MS_NOT_AVAILABLE);
 	SG_ADD(&m_num_iter, "num_iter", "Number of iterations", MS_NOT_AVAILABLE);
-	SG_ADD(&m_debug, "debug", "Debug switch", MS_NOT_AVAILABLE);
 	SG_ADD(&m_do_weighted_averaging, "do_weighted_averaging", "Do weighted averaging", MS_NOT_AVAILABLE);
 	SG_ADD(&m_debug_multiplier, "debug_multiplier", "Debug multiplier", MS_NOT_AVAILABLE);
 	SG_ADD(&m_rand_seed, "rand_seed", "Random seed", MS_NOT_AVAILABLE);
-	SG_ADD((CSGObject**)&m_progress, "progress", "Training progress", MS_NOT_AVAILABLE);
 
 	m_lambda = 1.0;
 	m_num_iter = 50;
-	m_debug = false;
 	m_do_weighted_averaging = true;
 	m_debug_multiplier = 0;
 	m_rand_seed = 1;
-	m_progress = NULL;
 }
 
 CStochasticSOSVM::~CStochasticSOSVM()
 {
-	SG_UNREF(m_progress);
 }
 
 EMachineType CStochasticSOSVM::get_classifier_type() const
@@ -108,6 +91,15 @@ bool CStochasticSOSVM::train_machine(CFeatures* data)
 		w_avg = m_w.clone();
 
 	// logging 
+	if (m_verbose)
+	{
+		if (m_helper != NULL)
+			SG_UNREF(m_helper);
+
+		m_helper = new CSOSVMHelper();
+		SG_REF(m_helper);
+	}
+
 	int32_t debug_iter = 1;
 	if (m_debug_multiplier == 0)
 	{
@@ -159,7 +151,7 @@ bool CStochasticSOSVM::train_machine(CFeatures* data)
 			SG_UNREF(result);
 
 			// Debug: compute objective and training error
-			if (m_debug && k == debug_iter)
+			if (m_verbose && k == debug_iter)
 			{
 				SGVector<float64_t> w_debug;
 				if (m_do_weighted_averaging)
@@ -173,7 +165,7 @@ bool CStochasticSOSVM::train_machine(CFeatures* data)
 				SG_SPRINT("pass %d (iteration %d), SVM primal = %f, train_error = %f \n", 
 					pi, k, primal, train_error);
 
-				m_progress->add_debug_info(primal, (1.0*k) / N, train_error);
+				m_helper->add_debug_info(primal, (1.0*k) / N, train_error);
 
 				debug_iter = CMath::min(debug_iter+N, debug_iter*(1+m_debug_multiplier/100));
 			}
@@ -183,8 +175,8 @@ bool CStochasticSOSVM::train_machine(CFeatures* data)
 	if (m_do_weighted_averaging)
 		m_w = w_avg.clone();
 
-	if (m_debug)
-		m_progress->terminate();
+	if (m_verbose)
+		m_helper->terminate();
 
 	SG_DEBUG("Leaving CStochasticSOSVM::train_machine.\n");
 	return true;
@@ -230,8 +222,3 @@ void CStochasticSOSVM::set_rand_seed(uint32_t rand_seed)
 	m_rand_seed = rand_seed;
 }
 
-CSOSVMHelper* CStochasticSOSVM::get_helper() const
-{
-	SG_REF(m_progress);
-	return m_progress;
-}

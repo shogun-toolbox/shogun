@@ -4,6 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
+ * Written (W) 2013 Shell Hu
  * Written (W) 2012 Fernando José Iglesias García
  * Copyright (C) 2012 Fernando José Iglesias García
  */
@@ -16,7 +17,7 @@
 #include <shogun/machine/Machine.h>
 #include <shogun/structure/StructuredModel.h>
 #include <shogun/loss/LossFunction.h>
-#include <shogun/structure/BmrmStatistics.h>
+#include <shogun/structure/SOSVMHelper.h>
 
 namespace shogun
 {
@@ -116,6 +117,23 @@ class CStructuredOutputMachine : public CMachine
 		virtual float64_t risk(float64_t* subgrad, float64_t* W, 
 				TMultipleCPinfo* info=0, EStructRiskType rtype = N_SLACK_MARGIN_RESCALING);
 
+		/** @return training progress helper */
+		CSOSVMHelper* get_helper() const; 
+
+		/** set verbose
+		 * NOTE that track verbose information including primal objectives, 
+		 * training errors and duality gaps will make the training 2x or 3x slower.
+		 *
+		 * @param verbose flag enabling/disabling verbose information
+		 */
+		void set_verbose(bool verbose);
+
+		/** get verbose
+		 *
+		 * @return Status of verbose flag (enabled/disabled)
+		 */
+		bool get_verbose() const;
+
 	protected:
 		/** n-slack formulation and margin rescaling
 		 *
@@ -195,6 +213,12 @@ class CStructuredOutputMachine : public CMachine
 		 * will be extended in the future
 		 */
 		CLossFunction* m_surrogate_loss;
+
+		/** the helper that records primal objectives, duality gaps etc */
+		CSOSVMHelper* m_helper;
+
+		/** verbose outputs and statistics */
+		bool m_verbose;
 
 }; /* class CStructuredOutputMachine */
 
