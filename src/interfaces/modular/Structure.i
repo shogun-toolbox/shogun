@@ -21,9 +21,6 @@
 %rename(SegmentLoss) CSegmentLoss;
 %rename(IntronList) CIntronList;
 
-%rename(StructuredOutputMachine) CStructuredOutputMachine;
-%rename(LinearStructuredOutputMachine) CLinearStructuredOutputMachine;
-%rename(KernelStructuredOutputMachine) CKernelStructuredOutputMachine;
 %rename(StructuredModel) CStructuredModel;
 %rename(ResultSet) CResultSet;
 %rename(MulticlassModel) CMulticlassModel;
@@ -35,14 +32,6 @@
 %rename(StateModel) CStateModel;
 %rename(TwoStateModel) CTwoStateModel;
 %rename(DirectorStructuredModel) CDirectorStructuredModel;
-%rename(DualLibQPBMSOSVM) CDualLibQPBMSOSVM;
-
-#ifdef USE_MOSEK
-%rename(PrimalMosekSOSVM) CPrimalMosekSOSVM;
-#endif /* USE_MOSEK */
-
-%rename(SOSVMHelper) CSOSVMHelper;
-%rename(StochasticSOSVM) CStochasticSOSVM;
 
 %rename(FactorType) CFactorType;
 %rename(TableFactorType) CTableFactorType;
@@ -56,6 +45,18 @@
 %rename(MAPInference) CMAPInference;
 %rename(FactorGraphModel) CFactorGraphModel;
 
+%rename(SOSVMHelper) CSOSVMHelper;
+%rename(StructuredOutputMachine) CStructuredOutputMachine;
+%rename(LinearStructuredOutputMachine) CLinearStructuredOutputMachine;
+%rename(KernelStructuredOutputMachine) CKernelStructuredOutputMachine;
+%rename(DualLibQPBMSOSVM) CDualLibQPBMSOSVM;
+
+#ifdef USE_MOSEK
+%rename(PrimalMosekSOSVM) CPrimalMosekSOSVM;
+#endif /* USE_MOSEK */
+
+%rename(StochasticSOSVM) CStochasticSOSVM;
+
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/structure/PlifBase.h>
 %include <shogun/structure/Plif.h>
@@ -64,10 +65,6 @@
 %include <shogun/structure/PlifMatrix.h>
 %include <shogun/structure/IntronList.h>
 %include <shogun/structure/SegmentLoss.h>
-
-%include <shogun/machine/StructuredOutputMachine.h>
-%include <shogun/machine/LinearStructuredOutputMachine.h>
-%include <shogun/machine/KernelStructuredOutputMachine.h>
 
 %include <shogun/structure/BmrmStatistics.h>
 %include <shogun/structure/StructuredModel.h>
@@ -79,14 +76,6 @@
 %include <shogun/structure/StateModel.h>
 %include <shogun/structure/TwoStateModel.h>
 %include <shogun/structure/DirectorStructuredModel.h>
-%include <shogun/structure/DualLibQPBMSOSVM.h>
-
-#ifdef USE_MOSEK
-%include <shogun/structure/PrimalMosekSOSVM.h>
-#endif /* USE_MOSEK */
-
-%include <shogun/structure/SOSVMHelper.h>
-%include <shogun/structure/StochasticSOSVM.h>
 
 %include <shogun/structure/FactorType.h>
 %include <shogun/structure/Factor.h>
@@ -96,3 +85,16 @@
 %include <shogun/labels/FactorGraphLabels.h>
 %include <shogun/structure/MAPInference.h>
 %include <shogun/structure/FactorGraphModel.h>
+
+%include <shogun/structure/SOSVMHelper.h>
+%include <shogun/machine/StructuredOutputMachine.h>
+%include <shogun/machine/LinearStructuredOutputMachine.h>
+%include <shogun/machine/KernelStructuredOutputMachine.h>
+
+%include <shogun/structure/DualLibQPBMSOSVM.h>
+
+#ifdef USE_MOSEK
+%include <shogun/structure/PrimalMosekSOSVM.h>
+#endif /* USE_MOSEK */
+
+%include <shogun/structure/StochasticSOSVM.h>

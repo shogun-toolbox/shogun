@@ -69,7 +69,6 @@ void CDualLibQPBMSOSVM::init()
 	SG_ADD(&m_Tmax, "m_Tmax", "Parameter Tmax", MS_AVAILABLE);
 	SG_ADD(&m_cp_models, "m_cp_models", "Number of cutting plane models",
 			MS_AVAILABLE);
-	SG_ADD(&m_verbose, "m_verbose", "Verbosity flag", MS_NOT_AVAILABLE);
 
 	set_TolRel(0.001);
 	set_TolAbs(0.0);
@@ -80,7 +79,6 @@ void CDualLibQPBMSOSVM::init()
 	set_K(0.4);
 	set_Tmax(100);
 	set_cp_models(1);
-	set_verbose(false);
 	set_solver(BMRM);
 }
 
@@ -88,6 +86,15 @@ bool CDualLibQPBMSOSVM::train_machine(CFeatures* data)
 {
 	if (data)
 		set_features(data);
+
+	if (m_verbose)
+	{
+		if (m_helper != NULL)
+			SG_UNREF(m_helper);
+
+		m_helper = new CSOSVMHelper();
+		SG_REF(m_helper);
+	}
 
 	// Initialize the model for training
 	m_model->init_training();

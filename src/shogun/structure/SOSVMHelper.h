@@ -81,7 +81,7 @@ public:
 	 * @param dual dual objective value
 	 * @param dgap duality gap
 	 */
-	void add_debug_info(float64_t primal, float64_t eff_pass, float64_t train_error, 
+	virtual void add_debug_info(float64_t primal, float64_t eff_pass, float64_t train_error, 
 		float64_t dual = -1, float64_t dgap = -1);
 
 	/** get primal objectives

@@ -53,7 +53,9 @@ BmrmStatistics svm_ppbm_solver(
 	floatmax_t rsum, sq_norm_W, sq_norm_Wdiff, sq_norm_prevW, eps;
 	uint32_t *I, *I2, *I_start, *I_good;
 	uint8_t S=1;
-	uint32_t nDim=machine->get_model()->get_dim();
+	CStructuredModel* model=machine->get_model();
+	uint32_t nDim=model->get_dim();
+	CSOSVMHelper* helper = NULL;
 	uint32_t qp_cnt=0;
 	bmrm_ll *CPList_head, *CPList_tail, *cp_ptr, *cp_ptr2, *cp_list=NULL;
 	float64_t *A_1=NULL, *A_2=NULL;
@@ -221,6 +223,9 @@ BmrmStatistics svm_ppbm_solver(
 	if (verbose)
 		SG_SPRINT("%4d: tim=%.3lf, Fp=%lf, Fd=%lf, R=%lf, K=%lf\n",
 				ppbmrm.nIter, tstop-tstart, ppbmrm.Fp, ppbmrm.Fd, R, K);
+
+	if (verbose)
+		helper = machine->get_helper();
 
 	/* main loop */
 
@@ -592,7 +597,22 @@ BmrmStatistics svm_ppbm_solver(
 		{
 			clean_icp(&icp_stats, ppbmrm, &CPList_head, &CPList_tail, H, diag_H, beta, map, cleanAfter, b, I);
 		}
+
+		/* Debug: compute objective and training error */
+		if (verbose)
+		{
+			SGVector<float64_t> w_debug(W, nDim, false);
+			float64_t primal = CSOSVMHelper::primal_objective(w_debug, model, _lambda);
+			float64_t train_error = CSOSVMHelper::average_loss(w_debug, model);
+			helper->add_debug_info(primal, ppbmrm.nIter, train_error);
+		}
 	} /* end of main loop */
+
+	if (verbose)
+	{
+		helper->terminate();
+		SG_UNREF(helper);
+	}
 
 	ppbmrm.hist_Fp.resize_vector(ppbmrm.nIter);
 	ppbmrm.hist_Fd.resize_vector(ppbmrm.nIter);
@@ -637,6 +657,8 @@ cleanup:
 
 	if (cp_list)
 		LIBBMRM_FREE(cp_list);
+
+	SG_UNREF(model);
 
 	return(ppbmrm);
 }
