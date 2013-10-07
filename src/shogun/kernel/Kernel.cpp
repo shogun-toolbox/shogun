@@ -530,11 +530,13 @@ void CKernel::kernel_cache_shrink(
 		}
 	}
 
-	kernel_cache.max_elems=
-		(int32_t)(kernel_cache.buffsize/kernel_cache.activenum);
-	if(kernel_cache.max_elems>totdoc) {
+	kernel_cache.max_elems= (int32_t) kernel_cache.buffsize;
+
+	if (kernel_cache.activenum>0)
+		kernel_cache.buffsize/=kernel_cache.activenum;
+
+	if(kernel_cache.max_elems>totdoc)
 		kernel_cache.max_elems=totdoc;
-	}
 
 	SG_FREE(keep);
 

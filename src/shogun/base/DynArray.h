@@ -344,26 +344,20 @@ template <class T> class DynArray
 				new_num_elements=((n/resize_granularity)+1)*resize_granularity;
 			}
 
-			T* p;
 
 			if (use_sg_mallocs)
-				p = SG_REALLOC(T, array, num_elements, new_num_elements);
+				array = SG_REALLOC(T, array, num_elements, new_num_elements);
 			else
-				p = (T*) realloc(array, new_num_elements*sizeof(T));
+				array = (T*) realloc(array, new_num_elements*sizeof(T));
 
-			if (p || new_num_elements==0)
-			{
-				array=p;
+			//in case of shrinking we must adjust last element idx
+			if (n-1<current_num_elements-1)
+				current_num_elements=n;
 
-				//in case of shrinking we must adjust last element idx
-				if (n-1<current_num_elements-1)
-					current_num_elements=n;
+			num_elements=new_num_elements;
+			return true;
 
-				num_elements=new_num_elements;
-				return true;
-			}
-			else
-				return false;
+			return array || new_num_elements==0;
 		}
 
 		/** get the array
