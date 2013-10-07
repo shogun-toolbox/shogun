@@ -99,6 +99,9 @@ bool CKernel::init(CFeatures* l, CFeatures* r)
 {
 	SG_DEBUG("entering CKernel::init(%p, %p)\n", l, r)
 
+	REQUIRE(l != NULL, "Left hand side features are NULL\n")
+	REQUIRE(r != NULL, "Right hand side features are NULL\n")
+
 	/* make sure that features are not deleted if same ones are used */
 	SG_REF(l);
 	SG_REF(r);

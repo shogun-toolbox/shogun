@@ -58,12 +58,21 @@ CSNPFeatures::CSNPFeatures(const CSNPFeatures& orig)
 	m_str_min(NULL), m_str_maj(NULL)
 {
 	SG_REF(strings);
-	string_length=strings->get_max_vector_length();
-	ASSERT((string_length & 1) == 0) // length divisible by 2
-	w_dim=3*string_length;
-	num_strings=strings->get_num_vectors();
-	CAlphabet* alpha=strings->get_alphabet();
-	SG_UNREF(alpha);
+
+	if (strings)
+	{
+		string_length=strings->get_max_vector_length();
+		ASSERT((string_length & 1) == 0) // length divisible by 2
+			w_dim=3*string_length;
+		num_strings=strings->get_num_vectors();
+	}
+	else
+	{
+		string_length = 0;
+		w_dim = 0;
+		num_strings = 0;
+		alphabet_size = 0;
+	}
 
 	obtain_base_strings();
 }

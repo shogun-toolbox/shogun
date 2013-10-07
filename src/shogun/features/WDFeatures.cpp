@@ -58,14 +58,25 @@ CWDFeatures::CWDFeatures(const CWDFeatures& orig)
 	normalization_const(orig.normalization_const)
 {
 	SG_REF(strings);
-	string_length=strings->get_max_vector_length();
-	num_strings=strings->get_num_vectors();
-	CAlphabet* alpha=strings->get_alphabet();
-	alphabet_size=alpha->get_num_symbols();
-	SG_UNREF(alpha);
+
+	if (strings)
+	{
+		string_length=strings->get_max_vector_length();
+		num_strings=strings->get_num_vectors();
+		CAlphabet* alpha=strings->get_alphabet();
+		alphabet_size=alpha->get_num_symbols();
+		SG_UNREF(alpha);
+	}
+	else
+	{
+		string_length = 0;
+		num_strings = 0;
+		alphabet_size = 0;
+	}
 
 	wd_weights=NULL;
-	set_wd_weights();
+	if (degree>0)
+		set_wd_weights();
 }
 
 CWDFeatures::~CWDFeatures()
