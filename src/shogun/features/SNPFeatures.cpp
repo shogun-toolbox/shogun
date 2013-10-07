@@ -71,7 +71,6 @@ CSNPFeatures::CSNPFeatures(const CSNPFeatures& orig)
 		string_length = 0;
 		w_dim = 0;
 		num_strings = 0;
-		alphabet_size = 0;
 	}
 
 	obtain_base_strings();
