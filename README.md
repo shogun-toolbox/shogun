@@ -1,9 +1,10 @@
 This is the SHOGUN machine learning toolbox.
 
-(see INSTALL for first steps on installation and running shogun)
+(see [INSTALL](INSTALL.md) for first steps on installation and running shogun)
 (see README.data for how to download example data sets accompanying shogun)
 
 INTRODUCTION
+============
 
 The machine learning toolbox's focus is on large scale kernel methods and
 especially on Support Vector Machines (SVM)[1]. It provides a generic SVM
@@ -30,16 +31,19 @@ Chains of ``preprocessors'' (e.g. substracting the mean) can be attached to
 each feature object allowing for on-the-fly pre-processing.
 
 INTERFACES
+==========
 
 SHOGUN is implemented in C++ and interfaces to Matlab(tm), R, Octave, 
 Java, C#, Ruby, Lua and Python.
 
 PLATFORMS
+=========
 
 Debian GNU/Linux, Mac OSX and WIN32/CYGWIN are supported platforms (see
 the INSTALL file for generic and platform specific installation instructions)
 
 DIRECTORY CONTENT
+=================
 
 README       - this file
 Makefile     - to create release archives
@@ -62,35 +66,36 @@ The following table depicts the status of each interface available in shogun:
 +==================+===========================================================+
 |    interface     |     status                                                |
 +==================+===========================================================+
-|python_modular    | mature (no known problems)                                |
-|octave_modular    | mature (no known problems)                                |
-|java_modular      | stable (no known problems; not all examples are ported)   |
-|ruby_modular      | stable (no known problems; only few examples ported)      |
-|csharp_modular    | stable (no known problems; not all examples are ported)   |
-|lua_modular       | alpha (some examples work, string typemaps are unstable   |
-|perl_modular      | pre-alpha work in progress quality                        |
-|r_modular         | pre-alpha quality (swig does not properly handle reference|
+|python\_modular    | mature (no known problems)                                |
+|octave\_modular    | mature (no known problems)                                |
+|java\_modular      | stable (no known problems; not all examples are ported)   |
+|ruby\_modular      | stable (no known problems; only few examples ported)      |
+|csharp\_modular    | stable (no known problems; not all examples are ported)   |
+|lua\_modular       | alpha (some examples work, string typemaps are unstable   |
+|perl\_modular      | pre-alpha work in progress quality                        |
+|r\_modular         | pre-alpha quality (swig does not properly handle reference|
 |                  | counting and thus only for the brave:                     |
 |                  | --disable-reference-counting to get it to work, but beware|
 |                  | that it will leak memory; disabled by default.)           |
 +------------------+-----------------------------------------------------------+
-|octave_static     | mature (no known problems)                                |
-|matlab_static     | mature (no known problems)                                |
-|python_static     | mature (no known problems)                                |
-|r_static          | mature (no known problems)                                |
-|libshogun_static  | mature (no known problems)                                |
-|cmdline_static    | stable but some data types incomplete                     |
+|octave\_static     | mature (no known problems)                                |
+|matlab\_static     | mature (no known problems)                                |
+|python\_static     | mature (no known problems)                                |
+|r\_static          | mature (no known problems)                                |
+|libshogun\_static  | mature (no known problems)                                |
+|cmdline\_static    | stable but some data types incomplete                     |
 |                  |                                                           |
-|elwms_static      | this is the eierlegendewollmilchsau interface, a chimera  |
+|elwms\_static      | this is the eierlegendewollmilchsau interface, a chimera  |
 |                  | that in one file interfaces with python,octave,r,matlab   |
-|                  | and provides the run_python command to run code in python |
+|                  | and provides the run\_python command to run code in python |
 |                  | using the in octave,r,matlab available variables, etc)    |
 +==================+===========================================================+
 
-Visit src/README and http://www.shogun-toolbox.org/doc/en/current for further information.
+Visit http://www.shogun-toolbox.org/doc/en/current for further information.
 
 
 APPLICATIONS
+============
 
 We have successfully used this toolbox to tackle the following sequence
 analysis problems: Protein Super Family classification[6],
@@ -100,20 +105,23 @@ Prediction[15]. Some of them come with no less than 10
 million training examples, others with 7 billion test examples.
 
 LICENSE
+=======
 
 Except for the files classifier/svm/Optimizer.{cpp,h},
 classifier/svm/SVM_light.{cpp,h}, regression/svr/SVR_light.{cpp,h}
 and the kernel caching functions in kernel/Kernel.{cpp,h}
 which are (C) Torsten Joachims and follow a different
-licensing scheme (cf. LICENSE.SVMLight) SHOGUN is licensed under the GPL
-version 3 or any later version (cf. LICENSE).
+licensing scheme (cf. LICENSE\_SVMLight.md) SHOGUN is licensed under the GPL
+version 3 or any later version (cf. LICENSE.md).
 
 AVAILABILITY
+============
 
 SHOGUN can be downloaded at
 	http://www.shogun-toolbox.org
 
 REFERENCES
+==========
 
 [1] C.~Cortes and V.N. Vapnik.  Support-vector networks.
 	Machine Learning, 20(3):273--297, 1995.
