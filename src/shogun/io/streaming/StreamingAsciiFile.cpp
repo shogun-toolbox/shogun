@@ -610,6 +610,8 @@ template <class T>
 void CStreamingAsciiFile::append_item(
 		DynArray<T>* items, char* ptr_data, char* ptr_item)
 {
+		REQUIRE(ptr_data && ptr_item, "Data and Item to append should not be NULL\n");
+
 		size_t len=(ptr_data-ptr_item)/sizeof(char);
 		char* item=SG_MALLOC(char, len+1);
 		memset(item, 0, sizeof(char)*(len+1));

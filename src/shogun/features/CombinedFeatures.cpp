@@ -96,11 +96,18 @@ bool CCombinedFeatures::check_feature_obj_compatibility(CCombinedFeatures* comb_
 	}
 	else
 	{
-		SG_WARNING("number of features in combined feature objects differs (%d != %d)\n", this->get_num_feature_obj(), comb_feat->get_num_feature_obj())
-		SG_INFO("compare\n")
-		comb_feat->list_feature_objs();
-		SG_INFO("vs this\n")
-		this->list_feature_objs();
+		if (!comb_feat)
+		{
+			SG_WARNING("comb_feat is NULL \n");
+		}
+		else
+		{
+			SG_WARNING("number of features in combined feature objects differs (%d != %d)\n", this->get_num_feature_obj(), comb_feat->get_num_feature_obj())
+				SG_INFO("compare\n")
+				comb_feat->list_feature_objs();
+			SG_INFO("vs this\n")
+				this->list_feature_objs();
+		}
 	}
 
 	return result;
