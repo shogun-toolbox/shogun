@@ -21,8 +21,8 @@ Quick links to this file:
 Other links that may be useful:
 
 * See [INSTALL](INSTALL.md) for first steps on installation and running SHOGUN.
-* See [README.developer](README.developer.md) for the developer documentation
-* See [README.data](README.data.md) for how to download example data sets accompanying SHOGUN.
+* See [README.developer](README_developer.md) for the developer documentation
+* See [README.data](README_data.md) for how to download example data sets accompanying SHOGUN.
 
 ## Introduction
 ---------------
