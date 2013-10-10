@@ -169,24 +169,30 @@ CODING CONVENTIONS:
 - indenting uses stroustrup style with tabsize 4, i.e. for emacs use in your
 	~/.emacs
 
+  ```
 	(add-hook 'c-mode-common-hook
 	 (lambda ()
 	  (show-paren-mode 1)
 	  (setq indent-tabs-mode t)
 	  (c-set-style "stroustrup")
 	  (setq tab-width 4)))
+  ```
 
 
 	for vim in ~/.vimrc
 
+  ```
 	set cindent         " C style indenting
 	set ts=4            " tabstop
 	set sw=4            " shiftwidth
+  ```
 
 - for newlines use LF only; avoid CRLF and CR. Git can be configured to convert
   all newlines to LF as source files are commited to the repo by:
 
+  ```
   git config --global core.autocrlf input
+  ```
 
   (for more information consult http://help.github.com/line-endings/)
 
@@ -195,11 +201,15 @@ CODING CONVENTIONS:
 
   for emacs:
 
+  ```
   (add-hook 'before-save-hook 'delete-trailing-whitespace)
+  ```
 
   for vim in ~/.vimrc (implemented as an autocmd, use wisely):
 
+  ```
   autocmd BufWritePre * :%s/\s\+$//e
+  ```
 
 - semicolons and commas ;, should be placed directly after a variable/statement
 
@@ -331,6 +341,7 @@ instead
 
 *TYPES:*
 - types (use only these!):
+	```
 	char		(8bit char(maybe signed or unsigned))
 	uint8_t		(8bit unsigned char)
 	uint16_t	(16bit unsigned short)
@@ -340,12 +351,13 @@ instead
 	float32_t	(32bit float)
 	float64_t	(64bit float)
 	floatmax_t	(96bit or 128bit float depending on arch)
+	```
 
 	exceptions: file IO / matlab interface
 
 - classes must be (directly or indirectly) derived from CSGObject
 
-- don\'t use fprintf/printf, but SG_DEBUG/SG_INFO/SG_WARNING/SG_ERROR/SG_PRINT
+- don't use fprintf/printf, but SG_DEBUG/SG_INFO/SG_WARNING/SG_ERROR/SG_PRINT
   (if in a from CSGObject derived object) or the static SG_SDEBUG/... functions
   elsewise
 
@@ -403,16 +415,16 @@ CLabels then the .i file should contain %newobject CClassifier::apply();
 
 - class member variables all start with m_, e.g. m_member (this is to avoid shadowing)
 
-- features
-	-featureclass Dense/Sparse
-		-featuretype Real/Byte/...
-- preprocessors
-	-featureclass Dense/Sparse
-		-featuretype Real/Byte/...
-- kernel
-	-featureclass Dense/Sparse
-		-featuretype Real/Byte/...
-			-kerneltype Linear/Gaussian/...
+> - features
+> >	-featureclass Dense/Sparse
+> >	>	-featuretype Real/Byte/...
+> - preprocessors
+> >	-featureclass Dense/Sparse
+> >	>	-featuretype Real/Byte/...
+> - kernel
+> >	-featureclass Dense/Sparse
+> >	>	-featuretype Real/Byte/...
+> >	>		-kerneltype Linear/Gaussian/...
 
 *VERSIONING SCHEME:*
 
@@ -420,7 +432,9 @@ The git repo for the project is hosted on GitHub at
 https://github.com/shogun-toolbox/shogun. To get started, create your own fork
 and clone it. Remember to set the upstream remote to the main repo by:
 
+```
 git remote add upstream git://github.com/shogun-toolbox/shogun.git
+```
 
 Its recommended to create local branches, which are linked to branches from
 your remote repository.  This will make "push" and "pull" work as expected:
@@ -484,13 +498,13 @@ repository in github.
 
   This error happens when:
 
-  1. git checkout -b my-branch
-  2. ... do something ...
-  3. ... rebasing ...
-  4. git push origin my-branch
-  5. ... do more thing ...
-  6. ... rebasing ...
-  7. git push origin my-branch
+1. ```git checkout -b my-branch```
+2. ... do something ...
+3. ... rebasing ...
+4. ```git push origin my-branch```
+5. ... do more thing ...
+6. ... rebasing ...
+7. ```git push origin my-branch```
 
   then git will complain about non-fast-forward error and not pushing into the remote
   my-branch branch. This is because the first push has already created the my-branch 
@@ -524,7 +538,7 @@ repository in github.
   the ./configure script. So, please check the produced configure.log whether
   the script detected it.
 
-  Once it\'s detected if you add new classes to the code please define some basic
+  Once it's detected if you add new classes to the code please define some basic
   unit tests for them under ./tests/unit (see some of the examples under that directory).
   As one can see the naming convention for files that contains the unit tests are:
   <classname>_unittest.cc
@@ -548,7 +562,10 @@ cd src && make unit-tests
   fails it won't let you commit until you don't fix the problem (or remove the
   pre-commit script :P
 
-  Note that the script should be executable, i.e. 'chmod +x .git/hook/pre-commit'
+  Note that the script should be executable, i.e.
+  ```
+  chmod +x .git/hook/pre-commit
+  ```
 
 
 To make a release, refer to the Makefile in the root dir of the repo.
