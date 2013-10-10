@@ -385,7 +385,7 @@ destruction.
 
 If a class function returns a new object this has to be stated in the
 corresponding swig .i file for cleanup to work, e.g. if apply() returns a new
-CLabels then the .i file should contain %newobject CClassifier::apply();
+CLabels then the .i file should contain ```%newobject CClassifier::apply();```
 
 *NAMING CONVENTIONS:*
 
