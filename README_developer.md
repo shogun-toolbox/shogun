@@ -1,4 +1,5 @@
 GETTING STARTED
+---------------
 
 Shogun is split up into libshogun which contains all the machine learning
 algorithms and 'static interfaces' helpers,
@@ -12,6 +13,7 @@ This can be easily done as a number of examples in examples/libshogun document.
 
 The simplest libshogun based program would be
 
+```
 #include <shogun/base/init.h>
 
 int main(int argc, char** argv)
@@ -20,6 +22,7 @@ int main(int argc, char** argv)
     exit_shogun();
     return 0;
 }
+```
 
 which could be compiled with g++ -lshogun minimal.cpp -o minimal and obviously
 does nothing (apart form initializing and destroying a couple of global shogun
@@ -29,6 +32,7 @@ In case one wants to redirect shoguns output functions SG_DEBUG, SG_INFO,
 SG_WARN, SG_ERROR, SG_PRINT etc, one has to pass them to init_shogun() as
 parameters like this
 
+```
 void print_message(FILE* target, const char* str)
 {
     fprintf(target, "%s", str);
@@ -46,11 +50,13 @@ void print_error(FILE* target, const char* str)
 
 init_shogun(&print_message, &print_warning,
 					&print_error);
+```
 
 To finally see some action one has to include the appropriate header files,
 e.g. we create some features and a gaussian kernel
 
 
+```
 #include <shogun/labels/Labels.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/kernel/GaussianKernel.h>
@@ -104,6 +110,7 @@ int main(int argc, char** argv)
 	exit_shogun();
 	return 0;
 }
+```
 
 Now you probably wonder why this example does not leak memory. First of all,
 supplying pointers to arrays allocated with new[] will make shogun objects own
@@ -113,7 +120,9 @@ internally. Whenever a shogun object is returned or supplied as an argument to
 some function its reference counter is increased, for example in the example
 above
 
+```
 CLibSVM* svm = new CLibSVM(10, kernel, labels);
+```
 
 increases the reference count of kernel and labels. On destruction the
 reference counter is decreased and the object is freed if the counter is <= 0.
@@ -136,6 +145,7 @@ CClassifier which finally calls CSGObject.
 For example if you implement your own SVM called MySVM you would in the
 constructor do
 
+```
 class MySVM : public CSVM
 {
     MySVM( ) : CSVM()
@@ -143,6 +153,7 @@ class MySVM : public CSVM
         ...
     }
 };
+```
 
 In case you got your object working we will happily integrate it into shogun
 provided you follow a number of basic coding conventions detailed below (see
@@ -151,8 +162,9 @@ TYPES on which types to use, FUNCTIONS on how functions should look like and
 NAMING CONVENTIONS for the naming scheme.
 
 CODING CONVENTIONS:
+-------------------
 
-FORMATTING:
+*FORMATTING:*
 
 - indenting uses stroustrup style with tabsize 4, i.e. for emacs use in your
 	~/.emacs
@@ -191,11 +203,13 @@ FORMATTING:
 
 - semicolons and commas ;, should be placed directly after a variable/statement
 
+  ```
   x+=1;
   set_cache_size(0);
 
   for (uint32_t i=0; i<10; i++)
       ...
+  ```
 
 - brackets () and (greater/lower) equal sign ><= should should not contain
   unecessary spaces, e.g:
@@ -203,15 +217,19 @@ FORMATTING:
   int32_t a=1;
   int32_t b=kernel->compute();
 
+  ```
   if (a==1)
   {
   }
+  ```
 
   exceptions are logical subunits
 
+  ```
   if ( (a==1) && (b==1) )
   {
   }
+  ```
 
 - avoid the use of inline functions where possible (little to zero performance
 		impact). nowadays compilers automagically inline code when beneficial
@@ -220,11 +238,13 @@ FORMATTING:
 - breaking long lines and strings
 	limit yourselves to 80 columns
 
+	```
 	for (int32_t vec=params->start; vec<params->end &&
 			!CSignal::cancel_computations(); vec++)
 	{
 		//foo
 	}
+	```
 
 	however exceptions are OK if readability is increased (as in function
 	definitions)
@@ -233,25 +253,32 @@ FORMATTING:
 
 - functions look like
 
+	```
 	int32_t* fun(int32_t* foo)
 	{
 		return foo;
 	}
+	```
 
   and are separated by a newline, e.g:
 
+	```
 	int32_t* fun1(int32_t* foo1)
 	{
 		return foo;
 	}
+	```
 
+	```
 	int32_t* fun2(int32_t* foo2)
 	{
 		return foo2;
 	}
+	```
 
 - same for if () else clauses, while/for loops
 
+	```
 	if (foo)
 		do_stuff();
 
@@ -260,22 +287,27 @@ FORMATTING:
 		do_stuff();
 		do_more();
 	}
+	```
 
 - one empty line between { } block, e.g.
 
+	```
 	for (int32_t i=0; i<17; i++)
 	{
 		// sth
 	}
 
 	x=1;
+	```
 
-MACROS & IFDEFS:
+*MACROS & IFDEFS:*
 
 - use macros sparingly
 - avoid defining constants using macros (bye bye typechecking), use
 
+```
 const int32_t FOO=5;
+```
 
 or enums (when defining several realted constants)
 
@@ -289,13 +321,15 @@ instead
 - if you need to use ifdefs always comment the corresponding #else / #endif
   in the following way:
 
+```
 #ifdef HAVE_LAPACK
   ...
 #else //HAVE_LAPACK
   ...
 #endif //HAVE_LAPACK
+```
 
-TYPES:
+*TYPES:*
 - types (use only these!):
 	char		(8bit char(maybe signed or unsigned))
 	uint8_t		(8bit unsigned char)
@@ -311,11 +345,11 @@ TYPES:
 
 - classes must be (directly or indirectly) derived from CSGObject
 
-- don't use fprintf/printf, but SG_DEBUG/SG_INFO/SG_WARNING/SG_ERROR/SG_PRINT
+- don\'t use fprintf/printf, but SG_DEBUG/SG_INFO/SG_WARNING/SG_ERROR/SG_PRINT
   (if in a from CSGObject derived object) or the static SG_SDEBUG/... functions
   elsewise
 
-FUNCTIONS:
+*FUNCTIONS:*
 
 - Functions should be short and sweet, and do just one thing.  They should fit
   on one or two screenfuls of text (the ISO/ANSI screen size is 80x24, as we all
@@ -327,7 +361,7 @@ FUNCTIONS:
   and it gets confused.  You know you're brilliant, but maybe you'd like
   to understand what you did 2 weeks from now.
 
-GETTING / SETTING OBJECTS
+*GETTING / SETTING OBJECTS*
 
 If a class stores a pointer to an object it should call SG_REF(obj) to increase
 the objects reference count and SG_UNREF(obj) on class desctruction (which will
@@ -341,7 +375,7 @@ If a class function returns a new object this has to be stated in the
 corresponding swig .i file for cleanup to work, e.g. if apply() returns a new
 CLabels then the .i file should contain %newobject CClassifier::apply();
 
-NAMING CONVENTIONS:
+*NAMING CONVENTIONS:*
 
 - naming variables:
 	- in classes are member variables are named like m_feature_vector (to avoid
@@ -380,7 +414,7 @@ NAMING CONVENTIONS:
 		-featuretype Real/Byte/...
 			-kerneltype Linear/Gaussian/...
 
-VERSIONING SCHEME:
+*VERSIONING SCHEME:*
 
 The git repo for the project is hosted on GitHub at
 https://github.com/shogun-toolbox/shogun. To get started, create your own fork
@@ -391,13 +425,17 @@ git remote add upstream git://github.com/shogun-toolbox/shogun.git
 Its recommended to create local branches, which are linked to branches from
 your remote repository.  This will make "push" and "pull" work as expected:
 
+```
 git checkout --track origin/master
 git checkout --track origin/develop
+```
 
 Each time you want to develop new feature / fix a bug / etc consider creating
 new branch using:
 
+```
 git checkout -b new_feature_name
+```
 
 While being on new_feature_name branch, develop your code, commit things and do
 everything you want.
@@ -406,15 +444,19 @@ Once your feature is ready (please consider larger commits that keep shogun in
 compileable state), rebase your new_feature_name branch on upstream/develop
 with:
 
+```
 git fetch upstream
 git checkout develop
 git rebase upstream/develop
 git checkout new_feature_name
 git rebase develop
+```
 
 Now you can push it to your origin repository:
 
+```
 git push
+```
 
 And finally send a pull request (PR) to the develop branch of the shogun 
 repository in github.
@@ -458,11 +500,15 @@ repository in github.
 
   Solution for this situation is to delete your remote branch by
 
+```
     git push origin :my-branch
+```
 
   and push again by
 
+```
     git push origin my-branch
+```
 
   note deleting your remote branch will not delete your pull request associated with that
   branch. And as long as you push your branch there again, your pull request will be OK.
@@ -478,7 +524,7 @@ repository in github.
   the ./configure script. So, please check the produced configure.log whether
   the script detected it.
 
-  Once it's detected if you add new classes to the code please define some basic
+  Once it\'s detected if you add new classes to the code please define some basic
   unit tests for them under ./tests/unit (see some of the examples under that directory).
   As one can see the naming convention for files that contains the unit tests are:
   <classname>_unittest.cc
@@ -490,12 +536,13 @@ repository in github.
   One possible way to do this automatically is to add into your pre-commit hook the
   following code snippet (.git/hook/pre-commit):
 
+```
 #!/bin/sh
 
 # run unit testing for basic checks
 # and only let commiting if the unit testing runs successfully
 cd src && make unit-tests
-
+```
 
   This way before each commit the unit testing will run automatically and if it
   fails it won't let you commit until you don't fix the problem (or remove the
