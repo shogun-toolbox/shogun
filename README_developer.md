@@ -415,16 +415,7 @@ CLabels then the .i file should contain %newobject CClassifier::apply();
 
 - class member variables all start with m_, e.g. m_member (this is to avoid shadowing)
 
-> - features
-> >	-featureclass Dense/Sparse
-> >	>	-featuretype Real/Byte/...
-> - preprocessors
-> >	-featureclass Dense/Sparse
-> >	>	-featuretype Real/Byte/...
-> - kernel
-> >	-featureclass Dense/Sparse
-> >	>	-featuretype Real/Byte/...
-> >	>		-kerneltype Linear/Gaussian/...
+- features and preprocessors are prefixed with featureclass (e.g. Dense/Sparse) followed by featuretype (Real/Byte/...)
 
 *VERSIONING SCHEME:*
 
