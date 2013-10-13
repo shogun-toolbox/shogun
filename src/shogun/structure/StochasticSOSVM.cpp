@@ -162,7 +162,7 @@ bool CStochasticSOSVM::train_machine(CFeatures* data)
 				float64_t primal = CSOSVMHelper::primal_objective(w_debug, m_model, m_lambda);
 				float64_t train_error = CSOSVMHelper::average_loss(w_debug, m_model);
 
-				SG_SPRINT("pass %d (iteration %d), SVM primal = %f, train_error = %f \n", 
+				SG_DEBUG("pass %d (iteration %d), SVM primal = %f, train_error = %f \n", 
 					pi, k, primal, train_error);
 
 				m_helper->add_debug_info(primal, (1.0*k) / N, train_error);

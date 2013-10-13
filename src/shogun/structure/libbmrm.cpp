@@ -14,6 +14,7 @@
 #include <shogun/structure/libbmrm.h>
 #include <shogun/lib/external/libqp.h>
 #include <shogun/lib/Time.h>
+#include <shogun/io/SGIO.h>
 
 namespace shogun
 {
@@ -371,7 +372,7 @@ BmrmStatistics svm_bmrm_solver(
 	/* Verbose output */
 
 	if (verbose)
-		SG_SPRINT("%4d: tim=%.3lf, Fp=%lf, Fd=%lf, R=%lf\n",
+		SG_SDEBUG("%4d: tim=%.3lf, Fp=%lf, Fd=%lf, R=%lf\n",
 				bmrm.nIter, tstop-tstart, bmrm.Fp, bmrm.Fd, R);
 
 	/* store Fp, Fd and wdist history */
@@ -502,7 +503,7 @@ BmrmStatistics svm_bmrm_solver(
 		/* Verbose output */
 
 		if (verbose)
-			SG_SPRINT("%4d: tim=%.3lf, Fp=%lf, Fd=%lf, (Fp-Fd)=%lf, (Fp-Fd)/Fp=%lf, R=%lf, nCP=%d, nzA=%d, QPexitflag=%d\n",
+			SG_SDEBUG("%4d: tim=%.3lf, Fp=%lf, Fd=%lf, (Fp-Fd)=%lf, (Fp-Fd)/Fp=%lf, R=%lf, nCP=%d, nzA=%d, QPexitflag=%d\n",
 					bmrm.nIter, tstop-tstart, bmrm.Fp, bmrm.Fd, bmrm.Fp-bmrm.Fd,
 					(bmrm.Fp-bmrm.Fd)/bmrm.Fp, R, bmrm.nCP, bmrm.nzA, qp_exitflag.exitflag);
 
