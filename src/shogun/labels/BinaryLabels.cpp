@@ -70,14 +70,14 @@ void CBinaryLabels::ensure_valid(const char* context)
 
 	if (!found_plus_one)
 	{
-		SG_ERROR(
+		SG_WARNING(
 				"%s%s%s::ensure_valid(): Not a two class labeling - no positively labeled examples found\n",
 				context ? context : "", context ? ": " : "", get_name());
 	}
 
 	if (!found_minus_one)
 	{
-		SG_ERROR(
+		SG_WARNING(
 				"%s%s%s::ensure_valid): Not a two class labeling - no negatively labeled examples found\n",
 				context ? context : "", context ? ": " : "", get_name());
 	}
