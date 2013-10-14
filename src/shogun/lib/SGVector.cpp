@@ -34,6 +34,14 @@ void SGVector<complex128_t>::function() \
 		#function);\
 }
 
+#define BOOL_ERROR_ONEARG(function) \
+template <> \
+void SGVector<bool>::function(bool a) \
+{ \
+	SG_SERROR("SGVector::%s():: Not supported for bool\n",\
+		#function);\
+}
+
 #define COMPLEX128_ERROR_ONEARG(function) \
 template <> \
 void SGVector<complex128_t>::function(complex128_t a) \
@@ -1309,6 +1317,7 @@ template <class T> void SGVector<T>::atan2(T x)
 		vector[i]=CMath::atan2(vector[i], x);
 }
 
+BOOL_ERROR_ONEARG(atan2)
 COMPLEX128_ERROR_ONEARG(atan2)
 
 template <class T> void SGVector<T>::pow(T q)

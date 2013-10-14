@@ -1578,7 +1578,7 @@ int sfa_special(double *x,     double *gap,  int * activeS,
 				break;
 			}
 
-			if ( (*gap <1) && (numS==numSp) && fabs(gapp == *gap) ){
+			if ( (*gap <1) && (numS==numSp) && (gapp == *gap) ){
 				//tFlag=1;			
 				break;
 				/*we terminate the program is *gap <1

@@ -70,7 +70,7 @@ class CCustomMahalanobisDistance : public CRealDistance
 
 	private:
 		/** register parameters */
-		void init();
+		void register_params();
 
 	private:
 		/** Mahalanobis matrix used to compute distances */

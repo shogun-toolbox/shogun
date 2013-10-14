@@ -18,17 +18,19 @@ using namespace Eigen;
 
 CCustomMahalanobisDistance::CCustomMahalanobisDistance() : CRealDistance()
 {
+	register_params();
+	m_mahalanobis_matrix = NULL;
 }
 
 CCustomMahalanobisDistance::CCustomMahalanobisDistance(CFeatures* l, CFeatures* r, SGMatrix<float64_t> m)
 : CRealDistance()
 {
-	init();
+	register_params();
 	CRealDistance::init(l, r);
 	m_mahalanobis_matrix = m;
 }
 
-void CCustomMahalanobisDistance::init()
+void CCustomMahalanobisDistance::register_params()
 {
 	SG_ADD(&m_mahalanobis_matrix, "m_mahalanobis_matrix", "Mahalanobis matrix", MS_NOT_AVAILABLE)
 }

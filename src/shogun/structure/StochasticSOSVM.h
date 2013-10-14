@@ -54,7 +54,7 @@ public:
 	 *
 	 * @return classifier type CT_PRIMALMOSEKSOSVM
 	 */
-	virtual EMachineType get_classifier_type() const;
+	virtual EMachineType get_classifier_type();
 
 	/** @return lambda */
 	float64_t get_lambda() const;

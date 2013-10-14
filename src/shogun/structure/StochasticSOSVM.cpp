@@ -58,7 +58,7 @@ CStochasticSOSVM::~CStochasticSOSVM()
 {
 }
 
-EMachineType CStochasticSOSVM::get_classifier_type() const
+EMachineType CStochasticSOSVM::get_classifier_type()
 {
 	return CT_STOCHASTICSOSVM;
 }
