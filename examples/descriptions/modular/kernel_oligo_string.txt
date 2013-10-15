@@ -1,5 +1,5 @@
-This is an example initializing the oligo string kernel which takes distances 
-between matching oligos (k-mers) into account via a gaussian. Variable 'k' defines the length 
-of the oligo and variable 'w' the width of the gaussian. The oligo string kernel is 
-implemented for the DNA-alphabet 'ACGT'. 
- 
+This is an example initializing the oligo string kernel which takes distances
+between matching oligos (k-mers) into account via a gaussian. Variable 'k' defines the length
+of the oligo and variable 'w' the width of the gaussian. The oligo string kernel is
+implemented for the DNA-alphabet 'ACGT'.
+

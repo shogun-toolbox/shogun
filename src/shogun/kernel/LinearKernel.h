@@ -92,10 +92,10 @@ class CLinearKernel: public CDotKernel
 		virtual bool delete_optimization();
 
 		/** compute optimized
-	 	*
-	 	* @param idx index to compute
-	 	* @return optimized value at given index
-	 	*/
+		*
+		* @param idx index to compute
+		* @return optimized value at given index
+		*/
 		virtual float64_t compute_optimized(int32_t idx);
 
 		virtual void clear_normal()
@@ -116,7 +116,7 @@ class CLinearKernel: public CDotKernel
 		 *
 		 * @return normal vector
 		 */
-		SGVector<float64_t> get_w() const 
+		SGVector<float64_t> get_w() const
 		{
 			ASSERT(lhs)
 			return normal;

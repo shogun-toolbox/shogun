@@ -1,2 +1,2 @@
-This is an example for the initialization of the chi2-kernel on real data, where 
-each column of the matrices corresponds to one training/test example. 
+This is an example for the initialization of the chi2-kernel on real data, where
+each column of the matrices corresponds to one training/test example.

@@ -192,7 +192,7 @@ public:
 
 	/** prints registered parameters out
 	 *
-	 * 	@param prefix prefix for members
+	 *	@param prefix prefix for members
 	 */
 	virtual void print_serializable(const char* prefix="");
 
@@ -343,7 +343,7 @@ public:
 #ifdef TRACE_MEMORY_ALLOCS
 	static void list_memory_allocs()
 	{
-        	shogun::list_memory_allocs();
+	shogun::list_memory_allocs();
 	}
 #endif
 

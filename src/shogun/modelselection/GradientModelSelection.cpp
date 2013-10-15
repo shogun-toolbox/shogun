@@ -77,7 +77,7 @@ double nlopt_function(unsigned n, const double* x, double* grad, void* func_data
 			{
 
 				bool result=current_combination->set_parameter(param->m_name,
-				 		(float64_t)x[offset++],	parent, j);
+						(float64_t)x[offset++],	parent, j);
 				 REQUIRE(result, "Parameter %s not found in combination tree\n",
 						 param->m_name)
 			}
@@ -85,7 +85,7 @@ double nlopt_function(unsigned n, const double* x, double* grad, void* func_data
 		else
 		{
 			bool result=current_combination->set_parameter(param->m_name,
-			 		(float64_t)x[offset++], parent);
+					(float64_t)x[offset++], parent);
 			REQUIRE(result, "Parameter %s not found in combination tree\n",
 					param->m_name)
 		}

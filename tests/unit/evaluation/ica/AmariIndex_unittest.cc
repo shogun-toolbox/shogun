@@ -10,9 +10,9 @@ using namespace shogun;
 
 TEST(AmariIndex, amari_zero)
 {
-	int d = 10;	
+	int d = 10;
 	SGMatrix<float64_t> A = SGMatrix<float64_t>::create_identity_matrix(d,1);
-	SGMatrix<float64_t> W = SGMatrix<float64_t>::create_identity_matrix(d,1);	
+	SGMatrix<float64_t> W = SGMatrix<float64_t>::create_identity_matrix(d,1);
 
 	float64_t error = amari_index(A,W,false);
 

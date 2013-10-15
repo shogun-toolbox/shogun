@@ -5,9 +5,9 @@ parameter_list = [[data,20],[data,30]]
 def converter_localtangentspacealignment_modular (data_fname,k):
 	try:
 		from modshogun import RealFeatures, LocalTangentSpaceAlignment, CSVFile
-		
+
 		features = RealFeatures(CSVFile(data_fname))
-			
+
 		converter = LocalTangentSpaceAlignment()
 		converter.set_target_dim(1)
 		converter.set_k(k)

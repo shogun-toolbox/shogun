@@ -12,7 +12,7 @@ INSTALL(TARGETS csharp_modular
 	LIBRARY DESTINATION lib/cli/shogun
 	COMPONENT csharp)
 
-INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/modshogun.dll 
+INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/modshogun.dll
 		DESTINATION lib/cli/shogun
 		COMPONENT csharp)
 

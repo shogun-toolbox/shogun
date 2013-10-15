@@ -18,7 +18,7 @@
 namespace shogun
 {
 
-/** @class class CManifoldSculpting used to embed 
+/** @class class CManifoldSculpting used to embed
  * data using manifold sculpting embedding algorithm.
  *
  * Uses implementation from the Tapkee library.
@@ -77,7 +77,7 @@ public:
 	 *
 	 * @return the maximum number of iterations
 	 */
-	int32_t get_max_iteration() const;	
+	int32_t get_max_iteration() const;
 
 private:
 
@@ -93,7 +93,7 @@ private:
 	float64_t m_squishing_rate;
 
 	/** max_iteration - the maximum number of algorithm's
-	 * iterations 
+	 * iterations
 	 */
 	float64_t m_max_iteration;
 

@@ -66,7 +66,7 @@ template <class T> class SGSparseMatrix : public SGReferencedData
 			return sparse_matrix[index];
 		}
 
-		/** 
+		/**
 		 * get the sparse matrix (no copying is done here)
 		 *
 		 * @return the refcount increased matrix
@@ -143,7 +143,7 @@ template <class T> class SGSparseMatrix : public SGReferencedData
 				sparse_matrix[i_row].features, j, j+1);
 			sparse_matrix[i_row].features[j].feat_index=i_col;
 			sparse_matrix[i_row].features[j].entry=static_cast<T>(0);
-			
+
 			return sparse_matrix[i_row].features[j].entry;
 		}
 

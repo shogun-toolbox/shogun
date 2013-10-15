@@ -81,7 +81,7 @@ int main(int argc, char** argv)
 	for (int32_t i=0; i<6; i++)
 		matrix[i]=i;
 
-	// create three 2-dimensional vectors 
+	// create three 2-dimensional vectors
 	// shogun will now own the matrix created
 	CDenseFeatures<float64_t>* features= new CDenseFeatures<float64_t>();
 	features->set_feature_matrix(matrix, 2, 3);
@@ -463,7 +463,7 @@ Now you can push it to your origin repository:
 git push
 ```
 
-And finally send a pull request (PR) to the develop branch of the shogun 
+And finally send a pull request (PR) to the develop branch of the shogun
 repository in github.
 
 
@@ -498,7 +498,7 @@ repository in github.
 7. ```git push origin my-branch```
 
   then git will complain about non-fast-forward error and not pushing into the remote
-  my-branch branch. This is because the first push has already created the my-branch 
+  my-branch branch. This is because the first push has already created the my-branch
   branch in origin. Later when you run rebasing, which is a destructive operation for
   the local history. Since the local history is no longer the same as those in the remote
   branch, pushing is not allowed.

@@ -262,7 +262,7 @@ class CFeatures : public CSGObject
 		virtual void remove_all_subsets();
 
 		/** returns subset stack
-		 * 
+		 *
 		 * @return subset stack
 		 */
 		virtual CSubsetStack* get_subset_stack();

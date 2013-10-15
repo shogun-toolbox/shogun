@@ -7,7 +7,7 @@
 #  COLPACK_LIBRARIES    - Which libraries are available
 
 # Look for the header files
-FIND_PATH(COLPACK_INCLUDE_DIR NAMES ColPack/ColPackHeaders.h 
+FIND_PATH(COLPACK_INCLUDE_DIR NAMES ColPack/ColPackHeaders.h
           PATHS /usr/include
                /usr/local/include
                /usr/local/include
@@ -17,13 +17,13 @@ FIND_PATH(COLPACK_INCLUDE_DIR NAMES ColPack/ColPackHeaders.h
           PATH_SUFFIXES ColPack)
 
 # Look for the libraries
-find_library(COLPACK_LIBRARIES NAMES ColPack 
+find_library(COLPACK_LIBRARIES NAMES ColPack
             PATHS
                    /usr/lib/ColPack
                    /usr/local/lib
                    /opt/local/lib
                    "c:\\libs\\ColPack\\lib"
-        				   /usr/lib64
+				   /usr/lib64
                    /usr/local/lib64
                    /usr/local/lib64
                    /opt/local/lib64
@@ -42,7 +42,7 @@ else ()
 endif ()
 
 mark_as_advanced (
-  COLPACK_LIBRARIES 
+  COLPACK_LIBRARIES
   COLPACK_LIBRARY_DIR
   COLPACK_INCLUDE_DIR
 )

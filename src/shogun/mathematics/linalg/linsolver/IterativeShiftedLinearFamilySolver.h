@@ -3,7 +3,7 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Written (W) 2013 Soumyajit De
  */
 
@@ -18,8 +18,8 @@ namespace shogun
 template <class T> class SGVector;
 template <class T> class CLinearOperator;
 
-/** 
- * @brief abstract template base for CG based solvers to the solution of 
+/**
+ * @brief abstract template base for CG based solvers to the solution of
  * shifted linear systems of the form \f$(A+\sigma)x=b\f$ for several values
  * of \f$\sigma\f$ simultaneously, using only as many matrix-vector operations
  * as the solution of a single system requires. This class adds another
@@ -44,7 +44,7 @@ public:
 	/** destructor */
 	virtual ~CIterativeShiftedLinearFamilySolver();
 
-	/** 
+	/**
 	 * abstract solve method for solving real linear systems which computes
 	 * the solution for non-shifted linear system in CG iteration
 	 *

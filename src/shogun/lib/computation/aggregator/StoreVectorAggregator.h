@@ -3,7 +3,7 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Written (W) 2013 Soumyajit De
  */
 
@@ -27,7 +27,7 @@ public:
 	/** default constructor */
 	CStoreVectorAggregator();
 
-	/** 
+	/**
 	 * constructor
 	 *
 	 * @param dimension the dimension of vectors in vector result
@@ -37,7 +37,7 @@ public:
 	/** destructor */
 	virtual ~CStoreVectorAggregator();
 
-	/** 
+	/**
 	 * method that submits the result (vector) of an independent job, and
 	 * computes the aggregation with the previously submitted result
 	 *
@@ -45,7 +45,7 @@ public:
 	 */
 	virtual void submit_result(CJobResult* result);
 
-	/** 
+	/**
 	 * abstract method that finalizes the aggregation and computes the result
 	 * (scalar), its necessary to call finalize before getting the final result
 	 */

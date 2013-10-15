@@ -27,9 +27,9 @@ histo.get_histogram();
 num_examples=feats.get_num_vectors();
 num_param=histo.get_num_model_parameters();
 % for i=0:(num_examples-1),
-% 	for j=0:(num_param-1),
-% 		histo.get_log_derivative(j, i);
-% 	end
+%	for j=0:(num_param-1),
+%		histo.get_log_derivative(j, i);
+%	end
 % end
 
 histo.get_log_likelihood();

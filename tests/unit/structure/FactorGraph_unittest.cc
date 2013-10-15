@@ -16,7 +16,7 @@ using namespace shogun;
 
 inline int grid_to_index(int32_t x, int32_t y, int32_t w = 10)
 {
-	return x + w*y; 
+	return x + w*y;
 }
 
 inline void index_to_grid(int32_t index, int32_t& x, int32_t& y, int32_t w = 10)
@@ -147,7 +147,7 @@ TEST(FactorGraph, evaluate_energy_data_indep)
 	fg.add_factor(fac1b);
 
 	fg.compute_energies();
-	
+
 	SGVector<int32_t> state(2);
 	state[0] = 0;
 	state[1] = 0;

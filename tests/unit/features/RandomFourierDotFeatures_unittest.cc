@@ -11,14 +11,14 @@ TEST(RandomFourierDotFeatures, dot_test)
 	int32_t D = 100;
 
 	SGMatrix<float64_t> w(num_dims+1,D);
-	
+
 	for (index_t i=0; i<D; i++)
 	{
 		for (index_t j=0; j<num_dims; j++)
 			w(j,i) = i+j;
 		w(num_dims,i) = 1;
 	}
-	
+
 	SGMatrix<int32_t> data(num_dims, vecs);
 	for (index_t i=0; i<vecs; i++)
 	{
@@ -40,7 +40,7 @@ TEST(RandomFourierDotFeatures, dot_test)
 			cross_dot_matrix(i,j) = r_feats->dot(i,r_feats,j);
 		}
 	}
-	
+
 	float64_t e = 1e-13;
 	float64_t mat []= {
 		1.00555015129804581, 0.0502863828725347,
@@ -56,7 +56,7 @@ TEST(RandomFourierDotFeatures, dot_test)
 		-0.00876801723029571, -0.01140342190110809,
 		-0.00074544906564934, 0.02708505456315890,
 		0.99501156944854796};
-	
+
 	SGMatrix<float64_t> precomputed_mat(mat, 5, 5, false);
 	for (index_t i=0; i<5; i++)
 	{
@@ -73,14 +73,14 @@ TEST(RandomFourierDotFeatures, dense_dot_test)
 	int32_t D = 100;
 
 	SGMatrix<float64_t> w(num_dims+1,D);
-	
+
 	for (index_t i=0; i<D; i++)
 	{
 		for (index_t j=0; j<num_dims; j++)
 			w(j,i) = i+j;
 		w(num_dims,i) = 1;
 	}
-	
+
 	SGMatrix<int32_t> data(num_dims, vecs);
 	for (index_t i=0; i<vecs; i++)
 	{
@@ -102,7 +102,7 @@ TEST(RandomFourierDotFeatures, dense_dot_test)
 			cross_dot_matrix(i,j) = r_feats->dot(i,r_feats,j);
 		}
 	}
-	
+
 	float64_t e = 1e-13;
 	float64_t vec[] = {0.0449317122413237, -0.2909428095069972, -0.0361875564777414, 0.1185535017124422,
 					-0.0018001695930624};
@@ -110,7 +110,7 @@ TEST(RandomFourierDotFeatures, dense_dot_test)
 	for (index_t i=0; i<5; i++)
 	{
 		SGVector<float64_t> ones(D);
-		SGVector<float64_t>::fill_vector(ones.vector, ones.vlen, 1);	
+		SGVector<float64_t>::fill_vector(ones.vector, ones.vlen, 1);
 		float64_t dot = r_feats->dense_dot(i, ones.vector, ones.vlen);
 		EXPECT_NEAR(dot, vec[i], e);
 	}
@@ -124,14 +124,14 @@ TEST(RandomFourierDotFeatures, add_to_dense_test)
 	int32_t D = 100;
 
 	SGMatrix<float64_t> w(num_dims+1,D);
-	
+
 	for (index_t i=0; i<D; i++)
 	{
 		for (index_t j=0; j<num_dims; j++)
 			w(j,i) = i+j;
 		w(num_dims,i) = 1;
 	}
-	
+
 	SGMatrix<int32_t> data(num_dims, vecs);
 	for (index_t i=0; i<vecs; i++)
 	{
@@ -153,7 +153,7 @@ TEST(RandomFourierDotFeatures, add_to_dense_test)
 			cross_dot_matrix(i,j) = r_feats->dot(i,r_feats,j);
 		}
 	}
-	
+
 	float64_t e = 1e-13;
 	float64_t vec[] = {0.0449317122413237, -0.2909428095069972, -0.0361875564777414, 0.1185535017124422,
 					-0.0018001695930624};
@@ -161,7 +161,7 @@ TEST(RandomFourierDotFeatures, add_to_dense_test)
 	for (index_t i=0; i<5; i++)
 	{
 		SGVector<float64_t> zeros(D);
-		SGVector<float64_t>::fill_vector(zeros.vector, zeros.vlen, 0);	
+		SGVector<float64_t>::fill_vector(zeros.vector, zeros.vlen, 0);
 		r_feats->add_to_dense_vec(1, i, zeros.vector, zeros.vlen, false);
 		float64_t sum = 0;
 		for (index_t j=0; j<D; j++)

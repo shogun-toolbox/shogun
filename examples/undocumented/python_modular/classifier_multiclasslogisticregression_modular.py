@@ -33,7 +33,7 @@ def classifier_multiclasslogisticregression_modular (fm_train_real=traindat,fm_t
 		evaluator = MulticlassAccuracy()
 		acc = evaluator.evaluate(label_pred, labels_test)
 		print('Accuracy = %.4f' % acc)
-	
+
 	return out
 
 if __name__=='__main__':

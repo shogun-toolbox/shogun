@@ -15,7 +15,7 @@
 
 namespace shogun
 {
-CHashedDocDotFeatures::CHashedDocDotFeatures(int32_t hash_bits, CStringFeatures<char>* docs, 
+CHashedDocDotFeatures::CHashedDocDotFeatures(int32_t hash_bits, CStringFeatures<char>* docs,
 	CTokenizer* tzer, bool normalize, int32_t n_grams, int32_t skips, int32_t size) : CDotFeatures(size)
 {
 	if (n_grams < 1)
@@ -39,7 +39,7 @@ CHashedDocDotFeatures::CHashedDocDotFeatures(CFile* loader)
 	SG_NOTIMPLEMENTED;
 }
 
-void CHashedDocDotFeatures::init(int32_t hash_bits, CStringFeatures<char>* docs, 
+void CHashedDocDotFeatures::init(int32_t hash_bits, CStringFeatures<char>* docs,
 	CTokenizer* tzer, bool normalize, int32_t n_grams, int32_t skips)
 {
 	num_bits = hash_bits;
@@ -117,7 +117,7 @@ float64_t CHashedDocDotFeatures::dense_dot(int32_t vec_idx1, const float64_t* ve
 	SGVector<char> sv = doc_collection->get_feature_vector(vec_idx1);
 
 	/** this vector will maintain the current n+k active tokens
-	 * in a circular manner */ 
+	 * in a circular manner */
 	SGVector<uint32_t> hashes(ngrams+tokens_to_skip);
 	index_t hashes_start = 0;
 	index_t hashes_end = 0;
@@ -187,7 +187,7 @@ void CHashedDocDotFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1,
 	float64_t* vec2, int32_t vec2_len, bool abs_val)
 {
 	ASSERT(vec2_len == CMath::pow(2,num_bits))
-	
+
 	if (abs_val)
 		alpha = CMath::abs(alpha);
 
@@ -195,7 +195,7 @@ void CHashedDocDotFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1,
 	const float64_t value = should_normalize ? alpha / CMath::sqrt((float64_t) sv.size()) : alpha;
 
 	/** this vector will maintain the current n+k active tokens
-	 * in a circular manner */ 
+	 * in a circular manner */
 	SGVector<uint32_t> hashes(ngrams+tokens_to_skip);
 	index_t hashes_start = 0;
 	index_t hashes_end = 0;
@@ -228,7 +228,7 @@ void CHashedDocDotFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1,
 				num_bits, ngrams, tokens_to_skip);
 
 		for (index_t i=0; i<hashed_indices.vlen; i++)
-			vec2[hashed_indices[i]] += value;	
+			vec2[hashed_indices[i]] += value;
 
 		hashes_start++;
 		hashes_end++;
@@ -245,7 +245,7 @@ void CHashedDocDotFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1,
 			len--;
 			index_t max_idx = CHashedDocConverter::generate_ngram_hashes(hashes,
 					hashes_start, len, hashed_indices, num_bits, ngrams, tokens_to_skip);
-		
+
 			for (index_t i=0; i<max_idx; i++)
 				vec2[hashed_indices[i]] += value;
 
@@ -254,12 +254,12 @@ void CHashedDocDotFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1,
 				hashes_start = 0;
 		}
 	}
-	
+
 	doc_collection->free_feature_vector(sv, vec_idx1);
 	SG_UNREF(local_tzer);
 }
 
-uint32_t CHashedDocDotFeatures::calculate_token_hash(char* token, 
+uint32_t CHashedDocDotFeatures::calculate_token_hash(char* token,
 		int32_t length, int32_t num_bits, uint32_t seed)
 {
 	int32_t hash = CHash::MurmurHash3((uint8_t* ) token, length, seed);

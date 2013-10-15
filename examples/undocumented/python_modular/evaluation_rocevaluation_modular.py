@@ -15,7 +15,7 @@ def evaluation_rocevaluation_modular (ground_truth, predicted):
 
 	ground_truth_labels = BinaryLabels(ground_truth)
 	predicted_labels = BinaryLabels(predicted)
-	
+
 	evaluator = ROCEvaluation()
 	evaluator.evaluate(predicted_labels,ground_truth_labels)
 

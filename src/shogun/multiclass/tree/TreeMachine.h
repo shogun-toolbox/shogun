@@ -28,7 +28,7 @@ public:
 
     /** constructor */
 	CTreeMachine()
-		:m_root(NULL) 
+		:m_root(NULL)
 	{
 		SG_ADD((CSGObject**)&m_root,"m_root", "tree structure", MS_NOT_AVAILABLE);
 	}
@@ -47,7 +47,7 @@ protected:
 	CTreeMachineNode<T> *m_root;
 };
 
-} /* shogun */ 
+} /* shogun */
 
 #endif /* end of include guard: TREEMACHINE_H__ */
 

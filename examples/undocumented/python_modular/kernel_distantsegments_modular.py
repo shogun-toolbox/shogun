@@ -12,7 +12,7 @@ def kernel_distantsegments_modular (fm_train_dna=traindat,fm_test_dna=testdat,de
 
 	feats_train=StringCharFeatures(fm_train_dna, DNA)
 	feats_test=StringCharFeatures(fm_test_dna, DNA)
-	
+
 	kernel=DistantSegmentsKernel(feats_train, feats_train, 10, delta, theta)
 
 	km_train=kernel.get_kernel_matrix()

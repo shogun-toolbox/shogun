@@ -15,8 +15,8 @@ LINK_DIRECTORIES(${THIRD_PARTY_DIR}/libs/gmock)
 # Generate automatic unittest from jinja2 templates
 ADD_CUSTOM_COMMAND(OUTPUT clone_unittest.cc
 	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.py
-	${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.jinja2 
-	clone_unittest.cc 
+	${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.jinja2
+	clone_unittest.cc
 	${LIBSHOGUN_SRC_DIR}/base/class_list.cpp
 	DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.py
 	${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.jinja2
@@ -40,7 +40,7 @@ ADD_CUSTOM_COMMAND(OUTPUT SerializationHDF5_unittest.cc
 	${CMAKE_CURRENT_SOURCE_DIR}/io/SerializationHDF5_unittest.cc.jinja2
 	SerializationHDF5_unittest.cc
 	${LIBSHOGUN_SRC_DIR}/base/class_list.cpp
-	DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.py 
+	DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.py
 	${CMAKE_CURRENT_SOURCE_DIR}/io/SerializationHDF5_unittest.cc.jinja2
 	WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 	COMMENT "Generating SerializationHDF5_unittest.cc")
@@ -51,7 +51,7 @@ ADD_CUSTOM_COMMAND(OUTPUT SerializationJSON_unittest.cc
 	${CMAKE_CURRENT_SOURCE_DIR}/io/SerializationJSON_unittest.cc.jinja2
 	SerializationJSON_unittest.cc
 	${LIBSHOGUN_SRC_DIR}/base/class_list.cpp
-	DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.py 
+	DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.py
 	${CMAKE_CURRENT_SOURCE_DIR}/io/SerializationJSON_unittest.cc.jinja2
 	WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 	COMMENT "Generating SerializationJSON_unittest.cc")
@@ -62,7 +62,7 @@ ADD_CUSTOM_COMMAND(OUTPUT SerializationXML_unittest.cc
 	${CMAKE_CURRENT_SOURCE_DIR}/io/SerializationXML_unittest.cc.jinja2
 	SerializationXML_unittest.cc
 	${LIBSHOGUN_SRC_DIR}/base/class_list.cpp
-	DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.py 
+	DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.py
 	${CMAKE_CURRENT_SOURCE_DIR}/io/SerializationXML_unittest.cc.jinja2
 	WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 	COMMENT "Generating SerializationXML_unittest.cc")
@@ -81,7 +81,7 @@ IF (SANITIZER_FLAGS)
 	set_target_properties(shogun-unit-test PROPERTIES COMPILE_FLAGS ${SANITIZER_FLAGS})
 ENDIF()
 
-ADD_CUSTOM_TARGET(unit-tests 
+ADD_CUSTOM_TARGET(unit-tests
 	COMMAND ${CMAKE_CURRENT_BINARY_DIR}/shogun-unit-test
 	DEPENDS shogun-unit-test)
 

@@ -10,11 +10,11 @@ def preprocessor_kernelpca_modular (data, threshold, width):
 	from modshogun import RealFeatures
 	from modshogun import KernelPCA
 	from modshogun import GaussianKernel
-	
+
 	features = RealFeatures(data)
-	
+
 	kernel = GaussianKernel(features,features,width)
-		
+
 	preprocessor = KernelPCA(kernel)
 	preprocessor.init(features)
 	preprocessor.set_target_dim(2)

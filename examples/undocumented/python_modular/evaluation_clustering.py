@@ -57,10 +57,10 @@ def evaluation_clustering (features=fea, ground_truth=gnd_raw, ncenters=10):
 	from modshogun import ClusteringAccuracy, ClusteringMutualInformation
 	from modshogun import MulticlassLabels
 	from modshogun import Math
-	
+
 	# reproducable results
 	Math.init_random(1)
-	
+
 	centroids = run_clustering(features, ncenters)
 	gnd_hat = assign_labels(features, centroids, ncenters)
 	gnd = MulticlassLabels(ground_truth)

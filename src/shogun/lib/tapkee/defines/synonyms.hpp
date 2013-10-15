@@ -19,7 +19,7 @@ namespace tapkee_internal
 #ifdef EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
 	template <typename T> struct Triplet
 	{
-		Triplet(IndexType colIndex, IndexType rowIndex, T valueT) : 
+		Triplet(IndexType colIndex, IndexType rowIndex, T valueT) :
 			col_(colIndex), row_(rowIndex), value_(valueT)
 		{
 		}

@@ -25,7 +25,7 @@ using namespace shogun;
 using namespace Eigen;
 
 CQDA::CQDA(float64_t tolerance, bool store_covs)
-: CNativeMulticlassMachine(), m_tolerance(tolerance), 
+: CNativeMulticlassMachine(), m_tolerance(tolerance),
 	m_store_covs(store_covs), m_num_classes(0), m_dim(0)
 {
 	init();
@@ -150,15 +150,15 @@ bool CQDA::train_machine(CFeatures* data)
 	{
 		if (!data->has_property(FP_DOT))
 			SG_ERROR("Speficied features are not of type CDotFeatures\n")
-			
+
 		set_features((CDotFeatures*) data);
 	}
-	
+
 	if (!m_features)
 		SG_ERROR("No features allocated in QDA training\n")
-	
+
 	SGVector< int32_t > train_labels = ((CMulticlassLabels*) m_labels)->get_int_labels();
-	
+
 	if (!train_labels.vector)
 		SG_ERROR("No train_labels allocated in QDA training\n")
 

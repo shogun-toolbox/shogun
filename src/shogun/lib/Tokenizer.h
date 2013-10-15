@@ -42,7 +42,7 @@ public:
 	 */
 	virtual void set_text(SGVector<char> txt);
 
-	/** Returns true or false based on whether 
+	/** Returns true or false based on whether
 	 * there exists another token in the text
 	 *
 	 * @return if another token exists
@@ -57,8 +57,8 @@ public:
 	 */
 	virtual index_t next_token_idx(index_t& start)=0;
 
-	/** Creates a copy of the appropriate runtime 
-	 * instance of a CTokenizer subclass 
+	/** Creates a copy of the appropriate runtime
+	 * instance of a CTokenizer subclass
 	 * Needs to be overriden
 	 */
 	virtual CTokenizer* get_copy()=0;

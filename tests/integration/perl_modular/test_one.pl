@@ -44,8 +44,8 @@ sub _get_name_fun($)
 =cut
 
 sub _test_mfile {
-    my $fnam = shift;    
-    my $mfile = IO::File->new($fnam, 'r') or return false;	
+    my $fnam = shift;
+    my $mfile = IO::File->new($fnam, 'r') or return false;
     my %indata = ();
 
     my $name_fun = &_get_name_fun($fnam);
@@ -61,7 +61,7 @@ sub _test_mfile {
 	    $indata{$param} = $line =~ m/.*='(.*)'/;
 	} elsif ($param eq 'kernel_symdata' or $param eq 'kernel_data') {
 	    $indata{$param} = &_read_matrix($line);
-	} elsif ($param =~ /^kernel_matrix/ or 
+	} elsif ($param =~ /^kernel_matrix/ or
 		 $param =~ /^distance_matrix/) {
 	    $indata{$param} = &_read_matrix($line);
 	} elsif ($param =~ /data_train/ or $param =~ /data_test/) {
@@ -74,7 +74,7 @@ sub _test_mfile {
 		$indata{$param} = &_read_matrix($line);
 	    }
 	} elsif($param eq 'clustering_centers' or $param eq 'clustering_pairs') {
-	    $indata{$param} = &_read_matrix($line); 
+	    $indata{$param} = &_read_matrix($line);
 	} else {
 	    unless($line =~ /'/) {
 		my $str_line;
@@ -138,7 +138,7 @@ sub _read_matrix {
 	my @lis;
 	foreach my $y (split(/,/, $x)) {
 	    if($y =~ /'/) {
-		$is_char = 1;	
+		$is_char = 1;
 	    }
 	    $y =~ s/'//g;
 	    push(@lis, $y);
@@ -164,7 +164,7 @@ exit($res);
 
 __END__
 
-=head1 
+=head1
 
 Test one data file
 

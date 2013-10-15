@@ -102,7 +102,7 @@ CSVMOcas及CLibLinear，它们能处理上百万的样本及feature。
   \subsection other_regress 其它
   \li CKRR - Kernel Ridge Regression
 
-  
+
 
   \section distrib_sec 分布
   \li CHMM - Hidden Markov Models
@@ -132,7 +132,7 @@ CSVMOcas及CLibLinear，它们能处理上百万的样本及feature。
   \li CAUCKernel - To maximize AUC in SVM training (takes a kernel as input)
   \li CChi2Kernel - Chi^2 Kernel
   \li CCombinedKernel - Combined kernel to work with multiple kernels
-  \li CCommUlongStringKernel - Spectrum Kernel with spectrums of up to 64bit 
+  \li CCommUlongStringKernel - Spectrum Kernel with spectrums of up to 64bit
   \li CCommWordStringKernel - Spectrum kernel with spectrum of up to 16 bit
   \li CConstKernel - A ``kernel'' returning a constant
   \li CCustomKernel - A user supplied custom kernel

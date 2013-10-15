@@ -5,7 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 2013 Kevin Hughes
- * ported from scikit-learn 
+ * ported from scikit-learn
  */
 
 #include <shogun/converter/ica/FastICA.h>
@@ -25,10 +25,10 @@ namespace {
 	MatrixXd sym_decorrelation(MatrixXd W)
 	{
 		MatrixXd K = W * W.transpose();
-		
+
 		SelfAdjointEigenSolver<MatrixXd> eig;
 		eig.compute(K);
-		
+
 		return ((eig.eigenvectors() * eig.eigenvalues().cwiseSqrt().asDiagonal().inverse()) * eig.eigenvectors().transpose()) * W;
 	}
 
@@ -41,13 +41,13 @@ namespace {
 
 	float64_t g_x(float64_t x)
 	{
-		return alpha * (1.0 - pow(gx(x),2)); 
+		return alpha * (1.0 - pow(gx(x),2));
 	}
 
 };
 
 CFastICA::CFastICA() : CICAConverter()
-{		
+{
 	init();
 }
 
@@ -73,11 +73,11 @@ bool CFastICA::get_whiten() const
 
 CFeatures* CFastICA::apply(CFeatures* features)
 {
-	ASSERT(features);	
+	ASSERT(features);
 	SG_REF(features);
-	
+
 	SGMatrix<float64_t> X = ((CDenseFeatures<float64_t>*)features)->get_feature_matrix();
-	
+
 	int n = X.num_rows;
 	int p = X.num_cols;
 	int m = n;
@@ -89,23 +89,23 @@ CFeatures* CFastICA::apply(CFeatures* features)
 	MatrixXd WX;
 	if (whiten)
 	{
-		VectorXd mean = (EX.rowwise().sum() / (float64_t)p);	
+		VectorXd mean = (EX.rowwise().sum() / (float64_t)p);
 		MatrixXd SPX = EX.colwise() - mean;
-		
+
 		Eigen::JacobiSVD<MatrixXd> svd;
 		svd.compute(SPX, Eigen::ComputeThinU);
-		
+
 		MatrixXd u = svd.matrixU();
 		MatrixXd d = svd.singularValues();
-		
+
 		// for matching numpy/scikit-learn
 		//u.rightCols(u.cols() - 1) *= -1;
-		
+
 		// see Hyvarinen (6.33) p.140
 		K = u.transpose();
 		for (int r = 0; r < K.rows(); r++)
 			K.row(r) /= d(r);
-		
+
 		// see Hyvarinen (13.6) p.267 Here WX is white and data
 		// in X has been projected onto a subspace by PCA
 		WX = K * SPX;
@@ -120,14 +120,14 @@ CFeatures* CFastICA::apply(CFeatures* features)
 	if (m_mixing_matrix.num_rows != m || m_mixing_matrix.num_cols != m)
 	{
 		m_mixing_matrix = SGMatrix<float64_t>(m,m);
-		
+
 		for (int i = 0; i < m; i++)
 		{
 			for (int j = 0; j < m; j++)
-				m_mixing_matrix(i,j) = CMath::randn_double();	
+				m_mixing_matrix(i,j) = CMath::randn_double();
 		}
 	}
-	
+
 	Map<MatrixXd> W(m_mixing_matrix.matrix, m, m);
 
 	W = sym_decorrelation(W);
@@ -137,25 +137,25 @@ CFeatures* CFastICA::apply(CFeatures* features)
 	while (lim > tol && iter < max_iter)
 	{
 		MatrixXd wtx = W * WX;
-		
+
 		MatrixXd gwtx = wtx.unaryExpr(std::ptr_fun(&gx));
 		MatrixXd g_wtx = wtx.unaryExpr(std::ptr_fun(&g_x));
-		
+
 		MatrixXd W1 = (gwtx * WX.transpose()) / (float64_t)p - (g_wtx.rowwise().sum()/(float64_t)p).asDiagonal() * W;
-		
+
 		W1 = sym_decorrelation(W1);
-		
+
 		lim = ((W1 * W.transpose()).diagonal().cwiseAbs().array() - 1).abs().maxCoeff();
-		
+
 		W = W1;
-		
+
 		iter++;
 	}
 
 	// Unmix
 	if (whiten)
 		W = (W*K);
-		
+
 	EX = W * EX;
 
 	// set m_mixing_matrix

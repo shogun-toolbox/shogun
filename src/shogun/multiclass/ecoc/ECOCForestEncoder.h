@@ -18,7 +18,7 @@ namespace shogun
 
 /** Forest ECOC Encoder.
  *
- * A data-dependent ECOC coding scheme that learns a tree-style codebook. See the 
+ * A data-dependent ECOC coding scheme that learns a tree-style codebook. See the
  * following paper for details
  *
  *   Sergio Escalera, Oriol Pujol, Petia Radeva. Boosted Landmarks of
@@ -45,7 +45,7 @@ public:
     void set_num_trees(int32_t num_trees);
 };
 
-} /*  shogun */ 
+} /*  shogun */
 
 #endif /* end of include guard: ECOCFORESTENCODER_H__ */
 

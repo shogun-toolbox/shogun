@@ -18,7 +18,7 @@ namespace shogun
 {
 /** @brief class Multitask Least Squares Regression, a
  * machine to solve regression problems with a few tasks
- * related via group or tree. Based on L1/Lq regression 
+ * related via group or tree. Based on L1/Lq regression
  * for groups and L1/L2 for trees.
  *
  * The underlying solver is based on the SLEP library.
@@ -42,18 +42,18 @@ class CMultitaskLeastSquaresRegression : public CMultitaskLinearMachine
 		 * @param task_relation task relation
 		 */
 		CMultitaskLeastSquaresRegression(
-		     float64_t z, CDotFeatures* training_data, 
+		     float64_t z, CDotFeatures* training_data,
 		     CRegressionLabels* training_labels, CTaskRelation* task_relation);
 
 		/** destructor */
 		virtual ~CMultitaskLeastSquaresRegression();
 
 		/** get name */
-		virtual const char* get_name() const 
+		virtual const char* get_name() const
 		{
 			return "MultitaskLeastSquaresRegression";
 		}
-		
+
 		/** get max iter */
 		int32_t get_max_iter() const;
 		/** get q */

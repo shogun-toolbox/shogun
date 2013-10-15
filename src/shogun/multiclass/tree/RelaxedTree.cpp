@@ -22,7 +22,7 @@
 using namespace shogun;
 
 CRelaxedTree::CRelaxedTree()
-	:m_max_num_iter(3), m_A(0.5), m_B(5), m_svm_C(1), m_svm_epsilon(0.001), 
+	:m_max_num_iter(3), m_A(0.5), m_B(5), m_svm_C(1), m_svm_epsilon(0.001),
 	m_kernel(NULL), m_feats(NULL), m_machine_for_confusion_matrix(NULL), m_num_classes(0)
 {
 	SG_ADD(&m_max_num_iter, "m_max_num_iter", "max number of iterations in alternating optimization", MS_NOT_AVAILABLE);
@@ -222,7 +222,7 @@ CRelaxedTree::node_t *CRelaxedTree::train_node(const SGMatrix<float64_t> &conf_m
 		CSVM *svm = new CLibSVM();
 		SG_REF(svm);
 		svm->set_store_model_features(true);
-		
+
 		SGVector<int32_t> mu = train_node_with_initialization(*it, classes, svm);
 		float64_t score = compute_score(mu, svm);
 
@@ -273,7 +273,7 @@ float64_t CRelaxedTree::compute_score(SGVector<int32_t> mu, CSVM *svm)
 	}
 
 	int32_t totalSV = svm->get_support_vectors().vlen;
-	float64_t score = num_neg/(num_neg+num_pos) * totalSV/num_pos + 
+	float64_t score = num_neg/(num_neg+num_pos) * totalSV/num_pos +
 		num_pos/(num_neg+num_pos)*totalSV/num_neg;
 	return score;
 }
@@ -519,11 +519,11 @@ SGVector<int32_t> CRelaxedTree::color_label_space(CSVM *svm, SGVector<int32_t> c
 	return mu;
 }
 
-void CRelaxedTree::enforce_balance_constraints_upper(SGVector<int32_t> &mu, SGVector<float64_t> &delta_neg, 
+void CRelaxedTree::enforce_balance_constraints_upper(SGVector<int32_t> &mu, SGVector<float64_t> &delta_neg,
 		SGVector<float64_t> &delta_pos, int32_t B_prime, SGVector<float64_t>& xi_neg_class)
 {
 	SGVector<index_t> index_zero = mu.find(0);
-	SGVector<index_t> index_pos = mu.find_if(std::bind1st(std::less<int32_t>(), 0)); 
+	SGVector<index_t> index_pos = mu.find_if(std::bind1st(std::less<int32_t>(), 0));
 
 	int32_t num_zero = index_zero.vlen;
 	int32_t num_pos  = index_pos.vlen;
@@ -708,11 +708,11 @@ void CRelaxedTree::enforce_balance_constraints_upper(SGVector<int32_t> &mu, SGVe
 	}
 }
 
-void CRelaxedTree::enforce_balance_constraints_lower(SGVector<int32_t> &mu, SGVector<float64_t> &delta_neg, 
+void CRelaxedTree::enforce_balance_constraints_lower(SGVector<int32_t> &mu, SGVector<float64_t> &delta_neg,
 		SGVector<float64_t> &delta_pos, int32_t B_prime, SGVector<float64_t>& xi_neg_class)
 {
 	SGVector<index_t> index_zero = mu.find(0);
-	SGVector<index_t> index_neg = mu.find_if(std::bind1st(std::greater<int32_t>(), 0)); 
+	SGVector<index_t> index_neg = mu.find_if(std::bind1st(std::greater<int32_t>(), 0));
 
 	int32_t num_zero = index_zero.vlen;
 	int32_t num_neg  = index_neg.vlen;

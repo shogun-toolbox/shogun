@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-#!/usr/bin/env python 
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 parameter_list=[['../data/DynProg_example_py.pickle.gz']]

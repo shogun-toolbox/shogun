@@ -12,7 +12,7 @@ converter = sg.KernelLocallyLinearEmbedding()
 
 # set target dimensionality
 converter.set_target_dim(2)
-# set number of neighbors 
+# set number of neighbors
 converter.set_k(10)
 # set number of threads
 converter.parallel.set_num_threads(2)

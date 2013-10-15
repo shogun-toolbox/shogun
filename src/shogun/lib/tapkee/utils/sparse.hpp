@@ -10,7 +10,7 @@
 #include <shogun/lib/tapkee/defines.hpp>
  /* End of Tapkee includes */
 
-namespace tapkee 
+namespace tapkee
 {
 namespace tapkee_internal
 {

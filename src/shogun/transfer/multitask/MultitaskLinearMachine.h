@@ -25,7 +25,7 @@ using namespace std;
 namespace shogun
 {
 /** @brief class MultitaskLinearMachine, a base class
- * for linear multitask classifiers 
+ * for linear multitask classifiers
  */
 class CMultitaskLinearMachine : public CLinearMachine
 {
@@ -41,14 +41,14 @@ class CMultitaskLinearMachine : public CLinearMachine
 		 * @param task_relation task relation
 		 */
 		CMultitaskLinearMachine(
-		     CDotFeatures* training_data, 
+		     CDotFeatures* training_data,
 		     CLabels* training_labels, CTaskRelation* task_relation);
 
 		/** destructor */
 		virtual ~CMultitaskLinearMachine();
 
 		/** get name */
-		virtual const char* get_name() const 
+		virtual const char* get_name() const
 		{
 			return "MultitaskLinearMachine";
 		}
@@ -62,7 +62,7 @@ class CMultitaskLinearMachine : public CLinearMachine
 		 * @param task task index
 		 */
 		void set_current_task(int32_t task);
-		
+
 		/** get w
 		 *
 		 * @return weight vector
@@ -141,7 +141,7 @@ class CMultitaskLinearMachine : public CLinearMachine
 
 		/** tasks w's */
 		SGMatrix<float64_t> m_tasks_w;
-		
+
 		/** tasks interceptss */
 		SGVector<float64_t> m_tasks_c;
 

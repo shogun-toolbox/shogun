@@ -112,7 +112,7 @@ max(abs(out_ref-out))
 %			 dat(offset+val+1,j) = weights(d);
 %			 offset = offset + 4^d;
 %		   end
-%	   end    
+%	   end
 %	end
 %end
 %

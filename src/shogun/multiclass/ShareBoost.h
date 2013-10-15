@@ -78,7 +78,7 @@ private:
 	SGMatrix<float64_t> m_pred; ///< predictions, used in training
 };
 
-} /* shogun */ 
+} /* shogun */
 
 #endif /* end of include guard: SHAREBOOST_H__ */
 

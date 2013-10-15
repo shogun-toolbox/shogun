@@ -27,10 +27,10 @@ CStochasticSOSVM::CStochasticSOSVM(
 		bool verbose)
 : CLinearStructuredOutputMachine(model, labs)
 {
-	REQUIRE(model != NULL && labs != NULL, 
+	REQUIRE(model != NULL && labs != NULL,
 		"%s::CStochasticSOSVM(): model and labels cannot be NULL!\n", get_name());
 
-	REQUIRE(labs->get_num_labels() > 0, 
+	REQUIRE(labs->get_num_labels() > 0,
 		"%s::CStochasticSOSVM(): number of labels should be greater than 0!\n", get_name());
 
 	init();
@@ -90,7 +90,7 @@ bool CStochasticSOSVM::train_machine(CFeatures* data)
 	if (m_do_weighted_averaging)
 		w_avg = m_w.clone();
 
-	// logging 
+	// logging
 	if (m_verbose)
 	{
 		if (m_helper != NULL)
@@ -121,12 +121,12 @@ bool CStochasticSOSVM::train_machine(CFeatures* data)
 			// 2) solve the loss-augmented inference for point i
 			CResultSet* result = m_model->argmax(m_w, i);
 
-			// 3) get the subgradient 
+			// 3) get the subgradient
 			// psi_i(y) := phi(x_i,y_i) - phi(x_i, y)
 			SGVector<float64_t> psi_i(M);
 			SGVector<float64_t> w_s(M);
 
-			SGVector<float64_t>::add(psi_i.vector, 
+			SGVector<float64_t>::add(psi_i.vector,
 				1.0, result->psi_truth.vector, -1.0, result->psi_pred.vector, psi_i.vlen);
 
 			w_s = psi_i.clone();
@@ -136,17 +136,17 @@ bool CStochasticSOSVM::train_machine(CFeatures* data)
 			float64_t gamma = 1.0 / (k+1.0);
 
 			// 5) finally update the weights
-			SGVector<float64_t>::add(m_w.vector, 
+			SGVector<float64_t>::add(m_w.vector,
 				1.0-gamma, m_w.vector, gamma*N, w_s.vector, m_w.vlen);
 
 			// 6) Optionally, update the weighted average
 			if (m_do_weighted_averaging)
 			{
 				float64_t rho = 2.0 / (k+2.0);
-				SGVector<float64_t>::add(w_avg.vector, 
+				SGVector<float64_t>::add(w_avg.vector,
 					1.0-rho, w_avg.vector, rho, m_w.vector, w_avg.vlen);
 			}
-			
+
 			k += 1;
 			SG_UNREF(result);
 
@@ -162,7 +162,7 @@ bool CStochasticSOSVM::train_machine(CFeatures* data)
 				float64_t primal = CSOSVMHelper::primal_objective(w_debug, m_model, m_lambda);
 				float64_t train_error = CSOSVMHelper::average_loss(w_debug, m_model);
 
-				SG_DEBUG("pass %d (iteration %d), SVM primal = %f, train_error = %f \n", 
+				SG_DEBUG("pass %d (iteration %d), SVM primal = %f, train_error = %f \n",
 					pi, k, primal, train_error);
 
 				m_helper->add_debug_info(primal, (1.0*k) / N, train_error);
@@ -171,7 +171,7 @@ bool CStochasticSOSVM::train_machine(CFeatures* data)
 			}
 		}
 	}
-	
+
 	if (m_do_weighted_averaging)
 		m_w = w_avg.clone();
 

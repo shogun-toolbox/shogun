@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2013 Shell Hu 
- * Copyright (C) 2013 Shell Hu 
+ * Written (W) 2013 Shell Hu
+ * Copyright (C) 2013 Shell Hu
  */
 
 #ifndef __FACTORGRAPH_H__
@@ -17,10 +17,10 @@
 #include <shogun/labels/FactorGraphLabels.h>
 #include <shogun/structure/DisjointSet.h>
 
-namespace shogun 
+namespace shogun
 {
 
-/** @brief Class CFactorGraph a factor graph is a structured input in general 
+/** @brief Class CFactorGraph a factor graph is a structured input in general
  */
 class CFactorGraph : public CSGObject
 {
@@ -28,13 +28,13 @@ class CFactorGraph : public CSGObject
 public:
 	CFactorGraph();
 
-	/** Constructor 
+	/** Constructor
 	 *
-	 * @param card cardinalities of all the variables in the factor graph 
+	 * @param card cardinalities of all the variables in the factor graph
 	 */
 	CFactorGraph(const SGVector<int32_t> card);
 
-	/** Copy constructor 
+	/** Copy constructor
 	 *
 	 * @param fg a factor graph instance
 	 */
@@ -46,15 +46,15 @@ public:
 	/** @return class name */
 	virtual const char* get_name() const { return "FactorGraph"; }
 
-	/** add a factor 
+	/** add a factor
 	 *
 	 * @param factor a factor pointer
 	 */
 	void add_factor(CFactor* factor);
 
-	/** add a data source  
+	/** add a data source
 	 *
-	 * @param datasource a factor data source 
+	 * @param datasource a factor data source
 	 */
 	void add_data_source(CFactorDataSource* datasource);
 
@@ -70,24 +70,24 @@ public:
 	/** @return cardinalities */
 	SGVector<int32_t> get_cardinalities() const;
 
-	/** set cardinalities 
+	/** set cardinalities
 	 *
 	 * @param cards cardinalities of all variables
 	 */
 	void set_cardinalities(SGVector<int32_t> cards);
 
-	/** compute energy tables in the factor graph */ 
+	/** compute energy tables in the factor graph */
 	void compute_energies();
 
-	/** evaluate energy given full assignment 
+	/** evaluate energy given full assignment
 	 *
-	 * @param state an assignment 
+	 * @param state an assignment
 	 */
 	float64_t evaluate_energy(const SGVector<int32_t> state) const;
 
 	/** evaluate energy for a given fully observed assignment
 	 *
-	 * @param obs factor graph observation 
+	 * @param obs factor graph observation
 	 */
 	float64_t evaluate_energy(const CFactorGraphObservation* obs) const;
 
@@ -103,8 +103,8 @@ public:
 	/** @return number of variable nodes */
 	int32_t get_num_vars() const;
 
-	/** connect graph nodes by performing union-find algorithm 
-	 * NOTE: make sure call this func before performing inference 
+	/** connect graph nodes by performing union-find algorithm
+	 * NOTE: make sure call this func before performing inference
 	 * and other functions related to structure analysis
 	 */
 	void connect_components();
@@ -118,13 +118,13 @@ public:
 	/** @return is tree graph or not */
 	bool is_tree_graph() const;
 
-	/** perform loss-augmentation 
+	/** perform loss-augmentation
 	 *
-	 * @param gt an observation (states and loss weights are stored in it) 
+	 * @param gt an observation (states and loss weights are stored in it)
 	 */
 	virtual void loss_augmentation(CFactorGraphObservation* gt);
 
-	/** perform loss-augmentation 
+	/** perform loss-augmentation
 	 *
 	 * @param states_gt ground truth states
 	 * @param loss weighted loss for each variable
@@ -159,7 +159,7 @@ protected:
 
 	/** number of edges */
 	int32_t m_num_edges;
-	
+
 };
 
 }

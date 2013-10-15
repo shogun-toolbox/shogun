@@ -84,7 +84,7 @@ template<class T> class SGMatrixList : public SGReferencedData
 
 		/** free data */
 		virtual void free_data();
-	
+
 	public:
 		/** matrix list */
 		SGMatrix<T>* matrix_list;

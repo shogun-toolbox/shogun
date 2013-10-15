@@ -22,22 +22,22 @@ namespace shogun
 class CFeatures;
 
 /** @brief class SOBI
- * 
- * Implements the Second Order Blind Identification (SOBI) 
- * algorithm for Independent Component Analysis (ICA) and 
- * Blind Source Separation (BSS). This algorithm is also 
+ *
+ * Implements the Second Order Blind Identification (SOBI)
+ * algorithm for Independent Component Analysis (ICA) and
+ * Blind Source Separation (BSS). This algorithm is also
  * sometime refered to as Temporal Decorrelation Separation
  * (TDSep).
- * 
- * Belouchrani, A., Abed-Meraim, K., Cardoso, J. F., & Moulines, E. (1997). 
- * A blind source separation technique using second-order statistics. 
+ *
+ * Belouchrani, A., Abed-Meraim, K., Cardoso, J. F., & Moulines, E. (1997).
+ * A blind source separation technique using second-order statistics.
  * Signal Processing, IEEE Transactions on, 45(2), 434-444.
- * 
+ *
  */
 class CSOBI: public CICAConverter
 {
 	public:
-		
+
 		/** constructor */
 		CSOBI();
 
@@ -73,13 +73,13 @@ class CSOBI: public CICAConverter
 		void init();
 
 	private:
-		
+
 		/** tau vector */
 		SGVector<float64_t> m_tau;
-		
+
 		/** cov matrices */
 		SGNDArray<float64_t> m_covs;
-};	
+};
 }
 #endif // HAVE_EIGEN3
 #endif // SOBI

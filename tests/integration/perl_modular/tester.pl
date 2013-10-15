@@ -212,7 +212,7 @@ __END__
  =head1 SYNOPSIS
 
     tester.pl [options]  [<file1> <file2> ...]
-  
+
     Options:
         --help          brief help message
         --man           full documentation
@@ -255,7 +255,7 @@ __END__
            B<This program> will read the given input file(s) and do something
            useful with the contents thereof.
 
-           
+
 =cut
 
 
@@ -267,6 +267,6 @@ __END__
   check-local: Makefile.perl
 	$(MAKE) -f $< test
 
-    done 
+    done
 
 =cut

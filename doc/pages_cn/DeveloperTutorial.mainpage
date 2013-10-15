@@ -9,7 +9,7 @@ Shogun分成两个部分：libshogun，它包含了已实现的所有机器学�
 如果要想扩展shogun，最好方法就是开始使用它提供的库。通过查看examples/libshogun
 的例子你可以很容易学习使用它。
 
-最简单的基于libshogun的程序如下所示： 
+最简单的基于libshogun的程序如下所示：
 
 \verbinclude minimal.cpp
 
@@ -105,7 +105,7 @@ virtual float64_t compute(int32_t idx_a, int32_t idx_b)
     int32_t alen, blen;
     bool afree, bfree;
 
-    float64_t* avec= 
+    float64_t* avec=
         ((CSimpleFeatures<float64_t>*) lhs)->get_feature_vector(idx_a, alen, afree);
     float64_t* bvec=
         ((CSimpleFeatures<float64_t>*) rhs)->get_feature_vector(idx_b, blen, bfree);

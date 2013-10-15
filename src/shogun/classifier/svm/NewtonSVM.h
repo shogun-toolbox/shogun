@@ -19,7 +19,7 @@
 namespace shogun
 {
 #ifdef HAVE_LAPACK
-/** @brief NewtonSVM, 
+/** @brief NewtonSVM,
  *  In this Implementation linear SVM is trained in its primal form using Newton-like iterations.
  *  This Implementation is ported from the Olivier Chapelles fast newton based SVM solver, Which could be found here :http://mloss.org/software/view/30/
  *  For further information on this implementation of SVM refer to this paper: http://www.kyb.mpg.de/publications/attachments/neco_%5B0%5D.pdf
@@ -39,7 +39,7 @@ class CNewtonSVM : public CLinearMachine
 		 * @param trainlab labels for features
 		 */
 		CNewtonSVM(float64_t C, CDotFeatures* traindat, CLabels* trainlab, int32_t itr=20);
-		
+
 		virtual ~CNewtonSVM();
 
 		/** get classifier type
@@ -70,7 +70,7 @@ class CNewtonSVM : public CLinearMachine
 		 */
 		inline float64_t get_C() { return C; }
 
-		
+
 		/** set if bias shall be enabled
 		 *  @param enable_bias if bias shall be enabled
 		 */
@@ -82,7 +82,7 @@ class CNewtonSVM : public CLinearMachine
 		inline bool get_bias_enabled() { return use_bias; }
 
 		/** set num_iter
-		 *  @return num_iter 
+		 *  @return num_iter
 		 */
 		inline int32_t get_num_iter() {return num_iter;}
 
@@ -90,10 +90,10 @@ class CNewtonSVM : public CLinearMachine
 		 *  @param num_iter number of iterations
 		 */
 		inline void set_num_iter(int32_t iter) { num_iter=iter; }
-		
+
 		/** @return object name */
 		virtual const char* get_name() const { return "NewtonSVM"; }
-	
+
 	protected:
 		/** train SVM classifier
 		 *

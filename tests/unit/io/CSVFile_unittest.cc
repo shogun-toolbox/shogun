@@ -159,14 +159,14 @@ TEST(CSVFileTest, string_list_char)
 
 	int32_t num_str=0;
 	int32_t max_line_len=0;
-	SGString<char>* lines_to_read;	
+	SGString<char>* lines_to_read;
 
 	SGString<char>* lines_to_write=SG_MALLOC(SGString<char>, num_lines);
 	for (int32_t i=0; i<num_lines; i++)
 		lines_to_write[i] = SGString<char>((char*)text[i], strlen(text[i]), false);
 
 	CCSVFile* fin;
-	CCSVFile* fout;	
+	CCSVFile* fout;
 
 	fout=new CCSVFile("CSVFileTest_string_list_char_output.txt",'w', NULL);
 	fout->set_string_list(lines_to_write, num_lines);

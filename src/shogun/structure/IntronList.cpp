@@ -55,7 +55,7 @@ void CIntronList::read_introns(int32_t* start_pos, int32_t* end_pos, int32_t* qu
 	{
 		while (k<len)
 		{
-			//SG_PRINT("i:%i, m_all_pos[i]:%i, k:%i, end_pos[k]: %i\n", i, m_all_pos[i], k, end_pos[k]) 
+			//SG_PRINT("i:%i, m_all_pos[i]:%i, k:%i, end_pos[k]: %i\n", i, m_all_pos[i], k, end_pos[k])
 			if (k>0)
 				if (end_pos[k]<end_pos[k-1])
 					SG_ERROR("end pos array is not sorted: end_pos[k-1]:%i end_pos[k]:%i\n", end_pos[k-1], end_pos[k])
@@ -67,7 +67,7 @@ void CIntronList::read_introns(int32_t* start_pos, int32_t* end_pos, int32_t* qu
 		}
 		while (k<len && end_pos[k]==m_all_pos[i])
 		{
-			//SG_PRINT("\tk:%i, end_pos[k]: %i, start_pos[k]:%i\n", k, end_pos[k], start_pos[k]) 
+			//SG_PRINT("\tk:%i, end_pos[k]: %i, start_pos[k]:%i\n", k, end_pos[k], start_pos[k])
 			ASSERT(start_pos[k]<end_pos[k])
 			ASSERT(end_pos[k]<=m_all_pos[m_length-1])
 			// intron list

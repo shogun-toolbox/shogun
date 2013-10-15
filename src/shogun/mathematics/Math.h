@@ -43,7 +43,7 @@
 #ifdef HAVE_PTHREAD
 #include <pthread.h>
 #endif
- 
+
 #ifdef SUNOS
 #include <ieeefp.h>
 #endif
@@ -122,13 +122,13 @@ static inline complex128_t function(complex128_t a)	\
 	SG_SERROR("CMath::%s():: Not supported for complex128_t\n",\
 		#function);\
 	return complex128_t(0.0, 0.0);	\
-}	
+}
 
 #define COMPLEX128_STDMATH(function)	\
 static inline complex128_t function(complex128_t a)	\
 {	\
 	return std::function(a);	\
-}	
+}
 
 namespace shogun
 {
@@ -767,7 +767,7 @@ class CMath : public CSGObject
 				if (size-left> 1)
 					qsort(&output[left],size-left);
 			}
-		
+
 		/** performs insertion sort of an array output of length size
 		 * it is sorted from in ascending (for type T) */
 		template <class T>
@@ -1215,7 +1215,7 @@ class CMath : public CSGObject
 
 
 		//@}
-		
+
 		/// returns real part of a complex128_t number
 		static float64_t real(complex128_t c)
 		{
@@ -1621,7 +1621,7 @@ inline complex128_t CMath::function<complex128_t>(complex128_t a)	\
 	SG_SERROR("CMath::%s():: Not supported for complex128_t\n",\
 		#function);\
 	return complex128_t(0.0, 0.0);	\
-}	
+}
 
 #define COMPLEX128_ERROR_TWOARGS_T(function) \
 template <> \

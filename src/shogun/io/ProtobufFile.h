@@ -24,7 +24,7 @@ namespace shogun
 
 /** @brief Class for work with binary file
  * in protobuf format.
- * 
+ *
  * Format of serialized data in byte file:
  * <size of ShogunVersion message - big endian uint32>
  * <ShogunVersion message>
@@ -352,7 +352,7 @@ private:
 	/** write unsigned int to array in big endian format */
 	void write_big_endian_uint(uint32_t number, uint8_t* array, uint32_t size);
 
-	/** read unsigned int from array in big endian format */	
+	/** read unsigned int from array in big endian format */
 	uint32_t read_big_endian_uint(uint8_t* array, uint32_t size);
 
 	/** compute number of messages for storing data */
@@ -485,31 +485,31 @@ private:
 	//@}
 
 	//@{
-	void read_sparse_matrix(SGSparseVector<bool>*& matrix, 
+	void read_sparse_matrix(SGSparseVector<bool>*& matrix,
 			const SparseMatrixHeader& data_header);
-	void read_sparse_matrix(SGSparseVector<uint8_t>*& matrix, 
+	void read_sparse_matrix(SGSparseVector<uint8_t>*& matrix,
 			const SparseMatrixHeader& data_header);
-	void read_sparse_matrix(SGSparseVector<int8_t>*& matrix, 
+	void read_sparse_matrix(SGSparseVector<int8_t>*& matrix,
 			const SparseMatrixHeader& data_header);
-	void read_sparse_matrix(SGSparseVector<char>*& matrix, 
+	void read_sparse_matrix(SGSparseVector<char>*& matrix,
 			const SparseMatrixHeader& data_header);
-	void read_sparse_matrix(SGSparseVector<int32_t>*& matrix, 
+	void read_sparse_matrix(SGSparseVector<int32_t>*& matrix,
 			const SparseMatrixHeader& data_header);
-	void read_sparse_matrix(SGSparseVector<uint32_t>*& matrix, 
+	void read_sparse_matrix(SGSparseVector<uint32_t>*& matrix,
 			const SparseMatrixHeader& data_header);
-	void read_sparse_matrix(SGSparseVector<int16_t>*& matrix, 
+	void read_sparse_matrix(SGSparseVector<int16_t>*& matrix,
 			const SparseMatrixHeader& data_header);
-	void read_sparse_matrix(SGSparseVector<uint16_t>*& matrix, 
+	void read_sparse_matrix(SGSparseVector<uint16_t>*& matrix,
 			const SparseMatrixHeader& data_header);
-	void read_sparse_matrix(SGSparseVector<int64_t>*& matrix, 
+	void read_sparse_matrix(SGSparseVector<int64_t>*& matrix,
 			const SparseMatrixHeader& data_header);
-	void read_sparse_matrix(SGSparseVector<uint64_t>*& matrix, 
+	void read_sparse_matrix(SGSparseVector<uint64_t>*& matrix,
 			const SparseMatrixHeader& data_header);
-	void read_sparse_matrix(SGSparseVector<float32_t>*& matrix, 
+	void read_sparse_matrix(SGSparseVector<float32_t>*& matrix,
 			const SparseMatrixHeader& data_header);
-	void read_sparse_matrix(SGSparseVector<float64_t>*& matrix, 
+	void read_sparse_matrix(SGSparseVector<float64_t>*& matrix,
 			const SparseMatrixHeader& data_header);
-	void read_sparse_matrix(SGSparseVector<floatmax_t>*& matrix, 
+	void read_sparse_matrix(SGSparseVector<floatmax_t>*& matrix,
 			const SparseMatrixHeader& data_header);
 	//@}
 
@@ -545,33 +545,33 @@ private:
 	//@}
 
 	//@{
-	void read_string_list(SGString<uint8_t>*& strings, 
+	void read_string_list(SGString<uint8_t>*& strings,
 			const StringListHeader& data_header);
-	void read_string_list(SGString<int8_t>*& strings, 
+	void read_string_list(SGString<int8_t>*& strings,
 			const StringListHeader& data_header);
-	void read_string_list(SGString<char>*& strings, 
+	void read_string_list(SGString<char>*& strings,
 			const StringListHeader& data_header);
-	void read_string_list(SGString<int32_t>*& strings, 
+	void read_string_list(SGString<int32_t>*& strings,
 			const StringListHeader& data_header);
-	void read_string_list(SGString<uint32_t>*& strings, 
+	void read_string_list(SGString<uint32_t>*& strings,
 			const StringListHeader& data_header);
-	void read_string_list(SGString<int16_t>*& strings, 
+	void read_string_list(SGString<int16_t>*& strings,
 			const StringListHeader& data_header);
-	void read_string_list(SGString<uint16_t>*& strings, 
+	void read_string_list(SGString<uint16_t>*& strings,
 			const StringListHeader& data_header);
-	void read_string_list(SGString<int64_t>*& strings, 
+	void read_string_list(SGString<int64_t>*& strings,
 			const StringListHeader& data_header);
-	void read_string_list(SGString<uint64_t>*& strings, 
+	void read_string_list(SGString<uint64_t>*& strings,
 			const StringListHeader& data_header);
-	void read_string_list(SGString<float32_t>*& strings, 
+	void read_string_list(SGString<float32_t>*& strings,
 			const StringListHeader& data_header);
-	void read_string_list(SGString<float64_t>*& strings, 
+	void read_string_list(SGString<float64_t>*& strings,
 			const StringListHeader& data_header);
-	void read_string_list(SGString<floatmax_t>*& strings, 
+	void read_string_list(SGString<floatmax_t>*& strings,
 			const StringListHeader& data_header);
 	//@}
 
-	/** 
+	/**
 	 */
 	//@{
 	void write_string_list(

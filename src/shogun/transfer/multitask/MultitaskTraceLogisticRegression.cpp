@@ -23,7 +23,7 @@ CMultitaskTraceLogisticRegression::CMultitaskTraceLogisticRegression() :
 }
 
 CMultitaskTraceLogisticRegression::CMultitaskTraceLogisticRegression(
-     float64_t rho, CDotFeatures* train_features, 
+     float64_t rho, CDotFeatures* train_features,
      CBinaryLabels* train_labels, CTaskGroup* task_group) :
 	CMultitaskLogisticRegression(0.0,train_features,train_labels,(CTaskRelation*)task_group)
 {
@@ -55,7 +55,7 @@ bool CMultitaskTraceLogisticRegression::train_locked_implementation(SGVector<ind
 	SGVector<float64_t> y(m_labels->get_num_labels());
 	for (int32_t i=0; i<y.vlen; i++)
 		y[i] = ((CBinaryLabels*)m_labels)->get_label(i);
-	
+
 	malsar_options options = malsar_options::default_options();
 	options.termination = m_termination;
 	options.tolerance = m_tolerance;
@@ -71,8 +71,8 @@ bool CMultitaskTraceLogisticRegression::train_locked_implementation(SGVector<ind
 	m_tasks_c = model.c;
 #else
 	SG_WARNING("Please install Eigen3 to use MultitaskTraceLogisticRegression\n")
-	m_tasks_w = SGMatrix<float64_t>(((CDotFeatures*)features)->get_dim_feature_space(), options.n_tasks); 
-	m_tasks_c = SGVector<float64_t>(options.n_tasks); 
+	m_tasks_w = SGMatrix<float64_t>(((CDotFeatures*)features)->get_dim_feature_space(), options.n_tasks);
+	m_tasks_c = SGVector<float64_t>(options.n_tasks);
 #endif
 	return true;
 }
@@ -89,7 +89,7 @@ bool CMultitaskTraceLogisticRegression::train_machine(CFeatures* data)
 	SGVector<float64_t> y(m_labels->get_num_labels());
 	for (int32_t i=0; i<y.vlen; i++)
 		y[i] = ((CBinaryLabels*)m_labels)->get_label(i);
-	
+
 	malsar_options options = malsar_options::default_options();
 	options.termination = m_termination;
 	options.tolerance = m_tolerance;
@@ -105,8 +105,8 @@ bool CMultitaskTraceLogisticRegression::train_machine(CFeatures* data)
 	m_tasks_c = model.c;
 #else
 	SG_WARNING("Please install Eigen3 to use MultitaskTraceLogisticRegression\n")
-	m_tasks_w = SGMatrix<float64_t>(((CDotFeatures*)features)->get_dim_feature_space(), options.n_tasks); 
-	m_tasks_c = SGVector<float64_t>(options.n_tasks); 
+	m_tasks_w = SGMatrix<float64_t>(((CDotFeatures*)features)->get_dim_feature_space(), options.n_tasks);
+	m_tasks_c = SGVector<float64_t>(options.n_tasks);
 #endif
 
 	SG_FREE(options.tasks_indices);

@@ -17,7 +17,7 @@ namespace shogun
 {
 	/**
 	 * @brief CombinationRule abstract class
-	 * The CombinationRule defines an interface to how to combine the 
+	 * The CombinationRule defines an interface to how to combine the
 	 * classification or regression outputs of an ensemble of Machines.
 	 */
 	class CCombinationRule : public CSGObject
@@ -28,17 +28,17 @@ namespace shogun
 
 			virtual ~CCombinationRule();
 
-			/** 
-			 * Combines a matrix of an ensemble of Machines output, where each 
-			 * column is a given Machine's classification/regression output 
+			/**
+			 * Combines a matrix of an ensemble of Machines output, where each
+			 * column is a given Machine's classification/regression output
 			 * for the input Features.
 			 *
-			 * @param ensemble_result SGMatrix 
+			 * @param ensemble_result SGMatrix
 			 * @return a vector where the nth element is the combined value of the Machines for the nth feature vector
 			 */
 			virtual SGVector<float64_t> combine(const SGMatrix<float64_t>& ensemble_result) const = 0;
 
-			/** 
+			/**
 			 * Combines a vector of Machine ouputs for a given feature vector.
 			 * The nth element of the vector is the nth Machine's output in the ensemble.
 			 *

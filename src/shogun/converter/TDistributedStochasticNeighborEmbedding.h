@@ -18,7 +18,7 @@
 namespace shogun
 {
 
-/** @class class CTDistributedStochasticNeighborEmbedding used to embed 
+/** @class class CTDistributedStochasticNeighborEmbedding used to embed
  * data using t-distributed stochastic neighbor embedding algorithm:
  * http://jmlr.csail.mit.edu/papers/volume9/vandermaaten08a/vandermaaten08a.pdf.
  *

@@ -25,26 +25,26 @@ int main(int argc,char *argv[])
 
 	for (int i=0; i<x_n*x_d; i++)
 		fmatrix.matrix[i] = i+1;
-	SG_SPRINT("FEATURE MATRIX :\n");	
+	SG_SPRINT("FEATURE MATRIX :\n");
 	CMath::display_matrix(fmatrix.matrix,x_d,x_n);
 
 	CDenseFeatures<float64_t>* features = new CDenseFeatures<float64_t>(fmatrix);
 	SG_REF(features);
-	
+
 /*Creating random labels */
 	CLabels* labels=new CLabels(x_n);
-	
-	// create labels, two classes 
+
+	// create labels, two classes
 	labels->set_label(0,1);
 	labels->set_label(1,-1);
 	labels->set_label(2,1);
 	labels->set_label(3,1);
 	SG_REF(labels);
-	
+
 /*Working with Newton SVM */
 
 	float64_t lambda=1.0;
-	int32_t iter=20;	
+	int32_t iter=20;
 
 	CNewtonSVM *nsvm = new CNewtonSVM(lambda,features,labels,iter);
 	SG_REF(nsvm);
@@ -54,32 +54,32 @@ int main(int argc,char *argv[])
 
 	SG_SPRINT("TEST 2:\n\n");
 
-	
+
 	x_n=5;
 	x_d=3;
-	SGMatrix<float64_t> fmatrix2(x_d,x_n);	
+	SGMatrix<float64_t> fmatrix2(x_d,x_n);
 	for (int i=0; i<x_n*x_d; i++)
 		fmatrix2.matrix[i] = i+1;
-	SG_SPRINT("FEATURE MATRIX :\n");	
+	SG_SPRINT("FEATURE MATRIX :\n");
 	CMath::display_matrix(fmatrix2.matrix,x_d,x_n);
 	features->set_feature_matrix(fmatrix2);
 	SG_REF(features);
-	
+
 /*Creating random labels */
 	CLabels* labels2=new CLabels(x_n);
-	
-	// create labels, two classes 
+
+	// create labels, two classes
 	labels2->set_label(0,1);
 	labels2->set_label(1,-1);
 	labels2->set_label(2,1);
 	labels2->set_label(3,1);
 	labels2->set_label(4,-1);
 	SG_REF(labels2);
-	
+
 /*Working with Newton SVM */
 
 	lambda=1.0;
-	iter=20;	
+	iter=20;
 
 	CNewtonSVM *nsvm2 = new CNewtonSVM(lambda,features,labels2,iter);
 	SG_REF(nsvm2);

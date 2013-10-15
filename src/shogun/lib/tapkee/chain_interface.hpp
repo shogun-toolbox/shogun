@@ -25,7 +25,7 @@ namespace tapkee_internal
 								  const DistanceCallback& d, const FeaturesCallback& f) :
 			parameters(params), kernel(k), distance(d), features(f) { }
 
-		/** Constructs an embedding using the data represented by the 
+		/** Constructs an embedding using the data represented by the
 		 * begin and end iterators.
 		 *
 		 * @param begin an iterator that points to the beginning of data container
@@ -37,9 +37,9 @@ namespace tapkee_internal
 			return tapkee::embed(begin,end,kernel,distance,features,parameters);
 		}
 
-		/** Constructs an embedding using the data represented by the container. 
+		/** Constructs an embedding using the data represented by the container.
 		 *
-		 * @param container a container that supports begin() and end() methods 
+		 * @param container a container that supports begin() and end() methods
 		 *                  to get corresponding iterators
 		 */
 		template<class Container>
@@ -65,14 +65,14 @@ namespace tapkee_internal
 		 *
 		 * @param callback a callback that implements the
 		 *        @code vector(const RandomAccessIterator::value_type&, DenseVector&) @endcode
-		 *        member function which is used to obtain the feature vector pointed by the 
+		 *        member function which is used to obtain the feature vector pointed by the
 		 *        first argument.
 		 */
 		template<class FeaturesCallback>
 		CallbacksInitializedState<KernelCallback,DistanceCallback,FeaturesCallback> withFeatures(const FeaturesCallback& features) const
 		{ return CallbacksInitializedState<KernelCallback,DistanceCallback,FeaturesCallback>(parameters,kernel,distance,features); }
-		
-		/** Constructs an embedding using the data represented by the 
+
+		/** Constructs an embedding using the data represented by the
 		 * begin and end iterators.
 		 *
 		 * @param begin an iterator that points to the beginning of data container
@@ -85,9 +85,9 @@ namespace tapkee_internal
 						  .embedRange(begin,end);
 		}
 
-		/** Constructs an embedding using the data represented by the container. 
+		/** Constructs an embedding using the data represented by the container.
 		 *
-		 * @param container a container that supports begin() and end() methods 
+		 * @param container a container that supports begin() and end() methods
 		 *                  to get corresponding iterators
 		 */
 		template<class Container>
@@ -112,14 +112,14 @@ namespace tapkee_internal
 		 *
 		 * @param callback a callback that implements the
 		 *        @code distance(const RandomAccessIterator::value_type&, const RandomAccessIterator::value_type&) @endcode
-		 *        member function which is used to compute distance (dissimilarity) between two objects 
+		 *        member function which is used to compute distance (dissimilarity) between two objects
 		 *        pointed by the first and the second arguments.
 		 */
 		template<class DistanceCallback>
 		CallbacksInitializedState<KernelCallback,DistanceCallback,FeaturesCallback> withDistance(const DistanceCallback& distance) const
 		{ return CallbacksInitializedState<KernelCallback,DistanceCallback,FeaturesCallback>(parameters,kernel,distance,features); }
 
-		/** Constructs an embedding using the data represented by the 
+		/** Constructs an embedding using the data represented by the
 		 * begin and end iterators.
 		 *
 		 * @param begin an iterator that points to the beginning of data container
@@ -132,9 +132,9 @@ namespace tapkee_internal
 						  .embedRange(begin,end);
 		}
 
-		/** Constructs an embedding using the data represented by the container. 
+		/** Constructs an embedding using the data represented by the container.
 		 *
-		 * @param container a container that supports begin() and end() methods 
+		 * @param container a container that supports begin() and end() methods
 		 *                  to get corresponding iterators
 		 */
 		template<class Container>
@@ -162,7 +162,7 @@ namespace tapkee_internal
 
 		/** Sets kernel callback.
 		 *
-		 * @param callback a callback that implements the 
+		 * @param callback a callback that implements the
 		 *        @code kernel(const RandomAccessIterator::value_type&, const RandomAccessIterator::value_type&) @endcode
 		 *        member function which is used to compute kernel value (similarity) between two objects
 		 *        pointed by the first and the second arguments.
@@ -171,7 +171,7 @@ namespace tapkee_internal
 		CallbacksInitializedState<KernelCallback,DistanceCallback,FeaturesCallback> withKernel(const KernelCallback& kernel) const
 		{ return CallbacksInitializedState<KernelCallback,DistanceCallback,FeaturesCallback>(parameters,kernel,distance,features); }
 
-		/** Constructs an embedding using the data represented by the 
+		/** Constructs an embedding using the data represented by the
 		 * begin and end iterators.
 		 *
 		 * @param begin an iterator that points to the beginning of data container
@@ -184,9 +184,9 @@ namespace tapkee_internal
 						  .embedRange(begin,end);
 		}
 
-		/** Constructs an embedding using the data represented by the container. 
+		/** Constructs an embedding using the data represented by the container.
 		 *
-		 * @param container a container that supports begin() and end() methods 
+		 * @param container a container that supports begin() and end() methods
 		 *                  to get corresponding iterators
 		 */
 		template<class Container>
@@ -211,7 +211,7 @@ namespace tapkee_internal
 		 *
 		 * @param callback a callback that implements the
 		 *        @code distance(const RandomAccessIterator::value_type&, const RandomAccessIterator::value_type&) @endcode
-		 *        member function which is used to compute distance (dissimilarity) between two objects 
+		 *        member function which is used to compute distance (dissimilarity) between two objects
 		 *        pointed by the first and the second arguments.
 		 */
 		template<class DistanceCallback>
@@ -222,14 +222,14 @@ namespace tapkee_internal
 		 *
 		 * @param callback a callback that implements the
 		 *        @code vector(const RandomAccessIterator::value_type&, DenseVector&) @endcode
-		 *        member function which is used to obtain the feature vector pointed by the 
+		 *        member function which is used to obtain the feature vector pointed by the
 		 *        first argument.
 		 */
 		template<class FeaturesCallback>
 		KernelAndFeaturesInitializedState<KernelCallback,FeaturesCallback> withFeatures(const FeaturesCallback& callback) const
 		{ return KernelAndFeaturesInitializedState<KernelCallback,FeaturesCallback>(parameters,kernel,callback); }
 
-		/** Constructs an embedding using the data represented by the 
+		/** Constructs an embedding using the data represented by the
 		 * begin and end iterators.
 		 *
 		 * @param begin an iterator that points to the beginning of data container
@@ -243,9 +243,9 @@ namespace tapkee_internal
 						  .embedRange(begin,end);
 		}
 
-		/** Constructs an embedding using the data represented by the container. 
+		/** Constructs an embedding using the data represented by the container.
 		 *
-		 * @param container a container that supports begin() and end() methods 
+		 * @param container a container that supports begin() and end() methods
 		 *                  to get corresponding iterators
 		 */
 		template<class Container>
@@ -267,7 +267,7 @@ namespace tapkee_internal
 
 		/** Sets kernel callback.
 		 *
-		 * @param callback a callback that implements the 
+		 * @param callback a callback that implements the
 		 *        @code kernel(const RandomAccessIterator::value_type&, const RandomAccessIterator::value_type&) @endcode
 		 *        member function which is used to compute kernel value (similarity) between two objects
 		 *        pointed by the first and the second arguments.
@@ -280,14 +280,14 @@ namespace tapkee_internal
 		 *
 		 * @param callback a callback that implements the
 		 *        @code vector(const RandomAccessIterator::value_type&, DenseVector&) @endcode
-		 *        member function which is used to obtain the feature vector pointed by the 
+		 *        member function which is used to obtain the feature vector pointed by the
 		 *        first argument.
 		 */
 		template<class FeaturesCallback>
 		DistanceAndFeaturesInitializedState<DistanceCallback,FeaturesCallback> withFeatures(const FeaturesCallback& callback) const
 		{ return DistanceAndFeaturesInitializedState<DistanceCallback,FeaturesCallback>(parameters,distance,callback); }
 
-		/** Constructs an embedding using the data represented by the 
+		/** Constructs an embedding using the data represented by the
 		 * begin and end iterators.
 		 *
 		 * @param begin an iterator that points to the beginning of data container
@@ -301,9 +301,9 @@ namespace tapkee_internal
 						  .embedRange(begin,end);
 		}
 
-		/** Constructs an embedding using the data represented by the container. 
+		/** Constructs an embedding using the data represented by the container.
 		 *
-		 * @param container a container that supports begin() and end() methods 
+		 * @param container a container that supports begin() and end() methods
 		 *                  to get corresponding iterators
 		 */
 		template<class Container>
@@ -325,7 +325,7 @@ namespace tapkee_internal
 
 		/** Sets kernel callback.
 		 *
-		 * @param callback a callback that implements the 
+		 * @param callback a callback that implements the
 		 *        @code kernel(const RandomAccessIterator::value_type&, const RandomAccessIterator::value_type&) @endcode
 		 *        member function which is used to compute kernel value (similarity) between two objects
 		 *        pointed by the first and the second arguments.
@@ -338,14 +338,14 @@ namespace tapkee_internal
 		 *
 		 * @param callback a callback that implements the
 		 *        @code distance(const RandomAccessIterator::value_type&, const RandomAccessIterator::value_type&) @endcode
-		 *        member function which is used to compute distance (dissimilarity) between two objects 
+		 *        member function which is used to compute distance (dissimilarity) between two objects
 		 *        pointed by the first and the second arguments.
 		 */
 		template<class DistanceCallback>
 		DistanceAndFeaturesInitializedState<DistanceCallback,FeaturesCallback> withDistance(const DistanceCallback& callback) const
 		{ return DistanceAndFeaturesInitializedState<DistanceCallback,FeaturesCallback>(parameters,callback,features); }
 
-		/** Constructs an embedding using the data represented by the 
+		/** Constructs an embedding using the data represented by the
 		 * begin and end iterators.
 		 *
 		 * @param begin an iterator that points to the beginning of data container
@@ -359,9 +359,9 @@ namespace tapkee_internal
 						  .embedRange(begin,end);
 		}
 
-		/** Constructs an embedding using the data represented by the container. 
+		/** Constructs an embedding using the data represented by the container.
 		 *
-		 * @param container a container that supports begin() and end() methods 
+		 * @param container a container that supports begin() and end() methods
 		 *                  to get corresponding iterators
 		 */
 		template<class Container>
@@ -383,12 +383,12 @@ namespace tapkee_internal
 
 		/** Sets kernel callback.
 		 *
-		 * @param callback a callback that implements the 
+		 * @param callback a callback that implements the
 		 *        @code kernel(const RandomAccessIterator::value_type&, const RandomAccessIterator::value_type&) @endcode
 		 *        member function which is used to compute kernel value (similarity) between two objects
 		 *        pointed by the first and the second arguments.
 		 */
-		template<class KernelCallback> 
+		template<class KernelCallback>
 		KernelFirstInitializedState<KernelCallback> withKernel(const KernelCallback& callback) const
 		{ return KernelFirstInitializedState<KernelCallback>(parameters,callback); }
 
@@ -396,7 +396,7 @@ namespace tapkee_internal
 		 *
 		 * @param callback a callback that implements the
 		 *        @code distance(const RandomAccessIterator::value_type&, const RandomAccessIterator::value_type&) @endcode
-		 *        member function which is used to compute distance (dissimilarity) between two objects 
+		 *        member function which is used to compute distance (dissimilarity) between two objects
 		 *        pointed by the first and the second arguments.
 		 */
 		template<class DistanceCallback>
@@ -407,7 +407,7 @@ namespace tapkee_internal
 		 *
 		 * @param callback a callback that implements the
 		 *        @code vector(const RandomAccessIterator::value_type&, DenseVector&) @endcode
-		 *        member function which is used to obtain the feature vector pointed by the 
+		 *        member function which is used to obtain the feature vector pointed by the
 		 *        first argument.
 		 */
 		template<class FeaturesCallback>
@@ -417,7 +417,7 @@ namespace tapkee_internal
 		/** Constructs an embedding using the data represented
 		 * by the feature matrix. Uses linear kernel (dot product)
 		 * and euclidean distance.
-		 * 
+		 *
 		 * @param matrix matrix that contains feature vectors column-wise
 		 */
 		TapkeeOutput embedUsing(const DenseMatrix& matrix) const
@@ -436,24 +436,24 @@ namespace tapkee_internal
 
 struct initialize
 {
-	/** Constructor that is the first required 
+	/** Constructor that is the first required
 	 * method in the call chain.
 	 */
-	initialize() 
+	initialize()
 	{
 	}
 
-	/** The second required method in the call chain. Returns 
+	/** The second required method in the call chain. Returns
 	 * an instance representing a state with initialized parameters.
 	 *
-	 * In the chain this method's call is followed by any of 
-	 * * @ref tapkee_internal::ParametersInitializedState::embedUsing 
+	 * In the chain this method's call is followed by any of
+	 * * @ref tapkee_internal::ParametersInitializedState::embedUsing
 	 * * @ref tapkee_internal::ParametersInitializedState::withKernel
 	 * * @ref tapkee_internal::ParametersInitializedState::withDistance
 	 * * @ref tapkee_internal::ParametersInitializedState::withFeatures
-	 * 
+	 *
 	 * @param parameters a set of parameters formed from keywords assigned
-	 *                   to values 
+	 *                   to values
 	 */
 	tapkee_internal::ParametersInitializedState withParameters(const ParametersSet& parameters) const
 	{

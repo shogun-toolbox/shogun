@@ -126,7 +126,7 @@ int parse_tuple_item(PyObject* item, Py_ssize_t length,
 		return 2;
 	}
 	else if (PyInt_Check(item) || PyArray_IsScalar(item, Integer) ||
-       		PyLong_Check(item) || (PyIndex_Check(item) && !PySequence_Check(item)))
+		PyLong_Check(item) || (PyIndex_Check(item) && !PySequence_Check(item)))
 	{
 		npy_intp idx;
 		idx = PyArray_PyIntAsIntp(item);
@@ -150,7 +150,7 @@ void set_method(PyMethodDef* methods, const char* name, PyCFunction new_method)
 	{
 		method_temp=methods[method_idx];
 		method_idx++;
-	} 
+	}
 	while (strcmp(method_temp.ml_name, name)!=0 && method_temp.ml_name!=NULL);
 
 	methods[method_idx-1].ml_meth=new_method;

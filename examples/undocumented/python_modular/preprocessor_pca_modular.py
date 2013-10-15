@@ -9,9 +9,9 @@ parameter_list = [[data]]
 def preprocessor_pca_modular (data):
 	from modshogun import RealFeatures
 	from modshogun import PCA
-	
+
 	features = RealFeatures(data)
-		
+
 	preprocessor = PCA()
 	preprocessor.init(features)
 	preprocessor.apply_to_feature_matrix(features)

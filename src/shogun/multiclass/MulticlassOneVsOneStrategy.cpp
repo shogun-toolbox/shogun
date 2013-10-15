@@ -147,7 +147,7 @@ void CMulticlassOneVsOneStrategy::rescale_outputs(SGVector<float64_t> outputs)
 
 	SGVector<int32_t> indx1(m_num_machines);
 	SGVector<int32_t> indx2(m_num_machines);
-	
+
 	int32_t tot = 0;
 	for (int32_t j=0; j<m_num_classes; j++)
 	{
@@ -158,7 +158,7 @@ void CMulticlassOneVsOneStrategy::rescale_outputs(SGVector<float64_t> outputs)
 			tot++;
 		}
 	}
-	
+
 	if(tot!=m_num_machines)
 		SG_ERROR("%s::rescale_output(): size(outputs) is not num_machines.\n", get_name());
 
@@ -181,61 +181,61 @@ void CMulticlassOneVsOneStrategy::rescale_outputs(SGVector<float64_t> outputs)
 	}
 }
 
-void CMulticlassOneVsOneStrategy::rescale_heuris_price(SGVector<float64_t> outputs, 
+void CMulticlassOneVsOneStrategy::rescale_heuris_price(SGVector<float64_t> outputs,
 		const SGVector<int32_t> indx1, const SGVector<int32_t> indx2)
 {
 	if (m_num_machines != outputs.vlen)
 	{
-		SG_ERROR("%s::rescale_heuris_price(): size(outputs) = %d != m_num_machines = %d\n", 
+		SG_ERROR("%s::rescale_heuris_price(): size(outputs) = %d != m_num_machines = %d\n",
 				get_name(), outputs.vlen, m_num_machines);
 	}
 
 	SGVector<float64_t> new_outputs(m_num_classes);
 	new_outputs.zero();
-	
+
 	for (int32_t j=0; j<m_num_classes; j++)
 	{
 		for (int32_t m=0; m<m_num_machines; m++)
 		{
 			if (indx1[m]==j)
-				new_outputs[j] += 1.0 / (outputs[m]+1E-12); 
+				new_outputs[j] += 1.0 / (outputs[m]+1E-12);
 			if (indx2[m]==j)
-				new_outputs[j] += 1.0 / (1.0-outputs[m]+1E-12); 
+				new_outputs[j] += 1.0 / (1.0-outputs[m]+1E-12);
 		}
 
-		new_outputs[j] = 1.0 / (new_outputs[j] - m_num_classes + 2); 
+		new_outputs[j] = 1.0 / (new_outputs[j] - m_num_classes + 2);
 	}
 
 	//outputs.resize_vector(m_num_classes);
-	
+
 	float64_t norm = SGVector<float64_t>::sum(new_outputs);
-	for (int32_t i=0; i<new_outputs.vlen; i++) 
+	for (int32_t i=0; i<new_outputs.vlen; i++)
 		outputs[i] = new_outputs[i] / norm;
 }
 
-void CMulticlassOneVsOneStrategy::rescale_heuris_hastie(SGVector<float64_t> outputs, 
+void CMulticlassOneVsOneStrategy::rescale_heuris_hastie(SGVector<float64_t> outputs,
 		const SGVector<int32_t> indx1, const SGVector<int32_t> indx2)
 {
 	if (m_num_machines != outputs.vlen)
 	{
-		SG_ERROR("%s::rescale_heuris_hastie(): size(outputs) = %d != m_num_machines = %d\n", 
+		SG_ERROR("%s::rescale_heuris_hastie(): size(outputs) = %d != m_num_machines = %d\n",
 				get_name(), outputs.vlen, m_num_machines);
 	}
 
 	SGVector<float64_t> new_outputs(m_num_classes);
 	new_outputs.zero();
-	
+
 	for (int32_t j=0; j<m_num_classes; j++)
 	{
 		for (int32_t m=0; m<m_num_machines; m++)
 		{
 			if (indx1[m]==j)
-				new_outputs[j] += outputs[m]; 
+				new_outputs[j] += outputs[m];
 			if (indx2[m]==j)
-				new_outputs[j] += 1.0-outputs[m]; 
+				new_outputs[j] += 1.0-outputs[m];
 		}
 
-		new_outputs[j] *= 2.0 / (m_num_classes * (m_num_classes - 1)); 
+		new_outputs[j] *= 2.0 / (m_num_classes * (m_num_classes - 1));
 		new_outputs[j] += 1E-10;
 	}
 
@@ -252,20 +252,20 @@ void CMulticlassOneVsOneStrategy::rescale_heuris_hastie(SGVector<float64_t> outp
 
 		for (int32_t j=0; j<m_num_classes; j++)
 		{
-			float64_t numerator = 0.0; 
-			float64_t denominator = 0.0; 
+			float64_t numerator = 0.0;
+			float64_t denominator = 0.0;
 			for (int32_t m=0; m<m_num_machines; m++)
 			{
 				if (indx1[m]==j)
 				{
 					numerator += m_num_samples[m] * outputs[m];
-					denominator += m_num_samples[m] * mu[m]; 
+					denominator += m_num_samples[m] * mu[m];
 				}
 
 				if (indx2[m]==j)
 				{
 					numerator += m_num_samples[m] * (1.0-outputs[m]);
-					denominator += m_num_samples[m] * (1.0-mu[m]); 
+					denominator += m_num_samples[m] * (1.0-mu[m]);
 				}
 			}
 
@@ -274,11 +274,11 @@ void CMulticlassOneVsOneStrategy::rescale_heuris_hastie(SGVector<float64_t> outp
 		}
 
 		float64_t norm = SGVector<float64_t>::sum(new_outputs);
-		for (int32_t i=0; i<new_outputs.vlen; i++) 
+		for (int32_t i=0; i<new_outputs.vlen; i++)
 			new_outputs[i] /= norm;
-		
+
 		// gap is Euclidean distance
-		for (int32_t i=0; i<new_outputs.vlen; i++) 
+		for (int32_t i=0; i<new_outputs.vlen; i++)
 			prev_outputs[i] -= new_outputs[i];
 
 		gap = SGVector<float64_t>::qsq(prev_outputs.vector, prev_outputs.vlen, 2);
@@ -289,12 +289,12 @@ void CMulticlassOneVsOneStrategy::rescale_heuris_hastie(SGVector<float64_t> outp
 		outputs[i] = new_outputs[i];
 }
 
-void CMulticlassOneVsOneStrategy::rescale_heuris_hamamura(SGVector<float64_t> outputs, 
+void CMulticlassOneVsOneStrategy::rescale_heuris_hamamura(SGVector<float64_t> outputs,
 		const SGVector<int32_t> indx1, const SGVector<int32_t> indx2)
 {
 	if (m_num_machines != outputs.vlen)
 	{
-		SG_ERROR("%s::rescale_heuris_hamamura(): size(outputs) = %d != m_num_machines = %d\n", 
+		SG_ERROR("%s::rescale_heuris_hamamura(): size(outputs) = %d != m_num_machines = %d\n",
 				get_name(), outputs.vlen, m_num_machines);
 	}
 
@@ -306,17 +306,17 @@ void CMulticlassOneVsOneStrategy::rescale_heuris_hamamura(SGVector<float64_t> ou
 		for (int32_t m=0; m<m_num_machines; m++)
 		{
 			if (indx1[m]==j)
-				new_outputs[j] *= outputs[m]; 
+				new_outputs[j] *= outputs[m];
 			if (indx2[m]==j)
-				new_outputs[j] *= 1-outputs[m]; 
+				new_outputs[j] *= 1-outputs[m];
 		}
 
-		new_outputs[j] += 1E-10; 
+		new_outputs[j] += 1E-10;
 	}
-	
+
 	float64_t norm = SGVector<float64_t>::sum(new_outputs);
 
-	for (int32_t i=0; i<new_outputs.vlen; i++) 
+	for (int32_t i=0; i<new_outputs.vlen; i++)
 		outputs[i] = new_outputs[i] / norm;
 }
 

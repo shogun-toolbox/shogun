@@ -20,7 +20,7 @@ CLinearStructuredOutputMachine::CLinearStructuredOutputMachine()
 }
 
 CLinearStructuredOutputMachine::CLinearStructuredOutputMachine(
-		CStructuredModel*  model, 
+		CStructuredModel*  model,
 		CStructuredLabels* labs)
 : CStructuredOutputMachine(model, labs)
 {

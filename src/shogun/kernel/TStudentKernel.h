@@ -27,7 +27,7 @@ class CDistance;
  * Formally described as
  *
  * \f[
- * 		K(x,x') = \frac{1}{1+\| x-x' \|^degree}
+ *		K(x,x') = \frac{1}{1+\| x-x' \|^degree}
  * \f]
  * with degree=1 by default
  */

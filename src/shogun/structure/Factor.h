@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2013 Shell Hu 
- * Copyright (C) 2013 Shell Hu 
+ * Written (W) 2013 Shell Hu
+ * Copyright (C) 2013 Shell Hu
  */
 
 #ifndef __FACTOR_RELATED_H__
@@ -16,7 +16,7 @@
 #include <shogun/lib/SGSparseVector.h>
 #include <shogun/structure/FactorType.h>
 
-namespace shogun 
+namespace shogun
 {
 
 /** @brief Class CFactorDataSource Source for factor data.
@@ -28,13 +28,13 @@ public:
 	/** default constructor is prohibitted */
 	CFactorDataSource();
 
-	/** constructor 
+	/** constructor
 	 *
 	 * @param dense dense factor data
 	 */
 	CFactorDataSource(SGVector<float64_t> dense);
 
-	/** constructor 
+	/** constructor
 	 *
 	 * @param sparse sparse factor data
 	 */
@@ -82,7 +82,7 @@ private:
 
 /** @brief Class CFactor A factor is defined on a clique in the factor graph.
  * Each factor can have its own data, either dense, sparse or shared data.
- * Note that currently this class is table factor oriented. 
+ * Note that currently this class is table factor oriented.
  */
 class CFactor : public CSGObject
 {
@@ -94,7 +94,7 @@ public:
 	 *
 	 * @param ftype factor type
 	 * @param var_index indices of variables
-	 * @param data dense data, can be empty 
+	 * @param data dense data, can be empty
 	 */
 	CFactor(CTableFactorType* ftype, SGVector<int32_t> var_index, SGVector<float64_t> data);
 
@@ -135,7 +135,7 @@ public:
 	const SGVector<int32_t> get_variables() const;
 
 	/** set variables
-	 * 
+	 *
 	 * @param vars indices of variables
 	 */
 	void set_variables(SGVector<int32_t> vars);
@@ -168,7 +168,7 @@ public:
 	/** @return whether data vector is sparse */
 	bool is_data_sparse() const;
 
-	/** @return energy table which are in Matlab-linearized order: 
+	/** @return energy table which are in Matlab-linearized order:
 	 * leftmost indices run by one.
 	 */
 	SGVector<float64_t> get_energies() const;
@@ -179,7 +179,7 @@ public:
 	 */
 	float64_t get_energy(int32_t index) const;
 
-	/** set energies with new values 
+	/** set energies with new values
 	 * @param ft_energies new energy table
 	 */
 	void set_energies(SGVector<float64_t> ft_energies);
@@ -190,8 +190,8 @@ public:
 	 */
 	void set_energy(int32_t ei, float64_t value);
 
-	/** evaluate energy for a given assignment 
-	 * @param state variable assignments 
+	/** evaluate energy for a given assignment
+	 * @param state variable assignments
 	 * @return energy
 	 */
 	float64_t evaluate_energy(const SGVector<int32_t> state) const;
@@ -203,7 +203,7 @@ public:
 	 *
 	 * @param marginals marginal distribution of the factor
 	 * @param parameter_gradient output gradients
-	 * @param mult multiplier 
+	 * @param mult multiplier
 	 */
 	void compute_gradients(const SGVector<float64_t> marginals,
 		SGVector<float64_t>& parameter_gradient, double mult = 1.0) const;
@@ -215,7 +215,7 @@ protected:
 	/** variable indices */
 	SGVector<int32_t> m_var_index;
 
-	/** energy table */ 
+	/** energy table */
 	SGVector<float64_t> m_energies;
 
 	/** shared data */

@@ -31,8 +31,8 @@ class CKernel;
  *
  * A kernel machine is defined as
  *  \f[
- * 		f({\bf x})=\sum_{i=0}^{N-1} \alpha_i k({\bf x}, {\bf x_i})+b
- * 	\f]
+ *		f({\bf x})=\sum_{i=0}^{N-1} \alpha_i k({\bf x}, {\bf x_i})+b
+ *	\f]
  *
  * where \f$N\f$ is the number of training examples
  * \f$\alpha_i\f$ are the weights assigned to each training example
@@ -211,7 +211,7 @@ class CKernelMachine : public CMachine
 		 * @return classified labels
 		 */
 		virtual CRegressionLabels* apply_regression(CFeatures* data=NULL);
-		
+
 		/** apply kernel machine to data
 		 * for binary classification task
 		 *
@@ -286,7 +286,7 @@ class CKernelMachine : public CMachine
 
 	protected:
 
-		/** apply get outputs 
+		/** apply get outputs
 		 *
 		 * @param data features to compute outputs
 		 * @return outputs

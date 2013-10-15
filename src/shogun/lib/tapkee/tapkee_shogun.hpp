@@ -81,4 +81,4 @@ CDenseFeatures<float64_t>* tapkee_embed(const TAPKEE_PARAMETERS_FOR_SHOGUN& para
 }
 
 #endif
-#endif 
+#endif

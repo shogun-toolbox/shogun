@@ -100,22 +100,22 @@ bool CSVMLightOneClass::train_machine(CFeatures* data)
 		kernel->clear_normal() ;
 
 	// output some info
-	SG_DEBUG("threads = %i\n", parallel->get_num_threads()) 
-	SG_DEBUG("qpsize = %i\n", learn_parm->svm_maxqpsize) 
-	SG_DEBUG("epsilon = %1.1e\n", learn_parm->epsilon_crit) 
-	SG_DEBUG("kernel->has_property(KP_LINADD) = %i\n", kernel->has_property(KP_LINADD)) 
-	SG_DEBUG("kernel->has_property(KP_KERNCOMBINATION) = %i\n", kernel->has_property(KP_KERNCOMBINATION)) 
-	SG_DEBUG("kernel->has_property(KP_BATCHEVALUATION) = %i\n", kernel->has_property(KP_BATCHEVALUATION)) 
-	SG_DEBUG("kernel->get_optimization_type() = %s\n", kernel->get_optimization_type()==FASTBUTMEMHUNGRY ? "FASTBUTMEMHUNGRY" : "SLOWBUTMEMEFFICIENT" ) 
+	SG_DEBUG("threads = %i\n", parallel->get_num_threads())
+	SG_DEBUG("qpsize = %i\n", learn_parm->svm_maxqpsize)
+	SG_DEBUG("epsilon = %1.1e\n", learn_parm->epsilon_crit)
+	SG_DEBUG("kernel->has_property(KP_LINADD) = %i\n", kernel->has_property(KP_LINADD))
+	SG_DEBUG("kernel->has_property(KP_KERNCOMBINATION) = %i\n", kernel->has_property(KP_KERNCOMBINATION))
+	SG_DEBUG("kernel->has_property(KP_BATCHEVALUATION) = %i\n", kernel->has_property(KP_BATCHEVALUATION))
+	SG_DEBUG("kernel->get_optimization_type() = %s\n", kernel->get_optimization_type()==FASTBUTMEMHUNGRY ? "FASTBUTMEMHUNGRY" : "SLOWBUTMEMEFFICIENT" )
 	SG_DEBUG("get_solver_type() = %i\n", get_solver_type())
-	SG_DEBUG("get_linadd_enabled() = %i\n", get_linadd_enabled()) 
-	SG_DEBUG("get_batch_computation_enabled() = %i\n", get_batch_computation_enabled()) 
-	SG_DEBUG("kernel->get_num_subkernels() = %i\n", kernel->get_num_subkernels()) 
+	SG_DEBUG("get_linadd_enabled() = %i\n", get_linadd_enabled())
+	SG_DEBUG("get_batch_computation_enabled() = %i\n", get_batch_computation_enabled())
+	SG_DEBUG("kernel->get_num_subkernels() = %i\n", kernel->get_num_subkernels())
 
 	use_kernel_cache = !((kernel->get_kernel_type() == K_CUSTOM) ||
 						 (get_linadd_enabled() && kernel->has_property(KP_LINADD)));
 
-	SG_DEBUG("use_kernel_cache = %i\n", use_kernel_cache) 
+	SG_DEBUG("use_kernel_cache = %i\n", use_kernel_cache)
 
 	if (kernel->get_kernel_type() == K_COMBINED)
 	{

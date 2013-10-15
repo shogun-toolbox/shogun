@@ -28,7 +28,7 @@ def kernel_director_linear_modular (fm_train_real=traindat,fm_test_real=testdat,
 	#feats_train.io.set_loglevel(MSG_DEBUG)
 	feats_train.parallel.set_num_threads(1)
 	feats_test=RealFeatures(fm_test_real)
-	 
+
 	kernel=LinearKernel()
 	kernel.set_normalizer(AvgDiagKernelNormalizer(scale))
 	kernel.init(feats_train, feats_train)

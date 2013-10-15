@@ -11,7 +11,7 @@ def features_hasheddocdot_modular(strings):
 
 	#create string features
 	f=StringCharFeatures(strings, RAWBYTE)
-	
+
 	#set the number of bits of the target dimension
 	#means a dim of size 2^5=32
 	num_bits=5
@@ -24,10 +24,10 @@ def features_hasheddocdot_modular(strings):
 
 	#create HashedDocDot features
 	hddf=HashedDocDotFeatures(num_bits, f, tokenizer, normalize)
-	
+
 	#should expect 32
 	#print('Feature space dimensionality is', hddf.get_dim_feature_space())
-	
+
 	#print('Self dot product of string 0', hddf.dot(0, hddf, 0))
 
 	return hddf

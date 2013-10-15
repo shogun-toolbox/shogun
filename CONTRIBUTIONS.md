@@ -6,10 +6,10 @@ We integrated the work of the following people:
  Antoine Bordes
 	- LaRank
 
- Thorsten Joachims 
+ Thorsten Joachims
 	- SVMLight
 
- Chih-Chung Chang and and Chih-Jen Lin	
+ Chih-Chung Chang and and Chih-Jen Lin
 	- LibSVM
 
  Xiang-Rui Wang and Chih-Jen Lin
@@ -29,7 +29,7 @@ We integrated the work of the following people:
 	- Local Alignment Kernel
 
  Leon Bottou
-	- Stochastic Gradient Descent (SGD) SVM 
+	- Stochastic Gradient Descent (SGD) SVM
 
  Marius Kloft
 	- 2-norm and q-norm MKL
@@ -50,7 +50,7 @@ We integrated the work of the following people:
 	- Structured Learning
 
  Elpmis Lee
-	- Translation of the documentation to Chinese 
+	- Translation of the documentation to Chinese
 
  Baozeng Ding
 	 - Support for modular java, c#, ruby, lua interfaces
@@ -58,7 +58,7 @@ We integrated the work of the following people:
  Shashwat Lal Das
 	- Streaming / Online Feature Framework for SimpleFeatures, SparseFeatures,
 	  StringFeatures, SGD-QN, Online SGD, Online Liblinear, Online Vowpal Vabit
-  
+
  Heiko Strathmann
 	- Model selection/Cross-validation for arbitrary Machines
 	- Statistics module
@@ -67,7 +67,7 @@ We integrated the work of the following people:
 	- Serialization improvements and fixes/ Migration framework
 	- Machine Locking for precomputed kernel matrices
 	- Statistical hypothesis testing framework / Kernel Two-Sample/Independence tests
-	
+
  Alesis Novik
 	- Gaussian Mixture Models
 
@@ -78,17 +78,17 @@ We integrated the work of the following people:
 	- HashSet
 
  Justin Patera
- 	- Ruby examples
+	- Ruby examples
 
  Daniel Korn
- 	- C# examples
+	- C# examples
 
  Fernando José Iglesias Garcia
- 	- Generic multiclass OvO training
- 	- Quadratic Discriminant Analysis
+	- Generic multiclass OvO training
+	- Quadratic Discriminant Analysis
 
  J. Liu, S. Ji and J. Ye
- 	- SLEP: A Sparse Learning Package C and ported code
+	- SLEP: A Sparse Learning Package C and ported code
 
  J. Zhou, J. Chen and J. Ye
- 	- MALSAR: Multi-tAsk Learning via StructurAL Regularization ported code
+	- MALSAR: Multi-tAsk Learning via StructurAL Regularization ported code

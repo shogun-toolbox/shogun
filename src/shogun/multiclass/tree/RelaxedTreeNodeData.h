@@ -37,7 +37,7 @@ struct RelaxedTreeNodeData
 	}
 };
 
-} /* shogun */ 
+} /* shogun */
 
 #endif /* end of include guard: RELAXEDTREENODEDATA_H__ */
 

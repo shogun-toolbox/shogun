@@ -15,7 +15,7 @@
 #include <shogun/lib/malsar/malsar_options.h>
 #include <shogun/features/DotFeatures.h>
 
-namespace shogun 
+namespace shogun
 {
 
 /**

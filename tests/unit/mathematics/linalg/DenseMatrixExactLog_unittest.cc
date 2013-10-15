@@ -6,7 +6,7 @@
  *
  * Written (W) 2013 Soumyajit De
  */
- 
+
 #include <shogun/lib/common.h>
 
 #ifdef HAVE_EIGEN3
@@ -36,7 +36,7 @@ TEST(DenseMatrixExactLog, dense_log_det)
 	CSerialComputationEngine* e=new CSerialComputationEngine;
 	SG_REF(e);
 
-	// create the linear operator whose log-det has to be computed	
+	// create the linear operator whose log-det has to be computed
 	const index_t size=2;
 	SGMatrix<float64_t> mat(size, size);
 	mat(0,0)=2.0;
@@ -45,7 +45,7 @@ TEST(DenseMatrixExactLog, dense_log_det)
 	mat(1,1)=3.0;
 	CDenseMatrixOperator<float64_t>* op=new CDenseMatrixOperator<float64_t>(mat);
 	SG_REF(op);
-	
+
 	// create operator function with the operator and the engine to submit jobs
 	CDenseMatrixExactLog *op_func=new CDenseMatrixExactLog(op, e);
 	SG_REF(op_func);
@@ -86,7 +86,7 @@ TEST(DenseMatrixExactLog, dense_log_det)
 		result+=r->get_result();
 		SG_UNREF(agg);
 	}
-	
+
 	// clear all aggregators
 	aggregators.clear_array();
 

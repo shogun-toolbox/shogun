@@ -33,14 +33,14 @@ struct distances_comparator
 	}
 };
 
-struct KernelType 
+struct KernelType
 {
 };
 
 template <class RandomAccessIterator, class Callback>
 struct KernelDistance
 {
-	KernelDistance(const Callback& cb) : callback(cb) {  } 
+	KernelDistance(const Callback& cb) : callback(cb) {  }
 	inline ScalarType operator()(const RandomAccessIterator& l, const RandomAccessIterator& r)
 	{
 		return callback.kernel(*l,*r);
@@ -75,7 +75,7 @@ struct PlainDistance
 
 #ifdef TAPKEE_USE_LGPL_COVERTREE
 template <class RandomAccessIterator, class Callback>
-Neighbors find_neighbors_covertree_impl(RandomAccessIterator begin, RandomAccessIterator end, 
+Neighbors find_neighbors_covertree_impl(RandomAccessIterator begin, RandomAccessIterator end,
                          Callback callback, IndexType k)
 {
 	timed_context context("Covertree-based neighbors search");
@@ -98,7 +98,7 @@ Neighbors find_neighbors_covertree_impl(RandomAccessIterator begin, RandomAccess
 	{
 		LocalNeighbors local_neighbors;
 		local_neighbors.reserve(k);
-		
+
 		for (IndexType j=1; j<=k; ++j) // j=0 is the query point
 		{
 			// The actual query point is found as a neighbor, just ignore it
@@ -117,7 +117,7 @@ Neighbors find_neighbors_covertree_impl(RandomAccessIterator begin, RandomAccess
 #endif
 
 template <class RandomAccessIterator, class Callback>
-Neighbors find_neighbors_bruteforce_impl(const RandomAccessIterator& begin, const RandomAccessIterator& end, 
+Neighbors find_neighbors_bruteforce_impl(const RandomAccessIterator& begin, const RandomAccessIterator& end,
                                          Callback callback, IndexType k)
 {
 	timed_context context("Distance sorting based neighbors search");
@@ -137,10 +137,10 @@ Neighbors find_neighbors_bruteforce_impl(const RandomAccessIterator& begin, cons
 
 		LocalNeighbors local_neighbors;
 		local_neighbors.reserve(k);
-		for (typename Distances::const_iterator neighbors_iter=distances.begin(); 
+		for (typename Distances::const_iterator neighbors_iter=distances.begin();
 				neighbors_iter!=distances.begin()+k+1; ++neighbors_iter)
 		{
-			if (neighbors_iter->first != iter) 
+			if (neighbors_iter->first != iter)
 				local_neighbors.push_back(neighbors_iter->first - begin);
 		}
 		neighbors.push_back(local_neighbors);
@@ -149,7 +149,7 @@ Neighbors find_neighbors_bruteforce_impl(const RandomAccessIterator& begin, cons
 }
 
 template <class RandomAccessIterator, class Callback>
-Neighbors find_neighbors_vptree_impl(const RandomAccessIterator& begin, const RandomAccessIterator& end, 
+Neighbors find_neighbors_vptree_impl(const RandomAccessIterator& begin, const RandomAccessIterator& end,
                                      Callback callback, IndexType k)
 {
 	timed_context context("VP-Tree based neighbors search");
@@ -170,8 +170,8 @@ Neighbors find_neighbors_vptree_impl(const RandomAccessIterator& begin, const Ra
 }
 
 template <class RandomAccessIterator, class Callback>
-Neighbors find_neighbors(NeighborsMethod method, const RandomAccessIterator& begin, 
-                         const RandomAccessIterator& end, const Callback& callback, 
+Neighbors find_neighbors(NeighborsMethod method, const RandomAccessIterator& begin,
+                         const RandomAccessIterator& end, const Callback& callback,
                          IndexType k, bool check_connectivity)
 {
 	if (k > static_cast<IndexType>(end-begin-1))

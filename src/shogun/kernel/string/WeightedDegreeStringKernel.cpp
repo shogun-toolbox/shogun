@@ -211,7 +211,7 @@ bool CWeightedDegreeStringKernel::init_optimization(int32_t count, int32_t* IDX,
 	delete_optimization();
 
 	if (tree_num<0)
-		SG_DEBUG("initializing CWeightedDegreeStringKernel optimization\n") 
+		SG_DEBUG("initializing CWeightedDegreeStringKernel optimization\n")
 
 	for (int32_t i=0; i<count; i++)
 	{
@@ -225,7 +225,7 @@ bool CWeightedDegreeStringKernel::init_optimization(int32_t count, int32_t* IDX,
 			else
 				add_example_to_tree_mismatch(IDX[i], alphas[i]) ;
 
-			//SG_DEBUG("number of used trie nodes: %i\n", tries.get_num_used_nodes()) 
+			//SG_DEBUG("number of used trie nodes: %i\n", tries.get_num_used_nodes())
 		}
 		else
 		{

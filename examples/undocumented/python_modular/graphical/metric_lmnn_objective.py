@@ -45,22 +45,22 @@ def metric_lmnn_statistics(k=3, fname_features='../../data/fm_train_multiclass_d
 	features = RealFeatures(load_compressed_features(fname_features).T)
 	labels = MulticlassLabels(CSVFile(fname_labels))
 
-# 	print 'number of examples = %d' % features.get_num_vectors()
-# 	print 'number of features = %d' % features.get_num_features()
+#	print 'number of examples = %d' % features.get_num_vectors()
+#	print 'number of features = %d' % features.get_num_features()
 
 	assert(features.get_num_vectors() == labels.get_num_labels())
 
 	# train LMNN
 	lmnn = LMNN(features, labels, k)
 	lmnn.set_correction(100)
-# 	lmnn.io.set_loglevel(MSG_DEBUG)
+#	lmnn.io.set_loglevel(MSG_DEBUG)
 	print 'Training LMNN, this will take about two minutes...'
 	lmnn.train()
 	print 'Training done!'
 
 	# plot objective obtained during training
 	statistics = lmnn.get_statistics()
-	
+
 	pyplot.plot(statistics.obj.get())
 	pyplot.grid(True)
 	pyplot.xlabel('Iterations')

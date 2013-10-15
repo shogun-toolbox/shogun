@@ -28,7 +28,7 @@ TEST(CombinedFeaturesTest,test_array_operations)
 		data_2[i] = -i;
 		data_3[i] = 2*i;
 	}
-	
+
 	CCombinedFeatures* comb_feat = new CCombinedFeatures();
 	CDenseFeatures<float64_t>* feat_1 = new CDenseFeatures<float64_t>(data_1);
 	CDenseFeatures<float64_t>* feat_2 = new CDenseFeatures<float64_t>(data_2);
@@ -45,7 +45,7 @@ TEST(CombinedFeaturesTest,test_array_operations)
 
 	comb_feat->delete_feature_obj(0);
 	EXPECT_EQ(comb_feat->get_num_feature_obj(),2);
-	
+
 	CDenseFeatures<float64_t>* f_1 = (CDenseFeatures<float64_t>*) comb_feat->get_feature_obj(0);
 	SGMatrix<float64_t> m_1 = f_1->get_feature_matrix();
 	CDenseFeatures<float64_t>* f_2 = (CDenseFeatures<float64_t>*) comb_feat->get_feature_obj(1);

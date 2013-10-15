@@ -14,10 +14,10 @@
 namespace shogun
 {
 
-/** @brief multiclass one vs one strategy 
- * used to train generic multiclass machines 
- * for K-class problems with building 
- * voting-based ensemble of K*(K-1) 
+/** @brief multiclass one vs one strategy
+ * used to train generic multiclass machines
+ * for K-class problems with building
+ * voting-based ensemble of K*(K-1)
  * binary classifiers
  * multiclass probabilistic outputs can be
  * obtained by using the heuristics described in [1]
@@ -31,8 +31,8 @@ public:
 	/** constructor */
 	CMulticlassOneVsOneStrategy();
 
-	/** constructor 
-	 * @param prob_heuris probability estimation heuristic 
+	/** constructor
+	 * @param prob_heuris probability estimation heuristic
 	 */
 	CMulticlassOneVsOneStrategy(EProbHeuristicType prob_heuris);
 
@@ -68,13 +68,13 @@ public:
 		return "MulticlassOneVsOneStrategy";
 	};
 
-	/** rescale multiclass outputs according to the selected heuristic 
+	/** rescale multiclass outputs according to the selected heuristic
 	 * @param outputs a vector of output from each machine (in that order)
 	 * which will be resized to length of num_classes if heuristic is set
 	 */
 	virtual void rescale_outputs(SGVector<float64_t> outputs);
 
-	/** set the number of classes, since the number of machines totally 
+	/** set the number of classes, since the number of machines totally
 	 * depends on the number of classes, which will also be set.
 	 * @param num_classes number of classes
 	 */

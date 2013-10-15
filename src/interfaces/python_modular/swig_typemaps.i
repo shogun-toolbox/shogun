@@ -351,7 +351,7 @@ static bool array_from_numpy(SGNDArray<type>& sg_array, PyObject* obj, int typec
 template <class type>
 static bool array_to_numpy(PyObject* &obj, SGNDArray<type> sg_array, int typecode)
 {
-	int n = 1;	
+	int n = 1;
 	npy_intp dims[sg_array.num_dims];
 	for (int i = 0; i < sg_array.num_dims; i++)
 	{
@@ -398,7 +398,7 @@ static bool string_from_strpy(SGStringList<type>& sg_strings, PyObject* obj, int
 
 #if PY_VERSION_HEX >= 0x03000000
 					int32_t len = PyUnicode_GetSize((PyObject*) o);
-    				const char* str = PyBytes_AsString(PyUnicode_AsASCIIString(const_cast<PyObject*>(o)));
+				const char* str = PyBytes_AsString(PyUnicode_AsASCIIString(const_cast<PyObject*>(o)));
 #else
                     int32_t len = PyString_Size(o);
                     const char* str = PyString_AsString(o);
@@ -933,7 +933,7 @@ static bool spvector_to_numpy(PyObject* &obj, SGSparseVector<type> sg_vector, in
 	else if (PyUnicode_Check($input))
 	{
 		$1 = PyBytes_AsString(PyUnicode_AsASCIIString(const_cast<PyObject*>($input)));
-    	}
+	}
 	else
 	{
 		PyErr_SetString(PyExc_TypeError, "Expected a string");

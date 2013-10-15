@@ -313,12 +313,12 @@ double l2r_l2_svr_fun::fun(double *w)
 	int l=m_prob->l;
 	int w_size=get_nr_variable();
 	double d;
-	
+
 	Xv(w, z);
 
 	for(i=0;i<w_size;i++)
 		f += w[i]*w[i];
-	f /= 2;	
+	f /= 2;
 	for(i=0;i<l;i++)
 	{
 		d = z[i] - y[i];
@@ -343,7 +343,7 @@ void l2r_l2_svr_fun::grad(double *w, double *g)
 	for(i=0;i<l;i++)
 	{
 		d = z[i] - y[i];
-		
+
 		// generate index set I
 		if(d < -m_p)
 		{
@@ -357,7 +357,7 @@ void l2r_l2_svr_fun::grad(double *w, double *g)
 			I[sizeI] = i;
 			sizeI++;
 		}
-	
+
 	}
 	subXTv(z, g);
 
@@ -546,7 +546,7 @@ void Solver_MCSVM_CS::solve()
 					for (m=0; m<active_size_i[i]; m++)
 						G[m] += w_i[alpha_index_i[m]]*tx[k];
 				}
-				
+
 				// experimental
 				// ***
 				if (prob->use_bias)

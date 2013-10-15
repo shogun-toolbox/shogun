@@ -57,7 +57,7 @@ void sg_global_cancel_computations(bool &delayed, bool &immediately)
 	if(PerlIO_flush(f)) //check signal
 	{
 		SG_SPRINT("\nImmediately return to matlab prompt / Prematurely finish computations / Do nothing (I/P/D)? ");
-		char answer= PerlIO_getc(f);   
+		char answer= PerlIO_getc(f);
 		if (answer == 'I')
 			immediately=true;
 		else if (answer == 'P')

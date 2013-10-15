@@ -95,10 +95,10 @@ CMulticlassLabels* CMCLDA::apply_multiclass(CFeatures* data)
 	int32_t num_vecs = m_features->get_num_vectors();
 	ASSERT(num_vecs > 0)
 	ASSERT( m_dim == m_features->get_dim_feature_space() );
-	
+
 	// collect features into a matrix
 	CDenseFeatures< float64_t >* rf = (CDenseFeatures< float64_t >*) m_features;
-	
+
 	MatrixXd X(num_vecs, m_dim);
 
 	int32_t vlen;
@@ -148,7 +148,7 @@ CMulticlassLabels* CMCLDA::apply_multiclass(CFeatures* data)
 	for (int i = 0; i < num_vecs; i++)
 		out->set_label(i, SGVector<float64_t>::arg_max(d.data()+i, num_vecs, m_num_classes));
 
-	return out;		
+	return out;
 }
 
 bool CMCLDA::train_machine(CFeatures* data)
@@ -160,13 +160,13 @@ bool CMCLDA::train_machine(CFeatures* data)
 	{
 		if (!data->has_property(FP_DOT))
 			SG_ERROR("Speficied features are not of type CDotFeatures\n")
-			
+
 		set_features((CDotFeatures*) data);
 	}
-	
+
 	if (!m_features)
 		SG_ERROR("No features allocated in MCLDA training\n")
-		
+
 	SGVector< int32_t > train_labels = ((CMulticlassLabels*) m_labels)->get_int_labels();
 
 	if (!train_labels.vector)
@@ -177,14 +177,14 @@ bool CMCLDA::train_machine(CFeatures* data)
 	m_num_classes = ((CMulticlassLabels*) m_labels)->get_num_classes();
 	m_dim = m_features->get_dim_feature_space();
 	int32_t num_vec  = m_features->get_num_vectors();
-	
+
 	if (num_vec != train_labels.vlen)
 		SG_ERROR("Dimension mismatch between features and labels in MCLDA training")
-	
+
 	int32_t* class_idxs = SG_MALLOC(int32_t, num_vec*m_num_classes);
 	int32_t* class_nums = SG_MALLOC(int32_t, m_num_classes); // number of examples of each class
 	memset(class_nums, 0, m_num_classes*sizeof(int32_t));
-	
+
 	for (int i = 0; i < train_labels.vlen; i++)
 	{
 		int32_t class_idx = train_labels.vector[i];
@@ -260,7 +260,7 @@ bool CMCLDA::train_machine(CFeatures* data)
 		if (m_store_cov)
 		{
 			// calc cov = buffer.T * buffer
-			Map< MatrixXd > Em_cov_k(covs.get_matrix(k), m_dim, m_dim); 
+			Map< MatrixXd > Em_cov_k(covs.get_matrix(k), m_dim, m_dim);
 			Em_cov_k = buffer.transpose() * buffer;
 		}
 	}
@@ -322,7 +322,7 @@ bool CMCLDA::train_machine(CFeatures* data)
 #endif
 
 	///////////////////////////////
-	// 2) Within variance scaling	
+	// 2) Within variance scaling
 	for (int i = 0; i < num_vec; i++)
 		X.row(i) = sqrt(fac) * X.row(i).array() / std.transpose().array();
 
@@ -330,7 +330,7 @@ bool CMCLDA::train_machine(CFeatures* data)
 	// SVD of centered (within)scaled data
 	VectorXd S(m_dim);
 	MatrixXd V(m_dim, m_dim);
-	
+
 	Eigen::JacobiSVD<MatrixXd> eSvd;
 	eSvd.compute(X,Eigen::ComputeFullV);
 	memcpy(S.data(), eSvd.singularValues().data(), m_dim*sizeof(float64_t));
@@ -385,7 +385,7 @@ bool CMCLDA::train_machine(CFeatures* data)
 
 	// compose the scalings
 	m_scalings  = SGMatrix< float64_t >(rank, m_rank);
-	Map< MatrixXd > Em_scalings(m_scalings.matrix, rank, m_rank); 
+	Map< MatrixXd > Em_scalings(m_scalings.matrix, rank, m_rank);
 	Em_scalings = scalings * V.leftCols(m_rank);
 
 #ifdef DEBUG_MCLDA

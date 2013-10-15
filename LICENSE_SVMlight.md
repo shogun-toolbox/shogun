@@ -9,19 +9,19 @@ Author: Thorsten Joachims
 	Ithaca, NY 14853
 	USA
 
-LICENSING TERMS 
+LICENSING TERMS
 
 This program is granted free of charge for research and education
 purposes. However you must obtain a license from the author to use it
 for commercial purposes.
 
 Scientific results produced using the software provided shall
-acknowledge the use of SVM-Light. Please cite as  
+acknowledge the use of SVM-Light. Please cite as
 
        T. Joachims, Making large-Scale SVM Learning
        Practical. Advances in Kernel Methods - Support Vector
        Learning, B. Schölkopf and C. Burges and A. Smola (ed.),
-       MIT-Press, 1999. 
+       MIT-Press, 1999.
        http://www-ai.cs.uni-dortmund.de/DOKUMENTE/joachims_99a.pdf
 
 Moreover shall the author of SVM-Light be informed about the
@@ -33,7 +33,7 @@ permission of the author.
 By using SVM-Light you agree to the licensing terms.
 
 
-NO WARRANTY 
+NO WARRANTY
 
 BECAUSE THE PROGRAM IS LICENSED FREE OF CHARGE, THERE IS NO WARRANTY
 FOR THE PROGRAM, TO THE EXTENT PERMITTED BY APPLICABLE LAW. EXCEPT

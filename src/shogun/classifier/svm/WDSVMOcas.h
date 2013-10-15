@@ -158,7 +158,7 @@ class CWDSVMOcas : public CMachine
 		 * @return classified labels
 		 */
 		virtual CBinaryLabels* apply_binary(CFeatures* data=NULL);
-		
+
 		/** classify objects
 		 * for regression problems
 		 *

@@ -94,7 +94,7 @@ CLossFunction* CStructuredOutputMachine::get_surrogate_loss() const
 float64_t CStructuredOutputMachine::risk_nslack_margin_rescale(float64_t* subgrad, float64_t* W, TMultipleCPinfo* info)
 {
 	int32_t dim = m_model->get_dim();
-	
+
 	int32_t from=0, to=0;
 	CFeatures* features = get_features();
 	if (info)
@@ -151,7 +151,7 @@ float64_t CStructuredOutputMachine::risk_customized_formulation(float64_t* subgr
 	return 0.0;
 }
 
-float64_t CStructuredOutputMachine::risk(float64_t* subgrad, float64_t* W, 
+float64_t CStructuredOutputMachine::risk(float64_t* subgrad, float64_t* W,
 		TMultipleCPinfo* info, EStructRiskType rtype)
 {
 	float64_t ret = 0.0;
@@ -192,12 +192,12 @@ CSOSVMHelper* CStructuredOutputMachine::get_helper() const
 	return m_helper;
 }
 
-void CStructuredOutputMachine::set_verbose(bool verbose) 
-{ 
-	m_verbose = verbose; 
+void CStructuredOutputMachine::set_verbose(bool verbose)
+{
+	m_verbose = verbose;
 }
 
-bool CStructuredOutputMachine::get_verbose() const 
-{ 
-	return m_verbose; 
+bool CStructuredOutputMachine::get_verbose() const
+{
+	return m_verbose;
 }

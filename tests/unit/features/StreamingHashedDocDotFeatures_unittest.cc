@@ -21,7 +21,7 @@ TEST(StreamingHashedDocFeaturesTest, example_reading)
 	const char* doc_1 = "You're never too old to rock and roll, if you're too young to die";
 	const char* doc_2 = "Give me some rope, tie me to dream, give me the hope to run out of steam";
 	const char* doc_3 = "Thank you Jack Daniels, Old Number Seven, Tennessee Whiskey got me drinking in heaven";
-	
+
 	SGString<char> string_1(65);
 	for (index_t i=0; i<65; i++)
 		string_1.string[i] = doc_1[i];
@@ -58,7 +58,7 @@ TEST(StreamingHashedDocFeaturesTest, example_reading)
 		SGVector<char> tmp(list.strings[i].string, list.strings[i].slen, false);
 		tmp.vector = list.strings[i].string;
 		SGSparseVector<float64_t> converted_doc = converter->apply(tmp);
-		
+
 		EXPECT_EQ(example.num_feat_entries, converted_doc.num_feat_entries);
 
 		for (index_t j=0; j<example.num_feat_entries; j++)
@@ -80,7 +80,7 @@ TEST(StreamingHashedDocFeaturesTest, dot_tests)
 	const char* doc_1 = "You're never too old to rock and roll, if you're too young to die";
 	const char* doc_2 = "Give me some rope, tie me to dream, give me the hope to run out of steam";
 	const char* doc_3 = "Thank you Jack Daniels, Old Number Seven, Tennessee Whiskey got me drinking in heaven";
-	
+
 	SGString<char> string_1(65);
 	for (index_t i=0; i<65; i++)
 		string_1.string[i] = doc_1[i];
@@ -120,7 +120,7 @@ TEST(StreamingHashedDocFeaturesTest, dot_tests)
 		SGVector<char> tmp(list.strings[i].string, list.strings[i].slen, false);
 		tmp.vector = list.strings[i].string;
 		SGSparseVector<float64_t> converted_doc = converter->apply(tmp);
-		
+
 		float32_t tmp_res = 0;
 		for (index_t j=0; j<converted_doc.num_feat_entries; j++)
 			tmp_res += dense_vec[converted_doc.features[j].feat_index] * converted_doc.features[j].entry;
@@ -132,12 +132,12 @@ TEST(StreamingHashedDocFeaturesTest, dot_tests)
 		SGVector<float32_t> dense_vec2(32);
 		for (index_t j=0; j<32; j++)
 			dense_vec2[j] = dense_vec[j];
-		
+
 		feats->add_to_dense_vec(1, dense_vec2.vector, dense_vec2.vlen);
 		index_t sparse_idx = 0;
 		for (index_t j=0; j<32; j++)
 		{
-			if ( (sparse_idx < example.num_feat_entries) && 
+			if ( (sparse_idx < example.num_feat_entries) &&
 					(example.features[sparse_idx].feat_index == j) )
 			{
 				EXPECT_NEAR(dense_vec2[j], dense_vec[j] + example.features[sparse_idx].entry, 1e-7);
@@ -146,11 +146,11 @@ TEST(StreamingHashedDocFeaturesTest, dot_tests)
 			else
 				EXPECT_NEAR(dense_vec2[j], dense_vec[j], 1e-7);
 		}
-		
+
 		feats->release_example();
 		i++;
 	}
-	
+
 	feats->end_parser();
 	SG_UNREF(feats);
 	SG_UNREF(doc_collection);

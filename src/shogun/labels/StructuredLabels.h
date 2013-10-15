@@ -65,7 +65,7 @@ class CStructuredLabels : public CLabels
 		 * @return labels
 		 */
 		CDynamicObjectArray* get_labels() const;
-		
+
 		/** get label object for specified index
 		 *
 		 * @param idx index of the label

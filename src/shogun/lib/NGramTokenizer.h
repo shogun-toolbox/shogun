@@ -17,7 +17,7 @@ namespace shogun
 {
 class CTokenizer;
 
-/** @brief The class CNGramTokenizer is used to tokenize 
+/** @brief The class CNGramTokenizer is used to tokenize
  *  a SGVector<char> into n-grams
  */
 class CNGramTokenizer: public CTokenizer
@@ -29,8 +29,8 @@ public:
 	 */
     CNGramTokenizer(int32_t ns=3);
 
-    /** copy constructor 
-	 * 
+    /** copy constructor
+	 *
 	 * @param orig the original NGramTokenizer
 	 */
     CNGramTokenizer(const CNGramTokenizer& orig);
@@ -44,7 +44,7 @@ public:
 	 */
 	virtual void set_text(SGVector<char> txt);
 
-	/** Returns true or false based on whether 
+	/** Returns true or false based on whether
 	 * there exists another token in the text
 	 *
 	 * @return if another token exists
@@ -72,7 +72,7 @@ private:
 	void init();
 
 protected:
-	
+
 	/** n-grams' size */
 	int32_t n;
 

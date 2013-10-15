@@ -84,7 +84,7 @@ int main(int argc, char** argv)
 
 	// specify Laplace approximation inference method
 	// CLaplacianInferenceMethod* inf=new CLaplacianInferenceMethod(kernel,
-	// 		feat_train, mean, lab_train, lik);
+	//		feat_train, mean, lab_train, lik);
 
 	// specify EP approximation inference method
 	CEPInferenceMethod* inf=new CEPInferenceMethod(kernel, feat_train, mean,

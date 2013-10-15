@@ -5,16 +5,16 @@
 #  it under the terms of the GNU General Public License as published by
 #  the Free Software Foundation; either version 3 of the License, or
 #  (at your option) any later version.
-# 
+#
 #  Written (W) 2013 Evangelos Anagnostopoulos
-# 
+#
 
 def parse_arguments():
 	import argparse
 	parser = argparse.ArgumentParser(description=
 		"Solve binary classification problems stored in libsvm format, "
 		"using Random Fourier features and SVMOcas")
-	parser.add_argument('--dataset', required=True, type=str, 
+	parser.add_argument('--dataset', required=True, type=str,
 					help='Path to training dataset in LibSVM format.')
 	parser.add_argument('--testset', type=str,
 					help='Path to test dataset in LibSVM format.')
@@ -67,7 +67,7 @@ if __name__=='__main__':
 
 	print 'Loading training data...'
 	sparse_data = load_sparse_data(args.dataset,args.dimension)
-	
+
 	kernel_params = array([args.width], dtype=float)
 	rf_feats = RandomFourierDotFeatures(sparse_data['data'], args.D, GAUSSIAN,
 				kernel_params)

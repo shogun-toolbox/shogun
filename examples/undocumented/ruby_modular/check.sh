@@ -31,7 +31,7 @@ else
 	$RUBY $1
 fi
 
-if test -f error.log 
+if test -f error.log
 then
 	cat error.log
 	exit 1

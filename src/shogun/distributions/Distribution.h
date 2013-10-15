@@ -29,9 +29,9 @@ class CMath;
  * get_num_model_parameters()	- for the total number of model parameters
  * get_log_model_parameter()	- for the n-th model parameter (logarithmic)
  * get_log_derivative()			- for the partial derivative wrt. to the n-th
- * 										model parameter
+ *										model parameter
  * get_log_likelihood_example() - for the likelihood for the
- * 										n-th example
+ *										n-th example
  *
  * This way methods building on CDistribution, might enumerate over all possible
  * model parameters and obtain the parameter vector and the gradient. This is

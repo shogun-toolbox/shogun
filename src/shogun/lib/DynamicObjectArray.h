@@ -442,7 +442,7 @@ class CDynamicObjectArray : public CSGObject
 		virtual void init()
 		{
 			m_parameters->add_vector(&m_array.array, &m_array.current_num_elements, "array",
-									 "Memory for dynamic array.");	
+									 "Memory for dynamic array.");
 			SG_ADD(&m_array.num_elements,
 							  "num_elements",
 							  "Number of Elements.", MS_NOT_AVAILABLE);

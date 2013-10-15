@@ -4,6 +4,6 @@ Comparing neighboring characters it puts emphasize on local features.
 It can be defined as
 K({\bf x},{\bf x'})=\left(\sum_{i=0}^{T-1}\left(\sum_{j=-l}^{+l}w_jI_{i+j}({\bf x},{\bf x'})\right)^{d_1}\right)^{d_2},
 where
-I_i({\bf x},{\bf x'})=1 
+I_i({\bf x},{\bf x'})=1
 if $x_i=x'_i and 0 otherwise.
 

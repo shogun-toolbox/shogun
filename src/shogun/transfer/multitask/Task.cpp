@@ -19,7 +19,7 @@ CTask::CTask() : CSGObject()
 	m_name = "task";
 }
 
-CTask::CTask(index_t min_index, index_t max_index, 
+CTask::CTask(index_t min_index, index_t max_index,
              float64_t weight, const char* name) :
 	CSGObject()
 {

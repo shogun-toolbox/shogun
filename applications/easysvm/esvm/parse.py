@@ -13,10 +13,10 @@ This module contains code to parse the input arguments to the command line:
 #                                                                                           #
 #    This program is distributed in the hope that it will be useful,                        #
 #    but WITHOUT ANY WARRANTY; without even the implied warranty of                         #
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                           # 
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                           #
 #    GNU General Public License for more details.                                           #
 #                                                                                           #
-#    You should have received a copy of the GNU General Public License                      # 
+#    You should have received a copy of the GNU General Public License                      #
 #    along with this program; if not, see http://www.gnu.org/licenses                       #
 #    or write to the Free Software Foundation, Inc., 51 Franklin Street,                    #
 #    Fifth Floor, Boston, MA 02110-1301  USA                                                #
@@ -36,7 +36,7 @@ def parse_range(str):
         return (int(list[0]), int(list[0]))
     if len(list)==2:
         return (int(list[0]), int(list[1]))
-    sys.stderr.write("Cannot parse range '%s'\n" %str) 
+    sys.stderr.write("Cannot parse range '%s'\n" %str)
     sys.exit(-1)
 
 
@@ -63,7 +63,7 @@ def parse_input_file_train(kernelname, argv):
     """Parse the input and output file names"""
 
     if len(argv)<2 or (argv[0]=="fasta" and len(argv)<3) or (argv[0]!='fasta' and argv[0]!='arff'):
-        sys.stderr.write("data usage: arff <train.arff>\n        or: fasta <train_pos.fa> <train_neg.fa>\n") 
+        sys.stderr.write("data usage: arff <train.arff>\n        or: fasta <train_pos.fa> <train_neg.fa>\n")
         sys.exit(-1)
 
     if argv[0] == 'fasta':
@@ -85,9 +85,9 @@ def parse_input_file_train_test(kernelname, argv):
     """Parse the input and output file names"""
 
     if len(argv)<3 or (argv[0]=="fasta" and len(argv)<4) or (argv[0]!='fasta' and argv[0]!='arff'):
-        sys.stderr.write("data usage: arff <train.arff> <test.arff>\n        or: fasta <train_pos.fa> <train_neg.fa> <test.fa>\n") 
+        sys.stderr.write("data usage: arff <train.arff> <test.arff>\n        or: fasta <train_pos.fa> <train_neg.fa> <test.fa>\n")
         sys.exit(-1)
- 
+
     if argv[0] == 'fasta':
         datafilenamepos = argv[1]
         datafilenameneg = argv[2]
@@ -115,21 +115,21 @@ def parse_prediction_file(fname):
 
     f = open(fname)
     str=f.read()
-    lines = str.split('\n') 
-    num=0 
+    lines = str.split('\n')
+    num=0
     for line in lines:
         if len(line)>0 and line[0] != '#':
-            elems=line.split('\t') 
+            elems=line.split('\t')
             assert(len(elems)>1)
-            assert(int(elems[0]) == num) 
-            num+=1 
+            assert(int(elems[0]) == num)
+            num+=1
             if len(elems)==2:
                 outputs.append(float(elems[1]))
             else:
                 assert(len(elems)==3)
                 outputs.append(float(elems[1]))
                 splitassignments.append(float(elems[2]))
-    f.close() 
+    f.close()
     if len(splitassignments)==0:
         splitassignments = None
 
@@ -145,12 +145,12 @@ def parse_kernel_param(argv, allow_modelsel_params):
         sys.stderr.write("kernel usage: <kernelname> [<parameters>]\n")
         sys.exit(-1)
 
-    kernelname = argv[0] 
+    kernelname = argv[0]
     kparam = {}
     kparam["name"]=kernelname
     kparam["modelsel_name"]=None
     kparam["modelsel_params"]=None
-    
+
     if kernelname == 'gauss':
         if len(argv)<2:
             sys.stderr.write("kernel usage: gauss <width>\n")

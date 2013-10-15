@@ -27,7 +27,7 @@ TEST(HashedDocDotFeaturesTest, computed_features_test)
 	const char* doc_1 = "You're never too old to rock and roll, if you're too young to die";
 	const char* doc_2 = "Give me some rope, tie me to dream, give me the hope to run out of steam";
 	const char* doc_3 = "Thank you Jack Daniels, Old Number Seven, Tennessee Whiskey got me drinking in heaven";
-	
+
 	SGString<char> string_1(65);
 	for (index_t i=0; i<65; i++)
 		string_1.string[i] = doc_1[i];
@@ -44,9 +44,9 @@ TEST(HashedDocDotFeaturesTest, computed_features_test)
 	list.strings[0] = string_1;
 	list.strings[1] = string_2;
 	list.strings[2] = string_3;
-	
+
 	int32_t hash_bits = 5; //log2(32).
-	
+
 	CDelimiterTokenizer* tokenizer = new CDelimiterTokenizer();
 	tokenizer->delimiters[' '] = 1;
 	tokenizer->delimiters['\''] = 1;
@@ -57,7 +57,7 @@ TEST(HashedDocDotFeaturesTest, computed_features_test)
 			tokenizer, false);
 
 	CHashedDocConverter* converter = new CHashedDocConverter(tokenizer, hash_bits, false);
-	
+
 	CSparseFeatures<float64_t>* converted_docs = (CSparseFeatures<float64_t>* ) converter->apply(doc_collection);
 
 	for (index_t i=0; i<3; i++)
@@ -80,7 +80,7 @@ TEST(HashedDocDotFeaturesTest, dense_dot_test)
 	const char* doc_1 = "You're never too old to rock and roll, if you're too young to die";
 	const char* doc_2 = "Give me some rope, tie me to dream, give me the hope to run out of steam";
 	const char* doc_3 = "Thank you Jack Daniels, Old Number Seven, Tennessee Whiskey got me drinking in heaven";
-	
+
 	SGString<char> string_1(65);
 	for (index_t i=0; i<65; i++)
 		string_1.string[i] = doc_1[i];
@@ -109,14 +109,14 @@ TEST(HashedDocDotFeaturesTest, dense_dot_test)
 	CStringFeatures<char>* doc_collection = new CStringFeatures<char>(list, RAWBYTE);
 	CHashedDocDotFeatures* hddf = new CHashedDocDotFeatures(hash_bits, doc_collection,
 			tokenizer, false);
-	
+
 	CHashedDocConverter* converter = new CHashedDocConverter(tokenizer, hash_bits, false);
 	CSparseFeatures<float64_t>* converted_docs = (CSparseFeatures<float64_t>* ) converter->apply(doc_collection);
 
 	SGVector<float64_t> vec(dimension);
 	for (index_t i=0; i<dimension; i++)
 		vec[i] = CMath::random(-dimension, dimension);
-	
+
 	for (index_t i=0; i<3; i++)
 	{
 		SGVector<float64_t> sv = converted_docs->get_full_feature_vector(i);
@@ -126,7 +126,7 @@ TEST(HashedDocDotFeaturesTest, dense_dot_test)
 
 		float64_t features_result = hddf->dense_dot(i, vec.vector, dimension);
 		EXPECT_EQ(features_result, converter_result);
-	} 
+	}
 
 	SG_UNREF(converter);
 	SG_UNREF(converted_docs);
@@ -142,7 +142,7 @@ TEST(HashedDocDotFeaturesTest, quadratic_dense_dot)
 	const int32_t seed = 0xdeadbeaf;
 	for (index_t i=0; i<4; i++)
 		hashes[i] = CHash::MurmurHash3((uint8_t* ) &grams[i][0], 3, seed);
-	
+
 
 	int32_t dimension = 32;
 	int32_t hash_bits = 5;
@@ -196,7 +196,7 @@ TEST(HashedDocDotFeaturesTest, quadratic_dense_dot)
 	SGStringList<char> list(1,6);
 	list.strings[0] = string_1;
 
-	CNGramTokenizer* tokenizer = new CNGramTokenizer(3);	
+	CNGramTokenizer* tokenizer = new CNGramTokenizer(3);
 	SG_REF(tokenizer);
 	CStringFeatures<char>* doc_collection = new CStringFeatures<char>(list, RAWBYTE);
 	CHashedDocDotFeatures* hddf = new CHashedDocDotFeatures(hash_bits, doc_collection,
@@ -212,7 +212,7 @@ TEST(HashedDocDotFeaturesTest, quadratic_dense_dot)
 		dot_product += i * vec[i];
 	}
 
-	float64_t hashed_dot_product = hddf->dense_dot(0, dense_vec.vector, dense_vec.vlen);	
+	float64_t hashed_dot_product = hddf->dense_dot(0, dense_vec.vector, dense_vec.vlen);
 	EXPECT_EQ(hashed_dot_product, dot_product);
 	float64_t sparse_dot_product = sf->dense_dot(0, dense_vec.vector, dense_vec.vlen);
 	EXPECT_EQ(sparse_dot_product, dot_product);
@@ -232,7 +232,7 @@ TEST(HashedDocDotFeaturesTest, quadratic_add_to_dense)
 	const int32_t seed = 0xdeadbeaf;
 	for (index_t i=0; i<4; i++)
 		hashes[i] = CHash::MurmurHash3((uint8_t* ) &grams[i][0], 3, seed);
-	
+
 
 	int32_t dimension = 32;
 	int32_t hash_bits = 5;
@@ -286,7 +286,7 @@ TEST(HashedDocDotFeaturesTest, quadratic_add_to_dense)
 	SGStringList<char> list(1,6);
 	list.strings[0] = string_1;
 
-	CNGramTokenizer* tokenizer = new CNGramTokenizer(3);	
+	CNGramTokenizer* tokenizer = new CNGramTokenizer(3);
 	CStringFeatures<char>* doc_collection = new CStringFeatures<char>(list, RAWBYTE);
 	CHashedDocDotFeatures* hddf = new CHashedDocDotFeatures(hash_bits, doc_collection,
 			tokenizer, false, 3, 2);
@@ -300,7 +300,7 @@ TEST(HashedDocDotFeaturesTest, quadratic_add_to_dense)
 	}
 
 	hddf->add_to_dense_vec(1, 0, dense_vec2.vector, dense_vec2.vlen, 0);
-	
+
 	for (index_t i=0; i<dimension; i++)
 		EXPECT_EQ(dense_vec[i], dense_vec2[i]);
 

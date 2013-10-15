@@ -1,13 +1,13 @@
-# 
+#
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
-# 
+#
 # Written (W) 2006-2008 Soeren Sonnenburg
 # Written (W) 2007 Gunnar Raetsch
 # Copyright (C) 2006-2008 Fraunhofer Institute FIRST and Max-Planck-Society
-# 
+#
 
 import sys
 from numpy import mat,array,inf,any,reshape,int32
@@ -24,11 +24,11 @@ class model(object):
 	statedescr = None
 	plifidmat = None
 	orf_info = None
-	use_orf = None 
+	use_orf = None
 
-	word_degree = None 
+	word_degree = None
 	mod_words = None
-	sign_words = None 
+	sign_words = None
 
 	#penalties
 	penalty_acceptor_boundaries=None
@@ -79,8 +79,8 @@ class model(object):
 	don_splice_window_right=None
 	don_splice_alphas=None
 	don_splice_svs=None
-	
-	
+
+
 
 def parse_file(file):
 	m=model()
@@ -110,12 +110,12 @@ def parse_file(file):
 				m.statedescr=parse_vector(l, file, 'statedescr')
 				if m.statedescr is not None:
 					m.statedescr=array(m.statedescr, int32)
-					
+
 			if m.plifidmat is None:
 				m.plifidmat=parse_matrix(l, file, 'plifidmat')
 				if m.plifidmat is not None:
 					m.plifidmat = array(m.plifidmat, int32)
-					
+
 			if m.orf_info is None:
 				m.orf_info=parse_matrix(l, file, 'orf_info')
 				if m.orf_info is not None:
@@ -128,14 +128,14 @@ def parse_file(file):
 			if m.word_degree is None: m.word_degree=parse_vector(l, file, 'word_degree')
 			if m.mod_words is None: m.mod_words=parse_matrix(l, file, 'mod_words')
 			if m.sign_words is None: m.sign_words=parse_vector(l, file, 'sign_words')
-			
+
 			#penalties
 			if m.penalty_acceptor_boundaries is None: m.penalty_acceptor_boundaries=parse_vector(l, file, 'penalty_acceptor_boundaries')
 			if m.penalty_acceptor_penalty is None: m.penalty_acceptor_penalty=parse_vector(l, file, 'penalty_acceptor_penalty')
 			if m.penalty_donor_boundaries is None: m.penalty_donor_boundaries=parse_vector(l, file, 'penalty_donor_boundaries')
-			if m.penalty_donor_penalty is None: m.penalty_donor_penalty=parse_vector(l, file, 'penalty_donor_penalty') 
+			if m.penalty_donor_penalty is None: m.penalty_donor_penalty=parse_vector(l, file, 'penalty_donor_penalty')
 			if m.penalty_coding_len_boundaries is None: m.penalty_coding_len_boundaries=parse_vector(l, file, 'penalty_coding_len_boundaries')
-			if m.penalty_coding_len_penalty is None: m.penalty_coding_len_penalty=parse_vector(l, file, 'penalty_coding_len_penalty') 
+			if m.penalty_coding_len_penalty is None: m.penalty_coding_len_penalty=parse_vector(l, file, 'penalty_coding_len_penalty')
 			if m.penalty_first_coding_len_boundaries is None: m.penalty_first_coding_len_boundaries=parse_vector(l, file, 'penalty_first_coding_len_boundaries')
 			if m.penalty_first_coding_len_penalty is None: m.penalty_first_coding_len_penalty=parse_vector(l, file, 'penalty_first_coding_len_penalty')
 			if m.penalty_last_coding_len_boundaries is None: m.penalty_last_coding_len_boundaries=parse_vector(l, file, 'penalty_last_coding_len_boundaries')

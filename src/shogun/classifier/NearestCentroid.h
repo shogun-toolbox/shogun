@@ -24,13 +24,13 @@ namespace shogun
 class CDistanceMachine;
 
 /** @brief Class NearestCentroid, an implementation of Nearest Shrunk Centroid classifier
- * 
+ *
  * To define how close examples are
  * NearestCentroid requires a CDistance object to work with (e.g., CEuclideanDistance ).
  */
 
 class CNearestCentroid : public CDistanceMachine{
-	
+
 public:
 
 	/** problem type */
@@ -40,28 +40,28 @@ public:
 	 * Default constructor
 	 */
 	CNearestCentroid();
-	
+
 	/** constructor
 	 *
 	 * @param distance distance
 	 * @param trainlab labels for training
 	 */
 	CNearestCentroid(CDistance* distance, CLabels* trainlab);
-	
+
 	/** Destructor
 	 */
 	virtual ~CNearestCentroid();
-	
+
 	/** Set shrinking constant
-	 * 
+	 *
 	 * @param shrinking to be set
 	 */
 	void set_shrinking(float64_t shrinking) {
 		m_shrinking = shrinking ;
 	}
-	
+
 	/** Get shrinking constant
-	 * 
+	 *
 	 * @return value of the shrinking constant
 	 */
 	float64_t get_shrinking() const{
@@ -69,7 +69,7 @@ public:
 	}
 
 	/** Get the centroids
-	 * 
+	 *
 	 * @return Matrix containing the centroids
 	 */
 	CDenseFeatures<float64_t>* get_centroids() const{
@@ -81,7 +81,7 @@ public:
 	 * @return name of the SGSerializable
 	 */
 	virtual const char* get_name() const { return "NearestCentroid"; }
-	
+
 protected:
 	/** train Nearest Centroid classifier
 	 *
@@ -92,7 +92,7 @@ protected:
 	 * @return whether training was successful
 	 */
 	virtual bool train_machine(CFeatures* data=NULL);
-	
+
 	/** Stores feature data of underlying model.
 	 *
 	 * Sets centroids as lhs
@@ -100,17 +100,17 @@ protected:
 
 private:
 	void init();
-	
+
 protected:
 	///	number of classes (i.e. number of values labels can take)
 	int32_t m_num_classes;
-	
+
 	///	Shrinking parameter
 	float64_t m_shrinking;
-	
+
 	///	The centroids of the trained features
 	CDenseFeatures<float64_t>* m_centroids;
-	
+
 	///	Tells if the classifier has been trained or not
 	bool m_is_trained;
 };

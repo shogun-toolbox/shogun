@@ -9,7 +9,7 @@ using namespace shogun;
 TEST(ParserTest, tokenization)
 {
 	int32_t ntokens=5;
-	const char* text="	This is  	the ultimate test!	";
+	const char* text="	This is	the ultimate test!	";
 	const char* tokens[]={"This", "is", "the", "ultimate", "test!"};
 	SGVector<char> cv(const_cast<char* >(text), 30, false);
 
@@ -29,7 +29,7 @@ TEST(ParserTest, tokenization)
 		EXPECT_EQ((index_t) strlen(tokens[num_tokens]), token.vlen);
 		for (int32_t i=0; i<token.vlen; i++)
 		{
-			EXPECT_EQ(tokens[num_tokens][i], token[i]);	
+			EXPECT_EQ(tokens[num_tokens][i], token[i]);
 		}
 		num_tokens++;
 	}

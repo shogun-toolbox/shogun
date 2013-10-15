@@ -3,9 +3,9 @@
 #ifdef HAVE_EIGEN3
 
 /**
- * @brief function amari_index 
- * 
- * calculates the amari index for an estimated 
+ * @brief function amari_index
+ *
+ * calculates the amari index for an estimated
  * mixing matrix and given mixing matrix.
  *
  * @param W the estimated mixing matrix

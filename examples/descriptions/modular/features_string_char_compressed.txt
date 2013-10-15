@@ -1,5 +1,5 @@
 This example demonstrates how to use compressed strings with shogun.
-We currently support reading and writing compressed files using 
+We currently support reading and writing compressed files using
 LZO, GZIP, BZIP2 and LZMA. Furthermore, we demonstrate how to extract
 compressed streams on-the-fly in order to fit data sets into
 memory that would be too large, otherwise.

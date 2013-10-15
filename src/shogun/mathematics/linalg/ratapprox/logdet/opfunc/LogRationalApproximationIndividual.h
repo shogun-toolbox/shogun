@@ -3,7 +3,7 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Written (W) 2013 Soumyajit De
  */
 
@@ -59,8 +59,8 @@ public:
 	/** destructor */
 	virtual ~CLogRationalApproximationIndividual();
 
-	/** 
-	 * method that creates a vector job result aggregator, then creates 
+	/**
+	 * method that creates a vector job result aggregator, then creates
 	 * num_shifts jobs per sample, with each of the shifts moved inside the
 	 * linear operator, attaches the aggregator with them, and submits
 	 * the job to computation engine and then returns the aggregator

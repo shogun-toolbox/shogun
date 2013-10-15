@@ -11,7 +11,7 @@ fm_hmm_pos=[traindat[i] for i in where([label_traindat==1])[1] ]
 fm_hmm_neg=[traindat[i] for i in where([label_traindat==-1])[1] ]
 
 parameter_list = [[traindat,testdat,label_traindat,1e-1,1,0,False,[1, False, True]], \
-[traindat,testdat,label_traindat,1e-1,1,0,False,[1, False, True] ]] 	
+[traindat,testdat,label_traindat,1e-1,1,0,False,[1, False, True] ]]
 
 def kernel_top_modular (fm_train_dna=traindat,fm_test_dna=testdat,label_train_dna=label_traindat,pseudo=1e-1,
 	order=1,gap=0,reverse=False,kargs=[1, False, True]):
@@ -19,7 +19,7 @@ def kernel_top_modular (fm_train_dna=traindat,fm_test_dna=testdat,label_train_dn
 	from modshogun import PolyKernel
 	from modshogun import HMM, BW_NORMAL
 
-	N=1 # toy HMM with 1 state 
+	N=1 # toy HMM with 1 state
 	M=4 # 4 observations -> DNA
 
 

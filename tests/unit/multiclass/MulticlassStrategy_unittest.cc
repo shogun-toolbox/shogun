@@ -19,7 +19,7 @@ TEST(MulticlassStrategy,rescale_ova_norm)
 
 	//SGVector<float64_t>::display_vector(scores.vector,scores.vlen);
 
-	// GT caculated manually 
+	// GT caculated manually
 	// scores[0] = scores[0] / sum(scores)
 	// scores[1] = scores[1] / sum(scores)
 	// scores[2] = scores[2] / sum(scores)
@@ -45,11 +45,11 @@ TEST(MulticlassStrategy,rescale_ova_softmax)
 
 	//SGVector<float64_t>::display_vector(scores.vector,scores.vlen);
 
-	// GT caculated manually 
+	// GT caculated manually
 	// scores[0] = exp(-0.1) / norm
 	// scores[1] = exp(-0.4) / norm
 	// scores[2] = exp(-0.9) / norm
-	// norm = exp(-0.1)+exp(-0.4)+exp(-0.9) 
+	// norm = exp(-0.1)+exp(-0.4)+exp(-0.9)
 	EXPECT_NEAR(scores[0],0.4565903181944378,1E-5);
 	EXPECT_NEAR(scores[1],0.33825042710530284,1E-5);
 	EXPECT_NEAR(scores[2],0.20515925470025934,1E-5);
@@ -66,7 +66,7 @@ TEST(MulticlassStrategy,rescale_ova_price)
 
 	//SGVector<float64_t>::display_vector(scores.vector,scores.vlen);
 
-	// GT caculated manually 
+	// GT caculated manually
 	// scores[0] = \frac{1}{1/0.5+1/0.5-(3-2)} / norm
 	// scores[1] = \frac{1}{1/0.5+1/0.5-(3-2)} / norm
 	// scores[2] = \frac{1}{1/0.5+1/0.5-(3-2)} / norm
@@ -85,7 +85,7 @@ TEST(MulticlassStrategy,rescale_ova_hastie)
 	SGVector<float64_t> labels(3);
 	labels.range_fill(0);
 
-	CMulticlassLabels *orig_labels = new CMulticlassLabels(labels); 
+	CMulticlassLabels *orig_labels = new CMulticlassLabels(labels);
 	SG_REF(orig_labels);
 
 	CBinaryLabels *train_labels = new CBinaryLabels(2);

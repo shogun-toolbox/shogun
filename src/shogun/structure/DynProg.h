@@ -122,9 +122,9 @@ public:
 	void precompute_tiling_plifs(CPlif** PEN, const int32_t* tiling_plif_ids, const int32_t num_tiling_plifs);
 
 	/** append rows to linear features array
- 	 *
- 	 * @param num_new_feat number of new rows to add
- 	 */
+	 *
+	 * @param num_new_feat number of new rows to add
+	 */
 	void resize_lin_feat(int32_t num_new_feat);
 	/** set vector p
 	 *
@@ -424,7 +424,7 @@ public:
 	 */
 	inline void set_lin_feat(float64_t* p_lin_feat, int32_t p_num_svms, int32_t p_seq_len)
 	{
- 	  m_lin_feat.set_array(p_lin_feat, p_num_svms, p_seq_len, true, true);
+	  m_lin_feat.set_array(p_lin_feat, p_num_svms, p_seq_len, true, true);
 	}
 	/** create word string from char*
 	 * Jonas
@@ -481,7 +481,7 @@ public:
 	{
 		m_long_transitions = use_long_transitions;
 		m_long_transition_threshold = threshold;
-		SG_DEBUG("ignoring max_len\n") 
+		SG_DEBUG("ignoring max_len\n")
 		//m_long_transition_max = max_len;
 	}
 
@@ -691,9 +691,9 @@ protected:
 	/** segment loss */
 	CDynamicArray<float64_t> m_segment_loss; // 3d
 	/** segment IDs */
-	CDynamicArray<int32_t> m_segment_ids;	
+	CDynamicArray<int32_t> m_segment_ids;
 	/** segment mask */
-	CDynamicArray<float64_t> m_segment_mask;	
+	CDynamicArray<float64_t> m_segment_mask;
 	/** my state seq */
 	CDynamicArray<int32_t> m_my_state_seq;
 	/** my position sequence */

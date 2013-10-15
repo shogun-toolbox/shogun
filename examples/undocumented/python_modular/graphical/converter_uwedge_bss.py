@@ -23,7 +23,7 @@ S = np.c_[s1, s2]
 S += 0.1 * np.random.normal(size=S.shape)  # add noise
 
 # Standardize data
-S /= S.std(axis=0)  
+S /= S.std(axis=0)
 S = S.T
 
 # Mixing Matrix

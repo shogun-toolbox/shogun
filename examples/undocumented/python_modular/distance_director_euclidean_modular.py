@@ -44,7 +44,7 @@ def distance_director_euclidean_modular (fm_train_real=traindat,fm_test_real=tes
 	#print  "ddm_train"
 	t=Time()
 	ddm_train=ddistance.get_distance_matrix()
-	#t2=t.cur_time_diff(True)	
+	#t2=t.cur_time_diff(True)
 
 	#print "dm_train", dm_train
 	#print "ddm_train", ddm_train

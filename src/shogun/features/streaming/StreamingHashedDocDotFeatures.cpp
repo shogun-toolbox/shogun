@@ -36,7 +36,7 @@ CStreamingHashedDocDotFeatures::CStreamingHashedDocDotFeatures(
 	int32_t size=1024;
 
 	init(file, is_labelled, size, tzer, bits, true, 1, 0);
-	
+
 	parser.set_free_vectors_on_destruct(false);
 	seekable= true;
 }
@@ -99,7 +99,7 @@ float32_t CStreamingHashedDocDotFeatures::dense_dot(const float32_t* vec2, int32
 	float32_t result = 0;
 	for (index_t i=0; i<current_vector.num_feat_entries; i++)
 	{
-		result += vec2[current_vector.features[i].feat_index] * 
+		result += vec2[current_vector.features[i].feat_index] *
 					current_vector.features[i].entry;
 	}
 	return result;
@@ -109,7 +109,7 @@ void CStreamingHashedDocDotFeatures::add_to_dense_vec(float32_t alpha, float32_t
 			int32_t vec2_len, bool abs_val)
 {
 	float32_t value = abs_val ? CMath::abs(alpha) : alpha;
-	
+
 	for (index_t i=0; i<current_vector.num_feat_entries; i++)
 		vec2[current_vector.features[i].feat_index] += value * current_vector.features[i].entry;
 }

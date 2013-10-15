@@ -28,7 +28,7 @@ struct Message
 		ss << data;
 		return *this;
 	}
-	operator std::string() 
+	operator std::string()
 	{
 		return ss.str();
 	}
@@ -48,7 +48,7 @@ class Parameter
 private:
 
 	template <typename T>
-	Parameter(const ParameterName& pname, const T& value) : 
+	Parameter(const ParameterName& pname, const T& value) :
 		valid(true), invalidity_reason(),
 		parameter_name(pname), keeper(tapkee_internal::ValueKeeper(value))
 	{
@@ -57,18 +57,18 @@ private:
 public:
 
 	template <typename T>
-	static Parameter create(const std::string& name, const T& value) 
+	static Parameter create(const std::string& name, const T& value)
 	{
 		return Parameter(name, value);
 	}
 
-	Parameter() : 
+	Parameter() :
 		valid(false), invalidity_reason(),
 		parameter_name("unknown"), keeper(tapkee_internal::ValueKeeper())
 	{
 	}
 
-	Parameter(const Parameter& p) : 
+	Parameter(const Parameter& p) :
 		valid(p.valid), invalidity_reason(p.invalidity_reason),
 		parameter_name(p.name()), keeper(p.keeper)
 	{
@@ -95,7 +95,7 @@ public:
 		{
 			throw wrong_parameter_error(invalidity_reason);
 		}
-		try 
+		try
 		{
 			return getValue<T>();
 		}
@@ -144,12 +144,12 @@ public:
 		return keeper.notEqual<T>(value);
 	}
 
-	bool isPositive() const 
+	bool isPositive() const
 	{
 		return keeper.positive();
 	}
-	
-	bool isNonNegative() const 
+
+	bool isNonNegative() const
 	{
 		return keeper.nonNegative();
 	}
@@ -176,7 +176,7 @@ public:
 		return keeper.isInitialized();
 	}
 
-	ParameterName name() const 
+	ParameterName name() const
 	{
 		return parameter_name;
 	}
@@ -190,7 +190,7 @@ private:
 	{
 		return keeper.getValue<T>();
 	}
-	
+
 	template <typename T>
 	inline bool isTypeCorrect() const
 	{
@@ -210,7 +210,7 @@ private:
 
 	ParameterName parameter_name;
 
-	tapkee_internal::ValueKeeper keeper; 
+	tapkee_internal::ValueKeeper keeper;
 
 };
 
@@ -245,9 +245,9 @@ public:
 	{
 		if (!parameter.isInRange(lower, upper))
 		{
-			std::string reason = 
-				(Message() << "Value of " << parameter.name() << " " 
-				 << parameter.getValue<T>() << " doesn't fit the range [" << 
+			std::string reason =
+				(Message() << "Value of " << parameter.name() << " "
+				 << parameter.getValue<T>() << " doesn't fit the range [" <<
 				    lower << ", " << upper << ")");
 			parameter.invalidate(reason);
 		}
@@ -259,9 +259,9 @@ public:
 	{
 		if (!parameter.isInRange(lower, upper) && !parameter.is(upper))
 		{
-			std::string reason = 
-				(Message() << "Value of " << parameter.name() << " " 
-				 << parameter.getValue<T>() << " doesn't fit the range [" << 
+			std::string reason =
+				(Message() << "Value of " << parameter.name() << " "
+				 << parameter.getValue<T>() << " doesn't fit the range [" <<
 				    lower << ", " << upper << "]");
 			parameter.invalidate(reason);
 		}
@@ -272,7 +272,7 @@ public:
 	{
 		if (!parameter.isPositive())
 		{
-			std::string reason = 
+			std::string reason =
 				(Message() << "Value of " << parameter.name() << " is not positive");
 			parameter.invalidate(reason);
 		}
@@ -283,7 +283,7 @@ public:
 	{
 		if (!parameter.isNonNegative())
 		{
-			std::string reason = 
+			std::string reason =
 				(Message() << "Value of " << parameter.name() << " is negative");
 			parameter.invalidate(reason);
 		}
@@ -297,7 +297,7 @@ private:
 
 };
 
-CheckedParameter Parameter::checked() 
+CheckedParameter Parameter::checked()
 {
 	return CheckedParameter(*this);
 }
@@ -308,10 +308,10 @@ public:
 
 	typedef std::map<std::string, Parameter> ParametersMap;
 
-	ParametersSet() : pmap() 
+	ParametersSet() : pmap()
 	{
 	}
-	void add(const Parameter& p) 
+	void add(const Parameter& p)
 	{
 		if (pmap.count(p.name()))
 			throw multiple_parameter_error(Message() << "Parameter " << p.name() << " is set more than once");
@@ -322,7 +322,7 @@ public:
 	{
 		return pmap.count(name) > 0;
 	}
-	void merge(const ParametersSet& pg) 
+	void merge(const ParametersSet& pg)
 	{
 		typedef ParametersMap::const_iterator MapIter;
 		for (MapIter iter = pg.pmap.begin(); iter!=pg.pmap.end(); ++iter)

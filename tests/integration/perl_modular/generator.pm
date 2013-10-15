@@ -71,7 +71,7 @@ sub get_test_mod
 	$mod =~ s#.*/##g;
 	$mod =~ s#_.*##g;
 	#TODO::PTZ121109 $t is path less...
-	#if(not &check_for_function($t)) {	    
+	#if(not &check_for_function($t)) {
 	#TODO::PTZ121109   warn("ERROR (no function)");
 	#}
 	$mod = eval( 'modshogun::' . $mod)->new();
@@ -97,14 +97,14 @@ sub generator
 	my ($mod, $mod_name) = &get_test_mod($t);
 	unless( @$mod ) { next; }
 	if($@) {
-	    warn("%-60s", $mod_name);	    
+	    warn("%-60s", $mod_name);
 	    next;
 	}
 	my $fname = "";
 
 	printf("%-60s", $mod_name);
 	#print "%+60s" % "...",
-	foreach my $i (0..$#{$mod}) {	    
+	foreach my $i (0..$#{$mod}) {
 	    $fname = &get_fname($mod_name, $i);
 	    my $a = &run_test($mod, $mod_name, $i);
 	    write_file($fname, $a);

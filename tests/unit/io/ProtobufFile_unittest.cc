@@ -189,10 +189,10 @@ TEST(ProtobufFileTest, sparse_matrix_int32)
 	{
 		for (int32_t j=0; j<data[i].num_feat_entries; j++)
 		{
-			EXPECT_EQ(data[i].features[j].feat_index, 
+			EXPECT_EQ(data[i].features[j].feat_index,
 					data_from_file[i].features[j].feat_index);
 
-			EXPECT_EQ(data[i].features[j].entry, 
+			EXPECT_EQ(data[i].features[j].entry,
 					data_from_file[i].features[j].entry);
 		}
 	}
@@ -247,10 +247,10 @@ TEST(ProtobufFileTest, sparse_matrix_float64)
 	{
 		for (int32_t j=0; j<data[i].num_feat_entries; j++)
 		{
-			EXPECT_EQ(data[i].features[j].feat_index, 
+			EXPECT_EQ(data[i].features[j].feat_index,
 					data_from_file[i].features[j].feat_index);
 
-			EXPECT_NEAR(data[i].features[j].entry, 
+			EXPECT_NEAR(data[i].features[j].entry,
 					data_from_file[i].features[j].entry, 1E-14);
 		}
 	}
@@ -273,9 +273,9 @@ TEST(ProtobufFileTest, DISABLED_string_list_char)
 	SGString<char>* strings=SG_MALLOC(SGString<char>, num_str);
 	for (int32_t i=0; i<num_str; i++)
 	{
-	 	strings[i]=SGString<char>((int32_t) rand->random(1, max_string_len));
-	 	for (int32_t j=0; j<strings[i].slen; j++)
-	 		strings[i].string[j]=(char) rand->random(0, 255);
+		strings[i]=SGString<char>((int32_t) rand->random(1, max_string_len));
+		for (int32_t j=0; j<strings[i].slen; j++)
+			strings[i].string[j]=(char) rand->random(0, 255);
 	}
 
 	CProtobufFile* fin;
@@ -294,8 +294,8 @@ TEST(ProtobufFileTest, DISABLED_string_list_char)
 
 	for (int32_t i=0; i<num_str; i++)
 	{
-	 	for (int32_t j=0; j<strings[i].slen; j++)
-	 		EXPECT_EQ(strings[i].string[j], data_from_file[i].string[j]);
+		for (int32_t j=0; j<strings[i].slen; j++)
+			EXPECT_EQ(strings[i].string[j], data_from_file[i].string[j]);
 	}
 
 	SG_UNREF(fin);

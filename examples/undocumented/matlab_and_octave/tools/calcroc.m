@@ -2,7 +2,7 @@ function [false_alarms,hits] = calcroc(output,LTE)
 
 assert(all(size(output)==size(LTE))) ;
 
-[ld,idx] = sort(output); 
+[ld,idx] = sort(output);
 
 hits=1-cumsum(LTE(idx)>0)/sum(LTE > 0) ;
 false_alarms=1-cumsum(LTE(idx)<0)/sum(LTE < 0) ;

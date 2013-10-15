@@ -19,15 +19,15 @@ binaries to call the original implementation), because the compiler evaluates
 SuperClass::virtualFunction() calls at compile-time (not link-time).
 
 6. Add or remove virtual member functions, because this would change the size
-and layout of the vtbl of every subclass. 
+and layout of the vtbl of every subclass.
 
 7. Change the type of any data members or move any data members that can be
 accessed via inline member functions.
 
-8. Change the class hierarchy, except to add new leaves. 
+8. Change the class hierarchy, except to add new leaves.
 
 9. Add or remove private data members, because this would change the size and
-layout of every subclass. 
+layout of every subclass.
 
 10. Remove public or protected member functions unless they are inline.
 

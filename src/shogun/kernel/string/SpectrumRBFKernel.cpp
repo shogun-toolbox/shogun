@@ -377,7 +377,7 @@ bool CSpectrumRBFKernel::set_AA_matrix(
 
 	if (AA_matrix_)
 	{
-		SG_DEBUG("Setting AA_matrix\n") 
+		SG_DEBUG("Setting AA_matrix\n")
 		memcpy(AA_matrix.matrix, AA_matrix_, 128*128*sizeof(float64_t)) ;
 		return true ;
 	}

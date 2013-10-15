@@ -40,7 +40,7 @@ TEST(KernelPCA, DISABLED_apply_to_feature_matrix_input)
 	kpca.set_target_dim(2);
 	kpca.init(feats);
 	SGMatrix<float64_t> embedding = kpca.apply_to_feature_matrix(feats);
-  
+
 	float64_t s;
 	// allow embedding with opposite sign
 	if ( embedding.matrix[0] > 0)

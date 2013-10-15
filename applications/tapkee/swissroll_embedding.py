@@ -84,5 +84,5 @@ for (i, (converter, label)) in enumerate(converters):
 	plt.xticks([]), plt.yticks([])
 	plt.title(label,fontsize=9)
 	print converter.get_name(), 'done'
-	
+
 plt.show()

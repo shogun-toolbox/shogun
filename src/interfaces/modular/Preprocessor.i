@@ -7,7 +7,7 @@
  * Written (W) 2009 Soeren Sonnenburg
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
- 
+
 /* Remove C Prefix */
 %rename(Preprocessor) CPreprocessor;
 %rename(SparsePreprocessor) CSparsePreprocessor;

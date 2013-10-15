@@ -3,7 +3,7 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Written (W) 2013 Soumyajit De
  */
 #ifndef TRACE_SAMPLER_H_
@@ -32,7 +32,7 @@ public:
 		SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 	}
 
-	/** 
+	/**
 	 * constructor
 	 *
 	 * @param dimension the dimension of the sample vectors
@@ -53,12 +53,12 @@ public:
 		SG_GCDEBUG("%s destroyed (%p)\n", this->get_name(), this)
 	}
 
-	/** 
+	/**
 	 * abstract method that generates the samples
 	 *
- 	 * @param idx the index which determines which sample to draw
+	 * @param idx the index which determines which sample to draw
 	 * @return the sample vector
- 	 */
+	 */
 	virtual SGVector<float64_t> sample(index_t idx) const = 0;
 
 	/**

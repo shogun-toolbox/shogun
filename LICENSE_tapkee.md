@@ -1,4 +1,4 @@
-This license is used for all the Tapkee code except 
+This license is used for all the Tapkee code except
 CoverTree by John Langford and Dinoj Surendran (LGPLv3),
 Any type by Christopher Diggins (Boost 1.0),
 EZOptionParser by Remik Ziemlinski (MIT license).
@@ -11,7 +11,7 @@ Developed by
 
 With contributions from
 	Evgeniy Andreev (FibonacciHeap class), David Harmon (ARPACK wrapper code),
-	Daisuke Okanohara (redsvd), Christopher Diggins and 
+	Daisuke Okanohara (redsvd), Christopher Diggins and
         Pablo Aguilar and Kevlin Henney (any type)
 
 All rights reserved.

@@ -17,19 +17,19 @@ public class kernel_auc_modular {
 		kernel.setup_auc_maximization(labels);
 
 		double[,] km_train = kernel.get_kernel_matrix();
-		
+
 		int numRows = km_train.GetLength(0);
 		int numCols = km_train.GetLength(1);
-		
+
 		Console.Write("km_train:\n");
-		
+
 		for(int i = 0; i < numRows; i++){
 			for(int j = 0; j < numCols; j++){
 				Console.Write(km_train[i,j] +" ");
 			}
 			Console.Write("\n");
 		}
-		
+
 		modshogun.exit_shogun();
 	}
 }

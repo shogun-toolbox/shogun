@@ -9,7 +9,7 @@ public class evaluation_meansquarederror_modular {
 
 	public static void main(String argv[]) {
 		modshogun.init_shogun_with_defaults();
-		int N = 100;		
+		int N = 100;
 
 		DoubleMatrix ground_truth = randn(1, N);
 		DoubleMatrix predicted = randn(1, N);

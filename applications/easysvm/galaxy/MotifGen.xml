@@ -2,13 +2,13 @@
   <description>Generation of a sequence toy data set for motif discovery in ARFF format.</description>
   <command interpreter="python">datagen.py motif arff $p_motif
   $p_number_of_sequences $p_length $p_position
-  $p_mutation_rate 
+  $p_mutation_rate
   #if $negative_model.negseq=="1"
-    T $negative_model.n_number_of_sequences $negative_model.n_length 1 1 
+    T $negative_model.n_number_of_sequences $negative_model.n_length 1 1
   #else
     $negative_model.n_motif
     $negative_model.n_number_of_sequences $negative_model.n_length $negative_model.n_position
-    $negative_model.n_mutation_rate 
+    $negative_model.n_mutation_rate
   #end if
   $outfile_arff
   </command>
@@ -69,22 +69,22 @@
       learning functionality to PSU's Galaxy framework.  Copyright (C)
       2008 Sebastian J. Schultheiss (sebi@umich.edu), Gunnar Raetsch
       (raetsch@tuebingen.mpg.de) and Cheng Soon Ong (chengsoon.ong@tuebingen.mpg.de)
-                                                                                             
-      This program is free software; you can redistribute it and/or modify                   
-      it under the terms of the GNU General Public License as published by                   
-      the Free Software Foundation; either version 3 of the License, or                      
-      (at your option) any later version.                                                    
-                                                                                             
-      This program is distributed in the hope that it will be useful,                        
-      but WITHOUT ANY WARRANTY; without even the implied warranty of                         
-      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                            
-      GNU General Public License for more details.                                           
-                                                                                             
-      You should have received a copy of the GNU General Public License                       
-      along with this program; if not, see http://www.gnu.org/licenses                       
-      or write to the Free Software Foundation, Inc., 51 Franklin Street,                    
-      Fifth Floor, Boston, MA 02110-1301  USA                                                
-    
+
+      This program is free software; you can redistribute it and/or modify
+      it under the terms of the GNU General Public License as published by
+      the Free Software Foundation; either version 3 of the License, or
+      (at your option) any later version.
+
+      This program is distributed in the hope that it will be useful,
+      but WITHOUT ANY WARRANTY; without even the implied warranty of
+      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+      GNU General Public License for more details.
+
+      You should have received a copy of the GNU General Public License
+      along with this program; if not, see http://www.gnu.org/licenses
+      or write to the Free Software Foundation, Inc., 51 Franklin Street,
+      Fifth Floor, Boston, MA 02110-1301  USA
+
 
   </help>
 </tool>

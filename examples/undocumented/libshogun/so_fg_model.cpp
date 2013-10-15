@@ -42,15 +42,15 @@ void test(int32_t num_samples)
 	CFactorGraphLabels* labels = new CFactorGraphLabels(num_samples);
 	SG_REF(labels);
 
-	for (int32_t n = 0; n < num_samples; ++n) 
+	for (int32_t n = 0; n < num_samples; ++n)
 	{
 		// factor graph
 		SGVector<int32_t> vc(3);
 		SGVector<int32_t>::fill_vector(vc.vector, vc.vlen, 2);
-	
+
 		CFactorGraph* fg = new CFactorGraph(vc);
 
-		// add factors 
+		// add factors
 		SGVector<float64_t> data1(2);
 		data1[0] = 2.0 * CMath::random(0.0, 1.0) - 1.0;
 		data1[1] = 2.0 * CMath::random(0.0, 1.0) - 1.0;
@@ -75,7 +75,7 @@ void test(int32_t num_samples)
 		fg->connect_components();
 		fg->compute_energies();
 
-		CMAPInference infer_met(fg, TREE_MAX_PROD);	
+		CMAPInference infer_met(fg, TREE_MAX_PROD);
 		infer_met.inference();
 
 		CFactorGraphObservation* fg_observ = infer_met.get_structured_outputs();
@@ -87,9 +87,9 @@ void test(int32_t num_samples)
 
 #ifdef SHOW_DATA
 	// show labels
-	for (unsigned int n = 0; n < num_samples; ++n) 
+	for (unsigned int n = 0; n < num_samples; ++n)
 	{
-		CFactorGraphObservation* fg_observ = CFactorGraphObservation::obtain_from_generic(labels->get_label(n));  
+		CFactorGraphObservation* fg_observ = CFactorGraphObservation::obtain_from_generic(labels->get_label(n));
 		SG_SPRINT("- sample %d:\n", n);
 		SGVector<int32_t> fst = fg_observ->get_data();
 		SGVector<int32_t>::display_vector(fst.vector, fst.vlen);
@@ -145,7 +145,7 @@ void test(int32_t num_samples)
 	SG_SPRINT(">>>> BMRM trained in %9.4f\n", t2-t1);
 	SG_SPRINT(">>>> SGD trained in %9.4f\n", t3-t2);
 
-	// check w 
+	// check w
 	primcp->get_slacks().display_vector("slacks");
 	primcp->get_w().display_vector("w_mosek");
 	bmrm->get_w().display_vector("w_bmrm");
@@ -159,7 +159,7 @@ void test(int32_t num_samples)
 
 	float64_t acc_loss_primcp = 0.0;
 	float64_t ave_loss_primcp = 0.0;
-	
+
 	for (int32_t i=0; i<num_samples; ++i)
 	{
 		CStructuredData* y_pred = labels_primcp->get_label(i);
@@ -179,7 +179,7 @@ void test(int32_t num_samples)
 
 	float64_t acc_loss_bmrm = 0.0;
 	float64_t ave_loss_bmrm = 0.0;
-	
+
 	for (int32_t i=0; i<num_samples; ++i)
 	{
 		CStructuredData* y_pred = labels_bmrm->get_label(i);
@@ -198,7 +198,7 @@ void test(int32_t num_samples)
 
 	float64_t acc_loss_sgd = 0.0;
 	float64_t ave_loss_sgd = 0.0;
-	
+
 	for (int32_t i=0; i<num_samples; ++i)
 	{
 		CStructuredData* y_pred = labels_sgd->get_label(i);
@@ -230,7 +230,7 @@ int main(int argc, char * argv[])
 	init_shogun_with_defaults();
 
 	//sg_io->set_loglevel(MSG_DEBUG);
-	
+
 	test(100);
 
 	exit_shogun();

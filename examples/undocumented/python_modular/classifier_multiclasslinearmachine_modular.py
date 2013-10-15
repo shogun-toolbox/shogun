@@ -13,7 +13,7 @@ def classifier_multiclasslinearmachine_modular (fm_train_real=traindat,fm_test_r
 	feats_test  = RealFeatures(fm_test_real)
 
 	labels = MulticlassLabels(label_train_multiclass)
-	
+
 	classifier = LibLinear(L2R_L2LOSS_SVC)
 	classifier.set_epsilon(epsilon)
 	classifier.set_bias_enabled(True)

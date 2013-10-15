@@ -764,7 +764,7 @@ float64_t CHMM::forward_comp(int32_t time, int32_t state, int32_t dimension)
 			register int32_t i ;
 			float64_t sum ;
 			sum=-CMath::INFTY;
-			for (i=0; i<N; i++)		 	                      			//sum over all paths
+			for (i=0; i<N; i++)						//sum over all paths
 				sum=CMath::logarithmic_sum(sum, alpha[i] + get_q(i));	//to get model probability
 
 			if (!ALPHA_CACHE(dimension).table)
@@ -895,7 +895,7 @@ float64_t CHMM::forward_comp_old(int32_t time, int32_t state, int32_t dimension)
 				sum=CMath::logarithmic_sum_array(ARRAYS(dimension), N>>1) ;
 #else //USE_LOGSUMARRAY
 			sum=-CMath::INFTY;
-			for (i=0; i<N; i++)		 	                      //sum over all paths
+			for (i=0; i<N; i++)			                      //sum over all paths
 				sum=CMath::logarithmic_sum(sum, alpha[i] + get_q(i));     //to get model probability
 #endif //USE_LOGSUMARRAY
 

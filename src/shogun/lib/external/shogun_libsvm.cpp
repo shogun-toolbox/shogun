@@ -2401,12 +2401,12 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 
             if (prob->pv)
             {
-            	pv[i] = prob->pv[perm[i]];
+	pv[i] = prob->pv[perm[i]];
             }
             else
             {
 				//no custom linear term is set
-            	pv[i] = -1.0;
+	pv[i] = -1.0;
             }
 
 		}

@@ -43,7 +43,7 @@ void ShareBoostOptimizer::optimize()
 	SG_FREE(W);
 }
 
-float64_t ShareBoostOptimizer::lbfgs_evaluate(void *userdata, const float64_t *W, 
+float64_t ShareBoostOptimizer::lbfgs_evaluate(void *userdata, const float64_t *W,
 		float64_t *grad, const int32_t n, const float64_t step)
 {
 	ShareBoostOptimizer *optimizer = static_cast<ShareBoostOptimizer *>(userdata);
@@ -66,7 +66,7 @@ float64_t ShareBoostOptimizer::lbfgs_evaluate(void *userdata, const float64_t *W
 			float64_t g=0;
 			for (int32_t ii=0; ii < fea.num_cols; ++ii)
 				g += fea(optimizer->m_sb->m_activeset[i], ii) *
-					(optimizer->m_sb->m_rho(j,ii)/optimizer->m_sb->m_rho_norm[ii] - 
+					(optimizer->m_sb->m_rho(j,ii)/optimizer->m_sb->m_rho_norm[ii] -
 					 (j == lab->get_int_label(ii)));
 			g /= fea.num_cols;
 			grad[idx] = g;

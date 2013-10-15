@@ -40,13 +40,13 @@ def mkl_multiclass_modular (fm_train_real, fm_test_real, label_train_multiclass,
 	feats_train.append_feature_obj(subkfeats_train)
 	feats_test.append_feature_obj(subkfeats_test)
 	kernel.append_kernel(subkernel)
-	
+
 	kernel.init(feats_train, feats_train)
 
 	labels = MulticlassLabels(label_train_multiclass)
 
 	mkl = MKLMulticlass(C, kernel, labels)
-	
+
 	mkl.set_epsilon(epsilon);
 	mkl.parallel.set_num_threads(num_threads)
 	mkl.set_mkl_epsilon(mkl_epsilon)

@@ -2,13 +2,13 @@
 
 static_dirs="cmdline_static elwms_static matlab_and_octave python_static r_static"
 modular_dirs="octave_modular python_modular r_modular lua_modular csharp_modular ruby_modular java_modular"
-lib_dirs=libshogun 
+lib_dirs=libshogun
 rm -f missing.log
 
 document_interface()
 {
 	iftype=$1
-	
+
 	if [ "$iftype" == "static" ]
 	then
 		if_dirs="${static_dirs}"
@@ -46,7 +46,7 @@ document_interface()
 				then
 					suffix=`echo $f | cut -f 2 -d '.'`
 
-					case "$suffix" in 
+					case "$suffix" in
 						(py)
 							prefix="#"
 							;;

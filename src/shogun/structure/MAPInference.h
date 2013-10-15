@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2013 Shell Hu 
- * Copyright (C) 2013 Shell Hu 
+ * Written (W) 2013 Shell Hu
+ * Copyright (C) 2013 Shell Hu
  */
 
 #ifndef __MAP_INFERENCE_H__
@@ -19,8 +19,8 @@
 namespace shogun
 {
 
-/** the following inference methods are acceptable: 
- * Tree Max Product, Loopy Max Product, LP Relaxation, 
+/** the following inference methods are acceptable:
+ * Tree Max Product, Loopy Max Product, LP Relaxation,
  * Sequential Tree Reweighted Max Product (TRW-S),
  * Iterated Conditional Mode (ICM), Naive Mean Field,
  * Structured Mean Field.
@@ -40,7 +40,7 @@ class CMAPInferImpl;
 
 /** @brief Class CMAPInference performs MAP inference on a factor graph.
  * Briefly, given a factor graph model, with features \f$\bold{x}\f$,
- * the prediction is obtained by \f$ {\arg\max} _{\bold{y}} P(\bold{Y} 
+ * the prediction is obtained by \f$ {\arg\max} _{\bold{y}} P(\bold{Y}
  * = \bold{y} | \bold{x}; \bold{w}) \f$.
  */
 class CMAPInference : public CSGObject
@@ -65,9 +65,9 @@ public:
 	/** perform inference */
 	virtual void inference();
 
-	/** get structured outputs 
+	/** get structured outputs
 	 *
-	 * @return CFactorGraphObservation pointer 
+	 * @return CFactorGraphObservation pointer
 	 */
 	CFactorGraphObservation* get_structured_outputs() const;
 
@@ -80,7 +80,7 @@ private:
 
 protected:
 	/** pointer of factor graph */
-	CFactorGraph* m_fg; 
+	CFactorGraph* m_fg;
 
 	/** structured outputs */
 	CFactorGraphObservation* m_outputs;
@@ -89,11 +89,11 @@ protected:
 	float64_t m_energy;
 
 	/** opaque pointer to hide implementation */
-	CMAPInferImpl* m_infer_impl; 
+	CMAPInferImpl* m_infer_impl;
 };
 
-/** @brief Class CMAPInferImpl abstract class 
- * of MAP inference implementation 
+/** @brief Class CMAPInferImpl abstract class
+ * of MAP inference implementation
  */
 class CMAPInferImpl : public CSGObject
 {

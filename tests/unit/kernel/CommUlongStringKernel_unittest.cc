@@ -12,7 +12,7 @@ TEST(CommUlongStringKernel, kernel_matrix)
 	const char* doc_1 = "stringkernelngram1";
 	const char* doc_2 = "kernelngram1string";
 	const char* doc_3 = "nrgam1kernelstring";
-	
+
 	SGString<char> string_1(65);
 	for (index_t i=0; i<65; i++)
 		string_1.string[i] = doc_1[i];
@@ -45,7 +45,7 @@ TEST(CommUlongStringKernel, kernel_matrix)
 
 	CHashedDocDotFeatures* h_feats = new CHashedDocDotFeatures(20, s_feats, new CNGramTokenizer(5), false);
 
-	SGMatrix<float64_t> kernel_matrix = kernel->get_kernel_matrix(); 
+	SGMatrix<float64_t> kernel_matrix = kernel->get_kernel_matrix();
 
 	SGMatrix<float64_t> feat_matrix(3,3);
 

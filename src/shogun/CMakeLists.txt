@@ -26,12 +26,12 @@ FOREACH(template ${LIBSHOGUN_SRC_TMP})
   STRING(REGEX REPLACE ${EXT_CPP_TMP} ${EXT_SRC_CPP} generated_cpp "${template}")
   STRING(REGEX REPLACE ${EXT_CPP_TMP} ${EXT_CPP_PY} generator_script "${template}")
   STRING(REGEX REPLACE ".*/(.*).${EXT_CPP_TMP}" "\\1" generated_target "${template}")
-  
+
   IF(MSVC)
     FOREACH(h ${LIBSHOGUN_HEADERS})
       FILE(APPEND ${CMAKE_CURRENT_BINARY_DIR}/headers_list.txt "${h}\n")
     ENDFOREACH()
-  
+
     ADD_CUSTOM_COMMAND(OUTPUT ${generated_cpp}
         COMMAND ${CMAKE_COMMAND} -E copy ${template} ${generated_cpp}
         COMMAND ${PYTHON_EXECUTABLE} ${generator_script} ${generated_cpp} -in ${CMAKE_CURRENT_BINARY_DIR}/headers_list.txt
@@ -54,7 +54,7 @@ FOREACH(template ${LIBSHOGUN_SRC_TMP})
 ENDFOREACH()
 
 CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/lib/config.h.in ${CMAKE_CURRENT_SOURCE_DIR}/lib/config.h)
-set_target_properties(shogun PROPERTIES 
+set_target_properties(shogun PROPERTIES
                       VERSION ${LIBSHOGUNVER}
                       SOVERSION ${LIBSHOGUNSO}
                       COMPILE_DEFINITIONS "${DEFINES}")
@@ -68,7 +68,7 @@ if(SHOGUN_DEPENDS)
   add_dependencies(shogun ${SHOGUN_DEPENDS})
 endif()
 
-INSTALL(DIRECTORY ./ 
+INSTALL(DIRECTORY ./
         DESTINATION include/shogun
         COMPONENT headers
         FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp"
@@ -81,7 +81,7 @@ ELSE()
   SET(SHOGUN_LIB_INSTALL lib)
 ENDIF()
 
-INSTALL(TARGETS shogun 
+INSTALL(TARGETS shogun
   ARCHIVE DESTINATION ${SHOGUN_LIB_INSTALL}
   LIBRARY DESTINATION ${SHOGUN_LIB_INSTALL}
   COMPONENT libraries)

@@ -85,10 +85,10 @@ class CWeightedCommWordStringKernel: public CCommWordStringKernel
 		virtual void cleanup();
 
 		/** compute optimized
-	 	*
-	 	* @param idx index to compute
-	 	* @return optimized value at given index
-	 	*/
+		*
+		* @param idx index to compute
+		* @return optimized value at given index
+		*/
 		virtual float64_t compute_optimized(int32_t idx);
 
 		/** add to normal

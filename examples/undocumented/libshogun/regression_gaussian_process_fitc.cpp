@@ -35,7 +35,7 @@ int32_t dim_vectors=3;
 void build_matrices(SGMatrix<float64_t>& test, SGMatrix<float64_t>& train,
 		    CRegressionLabels* labels)
 {
- 	/*Fill Matrices with random nonsense*/
+	/*Fill Matrices with random nonsense*/
 	train[0] = -1;
 	train[1] = -1;
 	train[2] = -1;

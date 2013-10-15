@@ -25,7 +25,7 @@ class CLabels;
  * error (MAE) is estimated as
  *
  * \f[
- * 		\frac{1}{|L|} \sum_{i=1}^{|L|} |L_i - R_i|
+ *		\frac{1}{|L|} \sum_{i=1}^{|L|} |L_i - R_i|
  * \f]
  *
  */

@@ -21,7 +21,7 @@ def statistics_hsic (n, difference, angle):
 	from modshogun import BOOTSTRAP, HSIC_GAMMA
 	from modshogun import EuclideanDistance
 	from modshogun import Math, Statistics, IntVector
-	
+
 	# init seed for reproducability
 	Math.init_random(1)
 
@@ -98,7 +98,7 @@ def statistics_hsic (n, difference, angle):
 	#print "null mean:", mean(null_samples)
 	#print "null variance:", var(null_samples)
 	#hist(null_samples, 100); show()
-	
+
 	return p_value_boot, thresh_boot, p_value_gamma, thresh_gamma, statistic, null_samples
 
 if __name__=='__main__':

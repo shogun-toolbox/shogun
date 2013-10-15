@@ -14,7 +14,7 @@
 using namespace shogun;
 
 CICAConverter::CICAConverter() : CConverter()
-{	
+{
 	init();
 }
 
@@ -23,7 +23,7 @@ void CICAConverter::init()
 	m_mixing_matrix = SGMatrix<float64_t>();
 	max_iter = 200;
 	tol = 1e-6;
-	
+
 	SG_ADD(&m_mixing_matrix, "mixing_matrix", "the mixing matrix", MS_NOT_AVAILABLE);
 	SG_ADD(&max_iter, "max_iter", "maximum number of iterations", MS_NOT_AVAILABLE);
 	SG_ADD(&tol, "tol", "the convergence tolerance", MS_NOT_AVAILABLE);

@@ -1372,14 +1372,14 @@ template <class T> SGVector<float64_t> SGVector<T>::get_imag()
 	return imag;
 }
 
-template <class T> 
-SGMatrix<T> SGVector<T>::convert_to_matrix(SGVector<T> vector, 
+template <class T>
+SGMatrix<T> SGVector<T>::convert_to_matrix(SGVector<T> vector,
 	index_t nrows, index_t ncols, bool fortran_order)
 {
 	if (nrows*ncols>vector.size())
 		SG_SERROR("SGVector::convert_to_matrix():: Dimensions mismatch\n");
 
-	T* data=NULL;	
+	T* data=NULL;
 	SGVector<T>::convert_to_matrix(data, nrows, ncols, vector.vector, vector.vlen, fortran_order);
 
 	SGMatrix<T> matrix=SGMatrix<T>(data, nrows, ncols);

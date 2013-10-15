@@ -41,7 +41,7 @@ public:
 	/** destructor */
 	virtual ~SGStringList();
 
-	/** 
+	/**
 	 * get the string list (no copying is done here)
 	 *
 	 * @return the refcount increased string list

@@ -28,9 +28,9 @@ void add_cutting_plane(
 		bmrm_ll**	tail,
 		bool*		map,
 		float64_t*	A,
-		uint32_t 	free_idx,
+		uint32_t	free_idx,
 		float64_t*	cp_data,
-		uint32_t 	dim)
+		uint32_t	dim)
 {
 	ASSERT(map[free_idx])
 
@@ -56,7 +56,7 @@ void add_cutting_plane(
 void remove_cutting_plane(
 		bmrm_ll**	head,
 		bmrm_ll**	tail,
-		bool* 		map,
+		bool*		map,
 		float64_t*	icp)
 {
 	bmrm_ll *cp_list_ptr=*head;
@@ -178,7 +178,7 @@ static const float64_t *get_col( uint32_t i)
 }
 
 BmrmStatistics svm_bmrm_solver(
-		CDualLibQPBMSOSVM  *machine, 
+		CDualLibQPBMSOSVM  *machine,
 		float64_t*       W,
 		float64_t        TolRel,
 		float64_t        TolAbs,

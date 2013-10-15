@@ -56,7 +56,7 @@ bool CNGramTokenizer::has_next()
 index_t CNGramTokenizer::next_token_idx(index_t& start)
 {
 	start = last_idx++;
-	return start + n;	
+	return start + n;
 }
 
 CNGramTokenizer* CNGramTokenizer::get_copy()

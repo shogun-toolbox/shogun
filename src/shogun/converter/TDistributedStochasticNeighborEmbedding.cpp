@@ -66,7 +66,7 @@ CFeatures* CTDistributedStochasticNeighborEmbedding::apply(CFeatures* features)
 	parameters.sne_theta = m_theta;
 	parameters.sne_perplexity = m_perplexity;
 	parameters.features = (CDotFeatures*)features;
-	
+
 	parameters.method = SHOGUN_TDISTRIBUTED_STOCHASTIC_NEIGHBOR_EMBEDDING;
 	parameters.target_dimension = m_target_dim;
 	CDenseFeatures<float64_t>* embedding = tapkee_embed(parameters);

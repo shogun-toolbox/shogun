@@ -3,7 +3,7 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Written (W) 2013 Soumyajit De
  */
 
@@ -23,9 +23,9 @@ template<class T> class CLinearOperator;
 
 /** @brief Class that aggregates vector job results in each submit_result call
  * of jobs generated from rational approximation of linear operator function
- * times a vector. finalize extracts the imaginary part of that aggregation, 
+ * times a vector. finalize extracts the imaginary part of that aggregation,
  * applies the linear operator to the aggregation, performs a dot product with
- * the sample vector, multiplies with the constant multiplier (see 
+ * the sample vector, multiplies with the constant multiplier (see
  * CRationalApproximation) and stores the result as CScalarResult
  */
 class CIndividualJobResultAggregator : public CStoreVectorAggregator<complex128_t>
@@ -34,7 +34,7 @@ public:
 	/** default constructor */
 	CIndividualJobResultAggregator();
 
-	/** 
+	/**
 	 * constructor
 	 *
 	 * @param linear_operator linear operator to apply on the imaginary part
@@ -51,7 +51,7 @@ public:
 	/** destructor */
 	virtual ~CIndividualJobResultAggregator();
 
-	/** 
+	/**
 	 * method that finalizes the aggregation and computes the result (scalar),
 	 * its necessary to call finalize before getting the final result
 	 */

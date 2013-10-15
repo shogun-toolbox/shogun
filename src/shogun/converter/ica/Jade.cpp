@@ -25,7 +25,7 @@ using namespace shogun;
 using namespace Eigen;
 
 CJade::CJade() : CICAConverter()
-{	
+{
 	init();
 }
 
@@ -46,7 +46,7 @@ SGMatrix<float64_t> CJade::get_cumulant_matrix() const
 
 CFeatures* CJade::apply(CFeatures* features)
 {
-	ASSERT(features);	
+	ASSERT(features);
 	SG_REF(features);
 
 	SGMatrix<float64_t> X = ((CDenseFeatures<float64_t>*)features)->get_feature_matrix();
@@ -58,7 +58,7 @@ CFeatures* CJade::apply(CFeatures* features)
 	Map<MatrixXd> EX(X.matrix,n,T);
 
 	// Mean center X
-	VectorXd mean = (EX.rowwise().sum() / (float64_t)T);	
+	VectorXd mean = (EX.rowwise().sum() / (float64_t)T);
 	MatrixXd SPX = EX.colwise() - mean;
 
 	MatrixXd cov = (SPX * SPX.transpose()) / (float64_t)T;
@@ -75,8 +75,8 @@ CFeatures* CJade::apply(CFeatures* features)
 	#ifdef DEBUG_JADE
 	std::cout << "eigenvectors" << std::endl;
 	std::cout << eig.eigenvectors() << std::endl;
-	
-	std::cout << "eigenvalues" << std::endl;	
+
+	std::cout << "eigenvalues" << std::endl;
 	std::cout << eig.eigenvalues().asDiagonal() << std::endl;
 	#endif
 
@@ -85,7 +85,7 @@ CFeatures* CJade::apply(CFeatures* features)
 	MatrixXd B = scales.cwiseInverse().asDiagonal() * eig.eigenvectors().transpose();
 
 	#ifdef DEBUG_JADE
-	std::cout << "whitener" << std::endl;	
+	std::cout << "whitener" << std::endl;
 	std::cout << B << std::endl;
 	#endif
 
@@ -94,9 +94,9 @@ CFeatures* CJade::apply(CFeatures* features)
 
 	// Estimation of the cumulant matrices
 	int dimsymm = (m * ( m + 1)) / 2; // Dim. of the space of real symm matrices
-	int nbcm = dimsymm; //  number of cumulant matrices	
+	int nbcm = dimsymm; //  number of cumulant matrices
 	m_cumulant_matrix = SGMatrix<float64_t>(m,m*nbcm);	// Storage for cumulant matrices
-	Map<MatrixXd> CM(m_cumulant_matrix.matrix,m,m*nbcm); 
+	Map<MatrixXd> CM(m_cumulant_matrix.matrix,m,m*nbcm);
 	MatrixXd R(m,m); R.setIdentity();
 	MatrixXd Qij = MatrixXd::Zero(m,m); // Temp for a cum. matrix
 	VectorXd Xim = VectorXd::Zero(m); // Temp
@@ -105,19 +105,19 @@ CFeatures* CJade::apply(CFeatures* features)
 	int Range = 0;
 
 	for (int im = 0; im < m; im++)
-	{ 
-		Xim = SPX.row(im);	
+	{
+		Xim = SPX.row(im);
 		Xijm = Xim.cwiseProduct(Xim);
 		Qij = SPX.cwiseProduct(Xijm.replicate(1,m).transpose()) * SPX.transpose() / (float)T - R - 2*R.col(im)*R.col(im).transpose();
 		CM.block(0,Range,m,m) = Qij;
-		Range = Range + m;	
+		Range = Range + m;
 		for (int jm = 0; jm < im; jm++)
 		{
 			Xjm = SPX.row(jm);
 			Xijm = Xim.cwiseProduct(Xjm);
 			Qij = SPX.cwiseProduct(Xijm.replicate(1,m).transpose()) * SPX.transpose() / (float)T - R.col(im)*R.col(jm).transpose() - R.col(jm)*R.col(im).transpose();
 			CM.block(0,Range,m,m) =  sqrt(2)*Qij;
-			Range = Range + m;	
+			Range = Range + m;
 		}
 	}
 
@@ -132,18 +132,18 @@ CFeatures* CJade::apply(CFeatures* features)
 	M_dims[1] = m;
 	M_dims[2] = nbcm;
 	SGNDArray< float64_t > M(M_dims, 3);
-	
+
 	for (int i = 0; i < nbcm; i++)
 	{
 		Map<MatrixXd> EM(M.get_matrix(i),m,m);
 		EM = CM.block(0,i*m,m,m);
 	}
-	
+
 	// Diagonalize
 	SGMatrix<float64_t> Q = CJADiagOrth::diagonalize(M, m_mixing_matrix, tol, max_iter);
 	Map<MatrixXd> EQ(Q.matrix,m,m);
 	EQ = -1 * EQ.inverse();
-	
+
 	#ifdef DEBUG_JADE
 	std::cout << "diagonalizer" << std::endl;
 	std::cout << EQ << std::endl;
@@ -166,14 +166,14 @@ CFeatures* CJade::apply(CFeatures* features)
 			{
 				std::swap(A(j),A(j-1));
 				C.col(j).swap(C.col(j-1));
-				swap = true;	
-			}						
+				swap = true;
+			}
 		}
-	
+
 	} while(swap);
 
 	for (int j = 0; j < m/2; j++)
-		C.row(j).swap( C.row(m-1-j) ); 
+		C.row(j).swap( C.row(m-1-j) );
 
 	// Fix Signs
 	VectorXd signs = VectorXd::Zero(m);
@@ -193,11 +193,11 @@ CFeatures* CJade::apply(CFeatures* features)
 
 	// Unmix
 	EX = C * EX;
-	
+
 	m_mixing_matrix = SGMatrix<float64_t>(m,m);
 	Map<MatrixXd> Emixing_matrix(m_mixing_matrix.matrix,m,m);
 	Emixing_matrix = C.inverse();
-	
+
 	return features;
 }
 

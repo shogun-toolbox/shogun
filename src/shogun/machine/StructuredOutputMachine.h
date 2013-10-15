@@ -24,7 +24,7 @@ namespace shogun
 
 /** The structured empirical risk types, corresponding to different training objectives [1].
  *
- * [1] T. Joachims, T. Finley, Chun-Nam Yu, Cutting-Plane Training of Structural SVMs, 
+ * [1] T. Joachims, T. Finley, Chun-Nam Yu, Cutting-Plane Training of Structural SVMs,
  * Machine Learning Journal, 2009.
  */
 enum EStructRiskType
@@ -72,7 +72,7 @@ class CStructuredOutputMachine : public CMachine
 
 		/** @return object name */
 		virtual const char* get_name() const
-		{ 
+		{
 			return "StructuredOutputMachine";
 		}
 
@@ -114,14 +114,14 @@ class CStructuredOutputMachine : public CMachine
 		 * @param rtype The type of structured risk
 		 * @return Value of the computed risk at given point W
 		 */
-		virtual float64_t risk(float64_t* subgrad, float64_t* W, 
+		virtual float64_t risk(float64_t* subgrad, float64_t* W,
 				TMultipleCPinfo* info=0, EStructRiskType rtype = N_SLACK_MARGIN_RESCALING);
 
 		/** @return training progress helper */
-		CSOSVMHelper* get_helper() const; 
+		CSOSVMHelper* get_helper() const;
 
 		/** set verbose
-		 * NOTE that track verbose information including primal objectives, 
+		 * NOTE that track verbose information including primal objectives,
 		 * training errors and duality gaps will make the training 2x or 3x slower.
 		 *
 		 * @param verbose flag enabling/disabling verbose information
@@ -191,7 +191,7 @@ class CStructuredOutputMachine : public CMachine
 		 */
 		virtual float64_t risk_1slack_slack_rescale(float64_t* subgrad, float64_t* W, TMultipleCPinfo* info=0);
 
-		/** customized risk type 
+		/** customized risk type
 		 *
 		 * @param subgrad Subgradient computed at given point W
 		 * @param W Given weight vector

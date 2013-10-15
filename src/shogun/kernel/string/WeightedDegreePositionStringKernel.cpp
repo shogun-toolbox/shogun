@@ -182,8 +182,8 @@ bool CWeightedDegreePositionStringKernel::init(CFeatures* l, CFeatures* r)
 
 	CStringKernel<char>::init(l,r);
 
-	SG_DEBUG("lhs_changed: %i\n", lhs_changed) 
-	SG_DEBUG("rhs_changed: %i\n", rhs_changed) 
+	SG_DEBUG("lhs_changed: %i\n", lhs_changed)
+	SG_DEBUG("rhs_changed: %i\n", rhs_changed)
 
 	CStringFeatures<char>* sf_l=(CStringFeatures<char>*) l;
 	CStringFeatures<char>* sf_r=(CStringFeatures<char>*) r;
@@ -266,7 +266,7 @@ bool CWeightedDegreePositionStringKernel::init_optimization(
 	delete_optimization();
 
 	if (tree_num<0)
-		SG_DEBUG("initializing CWeightedDegreePositionStringKernel optimization\n") 
+		SG_DEBUG("initializing CWeightedDegreePositionStringKernel optimization\n")
 
 	for (int32_t i=0; i<p_count; i++)
 	{
@@ -295,7 +295,7 @@ bool CWeightedDegreePositionStringKernel::delete_optimization()
 	if ((opt_type==FASTBUTMEMHUNGRY) && (tries.get_use_compact_terminal_nodes()))
 	{
 		tries.set_use_compact_terminal_nodes(false) ;
-		SG_DEBUG("disabling compact trie nodes with FASTBUTMEMHUNGRY\n") 
+		SG_DEBUG("disabling compact trie nodes with FASTBUTMEMHUNGRY\n")
 	}
 
 	if (get_is_initialized())

@@ -1,7 +1,7 @@
 In this example a two-class linear support vector machine classifier is trained
 on a toy data set and the trained classifier is used to predict labels of
 test examples. As training algorithm the OCAS solver is used with the SVM
-regularization parameter C=1.2 and the bias term in the classification rule 
+regularization parameter C=1.2 and the bias term in the classification rule
 switched off. The solver iterates until the relative duality gap falls below
 epsilon=1e-5 or the maximal training time (max_train_time=60 seconds) is
 exceeded.
@@ -9,5 +9,5 @@ exceeded.
 For more details on the OCAS solver see
  V. Franc, S. Sonnenburg. Optimized Cutting Plane Algorithm for Large-Scale Risk
  Minimization.The Journal of Machine Learning Research, vol. 10,
- pp. 2157--2192. October 2009. 
+ pp. 2157--2192. October 2009.
 

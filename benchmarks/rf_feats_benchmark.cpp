@@ -6,14 +6,14 @@
 
 using namespace shogun;
 
-/** Benchmark code for the RandomFourierDotFeatures class 
+/** Benchmark code for the RandomFourierDotFeatures class
  * Current results are after the code
  */
 
 int main(int argv, char** argc)
 {
 	init_shogun_with_defaults();
-	
+
 	int32_t dims[] = {100, 300, 600};
 	CTime* timer = new CTime();
 	for (index_t d=0; d<3; d++)
@@ -43,12 +43,12 @@ int main(int argv, char** argc)
 		{
 			SG_SPRINT("Results for D = %d\n", D[i]);
 			CRandomFourierDotFeatures* rand_feats =
-					new CRandomFourierDotFeatures(dense_feats, D[i], KernelName::GAUSSIAN, params); 
+					new CRandomFourierDotFeatures(dense_feats, D[i], KernelName::GAUSSIAN, params);
 			rand_feats->benchmark_dense_dot_range();
 			rand_feats->benchmark_add_to_dense_vector();
 			SG_UNREF(rand_feats);
 		}
-		
+
 		SG_SPRINT("-------------------------------------------------------------------------\n");
 		SG_UNREF(dense_feats);
 	}

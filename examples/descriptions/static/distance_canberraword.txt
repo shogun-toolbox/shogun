@@ -7,7 +7,7 @@ First, you need to determine what type your data will be, because this
 will determine the distance function you can use.
 
 This example loads two stored data sets in 'STRING' representation
-(feature type 'CHAR' with alphabet 'DNA') from different files and 
+(feature type 'CHAR' with alphabet 'DNA') from different files and
 initializes the distance to 'CANBERRA' with feature type 'WORD'.
 
 Data points in this example are defined by the transformation function
@@ -15,29 +15,29 @@ Data points in this example are defined by the transformation function
 'add_preproc' and preprocessor 'SORTWORDSTRING').
 
 The target 'TRAIN' for 'set_features' controls the binding of the given
-data points. In order to compute a pairwise distance matrix by 
+data points. In order to compute a pairwise distance matrix by
 'get_distance_matrix', we have to perform two preprocessing steps for
-input data 'TRAIN'. The method 'convert' transforms the input data to 
-a string representation suitable for the selected distance. The individual 
+input data 'TRAIN'. The method 'convert' transforms the input data to
+a string representation suitable for the selected distance. The individual
 strings are sorted in ascending order after the execution of 'attach_preproc'.
 A pairwise distance matrix is computed by 'get_distance_matrix'.
 
-The resulting distance matrix can be reaccessed by 'get_distance_matrix' 
+The resulting distance matrix can be reaccessed by 'get_distance_matrix'
 and target 'TRAIN'.
 
 The target 'TEST' for 'set_features' controls the binding of the given
-data points 'TRAIN' and 'TEST'. In order to compute a pairwise distance 
-matrix between these two data sets by 'get_distance_matrix', we have to 
-perform two preprocessing steps for input data 'TEST'. The method 'convert' 
-transforms the input data 'TEST' to a string representation suitable for 
-the selected distance. The individual strings are sorted in ascending order 
-after the execution of 'attach_preproc'. A pairwise distance matrix between 
+data points 'TRAIN' and 'TEST'. In order to compute a pairwise distance
+matrix between these two data sets by 'get_distance_matrix', we have to
+perform two preprocessing steps for input data 'TEST'. The method 'convert'
+transforms the input data 'TEST' to a string representation suitable for
+the selected distance. The individual strings are sorted in ascending order
+after the execution of 'attach_preproc'. A pairwise distance matrix between
 the data sets 'TRAIN' and 'TEST' is computed by 'get_distance_matrix'.
 
 The resulting distance matrix can be reaccessed by 'get_distance_matrix'
 and target 'TEST'. The 'TRAIN' distance matrix ceased to exist.
 
-For more details see 
+For more details see
 doc/classshogun_1_1CSortWordString.html,
 doc/classshogun_1_1CPreprocessor.html,
 doc/classshogun_1_1CStringFeatures.html (method obtain_from_char_features) and

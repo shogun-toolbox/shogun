@@ -29,7 +29,7 @@ x <- paste(x,sep="",collapse="")
 sg('set_features','TRAIN',x,'CUBE')
 sg('convert', 'TRAIN', 'STRING', 'CHAR', 'STRING', 'WORD', order)
 
-#train 10 HMM models 
+#train 10 HMM models
 liks=vector(mode='numeric', length=10)-Inf
 models=vector(mode='pairlist', length=10)
 for (i in 1:2)

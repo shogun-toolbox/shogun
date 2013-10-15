@@ -11,7 +11,7 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- *   Copyright (C) 2009 - 2012 Jun Liu and Jieping Ye 
+ *   Copyright (C) 2009 - 2012 Jun Liu and Jieping Ye
  */
 
 #include <stdlib.h>
@@ -45,7 +45,7 @@ void eplb(double * x, double *root, int * steps, double * v,int n, double z, dou
 		return;
 	}
 
-	V_i=0;    
+	V_i=0;
 	if (v[0] !=0){
 		rho_1=1;
 		s_1=x[V_i]=v_max=fabs(v[0]);
@@ -54,11 +54,11 @@ void eplb(double * x, double *root, int * steps, double * v,int n, double z, dou
 	else{
 		rho_1=0;
 		s_1=v_max=0;
-	}    
+	}
 
 	for (i=1;i<n; i++){
 		if (v[i]!=0){
-			x[V_i]=fabs(v[i]); s_1+= x[V_i]; rho_1++; 
+			x[V_i]=fabs(v[i]); s_1+= x[V_i]; rho_1++;
 
 			if (x[V_i] > v_max)
 				v_max=x[V_i];
@@ -80,23 +80,23 @@ void eplb(double * x, double *root, int * steps, double * v,int n, double z, dou
 	lambda_1=0; lambda_2=v_max;
 	f_lambda_1=s_1 -z;
 	/*f_lambda_1=s_1-rho_1* lambda_1 -z;*/
-	rho_2=0; s_2=0; f_lambda_2=-z; 
+	rho_2=0; s_2=0; f_lambda_2=-z;
 	V_i_b=0; V_i_e=V_i-1;
 
-	lambda=lambda0; 
-	if ( (lambda<lambda_2) && (lambda> lambda_1) ){ 
+	lambda=lambda0;
+	if ( (lambda<lambda_2) && (lambda> lambda_1) ){
 		/*-------------------------------------------------------------------
 		  Initialization with the root
 		 *-------------------------------------------------------------------
 		 */
 
 		i=V_i_b; j=V_i_e; rho=0; s=0;
-		while (i <= j){            
+		while (i <= j){
 			while( (i <= V_i_e) && (x[i] <= lambda) ){
 				i++;
 			}
 			while( (j>=V_i_b) && (x[j] > lambda) ){
-				s+=x[j];                
+				s+=x[j];
 				j--;
 			}
 			if (i<j){
@@ -107,7 +107,7 @@ void eplb(double * x, double *root, int * steps, double * v,int n, double z, dou
 			}
 		}
 
-		rho=V_i_e-j;  rho+=rho_2;  s+=s_2;        
+		rho=V_i_e-j;  rho+=rho_2;  s+=s_2;
 		f_lambda=s-rho*lambda-z;
 
 		if ( fabs(f_lambda)< delta ){
@@ -132,11 +132,11 @@ void eplb(double * x, double *root, int * steps, double * v,int n, double z, dou
 
 			lambda=(s - z)/ rho;
 			flag=1;
-		}       
+		}
 		/*-------------------------------------------------------------------
 		  End of initialization
 		 *--------------------------------------------------------------------
-		 */       
+		 */
 
 	}/* end of if(!flag) */
 
@@ -164,7 +164,7 @@ void eplb(double * x, double *root, int * steps, double * v,int n, double z, dou
 		s_T=s_S=s=0;
 		rho_T=rho_S=rho=0;
 		i=V_i_b; j=V_i_e;
-		while (i <= j){            
+		while (i <= j){
 			while( (i <= V_i_e) && (x[i] <= lambda) ){
 				if (x[i]> lambda_T){
 					s_T+=x[i]; rho_T++;
@@ -220,7 +220,7 @@ void eplb(double * x, double *root, int * steps, double * v,int n, double z, dou
 			/* printf("\n lambda_T");*/
 			lambda=lambda_T; flag=1;
 			break;
-		}        
+		}
 
 		/*
 		   printf("\n\n f_lambda_1=%5.6f, f_lambda_2=%5.6f, f_lambda=%5.6f",f_lambda_1,f_lambda_2, f_lambda);
@@ -230,7 +230,7 @@ void eplb(double * x, double *root, int * steps, double * v,int n, double z, dou
 
 		if (f_lambda <0){
 			lambda_2=lambda;  s_2=s;  rho_2=rho;
-			f_lambda_2=f_lambda;            
+			f_lambda_2=f_lambda;
 
 			lambda_1=lambda_T; s_1=s_T; rho_1=rho_T;
 			f_lambda_1=f_lambda_T;
@@ -243,11 +243,11 @@ void eplb(double * x, double *root, int * steps, double * v,int n, double z, dou
 				while( (j>=V_i_b) && (x[j] > lambda_T) ){
 					j--;
 				}
-				if (i<j){                    
+				if (i<j){
 					x[j]=x[i];
 					i++;   j--;
 				}
-			}            
+			}
 			V_i_b=i; V_i=V_i_e-V_i_b+1;
 		}
 		else{
@@ -281,7 +281,7 @@ void eplb(double * x, double *root, int * steps, double * v,int n, double z, dou
 	}/* end of while */
 
 
-	for(i=0;i<n;i++){        
+	for(i=0;i<n;i++){
 		if (v[i] > lambda)
 			x[i]=v[i]-lambda;
 		else
@@ -305,7 +305,7 @@ void  epp1(double *x, double *v, int n, double rho)
 	for(i=0;i<n;i++){
 		if (fabs(v[i])<=rho)
 			x[i]=0;
-		else 
+		else
 			if (v[i]< -rho)
 				x[i]=v[i]+rho;
 			else
@@ -385,8 +385,8 @@ void zerofind(double *root, int * iterStep, double v, double p, double c, double
 	while (1){
 		step++;
 
-		fprime=1 + c* p1 * pp / x; 
-		/* 
+		fprime=1 + c* p1 * pp / x;
+		/*
 		   The derivative at the current solution x
 		   */
 
@@ -403,12 +403,12 @@ void zerofind(double *root, int * iterStep, double v, double p, double c, double
 		}
 		else{
 			if ( (x<0) || (x>v)){
-				x=1e-30;			  
+				x=1e-30;
 
 				f= x+c* pow(x,p1)-v;
 
 				if (f>0){ /*
-							 If f(x) = x + c x^{p-1} - v <0 at x=1e-30, 
+							 If f(x) = x + c x^{p-1} - v <0 at x=1e-30,
 							 this shows that the real root is between (0, 1e-30).
 							 For numerical reason, we just set x=0
 							 */
@@ -425,8 +425,8 @@ void zerofind(double *root, int * iterStep, double v, double p, double c, double
 		   */
 
 		pp=pow(x, p1);
-		f= x + c* pp -v; 
-		/* 
+		f= x + c* pp -v;
+		/*
 		   The function value at the new solution
 		   */
 
@@ -468,7 +468,7 @@ double norm(double * v, double p, int n)
 
 void eppO(double *x, double * cc, int * iter_step, double *v,  int n, double rho, double p)
 {
-	int i, *flag, bisStep, newtonStep=0, totoalStep=0;	
+	int i, *flag, bisStep, newtonStep=0, totoalStep=0;
 	double vq=0, epsilon, vmax=0, vmin=1e10; /* we assume that the minimal value in |v| is less than 1e10*/
 	double q=1/(1-1/p), c, c1, c2, root, f, xp;
 
@@ -492,7 +492,7 @@ void eppO(double *x, double * cc, int * iter_step, double *v,  int n, double rho
 		if (v[i]==0)
 			flag[i]=0;
 		else
-		{		
+		{
 			if (v[i]>0)
 				flag[i]=0;
 			else
@@ -510,7 +510,7 @@ void eppO(double *x, double * cc, int * iter_step, double *v,  int n, double rho
 				vmax=v[i];
 
 			if (v[i]<vmin)
-				vmin=v[i];		
+				vmin=v[i];
 		}
 	}
 	vq=pow(vq, 1/q);
@@ -524,7 +524,7 @@ void eppO(double *x, double * cc, int * iter_step, double *v,  int n, double rho
 
 
 		for(i=0;i<n;i++){
-			if (flag[i])				
+			if (flag[i])
 				v[i]=-v[i]; /* set the value of v[i] back*/
 		}
 
@@ -533,7 +533,7 @@ void eppO(double *x, double * cc, int * iter_step, double *v,  int n, double rho
 	}
 
 	/*
-	   compute epsilon 
+	   compute epsilon
 	   initialize c1 and c2, the interval where the root lies
 	   */
 	epsilon=(vq -rho)/ vq;
@@ -543,7 +543,7 @@ void eppO(double *x, double * cc, int * iter_step, double *v,  int n, double rho
 		{
 			/* If this contition holds, we have c2 >= 1e308, exceeding the machine precision.
 
-			   In this case, the reason is that p is too large 
+			   In this case, the reason is that p is too large
 			   and meanwhile epsilon * vmin is typically small.
 
 			   For numerical stablity, we just regard p=inf, and run eppInf
@@ -551,7 +551,7 @@ void eppO(double *x, double * cc, int * iter_step, double *v,  int n, double rho
 
 
 			for(i=0;i<n;i++){
-				if (flag[i])				
+				if (flag[i])
 					v[i]=-v[i]; /* set the value of v[i] back*/
 			}
 

@@ -22,20 +22,20 @@ namespace shogun
 class CFeatures;
 
 /** @brief class JediSep
- * 
- * Implements the JediSep algorithm for Independent 
- * Component Analysis (ICA) and Blind Source 
+ *
+ * Implements the JediSep algorithm for Independent
+ * Component Analysis (ICA) and Blind Source
  * Separation (BSS).
- * 
- * Souloumiac, A. (2009). 
- * Nonorthogonal joint diagonalization by combining givens and hyperbolic rotations. 
+ *
+ * Souloumiac, A. (2009).
+ * Nonorthogonal joint diagonalization by combining givens and hyperbolic rotations.
  * Signal Processing, IEEE Transactions on, 57(6), 2222-2231.
  *
  */
 class CJediSep: public CICAConverter
 {
 	public:
-		
+
 		/** constructor */
 		CJediSep();
 
@@ -56,7 +56,7 @@ class CJediSep: public CICAConverter
 		 * @param tau vector
 		 */
 		void set_tau(SGVector<float64_t> tau);
-		
+
 		/** getter for time sep cov matrices
 		 * @return cov matrices
 		 */
@@ -71,13 +71,13 @@ class CJediSep: public CICAConverter
 		void init();
 
 	private:
-		
+
 		/** tau vector */
 		SGVector<float64_t> m_tau;
-		
+
 		/** cov matrices */
 		SGNDArray<float64_t> m_covs;
-};	
+};
 }
 #endif // HAVE_EIGEN3
 #endif // JEDISEP

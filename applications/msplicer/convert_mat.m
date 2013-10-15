@@ -17,7 +17,7 @@ for i=1:length(fnames),
 	fprintf(fid, 'dict_weights_coding=');
 	write_mat(fid, L.dict_weights_train.coding);
 	fprintf(fid,'\n');
-    
+
     % has to fit to the python code (order of array in plif.py)
     penids.acceptor = 0 ;
     penids.donor = 1 ;
@@ -68,7 +68,7 @@ for i=1:length(fnames),
 	don=load(L.donfname);
 	fprintf(fid,'%%donor splice\n');
 	fprintf(fid, 'don_splice_b=%e\n', don.b);
-	fprintf(fid, 'don_splice_use_gc=%d\n', don.PAR.use_gc); 
+	fprintf(fid, 'don_splice_use_gc=%d\n', don.PAR.use_gc);
 	fprintf(fid, 'don_splice_order=%d\n', don.PAR.order);
 	fprintf(fid, 'don_splice_window_left=%d\n', 80);
 	fprintf(fid, 'don_splice_window_right=%d\n', 59);
@@ -115,7 +115,7 @@ function write_model(fid, L, A,p,q, info, penalties, orf_info)
 	a_trans=a_trans' ;
 	[tmp,idx]=sort(a_trans(:,2)) ;
 	a_trans = a_trans(idx,:)' ;
-    
+
 	fprintf(fid, 'msplicer_a_trans=');
 	write_mat(fid, a_trans);
 	fprintf(fid, 'msplicer_p=');
@@ -125,7 +125,7 @@ function write_model(fid, L, A,p,q, info, penalties, orf_info)
 	q(isinf(q))=32768;
 	write_mat(fid, q(:));
 	fprintf(fid,'\n');
-    
+
     % start-state: 0
     % exon-start-state: 1
     % donor-state: 2
@@ -143,7 +143,7 @@ function write_model(fid, L, A,p,q, info, penalties, orf_info)
 	fprintf(fid, 'statedescr=');
 	write_mat(fid, statedescr);
 	fprintf(fid,'\n');
-    
+
     plifidmat = penalties ;
     plifidmat(plifidmat==0)=-1 ;
 
@@ -154,7 +154,7 @@ function write_model(fid, L, A,p,q, info, penalties, orf_info)
 	fprintf(fid, 'orf_info=');
 	write_mat(fid, orf_info);
 	fprintf(fid,'\n');
-    
+
     word_degree = [3,4,5,6] ;
     mod_words   = [1,1,1,1,1,1,1,1;
                    0,0,0,0,0,0,0,0] ;

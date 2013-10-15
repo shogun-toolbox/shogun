@@ -20,7 +20,7 @@ namespace tapkee_internal
 //!
 //! Follows the algorithm described below:
 //! <ul>
-//! <li> For each vector compute gaussian exp of distances to its neighbor vectors and 
+//! <li> For each vector compute gaussian exp of distances to its neighbor vectors and
 //!      put it to sparse matrix \f$ L_{i,N_i(j)} = \exp\left( - \frac{d(x_i,x_{N_i(j)})^2}{w} \right) \f$.
 //! <li> Symmetrize matrix \f$ L \f$ with \f$ L_{i,j} = \max (L_{i,j}, L_{j,i}) \f$ to
 //!      make neighborhood relationship symmetric.
@@ -36,8 +36,8 @@ namespace tapkee_internal
 //! @param width width \f$ w \f$ of the gaussian kernel
 //!
 template<class RandomAccessIterator, class DistanceCallback>
-Laplacian compute_laplacian(RandomAccessIterator begin, 
-			RandomAccessIterator end,const Neighbors& neighbors, 
+Laplacian compute_laplacian(RandomAccessIterator begin,
+			RandomAccessIterator end,const Neighbors& neighbors,
 			DistanceCallback callback, ScalarType width)
 {
 	SparseTriplets sparse_triplets;

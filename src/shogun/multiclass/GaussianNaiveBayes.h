@@ -94,7 +94,7 @@ protected:
 	 */
 	virtual bool train_machine(CFeatures* data=NULL);
 
-protected: 
+protected:
 
 	/// features for training or classifying
 	CDotFeatures* m_features;

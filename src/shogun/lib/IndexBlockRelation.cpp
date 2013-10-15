@@ -23,7 +23,7 @@ bool CIndexBlockRelation::check_blocks_list(CList* blocks)
 	CIndexBlock* iter_block = (CIndexBlock*)(blocks->get_first_element());
 	for (int32_t i=0; i<n_sub_blocks; i++)
 	{
-		min_idxs[i] = iter_block->get_min_index(); 
+		min_idxs[i] = iter_block->get_min_index();
 		max_idxs[i] = iter_block->get_max_index();
 		block_idxs_min[i] = i;
 		block_idxs_max[i] = i;
@@ -32,20 +32,20 @@ bool CIndexBlockRelation::check_blocks_list(CList* blocks)
 	}
 	CMath::qsort_index(min_idxs, block_idxs_min, n_sub_blocks);
 	CMath::qsort_index(max_idxs, block_idxs_max, n_sub_blocks);
-	
+
 	for (int32_t i=0; i<n_sub_blocks; i++)
 	{
 		if (block_idxs_min[i] != block_idxs_max[i])
 			SG_ERROR("Blocks do overlap and it is not supported\n")
 	}
-	if (min_idxs[0] != 0) 
+	if (min_idxs[0] != 0)
 		SG_ERROR("Block with smallest indices start from %d while 0 is required\n", min_idxs[0])
-	
+
 	for (int32_t i=1; i<n_sub_blocks; i++)
 	{
 		if (min_idxs[i] > max_idxs[i-1])
 			SG_ERROR("There is an unsupported gap between %d and %d vectors\n", max_idxs[i-1], min_idxs[i])
-		else if (min_idxs[i] < max_idxs[i-1]) 
+		else if (min_idxs[i] < max_idxs[i-1])
 			SG_ERROR("Blocks do overlap and it is not supported\n")
 	}
 

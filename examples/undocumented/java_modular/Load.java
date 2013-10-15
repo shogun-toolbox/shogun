@@ -14,7 +14,7 @@ public class Load {
 			System.exit(-1);
 		}
 		return result;
-	}	
+	}
 	public static DoubleMatrix load_labels(String filename) {
 		DoubleMatrix result = null;
 		try {
@@ -27,7 +27,7 @@ public class Load {
 		return result;
 	}
 	public static String[] load_dna(String filename) {
-		ArrayList<String> list = new ArrayList<String>();		
+		ArrayList<String> list = new ArrayList<String>();
 		String[] result = null;
 		try {
 			FileInputStream fstream = new FileInputStream(filename);
@@ -50,7 +50,7 @@ public class Load {
 	}
 
 	public static String[] load_cubes(String filename) {
-		ArrayList<String> list = new ArrayList<String>();		
+		ArrayList<String> list = new ArrayList<String>();
 		String[] result = null;
 		try {
 			FileInputStream fstream = new FileInputStream(filename);
@@ -71,4 +71,4 @@ public class Load {
 		}
 		return result;
 	}
-}	
+}

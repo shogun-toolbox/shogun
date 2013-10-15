@@ -12,8 +12,8 @@
 using namespace shogun;
 
 #ifdef HAVE_HDF5
-{% set ignores = ['IndividualJobResultAggregator', 
-	'RationalApproximationCGMJob', 
+{% set ignores = ['IndividualJobResultAggregator',
+	'RationalApproximationCGMJob',
 	'RationalApproximationIndividualJob',
 	'LogRationalApproximationCGM',
 	'LogRationalApproximationIndividual',
@@ -51,7 +51,7 @@ TEST(SerializationHDF5, {{class}})
 
 	// check whether they are equal
 	ASSERT_TRUE(object->equals(deserializedObject));
-	
+
 	SG_UNREF(object)
 	SG_UNREF(deserializedObject);
 
@@ -92,7 +92,7 @@ TEST(SerializationHDF5,{{class}}_{{type}})
 
 	// check whether they are equal
 	ASSERT_TRUE(object->equals(deserializedObject));
-	
+
 	SG_UNREF(object)
 	SG_UNREF(deserializedObject);
 

@@ -57,10 +57,10 @@ int main(int argc, char** argv)
 
 	if (argc > 1 && !strcmp(argv[1], "--only-on-failure"))
 	{
-		testing::TestEventListeners& listeners = 
+		testing::TestEventListeners& listeners =
 			testing::UnitTest::GetInstance()->listeners();
 
-		testing::TestEventListener* default_printer 
+		testing::TestEventListener* default_printer
 			= listeners.Release(listeners.default_result_printer());
 		listeners.Append(new FailurePrinter(default_printer));
 	}

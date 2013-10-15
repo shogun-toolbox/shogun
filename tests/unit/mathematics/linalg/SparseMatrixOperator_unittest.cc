@@ -3,7 +3,7 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Written (W) 2013 Soumyajit De
  */
 
@@ -144,7 +144,7 @@ TEST(SparseMatrixOperator, get_set_diagonal_no_alloc)
 	diag.set_const(3.0);
 	op.set_diagonal(diag);
 	SGVector<float64_t> new_diag=op.get_diagonal();
-	
+
 	Map<VectorXd> map_diag(diag.vector, diag.vlen);
 	Map<VectorXd> map_new_diag(new_diag.vector, new_diag.vlen);
 
@@ -177,7 +177,7 @@ TEST(SparseMatrixOperator, get_set_diagonal_realloc)
 	diag.set_const(3.0);
 	op.set_diagonal(diag);
 	SGVector<float64_t> new_diag=op.get_diagonal();
-	
+
 	Map<VectorXd> map_diag(diag.vector, diag.vlen);
 	Map<VectorXd> map_new_diag(new_diag.vector, new_diag.vlen);
 
@@ -211,7 +211,7 @@ TEST(SparseMatrixOperator, get_set_diagonal_realloc_complex128)
 	diag.set_const(complex128_t(3.0));
 	op.set_diagonal(diag);
 	SGVector<complex128_t> new_diag=op.get_diagonal();
-	
+
 	Map<VectorXcd> map_diag(diag.vector, diag.vlen);
 	Map<VectorXcd> map_new_diag(new_diag.vector, new_diag.vlen);
 
@@ -227,10 +227,10 @@ TEST(SparseMatrixOperator, get_sparsity_structure)
 
 	m.set_const(0.0);
 	for (int i=0; i<size; ++i)
-		m(i,i)=2.0; 
-	for (int i=0; i<size; i+=4) 
+		m(i,i)=2.0;
+	for (int i=0; i<size; i+=4)
 		m(i,size-1)=2.0;
-	for (int i=0; i<size; i+=4) 
+	for (int i=0; i<size; i+=4)
 		m(size-1,i)=2.0;
 
 	CSparseFeatures<double> feat(m);
@@ -254,7 +254,7 @@ TEST(SparseMatrixOperator, get_sparsity_structure)
 	SparsityStructure* sp_struct1
 		=new SparsityStructure(outerIndexPtr, innerIndexPtr, sp.cols());
 
-	// compute the sparsity structure using the method added in 
+	// compute the sparsity structure using the method added in
 	// sparse matrix operator
 	SparsityStructure* sp_struct2=op.get_sparsity_structure(max_pow);
 

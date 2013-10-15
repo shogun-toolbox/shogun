@@ -31,7 +31,7 @@ CLBPPyrDotFeatures::CLBPPyrDotFeatures(CDenseFeatures<uint32_t>* image_set, int3
 
 void CLBPPyrDotFeatures::init(CDenseFeatures<uint32_t>* image_set, int32_t image_w, int32_t image_h)
 {
-	images = image_set;	
+	images = image_set;
 	SG_REF(images);
 	image_width = image_w;
 	image_height = image_h;
@@ -123,13 +123,13 @@ SGVector<char> CLBPPyrDotFeatures::get_transformed_image(int32_t index)
 		{
 			for (int32_t y=1; y<hh-1; y++)
 			{
-				uint8_t pattern = create_lbp_pattern(img, x, y); 
+				uint8_t pattern = create_lbp_pattern(img, x, y);
 				vec[offset+pattern]++;
 				offset += 256;
 			}
 		}
 		if (vec_nDim <= offset)
-			break;	
+			break;
 
 
 		if (ww % 2 == 1)
@@ -149,7 +149,7 @@ SGVector<char> CLBPPyrDotFeatures::get_transformed_image(int32_t index)
 				img[LIBLBP_INDEX(y,j,image_height)] = img[LIBLBP_INDEX(2*y,j,image_height)] +
 					img[LIBLBP_INDEX(2*y+1,j,image_height)];
 	}
-	
+
 	SG_FREE(img);
 	return vec;
 }
@@ -185,13 +185,13 @@ float64_t CLBPPyrDotFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2,
 		{
 			for (int32_t y=1; y<hh-1; y++)
 			{
-				uint8_t pattern = create_lbp_pattern(img, x, y); 
+				uint8_t pattern = create_lbp_pattern(img, x, y);
 				dot_prod += vec2[offset+pattern];
 				offset += 256;
 			}
 		}
 		if (vec_nDim <= offset)
-			break;	
+			break;
 
 
 		if (ww % 2 == 1)
@@ -225,7 +225,7 @@ void CLBPPyrDotFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, flo
 	int32_t hh;
 	uint32_t* img = get_image(vec_idx1, ww, hh);
 
-	if (abs_val) 
+	if (abs_val)
 		alpha = CMath::abs(alpha);
 
 	int32_t offset = 0;
@@ -236,7 +236,7 @@ void CLBPPyrDotFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, flo
 		{
 			for (int32_t y=1; y<hh-1; y++)
 			{
-				uint8_t pattern = create_lbp_pattern(img, x, y); 
+				uint8_t pattern = create_lbp_pattern(img, x, y);
 				vec2[offset+pattern] += alpha;
 				offset += 256;
 			}
@@ -287,7 +287,7 @@ uint8_t CLBPPyrDotFeatures::create_lbp_pattern(uint32_t* img, int32_t x, int32_t
 	if (img[LIBLBP_INDEX(y+1,x+1,image_height)] < center)
 		pattern |= 0x80;
 
-	return pattern;	
+	return pattern;
 }
 
 CFeatures* CLBPPyrDotFeatures::duplicate() const

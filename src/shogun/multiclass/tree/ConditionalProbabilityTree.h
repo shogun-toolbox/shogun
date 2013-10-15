@@ -22,9 +22,9 @@ namespace shogun
 
 /**
  * Conditional Probability Tree.
- * 
+ *
  * See reference:
- * 
+ *
  *   Alina Beygelzimer, John Langford, Yuri Lifshits, Gregory Sorkin, Alex
  *   Strehl. Conditional Probability Tree Estimation Analysis and Algorithms. UAI 2009.
  */
@@ -55,7 +55,7 @@ public:
 		return m_num_passes;
 	}
 
-	/** set features 
+	/** set features
 	 * @param feats features
 	 */
 	void set_features(CStreamingDenseFeatures<float32_t> *feats)
@@ -81,7 +81,7 @@ protected:
 
 	/** train machine
 	 *
-	 * @param data training data 
+	 * @param data training data
 	 *
 	 * @return whether training was successful
 	 */
@@ -99,7 +99,7 @@ protected:
 	 */
 	void train_path(SGVector<float32_t> ex, node_t *node);
 
-	/** train a single node 
+	/** train a single node
 	 * @param ex the example being trained
 	 * @param label label
 	 * @param node the node
@@ -112,7 +112,7 @@ protected:
 	 */
 	float64_t predict_node(SGVector<float32_t> ex, node_t *node);
 
-	/** create a new OnlineLinear machine for a node 
+	/** create a new OnlineLinear machine for a node
 	 * @param ex the Example instance for training the new machine
 	 */
 	int32_t create_machine(SGVector<float32_t> ex);
@@ -128,7 +128,7 @@ protected:
 	void compute_conditional_probabilities(SGVector<float32_t> ex);
 
 	/** accumulate along the path to the root the conditional probability for a
-	 * particular leaf node. 
+	 * particular leaf node.
 	 */
 	float64_t accumulate_conditional_probability(node_t *leaf);
 
@@ -137,7 +137,7 @@ protected:
 	CStreamingDenseFeatures<float32_t> *m_feats; ///< online features
 };
 
-} /* shogun */ 
+} /* shogun */
 
 #endif /* end of include guard: CONDITIONALPROBABILITYTREE_H__ */
 

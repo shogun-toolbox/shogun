@@ -4,9 +4,9 @@ examples. The training algorithm is based on BSVM formulation (L2-soft margin
 and the bias added to the objective function) which is solved by the Improved
 Mitchell-Demyanov-Malozemov algorithm. The training algorithm uses the Gaussian
 kernel of width 2.1 and the regularization constant C=1. The solver stops if the
-relative duality gap falls below 1e-5. 
+relative duality gap falls below 1e-5.
 
-For more details on the used SVM solver see 
+For more details on the used SVM solver see
  V.Franc: Optimization Algorithms for Kernel Methods. Research report.
  CTU-CMP-2005-22. CTU FEL Prague. 2005.
  ftp://cmp.felk.cvut.cz/pub/cmp/articles/franc/Franc-PhD.pdf .

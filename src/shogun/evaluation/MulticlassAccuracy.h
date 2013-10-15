@@ -26,7 +26,7 @@ class CLabels;
  * accuracy is estimated as
  *
  * \f[
- * 		\frac{\sum_{i=1}^{|L|} [L_i=R_i]}{|L|}
+ *		\frac{\sum_{i=1}^{|L|} [L_i=R_i]}{|L|}
  * \f]
  *
  *

@@ -26,7 +26,7 @@ CDistanceKernel::CDistanceKernel()
 CDistanceKernel::CDistanceKernel(int32_t size, float64_t w, CDistance* d)
 : CKernel(size), distance(d)
 {
-  	ASSERT(distance)
+	ASSERT(distance)
 	set_width(w);
 	SG_REF(distance);
 	register_params();

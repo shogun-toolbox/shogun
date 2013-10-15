@@ -20,7 +20,7 @@ namespace shogun
 {
 /** @brief Implements Local Binary Patterns with Scale Pyramids as dot features for a set
  * of images. Expects the images to be loaded in a CDenseFeatures object.
- * 
+ *
  * Original code can be found here : https://github.com/grenaud/freeIbis/tree/master/libocas_v093
  *
  */
@@ -98,7 +98,7 @@ class CLBPPyrDotFeatures : public CDotFeatures
 		 * free_feature_iterator to cleanup
 		 *
 		 * @param vector_index the index of the vector over whose components to
-		 * 			iterate over
+		 *			iterate over
 		 * @return feature iterator (to be passed to get_next_feature)
 		 */
 		virtual void* get_feature_iterator(int32_t vector_index);
@@ -154,7 +154,7 @@ class CLBPPyrDotFeatures : public CDotFeatures
 		virtual void add_to_dense_vec(float64_t alpha, int32_t vec_idx1,
 				float64_t* vec2, int32_t vec2_len, bool abs_val=false);
 
-		/** gets a copy of the specified image. 
+		/** gets a copy of the specified image.
 		 *
 		 * @param index the index of the image to return
 		 * @param width the width of the image (returned by reference)
@@ -180,8 +180,8 @@ class CLBPPyrDotFeatures : public CDotFeatures
 		 * @param img the image to work on
 		 * @param x the x index
 		 * @param y the y index
-		 */ 
-		uint8_t create_lbp_pattern(uint32_t* img, int32_t x, int32_t y); 
+		 */
+		uint8_t create_lbp_pattern(uint32_t* img, int32_t x, int32_t y);
 
 	private:
 

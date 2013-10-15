@@ -24,7 +24,7 @@ CMultitaskLeastSquaresRegression::CMultitaskLeastSquaresRegression() :
 }
 
 CMultitaskLeastSquaresRegression::CMultitaskLeastSquaresRegression(
-     float64_t z, CDotFeatures* train_features, 
+     float64_t z, CDotFeatures* train_features,
      CRegressionLabels* train_labels, CTaskRelation* task_relation) :
 	CMultitaskLinearMachine(train_features,(CLabels*)train_labels,task_relation)
 {
@@ -132,7 +132,7 @@ bool CMultitaskLeastSquaresRegression::train_machine(CFeatures* data)
 	ASSERT(m_labels)
 
 	SGVector<float64_t> y = ((CRegressionLabels*)m_labels)->get_labels();
-	
+
 	slep_options options = slep_options::default_options();
 	options.n_tasks = m_task_relation->get_num_tasks();
 	options.tasks_indices = m_task_relation->get_tasks_indices();
@@ -155,7 +155,7 @@ bool CMultitaskLeastSquaresRegression::train_machine(CFeatures* data)
 			m_tasks_c.zero();
 		}
 		break;
-		case TASK_TREE: 
+		case TASK_TREE:
 		{
 			CTaskTree* task_tree = (CTaskTree*)m_task_relation;
 			SGVector<float64_t> ind_t = task_tree->get_SLEP_ind_t();
@@ -168,7 +168,7 @@ bool CMultitaskLeastSquaresRegression::train_machine(CFeatures* data)
 			m_tasks_c.zero();
 		}
 		break;
-		default: 
+		default:
 			SG_ERROR("Not supported task relation type\n")
 	}
 

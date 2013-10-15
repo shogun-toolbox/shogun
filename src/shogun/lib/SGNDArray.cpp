@@ -14,10 +14,10 @@
 #include <shogun/lib/SGNDArray.h>
 #include <shogun/lib/SGReferencedData.h>
 
-namespace shogun 
+namespace shogun
 {
 
-template<class T> SGNDArray<T>::SGNDArray() : 
+template<class T> SGNDArray<T>::SGNDArray() :
 	SGReferencedData()
 {
 	init_data();

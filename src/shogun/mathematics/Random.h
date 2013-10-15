@@ -50,7 +50,7 @@ namespace shogun
 			void set_seed(uint32_t seed);
 
 			/** get seed
-			 * 
+			 *
 			 * @return seed
 			 */
 			uint32_t get_seed() const;
@@ -66,7 +66,7 @@ namespace shogun
 			 * Generate an unsigned 64-bit random integer
 			 *
 			 * @return the random 64-bit unsigned integer
-			 */			
+			 */
 			uint64_t random_64() const;
 
 			/**
@@ -83,7 +83,7 @@ namespace shogun
 			 * Generate a signed 64-bit random integer
 			 *
 			 * @return the random 64-bit signed integer
-			 */			
+			 */
 			int64_t random_s64() const
 			{
 				return random_64() & ((uint64_t(-1)<<1)>>1);
@@ -192,7 +192,7 @@ namespace shogun
 			void fill_array(uint64_t* array, int32_t size) const;
 
 			/**
-			 * Fills an array of float64_t with randoms 
+			 * Fills an array of float64_t with randoms
 			 * from the (0,1] interval
 			 *
 			 * @param array
@@ -201,7 +201,7 @@ namespace shogun
 			void fill_array_oc(float64_t* array, int32_t size) const;
 
 			/**
-			 * Fills an array of float64_t with randoms 
+			 * Fills an array of float64_t with randoms
 			 * from the [0,1) interval
 			 *
 			 * @param array
@@ -210,7 +210,7 @@ namespace shogun
 			void fill_array_co(float64_t* array, int32_t size) const;
 
 			/**
-			 * Fills an array of float64_t with randoms 
+			 * Fills an array of float64_t with randoms
 			 * from the (0,1) interval
 			 *
 			 * @param array
@@ -219,7 +219,7 @@ namespace shogun
 			void fill_array_oo(float64_t* array, int32_t size) const;
 
 			/**
-			 * Fills an array of float64_t with randoms 
+			 * Fills an array of float64_t with randoms
 			 * from the [1,2) interval
 			 *
 			 * @param array
@@ -237,14 +237,14 @@ namespace shogun
 			/**
 			 * Get random
 			 * @return a float64_t random from (0,1) interval
-			 */			
+			 */
 			float64_t random_open() const;
 
 			/**
 			 * Get random
-			 * 
+			 *
 			 * @return a float64_t random from [0,1) interval
-			 */			
+			 */
 			float64_t random_half_open() const;
 
 			/**
@@ -258,7 +258,7 @@ namespace shogun
 			float64_t normal_distrib(float64_t mu, float64_t sigma) const;
 
 			/**
-			 * Sample a standard normal distribution, 
+			 * Sample a standard normal distribution,
 			 * i.e. mean = 0, var = 1.0
 			 *
 			 * @return sample from the std normal distrib
@@ -266,13 +266,13 @@ namespace shogun
 			float64_t std_normal_distrib() const;
 
 
-			virtual const char* get_name() const { return "Random"; } 
+			virtual const char* get_name() const { return "Random"; }
 
 		private:
 			/** initialise the object */
 			void init();
 
-			/** reinit PRNG 
+			/** reinit PRNG
 			 *
 			 * @param seed seed for the PRNG
 			 */
@@ -280,7 +280,7 @@ namespace shogun
 
 			/**
 			 * Sample from the distribution tail (defined as having x >= R).
-			 * 
+			 *
 			 * @return
 			 */
 			float64_t sample_tail() const;
@@ -312,9 +312,9 @@ namespace shogun
 			int32_t m_blockCount; //= 128;
 
 			/** Right hand x coord of the base rectangle, thus also the left hand x coord of the tail */
-    		float64_t m_R;//= 3.442619855899;
+		float64_t m_R;//= 3.442619855899;
 
-    		/** Area of each rectangle (pre-determined/computed for 128 blocks). */
+		/** Area of each rectangle (pre-determined/computed for 128 blocks). */
 			float64_t m_A;// = 9.91256303526217e-3;
 
 			/** Scale factor for converting a UInt with range [0,0xffffffff] to a double with range [0,1]. */
@@ -327,11 +327,11 @@ namespace shogun
 			float64_t* m_x;
 			float64_t* m_y;
 
-			/** The proprtion of each segment that is entirely within the distribution, expressed as uint where 
-        	  a value of 0 indicates 0% and uint.MaxValue 100%. Expressing this as an integer allows some floating
-        	  points operations to be replaced with integer ones.
-        	 */
- 			uint32_t* m_xComp;
+			/** The proprtion of each segment that is entirely within the distribution, expressed as uint where
+	  a value of 0 indicates 0% and uint.MaxValue 100%. Expressing this as an integer allows some floating
+	  points operations to be replaced with integer ones.
+	 */
+			uint32_t* m_xComp;
 
 			/** state lock */
 			CLock m_state_lock;

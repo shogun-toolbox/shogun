@@ -7,7 +7,7 @@ def kernel_const_modular (c=23):
 
 	feats_train=DummyFeatures(10)
 	feats_test=DummyFeatures(17)
-	
+
 	kernel=ConstKernel(feats_train, feats_train, c)
 
 	km_train=kernel.get_kernel_matrix()

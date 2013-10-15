@@ -146,7 +146,7 @@ public:
 	virtual void update_test_true_result(CLabels* results,
 			const char* prefix="") {}
 
-	/** post update test and true results 
+	/** post update test and true results
 	 */
 	virtual void post_update_results() {}
 

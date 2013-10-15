@@ -14,7 +14,7 @@ MSufSort:
 =========
 The files in lib/suffixarray/
 BWT.{cpp,h}, InductionSort.h, IntroSort.h, MSufSort.{cpp,h} and Stack.h
-belong to the MSufSort suffix sorting algorithm Version 2.2; 
+belong to the MSufSort suffix sorting algorithm Version 2.2;
 Author: Michael A Maniscalco, Date: November 3, 2005 and are according to the
 author free for any use at all:
 

@@ -84,7 +84,7 @@ TYPEMAP_SGVECTOR(float64_t, NUM2DBL, rb_float_new)
 {
 	$1 = (
 					($input && TYPE($input) == T_ARRAY && RARRAY_LEN($input) > 0 && TYPE(rb_ary_entry($input, 0)) == T_ARRAY) ||
-					($input &&  NA_IsNArray($input) && NA_SHAPE1($input) > 0 && NA_SHAPE0($input) > 0)		
+					($input &&  NA_IsNArray($input) && NA_SHAPE1($input) > 0 && NA_SHAPE0($input) > 0)
 				) ? 1 : 0;
 }
 
@@ -96,10 +96,10 @@ TYPEMAP_SGVECTOR(float64_t, NUM2DBL, rb_float_new)
 
 	if (rb_obj_is_kind_of($input,rb_cArray) || NA_IsNArray($input)) {
 		if (NA_IsNArray($input))	{
-			v = (*na_to_array_dl)($input);	
+			v = (*na_to_array_dl)($input);
 		}
 		else {
-			v = $input;		
+			v = $input;
 		}
 		rows = RARRAY_LEN(v);
 		cols = 0;
@@ -130,9 +130,9 @@ TYPEMAP_SGVECTOR(float64_t, NUM2DBL, rb_float_new)
 	int32_t len = rows * cols;
 	VALUE arr;
 	int32_t i, j;
-	
+
 	arr = rb_ary_new2(rows);
-		
+
 	for (i = 0; i < rows; i++) {
 		VALUE vec = rb_ary_new2(cols);
 		for (j = 0; j < cols; j++) {
@@ -176,7 +176,7 @@ TYPEMAP_SGMATRIX(float64_t, NUM2DBL, rb_float_new)
 	if (TYPE($input) != T_ARRAY) {
 		rb_raise(rb_eArgError, "Expected Arrays");
 	}
-	
+
 	size = RARRAY_LEN($input);
 	shogun::SGString<SGTYPE>* strings=SG_MALLOC(shogun::SGString<SGTYPE>, size);
 
@@ -190,7 +190,7 @@ TYPEMAP_SGMATRIX(float64_t, NUM2DBL, rb_float_new)
 
 			strings[i].slen = len;
 			strings[i].string = NULL;
-			
+
 			if (len > 0) {
 				strings[i].string = SG_MALLOC(SGTYPE, len + 1);
 				memcpy(strings[i].string, str, len + 1);
@@ -215,7 +215,7 @@ TYPEMAP_SGMATRIX(float64_t, NUM2DBL, rb_float_new)
 			}
 		}
 	}
-	
+
 	SGStringList<SGTYPE> sl;
 	sl.strings = strings;
 	sl.num_strings = size;
@@ -238,7 +238,7 @@ TYPEMAP_SGMATRIX(float64_t, NUM2DBL, rb_float_new)
 		else {
 			SGTYPE* data = SG_MALLOC(SGTYPE, str[i].slen);
 			memcpy(data, str[i].string, str[i].slen * sizeof(SGTYPE));
-			
+
 			VALUE vec = rb_ary_new2(str[i].slen);
 			for (j = 0; j < str[i].slen; j++) {
 				rb_ary_push(vec, SG2R(data[j]));

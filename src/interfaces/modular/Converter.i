@@ -7,7 +7,7 @@
  * Written (W) 2012 Sergey Lisitsyn
  * Copyright (C) 2012 Sergey Lisitsyn
  */
- 
+
 %rename(EmbeddingConverter) CEmbeddingConverter;
 %rename(LocallyLinearEmbedding) CLocallyLinearEmbedding;
 %rename(NeighborhoodPreservingEmbedding) CNeighborhoodPreservingEmbedding;

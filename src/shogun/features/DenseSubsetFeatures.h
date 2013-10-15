@@ -126,7 +126,7 @@ public:
 
 		SGVector<ST> vec1 = m_fea->get_feature_vector(vec_idx1);
 		SGVector<ST> vec2 = dsf->m_fea->get_feature_vector(vec_idx2);
-		
+
 		float64_t sum = 0;
 		for (int32_t i=0; i < m_idx.vlen; ++i)
 			sum += vec1[m_idx[i]] * vec2[dsf->m_idx[i]];
@@ -197,7 +197,7 @@ public:
 	 * free_feature_iterator to cleanup
 	 *
 	 * @param vector_index the index of the vector over whose components to
-	 * 			iterate over
+	 *			iterate over
 	 * @return feature iterator (to be passed to get_next_feature)
 	 */
 	virtual void* get_feature_iterator(int32_t vector_index)
@@ -235,7 +235,7 @@ private:
 	CDenseFeatures<ST> *m_fea;
 	SGVector<int32_t> m_idx;
 };
-} /*  shogun */ 
+} /*  shogun */
 
 #endif /* end of include guard: DENSESUBSETFEATURES_H__ */
 

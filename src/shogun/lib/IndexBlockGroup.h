@@ -16,10 +16,10 @@
 namespace shogun
 {
 
-/** @brief class IndexBlockGroup used to represent 
+/** @brief class IndexBlockGroup used to represent
  * group-based feature relation.
  *
- * Currently can be constructed with a few CIndexBlock 
+ * Currently can be constructed with a few CIndexBlock
  * instances.
  */
 class CIndexBlockGroup : public CIndexBlockRelation
@@ -42,7 +42,7 @@ public:
 	 */
 	void remove_block(CIndexBlock* block);
 
-	/** returns information about IndexBlocks in 
+	/** returns information about IndexBlocks in
 	 * SLEP "ind" format
 	 */
 	SGVector<index_t> get_SLEP_ind();

@@ -6,7 +6,7 @@
  *
  * Written (W) 2012-2013 Heiko Strathmann
  */
- 
+
 /* Remove C Prefix */
 %rename(TestStatistic) CTestStatistic;
 %rename(TwoDistributionsTestStatistic) CTwoDistributionsTestStatistic;

@@ -103,9 +103,9 @@ class CDistance : public CSGObject
 
 		/** get distance function for lhs feature vector a
 		 *  and rhs feature vector b. The computation of the
-		 *  distance stops if the intermediate result is 
-		 *  larger than upper_bound. This is useful to use 
-		 *  with John Langford's Cover Tree and it is ONLY 
+		 *  distance stops if the intermediate result is
+		 *  larger than upper_bound. This is useful to use
+		 *  with John Langford's Cover Tree and it is ONLY
 		 *  implemented for Euclidean distance
 		 *
 		 *  @param idx_a feature vector a at idx_a

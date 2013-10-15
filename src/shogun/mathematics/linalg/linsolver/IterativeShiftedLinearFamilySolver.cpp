@@ -3,7 +3,7 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Written (W) 2013 Soumyajit De
  */
 
@@ -82,7 +82,7 @@ void CIterativeShiftedLinearFamilySolver<T, ST>::compute_alpha_sh(
 	{
 		// compute alpha_sh_cur according to Jergerlehner, eq. 2.43
 		// [see IterativeShiftedLinearFamilySolver.h]
-  	for (index_t i=0; i<alpha_sh.vlen; ++i)
+	for (index_t i=0; i<alpha_sh.vlen; ++i)
 	  {
 			ST numer=alpha*zeta_sh_cur[i]*beta_sh_old[i];
 			ST denom=zeta_sh_old[i]*beta_old;

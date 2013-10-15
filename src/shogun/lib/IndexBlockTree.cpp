@@ -106,7 +106,7 @@ void collect_tree_nodes_recursive(CIndexBlock* subtree_root_block, vector<block_
 	SG_UNREF(sub_blocks);
 }
 
-CIndexBlockTree::CIndexBlockTree() : 
+CIndexBlockTree::CIndexBlockTree() :
 	CIndexBlockRelation(), m_root_block(NULL),
 	m_general(false)
 {
@@ -119,15 +119,15 @@ CIndexBlockTree::CIndexBlockTree(CIndexBlock* root_block) : CIndexBlockRelation(
 	set_root_block(root_block);
 }
 
-CIndexBlockTree::CIndexBlockTree(SGMatrix<float64_t> adjacency_matrix, bool include_supernode) : 
+CIndexBlockTree::CIndexBlockTree(SGMatrix<float64_t> adjacency_matrix, bool include_supernode) :
 	CIndexBlockRelation(),
 	m_root_block(NULL), m_general(true)
 {
 	ASSERT(adjacency_matrix.num_rows == adjacency_matrix.num_cols)
 	int32_t n_features = adjacency_matrix.num_rows;
-	
+
 	// well ordering is assumed
-	
+
 	tree_node_t* nodes = SG_CALLOC(tree_node_t, n_features);
 
 	int32_t* nz_row = SG_CALLOC(int32_t, n_features);
@@ -145,7 +145,7 @@ CIndexBlockTree::CIndexBlockTree(SGMatrix<float64_t> adjacency_matrix, bool incl
 		nodes[i].desc = SG_MALLOC(tree_node_t*, c);
 		for (int32_t j=0; j<c; j++)
 		{
-			nodes[i].desc[j] = &nodes[nz_row[j]]; 
+			nodes[i].desc[j] = &nodes[nz_row[j]];
 		}
 		if (nz_row[c] == n_features)
 			break;
@@ -202,10 +202,10 @@ CIndexBlockTree::CIndexBlockTree(SGMatrix<float64_t> adjacency_matrix, bool incl
 	m_precomputed_ind_t[0] = -1;
 	m_precomputed_ind_t[1] = -1;
 	m_precomputed_ind_t[2] = 1.0;
-	
+
 	for (int32_t i=0; i<(int)blocks.size(); i++)
 	{
-		m_precomputed_ind_t[3+3*i+0] = blocks[i].t_min_index; 
+		m_precomputed_ind_t[3+3*i+0] = blocks[i].t_min_index;
 		m_precomputed_ind_t[3+3*i+1] = blocks[i].t_max_index;
 		m_precomputed_ind_t[3+3*i+2] = blocks[i].weight;
 	}
@@ -215,7 +215,7 @@ CIndexBlockTree::CIndexBlockTree(SGMatrix<float64_t> adjacency_matrix, bool incl
 	SG_FREE(nodes);
 }
 
-CIndexBlockTree::CIndexBlockTree(SGVector<float64_t> G, SGVector<float64_t> ind_t) : 
+CIndexBlockTree::CIndexBlockTree(SGVector<float64_t> G, SGVector<float64_t> ind_t) :
 	CIndexBlockRelation(),
 	m_root_block(NULL), m_general(true)
 {
@@ -275,7 +275,7 @@ SGVector<float64_t> CIndexBlockTree::get_SLEP_ind_t() const
 		CList* blocks = new CList(true);
 
 		vector<block_tree_node_t> tree_nodes = vector<block_tree_node_t>();
-		
+
 		collect_tree_nodes_recursive(m_root_block, &tree_nodes);
 
 		SGVector<float64_t> ind_t(3+3*tree_nodes.size());

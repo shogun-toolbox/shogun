@@ -9,7 +9,7 @@ def kernel_circular_modular(train_fname=traindat,test_fname=testdat, sigma=1.0):
 
 	feats_train=RealFeatures(CSVFile(train_fname))
 	feats_test=RealFeatures(CSVFile(test_fname))
-	
+
 	distance=EuclideanDistance(feats_train, feats_train)
 	kernel=CircularKernel(feats_train, feats_train, sigma, distance)
 	km_train=kernel.get_kernel_matrix()

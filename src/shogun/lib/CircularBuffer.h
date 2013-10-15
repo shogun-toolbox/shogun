@@ -32,7 +32,7 @@ public:
 	/** default constructor */
 	CCircularBuffer();
 
-	/** constructor 
+	/** constructor
 	 *
 	 * @param buffer_size size of buffer
 	 */
@@ -48,9 +48,9 @@ public:
 	void set_tokenizer(CTokenizer* tokenizer);
 
 	/** push data into buffer from memory block
-	 * 
+	 *
 	 * @param source source data
-	 * @return number of bytes written	
+	 * @return number of bytes written
 	 */
 	int32_t push(SGVector<char> source);
 
@@ -62,13 +62,13 @@ public:
 	int32_t push(FILE* source, int32_t source_size);
 
 	/** remove characters from buffer
-	 *	
+	 *
 	 * @param num_chars number of characters that should be removed
 	 * @return characters removed
 	 */
 	SGVector<char> pop(int32_t num_chars);
 
-	/** returns true or false based on whether 
+	/** returns true or false based on whether
 	 * there exists another token in the text
 	 *
 	 * @return if another token exists
@@ -84,14 +84,14 @@ public:
 	index_t next_token_idx(index_t &start);
 
 	/** remove characters from buffer
-	 * similar with pop(), but but does not return a string. 
-	 * 
+	 * similar with pop(), but but does not return a string.
+	 *
 	 * @param num_chars number of characters that should be skipped
 	 */
 	void skip_characters(int32_t num_chars);
 
 	/** @return number of free bytes in buffer */
-	int32_t available() const 
+	int32_t available() const
 	{
 		return m_bytes_available;
 	}
@@ -113,18 +113,18 @@ private:
 	void init();
 
 	/** append memory block to buffer */
-	int32_t append_chunk(const char* source, int32_t source_size, 
+	int32_t append_chunk(const char* source, int32_t source_size,
 					bool from_buffer_begin);
-	
+
 	/** append data from file to buffer */
 	int32_t append_chunk(FILE* source, int32_t source_size,
 					bool from_buffer_begin);
 
 	/** detach memory block from buffer */
-	void detach_chunk(char** dest, int32_t* dest_size, int32_t dest_offset, int32_t num_bytes, 
+	void detach_chunk(char** dest, int32_t* dest_size, int32_t dest_offset, int32_t num_bytes,
 					bool from_buffer_begin);
 
-	/** returns true or false based on whether 
+	/** returns true or false based on whether
 	 * there exists another token in the text
 	 */
 	bool has_next_locally(char* begin, char* end);
@@ -144,7 +144,7 @@ private:
 	/** pointer to end of buffer's memory */
 	char* m_buffer_end;
 
-	/** begin of buffer */	
+	/** begin of buffer */
 	char* m_begin_pos;
 
 	/** end of buffer */

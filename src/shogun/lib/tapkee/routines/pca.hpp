@@ -18,7 +18,7 @@ namespace tapkee_internal
 
 template <class RandomAccessIterator, class FeatureVectorCallback>
 DenseMatrix project(const DenseMatrix& projection_matrix, const DenseVector& mean_vector,
-                    RandomAccessIterator begin, RandomAccessIterator end, 
+                    RandomAccessIterator begin, RandomAccessIterator end,
                     FeatureVectorCallback callback, IndexType dimension)
 {
 	timed_context context("Data projection");
@@ -40,7 +40,7 @@ DenseMatrix project(const DenseMatrix& projection_matrix, const DenseVector& mea
 
 template <class RandomAccessIterator, class FeatureVectorCallback>
 DenseVector compute_mean(RandomAccessIterator begin, RandomAccessIterator end,
-                         FeatureVectorCallback callback, IndexType dimension) 
+                         FeatureVectorCallback callback, IndexType dimension)
 {
 	DenseVector mean = DenseVector::Zero(dimension);
 	DenseVector current_vector(dimension);
@@ -54,13 +54,13 @@ DenseVector compute_mean(RandomAccessIterator begin, RandomAccessIterator end,
 }
 
 template <class RandomAccessIterator, class FeatureVectorCallback>
-DenseSymmetricMatrix compute_covariance_matrix(RandomAccessIterator begin, RandomAccessIterator end, 
+DenseSymmetricMatrix compute_covariance_matrix(RandomAccessIterator begin, RandomAccessIterator end,
                                                const DenseVector& mean, FeatureVectorCallback callback, IndexType dimension)
 {
 	timed_context context("Constructing PCA covariance matrix");
 
 	DenseSymmetricMatrix covariance_matrix = DenseSymmetricMatrix::Zero(dimension,dimension);
-	
+
 	DenseVector current_vector(dimension);
 	for (RandomAccessIterator iter=begin; iter!=end; ++iter)
 	{
@@ -73,7 +73,7 @@ DenseSymmetricMatrix compute_covariance_matrix(RandomAccessIterator begin, Rando
 }
 
 template <class RandomAccessIterator, class KernelCallback>
-DenseSymmetricMatrix compute_centered_kernel_matrix(RandomAccessIterator begin, RandomAccessIterator end, 
+DenseSymmetricMatrix compute_centered_kernel_matrix(RandomAccessIterator begin, RandomAccessIterator end,
                                                     KernelCallback callback)
 {
 	timed_context context("Constructing kPCA centered kernel matrix");

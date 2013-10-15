@@ -226,7 +226,7 @@ class CSVMOcas : public CLinearMachine
 		uint32_t* cp_nz_dims;
 		/** bias dimensions */
 		float64_t* cp_bias;
-		
+
 		/** primal objective */
 		float64_t primal_objective;
 };

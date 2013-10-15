@@ -110,7 +110,7 @@ class CStateModel : public CSGObject
 		 */
 		virtual SGVector< int32_t > labels_to_states(CSequence* label_seq) const = 0;
 
-		/** translates state sequence to label sequence 
+		/** translates state sequence to label sequence
 		 *
 		 * @param state_seq state sequence
 		 *

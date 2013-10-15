@@ -6,25 +6,25 @@ functions provided by shogun.
 First, you need to determine what type your data will be, because this
 will determine the distance function you can use.
 
-This example loads two stored matrices of real values (feature type 'REAL') 
-from different files and initializes the distance to 'BRAYCURTIS'. 
+This example loads two stored matrices of real values (feature type 'REAL')
+from different files and initializes the distance to 'BRAYCURTIS'.
 Each column of the matrices corresponds to one data point.
 
 The target 'TRAIN' for 'set_features' controls the processing of the given
-data points, where a pairwise distance matrix is computed by 
+data points, where a pairwise distance matrix is computed by
 'get_distance_matrix'.
 
-The resulting distance matrix can be reaccessed by 'get_distance_matrix' and 
+The resulting distance matrix can be reaccessed by 'get_distance_matrix' and
 target 'TRAIN'.
 
 The target 'TEST' for 'set_features' controls the processing of the given
-data points 'TRAIN' and 'TEST', where a pairwise distance matrix between 
+data points 'TRAIN' and 'TEST', where a pairwise distance matrix between
 these two matrices is computed by 'get_distance_matrix'.
 
-The resulting distance matrix can be reaccessed by 'get_distance_matrix' 
-and target 'TEST'. The 'TRAIN' distance matrix ceased to exist. 
+The resulting distance matrix can be reaccessed by 'get_distance_matrix'
+and target 'TEST'. The 'TRAIN' distance matrix ceased to exist.
 
 For more details see doc/classshogun_1_1CBrayCurtisDistance.html.
 
-Obviously, using the Bray Curtis distance is not limited to this showcase 
+Obviously, using the Bray Curtis distance is not limited to this showcase
 example.

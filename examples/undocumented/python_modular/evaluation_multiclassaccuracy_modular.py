@@ -15,10 +15,10 @@ def evaluation_multiclassaccuracy_modular (ground_truth, predicted):
 
 	ground_truth_labels = MulticlassLabels(ground_truth)
 	predicted_labels = MulticlassLabels(predicted)
-	
+
 	evaluator = MulticlassAccuracy()
 	accuracy = evaluator.evaluate(predicted_labels,ground_truth_labels)
-	
+
 	return accuracy
 
 

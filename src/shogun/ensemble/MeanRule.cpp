@@ -27,7 +27,7 @@ CMeanRule::~CMeanRule()
 
 SGVector<float64_t> CMeanRule::combine(const SGMatrix<float64_t>& ensemble_result) const
 {
-	float64_t* row_sum = 
+	float64_t* row_sum =
 		SGMatrix<float64_t>::get_column_sum(ensemble_result.matrix,
 											ensemble_result.num_rows,
 											ensemble_result.num_cols);

@@ -16,7 +16,7 @@ def kernel_local_alignment_string_modular (fm_train_dna=traindat,fm_test_dna=tes
 
 	kernel=LocalAlignmentStringKernel(feats_train, feats_train)
 	km_train=kernel.get_kernel_matrix()
-	
+
 	kernel.init(feats_train, feats_test)
 	km_test=kernel.get_kernel_matrix()
 	return km_train,km_test,kernel

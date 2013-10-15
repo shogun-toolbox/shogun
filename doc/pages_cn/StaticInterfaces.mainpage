@@ -21,7 +21,7 @@
 \li \ref staticifexample_sec
 
 <b>命令参考手册</b>
-\li \ref staticifcmdref_sec 
+\li \ref staticifcmdref_sec
 
 \section staticifoverview_sec 静态接口概览和安装测试
 
@@ -80,7 +80,7 @@ SHOGUN提供的命令。
 
 你可以看到一个帮助，该帮助对所有命令都有一个简单描述。
 
-\section staticifcmds 静态接口命令 
+\section staticifcmds 静态接口命令
 
 \subsection staticiffeatures_sec feature相关函数
 这些函数在各种接口中将数据传给shogun或者从shogun获得数据。假如你有一个包含数据的matlab矩阵
@@ -234,7 +234,7 @@ get_classifier命令返回一系列参数。\b set_classifier可用于设置alph
 \li get_WD_consensus
 \li get_WD_scoring
 
-\subsection staticifutil_sec 实用程序 
+\subsection staticifutil_sec 实用程序
 
 其它函数
 
@@ -251,7 +251,7 @@ get_classifier命令返回一系列参数。\b set_classifier可用于设置alph
   \li ALL: 极为详细的日志输出 (只在内存泄漏时比较有用)。
   \li DEBUG: 详细的日志输出 (调试时有用)。
   \li WARN: 少量日志输出 (查找错误时有用)。
-  \li ERROR: 只在遇到致命错误时才输出日志。 
+  \li ERROR: 只在遇到致命错误时才输出日志。
 
 例如
 \verbatim

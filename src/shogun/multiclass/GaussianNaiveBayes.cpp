@@ -113,9 +113,9 @@ bool CGaussianNaiveBayes::train_machine(CFeatures* data)
 
 	// number of iterations in all cycles
 	int32_t max_progress = 2 * train_labels.vlen + 2 * m_num_classes;
-	
+
 	// current progress
-	int32_t progress = 0;	
+	int32_t progress = 0;
 	SG_PROGRESS(progress, 0, max_progress)
 
 	// get sum of features among labels
@@ -147,20 +147,20 @@ bool CGaussianNaiveBayes::train_machine(CFeatures* data)
 		SGVector<float64_t> fea = m_features->get_computed_dot_feature_vector(i);
 		for (j=0; j<m_dim; j++)
 		{
-			m_variances(j, train_labels.vector[i]) += 
+			m_variances(j, train_labels.vector[i]) +=
 				CMath::sq(fea[j]-m_means(j, train_labels.vector[i]));
 		}
 
 		progress++;
 		SG_PROGRESS(progress, 0, max_progress)
-	}	
+	}
 
 	// get variance of features of labels
 	for (i=0; i<m_num_classes; i++)
 	{
 		for (j=0; j<m_dim; j++)
 			m_variances(j, i) /= m_label_prob.vector[i] > 1 ? m_label_prob.vector[i]-1 : 1;
-		
+
 		// get a priori probabilities of labels
 		m_label_prob.vector[i]/= m_num_classes;
 
@@ -215,11 +215,11 @@ float64_t CGaussianNaiveBayes::apply_one(int32_t idx)
 		}
 		else
 			m_rates.vector[i] = CMath::log(m_label_prob.vector[i]);
-	
+
 		// product all conditional gaussian probabilities
 		for (k=0; k<m_dim; k++)
 			if (m_variances(k,i)!=0.0)
-				m_rates.vector[i]+= CMath::log(0.39894228/CMath::sqrt(m_variances(k, i))) - 
+				m_rates.vector[i]+= CMath::log(0.39894228/CMath::sqrt(m_variances(k, i))) -
 					0.5*CMath::sq(feature_vector.vector[k]-m_means(k, i))/(m_variances(k, i));
 	}
 

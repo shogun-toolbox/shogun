@@ -153,7 +153,7 @@ template <class T> class CMemoryMappedFile : public CSGObject
 		 *
 		 * @param len length of line (returned via reference)
 		 * @param offs offset to be passed for reading next line, should be 0
-		 * 			initially (returned via reference)
+		 *			initially (returned via reference)
 		 *
 		 * @return line (NOT ZERO TERMINATED)
 		 */
@@ -179,10 +179,10 @@ template <class T> class CMemoryMappedFile : public CSGObject
 		/** write line to file
 		 *
 		 * @param line string to be written (must not contain '\n' and not
-		 * 									required to be zero terminated)
+		 *									required to be zero terminated)
 		 * @param len length of the string to be written
 		 * @param offs offset to be passed for writing next line, should be 0
-		 * 			initially (returned via reference)
+		 *			initially (returned via reference)
 		 *
 		 * @return line (NOT ZERO TERMINATED)
 		 */

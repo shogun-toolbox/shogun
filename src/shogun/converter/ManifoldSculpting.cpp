@@ -90,7 +90,7 @@ CFeatures* CManifoldSculpting::apply(CFeatures* features)
 	parameters.max_iteration = m_max_iteration;
 	parameters.features = feats;
 	parameters.distance = euclidean_distance;
-	
+
 	parameters.method = SHOGUN_MANIFOLD_SCULPTING;
 	parameters.target_dimension = m_target_dim;
 	CDenseFeatures<float64_t>* embedding = tapkee_embed(parameters);

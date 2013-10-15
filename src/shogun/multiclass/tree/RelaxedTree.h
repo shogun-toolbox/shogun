@@ -27,9 +27,9 @@ class CBaseMulticlassMachine;
 /** RelaxedTree refer to a tree-style multiclass classifier proposed in
  * the following paper.
  *
- *   Tianshi Gao and Daphne Koller. Discriminative Learning of Relaxed 
- *   Hierarchy for Large-scale Visual Recognition. In IEEE International 
- *   Conference on Computer Vision (ICCV), 2011. (Oral presentation) 
+ *   Tianshi Gao and Daphne Koller. Discriminative Learning of Relaxed
+ *   Hierarchy for Large-scale Visual Recognition. In IEEE International
+ *   Conference on Computer Vision (ICCV), 2011. (Oral presentation)
  */
 class CRelaxedTree: public CTreeMachine<RelaxedTreeNodeData>
 {
@@ -185,7 +185,7 @@ public:
 	typedef std::pair<std::pair<int32_t, int32_t>, float64_t> entry_t;
 protected:
 	/** apply to one instance.
-	 * 
+	 *
 	 * Note this method is not made public so that not be called from
 	 * external source. This is because preparation have to be done
 	 * before calling this (mainly setup the kernel for submachines).
@@ -194,7 +194,7 @@ protected:
 
 	/** train machine
 	 *
-	 * @param data training data 
+	 * @param data training data
 	 *
 	 * @return whether training was successful
 	 */
@@ -239,7 +239,7 @@ protected:
 	int32_t m_num_classes;
 };
 
-} /* shogun */ 
+} /* shogun */
 
 #endif /* end of include guard: RELAXEDTREE_H__ */
 

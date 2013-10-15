@@ -1,5 +1,5 @@
 This is an example for the initialization of the CommWordString-kernel (aka
-Spectrum or n-gram kernel; its name is derived from the unix command comm). This kernel 
-sums over k-mere matches (k='order'). For efficient computing a preprocessor is used 
-that extracts and sorts all k-mers. If 'use_sign' is set to one each k-mere is counted 
-only once. 
+Spectrum or n-gram kernel; its name is derived from the unix command comm). This kernel
+sums over k-mere matches (k='order'). For efficient computing a preprocessor is used
+that extracts and sorts all k-mers. If 'use_sign' is set to one each k-mere is counted
+only once.

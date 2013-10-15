@@ -9,7 +9,7 @@ def kernel_inversemultiquadric_modular (train_fname=traindat,test_fname=testdat,
 
 	feats_train=RealFeatures(CSVFile(train_fname))
 	feats_test=RealFeatures(CSVFile(test_fname))
-	
+
 	distance=EuclideanDistance(feats_train, feats_train)
 	kernel=InverseMultiQuadricKernel(feats_train, feats_train, shift_coef, distance)
 	km_train=kernel.get_kernel_matrix()

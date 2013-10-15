@@ -27,7 +27,7 @@ class CDistance;
  * Formally described as
  *
  * \f[
- * 		K(x,x') = - log (\| x-x' \|^{degree} + 1)
+ *		K(x,x') = - log (\| x-x' \|^{degree} + 1)
  * \f]
  *
  */

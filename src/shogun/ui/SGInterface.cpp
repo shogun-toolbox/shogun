@@ -5378,7 +5378,7 @@ bool CSGInterface::cmd_apply_converter()
 {
 	if (m_nrhs!=1 || !create_return_values(1))
 		return false;
-		
+
 	CDenseFeatures<float64_t>* conv_features = ui_converter->apply();
 	SGMatrix<float64_t> converted_mat = conv_features->get_feature_matrix();
 	set_matrix(converted_mat.matrix,converted_mat.num_rows,converted_mat.num_cols);
@@ -5388,10 +5388,10 @@ bool CSGInterface::cmd_apply_converter()
 bool CSGInterface::cmd_embed()
 {
 	int32_t target_dim = get_int_from_int_or_str();
-	
+
 	if (m_nrhs!=1 || !create_return_values(1))
 		return false;
-	
+
 	CDenseFeatures<float64_t>* embedding = ui_converter->embed(target_dim);
 	SGMatrix<float64_t> embedding_matrix = embedding->get_feature_matrix();
 	set_matrix(embedding_matrix.matrix,embedding_matrix.num_cols,embedding_matrix.num_rows);

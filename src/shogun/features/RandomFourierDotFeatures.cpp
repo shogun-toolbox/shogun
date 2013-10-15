@@ -22,7 +22,7 @@ CRandomFourierDotFeatures::CRandomFourierDotFeatures()
 }
 
 CRandomFourierDotFeatures::CRandomFourierDotFeatures(CDotFeatures* features,
-	int32_t D, KernelName kernel_name, SGVector<float64_t> params) 
+	int32_t D, KernelName kernel_name, SGVector<float64_t> params)
 : CRandomKitchenSinksDotFeatures(features, D)
 {
 	init(kernel_name, params);
@@ -31,7 +31,7 @@ CRandomFourierDotFeatures::CRandomFourierDotFeatures(CDotFeatures* features,
 
 CRandomFourierDotFeatures::CRandomFourierDotFeatures(CDotFeatures* features,
 	int32_t D, KernelName kernel_name, SGVector<float64_t> params,
-	SGMatrix<float64_t> coeff) 
+	SGMatrix<float64_t> coeff)
 : CRandomKitchenSinksDotFeatures(features, D, coeff)
 {
 	init(kernel_name, params);
@@ -58,9 +58,9 @@ void CRandomFourierDotFeatures::init(KernelName kernel_name, SGVector<float64_t>
 	kernel_params = params;
 
 	constant = num_samples>0 ? CMath::sqrt(2.0 / num_samples) : 1;
-	m_parameters->add(&kernel_params, "kernel_params", 
+	m_parameters->add(&kernel_params, "kernel_params",
 			"The parameters of the kernel to approximate");
-	SG_ADD((machine_int_t* ) &kernel, "kernel", 
+	SG_ADD((machine_int_t* ) &kernel, "kernel",
 			"The kernel to approximate", MS_NOT_AVAILABLE);
 	SG_ADD(&constant, "constant", "A constant needed",
 			MS_NOT_AVAILABLE);

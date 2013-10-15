@@ -13,7 +13,7 @@
 
 namespace shogun
 {
-/** @brief struct to store data of node of 
+/** @brief struct to store data of node of
  * conditional probability tree
  */
 struct ConditionalProbabilityTreeNodeData
@@ -24,7 +24,7 @@ struct ConditionalProbabilityTreeNodeData
 	float64_t p_right;
 
 	/** constructor */
-	ConditionalProbabilityTreeNodeData(): label(-1), p_right(0) 
+	ConditionalProbabilityTreeNodeData(): label(-1), p_right(0)
 	{
 	}
 
@@ -36,7 +36,7 @@ struct ConditionalProbabilityTreeNodeData
 };
 
 
-} /* shogun */ 
+} /* shogun */
 
 #endif /* end of include guard: CONDITIONALPROBABILITYTREENODEDATA_H__ */
 

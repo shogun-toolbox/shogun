@@ -192,7 +192,7 @@ for d in directories.keys():
 
 		body += '\n\\li <b>' + os.path.join(example_dir, d, f) + '</b>\n'
 		body += '\\verbinclude ' + f + '\n'
-	
+
 	header+=directories[d][2]
 	text = header + body + '*/'
 	file(os.path.join(target_dir, directories[d][1]),'w').write(text)

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if test -z "$PERL" 
+if test -z "$PERL"
 then
     PERL=perl
 fi
@@ -22,7 +22,7 @@ function test_all () {
 	echo -n "$file"
 	echo -n -e "\t\t"
 
-	if grep -q $file ../blacklist 
+	if grep -q $file ../blacklist
 	then
 		echo 'SKIPPING'
 	else

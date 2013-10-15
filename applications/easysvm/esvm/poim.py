@@ -12,10 +12,10 @@ Position Oligomer Importance Matrices
 #                                                                                           #
 #    This program is distributed in the hope that it will be useful,                        #
 #    but WITHOUT ANY WARRANTY; without even the implied warranty of                         #
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                           # 
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                           #
 #    GNU General Public License for more details.                                           #
 #                                                                                           #
-#    You should have received a copy of the GNU General Public License                      # 
+#    You should have received a copy of the GNU General Public License                      #
 #    along with this program; if not, see http://www.gnu.org/licenses                       #
 #    or write to the Free Software Foundation, Inc., 51 Franklin Street,                    #
 #    Fifth Floor, Boston, MA 02110-1301  USA                                                #
@@ -34,7 +34,7 @@ def compute_poims(svm, kernel, poimdegree, max_len):
 
     kernel.compute_POIM2(poimdegree, svm) ;
     poim = kernel.get_POIM2()
-    kernel.cleanup_POIM2() 
+    kernel.cleanup_POIM2()
 
     (poim, max_poim, diff_poim) = reshape_normalize_contribs(poim, poimdegree, max_len)
     (poim_weightmass, poim_totalmass) = compute_weight_mass(poim, poimdegree, max_len)
@@ -58,7 +58,7 @@ def getstringprobsMC(maxOrder,distrib,length, abcSize):
 
     pmatrix = []
     for k in xrange(0,maxOrder):
-	pmatrix.append(ones(4^k,len)) 
+	pmatrix.append(ones(4^k,len))
 
         for l in xrange(0,len):
             for sigma in xrange(0, abcSize):
@@ -74,7 +74,7 @@ def getV2_poimMC(u, strprobs, abcSize):
   VV = [];
   for k in xrange(0, len(u)):
       m = abcSize^k;
-      VV.append( numpy.ones(4**(k+1),1)*mean(u[k]*strprobs[k] ) ) 
+      VV.append( numpy.ones(4**(k+1),1)*mean(u[k]*strprobs[k] ) )
 
   return VV
 
@@ -93,7 +93,7 @@ def reshape_normalize_contribs(C, maxOrder, seqLen, opts={}):
 
     if opts.has_key("distribution"):
         strprobs = getstringprobsMC(length(Contribs), opts["distribution"], seqLen, 4);
-        MyV2 = getV2_poimMC(Contribs, strprobs, seqLen, 4);   
+        MyV2 = getV2_poimMC(Contribs, strprobs, seqLen, 4);
 
         for i in xrange(0, maxOrder ):
             Contribs[i] = Contribs[i] -MyV2[i];
@@ -124,5 +124,5 @@ def reshape_normalize_contribs(C, maxOrder, seqLen, opts={}):
             correction=numpy.max([A, B]);
             diffmaxContribs[k,l] = maxContribs[k,l] - correction;
 
-    return (Contribs, maxContribs, diffmaxContribs) 
+    return (Contribs, maxContribs, diffmaxContribs)
 

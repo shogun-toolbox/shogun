@@ -1,13 +1,13 @@
-# 
+#
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
-# 
+#
 # Written (W) 2006-2007 Soeren Sonnenburg
 # Written (W) 2007 Gunnar Raetsch
 # Copyright (C) 2007-2008 Fraunhofer Institute FIRST and Max-Planck-Society
-# 
+#
 
 from numpy import array
 from shogun.Structure import Plif
@@ -156,7 +156,7 @@ class plif:
 		self.intron3.set_plif_penalty(p)
 		self.intron3.set_min_value(-1e+20)
 		self.intron3.set_max_value(1e+20)
-		self.intron3.set_plif_name('intron3') 
+		self.intron3.set_plif_name('intron3')
 
 		l=array(model.penalty_intron4_boundaries).flatten()
 		p=array(model.penalty_intron4_penalty).flatten()

@@ -161,7 +161,7 @@ bool test_sgobject_vector()
 
 	/* old original kernels were deleted by shogun's SG_UNREF */
 	delete original_parameter;
-	
+
 	for (int32_t i=0; i<max; ++i)
 		SG_UNREF(new_parameter[i]);
 
@@ -210,7 +210,7 @@ bool test_sgobject_matrix()
 
 	/* old original kernels were deleted by shogun's SG_UNREF */
 	delete original_parameter;
-	
+
 	for (int32_t i=0; i<max*max; ++i)
 		SG_UNREF(new_parameter[i]);
 

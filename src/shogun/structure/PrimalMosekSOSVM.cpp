@@ -20,7 +20,7 @@ using namespace shogun;
 
 CPrimalMosekSOSVM::CPrimalMosekSOSVM()
 : CLinearStructuredOutputMachine(),
-	po_value(0.0) 
+	po_value(0.0)
 {
 	init();
 }
@@ -29,7 +29,7 @@ CPrimalMosekSOSVM::CPrimalMosekSOSVM(
 		CStructuredModel*  model,
 		CStructuredLabels* labs)
 : CLinearStructuredOutputMachine(model, labs),
-	po_value(0.0) 
+	po_value(0.0)
 {
 	init();
 }
@@ -106,7 +106,7 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 	m_slacks.zero();
 
 	// Initialize the list of constraints
-	// Each element in results is a list of CResultSet with the constraints 
+	// Each element in results is a list of CResultSet with the constraints
 	// associated to each training example
 	CDynamicObjectArray* results = new CDynamicObjectArray(N);
 	SG_REF(results);
@@ -132,7 +132,7 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 
 	SGVector< float64_t > aux(num_aux);
 
-	do 
+	do
 	{
 		SG_DEBUG("Iteration #%d: Cutting plane training with num_con=%d and old_num_con=%d.\n",
 				iteration, num_con, old_num_con);
@@ -230,7 +230,7 @@ float64_t CPrimalMosekSOSVM::compute_loss_arg(CResultSet* result) const
 	// Dimensionality of the joint feature space
 	int32_t M = m_w.vlen;
 
-	return 	SGVector< float64_t >::dot(m_w.vector, result->psi_pred.vector, M) +
+	return	SGVector< float64_t >::dot(m_w.vector, result->psi_pred.vector, M) +
 		result->delta -
 		SGVector< float64_t >::dot(m_w.vector, result->psi_truth.vector, M);
 }
@@ -260,7 +260,7 @@ bool CPrimalMosekSOSVM::add_constraint(
 	for ( int i = 0 ; i < M ; ++i )
 		dPsi[i] = result->psi_pred[i] - result->psi_truth[i]; // -dPsi(y)
 
-	return ( mosek->add_constraint_sosvm(dPsi, con_idx, train_idx, 
+	return ( mosek->add_constraint_sosvm(dPsi, con_idx, train_idx,
 			m_model->get_num_aux(), -result->delta) == MSK_RES_OK );
 }
 
@@ -280,9 +280,9 @@ void CPrimalMosekSOSVM::set_regularization(float64_t C)
 	m_regularization = C;
 }
 
-void CPrimalMosekSOSVM::set_epsilon(float64_t epsilon) 
-{ 
-	m_epsilon = epsilon; 
+void CPrimalMosekSOSVM::set_epsilon(float64_t epsilon)
+{
+	m_epsilon = epsilon;
 }
 
 #endif /* USE_MOSEK */

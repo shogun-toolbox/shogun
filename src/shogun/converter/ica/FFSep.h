@@ -22,21 +22,21 @@ namespace shogun
 class CFeatures;
 
 /** @brief class FFSep
- * 
- * Implements the FFSep algorithm for Independent 
- * Component Analysis (ICA) and Blind Source 
+ *
+ * Implements the FFSep algorithm for Independent
+ * Component Analysis (ICA) and Blind Source
  * Separation (BSS).
- * 
- * Ziehe, A., Laskov, P., Nolte, G., & Müller, K. R. (2004). 
- * A fast algorithm for joint diagonalization with non-orthogonal transformations 
- * and its application to blind source separation. 
+ *
+ * Ziehe, A., Laskov, P., Nolte, G., & Müller, K. R. (2004).
+ * A fast algorithm for joint diagonalization with non-orthogonal transformations
+ * and its application to blind source separation.
  * The Journal of Machine Learning Research, 5, 777-800.
  *
  */
 class CFFSep: public CICAConverter
 {
 	public:
-		
+
 		/** constructor */
 		CFFSep();
 
@@ -61,7 +61,7 @@ class CFFSep: public CICAConverter
 		/** getter for time sep cov matrices
 		 * @return cov matrices
 		 */
-		SGNDArray<float64_t> get_covs() const;		
+		SGNDArray<float64_t> get_covs() const;
 
 		/** @return object name */
 		virtual const char* get_name() const { return "FFSep"; };
@@ -72,13 +72,13 @@ class CFFSep: public CICAConverter
 		void init();
 
 	private:
-		
+
 		/** tau vector */
 		SGVector<float64_t> m_tau;
 
 		/** cov matrices */
 		SGNDArray<float64_t> m_covs;
-};	
+};
 }
 #endif // HAVE_EIGEN3
 #endif // FFSEP

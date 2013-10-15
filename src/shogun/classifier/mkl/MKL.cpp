@@ -70,7 +70,7 @@ bool CMKL::init_cplex()
 {
 	while (env==NULL)
 	{
-		SG_INFO("trying to initialize CPLEX\n") 
+		SG_INFO("trying to initialize CPLEX\n")
 
 		int status = 0; // calling external lib
 		env = CPXopenCPLEX (&status);
@@ -221,8 +221,8 @@ bool CMKL::train_machine(CFeatures* data)
 	if (mkl_epsilon<=0)
 		mkl_epsilon=1e-2 ;
 
-	SG_INFO("mkl_epsilon = %1.1e\n", mkl_epsilon) 
-	SG_INFO("C_mkl = %1.1e\n", C_mkl) 
+	SG_INFO("mkl_epsilon = %1.1e\n", mkl_epsilon)
+	SG_INFO("C_mkl = %1.1e\n", C_mkl)
 	SG_INFO("mkl_norm = %1.3e\n", mkl_norm)
 	SG_INFO("solver = %d\n", get_solver_type())
 	SG_INFO("ent_lambda = %f\n", ent_lambda)
@@ -993,7 +993,7 @@ float64_t CMKL::compute_optimal_betas_via_cplex(float64_t* new_beta, const float
 
 	if (!lp_initialized)
 	{
-		SG_INFO("creating LP\n") 
+		SG_INFO("creating LP\n")
 
 		double   obj[NUMCOLS]; /* calling external lib */
 		double   lb[NUMCOLS]; /* calling external lib */
@@ -1130,7 +1130,7 @@ float64_t CMKL::compute_optimal_betas_via_cplex(float64_t* new_beta, const float
 	}
 
 	{ // add the new row
-		//SG_INFO("add the new row\n") 
+		//SG_INFO("add the new row\n")
 
 		int rmatbeg[1];
 		int rmatind[num_kernels+1];
@@ -1292,7 +1292,7 @@ float64_t CMKL::compute_optimal_betas_via_cplex(float64_t* new_beta, const float
 			// have at most max(100,num_active_rows*2) rows, if not, remove one
 			if ( (num_rows-start_row>CMath::max(100,2*num_active_rows)) && (max_idx!=-1))
 			{
-				//SG_INFO("-%i(%i,%i)",max_idx,start_row,num_rows) 
+				//SG_INFO("-%i(%i,%i)",max_idx,start_row,num_rows)
 				status = CPXdelrows (env, lp_cplex, max_idx, max_idx) ;
 				if ( status )
 					SG_ERROR("Failed to remove an old row.\n")
@@ -1335,7 +1335,7 @@ float64_t CMKL::compute_optimal_betas_via_glpk(float64_t* beta, const float64_t*
 	int32_t NUMCOLS = 2*num_kernels + 1 ;
 	if (!lp_initialized)
 	{
-		SG_INFO("creating LP\n") 
+		SG_INFO("creating LP\n")
 
 		//set obj function, note glpk indexing is 1-based
 		glp_add_cols(lp_glpk, NUMCOLS);

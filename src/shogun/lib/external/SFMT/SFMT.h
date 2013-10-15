@@ -34,7 +34,7 @@
 
 #ifndef SFMTST_H
 #define SFMTST_H
-#ifndef DOXYGEN_SHOULD_SKIP_THIS 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 #if defined(__cplusplus)
 extern "C" {
 #endif

@@ -10,7 +10,7 @@ def preprocessor_dimensionreductionpreprocessor_modular (data, k):
 	from modshogun import RealFeatures
 	from modshogun import DimensionReductionPreprocessor
 	from modshogun import LocallyLinearEmbedding
-	
+
 	features = RealFeatures(data)
 
 	converter = LocallyLinearEmbedding()

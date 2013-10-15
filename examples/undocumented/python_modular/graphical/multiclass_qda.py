@@ -15,11 +15,11 @@ from modshogun import RealFeatures, MulticlassLabels
 
 # colormap
 cmap = mpl.colors.LinearSegmentedColormap('color_classes',
-	{'red':   [(0, 1,  1), 
+	{'red':   [(0, 1,  1),
 		   (1, .7, .7)],
-	 'green': [(0, 1, 1), 
+	 'green': [(0, 1, 1),
 	           (1, .7, .7)],
-	 'blue':  [(0, 1, 1), 
+	 'blue':  [(0, 1, 1),
 	           (1, .7, .7)]})
 pylab.cm.register_cmap(cmap = cmap)
 
@@ -57,7 +57,7 @@ def plot_data(qda, X, y, y_pred, ax):
 	pylab.plot(X1_fp[:, 0], X1_fp[:, 1], 's', color = cols[1])
 	m1 = qda.get_mean(1)
 	pylab.plot(m1[0], m1[1], 'o', color = 'black', markersize = 8)
-	
+
 	# Class 2 data
 	pylab.plot(X2_tp[:, 0], X2_tp[:, 1], 'o', color = cols[2])
 	pylab.plot(X2_fp[:, 0], X2_fp[:, 1], 's', color = cols[2])

@@ -52,7 +52,7 @@ int main(int argc, char** argv)
 
 	regressor->set_task_relation(task_tree);
 	regressor->train();
-	
+
 	regressor->set_current_task(0);
 	regressor->get_w().display_vector();
 

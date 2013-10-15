@@ -122,17 +122,17 @@ bool CSVRLight::train_machine(CFeatures* data)
 		kernel->clear_normal();
 
 	// output some info
-	SG_DEBUG("qpsize = %i\n", learn_parm->svm_maxqpsize) 
-	SG_DEBUG("epsilon = %1.1e\n", learn_parm->epsilon_crit) 
-	SG_DEBUG("kernel->has_property(KP_LINADD) = %i\n", kernel->has_property(KP_LINADD)) 
-	SG_DEBUG("kernel->has_property(KP_KERNCOMBINATION) = %i\n", kernel->has_property(KP_KERNCOMBINATION)) 
-	SG_DEBUG("get_linadd_enabled() = %i\n", get_linadd_enabled()) 
-	SG_DEBUG("kernel->get_num_subkernels() = %i\n", kernel->get_num_subkernels()) 
+	SG_DEBUG("qpsize = %i\n", learn_parm->svm_maxqpsize)
+	SG_DEBUG("epsilon = %1.1e\n", learn_parm->epsilon_crit)
+	SG_DEBUG("kernel->has_property(KP_LINADD) = %i\n", kernel->has_property(KP_LINADD))
+	SG_DEBUG("kernel->has_property(KP_KERNCOMBINATION) = %i\n", kernel->has_property(KP_KERNCOMBINATION))
+	SG_DEBUG("get_linadd_enabled() = %i\n", get_linadd_enabled())
+	SG_DEBUG("kernel->get_num_subkernels() = %i\n", kernel->get_num_subkernels())
 
 	use_kernel_cache = !((kernel->get_kernel_type() == K_CUSTOM) ||
 						 (get_linadd_enabled() && kernel->has_property(KP_LINADD)));
 
-	SG_DEBUG("use_kernel_cache = %i\n", use_kernel_cache) 
+	SG_DEBUG("use_kernel_cache = %i\n", use_kernel_cache)
 
 	// train the svm
 	svr_learn();
@@ -191,8 +191,8 @@ void CSVRLight::svr_learn()
   if (kernel->get_kernel_type() == K_COMBINED)
   {
 	  CCombinedKernel* k = (CCombinedKernel*) kernel;
-	  
-	  for (index_t k_idx=0; k_idx<k->get_num_kernels(); k_idx++)  
+
+	  for (index_t k_idx=0; k_idx<k->get_num_kernels(); k_idx++)
 	  {
 		  CKernel* kn = k->get_kernel(k_idx);
 		  kn->resize_kernel_cache( kernel->get_cache_size(), true);
@@ -508,7 +508,7 @@ void CSVRLight::update_linear_component_mkl(
 			 (!((CCombinedKernel*)kernel)->get_append_subkernel_weights()))// for combined kernel
 	{
 		CCombinedKernel* k = (CCombinedKernel*) kernel;
-		
+
 		int32_t n = 0, i, j ;
 
 		for (index_t k_idx=0; k_idx<k->get_num_kernels(); k_idx++)

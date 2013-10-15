@@ -22,7 +22,7 @@
 using namespace shogun;
 
 #define	DIMS		2
-#define EPSILON  	10e-5
+#define EPSILON	10e-5
 #define	NUM_SAMPLES	100
 #define NUM_CLASSES	10
 

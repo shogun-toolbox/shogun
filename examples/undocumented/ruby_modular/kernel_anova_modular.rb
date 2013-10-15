@@ -10,14 +10,14 @@ testdat = LoadMatrix.load_numbers('../data/fm_test_real.dat')
 parameter_list = [[traindat,testdat,2,10], [traindat,testdat,5,10]]
 
 def kernel_anova_modular(fm_train_real=traindat,fm_test_real=testdat,cardinality=2, size_cache=10)
-	
+
 	feats_train=Modshogun::RealFeatures.new
 	feats_train.set_feature_matrix(fm_train_real)
 	feats_test=Modshogun::RealFeatures.new
 	feats_test.set_feature_matrix(fm_test_real)
-	
+
 	kernel=Modshogun::ANOVAKernel.new(feats_train, feats_train, cardinality, size_cache)
-        
+
 	for i in 0..feats_train.get_num_vectors
 		for j in 0..feats_train.get_num_vectors
 			k1 = kernel.compute_rec1(i,j)

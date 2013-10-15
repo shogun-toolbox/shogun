@@ -2,10 +2,10 @@
 % paper that we labeled with "christmas star".
 %
 % The task is to classify two star-shaped classes that share the
-% midpoint. The difficulty of the learning problem depends on the 
+% midpoint. The difficulty of the learning problem depends on the
 % distance between the classes, which is varied
-% 
-% Our model selection leads to a choice of C = 0.5. The model 
+%
+% Our model selection leads to a choice of C = 0.5. The model
 % selection is not repeated inside this script.
 
 
@@ -43,7 +43,7 @@ randn('state', 17);
 
 
 for kk = 1:size(radius_star,1)
-  
+
   % data generation
   fprintf('MKL for radius %+02.2f                                                      \n', radius_star(kk,1))
 
@@ -52,9 +52,9 @@ for kk = 1:size(radius_star,1)
 
   dummy(2,:) = sin(k_star*pi*dummy(1,:)) + noise;         % sine
   dummy(2,1:2*no_obs) = dummy(2,1:2*no_obs)+ radius_star(kk,1);         % distanz shift: first class
-  dummy(2,(2*no_obs+1):end) = dummy(2,(2*no_obs+1):end)+ radius_star(kk,2); % distanz shift: second class   
+  dummy(2,(2*no_obs+1):end) = dummy(2,(2*no_obs+1):end)+ radius_star(kk,2); % distanz shift: second class
 
-  dummy(1,: ) = 2*pi*dummy(1,:);        
+  dummy(1,: ) = 2*pi*dummy(1,:);
 
   x(1,:) =  dummy(2,:).*sin(dummy(1,:));
   x(2,:) =  dummy(2,:).*cos(dummy(1,:));
@@ -116,7 +116,7 @@ for kk = 1:size(radius_star,1)
   sg('set_labels','TEST', train_y);
   sg('set_threshold', 0);
   result.trainout(kk,:)=sg('classify');
-  result.trainerr(kk)  = mean(train_y~=sign(result.trainout(kk,:)),2);  
+  result.trainerr(kk)  = mean(train_y~=sign(result.trainout(kk,:)),2);
 
   % calculate test error
 
@@ -129,7 +129,7 @@ for kk = 1:size(radius_star,1)
   sg('set_labels','TEST',test_y);
   sg('set_threshold', 0);
   result.testout(kk,:)=sg('classify');
-  result.testerr(kk)  = mean(test_y~=sign(result.testout(kk,:)),2);    
-	 
+  result.testerr(kk)  = mean(test_y~=sign(result.testout(kk,:)),2);
+
 end
 disp('done. now w contains the kernel weightings and result test/train outputs and errors')

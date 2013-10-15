@@ -15,7 +15,7 @@ def kernel_spherical_modular (fm_train_real=traindat,fm_test_real=testdat, sigma
 
 	feats_train=RealFeatures(fm_train_real)
 	feats_test=RealFeatures(fm_test_real)
-	
+
 	distance=EuclideanDistance(feats_train, feats_train)
 
 	kernel=MultiquadricKernel(feats_train, feats_train, sigma, distance)

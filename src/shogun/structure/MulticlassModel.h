@@ -39,7 +39,7 @@ class CMulticlassModel : public CStructuredModel
 		virtual ~CMulticlassModel();
 
 		/**
-		 * return the dimensionality of the joint feature space, i.e. 
+		 * return the dimensionality of the joint feature space, i.e.
 		 * the dimension of the weight vector \f$w\f$
 		 */
 		virtual int32_t get_dim() const;

@@ -80,7 +80,7 @@ int32_t CCCSOSVM::mosek_qp_optimize(float64_t** G, float64_t* delta, float64_t* 
 		 for (int32_t i=0;i<k;i++) {
 		 printf("delta: %.4f\n", delta[i]);
 		 }
-		 printf("G:\n"); 
+		 printf("G:\n");
 		 for (int32_t i=0;i<k;i++) {
 		 for (int32_t j=0;j<k;j++) {
 		 printf("%.4f ", G[i][j]);
@@ -286,7 +286,7 @@ bool CCCSOSVM::train_machine(CFeatures* data)
 		/*
 			 dXc = (DOC**)realloc(dXc, sizeof(DOC*)*size_active);
 			 dXc[size_active-1] = (DOC*)malloc(sizeof(DOC));
-			 dXc[size_active-1]->fvec = new_constraint; 
+			 dXc[size_active-1]->fvec = new_constraint;
 			 dXc[size_active-1]->slackid = 1; // only one common slackid (one-slack)
 			 dXc[size_active-1]->costfactor = 1.0;
 			 */
@@ -460,7 +460,7 @@ bool CCCSOSVM::train_machine(CFeatures* data)
 		SG_DEBUG("ITER RHO: %.4f\n", rho)
 		SG_DEBUG("ITER ||w-w_b||^2: %.4f\n", proximal_term)
 		SG_DEBUG("ITER PRIMAL_LOWER_BOUND: %.4f\n", primal_lower_bound)
-		SG_DEBUG("ITER V_K: %.4f\n", v_k) 
+		SG_DEBUG("ITER V_K: %.4f\n", v_k)
 		SG_DEBUG("ITER margin: %.4f\n", margin)
 		SG_DEBUG("ITER psi*-psi: %.4f\n", value-margin)
 

@@ -16,7 +16,7 @@
 namespace shogun
 {
 
-/** @brief class IndexBlockTree used to represent 
+/** @brief class IndexBlockTree used to represent
  * tree guided feature relation.
  *
  * Can be constructed via CIndexBlock instance having
@@ -39,7 +39,7 @@ public:
 	 * @param include_supernode whether to include supernode
 	 */
 	CIndexBlockTree(SGMatrix<float64_t> adjacency_matrix, bool include_supernode);
-	
+
 	/** constructor from general precomputed indices
 	 * each node is represented with indices G[ind_t.min:ind_t.max]
 	 * and weight ind_t.weight
@@ -47,7 +47,7 @@ public:
 	 * @param ind_t custom ind_t containing flatten parameters of each node [min,max,weight]
 	 */
 	CIndexBlockTree(SGVector<float64_t> G, SGVector<float64_t> ind_t);
-	
+
 	/** constructor from basic precomputed indices
 	 * each node is represented with indices ind_t.min:ind_t.max
 	 * and weight ind_t.weight
@@ -64,7 +64,7 @@ public:
 	/** set root block */
 	void set_root_block(CIndexBlock* root_block);
 
-	/** returns information about blocks in 
+	/** returns information about blocks in
 	 * SLEP "ind" format
 	 */
 	virtual SGVector<index_t> get_SLEP_ind();
@@ -98,7 +98,7 @@ protected:
 
 	/** precomputed ind_t */
 	SGVector<float64_t> m_precomputed_ind_t;
-	
+
 	/** precomputed G */
 	SGVector<float64_t> m_precomputed_G;
 };

@@ -26,7 +26,7 @@ public class regression_libsvr_modular {
 
 		kernel.init(feats_train, feats_test);
 		double[] out_labels = LabelsFactory.to_regression(svr.apply()).get_labels();
-		
+
 		foreach (double item in out_labels)
 		    Console.Write(out_labels);
 

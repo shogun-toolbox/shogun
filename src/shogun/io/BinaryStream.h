@@ -134,7 +134,7 @@ template <class T> class CBinaryStream : public CSGObject
 		 *
 		 * @param len length of line (returned via reference)
 		 * @param offs offset to be passed for reading next line, should be 0
-		 * 			initially (returned via reference)
+		 *			initially (returned via reference)
 		 *
 		 * @return line (NOT ZERO TERMINATED)
 		 */

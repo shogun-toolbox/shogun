@@ -2,10 +2,10 @@
 # paper that we labeled with "christmas star".
 #
 # The task is to classify two star-shaped classes that share the
-# midpoint. The difficulty of the learning problem depends on the 
+# midpoint. The difficulty of the learning problem depends on the
 # distance between the classes, which is varied
-# 
-# Our model selection leads to a choice of C <- 0.5. The model 
+#
+# Our model selection leads to a choice of C <- 0.5. The model
 # selection is not repeated inside this script.
 library(sg)
 
@@ -51,9 +51,9 @@ for (kk in 1:dim(radius_star)[1]) {
 
   dummy[2,] <- sin(k_star*pi*dummy[1,]) + noise         # sine
   dummy[2,1:(2*no_obs)] <- dummy[2,1:(2*no_obs)]+ radius_star[kk,1]         # distanz shift: first class
-  dummy[2,(2*no_obs+1):dim(dummy)[2]] <- dummy[2,(2*no_obs+1):dim(dummy)[2]]+ radius_star[kk,2] # distanz shift: second class   
+  dummy[2,(2*no_obs+1):dim(dummy)[2]] <- dummy[2,(2*no_obs+1):dim(dummy)[2]]+ radius_star[kk,2] # distanz shift: second class
 
-  dummy[1,] <- 2*pi*dummy[1,]        
+  dummy[1,] <- 2*pi*dummy[1,]
 
   x <- matrix(0, dim(dummy)[1], dim(dummy)[2])
   x[1,] <-  dummy[2,]*sin(dummy[1,])
@@ -103,7 +103,7 @@ for (kk in 1:dim(radius_star)[1]) {
   sg('set_threshold', 0)
 
   result.trainout[kk,]<-sg('classify')
-  result.trainerr[kk]  <- mean(train_y!=sign(result.trainout[kk,]))  
+  result.trainerr[kk]  <- mean(train_y!=sign(result.trainout[kk,]))
 
   # calculate test error
 
@@ -116,6 +116,6 @@ for (kk in 1:dim(radius_star)[1]) {
   sg('set_labels','TEST',test_y)
   sg('set_threshold', 0)
   result.testout[kk,]<-sg('classify')
-  result.testerr[kk]  <- mean(test_y!=sign(result.testout[kk,]))    
+  result.testerr[kk]  <- mean(test_y!=sign(result.testout[kk,]))
 }
 cat('done. now w contains the kernel weightings and result test/train outputs and errors')

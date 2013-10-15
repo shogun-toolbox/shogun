@@ -62,7 +62,7 @@ static int class_name ## _getbuffer(PyObject *self, Py_buffer *view, int flags)
 	int num_labels=0;
 	Py_ssize_t* shape=NULL;
 	Py_ssize_t* strides=NULL;
-	
+
 	buffer_vector_ ## type_name ## _info* info=NULL;
 
 	static char* format=(char *) format_str; // http://docs.python.org/dev/library/struct.html#module-struct
@@ -172,7 +172,7 @@ static PyObject* class_name ## _getitem(PyObject *self, Py_ssize_t idx, bool get
 	}
 
 	arg1=reinterpret_cast< SGVector< type_name >* >(argp1);
-	
+
 	temp=*arg1;
 	vlen=arg1->vlen;
 
@@ -201,8 +201,8 @@ static PyObject* class_name ## _getitem(PyObject *self, Py_ssize_t idx, bool get
 		ret=(PyObject *) PyArray_NewFromDescr(&PyArray_Type, descr,
 						0, shape,
 						strides, data,
-	 					NPY_FARRAY | NPY_WRITEABLE,
-	 					(PyObject *) self);
+						NPY_FARRAY | NPY_WRITEABLE,
+						(PyObject *) self);
 	}
 
 	if (ret==NULL)
@@ -287,9 +287,9 @@ static PyObject* class_name ## _getslice(PyObject *self, Py_ssize_t ilow, Py_ssi
 
 	ret=(PyArrayObject *) PyArray_NewFromDescr(&PyArray_Type, descr,
 					1, shape,
- 					strides, data,
- 					NPY_FARRAY | NPY_WRITEABLE,
- 					(PyObject *) self);
+					strides, data,
+					NPY_FARRAY | NPY_WRITEABLE,
+					(PyObject *) self);
 	if (ret==NULL)
 		goto fail;
 

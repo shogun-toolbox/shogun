@@ -22,7 +22,7 @@ namespace tapkee
 namespace tapkee_internal
 {
 
-namespace 
+namespace
 {
 	const ScalarType max_number_of_iterations_without_improvement = 20;
 	const ScalarType multiplier_treshold = 0.01;
@@ -32,7 +32,7 @@ namespace
 }
 
 /** @brief Data needed to compute error function
- */ 
+ */
 struct DataForErrorFunc
 {
 	/** contains distances between point and its neighbors */
@@ -55,7 +55,7 @@ struct DataForErrorFunc
 	 * we know, where to search for the angle value)
 	 */
 	const Neighbors& angle_neighbors;
-	/** a set of indices of points, that have been 
+	/** a set of indices of points, that have been
 	 * already adjusted
 	 */
 	const std::set<IndexType>& adjusted_points;
@@ -64,7 +64,7 @@ struct DataForErrorFunc
 };
 
 template<class RandomAccessIterator, class DistanceCallback>
-SparseMatrix neighbors_distances_matrix(RandomAccessIterator begin, RandomAccessIterator end, 
+SparseMatrix neighbors_distances_matrix(RandomAccessIterator begin, RandomAccessIterator end,
                                         const Neighbors& neighbors, DistanceCallback callback,
                                         ScalarType& average_distance)
 {
@@ -92,7 +92,7 @@ SparseMatrix neighbors_distances_matrix(RandomAccessIterator begin, RandomAccess
 	return sparse_matrix_from_triplets(sparse_triplets, n, n);
 }
 
-SparseMatrixNeighborsPair angles_matrix_and_neighbors(const Neighbors& neighbors, 
+SparseMatrixNeighborsPair angles_matrix_and_neighbors(const Neighbors& neighbors,
                                                       const DenseMatrix& data)
 {
 	const IndexType k = neighbors[0].size();
@@ -124,8 +124,8 @@ SparseMatrixNeighborsPair angles_matrix_and_neighbors(const Neighbors& neighbors
 				DenseVector neighbor_to_its_neighbor = data.col(neighbors_of_neighbor[l])
 														- data.col(current_neighbors[j]);
 				current_cos_value = neighbor_to_point.dot(neighbor_to_its_neighbor) /
-				 					(neighbor_to_point.norm() *
-				 					 neighbor_to_its_neighbor.norm());
+									(neighbor_to_point.norm() *
+									 neighbor_to_its_neighbor.norm());
 				if (current_cos_value < min_cos_value)
 				{
 					most_collinear_current_neighbors[j] = neighbors_of_neighbor[l];
@@ -139,7 +139,7 @@ SparseMatrixNeighborsPair angles_matrix_and_neighbors(const Neighbors& neighbors
 		most_collinear_neighbors_of_neighbors.push_back(most_collinear_current_neighbors);
 	}
 	return SparseMatrixNeighborsPair
-		(sparse_matrix_from_triplets(sparse_triplets, n_vectors, n_vectors), 
+		(sparse_matrix_from_triplets(sparse_triplets, n_vectors, n_vectors),
 		 most_collinear_neighbors_of_neighbors);
 }
 
@@ -173,22 +173,22 @@ ScalarType compute_error_for_point(const IndexType index, const DenseMatrix& dat
 		DenseVector neighbor_to_its_neighbor = data.col(neighbor_of_neighbor)
 												- data.col(neighbor);
 		ScalarType current_cos_value = neighbor_to_point.dot(neighbor_to_its_neighbor) /
-				 					(neighbor_to_point.norm() *
-				 					 neighbor_to_its_neighbor.norm());
+									(neighbor_to_point.norm() *
+									 neighbor_to_its_neighbor.norm());
 		/* Find new distance */
 		ScalarType current_distance = (data.col(index) - data.col(neighbor)).norm();
 		/* Compute one component of error function's value*/
-		ScalarType diff_cos = 
+		ScalarType diff_cos =
 			current_cos_value - error_func_data.angles_matrix.coeff(index, neighbor_of_neighbor);
 		if (diff_cos < 0)
 			diff_cos = 0;
-		ScalarType diff_distance = 
+		ScalarType diff_distance =
 			current_distance - error_func_data.distance_matrix.coeff(index, neighbor);
 		diff_distance /= error_func_data.average_distance;
 		/* Weight for adjusted point should be bigger than 1, according to the
 		 * original algorithm
 		 */
-		ScalarType weight = 
+		ScalarType weight =
 			(error_func_data.adjusted_points.count(neighbor) == 0) ? 1 : weight_for_adjusted_point;
 		error_value += weight * (diff_cos * diff_cos + diff_distance * diff_distance);
 	}
@@ -203,7 +203,7 @@ ScalarType compute_error_for_point(const IndexType index, const DenseMatrix& dat
  * the point adjustment (only index column will change)
  * @param target_dimension - you know, what it is:)
  * @param learning_rate some small value, that will be
- * used during hill-climbing to change the points coordinates 
+ * used during hill-climbing to change the points coordinates
  * @param error_func_data a special struct, that contains
  * data, needed for error function calculation - such
  * as initial distances between neighbors, initial
@@ -213,8 +213,8 @@ ScalarType compute_error_for_point(const IndexType index, const DenseMatrix& dat
  * @return a number of steps it took to  adjust the
  * point
  */
-IndexType adjust_point_at_index(const IndexType index, DenseMatrix& data, 
-                                const IndexType target_dimension, 
+IndexType adjust_point_at_index(const IndexType index, DenseMatrix& data,
+                                const IndexType target_dimension,
                                 const ScalarType learning_rate,
                                 const DataForErrorFunc& error_func_data,
                                 ScalarType& point_error)
@@ -258,7 +258,7 @@ IndexType adjust_point_at_index(const IndexType index, DenseMatrix& data,
 template <class RandomAccessIterator, class DistanceCallback>
 void manifold_sculpting_embed(RandomAccessIterator begin, RandomAccessIterator end,
                               DenseMatrix& data, IndexType target_dimension,
-                              const Neighbors& neighbors, DistanceCallback callback, 
+                              const Neighbors& neighbors, DistanceCallback callback,
                               IndexType max_iteration, ScalarType squishing_rate)
 {
 	/* Step 1: Get initial distances to each neighbor and initial
@@ -266,7 +266,7 @@ void manifold_sculpting_embed(RandomAccessIterator begin, RandomAccessIterator e
 	 * collinear neighbor of Nij.
 	 */
 	ScalarType initial_average_distance;
-	SparseMatrix distances_to_neighbors = 
+	SparseMatrix distances_to_neighbors =
 		neighbors_distances_matrix(begin, end, neighbors, callback, initial_average_distance);
 	SparseMatrixNeighborsPair angles_and_neighbors =
 		angles_matrix_and_neighbors(neighbors, data);
@@ -325,7 +325,7 @@ void manifold_sculpting_embed(RandomAccessIterator begin, RandomAccessIterator e
 									learning_rate, error_func_data, point_error);
 				current_error += point_error;
 				/* Insert all neighbors into deque */
-				std::copy(neighbors[current_point_index].begin(), 
+				std::copy(neighbors[current_point_index].begin(),
 				          neighbors[current_point_index].end(),
 				          std::back_inserter(points_to_adjust));
 				adjusted_points.insert(current_point_index);

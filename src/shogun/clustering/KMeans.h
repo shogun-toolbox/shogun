@@ -138,7 +138,7 @@ class CKMeans : public CDistanceMachine
 
 		/** Ensures cluster centers are in lhs of underlying distance */
 		virtual void store_model_features();
-		
+
 		virtual bool train_require_labels() const { return false; }
 
 	private:

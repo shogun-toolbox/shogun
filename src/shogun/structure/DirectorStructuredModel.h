@@ -4,7 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Copyright (C) 2012 Sergey Lisitsyn 
+ * Copyright (C) 2012 Sergey Lisitsyn
  */
 
 #ifndef DIRECTOR_STRUCTURED_MODEL_H_
@@ -21,7 +21,7 @@ class CStructuredModel;
 #define IGNORE_IN_CLASSLIST
 /**
  * @brief Class CDirectorStructuredModel that represents the application specific model
- * with structured output implemented in target interface language. It is a base class 
+ * with structured output implemented in target interface language. It is a base class
  * that needs to be extended with real implementations before using.
  *
  * @see CStructuredModel
@@ -104,7 +104,7 @@ IGNORE_IN_CLASSLIST class CDirectorStructuredModel : public CStructuredModel
 				SGMatrix< float64_t > B,  SGVector< float64_t > & b,
 				SGVector< float64_t > lb, SGVector< float64_t > ub,
 				SGMatrix < float64_t > & C);
-		
+
 		/** @return name of SGSerializable */
 		virtual const char* get_name() const { return "DirectorStructuredModel"; }
 

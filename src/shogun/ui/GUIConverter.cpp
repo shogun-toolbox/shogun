@@ -168,7 +168,7 @@ CDenseFeatures<float64_t>* CGUIConverter::apply()
 {
 	if (!m_converter)
 		SG_ERROR("No converter created")
-	return (CDenseFeatures<float64_t>*)m_converter->apply(m_ui->ui_features->get_train_features());	
+	return (CDenseFeatures<float64_t>*)m_converter->apply(m_ui->ui_features->get_train_features());
 }
 
 CDenseFeatures<float64_t>* CGUIConverter::embed(int32_t target_dim)

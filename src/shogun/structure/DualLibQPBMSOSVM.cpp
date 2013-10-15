@@ -23,9 +23,9 @@ CDualLibQPBMSOSVM::CDualLibQPBMSOSVM()
 }
 
 CDualLibQPBMSOSVM::CDualLibQPBMSOSVM(
-		CStructuredModel*   	model,
-		CStructuredLabels*  	labs,
-		float64_t           	_lambda,
+		CStructuredModel*	model,
+		CStructuredLabels*	labs,
+		float64_t	_lambda,
 		SGVector< float64_t >	W)
  : CLinearStructuredOutputMachine(model, labs)
 {

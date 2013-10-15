@@ -47,7 +47,7 @@ void CCombinedDotFeatures::list_feature_objs()
 	SG_INFO("BEGIN COMBINED DOTFEATURES LIST (%d, %d) - ", num_vectors, num_dimensions)
 	this->list_feature_obj();
 
-	for (index_t f_idx=0; f_idx<get_num_feature_obj(); f_idx++) 
+	for (index_t f_idx=0; f_idx<get_num_feature_obj(); f_idx++)
 	{
 		CDotFeatures* f = get_feature_obj(f_idx);
 		f->list_feature_obj();

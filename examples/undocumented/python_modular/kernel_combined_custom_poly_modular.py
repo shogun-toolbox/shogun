@@ -11,23 +11,23 @@ def kernel_combined_custom_poly_modular (train_fname = traindat,test_fname = tes
     from modshogun import CombinedFeatures, RealFeatures, BinaryLabels
     from modshogun import CombinedKernel, PolyKernel, CustomKernel
     from modshogun import LibSVM, CSVFile
-   
+
     kernel = CombinedKernel()
     feats_train = CombinedFeatures()
-    
+
     tfeats = RealFeatures(CSVFile(train_fname))
     tkernel = PolyKernel(10,3)
     tkernel.init(tfeats, tfeats)
     K = tkernel.get_kernel_matrix()
     kernel.append_kernel(CustomKernel(K))
-        
+
     subkfeats_train = RealFeatures(CSVFile(train_fname))
     feats_train.append_feature_obj(subkfeats_train)
     subkernel = PolyKernel(10,2)
     kernel.append_kernel(subkernel)
 
     kernel.init(feats_train, feats_train)
-    
+
     labels = BinaryLabels(CSVFile(train_label_fname))
     svm = LibSVM(1.0, kernel, labels)
     svm.train()

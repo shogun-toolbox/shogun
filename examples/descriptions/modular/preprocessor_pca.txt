@@ -1,2 +1,2 @@
 In this example toy data is being processed using the
-Principal Component Analysis. 
+Principal Component Analysis.

@@ -63,9 +63,9 @@ class CLinearStructuredOutputMachine : public CStructuredOutputMachine
 		virtual void store_model_features();
 
 		/** @return object name */
-		virtual const char* get_name() const 
-		{ 
-			return "LinearStructuredOutputMachine"; 
+		virtual const char* get_name() const
+		{
+			return "LinearStructuredOutputMachine";
 		}
 
 	private:

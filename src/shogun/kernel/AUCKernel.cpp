@@ -45,7 +45,7 @@ CAUCKernel::~CAUCKernel()
 
 CLabels* CAUCKernel::setup_auc_maximization(CLabels* labels)
 {
-	SG_INFO("setting up AUC maximization\n") 
+	SG_INFO("setting up AUC maximization\n")
 	ASSERT(labels)
 	ASSERT(labels->get_label_type() == LT_BINARY)
 	labels->ensure_valid();

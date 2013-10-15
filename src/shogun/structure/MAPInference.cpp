@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2013 Shell Hu 
- * Copyright (C) 2013 Shell Hu 
+ * Written (W) 2013 Shell Hu
+ * Copyright (C) 2013 Shell Hu
  */
 
 #include <shogun/structure/MAPInference.h>
@@ -35,31 +35,31 @@ CMAPInference::CMAPInference(CFactorGraph* fg, EMAPInferType inference_method)
 			m_infer_impl = new CTreeMaxProduct(fg);
 			break;
 		case LOOPY_MAX_PROD:
-			SG_ERROR("%s::CMAPInference(): LoopyMaxProduct has not been implemented!\n", 
+			SG_ERROR("%s::CMAPInference(): LoopyMaxProduct has not been implemented!\n",
 				get_name());
 			break;
 		case LP_RELAXATION:
-			SG_ERROR("%s::CMAPInference(): LPRelaxation has not been implemented!\n", 
+			SG_ERROR("%s::CMAPInference(): LPRelaxation has not been implemented!\n",
 				get_name());
 			break;
 		case TRWS_MAX_PROD:
-			SG_ERROR("%s::CMAPInference(): TRW-S has not been implemented!\n", 
+			SG_ERROR("%s::CMAPInference(): TRW-S has not been implemented!\n",
 				get_name());
 			break;
 		case ITER_COND_MODE:
-			SG_ERROR("%s::CMAPInference(): ICM has not been implemented!\n", 
+			SG_ERROR("%s::CMAPInference(): ICM has not been implemented!\n",
 				get_name());
 			break;
 		case NAIVE_MEAN_FIELD:
-			SG_ERROR("%s::CMAPInference(): NaiveMeanField has not been implemented!\n", 
+			SG_ERROR("%s::CMAPInference(): NaiveMeanField has not been implemented!\n",
 				get_name());
 			break;
 		case STRUCT_MEAN_FIELD:
-			SG_ERROR("%s::CMAPInference(): StructMeanField has not been implemented!\n", 
+			SG_ERROR("%s::CMAPInference(): StructMeanField has not been implemented!\n",
 				get_name());
 			break;
 		default:
-			SG_ERROR("%s::CMAPInference(): unsupported inference method!\n", 
+			SG_ERROR("%s::CMAPInference(): unsupported inference method!\n",
 				get_name());
 			break;
 	}
@@ -116,24 +116,24 @@ float64_t CMAPInference::get_energy() const
 //-----------------------------------------------------------------
 
 CMAPInferImpl::CMAPInferImpl() : CSGObject()
-{ 
+{
 	register_parameters();
 }
 
-CMAPInferImpl::CMAPInferImpl(CFactorGraph* fg) 
+CMAPInferImpl::CMAPInferImpl(CFactorGraph* fg)
 	: CSGObject()
-{ 
+{
 	register_parameters();
 	m_fg = fg;
 }
 
-CMAPInferImpl::~CMAPInferImpl() 
-{ 
+CMAPInferImpl::~CMAPInferImpl()
+{
 }
 
 void CMAPInferImpl::register_parameters()
 {
-	SG_ADD((CSGObject**)&m_fg, "fg", 
+	SG_ADD((CSGObject**)&m_fg, "fg",
 		"Factor graph pointer", MS_NOT_AVAILABLE);
 
 	m_fg = NULL;

@@ -3,7 +3,7 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Written (W) 2013 Soumyajit De
  */
 
@@ -33,7 +33,7 @@ public:
 		SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 	}
 
-	/** 
+	/**
 	 * constructor
 	 *
 	 * @param dimension dimension of the vector on which the operator can be applied
@@ -42,7 +42,7 @@ public:
 	: CSGObject()
 	{
 		init();
-	
+
 		m_dimension=dimension;
 
 		SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
@@ -60,7 +60,7 @@ public:
 		return m_dimension;
 	}
 
-	/** 
+	/**
 	 * abstract method that applies the linear operator to a vector
 	 *
 	 * @param b the vector to which the linear operator applies

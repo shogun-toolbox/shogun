@@ -51,7 +51,7 @@ public:
 	 * Get loss for an example. The definition used for the
 	 * hinge loss computed by this method is f(x) = max(0, x).
 	 *
-	 * @param z where to evaluate the loss 
+	 * @param z where to evaluate the loss
 	 *
 	 * @return loss
 	 */

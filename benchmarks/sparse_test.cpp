@@ -3,7 +3,7 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Written (W) 2013 Soumyajit De
  */
 
@@ -129,12 +129,12 @@ int main(int argc, char** argv)
 		// for first row
 		Entry *first=SG_MALLOC(Entry, size);
 		// the digonal index for row #1
-		first[0].feat_index=0;  
+		first[0].feat_index=0;
 		first[0].entry=1.836593;
 		for (index_t i=1; i<size; ++i)
 		{
 			// fill the index for row #1
-			first[i].feat_index=i; 
+			first[i].feat_index=i;
 			first[i].entry=0.02;
 		}
 		vec[0].features=first;
@@ -151,14 +151,14 @@ int main(int argc, char** argv)
 
 			for (int j=0; j<i && j<num; j++)
 			{
-				rest[i][j].feat_index=j; 
+				rest[i][j].feat_index=j;
 				rest[i][j].entry=0.01+j;
 			}
 
-			if (i>num) 
+			if (i>num)
 			{
 				//// the diagonal element
-				rest[i][num-1].feat_index=i+1; 
+				rest[i][num-1].feat_index=i+1;
 				rest[i][num-1].entry=1.836593;
 			}
 

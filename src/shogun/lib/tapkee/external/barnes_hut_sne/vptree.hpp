@@ -39,7 +39,7 @@
 #ifndef VPTREE_H
 #define VPTREE_H
 
-namespace tsne 
+namespace tsne
 {
 
 class DataPoint
@@ -50,7 +50,7 @@ class DataPoint
 
 public:
 	DataPoint() : _D(1), _ind(-1), _x(NULL) { }
-	DataPoint(int Dv, int indv, double* xv) : _D(Dv), _ind(indv), _x(NULL) 
+	DataPoint(int Dv, int indv, double* xv) : _D(Dv), _ind(indv), _x(NULL)
 	{
 		_x = (double*) malloc(_D * sizeof(double));
 		for(int d = 0; d < _D; d++) _x[d] = xv[d];
@@ -60,7 +60,7 @@ public:
 		if(this != &other) {
 			_D = other.dimensionality();
 			_ind = other.index();
-			_x = (double*) malloc(_D * sizeof(double));      
+			_x = (double*) malloc(_D * sizeof(double));
 			for(int d = 0; d < _D; d++) _x[d] = other.x(d);
 		}
 	}
@@ -152,7 +152,7 @@ private:
 
 		Node() : index(0), threshold(0.), left(0), right(0) {}
 
-		~Node() 
+		~Node()
 		{
 			delete left;
 			delete right;
@@ -222,7 +222,7 @@ private:
 		return node;
 	}
 
-	// Helper function that searches the tree    
+	// Helper function that searches the tree
 	void search(Node* node, const T& target, int k, std::priority_queue<HeapItem>& heap)
 	{
 		if(node == NULL) return;     // indicates that we're done here

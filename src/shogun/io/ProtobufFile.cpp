@@ -278,7 +278,7 @@ int32_t CProtobufFile::compute_num_messages(uint64_t len, int32_t sizeof_type) c
 	uint32_t elements_in_message=message_size/sizeof_type;
 	uint32_t num_messages=len/elements_in_message;
 	if (len % elements_in_message > 0)
-		num_messages++;	
+		num_messages++;
 
 	return num_messages;
 }

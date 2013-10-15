@@ -115,7 +115,7 @@ typedef int32_t (*line_search_proc)(
     callback_data_t *cd,
     const lbfgs_parameter_t *param
     );
-    
+
 static int32_t line_search_backtracking(
     int32_t n,
     float64_t *x,
@@ -650,7 +650,7 @@ static int32_t line_search_backtracking(
 	        /* Check the Wolfe condition. */
 			dg = SGVector<float64_t>::dot(g, s, n);
 	        if (dg < param->wolfe * dginit) {
-    		    width = inc;
+		    width = inc;
 	        } else {
 		        if(param->linesearch == LBFGS_LINESEARCH_BACKTRACKING_WOLFE) {
 		            /* Exit with the regular Wolfe condition. */
@@ -1069,7 +1069,7 @@ static int32_t line_search_morethuente(
  *  @param  brackt  The pointer to the predicate if the trial value is
  *                  bracketed.
  *  @retval int32_t     Status value. Zero indicates a normal termination.
- *  
+ *
  *  @see
  *      Jorge J. More and David J. Thuente. Line search algorithm with
  *      guaranteed sufficient decrease. ACM Transactions on Mathematical
@@ -1201,7 +1201,7 @@ static int32_t update_trial_interval(
             x <- x, y <- t.
         - Case b: if f(t) <= f(x) && f'(t)*f'(x) > 0,
             x <- t, y <- y.
-        - Case c: if f(t) <= f(x) && f'(t)*f'(x) < 0, 
+        - Case c: if f(t) <= f(x) && f'(t)*f'(x) < 0,
             x <- t, y <- x.
      */
     if (*fx < *ft) {

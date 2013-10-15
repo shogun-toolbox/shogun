@@ -32,7 +32,7 @@ static const float64_t *get_col( uint32_t i)
 }
 
 BmrmStatistics svm_p3bm_solver(
-		CDualLibQPBMSOSVM *machine, 
+		CDualLibQPBMSOSVM *machine,
 		float64_t*      W,
 		float64_t       TolRel,
 		float64_t       TolAbs,

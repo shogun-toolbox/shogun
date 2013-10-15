@@ -60,7 +60,7 @@ void CECOCIHDDecoder::update_delta_cache(const SGMatrix<int32_t> codebook)
     {
         for (int32_t j=i+1; j < codebook.num_cols; ++j)
         {
-            m_delta(i, j) = m_delta(j, i) = 
+            m_delta(i, j) = m_delta(j, i) =
                 CECOCUtil::hamming_distance(codebook.get_column_vector(i), codebook.get_column_vector(j), codebook.num_rows);
         }
     }
