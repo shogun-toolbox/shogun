@@ -9,10 +9,10 @@ TEST(ProductKernelTest,test_array_operations)
 	CProductKernel* product = new CProductKernel();
 	CGaussianKernel* gaus_1 = new CGaussianKernel();
 	product->append_kernel(gaus_1);
-	
+
 	CGaussianKernel* gaus_2 = new CGaussianKernel();
 	product->append_kernel(gaus_2);
-	
+
 	CGaussianKernel* gaus_3 = new CGaussianKernel();
 	product->insert_kernel(gaus_3,1);
 

@@ -111,10 +111,10 @@ class CPlifArray: public CPlifBase
 		 */
 		virtual void list_plif() const
 		{
-			SG_PRINT("CPlifArray(num_elements=%i, min_value=%1.2f, max_value=%1.2f)\n", m_array.get_num_elements(), min_value, max_value) 
+			SG_PRINT("CPlifArray(num_elements=%i, min_value=%1.2f, max_value=%1.2f)\n", m_array.get_num_elements(), min_value, max_value)
 			for (int32_t i=0; i<m_array.get_num_elements(); i++)
 			{
-				SG_PRINT("%i. ", i) 
+				SG_PRINT("%i. ", i)
 				m_array[i]->list_plif() ;
 			}
 		}

@@ -6,9 +6,9 @@ def converter_multidimensionalscaling_modular (data_fname):
 	try:
 		import numpy
 		from modshogun import RealFeatures, MultidimensionalScaling, EuclideanDistance, CSVFile
-		
+
 		features = RealFeatures(CSVFile(data_fname))
-			
+
 		distance_before = EuclideanDistance()
 		distance_before.init(features,features)
 

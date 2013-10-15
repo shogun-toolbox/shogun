@@ -1,8 +1,8 @@
 /** \mainpage SHOGUN Project Documentation
 
- 
- 
-  \image html shogun_logo.png 
+
+
+  \image html shogun_logo.png
 
   \section intro_sec Introduction
   SHOGUN is a large scale machine learning toolbox with focus on especially
@@ -30,7 +30,7 @@
 
   SHOGUN is implemented in C++ and interfaces to Matlab(tm), R, Octave and
   Python \ref interfaces "(see Interfaces)".
-  
+
   \li \subpage installation
   \li \subpage screenshots
   \li \subpage tutorial

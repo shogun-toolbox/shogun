@@ -633,8 +633,8 @@ template<class ST> void CDenseFeatures<ST>::init()
 
 #define GET_FEATURE_TYPE(f_type, sg_type)	\
 template<> EFeatureType CDenseFeatures<sg_type>::get_feature_type() const \
-{ 																			\
-	return f_type; 															\
+{																			\
+	return f_type;															\
 }
 
 GET_FEATURE_TYPE(F_BOOL, bool)

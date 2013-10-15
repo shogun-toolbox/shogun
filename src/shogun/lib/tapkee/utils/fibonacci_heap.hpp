@@ -64,7 +64,7 @@ class fibonacci_heap
 public:
 
 	/** Constructor for heap with specified capacity */
-	fibonacci_heap(int capacity) : 
+	fibonacci_heap(int capacity) :
 		min_root(NULL), nodes(NULL), num_nodes(0),
 		num_trees(0), max_num_nodes(capacity), A(NULL), Dn(0)
 	{
@@ -116,7 +116,7 @@ public:
 		num_nodes++;
 	}
 
-	bool empty() const 
+	bool empty() const
 	{
 		return num_nodes==0;
 	}

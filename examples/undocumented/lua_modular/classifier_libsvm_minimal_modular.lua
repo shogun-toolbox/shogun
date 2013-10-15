@@ -7,7 +7,7 @@ function concatenate(...)
 		for row,rowdata in ipairs(t) do
 			for col,coldata in ipairs(rowdata) do
 				table.insert(result[row], coldata)
-			end		
+			end
 		end
 	end
 	return result
@@ -19,7 +19,7 @@ function rand_matrix(rows, cols, dist)
 		matrix[i] = {}
 		for j = 1, cols do
 			matrix[i][j] = math.random() + dist
-		end	
+		end
 	end
 	return matrix
 end
@@ -65,7 +65,7 @@ kernel:init(feats_train, feats_test)
 out=svm:apply():get_labels()
 
 err_num = 0
-for i = 1, num do 
+for i = 1, num do
 	if out[i] > 0 then
 		err_num = err_num+1
 	end

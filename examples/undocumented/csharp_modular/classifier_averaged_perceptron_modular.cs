@@ -1,7 +1,7 @@
 using System;
 
 public class classifier_averaged_perceptron_modular{
-	
+
 	public static void Main() {
 		modshogun.init_shogun_with_defaults();
 		double learn_rate = 1.0;

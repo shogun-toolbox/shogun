@@ -18,7 +18,7 @@ def evaluation_contingencytableevaluation_modular (ground_truth, predicted):
 
 	ground_truth_labels = BinaryLabels(ground_truth)
 	predicted_labels = BinaryLabels(predicted)
-	
+
 	base_evaluator = ContingencyTableEvaluation()
 	base_evaluator.evaluate(predicted_labels,ground_truth_labels)
 

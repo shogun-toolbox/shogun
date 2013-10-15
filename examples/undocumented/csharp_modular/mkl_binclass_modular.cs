@@ -26,7 +26,7 @@ public class mkl_binclass_modular {
 		feats_train.append_feature_obj(new RealFeatures(traindata_real));
 
 		CombinedKernel kernel = new CombinedKernel();
-   		kernel.append_kernel(new CustomKernel(K_train));
+		kernel.append_kernel(new CustomKernel(K_train));
 		kernel.append_kernel(new PolyKernel(10,2));
 		kernel.init(feats_train, feats_train);
 

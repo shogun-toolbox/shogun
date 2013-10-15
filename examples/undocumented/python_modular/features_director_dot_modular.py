@@ -22,12 +22,12 @@ def features_director_dot_modular (fm_train_real, fm_test_real,
 
 		# variables
 		data=numpy.empty((1,1))
-		
+
 		# constructor
 		def __init__(self, d):
 			DirectorDotFeatures.__init__(self)
 			self.data = d
-		
+
 		# overloaded methods
 		def add_to_dense_sgvec(self, alpha, vec_idx1, vec2, abs):
 			if abs:

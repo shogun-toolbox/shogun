@@ -41,9 +41,9 @@ int main()
 	SGMatrix<float64_t> init_transform=SGMatrix<float64_t>::create_identity_matrix(2,1);
 	// set number of maximum iterations and train
 	lmnn->set_maxiter(1500);
-// 	lmnn->io->set_loglevel(MSG_DEBUG);
+//	lmnn->io->set_loglevel(MSG_DEBUG);
 	lmnn->train(init_transform);
-// 	lmnn->get_linear_transform().display_matrix("linear_transform");
+//	lmnn->get_linear_transform().display_matrix("linear_transform");
 	CLMNNStatistics* statistics=lmnn->get_statistics();
 /*
 	statistics->obj.display_vector("objective");

@@ -13,14 +13,14 @@ SGStringList<T>::SGStringList() : SGReferencedData()
 
 template <class T>
 SGStringList<T>::SGStringList(SGString<T>* s, index_t num_s, index_t max_length,
-		bool ref_counting) : 
+		bool ref_counting) :
 	SGReferencedData(ref_counting), num_strings(num_s),
 	max_string_length(max_length), strings(s)
 {
 }
 
 template <class T>
-SGStringList<T>::SGStringList(index_t num_s, index_t max_length, bool ref_counting) : 
+SGStringList<T>::SGStringList(index_t num_s, index_t max_length, bool ref_counting) :
 	SGReferencedData(ref_counting),
 	num_strings(num_s), max_string_length(max_length)
 {

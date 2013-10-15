@@ -78,7 +78,7 @@ def classifier_multiclass_ecoc (fm_train_real=traindat,fm_test_real=testdat,labe
 		        acc_fmt = '.4f'
 
 		    t_elapse = time.clock() - t_begin
-		    #print((format_str % ('d', '.3f', acc_fmt)) % 
+		    #print((format_str % ('d', '.3f', acc_fmt)) %
 		    #        (encoders[ier][4:-7], decoders[idr][4:-7], codelen, t_elapse, acc))
 
 if __name__=='__main__':

@@ -39,7 +39,7 @@ bool CParser::has_next()
 {
 	if (m_tokenizer!=NULL)
 		return m_tokenizer->has_next();
-	
+
 	return false;
 }
 
@@ -85,7 +85,7 @@ SGVector<char> CParser::read_cstring()
 bool CParser::read_bool()
 {
 	SGVector<char> token=read_cstring();
-	
+
 	if (token.vlen>0)
 		return (bool) strtod(token.vector, NULL);
 	else

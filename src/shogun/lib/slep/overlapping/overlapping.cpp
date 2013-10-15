@@ -11,14 +11,14 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- *   Copyright (C) 2009 - 2012 Jun Liu and Jieping Ye 
+ *   Copyright (C) 2009 - 2012 Jun Liu and Jieping Ye
  */
 
 #include <shogun/lib/slep/overlapping/overlapping.h>
 
 void identifySomeZeroEntries(double * u, int * zeroGroupFlag, int *entrySignFlag,
 		int *pp, int *gg,
-		double *v, double lambda1, double lambda2, 
+		double *v, double lambda1, double lambda2,
 		int p, int g, double * w, double *G){
 
 	int i, j, newZeroNum, iterStep=0;
@@ -82,14 +82,14 @@ void identifySomeZeroEntries(double * u, int * zeroGroupFlag, int *entrySignFlag
 				for(j=(int) w[3*i] ; j<= (int) w[3*i +1]; j++){
 					temp=u[ (int) G[j]];
 					twoNorm+=temp*temp;
-				}                
+				}
 				twoNorm=sqrt(twoNorm);
 
 				/*
 				   printf("\n twoNorm=%2.5f, %2.5f",twoNorm,lambda2 * w[3*i+2]);
 				   */
 
-				/* 
+				/*
 				 * Test whether this group should be sparse
 				 */
 				if (twoNorm<= lambda2 * w[3*i+2] ){
@@ -129,7 +129,7 @@ void identifySomeZeroEntries(double * u, int * zeroGroupFlag, int *entrySignFlag
 }
 
 void xFromY(double *x, double *y,
-		double *u, double *Y, 
+		double *u, double *Y,
 		int p, int g, int *zeroGroupFlag,
 		double *G, double *w){
 
@@ -159,7 +159,7 @@ void xFromY(double *x, double *y,
 	}
 }
 
-void YFromx(double *Y, 
+void YFromx(double *Y,
 		double *xnew, double *Ynew,
 		double lambda2, int g, int *zeroGroupFlag,
 		double *G, double *w){
@@ -196,7 +196,7 @@ void YFromx(double *Y,
 }
 
 void dualityGap(double *gap, double *penalty2,
-		double *x, double *Y, int g, int *zeroGroupFlag, 
+		double *x, double *Y, int g, int *zeroGroupFlag,
 		double *G, double *w, double lambda2){
 
 	int i,j;
@@ -221,7 +221,7 @@ void dualityGap(double *gap, double *penalty2,
 
 			*penalty2+=twoNorm;
 
-			twoNorm=lambda2 * twoNorm;                    
+			twoNorm=lambda2 * twoNorm;
 			if (twoNorm > innerProduct)
 				*gap+=twoNorm-innerProduct;
 		}
@@ -257,10 +257,10 @@ void overlapping_gd(double *x, double *gap, double *penalty2,
 
 	identifySomeZeroEntries(u, zeroGroupFlag, entrySignFlag,
 			&pp, &gg,
-			v, lambda1, lambda2, 
+			v, lambda1, lambda2,
 			p, g, w, G);
 
-	penalty2[1]=pp;    
+	penalty2[1]=pp;
 	penalty2[2]=gg;
 	/*store pp and gg to penalty2[1] and penalty2[2]*/
 
@@ -271,17 +271,17 @@ void overlapping_gd(double *x, double *gap, double *penalty2,
 	 *-------------------
 	 * We make sure that Y is feasible
 	 *    and if x_i=0, then set Y_{ij}=0
-	 */    
+	 */
 	for(i=0;i<g;i++){
 
 		if(zeroGroupFlag[i]){ /*this group is non-zero*/
 
-			/*compute the two norm of the group*/                
+			/*compute the two norm of the group*/
 			twoNorm=0;
 
 			for(j=(int) w[3*i] ; j<= (int) w[3*i +1]; j++){
 
-				if (! u[ (int) G[j] ] )                       
+				if (! u[ (int) G[j] ] )
 					Y[j]=0;
 
 				twoNorm+=Y[j]*Y[j];
@@ -309,7 +309,7 @@ void overlapping_gd(double *x, double *gap, double *penalty2,
 	 *
 	 */
 	for(i=0;i<YSize;i++)
-		Ynew[i]=0;    
+		Ynew[i]=0;
 
 	/*
 	 * ------------------------------------
@@ -330,10 +330,10 @@ void overlapping_gd(double *x, double *gap, double *penalty2,
 
 
 		/*
-		 * the gradient at Y is 
+		 * the gradient at Y is
 		 *
 		 *   omega'(Y)=-x e^T
-		 *  
+		 *
 		 *  where  x=max(u-Y * e, 0);
 		 *
 		 */
@@ -347,7 +347,7 @@ void overlapping_gd(double *x, double *gap, double *penalty2,
 			/*
 			 * compute
 			 * Ynew = proj ( Y + x e^T / L )
-			 */            
+			 */
 			for(i=0;i<g;i++){
 				if(zeroGroupFlag[i]){ /*this group is non-zero*/
 
@@ -372,10 +372,10 @@ void overlapping_gd(double *x, double *gap, double *penalty2,
 			 * compute xnew=max(u-Ynew * e, 0);
 			 *
 			 *void xFromY(double *x, double *y,
-			 *            double *u, double *Y, 
+			 *            double *u, double *Y,
 			 *            int p, int g, int *zeroGroupFlag,
 			 *            double *G, double *w)
-			 */          
+			 */
 			xFromY(xnew, y, u, Ynew, p, g, zeroGroupFlag, G, w);
 
 			/* test whether L is appropriate*/
@@ -432,20 +432,20 @@ void overlapping_gd(double *x, double *gap, double *penalty2,
 
 						break;
 					}
-				}                
+				}
 			}
 		}
 
-		/* compute the duality gap at (xnew, Ynew) 
+		/* compute the duality gap at (xnew, Ynew)
 		 *
 		 * void dualityGap(double *gap, double *penalty2,
-		 *               double *x, double *Y, int g, int *zeroGroupFlag, 
+		 *               double *x, double *Y, int g, int *zeroGroupFlag,
 		 *               double *G, double *w, double lambda2)
-		 *         
+		 *
 		 */
 		dualityGap(gap, penalty2, xnew, Ynew, g, zeroGroupFlag, G, w, lambda2);
 
-		/* 
+		/*
 		 * flag =1 means restart
 		 *
 		 * flag =0 means with restart
@@ -454,12 +454,12 @@ void overlapping_gd(double *x, double *gap, double *penalty2,
 		 *            initializing the restart process.
 		 *
 		 * This is based on the fact that, the result is only beneficial when
-		 *    xnew is good. In other words,  
+		 *    xnew is good. In other words,
 		 *             if xnew is not good, then the
 		 *                restart might not be helpful.
 		 */
 
-		if ( (flag==0) || (flag==1 && iterStep < nextRestartStep )){            
+		if ( (flag==0) || (flag==1 && iterStep < nextRestartStep )){
 
 			/* copy Ynew to Y, and xnew to x */
 			memcpy(x, xnew, sizeof(double) * p);
@@ -479,13 +479,13 @@ void overlapping_gd(double *x, double *gap, double *penalty2,
 			 * Here, Y is constructed as a subgradient of xnew, based on the
 			 *   assumption that Y might be a better choice than Ynew, provided
 			 *   that xnew is good enough.
-			 * 
+			 *
 			 */
 
 			/*
 			 * compute the restarting point Y with xnew and Ynew
 			 *
-			 *void YFromx(double *Y, 
+			 *void YFromx(double *Y,
 			 *            double *xnew, double *Ynew,
 			 *            double lambda2, int g, int *zeroGroupFlag,
 			 *            double *G, double *w)
@@ -495,10 +495,10 @@ void overlapping_gd(double *x, double *gap, double *penalty2,
 			/*compute the solution with the starting point Y
 			 *
 			 *void xFromY(double *x, double *y,
-			 *            double *u, double *Y, 
+			 *            double *u, double *Y,
 			 *            int p, int g, int *zeroGroupFlag,
 			 *            double *G, double *w)
-			 *             
+			 *
 			 */
 			xFromY(x, y, u, Y, p, g, zeroGroupFlag, G, w);
 
@@ -511,7 +511,7 @@ void overlapping_gd(double *x, double *gap, double *penalty2,
 			 */
 			dualityGap(&gapR, &penalty2R, x, Y, g, zeroGroupFlag, G, w, lambda2);
 
-			if (*gap< gapR){ 
+			if (*gap< gapR){
 				/*(xnew, Ynew) is better in terms of duality gap*/
 				/* copy Ynew to Y, and xnew to x */
 				memcpy(x, xnew, sizeof(double) * p);
@@ -519,7 +519,7 @@ void overlapping_gd(double *x, double *gap, double *penalty2,
 
 				/*In this case, we do not apply restart, as (x,Y) is not better
 				 *
-				 * We postpone the "restart" by giving a 
+				 * We postpone the "restart" by giving a
 				 *           "nextRestartStep"
 				 */
 
@@ -545,7 +545,7 @@ void overlapping_gd(double *x, double *gap, double *penalty2,
 
 		/*
 		 * if the duality gap is within pre-specified parameter tol
-		 * 
+		 *
 		 * we terminate the algorithm
 		 */
 		if (*gap <=tol)
@@ -570,7 +570,7 @@ void overlapping_gd(double *x, double *gap, double *penalty2,
 	}
 
 	/*
-	 * assign sign to the solution x 
+	 * assign sign to the solution x
 	 */
 	for(i=0;i<p;i++){
 		if (entrySignFlag[i]==-1){
@@ -586,9 +586,9 @@ void overlapping_gd(double *x, double *gap, double *penalty2,
 	free (entrySignFlag);
 }
 
-void gradientDescentStep(double *xnew, double *Ynew, 
+void gradientDescentStep(double *xnew, double *Ynew,
 		double *LL, double *u, double *y, int *entrySignFlag, double lambda2,
-		double *x, double *Y, int p, int g, int * zeroGroupFlag, 
+		double *x, double *Y, int p, int g, int * zeroGroupFlag,
 		double *G, double *w){
 
 	double twoNorm, temp, L=*LL, leftValue, rightValue;
@@ -676,7 +676,7 @@ void gradientDescentStep(double *xnew, double *Ynew,
 			else
 				L=2*L;
 
-			if ( L / g - 2* g >0 ){                
+			if ( L / g - 2* g >0 ){
 
 				if (rightValue < 1e-16){
 					break;
@@ -737,7 +737,7 @@ void overlapping_agd(double *x, double *gap, double *penalty2,
 			v, lambda1, lambda2,
 			p, g, w, G);
 
-	penalty2[1]=pp;    
+	penalty2[1]=pp;
 	penalty2[2]=gg;
 	/*store pp and gg to penalty2[1] and penalty2[2]*/
 
@@ -802,33 +802,33 @@ void overlapping_agd(double *x, double *gap, double *penalty2,
 
 	/*
 	 * compute x=max(u-Y * e, 0);
-	 */    
+	 */
 	xFromY(x, y, u, Y, p, g, zeroGroupFlag, G, w);
 
 	/*
 	 * compute (xnew, Ynew) from (x, Y)
 	 *
 	 *
-	 * gradientDescentStep(double *xnew, double *Ynew, 
+	 * gradientDescentStep(double *xnew, double *Ynew,
 	 double *LL, double *u, double *y, int *entrySignFlag, double lambda2,
-	 double *x, double *Y, int p, int g, int * zeroGroupFlag, 
+	 double *x, double *Y, int p, int g, int * zeroGroupFlag,
 	 double *G, double *w)
 	 */
 
-	gradientDescentStep(xnew, Ynew, 
+	gradientDescentStep(xnew, Ynew,
 			&L, u, y,entrySignFlag,lambda2,
-			x, Y, p, g, zeroGroupFlag, 
+			x, Y, p, g, zeroGroupFlag,
 			G, w);
 
 	/*
-	 * we have finished one gradient descent to get 
+	 * we have finished one gradient descent to get
 	 *
-	 * (x, Y) and (xnew, Ynew), where (xnew, Ynew) is 
-	 * 
+	 * (x, Y) and (xnew, Ynew), where (xnew, Ynew) is
+	 *
 	 *    a gradient descent step based on (x, Y)
 	 *
 	 * we set (xp, Yp)=(x, Y)
-	 *  
+	 *
 	 *        (x, Y)= (xnew, Ynew)
 	 */
 
@@ -847,15 +847,15 @@ void overlapping_agd(double *x, double *gap, double *penalty2,
 	 */
 
 
-	for(iterStep=0;iterStep<maxIter;iterStep++){        
+	for(iterStep=0;iterStep<maxIter;iterStep++){
 
 
 		while (1){
 
 
-			/* 
-			 * compute alpha as the positive root of 
-			 * 
+			/*
+			 * compute alpha as the positive root of
+			 *
 			 *     L * alpha^2 = (1-alpha) * gamma
 			 *
 			 */
@@ -867,7 +867,7 @@ void overlapping_agd(double *x, double *gap, double *penalty2,
 			/*
 			 * compute YS= Y + beta * (Y - Yp)
 			 *
-			 */            
+			 */
 			for(i=0;i<g;i++){
 				if(zeroGroupFlag[i]){ /*this group is non-zero*/
 
@@ -881,16 +881,16 @@ void overlapping_agd(double *x, double *gap, double *penalty2,
 
 
 			/*
-			 * compute xS 
+			 * compute xS
 			 */
 			xFromY(xS, y, u, YS, p, g, zeroGroupFlag, G, w);
 
 
 			/*
-			 * 
+			 *
 			 * Ynew = proj ( YS + xS e^T / L )
 			 *
-			 */            
+			 */
 			for(i=0;i<g;i++){
 				if(zeroGroupFlag[i]){ /*this group is non-zero*/
 
@@ -916,10 +916,10 @@ void overlapping_agd(double *x, double *gap, double *penalty2,
 			 * compute xnew=max(u-Ynew * e, 0);
 			 *
 			 *void xFromY(double *x, double *y,
-			 *            double *u, double *Y, 
+			 *            double *u, double *Y,
 			 *            int p, int g, int *zeroGroupFlag,
 			 *            double *G, double *w)
-			 */          
+			 */
 
 			xFromY(xnew, y, u, Ynew, p, g, zeroGroupFlag, G, w);
 
@@ -982,15 +982,15 @@ void overlapping_agd(double *x, double *gap, double *penalty2,
 			}
 		}
 
-		/* compute the duality gap at (xnew, Ynew) 
+		/* compute the duality gap at (xnew, Ynew)
 		 *
 		 * void dualityGap(double *gap, double *penalty2,
-		 *               double *x, double *Y, int g, int *zeroGroupFlag, 
+		 *               double *x, double *Y, int g, int *zeroGroupFlag,
 		 *               double *G, double *w, double lambda2)
-		 *         
+		 *
 		 */
-		dualityGap(gap, penalty2, 
-				xnew, Ynew, g, zeroGroupFlag, 
+		dualityGap(gap, penalty2,
+				xnew, Ynew, g, zeroGroupFlag,
 				G, w, lambda2);
 
 
@@ -1009,7 +1009,7 @@ void overlapping_agd(double *x, double *gap, double *penalty2,
 
 
 
-		/* 
+		/*
 		 * flag =1 means restart
 		 *
 		 * flag =0 means with restart
@@ -1018,12 +1018,12 @@ void overlapping_agd(double *x, double *gap, double *penalty2,
 		 *            initializing the restart process.
 		 *
 		 * This is based on the fact that, the result is only beneficial when
-		 *    xnew is good. In other words,  
+		 *    xnew is good. In other words,
 		 *             if xnew is not good, then the
 		 *                restart might not be helpful.
 		 */
 
-		if ( (flag==0) || (flag==1 && iterStep < nextRestartStep )){            
+		if ( (flag==0) || (flag==1 && iterStep < nextRestartStep )){
 
 
 			/*memcpy(xp, x, sizeof(double) * p);*/
@@ -1050,13 +1050,13 @@ void overlapping_agd(double *x, double *gap, double *penalty2,
 			 * Here, Y is constructed as a subgradient of xnew, based on the
 			 *   assumption that Y might be a better choice than Ynew, provided
 			 *   that xnew is good enough.
-			 * 
+			 *
 			 */
 
 			/*
 			 * compute the restarting point YS with xnew and Ynew
 			 *
-			 *void YFromx(double *Y, 
+			 *void YFromx(double *Y,
 			 *            double *xnew, double *Ynew,
 			 *            double lambda2, int g, int *zeroGroupFlag,
 			 *            double *G, double *w)
@@ -1066,10 +1066,10 @@ void overlapping_agd(double *x, double *gap, double *penalty2,
 			/*compute the solution with the starting point YS
 			 *
 			 *void xFromY(double *x, double *y,
-			 *            double *u, double *Y, 
+			 *            double *u, double *Y,
 			 *            int p, int g, int *zeroGroupFlag,
 			 *            double *G, double *w)
-			 *             
+			 *
 			 */
 			xFromY(xS, y, u, YS, p, g, zeroGroupFlag, G, w);
 
@@ -1082,12 +1082,12 @@ void overlapping_agd(double *x, double *gap, double *penalty2,
 			 */
 			dualityGap(&gapR, &penalty2R, xS, YS, g, zeroGroupFlag, G, w, lambda2);
 
-			if (*gap< gapR){ 
-				/*(xnew, Ynew) is better in terms of duality gap*/               
+			if (*gap< gapR){
+				/*(xnew, Ynew) is better in terms of duality gap*/
 
 				/*In this case, we do not apply restart, as (xS,YS) is not better
 				 *
-				 * We postpone the "restart" by giving a 
+				 * We postpone the "restart" by giving a
 				 *           "nextRestartStep"
 				 */
 
@@ -1103,7 +1103,7 @@ void overlapping_agd(double *x, double *gap, double *penalty2,
 
 				nextRestartStep=iterStep+ (int) sqrt(gapR / *gap);
 			}
-			else{ 
+			else{
 				/*we use (xS, YS), as it is better in terms of duality gap*/
 
 				*gap=gapR;
@@ -1125,9 +1125,9 @@ void overlapping_agd(double *x, double *gap, double *penalty2,
 					 * compute (x, Y) from (xS, YS)
 					 *
 					 *
-					 * gradientDescentStep(double *xnew, double *Ynew, 
+					 * gradientDescentStep(double *xnew, double *Ynew,
 					 * double *LL, double *u, double *y, int *entrySignFlag, double lambda2,
-					 * double *x, double *Y, int p, int g, int * zeroGroupFlag, 
+					 * double *x, double *Y, int p, int g, int * zeroGroupFlag,
 					 * double *G, double *w)
 					 */
 					gradientDescentStep(x, Y,
@@ -1160,7 +1160,7 @@ void overlapping_agd(double *x, double *gap, double *penalty2,
 	penalty2[3]=iterStep+1;
 
 	/*
-	 * get the number of nonzero groups 
+	 * get the number of nonzero groups
 	 */
 
 	penalty2[4]=0;
@@ -1209,7 +1209,7 @@ void overlapping(double *x, double *gap, double *penalty2,
 		double *w, double *G, double *Y, int maxIter, int flag, double tol){
 
 	switch(flag){
-		case 0: 
+		case 0:
 		case 1:
 			overlapping_gd(x, gap, penalty2,
 					v,  p, g, lambda1, lambda2,

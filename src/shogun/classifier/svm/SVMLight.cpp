@@ -228,22 +228,22 @@ bool CSVMLight::train_machine(CFeatures* data)
 		kernel->clear_normal() ;
 
 	// output some info
-	SG_DEBUG("threads = %i\n", parallel->get_num_threads()) 
-	SG_DEBUG("qpsize = %i\n", learn_parm->svm_maxqpsize) 
-	SG_DEBUG("epsilon = %1.1e\n", learn_parm->epsilon_crit) 
-	SG_DEBUG("kernel->has_property(KP_LINADD) = %i\n", kernel->has_property(KP_LINADD)) 
-	SG_DEBUG("kernel->has_property(KP_KERNCOMBINATION) = %i\n", kernel->has_property(KP_KERNCOMBINATION)) 
-	SG_DEBUG("kernel->has_property(KP_BATCHEVALUATION) = %i\n", kernel->has_property(KP_BATCHEVALUATION)) 
-	SG_DEBUG("kernel->get_optimization_type() = %s\n", kernel->get_optimization_type()==FASTBUTMEMHUNGRY ? "FASTBUTMEMHUNGRY" : "SLOWBUTMEMEFFICIENT" ) 
+	SG_DEBUG("threads = %i\n", parallel->get_num_threads())
+	SG_DEBUG("qpsize = %i\n", learn_parm->svm_maxqpsize)
+	SG_DEBUG("epsilon = %1.1e\n", learn_parm->epsilon_crit)
+	SG_DEBUG("kernel->has_property(KP_LINADD) = %i\n", kernel->has_property(KP_LINADD))
+	SG_DEBUG("kernel->has_property(KP_KERNCOMBINATION) = %i\n", kernel->has_property(KP_KERNCOMBINATION))
+	SG_DEBUG("kernel->has_property(KP_BATCHEVALUATION) = %i\n", kernel->has_property(KP_BATCHEVALUATION))
+	SG_DEBUG("kernel->get_optimization_type() = %s\n", kernel->get_optimization_type()==FASTBUTMEMHUNGRY ? "FASTBUTMEMHUNGRY" : "SLOWBUTMEMEFFICIENT" )
 	SG_DEBUG("get_solver_type() = %i\n", get_solver_type())
-	SG_DEBUG("get_linadd_enabled() = %i\n", get_linadd_enabled()) 
-	SG_DEBUG("get_batch_computation_enabled() = %i\n", get_batch_computation_enabled()) 
-	SG_DEBUG("kernel->get_num_subkernels() = %i\n", kernel->get_num_subkernels()) 
+	SG_DEBUG("get_linadd_enabled() = %i\n", get_linadd_enabled())
+	SG_DEBUG("get_batch_computation_enabled() = %i\n", get_batch_computation_enabled())
+	SG_DEBUG("kernel->get_num_subkernels() = %i\n", kernel->get_num_subkernels())
 
 	use_kernel_cache = !((kernel->get_kernel_type() == K_CUSTOM) ||
 						 (get_linadd_enabled() && kernel->has_property(KP_LINADD)));
 
-	SG_DEBUG("use_kernel_cache = %i\n", use_kernel_cache) 
+	SG_DEBUG("use_kernel_cache = %i\n", use_kernel_cache)
 
 	if (kernel->get_kernel_type() == K_COMBINED)
 	{
@@ -909,9 +909,9 @@ int32_t CSVMLight::optimize_to_convergence(int32_t* docs, int32_t* label, int32_
   {
       SG_DEBUG("reactivating inactive examples\n")
       reactivate_inactive_examples(label,a,shrink_state,lin,c,totdoc,
-    		  iteration,inconsistent,
-    		  docs,aicache,
-    		  maxdiff);
+		  iteration,inconsistent,
+		  docs,aicache,
+		  maxdiff);
       SG_DEBUG("done reactivating inactive examples\n")
       /* Update to new active variables. */
       activenum=compute_index(shrink_state->active,totdoc,active2dnum);
@@ -1024,9 +1024,9 @@ void CSVMLight::optimize_svm(
     /* call the qp-subsolver */
     a_v=optimize_qp(qp,epsilon_crit_target,
 		    learn_parm->svm_maxqpsize,
-		    &(model->b),  				/* in case the optimizer gives us */
+		    &(model->b),				/* in case the optimizer gives us */
             learn_parm->svm_maxqpsize); /* the threshold for free. otherwise */
-                                   		/* b is calculated in calculate_model. */
+		/* b is calculated in calculate_model. */
     if(verbosity>=3) {
      SG_DONE()
     }
@@ -1094,7 +1094,7 @@ void CSVMLight::compute_matrices_for_optimization_parallel(
 		pthread_t* threads = SG_MALLOC(pthread_t, parallel->get_num_threads()-1);
 		S_THREAD_PARAM_KERNEL* params = SG_MALLOC(S_THREAD_PARAM_KERNEL, parallel->get_num_threads()-1);
 		int32_t step= Knum/parallel->get_num_threads();
-		//SG_DEBUG("\nkernel-step size: %i\n", step) 
+		//SG_DEBUG("\nkernel-step size: %i\n", step)
 		for (int32_t t=0; t<parallel->get_num_threads()-1; t++)
 		{
 			params[t].svmlight = this;
@@ -1289,7 +1289,7 @@ int32_t CSVMLight::calculate_svm_model(
 
     if((!b_calculated)
        && (a[i]>learn_parm->epsilon_a) && (a[i]<ex_c)) {   /* calculate b */
-     	model->b=((float64_t)label[i]*learn_parm->eps[i]-c[i]+lin[i]);
+	model->b=((float64_t)label[i]*learn_parm->eps[i]-c[i]+lin[i]);
 	b_calculated=1;
     }
   }
@@ -1531,7 +1531,7 @@ void CSVMLight::update_linear_component_mkl(
 			 (!((CCombinedKernel*) kernel)->get_append_subkernel_weights()))// for combined kernel
 	{
 		CCombinedKernel* k = (CCombinedKernel*) kernel;
-		
+
 		int32_t n = 0, i, j ;
 
 		for (index_t k_idx=0; k_idx<k->get_num_kernels(); k_idx++)

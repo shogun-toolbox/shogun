@@ -24,13 +24,13 @@ class CDotFeatures;
 enum KernelName
 {
 	/** approximate gaussian kernel
-	 * 	expects one parameter to be specified :
-	 * 		kernel width
+	 *	expects one parameter to be specified :
+	 *		kernel width
 	 */
 	GAUSSIAN,
 
 	/** not specified */
-	NOT_SPECIFIED	
+	NOT_SPECIFIED
 };
 
 /** @brief This class implements the random fourier features for the DotFeatures
@@ -77,7 +77,7 @@ public:
 	 * @param loader File object via which to load data
 	 */
 	CRandomFourierDotFeatures(CFile* loader);
-	
+
 	/** copy constructor */
 	CRandomFourierDotFeatures(const CRandomFourierDotFeatures& orig);
 

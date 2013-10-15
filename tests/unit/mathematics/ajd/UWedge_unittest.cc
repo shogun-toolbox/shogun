@@ -29,30 +29,30 @@ TEST(CUWedge, diagonalize)
 	C_dims[1] = 10;
 	C_dims[2] = 30;
 	SGNDArray< float64_t > C(C_dims, 3);
-	
+
 	CMath::init_random(17);
-	
+
 	for (int i = 0; i < C_dims[2]; i++)
 	{
 		Eigen::Map<EMatrix> tmp(C.get_matrix(i),C_dims[0], C_dims[1]);
 		tmp.setIdentity();
-		
+
 		for (int j = 0; j < C_dims[0]; j++)
 		{
-			tmp(j,j) *= CMath::abs(CMath::random(1,5)); 
+			tmp(j,j) *= CMath::abs(CMath::random(1,5));
 		}
 	}
-	
+
 	// Mixing and demixing matrices
-	EMatrix B(C_dims[0], C_dims[1]); 
+	EMatrix B(C_dims[0], C_dims[1]);
 	B.setRandom();
 	EMatrix A = B.inverse();
-	
+
 	for (int i = 0; i < C_dims[2]; i++)
 	{
 		Eigen::Map<EMatrix> Ci(C.get_matrix(i),C_dims[0], C_dims[1]);
 		Ci = A * Ci * A.transpose();
-	}	
+	}
 
 	/** Diagonalize **/
 	SGMatrix<float64_t> V = CUWedge::diagonalize(C);

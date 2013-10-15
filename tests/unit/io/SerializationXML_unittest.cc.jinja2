@@ -47,7 +47,7 @@ TEST(SerializationXML, {{class}})
 	// check whether they are equal, up to a certain accuracy, since XML is lossy
 	float64_t accuracy=1e-14;
 	ASSERT_TRUE(object->equals(deserializedObject, accuracy));
-	
+
 	SG_UNREF(object)
 	SG_UNREF(deserializedObject);
 
@@ -89,7 +89,7 @@ TEST(SerializationXML,{{class}}_{{type}})
 	// check whether they are equal, up to a certain accuracy, since XML is lossy
 	float64_t accuracy=1e-14;
 	ASSERT_TRUE(object->equals(deserializedObject, accuracy));
-	
+
 	SG_UNREF(object)
 	SG_UNREF(deserializedObject);
 

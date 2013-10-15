@@ -54,7 +54,7 @@ bool CRescaleFeatures::init(CFeatures* features)
 				cur_min = CMath::min(vec[j], cur_min);
 				cur_max = CMath::max(vec[j], cur_max);
 			}
-	
+
 			/* only rescale if range > 0 */
 			if ((cur_max - cur_min) > 0) {
 				m_min[i] = cur_min;

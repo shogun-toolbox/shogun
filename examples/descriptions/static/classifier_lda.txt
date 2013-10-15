@@ -1,5 +1,5 @@
-In this example a linear two-class classifier is trained based on the Linear 
-Discriminant Analysis (LDA) from a toy 2-dimensional examples. The trained 
+In this example a linear two-class classifier is trained based on the Linear
+Discriminant Analysis (LDA) from a toy 2-dimensional examples. The trained
 LDA classifier is used to predict test examples. Note that the LDA classifier
 is optimal under the assumption that both classes are Gaussian distributed with equal
 co-variance. For more details on the LDA see e.g.

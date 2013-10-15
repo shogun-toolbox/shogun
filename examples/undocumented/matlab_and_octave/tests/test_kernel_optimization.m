@@ -6,7 +6,7 @@ for j=1:100,
 	for k=1:1000,
 	 traindat(j,k)=char(alphab(round(3*rand)+1));
 	 testdat(j,k)=char(alphab(round(3*rand)+1));
- 	end
+	end
 end
 
 %traindat=rand(100,1000);

@@ -6,7 +6,7 @@
  *
  * Written (W) 2013 Soumyajit De
  */
- 
+
 #include <shogun/lib/config.h>
 
 #ifdef HAVE_EIGEN3
@@ -55,7 +55,7 @@ TEST(IndividualJobResultAggregator, finalize)
 	float64_t result=final_result->get_result();
 
 	EXPECT_NEAR(result, 2.0, 1E-15);
-	
+
 	SG_UNREF(job_result);
 	SG_UNREF(agg);
 	SG_UNREF(op);

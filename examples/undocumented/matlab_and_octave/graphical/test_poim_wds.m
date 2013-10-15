@@ -67,8 +67,8 @@ sg( 'train_classifier' );
 % === test
 if( 0 )
   t1 = 'CCCCACCCCCC';
-  t2 = 'CCCCCCCCCCC';  
-  T = [ t1 ; t2 ]' 
+  t2 = 'CCCCCCCCCCC';
+  T = [ t1 ; t2 ]'
   sg( 'set_features', 'TEST', T, 'DNA' );
   sg( 'set_labels', 'TEST', ones(1,size(T,2)) );
   out = sg( 'classify' )

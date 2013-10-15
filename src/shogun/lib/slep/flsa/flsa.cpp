@@ -11,7 +11,7 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- *   Copyright (C) 2009 - 2012 Jun Liu and Jieping Ye 
+ *   Copyright (C) 2009 - 2012 Jun Liu and Jieping Ye
  */
 
 #include <shogun/lib/slep/flsa/flsa.h>
@@ -22,8 +22,8 @@
 #include <math.h>
 
 void flsa(double *x, double *z, double *infor,
-		double * v, double *z0, 
-		double lambda1, double lambda2, int n, 
+		double * v, double *z0,
+		double lambda1, double lambda2, int n,
 		int maxStep, double tol, int tau, int flag)
 {
 
@@ -70,11 +70,11 @@ void flsa(double *x, double *z, double *infor,
 		if (m!=0){
 			for (i=0;i<m;i++)
 				temp+=v[i];
-		}		
+		}
 		for (i=m;i<n;i+=5){
 			temp += v[i] + v[i+1] + v[i+2] + v[i+3] + v[i+4];
 		}
-		temp/=n; 
+		temp/=n;
 		/* temp is the mean value of v*/
 
 
@@ -125,7 +125,7 @@ void flsa(double *x, double *z, double *infor,
 
 	   We need to call sfa for computing x, and then do soft thresholding
 
-	   Before calling sfa, we need to allocate memory for g and s, 
+	   Before calling sfa, we need to allocate memory for g and s,
 	   and initialize z and z0.
 	   */
 
@@ -140,7 +140,7 @@ void flsa(double *x, double *z, double *infor,
 
 
 	m=flag /10;
-	/* 
+	/*
 
 	   If m=0, then this shows that, z0 is a "good" starting point. (m=1-6)
 
@@ -156,7 +156,7 @@ void flsa(double *x, double *z, double *infor,
 				if (z0[i]<-lambda2)
 					z[i]=-lambda2;
 				else
-					z[i]=z0[i];	
+					z[i]=z0[i];
 		}
 	}
 	else{
@@ -196,20 +196,20 @@ void flsa(double *x, double *z, double *infor,
 
 	if (flag==6)
 		iterStep=sfa_one(x, &gap, &numS,
-				z,  v,   Av, 
+				z,  v,   Av,
 				lambda2, nn,  maxStep,
 				s, g,
 				tol, tau);
 	else
 		if (flag==5)
 			iterStep=sfa_special(x, &gap, &numS,
-					z,  v,   Av, 
+					z,  v,   Av,
 					lambda2, nn,  maxStep,
 					s, g,
 					tol, tau);
 		else{
 			iterStep=sfa(x, &gap, &numS,
-					z, zz,   v,  Av, 
+					z, zz,   v,  Av,
 					lambda2, nn, maxStep,
 					s,  g,
 					tol,tau, flag);
@@ -236,7 +236,7 @@ void flsa(double *x, double *z, double *infor,
 	free(Av);
 	free(g);
 	free(s);
-	
+
 	if (infor)
 	{
 		infor[0]=gap;

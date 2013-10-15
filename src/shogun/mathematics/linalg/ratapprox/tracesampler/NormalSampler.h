@@ -3,7 +3,7 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Written (W) 2013 Soumyajit De
  */
 
@@ -17,7 +17,7 @@ namespace shogun
 {
 template<class T> class SGVector;
 
-/** @brief Class that provides a sample method for Gaussian samples 
+/** @brief Class that provides a sample method for Gaussian samples
  */
 class CNormalSampler : public CTraceSampler
 {
@@ -25,7 +25,7 @@ public:
 	/** default constructor */
 	CNormalSampler();
 
-	/** constructor 
+	/** constructor
 	 * @param dimension the dimension of the Gaussian sample vectors ~(0,I)
 	 */
 	CNormalSampler(index_t dimension);
@@ -34,9 +34,9 @@ public:
 	virtual ~CNormalSampler();
 
 	/** method that generates the samples
- 	 * @param idx the index (this is effectively ignored)
+	 * @param idx the index (this is effectively ignored)
 	 * @return the sample vector
- 	 */
+	 */
 	virtual SGVector<float64_t> sample(index_t idx) const;
 
 	/** precompute method that sets the num_samples of the base */

@@ -22,7 +22,7 @@ import org.shogun.SerializableAsciiFile;
 public void writeExternal(java.io.ObjectOutput out) throws java.io.IOException {
         java.util.Random randomGenerator = new java.util.Random();
         String tmpFileName = System.getProperty("java.io.tmpdir") + "/" + randomGenerator.nextInt() + "shogun.tmp";
-        java.io.File file = null; 
+        java.io.File file = null;
         java.io.FileInputStream in = null;
         int ch;
         try {
@@ -248,7 +248,7 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
 
 %typemap(in) __setstate__(PyObject* state) {
     $1 = $input;
-}       
+}
 
 %typemap(out) PyObject* __getstate__()
 {
@@ -488,12 +488,12 @@ def _sg_reduce_ex(self, proto):
         dict = getstate()
     if dict:
         return _sg_reconstructor, args, dict
-    else:   
+    else:
         return _sg_reconstructor, args
 
 _py_orig_reduce_ex=copy_reg._reduce_ex
 _py_orig_reconstructor=copy_reg._reconstructor
-      
+
 copy_reg._reduce_ex=_sg_reduce_ex
 copy_reg._reconstructor=_sg_reconstructor
 %}

@@ -7,7 +7,7 @@
  * Written (W) 2011-2012 Heiko Strathmann
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
- 
+
 SERIALIZABLE_DUMMY(shogun::CCrossValidationResult);
 
 /* These functions return new Objects */

@@ -23,9 +23,9 @@ namespace shogun
  *
  * [1] N. Ratliff, J. A. Bagnell, and M. Zinkevich. (online) subgradient methods
  * for structured prediction. AISTATS, 2007.
- * [2] S. Shalev-Shwartz, Y. Singer, N. Srebro. Pegasos: Primal Estimated 
+ * [2] S. Shalev-Shwartz, Y. Singer, N. Srebro. Pegasos: Primal Estimated
  * sub-GrAdient SOlver for SVM. ICML 2007.
- * [3] S. Lacoste-Julien, M. Jaggi, M. Schmidt and P. Pletscher. Block-Coordinate 
+ * [3] S. Lacoste-Julien, M. Jaggi, M. Schmidt and P. Pletscher. Block-Coordinate
  * Frank-Wolfe Optimization for Structural SVMs. ICML 2013.
  */
 class CStochasticSOSVM : public CLinearStructuredOutputMachine
@@ -41,7 +41,7 @@ public:
 	 * @param do_weighted_averaging whether mix w with previous average weights
 	 * @param verbose whether compute debug information, such as primal value, duality gap etc.
 	 */
-	CStochasticSOSVM(CStructuredModel* model, CStructuredLabels* labs, 
+	CStochasticSOSVM(CStructuredModel* model, CStructuredLabels* labs,
 		bool do_weighted_averaging = true, bool verbose = false);
 
 	/** destructor */
@@ -58,34 +58,34 @@ public:
 
 	/** @return lambda */
 	float64_t get_lambda() const;
-	
+
 	/** set regularization const
 	 *
 	 * @param lbda regularization const lambda
 	 */
 	void set_lambda(float64_t lbda);
-	
+
 	/** @return number of iterations */
 	int32_t get_num_iter() const;
-	
+
 	/** set max number of iterations
 	 *
 	 * @param num_iter number of iterations
 	 */
 	void set_num_iter(int32_t num_iter);
-	
+
 	/** @return debug multiplier */
 	int32_t get_debug_multiplier() const;
-	
+
 	/** set frequency of debug outputs
 	 *
 	 * @param multiplier debug multiplier
 	 */
 	void set_debug_multiplier(int32_t multiplier);
-	
+
 	/** @return rand seed */
 	uint32_t get_rand_seed() const;
-	
+
 	/** set random seed
 	 *
 	 * @param rand_seed random seed

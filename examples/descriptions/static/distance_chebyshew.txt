@@ -12,18 +12,18 @@ Each column of the matrices corresponds to one data point.
 
 The target 'TRAIN' for 'set_features' controls the processing of the given
 data points, where a pairwise distance matrix (maximum of absolute feature
-dimension differences) is computed by 'get_distance_matrix'. 
+dimension differences) is computed by 'get_distance_matrix'.
 
-The resulting distance matrix can be reaccessed by 'get_distance_matrix' 
+The resulting distance matrix can be reaccessed by 'get_distance_matrix'
 and target 'TRAIN'.
 
 The target 'TEST' for 'set_features' controls the processing of the given
-data points 'TRAIN' and 'TEST', where a pairwise distance matrix (maximum 
-of absolute feature dimension differences) between these two data sets is 
-computed. 
+data points 'TRAIN' and 'TEST', where a pairwise distance matrix (maximum
+of absolute feature dimension differences) between these two data sets is
+computed.
 
-The resulting distance matrix can be reaccessed by 'get_distance_matrix' 
-and target 'TEST'. The 'TRAIN' distance matrix ceased to exist. 
+The resulting distance matrix can be reaccessed by 'get_distance_matrix'
+and target 'TEST'. The 'TRAIN' distance matrix ceased to exist.
 
 For more details see doc/classshogun_1_1CChebyshewMetric.html.
 

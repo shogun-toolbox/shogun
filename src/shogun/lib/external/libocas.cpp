@@ -55,10 +55,10 @@ static float64_t get_time()
 
 
 /*----------------------------------------------------------------------
-  Linear binary Ocas-SVM solver with additinal contraint enforceing 
-  a subset of weights (indices of the weights given by num_nnw/nnw_idx) 
-  to be non-negative.    
-  
+  Linear binary Ocas-SVM solver with additinal contraint enforceing
+  a subset of weights (indices of the weights given by num_nnw/nnw_idx)
+  to be non-negative.
+
   ----------------------------------------------------------------------*/
 ocas_return_value_T svm_ocas_solver_nnw(
             float64_t C,
@@ -912,7 +912,7 @@ ocas_return_value_T svm_ocas_solver(
         /*        ocas_print("%4d: tim=%f, Q_P=%f, Q_D=%f, Q_P-Q_D=%f, 1-Q_D/Q_P=%f, nza=%4d, err=%.2f%%, qpf=%d\n",
                    ocas.nIter, cur_time, ocas.Q_P,ocas.Q_D,ocas.Q_P-ocas.Q_D,(ocas.Q_P-ocas.Q_D)/LIBOCAS_ABS(ocas.Q_P),
                    ocas.nNZAlpha, 100*(float64_t)ocas.trn_err/(float64_t)nData, ocas.qp_exitflag );
-        */ 
+        */
 
         start_time = get_time();
         ocas_print(ocas);
@@ -1109,7 +1109,7 @@ ocas_return_value_T svm_ocas_solver_difC(
 
   /* Compute initial value of Q_P assuming that W is zero vector.*/
   sq_norm_W = 0;
-/* 
+/*
   xi = nData;
   ocas.Q_P = 0.5*sq_norm_W + C*xi;
 */
@@ -1361,7 +1361,7 @@ ocas_return_value_T svm_ocas_solver_difC(
         /*        ocas_print("%4d: tim=%f, Q_P=%f, Q_D=%f, Q_P-Q_D=%f, 1-Q_D/Q_P=%f, nza=%4d, err=%.2f%%, qpf=%d\n",
                    ocas.nIter, cur_time, ocas.Q_P,ocas.Q_D,ocas.Q_P-ocas.Q_D,(ocas.Q_P-ocas.Q_D)/LIBOCAS_ABS(ocas.Q_P),
                    ocas.nNZAlpha, 100*(float64_t)ocas.trn_err/(float64_t)nData, ocas.qp_exitflag );
-        */ 
+        */
 
         start_time = get_time();
         ocas_print(ocas);

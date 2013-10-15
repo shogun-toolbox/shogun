@@ -56,7 +56,7 @@ foreach ( csharp_dotnet_executable ${csharp_dotnet_executables} )
     set( CSHARP_DOTNET_COMPILER_${csharp_dotnet_version_temp} ${csharp_dotnet_executable} CACHE STRING "C# .NET compiler ${csharp_dotnet_version}" FORCE )
     mark_as_advanced( CSHARP_DOTNET_COMPILER_${csharp_dotnet_version_temp} )
   endif( )
-  
+
   # Create a list of supported compiler versions
   if( NOT DEFINED CSHARP_DOTNET_VERSIONS )
     set( CSHARP_DOTNET_VERSIONS "${csharp_dotnet_version_temp}" CACHE STRING "Available C# .NET compiler versions" FORCE )

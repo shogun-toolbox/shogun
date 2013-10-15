@@ -1,4 +1,4 @@
-This is an example for the initialization of the CommUlongString-kernel. This kernel 
-sums over k-mere matches (k='order'). For efficient computing a preprocessor is used 
-that extracts and sorts all k-mers. If 'use_sign' is set to one each k-mere is counted 
-only once. 
+This is an example for the initialization of the CommUlongString-kernel. This kernel
+sums over k-mere matches (k='order'). For efficient computing a preprocessor is used
+that extracts and sorts all k-mers. If 'use_sign' is set to one each k-mere is counted
+only once.

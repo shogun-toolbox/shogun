@@ -13,7 +13,7 @@
 namespace tapkee
 {
 
-inline IndexType uniform_random_index() 
+inline IndexType uniform_random_index()
 {
 #ifdef CUSTOM_UNIFORM_RANDOM_INDEX_FUNCTION
 	return CUSTOM_UNIFORM_RANDOM_INDEX_FUNCTION % std::numeric_limits<IndexType>::max();

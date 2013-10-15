@@ -14,7 +14,7 @@
 
 namespace shogun
 {
-/** @brief class MultitaskClusteredLogisticRegression, a classifier for multitask problems. 
+/** @brief class MultitaskClusteredLogisticRegression, a classifier for multitask problems.
  * Supports only task group relations. Based on solver ported from the MALSAR library.
  * Assumes task in group are related with a clustered structure.
  *
@@ -39,7 +39,7 @@ class CMultitaskClusteredLogisticRegression : public CMultitaskLogisticRegressio
 		 * @param num_clusters number of task clusters
 		 */
 		CMultitaskClusteredLogisticRegression(
-		     float64_t rho1, float64_t rho2, CDotFeatures* training_data, 
+		     float64_t rho1, float64_t rho2, CDotFeatures* training_data,
 		     CBinaryLabels* training_labels, CTaskGroup* task_group,
 		     int32_t num_clusters);
 
@@ -50,12 +50,12 @@ class CMultitaskClusteredLogisticRegression : public CMultitaskLogisticRegressio
 		 *
 		 * @return rho1 value
 		 */
-		int32_t get_rho1() const; 
+		int32_t get_rho1() const;
 
 		/** set rho1
 		 * @param rho1 value
 		 */
-		void set_rho1(float64_t rho1); 
+		void set_rho1(float64_t rho1);
 
 		/** get rho1
 		 */
@@ -66,9 +66,9 @@ class CMultitaskClusteredLogisticRegression : public CMultitaskLogisticRegressio
 		 */
 		void set_rho2(float64_t rho2);
 
-		/** get number of clusters 
+		/** get number of clusters
 		 *
-		 * @return number of clusters 
+		 * @return number of clusters
 		 */
 		int32_t get_num_clusters() const;
 
@@ -81,7 +81,7 @@ class CMultitaskClusteredLogisticRegression : public CMultitaskLogisticRegressio
 		 *
 		 * @return name of the object
 		 */
-		virtual const char* get_name() const 
+		virtual const char* get_name() const
 		{
 			return "MultitaskClusteredLogisticRegression";
 		}
@@ -93,8 +93,8 @@ class CMultitaskClusteredLogisticRegression : public CMultitaskLogisticRegressio
 		 * @param data features to use for training
 		 */
 		virtual bool train_machine(CFeatures* data=NULL);
-		
-		/** train locked implementation 
+
+		/** train locked implementation
 		 *
 		 * @param tasks array of tasks indices
 		 */
@@ -104,7 +104,7 @@ class CMultitaskClusteredLogisticRegression : public CMultitaskLogisticRegressio
 
 		/** rho1 */
 		float64_t m_rho1;
-		
+
 		/** rho2 */
 		float64_t m_rho2;
 

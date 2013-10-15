@@ -27,7 +27,7 @@ using Eigen::Success;
 using Eigen::NumTraits;
 
 //! Namespace that contains ARPACK routines
-namespace arpack_internal 
+namespace arpack_internal
 {
 	template<typename Scalar, typename RealScalar> struct arpack_wrapper;
 }
@@ -65,7 +65,7 @@ public:
 	*/
 	ArpackGeneralizedSelfAdjointEigenSolver() : m_eivec(), m_eivalues(), m_isInitialized(false),
 		m_eigenvectorsOk(false), m_nbrConverged(0), m_nbrIterations(0)
-	{ 
+	{
 	}
 
 	/** \brief Constructor; computes generalized eigenvalues of given matrix with respect to another matrix.
@@ -92,7 +92,7 @@ public:
 	*/
 	ArpackGeneralizedSelfAdjointEigenSolver(const LMatrixType& A, const RMatrixType& B,
 	                                        Index nbrEigenvalues, std::string eigs_sigma="LM",
-	                                        int parameters=ComputeEigenvectors, RealScalar tol=0.0) : 
+	                                        int parameters=ComputeEigenvectors, RealScalar tol=0.0) :
 		m_eivec(), m_eivalues(), m_info(), m_isInitialized(false), m_eigenvectorsOk(false),
 		m_nbrConverged(0), m_nbrIterations(0)
 	{
@@ -121,7 +121,7 @@ public:
 	*
 	*/
 	ArpackGeneralizedSelfAdjointEigenSolver(const LMatrixType& A, Index nbrEigenvalues, std::string eigs_sigma="LM",
-	                                        int parameters=ComputeEigenvectors, RealScalar tol=0.0) : 
+	                                        int parameters=ComputeEigenvectors, RealScalar tol=0.0) :
 		m_eivec(), m_eivalues(), m_info(), m_isInitialized(false), m_eigenvectorsOk(false),
 		m_nbrConverged(0), m_nbrIterations(0)
 	{
@@ -177,7 +177,7 @@ public:
 	* calling eigenvectors().
 	*
 	*/
-	ArpackGeneralizedSelfAdjointEigenSolver& compute(const LMatrixType& A, Index nbrEigenvalues, 
+	ArpackGeneralizedSelfAdjointEigenSolver& compute(const LMatrixType& A, Index nbrEigenvalues,
 	                                                 std::string eigs_sigma="LM",
 	                                                 int parameters=ComputeEigenvectors, RealScalar tol=0.0);
 
@@ -281,7 +281,7 @@ public:
 
 	size_t getNbrIterations() const
 	{
-		return m_nbrIterations; 
+		return m_nbrIterations;
 	}
 
 protected:
@@ -393,7 +393,7 @@ ArpackGeneralizedSelfAdjointEigenSolver<LMatrixType, RMatrixType, MatrixOperatio
 	iparam[6] = mode; // The mode, 1 is standard ev problem, 2 for generalized ev, 3 for shift-and-invert
 
 	// Used during reverse communicate to notify where arrays start
-	int *ipntr = new int[11]; 
+	int *ipntr = new int[11];
 
 	// Error codes are returned in here, initial value of 0 indicates a random initial
 	// residual vector is used, any other values means resid contains the initial residual
@@ -420,7 +420,7 @@ ArpackGeneralizedSelfAdjointEigenSolver<LMatrixType, RMatrixType, MatrixOperatio
 	do
 	{
 		//std::cout << "Entering main loop\n";
-		arpack_internal::arpack_wrapper<Scalar, RealScalar>::saupd(&ido, bmat, &n, whch, &nev, &tol, resid, 
+		arpack_internal::arpack_wrapper<Scalar, RealScalar>::saupd(&ido, bmat, &n, whch, &nev, &tol, resid,
 		                                                           &ncv, v, &ldv, iparam, ipntr, workd, workl,
 		                                                           &lworkl, &cinfo);
 		if (ido == -1 || ido == 1)
@@ -481,7 +481,7 @@ ArpackGeneralizedSelfAdjointEigenSolver<LMatrixType, RMatrixType, MatrixOperatio
 		//Scalar *out = workd + ipntr[1] - 1;
 		//std::cout << Matrix<Scalar, Dynamic, 1>::Map(out, n).transpose() << std::endl;
 	} while (ido != 99);
-		
+
 	//std::cout << "Finsihed\n";
 
 	if (cinfo == 1)
@@ -511,7 +511,7 @@ ArpackGeneralizedSelfAdjointEigenSolver<LMatrixType, RMatrixType, MatrixOperatio
 		int rvec = (parameters & ComputeEigenvectors) == ComputeEigenvectors;
 
 		// "A" means "All", use "S" to choose specific eigenvalues (not yet supported in ARPACK))
-		char howmny[2] = "A"; 
+		char howmny[2] = "A";
 
 		// if howmny == "S", specifies the eigenvalues to compute (not implemented in ARPACK)
 		int *select = new int[ncv];
@@ -539,7 +539,7 @@ ArpackGeneralizedSelfAdjointEigenSolver<LMatrixType, RMatrixType, MatrixOperatio
 				for (int i=0; i<nev; i++)
 					for (int j=0; j<n; j++)
 						m_eivec(j,i) = v[i*n+j] / scale;
-  
+
 				// TODO if (mode == 1 && !isBempty && BisSPD)
 				//  internal::OP<MatrixSolver, MatrixType, Scalar, BisSPD>::project(OP, n, nev, m_eivec.data());
 
@@ -572,7 +572,7 @@ extern "C" void ssaupd_(int *ido, char *bmat, int *n, char *which,
                         int *info);
 
 extern "C" void sseupd_(int *rvec, char *All, int *select, float *d,
-                        float *z, int *ldz, float *sigma, 
+                        float *z, int *ldz, float *sigma,
                         char *bmat, int *n, char *which, int *nev,
                         float *tol, float *resid, int *ncv, float *v,
                         int *ldv, int *iparam, int *ipntr, float *workd,
@@ -587,7 +587,7 @@ extern "C" void dsaupd_(int *ido, char *bmat, int *n, char *which,
                         int *info);
 
 extern "C" void dseupd_(int *rvec, char *All, int *select, double *d,
-                        double *z, int *ldz, double *sigma, 
+                        double *z, int *ldz, double *sigma,
                         char *bmat, int *n, char *which, int *nev,
                         double *tol, double *resid, int *ncv, double *v,
                         int *ldv, int *iparam, int *ipntr, double *workd,

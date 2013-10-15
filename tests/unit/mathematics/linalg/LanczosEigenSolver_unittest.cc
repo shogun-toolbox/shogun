@@ -6,7 +6,7 @@
  *
  * Written (W) 2013 Soumyajit De
  */
- 
+
 #include <shogun/lib/common.h>
 
 #ifdef HAVE_EIGEN3
@@ -31,7 +31,7 @@ TEST(LanczosEigenSolver, compute)
 	const int32_t size=4;
 	SGMatrix<float64_t> m(size, size);
 	m.set_const(CMath::random(50.0, 100.0));
-	
+
 	// Hermintian matrix
 	for (index_t i=0; i<size; ++i)
 		m(i,i)=CMath::random(100.0, 10000.0);
@@ -76,7 +76,7 @@ TEST(LanczosEigenSolver, compute_big_diag_matrix)
 	float64_t difficulty=4;
 	float64_t min_eigenvalue=0.0001;
 
-	// create a sparse matrix	
+	// create a sparse matrix
 	const index_t size=100;
 	SGSparseMatrix<float64_t> sm(size, size);
 	CSparseMatrixOperator<float64_t>* op=new CSparseMatrixOperator<float64_t>(sm);
@@ -121,7 +121,7 @@ TEST(LanczosEigenSolver, set_eigenvalues_externally)
 	CLanczosEigenSolver* eig_solver=new CLanczosEigenSolver(A);
 	eig_solver->set_min_eigenvalue(min_eigenvalue);
 	eig_solver->set_max_eigenvalue(max_eigenvalue);
-	
+
 	eig_solver->compute();
 	EXPECT_NEAR(eig_solver->get_min_eigenvalue(), min_eigenvalue, 1E-16);
 	EXPECT_NEAR(eig_solver->get_max_eigenvalue(), max_eigenvalue, 1E-16);

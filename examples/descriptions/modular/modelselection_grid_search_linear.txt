@@ -1,5 +1,5 @@
 In this example simple crossvalidation model parameters selection is shown.
-During the first step a model parameter tree with values ranges of 
+During the first step a model parameter tree with values ranges of
 C1 and C2 parameters of SVM is constructed. After that a splitting
 strategy, an evaluation criterium and model selection instance
 are set

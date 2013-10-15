@@ -3,7 +3,7 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Written (W) 2013 Soumyajit De
  */
 
@@ -32,7 +32,7 @@ struct SparsityStructure
 
 	/**
 	 * constructor
-	 * 
+	 *
 	 * @param row_offsets outer index ptr in CRS
 	 * @param column_indices inner index ptr in CRS
 	 * @param num_rows number of rows
@@ -50,7 +50,7 @@ struct SparsityStructure
 
 			m_ptr[i]=new int32_t[length_row+1]();
 			m_ptr[i][0]=length_row;
-    
+
 			for (index_t j=1; j<=length_row; ++j)
 				m_ptr[i][j]=column_indices[current_index++];
 		}
@@ -104,7 +104,7 @@ public:
 	/** default constructor */
 	CSparseMatrixOperator();
 
-	/** 
+	/**
 	 * constructor
 	 *
 	 * @param op the sparse matrix to be used as the linear operator
@@ -121,7 +121,7 @@ public:
 	/** destructor */
 	~CSparseMatrixOperator();
 
-	/** 
+	/**
 	 * method that applies the sparse-matrix linear operator to a vector
 	 *
 	 * @param b the vector to which the linear operator applies

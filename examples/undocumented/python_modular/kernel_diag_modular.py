@@ -17,4 +17,4 @@ def kernel_diag_modular (diag=23):
 if __name__=='__main__':
 	print('Diag')
 	kernel_diag_modular(*parameter_list[0])
-	
+

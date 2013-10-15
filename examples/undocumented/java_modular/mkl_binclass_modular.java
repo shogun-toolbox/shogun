@@ -21,17 +21,17 @@ public class mkl_binclass_modular {
 		RealFeatures tfeats = new RealFeatures(traindata_real);
 		PolyKernel tkernel = new PolyKernel(10,3);
 		tkernel.init(tfeats, tfeats);
-    	DoubleMatrix K_train = tkernel.get_kernel_matrix();
+	DoubleMatrix K_train = tkernel.get_kernel_matrix();
 
 		RealFeatures pfeats = new RealFeatures(testdata_real);
 		tkernel.init(tfeats, pfeats);
-    	DoubleMatrix K_test = tkernel.get_kernel_matrix();
-		
+	DoubleMatrix K_test = tkernel.get_kernel_matrix();
+
 		CombinedFeatures feats_train = new CombinedFeatures();
-    	feats_train.append_feature_obj(new RealFeatures(traindata_real));
+	feats_train.append_feature_obj(new RealFeatures(traindata_real));
 
 		CombinedKernel kernel = new CombinedKernel();
-   		kernel.append_kernel(new CustomKernel(K_train));
+		kernel.append_kernel(new CustomKernel(K_train));
 		kernel.append_kernel(new PolyKernel(10,2));
 		kernel.init(feats_train, feats_train);
 
@@ -40,12 +40,12 @@ public class mkl_binclass_modular {
 		MKLClassification mkl = new MKLClassification();
 		mkl.set_mkl_norm(1);
 		mkl.set_kernel(kernel);
-    	mkl.set_labels(labels);
+	mkl.set_labels(labels);
 
 		mkl.train();
 
 		CombinedFeatures feats_pred = new CombinedFeatures();
-    	feats_pred.append_feature_obj(new RealFeatures(testdata_real));
+	feats_pred.append_feature_obj(new RealFeatures(testdata_real));
 
 		CombinedKernel kernel2 = new CombinedKernel();
 		kernel2.append_kernel(new CustomKernel(K_test));

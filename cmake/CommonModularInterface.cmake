@@ -34,7 +34,7 @@ FOREACH(file ${MODULAR_FILES})
 	)
 ENDFOREACH()
 
-ADD_CUSTOM_TARGET(${MODULAR_NAME}_modular_src 
+ADD_CUSTOM_TARGET(${MODULAR_NAME}_modular_src
 	DEPENDS ${modular_files}
 	COMMENT "copying SWIG files")
 
@@ -48,29 +48,29 @@ SWIG_ADD_MODULE(${MODULAR_NAME}_modular ${MODULAR_NAME} modshogun.i sg_print_fun
 set_target_properties(${SWIG_MODULE_${MODULAR_NAME}_modular_REAL_NAME} PROPERTIES
 						COMPILE_DEFINITIONS "${DEFINES}")
 SWIG_LINK_LIBRARIES(${MODULAR_NAME}_modular shogun ${MODULAR_LIBARIES})
-SET_TARGET_PROPERTIES(${SWIG_MODULE_${MODULAR_NAME}_modular_REAL_NAME} PROPERTIES OUTPUT_NAME ${PREPEND_TARGET}modshogun) 
+SET_TARGET_PROPERTIES(${SWIG_MODULE_${MODULAR_NAME}_modular_REAL_NAME} PROPERTIES OUTPUT_NAME ${PREPEND_TARGET}modshogun)
 ADD_DEPENDENCIES(${SWIG_MODULE_${MODULAR_NAME}_modular_REAL_NAME} ${MODULAR_NAME}_modular_src)
 
 #ADD_CUSTOM_COMMAND(TARGETS ${PREPEND_TARGET}${MODULAR_NAME}_modular
 #				   POST_BUILD
-#				   COMMAND ${PYTHON_EXECUTABLE} 
+#				   COMMAND ${PYTHON_EXECUTABLE}
 #				   ARGS ${CMAKE_SOURCE_DIR}/src/.scrub_docstrings.py )
 
 IF(DOXYGEN_FOUND)
 	configure_file(${COMMON_MODULAR_SRC_DIR}/modshogun.doxy.in modshogun.doxy)
 
-	ADD_CUSTOM_COMMAND( 
-    	OUTPUT    modshogun
-    	COMMAND   ${DOXYGEN_EXECUTABLE}
-    	ARGS	  modshogun.doxy
-    	COMMENT   "Generating doxygen doc"
+	ADD_CUSTOM_COMMAND(
+	OUTPUT    modshogun
+	COMMAND   ${DOXYGEN_EXECUTABLE}
+	ARGS	  modshogun.doxy
+	COMMENT   "Generating doxygen doc"
 	)
 
-	ADD_CUSTOM_COMMAND( 
-    	OUTPUT    modshogun_doxygen.i
-    	COMMAND   ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/src/.doxy2swig.py
-    	ARGS	  --quiet --no-function-definition modshogun/doxygen_xml/index.xml modshogun_doxygen.i
-    	DEPENDS   modshogun
+	ADD_CUSTOM_COMMAND(
+	OUTPUT    modshogun_doxygen.i
+	COMMAND   ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/src/.doxy2swig.py
+	ARGS	  --quiet --no-function-definition modshogun/doxygen_xml/index.xml modshogun_doxygen.i
+	DEPENDS   modshogun
 	)
 	ADD_CUSTOM_TARGET(${MODULAR_NAME}_doxy2swig DEPENDS modshogun_doxygen.i)
 	ADD_DEPENDENCIES(${SWIG_MODULE_${MODULAR_NAME}_modular_REAL_NAME} ${MODULAR_NAME}_doxy2swig)

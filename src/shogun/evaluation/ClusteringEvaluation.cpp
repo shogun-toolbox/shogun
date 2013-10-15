@@ -72,7 +72,7 @@ void CClusteringEvaluation::best_map(CLabels* predicted, CLabels* ground_truth)
 		{
 			if (G(j, i) == 0)
 			{
-				label_map.insert(make_pair(static_cast<int32_t>(label_p[i]), 
+				label_map.insert(make_pair(static_cast<int32_t>(label_p[i]),
 						static_cast<int32_t>(label_g[j])));
 				break;
 			}

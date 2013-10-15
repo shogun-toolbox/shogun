@@ -24,14 +24,14 @@ class ValueKeeper
 
 public:
 	template <typename T>
-	explicit ValueKeeper(const T& value) : 
-		policy(getPolicy<T>()), checker(getCheckerPolicy<T>()), value_ptr(NULL) 
+	explicit ValueKeeper(const T& value) :
+		policy(getPolicy<T>()), checker(getCheckerPolicy<T>()), value_ptr(NULL)
 	{
 		policy->copyFromValue(&value, &value_ptr);
 	}
 
 	ValueKeeper() :
-		policy(getPolicy<EmptyType>()), checker(getCheckerPolicy<EmptyType>()), value_ptr(NULL) 
+		policy(getPolicy<EmptyType>()), checker(getCheckerPolicy<EmptyType>()), value_ptr(NULL)
 	{
 	}
 

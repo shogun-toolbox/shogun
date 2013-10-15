@@ -74,7 +74,7 @@ void CHashedDenseFeatures<ST>::init(CDenseFeatures<ST>* feats, int32_t d, bool u
 	SG_ADD(&dim, "dim", "Dimension of new feature space", MS_NOT_AVAILABLE);
 	SG_ADD((CSGObject** ) &dense_feats, "dense_feats", "Dense features to work on",
 		MS_NOT_AVAILABLE);
-	
+
 	set_generic<ST>();
 }
 
@@ -120,8 +120,8 @@ float64_t CHashedDenseFeatures<ST>::dot(int32_t vec_idx1, CDotFeatures* df,
 	bool same_vec = (df == this) && (vec_idx1 == vec_idx2);
 	SGSparseVector<ST> vec_2 = same_vec ? vec_1 : feats->get_hashed_feature_vector(vec_idx2);
 	float64_t result = vec_1.sparse_dot(vec_2);
-	
-	return result;	
+
+	return result;
 }
 
 template <class ST>
@@ -139,7 +139,7 @@ float64_t CHashedDenseFeatures<ST>::dense_dot(int32_t vec_idx1, const float64_t*
 
 	for (index_t i=0; i<vec.vlen; i++)
 	{
-		uint32_t h_idx = CHash::MurmurHash3((uint8_t* ) &i, sizeof (index_t), i); 
+		uint32_t h_idx = CHash::MurmurHash3((uint8_t* ) &i, sizeof (index_t), i);
 		if (use_quadratic)
 			hash_cache[i] = h_idx;
 
@@ -173,7 +173,7 @@ void CHashedDenseFeatures<ST>::add_to_dense_vec(float64_t alpha, int32_t vec_idx
 {
 	float64_t val = abs_val ? CMath::abs(alpha) : alpha;
 	ASSERT(vec2_len == dim)
-	
+
 	SGVector<ST> vec = dense_feats->get_feature_vector(vec_idx1);
 
 	int32_t hash_cache_size = use_quadratic ? vec.vlen : 0;
@@ -205,7 +205,7 @@ void CHashedDenseFeatures<ST>::add_to_dense_vec(float64_t alpha, int32_t vec_idx
 			}
 		}
 	}
-	dense_feats->free_feature_vector(vec, vec_idx1);	
+	dense_feats->free_feature_vector(vec, vec_idx1);
 }
 
 template <class ST>
@@ -273,7 +273,7 @@ SGSparseVector<ST> CHashedDenseFeatures<ST>::hash_vector(SGVector<ST> vec, int32
 {
 	SGVector<ST> h_vec(dim);
 	SGVector<ST>::fill_vector(h_vec.vector, dim, 0);
-	
+
 	int32_t hash_cache_size = use_quadratic ? vec.vlen : 0;
 	SGVector<uint32_t> hash_cache(hash_cache_size);
 
@@ -298,7 +298,7 @@ SGSparseVector<ST> CHashedDenseFeatures<ST>::hash_vector(SGVector<ST> vec, int32
 			for (index_t j=i+1; j<vec.size(); j++)
 			{
 				idx = (hash_cache[i] ^ hash_cache[j]) % dim;
-				h_vec[idx] += vec[i] * vec[j]; 
+				h_vec[idx] += vec[i] * vec[j];
 			}
 		}
 	}
@@ -308,7 +308,7 @@ SGSparseVector<ST> CHashedDenseFeatures<ST>::hash_vector(SGVector<ST> vec, int32
 	{
 		if (h_vec[i]!=0)
 			num_nnz_feats++;
-	}	
+	}
 
 	SGSparseVector<ST> hashed_vector(num_nnz_feats);
 

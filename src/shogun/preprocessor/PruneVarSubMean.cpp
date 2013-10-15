@@ -86,7 +86,7 @@ bool CPruneVarSubMean::init(CFeatures* features)
 			}
 		}
 
-		SG_INFO("Reducing number of features from %i to %i\n", num_features, num_ok) 
+		SG_INFO("Reducing number of features from %i to %i\n", num_features, num_ok)
 
 		m_idx.resize_vector(num_ok);
 		SGVector<float64_t> new_mean(num_ok);

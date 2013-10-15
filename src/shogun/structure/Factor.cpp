@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2013 Shell Hu 
- * Copyright (C) 2013 Shell Hu 
+ * Written (W) 2013 Shell Hu
+ * Copyright (C) 2013 Shell Hu
  */
 
 #include <shogun/structure/Factor.h>
@@ -92,7 +92,7 @@ CFactor::~CFactor()
 	SG_UNREF(m_data_source);
 }
 
-CTableFactorType* CFactor::get_factor_type() const 
+CTableFactorType* CFactor::get_factor_type() const
 {
 	SG_REF(m_factor_type);
 	return m_factor_type;
@@ -104,7 +104,7 @@ void CFactor::set_factor_type(CTableFactorType* ftype)
 	SG_REF(m_factor_type);
 }
 
-const SGVector<int32_t> CFactor::get_variables() const 
+const SGVector<int32_t> CFactor::get_variables() const
 {
 	return m_var_index;
 }
@@ -114,20 +114,20 @@ void CFactor::set_variables(SGVector<int32_t> vars)
 	m_var_index = vars.clone();
 }
 
-const SGVector<int32_t> CFactor::get_cardinalities() const 
+const SGVector<int32_t> CFactor::get_cardinalities() const
 {
 	return m_factor_type->get_cardinalities();
 }
 
-SGVector<float64_t> CFactor::get_data() const 
+SGVector<float64_t> CFactor::get_data() const
 {
 	if (m_data_source != NULL)
 		return m_data_source->get_data();
-	
+
 	return m_data;
 }
 
-SGSparseVector<float64_t> CFactor::get_data_sparse() const 
+SGSparseVector<float64_t> CFactor::get_data_sparse() const
 {
 	if (m_data_source != NULL)
 		return m_data_source->get_data_sparse();
@@ -137,11 +137,11 @@ SGSparseVector<float64_t> CFactor::get_data_sparse() const
 
 void CFactor::set_data(SGVector<float64_t> data_dense)
 {
-	m_data = data_dense.clone();	
+	m_data = data_dense.clone();
 	m_is_data_dep = true;
 }
 
-void CFactor::set_data_sparse(SGSparseVectorEntry<float64_t>* data_sparse, 
+void CFactor::set_data_sparse(SGSparseVectorEntry<float64_t>* data_sparse,
 	int32_t dlen)
 {
 	m_data_sparse = SGSparseVector<float64_t>(data_sparse, dlen);
@@ -161,9 +161,9 @@ bool CFactor::is_data_sparse() const
 	return (m_data.size() == 0);
 }
 
-SGVector<float64_t> CFactor::get_energies() const 
+SGVector<float64_t> CFactor::get_energies() const
 {
-	if (is_data_dependent() == false && m_energies.size() == 0) 
+	if (is_data_dependent() == false && m_energies.size() == 0)
 	{
 		const SGVector<float64_t> ft_energies = m_factor_type->get_w();
 		ASSERT(ft_energies.size() == m_factor_type->get_num_assignments());
@@ -187,7 +187,7 @@ void CFactor::set_energies(SGVector<float64_t> ft_energies)
 
 void CFactor::set_energy(int32_t ei, float64_t value)
 {
-	REQUIRE(ei >= 0 && ei < m_factor_type->get_num_assignments(), 
+	REQUIRE(ei >= 0 && ei < m_factor_type->get_num_assignments(),
 		"%s::set_energy(): ei is out of index!\n", get_name());
 
 	REQUIRE(is_data_dependent(), "%s::set_energy(): \
@@ -196,15 +196,15 @@ void CFactor::set_energy(int32_t ei, float64_t value)
 	m_energies[ei] = value;
 }
 
-float64_t CFactor::evaluate_energy(const SGVector<int32_t> state) const 
+float64_t CFactor::evaluate_energy(const SGVector<int32_t> state) const
 {
 	int32_t index = m_factor_type->index_from_universe_assignment(state, m_var_index);
-	return get_energy(index); 
+	return get_energy(index);
 }
 
-void CFactor::compute_energies() 
+void CFactor::compute_energies()
 {
-	if (is_data_dependent() == false) 
+	if (is_data_dependent() == false)
 		return;
 
 	// For some factor types the size of the energy table is determined only
@@ -215,23 +215,23 @@ void CFactor::compute_energies()
 	const SGVector<float64_t> H = get_data();
 	const SGSparseVector<float64_t> H_sparse = get_data_sparse();
 
-	if (H_sparse.num_feat_entries == 0) 
+	if (H_sparse.num_feat_entries == 0)
 		m_factor_type->compute_energies(H, m_energies);
-	else 
+	else
 		m_factor_type->compute_energies(H_sparse, m_energies);
 }
 
 void CFactor::compute_gradients(
 	const SGVector<float64_t> marginals,
-	SGVector<float64_t>& parameter_gradient, 
-	float64_t mult) const 
+	SGVector<float64_t>& parameter_gradient,
+	float64_t mult) const
 {
 	const SGVector<float64_t> H = get_data();
 	const SGSparseVector<float64_t> H_sparse = get_data_sparse();
 
-	if (H_sparse.num_feat_entries == 0) 
+	if (H_sparse.num_feat_entries == 0)
 		m_factor_type->compute_gradients(H, marginals, parameter_gradient, mult);
-	else 
+	else
 		m_factor_type->compute_gradients(H_sparse, marginals, parameter_gradient, mult);
 }
 
@@ -269,31 +269,31 @@ CFactorDataSource::CFactorDataSource(SGSparseVector<float64_t> sparse)
 	m_sparse = sparse;
 }
 
-CFactorDataSource::~CFactorDataSource() 
+CFactorDataSource::~CFactorDataSource()
 {
 }
 
-bool CFactorDataSource::is_sparse() const 
+bool CFactorDataSource::is_sparse() const
 {
 	return (m_dense.size() == 0);
 }
 
-SGVector<float64_t> CFactorDataSource::get_data() const 
+SGVector<float64_t> CFactorDataSource::get_data() const
 {
 	return m_dense;
 }
 
-SGSparseVector<float64_t> CFactorDataSource::get_data_sparse() const 
+SGSparseVector<float64_t> CFactorDataSource::get_data_sparse() const
 {
 	return m_sparse;
 }
 
 void CFactorDataSource::set_data(SGVector<float64_t> dense)
 {
-	m_dense = dense.clone();	
+	m_dense = dense.clone();
 }
 
-void CFactorDataSource::set_data_sparse(SGSparseVectorEntry<float64_t>* sparse, 
+void CFactorDataSource::set_data_sparse(SGSparseVectorEntry<float64_t>* sparse,
 	int32_t dlen)
 {
 	m_sparse = SGSparseVector<float64_t>(sparse, dlen);

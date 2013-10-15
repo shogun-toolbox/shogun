@@ -127,7 +127,7 @@ bool CDomainAdaptationSVMLinear::train_machine(CFeatures* train_data)
 
     if (presvm)
     {
-    	ASSERT(presvm->get_bias() == 0.0)
+	ASSERT(presvm->get_bias() == 0.0)
 
         // bias of parent SVM was set to zero in constructor, already contains B
         CBinaryLabels* parent_svm_out = presvm->apply_binary(tmp_data);
@@ -140,7 +140,7 @@ bool CDomainAdaptationSVMLinear::train_machine(CFeatures* train_data)
             lin_term[i] = train_factor * B * labels->get_value(i) * parent_svm_out->get_value(i) - 1.0;
         }
 
-    	// set linear term for QP
+	// set linear term for QP
 		this->set_linear_term(
 				SGVector<float64_t>(&lin_term[0], lin_term.size()));
 

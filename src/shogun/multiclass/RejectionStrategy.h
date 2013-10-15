@@ -75,7 +75,7 @@ protected:
 
 };
 
-static const float64_t Q_test_statistic_values[10][8] = 
+static const float64_t Q_test_statistic_values[10][8] =
 {
 	/* 10,20,30,40,50,60,70,80,90,100 */
 	{0.713,0.683,0.637,0.597,0.551,0.477,0.409,0.325},
@@ -104,14 +104,14 @@ class CDixonQTestRejectionStrategy : public CRejectionStrategy
 		{
 			s_index = 3;
 		}
-		
-		/** constructor 
+
+		/** constructor
 		 * @param significance_level either 0.001,0.002,0.005,
-		 * 0.01,0.02,0.05,0.1 or 0.2 
+		 * 0.01,0.02,0.05,0.1 or 0.2
 		 */
 		CDixonQTestRejectionStrategy(float64_t significance_level) :
 			CRejectionStrategy()
-		{	
+		{
 			if (significance_level==0.001)
 				s_index = 0;
 			else if (significance_level==0.002)
@@ -131,7 +131,7 @@ class CDixonQTestRejectionStrategy : public CRejectionStrategy
 			else SG_ERROR("Given significance level is not supported")
 		}
 
-		virtual ~CDixonQTestRejectionStrategy() 
+		virtual ~CDixonQTestRejectionStrategy()
 		{
 		}
 
@@ -145,7 +145,7 @@ class CDixonQTestRejectionStrategy : public CRejectionStrategy
 		virtual bool reject(SGVector<float64_t> outputs) const
 		{
 			int32_t N = outputs.vlen;
-			if (N<10 || N>100) 
+			if (N<10 || N>100)
 				SG_ERROR("Given number of classes is not supported.")
 
 			int32_t Ni = N/10 - 1;

@@ -1,4 +1,4 @@
-This is the accurate splicer (asp) program accompanying the paper 
+This is the accurate splicer (asp) program accompanying the paper
 "Accurate Splice Site Prediction Using Support Vector Machines"
 by Soeren Sonnenburg, Gabriele Schweikert, Petra Philips,
 Jonas Behr and Gunnar Raetsch [1].
@@ -20,7 +20,7 @@ sequence). On first run with a new model (see --model option below),
 asp will load and decompress the .bz2 compressed model file and store it
 as a python native pickle dump, which increases startup times a lot.
 Due to the optimizations in [2] splice form prediction (layer 1) times
-won't change much for many/long sequences. 
+won't change much for many/long sequences.
 
 ASP PROGRAM USAGE:
 

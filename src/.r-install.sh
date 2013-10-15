@@ -66,8 +66,8 @@ EOF
 cat >"$1/$2/R/$2" <<EOF
 .packageName <- "$2"
 # The purpose of this file is to supply no functionality
-# except easier access functions in R for external C 
-# function calls. 
+# except easier access functions in R for external C
+# function calls.
 #
 # For example instead of typing
 #
@@ -98,7 +98,7 @@ get_kernel_matrix <- function() .External("$2","get_kernel_matrix",PACKAGE="$2")
 #
 svm_classify <- function() .External("$2","svm_classify",PACKAGE="$2")
 get_svm <- function() .External("$2","get_svm",PACKAGE="$2")
-get_subkernel_weights <- function() .External("$2","get_subkernel_weights",PACKAGE="$2") 
+get_subkernel_weights <- function() .External("$2","get_subkernel_weights",PACKAGE="$2")
 
 # HMM functions
 #
@@ -114,7 +114,7 @@ get_hmm <- function() .External("$2","get_hmm",PACKAGE="$2")
 
 # Unload the library.
 #
-.Last.lib <- function(lib) library.dynam.unload("$2", libpath=lib) 
+.Last.lib <- function(lib) library.dynam.unload("$2", libpath=lib)
 
 # Because in packages with namespaces .First.lib will not be loaded
 # one needs another functions called .onLoad resp. .onUnload

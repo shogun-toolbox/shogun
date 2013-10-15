@@ -1,6 +1,6 @@
 In this example toy data is being preprocessed using the Hessian Locally Linear Embedding algorithm
 as described in
 
-Donoho, D., & Grimes, C. (2003). 
+Donoho, D., & Grimes, C. (2003).
 Hessian eigenmaps: new tools for nonlinear dimensionality reduction.
 Proceedings of National Academy of Science (Vol. 100, pp. 5591-5596).

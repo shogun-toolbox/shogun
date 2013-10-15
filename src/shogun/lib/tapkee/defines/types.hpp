@@ -19,7 +19,7 @@ namespace tapkee
 	typedef int IndexType;
 	//! dense vector type (non-overridable)
 	typedef Eigen::Matrix<tapkee::ScalarType,Eigen::Dynamic,1> DenseVector;
-	//! dense matrix type (non-overridable) 
+	//! dense matrix type (non-overridable)
 	typedef Eigen::Matrix<tapkee::ScalarType,Eigen::Dynamic,Eigen::Dynamic> DenseMatrix;
 	//! dense symmetric matrix (non-overridable, currently just dense matrix, can be improved later)
 	typedef tapkee::DenseMatrix DenseSymmetricMatrix;
@@ -28,7 +28,7 @@ namespace tapkee
 	//! sparse weight matrix type (non-overridable)
 	typedef Eigen::SparseMatrix<tapkee::ScalarType> SparseWeightMatrix;
 	//! sparse matrix type (non-overridable)
-	typedef Eigen::SparseMatrix<tapkee::ScalarType> SparseMatrix;	
+	typedef Eigen::SparseMatrix<tapkee::ScalarType> SparseMatrix;
 	//! selfadjoint solver (non-overridable)
 	typedef Eigen::SelfAdjointEigenSolver<tapkee::DenseMatrix> DenseSelfAdjointEigenSolver;
 	//! dense solver (non-overridable)
@@ -41,7 +41,7 @@ namespace tapkee
 #else
 	#if defined(TAPKEE_SUPERLU_AVAILABLE) && defined(TAPKEE_USE_SUPERLU)
 	typedef Eigen::SuperLU<tapkee::SparseWeightMatrix> SparseSolver;
-	#else 
+	#else
 	typedef Eigen::SimplicialLDLT<tapkee::SparseWeightMatrix> SparseSolver;
 	#endif
 #endif

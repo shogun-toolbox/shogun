@@ -18,7 +18,7 @@ The resulting distance matrix can be reaccessed by 'get_distance_matrix' and
 target 'TRAIN'.
 
 The target 'TEST' for 'set_features' controls the processing of the given
-data points 'TRAIN' and 'TEST', where a pairwise distance (sum of absolute 
+data points 'TRAIN' and 'TEST', where a pairwise distance (sum of absolute
 feature dimension differences) matrix between these two data sets is
 computed by 'get_distance_matrix'.
 

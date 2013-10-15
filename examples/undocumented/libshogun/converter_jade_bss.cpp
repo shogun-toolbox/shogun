@@ -30,8 +30,8 @@ using namespace Eigen;
 
 void test()
 {
-	// Generate sample data	
-	CMath::init_random(0); 
+	// Generate sample data
+	CMath::init_random(0);
 	int n_samples = 2000;
 	VectorXd time(n_samples, true);
 	time.setLinSpaced(n_samples,0,10);
@@ -42,13 +42,13 @@ void test()
 	{
 		// Sin wave
 		S(0,i) = sin(2*time[i]);
-		S(0,i) += 0.2*CMath::randn_double(); 
-		
+		S(0,i) += 0.2*CMath::randn_double();
+
 		// Square wave
 		S(1,i) = sin(3*time[i]) < 0 ? -1 : 1;
 		S(1,i) += 0.2*CMath::randn_double();
 	}
-	
+
 	// Standardize data
 	VectorXd avg = S.rowwise().sum() / n_samples;
 	VectorXd std = ((S.colwise() - avg).array().pow(2).rowwise().sum() / n_samples).array().sqrt();
@@ -79,10 +79,10 @@ void test()
 
 	// Close to a permutation matrix (with random scales)
 	Map<MatrixXd> EA(jade->get_mixing_matrix().matrix,2,2);
-	
+
 	std::cout << "Estimated Mixing Matrix:" << std::endl;
 	std::cout << EA << std::endl << std::endl;
-	
+
 	SGMatrix<float64_t> P(2,2);
 	Eigen::Map<MatrixXd> EP(P.matrix,2,2);
 	EP = EA.inverse() * A;
@@ -90,13 +90,13 @@ void test()
 	bool isperm = is_permutation_matrix(P);
 	std::cout << "EA^-1 * A == Permuatation Matrix is: " << isperm << std::endl;
 
-	float64_t amari_err = amari_index(jade->get_mixing_matrix(), mixing_matrix, true); 
+	float64_t amari_err = amari_index(jade->get_mixing_matrix(), mixing_matrix, true);
 	std::cout << "Amari Error: " << amari_err << std::endl;
 
 	SG_UNREF(jade);
 	SG_UNREF(mixed_signals);
 	SG_UNREF(signals);
-	
+
 	return;
 }
 

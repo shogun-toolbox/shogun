@@ -15,10 +15,10 @@ def evaluation_prcevaluation_modular (ground_truth, predicted):
 
 	ground_truth_labels = BinaryLabels(ground_truth)
 	predicted_labels = BinaryLabels(predicted)
-	
+
 	evaluator = PRCEvaluation()
 	evaluator.evaluate(predicted_labels,ground_truth_labels)
-	
+
 	return evaluator.get_PRC(), evaluator.get_auPRC()
 
 

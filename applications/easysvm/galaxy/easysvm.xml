@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
 <tool id="easysvm" name="Train and Test SVMs">
 <description>Train SVMs and predict for given hyper-parameters</description>
-  <command interpreter="python">easysvm.py 
-  	#if $protocol.expt_type=="1"
-  		cv $protocol.crossval
-  	#elif $protocol.expt_type=="2"
-  		modelsel $protocol.crossval 
-  	#elif $protocol.expt_type=="3"
-  		pred 
+  <command interpreter="python">easysvm.py
+	#if $protocol.expt_type=="1"
+		cv $protocol.crossval
+	#elif $protocol.expt_type=="2"
+		modelsel $protocol.crossval
+	#elif $protocol.expt_type=="3"
+		pred
 	#end if
-        $C 
+        $C
 	#if $kernel.kname == "1"
 	    linear
         #elif $kernel.kname == "2"
@@ -21,25 +21,25 @@
         #elif $kernel.kname == "5"
 	    wd ${kernel.degree} ${kernel.shift}
         #end if
-  	#if $protocol.expt_type=="1"
+	#if $protocol.expt_type=="1"
 	    #if $protocol.datatype.inputdatatype=="1"
 	        fasta $protocol.datatype.dataset_pos $protocol.datatype.dataset_neg
 	    #else
-	        arff $protocol.datatype.dataset 
+	        arff $protocol.datatype.dataset
             #end if
-  	#elif $protocol.expt_type=="2"
+	#elif $protocol.expt_type=="2"
 	    #if $protocol.datatype.inputdatatype=="1"
 	        fasta $protocol.datatype.dataset_pos $protocol.datatype.dataset_neg
 	    #else
-	        arff $protocol.datatype.dataset 
+	        arff $protocol.datatype.dataset
             #end if
-  	#else
+	#else
 	    #if $protocol.datatype.inputdatatype=="1"
 	        fasta $protocol.datatype.dataset_pos $protocol.datatype.dataset_neg
 	    #else
-	        arff $protocol.datatype.dataset 
+	        arff $protocol.datatype.dataset
             #end if
-	    $protocol.datatype.dataset_test 
+	    $protocol.datatype.dataset_test
 	#end if
 	$outfile
         #if $kernel.kname=="4" or $kernel.kname=="5"
@@ -48,13 +48,13 @@
             #elif $kernel.seq.stype=="protein"
                 protein $kernel.seq.con
             #end if
-        #end if 
+        #end if
   </command>
   <inputs>
 	  <conditional name="protocol">
 	  <param name="expt_type" type="select" label="Experimental
-	  Protocol" help="In 'Cross Validation' mode, the training set is 
-			split into N subsets. (N-1) subsets are used for training 
+	  Protocol" help="In 'Cross Validation' mode, the training set is
+			split into N subsets. (N-1) subsets are used for training
             and the remaining subset is used for testing. This is repeated
             until every subset has been used for testing once.
             In 'Prediction' mode, one trains on a
@@ -63,7 +63,7 @@
 	<option value="3">Train and predict</option>
       </param>
       <when value="1">
-      	  <conditional name="datatype">
+	  <conditional name="datatype">
 	  <param name="inputdatatype" type="select" label="Input data type" help="There are two available formats: FASTA for sequences and the more general ARFF format for sequences or numerical attributes.">
 	  <option value="1">FASTA</option>
 	  <option value="2">ARFF</option>
@@ -90,7 +90,7 @@
 	  </param>
       </when>
       <when value="3">
-      	  <conditional name="datatype">
+	  <conditional name="datatype">
 	  <param name="inputdatatype" type="select" label="Input data type" help="">
 	  <option value="1">FASTA</option>
 	  <option value="2">ARFF</option>
@@ -149,17 +149,17 @@
       </when>
       <when value="3">
         <param name="width" type="float" size="10" value="1" help="The
-	  kernel width controls the breadth of the Gaussian 
+	  kernel width controls the breadth of the Gaussian
 	  around each point. ">
 	  <label>The width of the Gaussian Kernel</label>
 	</param>
       </when>
       <when value="4">
-        <param name="degree" type="integer" size="10" value="6" 
+        <param name="degree" type="integer" size="10" value="6"
 	  help="Degree controls the maximal length of substrings considered in the Spectrum kernel. ">
 	  <label>The degree of the Spectrum Kernel</label>
         </param>
-        
+
         <conditional name="seq">
                <param name="stype" type="select" label="Input sequence type" help="Mention about the input data file sequence type DNA/Protein.">
                      <option value="dna">DNA</option>
@@ -202,10 +202,10 @@
                     </param>
                </when>
         </conditional>
- 
+
       </when>
       <when value="5">
-        <param name="degree" type="integer" size="10" value="10" 
+        <param name="degree" type="integer" size="10" value="10"
 	  help="Degree controls the maximal length of substrings considered in the WD kernel. ">
 	  <label>The degree of the WD Kernel</label>
         </param>
@@ -213,7 +213,7 @@
 	  help="The shift parameter controls how many nucleotides a sequence elements can vary in position. ">
           <label>The shift parameter of the WD Kernel to allow positional variations</label>
         </param>
-        
+
         <conditional name="seq">
                <param name="stype" type="select" label="Input sequence type" help="Mention about the input data file sequence type DNA/Protein.">
                      <option value="dna">DNA</option>
@@ -272,7 +272,7 @@
     splits the data in a number of (approximately) equal sized sets
     (controlled by the CV repeat parameter). Then, it holds out each
     of those sets in turn for validation (prediction with the SVM),
-    while using all the other sets for training.  
+    while using all the other sets for training.
 
 .. class:: warningmark
 

@@ -304,7 +304,7 @@ CParameterCombination* CModelSelectionParameters::get_single_combination(
 		{
 			Parameter* p=new Parameter();
 			p->add(&m_sgobject, m_node_name);
-	     	new_root = new CParameterCombination(p);
+		new_root = new CParameterCombination(p);
 		}
 
 		else

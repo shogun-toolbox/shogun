@@ -25,9 +25,9 @@ namespace shogun
  * OVA_NORM: simple normalization of probabilites, eq.(6)
  * OVA_SOFTMAX: normalizing using softmax function, eq.(7)
  * OVO_PRICE: proposed by Price et al. see method 1 in [1]
- * OVO_HASTIE: proposed by Hastie et al. see method 2 [9] in [1] 
+ * OVO_HASTIE: proposed by Hastie et al. see method 2 [9] in [1]
  * OVO_HAMAMURA: proposed by Hamamura et al. see eq.(14) in [1]
- * 
+ *
  * [1] J. Milgram, M. Cheriet, R.Sabourin, "One Against One" or "One Against One":
  * Which One is Better for Handwriting Recognition with SVMs?
  */
@@ -50,8 +50,8 @@ public:
 	/** constructor */
 	CMulticlassStrategy();
 
-	/** constructor 
-	 * @param prob_heuris probability estimation heuristic 
+	/** constructor
+	 * @param prob_heuris probability estimation heuristic
 	 */
 	CMulticlassStrategy(EProbHeuristicType prob_heuris);
 
@@ -109,7 +109,7 @@ public:
 	 * @param outputs a vector of output from each machine (in that order)
 	 */
 	virtual int32_t decide_label(SGVector<float64_t> outputs)=0;
-	
+
 	/** decide the final label.
 	 * @param outputs a vector of output from each machine (in that order)
 	 * @param n_outputs number of outputs
@@ -130,8 +130,8 @@ public:
 		return m_prob_heuris;
 	}
 
-	/** set prob output heuristic type 
-	 * @param prob_heuris type of probability heuristic 
+	/** set prob output heuristic type
+	 * @param prob_heuris type of probability heuristic
 	 */
 	void set_prob_heuris_type(EProbHeuristicType prob_heuris)
 	{
@@ -146,9 +146,9 @@ public:
 	virtual void rescale_outputs(SGVector<float64_t> outputs)
 	{
 		SG_NOTIMPLEMENTED
-	}	
+	}
 
-	/** rescale multiclass outputs according to the selected heuristic 
+	/** rescale multiclass outputs according to the selected heuristic
 	 * this function only being called with OVA_SOFTMAX heuristic
 	 * the CStatistics::fit_sigmoid() should be called first
 	 * @param outputs a vector of output from each machine (in that order)
@@ -159,7 +159,7 @@ public:
 			const SGVector<float64_t> As, const SGVector<float64_t> Bs)
 	{
 		SG_NOTIMPLEMENTED
-	}	
+	}
 
 private:
 	/** initialize variables which will be called by all constructors */

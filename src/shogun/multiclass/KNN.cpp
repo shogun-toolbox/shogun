@@ -57,7 +57,7 @@ void CKNN::init()
 	m_use_covertree=false;
 	m_num_classes=0;
 
-	/* use the method classify_multiply_k to experiment with different values 
+	/* use the method classify_multiply_k to experiment with different values
 	 * of k */
 	SG_ADD(&m_k, "m_k", "Parameter k", MS_NOT_AVAILABLE);
 	SG_ADD(&m_q, "m_q", "Parameter q", MS_AVAILABLE);
@@ -202,7 +202,7 @@ CMulticlassLabels* CKNN::apply_multiclass(CFeatures* data)
 		}
 
 #ifdef BENCHMARK_KNN
-		SG_PRINT(">>>> Quick sort applied in %9.4f\n", 
+		SG_PRINT(">>>> Quick sort applied in %9.4f\n",
 				(tfinish = tstart.cur_time_diff(false)));
 #endif
 	}
@@ -216,16 +216,16 @@ CMulticlassLabels* CKNN::apply_multiclass(CFeatures* data)
 
 		// From the sets of features (lhs and rhs) stored in distance,
 		// build arrays of cover tree points
-		v_array< CJLCoverTreePoint > set_of_points  = 
+		v_array< CJLCoverTreePoint > set_of_points  =
 			parse_points(distance, FC_LHS);
-		v_array< CJLCoverTreePoint > set_of_queries = 
+		v_array< CJLCoverTreePoint > set_of_queries =
 			parse_points(distance, FC_RHS);
 
 #ifdef BENCHMARK_KNN
 		SG_PRINT(">>>> JL parsed in %9.4f\n",
 			( tparsed = tstart.cur_time_diff(false) ) - tfinish);
 #endif
-		// Build the cover trees, one for the test vectors (rhs features) 
+		// Build the cover trees, one for the test vectors (rhs features)
 		// and another for the training vectors (lhs features)
 		CFeatures* r = distance->replace_rhs( distance->get_lhs() );
 		node< CJLCoverTreePoint > top = batch_create(set_of_points);
@@ -234,7 +234,7 @@ CMulticlassLabels* CKNN::apply_multiclass(CFeatures* data)
 		node< CJLCoverTreePoint > top_query = batch_create(set_of_queries);
 
 #ifdef BENCHMARK_KNN
-		SG_PRINT(">>>> Cover trees created in %9.4f\n", 
+		SG_PRINT(">>>> Cover trees created in %9.4f\n",
 				(tcreated = tstart.cur_time_diff(false)) - tparsed);
 #endif
 
@@ -244,7 +244,7 @@ CMulticlassLabels* CKNN::apply_multiclass(CFeatures* data)
 		k_nearest_neighbor(top, top_query, res, m_k);
 
 #ifdef BENCHMARK_KNN
-		SG_PRINT(">>>> Query finished in %9.4f\n", 
+		SG_PRINT(">>>> Query finished in %9.4f\n",
 				(tqueried = tstart.cur_time_diff(false)) - tcreated);
 #endif
 
@@ -347,7 +347,7 @@ SGMatrix<int32_t> CKNN::classify_for_multiple_k()
 
 	//histogram of classes and returned output
 	int32_t* classes=SG_MALLOC(int32_t, m_num_classes);
-	
+
 	SG_INFO("%d test examples\n", num_lab)
 	CSignal::clear_cancel();
 
@@ -372,12 +372,12 @@ SGMatrix<int32_t> CKNN::classify_for_multiple_k()
 
 		// From the sets of features (lhs and rhs) stored in distance,
 		// build arrays of cover tree points
-		v_array< CJLCoverTreePoint > set_of_points  = 
+		v_array< CJLCoverTreePoint > set_of_points  =
 			parse_points(distance, FC_LHS);
-		v_array< CJLCoverTreePoint > set_of_queries = 
+		v_array< CJLCoverTreePoint > set_of_queries =
 			parse_points(distance, FC_RHS);
-		
-		// Build the cover trees, one for the test vectors (rhs features) 
+
+		// Build the cover trees, one for the test vectors (rhs features)
 		// and another for the training vectors (lhs features)
 		CFeatures* r = distance->replace_rhs( distance->get_lhs() );
 		node< CJLCoverTreePoint > top = batch_create(set_of_points);
@@ -394,13 +394,13 @@ SGMatrix<int32_t> CKNN::classify_for_multiple_k()
 		{
 			// Handle the fact that cover tree doesn't return neighbors
 			// ordered by distance
-			
+
 			for ( int32_t j = 0 ; j < m_k ; ++j )
 			{
 				// The first index in res[i] points to the test vector
 				dists[j]     = distance->distance(res[i][j+1].m_index,
 							res[i][0].m_index);
-				train_lab[j] = m_train_labels.vector[ 
+				train_lab[j] = m_train_labels.vector[
 							res[i][j+1].m_index ];
 			}
 

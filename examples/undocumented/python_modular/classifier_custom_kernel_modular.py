@@ -11,13 +11,13 @@ def classifier_custom_kernel_modular (C=1,dim=7):
 	lab=sign(2*rand(dim) - 1)
 	data=rand(dim, dim)
 	symdata=data*data.T + diag(ones(dim))
-    
+
 	kernel=CustomKernel()
 	kernel.set_full_kernel_matrix_from_full(data)
 	labels=BinaryLabels(lab)
 	svm=LibSVM(C, kernel, labels)
 	svm.train()
-	predictions =svm.apply() 
+	predictions =svm.apply()
 	out=svm.apply().get_labels()
 	return svm,out
 

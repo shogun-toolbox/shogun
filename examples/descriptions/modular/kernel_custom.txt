@@ -1,6 +1,6 @@
-A user defined custom kernel is assigned in this example, for which only the lower triangle 
-may be given (set_triangle_kernel_matrix_from_triangle) or 
-a full matrix (set_full_kernel_matrix_from_full), or a full matrix which is then internally stored as a 
-triangle (set_triangle_kernel_matrix_from_full). Labels for the examples are given, a svm is trained and 
-the svm is used to classify the examples. 
+A user defined custom kernel is assigned in this example, for which only the lower triangle
+may be given (set_triangle_kernel_matrix_from_triangle) or
+a full matrix (set_full_kernel_matrix_from_full), or a full matrix which is then internally stored as a
+triangle (set_triangle_kernel_matrix_from_full). Labels for the examples are given, a svm is trained and
+the svm is used to classify the examples.
 

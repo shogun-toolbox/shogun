@@ -65,7 +65,7 @@ float64_t CWeightedMajorityVote::weighted_combine(const SGVector<float64_t>& ens
 	{
 		if (CMath::is_nan(ensemble_result[i]))
 			continue;
-		
+
 		it = freq.find(ensemble_result[i]);
 		if (it == freq.end())
 		{
@@ -75,7 +75,7 @@ float64_t CWeightedMajorityVote::weighted_combine(const SGVector<float64_t>& ens
 				max_label = ensemble_result[i];
 				max = m_weights[i];
 			}
-		} 
+		}
 		else
 		{
 			it->second += m_weights[i];

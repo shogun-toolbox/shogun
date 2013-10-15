@@ -3,7 +3,7 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Written (W) 2013 Soumyajit De
  */
 
@@ -52,7 +52,7 @@ TEST(DenseMatrixOperator, apply)
 	SGVector<complex128_t> b2(size);
 	b2.set_const(complex128_t(0.25, 1.0));
 
-	// complex128_t, fixed matrix	
+	// complex128_t, fixed matrix
 	SGMatrix<complex128_t> m2(size, size);
 	m2.set_const(complex128_t(0.5, 0.25));
 
@@ -85,7 +85,7 @@ TEST(DenseMatrixOperator, shift_apply)
 	SGVector<complex128_t> b(size);
 	b.set_const(0.25);
 
-	// complex128_t, fixed matrix	
+	// complex128_t, fixed matrix
 	SGMatrix<complex128_t> m(size, size);
 	m.set_const(complex128_t(0.5, 0.0));
 
@@ -101,7 +101,7 @@ TEST(DenseMatrixOperator, shift_apply)
 #endif
 	}
 	op.set_diagonal(diag);
-	
+
 	SGVector<complex128_t> r1=op.apply(b);
 	Map<VectorXcd> map_r1(r1.vector, r1.vlen);
 

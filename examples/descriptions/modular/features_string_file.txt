@@ -1,5 +1,5 @@
 This example demonstrates how to load string features from files.
 We cover two cases: First, we show how to obtain StringCharFeatues
 from a directory of text files (particularly useful in computational biology)
-and second, we demonstrate how to load StringCharFeatues from one (multi-line) file. 
+and second, we demonstrate how to load StringCharFeatues from one (multi-line) file.
 

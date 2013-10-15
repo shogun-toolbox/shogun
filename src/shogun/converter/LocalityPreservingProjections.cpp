@@ -30,7 +30,7 @@ const char* CLocalityPreservingProjections::get_name() const
 	return "LocalityPreservingProjections";
 };
 
-CFeatures* CLocalityPreservingProjections::apply(CFeatures* features) 
+CFeatures* CLocalityPreservingProjections::apply(CFeatures* features)
 {
 	TAPKEE_PARAMETERS_FOR_SHOGUN parameters;
 	m_distance->init(features,features);

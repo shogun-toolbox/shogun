@@ -19,7 +19,7 @@
 using namespace shogun;
 
 CGUISignals::CGUISignals(CSGInterface* ui_)
-: ui(ui_), m_tpm(NULL) 
+: ui(ui_), m_tpm(NULL)
 {
 	SG_PRINT("constructor GUISignals\n")
 }

@@ -28,7 +28,7 @@ class CDistance;
  * Formally described as
  *
  * \f[
- * 		K_d(x,z) = \sum_{1\le i_1<i_2<\dots<i_d\le n} \prod_{j=1}^d x_{i_j} z_{i_j}
+ *		K_d(x,z) = \sum_{1\le i_1<i_2<\dots<i_d\le n} \prod_{j=1}^d x_{i_j} z_{i_j}
  * \f]
  * with d(cardinality)=1 by default
  * this function is computed recusively

@@ -21,10 +21,10 @@ namespace shogun
 
 class CMulticlassSOLabels;
 
-/** @brief Class CRealNumber to be used in the application of Structured 
+/** @brief Class CRealNumber to be used in the application of Structured
  * Output (SO) learning to multiclass classification. Even though it is likely
  * that it does not make sense to consider real numbers as structured data,
- * it has been made in this way because the basic type to use in structured 
+ * it has been made in this way because the basic type to use in structured
  * labels needs to inherit from CStructuredData. */
 struct CRealNumber : public CStructuredData
 {

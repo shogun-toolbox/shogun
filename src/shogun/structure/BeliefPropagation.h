@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2013 Shell Hu 
- * Copyright (C) 2013 Shell Hu 
+ * Written (W) 2013 Shell Hu
+ * Copyright (C) 2013 Shell Hu
  */
 
 #ifndef __BELIEF_PROPAGATION_H__
@@ -42,7 +42,7 @@ enum EEdgeType
 	FAC_TO_VAR = 1
 };
 
-struct GraphNode 
+struct GraphNode
 {
 	int32_t node_id;
 	ENodeType node_type; // 1 var, 0 factor
@@ -96,9 +96,9 @@ protected:
 /** max-product algorithm for tree graph
  * please refer to algorithm 1 on page 44 of [1] for more detail.
  *
- * [1] Sebastian Nowozin and Christoph H. Lampert, 
- * Structured Learning and Prediction for Computer Vision, 
- * Foundations and Trends in Computer Graphics and Vision series 
+ * [1] Sebastian Nowozin and Christoph H. Lampert,
+ * Structured Learning and Prediction for Computer Vision,
+ * Foundations and Trends in Computer Graphics and Vision series
  * of now publishers, 2011.
  */
 IGNORE_IN_CLASSLIST class CTreeMaxProduct : public CBeliefPropagation

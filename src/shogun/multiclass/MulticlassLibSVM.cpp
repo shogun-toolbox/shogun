@@ -159,7 +159,7 @@ bool CMulticlassLibSVM::train_machine(CFeatures* data)
 					{
 						for (k=0; k<model->label[i]; k++)
 							idx+=num_classes-k-1;
-	
+
 						for (l=model->label[i]+1; l<model->label[j]; l++)
 							idx++;
 					}

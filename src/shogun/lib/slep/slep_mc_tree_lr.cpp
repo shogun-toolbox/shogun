@@ -39,7 +39,7 @@ slep_result_t slep_mc_tree_lr(
 	int n_classes = labels->get_num_classes();
 
 	// labels vector containing values in range (0 .. n_classes)
-	SGVector<float64_t> labels_vector = labels->get_labels(); 
+	SGVector<float64_t> labels_vector = labels->get_labels();
 
 	// initialize matrices and vectors to be used
 	// weight vector
@@ -101,7 +101,7 @@ slep_result_t slep_mc_tree_lr(
 
 		// update dot products with search point
 		As = Aw + beta*(Aw-Awp);
-		
+
 		// compute objective and gradient at search point
 		double fun_s = 0;
 		g.setZero();
@@ -128,7 +128,7 @@ slep_result_t slep_mc_tree_lr(
 			}
 		}
 		//fun_s /= (n_vecs*n_classes);
-		
+
 		wp = w;
 		Awp = Aw;
 		cp = c;

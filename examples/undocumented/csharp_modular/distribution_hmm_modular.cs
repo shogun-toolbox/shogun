@@ -26,7 +26,7 @@ public class distribution_hmm_modular {
 		int num_param = hmm.get_num_model_parameters();
 		for (int i = 0; i < num_examples; i++)
 			for(int j = 0; j < num_param; j++) {
-			hmm.get_log_derivative(j, i);		
+			hmm.get_log_derivative(j, i);
 		}
 
 		int best_path = 0;

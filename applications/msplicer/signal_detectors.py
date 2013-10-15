@@ -1,13 +1,13 @@
-# 
+#
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
-# 
+#
 # Written (W) 2006-2008 Soeren Sonnenburg
 # Written (W) 2007 Gunnar Raetsch
 # Copyright (C) 2006-2008 Fraunhofer Institute FIRST and Max-Planck-Society
-# 
+#
 
 import sys
 import numpy
@@ -51,7 +51,7 @@ class svm_splice_model(object):
 		return positions
 
 	def get_predictions_from_seqdict(self, seqdic, site):
-		""" we need to generate a huge test features object 
+		""" we need to generate a huge test features object
 			containing all locations found in each seqdict-sequence
 			and each location (this is necessary to efficiently
 			(==fast,low memory) compute the splice outputs
@@ -130,10 +130,10 @@ class signal_detectors(object):
 			don_consensus=['GT']
 
 		self.acceptor=svm_splice_model(model.acc_splice_order, model.acc_splice_svs,
-				numpy.array(model.acc_splice_alphas).flatten(), model.acc_splice_b, 
+				numpy.array(model.acc_splice_alphas).flatten(), model.acc_splice_b,
 				(model.acc_splice_window_left, 2, model.acc_splice_window_right), ['AG'])
-		self.donor=svm_splice_model(model.don_splice_order, model.don_splice_svs, 
-				numpy.array(model.don_splice_alphas).flatten(), model.don_splice_b, 
+		self.donor=svm_splice_model(model.don_splice_order, model.don_splice_svs,
+				numpy.array(model.don_splice_alphas).flatten(), model.don_splice_b,
 				(model.don_splice_window_left, 0, model.don_splice_window_right),
 				don_consensus)
 

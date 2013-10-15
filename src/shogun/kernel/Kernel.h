@@ -118,7 +118,7 @@ enum EKernelType
 enum EKernelProperty
 {
 	KP_NONE = 0,
-	KP_LINADD = 1, 	// Kernels that can be optimized via doing normal updates w + dw
+	KP_LINADD = 1,	// Kernels that can be optimized via doing normal updates w + dw
 	KP_KERNCOMBINATION = 2,	// Kernels that are infact a linear combination of subkernels K=\sum_i b_i*K_i
 	KP_BATCHEVALUATION = 4  // Kernels that can on the fly generate normals in linadd and more quickly/memory efficient process batches instead of single examples
 };
@@ -257,7 +257,7 @@ class CKernel : public CSGObject
 		 * @return the jth column of the kernel matrix
 		 */
 		virtual SGVector<float64_t> get_kernel_col(int32_t j)
- 		{
+		{
 
 			SGVector<float64_t> col = SGVector<float64_t>(num_rhs);
 

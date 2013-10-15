@@ -3,7 +3,7 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Written (W) 2013 Soumyajit De
  */
 
@@ -70,7 +70,7 @@ TEST(JacobiEllipticFunctions, ellipJC)
 	EXPECT_NEAR(sn.imag(), 0.0, 1E-19);
 	EXPECT_NEAR(cn.imag(), 0.0, 1E-19);
 	EXPECT_NEAR(dn.imag(), 0.0, 1E-19);
-	
+
 	CJacobiEllipticFunctions::ellipJC(Complex(0.5,0.5), 0.0, sn, cn, dn);
 	EXPECT_NEAR(sn.real(), 0.54061268571315335141, 1E-19);
 	EXPECT_NEAR(cn.real(), 0.98958488339991990124, 1E-19);
@@ -78,7 +78,7 @@ TEST(JacobiEllipticFunctions, ellipJC)
 	EXPECT_NEAR(sn.imag(), 0.45730415318424921800, 1E-19);
 	EXPECT_NEAR(cn.imag(), -0.24982639750046153893, 1E-19);
 	EXPECT_NEAR(dn.imag(), 0.0, 1E-19);
-	
+
 	CJacobiEllipticFunctions::ellipJC(Complex(0.5,0.5), 0.5, sn, cn, dn);
 	EXPECT_NEAR(sn.real(), 0.55284325098354925032, 1E-19);
 	EXPECT_NEAR(cn.real(), 0.96941944802337476350, 1E-19);
@@ -86,7 +86,7 @@ TEST(JacobiEllipticFunctions, ellipJC)
 	EXPECT_NEAR(sn.imag(), 0.43032986483620772056, 1E-19);
 	EXPECT_NEAR(cn.imag(), -0.24540972636400421036, 1E-19);
 	EXPECT_NEAR(dn.imag(), -0.12174847394819815483, 1E-19);
-	
+
 	CJacobiEllipticFunctions::ellipJC(Complex(0.2,0.0), 0.99, sn, cn, dn);
 	EXPECT_NEAR(sn.real(), 0.19738823726686019477, 1E-19);
 	EXPECT_NEAR(cn.real(), 0.98032539689058428856, 1E-19);
@@ -103,7 +103,7 @@ TEST(JacobiEllipticFunctions, ellipJC)
 	EXPECT_NEAR(sn.imag(), 0.25191557357137611683, 1E-19);
 	EXPECT_NEAR(cn.imag(), -0.20747708305429035658, 1E-19);
 	EXPECT_NEAR(dn.imag(), -0.20747708305429032882, 1E-19);
-	
+
 	CJacobiEllipticFunctions::ellipJC(Complex(0.5,0.5), 1.0L-1E-16,
 		sn, cn, dn);
 	EXPECT_NEAR(sn.real(), 0.56408314126749847794, 1E-19);
@@ -120,7 +120,7 @@ TEST(JacobiEllipticFunctions, ellipJC)
 	EXPECT_NEAR(sn.imag(), 0.0, 1E-15);
 	EXPECT_NEAR(cn.imag(), 0.0, 1E-15);
 	EXPECT_NEAR(dn.imag(), 0.0, 1E-15);
-	
+
 	CJacobiEllipticFunctions::ellipJC(Complex(0.5,0.5), 0.0, sn, cn, dn);
 	EXPECT_NEAR(sn.real(), 0.54061268571315335141, 1E-15);
 	EXPECT_NEAR(cn.real(), 0.98958488339991990124, 1E-15);
@@ -128,7 +128,7 @@ TEST(JacobiEllipticFunctions, ellipJC)
 	EXPECT_NEAR(sn.imag(), 0.45730415318424921800, 1E-15);
 	EXPECT_NEAR(cn.imag(), -0.24982639750046153893, 1E-15);
 	EXPECT_NEAR(dn.imag(), 0.0, 1E-15);
-	
+
 	CJacobiEllipticFunctions::ellipJC(Complex(0.5,0.5), 0.5, sn, cn, dn);
 	EXPECT_NEAR(sn.real(), 0.55284325098354925032, 1E-15);
 	EXPECT_NEAR(cn.real(), 0.96941944802337476350, 1E-10);//low precision
@@ -136,7 +136,7 @@ TEST(JacobiEllipticFunctions, ellipJC)
 	EXPECT_NEAR(sn.imag(), 0.43032986483620772056, 1E-15);
 	EXPECT_NEAR(cn.imag(), -0.24540972636400421036, 1E-10);//low precision
 	EXPECT_NEAR(dn.imag(), -0.12174847394819815483, 1E-15);
-	
+
 	CJacobiEllipticFunctions::ellipJC(Complex(0.2,0.0), 0.99, sn, cn, dn);
 	EXPECT_NEAR(sn.real(), 0.19738823726686019477, 1E-15);
 	EXPECT_NEAR(cn.real(), 0.98032539689058428856, 1E-8);//low precision
@@ -153,7 +153,7 @@ TEST(JacobiEllipticFunctions, ellipJC)
 	EXPECT_NEAR(sn.imag(), 0.25191557357137611683, 1E-15);
 	EXPECT_NEAR(cn.imag(), -0.20747708305429035658, 1E-15);
 	EXPECT_NEAR(dn.imag(), -0.20747708305429032882, 1E-15);
-	
+
 	CJacobiEllipticFunctions::ellipJC(Complex(0.5,0.5), 1.0L-1E-16,
 		sn, cn, dn);
 	EXPECT_NEAR(sn.real(), 0.56408314126749847794, 1E-15);

@@ -31,7 +31,7 @@ namespace shogun
 	 *
 	 * Structured Output Support Vector Machine based on [1]
 	 *
-	 * [1] T. Joachims, T. Finley and C.-N. Yu, 
+	 * [1] T. Joachims, T. Finley and C.-N. Yu,
 	 *     Cutting-Plane Training of Structural SVMs,
 	 *     Machine Learning Journal, 77(1):27-59
 	 */

@@ -50,7 +50,7 @@ private:
 	bool m_verbose;
 };
 
-} /* shogun */ 
+} /* shogun */
 
 #endif /* end of include guard: SHAREBOOSTOPTIMIZER_H__ */
 

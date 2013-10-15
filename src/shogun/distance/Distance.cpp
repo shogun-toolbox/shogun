@@ -228,7 +228,7 @@ void CDistance::do_precompute_matrix()
 {
 	int32_t num_left=lhs->get_num_vectors();
 	int32_t num_right=rhs->get_num_vectors();
-	SG_INFO("precomputing distance matrix (%ix%i)\n", num_left, num_right) 
+	SG_INFO("precomputing distance matrix (%ix%i)\n", num_left, num_right)
 
 	ASSERT(num_left==num_right)
 	ASSERT(lhs==rhs)

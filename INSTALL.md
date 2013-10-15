@@ -1,27 +1,27 @@
 GENERAL
 =======
 
-Starting from the version 3.0 Shogun uses CMake to facilitate 
-the building process. When using command line on Linux- and Unix-based 
+Starting from the version 3.0 Shogun uses CMake to facilitate
+the building process. When using command line on Linux- and Unix-based
 systems with the `make` being available the building steps are:
 
 1) go to the shogun repository root
 2) do `mkdir build`
-3) do `cmake [options] ..` (or `ccmake ..` if available). It is very 
-recommended to use any of CMake GUIs (such as ccmake) if you feel unsure 
-about possible parameters and configurations. 
+3) do `cmake [options] ..` (or `ccmake ..` if available). It is very
+recommended to use any of CMake GUIs (such as ccmake) if you feel unsure
+about possible parameters and configurations.
 4) do `make` (and `sudo make install` if needed)
 
 In case you want to generate some IDE project (e.g. Eclipse CDT4 project)
-use the `-G generator-name` key. You may obtain possible generators with 
+use the `-G generator-name` key. You may obtain possible generators with
 the `cmake --help` command. For example to generate Eclipse CDT4 project
 for Shogun use the `cmake -G "Eclipse CDT4 - Unix Makefiles"`.
 
 Sometimes you would need to clean up your build (e.g. in case of some major
-changes). The easiest way to do that is straightforward: 
+changes). The easiest way to do that is straightforward:
 just remove the `build` directory you created before.
 
-If you prefer to not run the `make install` command, you should 
+If you prefer to not run the `make install` command, you should
 instead include the shogun library in your path:
 
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:path_to_shogun/src/shogun/
@@ -41,20 +41,20 @@ The standard linux utils like bash, grep, test, sed, cut, awk, ldd, uname gcc
 g++ and cat, python (debian package: python2.7) are required
 for the cmake to work.
 
-To compile the R interface you need to have the R developer files 
+To compile the R interface you need to have the R developer files
 (debian package r-base-dev) installed.
 
-To compile the octave interface you need to have the octave developer files 
+To compile the octave interface you need to have the octave developer files
 (debian package liboctave-dev) installed.
 
-To compile the java interface you need to have the java developer files 
+To compile the java interface you need to have the java developer files
 (debian package openjdk-6-jdk or openjdk-7-jdk) installed.
 
 To compile the python interface you need to have the python developer files
 installed (debian packages python2.7-dev or python3.X-dev) and numpy
 version 1.x installed (debian package python-numpy) installed.
 
-Optionally you will need atlas, lapack and eigen3 (debian packages lapack3-dev, 
+Optionally you will need atlas, lapack and eigen3 (debian packages lapack3-dev,
 atlas3-headers atlas3-base-dev, libeigen3-dev) installed. Note that
 atlas/lapack is only supported under linux and osx (high performance computing
 should be done under linux only anyway). In case atlas/lapack is unavailable,
@@ -111,7 +111,7 @@ object oriented java/swig interface:
   make
   make install
 
-to test if it is working try 
+to test if it is working try
 export CLASSPATH=/usr/share/java/jblas.jar:SHOGUNDIR/src/java_modular/shogun.jar:.
 export LD_LIBRARY_PATH=SHOGUNDIR/src/shogun:SHOGUNDIR/src/java_modular
 javac ../examples/documented/java_modular/classifier_libsvm_minimal_modular.java
@@ -137,7 +137,7 @@ cd examples/documented/cmdline_static
 octave
 ======
 
-To compile the octave interface you need to have the octave developer files 
+To compile the octave interface you need to have the octave developer files
 (debian package liboctave-dev).
 
 then do a
@@ -173,17 +173,17 @@ examples/documented/matlab_static directory and type
 addpath('../../../src/interfaces/matlab_static/graphical')
 svr_regression
 
-For permanent use you could add the following line to your matlab/startup.m 
+For permanent use you could add the following line to your matlab/startup.m
 
     addpath('path_to_shogun/src/interfaces/matlab_static');
 
 R
 =
 
-To compile the R interface you need to have the R developer files 
+To compile the R interface you need to have the R developer files
 (debian package r-base-dev) installed.
 
-then do the usual 
+then do the usual
 
 mkdir build && cd build
 ./cmake -DRStatic=ON ..
@@ -193,7 +193,7 @@ sudo make install
 python
 ======
 
-To compile the python interface you need to have numpy version 1.x installed 
+To compile the python interface you need to have numpy version 1.x installed
 (debian package python-numpy) and optionally for plotting
 python-matplotlib installed.
 
@@ -221,7 +221,7 @@ sudo make install
 
 
 cd src/interfaces/elwms_static
-LD_LIBRARY_PATH=/path/to/octave/lib:/path/to/matlab/libs octave 
+LD_LIBRARY_PATH=/path/to/octave/lib:/path/to/matlab/libs octave
 
 All examples from
 examples/documented/{r_static,python_static,matlab_static,octave_static}/*

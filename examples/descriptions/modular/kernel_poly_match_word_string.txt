@@ -1,5 +1,5 @@
-This is an example for the initialization of the PolyMatchString kernel on string data. 
-The PolyMatchString kernel sums over the matches of two stings of the same length and 
-takes the sum to the power of 'degree'. The strings consist of the characters 'ACGT' corresponding 
-to the DNA-alphabet. Each column of the matrices of type char corresponds to 
+This is an example for the initialization of the PolyMatchString kernel on string data.
+The PolyMatchString kernel sums over the matches of two stings of the same length and
+takes the sum to the power of 'degree'. The strings consist of the characters 'ACGT' corresponding
+to the DNA-alphabet. Each column of the matrices of type char corresponds to
 one training/test example.

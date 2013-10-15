@@ -71,7 +71,7 @@ SGVector<float64_t> CBaggingMachine::apply_get_outputs(CFeatures* data)
 	ASSERT(data != NULL);
 	REQUIRE(m_combination_rule != NULL, "Combination rule is not set!");
 	ASSERT(m_num_bags == m_bags->get_num_elements());
-  	
+
 	SGMatrix<float64_t> output(data->get_num_vectors(), m_num_bags);
 	output.zero();
 
@@ -120,10 +120,10 @@ bool CBaggingMachine::train_machine(CFeatures* data)
 
 	SG_UNREF(m_oob_indices);
 	m_oob_indices = new CDynamicObjectArray();
-	
+
 	/*
 	  TODO: enable multi-threaded learning. This requires views support
-		on CFeatures 
+		on CFeatures
 	#pragma omp parallel for num_threads(parallel->get_num_threads())
 	*/
 	for (int32_t i = 0; i < m_num_bags; ++i)
@@ -168,16 +168,16 @@ bool CBaggingMachine::train_machine(CFeatures* data)
 
 void CBaggingMachine::register_parameters()
 {
-	SG_ADD((CSGObject**)&m_features, "features", "Train features for bagging", 
+	SG_ADD((CSGObject**)&m_features, "features", "Train features for bagging",
 		MS_NOT_AVAILABLE);
 	SG_ADD(&m_num_bags, "num_bags", "Number of bags", MS_AVAILABLE);
 	SG_ADD(&m_bag_size, "bag_size", "Number of vectors per bag", MS_AVAILABLE);
 	SG_ADD((CSGObject**)&m_bags, "bags", "Bags array", MS_NOT_AVAILABLE);
-	SG_ADD((CSGObject**)&m_combination_rule, "combination_rule", 
+	SG_ADD((CSGObject**)&m_combination_rule, "combination_rule",
 		"Combination rule to use for aggregating", MS_AVAILABLE);
 	SG_ADD(&m_all_oob_idx, "all_oob_idx", "Indices of all oob vectors",
 			MS_NOT_AVAILABLE);
-	SG_ADD((CSGObject**)&m_oob_indices, "oob_indices", 
+	SG_ADD((CSGObject**)&m_oob_indices, "oob_indices",
 			"OOB indices for each machine", MS_NOT_AVAILABLE);
 }
 
@@ -258,7 +258,7 @@ float64_t CBaggingMachine::get_oob_error(CEvaluation* eval) const
 	for (index_t i = 0; i < m_bags->get_num_elements(); i++)
 	{
 		CMachine* m = dynamic_cast<CMachine*>(m_bags->get_element(i));
-		CDynamicArray<index_t>* current_oob 
+		CDynamicArray<index_t>* current_oob
 			= dynamic_cast<CDynamicArray<index_t>*>(m_oob_indices->get_element(i));
 
 		SGVector<index_t> oob(current_oob->get_array(), current_oob->get_num_elements(), false);
@@ -305,7 +305,7 @@ float64_t CBaggingMachine::get_oob_error(CEvaluation* eval) const
 		default:
 			SG_ERROR("Unsupported label type\n");
 	}
-	
+
 	m_labels->add_subset(SGVector<index_t>(idx.get_array(), idx.get_num_elements(), false));
 	float64_t res = eval->evaluate(predicted, m_labels);
 	m_labels->remove_subset();

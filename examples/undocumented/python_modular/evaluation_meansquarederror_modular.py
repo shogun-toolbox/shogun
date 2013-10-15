@@ -17,7 +17,7 @@ def evaluation_meansquarederror_modular (ground_truth, predicted):
 
 	ground_truth_labels = RegressionLabels(ground_truth)
 	predicted_labels = RegressionLabels(predicted)
-	
+
 	evaluator = MeanSquaredError()
 	mse = evaluator.evaluate(predicted_labels,ground_truth_labels)
 

@@ -6,7 +6,7 @@
  *
  * Written (W) 2013 Soumyajit De
  */
- 
+
 #include <gtest/gtest.h>
 
 #include <shogun/lib/common.h>

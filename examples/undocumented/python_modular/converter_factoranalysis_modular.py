@@ -6,9 +6,9 @@ def converter_factoranalysis_modular(data_fname):
 	try:
 		import numpy
 		from modshogun import RealFeatures, FactorAnalysis, EuclideanDistance, CSVFile
-		
+
 		features = RealFeatures(CSVFile(data_fname))
-			
+
 		converter = FactorAnalysis()
 		converter.set_target_dim(2)
 		embedding = converter.apply(features)

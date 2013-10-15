@@ -22,20 +22,20 @@ namespace shogun
 class CFeatures;
 
 /** @brief class UWedgeSep
- * 
- * Implements the UWedge algorithm for Independent 
- * Component Analysis (ICA) and Blind Source 
+ *
+ * Implements the UWedge algorithm for Independent
+ * Component Analysis (ICA) and Blind Source
  * Separation (BSS).
- * 
- * Tichavsky, P., & Yeredor, A. (2009). 
- * Fast approximate joint diagonalization incorporating weight matrices. 
+ *
+ * Tichavsky, P., & Yeredor, A. (2009).
+ * Fast approximate joint diagonalization incorporating weight matrices.
  * Signal Processing, IEEE Transactions on, 57(3), 878-891.
  *
  */
 class CUWedgeSep: public CICAConverter
 {
 	public:
-		
+
 		/** constructor */
 		CUWedgeSep();
 
@@ -56,7 +56,7 @@ class CUWedgeSep: public CICAConverter
 		 * @param tau vector
 		 */
 		void set_tau(SGVector<float64_t> tau);
-		
+
 		/** getter for time sep cov matrices
 		 * @return cov matrices
 		 */
@@ -71,13 +71,13 @@ class CUWedgeSep: public CICAConverter
 		void init();
 
 	private:
-		
+
 		/** tau vector */
 		SGVector<float64_t> m_tau;
 
 		/** cov matrices */
 		SGNDArray<float64_t> m_covs;
-};	
+};
 }
 #endif // HAVE_EIGEN3
 #endif // UWEDGESEP

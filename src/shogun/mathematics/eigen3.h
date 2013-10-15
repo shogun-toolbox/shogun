@@ -67,7 +67,7 @@ namespace shogun
 template<class T> class SGSparseMatrix;
 
 /** @brief This class contains some utilities for Eigen3 Sparse Matrix
- * integration with shogun. Currently it provides a method for 
+ * integration with shogun. Currently it provides a method for
  * converting SGSparseMatrix to Eigen3 SparseMatrix.
  */
 template<typename T> class EigenSparseUtil
@@ -75,7 +75,7 @@ template<typename T> class EigenSparseUtil
 	public:
 	/** Converts a SGSparseMatrix to Eigen3 SparseMatrix by copying
 	 * its non-zero co-efficients to a eigen3 SparseMatrix.
-	 * 
+	 *
 	 * @param sg_matrix the SGSparseMatrix
 	 * @return Eigen3 SparseMatrix representation of sg_matrix
 	 */

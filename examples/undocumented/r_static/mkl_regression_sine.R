@@ -2,7 +2,7 @@
 # paper that we labeled "sine".
 #
 # In this regression task a sine wave is to be learned.
-# We vary the frequency of the wave. 
+# We vary the frequency of the wave.
 
 # Preliminary settings:
 library(sg)
@@ -44,7 +44,7 @@ for (kk in 1:length(f)) {   # big loop for the different learning problems
   sg('new_classifier', 'MKL_REGRESSION')
   sg('mkl_parameters', mkl_eps, 0, mkl_norm)
 
-  sg('c', C)                
+  sg('c', C)
   sg('svm_epsilon', svm_eps)
   sg('svr_tube_epsilon', svr_tube_eps)
   sg('clean_features', 'TRAIN')

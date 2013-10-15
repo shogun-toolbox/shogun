@@ -14,7 +14,7 @@
 
 using namespace shogun;
 
-CCrossValidationMulticlassStorage::CCrossValidationMulticlassStorage(bool compute_ROC, bool compute_PRC, bool compute_conf_matrices) : 
+CCrossValidationMulticlassStorage::CCrossValidationMulticlassStorage(bool compute_ROC, bool compute_PRC, bool compute_conf_matrices) :
 	CCrossValidationOutput()
 {
 	m_initialized = false;
@@ -53,7 +53,7 @@ CCrossValidationMulticlassStorage::~CCrossValidationMulticlassStorage()
 	{
 		for (int32_t i=0; i<m_num_folds*m_num_runs; i++)
 			m_conf_matrices[i].~SGMatrix<int32_t>();
-	
+
 		SG_FREE(m_conf_matrices);
 	}
 
@@ -116,16 +116,16 @@ void CCrossValidationMulticlassStorage::post_update_results()
 		if (m_compute_ROC)
 		{
 			eval_ROC.evaluate(pred_labels_binary, true_labels_binary);
-			m_fold_ROC_graphs[m_current_run_index*m_num_folds*m_num_classes+m_current_fold_index*m_num_classes+c] = 
+			m_fold_ROC_graphs[m_current_run_index*m_num_folds*m_num_classes+m_current_fold_index*m_num_classes+c] =
 				eval_ROC.get_ROC();
 		}
 		if (m_compute_PRC)
 		{
 			eval_PRC.evaluate(pred_labels_binary, true_labels_binary);
-			m_fold_PRC_graphs[m_current_run_index*m_num_folds*m_num_classes+m_current_fold_index*m_num_classes+c] = 
+			m_fold_PRC_graphs[m_current_run_index*m_num_folds*m_num_classes+m_current_fold_index*m_num_classes+c] =
 				eval_PRC.get_PRC();
 		}
-		
+
 		for (int32_t i=0; i<n_evals; i++)
 		{
 			CBinaryClassEvaluation* evaluator = (CBinaryClassEvaluation*)m_binary_evaluations->get_element_safe(i);
@@ -140,7 +140,7 @@ void CCrossValidationMulticlassStorage::post_update_results()
 	CMulticlassAccuracy accuracy;
 
 	m_accuracies[m_current_run_index*m_num_folds+m_current_fold_index] = accuracy.evaluate(m_pred_labels, m_true_labels);
-	
+
 	if (m_compute_conf_matrices)
 	{
 		m_conf_matrices[m_current_run_index*m_num_folds+m_current_fold_index] = CMulticlassAccuracy::get_confusion_matrix(m_pred_labels, m_true_labels);

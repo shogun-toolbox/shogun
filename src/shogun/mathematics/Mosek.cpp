@@ -198,7 +198,7 @@ MSKrescodee CMosek::add_constraint_sosvm(
 
 	if ( m_rescode == MSK_RES_OK )
 	{
-		m_rescode = MSK_putbound(m_task, MSK_ACC_CON, con_idx, 
+		m_rescode = MSK_putbound(m_task, MSK_ACC_CON, con_idx,
 				MSK_BK_UP, -MSK_INFINITY, bi);
 	}
 
@@ -206,7 +206,7 @@ MSKrescodee CMosek::add_constraint_sosvm(
 }
 
 MSKrescodee CMosek::wrapper_putaveclist(
-		MSKtask_t & task, 
+		MSKtask_t & task,
 		SGMatrix< float64_t > A)
 {
 	// Indices to the rows of A to replace, all the rows
@@ -224,7 +224,7 @@ MSKrescodee CMosek::wrapper_putaveclist(
 	SGVector< int32_t > ptrb(A.num_rows);
 	// Next position to write in aval and asub
 	index_t idx = 0;
-	// Switch if the first non-zero element in each row 
+	// Switch if the first non-zero element in each row
 	// has been found
 	bool first_nnz_found = false;
 
@@ -256,7 +256,7 @@ MSKrescodee CMosek::wrapper_putaveclist(
 			ptrb[i] = ( i ? ptrb[i-1] : 0 );
 	}
 
-	// For each row, pointer to the last+1 non-zero element 
+	// For each row, pointer to the last+1 non-zero element
 	// in aval
 	SGVector< int32_t > ptre(A.num_rows);
 	for ( index_t i = 0 ; i < A.num_rows-1 ; ++i )
@@ -317,7 +317,7 @@ MSKrescodee CMosek::wrapper_putqobj(SGMatrix< float64_t > Q0) const
 	index_t N = Q0.num_rows;
 	index_t M = Q0.num_cols;
 
-	// Count the number of non-zero elements in the lower 
+	// Count the number of non-zero elements in the lower
 	// triangular part of the matrix
 	int32_t nnz = 0;
 	for ( index_t i = 0 ; i < N ; ++i )
@@ -340,7 +340,7 @@ MSKrescodee CMosek::wrapper_putqobj(SGMatrix< float64_t > Q0) const
 			{
 				qosubi[idx] = i;
 				qosubj[idx] = j;
-				 qoval[idx] = Q0[j + i*M]; 
+				 qoval[idx] = Q0[j + i*M];
 
 				++idx;
 			}
@@ -409,7 +409,7 @@ MSKrescodee CMosek::optimize(SGVector< float64_t > sol)
 #ifdef DEBUG_MOSEK
 			SG_PRINT("Other solution status\n")
 #endif
-			break; 	// to avoid compile error when DEBUG_MOSEK
+			break;	// to avoid compile error when DEBUG_MOSEK
 				// is not defined
 		}
 	}

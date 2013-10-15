@@ -62,7 +62,7 @@ static int class_name ## _getbuffer(PyObject *self, Py_buffer *view, int flags)
 	int num_feat=0, num_vec=0;
 	Py_ssize_t* shape=NULL;
 	Py_ssize_t* strides=NULL;
-	
+
 	buffer_matrix_ ## type_name ## _info* info=NULL;
 
 	static char* format=(char *) format_str; // http://docs.python.org/dev/library/struct.html#module-struct
@@ -177,7 +177,7 @@ static PyObject* class_name ## _getitem(PyObject *self, Py_ssize_t idx)
 	}
 
 	arg1=reinterpret_cast< CDenseFeatures< type_name >* >(argp1);
-	
+
 	temp=arg1->get_feature_matrix();
 	num_feat=arg1->get_num_features();
 	num_vec=arg1->get_num_vectors();
@@ -203,8 +203,8 @@ static PyObject* class_name ## _getitem(PyObject *self, Py_ssize_t idx)
 	ret=(PyArrayObject *) PyArray_NewFromDescr(&PyArray_Type, descr,
 					1, shape+1,
 					strides+1, data,
- 					NPY_FARRAY | NPY_WRITEABLE,
- 					(PyObject *) self);
+					NPY_FARRAY | NPY_WRITEABLE,
+					(PyObject *) self);
 	if (ret==NULL)
 		goto fail;
 
@@ -290,9 +290,9 @@ static PyObject* class_name ## _getslice(PyObject *self, Py_ssize_t ilow, Py_ssi
 
 	ret=(PyArrayObject *) PyArray_NewFromDescr(&PyArray_Type, descr,
 					2, shape,
- 					strides, data,
- 					NPY_FARRAY | NPY_WRITEABLE,
- 					(PyObject *) self);
+					strides, data,
+					NPY_FARRAY | NPY_WRITEABLE,
+					(PyObject *) self);
 	if (ret==NULL)
 		goto fail;
 
@@ -462,7 +462,7 @@ static PyObject* class_name ## _getsubscript(PyObject *self, PyObject *key, bool
 		return ret;
 	}
 	else if (PySlice_Check(key) || PyInt_Check(key) || PyArray_IsScalar(key, Integer) ||
-       		PyLong_Check(key) || (PyIndex_Check(key) && !PySequence_Check(key)))
+		PyLong_Check(key) || (PyIndex_Check(key) && !PySequence_Check(key)))
 	{
 		int item_type;
 		item_type=parse_tuple_item(key, num_feat,
@@ -517,11 +517,11 @@ static PyObject* class_name ## _free_feature_matrix(PyObject *self, PyObject *ar
 	CDenseFeatures< type_name > *arg1=(CDenseFeatures< type_name > *) 0;
 	void* argp1=0;
 	int res1=0;
-  
+
 	res1=SWIG_ConvertPtr(self, &argp1, SWIG_TypeQuery("shogun::CDenseFeatures<type_name>"), 0 |  0 );
-	if (!SWIG_IsOK(res1)) 
+	if (!SWIG_IsOK(res1))
 	{
-		SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "BoolFeatures_free_feature_matrix" "', argument " "1"" of type '" "shogun::CDenseFeatures< bool > *""'"); 
+		SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "BoolFeatures_free_feature_matrix" "', argument " "1"" of type '" "shogun::CDenseFeatures< bool > *""'");
 	}
 
 	arg1=reinterpret_cast< CDenseFeatures< type_name > * >(argp1);
@@ -538,7 +538,7 @@ static PyObject* class_name ## _free_feature_matrix(PyObject *self, PyObject *ar
 
 				PyBuffer_Release(view);
 				extend_ ## class_name ## _info.erase(arg1);
-		
+
 				free(temp);
 				delete view;
 			}
@@ -549,16 +549,16 @@ static PyObject* class_name ## _free_feature_matrix(PyObject *self, PyObject *ar
 		catch (std::bad_alloc)
 		{
 			SWIG_exception(SWIG_MemoryError, const_cast<char*>("Out of memory error.\n"));
-      
+
 			SWIG_fail;
-      
+
 		}
 		catch (shogun::ShogunException e)
 		{
 			SWIG_exception(SWIG_SystemError, const_cast<char*>(e.get_exception_string()));
-      
+
 			SWIG_fail;
-      
+
 		}
 	}
 	resultobj=SWIG_Py_Void();
@@ -664,7 +664,7 @@ int frombuffer(PyObject* exporter, bool copy)
 		$self->set_feature_matrix(new_feat_matrix.clone());
 	}
 	else
-	{	
+	{
 		$self->set_feature_matrix(new_feat_matrix);
 	}
 

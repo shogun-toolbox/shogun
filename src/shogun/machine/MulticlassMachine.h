@@ -92,7 +92,7 @@ class CMulticlassMachine : public CBaseMulticlassMachine
 		 * @return resulting labels
 		 */
 		virtual CMulticlassLabels* apply_multiclass(CFeatures* data=NULL);
-		
+
 		/** classify all examples with multiple output
 		 *
 		 * @return resulting labels
@@ -145,7 +145,7 @@ class CMulticlassMachine : public CBaseMulticlassMachine
 			return m_multiclass_strategy->get_prob_heuris_type();
 		}
 
-		/** set prob output heuristic of multiclass strategy 
+		/** set prob output heuristic of multiclass strategy
 		 * @param prob_heuris type of probability heuristic
 		 */
 		inline void set_prob_heuris(EProbHeuristicType prob_heuris)

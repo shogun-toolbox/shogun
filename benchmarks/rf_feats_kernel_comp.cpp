@@ -14,14 +14,14 @@
 
 using namespace shogun;
 
-/** Code that compares the times needed to train 
+/** Code that compares the times needed to train
  * a linear svm using the RandomFourierDotFeatures class
  * vs a non-linear svm using the Gaussian Kernel.
  */
 int main(int argv, char** argc)
 {
 	init_shogun_with_defaults();
-	
+
 	int32_t dims[] = {10, 100, 1000};
 	int32_t vecs[] = {10000, 100000, 1000000};
 	CTime* timer = new CTime(false);
@@ -47,7 +47,7 @@ int main(int argv, char** argc)
 				{
 					if ((i+j)%2==0)
 					{
-						labs[i] = -1; 
+						labs[i] = -1;
 						mat(j,i) = CMath::random(0,1) + 0.5;
 					}
 					else
@@ -74,18 +74,18 @@ int main(int argv, char** argc)
 			{
 				CRandomFourierDotFeatures* r_feats = new CRandomFourierDotFeatures(
 						dense_feats, D[d], KernelName::GAUSSIAN, params);
-	
+
 				//CLibLinear* lin_svm = new CLibLinear(C, r_feats, labels);
 				CSVMOcas* lin_svm = new CSVMOcas(lin_C, r_feats, labels);
 				lin_svm->set_epsilon(epsilon);
 				clock_t t = clock();
-				timer->start();		
+				timer->start();
 				lin_svm->train();
 				t = clock() - t;
 				timer->stop();
 				SG_SPRINT("\tSVMOcas using RFDotFeatures(D=%d) finished training. Took %fs (or %fs), ",
 						D[d], timer->time_diff_sec(), (float64_t) t /CLOCKS_PER_SEC);
-	
+
 				t = clock();
 				timer->start();
 				CBinaryLabels* predicted = CLabelsFactory::to_binary(lin_svm->apply());
@@ -101,13 +101,13 @@ int main(int argv, char** argc)
 
 
 			/** LibSVM using Gaussian Kernel */
-			
+
 			CGaussianKernel* kernel = new CGaussianKernel(dense_feats, dense_feats, params[0]);
 			//kernel->set_normalizer(normalizer);
 			CLibSVM* svm = new CLibSVM(non_lin_C, kernel, labels);
 			svm->set_epsilon(epsilon);
 			clock_t t = clock();
-			timer->start();	
+			timer->start();
 			svm->train();
 			t = clock() - t;
 			timer->stop();
@@ -127,7 +127,7 @@ int main(int argv, char** argc)
 			/** End of LibSVM code */
 			SG_UNREF(labels);
 			SG_UNREF(dense_feats);
-		}	
+		}
 	}
 	SG_UNREF(timer);
 	SG_UNREF(evaluator);

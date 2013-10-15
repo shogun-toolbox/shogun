@@ -12,7 +12,7 @@ def distance_canberraword_modular (fm_train_dna=traindna,fm_test_dna=testdna,ord
 	from modshogun import StringCharFeatures, StringWordFeatures, DNA
 	from modshogun import SortWordString
 	from modshogun import CanberraWordDistance
-	
+
 	charfeat=StringCharFeatures(DNA)
 	charfeat.set_features(fm_train_dna)
 	feats_train=StringWordFeatures(charfeat.get_alphabet())

@@ -1,7 +1,7 @@
 #ifndef TAPKEE_MATRIX_H_
 #define TAPKEE_MATRIX_H_
 
-namespace tapkee 
+namespace tapkee
 {
 namespace tapkee_internal
 {

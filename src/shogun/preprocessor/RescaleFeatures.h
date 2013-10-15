@@ -16,7 +16,7 @@
 namespace shogun
 {
 	/**@brief Preprocessor RescaleFeautres is rescaling the range of features to
-	 * make the features independent of each other and aims to scale the range 
+	 * make the features independent of each other and aims to scale the range
 	 * in [0, 1] or [-1, 1].
 	 *
 	 * The general formula is given as:
@@ -36,7 +36,7 @@ namespace shogun
 
 			/**
 			 * initialize preprocessor from features
-			 * 
+			 *
 			 * @param features the features to derive the min and max values from.
 			 */
 			virtual bool init(CFeatures* features);
@@ -56,7 +56,7 @@ namespace shogun
 
 			/**
 			 * Apply preproc on a single feature vector
-			 */			
+			 */
 			virtual SGVector<float64_t> apply_to_feature_vector(SGVector<float64_t> vector);
 
 			/** @return object name */

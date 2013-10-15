@@ -3,7 +3,7 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Written (W) 2013 Soumyajit De
  */
 
@@ -167,7 +167,7 @@ SGVector<complex128_t> CCGMShiftedFamilySolver::solve_shifted_weighted(
 		compute_alpha_sh(zeta_sh_new, zeta_sh_cur, beta_sh, beta, alpha, alpha_sh);
 
 		for (index_t i=0; i<shifts.vlen; ++i)
-		{		
+		{
 			p_sh.col(i)*=alpha_sh[i];
 			p_sh.col(i)+=zeta_sh_new[i]*r;
 		}

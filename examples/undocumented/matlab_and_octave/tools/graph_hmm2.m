@@ -3,15 +3,15 @@ function hmm_graph(a,b,p,q, dstname, treshold, treshout, startendstates, startco
 %
 % generate a state graph of a hmm
 %
-% srcname 	- filename of some hmm.mod 
-% dstname 	- destination postscript HMM file name (default: hmm_graph.ps)
-% treshold 	- treshold down to which bows are plotted (default: log(0.001))
-% treshout  	- treshout down to which outputs are included (default: log(0.001))
-% outmatrix 	- depending on the alphabet the M output symbols (default: [ 'A'; 'C'; 'G'; 'T' ])
-% startcolor 	- color of start states (default 'green')
-% endcolor 	- color of start states (default 'red')
-% ratio 	- default compress but can be 'fill' 'compress' 'none' 'auto'
-% nodesep 	- default=0.5
+% srcname	- filename of some hmm.mod
+% dstname	- destination postscript HMM file name (default: hmm_graph.ps)
+% treshold	- treshold down to which bows are plotted (default: log(0.001))
+% treshout	- treshout down to which outputs are included (default: log(0.001))
+% outmatrix	- depending on the alphabet the M output symbols (default: [ 'A'; 'C'; 'G'; 'T' ])
+% startcolor	- color of start states (default 'green')
+% endcolor	- color of start states (default 'red')
+% ratio	- default compress but can be 'fill' 'compress' 'none' 'auto'
+% nodesep	- default=0.5
 % shape		- default 'record' but can be 'circle' 'ellipse' 'record' 'doublecircle' 'diamond'
 % startendstates- whether to include virtual start/stop states default 0 (set to 1 to include them)
 
@@ -26,8 +26,8 @@ if nargin<11,ratio='compress';end;
 if nargin<12,nodesep=0.5;end;
 if nargin<13,shape='record';end;
 
-N=length(a) 
-M=size(b,2) 
+N=length(a)
+M=size(b,2)
 
 assert(equal(size(a),[N,N]))
 assert(equal(size(p),[1,N]))
@@ -40,16 +40,16 @@ fid=fopen(tmpname, 'w+');
 fprintf(fid,'digraph hmm {\npage="8,10.5";\nsize="7,9.5";\ncenter=true;\nnodesep=%f;\nratio=%s;\nnode [shape = record];\nedge [style=bold];\n',nodesep,ratio);
 
 if startendstates==1,
-    fprintf(fid,'start [style =filled, color=%s, label="start"];\n',startcolor);    
-    fprintf(fid,'end [style =filled, color=%s, label="end"];\n',endcolor);    
-end    
+    fprintf(fid,'start [style =filled, color=%s, label="start"];\n',startcolor);
+    fprintf(fid,'end [style =filled, color=%s, label="end"];\n',endcolor);
+end
 
 for i=1:N,
     out='';
     for j=1:M,
 	if b(i,j)>treshout,
 	    out = sprintf('%s%i:%1.2f\\n',out,j,b(i,j));
-	end    
+	end
     end
 
     if startendstates==0,
@@ -57,21 +57,21 @@ for i=1:N,
 	   fprintf(fid,'%d [ style = filled, color=%s, label = "n%d|%s" ];\n',i,endcolor,i,out);
 	elseif p(i)>treshold,
 	   fprintf(fid,'%d [ style = filled, color=%s, label = "n%d|%s" ];\n',i,startcolor,i,out);
-	else	
+	else
 	   fprintf(fid,'%d [ label = "n%d|%s" ];\n',i,i,out);
 	end
     else
 	   fprintf(fid,'%d [ label = "n%d|%s" ];\n',i,i,out);
     end
-end    
+end
 
 for i=1:N,
-  
+
     if startendstates==1
-      	if p(i)>treshold,
+	if p(i)>treshold,
 	    fprintf(fid, 'start -> %d [ label = "%1.2f"];\n',i,p(i));
 	end
-      	if q(i)>treshold,
+	if q(i)>treshold,
 	    fprintf(fid, '%d -> end [ label = "%1.2f"];\n',i,q(i));
 	end
     end

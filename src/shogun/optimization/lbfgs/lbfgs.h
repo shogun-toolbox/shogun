@@ -32,7 +32,7 @@
 namespace shogun
 {
 
-/** 
+/**
  * \addtogroup liblbfgs_api libLBFGS API
  * @{
  *
@@ -41,7 +41,7 @@ namespace shogun
 
 /**
  * Return values of lbfgs().
- * 
+ *
  *  Roughly speaking, a negative value indicates an error.
  */
 enum {
@@ -338,7 +338,7 @@ typedef struct {
  *  function and its gradients when needed. A client program must implement
  *  this function to evaluate the values of the objective function and its
  *  gradients, given current values of variables.
- *  
+ *
  *  @param  instance    The user data sent for lbfgs() function by the client.
  *  @param  x           The current values of variables.
  *  @param  g           The gradient vector. The callback function must compute

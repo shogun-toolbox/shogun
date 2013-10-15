@@ -62,7 +62,7 @@ SHOGUN requires the standard linux utils like bash, grep, test, sed, cut, ldd,
 uname gcc g++ and cat python (debian package: python2.4 or python2.5)
 for the ./configure to work.
 
-Optionally you will need atlas and lapack (debian packages lapack3-dev, 
+Optionally you will need atlas and lapack (debian packages lapack3-dev,
 atlas3-headers atlas3-base-dev or atlas3-altivec-dev atlas3-sse2-dev)
 installed. Note that atlas/lapack is only supported under linux (high
 performance computing should be done under linux only anyway). In case
@@ -72,25 +72,25 @@ CPLEX(tm) just make sure cplex can be found in the PATH. If it is not found
 shogun will resort to GLPK (if version at least 4.29 is found) for 1-norm MKL,
 p-norm MKL with p>1 will work nonetheless.
 
-\li To compile the C# interface you need to have the C# developer files 
+\li To compile the C# interface you need to have the C# developer files
 (debian package mono-utils) installed.
 
-\li To compile the Lua interface you need to have the Lua developer files 
+\li To compile the Lua interface you need to have the Lua developer files
 (debian package lua) installed.
 
-\li To compile the Java interface you need to have the Java developer files 
+\li To compile the Java interface you need to have the Java developer files
 (debian package openjdk-6-jdk) installed.
 
-\li To compile the R interface you need to have the R developer files 
+\li To compile the R interface you need to have the R developer files
 (debian package r-base-dev) installed.
 
-\li To compile the Ruby interface you need to have the Ruby developer files 
+\li To compile the Ruby interface you need to have the Ruby developer files
 (debian package ruby) installed.
 
-\li To compile the octave interface you need to have the octave developer files 
+\li To compile the octave interface you need to have the octave developer files
 (debian package octave3.0-headers) installed.
 
-\li To compile the python interface you need to have numpy version 1.x installed 
+\li To compile the python interface you need to have numpy version 1.x installed
 (debian package python-numpy) installed.
 
 \section compiling_shogun Compiling SHOGUN
@@ -133,7 +133,7 @@ where \b interface is one of the following
 
 (you don't need to compile libshogunui in case you compile a modular interface)
 
-However, just running 
+However, just running
 \verbatim ./configure\endverbatim
 will autodetect and configure for the available interfaces.
 

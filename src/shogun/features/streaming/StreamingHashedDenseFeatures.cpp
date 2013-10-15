@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2013 Evangelos Anagnostopoulos 
- * Copyright (C) 2013 Evangelos Anagnostopoulos 
+ * Written (W) 2013 Evangelos Anagnostopoulos
+ * Copyright (C) 2013 Evangelos Anagnostopoulos
  */
 
 #include <shogun/features/streaming/StreamingHashedDenseFeatures.h>
@@ -33,12 +33,12 @@ CStreamingHashedDenseFeatures<ST>::CStreamingHashedDenseFeatures(CDenseFeatures<
 {
 	ASSERT(dot_features);
 
-	CStreamingFileFromDenseFeatures<ST>* file = 
+	CStreamingFileFromDenseFeatures<ST>* file =
 			new CStreamingFileFromDenseFeatures<ST>(dot_features, lab);
 	bool is_labelled = (lab != NULL);
 	int32_t size = 1024;
 
-	init(file, is_labelled, size, d, use_quadr, keep_lin_terms); 
+	init(file, is_labelled, size, d, use_quadr, keep_lin_terms);
 
 	parser.set_free_vectors_on_destruct(false);
 	seekable=true;
@@ -99,7 +99,7 @@ float32_t CStreamingHashedDenseFeatures<ST>::dense_dot(const float32_t* vec2, in
 	float32_t result = 0;
 	for (index_t i=0; i<current_vector.num_feat_entries; i++)
 		result += vec2[current_vector.features[i].feat_index] * current_vector.features[i].entry;
-	
+
 	return result;
 }
 
@@ -131,7 +131,7 @@ const char* CStreamingHashedDenseFeatures<ST>::get_name() const
 template <class ST>
 int32_t CStreamingHashedDenseFeatures<ST>::get_num_vectors() const
 {
-	return 1;	
+	return 1;
 }
 
 template <class ST>
@@ -155,7 +155,7 @@ void CStreamingHashedDenseFeatures<ST>::set_vector_and_label_reader()
 template <class ST>
 EFeatureType CStreamingHashedDenseFeatures<ST>::get_feature_type() const
 {
-	return F_UINT; 
+	return F_UINT;
 }
 
 template <class ST>
@@ -174,7 +174,7 @@ void CStreamingHashedDenseFeatures<ST>::start_parser()
 template <class ST>
 void CStreamingHashedDenseFeatures<ST>::end_parser()
 {
-	parser.end_parser();	
+	parser.end_parser();
 }
 
 template <class ST>

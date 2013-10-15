@@ -15,8 +15,8 @@
 
 
 namespace shogun{
-	
-  	CNearestCentroid::CNearestCentroid() : CDistanceMachine()
+
+	CNearestCentroid::CNearestCentroid() : CDistanceMachine()
 	{
 		init();
 	}
@@ -70,13 +70,13 @@ namespace shogun{
 
 		m_centroids->set_num_features(num_feats);
 		m_centroids->set_num_vectors(num_classes);
-		
+
 		int64_t* num_per_class = new int64_t[num_classes];
 		for (int32_t i=0 ; i<num_classes ; i++)
 		{
 			num_per_class[i]=0;
 		}
-		
+
 		for (int32_t idx=0 ; idx<num_vectors ; idx++)
 		{
 			int32_t current_len;
@@ -99,19 +99,19 @@ namespace shogun{
 				scale = 1.0/((float64_t)(total-1));
 			else
 				scale = 1.0/(float64_t)total;
-				
+
 			SGVector<float64_t>::scale_vector(scale,target,num_feats);
 		}
-				
+
 		m_centroids->free_feature_matrix();
 		m_centroids->set_feature_matrix(centroids);
-		
-		
+
+
 		m_is_trained=true;
 		distance->init(m_centroids,distance->get_rhs());
-		
+
 		SG_FREE(num_per_class);
-		
+
 		return true;
 	}
 

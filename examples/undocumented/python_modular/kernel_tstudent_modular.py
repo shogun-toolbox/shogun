@@ -15,7 +15,7 @@ def kernel_tstudent_modular (fm_train_real=traindat,fm_test_real=testdat, degree
 
 	feats_train=RealFeatures(fm_train_real)
 	feats_test=RealFeatures(fm_test_real)
-	
+
 	distance=EuclideanDistance(feats_train, feats_train)
 
 	kernel=TStudentKernel(feats_train, feats_train, degree, distance)

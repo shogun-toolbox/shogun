@@ -3,7 +3,7 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Written (W) 2013 Soumyajit De
  */
 
@@ -42,7 +42,7 @@ public:
 		SG_GCDEBUG("%s destroyed (%p)\n", this->get_name(), this)
 	}
 
-	/** 
+	/**
 	 * abstract method that submits the result of an independent job, and
 	 * computes the aggregation with the previously submitted result
 	 *
@@ -50,7 +50,7 @@ public:
 	 */
 	virtual void submit_result(CJobResult* result) = 0;
 
-	/** 
+	/**
 	 * abstract method that finalizes the aggregation and computes the result,
 	 * its necessary to call finalize before getting the final result
 	 */

@@ -143,7 +143,7 @@ void test_cross_validation()
 
 	if (result->get_result_type() != CROSSVALIDATION_RESULT)
 		SG_SERROR("Evaluation result is not of type CCrossValidationResult!");
-	
+
 	SG_SPRINT("result: ");
 	result->print_result();
 

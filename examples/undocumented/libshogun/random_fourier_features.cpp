@@ -31,7 +31,7 @@ void load_data(int32_t num_dim, int32_t num_vecs,
 		{
 			if ((i+j)%2==0)
 			{
-				labs[i] = -1; 
+				labs[i] = -1;
 				mat(j,i) = CMath::random(0,1) + 0.5;
 			}
 			else
@@ -48,7 +48,7 @@ void load_data(int32_t num_dim, int32_t num_vecs,
 int main(int argv, char** argc)
 {
 	init_shogun_with_defaults();
-	
+
 	int32_t num_dim = 100;
 	int32_t num_vecs = 10000;
 

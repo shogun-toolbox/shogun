@@ -32,7 +32,7 @@ number of objects potentially interacting together. For example several SVMs
 with using multiple kernels or preprocessors, with the kernels relying on other
 machine learning methods (like e.g. HMMs). The modular interfaces heavily rely
 on swig and therefore currently only python is supported (though octave and R
-support is on the way). For further information 
+support is on the way). For further information
 \ref modularinterfaces "see Modular Interfaces"
 
 */

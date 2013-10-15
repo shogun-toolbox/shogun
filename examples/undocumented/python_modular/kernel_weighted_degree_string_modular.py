@@ -13,7 +13,7 @@ def kernel_weighted_degree_string_modular (fm_train_dna=traindat,fm_test_dna=tes
 	feats_train=StringCharFeatures(fm_train_dna, DNA)
 	#feats_train.io.set_loglevel(MSG_DEBUG)
 	feats_test=StringCharFeatures(fm_test_dna, DNA)
-	
+
 	kernel=WeightedDegreeStringKernel(feats_train, feats_train, degree)
 
 	from numpy import arange,double

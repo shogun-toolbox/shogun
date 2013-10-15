@@ -6,7 +6,7 @@
  *
  * Written (W) 2013 Soumyajit De
  */
- 
+
 #include <shogun/lib/common.h>
 
 #ifdef HAVE_EIGEN3
@@ -84,7 +84,7 @@ TEST(CGMShiftedFamilySolver, solve_shifted_weight_real_shift)
 	// weights
 	SGVector<complex128_t> weights(1);
 	weights.set_const(1.0);
-	
+
 	// Creating sparse system to solve with CG_M
 	CSparseFeatures<float64_t> feat(m);
 	SGSparseMatrix<float64_t> mat=feat.get_sparse_feature_matrix();
@@ -139,7 +139,7 @@ TEST(CGMShiftedFamilySolver, solve_shifted_weight_complex_shift)
 	// weights
 	SGVector<complex128_t> weights(1);
 	weights.set_const(1.0);
-	
+
 	// Creating sparse system to solve with CG_M
 	CSparseFeatures<float64_t> feat(m);
 	SGSparseMatrix<float64_t> mat=feat.get_sparse_feature_matrix();

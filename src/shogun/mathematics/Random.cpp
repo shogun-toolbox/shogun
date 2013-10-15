@@ -46,7 +46,7 @@ CRandom::~CRandom()
 }
 
 void CRandom::set_seed(uint32_t seed)
-{	
+{
 	reinit(seed);
 }
 
@@ -67,16 +67,16 @@ void CRandom::init()
 	m_y = SG_MALLOC(float64_t, m_blockCount);
 	m_xComp = SG_MALLOC(uint32_t, m_blockCount);
 
-	// Initialise rectangle position data. 
+	// Initialise rectangle position data.
 	// m_x[i] and m_y[i] describe the top-right position ox Box i.
 
-	// Determine top right position of the base rectangle/box (the rectangle with the Gaussian tale attached). 
+	// Determine top right position of the base rectangle/box (the rectangle with the Gaussian tale attached).
 	// We call this Box 0 or B0 for short.
 	// Note. x[0] also describes the right-hand edge of B1. (See diagram).
-	m_x[0] = m_R; 
+	m_x[0] = m_R;
 	m_y[0] = GaussianPdfDenorm(m_R);
 
-	// The next box (B1) has a right hand X edge the same as B0. 
+	// The next box (B1) has a right hand X edge the same as B0.
 	// Note. B1's height is the box area divided by its width, hence B1 has a smaller height than B0 because
 	// B0's total area includes the attached distribution tail.
 	m_x[1] = m_R;
@@ -86,7 +86,7 @@ void CRandom::init()
 	for(int i=2; i < m_blockCount; i++)
 	{
 		m_x[i] = GaussianPdfDenormInv(m_y[i-1]);
-		m_y[i] = m_y[i-1] + (m_A / m_x[i]);   
+		m_y[i] = m_y[i-1] + (m_A / m_x[i]);
 	}
 
 	// For completeness we define the right-hand edge of a notional box 6 as being zero (a box with no area).
@@ -95,12 +95,12 @@ void CRandom::init()
 	// Useful precomputed values.
 	m_A_div_y0 = m_A / m_y[0];
 
-	// Special case for base box. m_xComp[0] stores the area of B0 as a proportion of R 
+	// Special case for base box. m_xComp[0] stores the area of B0 as a proportion of R
 	// (recalling that all segments have area A, but that the base segment is the combination of B0 and the distribution tail).
 	// Thus -m_xComp[0] is the probability that a sample point is within the box part of the segment.
 	m_xComp[0] = (uint32_t)(((m_R * m_y[0]) / m_A) * (float64_t)std::numeric_limits<uint32_t>::max());
 
-	for(int32_t i=1; i < m_blockCount-1; i++) 
+	for(int32_t i=1; i < m_blockCount-1; i++)
 	{
 		m_xComp[i] = (uint32_t)((m_x[i+1] / m_x[i]) * (float64_t)std::numeric_limits<uint32_t>::max());
 	}
@@ -241,7 +241,7 @@ float64_t CRandom::std_normal_distrib() const
 		// Special case for the base segment.
 		if(0 == i)
 		{
-			if(u2 < m_xComp[0]) 
+			if(u2 < m_xComp[0])
 			{
 				// Generated x is within R0.
 				return u2 * m_uint32ToU * m_A_div_y0 * sign;
@@ -251,7 +251,7 @@ float64_t CRandom::std_normal_distrib() const
 		}
 
 		// All other segments.
-		if(u2 < m_xComp[i]) 
+		if(u2 < m_xComp[i])
 		{   // Generated x is within the rectangle.
 			return u2 * m_uint32ToU * m_x[i] * sign;
 		}
@@ -284,9 +284,9 @@ float64_t CRandom::GaussianPdfDenorm(float64_t x) const
 }
 
 float64_t CRandom::GaussianPdfDenormInv(float64_t y) const
-{   
-    // Operates over the y range (0,1], which happens to be the y range of the pdf, 
-    // with the exception that it does not include y=0, but we would never call with 
+{
+    // Operates over the y range (0,1], which happens to be the y range of the pdf,
+    // with the exception that it does not include y=0, but we would never call with
     // y=0 so it doesn't matter. Remember that a Gaussian effectively has a tail going
     // off into x == infinity, hence asking what is x when y=0 is an invalid question
     // in the context of this class.

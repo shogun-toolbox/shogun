@@ -6,8 +6,8 @@
 
 using namespace shogun;
 
-extern void generate_random_ensemble_matrix(SGMatrix<float64_t>& em, 
-	SGVector<float64_t>& expected_cv, 
+extern void generate_random_ensemble_matrix(SGMatrix<float64_t>& em,
+	SGVector<float64_t>& expected_cv,
 	const SGVector<float64_t>& w);
 
 TEST(MajorityVote, combine_matrix)
@@ -44,7 +44,7 @@ TEST(MajorityVote, binary_combine_vector)
 
 	expected.zero();
 	v.zero();
-	
+
 	for (index_t i = 0; i < num_classifiers; ++i)
 	{
 		int32_t r = sg_rand->random(0, 1);
@@ -60,7 +60,7 @@ TEST(MajorityVote, binary_combine_vector)
 	float64_t combined_label = mv->combine(v);
 	EXPECT_EQ(max_label, combined_label);
 
-	SG_UNREF(mv);	
+	SG_UNREF(mv);
 }
 
 TEST(MajorityVote, multiclass_combine_vector)
@@ -89,5 +89,5 @@ TEST(MajorityVote, multiclass_combine_vector)
 
 	EXPECT_EQ(max_label, c);
 
-	SG_UNREF(mv);	
+	SG_UNREF(mv);
 }

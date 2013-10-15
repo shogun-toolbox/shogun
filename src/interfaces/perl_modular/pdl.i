@@ -66,7 +66,7 @@ extern "C" {
             return it;
         }
 
- 
+
         static int array_type(SV* sv) {
             pdl* it = PDL->SvPDLV(sv);
             return it->datatype;
@@ -115,7 +115,7 @@ extern "C" {
             }
             //  pdl* it = SvPDLV(sv);
             //  return (it->state & (PDL_ALLOCATED | PDL_HDRCPY));
-            //PTZ120927 needs to check... in 
+            //PTZ120927 needs to check... in
             return RETVAL;
         }
 
@@ -356,15 +356,15 @@ extern "C" {
                 }
             }
             return  newRV_noinc((SV *)av);
-        }        
+        }
     /*
     //TODO::PTZ121111 there is an unfortunate need to transpose...
     PDL dimension format is reverse to the mathematical conventions (sigh).
-     which means a transposition of dimensions and memory.... 
+     which means a transposition of dimensions and memory....
      so bye bye to  sequencial  memcopy until a genious programmer knows better.
     ie.:
      PDL sequence(3,2) is dim [3,2] and [[0 1 2] [3 4 5]]
-    in memory... 
+    in memory...
     .
     -
     0		<=> pdl->at(0,0) <=> sg->at(0,0)
@@ -410,7 +410,7 @@ extern "C" {
 	  PDL_Long* incs_pdl = (PDL_VAFFOK(it) ? it->vafftrans->incs : it->dimincs);
 	  PDL_Long offs_pdl = PDL_REPROFFS(it);
 	  PDL_Long nvals_pdl = it->nvals;
-	  
+
 	  type val_sg;
 	  int lind = 0;
 	  int stop = 0;
@@ -490,7 +490,7 @@ extern "C" {
 	    if((*data_sg) == 0) {
 	      return false;
 	    }
-  
+
 	    int badflag = (it->state & PDL_BADVAL) > 0;
             type pdl_badval;
             if(badflag) {
@@ -504,7 +504,7 @@ extern "C" {
 	      //TODO::PTZ121113 still, try to trick pdl_get_offset (in pdlsections.c)
 	      pdl_val = pdl_at(data_pdl, typecode, inds, dims_pdl, incs_pdl, offs_pdl, ndims);
 	      if(badflag && pdl_val == pdl_badval) {
-		  //TODO::PTZ121111 inf, nan handling 
+		  //TODO::PTZ121111 inf, nan handling
 		  //sv = newSVpvn( "BAD", 3 );
 		  //change it to a NON_ variable INFTY, MAX_REAL, MACHINE_EPSILON;ALMOST_INFTY;
 		  //pdl_val is double

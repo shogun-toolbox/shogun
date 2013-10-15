@@ -16,7 +16,7 @@
 
 using namespace shogun;
 
-CStochasticProximityEmbedding::CStochasticProximityEmbedding() : 
+CStochasticProximityEmbedding::CStochasticProximityEmbedding() :
 	CEmbeddingConverter()
 {
 	// Initialize to default values
@@ -32,9 +32,9 @@ CStochasticProximityEmbedding::CStochasticProximityEmbedding() :
 void CStochasticProximityEmbedding::init()
 {
 	SG_ADD(&m_k, "m_k", "Number of neighbors", MS_NOT_AVAILABLE);
-	SG_ADD((machine_int_t*) &m_strategy, "m_strategy", "SPE strategy", 
+	SG_ADD((machine_int_t*) &m_strategy, "m_strategy", "SPE strategy",
 			MS_NOT_AVAILABLE);
-	SG_ADD(&m_tolerance, "m_tolerance", "Regularization parameter", 
+	SG_ADD(&m_tolerance, "m_tolerance", "Regularization parameter",
 			MS_NOT_AVAILABLE);
 	SG_ADD(&m_max_iteration, "max_iteration", "maximum number of iterations",
 			MS_NOT_AVAILABLE);
@@ -115,7 +115,7 @@ CFeatures* CStochasticProximityEmbedding::apply(CFeatures* features)
 		SG_ERROR("Features are required to apply SPE\n")
 
 	// Shorthand for the DenseFeatures
-	CDenseFeatures< float64_t >* simple_features = 
+	CDenseFeatures< float64_t >* simple_features =
 		(CDenseFeatures< float64_t >*) features;
 	SG_REF(features);
 

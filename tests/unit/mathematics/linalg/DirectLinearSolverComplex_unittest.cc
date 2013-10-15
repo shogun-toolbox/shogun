@@ -6,7 +6,7 @@
  *
  * Written (W) 2013 Soumyajit De
  */
- 
+
 #include <shogun/lib/config.h>
 
 #ifdef HAVE_EIGEN3

@@ -363,12 +363,12 @@ public:
 		SG_NOTIMPLEMENTED
 	}
 	virtual void set_sparse_matrix(const shogun::SGSparseVector<uint64_t>*, int32_t, int32_t)
-	{ 
+	{
 		SG_NOTIMPLEMENTED
 	}
 	virtual void set_sparse_matrix(const shogun::SGSparseVector<int16_t>*, int32_t, int32_t)
 	{
-		SG_NOTIMPLEMENTED 
+		SG_NOTIMPLEMENTED
 	}
 	virtual void set_sparse_matrix(const shogun::SGSparseVector<uint16_t>*, int32_t, int32_t)
 	{
@@ -400,7 +400,7 @@ public:
 	}
 	virtual void set_string_list(const shogun::SGString<char>*, int32_t)
 	{
-		SG_NOTIMPLEMENTED 
+		SG_NOTIMPLEMENTED
 	}
 	virtual void set_string_list(const shogun::SGString<int32_t>*, int32_t)
 	{

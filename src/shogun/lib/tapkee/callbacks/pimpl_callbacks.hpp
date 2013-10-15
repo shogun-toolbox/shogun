@@ -7,8 +7,8 @@
 #define TAPKEE_PIMPL_CALLBACKS_H_
 
 // Kernel function callback that computes
-// similarity function values on vectors 
-// given by their indices. This impl. computes 
+// similarity function values on vectors
+// given by their indices. This impl. computes
 // kernel i.e. dot product between two vectors.
 template<class Implementation>
 struct pimpl_kernel_callback

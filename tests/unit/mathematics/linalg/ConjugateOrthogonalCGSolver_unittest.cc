@@ -6,7 +6,7 @@
  *
  * Written (W) 2013 Soumyajit De
  */
- 
+
 #include <shogun/lib/common.h>
 
 #ifdef HAVE_EIGEN3
@@ -54,7 +54,7 @@ TEST(ConjugateOrthogonalCGSolver, solve)
 	Map<VectorXcd> map_Ax(Ax.vector, Ax.vlen);
 
 	EXPECT_NEAR((map_b.cast<complex128_t>()-map_Ax).norm(), 0.0, 1E-10);
-	
+
 	SG_UNREF(A);
 	SG_UNREF(cocg_linear_solver);
 }

@@ -22,7 +22,7 @@ IF (RubyModular)
 ENDIF()
 
 # octave modular
-IF (OctaveModular)		
+IF (OctaveModular)
 	add_subdirectory(undocumented/octave_modular)
 ENDIF()
 

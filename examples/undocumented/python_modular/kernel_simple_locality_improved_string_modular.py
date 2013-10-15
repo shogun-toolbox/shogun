@@ -8,7 +8,7 @@ parameter_list = [[traindat,testdat,5,5,1],[traindat,testdat,5,3,2]]
 
 def kernel_simple_locality_improved_string_modular (fm_train_dna=traindat,fm_test_dna=testdat,
 	length=5,inner_degree=5,outer_degree=1 ):
-	
+
 	from modshogun import StringCharFeatures, DNA
 	from modshogun import SimpleLocalityImprovedStringKernel, MSG_DEBUG
 

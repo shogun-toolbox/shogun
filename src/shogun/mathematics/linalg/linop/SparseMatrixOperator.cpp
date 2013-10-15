@@ -3,7 +3,7 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Written (W) 2013 Soumyajit De
  */
 
@@ -208,7 +208,7 @@ void CSparseMatrixOperator<T>::set_diagonal(SGVector<T> diag)
 					break;
 				}
 			}
-	
+
 			// we create a new entry if the diagonal element for this row doesn't exist
 			if (!inserted)
 			{

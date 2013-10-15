@@ -1,4 +1,4 @@
-/*! \page screenshots 使用快照 
+/*! \page screenshots 使用快照
   \section shots_modinterf_sec 静态接口
   使用shogun静态接口的快照
 
@@ -12,7 +12,7 @@
   matlab的使用例子在目录/examples/matlab下。
 
   \image html MatlabDemo.png "matlab静态接口使用快照 (见 http://www.mathworks.com)"
-  
+
   \subsection py_interf Python接口
   python的使用例子在目录examples/python下。
 

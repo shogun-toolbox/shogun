@@ -2,7 +2,7 @@ import modshogun as sg
 import data
 
 # load data
-feature_matrix = data.swissroll() 
+feature_matrix = data.swissroll()
 # create features instance
 features = sg.RealFeatures(feature_matrix)
 
@@ -11,7 +11,7 @@ converter = sg.LocallyLinearEmbedding()
 
 # set target dimensionality
 converter.set_target_dim(2)
-# set number of neighbors 
+# set number of neighbors
 converter.set_k(10)
 # set reconstruction shift (optional)
 converter.set_reconstruction_shift(1e-3)

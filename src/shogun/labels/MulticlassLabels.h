@@ -26,7 +26,7 @@ namespace shogun
 	class CMulticlassLabels;
 	class CDenseLabels;
 
-/** @brief Multiclass Labels for multi-class classification 
+/** @brief Multiclass Labels for multi-class classification
  *
  * valid values for labels are 0...nr_classes-1
  */
@@ -110,8 +110,8 @@ class CMulticlassLabels : public CDenseLabels
 		 */
 		void set_multiclass_confidences(int32_t i, SGVector<float64_t> confidences);
 
-		/** allocates matrix to store confidences. should always 
-		 * be called before setting confidences with 
+		/** allocates matrix to store confidences. should always
+		 * be called before setting confidences with
 		 * @ref set_multiclass_confidences
 		 *
 		 * @param n_classes number of classes

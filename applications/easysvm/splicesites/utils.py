@@ -21,7 +21,7 @@ def create_dataset():
     if not have_arff:
         print 'import arff failed, currently cannot create data'
         return
-    
+
     # convert data to arff format
     gen_arff('C_elegans_acc_100000.fasta.bz2','C_elegans_acc_gc.arff','C_elegans_acc_seq.arff',\
              'C_elegans_acc_seq2.arff','C_elegans_acc_freq.arff',\
@@ -34,7 +34,7 @@ def create_dataset():
     convert('C_elegans_acc_freq.arff','C_elegans_acc_freq.csv','vec')
     convert('C_elegans_acc_seq2.arff','C_elegans_acc_seq2.csv','mseq')
     convert('C_elegans_acc_seq.arff','C_elegans_acc_seq.fa','seq')
-    
+
 
 def create_modsel():
     """Read the file with last 100k sequences from C. elegans
@@ -44,7 +44,7 @@ def create_modsel():
     if not have_arff:
         print 'import arff failed, currently cannot create data'
         return
-    
+
     # convert data to arff format
     gen_arff('C_elegans_acc_modsel.fasta.bz2','C_elegans_acc_modsel_gc.arff','C_elegans_acc_modsel_seq.arff',\
              'C_elegans_acc_modsel_seq2.arff','C_elegans_acc_modsel_freq.arff',\
@@ -57,7 +57,7 @@ def create_modsel():
     convert('C_elegans_acc_modsel_freq.arff','C_elegans_acc_modsel_freq.csv','vec')
     convert('C_elegans_acc_modsel_seq2.arff','C_elegans_acc_modsel_seq2.csv','mseq')
     convert('C_elegans_acc_modsel_seq.arff','C_elegans_acc_modsel_seq.fa','seq')
-    
+
 
 def gen_arff(fastafilename,gcfilename,seqfilename,seq2filename,specfilename,\
              num_seqs=100000,subset=False,max_pos=200,max_neg=2000,\
@@ -68,9 +68,9 @@ def gen_arff(fastafilename,gcfilename,seqfilename,seq2filename,specfilename,\
     """
     if (exists(gcfilename) and exists(seqfilename)) and not overwrite:
         return
-    
+
     print 'Creating %s and %s from %s' % (gcfilename,seqfilename,fastafilename)
-    
+
     if fastafilename.find('acc')!= -1:
         # acceptor, AG at [40:42]
         window = (-40, 197, 42)
@@ -79,12 +79,12 @@ def gen_arff(fastafilename,gcfilename,seqfilename,seq2filename,specfilename,\
         window = (-40, 200, 42)
     else:
         print "Error: Cannot determine whether donor or acceptor"
-    
+
     [strings, lab]=read_data(bz2.BZ2File(fastafilename), num_seqs, window)
     # Only a subset of the examples are used.
     if subset:
         [strings, lab] = take_subset(strings, lab, max_pos, max_neg)
-    
+
     gcs=count_gs_and_cs(strings, (0, -window[0]), (-window[0]+2, -window[0]+2+window[2]))
 
     seq_upstream = []
@@ -102,7 +102,7 @@ def gen_arff(fastafilename,gcfilename,seqfilename,seq2filename,specfilename,\
         gcs = normalise_features(gcs)
         spec_up = normalise_features(spec_up)
         spec_down = normalise_features(spec_down)
-    
+
     # sequence file
     alist = [('label',1,[]),('sequence',0,[])]
     f = open(seqfilename,'w')
@@ -124,7 +124,7 @@ def gen_arff(fastafilename,gcfilename,seqfilename,seq2filename,specfilename,\
     f = open(gcfilename,'w')
     arff.arffwrite(f,alist,data,name=fastafilename,comment='Converted from '+fastafilename)
     f.close()
-    
+
     # spectrum
     alist = [('label',1,[]),\
              ('upA',1,[]),('upC',1,[]),('upG',1,[]),('upT',1,[]),\
@@ -137,14 +137,14 @@ def gen_arff(fastafilename,gcfilename,seqfilename,seq2filename,specfilename,\
         f = open(specfilename,'w')
         arff.arffwrite(f,alist,data,name=fastafilename,comment='Converted from '+fastafilename)
         f.close()
-    
+
 
 def take_subset(strings, lab, max_pos=200, max_neg=2000):
     """Take a subset of the classes to the maximum numbers determined by
     max_pos and max_neg
     """
     random.seed(123456789)
-    
+
     pos_idx = where(lab>0)[0]
     neg_idx = where(lab<0)[0]
     num_pos = len(pos_idx)
@@ -165,15 +165,15 @@ def take_subset(strings, lab, max_pos=200, max_neg=2000):
     lab = concatenate((lab[pos_sub_idx],lab[neg_sub_idx]))
 
     return (strings,lab)
-    
+
 def balance_classes(strings, lab, max_examples=1200,ratio=5.0):
     """Take a subset of negative examples such that
     the number of examples in the negative class are limited to ratio.
-    
+
     Also limit the maximum number of examples.
     """
     random.seed(123456789)
-    
+
     pos_idx = where(lab>0)[0]
     neg_idx = where(lab<0)[0]
     num_pos = len(pos_idx)
@@ -190,7 +190,7 @@ def balance_classes(strings, lab, max_examples=1200,ratio=5.0):
     max_neg = int(num_pos*ratio)
     if num_neg < max_neg:
         max_neg = num_neg
-    
+
     sub_idx = array(random.sample(neg_idx,max_neg))
     assert(all(lab[sub_idx]<0))
 
@@ -205,10 +205,10 @@ def normalise_features(feats):
 
     """
     (numdim,numex) = feats.shape
-    
+
     M = sum(feats,axis=1)/numex
     M = M.reshape(numdim,1)
-    
+
     M2 = sum(feats**2,axis=1)/numex
     M2 = M2.reshape(numdim,1)
     SD = sqrt(M2-M**2)
@@ -285,4 +285,4 @@ def count_nt_freq(strings):
         ntfreq[ix]=(a,c,g,t)
 
     return array(ntfreq).T
-    
+

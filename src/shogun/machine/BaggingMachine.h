@@ -92,11 +92,11 @@ namespace shogun
 			 * @param rule combination rule
 			 */
 			void set_combination_rule(CCombinationRule* rule);
-			
+
 			/**
 			 * Get the combination rule that is used for aggregating the results
 			 *
-			 * @return CCombinationRule 
+			 * @return CCombinationRule
 			 */
 			CCombinationRule* get_combination_rule() const;
 
@@ -135,9 +135,9 @@ namespace shogun
 			/**
 			 * get the vector of indices for feature vectors that are out of bag
 			 *
-			 * @param in_bag vector of indices that are in bag. 
+			 * @param in_bag vector of indices that are in bag.
 			 * NOTE: in_bag is a randomly generated with replacement
-			 * @return 
+			 * @return
 			 */
 			CDynamicArray<index_t>* get_oob_indices(const SGVector<index_t>& in_bag);
 

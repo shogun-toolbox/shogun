@@ -6,7 +6,7 @@ using System;
 
 public class kernel_comm_ulong_string_modular {
     public static void Main() {
-	
+
 	modshogun.init_shogun_with_defaults();
 	int order = 3;
 	int gap = 0;

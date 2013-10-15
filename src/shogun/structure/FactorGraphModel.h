@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2013 Shell Hu 
- * Copyright (C) 2013 Shell Hu 
+ * Written (W) 2013 Shell Hu
+ * Copyright (C) 2013 Shell Hu
  */
 
 #ifndef __FACTOR_GRAPH_MODEL_H__
@@ -20,9 +20,9 @@
 namespace shogun
 {
 
-/** @brief CFactorGraphModel defines a model in terms of CFactorGraph 
+/** @brief CFactorGraphModel defines a model in terms of CFactorGraph
  * and CMAPInference, where parameters are associated with factor types,
- * in the model. There is a mapping vector records the locations of 
+ * in the model. There is a mapping vector records the locations of
  * local factor parameters in the global parameter vector.
  *
  * TODO: implement functions for SGD
@@ -33,15 +33,15 @@ public:
 	/** constructor */
 	CFactorGraphModel();
 
-	/** constructor 
+	/** constructor
 	 *
 	 * @param features pointer to structured inputs
 	 * @param labels pointer to structured outputs
 	 * @param inf_type MAP inference type, default is tree max-product inference
-	 * @param verbose whether output verbose information, such as energy table, slack variables etc. 
+	 * @param verbose whether output verbose information, such as energy table, slack variables etc.
 	 * NOTE: do NOT set this up when training with large data, massive printing will crash the program
 	 */
-	CFactorGraphModel(CFeatures* features, CStructuredLabels* labels, 
+	CFactorGraphModel(CFeatures* features, CStructuredLabels* labels,
 		EMAPInferType inf_type = TREE_MAX_PROD, bool verbose = false);
 
 	/** destructor */
@@ -50,7 +50,7 @@ public:
 	/** @return name of SGSerializable */
 	virtual const char* get_name() const { return "FactorGraphModel"; }
 
-	/** add a new factor type, NOTE: a factor type is not allowed to change 
+	/** add a new factor type, NOTE: a factor type is not allowed to change
 	 * once it has been added to the FactorGraphModel. Secondly, the model itself
 	 * should not be modified during training, i.e. no add/delete operations.
 	 *
@@ -76,7 +76,7 @@ public:
 	/** @return parameter mapping for all factor types */
 	SGVector<int32_t> get_global_params_mapping() const;
 
-	/** get parameter mapping for a factor type 
+	/** get parameter mapping for a factor type
 	 *
 	 * @param ftype_id factor type id
 	 */
@@ -86,7 +86,7 @@ public:
 	SGVector<float64_t> fparams_to_w();
 
 	/** update local parameters
-	 * 
+	 *
 	 * @param w new global parameter vector
 	 */
 	void w_to_fparams(SGVector<float64_t> w);
@@ -104,7 +104,7 @@ public:
 	 * @return the joint feature vector
 	 */
 	virtual SGVector< float64_t > get_joint_feature_vector(int32_t feat_idx, CStructuredData* y);
-	
+
 	/**
 	 * obtains the argmax of \f$ \Delta(y_{pred}, y_{truth}) +
 	 * \langle w, \Psi(x_{truth}, y_{pred}) \rangle \f$
@@ -119,7 +119,7 @@ public:
 	 * @return structure with the predicted output
 	 */
 	virtual CResultSet* argmax(SGVector< float64_t > w, int32_t feat_idx, bool const training = true);
-	
+
 	/** computes \f$ \Delta(y_{1}, y_{2}) \f$
 	 *
 	 * @param y1 an instance of structured data
@@ -135,10 +135,10 @@ public:
 	 */
 	virtual void init_training();
 
-	/** initialize the optimization problem for primal solver 
+	/** initialize the optimization problem for primal solver
 	 *
 	 * @param regularization input for C
-	 * @param A  is [-dPsi(y) | -I_N ] with M+N columns => max. M+1 nnz per row 
+	 * @param A  is [-dPsi(y) | -I_N ] with M+N columns => max. M+1 nnz per row
 	 * @param a  unused input
 	 * @param B  unused input
 	 * @param b  upper bounds of the constraints, Ax <= b
@@ -152,7 +152,7 @@ public:
 			SGMatrix< float64_t > B,  SGVector< float64_t > & b,
 			SGVector< float64_t > lb, SGVector< float64_t > ub,
 			SGMatrix < float64_t >  & C);
-	
+
 	/**
 	 * return the dimensionality of the joint feature space, i.e.
 	 * the dimension of the weight vector \f$w\f$
@@ -162,7 +162,7 @@ public:
 private:
 	/** register and initialize parameters */
 	void init();
-	
+
 protected:
 	/** array of factor types */
 	CDynamicObjectArray* m_factor_types;

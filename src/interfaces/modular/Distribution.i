@@ -7,7 +7,7 @@
  * Written (W) 2009 Soeren Sonnenburg
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
- 
+
 #ifdef HAVE_PYTHON
 %feature("autodoc", "get_log_likelihood(self) -> numpy 1dim array of float") get_log_likelihood;
 %feature("autodoc", "get_histogram(self) -> numpy 1dim array of float") get_histogram;

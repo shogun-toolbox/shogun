@@ -23,19 +23,19 @@ public class kernel_distance_modular {
 		Console.Write("dm_train:\n");
 		int numRows = dm_train.GetLength(0);
 		int numCols = dm_train.GetLength(1);
-		
+
 		for(int i = 0; i < numRows; i++){
 			for(int j = 0; j < numCols; j++){
 				Console.Write(dm_train[i,j] +" ");
 			}
 			Console.Write("\n");
 		}
-		
+
 		//  Parse and Display km_test
 		Console.Write("\ndm_test:\n");
 		numRows = dm_test.GetLength(0);
 		numCols = dm_test.GetLength(1);
-		
+
 		for(int i = 0; i < numRows; i++){
 			for(int j = 0; j < numCols; j++){
 				Console.Write(dm_test[i,j] +" ");

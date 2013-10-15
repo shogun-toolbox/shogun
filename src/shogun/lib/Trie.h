@@ -758,7 +758,7 @@ int32_t CTrie<Trie>::find_deepest_node(
 {
 #ifdef TRIE_CHECK_EVERYTHING
 	int32_t ret=0 ;
-	SG_DEBUG("start_node=%i\n", start_node) 
+	SG_DEBUG("start_node=%i\n", start_node)
 
 	if (start_node==NO_CHILD)
 	{
@@ -766,7 +766,7 @@ int32_t CTrie<Trie>::find_deepest_node(
 		{
 			int32_t my_deepest_node ;
 			int32_t depth=find_deepest_node(i, my_deepest_node) ;
-			SG_DEBUG("start_node %i depth=%i\n", i, depth) 
+			SG_DEBUG("start_node %i depth=%i\n", i, depth)
 			if (depth>ret)
 			{
 				deepest_node=my_deepest_node ;
@@ -804,7 +804,7 @@ int32_t CTrie<Trie>::find_deepest_node(
 	}
 	return ret ;
 #else
-	SG_ERROR("not implemented\n") 
+	SG_ERROR("not implemented\n")
 	return 0 ;
 #endif
 }
@@ -813,7 +813,7 @@ int32_t CTrie<Trie>::find_deepest_node(
 int32_t CTrie<Trie>::compact_nodes(
 	int32_t start_node, int32_t depth, float64_t * weights)
 {
-	SG_ERROR("code buggy\n") 
+	SG_ERROR("code buggy\n")
 
 	int32_t ret=0 ;
 
@@ -828,7 +828,7 @@ int32_t CTrie<Trie>::compact_nodes(
 
 	if (depth==degree-1)
 	{
-		TRIE_ASSERT_EVERYTHING(TreeMem[start_node].has_floats) 
+		TRIE_ASSERT_EVERYTHING(TreeMem[start_node].has_floats)
 		int32_t num_used=0 ;
 		for (int32_t q=0; q<4; q++)
 			if (TreeMem[start_node].child_weights[q]!=0.0)
@@ -837,7 +837,7 @@ int32_t CTrie<Trie>::compact_nodes(
 			return -1 ;
 		return 1 ;
 	}
-	TRIE_ASSERT_EVERYTHING(!TreeMem[start_node].has_floats) 
+	TRIE_ASSERT_EVERYTHING(!TreeMem[start_node].has_floats)
 
 	int32_t num_used = 0 ;
 	int32_t q_used=-1 ;
@@ -865,7 +865,7 @@ int32_t CTrie<Trie>::compact_nodes(
 			int32_t last_node=TreeMem[start_node].children[q] ;
 			if (weights_in_tree)
 			{
-				ASSERT(weights[depth]!=0.0) 
+				ASSERT(weights[depth]!=0.0)
 				TreeMem[node].weight=TreeMem[last_node].weight/weights[depth] ;
 			}
 			else
@@ -877,11 +877,11 @@ int32_t CTrie<Trie>::compact_nodes(
 			memset(TreeMem[node].seq, TRIE_TERMINAL_CHARACTER, 16) ;
 			for (int32_t n=0; n<num; n++)
 			{
-				ASSERT(depth+n+1<=degree-1) 
-				ASSERT(last_node!=NO_CHILD) 
+				ASSERT(depth+n+1<=degree-1)
+				ASSERT(last_node!=NO_CHILD)
 				if (depth+n+1==degree-1)
 				{
-					TRIE_ASSERT_EVERYTHING(TreeMem[last_node].has_floats) 
+					TRIE_ASSERT_EVERYTHING(TreeMem[last_node].has_floats)
 					int32_t  k ;
 					for (k=0; k<4; k++)
 						if (TreeMem[last_node].child_weights[k]!=0.0)
@@ -893,7 +893,7 @@ int32_t CTrie<Trie>::compact_nodes(
 				}
 				else
 				{
-					TRIE_ASSERT_EVERYTHING(!TreeMem[last_node].has_floats) 
+					TRIE_ASSERT_EVERYTHING(!TreeMem[last_node].has_floats)
 					int32_t k ;
 					for (k=0; k<4; k++)
 						if (TreeMem[last_node].children[k]!=NO_CHILD)
@@ -922,32 +922,32 @@ int32_t CTrie<Trie>::compact_nodes(
 bool CTrie<Trie>::compare_traverse(
 	int32_t node, const CTrie<Trie> & other, int32_t other_node)
 {
-	SG_DEBUG("checking nodes %i and %i\n", node, other_node) 
+	SG_DEBUG("checking nodes %i and %i\n", node, other_node)
 	if (fabs(TreeMem[node].weight-other.TreeMem[other_node].weight)>=1e-5)
 	{
-		SG_DEBUG("CTrie::compare: TreeMem[%i].weight=%f!=other.TreeMem[%i].weight=%f\n", node, TreeMem[node].weight, other_node,other.TreeMem[other_node].weight) 
-		SG_DEBUG(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n") 
+		SG_DEBUG("CTrie::compare: TreeMem[%i].weight=%f!=other.TreeMem[%i].weight=%f\n", node, TreeMem[node].weight, other_node,other.TreeMem[other_node].weight)
+		SG_DEBUG(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n")
 		display_node(node) ;
-		SG_DEBUG("============================================================\n") 
+		SG_DEBUG("============================================================\n")
 		other.display_node(other_node) ;
-		SG_DEBUG("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n") 
+		SG_DEBUG("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n")
 		return false ;
 	}
 
 #ifdef TRIE_CHECK_EVERYTHING
 	if (TreeMem[node].has_seq!=other.TreeMem[other_node].has_seq)
 	{
-		SG_DEBUG("CTrie::compare: TreeMem[%i].has_seq=%i!=other.TreeMem[%i].has_seq=%i\n", node, TreeMem[node].has_seq, other_node,other.TreeMem[other_node].has_seq) 
-		SG_DEBUG(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n") 
+		SG_DEBUG("CTrie::compare: TreeMem[%i].has_seq=%i!=other.TreeMem[%i].has_seq=%i\n", node, TreeMem[node].has_seq, other_node,other.TreeMem[other_node].has_seq)
+		SG_DEBUG(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n")
 		display_node(node) ;
-		SG_DEBUG("============================================================\n") 
+		SG_DEBUG("============================================================\n")
 		other.display_node(other_node) ;
-		SG_DEBUG("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n") 
+		SG_DEBUG("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n")
 		return false ;
 	}
 	if (TreeMem[node].has_floats!=other.TreeMem[other_node].has_floats)
 	{
-		SG_DEBUG("CTrie::compare: TreeMem[%i].has_floats=%i!=other.TreeMem[%i].has_floats=%i\n", node, TreeMem[node].has_floats, other_node, other.TreeMem[other_node].has_floats) 
+		SG_DEBUG("CTrie::compare: TreeMem[%i].has_floats=%i!=other.TreeMem[%i].has_floats=%i\n", node, TreeMem[node].has_floats, other_node, other.TreeMem[other_node].has_floats)
 		return false ;
 	}
 	if (other.TreeMem[other_node].has_floats)
@@ -955,12 +955,12 @@ bool CTrie<Trie>::compare_traverse(
 		for (int32_t q=0; q<4; q++)
 			if (fabs(TreeMem[node].child_weights[q]-other.TreeMem[other_node].child_weights[q])>1e-5)
 			{
-				SG_DEBUG("CTrie::compare: TreeMem[%i].child_weights[%i]=%e!=other.TreeMem[%i].child_weights[%i]=%e\n", node, q,TreeMem[node].child_weights[q], other_node,q,other.TreeMem[other_node].child_weights[q]) 
-				SG_DEBUG(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n") 
+				SG_DEBUG("CTrie::compare: TreeMem[%i].child_weights[%i]=%e!=other.TreeMem[%i].child_weights[%i]=%e\n", node, q,TreeMem[node].child_weights[q], other_node,q,other.TreeMem[other_node].child_weights[q])
+				SG_DEBUG(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n")
 				display_node(node) ;
-				SG_DEBUG("============================================================\n") 
+				SG_DEBUG("============================================================\n")
 				other.display_node(other_node) ;
-				SG_DEBUG("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n") 
+				SG_DEBUG("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n")
 				return false ;
 			}
 	}
@@ -969,12 +969,12 @@ bool CTrie<Trie>::compare_traverse(
 		for (int32_t q=0; q<16; q++)
 			if ((TreeMem[node].seq[q]!=other.TreeMem[other_node].seq[q]) && ((TreeMem[node].seq[q]<4)||(other.TreeMem[other_node].seq[q]<4)))
 			{
-				SG_DEBUG("CTrie::compare: TreeMem[%i].seq[%i]=%i!=other.TreeMem[%i].seq[%i]=%i\n", node,q,TreeMem[node].seq[q], other_node,q,other.TreeMem[other_node].seq[q]) 
-				SG_DEBUG(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n") 
+				SG_DEBUG("CTrie::compare: TreeMem[%i].seq[%i]=%i!=other.TreeMem[%i].seq[%i]=%i\n", node,q,TreeMem[node].seq[q], other_node,q,other.TreeMem[other_node].seq[q])
+				SG_DEBUG(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n")
 				display_node(node) ;
-				SG_DEBUG("============================================================\n") 
+				SG_DEBUG("============================================================\n")
 				other.display_node(other_node) ;
-				SG_DEBUG("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n") 
+				SG_DEBUG("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n")
 				return false ;
 			}
 	}
@@ -986,12 +986,12 @@ bool CTrie<Trie>::compare_traverse(
 				continue ;
 			if ((TreeMem[node].children[q]==NO_CHILD)!=(other.TreeMem[other_node].children[q]==NO_CHILD))
 			{
-				SG_DEBUG("CTrie::compare: TreeMem[%i].children[%i]=%i!=other.TreeMem[%i].children[%i]=%i\n", node,q,TreeMem[node].children[q], other_node,q,other.TreeMem[other_node].children[q]) 
-				SG_DEBUG(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n") 
+				SG_DEBUG("CTrie::compare: TreeMem[%i].children[%i]=%i!=other.TreeMem[%i].children[%i]=%i\n", node,q,TreeMem[node].children[q], other_node,q,other.TreeMem[other_node].children[q])
+				SG_DEBUG(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n")
 				display_node(node) ;
-				SG_DEBUG("============================================================\n") 
+				SG_DEBUG("============================================================\n")
 				other.display_node(other_node) ;
-				SG_DEBUG("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n") 
+				SG_DEBUG("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n")
 				return false ;
 			}
 			if (!compare_traverse(abs(TreeMem[node].children[q]), other, abs(other.TreeMem[other_node].children[q])))
@@ -999,7 +999,7 @@ bool CTrie<Trie>::compare_traverse(
 		}
 	}
 #else
-	SG_ERROR("not implemented\n") 
+	SG_ERROR("not implemented\n")
 #endif
 
 	return true ;
@@ -1013,7 +1013,7 @@ bool CTrie<Trie>::compare(const CTrie<Trie> & other)
 		if (!compare_traverse(trees[i], other, other.trees[i]))
 			return false ;
 		else
-			SG_DEBUG("two tries at %i identical\n", i) 
+			SG_DEBUG("two tries at %i identical\n", i)
 
 	return ret ;
 }
@@ -1023,7 +1023,7 @@ bool CTrie<Trie>::find_node(
 	int32_t node, int32_t * trace, int32_t& trace_len) const
 {
 #ifdef TRIE_CHECK_EVERYTHING
-	ASSERT(trace_len-1>=0) 
+	ASSERT(trace_len-1>=0)
 	ASSERT((trace[trace_len-1]>=0) && (trace[trace_len-1]<TreeMemPtrMax))
 		if (TreeMem[trace[trace_len-1]].has_seq)
 			return false ;
@@ -1054,7 +1054,7 @@ bool CTrie<Trie>::find_node(
 	trace_len=0 ;
 	return false ;
 #else
-	SG_ERROR("not implemented\n") 
+	SG_ERROR("not implemented\n")
 	return false ;
 #endif
 }
@@ -1075,8 +1075,8 @@ void CTrie<Trie>::display_node(int32_t node) const
 		if (found)
 			break ;
 	}
-	ASSERT(found) 
-	SG_PRINT("position %i  trace: ", tree) 
+	ASSERT(found)
+	SG_PRINT("position %i  trace: ", tree)
 
 	for (int32_t i=0; i<trace_len-1; i++)
 	{
@@ -1087,20 +1087,20 @@ void CTrie<Trie>::display_node(int32_t node) const
 				branch=q;
 				break ;
 			}
-		ASSERT(branch!=-1) 
+		ASSERT(branch!=-1)
 		char acgt[5]="ACGT" ;
-		SG_PRINT("%c", acgt[branch]) 
+		SG_PRINT("%c", acgt[branch])
 	}
-	SG_PRINT("\nnode=%i\nweight=%f\nhas_seq=%i\nhas_floats=%i\n", node, TreeMem[node].weight, TreeMem[node].has_seq, TreeMem[node].has_floats) 
+	SG_PRINT("\nnode=%i\nweight=%f\nhas_seq=%i\nhas_floats=%i\n", node, TreeMem[node].weight, TreeMem[node].has_seq, TreeMem[node].has_floats)
 	if (TreeMem[node].has_floats)
 	{
 		for (int32_t q=0; q<4; q++)
-			SG_PRINT("child_weighs[%i] = %f\n", q, TreeMem[node].child_weights[q]) 
+			SG_PRINT("child_weighs[%i] = %f\n", q, TreeMem[node].child_weights[q])
 	}
 	if (TreeMem[node].has_seq)
 	{
 		for (int32_t q=0; q<16; q++)
-			SG_PRINT("seq[%i] = %i\n", q, TreeMem[node].seq[q]) 
+			SG_PRINT("seq[%i] = %i\n", q, TreeMem[node].seq[q])
 	}
 	if (!TreeMem[node].has_seq && !TreeMem[node].has_floats)
 	{
@@ -1108,18 +1108,18 @@ void CTrie<Trie>::display_node(int32_t node) const
 		{
 			if (TreeMem[node].children[q]!=NO_CHILD)
 			{
-				SG_PRINT("children[%i] = %i -> \n", q, TreeMem[node].children[q]) 
+				SG_PRINT("children[%i] = %i -> \n", q, TreeMem[node].children[q])
 				display_node(abs(TreeMem[node].children[q])) ;
 			}
 			else
-				SG_PRINT("children[%i] = NO_CHILD -| \n", q, TreeMem[node].children[q]) 
+				SG_PRINT("children[%i] = NO_CHILD -| \n", q, TreeMem[node].children[q])
 		}
 
 	}
 
 	SG_FREE(trace);
 #else
-	SG_ERROR("not implemented\n") 
+	SG_ERROR("not implemented\n")
 #endif
 }
 
@@ -1187,7 +1187,7 @@ float64_t CTrie<Trie>::compute_abs_weights_tree(int32_t tree, int32_t depth)
 
 	if (tree==NO_CHILD)
 		return 0 ;
-	TRIE_ASSERT(tree>=0) 
+	TRIE_ASSERT(tree>=0)
 
 	if (depth==degree-2)
 	{
@@ -1219,7 +1219,7 @@ float64_t *CTrie<Trie>::compute_abs_weights(int32_t &len)
 
 	for (int32_t i=0; i<length; i++)
 	{
-		TRIE_ASSERT(trees[i]!=NO_CHILD) 
+		TRIE_ASSERT(trees[i]!=NO_CHILD)
 		for (int32_t k=0; k<4; k++)
 		{
 			sum[i*4+k]=compute_abs_weights_tree(TreeMem[trees[i]].children[k], 0) ;
@@ -1238,7 +1238,7 @@ void CTrie<Trie>::add_example_to_tree_mismatch_recursion(
 {
 	if (tree==NO_CHILD)
 		tree=trees[i] ;
-	TRIE_ASSERT(tree!=NO_CHILD) 
+	TRIE_ASSERT(tree!=NO_CHILD)
 
 	if ((len_rem<=0) || (mismatch_rec>max_mismatch) || (degree_rec>degree))
 		return ;
@@ -1248,7 +1248,7 @@ void CTrie<Trie>::add_example_to_tree_mismatch_recursion(
 
 	if (degree_rec==degree-1)
 	{
-		TRIE_ASSERT_EVERYTHING(TreeMem[tree].has_floats) 
+		TRIE_ASSERT_EVERYTHING(TreeMem[tree].has_floats)
 		if (weights_in_tree)
 			TreeMem[tree].child_weights[vec[0]] += alpha*weights[degree_rec+degree*mismatch_rec];
 		else
@@ -1267,7 +1267,7 @@ void CTrie<Trie>::add_example_to_tree_mismatch_recursion(
 	}
 	else
 	{
-		TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_floats) 
+		TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_floats)
 		if (TreeMem[tree].children[vec[0]]!=NO_CHILD)
 		{
 			subtree=TreeMem[tree].children[vec[0]] ;
@@ -1280,7 +1280,7 @@ void CTrie<Trie>::add_example_to_tree_mismatch_recursion(
 		else
 		{
 			int32_t tmp = get_node(degree_rec==degree-2);
-			ASSERT(tmp>=0) 
+			ASSERT(tmp>=0)
 			TreeMem[tree].children[vec[0]]=tmp ;
 			subtree=tmp ;
 #ifdef TRIE_CHECK_EVERYTHING
@@ -1301,7 +1301,7 @@ void CTrie<Trie>::add_example_to_tree_mismatch_recursion(
 
 		if (mismatch_rec+1<=max_mismatch)
 		{
-			TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_floats) 
+			TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_floats)
 			for (int32_t o=0; o<3; o++)
 			{
 				int32_t ot = other[vec[0]][o] ;
@@ -1317,7 +1317,7 @@ void CTrie<Trie>::add_example_to_tree_mismatch_recursion(
 				else
 				{
 					int32_t tmp = get_node(degree_rec==degree-2);
-					ASSERT(tmp>=0) 
+					ASSERT(tmp>=0)
 					TreeMem[tree].children[ot]=tmp ;
 					subtree=tmp ;
 #ifdef TRIE_CHECK_EVERYTHING
@@ -1497,7 +1497,7 @@ void CTrie<Trie>::add_to_trie(
 	float64_t *weights, bool degree_times_position_weights)
 {
 	int32_t tree = trees[i] ;
-	//ASSERT(seq_offset==0) 
+	//ASSERT(seq_offset==0)
 
 	int32_t max_depth = 0 ;
 	float64_t* weights_column ;
@@ -1518,21 +1518,21 @@ void CTrie<Trie>::add_to_trie(
 
 	for (int32_t j=0; (j<max_depth) && (i+j+seq_offset<length); j++)
 	{
-		TRIE_ASSERT((vec[i+j+seq_offset]>=0) && (vec[i+j+seq_offset]<4)) 
+		TRIE_ASSERT((vec[i+j+seq_offset]>=0) && (vec[i+j+seq_offset]<4))
 		if ((j<degree-1) && (TreeMem[tree].children[vec[i+j+seq_offset]]!=NO_CHILD))
 		{
 			if (TreeMem[tree].children[vec[i+j+seq_offset]]<0)
 			{
 				// special treatment of the next nodes
-				TRIE_ASSERT(j >= degree-16) 
+				TRIE_ASSERT(j >= degree-16)
 				// get the right element
-				TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_seq) 
-				TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_floats) 
+				TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_seq)
+				TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_floats)
 				int32_t node = - TreeMem[tree].children[vec[i+j+seq_offset]] ;
 
-				TRIE_ASSERT((node>=0) && (node<=TreeMemPtrMax)) 
-				TRIE_ASSERT_EVERYTHING(TreeMem[node].has_seq) 
-				TRIE_ASSERT_EVERYTHING(!TreeMem[node].has_floats) 
+				TRIE_ASSERT((node>=0) && (node<=TreeMemPtrMax))
+				TRIE_ASSERT_EVERYTHING(TreeMem[node].has_seq)
+				TRIE_ASSERT_EVERYTHING(!TreeMem[node].has_floats)
 
 				// check whether the same string is stored
 				int32_t mismatch_pos = -1 ;
@@ -1540,12 +1540,12 @@ void CTrie<Trie>::add_to_trie(
 					int32_t k ;
 					for (k=0; (j+k<max_depth) && (i+j+seq_offset+k<length); k++)
 					{
-						TRIE_ASSERT((vec[i+j+seq_offset+k]>=0) && (vec[i+j+seq_offset+k]<4)) 
+						TRIE_ASSERT((vec[i+j+seq_offset+k]>=0) && (vec[i+j+seq_offset+k]<4))
 						// ###
 						if ((TreeMem[node].seq[k]>=4) && (TreeMem[node].seq[k]!=TRIE_TERMINAL_CHARACTER))
 							fprintf(stderr, "+++i=%i j=%i seq[%i]=%i\n", i, j, k, TreeMem[node].seq[k]) ;
-						TRIE_ASSERT((TreeMem[node].seq[k]<4) || (TreeMem[node].seq[k]==TRIE_TERMINAL_CHARACTER)) 
-						TRIE_ASSERT(k<16) 
+						TRIE_ASSERT((TreeMem[node].seq[k]<4) || (TreeMem[node].seq[k]==TRIE_TERMINAL_CHARACTER))
+						TRIE_ASSERT(k<16)
 						if (TreeMem[node].seq[k]!=vec[i+j+seq_offset+k])
 						{
 							mismatch_pos=k ;
@@ -1572,8 +1572,8 @@ void CTrie<Trie>::add_to_trie(
 					int32_t k ;
 					for (k=0; k<mismatch_pos; k++)
 					{
-						TRIE_ASSERT((vec[i+j+seq_offset+k]>=0) && (vec[i+j+seq_offset+k]<4)) 
-						TRIE_ASSERT(vec[i+j+seq_offset+k]==TreeMem[node].seq[k]) 
+						TRIE_ASSERT((vec[i+j+seq_offset+k]>=0) && (vec[i+j+seq_offset+k]<4))
+						TRIE_ASSERT(vec[i+j+seq_offset+k]==TreeMem[node].seq[k])
 
 						int32_t tmp=get_node();
 						TreeMem[last_node].children[vec[i+j+seq_offset+k]]=tmp ;
@@ -1582,12 +1582,12 @@ void CTrie<Trie>::add_to_trie(
 							TreeMem[last_node].weight = (TreeMem[node].weight+alpha)*weights_column[j+k] ;
 						else
 							TreeMem[last_node].weight = (TreeMem[node].weight+alpha) ;
-						TRIE_ASSERT(j+k!=degree-1) 
+						TRIE_ASSERT(j+k!=degree-1)
 					}
 					if ((TreeMem[node].seq[mismatch_pos]>=4) && (TreeMem[node].seq[mismatch_pos]!=TRIE_TERMINAL_CHARACTER))
 						fprintf(stderr, "**i=%i j=%i seq[%i]=%i\n", i, j, k, TreeMem[node].seq[mismatch_pos]) ;
-					ASSERT((TreeMem[node].seq[mismatch_pos]<4) || (TreeMem[node].seq[mismatch_pos]==TRIE_TERMINAL_CHARACTER)) 
-					TRIE_ASSERT(vec[i+j+seq_offset+mismatch_pos]!=TreeMem[node].seq[mismatch_pos]) 
+					ASSERT((TreeMem[node].seq[mismatch_pos]<4) || (TreeMem[node].seq[mismatch_pos]==TRIE_TERMINAL_CHARACTER))
+					TRIE_ASSERT(vec[i+j+seq_offset+mismatch_pos]!=TreeMem[node].seq[mismatch_pos])
 
 					if (j+k==degree-1)
 					{
@@ -1634,7 +1634,7 @@ void CTrie<Trie>::add_to_trie(
 						}
 
 						// the new branch
-						TRIE_ASSERT((vec[i+j+seq_offset+mismatch_pos]>=0) && (vec[i+j+seq_offset+mismatch_pos]<4)) 
+						TRIE_ASSERT((vec[i+j+seq_offset+mismatch_pos]>=0) && (vec[i+j+seq_offset+mismatch_pos]<4))
 						int32_t tmp = get_node() ;
 						TreeMem[last_node].children[vec[i+j+seq_offset+mismatch_pos]] = -tmp ;
 						last_node=tmp ;
@@ -1653,8 +1653,8 @@ void CTrie<Trie>::add_to_trie(
 			else
 			{
 				tree=TreeMem[tree].children[vec[i+j+seq_offset]] ;
-				TRIE_ASSERT((tree>=0) && (tree<TreeMemPtrMax)) 
-				TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_seq) 
+				TRIE_ASSERT((tree>=0) && (tree<TreeMemPtrMax))
+				TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_seq)
 				if (weights_in_tree)
 					TreeMem[tree].weight += alpha*weights_column[j];
 				else
@@ -1664,8 +1664,8 @@ void CTrie<Trie>::add_to_trie(
 		else if (j==degree-1)
 		{
 			// special treatment of the last node
-			TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_seq) 
-			TRIE_ASSERT_EVERYTHING(TreeMem[tree].has_floats) 
+			TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_seq)
+			TRIE_ASSERT_EVERYTHING(TreeMem[tree].has_floats)
 			if (weights_in_tree)
 				TreeMem[tree].child_weights[vec[i+j+seq_offset]] += alpha*weights_column[j] ;
 			else
@@ -1676,8 +1676,8 @@ void CTrie<Trie>::add_to_trie(
 		else
 		{
 			bool use_seq = use_compact_terminal_nodes && (j>degree-16) ;
-			TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_seq) 
-			TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_floats) 
+			TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_seq)
+			TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_floats)
 
 			int32_t tmp = get_node((j==degree-2) && (!use_seq));
 			if (use_seq)
@@ -1686,7 +1686,7 @@ void CTrie<Trie>::add_to_trie(
 				TreeMem[tree].children[vec[i+j+seq_offset]] = tmp ;
 			tree=tmp ;
 
-			TRIE_ASSERT((tree>=0) && (tree<TreeMemPtrMax)) 
+			TRIE_ASSERT((tree>=0) && (tree<TreeMemPtrMax))
 #ifdef TRIE_CHECK_EVERYTHING
 			TreeMem[tree].has_seq = use_seq ;
 #endif
@@ -1697,7 +1697,7 @@ void CTrie<Trie>::add_to_trie(
 				memset(TreeMem[tree].seq, TRIE_TERMINAL_CHARACTER, 16) ;
 				for (int32_t q=0; (j+q<degree) && (i+j+seq_offset+q<length); q++)
 				{
-					TRIE_ASSERT(q<16) 
+					TRIE_ASSERT(q<16)
 					TreeMem[tree].seq[q]=vec[i+j+seq_offset+q] ;
 				}
 				break ;
@@ -1737,20 +1737,20 @@ float64_t CTrie<Trie>::compute_by_tree_helper(
 	float64_t sum=0 ;
 	for (int32_t j=0; seq_pos+j < len; j++)
 	{
-		TRIE_ASSERT((vec[seq_pos+j]<4) && (vec[seq_pos+j]>=0)) 
+		TRIE_ASSERT((vec[seq_pos+j]<4) && (vec[seq_pos+j]>=0))
 
 		if ((j<degree-1) && (TreeMem[tree].children[vec[seq_pos+j]]!=NO_CHILD))
 		{
-			TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_floats) 
+			TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_floats)
 			if (TreeMem[tree].children[vec[seq_pos+j]]<0)
 			{
 				tree = - TreeMem[tree].children[vec[seq_pos+j]];
-				TRIE_ASSERT(tree>=0) 
-				TRIE_ASSERT_EVERYTHING(TreeMem[tree].has_seq) 
+				TRIE_ASSERT(tree>=0)
+				TRIE_ASSERT_EVERYTHING(TreeMem[tree].has_seq)
 				float64_t this_weight=0.0 ;
 				for (int32_t k=0; (j+k<degree) && (seq_pos+j+k<length); k++)
 				{
-					TRIE_ASSERT((vec[seq_pos+j+k]<4) && (vec[seq_pos+j+k]>=0)) 
+					TRIE_ASSERT((vec[seq_pos+j+k]<4) && (vec[seq_pos+j+k]>=0))
 					if (TreeMem[tree].seq[k]!=vec[seq_pos+j+k])
 						break ;
 					this_weight += weights_column[j+k] ;
@@ -1761,7 +1761,7 @@ float64_t CTrie<Trie>::compute_by_tree_helper(
 			else
 			{
 				tree=TreeMem[tree].children[vec[seq_pos+j]];
-				TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_seq) 
+				TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_seq)
 				if (weights_in_tree)
 					sum += TreeMem[tree].weight ;
 				else
@@ -1770,17 +1770,17 @@ float64_t CTrie<Trie>::compute_by_tree_helper(
 		}
 		else
 		{
-			TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_seq) 
+			TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_seq)
 			if (j==degree-1)
 			{
-				TRIE_ASSERT_EVERYTHING(TreeMem[tree].has_floats) 
+				TRIE_ASSERT_EVERYTHING(TreeMem[tree].has_floats)
 				if (weights_in_tree)
 					sum += TreeMem[tree].child_weights[vec[seq_pos+j]] ;
 				else
 					sum += TreeMem[tree].child_weights[vec[seq_pos+j]] * weights_column[j] ;
 			}
 			else
-				TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_floats) 
+				TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_floats)
 
 			break;
 		}
@@ -1817,7 +1817,7 @@ void CTrie<Trie>::compute_by_tree_helper(
 					if (TreeMem[tree].children[vec[seq_pos+j]]<0)
 					{
 						tree = -TreeMem[tree].children[vec[seq_pos+j]];
-						TRIE_ASSERT_EVERYTHING(TreeMem[tree].has_seq) 
+						TRIE_ASSERT_EVERYTHING(TreeMem[tree].has_seq)
 						for (int32_t k=0; (j+k<degree) && (seq_pos+j+k<length); k++)
 						{
 							if (TreeMem[tree].seq[k]!=vec[seq_pos+j+k])
@@ -1832,7 +1832,7 @@ void CTrie<Trie>::compute_by_tree_helper(
 					else
 					{
 						tree=TreeMem[tree].children[vec[seq_pos+j]];
-						TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_seq) 
+						TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_seq)
 						if (weights_in_tree)
 							LevelContrib[weight_pos/mkl_stepsize] += factor*TreeMem[tree].weight ;
 						else
@@ -1841,7 +1841,7 @@ void CTrie<Trie>::compute_by_tree_helper(
 				}
 				else
 				{
-					TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_seq) 
+					TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_seq)
 					if (j==degree-1)
 					{
 						if (weights_in_tree)
@@ -1861,7 +1861,7 @@ void CTrie<Trie>::compute_by_tree_helper(
 					if (TreeMem[tree].children[vec[seq_pos+j]]<0)
 					{
 						tree = -TreeMem[tree].children[vec[seq_pos+j]];
-						TRIE_ASSERT_EVERYTHING(TreeMem[tree].has_seq) 
+						TRIE_ASSERT_EVERYTHING(TreeMem[tree].has_seq)
 						for (int32_t k=0; (j+k<degree) && (seq_pos+j+k<length); k++)
 						{
 							if (TreeMem[tree].seq[k]!=vec[seq_pos+j+k])
@@ -1876,7 +1876,7 @@ void CTrie<Trie>::compute_by_tree_helper(
 					else
 					{
 						tree=TreeMem[tree].children[vec[seq_pos+j]];
-						TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_seq) 
+						TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_seq)
 						if (weights_in_tree)
 							LevelContrib[weight_pos/mkl_stepsize] += factor*TreeMem[tree].weight ;
 						else
@@ -1885,7 +1885,7 @@ void CTrie<Trie>::compute_by_tree_helper(
 				}
 				else
 				{
-					TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_seq) 
+					TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_seq)
 					if (j==degree-1)
 					{
 						if (weights_in_tree)
@@ -1907,7 +1907,7 @@ void CTrie<Trie>::compute_by_tree_helper(
 				if (TreeMem[tree].children[vec[seq_pos+j]]<0)
 				{
 					tree = -TreeMem[tree].children[vec[seq_pos+j]];
-					TRIE_ASSERT_EVERYTHING(TreeMem[tree].has_seq) 
+					TRIE_ASSERT_EVERYTHING(TreeMem[tree].has_seq)
 					for (int32_t k=0; (j+k<degree) && (seq_pos+j+k<length); k++)
 					{
 						if (TreeMem[tree].seq[k]!=vec[seq_pos+j+k])
@@ -1922,7 +1922,7 @@ void CTrie<Trie>::compute_by_tree_helper(
 				else
 				{
 					tree=TreeMem[tree].children[vec[seq_pos+j]];
-					TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_seq) 
+					TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_seq)
 					if (weights_in_tree)
 						LevelContrib[j/mkl_stepsize] += factor*TreeMem[tree].weight ;
 					else
@@ -1931,7 +1931,7 @@ void CTrie<Trie>::compute_by_tree_helper(
 			}
 			else
 			{
-				TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_seq) 
+				TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_seq)
 				if (j==degree-1)
 				{
 					if (weights_in_tree)
@@ -1970,7 +1970,7 @@ void CTrie<Trie>::compute_by_tree_helper(
 				if (TreeMem[tree].children[vec[seq_pos+j]]<0)
 				{
 					tree = -TreeMem[tree].children[vec[seq_pos+j]];
-					TRIE_ASSERT_EVERYTHING(TreeMem[tree].has_seq) 
+					TRIE_ASSERT_EVERYTHING(TreeMem[tree].has_seq)
 					for (int32_t k=0; (j+k<degree) && (seq_pos+j+k<length); k++)
 					{
 						if (TreeMem[tree].seq[k]!=vec[seq_pos+j+k])
@@ -1985,7 +1985,7 @@ void CTrie<Trie>::compute_by_tree_helper(
 				else
 				{
 					tree=TreeMem[tree].children[vec[seq_pos+j]];
-					TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_seq) 
+					TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_seq)
 					if (weights_in_tree)
 						LevelContrib[(j+degree*weight_pos)/mkl_stepsize] += factor * TreeMem[tree].weight ;
 					else
@@ -1994,7 +1994,7 @@ void CTrie<Trie>::compute_by_tree_helper(
 			}
 			else
 			{
-				TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_seq) 
+				TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_seq)
 				if (j==degree-1)
 				{
 					if (weights_in_tree)

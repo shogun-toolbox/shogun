@@ -3,7 +3,7 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Written (W) 2013 Soumyajit De
  * Written (W) 2013 Heiko Strathmann
  */
@@ -27,7 +27,7 @@ class CEigenSolver;
  * linear operator (A) times vector (v) using Cauchy's integral formula -
  * \f[f(\text{A})\text{v}=\oint_{\Gamma}f(z)(z\text{I}-\text{A})^{-1}
  * \text{v}dz\f]
- * Computes eigenvalues of linear operator and uses Jacobi elliptic functions 
+ * Computes eigenvalues of linear operator and uses Jacobi elliptic functions
  * and conformal maps [2] for quadrature rule for discretizing the contour
  * integral and computes complex shifts, weights and constant multiplier of the
  * rational approximation of the above expression as
@@ -41,9 +41,9 @@ class CEigenSolver;
  * The number of shifts is automatically computed based on a previously
  * specified accuracy \f$\epsilon\f$ using the error bound
  * \f[
- * 	  -1.5\left(\log\left(
- * 	  \frac{\lambda_\text{max}}{\lambda_\text{min}}\right)+6.0
- * 	  \right)\frac{\log(\epsilon)}{2\pi^2}.
+ *	  -1.5\left(\log\left(
+ *	  \frac{\lambda_\text{max}}{\lambda_\text{min}}\right)+6.0
+ *	  \right)\frac{\log(\epsilon)}{2\pi^2}.
  * \f]
  * It can also manually be set.
  *
@@ -88,7 +88,7 @@ public:
 	/** destructor */
 	virtual ~CRationalApproximation();
 
-	/** 
+	/**
 	 * precompute method that computes extremal eigenvalues using the eigensolver
 	 * and then computes complex shifts, weights and constant multiplier coming
 	 * from rational approximation of operator function times vector
@@ -101,9 +101,9 @@ public:
 	/** Computes the number of shifts from the current set accuracy \f$\epsilon\f$
 	 * using
 	 * \f[
-	 * 	  -1.5\left(\log\left(
-	 * 	  \frac{\lambda_\text{max}}{\lambda_\text{min}}\right)+6.0
-	 * 	  \right)\frac{\log(\epsilon)}{2\pi^2},
+	 *	  -1.5\left(\log\left(
+	 *	  \frac{\lambda_\text{max}}{\lambda_\text{min}}\right)+6.0
+	 *	  \right)\frac{\log(\epsilon)}{2\pi^2},
 	 * \f]
 	 *
 	 * @return number of shift to reach the above error bound
@@ -111,13 +111,13 @@ public:
 	 */
 	int32_t compute_num_shifts_from_accuracy();
 
-	/** 
+	/**
 	 * abstract method that creates a job result aggregator, then creates a
 	 * number of jobs based on its implementation, attaches the aggregator
 	 * with all those jobs, hands over the responsility of those to the
 	 * computation engine and then returns the aggregator for collecting the
 	 * job results
-	 * 
+	 *
 	 * @param sample the vector for which new computation job(s) are to be created
 	 * @return the array of generated independent jobs
 	 */
@@ -167,7 +167,7 @@ private:
 	/** initializes with default values and registers params */
 	void init();
 
-	/** 
+	/**
 	 * computes complex integration shifts and weights using conformal mapping
 	 * of quadrature rule of discretization of the contour integral
 	 */

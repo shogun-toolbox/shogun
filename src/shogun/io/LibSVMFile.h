@@ -175,43 +175,43 @@ public:
 	 */
 	//@{
 	virtual void get_sparse_matrix(
-			SGSparseVector<bool>*& matrix, int32_t& num_feat, int32_t& num_vec, 
+			SGSparseVector<bool>*& matrix, int32_t& num_feat, int32_t& num_vec,
 			float64_t*& labels, bool load_labels=true);
 	virtual void get_sparse_matrix(
-			SGSparseVector<uint8_t>*& matrix, int32_t& num_feat, int32_t& num_vec, 
+			SGSparseVector<uint8_t>*& matrix, int32_t& num_feat, int32_t& num_vec,
 			float64_t*& labels, bool load_labels=true);
 	virtual void get_sparse_matrix(
-			SGSparseVector<int8_t>*& matrix, int32_t& num_feat, int32_t& num_vec, 
+			SGSparseVector<int8_t>*& matrix, int32_t& num_feat, int32_t& num_vec,
 			float64_t*& labels, bool load_labels=true);
 	virtual void get_sparse_matrix(
-			SGSparseVector<char>*& matrix, int32_t& num_feat, int32_t& num_vec, 
+			SGSparseVector<char>*& matrix, int32_t& num_feat, int32_t& num_vec,
 			float64_t*& labels, bool load_labels=true);
 	virtual void get_sparse_matrix(
-			SGSparseVector<int32_t>*& matrix, int32_t& num_feat, int32_t& num_vec, 
+			SGSparseVector<int32_t>*& matrix, int32_t& num_feat, int32_t& num_vec,
 			float64_t*& labels, bool load_labels=true);
 	virtual void get_sparse_matrix(
-			SGSparseVector<uint32_t>*& matrix, int32_t& num_feat, int32_t& num_vec, 
+			SGSparseVector<uint32_t>*& matrix, int32_t& num_feat, int32_t& num_vec,
 			float64_t*& labels, bool load_labels=true);
 	virtual void get_sparse_matrix(
-			SGSparseVector<int64_t>*& matrix, int32_t& num_feat, int32_t& num_vec, 
+			SGSparseVector<int64_t>*& matrix, int32_t& num_feat, int32_t& num_vec,
 			float64_t*& labels, bool load_labels=true);
 	virtual void get_sparse_matrix(
-			SGSparseVector<uint64_t>*& matrix, int32_t& num_feat, int32_t& num_vec, 
+			SGSparseVector<uint64_t>*& matrix, int32_t& num_feat, int32_t& num_vec,
 			float64_t*& labels, bool load_labels=true);
 	virtual void get_sparse_matrix(
-			SGSparseVector<int16_t>*& matrix, int32_t& num_feat, int32_t& num_vec, 
+			SGSparseVector<int16_t>*& matrix, int32_t& num_feat, int32_t& num_vec,
 			float64_t*& labels, bool load_labels=true);
 	virtual void get_sparse_matrix(
-			SGSparseVector<uint16_t>*& matrix, int32_t& num_feat, int32_t& num_vec, 
+			SGSparseVector<uint16_t>*& matrix, int32_t& num_feat, int32_t& num_vec,
 			float64_t*& labels, bool load_labels=true);
 	virtual void get_sparse_matrix(
-			SGSparseVector<float32_t>*& matrix, int32_t& num_feat, int32_t& num_vec, 
+			SGSparseVector<float32_t>*& matrix, int32_t& num_feat, int32_t& num_vec,
 			float64_t*& labels, bool load_labels=true);
 	virtual void get_sparse_matrix(
-			SGSparseVector<float64_t>*& matrix, int32_t& num_feat, int32_t& num_vec, 
+			SGSparseVector<float64_t>*& matrix, int32_t& num_feat, int32_t& num_vec,
 			float64_t*& labels, bool load_labels=true);
 	virtual void get_sparse_matrix(
-			SGSparseVector<floatmax_t>*& matrix, int32_t& num_feat, int32_t& num_vec, 
+			SGSparseVector<floatmax_t>*& matrix, int32_t& num_feat, int32_t& num_vec,
 			float64_t*& labels, bool load_labels=true);
 
 	/** @name String Access Functions
@@ -460,7 +460,7 @@ private:
 	/** tokenizer for line_reader */
 	CDelimiterTokenizer* m_line_tokenizer;
 
-	/** delimiter for parsing lines */	
+	/** delimiter for parsing lines */
 	CDelimiterTokenizer* m_whitespace_tokenizer;
 
 	/** delimiter for parsing sparse entries */

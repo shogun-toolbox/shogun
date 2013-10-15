@@ -23,7 +23,7 @@ namespace shogun
 {
 
 /** @brief A CNode is an element of a CTaxonomy, which is used to describe hierarchical
- * 	structure between tasks.
+ *	structure between tasks.
  *
  */
 class CNode: public CSGObject
@@ -40,8 +40,8 @@ public:
 
     virtual ~CNode()
     {
-    	for (size_t i = 0; i < children.size(); i++)
-    		delete children[i];
+	for (size_t i = 0; i < children.size(); i++)
+		delete children[i];
     }
 
     /** get a list of all ancestors of this node
@@ -79,7 +79,7 @@ public:
             }
 
             if(current_node->is_leaf()){
-            	task_ids.push_back(current_node->getNode_id());
+	task_ids.push_back(current_node->getNode_id());
             }
         }
 
@@ -138,7 +138,7 @@ protected:
 
 
 /** @brief CTaxonomy is used to describe hierarchical
- * 	structure between tasks.
+ *	structure between tasks.
  *
  */
 class CTaxonomy : public CSGObject

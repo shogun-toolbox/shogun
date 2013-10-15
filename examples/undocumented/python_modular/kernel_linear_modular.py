@@ -10,7 +10,7 @@ def kernel_linear_modular (train_fname=traindat,test_fname=testdat,scale=1.2):
 
 	feats_train=RealFeatures(CSVFile(train_fname))
 	feats_test=RealFeatures(CSVFile(test_fname))
-	 
+
 	kernel=LinearKernel()
 	kernel.set_normalizer(AvgDiagKernelNormalizer(scale))
 	kernel.init(feats_train, feats_train)

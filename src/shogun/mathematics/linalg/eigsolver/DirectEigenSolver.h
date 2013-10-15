@@ -3,7 +3,7 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Written (W) 2013 Soumyajit De
  */
 
@@ -28,9 +28,9 @@ public:
 	/** default constructor */
 	CDirectEigenSolver();
 
-	/** 
+	/**
 	 * constructor
-	 * 
+	 *
 	 * @param linear_operator self-adjoint dense-matrix linear operator whose
 	 * eigenvalues have to be found
 	 */
@@ -39,7 +39,7 @@ public:
 	/** destructor */
 	virtual ~CDirectEigenSolver();
 
-	/** 
+	/**
 	 * compute method for computing eigenvalues of a real valued dense matrix
 	 * linear operator
 	 */

@@ -1,6 +1,6 @@
-// somehow this has to depend on the matlab version 
+// somehow this has to depend on the matlab version
 // comment it out for now
-// 
+//
 // #include <mexversion.c>
 //
 
@@ -204,14 +204,14 @@ char* CMatlabInterface::get_string(int32_t& len)
 
 #define GET_VECTOR(function_name, mx_type, sg_type, if_type, error_string)	\
 void CMatlabInterface::function_name(sg_type*& vector, int32_t& len)	\
-{ 																	\
+{																	\
 	const mxArray* mx_vec=get_arg_increment();						\
 	if (!mx_vec || mxGetM(mx_vec)!=1 || !mxIsClass(mx_vec, mx_type))		\
 		SG_ERROR("Expected " error_string " (1xN) Vector, got vector of " \
 				"class %s shape (%dx%d) as argument %d\n", \
-			mxGetClassName(mx_vec), mxGetM(mx_vec), mxGetN(mx_vec), m_rhs_counter); 				\
+			mxGetClassName(mx_vec), mxGetM(mx_vec), mxGetN(mx_vec), m_rhs_counter);				\
 																	\
-	len=mxGetNumberOfElements(mx_vec); 								\
+	len=mxGetNumberOfElements(mx_vec);								\
 	vector=SG_MALLOC(sg_type, len);										\
 	if_type* data=(if_type*) mxGetData(mx_vec);						\
 																	\
@@ -230,19 +230,19 @@ GET_VECTOR(get_vector, "uint16", uint16_t, unsigned short, "Word")
 
 #define GET_MATRIX(function_name, mx_type, sg_type, if_type, error_string)		\
 void CMatlabInterface::function_name(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec) \
-{ 																				\
-	const mxArray* mx_mat=get_arg_increment(); 									\
-	if (!mx_mat || !(mxIsClass(mx_mat, mx_type))) 								\
+{																				\
+	const mxArray* mx_mat=get_arg_increment();									\
+	if (!mx_mat || !(mxIsClass(mx_mat, mx_type)))								\
 		SG_ERROR("Expected " error_string " Matrix, got class %s as argument %d\n", \
-			mxGetClassName(mx_mat), m_rhs_counter); 							\
- 																				\
-	num_vec=mxGetN(mx_mat); 													\
-	num_feat=mxGetM(mx_mat); 													\
-	matrix=SG_MALLOC(sg_type, num_vec*num_feat); 										\
-	if_type* data=(if_type*) mxGetData(mx_mat); 								\
- 																				\
-	for (int32_t i=0; i<num_vec; i++) 												\
-		for (int32_t j=0; j<num_feat; j++) 											\
+			mxGetClassName(mx_mat), m_rhs_counter);							\
+																				\
+	num_vec=mxGetN(mx_mat);													\
+	num_feat=mxGetM(mx_mat);													\
+	matrix=SG_MALLOC(sg_type, num_vec*num_feat);										\
+	if_type* data=(if_type*) mxGetData(mx_mat);								\
+																				\
+	for (int32_t i=0; i<num_vec; i++)												\
+		for (int32_t j=0; j<num_feat; j++)											\
 			matrix[i*num_feat+j]=data[i*num_feat+j];							\
 }
 
@@ -257,23 +257,23 @@ GET_MATRIX(get_matrix, "uint16", uint16_t, unsigned short, "Word")
 
 #define GET_NDARRAY(function_name, mx_type, sg_type, if_type, error_string)		\
 void CMatlabInterface::function_name(sg_type*& array, int32_t*& dims, int32_t& num_dims)\
-{ 																				\
-	const mxArray* mx_array=get_arg_increment(); 								\
-	if (!mx_array || !(mxIsClass(mx_array, mx_type))) 							\
+{																				\
+	const mxArray* mx_array=get_arg_increment();								\
+	if (!mx_array || !(mxIsClass(mx_array, mx_type)))							\
 		SG_ERROR("Expected " error_string " ND Array, got class %s as argument %d\n", \
-			mxGetClassName(mx_array), m_rhs_counter); 							\
- 																				\
+			mxGetClassName(mx_array), m_rhs_counter);							\
+																				\
 	num_dims = (int32_t) mxGetNumberOfDimensions(mx_array);							\
 	const mwSize* mw_dims = mxGetDimensions(mx_array);							\
 	mwSize total_size=mxGetNumberOfElements(mx_array);							\
-	if_type* data=(if_type*) mxGetData(mx_array); 								\
- 																				\
+	if_type* data=(if_type*) mxGetData(mx_array);								\
+																				\
 	dims=SG_MALLOC(int32_t, num_dims);														\
 	for (int32_t d=0; d<num_dims; d++)												\
 		dims[d]=(int32_t) mw_dims[d];												\
 																				\
-	array=SG_MALLOC(sg_type, total_size); 												\
-	for (mwSize i=0; i<total_size; i++) 										\
+	array=SG_MALLOC(sg_type, total_size);												\
+	for (mwSize i=0; i<total_size; i++)										\
 		array[i]=data[i];														\
 }
 
@@ -289,43 +289,43 @@ GET_NDARRAY(get_ndarray, "uint16", uint16_t, unsigned short, "Word")
 #define GET_SPARSEMATRIX(function_name, mx_type, sg_type, if_type, error_string)		\
 void CMatlabInterface::function_name(SGSparseVector<sg_type>*& matrix, int32_t& num_feat, int32_t& num_vec) \
 {																						\
-	const mxArray* mx_mat=get_arg_increment(); 											\
-	if (!mx_mat || !mxIsSparse(mx_mat)) 												\
-		SG_ERROR("Expected Sparse Matrix as argument %d\n", m_rhs_counter); 			\
- 																						\
-	if (!mxIsClass(mx_mat,mx_type)) 													\
+	const mxArray* mx_mat=get_arg_increment();											\
+	if (!mx_mat || !mxIsSparse(mx_mat))												\
+		SG_ERROR("Expected Sparse Matrix as argument %d\n", m_rhs_counter);			\
+																						\
+	if (!mxIsClass(mx_mat,mx_type))													\
 		SG_ERROR("Expected " error_string " Matrix, got class %s as argument %d\n",	\
-			mxGetClassName(mx_mat), m_rhs_counter); 									\
- 																						\
-	num_vec=mxGetN(mx_mat); 															\
-	num_feat=mxGetM(mx_mat); 															\
-	matrix=SG_MALLOC(SGSparseVector<sg_type>, num_vec); 												\
-	if_type* data=(if_type*) mxGetData(mx_mat); 										\
- 																						\
-	int64_t nzmax=mxGetNzmax(mx_mat); 														\
-	mwIndex* ir=mxGetIr(mx_mat); 														\
-	mwIndex* jc=mxGetJc(mx_mat); 														\
-	int64_t offset=0; 																		\
-	for (int32_t i=0; i<num_vec; i++) 														\
-	{ 																					\
-		int32_t len=jc[i+1]-jc[i]; 															\
-		matrix[i].num_feat_entries=len; 												\
- 																						\
-		if (len>0) 																		\
-		{ 																				\
-			matrix[i].features=SG_MALLOC(SGSparseVectorEntry<sg_type>, len); 							\
- 																						\
-			for (int32_t j=0; j<len; j++) 													\
-			{ 																			\
-				matrix[i].features[j].entry=data[offset]; 								\
-				matrix[i].features[j].feat_index=ir[offset]; 							\
-				offset++; 																\
-			} 																			\
-		} 																				\
-		else 																			\
-			matrix[i].features=NULL; 													\
-	} 																					\
-	ASSERT(offset==nzmax); 																\
+			mxGetClassName(mx_mat), m_rhs_counter);									\
+																						\
+	num_vec=mxGetN(mx_mat);															\
+	num_feat=mxGetM(mx_mat);															\
+	matrix=SG_MALLOC(SGSparseVector<sg_type>, num_vec);												\
+	if_type* data=(if_type*) mxGetData(mx_mat);										\
+																						\
+	int64_t nzmax=mxGetNzmax(mx_mat);														\
+	mwIndex* ir=mxGetIr(mx_mat);														\
+	mwIndex* jc=mxGetJc(mx_mat);														\
+	int64_t offset=0;																		\
+	for (int32_t i=0; i<num_vec; i++)														\
+	{																					\
+		int32_t len=jc[i+1]-jc[i];															\
+		matrix[i].num_feat_entries=len;												\
+																						\
+		if (len>0)																		\
+		{																				\
+			matrix[i].features=SG_MALLOC(SGSparseVectorEntry<sg_type>, len);							\
+																						\
+			for (int32_t j=0; j<len; j++)													\
+			{																			\
+				matrix[i].features[j].entry=data[offset];								\
+				matrix[i].features[j].feat_index=ir[offset];							\
+				offset++;																\
+			}																			\
+		}																				\
+		else																			\
+			matrix[i].features=NULL;													\
+	}																					\
+	ASSERT(offset==nzmax);																\
 }
 
 GET_SPARSEMATRIX(get_sparse_matrix, "double", float64_t, double, "Double Precision")
@@ -340,8 +340,8 @@ GET_SPARSEMATRIX(get_sparse_matrix, "uint16", uint16_t, unsigned short, "Word")*
 
 
 #define GET_STRINGLIST(function_name, mx_type, sg_type, if_type, error_string)		\
-void CMatlabInterface::function_name(SGString<sg_type>*& strings, int32_t& num_str, int32_t& max_string_len) 	\
-{ 																						\
+void CMatlabInterface::function_name(SGString<sg_type>*& strings, int32_t& num_str, int32_t& max_string_len)	\
+{																						\
 	const mxArray* mx_str=get_arg_increment();											\
 	if (!mx_str)																		\
 		SG_ERROR("Expected Stringlist as argument (none given).\n");					\
@@ -361,15 +361,15 @@ void CMatlabInterface::function_name(SGString<sg_type>*& strings, int32_t& num_s
 				SG_ERROR("Expected String of type " error_string " as argument %d.  M:%i N:%i\n", m_rhs_counter,mxGetM(str),mxGetN(str)); \
 																						\
 			int32_t len=mxGetN(str);														\
-			if (len>0) 																	\
-			{ 																			\
+			if (len>0)																	\
+			{																			\
 				if_type* data=(if_type*) mxGetData(str);								\
-				strings[i].slen=len; /* all must have same length in matlab */ 		\
+				strings[i].slen=len; /* all must have same length in matlab */		\
 				strings[i].string=SG_MALLOC(sg_type, len+1); /* not zero terminated in matlab */ \
-				int32_t j; 																	\
-				for (j=0; j<len; j++) 													\
-					strings[i].string[j]= (sg_type) data[j]; 							\
-				strings[i].string[j]='\0'; 												\
+				int32_t j;																	\
+				for (j=0; j<len; j++)													\
+					strings[i].string[j]= (sg_type) data[j];							\
+				strings[i].string[j]='\0';												\
 				max_string_len=CMath::max(max_string_len, len);							\
 			}																			\
 			else																		\
@@ -383,28 +383,28 @@ void CMatlabInterface::function_name(SGString<sg_type>*& strings, int32_t& num_s
 	else if (mxIsClass(mx_str, mx_type))												\
 	{																					\
 		if_type* data=(if_type*) mxGetData(mx_str);										\
-		num_str=mxGetN(mx_str); 														\
-		int32_t len=mxGetM(mx_str); 														\
-		strings=SG_MALLOC(SGString<sg_type>, num_str); 										\
+		num_str=mxGetN(mx_str);														\
+		int32_t len=mxGetM(mx_str);														\
+		strings=SG_MALLOC(SGString<sg_type>, num_str);										\
 																						\
-		for (int32_t i=0; i<num_str; i++) 													\
-		{ 																				\
-			if (len>0) 																	\
-			{ 																			\
-				strings[i].slen=len; /* all must have same length in matlab */ 		\
+		for (int32_t i=0; i<num_str; i++)													\
+		{																				\
+			if (len>0)																	\
+			{																			\
+				strings[i].slen=len; /* all must have same length in matlab */		\
 				strings[i].string=SG_MALLOC(sg_type, len+1); /* not zero terminated in matlab */ \
-				int32_t j; 																	\
-				for (j=0; j<len; j++) 													\
-					strings[i].string[j]=(sg_type) data[j+i*len]; 						\
-				strings[i].string[j]='\0'; 												\
-			} 																			\
-			else 																		\
-			{ 																			\
-				SG_WARNING( "string with index %d has zero length.\n", i+1); 			\
-				strings[i].slen=0; 													\
-				strings[i].string=NULL; 												\
-			} 																			\
-		} 																				\
+				int32_t j;																	\
+				for (j=0; j<len; j++)													\
+					strings[i].string[j]=(sg_type) data[j+i*len];						\
+				strings[i].string[j]='\0';												\
+			}																			\
+			else																		\
+			{																			\
+				SG_WARNING( "string with index %d has zero length.\n", i+1);			\
+				strings[i].slen=0;													\
+				strings[i].string=NULL;												\
+			}																			\
+		}																				\
 		max_string_len=len;																\
 	}																					\
 	else																				\
@@ -494,21 +494,21 @@ SET_VECTOR(set_vector, mxUINT16_CLASS, uint16_t, unsigned short, "Word")
 
 #define SET_MATRIX(function_name, mx_type, sg_type, if_type, error_string)	\
 void CMatlabInterface::function_name(const sg_type* matrix, int32_t num_feat, int32_t num_vec) \
-{ 																				\
-	if (!matrix) 																\
+{																				\
+	if (!matrix)																\
 		SG_ERROR("Given matrix is invalid.\n");									\
- 																				\
+																				\
 	mxArray* mx_mat=mxCreateNumericMatrix(num_feat, num_vec, mx_type, mxREAL);	\
-	if (!mx_mat) 																\
+	if (!mx_mat)																\
 		SG_ERROR("Couldn't create " error_string " Matrix of %d rows and %d cols.\n", num_feat, num_vec); \
- 																				\
-	if_type* data=(if_type*) mxGetData(mx_mat); 								\
- 																				\
-	for (int32_t i=0; i<num_vec; i++) 												\
-		for (int32_t j=0; j<num_feat; j++) 											\
-			data[i*num_feat+j]=matrix[i*num_feat+j]; 							\
- 																				\
-	set_arg_increment(mx_mat); 													\
+																				\
+	if_type* data=(if_type*) mxGetData(mx_mat);								\
+																				\
+	for (int32_t i=0; i<num_vec; i++)												\
+		for (int32_t j=0; j<num_feat; j++)											\
+			data[i*num_feat+j]=matrix[i*num_feat+j];							\
+																				\
+	set_arg_increment(mx_mat);													\
 }
 
 SET_MATRIX(set_matrix, mxUINT8_CLASS, uint8_t, uint8_t, "Byte")
@@ -547,7 +547,7 @@ void CMatlabInterface::function_name(const SGSparseVector<sg_type>* matrix, int3
 		}																	\
 	}																		\
 	jc[num_vec]=offset;														\
- 																			\
+																			\
 	set_arg_increment(mx_mat);												\
 }
 

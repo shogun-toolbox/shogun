@@ -603,7 +603,7 @@ bool CRInterface::run_r_helper(CSGInterface* from_if)
 		SG_OBJ_PRINT(from_if, "%s", e.get_exception_string())
 		return true;
 	}
-	
+
 	// Find source function
 	SEXP src = Rf_findFun(Rf_install("source"), R_GlobalEnv);
 	PROTECT(src);
@@ -616,7 +616,7 @@ bool CRInterface::run_r_helper(CSGInterface* from_if)
 	// expression source(file,print.eval=p)
 	SEXP expr;
 	PROTECT(expr = allocVector(LANGSXP,2));
-	SETCAR(expr,src); 
+	SETCAR(expr,src);
 	SETCAR(CDR(expr),file);
 
 	int err=0;
@@ -673,7 +673,7 @@ bool CRInterface::run_r_helper(CSGInterface* from_if)
 
 /* The main function of the shogun R interface. All commands from the R command line
  * to the shogun backend are passed using the syntax:
- * .External("sg", "func", ... ) 
+ * .External("sg", "func", ... )
  * where '...' is a number of arguments passed to the shogun function 'func'. */
 
 extern "C" {
@@ -698,7 +698,7 @@ void R_init_sg(DllInfo *info)
 
    R_CMethodDef cMethods[] = { {NULL, NULL, 0} };
    R_FortranMethodDef fortranMethods[] = { {NULL, NULL, 0} };
-   
+
 #ifdef HAVE_ELWMS
    R_ExternalMethodDef externalMethods[] = { {"elwms", (void*(*)()) &Rsg, -1}, {NULL, NULL, 0} };
 #else
@@ -713,7 +713,7 @@ void R_init_sg(DllInfo *info)
 
 SEXP Rsg(SEXP args)
 {
-	/* The SEXP (Simple Expression) args is a list of arguments of the .External call. 
+	/* The SEXP (Simple Expression) args is a list of arguments of the .External call.
 	 * it consists of "sg", "func" and additional arguments.
 	 * */
 

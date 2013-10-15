@@ -6,7 +6,7 @@
  *
  * Written (W) 2013 Soumyajit De
  */
- 
+
 #include <shogun/lib/config.h>
 #ifdef HAVE_EIGEN3
 #include <shogun/lib/SGVector.h>
@@ -41,7 +41,7 @@ TEST(RationalApproximationIndividualJob, compute_direct)
 	SG_SDEBUG("creating op\n");
 	CDenseMatrixOperator<complex128_t>* op=new CDenseMatrixOperator<complex128_t>(m);
 	SG_REF(op);
-	
+
 	const float64_t const_multiplier=2.0;
 	const complex128_t weight=complex128_t(1.0, 1.0);
 	SGVector<float64_t> s(size);
@@ -56,7 +56,7 @@ TEST(RationalApproximationIndividualJob, compute_direct)
 	SG_REF(solver);
 
 	CRationalApproximationIndividualJob* job
-		=new CRationalApproximationIndividualJob(agg, 
+		=new CRationalApproximationIndividualJob(agg,
 			(CLinearSolver<complex128_t, float64_t>*)solver, op, s, weight);
 	SG_REF(job);
 	job->compute();
@@ -93,7 +93,7 @@ TEST(RationalApproximationIndividualJob, compute_cocg)
 	SG_SDEBUG("creating op\n");
 	CDenseMatrixOperator<complex128_t>* op=new CDenseMatrixOperator<complex128_t>(m);
 	SG_REF(op);
-	
+
 	const float64_t const_multiplier=2.0;
 	const complex128_t weight=complex128_t(1.0, 1.0);
 	SGVector<float64_t> s(size);
@@ -108,7 +108,7 @@ TEST(RationalApproximationIndividualJob, compute_cocg)
 	SG_REF(solver);
 
 	CRationalApproximationIndividualJob* job
-		=new CRationalApproximationIndividualJob(agg, 
+		=new CRationalApproximationIndividualJob(agg,
 			(CLinearSolver<complex128_t, float64_t>*)solver, op, s, weight);
 	SG_REF(job);
 	job->compute();

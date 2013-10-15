@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2013 Shell Hu 
- * Copyright (C) 2013 Shell Hu 
+ * Written (W) 2013 Shell Hu
+ * Copyright (C) 2013 Shell Hu
  */
 
 #include <shogun/structure/FactorGraph.h>
@@ -13,7 +13,7 @@
 
 using namespace shogun;
 
-CFactorGraph::CFactorGraph() 
+CFactorGraph::CFactorGraph()
 	: CSGObject()
 {
 	SG_UNSTABLE("CFactorGraph::CFactorGraph()", "\n");
@@ -43,7 +43,7 @@ CFactorGraph::CFactorGraph(const CFactorGraph &fg)
 	m_num_edges = fg.get_num_edges();
 }
 
-CFactorGraph::~CFactorGraph() 
+CFactorGraph::~CFactorGraph()
 {
 	SG_UNREF(m_factors);
 	SG_UNREF(m_datasources);
@@ -92,7 +92,7 @@ void CFactorGraph::init()
 	SG_REF(m_dset);
 }
 
-void CFactorGraph::add_factor(CFactor* factor) 
+void CFactorGraph::add_factor(CFactor* factor)
 {
 	m_factors->push_back(factor);
 	m_num_edges += factor->get_variables().size();
@@ -102,7 +102,7 @@ void CFactorGraph::add_factor(CFactor* factor)
 		m_dset->set_connected(false);
 }
 
-void CFactorGraph::add_data_source(CFactorDataSource* datasource) 
+void CFactorGraph::add_data_source(CFactorDataSource* datasource)
 {
 	m_datasources->push_back(datasource);
 }
@@ -150,7 +150,7 @@ int32_t CFactorGraph::get_num_vars() const
 	return m_cardinalities.size();
 }
 
-void CFactorGraph::compute_energies() 
+void CFactorGraph::compute_energies()
 {
 	for (int32_t fi = 0; fi < m_factors->get_num_elements(); ++fi)
 	{
@@ -183,7 +183,7 @@ SGVector<float64_t> CFactorGraph::evaluate_energies() const
 {
 	int num_assig = 1;
 	SGVector<int32_t> cumprod_cards(m_cardinalities.size());
-	for (int32_t n = 0; n < m_cardinalities.size(); ++n) 
+	for (int32_t n = 0; n < m_cardinalities.size(); ++n)
 	{
 		cumprod_cards[n] = num_assig;
 		num_assig *= m_cardinalities[n];
@@ -193,12 +193,12 @@ SGVector<float64_t> CFactorGraph::evaluate_energies() const
 	for (int32_t ei = 0; ei < num_assig; ++ei)
 	{
 		SGVector<int32_t> assig(m_cardinalities.size());
-		for (int32_t vi = 0; vi < m_cardinalities.size(); ++vi) 
+		for (int32_t vi = 0; vi < m_cardinalities.size(); ++vi)
 			assig[vi] = (ei / cumprod_cards[vi]) % m_cardinalities[vi];
 
 		etable[ei] = evaluate_energy(assig);
 
-		for (int32_t vi = 0; vi < m_cardinalities.size(); ++vi) 
+		for (int32_t vi = 0; vi < m_cardinalities.size(); ++vi)
 			SG_SPRINT("%d ", assig[vi]);
 
 		SG_SPRINT("| %f\n", etable[ei]);
@@ -227,11 +227,11 @@ void CFactorGraph::connect_components()
 			// for two nodes in a factor, should be an edge between them
 			// but this time link() isn't performed, if they are linked already
 			// means there is another path connected them, so cycle detected
-			int32_t ri = m_dset->find_set(vars[vi]);	
+			int32_t ri = m_dset->find_set(vars[vi]);
 
 			if (r0 == ri)
 			{
-				flag = true;	
+				flag = true;
 				continue;
 			}
 
@@ -269,7 +269,7 @@ void CFactorGraph::loss_augmentation(SGVector<int32_t> states_gt, SGVector<float
 	if (loss.size() == 0)
 	{
 		loss.resize_vector(states_gt.size());
-		SGVector<float64_t>::fill_vector(loss.vector, loss.vlen, 1.0 / states_gt.size());	
+		SGVector<float64_t>::fill_vector(loss.vector, loss.vlen, 1.0 / states_gt.size());
 	}
 
 	int32_t num_vars = states_gt.size();
@@ -280,7 +280,7 @@ void CFactorGraph::loss_augmentation(SGVector<int32_t> states_gt, SGVector<float
 
 	// augment loss to incorrect states in the first factor containing the variable
 	// since += L_i for each variable if it takes wrong state ever
-	// TODO: augment unary factors 
+	// TODO: augment unary factors
 	for (int32_t fi = 0; fi < m_factors->get_num_elements(); ++fi)
 	{
 		CFactor* fac = dynamic_cast<CFactor*>(m_factors->get_element(fi));

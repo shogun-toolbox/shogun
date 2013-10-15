@@ -16,7 +16,7 @@ using namespace shogun;
 
 inline int grid_to_index(int32_t x, int32_t y, int32_t w = 10)
 {
-	return x + w*y; 
+	return x + w*y;
 }
 
 inline void index_to_grid(int32_t index, int32_t& x, int32_t& y, int32_t w = 10)
@@ -107,7 +107,7 @@ TEST(BeliefPropagation, tree_max_product_string)
 	EXPECT_TRUE(fg->is_tree_graph());
 	EXPECT_EQ(fg->get_num_edges(), 4);
 
-	CMAPInference infer_met(fg, TREE_MAX_PROD);	
+	CMAPInference infer_met(fg, TREE_MAX_PROD);
 	infer_met.inference();
 
 	CFactorGraphObservation* fg_observ = infer_met.get_structured_outputs();
@@ -173,7 +173,7 @@ TEST(BeliefPropagation, tree_max_product_random)
 					data[1] = CMath::random(0.0, 1.0);
 					data[2] = CMath::random(0.0, 1.0);
 					data[3] = CMath::random(0.0, 1.0);
-	
+
 					SGVector<int32_t> var_index(2);
 					var_index[0] = grid_to_index(x,y,N);
 					var_index[1] = grid_to_index(x-1,y,N);
@@ -188,7 +188,7 @@ TEST(BeliefPropagation, tree_max_product_random)
 					data[1] = CMath::random(0.0, 1.0);
 					data[2] = CMath::random(0.0, 1.0);
 					data[3] = CMath::random(0.0, 1.0);
-	
+
 					SGVector<int32_t> var_index(2);
 					var_index[0] = grid_to_index(x,y-1,N);
 					var_index[1] = grid_to_index(x,y,N);
@@ -211,7 +211,7 @@ TEST(BeliefPropagation, tree_max_product_random)
 		EXPECT_TRUE(fg->is_tree_graph());
 		EXPECT_EQ(fg->get_num_edges(), 10);
 
-		CMAPInference infer_met(fg, TREE_MAX_PROD);	
+		CMAPInference infer_met(fg, TREE_MAX_PROD);
 		infer_met.inference();
 
 		CFactorGraphObservation* fg_observ = infer_met.get_structured_outputs();
@@ -282,7 +282,7 @@ TEST(BeliefPropagation, loss_augmented_energies)
 	var_index2[1] = 2;
 	CFactor* fac2 = new CFactor(factortype, var_index2, data);
 	fg->add_factor(fac2);
-	
+
 	fg->connect_components();
 	fg->compute_energies();
 
@@ -399,7 +399,7 @@ TEST(BeliefPropagation, tree_max_product_multi_states)
 	fg->compute_energies();
 	fg->connect_components();
 
-	CMAPInference infer_met(fg, TREE_MAX_PROD);	
+	CMAPInference infer_met(fg, TREE_MAX_PROD);
 	infer_met.inference();
 
 	CFactorGraphObservation* fg_observ = infer_met.get_structured_outputs();

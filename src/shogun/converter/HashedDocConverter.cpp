@@ -41,7 +41,7 @@ CHashedDocConverter::~CHashedDocConverter()
 {
 	SG_UNREF(tokenizer);
 }
-	
+
 void CHashedDocConverter::init(CTokenizer* tzer, int32_t hash_bits, bool normalize,
 	int32_t n_grams, int32_t skips)
 {
@@ -77,7 +77,7 @@ const char* CHashedDocConverter::get_name() const
 {
 	return "HashedDocConverter";
 }
-	
+
 CFeatures* CHashedDocConverter::apply(CFeatures* features)
 {
 	ASSERT(features);
@@ -86,7 +86,7 @@ CFeatures* CHashedDocConverter::apply(CFeatures* features)
 
 	CStringFeatures<char>* s_features = (CStringFeatures<char>*) features;
 
-	int32_t dim = CMath::pow(2, num_bits);	
+	int32_t dim = CMath::pow(2, num_bits);
 	SGSparseMatrix<float64_t> matrix(dim,features->get_num_vectors());
 	for (index_t vec_idx=0; vec_idx<s_features->get_num_vectors(); vec_idx++)
 	{
@@ -106,7 +106,7 @@ SGSparseVector<float64_t> CHashedDocConverter::apply(SGVector<char> document)
 	CDynamicArray<uint32_t> hashed_indices(array_size);
 
 	/** this vector will maintain the current n+k active tokens
-	 * in a circular manner */ 
+	 * in a circular manner */
 	SGVector<uint32_t> cached_hashes(ngrams+tokens_to_skip);
 	index_t hashes_start = 0;
 	index_t hashes_end = 0;
@@ -168,16 +168,16 @@ SGSparseVector<float64_t> CHashedDocConverter::apply(SGVector<char> document)
 		}
 	}
 
-	SGSparseVector<float64_t> sparse_doc_rep = create_hashed_representation(hashed_indices);	
+	SGSparseVector<float64_t> sparse_doc_rep = create_hashed_representation(hashed_indices);
 
 	/** Normalizing vector */
 	if (should_normalize)
 	{
 		float64_t norm_const = CMath::sqrt((float64_t) document.size());
 		for (index_t i=0; i<sparse_doc_rep.num_feat_entries; i++)
-			sparse_doc_rep.features[i].entry /= norm_const; 
+			sparse_doc_rep.features[i].entry /= norm_const;
 	}
-	
+
 	return sparse_doc_rep;
 }
 
@@ -191,7 +191,7 @@ SGSparseVector<float64_t> CHashedDocConverter::create_hashed_representation(CDyn
 	{
 		sparse_doc_rep.features[sparse_idx].feat_index = hashed_indices[i];
 		sparse_doc_rep.features[sparse_idx].entry = 1;
-		while ( (i+1<hashed_indices.get_num_elements()) && 
+		while ( (i+1<hashed_indices.get_num_elements()) &&
 				(hashed_indices[i+1]==hashed_indices[i]) )
 		{
 			sparse_doc_rep.features[sparse_idx].entry++;
@@ -234,13 +234,13 @@ int32_t CHashedDocConverter::count_distinct_indices(CDynamicArray<uint32_t>& has
 	for (index_t i=0; i<hashed_indices.get_num_elements(); i++)
 	{
 		num_nnz_features++;
-		while ( (i+1<hashed_indices.get_num_elements()) && 
+		while ( (i+1<hashed_indices.get_num_elements()) &&
 				(hashed_indices[i+1]==hashed_indices[i]) )
 		{
 			i++;
 		}
 	}
-	return num_nnz_features;	
+	return num_nnz_features;
 }
 
 void CHashedDocConverter::set_normalization(bool normalize)

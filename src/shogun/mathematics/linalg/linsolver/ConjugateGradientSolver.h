@@ -3,7 +3,7 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Written (W) 2013 Soumyajit De
  */
 
@@ -20,7 +20,7 @@ namespace shogun
 template<class T> class CLinearOperator;
 template<class T> class SGVector;
 
-/** 
+/**
  * @brief class that uses conjugate gradient method of solving a linear system
  * involving a real valued linear operator and vector. Useful for large sparse
  * systems involving sparse symmetric and positive-definite matrices.
@@ -38,7 +38,7 @@ public:
 	/** destructor */
 	virtual ~CConjugateGradientSolver();
 
-	/** 
+	/**
 	 * solve method for solving real linear systems
 	 *
 	 * @param A the linear operator of the system

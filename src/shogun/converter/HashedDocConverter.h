@@ -64,7 +64,7 @@ public:
 	/** Destructor */
 	virtual ~CHashedDocConverter();
 
-	/** Hashes each string contained in features 
+	/** Hashes each string contained in features
 	 *
 	 * @param features the strings to be hashed. Must be an instance of CStringFeatures.
 	 * @return a CSparseFeatures object containing the hashes of the strings.
@@ -73,14 +73,14 @@ public:
 
 	/** Hashes the tokens contained in document
 	 *
-	 * @param document the char vector to tokenize and hash 
+	 * @param document the char vector to tokenize and hash
 	 * @return a SGSparseVector with the hashed representation of the document
 	 */
 	SGSparseVector<float64_t> apply(SGVector<char> document);
 
 	/** Generates all the k-skip n-grams combinations for the pre-hashed tokens in hashes,
-	 * starting from hashes[hashes_start] and going up to hashes[1+len] in a circular manner. 
-	 * The generated tokens (maximun (n-1)(k+1)+1) are stored in ngram_hashes. The number of 
+	 * starting from hashes[hashes_start] and going up to hashes[1+len] in a circular manner.
+	 * The generated tokens (maximun (n-1)(k+1)+1) are stored in ngram_hashes. The number of
 	 * created tokens is returned in case fewer tokens are generated
 	 * (due to a smaller len than the size of hashes).
 	 * See class description for more information on k-skip n-grams.
@@ -90,9 +90,9 @@ public:
 	 * @param len the maximum allowed number of tokens to reach in a circular manner, starting from hashes_start
 	 * @param ngram_hashes the vector where to store the generated hashes. Must have been created to be able to
 	 * store at most (n-1)(k+1)+1 tokens.
-	 * @param num_bits the dimension in which to limit the hashed indices (means a dimension of size 2^num_bits) 
+	 * @param num_bits the dimension in which to limit the hashed indices (means a dimension of size 2^num_bits)
 	 * @param ngrams the n in k-skip n-grams or the max number of tokens to combine
-	 * @param tokens_to_skip the k in k-skip n-grams or the max number of tokens to skip when 
+	 * @param tokens_to_skip the k in k-skip n-grams or the max number of tokens to skip when
 	 * combining
 	 * @return the number of generated tokens
 	 */
@@ -109,7 +109,7 @@ public:
 	void set_normalization(bool normalize);
 
 	/** Method used to specify the parameters for the quadratic
-	 * approach of k-skip n-grams. See class description for more 
+	 * approach of k-skip n-grams. See class description for more
 	 * details and an example.
 	 *
 	 * @param k the max number of allowed skips
@@ -117,7 +117,7 @@ public:
 	 */
 	void set_k_skip_n_grams(int32_t k, int32_t n);
 protected:
-	
+
 	/** init */
 	void init(CTokenizer* tzer, int32_t d, bool normalize, int32_t n_grams, int32_t skips);
 
@@ -131,7 +131,7 @@ protected:
 
 	/** This method takes the dynamic array containing all the hashed indices of a document and returns a compact
 	 * sparse representation with each index found and with the count of such index
-	 * 
+	 *
 	 * @param hashed_indices the array containing the hashed indices
 	 * @return the compact hashed document representation
 	 */

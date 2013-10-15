@@ -65,7 +65,7 @@ public:
 
 	/** set tokenizer
 	 *
-	 * @param tokenizer tokenizer	
+	 * @param tokenizer tokenizer
 	 */
 	void set_tokenizer(CTokenizer* tokenizer);
 

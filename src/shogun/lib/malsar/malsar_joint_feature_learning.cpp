@@ -82,7 +82,7 @@ malsar_result_t malsar_joint_feature_learning(
 			}
 		}
 		gWs.noalias() += 2*rho2*Ws;
-		
+
 		// add regularizer
 		Fs += Ws.squaredNorm();
 
@@ -112,9 +112,9 @@ malsar_result_t malsar_joint_feature_learning(
 						Wzp.row(i) *= threshold/norm;
 				}
 			}
-			// walk in direction of antigradient 
+			// walk in direction of antigradient
 			Czp = Cs - gCs/gamma;
-			
+
 			// compute objective at line search point
 			Fzp = 0.0;
 			for (task=0; task<n_tasks; task++)
@@ -177,7 +177,7 @@ malsar_result_t malsar_joint_feature_learning(
 		//	obj += rho1*(Wz.col(task).norm());
 		SG_SDEBUG("Obj = %f\n",obj)
 		//SG_SABS_PROGRESS(obj,0.0)
-		// check if process should be terminated 
+		// check if process should be terminated
 		switch (options.termination)
 		{
 			case 0:

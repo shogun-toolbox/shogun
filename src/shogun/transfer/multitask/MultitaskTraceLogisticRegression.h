@@ -36,7 +36,7 @@ class CMultitaskTraceLogisticRegression : public CMultitaskLogisticRegression
 		 * @param task_relation task relation
 		 */
 		CMultitaskTraceLogisticRegression(
-		     float64_t rho, CDotFeatures* training_data, 
+		     float64_t rho, CDotFeatures* training_data,
 		     CBinaryLabels* training_labels, CTaskGroup* task_relation);
 
 		/** destructor */
@@ -51,12 +51,12 @@ class CMultitaskTraceLogisticRegression : public CMultitaskLogisticRegression
 		 * @return rho value
 		 */
 		float64_t get_rho() const;
-		
+
 		/** get name
 		 *
 		 * @return name of the object
 		 */
-		virtual const char* get_name() const 
+		virtual const char* get_name() const
 		{
 			return "MultitaskTraceLogisticRegression";
 		}
@@ -70,7 +70,7 @@ class CMultitaskTraceLogisticRegression : public CMultitaskLogisticRegression
 
 		/** train machine */
 		virtual bool train_machine(CFeatures* data=NULL);
-		
+
 		/** train locked implementation */
 		virtual bool train_locked_implementation(SGVector<index_t>* tasks);
 

@@ -9,7 +9,7 @@ parameter_list = [[matrix]]
 
 # ... of type LongInt
 def features_dense_real_modular (A=matrix):
-  
+
 # ... of type Real, LongInt and Byte
     a=RealFeatures(A)
 

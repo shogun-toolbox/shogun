@@ -16,7 +16,7 @@ def kernel_sigmoid_modular (train_fname=traindat,test_fname=testdat,size_cache=1
 	kernel.init(feats_train, feats_test)
 	km_test=kernel.get_kernel_matrix()
 	return km_train,km_test,kernel
-	
+
 if __name__=='__main__':
 	print('Sigmoid')
 	kernel_sigmoid_modular(*parameter_list[0])

@@ -7,5 +7,5 @@ switched off and the precision parameter epsilon=1e-5 (duality gap).
 For more details on the OCAS solver see
  V. Franc, S. Sonnenburg. Optimized Cutting Plane Algorithm for Large-Scale Risk
  Minimization.The Journal of Machine Learning Research, vol. 10,
- pp. 2157--2192. October 2009. 
+ pp. 2157--2192. October 2009.
 

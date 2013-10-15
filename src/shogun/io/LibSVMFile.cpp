@@ -245,9 +245,9 @@ SET_LABELED_SPARSE_MATRIX(SCNu16, uint16_t)
 int32_t CLibSVMFile::get_num_lines()
 {
 	int32_t num_lines=0;
-	while (m_line_reader->has_next()) 
+	while (m_line_reader->has_next())
 	{
-		m_line_reader->skip_line();	
+		m_line_reader->skip_line();
 		num_lines++;
 	}
 	m_line_reader->reset();

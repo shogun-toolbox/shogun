@@ -3,7 +3,7 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Written (W) 2013 Soumyajit De
  */
 
@@ -139,7 +139,7 @@ void CLanczosEigenSolver::compute()
 		{
 			SG_INFO("Iteration took %ld times, residual norm=%.20lf\n",
 			it.get_iter_info().iteration_count, it.get_iter_info().residual_norm);
-			
+
 			m_min_eigenvalue=w[0];
 			m_is_computed_min=true;
 		}

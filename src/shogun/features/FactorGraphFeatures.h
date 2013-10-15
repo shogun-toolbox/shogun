@@ -64,17 +64,17 @@ class CFactorGraphFeatures : public CFeatures
 		 */
 		virtual const char* get_name() const { return "FactorGraphFeatures"; }
 
-		/** add a graph instance 
+		/** add a graph instance
 		 *
 		 * @param fg a factor graph instance
 		 * @return whether the sample has been added successfully
 		 */
 		bool add_sample(CFactorGraph* fg);
 
-		/** get a graph instance 
+		/** get a graph instance
 		 *
 		 * @param idx index of the required example
-		 * @return pointer of CFactorGraph 
+		 * @return pointer of CFactorGraph
 		 */
 		CFactorGraph* get_sample(index_t idx);
 

@@ -2515,11 +2515,11 @@ void TParameter::get_incremental_hash(
 			break;
 		}
 		uint32_t size = (len_real_x*len_real_y)*m_datatype.sizeof_stype();
-		
+
 		total_length += size;
 
 	        uint8_t* data = (*(uint8_t**) m_parameter);
-		
+
 		CHash::IncrementalMurmurHash3(
 				&hash, &carry, data, size);
 		break;
@@ -3221,7 +3221,7 @@ bool TParameter::equals(TParameter* other, float64_t accuracy)
 			SG_SDEBUG("length_y: %d\n", *m_datatype.m_length_y)
 			SG_SDEBUG("length_x: %d\n", *m_datatype.m_length_x)
 			int64_t length=0;
-			
+
 			/* For ST_SPARSE, we just need to loop over the rows and compare_stype
 			 * does the comparison for one whole row vector at once. For ST_NONE,
 			 * however, we need to loop over all elements.
@@ -3471,7 +3471,7 @@ bool TParameter::compare_ptype(EPrimitiveType ptype, void* data1, void* data2,
 			CMath::abs(casted1_imag-casted2_imag)>accuracy)
 		{
 			SG_SDEBUG("leaving TParameter::compare_ptype(): PT_COMPLEX128: "
-					"data1=%f+i%f, data2=%f+i%f\n", 
+					"data1=%f+i%f, data2=%f+i%f\n",
 					casted1_real, casted1_imag,
 					casted2_real, casted2_imag);
 			return false;

@@ -11,7 +11,7 @@
 
   \subsection tut_examples_sec 例子
 
-  对于每种接口，都可以在下面的相应的examples目录下找到大量例子。   
+  对于每种接口，都可以在下面的相应的examples目录下找到大量例子。
 
   \li \b examples/libshogun
   \li \b examples/python

@@ -25,8 +25,8 @@ gmock-all.o: $(GMOCK_DIR)/src/gmock-all.cc
 	@$(COMP_CPP) $(COMPFLAGS_CPP) $(INCLUDES) $(DEFINES) -I$(SHOGUNSRCTOP) $(COMPFLAGS_GTEST_CPP) $(COMPFLAGS_GMOCK_CPP) -I$(GTEST_DIR) -I$(GMOCK_DIR) -c $<
 	@echo 'Compiling gmock'
 
-libgmock.a: gtest-all.o gmock-all.o 
-	@ar -crv libgmock.a gtest-all.o gmock-all.o 
+libgmock.a: gtest-all.o gmock-all.o
+	@ar -crv libgmock.a gtest-all.o gmock-all.o
 	@echo 'Creating gmock library'
 
 shogun-lib:

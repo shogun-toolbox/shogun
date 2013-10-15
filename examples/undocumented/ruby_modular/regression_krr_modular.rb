@@ -39,7 +39,7 @@ def krr_short()
 	puts 'KRR_short'
 
 	width=0.8; tau=1e-6
-# *** 	krr=KernelRidgeRegression(tau, GaussianKernel(0, width), RegressionLabels(label_train))
+# ***	krr=KernelRidgeRegression(tau, GaussianKernel(0, width), RegressionLabels(label_train))
 	krr=Modshogun::KernelRidgeRegression.new(tau, GaussianKernel(0, width), RegressionLabels(label_train))
 	#krr.set_features(tau, GaussianKernel(0, width), RegressionLabels(label_train))
 	krr.train(RealFeatures(fm_train))

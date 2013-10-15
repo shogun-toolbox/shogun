@@ -52,7 +52,7 @@ SGMatrix<index_t> CMulticlassMultipleOutputLabels::get_labels() const
 
 SGVector<index_t> CMulticlassMultipleOutputLabels::get_label(int32_t idx)
 {
-	ensure_valid("CMulticlassMultipleOutputLabels::get_label(int32_t)");	
+	ensure_valid("CMulticlassMultipleOutputLabels::get_label(int32_t)");
 	if ( idx < 0 || idx >= get_num_labels() )
 		SG_ERROR("Index must be inside [0, num_labels-1]\n")
 

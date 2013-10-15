@@ -3,7 +3,7 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Written (W) 2013 Soumyajit De
  * Written (W) 2013 Heiko Strathmann
  */
@@ -138,7 +138,7 @@ int32_t CRationalApproximation::compute_num_shifts_from_accuracy()
 	float64_t two_pi_sq=2.0*M_PI*M_PI;
 
 	int32_t num_shifts=static_cast<index_t>(-1.5*(log_cond_number+6.0)
-		  	*CMath::log(m_desired_accuracy)/two_pi_sq);
+			*CMath::log(m_desired_accuracy)/two_pi_sq);
 
 	return num_shifts;
 }
@@ -146,7 +146,7 @@ int32_t CRationalApproximation::compute_num_shifts_from_accuracy()
 void CRationalApproximation::compute_shifts_weights_const()
 {
 	float64_t PI=M_PI;
-	
+
 	// eigenvalues are always real in this case
 	float64_t max_eig=m_eigen_solver->get_max_eigenvalue();
 	float64_t min_eig=m_eigen_solver->get_min_eigenvalue();
@@ -157,19 +157,19 @@ void CRationalApproximation::compute_shifts_weights_const()
 	// and minimum eigenvalue respectively
 	float64_t m_div=CMath::pow(max_eig/min_eig, 0.25);
 	float64_t m_mult=CMath::pow(max_eig*min_eig, 0.25);
-	
+
 	// k=$\frac{(\frac{\lambda_{M}}{\lambda_{m}})^\frac{1}{4}-1}
 	// {(\frac{\lambda_{M}}{\lambda_{m}})^\frac{1}{4}+1}$
 	float64_t k=(m_div-1)/(m_div+1);
 	float64_t L=-CMath::log(k)/PI;
-	
+
 	// compute K and K'
 	float64_t K=0.0, Kp=0.0;
 	CJacobiEllipticFunctions::ellipKKp(L, K, Kp);
-	
+
 	// compute constant multiplier
 	m_constant_multiplier=-8*K*m_mult/(k*PI*m_num_shifts);
-	
+
 	// compute Jacobi elliptic functions sn, cn, dn and compute shifts, weights
 	// using conformal mapping of the quadrature rule for discretization of the
 	// contour integral

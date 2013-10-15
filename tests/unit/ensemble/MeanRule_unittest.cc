@@ -24,7 +24,7 @@ TEST(MeanRule, combine_matrix)
 	SGVector<float64_t> expected(num_vectors);
 
 	generate_random_ensemble_matrix(ensemble_matrix);
-	
+
 	/* calculate expected values */
 	for(index_t i = 0; i < ensemble_matrix.num_rows; i++)
 	{
@@ -39,7 +39,7 @@ TEST(MeanRule, combine_matrix)
 
 	for (index_t i = 0; i < combined.vlen; ++i)
 		EXPECT_DOUBLE_EQ(expected[i], combined[i]);
-	
+
 	SG_UNREF(mr);
 }
 

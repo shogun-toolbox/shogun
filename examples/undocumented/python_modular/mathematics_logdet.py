@@ -33,7 +33,7 @@ def mathematics_logdet (matrix=mtx,max_iter_eig=1000,max_iter_lin=1000,num_sampl
 		op=RealSparseMatrixOperator(A.tocsc())
 
 		eig_solver=LanczosEigenSolver(op)
-	
+
 		# we can set the iteration limit high for poorly conditioned matrices
 		eig_solver.set_max_iteration_limit(max_iter_eig)
 
@@ -54,7 +54,7 @@ def mathematics_logdet (matrix=mtx,max_iter_eig=1000,max_iter_lin=1000,num_sampl
 		engine=SerialComputationEngine()
 
 		# set the desired accuracy tighter to obtain better results
-		# this determines the number of contour points in conformal mapping of 
+		# this determines the number of contour points in conformal mapping of
 		# the rational approximation of the Cauchy's integral of f(A)*s, f=log
 		desired_accuracy=1E-5
 

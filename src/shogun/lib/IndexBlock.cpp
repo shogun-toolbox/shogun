@@ -19,7 +19,7 @@ CIndexBlock::CIndexBlock() : CSGObject(),
 	SG_REF(m_sub_blocks);
 }
 
-CIndexBlock::CIndexBlock(index_t min_index, index_t max_index, 
+CIndexBlock::CIndexBlock(index_t min_index, index_t max_index,
              float64_t weight, const char* name) :
 	CSGObject(), m_min_index(min_index), m_max_index(max_index),
 	m_weight(weight), m_sub_blocks(NULL)

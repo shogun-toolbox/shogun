@@ -11,29 +11,29 @@ public class serialization_svmlight_modular {
 	static {
 		System.loadLibrary("modshogun");
 	}
-	
+
 	public static void save(String fname, Object obj) {
 		try {
 			ObjectOutputStream out =  new ObjectOutputStream(new FileOutputStream(fname));
 			out.writeObject(obj);
 			out.close();
-        	}
+	}
 		catch(Exception ex){
-			ex.printStackTrace();  
-        	}
+			ex.printStackTrace();
+	}
 	}
 
 	public static Object load(String fname) {
-		Object r = null;		
+		Object r = null;
 		try {
 			ObjectInputStream in = new ObjectInputStream(new FileInputStream(fname));
 			r = in.readObject();
 			in.close();
 			return r;
-        	}
+	}
 		catch(Exception ex){
-			ex.printStackTrace();  
-        	}
+			ex.printStackTrace();
+	}
 		return r;
 	}
 	public static void main(String argv[]) {

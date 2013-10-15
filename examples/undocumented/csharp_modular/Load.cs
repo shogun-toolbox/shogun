@@ -11,16 +11,16 @@ public class Load {
 			split = System.Text.RegularExpressions.Regex.Split(contents, "\\s+", System.Text.RegularExpressions.RegexOptions.None);
 		}
 		catch (Exception e) {
-				Console.WriteLine("erro:{0}", e.Message);	
+				Console.WriteLine("erro:{0}", e.Message);
 		}
 		finally {
-			r.Close();		
+			r.Close();
 		}
 		return split;
  }
 	public static double[,] load_numbers(string file) {
 		string [] split = read_file(file);
-		int len = split.Length/2;		
+		int len = split.Length/2;
 		double[,] result = new double[2, len];
 
 		for (int i = 0; i < 2; i++) {
@@ -29,14 +29,14 @@ public class Load {
 			}
 		}
 		return result;
-	}	
+	}
 	public static double[] load_labels(string file) {
 		string [] split = read_file(file);
 		int len = split.Length;
 		double[] result = new double[len];
 
 		for (int i = 0; i < len; i++) {
-			result[i] = Convert.ToDouble(split[i]);	
+			result[i] = Convert.ToDouble(split[i]);
 		}
 		return result;
 	}
@@ -49,4 +49,4 @@ public class Load {
 		string [] result = read_file(file);
 		return result;
 	}
-}	
+}

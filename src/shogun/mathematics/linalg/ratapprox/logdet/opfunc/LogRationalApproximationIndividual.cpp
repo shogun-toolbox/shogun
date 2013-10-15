@@ -3,7 +3,7 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Written (W) 2013 Soumyajit De
  */
 
@@ -146,7 +146,7 @@ CJobResultAggregator* CLogRationalApproximationIndividual::submit_jobs(
 
 		// create a job and submit to the engine
 		CRationalApproximationIndividualJob* job
-			=new CRationalApproximationIndividualJob(agg, m_linear_solver, 
+			=new CRationalApproximationIndividualJob(agg, m_linear_solver,
 				shifted_op, sample, m_weights[i]);
 		SG_REF(job);
 
@@ -155,7 +155,7 @@ CJobResultAggregator* CLogRationalApproximationIndividual::submit_jobs(
 		// we can safely unref the job here, computation engine takes it from here
 		SG_UNREF(job);
 	}
-	
+
 	SG_UNREF(complex_op);
 
 	SG_DEBUG("OperatorFunction::submit_jobs(): Leaving..\n");

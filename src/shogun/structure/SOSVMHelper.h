@@ -19,11 +19,11 @@ namespace shogun
 {
 
 /** @brief class CSOSVMHelper contains helper functions to compute primal objectives,
- * dual objectives, average training losses, duality gaps etc. These values will be 
- * recorded to check convergence. This class is inspired by the matlab implementation 
+ * dual objectives, average training losses, duality gaps etc. These values will be
+ * recorded to check convergence. This class is inspired by the matlab implementation
  * of the block coordinate Frank-Wolfe SOSVM solver [1].
  *
- * [1] S. Lacoste-Julien, M. Jaggi, M. Schmidt and P. Pletscher. Block-Coordinate 
+ * [1] S. Lacoste-Julien, M. Jaggi, M. Schmidt and P. Pletscher. Block-Coordinate
  * Frank-Wolfe Optimization for Structural SVMs. ICML 2013.
  */
 class CSOSVMHelper : public CSGObject
@@ -32,7 +32,7 @@ public:
 	/** constructor */
 	CSOSVMHelper();
 
-	/** constructor 
+	/** constructor
 	 *
 	 * @param bufsize size of buffer (default: 1000)
 	 */
@@ -57,8 +57,8 @@ public:
 	/** Computes the dual SVM objective value
 	 * \f$ \frac{\lambda}{2} \|A\alpha\|^2 - b^T*\alpha \f$
 	 *
-	 * @param w is \f$ A\alpha \f$, \f$ A = \frac{1}{\lambda \cdot n}[\cdots, 
-	 * \psi_i(y), \cdots]_{d \times \sum_i |Y_i|} \f$ 
+	 * @param w is \f$ A\alpha \f$, \f$ A = \frac{1}{\lambda \cdot n}[\cdots,
+	 * \psi_i(y), \cdots]_{d \times \sum_i |Y_i|} \f$
 	 * @param b_alpha is \f$ b^T\alpha, b = \frac{1}{n}L_i(y) \f$, alpha are dual variables
 	 * @param lbda regularization parameter lambda
 	 * @return dual objective value
@@ -66,7 +66,7 @@ public:
 	static float64_t dual_objective(SGVector<float64_t> w, float64_t b_alpha, float64_t lbda);
 
 	/** Return the average loss for the predictions
-	 * 
+	 *
 	 * @param w parameter vector, may be different from model.w
 	 * @param model structured model
 	 * @return average loss
@@ -77,11 +77,11 @@ public:
 	 *
 	 * @param primal primal objective value
 	 * @param eff_pass effective pass
-	 * @param train_error training error 
+	 * @param train_error training error
 	 * @param dual dual objective value
 	 * @param dgap duality gap
 	 */
-	virtual void add_debug_info(float64_t primal, float64_t eff_pass, float64_t train_error, 
+	virtual void add_debug_info(float64_t primal, float64_t eff_pass, float64_t train_error,
 		float64_t dual = -1, float64_t dgap = -1);
 
 	/** get primal objectives

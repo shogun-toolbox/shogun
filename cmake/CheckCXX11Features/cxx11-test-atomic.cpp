@@ -1,6 +1,6 @@
 #include <atomic>
- 
-int main() 
+
+int main()
 {
 	volatile std::atomic<int> x;
 	x.store(0);
@@ -10,4 +10,4 @@ int main()
 	);
 
 	return ret ? 0 : 1;
-} 
+}

@@ -65,7 +65,7 @@ public:
 class QuadTree
 {
 
-	// Fixed constants    
+	// Fixed constants
 	static const int QT_NO_DIMS = 2;
 	static const int QT_NODE_CAPACITY = 1;
 
@@ -95,7 +95,7 @@ class QuadTree
 public:
 
 	// Default constructor for quadtree -- build tree, too!
-	QuadTree(double* inp_data, int N) : 
+	QuadTree(double* inp_data, int N) :
 		parent(NULL), is_leaf(false), size(0), cum_size(0), boundary(), data(NULL),
 		northWest(NULL), northEast(NULL), southWest(NULL), southEast(NULL)
 	{
@@ -111,7 +111,7 @@ public:
 			}
 		}
 		for(int d = 0; d < QT_NO_DIMS; d++) mean_Y[d] /= (double) N;
-		
+
 		// Construct quadtree
 		init(NULL, inp_data, mean_Y[0], mean_Y[1], std::max(max_Y[0] - mean_Y[0], mean_Y[0] - min_Y[0]) + 1e-5,
 		                                           std::max(max_Y[1] - mean_Y[1], mean_Y[1] - min_Y[1]) + 1e-5);
@@ -181,21 +181,21 @@ public:
 		double* point = data + new_index * QT_NO_DIMS;
 		if(!boundary.containsPoint(point))
 			return false;
-		
+
 		// Online update of cumulative size and center-of-mass
 		cum_size++;
 		double mult1 = (double) (cum_size - 1) / (double) cum_size;
 		double mult2 = 1.0 / (double) cum_size;
 		for(int d = 0; d < QT_NO_DIMS; d++) center_of_mass[d] *= mult1;
 		for(int d = 0; d < QT_NO_DIMS; d++) center_of_mass[d] += mult2 * point[d];
-		
+
 		// If there is space in this quad tree and it is a leaf, add the object here
 		if(is_leaf && size < QT_NODE_CAPACITY) {
 			index[size] = new_index;
 			size++;
 			return true;
 		}
-		
+
 		// Don't add duplicates for now (this is not very nice)
 		bool any_duplicate = false;
 		for(int n = 0; n < size; n++) {
@@ -206,29 +206,29 @@ public:
 			any_duplicate = any_duplicate | duplicate;
 		}
 		if(any_duplicate) return true;
-		
+
 		// Otherwise, we need to subdivide the current cell
 		if(is_leaf) subdivide();
-		
+
 		// Find out where the point can be inserted
 		if(northWest->insert(new_index)) return true;
 		if(northEast->insert(new_index)) return true;
 		if(southWest->insert(new_index)) return true;
 		if(southEast->insert(new_index)) return true;
-		
+
 		// Otherwise, the point cannot be inserted (this should never happen)
 		return false;
 	}
 
 	// Create four children which fully divide this cell into four quads of equal area
 	void subdivide()
-	{ 
+	{
 		// Create four children
 		northWest = new QuadTree(this, data, boundary.x - .5 * boundary.hw, boundary.y - .5 * boundary.hh, .5 * boundary.hw, .5 * boundary.hh);
 		northEast = new QuadTree(this, data, boundary.x + .5 * boundary.hw, boundary.y - .5 * boundary.hh, .5 * boundary.hw, .5 * boundary.hh);
 		southWest = new QuadTree(this, data, boundary.x - .5 * boundary.hw, boundary.y + .5 * boundary.hh, .5 * boundary.hw, .5 * boundary.hh);
 		southEast = new QuadTree(this, data, boundary.x + .5 * boundary.hw, boundary.y + .5 * boundary.hh, .5 * boundary.hw, .5 * boundary.hh);
-		
+
 		// Move existing points to correct children
 		for(int i = 0; i < size; i++) {
 			bool success = false;
@@ -238,7 +238,7 @@ public:
 			if(!success) success = southEast->insert(index[i]);
 			index[i] = -1;
 		}
-		
+
 		// Empty parent node
 		size = 0;
 		is_leaf = false;
@@ -265,13 +265,13 @@ public:
 			// Check whether point is erroneous
 			double* point = data + index[n] * QT_NO_DIMS;
 			if(!boundary.containsPoint(point)) {
-				
+
 				// Remove erroneous point
 				int rem_index = index[n];
 				for(int m = n + 1; m < size; m++) index[m - 1] = index[m];
 				index[size - 1] = -1;
 				size--;
-				
+
 				// Update center-of-mass and counter in all parents
 				bool done = false;
 				QuadTree* node = this;
@@ -283,12 +283,12 @@ public:
 					if(node->getParent() == NULL) done = true;
 					else node = node->getParent();
 				}
-				
+
 				// Reinsert point in the root tree
 				node->insert(rem_index);
 			}
-		}    
-		
+		}
+
 		// Rebuild lower parts of the tree
 		northWest->rebuildTree();
 		northEast->rebuildTree();
@@ -308,26 +308,26 @@ public:
 		return 1 + std::max(std::max(northWest->getDepth(),
 		                             northEast->getDepth()),
 		                    std::max(southWest->getDepth(),
-		                             southEast->getDepth()));                
+		                             southEast->getDepth()));
 	}
 
 	// Compute non-edge forces using Barnes-Hut algorithm
 	void computeNonEdgeForces(int point_index, double theta, double neg_f[], double* sum_Q)
 	{
-		
+
 		// Make sure that we spend no time on empty nodes or self-interactions
 		if(cum_size == 0 || (is_leaf && size == 1 && index[0] == point_index)) return;
-		
+
 		// Compute distance between point and center-of-mass
 		double D = .0;
 		int ind = point_index * QT_NO_DIMS;
 		for(int d = 0; d < QT_NO_DIMS; d++) buff[d]  = data[ind + d];
 		for(int d = 0; d < QT_NO_DIMS; d++) buff[d] -= center_of_mass[d];
 		for(int d = 0; d < QT_NO_DIMS; d++) D += buff[d] * buff[d];
-		
+
 		// Check whether we can use this node as a "summary"
 		if(is_leaf || std::max(boundary.hh, boundary.hw)/sqrt(D) < theta) {
-		
+
 			// Compute and add t-SNE force between point and current node
 			double Q = 1.0 / (1.0 + D);
 			*sum_Q += cum_size * Q;
@@ -353,7 +353,7 @@ public:
 		for(int n = 0; n < N; n++) {
 			ind1 = n * QT_NO_DIMS;
 			for(int i = row_P[n]; i < row_P[n + 1]; i++) {
-			
+
 				// Compute pairwise distance and Q-value
 				D = .0;
 				ind2 = col_P[i] * QT_NO_DIMS;
@@ -361,7 +361,7 @@ public:
 				for(int d = 0; d < QT_NO_DIMS; d++) buff[d] -= data[ind2 + d];
 				for(int d = 0; d < QT_NO_DIMS; d++) D += buff[d] * buff[d];
 				D = val_P[i] / (1.0 + D);
-				
+
 				// Sum positive force
 				for(int d = 0; d < QT_NO_DIMS; d++) pos_f[ind1 + d] += D * buff[d];
 			}
@@ -384,7 +384,7 @@ public:
 				printf(" (index = %d)", index[i]);
 				if(i < size - 1) printf("\n");
 				else printf("]\n");
-			}        
+			}
 		}
 		else {
 			printf("Intersection node with center-of-mass = [");
@@ -429,11 +429,11 @@ private:
 	// Build a list of all indices in quadtree
 	int getAllIndices(int* indices, int loc)
 	{
-		
+
 		// Gather indices in current quadrant
 		for(int i = 0; i < size; i++) indices[loc + i] = index[i];
 		loc += size;
-		
+
 		// Gather indices in children
 		if(!is_leaf) {
 			loc = northWest->getAllIndices(indices, loc);

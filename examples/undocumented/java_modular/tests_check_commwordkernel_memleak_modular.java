@@ -22,24 +22,24 @@ public class tests_check_commwordkernel_memleak_modular {
 
 		String POS[] = new String[141];
 		for (int i = 0; i < 60; i++) {
-			POS[i] = repeat("ACGT", 10);		
+			POS[i] = repeat("ACGT", 10);
 		}
 		for (int i = 60; i < 82; i++) {
-			POS[i] = repeat("TTGT", 10);		
+			POS[i] = repeat("TTGT", 10);
 		}
 		for (int i = 82; i < 141; i++) {
-			POS[i] = repeat("ACGT", 10);		
+			POS[i] = repeat("ACGT", 10);
 		}
 
 		String NEG[] = new String[141];
 		for (int i = 0; i < 60; i++) {
-			NEG[i] = repeat("ACGT", 10);		
+			NEG[i] = repeat("ACGT", 10);
 		}
 		for (int i = 60; i < 82; i++) {
-			NEG[i] = repeat("TTGT", 10);		
+			NEG[i] = repeat("TTGT", 10);
 		}
 		for (int i = 82; i < 141; i++) {
-			NEG[i] = repeat("ACGT", 10);		
+			NEG[i] = repeat("ACGT", 10);
 		}
 
 		String POSNEG[] = new String[282];
@@ -48,7 +48,7 @@ public class tests_check_commwordkernel_memleak_modular {
 			POSNEG[i + 141] = NEG[i];
 		}
 
-		for(int i = 0; i < 10; i++) {		
+		for(int i = 0; i < 10; i++) {
 			Alphabet alpha= new Alphabet(DNA);
 			StringCharFeatures traindat = new StringCharFeatures(alpha);
 			traindat.set_features(POSNEG);

@@ -12,8 +12,8 @@ namespace tapkee
 // based on the Eigen3 template matrix library
 
 // Kernel function callback that computes
-// similarity function values on vectors 
-// given by their indices. This impl. computes 
+// similarity function values on vectors
+// given by their indices. This impl. computes
 // linear kernel i.e. dot product between two vectors.
 struct precomputed_kernel_callback
 {

@@ -200,7 +200,7 @@ __FILE__ ":" func ": Unstable method!  Please report if it seems to " \
 #define SG_SNOTIMPLEMENTED { sg_io->not_implemented(__PRETTY_FUNCTION__, __FILE__, __LINE__); }
 #define SG_SDEPRECATED { sg_io->deprecated(__PRETTY_FUNCTION__, __FILE__, __LINE__); }
 
-#define ASSERT(x) { 																	\
+#define ASSERT(x) {																	\
 	if (SG_UNLIKELY(!(x)))																\
 		SG_SERROR("assertion %s failed in %s file %s line %d\n",#x, __PRETTY_FUNCTION__, __FILE__, __LINE__)	\
 }

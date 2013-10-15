@@ -5,7 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 2013 Kevin Hughes
- * ported from scikit-learn 
+ * ported from scikit-learn
  */
 
 #ifndef FASTICA_H_
@@ -22,10 +22,10 @@ namespace shogun
 class CFeatures;
 
 /** @brief class FastICA
- * 
- * Implements the FastICA (Independent 
+ *
+ * Implements the FastICA (Independent
  * Component Analysis) algorithm
- * 
+ *
  * A. Hyvarinen and E. Oja, Independent Component Analysis:
  * Algorithms and Applications, Neural Networks, 13(4-5), 2000,
  * pp. 411-430`
@@ -33,7 +33,7 @@ class CFeatures;
 class CFastICA: public CICAConverter
 {
 	public:
-		
+
 		/** constructor */
 		CFastICA();
 
@@ -65,11 +65,11 @@ class CFastICA: public CICAConverter
 		void init();
 
 	private:
-		
+
 		/** whiten */
 		bool whiten;
-	
-};	
+
+};
 }
 #endif // HAVE_EIGEN3
 #endif // FASTICA

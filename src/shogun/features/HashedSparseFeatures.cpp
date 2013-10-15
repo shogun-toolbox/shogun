@@ -153,7 +153,7 @@ SGSparseVector<ST> CHashedSparseFeatures<ST>::hash_vector(SGSparseVector<ST> vec
 		}
 	}
 
-	int32_t num_nnz_features = 0; 
+	int32_t num_nnz_features = 0;
 	for (index_t i=0; i<dim; i++)
 	{
 		if (h_vec[i]!=0)
@@ -162,7 +162,7 @@ SGSparseVector<ST> CHashedSparseFeatures<ST>::hash_vector(SGSparseVector<ST> vec
 
 	SGSparseVector<ST> sv(num_nnz_features);
 
-	int32_t sparse_index = 0;	
+	int32_t sparse_index = 0;
 	for (index_t i=0; i<dim; i++)
 	{
 		if (h_vec[i]!=0)
@@ -183,13 +183,13 @@ float64_t CHashedSparseFeatures<ST>::dot(int32_t vec_idx1, CDotFeatures* df,
 	ASSERT(df->get_feature_type() == get_feature_type())
 	ASSERT(df->get_feature_class() == get_feature_class())
 	ASSERT(strcmp(df->get_name(), get_name())==0)
-	
+
 	CHashedSparseFeatures<ST>* feats = (CHashedSparseFeatures<ST>* ) df;
 	SGSparseVector<ST> vec_1 = get_hashed_feature_vector(vec_idx1);
 	SGSparseVector<ST> vec_2 = feats->get_hashed_feature_vector(vec_idx2);
 
-	float64_t result = vec_1.sparse_dot(vec_2); 
-	return result;	
+	float64_t result = vec_1.sparse_dot(vec_2);
+	return result;
 }
 
 template <class ST>
@@ -229,7 +229,7 @@ float64_t CHashedSparseFeatures<ST>::dense_dot(int32_t vec_idx1, const float64_t
 			for (index_t j=i+1; j<vec.num_feat_entries; j++)
 			{
 				idx = (hash_cache[i] ^ hash_cache[j]) % dim;
-				result += vec2[idx] * vec.features[i].entry * vec.features[j].entry;	
+				result += vec2[idx] * vec.features[i].entry * vec.features[j].entry;
 			}
 		}
 	}
@@ -244,7 +244,7 @@ void CHashedSparseFeatures<ST>::add_to_dense_vec(float64_t alpha, int32_t vec_id
 {
 	float64_t val = abs_val ? CMath::abs(alpha) : alpha;
 	ASSERT(vec2_len == dim)
-	
+
 	SGSparseVector<ST> vec = sparse_feats->get_sparse_feature_vector(vec_idx1);
 
 	int32_t hash_cache_size = use_quadratic ? vec.num_feat_entries : 0;
@@ -278,7 +278,7 @@ void CHashedSparseFeatures<ST>::add_to_dense_vec(float64_t alpha, int32_t vec_id
 			}
 		}
 	}
-	sparse_feats ->free_feature_vector(vec_idx1);	
+	sparse_feats ->free_feature_vector(vec_idx1);
 }
 
 template <class ST>

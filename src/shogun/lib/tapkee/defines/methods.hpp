@@ -11,46 +11,46 @@ namespace tapkee
 	//! Dimension reduction methods
 	enum DimensionReductionMethod
 	{
-		/** Kernel Locally Linear Embedding as described 
+		/** Kernel Locally Linear Embedding as described
 		 * in @cite Decoste2001 */
 		KernelLocallyLinearEmbedding,
-		/** Neighborhood Preserving Embedding as described 
+		/** Neighborhood Preserving Embedding as described
 		 * in @cite He2005 */
 		NeighborhoodPreservingEmbedding,
-		/** Local Tangent Space Alignment as described 
+		/** Local Tangent Space Alignment as described
 		 * in @cite Zhang2002 */
 		KernelLocalTangentSpaceAlignment,
-		/** Linear Local Tangent Space Alignment as described 
+		/** Linear Local Tangent Space Alignment as described
 		 * in @cite Zhang2007 */
 		LinearLocalTangentSpaceAlignment,
-		/** Hessian Locally Linear Embedding as described in 
+		/** Hessian Locally Linear Embedding as described in
 		 * @cite Donoho2003 */
 		HessianLocallyLinearEmbedding,
-		/** Laplacian Eigenmaps as described in 
+		/** Laplacian Eigenmaps as described in
 		 * @cite Belkin2002 */
 		LaplacianEigenmaps,
-		/** Locality Preserving Projections as described in 
+		/** Locality Preserving Projections as described in
 		 * @cite He2003 */
 		LocalityPreservingProjections,
-		/** Diffusion map as described in 
+		/** Diffusion map as described in
 		 * @cite Coifman2006 */
 		DiffusionMap,
-		/** Isomap as described in 
+		/** Isomap as described in
 		 * @cite Tenenbaum2000 */
 		Isomap,
-		/** Landmark Isomap as described in 
+		/** Landmark Isomap as described in
 		 * @cite deSilva2002 */
 		LandmarkIsomap,
-		/** Multidimensional scaling as described in 
+		/** Multidimensional scaling as described in
 		 * @cite Cox2000 */
 		MultidimensionalScaling,
-		/** Landmark multidimensional scaling as described in 
+		/** Landmark multidimensional scaling as described in
 		 * @cite deSilva2004 */
 		LandmarkMultidimensionalScaling,
-		/** Stochastic Proximity Embedding as described in 
+		/** Stochastic Proximity Embedding as described in
 		 * @cite Agrafiotis2003 */
 		StochasticProximityEmbedding,
-		/** Kernel PCA as described in 
+		/** Kernel PCA as described in
 		 * @cite Scholkopf1997 */
 		KernelPCA,
 		/** Principal Component Analysis */
@@ -60,13 +60,13 @@ namespace tapkee
 		RandomProjection,
 		/** Factor Analysis */
 		FactorAnalysis,
-		/** t-SNE and Barnes-Hut-SNE as described in 
+		/** t-SNE and Barnes-Hut-SNE as described in
 		 * @cite vanDerMaaten2008 and @cite vanDerMaaten2013 */
 		tDistributedStochasticNeighborEmbedding,
 		/** Manifold Sculpting as described in
 		* @cite Gashler2007 */
 		ManifoldSculpting,
-		/** Passing through (doing nothing just passes the 
+		/** Passing through (doing nothing just passes the
 		 * data through) */
 		PassThru
 	};
@@ -98,10 +98,10 @@ namespace tapkee
 	//! Neighbors computation methods
 	enum NeighborsMethod
 	{
-		//! Brute force method with not least than 
+		//! Brute force method with not least than
 		//! \f$ O(N N \log k) \f$ time complexity.
 		//! Recommended to be used only in debug purposes.
-		Brute, 
+		Brute,
 		VpTree
 #ifdef TAPKEE_USE_LGPL_COVERTREE
 		//! Covertree-based method with approximate \f$ O(\log N) \f$ time complexity.
@@ -120,11 +120,11 @@ namespace tapkee
 	{
 #ifdef TAPKEE_WITH_ARPACK
 		//! ARPACK-based method (requires the ARPACK library
-		//! binaries to be available around). Recommended to be used as a 
+		//! binaries to be available around). Recommended to be used as a
 		//! default method. Supports both generalized and standard eigenproblems.
 		Arpack,
 #endif
-		//! Randomized method (implementation taken from the redsvd lib). 
+		//! Randomized method (implementation taken from the redsvd lib).
 		//! Supports only standard but not generalized eigenproblems.
 		Randomized,
 		//! Eigen library dense method (could be useful for debugging). Computes

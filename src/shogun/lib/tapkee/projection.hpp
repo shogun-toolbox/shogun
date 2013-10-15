@@ -9,7 +9,7 @@
 namespace tapkee
 {
 
-//! A base class for implementation of projecting 
+//! A base class for implementation of projecting
 struct ProjectionImplementation
 {
 	virtual ~ProjectionImplementation()
@@ -27,8 +27,8 @@ struct ProjectingFunction
 	ProjectingFunction() : implementation(NULL) {};
 	ProjectingFunction(ProjectionImplementation* impl) : implementation(impl) {};
 	//! Destroys current implementation
-	void clear() 
-	{ 
+	void clear()
+	{
 		delete implementation;
 	}
 	//! Projects provided vector to new space
@@ -53,7 +53,7 @@ struct MatrixProjectionImplementation : public ProjectionImplementation
 	{
 	}
 
-	virtual DenseVector project(const DenseVector& vec) 
+	virtual DenseVector project(const DenseVector& vec)
 	{
 		return proj_mat*(vec-mean_vec);
 	}

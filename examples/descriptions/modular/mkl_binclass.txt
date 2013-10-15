@@ -1,8 +1,8 @@
 In this example we show how to perform Multiple Kernel Learning (MKL)
 with the modular interface. First, we create a number of base kernels.
 These kernels can capture different views of the same features, or actually
-consider entirely different features associated with the same example 
-(e.g. DNA sequences = strings AND gene expression data = real values of the same tissue sample). 
+consider entirely different features associated with the same example
+(e.g. DNA sequences = strings AND gene expression data = real values of the same tissue sample).
 The base kernels are then subsequently added to a CombinedKernel, which
 contains a weight for each kernel and encapsulates the base kernels
 from the training procedure. When the CombinedKernel between two examples is

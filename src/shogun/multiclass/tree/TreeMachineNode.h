@@ -70,7 +70,7 @@ public:
 		return m_parent;
 	}
 
-	/** set left subtree 
+	/** set left subtree
 	 * @param l left subtree
 	 */
 	void left(CTreeMachineNode *l)
@@ -134,7 +134,7 @@ private:
 	}
 };
 
-} /* shogun */ 
+} /* shogun */
 
 #endif /* end of include guard: TREEMACHINENODE_H__ */
 

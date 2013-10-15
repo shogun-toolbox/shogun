@@ -3,7 +3,7 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Written (W) 2013 Soumyajit De
  */
 
@@ -59,8 +59,8 @@ public:
 	/** default constructor */
 	CProbingSampler();
 
-	/** 
-	 * constructor 
+	/**
+	 * constructor
 	 *
 	 * @param matrix_operator the sparse matrix operator
 	 * @param power the power of the sparse matrix operator whose
@@ -75,7 +75,7 @@ public:
 	/** destructor */
 	virtual ~CProbingSampler();
 
-	/** 
+	/**
 	 * set the coloring vector
 	 * @param coloring_vector the coloring vector
 	 */
@@ -84,7 +84,7 @@ public:
 	/** @return the coloring vector */
 	SGVector<int32_t> get_coloring_vector() const;
 
-	/** 
+	/**
 	 * method that generates the samples
 	 *
 	 * @param idx the index

@@ -28,7 +28,7 @@ TEST(GaussianDistribution,log_pdf_single_1d)
 	SGVector<float64_t> x(1);
 	x[0]=0;
 	float64_t result=((CProbabilityDistribution*)gauss)->log_pdf(x);
-	
+
 	EXPECT_NEAR(result, -1.5155121234846454, 1e-15);
 
 	SG_UNREF(gauss);
@@ -69,7 +69,7 @@ TEST(GaussianDistribution,log_pdf_single_2d)
 	x[0]=0;
 	x[1]=0;
 	float64_t result=((CProbabilityDistribution*)gauss)->log_pdf(x);
-	
+
 	EXPECT_NEAR(result, -3.375079401517433, 1e-15);
 
 	SG_UNREF(gauss);
@@ -93,7 +93,7 @@ TEST(GaussianDistribution,log_pdf_multiple_2d)
 	x(0,1)=3;
 	x(1,1)=4;
 	SGVector<float64_t> result=(gauss)->log_pdf_multiple(x);
-	
+
 	EXPECT_NEAR(result[0], -2.539698566136597, 1e-15);
 	EXPECT_NEAR(result[1], -3.620779647217678, 1e-15);
 
@@ -119,13 +119,13 @@ TEST(GaussianDistribution,sample_2d_fixed)
 	pre_samples(0,1)=0.44701692;
 	pre_samples(1,1)=-1.17987856;
 	SGMatrix<float64_t> result=gauss->sample(pre_samples.num_cols, pre_samples);
-	
+
 	EXPECT_NEAR(result(0,0), -1.9938345, 1e-7);
 	EXPECT_NEAR(result(0,1), 1.69251563, 1e-7);
 	EXPECT_NEAR(result(1,0), 2.52549802, 1e-7);
 	EXPECT_NEAR(result(1,1), 0.83862562, 1e-7);
-	
-	
+
+
 	SG_UNREF(gauss);
 }
 

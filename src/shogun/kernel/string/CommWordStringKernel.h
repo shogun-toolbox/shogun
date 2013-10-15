@@ -123,10 +123,10 @@ class CCommWordStringKernel : public CStringKernel<uint16_t>
 		virtual bool delete_optimization();
 
 		/** compute optimized
-	 	*
-	 	* @param idx index to compute
-	 	* @return optimized value at given index
-	 	*/
+		*
+		* @param idx index to compute
+		* @return optimized value at given index
+		*/
 		virtual float64_t compute_optimized(int32_t idx);
 
 		/** add to normal

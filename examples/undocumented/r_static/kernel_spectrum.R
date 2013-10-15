@@ -1,11 +1,11 @@
 library(sg)
 
 traindat = c("AGTAA", "CGCCC", "GGCGG", "TGTCT")
-trainlab <- c(1,-1,-1,1) 
+trainlab <- c(1,-1,-1,1)
 testdat = c("AGCAA", "CCCCC", "GGGGG", "TGCTT")
 
-order = 2 
-C = 1.0 
+order = 2
+C = 1.0
 
 sg('loglevel', 'ALL')
 sg('use_linadd', TRUE)

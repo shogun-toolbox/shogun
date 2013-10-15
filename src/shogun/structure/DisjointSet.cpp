@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2013 Shell Hu 
- * Copyright (C) 2013 Shell Hu 
+ * Written (W) 2013 Shell Hu
+ * Copyright (C) 2013 Shell Hu
  */
 
 #include <shogun/structure/DisjointSet.h>
@@ -46,16 +46,16 @@ void CDisjointSet::make_sets()
 	REQUIRE(m_num_elements > 0, "%s::make_sets(): m_num_elements <= 0.\n", get_name());
 
 	m_parent.range_fill();
-	m_rank.zero();	
+	m_rank.zero();
 }
 
-int32_t CDisjointSet::find_set(int32_t x) 
+int32_t CDisjointSet::find_set(int32_t x)
 {
 	ASSERT(x >= 0 && x < m_num_elements);
 
 	// path compression
 	if (x != m_parent[x])
-		m_parent[x] = find_set(m_parent[x]); 
+		m_parent[x] = find_set(m_parent[x]);
 
 	return m_parent[x];
 }
@@ -83,7 +83,7 @@ int32_t CDisjointSet::link_set(int32_t xroot, int32_t yroot)
 	}
 }
 
-bool CDisjointSet::union_set(int32_t x, int32_t y) 
+bool CDisjointSet::union_set(int32_t x, int32_t y)
 {
 	ASSERT(x >= 0 && x < m_num_elements);
 	ASSERT(y >= 0 && y < m_num_elements);
@@ -94,11 +94,11 @@ bool CDisjointSet::union_set(int32_t x, int32_t y)
 	if (xroot == yroot)
 		return true;
 
-	link_set(xroot, yroot);	
+	link_set(xroot, yroot);
 	return false;
 }
 
-bool CDisjointSet::is_same_set(int32_t x, int32_t y) 
+bool CDisjointSet::is_same_set(int32_t x, int32_t y)
 {
 	ASSERT(x >= 0 && x < m_num_elements);
 	ASSERT(y >= 0 && y < m_num_elements);
@@ -109,7 +109,7 @@ bool CDisjointSet::is_same_set(int32_t x, int32_t y)
 	return false;
 }
 
-int32_t CDisjointSet::get_unique_labeling(SGVector<int32_t> out_labels) 
+int32_t CDisjointSet::get_unique_labeling(SGVector<int32_t> out_labels)
 {
 	REQUIRE(m_num_elements > 0, "%s::get_unique_labeling(): m_num_elements <= 0.\n", get_name());
 
@@ -135,19 +135,19 @@ int32_t CDisjointSet::get_unique_labeling(SGVector<int32_t> out_labels)
 	return unilabel;
 }
 
-int32_t CDisjointSet::get_num_sets() 
+int32_t CDisjointSet::get_num_sets()
 {
 	REQUIRE(m_num_elements > 0, "%s::get_num_sets(): m_num_elements <= 0.\n", get_name());
 
 	return get_unique_labeling(SGVector<int32_t>(m_num_elements));
 }
 
-bool CDisjointSet::get_connected() 
+bool CDisjointSet::get_connected()
 {
 	return m_is_connected;
 }
 
-void CDisjointSet::set_connected(bool is_connected) 
+void CDisjointSet::set_connected(bool is_connected)
 {
 	m_is_connected = is_connected;
 }

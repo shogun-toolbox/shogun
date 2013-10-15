@@ -34,7 +34,7 @@ public:
 	}
 
 	/** destructor */
-	virtual ~CDirectorContingencyTableEvaluation() 
+	virtual ~CDirectorContingencyTableEvaluation()
 	{
 	}
 

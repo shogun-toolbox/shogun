@@ -11,7 +11,7 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- *   Copyright (C) 2009 - 2012 Jun Liu and Jieping Ye 
+ *   Copyright (C) 2009 - 2012 Jun Liu and Jieping Ye
  */
 
 #ifndef  INVCOV_SLEP
@@ -22,7 +22,7 @@
 #include <time.h>
 #include <math.h>
 
-/* 
+/*
  * A:    n x n
  * x:    n x 1
  * Ax:   n x 1
@@ -33,12 +33,12 @@
  */
 void m_Ax(double *Ax, double  *A, double *x, int n, int ith);
 
-int lassoCD(double *Theta, double *W, double *S, double lambda, int n, 
+int lassoCD(double *Theta, double *W, double *S, double lambda, int n,
             int ith, int flag, int maxIter, double fGap, double xGap);
 
-void invCov(double *Theta, double *W, double *S, double lambda, 
+void invCov(double *Theta, double *W, double *S, double lambda,
             double sum_S, int n,
-            int LassoMaxIter, double fGap, 
+            int LassoMaxIter, double fGap,
             double xGap, /*for the Lasso (inner iteration)*/
             int maxIter, double xtol);  /*for the outer iteration*/
 

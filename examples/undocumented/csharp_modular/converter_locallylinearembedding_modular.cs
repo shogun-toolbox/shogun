@@ -2,7 +2,7 @@ using System;
 
 public class converter_locallylinearembedding_modular {
 	public static void Main() {
-		
+
 		modshogun.init_shogun_with_defaults();
 
 		double[,] data = Load.load_numbers("../data/fm_train_real.dat");

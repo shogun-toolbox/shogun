@@ -51,7 +51,7 @@ int main(int argc, char** argv)
 
 	regressor->set_feature_relation(block_tree);
 	regressor->train();
-	
+
 	regressor->get_w().display_vector();
 
 	SG_UNREF(regressor);

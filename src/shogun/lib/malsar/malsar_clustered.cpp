@@ -71,7 +71,7 @@ malsar_result_t malsar_clustered(
 	double t=1, t_old=0;
 	double gamma=1, gamma_inc=2;
 	double obj=0.0, obj_old=0.0;
-			
+
 	double* diag_H = SG_MALLOC(double, n_tasks);
 	double* f = SG_MALLOC(double, n_tasks);
 	double* a = SG_MALLOC(double, n_tasks);
@@ -122,7 +122,7 @@ malsar_result_t malsar_clustered(
 			}
 		}
 		SG_SDEBUG("Computed gradient\n")
-		
+
 		// add regularizer
 		Fs += c*(Ws*invEtaMWt).trace();
 		SG_SDEBUG("Fs = %f \n", Fs)
@@ -144,7 +144,7 @@ malsar_result_t malsar_clustered(
 
 			// solve problem
 			// min sum_i (s_i - s*_i)^2 s.t. sum_i s_i = k, 0<=s_i<=1
-			for (int i=0; i<n_tasks; i++) 
+			for (int i=0; i<n_tasks; i++)
 			{
 				diag_H[i] = 2.0;
 				// TODO fails with C++11
@@ -175,7 +175,7 @@ malsar_result_t malsar_clustered(
 			Mzp_Pz = eigensolver.eigenvectors().real();
 			Mzp = Mzp_Pz*Mzp_DiagSigz.asDiagonal()*Mzp_Pz.transpose();
 			//internal::set_is_malloc_allowed(false);
-			// walk in direction of antigradient 
+			// walk in direction of antigradient
 			for (int i=0; i<n_tasks; i++)
 				Mzp_DiagSigz[i] += eta;
 			//internal::set_is_malloc_allowed(true);
@@ -259,7 +259,7 @@ malsar_result_t malsar_clustered(
 		obj_old = obj;
 		obj = Fzp;
 
-		// check if process should be terminated 
+		// check if process should be terminated
 		switch (options.termination)
 		{
 			case 0:
@@ -292,7 +292,7 @@ malsar_result_t malsar_clustered(
 	}
 	//internal::set_is_malloc_allowed(true);
 	SG_SDEBUG("%d iteration passed, objective = %f\n",iter,obj)
-	
+
 	SG_FREE(H_diag_matrix);
 	SG_FREE(diag_H);
 	SG_FREE(f);

@@ -3,7 +3,7 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Written (W) 2013 Soumyajit De
  */
 
@@ -96,7 +96,7 @@ void CProbingSampler::precompute()
 	{
 		SG_DEBUG("Coloring vector already computed! Exiting!\n");
 		return;
-	}	
+	}
 
 	// do coloring things here and save the coloring vector
 	SparsityStructure* sp_str=m_matrix_operator->get_sparsity_structure(m_power);

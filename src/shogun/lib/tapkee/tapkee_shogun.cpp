@@ -17,7 +17,7 @@
 #define TAPKEE_EIGEN_INCLUDE_FILE <shogun/mathematics/eigen3.h>
 
 #ifdef HAVE_ARPACK
-	#define TAPKEE_WITH_ARPACK 
+	#define TAPKEE_WITH_ARPACK
 #endif
 #define TAPKEE_USE_LGPL_COVERTREE
 #include <shogun/lib/tapkee/tapkee.hpp>
@@ -52,11 +52,11 @@ class ShogunLoggerImplementation : public tapkee::LoggerImplementation
 struct ShogunFeatureVectorCallback
 {
 	ShogunFeatureVectorCallback(CDotFeatures* f) : dim(0), features(f) { }
-	inline tapkee::IndexType dimension() const 
+	inline tapkee::IndexType dimension() const
 	{
 		if (features)
 			return (dim = features->get_dim_feature_space());
-		
+
 		return 0;
 	}
 	inline void vector(int i, tapkee::DenseVector& v) const
@@ -88,7 +88,7 @@ CDenseFeatures<float64_t>* shogun::tapkee_embed(const shogun::TAPKEE_PARAMETERS_
 	tapkee::NeighborsMethod neighbors_method = tapkee::CoverTree;
 	size_t N = 0;
 
-	switch (parameters.method) 
+	switch (parameters.method)
 	{
 		case SHOGUN_KERNEL_LOCALLY_LINEAR_EMBEDDING:
 		case SHOGUN_LOCALLY_LINEAR_EMBEDDING:
@@ -156,12 +156,12 @@ CDenseFeatures<float64_t>* shogun::tapkee_embed(const shogun::TAPKEE_PARAMETERS_
 			N = parameters.features->get_num_vectors();
 			break;
 	}
-	
+
 	std::vector<int32_t> indices(N);
 	for (size_t i=0; i<N; i++)
 		indices[i] = i;
 
-	tapkee::ParametersSet parameters_set = 
+	tapkee::ParametersSet parameters_set =
 		(tapkee::keywords::method=method,
 		 tapkee::keywords::eigen_method=eigen_method,
 		 tapkee::keywords::neighbors_method=neighbors_method,
@@ -189,9 +189,9 @@ CDenseFeatures<float64_t>* shogun::tapkee_embed(const shogun::TAPKEE_PARAMETERS_
 
 	SGMatrix<float64_t> feature_matrix(parameters.target_dimension,N);
 	// TODO avoid copying
-	for (uint32_t i=0; i<N; i++) 
+	for (uint32_t i=0; i<N; i++)
 	{
-		for (uint32_t j=0; j<parameters.target_dimension; j++) 
+		for (uint32_t j=0; j<parameters.target_dimension; j++)
 		{
 			feature_matrix(j,i) = result_embedding(i,j);
 		}

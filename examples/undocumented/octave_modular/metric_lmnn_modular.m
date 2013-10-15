@@ -9,7 +9,7 @@ feats_train=RealFeatures(CSVFile(train_fname));
 feats_test=RealFeatures(CSVFile(test_fname));
 labels_train=MulticlassLabels(CSVFile(label_train_fname));
 
-% distance learning with LMNN 
+% distance learning with LMNN
 disp('LMNN')
 
 % number of target neighbours per example

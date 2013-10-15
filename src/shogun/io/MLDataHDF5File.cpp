@@ -123,7 +123,7 @@ void CMLDataHDF5File::fname(sg_type*& vec, int32_t& len)							\
 		SG_ERROR("Error not a 1-dimensional vector (ndims=%d, dims[0]=%d)\n", ndims, dims[0])	\
 	vec=SG_MALLOC(sg_type, nelements);														\
 	len=nelements;																	\
-	herr_t status = H5Dread(dataset, h5_type, H5S_ALL, 								\
+	herr_t status = H5Dread(dataset, h5_type, H5S_ALL,								\
 			H5S_ALL, H5P_DEFAULT, vec);												\
 	H5Dclose(dataset);																\
 	H5Tclose(dtype);																\
@@ -176,7 +176,7 @@ void CMLDataHDF5File::fname(sg_type*& matrix, int32_t& num_feat, int32_t& num_ve
 	matrix=SG_MALLOC(sg_type, nelements);													\
 	num_feat=dims[0];																\
 	num_vec=dims[1];																\
-	herr_t status = H5Dread(dataset, h5_type, H5S_ALL, 								\
+	herr_t status = H5Dread(dataset, h5_type, H5S_ALL,								\
 			H5S_ALL, H5P_DEFAULT, matrix);											\
 	H5Dclose(dataset);																\
 	H5Tclose(dtype);																\

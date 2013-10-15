@@ -22,7 +22,7 @@ def typecheck(a, b):
 def compare(a, b, tolerance):
 	if not typecheck(a,b): return False
 
-	if type(a) == numpy.ndarray: 
+	if type(a) == numpy.ndarray:
 		if tolerance:
 			return numpy.max(numpy.abs(a - b)) < tolerance
 		else:
@@ -30,11 +30,11 @@ def compare(a, b, tolerance):
 	elif isinstance(a, modshogun.SGObject):
 		# old binary way to compare, via serialization and string comparison
 		#return pickle.dumps(a) == pickle.dumps(b)
-		
+
 		# new, parameter framework based comparison up to tolerance
 		shogun_tolerance = 1e-5 if tolerance is None else tolerance
 		result = a.equals(b, shogun_tolerance)
-		
+
 		# print debug output in case of failure
 		if not result:
 			print "Equals failed with debug output"
@@ -42,7 +42,7 @@ def compare(a, b, tolerance):
 			a.io.set_loglevel(1)
 			a.equals(b, shogun_tolerance)
 			a.io.set_loglevel(old_loglevel)
-			
+
 		return result
 	elif type(a) in (tuple,list):
 		if len(a) != len(b): return False

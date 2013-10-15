@@ -105,9 +105,9 @@ public:
 
 		/** train on one example
 		 * @param feature the feature object containing the current example. Note that get_next_example
-		 *        is already called so relevalent methods like dot() and dense_dot() can be directly 
-		 *        called. WARN: this function should only process ONE example, and get_next_example() 
-		 *        should NEVER be called here. Use the label passed in the 2nd parameter, instead of 
+		 *        is already called so relevalent methods like dot() and dense_dot() can be directly
+		 *        called. WARN: this function should only process ONE example, and get_next_example()
+		 *        should NEVER be called here. Use the label passed in the 2nd parameter, instead of
 		 *		  get_label() from feature, because sometimes the features might not have associated
 		 *		  labels or the caller might want to provide some other labels.
 		 * @param label label of this example

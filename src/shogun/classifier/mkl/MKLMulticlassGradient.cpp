@@ -69,17 +69,17 @@ void MKLMulticlassGradient::addconstraint(const ::std::vector<float64_t> & normw
 
 void MKLMulticlassGradient::genbetas( ::std::vector<float64_t> & weights ,const ::std::vector<float64_t> & gammas)
 {
-	
+
 	assert((int32_t)gammas.size()+1==numkernels);
 
 	double pi4=3.151265358979238/2;
 
 	weights.resize(numkernels);
-	
+
 
 	// numkernels-dimensional polar transform
 	weights[0]=1;
-	
+
 	for(int32_t i=0; i< numkernels-1 ;++i)
 	{
 		for(int32_t k=0; k< i+1 ;++k)
@@ -87,19 +87,19 @@ void MKLMulticlassGradient::genbetas( ::std::vector<float64_t> & weights ,const 
 			weights[k]*=cos( std::min(std::max(0.0,gammas[i]),pi4) );
 		}
 		weights[i+1]=sin( std::min(std::max(0.0,gammas[i]),pi4) );
-	} 
+	}
 
 	// pnorm- manifold adjustment
 	if(pnorm!=2.0)
 	{
 		for(int32_t i=0; i< numkernels ;++i)
-			weights[i]=pow(weights[i],2.0/pnorm);	
+			weights[i]=pow(weights[i],2.0/pnorm);
 	}
 }
 
 void MKLMulticlassGradient::gengammagradient( ::std::vector<float64_t> & gammagradient ,const ::std::vector<float64_t> & gammas,const int32_t dim)
 {
-	
+
 	assert((int32_t)gammas.size()+1==numkernels);
 
 	double pi4=3.151265358979238/2;
@@ -109,7 +109,7 @@ void MKLMulticlassGradient::gengammagradient( ::std::vector<float64_t> & gammagr
 
 	// numkernels-dimensional polar transform
 	gammagradient[0]=1;
-	
+
 	for(int32_t i=0; i< numkernels-1 ;++i)
 	{
 		if(i!=dim)
@@ -130,7 +130,7 @@ void MKLMulticlassGradient::gengammagradient( ::std::vector<float64_t> & gammagr
 			}
 			gammagradient[i+1]=pow( sin( std::min(std::max(0.0,gammas[i]),pi4) ),2.0/pnorm-1)*cos( std::min(std::max(0.0,gammas[i]),pi4) );
 		}
-	} 
+	}
 }
 
 float64_t MKLMulticlassGradient::objectives(const ::std::vector<float64_t> & weights, const int32_t index)
@@ -139,7 +139,7 @@ float64_t MKLMulticlassGradient::objectives(const ::std::vector<float64_t> & wei
 	assert(index < (int32_t) sumsofalphas.size());
 	assert(index < (int32_t) normsofsubkernels.size());
 
-	
+
 	float64_t obj= -sumsofalphas[index];
 	for(int32_t i=0; i< numkernels ;++i)
 	{
@@ -159,7 +159,7 @@ void MKLMulticlassGradient::linesearch(std::vector<float64_t> & finalbeta,const 
 	int32_t totaliters=6;
 	float64_t maxrelobjdiff=1e-6;
 
- 	std::vector<float64_t> finalgamma,curgamma;
+	std::vector<float64_t> finalgamma,curgamma;
 
 	curgamma.resize(numkernels-1);
 	if(oldweights.empty())
@@ -243,7 +243,7 @@ void MKLMulticlassGradient::linesearch(std::vector<float64_t> & finalbeta,const 
 		std::vector<float64_t> maxalphas(numkernels-1,0);
 		float64_t maxgrad=0;
 		for(int32_t i=0; i< numkernels-1 ;++i)
-		{	
+		{
 			maxgrad=std::max(maxgrad,fabs(curgrad[i]) );
 			if(curgrad[i]<0)
 			{
@@ -256,12 +256,12 @@ void MKLMulticlassGradient::linesearch(std::vector<float64_t> & finalbeta,const 
 			else
 			{
 				maxalphas[i]=1024*1024;
-			}	
+			}
 		}
-		
+
 		float64_t maxalpha=maxalphas[0];
 		for(int32_t i=1; i< numkernels-1 ;++i)
-		{	
+		{
 			maxalpha=std::min(maxalpha,maxalphas[i]);
 		}
 
@@ -289,7 +289,7 @@ void MKLMulticlassGradient::linesearch(std::vector<float64_t> & finalbeta,const 
 				curobj=std::min(curobj,objectives(tmpbeta, i));
 			}
 
-			int curhalfiter=0;	
+			int curhalfiter=0;
 			while((curobj < minval)&&(curhalfiter<maxhalfiter)&&(fabs(curobj/minval-1 ) > maxrelobjdiff ))
 			{
 				rightalpha=midalpha;
@@ -303,7 +303,7 @@ void MKLMulticlassGradient::linesearch(std::vector<float64_t> & finalbeta,const 
 				genbetas( tmpbeta ,tmpgamma);
 				curobj=objectives(tmpbeta, 0);
 				for(int32_t i=1; i< (int32_t)sumsofalphas.size() ;++i)
-				{	
+				{
 					curobj=std::min(curobj,objectives(tmpbeta, i));
 				}
 			}
@@ -312,7 +312,7 @@ void MKLMulticlassGradient::linesearch(std::vector<float64_t> & finalbeta,const 
          float64_t tmpobj=std::max(lobj,robj);
 			do
 			{
-				
+
 				tmpobj=std::max(lobj,robj);
 
 				tmpgamma=curgamma;
@@ -323,10 +323,10 @@ void MKLMulticlassGradient::linesearch(std::vector<float64_t> & finalbeta,const 
 				genbetas( tmpbeta ,tmpgamma);
 				curobj=objectives(tmpbeta, 0);
 				for(int32_t i=1; i< (int32_t)sumsofalphas.size() ;++i)
-				{	
+				{
 					curobj=std::min(curobj,objectives(tmpbeta, i));
 				}
-				
+
 				if(lobj>robj)
 				{
 					rightalpha=midalpha;

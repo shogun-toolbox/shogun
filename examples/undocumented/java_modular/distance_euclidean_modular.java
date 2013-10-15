@@ -16,7 +16,7 @@ public class distance_euclidean_modular {
 		RealFeatures feats_test = new RealFeatures(testdata_real);
 
 		EuclideanDistance distance = new EuclideanDistance(feats_train, feats_train);
-		
+
 		DoubleMatrix dm_train = distance.get_distance_matrix();
 		distance.init(feats_train, feats_test);
 		DoubleMatrix dm_test = distance.get_distance_matrix();

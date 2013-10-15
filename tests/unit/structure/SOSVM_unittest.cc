@@ -33,15 +33,15 @@ TEST(SOSVM, sgd_check_w_helper)
 	CFactorGraphLabels* labels = new CFactorGraphLabels(num_samples);
 	SG_REF(labels);
 
-	for (int32_t n = 0; n < num_samples; ++n) 
+	for (int32_t n = 0; n < num_samples; ++n)
 	{
 		// factor graph
 		SGVector<int32_t> vc(1);
 		vc[0] = 2;
-	
+
 		CFactorGraph* fg = new CFactorGraph(vc);
 
-		// add factors 
+		// add factors
 		SGVector<float64_t> data1(1);
 		data1[0] = -1.0;
 		SGVector<int32_t> var_index1(1);
@@ -55,7 +55,7 @@ TEST(SOSVM, sgd_check_w_helper)
 		fg->connect_components();
 		fg->compute_energies();
 
-		CMAPInference infer_met(fg, TREE_MAX_PROD);	
+		CMAPInference infer_met(fg, TREE_MAX_PROD);
 		infer_met.inference();
 
 		CFactorGraphObservation* fg_observ = infer_met.get_structured_outputs();
@@ -80,7 +80,7 @@ TEST(SOSVM, sgd_check_w_helper)
 	sgd->set_lambda(1.0);
 	sgd->train();
 	w = sgd->get_w();
-	
+
 	for (int32_t i = 0; i < w.vlen; i++)
 		EXPECT_NEAR(w_truth[i], w[i], 1E-10);
 

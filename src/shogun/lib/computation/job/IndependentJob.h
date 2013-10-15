@@ -3,7 +3,7 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Written (W) 2013 Soumyajit De
  */
 
@@ -33,7 +33,7 @@ public:
 		init();
 	}
 
-	/** 
+	/**
 	 * constructor
 	 *
 	 * @param aggregator the job result aggregator for the current job
@@ -53,7 +53,7 @@ public:
 		SG_UNREF(m_aggregator);
 	}
 
-	/** 
+	/**
 	 * abstract compute method that computes the job, creates a CJobResult,
 	 * submits the result to the job result aggregator
 	 */

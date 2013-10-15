@@ -6,7 +6,7 @@
  *
  * Written (W) 2013 Soumyajit De
  */
- 
+
 #include <shogun/lib/common.h>
 
 #ifdef HAVE_EIGEN3
@@ -42,7 +42,7 @@ TEST(LogDetEstimator, sample)
 {
 	CSerialComputationEngine* e=new CSerialComputationEngine;
 	SG_REF(e);
-	
+
 	const index_t size=2;
 	SGMatrix<float64_t> mat(size, size);
 	mat(0,0)=2.0;
@@ -62,7 +62,7 @@ TEST(LogDetEstimator, sample)
 	CLogDetEstimator estimator(trace_sampler, op_func, e);
 	const index_t num_estimates=5000;
 	SGVector<float64_t> estimates=estimator.sample(num_estimates);
-	
+
 	float64_t result=0.0;
 	for (index_t i=0; i<num_estimates; ++i)
 		result+=estimates[i];
@@ -81,7 +81,7 @@ TEST(LogDetEstimator, sample_ratapp_dense)
 {
 	CSerialComputationEngine* e=new CSerialComputationEngine;
 	SG_REF(e);
-	
+
 	const index_t size=2;
 	SGMatrix<float64_t> mat(size, size);
 	mat(0,0)=1.0;
@@ -106,14 +106,14 @@ TEST(LogDetEstimator, sample_ratapp_dense)
 			op, e, eig_solver,
 			(CLinearSolver<complex128_t, float64_t>*)linear_solver, accuracy);
 	SG_REF(op_func);
-	
+
 	CNormalSampler* trace_sampler=new CNormalSampler(size);
 	SG_REF(trace_sampler);
 
 	CLogDetEstimator estimator(trace_sampler, op_func, e);
 	const index_t num_estimates=10;
 	SGVector<float64_t> estimates=estimator.sample(num_estimates);
-	
+
 	float64_t result=0.0;
 	for (index_t i=0; i<num_estimates; ++i)
 		result+=estimates[i];
@@ -135,7 +135,7 @@ TEST(LogDetEstimator, sample_ratapp_probing_sampler)
 {
 	CSerialComputationEngine* e=new CSerialComputationEngine;
 	SG_REF(e);
-	
+
 	const index_t size=16;
 	SGMatrix<float64_t> mat(size, size);
 	mat.set_const(0.0);
@@ -222,7 +222,7 @@ TEST(LogDetEstimator, sample_ratapp_probing_sampler_cgm)
 {
 	CSerialComputationEngine* e=new CSerialComputationEngine;
 	SG_REF(e);
-	
+
 	const index_t size=16;
 	SGMatrix<float64_t> mat(size, size);
 	mat.set_const(0.0);
@@ -310,7 +310,7 @@ TEST(LogDetEstimator, sample_ratapp_big_diag_matrix)
 	float64_t accuracy=1E-5;
 	float64_t min_eigenvalue=0.001;
 
-	// create a sparse matrix	
+	// create a sparse matrix
 	const index_t size=100;
 	SGSparseMatrix<float64_t> sm(size, size);
 	CSparseMatrixOperator<float64_t>* op=new CSparseMatrixOperator<float64_t>(sm);
@@ -369,7 +369,7 @@ TEST(LogDetEstimator, sample_ratapp_big_matrix)
 	float64_t accuracy=1E-5;
 	float64_t min_eigenvalue=0.001;
 
-	// create a sparse matrix	
+	// create a sparse matrix
 	const index_t size=100;
 	SGSparseMatrix<float64_t> sm(size, size);
 

@@ -2,7 +2,7 @@ using System;
 
 public class distance_minkowski_modular {
 	public static void Main() {
-		
+
 		modshogun.init_shogun_with_defaults();
 		double k = 3;
 
@@ -21,7 +21,7 @@ public class distance_minkowski_modular {
 		foreach(double item in dm_train) {
 			Console.Write(item);
 		}
-		
+
 		foreach(double item in dm_test) {
 			Console.Write(item);
 		}

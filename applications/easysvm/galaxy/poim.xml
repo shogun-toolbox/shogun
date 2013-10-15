@@ -1,23 +1,23 @@
 <?xml version="1.0"?>
 <tool id="easypoim" name="Positional Oligomer Matrices">
 <description>Visualize SVMs with WD kernel</description>
-  <command interpreter="python">easysvm.py 
+  <command interpreter="python">easysvm.py
         poim
-        $C 
+        $C
 	${poimdegree}
 	wd ${degree} ${shift}
 	#if $datatype.inputdatatype=="1"
 	    fasta $datatype.dataset_pos $datatype.dataset_neg
 	#else
-	    arff $datatype.dataset 
+	    arff $datatype.dataset
         #end if
 	$poimfile
         #if $seq.stype=="dna"
             dna $seq.con
-        #end if 
+        #end if
   </command>
   <inputs>
-      	  <conditional name="datatype">
+	  <conditional name="datatype">
 	  <param name="inputdatatype" type="select" label="Input data type" help="There are two available formats: FASTA for sequences and the more general ARFF format for sequences or numerical attributes.">
 	  <option value="1">FASTA</option>
 	  <option value="2">ARFF</option>
@@ -39,7 +39,7 @@
     <param name="C" type="float" size="10" value="1" help="Increase C if you trust your training set.">
       <label>SVM regularization parameter C</label>
     </param>
-        <param name="degree" type="integer" size="10" value="8" 
+        <param name="degree" type="integer" size="10" value="8"
 	  help="Degree controls the maximal length of substrings considered in the WD kernel. ">
 	  <label>The degree of the WD Kernel</label>
         </param>

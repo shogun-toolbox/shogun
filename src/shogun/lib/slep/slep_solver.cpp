@@ -20,7 +20,7 @@
 namespace shogun
 {
 
-double compute_regularizer(double* w, double lambda, double lambda2, int n_vecs, int n_feats, 
+double compute_regularizer(double* w, double lambda, double lambda2, int n_vecs, int n_feats,
                            int n_blocks, const slep_options& options)
 {
 	double regularizer = 0.0;
@@ -105,10 +105,10 @@ double compute_regularizer(double* w, double lambda, double lambda2, int n_vecs,
 
 double compute_lambda(
 		double* ATx,
-		double z, 
-		CDotFeatures* features, 
-		double* y, 
-		int n_vecs, int n_feats, 
+		double z,
+		CDotFeatures* features,
+		double* y,
+		int n_vecs, int n_feats,
 		int n_blocks,
 		const slep_options& options)
 {
@@ -121,7 +121,7 @@ double compute_lambda(
 		q_bar = CMath::ALMOST_INFTY;
 	else if (options.q>1e6)
 		q_bar = 1;
-	else 
+	else
 		q_bar = options.q/(options.q-1);
 
 	SG_SINFO("q bar = %f \n",q_bar)
@@ -135,7 +135,7 @@ double compute_lambda(
 			{
 				SGVector<index_t> task_idx = options.tasks_indices[t];
 				int n_vecs_task = task_idx.vlen;
-			
+
 				switch (options.loss)
 				{
 					case LOGISTIC:
@@ -212,11 +212,11 @@ double compute_lambda(
 				double sum = 0.0;
 				for (int t=0; t<n_blocks; t++)
 					sum += CMath::pow(fabs(ATx[t*n_feats+i]),q_bar);
-				lambda_max = 
-					CMath::max(lambda_max, CMath::pow(sum,1.0/q_bar)); 
+				lambda_max =
+					CMath::max(lambda_max, CMath::pow(sum,1.0/q_bar));
 			}
 
-			if (options.loss==LOGISTIC) 
+			if (options.loss==LOGISTIC)
 				lambda_max /= n_vecs;
 		}
 		break;
@@ -239,7 +239,7 @@ double compute_lambda(
 				double sum = 0.0;
 				for (int i=group_ind_start; i<group_ind_end; i++)
 					sum += CMath::pow(fabs(ATx[i]),q_bar);
-				
+
 				sum = CMath::pow(sum, 1.0/q_bar);
 				sum /= options.gWeight[t];
 				SG_SINFO("sum = %f\n",sum)
@@ -274,7 +274,7 @@ double compute_lambda(
 	return z*lambda_max;
 }
 
-void projection(double* w, double* v, int n_feats, int n_blocks, double lambda, double lambda2,  
+void projection(double* w, double* v, int n_feats, int n_blocks, double lambda, double lambda2,
                 double L, double* z, double* z0, const slep_options& options)
 {
 	switch (options.mode)
@@ -310,8 +310,8 @@ void projection(double* w, double* v, int n_feats, int n_blocks, double lambda, 
 
 }
 
-double search_point_gradient_and_objective(CDotFeatures* features, double* ATx, double* As, 
-                                           double* sc, double* y, int n_vecs, 
+double search_point_gradient_and_objective(CDotFeatures* features, double* ATx, double* As,
+                                           double* sc, double* y, int n_vecs,
                                            int n_feats, int n_tasks,
                                            double* g, double* gc,
                                            const slep_options& options)
@@ -447,7 +447,7 @@ slep_result_t slep_solver(
 		lambda = compute_lambda(ATx, z, features, y, n_vecs, n_feats, n_blocks, options);
 		rsL2*= lambda;
 	}
-	else 
+	else
 		lambda = z;
 
 	double lambda2 = 0.0;
@@ -456,7 +456,7 @@ slep_result_t slep_solver(
 	w.zero();
 	SGVector<double> c(n_tasks);
 	c.zero();
-	
+
 	if (options.last_result)
 	{
 		w = options.last_result->w;
@@ -506,23 +506,23 @@ slep_result_t slep_solver(
 		L += rsL2;
 
 	double* wp = SG_CALLOC(double, n_feats*n_tasks);
-	for (i=0; i<n_feats*n_tasks; i++) 
+	for (i=0; i<n_feats*n_tasks; i++)
 		wp[i] = w[i];
 	double* Awp = SG_MALLOC(double, n_vecs);
-	for (i=0; i<n_vecs; i++) 
+	for (i=0; i<n_vecs; i++)
 		Awp[i] = Aw[i];
 	double* wwp = SG_CALLOC(double, n_feats*n_tasks);
 
 	double* cp = SG_MALLOC(double, n_tasks);
-	for (t=0; t<n_tasks; t++) 
+	for (t=0; t<n_tasks; t++)
 		cp[t] = c[t];
 	double* ccp = SG_CALLOC(double, n_tasks);
 
 	double* gc = SG_MALLOC(double, n_tasks);
 	double alphap = 0.0, alpha = 1.0;
 	double fun_x = 0.0;
-	
-	while (!done && iter <= options.max_iter && !CSignal::cancel_computations()) 
+
+	while (!done && iter <= options.max_iter && !CSignal::cancel_computations())
 	{
 		beta = (alphap-1.0)/alpha;
 
@@ -532,7 +532,7 @@ slep_result_t slep_solver(
 			sc[t] = c[t] + beta*ccp[t];
 		for (i=0; i<n_vecs; i++)
 			As[i] = Aw[i] + beta*(Aw[i]-Awp[i]);
-		for (i=0; i<n_tasks*n_feats; i++) 
+		for (i=0; i<n_tasks*n_feats; i++)
 			g[i] = 0.0;
 
 		double fun_s = search_point_gradient_and_objective(features, ATx, As, sc, y, n_vecs, n_feats, n_tasks, g, gc, options);
@@ -546,7 +546,7 @@ slep_result_t slep_solver(
 			wp[i] = w[i];
 		for (t=0; t<n_tasks; t++)
 			cp[t] = c[t];
-		for (i=0; i<n_vecs; i++) 
+		for (i=0; i<n_vecs; i++)
 			Awp[i] = Aw[i];
 
 		int inner_iter = 1;
@@ -557,7 +557,7 @@ slep_result_t slep_solver(
 
 			for (t=0; t<n_tasks; t++)
 				c[t] = sc[t] - gc[t]*(1.0/L);
-			
+
 			projection(w.matrix,v,n_feats,n_blocks,lambda,lambda2,L,z_flsa,z0_flsa,options);
 
 			for (i=0; i<n_feats*n_tasks; i++)
@@ -607,7 +607,7 @@ slep_result_t slep_solver(
 				fun_x /= n_vecs;
 			if (options.mode==PLAIN || options.mode==FUSED)
 				fun_x += rsL2/2 * SGVector<float64_t>::dot(w.matrix,w.matrix,n_feats);
-			
+
 			double l_sum = 0.0, r_sum = 0.0;
 			switch (options.loss)
 			{
@@ -636,7 +636,7 @@ slep_result_t slep_solver(
 
 			if (l_sum <= r_sum*L)
 				break;
-			else 
+			else
 				L = CMath::max(2*L, l_sum/r_sum);
 			inner_iter++;
 		}
@@ -712,7 +712,7 @@ slep_result_t slep_solver(
 				if (norm_wwp <= options.tolerance*CMath::max(norm_wp,1.0))
 					done = true;
 			break;
-			default: 
+			default:
 				done = true;
 		}
 

@@ -1,7 +1,7 @@
 /** \mainpage SHOGUN 项目文档
- 
- 
-  \image html shogun_logo.png 
+
+
+  \image html shogun_logo.png
 
   \section intro_sec 简介
   SHOGUN是一个关于大规模机器学习的工具包，它尤其关注支持向量机（SVM）。它提供
@@ -18,17 +18,17 @@
  另外一种。此外，还可以使用预处理器对输入feature进行预处理（如减去均值）。
 
   SHOGUN使用C++实现，但同时为Matlab(tm)， R, Octave和Python 提供接口\ref interfaces "(参看接口)"
-  
+
   \li \subpage installation
   \li \subpage screenshots
   \li \subpage tutorial
   \li \subpage examples
-  \li \subpage methods 
+  \li \subpage methods
   \li \subpage interfaces
   \li \subpage faq
   \li \subpage authors
   \li \subpage license
 
-  
+
   shogun作者致。
 */

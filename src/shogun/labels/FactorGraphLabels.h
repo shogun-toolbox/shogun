@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2013 Shell Hu 
- * Copyright (C) 2013 Shell Hu 
+ * Written (W) 2013 Shell Hu
+ * Copyright (C) 2013 Shell Hu
  */
 
 #ifndef __FACTORGRAPH_LABELS_H__
@@ -21,7 +21,7 @@ namespace shogun
 
 class CFactorGraphLabels;
 
-/** @brief Class CFactorGraphObservation is used as 
+/** @brief Class CFactorGraphObservation is used as
  * the structured output */
 class CFactorGraphObservation : public CStructuredData
 {
@@ -37,7 +37,7 @@ public:
 	 * @param observed_state Discrete labeling of a set of variables.
 	 * @param loss_weights weighted loss for each variable
 	 */
-	CFactorGraphObservation(SGVector<int32_t> observed_state, 
+	CFactorGraphObservation(SGVector<int32_t> observed_state,
 		SGVector<float64_t> loss_weights);
 
 	~CFactorGraphObservation() { }
@@ -65,7 +65,7 @@ public:
 	/** @return loss weights */
 	SGVector<float64_t> get_loss_weights() const;
 
-	/** set loss weights 
+	/** set loss weights
 	 *
 	 * @param loss_weights weights for weighted hamming loss
 	 */

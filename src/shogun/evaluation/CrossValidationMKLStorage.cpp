@@ -28,7 +28,7 @@ void CCrossValidationMKLStorage::update_trained_machine(
 				machine->get_name());
 
 	CKernel* kernel = NULL;
-	if (mkl) 
+	if (mkl)
 		kernel = mkl->get_kernel();
 	else
 		kernel = mkl_multiclass->get_kernel();

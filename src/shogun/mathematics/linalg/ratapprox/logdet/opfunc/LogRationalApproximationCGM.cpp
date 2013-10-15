@@ -3,7 +3,7 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Written (W) 2013 Soumyajit De
  */
 
@@ -96,7 +96,7 @@ CJobResultAggregator* CLogRationalApproximationCGM::submit_jobs(
 
 	// we can safely unref the job here, computation engine takes it from here
 	SG_UNREF(job);
-	
+
 	SG_DEBUG("Leaving\n");
 	return agg;
 }

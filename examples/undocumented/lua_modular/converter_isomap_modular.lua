@@ -7,7 +7,7 @@ parameter_list = {{data}}
 
 function converter_isomap_modular(data)
 	features = modshogun.RealFeatures(data)
-		
+
 	converter = modshogun.Isomap()
 	converter:set_target_dim(1)
 	converter:apply(features)

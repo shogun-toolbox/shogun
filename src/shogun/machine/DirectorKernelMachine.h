@@ -19,7 +19,7 @@
 namespace shogun
 {
 
-#define IGNORE_IN_CLASSLIST 
+#define IGNORE_IN_CLASSLIST
 IGNORE_IN_CLASSLIST class CDirectorKernelMachine : public CKernelMachine
 {
 	public:
@@ -39,7 +39,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernelMachine : public CKernelMachine
 		 * @param b bias term
 		 */
 		CDirectorKernelMachine(CKernel* k, const SGVector<float64_t> alphas, const SGVector<int32_t> svs, float64_t b)
-		: CKernelMachine(k, alphas, svs, b)		
+		: CKernelMachine(k, alphas, svs, b)
 		{
 		}
 
@@ -207,7 +207,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernelMachine : public CKernelMachine
 		}
 
 		/** @return whether this machine supports locking */
-		virtual bool supports_locking() const 
+		virtual bool supports_locking() const
 		{
 			return CKernelMachine::supports_locking();
 		}

@@ -32,8 +32,8 @@ class CDomainAdaptationMulticlassLibLinear : public CMulticlassLibLinear
 		 * @param target_labels target domain labels
 		 * @param source_machine source domain machine to regularize against
 		 */
-		CDomainAdaptationMulticlassLibLinear(float64_t target_C, 
-				CDotFeatures* target_features, CLabels* target_labels, 
+		CDomainAdaptationMulticlassLibLinear(float64_t target_C,
+				CDotFeatures* target_features, CLabels* target_labels,
 				CLinearMulticlassMachine* source_machine);
 
 		/** destructor */
@@ -48,7 +48,7 @@ class CDomainAdaptationMulticlassLibLinear : public CMulticlassLibLinear
 			return "DomainAdaptationMulticlassLibLinear";
 		}
 
-		/** getter for source bias 
+		/** getter for source bias
 		 * @return source bias
 		 */
 		float64_t get_source_bias() const;

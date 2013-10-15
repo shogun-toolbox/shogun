@@ -40,7 +40,7 @@ def evaluation_cross_validation_mkl_weight_storage(traindat=traindat, label_trai
     comb_features.append_feature_obj(features)
     comb_features.append_feature_obj(features)
     labels=BinaryLabels(label_traindat)
-    
+
     # kernel, different Gaussians combined
     kernel=CombinedKernel()
     kernel.append_kernel(GaussianKernel(10, 0.1))
@@ -70,7 +70,7 @@ def evaluation_cross_validation_mkl_weight_storage(traindat=traindat, label_trai
     mkl_storage=CrossValidationMKLStorage()
     cross_validation.add_cross_validation_output(mkl_storage)
     cross_validation.set_num_runs(3)
-    
+
     # perform cross-validation
     result=cross_validation.evaluate()
 
@@ -78,16 +78,16 @@ def evaluation_cross_validation_mkl_weight_storage(traindat=traindat, label_trai
     weights=mkl_storage.get_mkl_weights()
     #print "mkl weights during cross--validation"
     #print weights
-    
+
     #print "mean per kernel"
     #print Statistics.matrix_mean(weights, False)
-    
+
     #print "variance per kernel"
     #print Statistics.matrix_variance(weights, False)
-    
+
     #print "std-dev per kernel"
     #print Statistics.matrix_std_deviation(weights, False)
-    
+
 
 if __name__=='__main__':
 	print('Evaluation CrossValidationClassification')

@@ -25,7 +25,7 @@ typedef std::pair<IndexType,ScalarType> HeapElement;
 
 struct HeapElementComparator
 {
-	inline bool operator()(const HeapElement& l, const HeapElement& r) const 
+	inline bool operator()(const HeapElement& l, const HeapElement& r) const
 	{
 		return l.second > r.second;
 	}
@@ -41,7 +41,7 @@ struct HeapElementComparator
 //! @param callback distance callback
 //!
 template <class RandomAccessIterator, class DistanceCallback>
-DenseSymmetricMatrix compute_shortest_distances_matrix(const RandomAccessIterator& begin, const RandomAccessIterator& end, 
+DenseSymmetricMatrix compute_shortest_distances_matrix(const RandomAccessIterator& begin, const RandomAccessIterator& end,
 		const Neighbors& neighbors, DistanceCallback callback)
 {
 	timed_context context("Distances shortest path relaxing");
@@ -49,7 +49,7 @@ DenseSymmetricMatrix compute_shortest_distances_matrix(const RandomAccessIterato
 	const IndexType N = (end-begin);
 
 	DenseSymmetricMatrix shortest_distances(N,N);
-	
+
 #pragma omp parallel shared(shortest_distances,neighbors,begin,callback) default(none)
 	{
 		bool* f = new bool[N];
@@ -158,7 +158,7 @@ DenseSymmetricMatrix compute_shortest_distances_matrix(const RandomAccessIterato
 //! @param callback distance callback
 //!
 template <class RandomAccessIterator, class DistanceCallback>
-DenseMatrix compute_shortest_distances_matrix(const RandomAccessIterator& begin, const RandomAccessIterator& end, 
+DenseMatrix compute_shortest_distances_matrix(const RandomAccessIterator& begin, const RandomAccessIterator& end,
 		const Landmarks& landmarks, const Neighbors& neighbors, DistanceCallback callback)
 {
 	timed_context context("Distances shortest path relaxing");
@@ -167,7 +167,7 @@ DenseMatrix compute_shortest_distances_matrix(const RandomAccessIterator& begin,
 	const IndexType N_landmarks = landmarks.size();
 
 	DenseMatrix shortest_distances(landmarks.size(),N);
-	
+
 #pragma omp parallel shared(shortest_distances,begin,landmarks,neighbors,callback) default(none)
 	{
 		bool* f = new bool[N];

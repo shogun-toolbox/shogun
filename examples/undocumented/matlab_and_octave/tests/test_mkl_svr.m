@@ -2,7 +2,7 @@
 % paper that we labeled "sine".
 %
 % In this regression task a sine wave is to be learned.
-% We vary the frequency of the wave. 
+% We vary the frequency of the wave.
 
 % Preliminary settings:
 
@@ -35,12 +35,12 @@ end
 
 %for kk = 1:length(f)    % big loop for the different learning problems
 for kk = 4    % big loop for the different learning problems
-  
+
   % data generation
 
   train_x = [1:(((10*2*pi)-1)/(no_obs-1)):10*2*pi];
   train_y = sin(f(kk)*train_x);
-		
+
   kernels={};
 
   % initialize MKL-SVR

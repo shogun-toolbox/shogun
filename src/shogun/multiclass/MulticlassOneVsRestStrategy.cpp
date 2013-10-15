@@ -11,7 +11,7 @@
 #include <shogun/multiclass/MulticlassOneVsRestStrategy.h>
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/labels/MulticlassLabels.h>
-#include <shogun/mathematics/Math.h> 
+#include <shogun/mathematics/Math.h>
 
 using namespace shogun;
 
@@ -98,13 +98,13 @@ void CMulticlassOneVsRestStrategy::rescale_heuris_norm(SGVector<float64_t> outpu
 {
 	if (m_num_classes != outputs.vlen)
 	{
-		SG_ERROR("%s::rescale_heuris_norm(): size(outputs) = %d != m_num_classes = %d\n", 
+		SG_ERROR("%s::rescale_heuris_norm(): size(outputs) = %d != m_num_classes = %d\n",
 				get_name(), outputs.vlen, m_num_classes);
 	}
 
 	float64_t norm = SGVector<float64_t>::sum(outputs);
 	norm += 1E-10;
-	for (int32_t i=0; i<outputs.vlen; i++) 
+	for (int32_t i=0; i<outputs.vlen; i++)
 		outputs[i] /= norm;
 }
 
@@ -113,15 +113,15 @@ void CMulticlassOneVsRestStrategy::rescale_heuris_softmax(SGVector<float64_t> ou
 {
 	if (m_num_classes != outputs.vlen)
 	{
-		SG_ERROR("%s::rescale_heuris_softmax(): size(outputs) = %d != m_num_classes = %d\n", 
+		SG_ERROR("%s::rescale_heuris_softmax(): size(outputs) = %d != m_num_classes = %d\n",
 				get_name(), outputs.vlen, m_num_classes);
 	}
 
-	for (int32_t i=0; i<outputs.vlen; i++) 
+	for (int32_t i=0; i<outputs.vlen; i++)
 		outputs[i] = CMath::exp(-As[i]*outputs[i]-Bs[i]);
 
 	float64_t norm = SGVector<float64_t>::sum(outputs);
 	norm += 1E-10;
-	for (int32_t i=0; i<outputs.vlen; i++) 
+	for (int32_t i=0; i<outputs.vlen; i++)
 		outputs[i] /= norm;
 }

@@ -9,10 +9,10 @@ using namespace shogun;
 int main()
 {
 	init_shogun_with_defaults();
-	
+
 	int32_t num_vectors = 5;
 	int32_t dim = 20;
-	
+
 	SGMatrix<int32_t> mat(dim, num_vectors);
 	for (index_t v=0; v<num_vectors; v++)
 	{
@@ -24,13 +24,13 @@ int main()
 	CHashedDenseFeatures<int32_t>* h_dense_feats = new CHashedDenseFeatures<int32_t>(mat, hashing_dim);
 
 	CSparseFeatures<int32_t>* sparse_feats = new CSparseFeatures<int32_t>(mat);
-	CHashedSparseFeatures<int32_t>* h_sparse_feats = new CHashedSparseFeatures<int32_t>(sparse_feats, hashing_dim);	
+	CHashedSparseFeatures<int32_t>* h_sparse_feats = new CHashedSparseFeatures<int32_t>(sparse_feats, hashing_dim);
 
 	SG_REF(h_dense_feats);
 	CPolyKernel* kernel = new CPolyKernel(h_dense_feats, h_dense_feats, 1, false);
 	SGMatrix<float64_t> dense_mt = kernel->get_kernel_matrix();
 	SG_UNREF(kernel);
-	
+
 	SG_REF(h_sparse_feats);
 	kernel = new CPolyKernel(h_sparse_feats, h_sparse_feats, 1, false);
 	SGMatrix<float64_t> sparse_mt = kernel->get_kernel_matrix();

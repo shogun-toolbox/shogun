@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2013 Evangelos Anagnostopoulos 
- * Copyright (C) 2013 Evangelos Anagnostopoulos 
+ * Written (W) 2013 Evangelos Anagnostopoulos
+ * Copyright (C) 2013 Evangelos Anagnostopoulos
  */
 
 #include <shogun/features/streaming/StreamingHashedSparseFeatures.h>
@@ -18,7 +18,7 @@ namespace shogun
 template <class ST>
 CStreamingHashedSparseFeatures<ST>::CStreamingHashedSparseFeatures()
 {
-	init(NULL, false, 0, 0, false, true);	
+	init(NULL, false, 0, 0, false, true);
 }
 
 template <class ST>
@@ -34,12 +34,12 @@ CStreamingHashedSparseFeatures<ST>::CStreamingHashedSparseFeatures(CSparseFeatur
 {
 	ASSERT(dot_features);
 
-	CStreamingFileFromSparseFeatures<ST>* file = 
+	CStreamingFileFromSparseFeatures<ST>* file =
 			new CStreamingFileFromSparseFeatures<ST>(dot_features, lab);
 	bool is_labelled = (lab != NULL);
 	int32_t size = 1024;
 
-	init(file, is_labelled, size, d, use_quadr, keep_lin_terms); 
+	init(file, is_labelled, size, d, use_quadr, keep_lin_terms);
 
 	parser.set_free_vectors_on_destruct(false);
 	seekable=true;
@@ -52,7 +52,7 @@ CStreamingHashedSparseFeatures<ST>::~CStreamingHashedSparseFeatures()
 
 template <class ST>
 void CStreamingHashedSparseFeatures<ST>::init(CStreamingFile* file, bool is_labelled,
-	int32_t size, int32_t d, bool use_quadr, bool keep_lin_terms)	
+	int32_t size, int32_t d, bool use_quadr, bool keep_lin_terms)
 {
 	dim = d;
 	SG_ADD(&dim, "dim", "Size of target dimension", MS_NOT_AVAILABLE);
@@ -101,7 +101,7 @@ float32_t CStreamingHashedSparseFeatures<ST>::dense_dot(const float32_t* vec2, i
 	float32_t result = 0;
 	for (index_t i=0; i<current_vector.num_feat_entries; i++)
 		result += vec2[current_vector.features[i].feat_index] * current_vector.features[i].entry;
-	
+
 	return result;
 }
 
@@ -133,7 +133,7 @@ const char* CStreamingHashedSparseFeatures<ST>::get_name() const
 template <class ST>
 int32_t CStreamingHashedSparseFeatures<ST>::get_num_vectors() const
 {
-	return 1;	
+	return 1;
 }
 
 template <class ST>
@@ -145,7 +145,7 @@ CFeatures* CStreamingHashedSparseFeatures<ST>::duplicate() const
 template <class ST>
 void CStreamingHashedSparseFeatures<ST>::set_vector_reader()
 {
-	SG_DEBUG("called inside set_vector_reader\n"); 
+	SG_DEBUG("called inside set_vector_reader\n");
 	parser.set_read_vector(&CStreamingFile::get_sparse_vector);
 }
 
@@ -158,7 +158,7 @@ void CStreamingHashedSparseFeatures<ST>::set_vector_and_label_reader()
 template <class ST>
 EFeatureType CStreamingHashedSparseFeatures<ST>::get_feature_type() const
 {
-	return F_UINT; 
+	return F_UINT;
 }
 
 template <class ST>
@@ -177,7 +177,7 @@ void CStreamingHashedSparseFeatures<ST>::start_parser()
 template <class ST>
 void CStreamingHashedSparseFeatures<ST>::end_parser()
 {
-	parser.end_parser();	
+	parser.end_parser();
 }
 
 template <class ST>

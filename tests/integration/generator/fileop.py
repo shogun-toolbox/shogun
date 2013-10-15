@@ -155,7 +155,7 @@ def _loop_args(args, prefix):
 def _get_output_classifier (params, prefix=''):
 	"""
 	Classifier-specific gathering of output data
-	
+
 	@param params various classifier parameters
 	@param prefix prefix for parameter's name, e.g. 'classifier_'
 	@return dict containing testcase data ready to be written to file
@@ -172,7 +172,7 @@ def _get_output_classifier (params, prefix=''):
 def _get_output_clustering (params, prefix=''):
 	"""
 	Clustering-specific gathering of output data
-	
+
 	@param params various clustering parameters
 	@param prefix prefix for parameter's name, e.g. 'clustering_'
 	@return dict containing testcase data ready to be written to file
@@ -188,7 +188,7 @@ def _get_output_clustering (params, prefix=''):
 def _get_output_distance (params, prefix=''):
 	"""
 	Distance-specific gathering of outdata
-	
+
 	@param params various distance parameters
 	@param prefix prefix for parameter's name, e.g. 'subkernel'
 	@return dict containing testcase data ready to be written to file
@@ -203,7 +203,7 @@ def _get_output_distance (params, prefix=''):
 def _get_output_distribution (params, prefix=''):
 	"""
 	Clustering-specific gathering of output data
-	
+
 	@param params various clustering parameters
 	@param prefix prefix for parameter's name, e.g. 'clustering_'
 	@return dict containing testcase data ready to be written to file
@@ -220,7 +220,7 @@ def _get_output_distribution (params, prefix=''):
 def _get_output_kernel (params, prefix=''):
 	"""
 	Kernel-specific gathering of outdata
-	
+
 	@param params various kernel parameters
 	@param prefix prefix for parameter's name, e.g. 'subkernel'
 	@return dict containing testcase data ready to be written to file
@@ -245,7 +245,7 @@ def _get_output_kernel (params, prefix=''):
 def _get_output_preproc (params, prefix=''):
 	"""
 	Preproc-specific gathering of output data
-	
+
 	@param params various preproc parameters
 	@param prefix prefix for parameter's name, e.g. 'preproc_'
 	@return dict containing testcase data ready to be written to file
@@ -260,7 +260,7 @@ def _get_output_preproc (params, prefix=''):
 def _get_output_regression (params, prefix=''):
 	"""
 	Regression-specific gathering of output data
-	
+
 	@param params various regression parameters
 	@param prefix prefix for parameter's name, e.g. 'regression_'
 	@return dict containing testcase data ready to be written to file
@@ -343,7 +343,7 @@ def get_output (catID, params, prefix=''):
 	After computations, the gathered data is structured and
 	put into one data structure which can conveniently be written to a
 	file that will represent the testcase.
-	
+
 	@param catID ID of entity's category, e.g. category.DISTANCE
 	@param params hash with parameters to entity
 	@param prefix prefix for parameter's name, e.g. 'subkernel'

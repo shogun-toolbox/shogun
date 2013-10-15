@@ -14,9 +14,9 @@
 #include <shogun/labels/LabelTypes.h>
 #include <shogun/lib/DynamicObjectArray.h>
 
-namespace shogun 
+namespace shogun
 {
-/** @brief Multiclass Labels for multi-class classification 
+/** @brief Multiclass Labels for multi-class classification
  * with multiple labels
  *
  * valid values for labels are 0...nr_classes-1
@@ -54,7 +54,7 @@ class CMulticlassMultipleOutputLabels : public CLabels
 		 * @return labels
 		 */
 		SGMatrix<index_t> get_labels() const;
-		
+
 		/** get label object for specified index
 		 *
 		 * @param idx index of the label

@@ -26,7 +26,7 @@ macro(_eigen3_get_version)
   set(EIGEN_MINOR_VERSION "${CMAKE_MATCH_1}")
 
   set(EIGEN_VERSION ${EIGEN_WORLD_VERSION}.${EIGEN_MAJOR_VERSION}.${EIGEN_MINOR_VERSION})
- 
+
 endmacro(_eigen3_get_version)
 
 find_path(EIGEN_INCLUDE_DIR NAMES signature_of_eigen3_matrix_library

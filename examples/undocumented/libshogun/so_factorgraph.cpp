@@ -15,7 +15,7 @@ using namespace shogun;
 
 inline int grid_to_index(int32_t x, int32_t y, int32_t w = 10)
 {
-	return x + w*y; 
+	return x + w*y;
 }
 
 inline void index_to_grid(int32_t index, int32_t& x, int32_t& y, int32_t w = 10)
@@ -80,7 +80,7 @@ void create_tree_graph(int hh, int ww)
 
 	fg->compute_energies();
 
-	CMAPInference infer_met(fg, TREE_MAX_PROD);	
+	CMAPInference infer_met(fg, TREE_MAX_PROD);
 	infer_met.inference();
 
 	CFactorGraphObservation* fg_observ = infer_met.get_structured_outputs();
@@ -97,7 +97,7 @@ int main(int argc, char** argv)
 	init_shogun_with_defaults();
 
 	//sg_io->set_loglevel(MSG_DEBUG);
-	
+
 	create_tree_graph(30, 30);
 
 	exit_shogun();

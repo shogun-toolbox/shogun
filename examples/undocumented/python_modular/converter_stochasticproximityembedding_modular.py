@@ -5,9 +5,9 @@ parameter_list = [[data, 20]]
 def converter_stochasticproximityembedding_modular (data_fname, k):
 	try:
 		from modshogun import RealFeatures,StochasticProximityEmbedding, SPE_GLOBAL, SPE_LOCAL, CSVFile
-		
+
 		features = RealFeatures(CSVFile(data_fname))
-			
+
 		converter = StochasticProximityEmbedding()
 		converter.set_target_dim(1)
 		converter.set_nupdates(40)

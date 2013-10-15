@@ -4,7 +4,7 @@
 //// Eigen 3 library includes
 #ifdef TAPKEE_EIGEN_INCLUDE_FILE
 	#include TAPKEE_EIGEN_INCLUDE_FILE
-#else 
+#else
 	#ifndef TAPKEE_DEBUG
 		#define EIGEN_NO_DEBUG
 	#endif

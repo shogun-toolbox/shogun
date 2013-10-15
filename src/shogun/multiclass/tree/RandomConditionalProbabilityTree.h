@@ -39,7 +39,7 @@ protected:
 	virtual bool which_subtree(node_t *node, SGVector<float32_t> ex);
 };
 
-} /* shogun */ 
+} /* shogun */
 
 #endif /* end of include guard: RANDOMCONDITIONALPROBABILITYTREE_H__ */
 

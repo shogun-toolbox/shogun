@@ -1,5 +1,5 @@
 This example shows how to encode features that live in various vector spaces
 using the appropriate shogun objects. We demonstrate how to use
-three types of features: ByteFeatures (small integer values), 
+three types of features: ByteFeatures (small integer values),
 LongIntFeatures (large integer values) and finally RealFeatures
 (real-valued vectors).

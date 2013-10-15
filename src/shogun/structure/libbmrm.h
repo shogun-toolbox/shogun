@@ -63,7 +63,7 @@ IGNORE_IN_CLASSLIST struct ICP_stats
 
 /** Add cutting plane
  *
- * @param tail 		Pointer to the last CP entry
+ * @param tail		Pointer to the last CP entry
  * @param map		Pointer to map storing info about CP physical memory
  * @param A			CP physical memory
  * @param free_idx	Index to physical memory where the CP data will be stored
@@ -72,11 +72,11 @@ IGNORE_IN_CLASSLIST struct ICP_stats
  */
 void add_cutting_plane(
 		bmrm_ll**	tail,
-		bool* 		map,
+		bool*		map,
 		float64_t*	A,
-		uint32_t 	free_idx,
-		float64_t* 	cp_data,
-		uint32_t 	dim);
+		uint32_t	free_idx,
+		float64_t*	cp_data,
+		uint32_t	dim);
 
 /** Remove cutting plane at given index
  *
@@ -89,7 +89,7 @@ void remove_cutting_plane(
 		bmrm_ll**	head,
 		bmrm_ll**	tail,
 		bool*		map,
-		float64_t* 	icp);
+		float64_t*	icp);
 
 /**
  * Clean-up in-active cutting planes
@@ -110,7 +110,7 @@ void clean_icp(ICP_stats* icp_stats,
 
 /** Get cutting plane
  *
- * @param ptr 	Pointer to some CP entry
+ * @param ptr	Pointer to some CP entry
  * @return Pointer to cutting plane at given entry
  */
 inline float64_t * get_cutting_plane(bmrm_ll *ptr) { return ptr->address; }
@@ -126,24 +126,24 @@ inline uint32_t find_free_idx(bool *map, uint32_t size)
 
 /** Standard BMRM Solver for Structured Output Learning
  *
- * @param machine		Pointer to the BMRM machine	
+ * @param machine		Pointer to the BMRM machine
  * @param W				Weight vector
  * @param TolRel		Relative tolerance
  * @param TolAbs		Absolute tolerance
  * @param _lambda		Regularization constant
  * @param _BufSize		Size of the CP buffer (i.e. maximal number of
- * 						iterations)
+ *						iterations)
  * @param cleanICP		Flag that enables/disables inactive cutting plane
- * 						removal feature
+ *						removal feature
  * @param cleanAfter	Number of iterations that should be cutting plane
- * 						inactive for to be removed
+ *						inactive for to be removed
  * @param K				Parameter K
  * @param Tmax			Parameter Tmax
  * @param verbose		Flag that enables/disables screen output
  * @return Structure with BMRM algorithm result
  */
 BmrmStatistics svm_bmrm_solver(
-		CDualLibQPBMSOSVM  *machine, 
+		CDualLibQPBMSOSVM  *machine,
 		float64_t          *W,
 		float64_t          TolRel,
 		float64_t          TolAbs,

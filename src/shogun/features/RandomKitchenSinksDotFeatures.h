@@ -20,14 +20,14 @@ namespace shogun
  * as mentioned in http://books.nips.cc/papers/files/nips21/NIPS2008_0885.pdf.
  *
  * The Random Kitchen Sinks algorithm expects:
- * 		a dataset to work on
- * 		a function phi such that |phi(x; a)| <= 1, the a's are the function parameters
+ *		a dataset to work on
+ *		a function phi such that |phi(x; a)| <= 1, the a's are the function parameters
  *		a probability distrubution p, from which to draw the a's
  *		the number of samples K to draw from p.
  *
  * Then:
  *		it draws K a's from p
- *		it computes for each vector in the dataset 
+ *		it computes for each vector in the dataset
  *			Zi = [phi(Xi;a0), ..., phi(Xi;aK)]
  *		and then solves the empirical risk minimization problem for all Zi, either
  *			through least squares or through a linear SVM.
@@ -38,8 +38,8 @@ namespace shogun
  * instantiated object of that class to the constructor.
  *
  * Further useful resources, include :
- * 	http://www.shloosl.com/~ali/random-features/
- * 	https://research.microsoft.com/apps/video/dl.aspx?id=103390&l=i
+ *	http://www.shloosl.com/~ali/random-features/
+ *	https://research.microsoft.com/apps/video/dl.aspx?id=103390&l=i
  */
 class CRandomKitchenSinksDotFeatures : public CDotFeatures
 {
@@ -48,17 +48,17 @@ public:
 	/** default constructor */
 	CRandomKitchenSinksDotFeatures();
 
-	/** constructor 
+	/** constructor
 	 * Subclasses should call generate_random_coefficients() on their
 	 * own if they choose to use this constructor.
-	 * 
+	 *
 	 * @param dataset the dataset to work on
 	 * @param K the number of samples to draw
 	 */
 	CRandomKitchenSinksDotFeatures(CDotFeatures* dataset, int32_t K);
 
-	/** constructor 
-	 * 
+	/** constructor
+	 *
 	 * @param dataset the dataset to work on
 	 * @param K the number of samples to draw
 	 * @param coeff the random coefficients to use
@@ -141,7 +141,7 @@ public:
 	 * possible with subset
 	 *
 	 * @param vector_index the index of the vector over whose components to
-	 * 			iterate over
+	 *			iterate over
 	 * @return feature iterator (to be passed to get_next_feature)
 	 */
 	virtual void* get_feature_iterator(int32_t vector_index);
@@ -184,9 +184,9 @@ public:
 	 *
 	 * @return number of feature vectors
 	 */
-	virtual int32_t get_num_vectors() const;	
+	virtual int32_t get_num_vectors() const;
 
-	/** generate the random coefficients and return them in a 
+	/** generate the random coefficients and return them in a
 	 * matrix where each column is a parameter vector
 	 *
 	 * @return the parameter vectors in a matrix
@@ -200,7 +200,7 @@ public:
 	SGMatrix<float64_t> get_random_coefficients();
 
 	/** @return object name */
-	const char* get_name() const; 
+	const char* get_name() const;
 
 protected:
 	/** Method used before computing the dot product between

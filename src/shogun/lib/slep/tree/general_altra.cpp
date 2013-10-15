@@ -11,7 +11,7 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- *   Copyright (C) 2009 - 2012 Jun Liu and Jieping Ye 
+ *   Copyright (C) 2009 - 2012 Jun Liu and Jieping Ye
  */
 
 #include <shogun/lib/slep/tree/general_altra.h>
@@ -33,7 +33,7 @@ void general_altra(double *x, double *v, int n, double *G, double *ind, int node
 		if ((int) ind[1]!=-1){
 			printf("\n Error! \n Check ind");
 			exit(1);
-		}        
+		}
 
 		lambda=mult*ind[2];
 
@@ -60,11 +60,11 @@ void general_altra(double *x, double *v, int n, double *G, double *ind, int node
 	 */
 	for(;i < nodes; i++){
 		/*
-		 * compute the L2 norm of this group         
+		 * compute the L2 norm of this group
 		 */
 		twoNorm=0;
 		for(j=(int) ind[3*i]-1;j< (int) ind[3*i+1];j++)
-			twoNorm += x[(int) G[j]-1 ] * x[(int) G[j]-1 ];        
+			twoNorm += x[(int) G[j]-1 ] * x[(int) G[j]-1 ];
 		twoNorm=sqrt(twoNorm);
 
 		lambda=mult*ind[3*i+2];
@@ -75,7 +75,7 @@ void general_altra(double *x, double *v, int n, double *G, double *ind, int node
 			 * shrinkage this group by ratio
 			 */
 			for(j=(int) ind[3*i]-1;j<(int) ind[3*i+1];j++)
-				x[(int) G[j]-1 ]*=ratio;            
+				x[(int) G[j]-1 ]*=ratio;
 		}
 		else{
 			/*
@@ -97,7 +97,7 @@ void general_altra_mt(double *X, double *V, int n, int k, double *G, double *ind
 	for (i=0;i<n;i++){
 		/*
 		 * copy a row of V to v
-		 *         
+		 *
 		 */
 		for(j=0;j<k;j++)
 			v[j]=V[j*n + i];
@@ -105,8 +105,8 @@ void general_altra_mt(double *X, double *V, int n, int k, double *G, double *ind
 		general_altra(x, v, k, G, ind, nodes, mult);
 
 		/*
-		 * copy the solution to X         
-		 */        
+		 * copy the solution to X
+		 */
 		for(j=0;j<k;j++)
 			X[j*n+i]=x[j];
 	}
@@ -126,17 +126,17 @@ void general_computeLambda2Max(double *lambda2_max, double *x, int n, double *G,
 
 	for(i=0;i < nodes; i++){
 		/*
-		 * compute the L2 norm of this group         
+		 * compute the L2 norm of this group
 		 */
 		twoNorm=0;
 		for(j=(int) ind[3*i]-1;j< (int) ind[3*i+1];j++)
-			twoNorm += x[(int) G[j]-1 ] * x[(int) G[j]-1 ];        
+			twoNorm += x[(int) G[j]-1 ] * x[(int) G[j]-1 ];
 		twoNorm=sqrt(twoNorm);
 
 		twoNorm=twoNorm/ind[3*i+2];
 
 		if (twoNorm >*lambda2_max )
-			*lambda2_max=twoNorm;        
+			*lambda2_max=twoNorm;
 	}
 }
 
@@ -159,7 +159,7 @@ double general_treeNorm(double *x, int ldx, int n, double *G, double *ind, int n
 		if ((int) ind[1]!=-1){
 			printf("\n Error! \n Check ind");
 			exit(1);
-		}        
+		}
 
 		lambda=ind[2];
 
@@ -181,12 +181,12 @@ double general_treeNorm(double *x, int ldx, int n, double *G, double *ind, int n
 	 */
 	for(;i < nodes; i++){
 		/*
-		 * compute the L2 norm of this group         
+		 * compute the L2 norm of this group
 
 */
 		twoNorm=0;
 		for(j=(int) ind[3*i]-1;j< (int) ind[3*i+1];j++)
-			twoNorm += x[(int) G[j]-1 ] * x[(int) G[j]-1 ];        
+			twoNorm += x[(int) G[j]-1 ] * x[(int) G[j]-1 ];
 		twoNorm=sqrt(twoNorm);
 
 		lambda=ind[3*i+2];
@@ -238,7 +238,7 @@ double general_findLambdaMax(double *v, int n, double *G, double *ind, int nodes
 
 	/* test whether the solution is zero or not
 	*/
-	general_altra(x, v, n, G, ind2, nodes);    
+	general_altra(x, v, n, G, ind2, nodes);
 	for(i=0;i<n;i++){
 		if (x[i]!=0)
 			break;
@@ -286,7 +286,7 @@ double general_findLambdaMax(double *v, int n, double *G, double *ind, int nodes
 
 		num=0;
 		while(1){
-			num++;            
+			num++;
 
 			lambda1=lambda2;
 			lambda2=lambda2*2;
@@ -311,7 +311,7 @@ double general_findLambdaMax(double *v, int n, double *G, double *ind, int nodes
 				 */
 			}
 		}
-	}    
+	}
 
 	/*
 	   printf("\n num=%d, lambda1=%2.5f, lambda2=%2.5f",num, lambda1,lambda2);
@@ -373,7 +373,7 @@ double general_findLambdaMax_mt(double *V, int n, int k, double *G, double *ind,
 	for (i=0;i<n;i++){
 		/*
 		 * copy a row of V to v
-		 *         
+		 *
 		 */
 		for(j=0;j<k;j++)
 			v[j]=V[j*n + i];
@@ -381,7 +381,7 @@ double general_findLambdaMax_mt(double *V, int n, int k, double *G, double *ind,
 		lambda = general_findLambdaMax(v, k, G, ind, nodes);
 
 		/*
-		   printf("\n   lambda=%5.2f",lambda);        
+		   printf("\n   lambda=%5.2f",lambda);
 		   */
 
 

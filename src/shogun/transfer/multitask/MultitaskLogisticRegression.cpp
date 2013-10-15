@@ -22,7 +22,7 @@ CMultitaskLogisticRegression::CMultitaskLogisticRegression() :
 }
 
 CMultitaskLogisticRegression::CMultitaskLogisticRegression(
-     float64_t z, CDotFeatures* train_features, 
+     float64_t z, CDotFeatures* train_features,
      CBinaryLabels* train_labels, CTaskRelation* task_relation) :
 	CMultitaskLinearMachine(train_features,(CLabels*)train_labels,task_relation)
 {
@@ -62,11 +62,11 @@ bool CMultitaskLogisticRegression::train_machine(CFeatures* data)
 
 	ASSERT(features)
 	ASSERT(m_labels)
-	
+
 	SGVector<float64_t> y(m_labels->get_num_labels());
 	for (int32_t i=0; i<y.vlen; i++)
 		y[i] = ((CBinaryLabels*)m_labels)->get_label(i);
-	
+
 	slep_options options = slep_options::default_options();
 	options.n_tasks = m_task_relation->get_num_tasks();
 	options.tasks_indices = m_task_relation->get_tasks_indices();
@@ -89,7 +89,7 @@ bool CMultitaskLogisticRegression::train_machine(CFeatures* data)
 			m_tasks_c = result.c;
 		}
 		break;
-		case TASK_TREE: 
+		case TASK_TREE:
 		{
 			CTaskTree* task_tree = (CTaskTree*)m_task_relation;
 			SGVector<float64_t> ind_t = task_tree->get_SLEP_ind_t();
@@ -102,7 +102,7 @@ bool CMultitaskLogisticRegression::train_machine(CFeatures* data)
 			m_tasks_c = result.c;
 		}
 		break;
-		default: 
+		default:
 			SG_ERROR("Not supported task relation type\n")
 	}
 	SG_FREE(options.tasks_indices);
@@ -114,11 +114,11 @@ bool CMultitaskLogisticRegression::train_locked_implementation(SGVector<index_t>
 {
 	ASSERT(features)
 	ASSERT(m_labels)
-	
+
 	SGVector<float64_t> y(m_labels->get_num_labels());
 	for (int32_t i=0; i<y.vlen; i++)
 		y[i] = ((CBinaryLabels*)m_labels)->get_label(i);
-	
+
 	slep_options options = slep_options::default_options();
 	options.n_tasks = m_task_relation->get_num_tasks();
 	options.tasks_indices = tasks;
@@ -141,7 +141,7 @@ bool CMultitaskLogisticRegression::train_locked_implementation(SGVector<index_t>
 			m_tasks_c = result.c;
 		}
 		break;
-		case TASK_TREE: 
+		case TASK_TREE:
 		{
 			CTaskTree* task_tree = (CTaskTree*)m_task_relation;
 			SGVector<float64_t> ind_t = task_tree->get_SLEP_ind_t();
@@ -154,7 +154,7 @@ bool CMultitaskLogisticRegression::train_locked_implementation(SGVector<index_t>
 			m_tasks_c = result.c;
 		}
 		break;
-		default: 
+		default:
 			SG_ERROR("Not supported task relation type\n")
 	}
 	return true;

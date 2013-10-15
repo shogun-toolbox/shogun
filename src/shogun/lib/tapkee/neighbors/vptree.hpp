@@ -20,7 +20,7 @@ namespace tapkee
 namespace tapkee_internal
 {
 
-template<class Type, class RandomAccessIterator, class DistanceCallback> 
+template<class Type, class RandomAccessIterator, class DistanceCallback>
 struct compare_impl;
 
 template<class RandomAccessIterator, class DistanceCallback>
@@ -39,7 +39,7 @@ struct DistanceComparator
 
 struct KernelType;
 
-template<class RandomAccessIterator, class DistanceCallback> 
+template<class RandomAccessIterator, class DistanceCallback>
 struct compare_impl<KernelType,RandomAccessIterator,DistanceCallback>
 {
 	inline bool operator()(DistanceCallback& callback, const RandomAccessIterator& item,
@@ -51,7 +51,7 @@ struct compare_impl<KernelType,RandomAccessIterator,DistanceCallback>
 
 struct DistanceType;
 
-template<class RandomAccessIterator, class DistanceCallback> 
+template<class RandomAccessIterator, class DistanceCallback>
 struct compare_impl<DistanceType,RandomAccessIterator,DistanceCallback>
 {
 	inline bool operator()(DistanceCallback& callback, const RandomAccessIterator& item,
@@ -67,7 +67,7 @@ class VantagePointTree
 public:
 
 	// Default constructor
-	VantagePointTree(RandomAccessIterator b, RandomAccessIterator e, DistanceCallback c) :  
+	VantagePointTree(RandomAccessIterator b, RandomAccessIterator e, DistanceCallback c) :
 		begin(b), items(), callback(c), tau(0.0), root(0)
 	{
 		items.reserve(e-b);
@@ -77,7 +77,7 @@ public:
 	}
 
 	// Destructor
-	~VantagePointTree() 
+	~VantagePointTree()
 	{
 		delete root;
 	}
@@ -121,13 +121,13 @@ private:
 		Node* left;
 		Node* right;
 
-		Node() : 
-			index(0), threshold(0.), 
-			left(0), right(0) 
+		Node() :
+			index(0), threshold(0.),
+			left(0), right(0)
 		{
 		}
 
-		~Node() 
+		~Node()
 		{
 			delete left;
 			delete right;
@@ -165,7 +165,7 @@ private:
 			std::swap(items[lower], items[i]);
 
 			int median = (upper + lower) / 2;
-			std::nth_element(items.begin() + lower + 1, items.begin() + median, items.begin() + upper, 
+			std::nth_element(items.begin() + lower + 1, items.begin() + median, items.begin() + upper,
 				DistanceComparator<RandomAccessIterator,DistanceCallback>(callback,items[lower]));
 
 			node->threshold = callback.distance(items[lower], items[median]);
@@ -179,14 +179,14 @@ private:
 
 	void search(Node* node, const RandomAccessIterator& target, int k, std::priority_queue<HeapItem>& heap)
 	{
-		if (node == NULL) 
+		if (node == NULL)
 			return;
 
 		double distance = callback.distance(items[node->index], target);
 
-		if (distance < tau) 
+		if (distance < tau)
 		{
-			if (heap.size() == static_cast<size_t>(k)) 
+			if (heap.size() == static_cast<size_t>(k))
 				heap.pop();
 
 			heap.push(HeapItem(node->index, distance));
@@ -195,25 +195,25 @@ private:
 				tau = heap.top().distance;
 		}
 
-		if (node->left == NULL && node->right == NULL) 
+		if (node->left == NULL && node->right == NULL)
 		{
 			return;
 		}
 
 		if (distance < node->threshold)
 		{
-			if ((distance - tau) <= node->threshold) 
+			if ((distance - tau) <= node->threshold)
 				search(node->left, target, k, heap);
 
-			if ((distance + tau) >= node->threshold) 
+			if ((distance + tau) >= node->threshold)
 				search(node->right, target, k, heap);
-		} 
+		}
 		else
 		{
-			if ((distance + tau) >= node->threshold) 
+			if ((distance + tau) >= node->threshold)
 				search(node->right, target, k, heap);
 
-			if ((distance - tau) <= node->threshold) 
+			if ((distance - tau) <= node->threshold)
 				search(node->left, target, k, heap);
 		}
 	}

@@ -176,7 +176,7 @@ int32_t CShareBoost::choose_feature()
 				float64_t abssum = 0;
 				for (int32_t ii=0; ii < m_fea.num_cols; ++ii)
 				{
-					abssum += m_fea(j, ii)*(m_rho(k, ii)/m_rho_norm[ii] - 
+					abssum += m_fea(j, ii)*(m_rho(k, ii)/m_rho_norm[ii] -
 							(j == lab->get_int_label(ii)));
 				}
 				l1norm[j] += CMath::abs(abssum);

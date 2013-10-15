@@ -9,7 +9,7 @@ def kernel_rationalquadratic_modular (train_fname=traindat,test_fname=testdat, s
 
 	feats_train=RealFeatures(CSVFile(train_fname))
 	feats_test=RealFeatures(CSVFile(test_fname))
-	
+
 	distance=EuclideanDistance(feats_train, feats_train)
 
 	kernel=RationalQuadraticKernel(feats_train, feats_train, shift_coef, distance)

@@ -3,7 +3,7 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Written (W) 2013 Soumyajit De
  */
 
@@ -20,7 +20,7 @@ using namespace Eigen;
 namespace shogun
 {
 
-/** 
+/**
  * @brief struct that contains current state of the iteration for iterative
  * linear solvers
  */

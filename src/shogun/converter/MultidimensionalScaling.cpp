@@ -81,7 +81,7 @@ const char* CMultidimensionalScaling::get_name() const
 CDenseFeatures<float64_t>* CMultidimensionalScaling::embed_distance(CDistance* distance)
 {
 	TAPKEE_PARAMETERS_FOR_SHOGUN parameters;
-	if (m_landmark) 
+	if (m_landmark)
 	{
 		parameters.method = SHOGUN_LANDMARK_MULTIDIMENSIONAL_SCALING;
 		parameters.landmark_ratio = float64_t(m_landmark_number)/distance->get_num_vec_lhs();
@@ -90,7 +90,7 @@ CDenseFeatures<float64_t>* CMultidimensionalScaling::embed_distance(CDistance* d
 			parameters.landmark_ratio = 1.0;
 		}
 	}
-	else 
+	else
 	{
 		parameters.method = SHOGUN_MULTIDIMENSIONAL_SCALING;
 	}

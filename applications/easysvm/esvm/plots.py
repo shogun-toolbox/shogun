@@ -11,10 +11,10 @@ This module contains code for commonly used plots
 #                                                                                           #
 #    This program is distributed in the hope that it will be useful,                        #
 #    but WITHOUT ANY WARRANTY; without even the implied warranty of                         #
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                           # 
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                           #
 #    GNU General Public License for more details.                                           #
 #                                                                                           #
-#    You should have received a copy of the GNU General Public License                      # 
+#    You should have received a copy of the GNU General Public License                      #
 #    along with this program; if not, see http://www.gnu.org/licenses                       #
 #    or write to the Free Software Foundation, Inc., 51 Franklin Street,                    #
 #    Fifth Floor, Boston, MA 02110-1301  USA                                                #
@@ -51,14 +51,14 @@ def plotroc(output, LTE, draw_random=False, figure_fname="", roc_label='ROC'):
     pylab.yticks(ticks,size=10)
     pylab.xlabel('1 - specificity (false positive rate)',size=10)
     pylab.ylabel('sensitivity (true positive rate)',size=10)
-    pylab.legend(loc='lower right', prop = matplotlib.font_manager.FontProperties('tiny')) 
+    pylab.legend(loc='lower right', prop = matplotlib.font_manager.FontProperties('tiny'))
 
     if figure_fname!=None:
         warnings.filterwarnings('ignore','Could not match*')
         tempfname = figure_fname + '.png'
 	pylab.savefig(tempfname)
 	shutil.move(tempfname,figure_fname)
-    
+
     auROC=pm.get_auROC()
     return auROC ;
 
@@ -81,13 +81,13 @@ def plotprc(output, LTE, figure_fname="", prc_label='PRC'):
     pylab.xlabel('sensitivity (true positive rate)',size=10)
     pylab.ylabel('precision (1 - false discovery rate)',size=10)
     pylab.legend(loc='lower right')
-    
+
     if figure_fname!=None:
         warnings.filterwarnings('ignore','Could not match*')
         tempfname = figure_fname + '.png'
 	pylab.savefig(tempfname)
 	shutil.move(tempfname,figure_fname)
-    
+
     auPRC=pm.get_auPRC()
     return auPRC ;
 
@@ -98,8 +98,8 @@ def plotcloud(cloud, figure_fname="", label='cloud'):
 
     pylab.figure(1,dpi=150,figsize=(4,4))
 
-    pos = [] 
-    neg = [] 
+    pos = []
+    neg = []
     for i in xrange(len(cloud)):
         if cloud[i][0]==1:
             pos.append(cloud[i][1:])
@@ -119,13 +119,13 @@ def plotcloud(cloud, figure_fname="", label='cloud'):
     pylab.xlabel('dimension 1',size=10)
     pylab.ylabel('dimension 2',size=10)
     pylab.legend(loc='lower right')
-    
+
     if figure_fname!=None:
         warnings.filterwarnings('ignore','Could not match*')
         tempfname = figure_fname + '.png'
 	pylab.savefig(tempfname)
 	shutil.move(tempfname,figure_fname)
-    
+
 def plot_poims(poimfilename, poim, max_poim, diff_poim, poim_totalmass, poimdegree, max_len):
     """Plot a summary of the information in poims"""
     import pylab
@@ -151,10 +151,10 @@ def plot_poims(poimfilename, poim, max_poim, diff_poim, poim_totalmass, poimdegr
     for plot in [3, 5]:
         pylab.subplot(3,2,plot)
         ticks=numpy.arange(1., poimdegree+1, 1, dtype=numpy.float64)
-        ticks_str = [] 
+        ticks_str = []
         for i in xrange(0, poimdegree):
             ticks_str.append("%i" % (i+1))
-            ticks[i] = i + 0.5 
+            ticks[i] = i + 0.5
         pylab.yticks(ticks, ticks_str)
         pylab.ylabel('degree', size=5)
 
@@ -165,7 +165,7 @@ def plot_poims(poimfilename, poim, max_poim, diff_poim, poim_totalmass, poimdegr
     pylab.subplot(3,2,2)
     pylab.title('1-mer Positional Importance', fontdict)
     pylab.pcolor(poim[0], shading='flat') ;
-    ticks_str = ['A', 'C', 'G', 'T'] 
+    ticks_str = ['A', 'C', 'G', 'T']
     ticks = [0.5, 1.5, 2.5, 3.5]
     pylab.yticks(ticks, ticks_str, size=5)
     pylab.axis([0, max_len, 0, 4])
@@ -179,7 +179,7 @@ def plot_poims(poimfilename, poim, max_poim, diff_poim, poim_totalmass, poimdegr
     ticks_str=[] ;
     for l1 in ['A', 'C', 'G', 'T']:
         for l2 in ['A', 'C', 'G', 'T']:
-            ticks_str.append(l1+l2) 
+            ticks_str.append(l1+l2)
             ticks.append(0.5+i) ;
             i+=1 ;
     pylab.yticks(ticks, ticks_str, fontsize=5)
@@ -196,7 +196,7 @@ def plot_poims(poimfilename, poim, max_poim, diff_poim, poim_totalmass, poimdegr
         for l2 in ['A', 'C', 'G', 'T']:
             for l3 in ['A', 'C', 'G', 'T']:
                 if numpy.mod(i,4)==0:
-                    ticks_str.append(l1+l2+l3) 
+                    ticks_str.append(l1+l2+l3)
                     ticks.append(0.5+i) ;
                 i+=1 ;
     pylab.yticks(ticks, ticks_str, fontsize=5)
