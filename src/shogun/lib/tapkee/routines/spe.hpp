@@ -54,7 +54,7 @@ DenseMatrix spe_embedding(RandomAccessIterator begin, RandomAccessIterator end,
 	DenseMatrix Yd(target_dimension,nupdates);
 
 	// SPE's main loop
-	
+
 	typedef std::vector<int> Indices;
 	typedef std::vector<int>::iterator IndexIterator;
 

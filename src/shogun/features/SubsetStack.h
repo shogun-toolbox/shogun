@@ -76,7 +76,7 @@ public:
 	}
 
 	/** returns last (active) subset of the stack
-	 * 
+	 *
 	 * @return active subset
 	 */
 	CSubset* get_last_subset() const { return m_active_subset; }

@@ -3,7 +3,7 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Written (W) 2013 Soumyajit De
  */
 
@@ -48,7 +48,7 @@ public:
 		init();
 	}
 
-	/** 
+	/**
 	 * constructor
 	 *
 	 * @param op the linear operator of this operator function
@@ -83,14 +83,14 @@ public:
 		return m_linear_operator;
 	}
 
-	/** 
+	/**
 	 * abstract precompute method that must be called before using submit jobs
 	 * for performing preliminary computations that are necessary for the
 	 * rest of the computation jobs
 	 */
 	virtual void precompute() = 0;
 
-	/** 
+	/**
 	 * abstract method that creates a job result aggregator, then creates a
 	 * number of jobs based on its implementation, attaches the aggregator
 	 * with all those jobs, hands over the responsility of those to the

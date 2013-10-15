@@ -23,7 +23,7 @@ def preprocessor_logplusone_modular (fm_train_real=traindat,fm_test_real=testdat
 	feats_test.add_preprocessor(preproc)
 	feats_test.apply_preprocessor()
 
-	
+
 	kernel=Chi2Kernel(feats_train, feats_train, width, size_cache)
 
 	km_train=kernel.get_kernel_matrix()

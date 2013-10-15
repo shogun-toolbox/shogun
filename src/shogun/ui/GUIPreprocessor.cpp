@@ -162,18 +162,18 @@ bool CGUIPreprocessor::attach_preproc(char* target, bool do_force)
 			{
 				if (((CCombinedFeatures*) f_train)->check_feature_obj_compatibility((CCombinedFeatures*) f_test))
 				{
-					
+
 					int32_t num_combined=((CCombinedFeatures*) f_test)->get_num_feature_obj();
 					ASSERT(((CCombinedFeatures*) f_train)->get_num_feature_obj()==num_combined)
 
 					if (!num_combined)
 						SG_ERROR("One of the combined features has no sub-features ?!\n")
-					
+
 					//preprocess the last test feature obj
 					SG_INFO("BEGIN PREPROCESSING COMBINED FEATURES (%d sub-featureobjects).\n", num_combined)
-					index_t f_idx = 0;		
+					index_t f_idx = 0;
 					for (; f_idx<num_combined; f_idx++)
-					{										
+					{
 						CFeatures* te_feat=((CCombinedFeatures*) f_test)->get_feature_obj(f_idx);
 						CFeatures* tr_feat=((CCombinedFeatures*) f_train)->get_feature_obj(f_idx);
 
@@ -185,7 +185,7 @@ bool CGUIPreprocessor::attach_preproc(char* target, bool do_force)
 						tr_feat->list_feature_obj();
 						SG_INFO("TEST ")
 						te_feat->list_feature_obj();
-						preprocess_features(tr_feat, te_feat, do_force);				
+						preprocess_features(tr_feat, te_feat, do_force);
 					}
 					ASSERT(f_idx==num_combined)
 					result=true;

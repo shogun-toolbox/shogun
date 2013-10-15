@@ -338,7 +338,7 @@ template <class T> class DynArray
 		bool resize_array(int32_t n, bool exact_resize=false)
 		{
 			int32_t new_num_elements=n;
-			
+
 			if (!exact_resize)
 			{
 				new_num_elements=((n/resize_granularity)+1)*resize_granularity;

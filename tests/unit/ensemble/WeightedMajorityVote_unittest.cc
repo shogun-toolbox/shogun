@@ -6,8 +6,8 @@
 
 using namespace shogun;
 
-void generate_random_ensemble_matrix(SGMatrix<float64_t>& em, 
-	SGVector<float64_t>& expected_cv, 
+void generate_random_ensemble_matrix(SGMatrix<float64_t>& em,
+	SGVector<float64_t>& expected_cv,
 	const SGVector<float64_t>& w)
 {
 	int32_t num_classes = 3;
@@ -63,7 +63,7 @@ TEST(WeightedMajorityVote, binary_combine_vector)
 	CWeightedMajorityVote* mv = new CWeightedMajorityVote(weights);
 	SGVector<float64_t> v(num_classifiers);
 	SGVector<float64_t> expected(2);
-	
+
 	float64_t max = 0;
 	int64_t max_label = -10;
 
@@ -86,7 +86,7 @@ TEST(WeightedMajorityVote, binary_combine_vector)
 	float64_t combined_label = mv->combine(v);
 	EXPECT_EQ(max_label, combined_label);
 
-	SG_UNREF(mv);	
+	SG_UNREF(mv);
 }
 
 TEST(WeightedMajorityVote, multiclass_combine_vector)
@@ -97,10 +97,10 @@ TEST(WeightedMajorityVote, multiclass_combine_vector)
 	CWeightedMajorityVote* mv = new CWeightedMajorityVote(weights);
 	SGVector<float64_t> v(num_classifiers);
 	SGVector<float64_t> hist(3);
-	
+
 	hist.zero();
 	v.zero();
-	
+
 	int64_t max_label = -1;
 	float64_t max = -1;
 	for (index_t i = 0; i < num_classifiers; ++i)
@@ -117,5 +117,5 @@ TEST(WeightedMajorityVote, multiclass_combine_vector)
 
 	EXPECT_EQ(max_label, c);
 
-	SG_UNREF(mv);	
+	SG_UNREF(mv);
 }

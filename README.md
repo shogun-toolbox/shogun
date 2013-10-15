@@ -53,7 +53,7 @@ each feature object allowing for on-the-fly pre-processing.
 ## Interfaces
 -------------
 
-SHOGUN is implemented in C++ and interfaces to Matlab(tm), R, Octave, 
+SHOGUN is implemented in C++ and interfaces to Matlab(tm), R, Octave,
 Java, C#, Ruby, Lua and Python.
 
 The following table depicts the status of each interface available in SHOGUN:
@@ -129,7 +129,7 @@ https://github.com/shogun-toolbox/shogun.
 [1] C. Cortes and V.N. Vapnik.  Support-vector networks.
 	Machine Learning, 20(3):273--297, 1995.
 
-[2] J. Liu, S. Ji, and J. Ye. SLEP: Sparse Learning with Efficient Projections. Arizona State University, 2009. 
+[2] J. Liu, S. Ji, and J. Ye. SLEP: Sparse Learning with Efficient Projections. Arizona State University, 2009.
 	http://www.public.asu.edu/~jye02/Software/SLEP.
 
 [3] C.C. Chang and C.J. Lin.  Libsvm: Introduction and benchmarks.

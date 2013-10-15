@@ -6,7 +6,7 @@
  *
  * Written (W) 2013 Soumyajit De
  */
- 
+
 #include <shogun/lib/common.h>
 
 #ifdef HAVE_EIGEN3
@@ -40,7 +40,7 @@ TEST(RationalApproximation, precompute)
 {
 	CSerialComputationEngine* e=new CSerialComputationEngine;
 	SG_REF(e);
-	
+
 	const index_t size=2;
 	SGMatrix<float64_t> m(size, size);
 	m(0,0)=2.0;
@@ -72,7 +72,7 @@ TEST(RationalApproximation, precompute)
 	Map<VectorXcd> map_shifts(shifts.vector, shifts.vlen);
 	Map<VectorXcd> map_weights(weights.vector, weights.vlen);
 
-	// reference values are generated using KRYLSTAT	
+	// reference values are generated using KRYLSTAT
 	SGVector<complex128_t> ref_shifts(5);
 	ref_shifts[0]=complex128_t(0.51827127849765364243, 0.23609847245566201179);
 	ref_shifts[1]=complex128_t(0.44961096840887382342, 0.86844451701724056925);
@@ -87,7 +87,7 @@ TEST(RationalApproximation, precompute)
 	ref_weights[3]=complex128_t(0.05440205028428418688, 0.00100377381669515997);
 	ref_weights[4]=complex128_t(0.03177788684575824640, -0.05246446606420653719);
 	Map<VectorXcd> map_ref_weights(ref_weights.vector, ref_weights.vlen);
-	
+
 #ifdef HAVE_ARPREC
 	EXPECT_NEAR(const_multiplier, -10.02791094628079981987, 1E-19);
 	EXPECT_NEAR(map_shifts.norm(), map_ref_shifts.norm(), 1E-14);
@@ -139,7 +139,7 @@ TEST(RationalApproximation, trace_accuracy)
 	// create the operator function that extracts the trace
 	// of the approximation of log of the linear operator
 	CLogRationalApproximationIndividual *op_func
-  	=new CLogRationalApproximationIndividual(
+	=new CLogRationalApproximationIndividual(
 			op, e, eig_solver, linear_solver, accuracy);
 	SG_REF(op_func);
 
@@ -321,7 +321,7 @@ TEST(RationalApproximation, trace_accuracy_cg_m)
 	// create the operator function that extracts the trace
 	// of the approximation of log of the linear operator
 	CLogRationalApproximationCGM *op_func
-  	=new CLogRationalApproximationCGM(op, e, eig_solver,
+	=new CLogRationalApproximationCGM(op, e, eig_solver,
 		linear_solver, accuracy);
 	SG_REF(op_func);
 

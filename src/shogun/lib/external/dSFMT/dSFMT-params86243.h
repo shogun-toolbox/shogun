@@ -20,7 +20,7 @@
 
 /* PARAMETERS FOR ALTIVEC */
 #if defined(__APPLE__)	/* For OSX */
-    #define ALTI_SL1 	(vector unsigned char)(5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5)
+    #define ALTI_SL1	(vector unsigned char)(5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5)
     #define ALTI_SL1_PERM \
 	(vector unsigned char)(1,2,3,4,5,6,7,31,9,10,11,12,13,14,15,0)
     #define ALTI_SL1_MSK \
@@ -28,7 +28,7 @@
     #define ALTI_MSK	(vector unsigned int)(DSFMT_MSK32_1, \
 			DSFMT_MSK32_2, DSFMT_MSK32_3, DSFMT_MSK32_4)
 #else	/* For OTHER OSs(Linux?) */
-    #define ALTI_SL1 	{5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5}
+    #define ALTI_SL1	{5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5}
     #define ALTI_SL1_PERM \
 	{1,2,3,4,5,6,7,31,9,10,11,12,13,14,15,0}
     #define ALTI_SL1_MSK \

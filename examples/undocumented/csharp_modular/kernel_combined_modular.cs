@@ -32,9 +32,9 @@ public class kernel_combined_modular {
 
     StringCharFeatures subkfeats_train = new StringCharFeatures(fm_train_dna, EAlphabet.DNA);
     StringCharFeatures subkfeats_test = new StringCharFeatures(fm_test_dna, EAlphabet.DNA);
-    
+
     int degree = 3;
-    
+
     FixedDegreeStringKernel subkernel2= new FixedDegreeStringKernel(10, degree);
     feats_train.append_feature_obj(subkfeats_train);
     feats_test.append_feature_obj(subkfeats_test);
@@ -49,11 +49,11 @@ public class kernel_combined_modular {
 
     kernel.init(feats_train, feats_train);
     double[,] km_train=kernel.get_kernel_matrix();
-    
+
     kernel.init(feats_train, feats_test);
     double[,] km_test=kernel.get_kernel_matrix();
 
     modshogun.exit_shogun();
-    
+
     }
 }

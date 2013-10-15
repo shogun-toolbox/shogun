@@ -11,7 +11,7 @@ using namespace shogun;
 using namespace Eigen;
 
 void sweepjedi(float64_t *C, int *pMatSize, int *pMatNumber,
-				float64_t *s_max, float64_t *sh_max, float64_t *A); 
+				float64_t *s_max, float64_t *sh_max, float64_t *A);
 
 void iterJDI(float64_t *C, int *pMatSize, int *pMatNumber, int *ptn,int *ptm,
 			float64_t *s_max, float64_t *sh_max, float64_t *A);
@@ -25,7 +25,7 @@ SGMatrix<float64_t> CJediDiag::diagonalize(SGNDArray<float64_t> C, SGMatrix<floa
 	SGMatrix<float64_t> V;
 	if (V0.num_rows == d && V0.num_cols == d)
 		V = V0.clone();
-	else					
+	else
 		V = SGMatrix<float64_t>::create_identity_matrix(d,1);
 
 	int iter = 0;
@@ -41,64 +41,64 @@ SGMatrix<float64_t> CJediDiag::diagonalize(SGNDArray<float64_t> C, SGMatrix<floa
 					V.matrix);
 		iter++;
 	}
-	
+
 	if (iter == itermax)
 		SG_SERROR("Convergence not reached\n")
-	
+
 	Map<MatrixXd> EV(V.matrix,d,d);
 	EV = EV.inverse();
-	
+
 	return V;
 }
 
 void sweepjedi(float64_t *C, int *pMatSize, int *pMatNumber,
-				float64_t *s_max, float64_t *sh_max, float64_t *A) 
+				float64_t *s_max, float64_t *sh_max, float64_t *A)
 {
-	for (int n=2;n<=*pMatSize;n++) 
-		for (int m=1;m<n;m++) 
+	for (int n=2;n<=*pMatSize;n++)
+		for (int m=1;m<n;m++)
 			iterJDI(C, pMatSize, pMatNumber, &n, &m, s_max, sh_max, A);
-			
+
 	int MS=*pMatSize;
 	int MN=*pMatNumber;
 	float64_t col_norm[MS];
-	
-	for (int i=0;i<MS;i++) 
+
+	for (int i=0;i<MS;i++)
 	{
 		col_norm[i] = 0;
-		
+
 		for (int j=0;j<MS;j++)
 			col_norm[i] += A[i*MS+j]*A[i*MS+j];
 
 		col_norm[i] = sqrt(col_norm[i]);
 	}
-	
+
 	float64_t daux=1;
 	float64_t d[MS];
-	
-	for (int i=0;i<MS;i++) 
+
+	for (int i=0;i<MS;i++)
 		daux*=col_norm[i];
-	
+
 	daux=pow((float64_t)daux,(float64_t) 1/MS);
-	
-	for (int i=0;i<MS;i++) 
+
+	for (int i=0;i<MS;i++)
 		d[i]=daux/col_norm[i];
-	
-	for (int i=0;i<MS;i++) 
+
+	for (int i=0;i<MS;i++)
 		for (int j=0;j<MS;j++)
 			A[j*MS+i] *= d[j];
-	
-	for (int k=0;k<MN;k++) 
+
+	for (int k=0;k<MN;k++)
 	{
-		for (int i=0;i<MS;i++) 
+		for (int i=0;i<MS;i++)
 		{
-			for (int j=0;j<MS;j++) 
+			for (int j=0;j<MS;j++)
 				C[k*MS*MS+i*MS+j] *= (1/d[i])*(1/d[j]);
 		}
 	}
 }
 
 void iterJDI(float64_t *C, int *pMatSize, int *pMatNumber, int *ptn,int *ptm,
-			float64_t *s_max, float64_t *sh_max, float64_t *A) 
+			float64_t *s_max, float64_t *sh_max, float64_t *A)
 {
 	int n=*ptn-1;
 	int m=*ptm-1;
@@ -108,7 +108,7 @@ void iterJDI(float64_t *C, int *pMatSize, int *pMatNumber, int *ptn,int *ptm,
 	float64_t tmm[MN];
 	float64_t tnn[MN];
 	float64_t tmn[MN];
-	for (int i = 0, d3 = 0; i < MN; i++, d3+=MS*MS) 
+	for (int i = 0, d3 = 0; i < MN; i++, d3+=MS*MS)
 	{
 		tmm[i] = C[d3+m*MS+m];
 		tnn[i] = C[d3+n*MS+n];
@@ -118,46 +118,46 @@ void iterJDI(float64_t *C, int *pMatSize, int *pMatNumber, int *ptn,int *ptm,
 	// here we evd
 	float64_t G[MN][3];
 	float64_t evectors[9], evalues[3];
-	for (int i = 0; i < MN; i++) 
+	for (int i = 0; i < MN; i++)
 	{
-		G[i][0] = 0.5*(tmm[i]+tnn[i]);	
+		G[i][0] = 0.5*(tmm[i]+tnn[i]);
 		G[i][1] = 0.5*(tmm[i]-tnn[i]);
-		G[i][2] = tmn[i];	
+		G[i][2] = tmn[i];
 	}
 	float64_t GG[9];
-	for (int i = 0; i < 3; i++) 
+	for (int i = 0; i < 3; i++)
 	{
-		for (int j = 0; j <= i; j++) 
+		for (int j = 0; j <= i; j++)
 		{
 			GG[3*j+i] = 0;
-			
-			for (int k = 0; k < MN; k++) 
+
+			for (int k = 0; k < MN; k++)
 				GG[3*j+i] += G[k][i]*G[k][j];
-			
+
 			GG[3*i+j] = GG[3*j+i];
 		}
 	}
-	
-	for (int i = 0; i < 3; i++) 
+
+	for (int i = 0; i < 3; i++)
 		GG[3*i] *= -1;
-	
+
 	Map<MatrixXd> EGG(GG,3,3);
-	
+
 	EigenSolver<MatrixXd> eig;
 	eig.compute(EGG);
-	
+
 	MatrixXd eigenvectors = eig.pseudoEigenvectors();
 	VectorXd eigenvalues = eig.pseudoEigenvalueMatrix().diagonal();
-	
+
 	eigenvectors.col(0) = eigenvectors.col(0).normalized();
 	eigenvectors.col(1) = eigenvectors.col(1).normalized();
 	eigenvectors.col(2) = eigenvectors.col(2).normalized();
-	
+
 	memcpy(evectors, eigenvectors.data(), 9*sizeof(float64_t));
 	memcpy(evalues, eigenvalues.data(), 3*sizeof(float64_t));
-	
+
 	float64_t tmp_evec[3],tmp_eval;
-	if (fabs(evalues[1])<fabs(evalues[2])) 
+	if (fabs(evalues[1])<fabs(evalues[2]))
 	{
 		tmp_eval = evalues[1];
 		evalues[1] = evalues[2];
@@ -166,7 +166,7 @@ void iterJDI(float64_t *C, int *pMatSize, int *pMatNumber, int *ptn,int *ptm,
 		memcpy(&evectors[3],&evectors[6],3*sizeof(float64_t));
 		memcpy(&evectors[6],tmp_evec,3*sizeof(float64_t));
 	}
-	if (fabs(evalues[0])<fabs(evalues[1])) 
+	if (fabs(evalues[0])<fabs(evalues[1]))
 	{
 		tmp_eval = evalues[0];
 		evalues[0] = evalues[1];
@@ -175,7 +175,7 @@ void iterJDI(float64_t *C, int *pMatSize, int *pMatNumber, int *ptn,int *ptm,
 		memcpy(evectors,&evectors[3],3*sizeof(float64_t));
 		memcpy(&evectors[3],tmp_evec,3*sizeof(float64_t));
 	}
-	if (fabs(evalues[1])<fabs(evalues[2])) 
+	if (fabs(evalues[1])<fabs(evalues[2]))
 	{
 		tmp_eval = evalues[1];
 		evalues[1] = evalues[2];
@@ -188,38 +188,38 @@ void iterJDI(float64_t *C, int *pMatSize, int *pMatNumber, int *ptn,int *ptm,
 	float64_t aux[9];
 	float64_t diagaux[3];
 	float64_t v[3];
-	for (int i = 0; i < 9; i++) 
+	for (int i = 0; i < 9; i++)
 		aux[i] = evectors[i];
-	
-	for (int i = 0; i < 3; i++) 
+
+	for (int i = 0; i < 3; i++)
 		aux[3*i] *= -1;
-	
-	for (int i = 0; i < 3; i++) 
+
+	for (int i = 0; i < 3; i++)
 	{
 		diagaux[i]	= 0;
-		
-		for (int j = 0; j < 3; j++) 
+
+		for (int j = 0; j < 3; j++)
 			diagaux[i] += evectors[3*i+j] * aux[3*i+j];
-		
+
 		diagaux[i] = 1/sqrt(fabs(diagaux[i]));
 	}
-	
+
 	int ind_min=2;
-	
-	for (int i = 0; i < 3; i++) 
+
+	for (int i = 0; i < 3; i++)
 		v[i] = evectors[3*ind_min+i]*diagaux[ind_min];
-	
-	if (v[2]<0) 
-		for (int i = 0; i < 3; i++) 
+
+	if (v[2]<0)
+		for (int i = 0; i < 3; i++)
 			v[i]*=-1;
-	
+
 	float64_t ch = sqrt( (1+sqrt(1+v[0]*v[0]))/2 );
 	float64_t sh = v[0]/(2*ch);
 	float64_t c = sqrt( ( 1 + v[2]/sqrt(1+v[0]*v[0]) )/2 );
 	float64_t s = -v[1]/( 2*c*sqrt( (1+v[0]*v[0]) ) );
 	*s_max = std::max(*s_max,fabs(s));
 	*sh_max = std::max(*sh_max,fabs(sh));
-	
+
 	float64_t rm11=c*ch - s*sh;
 	float64_t rm12=c*sh - s*ch;
 	float64_t rm21=c*sh + s*ch;
@@ -227,10 +227,10 @@ void iterJDI(float64_t *C, int *pMatSize, int *pMatNumber, int *ptn,int *ptm,
 
 	float64_t h_slice1,h_slice2;
 	float64_t buf[MS][MN];
-	
-	for (int i = 0; i < MS ;i++) 
+
+	for (int i = 0; i < MS ;i++)
 	{
-		for (int j = 0, d3 = 0; j < MN; j++, d3+=MS*MS) 
+		for (int j = 0, d3 = 0; j < MN; j++, d3+=MS*MS)
 		{
 			h_slice1 = C[d3+i*MS+m];
 			h_slice2 = C[d3+i*MS+n];
@@ -240,17 +240,17 @@ void iterJDI(float64_t *C, int *pMatSize, int *pMatNumber, int *ptn,int *ptm,
 		}
 	}
 
-	for (int i = 0; i < MS; i++) 
+	for (int i = 0; i < MS; i++)
 	{
-		for (int j = 0, d3 = 0; j < MN; j++, d3+=MS*MS) 
+		for (int j = 0, d3 = 0; j < MN; j++, d3+=MS*MS)
 			C[d3+m*MS+i] = buf[i][j];
-	}	
-	for (int i = 0; i < MS; i++) 
+	}
+	for (int i = 0; i < MS; i++)
 	{
-		for (int j = 0, d3 = 0; j < MN; j++, d3+=MS*MS) 
+		for (int j = 0, d3 = 0; j < MN; j++, d3+=MS*MS)
 			C[d3+n*MS+i] = C[d3+i*MS+n];
 	}
-	for (int i = 0; i < MN; i++) 
+	for (int i = 0; i < MN; i++)
 	{
 		C[i*MS*MS+m*MS+m] = (rm11*rm11)*tmm[i]+(2*rm11*rm21)*tmn[i]+(rm21*rm21)*tnn[i];
 		C[i*MS*MS+n*MS+m] = (rm11*rm12)*tmm[i]+(rm11*rm22+rm12*rm21)*tmn[i]+(rm21*rm22)*tnn[i];
@@ -260,8 +260,8 @@ void iterJDI(float64_t *C, int *pMatSize, int *pMatNumber, int *ptn,int *ptm,
 
 	float64_t col1;
 	float64_t col2;
-	
-	for (int i = 0; i < MS; i++) 
+
+	for (int i = 0; i < MS; i++)
 	{
 		col1 = A[m*MS+i];
 		col2 = A[n*MS+i];

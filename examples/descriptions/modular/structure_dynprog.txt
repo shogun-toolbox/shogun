@@ -1,4 +1,4 @@
-In this example we use the dynamic progaramm implementation with a 
-gene finding specific model. The model and the training parameter 
-are stored in a file and are used to create a gene prediction on 
-some example sequence. 
+In this example we use the dynamic progaramm implementation with a
+gene finding specific model. The model and the training parameter
+are stored in a file and are used to create a gene prediction on
+some example sequence.

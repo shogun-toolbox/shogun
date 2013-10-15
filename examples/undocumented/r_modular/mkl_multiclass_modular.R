@@ -42,7 +42,7 @@ dump <- kernel$init(feats_train, feats_train)
 
 C <- 1.2
 epsilon <- 1e-5
-mkl_eps <- 0.001 
+mkl_eps <- 0.001
 mkl_norm <- 1
 num_threads <- as.integer(1)
 labels <- MulticlassLabels()

@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2013 Shell Hu 
- * Copyright (C) 2013 Shell Hu 
+ * Written (W) 2013 Shell Hu
+ * Copyright (C) 2013 Shell Hu
  */
 
 #ifndef __DISJOINTSET_H__
@@ -14,7 +14,7 @@
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/SGVector.h>
 
-namespace shogun 
+namespace shogun
 {
 
 /** @brief Class CDisjointSet data structure for linking graph nodes
@@ -27,7 +27,7 @@ public:
 	/** default constructor */
 	CDisjointSet();
 
-	/** constructor 
+	/** constructor
 	 *
 	 * @param num_elements number of initial disjoint elements
 	 */
@@ -42,23 +42,23 @@ public:
 	/** initialize internal data structures */
 	void make_sets();
 
-	/** find root of the set containing x with path compression 
+	/** find root of the set containing x with path compression
 	 *
-	 * @param x queried element 
+	 * @param x queried element
 	 * @return the root
 	 */
 	int32_t find_set(int32_t x);
 
 	/** link two roots, higher ranked root will be new root
-	 * 
-	 * @param xroot root of the set containing x 
-	 * @param yroot root of the set containing y 
-	 * @return new root 
+	 *
+	 * @param xroot root of the set containing x
+	 * @param yroot root of the set containing y
+	 * @return new root
 	 */
 	int32_t link_set(int32_t xroot, int32_t yroot);
 
-	/** link the roots of two sets containing x and y respectively 
-	 * and return if they were linked 
+	/** link the roots of two sets containing x and y respectively
+	 * and return if they were linked
 	 *
 	 * @param x first element to be linked
 	 * @param y second element to be linked

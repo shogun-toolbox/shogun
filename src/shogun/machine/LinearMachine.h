@@ -30,8 +30,8 @@ namespace shogun
  * A linear classifier computes
  *
  *  \f[
- * 		f({\bf x})= {\bf w} \cdot {\bf x} + b
- * 	\f]
+ *		f({\bf x})= {\bf w} \cdot {\bf x} + b
+ *	\f]
  *
  * where \f${\bf w}\f$ are the weights assigned to each feature in training
  * and \f$b\f$ the bias.
@@ -46,16 +46,16 @@ namespace shogun
  * operations (like the dot product). The decision function is thus
  *
  *  \f[
- * 		f({\bf x})= {\bf w} \cdot \Phi({\bf x}) + b.
- * 	\f]
+ *		f({\bf x})= {\bf w} \cdot \Phi({\bf x}) + b.
+ *	\f]
  *
- * 	The following linear classifiers are implemented
- * 	\li Linear Descriminant Analysis (CLDA)
- * 	\li Linear Programming Machines (CLPM, CLPBoost)
- * 	\li Perceptron (CPerceptron)
- * 	\li Linear SVMs (CSVMSGD, CLibLinear, CSVMOcas, CSVMLin, CSubgradientSVM)
+ *	The following linear classifiers are implemented
+ *	\li Linear Descriminant Analysis (CLDA)
+ *	\li Linear Programming Machines (CLPM, CLPBoost)
+ *	\li Perceptron (CPerceptron)
+ *	\li Linear SVMs (CSVMSGD, CLibLinear, CSVMOcas, CSVMLin, CSubgradientSVM)
  *
- * 	\sa CDotFeatures
+ *	\sa CDotFeatures
  *
  * */
 class CLinearMachine : public CMachine
@@ -135,7 +135,7 @@ class CLinearMachine : public CMachine
 	protected:
 
 		/** apply get outputs
-		 * 
+		 *
 		 * @param data features to compute outputs
 		 * @return outputs
 		 */

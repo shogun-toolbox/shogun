@@ -15,11 +15,11 @@ class reservable_priority_queue: public std::priority_queue<T,std::vector<T>,Com
 {
 public:
 	typedef typename std::priority_queue<T>::size_type size_type;
-	reservable_priority_queue(size_type initial_capacity=0) 
+	reservable_priority_queue(size_type initial_capacity=0)
 	{
 		reserve(initial_capacity);
 	}
-	void reserve(size_type initial_capacity) 
+	void reserve(size_type initial_capacity)
 	{
 		this->c.reserve(initial_capacity);
 	}

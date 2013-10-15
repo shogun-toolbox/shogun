@@ -53,25 +53,25 @@ public:
 	 */
 	SGVector<float64_t> get_SLEP_ind_t();
 
-	/** get root task 
+	/** get root task
 	 *
-	 * @return root task of the tree 
+	 * @return root task of the tree
 	 */
 	CTask* get_root_task() const { SG_REF(m_root_task); return m_root_task; }
 
-	/** set root task 
+	/** set root task
 	 *
 	 * @param root_task task to set as root of the tree
 	 */
 	void set_root_task(CTask* root_task) { SG_REF(root_task); SG_UNREF(m_root_task); m_root_task = root_task; }
 
-	/** get name 
+	/** get name
 	 *
 	 * @return name of the object
 	 */
 	const char* get_name() const { return "TaskTree"; };
 
-	/** get relation type 
+	/** get relation type
 	 *
 	 * @return TASK_TREE
 	 */

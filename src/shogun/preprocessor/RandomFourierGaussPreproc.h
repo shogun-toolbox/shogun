@@ -115,7 +115,7 @@ public:
 
 	/**  setter for the random coefficients
 	 * necessary for creating random fourier features compatible to the previous ones
-	 * sets values of internal members 	randomcoeff_additive
+	 * sets values of internal members	randomcoeff_additive
 	 * and randomcoeff_multiplicative
 	 * simply use as input what you got from get_random_coefficients(...)
 	 */

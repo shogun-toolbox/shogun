@@ -92,7 +92,7 @@ class CCircularKernel: public CKernel
 	 */
 	virtual void set_sigma(float64_t s)
 	{
-	  	sigma=s;
+		sigma=s;
 	}
 
 	/** return the kernel's sigma

@@ -41,7 +41,7 @@ TEST(Serialization, Ascii_scalar_equal_BOOL)
 
 	// check for equality
 	EXPECT_TRUE(param1->equals(param2));
-	
+
 	delete param1;
 	delete param2;
 }
@@ -70,7 +70,7 @@ TEST(Serialization, Ascii_scalar_equal_CHAR)
 
 	// check for equality
 	EXPECT_TRUE(param1->equals(param2));
-	
+
 	delete param1;
 	delete param2;
 }
@@ -99,7 +99,7 @@ TEST(Serialization, Ascii_scalar_equal_INT8)
 
 	// check for equality
 	EXPECT_TRUE(param1->equals(param2));
-	
+
 	delete param1;
 	delete param2;
 }
@@ -128,7 +128,7 @@ TEST(Serialization, Ascii_scalar_equal_UINT8)
 
 	// check for equality
 	EXPECT_TRUE(param1->equals(param2));
-	
+
 	delete param1;
 	delete param2;
 }
@@ -157,7 +157,7 @@ TEST(Serialization, Ascii_scalar_equal_INT16)
 
 	// check for equality
 	EXPECT_TRUE(param1->equals(param2));
-	
+
 	delete param1;
 	delete param2;
 }
@@ -186,7 +186,7 @@ TEST(Serialization, Ascii_scalar_equal_UINT16)
 
 	// check for equality
 	EXPECT_TRUE(param1->equals(param2));
-	
+
 	delete param1;
 	delete param2;
 }
@@ -215,7 +215,7 @@ TEST(Serialization, Ascii_scalar_equal_INT32)
 
 	// check for equality
 	EXPECT_TRUE(param1->equals(param2));
-	
+
 	delete param1;
 	delete param2;
 }
@@ -244,7 +244,7 @@ TEST(Serialization, Ascii_scalar_equal_UINT32)
 
 	// check for equality
 	EXPECT_TRUE(param1->equals(param2));
-	
+
 	delete param1;
 	delete param2;
 }
@@ -273,7 +273,7 @@ TEST(Serialization, Ascii_scalar_equal_INT64)
 
 	// check for equality
 	EXPECT_TRUE(param1->equals(param2));
-	
+
 	delete param1;
 	delete param2;
 }
@@ -302,7 +302,7 @@ TEST(Serialization, Ascii_scalar_equal_UINT64)
 
 	// check for equality
 	EXPECT_TRUE(param1->equals(param2));
-	
+
 	delete param1;
 	delete param2;
 }
@@ -332,7 +332,7 @@ TEST(Serialization, Ascii_scalar_equal_FLOAT32)
 	// check for equality
 	float64_t accuracy=0.0;
 	EXPECT_TRUE(param1->equals(param2, accuracy));
-	
+
 	delete param1;
 	delete param2;
 }
@@ -362,7 +362,7 @@ TEST(Serialization, Ascii_scalar_equal_FLOAT64)
 	// check for equality
 	float64_t accuracy=0.0;
 	EXPECT_TRUE(param1->equals(param2, accuracy));
-	
+
 	delete param1;
 	delete param2;
 }
@@ -392,7 +392,7 @@ TEST(Serialization, Ascii_scalar_equal_FLOATMAX)
 	// check for equality
 	float64_t accuracy=1E-15;
 	EXPECT_TRUE(param1->equals(param2, accuracy));
-	
+
 	delete param1;
 	delete param2;
 }
@@ -422,7 +422,7 @@ TEST(Serialization, Ascii_scalar_equal_COMPLEX128)
 	// check for equality
 	float64_t accuracy=0.0;
 	EXPECT_TRUE(param1->equals(param2, accuracy));
-	
+
 	delete param1;
 	delete param2;
 }
@@ -455,7 +455,7 @@ TEST(Serialization, Ascii_vector_equal_FLOAT64)
 	// check for equality
 	float64_t accuracy=0.0;
 	EXPECT_TRUE(param1->equals(param2, accuracy));
-	
+
 	delete param1;
 	delete param2;
 }
@@ -488,7 +488,7 @@ TEST(Serialization, Ascii_vector_equal_COMPLEX128)
 	// check for equality
 	float64_t accuracy=0.0;
 	EXPECT_TRUE(param1->equals(param2, accuracy));
-	
+
 	delete param1;
 	delete param2;
 }
@@ -521,7 +521,7 @@ TEST(Serialization, Ascii_matrix_equal_FLOAT64)
 	// check for equality
 	float64_t accuracy=0.0;
 	EXPECT_TRUE(param1->equals(param2, accuracy));
-	
+
 	delete param1;
 	delete param2;
 }
@@ -554,7 +554,7 @@ TEST(Serialization, Ascii_matrix_equal_COMPLEX128)
 	// check for equality
 	float64_t accuracy=0.0;
 	EXPECT_TRUE(param1->equals(param2, accuracy));
-	
+
 	delete param1;
 	delete param2;
 }
@@ -584,7 +584,7 @@ TEST(Serialization, Json_scalar_equal_BOOL)
 
 	// check for equality
 	EXPECT_TRUE(param1->equals(param2));
-	
+
 	delete param1;
 	delete param2;
 }
@@ -614,7 +614,7 @@ TEST(Serialization, Json_scalar_equal_FLOAT32)
 	// check for equality
 	float64_t accuracy=1E-6;
 	EXPECT_TRUE(param1->equals(param2, accuracy));
-	
+
 	delete param1;
 	delete param2;
 }
@@ -644,7 +644,7 @@ TEST(Serialization, Json_scalar_equal_FLOAT64)
 	// check for equality
 	float64_t accuracy=1E-6;
 	EXPECT_TRUE(param1->equals(param2, accuracy));
-	
+
 	delete param1;
 	delete param2;
 }
@@ -674,7 +674,7 @@ TEST(Serialization, Json_scalar_equal_FLOATMAX)
 	// check for equality
 	float64_t accuracy=1E-6;
 	EXPECT_TRUE(param1->equals(param2, accuracy));
-	
+
 	delete param1;
 	delete param2;
 }
@@ -707,7 +707,7 @@ TEST(Serialization, Json_vector_equal_FLOAT64)
 	// check for equality
 	float64_t accuracy=1E-6;
 	EXPECT_TRUE(param1->equals(param2, accuracy));
-	
+
 	delete param1;
 	delete param2;
 }
@@ -740,7 +740,7 @@ TEST(Serialization, Json_matrix_equal_FLOAT64)
 	// check for equality
 	float64_t accuracy=1E-6;
 	EXPECT_TRUE(param1->equals(param2, accuracy));
-	
+
 	delete param1;
 	delete param2;
 }
@@ -771,7 +771,7 @@ TEST(Serialization, Xml_scalar_equal_BOOL)
 
 	// check for equality
 	EXPECT_TRUE(param1->equals(param2));
-	
+
 	delete param1;
 	delete param2;
 }
@@ -800,7 +800,7 @@ TEST(Serialization, Xml_scalar_equal_CHAR)
 
 	// check for equality
 	EXPECT_TRUE(param1->equals(param2));
-	
+
 	delete param1;
 	delete param2;
 }
@@ -829,7 +829,7 @@ TEST(Serialization, Xml_scalar_equal_INT8)
 
 	// check for equality
 	EXPECT_TRUE(param1->equals(param2));
-	
+
 	delete param1;
 	delete param2;
 }
@@ -858,7 +858,7 @@ TEST(Serialization, Xml_scalar_equal_UINT8)
 
 	// check for equality
 	EXPECT_TRUE(param1->equals(param2));
-	
+
 	delete param1;
 	delete param2;
 }
@@ -887,7 +887,7 @@ TEST(Serialization, Xml_scalar_equal_INT16)
 
 	// check for equality
 	EXPECT_TRUE(param1->equals(param2));
-	
+
 	delete param1;
 	delete param2;
 }
@@ -916,7 +916,7 @@ TEST(Serialization, Xml_scalar_equal_UINT16)
 
 	// check for equality
 	EXPECT_TRUE(param1->equals(param2));
-	
+
 	delete param1;
 	delete param2;
 }
@@ -945,7 +945,7 @@ TEST(Serialization, Xml_scalar_equal_INT32)
 
 	// check for equality
 	EXPECT_TRUE(param1->equals(param2));
-	
+
 	delete param1;
 	delete param2;
 }
@@ -974,7 +974,7 @@ TEST(Serialization, Xml_scalar_equal_UINT32)
 
 	// check for equality
 	EXPECT_TRUE(param1->equals(param2));
-	
+
 	delete param1;
 	delete param2;
 }
@@ -1003,7 +1003,7 @@ TEST(Serialization, Xml_scalar_equal_INT64)
 
 	// check for equality
 	EXPECT_TRUE(param1->equals(param2));
-	
+
 	delete param1;
 	delete param2;
 }
@@ -1032,7 +1032,7 @@ TEST(Serialization, Xml_scalar_equal_UINT64)
 
 	// check for equality
 	EXPECT_TRUE(param1->equals(param2));
-	
+
 	delete param1;
 	delete param2;
 }
@@ -1062,7 +1062,7 @@ TEST(Serialization, Xml_scalar_equal_FLOAT32)
 	// check for equality
 	float64_t accuracy=1E-15;
 	EXPECT_TRUE(param1->equals(param2, accuracy));
-	
+
 	delete param1;
 	delete param2;
 }
@@ -1092,7 +1092,7 @@ TEST(Serialization, Xml_scalar_equal_FLOAT64)
 	// check for equality
 	float64_t accuracy=1E-15;
 	EXPECT_TRUE(param1->equals(param2, accuracy));
-	
+
 	delete param1;
 	delete param2;
 }
@@ -1122,7 +1122,7 @@ TEST(Serialization, Xml_scalar_equal_FLOATMAX)
 	// check for equality
 	float64_t accuracy=1E-15;
 	EXPECT_TRUE(param1->equals(param2, accuracy));
-	
+
 	delete param1;
 	delete param2;
 }
@@ -1152,7 +1152,7 @@ TEST(Serialization, Xml_scalar_equal_COMPLEX128)
 	// check for equality
 	float64_t accuracy=1E-15;
 	EXPECT_TRUE(param1->equals(param2, accuracy));
-	
+
 	delete param1;
 	delete param2;
 }
@@ -1185,7 +1185,7 @@ TEST(Serialization, Xml_vector_equal_FLOAT64)
 	// check for equality
 	float64_t accuracy=0.0;
 	EXPECT_TRUE(param1->equals(param2, accuracy));
-	
+
 	delete param1;
 	delete param2;
 }
@@ -1218,7 +1218,7 @@ TEST(Serialization, Xml_vector_equal_COMPLEX128)
 	// check for equality
 	float64_t accuracy=0.0;
 	EXPECT_TRUE(param1->equals(param2, accuracy));
-	
+
 	delete param1;
 	delete param2;
 }
@@ -1251,7 +1251,7 @@ TEST(Serialization, Xml_matrix_equal_FLOAT64)
 	// check for equality
 	float64_t accuracy=0.0;
 	EXPECT_TRUE(param1->equals(param2, accuracy));
-	
+
 	delete param1;
 	delete param2;
 }
@@ -1284,7 +1284,7 @@ TEST(Serialization, Xml_matrix_equal_COMPLEX128)
 	// check for equality
 	float64_t accuracy=0.0;
 	EXPECT_TRUE(param1->equals(param2, accuracy));
-	
+
 	delete param1;
 	delete param2;
 }
@@ -1316,7 +1316,7 @@ TEST(Serialization, Hdf5_scalar_equal_BOOL)
 
 	// check for equality
 	EXPECT_TRUE(param1->equals(param2));
-	
+
 	delete param1;
 	delete param2;
 }
@@ -1345,7 +1345,7 @@ TEST(Serialization, Hdf5_scalar_equal_CHAR)
 
 	// check for equality
 	EXPECT_TRUE(param1->equals(param2));
-	
+
 	delete param1;
 	delete param2;
 }
@@ -1374,7 +1374,7 @@ TEST(Serialization, Hdf5_scalar_equal_INT8)
 
 	// check for equality
 	EXPECT_TRUE(param1->equals(param2));
-	
+
 	delete param1;
 	delete param2;
 }
@@ -1403,7 +1403,7 @@ TEST(Serialization, Hdf5_scalar_equal_UINT8)
 
 	// check for equality
 	EXPECT_TRUE(param1->equals(param2));
-	
+
 	delete param1;
 	delete param2;
 }
@@ -1432,7 +1432,7 @@ TEST(Serialization, Hdf5_scalar_equal_INT16)
 
 	// check for equality
 	EXPECT_TRUE(param1->equals(param2));
-	
+
 	delete param1;
 	delete param2;
 }
@@ -1461,7 +1461,7 @@ TEST(Serialization, Hdf5_scalar_equal_UINT16)
 
 	// check for equality
 	EXPECT_TRUE(param1->equals(param2));
-	
+
 	delete param1;
 	delete param2;
 }
@@ -1490,7 +1490,7 @@ TEST(Serialization, Hdf5_scalar_equal_INT32)
 
 	// check for equality
 	EXPECT_TRUE(param1->equals(param2));
-	
+
 	delete param1;
 	delete param2;
 }
@@ -1519,7 +1519,7 @@ TEST(Serialization, Hdf5_scalar_equal_UINT32)
 
 	// check for equality
 	EXPECT_TRUE(param1->equals(param2));
-	
+
 	delete param1;
 	delete param2;
 }
@@ -1548,7 +1548,7 @@ TEST(Serialization, Hdf5_scalar_equal_INT64)
 
 	// check for equality
 	EXPECT_TRUE(param1->equals(param2));
-	
+
 	delete param1;
 	delete param2;
 }
@@ -1577,7 +1577,7 @@ TEST(Serialization, Hdf5_scalar_equal_UINT64)
 
 	// check for equality
 	EXPECT_TRUE(param1->equals(param2));
-	
+
 	delete param1;
 	delete param2;
 }
@@ -1607,7 +1607,7 @@ TEST(Serialization, Hdf5_scalar_equal_FLOAT32)
 	// check for equality
 	float64_t accuracy=0.0;
 	EXPECT_TRUE(param1->equals(param2, accuracy));
-	
+
 	delete param1;
 	delete param2;
 }
@@ -1637,7 +1637,7 @@ TEST(Serialization, Hdf5_scalar_equal_FLOAT64)
 	// check for equality
 	float64_t accuracy=0.0;
 	EXPECT_TRUE(param1->equals(param2, accuracy));
-	
+
 	delete param1;
 	delete param2;
 }
@@ -1667,7 +1667,7 @@ TEST(Serialization, Hdf5_scalar_equal_FLOATMAX)
 	// check for equality
 	float64_t accuracy=0.0;
 	EXPECT_TRUE(param1->equals(param2, accuracy));
-	
+
 	delete param1;
 	delete param2;
 }
@@ -1700,7 +1700,7 @@ TEST(Serialization, Hd5f_vector_equal_FLOAT64)
 	// check for equality
 	float64_t accuracy=0.0;
 	EXPECT_TRUE(param1->equals(param2, accuracy));
-	
+
 	delete param1;
 	delete param2;
 }
@@ -1733,7 +1733,7 @@ TEST(Serialization, Hdf5_matrix_equal_FLOAT64)
 	// check for equality
 	float64_t accuracy=0.0;
 	EXPECT_TRUE(param1->equals(param2, accuracy));
-	
+
 	delete param1;
 	delete param2;
 }

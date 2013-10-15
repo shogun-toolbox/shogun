@@ -41,7 +41,7 @@ public:
 
 	/** deconstructor */
 	virtual ~CLineReader();
-	
+
 	/** check for next line in the stream
 	 *
 	 * @return true if there is next line, false - otherwise
@@ -59,7 +59,7 @@ public:
 
 	/** set tokenizer
 	 *
-	 * @param tokenizer tokenizer	
+	 * @param tokenizer tokenizer
 	 */
 	void set_tokenizer(CTokenizer* tokenizer);
 
@@ -90,7 +90,7 @@ private:
 	int32_t m_max_token_length;
 
 	/** length of next line in the buffer */
-	int32_t m_next_token_length;	
+	int32_t m_next_token_length;
 };
 
 }

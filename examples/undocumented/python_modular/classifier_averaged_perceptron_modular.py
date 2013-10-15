@@ -7,7 +7,7 @@ parameter_list = [[100, 2, 5,1.,1000,1,1], [100, 2, 5,1.,1000,1,2]]
 def classifier_averaged_perceptron_modular (n=100, dim=2, distance=5,learn_rate=1.,max_iter=1000,num_threads=1,seed=1):
 	from modshogun import RealFeatures, BinaryLabels
 	from modshogun import AveragedPerceptron
-	
+
 	random.seed(seed)
 
 	# produce some (probably) linearly separable training data by hand
@@ -17,7 +17,7 @@ def classifier_averaged_perceptron_modular (n=100, dim=2, distance=5,learn_rate=
 	X_test=array(random.randn(dim,n))+distance
 	Y_test=array(random.randn(dim,n))-distance
 	label_train_twoclass=hstack((ones(n), -ones(n)))
-	
+
 	#plot(X[0,:], X[1,:], 'x', Y[0,:], Y[1,:], 'o')
 	fm_train_real=hstack((X,Y))
 	fm_test_real=hstack((X_test,Y_test))

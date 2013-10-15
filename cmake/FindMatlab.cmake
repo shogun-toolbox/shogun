@@ -52,7 +52,7 @@ IF(WIN32)
       OR ("${MATLAB_ROOT}" STREQUAL "")
       OR ("${MATLAB_ROOT}" STREQUAL "/registry"))
   ENDFOREACH(MATVER)
-  
+
   # Directory name depending on whether the Windows architecture is 32
   # bit or 64 bit
   IF(CMAKE_SIZEOF_VOID_P MATCHES "4")
@@ -140,7 +140,7 @@ ELSE(WIN32)
         IF((NOT DEFINED MATLAB_ROOT) OR ("${MATLAB_ROOT}" STREQUAL ""))
           IF(EXISTS /Applications/MATLAB_${MATVER}.app)
             SET(MATLAB_ROOT /Applications/MATLAB_${MATVER}.app)
-    
+
           ENDIF(EXISTS /Applications/MATLAB_${MATVER}.app)
         ENDIF((NOT DEFINED MATLAB_ROOT) OR ("${MATLAB_ROOT}" STREQUAL ""))
       ENDFOREACH(MATVER)

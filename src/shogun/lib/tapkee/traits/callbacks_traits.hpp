@@ -16,7 +16,7 @@ namespace tapkee
 	};
 	#define TAPKEE_CALLBACK_SUPPORTS_BATCH(X)								\
 	template<> const bool BatchCallbackTraits<X>::supports_batch = true;	\
-	
+
 	template <class T>
 	class is_dummy
 	{
@@ -25,7 +25,7 @@ namespace tapkee
 
 		template <typename C> static yes dummy(typename C::dummy*);
 		template <typename C> static no dummy(...);
-	
+
 		public:
 		static const bool value = (sizeof(dummy<T>(0)) == sizeof(yes));
 	};

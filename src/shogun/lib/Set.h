@@ -25,7 +25,7 @@ namespace shogun
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 /** hashset node */
 template<class T> struct CSetNode
-{	
+{
 	/** index in hashtable */
 	int32_t index;
 
@@ -51,7 +51,7 @@ template<class T> class CSet: public CSGObject
 public:
 	/** Custom constructor */
 	CSet(int32_t size=41, int32_t reserved=128, bool tracable=true)
-	{	
+	{
 		hash_size=size;
 		free_index=0;
 		num_elements=0;
@@ -122,7 +122,7 @@ public:
 	{
 		int32_t index=hash(element);
 		if (chain_search(index, element)!=NULL)
-			return true; 
+			return true;
 
 		return false;
 	}
@@ -136,7 +136,7 @@ public:
 		int32_t index=hash(element);
 		CSetNode<T>* result=chain_search(index, element);
 
-		if (result!=NULL)		
+		if (result!=NULL)
 		{
 			delete_key(index, result);
 			num_elements--;
@@ -155,7 +155,7 @@ public:
 
 		if (result!=NULL)
 			 return result->index;
-		
+
 		return -1;
 	}
 
@@ -202,7 +202,7 @@ public:
 	{
 		return array->get_element(index);
 	}
-		
+
 	/** @return underlying array of nodes in memory */
 	CSetNode<T>** get_array()
 	{
@@ -250,7 +250,7 @@ private:
 			return NULL;
 		}
 	}
-	
+
 	/** Inserts nodes with certain key and data in set */
 	void insert_key(int32_t index, const T& element)
 	{
@@ -301,7 +301,7 @@ private:
 
 	/** Deletes key from set */
 	void delete_key(int32_t index, CSetNode<T>* node)
-	{		
+	{
 		int32_t temp=0;
 
 		if (node==NULL)
@@ -311,7 +311,7 @@ private:
 			node->right->left = node->left;
 
 		if (node->left!=NULL)
-			node->left->right = node->right;		
+			node->left->right = node->right;
 		else
 			hash_array[index] = node->right;
 
@@ -322,7 +322,7 @@ private:
 		node->left=NULL;
 		node->right=NULL;
 
-		free_index=temp;		
+		free_index=temp;
 	}
 
 

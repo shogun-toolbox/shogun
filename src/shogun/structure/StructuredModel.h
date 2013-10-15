@@ -98,10 +98,10 @@ class CStructuredModel : public CSGObject
 		/** destructor */
 		virtual ~CStructuredModel();
 
-		/** initialize the optimization problem for primal solver 
+		/** initialize the optimization problem for primal solver
 		 *
 		 * @param regularization regularization strength
-		 * @param A  is [-dPsi(y) | -I_N ] with M+N columns => max. M+1 nnz per row 
+		 * @param A  is [-dPsi(y) | -I_N ] with M+N columns => max. M+1 nnz per row
 		 * @param a
 		 * @param B
 		 * @param b  upper bounds of the constraints, Ax <= b

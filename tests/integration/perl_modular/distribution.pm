@@ -47,7 +47,7 @@ sub _evaluate
 	$best_path=abs($best_path - $indata->{$prefix.'best_path'});
 	$best_path_state=abs($best_path_state -
 			     $indata->{$prefix.'best_path_state'});
-	
+
 	return &util::check_accuracy($indata->{$prefix.'accuracy'}
 				     , {
 					 derivatives=>$derivatives

@@ -69,7 +69,7 @@ public:
 
 	/** skip lines
 	 *
-	 * @param num_lines number of lines should be skiped	
+	 * @param num_lines number of lines should be skiped
 	 */
 	void set_lines_to_skip(int32_t num_lines);
 

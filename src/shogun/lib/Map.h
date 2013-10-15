@@ -171,7 +171,7 @@ public:
 		int32_t index=hash(key);
 		CMapNode<K, T>* result=chain_search(index, key);
 
-		if (result!=NULL)		
+		if (result!=NULL)
 			return result->data;
 		else
 		{
@@ -342,7 +342,7 @@ private:
 
 			new (&new_node->key) K();
 			new (&new_node->data) T();
-	
+
 			array->append_element(new_node);
 
 			new_index=free_index;

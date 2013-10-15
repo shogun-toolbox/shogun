@@ -25,7 +25,7 @@ struct VwConditionalProbabilityTreeNodeData
 	/** actual label */
 	int32_t label;
 	/** probability of right subtree used for prediction */
-	float64_t p_right; 
+	float64_t p_right;
 
 	/** ctor */
 	VwConditionalProbabilityTreeNodeData():label(-1), p_right(0) {}
@@ -63,7 +63,7 @@ public:
 		return m_num_passes;
 	}
 
-	/** set features 
+	/** set features
 	 * @param feats features
 	 */
 	void set_features(CStreamingVwFeatures *feats)
@@ -84,7 +84,7 @@ protected:
 
 	/** train machine
 	 *
-	 * @param data training data 
+	 * @param data training data
 	 *
 	 * @return whether training was successful
 	 */
@@ -101,14 +101,14 @@ protected:
 	 */
 	void train_path(VwExample *ex, node_t *node);
 
-	/** train a single node 
+	/** train a single node
 	 * @param ex VwExample instance of the training example
 	 * @param node the node
 	 * @return the predicted value for the example
 	 */
 	float64_t train_node(VwExample *ex, node_t *node);
 
-	/** create a new VW machine for a node 
+	/** create a new VW machine for a node
 	 * @param ex the VwExample instance for training the new machine
 	 */
 	int32_t create_machine(VwExample *ex);
@@ -124,7 +124,7 @@ protected:
 	void compute_conditional_probabilities(VwExample *ex);
 
 	/** accumulate along the path to the root the conditional probability for a
-	 * particular leaf node. 
+	 * particular leaf node.
 	 */
 	float64_t accumulate_conditional_probability(node_t *leaf);
 
@@ -133,7 +133,7 @@ protected:
 	CStreamingVwFeatures *m_feats; ///< online features
 };
 
-} /* shogun */ 
+} /* shogun */
 
 #endif /* end of include guard: CONDITIONALPROBABILITYTREE_H__ */
 

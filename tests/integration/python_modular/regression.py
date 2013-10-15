@@ -23,7 +23,7 @@ def _evaluate (indata):
 		name = indata[prefix+'name']
 		if (name=='KERNELRIDGEREGRESSION'):
 			name = 'KernelRidgeRegression'
-		
+
 		rfun=eval(name)
 	except NameError as e:
 		print("%s is disabled/unavailable!"%indata[prefix+'name'])

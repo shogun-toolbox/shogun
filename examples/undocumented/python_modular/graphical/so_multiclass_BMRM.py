@@ -3,10 +3,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from modshogun 	import RealFeatures
+from modshogun	import RealFeatures
 from modshogun	import MulticlassModel, MulticlassSOLabels, RealNumber, DualLibQPBMSOSVM
-from modshogun 	import BMRM, PPBMRM, P3BMRM
-from modshogun 	import StructuredAccuracy
+from modshogun	import BMRM, PPBMRM, P3BMRM
+from modshogun	import StructuredAccuracy
 
 def fill_data(cnt, minv, maxv):
 	x1 = np.linspace(minv, maxv, cnt)

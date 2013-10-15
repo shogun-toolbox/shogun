@@ -18,7 +18,7 @@ def clustering_hierarchical_modular(fm_train=traindat,merges=3)
 	out_distance = hierarchical.get_merge_distances()
 	out_cluster = hierarchical.get_cluster_pairs()
 
-	return hierarchical,out_distance,out_cluster 
+	return hierarchical,out_distance,out_cluster
 
 end
 

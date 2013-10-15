@@ -86,7 +86,7 @@ SerializableAsciiReader00::read_scalar_wrapped(
 		break;
 	case PT_COMPLEX128:
 		float64_t c_real, c_imag;
-		if (fscanf(m_file->m_fstream, "(%lg,%lg)", &c_real, &c_imag) 
+		if (fscanf(m_file->m_fstream, "(%lg,%lg)", &c_real, &c_imag)
 			!= 2) return false;
 #ifdef HAVE_CXX11
 		((complex128_t*) param)->real(c_real);

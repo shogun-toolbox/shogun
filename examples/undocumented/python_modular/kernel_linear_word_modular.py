@@ -9,7 +9,7 @@ testdat = ushort(lm.load_numbers('../data/fm_test_word.dat'))
 parameter_list=[[traindat,testdat,1.2],[traindat,testdat,1.2]]
 
 def kernel_linear_word_modular (fm_train_word=traindat,fm_test_word=testdat,scale=1.2):
-	
+
 	from modshogun import LinearKernel, AvgDiagKernelNormalizer
 	from modshogun import WordFeatures
 

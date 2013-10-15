@@ -22,7 +22,7 @@ namespace shogun
 class CStreamingDotFeatures;
 class CTokenizer;
 class CHashedDocConverter;
- 
+
 /** @brief This class implements streaming features for a document collection.
  * Like in the standard Bag-of-Words representation, this class considers each document as a collection of tokens,
  * which are then hashed into a new feature space of a specified dimension.
@@ -211,8 +211,8 @@ public:
 	 */
 	virtual int32_t get_num_features();
 
-	/** Get the current example 
-	 * 
+	/** Get the current example
+	 *
 	 * @return a SGSparseVector representing the hashed version of the string last read
 	 */
 	SGSparseVector<float64_t> get_vector();
@@ -224,7 +224,7 @@ public:
 	void set_normalization(bool normalize);
 
 	/** Method used to specify the parameters for the quadratic
-	 * approach of k-skip n-grams. See class description for more 
+	 * approach of k-skip n-grams. See class description for more
 	 * details and an example.
 	 *
 	 * @param k the max number of allowed skips
@@ -237,7 +237,7 @@ private:
 		int32_t bits, bool normalize, int32_t n_grams, int32_t skips);
 
 protected:
-	
+
 	/** number of bits for the target dimension */
 	int32_t num_bits;
 

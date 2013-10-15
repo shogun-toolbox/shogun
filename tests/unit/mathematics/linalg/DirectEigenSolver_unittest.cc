@@ -6,7 +6,7 @@
  *
  * Written (W) 2013 Soumyajit De
  */
- 
+
 #include <shogun/lib/config.h>
 
 #ifdef HAVE_EIGEN3
@@ -30,13 +30,13 @@ TEST(DirectEigenSolver, compute)
 
 	CDirectEigenSolver eig_solver(A);
 	eig_solver.compute();
-	
+
 	float64_t min_eigval=eig_solver.get_min_eigenvalue();
 	float64_t max_eigval=eig_solver.get_max_eigenvalue();
 
 	EXPECT_NEAR(min_eigval, 1.38196601125010509747, 1E-15);
 	EXPECT_NEAR(max_eigval, 3.61803398874989445844, 1E-15);
-	
+
 	SG_UNREF(A);
 }
 #endif //HAVE_EIGEN3

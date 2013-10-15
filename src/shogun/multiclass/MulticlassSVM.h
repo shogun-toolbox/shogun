@@ -88,32 +88,32 @@ class CMulticlassSVM : public CKernelMulticlassMachine
 
 		// TODO remove if unnecessary here
 		/** get linear term of base SVM
-		 * @return linear term of base SVM 
+		 * @return linear term of base SVM
 		 */
 		SGVector<float64_t> get_linear_term() { return svm_proto()->get_linear_term(); }
 		// TODO remove if unnecessary here
 		/** get tube epsilon of base SVM
-		 * @return tube epsilon of base SVM 
+		 * @return tube epsilon of base SVM
 		 */
 		float64_t get_tube_epsilon() { return svm_proto()->get_tube_epsilon(); }
 		// TODO remove if unnecessary here
 		/** get epsilon of base SVM
-		 * @return epsilon of base SVM 
+		 * @return epsilon of base SVM
 		 */
 		float64_t get_epsilon() { return svm_proto()->get_epsilon(); }
 		// TODO remove if unnecessary here
 		/** get nu of base SVM
-		 * @return nu of base SVM 
+		 * @return nu of base SVM
 		 */
 		float64_t get_nu() { return svm_proto()->get_nu(); }
 		// TODO remove if unnecessary here
 		/** get C of base SVM
-		 * @return C of base SVM 
+		 * @return C of base SVM
 		 */
 		float64_t get_C() { return m_C; }
 		// TODO remove if unnecessary here
 		/** get qpsize of base SVM
-		 * @return qpsize of base SVM 
+		 * @return qpsize of base SVM
 		 */
 		int32_t get_qpsize() { return svm_proto()->get_qpsize(); }
 		// TODO remove if unnecessary here
@@ -123,10 +123,10 @@ class CMulticlassSVM : public CKernelMulticlassMachine
 		bool get_shrinking_enabled() { return svm_proto()->get_shrinking_enabled(); }
 		// TODO remove if unnecessary here
 		/** get objective of base SVM
-		 * @return objective of base SVM 
+		 * @return objective of base SVM
 		 */
 		float64_t get_objective() { return svm_proto()->get_objective(); }
-		
+
 		// TODO remove if unnecessary here
 		/** get bias enabled options of base SVM
 		 * @return whether bias of base SVM is enabled

@@ -1,14 +1,14 @@
 #!/usr/bin/env python
-# 
+#
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
-# 
+#
 # Written (W) 2007 Gunnar Raetsch
 # Written (W) 2006-2008 Soeren Sonnenburg
 # Copyright (C) 2006-2008 Fraunhofer Institute FIRST and Max-Planck-Society
-# 
+#
 
 try:
 	import os
@@ -57,7 +57,7 @@ class msplicer:
 		f=None
 		picklefile=filename+'.pickle'
 		if os.path.isfile(picklefile):
-			self.model=pickle.load(file(picklefile))	
+			self.model=pickle.load(file(picklefile))
 		else:
 			if filename.endswith('.bz2'):
 				f=bz2.BZ2File(filename);
@@ -129,7 +129,7 @@ class msplicer:
 				if seqmatrix[don_idx[0], i] > -1e20:
 					s1 = seq.seq[unique_positions[i]-1:unique_positions[i]+1]
 					s2 = seq.seq[unique_positions[i]-2:unique_positions[i]+1]
-					if s1 in ['TG']: seqmatrix[don_idx[1], i]=-numpy.infty 
+					if s1 in ['TG']: seqmatrix[don_idx[1], i]=-numpy.infty
 					if s1 not in ['TG']: seqmatrix[don_idx[2], i]=-numpy.infty
 					if s2 in ['TAG', 'TGG']: seqmatrix[don_idx[3], i]=-numpy.infty
 					if s2 not in ['TAG']: seqmatrix[don_idx[4], i]=-numpy.infty
@@ -143,11 +143,11 @@ class msplicer:
 					if s2 in ['GAA', 'GAG', 'GGA']: seqmatrix[acc_idx[2], i]=-numpy.infty
 					if s1 in ['GA', 'GG']: seqmatrix[acc_idx[4], i]=-numpy.infty
 					if s1 in ['GA']: seqmatrix[acc_idx[5], i]=-numpy.infty
-			
+
 		plifstatemat = -numpy.ones((len(self.model.statedescr),1), numpy.int32);
 		plifstatemat[acc_idx,0] = 0 ; # acceptors use first plif
 		plifstatemat[don_idx,0] = 1 ; # donors use second plif
-		
+
 		return (seqmatrix, unique_positions, plifstatemat)
 
 
@@ -155,7 +155,7 @@ class msplicer:
 		dyn=shogun.Structure.DynProg()
 
 		self.content.initialize_content(dyn)
-		
+
 		n=len(self.model.p)
 		dyn.set_num_states(n)
 		dyn.set_p_vector(self.model.p)
@@ -168,7 +168,7 @@ class msplicer:
 		dyn.best_path_set_seq(seqmatrix)
 		dyn.best_path_set_pos(positions)
 		dyn.best_path_set_orf_info(self.model.orf_info)
-	
+
 		dyn.best_path_set_plif_list(self.plif.get_plif_array())
 
 		dyn.best_path_set_plif_id_matrix(self.model.plifidmat.T)
@@ -239,8 +239,8 @@ class msplicer:
 					pred_ = numpy.zeros(len(pred)+1, numpy.int32) ;
 					pred_[0:len(pred)] = pred ;
 					pred_[-1] = pred[-1]
-					pred = pred_ 
-			
+					pred = pred_
+
 			pred=pred.reshape((len(pred)/2,2))
 			self.write_gff(outfile, pred, seq.name, scores, skipheader)
 			skipheader=True
@@ -251,21 +251,21 @@ class msplicer:
 				print positions, my_posi
 				for i in xrange(len(my_posi)):
 					my_pos[i] = numpy.where(positions == my_posi[i])[0]
-					
+
 				my_states = numpy.array([0, 13, 6, 12, 2, 8, 4, 10, 4, 10, 14, 16], numpy.int32)
 				#my_pos = numpy.array([  0, 51, 169, 204, 216, 241, 300, 355, 360, 397], numpy.int32) ;
 				#my_states = numpy.array([0, 3, 1, 2, 1, 2, 1, 2, 4, 5], numpy.int32)
 
-				my_states = states[0][0:numpy.where(pos[0]==-1)[0]] 
+				my_states = states[0][0:numpy.where(pos[0]==-1)[0]]
 				my_pos    = pos[0][0:numpy.where(pos[0]==-1)[0]]
 
 				print my_states
 				print my_pos
 				print positions[my_pos]
-				
+
 				dyn.best_path_set_my_state_seq(my_states)
 				dyn.best_path_set_my_pos_seq(my_pos)
-				
+
 				dyn.io.set_loglevel(shogun.Structure.M_DEBUG)
 				dyn.best_path_deriv_call()
 
@@ -274,7 +274,7 @@ def print_version():
 
 def parse_options():
 	parser = optparse.OptionParser(usage="usage: %prog [options] seq.fa")
-	
+
 	parser.add_option("-o", "--outfile", type="str", default='stdout',
 			                  help="File to write the results to")
 	parser.add_option("-v", "--version", default=False,
@@ -314,7 +314,7 @@ def parse_options():
 
 	modelfname = 'data/msplicer_elegans%s_gc=%d_orf=%d.dat.bz2' % (model, gc, orf)
 	print "loading model file " + modelfname,
-	
+
 	if not os.path.isfile(modelfname):
 		print "...not found!\n"
 		parser.error("""model should be one of:
@@ -340,10 +340,10 @@ WS160, WS160gc, orfWS160gc
 	if options.stop < 0 and options.stop > -80:
 		parser.error("--stop value must be <= - 80")
 
-	# shift the start and stop a bit 
+	# shift the start and stop a bit
 	options.start -= 1 ;
 	options.stop -= 1 ;
-	
+
 	return ((options.start,options.stop), fafname, modelfname, outfile)
 
 

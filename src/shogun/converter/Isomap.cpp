@@ -51,12 +51,12 @@ const char* CIsomap::get_name() const
 CDenseFeatures<float64_t>* CIsomap::embed_distance(CDistance* distance)
 {
 	TAPKEE_PARAMETERS_FOR_SHOGUN parameters;
-	if (m_landmark) 
+	if (m_landmark)
 	{
 		parameters.method = SHOGUN_LANDMARK_ISOMAP;
 		parameters.landmark_ratio = float64_t(m_landmark_number)/distance->get_num_vec_lhs();
 	}
-	else 
+	else
 	{
 		parameters.method = SHOGUN_ISOMAP;
 	}

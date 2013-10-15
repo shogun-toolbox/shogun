@@ -27,7 +27,7 @@ sub _evaluate (indata):
     $km_test = max(abs(
 		       $indata->{$prefix.'matrix_test'}
 		       - $kernel->get_kernel_matrix())->flat);
-    
+
     return &util::check_accuracy(
 	$indata->{$prefix.'accuracy'}
 	, {km_train=>$km_train, km_test=>$km_test});

@@ -3,7 +3,7 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Written (W) 2013 Soumyajit De
  */
 
@@ -20,7 +20,7 @@ namespace shogun
 template<class T> class CLinearOperator;
 template<class T> class SGVector;
 
-/** 
+/**
  * @brief class that uses conjugate gradient method for solving a shifted
  * linear system family where the linear opeator is real valued and symmetric
  * positive definite, the vector is real valued, but the shifts are complex
@@ -43,7 +43,7 @@ public:
 	/** destructor */
 	virtual ~CCGMShiftedFamilySolver();
 
-	/** 
+	/**
 	 * solve method for solving linear systems assuming no shift
 	 *
 	 * @param A the linear operator of the system
@@ -57,7 +57,7 @@ public:
 	 * method that solves the shifted family of linear systems, multiples
 	 * each solution vector with a weight, computes a summation over all the
 	 * shifts and returns the final solution vector
-	 * 
+	 *
 	 * @param A the linear operator of the system
 	 * @param b the vector of the system
 	 * @param shifts the shifts of the shifted system

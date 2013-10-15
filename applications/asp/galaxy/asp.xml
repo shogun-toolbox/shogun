@@ -13,15 +13,15 @@
 		$sigmoid_transform
 		> $log_file
 	</command>
-  	<inputs>
+	<inputs>
 		<param format="fasta" name="fasta_input" type="data" label="Genome sequence in FASTA format" help=""/>
-    		<param name="organism" type="select" label="Organism" help="">
+		<param name="organism" type="select" label="Organism" help="">
 			<option value="Cress">Arabidopsis thaliana</option>
 		        <option value="Worm">Caenorhabditis elegans</option>
 		        <option value="Fly">Drosophila melanogaster</option>
 		        <option value="Human">Homo sapiens</option>
 		        <option value="Fish">Danio rerio</option>
-    		</param>
+		</param>
 		<param name="sigmoid_transform" type="select" label="Use sigmoid-transform on SVM outputs to obtain score between 0 and 1" help="By default it is Yes.">
 			<option value="yes">Yes</option>
 			<option value="no">No</option>

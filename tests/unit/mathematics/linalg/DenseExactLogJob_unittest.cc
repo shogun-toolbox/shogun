@@ -6,7 +6,7 @@
  *
  * Written (W) 2013 Soumyajit De
  */
- 
+
 #include <shogun/lib/common.h>
 
 #ifdef HAVE_EIGEN3
@@ -41,7 +41,7 @@ TEST(DenseExactLogJob, log_det)
 	Map<MatrixXd> log_m(log_mat.matrix, log_mat.num_rows, log_mat.num_cols);
 	log_m=m.log();
 
-	// create linear operator and aggregator	
+	// create linear operator and aggregator
 	CDenseMatrixOperator<float64_t>* log_op=new CDenseMatrixOperator<float64_t>(log_mat);
 	SG_REF(log_op);
 	CStoreScalarAggregator<float64_t>* agg=new CStoreScalarAggregator<float64_t>;
@@ -64,7 +64,7 @@ TEST(DenseExactLogJob, log_det)
 
 	CScalarResult<float64_t>* r=dynamic_cast<CScalarResult<float64_t>*>
 		(agg->get_final_result());
-	
+
 	EXPECT_NEAR(r->get_result(), CStatistics::log_det(mat), 1E-15);
 
 	SG_UNREF(log_op);

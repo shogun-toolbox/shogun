@@ -49,7 +49,7 @@ CCombinedFeatures::~CCombinedFeatures()
 CFeatures* CCombinedFeatures::get_feature_obj(int32_t idx)
 {
 	return (CFeatures*) feature_array->get_element(idx);
-} 
+}
 
 void CCombinedFeatures::list_feature_objs()
 {
@@ -87,7 +87,7 @@ bool CCombinedFeatures::check_feature_obj_compatibility(CCombinedFeatures* comb_
 				this->list_feature_objs();
 				return false;
 			}
-			
+
 			SG_UNREF(f1);
 			SG_UNREF(f2);
 		}
@@ -225,9 +225,9 @@ void CCombinedFeatures::add_subset(SGVector<index_t> subset)
 	CSet<CFeatures*>* processed=new CSet<CFeatures*>();
 
 	for (index_t f_idx=0; f_idx<get_num_feature_obj(); f_idx++)
-	{	
+	{
 		CFeatures* current=get_feature_obj(f_idx);
-	
+
 		if (!processed->contains(current))
 		{
 			/* remember that subset was added here */
@@ -311,7 +311,7 @@ CFeatures* CCombinedFeatures::copy_subset(SGVector<index_t> indices)
 	for (index_t f_idx=0; f_idx<get_num_feature_obj(); f_idx++)
 	{
 		CFeatures* current=get_feature_obj(f_idx);
-	
+
 		CFeatures* new_element=NULL;
 
 		/* only copy if not done yet, otherwise, use old copy */

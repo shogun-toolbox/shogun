@@ -102,12 +102,12 @@ float64_t CSOSVMHelper::average_loss(SGVector<float64_t> w, CStructuredModel* mo
 	return loss / N;
 }
 
-void CSOSVMHelper::add_debug_info(float64_t primal, float64_t eff_pass, float64_t train_error, 
+void CSOSVMHelper::add_debug_info(float64_t primal, float64_t eff_pass, float64_t train_error,
 		float64_t dual, float64_t dgap)
 {
 	if (m_tracker >= m_bufsize)
 	{
-		SG_PRINT("%s::add_debug_information(): Buffer overflows! No more values will be recorded!\n", 
+		SG_PRINT("%s::add_debug_information(): Buffer overflows! No more values will be recorded!\n",
 			get_name());
 
 		return;
@@ -153,9 +153,9 @@ SGVector<float64_t> CSOSVMHelper::get_train_errors() const
 
 void CSOSVMHelper::terminate()
 {
-	m_primal.resize_vector(m_tracker); 
+	m_primal.resize_vector(m_tracker);
 	m_dual.resize_vector(m_tracker);
-	m_duality_gap.resize_vector(m_tracker); 
-	m_eff_pass.resize_vector(m_tracker); 
-	m_train_error.resize_vector(m_tracker); 
+	m_duality_gap.resize_vector(m_tracker);
+	m_eff_pass.resize_vector(m_tracker);
+	m_train_error.resize_vector(m_tracker);
 }

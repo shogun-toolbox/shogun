@@ -25,16 +25,16 @@ namespace shogun
 /** @brief Class UWedge
  *
  * An Approximate Joint Diagonalizer (AJD) Implementation
- * 
- * Tichavsky, P., & Yeredor, A. (2009). 
- * Fast approximate joint diagonalization incorporating weight matrices. 
+ *
+ * Tichavsky, P., & Yeredor, A. (2009).
+ * Fast approximate joint diagonalization incorporating weight matrices.
  * Signal Processing, IEEE Transactions on, 57(3), 878-891.
- * 
+ *
  */
 class CUWedge : public CApproxJointDiagonalizer
 {
 	public:
-	
+
 		/** constructor */
 		CUWedge()
 		{
@@ -44,25 +44,25 @@ class CUWedge : public CApproxJointDiagonalizer
 		virtual ~CUWedge()
 		{
 		}
-	
-		/** Computes the matrix V that best diagonalizes C 
+
+		/** Computes the matrix V that best diagonalizes C
 		 * @param C the set of matrices to be diagonalized
 		 * @param V0 an estimate of the matrix V
 		 * @param eps machine epsilon or desired epsilon
 		 * @param itermax maximum number of iterations
-		 * @return V the matrix that best diagonalizes C 
+		 * @return V the matrix that best diagonalizes C
 		 */
 		static SGMatrix<float64_t> diagonalize(SGNDArray<float64_t> C,
-       							SGMatrix<float64_t> V0 = SGMatrix<float64_t>(NULL,0,0,false),
+							SGMatrix<float64_t> V0 = SGMatrix<float64_t>(NULL,0,0,false),
 								double eps=1e-12,
 								int itermax=200);
 
-		/** Computes the matrix V that best diagonalizes C 
+		/** Computes the matrix V that best diagonalizes C
 		 * @param C the set of matrices to be diagonalized
 		 * @param V0 an estimate of the matrix V
 		 * @param eps machine epsilon or desired epsilon
 		 * @param itermax maximum number of iterations
-		 * @return V the matrix that best diagonalizes C 
+		 * @return V the matrix that best diagonalizes C
 		 */
 		virtual SGMatrix<float64_t> compute(SGNDArray<float64_t> C,
 						   SGMatrix<float64_t> V0 = SGMatrix<float64_t>(NULL,0,0,false),
@@ -70,7 +70,7 @@ class CUWedge : public CApproxJointDiagonalizer
 						   int itermax=200)
 		{
 			m_V = diagonalize(C,V0,eps,itermax);
-			return m_V;	
+			return m_V;
 		}
 
 		/** @return object name */
@@ -78,4 +78,4 @@ class CUWedge : public CApproxJointDiagonalizer
 };
 }
 #endif //HAVE_EIGEN3
-#endif //UWEDGE_H_ 
+#endif //UWEDGE_H_

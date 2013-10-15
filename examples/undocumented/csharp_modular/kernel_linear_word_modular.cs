@@ -18,7 +18,7 @@ public class kernel_linear_word_modular {
 		for (int i = 0; i < testdata_real.GetLength(0); i++){
 			for (int j = 0; j < testdata_real.GetLength(1); j++)
 				testdata_word[i, j] = (short)testdata_real[i, j];
-		}	
+		}
 		WordFeatures feats_train = new WordFeatures(traindata_word);
 		WordFeatures feats_test = new WordFeatures(testdata_word);
 

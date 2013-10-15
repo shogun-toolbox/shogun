@@ -6,7 +6,7 @@
  *
  * Written (W) 2013 Soumyajit De
  */
- 
+
 #include <shogun/lib/common.h>
 
 #ifdef HAVE_EIGEN3
@@ -40,7 +40,7 @@ TEST(ConjugateGradientSolver, solve)
 
 	SGVector<float64_t> b(size);
 	b.set_const(0.01);
-	
+
 	SGVector<float64_t> x=linear_solver.solve(A, b);
 	Map<VectorXd> map_x(x.vector, x.vlen);
 

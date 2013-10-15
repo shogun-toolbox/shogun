@@ -47,7 +47,7 @@ sub _evaluate {
      , {km_train => $km_train, km_test => $km_test});
 }
 
-sub _get_subkernels 
+sub _get_subkernels
 {
     my ($indata, $prefix) = @_;
     my %subkernels;
@@ -103,7 +103,7 @@ sub _evaluate_combined
     my $km_test=max(abs(
 			$indata->{'kernel_matrix_test'}
 			- $kernel->get_kernel_matrix())->flat);
-    
+
     return &util::check_accuracy
 	(
 	 $indata->{$prefix.'accuracy'}
@@ -230,19 +230,19 @@ sub _evaluate_pie
     my $km_test = max(abs(
 			$indata->{$prefix.'matrix_test'}
 			-$kernel->get_kernel_matrix())->flat);
-  
+
 #PTZ121013 did not find get_confidences() anywhere in Labels it disappeared!
     my $classified = max(abs(
 		$pie->apply()->get_confidences()
 			   - $indata->{'classifier_classified'}));
-    
+
     return &util::check_accuracy(
 	$indata->{$prefix.'accuracy'}
 	, {
 	    km_train=>$km_train, km_test=>$km_test, classified=>$classified});
-    
+
 }
-			    
+
 sub _evaluate_top_fisher
 {
     my ($indata, $prefix) = @_;

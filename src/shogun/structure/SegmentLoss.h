@@ -133,7 +133,7 @@ inline float32_t CSegmentLoss::get_segment_loss(int32_t from_pos, int32_t to_pos
 
 		if (from_pos_shift>=to_pos)
 		{
-			//SG_PRINT("break") 
+			//SG_PRINT("break")
 			break ;
 		}
 		else from_pos_shift++ ;
@@ -171,7 +171,7 @@ inline float32_t CSegmentLoss::get_segment_loss_extend(int32_t from_pos, int32_t
 	//diff_contrib += m_segment_mask->element(to_pos)*m_segment_loss.element(segment_id, m_segment_ids->element(to_pos), 0);
 
 	//if (from_pos_shift!=from_pos)
-	//	SG_PRINT("shifting from %i to %i, to_pos=%i, loss=%1.1f\n", from_pos, from_pos_shift, to_pos, diff_contrib) 
+	//	SG_PRINT("shifting from %i to %i, to_pos=%i, loss=%1.1f\n", from_pos, from_pos_shift, to_pos, diff_contrib)
 
 	return diff_contrib;
 }

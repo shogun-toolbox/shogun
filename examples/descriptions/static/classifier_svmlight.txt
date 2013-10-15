@@ -10,4 +10,4 @@ For more details on the SVM^light see
 
 For more details on the Weighted Degree kernel see
  G. Raetsch, S.Sonnenburg, and B. Schoelkopf. RASE: recognition of alternatively
- spliced exons in C. elegans. Bioinformatics, 21:369-377, June 2005. 
+ spliced exons in C. elegans. Bioinformatics, 21:369-377, June 2005.

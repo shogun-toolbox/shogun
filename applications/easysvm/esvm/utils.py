@@ -7,10 +7,10 @@
 #                                                                                           #
 #    This program is distributed in the hope that it will be useful,                        #
 #    but WITHOUT ANY WARRANTY; without even the implied warranty of                         #
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                           # 
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                           #
 #    GNU General Public License for more details.                                           #
 #                                                                                           #
-#    You should have received a copy of the GNU General Public License                      # 
+#    You should have received a copy of the GNU General Public License                      #
 #    along with this program; if not, see http://www.gnu.org/licenses                       #
 #    or write to the Free Software Foundation, Inc., 51 Franklin Street,                    #
 #    Fifth Floor, Boston, MA 02110-1301  USA                                                #
@@ -88,7 +88,7 @@ def getPartitionedSet(total, crossval_repeat, seed=None):
 
     size = int(total / crossval_repeat)
     mod = total % crossval_repeat
-    
+
     splits = []
     for i in range(0, crossval_repeat):
         if i < mod:
@@ -97,17 +97,17 @@ def getPartitionedSet(total, crossval_repeat, seed=None):
             splits.append(size)
 
     ipartition = random.sample(xrange(0,total), total) # random sampling
-    
+
     index = 0
     partitions = []
 
     for size in splits:
         partitions.append(ipartition[index:index+size])
         index += size
-    
+
     return partitions
 
-    
+
 def getCurrentSplit(repetition, partitions, labels, seqs):
     """Split the data into training and test sets"""
     X = []; Y = []; XT = []; YT = []
@@ -117,7 +117,7 @@ def getCurrentSplit(repetition, partitions, labels, seqs):
                 if repetition != i:
                     X.append(seqs[partitions[i][j]])
                     Y.append(labels[partitions[i][j]])
-                else:            
+                else:
                     XT.append(seqs[partitions[i][j]])
                     YT.append(labels[partitions[i][j]])
         else:
@@ -162,19 +162,19 @@ def check_params(params, C, max_len):
         if params["poim_degree"]>8:
             sys.stderr.write( "\nerror: the parameter 'poim_degree' has to be smaller than 8\n" )
             assert(params["poim_degree"]<=8)
-    
+
     if params.has_key("crossval_repeat"):
         if params["crossval_repeat"]<1:
             sys.stderr.write( "\nerror: number of cross-validation repeats has to be larger than one\n" )
-            assert(params["crossval_repeat"]>1)    
+            assert(params["crossval_repeat"]>1)
 
     if params.has_key("inhomogene"):
         if params["inhomogene"]!=True and params["inhomogene"]!=False:
             sys.stderr.write( "\nerror: the parameter 'inhomogene' has to be True or False\n" )
-            assert(params["inhomogene"]==True or params["inhomogene"]==False)    
+            assert(params["inhomogene"]==True or params["inhomogene"]==False)
 
     if params.has_key("normal"):
         if params["normal"]!=True and params["normal"]!=False:
             sys.stderr.write( "\nerror: the parameter 'normal' has to be True or False\n" )
-            assert(params["normal"]==True or params["normal"]==False)    
+            assert(params["normal"]==True or params["normal"]==False)
 

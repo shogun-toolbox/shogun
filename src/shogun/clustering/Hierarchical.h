@@ -120,7 +120,7 @@ class CHierarchical : public CDistanceMachine
 		 * Currently: does nothing.
 		 * */
 		virtual void store_model_features();
-		
+
 		virtual bool train_require_labels() const { return false; }
 
 	protected:

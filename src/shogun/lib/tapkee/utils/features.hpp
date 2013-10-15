@@ -10,7 +10,7 @@
 #include <shogun/lib/tapkee/defines.hpp>
  /* End of Tapkee includes */
 
-namespace tapkee 
+namespace tapkee
 {
 namespace tapkee_internal
 {
@@ -18,7 +18,7 @@ namespace tapkee_internal
 template<class RandomAccessIterator, class FeaturesCallback>
 DenseMatrix dense_matrix_from_features(FeaturesCallback features,
                                        IndexType dimension,
-                                       RandomAccessIterator begin, 
+                                       RandomAccessIterator begin,
                                        RandomAccessIterator end)
 {
 	DenseMatrix matrix(dimension, end-begin);

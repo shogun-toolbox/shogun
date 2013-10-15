@@ -20,6 +20,6 @@ def classifier_lda (fm_train_real=traindat,fm_test_real=testdat,
 	result=sg('classify')
 	return result
 
-if __name__=='__main__': 
+if __name__=='__main__':
 	print('LDA')
 	classifier_lda(*parameter_list[0])

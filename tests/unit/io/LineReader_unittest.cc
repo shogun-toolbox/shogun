@@ -69,7 +69,7 @@ TEST(LineReaderTest, read_yourself)
 	// and check it on equality
 	rewind(fin);
 	lines_count=0;
-	while (fgets(temp_string.vector, temp_string.vlen, fin)!=NULL)	
+	while (fgets(temp_string.vector, temp_string.vlen, fin)!=NULL)
 	{
 		for (int i=0; i<strings[lines_count].vlen; i++)
 		{
@@ -82,6 +82,6 @@ TEST(LineReaderTest, read_yourself)
 	SG_UNREF(reader);
 	SG_UNREF(tokenizer);
 
-	fclose(fin);	
+	fclose(fin);
 }
 

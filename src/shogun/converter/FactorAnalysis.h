@@ -18,7 +18,7 @@
 namespace shogun
 {
 
-/** @class class Factor Analysis used to embed 
+/** @class class Factor Analysis used to embed
  * data using Factor Analysis algorithm.
  *
  * Uses implementation from the Tapkee library.

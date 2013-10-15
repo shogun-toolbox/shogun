@@ -27,7 +27,7 @@ class CDistance;
  * Formally described as
  *
  * \f[
- * 		K(x,x') = \frac{\theta}{\| x-x' \|} \sin \frac{\| x-x' \|}{\theta}
+ *		K(x,x') = \frac{\theta}{\| x-x' \|} \sin \frac{\| x-x' \|}{\theta}
  * \f]
  *
  */

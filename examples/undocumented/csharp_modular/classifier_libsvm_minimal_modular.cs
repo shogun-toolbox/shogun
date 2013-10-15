@@ -52,9 +52,9 @@ public class classifier_libsvm_minimal_modular {
 		int err_num = 0;
 		for (int i = 0; i < num; i++) {
 			if (result[i] > 0) {
-				err_num += 1;			
+				err_num += 1;
 			}
-			if (result[i+num] < 0) { 
+			if (result[i+num] < 0) {
 				err_num += 1;
 			}
 		}

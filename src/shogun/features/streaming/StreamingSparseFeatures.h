@@ -323,7 +323,7 @@ public:
 	 * @return C_STREAMING_SPARSE
 	 */
 	virtual EFeatureClass get_feature_class() const;
- 
+
 	/**
 	 * Duplicate the object.
 	 *

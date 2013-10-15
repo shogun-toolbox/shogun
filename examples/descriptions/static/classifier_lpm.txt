@@ -8,6 +8,6 @@ function.
 
 For more details on the LPM see
     Weida Zhou, Li Zhang, Licheng Jiao. Linear programming support vector
-    machines. Pattern Recognition, Volume 35, Issue 12, December 2002, 
-    pages 2927-2936. 
+    machines. Pattern Recognition, Volume 35, Issue 12, December 2002,
+    pages 2927-2936.
 

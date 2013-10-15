@@ -26,7 +26,7 @@ class CStructuredData : public CSGObject
 		CStructuredData();
 
 		/** destructor */
-		virtual ~CStructuredData(); 
+		virtual ~CStructuredData();
 
 		/** @return object name */
 		virtual const char* get_name() const { return "StructuredData"; }
@@ -37,7 +37,7 @@ class CStructuredData : public CSGObject
 		 */
 		virtual EStructuredDataType get_structured_data_type() const;
 
-}; 
+};
 
 } /* namespace shogun */
 

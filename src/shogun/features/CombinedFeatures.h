@@ -14,11 +14,11 @@
 #define _CCOMBINEDFEATURES__H__
 
 #include <shogun/features/Features.h>
-#include <shogun/lib/DynamicObjectArray.h> 
+#include <shogun/lib/DynamicObjectArray.h>
 
 namespace shogun
 {
-class CFeatures; 
+class CFeatures;
 class CDynamicObjectArray;
 
 /** @brief The class CombinedFeatures is used to combine a number of of feature objects
@@ -93,7 +93,7 @@ class CCombinedFeatures : public CFeatures
 		 * @return first feature object
 		 */
 		CFeatures* get_first_feature_obj();
-		
+
 		/** get feature object at index idx
 		*
 		* @param idx index of feature object

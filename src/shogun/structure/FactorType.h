@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2013 Shell Hu 
- * Copyright (C) 2013 Shell Hu 
+ * Written (W) 2013 Shell Hu
+ * Copyright (C) 2013 Shell Hu
  */
 
 #ifndef __FACTOR_TYPE_H__
@@ -71,7 +71,7 @@ public:
 	/** @return cardinalities of the variables */
 	virtual const SGVector<int32_t> get_cardinalities() const;
 
-	/** set cardinalities 
+	/** set cardinalities
 	 *
 	 * @param cards cardinalities of variables
 	 */
@@ -141,10 +141,10 @@ public:
 	virtual bool is_table() const { return true; }
 
 	/** infer variable state from a given index of energy table
-	 * 
-	 * @param ei the energy index. 
+	 *
+	 * @param ei the energy index.
 	 * @param var_index the variable index of this factor:
-	 * @return variable state 
+	 * @return variable state
 	 */
 	int32_t state_from_index(int32_t ei, int32_t var_index) const;
 
@@ -155,13 +155,13 @@ public:
 	 */
 	SGVector<int32_t> assignment_from_index(int32_t ei) const;
 
-	/** update energy index by substituting with contribution 
+	/** update energy index by substituting with contribution
 	 * from new state of a particular variable
-	 * 
-	 * @param old_ei old energy index. 
+	 *
+	 * @param old_ei old energy index.
 	 * @param var_index the variable index of this factor:
-	 * @param var_state new variable state 
-	 * @return new energy index 
+	 * @param var_state new variable state
+	 * @return new energy index
 	 */
 	int32_t index_from_new_state(int32_t old_ei, int32_t var_index, int32_t var_state) const;
 
@@ -183,7 +183,7 @@ public:
 
 	/** compute energy values from parameters for a specific factor.
 	 *
-	 * @param factor_data dense factor data vector 
+	 * @param factor_data dense factor data vector
 	 * @param energies forwarded energy table
 	 */
 	virtual void compute_energies(const SGVector<float64_t> factor_data,
@@ -199,10 +199,10 @@ public:
 
 	/** compute parameter gradient from marginals and factor data
 	 *
-	 * @param factor_data dense factor data 
+	 * @param factor_data dense factor data
 	 * @param marginals marginal distribution of the factor
 	 * @param parameter_gradient gradient of factor parameters
-	 * @param mult multiplier 
+	 * @param mult multiplier
 	 */
 	virtual void compute_gradients(const SGVector<float64_t> factor_data,
 		const SGVector<float64_t> marginals,

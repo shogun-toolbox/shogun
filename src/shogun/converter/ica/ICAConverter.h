@@ -20,13 +20,13 @@ namespace shogun
 
 class CFeatures;
 
-/** @brief class ICAConverter 
+/** @brief class ICAConverter
  * Base class for ICA algorithms
  */
 class CICAConverter: public CConverter
 {
 	public:
-		
+
 		/** constructor */
 		CICAConverter();
 
@@ -49,17 +49,17 @@ class CICAConverter: public CConverter
 		 */
 		SGMatrix<float64_t> get_mixing_matrix() const;
 
-		/** setter for max_iter, the maximum number of iterations 
+		/** setter for max_iter, the maximum number of iterations
 		 * the ICA algorithm will perform if supported
 		 * @param iter the number max number of iterations to perform
 		 */
 		void set_max_iter(int iter);
-		
+
 		/** getter for max_iter
 		 * @return max_iter the number max number of iterations to perform
 		 */
 		int get_max_iter() const;
-		
+
 		/** setter for tol, the convergence tolerance if supported
 		 * @param tol the convergence tolerance
 		 */
@@ -77,16 +77,16 @@ class CICAConverter: public CConverter
 
 		/** init */
 		void init();
-		
+
 		/** mixing_matrix */
 		SGMatrix<float64_t> m_mixing_matrix;
 
 		/** max_iter */
 		int max_iter;
-		
+
 		/** tol */
 		float64_t tol;
-};	
+};
 }
 #endif // HAVE_EIGEN3
 #endif // ICACONVERTER

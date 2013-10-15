@@ -33,7 +33,7 @@ def evaluation_cross_validation_multiclass_storage (traindat=traindat, label_tra
     from modshogun import GaussianKernel, CombinedKernel
     from modshogun import MKLMulticlass
     from modshogun import Statistics, MSG_DEBUG, Math
-    
+
     Math.init_random(1)
 
     # training data, combined features all on same data
@@ -43,7 +43,7 @@ def evaluation_cross_validation_multiclass_storage (traindat=traindat, label_tra
     comb_features.append_feature_obj(features)
     comb_features.append_feature_obj(features)
     labels=MulticlassLabels(label_traindat)
-    
+
     # kernel, different Gaussians combined
     kernel=CombinedKernel()
     kernel.append_kernel(GaussianKernel(10, 0.1))
@@ -75,7 +75,7 @@ def evaluation_cross_validation_multiclass_storage (traindat=traindat, label_tra
     multiclass_storage.append_binary_evaluation(F1Measure())
     cross_validation.add_cross_validation_output(multiclass_storage)
     cross_validation.set_num_runs(3)
-    
+
     # perform cross-validation
     result=cross_validation.evaluate()
 

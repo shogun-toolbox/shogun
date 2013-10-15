@@ -204,7 +204,7 @@ TSGDataType::sizeof_stype(EStructType stype, EPrimitiveType ptype)
 		case PT_FLOAT32: return sizeof (SGString<float32_t>);
 		case PT_FLOAT64: return sizeof (SGString<float64_t>);
 		case PT_FLOATMAX: return sizeof (SGString<floatmax_t>);
-		case PT_COMPLEX128: 
+		case PT_COMPLEX128:
 			SG_SWARNING("TGSDataType::sizeof_stype(): Strings are"
 				" not supported for complex128_t\n");
 			return -1;

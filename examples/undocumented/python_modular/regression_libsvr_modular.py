@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from numpy import * 
+from numpy import *
 
 parameter_list=[[1, 0.1,20,100,6,10,0.5,1, 1], [2,0.2,20,100,6,10,0.5,1, 2]]
 
@@ -12,25 +12,25 @@ def regression_libsvr_modular (svm_c=1, svr_param=0.1, n=100,n_test=100, \
 
 	# reproducable results
 	random.seed(seed)
-	
+
 	# easy regression data: one dimensional noisy sine wave
 	n=15
 	n_test=100
 	x_range_test=10
 	noise_var=0.5;
 	X=random.rand(1,n)*x_range
-	
+
 	X_test=array([[float(i)/n_test*x_range_test for i in range(n_test)]])
 	Y_test=sin(X_test)
 	Y=sin(X)+random.randn(n)*noise_var
-	
+
 	# shogun representation
 	labels=RegressionLabels(Y[0])
 	feats_train=RealFeatures(X)
 	feats_test=RealFeatures(X_test)
 
 	kernel=GaussianKernel(feats_train, feats_train, width)
-	
+
 	# two svr models: epsilon and nu
 	svr_epsilon=LibSVR(svm_c, svr_param, kernel, labels, LIBSVR_EPSILON_SVR)
 	svr_epsilon.train()

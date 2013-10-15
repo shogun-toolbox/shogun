@@ -55,7 +55,7 @@ CSVMOcas::~CSVMOcas()
 bool CSVMOcas::train_machine(CFeatures* data)
 {
 	SG_INFO("C=%f, epsilon=%f, bufsize=%d\n", get_C1(), get_epsilon(), bufsize)
-	SG_DEBUG("use_bias = %i\n", get_bias_enabled()) 
+	SG_DEBUG("use_bias = %i\n", get_bias_enabled())
 
 	ASSERT(m_labels)
   ASSERT(m_labels->get_label_type() == LT_BINARY)
@@ -118,7 +118,7 @@ bool CSVMOcas::train_machine(CFeatures* data)
 	SG_FREE(tmp_a_buf);
 
 	primal_objective = result.Q_P;
-	
+
 	uint32_t num_cut_planes = result.nCutPlanes;
 
 	SG_DEBUG("num_cut_planes=%d\n", num_cut_planes)
@@ -129,7 +129,7 @@ bool CSVMOcas::train_machine(CFeatures* data)
 		SG_DEBUG("cp_index[%d]=%p\n", i, cp_index)
 		SG_FREE(cp_index[i]);
 	}
-	
+
 	SG_FREE(cp_value);
 	cp_value=NULL;
 	SG_FREE(cp_index);

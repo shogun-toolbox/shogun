@@ -39,7 +39,7 @@ def generate_synthetic_logistic_data(n, p, L, blk_nnz, gcov, nstd):
     t = np.dot(X, coefs) + randn(n, 1) * nstd
     # applying the logit
     Pr = 1 / (1 + np.exp(-t))
-    # The response variable y[i] is a Bernoulli random variable taking 
+    # The response variable y[i] is a Bernoulli random variable taking
     # value 1 with probability Pr[i]
     y = rand(n, 1) <= Pr
 
@@ -50,7 +50,7 @@ def generate_synthetic_logistic_data(n, p, L, blk_nnz, gcov, nstd):
 
 def misclassified_groups(est_coefs, true_coefs, L):
     # Compute the number of groups that are misclassified, i.e. the ones with
-    # at least one non-zero coefficient whose estimated coefficients are all 
+    # at least one non-zero coefficient whose estimated coefficients are all
     # set to zero, or viceversa, as explained in [Friedman10]
     # est_coefs : coefficients estimated by the FBLR
     # true_coefs : the original coefficients of our synthetic example
@@ -76,7 +76,7 @@ def misclassified_features(est_coefs, true_coefs):
 
 
 def compute_misclassifications(cls, true_coefs, L, rel_z):
-    # Try the given classifier with different values of relative regularization 
+    # Try the given classifier with different values of relative regularization
     # parameters, store the coefficients and compute the number of groups
     # and features misclassified.
     # INPUTS:
@@ -85,7 +85,7 @@ def compute_misclassifications(cls, true_coefs, L, rel_z):
     # - L : number of blocks
     # - rel_z : regularization values to try, they will be in [0,1]
     # OUTPUTS:
-    # - est_coefs : array with the estimated coefficients, each row for a 
+    # - est_coefs : array with the estimated coefficients, each row for a
     #   different value of regularization
     # - misc_groups, misc_feats : see above
     num_z = rel_z.shape[0]

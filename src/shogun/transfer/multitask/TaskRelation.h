@@ -38,7 +38,7 @@ public:
 	virtual ~CTaskRelation()
 	{
 	}
-	
+
 	/** get name
 	 *
 	 * @return name of the object

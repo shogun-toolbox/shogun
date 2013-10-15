@@ -11,14 +11,14 @@ from different files and initializes the distance to 'GEODESIC'.
 Each column of the matrices corresponds to one data point.
 
 The target 'TRAIN' for 'set_features' controls the processing of the given
-data points, where a pairwise distance (shortest path on a sphere) matrix is 
+data points, where a pairwise distance (shortest path on a sphere) matrix is
 computed by 'get_distance_matrix'.
 
 The resulting distance matrix can be reaccessed by 'get_distance_matrix' and
 target 'TRAIN'.
 
 The target 'TEST' for 'set_features' controls the processing of the given
-data points 'TRAIN' and 'TEST', where a pairwise distance (shortest path on 
+data points 'TRAIN' and 'TEST', where a pairwise distance (shortest path on
 a sphere) matrix between these two data sets is computed by 'get_distance_matrix'.
 
 The resulting distance matrix can be reaccessed by 'get_distance_matrix'

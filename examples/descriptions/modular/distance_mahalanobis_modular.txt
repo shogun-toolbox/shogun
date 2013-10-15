@@ -1,16 +1,16 @@
-This example shows how to use the class MahalanobisDistance to compute the 
-distance from a feature vector to another vector of the same distributiona or the 
+This example shows how to use the class MahalanobisDistance to compute the
+distance from a feature vector to another vector of the same distributiona or the
 distance from a vector to a distribution of feature vectors.
 
 The program first loads toy data and creates objects of the class RealFeatures
-to create an instance of the class MahalanobisDistance. Later it computes and 
-prints on the screen the Mahalanobis distance from each of the feature vectors 
+to create an instance of the class MahalanobisDistance. Later it computes and
+prints on the screen the Mahalanobis distance from each of the feature vectors
 in feats_test to the set of features feats_train.
 
-Note that if both distributions are equal thenonly the second argument is relevant 
+Note that if both distributions are equal thenonly the second argument is relevant
 in the method distance of the class MahalanobisDistance.
 
-If you compare the results given by this program with other software, please 
+If you compare the results given by this program with other software, please
 keep in mind that the covariance matrix of a group of features in shogun is
 computed using the number of features (N) as normalizer while other software
 (e.g. octave) may use (N-1) as normalizer instead.

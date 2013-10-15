@@ -3,7 +3,7 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Written (W) 2013 Soumyajit De
  */
 
@@ -29,10 +29,10 @@ public:
 	/** default constructor */
 	CLanczosEigenSolver();
 
-	/** 
+	/**
 	 * constructor
-	 * 
-	 * @param linear_operator self-adjoint linear operator whose eigenvalues 
+	 *
+	 * @param linear_operator self-adjoint linear operator whose eigenvalues
 	 * are to be found
 	 */
 	CLanczosEigenSolver(CLinearOperator<float64_t>* linear_operator);
@@ -40,7 +40,7 @@ public:
 	/** destructor */
 	virtual ~CLanczosEigenSolver();
 
-	/** 
+	/**
 	 * compute method for computing eigenvalues of a real valued linear operator
 	 */
 	virtual void compute();

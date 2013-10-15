@@ -40,7 +40,7 @@ public:
 	 *	width, 1- use mean of inner distances
 	 *	in cases 1 and 2 the value of parameter width is still important, see parameter width2
 	 * @param width2 - in case of width_computation_type ==0 it is the
-	 * 	width, in case of width_computation_type > 0 its value determines
+	 *	width, in case of width_computation_type > 0 its value determines
 	 *	the how many random features are used for determining the width
 	 *	in case of width_computation_type > 0 set width2 <=1 to use all
 	 *	LEFT HAND SIDE features for width estimation
@@ -53,9 +53,9 @@ public:
 	/** constructor
 	 *
 	 * @param l features lhs
-	 * 	convention: concatenated features along all cells, i.e. [feature for cell1, feature for cell2, ... feature for last cell] , the dimensionality of the base feature is equal to dividing the total feature length by the number ofcells
+	 *	convention: concatenated features along all cells, i.e. [feature for cell1, feature for cell2, ... feature for last cell] , the dimensionality of the base feature is equal to dividing the total feature length by the number ofcells
 	 * @param r features rhs
-	 * 	the same convention as for param l applies here
+	 *	the same convention as for param l applies here
 	 * @param size cache size
 	 * @param num_cells2 - the number of pyramid cells
 	 * @param weights_foreach_cell2 the vector of weights for each cell with which the Chi2 distance gets weighted
@@ -63,7 +63,7 @@ public:
 	 *	width, 1- use mean of inner distances
 	 *	in case 1 the value of parameter width is important!!!
 	 * @param width2 - in case of width_computation_type ==0 it is the
-	 * 	width, in case of width_computation_type > 0 its value determines
+	 *	width, in case of width_computation_type > 0 its value determines
 	 *	the how many random features are used for determining the width
 	 *	in case of width_computation_type > 0 set width2 <=1 to use all
 	 *	LEFT HAND SIDE features for width estimation
@@ -106,7 +106,7 @@ public:
 	 *	width, 1- use mean of inner distances
 	 *	in cases 1 and 2 the value of parameter width is still important, see parameter width2
 	 * @param width2 - in case of width_computation_type ==0 it is the
-	 * 	width, in case of width_computation_type > 0 its value determines
+	 *	width, in case of width_computation_type > 0 its value determines
 	 *	the how many random features are used for determining the width
 	 *	in case of width_computation_type > 0 set width2 <=1 to use all
 	 *	LEFT HAND SIDE features for width estimation

@@ -13,10 +13,10 @@ namespace shogun
 /** brief This class implements a thread-safe counter used for
  * reference counting.
  */
-class RefCount 
+class RefCount
 {
 public:
-	/** Constructor 
+	/** Constructor
 	 *
 	 * @param ref_start starting value for counter
 	 */

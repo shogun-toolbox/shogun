@@ -48,14 +48,14 @@ def evaluation_cross_validation_classification (traindat=traindat, label_trainda
     cross_validation=CrossValidation(classifier, features, labels,
 	    splitting_strategy, evaluation_criterium)
     cross_validation.set_autolock(False)
-	
+
     # (optional) repeat x-val 10 times
     cross_validation.set_num_runs(10)
 
     # (optional) request 95% confidence intervals for results (not actually needed
     # for this toy example)
     cross_validation.set_conf_int_alpha(0.05)
-	
+
     # perform cross-validation and print(results)
     result=cross_validation.evaluate()
     #print("mean:", result.mean)

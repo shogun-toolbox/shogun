@@ -9,7 +9,7 @@
  */
 
 /*-----------------------------------------------------------------------------
- 
+
 If you want to understand the MurmurHash algorithm you would be much better
 off reading the original source. Just point your browser at:
 http://code.google.com/p/smhasher/source/browse/trunk/MurmurHash3.cpp
@@ -255,7 +255,7 @@ void PMurHash32_Process(uint32_t *ph1, uint32_t *pcarry, const void *key, int le
   /* Copy out new running hash and carry */
   *ph1 = h1;
   *pcarry = (c & ~0xff) | n;
-} 
+}
 
 /*---------------------------------------------------------------------------*/
 

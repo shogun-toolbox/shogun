@@ -70,11 +70,11 @@ bool CLineReader::has_next()
 	if (feof(m_stream) && (m_buffer->num_bytes_contained()<=0 || !m_buffer->has_next()))
 		return false; // nothing to read
 
-	return true;	
+	return true;
 }
 
 void CLineReader::skip_line()
-{	
+{
 	int32_t bytes_to_skip=0;
 	m_next_token_length=read(bytes_to_skip);
 	if (m_next_token_length==-1)
@@ -85,7 +85,7 @@ void CLineReader::skip_line()
 
 SGVector<char> CLineReader::read_line()
 {
-	SGVector<char> line;	
+	SGVector<char> line;
 
 	int32_t bytes_to_skip=0;
 	m_next_token_length=read(bytes_to_skip);
@@ -154,14 +154,14 @@ int32_t CLineReader::read(int32_t& bytes_to_skip)
 		if (feof(m_stream))
 			return line_end;
 		else
-			m_buffer->push(m_stream, bytes_to_read);		
-		
+			m_buffer->push(m_stream, bytes_to_read);
+
 		if (ferror(m_stream))
 		{
 			SG_ERROR("CLineReader::read(int32_t&):: Error reading file\n");
 			return -1;
 		}
-	}	
+	}
 }
 
 SGVector<char> CLineReader::read_token(int32_t line_len)

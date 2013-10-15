@@ -33,7 +33,7 @@ sg('set_features', 'TRAIN', mixed_signals)
 S_ <- sg('apply_converter')
 
 # Plot
-par(mfcol=c(3,1)); 
+par(mfcol=c(3,1));
 
 plot(time, S[1,], type="l", col='blue', main="True Sources", ylab="", xlab="")
 lines(time, S[2,], type="l", col='green')

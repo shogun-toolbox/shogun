@@ -692,7 +692,7 @@ template <class ST> class CStringFeatures : public CFeatures
 
 		/// order used in higher order mapping
 		ST* symbol_mask_table;
-		
+
 		/// order used in higher order mapping
 		int32_t symbol_mask_table_len;
 

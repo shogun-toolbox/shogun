@@ -236,7 +236,7 @@ void CLinearTimeMMD::compute_statistic_and_variance(
 						"variance=%f, kernel_idx=%d\n", current, delta,
 						statistic[i], variance[i], i);
 			}
-			
+
 			if (multiple_kernels)
 			{
 				SG_UNREF(kernel);
@@ -331,7 +331,7 @@ void CLinearTimeMMD::compute_statistic_and_Q(
 	/* produce two kernel lists to iterate doubly nested */
 	CList* list_i=new CList();
 	CList* list_j=new CList();
-	
+
 	for (index_t k_idx=0; k_idx<combined->get_num_kernels(); k_idx++)
 	{
 		CKernel* kernel = combined->get_kernel(k_idx);

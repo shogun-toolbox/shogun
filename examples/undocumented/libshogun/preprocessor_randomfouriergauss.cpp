@@ -162,7 +162,7 @@ int main()
 	SG_REF(kernelte1);
 	kernelte1->init(featurestr1, featureste1);
 	svm1->set_kernel(kernelte1);
-	
+
 	a=time(NULL);
 	std::cout << "scoring gaussian test kernel"<<std::endl;
 
@@ -235,7 +235,7 @@ int main()
 
 	// save random coefficients and state data of preprocessor for use with a new preprocessor object (see lines following "// now the same with a new preprocessor to show the usage of set_randomcoefficients"
 	// Alternative: use built-in serialization to load and save state data from/to a file!!!
- 
+
 	float64_t *randomcoeff_additive2, * randomcoeff_multiplicative2;
 	int32_t dim_feature_space2,dim_input_space2;
 	float64_t kernelwidth2;

@@ -38,7 +38,7 @@ def _test_mfile (fnam):
 	except IOError, e:
 		print e
 		return False
-	
+
 	indata={}
 
 	name_fun=_get_name_fun(fnam)
@@ -48,7 +48,7 @@ def _test_mfile (fnam):
 	for line in mfile:
 		line=line.strip(" \t\n;")
 		param = line.split('=')[0].strip()
-		
+
 		if param=='name':
 			name=line.split('=')[1].strip().split("'")[1]
 			indata[param]=name
@@ -65,7 +65,7 @@ def _test_mfile (fnam):
 		else:
 			if (line.find("'")==-1):
 				indata[param]=eval(line.split('=')[1])
-			else: 
+			else:
 				indata[param]=line.split('=')[1].strip().split("'")[1]
 
 	mfile.close()

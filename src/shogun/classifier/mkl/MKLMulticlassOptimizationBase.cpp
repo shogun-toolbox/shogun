@@ -26,7 +26,7 @@ MKLMulticlassOptimizationBase::~MKLMulticlassOptimizationBase()
 void MKLMulticlassOptimizationBase::setup(const int32_t numkernels2)
 {
 	SG_ERROR("class MKLMultiOptimizationBase, method not implemented in derivedclass")
-	
+
 }
 
 void MKLMulticlassOptimizationBase::set_mkl_norm(float64_t norm)
@@ -46,5 +46,5 @@ void MKLMulticlassOptimizationBase::addconstraint(const ::std::vector<float64_t>
 
 void MKLMulticlassOptimizationBase::computeweights(std::vector<float64_t> & weights2)
 {
-	SG_ERROR("class MKLMultiOptimizationBase, method not implemented in derivedclass")	
+	SG_ERROR("class MKLMultiOptimizationBase, method not implemented in derivedclass")
 }

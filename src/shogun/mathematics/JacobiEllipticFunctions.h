@@ -3,15 +3,15 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Written (W) 2013 Soumyajit De
- * 
+ *
  * KRYLSTAT Copyright 2011 by Erlend Aune <erlenda@math.ntnu.no> under GPL2+
  * (few parts rewritten and adjusted for shogun)
  *
  * NOTE: For higher precision, the methods in this class rely on an external
  * library, ARPREC (http://crd-legacy.lbl.gov/~dhbailey/mpdist/), in absense of
- * which they fallback to shogun datatypes. To use it with shogun, configure 
+ * which they fallback to shogun datatypes. To use it with shogun, configure
  * ARPREC with `CXX="c++ -fPIC" ./configure' in order to link.
  */
 
@@ -130,7 +130,7 @@ public:
 		Kp=dble(_Kp);
 		mp::mp_finalize();
 	}
-	
+
 	/** Wrapper method for ellipJC if ARPREC is present (for high precision)
 	 * @param u the elliptic integral of the first kind \f$u(k,m)\f$
 	 * @param m the modulus parameter, \f$0\le m \le 1\f$

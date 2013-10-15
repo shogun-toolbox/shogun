@@ -7,7 +7,7 @@ public class converter_classicisomap_modular {
 		double[,] data = Load.load_numbers("../data/fm_train_real.dat");
 
 		RealFeatures features = new RealFeatures(data);
-		
+
 		Isomap preprocessor = new Isomap();
 		preprocessor.set_target_dim(1);
 		preprocessor.apply(features);

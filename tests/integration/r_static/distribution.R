@@ -11,7 +11,7 @@ distribution <- function(filename) {
 
 	if (regexpr('^HMM', distribution_name)>0) {
 		sg('new_hmm', distribution_N, distribution_M)
- 		sg('bw')
+		sg('bw')
 	} else {
 		print('Cannot yet train other distributions than HMM!')
 		return(TRUE)

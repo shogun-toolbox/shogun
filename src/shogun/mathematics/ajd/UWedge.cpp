@@ -15,22 +15,22 @@ SGMatrix<float64_t> CUWedge::diagonalize(SGNDArray<float64_t> C, SGMatrix<float6
 {
 	int d = C.dims[0];
 	int L = C.dims[2];
-	
+
 	SGMatrix<float64_t> V;
 	if (V0.num_rows == d && V0.num_cols == d)
 	{
 		V = V0.clone();
 	}
 	else
-	{	
+	{
 		Map<MatrixXd> C0(C.get_matrix(0),d,d);
 		EigenSolver<MatrixXd> eig;
 		eig.compute(C0);
-		
+
 		// sort eigenvectors
 		MatrixXd eigenvectors = eig.pseudoEigenvectors();
 		MatrixXd eigenvalues = eig.pseudoEigenvalueMatrix();
-		
+
 		bool swap = false;
 		do
 		{
@@ -41,18 +41,18 @@ SGMatrix<float64_t> CUWedge::diagonalize(SGNDArray<float64_t> C, SGMatrix<float6
 				{
 					std::swap(eigenvalues(j,j),eigenvalues(j-1,j-1));
 					eigenvectors.col(j).swap(eigenvectors.col(j-1));
-					swap = true;	
-				}						
+					swap = true;
+				}
 			}
-		
+
 		} while(swap);
-							
+
 		V = SGMatrix<float64_t>::create_identity_matrix(d,1);
 		Map<MatrixXd> EV(V.matrix, d,d);
 		EV = eigenvalues.cwiseAbs().cwiseSqrt().inverse() * eigenvectors.transpose();
 	}
-	Map<MatrixXd> EV(V.matrix, d,d);	
-	
+	Map<MatrixXd> EV(V.matrix, d,d);
+
 	index_t * Cs_dims = SG_MALLOC(index_t, 3);
 	Cs_dims[0] = d;
 	Cs_dims[1] = d;
@@ -67,18 +67,18 @@ SGMatrix<float64_t> CUWedge::diagonalize(SGNDArray<float64_t> C, SGMatrix<float6
 	{
 		Map<MatrixXd> Ci(C.get_matrix(l),d,d);
 		Map<MatrixXd> Csi(Cs.get_matrix(l),d,d);
-		Ci = 0.5 * (Ci + Ci.transpose());		
+		Ci = 0.5 * (Ci + Ci.transpose());
 		Csi = EV * Ci * EV.transpose();
 		Rs.col(l) = Csi.diagonal();
-		crit.back() += Csi.cwiseAbs2().sum() - Rs.col(l).cwiseAbs2().sum();	
+		crit.back() += Csi.cwiseAbs2().sum() - Rs.col(l).cwiseAbs2().sum();
 	}
-	
+
 	float64_t iter = 0;
 	float64_t improve = 10;
 	while (improve > eps && iter < itermax)
 	{
 		MatrixXd B = Rs * Rs.transpose();
-		
+
 		MatrixXd C1 = MatrixXd::Zero(d,d);
 		for (int id = 0; id < d; id++)
 		{
@@ -87,13 +87,13 @@ SGMatrix<float64_t> CUWedge::diagonalize(SGNDArray<float64_t> C, SGMatrix<float6
 			{
 				Map<MatrixXd> Csi(Cs.get_matrix(l),d,d);
 				C1.row(id) += Csi.row(id) * Rs(id,l);
-			}		
+			}
 		}
 
-		MatrixXd D0 = B.cwiseProduct(B.transpose()) - B.diagonal() * B.diagonal().transpose();	
+		MatrixXd D0 = B.cwiseProduct(B.transpose()) - B.diagonal() * B.diagonal().transpose();
 		MatrixXd A0 = MatrixXd::Identity(d,d) + (C1.cwiseProduct(B) - B.diagonal().asDiagonal() * C1.transpose()).cwiseQuotient(D0+MatrixXd::Identity(d,d));
 		EV = A0.inverse() * EV;
-			
+
 		Map<MatrixXd> C0(C.get_matrix(0),d,d);
 		MatrixXd Raux = EV * C0 * EV.transpose();
 		MatrixXd aux = Raux.diagonal().cwiseAbs().cwiseSqrt().asDiagonal().inverse();
@@ -103,19 +103,19 @@ SGMatrix<float64_t> CUWedge::diagonalize(SGNDArray<float64_t> C, SGMatrix<float6
 		for (int l = 0; l < L; l++)
 		{
 			Map<MatrixXd> Ci(C.get_matrix(l),d,d);
-			Map<MatrixXd> Csi(Cs.get_matrix(l),d,d);	
+			Map<MatrixXd> Csi(Cs.get_matrix(l),d,d);
 			Csi = EV * Ci * EV.transpose();
 			Rs.col(l) = Csi.diagonal();
-			crit.back() += Csi.cwiseAbs2().sum() - Rs.col(l).cwiseAbs2().sum();	
+			crit.back() += Csi.cwiseAbs2().sum() - Rs.col(l).cwiseAbs2().sum();
 		}
-		
+
 		improve = CMath::abs(crit.back() - crit[iter]);
 		iter++;
 	}
-	
+
 	if (iter == itermax)
 		SG_SERROR("Convergence not reached\n")
-	
+
 	return V;
 
 }

@@ -108,8 +108,8 @@ int dpotrs_(const char*, int*, int*, double*, int*, double*, int*, int*);
 int dsygvx_(int*, const char*, const char*, const char*, int*, double*, int*,
             double*, int*, double* , double*, int*, int*, double*,
             int*, double*, double*, int*, double*, int*, int*, int*, int*);
-int dstemr_(char*, char*, int*, double*, double*, double*, double*, int*, 
-	int*, int*, double*, double*, int*, int*, int*, int*, double*, 
+int dstemr_(char*, char*, int*, double*, double*, double*, double*, int*,
+	int*, int*, double*, double*, int*, int*, int*, int*, double*,
 	int*, int*, int*, int*);
 #endif
 }

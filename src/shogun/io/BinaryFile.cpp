@@ -312,8 +312,8 @@ SET_NDARRAY(set_ndarray,float32_t,(CT_NDARRAY, ST_NONE, PT_FLOAT32));
 SET_NDARRAY(set_ndarray,float64_t,(CT_NDARRAY, ST_NONE, PT_FLOAT64));
 #undef SET_NDARRAY
 
-#define SET_SPARSEMATRIX(fname, sg_type, dtype) 			\
-void CBinaryFile::fname(const SGSparseVector<sg_type>* matrix, 	\
+#define SET_SPARSEMATRIX(fname, sg_type, dtype)			\
+void CBinaryFile::fname(const SGSparseVector<sg_type>* matrix,	\
 		int32_t num_feat, int32_t num_vec)					\
 {															\
 	if (!(file && matrix))									\

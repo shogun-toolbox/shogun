@@ -43,7 +43,7 @@ bool is_connected(RandomAccessIterator begin, RandomAccessIterator end,
 
 		visited[current] = true;
 		++nvisited;
-		
+
 		if (nvisited == N) break;
 
 		const LocalNeighbors& current_neighbors = neighbors[current];

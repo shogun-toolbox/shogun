@@ -3,7 +3,7 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Written (W) 2013 Soumyajit De
  */
 
@@ -35,7 +35,7 @@ public:
 	/** default constructor */
 	CLogDetEstimator();
 
-	/** 
+	/**
 	 * constructor
 	 *
 	 * @param trace_sampler the trace sampler
@@ -49,7 +49,7 @@ public:
 	/** destructor */
 	virtual ~CLogDetEstimator();
 
-	/** 
+	/**
 	 * method that gives num_estimates number of log-det estimates with running
 	 * averaging of the estimates
 	 *
@@ -58,7 +58,7 @@ public:
 	 */
 	SGVector<float64_t> sample(index_t num_estimates);
 
-	/** 
+	/**
 	 * method that gives num_estimates number of log-det estimates without any
 	 * averaging of the estimates
 	 *
@@ -76,7 +76,7 @@ public:
 private:
 	/** the trace sampler */
 	CTraceSampler* m_trace_sampler;
-	
+
 	/** the linear operator function, which is log in this case */
 	COperatorFunction<float64_t>* m_operator_log;
 

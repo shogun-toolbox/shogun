@@ -238,7 +238,7 @@ void CStreamingSparseFeatures<T>::sort_features()
 	// setting false to disallow reallocation
 	// and guarantee stable get_vector().features pointer
 	get_vector().sort_features(true);
-	
+
 	ASSERT(old_ptr == current_sgvector.features);
 }
 

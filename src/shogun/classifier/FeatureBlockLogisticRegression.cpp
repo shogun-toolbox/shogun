@@ -25,7 +25,7 @@ CFeatureBlockLogisticRegression::CFeatureBlockLogisticRegression() :
 }
 
 CFeatureBlockLogisticRegression::CFeatureBlockLogisticRegression(
-     float64_t z, CDotFeatures* train_features, 
+     float64_t z, CDotFeatures* train_features,
      CBinaryLabels* train_labels, CIndexBlockRelation* feature_relation) :
 	CLinearMachine()
 {
@@ -153,7 +153,7 @@ bool CFeatureBlockLogisticRegression::train_machine(CFeatures* data)
 	SGVector<float64_t> y(n_vecs);
 	for (int32_t i=0; i<n_vecs; i++)
 		y[i] = ((CBinaryLabels*)m_labels)->get_label(i);
-	
+
 	slep_options options = slep_options::default_options();
 	options.q = m_q;
 	options.regularization = m_regularization;
@@ -173,7 +173,7 @@ bool CFeatureBlockLogisticRegression::train_machine(CFeatures* data)
 			options.n_feature_blocks = ind.vlen-1;
 			if (ind[ind.vlen-1] > features->get_dim_feature_space())
 				SG_ERROR("Group of features covers more features than available\n")
-		
+
 			options.gWeight = SG_MALLOC(double, options.n_feature_blocks);
 			for (int32_t i=0; i<options.n_feature_blocks; i++)
 				options.gWeight[i] = 1.0;
@@ -192,7 +192,7 @@ bool CFeatureBlockLogisticRegression::train_machine(CFeatures* data)
 			w = new_w;
 		}
 		break;
-		case TREE: 
+		case TREE:
 		{
 			CIndexBlockTree* feature_tree = (CIndexBlockTree*)m_feature_relation;
 
@@ -211,7 +211,7 @@ bool CFeatureBlockLogisticRegression::train_machine(CFeatures* data)
 			options.loss = LOGISTIC;
 
 			slep_result_t result = slep_solver(features, y.vector, m_z, options);
-			
+
 			int32_t n_feats = features->get_dim_feature_space();
 			SGVector<float64_t> new_w(n_feats);
 			for (int i=0; i<n_feats; i++)
@@ -222,7 +222,7 @@ bool CFeatureBlockLogisticRegression::train_machine(CFeatures* data)
 			w = new_w;
 		}
 		break;
-		default: 
+		default:
 			SG_ERROR("Not supported feature relation type\n")
 	}
 

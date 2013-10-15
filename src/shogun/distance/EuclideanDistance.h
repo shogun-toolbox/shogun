@@ -99,8 +99,8 @@ class CEuclideanDistance: public CRealDistance
 
 		/** compute the distance between lhs feature vector a
 		 *  and rhs feature vector b. The computation of the
-		 *  distance stops if the intermediate result is 
-		 *  larger than upper_bound. This is useful to use 
+		 *  distance stops if the intermediate result is
+		 *  larger than upper_bound. This is useful to use
 		 *  with John Langford's Cover Tree
 		 *
 		 *  @param idx_a feature vector a at idx_a

@@ -30,32 +30,32 @@ TEST(CJADiagOrth, diagonalize)
 	C_dims[1] = 10;
 	C_dims[2] = 30;
 	SGNDArray< float64_t > C(C_dims, 3);
-	
+
 	CMath::init_random(17);
-	
+
 	for (int i = 0; i < C_dims[2]; i++)
 	{
 		Eigen::Map<EMatrix> tmp(C.get_matrix(i),C_dims[0], C_dims[1]);
 		tmp.setIdentity();
-		
-		for (int j = 0; j < C_dims[0]; j++)		
-			tmp(j,j) *= CMath::abs(CMath::random(1,5)); 
-			
+
+		for (int j = 0; j < C_dims[0]; j++)
+			tmp(j,j) *= CMath::abs(CMath::random(1,5));
+
 	}
 
 	// Building a random orthonormal matrix A
-	EMatrix B(C_dims[0], C_dims[1]); 
+	EMatrix B(C_dims[0], C_dims[1]);
 	B.setRandom();
 	SelfAdjointEigenSolver<EMatrix> eig;
 	eig.compute(B+B.transpose());
 	EMatrix A = eig.eigenvectors();
-	
+
 	// Building a stack
 	for (int i = 0; i < C_dims[2]; i++)
 	{
 		Eigen::Map<EMatrix> Ci(C.get_matrix(i),C_dims[0], C_dims[1]);
 		Ci = A * Ci * A.transpose();
-	}	
+	}
 
 	/** Diagonalize **/
 	SGMatrix<float64_t> V = CJADiagOrth::diagonalize(C);

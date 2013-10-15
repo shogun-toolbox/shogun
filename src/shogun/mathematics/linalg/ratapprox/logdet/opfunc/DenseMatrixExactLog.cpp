@@ -3,7 +3,7 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Written (W) 2013 Soumyajit De
  */
 
@@ -89,7 +89,7 @@ CJobResultAggregator* CDenseMatrixExactLog::submit_jobs(SGVector<float64_t>
 	CStoreScalarAggregator<float64_t>* agg=new CStoreScalarAggregator<float64_t>;
 	// we don't want the aggregator to be destroyed when the job is unref-ed
 	SG_REF(agg);
-	CDenseExactLogJob* job=new CDenseExactLogJob(agg, 
+	CDenseExactLogJob* job=new CDenseExactLogJob(agg,
 		dynamic_cast<CDenseMatrixOperator<float64_t>*>(m_linear_operator), sample);
 	SG_REF(job);
 	// sanity check

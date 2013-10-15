@@ -320,18 +320,18 @@ void CParameterCombination::print_tree(int prefix_num) const
 		    else if (m_param->get_parameter(i)->m_datatype.m_ctype == CT_SGVECTOR)
 		    {
 				SG_SPRINT("\"%s\"=", m_param->get_parameter(i)->m_name)
-		    	float64_t** param = (float64_t**)(m_param->
-		    			get_parameter(i)->m_parameter);
-		    	if (!m_param->get_parameter(i)->m_datatype.m_length_y)
-		    	{
-		    		SG_ERROR("Parameter vector %s has no length\n",
-		    				m_param->get_parameter(i)->m_name);
-		    	}
+			float64_t** param = (float64_t**)(m_param->
+					get_parameter(i)->m_parameter);
+			if (!m_param->get_parameter(i)->m_datatype.m_length_y)
+			{
+				SG_ERROR("Parameter vector %s has no length\n",
+						m_param->get_parameter(i)->m_name);
+			}
 
-		    	index_t length = *(m_param->get_parameter(i)->m_datatype.m_length_y);
+			index_t length = *(m_param->get_parameter(i)->m_datatype.m_length_y);
 
-		    	for (index_t j = 0; j < length; j++)
-		    		SG_SPRINT("%f ", (*param)[j])
+			for (index_t j = 0; j < length; j++)
+				SG_SPRINT("%f ", (*param)[j])
 		    }
 
 			else

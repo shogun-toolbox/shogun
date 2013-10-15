@@ -1,19 +1,19 @@
 <?xml version="1.0"?>
 <tool id="eval" name="Evaluate Predictions">
 <description>Use predictions and labeled examples to measure prediction performance</description>
-  <command interpreter="python">easysvm.py 
+  <command interpreter="python">easysvm.py
         eval
-	$predfile	
+	$predfile
 	#if $datatype.inputdatatype=="1"
 	    fasta $datatype.dataset_pos $datatype.dataset_neg
 	#else
-	    arff $datatype.dataset 
+	    arff $datatype.dataset
         #end if
 	$outfile $figuretype $figurefile
   </command>
   <inputs>
           <param type="data" format="tabular" name="predfile" help="Select a prediction file." label="Predictions" />
-      	  <conditional name="datatype">
+	  <conditional name="datatype">
 	  <param name="inputdatatype" type="select" label="Input data type" help="">
 	  <option value="1">FASTA</option>
 	  <option value="2">ARFF</option>
@@ -44,14 +44,14 @@
   <help>
 .. class:: infomark
 
-    This tool takes a set of predictions and the a labeled dataset as input 
-    and computes several performance measures. Only the labels are taken 
+    This tool takes a set of predictions and the a labeled dataset as input
+    and computes several performance measures. Only the labels are taken
     into account for evaluation. Two output files are generated: a text
     summary and either an ROC or PRC curve.
 
 .. class:: warningmark
 
-    Make sure the prediction file matches the dataset. 
+    Make sure the prediction file matches the dataset.
 
 .. class:: infomark
 

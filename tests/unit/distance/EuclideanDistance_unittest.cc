@@ -75,7 +75,7 @@ TEST(EuclideanDistance,get_distance_matrix)
 	euclidean->parallel->set_num_threads(1);
 
 	SGMatrix<float64_t> distance_matrix=euclidean->get_distance_matrix();
-// 	distance_matrix.display_matrix();
+//	distance_matrix.display_matrix();
 
 	// check distance matrix
 	EXPECT_EQ(distance_matrix(0,0), euclidean->distance(0,0));

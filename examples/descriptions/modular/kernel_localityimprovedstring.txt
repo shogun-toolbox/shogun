@@ -1,5 +1,5 @@
-This example initializes the locality improved string kernel. The locality improved string 
-kernel is defined on sequences of the same length and inspects letters matching at 
-corresponding positions in both sequences. The kernel sums over all matches in windows of 
-length l and takes this sum to the power of 'inner_degree'. The sum over all these 
-terms along the sequence is taken to the power of 'outer_degree'. 
+This example initializes the locality improved string kernel. The locality improved string
+kernel is defined on sequences of the same length and inspects letters matching at
+corresponding positions in both sequences. The kernel sums over all matches in windows of
+length l and takes this sum to the power of 'inner_degree'. The sum over all these
+terms along the sequence is taken to the power of 'outer_degree'.

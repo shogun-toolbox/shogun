@@ -15,7 +15,7 @@ public class preprocessor_kernelpca_modular {
 		RealFeatures features = new RealFeatures(data);
 
 		GaussianKernel kernel = new GaussianKernel(features, features, width);
-		
+
 		KernelPCA preprocessor = new KernelPCA(kernel);
 		preprocessor.init(features);
 		preprocessor.apply_to_feature_matrix(features);

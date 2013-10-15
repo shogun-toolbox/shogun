@@ -35,7 +35,7 @@ int32_t dim_vectors=3;
 void build_matrices(SGMatrix<float64_t>& test, SGMatrix<float64_t>& train,
 		    CRegressionLabels* labels)
 {
- 	/*Fill Matrices with random nonsense*/
+	/*Fill Matrices with random nonsense*/
 	train[0] = -1;
 	train[1] = -1;
 	train[2] = -1;
@@ -64,7 +64,7 @@ CModelSelectionParameters* build_tree(CInferenceMethod* inf,
 				      CLikelihoodModel* lik, CKernel* kernel,
 				      SGVector<float64_t>& weights)
 {
-  	CModelSelectionParameters* root=new CModelSelectionParameters();
+	CModelSelectionParameters* root=new CModelSelectionParameters();
 
 	CModelSelectionParameters* c1 =
 			new CModelSelectionParameters("inference_method", inf);

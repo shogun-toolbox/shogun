@@ -2,7 +2,7 @@ using System;
 
 public class distance_manhattenword_modular {
 	public static void Main() {
-		
+
 		modshogun.init_shogun_with_defaults();
 		int order = 3;
 		int gap = 0;
@@ -33,15 +33,15 @@ public class distance_manhattenword_modular {
 		double[,] dm_train = distance.get_distance_matrix();
 		distance.init(feats_train, feats_test);
 		double[,] dm_test = distance.get_distance_matrix();
-		
+
 		foreach(double item in dm_train) {
 			Console.Write(item);
 		}
-		
+
 		foreach(double item in dm_test) {
 			Console.Write(item);
 		}
-		
+
 		modshogun.exit_shogun();
 	}
 }

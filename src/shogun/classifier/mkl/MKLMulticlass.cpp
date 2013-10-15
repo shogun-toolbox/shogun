@@ -35,7 +35,7 @@ CMKLMulticlass::CMKLMulticlass(float64_t C, CKernel* k, CLabels* lab)
 {
 	svm=NULL;
 	lpw=NULL;
-	
+
 	mkl_eps=0.01;
 	max_num_mkl_iters=999;
 	pnorm=1;
@@ -115,7 +115,7 @@ void CMKLMulticlass::initlpsolver()
 		delete lpw;
 	}
 	*/
-	
+
    //lpw=new MKLMulticlassGLPK;
 	if(pnorm>1)
 	{
@@ -127,7 +127,7 @@ void CMKLMulticlass::initlpsolver()
       lpw=new MKLMulticlassGLPK;
 	}
 	lpw->setup(numker);
-	
+
 }
 
 
@@ -172,7 +172,7 @@ bool CMKLMulticlass::evaluatefinishcriterion(const int32_t
 			{
 				return true;
 			}
-			
+
 
 
 		}
@@ -195,7 +195,7 @@ bool CMKLMulticlass::evaluatefinishcriterion(const int32_t
 			{
             SG_SWARNING("CMKLMulticlass::evaluatefinishcriterion(...): deltanew<=0.Switching back to weight norsm difference as criterion.\n")
 				delta=sqrt(delta);
-			}			
+			}
 				SG_SINFO("weight delta %f \n",delta)
 
 			if( (delta < mkl_eps) && (numberofsilpiterations>=1) )
@@ -310,7 +310,7 @@ float64_t CMKLMulticlass::getsquarenormofprimalcoefficients(
 		for (int32_t i=0; i < sm->get_num_support_vectors(); ++i)
 		{
 			float64_t alphai=sm->get_alpha(i);
-			int32_t svindi= sm->get_support_vector(i); 
+			int32_t svindi= sm->get_support_vector(i);
 
 			for (int32_t k=0; k < sm->get_num_support_vectors(); ++k)
 			{

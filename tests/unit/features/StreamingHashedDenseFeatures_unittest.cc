@@ -29,9 +29,9 @@ TEST(StreamingHashedDenseFeaturesTest, dot)
 
 	int32_t hashing_dim = 8;
 	CDenseFeatures<float64_t>* d_feats = new CDenseFeatures<float64_t>(data);
-	CStreamingHashedDenseFeatures<float64_t>* h_feats = 
+	CStreamingHashedDenseFeatures<float64_t>* h_feats =
 		new CStreamingHashedDenseFeatures<float64_t>(d_feats, hashing_dim);
-	
+
 	h_feats->start_parser();
 	index_t i;
 	for (i=0; i<n && h_feats->get_next_example(); i++)
@@ -75,7 +75,7 @@ TEST(StreamingHashedDenseFeaturesTest, dense_dot)
 	int32_t hashing_dim = 8;
 
 	CDenseFeatures<float64_t>* d_feats = new CDenseFeatures<float64_t>(data);
-	CStreamingHashedDenseFeatures<float64_t>* h_feats = 
+	CStreamingHashedDenseFeatures<float64_t>* h_feats =
 		new CStreamingHashedDenseFeatures<float64_t>(d_feats, hashing_dim);
 
 	h_feats->start_parser();
@@ -96,7 +96,7 @@ TEST(StreamingHashedDenseFeaturesTest, dense_dot)
 
 		float64_t feat_dot = h_feats->dense_dot(tmp.vector, tmp.vlen);
 		EXPECT_EQ(feat_dot, dot_product);
-	
+
 		h_feats->release_example();
 	}
 	h_feats->end_parser();
@@ -118,7 +118,7 @@ TEST(StreamingHashedDenseFeaturesTest, add_to_dense)
 
 	int32_t hashing_dim = 8;
 	CDenseFeatures<float64_t>* d_feats = new CDenseFeatures<float64_t>(data);
-	CStreamingHashedDenseFeatures<float64_t>* h_feats = 
+	CStreamingHashedDenseFeatures<float64_t>* h_feats =
 		new CStreamingHashedDenseFeatures<float64_t>(d_feats, hashing_dim);
 
 	h_feats->start_parser();
@@ -140,7 +140,7 @@ TEST(StreamingHashedDenseFeaturesTest, add_to_dense)
 		h_feats->add_to_dense_vec(2, tmp.vector, tmp.vlen);
 		for (index_t j=0; j<hashing_dim; j++)
 			EXPECT_EQ(tmp2[j], tmp[j]);
-	
+
 		h_feats->release_example();
 	}
 	h_feats->end_parser();

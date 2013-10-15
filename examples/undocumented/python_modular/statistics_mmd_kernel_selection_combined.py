@@ -33,13 +33,13 @@ def statistics_mmd_kernel_selection_combined(m,distance,stretch,num_blobs,angle,
 	# streaming data generator
 	gen_p=GaussianBlobsDataGenerator(num_blobs, distance, 1, 0)
 	gen_q=GaussianBlobsDataGenerator(num_blobs, distance, stretch, angle)
-		
+
 	# stream some data and plot
 	num_plot=1000
 	features=gen_p.get_streamed_features(num_plot)
 	features=features.create_merged_copy(gen_q.get_streamed_features(num_plot))
 	data=features.get_feature_matrix()
-	
+
 	#figure()
 	#subplot(2,2,1)
 	#grid(True)
@@ -61,14 +61,14 @@ def statistics_mmd_kernel_selection_combined(m,distance,stretch,num_blobs,angle,
 	# mmd instance using streaming features, blocksize of 10000
 	block_size=10000
 	mmd=LinearTimeMMD(combined, gen_p, gen_q, m, block_size)
-	
+
 	# kernel selection instance (this can easily replaced by the other methods for selecting
 	# combined kernels
 	if selection_method=="opt":
 		selection=MMDKernelSelectionCombOpt(mmd)
 	elif selection_method=="l2":
 		selection=MMDKernelSelectionCombMaxL2(mmd)
-	
+
 	# perform kernel selection (kernel is automatically set)
 	kernel=selection.select_kernel()
 	kernel=CombinedKernel.obtain_from_generic(kernel)
@@ -76,13 +76,13 @@ def statistics_mmd_kernel_selection_combined(m,distance,stretch,num_blobs,angle,
 	#subplot(2,2,3)
 	#plot(kernel.get_subkernel_weights())
 	#title("Kernel weights")
-	
+
 	# compute tpye I and II error (use many more trials). Type I error is only
 	# estimated to check MMD1_GAUSSIAN method for estimating the null
 	# distribution. Note that testing has to happen on difference data than
 	# kernel selecting, but the linear time mmd does this implicitly
 	mmd.set_null_approximation_method(MMD1_GAUSSIAN)
-	
+
 	# number of trials should be larger to compute tight confidence bounds
 	num_trials=5;
 	alpha=0.05 # test power
@@ -93,13 +93,13 @@ def statistics_mmd_kernel_selection_combined(m,distance,stretch,num_blobs,angle,
 		mmd.set_simulate_h0(True)
 		typeIerrors[i]=mmd.perform_test()>alpha
 		mmd.set_simulate_h0(False)
-		
+
 		typeIIerrors[i]=mmd.perform_test()>alpha
-	
+
 	#print "type I error:", mean(typeIerrors), ", type II error:", mean(typeIIerrors)
-	
+
 	return kernel,typeIerrors,typeIIerrors
-	
+
 if __name__=='__main__':
 	print('MMDKernelSelectionCombined')
 	statistics_mmd_kernel_selection_combined(*parameter_list[0])

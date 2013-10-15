@@ -38,7 +38,7 @@ def _test_mfile (fnam):
 	except IOError as e:
 		print(e)
 		return False
-	
+
 	indata={}
 
 	name_fun=_get_name_fun(fnam)

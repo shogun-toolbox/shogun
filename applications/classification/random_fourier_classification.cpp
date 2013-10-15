@@ -71,7 +71,7 @@ void parse_arguments(int argv, char** argc)
 		exit_shogun();
 		exit(0);
 	}
-	
+
 	for (index_t i=1; i<argv; i++)
 	{
 		if (strcmp(argc[i],"--dataset")==0)
@@ -101,7 +101,7 @@ void parse_arguments(int argv, char** argc)
 int main(int argv, char** argc)
 {
 	init_shogun_with_defaults();
-	
+
 	parse_arguments(argv, argc);
 
 	/** Reading data */
@@ -167,7 +167,7 @@ int main(int argv, char** argc)
 				accuracy, (1-accuracy) * 100);
 		SG_UNREF(predicted);
 		SG_UNREF(test_labels);
-		
+
 	}
 	SG_UNREF(prc_evaluator);
 	SG_UNREF(roc_evaluator);

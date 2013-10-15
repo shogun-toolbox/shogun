@@ -14,8 +14,8 @@ TEST(ManifoldSculptingTest,DISABLED_basic)
 	const index_t n_samples = 15;
 	const index_t n_dimensions = 3;
 	const index_t n_target_dimensions = 2;
-	CDenseFeatures<float64_t>* high_dimensional_features = 
-		new CDenseFeatures<float64_t>(CDataGenerator::generate_gaussians(n_samples, 1, n_dimensions)); 
+	CDenseFeatures<float64_t>* high_dimensional_features =
+		new CDenseFeatures<float64_t>(CDataGenerator::generate_gaussians(n_samples, 1, n_dimensions));
 
 	CManifoldSculpting* embedder =
 		new CManifoldSculpting();
@@ -25,7 +25,7 @@ TEST(ManifoldSculptingTest,DISABLED_basic)
 
 	embedder->set_k(5);
 
-	CDenseFeatures<float64_t>* low_dimensional_features = 
+	CDenseFeatures<float64_t>* low_dimensional_features =
 		embedder->embed(high_dimensional_features);
 
 	EXPECT_EQ(n_target_dimensions,low_dimensional_features->get_dim_feature_space());

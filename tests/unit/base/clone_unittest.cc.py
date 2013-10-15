@@ -32,7 +32,7 @@ def get_class_list(class_list_content):
                     in_class_list = False
                     continue
                 result = re.match(r"{\"(?P<sho_class>\w+)\"", l[0])
-                
+
                 if result:
                     sho_class=result.group('sho_class')
                     #print l[1]

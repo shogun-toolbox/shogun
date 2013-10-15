@@ -20,7 +20,7 @@ using namespace shogun;
 
 TEST(CUWedgeSep, blind_source_separation)
 {
-	// Generate sample data	
+	// Generate sample data
 	int FS = 4000;
 	EVector t(FS+1, true);
 	t.setLinSpaced(FS+1,0,1);
@@ -32,7 +32,7 @@ TEST(CUWedgeSep, blind_source_separation)
 		S(0,i) = sin(2*M_PI*55*t[i]);
 		S(1,i) = cos(2*M_PI*100*t[i]);
 	}
-	
+
 	// Mixing Matrix
 	EMatrix A(2,2);
 	A(0,0) = 1;    A(0,1) = 0.85;

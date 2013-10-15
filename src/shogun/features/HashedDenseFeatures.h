@@ -75,7 +75,7 @@ public:
 	 */
 	CHashedDenseFeatures(CFile* loader, int32_t d, bool use_quadr = false,
 			bool keep_lin_terms = false);
-	
+
 	/** copy constructor */
 	CHashedDenseFeatures(const CHashedDenseFeatures& orig);
 
@@ -145,7 +145,7 @@ public:
 	 * possible with subset
 	 *
 	 * @param vector_index the index of the vector over whose components to
-	 * 			iterate over
+	 *			iterate over
 	 * @return feature iterator (to be passed to get_next_feature)
 	 */
 	virtual void* get_feature_iterator(int32_t vector_index);
@@ -191,7 +191,7 @@ public:
 	 *
 	 * @return number of feature vectors
 	 */
-	virtual int32_t get_num_vectors() const;	
+	virtual int32_t get_num_vectors() const;
 
 	/** get the hashed representation of the requested vector
 	 *

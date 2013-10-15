@@ -39,10 +39,10 @@ elseif(CMAKE_HOST_WIN32)
 endif()
 SET(PYTHON_PACKAGES_PATH "${_PYTHON_PACKAGES_PATH}" CACHE PATH "Where to install the python packages.")
 
-INSTALL(TARGETS _python_modular 
+INSTALL(TARGETS _python_modular
 		DESTINATION ${PYTHON_PACKAGES_PATH}
     COMPONENT python)
-INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/modshogun.py 
+INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/modshogun.py
 		DESTINATION ${PYTHON_PACKAGES_PATH}
     COMPONENT python)
 
@@ -55,7 +55,7 @@ SET(MODULES Kernel Distance Features Classifier Regression Converter
 	ModelSelection Preprocessor Structure Distribution Statistics Latent)
 
 FOREACH(module ${MODULES})
-	INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/__init__.py 
+	INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/__init__.py
 		DESTINATION ${PYTHON_PACKAGES_PATH}/shogun/${module}
     COMPONENT python)
 	file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/main_init.py.in "\"${module}\",\n")

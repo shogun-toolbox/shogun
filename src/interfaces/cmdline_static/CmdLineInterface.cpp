@@ -583,7 +583,7 @@ bool CCmdLineInterface::parse_line(char* line)
 {
 	if (!line)
 		return false;
-	
+
 	if (skip_line(line))
 		return true;
 	else
@@ -646,7 +646,7 @@ char** shogun_completion (const char *text, int start, int end)
 #endif //HAVE_READLINE
 
 int main(int argc, char* argv[])
-{	
+{
 #ifdef HAVE_READLINE
 	rl_readline_name = "shogun";
 	rl_attempted_completion_function = shogun_completion;
@@ -683,7 +683,7 @@ int main(int argc, char* argv[])
 		}
 
 		// help
-		if ( argc>2 || ((argc==2) && 
+		if ( argc>2 || ((argc==2) &&
 					( !strcmp(argv[1], "-h") || !strcmp(argv[1], "/?") || !strcmp(argv[1], "--help")) )
 		   )
 		{

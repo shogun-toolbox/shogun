@@ -7,7 +7,7 @@
  * Written (W) 2009 Soeren Sonnenburg
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
- 
+
 /* These functions return new Objects */
 %newobject CGradientEvaluation::evaluate();
 %newobject CCrossValidation::evaluate();

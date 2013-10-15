@@ -2,7 +2,7 @@ using System;
 
 public class distance_geodesic_modular {
 	public static void Main() {
-		
+
 		modshogun.init_shogun_with_defaults();
 
 		double[,] traindata_real = Load.load_numbers("../data/fm_train_real.dat");
@@ -20,7 +20,7 @@ public class distance_geodesic_modular {
 		foreach(double item in dm_train) {
 			Console.Write(item);
 		}
-		
+
 		foreach(double item in dm_test) {
 			Console.Write(item);
 		}

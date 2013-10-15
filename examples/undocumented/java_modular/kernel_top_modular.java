@@ -55,7 +55,7 @@ public class kernel_top_modular {
 
 		HMM neg = new HMM(hmm_neg_train, N, M, pseudo);
 		neg.baum_welch_viterbi_train(BW_NORMAL);
-		
+
 		charfeat = new StringCharFeatures(fm_train_dna, DNA);
 		StringWordFeatures wordfeats_train = new StringWordFeatures(charfeat.get_alphabet());
 		wordfeats_train.obtain_from_char(charfeat, order-1, order, gap, reverse);

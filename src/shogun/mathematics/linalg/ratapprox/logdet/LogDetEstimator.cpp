@@ -3,7 +3,7 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Written (W) 2013 Soumyajit De
  */
 
@@ -162,7 +162,7 @@ SGMatrix<float64_t> CLogDetEstimator::sample_without_averaging(
 	index_t num_estimates)
 {
 	SG_DEBUG("Entering...\n")
-	
+
 	REQUIRE(m_operator_log, "Operator function is NULL\n");
 	// call the precompute of operator function to compute all prerequisites
 	m_operator_log->precompute();
@@ -187,7 +187,7 @@ SGMatrix<float64_t> CLogDetEstimator::sample_without_averaging(
 			SG_UNREF(agg);
 		}
 	}
-	
+
 	REQUIRE(m_computation_engine, "Computation engine is NULL\n");
 	// wait for all the jobs to be completed
 	m_computation_engine->wait_for_all();

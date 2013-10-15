@@ -589,7 +589,7 @@ void CAlphabet::print_histogram()
 	for (int32_t i=0; i<(int32_t) (1 <<(sizeof(uint8_t)*8)); i++)
 	{
 		if (histogram[i])
-		{	
+		{
 			if (isprint(i))
 				SG_PRINT("hist['%c']=%lld", i, histogram[i])
 			else if (i == '\t')
@@ -600,11 +600,11 @@ void CAlphabet::print_histogram()
 				SG_PRINT("hist['\\r']=%lld", histogram[i])
 			else
 				SG_PRINT("hist[%d]=%lld", i, histogram[i])
-			
+
 			if (!valid_chars[i])
 				SG_PRINT(" - Character not in Alphabet.\n")
 			else
-				SG_PRINT("\n");			
+				SG_PRINT("\n");
 		}
 	}
 }

@@ -10,10 +10,10 @@ classifier. The Perceptron update rule reads
 where (x_t,y_t) is feature vector and label (must be +1/-1) of the misclassified example
       (w(t),b(t)) are the current parameters of the linear classifier
       (w(t+1),b(t+1)) are the new parameters of the linear classifier
-      alpha is the learning rate. 
+      alpha is the learning rate.
 
 The Perceptron algorithm iterates until all training examples are correctly
-classified or the prescribed maximal number of iterations is reached. 
+classified or the prescribed maximal number of iterations is reached.
 
 The learning rate and the maximal number of iterations can be set by
   sg('set_perceptron_parameters', alpha, max_iter);

@@ -130,6 +130,6 @@ inline float64_t CPNorm::get_pnorm (float64_t* vec, int32_t vec_len) const
 	{
 		norm = SGVector<float64_t>::qnorm(vec, vec_len, m_p);
 	}
-		
+
 	return norm;
 }

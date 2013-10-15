@@ -31,7 +31,7 @@ template<class T> class SGNDArray : public SGReferencedData
 
 		/** constructor to create new ndarray in memory */
 		SGNDArray(index_t* d, index_t nd, bool ref_counting=true);
-		
+
 		/** copy constructor */
 		SGNDArray(const SGNDArray &orig);
 

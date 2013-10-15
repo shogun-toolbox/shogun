@@ -104,9 +104,9 @@ malsar_result_t malsar_low_rank(
 					       svd.matrixV().col(i).transpose()).transpose();
 			}
 			//internal::set_is_malloc_allowed(false);
-			// walk in direction of antigradient 
+			// walk in direction of antigradient
 			Czp = Cs - gCs/gamma;
-			
+
 			// compute objective at line search point
 			Fzp = 0.0;
 			for (task=0; task<n_tasks; task++)
@@ -166,7 +166,7 @@ malsar_result_t malsar_low_rank(
 		//internal::set_is_malloc_allowed(false);
 
 
-		// check if process should be terminated 
+		// check if process should be terminated
 		switch (options.termination)
 		{
 			case 0:

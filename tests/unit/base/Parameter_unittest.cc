@@ -232,7 +232,7 @@ TEST(TParameter,compare_ptype_SGOBJECT)
 {
 	CBinaryLabels* a=new CBinaryLabels(10);
 	CRegressionLabels* b=new CRegressionLabels(10);
-	
+
 	EXPECT_FALSE(TParameter::compare_ptype(PT_SGOBJECT, &a, &b));
 
 	SG_UNREF(a);
@@ -1299,7 +1299,7 @@ TEST(TParameter,copy_MATRIX_SCALAR_target_empty)
 	EXPECT_EQ(a.num_cols, 2);
 	EXPECT_EQ(b.num_rows, a.num_rows);
 	EXPECT_EQ(b.num_cols, a.num_cols);
-	
+
 	for (index_t i=0; i<a.num_rows*a.num_cols; ++i)
 	{
 		EXPECT_EQ(a.matrix[i], b.matrix[i]);
@@ -1319,7 +1319,7 @@ TEST(TParameter,copy_MATRIX_SCALAR_different_size)
 	a(0,1)=1;
 	a(1,0)=1;
 	a(1,1)=1;
-	
+
 	b(0,0)=2;
 	b(0,1)=2;
 	b(0,2)=2;
@@ -1329,7 +1329,7 @@ TEST(TParameter,copy_MATRIX_SCALAR_different_size)
 	b(2,0)=2;
 	b(2,1)=2;
 	b(2,2)=2;
-	
+
 	TSGDataType type_a(CT_SGMATRIX, ST_NONE, PT_FLOAT64, &a.num_rows, &a.num_cols);
 	TSGDataType type_b(CT_SGMATRIX, ST_NONE, PT_FLOAT64, &b.num_rows, &b.num_cols);
 	TParameter* param1=new TParameter(&type_a, &a.matrix, "", "");
@@ -1341,7 +1341,7 @@ TEST(TParameter,copy_MATRIX_SCALAR_different_size)
 	EXPECT_EQ(a.num_cols, 2);
 	EXPECT_EQ(b.num_rows, a.num_rows);
 	EXPECT_EQ(b.num_cols, a.num_cols);
-	
+
 	for (index_t i=0; i<a.num_rows*a.num_cols; ++i)
 	{
 		EXPECT_EQ(a.matrix[i], b.matrix[i]);
@@ -1361,12 +1361,12 @@ TEST(TParameter,copy_MATRIX_SCALAR_same_size)
 	a(0,1)=1;
 	a(1,0)=1;
 	a(1,1)=1;
-	
+
 	b(0,0)=2;
 	b(0,1)=2;
 	b(1,0)=2;
 	b(1,1)=2;
-	
+
 	TSGDataType type_a(CT_SGMATRIX, ST_NONE, PT_FLOAT64, &a.num_rows, &a.num_cols);
 	TSGDataType type_b(CT_SGMATRIX, ST_NONE, PT_FLOAT64, &b.num_rows, &b.num_cols);
 	TParameter* param1=new TParameter(&type_a, &a.matrix, "", "");
@@ -1378,7 +1378,7 @@ TEST(TParameter,copy_MATRIX_SCALAR_same_size)
 	EXPECT_EQ(a.num_cols, 2);
 	EXPECT_EQ(b.num_rows, a.num_rows);
 	EXPECT_EQ(b.num_cols, a.num_cols);
-	
+
 	for (index_t i=0; i<a.num_rows*a.num_cols; ++i)
 	{
 		EXPECT_EQ(a.matrix[i], b.matrix[i]);
@@ -1405,7 +1405,7 @@ TEST(TParameter,copy_STRING_SCALAR_same_length)
 	TParameter* param2=new TParameter(&type, &str2.string, "", "");
 
 	EXPECT_TRUE(param1->copy(param2));
-	
+
 	EXPECT_EQ(a.vlen, 2);
 	EXPECT_EQ(a.vlen, b.vlen);
 	EXPECT_EQ(a[0], b[0]);

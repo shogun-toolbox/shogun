@@ -35,7 +35,7 @@ CLatentLabels::CLatentLabels(CLabels* labels)
 	int32_t num_labels = 0;
 	if (m_labels)
 		num_labels = m_labels->get_num_labels();
-	
+
 	m_latent_labels = new CDynamicObjectArray(num_labels);
 	SG_REF(m_latent_labels);
 }

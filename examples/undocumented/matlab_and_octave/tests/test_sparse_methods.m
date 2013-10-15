@@ -71,7 +71,7 @@ trainerr_reflight=mean(trainlab~=sign(trainout_reflight))
 %trainout_reflibsvm=sg('classify');
 %trainerr_reflibsvm=mean(trainlab~=sign(trainout_reflibsvm))
 %
-%max(abs(trainout-trainout_reflight)) 
+%max(abs(trainout-trainout_reflight))
 %max(abs(trainout-trainout_reflibsvm))
 %max(abs(trainout_reflibsvm-trainout_reflight))
 %

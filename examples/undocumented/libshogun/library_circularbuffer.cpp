@@ -38,7 +38,7 @@ int main(int argc, char** argv)
 			SG_SPRINT("%c", tmp_string.vector[i]);
 		SG_SPRINT("\n");
 	}
-	
+
 	SG_UNREF(buffer);
 	SG_UNREF(tokenizer);
 

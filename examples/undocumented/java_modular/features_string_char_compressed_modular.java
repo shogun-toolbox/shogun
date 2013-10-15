@@ -16,7 +16,7 @@ public class features_string_char_compressed_modular {
 
 		StringFileCharFeatures f = new StringFileCharFeatures("features_string_char_compressed_modular.java", RAWBYTE);
 		f.save_compressed("foo_uncompressed.str", UNCOMPRESSED, 1);
-		
+
 		StringCharFeatures f2 = new StringCharFeatures(RAWBYTE);
 		f2.load_compressed("foo_uncompressed.str", true);
 

@@ -33,13 +33,13 @@ class CDistanceMachine;
  * k closest examples belong to. Formally, kNN is described as
  *
  * \f[
- * 		label for x = \arg \max_{l} \sum_{i=1}^{k} [label of i-th example = l]
+ *		label for x = \arg \max_{l} \sum_{i=1}^{k} [label of i-th example = l]
  * \f]
  *
  * This class provides a capability to do weighted classfication using:
  *
  * \f[
- * 		label for x = \arg \max_{l} \sum_{i=1}^{k} [label of i-th example = l] q^{i},
+ *		label for x = \arg \max_{l} \sum_{i=1}^{k} [label of i-th example = l] q^{i},
  * \f]
  *
  * where \f$|q|<1\f$.
@@ -199,7 +199,7 @@ class CKNN : public CDistanceMachine
 		void init();
 
 		/** compute the histogram of class outputs of the k nearest
-		 *  neighbors to a test vector and return the index of the most 
+		 *  neighbors to a test vector and return the index of the most
 		 *  frequent class
 		 *
 		 * @param classes vector used to store the histogram

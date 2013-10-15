@@ -12,7 +12,7 @@
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/SGMatrix.h>
 
-namespace shogun 
+namespace shogun
 {
 
 /** @brief used to estimate inverse covariance matrix using graphical lasso
@@ -29,7 +29,7 @@ public:
 	/** destructor */
 	virtual ~CSparseInverseCovariance();
 
-	/** estimate inverse covariance matrix 
+	/** estimate inverse covariance matrix
 	 *
 	 * @param S empirical covariance matrix
 	 * @param lambda_c regularization constant
@@ -64,36 +64,36 @@ public:
 	/** set lasso max iter
 	 * @param lasso_max_iter lasso max iter
 	 */
-	void set_lasso_max_iter(int32_t lasso_max_iter) 
-	{ 
+	void set_lasso_max_iter(int32_t lasso_max_iter)
+	{
 		m_lasso_max_iter = lasso_max_iter;
 	}
 	/** set max iter
 	 * @param max_iter max iter
 	 */
-	void set_max_iter(int32_t max_iter) 
-	{ 
+	void set_max_iter(int32_t max_iter)
+	{
 		m_max_iter = max_iter;
 	}
 	/** set f gap
 	 * @param f_gap f gap
 	 */
-	void set_f_gap(int32_t f_gap) 
-	{ 
+	void set_f_gap(int32_t f_gap)
+	{
 		m_f_gap = f_gap;
 	}
 	/** set x gap
 	 * @param x_gap x gap
 	 */
-	void set_x_gap(int32_t x_gap) 
-	{ 
+	void set_x_gap(int32_t x_gap)
+	{
 		m_x_gap = x_gap;
 	}
 	/** set xtol
 	 * @param xtol xtol
 	 */
-	void set_xtol(int32_t xtol) 
-	{ 
+	void set_xtol(int32_t xtol)
+	{
 		m_xtol = xtol;
 	}
 

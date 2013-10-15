@@ -27,14 +27,14 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		/** default constructor
 		 *
 		 */
-		CDirectorKernel() 
+		CDirectorKernel()
 		: CKernel(), external_features(false)
 		{
 		}
 
 		/**
 		 */
-		CDirectorKernel(bool is_external_features) 
+		CDirectorKernel(bool is_external_features)
 		: CKernel(), external_features(is_external_features)
 		{
 		}
@@ -42,7 +42,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		/** constructor
 		 *
 		 */
-		CDirectorKernel(int32_t size, bool is_external_features) 
+		CDirectorKernel(int32_t size, bool is_external_features)
 		: CKernel(size), external_features(is_external_features)
 		{
 		}
@@ -50,7 +50,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		/** default constructor
 		 *
 		 */
-		virtual ~CDirectorKernel()	
+		virtual ~CDirectorKernel()
 		{
 			cleanup();
 		}
@@ -120,7 +120,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		 * @return the jth column of the kernel matrix
 		 */
 		virtual SGVector<float64_t> get_kernel_col(int32_t j)
- 		{
+		{
 			return CKernel::get_kernel_col(j);
 		}
 
@@ -169,7 +169,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		{
 			num_rhs=num;
 		}
-		
+
 		/** test whether features have been assigned to lhs and rhs
 		 *
 		 * @return true if features are assigned

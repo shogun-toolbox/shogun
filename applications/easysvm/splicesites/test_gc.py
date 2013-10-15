@@ -29,7 +29,7 @@ def test_gc(gcfilename):
     print distance.shape, labdist.shape
     #print '%d identical examples with opposing labels' %len(numpy.unique(numpy.where(difflab==0)[0]))
     print '%d identical examples with opposing labels' % contracount
-    
+
 
 def sqr_dist(a,b):
     """Compute the square distance between vectors"""
@@ -47,4 +47,4 @@ def sqr_dist(a,b):
 if __name__ == '__main__':
     test_gc('C_elegans_don_freq.csv')
     test_gc('C_elegans_acc_freq.csv')
-    
+

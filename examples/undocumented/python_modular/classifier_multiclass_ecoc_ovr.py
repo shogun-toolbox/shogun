@@ -28,7 +28,7 @@ def classifier_multiclass_ecoc_ovr (fm_train_real=traindat,fm_test_real=testdat,
 	ecoc_classifier = LinearMulticlassMachine(ecoc_strategy, feats_train, classifier, labels)
 	ecoc_classifier.train()
 	label_ecoc = ecoc_classifier.apply(feats_test)
-	out_ecoc = label_ecoc.get_labels() 
+	out_ecoc = label_ecoc.get_labels()
 
 	n_diff = (out_mc != out_ecoc).sum()
 	#if n_diff == 0:

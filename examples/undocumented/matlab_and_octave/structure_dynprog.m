@@ -1,19 +1,19 @@
 
 %% load data
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-load('-mat', '../data/DynProg_example.dat') 
+load('-mat', '../data/DynProg_example.dat')
 
 %% set a number of defaults
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 use_orf = 1;
-num_svms = 8; 
+num_svms = 8;
 use_long_transitions = 1;
 threshold = 1000;
 long_transition_max_len = 100000;
 block.content_pred(end+1:num_svms,:) = deal(0);
 viterbi_nbest = [1 0] ;
 
-%% reshape the training parameters and additional information like 
+%% reshape the training parameters and additional information like
 %% length constraints and transformation type and pass them to shogun
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 for j=1:length(penalty_array)
@@ -36,7 +36,7 @@ end
 sg('set_plif_struct',int32(all_ids)-1,all_names, all_limits, all_penalties, all_transform,...
 	all_min_values, all_max_values, int32(all_use_cache), int32(all_use_svm), int32(all_do_calc));
 
-%% pass the data to shogun  
+%% pass the data to shogun
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 sg('init_dyn_prog', num_svms)
 sg('set_lin_feat', block.seq, int32(block.all_pos-1), block.content_pred);

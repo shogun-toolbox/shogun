@@ -66,5 +66,5 @@ function y = regression(filename)
 	classified=max(abs(
 		regression.apply().get_labels()-regression_classified));
 
- 	data={'classifier', alphas, bias, sv, classified};
+	data={'classifier', alphas, bias, sv, classified};
 	y=check_accuracy(regression_accuracy, data);

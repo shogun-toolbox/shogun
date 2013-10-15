@@ -10,7 +10,7 @@ def kernel_locality_improved_string_modular (fm_train_dna=traindat,fm_test_dna=t
 
 	from modshogun import StringCharFeatures, DNA
 	from modshogun import LocalityImprovedStringKernel
-	
+
 	feats_train=StringCharFeatures(fm_train_dna, DNA)
 	feats_test=StringCharFeatures(fm_test_dna, DNA)
 

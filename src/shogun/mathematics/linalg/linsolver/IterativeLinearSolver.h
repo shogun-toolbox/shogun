@@ -3,7 +3,7 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Written (W) 2013 Soumyajit De
  */
 
@@ -16,7 +16,7 @@
 namespace shogun
 {
 
-/** 
+/**
  * @brief abstract template base for all iterative linear solvers such as
  * conjugate gradient (CG) solvers. provides interface for setting the
  * iteration limit, relative/absolute tolerence. solve method is abstract.
@@ -34,7 +34,7 @@ public:
 	/** destructor */
 	virtual ~CIterativeLinearSolver();
 
-	/** 
+	/**
 	 * abstract solve method for solving real linear systems
 	 *
 	 * @param A the linear operator of the system

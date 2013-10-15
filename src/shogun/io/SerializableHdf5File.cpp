@@ -108,7 +108,7 @@ CSerializableHdf5File::ptype2hdf5(EPrimitiveType ptype)
 	case PT_COMPLEX128: return NOT_OPEN; break;
 	case PT_SGOBJECT: return NOT_OPEN; break;
 	case PT_UNDEFINED:
-		SG_SERROR("Type undefined\n"); 
+		SG_SERROR("Type undefined\n");
 		return NOT_OPEN;
 	}
 

@@ -1,5 +1,5 @@
 In this example a multi-class support vector machine is trained on a toy data
-set and the trained classifier is used to predict labels of test examples. 
+set and the trained classifier is used to predict labels of test examples.
 The training algorithm is based on BSVM formulation (L2-soft margin
 and the bias added to the objective function) which is solved by the Improved
 Mitchell-Demyanov-Malozemov algorithm. The training algorithm uses the Gaussian
@@ -7,7 +7,7 @@ kernel of width 2.1 and the regularization constant C=1.2. The bias term of the
 classification rule is not used. The solver stops if the relative duality gap
 falls below 1e-5 and it uses 10MB for kernel cache.
 
-For more details on the used SVM solver see 
+For more details on the used SVM solver see
  V.Franc: Optimization Algorithms for Kernel Methods. Research report.
  CTU-CMP-2005-22. CTU FEL Prague. 2005.
  ftp://cmp.felk.cvut.cz/pub/cmp/articles/franc/Franc-PhD.pdf .

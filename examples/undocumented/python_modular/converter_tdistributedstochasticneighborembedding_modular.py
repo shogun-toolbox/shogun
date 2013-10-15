@@ -6,14 +6,14 @@ def converter_tdistributedstochasticneighborembedding_modular(data_fname, seed=1
 	try:
 		from modshogun import RealFeatures, TDistributedStochasticNeighborEmbedding
 		from modshogun import Math_init_random, CSVFile
-		
+
 		# reproducible results
 		Math_init_random(seed)
 		features = RealFeatures(CSVFile(data_fname))
-			
+
 		converter = TDistributedStochasticNeighborEmbedding()
 		converter.set_target_dim(2)
-		
+
 		embedding = converter.apply(features)
 
 		return embedding

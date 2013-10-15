@@ -47,7 +47,7 @@ SGMatrix<float64_t> CRandomKitchenSinksDotFeatures::generate_random_coefficients
 	{
 		vec = generate_random_parameter_vector();
 		for (index_t dim=0; dim<random_params.num_rows; dim++)
-			random_params(dim, sample) = vec[dim];	
+			random_params(dim, sample) = vec[dim];
 	}
 	return random_params;
 }
@@ -69,8 +69,8 @@ CRandomKitchenSinksDotFeatures::~CRandomKitchenSinksDotFeatures()
 	SG_UNREF(feats);
 }
 
-void CRandomKitchenSinksDotFeatures::init(CDotFeatures* dataset, 
-	int32_t K) 
+void CRandomKitchenSinksDotFeatures::init(CDotFeatures* dataset,
+	int32_t K)
 {
 	feats = dataset;
 	SG_REF(feats);
@@ -101,7 +101,7 @@ float64_t CRandomKitchenSinksDotFeatures::dot(int32_t vec_idx1, CDotFeatures* df
 		float64_t tmp_dot_2 = other->dot(vec_idx2, i);
 
 		tmp_dot_1 = post_dot(tmp_dot_1, i);
-		tmp_dot_2 = other->post_dot(tmp_dot_2, i); 
+		tmp_dot_2 = other->post_dot(tmp_dot_2, i);
 		dot_product += tmp_dot_1 * tmp_dot_2;
 	}
 	return dot_product;

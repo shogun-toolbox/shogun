@@ -8,8 +8,8 @@
 
 namespace tapkee
 {
-	// Features callback that provides operation that 
-	// puts contents of the specified feature 
+	// Features callback that provides operation that
+	// puts contents of the specified feature
 	// vector to given DenseVector instance.
 	struct eigen_features_callback
 	{
@@ -26,8 +26,8 @@ namespace tapkee
 	};
 
 	// Kernel function callback that computes
-	// similarity function values on vectors 
-	// given by their indices. This impl. computes 
+	// similarity function values on vectors
+	// given by their indices. This impl. computes
 	// linear kernel i.e. dot product between two vectors.
 	struct eigen_kernel_callback
 	{

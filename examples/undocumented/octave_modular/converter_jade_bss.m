@@ -40,14 +40,14 @@ subplot(311);
 plot(time, S(1,:), 'b');
 hold on;
 plot(time, S(2,:), 'g');
-set(gca, 'xtick', []) 
+set(gca, 'xtick', [])
 title("True Sources");
 
 subplot(312);
 plot(time, X(1,:), 'b');
 hold on;
 plot(time, X(2,:), 'g');
-set(gca, 'xtick', []) 
+set(gca, 'xtick', [])
 title("Mixed Sources");
 
 subplot(313);

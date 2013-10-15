@@ -3,7 +3,7 @@
  * it under the terms of the GNU General turalPublic License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Written (W) 2013 Soumyajit De
  */
 
@@ -37,8 +37,8 @@ public:
 	/** default constructor */
 	CDirectLinearSolverComplex();
 
-	/** 
-	 * constructor 
+	/**
+	 * constructor
 	 *
 	 * @param type the type of solver to be used in solve method
 	 */
@@ -47,7 +47,7 @@ public:
 	/** destructor */
 	virtual ~CDirectLinearSolverComplex();
 
-	/** 
+	/**
 	 * solve method for solving complex linear systems
 	 *
 	 * @param A the linear operator of the system

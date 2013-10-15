@@ -392,7 +392,7 @@ void CCSVFile::get_string_list(
 		strings[current_line_idx].string=SG_MALLOC(char, line.vlen);
 		for (int32_t i=0; i<line.vlen; i++)
 			strings[current_line_idx].string[i]=line[i];
-	
+
 		if (line.vlen>max_string_len)
 			max_string_len=line.vlen;
 

@@ -58,7 +58,7 @@ TEST(GaussianBlobsDataGenerator,get_next_example)
 	EXPECT_LE(CMath::abs(cov(1,0)-0.5), accuracy);
 	EXPECT_LE(CMath::abs(cov(1,1)-1.5), accuracy);
 #endif // HAVE_LAPACK
-	
+
 	/* mean is supposed to do [0, 0] */
 	EXPECT_LE(CMath::abs(mean[0]-0), 0.1);
 	EXPECT_LE(CMath::abs(mean[1]-0), 0.1);
@@ -94,7 +94,7 @@ TEST(GaussianBlobsDataGenerator,get_next_example)
 	EXPECT_LE(CMath::abs(cov2(1,0)-0.55), accuracy);
 	EXPECT_LE(CMath::abs(cov2(1,1)-7.55), accuracy);
 #endif // HAVE_LAPACK
-	
+
 	/* mean is supposed to do [3, 3] */
 	EXPECT_LE(CMath::abs(mean2[0]-3), accuracy);
 	EXPECT_LE(CMath::abs(mean2[1]-3), accuracy);

@@ -13,13 +13,13 @@ def classifier_custom_kernel_modular(c=1,dim=7)
 	pp lab
 	data= NMatrix.float(dim, dim).random!
 	symdata=data*data.transpose + NMatrix.float(dim,dim).unit
-    
+
 	kernel=Modshogun::CustomKernel.new
 	kernel.set_full_kernel_matrix_from_full(data)
 	labels=Modshogun::BinaryLabels.new(lab)
 	svm=Modshogun::LibSVM.new(c, kernel, labels)
 	svm.train()
-	predictions =svm.apply() 
+	predictions =svm.apply()
 	out=svm.apply().get_labels()
 	return svm,out
 

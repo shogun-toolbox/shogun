@@ -52,8 +52,8 @@ class CGMNPSVM : public CMulticlassSVM
 		 *  @param x width of basealphas
 		 *
 		 *  @return basealphas basealphas[k][j] is the alpha for class
-		 * 	        k and sample j which is untransformed compared to
-		 * 	        the alphas stored in CSVM* members
+		 *	        k and sample j which is untransformed compared to
+		 *	        the alphas stored in CSVM* members
 		 */
 		float64_t* get_basealphas_ptr(index_t* y, index_t* x);
 

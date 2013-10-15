@@ -3,7 +3,7 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Written (W) 2011-2013 Heiko Strathmann
  * Written (W) 2013 Soumyajit De
  * Written (W) 2012 Fernando Jose Iglesias Garcia
@@ -66,7 +66,7 @@ template<class T> class SGVector : public SGReferencedData
 		void set_const(T const_elem);
 
 		/** range fill a vector with start...start+len-1
-		 * 
+		 *
 		 * @param start - value to be assigned to first element of vector
 		 */
 		void range_fill(T start=0);
@@ -161,7 +161,7 @@ template<class T> class SGVector : public SGReferencedData
 		/** permute with given CRandom state */
 		static void permute(T* vec, int32_t n, CRandom * rand);
 
-		/** 
+		/**
 		 * get the vector (no copying is done here)
 		 *
 		 * @return the refcount increased vector
@@ -499,7 +499,7 @@ template<class T> class SGVector : public SGReferencedData
 		static bool fequal(T x, T y, float64_t precision=1e-6);
 
 		/** performs a inplace unique of a vector of type T using quicksort
-		 * returns the new number of elements 
+		 * returns the new number of elements
 		 */
 		static int32_t unique(T* output, int32_t size);
 
@@ -532,7 +532,7 @@ template<class T> class SGVector : public SGReferencedData
 		SGVector<index_t> find_if(Predicate p)
 		{
 			SGVector<index_t> idx(vlen);
-			index_t k=0; 
+			index_t k=0;
 
 			for (index_t i=0; i < vlen; ++i)
 				if (p(vector[i]))
@@ -603,12 +603,12 @@ template<class T> class SGVector : public SGReferencedData
 		SGVector<float64_t> get_imag();
 
 		/** create SGMatrix from linear vector
-		 * 
+		 *
 		 * @param vector source vector
 		 * @param nrows number of rows
 		 * @param ncols number of cols
 		 * @param fortran_order order of stroing matrix in linear vector
-		 * 	true - column-major order (FORTRAN, MATLAB, R)
+		 *	true - column-major order (FORTRAN, MATLAB, R)
 		 *	false - row-major order (C, Python)
 		 * @return matrix
 		 */
@@ -616,14 +616,14 @@ template<class T> class SGVector : public SGReferencedData
 
 
 		/** create matrix from linear vector
-		 * 
+		 *
 		 * @param matrix destination memory
 		 * @param nrows number of rows
 		 * @param ncols number of cols
 		 * @param vector source vector
 		 * @param vlen lenght of source vector
 		 * @param fortran_order order of stroing matrix in linear vector
-		 * 	true - column-major order (FORTRAN, MATLAB, R)
+		 *	true - column-major order (FORTRAN, MATLAB, R)
 		 *	false - row-major order (C, Python)
 		 * @return matrix
 		 */

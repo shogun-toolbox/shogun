@@ -25,17 +25,17 @@ namespace shogun
 /** @brief Class FFDiag
  *
  * An Approximate Joint Diagonalizer (AJD) Implementation
- * 
- * Ziehe, A., Laskov, P., Nolte, G., & Mueller, K. R. (2004). 
- * A fast algorithm for joint diagonalization with non-orthogonal transformations 
- * and its application to blind source separation. 
+ *
+ * Ziehe, A., Laskov, P., Nolte, G., & Mueller, K. R. (2004).
+ * A fast algorithm for joint diagonalization with non-orthogonal transformations
+ * and its application to blind source separation.
  * The Journal of Machine Learning Research, 5, 777-800.
- * 
+ *
  */
 class CFFDiag : public CApproxJointDiagonalizer
 {
 	public:
-	
+
 		/** constructor */
 		CFFDiag()
 		{
@@ -45,25 +45,25 @@ class CFFDiag : public CApproxJointDiagonalizer
 		virtual ~CFFDiag()
 		{
 		}
-	
-		/** Computes the matrix V that best diagonalizes C 
+
+		/** Computes the matrix V that best diagonalizes C
 		 * @param C the set of matrices to be diagonalized
 		 * @param V0 an estimate of the matrix V
 		 * @param eps machine epsilon or desired epsilon
 		 * @param itermax maximum number of iterations
-		 * @return V the matrix that best diagonalizes C 
+		 * @return V the matrix that best diagonalizes C
 		 */
 		static SGMatrix<float64_t> diagonalize(SGNDArray<float64_t> C,
-       							SGMatrix<float64_t> V0 = SGMatrix<float64_t>(NULL,0,0,false),
+							SGMatrix<float64_t> V0 = SGMatrix<float64_t>(NULL,0,0,false),
 							double eps=CMath::MACHINE_EPSILON,
 							int itermax=200);
 
-		/** Computes the matrix V that best diagonalizes C 
+		/** Computes the matrix V that best diagonalizes C
 		 * @param C the set of matrices to be diagonalized
 		 * @param V0 an estimate of the matrix V
 		 * @param eps machine epsilon or desired epsilon
 		 * @param itermax maximum number of iterations
-		 * @return V the matrix that best diagonalizes C 
+		 * @return V the matrix that best diagonalizes C
 		 */
 		virtual SGMatrix<float64_t> compute(SGNDArray<float64_t> C,
 						   SGMatrix<float64_t> V0 = SGMatrix<float64_t>(NULL,0,0,false),
@@ -71,7 +71,7 @@ class CFFDiag : public CApproxJointDiagonalizer
 						   int itermax=200)
 		{
 			m_V = diagonalize(C,V0,eps,itermax);
-			return m_V;	
+			return m_V;
 		}
 
 		/** @return object name */
@@ -79,4 +79,4 @@ class CFFDiag : public CApproxJointDiagonalizer
 };
 }
 #endif //HAVE_EIGEN3
-#endif //FFDIAG_H_ 
+#endif //FFDIAG_H_

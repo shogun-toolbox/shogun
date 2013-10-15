@@ -23,7 +23,7 @@ public class kernel_weighted_degree_position_string_modular {
 		WeightedDegreePositionStringKernel kernel = new WeightedDegreePositionStringKernel(feats_train, feats_train, degree);
 		kernel.set_shifts(DoubleMatrix.ones(1, (fm_train_dna[0]).length()));
 		kernel.set_position_weights(DoubleMatrix.ones(1, (fm_train_dna[0]).length()));
-		
+
 
 		DoubleMatrix km_train = kernel.get_kernel_matrix();
 		kernel.init(feats_train, feats_test);

@@ -14,7 +14,7 @@
 
 namespace shogun
 {
-/** @brief class MultitaskL12LogisticRegression, a classifier for multitask problems. 
+/** @brief class MultitaskL12LogisticRegression, a classifier for multitask problems.
  * Supports only task group relations. Based on solver ported from the MALSAR library.
  *
  * @see CTaskGroup
@@ -37,7 +37,7 @@ class CMultitaskL12LogisticRegression : public CMultitaskLogisticRegression
 		 * @param task_group task group
 		 */
 		CMultitaskL12LogisticRegression(
-		     float64_t rho1, float64_t rho2, CDotFeatures* training_data, 
+		     float64_t rho1, float64_t rho2, CDotFeatures* training_data,
 		     CBinaryLabels* training_labels, CTaskGroup* task_group);
 
 		/** destructor */
@@ -46,28 +46,28 @@ class CMultitaskL12LogisticRegression : public CMultitaskLogisticRegression
 		/** set rho1 regularization coefficient
 		 * @param rho1 value
 		 */
-		void set_rho1(float64_t rho1); 
+		void set_rho1(float64_t rho1);
 
 		/** get rho1 regularization coefficient
 		 * @return rho1 value
 		 */
-		float64_t get_rho1() const; 
+		float64_t get_rho1() const;
 
 		/** set rho2 regularization coefficient
 		 * @param rho2 value
 		 */
-		void set_rho2(float64_t rho2); 
+		void set_rho2(float64_t rho2);
 
 		/** get rho2 regularization coefficient
 		 * @return rho2 value
 		 */
-		float64_t get_rho2() const; 
+		float64_t get_rho2() const;
 
-		/** get name 
-		 * 
+		/** get name
+		 *
 		 * @return name of the object
 		 */
-		virtual const char* get_name() const 
+		virtual const char* get_name() const
 		{
 			return "MultitaskL12LogisticRegression";
 		}
@@ -84,8 +84,8 @@ class CMultitaskL12LogisticRegression : public CMultitaskLogisticRegression
 		 * @param data features to use for training
 		 */
 		virtual bool train_machine(CFeatures* data=NULL);
-		
-		/** train locked implementation 
+
+		/** train locked implementation
 		 *
 		 * @param tasks array of tasks indices
 		 */
@@ -95,7 +95,7 @@ class CMultitaskL12LogisticRegression : public CMultitaskLogisticRegression
 
 		/** rho1, regularization coefficient of L1/L2 term */
 		float64_t m_rho1;
-		
+
 		/** rho2, regularization coefficient of L2 term */
 		float64_t m_rho2;
 

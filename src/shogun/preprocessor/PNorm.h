@@ -38,7 +38,7 @@ class CPNorm : public CDensePreprocessor<float64_t>
      * @param p the norm to calculate. NOTE: has to be greater or equal than 1.0
      */
 		CPNorm (double p);
-		
+
 		/** destructor */
 		virtual ~CPNorm ();
 
@@ -65,23 +65,23 @@ class CPNorm : public CDensePreprocessor<float64_t>
 
 		/// return a type of preprocessor
 		virtual EPreprocessorType get_type () const { return P_PNORM; }
-		
+
 		/**
 		 * Set norm
 		 * @param pnorm norm value
 		 */
 		void set_pnorm (double pnorm);
-		
+
 		/**
 		 * Get norm value
 		 * @return norm
 		 */
 		double get_pnorm () const;
-	
-	private: 
+
+	private:
 		void register_param ();
 		inline float64_t get_pnorm (float64_t* vec, int32_t vec_len) const;
-		
+
 	private:
 		double m_p;
 };

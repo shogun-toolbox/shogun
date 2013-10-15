@@ -34,20 +34,20 @@ struct PointerTypePolicyImpl : public TypePolicyBase
 	}
 	inline virtual void free(void** src) const
 	{
-		if (*src) 
+		if (*src)
 			delete (*reinterpret_cast<T**>(src));
 		*src = NULL;
 	}
 	virtual void clone(void* const* src, void** dest) const
 	{
-		if (*dest) 
+		if (*dest)
 			(*reinterpret_cast<T**>(dest))->~T();
 		*dest = new T(**reinterpret_cast<T* const*>(src));
 	}
 	inline virtual void move(void* const* src, void** dest) const
 	{
 		(*reinterpret_cast<T**>(dest))->~T();
-		**reinterpret_cast<T**>(dest) = **reinterpret_cast<T* const*>(src); 
+		**reinterpret_cast<T**>(dest) = **reinterpret_cast<T* const*>(src);
 	}
 };
 

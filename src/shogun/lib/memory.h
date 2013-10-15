@@ -10,7 +10,7 @@
 
 #ifndef __MEMORY_H__
 #define __MEMORY_H__
-	
+
 #include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
 
@@ -120,7 +120,7 @@ class MemoryBlock
 		/** copy constructor
 		 * @param b b
 		 */
-        	MemoryBlock(const MemoryBlock &b);
+	MemoryBlock(const MemoryBlock &b);
 
 		/** equality
 		 * @param b b

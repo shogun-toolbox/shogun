@@ -38,9 +38,9 @@ def evaluation_clustering_simple (n_data=100, sqrt_num_blobs=4, distance=5):
 	from modshogun import MulticlassLabels, GaussianBlobsDataGenerator
 	from modshogun import Math
 
-	# reproducable results	
+	# reproducable results
 	Math.init_random(1)
-	
+
 	# produce sone Gaussian blobs to cluster
 	ncenters=sqrt_num_blobs**2
 	stretch=1
@@ -48,18 +48,18 @@ def evaluation_clustering_simple (n_data=100, sqrt_num_blobs=4, distance=5):
 	gen=GaussianBlobsDataGenerator(sqrt_num_blobs, distance, stretch, angle)
 	features=gen.get_streamed_features(n_data)
 	X=features.get_feature_matrix()
-	
+
 	# compute approximate "ground truth" labels via taking the closest blob mean
 	coords=array(range(0,sqrt_num_blobs*distance,distance))
 	idx_0=[abs(coords -x).argmin() for x in X[0]]
 	idx_1=[abs(coords -x).argmin() for x in X[1]]
 	ground_truth=array([idx_0[i]*sqrt_num_blobs + idx_1[i] for i in range(n_data)], dtype="float64")
-	
+
 	#for label in unique(ground_truth):
 	#	indices=ground_truth==label
 	#	plot(X[0][indices], X[1][indices], 'o')
 	#show()
-	
+
 	centroids = run_clustering(features, ncenters)
 	gnd_hat = assign_labels(features, centroids, ncenters)
 	gnd = MulticlassLabels(ground_truth)

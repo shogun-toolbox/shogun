@@ -11,8 +11,8 @@ using namespace Eigen;
 bool is_permutation_matrix(SGMatrix<float64_t> m)
 {
 	Map<MatrixXd> mat(m.matrix,m.num_rows,m.num_cols);
-		
-	// scale	
+
+	// scale
 	for(int t = 0; t < mat.cols(); t++)
 		mat.col(t) /= mat.col(t).cwiseAbs().maxCoeff();
 
@@ -26,7 +26,7 @@ bool is_permutation_matrix(SGMatrix<float64_t> m)
 			else
 				mat(i,j) = 0.0;
 		}
-	}	
+	}
 
 	// check only a single 1 per row
 	for (int i = 0; i < mat.rows(); i++)
@@ -41,7 +41,7 @@ bool is_permutation_matrix(SGMatrix<float64_t> m)
 		if (num_ones != 1)
 			return false;
 	}
-	
+
 	// check only a single 1 per col
 	for (int j = 0; j < mat.cols(); j++)
 	{
@@ -49,13 +49,13 @@ bool is_permutation_matrix(SGMatrix<float64_t> m)
 		for (int i = 0; i < mat.rows(); i++)
 		{
 			if (mat(i,j) >= 1.0)
-				num_ones++; 
+				num_ones++;
 		}
-		
+
 		if (num_ones != 1)
 			return false;
 	}
-	
+
 	return true;
 }
 #endif //HAVE_EIGEN3

@@ -40,7 +40,7 @@ IGNORE_IN_CLASSLIST struct line_search_res
 
 inline static line_search_res zoom
 (
- CDualLibQPBMSOSVM *machine, 
+ CDualLibQPBMSOSVM *machine,
  float64_t lambda,
  float64_t a_lo,
  float64_t a_hi,
@@ -59,7 +59,7 @@ inline static line_search_res zoom
 	line_search_res ls_res;
 	ls_res.solution.resize_vector(initial_solution.vlen);
 	ls_res.gradient.resize_vector(initial_solution.vlen);
-	
+
 	SGVector<float64_t> cur_solution(initial_solution.vlen);
 	cur_solution.zero();
 	SGVector<float64_t> cur_grad(initial_solution.vlen);
@@ -70,7 +70,7 @@ inline static line_search_res zoom
 		float64_t d1 = g_lo+g_hi - 3*(f_lo-f_hi)/(a_lo-a_hi);
 		float64_t d2 = CMath::sqrt(d1*d1 - g_lo*g_hi);
 		float64_t a_j = a_hi -(a_hi-a_lo)*(g_hi+d2-d1)/(g_hi-g_lo+2*d2);
-		
+
 		if (a_lo < a_hi)
 		{
 			if ((a_j < a_lo) || (a_j > a_hi))
@@ -85,7 +85,7 @@ inline static line_search_res zoom
 				a_j = 0.5*(a_lo+a_hi);
 			}
 		}
-		
+
 		cur_solution.add(cur_solution.vector, 1.0,
 				initial_solution.vector, a_j,
 				search_dir.vector, cur_solution.vlen);
@@ -135,7 +135,7 @@ inline static line_search_res zoom
 			f_lo = cur_fval;
 			g_lo = cur_lgrad;
 		}
-		
+
 		if
 			(
 			 (CMath::abs(a_lo - a_hi) <= 0.01*a_lo)
@@ -157,7 +157,7 @@ inline static line_search_res zoom
 
 inline std::vector<line_search_res> line_search_with_strong_wolfe
 (
-		CDualLibQPBMSOSVM *machine, 
+		CDualLibQPBMSOSVM *machine,
 		float64_t lambda,
 		float64_t initial_val,
 		SGVector<float64_t>& initial_solution,
@@ -177,7 +177,7 @@ inline std::vector<line_search_res> line_search_with_strong_wolfe
 	 * subgrad should be: subgrad + (lambda*w)
 	 *
 	 */
-	
+
 	uint32_t iter = 0;
 
 	initial_grad.vec1_plus_scalar_times_vec2(initial_grad.vector, lambda, initial_solution.vector, initial_grad.vlen);
@@ -306,7 +306,7 @@ inline void update_H(BmrmStatistics& ncbm,
 
 
 BmrmStatistics svm_ncbm_solver(
-		CDualLibQPBMSOSVM *machine, 
+		CDualLibQPBMSOSVM *machine,
 		float64_t         *w,
 		float64_t         TolRel,
 		float64_t         TolAbs,
@@ -616,7 +616,7 @@ BmrmStatistics svm_ncbm_solver(
 					=  cur_w.dot(cur_w.vector, cur_subgrad.vector, cur_w.vlen) - cur_risk;
 
 				update_H(ncbm, CPList_head, CPList_tail, H, diag_H, _lambda, maxCPs, w_dim);
-				
+
 				/* add as a new wbest candidate */
 				line_search_res ls;
 				ls.fval = cur_risk+0.5*_lambda*cur_w.dot(cur_w.vector, cur_w.vector, cur_w.vlen);
@@ -730,7 +730,7 @@ BmrmStatistics svm_ncbm_solver(
 			}
 		}
 
-		/* Inactive Cutting Planes (ICP) removal 
+		/* Inactive Cutting Planes (ICP) removal
 		if (cleanICP)
 		{
 			clean_icp(&icp_stats, ncbm, &CPList_head, &CPList_tail,

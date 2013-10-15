@@ -7,7 +7,7 @@ message BoolChunk
 
 message Int32Chunk
 {
-	repeated int32 data=1 [packed=true]; 
+	repeated int32 data=1 [packed=true];
 }
 
 message UInt32Chunk

@@ -25,17 +25,17 @@ namespace shogun
 /** @brief Class JADiag
  *
  * An Approximate Joint Diagonalizer (AJD) Implementation
- * Assumes the matrices are Positive-definite 
- * 
- * Pham, D. T., & Cardoso, J. F. (2001). 
- * Blind separation of instantaneous mixtures of nonstationary sources. 
+ * Assumes the matrices are Positive-definite
+ *
+ * Pham, D. T., & Cardoso, J. F. (2001).
+ * Blind separation of instantaneous mixtures of nonstationary sources.
  * Signal Processing, IEEE Transactions on, 49(9), 1837-1848.
  *
  */
 class CJADiag : public CApproxJointDiagonalizer
 {
 	public:
-	
+
 		/** constructor */
 		CJADiag()
 		{
@@ -45,25 +45,25 @@ class CJADiag : public CApproxJointDiagonalizer
 		virtual ~CJADiag()
 		{
 		}
-	
-		/** Computes the matrix V that best diagonalizes C 
+
+		/** Computes the matrix V that best diagonalizes C
 		 * @param C the set of matrices to be diagonalized
 		 * @param V0 an estimate of the matrix V
 		 * @param eps machine epsilon or desired epsilon
 		 * @param itermax maximum number of iterations
-		 * @return V the matrix that best diagonalizes C 
+		 * @return V the matrix that best diagonalizes C
 		 */
 		static SGMatrix<float64_t> diagonalize(SGNDArray<float64_t> C,
-       							SGMatrix<float64_t> V0 = SGMatrix<float64_t>(NULL,0,0,false),
+							SGMatrix<float64_t> V0 = SGMatrix<float64_t>(NULL,0,0,false),
 							double eps=CMath::MACHINE_EPSILON,
 							int itermax=200);
 
-		/** Computes the matrix V that best diagonalizes C 
+		/** Computes the matrix V that best diagonalizes C
 		 * @param C the set of matrices to be diagonalized
 		 * @param V0 an estimate of the matrix V
 		 * @param eps machine epsilon or desired epsilon
 		 * @param itermax maximum number of iterations
-		 * @return V the matrix that best diagonalizes C 
+		 * @return V the matrix that best diagonalizes C
 		 */
 		virtual SGMatrix<float64_t> compute(SGNDArray<float64_t> C,
 						   SGMatrix<float64_t> V0 = SGMatrix<float64_t>(NULL,0,0,false),
@@ -71,7 +71,7 @@ class CJADiag : public CApproxJointDiagonalizer
 						   int itermax=200)
 		{
 			m_V = diagonalize(C,V0,eps,itermax);
-			return m_V;	
+			return m_V;
 		}
 
 		/** @return object name */
@@ -79,4 +79,4 @@ class CJADiag : public CApproxJointDiagonalizer
 };
 }
 #endif //HAVE_EIGEN3
-#endif //JADIAG_H_ 
+#endif //JADIAG_H_

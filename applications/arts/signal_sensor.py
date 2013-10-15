@@ -178,11 +178,11 @@ class SignalSensor(object):
         num_chunks = int(numpy.ceil(float(seq_len) / float(chunk_size)))
         assert(num_chunks > 0)
 
-    	sys.stderr.write("number of chunks for contig: %i\n" % (num_chunks))
+	sys.stderr.write("number of chunks for contig: %i\n" % (num_chunks))
 
         start = 0
         stop = min(chunk_size, seq_len)
-		
+
         out = []
 
         # iterate over chunks

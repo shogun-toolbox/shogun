@@ -24,7 +24,7 @@ namespace tapkee_internal
 {
 
 /** @brief Class v_array taken directly from JL's implementation */
-template<class T> 
+template<class T>
 class v_array{
 
 	public:
@@ -60,7 +60,7 @@ class v_array{
  * @param v vector
  * @param new_ele element to insert
  */
-template<class T> 
+template<class T>
 void push(v_array<T>& v, const T &new_ele)
 {
 	while(v.index >= v.length)
@@ -77,7 +77,7 @@ void push(v_array<T>& v, const T &new_ele)
  * @param v vector
  * @param length the new length of the vector
  */
-template<class T> 
+template<class T>
 void alloc(v_array<T>& v, int length)
 {
 	v.elements = (T *)realloc(v.elements, sizeof(T) * length);
@@ -93,7 +93,7 @@ void alloc(v_array<T>& v, int length)
  * @param stack of vectors
  * @return the adequate vector according to the previous conditions
  */
-template<class T> 
+template<class T>
 v_array<T> pop(v_array<v_array<T> > &stack)
 {
 	if (stack.index > 0)
@@ -122,10 +122,10 @@ struct CoverTreePoint
 	ScalarType norm_;
 }; /* struct JLCoverTreePoint */
 
-template <class Type, class RandomAccessIterator, class Callback> 
+template <class Type, class RandomAccessIterator, class Callback>
 struct distance_impl;
 
-/** Functions declared out of the class definition to respect CoverTree 
+/** Functions declared out of the class definition to respect CoverTree
  *  structure */
 template <class RandomAccessIterator, class Callback>
 inline ScalarType distance(Callback& cb, const CoverTreePoint<RandomAccessIterator>& l,

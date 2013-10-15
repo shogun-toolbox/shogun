@@ -3,7 +3,7 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Written (W) 2013 Soumyajit De
  */
 
@@ -129,7 +129,7 @@ SGVector<T> CDenseMatrixOperator<T>::apply(SGVector<T> b) const
 		Map<VectorXt> _b(b.vector, b.vlen);
 		Map<MatrixXt> _op(m_operator.matrix, m_operator.num_rows,
 			m_operator.num_cols);
-	
+
 		SGVector<T> result(m_operator.num_rows);
 		Map<VectorXt> _result(result.vector, result.vlen);
 		_result=_op*_b;

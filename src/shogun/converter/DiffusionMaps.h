@@ -22,7 +22,7 @@ namespace shogun
 class CFeatures;
 class CKernel;
 
-/** @brief class DiffusionMaps used to preprocess given data 
+/** @brief class DiffusionMaps used to preprocess given data
  * using Diffusion Maps dimensionality
  * reduction technique as described in
  *

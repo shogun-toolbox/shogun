@@ -5,9 +5,9 @@ parameter_list = [[data]]
 def converter_isomap_modular (data_fname):
 	try:
 		from modshogun import RealFeatures, Isomap, CSVFile
-		
+
 		features = RealFeatures(CSVFile(data))
-			
+
 		converter = Isomap()
 		converter.set_k(20)
 		converter.set_target_dim(1)

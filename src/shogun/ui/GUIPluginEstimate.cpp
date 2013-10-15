@@ -101,13 +101,13 @@ CLabels* CGUIPluginEstimate::apply()
 
 	if (!estimator)
 	{
-		SG_ERROR("no estimator available") 
+		SG_ERROR("no estimator available")
 		return 0;
 	}
 
 	if (!testfeatures)
 	{
-		SG_ERROR("no test features available") 
+		SG_ERROR("no test features available")
 		return 0;
 	}
 
@@ -122,13 +122,13 @@ float64_t CGUIPluginEstimate::apply_one(int32_t idx)
 
 	if (!estimator)
 	{
-		SG_ERROR("no estimator available") 
+		SG_ERROR("no estimator available")
 		return 0;
 	}
 
 	if (!testfeatures)
 	{
-		SG_ERROR("no test features available") 
+		SG_ERROR("no test features available")
 		return 0;
 	}
 

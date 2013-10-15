@@ -31,7 +31,7 @@ TEST(LBPPyrDotFeatures, dot_test)
 	}
 
 	CDenseFeatures<uint32_t>* dense_feat = new CDenseFeatures<uint32_t>(mat);
-	CLBPPyrDotFeatures* lbp_feat = new CLBPPyrDotFeatures(dense_feat, image_width, 
+	CLBPPyrDotFeatures* lbp_feat = new CLBPPyrDotFeatures(dense_feat, image_width,
 			image_height, num_pyrs);
 
 	float64_t result = lbp_feat->dot(0, lbp_feat, 1);
@@ -54,10 +54,10 @@ TEST(LBPPyrDotFeatures, dense_dot_test)
 		mat(j,0) = j % image_height;
 
 	for (index_t j=0; j<img_len; j++)
-		mat(j,1) = j % 20 + 1; 
+		mat(j,1) = j % 20 + 1;
 
 	CDenseFeatures<uint32_t>* dense_feat = new CDenseFeatures<uint32_t>(mat);
-	CLBPPyrDotFeatures* lbp_feat = new CLBPPyrDotFeatures(dense_feat, image_width, 
+	CLBPPyrDotFeatures* lbp_feat = new CLBPPyrDotFeatures(dense_feat, image_width,
 			image_height, num_pyrs);
 
 	SGVector<char> vec = lbp_feat->get_transformed_image(1);
@@ -82,10 +82,10 @@ TEST(LBPPyrDotFeatures, add_to_dense_test)
 		mat(j,0) = j % image_height;
 
 	for (index_t j=0; j<img_len; j++)
-		mat(j,1) = j % 20 + 1; 
+		mat(j,1) = j % 20 + 1;
 
 	CDenseFeatures<uint32_t>* dense_feat = new CDenseFeatures<uint32_t>(mat);
-	CLBPPyrDotFeatures* lbp_feat = new CLBPPyrDotFeatures(dense_feat, image_width, 
+	CLBPPyrDotFeatures* lbp_feat = new CLBPPyrDotFeatures(dense_feat, image_width,
 			image_height, num_pyrs);
 
 	SGVector<char> tmp1 = lbp_feat->get_transformed_image(0);

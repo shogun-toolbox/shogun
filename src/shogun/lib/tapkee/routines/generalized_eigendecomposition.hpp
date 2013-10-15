@@ -20,15 +20,15 @@ namespace tapkee_internal
 
 #ifdef TAPKEE_WITH_ARPACK
 //! ARPACK implementation of eigendecomposition-based embedding
-template <class LMatrixType, class RMatrixType, class MatrixOperationType> 
-EigendecompositionResult generalized_eigendecomposition_impl_arpack(const LMatrixType& lhs, 
+template <class LMatrixType, class RMatrixType, class MatrixOperationType>
+EigendecompositionResult generalized_eigendecomposition_impl_arpack(const LMatrixType& lhs,
 		const RMatrixType& rhs, IndexType target_dimension, unsigned int skip)
 {
 	timed_context context("ARPACK DSXUPD generalized eigendecomposition");
 
-	ArpackGeneralizedSelfAdjointEigenSolver<LMatrixType, RMatrixType, MatrixOperationType> 
+	ArpackGeneralizedSelfAdjointEigenSolver<LMatrixType, RMatrixType, MatrixOperationType>
 		arpack(lhs,rhs,target_dimension+skip,"SM");
-	
+
 	if (arpack.info() == Eigen::Success)
 	{
 		std::stringstream ss;
@@ -46,7 +46,7 @@ EigendecompositionResult generalized_eigendecomposition_impl_arpack(const LMatri
 #endif
 
 //! Eigen library dense implementation of eigendecomposition
-template <class LMatrixType, class RMatrixType, class MatrixOperationType> 
+template <class LMatrixType, class RMatrixType, class MatrixOperationType>
 EigendecompositionResult generalized_eigendecomposition_impl_dense(const LMatrixType& lhs,
 		const RMatrixType& rhs, IndexType target_dimension, unsigned int skip)
 {
@@ -62,7 +62,7 @@ EigendecompositionResult generalized_eigendecomposition_impl_dense(const LMatrix
 			assert(skip==0);
 			DenseMatrix selected_eigenvectors = solver.eigenvectors().rightCols(target_dimension);
 			return EigendecompositionResult(selected_eigenvectors,solver.eigenvalues().tail(target_dimension));
-		} 
+		}
 		else
 		{
 			DenseMatrix selected_eigenvectors = solver.eigenvectors().leftCols(target_dimension+skip).rightCols(target_dimension);
@@ -86,7 +86,7 @@ EigendecompositionResult generalized_eigendecomposition(EigenMethod method, cons
 	switch (method)
 	{
 #ifdef TAPKEE_WITH_ARPACK
-		case Arpack: 
+		case Arpack:
 			return generalized_eigendecomposition_impl_arpack<LMatrixType, RMatrixType, MatrixOperationType>(lhs, rhs, target_dimension, skip);
 #endif
 		case Dense:

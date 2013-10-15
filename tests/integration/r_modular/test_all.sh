@@ -14,7 +14,7 @@ function test_all () {
 	echo "*** Testing in ${datapath}"
 	sleep 1
 	for file in ${datapath}; do
-		if grep -q $file ../blacklist 
+		if grep -q $file ../blacklist
 		then
 			echo 'SKIPPING'
 		else

@@ -3,7 +3,7 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Written (W) 2013 Soumyajit De
  */
 
@@ -19,7 +19,7 @@ CSerialComputationEngine::CSerialComputationEngine()
 {
 	SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 }
-	
+
 CSerialComputationEngine::~CSerialComputationEngine()
 {
 	SG_GCDEBUG("%s destroyed (%p)\n", this->get_name(), this)

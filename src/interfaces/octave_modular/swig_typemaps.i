@@ -243,7 +243,7 @@ TYPEMAP_INND(is_uint16_type, uint16NDArray, uint16_array_value, uint16_t, uint16
 
     for (int32_t i=0; i<n; i++)
         mat(i) = (if_type) array[i];
-        
+
     $result=mat;
 }
 %enddef
@@ -295,12 +295,12 @@ TYPEMAP_OUTND(uint16NDArray, uint16_t, uint16_t, "Word")
             oct_type str=c.elem(i).oct_converter();
 
             int32_t len=str.cols();
-            if (len>0) 
-            { 
+            if (len>0)
+            {
                 strings[i].slen=len; /* all must have same length in octave */
                 strings[i].string=SG_MALLOC(sg_type, len+1); /* not zero terminated in octave */
 
-                int32_t j; 
+                int32_t j;
                 for (j=0; j<len; j++)
                     strings[i].string[j]=str(0,j);
                 strings[i].string[j]='\0';
@@ -317,15 +317,15 @@ TYPEMAP_OUTND(uint16NDArray, uint16_t, uint16_t, "Word")
     else if (arg.oct_type_check())
     {
         oct_type data=arg.oct_converter();
-        num_strings=data.cols(); 
+        num_strings=data.cols();
         int32_t len=data.rows();
         strings=SG_MALLOC(SGString<sg_type>, num_strings);
         ASSERT(strings);
 
         for (int32_t i=0; i<num_strings; i++)
-        { 
-            if (len>0) 
-            { 
+        {
+            if (len>0)
+            {
                 strings[i].slen=len; /* all must have same length in octave */
                 strings[i].string=SG_MALLOC(sg_type, len+1); /* not zero terminated in octave */
 
@@ -335,7 +335,7 @@ TYPEMAP_OUTND(uint16NDArray, uint16_t, uint16_t, "Word")
                 strings[i].string[j]='\0';
             }
             else
-            { 
+            {
                 /*SG_WARNING( "string with index %d has zero length.\n", i+1);*/
                 strings[i].slen=0;
                 strings[i].string=NULL;
@@ -447,7 +447,7 @@ TYPEMAP_SPARSEFEATURES_IN(float64_t,     Matrix)
 {
 	int32_t num_vec = $1.num_vectors;
 	int32_t num_feat = $1.num_features;
-	
+
 	int64_t nnz = 0;
 	for (int32_t i = 0; i < num_vec; i++)
 	{

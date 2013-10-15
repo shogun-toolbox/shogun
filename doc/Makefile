@@ -19,7 +19,7 @@ Doxyfile_en: Doxyfile_en.in
 Doxyfile_cn: Doxyfile_cn.in
 	sed "s/PROJECT_NUMBER         = .*/PROJECT_NUMBER         = v$(MAINVERSION)/" Doxyfile_cn.in >Doxyfile_cn
 
-pages/Configure.generated:	
+pages/Configure.generated:
 	cmake --help 2>&1 >$@
 
 doc_cn: examples_cn Doxyfile_cn
@@ -33,7 +33,7 @@ examples: $(UNDOCUMENTED_EXAMPLE_DIRS) $(EXAMPLE_FILES)
 
 distclean: clean
 
-clean: 
+clean:
 	rm -rf html html_cn
 	rm -f pages/Configure.generated
 

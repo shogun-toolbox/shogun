@@ -32,7 +32,7 @@ class sequence(object):
 		self.preds['donor']=predictions()
 
 	def __str__(self):
-		s="start:" + `self.start` 
+		s="start:" + `self.start`
 		s+=" end:" + `self.end`
 		s+=" name:" + `self.name`
 		s+=" sequence:" + `self.seq[0:10]`
@@ -56,7 +56,7 @@ def seqdict(dic, (start,end)):
 			tab+='A'
 
 	for seqname in dic.ordered_items():
-		seq=string.translate(seqname[1], tab) 
+		seq=string.translate(seqname[1], tab)
 		seq=seq.upper()
 		if end<0:
 			stop=len(seq)+end

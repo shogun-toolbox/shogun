@@ -264,7 +264,7 @@ TEST(QuadraticTimeMMD,custom_kernel_vs_normal_kernel)
 		type_II_threshs_spectrum[i]=mmd->compute_threshold(alpha);
 		mmd->set_null_approximation_method(MMD2_GAMMA);
 		type_II_threshs_gamma[i]=mmd->compute_threshold(alpha);
-		
+
 	}
 	SG_UNREF(p_and_q);
 
@@ -313,7 +313,7 @@ TEST(QuadraticTimeMMD,custom_kernel_vs_normal_kernel)
 		type_II_threshs_spectrum_pre[i]=mmd2->compute_threshold(alpha);
 		mmd->set_null_approximation_method(MMD2_GAMMA);
 		type_II_threshs_gamma_pre[i]=mmd2->compute_threshold(alpha);
-		
+
 	}
 
 	//SG_SPRINT("precomputed kernel\n");

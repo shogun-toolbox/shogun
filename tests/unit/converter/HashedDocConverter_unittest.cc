@@ -51,7 +51,7 @@ TEST(HashedDocConverterTest, compare_dot_features)
 	const char* doc_1 = "You're never too old to rock and roll, if you're too young to die";
 	const char* doc_2 = "Give me some rope, tie me to dream, give me the hope to run out of steam";
 	const char* doc_3 = "Thank you Jack Daniels, Old Number Seven, Tennessee Whiskey got me drinking in heaven";
-	
+
 	SGString<char> string_1(65);
 	for (index_t i=0; i<65; i++)
 		string_1.string[i] = doc_1[i];
@@ -68,8 +68,8 @@ TEST(HashedDocConverterTest, compare_dot_features)
 	list.strings[0] = string_1;
 	list.strings[1] = string_2;
 	list.strings[2] = string_3;
-	
-	int32_t hash_bits = 3; 
+
+	int32_t hash_bits = 3;
 
 	CDelimiterTokenizer* tokenizer = new CDelimiterTokenizer();
 	tokenizer->delimiters[' '] = 1;
@@ -102,7 +102,7 @@ TEST(HashedDocConverterTest, apply_quadratic_test)
 	const int32_t seed = 0xdeadbeaf;
 	for (index_t i=0; i<4; i++)
 		hashes[i] = CHash::MurmurHash3((uint8_t* ) &grams[i][0], 3, seed);
-	
+
 
 	int32_t dimension = 32;
 	int32_t hash_bits = 5;

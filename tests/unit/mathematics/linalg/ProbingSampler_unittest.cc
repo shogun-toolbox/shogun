@@ -3,7 +3,7 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Written (W) 2013 Soumyajit De
  */
 
@@ -86,7 +86,7 @@ TEST(ProbingSampler, probing_samples_big_diag_matrix)
 	float64_t difficulty=3;
 	float64_t min_eigenvalue=0.0001;
 
-	// create a sparse matrix	
+	// create a sparse matrix
 	const index_t size=10000;
 	SGSparseMatrix<float64_t> sm(size, size);
 	CSparseMatrixOperator<float64_t>* op=new CSparseMatrixOperator<float64_t>(sm);
@@ -141,7 +141,7 @@ TEST(ProbingSampler, mean_variance)
 	CProbingSampler* trace_sampler=new CProbingSampler(A);
 	trace_sampler->precompute();
 
-	index_t num_samples=trace_sampler->get_num_samples();	
+	index_t num_samples=trace_sampler->get_num_samples();
 	for (index_t i=0; i<num_samples; ++i)
 	{
 		const SGVector<float64_t>& sample=trace_sampler->sample(i);

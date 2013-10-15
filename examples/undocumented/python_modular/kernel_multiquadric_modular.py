@@ -10,7 +10,7 @@ def kernel_multiquadric_modular (train_fname=traindat,test_fname=testdat, shift_
 
 	feats_train=RealFeatures(CSVFile(train_fname))
 	feats_test=RealFeatures(CSVFile(test_fname))
-	
+
 	distance=EuclideanDistance(feats_train, feats_train)
 
 	kernel=MultiquadricKernel(feats_train, feats_train, shift_coef, distance)

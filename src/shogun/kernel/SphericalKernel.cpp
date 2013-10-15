@@ -33,7 +33,7 @@ CSphericalKernel::CSphericalKernel(
 	CFeatures *l, CFeatures *r, float64_t sig, CDistance* dist)
 : CKernel(10), distance(dist)
 {
-  	ASSERT(distance)
+	ASSERT(distance)
 	SG_REF(distance);
 	init();
 	set_sigma(sig);
@@ -56,8 +56,8 @@ bool CSphericalKernel::init(CFeatures* l, CFeatures* r)
 
 void CSphericalKernel::init()
 {
- 	SG_ADD((CSGObject**) &distance, "distance", "Distance to be used.",
- 	    MS_AVAILABLE);
+	SG_ADD((CSGObject**) &distance, "distance", "Distance to be used.",
+	    MS_AVAILABLE);
 	SG_ADD(&sigma, "sigma", "Sigma kernel parameter.", MS_AVAILABLE);
 }
 

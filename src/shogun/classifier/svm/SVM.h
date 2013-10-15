@@ -26,8 +26,8 @@ class CMulticlassSVM;
  *
  * A support vector machine is defined as
  *  \f[
- * 		f({\bf x})=\sum_{i=0}^{N-1} \alpha_i k({\bf x}, {\bf x_i})+b
- * 	\f]
+ *		f({\bf x})=\sum_{i=0}^{N-1} \alpha_i k({\bf x}, {\bf x_i})+b
+ *	\f]
  *
  * where \f$N\f$ is the number of training examples
  * \f$\alpha_i\f$ are the weights assigned to each training example
@@ -38,9 +38,9 @@ class CMulticlassSVM;
  * by solving the following quadratic program
  *
  * \f{eqnarray*}
- * 		\max_{\bf \alpha} && \sum_{i=0}^{N-1} \alpha_i - \sum_{i=0}^{N-1}\sum_{j=0}^{N-1} \alpha_i y_i \alpha_j y_j  k({\bf x_i}, {\bf x_j})\\
- * 		\mbox{s.t.} && 0\leq\alpha_i\leq C\\
- * 		 			&& \sum_{i=0}^{N-1} \alpha_i y_i=0\\
+ *		\max_{\bf \alpha} && \sum_{i=0}^{N-1} \alpha_i - \sum_{i=0}^{N-1}\sum_{j=0}^{N-1} \alpha_i y_i \alpha_j y_j  k({\bf x_i}, {\bf x_j})\\
+ *		\mbox{s.t.} && 0\leq\alpha_i\leq C\\
+ *					&& \sum_{i=0}^{N-1} \alpha_i y_i=0\\
  * \f}
  * here C is a pre-specified regularization parameter.
  */

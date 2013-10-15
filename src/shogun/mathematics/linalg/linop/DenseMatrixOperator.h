@@ -3,7 +3,7 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Written (W) 2013 Soumyajit De
  */
 
@@ -35,14 +35,14 @@ public:
 	/** default constructor */
 	CDenseMatrixOperator();
 
-	/** 
+	/**
 	 * constructor
 	 *
 	 * @param op the dense matrix to be used as the linear operator
 	 */
 	explicit CDenseMatrixOperator(SGMatrix<T> op);
 
-	/** 
+	/**
 	 * copy constructor that creates a deep copy
 	 *
 	 * @param orig the original dense matrix operator
@@ -52,7 +52,7 @@ public:
 	/** destructor */
 	~CDenseMatrixOperator();
 
-	/** 
+	/**
 	 * method that applies the dense-matrix linear operator to a vector
 	 *
 	 * @param b the vector to which the linear operator applies

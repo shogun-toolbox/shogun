@@ -3,9 +3,9 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Written (W) 2013 Soumyajit De
- * 
+ *
  * KRYLSTAT Copyright 2011 by Erlend Aune <erlenda@math.ntnu.no> under GPL2+
  * (few parts rewritten and adjusted for shogun)
  */
@@ -120,7 +120,7 @@ void CJacobiEllipticFunctions
 		sn=sin_u-t*cos_u;
 		cn=cos_u+t*sin_u;
 		dn=Real(1.0)+Real(0.5*m)*(cos_u*cos_u);
-		
+
 		i--;
 		while (i>=0)
 		{

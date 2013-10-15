@@ -115,7 +115,7 @@ namespace shogun
 			 */
 			CDotFeatures* get_cached_psi_features() const;
 
-			/** get caching 
+			/** get caching
 			 *
 			 * @return true if caching of PSI vectors is enabled; false otherwise
 			 */

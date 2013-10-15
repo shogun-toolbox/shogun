@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2013 Evangelos Anagnostopoulos 
- * Copyright (C) 2013 Evangelos Anagnostopoulos 
+ * Written (W) 2013 Evangelos Anagnostopoulos
+ * Copyright (C) 2013 Evangelos Anagnostopoulos
  */
 
 #ifndef _STREAMING_HASHED_SPARSEFEATURES__H__
@@ -199,8 +199,8 @@ public:
 	 */
 	virtual int32_t get_num_features();
 
-	/** Get the current example 
-	 * 
+	/** Get the current example
+	 *
 	 * @return a SGSparseVector representing the hashed version of the string last read
 	 */
 	SGSparseVector<ST> get_vector();
@@ -210,7 +210,7 @@ private:
 		int32_t d, bool use_quadr, bool keep_lin_terms);
 
 protected:
-	
+
 	/** dimensionality of new feature space */
 	int32_t dim;
 

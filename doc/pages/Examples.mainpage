@@ -1,6 +1,6 @@
 /*! \page examples Examples
   \section static_examples Examples for Static Interfaces
-  
+
   \li \subpage python_static_examples
   \li \subpage octave_static_examples
   \li \subpage r_static_examples

@@ -3,7 +3,7 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Written (W) 2013 Soumyajit De
  */
 
@@ -18,7 +18,7 @@ namespace shogun
 {
 
 /** @brief Abstract base class that provides an abstract compute method for
- * computing eigenvalues of a real valued, self-adjoint linear operator. It 
+ * computing eigenvalues of a real valued, self-adjoint linear operator. It
  * also provides method for getting min and max eigenvalues.
  */
 class CEigenSolver : public CSGObject
@@ -31,7 +31,7 @@ public:
 		init();
 	}
 
-	/** 
+	/**
 	 * constructor
 	 *
 	 * @param linear_operator real valued self-adjoint linear operator
@@ -41,7 +41,7 @@ public:
 	: CSGObject()
 	{
 		init();
-		
+
 		m_linear_operator=linear_operator;
 		SG_REF(m_linear_operator);
 	}
@@ -51,7 +51,7 @@ public:
 		SG_UNREF(m_linear_operator);
 	}
 
-	/** 
+	/**
 	 * abstract compute method for computing eigenvalues of a real
 	 * valued linear operator
 	 */
@@ -113,7 +113,7 @@ private:
 		m_linear_operator=NULL;
 		m_is_computed_min=false;
 		m_is_computed_max=false;
-	
+
 		SG_ADD(&m_min_eigenvalue, "min_eigenvalue",
 			"Minimum eigenvalue of a real valued self-adjoint linear operator",
 			MS_NOT_AVAILABLE);

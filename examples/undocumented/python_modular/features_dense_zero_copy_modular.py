@@ -11,7 +11,7 @@ parameter_list = [[data]]
 def features_dense_zero_copy_modular (in_data=data):
 	feats = None
 	if numpy.__version__ >= '1.5':
-		feats=numpy.array(in_data, dtype=float64, order='F')		
+		feats=numpy.array(in_data, dtype=float64, order='F')
 
 		a=RealFeatures()
 		a.frombuffer(feats, False)

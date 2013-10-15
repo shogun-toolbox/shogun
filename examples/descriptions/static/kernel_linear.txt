@@ -1,2 +1,2 @@
-This is an example for the initialization of a linear kernel on real valued 
-data using scaling factor 1.2. 
+This is an example for the initialization of a linear kernel on real valued
+data using scaling factor 1.2.

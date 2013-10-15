@@ -101,7 +101,7 @@ void CCrossValidationPrintOutput::update_trained_machine(
 				prefix);
 		SG_UNREF(kernel);
 	}
-	
+
 	if (dynamic_cast<CMKLMulticlass*>(machine))
 	{
 		CMKLMulticlass* mkl=(CMKLMulticlass*)machine;

@@ -46,9 +46,9 @@ class Form(QMainWindow):
         self.create_main_frame()
         self.create_status_bar()
         self.create_toy_data()
-        
+
         self.on_show()
-                             
+
     def on_show(self):
         self.axes.clear()
         self.axes.plot(self.x, self.y, 'ro')
@@ -58,7 +58,7 @@ class Form(QMainWindow):
         self.canvas.draw()
         self.fill_series_list(self.get_stats())
 
-    
+
     def on_about(self):
         msg = __doc__
         QMessageBox.about(self, "About the demo", msg.strip())
@@ -66,7 +66,7 @@ class Form(QMainWindow):
 
     def fill_series_list(self, names):
         self.series_list_model.clear()
-        
+
         for name in names:
             item = QStandardItem(name)
             item.setCheckState(Qt.Unchecked)
@@ -84,20 +84,20 @@ class Form(QMainWindow):
 
     def create_menu(self):
         self.file_menu = self.menuBar().addMenu("&File")
-        
+
         #load_action = self.create_action("&Load file",
         #    shortcut="Ctrl+L", slot=self.load_file, tip="Load a file")
-        quit_action = self.create_action("&Quit", slot=self.close, 
+        quit_action = self.create_action("&Quit", slot=self.close,
             shortcut="Ctrl+Q", tip="Close the application")
-        
-        #self.add_actions(self.file_menu, 
+
+        #self.add_actions(self.file_menu,
         #    (load_action, None, quit_action))
-            
+
         self.help_menu = self.menuBar().addMenu("&Help")
-        about_action = self.create_action("&About", 
-            shortcut='F1', slot=self.on_about, 
+        about_action = self.create_action("&About",
+            shortcut='F1', slot=self.on_about,
             tip='About the demo')
-            
+
         self.add_actions(self.help_menu, (about_action,))
 
     def clear_data(self):
@@ -120,7 +120,7 @@ class Form(QMainWindow):
             self.degree.setEnabled(True)
         elif kernel_name == "Gaussian":
             self.sigma.setEnabled(True)
-            self.degree.setDisabled(True)         
+            self.degree.setDisabled(True)
 
     def get_stats(self):
         num_train = len(self.x)
@@ -143,7 +143,7 @@ class Form(QMainWindow):
         self.y=y-y.mean()
         self.x= x[:,SP.newaxis]
         self.on_show()
-    
+
     def learn_kernel_width(self):
         root=ModelSelectionParameters();
         c1=ModelSelectionParameters("inference_method", inf);
@@ -164,7 +164,7 @@ class Form(QMainWindow):
         c6 =ModelSelectionParameters("width");
         c5.append_child(c6);
         c6.build_values(0.001, 4.0, R_LINEAR);
-        
+
         crit = GradientCriterion();
 
         grad=GradientEvaluation(gp, feat_train, labels, crit);
@@ -180,7 +180,7 @@ class Form(QMainWindow):
         grad.set_autolock(0);
 
         best_combination=grad_search.select_model(1);
-    
+
         self.sigma.setText("1.0")
         self.plot_gp()
 
@@ -191,15 +191,15 @@ class Form(QMainWindow):
         #feat_train=RealFeatures(x.T)
         #labels=RegressionLabels(y)
         n_dimensions = 1
-        
+
         kernel_name = self.kernel_combo.currentText()
         print "current kernel is %s" % (kernel_name)
-        
+
         #new interface with likelihood parametres being decoupled from the covaraince function
         likelihood = GaussianLikelihood()
         #covar_parms = SP.log([2])
         #hyperparams = {'covar':covar_parms,'lik':SP.log([1])}
-        
+
         # construct covariance function
         width=float(self.sigma.text())
         degree=int(self.degree.text())
@@ -220,12 +220,12 @@ class Form(QMainWindow):
         # location of unispaced predictions
         x_test = array([linspace(self.xmin,self.xmax, self.nTest.text())])
         feat_test=RealFeatures(x_test)
-        
+
         gp = GaussianProcessRegression(inf)
         gp.train()
         covariance = gp.get_variance_vector(feat_test)
         predictions = gp.get_mean_vector(feat_test)
-        
+
         #print "x_test"
         #print feat_test.get_feature_matrix()
         #print "mean predictions"
@@ -235,7 +235,7 @@ class Form(QMainWindow):
 
         self.status_text.setText("Negative Log Marginal Likelihood = %f"%(inf.get_negative_marginal_likelihood()))
 
-        
+
         self.axes.clear()
         self.axes.grid(True)
         self.axes.set_xlim((self.xmin,self.xmax))
@@ -260,32 +260,32 @@ class Form(QMainWindow):
         self.xmax=5
         self.ymin=-5
         self.ymax=5
-            
+
         self.main_frame = QWidget()
-        
+
         plot_frame = QWidget()
-        
+
         self.dpi = 100
         self.fig = Figure((6.0, 6.0), dpi=self.dpi)
         self.canvas = FigureCanvas(self.fig)
         self.canvas.setParent(self.main_frame)
-            
+
         cid = self.canvas.mpl_connect('button_press_event', self.onclick)
         self.axes = self.fig.add_subplot(111)
         self.cax = None
         #self.mpl_toolbar = NavigationToolbar(self.canvas, self.main_frame)
-        
+
         self.kernel_combo = QComboBox()
         self.kernel_combo.insertItem(-1, "Gaussian")
         self.kernel_combo.insertItem(-1, "Polynomial")
         self.kernel_combo.insertItem(-1, "Linear")
         self.kernel_combo.maximumSize = QSize(300, 50)
         self.connect(self.kernel_combo, SIGNAL("currentIndexChanged(QString)"), self.enable_widgets)
-        
+
         log_label = QLabel("Data points")
         self.series_list_view = QListView()
         self.series_list_view.setModel(self.series_list_model)
-        
+
         self.sine_freq = QLineEdit()
         self.sine_freq.setText("1.0")
         self.sine_amplitude = QLineEdit()
@@ -298,7 +298,7 @@ class Form(QMainWindow):
         self.noise_level.setText("1")
         self.nTest = QLineEdit()
         self.nTest.setText("100")
-        
+
         spins_hbox = QHBoxLayout()
         spins_hbox.addWidget(QLabel('Sine data setting:     '))
         spins_hbox.addWidget(QLabel('Sine Freq.'))
@@ -308,7 +308,7 @@ class Form(QMainWindow):
         spins_hbox.addWidget(QLabel('Noise Level'))
         spins_hbox.addWidget(self.noise_level)
         spins_hbox.addStretch(1)
-        
+
         spins_hbox2 = QHBoxLayout()
         spins_hbox2.addWidget(QLabel('Kernel Setting:      '))
         spins_hbox2.addWidget(QLabel('Type'))
@@ -318,22 +318,22 @@ class Form(QMainWindow):
         spins_hbox2.addWidget(QLabel("Degree"))
         spins_hbox2.addWidget(self.degree)
         spins_hbox2.addStretch(1)
-        
+
         spins_hbox3 = QHBoxLayout()
         spins_hbox3.addWidget(QLabel('Test Setting:     '))
         spins_hbox3.addWidget(QLabel('Number of test points'))
         spins_hbox3.addWidget(self.nTest)
         spins_hbox3.addStretch(1)
-        
+
         self.show_button = QPushButton("&Train GP")
         self.connect(self.show_button, SIGNAL('clicked()'), self.plot_gp)
 
         self.gen_sine_data_button = QPushButton("&Generate Sine Data")
         self.connect(self.gen_sine_data_button, SIGNAL('clicked()'), self.create_toy_data)
-        
+
         self.clear_data_button = QPushButton("&Clear")
         self.connect(self.clear_data_button, SIGNAL('clicked()'), self.clear_data)
-        
+
         self.learn_kernel_button = QPushButton("&Learn Kernel Width and train GP")
         self.connect(self.learn_kernel_button, SIGNAL('clicked()'), self.learn_kernel_width)
 
@@ -361,7 +361,7 @@ class Form(QMainWindow):
         right_vbox = QHBoxLayout()
         right_vbox.addLayout(right0_vbox)
         right_vbox.addLayout(right2_vbox)
-    
+
         hbox = QVBoxLayout()
         hbox.addLayout(left_vbox)
         hbox.addLayout(right_vbox)
@@ -383,8 +383,8 @@ class Form(QMainWindow):
             else:
                 target.addAction(action)
 
-    def create_action(  self, text, slot=None, shortcut=None, 
-                        icon=None, tip=None, checkable=False, 
+    def create_action(  self, text, slot=None, shortcut=None,
+                        icon=None, tip=None, checkable=False,
                         signal="triggered()"):
         action = QAction(text, self)
         if icon is not None:
@@ -409,4 +409,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-    
+

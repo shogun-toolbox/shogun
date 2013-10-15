@@ -8,7 +8,7 @@
   <property name="test" location="../../examples/undocumented/java_modular/"/>
   <path id="project.classpath">
 	  <pathelement location="shogun.jar"/>
-	  <pathelement location="classes"/> 
+	  <pathelement location="classes"/>
   </path>
 
   <target name="compile"
@@ -29,17 +29,17 @@
 
     <!-- test examples -->
     <javac srcdir="${test}" destdir="${classes}">
-		<classpath refid="project.classpath"/> 
+		<classpath refid="project.classpath"/>
     </javac>
   </target>
-  
+
   <target name="run" depends="test"
         description="run the examples" >
     <java classname="VectorTest">
-       <classpath refid="project.classpath"/> 
+       <classpath refid="project.classpath"/>
     </java>
   </target>
-  
+
   <target name="clean"
         description="clean up" >
     <!-- Delete ${classes} directory trees -->

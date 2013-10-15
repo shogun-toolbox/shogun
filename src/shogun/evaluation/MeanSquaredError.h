@@ -26,7 +26,7 @@ class CLabels;
  * error (MSE) is estimated as
  *
  * \f[
- * 		\frac{1}{|L|} \sum_{i=1}^{|L|} (L_i - R_i)^2
+ *		\frac{1}{|L|} \sum_{i=1}^{|L|} (L_i - R_i)^2
  * \f]
  *
  */

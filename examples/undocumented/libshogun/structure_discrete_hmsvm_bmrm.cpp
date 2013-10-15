@@ -9,7 +9,7 @@ using namespace shogun;
 int main()
 {
 	init_shogun_with_defaults();
-	
+
 	float64_t features_dat[] = {0,1,1, 2,1,2, 0,1,0, 0,2,2};
 	SGMatrix<float64_t> features_mat(features_dat,1,12,false);
 	CMatrixFeatures<float64_t>* features = new CMatrixFeatures<float64_t>(features_mat,3,4);

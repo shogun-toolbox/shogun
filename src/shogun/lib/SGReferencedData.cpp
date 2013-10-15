@@ -9,7 +9,7 @@ using namespace shogun;
 namespace shogun {
 
 SGReferencedData::SGReferencedData(bool ref_counting) : m_refcount(NULL)
-{ 
+{
 	if (ref_counting)
 	{
 		m_refcount = new RefCount(0);

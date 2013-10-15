@@ -15,7 +15,7 @@ def kernel_wave_modular (fm_train_real=traindat,fm_test_real=testdat, theta=1.0)
 
 	feats_train=RealFeatures(fm_train_real)
 	feats_test=RealFeatures(fm_test_real)
-	
+
 	distance=EuclideanDistance(feats_train, feats_train)
 
 	kernel=WaveKernel(feats_train, feats_train, theta, distance)

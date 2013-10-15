@@ -10,10 +10,10 @@ TEST(CombinedKernelTest,test_array_operations)
 	CCombinedKernel* combined = new CCombinedKernel();
 	CGaussianKernel* gaus_1 = new CGaussianKernel();
 	combined->append_kernel(gaus_1);
-	
+
 	CGaussianKernel* gaus_2 = new CGaussianKernel();
 	combined->append_kernel(gaus_2);
-	
+
 	CGaussianKernel* gaus_3 = new CGaussianKernel();
 	combined->insert_kernel(gaus_3,1);
 
@@ -107,7 +107,7 @@ TEST(CombinedKernelTest,serialization)
 TEST(CombinedKernelTest,combination)
 {
 	CList* kernel_list = 0;
-	
+
 	CList* combined_list = CCombinedKernel::combine_kernels(kernel_list);
 	EXPECT_EQ(combined_list->get_num_elements(),0);
 	SG_UNREF(combined_list);
@@ -116,7 +116,7 @@ TEST(CombinedKernelTest,combination)
 	combined_list = CCombinedKernel::combine_kernels(kernel_list);
 	EXPECT_EQ(combined_list->get_num_elements(),0);
 	SG_UNREF(combined_list);
-	
+
 	CList* sub_list_1 = new CList(true);
 	CGaussianKernel* ck1 = new CGaussianKernel(10,3);
 	sub_list_1->append_element(ck1);
@@ -127,7 +127,7 @@ TEST(CombinedKernelTest,combination)
 	kernel_list->insert_element(sub_list_1);
 
 	float64_t combs1[3]= {3, 5, 7};
-	
+
 	combined_list = CCombinedKernel::combine_kernels(kernel_list);
 	index_t i = 0;
 	for (CSGObject* kernel=combined_list->get_first_element(); kernel;
@@ -156,9 +156,9 @@ TEST(CombinedKernelTest,combination)
 											{ 21, 21, 21, 31, 31, 31}};
 
 	combined_list = CCombinedKernel::combine_kernels(kernel_list);
-	
+
 	index_t j = 0;
-	for (CSGObject* kernel=combined_list->get_first_element(); kernel; 
+	for (CSGObject* kernel=combined_list->get_first_element(); kernel;
 			kernel=combined_list->get_next_element())
 	{
 		CCombinedKernel* c_kernel = dynamic_cast<CCombinedKernel* >(kernel);
@@ -166,7 +166,7 @@ TEST(CombinedKernelTest,combination)
 		i = 0;
 		for (index_t k_idx=0; k_idx<c_kernel->get_num_kernels(); k_idx++)
 		{
-			CGaussianKernel* c_subkernel = 
+			CGaussianKernel* c_subkernel =
 					dynamic_cast<CGaussianKernel* >(c_kernel->get_kernel(k_idx));
 			EXPECT_EQ(c_subkernel->get_width(), combs2[i++][j]);
 			SG_UNREF(c_subkernel);
@@ -190,12 +190,12 @@ TEST(CombinedKernelTest,combination)
 
 	float64_t combs[3][24] = {
 		{	3,		5,		7,		3,		5,		7,		3,		5,		7,		3,		5,		7,		3,		5,		7,		3,		5,		7,		3,		5,		7,		3,		5,		7},
-		{	21, 	21,	21,	31,	31,	31,	21,	21,	21,	31,	31,	31,	21,	21,	21,	31,	31,	31,	21,	21,	21,	31,	31,	31},
+		{	21,	21,	21,	31,	31,	31,	21,	21,	21,	31,	31,	31,	21,	21,	21,	31,	31,	31,	21,	21,	21,	31,	31,	31},
 		{	109,	109,	109,	109,	109,	109,	203,	203,	203,	203,	203,	203,	308,	308,	308,	308,	308,	308,	404,	404,	404,	404,	404,	404}
 		};
-	
+
 	combined_list = CCombinedKernel::combine_kernels(kernel_list);
-	
+
 	j = 0;
 	for (CSGObject* kernel=combined_list->get_first_element(); kernel;
 			kernel=combined_list->get_next_element())
@@ -205,7 +205,7 @@ TEST(CombinedKernelTest,combination)
 		EXPECT_EQ(c_kernel->get_num_subkernels(), 3);
 		for (index_t k_idx=0; k_idx<c_kernel->get_num_kernels(); k_idx++)
 		{
-			CGaussianKernel* c_subkernel = 
+			CGaussianKernel* c_subkernel =
 					dynamic_cast<CGaussianKernel* >(c_kernel->get_kernel(k_idx));
 			EXPECT_EQ(c_subkernel->get_width(), combs[i++][j]);
 			SG_UNREF(c_subkernel);

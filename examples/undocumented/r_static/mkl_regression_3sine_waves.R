@@ -2,8 +2,8 @@
 # paper that we labeled "mixture linear and sine ".
 #
 # The task is to learn a regression function where the true function
-# is given by a mixture of 2 sine waves in addition to a linear trend. 
-# We vary the frequency of the second higher frequency sine wave. 
+# is given by a mixture of 2 sine waves in addition to a linear trend.
+# We vary the frequency of the second higher frequency sine wave.
 
 # Setup: MKL on 10 RBF kernels of different widths on 1000 examples
 

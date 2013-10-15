@@ -40,7 +40,7 @@ CMMDKernelSelectionMedian::CMMDKernelSelectionMedian(
 
 	/* assert that all subkernels are Gaussian kernels */
 	CCombinedKernel* combined=(CCombinedKernel*)kernel;
-	
+
 	for (index_t k_idx=0; k_idx<combined->get_num_kernels(); k_idx++)
 	{
 		CKernel* subkernel=combined->get_kernel(k_idx);

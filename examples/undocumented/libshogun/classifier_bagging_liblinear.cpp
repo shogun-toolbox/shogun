@@ -28,14 +28,14 @@ int main(int argc, char** argv)
 	index_t num_pos = 20;
 	int32_t num_bags = 5;
 	int32_t bag_size = 25;
-	
+
 	/* streaming data generator for mean shift distributions */
     CMeanShiftDataGenerator* gen_n = new CMeanShiftDataGenerator(0, dim);
 	CMeanShiftDataGenerator* gen_p = new CMeanShiftDataGenerator(difference, dim);
 
 	CFeatures* neg = gen_n->get_streamed_features(num_pos);
 	CFeatures* pos = gen_p->get_streamed_features(num_neg);
-	CDenseFeatures<float64_t>* train_feats = 
+	CDenseFeatures<float64_t>* train_feats =
 		CDenseFeatures<float64_t>::obtain_from_generic(neg->create_merged_copy(pos));
 
 	SGVector<float64_t> tl(num_neg+num_pos);
@@ -43,7 +43,7 @@ int main(int argc, char** argv)
 	for (index_t i = 0; i < num_neg; ++i)
 		tl[i] = -1;
 	CBinaryLabels* train_labels = new CBinaryLabels(tl);
-	
+
 	CBaggingMachine* bm = new CBaggingMachine(train_feats, train_labels);
 	CLibLinear* ll = new CLibLinear();
 	ll->set_bias_enabled(true);
@@ -59,7 +59,7 @@ int main(int argc, char** argv)
 	CBinaryLabels* pred_bagging = bm->apply_binary(train_feats);
 	CContingencyTableEvaluation* eval = new CContingencyTableEvaluation();
 	pred_bagging->get_int_labels().display_vector();
-	
+
 	float64_t bag_accuracy = eval->evaluate(pred_bagging, train_labels);
 	float64_t oob_error = bm->get_oob_error(eval);
 
@@ -70,7 +70,7 @@ int main(int argc, char** argv)
 	pred_liblin->get_int_labels().display_vector();
 	float64_t liblin_accuracy = eval->evaluate(pred_liblin, train_labels);
 
-	SG_SPRINT("bagging accuracy: %f (OOB-error: %f)\nLibLinear accuracy: %f\n", 
+	SG_SPRINT("bagging accuracy: %f (OOB-error: %f)\nLibLinear accuracy: %f\n",
 		bag_accuracy, oob_error, liblin_accuracy);
 
 	SG_UNREF(bm);

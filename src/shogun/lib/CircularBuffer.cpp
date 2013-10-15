@@ -19,7 +19,7 @@ CCircularBuffer::CCircularBuffer()
 	init();
 }
 
-CCircularBuffer::CCircularBuffer(int32_t buffer_size)	
+CCircularBuffer::CCircularBuffer(int32_t buffer_size)
 {
 	init();
 
@@ -184,7 +184,7 @@ bool CCircularBuffer::has_next()
 
 	int32_t head_length=m_buffer_end-m_begin_pos;
 
-	// determine position of finder pointer in memory block 
+	// determine position of finder pointer in memory block
 	if (m_last_idx<head_length)
 	{
 		if (m_end_pos>=m_begin_pos && m_bytes_available!=0)
@@ -200,7 +200,7 @@ bool CCircularBuffer::has_next()
 				return temp;
 
 			return has_next_locally(m_buffer.vector+m_last_idx-head_length, m_end_pos);
-		}	
+		}
 	}
 	else
 	{
@@ -226,7 +226,7 @@ index_t CCircularBuffer::next_token_idx(index_t &start)
 	int32_t tail_length=m_end_pos-m_buffer.vector;
 	int32_t head_length=m_buffer_end-m_begin_pos;
 
-	// determine position of finder pointer in memory block 
+	// determine position of finder pointer in memory block
 	if (m_last_idx<head_length)
 	{
 		if (m_end_pos>=m_begin_pos && m_bytes_available!=0)
@@ -252,10 +252,10 @@ index_t CCircularBuffer::next_token_idx(index_t &start)
 				start=temp_start;
 
 			return end;
-		}	
+		}
 	}
 	else
-	{		
+	{
 		end=next_token_idx_locally(start, m_buffer.vector+m_last_idx-head_length, m_end_pos);
 		if (end-head_length<=tail_length)
 			return end;
@@ -274,7 +274,7 @@ void CCircularBuffer::skip_characters(int32_t num_chars)
 		m_last_idx=0;
 
 	m_bytes_available+=num_chars;
-	m_bytes_count-=num_chars;	
+	m_bytes_count-=num_chars;
 }
 
 void CCircularBuffer::clear()
@@ -293,7 +293,7 @@ void CCircularBuffer::init()
 	m_buffer_end=NULL;
 	m_tokenizer=NULL;
 
-	m_begin_pos=NULL; 
+	m_begin_pos=NULL;
 	m_end_pos=NULL;
 
 	m_last_idx=0;
@@ -309,7 +309,7 @@ int32_t CCircularBuffer::append_chunk(const char* source, int32_t source_size,
 		SG_ERROR("CCircularBuffer::append_chunk(const char*, int32_t, bool):: Invalid parameters!\
 				Source shouldn't be NULL or zero sized\n");
 		return -1;
-	}	
+	}
 
 	if (from_buffer_begin)
 		m_end_pos=m_buffer.vector;
@@ -325,7 +325,7 @@ int32_t CCircularBuffer::append_chunk(const char* source, int32_t source_size,
 
 int32_t CCircularBuffer::append_chunk(FILE* source, int32_t source_size,
 					bool from_buffer_begin)
-{	
+{
 	int32_t actually_read=fread(m_end_pos, sizeof(char), source_size, source);
 
 	if (from_buffer_begin && actually_read==source_size)
@@ -346,7 +346,7 @@ void CCircularBuffer::detach_chunk(char** dest, int32_t* dest_size, int32_t dest
 		SG_ERROR("CCircularBuffer::detach_chunk(...):: Invalid parameters! Pointers are NULL\n");
 		return;
 	}
-	
+
 	if (*dest==NULL)
 	{
 		*dest=SG_MALLOC(char, num_bytes+dest_offset);
@@ -364,7 +364,7 @@ void CCircularBuffer::detach_chunk(char** dest, int32_t* dest_size, int32_t dest
 
 	memcpy(*dest+dest_offset, m_begin_pos, num_bytes);
 	move_pointer(&m_begin_pos, m_begin_pos+num_bytes);
-	
+
 	m_last_idx-=num_bytes;
 	if (m_last_idx<0)
 		m_last_idx=0;

@@ -3,7 +3,7 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Written (W) 2013 Soumyajit De
  */
 
@@ -63,7 +63,7 @@ SGVector<complex128_t> CDirectLinearSolverComplex::solve(
 		{
 			LLT<MatrixXcd> llt(map_A);
 			map_x=llt.solve(map_b.cast<complex128_t>());
-			
+
 			// checking for success
 			if (llt.info()==NumericalIssue)
 				SG_WARNING("Matrix is not Hermitian positive definite!\n");

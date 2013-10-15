@@ -53,7 +53,7 @@ SparseMatrix<T> EigenSparseUtil<T>::toEigenSparse(SGSparseMatrix<T> sg_matrix)
 		DynamicSparseMatrix<T> dM(num_rows, num_cols);
 		dM.reserve(tripletList.size());
 
-		for (typename std::vector<SparseTriplet>::iterator it=tripletList.begin(); 
+		for (typename std::vector<SparseTriplet>::iterator it=tripletList.begin();
 			it!=tripletList.end(); ++it )
 			dM.coeffRef(it->row(), it->col())+=it->value();
 

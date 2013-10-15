@@ -29,7 +29,7 @@ namespace shogun
 #ifdef HAVE_LAPACK
 
 
-/** @brief mapped sparse matrix for 
+/** @brief mapped sparse matrix for
  * representing graph relations of tasks
  */
 class MappedSparseMatrix
@@ -79,7 +79,7 @@ class MappedSparseMatrix
 
         }
     }
-    
+
 	/** under-the-hood data structure  */
     std::vector< std::map<index_t, float64_t> > data;
 
@@ -235,11 +235,11 @@ class CLibLinearMTL : public CLinearMachine
 		 */
 		inline SGMatrix<float64_t> get_W()
 		{
-            
+
             int32_t w_size = V.num_rows;
 
             SGMatrix<float64_t> W = SGMatrix<float64_t>(w_size, num_tasks);
-            for(int32_t k=0; k<w_size*num_tasks; k++) 
+            for(int32_t k=0; k<w_size*num_tasks; k++)
             {
                 W.matrix[k] = 0;
             }

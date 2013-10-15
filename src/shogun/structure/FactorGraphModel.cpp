@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2013 Shell Hu 
- * Copyright (C) 2013 Shell Hu 
+ * Written (W) 2013 Shell Hu
+ * Copyright (C) 2013 Shell Hu
  */
 
 #include <shogun/structure/FactorGraphModel.h>
@@ -28,7 +28,7 @@ CFactorGraphModel::CFactorGraphModel()
 	init();
 }
 
-CFactorGraphModel::CFactorGraphModel(CFeatures* features, CStructuredLabels* labels, 
+CFactorGraphModel::CFactorGraphModel(CFeatures* features, CStructuredLabels* labels,
 	EMAPInferType inf_type, bool verbose) : CStructuredModel(features, labels)
 {
 	init();
@@ -56,10 +56,10 @@ void CFactorGraphModel::init()
 
 void CFactorGraphModel::add_factor_type(CFactorType* ftype)
 {
-	REQUIRE(ftype->get_w_dim() > 0, "%s::add_factor_type(): number of parameters can't be 0!\n", 
+	REQUIRE(ftype->get_w_dim() > 0, "%s::add_factor_type(): number of parameters can't be 0!\n",
 		get_name());
 
-	// check whether this ftype has been added 
+	// check whether this ftype has been added
 	int32_t id = ftype->get_type_id();
 	for (int32_t fi = 0; fi < m_factor_types->get_num_elements(); ++fi)
 	{
@@ -67,9 +67,9 @@ void CFactorGraphModel::add_factor_type(CFactorType* ftype)
 		if (id == ft->get_type_id())
 		{
 			SG_UNREF(ft);
-			SG_PRINT("%s::add_factor_type(): factor_type (id = %d) has been added!\n", 
+			SG_PRINT("%s::add_factor_type(): factor_type (id = %d) has been added!\n",
 				get_name(), id);
-			
+
 			return;
 		}
 
@@ -78,7 +78,7 @@ void CFactorGraphModel::add_factor_type(CFactorType* ftype)
 
 	SGVector<int32_t> w_map_cp = m_w_map.clone();
 	m_w_map.resize_vector(w_map_cp.size() + ftype->get_w_dim());
-	
+
 	for (int32_t mi = 0; mi < w_map_cp.size(); mi++)
 	{
 		m_w_map[mi] = w_map_cp[mi];
@@ -123,7 +123,7 @@ void CFactorGraphModel::del_factor_type(const int32_t ftype_id)
 
 	SGVector<int32_t> w_map_cp = m_w_map.clone();
 	m_w_map.resize_vector(w_map_cp.size() - w_dim);
-	
+
 	int ind = 0;
 	for (int32_t mi = 0; mi < w_map_cp.size(); mi++)
 	{
@@ -161,9 +161,9 @@ SGVector<int32_t> CFactorGraphModel::get_global_params_mapping() const
 	return m_w_map.clone();
 }
 
-SGVector<int32_t> CFactorGraphModel::get_params_mapping(const int32_t ftype_id) 
+SGVector<int32_t> CFactorGraphModel::get_params_mapping(const int32_t ftype_id)
 {
-	return m_w_map.find(ftype_id); 
+	return m_w_map.find(ftype_id);
 }
 
 int32_t CFactorGraphModel::get_dim() const
@@ -234,7 +234,7 @@ void CFactorGraphModel::w_to_fparams(SGVector<float64_t> w)
 SGVector< float64_t > CFactorGraphModel::get_joint_feature_vector(int32_t feat_idx, CStructuredData* y)
 {
 	// factor graph instance
-	CFactorGraphFeatures* mf = CFactorGraphFeatures::obtain_from_generic(m_features);	
+	CFactorGraphFeatures* mf = CFactorGraphFeatures::obtain_from_generic(m_features);
 	CFactorGraph* fg = mf->get_sample(feat_idx);
 
 	// ground truth states
@@ -260,7 +260,7 @@ SGVector< float64_t > CFactorGraphModel::get_joint_feature_vector(int32_t feat_i
 		int32_t dat_size = dat.size();
 
 		ASSERT(w_map.size() == dat_size * ftype->get_num_assignments());
-		
+
 		int32_t ei = ftype->index_from_universe_assignment(states, fac->get_variables());
 		for (int32_t di = 0; di < dat_size; di++)
 			psi[w_map[ei*dat_size + di]] += dat[di];
@@ -287,7 +287,7 @@ SGVector< float64_t > CFactorGraphModel::get_joint_feature_vector(int32_t feat_i
 CResultSet* CFactorGraphModel::argmax(SGVector<float64_t> w, int32_t feat_idx, bool const training)
 {
 	// factor graph instance
-	CFactorGraphFeatures* mf = CFactorGraphFeatures::obtain_from_generic(m_features);	
+	CFactorGraphFeatures* mf = CFactorGraphFeatures::obtain_from_generic(m_features);
 	CFactorGraph* fg = mf->get_sample(feat_idx);
 
 	// prepare factor graph
@@ -384,7 +384,7 @@ float64_t CFactorGraphModel::delta_loss(CStructuredData* y1, CStructuredData* y2
 	CFactorGraphObservation* y_pred = CFactorGraphObservation::obtain_from_generic(y2);
 	SGVector<int32_t> s_truth = y_truth->get_data();
 	SGVector<int32_t> s_pred = y_pred->get_data();
-	
+
 	ASSERT(s_pred.size() == s_truth.size());
 
 	float64_t loss = 0.0;

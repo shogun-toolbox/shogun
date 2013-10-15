@@ -11,7 +11,7 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- *   Copyright (C) 2009 - 2012 Jun Liu and Jieping Ye 
+ *   Copyright (C) 2009 - 2012 Jun Liu and Jieping Ye
  */
 
 #include <shogun/lib/slep/tree/altra.h>
@@ -32,7 +32,7 @@ void altra(double *x, double *v, int n, double *ind, int nodes, double mult)
 		if ((int) ind[1]!=-1){
 			printf("\n Error! \n Check ind");
 			exit(1);
-		}        
+		}
 
 		lambda=mult*ind[2];
 
@@ -59,11 +59,11 @@ void altra(double *x, double *v, int n, double *ind, int nodes, double mult)
 	 */
 	for(;i < nodes; i++){
 		/*
-		 * compute the L2 norm of this group         
+		 * compute the L2 norm of this group
 		 */
 		twoNorm=0;
 		for(j=(int) ind[3*i]-1;j< (int) ind[3*i+1];j++)
-			twoNorm += x[j] * x[j];        
+			twoNorm += x[j] * x[j];
 		twoNorm=sqrt(twoNorm);
 
 		lambda=mult*ind[3*i+2];
@@ -74,7 +74,7 @@ void altra(double *x, double *v, int n, double *ind, int nodes, double mult)
 			 * shrinkage this group by ratio
 			 */
 			for(j=(int) ind[3*i]-1;j<(int) ind[3*i+1];j++)
-				x[j]*=ratio;            
+				x[j]*=ratio;
 		}
 		else{
 			/*
@@ -96,7 +96,7 @@ void altra_mt(double *X, double *V, int n, int k, double *ind, int nodes, double
 	for (i=0;i<n;i++){
 		/*
 		 * copy a row of V to v
-		 *         
+		 *
 		 */
 		for(j=0;j<k;j++)
 			v[j]=V[j*n + i];
@@ -104,8 +104,8 @@ void altra_mt(double *X, double *V, int n, int k, double *ind, int nodes, double
 		altra(x, v, k, ind, nodes, mult);
 
 		/*
-		 * copy the solution to X         
-		 */        
+		 * copy the solution to X
+		 */
 		for(j=0;j<k;j++)
 			X[j*n+i]=x[j];
 	}
@@ -123,17 +123,17 @@ void computeLambda2Max(double *lambda2_max, double *x, int n, double *ind, int n
 
 	for(i=0;i < nodes; i++){
 		/*
-		 * compute the L2 norm of this group         
+		 * compute the L2 norm of this group
 		 */
 		twoNorm=0;
 		for(j=(int) ind[3*i]-1;j< (int) ind[3*i+1];j++)
-			twoNorm += x[j] * x[j];        
+			twoNorm += x[j] * x[j];
 		twoNorm=sqrt(twoNorm);
 
 		twoNorm=twoNorm/ind[3*i+2];
 
 		if (twoNorm >*lambda2_max )
-			*lambda2_max=twoNorm;        
+			*lambda2_max=twoNorm;
 	}
 }
 
@@ -155,7 +155,7 @@ double treeNorm(double *x, int ldx, int n, double *ind, int nodes){
 		if ((int) ind[1]!=-1){
 			printf("\n Error! \n Check ind");
 			exit(1);
-		}        
+		}
 
 		lambda=ind[2];
 
@@ -177,13 +177,13 @@ double treeNorm(double *x, int ldx, int n, double *ind, int nodes){
 	 */
 	for(;i < nodes; i++){
 		/*
-		 * compute the L2 norm of this group         
+		 * compute the L2 norm of this group
 		 */
 		twoNorm=0;
 
 		int n_in_node = (int) ind[3*i+1] - (int) ind[3*i]-1;
 		for(j=(int) ind[3*i]-1;j< (int) ind[3*i]-1 + n_in_node*ldx;j+=ldx)
-			twoNorm += x[j] * x[j];        
+			twoNorm += x[j] * x[j];
 		twoNorm=sqrt(twoNorm);
 
 		lambda=ind[3*i+2];
@@ -235,7 +235,7 @@ double findLambdaMax(double *v, int n, double *ind, int nodes){
 
 	/* test whether the solution is zero or not
 	*/
-	altra(x, v, n, ind2, nodes);    
+	altra(x, v, n, ind2, nodes);
 	for(i=0;i<n;i++){
 		if (x[i]!=0)
 			break;
@@ -283,7 +283,7 @@ double findLambdaMax(double *v, int n, double *ind, int nodes){
 
 		num=0;
 		while(1){
-			num++;            
+			num++;
 
 			lambda1=lambda2;
 			lambda2=lambda2*2;
@@ -308,7 +308,7 @@ double findLambdaMax(double *v, int n, double *ind, int nodes){
 				 */
 			}
 		}
-	}    
+	}
 
 	/*
 	   printf("\n num=%d, lambda1=%2.5f, lambda2=%2.5f",num, lambda1,lambda2);
@@ -371,7 +371,7 @@ double findLambdaMax_mt(double *V, int n, int k, double *ind, int nodes)
 	for (i=0;i<n;i++){
 		/*
 		 * copy a row of V to v
-		 *         
+		 *
 		 */
 		for(j=0;j<k;j++)
 			v[j]=V[j*n + i];
@@ -379,7 +379,7 @@ double findLambdaMax_mt(double *V, int n, int k, double *ind, int nodes)
 		lambda = findLambdaMax(v, k, ind, nodes);
 
 		/*
-		   printf("\n   lambda=%5.2f",lambda);        
+		   printf("\n   lambda=%5.2f",lambda);
 		   */
 
 		if (lambda>lambdaMax)

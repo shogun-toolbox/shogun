@@ -52,7 +52,7 @@ TEST(SGObject,equals_NULL_parameter)
 
 void* stress_test(void* args)
 {
-	CBinaryLabels* labs = (CBinaryLabels* ) args;	
+	CBinaryLabels* labs = (CBinaryLabels* ) args;
 	CBinaryLabels* labs_2 = new CBinaryLabels(*labs);
 	for (index_t i=0; i<1000000; i++)
 	{

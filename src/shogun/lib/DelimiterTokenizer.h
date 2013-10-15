@@ -26,13 +26,13 @@ class CTokenizer;
 class CDelimiterTokenizer: public CTokenizer
 {
 public:
-	/** default constructor 
+	/** default constructor
 	 *
 	 * @param skip_delimiters whether to skip consecutive delimiters or not
 	 */
 	CDelimiterTokenizer(bool skip_delimiters = false);
 
-	/** copy constructor 
+	/** copy constructor
 	 *
 	 * @param orig the original DelimiterTokenizer
 	 */
@@ -86,7 +86,7 @@ public:
 	 * @return if skip consecutive delimiters is set
 	 */
 	bool get_skip_delimiters() const;
-	
+
 	/** set value for skip_consecutive_delimiters
 	 *
 	 * @param skip_delimiters whether to skip or not consecutive delimiters

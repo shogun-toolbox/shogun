@@ -10,7 +10,7 @@ parameter_list = [[matrix,3,1,2],[matrix,3,1,2]]
 # ... of type LongInt
 def features_string_hashed_wd_modular (A=matrix,order=3,start_order=1,hash_bits=2):
     a=LongIntFeatures(A)
-    
+
     from numpy import array, uint8
     from modshogun import HashedWDFeatures, StringByteFeatures, RAWDNA
     from modshogun import MSG_DEBUG

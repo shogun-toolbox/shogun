@@ -23,7 +23,7 @@ class CDotFeatures;
 class CHashedDocConverter;
 class CTokenizer;
 
-/** @brief This class can be used to provide on-the-fly vectorization of a document collection. 
+/** @brief This class can be used to provide on-the-fly vectorization of a document collection.
  * Like in the standard Bag-of-Words representation, this class considers each document as a collection of tokens,
  * which are then hashed into a new feature space of a specified dimension.
  * This class is very flexible and allows the user to specify the tokenizer used to tokenize each document,
@@ -47,7 +47,7 @@ public:
 	 * @param skips max number of tokens to skip when combining tokens
 	 * @param size cache size
 	 */
-	CHashedDocDotFeatures(int32_t hash_bits=0, CStringFeatures<char>* docs=NULL, 
+	CHashedDocDotFeatures(int32_t hash_bits=0, CStringFeatures<char>* docs=NULL,
 			CTokenizer* tzer=NULL, bool normalize=true, int32_t n_grams=1, int32_t skips=0, int32_t size=0);
 
 	/** copy constructor */
@@ -61,7 +61,7 @@ public:
 
 	/** destructor */
 	virtual ~CHashedDocDotFeatures();
-	
+
 	/** obtain the dimensionality of the feature space
 	 *
 	 * (not mix this up with the dimensionality of the input space, usually
@@ -121,7 +121,7 @@ public:
 	 * NOT IMPLEMENTED
 	 *
 	 * @param vector_index the index of the vector over whose components to
-	 * 			iterate over
+	 *			iterate over
 	 * @return feature iterator (to be passed to get_next_feature)
 	 */
 	virtual void* get_feature_iterator(int32_t vector_index);
@@ -187,11 +187,11 @@ public:
 	 * @param num_bits the number of bits to maintain in the hash
 	 * @param seed a seed for the hash
 	 */
-	static uint32_t calculate_token_hash(char* token, int32_t length, 
+	static uint32_t calculate_token_hash(char* token, int32_t length,
 			int32_t num_bits, uint32_t seed);
 
 private:
-	void init(int32_t hash_bits, CStringFeatures<char>* docs, CTokenizer* tzer, 
+	void init(int32_t hash_bits, CStringFeatures<char>* docs, CTokenizer* tzer,
 		bool normalize, int32_t n_grams, int32_t skips);
 
 protected:

@@ -46,7 +46,7 @@ TEST(LibSVMFileTest, sparse_matrix_int32)
 	SG_UNREF(fout);
 
 	CLibSVMFile* fin=new CLibSVMFile("LibSVMFileTest_sparse_matrix_int32_output.txt", 'r', NULL);
-	fin->get_sparse_matrix(data_from_file, num_feat_from_file, num_vec_from_file, 
+	fin->get_sparse_matrix(data_from_file, num_feat_from_file, num_vec_from_file,
 				labels_from_file);
 
 	EXPECT_EQ(num_vec_from_file, num_vec);
@@ -56,10 +56,10 @@ TEST(LibSVMFileTest, sparse_matrix_int32)
 		EXPECT_NEAR(labels[i], labels_from_file[i], 1E-14);
 		for (int32_t j=0; j<data[i].num_feat_entries; j++)
 		{
-			EXPECT_EQ(data[i].features[j].feat_index, 
+			EXPECT_EQ(data[i].features[j].feat_index,
 					data_from_file[i].features[j].feat_index);
 
-			EXPECT_EQ(data[i].features[j].entry, 
+			EXPECT_EQ(data[i].features[j].entry,
 					data_from_file[i].features[j].entry);
 		}
 	}
@@ -110,7 +110,7 @@ TEST(LibSVMFileTest, sparse_matrix_float64)
 	SG_UNREF(fout);
 
 	CLibSVMFile* fin=new CLibSVMFile("LibSVMFileTest_sparse_matrix_float64_output.txt", 'r', NULL);
-	fin->get_sparse_matrix(data_from_file, num_feat_from_file, num_vec_from_file, 
+	fin->get_sparse_matrix(data_from_file, num_feat_from_file, num_vec_from_file,
 				labels_from_file);
 
 	EXPECT_EQ(num_vec_from_file, num_vec);
@@ -120,10 +120,10 @@ TEST(LibSVMFileTest, sparse_matrix_float64)
 		EXPECT_NEAR(labels[i], labels_from_file[i], 1E-14);
 		for (int32_t j=0; j<data[i].num_feat_entries; j++)
 		{
-			EXPECT_EQ(data[i].features[j].feat_index, 
+			EXPECT_EQ(data[i].features[j].feat_index,
 					data_from_file[i].features[j].feat_index);
 
-			EXPECT_NEAR(data[i].features[j].entry, 
+			EXPECT_NEAR(data[i].features[j].entry,
 					data_from_file[i].features[j].entry, 1E-14);
 		}
 	}

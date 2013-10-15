@@ -57,17 +57,17 @@ DenseSymmetricMatrix compute_distance_matrix(RandomAccessIterator begin, RandomA
 
 template <class RandomAccessIterator, class PairwiseCallback>
 DenseMatrix triangulate(RandomAccessIterator begin, RandomAccessIterator end, PairwiseCallback distance_callback,
-                        const Landmarks& landmarks, const DenseVector& landmark_distances_squared, 
+                        const Landmarks& landmarks, const DenseVector& landmark_distances_squared,
                         EigendecompositionResult& landmarks_embedding, IndexType target_dimension)
 {
 	timed_context context("Landmark triangulation");
-	
+
 	const IndexType n_vectors = end-begin;
 	const IndexType n_landmarks = landmarks.size();
 
 	bool* to_process = new bool[n_vectors];
 	std::fill(to_process,to_process+n_vectors,true);
-	
+
 	DenseMatrix embedding(n_vectors,target_dimension);
 
 	for (IndexType index_iter=0; index_iter<n_landmarks; ++index_iter)
@@ -108,7 +108,7 @@ DenseMatrix triangulate(RandomAccessIterator begin, RandomAccessIterator end, Pa
 }
 
 template <class RandomAccessIterator, class PairwiseCallback>
-DenseSymmetricMatrix compute_distance_matrix(RandomAccessIterator begin, RandomAccessIterator end, 
+DenseSymmetricMatrix compute_distance_matrix(RandomAccessIterator begin, RandomAccessIterator end,
                                              PairwiseCallback callback)
 {
 	timed_context context("Multidimensional scaling distance matrix computation");

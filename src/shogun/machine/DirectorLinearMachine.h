@@ -19,7 +19,7 @@
 namespace shogun
 {
 
-#define IGNORE_IN_CLASSLIST 
+#define IGNORE_IN_CLASSLIST
 IGNORE_IN_CLASSLIST class CDirectorLinearMachine : public CLinearMachine
 {
 	public:
@@ -195,7 +195,7 @@ IGNORE_IN_CLASSLIST class CDirectorLinearMachine : public CLinearMachine
 		}
 
 		/** @return whether this machine supports locking */
-		virtual bool supports_locking() const 
+		virtual bool supports_locking() const
 		{
 			return CLinearMachine::supports_locking();
 		}

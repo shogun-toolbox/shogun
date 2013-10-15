@@ -6,7 +6,7 @@
  *
  * Written (W) 2013 Soumyajit De
  */
- 
+
 #include <shogun/lib/common.h>
 
 #ifdef HAVE_EIGEN3
@@ -37,7 +37,7 @@ TEST(MatrixOperator, cast_dense_double_complex)
 
 	Map<MatrixXd> eig_orig(orig_m.matrix, orig_m.num_rows, orig_m.num_cols);
 	Map<MatrixXcd> eig_casted(casted_m.matrix, casted_m.num_rows, casted_m.num_cols);
-	
+
 	EXPECT_NEAR((eig_orig.cast<complex128_t>()-eig_casted).norm(), 0.0, 1E-15);
 
 	SG_UNREF(orig_op);

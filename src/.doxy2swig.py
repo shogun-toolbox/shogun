@@ -50,14 +50,14 @@ def my_open_write(dest):
         return open(dest, 'w')
 
 
-class Doxy2SWIG:    
+class Doxy2SWIG:
     """Converts Doxygen generated XML files into a file containing
     docstrings that can be used by SWIG-1.3.x that have support for
     feature("docstring").  Once the data is parsed it is stored in
     self.pieces.
 
-    """    
-    
+    """
+
     def __init__(self, src, include_function_definition=True, quiet=False):
         """Initialize the instance given a source object.  `src` can
         be a file or filename.  If you do not want to include function
@@ -92,15 +92,15 @@ class Doxy2SWIG:
             self.ignores.append('argsstring')
 
         self.quiet = quiet
-            
-        
+
+
     def generate(self):
         """Parses the file set in the initialization.  The resulting
         data is stored in `self.pieces`.
 
         """
         self.parse(self.xmldoc)
-    
+
     def parse(self, node):
         """Parse a given node.  This function in turn calls the
         `parse_<nodeType>` functions which handle the respective
@@ -129,7 +129,7 @@ class Doxy2SWIG:
         `do_<tagName>` handers for different elements.  If no handler
         is available the `generic_parse` method is called.  All
         tagNames specified in `self.ignores` are simply ignored.
-        
+
         """
         name = node.tagName
         ignores = self.ignores
@@ -183,7 +183,7 @@ class Doxy2SWIG:
         if pad:
             npiece = len(self.pieces)
             if pad == 2:
-                self.add_text('\n')                
+                self.add_text('\n')
         for n in node.childNodes:
             self.parse(n)
         if pad:
@@ -272,7 +272,7 @@ class Doxy2SWIG:
         tmp = node.parentNode.parentNode.parentNode
         compdef = tmp.getElementsByTagName('compounddef')[0]
         cdef_kind = compdef.attributes['kind'].value
-        
+
         if prot == 'public':
             first = self.get_specific_nodes(node, ('definition', 'name'))
             name = first['name'].firstChild.data
@@ -289,7 +289,7 @@ class Doxy2SWIG:
                 defn = ""
             self.add_text('\n')
             self.add_text('%feature("docstring") ')
-            
+
             anc = node.parentNode.parentNode
             if cdef_kind in ('file', 'namespace'):
                 ns_node = anc.getElementsByTagName('innernamespace')
@@ -310,7 +310,7 @@ class Doxy2SWIG:
                 if n not in first.values():
                     self.parse(n)
             self.add_text(['";', '\n'])
-        
+
     def do_definition(self, node):
         data = node.firstChild.data
         self.add_text('%s "\n%s'%(data, data))
@@ -388,7 +388,7 @@ class Doxy2SWIG:
         """Cleans the list of strings given as `pieces`.  It replaces
         multiple newlines by a maximum of 2 and returns a new list.
         It also wraps the paragraphs nicely.
-        
+
         """
         ret = []
         count = 0
@@ -438,13 +438,13 @@ def main():
                       default=False,
                       dest='quiet',
                       help='be quiet and minimise output')
-    
+
     options, args = parser.parse_args()
     if len(args) != 2:
         parser.error("error: no input and output specified")
 
     convert(args[0], args[1], not options.func_def, options.quiet)
-    
+
 
 if __name__ == '__main__':
     main()

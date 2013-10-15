@@ -27,7 +27,7 @@ void CSegmentLoss::set_segment_loss(float64_t* segment_loss, int32_t m, int32_t 
 {
 	// here we need two matrices. Store it in one: 2N x N
 	if (2*m!=n)
-		SG_ERROR("segment_loss should be 2 x quadratic matrix: %i!=%i\n", 2*m, n) 
+		SG_ERROR("segment_loss should be 2 x quadratic matrix: %i!=%i\n", 2*m, n)
 
 	m_num_segment_types = m;
 

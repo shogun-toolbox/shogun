@@ -3,7 +3,7 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Written (W) 2013 Soumyajit De
  */
 
@@ -20,7 +20,7 @@ class CIndependentJob;
 /** @brief Abstract base class for solving multiple independent instances of
  * CIndependentJob. It has one method, submit_job, which may add the job to an
  * internal queue and might block if there is yet not space in the queue.
- * After jobs are submitted, it might not yet be ready. wait_for_all waits 
+ * After jobs are submitted, it might not yet be ready. wait_for_all waits
  * until all jobs are completed, which *must be* called to guarantee that all
  * jobs are finished.
  */
@@ -33,16 +33,16 @@ public:
 	{
 		SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 	}
-	
+
 	/** destructor */
 	virtual ~CIndependentComputationEngine()
 	{
 		SG_GCDEBUG("%s destroyed (%p)\n", this->get_name(), this)
 	}
-	
-	/** 
+
+	/**
 	 * abstract method that submits the jobs to the engine
-	 * 
+	 *
 	 * @param job the job to be computed
 	 */
 	virtual void submit_job(CIndependentJob* job) = 0;
