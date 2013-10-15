@@ -9,7 +9,7 @@ using namespace shogun;
 TEST(ParserTest, tokenization)
 {
 	int32_t ntokens=5;
-	const char* text="	This is	the ultimate test!	";
+	const char* text="	This is  	the ultimate test!	";
 	const char* tokens[]={"This", "is", "the", "ultimate", "test!"};
 	SGVector<char> cv(const_cast<char* >(text), 30, false);
 
