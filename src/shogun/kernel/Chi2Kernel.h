@@ -25,7 +25,7 @@ namespace shogun
  *
  * It is defined as
  * \f[
- * k({\bf x},({\bf x'})= e^{-\frac{1}{width} \sum_{i=0}^{l}\frac{(x_i-x'_i)^2}{(x_i+x'_i)}}
+ * k({\bf x},{\bf x'})= e^{-\frac{1}{width} \sum_{i=0}^{l}\frac{(x_i-x'_i)^2}{(x_i+x'_i)}}
  * \f]
  *
  * */
