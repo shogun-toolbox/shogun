@@ -37,6 +37,7 @@
 		- Fixed bugs in FITC inference method that caused wrong posterior results.
 		- Fixed bugs in GP Regression that caused negative values for the variances.
 		- Fixed two memory errors in the streaming-features framework.
+		- Fixed bug in the Kernel Mean Matching implementation (thanks to Meghana Kshirsagar).
 	* Cleanup and API Changes:
 		- Switch compile system to cmake
 		- SGSparseVector/Matrix are now derived from SGReferenceData and thus refcounted.
