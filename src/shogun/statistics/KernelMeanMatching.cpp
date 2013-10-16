@@ -71,7 +71,7 @@ SGVector<float64_t> CKernelMeanMatching::compute_weights()
 			avg+= m_kernel->kernel(m_training_indices[i],m_test_indices[j]);
 
 		avg *= float64_t(n_tr)/n_te;
-		kappa[i] = avg;
+		kappa[i] = -avg;
 	}
 	float64_t* a = SG_MALLOC(float64_t, n_tr);
 	for (i=0; i<n_tr; i++) a[i] = 1.0;
