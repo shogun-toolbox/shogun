@@ -421,7 +421,8 @@ CLabels then the .i file should contain ```%newobject CClassifier::apply();```
 
 The git repo for the project is hosted on GitHub at
 https://github.com/shogun-toolbox/shogun. To get started, create your own fork
-and clone it. Remember to set the upstream remote to the main repo by:
+and clone it ([howto](https://help.github.com/articles/fork-a-repo "GitHub help - Fork a repo")).
+Remember to set the upstream remote to the main repo by:
 
 ```
 git remote add upstream git://github.com/shogun-toolbox/shogun.git
