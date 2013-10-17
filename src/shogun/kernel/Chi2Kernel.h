@@ -51,8 +51,8 @@ class CChi2Kernel: public CDotKernel
 		 * @param width width
 		 * @param size cache size
 		 */
-		CChi2Kernel(
-			CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r, float64_t width, int32_t size);
+		CChi2Kernel( CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r,
+				float64_t width, int32_t size=10);
 
 		virtual ~CChi2Kernel();
 
