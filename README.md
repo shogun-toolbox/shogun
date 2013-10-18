@@ -12,7 +12,7 @@ Quick links to this file:
 * [Introduction](#introduction)
 * [Interfaces](#interfaces)
 * [Platforms](#platforms)
-* [Contents](#contents)
+* [Directory Contents](#contents)
 * [Applications](#applications)
 * [License](#license)
 * [Download](#download)
@@ -85,17 +85,20 @@ Visit http://www.shogun-toolbox.org/doc/en/current for further information.
 Debian GNU/Linux, Mac OSX and WIN32/CYGWIN are supported platforms (see
 the [INSTALL](INSTALL.md) file for generic and platform specific installation instructions).
 
-## Contents
+## Directory Contents
 -----------
 
-- src: source code.
-- data: data sets (required for some examples / applications - these need to be downloaded
+The following directories are found in the source distribution. 
+
+- *src* - source code.
+- *data* - data sets (required for some examples / applications - these need to be downloaded
     separately via the download site or `git submodule update --init` from the root of the git checkout.
-- doc: documentation (to be built using doxygen), ipython notebooks, and the PDF tutorial.
-- examples: example files for all interfaces.
-- applications: applications of SHOGUN.
-- benchmarks: speed benchmarks.
-- tests: unit and integration tests.
+- *doc* - documentation (to be built using doxygen), ipython notebooks, and the PDF tutorial.
+- *examples* - example files for all interfaces.
+- *applications* - applications of SHOGUN.
+- *benchmarks* - speed benchmarks.
+- *tests* - unit and integration tests.
+- *cmake* - cmake build scripts
 
 ## Applications
 ---------------
@@ -114,8 +117,11 @@ Except for the files classifier/svm/Optimizer.{cpp,h},
 classifier/svm/SVM_light.{cpp,h}, regression/svr/SVR_light.{cpp,h}
 and the kernel caching functions in kernel/Kernel.{cpp,h}
 which are (C) Torsten Joachims and follow a different
-licensing scheme (cf. [LICENSE\_SVMlight](LICENSE_SVMlight.md)) SHOGUN is licensed under the GPL
-version 3 or any later version (cf. [LICENSE](LICENSE.md)).
+licensing scheme (cf. [LICENSE\_SVMlight](LICENSE_SVMlight.md)) SHOGUN is
+generally licensed under the GPL version 3 or any later version (cf.
+[LICENSE](LICENSE.md)) with code borrowed from various GPL compatible
+libraries from various places (cf. [CONTRIBUTIONS](CONTRIBUTIONS.md)). See also
+[LICENSE\_msufsort](LICENSE_msufsort.md) and  [LICENSE\tapkee](LICENSE_tapkee.md).
 
 ## Download
 -----------

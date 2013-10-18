@@ -1,17 +1,3 @@
-GPL:
-====
-Shogun is licensed under the GNU General Public License version 3 or at your
-option any later version.
-
-SVMlight:
-=========
-When configure is run with --enable-svm-light, you may as an exception to
-the GPL link the code with SVMlight and redistribute the resulting
-binaries under the terms of the SVMlight license. Please read LICENSE.SVMlight.
-
-
-MSufSort:
-=========
 The files in lib/suffixarray/
 BWT.{cpp,h}, InductionSort.h, IntroSort.h, MSufSort.{cpp,h} and Stack.h
 belong to the MSufSort suffix sorting algorithm Version 2.2;
