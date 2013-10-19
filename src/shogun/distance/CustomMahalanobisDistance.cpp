@@ -19,7 +19,6 @@ using namespace Eigen;
 CCustomMahalanobisDistance::CCustomMahalanobisDistance() : CRealDistance()
 {
 	register_params();
-	m_mahalanobis_matrix = NULL;
 }
 
 CCustomMahalanobisDistance::CCustomMahalanobisDistance(CFeatures* l, CFeatures* r, SGMatrix<float64_t> m)

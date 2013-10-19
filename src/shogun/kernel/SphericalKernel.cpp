@@ -16,7 +16,7 @@ using namespace shogun;
 
 CSphericalKernel::CSphericalKernel(): CKernel(0), distance(NULL)
 {
-	init();
+	register_params();
 	set_sigma(1.0);
 }
 
@@ -25,7 +25,7 @@ CSphericalKernel::CSphericalKernel(int32_t size, float64_t sig, CDistance* dist)
 {
 	ASSERT(distance)
 	SG_REF(distance);
-	init();
+	register_params();
 	set_sigma(sig);
 }
 
@@ -35,7 +35,7 @@ CSphericalKernel::CSphericalKernel(
 {
 	ASSERT(distance)
 	SG_REF(distance);
-	init();
+	register_params();
 	set_sigma(sig);
 	init(l, r);
 }
@@ -54,7 +54,7 @@ bool CSphericalKernel::init(CFeatures* l, CFeatures* r)
 	return init_normalizer();
 }
 
-void CSphericalKernel::init()
+void CSphericalKernel::register_params()
 {
 	SG_ADD((CSGObject**) &distance, "distance", "Distance to be used.",
 	    MS_AVAILABLE);

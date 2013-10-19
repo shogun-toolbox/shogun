@@ -32,7 +32,7 @@
 namespace shogun
 {
 /** class QProblem */
-class QPproblem : public CSGObject
+class QPproblem
 {
 // ----------------- Public Data ---------------
 public:
@@ -103,11 +103,12 @@ public:
 
   /** subproblem
    *
+   * @param dst where to copy subproblem to
    * @param ker problem kernel
    * @param len length
    * @param perm perm
    */
-  void Subproblem     (QPproblem &ker, int32_t len, int32_t *perm);
+  static void copy_subproblem(QPproblem* dst, QPproblem* ker, int32_t len, int32_t *perm);
 
   /** PrepMP */
   void PrepMP         ();

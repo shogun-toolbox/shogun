@@ -40,5 +40,10 @@ cd tests/unit && valgrind --leak-check=full ./shogun-unit-test --gtest_filter=EP
 # You might have to delete the build directory or clear the cmake cache otherwise for this to work
 CC=/path/to/gcc CXX=/path/to/g++ cmake ..
 
-# use a custom python installation for python bindings (here 2.7.1 installed in path/to/python
-cmake -DPYTHON_INCLUDE_DIR=/path/to/python/include/python2.7 -DPYTHON_LIBRARY=path/to/python/python-2.7.1/lib/python2.7 ..
+# Under osx one often has the same python major versions installed in /usr and /usr/local via brew etc so one might observe crashes
+# if the wrong python version is linked against.  To use a custom python
+# installation for python bindings one would under brew use 
+cmake -DPYTHON_INCLUDE_DIR=/usr/local/Cellar/python/2.7.5/Frameworks/Python.framework/Headers -DPYTHON_LIBRARY=/usr/local/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/libpython2.7.dylib  -DPythonModular=ON ..
+
+or in general 
+cmake -DPYTHON_INCLUDE_DIR=/path/to/python/include/dir -DPYTHON_LIBRARY=path/to/python/libpythonVERSION.so ..
