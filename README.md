@@ -21,9 +21,21 @@ Quick links to this file:
 Other links that may be useful:
 
 * See [INSTALL](INSTALL.md) for first steps on installation and running SHOGUN.
-* See [README.developer](README_developer.md) for the developer documentation
+* See [README.developer](README_developer.md) for the developer documentation.
 * See [README.data](README_data.md) for how to download example data sets accompanying SHOGUN.
+* See [README.cmake](README_cmake.md) for setting particular build options with SHOGUN and cmake.
 
+CONTRIBUTIONS.md
+INSTALL.md
+LICENSE.md
+LICENSE_msufsort.md
+LICENSE_SVMlight.md
+LICENSE_tapkee.md
+README_cmake.md
+README_data.md
+README_developer.md
+README.md
+README_soname.md
 ## Introduction
 ---------------
 
@@ -49,6 +61,13 @@ The input feature-objects can be dense, sparse or strings, and
 of types int/short/double/char. In addition, they can be converted into different feature types.
 Chains of *preprocessors* (e.g. substracting the mean) can be attached to
 each feature object allowing for on-the-fly pre-processing.
+
+Shogun got initiated by Soeren Sonnenburg and Gunnar Raetsch (thats where the
+name ShoGun originates from). It is now developed by a much larger Team
+cf. [AUTHORS](AUTHORS.md) and would not have been possible without the patches
+and bug reports by various people and by the various authors of other machine
+learning packages that we utilize. See [CONTRIBUTIONS](CONTRIBUTIONS.md) for
+a detailled list.
 
 ## Interfaces
 -------------
@@ -121,7 +140,7 @@ licensing scheme (cf. [LICENSE\_SVMlight](LICENSE_SVMlight.md)) SHOGUN is
 generally licensed under the GPL version 3 or any later version (cf.
 [LICENSE](LICENSE.md)) with code borrowed from various GPL compatible
 libraries from various places (cf. [CONTRIBUTIONS](CONTRIBUTIONS.md)). See also
-[LICENSE\_msufsort](LICENSE_msufsort.md) and  [LICENSE\tapkee](LICENSE_tapkee.md).
+[LICENSE\_msufsort](LICENSE_msufsort.md) and  [LICENSE\_tapkee](LICENSE_tapkee.md).
 
 ## Download
 -----------
