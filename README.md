@@ -25,17 +25,6 @@ Other links that may be useful:
 * See [README.data](README_data.md) for how to download example data sets accompanying SHOGUN.
 * See [README.cmake](README_cmake.md) for setting particular build options with SHOGUN and cmake.
 
-CONTRIBUTIONS.md
-INSTALL.md
-LICENSE.md
-LICENSE_msufsort.md
-LICENSE_SVMlight.md
-LICENSE_tapkee.md
-README_cmake.md
-README_data.md
-README_developer.md
-README.md
-README_soname.md
 ## Introduction
 ---------------
 

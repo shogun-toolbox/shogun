@@ -558,6 +558,4 @@ cd src && make unit-tests
   ```
   chmod +x .git/hook/pre-commit
   ```
-
-
-To make a release, refer to the Makefile in the root dir of the repo.
+To make a release, adjust the [NEWS](NEWS) file properly, i.e. date, release version (like 3.0.0), adjust the soname if required (cf. [README_soname](README_soname.md)) and if a new data version is required add that too. If parameters have been seen changes increase the parameter version too.
