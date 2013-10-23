@@ -657,7 +657,19 @@ float64_t CGMM::get_log_likelihood_example(int32_t num_example)
 
 float64_t CGMM::get_likelihood_example(int32_t num_example)
 {
-	return CMath::exp(get_log_likelihood_example(num_example));
+	float64_t result=0;
+
+	ASSERT(features);
+	ASSERT(features->get_feature_class() == C_DENSE);
+	ASSERT(features->get_feature_type() == F_DREAL);
+
+	for (int32_t i=0; i<int32_t(m_components.size()); i++)
+	{
+		SGVector<float64_t> point= ((CDenseFeatures<float64_t>*) features)->get_feature_vector(num_example);
+		result+=CMath::exp(m_components[i]->compute_log_PDF(point)+CMath::log(m_coefficients[i]));
+	}
+
+	return result;
 }
 
 SGVector<float64_t> CGMM::get_nth_mean(int32_t num)

@@ -142,6 +142,12 @@ class CDistribution : public CSGObject
 			return exp(get_log_likelihood_example(num_example));
 		}
 
+		/** compute likelihood for all vectors in sample
+		 *
+		 * @return likelihood vector for all examples
+		 */
+		virtual SGVector<float64_t> get_likelihood_for_all_examples();
+
 		/** set feature vectors
 		 *
 		 * @param f new feature vectors

@@ -59,3 +59,16 @@ int32_t CDistribution::get_num_relevant_model_parameters()
 	}
 	return num;
 }
+
+SGVector<float64_t> CDistribution::get_likelihood_for_all_examples()
+{
+	ASSERT(features);
+	int32_t num=features->get_num_vectors();
+	ASSERT(num>0);
+
+	SGVector<float64_t> result=SGVector<float64_t>(num);
+	for (int32_t i=0; i<num; i++)
+		result[i]=get_likelihood_example(i);
+
+	return result;
+}
