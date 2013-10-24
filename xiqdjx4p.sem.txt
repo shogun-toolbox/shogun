@@ -1,0 +1,14 @@
+﻿Fix overflow of 32-bit signed integers when multiplying two 32-bit integers: cast to 64-bit integers first, otherwise matrices with number of elements > 2^31 (e.g. a 48,000x48,000 custom kernel matrix) will not work.
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+# On branch develop
+# Changes to be committed:
+#   (use "git reset HEAD <file>..." to unstage)
+#
+#	modified:   src/shogun/lib/SGMatrix.cpp
+#	modified:   src/shogun/lib/SGMatrix.h
+#	modified:   src/shogun/lib/SGMatrixList.cpp
+#	modified:   src/shogun/lib/SGNDArray.cpp
+#	modified:   src/shogun/lib/SGNDArray.h
+#
+

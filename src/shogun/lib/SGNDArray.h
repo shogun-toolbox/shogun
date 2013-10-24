@@ -46,7 +46,7 @@ template<class T> class SGNDArray : public SGReferencedData
 		T* get_matrix(index_t matIdx) const
 		{
 			ASSERT(array && dims && num_dims > 2 && dims[2] > matIdx)
-			return &array[matIdx*dims[0]*dims[1]];
+			return &array[int64_t(matIdx)*int64_t(dims[0])*dims[1]];
 		}
 
 		/** transposes a matrix formed by the two first dimensions
