@@ -1,8 +1,25 @@
 2013-10-01 Soeren Sonnenburg <sonne@debian.org>
 
 	* SHOGUN Release version 3.0.0 (libshogun 14.0, data 0.6, parameter 1)
-	* This release contains several cleanups and bugfixes:
+	* This release features 8 successful Google Summer of Code projects and
+	  is the result an incredible effort by our students. All projects come with
+	  very cool ipython-notebooks that contain background, code examples and
+	  visualizations. Go check them out on our webpage!
+	  
+	  The projects are:
+	  - Gaussian Processes for binary classification [Roman Votjakov]
+	  - Sampling log-determinants for large sparse matrices [Rahul De]
+	  - Metric Learning via LMNN [Fernando Iglesias]
+	  - Independent Component Analysis (ICA) [Kevin Hughes]
+	  - Hashing Feature Framework [Evangelos Anagnostopoulos]
+	  - Structured Output Learning [Hu Shell]
+	  - A web-demo framework []
+	  
+	  Other important changes are the change of our build-system to cmake and
+	  the addition of clone/equals methods to our base-class. In addition, you
+	  get the usual ton of bugfixes, new unit-tests, and new mini-features.
 	* Features:
+		- In addition, the following features have been added:
 		- Added method to importance sample the (true) marginal likelihood of a
 		  Gaussian Process using a posterior approximation.
 		- Added a new class for classical probability distribution that can be
@@ -26,11 +43,6 @@
 		  Gauss-Kronrod and Gauss-Hermite quadrature formulas.
 		- Changed from configure script to CMake by Viktor Gal.
 		- Add C++0x and C++11 cmake detection scripts
-		- Add LMNN support.
-		- Add various ICA algorithms.
-		- Add Random Fourier Dot Features
-		- Add HashedDocDotFeatures and HashedDocConverter
-		- Add LBPyrDotFeatures
 		- ND-Array typmap support for python and octave modular.
 	* Bugfixes:
 		- Fix json serialization.
