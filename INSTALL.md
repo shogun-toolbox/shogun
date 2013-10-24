@@ -76,7 +76,12 @@ object oriented python/swig interface:
   make
   sudo make install
 
-to test if it is working try python examples/documented/python_modular/graphical/svm.py
+to test if it is working try
+```
+  $ export LD_LIBRARY_PATH=SHOGUN_INSTALL_DIR/lib
+  $ export PYTHONPATH=SHOGUN_INSTALL_DIR/lib/pythonX.Y/dist-packages/
+  $ python examples/undocumented/python_modular/graphical/svm.py
+```
 
 object oriented octave/swig interface:
 ======================================
@@ -112,10 +117,12 @@ object oriented java/swig interface:
   make install
 
 to test if it is working try
-export CLASSPATH=/usr/share/java/jblas.jar:SHOGUNDIR/src/java_modular/shogun.jar:.
-export LD_LIBRARY_PATH=SHOGUNDIR/src/shogun:SHOGUNDIR/src/java_modular
-javac ../examples/documented/java_modular/classifier_libsvm_minimal_modular.java
-and java classifier_libsvm_minimal_modular
+```
+  $ export CLASSPATH=/usr/share/java/jblas.jar:SHOGUNDIR/src/java_modular/shogun.jar:.
+  $ export LD_LIBRARY_PATH=SHOGUNDIR/src/shogun:SHOGUNDIR/src/java_modular
+  $ javac ../examples/udocumented/java_modular/classifier_libsvm_minimal_modular.java
+  $ java classifier_libsvm_minimal_modular
+```
 
 SPECIFIC BUILD INSTRUCTIONS FOR LEGACY STATIC INTERFACES
 
