@@ -24,8 +24,8 @@ bool
 SerializableHdf5Reader00::read_scalar_wrapped(
 	const TSGDataType* type, void* param)
 {
+	/* note: param may well be NULL. This doesnt hurt if m->y or m->x are -1 */
 	ASSERT(type);
-	ASSERT(param);
 
 	CSerializableHdf5File::type_item_t* m
 		= m_file->m_stack_type.back();
@@ -39,6 +39,7 @@ SerializableHdf5Reader00::read_scalar_wrapped(
 
 		if (m->sub_y != 0) return true;
 
+		ASSERT(param);
 		memcpy(param, m->vltype[m->x*m->dims[1] + m->y].p,
 			   m->vltype[m->x*m->dims[1] + m->y].len
 			   *type->sizeof_ptype());
