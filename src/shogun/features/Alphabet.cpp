@@ -96,7 +96,7 @@ CAlphabet::CAlphabet(CAlphabet* a)
 : CSGObject()
 {
 	init();
-	ASSERT(a)
+	REQUIRE(a, "No Alphabet specified!\n");
 	set_alphabet(a->get_alphabet());
 	copy_histogram(a);
 }
