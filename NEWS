@@ -4,16 +4,16 @@
 	* This release features 8 successful Google Summer of Code projects and
 	  is the result an incredible effort by our students. All projects come with
 	  very cool ipython-notebooks that contain background, code examples and
-	  visualizations. Go check them out on our webpage!
+	  visualizations. These can be found on our webpage!
 	  
 	  The projects are:
 	  - Gaussian Processes for binary classification [Roman Votjakov]
-	  - Sampling log-determinants for large sparse matrices [Rahul De]
+	  - Sampling log-determinants for large sparse matrices [Soumyajit De]
 	  - Metric Learning via LMNN [Fernando Iglesias]
 	  - Independent Component Analysis (ICA) [Kevin Hughes]
 	  - Hashing Feature Framework [Evangelos Anagnostopoulos]
 	  - Structured Output Learning [Hu Shell]
-	  - A web-demo framework []
+	  - A web-demo framework [Liu Zhengyang]
 	  
 	  Other important changes are the change of our build-system to cmake and
 	  the addition of clone/equals methods to our base-class. In addition, you
