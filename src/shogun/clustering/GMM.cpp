@@ -135,6 +135,7 @@ float64_t CGMM::train_em(float64_t min_cov, int32_t max_iter, float64_t min_chan
 
 	SGMatrix<float64_t> alpha;
 
+	/* compute initialization via kmeans if none is present */
 	if (m_components[0]->get_mean().vector==NULL)
 	{
 		CKMeans* init_k_means=new CKMeans(int32_t(m_components.size()), new CEuclideanDistance());
