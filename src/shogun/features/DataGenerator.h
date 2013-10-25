@@ -12,6 +12,8 @@
 #include <shogun/lib/config.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/SGMatrix.h>
+#include <shogun/labels/Labels.h>
+#include <shogun/labels/MulticlassLabels.h>
 
 namespace shogun
 {
@@ -25,6 +27,20 @@ public:
 	CDataGenerator();
 
 	virtual ~CDataGenerator();
+
+	/** Generate points for classification tasks. Every dimension is in the range [0,1]. You can 
+	 * scale or translate the features afterwards. It works be creating a grid in the n-dimensional space
+	 * with enough cells to hold all the classes and then starts filling them one by one.
+	 *
+	 * @param num_classes The number of classes
+	 * @param dim the dimension of the target feature space
+	 * @param num_points how many points to generate
+	 * @param overlap controls whether classes can overlap. Takes values in [0,1], where 0 means no overlap permitted.
+	 *
+	 * @return a matrix of (dim+1)-dimension vector points, where vector[dim] corrresponds to the class of the point
+	 */
+	static SGMatrix<float64_t> generate_checkboard_data(int32_t num_classes,
+		int32_t dim, int32_t num_points, float64_t overlap);
 
 	/** Takes each m samples from two distributions p and q, where each element
 	 * is standard normally distributed, except for the first dimension of q,

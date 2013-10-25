@@ -29,6 +29,56 @@ void CDataGenerator::init()
 {
 }
 
+SGMatrix<float64_t> CDataGenerator::generate_checkboard_data(int32_t num_classes,
+		int32_t dim, int32_t num_points, float64_t overlap)
+{
+	int32_t points_per_class = num_points / num_classes;
+
+	int32_t grid_size = (int32_t ) CMath::ceil(CMath::sqrt((float64_t ) num_classes));
+	float64_t cell_size = (float64_t ) 1 / grid_size;
+	SGVector<float64_t> grid_idx(dim);
+	for (index_t i=0; i<dim; i++)
+		grid_idx[i] = 0;
+
+	SGMatrix<float64_t> points(dim+1, num_points);
+	int32_t points_idx = 0;
+	for (int32_t class_idx=0; class_idx<num_classes; class_idx++)
+	{
+		SGVector<float64_t> class_dim_centers(dim);
+		for (index_t i=0; i<dim; i++)
+			class_dim_centers[i] = (grid_idx[i] * cell_size + (grid_idx[i] + 1) * cell_size) / 2;
+
+		for (index_t p=points_idx; p<points_per_class+points_idx; p++)
+		{
+			for (index_t i=0; i<dim; i++)
+			{
+				do
+				{
+					points(i, p) = CMath::normal_random(class_dim_centers[i], cell_size*0.5);	
+					if ((points(i, p)>(grid_idx[i]+1)*cell_size) || 
+							(points(i, p)<grid_idx[i]*cell_size))
+					{
+						if (!(CMath::random(0.0, 1.0)<overlap))
+							continue; 
+					}
+					break;
+				} while (true);
+			}
+			points(dim, p) = class_idx;
+		}
+		points_idx += points_per_class;
+		for (index_t i=dim-1; i>=0; i--)
+		{
+			grid_idx[i]++;
+			if (grid_idx[i]>=grid_size)
+				grid_idx[i] = 0;
+			else
+				break;
+		}
+	}
+	return points;
+}
+
 SGMatrix<float64_t> CDataGenerator::generate_mean_data(index_t m,
 		index_t dim, float64_t mean_shift,
 		SGMatrix<float64_t> target)
