@@ -203,12 +203,32 @@ template<class T> class SGVector : public SGReferencedData
 			return vector[index];
 		}
 
+		/** operator overload for vector read only access
+		 *
+		 * @param index dimension to access
+		 *
+		 */
+		inline const T& operator[](int64_t index) const
+		{
+			return vector[index];
+		}
+
 		/** operator overload for vector r/w access
 		 *
 		 * @param index dimension to access
 		 *
 		 */
 		inline T& operator[](index_t index)
+		{
+			return vector[index];
+		}
+
+		/** operator overload for vector r/w access
+		 *
+		 * @param index dimension to access
+		 *
+		 */
+		inline T& operator[](int64_t index)
 		{
 			return vector[index];
 		}
