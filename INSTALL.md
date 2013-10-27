@@ -5,12 +5,12 @@ Starting from the version 3.0 Shogun uses CMake to facilitate
 the building process. When using command line on Linux- and Unix-based
 systems with the `make` being available the building steps are:
 
-1) go to the shogun repository root
-2) do `mkdir build`
-3) do `cmake [options] ..` (or `ccmake ..` if available). It is very
+1. go to the shogun repository root
+2. do `mkdir build`
+3. do `cmake [options] ..` (or `ccmake ..` if available). It is very
 recommended to use any of CMake GUIs (such as ccmake) if you feel unsure
 about possible parameters and configurations.
-4) do `make` (and `sudo make install` if needed)
+4. do `make` (and `sudo make install` if needed)
 
 In case you want to generate some IDE project (e.g. Eclipse CDT4 project)
 use the `-G generator-name` key. You may obtain possible generators with
