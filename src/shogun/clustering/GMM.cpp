@@ -644,6 +644,16 @@ float64_t CGMM::get_log_model_parameter(int32_t num_param)
 	return CMath::log(m_components.size());
 }
 
+index_t CGMM::get_num_components() const
+{
+	return m_components.size();
+}
+
+CDistribution* CGMM::get_component(index_t index) const
+{
+	return m_components[index];
+}
+
 float64_t CGMM::get_log_derivative(int32_t num_param, int32_t num_example)
 {
 	SG_NOTIMPLEMENTED
@@ -754,14 +764,18 @@ SGMatrix<float64_t> CGMM::alpha_init(SGMatrix<float64_t> init_means)
 
 SGVector<float64_t> CGMM::sample()
 {
-	ASSERT(m_components.size())
+	REQUIRE(m_components.size()>0, "Number of mixture components is %d but "
+			"must be positive\n", m_components.size());
 	float64_t rand_num=CMath::random(float64_t(0), float64_t(1));
 	float64_t cum_sum=0;
 	for (int32_t i=0; i<m_coefficients.vlen; i++)
 	{
 		cum_sum+=m_coefficients.vector[i];
 		if (cum_sum>=rand_num)
+		{
+			SG_DEBUG("Sampling from mixture component %d\n", i);
 			return m_components[i]->sample();
+		}
 	}
 	return m_components[m_coefficients.vlen-1]->sample();
 }
