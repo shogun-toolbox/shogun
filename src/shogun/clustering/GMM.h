@@ -114,6 +114,15 @@ class CGMM : public CDistribution
 		 */
 		virtual float64_t get_log_model_parameter(int32_t num_param);
 
+		/** @return number of mixture components */
+		index_t get_num_components() const;
+
+		/** Getter for mixture components
+		 * @param index index of component
+		 * @return component at index
+		 */
+		CDistribution* get_component(index_t index) const;
+
 		/** get partial derivative of likelihood function (logarithmic)
 		 *
 		 * @param num_param derivative against which param
