@@ -72,7 +72,7 @@ SPECIFIC BUILD INSTRUCTIONS FOR MODULAR INTERFACES
 object oriented python/swig interface:
 ======================================
   mkdir build && cd build
-  ./cmake -DPythonModular=ON ..
+  cmake -DPythonModular=ON ..
   make
   sudo make install
 
@@ -90,7 +90,7 @@ do all of the above you did for octave but now in addition install the swig
 package and configure+compile shogun with:
 
   mkdir build && cd build
-  ./cmake -DOctaveModular=ON ..
+  cmake -DOctaveModular=ON ..
   make
   sudo make install
 
@@ -102,7 +102,7 @@ object oriented r/swig interface:
 note that this interface is pre-alpha quality
 
   mkdir build && cd build
-  ./cmake -DRModular=ON ..
+  cmake -DRModular=ON ..
   make
   sudo make install
 
@@ -112,7 +112,7 @@ object oriented java/swig interface:
 ======================================
 
   mkdir build && cd build
-  ./cmake -DJavaModular=ON ..
+  cmake -DJavaModular=ON ..
   make
   make install
 
@@ -130,7 +130,7 @@ standalone:
 ===========
 
 mkdir build && cd build
-./cmake -DCmdLineStatic=ON ..
+cmake -DCmdLineStatic=ON ..
 make
 
 a shogun executable can be found in interfaces/cmdline_static
@@ -150,7 +150,7 @@ To compile the octave interface you need to have the octave developer files
 then do a
 
 mkdir build && cd build
-./cmake -DOctaveStatic=ON ..
+cmake -DOctaveStatic=ON ..
 make
 sudo make install
 
@@ -169,7 +169,7 @@ To compile the matlab interface you need to have matlab installed in the path
 then do a
 
 mkdir build && cd build
-./cmake -DMatlabStatic=ON ..
+cmake -DMatlabStatic=ON ..
 make
 sudo make install
 
@@ -193,7 +193,7 @@ To compile the R interface you need to have the R developer files
 then do the usual
 
 mkdir build && cd build
-./cmake -DRStatic=ON ..
+cmake -DRStatic=ON ..
 make
 sudo make install
 
@@ -205,7 +205,7 @@ To compile the python interface you need to have numpy version 1.x installed
 python-matplotlib installed.
 
 mkdir build && cd build
-./cmake -DPythonStatic=ON ..
+cmake -DPythonStatic=ON ..
 make
 sudo make install
 
@@ -222,7 +222,7 @@ This is a .so file that works with R,python,matlab,octave all in one. To compile
 you should have at least python and some other interface enabled:
 
 mkdir build && cd build
-./cmake -DElwmsStatic=ON ..
+cmake -DElwmsStatic=ON ..
 make
 sudo make install
 
