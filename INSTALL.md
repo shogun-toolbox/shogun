@@ -30,12 +30,14 @@ Often you are just interested in one language and we always recommend to
 use the more powerful modular interfaces.
 
 SPECIAL FEATURES
+----------------
 
 To enable Multiple Kernel Learning with CPLEX(tm) just make sure cplex can
 be found in the PATH. If it is not found shogun will resort to GLPK (if found)
 for 1-norm MKL, p-norm MKL with p>1 will work nonetheless.
 
 REQUIREMENTS
+------------
 
 The standard linux utils like bash, grep, test, sed, cut, awk, ldd, uname gcc
 g++ and cat, python (debian package: python2.7) are required
@@ -68,6 +70,7 @@ For the interfaces to compile you will need swig.
 
 
 SPECIFIC BUILD INSTRUCTIONS FOR MODULAR INTERFACES
+--------------------------------------------------
 
 object oriented python/swig interface:
 ======================================
@@ -133,6 +136,7 @@ to test if it is working try
 ```
 
 SPECIFIC BUILD INSTRUCTIONS FOR LEGACY STATIC INTERFACES
+--------------------------------------------------------
 
 standalone:
 ===========
@@ -267,6 +271,7 @@ should work plus the ones in examples/documented/elwms_static/
 (that allows lang -> python subcommands).
 
 PROBLEMS
+--------
 
 In case header files or libraries are not at standard locations one needs
 to manually adjust the libray/include paths. This can be done with
