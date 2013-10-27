@@ -71,10 +71,12 @@ SPECIFIC BUILD INSTRUCTIONS FOR MODULAR INTERFACES
 
 object oriented python/swig interface:
 ======================================
-  mkdir build && cd build
-  cmake -DPythonModular=ON ..
-  make
-  sudo make install
+```
+  $ mkdir build && cd build
+  $ cmake -DPythonModular=ON ..
+  $ make
+  $ sudo make install
+```
 
 to test if it is working try
 ```
@@ -89,10 +91,12 @@ object oriented octave/swig interface:
 do all of the above you did for octave but now in addition install the swig
 package and configure+compile shogun with:
 
-  mkdir build && cd build
-  cmake -DOctaveModular=ON ..
-  make
-  sudo make install
+```
+  $ mkdir build && cd build
+  $ cmake -DOctaveModular=ON ..
+  $ make
+  $ sudo make install
+```
 
 to test if it is working try octave examples/documented/octave_modular/libsvm.m
 
@@ -101,20 +105,24 @@ object oriented r/swig interface:
 
 note that this interface is pre-alpha quality
 
-  mkdir build && cd build
-  cmake -DRModular=ON ..
-  make
-  sudo make install
+```
+  $ mkdir build && cd build
+  $ cmake -DRModular=ON ..
+  $ make
+  $ sudo make install
+```
 
 to test if it is working try R  examples/documented/r_modular/all_classifier.R
 
 object oriented java/swig interface:
 ======================================
 
-  mkdir build && cd build
-  cmake -DJavaModular=ON ..
-  make
-  make install
+```
+  $ mkdir build && cd build
+  $ cmake -DJavaModular=ON ..
+  $ make
+  $ sudo make install
+```
 
 to test if it is working try
 ```
@@ -129,17 +137,21 @@ SPECIFIC BUILD INSTRUCTIONS FOR LEGACY STATIC INTERFACES
 standalone:
 ===========
 
-mkdir build && cd build
-cmake -DCmdLineStatic=ON ..
-make
+```
+  $ mkdir build && cd build
+  $ cmake -DCmdLineStatic=ON ..
+  $ make
+```
 
 a shogun executable can be found in interfaces/cmdline_static
 
 In order to test the shogun standalone binary, you can run the following
 commands from the project root directory:
 
-cd examples/documented/cmdline_static
-../../../src/interfaces/cmdline_static/shogun classifier_liblinear.sg
+```
+  $ cd examples/documented/cmdline_static
+  $ ../../../src/interfaces/cmdline_static/shogun classifier_liblinear.sg
+```
 
 octave
 ======
@@ -149,16 +161,20 @@ To compile the octave interface you need to have the octave developer files
 
 then do a
 
-mkdir build && cd build
-cmake -DOctaveStatic=ON ..
-make
-sudo make install
+```
+  $ mkdir build && cd build
+  $ cmake -DOctaveStatic=ON ..
+  $ make
+  $ sudo make install
+```
 
 a sg.oct file should be created. as a test start octave in the
 examples/documented/octave_static/ directory and type
 
-addpath('../../../src/interfaces/octave_static/graphical')
-svr_regression
+```
+  addpath('../../../src/interfaces/octave_static/graphical')
+  svr_regression
+```
 
 matlab
 ======
@@ -168,21 +184,27 @@ To compile the matlab interface you need to have matlab installed in the path
 
 then do a
 
-mkdir build && cd build
-cmake -DMatlabStatic=ON ..
-make
-sudo make install
+```
+  $ mkdir build && cd build
+  $ cmake -DMatlabStatic=ON ..
+  $ make
+  $ sudo make install
+```
 
 a sg.mexglx (or sg.mexa64 or sg.mexmac etc file should be created in
 src/interfaces/matlab_static/). As a test start matlab in the
 examples/documented/matlab_static directory and type
 
-addpath('../../../src/interfaces/matlab_static/graphical')
-svr_regression
+```
+  addpath('../../../src/interfaces/matlab_static/graphical')
+  svr_regression
+```
 
 For permanent use you could add the following line to your matlab/startup.m
 
-    addpath('path_to_shogun/src/interfaces/matlab_static');
+```
+  addpath('path_to_shogun/src/interfaces/matlab_static');
+```
 
 R
 =
@@ -192,10 +214,12 @@ To compile the R interface you need to have the R developer files
 
 then do the usual
 
-mkdir build && cd build
-cmake -DRStatic=ON ..
-make
-sudo make install
+```
+  $ mkdir build && cd build
+  $ cmake -DRStatic=ON ..
+  $ make
+  $ sudo make install
+```
 
 python
 ======
@@ -204,16 +228,20 @@ To compile the python interface you need to have numpy version 1.x installed
 (debian package python-numpy) and optionally for plotting
 python-matplotlib installed.
 
-mkdir build && cd build
-cmake -DPythonStatic=ON ..
-make
-sudo make install
+```
+  $ mkdir build && cd build
+  $ cmake -DPythonStatic=ON ..
+  $ make
+  $ sudo make install
+```
 
 A sg.so file should be created in the src/interfaces/python_static directory:
 To test whether it is working change to examples/documented/python_static/graphical
 and run:
 
-PYTHONPATH=path_to_shogun/src/interfaces/python_static/ python svm_classification.py
+```
+  $ PYTHONPATH=path_to_shogun/src/interfaces/python_static/ python svm_classification.py
+```
 
 eierlegendewollmichsau (elwms) interface
 ========================================
@@ -221,14 +249,17 @@ eierlegendewollmichsau (elwms) interface
 This is a .so file that works with R,python,matlab,octave all in one. To compile
 you should have at least python and some other interface enabled:
 
-mkdir build && cd build
-cmake -DElwmsStatic=ON ..
-make
-sudo make install
+```
+  $ mkdir build && cd build
+  $ cmake -DElwmsStatic=ON ..
+  $ make
+  $ sudo make install
+```
 
-
-cd src/interfaces/elwms_static
-LD_LIBRARY_PATH=/path/to/octave/lib:/path/to/matlab/libs octave
+```
+  $ cd src/interfaces/elwms_static
+  $ LD_LIBRARY_PATH=/path/to/octave/lib:/path/to/matlab/libs octave
+```
 
 All examples from
 examples/documented/{r_static,python_static,matlab_static,octave_static}/*
