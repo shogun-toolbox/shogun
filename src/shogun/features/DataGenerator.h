@@ -28,7 +28,7 @@ public:
 
 	virtual ~CDataGenerator();
 
-	/** Generate points for classification tasks. Every dimension is in the range [0,1]. You can 
+	/** Generate points for classification tasks. Every dimension is in the range [0,1]. You can
 	 * scale or translate the features afterwards. It works be creating a grid in the n-dimensional space
 	 * with enough cells to hold all the classes and then starts filling them one by one.
 	 *

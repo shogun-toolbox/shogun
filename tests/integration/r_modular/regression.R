@@ -15,7 +15,7 @@ regression <- function(filename) {
 
 	regression_num_threads <- as.integer(regression_num_threads)
 	kernel$parallel$set_num_threads(kernel$parallel, regression_num_threads)
-	lab <- Labels(as.real(regression_labels))
+	lab <- Labels(as.double(regression_labels))
 
 	if (regexpr('KRR', regression_name)>0) {
 		regression <- KRR(regression_tau, kernel, lab)

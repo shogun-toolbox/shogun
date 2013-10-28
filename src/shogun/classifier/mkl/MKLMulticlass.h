@@ -195,7 +195,7 @@ protected:
    */
    float64_t pnorm;
 
-   /** stores the term  
+   /** stores the term
 	* \f$\| w_l \|^2 = \alpha Y K_l Y \alpha\f$
    *
    */

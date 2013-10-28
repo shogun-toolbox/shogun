@@ -31,7 +31,7 @@ classifier <- function(filename) {
 	}
 
 	if (exists('classifier_labels')) {
-		lab <- Labels(as.real(classifier_labels))
+		lab <- Labels(as.double(classifier_labels))
 	}
 
 	if (regexpr('GMNPSVM', classifier_name)>0) {

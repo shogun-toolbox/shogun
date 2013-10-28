@@ -11,10 +11,10 @@ This module contains code for generating toy examples
 #                                                                                           #
 #    This program is distributed in the hope that it will be useful,                        #
 #    but WITHOUT ANY WARRANTY; without even the implied warranty of                         #
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                           # 
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                           #
 #    GNU General Public License for more details.                                           #
 #                                                                                           #
-#    You should have received a copy of the GNU General Public License                      # 
+#    You should have received a copy of the GNU General Public License                      #
 #    along with this program; if not, see http://www.gnu.org/licenses                       #
 #    or write to the Free Software Foundation, Inc., 51 Franklin Street,                    #
 #    Fifth Floor, Boston, MA 02110-1301  USA                                                #
@@ -77,13 +77,13 @@ def cloudgen(numpoint, numfeat, fracpos, width):
     dataneg = -ones((numfeat, numneg)) + width*randn(numfeat, numneg)
     pointcloud = concatenate((datapos,dataneg),axis=1)
     labels = concatenate((ones(numpos),-ones(numneg)))
-    
+
     return metadata, pointcloud, labels
 
 
 
-    
-                                                                                   
+
+
 ################################################################################
 # ARFF functions
 
@@ -98,7 +98,7 @@ def arffwrite_real(filename, numpoint, numfeat, fracpos=0.5, width=1.0):
     fp.dataname = 'pointcloud'
     fp.writelines(pointcloud,labels)
 
-    
+
 def arffwrite_sequence(filename,p, n):
     """Write an ARFF file containing a sequence dataset"""
     #import arff

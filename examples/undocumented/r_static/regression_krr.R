@@ -7,7 +7,7 @@ width <- 2.1
 
 fm_train <- t(as.matrix(read.table('../data/fm_train_real.dat')))
 fm_test <- t(as.matrix(read.table('../data/fm_test_real.dat')))
-label_train <- as.real(as.matrix(read.table('../data/label_train_regression.dat')))
+label_train <- as.double(as.matrix(read.table('../data/label_train_regression.dat')))
 
 # KRR
 print('KRR')

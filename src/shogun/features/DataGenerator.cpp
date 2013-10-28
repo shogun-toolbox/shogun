@@ -54,12 +54,12 @@ SGMatrix<float64_t> CDataGenerator::generate_checkboard_data(int32_t num_classes
 			{
 				do
 				{
-					points(i, p) = CMath::normal_random(class_dim_centers[i], cell_size*0.5);	
-					if ((points(i, p)>(grid_idx[i]+1)*cell_size) || 
+					points(i, p) = CMath::normal_random(class_dim_centers[i], cell_size*0.5);
+					if ((points(i, p)>(grid_idx[i]+1)*cell_size) ||
 							(points(i, p)<grid_idx[i]*cell_size))
 					{
 						if (!(CMath::random(0.0, 1.0)<overlap))
-							continue; 
+							continue;
 					}
 					break;
 				} while (true);

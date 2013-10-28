@@ -2,7 +2,7 @@ library(shogun)
 
 fm_train_dna <- as.matrix(read.table('../data/fm_train_dna.dat'))
 fm_test_dna <- as.matrix(read.table('../data/fm_test_dna.dat'))
-label_train_dna <- as.real(read.table('../data/label_train_dna.dat')$V1)
+label_train_dna <- as.double(read.table('../data/label_train_dna.dat')$V1)
 
 # svm light
 dosvmlight <- function()
