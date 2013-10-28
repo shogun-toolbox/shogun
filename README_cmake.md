@@ -42,8 +42,8 @@ CC=/path/to/gcc CXX=/path/to/g++ cmake ..
 
 # Under osx one often has the same python major versions installed in /usr and /usr/local via brew etc so one might observe crashes
 # if the wrong python version is linked against.  To use a custom python
-# installation for python bindings one would under brew use 
+# installation for python bindings one would under brew use
 cmake -DPYTHON_INCLUDE_DIR=/usr/local/Cellar/python/2.7.5/Frameworks/Python.framework/Headers -DPYTHON_LIBRARY=/usr/local/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/libpython2.7.dylib  -DPythonModular=ON ..
 
-or in general 
+or in general
 cmake -DPYTHON_INCLUDE_DIR=/path/to/python/include/dir -DPYTHON_LIBRARY=path/to/python/libpythonVERSION.so ..

@@ -51,16 +51,16 @@ except ImportError:
 class DatasetFileBase(file):
     """A Base class defining barebones and common behaviour
     """
-    
+
     def __init__(self,filename,extype):
         """Just the normal file __init__,
         followed by the specific class corresponding to the file extension.
-        
+
         """
         self.extype = extype
         self.filename = filename
 
-    
+
     def readlines(self,idx=None):
         """Read the lines defined by idx (a numpy array).
         Default is read all lines.
@@ -124,7 +124,7 @@ class DatasetFileCSV(DatasetFileBase):
                 printstr += '%d, ' % len(seq)
             printstr += '%d examples' % len(examples)
             print printstr
-            
+
         return (examples,array(labels))
 
 
@@ -142,7 +142,7 @@ class DatasetFileCSV(DatasetFileBase):
             data = []
             for ix,curlab in enumerate(labels):
                 data.append(concatenate((array([curlab]),examples[:,ix].T)))
-                
+
         fp = open(self.filename,'w')
         writer = csv.writer(fp,delimiter=',',quoting=csv.QUOTE_NONE)
         for ix in idx:
@@ -164,7 +164,7 @@ class DatasetFileFASTA(DatasetFileBase):
             raise IOError
         DatasetFileBase.__init__(self,filename,extype)
         self.fp = None
-                
+
     def readlines(self,idx=None):
         """Read from file and split data into examples and labels"""
         self.fp = open(self.filename,'r')
@@ -195,7 +195,7 @@ class DatasetFileFASTA(DatasetFileBase):
             for lineidx in xrange(0, len(examples[ix]), linelen):
                 fp.write(examples[ix][lineidx:lineidx+linelen] + '\n')
         fp.close()
-            
+
 
     def readline(self,line):
         """Reads a fasta entry and returns the label and the sequence"""
@@ -216,8 +216,8 @@ class DatasetFileFASTA(DatasetFileBase):
             line = self.fp.readline()
 
         return (''.join(lines),label,line)
-            
-                                                        
+
+
 def init_datasetfile(filename,extype):
     """A factory that returns the appropriate class based on the file extension.
 
@@ -229,7 +229,7 @@ def init_datasetfile(filename,extype):
 
     Since the file type does not determine what type of data is actually being used,
     the user has to supply the example type.
-    
+
     extype can be ('vec','seq','mseq')
     vec - array of floats
     seq - single sequence
@@ -287,9 +287,9 @@ def detect_extension(filename):
            detect_ext = 'arff'
         else:
            detect_ext = 'csv'
-           
+
     return detect_ext
-                                        
+
 
 def convert(infile,outfile,extype):
     """Copy data from infile to outfile, possibly converting the file format."""

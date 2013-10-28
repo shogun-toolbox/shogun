@@ -96,7 +96,7 @@ the [INSTALL](INSTALL.md) file for generic and platform specific installation in
 ## Directory Contents
 -----------
 
-The following directories are found in the source distribution. 
+The following directories are found in the source distribution.
 
 - *src* - source code.
 - *data* - data sets (required for some examples / applications - these need to be downloaded

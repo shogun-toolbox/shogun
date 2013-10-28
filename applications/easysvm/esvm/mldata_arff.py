@@ -31,7 +31,7 @@ try:
     have_arff = True
 except ImportError:
     have_arff = False
-    
+
 
 import sys
 from numpy import array, concatenate
@@ -51,21 +51,21 @@ class DatasetFileARFF(DatasetFileBase):
         DatasetFileBase.__init__(self,filename,extype)
         self.dataname = dataname
         self.comment = comment
-        
+
     def readlines(self,idx=None):
         """Read from file and split data into examples and labels"""
         fp = open(self.filename,'r')
         (dataname,issparse,alist,data) = arff.arffread(fp)
         fp.close()
         self.dataname = dataname
-        
+
         #if (alist[0][0]!='label'):
         #    sys.stderr.write('First column of ARFF file needs to be the label\n')
         #    sys.exit(-1)
 
         if idx is None:
             idx = range(len(data))
-            
+
         labels = [data[ix][0] for ix in idx]
         labels = array(labels)
         if self.extype == 'vec':
@@ -82,9 +82,9 @@ class DatasetFileARFF(DatasetFileBase):
                 printstr += '%d, ' % len(seq)
             printstr += '%d examples' % len(examples)
             print printstr
-                                                        
+
         return (examples, labels)
-                                                    
+
     def writelines(self,examples,labels,idx=None):
         """Merge the examples and labels and write to file"""
         alist = [('label',1,[])]
@@ -107,7 +107,7 @@ class DatasetFileARFF(DatasetFileBase):
                 data.append([curlab]+list(examples[ix]))
             alist.append(('upstream sequence',0,[]))
             alist.append(('downstream sequence',0,[]))
-            
+
         fp = open(self.filename,'w')
         arff.arffwrite(fp,alist,data,name=self.dataname,comment=self.comment)
         fp.close()
