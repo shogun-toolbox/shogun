@@ -3,11 +3,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from shogun.Features 	import RealFeatures
-from shogun.Loss     	import HingeLoss
-from shogun.Structure	import MulticlassModel, MulticlassSOLabels, RealNumber, DualLibQPBMSOSVM
-from shogun.Structure 	import BMRM, PPBMRM, P3BMRM
-from shogun.Evaluation 	import StructuredAccuracy
+from modshogun	import RealFeatures
+from modshogun	import MulticlassModel, MulticlassSOLabels, RealNumber, DualLibQPBMSOSVM
+from modshogun	import BMRM, PPBMRM, P3BMRM
+from modshogun	import StructuredAccuracy
 
 def fill_data(cnt, minv, maxv):
 	x1 = np.linspace(minv, maxv, cnt)
@@ -53,10 +52,9 @@ labels = MulticlassSOLabels(y)
 features = RealFeatures(X.T)
 
 model = MulticlassModel(features, labels)
-loss = HingeLoss()
 
 lambda_ = 1e1
-sosvm = DualLibQPBMSOSVM(model, loss, labels, lambda_)
+sosvm = DualLibQPBMSOSVM(model, labels, lambda_)
 
 sosvm.set_cleanAfter(10)	# number of iterations that cutting plane has to be inactive for to be removed
 sosvm.set_cleanICP(True)	# enables inactive cutting plane removal feature

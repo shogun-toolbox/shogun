@@ -55,6 +55,11 @@ class CGUIConverter : public CSGObject
 		bool create_isomap(int32_t k);
 		/** create Multidimensional scaling */
 		bool create_multidimensionalscaling();
+		/** create Jade */
+		bool create_jade();
+
+		/** apply */
+		CDenseFeatures<float64_t>* apply();
 
 		/** embed */
 		CDenseFeatures<float64_t>* embed(int32_t target_dim);
@@ -63,7 +68,7 @@ class CGUIConverter : public CSGObject
 		~CGUIConverter();
 
 		/** @return object name */
-		virtual const char* get_name() const { return "GUIPreprocessor"; }
+		virtual const char* get_name() const { return "GUIConverter"; }
 
 	protected:
 

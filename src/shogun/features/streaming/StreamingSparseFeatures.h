@@ -291,8 +291,8 @@ public:
 
 	/**
 	 * Ensure features of the current vector are in ascending order.
-	 * It modifies the current_vector in-place, though a temporary
-	 * vector is created and later freed.
+	 * It modifies the current_sgvector in-place and does not change
+	 * the reference in current_sgvector.features.
 	 */
 	void sort_features();
 
@@ -323,7 +323,7 @@ public:
 	 * @return C_STREAMING_SPARSE
 	 */
 	virtual EFeatureClass get_feature_class() const;
- 
+
 	/**
 	 * Duplicate the object.
 	 *
@@ -344,13 +344,6 @@ public:
 	 * @return 1 if current_vector exists, else 0.
 	 */
 	virtual int32_t get_num_vectors() const;
-
-	/**
-	 * Return the size of one T object.
-	 *
-	 * @return Size of T.
-	 */
-	virtual int32_t get_size() const;
 
 private:
 	/**
@@ -375,17 +368,11 @@ protected:
 	/// The current example's feature vector as an SGVector<T>
 	SGSparseVector<T> current_sgvector;
 
-	/// The current example's feature vector as an SGSparseVectorEntry<T>*.
-	SGSparseVectorEntry<T>* current_vector;
-
 	/// The current vector index
 	index_t current_vec_index;
 
 	/// The current example's label.
 	float64_t current_label;
-
-	/// Number of set indices in current example.
-	int32_t current_length;
 
 	/// Number of features in current vector (as seen so far upto the current vector)
 	int32_t current_num_features;

@@ -14,6 +14,7 @@ using namespace shogun;
 CStreamingVwCacheFile::CStreamingVwCacheFile()
 	: CStreamingFile()
 {
+	buf=NULL;
 	init(C_NATIVE);
 }
 
@@ -53,11 +54,9 @@ void CStreamingVwCacheFile::get_vector_and_label(VwExample* &ex, int32_t &len, f
 
 void CStreamingVwCacheFile::set_env(CVwEnvironment* env_to_use)
 {
-	if (env)
-		SG_UNREF(env);
-
+	SG_REF(env_to_use);
+	SG_UNREF(env);
 	env = env_to_use;
-	SG_REF(env);
 
 	SG_UNREF(cache_reader);
 
@@ -90,7 +89,10 @@ void CStreamingVwCacheFile::init(EVwCacheType cache_type)
 	switch (cache_type)
 	{
 	case C_NATIVE:
-		cache_reader = new CVwNativeCacheReader(buf->working_file, env);
+		if (buf)
+			cache_reader = new CVwNativeCacheReader(buf->working_file, env);
+		else
+			cache_reader=NULL;
 		return;
 	case C_PROTOBUF:
 		SG_ERROR("Protocol buffers cache support is not implemented yet!\n")

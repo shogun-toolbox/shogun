@@ -33,7 +33,7 @@ sub _evaluate (indata):
 	$regression->set_tube_epsilon($indata->{$prefix.'tube_epsilon'});
     }
     $regression->train();
-    
+
     my $alphas=0;
     my $bias=0;
     my $sv=0;
@@ -55,7 +55,7 @@ sub _evaluate (indata):
     $kernel->init($feats->{'train'}, $feats->{'test'});
     my $classified=max(abs(
 			   $regression->apply()->get_labels()-$indata->{$prefix.'classified'}));
-    
+
     return &util::check_accuracy($indata->{$prefix.'accuracy'}
 				 , {alphas=>$alphas,
 				    bias=>$bias, support_vectors=>$sv, classified=>$classified});

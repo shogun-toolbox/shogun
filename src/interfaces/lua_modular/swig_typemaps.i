@@ -11,12 +11,15 @@
 /* One dimensional input arrays */
 
 %{
-// luaL_typerror was removed in Lua 5.2.
+#include <lua.h>
+#if LUA_VERSION_NUM < 502
+#define lua_rawlen lua_objlen
+#else // luaL_typerror was removed in Lua 5.2.
 int luaL_typerror (lua_State *L, int narg, const char *tname) {
   const char *msg = lua_pushfstring(L, "%s expected, got %s", tname, luaL_typename(L, narg));
   return luaL_argerror(L, narg, msg);
 }
-
+#endif
 %}
 
 %define TYPEMAP_SGVECTOR(SGTYPE)

@@ -7,9 +7,9 @@ parameter_list=[[traindat,testdat,1.2],[traindat,testdat,1.4]]
 
 def kernel_director_linear_modular (fm_train_real=traindat,fm_test_real=testdat,scale=1.2):
 	try:
-		from shogun.Kernel import DirectorKernel
+		from modshogun import DirectorKernel
 	except ImportError:
-		print "recompile shogun with --enable-swig-directors"
+		print("recompile shogun with --enable-swig-directors")
 		return
 
 	class DirectorLinearKernel(DirectorKernel):
@@ -21,14 +21,14 @@ def kernel_director_linear_modular (fm_train_real=traindat,fm_test_real=testdat,
 			return numpy.dot(seq1, seq2)
 
 
-	from shogun.Kernel import LinearKernel, AvgDiagKernelNormalizer
+	from modshogun import LinearKernel, AvgDiagKernelNormalizer
 	from modshogun import Time
 
 	feats_train=RealFeatures(fm_train_real)
 	#feats_train.io.set_loglevel(MSG_DEBUG)
 	feats_train.parallel.set_num_threads(1)
 	feats_test=RealFeatures(fm_test_real)
-	 
+
 	kernel=LinearKernel()
 	kernel.set_normalizer(AvgDiagKernelNormalizer(scale))
 	kernel.init(feats_train, feats_train)

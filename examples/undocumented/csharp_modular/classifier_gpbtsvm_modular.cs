@@ -25,7 +25,7 @@ public class classifier_gpbtsvm_modular {
 		svm.set_epsilon(epsilon);
 		svm.train();
 		kernel.init(feats_train, feats_test);
-		double[] out_labels = BinaryLabels.obtain_from_generic(svm.apply()).get_labels();
+		double[] out_labels = LabelsFactory.to_binary(svm.apply()).get_labels();
 
 		foreach(double item in out_labels) {
 			Console.Write(item);

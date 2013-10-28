@@ -7,8 +7,8 @@ testdat = lm.load_dna('../data/fm_test_dna.dat')
 parameter_list = [[traindat,testdat,3,1.2,10],[traindat,testdat,4,1.3,10]]
 
 def kernel_oligo_string_modular (fm_train_dna=traindat,fm_test_dna=testdat,k=3,width=1.2,size_cache=10):
-	from shogun.Features import StringCharFeatures, DNA
-	from shogun.Kernel import OligoStringKernel
+	from modshogun import StringCharFeatures, DNA
+	from modshogun import OligoStringKernel
 
 	feats_train=StringCharFeatures(fm_train_dna, DNA)
 	feats_test=StringCharFeatures(fm_test_dna, DNA)

@@ -5,7 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 2008-2010 Soeren Sonnenburg
- * Written (W) 2011-2012 Heiko Strathmann
+ * Written (W) 2011-2013 Heiko Strathmann
  * Copyright (C) 2008-2010 Fraunhofer Institute FIRST and Max Planck Society
  */
 
@@ -17,16 +17,13 @@
 #include <shogun/lib/DataType.h>
 #include <shogun/lib/SGStringList.h>
 #include <shogun/lib/ShogunException.h>
+#include <shogun/lib/RefCount.h>
 
 #include <shogun/base/Parallel.h>
 #include <shogun/base/Version.h>
 
 #include <shogun/io/SGIO.h>
 
-
-#ifdef HAVE_PTHREAD
-#include <pthread.h>
-#endif //HAVE_PTHREAD
 
 /** \namespace shogun
  * @brief all of classes and functions are contained in the shogun namespace
@@ -40,6 +37,7 @@ class Parameter;
 class ParameterMap;
 class SGParamInfo;
 class CSerializableFile;
+class CLock;
 
 template <class T, class K> class CMap;
 
@@ -61,18 +59,45 @@ template <class T> class DynArray;
 /*******************************************************************************
  * Macros for registering parameters/model selection parameters
  ******************************************************************************/
-#define SG_ADD(param, name, description, ms_available) {\
+
+#define VA_NARGS_IMPL(_1, _2, _3, _4, _5, N, ...) N
+#define VA_NARGS(...) VA_NARGS_IMPL(__VA_ARGS__, 5, 4, 3, 2, 1)
+
+#define VARARG_IMPL2(base, count, ...) base##count(__VA_ARGS__)
+#define VARARG_IMPL(base, count, ...) VARARG_IMPL2(base, count, __VA_ARGS__)
+#define VARARG(base, ...) VARARG_IMPL(base, VA_NARGS(__VA_ARGS__), __VA_ARGS__)
+
+#define SG_ADD4(param, name, description, ms_available) {\
 		m_parameters->add(param, name, description);\
 		if (ms_available)\
 			m_model_selection_parameters->add(param, name, description);\
 }
+
+#define SG_ADD5(param, name, description, ms_available, gradient_available) {\
+		m_parameters->add(param, name, description);\
+		if (ms_available)\
+			m_model_selection_parameters->add(param, name, description);\
+		if (gradient_available)\
+			m_gradient_parameters->add(param, name, description);\
+}
+
+#define SG_ADD(...) VARARG(SG_ADD, __VA_ARGS__)
+
 /*******************************************************************************
  * End of macros for registering parameters/model selection parameters
  ******************************************************************************/
 
 /** model selection availability */
 enum EModelSelectionAvailability {
-	MS_NOT_AVAILABLE=0, MS_AVAILABLE
+	MS_NOT_AVAILABLE=0,
+	MS_AVAILABLE=1,
+};
+
+/** gradient availability */
+enum EGradientAvailability
+{
+	GRADIENT_NOT_AVAILABLE=0,
+	GRADIENT_AVAILABLE=1
 };
 
 /** @brief Class SGObject is the base class of all shogun objects.
@@ -84,6 +109,8 @@ enum EModelSelectionAvailability {
  * -# parallel - to determine the number of used CPUs for a method (cf. Parallel)
  * -# io - to output messages and general i/o (cf. IO)
  * -# version - to provide version information of the shogun version used (cf. Version)
+ *
+ * All objects can be cloned and compared (deep copy, recursively)
  */
 class CSGObject
 {
@@ -165,7 +192,7 @@ public:
 
 	/** prints registered parameters out
 	 *
-	 * 	@param prefix prefix for members
+	 *	@param prefix prefix for members
 	 */
 	virtual void print_serializable(const char* prefix="");
 
@@ -179,7 +206,7 @@ public:
 	 * @return TRUE if done, otherwise FALSE
 	 */
 	virtual bool save_serializable(CSerializableFile* file,
-			const char* prefix="", int32_t param_version=VERSION_PARAMETER);
+			const char* prefix="", int32_t param_version=Version::get_version_parameter());
 
 	/** Load this object from file.  If it will fail (returning FALSE)
 	 *  then this object will contain inconsistent data and should not
@@ -193,7 +220,7 @@ public:
 	 *  @return TRUE if done, otherwise FALSE
 	 */
 	virtual bool load_serializable(CSerializableFile* file,
-			const char* prefix="", int32_t param_version=VERSION_PARAMETER);
+			const char* prefix="", int32_t param_version=Version::get_version_parameter());
 
 	/** loads some specified parameters from a file with a specified version
 	 * The provided parameter info has a version which is recursively mapped
@@ -219,7 +246,7 @@ public:
 	 *
 	 * @param file_version parameter version of the file
 	 * @param current_version version from which mapping begins (you want to use
-	 * VERSION_PARAMETER for this in most cases)
+	 * Version::get_version_parameter() for this in most cases)
 	 * @param file file to load from
 	 * @param prefix prefix for members
 	 * @return (sorted) array of created TParameter instances with file data
@@ -310,14 +337,13 @@ public:
 	 *  parameters to the objects that own them.
 	 *
 	 * @param dict dictionary of parameters to be built.
-	 *
 	 */
-	void build_parameter_dictionary(CMap<TParameter*, CSGObject*>& dict);
+	void build_gradient_parameter_dictionary(CMap<TParameter*, CSGObject*>* dict);
 
 #ifdef TRACE_MEMORY_ALLOCS
 	static void list_memory_allocs()
 	{
-        	shogun::list_memory_allocs();
+	shogun::list_memory_allocs();
 	}
 #endif
 
@@ -418,6 +444,29 @@ public:
 	 */
 	virtual bool update_parameter_hash();
 
+	/** Recursively compares the current SGObject to another one. Compares all
+	 * registered numerical parameters, recursion upon complex (SGObject)
+	 * parameters. Does not compare pointers!
+	 *
+	 * May be overwritten but please do with care! Should not be necessary in
+	 * most cases.
+	 *
+	 * @param other object to compare with
+	 * @param accuracy accuracy to use for comparison (optional)
+	 * @return true if all parameters were equal, false if not
+	 */
+	virtual bool equals(CSGObject* other, float64_t accuracy=0.0);
+
+	/** Creates a clone of the current object. This is done via recursively
+	 * traversing all parameters, which corresponds to a deep copy.
+	 * Calling equals on the cloned object always returns true although none
+	 * of the memory of both objects overlaps.
+	 *
+	 * @return an identical copy of the given object, which is disjoint in memory.
+	 * NULL if the clone fails. Note that the returned object is SG_REF'ed
+	 */
+	virtual CSGObject* clone();
+
 private:
 	void set_global_objects();
 	void unset_global_objects();
@@ -439,7 +488,7 @@ private:
 	 * @return true iff successful
 	 */
 	bool save_parameter_version(CSerializableFile* file, const char* prefix="",
-			int32_t param_version=VERSION_PARAMETER);
+			int32_t param_version=Version::get_version_parameter());
 
 	/** loads the parameter version of the provided file.
 	 * @return parameter version of file, -1 if there is no such
@@ -476,6 +525,9 @@ public:
 	/** model selection parameters */
 	Parameter* m_model_selection_parameters;
 
+	/** parameters wrt which we can compute gradients */
+	Parameter* m_gradient_parameters;
+
 	/** map for different parameter versions */
 	ParameterMap* m_parameter_map;
 
@@ -490,11 +542,7 @@ private:
 	bool m_save_pre_called;
 	bool m_save_post_called;
 
-	int32_t m_refcount;
-
-#ifdef HAVE_PTHREAD
-	PTHREAD_LOCK_T m_ref_lock;
-#endif //HAVE_PTHREAD
+	RefCount* m_refcount;
 };
 }
 #endif // __SGOBJECT_H__

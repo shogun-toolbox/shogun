@@ -16,7 +16,7 @@ int main(int argc, char** argv)
 	for (int32_t i=0; i<6; i++)
 		matrix.matrix[i]=i;
 
-	// create three 2-dimensional vectors 
+	// create three 2-dimensional vectors
 	// shogun will now own the matrix created
 	CDenseFeatures<float64_t>* features= new CDenseFeatures<float64_t>(matrix);
 

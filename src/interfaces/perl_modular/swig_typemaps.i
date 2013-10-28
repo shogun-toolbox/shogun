@@ -16,14 +16,6 @@
 %{
 #include <shogun/lib/DataType.h>
 
-    //PTZ121010 doesnot think we need this since already called in the swig interface...
-    static void* get_copy(void* src, size_t len)
-    {
-        void* copy = SG_MALLOC(uint8_t, len);
-        memcpy(copy, src, len);
-        return copy;
-    }
-
     /* OUT typemaps */
     /****************/
     template <class type>
@@ -309,7 +301,7 @@ fail:
                                     l_ss[j].~SGString< type >();
                                 SG_FREE(l_ss);
                                 //free(inds);
-                                return false;	
+                                return false;
                             }
                             memcpy(l_ss[lind].string, el_str, el_len);
                             if(el_len > sg_strings.max_string_length) {
@@ -477,10 +469,10 @@ fail:
             default:
                 obj=SWIG_NewPointerObj(f, $descriptor(shogun::CFeatures*), SWIG_POINTER_EXCEPTION);
                 break;
-        }    
+        }
 %enddef
 
-        
+
 %typemap(out) shogun::CFeatures*
 {
             int feats_class=$1->get_feature_class();
@@ -825,7 +817,7 @@ TYPEMAP_STRINGFEATURES_OUT(float64_t,     PDL_FLOAT64)
 TYPEMAP_STRINGFEATURES_OUT(floatmax_t,    PDL_LONGDOUBLE)
 TYPEMAP_STRINGFEATURES_OUT(SV*,		  PDL_OBJECT)
 #undef TYPEMAP_STRINGFEATURES_ARGOUT
-     
+
 /* input typemap for Sparse Features */
 %define TYPEMAP_SPARSEFEATURES_IN(type,typecode)
 %typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) shogun::SGSparseMatrix<type>

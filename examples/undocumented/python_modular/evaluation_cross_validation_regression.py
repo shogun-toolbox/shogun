@@ -8,60 +8,51 @@
 # Written (W) 2012 Heiko Strathmann
 # Copyright (C) 2012 Berlin Institute of Technology and Max-Planck-Society
 #
+traindat = '../data/fm_train_real.dat'
+label_traindat = '../data/label_train_twoclass.dat'
 
-from numpy import array
-from numpy.random import seed, rand
-from tools.load import LoadMatrix
-lm=LoadMatrix()
+parameter_list = [[traindat,label_traindat,0.8,1e-6],[traindat,label_traindat,0.9,1e-7]]
 
-traindat = lm.load_numbers('../data/fm_train_real.dat')
-testdat = lm.load_numbers('../data/fm_test_real.dat')
-label_traindat = lm.load_labels('../data/label_train_twoclass.dat')
+def evaluation_cross_validation_regression (train_fname=traindat,label_fname=label_traindat,width=0.8,tau=1e-6):
+	from modshogun import CrossValidation, CrossValidationResult
+	from modshogun import MeanSquaredError, CrossValidationSplitting
+	from modshogun import RegressionLabels, RealFeatures
+	from modshogun import GaussianKernel, KernelRidgeRegression, CSVFile
 
-parameter_list = [[traindat,testdat,label_traindat,0.8,1e-6],[traindat,testdat,label_traindat,0.9,1e-7]]
+	# training data
+	features=RealFeatures(CSVFile(train_fname))
+	labels=RegressionLabels(CSVFile(label_fname))
 
-def evaluation_cross_validation_regression (fm_train=traindat,fm_test=testdat,label_train=label_traindat,width=0.8,tau=1e-6):
-    from shogun.Evaluation import CrossValidation, CrossValidationResult
-    from shogun.Evaluation import MeanSquaredError
-    from shogun.Evaluation import CrossValidationSplitting
-    from shogun.Features import RegressionLabels, RealFeatures
-    from shogun.Kernel import GaussianKernel
-    from shogun.Regression import KernelRidgeRegression
+	# kernel and predictor
+	kernel=GaussianKernel()
+	predictor=KernelRidgeRegression(tau, kernel, labels)
 
-    # training data
-    features=RealFeatures(fm_train)
-    labels=RegressionLabels(label_train)
+	# splitting strategy for 5 fold cross-validation (for classification its better
+	# to use "StratifiedCrossValidation", but here, the std x-val is used
+	splitting_strategy=CrossValidationSplitting(labels, 5)
 
-    # kernel and predictor
-    kernel=GaussianKernel()
-    predictor=KernelRidgeRegression(tau, kernel, labels)
+	# evaluation method
+	evaluation_criterium=MeanSquaredError()
 
-    # splitting strategy for 5 fold cross-validation (for classification its better
-    # to use "StratifiedCrossValidation", but here, the std x-val is used
-    splitting_strategy=CrossValidationSplitting(labels, 5)
+	# cross-validation instance
+	cross_validation=CrossValidation(predictor, features, labels,
+			splitting_strategy, evaluation_criterium)
 
-    # evaluation method
-    evaluation_criterium=MeanSquaredError()
+	# (optional) repeat x-val 10 times
+	cross_validation.set_num_runs(10)
 
-    # cross-validation instance
-    cross_validation=CrossValidation(predictor, features, labels,
-        splitting_strategy, evaluation_criterium)
+	# (optional) request 95% confidence intervals for results (not actually needed
+	# for this toy example)
+	cross_validation.set_conf_int_alpha(0.05)
 
-    # (optional) repeat x-val 10 times
-    cross_validation.set_num_runs(10)
+	# (optional) tell machine to precompute kernel matrix. speeds up. may not work
+	predictor.data_lock(labels, features)
 
-    # (optional) request 95% confidence intervals for results (not actually needed
-    # for this toy example)
-    cross_validation.set_conf_int_alpha(0.05)
-
-    # (optional) tell machine to precompute kernel matrix. speeds up. may not work
-    predictor.data_lock(labels, features)
-
-    # perform cross-validation and print(results)
-    result=cross_validation.evaluate()
-    #print("mean:", result.mean)
-    #if result.has_conf_int:
-    #    print("[", result.conf_int_low, ",", result.conf_int_up, "] with alpha=", result.conf_int_alpha)
+	# perform cross-validation and print(results)
+	result=cross_validation.evaluate()
+	#print("mean:", result.mean)
+	#if result.has_conf_int:
+	#    print("[", result.conf_int_low, ",", result.conf_int_up, "] with alpha=", result.conf_int_alpha)
 
 if __name__=='__main__':
 	print('Evaluation CrossValidationClassification')

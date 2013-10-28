@@ -26,7 +26,7 @@ enum ESPEStrategy
 	SPE_LOCAL,
 };
 
-/** @brief class StochasticProximityEmbedding used to construct embeddings of data using 
+/** @brief class StochasticProximityEmbedding used to construct embeddings of data using
  * the Stochastic Proximity algorithm.
  *
  * Agrafiotis, D. K. (2002)
@@ -34,13 +34,13 @@ enum ESPEStrategy
  * Retrieved from:
  * http://www.dimitris-agrafiotis.com/Papers/jcc20078.pdf
  *
- * This class provides two different strategies for the computation of the embedding. 
- * In each iteration, both strategies choose two sets of feature vectors whose 
- * representation in the embedded space is updated. The first set is randomly chosen 
- * in both strategies. However, the second set is obtained differently depending on 
- * the strategy used. In the SPE_GLOBAL strategy, the second set is still 
- * chosen at random. On the other hand, if SPE_LOCAL is used, first of all, the 
- * K-Nearest Neighbors  of each of the feature vectors in the first set is obtained 
+ * This class provides two different strategies for the computation of the embedding.
+ * In each iteration, both strategies choose two sets of feature vectors whose
+ * representation in the embedded space is updated. The first set is randomly chosen
+ * in both strategies. However, the second set is obtained differently depending on
+ * the strategy used. In the SPE_GLOBAL strategy, the second set is still
+ * chosen at random. On the other hand, if SPE_LOCAL is used, first of all, the
+ * K-Nearest Neighbors  of each of the feature vectors in the first set is obtained
  * and secondly, a number of feature vectors among these K-Nearest Neighbors is chosen
  * to form the second set.
  *
@@ -50,7 +50,7 @@ enum ESPEStrategy
  * times the value of "m_nupdates".
  *
  * In order to avoid problems with memory in case a large number of features vectors is
- * to be embedded, the distance matrix is never computed explicitily. This has the 
+ * to be embedded, the distance matrix is never computed explicitily. This has the
  * drawback that it is likely that the same distances are computed several times during
  * the process.
  *
@@ -175,4 +175,4 @@ class CStochasticProximityEmbedding : public CEmbeddingConverter
 
 
 #endif /* HAVE_EIGEN3 */
-#endif /* STOCHASTICPROXIMITYEMBEDDING_H_ */ 
+#endif /* STOCHASTICPROXIMITYEMBEDDING_H_ */

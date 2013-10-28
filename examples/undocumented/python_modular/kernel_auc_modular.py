@@ -1,28 +1,17 @@
 #!/usr/bin/env python
-###########################################################################
-# kernel can be used to maximize AUC instead of margin in SVMs 
-###########################################################################
-from tools.load import LoadMatrix
-from numpy import double
-lm=LoadMatrix()
+traindat = '../data/fm_train_real.dat'
+label_traindat = '../data/label_train_twoclass.dat'
+parameter_list = [[traindat,label_traindat,1.7], [traindat,label_traindat,1.6]]
 
-traindat = double(lm.load_numbers('../data/fm_train_real.dat'))
-testdat = lm.load_labels('../data/label_train_twoclass.dat')
-parameter_list = [[traindat,testdat,1.7], [traindat,testdat,1.6]]
+def kernel_auc_modular (train_fname=traindat,label_fname=label_traindat,width=1.7):
+	from modshogun import GaussianKernel, AUCKernel, RealFeatures
+	from modshogun import BinaryLabels, CSVFile
 
-
-def kernel_auc_modular (fm_train_real=traindat,label_train_real=testdat,width=1.7):
-
-
-	from shogun.Kernel import GaussianKernel, AUCKernel
-	from shogun.Features import RealFeatures, BinaryLabels
-
-	feats_train=RealFeatures(fm_train_real)
-
+	feats_train=RealFeatures(CSVFile(train_fname))
 	subkernel=GaussianKernel(feats_train, feats_train, width)
 
 	kernel=AUCKernel(0, subkernel)
-	kernel.setup_auc_maximization( BinaryLabels(label_train_real) )
+	kernel.setup_auc_maximization(BinaryLabels(CSVFile(label_fname)))
 	km_train=kernel.get_kernel_matrix()
 	return kernel
 

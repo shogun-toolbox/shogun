@@ -1,6 +1,6 @@
 from pylab import figure,pcolor,scatter,contour,colorbar,show,subplot,plot,connect
-from shogun.Features import *
-from shogun.Classifier import *
+from modshogun import *
+from modshogun import *
 import util
 
 util.set_title('LDA')

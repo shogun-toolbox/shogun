@@ -21,7 +21,7 @@ class CLatentModel;
 #define IGNORE_IN_CLASSLIST
 /**
  * @brief Class CDirectorLatentModel that represents the application specific model
- * with latent variable svm in target interface language. It is a base class 
+ * with latent variable svm in target interface language. It is a base class
  * that needs to be extended with real implementations before using.
  *
  * @see CLatentModel

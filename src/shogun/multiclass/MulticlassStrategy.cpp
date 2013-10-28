@@ -5,6 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 2012 Chiyuan Zhang
+ * Written (W) 2013 Shell Hu and Heiko Strathmann
  * Copyright (C) 2012 Chiyuan Zhang
  */
 
@@ -15,10 +16,33 @@ using namespace shogun;
 
 
 CMulticlassStrategy::CMulticlassStrategy()
-	: m_rejection_strategy(NULL), m_train_labels(NULL), m_orig_labels(NULL), m_train_iter(0)
+	: CSGObject()
 {
+	init();
+}
+
+CMulticlassStrategy::CMulticlassStrategy(EProbHeuristicType prob_heuris)
+	: CSGObject()
+{
+	init();
+
+	m_prob_heuris=prob_heuris;
+}
+
+void CMulticlassStrategy::init()
+{
+	m_rejection_strategy=NULL;
+	m_train_labels=NULL;
+	m_orig_labels=NULL;
+	m_train_iter=0;
+	m_prob_heuris=PROB_HEURIS_NONE;
+	m_num_classes=0;
+
 	SG_ADD((CSGObject**)&m_rejection_strategy, "rejection_strategy", "Strategy of rejection", MS_NOT_AVAILABLE);
 	SG_ADD(&m_num_classes, "num_classes", "Number of classes", MS_NOT_AVAILABLE);
+	//SG_ADD((machine_int_t*)&m_prob_heuris, "prob_heuris", "Probability estimation heuristics", MS_NOT_AVAILABLE);
+
+	SG_WARNING("%s::CMulticlassStrategy(): register parameters!\n", get_name());
 }
 
 void CMulticlassStrategy::train_start(CMulticlassLabels *orig_labels, CBinaryLabels *train_labels)

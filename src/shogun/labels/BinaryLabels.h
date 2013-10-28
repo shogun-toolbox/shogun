@@ -76,12 +76,6 @@ class CBinaryLabels : public CDenseLabels
 		 */
 		CBinaryLabels(CFile* loader);
 
-		/** helper method used to specialize a base class instance
-		 *
-		 * @param base_labels its dynamic type must be CBinaryLabels
-		 */
-		static CBinaryLabels* obtain_from_generic(CLabels* base_labels);
-
 		/** Make sure the label is valid, otherwise raise SG_ERROR.
 		 *
 		 * possible with subset
@@ -94,17 +88,27 @@ class CBinaryLabels : public CDenseLabels
 		 *
 		 * @return label type binary
 		 */
-		virtual ELabelType get_label_type();
+		virtual ELabelType get_label_type() const;
 
 		/** Converts all scores to calibrated probabilities by fitting a
 		 * sigmoid function using the method described in
 		 * Lin, H., Lin, C., and Weng, R. (2007).
 		 * A note on Platt's probabilistic outputs for support vector machines.
 		 *
+		 * A sigmoid is fitted to the scores of the labels and then is used
+		 * to compute porbabilities which are stored in the values vector. This
+		 * is done via computing
+		 * \f$pf=x*a+b\f$ for a given score \f$x\f$ and then computing
+		 * \f$\frac{\exp(-f)}{1+}exp(-f)}\f$ if \f$f\geq 0\f$ and
+		 * \f$\frac{1}{(1+\exp(f)}\f$ otherwise, where \f$a, bf\f$ are shape parameters
+		 * of the sigmoid. These can be specified or learned automatically
+		 *
 		 * Should only be used in conjunction with SVM.
-		 * The fitted sigmoid is used to replace all score values.
+		 *
+		 * @param a parameter a of sigmoid, if a=b=0, both are learned
+		 * @param b parameter b of sigmoid, if a=b=0, both are learned
 		 */
-		void scores_to_probabilities();
+		void scores_to_probabilities(float64_t a=0, float64_t b=0);
 
 		/** @return object name */
 		virtual const char* get_name() const { return "BinaryLabels"; }

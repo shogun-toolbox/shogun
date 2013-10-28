@@ -7,10 +7,10 @@ data = lm.load_numbers('../data/fm_train_real.dat')
 parameter_list = [[data, 20], [data, 30]]
 
 def preprocessor_dimensionreductionpreprocessor_modular (data, k):
-	from shogun.Features import RealFeatures
-	from shogun.Preprocessor import DimensionReductionPreprocessor
-	from shogun.Converter import LocallyLinearEmbedding
-	
+	from modshogun import RealFeatures
+	from modshogun import DimensionReductionPreprocessor
+	from modshogun import LocallyLinearEmbedding
+
 	features = RealFeatures(data)
 
 	converter = LocallyLinearEmbedding()

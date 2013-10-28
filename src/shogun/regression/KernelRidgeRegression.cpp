@@ -33,14 +33,13 @@ CKernelRidgeRegression::CKernelRidgeRegression(float64_t tau, CKernel* k, CLabel
 	m_tau=tau;
 	set_labels(lab);
 	set_kernel(k);
-	set_epsilon(0.0001);
 	m_train_func=m;
 }
 
 void CKernelRidgeRegression::init()
 {
 	m_tau=1e-6;
-
+	m_epsilon=0.0001;
 	SG_ADD(&m_tau, "tau", "Regularization parameter", MS_AVAILABLE);
 }
 

@@ -5,6 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 2011-2012 Heiko Strathmann
+ * Written (W) 2013 Roman Votyakov
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
@@ -12,22 +13,21 @@
 #define __PARAMETERCOMBINATION_H__
 
 #include <shogun/lib/DynamicObjectArray.h>
+#include <shogun/lib/Map.h>
 
 namespace shogun
 {
-
 class CModelSelectionParameters;
 class CMachine;
 class Parameter;
 
-/**
- * @brief class that holds ONE combination of parameters for a learning machine.
- * The structure is organized as a tree. Every node may hold a name or an
- * instance of a Parameter class. Nodes may have children. The nodes are
+/** @brief Class that holds ONE combination of parameters for a learning
+ * machine. The structure is organized as a tree. Every node may hold a name or
+ * an instance of a Parameter class. Nodes may have children. The nodes are
  * organized in such way, that every parameter of a model for model selection
  * has one node and sub-parameters are stored in sub-nodes. Using a tree of this
- * class, parameters of models may easily be set.
- * There are these types of nodes:
+ * class, parameters of models may easily be set. There are these types of
+ * nodes:
  *
  * -root node: no name and no Parameter instance, every tree has such a node as
  * root. Has children.
@@ -37,16 +37,35 @@ class Parameter;
  * instances. Parameter nodes may have children with sub-parameters.
  *
  * Again: Leafs of the tree may only be Parameter nodes.
- *
  */
 class CParameterCombination : public CSGObject
 {
-
 friend class CModelSelectionParameters;
 
 public:
 	/** constructor for a root node */
 	CParameterCombination();
+
+	/** constructor for a parameter node
+	 *
+	 * @param param parameter node
+	 */
+	CParameterCombination(Parameter* param);
+
+	/** constructor for an object. Builds parameter combination of the gradient
+	 * parameters.
+	 *
+	 * It adds parameters recursively starting from given object (given object
+	 * becomes the root node).
+	 *
+	 * @param obj object to build parameter combination
+	 */
+	CParameterCombination(CSGObject* obj);
+
+	/** destructor also recursively destroys complete tree (SG_UNREF of child
+	 * nodes)
+	 */
+	virtual ~CParameterCombination();
 
 	/** Prints a representation of the current node
 	 *
@@ -55,14 +74,8 @@ public:
 	 */
 	void print_tree(int prefix_num=0) const;
 
-	/** constructor for a Parameter node */
-	CParameterCombination(Parameter* param);
-
-	/** destructor
-	 * also recursively destroys complete tree (SG_UNREF of child nodes) */
-	virtual ~CParameterCombination();
-
 	/** applies this parameter tree to a parameter instance
+	 *
 	 * Recursively iterates over all children of the tree and sets model
 	 * selection parameters of children to sub-parameters
 	 *
@@ -70,8 +83,8 @@ public:
 	 */
 	void apply_to_modsel_parameter(Parameter* parameter) const;
 
-	/**applies this parameter tree to a learning machine
-	 * (wrapper for apply_to_modesel_parameter() method)
+	/** applies this parameter tree to a learning machine (wrapper for
+	 * apply_to_modesel_parameter() method)
 	 *
 	 * @param machine learning machine to apply parameter tree to
 	 */
@@ -200,6 +213,28 @@ public:
 		return "ParameterCombination";
 	}
 
+	/** returns total length of the parameters in combination
+	 *
+	 * @return total length of the parameters in combination
+	 */
+	virtual uint32_t get_parameters_length() { return m_parameters_length; }
+
+	/** builds map, which contains parameters and its values.
+	 *
+	 * This method adds to map only parameters of floating point type.
+	 *
+	 * @param values_map map, which contains parameters and its values
+	 */
+	virtual void build_parameter_values_map(
+			CMap<TParameter*, SGVector<float64_t> >* values_map);
+
+	/** builds map, which contains parameters and its parents
+	 *
+	 * @param parent_map map, which contains parameters and its parents
+	 */
+	virtual void build_parameter_parent_map(
+			CMap<TParameter*, CSGObject*>* parent_map);
+
 protected:
 	/** Takes a set of sets of (non-value) trees and returns a set with all
 	 * combinations of the elements, where only combinations of trees with
@@ -267,13 +302,14 @@ private:
 	void init();
 
 protected:
-
-	/** Parameter of combination */
+	/** parameter of combination */
 	Parameter* m_param;
 
-	/** Child Parameters */
+	/** child parameters */
 	CDynamicObjectArray* m_child_nodes;
+
+	/** total length of the parameters in combination */
+	uint32_t m_parameters_length;
 };
 }
-
 #endif /* __PARAMETERCOMBINATION_H__ */

@@ -8,6 +8,7 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
+#include <shogun/lib/memory.h>
 #include <shogun/io/streaming/StreamingFile.h>
 
 #include <ctype.h>
@@ -201,7 +202,7 @@ CStreamingFile::CStreamingFile() : CSGObject()
 CStreamingFile::CStreamingFile(const char* fname, char rw) : CSGObject()
 {
 	task=rw;
-	filename=strdup(fname);
+	filename=get_strdup(fname);
 	int mode = O_LARGEFILE;
 
 	switch (rw)

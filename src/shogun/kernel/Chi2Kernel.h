@@ -25,7 +25,7 @@ namespace shogun
  *
  * It is defined as
  * \f[
- * k({\bf x},({\bf x'})= e^{-\frac{1}{width} \sum_{i=0}^{l}\frac{(x_i-x'_i)^2}{(x_i+x'_i)}}
+ * k({\bf x},{\bf x'})= e^{-\frac{1}{width} \sum_{i=0}^{l}\frac{(x_i-x'_i)^2}{(x_i+x'_i)}}
  * \f]
  *
  * */
@@ -51,8 +51,8 @@ class CChi2Kernel: public CDotKernel
 		 * @param width width
 		 * @param size cache size
 		 */
-		CChi2Kernel(
-			CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r, float64_t width, int32_t size);
+		CChi2Kernel( CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r,
+				float64_t width, int32_t size=10);
 
 		virtual ~CChi2Kernel();
 
@@ -63,6 +63,15 @@ class CChi2Kernel: public CDotKernel
 		 * @return if initializing was successful
 		 */
 		virtual bool init(CFeatures* l, CFeatures* r);
+
+		/** @return width of the kernel */
+		virtual float64_t get_width();
+
+		/** @param kernel is casted to CChi2Kernel, error if not possible
+		 * is SG_REF'ed
+		 * @return casted CGaussianKernel object
+		 */
+		static CChi2Kernel* obtain_from_generic(CKernel* kernel);
 
 		/** return what type of kernel we are
 		 *

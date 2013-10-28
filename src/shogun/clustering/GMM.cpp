@@ -135,6 +135,7 @@ float64_t CGMM::train_em(float64_t min_cov, int32_t max_iter, float64_t min_chan
 
 	SGMatrix<float64_t> alpha;
 
+	/* compute initialization via kmeans if none is present */
 	if (m_components[0]->get_mean().vector==NULL)
 	{
 		CKMeans* init_k_means=new CKMeans(int32_t(m_components.size()), new CEuclideanDistance());
@@ -643,6 +644,16 @@ float64_t CGMM::get_log_model_parameter(int32_t num_param)
 	return CMath::log(m_components.size());
 }
 
+index_t CGMM::get_num_components() const
+{
+	return m_components.size();
+}
+
+CDistribution* CGMM::get_component(index_t index) const
+{
+	return m_components[index];
+}
+
 float64_t CGMM::get_log_derivative(int32_t num_param, int32_t num_example)
 {
 	SG_NOTIMPLEMENTED
@@ -657,7 +668,19 @@ float64_t CGMM::get_log_likelihood_example(int32_t num_example)
 
 float64_t CGMM::get_likelihood_example(int32_t num_example)
 {
-	return CMath::exp(get_log_likelihood_example(num_example));
+	float64_t result=0;
+
+	ASSERT(features);
+	ASSERT(features->get_feature_class() == C_DENSE);
+	ASSERT(features->get_feature_type() == F_DREAL);
+
+	for (int32_t i=0; i<int32_t(m_components.size()); i++)
+	{
+		SGVector<float64_t> point= ((CDenseFeatures<float64_t>*) features)->get_feature_vector(num_example);
+		result+=CMath::exp(m_components[i]->compute_log_PDF(point)+CMath::log(m_coefficients[i]));
+	}
+
+	return result;
 }
 
 SGVector<float64_t> CGMM::get_nth_mean(int32_t num)
@@ -741,14 +764,18 @@ SGMatrix<float64_t> CGMM::alpha_init(SGMatrix<float64_t> init_means)
 
 SGVector<float64_t> CGMM::sample()
 {
-	ASSERT(m_components.size())
+	REQUIRE(m_components.size()>0, "Number of mixture components is %d but "
+			"must be positive\n", m_components.size());
 	float64_t rand_num=CMath::random(float64_t(0), float64_t(1));
 	float64_t cum_sum=0;
 	for (int32_t i=0; i<m_coefficients.vlen; i++)
 	{
 		cum_sum+=m_coefficients.vector[i];
 		if (cum_sum>=rand_num)
+		{
+			SG_DEBUG("Sampling from mixture component %d\n", i);
 			return m_components[i]->sample();
+		}
 	}
 	return m_components[m_coefficients.vlen-1]->sample();
 }

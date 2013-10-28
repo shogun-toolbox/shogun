@@ -8,7 +8,7 @@
 #define TAPKEE_MATRIX_OPS_H_
 
 /* Tapkee includes */
-#include <shogun/lib/tapkee/tapkee_defines.hpp>
+#include <shogun/lib/tapkee/defines.hpp>
 /* End of Tapkee includes */
 
 namespace tapkee
@@ -16,10 +16,10 @@ namespace tapkee
 namespace tapkee_internal
 {
 
-//! Matrix-matrix operation used to 
-//! compute smallest eigenvalues and 
+//! Matrix-matrix operation used to
+//! compute smallest eigenvalues and
 //! associated eigenvectors of a sparse matrix
-//! Essentially solves linear system 
+//! Essentially solves linear system
 //! with provided right-hand side part.
 //!
 struct SparseInverseMatrixOperation
@@ -41,10 +41,10 @@ struct SparseInverseMatrixOperation
 const char* SparseInverseMatrixOperation::ARPACK_CODE = "SM";
 const bool SparseInverseMatrixOperation::largest = false;
 
-//! Matrix-matrix operation used to 
-//! compute smallest eigenvalues and 
+//! Matrix-matrix operation used to
+//! compute smallest eigenvalues and
 //! associated eigenvectors of a dense matrix
-//! Essentially solves linear system 
+//! Essentially solves linear system
 //! with provided right-hand side part.
 //!
 struct DenseInverseMatrixOperation
@@ -69,7 +69,7 @@ const bool DenseInverseMatrixOperation::largest = false;
 //! Matrix-matrix operation used to
 //! compute largest eigenvalues and
 //! associated eigenvectors. Essentially
-//! computes matrix product with 
+//! computes matrix product with
 //! provided right-hand side part.
 //!
 struct DenseMatrixOperation
@@ -77,9 +77,9 @@ struct DenseMatrixOperation
 	DenseMatrixOperation(const DenseMatrix& matrix) : _matrix(matrix)
 	{
 	}
-	//! Computes matrix product of the matrix and provided right-hand 
+	//! Computes matrix product of the matrix and provided right-hand
 	//! side matrix
-	//! 
+	//!
 	//! @param rhs right-hand size matrix
 	//!
 	inline DenseMatrix operator()(const DenseMatrix& rhs)
@@ -100,19 +100,47 @@ const bool DenseMatrixOperation::largest = true;
 //! computes matrix product with provided
 //! right-hand side part *twice*.
 //!
-struct DenseImplicitSquareMatrixOperation
+struct DenseImplicitSquareSymmetricMatrixOperation
 {
-	DenseImplicitSquareMatrixOperation(const DenseMatrix& matrix) : _matrix(matrix)
+	DenseImplicitSquareSymmetricMatrixOperation(const DenseMatrix& matrix) : _matrix(matrix)
 	{
 	}
-	//! Computes matrix product of the matrix and provided right-hand 
+	//! Computes matrix product of the matrix and provided right-hand
 	//! side matrix twice
-	//! 
+	//!
 	//! @param rhs right-hand side matrix
 	//!
 	inline DenseMatrix operator()(const DenseMatrix& rhs)
 	{
 		return _matrix.selfadjointView<Eigen::Upper>()*(_matrix.selfadjointView<Eigen::Upper>()*rhs);
+	}
+	const DenseMatrix& _matrix;
+	static const char* ARPACK_CODE;
+	static const bool largest;
+};
+const char* DenseImplicitSquareSymmetricMatrixOperation::ARPACK_CODE = "LM";
+const bool DenseImplicitSquareSymmetricMatrixOperation::largest = true;
+
+//! Matrix-matrix operation used to
+//! compute largest eigenvalues and
+//! associated eigenvectors of X*X^T like
+//! matrix implicitly. Essentially
+//! computes matrix product with provided
+//! right-hand side part *twice*.
+//!
+struct DenseImplicitSquareMatrixOperation
+{
+	DenseImplicitSquareMatrixOperation(const DenseMatrix& matrix) : _matrix(matrix)
+	{
+	}
+	//! Computes matrix product of the matrix and provided right-hand
+	//! side matrix twice
+	//!
+	//! @param rhs right-hand side matrix
+	//!
+	inline DenseMatrix operator()(const DenseMatrix& rhs)
+	{
+		return _matrix*(_matrix.transpose()*rhs);
 	}
 	const DenseMatrix& _matrix;
 	static const char* ARPACK_CODE;
@@ -132,9 +160,9 @@ struct GPUDenseImplicitSquareMatrixOperation
 		res = viennacl::matrix<ScalarType>(matrix.cols(),1);
 		viennacl::copy(matrix,mat);
 	}
-	//! Computes matrix product of the matrix and provided right-hand 
+	//! Computes matrix product of the matrix and provided right-hand
 	//! side matrix twice
-	//! 
+	//!
 	//! @param rhs right-hand side matrix
 	//!
 	inline DenseMatrix operator()(const DenseMatrix& rhs)
@@ -166,9 +194,9 @@ struct GPUDenseMatrixOperation
 		res = viennacl::matrix<ScalarType>(matrix.cols(),1);
 		viennacl::copy(matrix,mat);
 	}
-	//! Computes matrix product of the matrix and provided right-hand 
+	//! Computes matrix product of the matrix and provided right-hand
 	//! side matrix twice
-	//! 
+	//!
 	//! @param rhs right-hand side matrix
 	//!
 	inline DenseMatrix operator()(const DenseMatrix& rhs)

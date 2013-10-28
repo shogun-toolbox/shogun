@@ -11,27 +11,27 @@
  * Implementation of the Proximal Point P-BMRM (3pbm)
  *--------------------------------------------------------------------- */
 
-#include <shogun/lib/common.h>
-#include <shogun/structure/libbmrm.h>
-
 #ifndef libp3bm_h
 #define libp3bm_h
+
+#include <shogun/lib/common.h>
+#include <shogun/structure/libbmrm.h>
 
 namespace shogun
 {
 	/** Proximal Point P-BMRM (multiple cutting plane models) Solver for
-	 * 	Structured Output Learning
+	 *	Structured Output Learning
 	 *
-	 * @param model			Pointer to user defined CStructuredModel
+	 * @param machine		Pointer to the BMRM machine
 	 * @param W				Weight vector
 	 * @param TolRel		Relative tolerance
 	 * @param TolAbs		Absolute tolerance
 	 * @param _lambda		Regularization constant
 	 * @param _BufSize		Size of the CP buffer (i.e. maximal number of iterations)
 	 * @param cleanICP		Flag that enables/disables inactive cutting plane removal
-	 * 						feature
+	 *						feature
 	 * @param cleanAfter	Number of iterations that should be cutting plane
-	 * 						inactive for to be removed
+	 *						inactive for to be removed
 	 * @param K				Parameter K
 	 * @param Tmax			Parameter Tmax
 	 * @param cp_models		Count of cutting plane models to be used
@@ -39,18 +39,18 @@ namespace shogun
 	 * @return Structure with BMRM algorithm result
 	 */
 	BmrmStatistics svm_p3bm_solver(
-			CStructuredModel *model,
-			float64_t   	*W,
-			float64_t   	TolRel,
-			float64_t   	TolAbs,
-			float64_t   	_lambda,
-			uint32_t    	_BufSize,
-			bool        	cleanICP,
-			uint32_t    	cleanAfter,
-			float64_t   	K,
-			uint32_t    	Tmax,
+			CDualLibQPBMSOSVM  *machine,
+			float64_t	*W,
+			float64_t	TolRel,
+			float64_t	TolAbs,
+			float64_t	_lambda,
+			uint32_t	_BufSize,
+			bool	cleanICP,
+			uint32_t	cleanAfter,
+			float64_t	K,
+			uint32_t	Tmax,
 			uint32_t        cp_models,
-			bool        	verbose
+			bool	verbose
 			);
 
 }

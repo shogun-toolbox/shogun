@@ -9,10 +9,10 @@
 #                                                                                           #
 #    This program is distributed in the hope that it will be useful,                        #
 #    but WITHOUT ANY WARRANTY; without even the implied warranty of                         #
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                           # 
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                           #
 #    GNU General Public License for more details.                                           #
 #                                                                                           #
-#    You should have received a copy of the GNU General Public License                      # 
+#    You should have received a copy of the GNU General Public License                      #
 #    along with this program; if not, see http://www.gnu.org/licenses                       #
 #    or write to the Free Software Foundation, Inc., 51 Franklin Street,                    #
 #    Fifth Floor, Boston, MA 02110-1301  USA                                                #
@@ -68,17 +68,17 @@ if __name__ == '__main__':
             (p.seqlenmin,p.seqlenmax) = esvm.parse.parse_range(sys.argv[5])
             (p.posstart,p.posend) = esvm.parse.parse_range(sys.argv[6])
             p.mutrate = float(sys.argv[7])
-            
+
             n = MotifDataDef()
             n.motif = sys.argv[8]
             n.numseq = int(sys.argv[9])
             (n.seqlenmin,n.seqlenmax) = esvm.parse.parse_range(sys.argv[10])
             (n.posstart,n.posend) = esvm.parse.parse_range(sys.argv[11])
             n.mutrate = float(sys.argv[12])
-            
+
             filename = sys.argv[13]
             arffwrite_sequence(filename, p, n)
-        
+
     elif sys.argv[1] == 'cloud':
         # generate a data cloud in ARFF format
         numpoint = int(sys.argv[2])
@@ -95,7 +95,7 @@ if __name__ == '__main__':
             for ix in xrange(numpoint):
                 pointcloud.append(array([labels[ix],examples[0,ix],examples[1,ix]]))
             esvm.plots.plotcloud(pointcloud,sys.argv[7],'Pointcloud')
-            
+
 	#(examples,labels,metadata)=arffwrite_real(filename, numpoint, numfeat, fracpos, width)
 	#if len(sys.argv)>=8:
 	#	plots.plotcloud(pointcloud,sys.argv[7],metadata)

@@ -16,41 +16,43 @@
 
 namespace shogun
 {
-
 class CModelSelectionParameters;
 class CParameterCombination;
 
-/**
- * @brief Abstract base class for model selection.
- * Takes a parameter tree which specifies parameters for model selection,
- * and a cross-validation instance and searches for the best combination of
- * parameters in the abstract method select_model(), which has to be implemented
- * in concrete sub-classes.
+/** @brief Abstract base class for model selection.
+ *
+ * Takes a parameter tree which specifies parameters for model selection, and a
+ * cross-validation instance and searches for the best combination of parameters
+ * in the abstract method select_model(), which has to be implemented in
+ * concrete sub-classes.
  */
 class CModelSelection: public CSGObject
 {
 public:
+	/** default constructor */
+	CModelSelection();
+
 	/** constructor
+	 *
+	 * @param machine_eval object that computes the actual evaluation
 	 * @param model_parameters parameter tree with model parameters to optimize
-	 * @param machine_eval Object that computes the actual evaluation
 	 */
-	CModelSelection(CModelSelectionParameters* model_parameters,
-			CMachineEvaluation* machine_eval);
+	CModelSelection(CMachineEvaluation* machine_eval,
+			CModelSelectionParameters* model_parameters);
 
 	/** destructor */
 	virtual ~CModelSelection();
 
-	/**
-	 * abstract method to select model
+	/** abstract method to select model
 	 *
 	 * @param print_state if true, the current combination is printed
+	 *
 	 * @return best combination of model parameters
 	 */
 	virtual CParameterCombination* select_model(bool print_state=false)=0;
 
 private:
-
-	/*Initializer*/
+	/** initializer */
 	void init();
 
 protected:
@@ -59,7 +61,5 @@ protected:
 	/** cross validation */
 	CMachineEvaluation* m_machine_eval;
 };
-
 }
-
 #endif /* __MODELSELECTION_H_ */

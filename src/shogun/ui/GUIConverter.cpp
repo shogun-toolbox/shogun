@@ -27,6 +27,7 @@
 #include <shogun/converter/MultidimensionalScaling.h>
 #include <shogun/converter/Isomap.h>
 #include <shogun/converter/EmbeddingConverter.h>
+#include <shogun/converter/ica/Jade.h>
 
 using namespace shogun;
 
@@ -151,6 +152,23 @@ bool CGUIConverter::create_multidimensionalscaling()
 	SG_ERROR("Requires EIGEN3 to be enabled at compile time\n")
 #endif
 	return true;
+}
+
+bool CGUIConverter::create_jade()
+{
+#ifdef HAVE_EIGEN3
+	m_converter = new CJade();
+#else
+	SG_ERROR("Requires EIGEN3 to be enabled at compile time\n")
+#endif
+	return true;
+}
+
+CDenseFeatures<float64_t>* CGUIConverter::apply()
+{
+	if (!m_converter)
+		SG_ERROR("No converter created")
+	return (CDenseFeatures<float64_t>*)m_converter->apply(m_ui->ui_features->get_train_features());
 }
 
 CDenseFeatures<float64_t>* CGUIConverter::embed(int32_t target_dim)

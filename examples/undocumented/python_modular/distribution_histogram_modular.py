@@ -7,8 +7,8 @@ traindna = lm.load_dna('../data/fm_train_dna.dat')
 parameter_list = [[traindna,3,0,False],[traindna,4,0,False]]
 
 def distribution_histogram_modular (fm_dna=traindna,order=3,gap=0,reverse=False):
-	from shogun.Features import StringWordFeatures, StringCharFeatures, DNA
-	from shogun.Distribution import Histogram
+	from modshogun import StringWordFeatures, StringCharFeatures, DNA
+	from modshogun import Histogram
 
 	charfeat=StringCharFeatures(DNA)
 	charfeat.set_features(fm_dna)

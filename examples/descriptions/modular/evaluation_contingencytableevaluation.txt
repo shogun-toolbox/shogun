@@ -1,2 +1,2 @@
 In this example various (accuracy, error rate, ..) measures are being computed
-for the pair of ground truth toy data and random data. 
+for the pair of ground truth toy data and random data.

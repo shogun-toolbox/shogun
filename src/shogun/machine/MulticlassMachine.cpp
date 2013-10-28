@@ -6,6 +6,7 @@
  *
  * Written (W) 1999-2011 Soeren Sonnenburg
  * Written (W) 2012 Fernando José Iglesias García and Sergey Lisitsyn
+ * Written (W) 2013 Shell Hu and Heiko Strathmann
  * Copyright (C) 2012 Sergey Lisitsyn, Fernando José Iglesias Garcia
  */
 
@@ -16,6 +17,7 @@
 #include <shogun/base/Parameter.h>
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/labels/RegressionLabels.h>
+#include <shogun/mathematics/Statistics.h>
 
 using namespace shogun;
 
@@ -112,21 +114,67 @@ CMulticlassLabels* CMulticlassMachine::apply_multiclass(CFeatures* data)
 			SG_ERROR("num_machines = %d, did you train your machine?", num_machines)
 
 		CMulticlassLabels* result=new CMulticlassLabels(num_vectors);
-		result->allocate_confidences_for(num_machines);
+
+		// if outputs are prob, only one confidence for each class
+		int32_t num_classes=m_multiclass_strategy->get_num_classes();
+		EProbHeuristicType heuris = get_prob_heuris();
+
+		if (heuris!=PROB_HEURIS_NONE)
+			result->allocate_confidences_for(num_classes);
+		else
+			result->allocate_confidences_for(num_machines);
 
 		CBinaryLabels** outputs=SG_MALLOC(CBinaryLabels*, num_machines);
+		SGVector<float64_t> As(num_machines);
+		SGVector<float64_t> Bs(num_machines);
 
-		for (int32_t i=0; i < num_machines; ++i)
+		for (int32_t i=0; i<num_machines; ++i)
+		{
 			outputs[i] = (CBinaryLabels*) get_submachine_outputs(i);
 
+			if (heuris==OVA_SOFTMAX)
+			{
+				CStatistics::SigmoidParamters params = CStatistics::fit_sigmoid(outputs[i]->get_values());
+				As[i] = params.a;
+				Bs[i] = params.b;
+			}
+
+			if (heuris!=PROB_HEURIS_NONE && heuris!=OVA_SOFTMAX)
+				outputs[i]->scores_to_probabilities(0,0);
+		}
+
 		SGVector<float64_t> output_for_i(num_machines);
+		SGVector<float64_t> r_output_for_i(num_machines);
+		if (heuris!=PROB_HEURIS_NONE)
+			r_output_for_i.resize_vector(num_classes);
+
 		for (int32_t i=0; i<num_vectors; i++)
 		{
 			for (int32_t j=0; j<num_machines; j++)
 				output_for_i[j] = outputs[j]->get_value(i);
 
-			result->set_label(i, m_multiclass_strategy->decide_label(output_for_i));
-			result->set_multiclass_confidences(i, output_for_i.clone());
+			if (heuris==PROB_HEURIS_NONE)
+			{
+				r_output_for_i = output_for_i;
+			}
+			else
+			{
+				if (heuris==OVA_SOFTMAX)
+					m_multiclass_strategy->rescale_outputs(output_for_i,As,Bs);
+				else
+					m_multiclass_strategy->rescale_outputs(output_for_i);
+
+				// only first num_classes are returned
+				for (int32_t r=0; r<num_classes; r++)
+					r_output_for_i[r] = output_for_i[r];
+
+				SG_DEBUG("%s::apply_multiclass(): sum(r_output_for_i) = %f\n",
+					get_name(), SGVector<float64_t>::sum(r_output_for_i.vector,num_classes));
+			}
+
+			// use rescaled outputs for label decision
+			result->set_label(i, m_multiclass_strategy->decide_label(r_output_for_i));
+			result->set_multiclass_confidences(i, r_output_for_i);
 		}
 
 		for (int32_t i=0; i < num_machines; ++i)
@@ -207,7 +255,7 @@ bool CMulticlassMachine::train_machine(CFeatures* data)
 	SG_REF(train_labels);
 	m_machine->set_labels(train_labels);
 
-	m_multiclass_strategy->train_start(CMulticlassLabels::obtain_from_generic(m_labels), train_labels);
+	m_multiclass_strategy->train_start(CLabelsFactory::to_multiclass(m_labels), train_labels);
 	while (m_multiclass_strategy->train_has_more())
 	{
 		SGVector<index_t> subset=m_multiclass_strategy->train_prepare_next();

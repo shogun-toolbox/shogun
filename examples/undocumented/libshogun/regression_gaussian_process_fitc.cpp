@@ -8,15 +8,18 @@
  */
 
 #include <shogun/lib/config.h>
-#if defined(HAVE_EIGEN3) && defined(HAVE_NLOPT)
+
+// temporally disabled, since API was changed
+#if defined(HAVE_EIGEN3) && defined(HAVE_NLOPT) && 0
+
 #include <shogun/base/init.h>
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/regression/gp/FITCInferenceMethod.h>
-#include <shogun/regression/gp/GaussianLikelihood.h>
-#include <shogun/regression/gp/ZeroMean.h>
+#include <shogun/machine/gp/FITCInferenceMethod.h>
+#include <shogun/machine/gp/GaussianLikelihood.h>
+#include <shogun/machine/gp/ZeroMean.h>
 #include <shogun/regression/GaussianProcessRegression.h>
 #include <shogun/evaluation/GradientEvaluation.h>
 #include <shogun/modelselection/GradientModelSelection.h>
@@ -32,7 +35,7 @@ int32_t dim_vectors=3;
 void build_matrices(SGMatrix<float64_t>& test, SGMatrix<float64_t>& train,
 		    CRegressionLabels* labels)
 {
- 	/*Fill Matrices with random nonsense*/
+	/*Fill Matrices with random nonsense*/
 	train[0] = -1;
 	train[1] = -1;
 	train[2] = -1;
@@ -45,10 +48,10 @@ void build_matrices(SGMatrix<float64_t>& test, SGMatrix<float64_t>& train,
 	train[9] = 3;
 	train[10] = 2;
 	train[11] = 1;
-	
+
 	for (int32_t i=0; i<num_vectors*dim_vectors; i++)
-	    test[i]=i*sin(i)*.96; 
-	
+	    test[i]=i*sin(i)*.96;
+
 	/* create labels, two classes */
 	for (index_t i=0; i<num_vectors; ++i)
 	{
@@ -57,7 +60,7 @@ void build_matrices(SGMatrix<float64_t>& test, SGMatrix<float64_t>& train,
 	}
 }
 
-CModelSelectionParameters* build_tree(CInferenceMethod* inf, 
+CModelSelectionParameters* build_tree(CInferenceMethod* inf,
 				      CLikelihoodModel* lik, CKernel* kernel)
 {
 	CModelSelectionParameters* root=new CModelSelectionParameters();
@@ -101,11 +104,11 @@ int main(int argc, char **argv)
 
 	SGMatrix<float64_t> matrix2 =
 			SGMatrix<float64_t>(dim_vectors, num_vectors);
-			
+
 	CRegressionLabels* labels=new CRegressionLabels(num_vectors);
 
 	build_matrices(matrix2, matrix, labels);
-	
+
 	/* create training features */
 	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t> ();
 	features->set_feature_matrix(matrix);
@@ -115,7 +118,7 @@ int main(int argc, char **argv)
 	features2->set_feature_matrix(matrix2);
 
 	SG_REF(labels);
-	
+
 	/*Allocate our Kernel*/
 	CGaussianKernel* test_kernel = new CGaussianKernel(10, 2);
 
@@ -126,12 +129,12 @@ int main(int argc, char **argv)
 
 	/*Allocate our likelihood function*/
 	CGaussianLikelihood* lik = new CGaussianLikelihood();
-	
+
 	//SG_SPRINT("features2 bef inf rc= %d\n",features2->ref_count());
 
 	/*Allocate our inference method*/
 	CFITCInferenceMethod* inf =
-			new CFITCInferenceMethod(test_kernel, 
+			new CFITCInferenceMethod(test_kernel,
 						  features, mean, labels, lik, features2);
 	//SG_SPRINT("features2 aft inf rc= %d\n",features2->ref_count());
 
@@ -139,10 +142,10 @@ int main(int argc, char **argv)
 
 	/*Finally use these to allocate the Gaussian Process Object*/
 	CGaussianProcessRegression* gp =
-			new CGaussianProcessRegression(inf, features, labels);
+			new CGaussianProcessRegression(inf);
 
 	SG_REF(gp);
-	
+
 	/*Build the parameter tree for model selection*/
 	CModelSelectionParameters* root = build_tree(inf, lik, test_kernel);
 
@@ -189,25 +192,20 @@ int main(int argc, char **argv)
 	SGVector<float64_t> labe = labels->get_labels();
 	SGVector<float64_t> diagonal = inf->get_diagonal_vector();
 	SGMatrix<float64_t> cholesky = inf->get_cholesky();
-	gp->set_return_type(CGaussianProcessRegression::GP_RETURN_COV);
-	CRegressionLabels* covariance = gp->apply_regression(features);
-
-	gp->set_return_type(CGaussianProcessRegression::GP_RETURN_MEANS);
-
-	CRegressionLabels* predictions = gp->apply_regression();
+	CRegressionLabels* predictions=gp->apply_regression(features);
+	SGVector<float64_t> variance_vector=gp->get_variance_vector(features);
 
 	alpha.display_vector("Alpha Vector");
 	labe.display_vector("Labels");
 	diagonal.display_vector("sW Matrix");
-	covariance->get_labels().display_vector("Predicted Variances");
+	variance_vector.display_vector("Predicted Variances");
 	predictions->get_labels().display_vector("Mean Predictions");
 	cholesky.display_matrix("Cholesky Matrix L");
 	matrix.display_matrix("Training Features");
 	matrix2.display_matrix("Testing Features");
-	
+
 	/*free memory*/
 	SG_UNREF(predictions);
-	SG_UNREF(covariance);
 	SG_UNREF(labels);
 	SG_UNREF(inf);
 	SG_UNREF(gp);

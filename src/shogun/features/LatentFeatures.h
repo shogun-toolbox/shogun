@@ -59,14 +59,6 @@ namespace shogun
 			 */
 			virtual int32_t get_num_vectors() const;
 
-			/** get memory footprint of one feature
-			 *
-			 * abstract base method
-			 *
-			 * @return memory footprint of one feature
-			 */
-			virtual int32_t get_size() const;
-
 			/** Returns the name of the SGSerializable instance.
 			 *
 			 * @return name of the SGSerializable

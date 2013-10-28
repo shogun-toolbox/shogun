@@ -55,17 +55,11 @@ class CRegressionLabels : public CDenseLabels
 		 */
 		CRegressionLabels(CFile* loader);
 
-		/** helper method used to specialize a base class instance
-		 *
-		 * @param base_labels its dynamic type must be CRegressionLabels
-		 */
-		static CRegressionLabels* obtain_from_generic(CLabels* base_labels);
-
 		/** get label type
 		 *
 		 * @return label type real
 		 */
-		virtual ELabelType get_label_type();
+		virtual ELabelType get_label_type() const;
 
 		/** @return object name */
 		virtual const char* get_name() const { return "RegressionLabels"; }

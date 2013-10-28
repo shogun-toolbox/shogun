@@ -1,0 +1,77 @@
+#
+# valgrind suppression file for shogun tests to filter known warnings.
+#
+# Usage:
+#    valgrind --suppressions=.valgrind.supp ./a.out
+#
+# Adding new entries:
+#    If you want to generate suppression entries for your warnings, simply
+#    run "valgrind --gen-suppressions=yes" on your program.  It will ask
+#    on every warnings if you want to see the entry.  Running valgrind with
+#    "--gen-suppressions=all" will generate all entries without asking.
+#
+# See also:
+#    http://valgrind.org/docs/manual/manual-core.html#manual-core.suppress
+#
+# Written (W) 2013 Thoralf Klein <thoralf.klein@zib.de>
+#
+
+{
+   shogun pthread_create warnings for CInputParser<T>::start_parser()
+   Memcheck:Leak
+   fun:calloc
+   fun:_dl_allocate_tls
+   fun:pthread_create@@GLIBC_*
+   fun:_ZN6shogun12CInputParserI*12start_parserEv
+}
+
+{
+   shogun pthread_create warnings for libgomp (-fopenmp)
+   Memcheck:Leak
+   fun:calloc
+   fun:_dl_allocate_tls
+   fun:pthread_create@@GLIBC_*
+   obj:*/usr/*lib*/libgomp.so*
+}
+
+{
+   libxml strange leaks 64-bit
+   Memcheck:Leak
+   fun:calloc
+   fun:_dlerror_run
+   fun:dlopen@@GLIBC_2.2.5
+   obj:/lib/x86_64-linux-gnu/liblzma.so.5.0.0
+   fun:lzma_auto_decoder
+   obj:/usr/lib/x86_64-linux-gnu/libxml2.so.2.8.0
+   fun:__libxml2_xzread
+   obj:/usr/lib/x86_64-linux-gnu/libxml2.so.2.8.0
+   fun:xmlParserInputBufferGrow
+   fun:xmlParserInputGrow
+   obj:/usr/lib/x86_64-linux-gnu/libxml2.so.2.8.0
+   fun:xmlParseDocument
+   obj:/usr/lib/x86_64-linux-gnu/libxml2.so.2.8.0
+   fun:*
+}
+
+{
+   libxml strange leaks 2 64-bit
+   Memcheck:Leak
+   fun:malloc
+   fun:_dl_signal_error
+   fun:_dl_open
+   fun:dlopen_doit
+   fun:_dl_catch_error
+   fun:_dlerror_run
+   fun:dlopen@@GLIBC_2.2.5
+   obj:/lib/x86_64-linux-gnu/liblzma.so.5.0.0
+   fun:lzma_auto_decoder
+   obj:/usr/lib/x86_64-linux-gnu/libxml2.so.2.8.0
+   fun:__libxml2_xzread
+   obj:/usr/lib/x86_64-linux-gnu/libxml2.so.2.8.0
+   fun:xmlParserInputBufferGrow
+   fun:xmlParserInputGrow
+   obj:/usr/lib/x86_64-linux-gnu/libxml2.so.2.8.0
+   fun:xmlParseDocument
+   obj:/usr/lib/x86_64-linux-gnu/libxml2.so.2.8.0
+   fun:*
+}

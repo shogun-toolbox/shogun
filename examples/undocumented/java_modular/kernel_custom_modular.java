@@ -21,8 +21,8 @@ public class kernel_custom_modular {
 		for (int i = 0; i < dim; i ++) {
 			for (int j = 0; j < dim; j++) {
 				if (j <= i) {
-					lowertriangle.put(0, count++, symdata.get(i,j));		
-				}			
+					lowertriangle.put(0, count++, symdata.get(i,j));
+				}
 			}
 		}
 

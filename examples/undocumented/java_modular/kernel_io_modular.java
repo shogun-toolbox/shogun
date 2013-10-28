@@ -18,12 +18,12 @@ public class kernel_io_modular {
 
 		GaussianKernel kernel = new GaussianKernel(feats_train, feats_test, width);
 		DoubleMatrix km_train = kernel.get_kernel_matrix();
-		AsciiFile f=new AsciiFile("gaussian_train.ascii",'w');
+		CSVFile f=new CSVFile("gaussian_train.ascii",'w');
 		kernel.save(f);
 
 		kernel.init(feats_train, feats_test);
 		DoubleMatrix km_test = kernel.get_kernel_matrix();
-		AsciiFile f_test=new AsciiFile("gaussian_train.ascii",'w');
+		CSVFile f_test=new CSVFile("gaussian_train.ascii",'w');
 		kernel.save(f_test);
 
 		System.out.println(km_train.toString());

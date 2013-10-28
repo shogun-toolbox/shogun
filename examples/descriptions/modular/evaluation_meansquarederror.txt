@@ -1,2 +1,2 @@
-In this example a mean squared error (MSE) is being computed 
+In this example a mean squared error (MSE) is being computed
 for the pair of random vectors of length N.

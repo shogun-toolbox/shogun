@@ -15,7 +15,7 @@
 
 #include <shogun/lib/config.h>
 #include <shogun/io/SGIO.h>
-#include <shogun/io/AsciiFile.h>
+#include <shogun/io/CSVFile.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/kernel/CombinedKernel.h>
 #include <shogun/kernel/Chi2Kernel.h>
@@ -297,14 +297,12 @@ CKernel* CGUIKernel::create_weighteddegreepositionstring(
 
 	float64_t* weights=get_weights(order, max_mismatch);
 
-	CKernel* kern=new CWeightedDegreePositionStringKernel(size, weights, order, max_mismatch, shifts, length);
+	CKernel* kern=new CWeightedDegreePositionStringKernel(size, SGVector<float64_t>(weights, order*(1+max_mismatch)), order, max_mismatch, SGVector<int32_t>(shifts, length).clone());
 	if (!kern)
 		SG_ERROR("Couldn't create WeightedDegreePositionStringKernel with size %d, order %d, max_mismatch %d, length %d, center %d, step %f.\n", size, order, max_mismatch, length, center, step)
 	else
 		SG_DEBUG("created WeightedDegreePositionStringKernel with size %d, order %d, max_mismatch %d, length %d, center %d, step %f.\n", kern, size, order, max_mismatch, length, center, step)
 
-	SG_FREE(weights);
-	SG_FREE(shifts);
 	return kern;
 }
 
@@ -314,7 +312,7 @@ CKernel* CGUIKernel::create_weighteddegreepositionstring3(
 {
 	float64_t* weights=get_weights(order, max_mismatch);
 
-	CKernel* kern=new CWeightedDegreePositionStringKernel(size, weights, order, max_mismatch, shifts, length, mkl_stepsize);
+	CKernel* kern=new CWeightedDegreePositionStringKernel(size, SGVector<float64_t>(weights, order*(1+max_mismatch)), order, max_mismatch, SGVector<int32_t>(shifts, length, false).clone(), mkl_stepsize);
 	kern->set_normalizer(new CIdentityKernelNormalizer());
 
 	SG_DEBUG("created WeightedDegreePositionStringKernel (%p) with size %d, order %d, max_mismatch %d, length %d and position_weights (MKL stepsize: %d).\n", kern, size, order, max_mismatch, length, mkl_stepsize)
@@ -328,7 +326,6 @@ CKernel* CGUIKernel::create_weighteddegreepositionstring3(
 	((CWeightedDegreePositionStringKernel*) kern)->
 		set_position_weights(SGVector<float64_t>(position_weights, length));
 
-	SG_FREE(weights);
 	return kern;
 }
 
@@ -338,14 +335,13 @@ CKernel* CGUIKernel::create_weighteddegreepositionstring2(
 {
 	float64_t* weights=get_weights(order, max_mismatch);
 
-	CKernel* kern=new CWeightedDegreePositionStringKernel(size, weights, order, max_mismatch, shifts, length);
+	CKernel* kern=new CWeightedDegreePositionStringKernel(size, SGVector<float64_t>(weights, order*(1+max_mismatch)), order, max_mismatch, SGVector<int32_t>(shifts, length, false).clone());
 	if (!use_normalization)
 		kern->set_normalizer(new CIdentityKernelNormalizer());
 
 
 	SG_DEBUG("created WeightedDegreePositionStringKernel (%p) with size %d, order %d, max_mismatch %d, length %d, use_normalization %d.\n", kern, size, order, max_mismatch, length, use_normalization)
 
-	SG_FREE(weights);
 	return kern;
 }
 
@@ -680,7 +676,7 @@ bool CGUIKernel::set_normalization(char* normalization, float64_t c, float64_t r
 		SG_INFO("Variance Normalization selected\n")
 		return k->set_normalizer(new CVarianceKernelNormalizer());
 	}
-   	else if (strncmp(normalization,"SCATTER", 7)==0)
+	else if (strncmp(normalization,"SCATTER", 7)==0)
 	{
 		SG_INFO("Scatter Normalization selected\n")
 		CLabels* train_labels=ui->ui_labels->get_train_labels();
@@ -705,8 +701,8 @@ bool CGUIKernel::set_kernel(CKernel* kern)
 	if (kern)
 	{
 		SG_DEBUG("deleting old kernel (%p).\n", kernel)
-		SG_UNREF(kernel);
 		SG_REF(kern);
+		SG_UNREF(kernel);
 		kernel=kern;
 		SG_DEBUG("set new kernel (%p).\n", kern)
 
@@ -842,7 +838,7 @@ bool CGUIKernel::save_kernel(char* filename)
 {
 	if (kernel && initialized)
 	{
-		CAsciiFile* file=new CAsciiFile(filename);
+		CCSVFile* file=new CCSVFile(filename);
 		try
 		{
 			kernel->save(file);
@@ -906,9 +902,9 @@ bool CGUIKernel::del_last_kernel()
 	if (kernel->get_kernel_type()!=K_COMBINED)
 		SG_ERROR("Need a combined kernel for deleting the last kernel in it.\n")
 
-	CKernel* last=((CCombinedKernel*) kernel)->get_last_kernel();
-	if (last)
-		return ((CCombinedKernel*) kernel)->delete_kernel();
+	if (((CCombinedKernel*) kernel)->get_num_kernels()>0)
+		return ((CCombinedKernel*) kernel)->
+				delete_kernel(((CCombinedKernel*) kernel)->get_num_kernels()-1);
 	else
 		SG_ERROR("No kernel available to delete.\n")
 

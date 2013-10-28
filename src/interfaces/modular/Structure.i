@@ -21,25 +21,41 @@
 %rename(SegmentLoss) CSegmentLoss;
 %rename(IntronList) CIntronList;
 
-%rename(StructuredOutputMachine) CStructuredOutputMachine;
-%rename(LinearStructuredOutputMachine) CLinearStructuredOutputMachine;
-%rename(KernelStructuredOutputMachine) CKernelStructuredOutputMachine;
 %rename(StructuredModel) CStructuredModel;
 %rename(ResultSet) CResultSet;
 %rename(MulticlassModel) CMulticlassModel;
 %rename(MulticlassSOLabels) CMulticlassSOLabels;
 %rename(RealNumber) CRealNumber;
 %rename(HMSVMModel) CHMSVMModel;
-%rename(HMSVMLabels) CHMSVMLabels;
+%rename(SequenceLabels) CSequenceLabels;
 %rename(Sequence) CSequence;
 %rename(StateModel) CStateModel;
 %rename(TwoStateModel) CTwoStateModel;
 %rename(DirectorStructuredModel) CDirectorStructuredModel;
+
+%rename(FactorType) CFactorType;
+%rename(TableFactorType) CTableFactorType;
+%rename(FactorDataSource) CFactorDataSource;
+%rename(Factor) CFactor;
+%rename(DisjointSet) CDisjointSet;
+%rename(FactorGraph) CFactorGraph;
+%rename(FactorGraphObservation) CFactorGraphObservation;
+%rename(FactorGraphLabels) CFactorGraphLabels;
+%rename(FactorGraphFeatures) CFactorGraphFeatures;
+%rename(MAPInference) CMAPInference;
+%rename(FactorGraphModel) CFactorGraphModel;
+
+%rename(SOSVMHelper) CSOSVMHelper;
+%rename(StructuredOutputMachine) CStructuredOutputMachine;
+%rename(LinearStructuredOutputMachine) CLinearStructuredOutputMachine;
+%rename(KernelStructuredOutputMachine) CKernelStructuredOutputMachine;
 %rename(DualLibQPBMSOSVM) CDualLibQPBMSOSVM;
 
 #ifdef USE_MOSEK
 %rename(PrimalMosekSOSVM) CPrimalMosekSOSVM;
 #endif /* USE_MOSEK */
+
+%rename(StochasticSOSVM) CStochasticSOSVM;
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/structure/PlifBase.h>
@@ -50,22 +66,35 @@
 %include <shogun/structure/IntronList.h>
 %include <shogun/structure/SegmentLoss.h>
 
-%include <shogun/machine/StructuredOutputMachine.h>
-%include <shogun/machine/LinearStructuredOutputMachine.h>
-%include <shogun/machine/KernelStructuredOutputMachine.h>
-
 %include <shogun/structure/BmrmStatistics.h>
 %include <shogun/structure/StructuredModel.h>
 %include <shogun/structure/MulticlassModel.h>
 %include <shogun/structure/MulticlassSOLabels.h>
 %include <shogun/structure/HMSVMModel.h>
-%include <shogun/structure/HMSVMLabels.h>
+%include <shogun/structure/SequenceLabels.h>
 %include <shogun/structure/StateModelTypes.h>
 %include <shogun/structure/StateModel.h>
 %include <shogun/structure/TwoStateModel.h>
 %include <shogun/structure/DirectorStructuredModel.h>
+
+%include <shogun/structure/FactorType.h>
+%include <shogun/structure/Factor.h>
+%include <shogun/structure/DisjointSet.h>
+%include <shogun/structure/FactorGraph.h>
+%include <shogun/features/FactorGraphFeatures.h>
+%include <shogun/labels/FactorGraphLabels.h>
+%include <shogun/structure/MAPInference.h>
+%include <shogun/structure/FactorGraphModel.h>
+
+%include <shogun/structure/SOSVMHelper.h>
+%include <shogun/machine/StructuredOutputMachine.h>
+%include <shogun/machine/LinearStructuredOutputMachine.h>
+%include <shogun/machine/KernelStructuredOutputMachine.h>
+
 %include <shogun/structure/DualLibQPBMSOSVM.h>
 
 #ifdef USE_MOSEK
 %include <shogun/structure/PrimalMosekSOSVM.h>
 #endif /* USE_MOSEK */
+
+%include <shogun/structure/StochasticSOSVM.h>

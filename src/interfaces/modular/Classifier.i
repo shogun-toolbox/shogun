@@ -5,6 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 2009 Soeren Sonnenburg
+ * Written (W) 2013 Heiko Strathmann
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
@@ -42,8 +43,6 @@
 %rename(OnlineLibLinear) COnlineLibLinear;
 %rename(Perceptron) CPerceptron;
 %rename(AveragedPerceptron) CAveragedPerceptron;
-%rename(SubGradientLPM) CSubGradientLPM;
-%rename(SubGradientSVM) CSubGradientSVM;
 %rename(NewtonSVM) CNewtonSVM;
 #ifndef HAVE_PYTHON
 %rename(SVM) CSVM;
@@ -65,6 +64,7 @@
 %rename(FeatureBlockLogisticRegression) CFeatureBlockLogisticRegression;
 %rename(DirectorLinearMachine) CDirectorLinearMachine;
 %rename(DirectorKernelMachine) CDirectorKernelMachine;
+%rename(BaggingMachine) CBaggingMachine;
 
 /* These functions return new Objects */
 %newobject apply();
@@ -86,21 +86,19 @@
 %include <shogun/classifier/svm/LibLinear.h>
 %include <shogun/classifier/svm/LibSVM.h>
 %include <shogun/classifier/svm/LibSVMOneClass.h>
-%include <shogun/classifier/LPBoost.h> 
+%include <shogun/classifier/LPBoost.h>
 %include <shogun/classifier/LPM.h>
 %include <shogun/classifier/svm/MPDSVM.h>
 %include <shogun/classifier/svm/OnlineSVMSGD.h>
 %include <shogun/classifier/svm/OnlineLibLinear.h>
 %include <shogun/classifier/Perceptron.h>
 %include <shogun/classifier/AveragedPerceptron.h>
-%include <shogun/classifier/SubGradientLPM.h>
-%include <shogun/classifier/svm/SubGradientSVM.h>
 %include <shogun/classifier/svm/SVMLin.h>
 %include <shogun/classifier/svm/SVMOcas.h>
 %include <shogun/classifier/svm/SVMSGD.h>
 %include <shogun/classifier/svm/SGDQN.h>
 %include <shogun/classifier/svm/WDSVMOcas.h>
-%include <shogun/classifier/PluginEstimate.h> 
+%include <shogun/classifier/PluginEstimate.h>
 %include <shogun/classifier/mkl/MKL.h>
 %include <shogun/classifier/mkl/MKLClassification.h>
 %include <shogun/classifier/mkl/MKLOneClass.h>
@@ -109,6 +107,7 @@
 %include <shogun/classifier/FeatureBlockLogisticRegression.h>
 %include <shogun/machine/DirectorLinearMachine.h>
 %include <shogun/machine/DirectorKernelMachine.h>
+%include <shogun/machine/BaggingMachine.h>
 
 #ifdef USE_SVMLIGHT
 

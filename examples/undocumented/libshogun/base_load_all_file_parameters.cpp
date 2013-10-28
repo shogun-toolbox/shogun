@@ -13,6 +13,7 @@
 #include <shogun/io/SerializableAsciiFile.h>
 #include <shogun/base/ParameterMap.h>
 #include <shogun/features/DenseFeatures.h>
+#include <unistd.h>
 
 using namespace shogun;
 
@@ -151,10 +152,11 @@ public:
 	virtual const char* get_name() const { return "TestClassFloat"; }
 };
 
-const char* filename="test.txt";
-
 void test_load_file_parameter()
 {
+	char filename_tmp[] = "load_all_file_test.XXXXXX";
+	char* filename=mktemp(filename_tmp);
+
 	/* create one instance of each class */
 	CTestClassInt* int_instance=new CTestClassInt();
 	CTestClassFloat* float_instance=new CTestClassFloat();
@@ -192,18 +194,20 @@ void test_load_file_parameter()
 		{
 			int32_t* value_vector=*((int32_t**)current->m_parameter);
 			SGVector<int32_t>::display_vector(value_vector, int_instance->m_vector_length);
-			for (index_t i=0; i<int_instance->m_vector_length; ++i)
-				ASSERT(value_vector[i]=int_instance->m_vector[i]);
+
+			for (index_t j=0; j<int_instance->m_vector_length; ++j)
+				ASSERT(value_vector[j]=int_instance->m_vector[j]);
 		}
 		else if (!strcmp(current->m_name, "matrix"))
 		{
 			int32_t* value_matrix=*((int32_t**)current->m_parameter);
 			SGMatrix<int32_t>::display_matrix(value_matrix, int_instance->m_matrix_rows,
 					int_instance->m_matrix_cols);
-			for (index_t i=0; i<int_instance->m_matrix_rows*int_instance->m_matrix_cols;
-					++i)
+
+			for (index_t j=0; j<int_instance->m_matrix_rows*int_instance->m_matrix_cols;
+					++j)
 			{
-				ASSERT(value_matrix[i]==int_instance->m_matrix[i]);
+				ASSERT(value_matrix[j]==int_instance->m_matrix[j]);
 			}
 		}
 		else if (!strcmp(current->m_name, "int_features"))
@@ -220,12 +224,13 @@ void test_load_file_parameter()
 					feature_matrix_loaded.num_rows,
 					feature_matrix_loaded.num_cols,
 					"features");
-			for (index_t i=0;
-					i<int_instance->m_matrix_rows*int_instance->m_matrix_cols;
-					++i)
+
+			for (index_t j=0;
+					j<int_instance->m_matrix_rows*int_instance->m_matrix_cols;
+					++j)
 			{
-				ASSERT(feature_matrix_original.matrix[i]==
-						feature_matrix_loaded.matrix[i]);
+				ASSERT(feature_matrix_original.matrix[j]==
+						feature_matrix_loaded.matrix[j]);
 			}
 		}
 	}
@@ -257,6 +262,7 @@ void test_load_file_parameter()
 	SG_UNREF(file);
 	SG_UNREF(int_instance);
 	SG_UNREF(float_instance);
+	unlink(filename);
 }
 
 int main(int argc, char **argv)

@@ -24,7 +24,7 @@ public class preprocessor_prunevarsubmean_modular {
 		feats_test.add_preprocessor(preproc);
 		feats_test.apply_preprocessor();
 
-	
+
 		Chi2Kernel kernel = new Chi2Kernel(feats_train, feats_train, width, size_cache);
 
 		DoubleMatrix km_train = kernel.get_kernel_matrix();

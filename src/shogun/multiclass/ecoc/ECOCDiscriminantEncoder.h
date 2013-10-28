@@ -23,7 +23,7 @@ namespace shogun
 
 /** Discriminant ECOC Encoder.
  *
- * A data-dependent ECOC coding scheme that learns a tree-style codebook. See the 
+ * A data-dependent ECOC coding scheme that learns a tree-style codebook. See the
  * following paper for details
  *
  *   Oriol Pujol, Petia Radeva, Jordi Vitria.  Discriminant ECOC: A Heuristic Method for
@@ -72,7 +72,7 @@ protected:
     float64_t sffs_iteration(float64_t MI, std::vector<int32_t>& part1, std::set<int32_t>& idata1,
             std::vector<int32_t>& part2, std::set<int32_t>& idata2);
     float64_t compute_MI(const std::set<int32_t>& idata1, const std::set<int32_t>& idata2);
-    void compute_hist(int32_t i, float64_t max_val, float64_t min_val, 
+    void compute_hist(int32_t i, float64_t max_val, float64_t min_val,
             const std::set<int32_t>& idata, int32_t *hist);
 
     int32_t m_iterations;
@@ -86,7 +86,7 @@ protected:
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */
 };
 
-} /* shogun */ 
+} /* shogun */
 
 #endif /* end of include guard: ECOCDISCRIMINANTENCODER_H__ */
 

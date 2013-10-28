@@ -22,25 +22,25 @@ label_traindat=concatenate((-ones(num_vectors), ones(num_vectors)));
 parameter_list = [[traindat,label_traindat]]
 
 def modelselection_grid_search_liblinear_modular (traindat=traindat, label_traindat=label_traindat):
-    from shogun.Evaluation import CrossValidation, CrossValidationResult
-    from shogun.Evaluation import ContingencyTableEvaluation, ACCURACY
-    from shogun.Evaluation import StratifiedCrossValidationSplitting
-    from shogun.ModelSelection import GridSearchModelSelection
-    from shogun.ModelSelection import ModelSelectionParameters, R_EXP
-    from shogun.ModelSelection import ParameterCombination
-    from shogun.Features import BinaryLabels
-    from shogun.Features import RealFeatures
-    from shogun.Classifier import LibLinear, L2R_L2LOSS_SVC
+    from modshogun import CrossValidation, CrossValidationResult
+    from modshogun import ContingencyTableEvaluation, ACCURACY
+    from modshogun import StratifiedCrossValidationSplitting
+    from modshogun import GridSearchModelSelection
+    from modshogun import ModelSelectionParameters, R_EXP
+    from modshogun import ParameterCombination
+    from modshogun import BinaryLabels
+    from modshogun import RealFeatures
+    from modshogun import LibLinear, L2R_L2LOSS_SVC
 
-    # build parameter tree to select C1 and C2 
+    # build parameter tree to select C1 and C2
     param_tree_root=ModelSelectionParameters()
     c1=ModelSelectionParameters("C1");
     param_tree_root.append_child(c1)
-    c1.build_values(-2.0, 2.0, R_EXP);
+    c1.build_values(-1.0, 0.0, R_EXP);
 
     c2=ModelSelectionParameters("C2");
     param_tree_root.append_child(c2);
-    c2.build_values(-2.0, 2.0, R_EXP);
+    c2.build_values(-1.0, 0.0, R_EXP);
 
     # training data
     features=RealFeatures(traindat)
@@ -65,8 +65,7 @@ def modelselection_grid_search_liblinear_modular (traindat=traindat, label_train
     cross_validation.set_autolock(False)
 
     # model selection instance
-    model_selection=GridSearchModelSelection(param_tree_root,
-	    cross_validation) 
+    model_selection=GridSearchModelSelection(cross_validation, param_tree_root)
 
     # perform model selection with selected methods
     #print "performing model selection of"

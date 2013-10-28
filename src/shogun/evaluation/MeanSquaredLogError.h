@@ -26,7 +26,7 @@ class CLabels;
  * log error is estimated as
  *
  * \f[
- * 		\sqrt{\frac{1}{|L|} \sum_{i=1}^{|L|} (\log{L_i+1} - \log{R_i+1})^2}
+ *		\sqrt{\frac{1}{|L|} \sum_{i=1}^{|L|} (\log{L_i+1} - \log{R_i+1})^2}
  * \f]
  *
  */
@@ -46,7 +46,7 @@ public:
 	 */
 	virtual float64_t evaluate(CLabels* predicted, CLabels* ground_truth);
 
-	inline EEvaluationDirection get_evaluation_direction()
+	inline EEvaluationDirection get_evaluation_direction() const
 	{
 		return ED_MINIMIZE;
 	}

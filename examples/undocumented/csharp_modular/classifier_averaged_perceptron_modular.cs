@@ -1,7 +1,7 @@
 using System;
 
 public class classifier_averaged_perceptron_modular{
-	
+
 	public static void Main() {
 		modshogun.init_shogun_with_defaults();
 		double learn_rate = 1.0;
@@ -22,7 +22,7 @@ public class classifier_averaged_perceptron_modular{
 		perceptron.train();
 
 		perceptron.set_features(feats_test);
-		double[] out_labels = BinaryLabels.obtain_from_generic(perceptron.apply()).get_labels();
+		double[] out_labels = LabelsFactory.to_binary(perceptron.apply()).get_labels();
 
 		foreach(double item in out_labels) {
 			Console.Write(item);

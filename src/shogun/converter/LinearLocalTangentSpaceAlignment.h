@@ -33,7 +33,7 @@ class CDistance;
  *
  * This method is hardly applicable to very high-dimensional data due to
  * necessity to solve eigenproblem involving matrix of size (dim x dim).
- * 
+ *
  * Uses implementation from the Tapkee library.
  *
  * To use this converter with static interfaces please refer it by

@@ -15,7 +15,7 @@
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/structure/HMSVMLabels.h>
+#include <shogun/structure/SequenceLabels.h>
 #include <shogun/structure/StateModelTypes.h>
 
 namespace shogun
@@ -64,7 +64,7 @@ class CStateModel : public CSGObject
 		virtual float64_t loss(CSequence* label_seq_lhs, CSequence* label_seq_rhs) = 0;
 
 		/**
-		 * arranges the emission parameterss of the weight vector into a vector
+		 * arranges the emission parameters of the weight vector into a vector
 		 * adding zero elements for the states whose parameters are not learnt.
 		 * This vector is suitable to iterate through when constructing the
 		 * emission matrix used in Viterbi decoding
@@ -78,7 +78,20 @@ class CStateModel : public CSGObject
 			SGVector< float64_t > w, int32_t num_feats, int32_t num_obs) = 0;
 
 		/**
-		 * arranges the tranmission parameterss of the weight vector into a matrix
+		 * arranges the emission parameters of the weight vector into a matrix
+		 * of PLiFs adding zero elements for the states whose parameters are not
+		 * learnt.
+		 *
+		 * @param plif_matrix matrix of PLiFs outputted
+		 * @param w the weight vector
+		 * @param num_feats number of features
+		 * @param num_plif_nodes number of nodes in the PLiFs
+		 */
+		virtual void reshape_emission_params(CDynamicObjectArray* plif_matrix,
+			SGVector< float64_t > w, int32_t num_feats, int32_t num_plif_nodes) = 0;
+
+		/**
+		 * arranges the transmission parameters of the weight vector into a matrix
 		 * adding zero elements for the states whose parameters are not learnt.
 		 * This matrix is suitable to iterate during Viterbi decoding
 		 *
@@ -97,7 +110,7 @@ class CStateModel : public CSGObject
 		 */
 		virtual SGVector< int32_t > labels_to_states(CSequence* label_seq) const = 0;
 
-		/** translates state sequence to label sequence 
+		/** translates state sequence to label sequence
 		 *
 		 * @param state_seq state sequence
 		 *
@@ -108,13 +121,12 @@ class CStateModel : public CSGObject
 		/**
 		 * reshapes the transition and emission weights into a vector (the joint
 		 * feature vector so it will be possible to take the dot product with the
-		 * weight vector)
+		 * weight vector). Version with the joint feature vector as parameter by
+		 * reference
 		 *
 		 * @param psi output vector
-		 * @param transmission_weights counts of the state transitions for a state
-		 * sequence
-		 * @param emission_weights counts of the emission scores for a state
-		 * sequence and a feature vector
+		 * @param transmission_weights counts of the state transitions for a state sequence
+		 * @param emission_weights counts of the emission scores for a state sequence and a feature vector
 		 * @param num_feats number of features
 		 * @param num_obs number of emission scores per feature and state
 		 */
@@ -122,6 +134,21 @@ class CStateModel : public CSGObject
 				SGMatrix< float64_t > transmission_weights,
 				SGVector< float64_t > emission_weights,
 				int32_t num_feats, int32_t num_obs) const = 0;
+
+		/**
+		 * reshapes the transition and emission weights into a vector (the joint
+		 * feature vector so it will be possible to take the dot product with the
+		 * weight vector). Version returning the joint feature vector
+		 *
+		 * @param transmission_weights counts of the state transitions for a state sequence
+		 * @param emission_weights counts of the emission scores for a state sequence and a feature vector
+		 * @param num_feats number of features
+		 * @param num_obs number of emission scores per feature and state
+		 *
+		 * @return psi output vector
+		 */
+		virtual SGVector< float64_t > weights_to_vector(SGMatrix< float64_t > transmission_weights,
+				SGVector< float64_t > emission_weights, int32_t num_feats, int32_t num_obs) const = 0;
 
 		/**
 		 * specify monotonicity constraints for feature scoring functions. The

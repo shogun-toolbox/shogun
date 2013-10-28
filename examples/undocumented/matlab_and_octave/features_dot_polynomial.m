@@ -4,7 +4,7 @@ testdat = [rand(10,50)-1 2+rand(10,50)+1];
 trainlab = [ones(1, 50) -ones(1, 50)];
 
 C=1;
-size_cache=10; 
+size_cache=10;
 epsilon=1e-5;
 sg('set_kernel', 'POLY', 'REAL', size_cache, degree);
 %sg('set_kernel_normalization', 'IDENTITY');

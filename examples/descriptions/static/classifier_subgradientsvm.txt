@@ -2,8 +2,8 @@ In this example a two-class linear support vector machine classifier is trained
 on a toy data set and the trained classifier is used to predict labels of
 test examples. As training algorithm the steepest descent subgradient algorithm
 is used with the SVM regularization parameter C=1.2 and the bias in the classification
-rule switched off. The solver iterates until it finds epsilon-precise solution 
-(epsilon=1e-5) or the maximal training time (max_train_time=60 seconds) is exceeded. 
+rule switched off. The solver iterates until it finds epsilon-precise solution
+(epsilon=1e-5) or the maximal training time (max_train_time=60 seconds) is exceeded.
 
 Note that this solver often has a tendency not to converge because the steepest descent
 subgradient algorithm is oversensitive to rounding errors. Note also that this

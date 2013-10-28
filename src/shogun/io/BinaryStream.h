@@ -13,9 +13,9 @@
 
 #include <shogun/io/SGIO.h>
 #include <shogun/base/SGObject.h>
+#include <shogun/lib/memory.h>
 
 #include <stdio.h>
-#include <string.h>
 
 namespace shogun
 {
@@ -35,6 +35,8 @@ template <class T> class CBinaryStream : public CSGObject
             m_fname=NULL;
 			fd = NULL;
 			length = 0;
+
+			set_generic<T>();
 		}
 
 		/** constructor
@@ -49,6 +51,7 @@ template <class T> class CBinaryStream : public CSGObject
 		{
 			/* open_stream(bs.m_fname, bs.rw); */
 			SG_NOTIMPLEMENTED
+			set_generic<T>();
 		}
 
 
@@ -60,6 +63,7 @@ template <class T> class CBinaryStream : public CSGObject
         {
 			open_stream(bs.m_fname, bs.rw);
             ASSERT(length==bs.length)
+			set_generic<T>();
         }
 
 
@@ -76,8 +80,8 @@ template <class T> class CBinaryStream : public CSGObject
 		 */
 		void open_stream(const char* fname, const char* flag="r")
 		{
-            rw=strdup(flag);
-            m_fname=strdup(fname);
+            rw=get_strdup(flag);
+            m_fname=get_strdup(fname);
 
 			fd = fopen(fname, flag);
 			if (!fd)
@@ -130,7 +134,7 @@ template <class T> class CBinaryStream : public CSGObject
 		 *
 		 * @param len length of line (returned via reference)
 		 * @param offs offset to be passed for reading next line, should be 0
-		 * 			initially (returned via reference)
+		 *			initially (returned via reference)
 		 *
 		 * @return line (NOT ZERO TERMINATED)
 		 */

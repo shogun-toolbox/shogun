@@ -1,4 +1,4 @@
-#include <shogun/io/AsciiFile.h>
+#include <shogun/io/CSVFile.h>
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/features/DenseFeatures.h>
@@ -21,7 +21,7 @@ const char fname_labels[]="../data/label_train_multiclass.dat";
 void test()
 {
 	/* dense features from matrix */
-	CAsciiFile* feature_file = new CAsciiFile(fname_feats);
+	CCSVFile* feature_file = new CCSVFile(fname_feats);
 	SGMatrix<float64_t> mat=SGMatrix<float64_t>();
 	mat.load(feature_file);
 	SG_UNREF(feature_file);
@@ -30,7 +30,7 @@ void test()
 	SG_REF(features);
 
 	/* labels from vector */
-	CAsciiFile* label_file = new CAsciiFile(fname_labels);
+	CCSVFile* label_file = new CCSVFile(fname_labels);
 	SGVector<float64_t> label_vec;
 	label_vec.load(label_file);
 	SG_UNREF(label_file);
@@ -55,7 +55,7 @@ void test()
 	mc_svm->train();
 
 	// Classify the training examples and show the results
-	CMulticlassLabels* output = CMulticlassLabels::obtain_from_generic(mc_svm->apply());
+	CMulticlassLabels* output = CLabelsFactory::to_multiclass(mc_svm->apply());
 
 	SGVector< int32_t > out_labels = output->get_int_labels();
 	SGVector< int32_t >::display_vector(out_labels.vector, out_labels.vlen);

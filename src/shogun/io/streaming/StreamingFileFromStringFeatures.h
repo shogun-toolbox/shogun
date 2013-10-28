@@ -89,7 +89,7 @@ private:
 	/**
 	 * Initialize members to defaults
 	 */
-	void init();
+	void init(CStringFeatures<T>* feat=NULL);
 
 protected:
 
@@ -112,14 +112,14 @@ template <class T>
 CStreamingFileFromStringFeatures<T>::CStreamingFileFromStringFeatures(CStringFeatures<T>* feat)
 	: CStreamingFileFromFeatures(feat)
 {
-	init();
+	init(feat);
 }
 
 template <class T>
 CStreamingFileFromStringFeatures<T>::CStreamingFileFromStringFeatures(CStringFeatures<T>* feat, float64_t* lab)
 	: CStreamingFileFromFeatures(feat,lab)
 {
-	init();
+	init(feat);
 }
 
 template <class T>
@@ -128,9 +128,12 @@ CStreamingFileFromStringFeatures<T>::~CStreamingFileFromStringFeatures()
 }
 
 template <class T>
-void CStreamingFileFromStringFeatures<T>::init()
+void CStreamingFileFromStringFeatures<T>::init(CStringFeatures<T>* feat)
 {
 	vector_num=0;
+	features = feat;
+
+	set_generic<T>();
 }
 
 /* Functions to return the vector from the StringFeatures object */
@@ -148,9 +151,10 @@ void CStreamingFileFromStringFeatures<T>::get_string(T*& vector, int32_t& num_fe
 		features->get_feature_vector(vector_num);
 
 	vector = sg_vector.vector;
-	num_feat = sg_vector.vlen;;
+	num_feat = sg_vector.vlen;
+	sg_vector.vector = NULL;
+	sg_vector.vlen = -1;
 	vector_num++;
-
 }
 
 /* Functions to return the vector from the StringFeatures object with label */

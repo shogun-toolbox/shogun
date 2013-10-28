@@ -73,9 +73,9 @@ void test_mapping_1()
 		DynArray<const SGParamInfo*>* result=map->get(current);
 		if (result)
 		{
-			for (index_t i=0; i<result->get_num_elements(); ++i)
+			for (index_t j=0; j<result->get_num_elements(); ++j)
 			{
-				s=result->get_element(i)->to_string();
+				s=result->get_element(j)->to_string();
 				SG_SPRINT("found: %s\n\n", s);
 				SG_FREE(s);
 			}
@@ -271,4 +271,3 @@ int main(int argc, char **argv)
 
 	return 0;
 }
-

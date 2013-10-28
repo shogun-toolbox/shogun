@@ -41,7 +41,7 @@ CMulticlassSOLabels::~CMulticlassSOLabels()
 
 void CMulticlassSOLabels::init()
 {
-	SG_ADD(&m_num_classes, "m_num_classes", "The number of classes", 
+	SG_ADD(&m_num_classes, "m_num_classes", "The number of classes",
 			MS_NOT_AVAILABLE);
 
 	m_num_classes = 0;

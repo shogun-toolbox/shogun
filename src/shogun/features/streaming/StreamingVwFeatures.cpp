@@ -41,7 +41,8 @@ CStreamingVwFeatures::CStreamingVwFeatures(CStreamingVwCacheFile* file,
 
 CStreamingVwFeatures::~CStreamingVwFeatures()
 {
-	parser.end_parser();
+	if (parser.is_running())
+		parser.end_parser();
 	SG_UNREF(env);
 }
 
@@ -129,11 +130,6 @@ int32_t CStreamingVwFeatures::get_num_vectors() const
 		return 0;
 }
 
-int32_t CStreamingVwFeatures::get_size() const
-{
-	return sizeof(VwExample);
-}
-
 EFeatureType CStreamingVwFeatures::get_feature_type() const
 {
 	return F_DREAL;
@@ -145,6 +141,7 @@ void CStreamingVwFeatures::init()
 	seekable=false;
 	current_length=-1;
 	current_example=NULL;
+	env=NULL;
 
 	example_count = 0;
 }

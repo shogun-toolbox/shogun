@@ -1,2 +1,2 @@
-This is an example for the initialization of a linear kernel on word (2byte) 
-data. 
+This is an example for the initialization of a linear kernel on word (2byte)
+data.

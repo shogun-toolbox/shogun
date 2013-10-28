@@ -9,13 +9,13 @@ testdat = lm.load_numbers('../data/fm_test_real.dat')
 parameter_list=[[traindat,testdat, 2.0],[traindat,testdat, 3.0]]
 
 def kernel_tstudent_modular (fm_train_real=traindat,fm_test_real=testdat, degree=2.0):
-	from shogun.Features import RealFeatures
-	from shogun.Kernel import TStudentKernel
-	from shogun.Distance import EuclideanDistance
+	from modshogun import RealFeatures
+	from modshogun import TStudentKernel
+	from modshogun import EuclideanDistance
 
 	feats_train=RealFeatures(fm_train_real)
 	feats_test=RealFeatures(fm_test_real)
-	
+
 	distance=EuclideanDistance(feats_train, feats_train)
 
 	kernel=TStudentKernel(feats_train, feats_train, degree, distance)

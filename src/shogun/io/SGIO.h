@@ -17,7 +17,9 @@
 #include <stdarg.h>
 #include <string.h>
 #include <dirent.h>
+#ifndef _WIN32
 #include <unistd.h>
+#endif
 #include <locale.h>
 
 #include <sys/types.h>
@@ -28,6 +30,7 @@
 
 namespace shogun
 {
+	class RefCount;
 	class SGIO;
 	/** shogun IO */
 	extern SGIO* sg_io;
@@ -54,6 +57,15 @@ enum EMessageType
 	MSG_MESSAGEONLY=9
 };
 
+/** The io functions can optionally prepend the function name or the line from
+ * where the print occurred.
+ */
+enum EMessageLocation
+{
+	MSG_NONE=0,
+	MSG_FUNCTION=1,
+	MSG_LINE_AND_FILE=2
+};
 
 #define NUM_LOG_LEVELS 10
 #define FBUFSIZE 4096
@@ -83,47 +95,51 @@ enum EMessageType
 #endif
 #endif
 
+#ifdef _WIN32
+#define __PRETTY_FUNCTION__ __FUNCTION__
+#endif
+
 // printf like funktions (with additional severity level)
 // for object derived from CSGObject
 #define SG_GCDEBUG(...) {											\
 	if (SG_UNLIKELY(io->loglevel_above(MSG_GCDEBUG)))				\
-		io->message(MSG_GCDEBUG, __FILE__, __LINE__, __VA_ARGS__);	\
+		io->message(MSG_GCDEBUG, __PRETTY_FUNCTION__, __FILE__, __LINE__, __VA_ARGS__);	\
 }
 
 #define SG_DEBUG(...) {												\
 	if (SG_UNLIKELY(io->loglevel_above(MSG_DEBUG)))					\
-		io->message(MSG_DEBUG, __FILE__, __LINE__, __VA_ARGS__);	\
+		io->message(MSG_DEBUG, __PRETTY_FUNCTION__, __FILE__, __LINE__, __VA_ARGS__);	\
 }
 
 #define SG_OBJ_DEBUG(o,...) {										\
 	if (SG_UNLIKELY(o->io->loglevel_above(MSG_DEBUG)))				\
-		o->io->message(MSG_DEBUG, __FILE__, __LINE__, __VA_ARGS__);	\
+		o->io->message(MSG_DEBUG, __PRETTY_FUNCTION__, __FILE__, __LINE__, __VA_ARGS__);	\
 }
 
 
 #define SG_INFO(...) {												\
 	if (SG_UNLIKELY(io->loglevel_above(MSG_INFO)))					\
-		io->message(MSG_INFO, __FILE__, __LINE__, __VA_ARGS__);		\
+		io->message(MSG_INFO, __PRETTY_FUNCTION__, __FILE__, __LINE__, __VA_ARGS__);		\
 }
 
 #define SG_CLASS_INFO(c, ...) {										\
 	if (SG_UNLIKELY(c::io->loglevel_above(MSG_INFO)))				\
-		c::io->message(MSG_INFO, __FILE__, __LINE__, __VA_ARGS__);	\
+		c::io->message(MSG_INFO, __PRETTY_FUNCTION__, __FILE__, __LINE__, __VA_ARGS__);	\
 }
 
-#define SG_WARNING(...) { io->message(MSG_WARN, __FILE__, __LINE__, __VA_ARGS__); }
-#define SG_ERROR(...) { io->message(MSG_ERROR, __FILE__, __LINE__, __VA_ARGS__); }
-#define SG_OBJ_ERROR(o, ...) { o->io->message(MSG_ERROR, __FILE__, __LINE__, __VA_ARGS__); }
-#define SG_CLASS_ERROR(c, ...) { c::io->message(MSG_ERROR, __FILE__, __LINE__, __VA_ARGS__); }
-#define SG_UNSTABLE(func, ...) { io->message(MSG_WARN, __FILE__, __LINE__, \
+#define SG_WARNING(...) { io->message(MSG_WARN, __PRETTY_FUNCTION__, __FILE__, __LINE__, __VA_ARGS__); }
+#define SG_ERROR(...) { io->message(MSG_ERROR, __PRETTY_FUNCTION__, __FILE__, __LINE__, __VA_ARGS__); }
+#define SG_OBJ_ERROR(o, ...) { o->io->message(MSG_ERROR, __PRETTY_FUNCTION__, __FILE__, __LINE__, __VA_ARGS__); }
+#define SG_CLASS_ERROR(c, ...) { c::io->message(MSG_ERROR, __PRETTY_FUNCTION__, __FILE__, __LINE__, __VA_ARGS__); }
+#define SG_UNSTABLE(func, ...) { io->message(MSG_WARN, __PRETTY_FUNCTION__, __FILE__, __LINE__, \
 __FILE__ ":" func ": Unstable method!  Please report if it seems to " \
 "work or not to the Shogun mailing list.  Thanking you in " \
 "anticipation.  " __VA_ARGS__); }
 
-#define SG_PRINT(...) { io->message(MSG_MESSAGEONLY, __FILE__, __LINE__, __VA_ARGS__); }
-#define SG_OBJ_PRINT(o, ...) { o->io->message(MSG_MESSAGEONLY, __FILE__, __LINE__, __VA_ARGS__); }
-#define SG_NOTIMPLEMENTED { io->not_implemented(__FILE__, __LINE__); }
-#define SG_DEPRECATED { io->deprecated(__FILE__, __LINE__); }
+#define SG_PRINT(...) { io->message(MSG_MESSAGEONLY, __PRETTY_FUNCTION__, __FILE__, __LINE__, __VA_ARGS__); }
+#define SG_OBJ_PRINT(o, ...) { o->io->message(MSG_MESSAGEONLY, __PRETTY_FUNCTION__, __FILE__, __LINE__, __VA_ARGS__); }
+#define SG_NOTIMPLEMENTED { io->not_implemented(__PRETTY_FUNCTION__, __FILE__, __LINE__); }
+#define SG_DEPRECATED { io->deprecated(__PRETTY_FUNCTION__, __FILE__, __LINE__); }
 
 #define SG_PROGRESS(...) {						\
 	if (SG_UNLIKELY(io->get_show_progress()))	\
@@ -148,22 +164,22 @@ __FILE__ ":" func ": Unstable method!  Please report if it seems to " \
 // printf like function using the global sg_io object
 #define SG_SGCDEBUG(...) {											\
 	if (SG_UNLIKELY(sg_io->loglevel_above(MSG_GCDEBUG)))			\
-		sg_io->message(MSG_GCDEBUG,__FILE__, __LINE__, __VA_ARGS__);\
+		sg_io->message(MSG_GCDEBUG,__PRETTY_FUNCTION__, __FILE__, __LINE__, __VA_ARGS__);\
 }
 
 #define SG_SDEBUG(...) {											\
-	if (SG_UNLIKELY(sg_io->loglevel_above(MSG_GCDEBUG)))			\
-		sg_io->message(MSG_DEBUG,__FILE__, __LINE__, __VA_ARGS__);	\
+	if (SG_UNLIKELY(sg_io->loglevel_above(MSG_DEBUG)))			\
+		sg_io->message(MSG_DEBUG,__PRETTY_FUNCTION__, __FILE__, __LINE__, __VA_ARGS__);	\
 }
 
 #define SG_SINFO(...) {												\
 	if (SG_UNLIKELY(sg_io->loglevel_above(MSG_INFO)))				\
-		sg_io->message(MSG_INFO,__FILE__, __LINE__, __VA_ARGS__);	\
+		sg_io->message(MSG_INFO,__PRETTY_FUNCTION__, __FILE__, __LINE__, __VA_ARGS__);	\
 }
 
-#define SG_SWARNING(...) { sg_io->message(MSG_WARN,__FILE__, __LINE__, __VA_ARGS__); }
-#define SG_SERROR(...) { sg_io->message(MSG_ERROR,__FILE__, __LINE__, __VA_ARGS__); }
-#define SG_SPRINT(...) { sg_io->message(MSG_MESSAGEONLY,__FILE__, __LINE__, __VA_ARGS__); }
+#define SG_SWARNING(...) { sg_io->message(MSG_WARN,__PRETTY_FUNCTION__, __FILE__, __LINE__, __VA_ARGS__); }
+#define SG_SERROR(...) { sg_io->message(MSG_ERROR,__PRETTY_FUNCTION__, __FILE__, __LINE__, __VA_ARGS__); }
+#define SG_SPRINT(...) { sg_io->message(MSG_MESSAGEONLY,__PRETTY_FUNCTION__, __FILE__, __LINE__, __VA_ARGS__); }
 
 
 #define SG_SPROGRESS(...) {							\
@@ -181,18 +197,29 @@ __FILE__ ":" func ": Unstable method!  Please report if it seems to " \
 		sg_io->done();								\
 }
 
-#define SG_SNOTIMPLEMENTED { sg_io->not_implemented(__FILE__, __LINE__); }
-#define SG_SDEPRECATED { sg_io->deprecated(__FILE__, __LINE__); }
+#define SG_SNOTIMPLEMENTED { sg_io->not_implemented(__PRETTY_FUNCTION__, __FILE__, __LINE__); }
+#define SG_SDEPRECATED { sg_io->deprecated(__PRETTY_FUNCTION__, __FILE__, __LINE__); }
 
-#define ASSERT(x) { 																	\
+#define ASSERT(x) {																	\
 	if (SG_UNLIKELY(!(x)))																\
-		SG_SERROR("assertion %s failed in file %s line %d\n",#x, __FILE__, __LINE__)	\
+		SG_SERROR("assertion %s failed in %s file %s line %d\n",#x, __PRETTY_FUNCTION__, __FILE__, __LINE__)	\
 }
 
 #define REQUIRE(x, ...) {		\
 	if (SG_UNLIKELY(!(x)))		\
 		SG_SERROR(__VA_ARGS__)	\
 }
+
+/* help clang static analyzer to identify custom assertation functions */
+#ifdef __clang_analyzer__
+void _clang_fail(void) __attribute__((analyzer_noreturn));
+
+#undef SG_ERROR(...)
+#undef SG_SERROR(...)
+#define SG_ERROR(...) _clang_fail();
+#define SG_SERROR(...) _clang_fail();
+
+#endif /* __clang_analyzer__ */
 
 /**
  * @brief struct Substring, specified by
@@ -222,6 +249,9 @@ class SGIO
 		SGIO();
 		/** copy constructor */
 		SGIO(const SGIO& orig);
+
+		/** destructor */
+		virtual ~SGIO();
 
 		/** set loglevel
 		 *
@@ -254,13 +284,11 @@ class SGIO
 			return show_progress;
 		}
 
-		/** get show file and line
-		 *
-		 * @return if file and line should prefix messages
+		/** show location where printing occurs
 		 */
-		inline bool get_show_file_and_line() const
+		inline EMessageLocation get_location_info() const
 		{
-			return show_file_and_line;
+			return location_info;
 		}
 
 		/** get syntax highlight
@@ -278,11 +306,12 @@ class SGIO
 		 * from (use -1 in line to disable this)
 		 *
 		 * @param prio message priority
+		 * @param function the function name from where the message is called
 		 * @param file file name from where the message is called
 		 * @param line line number from where the message is called
 		 * @param fmt format string
 		 */
-		void message(EMessageType prio, const char* file,
+		void message(EMessageType prio, const char* function, const char* file,
 				int32_t line, const char *fmt, ... ) const;
 
 		/** print progress bar
@@ -319,15 +348,15 @@ class SGIO
 		void done();
 
 		/** print error message 'not implemented' */
-		inline void not_implemented(const char* file, int32_t line) const
+		inline void not_implemented(const char* function, const char* file, int32_t line) const
 		{
-			message(MSG_ERROR, file, line, "Sorry, not yet implemented .\n");
+			message(MSG_ERROR, function, file, line, "Sorry, not yet implemented .\n");
 		}
 
 		/** print warning message 'function deprecated' */
-		inline void deprecated(const char* file, int32_t line) const
+		inline void deprecated(const char* function, const char* file, int32_t line) const
 		{
-			message(MSG_WARN, file, line,
+			message(MSG_WARN, function, file, line,
 					"This function is deprecated and will be removed soon.\n");
 		}
 
@@ -393,22 +422,17 @@ class SGIO
 				sg_io->disable_progress();
 		}
 
-		/** enable displaying of file and line when printing messages*/
-		inline void enable_file_and_line()
+		/** enable displaying of file and line when printing messages etc
+		 *
+		 * @param location location info (none, function, ...)
+		 *
+		 */
+		inline void set_location_info(EMessageLocation location)
 		{
-			show_file_and_line=true;
+			location_info = location;
 
 			if (sg_io!=this)
-				sg_io->enable_file_and_line();
-		}
-
-		/** disable displaying of file and line when printing messages*/
-		inline void disable_file_and_line()
-		{
-			show_file_and_line=false;
-
-			if (sg_io!=this)
-				sg_io->disable_file_and_line();
+				sg_io->set_location_info(location);
 		}
 
 		/** enable syntax highlighting */
@@ -444,35 +468,14 @@ class SGIO
 		 * @param filename new filename
 		 * @return concatenated directory and filename
 		 */
-        static inline char* concat_filename(const char* filename)
-        {
-            if (snprintf(file_buffer, FBUFSIZE, "%s/%s", directory_name, filename) > FBUFSIZE)
-                SG_SERROR("filename too long")
-            SG_SDEBUG("filename=\"%s\"\n", file_buffer)
-            return file_buffer;
-        }
+        static char* concat_filename(const char* filename);
 
 		/** filter
 		 *
 		 * @param d directory entry
 		 * @return 1 if d is a readable file
 		 */
-		static inline int filter(CONST_DIRENT_T* d)
-        {
-            if (d)
-            {
-                char* fname=concat_filename(d->d_name);
-
-                if (!access(fname, R_OK))
-                {
-                    struct stat s;
-                    if (!stat(fname, &s) && S_ISREG(s.st_mode))
-                        return 1;
-                }
-            }
-
-            return 0;
-        }
+		static int filter(CONST_DIRENT_T* d);
 
 		/**
 		 * Return a C string from the substring
@@ -527,36 +530,20 @@ class SGIO
 		 *
 		 * @return reference count
 		 */
-		inline int32_t ref()
-		{
-			++refcount;
-			return refcount;
-		}
+		int32_t ref();
 
 		/** display reference counter
 		 *
 		 * @return reference count
 		 */
-		inline int32_t ref_count() const
-		{
-			return refcount;
-		}
+		int32_t ref_count() const;
 
 		/** decrement reference counter and deallocate object if refcount is zero
 		 * before or after decrementing it
 		 *
 		 * @return reference count
 		 */
-		inline int32_t unref()
-		{
-			if (refcount==0 || --refcount==0)
-			{
-				delete this;
-				return 0;
-			}
-			else
-				return refcount;
-		}
+		int32_t unref();
 
 		/** @return object name */
 		inline const char* get_name() { return "SGIO"; }
@@ -582,8 +569,8 @@ class SGIO
 		/** if progress bar shall be shown */
 		bool show_progress;
 		/** if each print function should append filename and linenumber of
-		 * where the print occurs */
-		bool show_file_and_line;
+		 * where the print occurs etc */
+		EMessageLocation location_info;
 		/** whether syntax highlighting is enabled */
 		bool syntax_highlight;
 
@@ -602,7 +589,7 @@ class SGIO
         static char directory_name[FBUFSIZE];
 
 	private:
-		int32_t refcount;
+		RefCount* m_refcount;
 };
 }
 #endif // __SGIO_H__

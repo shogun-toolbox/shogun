@@ -2,7 +2,7 @@
 """
 
 from numpy import matrix
-from shogun.Distance import EuclidianDistance
+from shogun.Distance import EuclideanDistance
 import shogun.Clustering as clustering
 
 from shogun.Library import Math_init_random
@@ -26,7 +26,7 @@ def _run (name, first_arg):
 
 	num_clouds=3
 	params={
-		'name': 'EuclidianDistance',
+		'name': 'EuclideanDistance',
 		'data': dataop.get_clouds(num_clouds, 5),
 		'feature_class': 'simple',
 		'feature_type': 'Real'
@@ -46,7 +46,6 @@ def _run (name, first_arg):
 	clustering=fun(params[first_arg], distance)
 	clustering.train()
 
-	distance.init(feats['train'], feats['test'])
 	if name=='KMeans':
 		params['radi']=clustering.get_radiuses()
 		params['centers']=clustering.get_cluster_centers()

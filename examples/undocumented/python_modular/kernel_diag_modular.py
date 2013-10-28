@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 parameter_list =[[23],[24]]
 def kernel_diag_modular (diag=23):
-	from shogun.Features import DummyFeatures
-	from shogun.Kernel import DiagKernel
+	from modshogun import DummyFeatures
+	from modshogun import DiagKernel
 
 	feats_train=DummyFeatures(10)
 	feats_test=DummyFeatures(17)
@@ -17,4 +17,4 @@ def kernel_diag_modular (diag=23):
 if __name__=='__main__':
 	print('Diag')
 	kernel_diag_modular(*parameter_list[0])
-	
+

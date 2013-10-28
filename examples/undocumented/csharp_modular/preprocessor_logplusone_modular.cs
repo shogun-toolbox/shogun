@@ -31,7 +31,7 @@ public class preprocessor_logplusone_modular {
 
 		foreach (double item in km_test)
 		    Console.Write(item);
-		
+
 		modshogun.exit_shogun();
 	}
 }

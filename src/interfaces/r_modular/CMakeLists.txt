@@ -1,0 +1,30 @@
+include(CommonModularInterface)
+SET(SWIG_CXX_COMPILER_FLAGS "${SWIG_CXX_COMPILER_FLAGS} ${R_CXX_FLAGS}")
+
+GENERATE_MODULAR_TARGET(r ${CMAKE_CURRENT_SOURCE_DIR} ${R_LIBRARIES})
+set_target_properties(r_modular PROPERTIES PREFIX "")
+
+ADD_CUSTOM_COMMAND(TARGET r_modular
+	POST_BUILD
+	COMMAND echo 'f="modshogun.R"\; fdata="modshogun.RData"\; source(f)\; save(list=ls(all=TRUE),file=fdata, compress=TRUE)\; q(save="no")' | ${R_EXECUTABLE} --silent --no-save
+	WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+	COMMENT "Generating modshogun.RData"
+)
+
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/modshogun.so
+	DESTINATION ${R_COMPONENT_LIB_PATH}/shogun/libs
+	COMPONENT r)
+
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/modshogun.RData
+	DESTINATION ${R_COMPONENT_LIB_PATH}/shogun/R
+	COMPONENT r)
+
+install(CODE "FILE(MAKE_DIRECTORY ${R_COMPONENT_LIB_PATH}/shogun/Meta)")
+
+install(CODE "EXECUTE_PROCESS(COMMAND ${CMAKE_SOURCE_DIR}/src/.r-install.sh ${R_COMPONENT_LIB_PATH} shogun so saveRDS WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})")
+
+set(CPACK_COMPONENT_R_DISPLAY_NAME "R interface" PARENT_SCOPE)
+set(CPACK_COMPONENT_R_DESCRIPTION "R modular interface of Shogun" PARENT_SCOPE)
+set(CPACK_COMPONENT_R_GROUP "Runtime" PARENT_SCOPE)
+set(CPACK_COMPONENT_R_DEPENDS libraries PARENT_SCOPE)
+SET(CPACK_COMPONENTS_ALL ${CPACK_COMPONENTS_ALL} r PARENT_SCOPE)

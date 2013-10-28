@@ -20,7 +20,7 @@
 #include <octave/Cell.h>
 #include <stdio.h>
 
-#include "ui/SGInterface.h"
+#include <shogun/ui/SGInterface.h>
 #include <shogun/lib/ShogunException.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/config.h>
@@ -260,7 +260,7 @@ void COctaveInterface::function_name(sg_type*& vec, int32_t& len)						\
 																					\
 	if (m.rows()!=1)																\
 		SG_ERROR("Expected " error_string " (1xN) Vector as argument %d, got vector " \
-			"of shape (%dx%d)\n", m_rhs_counter, m.rows(), m.cols()); 				\
+			"of shape (%dx%d)\n", m_rhs_counter, m.rows(), m.cols());				\
 																					\
 	len = m.cols();																	\
 	vec=SG_MALLOC(sg_type, len);															\
@@ -391,14 +391,14 @@ void COctaveInterface::function_name(SGString<sg_type>*& strings, int32_t& num_s
 			oct_type str=c.elem(i).oct_converter();									\
 																					\
 			int32_t len=str.cols();													\
-			if (len>0) 																\
-			{ 																		\
-				strings[i].slen=len; /* all must have same length in octave */ 		\
+			if (len>0)																\
+			{																		\
+				strings[i].slen=len; /* all must have same length in octave */		\
 				strings[i].string=SG_MALLOC(sg_type, len+1); /* not zero terminated in octave */ \
-				int32_t j; 															\
-				for (j=0; j<len; j++) 												\
-					strings[i].string[j]=str(0,j); 									\
-				strings[i].string[j]='\0'; 											\
+				int32_t j;															\
+				for (j=0; j<len; j++)												\
+					strings[i].string[j]=str(0,j);									\
+				strings[i].string[j]='\0';											\
 				max_string_len=CMath::max(max_string_len, len);						\
 			}																		\
 			else																	\
@@ -407,33 +407,33 @@ void COctaveInterface::function_name(SGString<sg_type>*& strings, int32_t& num_s
 				strings[i].slen=0;													\
 				strings[i].string=NULL;												\
 			}																		\
-		} 																			\
-	} 																				\
+		}																			\
+	}																				\
 	else if (arg.oct_type_check1() && arg.oct_type_check2())						\
 	{																				\
 		oct_type data=arg.oct_converter();											\
-		num_str=data.cols(); 														\
-		int32_t len=data.rows(); 													\
-		strings=SG_MALLOC(SGString<sg_type>, num_str); 								\
+		num_str=data.cols();														\
+		int32_t len=data.rows();													\
+		strings=SG_MALLOC(SGString<sg_type>, num_str);								\
 																					\
-		for (int32_t i=0; i<num_str; i++) 											\
-		{ 																			\
-			if (len>0) 																\
-			{ 																		\
-				strings[i].slen=len; /* all must have same length in octave */ 		\
+		for (int32_t i=0; i<num_str; i++)											\
+		{																			\
+			if (len>0)																\
+			{																		\
+				strings[i].slen=len; /* all must have same length in octave */		\
 				strings[i].string=SG_MALLOC(sg_type, len+1); /* not zero terminated in octave */ \
-				int32_t j; 															\
-				for (j=0; j<len; j++) 												\
+				int32_t j;															\
+				for (j=0; j<len; j++)												\
 					strings[i].string[j]=data(j,i);									\
-				strings[i].string[j]='\0'; 											\
-			} 																		\
-			else 																	\
-			{ 																		\
-				SG_WARNING( "string with index %d has zero length.\n", i+1); 		\
-				strings[i].slen=0; 													\
-				strings[i].string=NULL; 											\
-			} 																		\
-		} 																			\
+				strings[i].string[j]='\0';											\
+			}																		\
+			else																	\
+			{																		\
+				SG_WARNING( "string with index %d has zero length.\n", i+1);		\
+				strings[i].slen=0;													\
+				strings[i].string=NULL;											\
+			}																		\
+		}																			\
 		max_string_len=len;															\
 	}																				\
 	else																			\
@@ -545,7 +545,7 @@ void COctaveInterface::function_name(const SGString<sg_type>* strings, int32_t n
 	if (!strings)																	\
 		SG_ERROR("Given strings are invalid.\n")									\
 																					\
-	Cell c= Cell(dim_vector(num_str));												\
+	Cell c= Cell(dim_vector(1,num_str));											\
 	if (c.nelem()!=num_str)															\
 		SG_ERROR("Couldn't create Cell Array of %d strings.\n", num_str)			\
 																					\
@@ -668,7 +668,7 @@ bool COctaveInterface::run_octave_helper(CSGInterface* from_if)
 	octave_catch_interrupts ();
 	octave_initialized = true;
 
-	try 
+	try
 	{
 		int parse_status;
 		char* octave_code=NULL;

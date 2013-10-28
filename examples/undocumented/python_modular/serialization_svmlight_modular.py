@@ -2,10 +2,10 @@
 parameter_list=[[10, 1, 2.1, 2.0]]
 
 def serialization_svmlight_modular (num, dist, width, C):
-    from shogun.IO import MSG_DEBUG
-    from shogun.Features import RealFeatures, BinaryLabels, DNA, Alphabet
-    from shogun.Kernel import WeightedDegreeStringKernel, GaussianKernel
-    from shogun.Classifier import SVMLight
+    from modshogun import MSG_DEBUG
+    from modshogun import RealFeatures, BinaryLabels, DNA, Alphabet
+    from modshogun import WeightedDegreeStringKernel, GaussianKernel
+    from modshogun import SVMLight
     from numpy import concatenate, ones
     from numpy.random import randn, seed
 
@@ -108,7 +108,7 @@ def serialization_svmlight_modular (num, dist, width, C):
     out2 =  svm2.apply(feats_test).get_labels()
 
     # assert outputs are close
-    for i in xrange(len(out)):
+    for i in range(len(out)):
         assert abs(out[i] - out2[i] < 0.000001)
 
     #print("all checks passed.")

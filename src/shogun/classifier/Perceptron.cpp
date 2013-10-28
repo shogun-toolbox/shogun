@@ -16,12 +16,12 @@
 using namespace shogun;
 
 CPerceptron::CPerceptron()
-: CLinearMachine(), learn_rate(0.1), max_iter(1000)
+: CLinearMachine(), learn_rate(0.1), max_iter(1000), m_initialize_hyperplane(true)
 {
 }
 
 CPerceptron::CPerceptron(CDotFeatures* traindat, CLabels* trainlab)
-: CLinearMachine(), learn_rate(.1), max_iter(1000)
+: CLinearMachine(), learn_rate(0.1), max_iter(1000), m_initialize_hyperplane(true)
 {
 	set_features(traindat);
 	set_labels(trainlab);
@@ -51,13 +51,16 @@ bool CPerceptron::train_machine(CFeatures* data)
 	int32_t num_vec=features->get_num_vectors();
 
 	ASSERT(num_vec==train_labels.vlen)
-	w=SGVector<float64_t>(num_feat);
 	float64_t* output=SG_MALLOC(float64_t, num_vec);
 
-	//start with uniform w, bias=0
-	bias=0;
-	for (int32_t i=0; i<num_feat; i++)
-		w.vector[i]=1.0/num_feat;
+	if (m_initialize_hyperplane)
+	{
+		//start with uniform w, bias=0
+		w=SGVector<float64_t>(num_feat);
+		bias=0;
+		for (int32_t i=0; i<num_feat; i++)
+			w.vector[i]=1.0/num_feat;
+	}
 
 	//loop till we either get everything classified right or reach max_iter
 	while (!converged && iter<max_iter)
@@ -86,4 +89,14 @@ bool CPerceptron::train_machine(CFeatures* data)
 	SG_FREE(output);
 
 	return converged;
+}
+
+void CPerceptron::set_initialize_hyperplane(bool initialize_hyperplane)
+{
+	m_initialize_hyperplane = initialize_hyperplane;
+}
+
+bool CPerceptron::get_initialize_hyperplane()
+{
+	return m_initialize_hyperplane;
 }

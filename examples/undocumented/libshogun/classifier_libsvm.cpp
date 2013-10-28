@@ -83,7 +83,7 @@ void test_libsvm()
 			svm->get_bias());
 
 	// classify + display output
-	CBinaryLabels* out_labels=CBinaryLabels::obtain_from_generic(svm->apply());
+	CBinaryLabels* out_labels=CLabelsFactory::to_binary(svm->apply());
 
 	for (int32_t i=0; i<num; i++)
 	{

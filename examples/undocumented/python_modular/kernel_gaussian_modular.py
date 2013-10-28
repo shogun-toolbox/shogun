@@ -1,19 +1,14 @@
 #!/usr/bin/env python
-from tools.load import LoadMatrix
-from numpy import where
-
-lm=LoadMatrix()
-traindat = lm.load_numbers('../data/fm_train_real.dat')
-testdat = lm.load_numbers('../data/fm_test_real.dat')
+traindat = '../data/fm_train_real.dat'
+testdat = '../data/fm_test_real.dat'
 
 parameter_list=[[traindat,testdat, 1.3],[traindat,testdat, 1.4]]
 
-def kernel_gaussian_modular (fm_train_real=traindat,fm_test_real=testdat, width=1.3):
-	from shogun.Features import RealFeatures
-	from shogun.Kernel import GaussianKernel
+def kernel_gaussian_modular (train_fname=traindat,test_fname=testdat, width=1.3):
+	from modshogun import RealFeatures, GaussianKernel, CSVFile
 
-	feats_train=RealFeatures(fm_train_real)
-	feats_test=RealFeatures(fm_test_real)
+	feats_train=RealFeatures(CSVFile(train_fname))
+	feats_test=RealFeatures(CSVFile(test_fname))
 
 	kernel=GaussianKernel(feats_train, feats_train, width)
 	km_train=kernel.get_kernel_matrix()

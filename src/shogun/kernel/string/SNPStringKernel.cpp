@@ -192,4 +192,5 @@ void CSNPStringKernel::init()
 {
 	m_str_min=NULL;
 	m_str_maj=NULL;
+	m_str_len=0;
 }

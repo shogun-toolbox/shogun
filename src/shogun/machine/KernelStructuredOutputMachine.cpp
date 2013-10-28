@@ -20,10 +20,9 @@ CKernelStructuredOutputMachine::CKernelStructuredOutputMachine()
 
 CKernelStructuredOutputMachine::CKernelStructuredOutputMachine(
 		CStructuredModel*  model,
-		CLossFunction*     loss,
 		CStructuredLabels* labs,
 		CKernel*           kernel)
-: CStructuredOutputMachine(model, loss, labs), m_kernel(NULL)
+: CStructuredOutputMachine(model, labs), m_kernel(NULL)
 {
 	set_kernel(kernel);
 	register_parameters();

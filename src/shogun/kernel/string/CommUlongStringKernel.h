@@ -109,10 +109,10 @@ class CCommUlongStringKernel: public CStringKernel<uint64_t>
 		virtual bool delete_optimization();
 
 		/** compute optimized
-	 	*
-	 	* @param idx index to compute
-	 	* @return optimized value at given index
-	 	*/
+		*
+		* @param idx index to compute
+		* @return optimized value at given index
+		*/
 		virtual float64_t compute_optimized(int32_t idx);
 
 		/** merge dictionaries
@@ -127,10 +127,10 @@ class CCommUlongStringKernel: public CStringKernel<uint64_t>
 		 * @param vec_idx vector index
 		 */
 		inline void merge_dictionaries(
-			int32_t& t, int32_t j, int32_t& k, uint64_t* vec, uint64_t* dic,
-			float64_t* dic_weights, float64_t weight, int32_t vec_idx)
+			int32_t& t, int32_t j, int32_t& k, uint64_t* vec, SGVector<uint64_t> dic,
+			SGVector<float64_t> dic_weights, float64_t weight, int32_t vec_idx)
 		{
-			while (k<dictionary.get_num_elements() && dictionary[k] < vec[j-1])
+			while (k<dictionary.vlen && dictionary[k] < vec[j-1])
 			{
 				dic[t]=dictionary[k];
 				dic_weights[t]=dictionary_weights[k];
@@ -138,7 +138,7 @@ class CCommUlongStringKernel: public CStringKernel<uint64_t>
 				k++;
 			}
 
-			if (k<dictionary.get_num_elements() && dictionary[k]==vec[j-1])
+			if (k<dictionary.vlen && dictionary[k]==vec[j-1])
 			{
 				dic[t]=vec[j-1];
 				dic_weights[t]=dictionary_weights[k]+normalizer->normalize_lhs(weight, vec_idx);
@@ -183,9 +183,9 @@ class CCommUlongStringKernel: public CStringKernel<uint64_t>
 		void get_dictionary(
 			int32_t &dsize, uint64_t*& dict, float64_t*& dweights)
 		{
-			dsize=dictionary.get_num_elements();
-			dict=dictionary.get_array();
-			dweights = dictionary_weights.get_array();
+			dsize=dictionary.vlen;
+			dict=dictionary.vector;
+			dweights = dictionary_weights.vector;
 		}
 
 	protected:
@@ -201,9 +201,9 @@ class CCommUlongStringKernel: public CStringKernel<uint64_t>
 
 	protected:
 		/** dictionary */
-		CDynamicArray<uint64_t> dictionary;
+		SGVector<uint64_t> dictionary;
 		/** dictionary weights */
-		CDynamicArray<float64_t> dictionary_weights;
+		SGVector<float64_t> dictionary_weights;
 
 		/** if sign shall be used */
 		bool use_sign;

@@ -110,7 +110,7 @@ class CExplicitSpecFeatures : public CDotFeatures
 		 * free_feature_iterator to cleanup
 		 *
 		 * @param vector_index the index of the vector over whose components to
-		 * 			iterate over
+		 *			iterate over
 		 * @return feature iterator (to be passed to get_next_feature)
 		 */
 		virtual void* get_feature_iterator(int32_t vector_index);
@@ -158,12 +158,6 @@ class CExplicitSpecFeatures : public CDotFeatures
 		 * @return number of strings
 		 */
 		virtual int32_t get_num_vectors() const;
-
-		/** get size of one element
-		 *
-		 * @return size of one element
-		 */
-		virtual int32_t get_size() const;
 
 		/** @return object name */
 		virtual const char* get_name() const { return "ExplicitSpecFeatures"; }

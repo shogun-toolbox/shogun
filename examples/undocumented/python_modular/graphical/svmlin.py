@@ -1,7 +1,7 @@
 from pylab import figure,pcolor,scatter,contour,colorbar,show,subplot,plot,axis, connect
-from shogun.Features import *
-from shogun.Classifier import *
-from shogun.Kernel import *
+from modshogun import *
+from modshogun import *
+from modshogun import *
 import util
 
 util.set_title('SVM Linear 1')

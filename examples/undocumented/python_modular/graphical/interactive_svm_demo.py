@@ -17,9 +17,9 @@ from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg as NavigationToolbar
 from matplotlib.figure import Figure
 
-from shogun.Features import *
-from shogun.Classifier import *
-from shogun.Kernel import *
+from modshogun import *
+from modshogun import *
+from modshogun import *
 import util
 
 class Form(QMainWindow):
@@ -33,20 +33,20 @@ class Form(QMainWindow):
         self.create_menu()
         self.create_main_frame()
         self.create_status_bar()
-        
+
         self.on_show()
 
     def load_file(self, filename=None):
         filename = QFileDialog.getOpenFileName(self,
             'Open a data file', '.', 'CSV files (*.csv);;All Files (*.*)')
-        
+
         if filename:
             self.data.load_from_file(filename)
             self.fill_series_list(self.data.series_names())
             self.status_text.setText("Loaded " + filename)
-    
+
     def on_show(self):
-        self.axes.clear()        
+        self.axes.clear()
         self.axes.grid(True)
         self.axes.plot(self.data.x1_pos, self.data.x2_pos, 'ro')
         self.axes.plot(self.data.x1_neg, self.data.x2_neg, 'bo')
@@ -54,7 +54,7 @@ class Form(QMainWindow):
         self.axes.set_ylim((-5,5))
         self.canvas.draw()
         self.fill_series_list(self.data.get_stats())
-    
+
 
     def on_about(self):
         msg = __doc__
@@ -62,7 +62,7 @@ class Form(QMainWindow):
 
     def fill_series_list(self, names):
         self.series_list_model.clear()
-        
+
         for name in names:
             item = QStandardItem(name)
             item.setCheckState(Qt.Unchecked)
@@ -100,7 +100,7 @@ class Form(QMainWindow):
         width = float(self.sigma.text())
         degree = int(self.degree.text())
 
-        self.axes.clear()        
+        self.axes.clear()
         self.axes.grid(True)
         self.axes.plot(self.data.x1_pos, self.data.x2_pos, 'ro')
         self.axes.plot(self.data.x1_neg, self.data.x2_neg, 'bo')
@@ -123,7 +123,7 @@ class Form(QMainWindow):
             gk.set_normalizer(IdentityKernelNormalizer())
         elif kernel_name == "GaussianKernel":
             gk = GaussianKernel(train, train, width)
- 
+
         cost = float(self.cost.text())
 
         print "cost", cost
@@ -159,19 +159,19 @@ class Form(QMainWindow):
 
     def create_main_frame(self):
         self.main_frame = QWidget()
-        
+
         plot_frame = QWidget()
-        
+
         self.dpi = 100
         self.fig = Figure((6.0, 6.0), dpi=self.dpi)
         self.canvas = FigureCanvas(self.fig)
         self.canvas.setParent(self.main_frame)
-            
+
         cid = self.canvas.mpl_connect('button_press_event', self.onclick)
         self.axes = self.fig.add_subplot(111)
         self.cax = None
         #self.mpl_toolbar = NavigationToolbar(self.canvas, self.main_frame)
-        
+
         log_label = QLabel("Number of examples:")
         self.series_list_view = QListView()
         self.series_list_view.setModel(self.series_list_model)
@@ -189,7 +189,7 @@ class Form(QMainWindow):
         self.degree = QLineEdit()
         self.degree.setText("2")
         #self.sigma.setMinimum(1)
-        
+
         spins_hbox = QHBoxLayout()
         spins_hbox.addWidget(cost_label)
         spins_hbox.addWidget(self.cost)
@@ -197,17 +197,17 @@ class Form(QMainWindow):
         spins_hbox.addWidget(self.sigma)
         spins_hbox.addWidget(self.degree)
         spins_hbox.addStretch(1)
-        
+
         self.legend_cb = QCheckBox("Show Support Vectors")
         self.legend_cb.setChecked(False)
-        
+
         self.show_button = QPushButton("&Train SVM")
         self.connect(self.show_button, SIGNAL('clicked()'), self.train_svm)
 
         self.clear_button = QPushButton("&Clear")
         self.connect(self.clear_button, SIGNAL('clicked()'), self.clear)
 
-        
+
         self.kernel_combo = QComboBox()
         self.kernel_combo.insertItem(-1, "GaussianKernel")
         self.kernel_combo.insertItem(-1, "PolynomialKernel")
@@ -234,17 +234,17 @@ class Form(QMainWindow):
         right2_vbox.addLayout(spins_hbox)
         right2_clearlabel = QLabel("Remove Data")
         right2_vbox.addWidget(right2_clearlabel)
- 
+
         right2_vbox.addWidget(self.clear_button)
-        
+
 
         right2_vbox.addStretch(1)
 
         right_vbox = QHBoxLayout()
         right_vbox.addLayout(right0_vbox)
         right_vbox.addLayout(right2_vbox)
-    
-        
+
+
         hbox = QVBoxLayout()
         hbox.addLayout(left_vbox)
         hbox.addLayout(right_vbox)
@@ -260,20 +260,20 @@ class Form(QMainWindow):
 
     def create_menu(self):
         self.file_menu = self.menuBar().addMenu("&File")
-        
+
         load_action = self.create_action("&Load file",
             shortcut="Ctrl+L", slot=self.load_file, tip="Load a file")
-        quit_action = self.create_action("&Quit", slot=self.close, 
+        quit_action = self.create_action("&Quit", slot=self.close,
             shortcut="Ctrl+Q", tip="Close the application")
-        
-        self.add_actions(self.file_menu, 
+
+        self.add_actions(self.file_menu,
             (load_action, None, quit_action))
-            
+
         self.help_menu = self.menuBar().addMenu("&Help")
-        about_action = self.create_action("&About", 
-            shortcut='F1', slot=self.on_about, 
+        about_action = self.create_action("&About",
+            shortcut='F1', slot=self.on_about,
             tip='About the demo')
-        
+
         self.add_actions(self.help_menu, (about_action,))
 
     def add_actions(self, target, actions):
@@ -283,8 +283,8 @@ class Form(QMainWindow):
             else:
                 target.addAction(action)
 
-    def create_action(  self, text, slot=None, shortcut=None, 
-                        icon=None, tip=None, checkable=False, 
+    def create_action(  self, text, slot=None, shortcut=None,
+                        icon=None, tip=None, checkable=False,
                         signal="triggered()"):
         action = QAction(text, self)
         if icon is not None:
@@ -302,13 +302,13 @@ class Form(QMainWindow):
 
 
 class DataHolder(object):
-    """ Just a thin wrapper over a dictionary that holds integer 
-        data series. Each series has a name and a list of numbers 
+    """ Just a thin wrapper over a dictionary that holds integer
+        data series. Each series has a name and a list of numbers
         as its data. The length of all series is assumed to be
         the same.
-        
+
         The series can be read from a CSV file, where each line
-        is a separate series. In each series, the first item in 
+        is a separate series. In each series, the first item in
         the line is the name, and the rest are data numbers.
     """
     def __init__(self, filename=None):
@@ -365,23 +365,23 @@ class DataHolder(object):
     def load_from_file(self, filename=None):
         self.data = {}
         self.names = []
-        
+
         if filename:
             for line in csv.reader(open(filename, 'rb')):
                 self.names.append(line[0])
                 self.data[line[0]] = map(int, line[1:])
                 self.datalen = len(line[1:])
-    
+
     def series_names(self):
         """ Names of the data series
         """
         return self.names
-    
+
     def series_len(self):
         """ Length of a data series
         """
         return self.datalen
-    
+
     def series_count(self):
         return len(self.data)
 
@@ -398,7 +398,7 @@ def main():
 
 if __name__ == "__main__":
     main()
-    
+
     #~ dh = DataHolder('qt_mpl_data.csv')
     #~ print dh.data
     #~ print dh.get_series_data('1991 Sales')

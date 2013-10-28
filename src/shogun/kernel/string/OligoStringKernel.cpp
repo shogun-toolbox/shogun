@@ -241,7 +241,7 @@ float64_t COligoStringKernel::kernelOligoFast(
 }
 
 float64_t COligoStringKernel::kernelOligo(
-		const std::vector< std::pair<int32_t, float64_t> >&    x, 
+		const std::vector< std::pair<int32_t, float64_t> >&    x,
 		const std::vector< std::pair<int32_t, float64_t> >&    y)
 {
 	float64_t result = 0;
@@ -285,7 +285,7 @@ float64_t COligoStringKernel::kernelOligo(
 		}
 	}
 	return result;
-}		
+}
 
 float64_t COligoStringKernel::compute(int32_t idx_a, int32_t idx_b)
 {

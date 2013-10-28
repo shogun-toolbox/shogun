@@ -11,17 +11,17 @@ from different files and initializes the distance to 'CANBERRA'.
 Each column of the matrices corresponds to one data point.
 
 The target 'TRAIN' for 'set_features' controls the processing of the given
-data points, where a pairwise distance (dissimilarity ratio) matrix is 
-computed by 'get_distance_matrix'. 
+data points, where a pairwise distance (dissimilarity ratio) matrix is
+computed by 'get_distance_matrix'.
 
-The resulting distance matrix can be reaccessed by 'get_distance_matrix' 
+The resulting distance matrix can be reaccessed by 'get_distance_matrix'
 and target 'TRAIN'.
 
 The target 'TEST' for 'set_features' controls the processing of the given
 data points 'TRAIN' and 'TEST', where a pairwise distance (dissimilarity ratio)
-matrix between these two data sets is computed by 'get_distance_matrix'. 
+matrix between these two data sets is computed by 'get_distance_matrix'.
 
-The resulting distance matrix can be reaccessed by 'get_distance_matrix' and 
+The resulting distance matrix can be reaccessed by 'get_distance_matrix' and
 target 'TEST'. The 'TRAIN' distance matrix ceased to exist.
 
 For more details see doc/classshogun_1_1CCanberraMetric.html.

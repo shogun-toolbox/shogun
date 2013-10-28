@@ -8,9 +8,9 @@ parameter_list=[[data,label]]
 
 def features_io_modular (fm_train_real, label_train_twoclass):
 	import numpy
-	from shogun.Features import SparseRealFeatures, RealFeatures, MulticlassLabels
-	from shogun.Kernel import GaussianKernel
-	from shogun.IO import AsciiFile, BinaryFile, HDF5File
+	from modshogun import SparseRealFeatures, RealFeatures, MulticlassLabels
+	from modshogun import GaussianKernel
+	from modshogun import LibSVMFile, CSVFile, BinaryFile, HDF5File
 
 	feats=SparseRealFeatures(fm_train_real)
 	feats2=SparseRealFeatures()
@@ -18,13 +18,13 @@ def features_io_modular (fm_train_real, label_train_twoclass):
 	f=BinaryFile("fm_train_sparsereal.bin","w")
 	feats.save(f)
 
-	f=AsciiFile("fm_train_sparsereal.ascii","w")
+	f=LibSVMFile("fm_train_sparsereal.ascii","w")
 	feats.save(f)
 
 	f=BinaryFile("fm_train_sparsereal.bin")
 	feats2.load(f)
 
-	f=AsciiFile("fm_train_sparsereal.ascii")
+	f=LibSVMFile("fm_train_sparsereal.ascii")
 	feats2.load(f)
 
 	feats=RealFeatures(fm_train_real)
@@ -36,20 +36,20 @@ def features_io_modular (fm_train_real, label_train_twoclass):
 	f=HDF5File("fm_train_real.h5","w", "/data/doubles")
 	feats.save(f)
 
-	f=AsciiFile("fm_train_real.ascii","w")
+	f=CSVFile("fm_train_real.ascii","w")
 	feats.save(f)
 
 	f=BinaryFile("fm_train_real.bin")
 	feats2.load(f)
 	#print("diff binary", numpy.max(numpy.abs(feats2.get_feature_matrix().flatten()-fm_train_real.flatten())))
 
-	f=AsciiFile("fm_train_real.ascii")
+	f=CSVFile("fm_train_real.ascii")
 	feats2.load(f)
 	#print("diff ascii", numpy.max(numpy.abs(feats2.get_feature_matrix().flatten()-fm_train_real.flatten())))
 
 	lab=MulticlassLabels(numpy.array([0.0,1.0,2.0,3.0]))
 	lab2=MulticlassLabels()
-	f=AsciiFile("label_train_twoclass.ascii","w")
+	f=CSVFile("label_train_twoclass.ascii","w")
 	lab.save(f)
 
 	f=BinaryFile("label_train_twoclass.bin","w")
@@ -58,7 +58,7 @@ def features_io_modular (fm_train_real, label_train_twoclass):
 	f=HDF5File("label_train_real.h5","w", "/data/labels")
 	lab.save(f)
 
-	f=AsciiFile("label_train_twoclass.ascii")
+	f=CSVFile("label_train_twoclass.ascii")
 	lab2.load(f)
 
 	f=BinaryFile("label_train_twoclass.bin")

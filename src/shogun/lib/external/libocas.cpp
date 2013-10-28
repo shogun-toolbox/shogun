@@ -55,10 +55,10 @@ static float64_t get_time()
 
 
 /*----------------------------------------------------------------------
-  Linear binary Ocas-SVM solver with additinal contraint enforceing 
-  a subset of weights (indices of the weights given by num_nnw/nnw_idx) 
-  to be non-negative.    
-  
+  Linear binary Ocas-SVM solver with additinal contraint enforceing
+  a subset of weights (indices of the weights given by num_nnw/nnw_idx)
+  to be non-negative.
+
   ----------------------------------------------------------------------*/
 ocas_return_value_T svm_ocas_solver_nnw(
             float64_t C,
@@ -95,7 +95,7 @@ ocas_return_value_T svm_ocas_solver_nnw(
 
   float64_t max_cp_norm;
   float64_t max_b;
-  float64_t _C[2];
+  float64_t Cs[2];
   uint8_t S[2];
 
   ocas_start_time = get_time();
@@ -124,7 +124,7 @@ ocas_return_value_T svm_ocas_solver_nnw(
   Bi=NULL;
 
   /* Hessian matrix contains dot product of normal vectors of selected cutting planes */
-  H = (float64_t*)LIBOCAS_CALLOC(BufSize*BufSize,sizeof(float64_t));
+  H = (float64_t*)LIBOCAS_CALLOC(BufSize*BufSize, float64_t);
   if(H == NULL)
   {
           ocas.exitflag=-2;
@@ -132,14 +132,14 @@ ocas_return_value_T svm_ocas_solver_nnw(
   }
 
   /* bias of cutting planes */
-  b = (float64_t*)LIBOCAS_CALLOC(BufSize,sizeof(float64_t));
+  b = (float64_t*)LIBOCAS_CALLOC(BufSize, float64_t);
   if(b == NULL)
   {
           ocas.exitflag=-2;
           goto cleanup;
   }
 
-  alpha = (float64_t*)LIBOCAS_CALLOC(BufSize,sizeof(float64_t));
+  alpha = (float64_t*)LIBOCAS_CALLOC(BufSize, float64_t);
   if(alpha == NULL)
   {
           ocas.exitflag=-2;
@@ -147,14 +147,14 @@ ocas_return_value_T svm_ocas_solver_nnw(
   }
 
   /* indices of examples which define a new cut */
-  new_cut = (uint32_t*)LIBOCAS_CALLOC(nData,sizeof(uint32_t));
+  new_cut = (uint32_t*)LIBOCAS_CALLOC(nData, uint32_t);
   if(new_cut == NULL)
   {
           ocas.exitflag=-2;
           goto cleanup;
   }
 
-  I = (uint32_t*)LIBOCAS_CALLOC(BufSize,sizeof(uint32_t));
+  I = (uint32_t*)LIBOCAS_CALLOC(BufSize, uint32_t);
   if(I == NULL)
   {
           ocas.exitflag=-2;
@@ -163,21 +163,21 @@ ocas_return_value_T svm_ocas_solver_nnw(
 
   for(i=0; i< BufSize; i++) I[i] = 2;
 
-  diag_H = (float64_t*)LIBOCAS_CALLOC(BufSize,sizeof(float64_t));
+  diag_H = (float64_t*)LIBOCAS_CALLOC(BufSize, float64_t);
   if(diag_H == NULL)
   {
           ocas.exitflag=-2;
           goto cleanup;
   }
 
-  output = (float64_t*)LIBOCAS_CALLOC(nData,sizeof(float64_t));
+  output = (float64_t*)LIBOCAS_CALLOC(nData, float64_t);
   if(output == NULL)
   {
           ocas.exitflag=-2;
           goto cleanup;
   }
 
-  old_output = (float64_t*)LIBOCAS_CALLOC(nData,sizeof(float64_t));
+  old_output = (float64_t*)LIBOCAS_CALLOC(nData, float64_t);
   if(old_output == NULL)
   {
           ocas.exitflag=-2;
@@ -185,14 +185,14 @@ ocas_return_value_T svm_ocas_solver_nnw(
   }
 
   /* array of hinge points used in line-serach  */
-  hpf = (float64_t*) LIBOCAS_CALLOC(nData, sizeof(hpf[0]));
+  hpf = (float64_t*) LIBOCAS_CALLOC(nData, float64_t);
   if(hpf == NULL)
   {
           ocas.exitflag=-2;
           goto cleanup;
   }
 
-  hpb = (float64_t*) LIBOCAS_CALLOC(nData, sizeof(hpb[0]));
+  hpb = (float64_t*) LIBOCAS_CALLOC(nData, float64_t);
   if(hpb == NULL)
   {
           ocas.exitflag=-2;
@@ -200,14 +200,14 @@ ocas_return_value_T svm_ocas_solver_nnw(
   }
 
   /* vectors Ci, Bi are used in the line search procedure */
-  Ci = (float64_t*)LIBOCAS_CALLOC(nData,sizeof(float64_t));
+  Ci = (float64_t*)LIBOCAS_CALLOC(nData, float64_t);
   if(Ci == NULL)
   {
           ocas.exitflag=-2;
           goto cleanup;
   }
 
-  Bi = (float64_t*)LIBOCAS_CALLOC(nData,sizeof(float64_t));
+  Bi = (float64_t*)LIBOCAS_CALLOC(nData, float64_t);
   if(Bi == NULL)
   {
           ocas.exitflag=-2;
@@ -215,8 +215,8 @@ ocas_return_value_T svm_ocas_solver_nnw(
   }
 
   /* initial cutting planes implementing the non-negativity constraints on W*/
-  _C[0]=10000000.0;
-  _C[1]=C;
+  Cs[0]=10000000.0;
+  Cs[1]=C;
   S[0]=1;
   S[1]=1;
   for(i=0; i < num_nnw; i++)
@@ -292,11 +292,11 @@ ocas_return_value_T svm_ocas_solver_nnw(
     start_time = get_time();
 
     /* compute upper bound on sum of dual variables associated with the positivity constraints */
-    _C[0] = sqrt((float64_t)nData)*(sqrt(C)*sqrt(max_b) + C*max_cp_norm);
+    Cs[0] = sqrt((float64_t)nData)*(sqrt(C)*sqrt(max_b) + C*max_cp_norm);
 
 /*    qp_exitflag = libqp_splx_solver(&get_col, diag_H, b, &C, I, &S, alpha,
                                   ocas.nCutPlanes, QPSolverMaxIter, 0.0, QPSolverTolRel, -LIBOCAS_PLUS_INF,0);*/
-    qp_exitflag = libqp_splx_solver(&get_col, diag_H, b, _C, I, S, alpha,
+    qp_exitflag = libqp_splx_solver(&get_col, diag_H, b, Cs, I, S, alpha,
                                   ocas.nCutPlanes, QPSolverMaxIter, 0.0, QPSolverTolRel, -LIBOCAS_PLUS_INF,0);
 
     ocas.qp_exitflag = qp_exitflag.exitflag;
@@ -583,7 +583,7 @@ ocas_return_value_T svm_ocas_solver(
   Bi=NULL;
 
   /* Hessian matrix contains dot product of normal vectors of selected cutting planes */
-  H = (float64_t*)LIBOCAS_CALLOC(BufSize*BufSize,sizeof(float64_t));
+  H = (float64_t*)LIBOCAS_CALLOC(BufSize*BufSize, float64_t);
   if(H == NULL)
   {
 	  ocas.exitflag=-2;
@@ -591,14 +591,14 @@ ocas_return_value_T svm_ocas_solver(
   }
 
   /* bias of cutting planes */
-  b = (float64_t*)LIBOCAS_CALLOC(BufSize,sizeof(float64_t));
+  b = (float64_t*)LIBOCAS_CALLOC(BufSize, float64_t);
   if(b == NULL)
   {
 	  ocas.exitflag=-2;
 	  goto cleanup;
   }
 
-  alpha = (float64_t*)LIBOCAS_CALLOC(BufSize,sizeof(float64_t));
+  alpha = (float64_t*)LIBOCAS_CALLOC(BufSize, float64_t);
   if(alpha == NULL)
   {
 	  ocas.exitflag=-2;
@@ -606,14 +606,14 @@ ocas_return_value_T svm_ocas_solver(
   }
 
   /* indices of examples which define a new cut */
-  new_cut = (uint32_t*)LIBOCAS_CALLOC(nData,sizeof(uint32_t));
+  new_cut = (uint32_t*)LIBOCAS_CALLOC(nData, uint32_t);
   if(new_cut == NULL)
   {
 	  ocas.exitflag=-2;
 	  goto cleanup;
   }
 
-  I = (uint32_t*)LIBOCAS_CALLOC(BufSize,sizeof(uint32_t));
+  I = (uint32_t*)LIBOCAS_CALLOC(BufSize, uint32_t);
   if(I == NULL)
   {
 	  ocas.exitflag=-2;
@@ -622,21 +622,21 @@ ocas_return_value_T svm_ocas_solver(
 
   for(i=0; i< BufSize; i++) I[i] = 1;
 
-  diag_H = (float64_t*)LIBOCAS_CALLOC(BufSize,sizeof(float64_t));
+  diag_H = (float64_t*)LIBOCAS_CALLOC(BufSize, float64_t);
   if(diag_H == NULL)
   {
 	  ocas.exitflag=-2;
 	  goto cleanup;
   }
 
-  output = (float64_t*)LIBOCAS_CALLOC(nData,sizeof(float64_t));
+  output = (float64_t*)LIBOCAS_CALLOC(nData, float64_t);
   if(output == NULL)
   {
 	  ocas.exitflag=-2;
 	  goto cleanup;
   }
 
-  old_output = (float64_t*)LIBOCAS_CALLOC(nData,sizeof(float64_t));
+  old_output = (float64_t*)LIBOCAS_CALLOC(nData, float64_t);
   if(old_output == NULL)
   {
 	  ocas.exitflag=-2;
@@ -644,14 +644,14 @@ ocas_return_value_T svm_ocas_solver(
   }
 
   /* array of hinge points used in line-serach  */
-  hpf = (float64_t*) LIBOCAS_CALLOC(nData, sizeof(hpf[0]));
+  hpf = (float64_t*) LIBOCAS_CALLOC(nData, float64_t);
   if(hpf == NULL)
   {
 	  ocas.exitflag=-2;
 	  goto cleanup;
   }
 
-  hpb = (float64_t*) LIBOCAS_CALLOC(nData, sizeof(hpb[0]));
+  hpb = (float64_t*) LIBOCAS_CALLOC(nData, float64_t);
   if(hpb == NULL)
   {
 	  ocas.exitflag=-2;
@@ -659,14 +659,14 @@ ocas_return_value_T svm_ocas_solver(
   }
 
   /* vectors Ci, Bi are used in the line search procedure */
-  Ci = (float64_t*)LIBOCAS_CALLOC(nData,sizeof(float64_t));
+  Ci = (float64_t*)LIBOCAS_CALLOC(nData, float64_t);
   if(Ci == NULL)
   {
 	  ocas.exitflag=-2;
 	  goto cleanup;
   }
 
-  Bi = (float64_t*)LIBOCAS_CALLOC(nData,sizeof(float64_t));
+  Bi = (float64_t*)LIBOCAS_CALLOC(nData, float64_t);
   if(Bi == NULL)
   {
 	  ocas.exitflag=-2;
@@ -912,7 +912,7 @@ ocas_return_value_T svm_ocas_solver(
         /*        ocas_print("%4d: tim=%f, Q_P=%f, Q_D=%f, Q_P-Q_D=%f, 1-Q_D/Q_P=%f, nza=%4d, err=%.2f%%, qpf=%d\n",
                    ocas.nIter, cur_time, ocas.Q_P,ocas.Q_D,ocas.Q_P-ocas.Q_D,(ocas.Q_P-ocas.Q_D)/LIBOCAS_ABS(ocas.Q_P),
                    ocas.nNZAlpha, 100*(float64_t)ocas.trn_err/(float64_t)nData, ocas.qp_exitflag );
-        */ 
+        */
 
         start_time = get_time();
         ocas_print(ocas);
@@ -1013,7 +1013,7 @@ ocas_return_value_T svm_ocas_solver_difC(
   Bi=NULL;
 
   /* Hessian matrix contains dot product of normal vectors of selected cutting planes */
-  H = (float64_t*)LIBOCAS_CALLOC(BufSize*BufSize,sizeof(float64_t));
+  H = (float64_t*)LIBOCAS_CALLOC(BufSize*BufSize, float64_t);
   if(H == NULL)
   {
 	  ocas.exitflag=-2;
@@ -1021,14 +1021,14 @@ ocas_return_value_T svm_ocas_solver_difC(
   }
 
   /* bias of cutting planes */
-  b = (float64_t*)LIBOCAS_CALLOC(BufSize,sizeof(float64_t));
+  b = (float64_t*)LIBOCAS_CALLOC(BufSize, float64_t);
   if(b == NULL)
   {
 	  ocas.exitflag=-2;
 	  goto cleanup;
   }
 
-  alpha = (float64_t*)LIBOCAS_CALLOC(BufSize,sizeof(float64_t));
+  alpha = (float64_t*)LIBOCAS_CALLOC(BufSize, float64_t);
   if(alpha == NULL)
   {
 	  ocas.exitflag=-2;
@@ -1036,14 +1036,14 @@ ocas_return_value_T svm_ocas_solver_difC(
   }
 
   /* indices of examples which define a new cut */
-  new_cut = (uint32_t*)LIBOCAS_CALLOC(nData,sizeof(uint32_t));
+  new_cut = (uint32_t*)LIBOCAS_CALLOC(nData, uint32_t);
   if(new_cut == NULL)
   {
 	  ocas.exitflag=-2;
 	  goto cleanup;
   }
 
-  I = (uint32_t*)LIBOCAS_CALLOC(BufSize,sizeof(uint32_t));
+  I = (uint32_t*)LIBOCAS_CALLOC(BufSize, uint32_t);
   if(I == NULL)
   {
 	  ocas.exitflag=-2;
@@ -1052,21 +1052,21 @@ ocas_return_value_T svm_ocas_solver_difC(
 
   for(i=0; i< BufSize; i++) I[i] = 1;
 
-  diag_H = (float64_t*)LIBOCAS_CALLOC(BufSize,sizeof(float64_t));
+  diag_H = (float64_t*)LIBOCAS_CALLOC(BufSize, float64_t);
   if(diag_H == NULL)
   {
 	  ocas.exitflag=-2;
 	  goto cleanup;
   }
 
-  output = (float64_t*)LIBOCAS_CALLOC(nData,sizeof(float64_t));
+  output = (float64_t*)LIBOCAS_CALLOC(nData, float64_t);
   if(output == NULL)
   {
 	  ocas.exitflag=-2;
 	  goto cleanup;
   }
 
-  old_output = (float64_t*)LIBOCAS_CALLOC(nData,sizeof(float64_t));
+  old_output = (float64_t*)LIBOCAS_CALLOC(nData, float64_t);
   if(old_output == NULL)
   {
 	  ocas.exitflag=-2;
@@ -1074,14 +1074,14 @@ ocas_return_value_T svm_ocas_solver_difC(
   }
 
   /* array of hinge points used in line-serach  */
-  hpf = (float64_t*) LIBOCAS_CALLOC(nData, sizeof(hpf[0]));
+  hpf = (float64_t*) LIBOCAS_CALLOC(nData, float64_t);
   if(hpf == NULL)
   {
 	  ocas.exitflag=-2;
 	  goto cleanup;
   }
 
-  hpb = (float64_t*) LIBOCAS_CALLOC(nData, sizeof(hpb[0]));
+  hpb = (float64_t*) LIBOCAS_CALLOC(nData, float64_t);
   if(hpb == NULL)
   {
 	  ocas.exitflag=-2;
@@ -1089,14 +1089,14 @@ ocas_return_value_T svm_ocas_solver_difC(
   }
 
   /* vectors Ci, Bi are used in the line search procedure */
-  Ci = (float64_t*)LIBOCAS_CALLOC(nData,sizeof(float64_t));
+  Ci = (float64_t*)LIBOCAS_CALLOC(nData, float64_t);
   if(Ci == NULL)
   {
 	  ocas.exitflag=-2;
 	  goto cleanup;
   }
 
-  Bi = (float64_t*)LIBOCAS_CALLOC(nData,sizeof(float64_t));
+  Bi = (float64_t*)LIBOCAS_CALLOC(nData, float64_t);
   if(Bi == NULL)
   {
 	  ocas.exitflag=-2;
@@ -1109,8 +1109,10 @@ ocas_return_value_T svm_ocas_solver_difC(
 
   /* Compute initial value of Q_P assuming that W is zero vector.*/
   sq_norm_W = 0;
+/*
   xi = nData;
-/*  ocas.Q_P = 0.5*sq_norm_W + C*xi;*/
+  ocas.Q_P = 0.5*sq_norm_W + C*xi;
+*/
   ocas.Q_D = 0;
 
   /* Compute the initial cutting plane */
@@ -1359,7 +1361,7 @@ ocas_return_value_T svm_ocas_solver_difC(
         /*        ocas_print("%4d: tim=%f, Q_P=%f, Q_D=%f, Q_P-Q_D=%f, 1-Q_D/Q_P=%f, nza=%4d, err=%.2f%%, qpf=%d\n",
                    ocas.nIter, cur_time, ocas.Q_P,ocas.Q_D,ocas.Q_P-ocas.Q_D,(ocas.Q_P-ocas.Q_D)/LIBOCAS_ABS(ocas.Q_P),
                    ocas.nNZAlpha, 100*(float64_t)ocas.trn_err/(float64_t)nData, ocas.qp_exitflag );
-        */ 
+        */
 
         start_time = get_time();
         ocas_print(ocas);
@@ -1416,7 +1418,6 @@ static void findactive(float64_t *Theta, float64_t *SortedA, uint32_t *nSortedA,
 
   sort(A,B,n);
 
-  tmp = B[0];
   idx = 0;
   i = 0;
   while( i < (uint32_t)n-1 && A[i] == A[i+1])
@@ -1424,7 +1425,6 @@ static void findactive(float64_t *Theta, float64_t *SortedA, uint32_t *nSortedA,
     if( B[i+1] > B[idx] )
     {
       idx = i+1;
-      tmp = B[i+1];
     }
     i++;
   }
@@ -1525,7 +1525,7 @@ ocas_return_value_T msvm_ocas_solver(
   Add = NULL;
 
   /* Hessian matrix contains dot product of normal vectors of selected cutting planes */
-  H = (float64_t*)LIBOCAS_CALLOC(BufSize*BufSize,sizeof(float64_t));
+  H = (float64_t*)LIBOCAS_CALLOC(BufSize*BufSize, float64_t);
   if(H == NULL)
   {
 	  ocas.exitflag=-2;
@@ -1533,14 +1533,14 @@ ocas_return_value_T msvm_ocas_solver(
   }
 
   /* bias of cutting planes */
-  b = (float64_t*)LIBOCAS_CALLOC(BufSize,sizeof(float64_t));
+  b = (float64_t*)LIBOCAS_CALLOC(BufSize, float64_t);
   if(b == NULL)
   {
 	  ocas.exitflag=-2;
 	  goto cleanup;
   }
 
-  alpha = (float64_t*)LIBOCAS_CALLOC(BufSize,sizeof(float64_t));
+  alpha = (float64_t*)LIBOCAS_CALLOC(BufSize, float64_t);
   if(alpha == NULL)
   {
 	  ocas.exitflag=-2;
@@ -1548,14 +1548,14 @@ ocas_return_value_T msvm_ocas_solver(
   }
 
   /* indices of examples which define a new cut */
-  new_cut = (uint32_t*)LIBOCAS_CALLOC(nData,sizeof(uint32_t));
+  new_cut = (uint32_t*)LIBOCAS_CALLOC(nData, uint32_t);
   if(new_cut == NULL)
   {
 	  ocas.exitflag=-2;
 	  goto cleanup;
   }
 
-  I = (uint32_t*)LIBOCAS_CALLOC(BufSize,sizeof(uint32_t));
+  I = (uint32_t*)LIBOCAS_CALLOC(BufSize, uint32_t);
   if(I == NULL)
   {
 	  ocas.exitflag=-2;
@@ -1565,21 +1565,21 @@ ocas_return_value_T msvm_ocas_solver(
   for(i=0; i< BufSize; i++)
     I[i] = 1;
 
-  diag_H = (float64_t*)LIBOCAS_CALLOC(BufSize,sizeof(float64_t));
+  diag_H = (float64_t*)LIBOCAS_CALLOC(BufSize, float64_t);
   if(diag_H == NULL)
   {
 	  ocas.exitflag=-2;
 	  goto cleanup;
   }
 
-  output = (float64_t*)LIBOCAS_CALLOC(nData*nY,sizeof(float64_t));
+  output = (float64_t*)LIBOCAS_CALLOC(nData*nY, float64_t);
   if(output == NULL)
   {
 	  ocas.exitflag=-2;
 	  goto cleanup;
   }
 
-  old_output = (float64_t*)LIBOCAS_CALLOC(nData*nY,sizeof(float64_t));
+  old_output = (float64_t*)LIBOCAS_CALLOC(nData*nY, float64_t);
   if(old_output == NULL)
   {
 	  ocas.exitflag=-2;
@@ -1587,42 +1587,42 @@ ocas_return_value_T msvm_ocas_solver(
   }
 
   /* auxciliary variables used in the linesearch */
-  A = (float64_t*)LIBOCAS_CALLOC(nData*nY,sizeof(float64_t));
+  A = (float64_t*)LIBOCAS_CALLOC(nData*nY, float64_t);
   if(A == NULL)
   {
 	  ocas.exitflag=-2;
 	  goto cleanup;
   }
 
-  B = (float64_t*)LIBOCAS_CALLOC(nData*nY,sizeof(float64_t));
+  B = (float64_t*)LIBOCAS_CALLOC(nData*nY, float64_t);
   if(B == NULL)
   {
 	  ocas.exitflag=-2;
 	  goto cleanup;
   }
 
-  theta = (float64_t*)LIBOCAS_CALLOC(nY,sizeof(float64_t));
+  theta = (float64_t*)LIBOCAS_CALLOC(nY, float64_t);
   if(theta == NULL)
   {
 	  ocas.exitflag=-2;
 	  goto cleanup;
   }
 
-  sortedA = (float64_t*)LIBOCAS_CALLOC(nY,sizeof(float64_t));
+  sortedA = (float64_t*)LIBOCAS_CALLOC(nY, float64_t);
   if(sortedA == NULL)
   {
 	  ocas.exitflag=-2;
 	  goto cleanup;
   }
 
-  Theta = (float64_t*)LIBOCAS_CALLOC(nData*nY,sizeof(float64_t));
+  Theta = (float64_t*)LIBOCAS_CALLOC(nData*nY, float64_t);
   if(Theta == NULL)
   {
 	  ocas.exitflag=-2;
 	  goto cleanup;
   }
 
-  Add = (float64_t*)LIBOCAS_CALLOC(nData*nY,sizeof(float64_t));
+  Add = (float64_t*)LIBOCAS_CALLOC(nData*nY, float64_t);
   if(Add == NULL)
   {
 	  ocas.exitflag=-2;

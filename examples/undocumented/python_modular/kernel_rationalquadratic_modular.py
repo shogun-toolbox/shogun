@@ -1,21 +1,15 @@
 #!/usr/bin/env python
-from tools.load import LoadMatrix
-from numpy import where
 
-lm=LoadMatrix()
-traindat = lm.load_numbers('../data/fm_train_real.dat')
-testdat = lm.load_numbers('../data/fm_test_real.dat')
-
+traindat = '../data/fm_train_real.dat'
+testdat = '../data/fm_test_real.dat'
 parameter_list=[[traindat,testdat, 1.0],[traindat,testdat, 5.0]]
 
-def kernel_rationalquadratic_modular (fm_train_real=traindat,fm_test_real=testdat, shift_coef=1.0):
-	from shogun.Features import RealFeatures
-	from shogun.Kernel import RationalQuadraticKernel
-	from shogun.Distance import EuclideanDistance
+def kernel_rationalquadratic_modular (train_fname=traindat,test_fname=testdat, shift_coef=1.0):
+	from modshogun import RealFeatures, RationalQuadraticKernel, EuclideanDistance, CSVFile
 
-	feats_train=RealFeatures(fm_train_real)
-	feats_test=RealFeatures(fm_test_real)
-	
+	feats_train=RealFeatures(CSVFile(train_fname))
+	feats_test=RealFeatures(CSVFile(test_fname))
+
 	distance=EuclideanDistance(feats_train, feats_train)
 
 	kernel=RationalQuadraticKernel(feats_train, feats_train, shift_coef, distance)

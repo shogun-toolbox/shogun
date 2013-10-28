@@ -60,8 +60,7 @@ TEST(QuadraticTimeMMD,test_quadratic_mmd_biased)
 	/* assert matlab result */
 	float64_t statistic=mmd->compute_statistic();
 	//SG_SPRINT("statistic=%f\n", statistic);
-	float64_t difference=statistic-0.357650929735592;
-	EXPECT_LE(CMath::abs(difference), 10E-15);
+	EXPECT_NEAR(statistic, 0.357650929735592, 10E-15);
 
 	/* clean up */
 	SG_UNREF(mmd);
@@ -158,14 +157,13 @@ TEST(QuadraticTimeMMD,test_quadratic_mmd_precomputed_kernel)
 	mmd->set_bootstrap_iterations(10);
 
 	/* use fixed seed */
-	CMath::init_random(1);
+	sg_rand->set_seed(12345);
 	SGVector<float64_t> null_samples=mmd->bootstrap_null();
 
 	float64_t mean=CStatistics::mean(null_samples);
 	float64_t var=CStatistics::variance(null_samples);
 
-	//SG_SPRINT("mean %f\n", mean);
-	//SG_SPRINT("var %f\n", var);
+	//SG_SPRINT("mean %f, var %f\n", mean, var);
 
 	/* now again but with a precomputed kernel, same features.
 	 * This avoids re-computing the kernel matrix in every bootstrapping
@@ -179,7 +177,7 @@ TEST(QuadraticTimeMMD,test_quadratic_mmd_precomputed_kernel)
 	mmd=new CQuadraticTimeMMD(precomputed_kernel, p_and_q, m);
 	mmd->set_statistic_type(UNBIASED);
 	mmd->set_bootstrap_iterations(10);
-	CMath::init_random(1);
+	sg_rand->set_seed(12345);
 	null_samples=mmd->bootstrap_null();
 
 	/* assert that results do not change */
@@ -266,7 +264,7 @@ TEST(QuadraticTimeMMD,custom_kernel_vs_normal_kernel)
 		type_II_threshs_spectrum[i]=mmd->compute_threshold(alpha);
 		mmd->set_null_approximation_method(MMD2_GAMMA);
 		type_II_threshs_gamma[i]=mmd->compute_threshold(alpha);
-		
+
 	}
 	SG_UNREF(p_and_q);
 
@@ -315,7 +313,7 @@ TEST(QuadraticTimeMMD,custom_kernel_vs_normal_kernel)
 		type_II_threshs_spectrum_pre[i]=mmd2->compute_threshold(alpha);
 		mmd->set_null_approximation_method(MMD2_GAMMA);
 		type_II_threshs_gamma_pre[i]=mmd2->compute_threshold(alpha);
-		
+
 	}
 
 	//SG_SPRINT("precomputed kernel\n");

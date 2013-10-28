@@ -2,7 +2,7 @@ import org.shogun.*;
 import org.jblas.*;
 import static org.shogun.EAlphabet.DNA;
 
-import static org.shogun.BinaryLabels.obtain_from_generic;
+import static org.shogun.LabelsFactory.to_binary;
 
 public class classifier_domainadaptationsvm_modular {
 	static {
@@ -48,7 +48,7 @@ public class classifier_domainadaptationsvm_modular {
 		DomainAdaptationSVM dasvm = new DomainAdaptationSVM(C, kernel, labels, svm, 1.0);
 		dasvm.train();
 
-		DoubleMatrix out = obtain_from_generic(dasvm.apply(feats_test)).get_labels();
+		DoubleMatrix out = to_binary(dasvm.apply(feats_test)).get_labels();
 		modshogun.exit_shogun();
 	}
 }

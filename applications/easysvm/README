@@ -35,7 +35,7 @@ See distutils-help.txt for more details.
 Dependencies
 ------------
 
-- `numpy`_ (>=1.0.1) 
+- `numpy`_ (>=1.0.1)
 - `pylab`_ (>=0.87.7) [optional]
 - `shogun`_ (>=0.7.3)
 - `arff`_ [optional]
@@ -82,9 +82,9 @@ Clean up::
 
 Cross validation and evaluation on a independent validation set::
 
-    easysvm.py cv 5 10 gauss 0.6 arff testcloud1.arff cv_cloud.txt 
+    easysvm.py cv 5 10 gauss 0.6 arff testcloud1.arff cv_cloud.txt
     easysvm.py eval cv_cloud.txt arff testcloud1.arff cv_cloud_eval.txt roc roc_cloud_cv.png
-    easysvm.py cv 5 10 wd 10 2 arff testmotif1.arff cv_motif.txt 
+    easysvm.py cv 5 10 wd 10 2 arff testmotif1.arff cv_motif.txt
     easysvm.py eval cv_motif.txt arff testmotif1.arff cv_motif_eval.txt roc roc_motif_cv.png
 
 Predict on a test set::
@@ -124,7 +124,7 @@ GPLv3_
 
 .. _GPLv3: http://gplv3.fsf.org/
 
-All programs in this collection are free software: 
+All programs in this collection are free software:
 you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or

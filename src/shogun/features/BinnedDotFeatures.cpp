@@ -330,9 +330,3 @@ int32_t CBinnedDotFeatures::get_num_vectors() const
 	ASSERT(m_features)
 	return m_features->get_num_vectors();
 }
-
-int32_t CBinnedDotFeatures::get_size() const
-{
-	return sizeof(float64_t);
-}
-

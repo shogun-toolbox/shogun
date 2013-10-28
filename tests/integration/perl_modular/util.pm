@@ -10,7 +10,7 @@ use Shogun.Distance;use Shogun.Kernel;
 =cut
 
 use PDL;
-#use PDL::NiceSlice; 
+#use PDL::NiceSlice;
 
 use Data::Dumper;
 
@@ -57,7 +57,7 @@ sub get_args {
 	ordered list
 
 =cut
-    
+
     my $ident=$prefix . 'arg';
     # need to pregenerate list for using indices in loop
     my @args = ();
@@ -136,7 +136,7 @@ sub get_feats_simple {
 	$ftest  = eval('modshogun::' . $ftype . 'Features')->new($data_test);
     }
     if($indata->{$prefix.'name'} =~ /Sparse/ or (
-	   defined($indata->{'classifier_type'}) and 
+	   defined($indata->{'classifier_type'}) and
 	   $indata->{'classifier_type'} eq 'linear')
 	) {
 #  _v = is_pdl_sparse_matrix(ST(0), PDL_D);
@@ -175,7 +175,7 @@ sub get_feats_string_complex
 	, 'test'=> modshogun::StringCharFeatures->new($alphabet)
 	);
 #PTZ121011 ->server might be needed to be sure it is a dense object.
-    #my $data_train = $indata->{$prefix.'data_train'}->slice('0:-1,(0)'); #->nslice([0,-1], 0); 
+    #my $data_train = $indata->{$prefix.'data_train'}->slice('0:-1,(0)'); #->nslice([0,-1], 0);
     #my $data_test  = $indata->{$prefix.'data_test'}->slice('0:-1,(0)'); #->nslice([0,-1], 0);
     my $data_train = $indata->{$prefix.'data_train'};
     my $data_test  = $indata->{$prefix.'data_test'};
@@ -183,7 +183,7 @@ sub get_feats_string_complex
     { ##map { $a($_ - 1) .= $_; } (1..$a->nelem);    # Lots of little ops
 	#map { $data_train->nslice($_) = chr($data_train->nslice($_)) } (0..$data_train->nelem - 1);
 	#map { $data_test->nslice($_) = chr($data_test->nslice($_)) } (0..$data_test->nelem - 1);
-	
+
     }
     $feats{'train'}->set_features($data_train);
     $feats{'test'}->set_features($data_test);
@@ -200,7 +200,7 @@ sub get_feats_string_complex
 			    ${'modshogun::' . $indata->{$prefix.'reverse'}});
     $feats{'test'}=$feat;
 
-    if( $indata->{$prefix.'feature_type'} eq 'Word' or 
+    if( $indata->{$prefix.'feature_type'} eq 'Word' or
 	$indata->{$prefix.'feature_type'} eq 'Ulong'){
 	my $name = 'Sort' .$indata->{$prefix.'feature_type'}.'String';
 	return &add_preprocessor($name, \%feats);

@@ -5,7 +5,7 @@
 
 #include <shogun/lib/ShogunException.h>
 #include <shogun/io/SGIO.h>
-#include "ui/SGInterface.h"
+#include <shogun/ui/SGInterface.h>
 #include <shogun/base/init.h>
 
 #ifdef HAVE_OCTAVE
@@ -169,13 +169,13 @@ char* CPythonInterface::get_string(int32_t& len)
 #ifdef IS_PYTHON3
     if (!s || !PyUnicode_Check(s))
         SG_ERROR("Expected String as argument %d\n", m_rhs_counter);
-        
+
     len = PyUnicode_GetSize((PyObject*) s);
     char* str = PyBytes_AsString(PyUnicode_AsASCIIString(const_cast<PyObject*>(s)));
 #else
     if (!s || !PyString_Check(s))
         SG_ERROR("Expected String as argument %d\n", m_rhs_counter);
-    
+
     len = PyString_Size((PyObject*) s);
 	char* str = PyString_AS_STRING(s);
 	ASSERT(str && len>0);
@@ -192,16 +192,16 @@ char* CPythonInterface::get_string(int32_t& len)
 
 #define GET_VECTOR(function_name, py_type, sg_type, if_type, error_string)	\
 void CPythonInterface::function_name(sg_type*& vector, int32_t& len)		\
-{ 																			\
+{																			\
 	const PyArrayObject* py_vec=(PyArrayObject *) get_arg_increment();		\
 	if (!py_vec || !PyArray_Check(py_vec) || py_vec->nd!=1 ||				\
 			PyArray_TYPE(py_vec)!=py_type)									\
 	{																		\
 		SG_ERROR("Expected " error_string " Vector as argument %d\n",		\
-			m_rhs_counter); 												\
+			m_rhs_counter);												\
 	}																		\
 																			\
-	len=py_vec->dimensions[0]; 												\
+	len=py_vec->dimensions[0];												\
 	npy_intp stride_offs= py_vec->strides[0];								\
 	vector=SG_MALLOC(sg_type, len);												\
 	char* data=(char*) py_vec->data;										\
@@ -226,25 +226,25 @@ GET_VECTOR(get_vector, NPY_USHORT, uint16_t, unsigned short, "Word")
 
 #define GET_MATRIX(function_name, py_type, sg_type, if_type, error_string)	\
 void CPythonInterface::function_name(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec)	\
-{ 																			\
-	const PyArrayObject* py_mat=(PyArrayObject *) get_arg_increment(); 		\
+{																			\
+	const PyArrayObject* py_mat=(PyArrayObject *) get_arg_increment();		\
 	if (!py_mat || !PyArray_Check(py_mat) ||								\
-			PyArray_TYPE(py_mat)!=py_type || py_mat->nd!=2) 				\
+			PyArray_TYPE(py_mat)!=py_type || py_mat->nd!=2)				\
 	{																		\
 		SG_ERROR("Expected " error_string " Matrix as argument %d\n",		\
-			m_rhs_counter); 												\
+			m_rhs_counter);												\
 	}																		\
- 																			\
-	num_feat=py_mat->dimensions[0]; 										\
-	num_vec=py_mat->dimensions[1]; 											\
-	matrix=SG_MALLOC(sg_type, num_vec*num_feat); 									\
-	char* data=py_mat->data; 												\
-	npy_intp* strides= py_mat->strides; 									\
+																			\
+	num_feat=py_mat->dimensions[0];										\
+	num_vec=py_mat->dimensions[1];											\
+	matrix=SG_MALLOC(sg_type, num_vec*num_feat);									\
+	char* data=py_mat->data;												\
+	npy_intp* strides= py_mat->strides;									\
 	npy_intp d2_offs=0;														\
-	for (int32_t i=0; i<num_feat; i++) 										\
+	for (int32_t i=0; i<num_feat; i++)										\
 	{																		\
 		npy_intp offs=d2_offs;												\
-		for (int32_t j=0; j<num_vec; j++) 									\
+		for (int32_t j=0; j<num_vec; j++)									\
 		{																	\
 			matrix[i+j*num_feat]=*((if_type*)(data+offs));					\
 			offs+=strides[1];												\
@@ -264,16 +264,16 @@ GET_MATRIX(get_matrix, NPY_USHORT, uint16_t, unsigned short, "Word")
 
 #define GET_NDARRAY(function_name, py_type, sg_type, if_type, error_string)	\
 void CPythonInterface::function_name(sg_type*& array, int32_t*& dims, int32_t& num_dims)	\
-{ 																			\
-	const PyArrayObject* py_mat=(PyArrayObject *) get_arg_increment(); 		\
-	if (!py_mat || !PyArray_Check(py_mat) || 								\
-			PyArray_TYPE(py_mat)!=py_type) 									\
+{																			\
+	const PyArrayObject* py_mat=(PyArrayObject *) get_arg_increment();		\
+	if (!py_mat || !PyArray_Check(py_mat) ||								\
+			PyArray_TYPE(py_mat)!=py_type)									\
 	{																		\
 		SG_ERROR("Expected " error_string " ND-Array as argument %d\n",		\
-			m_rhs_counter); 												\
+			m_rhs_counter);												\
 	}																		\
 																			\
- 	num_dims=py_mat->nd;													\
+	num_dims=py_mat->nd;													\
 	int64_t total_size=0;														\
 																			\
 	dims=SG_MALLOC(int32_t, num_dims);													\
@@ -283,10 +283,10 @@ void CPythonInterface::function_name(sg_type*& array, int32_t*& dims, int32_t& n
 		total_size+=dims[d];												\
 	}																		\
 																			\
-	array=SG_MALLOC(sg_type, total_size); 											\
+	array=SG_MALLOC(sg_type, total_size);											\
 																			\
-	char* data=py_mat->data; 												\
-	for (int64_t i=0; i<total_size; i++) 										\
+	char* data=py_mat->data;												\
+	for (int64_t i=0; i<total_size; i++)										\
 		array[i]=*(((if_type*)(data))+i);									\
 }
 
@@ -307,42 +307,42 @@ void CPythonInterface::function_name(SGSparseVector<sg_type>*& matrix, int32_t& 
 	return; \
 	\
 	/* \
-	const PyArray_Object* py_mat=(PyArrayObject *) get_arg_increment(); 	\
-	if (!PyArray_Check(py_mat)) 											\
+	const PyArray_Object* py_mat=(PyArrayObject *) get_arg_increment();	\
+	if (!PyArray_Check(py_mat))											\
 		SG_ERROR("Expected Sparse Matrix as argument %d\n", m_rhs_counter); \
- 																			\
-	if (!PyArray_TYPE(py_mat)!=py_type) 									\
+																			\
+	if (!PyArray_TYPE(py_mat)!=py_type)									\
 		SG_ERROR("Expected " error_string " Matrix as argument %d\n",		\
-			m_rhs_counter); 												\
- 																			\
-	num_vec=py_mat->dimensions[0]; 											\
-	num_feat=py_mat->nd; 													\
-	matrix=SG_MALLOC(SGSparseVector<sg_type>, num_vec); 									\
-	if_type* data=(if_type*) py_mat->data; 									\
- 																			\
-	int64_t nzmax=mxGetNzmax(mx_mat); 											\
-	mwIndex* ir=mxGetIr(mx_mat); 											\
-	mwIndex* jc=mxGetJc(mx_mat); 											\
-	int64_t offset=0; 															\
-	for (int32_t i=0; i<num_vec; i++) 											\
-	{ 																		\
-		int32_t len=jc[i+1]-jc[i]; 												\
+			m_rhs_counter);												\
+																			\
+	num_vec=py_mat->dimensions[0];											\
+	num_feat=py_mat->nd;													\
+	matrix=SG_MALLOC(SGSparseVector<sg_type>, num_vec);									\
+	if_type* data=(if_type*) py_mat->data;									\
+																			\
+	int64_t nzmax=mxGetNzmax(mx_mat);											\
+	mwIndex* ir=mxGetIr(mx_mat);											\
+	mwIndex* jc=mxGetJc(mx_mat);											\
+	int64_t offset=0;															\
+	for (int32_t i=0; i<num_vec; i++)											\
+	{																		\
+		int32_t len=jc[i+1]-jc[i];												\
 		matrix[i].num_feat_entries=len;										\
- 																			\
-		if (len>0) 															\
-		{ 																	\
-			matrix[i].features=SG_MALLOC(SGSparseVectorEntry<sg_type>, len); 				\
-			for (int32_t j=0; j<len; j++) 										\
-			{ 																\
-				matrix[i].features[j].entry=data[offset]; 					\
-				matrix[i].features[j].feat_index=ir[offset]; 				\
-				offset++; 													\
-			} 																\
-		} 																	\
-		else 																\
-			matrix[i].features=NULL; 										\
-	} 																		\
-	ASSERT(offset==nzmax); 													\
+																			\
+		if (len>0)															\
+		{																	\
+			matrix[i].features=SG_MALLOC(SGSparseVectorEntry<sg_type>, len);				\
+			for (int32_t j=0; j<len; j++)										\
+			{																\
+				matrix[i].features[j].entry=data[offset];					\
+				matrix[i].features[j].feat_index=ir[offset];				\
+				offset++;													\
+			}																\
+		}																	\
+		else																\
+			matrix[i].features=NULL;										\
+	}																		\
+	ASSERT(offset==nzmax);													\
 	*/ \
 }
 
@@ -360,7 +360,7 @@ GET_SPARSEMATRIX(get_sparse_matrix, "uint16", uint16_t, unsigned short, "Word")*
 
 #define GET_STRINGLIST(function_name, py_type, sg_type, if_type, is_char_str, error_string)	\
 void CPythonInterface::function_name(SGString<sg_type>*& strings, int32_t& num_str, int32_t& max_string_len)	\
-{ 																			\
+{																			\
 	max_string_len=0;														\
 	const PyObject* py_str= get_arg_increment();							\
 	if (!py_str)															\
@@ -409,28 +409,28 @@ void CPythonInterface::function_name(SGString<sg_type>*& strings, int32_t& num_s
 	{																		\
 		const PyArrayObject* py_array_str=(const PyArrayObject*) py_str;	\
 		if_type* data=(if_type*) py_array_str->data;						\
-		num_str=py_array_str->dimensions[0]; 								\
-		int32_t len=py_array_str->dimensions[1]; 								\
-		strings=SG_MALLOC(SGString<sg_type>, num_str); 							\
+		num_str=py_array_str->dimensions[0];								\
+		int32_t len=py_array_str->dimensions[1];								\
+		strings=SG_MALLOC(SGString<sg_type>, num_str);							\
 																			\
-		for (int32_t i=0; i<num_str; i++) 										\
-		{ 																	\
-			if (len>0) 														\
-			{ 																\
+		for (int32_t i=0; i<num_str; i++)										\
+		{																	\
+			if (len>0)														\
+			{																\
 				strings[i].slen=len; /* all must have same length*/			\
 				strings[i].string=SG_MALLOC(sg_type, len+1); /* not zero terminated */	\
-				int32_t j; 														\
-				for (j=0; j<len; j++) 										\
-					strings[i].string[j]=data[j+i*len]; 					\
-				strings[i].string[j]='\0'; 									\
-			} 																\
-			else 															\
-			{ 																\
+				int32_t j;														\
+				for (j=0; j<len; j++)										\
+					strings[i].string[j]=data[j+i*len];					\
+				strings[i].string[j]='\0';									\
+			}																\
+			else															\
+			{																\
 				SG_WARNING( "string with index %d has zero length.\n", i+1);	\
-				strings[i].slen=0; 											\
-				strings[i].string=NULL; 									\
-			} 																\
-		} 																	\
+				strings[i].slen=0;											\
+				strings[i].string=NULL;									\
+			}																\
+		}																	\
 		max_string_len=len;													\
 	}																		\
 	else																	\
@@ -441,7 +441,7 @@ void CPythonInterface::function_name(SGString<sg_type>*& strings, int32_t& num_s
 
 #define GET_STRINGLIST(function_name, py_type, sg_type, if_type, is_char_str, error_string)	\
 void CPythonInterface::function_name(SGString<sg_type>*& strings, int32_t& num_str, int32_t& max_string_len)	\
-{ 																			\
+{																			\
 	max_string_len=0;														\
 	const PyObject* py_str= get_arg_increment();							\
 	if (!py_str)															\
@@ -490,28 +490,28 @@ void CPythonInterface::function_name(SGString<sg_type>*& strings, int32_t& num_s
 	{																		\
 		const PyArrayObject* py_array_str=(const PyArrayObject*) py_str;	\
 		if_type* data=(if_type*) py_array_str->data;						\
-		num_str=py_array_str->dimensions[0]; 								\
-		int32_t len=py_array_str->dimensions[1]; 								\
-		strings=SG_MALLOC(SGString<sg_type>, num_str); 							\
+		num_str=py_array_str->dimensions[0];								\
+		int32_t len=py_array_str->dimensions[1];								\
+		strings=SG_MALLOC(SGString<sg_type>, num_str);							\
 																			\
-		for (int32_t i=0; i<num_str; i++) 										\
-		{ 																	\
-			if (len>0) 														\
-			{ 																\
+		for (int32_t i=0; i<num_str; i++)										\
+		{																	\
+			if (len>0)														\
+			{																\
 				strings[i].slen=len; /* all must have same length*/			\
 				strings[i].string=SG_MALLOC(sg_type, len+1); /* not zero terminated */	\
-				int32_t j; 														\
-				for (j=0; j<len; j++) 										\
-					strings[i].string[j]=data[j+i*len]; 					\
-				strings[i].string[j]='\0'; 									\
-			} 																\
-			else 															\
-			{ 																\
+				int32_t j;														\
+				for (j=0; j<len; j++)										\
+					strings[i].string[j]=data[j+i*len];					\
+				strings[i].string[j]='\0';									\
+			}																\
+			else															\
+			{																\
 				SG_WARNING( "string with index %d has zero length.\n", i+1);	\
-				strings[i].slen=0; 											\
-				strings[i].string=NULL; 									\
-			} 																\
-		} 																	\
+				strings[i].slen=0;											\
+				strings[i].string=NULL;									\
+			}																\
+		}																	\
 		max_string_len=len;													\
 	}																		\
 	else																	\
@@ -596,24 +596,24 @@ SET_VECTOR(set_vector, NPY_USHORT, uint16_t, unsigned short, "Word")
 
 #define SET_MATRIX(function_name, py_type, sg_type, if_type, error_string)	\
 void CPythonInterface::function_name(const sg_type* matrix, int32_t num_feat, int32_t num_vec)	\
-{ 																			\
-	if (!matrix || num_feat<1 || num_vec<1) 								\
+{																			\
+	if (!matrix || num_feat<1 || num_vec<1)								\
 		SG_ERROR("Given matrix is invalid.\n");								\
- 																			\
+																			\
 	npy_intp dims[2]={num_feat, num_vec};									\
 	PyObject* py_mat=PyArray_SimpleNew(2, dims, py_type);					\
-	if (!py_mat || !PyArray_Check(py_mat)) 									\
+	if (!py_mat || !PyArray_Check(py_mat))									\
 		SG_ERROR("Couldn't create " error_string " Matrix of %d rows and %d cols.\n",	\
 			num_feat, num_vec);												\
 	ASSERT(PyArray_ISCARRAY(py_mat));										\
- 																			\
-	if_type* data=(if_type*) ((PyArrayObject *) py_mat)->data; 				\
- 																			\
-	for (int32_t j=0; j<num_feat; j++) 											\
-		for (int32_t i=0; i<num_vec; i++) 										\
-			data[i+j*num_vec]=matrix[i*num_feat+j]; 						\
- 																			\
-	set_arg_increment(py_mat); 												\
+																			\
+	if_type* data=(if_type*) ((PyArrayObject *) py_mat)->data;				\
+																			\
+	for (int32_t j=0; j<num_feat; j++)											\
+		for (int32_t i=0; i<num_vec; i++)										\
+			data[i+j*num_vec]=matrix[i*num_feat+j];						\
+																			\
+	set_arg_increment(py_mat);												\
 }
 
 SET_MATRIX(set_matrix, NPY_BYTE, uint8_t, uint8_t, "Byte")
@@ -655,7 +655,7 @@ void CPythonInterface::function_name(const SGSparseVector<sg_type>* matrix, int3
 		}																	\
 	}																		\
 	jc[num_vec]=offset;														\
- 																			\
+																			\
 	set_arg_increment(mx_mat);												\
 	*/ \
 }
@@ -692,8 +692,8 @@ void CPythonInterface::function_name(const SGString<sg_type>* strings, int32_t n
 		if (len>0)																\
 		{																		\
 			PyObject* str=PyUnicode_FromStringAndSize((const char*) strings[i].string, len); \
-			if (!str) 															\
-				SG_ERROR("Couldn't create " error_string 						\
+			if (!str)															\
+				SG_ERROR("Couldn't create " error_string						\
 						" String %d of length %d.\n", i, len);					\
 																				\
 			PyList_SET_ITEM(py_str, i, str);									\
@@ -724,8 +724,8 @@ void CPythonInterface::function_name(const SGString<sg_type>* strings, int32_t n
 		if (len>0)																\
 		{																		\
 			PyObject* str=PyString_FromStringAndSize((const char*) strings[i].string, len); \
-			if (!str) 															\
-				SG_ERROR("Couldn't create " error_string 						\
+			if (!str)															\
+				SG_ERROR("Couldn't create " error_string						\
 						" String %d of length %d.\n", i, len);					\
 																				\
 			PyList_SET_ITEM(py_str, i, str);									\
@@ -959,7 +959,7 @@ MOD_INIT(sg)
 #endif
 {
     PyObject *module;
-    
+
 	// initialize python interpreter
 	Py_Initialize();
 
@@ -991,6 +991,6 @@ MOD_INIT(sg)
 	// exit_shogun is called upon destruction in exitsg()
 	init_shogun(&python_print_message, &python_print_warning,
 			&python_print_error, &python_cancel_computations);
-            
+
     return MOD_SUCCESS_VAL(module);
 }

@@ -98,7 +98,7 @@ SGVector<float64_t> CMMDKernelSelectionComb::solve_optimization(
 
 	/* init everything, there are two cases possible: i) at least one mmd is
 	 * is positive, ii) all mmds are negative */
-	bool one_pos;
+	bool one_pos=false;
 	for (index_t i=0; i<mmds.vlen; ++i)
 	{
 		if (mmds[i]>0)
@@ -107,12 +107,11 @@ SGVector<float64_t> CMMDKernelSelectionComb::solve_optimization(
 			one_pos=true;
 			break;
 		}
-		one_pos=false;
 	}
 
 	if (!one_pos)
 	{
-		SG_WARNING("%CMMDKernelSelectionComb::solve_optimization(): all mmd "
+		SG_WARNING("CMMDKernelSelectionComb::solve_optimization(): all mmd "
 				"estimates are negative. This is techically possible, although "
 				"extremely rare. Consider using different kernels. "
 				"This combination will lead to a bad two-sample test. Since any"

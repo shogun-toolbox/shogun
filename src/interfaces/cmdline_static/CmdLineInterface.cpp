@@ -3,8 +3,9 @@
 #include <shogun/lib/config.h>
 #include <shogun/lib/ShogunException.h>
 #include <shogun/io/SGIO.h>
-#include <shogun/io/AsciiFile.h>
-#include "ui/SGInterface.h"
+#include <shogun/io/CSVFile.h>
+#include <shogun/io/LibSVMFile.h>
+#include <shogun/ui/SGInterface.h>
 
 #ifdef HAVE_READLINE
 #include <readline/readline.h>
@@ -284,7 +285,7 @@ void CCmdLineInterface::fname(sg_type*& vec, int32_t& len)	\
 	if (!filename)														\
 		SG_ERROR("No filename given to read vector.\n");				\
 																		\
-	CAsciiFile f((char*) filename, 'r');								\
+	CCSVFile f((char*) filename, 'r');								\
 																		\
 	try																	\
 	{																	\
@@ -311,7 +312,7 @@ void CCmdLineInterface::fname(sg_type*& matrix, int32_t& num_feat, int32_t& num_
 	if (!filename)														\
 		SG_ERROR("No filename given to read matrix.\n");				\
 																		\
-	CAsciiFile f((char*) filename, 'r');								\
+	CCSVFile f((char*) filename, 'r');								\
 																		\
 	try																	\
 	{																	\
@@ -365,7 +366,7 @@ void CCmdLineInterface::get_sparse_matrix(SGSparseVector<float64_t>*& matrix, in
 	if (!filename)
 		SG_ERROR("No filename given to read SPARSE REAL matrix.\n");
 
-	CAsciiFile f((char*) filename, 'r');
+	CLibSVMFile f((char*) filename, 'r');
 	f.get_sparse_matrix(matrix, num_feat, num_vec);
 }
 
@@ -383,7 +384,7 @@ void CCmdLineInterface::get_string_list(SGString<char>*& strings, int32_t& num_s
 	if (!filename)
 		SG_ERROR("No filename given to read CHAR string list.\n");
 
-	CAsciiFile f((char*) filename, 'r');
+	CCSVFile f((char*) filename, 'r');
 	f.get_string_list(strings, num_str, max_string_len);
 }
 
@@ -435,7 +436,7 @@ void* CCmdLineInterface::get_return_values()
 void CCmdLineInterface::fname(sg_type scalar)	\
 {												\
 	const char* filename=set_arg_increment();	\
-	CAsciiFile f((char*) filename, 'w');		\
+	CCSVFile f((char*) filename, 'w');		\
 	f.mfname(&scalar, 1, 1);					\
 }
 SET_SCALAR(set_int, set_matrix, int32_t)
@@ -450,7 +451,7 @@ void CCmdLineInterface::fname(const sg_type* vec, int32_t len)	\
 	if (!filename)												\
 		SG_ERROR("No filename given to write vector.\n");		\
 																\
-	CAsciiFile f((char*) filename, 'w');						\
+	CCSVFile f((char*) filename, 'w');						\
 	f.mfname(vec, len, 1);										\
 }
 SET_VECTOR(set_vector, set_matrix, uint8_t)
@@ -469,7 +470,7 @@ void CCmdLineInterface::fname(const sg_type* matrix, int32_t num_feat, int32_t n
 	if (!filename)																		\
 		SG_ERROR("No filename given to write matrix.\n");								\
 																						\
-	CAsciiFile f((char*) filename, 'w');												\
+	CCSVFile f((char*) filename, 'w');												\
 	f.fname(matrix, num_feat, num_vec);										\
 }
 SET_MATRIX(set_matrix, uint8_t)
@@ -486,7 +487,7 @@ void CCmdLineInterface::set_sparse_matrix(const SGSparseVector<float64_t>* matri
 	if (!filename)
 		SG_ERROR("No filename given to write SPARSE REAL matrix.\n");
 
-	CAsciiFile f((char*) filename, 'w');
+	CCSVFile f((char*) filename, 'w');
 	f.set_sparse_matrix(matrix, num_feat, num_vec);
 }
 
@@ -497,7 +498,7 @@ void CCmdLineInterface::fname(const SGString<sg_type>* strings, int32_t num_str)
 	if (!filename)																		\
 		SG_ERROR("No filename given to write CHAR string list.\n");						\
 																						\
-	CAsciiFile f((char*) filename, 'w');												\
+	CCSVFile f((char*) filename, 'w');												\
 	f.fname(strings, num_str);															\
 }
 SET_STRING_LIST(set_string_list, uint8_t)
@@ -582,7 +583,7 @@ bool CCmdLineInterface::parse_line(char* line)
 {
 	if (!line)
 		return false;
-	
+
 	if (skip_line(line))
 		return true;
 	else
@@ -645,7 +646,7 @@ char** shogun_completion (const char *text, int start, int end)
 #endif //HAVE_READLINE
 
 int main(int argc, char* argv[])
-{	
+{
 #ifdef HAVE_READLINE
 	rl_readline_name = "shogun";
 	rl_attempted_completion_function = shogun_completion;
@@ -682,7 +683,7 @@ int main(int argc, char* argv[])
 		}
 
 		// help
-		if ( argc>2 || ((argc==2) && 
+		if ( argc>2 || ((argc==2) &&
 					( !strcmp(argv[1], "-h") || !strcmp(argv[1], "/?") || !strcmp(argv[1], "--help")) )
 		   )
 		{

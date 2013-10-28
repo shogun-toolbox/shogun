@@ -3,14 +3,14 @@ library("sg")
 size_cache <- 10
 C <- 1.2
 epsilon <- 1e-5
-mkl_eps <- 0.01 
+mkl_eps <- 0.01
 mkl_norm <- 1.5
 
 width <- 1.2
 
 fm_train_real <- t(as.matrix(read.table('../data/fm_train_real.dat')))
 fm_test_real <- t(as.matrix(read.table('../data/fm_test_real.dat')))
-label_train_multiclass <- as.real(as.matrix(read.table('../data/label_train_multiclass.dat')))
+label_train_multiclass <- as.double(as.matrix(read.table('../data/label_train_multiclass.dat')))
 
 # MKL_MULTICLASS
 print('MKL_MULTICLASS')

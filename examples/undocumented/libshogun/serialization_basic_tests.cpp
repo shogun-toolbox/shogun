@@ -12,6 +12,7 @@
 #include <shogun/base/Parameter.h>
 #include <shogun/io/SerializableAsciiFile.h>
 #include <shogun/features/DenseFeatures.h>
+#include <unistd.h>
 
 using namespace shogun;
 
@@ -74,10 +75,11 @@ public:
 };
 
 
-const char* filename="test.txt";
-
 void test_test_class_serial()
 {
+	char filename_tmp[] = "serialization_test.XXXXXX";
+	char* filename=mktemp(filename_tmp);
+
 	CTestClass* to_save=new CTestClass(10, 0, 0);
 	CTestClass* to_load=new CTestClass(20, 10, 66);
 
@@ -129,6 +131,7 @@ void test_test_class_serial()
 
 	SG_UNREF(to_save);
 	SG_UNREF(to_load);
+	unlink(filename);
 }
 
 int main(int argc, char **argv)

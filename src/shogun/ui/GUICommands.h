@@ -60,8 +60,8 @@
 #define N_MODEL_PROB_NO_B_TRANS				"model_prob_no_b_trans"
 #define N_BEST_PATH_NO_B_TRANS				"best_path_no_b_trans"
 #define N_SIGNALS_SET_MODEL				"signals_set_model"
-#define N_SIGNALS_SET_POSITIONS 			"signals_set_positions"
-#define N_SIGNALS_SET_LABELS 				"signals_set_labels"
+#define N_SIGNALS_SET_POSITIONS			"signals_set_positions"
+#define N_SIGNALS_SET_LABELS				"signals_set_labels"
 #define N_SIGNALS_SET_SPLIT				"signals_set_split"
 #define N_SIGNALS_SET_TRAIN_MASK			"signals_set_train_mask"
 #define N_SIGNALS_ADD_FEATURE				"signals_add_feature"
@@ -234,5 +234,6 @@
 #define N_RUN_R							"run_r"
 #define N_PR_LOQO						"pr_loqo"
 #define N_SET_CONVERTER						"set_converter"
+#define N_APPLY_CONVERTER					"apply_converter"
 #define N_EMBED							"embed"
 #endif

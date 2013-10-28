@@ -13,7 +13,7 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_LAPACK
+#ifdef HAVE_EIGEN3
 
 #include <shogun/features/DotFeatures.h>
 #include <shogun/features/DenseFeatures.h>
@@ -103,8 +103,8 @@ class CQDA : public CNativeMulticlassMachine
 				feat->get_feature_type() != F_DREAL)
 				SG_ERROR("QDA requires SIMPLE REAL valued features\n")
 
-			SG_UNREF(m_features);
 			SG_REF(feat);
+			SG_UNREF(m_features);
 			m_features = feat;
 		}
 
@@ -189,5 +189,5 @@ class CQDA : public CNativeMulticlassMachine
 }; /* class QDA */
 }  /* namespace shogun */
 
-#endif /* HAVE_LAPACK */
+#endif /* HAVE_EIGEN3 */
 #endif /* _QDA_H__ */

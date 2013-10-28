@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from shogun.Features import RealFeatures
+from modshogun import RealFeatures
 from numpy import array, float64, all
 
 # create dense matrices A,B,C
@@ -9,7 +9,7 @@ parameter_list = [[matrix]]
 
 # ... of type LongInt
 def features_dense_real_modular (A=matrix):
-  
+
 # ... of type Real, LongInt and Byte
     a=RealFeatures(A)
 

@@ -113,6 +113,6 @@ class CSignal : public CSGObject
 		/** if shogun should return ASAP */
 		static bool cancel_immediately;
 };
-#endif // WIN32
 }
+#endif // WIN32
 #endif // __SIGNAL__H_

@@ -338,32 +338,26 @@ template <class T> class DynArray
 		bool resize_array(int32_t n, bool exact_resize=false)
 		{
 			int32_t new_num_elements=n;
-			
+
 			if (!exact_resize)
 			{
 				new_num_elements=((n/resize_granularity)+1)*resize_granularity;
 			}
 
-			T* p;
 
 			if (use_sg_mallocs)
-				p = SG_REALLOC(T, array, num_elements, new_num_elements);
+				array = SG_REALLOC(T, array, num_elements, new_num_elements);
 			else
-				p = (T*) realloc(array, new_num_elements*sizeof(T));
+				array = (T*) realloc(array, new_num_elements*sizeof(T));
 
-			if (p || new_num_elements==0)
-			{
-				array=p;
+			//in case of shrinking we must adjust last element idx
+			if (n-1<current_num_elements-1)
+				current_num_elements=n;
 
-				//in case of shrinking we must adjust last element idx
-				if (n-1<current_num_elements-1)
-					current_num_elements=n;
+			num_elements=new_num_elements;
+			return true;
 
-				num_elements=new_num_elements;
-				return true;
-			}
-			else
-				return false;
+			return array || new_num_elements==0;
 		}
 
 		/** get the array
@@ -448,11 +442,18 @@ template <class T> class DynArray
 			current_num_elements=0;
 		}
 
-		/** randomizes the array */
+		/** randomizes the array (not thread safe!) */
 		void shuffle()
 		{
 			for (index_t i=0; i<=current_num_elements-1; ++i)
 				CMath::swap(array[i], array[CMath::random(i, current_num_elements-1)]);
+		}
+
+		/** randomizes the array with external random state */
+		void shuffle(CRandom * rand)
+		{
+			for (index_t i=0; i<=current_num_elements-1; ++i)
+				CMath::swap(array[i], array[rand->random(i, current_num_elements-1)]);
 		}
 
 		/** set array with a constant */

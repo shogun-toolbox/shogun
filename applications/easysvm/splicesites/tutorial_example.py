@@ -9,10 +9,10 @@
 #                                                                                           #
 #    This program is distributed in the hope that it will be useful,                        #
 #    but WITHOUT ANY WARRANTY; without even the implied warranty of                         #
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                           # 
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                           #
 #    GNU General Public License for more details.                                           #
 #                                                                                           #
-#    You should have received a copy of the GNU General Public License                      # 
+#    You should have received a copy of the GNU General Public License                      #
 #    along with this program; if not, see http://www.gnu.org/licenses                       #
 #    or write to the Free Software Foundation, Inc., 51 Franklin Street,                    #
 #    Fifth Floor, Boston, MA 02110-1301  USA                                                #
@@ -66,7 +66,7 @@ def normalize(examples, subtract_mean=False, divide_std=False, rescale=False, no
         std=numpy.std(examples, axis=1)
         for i in xrange(examples.shape[1]):
             examples[:,i]/=(std+1e-10)
-            
+
     if rescale:
         # scale to have on average 1 on linear kernel diagonal
         scale=numpy.sqrt(numpy.mean(numpy.diag(numpy.mat(examples).T*numpy.mat(examples))))
@@ -136,7 +136,7 @@ def splice_example(Cs, gcfilename,seqfilename,seq2filename, plot=False):
     ('gauss', {'width':100.0, 'name':'width'}, (gc_examples, gc_labels)),
     ('gauss', {'width':1.0, 'name':'width'}, (gc_examples, gc_labels)),
     ('gauss', {'width':0.01, 'name':'width'}, (gc_examples, gc_labels)),
-    
+
     # Spectrum kernel on 2 dna sequences
     ('spec2', {'degree':1, 'name':'degree'}, (dna2_examples, dna2_labels)),
     ('spec2', {'degree':3, 'name':'degree'}, (dna2_examples, dna2_labels)),

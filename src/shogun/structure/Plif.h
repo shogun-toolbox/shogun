@@ -12,9 +12,9 @@
 #define __PLIF_H__
 
 #include <shogun/lib/common.h>
+#include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/structure/PlifBase.h>
-#include <shogun/lib/SGVector.h>
 
 namespace shogun
 {
@@ -308,18 +308,18 @@ class CPlif: public CPlifBase
 		 *
 		 * @return limits
 		 */
-		float64_t* get_plif_limits()
+		SGVector<float64_t> get_plif_limits()
 		{
-			return limits.vector;
+			return limits;
 		}
 
 		/** get plif penalty
- 		 *
- 		 * @return plif penalty
- 		 */
-		float64_t* get_plif_penalties()
+		 *
+		 * @return plif penalty
+		 */
+		SGVector<float64_t> get_plif_penalties()
 		{
-			return penalties.vector;
+			return penalties;
 		}
 
 		/** set maximum value
@@ -370,18 +370,7 @@ class CPlif: public CPlifBase
 		 *
 		 * @return name
 		 */
-		inline char* get_plif_name() const
-		{
-			if (name)
-				return name;
-			else
-			{
-				char buf[20];
-				sprintf(buf, "plif%i", id);
-				//name = strdup(buf);
-				return strdup(buf);
-			}
-		}
+		char* get_plif_name() const;
 
 		/** get do calc
 		 *
@@ -415,7 +404,7 @@ class CPlif: public CPlifBase
 		 */
 		virtual void list_plif() const
 		{
-			SG_PRINT("CPlif(min_value=%1.2f, max_value=%1.2f, use_svm=%i)\n", min_value, max_value, use_svm) 
+			SG_PRINT("CPlif(min_value=%1.2f, max_value=%1.2f, use_svm=%i)\n", min_value, max_value, use_svm)
 		}
 
 		/** delete plif struct

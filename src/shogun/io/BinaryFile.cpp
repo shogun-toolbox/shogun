@@ -156,6 +156,7 @@ void CBinaryFile::fname(SGSparseVector<sg_type>*& matrix, int32_t& num_feat, int
 		if (fread(vec, sizeof(SGSparseVectorEntry<sg_type>), len, file)!= (size_t) len)		\
 			SG_ERROR("Failed to read sparse vector %d\n", i)							\
 		matrix[i].features=vec;															\
+		num_feat = CMath::max(num_feat, matrix[i].get_num_dimensions()); \
 	}																					\
 }
 GET_SPARSEMATRIX(get_sparse_matrix, bool, TSGDataType(CT_MATRIX, ST_NONE, PT_BOOL))
@@ -311,8 +312,8 @@ SET_NDARRAY(set_ndarray,float32_t,(CT_NDARRAY, ST_NONE, PT_FLOAT32));
 SET_NDARRAY(set_ndarray,float64_t,(CT_NDARRAY, ST_NONE, PT_FLOAT64));
 #undef SET_NDARRAY
 
-#define SET_SPARSEMATRIX(fname, sg_type, dtype) 			\
-void CBinaryFile::fname(const SGSparseVector<sg_type>* matrix, 	\
+#define SET_SPARSEMATRIX(fname, sg_type, dtype)			\
+void CBinaryFile::fname(const SGSparseVector<sg_type>* matrix,	\
 		int32_t num_feat, int32_t num_vec)					\
 {															\
 	if (!(file && matrix))									\

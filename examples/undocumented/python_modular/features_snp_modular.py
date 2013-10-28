@@ -2,7 +2,7 @@
 parameter_list=[['../data/snps.dat']]
 
 def features_snp_modular (fname):
-	from shogun.Features import StringByteFeatures, SNPFeatures, SNP
+	from modshogun import StringByteFeatures, SNPFeatures, SNP
 
 	sf=StringByteFeatures(SNP)
 	sf.load_ascii_file(fname, False, SNP, SNP)

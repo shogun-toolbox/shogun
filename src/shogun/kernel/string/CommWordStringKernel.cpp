@@ -70,7 +70,7 @@ bool CCommWordStringKernel::init(CFeatures* l, CFeatures* r)
 	{
 		SG_FREE(dict_diagonal_optimization);
 		dict_diagonal_optimization=SG_MALLOC(int32_t, int32_t(((CStringFeatures<uint16_t>*)l)->get_num_symbols()));
-		ASSERT(((CStringFeatures<uint16_t>*)l)->get_num_symbols() == ((CStringFeatures<uint16_t>*)r)->get_num_symbols()) 
+		ASSERT(((CStringFeatures<uint16_t>*)l)->get_num_symbols() == ((CStringFeatures<uint16_t>*)r)->get_num_symbols())
 	}
 
 	return init_normalizer();

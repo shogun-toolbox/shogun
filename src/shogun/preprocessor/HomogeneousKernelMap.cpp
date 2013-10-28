@@ -29,7 +29,7 @@ CHomogeneousKernelMap::CHomogeneousKernelMap()
 }
 
 CHomogeneousKernelMap::CHomogeneousKernelMap(HomogeneousKernelType kernel,
-	HomogeneousKernelMapWindowType wType, float64_t gamma, 
+	HomogeneousKernelMapWindowType wType, float64_t gamma,
 	uint64_t order, float64_t period)
 	: CDensePreprocessor<float64_t>(),
 	m_kernel(kernel),
@@ -64,7 +64,7 @@ void CHomogeneousKernelMap::cleanup()
 void CHomogeneousKernelMap::init()
 {
 	SG_DEBUG ("Initialising homogeneous kernel map...\n")
-	ASSERT (m_gamma > 0) 
+	ASSERT (m_gamma > 0)
 
 	ASSERT (m_kernel == HomogeneousKernelIntersection ||
 			m_kernel == HomogeneousKernelChi2 ||
@@ -167,7 +167,7 @@ SGMatrix<float64_t> CHomogeneousKernelMap::apply_to_feature_matrix (CFeatures* f
 	int32_t num_features = simple_features->get_num_features ();
 
 	SGMatrix<float64_t> feature_matrix(num_features*(2*m_order+1),num_vectors);
-	for (int i = 0; i < num_vectors; ++i) 
+	for (int i = 0; i < num_vectors; ++i)
 	{
 		SGVector<float64_t> transformed = apply_to_vector(simple_features->get_feature_vector(i));
 		for (int j=0; j<transformed.vlen; j++)
@@ -354,10 +354,10 @@ void CHomogeneousKernelMap::register_params()
 	SG_ADD((machine_int_t*) &m_window, "window", "Window type to use.",MS_AVAILABLE);
 	SG_ADD(&m_gamma, "gamma", "Homogeneity order.",MS_AVAILABLE);
 	SG_ADD(&m_period, "period", "Approximation order",MS_NOT_AVAILABLE);
-	SG_ADD(&m_numSubdivisions, "numSubdivisions", "The number of sublevels",MS_NOT_AVAILABLE);
+	SG_ADD(&m_numSubdivisions, "num_subdivisions", "The number of sublevels",MS_NOT_AVAILABLE);
 	SG_ADD(&m_subdivision, "subdivision", "subdivision.",MS_NOT_AVAILABLE);
 	SG_ADD(&m_order, "order", "The order",MS_AVAILABLE);
-	SG_ADD(&m_minExponent, "minExponent", "Minimum exponent",MS_NOT_AVAILABLE);
-	SG_ADD(&m_maxExponent, "maxExponent", "Maximum exponent",MS_NOT_AVAILABLE);
+	SG_ADD(&m_minExponent, "min_exponent", "Minimum exponent",MS_NOT_AVAILABLE);
+	SG_ADD(&m_maxExponent, "max_exponent", "Maximum exponent",MS_NOT_AVAILABLE);
 	SG_ADD(&m_table, "table", "Lookup-table",MS_NOT_AVAILABLE);
 }

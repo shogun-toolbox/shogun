@@ -4,6 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
+ * Written (W) 2013 Thoralf Klein
  * Written (W) 2012 Fernando José Iglesias García
  * Written (W) 2010,2012 Soeren Sonnenburg
  * Copyright (C) 2010 Berlin Institute of Technology
@@ -16,7 +17,6 @@
 #include <shogun/lib/config.h>
 #include <shogun/lib/DataType.h>
 #include <shogun/lib/SGReferencedData.h>
-#include <map>
 
 namespace shogun
 {
@@ -72,6 +72,14 @@ public:
 	 */
 	T dense_dot(T alpha, T* vec, int32_t dim, T b);
 
+	/** compute the dot product between dense weights and a sparse feature vector
+	 * sparse^T * w
+	 *
+	 * @param vec dense vector to compute dot product with
+	 * @return dot product between dense weights and a sparse feature vector
+	 */
+	template<typename ST> T dense_dot(SGVector<ST> vec);
+
 	/** compute the dot product between current sparse vector and a given
 	 * sparse vector.
 	 * sparse_a^T * sparse_b
@@ -90,7 +98,7 @@ public:
 	 */
 	static T sparse_dot(const SGSparseVector<T>& a, const SGSparseVector<T>& b);
 
-	/** 
+	/**
 	 * get the sparse vector (no copying is done here)
 	 *
 	 * @return the refcount increased vector
@@ -99,6 +107,49 @@ public:
 	{
 		return *this;
 	}
+
+	/**
+	 * get number of dimensions
+	 *
+	 * @return largest feature index
+	 */
+	int32_t get_num_dimensions();
+
+	/**
+	 * sort features by indices  (Setting stable_pointer=true to
+	 * guarantee that pointer features does not change. On the
+	 * other hand, stable_pointer=false can shrink the vector if
+	 * possible.)
+	 *
+	 * @param stable_pointer (default false) enforce stable pointer
+	 */
+	void sort_features(bool stable_pointer = false);
+
+	/**
+	 * get feature value for index
+	 *
+	 * @param index
+	 * @return value
+	 */
+	T get_feature(int32_t index);
+
+	/**
+	 * get dense representation of given size
+	 *
+	 * @param dimension of requested dense vector
+	 * @return SGVector<T>
+	 */
+	SGVector<T> get_dense(int32_t dimension);
+
+	/**
+	 * get shortet dense representation for sparse vector
+	 *
+	 * @return SGVector<T>
+	 */
+	SGVector<T> get_dense();
+
+	/** clone vector */
+	SGSparseVector<T> clone() const;
 
 	/** load vector from file
 	 *
@@ -111,6 +162,15 @@ public:
 	 * @param saver File object via which to save data
 	 */
 	void save(CFile* saver);
+
+
+	/** display vector
+	 *
+	 * @param name   vector name in output
+	 * @param prefix prepend on every entry
+	 */
+	void display_vector(const char* name="vector",
+			const char* prefix="");
 
 protected:
 	virtual void copy_data(const SGReferencedData& orig);

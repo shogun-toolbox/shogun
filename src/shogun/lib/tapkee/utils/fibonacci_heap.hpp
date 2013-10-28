@@ -3,11 +3,11 @@
  * Copyright (c) 2011-2013 Evgeniy Andreev
  */
 
-#ifndef FIBONACCI_H_
-#define FIBONACCI_H_
+#ifndef TAPKEE_FIBONACCI_H_
+#define TAPKEE_FIBONACCI_H_
 
 /* Tapkee includes */
-#include <shogun/lib/tapkee/tapkee_defines.hpp>
+#include <shogun/lib/tapkee/defines.hpp>
 /* End of Tapkee includes */
 
 #include <cmath>
@@ -17,24 +17,24 @@ namespace tapkee
 namespace tapkee_internal
 {
 
-struct FibonacciHeapNode
+struct fibonacci_heap_node
 {
-	FibonacciHeapNode() : parent(NULL), child(NULL), left(NULL), right(NULL),
+	fibonacci_heap_node() : parent(NULL), child(NULL), left(NULL), right(NULL),
 		rank(0), marked(false), index(-1), key(0.0)
 	{
 	}
 
 	/** pointer to parent node */
-	FibonacciHeapNode* parent;
+	fibonacci_heap_node* parent;
 
 	/** pointer to child node */
-	FibonacciHeapNode* child;
+	fibonacci_heap_node* child;
 
 	/** pointer to left sibling */
-	FibonacciHeapNode* left;
+	fibonacci_heap_node* left;
 
 	/** pointer to right sibling */
-	FibonacciHeapNode* right;
+	fibonacci_heap_node* right;
 
 	/** rank of node */
 	int rank;
@@ -49,31 +49,31 @@ struct FibonacciHeapNode
 	ScalarType key;
 
 private:
-	FibonacciHeapNode(const FibonacciHeapNode& fh);
-	FibonacciHeapNode& operator=(const FibonacciHeapNode& fh);
+	fibonacci_heap_node(const fibonacci_heap_node& fh);
+	fibonacci_heap_node& operator=(const fibonacci_heap_node& fh);
 };
 
-/** @brief the class FibonacciHeap, a fibonacci
+/** @brief the class fibonacci_heap, a fibonacci
  * heap. Generally used by Isomap for Dijkstra heap
  * algorithm
  *
  * w: http://en.wikipedia.org/wiki/Fibonacci_heap
  */
-class FibonacciHeap
+class fibonacci_heap
 {
 public:
 
 	/** Constructor for heap with specified capacity */
-	FibonacciHeap(int capacity) : 
+	fibonacci_heap(int capacity) :
 		min_root(NULL), nodes(NULL), num_nodes(0),
 		num_trees(0), max_num_nodes(capacity), A(NULL), Dn(0)
 	{
-		nodes = (FibonacciHeapNode**)malloc(sizeof(FibonacciHeapNode*)*max_num_nodes);
+		nodes = (fibonacci_heap_node**)malloc(sizeof(fibonacci_heap_node*)*max_num_nodes);
 		for (int i = 0; i < max_num_nodes; i++)
-			nodes[i] = new FibonacciHeapNode;
+			nodes[i] = new fibonacci_heap_node;
 
 		Dn = 1 + (int)(log(ScalarType(max_num_nodes))/log(2.));
-		A = (FibonacciHeapNode**)malloc(sizeof(FibonacciHeapNode*)*Dn);
+		A = (fibonacci_heap_node**)malloc(sizeof(fibonacci_heap_node*)*Dn);
 		for (int i = 0; i < Dn; i++)
 			A[i] = NULL;
 
@@ -81,7 +81,7 @@ public:
 		num_trees = 0;
 	}
 
-	~FibonacciHeap()
+	~fibonacci_heap()
 	{
 		for(int i = 0; i < max_num_nodes; i++)
 		{
@@ -116,6 +116,11 @@ public:
 		num_nodes++;
 	}
 
+	bool empty() const
+	{
+		return num_nodes==0;
+	}
+
 	int get_num_nodes() const
 	{
 		return num_nodes;
@@ -137,8 +142,8 @@ public:
 	 */
 	int extract_min(ScalarType& ret_key)
 	{
-		FibonacciHeapNode *min_node;
-		FibonacciHeapNode *child, *next_child;
+		fibonacci_heap_node *min_node;
+		fibonacci_heap_node *child, *next_child;
 
 		int result;
 
@@ -225,7 +230,7 @@ public:
 	 */
 	void decrease_key(int index, ScalarType& key)
 	{
-		FibonacciHeapNode* parent;
+		fibonacci_heap_node* parent;
 
 		if(index >= max_num_nodes || index < 0)
 			return;
@@ -251,13 +256,13 @@ public:
 
 private:
 
-	FibonacciHeap();
-	FibonacciHeap(const FibonacciHeap& fh);
-	FibonacciHeap& operator=(const FibonacciHeap& fh);
+	fibonacci_heap();
+	fibonacci_heap(const fibonacci_heap& fh);
+	fibonacci_heap& operator=(const fibonacci_heap& fh);
 
 private:
 	/** Adds node to roots list */
-	void add_to_roots(FibonacciHeapNode *up_node)
+	void add_to_roots(fibonacci_heap_node *up_node)
 	{
 		if(min_root == NULL)
 		{
@@ -290,7 +295,7 @@ private:
 	/** Consolidates heap */
 	void consolidate()
 	{
-		FibonacciHeapNode *x, *y, *w;
+		fibonacci_heap_node *x, *y, *w;
 		int d;
 
 		for(int i = 0; i < Dn; i++)
@@ -314,7 +319,7 @@ private:
 
 				if(y->key < x->key)
 				{
-					FibonacciHeapNode *temp;
+					fibonacci_heap_node *temp;
 
 					temp = y;
 					y = x;
@@ -344,7 +349,7 @@ private:
 	}
 
 	/** Links right node to childs of left node */
-	void link_nodes(FibonacciHeapNode *y, FibonacciHeapNode *x)
+	void link_nodes(fibonacci_heap_node *y, fibonacci_heap_node *x)
 	{
 		if(y->right != NULL)
 			y->right->left = y->left;
@@ -392,7 +397,7 @@ private:
 	}
 
 	/** Cuts child node from childs list of parent */
-	void cut(FibonacciHeapNode *child, FibonacciHeapNode *parent)
+	void cut(fibonacci_heap_node *child, fibonacci_heap_node *parent)
 	{
 		if(parent->child == child)
 			parent->child = child->right;
@@ -409,9 +414,9 @@ private:
 		add_to_roots(child);
 	}
 
-	void cascading_cut(FibonacciHeapNode* tree)
+	void cascading_cut(fibonacci_heap_node* tree)
 	{
-		FibonacciHeapNode *temp;
+		fibonacci_heap_node *temp;
 
 		temp = tree->parent;
 		if(temp != NULL)
@@ -430,10 +435,10 @@ private:
 
 protected:
 	/** minimal root in heap */
-	FibonacciHeapNode* min_root;
+	fibonacci_heap_node* min_root;
 
 	/** array of nodes for fast search by index */
-	FibonacciHeapNode** nodes;
+	fibonacci_heap_node** nodes;
 
 	/** number of nodes */
 	int num_nodes;
@@ -445,7 +450,7 @@ protected:
 	int max_num_nodes;
 
 	/** supporting array */
-	FibonacciHeapNode **A;
+	fibonacci_heap_node **A;
 
 	/** size of supporting array */
 	int Dn;

@@ -11,6 +11,7 @@
 #ifndef __SIMPLEFILE_H__
 #define __SIMPLEFILE_H__
 
+#include <shogun/lib/memory.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/base/SGObject.h>
 
@@ -33,8 +34,10 @@ template <class T> class CSimpleFile : public CSGObject
 			SG_UNSTABLE("CSimpleFile::CSimpleFile()", "\n")
 
 			file=NULL;
-			filename=strdup("");
+			filename=get_strdup("");
 			status = false;
+
+			set_generic<T>();
 		}
 
 		/** constructor
@@ -47,7 +50,7 @@ template <class T> class CSimpleFile : public CSGObject
 		: CSGObject(), line_buffer_size(1024*1024), line_buffer(NULL)
 		{
 			file=f;
-			filename=strdup(fname);
+			filename=get_strdup(fname);
 			status = (file!=NULL && filename!=NULL);
 		}
 

@@ -1,25 +1,22 @@
 #!/usr/bin/env python
-from tools.load import LoadMatrix
-import numpy
-
-lm=LoadMatrix()
-data = lm.load_numbers('../data/fm_train_real.dat')
-
+data = '../data/fm_train_real.dat'
 parameter_list = [[data]]
 
-def converter_factoranalysis_modular(data):
+def converter_factoranalysis_modular(data_fname):
 	try:
-		from shogun.Features import RealFeatures
-		from shogun.Converter import FactorAnalysis
-		from shogun.Distance import EuclideanDistance
-		
-		features = RealFeatures(data)
-			
+		import numpy
+		from modshogun import RealFeatures, FactorAnalysis, EuclideanDistance, CSVFile
+
+		features = RealFeatures(CSVFile(data_fname))
+
 		converter = FactorAnalysis()
 		converter.set_target_dim(2)
 		embedding = converter.apply(features)
 
-		return embedding
+		X = embedding.get_feature_matrix()
+		covdet = numpy.linalg.det(numpy.dot(X,X.T))
+
+		return covdet > 0
 	except ImportError:
 		print('No Eigen3 available')
 

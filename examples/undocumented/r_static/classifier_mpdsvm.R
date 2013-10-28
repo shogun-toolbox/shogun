@@ -8,7 +8,7 @@ width <- 2.1
 
 fm_train_real <- t(as.matrix(read.table('../data/fm_train_real.dat')))
 fm_test_real <- t(as.matrix(read.table('../data/fm_test_real.dat')))
-label_train_twoclass <- as.real(as.matrix(read.table('../data/label_train_twoclass.dat')))
+label_train_twoclass <- as.double(as.matrix(read.table('../data/label_train_twoclass.dat')))
 
 
 # MPDSVM

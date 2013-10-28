@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2012 Fernando José Iglesias García
- * Copyright (C) 2012 Fernando José Iglesias García
+ * Written (W) 2012 Fernando Jose Iglesias Garcia
+ * Copyright (C) 2012 Fernando Jose Iglesias Garcia
  */
 
 #include <shogun/features/MatrixFeatures.h>
@@ -70,12 +70,6 @@ template< class ST > EFeatureClass CMatrixFeatures< ST >::get_feature_class() co
 	return C_MATRIX;
 }
 
-/* TODO */
-template< class ST > int32_t CMatrixFeatures< ST >::get_size() const
-{
-	return 0;
-}
-
 template< class ST > SGMatrix< ST > CMatrixFeatures< ST >::get_feature_vector(
 		int32_t num) const
 {
@@ -89,8 +83,8 @@ template< class ST > SGMatrix< ST > CMatrixFeatures< ST >::get_feature_vector(
 }
 
 template< class ST > void CMatrixFeatures< ST >::get_feature_vector_col(
-		SGVector< ST > out, 
-		int32_t num, 
+		SGVector< ST > out,
+		int32_t num,
 		int32_t col) const
 {
 	if ( num < 0 || num >= get_num_vectors() )
@@ -123,7 +117,7 @@ template< class ST > void CMatrixFeatures< ST >::get_feature_vector_col(
 }
 
 template< class ST > void CMatrixFeatures< ST >::set_feature_vector(
-		SGMatrix< ST > const & vec,
+		SGMatrix< ST > const vec,
 		int32_t num)
 {
 	if ( num < 0 || num >= get_num_vectors() )
@@ -139,7 +133,7 @@ template< class ST > void CMatrixFeatures< ST >::set_feature_vector(
 			 "(get_num_features())\n", get_num_features());
 	}
 
-	m_features[num] = vec;
+	m_features.set_matrix(num, vec);
 }
 
 template< class ST > void CMatrixFeatures< ST >::set_features(
@@ -161,6 +155,8 @@ template< class ST > void CMatrixFeatures< ST >::init()
 
 	m_num_vectors  = 0;
 	m_num_features = 0;
+
+	set_generic<ST>();
 }
 
 template< class ST > void CMatrixFeatures< ST >::cleanup()

@@ -1,6 +1,6 @@
 #include <shogun/features/MatrixFeatures.h>
 #include <shogun/loss/HingeLoss.h>
-#include <shogun/structure/HMSVMLabels.h>
+#include <shogun/structure/SequenceLabels.h>
 #include <shogun/structure/HMSVMModel.h>
 #include <shogun/structure/PrimalMosekSOSVM.h>
 
@@ -13,7 +13,7 @@ int main(int argc, char ** argv)
 #ifdef USE_MOSEK
 
 	// Create structured labels
-	CHMSVMLabels* labels = new CHMSVMLabels(5, 2);
+	CSequenceLabels* labels = new CSequenceLabels(5, 2);
 
 	// Label sequences of with two states
 	int32_t lab1[] = {0, 0, 1, 1};
@@ -24,11 +24,11 @@ int main(int argc, char ** argv)
 
 	// No need for ref_counting in SGVector since the data is allocated
 	// during compilation time
-	labels->add_label(SGVector< int32_t >(lab1, 4, false));
-	labels->add_label(SGVector< int32_t >(lab2, 4, false));
-	labels->add_label(SGVector< int32_t >(lab3, 4, false));
-	labels->add_label(SGVector< int32_t >(lab4, 4, false));
-	labels->add_label(SGVector< int32_t >(lab5, 4, false));
+	labels->add_vector_label(SGVector< int32_t >(lab1, 4, false));
+	labels->add_vector_label(SGVector< int32_t >(lab2, 4, false));
+	labels->add_vector_label(SGVector< int32_t >(lab3, 4, false));
+	labels->add_vector_label(SGVector< int32_t >(lab4, 4, false));
+	labels->add_vector_label(SGVector< int32_t >(lab5, 4, false));
 
 	// Create features
 	CMatrixFeatures< float64_t >* features = new CMatrixFeatures< float64_t >(5, 3);
@@ -48,8 +48,7 @@ int main(int argc, char ** argv)
 
 	CHMSVMModel* model = new CHMSVMModel(features, labels, SMT_TWO_STATE, 3);
 	SG_REF(model);
-	CHingeLoss* loss = new CHingeLoss();
-	CPrimalMosekSOSVM* sosvm = new CPrimalMosekSOSVM(model, loss, labels);
+	CPrimalMosekSOSVM* sosvm = new CPrimalMosekSOSVM(model, labels);
 	SG_REF(sosvm);
 
 	sosvm->train();

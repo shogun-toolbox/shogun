@@ -11,16 +11,16 @@ gap <- as.integer(0)
 reverse <- FALSE
 
 charfeat <- StringCharFeatures("DNA")
-dump <- charfeat$set_features(charfeat, fm_train_dna)
+dump <- charfeat$set_features(fm_train_dna)
 feats=StringWordFeatures(charfeat$get_alphabet())
-dump <- feats$obtain_from_char(feats, charfeat, start, order, gap, reverse)
+dump <- feats$obtain_from_char(charfeat, start, order, gap, reverse)
 preproc=SortWordString()
-dump <- preproc$init(preproc, feats)
-dump <- feats$add_preproc(feats, preproc)
-dump <- feats$apply_preproc(feats)
+dump <- preproc$init(feats)
+dump <- feats$add_preproc(preproc)
+dump <- feats$apply_preproc()
 
 histo=Histogram(feats)
-dump <- histo$train(histo)
+dump <- histo$train()
 
 dump <- histo$get_histogram()
 
@@ -36,5 +36,5 @@ num_param <- histo$get_num_model_parameters()
 #		derivs[j,i]=histo$get_log_derivative(histo, j, i)
 #	}
 #}
-dump <- histo$get_log_likelihood(histo)
+dump <- histo$get_log_likelihood()
 dump <- histo$get_log_likelihood_sample()

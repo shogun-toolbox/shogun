@@ -17,7 +17,6 @@
 #include <shogun/kernel/string/StringKernel.h>
 #include <shogun/features/StringFeatures.h>
 
-
 #include <shogun/lib/DynamicArray.h>
 #include <string>
 #include <vector>
@@ -41,183 +40,197 @@ struct joint_list_struct
 /** @brief spectrum mismatch rbf kernel */
 class CSpectrumMismatchRBFKernel: public CStringKernel<char>
 {
-	public:
-		/** default constructor  */
-		CSpectrumMismatchRBFKernel();
+public:
+	/** default constructor  */
+	CSpectrumMismatchRBFKernel();
 
-		/** constructor
-		 *
-		 * @param size
-		 * @param AA_matrix_
-		 * @param nr_
-		 * @param nc_
-		 * @param degree
-		 * @param max_mismatch
-		 * @param width
-		 */
-		CSpectrumMismatchRBFKernel(int32_t size, float64_t* AA_matrix_, int32_t nr_, int32_t nc_, int32_t degree, int32_t max_mismatch, float64_t width);
+	/** constructor
+	 *
+	 * @param size
+	 * @param AA_matrix_
+	 * @param nr_
+	 * @param nc_
+	 * @param degree
+	 * @param max_mismatch
+	 * @param width
+	 */
+	CSpectrumMismatchRBFKernel(int32_t size, float64_t* AA_matrix_, int32_t nr_,
+			int32_t nc_, int32_t degree, int32_t max_mismatch, float64_t width);
 
-		/** constructor
-		 *
-		 * @param l features of left-hand side
-		 * @param r features of right-hand side
-		 * @param size
-		 * @param AA_matrix_
-		 * @param nr_
-		 * @param nc_
-		 * @param degree
-		 * @param max_mismatch
-		 * @param width
-		 */
-		CSpectrumMismatchRBFKernel(
-                                   CStringFeatures<char>* l, CStringFeatures<char>* r,
-		                   int32_t size, float64_t* AA_matrix_, int32_t nr_,
-		                   int32_t nc_, int32_t degree, int32_t max_mismatch, float64_t width);
+	/** constructor
+	 *
+	 * @param l features of left-hand side
+	 * @param r features of right-hand side
+	 * @param size
+	 * @param AA_matrix_
+	 * @param nr_
+	 * @param nc_
+	 * @param degree
+	 * @param max_mismatch
+	 * @param width
+	 */
+	CSpectrumMismatchRBFKernel(CStringFeatures<char>* l,
+			CStringFeatures<char>* r, int32_t size, float64_t* AA_matrix_,
+			int32_t nr_, int32_t nc_, int32_t degree, int32_t max_mismatch,
+			float64_t width);
 
-		/** destructor */
-		virtual ~CSpectrumMismatchRBFKernel();
+	/** destructor */
+	virtual ~CSpectrumMismatchRBFKernel();
 
-		/** initialize kernel
-		 *
-		 * @param l features of left-hand side
-		 * @param r features of right-hand side
-		 * @return if initializing was successful
-		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+	/** initialize kernel
+	 *
+	 * @param l features of left-hand side
+	 * @param r features of right-hand side
+	 * @return if initializing was successful
+	 */
+	virtual bool init(CFeatures* l, CFeatures* r);
 
-		/** clean up kernel */
-		virtual void cleanup();
+	/** clean up kernel */
+	virtual void cleanup();
 
-		/** return what type of kernel we are
-		 *
-		 * @return kernel type
-		 */
-		virtual EKernelType get_kernel_type() { return K_SPECTRUMMISMATCHRBF; }
+	/** return what type of kernel we are
+	 *
+	 * @return kernel type
+	 */
+	virtual EKernelType get_kernel_type()
+	{
+		return K_SPECTRUMMISMATCHRBF;
+	}
 
-		/** return the kernel's name
-		 *
-		 * @return name
-		 */
-		virtual const char* get_name() const { return "SpectrumMismatchRBFKernel"; }
+	/** return the kernel's name
+	 *
+	 * @return name
+	 */
+	virtual const char* get_name() const
+	{
+		return "SpectrumMismatchRBFKernel";
+	}
 
-		/** set maximum mismatch
-		 *
-		 * @param max new maximum mismatch
-		 * @return if setting was successful
-		 */
-		bool set_max_mismatch(int32_t max);
+	/** set maximum mismatch
+	 *
+	 * @param max new maximum mismatch
+	 * @return if setting was successful
+	 */
+	bool set_max_mismatch(int32_t max);
 
-		/** get maximum mismatch
-		 *
-		 * @return maximum mismatch
-		 */
-		inline int32_t get_max_mismatch() const { return max_mismatch; }
+	/** get maximum mismatch
+	 *
+	 * @return maximum mismatch
+	 */
+	inline int32_t get_max_mismatch() const
+	{
+		return max_mismatch;
+	}
 
-		/** set degree
-		 *
-		 * @param deg new degree
-		 * @return if setting was successful
-		 */
-		inline bool set_degree(int32_t deg) { degree=deg; return true; }
+	/** set degree
+	 *
+	 * @param deg new degree
+	 * @return if setting was successful
+	 */
+	inline bool set_degree(int32_t deg)
+	{
+		degree=deg;
+		return true;
+	}
 
-		/** get degree
-		 *
-		 * @return degree
-		 */
-		inline int32_t get_degree() const { return degree; }
+	/** get degree
+	 *
+	 * @return degree
+	 */
+	inline int32_t get_degree() const
+	{
+		return degree;
+	}
 
-		/** set AA matrix
-		 * @param AA_matrix_
-		 * @param nr
-		 * @param nc
-		 * @return true if set
-		 */
-		bool set_AA_matrix(float64_t* AA_matrix_=NULL, int32_t nr=128, int32_t nc=128);
+	/** set AA matrix
+	 * @param AA_matrix_
+	 * @param nr
+	 * @param nc
+	 * @return true if set
+	 */
+	bool set_AA_matrix(float64_t* AA_matrix_=NULL, int32_t nr=128, int32_t nc=
+			128);
 
-	protected:
+protected:
 
-		/** AA helper
-		 * @param path
-		 * @param joint_seq
-		 * @param index
-		 * @return AA helper
-		 */
-		float64_t AA_helper(std::string &path, const char* joint_seq, unsigned int index);
+	/** AA helper
+	 * @param path
+	 * @param joint_seq
+	 * @param index
+	 * @return AA helper
+	 */
+	float64_t AA_helper(std::string &path, const char* joint_seq,
+			unsigned int index);
 
-		/** compute helper
-		 * @param joint_seq
-		 * @param joint_index
-		 * @param joint_mismatch
-		 * @param path
-		 * @param d
-		 * @param alen
-		 * @return helper
-		 */
-		float64_t compute_helper(const char* joint_seq,
-								 std::vector<unsigned int> joint_index, std::vector<unsigned int> joint_mismatch,
-								 std::string path, unsigned int d,
-								 const int & alen) ;
+	/** compute helper
+	 * @param joint_seq
+	 * @param joint_index
+	 * @param joint_mismatch
+	 * @param path
+	 * @param d
+	 * @param alen
+	 * @return helper
+	 */
+	float64_t compute_helper(const char* joint_seq,
+			std::vector<unsigned int> joint_index,
+			std::vector<unsigned int> joint_mismatch, std::string path,
+			unsigned int d, const int & alen);
 
-		/** compute helper all
-		 * @param joint_seq
-		 * @param joint_list
-		 * @param path
-		 * @param d
-		 * @return helper
-		 */
-		void compute_helper_all(const char* joint_seq,
-								std::vector<struct joint_list_struct> & joint_list,
-								std::string path, unsigned int d);
+	/** compute helper all
+	 * @param joint_seq
+	 * @param joint_list
+	 * @param path
+	 * @param d
+	 * @return helper
+	 */
+	void compute_helper_all(const char* joint_seq,
+			std::vector<struct joint_list_struct> & joint_list,
+			std::string path, unsigned int d);
 
-		/** computer all */
-		void compute_all();
+	/** computer all */
+	void compute_all();
 
-		/** compute kernel function for features a and b
-		 * idx_{a,b} denote the index of the feature vectors
-		 * in the corresponding feature object
-		 *
-		 * @param idx_a index a
-		 * @param idx_b index b
-		 * @return computed kernel function at indices a,b
-		 */
-		float64_t compute(int32_t idx_a, int32_t idx_b);
+	/** compute kernel function for features a and b
+	 * idx_{a,b} denote the index of the feature vectors
+	 * in the corresponding feature object
+	 *
+	 * @param idx_a index a
+	 * @param idx_b index b
+	 * @return computed kernel function at indices a,b
+	 */
+	float64_t compute(int32_t idx_a, int32_t idx_b);
 
-		/** remove lhs from kernel */
-		virtual void remove_lhs();
-		/** register the parameters
-		 */
-		virtual void register_params();
-		/** register the alphabet
-		 */
-		void register_alphabet();
+	/** register the parameters
+	 */
+	virtual void register_params();
+	/** register the alphabet
+	 */
+	void register_alphabet();
 
+protected:
+	/** alphabet of features */
+	CAlphabet* alphabet;
+	/** degree */
+	int32_t degree;
+	/** maximum mismatch */
+	int32_t max_mismatch;
+	/**  128x128 scalar product matrix */
+	SGMatrix<float64_t> AA_matrix;
+	/** width of Gaussian*/
+	float64_t width;
 
-	protected:
-		/** alphabet of features */
-		CAlphabet* alphabet;
-		/** degree */
-		int32_t degree;
-		/** maximum mismatch */
-		int32_t max_mismatch;
-		/**  128x128 scalar product matrix */
-		float64_t* AA_matrix;
-		/** length of the AA_matrix -- for registration */
-		int32_t AA_matrix_length;
-		/** width of Gaussian*/
-		float64_t width;
+	/** if kernel is initialized */
+	bool initialized;
 
-		/** if kernel is initialized */
-		bool initialized;
+	/** kernel matrix */
+	CDynamicArray<float64_t>* kernel_matrix; // 2d
+	/** kernel matrix length */
+	int32_t kernel_matrix_length;
+	/** target letter 0 */
+	int32_t target_letter_0;
 
-		/** kernel matrix */
-		CDynamicArray<float64_t> kernel_matrix ; // 2d
-		/** kernel matrix length */
-		int32_t kernel_matrix_length;
-		/** target letter 0 */
-		int32_t target_letter_0;
-
-	private:
-		void init();
+private:
+	void init();
 };
 
 }

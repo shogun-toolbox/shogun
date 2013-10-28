@@ -23,7 +23,7 @@ namespace shogun
 {
 
 /** @brief A CNode is an element of a CTaxonomy, which is used to describe hierarchical
- * 	structure between tasks.
+ *	structure between tasks.
  *
  */
 class CNode: public CSGObject
@@ -36,6 +36,12 @@ public:
         parent = NULL;
         beta = 1.0;
         node_id = 0;
+    }
+
+    virtual ~CNode()
+    {
+	for (size_t i = 0; i < children.size(); i++)
+		delete children[i];
     }
 
     /** get a list of all ancestors of this node
@@ -73,7 +79,7 @@ public:
             }
 
             if(current_node->is_leaf()){
-            	task_ids.push_back(current_node->getNode_id());
+	task_ids.push_back(current_node->getNode_id());
             }
         }
 
@@ -92,7 +98,7 @@ public:
     /** @return object name */
     virtual const char *get_name() const
     {
-        return "CNode";
+        return "Node";
     }
 
     /** @return boolean indicating, whether this node is a leaf */
@@ -132,7 +138,7 @@ protected:
 
 
 /** @brief CTaxonomy is used to describe hierarchical
- * 	structure between tasks.
+ *	structure between tasks.
  *
  */
 class CTaxonomy : public CSGObject
@@ -149,6 +155,15 @@ public:
 
 		name2id = std::map<std::string, int32_t>();
 		name2id["root"] = 0;
+	}
+
+	virtual ~CTaxonomy()
+	{
+		for (size_t i = 0; i < nodes.size(); i++)
+			delete nodes[i];
+		nodes.clear();
+		name2id.clear();
+		task_histogram.clear();
 	}
 
 	/**
@@ -323,7 +338,7 @@ public:
 	/** @return object name */
 	virtual const char* get_name() const
 	{
-		return "CTaxonomy";
+		return "Taxonomy";
 	}
 
 	/** @return mapping from name to id */

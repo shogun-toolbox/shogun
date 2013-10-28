@@ -14,11 +14,11 @@ function evaluation_contingencytableevaluation_modular(ground_truth, predicted)
 
 	ground_truth_labels = modshogun.BinaryLabels(ground_truth)
 	predicted_labels = modshogun.BinaryLabels(predicted)
-	
+
 	base_evaluator = modshogun.ContingencyTableEvaluation()
 	base_evaluator:evaluate(predicted_labels,ground_truth_labels)
 
-	evaluator = modshogun.AccuracyMeasure()	
+	evaluator = modshogun.AccuracyMeasure()
 	accuracy = evaluator:evaluate(predicted_labels,ground_truth_labels)
 
 	evaluator = modshogun.ErrorRateMeasure()
@@ -29,7 +29,7 @@ function evaluation_contingencytableevaluation_modular(ground_truth, predicted)
 
 	evaluator = modshogun.WRACCMeasure()
 	wracc = evaluator:evaluate(predicted_labels,ground_truth_labels)
- 
+
 	evaluator = modshogun.F1Measure()
 	f1 = evaluator:evaluate(predicted_labels,ground_truth_labels)
 

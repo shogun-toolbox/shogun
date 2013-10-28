@@ -13,7 +13,7 @@ import clustering
 import distribution
 import regression
 import preprocessor
-from shogun.Library import Math_init_random
+from modshogun import Math_init_random
 
 SUPPORTED=['kernel', 'distance', 'classifier', 'clustering', 'distribution',
 	'regression', 'preprocessor']
@@ -27,7 +27,7 @@ def _get_name_fun (fnam):
 			break
 
 	if module is None:
-		print 'Module required for %s not supported yet!' % fnam
+		print('Module required for %s not supported yet!' % fnam)
 		return None
 
 	return module+'.test'
@@ -35,10 +35,10 @@ def _get_name_fun (fnam):
 def _test_mfile (fnam):
 	try:
 		mfile=open(fnam, mode='r')
-	except IOError, e:
-		print e
+	except IOError as e:
+		print(e)
 		return False
-	
+
 	indata={}
 
 	name_fun=_get_name_fun(fnam)

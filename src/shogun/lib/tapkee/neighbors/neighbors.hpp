@@ -7,57 +7,83 @@
 #define TAPKEE_NEIGHBORS_H_
 
 /* Tapkee includes */
-#include <shogun/lib/tapkee/tapkee_defines.hpp>
+#include <shogun/lib/tapkee/defines.hpp>
 #ifdef TAPKEE_USE_LGPL_COVERTREE
 	#include <shogun/lib/tapkee/neighbors/covertree.hpp>
 #endif
 #include <shogun/lib/tapkee/neighbors/connected.hpp>
+#include <shogun/lib/tapkee/neighbors/vptree.hpp>
 /* End of Tapkee includes */
 
 #include <vector>
 #include <utility>
 #include <algorithm>
 
-using std::nth_element;
-using std::pair;
-
 namespace tapkee
 {
 namespace tapkee_internal
 {
 
-std::string get_neighbors_method_name(TAPKEE_NEIGHBORS_METHOD m)
-{
-	switch (m)
-	{
-		case BRUTE_FORCE: return "Brute force";
-#ifdef TAPKEE_USE_LGPL_COVERTREE
-		case COVER_TREE: return "Cover tree";
-#endif
-		default: return "Unknown neighbors finding method (yes it is a bug)";
-	}
-}
-
 template <class DistanceRecord>
 struct distances_comparator
 {
-	bool operator()(const DistanceRecord& l, const DistanceRecord& r) 
+	inline bool operator()(const DistanceRecord& l, const DistanceRecord& r) const
 	{
 		return (l.second < r.second);
 	}
 };
 
+struct KernelType
+{
+};
+
+template <class RandomAccessIterator, class Callback>
+struct KernelDistance
+{
+	KernelDistance(const Callback& cb) : callback(cb) {  }
+	inline ScalarType operator()(const RandomAccessIterator& l, const RandomAccessIterator& r)
+	{
+		return callback.kernel(*l,*r);
+	}
+	inline ScalarType distance(const RandomAccessIterator& l, const RandomAccessIterator& r)
+	{
+		return sqrt(callback.kernel(*l,*l) - 2*callback.kernel(*l,*r) + callback.kernel(*r,*r));
+	}
+	typedef KernelType type;
+	Callback callback;
+};
+
+struct DistanceType
+{
+};
+
+template <class RandomAccessIterator, class Callback>
+struct PlainDistance
+{
+	PlainDistance(const Callback& cb) : callback(cb) {  }
+	inline ScalarType operator()(const RandomAccessIterator& l, const RandomAccessIterator& r)
+	{
+		return callback.distance(*l,*r);
+	}
+	inline ScalarType distance(const RandomAccessIterator& l, const RandomAccessIterator& r)
+	{
+		return callback.distance(*l,*r);
+	}
+	typedef DistanceType type;
+	Callback callback;
+};
+
 #ifdef TAPKEE_USE_LGPL_COVERTREE
-template <class RandomAccessIterator, class PairwiseCallback>
-Neighbors find_neighbors_covertree_impl(RandomAccessIterator begin, RandomAccessIterator end, 
-                         PairwiseCallback callback, IndexType k)
+template <class RandomAccessIterator, class Callback>
+Neighbors find_neighbors_covertree_impl(RandomAccessIterator begin, RandomAccessIterator end,
+                         Callback callback, IndexType k)
 {
 	timed_context context("Covertree-based neighbors search");
 
 	typedef CoverTreePoint<RandomAccessIterator> TreePoint;
 	v_array<TreePoint> points;
 	for (RandomAccessIterator iter=begin; iter!=end; ++iter)
-		push(points, TreePoint(iter, callback(*iter,*iter)));
+		push(points, TreePoint(iter, callback(iter,iter)));
 
 	node<TreePoint> ct = batch_create(callback, points);
 
@@ -72,7 +98,7 @@ Neighbors find_neighbors_covertree_impl(RandomAccessIterator begin, RandomAccess
 	{
 		LocalNeighbors local_neighbors;
 		local_neighbors.reserve(k);
-		
+
 		for (IndexType j=1; j<=k; ++j) // j=0 is the query point
 		{
 			// The actual query point is found as a neighbor, just ignore it
@@ -90,9 +116,9 @@ Neighbors find_neighbors_covertree_impl(RandomAccessIterator begin, RandomAccess
 }
 #endif
 
-template <class RandomAccessIterator, class PairwiseCallback>
-Neighbors find_neighbors_bruteforce_impl(const RandomAccessIterator& begin, const RandomAccessIterator& end, 
-                                         PairwiseCallback callback, IndexType k)
+template <class RandomAccessIterator, class Callback>
+Neighbors find_neighbors_bruteforce_impl(const RandomAccessIterator& begin, const RandomAccessIterator& end,
+                                         Callback callback, IndexType k)
 {
 	timed_context context("Distance sorting based neighbors search");
 	typedef std::pair<RandomAccessIterator, ScalarType> DistanceRecord;
@@ -103,33 +129,49 @@ Neighbors find_neighbors_bruteforce_impl(const RandomAccessIterator& begin, cons
 	for (RandomAccessIterator iter=begin; iter!=end; ++iter)
 	{
 		Distances distances;
-		if (BasicCallbackTraits<PairwiseCallback>::is_kernel)
-		{
-			for (RandomAccessIterator around_iter=begin; around_iter!=end; ++around_iter)
-				distances.push_back(make_pair(around_iter, callback(*around_iter,*around_iter) + callback(*iter,*iter) - 2*callback(*iter,*around_iter)));
-		}
-		else
-		{
-			for (RandomAccessIterator around_iter=begin; around_iter!=end; ++around_iter)
-				distances.push_back(make_pair(around_iter, callback(*iter,*around_iter)));
-		}
+		for (RandomAccessIterator around_iter=begin; around_iter!=end; ++around_iter)
+			distances.push_back(std::make_pair(around_iter, callback.distance(iter,around_iter)));
 
-		nth_element(distances.begin(),distances.begin()+k+1,distances.end(),
-		            distances_comparator<DistanceRecord>());
+		std::nth_element(distances.begin(),distances.begin()+k+1,distances.end(),
+		                 distances_comparator<DistanceRecord>());
 
 		LocalNeighbors local_neighbors;
 		local_neighbors.reserve(k);
-		for (typename Distances::const_iterator neighbors_iter=distances.begin()+1; 
+		for (typename Distances::const_iterator neighbors_iter=distances.begin();
 				neighbors_iter!=distances.begin()+k+1; ++neighbors_iter)
-			local_neighbors.push_back(neighbors_iter->first - begin);
+		{
+			if (neighbors_iter->first != iter)
+				local_neighbors.push_back(neighbors_iter->first - begin);
+		}
 		neighbors.push_back(local_neighbors);
 	}
 	return neighbors;
 }
 
-template <class RandomAccessIterator, class PairwiseCallback>
-Neighbors find_neighbors(TAPKEE_NEIGHBORS_METHOD method, const RandomAccessIterator& begin, 
-                         const RandomAccessIterator& end, const PairwiseCallback& callback, 
+template <class RandomAccessIterator, class Callback>
+Neighbors find_neighbors_vptree_impl(const RandomAccessIterator& begin, const RandomAccessIterator& end,
+                                     Callback callback, IndexType k)
+{
+	timed_context context("VP-Tree based neighbors search");
+
+	Neighbors neighbors;
+	neighbors.reserve(end-begin);
+
+	VantagePointTree<RandomAccessIterator,Callback> tree(begin,end,callback);
+
+	for (RandomAccessIterator i=begin; i!=end; ++i)
+	{
+		LocalNeighbors local_neighbors = tree.search(i,k+1);
+		std::remove(local_neighbors.begin(),local_neighbors.end(),i-begin);
+		neighbors.push_back(local_neighbors);
+	}
+
+	return neighbors;
+}
+
+template <class RandomAccessIterator, class Callback>
+Neighbors find_neighbors(NeighborsMethod method, const RandomAccessIterator& begin,
+                         const RandomAccessIterator& end, const Callback& callback,
                          IndexType k, bool check_connectivity)
 {
 	if (k > static_cast<IndexType>(end-begin-1))
@@ -138,20 +180,20 @@ Neighbors find_neighbors(TAPKEE_NEIGHBORS_METHOD method, const RandomAccessItera
 		                                             "Using greatest possible number of neighbors.");
 		k = static_cast<IndexType>(end-begin-1);
 	}
-	LoggingSingleton::instance().message_info("Using " + get_neighbors_method_name(method) + " neighbors computation method.");
+	LoggingSingleton::instance().message_info("Using the " + get_neighbors_method_name(method) + " neighbors computation method.");
 	Neighbors neighbors;
 	switch (method)
 	{
-		case BRUTE_FORCE: neighbors = find_neighbors_bruteforce_impl(begin,end,callback,k); break;
+		case Brute: neighbors = find_neighbors_bruteforce_impl(begin,end,callback,k); break;
+		case VpTree: neighbors = find_neighbors_vptree_impl(begin,end,callback,k); break;
 #ifdef TAPKEE_USE_LGPL_COVERTREE
-		case COVER_TREE: neighbors = find_neighbors_covertree_impl(begin,end,callback,k); break;
+		case CoverTree: neighbors = find_neighbors_covertree_impl(begin,end,callback,k); break;
 #endif
 		default: break;
 	}
 
 	if (check_connectivity)
 	{
-		timed_context connectivity("Checking connectivity");
 		if (!is_connected(begin,end,neighbors))
 			LoggingSingleton::instance().message_warning("The neighborhood graph is not connected.");
 	}

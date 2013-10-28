@@ -11,6 +11,7 @@ CPolyFeatures::CPolyFeatures() :CDotFeatures()
 	m_multi_index=NULL;
 	m_multinomial_coefficients=NULL;
 	m_normalization_values=NULL;
+	m_output_dimensions=0;
 
 	register_parameters();
 }
@@ -80,11 +81,6 @@ int32_t CPolyFeatures::get_num_vectors() const
 
 }
 
-int32_t CPolyFeatures::get_size() const
-{
-	return sizeof(float64_t);
-}
-
 void* CPolyFeatures::get_feature_iterator(int32_t vector_index)
 {
 	SG_NOTIMPLEMENTED
@@ -94,7 +90,7 @@ void* CPolyFeatures::get_feature_iterator(int32_t vector_index)
 bool CPolyFeatures::get_next_feature(int32_t& index, float64_t& value, void* iterator)
 {
 	SG_NOTIMPLEMENTED
-	return NULL;
+	return false;
 }
 
 void CPolyFeatures::free_feature_iterator(void* iterator)

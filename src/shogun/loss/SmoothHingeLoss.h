@@ -35,7 +35,7 @@ public:
 	/**
 	 * Get loss for an example
 	 *
-	 * @param z where to evaluate the loss 
+	 * @param z where to evaluate the loss
 	 *
 	 * @return loss
 	 */

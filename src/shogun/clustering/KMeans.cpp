@@ -246,7 +246,7 @@ void CKMeans::clustknb(bool use_old_mus, float64_t *mus_start)
 		float64_t* p_dists=dists;
 
 		for(int32_t idx=0;idx<XSize;idx++,p_dists+=k)
-			distances_rhs(p_dists,0,k,idx);
+			distances_rhs(p_dists,0,k - 1,idx);
 		p_dists=NULL;
 
 		for (i=0; i<XSize; i++)

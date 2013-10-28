@@ -26,6 +26,7 @@
 %{
 #include <stdio.h>
 #include <shogun/lib/DataType.h>
+#include <shogun/lib/memory.h>
 
 #undef _POSIX_C_SOURCE
 extern "C" {
@@ -51,13 +52,13 @@ static const char* typecode_string(PyObject* py_obj) {
   if (PyUnicode_Check( py_obj)) return "unicode";
 #else
   if (PyString_Check(  py_obj)) return "string";
-#endif  
+#endif
 
 #if PY_VERSION_HEX >= 0x03000000
   if (PyLong_Check(    py_obj)) return "int";
 #else
   if (PyInt_Check(     py_obj)) return "int";
-#endif  
+#endif
   if (PyFloat_Check(   py_obj)) return "float";
   if (PyDict_Check(    py_obj)) return "dict";
   if (PyList_Check(    py_obj)) return "list";
@@ -87,18 +88,11 @@ static const char* typecode_string(int typecode) {
         return type_names[typecode];
 }
 
-static void* get_copy(void* src, size_t len)
-{
-    void* copy=SG_MALLOC(uint8_t, len);
-    memcpy(copy, src, len);
-    return copy;
-}
-
 /* Given a PyArrayObject, check to see if it is contiguous.  If so,
  * return the input pointer and flag it as not a new object.  If it is
  * not contiguous, create a new PyArrayObject using the original data,
  * flag it as a new object and return the pointer.
- * 
+ *
  * If array is NULL or dimensionality or typecode does not match
  * return NULL
  */
@@ -124,7 +118,7 @@ static PyObject* make_contiguous(PyObject* ary, int* is_new_object,
         return NULL;
     }
 
-    if (!is_array(array))
+    if (!::is_array(array))
     {
         PyErr_SetString(PyExc_TypeError, "Object not an Array");
         *is_new_object=0;
@@ -133,7 +127,7 @@ static PyObject* make_contiguous(PyObject* ary, int* is_new_object,
 
     if (dims!=-1 && array_dimensions(array)!=dims)
     {
-        PyErr_Format(PyExc_TypeError, "Array has wrong dimensionality, " 
+        PyErr_Format(PyExc_TypeError, "Array has wrong dimensionality, "
                 "expected a %dd-array, received a %dd-array", dims, array_dimensions(array));
         if (*is_new_object)
             Py_DECREF(array);
@@ -143,13 +137,13 @@ static PyObject* make_contiguous(PyObject* ary, int* is_new_object,
 
     /*this works around a numpy oddity when LONG==INT32*/
     if ((array_type(array) != typecode) &&
-        !(typecode==NPY_LONG && NPY_BITSOF_INT == NPY_BITSOF_LONG 
+        !(typecode==NPY_LONG && NPY_BITSOF_INT == NPY_BITSOF_LONG
             && NPY_BITSOF_INT==32 && array_type(array)==NPY_INT))
     {
         const char* desired_type = typecode_string(typecode);
         const char* actual_type = typecode_string(array_type(array));
-        PyErr_Format(PyExc_TypeError, 
-                "Array of type '%s' required.  Array of type '%s' given", 
+        PyErr_Format(PyExc_TypeError,
+                "Array of type '%s' required.  Array of type '%s' given",
                 desired_type, actual_type);
         if (*is_new_object)
             Py_DECREF(array);
@@ -166,7 +160,7 @@ static int is_pyvector(PyObject* obj, int typecode)
 {
     return  ((obj && !PyList_Check(obj)) &&
             (
-             is_array(obj) &&
+             ::is_array(obj) &&
              array_dimensions(obj)==1 &&
              (array_type(obj) == typecode || PyArray_EquivTypenums(array_type(obj), typecode))
             )) ? 1 : 0;
@@ -176,7 +170,7 @@ static int is_pymatrix(PyObject* obj, int typecode)
 {
     return ((obj && !PyList_Check(obj)) &&
                 (
-				 is_array(obj) &&
+				 ::is_array(obj) &&
                  array_dimensions(obj)==2 &&
                  (array_type(obj) == typecode || PyArray_EquivTypenums(array_type(obj), typecode))
                 )) ? 1 : 0;
@@ -186,7 +180,7 @@ static int is_pyarray(PyObject* obj, int typecode)
 {
     return ((obj && !PyList_Check(obj)) &&
                 (
-				 is_array(obj) &&
+				 ::is_array(obj) &&
                  (array_type(obj) == typecode || PyArray_EquivTypenums(array_type(obj), typecode))
                 )) ? 1 : 0;
 }
@@ -217,7 +211,7 @@ static int is_pystring_list(PyObject* obj, int typecode)
             {
 #if PY_VERSION_HEX >= 0x03000000
                 if (!PyUnicode_Check(o))
-#else				
+#else
 				if (!PyString_Check(o))
 #endif
                 {
@@ -227,7 +221,7 @@ static int is_pystring_list(PyObject* obj, int typecode)
             }
             else
             {
-                if (!is_array(o) || array_dimensions(o)!=1 || array_type(o) != typecode)
+                if (!::is_array(o) || array_dimensions(o)!=1 || array_type(o) != typecode)
                 {
                     result=0;
                     break;
@@ -345,13 +339,37 @@ static bool array_from_numpy(SGNDArray<type>& sg_array, PyObject* obj, int typec
 
     for (int32_t i=0; i<ndim; i++)
       temp_dims[i] = py_dims[i];
-    
+
     sg_array = SGNDArray<type>((type*) PyArray_BYTES(array), temp_dims, ndim);
 
     ((PyArrayObject*) array)->flags &= (-1 ^ NPY_OWNDATA);
     Py_DECREF(array);
 
     return true;
+}
+
+template <class type>
+static bool array_to_numpy(PyObject* &obj, SGNDArray<type> sg_array, int typecode)
+{
+	int n = 1;
+	npy_intp dims[sg_array.num_dims];
+	for (int i = 0; i < sg_array.num_dims; i++)
+	{
+		dims[i] = (npy_intp)sg_array.dims[i];
+		n *= sg_array.dims[i];
+	}
+
+	PyArray_Descr* descr=PyArray_DescrFromType(typecode);
+
+	if (descr)
+	{
+		void* copy=get_copy(sg_array.array, sizeof(type)*size_t(n));
+		obj = PyArray_NewFromDescr(&PyArray_Type,
+		    descr, sg_array.num_dims, dims, NULL, (void*) copy, NPY_FARRAY | NPY_WRITEABLE, NULL);
+		((PyArrayObject*) obj)->flags |= NPY_OWNDATA;
+	}
+
+	return descr!=NULL;
 }
 
 template <class type>
@@ -373,14 +391,14 @@ static bool string_from_strpy(SGStringList<type>& sg_strings, PyObject* obj, int
             {
 #if PY_VERSION_HEX >= 0x03000000
                 if (PyUnicode_Check(o))
-#else				
+#else
 				if (PyString_Check(o))
 #endif
                 {
 
 #if PY_VERSION_HEX >= 0x03000000
 					int32_t len = PyUnicode_GetSize((PyObject*) o);
-    				const char* str = PyBytes_AsString(PyUnicode_AsASCIIString(const_cast<PyObject*>(o)));
+				const char* str = PyBytes_AsString(PyUnicode_AsASCIIString(const_cast<PyObject*>(o)));
 #else
                     int32_t len = PyString_Size(o);
                     const char* str = PyString_AsString(o);
@@ -408,7 +426,7 @@ static bool string_from_strpy(SGStringList<type>& sg_strings, PyObject* obj, int
             }
             else
             {
-                if (is_array(o) && array_dimensions(o)==1 && array_type(o) == typecode)
+                if (::is_array(o) && array_dimensions(o)==1 && array_type(o) == typecode)
                 {
                     int is_new_object=0;
                     PyObject* array = make_contiguous(o, &is_new_object, 1, typecode);
@@ -543,21 +561,21 @@ static bool spmatrix_from_numpy(SGSparseMatrix<type>& sg_matrix, PyObject* obj, 
     PyObject* shape = PyObject_GetAttrString(o, "shape");
 
     /* check that types are OK */
-    if ((!is_array(indptr)) || (array_dimensions(indptr)!=1) ||
+    if ((!::is_array(indptr)) || (array_dimensions(indptr)!=1) ||
             (array_type(indptr)!=NPY_INT && array_type(indptr)!=NPY_LONG))
     {
         PyErr_SetString(PyExc_TypeError,"indptr array should be 1d int's");
         return false;
     }
 
-    if (!is_array(indices) || array_dimensions(indices)!=1 ||
+    if (!::is_array(indices) || array_dimensions(indices)!=1 ||
             (array_type(indices)!=NPY_INT && array_type(indices)!=NPY_LONG))
     {
         PyErr_SetString(PyExc_TypeError,"indices array should be 1d int's");
         return false;
     }
 
-    if (!is_array(data) || array_dimensions(data)!=1 || array_type(data) != typecode)
+    if (!::is_array(data) || array_dimensions(data)!=1 || array_type(data) != typecode)
     {
         PyErr_SetString(PyExc_TypeError,"data array should be 1d and match datatype");
         return false;
@@ -610,7 +628,7 @@ static bool spmatrix_from_numpy(SGSparseMatrix<type>& sg_matrix, PyObject* obj, 
     for (int32_t i=1; i<len_indptr; i++)
     {
         int32_t num = bytes_indptr[i]-bytes_indptr[i-1];
-        
+
         if (num>0)
         {
             shogun::SGSparseVectorEntry<type>* features=SG_MALLOC(shogun::SGSparseVectorEntry<type>, num);
@@ -902,22 +920,28 @@ static bool spvector_to_numpy(PyObject* &obj, SGSparseVector<type> sg_vector, in
 }
 
 #ifdef PYTHON3
-%typemap(typecheck) const char* 
+%typemap(typecheck, precedence=SWIG_TYPECHECK_STRING) const char *
 {
-	$1 = PyUnicode_Check($input);
+	$1 = (PyUnicode_Check($input) || PyString_Check($input)) ? 1 : 0;
 }
-
-%typemap(in) const char* 
+%typemap(in) const char *
 {
-	if (PyUnicode_Check($input))
+	if (PyString_Check($input))
+	{
+		$1 = PyString_AsString($input);
+	}
+	else if (PyUnicode_Check($input))
+	{
 		$1 = PyBytes_AsString(PyUnicode_AsASCIIString(const_cast<PyObject*>($input)));
-    	else
-		SWIG_fail;
+	}
+	else
+	{
+		PyErr_SetString(PyExc_TypeError, "Expected a string");
+	}
 }
-
-%typemap(freearg) const char* 
+%typemap(freearg) const char *
 {
-	// pass
+	// nothing to do there
 }
 #endif
 
@@ -952,6 +976,7 @@ TYPEMAP_IN_SGVECTOR(uint64_t,      NPY_UINT64)
 TYPEMAP_IN_SGVECTOR(float32_t,     NPY_FLOAT32)
 TYPEMAP_IN_SGVECTOR(float64_t,     NPY_FLOAT64)
 TYPEMAP_IN_SGVECTOR(floatmax_t,    NPY_LONGDOUBLE)
+TYPEMAP_IN_SGVECTOR(complex128_t,   NPY_CDOUBLE)
 TYPEMAP_IN_SGVECTOR(PyObject,      NPY_OBJECT)
 
 #undef TYPEMAP_IN_SGVECTOR
@@ -982,6 +1007,7 @@ TYPEMAP_OUT_SGVECTOR(uint64_t,      NPY_UINT64)
 TYPEMAP_OUT_SGVECTOR(float32_t,     NPY_FLOAT32)
 TYPEMAP_OUT_SGVECTOR(float64_t,     NPY_FLOAT64)
 TYPEMAP_OUT_SGVECTOR(floatmax_t,    NPY_LONGDOUBLE)
+TYPEMAP_OUT_SGVECTOR(complex128_t,   NPY_CDOUBLE)
 TYPEMAP_OUT_SGVECTOR(PyObject,      NPY_OBJECT)
 
 #undef TYPEMAP_OUT_SGVECTOR
@@ -1017,6 +1043,7 @@ TYPEMAP_IN_SGMATRIX(uint64_t,      NPY_UINT64)
 TYPEMAP_IN_SGMATRIX(float32_t,     NPY_FLOAT32)
 TYPEMAP_IN_SGMATRIX(float64_t,     NPY_FLOAT64)
 TYPEMAP_IN_SGMATRIX(floatmax_t,    NPY_LONGDOUBLE)
+TYPEMAP_IN_SGMATRIX(complex128_t,   NPY_CDOUBLE)
 TYPEMAP_IN_SGMATRIX(PyObject,      NPY_OBJECT)
 
 #undef TYPEMAP_IN_SGMATRIX
@@ -1047,14 +1074,14 @@ TYPEMAP_OUT_SGMATRIX(uint64_t,      NPY_UINT64)
 TYPEMAP_OUT_SGMATRIX(float32_t,     NPY_FLOAT32)
 TYPEMAP_OUT_SGMATRIX(float64_t,     NPY_FLOAT64)
 TYPEMAP_OUT_SGMATRIX(floatmax_t,    NPY_LONGDOUBLE)
+TYPEMAP_OUT_SGMATRIX(complex128_t,   NPY_CDOUBLE)
 TYPEMAP_OUT_SGMATRIX(PyObject,      NPY_OBJECT)
 
 #undef TYPEMAP_OUT_SGMATRIX
 
 /* N-dimensional input arrays */
 %define TYPEMAP_INND(type,typecode)
-%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER)
-        shogun::SGNDArray<type>
+%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) shogun::SGNDArray<type>
 {
     $1 = is_pyarray($input, typecode);
 }
@@ -1086,6 +1113,36 @@ TYPEMAP_INND(floatmax_t,    NPY_LONGDOUBLE)
 TYPEMAP_INND(PyObject,      NPY_OBJECT)
 
 #undef TYPEMAP_INND
+
+/* N-dimensional output arrays */
+%define TYPEMAP_OUTND(type,typecode)
+%typemap(out) shogun::SGNDArray<type>
+{
+    if (!array_to_numpy($result, $1, typecode))
+        SWIG_fail;
+}
+%enddef
+
+/* Define concrete examples of the TYPEMAP_OUTND macros */
+TYPEMAP_OUTND(bool,          NPY_BOOL)
+#ifdef PYTHON3 // str -> unicode for python3
+TYPEMAP_OUTND(char,          NPY_UNICODE)
+#else
+TYPEMAP_OUTND(char,          NPY_STRING)
+#endif
+TYPEMAP_OUTND(uint8_t,       NPY_UINT8)
+TYPEMAP_OUTND(int16_t,       NPY_INT16)
+TYPEMAP_OUTND(uint16_t,      NPY_UINT16)
+TYPEMAP_OUTND(int32_t,       NPY_INT32)
+TYPEMAP_OUTND(uint32_t,      NPY_UINT32)
+TYPEMAP_OUTND(int64_t,       NPY_INT64)
+TYPEMAP_OUTND(uint64_t,      NPY_UINT64)
+TYPEMAP_OUTND(float32_t,     NPY_FLOAT32)
+TYPEMAP_OUTND(float64_t,     NPY_FLOAT64)
+TYPEMAP_OUTND(floatmax_t,    NPY_LONGDOUBLE)
+TYPEMAP_OUTND(PyObject,      NPY_OBJECT)
+
+#undef TYPEMAP_OUTND
 
 /* input typemap for CStringFeatures */
 %define TYPEMAP_STRINGFEATURES_IN(type,typecode)
@@ -1178,6 +1235,7 @@ TYPEMAP_SPARSEFEATURES_IN(int64_t,       NPY_INT64)
 TYPEMAP_SPARSEFEATURES_IN(uint64_t,      NPY_UINT64)
 TYPEMAP_SPARSEFEATURES_IN(float32_t,     NPY_FLOAT32)
 TYPEMAP_SPARSEFEATURES_IN(float64_t,     NPY_FLOAT64)
+TYPEMAP_SPARSEFEATURES_IN(complex128_t,  NPY_CDOUBLE)
 TYPEMAP_SPARSEFEATURES_IN(floatmax_t,    NPY_LONGDOUBLE)
 TYPEMAP_SPARSEFEATURES_IN(PyObject,      NPY_OBJECT)
 #undef TYPEMAP_SPARSEFEATURES_IN
@@ -1212,6 +1270,7 @@ TYPEMAP_SPARSEFEATURES_OUT(int64_t,       NPY_INT64)
 TYPEMAP_SPARSEFEATURES_OUT(uint64_t,      NPY_UINT64)
 TYPEMAP_SPARSEFEATURES_OUT(float32_t,     NPY_FLOAT32)
 TYPEMAP_SPARSEFEATURES_OUT(float64_t,     NPY_FLOAT64)
+TYPEMAP_SPARSEFEATURES_OUT(complex128_t,  NPY_CDOUBLE)
 TYPEMAP_SPARSEFEATURES_OUT(floatmax_t,    NPY_LONGDOUBLE)
 TYPEMAP_SPARSEFEATURES_OUT(PyObject,      NPY_OBJECT)
 #undef TYPEMAP_SPARSEFEATURES_OUT

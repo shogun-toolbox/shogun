@@ -10,15 +10,15 @@ predicted = random.randn(len(ground_truth))
 parameter_list = [[ground_truth,predicted]]
 
 def evaluation_contingencytableevaluation_modular (ground_truth, predicted):
-	from shogun.Features import BinaryLabels
-	from shogun.Evaluation import ContingencyTableEvaluation
-	from shogun.Evaluation import AccuracyMeasure,ErrorRateMeasure,BALMeasure
-	from shogun.Evaluation import WRACCMeasure,F1Measure,CrossCorrelationMeasure
-	from shogun.Evaluation import RecallMeasure,PrecisionMeasure,SpecificityMeasure
+	from modshogun import BinaryLabels
+	from modshogun import ContingencyTableEvaluation
+	from modshogun import AccuracyMeasure,ErrorRateMeasure,BALMeasure
+	from modshogun import WRACCMeasure,F1Measure,CrossCorrelationMeasure
+	from modshogun import RecallMeasure,PrecisionMeasure,SpecificityMeasure
 
 	ground_truth_labels = BinaryLabels(ground_truth)
 	predicted_labels = BinaryLabels(predicted)
-	
+
 	base_evaluator = ContingencyTableEvaluation()
 	base_evaluator.evaluate(predicted_labels,ground_truth_labels)
 

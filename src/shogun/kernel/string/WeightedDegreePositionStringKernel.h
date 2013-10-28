@@ -68,13 +68,12 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		 * @param weights weights
 		 * @param degree degree
 		 * @param max_mismatch maximum mismatch
-		 * @param shift position shifts
-		 * @param shift_len number of shifts
+		 * @param shifts position shifts
 		 * @param mkl_stepsize MKL stepsize
 		 */
 		CWeightedDegreePositionStringKernel(
-			int32_t size, float64_t* weights, int32_t degree,
-			int32_t max_mismatch, int32_t* shift, int32_t shift_len,
+			int32_t size, SGVector<float64_t> weights, int32_t degree,
+			int32_t max_mismatch, SGVector<int32_t> shifts,
 			int32_t mkl_stepsize=1);
 
 		/** constructor
@@ -146,10 +145,10 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		virtual bool delete_optimization();
 
 		/** compute optimized
-	 	*
-	 	* @param idx index to compute
-	 	* @return optimized value at given index
-	 	*/
+		*
+		* @param idx index to compute
+		* @return optimized value at given index
+		*/
 		virtual float64_t compute_optimized(int32_t idx)
 		{
 			ASSERT(get_is_initialized())
@@ -187,7 +186,7 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 			if ((opt_type==FASTBUTMEMHUNGRY) && (tries.get_use_compact_terminal_nodes()))
 			{
 				tries.set_use_compact_terminal_nodes(false) ;
-				SG_DEBUG("disabling compact trie nodes with FASTBUTMEMHUNGRY\n") 
+				SG_DEBUG("disabling compact trie nodes with FASTBUTMEMHUNGRY\n")
 			}
 
 			if (get_is_initialized())
@@ -241,7 +240,7 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 				return ;
 			}
 
-			SG_ERROR("CWeightedDegreePositionStringKernel optimization not initialized\n") 
+			SG_ERROR("CWeightedDegreePositionStringKernel optimization not initialized\n")
 		}
 
 		/** get subkernel weights
@@ -277,7 +276,7 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 
 			int32_t num_weights = get_num_subkernels() ;
 			if (num_weights!=num_weights2)
-				SG_ERROR("number of weights do not match\n") 
+				SG_ERROR("number of weights do not match\n")
 
 			if (position_weights!=NULL)
 				for (int32_t i=0; i<num_weights; i++)

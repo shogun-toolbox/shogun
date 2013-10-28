@@ -4,10 +4,9 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * (W) 2012 Jacob Walker
+ * Written (W) 2012 Jacob Walker
  *
  * Adapted from WeightedDegreeRBFKernel.h
- *
  */
 
 #ifndef GAUSSIANARDKERNEL_H_
@@ -21,23 +20,17 @@
 namespace shogun
 {
 
-/** @brief Gaussian Kernel with Automatic
- * Relevance Detection
- */
+/** @brief Gaussian Kernel with Automatic Relevance Detection */
 class CGaussianARDKernel: public CLinearARDKernel
 {
-
 public:
-	/** default constructor
-	 *
-	 */
+	/** default constructor */
 	CGaussianARDKernel();
 
 	/** constructor
 	 *
 	 * @param size cache size
 	 * @param width kernel width
-	 *
 	 */
 	CGaussianARDKernel(int32_t size, float64_t width);
 
@@ -49,10 +42,16 @@ public:
 	 * @param width kernel width
 	 */
 	CGaussianARDKernel(CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r,
-		int32_t size=10, float64_t width = 2.0);
+		int32_t size=10, float64_t width=2.0);
 
 	/** destructor */
 	virtual ~CGaussianARDKernel();
+
+	/** @param kernel is casted to CGaussianARDKernel, error if not possible
+	 * is SG_REF'ed
+	 * @return casted CGaussianARDKernel object
+	 */
+	static CGaussianARDKernel* obtain_from_generic(CKernel* kernel);
 
 	/** initialize kernel
 	 *
@@ -77,16 +76,14 @@ public:
 	/** return derivative with respect to specified parameter
 	 *
 	 * @param param the parameter
-	 * @param obj the object that owns the parameter
 	 * @param index the index of the element if parameter is a vector
 	 *
 	 * @return gradient with respect to parameter
 	 */
-	virtual SGMatrix<float64_t> get_parameter_gradient(TParameter* param,
-			CSGObject* obj, index_t index = -1);
+	virtual SGMatrix<float64_t> get_parameter_gradient(const TParameter* param,
+			index_t index=-1);
 
 protected:
-
 	/** compute kernel function for features a and b
 	 * idx_{a,b} denote the index of the feature vectors
 	 * in the corresponding feature object
@@ -98,14 +95,11 @@ protected:
 	virtual float64_t compute(int32_t idx_a, int32_t idx_b);
 
 private:
-
 	void init();
 
 protected:
-
 	/** kernel width */
 	float64_t m_width;
 };
-
-} /* namespace shogun */
+}
 #endif /* GAUSSIANARDKERNEL_H_ */

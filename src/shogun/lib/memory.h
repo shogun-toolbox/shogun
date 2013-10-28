@@ -10,7 +10,7 @@
 
 #ifndef __MEMORY_H__
 #define __MEMORY_H__
-	
+
 #include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
 
@@ -47,6 +47,7 @@ namespace shogun
 {
 	template <class T> class SGVector;
 	template <class T> class SGSparseVector;
+	template <class T> class SGMatrix;
 
 #ifdef TRACE_MEMORY_ALLOCS
 void* sg_malloc(size_t size, const char* file, int line);
@@ -119,7 +120,7 @@ class MemoryBlock
 		/** copy constructor
 		 * @param b b
 		 */
-        	MemoryBlock(const MemoryBlock &b);
+	MemoryBlock(const MemoryBlock &b);
 
 		/** equality
 		 * @param b b
@@ -167,6 +168,7 @@ SG_SPECIALIZED_MALLOC(SGVector<uint64_t>)
 SG_SPECIALIZED_MALLOC(SGVector<float32_t>)
 SG_SPECIALIZED_MALLOC(SGVector<float64_t>)
 SG_SPECIALIZED_MALLOC(SGVector<floatmax_t>)
+SG_SPECIALIZED_MALLOC(SGVector<complex128_t>)
 
 SG_SPECIALIZED_MALLOC(SGSparseVector<bool>)
 SG_SPECIALIZED_MALLOC(SGSparseVector<char>)
@@ -181,7 +183,26 @@ SG_SPECIALIZED_MALLOC(SGSparseVector<uint64_t>)
 SG_SPECIALIZED_MALLOC(SGSparseVector<float32_t>)
 SG_SPECIALIZED_MALLOC(SGSparseVector<float64_t>)
 SG_SPECIALIZED_MALLOC(SGSparseVector<floatmax_t>)
+SG_SPECIALIZED_MALLOC(SGSparseVector<complex128_t>)
+
+SG_SPECIALIZED_MALLOC(SGMatrix<bool>)
+SG_SPECIALIZED_MALLOC(SGMatrix<char>)
+SG_SPECIALIZED_MALLOC(SGMatrix<int8_t>)
+SG_SPECIALIZED_MALLOC(SGMatrix<uint8_t>)
+SG_SPECIALIZED_MALLOC(SGMatrix<int16_t>)
+SG_SPECIALIZED_MALLOC(SGMatrix<uint16_t>)
+SG_SPECIALIZED_MALLOC(SGMatrix<int32_t>)
+SG_SPECIALIZED_MALLOC(SGMatrix<uint32_t>)
+SG_SPECIALIZED_MALLOC(SGMatrix<int64_t>)
+SG_SPECIALIZED_MALLOC(SGMatrix<uint64_t>)
+SG_SPECIALIZED_MALLOC(SGMatrix<float32_t>)
+SG_SPECIALIZED_MALLOC(SGMatrix<float64_t>)
+SG_SPECIALIZED_MALLOC(SGMatrix<floatmax_t>)
+SG_SPECIALIZED_MALLOC(SGMatrix<complex128_t>)
 #undef SG_SPECIALIZED_MALLOC
+
+void* get_copy(void* src, size_t len);
+char* get_strdup(const char* str);
 }
 
 #endif // DOXYGEN_SHOULD_SKIP_THIS

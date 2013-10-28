@@ -322,6 +322,8 @@ class CSGInterface : public CSGObject
 
 		/** create converter */
 		bool cmd_set_converter();
+		/** apply converter */
+		bool cmd_apply_converter();
 		/** embed features */
 		bool cmd_embed();
 
@@ -412,10 +414,10 @@ class CSGInterface : public CSGObject
 		/** best path 2struct */
 		bool cmd_best_path_2struct();
 		/**
- 		 * -assemble plif struct from a bunch of
- 		 *  arrays of the same length corresponding
- 		 *  to the fields of the plif-struct-array
- 		 */
+		 * -assemble plif struct from a bunch of
+		 *  arrays of the same length corresponding
+		 *  to the fields of the plif-struct-array
+		 */
 		bool cmd_set_plif_struct();
 		/**
 		 * -get plif struct as a bunch
@@ -510,16 +512,16 @@ class CSGInterface : public CSGObject
 		 */
 		bool cmd_precompute_tiling_features();
 		/**
- 		 * -compute the matrix that links
- 		 *  the plif ids to the transitions
- 		 *
- 		 * -the matrix has dimensions nof states
- 		 *  times nof states times nof feature types
- 		 *
- 		 * - feature types are for example
- 		 *   signal features, length features,
- 		 *   content features and tiling features
- 		 */
+		 * -compute the matrix that links
+		 *  the plif ids to the transitions
+		 *
+		 * -the matrix has dimensions nof states
+		 *  times nof states times nof feature types
+		 *
+		 * - feature types are for example
+		 *   signal features, length features,
+		 *   content features and tiling features
+		 */
 		bool cmd_set_model();
 		/**
 		 * set sparse feature matrix and

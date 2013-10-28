@@ -48,16 +48,16 @@ sudo port install shogun
 \subsection requirements 安装需要的环境
 
 SHOGUN的./configure配置程序需要使用一些linux工具，包括bash, grep, test, sed, cut, ldd,uname,gcc,g++和
-cat，还有python(debian包: python2.4 or python2.5)。 
+cat，还有python(debian包: python2.4 or python2.5)。
 
 另外，你可以选择安装atlas和lapack（debian包lapack3-dev,atlas3-headers，atlas3-base-dev或atlas3-altivec-dev，
 atlas3-sse2-dev）。请注意atlas/lapack只可以支持linux（因此它们所支持的高性能计算只能在linux进行）。
 如果atlas/lapack没有安装，shogun一样可以工作，不过这时它是较慢的版本。如果想使用CPLEX(tm)来做
 多重核函数学习，需要确定cplex包含在系统路径中（PATH环境变量）。如果没有包含cplex，
 对于1范数MKL,shogun会尝试使用GLPK（如果能找到大于4.29的版本）;对于对于p范数MKL,使用常规方法。
-\li 若安装R接口，你需要安装R开发包（debian包r-base-dev） 
+\li 若安装R接口，你需要安装R开发包（debian包r-base-dev）
 
-\li 若安装octave接口，你需要安装octave开发包（debian包octave3.0-headers） 
+\li 若安装octave接口，你需要安装octave开发包（debian包octave3.0-headers）
 
 \li 若安装python接口，你需要安装numpy1.x
 
@@ -91,7 +91,7 @@ sudo make install
 
 (如果是编译模块化接口，你不必编译libshogunui)
 
-如果你运行 
+如果你运行
 \verbatim ./configure\endverbatim
 它会自动检测和配置可使用的接口
 

@@ -44,7 +44,7 @@ void test()
 	/* number of classes is dimension of data here to have some easy multiclass
 	 * structure  */
 	const unsigned int num_vectors=50;
-	const unsigned int dim_vectors=3; 
+	const unsigned int dim_vectors=3;
 	// Heiko: increase number of classes and things will fail :(
 	// Sergey: the special buggy case of 3 classes was hopefully fixed
 
@@ -90,7 +90,7 @@ void test()
 	CModelSelectionParameters* root=build_param_tree(kernel);
 
 	CGridSearchModelSelection * model_selection=new CGridSearchModelSelection(
-			root, cross);
+			cross, root);
 	bool print_state=true;
 	CParameterCombination * params=model_selection->select_model(print_state);
 	SG_SPRINT("best combination\n");
@@ -113,4 +113,3 @@ int main(int argc, char **argv)
 
 	return 0;
 }
-

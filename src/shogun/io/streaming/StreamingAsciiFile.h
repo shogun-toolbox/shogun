@@ -10,7 +10,7 @@
 #ifndef __STREAMING_ASCIIFILE_H__
 #define __STREAMING_ASCIIFILE_H__
 
-#include <shogun/io/AsciiFile.h>
+#include <shogun/io/CSVFile.h>
 #include <shogun/io/streaming/StreamingFile.h>
 #include <shogun/features/SparseFeatures.h>
 
@@ -18,7 +18,7 @@ namespace shogun
 {
 /** @brief Class StreamingAsciiFile to read vector-by-vector from ASCII files.
  *
- * The object must be initialized like a CAsciiFile.
+ * The object must be initialized like a CCSVFile.
  */
 class CStreamingAsciiFile: public CStreamingFile
 {
@@ -41,6 +41,12 @@ public:
 	 * Destructor
 	 */
 	virtual ~CStreamingAsciiFile();
+
+	/** set delimiting character
+	 *
+	 * @param delimiter the character used as delimiter
+	 */
+	void set_delimiter(char delimiter);
 
 	/**
 	 * Utility function to convert a string to a boolean value
@@ -106,6 +112,9 @@ private:
 
 	/// Helper for parsing
 	v_array<substring> words;
+
+	/** delimiter */
+	char m_delimiter;
 };
 }
 #endif //__STREAMING_ASCIIFILE_H__

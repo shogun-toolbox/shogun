@@ -26,7 +26,7 @@ namespace shogun
 	class CMulticlassLabels;
 	class CDenseLabels;
 
-/** @brief Multiclass Labels for multi-class classification 
+/** @brief Multiclass Labels for multi-class classification
  *
  * valid values for labels are 0...nr_classes-1
  */
@@ -57,12 +57,6 @@ class CMulticlassLabels : public CDenseLabels
 		/** destructor */
 		~CMulticlassLabels();
 
-		/** helper method used to specialize a base class instance
-		 *
-		 * @param base_labels its dynamic type must be CMulticlassLabels
-		 */
-		static CMulticlassLabels* obtain_from_generic(CLabels* base_labels);
-
 		/** Make sure the label is valid, otherwise raise SG_ERROR.
 		 *
 		 * possible with subset
@@ -75,7 +69,7 @@ class CMulticlassLabels : public CDenseLabels
 		 *
 		 * @return label type multiclass
 		 */
-		virtual ELabelType get_label_type();
+		virtual ELabelType get_label_type() const;
 
 		/** returns labels containing +1 at positions with ith class
 		 *  and -1 at other positions
@@ -84,7 +78,7 @@ class CMulticlassLabels : public CDenseLabels
 		 */
 		CBinaryLabels* get_binary_for_class(int32_t i);
 
-		/** get unqiue labels (new SGVector, caller has to clean up)
+		/** get unique labels (new SGVector)
 		 *
 		 * possible with subset
 		 *
@@ -116,8 +110,8 @@ class CMulticlassLabels : public CDenseLabels
 		 */
 		void set_multiclass_confidences(int32_t i, SGVector<float64_t> confidences);
 
-		/** allocates matrix to store confidences. should always 
-		 * be called before setting confidences with 
+		/** allocates matrix to store confidences. should always
+		 * be called before setting confidences with
 		 * @ref set_multiclass_confidences
 		 *
 		 * @param n_classes number of classes

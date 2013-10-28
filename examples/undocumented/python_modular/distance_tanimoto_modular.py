@@ -1,18 +1,14 @@
 #!/usr/bin/env python
-from tools.load import LoadMatrix
-lm=LoadMatrix()
-
-traindat = lm.load_numbers('../data/fm_train_real.dat')
-testdat = lm.load_numbers('../data/fm_test_real.dat')
+traindat = '../data/fm_train_real.dat'
+testdat = '../data/fm_test_real.dat'
 
 parameter_list = [[traindat,testdat],[traindat,testdat]]
 
-def distance_tanimoto_modular (fm_train_real=traindat,fm_test_real=testdat):
-	from shogun.Features import RealFeatures
-	from shogun.Distance import TanimotoDistance
+def distance_tanimoto_modular (train_fname=traindat,test_fname=testdat):
+	from modshogun import RealFeatures, TanimotoDistance, CSVFile
 
-	feats_train=RealFeatures(fm_train_real)
-	feats_test=RealFeatures(fm_test_real)
+	feats_train=RealFeatures(CSVFile(train_fname))
+	feats_test=RealFeatures(CSVFile(test_fname))
 
 	distance=TanimotoDistance(feats_train, feats_train)
 

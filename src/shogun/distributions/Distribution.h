@@ -29,9 +29,9 @@ class CMath;
  * get_num_model_parameters()	- for the total number of model parameters
  * get_log_model_parameter()	- for the n-th model parameter (logarithmic)
  * get_log_derivative()			- for the partial derivative wrt. to the n-th
- * 										model parameter
+ *										model parameter
  * get_log_likelihood_example() - for the likelihood for the
- * 										n-th example
+ *										n-th example
  *
  * This way methods building on CDistribution, might enumerate over all possible
  * model parameters and obtain the parameter vector and the gradient. This is
@@ -142,14 +142,20 @@ class CDistribution : public CSGObject
 			return exp(get_log_likelihood_example(num_example));
 		}
 
+		/** compute likelihood for all vectors in sample
+		 *
+		 * @return likelihood vector for all examples
+		 */
+		virtual SGVector<float64_t> get_likelihood_for_all_examples();
+
 		/** set feature vectors
 		 *
 		 * @param f new feature vectors
 		 */
 		virtual void set_features(CFeatures* f)
 		{
-			SG_UNREF(features);
 			SG_REF(f);
+			SG_UNREF(features);
 			features=f;
 		}
 

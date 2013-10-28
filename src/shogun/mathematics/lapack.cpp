@@ -38,6 +38,7 @@ using namespace shogun;
 #define DPOTRS dpotrs
 #define DGETRS dgetrs
 #define DSYGVX dsygvx
+#define DSTEMR dstemr
 #else
 #define DSYEV dsyev_
 #define DGESVD dgesvd_
@@ -52,6 +53,7 @@ using namespace shogun;
 #define DGETRS dgetrs_
 #define DPOTRS dpotrs_
 #define DSYGVX dsygvx_
+#define DSTEMR dstemr_
 #endif
 
 #ifndef HAVE_ATLAS
@@ -367,5 +369,34 @@ void wrap_dsygvx(int itype, char jobz, char uplo, int n, double *a, int lda, dou
 #endif
 }
 #undef DSYGVX
+
+void wrap_dstemr(char jobz, char range, int n, double* diag, double *subdiag,
+		double vl, double vu, int il, int iu, int* m, double* w, double* z__,
+		int ldz, int nzc, int *isuppz, int tryrac, int *info)
+{
+#ifdef HAVE_ACML
+	SG_SNOTIMPLEMENTED
+#else
+	int lwork=-1;
+	int liwork=-1;
+	double work1=0;
+	int iwork1=0;
+	DSTEMR(&jobz, &range, &n, diag, subdiag, &vl, &vu,
+		&il, &iu, m, w, z__, &ldz, &nzc, isuppz, &tryrac,
+		&work1, &lwork, &iwork1, &liwork, info);
+	lwork=(int)work1;
+	liwork=iwork1;
+	double* work=SG_MALLOC(double, lwork);
+	int* iwork=SG_MALLOC(int, liwork);
+	DSTEMR(&jobz, &range, &n, diag, subdiag, &vl, &vu,
+		&il, &iu, m, w, z__, &ldz, &nzc, isuppz, &tryrac,
+		work, &lwork, iwork, &liwork, info);
+
+	SG_FREE(work);
+	SG_FREE(iwork);
+#endif
+}
+#undef DSTEMR
+
 }
 #endif //HAVE_LAPACK

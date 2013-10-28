@@ -12,12 +12,12 @@
 parameter_list=[[None]]
 
 def modelselection_parameter_tree_modular (dummy):
-    from shogun.ModelSelection import ParameterCombination
-    from shogun.ModelSelection import ModelSelectionParameters, R_EXP, R_LINEAR
-    from shogun.Kernel import PowerKernel
-    from shogun.Kernel import GaussianKernel
-    from shogun.Kernel import DistantSegmentsKernel
-    from shogun.Distance import MinkowskiMetric
+    from modshogun import ParameterCombination
+    from modshogun import ModelSelectionParameters, R_EXP, R_LINEAR
+    from modshogun import PowerKernel
+    from modshogun import GaussianKernel
+    from modshogun import DistantSegmentsKernel
+    from modshogun import MinkowskiMetric
 
     root=ModelSelectionParameters()
 

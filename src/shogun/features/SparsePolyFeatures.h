@@ -31,7 +31,7 @@ class CSparsePolyFeatures : public CDotFeatures
 		 *
 		 * @param feat real features
 		 * @param degree degree of the polynomial kernel
-		 * 					(only degree 2 & 3 are supported)
+		 *					(only degree 2 & 3 are supported)
 		 * @param normalize normalize kernel
 		 * @param hash_bits number of bits in hashd feature space
 		 */
@@ -87,12 +87,6 @@ class CSparsePolyFeatures : public CDotFeatures
 		 */
 		virtual float64_t dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2);
 
-		/**
-		 *
-		 * @return size
-		 */
-		virtual int32_t get_size() const;
-
 		#ifndef DOXYGEN_SHOULD_SKIP_THIS
 		/** iterator for weighted spectrum features */
 		struct sparse_poly_feature_iterator
@@ -117,7 +111,7 @@ class CSparsePolyFeatures : public CDotFeatures
 		 * free_feature_iterator to cleanup
 		 *
 		 * @param vector_index the index of the vector over whose components to
-		 * 			iterate over
+		 *			iterate over
 		 * @return feature iterator (to be passed to get_next_feature)
 		 */
 		virtual void* get_feature_iterator(int32_t vector_index);

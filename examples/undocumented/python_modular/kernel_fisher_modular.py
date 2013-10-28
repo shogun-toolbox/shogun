@@ -12,14 +12,14 @@ fm_hmm_pos=[ traindat[i] for i in where([label_traindat==1])[1] ]
 fm_hmm_neg=[ traindat[i] for i in where([label_traindat==-1])[1] ]
 
 def kernel_fisher_modular (fm_train_dna=traindat, fm_test_dna=testdat,
-		label_train_dna=label_traindat, 
+		label_train_dna=label_traindat,
 		N=1,M=4,pseudo=1e-1,order=1,gap=0,reverse=False,
 		kargs=[1,False,True]):
 
-	from shogun.Features import StringCharFeatures, StringWordFeatures, FKFeatures, DNA
-	from shogun.Kernel import PolyKernel
-	from shogun.Distribution import HMM, BW_NORMAL#, MSG_DEBUG
-	
+	from modshogun import StringCharFeatures, StringWordFeatures, FKFeatures, DNA
+	from modshogun import PolyKernel
+	from modshogun import HMM, BW_NORMAL#, MSG_DEBUG
+
 	# train HMM for positive class
 	charfeat=StringCharFeatures(fm_hmm_pos, DNA)
 	#charfeat.io.set_loglevel(MSG_DEBUG)

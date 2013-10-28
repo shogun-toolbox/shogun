@@ -7,5 +7,5 @@ covariance as input. The covariance used in this example is the full covariance.
 The training method used in this example is Expectation-Maximization. It takes
 minimum covariance, maximum iterations and minimum log-likelihood change as
 input. After training one can cluster observations by selecting the most
-likely cluster to have generated the observation. 
+likely cluster to have generated the observation.
 

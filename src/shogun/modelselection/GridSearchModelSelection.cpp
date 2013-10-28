@@ -16,18 +16,15 @@
 
 using namespace shogun;
 
-CGridSearchModelSelection::CGridSearchModelSelection() :
-	CModelSelection(NULL, NULL)
+CGridSearchModelSelection::CGridSearchModelSelection() : CModelSelection()
 {
-
 }
 
 CGridSearchModelSelection::CGridSearchModelSelection(
-		CModelSelectionParameters* model_parameters,
-		CMachineEvaluation* machine_eval) :
-	CModelSelection(model_parameters, machine_eval)
+		CMachineEvaluation* machine_eval,
+		CModelSelectionParameters* model_parameters)
+		: CModelSelection(machine_eval, model_parameters)
 {
-
 }
 
 CGridSearchModelSelection::~CGridSearchModelSelection()
@@ -43,7 +40,7 @@ CParameterCombination* CGridSearchModelSelection::select_model(bool print_state)
 	CDynamicObjectArray* combinations=
 			(CDynamicObjectArray*)m_model_parameters->get_combinations();
 
-	CCrossValidationResult* best_result = new CCrossValidationResult();
+	CCrossValidationResult* best_result=new CCrossValidationResult();
 
 	CParameterCombination* best_combination=NULL;
 	if (m_machine_eval->get_evaluation_direction()==ED_MAXIMIZE)
@@ -77,7 +74,7 @@ CParameterCombination* CGridSearchModelSelection::select_model(bool print_state)
 				machine->m_model_selection_parameters);
 
 		/* note that this may implicitly lock and unlockthe machine */
-		CCrossValidationResult* result =
+		CCrossValidationResult* result=
 				(CCrossValidationResult*)(m_machine_eval->evaluate());
 
 		if (result->get_result_type() != CROSSVALIDATION_RESULT)
@@ -97,9 +94,9 @@ CParameterCombination* CGridSearchModelSelection::select_model(bool print_state)
 				best_combination=(CParameterCombination*)
 						combinations->get_element(i);
 
-				SG_UNREF(best_result);
 				SG_REF(result);
-				best_result = result;
+				SG_UNREF(best_result);
+				best_result=result;
 			}
 			else
 			{
@@ -118,9 +115,9 @@ CParameterCombination* CGridSearchModelSelection::select_model(bool print_state)
 				best_combination=(CParameterCombination*)
 						combinations->get_element(i);
 
-				SG_UNREF(best_result);
 				SG_REF(result);
-				best_result = result;
+				SG_UNREF(best_result);
+				best_result=result;
 			}
 			else
 			{
@@ -140,4 +137,3 @@ CParameterCombination* CGridSearchModelSelection::select_model(bool print_state)
 
 	return best_combination;
 }
-

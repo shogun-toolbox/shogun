@@ -9,6 +9,7 @@
  */
 
 #include <shogun/lib/SGMatrixList.h>
+#include <shogun/lib/memory.h>
 
 namespace shogun {
 
@@ -29,9 +30,6 @@ SGMatrixList<T>::SGMatrixList(int32_t nmats, bool ref_counting)
 : SGReferencedData(ref_counting), num_matrices(nmats)
 {
 	matrix_list = SG_MALLOC(SGMatrix<T>, nmats);
-	// Call to SGMatrix default constructor in-place
-	for ( int32_t i = 0 ; i < nmats ; ++i )
-		new (&matrix_list[i]) SGMatrix<T>();
 }
 
 template <class T>
@@ -44,6 +42,24 @@ template <class T>
 SGMatrixList<T>::~SGMatrixList()
 {
 	unref();
+}
+
+template <class T>
+SGMatrix<T> SGMatrixList<T>::get_matrix(index_t index) const
+{
+	return matrix_list[index];
+}
+
+template <class T>
+SGMatrix<T> SGMatrixList<T>::operator[](index_t index) const
+{
+	return matrix_list[index];
+}
+
+template <class T>
+void SGMatrixList<T>::set_matrix(index_t index, const SGMatrix<T> matrix)
+{
+	matrix_list[index] = matrix;
 }
 
 template <class T>
@@ -63,24 +79,9 @@ void SGMatrixList<T>::init_data()
 template <class T>
 void SGMatrixList<T>::free_data()
 {
-	cleanup_matrices();
 	SG_FREE(matrix_list);
 	num_matrices = 0;
 	matrix_list = NULL;
-}
-
-template <class T>
-void SGMatrixList<T>::cleanup_matrices()
-{
-	if ( matrix_list && num_matrices )
-	{
-		for ( int32_t i = 0 ; i < num_matrices ; ++i )
-		{
-			// Explicit call to the destructor required
-			// due to the use of in-place constructors
-			matrix_list[i].~SGMatrix();
-		}
-	}
 }
 
 template <class T>
@@ -92,22 +93,19 @@ SGMatrixList<T> SGMatrixList<T>::split(SGMatrix<T> matrix, int32_t num_component
 		matrix.num_cols, num_components);
 
 	int32_t new_num_cols = matrix.num_cols / num_components;
-	int32_t start;
 	SGMatrixList<T> out(num_components);
 
 	for ( int32_t i = 0 ; i < num_components ; ++i )
 	{
-		out[i] = SGMatrix<T>(matrix.num_rows, new_num_cols);
-		start = i*matrix.num_rows*new_num_cols;
+		SGMatrix<T> new_matrix = SGMatrix<T>(matrix.num_rows, new_num_cols);
 
 		for ( int32_t row = 0 ; row < matrix.num_rows ; ++row )
 		{
 			for ( int32_t col = 0 ; col < new_num_cols ; ++col )
-			{
-				out[i][col*matrix.num_rows + row] =
-					matrix[start + col*matrix.num_rows + row];
-			}
+				new_matrix(row, col) = matrix(row, i*new_num_cols + col);
 		}
+
+		out.set_matrix(i, new_matrix);
 	}
 
 	return out;

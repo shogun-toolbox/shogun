@@ -74,7 +74,7 @@ CWeightedDegreePositionStringKernel::CWeightedDegreePositionStringKernel(
 }
 
 CWeightedDegreePositionStringKernel::CWeightedDegreePositionStringKernel(
-	int32_t size, float64_t* w, int32_t d, int32_t mm, int32_t* s, int32_t sl,
+	int32_t size, SGVector<float64_t> w, int32_t d, int32_t mm, SGVector<int32_t> s,
 	int32_t mkls)
 : CStringKernel<char>(size)
 {
@@ -94,7 +94,7 @@ CWeightedDegreePositionStringKernel::CWeightedDegreePositionStringKernel(
 	for (int32_t i=0; i<d*(1+max_mismatch); i++)
 		weights[i]=w[i];
 
-	set_shifts(SGVector<int32_t>(SGVector<int32_t>::clone_vector(s,sl), sl));
+	set_shifts(s);
 }
 
 CWeightedDegreePositionStringKernel::CWeightedDegreePositionStringKernel(
@@ -182,8 +182,8 @@ bool CWeightedDegreePositionStringKernel::init(CFeatures* l, CFeatures* r)
 
 	CStringKernel<char>::init(l,r);
 
-	SG_DEBUG("lhs_changed: %i\n", lhs_changed) 
-	SG_DEBUG("rhs_changed: %i\n", rhs_changed) 
+	SG_DEBUG("lhs_changed: %i\n", lhs_changed)
+	SG_DEBUG("rhs_changed: %i\n", rhs_changed)
 
 	CStringFeatures<char>* sf_l=(CStringFeatures<char>*) l;
 	CStringFeatures<char>* sf_r=(CStringFeatures<char>*) r;
@@ -266,7 +266,7 @@ bool CWeightedDegreePositionStringKernel::init_optimization(
 	delete_optimization();
 
 	if (tree_num<0)
-		SG_DEBUG("initializing CWeightedDegreePositionStringKernel optimization\n") 
+		SG_DEBUG("initializing CWeightedDegreePositionStringKernel optimization\n")
 
 	for (int32_t i=0; i<p_count; i++)
 	{
@@ -295,7 +295,7 @@ bool CWeightedDegreePositionStringKernel::delete_optimization()
 	if ((opt_type==FASTBUTMEMHUNGRY) && (tries.get_use_compact_terminal_nodes()))
 	{
 		tries.set_use_compact_terminal_nodes(false) ;
-		SG_DEBUG("disabling compact trie nodes with FASTBUTMEMHUNGRY\n") 
+		SG_DEBUG("disabling compact trie nodes with FASTBUTMEMHUNGRY\n")
 	}
 
 	if (get_is_initialized())
@@ -1889,6 +1889,8 @@ void CWeightedDegreePositionStringKernel::load_serializable_post() throw (Shogun
 void CWeightedDegreePositionStringKernel::init()
 {
 	weights=NULL;
+	weights_length=0;
+	weights_degree=0;
 	position_weights=NULL;
 	position_weights_len=0;
 

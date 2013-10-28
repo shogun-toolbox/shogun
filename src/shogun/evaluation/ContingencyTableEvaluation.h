@@ -92,7 +92,7 @@ public:
 	 */
 	virtual float64_t evaluate(CLabels* predicted, CLabels* ground_truth);
 
-	EEvaluationDirection get_evaluation_direction();
+	virtual EEvaluationDirection get_evaluation_direction() const;
 
 	/** get name */
 	virtual const char* get_name() const
@@ -199,28 +199,28 @@ public:
 		return m_TN/(m_TN+m_FP);
 	};
 
-	/** Returns number of True Positives 
+	/** Returns number of True Positives
 	 * @return number of true positives
 	 */
 	float64_t get_TP() const
 	{
 		return m_TP;
 	}
-	/** Returns number of False Positives 
+	/** Returns number of False Positives
 	 * @return number of false positives
 	 */
 	float64_t get_FP() const
 	{
 		return m_FP;
 	}
-	/** Returns number of True Negatives 
+	/** Returns number of True Negatives
 	 * @return number of true negatives
 	 */
 	float64_t get_TN() const
 	{
 		return m_TN;
 	}
-	/** Returns number of True Negatives 
+	/** Returns number of True Negatives
 	 * @return number of false negatives
 	 */
 	float64_t get_FN() const
@@ -240,7 +240,7 @@ public:
 	/** Returns custom direction, not implemented
 	 * @return direction of custom score
 	 */
-	virtual EEvaluationDirection get_custom_direction()
+	virtual EEvaluationDirection get_custom_direction() const
 	{
 		SG_NOTIMPLEMENTED
 		return ED_MAXIMIZE;

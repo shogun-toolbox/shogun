@@ -7,11 +7,11 @@ testdat = lm.load_dna('../data/fm_test_dna.dat')
 parameter_list = [[traindat,testdat,4,0,False, False],[traindat,testdat,4,0,False,False]]
 
 def kernel_comm_word_string_modular (fm_train_dna=traindat, fm_test_dna=testdat, order=3, gap=0, reverse = False, use_sign = False):
-	
-	from shogun.Kernel import CommWordStringKernel
-	from shogun.Features import StringWordFeatures, StringCharFeatures, DNA
-	from shogun.Preprocessor import SortWordString
-	
+
+	from modshogun import CommWordStringKernel
+	from modshogun import StringWordFeatures, StringCharFeatures, DNA
+	from modshogun import SortWordString
+
 	charfeat=StringCharFeatures(DNA)
 	charfeat.set_features(fm_train_dna)
 	feats_train=StringWordFeatures(charfeat.get_alphabet())

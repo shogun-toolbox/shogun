@@ -53,9 +53,22 @@ bool CDirectorStructuredModel::check_training_setup() const
 	return false;
 }
 
-void CDirectorStructuredModel::init_opt(SGMatrix< float64_t > & A,  SGVector< float64_t > a, SGMatrix< float64_t > B,  SGVector< float64_t > & b, SGVector< float64_t > lb, SGVector< float64_t > ub, SGMatrix < float64_t >  & C)
+void CDirectorStructuredModel::init_primal_opt(
+		float64_t regularization,
+		SGMatrix< float64_t > & A,
+		SGVector< float64_t > a,
+		SGMatrix< float64_t > B,
+		SGVector< float64_t > & b,
+		SGVector< float64_t > lb,
+		SGVector< float64_t > ub,
+		SGMatrix< float64_t > & C)
 {
-	SG_ERROR("Please implemement init_opt(A,a,B,b,lb,ub,C) in your target language before use\n")
+	SG_ERROR("Please implemement init_primal_opt(regularization,A,a,B,b,lb,ub,C) in your target language before use\n")
+}
+
+void CDirectorStructuredModel::init_training()
+{
+	SG_ERROR("Please implemement init_training() in your target language before use\n")
 }
 
 #endif /* USE_SWIG_DIRECTORS */

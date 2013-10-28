@@ -85,7 +85,6 @@ void    fatalError(const char *msg1, const char *msg2);
 /*** Class constructor                                                      ***/
 /******************************************************************************/
 QPproblem::QPproblem()
-: CSGObject()
 {
   /*** set problem defaults ***/
   maxmw                = 40;
@@ -114,17 +113,17 @@ QPproblem::~QPproblem()
 /******************************************************************************/
 /*** Setter method for the subproblem features                              ***/
 /******************************************************************************/
-void QPproblem::Subproblem(QPproblem &p, int32_t len, int32_t *perm)
+void QPproblem::copy_subproblem(QPproblem* dst, QPproblem* p, int32_t len, int32_t *perm)
 {
   int32_t k;
 
-  memcpy(this, &p, sizeof(QPproblem));
-  ell = len;
+  *dst=*p;
+  dst->ell = len;
 
-  KER->SetSubproblem(p.KER, len, perm);
-  y = SG_MALLOC(int32_t, len);
-  for (k = 0; k < ell; k++)
-      y[k] = p.y[perm[k]];
+  dst->KER->SetSubproblem(p->KER, len, perm);
+  dst->y = SG_MALLOC(int32_t, len);
+  for (k = 0; k < len; k++)
+      dst->y[k] = p->y[perm[k]];
 }
 
 namespace shogun

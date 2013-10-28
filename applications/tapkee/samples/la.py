@@ -14,7 +14,7 @@ converter = sg.LaplacianEigenmaps()
 converter.set_target_dim(2)
 # set number of neighbors
 converter.set_k(20)
-# set tau multiplier 
+# set tau multiplier
 converter.set_tau(1.0)
 
 # compute embedding with Laplacian Eigenmaps method

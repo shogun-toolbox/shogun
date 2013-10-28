@@ -7,10 +7,10 @@
 #                                                                                           #
 #    This program is distributed in the hope that it will be useful,                        #
 #    but WITHOUT ANY WARRANTY; without even the implied warranty of                         #
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                           # 
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                           #
 #    GNU General Public License for more details.                                           #
 #                                                                                           #
-#    You should have received a copy of the GNU General Public License                      # 
+#    You should have received a copy of the GNU General Public License                      #
 #    along with this program; if not, see http://www.gnu.org/licenses                       #
 #    or write to the Free Software Foundation, Inc., 51 Franklin Street,                    #
 #    Fifth Floor, Boston, MA 02110-1301  USA                                                #
@@ -48,7 +48,7 @@ try:
 except:
     LinAddSVM = GPBTSVM
     LinearSVM = LibSVM
-    
+
 from shogun.Preprocessor import SortWordString, SortUlongString
 
 from utils import calcprc, calcroc, accuracy
@@ -60,10 +60,10 @@ from poim import reshape_normalize_contribs, compute_weight_mass
 ################################################################################
 def non_atcg_convert(seq, nuc_con):
     """ Converts Non ATCG characters from DNA sequence """
-    
+
     if nuc_con == '':sys.stderr.write("usage: Provide a choice for non ACGT nucleotide conversion [T|A|C|G|R|Y|N] at last\n");sys.exit(-1)
     if re.match(r'[^ATCGRYN]', nuc_con):sys.stderr.write("usage: Conversion nucleotide choice -"+ nuc_con +"- failed. pick one from [T|A|C|G|R|Y|N]\n");sys.exit(-1)
-    
+
     nuc_con = nuc_con.upper()
     mod_seq = []
     for i in range(len(seq)):
@@ -76,26 +76,26 @@ def non_atcg_convert(seq, nuc_con):
             if nuc_con == 'N':(nucleotide, line) = ('ATCG', '')
             if nuc_con == 'R':(nucleotide, line) = ('AG', '')
             if nuc_con == 'Y':(nucleotide, line) = ('TC', '')
-                
+
             for single_nuc in seq[i]:
                 if re.match(r'[^ACGT]', single_nuc, re.IGNORECASE):
                     line += random.choice(nucleotide)
                 else:
                     line += single_nuc.upper()
-            mod_seq.append(line)       
+            mod_seq.append(line)
         else:
             seq[i] = seq[i].upper()
             mod_seq.append(seq[i])
     return mod_seq
 
 def non_aminoacid_converter(seq, amino_con):
-    """ Converts Non amino acid characters from protein sequence """  
+    """ Converts Non amino acid characters from protein sequence """
 
     if amino_con == '':sys.stderr.write("usage: Provide a choice for replacing non amino acid characters\n");sys.exit(-1)
     flag = 0
     if len(amino_con)>1:
         if amino_con != 'random':flag = 1
-    else:        
+    else:
         if re.match(r'[^GPAVLIMCFYWHKRQNEDST]', amino_con, re.IGNORECASE):flag = 1
     if flag == 1:sys.stderr.write("usage: Replace aminoacid chioce -"+ amino_con +"- failed. Pick a valid aminoacid single letter code/random\n");sys.exit(-1)
 
@@ -113,7 +113,7 @@ def non_aminoacid_converter(seq, amino_con):
                     else:
                         single_amino = single_amino.upper()
                         line += single_amino
-                opt_seq.append(line)         
+                opt_seq.append(line)
             else:
                 seq[i] = re.sub(r'[^GPAVLIMCFYWHKRQNEDST|gpavlimcfywhkrqnedst]', amino_con, seq[i])
                 seq[i] = seq[i].upper()
@@ -121,7 +121,7 @@ def non_aminoacid_converter(seq, amino_con):
         else:
             seq[i] = seq[i].upper()
             opt_seq.append(seq[i])
-    return opt_seq 
+    return opt_seq
 # helper functions
 
 def create_features(kname, examples, kparam, train_mode, preproc, seq_source, nuc_con):
@@ -130,13 +130,13 @@ def create_features(kname, examples, kparam, train_mode, preproc, seq_source, nu
     if kname == 'gauss' or kname == 'linear' or kname == 'poly':
         examples = numpy.array(examples)
         feats = RealFeatures(examples)
-        
+
     elif kname == 'wd' or kname == 'localalign' or kname == 'localimprove':
-        if seq_source == 'dna': 
+        if seq_source == 'dna':
             examples = non_atcg_convert(examples, nuc_con)
             feats = StringCharFeatures(examples, DNA)
         elif seq_source == 'protein':
-            examples = non_aminoacid_converter(examples, nuc_con) 
+            examples = non_aminoacid_converter(examples, nuc_con)
             feats = StringCharFeatures(examples, PROTEIN)
         else:
             sys.stderr.write("Sequence source -"+seq_source+"- is invalid. select [dna|protein]\n")
@@ -145,14 +145,14 @@ def create_features(kname, examples, kparam, train_mode, preproc, seq_source, nu
     elif kname == 'spec' or kname == 'cumspec':
         if seq_source == 'dna':
             examples = non_atcg_convert(examples, nuc_con)
-            feats = StringCharFeatures(examples, DNA) 
-        elif seq_source == 'protein':    
+            feats = StringCharFeatures(examples, DNA)
+        elif seq_source == 'protein':
             examples = non_aminoacid_converter(examples, nuc_con)
             feats = StringCharFeatures(examples, PROTEIN)
         else:
             sys.stderr.write("Sequence source -"+seq_source+"- is invalid. select [dna|protein]\n")
             sys.exit(-1)
-       
+
         wf = StringUlongFeatures( feats.get_alphabet() )
         wf.obtain_from_char(feats, kparam['degree']-1, kparam['degree'], 0, kname=='cumspec')
         del feats
@@ -204,7 +204,7 @@ def create_features(kname, examples, kparam, train_mode, preproc, seq_source, nu
 
     else:
         print 'Unknown kernel %s' % kname
-    
+
     return (feats,preproc)
 
 def create_kernel(kname,kparam,feats_train):
@@ -253,7 +253,7 @@ def create_kernel(kname,kparam,feats_train):
     else:
         print 'Unknown kernel %s' % kname
 
-    kernel.set_cache_size(32) 
+    kernel.set_cache_size(32)
     return kernel
 
 def create_combined_kernel(kname, kparam, examples, train_mode, preproc):
@@ -302,14 +302,14 @@ def train(trainex,trainlab,C,kname,kparam,seq_source,nuc_con):
     """Trains a SVM with the given kernel"""
 
     (feats_train, preproc) = create_features(kname,trainex, kparam, True, None, seq_source, nuc_con)
-    
+
     if kname == 'wd':
         kparam['seqlength'] = len(trainex[0])
     kernel = create_kernel(kname,kparam,feats_train)
 
     if kname == 'spec2' or kname == 'cumspec2':
         kernel.init(feats_train['combined'], feats_train['combined'])
-    else:    
+    else:
         kernel.init(feats_train, feats_train)
     kernel.io.disable_progress()
     kernel.set_optimization_type(SLOWBUTMEMEFFICIENT)
@@ -319,11 +319,11 @@ def train(trainex,trainlab,C,kname,kparam,seq_source,nuc_con):
     if kname in ('wd', 'spec', 'cumspec', 'spec2', 'cumspec2'):
         # for the string kernels there exist specific optimizations that are only effective when using
         # a LinAdd SVM implementation (e.g. SVM-light or GPBT-SVM)
-        SVMClass = LinAddSVM 
-    elif kname == 'linear': 
+        SVMClass = LinAddSVM
+    elif kname == 'linear':
         SVMClass = LinearSVM
     else:
-        SVMClass=DefaultSVM 
+        SVMClass=DefaultSVM
 
     svm = SVMClass(C, kernel, labels)
 
@@ -332,7 +332,7 @@ def train(trainex,trainlab,C,kname,kparam,seq_source,nuc_con):
     svm.set_linadd_enabled(True)
     svm.set_epsilon(1e-5)
     svm.parallel.set_num_threads(svm.parallel.get_num_cpus())
-    
+
     svm.train()
 
     return (svm, kernel, feats_train, preproc)
@@ -348,14 +348,14 @@ def train_and_test(trainex,trainlab,testex,C,kname,kparam, seq_source, nuc_con):
         for feats in feats_test.values():
             feats.io.disable_progress()
         kernel.init(feats_train['combined'], feats_test['combined'])
-    else:    
+    else:
         feats_train.io.disable_progress()
         feats_test.io.disable_progress()
         kernel.init(feats_train, feats_test)
 
     kernel.set_optimization_type(SLOWBUTMEMEFFICIENT)
     output = svm.apply().get_labels()
-    
+
     return output
 
 def crossvalidation(cv, kname, kparam, C, all_examples, all_labels, seq_source, nuc_con):
@@ -378,11 +378,11 @@ def crossvalidation(cv, kname, kparam, C, all_examples, all_labels, seq_source, 
         XT, LT, XTE, LTE = getCurrentSplit(repetition, partitions, all_labels, all_examples)
         numpos = len(where(array(LTE)>0)[0])
         svmout = train_and_test(XT, LT, XTE, C, kname, kparam, seq_source, nuc_con)
-        
+
         for i in xrange(len(svmout)):
             all_outputs[partitions[repetition][i]] = svmout[i]
             all_split[partitions[repetition][i]] = repetition ;
-        
+
     return (all_outputs, all_split)
 
 def evaluate(predictions, splitassignments, labels, roc_fname=None, prc_fname=None):
@@ -404,8 +404,8 @@ def evaluate(predictions, splitassignments, labels, roc_fname=None, prc_fname=No
     output_splits = cv* [[]]
     label_splits = cv* [[]]
     for i in xrange(cv):
-        label_splits[i]=[] 
-        output_splits[i]=[] 
+        label_splits[i]=[]
+        output_splits[i]=[]
 
     for i in xrange(0,len(labels)):
         if cv>1:
@@ -426,10 +426,10 @@ def evaluate(predictions, splitassignments, labels, roc_fname=None, prc_fname=No
         LTE = label_splits[split] ;
         svmout = output_splits[split]
 
-        numpos=0 
+        numpos=0
         for l in LTE:
             if l==1:
-                numpos+=1 
+                numpos+=1
         istwoclass = numpos>0 and numpos<len(LTE)
         res_str += '   number of positive examples = %i\n' % numpos
         res_str += '   number of negative examples = %i\n' % (len(LTE)-numpos)
@@ -455,10 +455,10 @@ def evaluate(predictions, splitassignments, labels, roc_fname=None, prc_fname=No
         res_str += '   accuracy (at threshold 0)   = %2.1f %% \n' % (100.0*acc)
         sum_accuracy += acc
 
-    numpos=0 
+    numpos=0
     for l in labels:
         if l==1:
-            numpos+=1 
+            numpos+=1
 
     mean_roc = sum_roc/cv
     mean_prc = sum_prc/cv
@@ -467,9 +467,9 @@ def evaluate(predictions, splitassignments, labels, roc_fname=None, prc_fname=No
     res_str += 'Averages\n'
     res_str += '   number of positive examples = %i\n' % round(numpos/cv)
     res_str += '   number of negative examples = %i\n' % round((len(labels)-numpos)/cv)
-    res_str += '   Area under ROC curve        = %2.1f %%\n' % (100.0*mean_roc) 
-    res_str += '   Area under PRC curve        = %2.1f %%\n' % (100.0*mean_prc) 
-    res_str += '   accuracy (at threshold 0)   = %2.1f %% \n' % (100.0*mean_acc) 
+    res_str += '   Area under ROC curve        = %2.1f %%\n' % (100.0*mean_roc)
+    res_str += '   Area under PRC curve        = %2.1f %%\n' % (100.0*mean_prc)
+    res_str += '   accuracy (at threshold 0)   = %2.1f %% \n' % (100.0*mean_acc)
 
     return (res_str,mean_roc,mean_prc,mean_acc)
 
@@ -485,7 +485,7 @@ def svm_cv(argv):
     C = float(argv[3])
     (kernelname,kparam,argv_rest) = parse.parse_kernel_param(argv[4:],False)
     (examples,labels,argv_rest) = parse.parse_input_file_train(kernelname, argv_rest)
-    
+
     (seq_source, nuc_con) = ('', '')
     if kernelname == 'spec' or kernelname == 'wd':
         if len(argv_rest)<1:sys.stderr.write("outputfile [dna|protein] non(nucleotide|amino)converter are missing\n");sys.exit(-1)
@@ -494,7 +494,7 @@ def svm_cv(argv):
             if argv_rest[-1] == 'dna':
                 sys.stderr.write("non-nucleotide converter like [A|T|C|G|R|Y|N] is missing. Cannot continue.\n")
                 sys.exit(-1)
-            elif argv_rest[-1] == 'protein':    
+            elif argv_rest[-1] == 'protein':
                 sys.stderr.write("non-amino acid converter like [G|P|A|V|L|I|M|C|F|Y|W|H|K|R|Q|N|E|D|S|T|random] is missing. Cannot continue.\n")
                 sys.exit(-1)
             else:
@@ -554,7 +554,7 @@ def svm_modelsel(argv):
         if len(argv_rest)>3:sys.stderr.write("Too many arguments\n");sys.exit(-1)
         seq_source = argv_rest[1]
         nuc_con = argv_rest[2]
-    
+
     if kernelname == 'linear' or kernelname == 'gauss' or kernelname== 'poly':
         if len(argv_rest)<1:sys.stderr.write("outputfile missing\n");sys.exit(-1)
         if len(argv_rest)>1:sys.stderr.write("Too many arguments\n");sys.exit(-1)
@@ -574,28 +574,28 @@ def svm_modelsel(argv):
 
             (all_outputs, all_split) = crossvalidation(cv, kernelname, kparam, C, examples, labels, seq_source, nuc_con)
             (res_str, mean_roc, mean_prc, mean_acc) = evaluate(all_outputs, all_split, labels)
-            mean_rocs.append(mean_roc) 
-            mean_prcs.append(mean_prc) 
-            mean_accs.append(mean_acc) 
-            all_Cs.append(C) 
-            all_kparam.append(None) 
+            mean_rocs.append(mean_roc)
+            mean_prcs.append(mean_prc)
+            mean_accs.append(mean_acc)
+            all_Cs.append(C)
+            all_kparam.append(None)
     else: # also optimize one kernel parameter
         for C in Cs:
             for kp in kparam["modelsel_params"]:
-                kparam[kparam["modelsel_name"]] = kp 
+                kparam[kparam["modelsel_name"]] = kp
                 utils.check_params(kparam, C, len(examples[0]))
 
                 (all_outputs, all_split) = crossvalidation(cv, kernelname, kparam, C, examples, labels, seq_source, nuc_con)
                 (res_str, mean_roc, mean_prc, mean_acc) = evaluate(all_outputs, all_split, labels)
-                mean_rocs.append(mean_roc) 
-                mean_prcs.append(mean_prc) 
-                mean_accs.append(mean_acc) 
-                all_Cs.append(C) 
+                mean_rocs.append(mean_roc)
+                mean_prcs.append(mean_prc)
+                mean_accs.append(mean_acc)
+                all_Cs.append(C)
                 all_kparam.append(kp)
 
-    max_roc=numpy.max(numpy.array(mean_rocs)) 
-    max_prc=numpy.max(numpy.array(mean_prcs)) 
-    max_acc=numpy.max(numpy.array(mean_accs)) 
+    max_roc=numpy.max(numpy.array(mean_rocs))
+    max_prc=numpy.max(numpy.array(mean_prcs))
+    max_acc=numpy.max(numpy.array(mean_accs))
     try:
         f = open(outfilename, 'w+')
     except:
@@ -626,7 +626,7 @@ def svm_modelsel(argv):
             best_acc_str+=model2str(kparam, all_Cs[i], all_kparam[i])+'\n'
         else:
             accsym=' '
-        
+
         detail_str+=model2str(kparam, all_Cs[i], all_kparam[i], False)+'\t'
         if kparam["modelsel_name"]==None or len(kparam["modelsel_params"])==1:
             detail_str += '%c%2.1f%%\t%c%2.1f%%\t%c%2.1f%%\n' % (rocsym, 100*mean_rocs[i], prcsym, 100*mean_prcs[i], accsym, 100*mean_accs[i])
@@ -669,13 +669,13 @@ def svm_pred(argv):
         if len(argv_rest)>3:sys.stderr.write("Too many arguments\n");sys.exit(-1)
         seq_source = argv_rest[1]
         nuc_con = argv_rest[2]
-    
+
     if kernelname == 'linear' or kernelname== 'poly' or kernelname == 'gauss':
         if len(argv_rest)<1:sys.stderr.write("outputfile missing\n");sys.exit(-1)
         if len(argv_rest)>1:sys.stderr.write("Too many arguments\n");sys.exit(-1)
-    
+
     outfilename = argv_rest[0]
-    
+
     utils.check_params(kparam, C, len(trainex[0]))
 
     # run training and testing
@@ -687,7 +687,7 @@ def svm_pred(argv):
     except:
         sys.stderr.write('Fails to open the outputfile at ' + outfilename + ' Cannot continue.\n')
         sys.exit(-1)
-        
+
     res_str = '#example\toutput\n'
     f.write(res_str)
     for ix in xrange(len(svmout)):
@@ -728,11 +728,11 @@ def svm_eval(argv):
     except:
         sys.stderr.write('Fails to open the outputfile at ' + outfilename + ' Cannot continue.\n')
         sys.exit(-1)
-        
+
     f.write(res_str)
     f.close()
 
-    
+
 def svm_poim(argv):
     """A top level script to parse input parameters and plot poims"""
 
@@ -744,7 +744,7 @@ def svm_poim(argv):
     poimdegree = int(argv[3])
     (kernelname,kparam,argv_rest) = parse.parse_kernel_param(argv[4:], False)
     (examples,labels,argv_rest) = parse.parse_input_file_train(kernelname, argv_rest)
-    
+
     if len(argv_rest)<1:sys.stderr.write("poim.png [dna|protein] non(nucleotide|amino)converter are missing\n");sys.exit(-1)
     if len(argv_rest)<2:sys.stderr.write("[dna|protein] non(nucleotide|amino)converter are missing\n");sys.exit(-1)
     if len(argv_rest)<3:

@@ -10,10 +10,13 @@
 
 class_str='class'
 types=["BOOL", "CHAR", "INT8", "UINT8", "INT16", "UINT16", "INT32", "UINT32",
-		"INT64", "UINT64", "FLOAT32", "FLOAT64", "FLOATMAX"] 
+		"INT64", "UINT64", "FLOAT32", "FLOAT64", "FLOATMAX", "COMPLEX128"]
 config_tests=["HAVE_HDF5", "HAVE_JSON", "HAVE_XML", "HAVE_LAPACK", "USE_CPLEX",
 	"USE_SVMLIGHT", "USE_GLPK", "USE_LZO", "USE_GZIP", "USE_BZIP2", "USE_LZMA",
-	"USE_MOSEK", "HAVE_EIGEN3"]
+	"USE_MOSEK", "HAVE_EIGEN3", "HAVE_COLPACK", "HAVE_NLOPT", "HAVE_PROTOBUF"]
+
+SHOGUN_TEMPLATE_CLASS = "SHOGUN_TEMPLATE_CLASS"
+SHOGUN_BASIC_CLASS = "SHOGUN_BASIC_CLASS"
 
 def check_class(line):
 	if not (line.find('public')==-1 and
@@ -72,56 +75,58 @@ def extract_class_name(lines, line_nr, line, blacklist):
 	return c[1:]
 
 def get_includes(classes):
-	from subprocess import Popen, PIPE 
-	try:
-	    from StringIO import StringIO
-	except ImportError:
-	    from io import BytesIO
-	cmd=["find", ".", "-false"]
-	for c in classes:
-		cmd.extend(["-o", "-name", "%s.h" % c])
-	p = Popen(cmd, stdout=PIPE)
+	class_headers = []
+	for c,t in classes:
+		class_headers.append(c+".h")
 
-	if sys.version_info < (3,):
-		output = StringIO(p.communicate()[0])
-	else:
-		output = BytesIO(p.communicate()[0])
+	import os
+	result = []
+	for root, dirs, files in os.walk("."):
+		for f in files:
+			if f in class_headers:
+				result.append(os.path.join(root, f))
 
 	includes=[]
-	for o in output:
-		if sys.version_info > (3,):
-			tempstr = o.decode()
-			includes.append('#include "%s"' % tempstr.strip().lstrip('./'))
-		else:
-			includes.append('#include "%s"' % o.strip().lstrip('./'))
+	for o in result:
+		includes.append('#include "%s"' % o.strip().lstrip('./'))
 	return includes
 
 def get_definitions(classes):
 	definitions=[]
-	for c in classes:
-		d="static CSGObject* __new_C%s(EPrimitiveType g) { return g == PT_NOT_GENERIC? new C%s(): NULL; }" % (c,c)
+	definitions.append("#define %s" % SHOGUN_TEMPLATE_CLASS)
+	definitions.append("#define %s" % SHOGUN_BASIC_CLASS)
+	for c,t in classes:
+		d="static %s CSGObject* __new_C%s(EPrimitiveType g) { return g == PT_NOT_GENERIC? new C%s(): NULL; }" % (SHOGUN_BASIC_CLASS,c,c)
 		definitions.append(d)
 	return definitions
 
-def get_template_definitions(classes):
+def get_template_definitions(classes, supports_complex):
 	definitions=[]
-	for c in classes:
+	for c,t in classes:
 		d=[]
-		d.append("static CSGObject* __new_C%s(EPrimitiveType g)\n{\n\tswitch (g)\n\t{\n" % c)
+		d.append("static %s CSGObject* __new_C%s(EPrimitiveType g)\n{\n\tswitch (g)\n\t{\n" % (SHOGUN_TEMPLATE_CLASS,c))
 		for t in types:
 			if t in ('BOOL','CHAR'):
 				suffix=''
 			else:
 				suffix='_t'
-			d.append("\t\tcase PT_%s: return new C%s<%s%s>();\n" % (t,c,t.lower(),suffix))
-		d.append("\t\tcase PT_SGOBJECT: return NULL;\n\t}\n\treturn NULL;\n}")
+			if t=='COMPLEX128' and not supports_complex:
+				d.append("\t\tcase PT_COMPLEX128: return NULL;\n")
+			else:
+				d.append("\t\tcase PT_%s: return new C%s<%s%s>();\n" % (t,c,t.lower(),suffix))
+		d.append("\t\tcase PT_SGOBJECT:\n")
+		d.append("\t\tcase PT_UNDEFINED: return NULL;\n\t}\n\treturn NULL;\n}")
 		definitions.append(''.join(d))
 	return definitions
 
 def get_struct(classes):
 	struct=[]
-	for c in classes:
-		s='{"%s", __new_C%s},' % (c,c)
+	for c,template in classes:
+		prefix = SHOGUN_BASIC_CLASS
+		if template:
+			prefix = SHOGUN_TEMPLATE_CLASS
+
+		s='{"%s", %s __new_C%s},' % (c,prefix,c)
 		struct.append(s)
 	return struct
 
@@ -145,26 +150,41 @@ def extract_block(c, lines, start_line, stop_line, start_sym, stop_sym):
 
 	return block_start,block_stop
 
-def test_candidate(c, lines, line_nr):
+def check_complex_supported_class(line):
+	l=list(filter(lambda y:y if y!='' else None,\
+		line.strip().replace('\t',' ').split(' ')))
+	supported=len(l)==3 and l[0]=='typedef' and l[1]=='bool'\
+		and l[2]=='supports_complex128_t;'
+	return supported
+
+def test_candidate(c, lines, line_nr, supports_complex):
 	start,stop=extract_block(c, lines, line_nr, len(lines), '{','}')
 	if stop<line_nr:
 		return False, line_nr+1
+	complex_supported=False
 	for line_nr in range(start, stop):
 		line=lines[line_nr]
 		if line.find('virtual')!=-1:
 			if check_abstract_class(line):
 				return False, stop
 			else:
-				vstart,vstop=extract_block(c, lines, line_nr, len(lines), '(',')')
+				vstart,vstop=extract_block(c, lines, line_nr, stop, '(',')')
 				for line_nr in range(vstart, vstop):
 					line=lines[line_nr]
 					if check_abstract_class(line):
 						return False, stop
+		if line.find('supports_complex128_t')!=-1:
+			if check_complex_supported_class(line):
+				complex_supported=True
+				if not supports_complex:
+					return False, stop
+	if supports_complex and not complex_supported:
+		return False, stop
 
 	return True, stop
 
 
-def extract_classes(HEADERS, template, blacklist):
+def extract_classes(HEADERS, template, blacklist, supports_complex):
 	"""
 	Search in headers for non-template/non-abstract class-names starting
 	with `C'.
@@ -196,9 +216,9 @@ def extract_classes(HEADERS, template, blacklist):
 				if line.find(class_str)!=-1:
 					c=extract_class_name(lines, line_nr, None, blacklist)
 			if c:
-				ok, line_nr=test_candidate(c, lines, line_nr)
+				ok, line_nr=test_candidate(c, lines, line_nr, supports_complex)
 				if ok:
-					classes.append(c)
+					classes.append((c,template))
 				continue
 
 			line_nr+=1
@@ -217,8 +237,8 @@ def write_templated_file(fname, substitutes):
 				for s in substitutes.keys():
 					if l==s:
 						f.write('\n'.join(substitutes[s]))
-					continue			
-			else:		
+					continue
+			else:
 				for s in substitutes.iterkeys():
 					if l==s:
 						f.write('\n'.join(substitutes[s]))
@@ -244,23 +264,33 @@ def get_blacklist():
 		if not cfg in config:
 			blacklist[cfg]=1
 	return blacklist
-		
+
 if __name__=='__main__':
 	import sys
 	TEMPL_FILE=sys.argv[1]
-	HEADERS=sys.argv[2:]
+	HEADERS=None
+	if (sys.argv[2] == "-in"):
+		# read header file list from file
+		with open(sys.argv[3]) as f:
+			content = f.readlines()
+			HEADERS = [x.strip() for x in content]
+	else:
+		HEADERS=sys.argv[2:]
 
 	blacklist = get_blacklist()
 
-	classes = extract_classes(HEADERS, False, blacklist)
-	template_classes = extract_classes(HEADERS, True, blacklist)
-	includes = get_includes(classes+template_classes)
+	classes = extract_classes(HEADERS, False, blacklist, False)
+	template_classes = extract_classes(HEADERS, True, blacklist, False)
+	complex_template_classes = extract_classes(HEADERS, True, blacklist, True)
+	includes = get_includes(classes+template_classes+complex_template_classes)
 	definitions = get_definitions(classes)
-	template_definitions = get_template_definitions(template_classes)
-	struct = get_struct(classes+template_classes)
+	template_definitions = get_template_definitions(template_classes, False)
+	complex_template_definitions = get_template_definitions(complex_template_classes, True)
+	struct = get_struct(classes+template_classes+complex_template_classes)
 	substitutes = {'includes': includes,
 		'definitions' :definitions,
 		'template_definitions' : template_definitions,
+		'complex_template_definitions' : complex_template_definitions,
 		'struct' : struct
 		}
 

@@ -27,8 +27,6 @@
 %rename(MultitaskTraceLogisticRegression) CMultitaskTraceLogisticRegression;
 %rename(MultitaskClusteredLogisticRegression) CMultitaskClusteredLogisticRegression;
 
-%rename(MultitaskCompositeMachine) CMultitaskCompositeMachine;
-
 %rename(MultitaskROCEvaluation) CMultitaskROCEvaluation;
 
 %rename(LibLinearMTL) CLibLinearMTL;
@@ -59,8 +57,6 @@
 %include <shogun/transfer/multitask/MultitaskTraceLogisticRegression.h>
 %include <shogun/transfer/multitask/MultitaskClusteredLogisticRegression.h>
 
-%include <shogun/transfer/multitask/MultitaskCompositeMachine.h>
-
 %include <shogun/transfer/multitask/MultitaskROCEvaluation.h>
 
 %include <shogun/transfer/multitask/LibLinearMTL.h>
@@ -72,4 +68,6 @@
 %include <shogun/transfer/domain_adaptation/DomainAdaptationSVMLinear.h>
 %include <shogun/transfer/domain_adaptation/DomainAdaptationMulticlassLibLinear.h>
 
+#ifdef HAVE_LAPACK
 SERIALIZABLE_DUMMY(shogun::MappedSparseMatrix);
+#endif

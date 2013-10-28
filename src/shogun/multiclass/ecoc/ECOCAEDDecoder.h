@@ -36,7 +36,7 @@ public:
     /** get name */
     virtual const char* get_name() const { return "ECOCAEDDecoder"; }
 
-    
+
 protected:
     /** whether to turn the output into binary before decoding */
     virtual bool binary_decoding()
@@ -54,7 +54,7 @@ protected:
     }
 };
 
-} /* shogun */ 
+} /* shogun */
 
 
 #endif /* end of include guard: ECOCAEDDECODER_H__ */

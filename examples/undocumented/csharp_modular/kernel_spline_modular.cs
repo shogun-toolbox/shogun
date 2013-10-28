@@ -21,19 +21,19 @@ public class kernel_spline_modular {
 		Console.Write("km_train:\n");
 		int numRows = km_train.GetLength(0);
 		int numCols = km_train.GetLength(1);
-		
+
 		for(int i = 0; i < numRows; i++){
 			for(int j = 0; j < numCols; j++){
 				Console.Write(km_train[i,j] +" ");
 			}
 			Console.Write("\n");
 		}
-		
+
 		//  Parse and Display km_test
 		Console.Write("\nkm_test:\n");
 		numRows = km_test.GetLength(0);
 		numCols = km_test.GetLength(1);
-		
+
 		for(int i = 0; i < numRows; i++){
 			for(int j = 0; j < numCols; j++){
 				Console.Write(km_test[i,j] +" ");

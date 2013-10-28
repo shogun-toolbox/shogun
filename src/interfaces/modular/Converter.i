@@ -7,7 +7,7 @@
  * Written (W) 2012 Sergey Lisitsyn
  * Copyright (C) 2012 Sergey Lisitsyn
  */
- 
+
 %rename(EmbeddingConverter) CEmbeddingConverter;
 %rename(LocallyLinearEmbedding) CLocallyLinearEmbedding;
 %rename(NeighborhoodPreservingEmbedding) CNeighborhoodPreservingEmbedding;
@@ -22,6 +22,16 @@
 %rename(Isomap) CIsomap;
 %rename(StochasticProximityEmbedding) CStochasticProximityEmbedding;
 %rename(FactorAnalysis) CFactorAnalysis;
+%rename(TDistributedStochasticNeighborEmbedding) CTDistributedStochasticNeighborEmbedding;
+%rename(ManifoldSculpting) CManifoldSculpting;
+%rename(HashedDocConverter) CHashedDocConverter;
+%rename(ICAConverter) CICAConverter;
+%rename(Jade) CJade;
+%rename(SOBI) CSOBI;
+%rename(FFSep) CFFSep;
+%rename(JediSep) CJediSep;
+%rename(UWedgeSep) CUWedgeSep;
+%rename(FastICA) CFastICA;
 
 %newobject shogun::CEmbeddingConverter::apply;
 %newobject shogun::*::embed_kernel;
@@ -42,3 +52,13 @@
 %include <shogun/converter/Isomap.h>
 %include <shogun/converter/StochasticProximityEmbedding.h>
 %include <shogun/converter/FactorAnalysis.h>
+%include <shogun/converter/TDistributedStochasticNeighborEmbedding.h>
+%include <shogun/converter/ManifoldSculpting.h>
+%include <shogun/converter/HashedDocConverter.h>
+%include <shogun/converter/ica/ICAConverter.h>
+%include <shogun/converter/ica/Jade.h>
+%include <shogun/converter/ica/SOBI.h>
+%include <shogun/converter/ica/FFSep.h>
+%include <shogun/converter/ica/JediSep.h>
+%include <shogun/converter/ica/UWedgeSep.h>
+%include <shogun/converter/ica/FastICA.h>

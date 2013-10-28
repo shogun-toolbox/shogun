@@ -27,7 +27,7 @@
 namespace shogun
 {
 #define LIBQP_PLUS_INF (-log(0.0))
-#define LIBQP_CALLOC(x,y) calloc(x,y)
+#define LIBQP_CALLOC(x,y) SG_CALLOC(y,x)
 #define LIBQP_FREE(x) SG_FREE(x)
 #define LIBQP_INDEX(ROW,COL,NUM_ROWS) ((COL)*(NUM_ROWS)+(ROW))
 #define LIBQP_MIN(A,B) ((A) > (B) ? (B) : (A))

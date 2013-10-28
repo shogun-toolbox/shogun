@@ -1,4 +1,5 @@
 #include <shogun/lib/SGVector.h>
+#include <shogun/lib/SGMatrix.h>
 #include <shogun/mathematics/Math.h>
 #include <gtest/gtest.h>
 
@@ -116,7 +117,7 @@ TEST(SGVectorTest,misc)
 {
 	SGVector<float64_t> a(10);
 	a.random(-1024.0, 1024.0);
-	
+
 	/* test, min, max, sum */
 	int arg_max = 0, arg_max_abs = 0;
 	float64_t min = 1025, max = -1025, sum = 0.0, max_abs = -1, sum_abs = 0.0;
@@ -137,7 +138,7 @@ TEST(SGVectorTest,misc)
 		if (a[i] < min)
 			min = a[i];
 	}
-	
+
 	EXPECT_EQ(min, SGVector<float64_t>::min(a.vector,a.vlen));
 	EXPECT_EQ(max, SGVector<float64_t>::max(a.vector,a.vlen));
 	EXPECT_EQ(arg_max, SGVector<float64_t>::arg_max(a.vector,1, a.vlen, NULL));
@@ -170,4 +171,214 @@ TEST(SGVectorTest,misc)
 	SGVector<float64_t>::vec1_plus_scalar_times_vec2(d.vector, 1.3, d.vector, b.vlen);
 	for (int32_t i = 0; i < d.vlen; ++i)
 		EXPECT_DOUBLE_EQ(d[i],b[i]+1.3*b[i]);
+}
+
+TEST(SGVectorTest,complex128_tests)
+{
+	SGVector<complex128_t> a(10);
+	a.set_const(complex128_t(5.0, 6.0));
+	SGVector<complex128_t> b=a.clone();
+
+	// test ::operator+ and []
+	a=a+b;
+	for (index_t i=0; i<a.vlen; ++i)
+	{
+		EXPECT_NEAR(a[i].real(), 10.0, 1E-14);
+		EXPECT_NEAR(a[i].imag(), 12.0, 1E-14);
+	}
+
+	// test ::misc
+	SGVector<complex128_t>::vec1_plus_scalar_times_vec2(a.vector,
+		complex128_t(0.0, 0.0), b.vector, a.vlen);
+	for (index_t i=0; i<a.vlen; ++i)
+	{
+		EXPECT_NEAR(a[i].real(), 10.0, 1E-14);
+		EXPECT_NEAR(a[i].imag(), 12.0, 1E-14);
+	}
+	a.permute();
+	complex128_t sum=SGVector<complex128_t>::sum_abs(a.vector, 1);
+	EXPECT_NEAR(sum.real(), 15.62049935181330878825, 1E-14);
+	EXPECT_NEAR(sum.imag(), 0.0, 1E-14);
+
+	SGVector<index_t> res=a.find(complex128_t(10.0, 12.0));
+	for (index_t i=0; i<res.vlen; ++i)
+		EXPECT_EQ(res[i], i);
+
+	a.scale(complex128_t(1.0));
+	for (index_t i=0; i<a.vlen; ++i)
+	{
+		EXPECT_NEAR(a[i].real(), 10.0, 1E-14);
+		EXPECT_NEAR(a[i].imag(), 12.0, 1E-14);
+	}
+
+	// tests ::norm
+	float64_t norm1=SGVector<complex128_t>::onenorm(a.vector, 1);
+	EXPECT_NEAR(norm1, 15.62049935181330795331, 1E-14);
+
+	complex128_t norm2=SGVector<complex128_t>::twonorm(a.vector, 1);
+	EXPECT_NEAR(norm2.real(), 10.0, 1E-14);
+	EXPECT_NEAR(norm2.imag(), 12.0, 1E-14);
+
+	// tests ::maths
+	a.set_const(complex128_t(1.0, 2.0));
+	a.abs();
+	for (index_t i=0; i<a.vlen; ++i)
+	{
+		EXPECT_NEAR(a[i].real(), 2.23606797749978980505, 1E-14);
+		EXPECT_NEAR(a[i].imag(), 0.0, 1E-14);
+	}
+
+	a.set_const(complex128_t(1.0, 2.0));
+	a.sin();
+	for (index_t i=0; i<a.vlen; ++i)
+	{
+		EXPECT_NEAR(a[i].real(), 3.16577851321616821068, 1E-14);
+		EXPECT_NEAR(a[i].imag(), 1.95960104142160607132, 1E-14);
+	}
+
+	a.set_const(complex128_t(1.0, 2.0));
+	a.cos();
+	for (index_t i=0; i<a.vlen; ++i)
+	{
+		EXPECT_NEAR(a[i].real(), 2.03272300701966557313, 1E-14);
+		EXPECT_NEAR(a[i].imag(), -3.05189779915179970615, 1E-14);
+	}
+
+	a.set_const(complex128_t(1.0, 2.0));
+	SGVector<float64_t> a_real=a.get_real();
+	SGVector<float64_t> a_imag=a.get_imag();
+	for (index_t i=0; i<a.vlen; ++i)
+	{
+		EXPECT_NEAR(a_real[i], 1.0, 1E-14);
+		EXPECT_NEAR(a_imag[i], 2.0, 1E-14);
+	}
+}
+
+TEST(SGVectorTest,equals_equal)
+{
+	SGVector<float64_t> a(3);
+	SGVector<float64_t> b(3);
+	a[0]=0;
+	a[1]=1;
+	a[2]=2;
+	b[0]=0;
+	b[1]=1;
+	b[2]=2;
+
+	EXPECT_TRUE(a.equals(b));
+}
+
+TEST(SGVectorTest,equals_different)
+{
+	SGVector<float64_t> a(3);
+	SGVector<float64_t> b(3);
+	a[0]=0;
+	a[1]=1;
+	a[2]=2;
+	b[0]=0;
+	b[1]=1;
+	b[2]=3;
+
+	EXPECT_FALSE(a.equals(b));
+}
+
+TEST(SGVectorTest,equals_different_size)
+{
+	SGVector<float64_t> a(3);
+	SGVector<float64_t> b(2);
+	a.zero();
+	b.zero();
+
+	EXPECT_FALSE(a.equals(b));
+}
+
+TEST(SGVectorTest, convert_to_matrix)
+{
+	index_t len=6;
+	index_t nrows=2;
+	index_t ncols=3;
+	int32_t c_order_memory[]={1, 2, 3, 4, 5, 6};
+	int32_t fortran_order_memory[]={1, 4, 2, 5, 3, 6};
+
+	SGVector<int32_t> vector;
+	SGMatrix<int32_t> a;
+	SGMatrix<int32_t> b;
+
+	vector=SGVector<int32_t>(c_order_memory, len, false);
+	a=SGVector<int32_t>::convert_to_matrix(vector, nrows, ncols, false);
+
+	vector=SGVector<int32_t>(fortran_order_memory, len, false);
+	b=SGVector<int32_t>::convert_to_matrix(vector, nrows, ncols, true);
+
+	for (index_t i=0; i<nrows; i++)
+	{
+		for (index_t j=0; j<ncols; j++)
+		{
+			EXPECT_EQ(a(i, j), b(i, j));
+		}
+	}
+}
+
+TEST(SGVectorTest,qsort)
+{
+	SGVector<index_t> v(4);
+	v[0]=12;
+	v[1]=1;
+	v[2]=7;
+	v[3]=9;
+
+	v.qsort();
+
+	EXPECT_EQ(v.vlen, 4);
+	EXPECT_EQ(v[0], 1);
+	EXPECT_EQ(v[1], 7);
+	EXPECT_EQ(v[2], 9);
+	EXPECT_EQ(v[3], 12);
+}
+
+TEST(SGVectorTest,is_sorted)
+{
+	SGVector<index_t> v(4);
+	v[0]=12;
+	v[1]=1;
+	v[2]=7;
+	v[3]=9;
+
+	EXPECT_EQ(v.is_sorted(), false);
+	v.qsort();
+
+	EXPECT_EQ(v.is_sorted(), true);
+}
+
+TEST(SGVectorTest,is_sorted_0)
+{
+	SGVector<index_t> v(0);
+
+	EXPECT_EQ(v.is_sorted(), true);
+	v.qsort();
+
+	EXPECT_EQ(v.is_sorted(), true);
+}
+
+TEST(SGVectorTest,is_sorted_1)
+{
+	SGVector<index_t> v(1);
+	v[0]=12;
+
+	EXPECT_EQ(v.is_sorted(), true);
+	v.qsort();
+
+	EXPECT_EQ(v.is_sorted(), true);
+}
+
+TEST(SGVectorTest,is_sorted_2)
+{
+	SGVector<index_t> v(2);
+	v[0]=12;
+	v[1]=1;
+
+	EXPECT_EQ(v.is_sorted(), false);
+	v.qsort();
+
+	EXPECT_EQ(v.is_sorted(), true);
 }

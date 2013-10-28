@@ -14,6 +14,7 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/io/File.h>
 #include <shogun/lib/Time.h>
+#include <shogun/lib/Signal.h>
 #include <shogun/base/Parallel.h>
 #include <shogun/base/Parameter.h>
 
@@ -29,29 +30,30 @@
 
 using namespace shogun;
 
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-struct DISTANCE_THREAD_PARAM
+/** distance thread parameters */
+template <class T> struct D_THREAD_PARAM
 {
-	// CDistance instance used by thread to compute distance
+	/** distance */
 	CDistance* distance;
-	// distance matrix to store computed distances
-	float64_t* distance_matrix;
-	// starting index of the main loop
-	int32_t idx_start;
-	// end index of the main loop
-	int32_t idx_stop;
-	// step of the main loop
-	int32_t idx_step;
-	// number of lhs vectors
-	int32_t lhs_vectors_number;
-	// number of rhs vectors
-	int32_t rhs_vectors_number;
-	// whether matrix distance is symmetric
+	/** start (unit row) */
+	int32_t start;
+	/** end (unit row) */
+	int32_t end;
+	/** start (unit number of elements) */
+	int32_t total_start;
+	/** end (unit number of elements) */
+	int32_t total_end;
+	/** m */
+	int32_t m;
+	/** n */
+	int32_t n;
+	/** result */
+	T* result;
+	/** distance matrix k(i,j)=k(j,i) */
 	bool symmetric;
-	// chunking method
-	bool chunk_by_lhs;
+	/** output progress */
+	bool verbose;
 };
-#endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
 CDistance::CDistance() : CSGObject()
 {
@@ -132,7 +134,7 @@ void CDistance::remove_lhs()
 	num_lhs=0;
 }
 
-/// takes all necessary steps if the rhs is removed from kernel
+/// takes all necessary steps if the rhs is removed from distance
 void CDistance::remove_rhs()
 {
 	SG_UNREF(rhs);
@@ -184,11 +186,49 @@ CFeatures* CDistance::replace_lhs(CFeatures* l)
 	return tmp;
 }
 
+float64_t CDistance::distance(int32_t idx_a, int32_t idx_b)
+{
+	REQUIRE(idx_a >= 0 && idx_b >= 0, "In CDistance::distance(int32_t,int32_t), idx_a and "
+			"idx_b must be positive, %d and %d given instead\n", idx_a, idx_b)
+
+	ASSERT(lhs)
+	ASSERT(rhs)
+
+	if (lhs==rhs)
+	{
+		int32_t num_vectors = lhs->get_num_vectors();
+
+		if (idx_a>=num_vectors)
+			idx_a=2*num_vectors-1-idx_a;
+
+		if (idx_b>=num_vectors)
+			idx_b=2*num_vectors-1-idx_b;
+	}
+
+	REQUIRE(idx_a < lhs->get_num_vectors() && idx_b < rhs->get_num_vectors(),
+			"In CDistance::distance(int32_t,int32_t), idx_a and idx_b must be less than "
+			"the number of vectors, but %d >= %d or %d >= %d\n",
+			idx_a, lhs->get_num_vectors(), idx_b, rhs->get_num_vectors())
+
+	if (precompute_matrix && (precomputed_matrix==NULL) && (lhs==rhs))
+		do_precompute_matrix() ;
+
+	if (precompute_matrix && (precomputed_matrix!=NULL))
+	{
+		if (idx_a>=idx_b)
+			return precomputed_matrix[idx_a*(idx_a+1)/2+idx_b] ;
+		else
+			return precomputed_matrix[idx_b*(idx_b+1)/2+idx_a] ;
+	}
+
+	return compute(idx_a, idx_b);
+}
+
 void CDistance::do_precompute_matrix()
 {
 	int32_t num_left=lhs->get_num_vectors();
 	int32_t num_right=rhs->get_num_vectors();
-	SG_INFO("precomputing distance matrix (%ix%i)\n", num_left, num_right) 
+	SG_INFO("precomputing distance matrix (%ix%i)\n", num_left, num_right)
 
 	ASSERT(num_left==num_right)
 	ASSERT(lhs==rhs)
@@ -208,167 +248,6 @@ void CDistance::do_precompute_matrix()
 	SG_DONE()
 }
 
-SGMatrix<float64_t> CDistance::get_distance_matrix()
-{
-	int32_t m,n;
-	float64_t* data=get_distance_matrix_real(m,n,NULL);
-	return SGMatrix<float64_t>(data, m,n);
-}
-
-float32_t* CDistance::get_distance_matrix_shortreal(
-	int32_t &num_vec1, int32_t &num_vec2, float32_t* target)
-{
-	float32_t* result = NULL;
-	CFeatures* f1 = lhs;
-	CFeatures* f2 = rhs;
-
-	if (has_features())
-	{
-		if (target && (num_vec1!=get_num_vec_lhs() || num_vec2!=get_num_vec_rhs()))
-			SG_ERROR("distance matrix does not fit into target\n")
-
-		num_vec1=get_num_vec_lhs();
-		num_vec2=get_num_vec_rhs();
-		int64_t total_num=num_vec1*num_vec2;
-		int32_t num_done=0;
-
-		SG_DEBUG("returning distance matrix of size %dx%d\n", num_vec1, num_vec2)
-
-		if (target)
-			result=target;
-		else
-			result=SG_MALLOC(float32_t, total_num);
-
-		if ( (f1 == f2) && (num_vec1 == num_vec2) && (f1!=NULL && f2!=NULL) )
-		{
-			for (int32_t i=0; i<num_vec1; i++)
-			{
-				for (int32_t j=i; j<num_vec1; j++)
-				{
-					float64_t v=distance(i,j);
-
-					result[i+j*num_vec1]=v;
-					result[j+i*num_vec1]=v;
-
-					if (num_done%100000)
-						SG_PROGRESS(num_done, 0, total_num-1)
-
-					if (i!=j)
-						num_done+=2;
-					else
-						num_done+=1;
-				}
-			}
-		}
-		else
-		{
-			for (int32_t i=0; i<num_vec1; i++)
-			{
-				for (int32_t j=0; j<num_vec2; j++)
-				{
-					result[i+j*num_vec1]=distance(i,j) ;
-
-					if (num_done%100000)
-						SG_PROGRESS(num_done, 0, total_num-1)
-
-					num_done++;
-				}
-			}
-		}
-
-		SG_DONE()
-	}
-	else
-      		SG_ERROR("no features assigned to distance\n")
-
-	return result;
-}
-
-float64_t* CDistance::get_distance_matrix_real(
-	int32_t &lhs_vectors_number, int32_t &rhs_vectors_number, float64_t* target)
-{
-	float64_t* distance_matrix = NULL;
-	CFeatures* lhs_features = lhs;
-	CFeatures* rhs_features = rhs;
-
-	// check for errors
-	if (!has_features())
-		SG_ERROR("No features assigned to the distance.\n")
-
-	if (target &&
-	    (lhs_vectors_number!=get_num_vec_lhs() ||
-	     rhs_vectors_number!=get_num_vec_rhs()))
-		SG_ERROR("Distance matrix does not fit into the given target.\n")
-
-	// init numbers of vectors and total number of distances
-	lhs_vectors_number = get_num_vec_lhs();
-	rhs_vectors_number = get_num_vec_rhs();
-	int64_t total_distances_number = lhs_vectors_number*rhs_vectors_number;
-
-	SG_DEBUG("Calculating distance matrix of size %dx%d.\n", lhs_vectors_number, rhs_vectors_number)
-
-	// redirect to target or allocate memory
-	if (target)
-		distance_matrix = target;
-	else
-		distance_matrix = SG_MALLOC(float64_t, total_distances_number);
-
-	// check if we're computing symmetric distance_matrix
-	bool symmetric = (lhs_features==rhs_features) || (lhs_vectors_number==rhs_vectors_number);
-	// select chunking method according to greatest dimension
-	bool chunk_by_lhs = (lhs_vectors_number >= rhs_vectors_number);
-
-#ifdef HAVE_PTHREAD
-	// init parallel to work
-	int32_t num_threads = parallel->get_num_threads();
-	ASSERT(num_threads>0)
-	pthread_t* threads = SG_MALLOC(pthread_t, num_threads);
-	DISTANCE_THREAD_PARAM* parameters = SG_MALLOC(DISTANCE_THREAD_PARAM,num_threads);
-	pthread_attr_t attr;
-	pthread_attr_init(&attr);
-	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
-	// run threads
-	for (int32_t t=0; t<num_threads; t++)
-	{
-		parameters[t].idx_start = t;
-		parameters[t].idx_stop = chunk_by_lhs ? lhs_vectors_number : rhs_vectors_number;
-		parameters[t].idx_step = num_threads;
-		parameters[t].distance_matrix = distance_matrix;
-		parameters[t].symmetric = symmetric;
-		parameters[t].lhs_vectors_number = lhs_vectors_number;
-		parameters[t].rhs_vectors_number = rhs_vectors_number;
-		parameters[t].chunk_by_lhs = chunk_by_lhs;
-		parameters[t].distance = this;
-		pthread_create(&threads[t], &attr, run_distance_thread, (void*)&parameters[t]);
-	}
-	// join, i.e. wait threads for finish
-	for (int32_t t=0; t<num_threads; t++)
-	{
-		pthread_join(threads[t], NULL);
-	}
-	// cleanup
-	pthread_attr_destroy(&attr);
-	SG_FREE(parameters);
-	SG_FREE(threads);
-#else
-	// init one-threaded parameters
-	DISTANCE_THREAD_PARAM single_thread_param;
-	single_thread_param.idx_start = 0;
-	single_thread_param.idx_stop = chunk_by_lhs ? lhs_vectors_number : rhs_vectors_number;
-	single_thread_param.idx_step = 1;
-	single_thread_param.distance_matrix = distance_matrix;
-	single_thread_param.symmetric = symmetric;
-	single_thread_param.lhs_vectors_number = lhs_vectors_number;
-	single_thread_param.rhs_vectors_number = rhs_vectors_number;
-	single_thread_param.chunk_by_lhs = chunk_by_lhs;
-	single_thread_param.distance = this;
-	// run thread
-	run_distance_thread((void*)&single_thread_param);
-#endif
-
-	return distance_matrix;
-}
-
 void CDistance::init()
 {
 	precomputed_matrix = NULL;
@@ -384,54 +263,154 @@ void CDistance::init()
 					  "Feature vectors to occur on right hand side.");
 }
 
-void* CDistance::run_distance_thread(void* p)
+template <class T> void* CDistance::get_distance_matrix_helper(void* p)
 {
-	DISTANCE_THREAD_PARAM* parameters = (DISTANCE_THREAD_PARAM*)p;
-	float64_t* distance_matrix = parameters->distance_matrix;
-	CDistance* distance = parameters->distance;
-	int32_t idx_start = parameters->idx_start;
-	int32_t idx_stop = parameters->idx_stop;
-	int32_t idx_step = parameters->idx_step;
-	int32_t lhs_vectors_number = parameters->lhs_vectors_number;
-	int32_t rhs_vectors_number = parameters->rhs_vectors_number;
-	bool symmetric = parameters->symmetric;
-	bool chunk_by_lhs = parameters->chunk_by_lhs;
+	D_THREAD_PARAM<T>* params= (D_THREAD_PARAM<T>*) p;
+	int32_t i_start=params->start;
+	int32_t i_end=params->end;
+	CDistance* k=params->distance;
+	T* result=params->result;
+	bool symmetric=params->symmetric;
+	int32_t n=params->n;
+	int32_t m=params->m;
+	bool verbose=params->verbose;
+	int64_t total_start=params->total_start;
+	int64_t total_end=params->total_end;
+	int64_t total=total_start;
 
-	if (symmetric)
+	for (int32_t i=i_start; i<i_end; i++)
 	{
-		for (int32_t i=idx_start; i<idx_stop; i+=idx_step)
+		int32_t j_start=0;
+
+		if (symmetric)
+			j_start=i;
+
+		for (int32_t j=j_start; j<n; j++)
 		{
-			for (int32_t j=i; j<rhs_vectors_number; j++)
+			float64_t v=k->distance(i,j);
+			result[i+j*m]=v;
+
+			if (symmetric && i!=j)
+				result[j+i*m]=v;
+
+			if (verbose)
 			{
-				float64_t ij_distance = distance->compute(i,j);
-				distance_matrix[i*rhs_vectors_number+j] = ij_distance;
-				distance_matrix[j*rhs_vectors_number+i] = ij_distance;
+				total++;
+
+				if (symmetric && i!=j)
+					total++;
+
+				if (total%100 == 0)
+					SG_OBJ_PROGRESS(k, total, total_start, total_end)
+
+				if (CSignal::cancel_computations())
+					break;
 			}
 		}
-	}
-	else
-	{
-		if (chunk_by_lhs)
-		{
-			for (int32_t i=idx_start; i<idx_stop; i+=idx_step)
-			{
-				for (int32_t j=0; j<rhs_vectors_number; j++)
-				{
-					distance_matrix[j*lhs_vectors_number+i] = distance->compute(i,j);
-				}
-			}
-		}
-		else
-		{
-			for (int32_t j=idx_start; j<idx_stop; j+=idx_step)
-			{
-				for (int32_t i=0; i<lhs_vectors_number; i++)
-				{
-					distance_matrix[j*lhs_vectors_number+i] = distance->compute(i,j);
-				}
-			}
-		}
+
 	}
 
 	return NULL;
 }
+
+template <class T>
+SGMatrix<T> CDistance::get_distance_matrix()
+{
+	T* result = NULL;
+
+	REQUIRE(has_features(), "no features assigned to distance\n")
+
+	int32_t m=get_num_vec_lhs();
+	int32_t n=get_num_vec_rhs();
+
+	int64_t total_num = int64_t(m)*n;
+
+	// if lhs == rhs and sizes match assume k(i,j)=k(j,i)
+	bool symmetric= (lhs && lhs==rhs && m==n);
+
+	SG_DEBUG("returning distance matrix of size %dx%d\n", m, n)
+
+		result=SG_MALLOC(T, total_num);
+
+	int32_t num_threads=parallel->get_num_threads();
+	if (num_threads < 2)
+	{
+		D_THREAD_PARAM<T> params;
+		params.distance=this;
+		params.result=result;
+		params.start=0;
+		params.end=m;
+		params.total_start=0;
+		params.total_end=total_num;
+		params.n=n;
+		params.m=m;
+		params.symmetric=symmetric;
+		params.verbose=true;
+		get_distance_matrix_helper<T>((void*) &params);
+	}
+	else
+	{
+		pthread_t* threads = SG_MALLOC(pthread_t, num_threads-1);
+		D_THREAD_PARAM<T>* params = SG_MALLOC(D_THREAD_PARAM<T>, num_threads);
+		int64_t step= total_num/num_threads;
+
+		int32_t t;
+
+		num_threads--;
+		for (t=0; t<num_threads; t++)
+		{
+			params[t].distance = this;
+			params[t].result = result;
+			params[t].start = compute_row_start(t*step, n, symmetric);
+			params[t].end = compute_row_start((t+1)*step, n, symmetric);
+			params[t].total_start=t*step;
+			params[t].total_end=(t+1)*step;
+			params[t].n=n;
+			params[t].m=m;
+			params[t].symmetric=symmetric;
+			params[t].verbose=false;
+
+			int code=pthread_create(&threads[t], NULL,
+					CDistance::get_distance_matrix_helper<T>, (void*)&params[t]);
+
+			if (code != 0)
+			{
+				SG_WARNING("Thread creation failed (thread %d of %d) "
+						"with error:'%s'\n",t, num_threads, strerror(code));
+				num_threads=t;
+				break;
+			}
+		}
+
+		params[t].distance = this;
+		params[t].result = result;
+		params[t].start = compute_row_start(t*step, n, symmetric);
+		params[t].end = m;
+		params[t].total_start=t*step;
+		params[t].total_end=total_num;
+		params[t].n=n;
+		params[t].m=m;
+		params[t].symmetric=symmetric;
+		params[t].verbose=true;
+		get_distance_matrix_helper<T>(&params[t]);
+
+		for (t=0; t<num_threads; t++)
+		{
+			if (pthread_join(threads[t], NULL) != 0)
+				SG_WARNING("pthread_join of thread %d/%d failed\n", t, num_threads)
+		}
+
+		SG_FREE(params);
+		SG_FREE(threads);
+	}
+
+	SG_DONE()
+
+	return SGMatrix<T>(result,m,n,true);
+}
+
+template SGMatrix<float64_t> CDistance::get_distance_matrix<float64_t>();
+template SGMatrix<float32_t> CDistance::get_distance_matrix<float32_t>();
+
+template void* CDistance::get_distance_matrix_helper<float64_t>(void* p);
+template void* CDistance::get_distance_matrix_helper<float32_t>(void* p);

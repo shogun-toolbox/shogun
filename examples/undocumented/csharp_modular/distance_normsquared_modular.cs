@@ -21,7 +21,7 @@ public class distance_normsquared_modular {
 		foreach(double item in dm_train) {
 			Console.Write(item);
 		}
-		
+
 		foreach(double item in dm_test) {
 			Console.Write(item);
 		}

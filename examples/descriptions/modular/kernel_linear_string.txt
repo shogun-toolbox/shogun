@@ -1,4 +1,4 @@
-This is an example for the initialization of a linear kernel on string data. The 
-strings are all of the same length and consist of the characters 'ACGT' corresponding 
-to the DNA-alphabet. Each column of the matrices of type char corresponds to 
+This is an example for the initialization of a linear kernel on string data. The
+strings are all of the same length and consist of the characters 'ACGT' corresponding
+to the DNA-alphabet. Each column of the matrices of type char corresponds to
 one training/test example.

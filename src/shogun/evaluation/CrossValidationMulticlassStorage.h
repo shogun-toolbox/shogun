@@ -26,13 +26,13 @@ class CEvaluation;
 
 /** @brief Class for storing multiclass evaluation information in every fold of cross-validation.
  *
- * Be careful - can be very expensive memory-wise. 
+ * Be careful - can be very expensive memory-wise.
  */
 class CCrossValidationMulticlassStorage: public CCrossValidationOutput
 {
 public:
 
-	/** constructor 
+	/** constructor
 	 * @param compute_ROC whether to compute ROCs
 	 * @param compute_PRC whether to compute PRCs
 	 * @param compute_conf_matrices whether to compute confusion matrices
@@ -43,7 +43,7 @@ public:
 	virtual ~CCrossValidationMulticlassStorage();
 
 	/** returns ROC of 1-v-R in given fold and run
-	 * 
+	 *
 	 * @param run run
 	 * @param fold fold
 	 * @param c class
@@ -60,9 +60,9 @@ public:
 		REQUIRE(m_compute_ROC, "ROC computation was not enabled\n")
 		return m_fold_ROC_graphs[run*m_num_folds*m_num_classes+fold*m_num_classes+c];
 	}
-	
+
 	/** returns PRC of 1-v-R in given fold and run
-	 * 
+	 *
 	 * @param run run
 	 * @param fold fold
 	 * @param c class
@@ -90,7 +90,7 @@ public:
 	}
 
 	/** returns binary evalution appended before
-	 * 
+	 *
 	 * @param idx
 	 */
 	CBinaryClassEvaluation* get_binary_evaluation(int32_t idx)
@@ -152,7 +152,7 @@ public:
 	/** post update results */
 	virtual void post_update_results();
 
-	/** expose labels 
+	/** expose labels
 	 * @param labels labels to expose
 	 */
 	virtual void init_expose_labels(CLabels* labels);
@@ -194,13 +194,13 @@ protected:
 	bool m_compute_ROC;
 
 	/** fold ROC graphs */
-	SGMatrix<float64_t>* m_fold_ROC_graphs; 
+	SGMatrix<float64_t>* m_fold_ROC_graphs;
 
 	/** whether compute PRCs */
 	bool m_compute_PRC;
 
 	/** fold PRC graphs */
-	SGMatrix<float64_t>* m_fold_PRC_graphs; 
+	SGMatrix<float64_t>* m_fold_PRC_graphs;
 
 	/** whether compute confusion matrices */
 	bool m_compute_conf_matrices;

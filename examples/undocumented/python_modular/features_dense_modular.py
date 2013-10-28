@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from shogun.Features import RealFeatures, LongIntFeatures, ByteFeatures
+from modshogun import RealFeatures, LongIntFeatures, ByteFeatures
 from numpy import array, float64, int64, uint8, all
 
 # create dense matrices A,B,C
@@ -16,7 +16,7 @@ def features_dense_modular (A=matrixA,B=matrixB,C=matrixC):
     a=RealFeatures(A)
     b=LongIntFeatures(B)
     c=ByteFeatures(C)
-    
+
 # or 16bit wide ...
 #feat1 = f.ShortFeatures(N.zeros((10,5),N.short))
 #feat2 = f.WordFeatures(N.zeros((10,5),N.uint16))

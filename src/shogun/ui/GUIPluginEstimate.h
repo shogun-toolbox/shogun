@@ -27,7 +27,7 @@ class CGUIPluginEstimate : public CSGObject
 
 	public:
 		/** constructor */
-		CGUIPluginEstimate() {};
+		CGUIPluginEstimate();
 		/** constructor
 		 * @param interface
 		 */
@@ -64,6 +64,9 @@ class CGUIPluginEstimate : public CSGObject
 
 		/** @return object name */
 		virtual const char* get_name() const { return "GUIPluginEstimate"; }
+
+	private:
+		void init();
 
 	protected:
 		/** ui */

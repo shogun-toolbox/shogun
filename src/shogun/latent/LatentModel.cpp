@@ -47,8 +47,8 @@ int32_t CLatentModel::get_num_vectors() const
 
 void CLatentModel::set_labels(CLatentLabels* labs)
 {
-	SG_UNREF(m_labels);
 	SG_REF(labs);
+	SG_UNREF(m_labels);
 	m_labels = labs;
 }
 
@@ -60,18 +60,17 @@ CLatentLabels* CLatentModel::get_labels() const
 
 void CLatentModel::set_features(CLatentFeatures* feats)
 {
-	SG_UNREF(m_features);
 	SG_REF(feats);
+	SG_UNREF(m_features);
 	m_features = feats;
 }
 
 void CLatentModel::argmax_h(const SGVector<float64_t>& w)
 {
 	int32_t num = get_num_vectors();
-	CBinaryLabels* y = CBinaryLabels::obtain_from_generic(m_labels->get_labels());
+	CBinaryLabels* y = CLabelsFactory::to_binary(m_labels->get_labels());
 	ASSERT(num > 0)
 	ASSERT(num == m_labels->get_num_labels())
-	
 
 	// argmax_h only for positive examples
 	for (int32_t i = 0; i < num; ++i)
@@ -89,8 +88,8 @@ void CLatentModel::register_parameters()
 {
 	m_parameters->add((CSGObject**) &m_features, "features", "Latent features");
 	m_parameters->add((CSGObject**) &m_labels, "labels", "Latent labels");
-	m_parameters->add((CSGObject**) &m_cached_psi, "cached psi", "Cached PSI features after argmax_h");
-	m_parameters->add(&m_do_caching, "do caching", "Indicate whether or not do PSI vector caching after argmax_h");
+	m_parameters->add((CSGObject**) &m_cached_psi, "cached_psi", "Cached PSI features after argmax_h");
+	m_parameters->add(&m_do_caching, "do_caching", "Indicate whether or not do PSI vector caching after argmax_h");
 }
 
 

@@ -19,6 +19,7 @@
 #include <shogun/lib/SGSparseMatrix.h>
 #include <shogun/lib/Cache.h>
 #include <shogun/io/File.h>
+#include <shogun/io/LibSVMFile.h>
 
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/features/Features.h>
@@ -29,6 +30,7 @@ namespace shogun
 {
 
 class CFile;
+class CLibSVMFile;
 class CRegressionLabels;
 class CFeatures;
 class CDotFeatures;
@@ -61,17 +63,6 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 * @param size cache size
 		 */
 		CSparseFeatures(int32_t size=0);
-
-		/** convenience constructor that creates sparse features from
-		 * the ones passed as argument
-		 *
-		 * @param src dense feature matrix
-		 * @param num_feat number of features
-		 * @param num_vec number of vectors
-		 * @param copy true to copy feature matrix
-		 */
-		CSparseFeatures(SGSparseVector<ST>* src,
-				int32_t num_feat, int32_t num_vec,bool copy=false);
 
 		/** convenience constructor that creates sparse features from
 		 * sparse features
@@ -127,16 +118,6 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 * @return sum of features that match dimension index and 0 if none is found
 		 */
 		ST get_feature(int32_t num, int32_t index);
-
-		/** converts a sparse feature vector into a dense one
-		  * preprocessed compute_feature_vector
-		  * caller cleans up
-		  *
-		  * @param num index of feature vector
-		  * @param len length is returned by reference
-		  * @return dense feature vector
-		  */
-		ST* get_full_feature_vector(int32_t num, int32_t& len);
 
 		/** get the fully expanded dense feature vector num
 		  *
@@ -217,11 +198,11 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 * @return sparse matrix
 		 *
 		 */
-        SGSparseMatrix<ST> get_sparse_feature_matrix();
+		SGSparseMatrix<ST> get_sparse_feature_matrix();
 
 		/** get a transposed copy of the features
 		 *
-		 * possible with subset
+		 * not possible with subset
 		 *
 		 * @return transposed copy
 		 */
@@ -266,7 +247,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 *
 		 * @param full full feature matrix
 		 */
-		virtual bool set_full_feature_matrix(SGMatrix<ST> full);
+		virtual void set_full_feature_matrix(SGMatrix<ST> full);
 
 		/** apply preprocessor
 		 *
@@ -277,32 +258,25 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 */
 		virtual bool apply_preprocessor(bool force_preprocessing=false);
 
-		/** get memory footprint of one feature
-		 *
-		 * @return memory footprint of one feature
-		 */
-		virtual int32_t get_size() const;
-
 		/** obtain sparse features from simple features
 		 *
 		 * subset on input is ignored, subset of this instance is removed
 		 *
 		 * @param sf simple features
-		 * @return if obtaining was successful
 		 */
-		bool obtain_from_simple(CDenseFeatures<ST>* sf);
+		void obtain_from_simple(CDenseFeatures<ST>* sf);
 
 		/** get number of feature vectors, possibly of subset
 		 *
 		 * @return number of feature vectors
 		 */
-		virtual int32_t  get_num_vectors() const;
+		virtual int32_t get_num_vectors() const;
 
 		/** get number of features
 		 *
 		 * @return number of features
 		 */
-		int32_t  get_num_features();
+		int32_t get_num_features() const;
 
 		/** set number of features
 		 *
@@ -379,6 +353,15 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 */
 		void load(CFile* loader);
 
+		/** load features from file
+		 *
+		 * any subset is removed before
+		 *
+		 * @param loader File object to load data from
+		 * @return label vector
+		 */
+		SGVector<float64_t> load_with_labels(CLibSVMFile* loader);
+
 		/** save features to file
 		 *
 		 * not possible with subset
@@ -387,16 +370,14 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 */
 		void save(CFile* writer);
 
-		/** load features from file
+		/** save features to file
 		 *
-		 * any subset is removed before
+		 * not possible with subset
 		 *
-		 * @param fname filename to load from
-		 * @param do_sort_features if true features will be sorted to ensure they
-		 * 		 are in ascending order
-		 * @return label object with corresponding labels
+		 * @param writer File object to write data to
+		 * @param labels vector with labels to write out
 		 */
-		CRegressionLabels* load_svmlight_file(char* fname, bool do_sort_features=true);
+		void save_with_labels(CLibSVMFile* writer, SGVector<float64_t> labels);
 
 		/** ensure that features occur in ascending order, only call when no
 		 * preprocessors are attached
@@ -404,16 +385,6 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 * not possiblwe with subset
 		 * */
 		void sort_features();
-
-		/** write features to file using svm light format
-		 *
-		 * not possible with subset
-		 *
-		 * @param fname filename to write to
-		 * @param label Label object (number of labels must correspond to number of features)
-		 * @return true if successful
-		 */
-		bool write_svmlight_file(char* fname, CRegressionLabels* label);
 
 		/** obtain the dimensionality of the feature space
 		 *
@@ -475,7 +446,7 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 		 * possible with subset
 		 *
 		 * @param vector_index the index of the vector over whose components to
-		 * 			iterate over
+		 *			iterate over
 		 * @return feature iterator (to be passed to get_next_feature)
 		 */
 		virtual void* get_feature_iterator(int32_t vector_index);
@@ -529,14 +500,8 @@ template <class ST> class CSparseFeatures : public CDotFeatures
 
 	protected:
 
-		/// total number of vectors
-		int32_t num_vectors;
-
-		/// total number of features
-		int32_t num_features;
-
 		/// array of sparse vectors of size num_vectors
-		SGSparseVector<ST>* sparse_feature_matrix;
+		SGSparseMatrix<ST> sparse_feature_matrix;
 
 		/** feature cache */
 		CCache< SGSparseVectorEntry<ST> >* feature_cache;

@@ -568,7 +568,7 @@ int32_t pr_loqo(
       /* and do it */
       if (!solve_reduced(n, m, h_x, h_y, a, delta_x, delta_y, c_x, c_y, workspace, PREDICTOR))
 	  {
-	  	  status=INCONSISTENT;
+		  status=INCONSISTENT;
 		  goto exit_optimizer;
 	  }
 

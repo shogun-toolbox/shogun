@@ -93,9 +93,9 @@ float64_t CPlifArray::lookup_penalty(
 #ifdef PLIFARRAY_DEBUG
 		CPlif * plif = (CPlif*)m_array[i] ;
 		if (plif->get_use_svm())
-			SG_PRINT("penalty[%i]=%1.5f (use_svm=%i -> %1.5f)\n", i, val, plif->get_use_svm(), svm_values[plif->get_use_svm()-1]) 
+			SG_PRINT("penalty[%i]=%1.5f (use_svm=%i -> %1.5f)\n", i, val, plif->get_use_svm(), svm_values[plif->get_use_svm()-1])
 		else
-			SG_PRINT("penalty[%i]=%1.5f\n", i, val) 
+			SG_PRINT("penalty[%i]=%1.5f\n", i, val)
 #endif
 	}
 	return ret ;

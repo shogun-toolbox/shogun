@@ -98,17 +98,19 @@ class CStructuredModel : public CSGObject
 		/** destructor */
 		virtual ~CStructuredModel();
 
-		/** initialize the optimization problem
+		/** initialize the optimization problem for primal solver
 		 *
-		 * @param A
+		 * @param regularization regularization strength
+		 * @param A  is [-dPsi(y) | -I_N ] with M+N columns => max. M+1 nnz per row
 		 * @param a
 		 * @param B
-		 * @param b
-		 * @param lb
-		 * @param ub
-		 * @param C
+		 * @param b  upper bounds of the constraints, Ax <= b
+		 * @param lb lower bound for the weight vector
+		 * @param ub upper bound for the weight vector
+		 * @param C  regularization matrix, w'Cw
 		 */
-		virtual void init_opt(
+		virtual void init_primal_opt(
+				float64_t regularization,
 				SGMatrix< float64_t > & A,  SGVector< float64_t > a,
 				SGMatrix< float64_t > B,  SGVector< float64_t > & b,
 				SGVector< float64_t > lb, SGVector< float64_t > ub,
@@ -208,6 +210,12 @@ class CStructuredModel : public CSGObject
 		/** @return name of SGSerializable */
 		virtual const char* get_name() const { return "StructuredModel"; }
 
+		/** initializes the part of the model that needs to be used during training.
+		 * In this class this method is empty and it can be re-implemented for any
+		 * particular StructuredModel
+		 */
+		virtual void init_training();
+
 		/**
 		 * method to be called from a SO machine before training
 		 * to ensure that the training data is valid (e.g. check that
@@ -239,21 +247,6 @@ class CStructuredModel : public CSGObject
 		 */
 		virtual int32_t get_num_aux_con() const;
 
-		/** computes the value of the risk function and sub-gradient at given point
-		 *
-		 * @param subgrad Subgradient computed at given point W
-		 * @param W Given weight vector
-		 * @param info Helper info for multiple cutting plane models algorithm
-		 * @return Value of the computed risk at given point W
-		 */
-		virtual float64_t risk(float64_t* subgrad, float64_t* W, TMultipleCPinfo* info=0);
-
-#ifdef USE_SWIG_DIRECTORS
-		virtual float64_t director_risk(SGVector<float64_t> subgrad, SGVector<float64_t> W, TMultipleCPinfo info);
-
-		void use_director_risk() { m_use_director_risk = true; }
-#endif
-
 	private:
 		/** internal initialization */
 		void init();
@@ -264,11 +257,6 @@ class CStructuredModel : public CSGObject
 
 		/** feature vectors */
 		CFeatures* m_features;
-
-#ifdef USE_SWIG_DIRECTORS
-		/** Whether to use custom risk function */
-		bool m_use_director_risk;
-#endif
 
 }; /* class CStructuredModel */
 

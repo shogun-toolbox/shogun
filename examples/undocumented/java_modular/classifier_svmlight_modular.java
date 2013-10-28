@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.shogun.EAlphabet.DNA;
-import static org.shogun.BinaryLabels.obtain_from_generic;
+import static org.shogun.LabelsFactory.to_binary;
 
 public class classifier_svmlight_modular {
 	static {
@@ -34,7 +34,7 @@ public class classifier_svmlight_modular {
 		svm.train();
 
 		kernel.init(feats_train, feats_test);
-		obtain_from_generic(svm.apply()).get_labels();
+		to_binary(svm.apply()).get_labels();
 
 		modshogun.exit_shogun();
 	}

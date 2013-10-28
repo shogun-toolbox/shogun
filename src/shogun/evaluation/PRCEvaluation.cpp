@@ -84,6 +84,7 @@ float64_t CPRCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 	// set computed indicator
 	m_computed = true;
 
+	SG_FREE(idxs);
 	return m_auPRC;
 }
 

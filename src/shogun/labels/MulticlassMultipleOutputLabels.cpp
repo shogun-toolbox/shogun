@@ -30,16 +30,6 @@ CMulticlassMultipleOutputLabels::~CMulticlassMultipleOutputLabels()
 	SG_FREE(m_labels);
 }
 
-CMulticlassMultipleOutputLabels* CMulticlassMultipleOutputLabels::obtain_from_generic(CLabels* base_labels)
-{
-	if (base_labels->get_label_type() == LT_MULTICLASS_MULTIPLE_OUTPUT)
-		return (CMulticlassMultipleOutputLabels*) base_labels;
-	else
-		SG_SERROR("base_labels must be of dynamic type CMulticlassMultipleOutputLabels\n")
-
-	return NULL;
-}
-
 void CMulticlassMultipleOutputLabels::ensure_valid(const char* context)
 {
 	if ( m_labels == NULL )
@@ -62,7 +52,7 @@ SGMatrix<index_t> CMulticlassMultipleOutputLabels::get_labels() const
 
 SGVector<index_t> CMulticlassMultipleOutputLabels::get_label(int32_t idx)
 {
-	ensure_valid("CMulticlassMultipleOutputLabels::get_label(int32_t)");	
+	ensure_valid("CMulticlassMultipleOutputLabels::get_label(int32_t)");
 	if ( idx < 0 || idx >= get_num_labels() )
 		SG_ERROR("Index must be inside [0, num_labels-1]\n")
 
@@ -82,7 +72,7 @@ bool CMulticlassMultipleOutputLabels::set_label(int32_t idx, SGVector<index_t> l
 		return false;
 }
 
-int32_t CMulticlassMultipleOutputLabels::get_num_labels()
+int32_t CMulticlassMultipleOutputLabels::get_num_labels() const
 {
 	return m_n_labels;
 }

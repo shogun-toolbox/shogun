@@ -41,7 +41,7 @@ sub  _get_results_alpha_and_sv
     my $a=0;
     my $sv=0;
     if( defined($indata->{$prefix.'label_type'})
-	and 
+	and
 	$indata->{$prefix.'label_type'} eq 'series'){
 	foreach my  $i (0..$classifier->get_num_svms()){
 	    my $subsvm=$classifier->get_svm($i);
@@ -67,7 +67,7 @@ sub  _get_results_alpha_and_sv
     return ($a, $sv);
 }
 
-sub _get_results 
+sub _get_results
 {
     my ($indata, $prefix, $classifier, $machine, $feats) = @_;
     my $e;
@@ -171,7 +171,7 @@ sub _evaluate {
 	}
     }else{
 	$classifier->set_bias_enabled(0);
-    }	
+    }
     if( $ctype eq 'perceptron'){
 	$classifier->set_learn_rate=$indata->{$prefix.'learn_rate'};
 	$classifier->set_max_iter=$indata->{$prefix.'max_iter'};

@@ -27,25 +27,18 @@ class CLinearStructuredOutputMachine : public CStructuredOutputMachine
 		/** standard constructor
 		 *
 		 * @param model structured model with application specific functions
-		 * @param loss loss function
 		 * @param labs structured labels
 		 */
-		CLinearStructuredOutputMachine(CStructuredModel* model, CLossFunction* loss, CStructuredLabels* labs);
+		CLinearStructuredOutputMachine(CStructuredModel* model, CStructuredLabels* labs);
 
 		/** destructor */
 		virtual ~CLinearStructuredOutputMachine();
 
-		/** set features
+		/** set w (useful for modular interfaces)
 		 *
-		 * @param f features
+		 * @param w weight vector to set
 		 */
-		void set_features(CFeatures* f);
-
-		/** get features
-		 *
-		 * @return features
-		 */
-		CFeatures* get_features() const;
+		void set_w(SGVector< float64_t > w);
 
 		/** get w
 		 *
@@ -63,10 +56,16 @@ class CLinearStructuredOutputMachine : public CStructuredOutputMachine
 		 */
 		virtual CStructuredLabels* apply_structured(CFeatures* data = NULL);
 
+		/** Stores feature data of underlying model. Does nothing because
+		 * Linear machines store the normal vector of the separating hyperplane
+		 * and therefore the model anyway
+		 */
+		virtual void store_model_features();
+
 		/** @return object name */
-		virtual const char* get_name() const 
-		{ 
-			return "LinearStructuredOutputMachine"; 
+		virtual const char* get_name() const
+		{
+			return "LinearStructuredOutputMachine";
 		}
 
 	private:
@@ -74,9 +73,6 @@ class CLinearStructuredOutputMachine : public CStructuredOutputMachine
 		void register_parameters();
 
 	protected:
-		/** feature vectors */
-		CFeatures* m_features;
-
 		/** weight vector */
 		SGVector< float64_t > m_w;
 

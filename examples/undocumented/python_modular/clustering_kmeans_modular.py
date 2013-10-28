@@ -1,24 +1,13 @@
 #!/usr/bin/env python
-##!/usr/bin/env python
-#"""
-#Explicit examples on how to use clustering
-#"""
-from tools.load import LoadMatrix
-lm=LoadMatrix()
-
-traindat = lm.load_numbers('../data/fm_train_real.dat')
+traindat = '../data/fm_train_real.dat'
 
 parameter_list = [[traindat,3],[traindat,4]]
 
 def clustering_kmeans_modular (fm_train=traindat,k=3):
-
-	from shogun.Distance import EuclideanDistance
-	from shogun.Features import RealFeatures
-	from shogun.Clustering import KMeans
-	from shogun.Mathematics import Math_init_random
+	from modshogun import EuclideanDistance, RealFeatures, KMeans, Math_init_random, CSVFile
 	Math_init_random(17)
 
-	feats_train=RealFeatures(fm_train)
+	feats_train=RealFeatures(CSVFile(fm_train))
 	distance=EuclideanDistance(feats_train, feats_train)
 
 	kmeans=KMeans(k, distance)

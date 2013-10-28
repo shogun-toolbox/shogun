@@ -20,7 +20,7 @@ namespace shogun
 {
 
 /** @brief Class v_array taken directly from JL's implementation */
-template<class T> 
+template<class T>
 class v_array{
 
 	public:
@@ -57,7 +57,7 @@ class v_array{
  * @param v vector
  * @param new_ele element to insert
  */
-template<class T> 
+template<class T>
 void push(v_array<T>& v, const T &new_ele)
 {
 	while(v.index >= v.length)
@@ -74,7 +74,7 @@ void push(v_array<T>& v, const T &new_ele)
  * @param v vector
  * @param length the new length of the vector
  */
-template<class T> 
+template<class T>
 void alloc(v_array<T>& v, int length)
 {
 	v.elements = (T *)realloc(v.elements, sizeof(T) * length);
@@ -90,7 +90,7 @@ void alloc(v_array<T>& v, int length)
  * @param stack of vectors
  * @return the adequate vector according to the previous conditions
  */
-template<class T> 
+template<class T>
 v_array<T> pop(v_array<v_array<T> > &stack)
 {
 	if (stack.index > 0)
@@ -120,7 +120,7 @@ class CJLCoverTreePoint
 
 	public:
 
-		/** Distance object where to find the coordinate information of 
+		/** Distance object where to find the coordinate information of
 		 * this point */
 		CDistance* m_distance;
 
@@ -132,12 +132,12 @@ class CJLCoverTreePoint
 
 }; /* class JLCoverTreePoint */
 
-/** Functions declared out of the class definition to respect JLCoverTree 
+/** Functions declared out of the class definition to respect JLCoverTree
  *  structure */
 
 float distance(CJLCoverTreePoint p1, CJLCoverTreePoint p2, float64_t upper_bound)
 {
-	/** Call m_distance->distance() with the proper index order depending on 
+	/** Call m_distance->distance() with the proper index order depending on
 	 *  the feature containers in m_distance for each of the points*/
 
 	if ( p1.m_features_container == p2.m_features_container )
@@ -149,7 +149,7 @@ float distance(CJLCoverTreePoint p1, CJLCoverTreePoint p2, float64_t upper_bound
 		}
 		else
 		{
-			return p1.m_distance->distance_upper_bounded(p1.m_index, 
+			return p1.m_distance->distance_upper_bounded(p1.m_index,
 					p2.m_index, upper_bound);
 		}
 	}
@@ -164,12 +164,12 @@ float distance(CJLCoverTreePoint p1, CJLCoverTreePoint p2, float64_t upper_bound
 		{
 			if ( p1.m_features_container == FC_LHS )
 			{
-				return p1.m_distance->distance_upper_bounded(p1.m_index, 
+				return p1.m_distance->distance_upper_bounded(p1.m_index,
 						p2.m_index, upper_bound);
 			}
 			else
 			{
-				return p1.m_distance->distance_upper_bounded(p2.m_index, 
+				return p1.m_distance->distance_upper_bounded(p2.m_index,
 						p1.m_index, upper_bound);
 			}
 		}
@@ -199,7 +199,7 @@ v_array< CJLCoverTreePoint > parse_points(CDistance* distance, EFeaturesContaine
 
 		push(parsed, new_point);
 	}
-	
+
 	return parsed;
 }
 

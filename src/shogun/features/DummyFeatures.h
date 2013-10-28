@@ -41,9 +41,6 @@ class CDummyFeatures : public CFeatures
 		/** get number of feature vectors */
 		virtual int32_t get_num_vectors() const;
 
-		/** get size of features (always 1) */
-		virtual int32_t get_size() const;
-
 		/** duplicate features */
 		virtual CFeatures* duplicate() const;
 

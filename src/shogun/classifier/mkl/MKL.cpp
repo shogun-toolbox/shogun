@@ -30,6 +30,7 @@ CMKL::CMKL(CSVM* s) : CSVM(), svm(NULL), C_mkl(0), mkl_norm(1), ent_lambda(0),
 
 #ifdef USE_GLPK
 	lp_glpk = NULL;
+	lp_glpk_parm = NULL;
 #endif
 
 	SG_DEBUG("creating MKL object %p\n", this)
@@ -69,7 +70,7 @@ bool CMKL::init_cplex()
 {
 	while (env==NULL)
 	{
-		SG_INFO("trying to initialize CPLEX\n") 
+		SG_INFO("trying to initialize CPLEX\n")
 
 		int status = 0; // calling external lib
 		env = CPXopenCPLEX (&status);
@@ -152,10 +153,13 @@ bool CMKL::cleanup_cplex()
 #ifdef USE_GLPK
 bool CMKL::init_glpk()
 {
-	lp_glpk = lpx_create_prob();
-	lpx_set_obj_dir(lp_glpk, LPX_MIN);
-	lpx_set_int_parm(lp_glpk, LPX_K_DUAL, GLP_ON );
-	lpx_set_int_parm(lp_glpk, LPX_K_PRESOL, GLP_ON );
+	lp_glpk = glp_create_prob();
+	glp_set_obj_dir(lp_glpk, GLP_MIN);
+
+	lp_glpk_parm = SG_MALLOC(glp_smcp, 1);
+	glp_init_smcp(lp_glpk_parm);
+	lp_glpk_parm->meth = GLP_DUAL;
+	lp_glpk_parm->presolve = GLP_ON;
 
 	glp_term_out(GLP_OFF);
 	return (lp_glpk != NULL);
@@ -165,21 +169,22 @@ bool CMKL::cleanup_glpk()
 {
 	lp_initialized = false;
 	if (lp_glpk)
-		lpx_delete_prob(lp_glpk);
+		glp_delete_prob(lp_glpk);
 	lp_glpk = NULL;
+	SG_FREE(lp_glpk_parm);
 	return true;
 }
 
-bool CMKL::check_lpx_status(LPX *lp)
+bool CMKL::check_glp_status(glp_prob *lp)
 {
-	int status = lpx_get_status(lp);
+	int status = glp_get_status(lp);
 
-	if (status==LPX_INFEAS)
+	if (status==GLP_INFEAS)
 	{
 		SG_PRINT("solution is infeasible!\n")
 		return false;
 	}
-	else if(status==LPX_NOFEAS)
+	else if(status==GLP_NOFEAS)
 	{
 		SG_PRINT("problem has no feasible solution!\n")
 		return false;
@@ -216,8 +221,8 @@ bool CMKL::train_machine(CFeatures* data)
 	if (mkl_epsilon<=0)
 		mkl_epsilon=1e-2 ;
 
-	SG_INFO("mkl_epsilon = %1.1e\n", mkl_epsilon) 
-	SG_INFO("C_mkl = %1.1e\n", C_mkl) 
+	SG_INFO("mkl_epsilon = %1.1e\n", mkl_epsilon)
+	SG_INFO("C_mkl = %1.1e\n", C_mkl)
 	SG_INFO("mkl_norm = %1.3e\n", mkl_norm)
 	SG_INFO("solver = %d\n", get_solver_type())
 	SG_INFO("ent_lambda = %f\n", ent_lambda)
@@ -593,11 +598,12 @@ float64_t CMKL::compute_elasticnet_dual_objective()
 		// Compute Elastic-net dual
 		float64_t* nm = SG_MALLOC(float64_t, num_kernels);
 		float64_t del=0;
-		CKernel* kn = ((CCombinedKernel*)kernel)->get_first_kernel();
+
 
 		int32_t k=0;
-		while (kn)
+		for (index_t k_idx=0; k_idx<((CCombinedKernel*) kernel)->get_num_kernels(); k_idx++)
 		{
+			CKernel* kn = ((CCombinedKernel*) kernel)->get_kernel(k_idx);
 			float64_t sum=0;
 			for (int32_t i=0; i<n; i++)
 			{
@@ -617,7 +623,6 @@ float64_t CMKL::compute_elasticnet_dual_objective()
 
 
 			SG_UNREF(kn);
-			kn = ((CCombinedKernel*) kernel)->get_next_kernel();
 		}
 		// initial delta
 		del = del/CMath::sqrt(2*(1-ent_lambda));
@@ -988,7 +993,7 @@ float64_t CMKL::compute_optimal_betas_via_cplex(float64_t* new_beta, const float
 
 	if (!lp_initialized)
 	{
-		SG_INFO("creating LP\n") 
+		SG_INFO("creating LP\n")
 
 		double   obj[NUMCOLS]; /* calling external lib */
 		double   lb[NUMCOLS]; /* calling external lib */
@@ -1125,7 +1130,7 @@ float64_t CMKL::compute_optimal_betas_via_cplex(float64_t* new_beta, const float
 	}
 
 	{ // add the new row
-		//SG_INFO("add the new row\n") 
+		//SG_INFO("add the new row\n")
 
 		int rmatbeg[1];
 		int rmatind[num_kernels+1];
@@ -1287,7 +1292,7 @@ float64_t CMKL::compute_optimal_betas_via_cplex(float64_t* new_beta, const float
 			// have at most max(100,num_active_rows*2) rows, if not, remove one
 			if ( (num_rows-start_row>CMath::max(100,2*num_active_rows)) && (max_idx!=-1))
 			{
-				//SG_INFO("-%i(%i,%i)",max_idx,start_row,num_rows) 
+				//SG_INFO("-%i(%i,%i)",max_idx,start_row,num_rows)
 				status = CPXdelrows (env, lp_cplex, max_idx, max_idx) ;
 				if ( status )
 					SG_ERROR("Failed to remove an old row.\n")
@@ -1330,24 +1335,24 @@ float64_t CMKL::compute_optimal_betas_via_glpk(float64_t* beta, const float64_t*
 	int32_t NUMCOLS = 2*num_kernels + 1 ;
 	if (!lp_initialized)
 	{
-		SG_INFO("creating LP\n") 
+		SG_INFO("creating LP\n")
 
 		//set obj function, note glpk indexing is 1-based
-		lpx_add_cols(lp_glpk, NUMCOLS);
+		glp_add_cols(lp_glpk, NUMCOLS);
 		for (int i=1; i<=2*num_kernels; i++)
 		{
-			lpx_set_obj_coef(lp_glpk, i, 0);
-			lpx_set_col_bnds(lp_glpk, i, LPX_DB, 0, 1);
+			glp_set_obj_coef(lp_glpk, i, 0);
+			glp_set_col_bnds(lp_glpk, i, GLP_DB, 0, 1);
 		}
 		for (int i=num_kernels+1; i<=2*num_kernels; i++)
 		{
-			lpx_set_obj_coef(lp_glpk, i, C_mkl);
+			glp_set_obj_coef(lp_glpk, i, C_mkl);
 		}
-		lpx_set_obj_coef(lp_glpk, NUMCOLS, 1);
-		lpx_set_col_bnds(lp_glpk, NUMCOLS, LPX_FR, 0,0); //unbound
+		glp_set_obj_coef(lp_glpk, NUMCOLS, 1);
+		glp_set_col_bnds(lp_glpk, NUMCOLS, GLP_FR, 0,0); //unbound
 
 		//add first row. sum[w]=1
-		int row_index = lpx_add_rows(lp_glpk, 1);
+		int row_index = glp_add_rows(lp_glpk, 1);
 		int* ind = SG_MALLOC(int, num_kernels+2);
 		float64_t* val = SG_MALLOC(float64_t, num_kernels+2);
 		for (int i=1; i<=num_kernels; i++)
@@ -1357,8 +1362,8 @@ float64_t CMKL::compute_optimal_betas_via_glpk(float64_t* beta, const float64_t*
 		}
 		ind[num_kernels+1] = NUMCOLS;
 		val[num_kernels+1] = 0;
-		lpx_set_mat_row(lp_glpk, row_index, num_kernels, ind, val);
-		lpx_set_row_bnds(lp_glpk, row_index, LPX_FX, 1, 1);
+		glp_set_mat_row(lp_glpk, row_index, num_kernels, ind, val);
+		glp_set_row_bnds(lp_glpk, row_index, GLP_FX, 1, 1);
 		SG_FREE(val);
 		SG_FREE(ind);
 
@@ -1370,26 +1375,26 @@ float64_t CMKL::compute_optimal_betas_via_glpk(float64_t* beta, const float64_t*
 			{
 				int mat_ind[4];
 				float64_t mat_val[4];
-				int mat_row_index = lpx_add_rows(lp_glpk, 2);
+				int mat_row_index = glp_add_rows(lp_glpk, 2);
 				mat_ind[1] = q;
 				mat_val[1] = 1;
 				mat_ind[2] = q+1;
 				mat_val[2] = -1;
 				mat_ind[3] = num_kernels+q;
 				mat_val[3] = -1;
-				lpx_set_mat_row(lp_glpk, mat_row_index, 3, mat_ind, mat_val);
-				lpx_set_row_bnds(lp_glpk, mat_row_index, LPX_UP, 0, 0);
+				glp_set_mat_row(lp_glpk, mat_row_index, 3, mat_ind, mat_val);
+				glp_set_row_bnds(lp_glpk, mat_row_index, GLP_UP, 0, 0);
 				mat_val[1] = -1;
 				mat_val[2] = 1;
-				lpx_set_mat_row(lp_glpk, mat_row_index+1, 3, mat_ind, mat_val);
-				lpx_set_row_bnds(lp_glpk, mat_row_index+1, LPX_UP, 0, 0);
+				glp_set_mat_row(lp_glpk, mat_row_index+1, 3, mat_ind, mat_val);
+				glp_set_row_bnds(lp_glpk, mat_row_index+1, GLP_UP, 0, 0);
 			}
 		}
 	}
 
 	int* ind=SG_MALLOC(int,num_kernels+2);
 	float64_t* val=SG_MALLOC(float64_t, num_kernels+2);
-	int row_index = lpx_add_rows(lp_glpk, 1);
+	int row_index = glp_add_rows(lp_glpk, 1);
 	for (int32_t i=1; i<=num_kernels; i++)
 	{
 		ind[i] = i;
@@ -1397,19 +1402,19 @@ float64_t CMKL::compute_optimal_betas_via_glpk(float64_t* beta, const float64_t*
 	}
 	ind[num_kernels+1] = 2*num_kernels+1;
 	val[num_kernels+1] = -1;
-	lpx_set_mat_row(lp_glpk, row_index, num_kernels+1, ind, val);
-	lpx_set_row_bnds(lp_glpk, row_index, LPX_UP, 0, 0);
+	glp_set_mat_row(lp_glpk, row_index, num_kernels+1, ind, val);
+	glp_set_row_bnds(lp_glpk, row_index, GLP_UP, 0, 0);
 	SG_FREE(ind);
 	SG_FREE(val);
 
 	//optimize
-	lpx_simplex(lp_glpk);
-	bool res = check_lpx_status(lp_glpk);
+	glp_simplex(lp_glpk, lp_glpk_parm);
+	bool res = check_glp_status(lp_glpk);
 	if (!res)
 		SG_ERROR("Failed to optimize Problem.\n")
 
-	int32_t cur_numrows = lpx_get_num_rows(lp_glpk);
-	int32_t cur_numcols = lpx_get_num_cols(lp_glpk);
+	int32_t cur_numrows = glp_get_num_rows(lp_glpk);
+	int32_t cur_numcols = glp_get_num_cols(lp_glpk);
 	int32_t num_rows=cur_numrows;
 	ASSERT(cur_numcols<=2*num_kernels+1)
 
@@ -1419,11 +1424,11 @@ float64_t CMKL::compute_optimal_betas_via_glpk(float64_t* beta, const float64_t*
 
 	for (int i=0; i<cur_numrows; i++)
 	{
-		row_primal[i] = lpx_get_row_prim(lp_glpk, i+1);
-		row_dual[i] = lpx_get_row_dual(lp_glpk, i+1);
+		row_primal[i] = glp_get_row_prim(lp_glpk, i+1);
+		row_dual[i] = glp_get_row_dual(lp_glpk, i+1);
 	}
 	for (int i=0; i<cur_numcols; i++)
-		col_primal[i] = lpx_get_col_prim(lp_glpk, i+1);
+		col_primal[i] = glp_get_col_prim(lp_glpk, i+1);
 
 	obj = -col_primal[2*num_kernels];
 
@@ -1457,7 +1462,7 @@ float64_t CMKL::compute_optimal_betas_via_glpk(float64_t* beta, const float64_t*
 		{
 			int del_rows[2];
 			del_rows[1] = max_idx+1;
-			lpx_del_rows(lp_glpk, 1, del_rows);
+			glp_del_rows(lp_glpk, 1, del_rows);
 		}
 	}
 
@@ -1529,9 +1534,9 @@ float64_t CMKL::compute_mkl_dual_objective()
 
 	if (m_labels && kernel && kernel->get_kernel_type() == K_COMBINED)
 	{
-		CKernel* kn = ((CCombinedKernel*)kernel)->get_first_kernel();
-		while (kn)
+		for (index_t k_idx=0; k_idx<((CCombinedKernel*) kernel)->get_num_kernels(); k_idx++)
 		{
+			CKernel* kn = ((CCombinedKernel*) kernel)->get_kernel(k_idx);
 			float64_t sum=0;
 			for (int32_t i=0; i<n; i++)
 			{
@@ -1550,7 +1555,6 @@ float64_t CMKL::compute_mkl_dual_objective()
 				mkl_obj += CMath::pow(sum, mkl_norm/(mkl_norm-1));
 
 			SG_UNREF(kn);
-			kn = ((CCombinedKernel*) kernel)->get_next_kernel();
 		}
 
 		if (mkl_norm==1.0)

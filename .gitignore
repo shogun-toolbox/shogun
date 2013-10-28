@@ -26,6 +26,7 @@ configure.log
 *.mex*
 *.oct
 .localvimrc
+*.DS_Store
 
 *~
 \#*\#
@@ -34,6 +35,8 @@ configure.log
 
 
 # /doc/
+/doc/Doxyfile_en
+/doc/Doxyfile_cn
 /doc/html
 /doc/html_cn
 /doc/pages/Configure.generated
@@ -48,7 +51,7 @@ configure.log
 /src/examples
 /src/shogun/.clang_complete
 /src/configure-*-*.c*
-
+/src/build-local
 
 # static interfaces
 /src/interfaces/cmdline_static/shogun
@@ -81,19 +84,23 @@ configure.log
 /src/interfaces/*_modular/Loss.i
 /src/interfaces/*_modular/Statistics.i
 /src/interfaces/*_modular/Latent.i
-
+/src/interfaces/*_modular/GaussianProcess.i
 
 # particular modular ones
 /src/interfaces/csharp_modular/*.cs
+/src/interfaces/csharp_modular/abstract_types_extension.i
+/src/interfaces/csharp_modular/modshogun.dll
 /src/interfaces/java_modular/*.java
 /src/interfaces/java_modular/*.jar
 /src/interfaces/java_modular/*.class
 /src/interfaces/java_modular/org/*
 /src/interfaces/java_modular/shogun/*
 /src/interfaces/python_modular/*.py
+/src/interfaces/python_modular/abstract_types_extension.i
 /src/interfaces/r_modular/*.R
 /src/interfaces/r_modular/*.RData
 /src/interfaces/perl_modular/*.pm
+/src/interfaces/octave_modular/abstract_types_extension.i
 /.duped_py_pl.pb
 
 # /examples/
@@ -103,10 +110,23 @@ configure.log
 /examples/missing.log
 /examples/undocumented/libshogun/*
 !/examples/undocumented/libshogun/*.cpp
+!/examples/undocumented/libshogun/CMakeLists.txt
 examples/undocumented/python_modular/*
 !/examples/undocumented/libshogun/tools/
 !examples/undocumented/python_modular/graphical/
 !examples/undocumented/python_modular/*.py
+!examples/undocumented/python_modular/CMakeLists.txt
 
 # /tests
 /tests/unit/shogun-unit-test
+/tests/unit/*.txt
+/tests/unit/*.xml
+/tests/unit/*.hdf5
+/tests/unit/*.json
+/tests/unit/combined_kernel.weights
+
+# cmake
+/CMakeFiles/
+CMakeCache.txt
+/build
+/third_party

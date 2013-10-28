@@ -7,7 +7,6 @@
  * (W) 2012 Jacob Walker
  *
  * Adapted from WeightedDegreeRBFKernel.h
- *
  */
 
 #ifndef LINEARARDKERNEL_H_
@@ -20,16 +19,11 @@
 namespace shogun
 {
 
-/** @brief Linear Kernel with Automatic
- * Relevance Detection
- */
+/** @brief Linear Kernel with Automatic Relevance Detection */
 class CLinearARDKernel: public CDotKernel
 {
-
 public:
-	/** default constructor
-	 *
-	 */
+	/** default constructor */
 	CLinearARDKernel();
 
 	/** constructor
@@ -45,7 +39,7 @@ public:
 	 * @param size cache size
 	 */
 	CLinearARDKernel(CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r,
-		int32_t size=10);
+			int32_t size=10);
 
 	virtual ~CLinearARDKernel();
 
@@ -69,7 +63,6 @@ public:
 	 */
 	virtual const char* get_name() const { return "LinearARDKernel"; }
 
-
 	/** return feature class the kernel can deal with
 	 *
 	 * @return feature class DENSE
@@ -82,14 +75,14 @@ public:
 	 */
 	virtual EFeatureType get_feature_type() { return F_DREAL; }
 
-	/**Set weight of particular feature
+	/** set weight of particular feature/dimension
 	 *
 	 * @param w weight to set
 	 * @param i index of feature
 	 */
 	virtual void set_weight(float64_t w, index_t i);
 
-	/**Get weight of particular feature
+	/** get weight of particular feature/dimension
 	 *
 	 * @param i index of feature
 	 *
@@ -97,8 +90,16 @@ public:
 	 */
 	virtual float64_t get_weight(index_t i);
 
-	protected:
+	/** @return Current feature/dimension weights */
+	virtual SGVector<float64_t> get_weights() { return m_weights; }
 
+	/** setter for feature/dimension weights
+	 *
+	 * @param weights weights to set
+	 */
+	virtual void set_weights(SGVector<float64_t> weights) { m_weights=weights; }
+
+protected:
 	/** compute kernel function for features a and b
 	 * idx_{a,b} denote the index of the feature vectors
 	 * in the corresponding feature object
@@ -118,23 +119,19 @@ public:
 	/** return derivative with respect to specified parameter
 	 *
 	 * @param  param the parameter
-	 * @param obj the object that owns the parameter
 	 * @param index the index of the element if parameter is a vector
 	 *
 	 * @return gradient with respect to parameter
 	 */
-	virtual SGMatrix<float64_t> get_parameter_gradient(TParameter* param,
-			CSGObject* obj, index_t index);
+	virtual SGMatrix<float64_t> get_parameter_gradient(const TParameter* param,
+			index_t index=-1);
 
 private:
-
 	void init();
 
 protected:
-
 	/** weights */
 	SGVector<float64_t> m_weights;
 };
-
-} /* namespace shogun */
+}
 #endif /* LINEARARDKERNEL_H_ */

@@ -201,7 +201,7 @@ public:
 	 */
 	static float64_t inverse_student_t(int32_t k, float64_t p);
 
-	/** Inverse of imcomplete beta integral
+	/** Inverse of incomplete beta integral
 	 *
 	 * Given \f$y\f$, the function finds \f$x\f$ such that
 	 *
@@ -341,7 +341,7 @@ public:
 	 */
 	static float64_t inverse_gamma_cdf(float64_t p, float64_t a, float64_t b);
 
-	/** Inverse of complemented imcomplete gamma integral
+	/** Inverse of complemented incomplete gamma integral
 	 *
 	 * Given \f$p\f$, the function finds \f$x\f$ such that
 	 *
@@ -376,6 +376,23 @@ public:
 	 * Custom variance added by Heiko Strathmann
 	 */
 	static float64_t normal_cdf(float64_t x, float64_t std_dev=1);
+
+	/** returns logarithm of the cumulative distribution function
+	 * (CDF) of Gaussian distribution \f$N(0, 1)\f$:
+	 *
+	 * \f[
+	 * \text{lnormal\_cdf}(x)=log\left(\frac{1}{2}+
+	 * \frac{1}{2}\text{error\_function}(\frac{x}{\sqrt{2}})\right)
+	 * \f]
+	 *
+	 * This method uses asymptotic expansion for \f$x<-10.0\f$,
+	 * otherwise it returns \f$log(\text{normal\_cdf}(x))\f$.
+	 *
+	 * @param x real value
+	 *
+	 * @return \f$log(\text{normal\_cdf}(x))\f$
+	 */
+	static float64_t lnormal_cdf(float64_t x);
 
 	/** Error function
 	 *
@@ -445,18 +462,40 @@ public:
 	}
 
 	 /** Derivative of the log gamma function.
-         *
-         * Taken from likT.m from the GPML
-         * toolbox.
-         *
-         * @param x input
-         * @return derivative of the log gamma input
-         */
-        static float64_t dlgamma(float64_t x);
+	 *
+	 * @param x input
+	 * @return derivative of the log gamma input
+	 */
+	static float64_t dlgamma(float64_t x);
+
+	/** Representation of a Sigmoid function for the fit_sigmoid function */
+	struct SigmoidParamters
+	{
+		/** parameter a */
+		float64_t a;
+
+		/** parameter b */
+		float64_t b;
+	};
+
+	/** Converts a given vector of scores to calibrated probabilities by fitting a
+	 * sigmoid function using the method described in
+	 * Lin, H., Lin, C., and Weng, R. (2007).
+	 * A note on Platt's probabilistic outputs for support vector machines.
+	 *
+	 * This can be used to transform scores to probabilities as setting
+	 * \f$pf=x*a+b\f$ for a given score \f$x\f$ and computing
+	 * \f$\frac{\exp(-f)}{1+}exp(-f)}\f$ if \f$f\geq 0\f$ and
+	 * \f$\frac{1}{(1+\exp(f)}\f$ otherwise
+	 *
+	 * @param scores scores to fit the sigmoid to
+	 * @return struct containing the sigmoid's shape parameters a and b
+	 */
+	static SigmoidParamters fit_sigmoid(SGVector<float64_t> scores);
 
 #ifdef HAVE_EIGEN3
 	/** The log determinant of a dense matrix
-	 * 
+	 *
 	 * The log determinant of a positive definite symmetric real valued
 	 * matrix is calculated as
 	 * \f[
@@ -472,22 +511,57 @@ public:
 	static float64_t log_det(SGMatrix<float64_t> m);
 
 	/** The log determinant of a sparse matrix
-	 * 
+	 *
 	 * The log determinant of symmetric positive definite sparse matrix
-	 * is calculated in a similar way as the dense case. But using 
-	 * cholesky decomposition on sparse matrices may suffer from fill-in 
-	 * phenomenon, i.e. the factors may not be as sparse. The 
-	 * SimplicialCholesky module for sparse matrix in eigen3 library 
-	 * uses an approach called approximate minimum degree reordering, 
-	 * or amd, which permutes the matrix beforehand and results in much 
+	 * is calculated in a similar way as the dense case. But using
+	 * cholesky decomposition on sparse matrices may suffer from fill-in
+	 * phenomenon, i.e. the factors may not be as sparse. The
+	 * SimplicialCholesky module for sparse matrix in eigen3 library
+	 * uses an approach called approximate minimum degree reordering,
+	 * or amd, which permutes the matrix beforehand and results in much
 	 * sparser factors. If \f$P\f$ is the permutation matrix, it computes
 	 * \f$\text{LLT}(P\times M\times P^{-1}) = L\times L'\f$.
-	 * 
+	 *
 	 * @param m input sparse matrix
 	 * @return the log determinant value
 	 */
 	static float64_t log_det(const SGSparseMatrix<float64_t> m);
 
+	/** Sampling from a multivariate Gaussian distribution with
+	 * dense covariance matrix
+	 *
+	 * Sampling is performed by taking samples from \f$N(0, I)\f$, then
+	 * using cholesky factor of the covariance matrix, \f$\Sigma\f$ and
+	 * performing
+	 * \f[S_{N(\mu,\Sigma)}=S_{N(0,I)}*L^{T}+\mu\f]
+	 * where \f$\Sigma=L*L^{T}\f$ and \f$\mu\f$ is the mean vector.
+	 *
+	 * @param mean the mean vector
+	 * @param cov the covariance matrix
+	 * @param N number of samples
+	 * @param precision_matrix if true, sample from N(mu,C^-1)
+	 * @return the sample matrix of size \f$N\times dim\f$
+	 */
+	static SGMatrix<float64_t> sample_from_gaussian(SGVector<float64_t> mean,
+	SGMatrix<float64_t> cov, int32_t N=1, bool precision_matrix=false);
+
+	/** Sampling from a multivariate Gaussian distribution with
+	 * sparse covariance matrix
+	 *
+	 * Sampling is performed in similar way as of dense covariance
+	 * matrix, but direct cholesky factorization of sparse matrices
+	 * could be inefficient. So, this method uses permutation matrix
+	 * for factorization and then permutes back the final samples
+	 * before adding the mean.
+	 *
+	 * @param mean the mean vector
+	 * @param cov the covariance matrix
+	 * @param N number of samples
+	 * @param precision_matrix if true, sample from N(mu,C^-1)
+	 * @return the sample matrix of size \f$N\times dim\f$
+	 */
+	static SGMatrix<float64_t> sample_from_gaussian(SGVector<float64_t> mean,
+	SGSparseMatrix<float64_t> cov, int32_t N=1, bool precision_matrix=false);
 #endif //HAVE_EIGEN3
 
 
@@ -533,24 +607,6 @@ protected:
 	static inline bool greater_equal(float64_t a, float64_t b) { return a>=b; }
 };
 
-#ifdef HAVE_EIGEN3
-	/** EigenTriplet definition for Eigen3 backword compatibility */
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-	template <typename T> struct EigenTriplet
-	{
-		EigenTriplet(index_t colIndex, index_t rowIndex, T valueT) :
-		ecol(colIndex), erow(rowIndex), evalue(valueT)
-		{
-		}
-		index_t col() const { return ecol; };
-		index_t row() const { return erow; };
-		T value() const { return evalue; };
-		index_t ecol;
-		index_t erow;
-		T evalue;
-	};
-#endif /* DOXYGEN_SHOULD_SKIP_THIS */
-#endif //HAVE_EIGEN3
 }
 
 #endif /* __STATISTICS_H_ */

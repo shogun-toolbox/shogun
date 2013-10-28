@@ -6,22 +6,22 @@ functions provided by shogun.
 First, you need to determine what type your data will be, because this
 will determine the distance function you can use.
 
-This example loads two stored matrices of real values from different 
+This example loads two stored matrices of real values from different
 files and initializes the matrices to 'RealFeatures'.
 Each column of the matrices corresponds to one data point.
 
-The distance initialized by two data sets (the same data set as shown in the 
-first call) and norm 'k' controls the processing of the given data points, 
+The distance initialized by two data sets (the same data set as shown in the
+first call) and norm 'k' controls the processing of the given data points,
 where a pairwise distance matrix is computed by 'get_distance_matrix'.
 
 The resulting distance matrix can be reaccessed by 'get_distance_matrix'.
 
-The method call 'init'* binds the given data sets, where a pairwise distance 
+The method call 'init'* binds the given data sets, where a pairwise distance
 matrix between these two data sets is computed by 'get_distance_matrix'.
 
 The resulting distance matrix can be reaccessed by 'get_distance_matrix'.
 
-*Note that the previous computed distance matrix can no longer be 
+*Note that the previous computed distance matrix can no longer be
 reaccessed by 'get_distance_matrix'.
 
 For more details see doc/classshogun_1_1CMinkowskiMetric.html.

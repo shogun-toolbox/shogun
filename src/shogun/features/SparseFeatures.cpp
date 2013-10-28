@@ -13,30 +13,13 @@ namespace shogun
 {
 
 template<class ST> CSparseFeatures<ST>::CSparseFeatures(int32_t size)
-: CDotFeatures(size), num_vectors(0), num_features(0),
-	sparse_feature_matrix(NULL), feature_cache(NULL)
+: CDotFeatures(size), feature_cache(NULL)
 {
 	init();
-}
-
-template<class ST> CSparseFeatures<ST>::CSparseFeatures(SGSparseVector<ST>* src,
-		int32_t num_feat, int32_t num_vec, bool copy)
-: CDotFeatures(0), num_vectors(num_vec), num_features(num_feat),
-	sparse_feature_matrix(NULL), feature_cache(NULL)
-{
-	init();
-
-	sparse_feature_matrix = src;
-	//SG_MALLOC(SGSparseVector<ST>, num_vec);
-	//for (int32_t i=0; i< num_vec; i++)
-	//{
-	//	sparse_feature_matrix[i] = src[i];
-	//}
 }
 
 template<class ST> CSparseFeatures<ST>::CSparseFeatures(SGSparseMatrix<ST> sparse)
-: CDotFeatures(0), num_vectors(0), num_features(0),
-	sparse_feature_matrix(NULL), feature_cache(NULL)
+: CDotFeatures(0), feature_cache(NULL)
 {
 	init();
 
@@ -44,8 +27,7 @@ template<class ST> CSparseFeatures<ST>::CSparseFeatures(SGSparseMatrix<ST> spars
 }
 
 template<class ST> CSparseFeatures<ST>::CSparseFeatures(SGMatrix<ST> dense)
-: CDotFeatures(0), num_vectors(0), num_features(0),
-	sparse_feature_matrix(NULL), feature_cache(NULL)
+: CDotFeatures(0), feature_cache(NULL)
 {
 	init();
 
@@ -53,27 +35,16 @@ template<class ST> CSparseFeatures<ST>::CSparseFeatures(SGMatrix<ST> dense)
 }
 
 template<class ST> CSparseFeatures<ST>::CSparseFeatures(const CSparseFeatures & orig)
-: CDotFeatures(orig), num_vectors(orig.num_vectors),
-	num_features(orig.num_features),
-	sparse_feature_matrix(orig.sparse_feature_matrix),
+: CDotFeatures(orig), sparse_feature_matrix(orig.sparse_feature_matrix),
 	feature_cache(orig.feature_cache)
 {
 	init();
-
-	if (orig.sparse_feature_matrix)
-	{
-		free_sparse_feature_matrix();
-		sparse_feature_matrix=SG_MALLOC(SGSparseVector<ST>, num_vectors);
-		for (int32_t i=0; i< num_vectors; i++)
-			sparse_feature_matrix[i] = orig.sparse_feature_matrix[i];
-	}
 
 	m_subset_stack=orig.m_subset_stack;
 	SG_REF(m_subset_stack);
 }
 template<class ST> CSparseFeatures<ST>::CSparseFeatures(CFile* loader)
-: CDotFeatures(loader), num_vectors(0), num_features(0),
-	sparse_feature_matrix(NULL), feature_cache(NULL)
+: CDotFeatures(), feature_cache(NULL)
 {
 	init();
 
@@ -82,22 +53,9 @@ template<class ST> CSparseFeatures<ST>::CSparseFeatures(CFile* loader)
 
 template<class ST> CSparseFeatures<ST>::~CSparseFeatures()
 {
-	free_sparse_features();
+	SG_UNREF(feature_cache);
 }
 
-template<class ST> void CSparseFeatures<ST>::free_sparse_feature_matrix()
-{
-	SG_FREE(sparse_feature_matrix);
-	num_vectors=0;
-	num_features=0;
-	remove_all_subsets();
-}
-template<class ST> void CSparseFeatures<ST>::free_sparse_features()
-{
-	free_sparse_feature_matrix();
-	delete feature_cache;
-	feature_cache = NULL;
-}
 template<class ST> CFeatures* CSparseFeatures<ST>::duplicate() const
 {
 	return new CSparseFeatures<ST>(*this);
@@ -105,72 +63,22 @@ template<class ST> CFeatures* CSparseFeatures<ST>::duplicate() const
 
 template<class ST> ST CSparseFeatures<ST>::get_feature(int32_t num, int32_t index)
 {
-	ASSERT(index>=0 && index<num_features)
-	ASSERT(num>=0 && num<get_num_vectors())
+	REQUIRE(index>=0 && index<get_num_features(),
+		"get_feature(num=%d,index=%d): index exceeds [0;%d]\n",
+		num, index, get_num_features()-1);
 
-	int32_t i;
 	SGSparseVector<ST> sv=get_sparse_feature_vector(num);
-	ST ret = 0 ;
-
-	if (sv.features)
-	{
-		for (i=0; i<sv.num_feat_entries; i++)
-			if (sv.features[i].feat_index==index)
-				ret+=sv.features[i].entry ;
-	}
+	ST ret = sv.get_feature(index);
 
 	free_sparse_feature_vector(num);
-
-	return ret ;
-}
-
-template<class ST> ST* CSparseFeatures<ST>::get_full_feature_vector(int32_t num, int32_t& len)
-{
-	int32_t i;
-	len=0;
-	SGSparseVector<ST> sv=get_sparse_feature_vector(num);
-	ST* fv=NULL;
-
-	if (sv.features)
-	{
-		len=num_features;
-		fv=SG_MALLOC(ST, num_features);
-
-		for (i=0; i<num_features; i++)
-			fv[i]=0;
-
-		for (i=0; i<sv.num_feat_entries; i++)
-			fv[sv.features[i].feat_index]= sv.features[i].entry;
-	}
-
-	free_sparse_feature_vector(num);
-
-	return fv;
+	return ret;
 }
 
 template<class ST> SGVector<ST> CSparseFeatures<ST>::get_full_feature_vector(int32_t num)
 {
-	if (num>=get_num_vectors())
-	{
-		SG_ERROR("Index out of bounds (number of vectors %d, you "
-				"requested %d)\n", get_num_vectors(), num);
-	}
-
 	SGSparseVector<ST> sv=get_sparse_feature_vector(num);
-
-	SGVector<ST> dense;
-
-	if (sv.features)
-	{
-		dense=SGVector<ST>(num_features);
-		dense.zero();
-
-		for (int32_t i=0; i<sv.num_feat_entries; i++)
-			dense.vector[sv.features[i].feat_index]= sv.features[i].entry;
-	}
-
+	SGVector<ST> dense = sv.get_dense(get_num_features());
 	free_sparse_feature_vector(num);
-
 	return dense;
 }
 
@@ -184,18 +92,18 @@ template<class ST> int32_t CSparseFeatures<ST>::get_nnz_features_for_vector(int3
 
 template<class ST> SGSparseVector<ST> CSparseFeatures<ST>::get_sparse_feature_vector(int32_t num)
 {
-	ASSERT(num<get_num_vectors())
-
+	REQUIRE(num>=0 && num<get_num_vectors(),
+		"get_sparse_feature_vector(num=%d): num exceeds [0;%d]\n",
+		num, get_num_vectors()-1);
 	index_t real_num=m_subset_stack->subset_idx_conversion(num);
 
-	SGSparseVector<ST> result;
-
-	if (sparse_feature_matrix)
+	if (sparse_feature_matrix.sparse_matrix)
 	{
 		return sparse_feature_matrix[real_num];
 	}
 	else
 	{
+		SGSparseVector<ST> result;
 		if (feature_cache)
 		{
 			result.features=feature_cache->lock_entry(num);
@@ -230,12 +138,15 @@ template<class ST> SGSparseVector<ST> CSparseFeatures<ST>::get_sparse_feature_ve
 				tmp_feat_before=tmp_feat_after;
 			}
 
-			memcpy(result.features, tmp_feat_after,
-					sizeof(SGSparseVectorEntry<ST>)*tmp_len);
+			if (tmp_feat_after)
+			{
+				memcpy(result.features, tmp_feat_after,
+						sizeof(SGSparseVectorEntry<ST>)*tmp_len);
 
-			SG_FREE(tmp_feat_after);
-			result.num_feat_entries=tmp_len ;
-			SG_DEBUG("len: %d len2: %d\n", result.num_feat_entries, num_features)
+				SG_FREE(tmp_feat_after);
+				result.num_feat_entries=tmp_len;
+			}
+			SG_DEBUG("len: %d len2: %d\n", result.num_feat_entries, get_num_features())
 		}
 		return result ;
 	}
@@ -243,33 +154,19 @@ template<class ST> SGSparseVector<ST> CSparseFeatures<ST>::get_sparse_feature_ve
 
 template<class ST> ST CSparseFeatures<ST>::dense_dot(ST alpha, int32_t num, ST* vec, int32_t dim, ST b)
 {
-	ASSERT(vec)
-	ASSERT(dim==num_features)
-	ST result=b;
-
 	SGSparseVector<ST> sv=get_sparse_feature_vector(num);
-
-	if (sv.features)
-	{
-		for (int32_t i=0; i<sv.num_feat_entries; i++)
-		{
-			result+=alpha*vec[sv.features[i].feat_index]
-				*sv.features[i].entry;
-		}
-	}
-
+	ST result = sv.dense_dot(alpha,vec,dim,b);
 	free_sparse_feature_vector(num);
 	return result;
 }
 
 template<class ST> void CSparseFeatures<ST>::add_to_dense_vec(float64_t alpha, int32_t num, float64_t* vec, int32_t dim, bool abs_val)
 {
-	ASSERT(vec)
-	if (dim!=num_features)
-	{
-		SG_ERROR("dimension of vec (=%d) does not match number of features (=%d)\n",
-				dim, num_features);
-	}
+	REQUIRE(vec, "add_to_dense_vec(num=%d,dim=%d): vec must not be NULL\n",
+		num, dim);
+	REQUIRE(dim>=get_num_features(),
+		"add_to_dense_vec(num=%d,dim=%d): dim should contain number of features %d\n",
+		num, dim, get_num_features());
 
 	SGSparseVector<ST> sv=get_sparse_feature_vector(num);
 
@@ -296,6 +193,13 @@ template<class ST> void CSparseFeatures<ST>::add_to_dense_vec(float64_t alpha, i
 	free_sparse_feature_vector(num);
 }
 
+template<>
+void CSparseFeatures<complex128_t>::add_to_dense_vec(float64_t alpha,
+	int32_t num, float64_t* vec, int32_t dim, bool abs_val)
+{
+	SG_NOTIMPLEMENTED;
+}
+
 template<class ST> void CSparseFeatures<ST>::free_sparse_feature_vector(int32_t num)
 {
 	if (feature_cache)
@@ -304,103 +208,45 @@ template<class ST> void CSparseFeatures<ST>::free_sparse_feature_vector(int32_t 
 	//vec.free_vector();
 }
 
-template<class ST> SGSparseVector<ST>* CSparseFeatures<ST>::get_sparse_feature_matrix(int32_t &num_feat, int32_t &num_vec)
+template<class ST> SGSparseMatrix<ST> CSparseFeatures<ST>::get_sparse_feature_matrix()
 {
 	if (m_subset_stack->has_subsets())
-		SG_ERROR("get_sparse_feature_matrix() not allowed with subset\n")
-
-	num_feat=num_features;
-	num_vec=num_vectors;
+		SG_ERROR("Not allowed with subset\n");
 
 	return sparse_feature_matrix;
 }
 
-template<class ST> SGSparseMatrix<ST> CSparseFeatures<ST>::get_sparse_feature_matrix()
-{
-	if (m_subset_stack->has_subsets())
-		SG_ERROR("get_sparse_feature_matrix() not allowed with subset\n")
-
-	SGSparseMatrix<ST> sm=SGSparseMatrix<ST>(NULL, 0, 0, false);
-	sm.sparse_matrix=get_sparse_feature_matrix(sm.num_features, sm.num_vectors);
-	return sm;
-}
-
 template<class ST> CSparseFeatures<ST>* CSparseFeatures<ST>::get_transposed()
 {
-	int32_t num_feat;
-	int32_t num_vec;
-	SGSparseVector<ST>* s=get_transposed(num_feat, num_vec);
-	//SG_PRINT("num_feat = %d , num_vec = %d \n", num_feat, num_vec)
-	return new CSparseFeatures<ST>(s, num_feat, num_vec);
-}
+	if (m_subset_stack->has_subsets())
+		SG_ERROR("Not allowed with subset\n");
 
-template<class ST> SGSparseVector<ST>* CSparseFeatures<ST>::get_transposed(int32_t &num_feat, int32_t &num_vec)
-{
-	num_feat=get_num_vectors();
-	num_vec=num_features;
-	//SG_PRINT("get transposed num_feat = %d , num_vec = %d \n", num_feat, num_vec)
-
-	int32_t* hist=SG_MALLOC(int32_t, num_features);
-	memset(hist, 0, sizeof(int32_t)*num_features);
-
-	// count how lengths of future feature vectors
-	for (int32_t v=0; v<num_feat; v++)
-	{
-		SGSparseVector<ST> sv=get_sparse_feature_vector(v);
-
-		for (int32_t i=0; i<sv.num_feat_entries; i++)
-			hist[sv.features[i].feat_index]++;
-	}
-
-	// allocate room for future feature vectors
-	SGSparseVector<ST>* sfm=SG_MALLOC(SGSparseVector<ST>, num_vec);
-
-	for (int32_t v=0; v<num_vec; v++)
-		sfm[v]=SGSparseVector<ST>(hist[v]);
-
-	// fill future feature vectors with content
-	memset(hist,0,sizeof(int32_t)*num_features);
-	for (int32_t v=0; v<num_feat; v++)
-	{
-
-		SGSparseVector<ST> sv=get_sparse_feature_vector(v);
-
-		for (int32_t i=0; i<sv.num_feat_entries; i++)
-		{
-			int32_t vidx=sv.features[i].feat_index;
-			int32_t fidx=v;
-			sfm[vidx].features[hist[vidx]].feat_index=fidx;
-			sfm[vidx].features[hist[vidx]].entry=sv.features[i].entry;
-			hist[vidx]++;
-		}
-
-	}
-
-	SG_FREE(hist);
-	return sfm;
+	return new CSparseFeatures<ST>(sparse_feature_matrix.get_transposed());
 }
 
 template<class ST> void CSparseFeatures<ST>::set_sparse_feature_matrix(SGSparseMatrix<ST> sm)
 {
 	if (m_subset_stack->has_subsets())
-		SG_ERROR("set_sparse_feature_matrix() not allowed with subset\n")
+		SG_ERROR("Not allowed with subset\n");
 
-	SGSparseVector<ST>* sparse_matrix = SG_MALLOC(SGSparseVector<ST>, sm.num_vectors);
+	sparse_feature_matrix=sm;
 
-	for (int32_t i=0; i<sm.num_vectors; i++)
-		sparse_matrix[i] = sm[i];
-
-	sparse_feature_matrix=sparse_matrix;
-	num_features=sm.num_features;
-	num_vectors=sm.num_vectors;
+	// TODO: check should be implemented in sparse matrix class
+	for (int32_t j=0; j<get_num_vectors(); j++) {
+		SGSparseVector<ST> sv=get_sparse_feature_vector(j);
+		REQUIRE(get_num_features() >= sv.get_num_dimensions(),
+			"sparse_matrix[%d] check failed (matrix features %d >= vector dimension %d)\n",
+			j, get_num_features(), sv.get_num_dimensions());
+	}
 }
 
 template<class ST> SGMatrix<ST> CSparseFeatures<ST>::get_full_feature_matrix()
 {
-	SGMatrix<ST> full(num_features, get_num_vectors());
+	SGMatrix<ST> full(get_num_features(), get_num_vectors());
 	full.zero();
 
-	SG_INFO("converting sparse features to full feature matrix of %ld x %ld entries\n", num_vectors, num_features)
+	SG_INFO("converting sparse features to full feature matrix of %d x %d"
+			" entries\n", sparse_feature_matrix.num_vectors, get_num_features())
 
 	for (int32_t v=0; v<full.num_cols; v++)
 	{
@@ -409,7 +255,7 @@ template<class ST> SGMatrix<ST> CSparseFeatures<ST>::get_full_feature_matrix()
 
 		for (int32_t f=0; f<current.num_feat_entries; f++)
 		{
-			int64_t offs=(idx*num_features)
+			int64_t offs=(v*get_num_features())
 					+current.features[f].feat_index;
 
 			full.matrix[offs]=current.features[f].entry;
@@ -419,86 +265,29 @@ template<class ST> SGMatrix<ST> CSparseFeatures<ST>::get_full_feature_matrix()
 	return full;
 }
 
-template<class ST> bool CSparseFeatures<ST>::set_full_feature_matrix(SGMatrix<ST> full)
+template<class ST> void CSparseFeatures<ST>::free_sparse_features()
+{
+	free_sparse_feature_matrix();
+	SG_UNREF(feature_cache);
+}
+
+template<class ST> void CSparseFeatures<ST>::free_sparse_feature_matrix()
+{
+	sparse_feature_matrix=SGSparseMatrix<ST>();
+}
+
+template<class ST> void CSparseFeatures<ST>::set_full_feature_matrix(SGMatrix<ST> full)
 {
 	remove_all_subsets();
-
-	ST* src=full.matrix;
-	int32_t num_feat=full.num_rows;
-	int32_t num_vec=full.num_cols;
-
 	free_sparse_feature_matrix();
-	bool result=true;
-	num_features=num_feat;
-	num_vectors=num_vec;
-
-	SG_INFO("converting dense feature matrix to sparse one\n")
-	int32_t* num_feat_entries=SG_MALLOC(int, num_vectors);
-
-	if (num_feat_entries)
-	{
-		int64_t num_total_entries=0;
-
-		// count nr of non sparse features
-		for (int32_t i=0; i< num_vec; i++)
-		{
-			num_feat_entries[i]=0;
-			for (int32_t j=0; j< num_feat; j++)
-			{
-				if (src[i*((int64_t) num_feat) + j] != 0)
-					num_feat_entries[i]++;
-			}
-		}
-
-		if (num_vec>0)
-		{
-			sparse_feature_matrix=SG_MALLOC(SGSparseVector<ST>, num_vec);
-
-			if (sparse_feature_matrix)
-			{
-				for (int32_t i=0; i< num_vec; i++)
-				{
-					sparse_feature_matrix[i] = SGSparseVector<ST>(num_feat_entries[i]);
-					int32_t sparse_feat_idx=0;
-
-					for (int32_t j=0; j< num_feat; j++)
-					{
-						int64_t pos= i*num_feat + j;
-
-						if (src[pos] != 0)
-						{
-							sparse_feature_matrix[i].features[sparse_feat_idx].entry=src[pos];
-							sparse_feature_matrix[i].features[sparse_feat_idx].feat_index=j;
-							sparse_feat_idx++;
-							num_total_entries++;
-						}
-					}
-				}
-			}
-			else
-			{
-				SG_ERROR("allocation of sparse feature matrix failed\n")
-				result=false;
-			}
-
-			SG_INFO("sparse feature matrix has %ld entries (full matrix had %ld, sparsity %2.2f%%)\n",
-					num_total_entries, int64_t(num_feat)*num_vec, (100.0*num_total_entries)/(int64_t(num_feat)*num_vec));
-		}
-		else
-		{
-			SG_ERROR("huh ? zero size matrix given ?\n")
-			result=false;
-		}
-	}
-	SG_FREE(num_feat_entries);
-	return result;
+	sparse_feature_matrix.from_dense(full);
 }
 
 template<class ST> bool CSparseFeatures<ST>::apply_preprocessor(bool force_preprocessing)
 {
 	SG_INFO("force: %d\n", force_preprocessing)
 
-	if ( sparse_feature_matrix && get_num_preprocessors() )
+	if ( sparse_feature_matrix.sparse_matrix && get_num_preprocessors() )
 	{
 		for (int32_t i=0; i<get_num_preprocessors(); i++)
 		{
@@ -520,35 +309,34 @@ template<class ST> bool CSparseFeatures<ST>::apply_preprocessor(bool force_prepr
 	}
 }
 
-template<class ST> int32_t CSparseFeatures<ST>::get_size() const
-{
-	return sizeof(ST);
-}
-
-template<class ST> bool CSparseFeatures<ST>::obtain_from_simple(CDenseFeatures<ST>* sf)
+template<class ST> void CSparseFeatures<ST>::obtain_from_simple(CDenseFeatures<ST>* sf)
 {
 	SGMatrix<ST> fm=sf->get_feature_matrix();
 	ASSERT(fm.matrix && fm.num_cols>0 && fm.num_rows>0)
+	set_full_feature_matrix(fm);
+}
 
-	return set_full_feature_matrix(fm);
+template<> void CSparseFeatures<complex128_t>::obtain_from_simple(CDenseFeatures<complex128_t>* sf)
+{
+	SG_NOTIMPLEMENTED;
 }
 
 template<class ST> int32_t  CSparseFeatures<ST>::get_num_vectors() const
 {
-	return m_subset_stack->has_subsets() ? m_subset_stack->get_size() : num_vectors;
+	return m_subset_stack->has_subsets() ? m_subset_stack->get_size() : sparse_feature_matrix.num_vectors;
 }
 
-template<class ST> int32_t  CSparseFeatures<ST>::get_num_features()
+template<class ST> int32_t  CSparseFeatures<ST>::get_num_features() const
 {
-	return num_features;
+	return sparse_feature_matrix.num_features;
 }
 
 template<class ST> int32_t CSparseFeatures<ST>::set_num_features(int32_t num)
 {
-	int32_t n=num_features;
+	int32_t n=get_num_features();
 	ASSERT(n<=num)
-	num_features=num;
-	return num_features;
+	sparse_feature_matrix.num_features=num;
+	return sparse_feature_matrix.num_features;
 }
 
 template<class ST> EFeatureClass CSparseFeatures<ST>::get_feature_class() const
@@ -590,6 +378,12 @@ template<class ST> float64_t* CSparseFeatures<ST>::compute_squared(float64_t* sq
 		free_feature_vector(i);
 	}
 
+	return sq;
+}
+
+template<> float64_t* CSparseFeatures<complex128_t>::compute_squared(float64_t* sq)
+{
+	SG_NOTIMPLEMENTED;
 	return sq;
 }
 
@@ -653,255 +447,9 @@ template<class ST> float64_t CSparseFeatures<ST>::compute_squared_norm(
 	return CMath::abs(result);
 }
 
-template<class ST> CRegressionLabels* CSparseFeatures<ST>::load_svmlight_file(char* fname,
-		bool do_sort_features)
-{
-	remove_all_subsets();
-
-	CRegressionLabels* lab=NULL;
-
-	size_t blocksize=1024*1024;
-	size_t required_blocksize=blocksize;
-	uint8_t* dummy=SG_MALLOC(uint8_t, blocksize);
-	FILE* f=fopen(fname, "ro");
-
-	if (f)
-	{
-		free_sparse_feature_matrix();
-		num_vectors=0;
-		num_features=0;
-
-		SG_INFO("counting line numbers in file %s\n", fname)
-		size_t sz=blocksize;
-		size_t block_offs=0;
-		size_t old_block_offs=0;
-		fseek(f, 0, SEEK_END);
-		size_t fsize=ftell(f);
-		rewind(f);
-
-		while (sz == blocksize)
-		{
-			sz=fread(dummy, sizeof(uint8_t), blocksize, f);
-			for (size_t i=0; i<sz; i++)
-			{
-				block_offs++;
-				if (dummy[i]=='\n' || (i==sz-1 && sz<blocksize))
-				{
-					num_vectors++;
-					required_blocksize=CMath::max(required_blocksize, block_offs-old_block_offs+1);
-					old_block_offs=block_offs;
-				}
-			}
-			SG_PROGRESS(block_offs, 0, fsize, 1, "COUNTING:\t")
-		}
-
-		SG_INFO("found %d feature vectors\n", num_vectors)
-		SG_FREE(dummy);
-		blocksize=required_blocksize;
-		dummy = SG_MALLOC(uint8_t, blocksize+1); //allow setting of '\0' at EOL
-
-		lab=new CRegressionLabels(num_vectors);
-		sparse_feature_matrix=SG_MALLOC(SGSparseVector<ST>, num_vectors);
-		rewind(f);
-		sz=blocksize;
-		int32_t lines=0;
-		while (sz == blocksize)
-		{
-			sz=fread(dummy, sizeof(uint8_t), blocksize, f);
-
-			size_t old_sz=0;
-			for (size_t i=0; i<sz; i++)
-			{
-				if (i==sz-1 && dummy[i]!='\n' && sz==blocksize)
-				{
-					size_t len=i-old_sz+1;
-					uint8_t* data=&dummy[old_sz];
-
-					for (size_t j=0; j<len; j++)
-						dummy[j]=data[j];
-
-					sz=fread(dummy+len, sizeof(uint8_t), blocksize-len, f);
-					i=0;
-					old_sz=0;
-					sz+=len;
-				}
-
-				if (dummy[i]=='\n' || (i==sz-1 && sz<blocksize))
-				{
-
-					size_t len=i-old_sz;
-					uint8_t* data=&dummy[old_sz];
-
-					int32_t dims=0;
-					for (size_t j=0; j<len; j++)
-					{
-						if (data[j]==':')
-							dims++;
-					}
-
-					if (dims<=0)
-					{
-						SG_ERROR("Error in line %d - number of"
-								" dimensions is %d line is %d characters"
-								" long\n line_content:'%.*s'\n", lines,
-								dims, len, len, (const char*) data);
-					}
-
-					SGSparseVectorEntry<ST>* feat=SG_MALLOC(SGSparseVectorEntry<ST>, dims);
-					size_t j=0;
-					for (; j<len; j++)
-					{
-						if (data[j]==' ')
-						{
-							data[j]='\0';
-
-							lab->set_label(lines, atof((const char*) data));
-							break;
-						}
-					}
-
-					int32_t d=0;
-					j++;
-					uint8_t* start=&data[j];
-					for (; j<len; j++)
-					{
-						if (data[j]==':')
-						{
-							data[j]='\0';
-
-							feat[d].feat_index=(int32_t) atoi((const char*) start)-1;
-							num_features=CMath::max(num_features, feat[d].feat_index+1);
-
-							j++;
-							start=&data[j];
-							for (; j<len; j++)
-							{
-								if (data[j]==' ' || data[j]=='\n')
-								{
-									data[j]='\0';
-									feat[d].entry=(ST) atof((const char*) start);
-									d++;
-									break;
-								}
-							}
-
-							if (j==len)
-							{
-								data[j]='\0';
-								feat[dims-1].entry=(ST) atof((const char*) start);
-							}
-
-							j++;
-							start=&data[j];
-						}
-					}
-
-					sparse_feature_matrix[lines].num_feat_entries=dims;
-					sparse_feature_matrix[lines].features=feat;
-
-					old_sz=i+1;
-					lines++;
-					SG_PROGRESS(lines, 0, num_vectors, 1, "LOADING:\t")
-				}
-			}
-		}
-		SG_INFO("file successfully read\n")
-		fclose(f);
-	}
-
-	SG_FREE(dummy);
-
-	if (do_sort_features)
-		sort_features();
-
-	return lab;
-}
-
-template<class ST> void CSparseFeatures<ST>::sort_features()
-{
-	if (m_subset_stack->has_subsets())
-		SG_ERROR("sort_features() not allowed with subset\n")
-
-	ASSERT(get_num_preprocessors()==0)
-
-	if (!sparse_feature_matrix)
-		SG_ERROR("Requires sparse feature matrix to be available in-memory\n")
-
-	for (int32_t i=0; i<num_vectors; i++)
-	{
-		int32_t len=sparse_feature_matrix[i].num_feat_entries;
-
-		if (!len)
-			continue;
-
-		SGSparseVectorEntry<ST>* sf_orig=sparse_feature_matrix[i].features;
-		int32_t* feat_idx=SG_MALLOC(int32_t, len);
-		int32_t* orig_idx=SG_MALLOC(int32_t, len);
-
-		for (int j=0; j<len; j++)
-		{
-			feat_idx[j]=sf_orig[j].feat_index;
-			orig_idx[j]=j;
-		}
-
-		CMath::qsort_index(feat_idx, orig_idx, len);
-
-		SGSparseVectorEntry<ST>* sf_new= SG_MALLOC(SGSparseVectorEntry<ST>, len);
-		for (int j=0; j<len; j++)
-			sf_new[j]=sf_orig[orig_idx[j]];
-
-		sparse_feature_matrix[i].features=sf_new;
-
-		// sanity check
-		for (int j=0; j<len-1; j++)
-			ASSERT(sf_new[j].feat_index<sf_new[j+1].feat_index)
-
-		SG_FREE(orig_idx);
-		SG_FREE(feat_idx);
-		SG_FREE(sf_orig);
-	}
-}
-
-template<class ST> bool CSparseFeatures<ST>::write_svmlight_file(char* fname,
-		CRegressionLabels* label)
-{
-	if (m_subset_stack->has_subsets())
-		SG_ERROR("write_svmlight_file() not allowed with subset\n")
-
-	ASSERT(label)
-	int32_t num=label->get_num_labels();
-	ASSERT(num>0)
-	ASSERT(num==num_vectors)
-
-	FILE* f=fopen(fname, "wb");
-
-	if (f)
-	{
-		for (int32_t i=0; i<num; i++)
-		{
-			fprintf(f, "%d ", (int32_t) label->get_int_label(i));
-
-			SGSparseVectorEntry<ST>* vec = sparse_feature_matrix[i].features;
-			int32_t num_feat = sparse_feature_matrix[i].num_feat_entries;
-
-			for (int32_t j=0; j<num_feat; j++)
-			{
-				if (j<num_feat-1)
-					fprintf(f, "%d:%f ", (int32_t) vec[j].feat_index+1, (double) vec[j].entry);
-				else
-					fprintf(f, "%d:%f\n", (int32_t) vec[j].feat_index+1, (double) vec[j].entry);
-			}
-		}
-
-		fclose(f);
-		return true;
-	}
-	return false;
-}
-
 template<class ST> int32_t CSparseFeatures<ST>::get_dim_feature_space() const
 {
-	return num_features;
+	return get_num_features();
 }
 
 template<class ST> float64_t CSparseFeatures<ST>::dot(int32_t vec_idx1,
@@ -921,20 +469,35 @@ template<class ST> float64_t CSparseFeatures<ST>::dot(int32_t vec_idx1,
 
 	return result;
 }
+
+template<> float64_t CSparseFeatures<complex128_t>::dot(int32_t vec_idx1,
+		CDotFeatures* df, int32_t vec_idx2)
+{
+	SG_NOTIMPLEMENTED;
+	return 0.0;
+}
+
 template<class ST> float64_t CSparseFeatures<ST>::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)
 {
-	ASSERT(vec2)
-	if (vec2_len!=num_features)
-	{
-		SG_ERROR("dimension of vec2 (=%d) does not match number of features (=%d)\n",
-				vec2_len, num_features);
-	}
-	float64_t result=0;
+	REQUIRE(vec2, "dense_dot(vec_idx1=%d,vec2_len=%d): vec2 must not be NULL\n",
+		vec_idx1, vec2_len);
+	REQUIRE(vec2_len>=get_num_features(),
+		"dense_dot(vec_idx1=%d,vec2_len=%d): vec2_len should contain number of features %d %d\n",
+		vec_idx1, vec2_len, get_num_features());
 
+	float64_t result=0;
 	SGSparseVector<ST> sv=get_sparse_feature_vector(vec_idx1);
 
 	if (sv.features)
 	{
+		REQUIRE(get_num_features() >= sv.get_num_dimensions(),
+			"sparse_matrix[%d] check failed (matrix features %d >= vector dimension %d)\n",
+			vec_idx1, get_num_features(), sv.get_num_dimensions());
+
+		REQUIRE(vec2_len >= sv.get_num_dimensions(),
+			"sparse_matrix[%d] check failed (dense vector dimension %d >= vector dimension %d)\n",
+			vec_idx1, vec2_len, sv.get_num_dimensions());
+
 		for (int32_t i=0; i<sv.num_feat_entries; i++)
 			result+=vec2[sv.features[i].feat_index]*sv.features[i].entry;
 	}
@@ -942,6 +505,13 @@ template<class ST> float64_t CSparseFeatures<ST>::dense_dot(int32_t vec_idx1, co
 	free_sparse_feature_vector(vec_idx1);
 
 	return result;
+}
+
+template<> float64_t CSparseFeatures<complex128_t>::dense_dot(int32_t vec_idx1,
+	const float64_t* vec2, int32_t vec2_len)
+{
+	SG_NOTIMPLEMENTED;
+	return 0.0;
 }
 
 template<class ST> void* CSparseFeatures<ST>::get_feature_iterator(int32_t vector_index)
@@ -952,10 +522,10 @@ template<class ST> void* CSparseFeatures<ST>::get_feature_iterator(int32_t vecto
 				"requested %d)\n", get_num_vectors(), vector_index);
 	}
 
-	if (!sparse_feature_matrix)
+	if (!sparse_feature_matrix.sparse_matrix)
 		SG_ERROR("Requires a in-memory feature matrix\n")
 
-	sparse_feature_iterator* it=SG_MALLOC(sparse_feature_iterator, 1);
+	sparse_feature_iterator* it=new sparse_feature_iterator();
 	it->sv=get_sparse_feature_vector(vector_index);
 	it->index=0;
 	it->vector_index=vector_index;
@@ -977,14 +547,19 @@ template<class ST> bool CSparseFeatures<ST>::get_next_feature(int32_t& index, fl
 	return true;
 }
 
+template<> bool CSparseFeatures<complex128_t>::get_next_feature(int32_t& index,
+	float64_t& value, void* iterator)
+{
+	SG_NOTIMPLEMENTED;
+	return false;
+}
+
 template<class ST> void CSparseFeatures<ST>::free_feature_iterator(void* iterator)
 {
 	if (!iterator)
 		return;
 
-	sparse_feature_iterator* it=(sparse_feature_iterator*) iterator;
-	free_sparse_feature_vector(it->vector_index);
-	SG_FREE(it);
+	delete ((sparse_feature_iterator*) iterator);
 }
 
 template<class ST> CFeatures* CSparseFeatures<ST>::copy_subset(SGVector<index_t> indices)
@@ -1018,14 +593,19 @@ template<class ST> SGSparseVectorEntry<ST>* CSparseFeatures<ST>::compute_sparse_
 	return NULL;
 }
 
+template<class ST> void CSparseFeatures<ST>::sort_features()
+{
+	sparse_feature_matrix.sort_features();
+}
+
 template<class ST> void CSparseFeatures<ST>::init()
 {
 	set_generic<ST>();
 
-	m_parameters->add_vector(&sparse_feature_matrix, &num_vectors,
+	m_parameters->add_vector(&sparse_feature_matrix.sparse_matrix, &sparse_feature_matrix.num_vectors,
 			"sparse_feature_matrix",
 			"Array of sparse vectors.");
-	m_parameters->add(&num_features, "num_features",
+	m_parameters->add(&sparse_feature_matrix.num_features, "sparse_feature_matrix.num_features",
 			"Total number of features.");
 }
 
@@ -1047,60 +627,40 @@ GET_FEATURE_TYPE(uint64_t, F_ULONG)
 GET_FEATURE_TYPE(float32_t, F_SHORTREAL)
 GET_FEATURE_TYPE(float64_t, F_DREAL)
 GET_FEATURE_TYPE(floatmax_t, F_LONGREAL)
+GET_FEATURE_TYPE(complex128_t, F_ANY)
 #undef GET_FEATURE_TYPE
 
-#define LOAD(fname, sg_type)											\
-template<> void CSparseFeatures<sg_type>::load(CFile* loader)			\
-{																		\
-	remove_all_subsets();												\
-	SG_SET_LOCALE_C;													\
-	ASSERT(loader)														\
-	SGSparseVector<sg_type>* matrix=NULL;								\
-	int32_t num_feat=0;													\
-	int32_t num_vec=0;													\
-	loader->fname(matrix, num_feat, num_vec);							\
-	set_sparse_feature_matrix(SGSparseMatrix<sg_type>(matrix, num_feat, num_vec));				\
-	SG_RESET_LOCALE;													\
+template<class ST> void CSparseFeatures<ST>::load(CFile* loader)
+{
+	remove_all_subsets();
+	ASSERT(loader)
+	free_sparse_feature_matrix();
+	sparse_feature_matrix.load(loader);
 }
-LOAD(get_sparse_matrix, bool)
-LOAD(get_sparse_matrix, char)
-LOAD(get_sparse_matrix, uint8_t)
-LOAD(get_sparse_matrix, int8_t)
-LOAD(get_sparse_matrix, int16_t)
-LOAD(get_sparse_matrix, uint16_t)
-LOAD(get_sparse_matrix, int32_t)
-LOAD(get_sparse_matrix, uint32_t)
-LOAD(get_sparse_matrix, int64_t)
-LOAD(get_sparse_matrix, uint64_t)
-LOAD(get_sparse_matrix, float32_t)
-LOAD(get_sparse_matrix, float64_t)
-LOAD(get_sparse_matrix, floatmax_t)
-#undef LOAD
 
-#define WRITE(fname, sg_type)											\
-template<> void CSparseFeatures<sg_type>::save(CFile* writer)			\
-{																		\
-	if (m_subset_stack->has_subsets())									\
-		SG_ERROR("save() not allowed with subset\n")					\
-	SG_SET_LOCALE_C;													\
-	ASSERT(writer)														\
-	writer->fname(sparse_feature_matrix, num_features, num_vectors);	\
-	SG_RESET_LOCALE;													\
+template<class ST> SGVector<float64_t> CSparseFeatures<ST>::load_with_labels(CLibSVMFile* loader)
+{
+	remove_all_subsets();
+	ASSERT(loader)
+	free_sparse_feature_matrix();
+	return sparse_feature_matrix.load_with_labels(loader);
 }
-WRITE(set_sparse_matrix, bool)
-WRITE(set_sparse_matrix, char)
-WRITE(set_sparse_matrix, uint8_t)
-WRITE(set_sparse_matrix, int8_t)
-WRITE(set_sparse_matrix, int16_t)
-WRITE(set_sparse_matrix, uint16_t)
-WRITE(set_sparse_matrix, int32_t)
-WRITE(set_sparse_matrix, uint32_t)
-WRITE(set_sparse_matrix, int64_t)
-WRITE(set_sparse_matrix, uint64_t)
-WRITE(set_sparse_matrix, float32_t)
-WRITE(set_sparse_matrix, float64_t)
-WRITE(set_sparse_matrix, floatmax_t)
-#undef WRITE
+
+template<class ST> void CSparseFeatures<ST>::save(CFile* writer)
+{
+	if (m_subset_stack->has_subsets())
+		SG_ERROR("Not allowed with subset\n");
+	ASSERT(writer)
+	sparse_feature_matrix.save(writer);
+}
+
+template<class ST> void CSparseFeatures<ST>::save_with_labels(CLibSVMFile* writer, SGVector<float64_t> labels)
+{
+	if (m_subset_stack->has_subsets())
+		SG_ERROR("Not allowed with subset\n");
+	ASSERT(writer)
+	sparse_feature_matrix.save_with_labels(writer, labels);
+}
 
 template class CSparseFeatures<bool>;
 template class CSparseFeatures<char>;
@@ -1115,4 +675,5 @@ template class CSparseFeatures<uint64_t>;
 template class CSparseFeatures<float32_t>;
 template class CSparseFeatures<float64_t>;
 template class CSparseFeatures<floatmax_t>;
+template class CSparseFeatures<complex128_t>;
 }

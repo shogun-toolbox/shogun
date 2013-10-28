@@ -7,13 +7,13 @@ testdat = lm.load_dna('../data/fm_test_dna.dat')
 parameter_list = [[traindat,testdat,3],[traindat,testdat,20]]
 
 def kernel_weighted_degree_string_modular (fm_train_dna=traindat,fm_test_dna=testdat,degree=20):
-	from shogun.Features import StringCharFeatures, DNA
-	from shogun.Kernel import WeightedDegreeStringKernel, MSG_DEBUG
+	from modshogun import StringCharFeatures, DNA
+	from modshogun import WeightedDegreeStringKernel, MSG_DEBUG
 
 	feats_train=StringCharFeatures(fm_train_dna, DNA)
 	#feats_train.io.set_loglevel(MSG_DEBUG)
 	feats_test=StringCharFeatures(fm_test_dna, DNA)
-	
+
 	kernel=WeightedDegreeStringKernel(feats_train, feats_train, degree)
 
 	from numpy import arange,double

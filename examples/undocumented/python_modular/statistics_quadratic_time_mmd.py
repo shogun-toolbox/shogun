@@ -12,20 +12,22 @@ from numpy import *
 parameter_list = [[30,2,0.5]]
 
 def statistics_quadratic_time_mmd (m,dim,difference):
-	from shogun.Features import RealFeatures
-	from shogun.Features import MeanShiftDataGenerator
-	from shogun.Kernel import GaussianKernel, CustomKernel
-	from shogun.Statistics import QuadraticTimeMMD
-	from shogun.Statistics import BOOTSTRAP, MMD2_SPECTRUM, MMD2_GAMMA, BIASED, UNBIASED
-	from shogun.Mathematics import Statistics, IntVector, RealVector, Math
-	
+	from modshogun import RealFeatures
+	from modshogun import MeanShiftDataGenerator
+	from modshogun import GaussianKernel, CustomKernel
+	from modshogun import QuadraticTimeMMD
+	from modshogun import BOOTSTRAP, MMD2_SPECTRUM, MMD2_GAMMA, BIASED, UNBIASED
+	from modshogun import Statistics, IntVector, RealVector, Math
+
 	# init seed for reproducability
 	Math.init_random(1)
+	random.seed(17)
 
 	# number of examples kept low in order to make things fast
 
 	# streaming data generator for mean shift distributions
 	gen_p=MeanShiftDataGenerator(0, dim);
+	#gen_p.parallel.set_num_threads(1)
 	gen_q=MeanShiftDataGenerator(difference, dim);
 
 	# stream some data from generator
@@ -44,7 +46,7 @@ def statistics_quadratic_time_mmd (m,dim,difference):
 	# perform test: compute p-value and test if null-hypothesis is rejected for
 	# a test level of 0.05
 	alpha=0.05;
-	
+
 	# using bootstrapping (slow, not the most reliable way. Consider pre-
 	# computing the kernel when using it, see below).
 	# Also, in practice, use at least 250 iterations
@@ -104,9 +106,9 @@ def statistics_quadratic_time_mmd (m,dim,difference):
 
 		# on normal data, this gives type II error
 		type_II_errors[i]=mmd.perform_test()>alpha;
-		
-	return type_I_errors.get(),type_I_errors.get(),p_value_boot,p_value_spectrum,p_value_gamma, 
-	
+
+	return type_I_errors.get(),type_I_errors.get(),p_value_boot,p_value_spectrum,p_value_gamma,
+
 if __name__=='__main__':
 	print('QuadraticTimeMMD')
 	statistics_quadratic_time_mmd(*parameter_list[0])

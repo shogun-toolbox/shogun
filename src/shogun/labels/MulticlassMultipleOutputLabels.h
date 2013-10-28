@@ -14,9 +14,9 @@
 #include <shogun/labels/LabelTypes.h>
 #include <shogun/lib/DynamicObjectArray.h>
 
-namespace shogun 
+namespace shogun
 {
-/** @brief Multiclass Labels for multi-class classification 
+/** @brief Multiclass Labels for multi-class classification
  * with multiple labels
  *
  * valid values for labels are 0...nr_classes-1
@@ -39,12 +39,6 @@ class CMulticlassMultipleOutputLabels : public CLabels
 		/** destructor */
 		virtual ~CMulticlassMultipleOutputLabels();
 
-		/** helper method used to specialize a base class instance
-		 *
-		 * @param base_labels its dynamic type must be CStructuredLabels
-		 */
-		static CMulticlassMultipleOutputLabels* obtain_from_generic(CLabels* base_labels);
-
 		/** check if labeling is valid
 		 *
 		 * possible with subset
@@ -60,7 +54,7 @@ class CMulticlassMultipleOutputLabels : public CLabels
 		 * @return labels
 		 */
 		SGMatrix<index_t> get_labels() const;
-		
+
 		/** get label object for specified index
 		 *
 		 * @param idx index of the label
@@ -85,7 +79,7 @@ class CMulticlassMultipleOutputLabels : public CLabels
 		 *
 		 * @return number of labels
 		 */
-		virtual int32_t get_num_labels();
+		virtual int32_t get_num_labels() const;
 
 		/** @return object name */
 		virtual const char* get_name() const { return "MulticlassMultipleOutputLabels"; }
@@ -94,7 +88,7 @@ class CMulticlassMultipleOutputLabels : public CLabels
 		 *
 		 * @return label type LT_STRUCTURED
 		 */
-		virtual ELabelType get_label_type() { return LT_MULTICLASS_MULTIPLE_OUTPUT; }
+		virtual ELabelType get_label_type() const { return LT_MULTICLASS_MULTIPLE_OUTPUT; }
 
 	private:
 		/** internal initialization */

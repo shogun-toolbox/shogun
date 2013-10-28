@@ -55,13 +55,17 @@ CSerializableJsonFile::new_reader(char* dest_version, size_t n)
 	return NULL;
 }
 
-void
-CSerializableJsonFile::push_object(json_object* o)
-{ m_stack_stream.push_back(o); json_object_get(o); }
+void CSerializableJsonFile::push_object(json_object* o)
+{
+	m_stack_stream.push_back(o);
+	json_object_get(o);
+}
 
-void
-CSerializableJsonFile::pop_object()
-{ json_object_put(m_stack_stream.back()); m_stack_stream.pop_back(); }
+void CSerializableJsonFile::pop_object()
+{
+	json_object_put(m_stack_stream.back());
+	m_stack_stream.pop_back();
+}
 
 bool
 CSerializableJsonFile::get_object_any(
@@ -87,7 +91,8 @@ CSerializableJsonFile::init(const char* fname)
 {
 	if (m_filename == NULL || *m_filename == '\0') {
 		SG_WARNING("Filename not given for opening file!\n")
-		close(); return;
+		close();
+		return;
 	}
 
 	json_object* buf;
@@ -95,15 +100,14 @@ CSerializableJsonFile::init(const char* fname)
 	case 'r':
 		buf = json_object_from_file((char*) fname);
 		if (is_error(buf)) {
-			SG_WARNING("Could not open file `%s' for reading!\n",
+			SG_ERROR("Could not open file `%s' for reading!\n",
 					   fname);
 			return;
 		}
-		push_object(buf);
+		m_stack_stream.push_back(buf);
 		break;
 	case 'w':
-		push_object(json_object_new_object());
-
+		m_stack_stream.push_back(json_object_new_object());
 		buf = json_object_new_string(STR_FILETYPE_00);
 		json_object_object_add(m_stack_stream.back(),
 							   STR_KEY_FILETYPE, buf);
@@ -111,7 +115,8 @@ CSerializableJsonFile::init(const char* fname)
 	default:
 		SG_WARNING("Could not open file `%s', unknown mode!\n",
 				   m_filename);
-		close(); return;
+		close();
+		return;
 	}
 }
 
@@ -123,9 +128,8 @@ CSerializableJsonFile::close()
 
 	if (m_stack_stream.get_num_elements() == 1) {
 		if (m_task == 'w'
-			&& is_error(
-				json_object_to_file(m_filename, m_stack_stream.back())
-				)) {
+			&& json_object_to_file(m_filename, m_stack_stream.back()))
+		{
 			SG_WARNING("Could not close file `%s' for writing!\n",
 					   m_filename);
 		}
@@ -187,13 +191,20 @@ CSerializableJsonFile::write_scalar_wrapped(
 		push_object(json_object_new_double(
 						(double) *(floatmax_t*) param));
 		break;
+	case PT_COMPLEX128:
+		SG_ERROR("Not supported for complex128_t for writing into JsonFile!");
+		break;
 	case PT_SGOBJECT:
-		SG_ERROR("write_scalar_wrapped(): Implementation error during"
-				 " writing JsonFile!");
+		SG_ERROR("Implementation error during writing JsonFile!");
 		return false;
+	case PT_UNDEFINED: default:
+		SG_ERROR("Implementation error: undefined primitive type\n");
+		return false;
+		break;
 	}
 
-	if (is_error(m_stack_stream.back())) return false;
+	if (is_error(m_stack_stream.back()))
+		return false;
 
 	return true;
 }
@@ -248,8 +259,8 @@ CSerializableJsonFile::write_stringentry_end_wrapped(
 	json_object* array = m_stack_stream.get_element(
 		m_stack_stream.get_num_elements() - 2);
 
-	if (is_error(json_object_array_put_idx(
-					 array, y, m_stack_stream.back()))) return false;
+	if (json_object_array_put_idx( array, y, m_stack_stream.back()))
+		return false;
 
 	pop_object();
 	return true;
@@ -262,7 +273,9 @@ CSerializableJsonFile::write_sparse_begin_wrapped(
 	push_object(json_object_new_object());
 
 	json_object* buf = json_object_new_array();
-	if (is_error(buf)) return false;
+	if (is_error(buf))
+		return false;
+
 	json_object_object_add(m_stack_stream.back(),
 			STR_KEY_SPARSE_FEATURES, buf);
 
@@ -284,12 +297,15 @@ CSerializableJsonFile::write_sparseentry_begin_wrapped(
 	index_t feat_index, index_t y)
 {
 	json_object* buf = json_object_new_object();
-	if (is_error(json_object_array_put_idx(m_stack_stream.back(), y,
-										   buf))) return false;
+	if (json_object_array_put_idx(m_stack_stream.back(), y, buf))
+		return false;
+
 	push_object(buf);
 
 	buf = json_object_new_int(feat_index);
-	if (is_error(buf)) return false;
+	if (is_error(buf))
+		return false;
+
 	json_object_object_add(m_stack_stream.back(),
 						   STR_KEY_SPARSE_FEATINDEX, buf);
 
@@ -340,14 +356,17 @@ CSerializableJsonFile::write_sgserializable_begin_wrapped(
 	EPrimitiveType generic)
 {
 	if (*sgserializable_name == '\0') {
-		push_object(NULL); return true;
+		push_object(NULL);
+		return true;
 	}
 
 	push_object(json_object_new_object());
 
 	json_object* buf;
 	buf = json_object_new_string(sgserializable_name);
-	if (is_error(buf)) return false;
+	if (is_error(buf))
+		return false;
+
 	json_object_object_add(m_stack_stream.back(),
 						   STR_KEY_INSTANCE_NAME, buf);
 
@@ -355,13 +374,16 @@ CSerializableJsonFile::write_sgserializable_begin_wrapped(
 		string_t buf_str;
 		TSGDataType::ptype_to_string(buf_str, generic, STRING_LEN);
 		buf = json_object_new_string(buf_str);
-		if (is_error(buf)) return false;
+		if (is_error(buf))
+			return false;
+
 		json_object_object_add(m_stack_stream.back(),
 							   STR_KEY_GENERIC_NAME, buf);
 	}
 
 	buf = json_object_new_object();
-	if (is_error(buf)) return false;
+	if (is_error(buf))
+		return false;
 	json_object_object_add(m_stack_stream.back(), STR_KEY_INSTANCE,
 						   buf);
 	push_object(buf);
@@ -385,7 +407,8 @@ CSerializableJsonFile::write_type_begin_wrapped(
 	const TSGDataType* type, const char* name, const char* prefix)
 {
 	json_object* buf = json_object_new_object();
-	if (is_error(buf)) return false;
+	if (is_error(buf))
+		return false;
 
 	json_object_object_add(m_stack_stream.back(), name, buf);
 	push_object(buf);
@@ -393,7 +416,9 @@ CSerializableJsonFile::write_type_begin_wrapped(
 	string_t str_buf;
 	type->to_string(str_buf, STRING_LEN);
 	buf = json_object_new_string(str_buf);
-	if (is_error(buf)) return false;
+	if (is_error(buf))
+		return false;
+
 	json_object_object_add(m_stack_stream.back(), STR_KEY_TYPE, buf);
 
 	return true;

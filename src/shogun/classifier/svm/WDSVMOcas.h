@@ -95,8 +95,8 @@ class CWDSVMOcas : public CMachine
 		 */
 		inline void set_features(CStringFeatures<uint8_t>* feat)
 		{
-			SG_UNREF(features);
 			SG_REF(feat);
+			SG_UNREF(features);
 			features=feat;
 		}
 
@@ -158,7 +158,7 @@ class CWDSVMOcas : public CMachine
 		 * @return classified labels
 		 */
 		virtual CBinaryLabels* apply_binary(CFeatures* data=NULL);
-		
+
 		/** classify objects
 		 * for regression problems
 		 *

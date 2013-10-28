@@ -2,7 +2,7 @@
 Test Distance
 """
 
-from shogun.Distance import *
+from modshogun import *
 
 import util
 

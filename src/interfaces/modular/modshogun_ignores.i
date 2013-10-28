@@ -21,6 +21,7 @@
 %ignore *::operator unsigned long*;
 %ignore *::operator float*;
 %ignore *::operator double*;
+%ignore *::operator std::complex<double>*;
 
 #ifdef SWIGJAVA
 %ignore SGIO;
@@ -29,16 +30,6 @@
 %ignore ref;
 %ignore unref;
 
-
-#ifdef SWIGCSHARP
-%ignore shogun::CStructuredModel::director_risk;
-%ignore shogun::CKernelMachine::CKernelMachine(CKernel* k, const SGVector<float64_t> alphas, const SGVector<int32_t> svs, float64_t b);
-%ignore shogun::SGMatrix::matrix_multiply;
-%ignore shogun::CStructuredModel::init_opt;
-%ignore shogun::CIndexBlockTree::CIndexBlockTree(SGVector<float64_t> G, SGVector<float64_t> ind_t);
-%ignore shogun::CKernelMeanMatching::CKernelMeanMatching(CKernel* kernel, SGVector<index_t> training_indices, SGVector<index_t> test_indices);
-#endif
-
 %ignore shogun::SGVector::display_vector;
 %ignore shogun::SGMatrix::display_matrix;
 
@@ -46,11 +37,11 @@
 %ignore shogun::bmrm_ll;
 %ignore shogun::TMultipleCPinfo;
 %ignore refcount_t;
-%ignore cleanup;
 %ignore QP;
 %ignore ConsensusEntry;
 %ignore DNATrie;
 %ignore Model;
+%ignore SparsityStructure;
 
 #if !defined(SWIGPERL)
 /*%rename("%s") *::LatentModel; */
@@ -217,3 +208,14 @@
 %ignore shogun::CSerializableFile::write_type_end;
 
 %ignore shogun::CMosek;
+
+%ignore shogun::CFactorType::CFactorType();
+%ignore shogun::CTableFactorType::CTableFactorType();
+%ignore shogun::CFactorDataSource::CFactorDataSource();
+%ignore shogun::CFactor::CFactor();
+%ignore shogun::CFactor::CFactor(CTableFactorType*, SGVector<int32_t>, SGSparseVector<float64_t>);
+%ignore shogun::CFactor::CFactor(CTableFactorType*, SGVector<int32_t>, CFactorDataSource*);
+%ignore shogun::CDisjointSet::CDisjointSet();
+%ignore shogun::CFactorGraph::CFactorGraph();
+%ignore shogun::CMAPInference::CMAPInference();
+%ignore shogun::CFactorGraphModel::CFactorGraphModel();

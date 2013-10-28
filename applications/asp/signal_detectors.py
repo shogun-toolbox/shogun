@@ -1,13 +1,13 @@
-# 
+#
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
-# 
+#
 # Written (W) 2006-2009 Soeren Sonnenburg
 # Written (W) 2007 Gunnar Raetsch
 # Copyright (C) 2006-2009 Fraunhofer Institute FIRST and Max-Planck-Society
-# 
+#
 
 import sys
 import numpy
@@ -57,7 +57,7 @@ class svm_splice_model(object):
 		return positions
 
 	def get_predictions_from_seqdict(self, seqdic, site):
-		""" we need to generate a huge test features object 
+		""" we need to generate a huge test features object
 			containing all locations found in each seqdict-sequence
 			and each location (this is necessary to efficiently
 			(==fast,low memory) compute the splice outputs
@@ -67,7 +67,7 @@ class svm_splice_model(object):
 
 		for s in seqdic:
 			position_list=DynamicIntArray()
-			
+
 			sequence=s.seq
 			positions=s.preds[site].positions
 			for j in xrange(len(positions)):
@@ -79,7 +79,7 @@ class svm_splice_model(object):
 			self.wd_kernel.init(self.traindat, t)
 
 			self.wd_kernel.io.enable_progress()
-			l=self.svm.apply().get_labels()
+			l=self.svm.apply().get_values()
 			self.wd_kernel.cleanup()
 			sys.stdout.write("\n...done...\n")
 
@@ -120,7 +120,7 @@ class svm_splice_model(object):
 		del t
 
 		self.wd_kernel.io.enable_progress()
-		l=self.svm.apply().get_labels()
+		l=self.svm.apply().get_values()
 		self.wd_kernel.cleanup()
 		sys.stdout.write("\n...done...\n")
 		return l
@@ -130,10 +130,10 @@ class signal_detectors(object):
 		don_consensus=['GC','GT']
 
 		self.acceptor=svm_splice_model(model.acc_splice_order, model.acc_splice_svs,
-				numpy.array(model.acc_splice_alphas).flatten(), model.acc_splice_b, 
+				numpy.array(model.acc_splice_alphas).flatten(), model.acc_splice_b,
 				(model.acc_splice_window_left-2, 2, model.acc_splice_window_right+2), ['AG'])
-		self.donor=svm_splice_model(model.don_splice_order, model.don_splice_svs, 
-				numpy.array(model.don_splice_alphas).flatten(), model.don_splice_b, 
+		self.donor=svm_splice_model(model.don_splice_order, model.don_splice_svs,
+				numpy.array(model.don_splice_alphas).flatten(), model.don_splice_b,
 				(model.don_splice_window_left+1, 0, model.don_splice_window_right-1),
 				don_consensus)
 
@@ -162,7 +162,7 @@ class signal_detectors(object):
 		self.donor.get_positions_from_seqdict(seqs, 'donor')
 		sys.stdout.write("computing svm output for donor positions\n")
 		self.donor.get_predictions_from_seqdict(seqs, 'donor')
-	
+
 	def clear_acceptor():
 		del self.acceptor
 		self.acceptor=None

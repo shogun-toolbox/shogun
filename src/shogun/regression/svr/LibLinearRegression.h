@@ -143,7 +143,7 @@ protected:
 
 private:
 		/** solve svr with l1 or l2 loss */
-		void solve_l2r_l1l2_svr(const problem *prob);
+		void solve_l2r_l1l2_svr(const liblinear_problem *prob);
 
 		/** init defaults */
 		void init_defaults();

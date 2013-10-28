@@ -31,6 +31,7 @@ CDenseLabels::CDenseLabels(int32_t num_lab)
 {
 	init();
 	m_labels = SGVector<float64_t>(num_lab);
+	m_current_values=SGVector<float64_t>(num_lab);
 }
 
 CDenseLabels::CDenseLabels(CFile* loader)
@@ -64,7 +65,10 @@ void CDenseLabels::set_to_const(float64_t c)
 	ASSERT(m_labels.vector)
 	index_t subset_size=get_num_labels();
 	for (int32_t i=0; i<subset_size; i++)
+	{
 		m_labels.vector[m_subset_stack->subset_idx_conversion(i)]=c;
+		m_current_values.vector[m_subset_stack->subset_idx_conversion(i)]=c;
+	}
 }
 
 void CDenseLabels::set_labels(SGVector<float64_t> v)
@@ -78,7 +82,7 @@ void CDenseLabels::set_labels(SGVector<float64_t> v)
 SGVector<float64_t> CDenseLabels::get_labels()
 {
 	if (m_subset_stack->has_subsets())
-		SG_ERROR("get_labels() is not possible on subset")
+		return get_labels_copy();
 
 	return m_labels;
 }
@@ -194,7 +198,7 @@ int32_t CDenseLabels::get_int_label(int32_t idx)
 	return int32_t(m_labels.vector[real_num]);
 }
 
-int32_t CDenseLabels::get_num_labels()
+int32_t CDenseLabels::get_num_labels() const
 {
 	return m_subset_stack->has_subsets()
 			? m_subset_stack->get_size() : m_labels.vlen;

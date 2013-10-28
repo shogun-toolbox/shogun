@@ -8,12 +8,22 @@
  * Copyright (C) 2008-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
+#include <shogun/lib/config.h>
 #include <shogun/lib/ShogunException.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/Map.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGSparseVector.h>
+#include <shogun/lib/SGMatrix.h>
 #include <shogun/base/SGObject.h>
+
+#include <string.h>
+
+#ifdef USE_JEMALLOC
+#include <jemalloc/jemalloc.h>
+#elif USE_TCMALLOC
+#include <gperftools/tcmalloc.h>
+#endif
 
 using namespace shogun;
 
@@ -79,9 +89,20 @@ void MemoryBlock::set_sgobject()
 }
 #endif
 
+#ifdef HAVE_CXX11
+void* operator new(size_t size)
+#else
 void* operator new(size_t size) throw (std::bad_alloc)
+#endif
 {
+#if defined(USE_JEMALLOC)
+	void *p=je_malloc(size);
+#elif defined(USE_TCMALLOC)
+	void *p=tc_malloc(size);
+#else
 	void *p=malloc(size);
+#endif
+
 #ifdef TRACE_MEMORY_ALLOCS
 	if (sg_mallocs)
 		sg_mallocs->add(p, MemoryBlock(p,size));
@@ -107,12 +128,30 @@ void operator delete(void *p) throw()
 	if (sg_mallocs)
 		sg_mallocs->remove(p);
 #endif
+
+#if defined(USE_JEMALLOC)
+	je_free(p);
+#elif defined(USE_TCMALLOC)
+	tc_free(p);
+#else
 	free(p);
+#endif
 }
 
+#ifdef HAVE_CXX11
+void* operator new[](size_t size)
+#else
 void* operator new[](size_t size) throw(std::bad_alloc)
+#endif
 {
+#if defined(USE_JEMALLOC)
+	void *p=je_malloc(size);
+#elif defined(USE_TCMALLOC)
+	void *p=tc_malloc(size);
+#else
 	void *p=malloc(size);
+#endif
+
 #ifdef TRACE_MEMORY_ALLOCS
 	if (sg_mallocs)
 		sg_mallocs->add(p, MemoryBlock(p,size));
@@ -139,7 +178,14 @@ void operator delete[](void *p) throw()
 	if (sg_mallocs)
 		sg_mallocs->remove(p);
 #endif
+
+#if defined(USE_JEMALLOC)
+	je_free(p);
+#elif defined(USE_TCMALLOC)
+	tc_free(p);
+#else
 	free(p);
+#endif
 }
 
 namespace shogun
@@ -150,7 +196,13 @@ void* sg_malloc(size_t size
 #endif
 )
 {
+#if defined(USE_JEMALLOC)
+	void* p=je_malloc(size);
+#elif defined(USE_TCMALLOC)
+	void *p=tc_malloc(size);
+#else
 	void* p=malloc(size);
+#endif
 #ifdef TRACE_MEMORY_ALLOCS
 	if (sg_mallocs)
 		sg_mallocs->add(p, MemoryBlock(p,size, file, line));
@@ -177,7 +229,14 @@ void* sg_calloc(size_t num, size_t size
 #endif
 )
 {
+#if defined(USE_JEMALLOC)
+	void* p=je_calloc(num, size);
+#elif defined(USE_TCMALLOC)
+	void* p=tc_calloc(num, size);
+#else
 	void* p=calloc(num, size);
+#endif
+
 #ifdef TRACE_MEMORY_ALLOCS
 	if (sg_mallocs)
 		sg_mallocs->add(p, MemoryBlock(p,size, file, line));
@@ -206,7 +265,14 @@ void  sg_free(void* ptr)
 	if (sg_mallocs)
 		sg_mallocs->remove(ptr);
 #endif
+
+#if defined(USE_JEMALLOC)
+	je_free(ptr);
+#elif defined(USE_TCMALLOC)
+	tc_free(ptr);
+#else
 	free(ptr);
+#endif
 }
 
 void* sg_realloc(void* ptr, size_t size
@@ -215,7 +281,13 @@ void* sg_realloc(void* ptr, size_t size
 #endif
 )
 {
+#if defined(USE_JEMALLOC)
+	void* p=je_realloc(ptr, size);
+#elif defined(USE_TCMALLOC)
+	void* p=tc_realloc(ptr, size);
+#else
 	void* p=realloc(ptr, size);
+#endif
 
 #ifdef TRACE_MEMORY_ALLOCS
 	if (sg_mallocs)
@@ -254,7 +326,7 @@ void list_memory_allocs()
 		for (int32_t i=0; i<size; i++)
 		{
 			temp=sg_mallocs->get_element_ptr(i);
-			if (temp!=NULL)			
+			if (temp!=NULL)
 				temp->display();
 		}
 	}
@@ -334,6 +406,7 @@ SG_SPECIALIZED_MALLOC(SGVector<uint64_t>)
 SG_SPECIALIZED_MALLOC(SGVector<float32_t>)
 SG_SPECIALIZED_MALLOC(SGVector<float64_t>)
 SG_SPECIALIZED_MALLOC(SGVector<floatmax_t>)
+SG_SPECIALIZED_MALLOC(SGVector<complex128_t>)
 
 SG_SPECIALIZED_MALLOC(SGSparseVector<bool>)
 SG_SPECIALIZED_MALLOC(SGSparseVector<char>)
@@ -348,5 +421,36 @@ SG_SPECIALIZED_MALLOC(SGSparseVector<uint64_t>)
 SG_SPECIALIZED_MALLOC(SGSparseVector<float32_t>)
 SG_SPECIALIZED_MALLOC(SGSparseVector<float64_t>)
 SG_SPECIALIZED_MALLOC(SGSparseVector<floatmax_t>)
+SG_SPECIALIZED_MALLOC(SGSparseVector<complex128_t>)
+
+SG_SPECIALIZED_MALLOC(SGMatrix<bool>)
+SG_SPECIALIZED_MALLOC(SGMatrix<char>)
+SG_SPECIALIZED_MALLOC(SGMatrix<int8_t>)
+SG_SPECIALIZED_MALLOC(SGMatrix<uint8_t>)
+SG_SPECIALIZED_MALLOC(SGMatrix<int16_t>)
+SG_SPECIALIZED_MALLOC(SGMatrix<uint16_t>)
+SG_SPECIALIZED_MALLOC(SGMatrix<int32_t>)
+SG_SPECIALIZED_MALLOC(SGMatrix<uint32_t>)
+SG_SPECIALIZED_MALLOC(SGMatrix<int64_t>)
+SG_SPECIALIZED_MALLOC(SGMatrix<uint64_t>)
+SG_SPECIALIZED_MALLOC(SGMatrix<float32_t>)
+SG_SPECIALIZED_MALLOC(SGMatrix<float64_t>)
+SG_SPECIALIZED_MALLOC(SGMatrix<floatmax_t>)
+SG_SPECIALIZED_MALLOC(SGMatrix<complex128_t>)
 #undef SG_SPECIALIZED_MALLOC
+}
+
+void* shogun::get_copy(void* src, size_t len)
+{
+	void* copy=SG_MALLOC(uint8_t, len);
+	memcpy(copy, src, len);
+	return copy;
+}
+
+char* shogun::get_strdup(const char* str)
+{
+	if (!str)
+		return NULL;
+
+	return (char*) get_copy((void*) str, strlen(str)+1);
 }

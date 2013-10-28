@@ -27,7 +27,7 @@ class CDistance;
  * Formally described as
  *
  * \f[
- * 		K(x,x') = 1 -\frac{\| x-x'\|^2}{\|x-x'\|^2 + coef}
+ *		K(x,x') = 1 -\frac{\| x-x'\|^2}{\|x-x'\|^2 + coef}
  * \f]
  *
  */

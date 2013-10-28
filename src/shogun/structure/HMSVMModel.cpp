@@ -11,6 +11,7 @@
 #include <shogun/structure/HMSVMModel.h>
 #include <shogun/features/MatrixFeatures.h>
 #include <shogun/structure/TwoStateModel.h>
+#include <shogun/structure/Plif.h>
 
 using namespace shogun;
 
@@ -20,17 +21,13 @@ CHMSVMModel::CHMSVMModel()
 	init();
 }
 
-CHMSVMModel::CHMSVMModel(CFeatures* features, CStructuredLabels* labels, EStateModelType smt, int32_t num_obs)
+CHMSVMModel::CHMSVMModel(CFeatures* features, CStructuredLabels* labels, EStateModelType smt, int32_t num_obs, bool use_plifs)
 : CStructuredModel(features, labels)
 {
 	init();
-
 	m_num_obs = num_obs;
-	// Shorthand for the number of free states
-	int32_t free_states = ((CHMSVMLabels*) m_labels)->get_num_states();
-	// Shorthand for the number of features of the feature vector
-	int32_t D = ((CMatrixFeatures< float64_t >*) m_features)->get_num_features();
-	m_num_aux = free_states*D*(num_obs-1);
+	m_num_plif_nodes = 20;
+	m_use_plifs = use_plifs;
 
 	switch (smt)
 	{
@@ -41,25 +38,25 @@ CHMSVMModel::CHMSVMModel(CFeatures* features, CStructuredLabels* labels, EStateM
 		default:
 			SG_ERROR("The EStateModelType given is not valid\n")
 	}
-
-	int32_t S = m_state_model->get_num_states();
-	m_transmission_weights = SGMatrix< float64_t >(S,S);
-	m_emission_weights     = SGVector< float64_t >(S*D*m_num_obs);
 }
 
 CHMSVMModel::~CHMSVMModel()
 {
 	SG_UNREF(m_state_model);
+	SG_UNREF(m_plif_matrix);
 }
 
 int32_t CHMSVMModel::get_dim() const
 {
-	// Shorthand for the number of states
-	int32_t S = ((CHMSVMLabels*) m_labels)->get_num_states();
-	// Shorthand for the number of features of the feature vector
-	int32_t D = ((CMatrixFeatures< float64_t >*) m_features)->get_num_features();
+	// Shorthand for the number of free states
+	int32_t free_states = ((CSequenceLabels*) m_labels)->get_num_states();
+	CMatrixFeatures< float64_t >* mf = (CMatrixFeatures< float64_t >*) m_features;
+	int32_t D = mf->get_num_features();
 
-	return S*(S + D*m_num_obs);
+	if ( m_use_plifs )
+		return free_states*(free_states + D*m_num_plif_nodes);
+	else
+		return free_states*(free_states + D*m_num_obs);
 }
 
 SGVector< float64_t > CHMSVMModel::get_joint_feature_vector(
@@ -85,23 +82,75 @@ SGVector< float64_t > CHMSVMModel::get_joint_feature_vector(
 		m_transmission_weights(state_seq[i],state_seq[i+1]) += 1;
 
 	SGMatrix< float64_t > obs = mf->get_feature_vector(feat_idx);
-	ASSERT(obs.num_rows == D && obs.num_cols == state_seq.vlen)
+	REQUIRE(obs.num_rows == D && obs.num_cols == state_seq.vlen,
+		"obs.num_rows (%d) != D (%d) OR obs.num_cols (%d) != state_seq.vlen (%d)\n",
+		obs.num_rows, D, obs.num_cols, state_seq.vlen)
 	m_emission_weights.zero();
 	index_t aux_idx, weight_idx;
 
-	for ( int32_t f = 0 ; f < D ; ++f )
+	if ( !m_use_plifs )	// Do not use PLiFs
 	{
-		aux_idx = f*m_num_obs;
-
-		for ( int32_t j = 0 ; j < state_seq.vlen ; ++j )
+		for ( int32_t f = 0 ; f < D ; ++f )
 		{
-			weight_idx = aux_idx + state_seq[j]*D*m_num_obs + obs(f,j);
-			m_emission_weights[weight_idx] += 1;
-		}
-	}
+			aux_idx = f*m_num_obs;
 
-	m_state_model->weights_to_vector(psi, m_transmission_weights, m_emission_weights,
-			D, m_num_obs);
+			for ( int32_t j = 0 ; j < state_seq.vlen ; ++j )
+			{
+				weight_idx = aux_idx + state_seq[j]*D*m_num_obs + obs(f,j);
+				m_emission_weights[weight_idx] += 1;
+			}
+		}
+
+		m_state_model->weights_to_vector(psi, m_transmission_weights, m_emission_weights,
+				D, m_num_obs);
+	}
+	else	// Use PLiFs
+	{
+		int32_t S = m_state_model->get_num_states();
+
+		for ( int32_t f = 0 ; f < D ; ++f )
+		{
+			aux_idx = f*m_num_plif_nodes;
+
+			for ( int32_t j = 0 ; j < state_seq.vlen ; ++j )
+			{
+				CPlif* plif = (CPlif*) m_plif_matrix->get_element(S*f + state_seq[j]);
+				SGVector<float64_t> limits = plif->get_plif_limits();
+				// The number of supporting points smaller or equal than value
+				int32_t count = 0;
+				// The observation value
+				float64_t value = obs(f,j);
+
+				for ( int32_t i = 0 ; i < m_num_plif_nodes ; ++i )
+				{
+					if ( limits[i] <= value )
+						++count;
+					else
+						break;
+				}
+
+				weight_idx = aux_idx + state_seq[j]*D*m_num_plif_nodes;
+
+				if ( count == 0 )
+					m_emission_weights[weight_idx] += 1;
+				else if ( count == m_num_plif_nodes )
+					m_emission_weights[weight_idx + m_num_plif_nodes-1] += 1;
+				else
+				{
+					m_emission_weights[weight_idx + count] +=
+						(value-limits[count-1]) / (limits[count]-limits[count-1]);
+
+					m_emission_weights[weight_idx + count-1] +=
+						(limits[count]-value) / (limits[count]-limits[count-1]);
+				}
+
+				SG_UNREF(plif);
+			}
+		}
+
+		m_state_model->weights_to_vector(psi, m_transmission_weights, m_emission_weights,
+				D, m_num_plif_nodes);
+	}
 
 	return psi;
 }
@@ -120,6 +169,14 @@ CResultSet* CHMSVMModel::argmax(
 	// Shorthand for the number of states
 	int32_t S = m_state_model->get_num_states();
 
+	if ( m_use_plifs )
+	{
+		REQUIRE(m_plif_matrix, "PLiF matrix not allocated, has the SO machine been trained with "
+				"the use_plifs option?\n");
+		REQUIRE(m_plif_matrix->get_num_elements() == S*D, "Dimension mismatch in PLiF matrix, have the "
+				"feature dimension and/or number of states changed from training to prediction?\n");
+	}
+
 	// Distribution of start states
 	SGVector< float64_t > p = m_state_model->get_start_states();
 	// Distribution of stop states
@@ -133,22 +190,43 @@ CResultSet* CHMSVMModel::argmax(
 	int32_t T = x.num_cols;
 	SGMatrix< float64_t > E(S, T);
 	E.zero();
-	index_t em_idx;
-	m_state_model->reshape_emission_params(m_emission_weights, w, D, m_num_obs);
 
-	for ( int32_t i = 0 ; i < T ; ++i )
+	if ( !m_use_plifs )	// Do not use PLiFs
 	{
-		for ( int32_t j = 0 ; j < D ; ++j )
-		{
-			//FIXME make independent of observation values
-			em_idx = j*m_num_obs + (index_t)CMath::round(x(j,i));
+		index_t em_idx;
+		m_state_model->reshape_emission_params(m_emission_weights, w, D, m_num_obs);
 
-			for ( int32_t s = 0 ; s < S ; ++s )
-				E(s,i) += m_emission_weights[s*D*m_num_obs + em_idx];
+		for ( int32_t i = 0 ; i < T ; ++i )
+		{
+			for ( int32_t j = 0 ; j < D ; ++j )
+			{
+				//FIXME make independent of observation values
+				em_idx = j*m_num_obs + (index_t)CMath::round(x(j,i));
+
+				for ( int32_t s = 0 ; s < S ; ++s )
+					E(s,i) += m_emission_weights[s*D*m_num_obs + em_idx];
+			}
+		}
+	}
+	else	// Use PLiFs
+	{
+		m_state_model->reshape_emission_params(m_plif_matrix, w, D, m_num_plif_nodes);
+
+		for ( int32_t i = 0 ; i < T ; ++i )
+		{
+			for ( int32_t f = 0 ; f < D ; ++f )
+			{
+				for ( int32_t s = 0 ; s < S ; ++s )
+				{
+					CPlif* plif = (CPlif*) m_plif_matrix->get_element(S*f + s);
+					E(s,i) += plif->lookup( x(f,i) );
+					SG_UNREF(plif);
+				}
+			}
 		}
 	}
 
-	// If argmax used while training, add to E the loss matrix
+	// If argmax used while training, add to E the loss matrix (loss-augmented inference)
 	if ( training )
 	{
 		CSequence* ytrue =
@@ -242,6 +320,10 @@ CResultSet* CHMSVMModel::argmax(
 		}
 	}
 
+	REQUIRE(opt_path[T-1]!=-1, "Viterbi decoding found no possible sequence states.\n"
+			"Maybe the state model used cannot produce such sequence.\n"
+			"If using the TwoStateModel, please use sequences of length greater than two.\n");
+
 	for ( int32_t i = T-1 ; i > 0 ; --i )
 		opt_path[i-1] = trb[opt_path[i]*T + i];
 
@@ -271,7 +353,8 @@ float64_t CHMSVMModel::delta_loss(CStructuredData* y1, CStructuredData* y2)
 	return m_state_model->loss(seq1, seq2);
 }
 
-void CHMSVMModel::init_opt(
+void CHMSVMModel::init_primal_opt(
+		float64_t regularization,
 		SGMatrix< float64_t > & A,
 		SGVector< float64_t > a,
 		SGMatrix< float64_t > B,
@@ -280,18 +363,18 @@ void CHMSVMModel::init_opt(
 		SGVector< float64_t > ub,
 		SGMatrix< float64_t > & C)
 {
-	// Shorthand for the number of free states
-	int32_t S = ((CHMSVMLabels*) m_labels)->get_num_states();
+	// Shorthand for the number of free states (i.e. states for which parameters are learnt)
+	int32_t S = ((CSequenceLabels*) m_labels)->get_num_states();
 	// Shorthand for the number of features of the feature vector
 	int32_t D = ((CMatrixFeatures< float64_t >*) m_features)->get_num_features();
 
 	// Monotonicity constraints for feature scoring functions
 	SGVector< int32_t > monotonicity = m_state_model->get_monotonicity(S,D);
 
-	// Quadratic regularizer
+	// Quadratic regularization
 
-	float64_t C_small  =  5.0;
-	float64_t C_smooth = 10.0;
+	float64_t C_small = regularization;
+	float64_t C_smooth = 0.02*regularization;
 	// TODO change the representation of C to sparse matrix
 	C = SGMatrix< float64_t >(get_dim()+m_num_aux, get_dim()+m_num_aux);
 	C.zero();
@@ -310,12 +393,13 @@ void CHMSVMModel::init_opt(
 	// Indices to the beginning of the blocks of scores. Each block is
 	// formed by the scores of a pair (state, feature)
 	SGVector< int32_t > score_starts(S*D);
-	for ( int32_t idx = S*S, k = 0 ; k < S*D ; idx += m_num_obs, ++k )
+	int32_t delta = m_use_plifs ? m_num_plif_nodes : m_num_obs;
+	for ( int32_t idx = S*S, k = 0 ; k < S*D ; idx += delta, ++k )
 		score_starts[k] = idx;
 
 	// Indices to the beginning of the blocks of variables for smoothness
 	SGVector< int32_t > aux_starts_smooth(S*D);
-	for ( int32_t idx = get_dim(), k = 0 ; k < S*D ; idx += m_num_obs-1, ++k )
+	for ( int32_t idx = get_dim(), k = 0 ; k < S*D ; idx += delta-1, ++k )
 		aux_starts_smooth[k] = idx;
 
 	// Bound the difference between adjacent score values from above and
@@ -329,7 +413,7 @@ void CHMSVMModel::init_opt(
 		scr_idx = score_starts[i];
 		aux_idx = aux_starts_smooth[i];
 
-		for ( int32_t j = 0 ; j < m_num_obs-1 ; ++j )
+		for ( int32_t j = 0 ; j < delta-1 ; ++j )
 		{
 			A(con_idx, scr_idx)   =  1;
 			A(con_idx, scr_idx+1) = -1;
@@ -357,7 +441,7 @@ void CHMSVMModel::init_opt(
 bool CHMSVMModel::check_training_setup() const
 {
 	// Shorthand for the labels in the correct type
-	CHMSVMLabels* hmsvm_labels = (CHMSVMLabels*) m_labels;
+	CSequenceLabels* hmsvm_labels = (CSequenceLabels*) m_labels;
 	// Frequency of each state
 	SGVector< int32_t > state_freq( hmsvm_labels->get_num_states() );
 	state_freq.zero();
@@ -403,17 +487,21 @@ bool CHMSVMModel::check_training_setup() const
 
 void CHMSVMModel::init()
 {
-	SG_ADD(&m_num_states, "m_num_states", "The number of states", MS_NOT_AVAILABLE);
 	SG_ADD((CSGObject**) &m_state_model, "m_state_model", "The state model", MS_NOT_AVAILABLE);
 	SG_ADD(&m_transmission_weights, "m_transmission_weights",
 			"Transmission weights used in Viterbi", MS_NOT_AVAILABLE);
 	SG_ADD(&m_emission_weights, "m_emission_weights",
 			"Emission weights used in Viterbi", MS_NOT_AVAILABLE);
+	SG_ADD(&m_num_plif_nodes, "m_num_plif_nodes", "The number of points per PLiF",
+			MS_NOT_AVAILABLE); // FIXME It would actually make sense to do MS for this parameter
+	SG_ADD(&m_use_plifs, "m_use_plifs", "Whether to use plifs", MS_NOT_AVAILABLE);
 
-	m_num_states  = 0;
-	m_num_obs     = 0;
-	m_num_aux     = 0;
+	m_num_obs = 0;
+	m_num_aux = 0;
+	m_use_plifs = false;
 	m_state_model = NULL;
+	m_plif_matrix = NULL;
+	m_num_plif_nodes = 0;
 }
 
 int32_t CHMSVMModel::get_num_aux() const
@@ -424,4 +512,101 @@ int32_t CHMSVMModel::get_num_aux() const
 int32_t CHMSVMModel::get_num_aux_con() const
 {
 	return 2*m_num_aux;
+}
+
+void CHMSVMModel::set_use_plifs(bool use_plifs)
+{
+	m_use_plifs = use_plifs;
+}
+
+void CHMSVMModel::init_training()
+{
+	// Shorthands for the number of states, the matrix features and their dimension
+	int32_t S = m_state_model->get_num_states();
+	CMatrixFeatures< float64_t >* mf = (CMatrixFeatures< float64_t >*) m_features;
+	int32_t D = mf->get_num_features();
+
+	// Transmission and emission weights allocation
+	m_transmission_weights = SGMatrix< float64_t >(S,S);
+	if ( m_use_plifs )
+		m_emission_weights = SGVector< float64_t >(S*D*m_num_plif_nodes);
+	else
+		m_emission_weights = SGVector< float64_t >(S*D*m_num_obs);
+
+	// Auxiliary variables
+
+	// Shorthand for the number of free states
+	int32_t free_states = ((CSequenceLabels*) m_labels)->get_num_states();
+	if ( m_use_plifs )
+		m_num_aux = free_states*D*(m_num_plif_nodes-1);
+	else
+		m_num_aux = free_states*D*(m_num_obs-1);
+
+	if ( m_use_plifs )
+	{
+		// Initialize PLiF matrix
+		m_plif_matrix = new CDynamicObjectArray(S*D);
+		SG_REF(m_plif_matrix);
+
+		// Determine the x values for the supporting points of the PLiFs
+
+		// Count the number of points per feature, using all the feature vectors
+		int32_t N = 0;
+		for ( int32_t i = 0 ; i < mf->get_num_vectors() ; ++i )
+		{
+			SGMatrix<float64_t> feat_vec = mf->get_feature_vector(i);
+			N += feat_vec.num_cols;
+		}
+
+		// Choose the supporting points so that roughly the same number of points fall in each bin
+		SGVector< float64_t > a = SGVector< float64_t >::linspace_vec(1, N, m_num_plif_nodes+1);
+		SGVector< index_t > signal_idxs(m_num_plif_nodes);
+		for ( int32_t i = 0 ; i < signal_idxs.vlen ; ++i )
+			signal_idxs[i] = (index_t) CMath::round( (a[i] + a[i+1]) / 2 ) - 1;
+
+		SGVector< float64_t > signal(N);
+		index_t idx; // used to populate signal
+		for ( int32_t f = 0 ; f < D ; ++f )
+		{
+			// Get the points of feature f of all the feature vectors
+			idx = 0;
+			for ( int32_t i = 0 ; i < mf->get_num_vectors() ; ++i )
+			{
+				SGMatrix<float64_t> feat_vec = mf->get_feature_vector(i);
+				for ( int32_t j = 0 ; j < feat_vec.num_cols ; ++j )
+					signal[idx++] = feat_vec(f,j);
+			}
+
+			signal.qsort();
+			SGVector< float64_t > limits(m_num_plif_nodes);
+			for ( int32_t i = 0 ; i < m_num_plif_nodes ; ++i )
+				limits[i] = signal[ signal_idxs[i] ];
+
+			// Set the PLiFs' supporting points
+			for ( int32_t s = 0 ; s < S ; ++s )
+			{
+				CPlif* plif = new CPlif(m_num_plif_nodes);
+				plif->set_plif_limits(limits);
+				plif->set_min_value(-CMath::INFTY);
+				plif->set_max_value(CMath::INFTY);
+				m_plif_matrix->push_back(plif);
+			}
+		}
+	}
+}
+
+SGMatrix< float64_t > CHMSVMModel::get_transmission_weights() const
+{
+	return m_transmission_weights;
+}
+
+SGVector< float64_t > CHMSVMModel::get_emission_weights() const
+{
+	return m_emission_weights;
+}
+
+CStateModel* CHMSVMModel::get_state_model() const
+{
+	SG_REF(m_state_model);
+	return m_state_model;
 }

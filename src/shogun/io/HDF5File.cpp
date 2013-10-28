@@ -16,6 +16,7 @@
 #include <string.h>
 #include <hdf5.h>
 
+#include <shogun/lib/memory.h>
 #include <shogun/io/HDF5File.h>
 
 #include <shogun/features/StringFeatures.h>
@@ -92,7 +93,7 @@ void CHDF5File::fname(sg_type*& vec, int32_t& len)									\
 		SG_ERROR("Error not a 1-dimensional vector (ndims=%d, dims[0]=%d)\n", ndims, dims[0])	\
 	vec=SG_MALLOC(sg_type, nelements);														\
 	len=nelements;																	\
-	herr_t status = H5Dread(dataset, h5_type, H5S_ALL, 								\
+	herr_t status = H5Dread(dataset, h5_type, H5S_ALL,								\
 			H5S_ALL, H5P_DEFAULT, vec);												\
 	H5Dclose(dataset);																\
 	H5Tclose(dtype);																\
@@ -145,7 +146,7 @@ void CHDF5File::fname(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec)		\
 	matrix=SG_MALLOC(sg_type, nelements);													\
 	num_feat=dims[0];																\
 	num_vec=dims[1];																\
-	herr_t status = H5Dread(dataset, h5_type, H5S_ALL, 								\
+	herr_t status = H5Dread(dataset, h5_type, H5S_ALL,								\
 			H5S_ALL, H5P_DEFAULT, matrix);											\
 	H5Dclose(dataset);																\
 	H5Tclose(dtype);																\
@@ -253,7 +254,7 @@ void CHDF5File::fname(const sg_type* vec, int32_t len)						\
 																			\
 	hsize_t dims=(hsize_t) len;												\
 	hid_t dataspace, dataset, status;										\
-	dataspace=H5Screate_simple(1, &dims, NULL); 							\
+	dataspace=H5Screate_simple(1, &dims, NULL);							\
 	if (dataspace<0)														\
 		SG_ERROR("Could not create hdf5 dataspace\n")						\
 	dataset=H5Dcreate2(h5file, variable_name, h5type, dataspace, H5P_DEFAULT,\
@@ -294,7 +295,7 @@ void CHDF5File::fname(const sg_type* matrix, int32_t num_feat, int32_t num_vec)	
 																				\
 	hsize_t dims[2]={(hsize_t) num_feat, (hsize_t) num_vec};					\
 	hid_t dataspace, dataset, status;											\
-	dataspace=H5Screate_simple(2, dims, NULL); 									\
+	dataspace=H5Screate_simple(2, dims, NULL);									\
 	if (dataspace<0)															\
 		SG_ERROR("Could not create hdf5 dataspace\n")							\
 	dataset=H5Dcreate2(h5file, variable_name, h5type, dataspace, H5P_DEFAULT,	\
@@ -325,8 +326,8 @@ SET_MATRIX(set_matrix, float64_t, DT_DENSE_REAL, H5T_NATIVE_DOUBLE)
 SET_MATRIX(set_matrix, floatmax_t, DT_DENSE_LONGREAL, H5T_NATIVE_LDOUBLE)
 #undef SET_MATRIX
 
-#define SET_SPARSEMATRIX(fname, sg_type, dtype) 			\
-void CHDF5File::fname(const SGSparseVector<sg_type>* matrix, 	\
+#define SET_SPARSEMATRIX(fname, sg_type, dtype)			\
+void CHDF5File::fname(const SGSparseVector<sg_type>* matrix,	\
 		int32_t num_feat, int32_t num_vec)					\
 {															\
 	if (!(file && matrix))									\
@@ -414,7 +415,11 @@ hid_t CHDF5File::get_compatible_type(H5T_class_t t_class,
 			case PT_FLOAT32: return H5T_NATIVE_FLOAT;
 			case PT_FLOAT64: return H5T_NATIVE_DOUBLE;
 			case PT_FLOATMAX: return H5T_NATIVE_LDOUBLE;
+			case PT_COMPLEX128:
+				SG_ERROR("complex128_t not compatible with HDF5File!");
+				return -1;
 			case PT_SGOBJECT:
+			case PT_UNDEFINED:
 				SG_ERROR("Implementation error during writing "
 						 "HDF5File!");
 				return -1;
@@ -453,7 +458,7 @@ void CHDF5File::get_dims(hid_t dataset, int32_t*& dims, int32_t& ndims, int64_t&
 
 void CHDF5File::create_group_hierarchy()
 {
-	char* vname=strdup(variable_name);
+	char* vname=get_strdup(variable_name);
 	int32_t vlen=strlen(vname);
 	for (int32_t i=0; i<vlen; i++)
 	{

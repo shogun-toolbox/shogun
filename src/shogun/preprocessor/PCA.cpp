@@ -36,11 +36,11 @@ void CPCA::init()
 	m_mean_vector = SGVector<float64_t>();
 	m_eigenvalues_vector = SGVector<float64_t>();
 
-	SG_ADD(&m_transformation_matrix, "transformation matrix",
+	SG_ADD(&m_transformation_matrix, "transformation_matrix",
 	    "Transformation matrix (Eigenvectors of covariance matrix).",
 	    MS_NOT_AVAILABLE);
-	SG_ADD(&m_mean_vector, "mean vector", "Mean Vector.", MS_NOT_AVAILABLE);
-	SG_ADD(&m_eigenvalues_vector, "eigenvalues vector",
+	SG_ADD(&m_mean_vector, "mean_vector", "Mean Vector.", MS_NOT_AVAILABLE);
+	SG_ADD(&m_eigenvalues_vector, "eigenvalues_vector",
 	    "Vector with Eigenvalues.", MS_NOT_AVAILABLE);
 	SG_ADD(&m_initialized, "initalized", "True when initialized.",
 	    MS_NOT_AVAILABLE);
@@ -89,10 +89,10 @@ bool CPCA::init(CFeatures* features)
 
 		for (i=0; i<num_vectors; i++)
 		{
-            		for (k=0; k<num_features; k++)
-                		sub_mean[k]=feature_matrix.matrix[i*num_features+k]-m_mean_vector.vector[k];
+		for (k=0; k<num_features; k++)
+		sub_mean[k]=feature_matrix.matrix[i*num_features+k]-m_mean_vector.vector[k];
 
-            		cblas_dger(CblasColMajor,
+		cblas_dger(CblasColMajor,
 			           num_features,num_features,
 			           1.0,sub_mean,1,
 			           sub_mean,1,
@@ -107,7 +107,7 @@ bool CPCA::init(CFeatures* features)
 				cov[i*num_features+j]/=(num_vectors-1);
 		}
 
-		SG_INFO("Computing Eigenvalues ... ") 
+		SG_INFO("Computing Eigenvalues ... ")
 
 		m_eigenvalues_vector.vector = SGMatrix<float64_t>::compute_eigenvectors(cov,num_features,num_features);
 		m_eigenvalues_vector.vlen = num_features;
@@ -144,7 +144,7 @@ bool CPCA::init(CFeatures* features)
 			}
 		}
 
-		SG_INFO("Done\nReducing from %i to %i features..", num_features, num_dim) 
+		SG_INFO("Done\nReducing from %i to %i features..", num_features, num_dim)
 
 		m_transformation_matrix = SGMatrix<float64_t>(num_features,num_dim);
 		num_old_dim = num_features;

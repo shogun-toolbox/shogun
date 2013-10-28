@@ -30,9 +30,13 @@ CLatentLabels::CLatentLabels(CLabels* labels)
 	: CLabels()
 {
 	init();
-	m_labels = labels;
-	SG_REF(m_labels);
-	m_latent_labels = new CDynamicObjectArray(m_labels->get_num_labels());
+	set_labels(labels);
+
+	int32_t num_labels = 0;
+	if (m_labels)
+		num_labels = m_labels->get_num_labels();
+
+	m_latent_labels = new CDynamicObjectArray(num_labels);
 	SG_REF(m_latent_labels);
 }
 
@@ -89,18 +93,7 @@ void CLatentLabels::ensure_valid(const char* context)
 		SG_ERROR("Non-valid LatentLabels in %s", context)
 }
 
-CLatentLabels* CLatentLabels::obtain_from_generic(CLabels* base_labels)
-{
-	ASSERT(base_labels != NULL)
-	if (base_labels->get_label_type() == LT_LATENT)
-		return (CLatentLabels*) base_labels;
-	else
-		SG_SERROR("base_labels must be of dynamic type CLatentLabels\n")
-
-	return NULL;
-}
-
-int32_t CLatentLabels::get_num_labels()
+int32_t CLatentLabels::get_num_labels() const
 {
 	if (!m_latent_labels || !m_labels)
 		return 0;
@@ -113,8 +106,8 @@ int32_t CLatentLabels::get_num_labels()
 
 void CLatentLabels::set_labels(CLabels* labels)
 {
-	SG_UNREF(m_labels);
 	SG_REF(labels);
+	SG_UNREF(m_labels);
 	m_labels = labels;
 }
 

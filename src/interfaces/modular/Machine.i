@@ -1,3 +1,13 @@
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Written (W) 2009 Soeren Sonnenburg
+ * Written (W) 2013 Heiko Strathmann
+ */
+
 /*%warnfilter(302) apply;
 %warnfilter(302) apply_generic;*/
 #if defined(SWIGPYTHON) || defined(SWIGOCTAVE) || defined(SWIGRUBY) || defined(SWIGLUA) || defined(SWIGR)
@@ -57,21 +67,24 @@ APPLY_MULTICLASS(CMulticlassMachine);
 APPLY_MULTICLASS(CKernelMulticlassMachine);
 APPLY_MULTICLASS(CLinearMulticlassMachine);
 APPLY_MULTICLASS(CDistanceMachine);
-APPLY_MULTICLASS(CConjugateIndex);
 
 APPLY_BINARY(CLinearMachine);
 APPLY_BINARY(CKernelMachine);
 APPLY_BINARY(CWDSVMOcas);
 APPLY_BINARY(CPluginEstimate);
+#ifdef HAVE_EIGEN3
+APPLY_BINARY(CGaussianProcessBinaryClassification);
+#endif //HAVE_EIGEN3
 
-APPLY_REGRESSION(CKernelRidgeRegression);
 APPLY_REGRESSION(CLibSVR);
 APPLY_REGRESSION(CSVRLight);
 APPLY_REGRESSION(CMKLRegression);
+#ifdef HAVE_LAPACK
 APPLY_REGRESSION(CKernelRidgeRegression);
 APPLY_REGRESSION(CLinearRidgeRegression);
 APPLY_REGRESSION(CLeastSquaresRegression);
 APPLY_REGRESSION(CLeastAngleRegression);
+#endif
 #ifdef HAVE_EIGEN3
 APPLY_REGRESSION(CGaussianProcessRegression);
 #endif //HAVE_EIGEN3
@@ -100,12 +113,13 @@ APPLY_LATENT(CLatentSVM);
 %rename(apply_generic) CSVRLight::apply(CFeatures* data=NULL);
 %rename(apply_generic) CLibSVR::apply(CFeatures* data=NULL);
 %rename(apply_generic) CMKLRegression::apply(CFeatures* data=NULL);
+#ifdef HAVE_LAPACK
 %rename(apply_generic) CKernelRidgeRegression::apply(CFeatures* data=NULL);
 %rename(apply_generic) CLinearRidgeRegression::apply(CFeatures* data=NULL);
 %rename(apply_generic) CLeastSquaresRegression::apply(CFeatures* data=NULL);
 %rename(apply_generic) CLeastAngleRegression::apply(CFeatures* data=NULL);
+#endif
 %rename(apply_generic) CGaussianProcessRegression::apply(CFeatures* data=NULL);
-%rename(apply_generic) CConjugateIndex::apply(CFeatures* data=NULL);
 
 %rename(apply_generic) CStructuredOutputMachine::apply(CFeatures* data=NULL);
 %rename(apply_generic) CLinearStructuredOutputMachine::apply(CFeatures* data=NULL);

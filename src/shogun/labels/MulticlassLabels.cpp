@@ -48,14 +48,14 @@ void CMulticlassLabels::set_multiclass_confidences(int32_t i,
 			"%s::set_multiclass_confidences(): Length of confidences should "
 			"match size of the matrix", get_name());
 
-	for (index_t j=0; j<confidences.size(); j++) 
+	for (index_t j=0; j<confidences.size(); j++)
 		m_multiclass_confidences(j,i) = confidences[j];
 }
 
 SGVector<float64_t> CMulticlassLabels::get_multiclass_confidences(int32_t i)
 {
 	SGVector<float64_t> confs(m_multiclass_confidences.num_rows);
-	for (index_t j=0; j<confs.size(); j++) 
+	for (index_t j=0; j<confs.size(); j++)
 		confs[j] = m_multiclass_confidences(j,i);
 
 	return confs;
@@ -66,26 +66,12 @@ void CMulticlassLabels::allocate_confidences_for(int32_t n_classes)
 	int32_t n_labels = m_labels.size();
 	REQUIRE(n_labels!=0,"%s::allocate_confidences_for(): There should be "
 			"labels to store confidences", get_name());
-	
+
 	m_multiclass_confidences = SGMatrix<float64_t>(n_classes,n_labels);
 }
 
-CMulticlassLabels* CMulticlassLabels::obtain_from_generic(CLabels* base_labels)
-{
-	if (!base_labels)
-		return NULL;
-
-	if (base_labels->get_label_type()!=LT_MULTICLASS)
-	{
-		SG_SERROR("CMulticlassLabels::base_labels is of wrong type \"%s\"!\n",
-				base_labels->get_name());
-	}
-
-	return (CMulticlassLabels*) base_labels;
-}
-
 void CMulticlassLabels::ensure_valid(const char* context)
-{       
+{
     CDenseLabels::ensure_valid(context);
 
     int32_t subset_size=get_num_labels();
@@ -102,7 +88,7 @@ void CMulticlassLabels::ensure_valid(const char* context)
 	}
 }
 
-ELabelType CMulticlassLabels::get_label_type()
+ELabelType CMulticlassLabels::get_label_type() const
 {
 	return LT_MULTICLASS;
 }

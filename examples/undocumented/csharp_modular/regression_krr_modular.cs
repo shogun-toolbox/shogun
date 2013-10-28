@@ -21,8 +21,8 @@ public class regression_krr_modular {
 		krr.train(feats_train);
 
 		kernel.init(feats_train, feats_test);
-		double[] out_labels = RegressionLabels.obtain_from_generic(krr.apply()).get_labels();
-		
+		double[] out_labels = LabelsFactory.to_regression(krr.apply()).get_labels();
+
 		foreach(double item in out_labels) {
 			Console.Write(item);
 		}

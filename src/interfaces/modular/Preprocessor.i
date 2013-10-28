@@ -7,7 +7,7 @@
  * Written (W) 2009 Soeren Sonnenburg
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
- 
+
 /* Remove C Prefix */
 %rename(Preprocessor) CPreprocessor;
 %rename(SparsePreprocessor) CSparsePreprocessor;
@@ -18,6 +18,7 @@
 %rename(RandomFourierGaussPreproc) CRandomFourierGaussPreproc;
 %rename(HomogeneousKernelMap) CHomogeneousKernelMap;
 %rename(PNorm) CPNorm;
+%rename(RescaleFeatures) CRescaleFeatures;
 
 %rename(DimensionReductionPreprocessor) CDimensionReductionPreprocessor;
 %rename(PCA) CPCA;
@@ -102,6 +103,7 @@ namespace shogun
 %include <shogun/preprocessor/RandomFourierGaussPreproc.h>
 %include <shogun/preprocessor/HomogeneousKernelMap.h>
 %include <shogun/preprocessor/PNorm.h>
+%include <shogun/preprocessor/RescaleFeatures.h>
 
 %include <shogun/preprocessor/PCA.h>
 %include <shogun/preprocessor/KernelPCA.h>

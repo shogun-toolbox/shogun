@@ -1,2 +1,2 @@
-This example demonstrates how to encode small positive natural numbers 
+This example demonstrates how to encode small positive natural numbers
 (up to 255) in shogun using ByteFeatures.

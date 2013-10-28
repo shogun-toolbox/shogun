@@ -111,7 +111,7 @@ class CBinnedDotFeatures : public CDotFeatures
 		 * free_feature_iterator to cleanup
 		 *
 		 * @param vector_index the index of the vector over whose components to
-		 * 			iterate over
+		 *			iterate over
 		 * @return feature iterator (to be passed to get_next_feature)
 		 */
 		virtual void* get_feature_iterator(int32_t vector_index);
@@ -217,12 +217,6 @@ class CBinnedDotFeatures : public CDotFeatures
 		 * @return number of examples/vectors
 		 */
 		virtual int32_t get_num_vectors() const;
-
-		/** get size of underlying data type in bytes
-		 *
-		 * @return size in bytes
-		 */
-		virtual int32_t get_size() const;
 
 	private:
 		void init();

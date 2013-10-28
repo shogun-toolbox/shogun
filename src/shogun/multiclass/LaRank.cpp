@@ -13,9 +13,9 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
-// You should have received a copy of the GNU General Public License
-// aint64_t with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 //
 /***********************************************************************
  *
@@ -457,8 +457,8 @@ void LaRankOutput::update (int32_t x_id, float64_t lambda, float64_t gp)
 	else
 	{
 		larank_kcache_swap_ri (kernel, l, x_id);
-		SGVector<float32_t>::resize(g, l, l+1);
-		SGVector<float32_t>::resize(beta, l, l+1);
+		g = SG_REALLOC(float32_t, g, l, l+1);
+		beta = SG_REALLOC(float32_t, beta, l, l+1);
 		g[l]=gp;
 		beta[l]=lambda;
 		l++;
@@ -504,8 +504,8 @@ int32_t LaRankOutput::cleanup ()
 			g[r]=g[r + 1];
 		}
 	}
-	SGVector<float32_t>::resize(beta, l, new_l+1);
-	SGVector<float32_t>::resize(g, l, new_l+1);
+	beta = SG_REALLOC(float32_t, beta, l, new_l+1);
+	g = SG_REALLOC(float32_t, g, l, new_l+1);
 	beta[new_l]=0;
 	g[new_l]=0;
 	l = new_l;

@@ -3,13 +3,13 @@ Shogun demo
 
 Fernando J. Iglesias Garcia
 
-This example shows the use of dimensionality reduction methods, mainly 
-Stochastic Proximity Embedding (SPE), although Isomap is also used for 
+This example shows the use of dimensionality reduction methods, mainly
+Stochastic Proximity Embedding (SPE), although Isomap is also used for
 comparison. The data selected to be embedded is an helix. Two different methods
 of SPE (global and local) are applied showing that the global method outperforms
-the local one in this case. Actually the results of local SPE are fairly poor 
-for this input. Finally, the reduction achieved with Isomap is better than the 
-two previous ones, more robust against noise. Isomap exploits the 
+the local one in this case. Actually the results of local SPE are fairly poor
+for this input. Finally, the reduction achieved with Isomap is better than the
+two previous ones, more robust against noise. Isomap exploits the
 parametrization of the input data.
 """
 
@@ -19,15 +19,15 @@ import numpy as np
 import pylab
 import util
 
-from shogun.Features  import RealFeatures
-from shogun.Converter import StochasticProximityEmbedding, SPE_GLOBAL
-from shogun.Converter import SPE_LOCAL, Isomap
+from modshogun  import RealFeatures
+from modshogun import StochasticProximityEmbedding, SPE_GLOBAL
+from modshogun import SPE_LOCAL, Isomap
 
 # Number of data points
 N = 500
 
 # Generate helix
-t = np.linspace(1, N, N).T / N 
+t = np.linspace(1, N, N).T / N
 t = t*2*math.pi
 X = np.r_[ [ ( 2 + np.cos(8*t) ) * np.cos(t) ],
            [ ( 2 + np.cos(8*t) ) * np.sin(t) ],

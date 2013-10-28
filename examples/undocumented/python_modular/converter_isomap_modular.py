@@ -1,18 +1,13 @@
 #!/usr/bin/env python
-from tools.load import LoadMatrix
-
-lm=LoadMatrix()
-data = lm.load_numbers('../data/fm_train_real.dat')
-
+data = '../data/fm_train_real.dat'
 parameter_list = [[data]]
 
-def converter_isomap_modular (data):
+def converter_isomap_modular (data_fname):
 	try:
-		from shogun.Features import RealFeatures
-		from shogun.Converter import Isomap
-		
-		features = RealFeatures(data)
-			
+		from modshogun import RealFeatures, Isomap, CSVFile
+
+		features = RealFeatures(CSVFile(data))
+
 		converter = Isomap()
 		converter.set_k(20)
 		converter.set_target_dim(1)

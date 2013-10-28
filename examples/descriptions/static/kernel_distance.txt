@@ -1,2 +1,2 @@
-With the distance kernel one can use any of the following distance metrics: 
+With the distance kernel one can use any of the following distance metrics:
 MINKOWSKI MANHATTAN HAMMING CANBERRA CHEBYSHEW GEODESIC JENSEN CHISQUARE TANIMOTO COSINE BRAYCURTIS EUCLIDIAN

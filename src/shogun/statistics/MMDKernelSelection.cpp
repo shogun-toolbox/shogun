@@ -84,12 +84,7 @@ CKernel* CMMDKernelSelection::select_kernel()
 
 	/* find kernel with corresponding index */
 	CCombinedKernel* combined=(CCombinedKernel*)m_mmd->get_kernel();
-	CKernel* current=combined->get_first_kernel();
-	for (index_t i=0; i<max_idx; ++i)
-	{
-		SG_UNREF(current);
-		current=combined->get_next_kernel();
-	}
+	CKernel* current=combined->get_kernel(max_idx);
 
 	SG_UNREF(combined);
 	SG_DEBUG("leaving CMMDKernelSelection::select_kernel()\n");

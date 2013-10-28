@@ -23,7 +23,7 @@ Jaccard coefficient) matrix between these two data sets is computed by
 'get_distance_matrix'.
 
 The resulting distance matrix can be reaccessed by 'get_distance_matrix'
-and target 'TEST'. The 'TRAIN' distance matrix ceased to exist. 
+and target 'TEST'. The 'TRAIN' distance matrix ceased to exist.
 
 For more details see doc/classshogun_1_1CTanimotoDistance.html.
 

@@ -1,7 +1,7 @@
 import org.shogun.*;
 import org.jblas.*;
 
-import static org.shogun.MulticlassLabels.obtain_from_generic;
+import static org.shogun.LabelsFactory.to_multiclass;
 
 public class mkl_multiclass_modular {
 	static {
@@ -26,7 +26,7 @@ public class mkl_multiclass_modular {
 
 		RealFeatures subkfeats1_train = new RealFeatures(traindata_real);
 		RealFeatures subkfeats1_test = new RealFeatures(testdata_real);
-		
+
 		GaussianKernel subkernel = new GaussianKernel(10, width);
 		feats_train.append_feature_obj(subkfeats1_train);
 		feats_test.append_feature_obj(subkfeats1_test);
@@ -34,7 +34,7 @@ public class mkl_multiclass_modular {
 
 		RealFeatures subkfeats2_train = new RealFeatures(traindata_real);
 		RealFeatures subkfeats2_test = new RealFeatures(testdata_real);
-		
+
 		LinearKernel subkernel2 = new LinearKernel();
 		feats_train.append_feature_obj(subkfeats2_train);
 		feats_test.append_feature_obj(subkfeats2_test);
@@ -42,7 +42,7 @@ public class mkl_multiclass_modular {
 
 		RealFeatures subkfeats3_train = new RealFeatures(traindata_real);
 		RealFeatures subkfeats3_test = new RealFeatures(testdata_real);
-		
+
 		PolyKernel subkernel3 = new PolyKernel(10, 2);
 		feats_train.append_feature_obj(subkfeats3_train);
 		feats_test.append_feature_obj(subkfeats3_test);
@@ -60,7 +60,7 @@ public class mkl_multiclass_modular {
 		mkl.train();
 
 		kernel.init(feats_train, feats_test);
-		DoubleMatrix out =  obtain_from_generic(mkl.apply()).get_labels();
+		DoubleMatrix out =  to_multiclass(mkl.apply()).get_labels();
 
 		modshogun.exit_shogun();
 	}

@@ -50,8 +50,8 @@ int32_t CEmbeddingConverter::get_target_dim() const
 
 void CEmbeddingConverter::set_distance(CDistance* distance)
 {
-	SG_UNREF(m_distance);
 	SG_REF(distance);
+	SG_UNREF(m_distance);
 	m_distance = distance;
 }
 
@@ -63,8 +63,8 @@ CDistance* CEmbeddingConverter::get_distance() const
 
 void CEmbeddingConverter::set_kernel(CKernel* kernel)
 {
-	SG_UNREF(m_kernel);
 	SG_REF(kernel);
+	SG_UNREF(m_kernel);
 	m_kernel = kernel;
 }
 

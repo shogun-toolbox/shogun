@@ -11,6 +11,7 @@
 #include <shogun/features/SNPFeatures.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/features/Alphabet.h>
+#include <shogun/lib/memory.h>
 
 using namespace shogun;
 
@@ -57,12 +58,20 @@ CSNPFeatures::CSNPFeatures(const CSNPFeatures& orig)
 	m_str_min(NULL), m_str_maj(NULL)
 {
 	SG_REF(strings);
-	string_length=strings->get_max_vector_length();
-	ASSERT((string_length & 1) == 0) // length divisible by 2
-	w_dim=3*string_length;
-	num_strings=strings->get_num_vectors();
-	CAlphabet* alpha=strings->get_alphabet();
-	SG_UNREF(alpha);
+
+	if (strings)
+	{
+		string_length=strings->get_max_vector_length();
+		ASSERT((string_length & 1) == 0) // length divisible by 2
+			w_dim=3*string_length;
+		num_strings=strings->get_num_vectors();
+	}
+	else
+	{
+		string_length = 0;
+		w_dim = 0;
+		num_strings = 0;
+	}
 
 	obtain_base_strings();
 }
@@ -97,11 +106,6 @@ int32_t CSNPFeatures::get_num_vectors() const
 	return num_strings;
 }
 
-int32_t CSNPFeatures::get_size() const
-{
-	return sizeof(float64_t);
-}
-
 float64_t CSNPFeatures::get_normalization_const()
 {
 	return normalization_const;
@@ -109,12 +113,12 @@ float64_t CSNPFeatures::get_normalization_const()
 
 void CSNPFeatures::set_minor_base_string(const char* str)
 {
-	m_str_min=(uint8_t*) strdup(str);
+	m_str_min=(uint8_t*) get_strdup(str);
 }
 
 void CSNPFeatures::set_major_base_string(const char* str)
 {
-	m_str_maj=(uint8_t*) strdup(str);
+	m_str_maj=(uint8_t*) get_strdup(str);
 }
 
 char* CSNPFeatures::get_minor_base_string()

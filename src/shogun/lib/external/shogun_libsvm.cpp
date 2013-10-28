@@ -107,7 +107,7 @@ private:
 
 Cache::Cache(int32_t l_, int64_t size_):l(l_),size(size_)
 {
-	head = (head_t *)calloc(l,sizeof(head_t));	// initialized to 0
+	head = (head_t *)SG_CALLOC(head_t, l);	// initialized to 0
 	size /= sizeof(Qfloat);
 	size -= l * sizeof(head_t) / sizeof(Qfloat);
 	size = CMath::max(size, (int64_t) 2*l);	// cache must be large enough for two columns
@@ -342,17 +342,9 @@ private:
 	CKernel* kernel;
 	const svm_node **x;
 	float64_t *x_square;
-
-	// svm_parameter
-	const int32_t kernel_type;
-	const int32_t degree;
-	const float64_t gamma;
-	const float64_t coef0;
 };
 
 LibSVMKernel::LibSVMKernel(int32_t l, svm_node * const * x_, const svm_parameter& param)
-: kernel_type(param.kernel_type), degree(param.degree),
- gamma(param.gamma), coef0(param.coef0)
 {
 	clone(x,x_,l);
 	x_square = 0;
@@ -2409,12 +2401,12 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 
             if (prob->pv)
             {
-            	pv[i] = prob->pv[perm[i]];
+	pv[i] = prob->pv[perm[i]];
             }
             else
             {
 				//no custom linear term is set
-            	pv[i] = -1.0;
+	pv[i] = -1.0;
             }
 
 		}

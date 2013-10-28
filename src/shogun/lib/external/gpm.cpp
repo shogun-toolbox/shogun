@@ -738,7 +738,9 @@ int32_t FletcherAlg2A(
                   }
 
               if (info == 1)
+			  {
                   for (i = 0; i < luv; i++)
+				  {
                       if (x[uv[i]] <= DELTAsv)
                       {
                           if (g[uv[i]] + kktlam*iy[uv[i]] < -tol)
@@ -755,6 +757,8 @@ int32_t FletcherAlg2A(
                               break;
                           }
                       }
+				  }
+			  }
 
               if (info == 1)
                   goto Clean;

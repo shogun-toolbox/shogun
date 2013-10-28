@@ -2,8 +2,8 @@
 parameter_list=[[".", "features_string_char_modular.py"]]
 
 def features_string_file_modular (directory, fname):
-	from shogun.Features import StringCharFeatures, RAWBYTE
-	from shogun.IO import AsciiFile
+	from modshogun import StringCharFeatures, RAWBYTE
+	from modshogun import CSVFile
 
 	# load features from directory
 	f=StringCharFeatures(RAWBYTE)
@@ -18,7 +18,7 @@ def features_string_file_modular (directory, fname):
 	#print("str[0]", f.get_feature_vector(0))
 
 	#or load features from file (one string per line)
-	fil=AsciiFile(fname)
+	fil=CSVFile(fname)
 	f.load(fil)
 	#print(f.get_features())
 

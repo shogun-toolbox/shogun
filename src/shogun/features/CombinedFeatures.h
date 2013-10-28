@@ -14,13 +14,12 @@
 #define _CCOMBINEDFEATURES__H__
 
 #include <shogun/features/Features.h>
-#include <shogun/lib/List.h>
+#include <shogun/lib/DynamicObjectArray.h>
 
 namespace shogun
 {
 class CFeatures;
-class CList;
-class CListElement;
+class CDynamicObjectArray;
 
 /** @brief The class CombinedFeatures is used to combine a number of of feature objects
  * into a single CombinedFeatures object.
@@ -79,12 +78,6 @@ class CCombinedFeatures : public CFeatures
 					? m_subset_stack->get_size() : num_vec;
 		}
 
-		/** get memory footprint of one feature
-		 *
-		 * @return memory footprint of one feature
-		 */
-		virtual int32_t get_size() const;
-
 		/** list feature objects */
 		void list_feature_objs();
 
@@ -101,25 +94,12 @@ class CCombinedFeatures : public CFeatures
 		 */
 		CFeatures* get_first_feature_obj();
 
-		/** get first feature object
-		 *
-		 * @param current list of features
-		 * @return first feature object
-		 */
-		CFeatures* get_first_feature_obj(CListElement*& current);
-
-		/** get next feature object
-		 *
-		 * @return next feature object
-		 */
-		CFeatures* get_next_feature_obj();
-
-		/** get next feature object
-		 *
-		 * @param current list of features
-		 * @return next feature object
-		 */
-		CFeatures* get_next_feature_obj(CListElement*& current);
+		/** get feature object at index idx
+		*
+		* @param idx index of feature object
+		* @return the feature object at index idx
+		*/
+		CFeatures* get_feature_obj(int32_t idx);
 
 		/** get last feature object
 		 *
@@ -127,25 +107,28 @@ class CCombinedFeatures : public CFeatures
 		 */
 		CFeatures* get_last_feature_obj();
 
-		/** insert feature object
+		/** insert feature object at index idx
+		 *  Important, idx must be < num_feature_obj
 		 *
 		 * @param obj feature object to insert
+		 * @param idx the index where to insert the feature object
 		 * @return if inserting was successful
 		 */
-		bool insert_feature_obj(CFeatures* obj);
+		bool insert_feature_obj(CFeatures* obj, int32_t idx);
 
-		/** append feature object
+		/** append feature object to the end of this CombinedFeatures object array
 		 *
 		 * @param obj feature object to append
 		 * @return if appending was successful
 		 */
 		bool append_feature_obj(CFeatures* obj);
 
-		/** delete feature object
+		/** delete feature object at position idx
 		 *
+		 * @param idx the index of the feature object to delete
 		 * @return if deleting was successful
 		 */
-		bool delete_feature_obj();
+		bool delete_feature_obj(int32_t idx);
 
 		/** get number of feature objects
 		 *
@@ -204,8 +187,8 @@ class CCombinedFeatures : public CFeatures
 		void init();
 
 	protected:
-		/** feature list */
-		CList* feature_list;
+		/** feature array */
+		CDynamicObjectArray* feature_array;
 
 		/** number of vectors
 		 * must match between sub features

@@ -38,6 +38,7 @@ void CIOBuffer::init()
 	size_t s = 1 << 16;
 	space.reserve(s);
 	endloaded = space.begin;
+	working_file=-1;
 }
 
 void CIOBuffer::use_file(int fd)
@@ -107,8 +108,11 @@ ssize_t CIOBuffer::write_file(const void* buf, size_t nbytes)
 
 void CIOBuffer::flush()
 {
-	if (write_file(space.begin, space.index()) != (int) space.index())
-		SG_ERROR("Error, failed to write example!\n")
+	if (working_file>=0)
+	{
+		if (write_file(space.begin, space.index()) != (int) space.index())
+			SG_ERROR("Error, failed to write example!\n")
+	}
 	space.end = space.begin;
 	fsync(working_file);
 }

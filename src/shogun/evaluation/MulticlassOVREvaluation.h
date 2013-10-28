@@ -20,8 +20,8 @@ namespace shogun
 class CLabels;
 
 /** @brief The class MulticlassOVREvaluation
- * used to compute evaluation parameters 
- * of multiclass classification via 
+ * used to compute evaluation parameters
+ * of multiclass classification via
  * binary OvR decomposition and given binary
  * evaluation technique.
  */
@@ -75,7 +75,7 @@ public:
 	}
 
 	/** returns evaluation direction */
-	virtual EEvaluationDirection get_evaluation_direction()
+	virtual EEvaluationDirection get_evaluation_direction() const
 	{
 		return m_binary_evaluation->get_evaluation_direction();
 	}

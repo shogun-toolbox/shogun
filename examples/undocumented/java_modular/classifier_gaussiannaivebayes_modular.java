@@ -1,7 +1,7 @@
 import org.shogun.*;
 import org.jblas.*;
 
-import static org.shogun.MulticlassLabels.obtain_from_generic;
+import static org.shogun.LabelsFactory.to_multiclass;
 
 public class classifier_gaussiannaivebayes_modular {
 	static {
@@ -24,9 +24,9 @@ public class classifier_gaussiannaivebayes_modular {
 
 		GaussianNaiveBayes gnb = new GaussianNaiveBayes(feats_train, labels);
 		gnb.train();
-		DoubleMatrix out_labels = obtain_from_generic(gnb.apply(feats_test)).get_labels();
+		DoubleMatrix out_labels = to_multiclass(gnb.apply(feats_test)).get_labels();
 		System.out.println(out_labels.toString());
-		
+
 		modshogun.exit_shogun();
 	}
 }

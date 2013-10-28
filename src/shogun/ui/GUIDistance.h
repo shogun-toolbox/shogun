@@ -25,7 +25,7 @@ class CSGInterface;
 class CGUIDistance : public CSGObject
 {
  public:
- 	/** constructor */
+	/** constructor */
 	CGUIDistance() {};
 	/** constructor
 	 * @param interface
@@ -60,7 +60,7 @@ class CGUIDistance : public CSGObject
 	virtual const char* get_name() const { return "GUIDistance"; }
 
  protected:
- 	/** distance */
+	/** distance */
 	CDistance* distance;
 	/** ui */
 	CSGInterface* ui;

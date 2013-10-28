@@ -18,7 +18,7 @@ public class classifier_knn_modular {
 
 		KNN knn = new KNN(k, distance, labels);
 		knn.train();
-		double[] out_labels = MulticlassLabels.obtain_from_generic(knn.apply(feats_test)).get_labels();
+		double[] out_labels = LabelsFactory.to_multiclass(knn.apply(feats_test)).get_labels();
 
 		foreach(double item in out_labels) {
 			Console.Write(item);

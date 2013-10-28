@@ -113,11 +113,9 @@ class CDenseLabels : public CLabels
 		 */
 		int32_t get_int_label(int32_t idx);
 
-		/** get labels
+		/** Getter for labels
 		 *
-		 * not possible with subset
-		 *
-		 * @return labels
+		 * @return labels, a copy if a subset is set
 		 */
 		SGVector<float64_t> get_labels();
 
@@ -190,13 +188,13 @@ class CDenseLabels : public CLabels
 		 *
 		 * @return number of labels
 		 */
-		virtual int32_t get_num_labels();
+		virtual int32_t get_num_labels() const;
 
 		/** get label type
 		 *
 		 * @return label type (binary, multiclass, ...)
 		 */
-		virtual ELabelType get_label_type()=0;
+		virtual ELabelType get_label_type() const=0;
 
 	public:
 		/** label designates classify reject */

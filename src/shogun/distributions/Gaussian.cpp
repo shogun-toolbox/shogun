@@ -256,6 +256,7 @@ void CGaussian::decompose_cov(SGMatrix<float64_t> cov)
 
 SGVector<float64_t> CGaussian::sample()
 {
+	SG_DEBUG("Entering\n");
 	float64_t* r_matrix=SG_MALLOC(float64_t, m_mean.vlen*m_mean.vlen);
 	memset(r_matrix, 0, m_mean.vlen*m_mean.vlen*sizeof(float64_t));
 
@@ -300,7 +301,22 @@ SGVector<float64_t> CGaussian::sample()
 	SG_FREE(random_vec);
 	SG_FREE(r_matrix);
 
+	SG_DEBUG("Leaving\n");
 	return SGVector<float64_t>(samp, m_mean.vlen, false);//fix needed
 }
 
-#endif
+CGaussian* CGaussian::obtain_from_generic(CDistribution* distribution)
+{
+	if (!distribution)
+		return NULL;
+
+	CGaussian* casted=dynamic_cast<CGaussian*>(distribution);
+	if (!casted)
+		return NULL;
+
+	/* since an additional reference is returned */
+	SG_REF(casted);
+	return casted;
+}
+
+#endif // HAVE_LAPACK

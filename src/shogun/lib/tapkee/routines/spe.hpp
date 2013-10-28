@@ -7,13 +7,9 @@
 #define TAPKEE_SPE_H_
 
 /* Tapkee includes */
-#include <shogun/lib/tapkee/tapkee_defines.hpp>
+#include <shogun/lib/tapkee/defines.hpp>
 #include <shogun/lib/tapkee/utils/time.hpp>
 /* End of Tapkee includes */
-
-#include <algorithm>
-#include <ctime>
-#include <math.h>
 
 namespace tapkee
 {
@@ -42,7 +38,7 @@ DenseMatrix spe_embedding(RandomAccessIterator begin, RandomAccessIterator end,
 	{
 		for (RandomAccessIterator j_iter=i_iter+1; j_iter!=end; ++j_iter)
 		{
-			max = std::max(max, callback(*i_iter,*j_iter));
+			max = std::max(max, callback.distance(*i_iter,*j_iter));
 		}
 	}
 
@@ -52,15 +48,13 @@ DenseMatrix spe_embedding(RandomAccessIterator begin, RandomAccessIterator end,
 		alpha = 1.0 / max * std::sqrt(2.0);
 
 	// Random embedding initialization, Y is the short for embedding_feature_matrix
-	// TODO handle this somewhere else
-	std::srand(static_cast<unsigned int>(std::time(0)));
 	DenseMatrix Y = (DenseMatrix::Random(target_dimension,N)
 		       + DenseMatrix::Ones(target_dimension,N)) / 2;
 	// Auxiliary diffference embedding feature matrix
 	DenseMatrix Yd(target_dimension,nupdates);
 
 	// SPE's main loop
-	
+
 	typedef std::vector<int> Indices;
 	typedef std::vector<int>::iterator IndexIterator;
 
@@ -93,7 +87,7 @@ DenseMatrix spe_embedding(RandomAccessIterator begin, RandomAccessIterator end,
 	for (IndexType i=0; i<max_iter; ++i)
 	{
 		// Shuffle to select the vectors to update in this iteration
-		std::random_shuffle(indices.begin(),indices.end());
+		tapkee::random_shuffle(indices.begin(),indices.end());
 
 		ind1 = indices.begin();
 		ind2 = indices.begin()+nupdates;
@@ -117,7 +111,7 @@ DenseMatrix spe_embedding(RandomAccessIterator begin, RandomAccessIterator end,
 			// Generate pseudo-random indices and select final indices
 			for(int j=0; j<nupdates; ++j)
 			{
-				IndexType r = static_cast<IndexType>(floor(std::rand()*1.0/RAND_MAX*(k-1)) + k*j);
+				IndexType r = static_cast<IndexType>(floor(tapkee::uniform_random()*(k-1)) + k*j);
 				indices[nupdates+j] = ind1Neighbors[r];
 			}
 		}
@@ -140,7 +134,7 @@ DenseMatrix spe_embedding(RandomAccessIterator begin, RandomAccessIterator end,
 		ind1 = indices.begin();
 		ind2 = indices.begin()+nupdates;
 		for (int j=0; j<nupdates; ++j)
-			Rt[j] *= callback(*(begin + *ind1++), *(begin + *ind2++));
+			Rt[j] *= callback.distance(*(begin + *ind1++), *(begin + *ind2++));
 
 		// Compute some terms for update
 

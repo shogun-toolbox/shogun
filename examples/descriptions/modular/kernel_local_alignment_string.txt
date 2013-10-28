@@ -1,3 +1,3 @@
-This is an example for the initialization of the local alignment kernel on 
-DNA sequences, where each column of the matrices of type char corresponds to 
-one training/test example. 
+This is an example for the initialization of the local alignment kernel on
+DNA sequences, where each column of the matrices of type char corresponds to
+one training/test example.

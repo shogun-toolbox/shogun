@@ -177,7 +177,7 @@ IGNORE_IN_CLASSLIST class CDirectorDotFeatures : public CDotFeatures
 		 * free_feature_iterator to cleanup
 		 *
 		 * @param vector_index the index of the vector over whose components to
-		 * 			iterate over
+		 *			iterate over
 		 * @return feature iterator (to be passed to get_next_feature)
 		 */
 		virtual void* get_feature_iterator(int32_t vector_index)
@@ -267,11 +267,10 @@ IGNORE_IN_CLASSLIST class CDirectorDotFeatures : public CDotFeatures
 		/** add preprocessor
 		 *
 		 * @param p preprocessor to set
-		 * @return something inty
 		 */
-		virtual int32_t add_preprocessor(CPreprocessor* p)
+		virtual void add_preprocessor(CPreprocessor* p)
 		{
-			return CFeatures::add_preprocessor(p);
+			CFeatures::add_preprocessor(p);
 		}
 
 		/** delete preprocessor from list
@@ -279,9 +278,9 @@ IGNORE_IN_CLASSLIST class CDirectorDotFeatures : public CDotFeatures
 		 *
 		 * @param num index of preprocessor in list
 		 */
-		virtual CPreprocessor* del_preprocessor(int32_t num)
+		virtual void del_preprocessor(int32_t num)
 		{
-			return CFeatures::del_preprocessor(num);
+			CFeatures::del_preprocessor(num);
 		}
 
 		/** in case there is a feature matrix allow for reshaping
@@ -296,18 +295,6 @@ IGNORE_IN_CLASSLIST class CDirectorDotFeatures : public CDotFeatures
 		{
 			SG_NOTIMPLEMENTED
 			return false;
-		}
-
-		/** get memory footprint of one feature
-		 *
-		 * abstract base method
-		 *
-		 * @return memory footprint of one feature
-		 */
-		virtual int32_t get_size() const
-		{
-			SG_NOTIMPLEMENTED
-			return 0;
 		}
 
 		/** load features from file

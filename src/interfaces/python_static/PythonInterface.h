@@ -9,7 +9,7 @@ extern "C" {
 #include <numpy/arrayobject.h>
 }
 
-#include "ui/SGInterface.h"
+#include <shogun/ui/SGInterface.h>
 
 extern "C" {
 #include <numpy/arrayobject.h>

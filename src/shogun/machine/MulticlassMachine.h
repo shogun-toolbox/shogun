@@ -6,6 +6,7 @@
  *
  * Written (W) 1999-2011 Soeren Sonnenburg
  * Written (W) 2012 Fernando José Iglesias García and Sergey Lisitsyn
+ * Written (W) 2013 Shell Hu and Heiko Strathmann
  * Copyright (C) 2012 Sergey Lisitsyn, Fernando José Iglesias Garcia
  */
 
@@ -91,7 +92,7 @@ class CMulticlassMachine : public CBaseMulticlassMachine
 		 * @return resulting labels
 		 */
 		virtual CMulticlassLabels* apply_multiclass(CFeatures* data=NULL);
-		
+
 		/** classify all examples with multiple output
 		 *
 		 * @return resulting labels
@@ -136,6 +137,20 @@ class CMulticlassMachine : public CBaseMulticlassMachine
 		virtual const char* get_name() const
 		{
 			return "MulticlassMachine";
+		}
+
+		/** get prob output heuristic of multiclass strategy */
+		inline EProbHeuristicType get_prob_heuris()
+		{
+			return m_multiclass_strategy->get_prob_heuris_type();
+		}
+
+		/** set prob output heuristic of multiclass strategy
+		 * @param prob_heuris type of probability heuristic
+		 */
+		inline void set_prob_heuris(EProbHeuristicType prob_heuris)
+		{
+			m_multiclass_strategy->set_prob_heuris_type(prob_heuris);
 		}
 
 	protected:

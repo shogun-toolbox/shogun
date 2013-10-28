@@ -22,7 +22,7 @@ import org.shogun.SerializableAsciiFile;
 public void writeExternal(java.io.ObjectOutput out) throws java.io.IOException {
         java.util.Random randomGenerator = new java.util.Random();
         String tmpFileName = System.getProperty("java.io.tmpdir") + "/" + randomGenerator.nextInt() + "shogun.tmp";
-        java.io.File file = null; 
+        java.io.File file = null;
         java.io.FileInputStream in = null;
         int ch;
         try {
@@ -248,7 +248,7 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
 
 %typemap(in) __setstate__(PyObject* state) {
     $1 = $input;
-}       
+}
 
 %typemap(out) PyObject* __getstate__()
 {
@@ -382,7 +382,7 @@ namespace shogun
             unlink(fname);
 
 #ifdef PYTHON3
-			PyObject* str=PyBytes_FromStringAndSize(result, len);
+            PyObject* str=PyBytes_FromStringAndSize(result, len);
 #else
             PyObject* str=PyString_FromStringAndSize(result, len);
 #endif
@@ -404,7 +404,7 @@ namespace shogun
             Py_ssize_t len=0;
 
 #ifdef PYTHON3
-			PyBytes_AsStringAndSize(py_str, &str, &len);
+            PyBytes_AsStringAndSize(py_str, &str, &len);
 #else
             PyString_AsStringAndSize(py_str, &str, &len);
 #endif
@@ -420,13 +420,28 @@ namespace shogun
             if (pickle_ascii)
                 fstream = new CSerializableAsciiFile(fname, 'r');
             else
-                fstream = new CSerializableHdf5File(fname, 'r');
+            {
+                try
+                {
+                    fstream = new CSerializableHdf5File(fname, 'r');
+                }
+                catch (ShogunException& e)
+                {
+                    fstream = new CSerializableAsciiFile(fname, 'r');
+                }
+            }
 #else
-            if (!pickle_ascii)
-                SG_SERROR("File contains an HDF5 stream but " \
-                        "Shogun was not compiled with HDF5" \
-                        " support! -  cannot load.");
-            fstream = new CSerializableAsciiFile(fname, 'r');
+            try
+            {
+                fstream = new CSerializableAsciiFile(fname, 'r');
+            }
+            catch (ShogunException& e)
+            {
+                    SG_SERROR("File contains an HDF5 stream but " \
+                            "Shogun was not compiled with HDF5" \
+                            " support! -  cannot load file %s." \
+                            " (exception was %s)", e.get_exception_string());
+            }
 #endif
             $self->load_serializable(fstream);
             fstream->close();
@@ -488,12 +503,12 @@ def _sg_reduce_ex(self, proto):
         dict = getstate()
     if dict:
         return _sg_reconstructor, args, dict
-    else:   
+    else:
         return _sg_reconstructor, args
 
 _py_orig_reduce_ex=copy_reg._reduce_ex
 _py_orig_reconstructor=copy_reg._reconstructor
-      
+
 copy_reg._reduce_ex=_sg_reduce_ex
 copy_reg._reconstructor=_sg_reconstructor
 %}

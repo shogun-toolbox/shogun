@@ -178,11 +178,11 @@ class SignalSensor(object):
         num_chunks = int(numpy.ceil(float(seq_len) / float(chunk_size)))
         assert(num_chunks > 0)
 
-    	sys.stderr.write("number of chunks for contig: %i\n" % (num_chunks))
+	sys.stderr.write("number of chunks for contig: %i\n" % (num_chunks))
 
         start = 0
         stop = min(chunk_size, seq_len)
-		
+
         out = []
 
         # iterate over chunks
@@ -204,14 +204,10 @@ class SignalSensor(object):
             sys.stderr.write("..done\n")
 
             self.svm.set_kernel(self.kernel)
-            lab_out = self.svm.apply()
+            lab_out = self.svm.apply().get_values()
 
-            # work around problem with get_labels()
-            tmp_out = [lab_out.get_label(idx) for idx in range(0, lab_out.get_num_labels())]
-            assert(len(tmp_out) > 0)
-            out.extend(tmp_out)
-
-            print "len out", len(out)
+            assert(len(lab_out) > 0)
+            out.extend(lab_out)
 
             # increment chunk
             start = stop

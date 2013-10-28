@@ -19,12 +19,6 @@
 #include <stdio.h>
 #include <shogun/lib/config.h>
 
-#ifndef LINUX
-#define RANDOM_MAX 2147483647
-#else
-#define RANDOM_MAX RAND_MAX
-#endif
-
 /**@name Standard Types
  * Definition of Platform independent Types
 */
@@ -65,6 +59,10 @@ typedef int                        machine_int_t;
 /** index type */
 typedef int32_t index_t;
 
+/** complex type */
+#include <complex>
+
+typedef std::complex<float64_t> complex128_t;
 
 #include <shogun/lib/memory.h>
 #endif //__COMMON_H__

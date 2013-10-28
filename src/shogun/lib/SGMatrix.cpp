@@ -1,3 +1,16 @@
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Written (W) 2011-2013 Heiko Strathmann
+ * Written (W) 2012 Fernando Jose Iglesias Garcia
+ * Written (W) 2010,2012 Soeren Sonnenburg
+ * Copyright (C) 2010 Berlin Institute of Technology
+ * Copyright (C) 2012 Soeren Sonnenburg
+ */
+
 #include <shogun/lib/config.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/io/File.h>
@@ -86,6 +99,13 @@ void SGMatrix<T>::zero()
 		set_const(0);
 }
 
+template <>
+void SGMatrix<complex128_t>::zero()
+{
+	if (matrix && (num_rows*num_cols))
+		set_const(complex128_t(0.0));
+}
+
 template <class T>
 T SGMatrix<T>::max_single()
 {
@@ -97,6 +117,13 @@ T SGMatrix<T>::max_single()
 	}
 
 	return max;
+}
+
+template <>
+complex128_t SGMatrix<complex128_t>::max_single()
+{
+	SG_SERROR("SGMatrix::max_single():: Not supported for complex128_t\n");
+	return complex128_t(0.0);
 }
 
 template <class T>
@@ -482,6 +509,24 @@ void SGMatrix<floatmax_t>::display_matrix(
 }
 
 template <>
+void SGMatrix<complex128_t>::display_matrix(
+	const complex128_t* matrix, int32_t rows, int32_t cols, const char* name,
+	const char* prefix)
+{
+	ASSERT(rows>=0 && cols>=0)
+	SG_SPRINT("%s%s=[\n", prefix, name)
+	for (int32_t i=0; i<rows; i++)
+	{
+		SG_SPRINT("%s[", prefix)
+		for (int32_t j=0; j<cols; j++)
+			SG_SPRINT("%s\t(%.18g+i%.18g)%s", prefix, matrix[j*rows+i].real(),
+				matrix[j*rows+i].imag(), j==cols-1? "" : ",");
+		SG_SPRINT("%s]%s\n", prefix, i==rows-1? "" : ",")
+	}
+	SG_SPRINT("%s]\n", prefix)
+}
+
+template <>
 SGMatrix<char> SGMatrix<char>::create_identity_matrix(index_t size, char scale)
 {
 	SG_SNOTIMPLEMENTED
@@ -639,6 +684,19 @@ SGMatrix<floatmax_t> SGMatrix<floatmax_t>::create_identity_matrix(index_t size, 
 	{
 		for (index_t j=0; j<size; ++j)
 			I(i,j)=i==j ? scale : 0.0;
+	}
+
+	return I;
+}
+
+template <>
+SGMatrix<complex128_t> SGMatrix<complex128_t>::create_identity_matrix(index_t size, complex128_t scale)
+{
+	SGMatrix<complex128_t> I(size, size);
+	for (index_t i=0; i<size; ++i)
+	{
+		for (index_t j=0; j<size; ++j)
+			I(i,j)=i==j ? scale : complex128_t(0.0);
 	}
 
 	return I;
@@ -874,7 +932,7 @@ void SGMatrix<T>::load(CFile* loader)
 {
 	ASSERT(loader)
 	unref();
-	
+
 	SG_SET_LOCALE_C;
 	SGMatrix<T> mat;
 	loader->get_matrix(mat.matrix, mat.num_rows, mat.num_cols);
@@ -884,6 +942,12 @@ void SGMatrix<T>::load(CFile* loader)
 	SG_RESET_LOCALE;
 }
 
+template<>
+void SGMatrix<complex128_t>::load(CFile* loader)
+{
+	SG_SERROR("SGMatrix::load():: Not supported for complex128_t\n");
+}
+
 template<class T>
 void SGMatrix<T>::save(CFile* writer)
 {
@@ -891,6 +955,37 @@ void SGMatrix<T>::save(CFile* writer)
 	SG_SET_LOCALE_C;
 	writer->set_matrix(matrix, num_rows, num_cols);
 	SG_RESET_LOCALE;
+}
+
+template<>
+void SGMatrix<complex128_t>::save(CFile* saver)
+{
+	SG_SERROR("SGMatrix::save():: Not supported for complex128_t\n");
+}
+
+template<class T>
+SGVector<T> SGMatrix<T>::get_row_vector(index_t row) const
+{
+	SGVector<T> rowv(num_cols);
+	for (index_t i = 0; i < num_cols; i++)
+	{
+		rowv[i] = matrix[i*num_rows+row];
+	}
+	return rowv;
+}
+
+template<class T>
+SGVector<T> SGMatrix<T>::get_diagonal_vector() const
+{
+	index_t diag_vlen=CMath::min(num_cols, num_rows);
+	SGVector<T> diag(diag_vlen);
+
+	for (index_t i=0; i<diag_vlen; i++)
+	{
+		diag[i]=matrix[i*num_rows+i];
+	}
+
+	return diag;
 }
 
 template class SGMatrix<bool>;
@@ -906,4 +1001,5 @@ template class SGMatrix<uint64_t>;
 template class SGMatrix<float32_t>;
 template class SGMatrix<float64_t>;
 template class SGMatrix<floatmax_t>;
+template class SGMatrix<complex128_t>;
 }

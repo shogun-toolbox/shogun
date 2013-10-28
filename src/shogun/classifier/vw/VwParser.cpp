@@ -282,7 +282,7 @@ void CVwParser::feature_value(substring &s, v_array<substring>& feat_name, float
 		break;
 	case 2:
 		v = SGIO::float_of_substring(feat_name[1]);
-		if (isnan(v))
+		if (CMath::is_nan(v))
 			SG_SERROR("error NaN value for feature %s! Terminating!\n",
 				  SGIO::c_string_of_substring(feat_name[0]));
 		break;

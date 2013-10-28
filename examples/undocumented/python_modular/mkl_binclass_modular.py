@@ -1,7 +1,7 @@
 #!/usr/bin/env python
-from shogun.Features import CombinedFeatures, RealFeatures, BinaryLabels
-from shogun.Kernel import CombinedKernel, PolyKernel, CustomKernel
-from shogun.Classifier import MKLClassification
+from modshogun import CombinedFeatures, RealFeatures, BinaryLabels
+from modshogun import CombinedKernel, PolyKernel, CustomKernel
+from modshogun import MKLClassification
 from tools.load import LoadMatrix
 lm=LoadMatrix()
 

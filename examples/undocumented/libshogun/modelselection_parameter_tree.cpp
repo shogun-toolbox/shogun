@@ -18,9 +18,9 @@
 #include <shogun/distance/MinkowskiMetric.h>
 #include <shogun/distance/EuclideanDistance.h>
 #include <shogun/kernel/string/DistantSegmentsKernel.h>
-#include <shogun/regression/gp/ExactInferenceMethod.h>
-#include <shogun/regression/gp/GaussianLikelihood.h>
-#include <shogun/regression/gp/ZeroMean.h>
+#include <shogun/machine/gp/ExactInferenceMethod.h>
+#include <shogun/machine/gp/GaussianLikelihood.h>
+#include <shogun/machine/gp/ZeroMean.h>
 #include <shogun/regression/GaussianProcessRegression.h>
 #include <shogun/modelselection/ModelSelectionParameters.h>
 #include <shogun/modelselection/ParameterCombination.h>
@@ -385,4 +385,3 @@ int main(int argc, char **argv)
 
 	return 0;
 }
-

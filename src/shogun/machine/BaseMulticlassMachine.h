@@ -40,7 +40,7 @@ public:
 
 	/** get problem type */
 	virtual EProblemType get_machine_problem_type() const;
-	
+
 	/** check whether the labels is valid.
 	 *
 	 * @param lab the labels being checked, guaranteed to be non-NULL
@@ -53,7 +53,7 @@ protected:
 	CDynamicObjectArray *m_machines;
 };
 
-} /* shogun */ 
+} /* shogun */
 
 #endif /* end of include guard: BASEMULTICLASSMACHINE_H__ */
 

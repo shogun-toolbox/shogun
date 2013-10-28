@@ -39,8 +39,8 @@ namespace shogun
  * training. The resulting kernel method can be stated as
  *
  *  \f[
- * 		f({\bf x})=\sum_{i=0}^{N-1} \alpha_i \sum_{j=0}^M \beta_j k_j({\bf x}, {\bf x_i})+b .
- * 	\f]
+ *		f({\bf x})=\sum_{i=0}^{N-1} \alpha_i \sum_{j=0}^M \beta_j k_j({\bf x}, {\bf x_i})+b .
+ *	\f]
  *
  * where \f$N\f$ is the number of training examples
  * \f$\alpha_i\f$ are the weights assigned to each training example
@@ -443,7 +443,7 @@ class CMKL : public CSVM
 		 *
 		 * @return if in good status
 		 */
-		bool check_lpx_status(LPX *lp);
+		bool check_glp_status(glp_prob *lp);
 #endif
 
 	protected:
@@ -493,7 +493,10 @@ class CMKL : public CSVM
 
 #ifdef USE_GLPK
 		/** lp */
-		LPX* lp_glpk;
+		glp_prob* lp_glpk;
+
+		/** lp parameters */
+		glp_smcp* lp_glpk_parm;
 #endif
 		/** if lp is initialized */
 		bool lp_initialized ;

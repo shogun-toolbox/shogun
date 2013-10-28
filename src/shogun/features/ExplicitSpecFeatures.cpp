@@ -161,7 +161,7 @@ void* CExplicitSpecFeatures::get_feature_iterator(int32_t vector_index)
 bool CExplicitSpecFeatures::get_next_feature(int32_t& index, float64_t& value, void* iterator)
 {
 	SG_NOTIMPLEMENTED
-	return NULL;
+	return false;
 }
 
 void CExplicitSpecFeatures::free_feature_iterator(void* iterator)
@@ -188,9 +188,4 @@ EFeatureClass CExplicitSpecFeatures::get_feature_class() const
 int32_t CExplicitSpecFeatures::get_num_vectors() const
 {
 	return num_strings;
-}
-
-int32_t CExplicitSpecFeatures::get_size() const
-{
-	return sizeof(float64_t);
 }

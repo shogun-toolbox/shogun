@@ -20,11 +20,8 @@
 #include <cstdio>
 
 #include <shogun/io/SGIO.h>
-#include <shogun/base/Parallel.h>
+#include <shogun/lib/Lock.h>
 
-#ifdef HAVE_PTHREAD
-#include <pthread.h>
-#endif
 
 namespace shogun
 {
@@ -82,18 +79,11 @@ public:
 		}
 
 		array=new DynArray<CMapNode<K, T>*>(reserved, tracable);
-
-#ifdef HAVE_PTHREAD
-		PTHREAD_LOCK_INIT(&lock);
-#endif	
 	}
 
 	/** Default destructor */
 	virtual ~CMap()
 	{
-#ifdef HAVE_PTHREAD
-		PTHREAD_LOCK_DESTROY(&lock);
-#endif
 		destroy_map();
 	}
 
@@ -111,14 +101,10 @@ public:
 		int32_t index=hash(key);
 		if (chain_search(index, key)==NULL)
 		{
-#ifdef HAVE_PTHREAD
-			PTHREAD_LOCK(&lock);
-#endif
+			lock.lock();
 			int32_t added_index=insert_key(index, key, data);
 			num_elements++;
-#ifdef HAVE_PTHREAD
-			PTHREAD_UNLOCK(&lock);
-#endif
+			lock.unlock();
 
 			return added_index;
 		}
@@ -151,14 +137,10 @@ public:
 
 		if (result!=NULL)
 		{
-#ifdef HAVE_PTHREAD
-			PTHREAD_LOCK(&lock);
-#endif
+			lock.lock();
 			delete_key(index, result);
 			num_elements--;
-#ifdef HAVE_PTHREAD
-			PTHREAD_UNLOCK(&lock);
-#endif
+			lock.unlock();
 		}
 	}
 
@@ -189,7 +171,7 @@ public:
 		int32_t index=hash(key);
 		CMapNode<K, T>* result=chain_search(index, key);
 
-		if (result!=NULL)		
+		if (result!=NULL)
 			return result->data;
 		else
 		{
@@ -210,19 +192,14 @@ public:
 		int32_t index=hash(key);
 		CMapNode<K, T>* result=chain_search(index, key);
 
-#ifdef HAVE_PTHREAD
-		PTHREAD_LOCK(&lock);
-#endif
+		lock.lock();
+
 		if (result!=NULL)
 			result->data=data;
 		else
-		{
 			add(key, data);
-		}
 
-#ifdef HAVE_PTHREAD
-		PTHREAD_UNLOCK(&lock);
-#endif
+		lock.unlock();
 	}
 
 	/** Get number of elements
@@ -365,7 +342,7 @@ private:
 
 			new (&new_node->key) K();
 			new (&new_node->data) T();
-	
+
 			array->append_element(new_node);
 
 			new_index=free_index;
@@ -480,10 +457,8 @@ protected:
 	/** array for index permission */
 	DynArray<CMapNode<K, T>*>* array;
 
-#ifdef HAVE_PTHREAD
-	/** lock */
-	PTHREAD_LOCK_T lock;
-#endif
+	/** concurrency lock */
+	CLock lock;
 };
 
 }

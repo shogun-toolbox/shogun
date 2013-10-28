@@ -5,6 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 2010 Vojtech Franc, Soeren Sonnenburg
+ * Written (W) 2013 Evangelos Anagnostopoulos
  * Copyright (C) 2010 Vojtech Franc, xfrancv@cmp.felk.cvut.cz
  * Copyright (C) 2010 Berlin Institute of Technology
  */
@@ -17,9 +18,10 @@
 
 namespace shogun
 {
-/** @brief implement DotFeatures for the polynomial kernel
+/** @brief Implements Local Binary Patterns with Scale Pyramids as dot features for a set
+ * of images. Expects the images to be loaded in a CDenseFeatures object.
  *
- * see DotFeatures for further discription
+ * Original code can be found here : https://github.com/grenaud/freeIbis/tree/master/libocas_v093
  *
  */
 class CLBPPyrDotFeatures : public CDotFeatures
@@ -28,13 +30,18 @@ class CLBPPyrDotFeatures : public CDotFeatures
 		/** default constructor  */
 		CLBPPyrDotFeatures();
 
-		/** constructor
+		/** constructor that initializes this Features object with the images to work on and
+		 * the number of pyramids to consider.
 		 *
-		 * @param images images
-		 * @param num_pyramids
+		 * @param image_set the image set
+		 * @param image_w image width
+		 * @param image_h image height
+		 * @param num_pyramids the number of pyramids to consider
 		 */
-		CLBPPyrDotFeatures(CDenseFeatures<uint32_t>* images, uint16_t num_pyramids);
+		CLBPPyrDotFeatures(CDenseFeatures<uint32_t>* image_set, int32_t image_w, int32_t image_h,
+			uint16_t num_pyramids);
 
+		/** Destructor */
 		virtual ~CLBPPyrDotFeatures();
 
 		/** copy constructor
@@ -85,19 +92,13 @@ class CLBPPyrDotFeatures : public CDotFeatures
 		 */
 		virtual float64_t dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2);
 
-		/**
-		 *
-		 * @return size
-		 */
-		virtual int32_t get_size() const;
-
 		/** iterate over the non-zero features
 		 *
 		 * call get_feature_iterator first, followed by get_next_feature and
 		 * free_feature_iterator to cleanup
 		 *
 		 * @param vector_index the index of the vector over whose components to
-		 * 			iterate over
+		 *			iterate over
 		 * @return feature iterator (to be passed to get_next_feature)
 		 */
 		virtual void* get_feature_iterator(int32_t vector_index);
@@ -153,6 +154,20 @@ class CLBPPyrDotFeatures : public CDotFeatures
 		virtual void add_to_dense_vec(float64_t alpha, int32_t vec_idx1,
 				float64_t* vec2, int32_t vec2_len, bool abs_val=false);
 
+		/** gets a copy of the specified image.
+		 *
+		 * @param index the index of the image to return
+		 * @param width the width of the image (returned by reference)
+		 * @param height the height of the image (returned by reference)
+		 * @return the image at the given index
+		 */
+		uint32_t* get_image(int32_t index, int32_t& width, int32_t& height);
+
+		/** returns the transformed representation of the image
+		 *
+		 * @param index the index of the image
+		 */
+		SGVector<char> get_transformed_image(int32_t index);
 	protected:
 
 		/** lib lbp pyr get dim
@@ -160,16 +175,30 @@ class CLBPPyrDotFeatures : public CDotFeatures
 		 */
 		uint32_t liblbp_pyr_get_dim(uint16_t nPyramids);
 
-	protected:
-		/** features in original space*/
-		CDenseFeatures<uint32_t>* m_feat;
+		/** create the 3x3 local binary pattern with center at (x,y) in image img.
+		 *
+		 * @param img the image to work on
+		 * @param x the x index
+		 * @param y the y index
+		 */
+		uint8_t create_lbp_pattern(uint32_t* img, int32_t x, int32_t y);
 
-		/** img */
-		uint32_t* img;
-		/** img nRows */
-		int32_t img_nRows;
-		/** img nCols */
-		int32_t img_nCols;
+	private:
+
+		/** init */
+		void init(CDenseFeatures<uint32_t>* image_set, int32_t image_w,
+				int32_t image_h);
+
+	protected:
+		/** features in original space */
+		CDenseFeatures<uint32_t>* images;
+
+		/** image width */
+		int32_t image_width;
+
+		/** image height */
+		int32_t image_height;
+
 		/** vec nDim */
 		int32_t vec_nDim;
 };

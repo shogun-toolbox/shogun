@@ -4,65 +4,71 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
+ * Written (W) 2013 Roman Votyakov
  * Copyright (C) 2012 Jacob Walker
  */
 
 #include <shogun/evaluation/GradientEvaluation.h>
 #include <shogun/evaluation/GradientResult.h>
-#include <shogun/evaluation/Evaluation.h>
-#include <shogun/evaluation/EvaluationResult.h>
-
 
 using namespace shogun;
 
-CGradientEvaluation::CGradientEvaluation() : CMachineEvaluation(NULL,
-		NULL, NULL, NULL, NULL, true)
+CGradientEvaluation::CGradientEvaluation() : CMachineEvaluation()
 {
-
+	init();
 }
 
 CGradientEvaluation::CGradientEvaluation(CMachine* machine, CFeatures* features,
 		CLabels* labels, CEvaluation* evaluation_crit, bool autolock) :
-		CMachineEvaluation(machine, features, labels, NULL, evaluation_crit, true)
+		CMachineEvaluation(machine, features, labels, NULL, evaluation_crit, autolock)
 {
 	init();
 }
 
 void CGradientEvaluation::init()
 {
-	m_diff = NULL;
+	m_diff=NULL;
+	m_parameter_dictionary=NULL;
 
-	SG_ADD((CSGObject**)&m_diff, "differentiable_function",
-			"Differentiable Function", MS_NOT_AVAILABLE);
+	SG_ADD((CSGObject**)&m_diff, "differentiable_function",	"Differentiable "
+			"function", MS_AVAILABLE);
 }
 
 CGradientEvaluation::~CGradientEvaluation()
 {
 	SG_UNREF(m_diff);
+	SG_UNREF(m_parameter_dictionary);
+}
+
+void CGradientEvaluation::update_parameter_dictionary()
+{
+	SG_UNREF(m_parameter_dictionary);
+
+	m_parameter_dictionary=new CMap<TParameter*, CSGObject*>();
+	m_diff->build_gradient_parameter_dictionary(m_parameter_dictionary);
+	SG_REF(m_parameter_dictionary);
 }
 
 CEvaluationResult* CGradientEvaluation::evaluate()
 {
-	CGradientResult* result = new CGradientResult();
+	if (update_parameter_hash())
+		update_parameter_dictionary();
 
-	SGVector<float64_t> quan = m_diff->get_quantity();
-
-	result->gradient = m_diff->get_gradient(result->parameter_dictionary);
-
-	result->quantity = quan.clone();
-
-	result->total_variables = 0;
-
-	for (index_t i = 0; i < result->gradient.get_num_elements(); i++)
-	{
-		shogun::CMapNode<TParameter*, SGVector<float64_t> >* node =
-				result->gradient.get_node_ptr(i);
-
-		result->total_variables += node->data.vlen;
-	}
-
-
+	// create gradient result object
+	CGradientResult* result=new CGradientResult();
 	SG_REF(result);
+
+	// set function value
+	result->set_value(m_diff->get_value());
+
+	CMap<TParameter*, SGVector<float64_t> >* gradient=m_diff->get_gradient(
+			m_parameter_dictionary);
+
+	// set gradient and parameter dictionary
+	result->set_gradient(gradient);
+	result->set_paramter_dictionary(m_parameter_dictionary);
+
+	SG_UNREF(gradient);
+
 	return result;
 }
-

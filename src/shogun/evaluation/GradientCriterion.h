@@ -15,51 +15,54 @@
 namespace shogun
 {
 
-/** @brief CGradientCriterion Simple class which specifies the direction
- * of gradient search. Does not provide any
- * label evaluation measure, however.
+/** @brief Simple class which specifies the direction of gradient search.
+ *
+ * Does not provide any label evaluation measure, however.
  */
-class CGradientCriterion: public CEvaluation
+class CGradientCriterion : public CEvaluation
 {
-
-
 public:
+	/** default constructor */
+	CGradientCriterion() : CEvaluation() { m_direction=ED_MINIMIZE; }
 
-	/*Constructor*/
-	CGradientCriterion();
+	virtual ~CGradientCriterion() { }
 
-	/** destructor */
-	virtual ~CGradientCriterion();
-
-	/** evaluate labels (Not really used in this class).
+	/** evaluate labels (not really used in this class).
+	 *
 	 * @param predicted labels for evaluating
 	 * @param ground_truth labels assumed to be correct
+	 *
 	 * @return evaluation result
 	 */
 	virtual float64_t evaluate(CLabels* predicted, CLabels* ground_truth)
-	{ return 0; }
-
-
-	/** @return whether criterium has to be maximized or minimized */
-	virtual EEvaluationDirection get_evaluation_direction()
-	{ return m_direction; }
-
-	/** Set the evaluation direction
-	 * @param dir evaluation direction to be set.
-	 */
-	virtual void set_evaluation_direction(EEvaluationDirection dir)
 	{
-		m_direction = dir;
+		return 0.0;
 	}
 
-	/** get name */
+	/** @return whether criterion has to be maximized or minimized */
+	virtual EEvaluationDirection get_evaluation_direction() const
+	{
+		return m_direction;
+	}
+
+	/** set the evaluation direction
+	 *
+	 * @param direction evaluation direction to be set
+	 */
+	virtual void set_evaluation_direction(EEvaluationDirection direction)
+	{
+		m_direction=direction;
+	}
+
+	/** returns name of evaluation criterion
+	 *
+	 * @return name GradientCriterion
+	 */
 	virtual const char* get_name() const { return "GradientCriterion"; }
 
 private:
-	/*Evaluation Direction*/
+	/** evaluation direction */
 	EEvaluationDirection m_direction;
-
 };
-
-} /* namespace shogun */
+}
 #endif /* CGRADIENTCRITERION_H_ */

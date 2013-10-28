@@ -146,13 +146,46 @@ CHMM::CHMM()
 	M=0;
 	model=NULL;
 	status=false;
+	p_observations=NULL;
+	trans_list_forward_cnt=NULL;
+	trans_list_backward_cnt=NULL;
+	trans_list_forward=NULL;
+	trans_list_backward=NULL;
+	trans_list_forward_val=NULL;
+	iterations=150;
+	epsilon=1e-4;
+	conv_it=5;
+	path=NULL;
+	arrayN1=NULL;
+	arrayN2=NULL;
+	reused_caches=false;
+	transition_matrix_a=NULL;
+	observation_matrix_b=NULL;
+	initial_state_distribution_p=NULL;
+	end_state_distribution_q=NULL;
+#ifdef USE_LOGSUMARRAY
+	arrayS = NULL;
+#endif
+#ifdef USE_HMMPARALLEL_STRUCTURES
+	this->alpha_cache=NULL;
+	this->beta_cache=NULL;
+	path_prob_updated = NULL;
+	path_prob_dimension = NULL;
+#else
+	this->alpha_cache.table=NULL;
+	this->beta_cache.table=NULL;
+	this->alpha_cache.dimension=0;
+	this->beta_cache.dimension=0;
+#endif
+	states_per_observation_psi=NULL;
+	mem_initialized = false;
 }
 
 CHMM::CHMM(CHMM* h)
 : CDistribution(), iterations(150), epsilon(1e-4), conv_it(5)
 {
 #ifdef USE_HMMPARALLEL_STRUCTURES
-	SG_INFO("hmm is using %i separate tables\n",  parallel->get_num_threads()) 
+	SG_INFO("hmm is using %i separate tables\n",  parallel->get_num_threads())
 #endif
 
 	this->N=h->get_N();
@@ -170,7 +203,7 @@ CHMM::CHMM(int32_t p_N, int32_t p_M, Model* p_model, float64_t p_PSEUDO)
 	model=NULL ;
 
 #ifdef USE_HMMPARALLEL_STRUCTURES
-	SG_INFO("hmm is using %i separate tables\n",  parallel->get_num_threads()) 
+	SG_INFO("hmm is using %i separate tables\n",  parallel->get_num_threads())
 #endif
 
 	status=initialize(p_model, p_PSEUDO);
@@ -186,7 +219,7 @@ CHMM::CHMM(
 	model=NULL ;
 
 #ifdef USE_HMMPARALLEL_STRUCTURES
-	SG_INFO("hmm is using %i separate tables\n",  parallel->get_num_threads()) 
+	SG_INFO("hmm is using %i separate tables\n",  parallel->get_num_threads())
 #endif
 
 	initialize(model, p_PSEUDO);
@@ -212,8 +245,6 @@ CHMM::CHMM(int32_t p_N, float64_t* p, float64_t* q, float64_t* a)
 	this->observation_matrix_b=NULL;
 	this->initial_state_distribution_p=NULL;
 	this->end_state_distribution_q=NULL;
-	this->PSEUDO= PSEUDO;
-	this->model= model;
 	this->p_observations=NULL;
 	this->reused_caches=false;
 
@@ -267,8 +298,6 @@ CHMM::CHMM(
 	this->observation_matrix_b=NULL;
 	this->initial_state_distribution_p=NULL;
 	this->end_state_distribution_q=NULL;
-	this->PSEUDO= PSEUDO;
-	this->model= model;
 	this->p_observations=NULL;
 	this->reused_caches=false;
 
@@ -361,7 +390,7 @@ CHMM::CHMM(FILE* model_file, float64_t p_PSEUDO)
 : CDistribution(), iterations(150), epsilon(1e-4), conv_it(5)
 {
 #ifdef USE_HMMPARALLEL_STRUCTURES
-	SG_INFO("hmm is using %i separate tables\n",  parallel->get_num_threads()) 
+	SG_INFO("hmm is using %i separate tables\n",  parallel->get_num_threads())
 #endif
 
 	status=initialize(NULL, p_PSEUDO, model_file);
@@ -402,14 +431,16 @@ CHMM::~CHMM()
 	if (!reused_caches)
 	{
 #ifdef USE_HMMPARALLEL_STRUCTURES
-		for (int32_t i=0; i<parallel->get_num_threads(); i++)
+		if (mem_initialized)
 		{
-			SG_FREE(alpha_cache[i].table);
-			SG_FREE(beta_cache[i].table);
-			alpha_cache[i].table=NULL;
-			beta_cache[i].table=NULL;
+			for (int32_t i=0; i<parallel->get_num_threads(); i++)
+			{
+				SG_FREE(alpha_cache[i].table);
+				SG_FREE(beta_cache[i].table);
+				alpha_cache[i].table=NULL;
+				beta_cache[i].table=NULL;
+			}
 		}
-
 		SG_FREE(alpha_cache);
 		SG_FREE(beta_cache);
 		alpha_cache=NULL;
@@ -428,8 +459,11 @@ CHMM::~CHMM()
 #ifdef USE_LOGSUMARRAY
 #ifdef USE_HMMPARALLEL_STRUCTURES
 	{
-		for (int32_t i=0; i<parallel->get_num_threads(); i++)
-			SG_FREE(arrayS[i]);
+		if (mem_initialized)
+		{
+			for (int32_t i=0; i<parallel->get_num_threads(); i++)
+				SG_FREE(arrayS[i]);
+		}
 		SG_FREE(arrayS);
 	} ;
 #else //USE_HMMPARALLEL_STRUCTURES
@@ -440,10 +474,13 @@ CHMM::~CHMM()
 	if (!reused_caches)
 	{
 #ifdef USE_HMMPARALLEL_STRUCTURES
-		SG_FREE(path_prob_updated);
-		SG_FREE(path_prob_dimension);
-		for (int32_t i=0; i<parallel->get_num_threads(); i++)
-			SG_FREE(path[i]);
+		if (mem_initialized)
+		{
+			SG_FREE(path_prob_updated);
+			SG_FREE(path_prob_dimension);
+			for (int32_t i=0; i<parallel->get_num_threads(); i++)
+				SG_FREE(path[i]);
+		}
 #endif //USE_HMMPARALLEL_STRUCTURES
 		SG_FREE(path);
 	}
@@ -523,20 +560,23 @@ bool CHMM::alloc_state_dependend_arrays()
 void CHMM::free_state_dependend_arrays()
 {
 #ifdef USE_HMMPARALLEL_STRUCTURES
-	for (int32_t i=0; i<parallel->get_num_threads(); i++)
+	if (arrayN1 && arrayN2)
 	{
-		SG_FREE(arrayN1[i]);
-		SG_FREE(arrayN2[i]);
+		for (int32_t i=0; i<parallel->get_num_threads(); i++)
+		{
+			SG_FREE(arrayN1[i]);
+			SG_FREE(arrayN2[i]);
 
-		arrayN1[i]=NULL;
-		arrayN2[i]=NULL;
+			arrayN1[i]=NULL;
+			arrayN2[i]=NULL;
+		}
 	}
-#else
+#endif
 	SG_FREE(arrayN1);
 	SG_FREE(arrayN2);
 	arrayN1=NULL;
 	arrayN2=NULL;
-#endif
+
 	if (observation_matrix_b)
 	{
 		SG_FREE(transition_matrix_A);
@@ -724,7 +764,7 @@ float64_t CHMM::forward_comp(int32_t time, int32_t state, int32_t dimension)
 			register int32_t i ;
 			float64_t sum ;
 			sum=-CMath::INFTY;
-			for (i=0; i<N; i++)		 	                      			//sum over all paths
+			for (i=0; i<N; i++)						//sum over all paths
 				sum=CMath::logarithmic_sum(sum, alpha[i] + get_q(i));	//to get model probability
 
 			if (!ALPHA_CACHE(dimension).table)
@@ -855,7 +895,7 @@ float64_t CHMM::forward_comp_old(int32_t time, int32_t state, int32_t dimension)
 				sum=CMath::logarithmic_sum_array(ARRAYS(dimension), N>>1) ;
 #else //USE_LOGSUMARRAY
 			sum=-CMath::INFTY;
-			for (i=0; i<N; i++)		 	                      //sum over all paths
+			for (i=0; i<N; i++)			                      //sum over all paths
 				sum=CMath::logarithmic_sum(sum, alpha[i] + get_q(i));     //to get model probability
 #endif //USE_LOGSUMARRAY
 
@@ -1120,7 +1160,7 @@ float64_t CHMM::best_path(int32_t dimension)
 	{
 		if (!all_path_prob_updated)
 		{
-			SG_INFO("computing full viterbi likelihood\n") 
+			SG_INFO("computing full viterbi likelihood\n")
 			float64_t sum = 0 ;
 			for (int32_t i=0; i<p_observations->get_num_vectors(); i++)
 				sum+=best_path(i) ;
@@ -1196,7 +1236,7 @@ float64_t CHMM::best_path(int32_t dimension)
 
 			if (best<-CMath::INFTY/2)
 			{
-				SG_DEBUG("worst case at %i: %e:%e\n", t, best, worst) 
+				SG_DEBUG("worst case at %i: %e:%e\n", t, best, worst)
 				worst=best ;
 			} ;
 #endif
@@ -2806,7 +2846,7 @@ bool CHMM::comma_or_space(FILE* file)
 	if (value==']')
 	{
 		ungetc(value, file);
-		SG_ERROR("found ']' instead of ';' or ','\n") 
+		SG_ERROR("found ']' instead of ';' or ','\n")
 		return false ;
 	} ;
 
@@ -2884,7 +2924,7 @@ bool CHMM::get_numbuffer(FILE* file, char* buffer, int32_t length)
 				case '6': case '7': case'8': case '9': case '0': break ;
 				case '.': case 'e': case '-': break ;
 				default:
-											  SG_ERROR("found crap: %i %c (pos:%li)\n",i,value,ftell(file)) 
+											  SG_ERROR("found crap: %i %c (pos:%li)\n",i,value,ftell(file))
 			};
 			buffer[i++]=value;
 		}
@@ -3337,7 +3377,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool _initialize)
 						int32_t i=0;
 
 						if (verbose)
-							SG_DEBUG("\nlearn for transition matrix: ") 
+							SG_DEBUG("\nlearn for transition matrix: ")
 						while (!finished)
 						{
 							open_bracket(file);
@@ -3353,7 +3393,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool _initialize)
 									break;
 								}
 								if (value>=N)
-									SG_ERROR("invalid value for learn_a(%i,0): %i\n",i/2,(int)value) 
+									SG_ERROR("invalid value for learn_a(%i,0): %i\n",i/2,(int)value)
 							}
 							else
 								break;
@@ -3371,7 +3411,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool _initialize)
 									break;
 								}
 								if (value>=N)
-									SG_ERROR("invalid value for learn_a(%i,1): %i\n",i/2-1,(int)value) 
+									SG_ERROR("invalid value for learn_a(%i,1): %i\n",i/2-1,(int)value)
 
 							}
 							else
@@ -3380,7 +3420,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool _initialize)
 						}
 						close_bracket(file);
 						if (verbose)
-							SG_DEBUG("%i Entries",(int)(i/2)) 
+							SG_DEBUG("%i Entries",(int)(i/2))
 
 						if (finished)
 						{
@@ -3400,7 +3440,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool _initialize)
 						int32_t i=0;
 
 						if (verbose)
-							SG_DEBUG("\nlearn for emission matrix:   ") 
+							SG_DEBUG("\nlearn for emission matrix:   ")
 
 						while (!finished)
 						{
@@ -3424,7 +3464,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool _initialize)
 											break;
 										}
 										if (value>=N)
-											SG_ERROR("invalid value for learn_b(%i,0): %i\n",i/2,(int)value) 
+											SG_ERROR("invalid value for learn_b(%i,0): %i\n",i/2,(int)value)
 									}
 									else
 										combine=value;
@@ -3440,11 +3480,11 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool _initialize)
 							model->set_learn_b(i++, combine);
 							if (combine>=M)
 
-								SG_ERROR("invalid value for learn_b(%i,1): %i\n",i/2-1,(int)value) 
+								SG_ERROR("invalid value for learn_b(%i,1): %i\n",i/2-1,(int)value)
 						}
 						close_bracket(file);
 						if (verbose)
-							SG_DEBUG("%i Entries",(int)(i/2-1)) 
+							SG_DEBUG("%i Entries",(int)(i/2-1))
 
 						if (finished)
 						{
@@ -3463,7 +3503,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool _initialize)
 						int32_t i=0;
 
 						if (verbose)
-							SG_DEBUG("\nlearn start states: ") 
+							SG_DEBUG("\nlearn start states: ")
 						while (!finished)
 						{
 							if (get_numbuffer(file, buffer, 4))	//get num
@@ -3478,7 +3518,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool _initialize)
 									break;
 								}
 								if (value>=N)
-									SG_ERROR("invalid value for learn_p(%i): %i\n",i-1,(int)value) 
+									SG_ERROR("invalid value for learn_p(%i): %i\n",i-1,(int)value)
 							}
 							else
 								break;
@@ -3488,7 +3528,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool _initialize)
 
 						close_bracket(file);
 						if (verbose)
-							SG_DEBUG("%i Entries",i-1) 
+							SG_DEBUG("%i Entries",i-1)
 
 						if (finished)
 						{
@@ -3507,7 +3547,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool _initialize)
 						int32_t i=0;
 
 						if (verbose)
-							SG_DEBUG("\nlearn terminal states: ") 
+							SG_DEBUG("\nlearn terminal states: ")
 						while (!finished)
 						{
 							if (get_numbuffer(file, buffer, 4))	//get num
@@ -3521,7 +3561,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool _initialize)
 									break;
 								}
 								if (value>=N)
-									SG_ERROR("invalid value for learn_q(%i): %i\n",i-1,(int)value) 
+									SG_ERROR("invalid value for learn_q(%i): %i\n",i-1,(int)value)
 							}
 							else
 								break;
@@ -3531,7 +3571,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool _initialize)
 
 						close_bracket(file);
 						if (verbose)
-							SG_DEBUG("%i Entries",i-1) 
+							SG_DEBUG("%i Entries",i-1)
 
 						if (finished)
 						{
@@ -3551,9 +3591,9 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool _initialize)
 
 						if (verbose)
 #ifdef USE_HMMDEBUG
-							SG_DEBUG("\nconst for transition matrix: \n") 
+							SG_DEBUG("\nconst for transition matrix: \n")
 #else
-						SG_DEBUG("\nconst for transition matrix: ") 
+						SG_DEBUG("\nconst for transition matrix: ")
 #endif
 						while (!finished)
 						{
@@ -3572,7 +3612,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool _initialize)
 									break;
 								}
 								if (value>=N)
-									SG_ERROR("invalid value for const_a(%i,0): %i\n",i/2,(int)value) 
+									SG_ERROR("invalid value for const_a(%i,0): %i\n",i/2,(int)value)
 							}
 							else
 								break;
@@ -3591,7 +3631,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool _initialize)
 									break;
 								}
 								if (value>=N)
-									SG_ERROR("invalid value for const_a(%i,1): %i\n",i/2-1,(int)value) 
+									SG_ERROR("invalid value for const_a(%i,1): %i\n",i/2-1,(int)value)
 							}
 							else
 								break;
@@ -3609,20 +3649,20 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool _initialize)
 										break;
 									}
 									if ((dvalue>1.0) || (dvalue<0.0))
-										SG_ERROR("invalid value for const_a_val(%i): %e\n",(int)i/2-1,dvalue) 
+										SG_ERROR("invalid value for const_a_val(%i): %e\n",(int)i/2-1,dvalue)
 								}
 								else
 									model->set_const_a_val((int32_t)i/2 - 1, 1.0);
 
 #ifdef USE_HMMDEBUG
 							if (verbose)
-								SG_ERROR("const_a(%i,%i)=%e\n", model->get_const_a((int32_t)i/2-1,0),model->get_const_a((int32_t)i/2-1,1),model->get_const_a_val((int32_t)i/2-1)) 
+								SG_ERROR("const_a(%i,%i)=%e\n", model->get_const_a((int32_t)i/2-1,0),model->get_const_a((int32_t)i/2-1,1),model->get_const_a_val((int32_t)i/2-1))
 #endif
 							close_bracket(file);
 						}
 						close_bracket(file);
 						if (verbose)
-							SG_DEBUG("%i Entries",(int)i/2-1) 
+							SG_DEBUG("%i Entries",(int)i/2-1)
 
 						if (finished)
 						{
@@ -3643,9 +3683,9 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool _initialize)
 
 						if (verbose)
 #ifdef USE_HMMDEBUG
-							SG_DEBUG("\nconst for emission matrix:   \n") 
+							SG_DEBUG("\nconst for emission matrix:   \n")
 #else
-						SG_DEBUG("\nconst for emission matrix:   ") 
+						SG_DEBUG("\nconst for emission matrix:   ")
 #endif
 						while (!finished)
 						{
@@ -3668,7 +3708,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool _initialize)
 											break;
 										}
 										if (value>=N)
-											SG_ERROR("invalid value for const_b(%i,0): %i\n",i/2-1,(int)value) 
+											SG_ERROR("invalid value for const_b(%i,0): %i\n",i/2-1,(int)value)
 									}
 									else if (j==2)
 									{
@@ -3680,7 +3720,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool _initialize)
 											break;
 										} ;
 										if ((dvalue>1.0) || (dvalue<0.0))
-											SG_ERROR("invalid value for const_b_val(%i,1): %e\n",i/2-1,dvalue) 
+											SG_ERROR("invalid value for const_b_val(%i,1): %e\n",i/2-1,dvalue)
 									}
 									else
 									{
@@ -3704,15 +3744,15 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool _initialize)
 							close_bracket(file);
 							model->set_const_b(i++, combine);
 							if (combine>=M)
-								SG_ERROR("invalid value for const_b(%i,1): %i\n",i/2-1, combine) 
+								SG_ERROR("invalid value for const_b(%i,1): %i\n",i/2-1, combine)
 #ifdef USE_HMMDEBUG
 							if (verbose && !finished)
-								SG_ERROR("const_b(%i,%i)=%e\n", model->get_const_b((int32_t)i/2-1,0),model->get_const_b((int32_t)i/2-1,1),model->get_const_b_val((int32_t)i/2-1)) 
+								SG_ERROR("const_b(%i,%i)=%e\n", model->get_const_b((int32_t)i/2-1,0),model->get_const_b((int32_t)i/2-1,1),model->get_const_b_val((int32_t)i/2-1))
 #endif
 						}
 						close_bracket(file);
 						if (verbose)
-							SG_ERROR("%i Entries",(int)i/2-1) 
+							SG_ERROR("%i Entries",(int)i/2-1)
 
 						if (finished)
 						{
@@ -3732,9 +3772,9 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool _initialize)
 
 						if (verbose)
 #ifdef USE_HMMDEBUG
-							SG_DEBUG("\nconst for start states:     \n") 
+							SG_DEBUG("\nconst for start states:     \n")
 #else
-						SG_DEBUG("\nconst for start states:     ") 
+						SG_DEBUG("\nconst for start states:     ")
 #endif
 						while (!finished)
 						{
@@ -3752,7 +3792,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool _initialize)
 									break;
 								}
 								if (value>=N)
-									SG_ERROR("invalid value for const_p(%i): %i\n",i,(int)value) 
+									SG_ERROR("invalid value for const_p(%i): %i\n",i,(int)value)
 
 							}
 							else
@@ -3771,7 +3811,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool _initialize)
 										break;
 									}
 									if ((dvalue>1) || (dvalue<0))
-										SG_ERROR("invalid value for const_p_val(%i): %e\n",i,dvalue) 
+										SG_ERROR("invalid value for const_p_val(%i): %e\n",i,dvalue)
 								}
 								else
 									model->set_const_p_val(i++, 1.0);
@@ -3780,11 +3820,11 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool _initialize)
 
 #ifdef USE_HMMDEBUG
 							if (verbose)
-								SG_DEBUG("const_p(%i)=%e\n", model->get_const_p(i-1),model->get_const_p_val(i-1)) 
+								SG_DEBUG("const_p(%i)=%e\n", model->get_const_p(i-1),model->get_const_p_val(i-1))
 #endif
 						}
 						if (verbose)
-							SG_DEBUG("%i Entries",i-1) 
+							SG_DEBUG("%i Entries",i-1)
 
 						close_bracket(file);
 
@@ -3804,9 +3844,9 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool _initialize)
 						bool finished=false;
 						if (verbose)
 #ifdef USE_HMMDEBUG
-							SG_DEBUG("\nconst for terminal states: \n") 
+							SG_DEBUG("\nconst for terminal states: \n")
 #else
-						SG_DEBUG("\nconst for terminal states: ") 
+						SG_DEBUG("\nconst for terminal states: ")
 #endif
 						int32_t i=0;
 
@@ -3824,7 +3864,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool _initialize)
 									break;
 								}
 								if (value>=N)
-									SG_ERROR("invalid value for const_q(%i): %i\n",i,(int)value) 
+									SG_ERROR("invalid value for const_q(%i): %i\n",i,(int)value)
 							}
 							else
 								break;
@@ -3842,7 +3882,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool _initialize)
 										break;
 									}
 									if ((dvalue>1) || (dvalue<0))
-										SG_ERROR("invalid value for const_q_val(%i): %e\n",i,(double) dvalue) 
+										SG_ERROR("invalid value for const_q_val(%i): %e\n",i,(double) dvalue)
 								}
 								else
 									model->set_const_q_val(i++, 1.0);
@@ -3850,11 +3890,11 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool _initialize)
 							close_bracket(file);
 #ifdef USE_HMMDEBUG
 							if (verbose)
-								SG_DEBUG("const_q(%i)=%e\n", model->get_const_q(i-1),model->get_const_q_val(i-1)) 
+								SG_DEBUG("const_q(%i)=%e\n", model->get_const_q(i-1),model->get_const_q_val(i-1))
 #endif
 						}
 						if (verbose)
-							SG_DEBUG("%i Entries",i-1) 
+							SG_DEBUG("%i Entries",i-1)
 
 						close_bracket(file);
 
@@ -3896,7 +3936,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool _initialize)
 		} ;
 	}
 	if (verbose)
-		SG_DEBUG("\n") 
+		SG_DEBUG("\n")
 	return result;
 }
 
@@ -4052,7 +4092,7 @@ bool CHMM::save_path(FILE* file)
 	  for (int32_t dim=0; dim<p_observations->get_num_vectors(); dim++)
 	    {
 	      if (dim%100==0)
-		SG_PRINT("%i..", dim) 
+		SG_PRINT("%i..", dim)
 	      float64_t prob = best_path(dim);
 	      fprintf(file,"%i. path probability:%e\nstate sequence:\n", dim, prob);
 	      for (int32_t i=0; i<p_observations->get_vector_length(dim)-1; i++)
@@ -4119,22 +4159,22 @@ bool CHMM::save_model_bin(FILE* file)
 			//derivates log(dp),log(dq)
 			for (i=0; i<N; i++)
 				FLOATWRITE(file, get_p(i));
-			SG_INFO("wrote %i parameters for p\n",N) 
+			SG_INFO("wrote %i parameters for p\n",N)
 
 			for (i=0; i<N; i++)
 				FLOATWRITE(file, get_q(i)) ;
-			SG_INFO("wrote %i parameters for q\n",N) 
+			SG_INFO("wrote %i parameters for q\n",N)
 
 			//derivates log(da),log(db)
 			for (i=0; i<N; i++)
 				for (j=0; j<N; j++)
 					FLOATWRITE(file, get_a(i,j));
-			SG_INFO("wrote %i parameters for a\n",N*N) 
+			SG_INFO("wrote %i parameters for a\n",N*N)
 
 			for (i=0; i<N; i++)
 				for (j=0; j<M; j++)
 					FLOATWRITE(file, get_b(i,j));
-			SG_INFO("wrote %i parameters for b\n",N*M) 
+			SG_INFO("wrote %i parameters for b\n",N*M)
 
 			// write id
 			FLOATWRITE(file, (float32_t)CMath::INFTY);
@@ -4161,12 +4201,12 @@ bool CHMM::save_model_bin(FILE* file)
 			for (i=0; model->get_learn_p(i)>=0; i++)
 				FLOATWRITE(file, get_p(model->get_learn_p(i)));
 			num_p=i ;
-			SG_INFO("wrote %i parameters for p\n",num_p) 
+			SG_INFO("wrote %i parameters for p\n",num_p)
 
 			for (i=0; model->get_learn_q(i)>=0; i++)
 				FLOATWRITE(file, get_q(model->get_learn_q(i)));
 			num_q=i ;
-			SG_INFO("wrote %i parameters for q\n",num_q) 
+			SG_INFO("wrote %i parameters for q\n",num_q)
 
 			//derivates log(da),log(db)
 			for (q=0; model->get_learn_a(q,1)>=0; q++)
@@ -4178,7 +4218,7 @@ bool CHMM::save_model_bin(FILE* file)
 				FLOATWRITE(file, get_a(i,j));
 			} ;
 			num_a=q ;
-			SG_INFO("wrote %i parameters for a\n",num_a) 
+			SG_INFO("wrote %i parameters for a\n",num_a)
 
 			for (q=0; model->get_learn_b(q,0)>=0; q++)
 			{
@@ -4189,7 +4229,7 @@ bool CHMM::save_model_bin(FILE* file)
 				FLOATWRITE(file, get_b(i,j));
 			} ;
 			num_b=q ;
-			SG_INFO("wrote %i parameters for b\n",num_b) 
+			SG_INFO("wrote %i parameters for b\n",num_b)
 
 			// write id
 			FLOATWRITE(file, (float32_t)CMath::INFTY);
@@ -4263,15 +4303,15 @@ bool CHMM::save_path_derivatives_bin(FILE* logfile)
 
 	float64_t sum_prob=0.0 ;
 	if (!model)
-		SG_WARNING("No definitions loaded -- writing derivatives of all weights\n") 
+		SG_WARNING("No definitions loaded -- writing derivatives of all weights\n")
 	else
-		SG_INFO("writing derivatives of changed weights only\n") 
+		SG_INFO("writing derivatives of changed weights only\n")
 
 	for (dim=0; dim<p_observations->get_num_vectors(); dim++)
 	{
 		if (dim%100==0)
 		{
-			SG_PRINT(".") 
+			SG_PRINT(".")
 
 		} ;
 
@@ -4333,7 +4373,7 @@ bool CHMM::save_path_derivatives_bin(FILE* logfile)
 	save_model_bin(logfile) ;
 
 	result=true;
-	SG_PRINT("\n") 
+	SG_PRINT("\n")
 	return result;
 }
 
@@ -4344,9 +4384,9 @@ bool CHMM::save_model_derivatives_bin(FILE* file)
 	int32_t num_floats=0 ;
 
 	if (!model)
-		SG_WARNING("No definitions loaded -- writing derivatives of all weights\n") 
+		SG_WARNING("No definitions loaded -- writing derivatives of all weights\n")
 	else
-		SG_INFO("writing derivatives of changed weights only\n") 
+		SG_INFO("writing derivatives of changed weights only\n")
 
 #ifdef USE_HMMPARALLEL
 	int32_t num_threads = parallel->get_num_threads();
@@ -4361,7 +4401,7 @@ bool CHMM::save_model_derivatives_bin(FILE* file)
 	{
 		if (dim%20==0)
 		{
-			SG_PRINT(".") 
+			SG_PRINT(".")
 
 		} ;
 
@@ -4411,7 +4451,7 @@ bool CHMM::save_model_derivatives_bin(FILE* file)
 						FLOATWRITE(file, model_derivative_b(i,j,dim));
 
 				if (dim==0)
-					SG_INFO("Number of parameters (including posterior prob.): %i\n", num_floats) 
+					SG_INFO("Number of parameters (including posterior prob.): %i\n", num_floats)
 			} ;
 		}
 		else
@@ -4442,7 +4482,7 @@ bool CHMM::save_model_derivatives_bin(FILE* file)
 					FLOATWRITE(file, model_derivative_b(i,j,dim));
 				} ;
 				if (dim==0)
-					SG_INFO("Number of parameters (including posterior prob.): %i\n", num_floats) 
+					SG_INFO("Number of parameters (including posterior prob.): %i\n", num_floats)
 			} ;
 		} ;
 	}
@@ -4454,7 +4494,7 @@ bool CHMM::save_model_derivatives_bin(FILE* file)
 #endif
 
 	result=true;
-	SG_PRINT("\n") 
+	SG_PRINT("\n")
 	return result;
 }
 
@@ -4567,7 +4607,7 @@ bool CHMM::check_model_derivatives_combined()
 			{
 				deriv_calc+=exp(model_derivative_b(i, j, dim)-model_probability(dim)) ;
 				if (j==1)
-					SG_INFO("deriv_calc[%i]=%e\n",dim,deriv_calc) 
+					SG_INFO("deriv_calc[%i]=%e\n",dim,deriv_calc)
 			} ;
 
 			SG_ERROR("b(%i,%i)=%e  db(%i,%i) = %e:%e\t (%1.5f%%)\n", i,j,exp(old_b),i,j, deriv_calc,  deriv, 100.0*(deriv-deriv_calc)/deriv_calc)
@@ -5350,9 +5390,9 @@ void CHMM::set_observations(CStringFeatures<uint16_t>* obs, CHMM* lambda)
 			for (int32_t i=0; i<parallel->get_num_threads(); i++)
 			{
 				if ((states_per_observation_psi[i]=SG_MALLOC(T_STATES,max_T*N))!=NULL)
-					SG_DEBUG("path_table[%i] successfully allocated\n",i) 
+					SG_DEBUG("path_table[%i] successfully allocated\n",i)
 				else
-					SG_ERROR("failed allocating memory for path_table[%i].\n",i) 
+					SG_ERROR("failed allocating memory for path_table[%i].\n",i)
 				path[i]=SG_MALLOC(T_STATES, max_T);
 			}
 #else // no USE_HMMPARALLEL_STRUCTURES
@@ -5360,7 +5400,7 @@ void CHMM::set_observations(CStringFeatures<uint16_t>* obs, CHMM* lambda)
 			if ((states_per_observation_psi=SG_MALLOC(T_STATES,max_T*N)) != NULL)
 				SG_DONE()
 			else
-				SG_ERROR("failed.\n") 
+				SG_ERROR("failed.\n")
 
 			path=SG_MALLOC(T_STATES, max_T);
 #endif // USE_HMMPARALLEL_STRUCTURES
@@ -5371,25 +5411,25 @@ void CHMM::set_observations(CStringFeatures<uint16_t>* obs, CHMM* lambda)
 			for (int32_t i=0; i<parallel->get_num_threads(); i++)
 			{
 				if ((alpha_cache[i].table=SG_MALLOC(T_ALPHA_BETA_TABLE, max_T*N))!=NULL)
-					SG_DEBUG("alpha_cache[%i].table successfully allocated\n",i) 
+					SG_DEBUG("alpha_cache[%i].table successfully allocated\n",i)
 				else
-					SG_ERROR("allocation of alpha_cache[%i].table failed\n",i) 
+					SG_ERROR("allocation of alpha_cache[%i].table failed\n",i)
 
 				if ((beta_cache[i].table=SG_MALLOC(T_ALPHA_BETA_TABLE, max_T*N)) != NULL)
-					SG_DEBUG("beta_cache[%i].table successfully allocated\n",i) 
+					SG_DEBUG("beta_cache[%i].table successfully allocated\n",i)
 				else
-					SG_ERROR("allocation of beta_cache[%i].table failed\n",i) 
+					SG_ERROR("allocation of beta_cache[%i].table failed\n",i)
 			} ;
 #else // USE_HMMPARALLEL_STRUCTURES
 			if ((alpha_cache.table=SG_MALLOC(T_ALPHA_BETA_TABLE, max_T*N)) != NULL)
-				SG_DEBUG("alpha_cache.table successfully allocated\n") 
+				SG_DEBUG("alpha_cache.table successfully allocated\n")
 			else
-				SG_ERROR("allocation of alpha_cache.table failed\n") 
+				SG_ERROR("allocation of alpha_cache.table failed\n")
 
 			if ((beta_cache.table=SG_MALLOC(T_ALPHA_BETA_TABLE, max_T*N)) != NULL)
-				SG_DEBUG("beta_cache.table successfully allocated\n") 
+				SG_DEBUG("beta_cache.table successfully allocated\n")
 			else
-				SG_ERROR("allocation of beta_cache.table failed\n") 
+				SG_ERROR("allocation of beta_cache.table failed\n")
 
 #endif // USE_HMMPARALLEL_STRUCTURES
 #else // USE_HMMCACHE

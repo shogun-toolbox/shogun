@@ -50,7 +50,7 @@ public:
 	/** destroy string */
 	void destroy_string();
 
-	/** 
+	/**
 	 * get the string (no copying is done here)
 	 *
 	 * @return the refcount increased string

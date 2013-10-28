@@ -381,8 +381,11 @@ class CDynamicObjectArray : public CSGObject
 		/** @return underlying array of pointers */
 		inline CSGObject** get_array() const { return m_array.get_array(); }
 
-		/** shuffles the array */
+		/** shuffles the array (not thread safe!) */
 		inline void shuffle() { m_array.shuffle(); }
+
+		/** shuffles the array with external random state */
+		inline void shuffle(CRandom * rand) { m_array.shuffle(rand); }
 
 		/** set array's name
 		 *
@@ -439,7 +442,7 @@ class CDynamicObjectArray : public CSGObject
 		virtual void init()
 		{
 			m_parameters->add_vector(&m_array.array, &m_array.current_num_elements, "array",
-									 "Memory for dynamic array.");	
+									 "Memory for dynamic array.");
 			SG_ADD(&m_array.num_elements,
 							  "num_elements",
 							  "Number of Elements.", MS_NOT_AVAILABLE);

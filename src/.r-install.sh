@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-VERSION=`head -n 3 ../../NEWS | tail -n 1| awk '{ print $5 }'`
-DATE=`head -n 1 ../../NEWS | cut -f 1 -d ' '`
+VERSION=`head -n 3 ../../../../NEWS | tail -n 1| awk '{ print $5 }'`
+DATE=`head -n 1 ../../../../NEWS | cut -f 1 -d ' '`
 RVERSION=`R --slave -e "with(R.version, cat(sprintf('%s.%s', major, minor)))"`
 PLATFORM=`R --slave -e "cat(R.version\\$platform)"`
 OSTYPE=`R --slave -e "cat(.Platform\\$OS.type)"`
@@ -66,8 +66,8 @@ EOF
 cat >"$1/$2/R/$2" <<EOF
 .packageName <- "$2"
 # The purpose of this file is to supply no functionality
-# except easier access functions in R for external C 
-# function calls. 
+# except easier access functions in R for external C
+# function calls.
 #
 # For example instead of typing
 #
@@ -98,7 +98,7 @@ get_kernel_matrix <- function() .External("$2","get_kernel_matrix",PACKAGE="$2")
 #
 svm_classify <- function() .External("$2","svm_classify",PACKAGE="$2")
 get_svm <- function() .External("$2","get_svm",PACKAGE="$2")
-get_subkernel_weights <- function() .External("$2","get_subkernel_weights",PACKAGE="$2") 
+get_subkernel_weights <- function() .External("$2","get_subkernel_weights",PACKAGE="$2")
 
 # HMM functions
 #
@@ -114,7 +114,7 @@ get_hmm <- function() .External("$2","get_hmm",PACKAGE="$2")
 
 # Unload the library.
 #
-.Last.lib <- function(lib) library.dynam.unload("$2", libpath=lib) 
+.Last.lib <- function(lib) library.dynam.unload("$2", libpath=lib)
 
 # Because in packages with namespaces .First.lib will not be loaded
 # one needs another functions called .onLoad resp. .onUnload
@@ -122,10 +122,6 @@ get_hmm <- function() .External("$2","get_hmm",PACKAGE="$2")
 
 .onLoad <- function(lib, pkg) .First.lib(lib,pkg)
 .onUnload <- function(lib) .Last.lib(lib)
-
-# a nice banner
-#
-.onAttach <- function(lib, pkg) cat(paste("\nWelcome! This is SHOGUN version $VERSION\n"))
 EOF
 
 # R-MODULAR
@@ -133,7 +129,7 @@ else
 echo "Installing modular shogun interface for R"
 
 cat >"$1/$2/NAMESPACE" <<EOF
-export( shogun )
+useDynLib(modshogun, .registration = TRUE)
 EOF
 
 cat >"$1/$2/R/$2" <<EOF
@@ -149,7 +145,7 @@ EOF
 
 for f in *.so
 do
-	echo "library.dynam(\"`basename $f`\", pkg, lib)" >> "$1/$2/R/$2"
+	echo "library.dynam(\"`basename $f .so`\", pkg, lib)" >> "$1/$2/R/$2"
 done
 
 for f in *.RData
@@ -178,9 +174,5 @@ cat >>"$1/$2/R/$2" <<EOF
 #
 .onLoad <- function(lib, pkg) .First.lib(lib,pkg)
 .onUnload <- function(lib) .Last.lib(lib)
-
-# a nice banner
-#
-.onAttach <- function() cat(paste("\nWelcome! This is SHOGUN version $VERSION\n"))
 EOF
 fi

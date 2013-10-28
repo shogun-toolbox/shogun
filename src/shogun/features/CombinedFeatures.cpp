@@ -22,17 +22,17 @@ CCombinedFeatures::CCombinedFeatures()
 {
 	init();
 
-	feature_list=new CList(true);
+	feature_array = new CDynamicObjectArray();
 	num_vec=0;
 }
 
-CCombinedFeatures::CCombinedFeatures(const CCombinedFeatures & orig)
+CCombinedFeatures::CCombinedFeatures(const CCombinedFeatures& orig)
 : CFeatures(0)
 {
 	init();
 
-	feature_list=new CList(true);
-	//todo copy features
+	feature_array=new CDynamicObjectArray();
+	//TODO copy features
 	num_vec=orig.num_vec;
 }
 
@@ -43,21 +43,12 @@ CFeatures* CCombinedFeatures::duplicate() const
 
 CCombinedFeatures::~CCombinedFeatures()
 {
-	SG_UNREF(feature_list);
+	SG_UNREF(feature_array);
 }
 
-int32_t CCombinedFeatures::get_size() const
+CFeatures* CCombinedFeatures::get_feature_obj(int32_t idx)
 {
-	CFeatures* f=(CFeatures*) feature_list
-		->get_current_element();
-	if (f)
-	{
-		int32_t s=f->get_size();
-		SG_UNREF(f)
-			return s;
-	}
-	else
-		return 0;
+	return (CFeatures*) feature_array->get_element(idx);
 }
 
 void CCombinedFeatures::list_feature_objs()
@@ -65,14 +56,11 @@ void CCombinedFeatures::list_feature_objs()
 	SG_INFO("BEGIN COMBINED FEATURES LIST - ")
 	this->list_feature_obj();
 
-	CListElement* current = NULL ;
-	CFeatures* f=get_first_feature_obj(current);
-
-	while (f)
+	for (index_t f_idx=0; f_idx<get_num_feature_obj(); f_idx++)
 	{
+		CFeatures* f = get_feature_obj(f_idx);
 		f->list_feature_obj();
 		SG_UNREF(f);
-		f=get_next_feature_obj(current);
 	}
 
 	SG_INFO("END COMBINED FEATURES LIST - ")
@@ -82,45 +70,44 @@ bool CCombinedFeatures::check_feature_obj_compatibility(CCombinedFeatures* comb_
 {
 	bool result=false;
 
-	if (comb_feat && (this->get_num_feature_obj() == comb_feat->get_num_feature_obj()) )
+	if ( (comb_feat) && (this->get_num_feature_obj() == comb_feat->get_num_feature_obj()) )
 	{
-		CFeatures* f1=this->get_first_feature_obj();
-		CFeatures* f2=comb_feat->get_first_feature_obj();
-
-		if (f1 && f2 && f1->check_feature_compatibility(f2))
+		for (index_t f_idx=0; f_idx<get_num_feature_obj(); f_idx++)
 		{
-			SG_UNREF(f1);
-			SG_UNREF(f2);
-			while( ( (f1=this->get_next_feature_obj()) != NULL )  &&
-				   ( (f2=comb_feat->get_next_feature_obj()) != NULL) )
+			CFeatures* f1=this->get_feature_obj(f_idx);
+			CFeatures* f2=comb_feat->get_feature_obj(f_idx);
+
+			if ( ! (f1 && f2 && f1->check_feature_compatibility(f2)) )
 			{
-				if (!f1->check_feature_compatibility(f2))
-				{
-					SG_UNREF(f1);
-					SG_UNREF(f2);
-					SG_INFO("not compatible, combfeat\n")
-					comb_feat->list_feature_objs();
-					SG_INFO("vs this\n")
-					this->list_feature_objs();
-					return false;
-				}
 				SG_UNREF(f1);
 				SG_UNREF(f2);
+				SG_INFO("not compatible, combfeat\n")
+				comb_feat->list_feature_objs();
+				SG_INFO("vs this\n")
+				this->list_feature_objs();
+				return false;
 			}
 
-			SG_DEBUG("features are compatible\n")
-			result=true;
+			SG_UNREF(f1);
+			SG_UNREF(f2);
 		}
-		else
-			SG_WARNING("first 2 features not compatible\n")
+		SG_DEBUG("features are compatible\n")
+		result=true;
 	}
 	else
 	{
-		SG_WARNING("number of features in combined feature objects differs (%d != %d)\n", this->get_num_feature_obj(), comb_feat->get_num_feature_obj())
-		SG_INFO("compare\n")
-		comb_feat->list_feature_objs();
-		SG_INFO("vs this\n")
-		this->list_feature_objs();
+		if (!comb_feat)
+		{
+			SG_WARNING("comb_feat is NULL \n");
+		}
+		else
+		{
+			SG_WARNING("number of features in combined feature objects differs (%d != %d)\n", this->get_num_feature_obj(), comb_feat->get_num_feature_obj())
+				SG_INFO("compare\n")
+				comb_feat->list_feature_objs();
+			SG_INFO("vs this\n")
+				this->list_feature_objs();
+		}
 	}
 
 	return result;
@@ -128,30 +115,15 @@ bool CCombinedFeatures::check_feature_obj_compatibility(CCombinedFeatures* comb_
 
 CFeatures* CCombinedFeatures::get_first_feature_obj()
 {
-	return (CFeatures*) feature_list->get_first_element();
-}
-
-CFeatures* CCombinedFeatures::get_first_feature_obj(CListElement*& current)
-{
-	return (CFeatures*) feature_list->get_first_element(current);
-}
-
-CFeatures* CCombinedFeatures::get_next_feature_obj()
-{
-	return (CFeatures*) feature_list->get_next_element();
-}
-
-CFeatures* CCombinedFeatures::get_next_feature_obj(CListElement*& current)
-{
-	return (CFeatures*) feature_list->get_next_element(current);
+	return get_feature_obj(0);
 }
 
 CFeatures* CCombinedFeatures::get_last_feature_obj()
 {
-	return (CFeatures*) feature_list->get_last_element();
+	return get_feature_obj(get_num_feature_obj()-1);
 }
 
-bool CCombinedFeatures::insert_feature_obj(CFeatures* obj)
+bool CCombinedFeatures::insert_feature_obj(CFeatures* obj, int32_t idx)
 {
 	ASSERT(obj)
 	int32_t n=obj->get_num_vectors();
@@ -163,7 +135,7 @@ bool CCombinedFeatures::insert_feature_obj(CFeatures* obj)
 	}
 
 	num_vec=n;
-	return feature_list->insert_element(obj);
+	return feature_array->insert_element(obj, idx);
 }
 
 bool CCombinedFeatures::append_feature_obj(CFeatures* obj)
@@ -178,32 +150,28 @@ bool CCombinedFeatures::append_feature_obj(CFeatures* obj)
 	}
 
 	num_vec=n;
-	return feature_list->append_element(obj);
+
+	int num_feature_obj = get_num_feature_obj();
+	feature_array->push_back(obj);
+	return num_feature_obj+1 == feature_array->get_num_elements();
 }
 
-bool CCombinedFeatures::delete_feature_obj()
+bool CCombinedFeatures::delete_feature_obj(int32_t idx)
 {
-	CFeatures* f=(CFeatures*)feature_list->delete_element();
-	if (f)
-	{
-		SG_UNREF(f);
-		return true;
-	}
-	else
-		return false;
+	return feature_array->delete_element(idx);
 }
 
 int32_t CCombinedFeatures::get_num_feature_obj()
 {
-	return feature_list->get_num_elements();
+	return feature_array->get_num_elements();
 }
 
 void CCombinedFeatures::init()
 {
 	m_parameters->add(&num_vec, "num_vec",
 					  "Number of vectors.");
-	m_parameters->add((CSGObject**) &feature_list,
-					  "feature_list", "Feature list.");
+	m_parameters->add((CSGObject**) &feature_array,
+					  "feature_array", "Feature array.");
 }
 
 CFeatures* CCombinedFeatures::create_merged_copy(CFeatures* other)
@@ -236,16 +204,15 @@ CFeatures* CCombinedFeatures::create_merged_copy(CFeatures* other)
 	}
 
 	CCombinedFeatures* result=new CCombinedFeatures();
-	CFeatures* current_this=get_first_feature_obj();
-	CFeatures* current_other=casted->get_first_feature_obj();
-	while (current_this)
+	for (index_t f_idx=0; f_idx<get_num_feature_obj(); f_idx++)
 	{
+		CFeatures* current_this=get_feature_obj(f_idx);
+		CFeatures* current_other=casted->get_feature_obj(f_idx);
+
 		result->append_feature_obj(
 				current_this->create_merged_copy(current_other));
 		SG_UNREF(current_this);
 		SG_UNREF(current_other);
-		current_this=get_next_feature_obj();
-		current_other=get_next_feature_obj();
 	}
 
 	SG_DEBUG("leaving %s::create_merged_copy()\n", get_name())
@@ -257,9 +224,10 @@ void CCombinedFeatures::add_subset(SGVector<index_t> subset)
 	SG_DEBUG("entering %s::add_subset()\n", get_name())
 	CSet<CFeatures*>* processed=new CSet<CFeatures*>();
 
-	CFeatures* current=get_first_feature_obj();
-	while (current)
+	for (index_t f_idx=0; f_idx<get_num_feature_obj(); f_idx++)
 	{
+		CFeatures* current=get_feature_obj(f_idx);
+
 		if (!processed->contains(current))
 		{
 			/* remember that subset was added here */
@@ -269,7 +237,6 @@ void CCombinedFeatures::add_subset(SGVector<index_t> subset)
 					current->get_name(), current);
 		}
 		SG_UNREF(current);
-		current=get_next_feature_obj();
 	}
 
 	/* also add subset to local stack to have it for easy access */
@@ -285,9 +252,9 @@ void CCombinedFeatures::remove_subset()
 	SG_DEBUG("entering %s::remove_subset()\n", get_name())
 	CSet<CFeatures*>* processed=new CSet<CFeatures*>();
 
-	CFeatures* current=get_first_feature_obj();
-	while (current)
+	for (index_t f_idx=0; f_idx<get_num_feature_obj(); f_idx++)
 	{
+		CFeatures* current=get_feature_obj(f_idx);
 		if (!processed->contains(current))
 		{
 			/* remember that subset was added here */
@@ -297,7 +264,6 @@ void CCombinedFeatures::remove_subset()
 					current->get_name(), current);
 		}
 		SG_UNREF(current);
-		current=get_next_feature_obj();
 	}
 
 	/* also remove subset from local stack to have it for easy access */
@@ -313,9 +279,9 @@ void CCombinedFeatures::remove_all_subsets()
 	SG_DEBUG("entering %s::remove_all_subsets()\n", get_name())
 	CSet<CFeatures*>* processed=new CSet<CFeatures*>();
 
-	CFeatures* current=get_first_feature_obj();
-	while (current)
+	for (index_t f_idx=0; f_idx<get_num_feature_obj(); f_idx++)
 	{
+		CFeatures* current=get_feature_obj(f_idx);
 		if (!processed->contains(current))
 		{
 			/* remember that subset was added here */
@@ -325,7 +291,6 @@ void CCombinedFeatures::remove_all_subsets()
 					current->get_name(), current);
 		}
 		SG_UNREF(current);
-		current=get_next_feature_obj();
 	}
 
 	/* also remove subsets from local stack to have it for easy access */
@@ -343,9 +308,10 @@ CFeatures* CCombinedFeatures::copy_subset(SGVector<index_t> indices)
 
 	/* map to only copy same feature objects once */
 	CMap<CFeatures*, CFeatures*>* processed=new CMap<CFeatures*, CFeatures*>();
-	CFeatures* current=get_first_feature_obj();
-	while (current)
+	for (index_t f_idx=0; f_idx<get_num_feature_obj(); f_idx++)
 	{
+		CFeatures* current=get_feature_obj(f_idx);
+
 		CFeatures* new_element=NULL;
 
 		/* only copy if not done yet, otherwise, use old copy */
@@ -369,7 +335,6 @@ CFeatures* CCombinedFeatures::copy_subset(SGVector<index_t> indices)
 		SG_UNREF(new_element);
 
 		SG_UNREF(current);
-		current=get_next_feature_obj();
 	}
 
 	SG_UNREF(processed);

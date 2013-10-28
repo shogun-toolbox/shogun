@@ -9,25 +9,12 @@
 #ifndef __SGREFERENCED_DATA_H__
 #define __SGREFERENCED_DATA_H__
 
-#include <shogun/base/Parallel.h>
-
-#ifdef HAVE_PTHREAD
-#include <pthread.h>
-#endif
-
-/** refcount structure */
-struct refcount_t 
-{
-	/** reference count */
-	int32_t rc;
-#ifdef HAVE_PTHREAD
-	/** lock for thread safety */
-	PTHREAD_LOCK_T lock;
-#endif
-};
+#include <shogun/lib/common.h>
 
 namespace shogun
 {
+class RefCount;
+
 /** @brief shogun reference count managed data */
 class SGReferencedData
 {
@@ -83,7 +70,7 @@ class SGReferencedData
 	private:
 
 		/** reference counter */
-		refcount_t* m_refcount;
+		RefCount* m_refcount;
 };
 }
 #endif // __SGREFERENCED_DATA_H__

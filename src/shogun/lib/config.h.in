@@ -1,0 +1,77 @@
+#cmakedefine MACHINE "@MACHINE@"
+#cmakedefine CONFIGURE_OPTIONS "@CONFIGURE_OPTIONS@"
+#cmakedefine COMPFLAGS_CPP "@COMPFLAGS_CPP@"
+#cmakedefine LINKFLAGS "@LINKFLAGS@"
+
+#cmakedefine SFMT_MEXP @SFMT_MEXP@
+#cmakedefine DSFMT_MEXP @DSFMT_MEXP@
+
+#cmakedefine HAVE_HDF5 1
+#cmakedefine HAVE_CURL 1
+#cmakedefine HAVE_JSON 1
+#cmakedefine HAVE_XML 1
+#cmakedefine HAVE_LARGEFILE 1
+#cmakedefine HAVE_DOXYGEN 1
+#cmakedefine HAVE_LAPACK 1
+#cmakedefine HAVE_MVEC 1
+#cmakedefine HAVE_PROTOBUF 1
+
+#cmakedefine HAVE_ARPACK 1
+#cmakedefine HAVE_EIGEN3 1
+#cmakedefine HAVE_CATLAS 1
+#cmakedefine HAVE_ATLAS 1
+#cmakedefine HAVE_NLOPT 1
+#cmakedefine USE_LPSOLVE 1
+#cmakedefine HAVE_PTHREAD 1
+#cmakedefine USE_CPLEX 1
+#cmakedefine HAVE_COLPACK 1
+#cmakedefine HAVE_ARPREC 1
+
+#cmakedefine HAVE_POWL 1
+#cmakedefine HAVE_LGAMMAL 1
+#cmakedefine HAVE_SQRTL 1
+#cmakedefine HAVE_LOG2 1
+#cmakedefine USE_LOGCACHE 1
+#cmakedefine USE_LOGSUMARRAY 1
+
+#cmakedefine USE_SPINLOCKS 1
+#cmakedefine USE_SHORTREAL_KERNELCACHE 1
+#cmakedefine USE_BIGSTATES 1
+
+#cmakedefine USE_HMMDEBUG 1
+#cmakedefine USE_HMMCACHE 1
+#cmakedefine USE_HMMPARALLEL 1
+#cmakedefine USE_HMMPARALLEL_STRUCTURES 1
+
+#cmakedefine USE_PATHDEBUG 1
+
+#cmakedefine USE_SVMLIGHT 1
+#cmakedefine USE_MOSEK 1
+
+#cmakedefine USE_GLPK 1
+#cmakedefine USE_LZO 1
+#cmakedefine USE_GZIP 1
+#cmakedefine USE_BZIP2 1
+#cmakedefine USE_LZMA 1
+#cmakedefine USE_REFERENCE_COUNTING 1
+#cmakedefine USE_SNAPPY 1
+
+#cmakedefine HAVE_SSE2 1
+#cmakedefine HAVE_BUILTIN_VECTOR 1
+#cmakedefine OCTAVE_APIVERSION @OCTAVE_APIVERSION@
+
+#cmakedefine DARWIN 1
+#cmakedefine FREEBSD 1
+#cmakedefine LINUX 1
+
+#cmakedefine USE_SWIG_DIRECTORS 1
+#cmakedefine TRACE_MEMORY_ALLOCS 1
+#cmakedefine USE_JEMALLOC 1
+
+#cmakedefine NARRAY_LIB "@NARRAY_LIB@"
+
+#cmakedefine HAVE_CXX0X 1
+#cmakedefine HAVE_CXX11 1
+#cmakedefine HAVE_CXX11_ATOMIC 1
+
+#cmakedefine HAVE_JBLAS 1

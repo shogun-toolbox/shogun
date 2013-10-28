@@ -84,9 +84,6 @@ class CRegulatoryModulesStringKernel: public CStringKernel<char>
 		 */
 		void set_motif_positions(
 			CDenseFeatures<uint16_t>* positions_lhs, CDenseFeatures<uint16_t>* positions_rhs);
-		/* register the parameters
-		 */
-		virtual void register_params();
 
 	protected:
 		/** compute kernel function for features a and b
@@ -112,6 +109,10 @@ class CRegulatoryModulesStringKernel: public CStringKernel<char>
 		/** set standard weighted degree kernel weighting */
 		void set_wd_weights();
 
+	private:
+		/** initialises parameters and registers them */
+		void init();
+
 	protected:
 		/** width of Gaussian kernel part */
 		float64_t width;
@@ -130,16 +131,11 @@ class CRegulatoryModulesStringKernel: public CStringKernel<char>
 		/** Matrix of motif positions from sequences right-hand side */
 		CDenseFeatures<uint16_t>* motif_positions_rhs;
 
-		/** the length of matrix of motif positions -- for serialization purposes*/
-		int32_t alen;
-		/** the length of matrix of motif positions -- for serialization purposes*/
-		int32_t blen;
-
 		/** scaling weights in window */
-		float64_t* position_weights;
+		SGVector<float64_t> position_weights;
 
 		/** weights of WD kernel */
-		float64_t* weights;
+		SGVector<float64_t> weights;
 };
 }
 #endif /* _REGULATORYMODULESSTRINGKERNEL_H__ */

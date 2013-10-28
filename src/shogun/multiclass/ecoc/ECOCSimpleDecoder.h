@@ -47,7 +47,7 @@ protected:
     virtual float64_t compute_distance(SGVector<float64_t> outputs, const int32_t *code)=0;
 };
 
-} /* shogun */ 
+} /* shogun */
 
 #endif /* end of include guard: ECOCSIMPLEDECODER_H__ */
 

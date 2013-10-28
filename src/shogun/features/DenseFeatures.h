@@ -287,12 +287,6 @@ public:
 	 */
 	virtual bool apply_preprocessor(bool force_preprocessing = false);
 
-	/** get memory footprint of one feature
-	 *
-	 * @return memory footprint of one feature
-	 */
-	virtual int32_t get_size() const;
-
 	/** get number of feature vectors
 	 *
 	 * @return number of feature vectors
@@ -303,7 +297,7 @@ public:
 	 *
 	 * @return number of features
 	 */
-	int32_t get_num_features();
+	int32_t get_num_features() const;
 
 	/** set number of features
 	 *
@@ -437,7 +431,7 @@ public:
 	 * possible with subset
 	 *
 	 * @param vector_index the index of the vector over whose components to
-	 * 			iterate over
+	 *			iterate over
 	 * @return feature iterator (to be passed to get_next_feature)
 	 */
 	virtual void* get_feature_iterator(int32_t vector_index);
@@ -499,6 +493,11 @@ public:
 	 * instance and of given one
 	 */
 	CFeatures* create_merged_copy(CFeatures* other);
+
+	/** helper method used to specialize a base class instance
+	 *
+	 */
+	static CDenseFeatures* obtain_from_generic(CFeatures* const base_features);
 
 	/** @return object name */
 	virtual const char* get_name() const { return "DenseFeatures"; }

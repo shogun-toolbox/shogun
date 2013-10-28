@@ -22,8 +22,8 @@
 namespace shogun
 {
 	class CDotFeatures;
-/** @brief The well known Gaussian kernel (swiss army knife for SVMs)
- * computed on CDotFeatures.
+/** @brief The well known Gaussian kernel (swiss army knife for SVMs) computed
+ * on CDotFeatures.
  *
  * It is computed as
  *
@@ -33,21 +33,20 @@ namespace shogun
  *
  * where \f$\tau\f$ is the kernel width.
  *
- * The compact version as given in Bart Hamers' thesis <i>Kernel Models for Large Scale Applications</i> (Eq. 4.10) is computed as
+ * The compact version as given in Bart Hamers' thesis <i>Kernel Models for
+ * Large Scale Applications</i> (Eq. 4.10) is computed as
  *
  * \f[
- * k({\bf x},{\bf x'})= max(0, (1-\frac{||{\bf x}-{\bf x'}||}{3\tau})^v)) * exp(-\frac{||{\bf x}-{\bf x'}||^2}{\tau})
+ * k({\bf x},{\bf x'})= max(0, (1-\frac{||{\bf x}-{\bf x'}||}{3\tau})^v)) *
+ * exp(-\frac{||{\bf x}-{\bf x'}||^2}{\tau})
  * \f]
  *
  * where \f$\tau\f$ is the kernel width.
- *
  */
 class CGaussianKernel: public CDotKernel
 {
 	public:
-		/** default constructor
-		 *
-		 */
+		/** default constructor */
 		CGaussianKernel();
 
 		/** constructor
@@ -76,7 +75,7 @@ class CGaussianKernel: public CDotKernel
 		static CGaussianKernel* obtain_from_generic(CKernel* kernel);
 
 		/** Make a shallow copy of the kernel */
-		virtual CSGObject *shallow_copy() const;
+		virtual CSGObject* shallow_copy() const;
 
 		/** initialize kernel
 		 *
@@ -105,49 +104,35 @@ class CGaussianKernel: public CDotKernel
 		 *
 		 * @param w kernel width
 		 */
-		virtual void set_width(float64_t w)
-		{
-			width=w;
-		}
+		virtual void set_width(float64_t w)	{ width=w; }
 
 		/** return the kernel's width
 		 *
 		 * @return kernel width
 		 */
-		virtual float64_t get_width() const
-		{
-			return width;
-		}
+		virtual float64_t get_width() const	{ return width;	}
 
 		/** set the compact option
 		 *
 		 * @param compact value of the compact option
 		 */
-		inline void set_compact_enabled(bool compact)
-		{
-			m_compact = compact;
-		}
+		inline void set_compact_enabled(bool compact) {	m_compact=compact; }
 
 		/** return value of the compact option
 		 *
 		 * @return whether the compact option is enabled
 		 */
-		inline bool get_compact_enabled()
-		{
-			return m_compact;
-		}
-		
+		inline bool get_compact_enabled() { return m_compact; }
+
 		/** return derivative with respect to specified parameter
-		 * 
+		 *
 		 * @param param the parameter
-		 * @param obj the object that owns the parameter
 		 * @param index the index of the element if parameter is a vector
 		 *
 		 * @return gradient with respect to parameter
 		 */
-		virtual SGMatrix<float64_t> get_parameter_gradient(TParameter* param,
-				CSGObject* obj, index_t index = -1);
-
+		virtual SGMatrix<float64_t> get_parameter_gradient(
+				const TParameter* param, index_t index=-1);
 
 	protected:
 		/** compute kernel function for features a and b
@@ -160,13 +145,11 @@ class CGaussianKernel: public CDotKernel
 		 */
 		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
 
-		/** Can (optionally) be overridden to post-initialize some
-		 *  member variables which are not PARAMETER::ADD'ed.  Make
-		 *  sure that at first the overridden method
-		 *  BASE_CLASS::LOAD_SERIALIZABLE_POST is called.
+		/** Can (optionally) be overridden to post-initialize some member
+		 * variables which are not PARAMETER::ADD'ed. Make sure that at first
+		 * the overridden method BASE_CLASS::LOAD_SERIALIZABLE_POST is called.
 		 *
-		 *  @exception ShogunException Will be thrown if an error
-		 *                             occurres.
+		 *  @exception ShogunException Will be thrown if an error occurres.
 		 */
 		virtual void load_serializable_post() throw (ShogunException);
 

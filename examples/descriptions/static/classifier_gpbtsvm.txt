@@ -2,8 +2,8 @@ In this example a two-class support vector machine classifier is trained on a
 toy data set and the trained classifier is used to predict labels of test
 examples. As training algorithm Gradient Projection Decomposition Technique
 (GPDT) is used with SVM regularization parameter C=1.2 and a Gaussian
-kernel of width 2.1 and 10MB of kernel cache. 
+kernel of width 2.1 and 10MB of kernel cache.
 
-For more details on GPDT solver see http://dm.unife.it/gpdt 
- 
-   
+For more details on GPDT solver see http://dm.unife.it/gpdt
+
+

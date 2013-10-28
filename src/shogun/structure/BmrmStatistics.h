@@ -38,7 +38,7 @@ struct BmrmStatistics
 
 	/** dummy load serializable */
 	bool load_serializable(CSerializableFile* file, const char* prefix="") { return false; }
-	
+
 	/** dummy save serializable */
 	bool save_serializable(CSerializableFile* file, const char* prefix="") { return false; }
 

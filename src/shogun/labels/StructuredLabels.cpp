@@ -31,16 +31,6 @@ CStructuredLabels::~CStructuredLabels()
 	SG_UNREF(m_labels);
 }
 
-CStructuredLabels* CStructuredLabels::obtain_from_generic(CLabels* base_labels)
-{
-	if ( base_labels->get_label_type() == LT_STRUCTURED )
-		return (CStructuredLabels*) base_labels;
-	else
-		SG_SERROR("base_labels must be of dynamic type CStructuredLabels\n")
-
-	return NULL;
-}
-
 void CStructuredLabels::ensure_valid(const char* context)
 {
 	if ( m_labels == NULL )
@@ -55,7 +45,7 @@ CDynamicObjectArray* CStructuredLabels::get_labels() const
 
 CStructuredData* CStructuredLabels::get_label(int32_t idx)
 {
-	ensure_valid("CStructuredLabels::get_label(int32_t)");	
+	ensure_valid("CStructuredLabels::get_label(int32_t)");
 	if ( idx < 0 || idx >= get_num_labels() )
 		SG_ERROR("Index must be inside [0, num_labels-1]\n")
 
@@ -75,7 +65,7 @@ bool CStructuredLabels::set_label(int32_t idx, CStructuredData* label)
 
 	if ( real_idx < get_num_labels() )
 	{
-		return m_labels->insert_element(label, real_idx);
+		return m_labels->set_element(label, real_idx);
 	}
 	else
 	{
@@ -83,7 +73,7 @@ bool CStructuredLabels::set_label(int32_t idx, CStructuredData* label)
 	}
 }
 
-int32_t CStructuredLabels::get_num_labels()
+int32_t CStructuredLabels::get_num_labels() const
 {
 	if ( m_labels == NULL )
 		return 0;

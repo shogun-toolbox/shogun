@@ -9,7 +9,7 @@
  */
 
 /*-----------------------------------------------------------------------------
- 
+
 If you want to understand the MurmurHash algorithm you would be much better
 off reading the original source. Just point your browser at:
 http://code.google.com/p/smhasher/source/browse/trunk/MurmurHash3.cpp
@@ -255,7 +255,7 @@ void PMurHash32_Process(uint32_t *ph1, uint32_t *pcarry, const void *key, int le
   /* Copy out new running hash and carry */
   *ph1 = h1;
   *pcarry = (c & ~0xff) | n;
-} 
+}
 
 /*---------------------------------------------------------------------------*/
 
@@ -299,17 +299,7 @@ void PMurHash32_test(const void *key, int len, uint32_t seed, void *out)
   const uint8_t *ptr = (uint8_t*)key;
   const uint8_t *end = ptr + len;
 
-#if 0 /* Exercise the progressive processing */
-  while(ptr < end) {
-    //const uint8_t *mid = ptr + rand()%(end-ptr)+1;
-    const uint8_t *mid = ptr + (rand()&0xF);
-    mid = mid<end?mid:end;
-    PMurHash32_Process(&h1, &carry, ptr, mid-ptr);
-    ptr = mid;
-  }
-#else
   PMurHash32_Process(&h1, &carry, ptr, (int)(end-ptr));
-#endif
   h1 = PMurHash32_Result(h1, carry, len);
   *(uint32_t*)out = h1;
 }

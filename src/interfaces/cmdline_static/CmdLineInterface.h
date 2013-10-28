@@ -4,7 +4,7 @@
 #include <shogun/base/DynArray.h>
 #include <shogun/io/SGIO.h>
 
-#include "ui/SGInterface.h"
+#include <shogun/ui/SGInterface.h>
 
 namespace shogun
 {

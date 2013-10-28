@@ -41,11 +41,11 @@ class CGUILabels : public CSGObject
 		/** set train labels
 		 * @param lab
 		 */
-		bool set_train_labels(CLabels* lab) { SG_UNREF(train_labels); SG_REF(lab); train_labels=lab; return true;}
+		bool set_train_labels(CLabels* lab) { SG_REF(lab); SG_UNREF(train_labels); train_labels=lab; return true;}
 		/** set test labels
 		 * @param lab
 		 */
-		bool set_test_labels(CLabels* lab) { SG_UNREF(test_labels); SG_REF(lab); test_labels=lab; return true;}
+		bool set_test_labels(CLabels* lab) { SG_REF(lab); SG_UNREF(test_labels); test_labels=lab; return true;}
 
 		/** load labels from file
 		 * @param filename
@@ -57,7 +57,7 @@ class CGUILabels : public CSGObject
 		 */
 		bool save(char* param);
 
-		/** infer labels from array 
+		/** infer labels from array
 		 *
 		 * @param lab array
 		 * @param len length of array

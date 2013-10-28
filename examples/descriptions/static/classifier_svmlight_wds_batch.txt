@@ -2,7 +2,7 @@ In this example a two-class support vector machine classifier is trained on a
 DNA splice-site detection data set and the trained classifier is then used to
 predict labels on test set. As training algorithm SVM^light is used with SVM
 regularization parameter C=1 and the Weighted Degree kernel and the bias term
-in the classification rule switched off. 
+in the classification rule switched off.
 
 For more details on the SVM^light see
  T. Joachims. Making large-scale SVM learning practical. In Advances in Kernel
@@ -10,4 +10,4 @@ For more details on the SVM^light see
 
 For more details on the Weighted Degree kernel see
  G. Raetsch, S.Sonnenburg, and B. Schoelkopf. RASE: recognition of alternatively
- spliced exons in C. elegans. Bioinformatics, 21:369-377, June 2005. 
+ spliced exons in C. elegans. Bioinformatics, 21:369-377, June 2005.

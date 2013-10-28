@@ -9,10 +9,10 @@ label_traindat = lm.load_labels('../data/label_train_dna.dat')
 parameter_list = [[traindat,testdat,label_traindat,1.1,1e-5,1],[traindat,testdat,label_traindat,1.2,1e-5,1]]
 
 def classifier_svmlight_modular (fm_train_dna=traindat,fm_test_dna=testdat,label_train_dna=label_traindat,C=1.2,epsilon=1e-5,num_threads=1):
-	from shogun.Features import StringCharFeatures, BinaryLabels, DNA
-	from shogun.Kernel import WeightedDegreeStringKernel
+	from modshogun import StringCharFeatures, BinaryLabels, DNA
+	from modshogun import WeightedDegreeStringKernel
 	try:
-		from shogun.Classifier import SVMLight
+		from modshogun import SVMLight
 	except ImportError:
 		print('No support for SVMLight available.')
 		return

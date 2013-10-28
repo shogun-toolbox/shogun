@@ -76,7 +76,7 @@ class CGUIStructure : public CSGObject
 		 */
 		inline CSparseFeatures<float64_t>* get_feature_matrix_sparse(int32_t index)
 		{
-			ASSERT(index>=0 && index<=1) 
+			ASSERT(index>=0 && index<=1)
 			if (index==0)
 				return m_feature_matrix_sparse1;
 			if (index==1)
@@ -107,8 +107,8 @@ class CGUIStructure : public CSGObject
 			SG_FREE(m_feature_matrix_sparse1);
 			SG_FREE(m_feature_matrix_sparse2);
 
-			m_feature_matrix_sparse1 = new CSparseFeatures<float64_t>(f1, dims[0], dims[1], true) ;
-			m_feature_matrix_sparse2 = new CSparseFeatures<float64_t>(f2, dims[0], dims[1], true) ;
+			m_feature_matrix_sparse1 = new CSparseFeatures<float64_t>(SGSparseMatrix<float64_t>(f1, dims[0], dims[1], true));
+			m_feature_matrix_sparse2 = new CSparseFeatures<float64_t>(SGSparseMatrix<float64_t>(f2, dims[0], dims[1], true));
 
 			return true;
 		}

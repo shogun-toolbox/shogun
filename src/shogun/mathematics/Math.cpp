@@ -10,6 +10,7 @@
  */
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/common.h>
+#include <cmath>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/lapack.h>
 #include <shogun/io/SGIO.h>
@@ -44,15 +45,11 @@ const float64_t CMath::MIN_REAL_NUMBER=1E-300;
 #ifdef USE_LOGCACHE
 float64_t* CMath::logtable = NULL;
 #endif
-char* CMath::rand_state = NULL;
 uint32_t CMath::seed = 0;
 
 CMath::CMath()
 : CSGObject()
 {
-	CMath::rand_state=SG_MALLOC(char, RNG_SEED_SIZE);
-	init_random();
-
 #ifdef USE_LOGCACHE
     LOGRANGE=CMath::determine_logrange();
     LOGACCURACY=CMath::determine_logaccuracy(LOGRANGE);
@@ -69,8 +66,6 @@ CMath::CMath()
 
 CMath::~CMath()
 {
-	SG_FREE(CMath::rand_state);
-	CMath::rand_state=NULL;
 #ifdef USE_LOGCACHE
 	SG_FREE(CMath::logtable);
 	CMath::logtable=NULL;
@@ -188,4 +183,28 @@ float64_t CMath::Align(
 
   // return the final cost
   return actCost;
+}
+
+void CMath::linspace(float64_t* output, float64_t start, float64_t end, int32_t n)
+{
+	float64_t delta = (end-start) / (n-1);
+	float64_t v = start;
+	index_t i = 0;
+	while ( v <= end )
+	{
+		output[i++] = v;
+		v += delta;
+	}
+	output[n-1] = end;
+}
+
+
+int CMath::is_nan(double f)
+{
+	return std::isnan(f);
+}
+
+int CMath::is_infinity(double f)
+{
+	return std::isinf(f);
 }

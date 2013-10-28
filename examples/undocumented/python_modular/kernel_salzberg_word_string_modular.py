@@ -8,9 +8,9 @@ label_traindat = lm.load_labels('../data/label_train_dna.dat')
 parameter_list = [[traindat,testdat,label_traindat,3,0,False],[traindat,testdat,label_traindat,3,0,False]]
 def kernel_salzberg_word_string_modular (fm_train_dna=traindat,fm_test_dna=testdat,label_train_dna=label_traindat,
 order=3,gap=0,reverse=False):
-	from shogun.Features import StringCharFeatures, StringWordFeatures, DNA, BinaryLabels
-	from shogun.Kernel import SalzbergWordStringKernel
-	from shogun.Classifier import PluginEstimate
+	from modshogun import StringCharFeatures, StringWordFeatures, DNA, BinaryLabels
+	from modshogun import SalzbergWordStringKernel
+	from modshogun import PluginEstimate
 
 	charfeat=StringCharFeatures(fm_train_dna, DNA)
 	feats_train=StringWordFeatures(charfeat.get_alphabet())

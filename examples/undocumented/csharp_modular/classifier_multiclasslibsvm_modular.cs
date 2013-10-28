@@ -26,7 +26,7 @@ public class classifier_multiclasslibsvm_modular {
 		svm.train();
 
 		kernel.init(feats_train, feats_test);
-		double[] out_labels = MulticlassLabels.obtain_from_generic(svm.apply()).get_labels();
+		double[] out_labels = LabelsFactory.to_multiclass(svm.apply()).get_labels();
 
 		foreach (double item in out_labels)
 		    Console.Write(item);

@@ -24,13 +24,6 @@
 #include <octave/Cell.h>
 
 #include <shogun/lib/DataType.h>
-
-void* get_copy(void* src, size_t len)
-{
-    void* copy=SG_MALLOC(uint8_t, len);
-    memcpy(copy, src, len);
-    return copy;
-}
 %}
 
 /* One dimensional input arrays */
@@ -80,7 +73,11 @@ TYPEMAP_IN_SGVECTOR(is_uint16_type, uint16NDArray, uint16_array_value, uint16_t,
     sg_type* vec = $1.vector;
     int32_t len = $1.vlen;
 
-    oct_type mat=oct_type(dim_vector(1, len));
+    dim_vector vdims = dim_vector::alloc(2);
+    vdims(0) = 1;
+    vdims(1) = len;
+
+    oct_type mat=oct_type(vdims);
 
     if (mat.cols() != len)
         SWIG_fail;
@@ -150,7 +147,11 @@ TYPEMAP_IN_SGMATRIX(is_uint16_type, uint16NDArray, uint16_array_value, uint16_t,
     int32_t num_feat = $1.num_rows;
     int32_t num_vec = $1.num_cols;
 
-    oct_type mat=oct_type(dim_vector(num_feat, num_vec));
+    dim_vector vdims = dim_vector::alloc(2);
+    vdims(0) = num_feat;
+    vdims(1) = num_vec;
+
+    oct_type mat=oct_type(vdims);
 
     if (mat.rows() != num_feat || mat.cols() != num_vec)
         SWIG_fail;
@@ -175,7 +176,87 @@ TYPEMAP_OUT_SGMATRIX(uint16NDArray, uint16_t, uint16_t, "Word")
 #undef TYPEMAP_OUT_SGMATRIX
 
 
-/* TODO INND ARRAYS */
+/* N-dimensional input arrays */
+%define TYPEMAP_INND(oct_type_check, oct_type, oct_converter, sg_type, if_type, error_string)
+%typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER) shogun::SGNDArray<sg_type>
+{
+    const octave_value m=$input;
+    $1 = (m.is_matrix_type() && m.oct_type_check()) ? 1 : 0;
+}
+
+%typemap(in) shogun::SGNDArray<sg_type>
+{
+    oct_type m;
+    const octave_value mat_feat=$input;
+    if (!mat_feat.is_matrix_type() || !mat_feat.oct_type_check())
+    {
+        /*SG_ERROR("Expected " error_string " Matrix as argument\n");*/
+        SWIG_fail;
+    }
+
+    m = mat_feat.oct_converter();
+
+    int32_t n = 1;
+    index_t * sdims = SG_MALLOC(index_t, m.ndims());
+    for (int32_t i = 0; i < m.ndims(); i++)
+    {
+        sdims[i] = m.dims().elem(i);
+        n *= m.dims().elem(i);
+    }
+
+    void* copy=get_copy((void*) m.fortran_vec(), size_t(n*sizeof(sg_type)));
+    $1 = shogun::SGNDArray<sg_type>((sg_type*) copy, sdims, m.ndims(), true);
+}
+%typemap(freearg) shogun::SGNDArray<sg_type>
+{
+}
+%enddef
+
+/* Define concrete examples of the TYPEMAP_INND macros */
+TYPEMAP_INND(is_uint8_type, uint8NDArray, uint8_array_value, uint8_t, uint8_t, "Byte")
+TYPEMAP_INND(is_char_matrix, charNDArray, char_matrix_value, char, char, "Char")
+TYPEMAP_INND(is_int32_type, int32NDArray, int32_array_value, int32_t, int32_t, "Integer")
+TYPEMAP_INND(is_int16_type, int16NDArray, int16_array_value, int16_t, int16_t, "Short")
+TYPEMAP_INND(is_single_type, NDArray, array_value, float32_t, float32_t, "Single Precision")
+TYPEMAP_INND(is_double_type, NDArray, array_value, float64_t, float64_t, "Double Precision")
+TYPEMAP_INND(is_uint16_type, uint16NDArray, uint16_array_value, uint16_t, uint16_t, "Word")
+#undef TYPEMAP_INND
+
+/* N-dimensional output arrays */
+%define TYPEMAP_OUTND(oct_type, sg_type, if_type, error_string)
+%typemap(out) shogun::SGNDArray<sg_type>
+{
+    sg_type* array = $1.array;
+    int32_t* dims = $1.dims;
+    int32_t num_dims = $1.num_dims;
+
+    dim_vector vdims = dim_vector::alloc(num_dims);
+
+    int32_t n = 1;
+    for (int32_t i = 0; i < num_dims; i++)
+    {
+        n *= dims[i];
+        vdims(i) = (int32_t)dims[i];
+    }
+
+    oct_type mat = oct_type(vdims);
+
+    for (int32_t i=0; i<n; i++)
+        mat(i) = (if_type) array[i];
+
+    $result=mat;
+}
+%enddef
+
+TYPEMAP_OUTND(uint8NDArray, uint8_t, uint8_t, "Byte")
+TYPEMAP_OUTND(charNDArray, char, char, "Char")
+TYPEMAP_OUTND(int32NDArray, int32_t, int32_t, "Integer")
+TYPEMAP_OUTND(int16NDArray, int16_t, int16_t, "Short")
+TYPEMAP_OUTND(NDArray, float32_t, float32_t, "Single Precision")
+TYPEMAP_OUTND(NDArray, float64_t, float64_t, "Double Precision")
+TYPEMAP_OUTND(uint16NDArray, uint16_t, uint16_t, "Word")
+#undef TYPEMAP_OUTND
+
 
 /* input typemap for CStringFeatures<char> etc */
 %define TYPEMAP_STRINGFEATURES_IN(oct_type_check, oct_type, oct_converter, sg_type, if_type, error_string)
@@ -214,12 +295,12 @@ TYPEMAP_OUT_SGMATRIX(uint16NDArray, uint16_t, uint16_t, "Word")
             oct_type str=c.elem(i).oct_converter();
 
             int32_t len=str.cols();
-            if (len>0) 
-            { 
+            if (len>0)
+            {
                 strings[i].slen=len; /* all must have same length in octave */
                 strings[i].string=SG_MALLOC(sg_type, len+1); /* not zero terminated in octave */
 
-                int32_t j; 
+                int32_t j;
                 for (j=0; j<len; j++)
                     strings[i].string[j]=str(0,j);
                 strings[i].string[j]='\0';
@@ -236,15 +317,15 @@ TYPEMAP_OUT_SGMATRIX(uint16NDArray, uint16_t, uint16_t, "Word")
     else if (arg.oct_type_check())
     {
         oct_type data=arg.oct_converter();
-        num_strings=data.cols(); 
+        num_strings=data.cols();
         int32_t len=data.rows();
         strings=SG_MALLOC(SGString<sg_type>, num_strings);
         ASSERT(strings);
 
         for (int32_t i=0; i<num_strings; i++)
-        { 
-            if (len>0) 
-            { 
+        {
+            if (len>0)
+            {
                 strings[i].slen=len; /* all must have same length in octave */
                 strings[i].string=SG_MALLOC(sg_type, len+1); /* not zero terminated in octave */
 
@@ -254,7 +335,7 @@ TYPEMAP_OUT_SGMATRIX(uint16NDArray, uint16_t, uint16_t, "Word")
                 strings[i].string[j]='\0';
             }
             else
-            { 
+            {
                 /*SG_WARNING( "string with index %d has zero length.\n", i+1);*/
                 strings[i].slen=0;
                 strings[i].string=NULL;
@@ -366,7 +447,7 @@ TYPEMAP_SPARSEFEATURES_IN(float64_t,     Matrix)
 {
 	int32_t num_vec = $1.num_vectors;
 	int32_t num_feat = $1.num_features;
-	
+
 	int64_t nnz = 0;
 	for (int32_t i = 0; i < num_vec; i++)
 	{

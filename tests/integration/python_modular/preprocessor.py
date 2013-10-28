@@ -2,7 +2,7 @@
 Test Preprocessor
 """
 
-from shogun.Kernel import *
+from modshogun import *
 
 import util
 

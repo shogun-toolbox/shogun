@@ -14,7 +14,6 @@
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/labels/StructuredLabels.h>
 #include <shogun/lib/common.h>
-#include <shogun/loss/HingeLoss.h>
 #include <shogun/machine/LinearMulticlassMachine.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/multiclass/MulticlassOneVsRestStrategy.h>
@@ -28,7 +27,7 @@
 using namespace shogun;
 
 #define	DIMS		2
-#define EPSILON  	10e-5
+#define EPSILON	10e-5
 #define	NUM_SAMPLES	100
 #define NUM_CLASSES	10
 
@@ -200,14 +199,10 @@ int main(int argc, char * argv[])
 	// Create structured model
 	CMulticlassModel* model = new CMulticlassModel(features, labels);
 
-	// Create loss function
-	CHingeLoss* loss = new CHingeLoss();
-
 	// Create SO-SVM
 	CDualLibQPBMSOSVM* sosvm =
 		new CDualLibQPBMSOSVM(
 				model,
-				loss,
 				labels,
 				lambda);
 	SG_REF(sosvm);
@@ -232,7 +227,7 @@ int main(int argc, char * argv[])
 			res.Fp, res.Fd, res.nIter, res.nCP, res.nzA, res.exitflag);
 
 	CStructuredLabels* out =
-		CStructuredLabels::obtain_from_generic(sosvm->apply());
+		CLabelsFactory::to_structured(sosvm->apply());
 	SG_REF(out);
 
 	SG_SPRINT("\n");

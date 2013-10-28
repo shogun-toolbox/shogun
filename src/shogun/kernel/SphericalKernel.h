@@ -66,8 +66,6 @@ class CSphericalKernel: public CKernel
 	 */
 	virtual bool init(CFeatures* l, CFeatures* r);
 
-	void init();
-
 	/**
 	 * @return kernel type
 	 */
@@ -94,7 +92,7 @@ class CSphericalKernel: public CKernel
 	 */
 	virtual void set_sigma(float64_t s)
 	{
-	  	sigma=s;
+		sigma=s;
 	}
 
 	/** return the kernel's sigma
@@ -107,6 +105,11 @@ class CSphericalKernel: public CKernel
 	}
 
 	virtual ~CSphericalKernel();
+
+private:
+	/** register parameters */
+	void register_params();
+
 protected:
 
 	/** distance */

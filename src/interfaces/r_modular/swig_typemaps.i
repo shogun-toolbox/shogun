@@ -14,6 +14,7 @@
 %{
 
 #include <shogun/lib/DataType.h>
+#include <shogun/lib/memory.h>
 
 extern "C" {
 #include <R.h>
@@ -30,6 +31,7 @@ extern "C" {
 #ifndef ScalarReal
 #define ScalarReal      Rf_ScalarReal
 #endif
+
 %}
 
 /* One dimensional input arrays */
@@ -49,7 +51,7 @@ extern "C" {
         SWIG_fail;
     }
 
-    $1 = shogun::SGVector<sg_type>((sg_type*) r_cast(rvec), LENGTH(rvec));
+    $1 = shogun::SGVector<sg_type>((sg_type*) get_copy(r_cast(rvec), sizeof(sg_type)*LENGTH(rvec)), LENGTH(rvec));
 }
 %typemap(freearg) shogun::SGVector<sg_type>
 {
@@ -101,7 +103,7 @@ TYPEMAP_OUT_SGVECTOR(INTSXP, INTEGER, uint16_t, int, "Word")
         SWIG_fail;
     }
 
-    $1 = shogun::SGMatrix<sg_type>((sg_type*) r_cast($input),  Rf_nrows($input), Rf_ncols($input));
+    $1 = shogun::SGMatrix<sg_type>((sg_type*) get_copy(r_cast($input), ((size_t) Rf_nrows($input))*Rf_ncols($input)*sizeof(sg_type)), Rf_nrows($input), Rf_ncols($input));
 }
 %typemap(freearg) shogun::SGMatrix<sg_type>
 {
@@ -165,8 +167,8 @@ TYPEMAP_OUT_SGMATRIX(INTSXP, INTEGER, uint16_t, int, "Word")
         sg_type* c= (sg_type*) if_type(s);
         int32_t len=LENGTH(s);
 
-        if (len>0) 
-        { 
+        if (len>0)
+        {
 			sg_type* dst=SG_MALLOC(sg_type, len+1);
             /*ASSERT(strs[i].string);*/
 			strs[i].string=(sg_type*) memcpy(dst, c, len*sizeof(sg_type));

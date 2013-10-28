@@ -1,4 +1,4 @@
-init_shogun
+modshogun
 
 addpath('tools');
 label_train=load_matrix('../data/label_train_twoclass.dat');

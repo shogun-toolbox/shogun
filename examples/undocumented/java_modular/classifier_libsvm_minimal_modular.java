@@ -5,13 +5,13 @@ import static org.jblas.DoubleMatrix.concatHorizontally;
 import static org.jblas.DoubleMatrix.ones;
 import static org.jblas.DoubleMatrix.randn;
 
-import static org.shogun.BinaryLabels.obtain_from_generic;
+import static org.shogun.LabelsFactory.to_binary;
 
 public class classifier_libsvm_minimal_modular {
 	static {
 		System.loadLibrary("modshogun");
 	}
-	
+
 	public static void main(String argv[]) {
 		modshogun.init_shogun_with_defaults();
 
@@ -40,7 +40,7 @@ public class classifier_libsvm_minimal_modular {
 		LibSVM svm = new LibSVM(C, kernel, labels);
 		svm.train();
 
-		DoubleMatrix out = obtain_from_generic(svm.apply(feats_test)).get_labels();
+		DoubleMatrix out = to_binary(svm.apply(feats_test)).get_labels();
 
 		System.out.println("Mean Error = " + signum(out).ne(testlab).mean());
 		modshogun.exit_shogun();

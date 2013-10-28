@@ -5,7 +5,7 @@ require 'load'
 parameter_list={{5,1,10, 2.0, 10}, {10,0.3,2, 1.0, 0.1}}
 
 function check_status(status)
-	 
+
 	assert(status == true)
 	-- if  status:
   --	print "OK reading/writing .h5\n"
@@ -19,7 +19,7 @@ function concatenate(...)
 		for row,rowdata in ipairs(t) do
 			for col,coldata in ipairs(rowdata) do
 				table.insert(result[row], coldata)
-			end		
+			end
 		end
 	end
 	return result
@@ -31,7 +31,7 @@ function rand_matrix(rows, cols, dist)
 		matrix[i] = {}
 		for j = 1, cols do
 			matrix[i][j] = math.random() + dist
-		end	
+		end
 	end
 	return matrix
 end
@@ -54,11 +54,11 @@ function generate_lab(num)
 end
 
 function serialization_complex_example(num, dist, dim, C, width)
-	
+
 	math.randomseed(17)
 
 	data=concatenate(rand_matrix(dim, num, 0), rand_matrix(dim, num, dist), rand_matrix(dim, num, 2 * dist), rand_matrix(dim, num, 3 * dist))
-	
+
 	lab=generate_lab(num)
 
 	feats=modshogun.RealFeatures(data)

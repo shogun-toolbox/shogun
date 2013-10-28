@@ -75,6 +75,7 @@ SGVector<float64_t> COnlineLinearMachine::apply_get_outputs(CFeatures* data)
 	for (int32_t i=0; i<num_labels; i++)
 		labels_array.vector[i]=(*labels_dynarray)[i];
 
+	delete labels_dynarray;
 	return labels_array;
 }
 

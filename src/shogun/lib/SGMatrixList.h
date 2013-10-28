@@ -44,10 +44,7 @@ template<class T> class SGMatrixList : public SGReferencedData
 		 *
 		 * @return the matrix at position index of the list
 		 */
-		inline SGMatrix<T>& get_matrix(index_t index) const
-		{
-			return matrix_list[index];
-		}
+		SGMatrix<T> get_matrix(index_t index) const;
 
 		/** operator overload to get a matrix for read & write access
 		 *
@@ -56,10 +53,15 @@ template<class T> class SGMatrixList : public SGReferencedData
 		 *
 		 * @return the matrix at position index of the list
 		 */
-		inline SGMatrix<T>& operator[](index_t index) const
-		{
-			return matrix_list[index];
-		}
+		SGMatrix<T> operator[](index_t index) const;
+
+		/** set a matrix of the list
+		 *
+		 * @param index matrix index, index must be less than
+		 * num_matrices although no check is performed in the method
+		 * @param matrix matrix to set at index
+		 */
+		void set_matrix(index_t index, const SGMatrix<T> matrix);
 
 		/**
 		 * divide the matrix into a list of matrices. Each of the new
@@ -82,10 +84,6 @@ template<class T> class SGMatrixList : public SGReferencedData
 
 		/** free data */
 		virtual void free_data();
-	
-	private:
-		/** helper method of free_data */
-		void cleanup_matrices();
 
 	public:
 		/** matrix list */

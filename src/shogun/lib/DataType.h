@@ -4,8 +4,9 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2012 Fernando José Iglesias García
+ * Written (W) 2012 Fernando Jose Iglesias Garcia
  * Written (W) 2010,2012 Soeren Sonnenburg
+ * Written (W) 2011-2013 Heiko Strathmann
  * Copyright (C) 2010 Berlin Institute of Technology
  * Copyright (C) 2012 Soeren Sonnenburg
  */
@@ -29,14 +30,16 @@ enum EContainerType
 	CT_MATRIX=2,
 	CT_NDARRAY=3,
 	CT_SGVECTOR=4,
-	CT_SGMATRIX=5
+	CT_SGMATRIX=5,
+	CT_UNDEFINED=6
 };
 
 enum EStructType
 {
 	ST_NONE=0,
 	ST_STRING=1,
-	ST_SPARSE=2
+	ST_SPARSE=2,
+	ST_UNDEFINED=3
 };
 
 enum EPrimitiveType
@@ -54,7 +57,9 @@ enum EPrimitiveType
 	PT_FLOAT32=10,
 	PT_FLOAT64=11,
 	PT_FLOATMAX=12,
-	PT_SGOBJECT=13
+	PT_SGOBJECT=13,
+	PT_COMPLEX128=14,
+	PT_UNDEFINED=15
 };
 #endif
 
@@ -99,6 +104,19 @@ struct TSGDataType
 						 EPrimitiveType ptype, index_t* length_y,
 						 index_t* length_x);
 
+	/** Compares the content of the data types, including the length fields if
+	 * non-NULL
+	 * @return other type to compare with
+	 * @return true if equals, false otherwise
+	 */
+	bool equals(TSGDataType other);
+
+	/** Compares the content of the data types, excluding the length fields
+	 * @return other type to compare with
+	 * @return true if equals, false otherwise
+	 */
+	bool equals_without_length(TSGDataType other);
+
 	/** equality */
 	bool operator==(const TSGDataType& a);
 	/** inequality
@@ -119,6 +137,22 @@ struct TSGDataType
 	size_t sizeof_stype() const;
 	/** size of ptype */
 	size_t sizeof_ptype() const;
+
+	/** get the size of the primitive type ptype
+	 *
+	 * @param ptype the primitive type
+	 * @return its size
+	 */
+	static size_t sizeof_ptype(EPrimitiveType ptype);
+
+	/** get the size of the structured type stype that internally uses the
+	 * primitive type ptype as type
+	 *
+	 * @param stype the structured type
+	 * @param ptype the primitive type
+	 * @return its size
+	 */
+	static size_t sizeof_stype(EStructType stype, EPrimitiveType ptype);
 
 	/** size of sparse entry
 	 * @param ptype

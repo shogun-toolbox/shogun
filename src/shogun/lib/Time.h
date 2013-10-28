@@ -11,13 +11,34 @@
 #ifndef __TIME_H__
 #define __TIME_H__
 
+#ifndef _WIN32
 #include <sys/time.h>
+#endif
 #include <time.h>
 
 #include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/base/SGObject.h>
 
+#if defined(_MSC_VER) || defined(__MINGW32__)
+
+#ifndef _TIMEVAL_DEFINED /* also in winsock[2].h */
+#define _TIMEVAL_DEFINED
+struct timeval {
+    long tv_sec;
+    long tv_usec;
+};
+#endif /* _TIMEVAL_DEFINED */
+
+int gettimeofday(struct timeval* tp, void* tzp) {
+    DWORD t;
+    t = timeGetTime();
+    tp->tv_sec = t / 1000;
+    tp->tv_usec = t % 1000;
+    /* 0 indicates that the call succeeded. */
+    return 0;
+}
+#endif
 namespace shogun
 {
 /** @brief Class Time that implements a stopwatch based on either cpu time or wall

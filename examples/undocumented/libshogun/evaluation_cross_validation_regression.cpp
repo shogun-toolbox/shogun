@@ -26,6 +26,7 @@ void print_message(FILE* target, const char* str)
 
 void test_cross_validation()
 {
+#ifdef HAVE_LAPACK
 	/* data matrix dimensions */
 	index_t num_vectors=100;
 	index_t num_features=1;
@@ -65,7 +66,7 @@ void test_cross_validation()
 
 	/* train and output */
 	krr->train(features);
-	CRegressionLabels* output= CRegressionLabels::obtain_from_generic(krr->apply());
+	CRegressionLabels* output= CLabelsFactory::to_regression(krr->apply());
 	for (index_t i=0; i<num_vectors; ++i)
 	{
 		SG_SPRINT("x=%f, train=%f, predict=%f\n", train_dat.matrix[i],
@@ -110,6 +111,7 @@ void test_cross_validation()
 	SG_UNREF(result);
 	SG_UNREF(cross);
 	SG_UNREF(features);
+#endif /* HAVE_LAPACK */
 }
 
 int main(int argc, char **argv)

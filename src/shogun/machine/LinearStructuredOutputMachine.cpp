@@ -20,10 +20,9 @@ CLinearStructuredOutputMachine::CLinearStructuredOutputMachine()
 }
 
 CLinearStructuredOutputMachine::CLinearStructuredOutputMachine(
-		CStructuredModel*  model, 
-		CLossFunction*     loss, 
+		CStructuredModel*  model,
 		CStructuredLabels* labs)
-: CStructuredOutputMachine(model, loss, labs)
+: CStructuredOutputMachine(model, labs)
 {
 	register_parameters();
 }
@@ -32,14 +31,9 @@ CLinearStructuredOutputMachine::~CLinearStructuredOutputMachine()
 {
 }
 
-void CLinearStructuredOutputMachine::set_features(CFeatures* f)
+void CLinearStructuredOutputMachine::set_w(SGVector< float64_t > w)
 {
-	m_model->set_features(f);
-}
-
-CFeatures* CLinearStructuredOutputMachine::get_features() const
-{
-	return m_model->get_features();
+	m_w = w;
 }
 
 SGVector< float64_t > CLinearStructuredOutputMachine::get_w() const
@@ -78,4 +72,8 @@ CStructuredLabels* CLinearStructuredOutputMachine::apply_structured(CFeatures* d
 void CLinearStructuredOutputMachine::register_parameters()
 {
 	SG_ADD(&m_w, "m_w", "Weight vector", MS_NOT_AVAILABLE);
+}
+
+void CLinearStructuredOutputMachine::store_model_features()
+{
 }

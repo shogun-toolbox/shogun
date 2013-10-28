@@ -1,7 +1,7 @@
 import org.shogun.*;
 import org.jblas.*;
 
-import static org.shogun.BinaryLabels.obtain_from_generic;
+import static org.shogun.LabelsFactory.to_binary;
 
 public class classifier_mpdsvm_modular {
 	static {
@@ -33,7 +33,7 @@ public class classifier_mpdsvm_modular {
 		svm.train();
 
 		kernel.init(feats_train, feats_test);
-		DoubleMatrix out_labels = obtain_from_generic(svm.apply()).get_labels();
+		DoubleMatrix out_labels = to_binary(svm.apply()).get_labels();
 		System.out.println(out_labels.toString());
 
 		modshogun.exit_shogun();

@@ -109,15 +109,10 @@ void CLinearMachine::set_features(CDotFeatures* feat)
 	features=feat;
 }
 
-CDotFeatures* CLinearMachine::get_features() 
+CDotFeatures* CLinearMachine::get_features()
 {
 	SG_REF(features);
 	return features;
-}
-
-CMachine* CLinearMachine::clone()
-{
-	return new CLinearMachine(this);
 }
 
 void CLinearMachine::store_model_features()

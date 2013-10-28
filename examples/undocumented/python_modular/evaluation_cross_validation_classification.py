@@ -22,12 +22,12 @@ label_traindat=concatenate((-ones(num_vectors), ones(num_vectors)));
 parameter_list = [[traindat,label_traindat]]
 
 def evaluation_cross_validation_classification (traindat=traindat, label_traindat=label_traindat):
-    from shogun.Evaluation import CrossValidation, CrossValidationResult
-    from shogun.Evaluation import ContingencyTableEvaluation, ACCURACY
-    from shogun.Evaluation import StratifiedCrossValidationSplitting
-    from shogun.Features import BinaryLabels
-    from shogun.Features import RealFeatures
-    from shogun.Classifier import LibLinear, L2R_L2LOSS_SVC
+    from modshogun import CrossValidation, CrossValidationResult
+    from modshogun import ContingencyTableEvaluation, ACCURACY
+    from modshogun import StratifiedCrossValidationSplitting
+    from modshogun import BinaryLabels
+    from modshogun import RealFeatures
+    from modshogun import LibLinear, L2R_L2LOSS_SVC
 
     # training data
     features=RealFeatures(traindat)
@@ -38,7 +38,7 @@ def evaluation_cross_validation_classification (traindat=traindat, label_trainda
 
     # splitting strategy for 5 fold cross-validation (for classification its better
     # to use "StratifiedCrossValidation", but the standard
-    # "StratifiedCrossValidationSplitting" is also available
+    # "CrossValidationSplitting" is also available
     splitting_strategy=StratifiedCrossValidationSplitting(labels, 5)
 
     # evaluation method
@@ -48,14 +48,14 @@ def evaluation_cross_validation_classification (traindat=traindat, label_trainda
     cross_validation=CrossValidation(classifier, features, labels,
 	    splitting_strategy, evaluation_criterium)
     cross_validation.set_autolock(False)
-	
+
     # (optional) repeat x-val 10 times
     cross_validation.set_num_runs(10)
 
     # (optional) request 95% confidence intervals for results (not actually needed
     # for this toy example)
     cross_validation.set_conf_int_alpha(0.05)
-	
+
     # perform cross-validation and print(results)
     result=cross_validation.evaluate()
     #print("mean:", result.mean)

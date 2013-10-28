@@ -94,6 +94,13 @@ class CLinearHMM : public CDistribution
 		 */
 		float64_t get_likelihood_example(uint16_t* vector, int32_t len);
 
+		/** compute likelihood for example
+		 *
+		 * @param num_example which example
+		 * @return likelihood for example
+		 */
+		float64_t get_likelihood_example(int32_t num_example);
+
 		/** get logarithm of one example's likelihood
 		 *
 		 * @param num_example which example

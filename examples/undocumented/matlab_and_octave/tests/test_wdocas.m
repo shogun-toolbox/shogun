@@ -43,7 +43,7 @@ for j=1:size(traindat,2),
 			 dat(offset+val+1,j) = weights(d);
 			 offset = offset + 4^d;
 		   end
-	   end    
+	   end
 	end
 end
 

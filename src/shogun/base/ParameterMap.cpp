@@ -10,23 +10,25 @@
 
 #include <shogun/base/ParameterMap.h>
 #include <shogun/base/Parameter.h>
+#include <shogun/lib/memory.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/lib/DataType.h>
 
 using namespace shogun;
 
 SGParamInfo::SGParamInfo()
 {
 	m_name=NULL;
-	m_ctype=(EContainerType) -1;
-	m_stype=(EStructType) -1;
-	m_ptype=(EPrimitiveType) -1;
+	m_ctype=CT_UNDEFINED;
+	m_stype=ST_UNDEFINED;
+	m_ptype=PT_UNDEFINED;
 	m_param_version=-1;
 }
 
 SGParamInfo::SGParamInfo(const SGParamInfo& orig)
 {
 	/* copy name if existent */
-	m_name=orig.m_name ? strdup(orig.m_name) : NULL;
+	m_name=get_strdup(orig.m_name);
 
 	m_ctype=orig.m_ctype;
 	m_stype=orig.m_stype;
@@ -38,7 +40,7 @@ SGParamInfo::SGParamInfo(const char* name, EContainerType ctype,
 		EStructType stype, EPrimitiveType ptype, int32_t param_version)
 {
 	/* copy name if existent */
-	m_name=name ? strdup(name) : NULL;
+	m_name=get_strdup(name);
 
 	m_ctype=ctype;
 	m_stype=stype;
@@ -49,7 +51,7 @@ SGParamInfo::SGParamInfo(const char* name, EContainerType ctype,
 SGParamInfo::SGParamInfo(const TParameter* param, int32_t param_version)
 {
 	/* copy name if existent */
-	m_name=param->m_name ? strdup(param->m_name) : NULL;
+	m_name=get_strdup(param->m_name);
 
 	TSGDataType type=param->m_datatype;
 	m_ctype=type.m_ctype;
@@ -181,7 +183,7 @@ bool SGParamInfo::operator>(const SGParamInfo& other) const
 bool SGParamInfo::is_empty() const
 {
 	/* return true if this info is for empty parameter */
-	return m_ctype<0 && m_stype<0 && m_ptype<0 && !m_name;
+	return m_ctype==CT_UNDEFINED && m_stype==ST_UNDEFINED && m_ptype==PT_UNDEFINED && !m_name;
 }
 
 ParameterMapElement::ParameterMapElement()
@@ -242,7 +244,7 @@ ParameterMap::~ParameterMap()
 void ParameterMap::put(const SGParamInfo* key, const SGParamInfo* value)
 {
 	/* assert that versions do differ exactly one if mapping is non-empty */
-	if(key->m_param_version-value->m_param_version!=1)
+	if (key->m_param_version-value->m_param_version!=1)
 	{
 		if (!key->is_empty() && !value->is_empty())
 		{

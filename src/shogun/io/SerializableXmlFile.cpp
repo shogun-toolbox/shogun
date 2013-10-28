@@ -178,35 +178,35 @@ CSerializableXmlFile::write_scalar_wrapped(
 				) <= 0) return false;
 		break;
 	case PT_INT8:
-		if (snprintf(buf, STRING_LEN, "%"PRIi8, *(int8_t*) param
+		if (snprintf(buf, STRING_LEN, "%" PRIi8, *(int8_t*) param
 				) <= 0) return false;
 		break;
 	case PT_UINT8:
-		if (snprintf(buf, STRING_LEN, "%"PRIu8, *(uint8_t*) param
+		if (snprintf(buf, STRING_LEN, "%" PRIu8, *(uint8_t*) param
 				) <= 0) return false;
 		break;
 	case PT_INT16:
-		if (snprintf(buf, STRING_LEN, "%"PRIi16, *(int16_t*) param
+		if (snprintf(buf, STRING_LEN, "%" PRIi16, *(int16_t*) param
 				) <= 0) return false;
 		break;
 	case PT_UINT16:
-		if (snprintf(buf, STRING_LEN, "%"PRIu16, *(uint16_t*) param
+		if (snprintf(buf, STRING_LEN, "%" PRIu16, *(uint16_t*) param
 				) <= 0) return false;
 		break;
 	case PT_INT32:
-		if (snprintf(buf, STRING_LEN, "%"PRIi32, *(int32_t*) param
+		if (snprintf(buf, STRING_LEN, "%" PRIi32, *(int32_t*) param
 				) <= 0) return false;
 		break;
 	case PT_UINT32:
-		if (snprintf(buf, STRING_LEN, "%"PRIu32, *(uint32_t*) param
+		if (snprintf(buf, STRING_LEN, "%" PRIu32, *(uint32_t*) param
 				) <= 0) return false;
 		break;
 	case PT_INT64:
-		if (snprintf(buf, STRING_LEN, "%"PRIi64, *(int64_t*) param
+		if (snprintf(buf, STRING_LEN, "%" PRIi64, *(int64_t*) param
 				) <= 0) return false;
 		break;
 	case PT_UINT64:
-		if (snprintf(buf, STRING_LEN, "%"PRIu64, *(uint64_t*) param
+		if (snprintf(buf, STRING_LEN, "%" PRIu64, *(uint64_t*) param
 				) <= 0) return false;
 		break;
 	case PT_FLOAT32:
@@ -221,6 +221,12 @@ CSerializableXmlFile::write_scalar_wrapped(
 		if (snprintf(buf, STRING_LEN, "%.16Lg", *(floatmax_t*)
 					 param) <= 0) return false;
 		break;
+	case PT_COMPLEX128:
+		if (snprintf(buf, STRING_LEN, "(%.16lg,%.16lg)",
+				((complex128_t*) param)->real(),((complex128_t*) param)->imag()
+				) <= 0) return false;
+		break;
+	case PT_UNDEFINED:
 	case PT_SGOBJECT:
 		SG_ERROR("write_scalar_wrapped(): Implementation error during"
 				 " writing XmlFile!");
@@ -303,7 +309,7 @@ CSerializableXmlFile::write_sparseentry_begin_wrapped(
 	push_node(BAD_CAST STR_SPARSE);
 
 	string_t buf;
-	snprintf(buf, STRING_LEN, "%"PRIi32, feat_index);
+	snprintf(buf, STRING_LEN, "%" PRIi32, feat_index);
 	if (xmlNewProp(m_stack_stream.back(), BAD_CAST STR_PROP_FEATINDEX,
 				   BAD_CAST buf) == NULL) return false;
 	return true;
@@ -328,7 +334,7 @@ CSerializableXmlFile::write_item_begin_wrapped(
 		{
 			if (x != 0) pop_node();
 
-			string_t buf_x; snprintf(buf_x, STRING_LEN, "x%"PRIi32, x);
+			string_t buf_x; snprintf(buf_x, STRING_LEN, "x%" PRIi32, x);
 			if (!push_node(BAD_CAST buf_x)) return false;
 		}
 	}

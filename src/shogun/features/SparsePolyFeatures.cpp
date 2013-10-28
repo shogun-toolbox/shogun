@@ -90,11 +90,6 @@ int32_t CSparsePolyFeatures::get_num_vectors() const
 
 }
 
-int32_t CSparsePolyFeatures::get_size() const
-{
-	return sizeof(float64_t);
-}
-
 void* CSparsePolyFeatures::get_feature_iterator(int32_t vector_index)
 {
 	SG_NOTIMPLEMENTED
@@ -104,7 +99,7 @@ void* CSparsePolyFeatures::get_feature_iterator(int32_t vector_index)
 bool CSparsePolyFeatures::get_next_feature(int32_t& index, float64_t& value, void* iterator)
 {
 	SG_NOTIMPLEMENTED
-	return NULL;
+	return false;
 }
 
 void CSparsePolyFeatures::free_feature_iterator(void* iterator)

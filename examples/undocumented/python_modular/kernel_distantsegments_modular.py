@@ -7,12 +7,12 @@ testdat = lm.load_dna('../data/fm_test_dna.dat')
 parameter_list = [[traindat,testdat,5,5],[traindat,testdat,6,6]]
 
 def kernel_distantsegments_modular (fm_train_dna=traindat,fm_test_dna=testdat,delta=5, theta=5):
-	from shogun.Features import StringCharFeatures, DNA
-	from shogun.Kernel import DistantSegmentsKernel
+	from modshogun import StringCharFeatures, DNA
+	from modshogun import DistantSegmentsKernel
 
 	feats_train=StringCharFeatures(fm_train_dna, DNA)
 	feats_test=StringCharFeatures(fm_test_dna, DNA)
-	
+
 	kernel=DistantSegmentsKernel(feats_train, feats_train, 10, delta, theta)
 
 	km_train=kernel.get_kernel_matrix()

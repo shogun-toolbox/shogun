@@ -1,9 +1,9 @@
 In this example toy data is being processed using the Local Tangent Space
 Alignment (LTSA) algorithms as described in
 
-Zhang, Z., & Zha, H. (2002). Principal Manifolds 
-and Nonlinear Dimension Reduction via Local Tangent Space Alignment. 
-Journal of Shanghai University English Edition, 8(4), 406-424. SIAM. 
+Zhang, Z., & Zha, H. (2002). Principal Manifolds
+and Nonlinear Dimension Reduction via Local Tangent Space Alignment.
+Journal of Shanghai University English Edition, 8(4), 406-424. SIAM.
 Retrieved from http://arxiv.org/abs/cs/0212008
 
 Before processing the number of neighbors for computing local tangent space

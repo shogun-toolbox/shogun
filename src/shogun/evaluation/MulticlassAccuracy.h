@@ -26,7 +26,7 @@ class CLabels;
  * accuracy is estimated as
  *
  * \f[
- * 		\frac{\sum_{i=1}^{|L|} [L_i=R_i]}{|L|}
+ *		\frac{\sum_{i=1}^{|L|} [L_i=R_i]}{|L|}
  * \f]
  *
  *
@@ -59,7 +59,7 @@ public:
 	 */
 	static SGMatrix<int32_t> get_confusion_matrix(CLabels* predicted, CLabels* ground_truth);
 
-	inline EEvaluationDirection get_evaluation_direction()
+	inline EEvaluationDirection get_evaluation_direction() const
 	{
 		return ED_MAXIMIZE;
 	}

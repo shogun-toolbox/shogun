@@ -4,7 +4,8 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2012 Fernando José Iglesias García
+ * Written (W) 2011-2013 Heiko Strathmann
+ * Written (W) 2012 Fernando Jose Iglesias Garcia
  * Written (W) 2010,2012 Soeren Sonnenburg
  * Copyright (C) 2010 Berlin Institute of Technology
  * Copyright (C) 2012 Soeren Sonnenburg
@@ -53,6 +54,19 @@ template<class T> class SGMatrix : public SGReferencedData
 			return &matrix[col*num_rows];
 		}
 
+		/** get a row vector
+		 *
+		 * @param row row index
+		 * @return row vector
+		 */
+		SGVector<T> get_row_vector(index_t row) const;
+
+		/** get a main diagonal vector. Matrix is not required to be square.
+		 *
+		 * @return main diagonal vector
+		 */
+		SGVector<T> get_diagonal_vector() const;
+
 		/** operator overload for matrix read only access
 		 * @param i_row
 		 * @param i_col
@@ -87,7 +101,7 @@ template<class T> class SGMatrix : public SGReferencedData
 			return matrix[index];
 		}
 
-		/** 
+		/**
 		 * get the matrix (no copying is done here)
 		 *
 		 * @return the refcount increased matrix
@@ -172,7 +186,7 @@ template<class T> class SGMatrix : public SGReferencedData
 		static double* compute_eigenvectors(double* matrix, int n, int m);
 
 		/** compute few eigenpairs of a symmetric matrix using LAPACK DSYEVR method
-		 * (Relatively Robust Representations). 
+		 * (Relatively Robust Representations).
 		 * Has at least O(n^3/3) complexity
 		 * @param matrix_ symmetric matrix
 		 * @param eigenvalues contains iu-il+1 eigenvalues in ascending order (to be free'd)

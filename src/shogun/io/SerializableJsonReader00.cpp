@@ -18,7 +18,9 @@ using namespace shogun;
 SerializableJsonReader00::SerializableJsonReader00(
 	CSerializableJsonFile* file) { m_file = file; }
 
-SerializableJsonReader00::~SerializableJsonReader00() {}
+SerializableJsonReader00::~SerializableJsonReader00()
+{
+}
 
 bool
 SerializableJsonReader00::read_scalar_wrapped(
@@ -79,9 +81,14 @@ SerializableJsonReader00::read_scalar_wrapped(
 		if (!json_object_is_type(m, json_type_double)) return false;
 		*(floatmax_t*) param = json_object_get_double(m);
 		break;
+	case PT_COMPLEX128:
+		SG_ERROR("read_scalar_wrapped(): Not supported for complex128_t"
+				 " for reading from JsonFile!");
+		break;
 	case PT_SGOBJECT:
-		SG_ERROR("write_scalar_wrapped(): Implementation error during"
-				 " writing JsonFile!");
+	case PT_UNDEFINED:
+		SG_ERROR("read_scalar_wrapped(): Implementation error during"
+				 " reading JsonFile!");
 		return false;
 	}
 
@@ -304,8 +311,8 @@ SerializableJsonReader00::read_type_begin_wrapped(
 	if (strcmp(str_buf, json_object_get_string(buf)) != 0)
 		return false;
 
-	if (!m_file->get_object_any(&buf, buf_type, STR_KEY_DATA))
-		return false;
+	// data (and so buf) can be NULL for empty objects
+	m_file->get_object_any(&buf, buf_type, STR_KEY_DATA);
 	m_file->push_object(buf);
 
 	return true;

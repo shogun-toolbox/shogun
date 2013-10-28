@@ -2,12 +2,12 @@
 parameter_list =[[23],[24]]
 
 def kernel_const_modular (c=23):
-	from shogun.Features import DummyFeatures
-	from shogun.Kernel import ConstKernel
+	from modshogun import DummyFeatures
+	from modshogun import ConstKernel
 
 	feats_train=DummyFeatures(10)
 	feats_test=DummyFeatures(17)
-	
+
 	kernel=ConstKernel(feats_train, feats_train, c)
 
 	km_train=kernel.get_kernel_matrix()

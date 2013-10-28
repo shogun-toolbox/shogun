@@ -18,12 +18,14 @@ using namespace shogun;
 CStreamingAsciiFile::CStreamingAsciiFile()
 		: CStreamingFile()
 {
-		SG_UNSTABLE("CStreamingAsciiFile::CStreamingAsciiFile()", "\n")
+	SG_UNSTABLE("CStreamingAsciiFile::CStreamingAsciiFile()", "\n")
+	m_delimiter = ' ';
 }
 
 CStreamingAsciiFile::CStreamingAsciiFile(const char* fname, char rw)
 		: CStreamingFile(fname, rw)
 {
+	m_delimiter = ' ';
 }
 
 CStreamingAsciiFile::~CStreamingAsciiFile()
@@ -39,12 +41,14 @@ void CStreamingAsciiFile::get_vector(sg_type*& vector, int32_t& num_feat)	\
 		ssize_t bytes_read;													\
 		int32_t old_len = num_feat;											\
 																			\
+		SG_SET_LOCALE_C;													\
 		bytes_read = buf->read_line(buffer);								\
 																			\
 		if (bytes_read<=0)													\
 		{																	\
 				vector=NULL;												\
 				num_feat=-1;												\
+				SG_RESET_LOCALE;											\
 				return;														\
 		}																	\
 																			\
@@ -85,7 +89,7 @@ void CStreamingAsciiFile::get_vector(sg_type*& vector, int32_t& num_feat)	\
 				ptr_data++;													\
 		}																	\
 																			\
-		SG_DEBUG("num_feat %d\n", num_feat)								\
+		SG_DEBUG("num_feat %d\n", num_feat)									\
 																			\
 		/* now copy data into vector */										\
 		if (old_len < num_feat)												\
@@ -98,6 +102,7 @@ void CStreamingAsciiFile::get_vector(sg_type*& vector, int32_t& num_feat)	\
 				SG_FREE(item);												\
 		}																	\
 		delete items;														\
+		SG_RESET_LOCALE;													\
 }
 
 GET_VECTOR(get_bool_vector, str_to_bool, bool)
@@ -117,18 +122,20 @@ GET_VECTOR(get_longreal_vector, atoi, floatmax_t)
 		void CStreamingAsciiFile::get_vector(sg_type*& vector, int32_t& len)\
 		{																	\
 				char *line=NULL;											\
+				SG_SET_LOCALE_C;											\
 				int32_t num_chars = buf->read_line(line);					\
 				int32_t old_len = len;										\
 																			\
 				if (num_chars == 0)											\
 				{															\
 						len = -1;											\
+						SG_RESET_LOCALE;									\
 						return;												\
 				}															\
 																			\
 				substring example_string = {line, line + num_chars};		\
 																			\
-				CAsciiFile::tokenize(' ', example_string, words);			\
+				CCSVFile::tokenize(m_delimiter, example_string, words);		\
 																			\
 				len = words.index();										\
 				substring* feature_start = &words[0];						\
@@ -141,6 +148,7 @@ GET_VECTOR(get_longreal_vector, atoi, floatmax_t)
 				{															\
 						vector[j++] = SGIO::float_of_substring(*i);			\
 				}															\
+				SG_RESET_LOCALE;											\
 		}
 
 GET_FLOAT_VECTOR(float32_t)
@@ -155,6 +163,7 @@ GET_FLOAT_VECTOR(float64_t)
 				char* buffer = NULL;									\
 				ssize_t bytes_read;										\
 				int32_t old_len = num_feat;								\
+				SG_SET_LOCALE_C;										\
 																		\
 				bytes_read = buf->read_line(buffer);					\
 																		\
@@ -162,6 +171,7 @@ GET_FLOAT_VECTOR(float64_t)
 				{														\
 						vector=NULL;									\
 						num_feat=-1;									\
+						SG_RESET_LOCALE;								\
 						return;											\
 				}														\
 																		\
@@ -217,6 +227,7 @@ GET_FLOAT_VECTOR(float64_t)
 				}														\
 				delete items;											\
 				num_feat--;												\
+				SG_RESET_LOCALE;										\
 		}
 
 GET_VECTOR_AND_LABEL(get_bool_vector_and_label, str_to_bool, bool)
@@ -236,18 +247,20 @@ GET_VECTOR_AND_LABEL(get_longreal_vector_and_label, atoi, floatmax_t)
 		void CStreamingAsciiFile::get_vector_and_label(sg_type*& vector, int32_t& len, float64_t& label) \
 		{																\
 				char *line=NULL;										\
+				SG_SET_LOCALE_C;										\
 				int32_t num_chars = buf->read_line(line);				\
 				int32_t old_len = len;									\
 																		\
 				if (num_chars == 0)										\
 				{														\
 						len = -1;										\
+						SG_RESET_LOCALE;								\
 						return;											\
 				}														\
 																		\
 				substring example_string = {line, line + num_chars};	\
 																		\
-				CAsciiFile::tokenize(' ', example_string, words);		\
+				CCSVFile::tokenize(m_delimiter, example_string, words);	\
 																		\
 				label = SGIO::float_of_substring(words[0]);				\
 																		\
@@ -262,6 +275,7 @@ GET_VECTOR_AND_LABEL(get_longreal_vector_and_label, atoi, floatmax_t)
 				{														\
 						vector[j++] = SGIO::float_of_substring(*i);		\
 				}														\
+				SG_RESET_LOCALE;										\
 		}
 
 GET_FLOAT_VECTOR_AND_LABEL(float32_t)
@@ -276,12 +290,14 @@ void CStreamingAsciiFile::get_string(sg_type*& vector, int32_t& len)	\
 		char* buffer = NULL;											\
 		ssize_t bytes_read;												\
 																		\
+		SG_SET_LOCALE_C;												\
 		bytes_read = buf->read_line(buffer);							\
 																		\
 		if (bytes_read<=1)												\
 		{																\
 				vector=NULL;											\
 				len=-1;													\
+				SG_RESET_LOCALE;										\
 				return;													\
 		}																\
 																		\
@@ -295,6 +311,7 @@ void CStreamingAsciiFile::get_string(sg_type*& vector, int32_t& len)	\
 		else															\
 				len=bytes_read;											\
 		vector=(sg_type *) buffer;										\
+		SG_RESET_LOCALE;												\
 }
 
 GET_STRING(get_bool_string, str_to_bool, bool)
@@ -320,12 +337,14 @@ void CStreamingAsciiFile::get_string_and_label(sg_type*& vector, int32_t& len, f
 		char* buffer = NULL;											\
 		ssize_t bytes_read;												\
 																		\
+		SG_SET_LOCALE_C;												\
 		bytes_read = buf->read_line(buffer);							\
 																		\
 		if (bytes_read<=1)												\
 		{																\
 				vector=NULL;											\
 				len=-1;													\
+				SG_RESET_LOCALE;										\
 				return;													\
 		}																\
 																		\
@@ -359,6 +378,7 @@ void CStreamingAsciiFile::get_string_and_label(sg_type*& vector, int32_t& len, f
 				len=bytes_read-str_start_pos;							\
 																		\
 		vector=(sg_type*) &buffer[str_start_pos];						\
+		SG_RESET_LOCALE;												\
 }
 
 GET_STRING_AND_LABEL(get_bool_string_and_label, str_to_bool, bool)
@@ -383,6 +403,7 @@ void CStreamingAsciiFile::get_sparse_vector(SGSparseVectorEntry<sg_type>*& vecto
 {																		\
 		char* buffer = NULL;											\
 		ssize_t bytes_read;												\
+		SG_SET_LOCALE_C;												\
 																		\
 		bytes_read = buf->read_line(buffer);							\
 																		\
@@ -390,6 +411,7 @@ void CStreamingAsciiFile::get_sparse_vector(SGSparseVectorEntry<sg_type>*& vecto
 		{																\
 				vector=NULL;											\
 				len=-1;													\
+				SG_RESET_LOCALE;										\
 				return;													\
 		}																\
 																		\
@@ -415,7 +437,8 @@ void CStreamingAsciiFile::get_sparse_vector(SGSparseVectorEntry<sg_type>*& vecto
 		int32_t index_start_pos=-1;										\
 		int32_t feature_start_pos;										\
 		int32_t current_feat=0;											\
-		vector=SG_MALLOC(SGSparseVectorEntry<sg_type>, num_dims);		\
+		if (len < num_dims)												\
+			vector=SG_REALLOC(SGSparseVectorEntry<sg_type>, vector, len, num_dims);	\
 		for (int32_t i=0; i<num_chars; i++)								\
 		{																\
 				if (buffer[i]==':')										\
@@ -449,6 +472,7 @@ void CStreamingAsciiFile::get_sparse_vector(SGSparseVectorEntry<sg_type>*& vecto
 		}																\
 																		\
 		len=current_feat;												\
+		SG_RESET_LOCALE;												\
 }
 
 GET_SPARSE_VECTOR(get_bool_sparse_vector, str_to_bool, bool)
@@ -473,6 +497,7 @@ void CStreamingAsciiFile::get_sparse_vector_and_label(SGSparseVectorEntry<sg_typ
 {																		\
 		char* buffer = NULL;											\
 		ssize_t bytes_read;												\
+		SG_SET_LOCALE_C;												\
 																		\
 		bytes_read = buf->read_line(buffer);							\
 																		\
@@ -480,6 +505,7 @@ void CStreamingAsciiFile::get_sparse_vector_and_label(SGSparseVectorEntry<sg_typ
 		{																\
 				vector=NULL;											\
 				len=-1;													\
+				SG_RESET_LOCALE;										\
 				return;													\
 		}																\
 																		\
@@ -506,7 +532,8 @@ void CStreamingAsciiFile::get_sparse_vector_and_label(SGSparseVectorEntry<sg_typ
 		int32_t feature_start_pos;										\
 		int32_t current_feat=0;											\
 		int32_t label_pos=-1;											\
-		vector=SG_MALLOC(SGSparseVectorEntry<sg_type>, num_dims);		\
+		if (len < num_dims)												\
+			vector=SG_REALLOC(SGSparseVectorEntry<sg_type>, vector, len, num_dims); \
 																		\
 		for (int32_t i=1; i<num_chars; i++)								\
 		{																\
@@ -561,6 +588,7 @@ void CStreamingAsciiFile::get_sparse_vector_and_label(SGSparseVectorEntry<sg_typ
 		}																\
 																		\
 		len=current_feat;												\
+		SG_RESET_LOCALE;												\
 }
 
 GET_SPARSE_VECTOR_AND_LABEL(get_bool_sparse_vector_and_label, str_to_bool, bool)
@@ -582,6 +610,8 @@ template <class T>
 void CStreamingAsciiFile::append_item(
 		DynArray<T>* items, char* ptr_data, char* ptr_item)
 {
+		REQUIRE(ptr_data && ptr_item, "Data and Item to append should not be NULL\n");
+
 		size_t len=(ptr_data-ptr_item)/sizeof(char);
 		char* item=SG_MALLOC(char, len+1);
 		memset(item, 0, sizeof(char)*(len+1));
@@ -589,4 +619,9 @@ void CStreamingAsciiFile::append_item(
 
 		SG_DEBUG("current %c, len %d, item %s\n", *ptr_data, len, item)
 		items->append_element(item);
+}
+
+void CStreamingAsciiFile::set_delimiter(char delimiter)
+{
+	m_delimiter = delimiter;
 }

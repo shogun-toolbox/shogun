@@ -32,7 +32,7 @@ class CROCEvaluation: public CBinaryClassEvaluation
 public:
 	/** constructor */
 	CROCEvaluation() :
-		CBinaryClassEvaluation(), m_computed(false) 
+		CBinaryClassEvaluation(), m_computed(false)
 	{
 		m_ROC_graph = SGMatrix<float64_t>();
 		m_thresholds = SGVector<float64_t>();
@@ -51,7 +51,7 @@ public:
 	 */
 	virtual float64_t evaluate(CLabels* predicted, CLabels* ground_truth);
 
-	virtual EEvaluationDirection get_evaluation_direction()
+	virtual EEvaluationDirection get_evaluation_direction() const
 	{
 		return ED_MAXIMIZE;
 	}

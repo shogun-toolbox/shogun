@@ -89,7 +89,7 @@ private:
 	/**
 	 * Initialize members to defaults
 	 */
-	void init();
+	void init(CSparseFeatures<T>* feat);
 
 protected:
 	/// SparseFeatures object
@@ -104,32 +104,37 @@ template <class T>
 CStreamingFileFromSparseFeatures<T>::CStreamingFileFromSparseFeatures()
 	: CStreamingFileFromFeatures()
 {
-	init();
+	init(NULL);
 }
 
 template <class T>
 CStreamingFileFromSparseFeatures<T>::CStreamingFileFromSparseFeatures(CSparseFeatures<T>* feat)
 	: CStreamingFileFromFeatures(feat)
 {
-	init();
+	init(feat);
 }
 
 template <class T>
 CStreamingFileFromSparseFeatures<T>::CStreamingFileFromSparseFeatures(CSparseFeatures<T>* feat, float64_t* lab)
 	: CStreamingFileFromFeatures(feat,lab)
 {
-	init();
+	init(feat);
 }
 
 template <class T>
 CStreamingFileFromSparseFeatures<T>::~CStreamingFileFromSparseFeatures()
 {
+	SG_UNREF(features);
 }
 
 template <class T>
-void CStreamingFileFromSparseFeatures<T>::init()
+void CStreamingFileFromSparseFeatures<T>::init(CSparseFeatures<T>* feat)
 {
+	features = feat;
+	SG_REF(features);
 	vector_num=0;
+
+	set_generic<T>();
 }
 
 /* Functions to return the vector from the SparseFeatures object */
@@ -145,7 +150,7 @@ void CStreamingFileFromSparseFeatures<T>::get_sparse_vector
 	}
 
 	SGSparseVector<T> vec=
-			((CSparseFeatures<T>*)this)->get_sparse_feature_vector(vector_num);
+			features->get_sparse_feature_vector(vector_num);
 	vector=vec.features;
 	len=vec.num_feat_entries;
 

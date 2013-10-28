@@ -14,7 +14,7 @@
 
 #include <shogun/lib/config.h>
 #include <shogun/io/SGIO.h>
-#include <shogun/io/AsciiFile.h>
+#include <shogun/io/CSVFile.h>
 
 using namespace shogun;
 
@@ -68,7 +68,7 @@ bool CGUIFeatures::load(
 	SG_UNREF(*f_ptr);
 	*f_ptr=NULL;
 
-	CAsciiFile* file=new CAsciiFile(filename);
+	CCSVFile* file=new CCSVFile(filename);
 	if (strncmp(fclass, "SIMPLE", 6)==0)
 	{
 		if (strncmp(type, "REAL", 4)==0)
@@ -159,7 +159,7 @@ bool CGUIFeatures::save(char* filename, char* type, char* target)
 	{
 		try
 		{
-			CAsciiFile* file=new CAsciiFile(filename, 'w');
+			CCSVFile* file=new CCSVFile(filename, 'w');
 			if (strncmp(type, "REAL", 4)==0)
 			{
 				((CDenseFeatures<float64_t>*) (*f_ptr))->save(file);
@@ -280,7 +280,7 @@ bool CGUIFeatures::set_convert_features(CFeatures* features, char* target)
 	if (features_prev->get_feature_class()==C_COMBINED)
 	{
 		CCombinedFeatures* combined=(CCombinedFeatures*) features_prev;
-		combined->delete_feature_obj();
+		combined->delete_feature_obj(combined->get_num_feature_obj()-1);
 		combined->append_feature_obj(features);
 		combined->list_feature_objs();
 	}
@@ -308,10 +308,8 @@ CSparseFeatures<float64_t>* CGUIFeatures::convert_simple_real_to_sparse_real(
 		int32_t num_f=0;
 		int32_t num_v=0;
 		float64_t* feats=src->get_feature_matrix(num_f, num_v);
-		if (target->set_full_feature_matrix(SGMatrix<float64_t>(feats, num_f, num_v)))
-			return target;
-
-		SG_UNREF(target);
+		target->set_full_feature_matrix(SGMatrix<float64_t>(feats, num_f, num_v));
+		return target;
 	}
 	else
 		SG_ERROR("No SIMPLE DREAL features available.\n")
@@ -695,7 +693,7 @@ bool CGUIFeatures::del_last_feature_obj(char* target)
 	else
 		SG_ERROR("Unknown target %s, neither TRAIN nor TEST.\n", target)
 
-	if (!cf->delete_feature_obj())
+	if (!cf->delete_feature_obj(cf->get_num_feature_obj()-1))
 		SG_ERROR("No features available to delete.\n")
 
 	return false;

@@ -27,7 +27,8 @@ int main(int argc, char** argv)
 	//SG_SPRINT("Num of elements: %d\n", set->get_num_elements());
 	for (int i=0; i<SIZE; i++)
 	{
-		if (set->contains(v[i]));
+		if (set->contains(v[i]))
+			;
 			//SG_SPRINT("%lg contains in set with index %d\n", v[i], set->index_of(v[i]));
 	}
 

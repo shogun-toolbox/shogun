@@ -16,7 +16,7 @@ public class features_string_file_modular {
 		StringCharFeatures f = new StringCharFeatures(RAWBYTE);
 		f.load_from_directory(".");
 
-		AsciiFile fil = new AsciiFile(fname);
+		CSVFile fil = new CSVFile(fname);
 		f.load(fil);
 
 		modshogun.exit_shogun();

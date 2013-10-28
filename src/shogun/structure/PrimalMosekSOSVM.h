@@ -13,14 +13,13 @@
 
 #ifdef USE_MOSEK
 
-#include <shogun/loss/LossFunction.h>
 #include <shogun/machine/LinearStructuredOutputMachine.h>
 #include <shogun/mathematics/Mosek.h>
 
 namespace shogun
 {
 
-/** 
+/**
  * @brief Class PrimalMosekSOSVM that implements the optimization
  * algorithm for structured output (SO) problems presented in [1] for SVM
  * learning. The optimization problem is solved using a cutting plane algorithm.
@@ -39,10 +38,9 @@ class CPrimalMosekSOSVM : public CLinearStructuredOutputMachine
 		/** standard constructor
 		 *
 		 * @param model structured model with application specific functions
-		 * @param loss structured loss function
 		 * @param labs structured labels
 		 */
-		CPrimalMosekSOSVM(CStructuredModel* model, CLossFunction* loss, CStructuredLabels* labs);
+		CPrimalMosekSOSVM(CStructuredModel* model, CStructuredLabels* labs);
 
 		/** destructor */
 		~CPrimalMosekSOSVM();
@@ -67,6 +65,18 @@ class CPrimalMosekSOSVM : public CLinearStructuredOutputMachine
 		 * @return classifier type CT_PRIMALMOSEKSOSVM
 		 */
 		virtual EMachineType get_classifier_type();
+
+		/** set regularization constant C
+		 *
+		 * @param C regularization constant
+		 */
+		void set_regularization(float64_t C);
+
+		/** set epsilon
+		 *
+		 * @param epsilon if slack_i > max_slack_i + epsilon, add to cutting plane set
+		 */
+		void set_epsilon(float64_t epsilon);
 
 	protected:
 		/** train primal SO-SVM
@@ -93,7 +103,7 @@ class CPrimalMosekSOSVM : public CLinearStructuredOutputMachine
 		 */
 		bool insert_result(CList* result_list, CResultSet* result) const;
 
-		/** introduces a new constraint of type Ax <= b in the 
+		/** introduces a new constraint of type Ax <= b in the
 		 * optimization problem. Remember that each row i in A takes the
 		 * form
 		 *
@@ -111,7 +121,7 @@ class CPrimalMosekSOSVM : public CLinearStructuredOutputMachine
 		 * @param result structure with numerical information of the
 		 * constraint
 		 * @param con_idx row index in A for this new constraint
-		 * @param train_idx training example associated to this 
+		 * @param train_idx training example associated to this
 		 * constraint
 		 *
 		 * @return whether the new constraint has been succesfully added
@@ -124,6 +134,12 @@ class CPrimalMosekSOSVM : public CLinearStructuredOutputMachine
 
 		/** primal objective value */
 		float64_t po_value;
+
+		/** regularization constant */
+		float64_t m_regularization;
+
+		/** epsilon */
+		float64_t m_epsilon;
 
 }; /* class CPrimalMosekSOSVM */
 

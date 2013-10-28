@@ -24,6 +24,7 @@ using namespace shogun;
 
 CDomainAdaptationSVM::CDomainAdaptationSVM() : CSVMLight()
 {
+	init();
 }
 
 CDomainAdaptationSVM::CDomainAdaptationSVM(float64_t C, CKernel* k, CLabels* lab, CSVM* pre_svm, float64_t B_param) : CSVMLight(C, k, lab)
@@ -41,6 +42,7 @@ CDomainAdaptationSVM::~CDomainAdaptationSVM()
 
 void CDomainAdaptationSVM::init(CSVM* pre_svm, float64_t B_param)
 {
+	REQUIRE(pre_svm != NULL, "Pre SVM should not be null");
 	// increase reference counts
 	SG_REF(pre_svm);
 
@@ -181,11 +183,11 @@ void CDomainAdaptationSVM::init()
 	B = 0;
 	train_factor = 1.0;
 
-	m_parameters->add((CSGObject**) &presvm, "presvm",
-					  "SVM to regularize against.");
-	m_parameters->add(&B, "B", "regularization parameter B.");
-	m_parameters->add(&train_factor,
-			"train_factor", "flag to switch off regularization in training.");
+	SG_ADD((CSGObject**) &presvm, "presvm", "SVM to regularize against.",
+			MS_NOT_AVAILABLE);
+	SG_ADD(&B, "B", "regularization parameter B.", MS_AVAILABLE);
+	SG_ADD(&train_factor, "train_factor",
+			"flag to switch off regularization in training.", MS_AVAILABLE);
 }
 
 #endif //USE_SVMLIGHT

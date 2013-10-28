@@ -33,31 +33,31 @@ public:
 	/** destructor */
 	virtual ~CTaskGroup();
 
-	/** get tasks indices 
+	/** get tasks indices
 	 *
 	 * @return array of vectors containing indices of each task
 	 */
 	virtual SGVector<index_t>* get_tasks_indices() const;
 
-	/** append task to the group 
+	/** append task to the group
 	 *
 	 * @param task task to append
 	 */
 	void append_task(CTask* task);
-	
+
 	/** get number of tasks in the group
 	 *
 	 * @return number of tasks in the group
 	 */
 	virtual int32_t get_num_tasks() const;
 
-	/** get name 
-	 * 
+	/** get name
+	 *
 	 * @return name of the object
 	 */
 	const char* get_name() const { return "TaskGroup"; };
 
-	/** get relation type 
+	/** get relation type
 	 *
 	 * @return TASK_GROUP
 	 */

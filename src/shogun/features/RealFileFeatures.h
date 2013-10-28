@@ -80,6 +80,10 @@ class CRealFileFeatures: public CDenseFeatures<float64_t>
 		 */
 		bool load_base_data();
 
+	private:
+		/** initialises members */
+		void init();
+
     protected:
 		/** working file */
 		FILE* working_file;

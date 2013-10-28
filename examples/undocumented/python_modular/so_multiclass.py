@@ -27,19 +27,17 @@ parameter_list = [[traindat,label_traindat]]
 
 def so_multiclass (fm_train_real=traindat,label_train_multiclass=label_traindat):
 	try:
-		from shogun.Features 	import RealFeatures
-		from shogun.Loss     	import HingeLoss
-		from shogun.Structure	import MulticlassModel, MulticlassSOLabels, PrimalMosekSOSVM, RealNumber
+		from modshogun	import RealFeatures
+		from modshogun	import MulticlassModel, MulticlassSOLabels, PrimalMosekSOSVM, RealNumber
 	except ImportError:
-		print "Mosek not available"
+		print("Mosek not available")
 		return
 
 	labels = MulticlassSOLabels(label_train_multiclass)
 	features = RealFeatures(fm_train_real.T)
 
 	model = MulticlassModel(features, labels)
-	loss = HingeLoss()
-	sosvm = PrimalMosekSOSVM(model, loss, labels)
+	sosvm = PrimalMosekSOSVM(model, labels)
 	sosvm.train()
 
 	out = sosvm.apply()
@@ -49,7 +47,7 @@ def so_multiclass (fm_train_real=traindat,label_train_multiclass=label_traindat)
 		if yi_pred.value == label_train_multiclass[i]:
 			count = count + 1
 
-	print "Correct classification rate: %0.2f" % ( 100.0*count/out.get_num_labels() )
+	print("Correct classification rate: %0.2f" % ( 100.0*count/out.get_num_labels() ))
 
 if __name__=='__main__':
 	print('SO multiclass')

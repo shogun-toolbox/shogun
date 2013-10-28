@@ -484,12 +484,6 @@ template <class ST> class CStringFeatures : public CFeatures
 		 */
 		virtual bool save_compressed(char* dest, E_COMPRESSION_TYPE compression, int level);
 
-		/** get memory footprint of one feature
-		 *
-		 * @return memory footprint of one feature
-		 */
-		virtual int32_t get_size() const;
-
 		/** apply preprocessor
 		 *
 		 * @param force_preprocessing if preprocssing shall be forced
@@ -698,7 +692,7 @@ template <class ST> class CStringFeatures : public CFeatures
 
 		/// order used in higher order mapping
 		ST* symbol_mask_table;
-		
+
 		/// order used in higher order mapping
 		int32_t symbol_mask_table_len;
 

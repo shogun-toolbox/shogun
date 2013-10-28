@@ -1,4 +1,4 @@
-init_shogun
+modshogun
 
 num=1000;
 dist=1;

@@ -35,9 +35,9 @@ public:
 	 * @param weight weight (optional)
 	 * @param name name of task (optional)
 	 */
-	CTask(index_t min_index, index_t max_index, 
+	CTask(index_t min_index, index_t max_index,
 	      float64_t weight=1.0, const char* name="task");
-	
+
 	/** constructor from indices
 	 * @param indices indices of the task
 	 * @param weight weight (optional)
@@ -48,49 +48,49 @@ public:
 	/** destructor */
 	virtual ~CTask();
 
-	/** is contiguous 
+	/** is contiguous
 	 *
 	 * @return whether task is contiguous
 	 */
 	bool is_contiguous();
 
 	/** get indices
-	 * 
-	 * @return indices 
+	 *
+	 * @return indices
 	 */
 	SGVector<index_t> get_indices() const { return m_indices; }
 
-	/** set indices 
+	/** set indices
 	 *
 	 * @param indices task vector indices to set
 	 */
 	void set_indices(SGVector<index_t> indices) { m_indices = indices; }
 
 	/** get weight of the task
-	 * 
+	 *
 	 * @return weight of the task
 	 */
 	float64_t get_weight() const { return m_weight; }
 
 	/** set weight of the task
-	 * 
+	 *
 	 * @param weight weight of the task
 	 */
 	void set_weight(float64_t weight) { m_weight = weight; }
 
-	/** get task name 
-	 * 
+	/** get task name
+	 *
 	 * @return name of the task
 	 */
 	const char* get_task_name() const { return m_name; }
 
-	/** set task name 
+	/** set task name
 	 *
 	 * @param name name of the task
 	 */
 	void set_task_name(const char* name) { m_name = name; }
 
-	/** add subtask 
+	/** add subtask
 	 * should represent a subset of indices of the task
 	 *
 	 * @param sub_task subtask to add
@@ -103,13 +103,13 @@ public:
 	 */
 	CList* get_subtasks();
 
-	/** get number of subtasks 
+	/** get number of subtasks
 	 *
 	 * @return number of subtasks
 	 */
 	int32_t get_num_subtasks();
 
-	/** get name 
+	/** get name
 	 *
 	 * @return name of object
 	 */

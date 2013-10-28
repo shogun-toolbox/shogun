@@ -51,8 +51,6 @@ enum EMachineType
 	CT_KERNELRIDGEREGRESSION = 150,
 	CT_GNPPSVM = 160,
 	CT_GMNPSVM = 170,
-	CT_SUBGRADIENTSVM = 180,
-	CT_SUBGRADIENTLPM = 190,
 	CT_SVMPERF = 200,
 	CT_LIBSVR = 210,
 	CT_SVRLIGHT = 220,
@@ -85,7 +83,11 @@ enum EMachineType
 	CT_DIRECTORKERNEL = 490,
 	CT_LIBQPSOSVM = 500,
 	CT_PRIMALMOSEKSOSVM = 510,
-	CT_CCSOSVM = 520
+	CT_CCSOSVM = 520,
+	CT_GAUSSIANPROCESSBINARY = 530,
+	CT_GAUSSIANPROCESSMULTICLASS = 540,
+	CT_STOCHASTICSOSVM = 550,
+	CT_BAGGING
 };
 
 /** solver type */
@@ -293,13 +295,6 @@ class CMachine : public CSGObject
 		{
 			SG_NOTIMPLEMENTED
 			return PT_BINARY;
-		}
-
-		/** clone */
-		virtual CMachine* clone()
-		{
-			SG_NOTIMPLEMENTED
-			return NULL;
 		}
 
 		virtual const char* get_name() const { return "Machine"; }

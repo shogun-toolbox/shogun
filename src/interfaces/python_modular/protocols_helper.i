@@ -8,8 +8,10 @@
  */
 
 /* helper's stuff */
-%init
+%wrapper
 %{
+// needed for support of new buffer protocol in python 2.6 and later
+// doesn't make sense for python3
 #if (PY_VERSION_HEX < 0x02060000) || (PY_VERSION_HEX >= 0x03000000)
 #define Py_TPFLAGS_HAVE_NEWBUFFER 0
 #endif
@@ -56,6 +58,7 @@ BUFFER_VECTOR_INFO(int64_t)
 BUFFER_VECTOR_INFO(uint64_t)
 BUFFER_VECTOR_INFO(float32_t)
 BUFFER_VECTOR_INFO(float64_t)
+BUFFER_VECTOR_INFO(complex128_t)
 
 BUFFER_MATRIX_INFO(bool)
 BUFFER_MATRIX_INFO(char)
@@ -68,6 +71,7 @@ BUFFER_MATRIX_INFO(int64_t)
 BUFFER_MATRIX_INFO(uint64_t)
 BUFFER_MATRIX_INFO(float32_t)
 BUFFER_MATRIX_INFO(float64_t)
+BUFFER_MATRIX_INFO(complex128_t)
 
 %wrapper
 %{
@@ -122,7 +126,7 @@ int parse_tuple_item(PyObject* item, Py_ssize_t length,
 		return 2;
 	}
 	else if (PyInt_Check(item) || PyArray_IsScalar(item, Integer) ||
-       		PyLong_Check(item) || (PyIndex_Check(item) && !PySequence_Check(item)))
+		PyLong_Check(item) || (PyIndex_Check(item) && !PySequence_Check(item)))
 	{
 		npy_intp idx;
 		idx = PyArray_PyIntAsIntp(item);
@@ -146,7 +150,7 @@ void set_method(PyMethodDef* methods, const char* name, PyCFunction new_method)
 	{
 		method_temp=methods[method_idx];
 		method_idx++;
-	} 
+	}
 	while (strcmp(method_temp.ml_name, name)!=0 && method_temp.ml_name!=NULL);
 
 	methods[method_idx-1].ml_meth=new_method;

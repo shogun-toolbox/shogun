@@ -30,7 +30,7 @@ public class kernel_salzberg_word_string_modular {
 		double[,] km_train = kernel.get_kernel_matrix();
 		kernel.init(feats_train, feats_test);
 		pie.set_features(feats_test);
-		BinaryLabels.obtain_from_generic(pie.apply()).get_labels();
+		LabelsFactory.to_binary(pie.apply()).get_labels();
 		double[,] km_test=kernel.get_kernel_matrix();
 
 		modshogun.exit_shogun();

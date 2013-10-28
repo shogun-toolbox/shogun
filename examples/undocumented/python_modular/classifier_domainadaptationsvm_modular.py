@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 import numpy
 
-from shogun.Features import StringCharFeatures, BinaryLabels, DNA
-from shogun.Kernel import WeightedDegreeStringKernel
-from shogun.Classifier import SVMLight, DomainAdaptationSVM, MSG_DEBUG
+from modshogun import StringCharFeatures, BinaryLabels, DNA
+from modshogun import WeightedDegreeStringKernel
+from modshogun import SVMLight, DomainAdaptationSVM, MSG_DEBUG
 
 traindna = ['CGCACGTACGTAGCTCGAT',
 		      'CGACGTAGTCGTAGTCGTA',
@@ -54,7 +54,7 @@ label_testdna2 = numpy.array(5*[-1.0] + 5*[1.0])
 
 parameter_list = [[traindna,testdna,label_traindna,label_testdna,traindna2,label_traindna2, \
                        testdna2,label_testdna2,1,3],[traindna,testdna,label_traindna,label_testdna,traindna2,label_traindna2, \
-                       testdna2,label_testdna2,2,5]] 
+                       testdna2,label_testdna2,2,5]]
 
 def classifier_domainadaptationsvm_modular (fm_train_dna=traindna,fm_test_dna=testdna, \
                                                 label_train_dna=label_traindna, \
@@ -63,7 +63,7 @@ def classifier_domainadaptationsvm_modular (fm_train_dna=traindna,fm_test_dna=te
 
 
 
-    
+
 	feats_train = StringCharFeatures(fm_train_dna, DNA)
 	feats_test = StringCharFeatures(fm_test_dna, DNA)
 	kernel = WeightedDegreeStringKernel(feats_train, feats_train, degree)
@@ -71,9 +71,9 @@ def classifier_domainadaptationsvm_modular (fm_train_dna=traindna,fm_test_dna=te
 	svm = SVMLight(C, kernel, labels)
 	svm.train()
 	#svm.io.set_loglevel(MSG_DEBUG)
-    
+
 	#####################################
-		
+
 	#print("obtaining DA SVM from previously trained SVM")
 
 	feats_train2 = StringCharFeatures(fm_train_dna, DNA)

@@ -5,6 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 2010 Soeren Sonnenburg
+ * Written (W) 2011-2013 Heiko Strathmann
  * Copyright (C) 2010 Berlin Institute of Technology
  */
 #ifndef __PARAMETER_H__
@@ -15,6 +16,7 @@
 #include <shogun/lib/DataType.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
+#include <shogun/lib/SGSparseMatrix.h>
 #include <shogun/io/SerializableFile.h>
 #include <shogun/base/DynArray.h>
 
@@ -74,6 +76,72 @@ struct TParameter
 	 * Old SG_OBJECTS are SG_UNREF'ed and the new ones are SG_REF'ed.
 	 * @param source source TParameter instance to copy from */
 	void copy_data(const TParameter* source);
+
+	/** Numerically this instance with another instance. Compares recursively
+	 * in case of non-numerical parameters
+	 *
+	 * @param other other instance to compare with
+	 * @param accuracy accuracy for numerical comparison
+	 * @return true if given parameter instance is equal, false otherwise
+	 */
+	bool equals(TParameter* other, float64_t accuracy=0.0);
+
+	/** Given two pointers to a scalar element of a given primitive-type, this
+	 * method compares the values up to a given accuracy.
+	 *
+	 * If the type of the data is SGObject, recursively calls equals on the
+	 * object.
+	 *
+	 * @param ptype primitive type of both data
+	 * @param data1 pointer 1
+	 * @param data2 pointer 2
+	 * @param accuracy accuracy to compare
+	 * @return whether the data was equal
+	 */
+	static bool compare_ptype(EPrimitiveType ptype, void* data1, void* data2,
+			floatmax_t accuracy=0.0);
+
+	/** Given two pointers to a string element of a given primitive-type, this
+	 * method compares the values up to a given accuracy.
+	 *
+	 * If the type of the data is SGObject, recursively calls equals on the
+	 * object.
+	 *
+	 * @param stype string type of both data
+	 * @param ptype primitive type of both data
+	 * @param data1 pointer 1
+	 * @param data2 pointer 2
+	 * @param accuracy accuracy to compare
+	 * @return whether the data was equal
+	 */
+	static bool compare_stype(EStructType stype, EPrimitiveType ptype,
+			void* data1, void* data2, floatmax_t accuracy=0.0);
+
+	/** copy primitive type from source to target
+	 *
+	 * @param ptype the primitive type
+	 * @param source from where to copy
+	 * @param target where to copy to
+	 */
+	static bool copy_ptype(EPrimitiveType ptype, void* source, void* target);
+
+	/** copy structured type from source to target
+	 *
+	 * @param stype the structured type
+	 * @param ptype the primitive type that the structured objects use
+	 * @param source from where to copy
+	 * @param target where to copy to
+	 */
+	static bool copy_stype(EStructType stype, EPrimitiveType ptype,
+				void* source, void* target);
+
+	/** copy this to parameter target
+	 *
+	 * @param target where this should be copied to
+	 */
+	bool copy(TParameter* target);
+
+
 
 	/** operator for comparison, (by string m_name) */
 	bool operator==(const TParameter& other) const;
@@ -331,6 +399,13 @@ public:
 	 * @param name name of parameter
 	 * @param description description of parameter
 	 */
+	void add(complex128_t* param, const char* name,
+			 const char* description="");
+	/** add param
+	 * @param param parameter itself
+	 * @param name name of parameter
+	 * @param description description of parameter
+	 */
 	void add(CSGObject** param,
 			 const char* name, const char* description="");
 	/** add param
@@ -515,6 +590,13 @@ public:
 	 */
 	void add(SGSparseVector<floatmax_t>* param, const char* name,
 			 const char* description="");
+	/** add param
+	 * @param param parameter itself
+	 * @param name name of parameter
+	 * @param description description of parameter
+	 */
+	void add(SGSparseVector<complex128_t>* param, const char* name,
+			 const char* description="");
 
 	/* ************************************************************ */
 	/* Vector wrappers  */
@@ -622,6 +704,14 @@ public:
 	 * @param description description of parameter
 	 */
 	void add_vector(floatmax_t** param, index_t* length,
+					const char* name, const char* description="");
+	/** add vector param
+	 * @param param parameter vector itself
+	 * @param length length of vector
+	 * @param name name of parameter
+	 * @param description description of parameter
+	 */
+	void add_vector(complex128_t** param, index_t* length,
 					const char* name, const char* description="");
 	/** add vector param
 	 * @param param parameter vector itself
@@ -839,6 +929,14 @@ public:
 	 */
 	void add_vector(SGSparseVector<floatmax_t>** param, index_t* length,
 					const char* name, const char* description="");
+	/** add vector param
+	 * @param param parameter vector itself
+	 * @param length length of vector
+	 * @param name name of parameter
+	 * @param description description of parameter
+	 */
+	void add_vector(SGSparseVector<complex128_t>** param, index_t* length,
+					const char* name, const char* description="");
 
 
 	/** add vector param
@@ -931,6 +1029,13 @@ public:
 	 * @param description description of parameter
 	 */
 	void add(SGVector<floatmax_t>* param, const char* name,
+					const char* description="");
+	/** add vector param
+	 * @param param parameter vector itself
+	 * @param name name of parameter
+	 * @param description description of parameter
+	 */
+	void add(SGVector<complex128_t>* param, const char* name,
 					const char* description="");
 	/** add vector param
 	 * @param param parameter vector itself
@@ -1121,6 +1226,13 @@ public:
 	 */
 	void add(SGVector<SGSparseVector<floatmax_t> >* param,
 					const char* name, const char* description="");
+	/** add vector param
+	 * @param param parameter vector itself
+	 * @param name name of parameter
+	 * @param description description of parameter
+	 */
+	void add(SGVector<SGSparseVector<complex128_t> >* param,
+					const char* name, const char* description="");
 
 	/* ************************************************************ */
 	/* Matrix wrappers  */
@@ -1253,6 +1365,16 @@ public:
 	 * @param description description of parameter
 	 */
 	void add_matrix(floatmax_t** param,
+					index_t* length_y, index_t* length_x,
+					const char* name, const char* description="");
+	/** add matrix param
+	 * @param param parameter matrix itself
+	 * @param length_y y size of matrix
+	 * @param length_x x size of matrix
+	 * @param name name of parameter
+	 * @param description description of parameter
+	 */
+	void add_matrix(complex128_t** param,
 					index_t* length_y, index_t* length_x,
 					const char* name, const char* description="");
 	/** add matrix param
@@ -1527,6 +1649,16 @@ public:
 					const char* name, const char* description="");
 	/** add matrix param
 	 * @param param parameter matrix itself
+	 * @param length_y y size of matrix
+	 * @param length_x x size of matrix
+	 * @param name name of parameter
+	 * @param description description of parameter
+	 */
+	void add_matrix(SGSparseVector<complex128_t>** param,
+					index_t* length_y, index_t* length_x,
+					const char* name, const char* description="");
+	/** add matrix param
+	 * @param param parameter matrix itself
 	 * @param name name of parameter
 	 * @param description description of parameter
 	 */
@@ -1615,6 +1747,13 @@ public:
 	 * @param description description of parameter
 	 */
 	void add(SGMatrix<floatmax_t>* param, const char* name,
+					const char* description="");
+	/** add matrix param
+	 * @param param parameter matrix itself
+	 * @param name name of parameter
+	 * @param description description of parameter
+	 */
+	void add(SGMatrix<complex128_t>* param, const char* name,
 					const char* description="");
 	/** add matrix param
 	 * @param param parameter matrix itself
@@ -1805,7 +1944,119 @@ public:
 	 */
 	void add(SGMatrix<SGSparseVector<floatmax_t> >* param,
 					const char* name, const char* description="");
+	/** add matrix param
+	 * @param param parameter matrix itself
+	 * @param name name of parameter
+	 * @param description description of parameter
+	 */
+	void add(SGMatrix<SGSparseVector<complex128_t> >* param,
+					const char* name, const char* description="");
 
+	/** add matrix param
+	 * @param param parameter matrix itself
+	 * @param name name of parameter
+	 * @param description description of parameter
+	 */
+	void add(SGSparseMatrix<bool>* param,
+					const char* name, const char* description="");
+	/** add matrix param
+	 * @param param parameter matrix itself
+	 * @param name name of parameter
+	 * @param description description of parameter
+	 */
+	void add(SGSparseMatrix<char>* param,
+					const char* name, const char* description="");
+	/** add matrix param
+	 * @param param parameter matrix itself
+	 * @param name name of parameter
+	 * @param description description of parameter
+	 */
+	void add(SGSparseMatrix<int8_t>* param,
+					const char* name, const char* description="");
+	/** add matrix param
+	 * @param param parameter matrix itself
+	 * @param name name of parameter
+	 * @param description description of parameter
+	 */
+	void add(SGSparseMatrix<uint8_t>* param,
+					const char* name, const char* description="");
+	/** add matrix param
+	 * @param param parameter matrix itself
+	 * @param name name of parameter
+	 * @param description description of parameter
+	 */
+	void add(SGSparseMatrix<int16_t>* param,
+					const char* name, const char* description="");
+	/** add matrix param
+	 * @param param parameter matrix itself
+	 * @param name name of parameter
+	 * @param description description of parameter
+	 */
+	void add(SGSparseMatrix<uint16_t>* param,
+					const char* name, const char* description="");
+	/** add matrix param
+	 * @param param parameter matrix itself
+	 * @param name name of parameter
+	 * @param description description of parameter
+	 */
+	void add(SGSparseMatrix<int32_t>* param,
+					const char* name, const char* description="");
+	/** add matrix param
+	 * @param param parameter matrix itself
+	 * @param name name of parameter
+	 * @param description description of parameter
+	 */
+	void add(SGSparseMatrix<uint32_t>* param,
+					const char* name, const char* description="");
+	/** add matrix param
+	 * @param param parameter matrix itself
+	 * @param name name of parameter
+	 * @param description description of parameter
+	 */
+	void add(SGSparseMatrix<int64_t>* param,
+					const char* name, const char* description="");
+	/** add matrix param
+	 * @param param parameter matrix itself
+	 * @param name name of parameter
+	 * @param description description of parameter
+	 */
+	void add(SGSparseMatrix<uint64_t>* param,
+					const char* name, const char* description="");
+	/** add matrix param
+	 * @param param parameter matrix itself
+	 * @param name name of parameter
+	 * @param description description of parameter
+	 */
+	void add(SGSparseMatrix<float32_t>* param,
+					const char* name, const char* description="");
+	/** add matrix param
+	 * @param param parameter matrix itself
+	 * @param name name of parameter
+	 * @param description description of parameter
+	 */
+	void add(SGSparseMatrix<float64_t>* param,
+					const char* name, const char* description="");
+	/** add matrix param
+	 * @param param parameter matrix itself
+	 * @param name name of parameter
+	 * @param description description of parameter
+	 */
+	void add(SGSparseMatrix<floatmax_t>* param,
+					const char* name, const char* description="");
+	/** add matrix param
+	 * @param param parameter matrix itself
+	 * @param name name of parameter
+	 * @param description description of parameter
+	 */
+	void add(SGSparseMatrix<complex128_t>* param,
+					const char* name, const char* description="");
+	/** add matrix param
+	 * @param param parameter matrix itself
+	 * @param name name of parameter
+	 * @param description description of parameter
+	 */
+	void add(SGSparseMatrix<CSGObject*>* param,
+					const char* name, const char* description="");
 protected:
 
 	/** array of parameters */

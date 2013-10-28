@@ -7,8 +7,8 @@ testdat = lm.load_dna('../data/fm_test_dna.dat')
 parameter_list=[[traindat,testdat],[traindat,testdat]]
 
 def kernel_linear_string_modular (fm_train_dna=traindat,fm_test_dna=testdat):
-	from shogun.Features import StringCharFeatures, DNA
-	from shogun.Kernel import LinearStringKernel
+	from modshogun import StringCharFeatures, DNA
+	from modshogun import LinearStringKernel
 
 	feats_train=StringCharFeatures(fm_train_dna, DNA)
 	feats_test=StringCharFeatures(fm_test_dna, DNA)

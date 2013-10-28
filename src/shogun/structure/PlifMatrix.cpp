@@ -170,7 +170,7 @@ void CPlifMatrix::set_plif_transform_type(SGString<char>* transform_type, int32_
 			m_PEN=NULL;
 			m_num_plifs=0;
 			m_num_limits=0;
-			SG_ERROR("transform type not recognized ('%s')\n", transform_str) 
+			SG_ERROR("transform type not recognized ('%s')\n", transform_str)
 		}
 		SG_FREE(transform_str);
 	}
@@ -213,7 +213,7 @@ bool CPlifMatrix::compute_plif_matrix(SGNDArray<float64_t> penalties_array)
 
 				if ((id<0 || id>=num_plifs) && (id!=-1))
 				{
-					SG_ERROR("id out of range\n") 
+					SG_ERROR("id out of range\n")
 					CPlif::delete_penalty_struct(PEN, num_plifs) ;
 					return false ;
 				}
@@ -229,7 +229,7 @@ bool CPlifMatrix::compute_plif_matrix(SGNDArray<float64_t> penalties_array)
 			else if (plif_array->get_num_plifs()==1)
 			{
 				SG_UNREF(plif_array);
-				ASSERT(plif!=NULL) 
+				ASSERT(plif!=NULL)
 				m_plif_matrix[i+j*num_states] = plif ;
 			}
 			else
@@ -254,7 +254,7 @@ bool  CPlifMatrix::compute_signal_plifs(SGMatrix<int32_t> state_signals)
 		int32_t id = (int32_t) state_signals.matrix[i]-1 ;
 		if ((id<0 || id>=Nplif) && (id!=-1))
 		{
-			SG_ERROR("id out of range\n") 
+			SG_ERROR("id out of range\n")
 			CPlif::delete_penalty_struct(PEN, Nplif) ;
 			return false ;
 		}
@@ -271,10 +271,10 @@ void CPlifMatrix::set_plif_state_signal_matrix(
 	int32_t *plif_id_matrix, int32_t m, int32_t max_num_signals)
 {
 	if (m!=m_num_plifs)
-		SG_ERROR("plif_state_signal_matrix size does not match previous info %i!=%i\n", m, m_num_plifs) 
+		SG_ERROR("plif_state_signal_matrix size does not match previous info %i!=%i\n", m, m_num_plifs)
 
 	/*if (m_seq.get_dim3() != max_num_signals)
-		SG_ERROR("size(plif_state_signal_matrix,2) does not match with size(m_seq,3): %i!=%i\nSorry, Soeren... interface changed\n", m_seq.get_dim3(), max_num_signals) 
+		SG_ERROR("size(plif_state_signal_matrix,2) does not match with size(m_seq,3): %i!=%i\nSorry, Soeren... interface changed\n", m_seq.get_dim3(), max_num_signals)
 
 	CArray2<int32_t> id_matrix(plif_id_matrix, m_num_plifs, max_num_signals, false, false) ;
 	m_PEN_state_signals.resize_array(m_num_plifs, max_num_signals) ;

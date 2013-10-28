@@ -20,14 +20,14 @@ namespace shogun
 {
 
 CMultitaskLinearMachine::CMultitaskLinearMachine() :
-	CLinearMachine(), m_current_task(0), 
+	CLinearMachine(), m_current_task(0),
 	m_task_relation(NULL)
 {
 	register_parameters();
 }
 
 CMultitaskLinearMachine::CMultitaskLinearMachine(
-     CDotFeatures* train_features, 
+     CDotFeatures* train_features,
      CLabels* train_labels, CTaskRelation* task_relation) :
 	CLinearMachine(), m_current_task(0), m_task_relation(NULL)
 {
@@ -67,8 +67,8 @@ CTaskRelation* CMultitaskLinearMachine::get_task_relation() const
 
 void CMultitaskLinearMachine::set_task_relation(CTaskRelation* task_relation)
 {
-	SG_UNREF(m_task_relation);
 	SG_REF(task_relation);
+	SG_UNREF(m_task_relation);
 	m_task_relation = task_relation;
 }
 
@@ -235,7 +235,7 @@ SGVector<index_t>* CMultitaskLinearMachine::get_subset_tasks_indices()
 		subset_tasks_indices[i] = cutted_task;
 	}
 	SG_FREE(tasks_indices);
-	
+
 	return subset_tasks_indices;
 }
 

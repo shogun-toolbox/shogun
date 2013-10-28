@@ -6,7 +6,7 @@
  *
  * Written (W) 2011-2012 Heiko Strathmann
  * Written (W) 2012 Jacob Walker
- *
+ * Written (W) 2013 Roman Votyakov
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
@@ -31,14 +31,88 @@ CParameterCombination::CParameterCombination(Parameter* param)
 	m_param=param;
 }
 
+CParameterCombination::CParameterCombination(CSGObject* obj)
+{
+	init();
+
+	Parameter* gradient_params=obj->m_gradient_parameters;
+
+	for (index_t i=0; i<gradient_params->get_num_parameters(); i++)
+	{
+		TParameter* param=gradient_params->get_parameter(i);
+		TSGDataType type=param->m_datatype;
+
+		if (type.m_ptype==PT_FLOAT64 || type.m_ptype==PT_FLOAT32 ||
+			type.m_ptype==PT_FLOATMAX)
+		{
+			if ((type.m_ctype==CT_SGVECTOR || type.m_ctype==CT_VECTOR))
+			{
+				Parameter* p=new Parameter();
+				p->add_vector((float64_t**)param->m_parameter, type.m_length_y,
+						param->m_name);
+
+				m_child_nodes->append_element(new CParameterCombination(p));
+				m_parameters_length+=*(type.m_length_y);
+			}
+			else if (type.m_ctype==CT_SCALAR)
+			{
+				Parameter* p=new Parameter();
+				p->add((float64_t*)param->m_parameter, param->m_name);
+
+				m_child_nodes->append_element(new CParameterCombination(p));
+				m_parameters_length++;
+			}
+		}
+		else
+		{
+			SG_WARNING("Parameter %s.%s was not added to parameter combination, "
+					"since it isn't of floating point type\n", obj->get_name(),
+					param->m_name);
+		}
+	}
+
+	Parameter* modsel_params=obj->m_model_selection_parameters;
+
+	for (index_t i=0; i<modsel_params->get_num_parameters(); i++)
+	{
+		TParameter* param=modsel_params->get_parameter(i);
+		TSGDataType type=param->m_datatype;
+
+		if (type.m_ptype==PT_SGOBJECT)
+		{
+			if (type.m_ctype==CT_SCALAR)
+			{
+				CSGObject* child=*((CSGObject**)(param->m_parameter));
+
+				if (child->m_gradient_parameters->get_num_parameters()>0)
+				{
+					CParameterCombination* comb=new CParameterCombination(child);
+
+					comb->m_param=new Parameter();
+					comb->m_param->add((CSGObject**)(param->m_parameter),
+							param->m_name);
+
+					m_child_nodes->append_element(comb);
+					m_parameters_length+=comb->m_parameters_length;
+				}
+			}
+			else
+			{
+				SG_NOTIMPLEMENTED
+			}
+		}
+	}
+}
+
 void CParameterCombination::init()
 {
+	m_parameters_length=0;
 	m_param=NULL;
 	m_child_nodes=new CDynamicObjectArray();
 	SG_REF(m_child_nodes);
 
-	SG_ADD((CSGObject**)&m_child_nodes, "child_nodes",
-			"children of this node", MS_NOT_AVAILABLE);
+	SG_ADD((CSGObject**)&m_child_nodes, "child_nodes", "Children of this node",
+			MS_NOT_AVAILABLE);
 }
 
 CParameterCombination::~CParameterCombination()
@@ -51,8 +125,6 @@ void CParameterCombination::append_child(CParameterCombination* child)
 {
 	m_child_nodes->append_element(child);
 }
-
-
 
 bool CParameterCombination::set_parameter_helper(
 		const char* name, bool value, index_t index)
@@ -248,18 +320,18 @@ void CParameterCombination::print_tree(int prefix_num) const
 		    else if (m_param->get_parameter(i)->m_datatype.m_ctype == CT_SGVECTOR)
 		    {
 				SG_SPRINT("\"%s\"=", m_param->get_parameter(i)->m_name)
-		    	float64_t** param = (float64_t**)(m_param->
-		    			get_parameter(i)->m_parameter);
-		    	if (!m_param->get_parameter(i)->m_datatype.m_length_y)
-		    	{
-		    		SG_ERROR("Parameter vector %s has no length\n",
-		    				m_param->get_parameter(i)->m_name);
-		    	}
+			float64_t** param = (float64_t**)(m_param->
+					get_parameter(i)->m_parameter);
+			if (!m_param->get_parameter(i)->m_datatype.m_length_y)
+			{
+				SG_ERROR("Parameter vector %s has no length\n",
+						m_param->get_parameter(i)->m_name);
+			}
 
-		    	index_t length = *(m_param->get_parameter(i)->m_datatype.m_length_y);
+			index_t length = *(m_param->get_parameter(i)->m_datatype.m_length_y);
 
-		    	for (index_t j = 0; j < length; j++)
-		    		SG_SPRINT("%f ", (*param)[j])
+			for (index_t j = 0; j < length; j++)
+				SG_SPRINT("%f ", (*param)[j])
 		    }
 
 			else
@@ -511,7 +583,7 @@ CDynamicObjectArray* CParameterCombination::non_value_tree_multiplication(
 			current_root->append_child(current_tree);
 			result->append_element(current_root);
 
-//			current_tree->print_tree(1);
+			// current_tree->print_tree(1);
 			SG_UNREF(current_tree);
 		}
 		SG_UNREF(trees);
@@ -547,8 +619,8 @@ CDynamicObjectArray* CParameterCombination::non_value_tree_multiplication(
 					new_element->append_child(to_add);
 					SG_UNREF(to_add);
 					new_result->append_element(new_element);
-//					SG_SDEBUG("added:\n")
-//					new_element->print_tree();
+					// SG_SDEBUG("added:\n")
+					// new_element->print_tree();
 				}
 			}
 
@@ -680,4 +752,99 @@ void CParameterCombination::apply_to_modsel_parameter(
 	}
 	else
 		SG_SERROR("CParameterCombination node has illegal type.\n")
+}
+
+void CParameterCombination::build_parameter_values_map(
+		CMap<TParameter*, SGVector<float64_t> >* dict)
+{
+	if (m_param)
+	{
+		for (index_t i=0; i<m_param->get_num_parameters(); i++)
+		{
+			TParameter* param=m_param->get_parameter(i);
+			TSGDataType type=param->m_datatype;
+
+			if (type.m_ptype==PT_FLOAT64 || type.m_ptype==PT_FLOAT32 ||
+					type.m_ptype==PT_FLOATMAX)
+			{
+				if ((type.m_ctype==CT_SGVECTOR || type.m_ctype==CT_VECTOR))
+				{
+					SGVector<float64_t> value(*((float64_t **)param->m_parameter),
+							(*type.m_length_y));
+					dict->add(param, value);
+				}
+				else if (type.m_ctype==CT_SCALAR)
+				{
+					SGVector<float64_t> value(1);
+					value.set_const(*((float64_t *)param->m_parameter));
+					dict->add(param, value);
+				}
+			}
+		}
+	}
+
+	for (index_t i=0; i<m_child_nodes->get_num_elements(); i++)
+	{
+		CParameterCombination* child=(CParameterCombination*)
+			m_child_nodes->get_element(i);
+		child->build_parameter_values_map(dict);
+		SG_UNREF(child);
+	}
+}
+
+void CParameterCombination::build_parameter_parent_map(
+		CMap<TParameter*, CSGObject*>* dict)
+{
+	CSGObject* parent=NULL;
+
+	if (m_param)
+	{
+		for (index_t i=0; i<m_param->get_num_parameters(); i++)
+		{
+			TParameter* param=m_param->get_parameter(i);
+			TSGDataType type=param->m_datatype;
+
+			if (type.m_ptype==PT_SGOBJECT)
+			{
+				if (type.m_ctype==CT_SCALAR)
+				{
+					parent=(*(CSGObject**)param->m_parameter);
+					break;
+				}
+				else
+				{
+					SG_NOTIMPLEMENTED
+				}
+			}
+		}
+	}
+
+	for (index_t i=0; i<m_child_nodes->get_num_elements(); i++)
+	{
+		CParameterCombination* child=(CParameterCombination*)
+			m_child_nodes->get_element(i);
+
+		for (index_t j=0; j<child->m_param->get_num_parameters(); j++)
+		{
+			TParameter* param=child->m_param->get_parameter(j);
+			TSGDataType type=param->m_datatype;
+
+			if (type.m_ptype==PT_SGOBJECT)
+			{
+				if (type.m_ctype==CT_SCALAR)
+				{
+					child->build_parameter_parent_map(dict);
+				}
+				else
+				{
+					SG_NOTIMPLEMENTED
+				}
+			}
+			else
+			{
+				dict->add(param, parent);
+			}
+		}
+		SG_UNREF(child);
+	}
 }

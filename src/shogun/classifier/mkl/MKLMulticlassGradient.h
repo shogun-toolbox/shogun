@@ -26,17 +26,17 @@ namespace shogun
 /** @brief MKLMulticlassGradient is a helper class for MKLMulticlass.
  *
  *	it solves the corresponding linear problem arising in SIP formulation for
- * 	MKL using a gradient based approach
+ *	MKL using a gradient based approach
  */
 class MKLMulticlassGradient: public MKLMulticlassOptimizationBase
 {
 public:
 	/** Class default Constructor
-	 * 
+	 *
 	 */
    MKLMulticlassGradient();
 	/** Class default Destructor
-	 * 
+	 *
 	 */
    virtual ~MKLMulticlassGradient();
 
@@ -46,15 +46,15 @@ public:
    MKLMulticlassGradient(MKLMulticlassGradient & gl);
 
 	/** Class Assignment operator
-	 * 
+	 *
 	 */
    MKLMulticlassGradient operator=(MKLMulticlassGradient & gl);
 
-	/** initializes solver 
+	/** initializes solver
 	 *
 	 * @param numkernels2 is the number of kernels
-	 * 
-	 * 
+	 *
+	 *
 	 */
 	virtual void setup(const int32_t numkernels2);
 
@@ -64,7 +64,7 @@ public:
 	 * @param sumofpositivealphas is a term depending on alphas, labels and
 	 * biases, see in the function float64_t getsumofsignfreealphas() from
     * MKLMulticlass.h, it depends on the formulation of the underlying GMNPSVM.
-	 * 
+	 *
 	 */
 	virtual void addconstraint(const ::std::vector<float64_t> & normw2,
 			const float64_t sumofpositivealphas);
@@ -72,15 +72,12 @@ public:
 	/** computes MKL weights
 	 *
 	 * @param weights2 stores the new weights
-	 * 
+	 *
 	 */
 	virtual void computeweights(std::vector<float64_t> & weights2);
 
 	/** @return object name */
-	virtual const char* get_name() const
-	{
-      return "MKLMulticlassGradient";
-	}
+	virtual const char* get_name() const { return "MKLMulticlassGradient"; }
 
 	/** sets p-norm parameter for MKL
 	*	 @param norm the MKL norm
@@ -90,7 +87,7 @@ public:
 protected:
 	/** helper routine for MKL optimization, performs linesearch
 	*
-	*	@param oldweights - MKL weights to start from 
+	*	@param oldweights - MKL weights to start from
 	*	@param finalbeta - new MKL weights
 	*
 	*/
@@ -113,7 +110,7 @@ protected:
 	*/
 	void gengammagradient( ::std::vector<float64_t> & gammagradient ,const ::std::vector<float64_t> & gammas,const int32_t dim);
 
-	/** helper routine for MKL optimization, computes optimization objective for one contraint 
+	/** helper routine for MKL optimization, computes optimization objective for one contraint
 	*
 	*	@param weights - MKL weights
 	*	@param index - index of constraint
@@ -123,7 +120,7 @@ protected:
 
 	/** helper routine for MKL optimization, performs linesearch
 	*
-	*	@param oldweights - MKL weights to start from 
+	*	@param oldweights - MKL weights to start from
 	*	@param finalbeta - new MKL weights
 	*
 	*/

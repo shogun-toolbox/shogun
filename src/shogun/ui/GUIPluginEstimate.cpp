@@ -18,15 +18,30 @@
 
 using namespace shogun;
 
-CGUIPluginEstimate::CGUIPluginEstimate(CSGInterface* ui_)
-: CSGObject(), ui(ui_), estimator(NULL),
-	pos_pseudo(1e-10), neg_pseudo(1e-10)
+CGUIPluginEstimate::CGUIPluginEstimate() : CSGObject()
 {
+	init();
+}
+
+CGUIPluginEstimate::CGUIPluginEstimate(CSGInterface* ui_)
+: CSGObject()
+{
+	init();
+
+	ui=ui_;
 }
 
 CGUIPluginEstimate::~CGUIPluginEstimate()
 {
 	SG_UNREF(estimator);
+}
+
+void CGUIPluginEstimate::init()
+{
+	ui=NULL;
+	estimator=NULL;
+	pos_pseudo=1e-10;
+	neg_pseudo=1e-10;
 }
 
 bool CGUIPluginEstimate::new_estimator(float64_t pos, float64_t neg)
@@ -86,13 +101,13 @@ CLabels* CGUIPluginEstimate::apply()
 
 	if (!estimator)
 	{
-		SG_ERROR("no estimator available") 
+		SG_ERROR("no estimator available")
 		return 0;
 	}
 
 	if (!testfeatures)
 	{
-		SG_ERROR("no test features available") 
+		SG_ERROR("no test features available")
 		return 0;
 	}
 
@@ -107,13 +122,13 @@ float64_t CGUIPluginEstimate::apply_one(int32_t idx)
 
 	if (!estimator)
 	{
-		SG_ERROR("no estimator available") 
+		SG_ERROR("no estimator available")
 		return 0;
 	}
 
 	if (!testfeatures)
 	{
-		SG_ERROR("no test features available") 
+		SG_ERROR("no test features available")
 		return 0;
 	}
 

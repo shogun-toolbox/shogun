@@ -27,8 +27,8 @@ namespace shogun
  * A linear classifier computes
  *
  *  \f[
- * 		f({\bf x})= {\bf w} \cdot {\bf x} + b
- * 	\f]
+ *		f({\bf x})= {\bf w} \cdot {\bf x} + b
+ *	\f]
  *
  * where \f${\bf w}\f$ are the weights assigned to each feature in training
  * and \f$b\f$ the bias.
@@ -43,8 +43,8 @@ namespace shogun
  * operations (like the dot product). The decision function is thus
  *
  *  \f[
- * 		f({\bf x})= {\bf w} \cdot \Phi({\bf x}) + b.
- * 	\f]
+ *		f({\bf x})= {\bf w} \cdot \Phi({\bf x}) + b.
+ *	\f]
  *
  * */
 class COnlineLinearMachine : public CMachine
@@ -87,7 +87,10 @@ class COnlineLinearMachine : public CMachine
 		 */
 		virtual SGVector<float32_t> get_w()
 		{
-			return SGVector<float32_t>(w, w_dim);
+			float32_t * dst_w = SG_MALLOC(float32_t, w_dim);
+			for (int32_t i=0; i<w_dim; i++)
+				dst_w[i]=w[i];
+			return SGVector<float32_t>(dst_w, w_dim);
 		}
 
 		/** set w
@@ -142,9 +145,8 @@ class COnlineLinearMachine : public CMachine
 		 */
 		virtual void set_features(CStreamingDotFeatures* feat)
 		{
-			if (features)
-				SG_UNREF(features);
 			SG_REF(feat);
+			SG_UNREF(features);
 			features=feat;
 		}
 
@@ -155,7 +157,7 @@ class COnlineLinearMachine : public CMachine
 		 * @return classified labels
 		 */
 		virtual CRegressionLabels* apply_regression(CFeatures* data=NULL);
-		
+
 		/** apply linear machine to data
 		 * for binary classification problems
 		 *
@@ -213,9 +215,9 @@ class COnlineLinearMachine : public CMachine
 
 		/** train on one example
 		 * @param feature the feature object containing the current example. Note that get_next_example
-		 *        is already called so relevalent methods like dot() and dense_dot() can be directly 
-		 *        called. WARN: this function should only process ONE example, and get_next_example() 
-		 *        should NEVER be called here. Use the label passed in the 2nd parameter, instead of 
+		 *        is already called so relevalent methods like dot() and dense_dot() can be directly
+		 *        called. WARN: this function should only process ONE example, and get_next_example()
+		 *        should NEVER be called here. Use the label passed in the 2nd parameter, instead of
 		 *		  get_label() from feature, because sometimes the features might not have associated
 		 *		  labels or the caller might want to provide some other labels.
 		 * @param label label of this example

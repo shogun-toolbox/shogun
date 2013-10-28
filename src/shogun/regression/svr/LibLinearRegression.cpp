@@ -81,7 +81,7 @@ bool CLibLinearRegression::train_machine(CFeatures* data)
 	else
 		w=SGVector<float64_t>(num_feat);
 
-	problem prob;
+	liblinear_problem prob;
 	if (m_use_bias)
 	{
 		prob.n=w.vlen+1;
@@ -126,35 +126,35 @@ bool CLibLinearRegression::train_machine(CFeatures* data)
 	return true;
 }
 
-// A coordinate descent algorithm for 
+// A coordinate descent algorithm for
 // L1-loss and L2-loss epsilon-SVR dual problem
 //
 //  min_\beta  0.5\beta^T (Q + diag(lambda)) \beta - p \sum_{i=1}^l|\beta_i| + \sum_{i=1}^l yi\beta_i,
 //    s.t.      -upper_bound_i <= \beta_i <= upper_bound_i,
-// 
+//
 //  where Qij = xi^T xj and
-//  D is a diagonal matrix 
+//  D is a diagonal matrix
 //
 // In L1-SVM case:
-// 		upper_bound_i = C
-// 		lambda_i = 0
+//		upper_bound_i = C
+//		lambda_i = 0
 // In L2-SVM case:
-// 		upper_bound_i = INF
-// 		lambda_i = 1/(2*C)
+//		upper_bound_i = INF
+//		lambda_i = 1/(2*C)
 //
-// Given: 
+// Given:
 // x, y, p, C
 // eps is the stopping tolerance
 //
 // solution will be put in w
 //
-// See Algorithm 4 of Ho and Lin, 2012   
+// See Algorithm 4 of Ho and Lin, 2012
 
 #undef GETI
 #define GETI(i) (0)
 // To support weights for instances, use GETI(i) (i)
 
-void CLibLinearRegression::solve_l2r_l1l2_svr(const problem *prob)
+void CLibLinearRegression::solve_l2r_l1l2_svr(const liblinear_problem *prob)
 {
 	int l = prob->l;
 	double C = m_C;
@@ -211,7 +211,7 @@ void CLibLinearRegression::solve_l2r_l1l2_svr(const problem *prob)
 
 		for(i=0; i<active_size; i++)
 		{
-			int j = i+rand()%(active_size-i);
+			int j = CMath::random(i, active_size-1);
 			CMath::swap(index[i], index[j]);
 		}
 

@@ -134,18 +134,18 @@ public:
 
 	/** get path size
 	 *
-	 * @return the size of variable selection path. Call get_w(i) to get the
+	 * @return the size of variable selection path. Call get_w_for_var(i) to get the
 	 * estimator of i-th entry on the path, where i can be in the range [0, path_size)
 	 *
 	 * @see switch_w
-	 * @see get_w
+	 * @see get_w_for_var
 	 */
 	int32_t get_path_size() const
 	{
 		return m_beta_idx.size();
 	}
 
-	/** get w
+	/** get w for a particular regularization variable
 	 *
 	 * @param num_var number of non-zero coefficients
 	 *
@@ -154,7 +154,7 @@ public:
 	 * become invalid if train is called *again*. So make a copy if you want to
 	 * call train multiple times.
 	 */
-	SGVector<float64_t> get_w(int32_t num_var)
+	SGVector<float64_t> get_w_for_var(int32_t num_var)
 	{
 		return SGVector<float64_t>(&m_beta_path[m_beta_idx[num_var]][0], w.vlen, false);
 	}
@@ -169,7 +169,7 @@ public:
 	}
 
 	/** @return object name */
-	virtual const char* get_name() const { return "LARS"; }
+	virtual const char* get_name() const { return "LeastAngleRegression"; }
 
 protected:
 	virtual bool train_machine(CFeatures* data=NULL);

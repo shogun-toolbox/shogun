@@ -153,11 +153,6 @@ class CHashedWDFeaturesTransposed : public CDotFeatures
 			return num_strings;
 		}
 
-		virtual int32_t get_size() const
-		{
-			return sizeof(float64_t);
-		}
-
 		/** set normalization constant
 		 * @param n n=0 means automagic */
 		void set_normalization_const(float64_t n=0);
@@ -193,7 +188,7 @@ class CHashedWDFeaturesTransposed : public CDotFeatures
 		 * free_feature_iterator to cleanup
 		 *
 		 * @param vector_index the index of the vector over whose components to
-		 * 			iterate over
+		 *			iterate over
 		 * @return feature iterator (to be passed to get_next_feature)
 		 */
 		virtual void* get_feature_iterator(int32_t vector_index);
@@ -224,6 +219,8 @@ class CHashedWDFeaturesTransposed : public CDotFeatures
 
 		/** create wd kernel weighting heuristic */
 		void set_wd_weights();
+
+		/** helper function for parallel dense_dot computation */
 		static void* dense_dot_range_helper(void* p);
 
 	protected:

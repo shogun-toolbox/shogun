@@ -12,10 +12,10 @@ parameter_list=[[train_dna, test_dna, label, 20, 0.9, 1e-3, 1],
 def classifier_svmlight_batch_linadd_modular (fm_train_dna, fm_test_dna,
 		label_train_dna, degree, C, epsilon, num_threads):
 
-	from shogun.Features import StringCharFeatures, BinaryLabels, DNA
-	from shogun.Kernel import WeightedDegreeStringKernel, MSG_DEBUG
+	from modshogun import StringCharFeatures, BinaryLabels, DNA
+	from modshogun import WeightedDegreeStringKernel, MSG_DEBUG
 	try:
-		from shogun.Classifier import SVMLight
+		from modshogun import SVMLight
 	except ImportError:
 		print('No support for SVMLight available.')
 		return

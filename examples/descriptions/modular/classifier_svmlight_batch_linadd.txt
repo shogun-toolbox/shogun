@@ -10,8 +10,8 @@ For more details on the SVM^light see
  Methods -- Support Vector Learning, pages 169-184. MIT Press, Cambridge, MA USA, 1999.
 
 For more details on the Weighted Degree kernel and the LINADD trick see
-  Sonnenburg, s. and Rätsch, G. and Rieck, K. Large Scale Learning with String
+  Sonnenburg, s. and RÃ¤tsch, G. and Rieck, K. Large Scale Learning with String
   Kernels. In Bottou, Leon and Chapelle, Olivier and DeCoste, Dennis and Weston,
   Jason, editor, In Large Scale Kernel Machines, pages 73-103, MIT Press,
-  Cambridge, MA. 2007.  
+  Cambridge, MA. 2007.
 

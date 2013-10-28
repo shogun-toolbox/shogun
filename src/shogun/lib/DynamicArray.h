@@ -270,7 +270,7 @@ template <class T> class CDynamicArray :public CSGObject
 			ASSERT(idx2>=0 && idx2<p_dim2_size)
 			ASSERT(idx3>=0 && idx3<dim3_size)
 			return p_array[idx1+p_dim1_size*(idx2+p_dim2_size*idx3)];
-		}	
+		}
 
 		/** gets last array element
 		 *
@@ -490,6 +490,12 @@ template <class T> class CDynamicArray :public CSGObject
 			m_array.clear_array(value);
 		}
 
+		/** resets the array */
+		inline void reset_array()
+		{
+			m_array.reset((T) 0);
+		}
+
 		/** operator overload for array read only access
 		 * use set_element() for write access (will also make the array
 		 * dynamically grow)
@@ -527,12 +533,15 @@ template <class T> class CDynamicArray :public CSGObject
 			dim1_size=orig.dim1_size;
 			dim2_size=orig.dim2_size;
 			dim3_size=orig.dim3_size;
-			
+
 			return *this;
 		}
 
-		/** shuffles the array */
+		/** shuffles the array (not thread safe!) */
 		inline void shuffle() { m_array.shuffle(); }
+
+		/** shuffles the array with external random state */
+		inline void shuffle(CRandom * rand) { m_array.shuffle(rand); }
 
 		/** set array's name
 		 *
@@ -566,7 +575,7 @@ template <class T> class CDynamicArray :public CSGObject
 					SG_PRINT(" ]\n")
 				}
 		}
-	
+
 		/** display array's size */
 		inline void display_size()
 		{
@@ -618,7 +627,7 @@ template <class T> class CDynamicArray :public CSGObject
 
 			m_parameters->add_vector(&m_array.array,
 					&m_array.current_num_elements, "array",
-					"Memory for dynamic array.");	
+					"Memory for dynamic array.");
 			SG_ADD(&m_array.num_elements,
 							  "num_elements",
 							  "Number of Elements.", MS_NOT_AVAILABLE);

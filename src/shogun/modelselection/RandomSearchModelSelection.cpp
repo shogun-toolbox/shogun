@@ -17,16 +17,15 @@
 
 using namespace shogun;
 
-CRandomSearchModelSelection::CRandomSearchModelSelection() :
-	CModelSelection(NULL, NULL)
+CRandomSearchModelSelection::CRandomSearchModelSelection() : CModelSelection()
 {
 	set_ratio(0.5);
 }
 
 CRandomSearchModelSelection::CRandomSearchModelSelection(
-		CModelSelectionParameters* model_parameters,
-		CMachineEvaluation* machine_eval, float64_t ratio) :
-	CModelSelection(model_parameters, machine_eval)
+		CMachineEvaluation* machine_eval,
+		CModelSelectionParameters* model_parameters, float64_t ratio)
+		: CModelSelection(machine_eval, model_parameters)
 {
 	set_ratio(ratio);
 }
@@ -44,15 +43,15 @@ CParameterCombination* CRandomSearchModelSelection::select_model(bool print_stat
 	CDynamicObjectArray* all_combinations=
 			(CDynamicObjectArray*)m_model_parameters->get_combinations();
 
-	int32_t n_all_combinations = all_combinations->get_num_elements();
-	SGVector<index_t> combinations_indices = CStatistics::sample_indices(n_all_combinations*m_ratio, n_all_combinations);
+	int32_t n_all_combinations=all_combinations->get_num_elements();
+	SGVector<index_t> combinations_indices=CStatistics::sample_indices(n_all_combinations*m_ratio, n_all_combinations);
 
-	CDynamicObjectArray* combinations = new CDynamicObjectArray();
+	CDynamicObjectArray* combinations=new CDynamicObjectArray();
 
 	for (int32_t i=0; i<combinations_indices.vlen; i++)
 		combinations->append_element(all_combinations->get_element(i));
 
-	CCrossValidationResult* best_result = new CCrossValidationResult();
+	CCrossValidationResult* best_result=new CCrossValidationResult();
 
 	CParameterCombination* best_combination=NULL;
 	if (m_machine_eval->get_evaluation_direction()==ED_MAXIMIZE)
@@ -106,9 +105,9 @@ CParameterCombination* CRandomSearchModelSelection::select_model(bool print_stat
 				best_combination=(CParameterCombination*)
 						combinations->get_element(i);
 
-				SG_UNREF(best_result);
 				SG_REF(result);
-				best_result = result;
+				SG_UNREF(best_result);
+				best_result=result;
 			}
 			else
 			{
@@ -127,9 +126,9 @@ CParameterCombination* CRandomSearchModelSelection::select_model(bool print_stat
 				best_combination=(CParameterCombination*)
 						combinations->get_element(i);
 
-				SG_UNREF(best_result);
 				SG_REF(result);
-				best_result = result;
+				SG_UNREF(best_result);
+				best_result=result;
 			}
 			else
 			{
@@ -149,4 +148,3 @@ CParameterCombination* CRandomSearchModelSelection::select_model(bool print_stat
 
 	return best_combination;
 }
-

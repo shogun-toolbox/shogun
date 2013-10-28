@@ -1,5 +1,5 @@
-The PolyMatchWordString kernel is defined on strings of equal length. 
-The kernel sums over the matches of two stings of the same length and 
-takes the sum to the power of 'degree'. The strings in this example 
-consist of the characters 'ACGT' corresponding to the DNA-alphabet. Each 
+The PolyMatchWordString kernel is defined on strings of equal length.
+The kernel sums over the matches of two stings of the same length and
+takes the sum to the power of 'degree'. The strings in this example
+consist of the characters 'ACGT' corresponding to the DNA-alphabet. Each
 column of the matrices of type char corresponds to one training/test example.

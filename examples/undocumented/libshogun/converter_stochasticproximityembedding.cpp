@@ -32,7 +32,7 @@ int main()
 
 	CDenseFeatures< float64_t >* features = new CDenseFeatures<float64_t>(matrix);
 	SG_REF(features);
-	
+
 	// Create embedding and set parameters for global strategy
 	CStochasticProximityEmbedding* spe = new CStochasticProximityEmbedding();
 	spe->set_target_dim(2);

@@ -11,11 +11,17 @@
 #include <shogun/multiclass/MulticlassOneVsRestStrategy.h>
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/labels/MulticlassLabels.h>
+#include <shogun/mathematics/Math.h>
 
 using namespace shogun;
 
 CMulticlassOneVsRestStrategy::CMulticlassOneVsRestStrategy()
 	: CMulticlassStrategy()
+{
+}
+
+CMulticlassOneVsRestStrategy::CMulticlassOneVsRestStrategy(EProbHeuristicType prob_heuris)
+	: CMulticlassStrategy(prob_heuris)
 {
 }
 
@@ -61,3 +67,61 @@ SGVector<index_t> CMulticlassOneVsRestStrategy::decide_label_multiple_output(SGV
 	return result;
 }
 
+void CMulticlassOneVsRestStrategy::rescale_outputs(SGVector<float64_t> outputs)
+{
+	switch(get_prob_heuris_type())
+	{
+		case OVA_NORM:
+			rescale_heuris_norm(outputs);
+			break;
+		case OVA_SOFTMAX:
+			SG_ERROR("%s::rescale_outputs(): Need to specify sigmoid parameters!\n", get_name());
+			break;
+		case PROB_HEURIS_NONE:
+			break;
+		default:
+			SG_ERROR("%s::rescale_outputs(): Unknown OVA probability heuristic type!\n", get_name());
+			break;
+	}
+}
+
+void CMulticlassOneVsRestStrategy::rescale_outputs(SGVector<float64_t> outputs,
+		const SGVector<float64_t> As, const SGVector<float64_t> Bs)
+{
+	if (get_prob_heuris_type()==OVA_SOFTMAX)
+		rescale_heuris_softmax(outputs,As,Bs);
+	else
+		rescale_outputs(outputs);
+}
+
+void CMulticlassOneVsRestStrategy::rescale_heuris_norm(SGVector<float64_t> outputs)
+{
+	if (m_num_classes != outputs.vlen)
+	{
+		SG_ERROR("%s::rescale_heuris_norm(): size(outputs) = %d != m_num_classes = %d\n",
+				get_name(), outputs.vlen, m_num_classes);
+	}
+
+	float64_t norm = SGVector<float64_t>::sum(outputs);
+	norm += 1E-10;
+	for (int32_t i=0; i<outputs.vlen; i++)
+		outputs[i] /= norm;
+}
+
+void CMulticlassOneVsRestStrategy::rescale_heuris_softmax(SGVector<float64_t> outputs,
+		const SGVector<float64_t> As, const SGVector<float64_t> Bs)
+{
+	if (m_num_classes != outputs.vlen)
+	{
+		SG_ERROR("%s::rescale_heuris_softmax(): size(outputs) = %d != m_num_classes = %d\n",
+				get_name(), outputs.vlen, m_num_classes);
+	}
+
+	for (int32_t i=0; i<outputs.vlen; i++)
+		outputs[i] = CMath::exp(-As[i]*outputs[i]-Bs[i]);
+
+	float64_t norm = SGVector<float64_t>::sum(outputs);
+	norm += 1E-10;
+	for (int32_t i=0; i<outputs.vlen; i++)
+		outputs[i] /= norm;
+}

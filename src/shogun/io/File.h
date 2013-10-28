@@ -26,7 +26,7 @@ template <class ST> struct SGSparseVectorEntry;
  *
  * A file is assumed to be a seekable raw data stream.
  *
- * \sa CAsciiFile
+ * \sa CCSVFile
  * \sa CBinaryFile
  * \sa CHDF5File
  *
@@ -43,6 +43,14 @@ public:
 	 * @param name variable name (e.g. "x" or "/path/to/x")
 	 */
 	CFile(FILE* f, const char* name=NULL);
+
+	/** constructor
+	 *
+	 * @param fd already opened file descriptor
+	 * @param mode mode, 'r' or 'w'
+	 * @param name variable name (e.g. "x" or "/path/to/x")
+	 */
+	CFile(int fd, const char* mode, const char* name=NULL);
 
 	/** constructor
 	 *

@@ -199,10 +199,7 @@ float64_t CLinearHMM::get_log_likelihood_example(int32_t num_example)
 	bool free_vec;
 	uint16_t* vector=((CStringFeatures<uint16_t>*) features)->
 		get_feature_vector(num_example, len, free_vec);
-	float64_t result=log_transition_probs[vector[0]];
-
-	for (int32_t i=1; i<len; i++)
-		result+=log_transition_probs[i*num_symbols+vector[i]];
+	float64_t result=get_log_likelihood_example(vector, len);
 
 	((CStringFeatures<uint16_t>*) features)->
 		free_feature_vector(vector, num_example, free_vec);
@@ -216,6 +213,21 @@ float64_t CLinearHMM::get_likelihood_example(uint16_t* vector, int32_t len)
 
 	for (int32_t i=1; i<len; i++)
 		result*=transition_probs[i*num_symbols+vector[i]];
+
+	return result;
+}
+
+float64_t CLinearHMM::get_likelihood_example(int32_t num_example)
+{
+	int32_t len;
+	bool free_vec;
+	uint16_t* vector=((CStringFeatures<uint16_t>*) features)->
+		get_feature_vector(num_example, len, free_vec);
+
+	float64_t result=get_likelihood_example(vector, len);
+
+	((CStringFeatures<uint16_t>*) features)->
+		free_feature_vector(vector, num_example, free_vec);
 
 	return result;
 }

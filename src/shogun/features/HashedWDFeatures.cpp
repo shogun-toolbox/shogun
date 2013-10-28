@@ -67,14 +67,26 @@ CHashedWDFeatures::CHashedWDFeatures(const CHashedWDFeatures& orig)
 	from_degree(orig.from_degree), m_hash_bits(orig.m_hash_bits),
 	normalization_const(orig.normalization_const)
 {
-	SG_REF(strings);
-	string_length=strings->get_max_vector_length();
-	num_strings=strings->get_num_vectors();
-	CAlphabet* alpha=strings->get_alphabet();
-	alphabet_size=alpha->get_num_symbols();
-	SG_UNREF(alpha);
 
-	set_wd_weights();
+
+	SG_REF(strings);
+	if (strings)
+	{
+		string_length=strings->get_max_vector_length();
+		num_strings=strings->get_num_vectors();
+		CAlphabet* alpha=strings->get_alphabet();
+		alphabet_size=alpha->get_num_symbols();
+		SG_UNREF(alpha);
+	}
+	else
+	{
+		string_length = 0;
+		num_strings = 0;
+		alphabet_size = 0;
+	}
+
+	if (degree>0)
+		set_wd_weights();
 }
 
 CHashedWDFeatures::~CHashedWDFeatures()
@@ -287,7 +299,7 @@ bool CHashedWDFeatures::get_next_feature(int32_t& index, float64_t& value,
 		void* iterator)
 {
 	SG_NOTIMPLEMENTED
-	return NULL;
+	return false;
 }
 
 void CHashedWDFeatures::free_feature_iterator(void* iterator)

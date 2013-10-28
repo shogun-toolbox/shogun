@@ -19,12 +19,12 @@ namespace shogun
 /** @brief class FeatureBlockLogisticRegression, a linear
  * binary logistic loss classifier for problems with complex feature relations.
  * Currently two feature relations are supported - feature group
- * (done via CIndexBlockGroup) and feature tree (done via CIndexTree). 
- * Handling of feature relations is done via L1/Lq (for groups) and L1/L2 
+ * (done via CIndexBlockGroup) and feature tree (done via CIndexTree).
+ * Handling of feature relations is done via L1/Lq (for groups) and L1/L2
  * (for trees) regularization.
  *
  * The underlying solver is based on the SLEP library.
- * 
+ *
  * @see CIndexBlock
  * @see CIndexBlockGroup
  * @see CIndexBlockTree
@@ -46,14 +46,14 @@ class CFeatureBlockLogisticRegression : public CLinearMachine
 		 * @param task_relation task relation
 		 */
 		CFeatureBlockLogisticRegression(
-		     float64_t z, CDotFeatures* training_data, 
+		     float64_t z, CDotFeatures* training_data,
 		     CBinaryLabels* training_labels, CIndexBlockRelation* task_relation);
 
 		/** destructor */
 		virtual ~CFeatureBlockLogisticRegression();
 
 		/** get name */
-		virtual const char* get_name() const 
+		virtual const char* get_name() const
 		{
 			return "FeatureBlockLogisticRegression";
 		}
@@ -69,7 +69,7 @@ class CFeatureBlockLogisticRegression : public CLinearMachine
 		void set_feature_relation(CIndexBlockRelation* feature_relation);
 
 		virtual float64_t apply_one(int32_t vec_idx);
-		
+
 		/** get max iter */
 		int32_t get_max_iter() const;
 		/** get q */
@@ -97,7 +97,7 @@ class CFeatureBlockLogisticRegression : public CLinearMachine
 		void set_z(float64_t z);
 
 	protected:
-		
+
 		virtual SGVector<float64_t> apply_get_outputs(CFeatures* data);
 
 		/** train machine */
@@ -108,11 +108,14 @@ class CFeatureBlockLogisticRegression : public CLinearMachine
 		/** register parameters */
 		void register_parameters();
 
+		/** Initializes Parameters to std values */
+		void init();
+
 	protected:
 
 		/** feature tree */
 		CIndexBlockRelation* m_feature_relation;
-		
+
 		/** regularization type */
 		int32_t m_regularization;
 

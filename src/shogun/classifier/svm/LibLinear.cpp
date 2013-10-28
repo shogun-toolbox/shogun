@@ -120,7 +120,7 @@ bool CLibLinear::train_machine(CFeatures* data)
 	else
 		w=SGVector<float64_t>(num_feat);
 
-	problem prob;
+	liblinear_problem prob;
 	if (use_bias)
 	{
 		prob.n=w.vlen+1;
@@ -231,13 +231,13 @@ bool CLibLinear::train_machine(CFeatures* data)
 //  D is a diagonal matrix
 //
 // In L1-SVM case:
-// 		upper_bound_i = Cp if y_i = 1
-// 		upper_bound_i = Cn if y_i = -1
-// 		D_ii = 0
+//		upper_bound_i = Cp if y_i = 1
+//		upper_bound_i = Cn if y_i = -1
+//		D_ii = 0
 // In L2-SVM case:
-// 		upper_bound_i = INF
-// 		D_ii = 1/(2*Cp)	if y_i = 1
-// 		D_ii = 1/(2*Cn)	if y_i = -1
+//		upper_bound_i = INF
+//		D_ii = 1/(2*Cp)	if y_i = 1
+//		D_ii = 1/(2*Cn)	if y_i = -1
 //
 // Given:
 // x, y, Cp, Cn
@@ -250,7 +250,7 @@ bool CLibLinear::train_machine(CFeatures* data)
 // To support weights for instances, use GETI(i) (i)
 
 void CLibLinear::solve_l2r_l1l2_svc(
-			const problem *prob, double eps, double Cp, double Cn, LIBLINEAR_SOLVER_TYPE st)
+			const liblinear_problem *prob, double eps, double Cp, double Cn, LIBLINEAR_SOLVER_TYPE st)
 {
 	int l = prob->l;
 	int w_size = prob->n;
@@ -316,7 +316,7 @@ void CLibLinear::solve_l2r_l1l2_svc(
 
 		for (i=0; i<active_size; i++)
 		{
-			int j = i+rand()%(active_size-i);
+			int j = CMath::random(i, active_size-1);
 			CMath::swap(index[i], index[j]);
 		}
 
@@ -450,7 +450,7 @@ void CLibLinear::solve_l2r_l1l2_svc(
 // To support weights for instances, use GETI(i) (i)
 
 void CLibLinear::solve_l1r_l2_svc(
-	problem *prob_col, double eps, double Cp, double Cn)
+	liblinear_problem *prob_col, double eps, double Cp, double Cn)
 {
 	int l = prob_col->l;
 	int w_size = prob_col->n;
@@ -523,7 +523,7 @@ void CLibLinear::solve_l1r_l2_svc(
 
 		for(j=0; j<active_size; j++)
 		{
-			int i = j+rand()%(active_size-j);
+			int i = CMath::random(j, active_size-1);
 			CMath::swap(index[i], index[j]);
 		}
 
@@ -796,7 +796,7 @@ void CLibLinear::solve_l1r_l2_svc(
 // To support weights for instances, use GETI(i) (i)
 
 void CLibLinear::solve_l1r_lr(
-	const problem *prob_col, double eps,
+	const liblinear_problem *prob_col, double eps,
 	double Cp, double Cn)
 {
 	int l = prob_col->l;
@@ -892,7 +892,7 @@ void CLibLinear::solve_l1r_lr(
 
 		for(j=0; j<active_size; j++)
 		{
-			int i = j+rand()%(active_size-j);
+			int i = CMath::random(j, active_size-1);
 			CMath::swap(index[i], index[j]);
 		}
 
@@ -1145,17 +1145,17 @@ void CLibLinear::solve_l1r_lr(
 	SG_FREE(xjpos_sum);
 }
 
-// A coordinate descent algorithm for 
+// A coordinate descent algorithm for
 // the dual of L2-regularized logistic regression problems
 //
 //  min_\alpha  0.5(\alpha^T Q \alpha) + \sum \alpha_i log (\alpha_i) + (upper_bound_i - \alpha_i) log (upper_bound_i - \alpha_i),
 //    s.t.      0 <= \alpha_i <= upper_bound_i,
-// 
-//  where Qij = yi yj xi^T xj and 
+//
+//  where Qij = yi yj xi^T xj and
 //  upper_bound_i = Cp if y_i = 1
 //  upper_bound_i = Cn if y_i = -1
 //
-// Given: 
+// Given:
 // x, y, Cp, Cn
 // eps is the stopping tolerance
 //
@@ -1167,18 +1167,18 @@ void CLibLinear::solve_l1r_lr(
 #define GETI(i) (y[i]+1)
 // To support weights for instances, use GETI(i) (i)
 
-void CLibLinear::solve_l2r_lr_dual(const problem *prob, double eps, double Cp, double Cn)
+void CLibLinear::solve_l2r_lr_dual(const liblinear_problem *prob, double eps, double Cp, double Cn)
 {
 	int l = prob->l;
 	int w_size = prob->n;
 	int i, s, iter = 0;
 	double *xTx = new double[l];
 	int max_iter = 1000;
-	int *index = new int[l];		
+	int *index = new int[l];
 	double *alpha = new double[2*l]; // store alpha and C - alpha
 	int32_t *y = SG_MALLOC(int32_t, l);
 	int max_inner_iter = 100; // for inner Newton
-	double innereps = 1e-2; 
+	double innereps = 1e-2;
 	double innereps_min = CMath::min(1e-8, eps);
 	double upper_bound[3] = {Cn, 0, Cp};
 	double Gmax_init = 0;
@@ -1187,14 +1187,14 @@ void CLibLinear::solve_l2r_lr_dual(const problem *prob, double eps, double Cp, d
 	{
 		if(prob->y[i] > 0)
 		{
-			y[i] = +1; 
+			y[i] = +1;
 		}
 		else
 		{
 			y[i] = -1;
 		}
 	}
-		
+
 	// Initial alpha can be set here. Note that
 	// 0 < alpha[i] < upper_bound[GETI(i)]
 	// alpha[2*i] + alpha[2*i+1] = upper_bound[GETI(i)]
@@ -1223,7 +1223,7 @@ void CLibLinear::solve_l2r_lr_dual(const problem *prob, double eps, double Cp, d
 	{
 		for (i=0; i<l; i++)
 		{
-			int j = i+rand()%(l-i);
+			int j = CMath::random(i, l-1);
 			CMath::swap(index[i], index[j]);
 		}
 		int newton_iter = 0;
@@ -1244,7 +1244,7 @@ void CLibLinear::solve_l2r_lr_dual(const problem *prob, double eps, double Cp, d
 
 			// Decide to minimize g_1(z) or g_2(z)
 			int ind1 = 2*i, ind2 = 2*i+1, sign = 1;
-			if(0.5*a*(alpha[ind2]-alpha[ind1])+b < 0) 
+			if(0.5*a*(alpha[ind2]-alpha[ind1])+b < 0)
 			{
 				ind1 = 2*i+1;
 				ind2 = 2*i;
@@ -1254,7 +1254,7 @@ void CLibLinear::solve_l2r_lr_dual(const problem *prob, double eps, double Cp, d
 			//  g_t(z) = z*log(z) + (C-z)*log(C-z) + 0.5a(z-alpha_old)^2 + sign*b(z-alpha_old)
 			double alpha_old = alpha[ind1];
 			double z = alpha_old;
-			if(C - z < 0.5 * C) 
+			if(C - z < 0.5 * C)
 				z = 0.1*z;
 			double gp = a*(z-alpha_old)+sign*b+CMath::log(z/(C-z));
 			Gmax = CMath::max(Gmax, CMath::abs(gp));
@@ -1262,13 +1262,13 @@ void CLibLinear::solve_l2r_lr_dual(const problem *prob, double eps, double Cp, d
 			// Newton method on the sub-problem
 			const double eta = 0.1; // xi in the paper
 			int inner_iter = 0;
-			while (inner_iter <= max_inner_iter) 
+			while (inner_iter <= max_inner_iter)
 			{
 				if(fabs(gp) < innereps)
 					break;
 				double gpp = a + C/(C-z)/z;
 				double tmpz = z - gp/gpp;
-				if(tmpz <= 0) 
+				if(tmpz <= 0)
 					z *= eta;
 				else // tmpz in (0, C)
 					z = tmpz;
@@ -1295,10 +1295,10 @@ void CLibLinear::solve_l2r_lr_dual(const problem *prob, double eps, double Cp, d
 
 		SG_SABS_PROGRESS(Gmax, -CMath::log10(Gmax), -CMath::log10(Gmax_init), -CMath::log10(eps*Gmax_init), 6)
 
-		if(Gmax < eps) 
+		if(Gmax < eps)
 			break;
 
-		if(newton_iter <= l/10) 
+		if(newton_iter <= l/10)
 			innereps = CMath::max(innereps_min, 0.1*innereps);
 
 	}
@@ -1309,13 +1309,13 @@ void CLibLinear::solve_l2r_lr_dual(const problem *prob, double eps, double Cp, d
 		SG_WARNING("reaching max number of iterations\nUsing -s 0 may be faster (also see FAQ)\n\n")
 
 	// calculate objective value
-	
+
 	double v = 0;
 	for(i=0; i<w_size; i++)
 		v += w[i] * w[i];
 	v *= 0.5;
 	for(i=0; i<l; i++)
-		v += alpha[2*i] * log(alpha[2*i]) + alpha[2*i+1] * log(alpha[2*i+1]) 
+		v += alpha[2*i] * log(alpha[2*i]) + alpha[2*i+1] * log(alpha[2*i+1])
 			- upper_bound[GETI(i)] * log(upper_bound[GETI(i)]);
 	SG_INFO("Objective value = %lf\n", v)
 

@@ -33,13 +33,13 @@ class CDistanceMachine;
  * k closest examples belong to. Formally, kNN is described as
  *
  * \f[
- * 		label for x = \arg \max_{l} \sum_{i=1}^{k} [label of i-th example = l]
+ *		label for x = \arg \max_{l} \sum_{i=1}^{k} [label of i-th example = l]
  * \f]
  *
  * This class provides a capability to do weighted classfication using:
  *
  * \f[
- * 		label for x = \arg \max_{l} \sum_{i=1}^{k} [label of i-th example = l] q^{i},
+ *		label for x = \arg \max_{l} \sum_{i=1}^{k} [label of i-th example = l] q^{i},
  * \f]
  *
  * where \f$|q|<1\f$.
@@ -74,7 +74,17 @@ class CKNN : public CDistanceMachine
 		 * @return classifier type KNN
 		 */
 		virtual EMachineType get_classifier_type() { return CT_KNN; }
-		//inline EDistanceType get_distance_type() { return DT_KNN;}
+
+		/**
+		 * for each example in the rhs features of the distance member, find the m_k
+		 * nearest neighbors among the vectors in the lhs features
+		 *
+		 * @return matrix with indices to the nearest neighbors, the dimensions of the
+		 * matrix are k rows and n columns, where n is the number of feature vectors in rhs;
+		 * among the nearest neighbors, the closest are in the first row, and the furthest
+		 * in the last one
+		 */
+		SGMatrix<index_t> nearest_neighbors();
 
 		/** classify objects
 		 *
@@ -188,8 +198,8 @@ class CKNN : public CDistanceMachine
 	private:
 		void init();
 
-		/** compute the histogram of class outputs of the first k nearest
-		 *  neighbors to a test vector and return the index of the most 
+		/** compute the histogram of class outputs of the k nearest
+		 *  neighbors to a test vector and return the index of the most
 		 *  frequent class
 		 *
 		 * @param classes vector used to store the histogram
@@ -197,10 +207,24 @@ class CKNN : public CDistanceMachine
 		 * tree is not used, the elements are ordered by increasing distance
 		 * and there are elements for each of the training vectors. If the cover
 		 * tree is used, it contains just m_k elements not necessary ordered.
-		 * 
+		 *
 		 * @return index of the most frequent class, class detected by KNN
 		 */
 		int32_t choose_class(float64_t* classes, int32_t* train_lab);
+
+		/** compute the histogram of class outputs of the k nearest neighbors
+		 *  to a test vector, using k from 1 to m_k, and write the most frequent
+		 *  class for each value of k in output, using a distance equal to step
+		 *  between elements in the output array
+		 *
+		 * @param output return value where the most frequent classes are written
+		 * @param classes vector used to store the histogram
+		 * @param train_lab class indices of the training data; no matter the cover tree
+		 * is used or not, the neighbors are ordered by distance to the test vector
+		 * in ascending order
+		 * @param step distance between elements to be written in output
+		 */
+		void choose_class_for_multiple_k(int32_t* output, int32_t* classes, int32_t* train_lab, int32_t step);
 
 	protected:
 		/// the k parameter in KNN

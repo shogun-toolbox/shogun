@@ -55,7 +55,7 @@ template<class ST> CDenseFeatures<ST>::CDenseFeatures(ST* src, int32_t num_feat,
 	set_feature_matrix(SGMatrix<ST>(src, num_feat, num_vec));
 }
 template<class ST> CDenseFeatures<ST>::CDenseFeatures(CFile* loader) :
-		CDotFeatures(loader)
+		CDotFeatures()
 {
 	init();
 	load(loader);
@@ -137,10 +137,14 @@ template<class ST> ST* CDenseFeatures<ST>::get_feature_vector(int32_t num, int32
 			tmp_feat_before = tmp_feat_after;
 		}
 
-		memcpy(feat, tmp_feat_after, sizeof(ST) * tmp_len);
-		SG_FREE(tmp_feat_after);
+		// note: tmp_feat_after should be checked as it is used by memcpy
+		if (tmp_feat_after)
+		{
+			memcpy(feat, tmp_feat_after, sizeof(ST) * tmp_len);
+			SG_FREE(tmp_feat_after);
 
-		len = tmp_len;
+			len = tmp_len;
+		}
 	}
 	return feat;
 }
@@ -414,14 +418,12 @@ template<class ST> bool CDenseFeatures<ST>::apply_preprocessor(bool force_prepro
 	}
 }
 
-template<class ST> int32_t CDenseFeatures<ST>::get_size() const  { return sizeof(ST); }
-
 template<class ST> int32_t CDenseFeatures<ST>::get_num_vectors() const
 {
 	return m_subset_stack->has_subsets() ? m_subset_stack->get_size() : num_vectors;
 }
 
-template<class ST> int32_t CDenseFeatures<ST>::get_num_features() { return num_features; }
+template<class ST> int32_t CDenseFeatures<ST>::get_num_features() const { return num_features; }
 
 template<class ST> void CDenseFeatures<ST>::set_num_features(int32_t num)
 {
@@ -631,8 +633,8 @@ template<class ST> void CDenseFeatures<ST>::init()
 
 #define GET_FEATURE_TYPE(f_type, sg_type)	\
 template<> EFeatureType CDenseFeatures<sg_type>::get_feature_type() const \
-{ 																			\
-	return f_type; 															\
+{																			\
+	return f_type;															\
 }
 
 GET_FEATURE_TYPE(F_BOOL, bool)
@@ -1052,6 +1054,13 @@ void CDenseFeatures<ST>::save(CFile* writer)
 	feature_matrix.save(writer);
 }
 
+template< class ST > CDenseFeatures< ST >* CDenseFeatures< ST >::obtain_from_generic(CFeatures* const base_features)
+{
+	REQUIRE(base_features->get_feature_class() == C_DENSE,
+			"base_features must be of dynamic type CDenseFeatures\n")
+
+	return (CDenseFeatures< ST >*) base_features;
+}
 
 template class CDenseFeatures<bool>;
 template class CDenseFeatures<char>;

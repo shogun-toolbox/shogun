@@ -11,10 +11,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 #include <shogun/io/File.h>
-
+#include <shogun/lib/memory.h>
 #include <shogun/features/StringFeatures.h>
 #include <shogun/features/SparseFeatures.h>
 
@@ -37,11 +36,21 @@ CFile::CFile(FILE* f, const char* name) : CSGObject()
 		set_variable_name(name);
 }
 
+CFile::CFile(int fd, const char* mode, const char* name) : CSGObject()
+{
+	file=fdopen(fd, mode);
+	filename=NULL;
+	variable_name=NULL;
+
+	if (name)
+		set_variable_name(name);
+}
+
 CFile::CFile(const char* fname, char rw, const char* name) : CSGObject()
 {
 	variable_name=NULL;
 	task=rw;
-	filename=strdup(fname);
+	filename=get_strdup(fname);
 	char mode[2];
 	mode[0]=rw;
 	mode[1]='\0';

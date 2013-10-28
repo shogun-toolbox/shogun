@@ -9,25 +9,21 @@
 #include <iostream>
 #include <string>
 
-using std::cout;
-using std::ostream;
-using std::string;
-
 #define LEVEL_ENABLED_FIELD(X) bool X##_enabled
 #define LEVEL_ENABLED_FIELD_INITIALIZER(X,value) X##_enabled(value)
 #define LEVEL_HANDLERS(LEVEL) \
 		void enable_##LEVEL() { LEVEL##_enabled = true; };		\
 		void disable_##LEVEL() { LEVEL##_enabled = false; };	\
-		bool is_##LEVEL##_enabled() { return LEVEL##_enabled; };  \
-		void message_##LEVEL(const string& msg)					\
+		bool is_##LEVEL##_enabled() { return LEVEL##_enabled; };\
+		void message_##LEVEL(const std::string& msg)			\
 		{														\
 			if (LEVEL##_enabled)								\
 				impl->message_##LEVEL(msg);						\
 		}
 #define LEVEL_HANDLERS_DECLARATION(LEVEL) \
-		virtual void message_##LEVEL(const string& msg) = 0
+		virtual void message_##LEVEL(const std::string& msg) = 0
 #define LEVEL_HANDLERS_DEFAULT_IMPL(LEVEL) \
-		virtual void message_##LEVEL(const string& msg)			\
+		virtual void message_##LEVEL(const std::string& msg)	\
 		{														\
 			if (os_ && os_->good())								\
 				(*os_) << "["#LEVEL"] " << msg << "\n";			\
@@ -56,7 +52,7 @@ private:
 class DefaultLoggerImplementation : public LoggerImplementation
 {
 public:
-	DefaultLoggerImplementation() : os_(&cout) {}
+	DefaultLoggerImplementation() : os_(&std::cout) {}
 	virtual ~DefaultLoggerImplementation() {}
 	LEVEL_HANDLERS_DEFAULT_IMPL(info);
 	LEVEL_HANDLERS_DEFAULT_IMPL(warning);
@@ -67,7 +63,7 @@ private:
 	DefaultLoggerImplementation& operator=(const DefaultLoggerImplementation&);
 	DefaultLoggerImplementation(const DefaultLoggerImplementation&);
 
-	ostream* os_;
+	std::ostream* os_;
 };
 
 //! Main logging singleton used by the library. Can use provided

@@ -1689,6 +1689,22 @@ float64_t CStatistics::normal_cdf(float64_t x, float64_t std_dev)
 	return 0.5*(error_function(x/std_dev/1.41421356237309504880)+1);
 }
 
+float64_t CStatistics::lnormal_cdf(float64_t x)
+{
+	float64_t result;
+
+	if (x<-10.0)
+	{
+		float64_t x2=x*x;
+		float64_t s=1.0-1.0/x2*(1.0-3.0/x2*(1.0-5.0/x2*(1.0-7.0/x2)));
+		result=-0.5*CMath::log(2*CMath::PI)-x2*0.5-CMath::log(-x)+CMath::log(s);
+	}
+	else
+		result=CMath::log(normal_cdf(x));
+
+	return result;
+}
+
 float64_t CStatistics::error_function(float64_t x)
 {
 	float64_t xsq;
@@ -1953,12 +1969,50 @@ SGVector<int32_t> CStatistics::sample_indices(int32_t sample_size, int32_t N)
 
 float64_t CStatistics::dlgamma(float64_t x)
 {
-	x = x+6.0;
-        float64_t df = 1./(x*x);
-        df = (((df/240-0.003968253986254)*df+1/120.0)*df-1/120.0)*df;
-        df = df+log(x)-0.5/x-1.0/(x-1.0)-1.0/(x-2.0)-1.0/
-                          (x-3.0)-1.0/(x-4.0)-1.0/(x-5.0)-1.0/(x-6.0);
-        return df;
+	float64_t result=0.0;
+
+	if (x<0.0)
+	{
+		// use reflection formula
+		x=1.0-x;
+		result=CMath::PI/CMath::tan(CMath::PI*x);
+	}
+
+	// make x>7 for approximation
+	// (use reccurent formula: psi(x+1) = psi(x) + 1/x)
+	while (x<=7.0)
+	{
+		result-=1.0/x;
+		x++;
+	}
+
+	// perform approximation
+	x-=0.5;
+	result+=log(x);
+
+	float64_t coeff[10]={
+		0.04166666666666666667,
+		-0.00729166666666666667,
+		0.00384424603174603175,
+		-0.00413411458333333333,
+		0.00756096117424242424,
+		-0.02108249687595390720,
+		0.08332316080729166666,
+		-0.44324627670587277880,
+		3.05393103044765369366,
+		-26.45616165999210241989};
+
+	float64_t power=1.0;
+	float64_t ix2=1.0/CMath::sq(x);
+
+	// perform approximation
+	for (index_t i=0; i<10; i++)
+	{
+		power*=ix2;
+		result+=coeff[i]*power;
+	}
+
+	return result;
 }
 
 #ifdef HAVE_EIGEN3
@@ -1987,75 +2041,315 @@ float64_t CStatistics::log_det(SGMatrix<float64_t> m)
 
 float64_t CStatistics::log_det(const SGSparseMatrix<float64_t> m)
 {
-	// convert from SGSparseMatrix<T> to SparseMatrix<T>
-	index_t num_rows = m.num_vectors;
-	index_t num_cols = m.num_features;
-
-#ifdef EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
-	typedef shogun::EigenTriplet<float64_t> SparseTriplet;
-#else // EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
-	typedef Eigen::Triplet<float64_t> SparseTriplet;
-#endif // EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
-
-	// create a triplet list
-	std::vector<SparseTriplet> tripletList;
-
-	// fill the triplet list
-	for( index_t i = 0; i < num_rows; ++i )
-	{
-		for( index_t k = 0; k < m[i].num_feat_entries; ++k )
-		{
-			index_t &index_i = i;
-			index_t &index_j = m[i].features[k].feat_index;
-			float64_t &val = m[i].features[k].entry;
-			tripletList.push_back(SparseTriplet(index_i, index_j, val));
-		}
-	}
-#ifdef EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
-	// initialize the sparse matrix
-	DynamicSparseMatrix<float64_t> dM(num_rows, num_cols);
-	dM.reserve(tripletList.size());
-
-	for( std::vector<SparseTriplet>::iterator it = tripletList.begin(); it != tripletList.end(); ++it )
-			dM.coeffRef(it->row(), it->col()) += it->value();
-	SparseMatrix<float64_t> M(dM);
-
-	// access the lower triangular factor after cholesky decomposition
 	typedef SparseMatrix<float64_t> MatrixType;
-	class EigenSimplicialLLT: public SimplicialCholesky<MatrixType, Eigen::Lower>
-	{
-	public:
-		EigenSimplicialLLT(): SimplicialCholesky<MatrixType>()
-		{
-			setMode(SimplicialCholeskyLLt);
-		}
-		~EigenSimplicialLLT()
-		{
-		}
-		inline const MatrixType matrixL() { return SimplicialCholesky<MatrixType>::m_matrix; }
-	};
+	const MatrixType &M=EigenSparseUtil<float64_t>::toEigenSparse(m);
 
-	EigenSimplicialLLT llt;
-#else // EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
-	// initialize the sparse matrix
-	SparseMatrix<float64_t> M(num_rows, num_cols);
-	M.setFromTriplets(tripletList.begin(), tripletList.end());
+	SimplicialLLT<MatrixType> llt;
 
-	SimplicialLLT<SparseMatrix<float64_t> > llt;
-#endif // EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
-
-	// factorize using cholesky with amd permutation 
+	// factorize using cholesky with amd permutation
 	llt.compute(M);
-	// get the lower triangular matrix
-	SparseMatrix<float64_t> L =  llt.matrixL();
-	
+	MatrixType L=llt.matrixL();
+
 	// calculate the log-determinant
-	float64_t retval = 0.0;
-	for( index_t i = 0; i < M.rows(); ++i )
-		retval += log(L.coeff(i,i));
-	retval *= 2;
+	float64_t retval=0.0;
+	for( index_t i=0; i<M.rows(); ++i )
+		retval+=log(L.coeff(i,i));
+	retval*=2;
 
 	return retval;
 }
 
+SGMatrix<float64_t> CStatistics::sample_from_gaussian(SGVector<float64_t> mean,
+	SGMatrix<float64_t> cov, int32_t N, bool precision_matrix)
+{
+	REQUIRE(cov.num_rows>0,
+		"CStatistics::sample_from_gaussian(): \
+		Number of covariance rows must be positive!\n");
+	REQUIRE(cov.num_cols>0,
+		"CStatistics::sample_from_gaussian(): \
+		Number of covariance cols must be positive!\n");
+	REQUIRE(cov.matrix,
+		"CStatistics::sample_from_gaussian(): \
+		Covariance is not initialized!\n");
+	REQUIRE(cov.num_rows==cov.num_cols,
+		"CStatistics::sample_from_gaussian(): \
+		Covariance should be square matrix!\n");
+	REQUIRE(mean.vlen==cov.num_rows,
+		"CStatistics::sample_from_gaussian(): \
+		Mean and covariance dimension mismatch!\n");
+
+	int32_t dim=mean.vlen;
+	Map<VectorXd> mu(mean.vector, mean.vlen);
+	Map<MatrixXd> c(cov.matrix, cov.num_rows, cov.num_cols);
+
+	// generate samples, z,  from N(0, I), DxN
+	SGMatrix<float64_t> S(dim, N);
+	for( int32_t j=0; j<N; ++j )
+		for( int32_t i=0; i<dim; ++i )
+			S(i,j)=CMath::randn_double();
+
+	// the cholesky factorization c=L*U
+	MatrixXd U=c.llt().matrixU();
+
+	// generate samples, x, from N(mean, cov) or N(mean, cov^-1)
+	// return samples of dimension NxD
+	if( precision_matrix )
+	{
+		// here we have U*x=z, to solve this, we use cholesky again
+		Map<MatrixXd> s(S.matrix, S.num_rows, S.num_cols);
+		LDLT<MatrixXd> ldlt;
+		ldlt.compute(U);
+		s=ldlt.solve(s);
+	}
+
+	SGMatrix<float64_t>::transpose_matrix(S.matrix, S.num_rows, S.num_cols);
+
+	if( !precision_matrix )
+	{
+		// here we need to find x=L*z, so, x'=z'*L' i.e. x'=z'*U
+		Map<MatrixXd> s(S.matrix, S.num_rows, S.num_cols);
+		s=s*U;
+	}
+
+	// add the mean
+	Map<MatrixXd> x(S.matrix, S.num_rows, S.num_cols);
+	for( int32_t i=0; i<N; ++i )
+		x.row(i)+=mu;
+
+	return S;
+}
+
+SGMatrix<float64_t> CStatistics::sample_from_gaussian(SGVector<float64_t> mean,
+ SGSparseMatrix<float64_t> cov, int32_t N, bool precision_matrix)
+{
+	REQUIRE(cov.num_vectors>0,
+		"CStatistics::sample_from_gaussian(): \
+		Number of covariance rows must be positive!\n");
+	REQUIRE(cov.num_features>0,
+		"CStatistics::sample_from_gaussian(): \
+		Number of covariance cols must be positive!\n");
+	REQUIRE(cov.sparse_matrix,
+		"CStatistics::sample_from_gaussian(): \
+		Covariance is not initialized!\n");
+	REQUIRE(cov.num_vectors==cov.num_features,
+		"CStatistics::sample_from_gaussian(): \
+		Covariance should be square matrix!\n");
+	REQUIRE(mean.vlen==cov.num_vectors,
+		"CStatistics::sample_from_gaussian(): \
+		Mean and covariance dimension mismatch!\n");
+
+	int32_t dim=mean.vlen;
+	Map<VectorXd> mu(mean.vector, mean.vlen);
+
+	typedef SparseMatrix<float64_t> MatrixType;
+	const MatrixType &c=EigenSparseUtil<float64_t>::toEigenSparse(cov);
+
+	SimplicialLLT<MatrixType> llt;
+
+	// generate samples, z,  from N(0, I), DxN
+	SGMatrix<float64_t> S(dim, N);
+	for( int32_t j=0; j<N; ++j )
+		for( int32_t i=0; i<dim; ++i )
+			S(i,j)=CMath::randn_double();
+
+	Map<MatrixXd> s(S.matrix, S.num_rows, S.num_cols);
+
+	// the cholesky factorization P*c*P^-1 = LP*UP, with LP=P*L, UP=U*P^-1
+	llt.compute(c);
+	MatrixType LP=llt.matrixL();
+	MatrixType UP=llt.matrixU();
+
+	// generate samples, x, from N(mean, cov) or N(mean, cov^-1)
+	// return samples of dimension NxD
+	if( precision_matrix )
+	{
+		// here we have UP*xP=z, to solve this, we use cholesky again
+		SimplicialLLT<MatrixType> lltUP;
+		lltUP.compute(UP);
+		s=lltUP.solve(s);
+	}
+	else
+	{
+		// here we need to find xP=LP*z
+		s=LP*s;
+	}
+
+	// permute the samples back with x=P^-1*xP
+	s=llt.permutationPinv()*s;
+
+	SGMatrix<float64_t>::transpose_matrix(S.matrix, S.num_rows, S.num_cols);
+	// add the mean
+	Map<MatrixXd> x(S.matrix, S.num_rows, S.num_cols);
+	for( int32_t i=0; i<N; ++i )
+		x.row(i)+=mu;
+
+	return S;
+}
+
 #endif //HAVE_EIGEN3
+
+CStatistics::SigmoidParamters CStatistics::fit_sigmoid(SGVector<float64_t> scores)
+{
+	SG_SDEBUG("entering CStatistics::fit_sigmoid()\n")
+
+	REQUIRE(scores.vector, "CStatistics::fit_sigmoid() requires "
+			"scores vector!\n");
+
+	/* count prior0 and prior1 if needed */
+	int32_t prior0=0;
+	int32_t prior1=0;
+	SG_SDEBUG("counting number of positive and negative labels\n")
+	{
+		for (index_t i=0; i<scores.vlen; ++i)
+		{
+			if (scores[i]>0)
+				prior1++;
+			else
+				prior0++;
+		}
+	}
+	SG_SDEBUG("%d pos; %d neg\n", prior1, prior0)
+
+	/* parameter setting */
+	/* maximum number of iterations */
+	index_t maxiter=100;
+
+	/* minimum step taken in line search */
+	float64_t minstep=1E-10;
+
+	/* for numerically strict pd of hessian */
+	float64_t sigma=1E-12;
+	float64_t eps=1E-5;
+
+	/* construct target support */
+	float64_t hiTarget=(prior1+1.0)/(prior1+2.0);
+	float64_t loTarget=1/(prior0+2.0);
+	index_t length=prior1+prior0;
+
+	SGVector<float64_t> t(length);
+	for (index_t i=0; i<length; ++i)
+	{
+		if (scores[i]>0)
+			t[i]=hiTarget;
+		else
+			t[i]=loTarget;
+	}
+
+	/* initial Point and Initial Fun Value */
+	/* result parameters of sigmoid */
+	float64_t a=0;
+	float64_t b=CMath::log((prior0+1.0)/(prior1+1.0));
+	float64_t fval=0.0;
+
+	for (index_t i=0; i<length; ++i)
+	{
+		float64_t fApB=scores[i]*a+b;
+		if (fApB>=0)
+			fval+=t[i]*fApB+CMath::log(1+CMath::exp(-fApB));
+		else
+			fval+=(t[i]-1)*fApB+CMath::log(1+CMath::exp(fApB));
+	}
+
+	index_t it;
+	float64_t g1;
+	float64_t g2;
+	for (it=0; it<maxiter; ++it)
+	{
+		SG_SDEBUG("Iteration %d, a=%f, b=%f, fval=%f\n", it, a, b, fval)
+
+		/* Update Gradient and Hessian (use H' = H + sigma I) */
+		float64_t h11=sigma; //Numerically ensures strict PD
+		float64_t h22=h11;
+		float64_t h21=0;
+		g1=0;
+		g2=0;
+
+		for (index_t i=0; i<length; ++i)
+		{
+			float64_t fApB=scores[i]*a+b;
+			float64_t p;
+			float64_t q;
+			if (fApB>=0)
+			{
+				p=CMath::exp(-fApB)/(1.0+CMath::exp(-fApB));
+				q=1.0/(1.0+CMath::exp(-fApB));
+			}
+			else
+			{
+				p=1.0/(1.0+CMath::exp(fApB));
+				q=CMath::exp(fApB)/(1.0+CMath::exp(fApB));
+			}
+
+			float64_t d2=p*q;
+			h11+=scores[i]*scores[i]*d2;
+			h22+=d2;
+			h21+=scores[i]*d2;
+			float64_t d1=t[i]-p;
+			g1+=scores[i]*d1;
+			g2+=d1;
+		}
+
+		/* Stopping Criteria */
+		if (CMath::abs(g1)<eps && CMath::abs(g2)<eps)
+			break;
+
+		/* Finding Newton direction: -inv(H') * g */
+		float64_t det=h11*h22-h21*h21;
+		float64_t dA=-(h22*g1-h21*g2)/det;
+		float64_t dB=-(-h21*g1+h11*g2)/det;
+		float64_t gd=g1*dA+g2*dB;
+
+		/* Line Search */
+		float64_t stepsize=1;
+
+		while (stepsize>=minstep)
+		{
+			float64_t newA=a+stepsize*dA;
+			float64_t newB=b+stepsize*dB;
+
+			/* New function value */
+			float64_t newf=0.0;
+			for (index_t i=0; i<length; ++i)
+			{
+				float64_t fApB=scores[i]*newA+newB;
+				if (fApB>=0)
+					newf+=t[i]*fApB+CMath::log(1+CMath::exp(-fApB));
+				else
+					newf+=(t[i]-1)*fApB+CMath::log(1+CMath::exp(fApB));
+			}
+
+			/* Check sufficient decrease */
+			if (newf<fval+0.0001*stepsize*gd)
+			{
+				a=newA;
+				b=newB;
+				fval=newf;
+				break;
+			}
+			else
+				stepsize=stepsize/2.0;
+		}
+
+		if (stepsize<minstep)
+		{
+			SG_SWARNING("CStatistics::fit_sigmoid(): line search fails, A=%f, "
+					"B=%f, g1=%f, g2=%f, dA=%f, dB=%f, gd=%f\n",
+					a, b, g1, g2, dA, dB, gd);
+		}
+	}
+
+	if (it>=maxiter-1)
+	{
+		SG_SWARNING("CStatistics::fit_sigmoid(): reaching maximal iterations,"
+				" g1=%f, g2=%f\n", g1, g2);
+	}
+
+	SG_SDEBUG("fitted sigmoid: a=%f, b=%f\n", a, b)
+
+	CStatistics::SigmoidParamters result;
+	result.a=a;
+	result.b=b;
+
+	SG_SDEBUG("leaving CStatistics::fit_sigmoid()\n")
+	return result;
+}

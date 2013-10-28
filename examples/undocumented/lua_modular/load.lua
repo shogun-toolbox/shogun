@@ -2,7 +2,7 @@ function load_numbers(fname)
 	f = io.open(fname)
 	if (f == nil) then
 		print("Cannot open ", fname)
-	end	
+	end
 	matrix = {}
 	while true do
 		local	 num = f:read("*number")
@@ -25,7 +25,7 @@ function load_labels(fname)
 	f = io.open(fname)
 	if (f == nil) then
 		print("Cannot open ", fname)
-	end	
+	end
 	matrix = {}
 	while true do
 		local	 num = f:read("*number")
@@ -40,7 +40,7 @@ function load_dna(fname)
 	f = io.open(fname)
 	if (f == nil) then
 		print("Cannot open file:", fname)
-	end	
+	end
 	matrix = {}
 	while true do
 		print("love")
@@ -57,7 +57,7 @@ function load_cubes(fname)
 	f = io.open(fname)
 	if (f == nil) then
 		print("Cannot open file:", fname)
-	end	
+	end
 	matrix = {}
 	while true do
 		local	 num = f:read("*line")

@@ -13,7 +13,7 @@
 
 #include <shogun/lib/config.h>
 #include <shogun/io/SGIO.h>
-#include <shogun/io/AsciiFile.h>
+#include <shogun/io/CSVFile.h>
 #include <shogun/labels/Labels.h>
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/labels/MulticlassLabels.h>
@@ -48,7 +48,7 @@ bool CGUILabels::load(char* filename, char* target)
 	if (labels)
 	{
 		SG_UNREF(labels);
-		CAsciiFile* file=new CAsciiFile(filename);
+		CCSVFile* file=new CCSVFile(filename);
 		labels=new CRegressionLabels(file);
 		SGVector<float64_t> labs = ((CRegressionLabels*) labels)->get_labels();
 		float64_t* lab=SGVector<float64_t>::clone_vector(labs.vector, labs.vlen);

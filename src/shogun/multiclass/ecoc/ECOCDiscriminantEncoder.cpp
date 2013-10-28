@@ -18,12 +18,12 @@
 using namespace std;
 using namespace shogun;
 
-CECOCDiscriminantEncoder::CECOCDiscriminantEncoder() 
-{ 
-    init(); 
+CECOCDiscriminantEncoder::CECOCDiscriminantEncoder()
+{
+    init();
 }
 
-CECOCDiscriminantEncoder::~CECOCDiscriminantEncoder() 
+CECOCDiscriminantEncoder::~CECOCDiscriminantEncoder()
 {
     SG_UNREF(m_features);
     SG_UNREF(m_labels);
@@ -40,7 +40,7 @@ void CECOCDiscriminantEncoder::init()
     m_labels = NULL;
 
     // parameters
-    
+
     SG_ADD(&m_iterations, "iterations", "number of iterations in SFFS", MS_NOT_AVAILABLE);
 }
 
@@ -112,7 +112,7 @@ void CECOCDiscriminantEncoder::run_sffs(vector<int32_t>& part1, vector<int32_t>&
 {
     set<int32_t> idata1;
     set<int32_t> idata2;
-    
+
     for (int32_t i=0; i < m_labels->get_num_labels(); ++i)
     {
         if (find(part1.begin(), part1.end(), ((CMulticlassLabels*) m_labels)->get_int_label(i)) != part1.end())
@@ -205,7 +205,7 @@ float64_t CECOCDiscriminantEncoder::compute_MI(const set<int32_t>& idata1, const
     return MI;
 }
 
-void CECOCDiscriminantEncoder::compute_hist(int32_t i, float64_t max_val, float64_t min_val, 
+void CECOCDiscriminantEncoder::compute_hist(int32_t i, float64_t max_val, float64_t min_val,
         const set<int32_t>& idata, int32_t *hist)
 {
     // hist of 0:0.1:1

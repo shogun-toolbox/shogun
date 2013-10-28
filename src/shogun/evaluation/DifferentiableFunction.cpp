@@ -4,6 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
+ * Written (W) 2013 Roman Votyakov
  * Copyright (C) 2012 Jacob Walker
  */
 
@@ -11,13 +12,10 @@
 
 using namespace shogun;
 
-CDifferentiableFunction::CDifferentiableFunction()
+CDifferentiableFunction::CDifferentiableFunction() : CSGObject()
 {
-
 }
 
 CDifferentiableFunction::~CDifferentiableFunction()
 {
-
 }
-

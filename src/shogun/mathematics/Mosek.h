@@ -127,7 +127,7 @@ class CMosek : public CSGObject
 
 		/**
 		 * wrapper for MOSEK's function MSK_putqobj used to
-		 * set the values in the regularization matrix of the 
+		 * set the values in the regularization matrix of the
 		 * quadratic objective term
 		 *
 		 * @param Q0 new regularization matrix, assumed to be

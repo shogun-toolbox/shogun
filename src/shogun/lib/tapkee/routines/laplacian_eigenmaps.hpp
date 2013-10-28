@@ -3,11 +3,11 @@
  * Copyright (c) 2012-2013 Sergey Lisitsyn
  */
 
-#ifndef TAPKEE_LAPLACIAN_EIGENMAPS_H_
-#define TAPKEE_LAPLACIAN_EIGENMAPS_H_
+#ifndef TAPKEE_LaplacianEigenmaps_H_
+#define TAPKEE_LaplacianEigenmaps_H_
 
 /* Tapkee includes */
-#include <shogun/lib/tapkee/tapkee_defines.hpp>
+#include <shogun/lib/tapkee/defines.hpp>
 #include <shogun/lib/tapkee/utils/time.hpp>
 /* End of Tapkee includes */
 
@@ -20,7 +20,7 @@ namespace tapkee_internal
 //!
 //! Follows the algorithm described below:
 //! <ul>
-//! <li> For each vector compute gaussian exp of distances to its neighbor vectors and 
+//! <li> For each vector compute gaussian exp of distances to its neighbor vectors and
 //!      put it to sparse matrix \f$ L_{i,N_i(j)} = \exp\left( - \frac{d(x_i,x_{N_i(j)})^2}{w} \right) \f$.
 //! <li> Symmetrize matrix \f$ L \f$ with \f$ L_{i,j} = \max (L_{i,j}, L_{j,i}) \f$ to
 //!      make neighborhood relationship symmetric.
@@ -36,8 +36,8 @@ namespace tapkee_internal
 //! @param width width \f$ w \f$ of the gaussian kernel
 //!
 template<class RandomAccessIterator, class DistanceCallback>
-Laplacian compute_laplacian(RandomAccessIterator begin, 
-			RandomAccessIterator end,const Neighbors& neighbors, 
+Laplacian compute_laplacian(RandomAccessIterator begin,
+			RandomAccessIterator end,const Neighbors& neighbors,
 			DistanceCallback callback, ScalarType width)
 {
 	SparseTriplets sparse_triplets;
@@ -53,7 +53,7 @@ Laplacian compute_laplacian(RandomAccessIterator begin,
 
 		for (IndexType i=0; i<k; ++i)
 		{
-			ScalarType distance = callback(*iter,begin[current_neighbors[i]]);
+			ScalarType distance = callback.distance(*iter,begin[current_neighbors[i]]);
 			ScalarType heat = exp(-distance*distance/width);
 			D(iter-begin) += heat;
 			D(current_neighbors[i]) += heat;
@@ -92,7 +92,7 @@ DenseSymmetricMatrixPair construct_locality_preserving_eigenproblem(SparseWeight
 	DenseVector rank_update_vector_j(dimension);
 	for (RandomAccessIterator iter=begin; iter!=end; ++iter)
 	{
-		feature_vector_callback(*iter,rank_update_vector_i);
+		feature_vector_callback.vector(*iter,rank_update_vector_i);
 		rhs.selfadjointView<Eigen::Upper>().rankUpdate(rank_update_vector_i,D.diagonal()(iter-begin));
 	}
 
@@ -100,8 +100,8 @@ DenseSymmetricMatrixPair construct_locality_preserving_eigenproblem(SparseWeight
 	{
 		for (SparseWeightMatrix::InnerIterator it(L,i); it; ++it)
 		{
-			feature_vector_callback(begin[it.row()],rank_update_vector_i);
-			feature_vector_callback(begin[it.col()],rank_update_vector_j);
+			feature_vector_callback.vector(begin[it.row()],rank_update_vector_i);
+			feature_vector_callback.vector(begin[it.col()],rank_update_vector_j);
 			lhs.selfadjointView<Eigen::Upper>().rankUpdate(rank_update_vector_i, rank_update_vector_j, it.value());
 		}
 	}

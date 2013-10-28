@@ -16,36 +16,55 @@
 using namespace shogun;
 
 CRegulatoryModulesStringKernel::CRegulatoryModulesStringKernel()
-: CStringKernel<char>(0), width(0.0), degree(0), shift(0), window(0),
-	motif_positions_lhs(NULL), motif_positions_rhs(NULL),
-  position_weights(NULL), weights(NULL)
+: CStringKernel<char>(0)
 {
-	register_params();
+	init();
 }
 
 CRegulatoryModulesStringKernel::CRegulatoryModulesStringKernel(
 		int32_t size, float64_t w, int32_t d, int32_t s, int32_t wl)
-: CStringKernel<char>(size), width(w), degree(d), shift(s), window(wl),
-	motif_positions_lhs(NULL), motif_positions_rhs(NULL), position_weights(NULL), weights(NULL)
+: CStringKernel<char>(size)
 {
-	register_params();
+	init();
 }
 
 CRegulatoryModulesStringKernel::CRegulatoryModulesStringKernel(CStringFeatures<char>* lstr, CStringFeatures<char>* rstr,
 		CDenseFeatures<uint16_t>* lpos, CDenseFeatures<uint16_t>* rpos,
 		float64_t w, int32_t d, int32_t s, int32_t wl, int32_t size)
-: CStringKernel<char>(size), width(w), degree(d), shift(s), window(wl),
-	motif_positions_lhs(NULL), motif_positions_rhs(NULL), position_weights(NULL), weights(NULL)
+: CStringKernel<char>(size)
 {
+	init();
 	set_motif_positions(lpos, rpos);
 	init(lstr,rstr);
-	register_params();
 }
 
 CRegulatoryModulesStringKernel::~CRegulatoryModulesStringKernel()
 {
 	SG_UNREF(motif_positions_lhs);
 	SG_UNREF(motif_positions_rhs);
+}
+
+void CRegulatoryModulesStringKernel::init()
+{
+	width=0;
+	degree=0;
+	shift=0;
+	window=0;
+	motif_positions_lhs=NULL;
+	motif_positions_rhs=NULL;
+
+	SG_ADD(&width, "width", "the width of Gaussian kernel part", MS_AVAILABLE);
+	SG_ADD(&degree, "degree", "the degree of weighted degree kernel part",
+	    MS_AVAILABLE);
+	SG_ADD(&shift, "shift",
+	    "the shift of weighted degree with shifts kernel part", MS_AVAILABLE);
+	SG_ADD(&window, "window", "the size of window around motifs", MS_AVAILABLE);
+	SG_ADD((CSGObject**)&motif_positions_lhs, "motif_positions_lhs",
+			"the matrix of motif positions from sequences left-hand side", MS_NOT_AVAILABLE);
+	SG_ADD((CSGObject**)&motif_positions_rhs, "motif_positions_rhs",
+			"the matrix of motif positions from sequences right-hand side", MS_NOT_AVAILABLE);
+	SG_ADD(&position_weights, "position_weights", "scaling weights in window", MS_NOT_AVAILABLE);
+	SG_ADD(&weights, "weights", "weights of WD kernel", MS_NOT_AVAILABLE);
 }
 
 bool CRegulatoryModulesStringKernel::init(CFeatures* l, CFeatures* r)
@@ -87,6 +106,8 @@ float64_t CRegulatoryModulesStringKernel::compute(int32_t idx_a, int32_t idx_b)
 	ASSERT(motif_positions_rhs)
 
 	bool free_avec, free_bvec;
+	int32_t alen=0;
+	int32_t blen=0;
 	char* avec=((CStringFeatures<char>*) lhs)->get_feature_vector(idx_a, alen, free_avec);
 	char* bvec=((CStringFeatures<char>*) rhs)->get_feature_vector(idx_b, blen, free_bvec);
 
@@ -140,7 +161,7 @@ float64_t CRegulatoryModulesStringKernel::compute_wds(
 	// no shift
 	for (int32_t i=0; i<len; i++)
 	{
-		if ((position_weights!=NULL) && (position_weights[i]==0.0))
+		if ((position_weights.vector!=NULL) && (position_weights[i]==0.0))
 			continue ;
 
 		float64_t sumi = 0.0 ;
@@ -150,7 +171,7 @@ float64_t CRegulatoryModulesStringKernel::compute_wds(
 				break ;
 			sumi += weights[j];
 		}
-		if (position_weights!=NULL)
+		if (position_weights.vector!=NULL)
 			sum0 += position_weights[i]*sumi ;
 		else
 			sum0 += sumi ;
@@ -160,7 +181,7 @@ float64_t CRegulatoryModulesStringKernel::compute_wds(
 	{
 		for (int32_t k=1; (k<=shift) && (i+k<len); k++)
 		{
-			if ((position_weights!=NULL) && (position_weights[i]==0.0) && (position_weights[i+k]==0.0))
+			if ((position_weights.vector!=NULL) && (position_weights[i]==0.0) && (position_weights[i+k]==0.0))
 				continue ;
 
 			float64_t sumi1 = 0.0 ;
@@ -179,7 +200,7 @@ float64_t CRegulatoryModulesStringKernel::compute_wds(
 					break ;
 				sumi2 += weights[j];
 			}
-			if (position_weights!=NULL)
+			if (position_weights.vector!=NULL)
 				max_shift_vec[k-1] += position_weights[i]*sumi1 + position_weights[i+k]*sumi2 ;
 			else
 				max_shift_vec[k-1] += sumi1 + sumi2 ;
@@ -198,8 +219,7 @@ void CRegulatoryModulesStringKernel::set_wd_weights()
 {
 	ASSERT(degree>0)
 
-	SG_FREE(weights);
-	weights=SG_MALLOC(float64_t, degree);
+	weights=SGVector<float64_t>(degree);
 
 	int32_t i;
 	float64_t sum=0;
@@ -213,16 +233,3 @@ void CRegulatoryModulesStringKernel::set_wd_weights()
 		weights[i]/=sum;
 }
 
-void CRegulatoryModulesStringKernel::register_params()
-{
-	SG_ADD(&width, "width", "the width of Gaussian kernel part", MS_AVAILABLE);
-	SG_ADD(&degree, "degree", "the degree of weighted degree kernel part",
-	    MS_AVAILABLE);
-	SG_ADD(&shift, "shift",
-	    "the shift of weighted degree with shifts kernel part", MS_AVAILABLE);
-	SG_ADD(&window, "window", "the size of window around motifs", MS_AVAILABLE);
-	m_parameters->add_vector((CSGObject***)&motif_positions_lhs, &alen, "motif_positions_lhs", "the matrix of motif positions from sequences left-hand side");
-	m_parameters->add_vector((CSGObject***)&motif_positions_rhs, &blen, "motif_positions_rhs", "the matrix of motif positions from sequences right-hand side");
-	m_parameters->add_vector(&position_weights, &degree, "position_weights", "scaling weights in window");
-	m_parameters->add_vector(&weights, &degree, "weights", "weights of WD kernel");
-}

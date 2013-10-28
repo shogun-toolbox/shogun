@@ -63,6 +63,12 @@ class CPerceptron : public CLinearMachine
 			max_iter=i;
 		}
 
+		/// set if the hyperplane should be initialized
+		void set_initialize_hyperplane(bool initialize_hyperplane);
+
+		/// get if the hyperplane should be initialized
+		bool get_initialize_hyperplane();
+
 		/** @return object name */
 		virtual const char* get_name() const { return "Perceptron"; }
 
@@ -82,6 +88,13 @@ class CPerceptron : public CLinearMachine
 		float64_t learn_rate;
 		/** maximum number of iterations */
 		int32_t max_iter;
+
+	private:
+		/** whether the hyperplane should be initialized in train_machine
+		 *
+		 * this allows to initialize the hyperplane externally using set_w and set_b
+		 */
+		bool m_initialize_hyperplane;
 };
 }
 #endif

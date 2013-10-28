@@ -26,7 +26,7 @@ CKernelMeanMatching::CKernelMeanMatching() :
 {
 }
 
-CKernelMeanMatching::CKernelMeanMatching(CKernel* kernel, SGVector<index_t> training_indices, 
+CKernelMeanMatching::CKernelMeanMatching(CKernel* kernel, SGVector<index_t> training_indices,
                                          SGVector<index_t> test_indices) :
 	CSGObject(), m_kernel(NULL)
 {
@@ -44,7 +44,7 @@ SGVector<float64_t> CKernelMeanMatching::compute_weights()
 
 	int32_t n_tr = m_training_indices.vlen;
 	int32_t n_te = m_test_indices.vlen;
-	
+
 	SGVector<float64_t> weights(n_tr);
 	weights.zero();
 
@@ -71,7 +71,7 @@ SGVector<float64_t> CKernelMeanMatching::compute_weights()
 			avg+= m_kernel->kernel(m_training_indices[i],m_test_indices[j]);
 
 		avg *= float64_t(n_tr)/n_te;
-		kappa[i] = avg;
+		kappa[i] = -avg;
 	}
 	float64_t* a = SG_MALLOC(float64_t, n_tr);
 	for (i=0; i<n_tr; i++) a[i] = 1.0;
@@ -86,7 +86,7 @@ SGVector<float64_t> CKernelMeanMatching::compute_weights()
 	for (i=0; i<n_tr; i++)
 		weights[i] = 1.0/float64_t(n_tr);
 
-	libqp_state_T result = 
+	libqp_state_T result =
 		libqp_gsmo_solver(&kmm_get_col,diag_K,kappa,a,1.0,LB,UB,weights,n_tr,1000,1e-9,NULL);
 
 	SG_DEBUG("libqp exitflag=%d, %d iterations passed, primal objective=%f\n",

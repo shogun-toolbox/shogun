@@ -7,14 +7,9 @@
 #define TAPKEE_MDS_H_
 
 /* Tapkee includes */
-#include <shogun/lib/tapkee/tapkee_defines.hpp>
+#include <shogun/lib/tapkee/defines.hpp>
 #include <shogun/lib/tapkee/utils/time.hpp>
 /* End of Tapkee includes */
-
-#include <algorithm>
-
-using std::random_shuffle;
-using std::fill;
 
 namespace tapkee
 {
@@ -28,7 +23,7 @@ Landmarks select_landmarks_random(RandomAccessIterator begin, RandomAccessIterat
 	landmarks.reserve(end-begin);
 	for (RandomAccessIterator iter=begin; iter!=end; ++iter)
 		landmarks.push_back(iter-begin);
-	random_shuffle(landmarks.begin(),landmarks.end());
+	tapkee::random_shuffle(landmarks.begin(),landmarks.end());
 	landmarks.erase(landmarks.begin() + static_cast<IndexType>(landmarks.size()*ratio),landmarks.end());
 	return landmarks;
 }
@@ -50,7 +45,7 @@ DenseSymmetricMatrix compute_distance_matrix(RandomAccessIterator begin, RandomA
 		{
 			for (j_index_iter=i_index_iter; j_index_iter<n_landmarks; ++j_index_iter)
 			{
-				ScalarType d = callback(begin[landmarks[i_index_iter]],begin[landmarks[j_index_iter]]);
+				ScalarType d = callback.distance(begin[landmarks[i_index_iter]],begin[landmarks[j_index_iter]]);
 				d *= d;
 				distance_matrix(i_index_iter,j_index_iter) = d;
 				distance_matrix(j_index_iter,i_index_iter) = d;
@@ -61,18 +56,18 @@ DenseSymmetricMatrix compute_distance_matrix(RandomAccessIterator begin, RandomA
 }
 
 template <class RandomAccessIterator, class PairwiseCallback>
-EmbeddingResult triangulate(RandomAccessIterator begin, RandomAccessIterator end, PairwiseCallback distance_callback,
-                            const Landmarks& landmarks, const DenseVector& landmark_distances_squared, 
-                            EmbeddingResult& landmarks_embedding, IndexType target_dimension)
+DenseMatrix triangulate(RandomAccessIterator begin, RandomAccessIterator end, PairwiseCallback distance_callback,
+                        const Landmarks& landmarks, const DenseVector& landmark_distances_squared,
+                        EigendecompositionResult& landmarks_embedding, IndexType target_dimension)
 {
 	timed_context context("Landmark triangulation");
-	
+
 	const IndexType n_vectors = end-begin;
 	const IndexType n_landmarks = landmarks.size();
 
 	bool* to_process = new bool[n_vectors];
-	fill(to_process,to_process+n_vectors,true);
-	
+	std::fill(to_process,to_process+n_vectors,true);
+
 	DenseMatrix embedding(n_vectors,target_dimension);
 
 	for (IndexType index_iter=0; index_iter<n_landmarks; ++index_iter)
@@ -97,7 +92,7 @@ EmbeddingResult triangulate(RandomAccessIterator begin, RandomAccessIterator end
 
 			for (IndexType i=0; i<n_landmarks; ++i)
 			{
-				ScalarType d = distance_callback(begin[index_iter],begin[landmarks[i]]);
+				ScalarType d = distance_callback.distance(begin[index_iter],begin[landmarks[i]]);
 				distances_to_landmarks(i) = d*d;
 			}
 			//distances_to_landmarks.array().square();
@@ -109,11 +104,11 @@ EmbeddingResult triangulate(RandomAccessIterator begin, RandomAccessIterator end
 
 	delete[] to_process;
 
-	return EmbeddingResult(embedding,DenseVector());
+	return embedding;
 }
 
 template <class RandomAccessIterator, class PairwiseCallback>
-DenseSymmetricMatrix compute_distance_matrix(RandomAccessIterator begin, RandomAccessIterator end, 
+DenseSymmetricMatrix compute_distance_matrix(RandomAccessIterator begin, RandomAccessIterator end,
                                              PairwiseCallback callback)
 {
 	timed_context context("Multidimensional scaling distance matrix computation");
@@ -129,7 +124,7 @@ DenseSymmetricMatrix compute_distance_matrix(RandomAccessIterator begin, RandomA
 		{
 			for (j_index_iter=i_index_iter; j_index_iter<n_vectors; ++j_index_iter)
 			{
-				ScalarType d = callback(begin[i_index_iter],begin[j_index_iter]);
+				ScalarType d = callback.distance(begin[i_index_iter],begin[j_index_iter]);
 				d *= d;
 				distance_matrix(i_index_iter,j_index_iter) = d;
 				distance_matrix(j_index_iter,i_index_iter) = d;

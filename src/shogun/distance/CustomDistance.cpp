@@ -107,6 +107,7 @@ bool CCustomDistance::init(CFeatures* l, CFeatures* r)
 	return true;
 }
 
+
 void CCustomDistance::cleanup_custom()
 {
 	SG_DEBUG("cleanup up custom distance\n")
@@ -131,4 +132,28 @@ void CCustomDistance::init()
 void CCustomDistance::cleanup()
 {
 	cleanup_custom();
+}
+
+float64_t CCustomDistance::compute(int32_t row, int32_t col)
+{
+	ASSERT(dmatrix)
+
+	if (upper_diagonal)
+	{
+		if (row <= col)
+		{
+			int64_t r=row;
+			return dmatrix[r*num_cols - r*(r+1)/2 + col];
+		}
+		else
+		{
+			int64_t c=col;
+			return dmatrix[c*num_cols - c*(c+1)/2 + row];
+		}
+	}
+	else
+	{
+		int64_t r=row;
+		return dmatrix[r*num_cols+col];
+	}
 }

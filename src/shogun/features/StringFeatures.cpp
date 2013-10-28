@@ -112,7 +112,7 @@ template<class ST> CStringFeatures<ST>::CStringFeatures(const CStringFeatures & 
 }
 
 template<class ST> CStringFeatures<ST>::CStringFeatures(CFile* loader, EAlphabet alpha)
-: CFeatures(loader), num_vectors(0),
+: CFeatures(), num_vectors(0),
   features(NULL), single_string(NULL), length_of_single_string(0),
   max_string_length(0), order(0),
   preprocess_on_get(false), feature_cache(NULL)
@@ -287,7 +287,7 @@ template<class ST> ST* CStringFeatures<ST>::get_feature_vector(int32_t num, int3
 	}
 	else
 	{
-		SG_DEBUG("computing feature vector!\n") 
+		SG_DEBUG("computing feature vector!\n")
 		ST* feat=compute_feature_vector(num, len);
 		dofree=true;
 
@@ -1166,8 +1166,6 @@ template<class ST> bool CStringFeatures<ST>::save_compressed(char* dest, E_COMPR
 	return true;
 }
 
-template<class ST> int32_t CStringFeatures<ST>::get_size() const { return sizeof(ST); }
-
 template<class ST> bool CStringFeatures<ST>::apply_preprocessor(bool force_preprocessing)
 {
 	SG_DEBUG("force: %d\n", force_preprocessing)
@@ -1672,6 +1670,8 @@ template<class ST> void CStringFeatures<ST>::init()
 	feature_cache=NULL;
 	symbol_mask_table=NULL;
 	symbol_mask_table_len=0;
+	num_symbols=0.0;
+	original_num_symbols=0;
 
 	m_parameters->add((CSGObject**) &alphabet, "alphabet");
 	m_parameters->add_vector(&features, &num_vectors, "features",
@@ -1854,60 +1854,60 @@ template<> floatmax_t CStringFeatures<floatmax_t>::shift_symbol(floatmax_t symbo
 }
 
 #ifndef SUNOS
-template<> 	template <class CT> bool CStringFeatures<float32_t>::obtain_from_char_features(CStringFeatures<CT>* sf, int32_t start, int32_t p_order, int32_t gap, bool rev)
+template<>	template <class CT> bool CStringFeatures<float32_t>::obtain_from_char_features(CStringFeatures<CT>* sf, int32_t start, int32_t p_order, int32_t gap, bool rev)
 {
 	return false;
 }
-template<> 	template <class CT> bool CStringFeatures<float64_t>::obtain_from_char_features(CStringFeatures<CT>* sf, int32_t start, int32_t p_order, int32_t gap, bool rev)
+template<>	template <class CT> bool CStringFeatures<float64_t>::obtain_from_char_features(CStringFeatures<CT>* sf, int32_t start, int32_t p_order, int32_t gap, bool rev)
 {
 	return false;
 }
-template<> 	template <class CT> bool CStringFeatures<floatmax_t>::obtain_from_char_features(CStringFeatures<CT>* sf, int32_t start, int32_t p_order, int32_t gap, bool rev)
+template<>	template <class CT> bool CStringFeatures<floatmax_t>::obtain_from_char_features(CStringFeatures<CT>* sf, int32_t start, int32_t p_order, int32_t gap, bool rev)
 {
 	return false;
 }
 #endif
 
-template<> 	void CStringFeatures<float32_t>::embed_features(int32_t p_order)
+template<>	void CStringFeatures<float32_t>::embed_features(int32_t p_order)
 {
 }
-template<> 	void CStringFeatures<float64_t>::embed_features(int32_t p_order)
+template<>	void CStringFeatures<float64_t>::embed_features(int32_t p_order)
 {
 }
-template<> 	void CStringFeatures<floatmax_t>::embed_features(int32_t p_order)
-{
-}
-
-template<> 	void CStringFeatures<float32_t>::compute_symbol_mask_table(int64_t max_val)
-{
-}
-template<> 	void CStringFeatures<float64_t>::compute_symbol_mask_table(int64_t max_val)
-{
-}
-template<> 	void CStringFeatures<floatmax_t>::compute_symbol_mask_table(int64_t max_val)
+template<>	void CStringFeatures<floatmax_t>::embed_features(int32_t p_order)
 {
 }
 
-template<> 	float32_t CStringFeatures<float32_t>::embed_word(float32_t* seq, int32_t len)
+template<>	void CStringFeatures<float32_t>::compute_symbol_mask_table(int64_t max_val)
+{
+}
+template<>	void CStringFeatures<float64_t>::compute_symbol_mask_table(int64_t max_val)
+{
+}
+template<>	void CStringFeatures<floatmax_t>::compute_symbol_mask_table(int64_t max_val)
+{
+}
+
+template<>	float32_t CStringFeatures<float32_t>::embed_word(float32_t* seq, int32_t len)
 {
 	return 0;
 }
-template<> 	float64_t CStringFeatures<float64_t>::embed_word(float64_t* seq, int32_t len)
+template<>	float64_t CStringFeatures<float64_t>::embed_word(float64_t* seq, int32_t len)
 {
 	return 0;
 }
-template<> 	floatmax_t CStringFeatures<floatmax_t>::embed_word(floatmax_t* seq, int32_t len)
+template<>	floatmax_t CStringFeatures<floatmax_t>::embed_word(floatmax_t* seq, int32_t len)
 {
 	return 0;
 }
 
-template<> 	void CStringFeatures<float32_t>::unembed_word(float32_t word, uint8_t* seq, int32_t len)
+template<>	void CStringFeatures<float32_t>::unembed_word(float32_t word, uint8_t* seq, int32_t len)
 {
 }
-template<> 	void CStringFeatures<float64_t>::unembed_word(float64_t word, uint8_t* seq, int32_t len)
+template<>	void CStringFeatures<float64_t>::unembed_word(float64_t word, uint8_t* seq, int32_t len)
 {
 }
-template<> 	void CStringFeatures<floatmax_t>::unembed_word(floatmax_t word, uint8_t* seq, int32_t len)
+template<>	void CStringFeatures<floatmax_t>::unembed_word(floatmax_t word, uint8_t* seq, int32_t len)
 {
 }
 #define LOAD(f_load, sg_type)												\
@@ -1941,7 +1941,7 @@ LOAD(get_string_list, floatmax_t)
 
 #define SAVE(f_write, sg_type)												\
 template<> void CStringFeatures<sg_type>::save(CFile* writer)		\
-{ 																			\
+{																			\
 	if (m_subset_stack->has_subsets())															\
 		SG_ERROR("save() is not possible on subset")						\
 	SG_SET_LOCALE_C;													\
@@ -2018,7 +2018,7 @@ bool CStringFeatures<ST>::obtain_from_char_features(CStringFeatures<CT>* sf, int
 		return false;
 	}
 
-	SG_DEBUG("translate: start=%i order=%i gap=%i(size:%i)\n", start, p_order, gap, sizeof(ST)) 
+	SG_DEBUG("translate: start=%i order=%i gap=%i(size:%i)\n", start, p_order, gap, sizeof(ST))
 	for (int32_t line=0; line<num_vectors; line++)
 	{
 		int32_t len=0;

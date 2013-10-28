@@ -148,10 +148,10 @@ class COligoStringKernel : public CStringKernel<char>
 
 		  This function computes the kernel value of the oligo kernel,
 		  which was introduced by Meinicke et al. in 2004. 'x' and
-		  'y' have to be encoded by encodeOligo. 
+		  'y' have to be encoded by encodeOligo.
 		  */
 		float64_t kernelOligo(
-				const std::vector< std::pair<int32_t, float64_t> >& x, 
+				const std::vector< std::pair<int32_t, float64_t> >& x,
 				const std::vector< std::pair<int32_t, float64_t> >& y);
 
 

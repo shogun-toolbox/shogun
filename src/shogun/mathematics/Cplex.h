@@ -66,7 +66,7 @@ public:
 	// create the following 1-norm SVM problem & transfer to cplex
 	//
 	/////////////////////////////////////////////////////////////////
-	// min_w 		sum_{i=0}^N ( w^+_i + w^-_i) + C \sum_{i=0}^N \xi_i
+	// min_w		sum_{i=0}^N ( w^+_i + w^-_i) + C \sum_{i=0}^N \xi_i
 	// w=[w^+ w^-]
 	// b, xi
 	//
@@ -79,23 +79,23 @@ public:
 	// -x <= 0
 	//
 	// lb= [ -inf, //b
-	// 	  2*dims [0], //w
-	// 	  num_train [0] //xi
-	// 	]
+	//	  2*dims [0], //w
+	//	  num_train [0] //xi
+	//	]
 	//
 	// ub= [ inf, //b
-	// 	  2*dims [inf], //w
-	// 	  num_train [inf] //xi
-	// 	]
+	//	  2*dims [inf], //w
+	//	  num_train [inf] //xi
+	//	]
 	//
 	// f= [0,2*dim[1], num_train*C]
 	// A= [-y', // b
-	// 	-y_ix_i // w_+
-	// 	+y_ix_i // w_-
-	// 	-1 //xi
-	// 	]
+	//	-y_ix_i // w_+
+	//	+y_ix_i // w_-
+	//	-1 //xi
+	//	]
 	//
-	// 	dim(A)=(n,1+2*dim+n)
+	//	dim(A)=(n,1+2*dim+n)
 	//
 	// b =  -1 -1 -1 -1 ...
 	bool setup_lpm(

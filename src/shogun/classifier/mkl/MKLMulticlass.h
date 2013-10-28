@@ -32,13 +32,18 @@ namespace shogun
  *
  *	It is based on the GMNPSVM Multiclass SVM.
  *	Its own parameters are the L2 norm weight change based MKL
- *	Its termination criterion set by void set_mkl_epsilon(float64_t eps ); and the maximal number of MKL iterations set by void set_max_num_mkliters(int32_t maxnum); It passes the regularization constants C1 and C2 to GMNPSVM.
+ *
+ *	Its termination criterion is set by void set_mkl_epsilon(float64_t eps ); and
+ *	the maximal number of MKL iterations is set by void
+ *	set_max_num_mkliters(int32_t maxnum); It passes the regularization
+ *	constants C1 and C2 to GMNPSVM.
  */
 class CMKLMulticlass : public CMulticlassSVM
 {
 public:
    /** Class default Constructor */
    CMKLMulticlass();
+
    /** Class Constructor commonly used in Shogun Toolbox
     * @param C constant C
     * @param k kernel
@@ -190,7 +195,8 @@ protected:
    */
    float64_t pnorm;
 
-   /** stores the term  \| w_l \|^2 ~~~ "alpha o Y K_l Y o alpha"
+   /** stores the term
+	* \f$\| w_l \|^2 = \alpha Y K_l Y \alpha\f$
    *
    */
    std::vector<float64_t> normweightssquared;

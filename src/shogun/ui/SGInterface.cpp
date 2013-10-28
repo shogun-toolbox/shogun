@@ -379,18 +379,18 @@ CSGInterfaceMethod sg_methods[]=
 		(&CSGInterface::cmd_new_classifier),
 		USAGE_I(N_NEW_SVM, USAGE_STR "LIBSVM_ONECLASS|LIBSVM_MULTICLASS|LIBSVM"
 				"|SVMLIGHT|LIGHT|LIGHT_ONECLASS|SVMLIN|GPBTSVM|MPDSVM|GNPPSVM|GMNPSVM"
-				"|SUBGRADIENTSVM|WDSVMOCAS|SVMOCAS|SVMSGD|SVMBMRM|SVMPERF"
+				"|WDSVMOCAS|SVMOCAS|SVMSGD|SVMBMRM|SVMPERF"
 				"|KERNELPERCEPTRON|PERCEPTRON|LIBLINEAR_LR|LIBLINEAR_L2|LDA"
-				"|LPM|LPBOOST|SUBGRADIENTLPM|KNN" USAGE_STR)
+				"|LPM|LPBOOST|KNN" USAGE_STR)
 	},
 	{
 		N_NEW_CLASSIFIER,
 		(&CSGInterface::cmd_new_classifier),
 		USAGE_I(N_NEW_CLASSIFIER, USAGE_STR "LIBSVM_ONECLASS|LIBSVM_MULTICLASS"
 				"|LIBSVM|SVMLIGHT|LIGHT|LIGHT_ONECLASS|SVMLIN|GPBTSVM|MPDSVM|GNPPSVM|GMNPSVM"
-				"|SUBGRADIENTSVM|WDSVMOCAS|SVMOCAS|SVMSGD|SVMBMRM|SVMPERF"
+				"|WDSVMOCAS|SVMOCAS|SVMSGD|SVMBMRM|SVMPERF"
 				"|KERNELPERCEPTRON|PERCEPTRON|LIBLINEAR_LR|LIBLINEAR_L2|LDA"
-				"|LPM|LPBOOST|SUBGRADIENTLPM|KNN" USAGE_STR)
+				"|LPM|LPBOOST|KNN" USAGE_STR)
 	},
 	{
 		N_NEW_REGRESSION,
@@ -611,6 +611,11 @@ CSGInterfaceMethod sg_methods[]=
 		N_SET_CONVERTER,
 		(&CSGInterface::cmd_set_converter),
 		USAGE(N_SET_CONVERTER)
+	},
+	{
+		N_APPLY_CONVERTER,
+		(&CSGInterface::cmd_apply_converter),
+		USAGE_O(N_APPLY_CONVERTER, "conv_features")
 	},
 	{
 		N_EMBED,
@@ -1811,7 +1816,7 @@ bool CSGInterface::do_set_features(bool add, bool check_dot, int32_t repetitions
 			SGSparseVector<float64_t>* fmatrix=NULL;
 			get_sparse_matrix(fmatrix, num_feat, num_vec);
 
-			feat=new CSparseFeatures<float64_t>(fmatrix, num_feat, num_vec);
+			feat=new CSparseFeatures<float64_t>(SGSparseMatrix<float64_t>(fmatrix, num_feat, num_vec));
 			break;
 		}
 
@@ -4323,13 +4328,8 @@ bool CSGInterface::cmd_get_distance_matrix()
 		if (!distance || !distance->has_features())
 			SG_ERROR("No distance defined or not initialized.\n")
 
-		int32_t num_vec_lhs=0;
-		int32_t num_vec_rhs=0;
-		float64_t* dmatrix=NULL;
-		dmatrix=distance->get_distance_matrix_real(num_vec_lhs, num_vec_rhs, dmatrix);
-
-		set_matrix(dmatrix, num_vec_lhs, num_vec_rhs);
-		SG_FREE(dmatrix);
+		SGMatrix<float64_t> dmatrix=distance->get_distance_matrix();
+		set_matrix(dmatrix.matrix, dmatrix.num_rows, dmatrix.num_cols);
 	}
 
 	return success;
@@ -4582,7 +4582,7 @@ bool CSGInterface::cmd_classify()
 		return false;
 
 	if (!ui_kernel->get_kernel() ||
-			!ui_kernel->get_kernel()->get_kernel_type()==K_CUSTOM)
+		ui_kernel->get_kernel()->get_kernel_type()!=K_CUSTOM)
 	{
 		CFeatures* feat=ui_features->get_test_features();
 		if (!feat)
@@ -4721,11 +4721,18 @@ bool CSGInterface::cmd_load_classifier()
 
 	bool success=ui_classifier->load(filename, type);
 
+	if (dynamic_cast<CKernelMachine*>(ui_classifier->get_classifier()))
+	{
+		CKernelMachine* kernel_machine = dynamic_cast<CKernelMachine*>(ui_classifier->get_classifier());
+		ui_features->set_train_features(kernel_machine->get_kernel()->get_lhs());
+		ui_features->set_test_features(kernel_machine->get_kernel()->get_rhs());
+		ui_kernel->set_kernel(kernel_machine->get_kernel());
+	}
+
 	SG_FREE(filename);
 	SG_FREE(type);
 	return success;
 }
-
 
 bool CSGInterface::cmd_get_num_svms()
 {
@@ -4990,12 +4997,10 @@ bool CSGInterface::cmd_train_classifier()
 		case CT_PERCEPTRON:
 		case CT_SVMLIN:
 		case CT_SVMPERF:
-		case CT_SUBGRADIENTSVM:
 		case CT_SVMOCAS:
 		case CT_SVMSGD:
 		case CT_LPM:
 		case CT_LPBOOST:
-		case CT_SUBGRADIENTLPM:
 		case CT_LIBLINEAR:
 			return ui_classifier->train_linear();
 
@@ -5361,12 +5366,32 @@ bool CSGInterface::cmd_set_converter()
 		ui_converter->create_multidimensionalscaling();
 		return true;
 	}
+	if (strmatch(type, "jade"))
+	{
+		ui_converter->create_jade();
+		return true;
+	}
 	return false;
+}
+
+bool CSGInterface::cmd_apply_converter()
+{
+	if (m_nrhs!=1 || !create_return_values(1))
+		return false;
+
+	CDenseFeatures<float64_t>* conv_features = ui_converter->apply();
+	SGMatrix<float64_t> converted_mat = conv_features->get_feature_matrix();
+	set_matrix(converted_mat.matrix,converted_mat.num_rows,converted_mat.num_cols);
+	return true;
 }
 
 bool CSGInterface::cmd_embed()
 {
 	int32_t target_dim = get_int_from_int_or_str();
+
+	if (m_nrhs!=1 || !create_return_values(1))
+		return false;
+
 	CDenseFeatures<float64_t>* embedding = ui_converter->embed(target_dim);
 	SGMatrix<float64_t> embedding_matrix = embedding->get_feature_matrix();
 	set_matrix(embedding_matrix.matrix,embedding_matrix.num_cols,embedding_matrix.num_rows);
@@ -6272,8 +6297,8 @@ bool CSGInterface::cmd_get_plif_struct()
 		ids[i]=PEN[i]->get_id();
 		names[i].string = PEN[i]->get_plif_name();
 		names[i].slen = strlen(PEN[i]->get_plif_name());
-		float64_t* limits = PEN[i]->get_plif_limits();
-		float64_t* penalties = PEN[i]->get_plif_penalties();
+		SGVector<float64_t> limits = PEN[i]->get_plif_limits();
+		SGVector<float64_t> penalties = PEN[i]->get_plif_penalties();
 		for (int32_t j=0;j<M;j++)
 		{
 			all_limits[i*M+j]=limits[j];
@@ -6458,7 +6483,7 @@ bool CSGInterface::cmd_precompute_content_svms()
 	float64_t* weights;
 	get_matrix(weights, Nweights, num_svms);
 	if (Nweights!=5440)
-	  SG_PRINT("Dimension mismatch: got %i, expect %i\n", Nweights, 5440) 
+	  SG_PRINT("Dimension mismatch: got %i, expect %i\n", Nweights, 5440)
 	ui_structure->set_content_svm_weights(weights, Nweights, num_svms);
 
 	CDynProg* h = ui_structure->get_dyn_prog();
@@ -6515,7 +6540,7 @@ bool CSGInterface::cmd_set_lin_feat()
 
         if (Npos!=seq_len)
 	  {
-	    SG_ERROR("Dimension mismatch: got %i positions and (%ix%i) values\n", Npos, num_svms, seq_len) 
+	    SG_ERROR("Dimension mismatch: got %i positions and (%ix%i) values\n", Npos, num_svms, seq_len)
 
 	    SG_FREE(lin_feat);
 	    SG_FREE(seq);
@@ -6591,8 +6616,8 @@ bool CSGInterface::cmd_set_feature_matrix_sparse()
 	SGSparseVector<float64_t> *features2=NULL ;
 	get_sparse_matrix(features2, dim21, dim22);
 
-	ASSERT(dim11==dim21) 
-	ASSERT(dim12==dim22) 
+	ASSERT(dim11==dim21)
+	ASSERT(dim12==dim22)
 
 	int32_t *Dims = SG_MALLOC(int32_t, 3);
 	Dims[0]=dim11 ;
@@ -6787,7 +6812,7 @@ bool CSGInterface::cmd_best_path_trans()
 
 	if (!h->check_svm_arrays())
 	{
-		SG_ERROR("svm arrays inconsistent\n") 
+		SG_ERROR("svm arrays inconsistent\n")
 		CPlif::delete_penalty_struct(PEN, Nplif) ;
 		return false ;
 	}
@@ -6825,7 +6850,7 @@ bool CSGInterface::cmd_best_path_trans()
 
 	if (segment_loss_non_zero)
 	{
-	        SG_DEBUG("Using version with segment_loss\n") 
+	        SG_DEBUG("Using version with segment_loss\n")
 	        if (nbest==1)
 				h->compute_nbest_paths(feat_dims[2], use_orf, 1,true,false);
 	        else
@@ -6833,7 +6858,7 @@ bool CSGInterface::cmd_best_path_trans()
 	}
 	else
 	{
-	        SG_DEBUG("Using version without segment_loss\n") 
+	        SG_DEBUG("Using version without segment_loss\n")
 	        if (nbest==1)
 				h->compute_nbest_paths(feat_dims[2], use_orf, 1,false,false);
 	        else
@@ -6961,7 +6986,7 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 		h->set_a_trans_matrix(SGMatrix<float64_t>(a_trans, num_a_trans, 3)) ;
 
 	if (!h->check_svm_arrays())
-		SG_ERROR("svm arrays inconsistent\n") 
+		SG_ERROR("svm arrays inconsistent\n")
 
 	int32_t *my_path = SG_MALLOC(int32_t, Nmypos_seq+1);
 	memset(my_path, -1, Nmypos_seq*sizeof(int32_t)) ;
@@ -7019,7 +7044,7 @@ bool CSGInterface::cmd_best_path_trans_deriv()
 	{
 		int32_t len=0 ;
 		const float64_t * deriv = PEN[id]->get_cum_derivative(len) ;
-		ASSERT(len<=max_plif_len) 
+		ASSERT(len<=max_plif_len)
 		for (int32_t j=0; j<max_plif_len; j++)
 			a_Plif_deriv.element(id, j)= deriv[j] ;
 	}
@@ -7084,30 +7109,40 @@ bool CSGInterface::cmd_system()
 	if (m_nrhs<2 || !create_return_values(0))
 		return false;
 
+	const int32_t MAX_LEN=10000;
 	int32_t len=0;
-	char* command=SG_MALLOC(char, 10000);
-	memset(command, 0, sizeof(char)*10000);
+	int32_t command_len=0;
+	char* command=SG_MALLOC(char, MAX_LEN+1);
+	memset(command, 0, sizeof(char)*MAX_LEN+1);
 	char* cmd=get_str_from_str_or_direct(len);
-	strncat(command, cmd, 10000);
+	strncat(command, cmd, MAX_LEN);
+	command_len+=len;
 	SG_FREE(cmd);
 
 	while (m_rhs_counter<m_nrhs)
 	{
-		strncat(command, " ", 10000);
 		char* arg=get_str_from_str_or_direct(len);
-		strncat(command, arg, 10000);
+		command_len += len + 1;
+
+		if (command_len >= MAX_LEN)
+		{
+			SG_FREE(arg);
+			return false;
+		}
+		strcat(command, " ");
+		strcat(command, arg);
 		SG_FREE(arg);
 	}
 
-	int32_t success=system(command);
-
-	return (success==0);
+	int status=system(command);
+	SG_FREE(command);
+	return (status==0);
 }
 
 bool CSGInterface::cmd_exit()
 {
 	exit(0);
-	return 0; //never reached but necessary to keep sun compiler happy
+	return true; //never reached but necessary to keep sun compiler happy
 }
 
 bool CSGInterface::cmd_exec()

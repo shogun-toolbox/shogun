@@ -232,9 +232,9 @@ bool CSVM::save(FILE* modelfl)
 void CSVM::set_callback_function(CMKL* m, bool (*cb)
 		(CMKL* mkl, const float64_t* sumw, const float64_t suma))
 {
+	SG_REF(m);
 	SG_UNREF(mkl);
 	mkl=m;
-	SG_REF(mkl);
 
 	callback=cb;
 }

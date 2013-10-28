@@ -13,31 +13,31 @@ public class kernel_io_modular {
 
 		GaussianKernel kernel = new GaussianKernel(feats_train, feats_test, width);
 		double[,] km_train = kernel.get_kernel_matrix();
-		AsciiFile f=new AsciiFile("gaussian_train.ascii",'w');
+		CSVFile f=new CSVFile("gaussian_train.ascii",'w');
 		kernel.save(f);
 
 		kernel.init(feats_train, feats_test);
 		double[,] km_test = kernel.get_kernel_matrix();
-		AsciiFile f_test=new AsciiFile("gaussian_train.ascii",'w');
+		CSVFile f_test=new CSVFile("gaussian_train.ascii",'w');
 		kernel.save(f_test);
 
 		//  Parse and Display km_train
 		Console.Write("km_train:\n");
 		int numRows = km_train.GetLength(0);
 		int numCols = km_train.GetLength(1);
-		
+
 		for(int i = 0; i < numRows; i++){
 			for(int j = 0; j < numCols; j++){
 				Console.Write(km_train[i,j] +" ");
 			}
 			Console.Write("\n");
 		}
-		
+
 		//  Parse and Display km_test
 		Console.Write("\nkm_test:\n");
 		numRows = km_test.GetLength(0);
 		numCols = km_test.GetLength(1);
-		
+
 		for(int i = 0; i < numRows; i++){
 			for(int j = 0; j < numCols; j++){
 				Console.Write(km_test[i,j] +" ");

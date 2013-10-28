@@ -8,11 +8,11 @@ test_dir = '../../../testsuite/tests'
 blacklist = {"load.lua", "MatrixTest.lua", "VectorTest.lua"}
 
 function get_test_mod(tests)
-	lfs.chdir(example_dir)	
-	local r = {}	
+	lfs.chdir(example_dir)
+	local r = {}
 	for _, v in pairs(tests) do
 		local flag = 0
-		if string.sub(v, -3) ~= "lua" then	
+		if string.sub(v, -3) ~= "lua" then
 			flag = 1
 		end
 		for _, n in pairs(blacklist) do

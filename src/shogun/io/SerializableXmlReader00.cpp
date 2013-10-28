@@ -11,6 +11,7 @@
 #include <shogun/lib/config.h>
 #ifdef HAVE_XML
 
+#include <shogun/lib/common.h>
 #include <shogun/io/SerializableXmlReader00.h>
 
 using namespace shogun;
@@ -35,7 +36,7 @@ SerializableXmlReader00::read_scalar_wrapped(
 	case PT_BOOL:
 		string_t bool_buf;
 
-		if (sscanf(buf, "%"STRING_LEN_STR"s", bool_buf) != 1)
+		if (sscanf(buf, "%" STRING_LEN_STR "s", bool_buf) != 1)
 			result = false;
 
 		if (strcmp(buf, STR_TRUE) == 0) *(bool*) param = true;
@@ -48,35 +49,35 @@ SerializableXmlReader00::read_scalar_wrapped(
 			result = false;
 		break;
 	case PT_INT8:
-		if (sscanf(buf, "%"SCNi8, (int8_t*) param) != 1)
+		if (sscanf(buf, "%" SCNi8, (int8_t*) param) != 1)
 			result = false;
 		break;
 	case PT_UINT8:
-		if (sscanf(buf, "%"SCNu8, (uint8_t*) param) != 1)
+		if (sscanf(buf, "%" SCNu8, (uint8_t*) param) != 1)
 			result = false;
 		break;
 	case PT_INT16:
-		if (sscanf(buf, "%"SCNi16, (int16_t*) param) != 1)
+		if (sscanf(buf, "%" SCNi16, (int16_t*) param) != 1)
 			result = false;
 		break;
 	case PT_UINT16:
-		if (sscanf(buf, "%"SCNu16, (uint16_t*) param) != 1)
+		if (sscanf(buf, "%" SCNu16, (uint16_t*) param) != 1)
 			result = false;
 		break;
 	case PT_INT32:
-		if (sscanf(buf, "%"SCNi32, (int32_t*) param) != 1)
+		if (sscanf(buf, "%" SCNi32, (int32_t*) param) != 1)
 			result = false;
 		break;
 	case PT_UINT32:
-		if (sscanf(buf, "%"SCNu32, (uint32_t*) param) != 1)
+		if (sscanf(buf, "%" SCNu32, (uint32_t*) param) != 1)
 			result = false;
 		break;
 	case PT_INT64:
-		if (sscanf(buf, "%"SCNi64, (int64_t*) param) != 1)
+		if (sscanf(buf, "%" SCNi64, (int64_t*) param) != 1)
 			result = false;
 		break;
 	case PT_UINT64:
-		if (sscanf(buf, "%"SCNu64, (uint64_t*) param) != 1)
+		if (sscanf(buf, "%" SCNu64, (uint64_t*) param) != 1)
 			result = false;
 		break;
 	case PT_FLOAT32:
@@ -91,6 +92,19 @@ SerializableXmlReader00::read_scalar_wrapped(
 		if (sscanf(buf, "%Lg", (floatmax_t*) param) != 1)
 			result = false;
 		break;
+	case PT_COMPLEX128:
+		float64_t c_real, c_imag;
+		if (sscanf(buf, "(%lg,%lg)", &c_real, &c_imag) != 2)
+			result = false;
+#ifdef HAVE_CXX11
+		((complex128_t*) param)->real(c_real);
+		((complex128_t*) param)->imag(c_imag);
+#else
+		((complex128_t*) param)->real()=c_real;
+		((complex128_t*) param)->imag()=c_imag;
+#endif
+		break;
+	case PT_UNDEFINED:
 	case PT_SGOBJECT:
 		SG_ERROR("read_scalar_wrapped(): Implementation error during"
 				 " reading XmlFile!");
@@ -126,8 +140,9 @@ SerializableXmlReader00::read_cont_begin_wrapped(
 			if (*len_read_y != (index_t) xmlChildElementCount(cur))
 				return false;
 		}
-
 		break;
+	case CT_UNDEFINED:
+		SG_ERROR("type undefined\n");
 	}
 
 	return true;
@@ -221,7 +236,7 @@ SerializableXmlReader00::read_sparseentry_begin_wrapped(
 
 	if ((buf = xmlGetProp(m_file->m_stack_stream.back(), BAD_CAST
 						  STR_PROP_FEATINDEX)) == NULL) return false;
-	if (sscanf((const char*) buf, "%"PRIi32, feat_index) != 1)
+	if (sscanf((const char*) buf, "%" PRIi32, feat_index) != 1)
 		result = false;
 	xmlFree(buf); if (!result) return false;
 
@@ -255,12 +270,14 @@ SerializableXmlReader00::read_item_begin_wrapped(
 		{
 			if (x != 0) { m_file->pop_node(); m_file->pop_node(); }
 
-			string_t buf_x; snprintf(buf_x, STRING_LEN, "x%"PRIi32, x);
+			string_t buf_x; snprintf(buf_x, STRING_LEN, "x%" PRIi32, x);
 			if (!m_file->join_node(BAD_CAST buf_x)) return false;
 			if (!m_file->join_node(BAD_CAST STR_ITEM)) return false;
 			return true;
 		}
 		break;
+	case CT_UNDEFINED:
+		SG_ERROR("type undefined\n");
 	}
 
 	if (!m_file->next_node(BAD_CAST STR_ITEM)) return false;

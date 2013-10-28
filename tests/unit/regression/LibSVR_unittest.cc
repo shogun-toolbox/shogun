@@ -70,7 +70,7 @@ TEST(LibSVR,epsilon_svr_apply)
 	svm->train();
 
 	/* predict */
-	CRegressionLabels* predicted_labels=CRegressionLabels::obtain_from_generic(
+	CRegressionLabels* predicted_labels=CLabelsFactory::to_regression(
 			svm->apply(features_test));
 
 	/* LibSVM regression comparison (with easy.py script) */
@@ -79,7 +79,7 @@ TEST(LibSVR,epsilon_svr_apply)
 	EXPECT_NEAR(predicted_labels->get_labels()[2], 0.313201, 1E-5);
 	EXPECT_NEAR(predicted_labels->get_labels()[3], 1.57767, 1E-5);
 	EXPECT_NEAR(predicted_labels->get_labels()[4], 2.34949, 1E-5);
-	
+
 	EXPECT_NEAR(CMath::abs(svm->get_bias()), 1.60903, 1E-5);
 	EXPECT_EQ(svm->get_num_support_vectors(), 5);
 
@@ -145,7 +145,7 @@ TEST(LibSVR,nu_svr_apply)
 	svm->train();
 
 	/* predict */
-	CRegressionLabels* predicted_labels=CRegressionLabels::obtain_from_generic(
+	CRegressionLabels* predicted_labels=CLabelsFactory::to_regression(
 			svm->apply(features_test));
 
 	/* LibSVM regression comparison (with easy.py script) */
@@ -154,7 +154,7 @@ TEST(LibSVR,nu_svr_apply)
 	EXPECT_NEAR(predicted_labels->get_labels()[2], 1.82819, 1E-5);
 	EXPECT_NEAR(predicted_labels->get_labels()[3], 2.09295, 1E-5);
 	EXPECT_NEAR(predicted_labels->get_labels()[4], 2.17949, 1E-5);
-	
+
 	EXPECT_NEAR(CMath::abs(svm->get_bias()), 2.0625, 1E-5);
 	EXPECT_EQ(svm->get_num_support_vectors(), 3);
 

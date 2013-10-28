@@ -14,4 +14,14 @@
 #include <shogun/converter/Isomap.h>
 #include <shogun/converter/StochasticProximityEmbedding.h>
 #include <shogun/converter/FactorAnalysis.h>
+#include <shogun/converter/TDistributedStochasticNeighborEmbedding.h>
+#include <shogun/converter/ManifoldSculpting.h>
+#include <shogun/converter/HashedDocConverter.h>
+#include <shogun/converter/ica/ICAConverter.h>
+#include <shogun/converter/ica/Jade.h>
+#include <shogun/converter/ica/SOBI.h>
+#include <shogun/converter/ica/FFSep.h>
+#include <shogun/converter/ica/JediSep.h>
+#include <shogun/converter/ica/UWedgeSep.h>
+#include <shogun/converter/ica/FastICA.h>
 %}

@@ -7,13 +7,14 @@
  * Written (W) 2011 Shashwat Lal Das
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
-
-#include <shogun/lib/common.h>
-#include <shogun/lib/DataType.h>
-#include <pthread.h>
-
 #ifndef __PARSEBUFFER_H__
 #define __PARSEBUFFER_H__
+
+#include <shogun/lib/common.h>
+#ifdef HAVE_PTHREAD
+
+#include <shogun/lib/DataType.h>
+#include <pthread.h>
 
 namespace shogun
 {
@@ -43,7 +44,8 @@ public:
 	/// Label
 	float64_t label;
 	/// Feature vector of type T
-	SGVector<T> fv;
+	T* fv;
+	index_t length;
 };
 
 /** @brief Class CParseBuffer implements a ring of
@@ -237,8 +239,8 @@ template <class T> CParseBuffer<T>::CParseBuffer(int32_t size)
 
 		/* this closes a memory leak, seems to have no bad consequences,
 		 * but I am not completely sure due to lack of any tests */
-//		ex_ring[i].fv.vector = SG_MALLOC(T, 1);
-//		ex_ring[i].fv.vlen = 1;
+		//ex_ring[i].fv = SG_MALLOC(T, 1);
+		//ex_ring[i].length = 1;
 		ex_ring[i].label = FLT_MAX;
 
 		pthread_cond_init(&ex_in_use_cond[i], NULL);
@@ -254,11 +256,11 @@ template <class T> CParseBuffer<T>::~CParseBuffer()
 {
 	for (int32_t i=0; i<ring_size; i++)
 	{
-		if (ex_ring[i].fv.vector != NULL && free_vectors_on_destruct)
+		if (ex_ring[i].fv != NULL && free_vectors_on_destruct)
 		{
 			SG_DEBUG("%s::~%s(): destroying examples ring vector %d at %p\n",
-					get_name(), get_name(), i, ex_ring[i].fv.vector);
-			SG_FREE(ex_ring[i].fv.vector);
+					get_name(), get_name(), i, ex_ring[i].fv);
+			SG_FREE(ex_ring[i].fv);
 		}
 		pthread_mutex_destroy(&ex_in_use_mutex[i]);
 		pthread_cond_destroy(&ex_in_use_cond[i]);
@@ -276,8 +278,8 @@ template <class T>
 int32_t CParseBuffer<T>::write_example(Example<T> *ex)
 {
 	ex_ring[ex_write_index].label = ex->label;
-	ex_ring[ex_write_index].fv.vector = ex->fv.vector;
-	ex_ring[ex_write_index].fv.vlen = ex->fv.vlen;
+	ex_ring[ex_write_index].fv = ex->fv;
+	ex_ring[ex_write_index].length = ex->length;
 	ex_used[ex_write_index] = E_NOT_USED;
 	inc_write_index();
 
@@ -346,10 +348,10 @@ void CParseBuffer<T>::finalize_example(bool free_after_release)
 	if (free_after_release)
 	{
 		SG_DEBUG("Freeing object in ring at index %d and address: %p.\n",
-			 ex_read_index, ex_ring[ex_read_index].fv.vector);
+			 ex_read_index, ex_ring[ex_read_index].fv);
 
-		SG_FREE(ex_ring[ex_read_index].fv.vector);
-		ex_ring[ex_read_index].fv.vector=NULL;
+		SG_FREE(ex_ring[ex_read_index].fv);
+		ex_ring[ex_read_index].fv=NULL;
 	}
 
 	pthread_cond_signal(&ex_in_use_cond[ex_read_index]);
@@ -360,4 +362,5 @@ void CParseBuffer<T>::finalize_example(bool free_after_release)
 }
 
 }
+#endif // HAVE_PTHREAD
 #endif // __PARSEBUFFER_H__

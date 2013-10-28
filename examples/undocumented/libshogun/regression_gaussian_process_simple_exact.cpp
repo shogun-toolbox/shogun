@@ -14,9 +14,9 @@
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/regression/GaussianProcessRegression.h>
-#include <shogun/regression/gp/ExactInferenceMethod.h>
-#include <shogun/regression/gp/ZeroMean.h>
-#include <shogun/regression/gp/GaussianLikelihood.h>
+#include <shogun/machine/gp/ExactInferenceMethod.h>
+#include <shogun/machine/gp/ZeroMean.h>
+#include <shogun/machine/gp/GaussianLikelihood.h>
 #include <shogun/base/init.h>
 
 using namespace shogun;
@@ -52,13 +52,9 @@ void test()
 	lik->set_sigma(1);
 	CExactInferenceMethod* inf=new CExactInferenceMethod(kernel, feat_train,
 			mean, label_train, lik);
-	CFeatures* latent=inf->get_latent_features();
-	SG_UNREF(latent);
-	CGaussianProcessRegression* gpr=new CGaussianProcessRegression(inf,
-			feat_train, label_train);
+	CGaussianProcessRegression* gpr=new CGaussianProcessRegression(inf);
 
 	/* perform inference */
-	gpr->set_return_type(CGaussianProcessRegression::GP_RETURN_MEANS);
 	CRegressionLabels* predictions=gpr->apply_regression(feat_test);
 	predictions->get_labels().display_vector("predictions");
 

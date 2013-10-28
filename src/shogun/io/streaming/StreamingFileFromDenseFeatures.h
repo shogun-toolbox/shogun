@@ -135,6 +135,8 @@ void CStreamingFileFromDenseFeatures<T>::init()
 {
 	vector_num=0;
 	features=NULL;
+
+	set_generic<T>();
 }
 
 /* Functions to return the vector from the DenseFeatures object
@@ -155,7 +157,6 @@ void CStreamingFileFromDenseFeatures<T>::get_vector(T*& vector,
 
 	vector=sg_vector.vector;
 	num_feat=sg_vector.vlen;
-	;
 	vector_num++;
 
 }

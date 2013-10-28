@@ -12,8 +12,8 @@
 #define _DUALLIBQPBMSOSVM__H__
 
 #include <shogun/machine/LinearStructuredOutputMachine.h>
-#include <shogun/structure/libbmrm.h>
 #include <shogun/features/DotFeatures.h>
+#include <shogun/structure/BmrmStatistics.h>
 
 namespace shogun
 {
@@ -36,9 +36,9 @@ enum ESolver
  * in [2].
  *
  * [1] Tsochantaridis, I., Hofmann, T., Joachims, T., Altun, Y.
- * 	   Support Vector Machine Learning for Interdependent and Structured Ouput
- * 	   Spaces.
- * 	   http://www.cs.cornell.edu/People/tj/publications/tsochantaridis_etal_04a.pdf
+ *	   Support Vector Machine Learning for Interdependent and Structured Ouput
+ *	   Spaces.
+ *	   http://www.cs.cornell.edu/People/tj/publications/tsochantaridis_etal_04a.pdf
  *
  * [2] Teo, C.H., Vishwanathan, S.V.N, Smola, A. and Quoc, V.Le.
  *     Bundle Methods for Regularized Risk Minimization
@@ -52,21 +52,19 @@ class CDualLibQPBMSOSVM : public CLinearStructuredOutputMachine
 
 		/** constructor
 		 *
-		 * @param model 		Structured Model
-		 * @param loss			Loss function
+		 * @param model		Structured Model
 		 * @param labs			Structured labels
 		 * @param _lambda		Regularization constant
 		 * @param W				initial solution of weight vector
 		 */
 		CDualLibQPBMSOSVM(
-				CStructuredModel* 		model,
-				CLossFunction* 			loss,
-				CStructuredLabels* 		labs,
-				float64_t 				_lambda,
-				SGVector< float64_t > 	W=0);
+				CStructuredModel*		model,
+				CStructuredLabels*		labs,
+				float64_t				_lambda,
+				SGVector< float64_t >	W=0);
 
 		/** destructor */
-		~CDualLibQPBMSOSVM();
+		virtual ~CDualLibQPBMSOSVM();
 
 		/** @return name of SGSerializable */
 		virtual const char* get_name() const { return "DualLibQPBMSOSVM"; }
@@ -110,7 +108,7 @@ class CDualLibQPBMSOSVM : public CLinearStructuredOutputMachine
 		/** set size of cutting plane buffer
 		 *
 		 * @param BufSize	Size of the cutting plane buffer (i.e. maximal number of
-		 * 					iterations)
+		 *					iterations)
 		 */
 		inline void set_BufSize(uint32_t BufSize) { m_BufSize=BufSize; }
 
@@ -123,7 +121,7 @@ class CDualLibQPBMSOSVM : public CLinearStructuredOutputMachine
 		/** set ICP removal flag
 		 *
 		 * @param cleanICP	Flag that enables/disables inactive cutting plane removal
-		 * 					feature
+		 *					feature
 		 */
 		inline void set_cleanICP(bool cleanICP) { m_cleanICP=cleanICP; }
 
@@ -136,14 +134,14 @@ class CDualLibQPBMSOSVM : public CLinearStructuredOutputMachine
 		/** set number of iterations for cleaning ICP
 		 *
 		 * @param cleanAfter	Specifies number of iterations that inactive cutting
-		 * 						planes has to be inactive for to be removed
+		 *						planes has to be inactive for to be removed
 		 */
 		inline void set_cleanAfter(uint32_t cleanAfter) { m_cleanAfter=cleanAfter; }
 
 		/** get number of iterations for cleaning ICP
 		 *
 		 * @return Number of iterations that inactive cutting planes has to be
-		 * 			inactive for to be removed
+		 *			inactive for to be removed
 		 */
 		inline uint32_t get_cleanAfter() { return m_cleanAfter; }
 
@@ -182,18 +180,6 @@ class CDualLibQPBMSOSVM : public CLinearStructuredOutputMachine
 		 * @return Number of cutting plane models
 		 */
 		inline uint32_t get_cp_models() { return m_cp_models; }
-
-		/** set verbose
-		 *
-		 * @param verbose 	Flag enabling/disabling screen output
-		 */
-		inline void set_verbose(bool verbose) { m_verbose=verbose; }
-
-		/** get verbose
-		 *
-		 * @return Status of screen output (enabled/disabled)
-		 */
-		inline bool get_verbose() { return m_verbose; }
 
 		/** get bmrm result
 		 *
@@ -270,9 +256,6 @@ class CDualLibQPBMSOSVM : public CLinearStructuredOutputMachine
 
 		/** number of cutting plane models */
 		uint32_t m_cp_models;
-
-		/** verbose */
-		bool m_verbose;
 
 		/** BMRM result */
 		BmrmStatistics m_result;

@@ -39,7 +39,7 @@ namespace shogun
 			CLinearLatentMachine(CLatentModel* model, float64_t C);
 
 			virtual ~CLinearLatentMachine();
-			
+
 			/** apply linear machine to data set before
 			 *
 			 * @return classified labels

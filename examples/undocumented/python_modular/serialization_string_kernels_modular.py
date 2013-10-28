@@ -1,17 +1,16 @@
 #!/usr/bin/env python
 
-from shogun.Kernel import WeightedDegreeStringKernel, LinearKernel, PolyKernel, GaussianKernel, CTaxonomy
-from shogun.Kernel import CombinedKernel, WeightedDegreeRBFKernel
-from shogun.Features import StringCharFeatures, RealFeatures, CombinedFeatures, StringWordFeatures, SortWordString
-from shogun.Features import DNA, PROTEIN, Labels
-from shogun.Kernel import WeightedDegreeStringKernel, CombinedKernel, WeightedCommWordStringKernel, WeightedDegreePositionStringKernel
-from shogun.Features import StringCharFeatures, DNA, StringWordFeatures, CombinedFeatures
-from shogun.Features import CombinedDotFeatures, HashedWDFeatures, HashedWDFeaturesTransposed, WDFeatures, ImplicitWeightedSpecFeatures, StringByteFeatures
+from modshogun import WeightedDegreeStringKernel, LinearKernel, PolyKernel, GaussianKernel, CTaxonomy
+from modshogun import CombinedKernel, WeightedDegreeRBFKernel
+from modshogun import StringCharFeatures, RealFeatures, CombinedFeatures, StringWordFeatures, SortWordString
+from modshogun import DNA, PROTEIN, Labels
+from modshogun import WeightedDegreeStringKernel, CombinedKernel, WeightedCommWordStringKernel, WeightedDegreePositionStringKernel
+from modshogun import StringCharFeatures, DNA, StringWordFeatures, CombinedFeatures
 
-from shogun.IO import MSG_DEBUG
-from shogun.Features import RealFeatures, BinaryLabels, DNA, Alphabet
-from shogun.Kernel import WeightedDegreeStringKernel, GaussianKernel
-from shogun.Classifier import SVMLight
+from modshogun import MSG_DEBUG
+from modshogun import RealFeatures, BinaryLabels, DNA, Alphabet
+from modshogun import WeightedDegreeStringKernel, GaussianKernel
+from modshogun import SVMLight
 from numpy import concatenate, ones
 from numpy.random import randn, seed
 import numpy
@@ -38,8 +37,8 @@ def generate_random_string(length, number):
 
     alphabet = "AGTC"
 
-    for i in xrange(number):
-        dat.append("".join([random.choice(alphabet) for j in xrange(length)]))
+    for i in range(number):
+        dat.append("".join([random.choice(alphabet) for j in range(length)]))
 
     return dat
 
@@ -49,7 +48,7 @@ def generate_random_data(number):
     create random examples and labels
     """
 
-    labels = numpy.array([random.choice([-1.0, 1.0]) for i in xrange(number)])
+    labels = numpy.array([random.choice([-1.0, 1.0]) for i in range(number)])
     examples = numpy.array(generate_random_string(22, number))
 
     return examples, labels
@@ -206,7 +205,7 @@ def serialization_string_kernels_modular(n_data, num_shifts, size):
     out2 =  svm2.apply(feats_test).get_labels()
 
     # assert outputs are close
-    for i in xrange(len(out)):
+    for i in range(len(out)):
         assert abs(out[i] - out2[i] < 0.000001)
 
     #print("all checks passed.")

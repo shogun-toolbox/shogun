@@ -10,7 +10,7 @@ LINKFLAGS=
 CXXFLAGS=-O0 -g
 
 LIBRARY_PATH=LD_LIBRARY_PATH
-LINKFLAGS+=$(LIBS) $(LIBS_ADD) -L$(LIB_PATH) 
+LINKFLAGS+=$(LIBS) $(LIBS_ADD) -L$(LIB_PATH)
 CXXFLAGS+=-I$(INC_PATH) $(INCLUDES)
 CC=c++
 
@@ -18,13 +18,16 @@ VALGRIND_LOG = valgrind.log
 
 TARGETS = basic_minimal \
 		  classifier_libsvm \
+		  classifier_libsvm_probabilities\
 		  classifier_minimal_svm \
 		  classifier_mklmulticlass \
-  		  classifier_conjugateindex \
+		  classifier_gaussian_process_binary_classification \
 		  classifier_gaussiannaivebayes \
 		  classifier_multiclasslibsvm \
 		  classifier_qda \
+		  classifier_lda \
 		  classifier_multiclasslinearmachine \
+		  classifier_knn \
 		  kernel_gaussian kernel_revlin kernel_custom\
 		  library_dyn_int library_gc_array library_indirect_object \
 		  library_hash parameter_set_from_parameters \
@@ -43,7 +46,7 @@ TARGETS = basic_minimal \
 		  regression_gaussian_process_product \
 		  regression_gaussian_process_ard \
 		  regression_gaussian_process_laplace \
-  		  regression_gaussian_process_simple_exact \
+		  regression_gaussian_process_simple_exact \
 		  modelselection_model_selection_parameters_test \
 		  modelselection_parameter_tree \
 		  modelselection_apply_parameter_tree \
@@ -51,10 +54,10 @@ TARGETS = basic_minimal \
 		  modelselection_grid_search_kernel \
 		  modelselection_grid_search_string_kernel \
 		  modelselection_grid_search_multiclass_svm \
+		  modelselection_combined_kernel_sub_parameters \
 		  features_dense_real_modular \
 		  features_subset_stack \
 		  features_subset_simple_features \
-		  features_subset_sparse_features \
 		  features_copy_subset_simple_features \
 		  features_copy_subset_sparse_features \
 		  labels_binary_fit_sigmoid \
@@ -77,6 +80,7 @@ TARGETS = basic_minimal \
 		  converter_kernellocallylinearembedding \
 		  converter_multidimensionalscaling \
 		  converter_isomap \
+		  converter_jade_bss \
 		  converter_diffusionmaps \
 		  converter_laplacianeigenmaps \
 		  converter_neighborhoodpreservingembedding \
@@ -102,12 +106,17 @@ TARGETS = basic_minimal \
 		  classifier_multiclass_ecoc_random \
 		  streaming_from_dense \
 		  library_hdf5 \
+		  library_mldatahdf5 \
 		  library_serialization \
 		  classifier_svmlight_string_features_precomputed_kernel \
-  		  classifier_mkl_svmlight_modelselection_bug \
-  		  base_migration_new_buggy \
-  		  regression_libsvr \
-  		  
+		  classifier_mkl_svmlight_modelselection_bug \
+		  base_migration_new_buggy \
+		  regression_libsvr \
+		  classifier_multiclass_prob_heuristics \
+		  streaming_onlineliblinear \
+		  io_linereader \
+		  library_circularbuffer \
+		  so_factorgraph \
 
 all: $(TARGETS)
 

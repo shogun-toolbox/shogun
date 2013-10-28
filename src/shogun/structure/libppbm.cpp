@@ -32,7 +32,7 @@ static const float64_t *get_col( uint32_t i)
 }
 
 BmrmStatistics svm_ppbm_solver(
-		CStructuredModel* model,
+		CDualLibQPBMSOSVM *machine,
 		float64_t*      W,
 		float64_t       TolRel,
 		float64_t       TolAbs,
@@ -53,7 +53,9 @@ BmrmStatistics svm_ppbm_solver(
 	floatmax_t rsum, sq_norm_W, sq_norm_Wdiff, sq_norm_prevW, eps;
 	uint32_t *I, *I2, *I_start, *I_good;
 	uint8_t S=1;
+	CStructuredModel* model=machine->get_model();
 	uint32_t nDim=model->get_dim();
+	CSOSVMHelper* helper = NULL;
 	uint32_t qp_cnt=0;
 	bmrm_ll *CPList_head, *CPList_tail, *cp_ptr, *cp_ptr2, *cp_list=NULL;
 	float64_t *A_1=NULL, *A_2=NULL;
@@ -88,32 +90,32 @@ BmrmStatistics svm_ppbm_solver(
 
 	alpha=0.0;
 
-	H= (float64_t*) LIBBMRM_CALLOC(BufSize*BufSize, sizeof(float64_t));
+	H= (float64_t*) LIBBMRM_CALLOC(BufSize*BufSize, float64_t);
 
-	A= (float64_t*) LIBBMRM_CALLOC(nDim*BufSize, sizeof(float64_t));
+	A= (float64_t*) LIBBMRM_CALLOC(nDim*BufSize, float64_t);
 
-	b= (float64_t*) LIBBMRM_CALLOC(BufSize, sizeof(float64_t));
+	b= (float64_t*) LIBBMRM_CALLOC(BufSize, float64_t);
 
-	beta= (float64_t*) LIBBMRM_CALLOC(BufSize, sizeof(float64_t));
+	beta= (float64_t*) LIBBMRM_CALLOC(BufSize, float64_t);
 
-	subgrad= (float64_t*) LIBBMRM_CALLOC(nDim, sizeof(float64_t));
+	subgrad= (float64_t*) LIBBMRM_CALLOC(nDim, float64_t);
 
-	diag_H= (float64_t*) LIBBMRM_CALLOC(BufSize, sizeof(float64_t));
+	diag_H= (float64_t*) LIBBMRM_CALLOC(BufSize, float64_t);
 
-	I= (uint32_t*) LIBBMRM_CALLOC(BufSize, sizeof(uint32_t));
+	I= (uint32_t*) LIBBMRM_CALLOC(BufSize, uint32_t);
 
 	/* structure for maintaining inactive CPs info */
 	ICP_stats icp_stats;
 	icp_stats.maxCPs = BufSize;
-	icp_stats.ICPcounter= (uint32_t*) LIBBMRM_CALLOC(BufSize, sizeof(uint32_t));
-	icp_stats.ICPs= (float64_t**) LIBBMRM_CALLOC(BufSize, sizeof(float64_t*));
-	icp_stats.ACPs= (uint32_t*) LIBBMRM_CALLOC(BufSize, sizeof(uint32_t));
+	icp_stats.ICPcounter= (uint32_t*) LIBBMRM_CALLOC(BufSize, uint32_t);
+	icp_stats.ICPs= (float64_t**) LIBBMRM_CALLOC(BufSize, float64_t*);
+	icp_stats.ACPs= (uint32_t*) LIBBMRM_CALLOC(BufSize, uint32_t);
 
-	cp_list= (bmrm_ll*) LIBBMRM_CALLOC(1, sizeof(bmrm_ll));
+	cp_list= (bmrm_ll*) LIBBMRM_CALLOC(1, bmrm_ll);
 
-	prevW= (float64_t*) LIBBMRM_CALLOC(nDim, sizeof(float64_t));
+	prevW= (float64_t*) LIBBMRM_CALLOC(nDim, float64_t);
 
-	wt= (float64_t*) LIBBMRM_CALLOC(nDim, sizeof(float64_t));
+	wt= (float64_t*) LIBBMRM_CALLOC(nDim, float64_t);
 
 	if (H==NULL || A==NULL || b==NULL || beta==NULL || subgrad==NULL ||
 			diag_H==NULL || I==NULL || icp_stats.ICPcounter==NULL ||
@@ -124,7 +126,7 @@ BmrmStatistics svm_ppbm_solver(
 		goto cleanup;
 	}
 
-	map= (bool*) LIBBMRM_CALLOC(BufSize, sizeof(bool));
+	map= (bool*) LIBBMRM_CALLOC(BufSize, bool);
 
 	if (map==NULL)
 	{
@@ -135,7 +137,7 @@ BmrmStatistics svm_ppbm_solver(
 	memset( (bool*) map, true, BufSize);
 
 	/* Temporary buffers for ICP removal */
-	icp_stats.H_buff= (float64_t*) LIBBMRM_CALLOC(BufSize*BufSize, sizeof(float64_t));
+	icp_stats.H_buff= (float64_t*) LIBBMRM_CALLOC(BufSize*BufSize, float64_t);
 
 	if (icp_stats.H_buff==NULL)
 	{
@@ -144,21 +146,21 @@ BmrmStatistics svm_ppbm_solver(
 	}
 
 	/* Temporary buffers */
-	beta_start= (float64_t*) LIBBMRM_CALLOC(BufSize, sizeof(float64_t));
+	beta_start= (float64_t*) LIBBMRM_CALLOC(BufSize, float64_t);
 
-	beta_good= (float64_t*) LIBBMRM_CALLOC(BufSize, sizeof(float64_t));
+	beta_good= (float64_t*) LIBBMRM_CALLOC(BufSize, float64_t);
 
-	b2= (float64_t*) LIBBMRM_CALLOC(BufSize, sizeof(float64_t));
+	b2= (float64_t*) LIBBMRM_CALLOC(BufSize, float64_t);
 
-	diag_H2= (float64_t*) LIBBMRM_CALLOC(BufSize, sizeof(float64_t));
+	diag_H2= (float64_t*) LIBBMRM_CALLOC(BufSize, float64_t);
 
-	H2= (float64_t*) LIBBMRM_CALLOC(BufSize*BufSize, sizeof(float64_t));
+	H2= (float64_t*) LIBBMRM_CALLOC(BufSize*BufSize, float64_t);
 
-	I_start= (uint32_t*) LIBBMRM_CALLOC(BufSize, sizeof(uint32_t));
+	I_start= (uint32_t*) LIBBMRM_CALLOC(BufSize, uint32_t);
 
-	I_good= (uint32_t*) LIBBMRM_CALLOC(BufSize, sizeof(uint32_t));
+	I_good= (uint32_t*) LIBBMRM_CALLOC(BufSize, uint32_t);
 
-	I2= (uint32_t*) LIBBMRM_CALLOC(BufSize, sizeof(uint32_t));
+	I2= (uint32_t*) LIBBMRM_CALLOC(BufSize, uint32_t);
 
 	if (beta_start==NULL || beta_good==NULL || b2==NULL || diag_H2==NULL ||
 			I_start==NULL || I_good==NULL || I2==NULL || H2==NULL)
@@ -172,7 +174,7 @@ BmrmStatistics svm_ppbm_solver(
 	ppbmrm.hist_wdist.resize_vector(BufSize);
 
 	/* Iinitial solution */
-	R = model->risk(subgrad, W);
+	R = machine->risk(subgrad, W);
 
 	ppbmrm.nCP=0;
 	ppbmrm.nIter=0;
@@ -191,7 +193,6 @@ BmrmStatistics svm_ppbm_solver(
 	CPList_tail=cp_list;
 
 	/* Compute initial value of Fp, Fd, assuming that W is zero vector */
-	sq_norm_W=0.0;
 	sq_norm_Wdiff=0.0;
 
 	b[0] = SGVector<float64_t>::dot(subgrad, W, nDim);
@@ -220,8 +221,11 @@ BmrmStatistics svm_ppbm_solver(
 	/* Verbose output */
 
 	if (verbose)
-		SG_SPRINT("%4d: tim=%.3lf, Fp=%lf, Fd=%lf, R=%lf, K=%lf\n",
+		SG_SDEBUG("%4d: tim=%.3lf, Fp=%lf, Fd=%lf, R=%lf, K=%lf\n",
 				ppbmrm.nIter, tstop-tstart, ppbmrm.Fp, ppbmrm.Fd, R, K);
+
+	if (verbose)
+		helper = machine->get_helper();
 
 	/* main loop */
 
@@ -347,7 +351,6 @@ BmrmStatistics svm_ppbm_solver(
 
 				for (uint32_t i=0; i<ppbmrm.nCP; ++i)
 				{
-					rsum=0.0;
 					A_1=get_cutting_plane(cp_ptr);
 					cp_ptr=cp_ptr->next;
 
@@ -453,7 +456,6 @@ BmrmStatistics svm_ppbm_solver(
 
 			for (uint32_t i=0; i<ppbmrm.nCP; ++i)
 			{
-				rsum=0.0;
 				A_1=get_cutting_plane(cp_ptr);
 				cp_ptr=cp_ptr->next;
 
@@ -508,7 +510,7 @@ BmrmStatistics svm_ppbm_solver(
 		}
 
 		/* risk and subgradient computation */
-		R = model->risk(subgrad, W);
+		R = machine->risk(subgrad, W);
 		add_cutting_plane(&CPList_tail, map, A,
 				find_free_idx(map, BufSize), subgrad, nDim);
 
@@ -574,7 +576,7 @@ BmrmStatistics svm_ppbm_solver(
 
 		/* Verbose output */
 		if (verbose)
-			SG_SPRINT("%4d: tim=%.3lf, Fp=%lf, Fd=%lf, (Fp-Fd)=%lf, (Fp-Fd)/Fp=%lf, R=%lf, nCP=%d, nzA=%d, wdist=%lf, alpha=%lf, qp_cnt=%d, gamma=%lf, tuneAlpha=%d\n",
+			SG_SDEBUG("%4d: tim=%.3lf, Fp=%lf, Fd=%lf, (Fp-Fd)=%lf, (Fp-Fd)/Fp=%lf, R=%lf, nCP=%d, nzA=%d, wdist=%lf, alpha=%lf, qp_cnt=%d, gamma=%lf, tuneAlpha=%d\n",
 					ppbmrm.nIter, tstop-tstart, ppbmrm.Fp, ppbmrm.Fd, ppbmrm.Fp-ppbmrm.Fd,
 					(ppbmrm.Fp-ppbmrm.Fd)/ppbmrm.Fp, R, ppbmrm.nCP, ppbmrm.nzA, wdist, alpha,
 					qp_cnt, gamma, tuneAlpha);
@@ -595,7 +597,22 @@ BmrmStatistics svm_ppbm_solver(
 		{
 			clean_icp(&icp_stats, ppbmrm, &CPList_head, &CPList_tail, H, diag_H, beta, map, cleanAfter, b, I);
 		}
+
+		/* Debug: compute objective and training error */
+		if (verbose)
+		{
+			SGVector<float64_t> w_debug(W, nDim, false);
+			float64_t primal = CSOSVMHelper::primal_objective(w_debug, model, _lambda);
+			float64_t train_error = CSOSVMHelper::average_loss(w_debug, model);
+			helper->add_debug_info(primal, ppbmrm.nIter, train_error);
+		}
 	} /* end of main loop */
+
+	if (verbose)
+	{
+		helper->terminate();
+		SG_UNREF(helper);
+	}
 
 	ppbmrm.hist_Fp.resize_vector(ppbmrm.nIter);
 	ppbmrm.hist_Fd.resize_vector(ppbmrm.nIter);
@@ -640,6 +657,8 @@ cleanup:
 
 	if (cp_list)
 		LIBBMRM_FREE(cp_list);
+
+	SG_UNREF(model);
 
 	return(ppbmrm);
 }

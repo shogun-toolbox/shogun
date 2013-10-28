@@ -20,7 +20,7 @@ do
 	fi
 done
 
-if test -f error.log 
+if test -f error.log
 then
 	cat error.log
 	exit 1

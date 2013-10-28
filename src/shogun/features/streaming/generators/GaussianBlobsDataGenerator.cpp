@@ -74,7 +74,11 @@ void CGaussianBlobsDataGenerator::init()
 	m_angle=0;
 	m_cholesky=SGMatrix<float64_t>(2, 2);
 	m_cholesky(0, 0)=1;
+	m_cholesky(0, 1)=0;
+	m_cholesky(1, 0)=0;
 	m_cholesky(1, 1)=1;
+
+	unset_generic();
 }
 
 bool CGaussianBlobsDataGenerator::get_next_example()

@@ -26,11 +26,11 @@ template<class ST> class CDenseSubsetFeatures: public CDotFeatures
 {
 public:
     /** default constructor */
-	CDenseSubsetFeatures():m_fea(NULL) {}
+	CDenseSubsetFeatures():m_fea(NULL) { set_generic<ST>(); }
 
 	/** constructor */
 	CDenseSubsetFeatures(CDenseFeatures<ST> *fea, SGVector<int32_t> idx)
-		:m_fea(fea), m_idx(idx) { SG_REF(m_fea); }
+		:m_fea(fea), m_idx(idx) { SG_REF(m_fea); set_generic<ST>(); }
 
     /** destructor */
 	virtual ~CDenseSubsetFeatures() { SG_UNREF(m_fea); }
@@ -96,19 +96,6 @@ public:
 		return m_fea->get_num_vectors();
 	}
 
-
-	/** get memory footprint of one feature
-	 *
-	 * abstract base method
-	 *
-	 * @return memory footprint of one feature
-	 */
-	virtual int32_t get_size() const
-	{
-		return m_fea->get_size();
-	}
-
-
 	/** obtain the dimensionality of the feature space
 	 *
 	 * (not mix this up with the dimensionality of the input space, usually
@@ -139,7 +126,7 @@ public:
 
 		SGVector<ST> vec1 = m_fea->get_feature_vector(vec_idx1);
 		SGVector<ST> vec2 = dsf->m_fea->get_feature_vector(vec_idx2);
-		
+
 		float64_t sum = 0;
 		for (int32_t i=0; i < m_idx.vlen; ++i)
 			sum += vec1[m_idx[i]] * vec2[dsf->m_idx[i]];
@@ -210,7 +197,7 @@ public:
 	 * free_feature_iterator to cleanup
 	 *
 	 * @param vector_index the index of the vector over whose components to
-	 * 			iterate over
+	 *			iterate over
 	 * @return feature iterator (to be passed to get_next_feature)
 	 */
 	virtual void* get_feature_iterator(int32_t vector_index)
@@ -248,7 +235,7 @@ private:
 	CDenseFeatures<ST> *m_fea;
 	SGVector<int32_t> m_idx;
 };
-} /*  shogun */ 
+} /*  shogun */
 
 #endif /* end of include guard: DENSESUBSETFEATURES_H__ */
 

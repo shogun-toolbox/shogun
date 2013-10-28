@@ -2,6 +2,25 @@
 
 namespace shogun {
 
+template <class ST> bool CDenseDistance<ST>::init(CFeatures* l, CFeatures* r)
+{
+	CDistance::init(l,r);
+
+	ASSERT(l->get_feature_class()==C_DENSE)
+	ASSERT(r->get_feature_class()==C_DENSE)
+	ASSERT(l->get_feature_type()==this->get_feature_type())
+	ASSERT(r->get_feature_type()==this->get_feature_type())
+
+
+	if ( ((CDenseFeatures<ST>*) l)->get_num_features() != ((CDenseFeatures<ST>*) r)->get_num_features() )
+	{
+		SG_ERROR("train or test features #dimension mismatch (l:%d vs. r:%d)\n",
+				((CDenseFeatures<ST>*) l)->get_num_features(),((CDenseFeatures<ST>*) r)->get_num_features());
+	}
+
+	return true;
+}
+
 /** get feature type the DREAL distance can deal with
  *
  * @return feature type DREAL

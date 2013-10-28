@@ -40,15 +40,13 @@ CMMDKernelSelectionMedian::CMMDKernelSelectionMedian(
 
 	/* assert that all subkernels are Gaussian kernels */
 	CCombinedKernel* combined=(CCombinedKernel*)kernel;
-	CKernel* subkernel=combined->get_first_kernel();
-	index_t i=0;
-	while (subkernel)
+
+	for (index_t k_idx=0; k_idx<combined->get_num_kernels(); k_idx++)
 	{
-		REQUIRE(kernel, "%s::%s(): Subkernel (i) of current kernel is not"
-				" of type GaussianKernel\n", get_name(), get_name(), i);
+		CKernel* subkernel=combined->get_kernel(k_idx);
+		REQUIRE(kernel, "%s::%s(): Subkernel (%d) of current kernel is not"
+				" of type GaussianKernel\n", get_name(), get_name(), k_idx);
 		SG_UNREF(subkernel);
-		subkernel=combined->get_next_kernel();
-		i++;
 	}
 
 	/* assert 64 bit dense features since EuclideanDistance can only handle
@@ -206,12 +204,12 @@ CKernel* CMMDKernelSelectionMedian::select_kernel()
 	/* now of all kernels, find the one which has its width closest
 	 * Cast is safe due to constructor of MMDKernelSelection class */
 	CCombinedKernel* combined=(CCombinedKernel*)m_mmd->get_kernel();
-	CKernel* current=combined->get_first_kernel();
 	float64_t min_distance=CMath::MAX_REAL_NUMBER;
 	CKernel* min_kernel=NULL;
 	float64_t distance;
 	for (index_t i=0; i<combined->get_num_subkernels(); ++i)
 	{
+		CKernel* current=combined->get_kernel(i);
 		REQUIRE(current->get_kernel_type()==K_GAUSSIAN, "%s::select_kernel(): "
 				"%d-th kernel is not a Gaussian but \"%s\"!\n", get_name(), i,
 				current->get_name());
@@ -228,7 +226,6 @@ CKernel* CMMDKernelSelectionMedian::select_kernel()
 
 		/* next kernel */
 		SG_UNREF(current);
-		current=combined->get_next_kernel();
 	}
 	SG_UNREF(combined);
 

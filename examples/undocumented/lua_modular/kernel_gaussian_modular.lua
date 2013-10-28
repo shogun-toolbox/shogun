@@ -12,7 +12,7 @@ function kernel_gaussian_modular (fm_train_real,fm_test_real,width)
 	feats_test=modshogun.RealFeatures(fm_test_real)
 
 	kernel=modshogun.GaussianKernel(feats_train, feats_train, width)
-	
+
 	km_train=kernel:get_kernel_matrix()
 	kernel:init(feats_train, feats_test)
 	km_test=kernel:get_kernel_matrix()

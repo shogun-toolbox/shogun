@@ -19,7 +19,7 @@ CCombinedDotFeatures::CCombinedDotFeatures() : CDotFeatures()
 {
 	init();
 
-	feature_list=new CList(true);
+	feature_array=new CDynamicObjectArray();
 	update_dim_feature_space_and_num_vec();
 }
 
@@ -29,7 +29,7 @@ CCombinedDotFeatures::CCombinedDotFeatures(const CCombinedDotFeatures & orig)
 {
 	init();
 
-	feature_list=new CList(true);
+	feature_array=new CDynamicObjectArray();
 }
 
 CFeatures* CCombinedDotFeatures::duplicate() const
@@ -39,7 +39,7 @@ CFeatures* CCombinedDotFeatures::duplicate() const
 
 CCombinedDotFeatures::~CCombinedDotFeatures()
 {
-	delete feature_list;
+	SG_UNREF(feature_array);
 }
 
 void CCombinedDotFeatures::list_feature_objs()
@@ -47,13 +47,11 @@ void CCombinedDotFeatures::list_feature_objs()
 	SG_INFO("BEGIN COMBINED DOTFEATURES LIST (%d, %d) - ", num_vectors, num_dimensions)
 	this->list_feature_obj();
 
-	CListElement* current = NULL ;
-	CDotFeatures* f=get_first_feature_obj(current);
-
-	while (f)
+	for (index_t f_idx=0; f_idx<get_num_feature_obj(); f_idx++)
 	{
+		CDotFeatures* f = get_feature_obj(f_idx);
 		f->list_feature_obj();
-		f=get_next_feature_obj(current);
+		SG_UNREF(f);
 	}
 
 	SG_INFO("END COMBINED DOTFEATURES LIST (%d, %d) - ", num_vectors, num_dimensions)
@@ -62,14 +60,12 @@ void CCombinedDotFeatures::list_feature_objs()
 
 void CCombinedDotFeatures::update_dim_feature_space_and_num_vec()
 {
-	CListElement* current = NULL ;
-	CDotFeatures* f=get_first_feature_obj(current);
-
 	int32_t dim=0;
 	int32_t vec=-1;
 
-	while (f)
+	for (index_t f_idx=0; f_idx<get_num_feature_obj(); f_idx++)
 	{
+		CDotFeatures* f = get_feature_obj(f_idx);
 		dim+= f->get_dim_feature_space();
 		if (vec==-1)
 			vec=f->get_num_vectors();
@@ -80,8 +76,6 @@ void CCombinedDotFeatures::update_dim_feature_space_and_num_vec()
 		}
 
 		SG_UNREF(f);
-
-		f=get_next_feature_obj(current);
 	}
 
 	num_dimensions=dim;
@@ -98,26 +92,24 @@ float64_t CCombinedDotFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t 
 	ASSERT(df->get_feature_class() == get_feature_class())
 	CCombinedDotFeatures* cf = (CCombinedDotFeatures*) df;
 
-	CListElement* current1 = NULL;
-	CDotFeatures* f1=get_first_feature_obj(current1);
+	// check that both have same number of feature objects inside
+	ASSERT(get_num_feature_obj()==cf->get_num_feature_obj())
 
-	CListElement* current2 = NULL;
-	CDotFeatures* f2=cf->get_first_feature_obj(current2);
-
-	while (f1 && f2)
+	for (index_t f_idx=0; f_idx<get_num_feature_obj(); f_idx++)
 	{
+		CDotFeatures* f1 = get_feature_obj(f_idx);
+		CDotFeatures* f2 = cf->get_feature_obj(f_idx);
+
+		ASSERT(f1)
+		ASSERT(f2)
+
 		result += f1->dot(vec_idx1, f2,vec_idx2) *
 			f1->get_combined_feature_weight() *
 			f2->get_combined_feature_weight();
 
 		SG_UNREF(f1);
 		SG_UNREF(f2);
-		f1=get_next_feature_obj(current1);
-		f2=cf->get_next_feature_obj(current2);
 	}
-
-	// check that both have same number of feature objects inside
-	ASSERT(f1 == NULL && f2 == NULL)
 
 	return result;
 }
@@ -126,18 +118,16 @@ float64_t CCombinedDotFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec
 {
 	float64_t result=0;
 
-	CListElement* current = NULL ;
-	CDotFeatures* f=get_first_feature_obj(current);
 	uint32_t offs=0;
 
-	while (f)
+	for (index_t f_idx=0; f_idx<get_num_feature_obj(); f_idx++)
 	{
+		CDotFeatures* f = get_feature_obj(f_idx);
 		int32_t dim = f->get_dim_feature_space();
 		result += f->dense_dot(vec_idx1, vec2+offs, dim)*f->get_combined_feature_weight();
 		offs += dim;
 
 		SG_UNREF(f);
-		f=get_next_feature_obj(current);
 	}
 
 	return result;
@@ -149,15 +139,14 @@ void CCombinedDotFeatures::dense_dot_range(float64_t* output, int32_t start, int
 		return;
 	ASSERT(dim==num_dimensions)
 
-	CListElement* current = NULL;
-	CDotFeatures* f=get_first_feature_obj(current);
 	uint32_t offs=0;
 	bool first=true;
 	int32_t num=stop-start;
 	float64_t* tmp=SG_MALLOC(float64_t, num);
 
-	while (f)
+	for (index_t f_idx=0; f_idx<get_num_feature_obj(); f_idx++)
 	{
+		CDotFeatures* f = get_feature_obj(f_idx);
 		int32_t f_dim = f->get_dim_feature_space();
 		if (first)
 		{
@@ -173,7 +162,6 @@ void CCombinedDotFeatures::dense_dot_range(float64_t* output, int32_t start, int
 		offs += f_dim;
 
 		SG_UNREF(f);
-		f=get_next_feature_obj(current);
 	}
 	SG_FREE(tmp);
 }
@@ -184,14 +172,13 @@ void CCombinedDotFeatures::dense_dot_range_subset(int32_t* sub_index, int32_t nu
 		return;
 	ASSERT(dim==num_dimensions)
 
-	CListElement* current = NULL;
-	CDotFeatures* f=get_first_feature_obj(current);
 	uint32_t offs=0;
 	bool first=true;
 	float64_t* tmp=SG_MALLOC(float64_t, num);
 
-	while (f)
+	for (index_t f_idx=0; f_idx<get_num_feature_obj(); f_idx++)
 	{
+		CDotFeatures* f = get_feature_obj(f_idx);
 		int32_t f_dim = f->get_dim_feature_space();
 		if (first)
 		{
@@ -207,25 +194,22 @@ void CCombinedDotFeatures::dense_dot_range_subset(int32_t* sub_index, int32_t nu
 		offs += f_dim;
 
 		SG_UNREF(f);
-		f=get_next_feature_obj(current);
 	}
 	SG_FREE(tmp);
 }
 
 void CCombinedDotFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val)
 {
-	CListElement* current = NULL ;
-	CDotFeatures* f=get_first_feature_obj(current);
 	uint32_t offs=0;
 
-	while (f)
+	for (index_t f_idx=0; f_idx<get_num_feature_obj(); f_idx++)
 	{
+		CDotFeatures* f = get_feature_obj(f_idx);
 		int32_t dim = f->get_dim_feature_space();
 		f->add_to_dense_vec(alpha*f->get_combined_feature_weight(), vec_idx1, vec2+offs, dim, abs_val);
 		offs += dim;
 
 		SG_UNREF(f);
-		f=get_next_feature_obj(current);
 	}
 }
 
@@ -233,8 +217,8 @@ void* CCombinedDotFeatures::get_feature_iterator(int32_t vector_index)
 {
 	combined_feature_iterator* it=SG_MALLOC(combined_feature_iterator, 1);
 
-	it->current=NULL;
-	it->f=get_first_feature_obj(it->current);
+	it->f=get_feature_obj(0);
+	iterator_idx=0;
 	it->iterator=it->f->get_feature_iterator(vector_index);
 	it->vector_index=vector_index;
 	return it;
@@ -253,8 +237,15 @@ bool CCombinedDotFeatures::get_next_feature(int32_t& index, float64_t& value, vo
 			return true;
 		}
 
+		if (++iterator_idx == get_num_feature_obj())
+		{
+			index = -1;
+			break;
+		}
+
 		it->f->free_feature_iterator(it->iterator);
-		it->f=get_next_feature_obj(it->current);
+		SG_UNREF(it->f);
+		it->f=get_feature_obj(iterator_idx);
 		if (it->f)
 			it->iterator=it->f->get_feature_iterator(it->vector_index);
 		else
@@ -270,39 +261,20 @@ void CCombinedDotFeatures::free_feature_iterator(void* iterator)
 		combined_feature_iterator* it = (combined_feature_iterator*) iterator;
 		if (it->iterator && it->f)
 			it->f->free_feature_iterator(it->iterator);
+		SG_UNREF(it->f);
 		SG_FREE(it);
 	}
 }
 
-CDotFeatures* CCombinedDotFeatures::get_first_feature_obj()
+CDotFeatures* CCombinedDotFeatures::get_feature_obj(int32_t idx)
 {
-	return (CDotFeatures*) feature_list->get_first_element();
+	return (CDotFeatures*) feature_array->get_element(idx);
 }
 
-CDotFeatures* CCombinedDotFeatures::get_first_feature_obj(CListElement*& current)
-{
-	return (CDotFeatures*) feature_list->get_first_element(current);
-}
-
-CDotFeatures* CCombinedDotFeatures::get_next_feature_obj()
-{
-	return (CDotFeatures*) feature_list->get_next_element();
-}
-
-CDotFeatures* CCombinedDotFeatures::get_next_feature_obj(CListElement*& current)
-{
-	return (CDotFeatures*) feature_list->get_next_element(current);
-}
-
-CDotFeatures* CCombinedDotFeatures::get_last_feature_obj()
-{
-	return (CDotFeatures*) feature_list->get_last_element();
-}
-
-bool CCombinedDotFeatures::insert_feature_obj(CDotFeatures* obj)
+bool CCombinedDotFeatures::insert_feature_obj(CDotFeatures* obj, int32_t idx)
 {
 	ASSERT(obj)
-	bool result=feature_list->insert_element(obj);
+	bool result=feature_array->insert_element(obj, idx);
 	update_dim_feature_space_and_num_vec();
 	return result;
 }
@@ -310,41 +282,34 @@ bool CCombinedDotFeatures::insert_feature_obj(CDotFeatures* obj)
 bool CCombinedDotFeatures::append_feature_obj(CDotFeatures* obj)
 {
 	ASSERT(obj)
-	bool result=feature_list->append_element(obj);
+	int n = get_num_feature_obj();
+	feature_array->push_back(obj);
 	update_dim_feature_space_and_num_vec();
-	return result;
+	return n+1==get_num_feature_obj();
 }
 
-bool CCombinedDotFeatures::delete_feature_obj()
+bool CCombinedDotFeatures::delete_feature_obj(int32_t idx)
 {
-	CDotFeatures* f=(CDotFeatures*) feature_list->delete_element();
-	if (f)
-	{
-		SG_UNREF(f);
+	bool succesful_deletion = feature_array->delete_element(idx);
+	if (succesful_deletion)
 		update_dim_feature_space_and_num_vec();
-		return true;
-	}
-	else
-		return false;
+	return succesful_deletion;
 }
 
 int32_t CCombinedDotFeatures::get_num_feature_obj()
 {
-	return feature_list->get_num_elements();
+	return feature_array->get_num_elements();
 }
 
 int32_t CCombinedDotFeatures::get_nnz_features_for_vector(int32_t num)
 {
-	CListElement* current = NULL ;
-	CDotFeatures* f=get_first_feature_obj(current);
 	int32_t result=0;
 
-	while (f)
+	for (index_t f_idx=0; f_idx<get_num_feature_obj(); f_idx++)
 	{
+		CDotFeatures* f = get_feature_obj(f_idx);
 		result+=f->get_nnz_features_for_vector(num);
-
 		SG_UNREF(f);
-		f=get_next_feature_obj(current);
 	}
 
 	return result;
@@ -357,36 +322,24 @@ SGVector<float64_t> CCombinedDotFeatures::get_subfeature_weights()
 
 	float64_t* weights=SG_MALLOC(float64_t, num_weights);
 
-	CListElement* current = NULL;
-	CDotFeatures* f = get_first_feature_obj(current);
-
-	int32_t i = 0;
-	while (f)
+	for (index_t f_idx=0; f_idx<num_weights; f_idx++)
 	{
-		weights[i] = f->get_combined_feature_weight();
-
+		CDotFeatures* f = get_feature_obj(f_idx);
+		weights[f_idx] = f->get_combined_feature_weight();
 		SG_UNREF(f);
-		f = get_next_feature_obj(current);
-		i++;
 	}
 	return SGVector<float64_t>(weights,num_weights);
 }
 
 void CCombinedDotFeatures::set_subfeature_weights(SGVector<float64_t> weights)
 {
-	int32_t i = 0;
-	CListElement* current = NULL ;
-	CDotFeatures* f = get_first_feature_obj(current);
-
 	ASSERT(weights.vlen==get_num_feature_obj())
 
-	while(f)
+	for (index_t f_idx=0; f_idx<get_num_feature_obj(); f_idx++)
 	{
-		f->set_combined_feature_weight(weights[i]);
-
+		CDotFeatures* f = get_feature_obj(f_idx);
+		f->set_combined_feature_weight(weights[f_idx]);
 		SG_UNREF(f);
-		f = get_next_feature_obj(current);
-		i++;
 	}
 }
 
@@ -396,7 +349,7 @@ void CCombinedDotFeatures::init()
 					  "Total number of dimensions.");
 	m_parameters->add(&num_vectors, "num_vectors",
 					  "Total number of vectors.");
-	m_parameters->add((CSGObject**) &feature_list,
-					  "feature_list", "Feature list.");
+	m_parameters->add((CSGObject**) &feature_array,
+					  "feature_array", "Feature array.");
 }
 

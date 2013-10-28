@@ -21,7 +21,7 @@ CMultitaskClusteredLogisticRegression::CMultitaskClusteredLogisticRegression() :
 }
 
 CMultitaskClusteredLogisticRegression::CMultitaskClusteredLogisticRegression(
-     float64_t rho1, float64_t rho2, CDotFeatures* train_features, 
+     float64_t rho1, float64_t rho2, CDotFeatures* train_features,
      CBinaryLabels* train_labels, CTaskGroup* task_group, int32_t n_clusters) :
 	CMultitaskLogisticRegression(0.0,train_features,train_labels,(CTaskRelation*)task_group)
 {
@@ -69,7 +69,7 @@ bool CMultitaskClusteredLogisticRegression::train_locked_implementation(SGVector
 	SGVector<float64_t> y(m_labels->get_num_labels());
 	for (int32_t i=0; i<y.vlen; i++)
 		y[i] = ((CBinaryLabels*)m_labels)->get_label(i);
-	
+
 	malsar_options options = malsar_options::default_options();
 	options.termination = m_termination;
 	options.tolerance = m_tolerance;
@@ -79,15 +79,21 @@ bool CMultitaskClusteredLogisticRegression::train_locked_implementation(SGVector
 	options.n_clusters = m_num_clusters;
 
 #ifdef HAVE_EIGEN3
+#ifndef HAVE_CXX11
 	malsar_result_t model = malsar_clustered(
 		features, y.vector, m_rho1, m_rho2, options);
 
 	m_tasks_w = model.w;
 	m_tasks_c = model.c;
 #else
+	SG_WARNING("Clustered LR is unstable with C++11\n")
+	m_tasks_w = SGMatrix<float64_t>(((CDotFeatures*)features)->get_dim_feature_space(), options.n_tasks);
+	m_tasks_c = SGVector<float64_t>(options.n_tasks);
+#endif
+#else
 	SG_WARNING("Please install Eigen3 to use MultitaskClusteredLogisticRegression\n")
-	m_tasks_w = SGMatrix<float64_t>(((CDotFeatures*)features)->get_dim_feature_space(), options.n_tasks); 
-	m_tasks_c = SGVector<float64_t>(options.n_tasks); 
+	m_tasks_w = SGMatrix<float64_t>(((CDotFeatures*)features)->get_dim_feature_space(), options.n_tasks);
+	m_tasks_c = SGVector<float64_t>(options.n_tasks);
 #endif
 	return true;
 }
@@ -104,7 +110,7 @@ bool CMultitaskClusteredLogisticRegression::train_machine(CFeatures* data)
 	SGVector<float64_t> y(m_labels->get_num_labels());
 	for (int32_t i=0; i<y.vlen; i++)
 		y[i] = ((CBinaryLabels*)m_labels)->get_label(i);
-	
+
 	malsar_options options = malsar_options::default_options();
 	options.termination = m_termination;
 	options.tolerance = m_tolerance;
@@ -114,15 +120,21 @@ bool CMultitaskClusteredLogisticRegression::train_machine(CFeatures* data)
 	options.n_clusters = m_num_clusters;
 
 #ifdef HAVE_EIGEN3
+#ifndef HAVE_CXX11
 	malsar_result_t model = malsar_clustered(
 		features, y.vector, m_rho1, m_rho2, options);
 
 	m_tasks_w = model.w;
 	m_tasks_c = model.c;
 #else
+	SG_WARNING("Clustered LR is unstable with C++11\n")
+	m_tasks_w = SGMatrix<float64_t>(((CDotFeatures*)features)->get_dim_feature_space(), options.n_tasks);
+	m_tasks_c = SGVector<float64_t>(options.n_tasks);
+#endif
+#else
 	SG_WARNING("Please install Eigen3 to use MultitaskClusteredLogisticRegression\n")
-	m_tasks_w = SGMatrix<float64_t>(((CDotFeatures*)features)->get_dim_feature_space(), options.n_tasks); 
-	m_tasks_c = SGVector<float64_t>(options.n_tasks); 
+	m_tasks_w = SGMatrix<float64_t>(((CDotFeatures*)features)->get_dim_feature_space(), options.n_tasks);
+	m_tasks_c = SGVector<float64_t>(options.n_tasks);
 #endif
 
 	SG_FREE(options.tasks_indices);

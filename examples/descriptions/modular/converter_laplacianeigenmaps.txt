@@ -1,9 +1,9 @@
 In this example toy data is being processed using Laplacian Eigenmaps
 algorithm as described in
 
-Belkin, M., & Niyogi, P. (2002). 
-Laplacian Eigenmaps and Spectral Techniques for Embedding and Clustering. 
-Science, 14, 585-591. MIT Press. 
+Belkin, M., & Niyogi, P. (2002).
+Laplacian Eigenmaps and Spectral Techniques for Embedding and Clustering.
+Science, 14, 585-591. MIT Press.
 Retrieved from http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.19.9400&rep=rep1&type=pdf
 
 The number of neighbors for the kNN graph and the heat distribution

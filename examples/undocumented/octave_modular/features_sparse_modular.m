@@ -1,4 +1,4 @@
-init_shogun
+modshogun
 rand('state',0);
 
 disp('Sparse Features')

@@ -20,7 +20,7 @@ $HOME/lib/python2.5/site-packages/package-name
 
 I suggest using
 $ python setup.py install --prefix=$HOME
-because then you can just add 
+because then you can just add
 export PYTHONPATH=$HOME/lib/python2.5/site-packages/package-name:$PYTHONPATH
 to your .bashrc and you can just install all your downloaded python
 packages that use distutils in the same way. Also, it allows you to
@@ -42,32 +42,32 @@ which compiler to use for C/C++/python. It even knows when to invoke
 SWIG. The following instructions are from the distutils documentation.
 
 If all you want to do is distribute a module called foo, contained in
-a file foo.py, then your setup script can be as simple as this:  
+a file foo.py, then your setup script can be as simple as this:
 
-from distutils.core import setup 
+from distutils.core import setup
 setup(name='foo',
     version='1.0',
     py_modules=['foo'],
     )
 
-Some observations:      
+Some observations:
 * most information that you supply to the Distutils is supplied as
-keyword arguments to the setup() function     
+keyword arguments to the setup() function
 * those keyword arguments fall into two categories: package metadata
 (name, version number) and information about what's in the package (a
-list of pure Python modules, in this case)     
+list of pure Python modules, in this case)
 * modules are specified by module name, not filename (the same will
-hold true for packages and extensions)     
+hold true for packages and extensions)
 * it's recommended that you supply a little more metadata, in
 particular your name, email address and a URL for the project.
 
 To create a source distribution for this module, you would create a
-setup script, setup.py, containing the above code, and run:  
-$ python setup.py sdist  
+setup script, setup.py, containing the above code, and run:
+$ python setup.py sdist
 which will create an archive file (e.g., tarball on Unix, ZIP file on
 Windows) containing your setup script setup.py, and your module
 foo.py. The archive file will be named foo-1.0.tar.gz (or .zip), and
-will unpack into a directory foo-1.0.  
+will unpack into a directory foo-1.0.
 
 For more information, look at the documentation for "Installing Python
 Modules" and "Distributing Python Modules".

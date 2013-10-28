@@ -7,7 +7,7 @@
 
 public class features_snp_modular {
     public static void Main() {
-    
+
 	modshogun.init_shogun_with_defaults();
 	string filename = "../data/snps.dat";
 	StringByteFeatures sf = new StringByteFeatures(EAlphabet.SNP);
@@ -15,6 +15,6 @@ public class features_snp_modular {
 	SNPFeatures snps = new SNPFeatures(sf);
 
 	modshogun.exit_shogun();
-      
+
     }
 }

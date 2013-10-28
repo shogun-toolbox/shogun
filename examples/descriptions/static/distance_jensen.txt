@@ -11,15 +11,15 @@ from different files and initializes the distance to 'JENSEN'.
 Each column of the matrices corresponds to one data point.
 
 The target 'TRAIN' for 'set_features' controls the processing of the given
-data points, where a pairwise distance (divergence measure based on the 
+data points, where a pairwise distance (divergence measure based on the
 Kullback-Leibler divergence) matrix is computed by 'get_distance_matrix'.
 
 The resulting distance matrix can be reaccessed by 'get_distance_matrix' and
 target 'TRAIN'.
 
 The target 'TEST' for 'set_features' controls the processing of the given
-data points 'TRAIN' and 'TEST', where a pairwise distance (divergence measure 
-based on the Kullback-Leibler divergence) matrix between these two data sets 
+data points 'TRAIN' and 'TEST', where a pairwise distance (divergence measure
+based on the Kullback-Leibler divergence) matrix between these two data sets
 is computed by 'get_distance_matrix'.
 
 The resulting distance matrix can be reaccessed by 'get_distance_matrix'
@@ -27,5 +27,5 @@ and target 'TEST'. The 'TRAIN' distance matrix ceased to exist.
 
 For more details see doc/classshogun_1_1CJensenMetric.html.
 
-Obviously, using the Jensen-Shannon distance/divergence is not limited to 
+Obviously, using the Jensen-Shannon distance/divergence is not limited to
 this showcase example.

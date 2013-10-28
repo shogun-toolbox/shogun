@@ -103,7 +103,7 @@ bool CLibLinearMTL::train_machine(CFeatures* data)
 	else
 		training_w=SG_MALLOC(float64_t, num_feat+0);
 
-	problem prob;
+	liblinear_problem prob;
 	if (use_bias)
 	{
 		prob.n=num_feat+1;
@@ -162,13 +162,13 @@ bool CLibLinearMTL::train_machine(CFeatures* data)
 //  D is a diagonal matrix
 //
 // In L1-SVM case:
-// 		upper_bound_i = Cp if y_i = 1
-// 		upper_bound_i = Cn if y_i = -1
-// 		D_ii = 0
+//		upper_bound_i = Cp if y_i = 1
+//		upper_bound_i = Cn if y_i = -1
+//		D_ii = 0
 // In L2-SVM case:
-// 		upper_bound_i = INF
-// 		D_ii = 1/(2*Cp)	if y_i = 1
-// 		D_ii = 1/(2*Cn)	if y_i = -1
+//		upper_bound_i = INF
+//		D_ii = 1/(2*Cp)	if y_i = 1
+//		D_ii = 1/(2*Cn)	if y_i = -1
 //
 // Given:
 // x, y, Cp, Cn
@@ -181,7 +181,7 @@ bool CLibLinearMTL::train_machine(CFeatures* data)
 // To support weights for instances, use GETI(i) (i)
 
 
-void CLibLinearMTL::solve_l2r_l1l2_svc(const problem *prob, double eps, double Cp, double Cn)
+void CLibLinearMTL::solve_l2r_l1l2_svc(const liblinear_problem *prob, double eps, double Cp, double Cn)
 {
 
 
@@ -226,7 +226,7 @@ void CLibLinearMTL::solve_l2r_l1l2_svc(const problem *prob, double eps, double C
 		n--;
 
 	// set V to zero
-	for(int32_t k=0; k<w_size*num_tasks; k++) 
+	for(int32_t k=0; k<w_size*num_tasks; k++)
 	{
 		V.matrix[k] = 0;
 	}
@@ -263,7 +263,7 @@ void CLibLinearMTL::solve_l2r_l1l2_svc(const problem *prob, double eps, double C
 
 		for (i=0; i<active_size; i++)
 		{
-			int j = i+rand()%(active_size-i);
+			int j = CMath::random(i, active_size-1);
 			CMath::swap(index[i], index[j]);
 		}
 
@@ -281,7 +281,7 @@ void CLibLinearMTL::solve_l2r_l1l2_svc(const problem *prob, double eps, double C
 			float64_t inner_sum = 0;
 			for (map_iter it=task_similarity_matrix.data[ti].begin(); it!=task_similarity_matrix.data[ti].end(); it++)
 			{
-				
+
 				// get data from sparse matrix
 				int32_t e_i = it->first;
                 float64_t sim = it->second;
@@ -331,7 +331,7 @@ void CLibLinearMTL::solve_l2r_l1l2_svc(const problem *prob, double eps, double C
 			PGmin_new = CMath::min(PGmin_new, PG);
 
 			if(fabs(PG) > 1.0e-12)
-			{   
+			{
 				// save previous alpha
 				double alpha_old = alphas[i];
 
@@ -548,7 +548,7 @@ return obj
 			const float64_t ts = task_similarity_matrix(ti_i, ti_j);
 
 			// compute objective
-			tmp_val2 -= 0.5 * alphas[i] * alphas[j] * ts * ((CBinaryLabels*)m_labels)->get_label(i) * 
+			tmp_val2 -= 0.5 * alphas[i] * alphas[j] * ts * ((CBinaryLabels*)m_labels)->get_label(i) *
 				((CBinaryLabels*)m_labels)->get_label(j) * features->dot(i, features,j);
 		}
 	}

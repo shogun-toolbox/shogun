@@ -11,18 +11,18 @@
 from numpy import array
 from numpy import random
 
-from shogun.Evaluation import CrossValidation, CrossValidationResult
-from shogun.Evaluation import ContingencyTableEvaluation, ACCURACY
-from shogun.Evaluation import StratifiedCrossValidationSplitting
-from shogun.Features import BinaryLabels
-from shogun.Features import RealFeatures
-from shogun.Kernel import GaussianKernel, PowerKernel
-from shogun.Classifier import LibSVM
-from shogun.Distance import MinkowskiMetric
-from shogun.ModelSelection import GridSearchModelSelection
-from shogun.ModelSelection import ModelSelectionParameters, R_EXP, R_LINEAR
-from shogun.ModelSelection import ParameterCombination
-from shogun.Mathematics import Math
+from modshogun import CrossValidation, CrossValidationResult
+from modshogun import ContingencyTableEvaluation, ACCURACY
+from modshogun import StratifiedCrossValidationSplitting
+from modshogun import BinaryLabels
+from modshogun import RealFeatures
+from modshogun import GaussianKernel, PowerKernel
+from modshogun import LibSVM
+from modshogun import MinkowskiMetric
+from modshogun import GridSearchModelSelection
+from modshogun import ModelSelectionParameters, R_EXP, R_LINEAR
+from modshogun import ParameterCombination
+from modshogun import Math
 
 def create_param_tree():
 	root=ModelSelectionParameters()
@@ -82,7 +82,7 @@ def modelselection_grid_search_kernel (num_subsets, num_vectors, dim_vectors):
 	# init seed for reproducability
 	Math.init_random(1)
 	random.seed(1);
-	
+
 	# create some (non-sense) data
 	matrix=random.rand(dim_vectors, num_vectors)
 
@@ -116,7 +116,7 @@ def modelselection_grid_search_kernel (num_subsets, num_vectors, dim_vectors):
 	param_tree=create_param_tree()
 	#param_tree.print_tree()
 
-	grid_search=GridSearchModelSelection(param_tree, cross)
+	grid_search=GridSearchModelSelection(cross, param_tree)
 
 	print_state=False
 	best_combination=grid_search.select_model(print_state)
@@ -133,7 +133,7 @@ def modelselection_grid_search_kernel (num_subsets, num_vectors, dim_vectors):
 	#print "result mean:", casted.mean
 
 	return classifier,result,casted.mean
-	
+
 if __name__=='__main__':
 	print('ModelselectionGridSearchKernel')
 	modelselection_grid_search_kernel(*parameter_list[0])

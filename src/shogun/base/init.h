@@ -19,6 +19,7 @@ namespace shogun
 	class CMath;
 	class Version;
 	class Parallel;
+	class CRandom;
 
 /** This function must be called before libshogun is used. Usually shogun does
  * not provide any output messages (neither debugging nor error; apart from
@@ -92,6 +93,18 @@ void set_global_math(CMath* math);
  * @return math object
  */
 CMath* get_global_math();
+
+/** set the global random object
+ *
+ * @param rand random object to use
+ */
+void set_global_rand(CRandom* rand);
+
+/** get the global random object
+ *
+ * @return random object
+ */
+CRandom* get_global_rand();
 
 /// function called to print normal messages
 extern void (*sg_print_message)(FILE* target, const char* str);

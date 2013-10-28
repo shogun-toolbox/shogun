@@ -63,7 +63,7 @@ CSerializableFile::TSerializableReader*
 CSerializableAsciiFile::new_reader(char* dest_version, size_t n)
 {
 	string_t buf;
-	if (fscanf(m_fstream, "%"STRING_LEN_STR"s\n", buf) != 1)
+	if (fscanf(m_fstream, "%" STRING_LEN_STR"s\n", buf) != 1)
 		return NULL;
 
 	strncpy(dest_version, buf, n < STRING_LEN? n: STRING_LEN);
@@ -105,39 +105,39 @@ CSerializableAsciiFile::write_scalar_wrapped(
 			return false;
 		break;
 	case PT_CHAR:
-		if (fprintf(m_fstream, "%"PRIu8, *(uint8_t*) param) <= 0)
+		if (fprintf(m_fstream, "%" PRIu8, *(uint8_t*) param) <= 0)
 			return false;
 		break;
 	case PT_INT8:
-		if (fprintf(m_fstream, "%"PRIi8, *(int8_t*) param) <= 0)
+		if (fprintf(m_fstream, "%" PRIi8, *(int8_t*) param) <= 0)
 			return false;
 		break;
 	case PT_UINT8:
-		if (fprintf(m_fstream, "%"PRIu8, *(uint8_t*) param) <= 0)
+		if (fprintf(m_fstream, "%" PRIu8, *(uint8_t*) param) <= 0)
 			return false;
 		break;
 	case PT_INT16:
-		if (fprintf(m_fstream, "%"PRIi16, *(int16_t*) param) <= 0)
+		if (fprintf(m_fstream, "%" PRIi16, *(int16_t*) param) <= 0)
 			return false;
 		break;
 	case PT_UINT16:
-		if (fprintf(m_fstream, "%"PRIu16, *(uint16_t*) param) <= 0)
+		if (fprintf(m_fstream, "%" PRIu16, *(uint16_t*) param) <= 0)
 			return false;
 		break;
 	case PT_INT32:
-		if (fprintf(m_fstream, "%"PRIi32, *(int32_t*) param) <= 0)
+		if (fprintf(m_fstream, "%" PRIi32, *(int32_t*) param) <= 0)
 			return false;
 		break;
 	case PT_UINT32:
-		if (fprintf(m_fstream, "%"PRIu32, *(uint32_t*) param) <= 0)
+		if (fprintf(m_fstream, "%" PRIu32, *(uint32_t*) param) <= 0)
 			return false;
 		break;
 	case PT_INT64:
-		if (fprintf(m_fstream, "%"PRIi64, *(int64_t*) param) <= 0)
+		if (fprintf(m_fstream, "%" PRIi64, *(int64_t*) param) <= 0)
 			return false;
 		break;
 	case PT_UINT64:
-		if (fprintf(m_fstream, "%"PRIu64, *(uint64_t*) param) <= 0)
+		if (fprintf(m_fstream, "%" PRIu64, *(uint64_t*) param) <= 0)
 			return false;
 		break;
 	case PT_FLOAT32:
@@ -152,6 +152,12 @@ CSerializableAsciiFile::write_scalar_wrapped(
 		if (fprintf(m_fstream, "%.16Lg", *(floatmax_t*) param) <= 0)
 			return false;
 		break;
+	case PT_COMPLEX128:
+		if (fprintf(m_fstream, "(%.16lg,%.16lg)",
+			((complex128_t*) param)->real(),((complex128_t*) param)->imag()) <= 0)
+			return false;
+		break;
+	case PT_UNDEFINED:
 	case PT_SGOBJECT:
 		SG_ERROR("write_scalar_wrapped(): Implementation error during"
 				 " writing AsciiFile!");
@@ -169,20 +175,21 @@ CSerializableAsciiFile::write_cont_begin_wrapped(
 	case CT_NDARRAY:
 		SG_NOTIMPLEMENTED
 		break;
-	case CT_SCALAR:
-		SG_ERROR("write_cont_begin_wrapped(): Implementation error "
-				 "during writing AsciiFile!");
-		return false;
 	case CT_VECTOR: case CT_SGVECTOR:
-		if (fprintf(m_fstream, "%"PRIi32" %c", len_real_y,
+		if (fprintf(m_fstream, "%" PRIi32 " %c", len_real_y,
 					CHAR_CONT_BEGIN) <= 0)
 			return false;
 		break;
 	case CT_MATRIX: case CT_SGMATRIX:
-		if (fprintf(m_fstream, "%"PRIi32" %"PRIi32" %c",
+		if (fprintf(m_fstream, "%" PRIi32" %" PRIi32 " %c",
 					len_real_y, len_real_x, CHAR_CONT_BEGIN) <= 0)
 			return false;
 		break;
+	case CT_UNDEFINED:
+	case CT_SCALAR:
+		SG_ERROR("write_cont_begin_wrapped(): Implementation error "
+				 "during writing AsciiFile!");
+		return false;
 	}
 
 	return true;
@@ -201,7 +208,7 @@ bool
 CSerializableAsciiFile::write_string_begin_wrapped(
 	const TSGDataType* type, index_t length)
 {
-	if (fprintf(m_fstream, "%"PRIi32" %c", length,
+	if (fprintf(m_fstream, "%" PRIi32 " %c", length,
 				CHAR_STRING_BEGIN) <= 0) return false;
 
 	return true;
@@ -238,7 +245,7 @@ bool
 CSerializableAsciiFile::write_sparse_begin_wrapped(
 	const TSGDataType* type, index_t length)
 {
-	if (fprintf(m_fstream, "%"PRIi32" %c", length,
+	if (fprintf(m_fstream, "%" PRIi32" %c", length,
 				CHAR_SPARSE_BEGIN) <= 0) return false;
 
 	return true;
@@ -258,7 +265,7 @@ CSerializableAsciiFile::write_sparseentry_begin_wrapped(
 	const TSGDataType* type, const SGSparseVectorEntry<char>* first_entry,
 	index_t feat_index, index_t y)
 {
-	if (fprintf(m_fstream, " %"PRIi32" %c", feat_index, CHAR_ITEM_BEGIN)
+	if (fprintf(m_fstream, " %" PRIi32 " %c", feat_index, CHAR_ITEM_BEGIN)
 		<= 0) return false;
 
 	return true;

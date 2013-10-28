@@ -620,7 +620,7 @@ EXCLUDE_SYMLINKS       = YES
 # against the file with absolute path, so to exclude all test directories
 # for example use the pattern */test/*
 
-EXCLUDE_PATTERNS       =
+EXCLUDE_PATTERNS       = */shogun/lib/external/*
 
 # The EXCLUDE_SYMBOLS tag can be used to specify one or more symbol names
 # (namespaces, classes, functions, etc.) that should be excluded from the
@@ -1026,6 +1026,9 @@ SEARCHENGINE           = YES
 # and does not have live searching capabilities.
 
 SERVER_BASED_SEARCH    = NO
+
+USE_MATHJAX            = YES
+MATHJAX_RELPATH        = http://www.mathjax.org/mathjax
 
 #---------------------------------------------------------------------------
 # configuration options related to the LaTeX output

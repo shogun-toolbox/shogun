@@ -28,7 +28,13 @@ CMosek::CMosek(int32_t num_con, int32_t num_var)
 : CSGObject()
 {
 	// Create MOSEK environment
+#if (MSK_VERSION_MAJOR == 6)
 	m_rescode = MSK_makeenv(&m_env, NULL, NULL, NULL, NULL);
+#elif (MSK_VERSION_MAJOR == 7)
+	m_rescode = MSK_makeenv(&m_env, NULL);
+#else
+	#error "Unsupported Mosek version"
+#endif
 
 #ifdef DEBUG_MOSEK
 	// Direct the environment's log stream to SG_PRINT
@@ -91,9 +97,21 @@ MSKrescodee CMosek::init_sosvm(int32_t M, int32_t N,
 	m_rescode = MSK_putmaxnumanz(m_task, (M+1)*N*N);
 
 	// Append optimization variables initialized to zero
+#if (MSK_VERSION_MAJOR == 6)
 	m_rescode = MSK_append(m_task, MSK_ACC_VAR, num_var);
+#elif (MSK_VERSION_MAJOR == 7)
+	m_rescode = MSK_appendvars(m_task, num_var);
+#else
+	#error "Unsupported Mosek version"
+#endif
 	// Append empty constraints initialized with no bounds
+#if (MSK_VERSION_MAJOR == 6)
 	m_rescode = MSK_append(m_task, MSK_ACC_CON, num_con);
+#elif (MSK_VERSION_MAJOR == 7)
+	m_rescode = MSK_appendcons(m_task, num_con);
+#else
+	#error "Unsupported Mosek version"
+#endif
 	// Set the constant term in the objective equal to zero
 	m_rescode = MSK_putcfix(m_task, 0.0);
 
@@ -169,12 +187,18 @@ MSKrescodee CMosek::add_constraint_sosvm(
 	asub[idx] = dPsi.vlen + num_aux + train_idx;
 	aval[idx] = -1;
 
+#if (MSK_VERSION_MAJOR == 6)
 	m_rescode = MSK_putavec(m_task, MSK_ACC_CON, con_idx, nnz+1,
 			asub.vector, aval.vector);
+#elif (MSK_VERSION_MAJOR == 7)
+	m_rescode = MSK_putarow(m_task, con_idx, nnz+1, asub.vector, aval.vector);
+#else
+	#error "Unsupported Mosek version"
+#endif
 
 	if ( m_rescode == MSK_RES_OK )
 	{
-		m_rescode = MSK_putbound(m_task, MSK_ACC_CON, con_idx, 
+		m_rescode = MSK_putbound(m_task, MSK_ACC_CON, con_idx,
 				MSK_BK_UP, -MSK_INFINITY, bi);
 	}
 
@@ -182,7 +206,7 @@ MSKrescodee CMosek::add_constraint_sosvm(
 }
 
 MSKrescodee CMosek::wrapper_putaveclist(
-		MSKtask_t & task, 
+		MSKtask_t & task,
 		SGMatrix< float64_t > A)
 {
 	// Indices to the rows of A to replace, all the rows
@@ -200,7 +224,7 @@ MSKrescodee CMosek::wrapper_putaveclist(
 	SGVector< int32_t > ptrb(A.num_rows);
 	// Next position to write in aval and asub
 	index_t idx = 0;
-	// Switch if the first non-zero element in each row 
+	// Switch if the first non-zero element in each row
 	// has been found
 	bool first_nnz_found = false;
 
@@ -232,7 +256,7 @@ MSKrescodee CMosek::wrapper_putaveclist(
 			ptrb[i] = ( i ? ptrb[i-1] : 0 );
 	}
 
-	// For each row, pointer to the last+1 non-zero element 
+	// For each row, pointer to the last+1 non-zero element
 	// in aval
 	SGVector< int32_t > ptre(A.num_rows);
 	for ( index_t i = 0 ; i < A.num_rows-1 ; ++i )
@@ -241,9 +265,17 @@ MSKrescodee CMosek::wrapper_putaveclist(
 	if ( A.num_rows > 0 )
 		ptre[A.num_rows-1] = nnza;
 
-	MSKrescodee ret = MSK_putaveclist(task, MSK_ACC_CON, A.num_rows, sub.vector,
+	MSKrescodee ret;
+#if (MSK_VERSION_MAJOR == 6)
+	ret = MSK_putaveclist(task, MSK_ACC_CON, A.num_rows, sub.vector,
 			ptrb.vector, ptre.vector,
 			asub.vector, aval.vector);
+#elif (MSK_VERSION_MAJOR == 7)
+	ret = MSK_putarowlist(task, A.num_rows, sub.vector, ptrb.vector, ptre.vector,
+			asub.vector, aval.vector);
+#else
+	#error "Unsupported Mosek version"
+#endif
 
 	REQUIRE(ret == MSK_RES_OK, "MOSEK Error in CMosek::wrapper_putaveclist(). "
 			"Enable DEBUG_MOSEK for details.\n");
@@ -285,7 +317,7 @@ MSKrescodee CMosek::wrapper_putqobj(SGMatrix< float64_t > Q0) const
 	index_t N = Q0.num_rows;
 	index_t M = Q0.num_cols;
 
-	// Count the number of non-zero elements in the lower 
+	// Count the number of non-zero elements in the lower
 	// triangular part of the matrix
 	int32_t nnz = 0;
 	for ( index_t i = 0 ; i < N ; ++i )
@@ -308,7 +340,7 @@ MSKrescodee CMosek::wrapper_putqobj(SGMatrix< float64_t > Q0) const
 			{
 				qosubi[idx] = i;
 				qosubj[idx] = j;
-				 qoval[idx] = Q0[j + i*M]; 
+				 qoval[idx] = Q0[j + i*M];
 
 				++idx;
 			}
@@ -336,8 +368,13 @@ MSKrescodee CMosek::optimize(SGVector< float64_t > sol)
 		// MSK_SOL_ITR: the interior solution
 		// MSK_SOL_BAS: the basic solution
 		// MSK_SOL_ITG: the integer solution
+#if (MSK_VERSION_MAJOR == 6)
 		MSK_getsolutionstatus(m_task, MSK_SOL_ITR, NULL, &solsta);
-
+#elif (MSK_VERSION_MAJOR == 7)
+		MSK_getsolsta(m_task, MSK_SOL_ITR, &solsta);
+#else
+	#error "Unsupported Mosek Version"
+#endif
 		switch (solsta)
 		{
 		case MSK_SOL_STA_OPTIMAL:
@@ -372,7 +409,7 @@ MSKrescodee CMosek::optimize(SGVector< float64_t > sol)
 #ifdef DEBUG_MOSEK
 			SG_PRINT("Other solution status\n")
 #endif
-			break; 	// to avoid compile error when DEBUG_MOSEK
+			break;	// to avoid compile error when DEBUG_MOSEK
 				// is not defined
 		}
 	}

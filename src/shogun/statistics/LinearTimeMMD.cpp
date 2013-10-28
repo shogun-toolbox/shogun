@@ -195,12 +195,17 @@ void CLinearTimeMMD::compute_statistic_and_variance(
 		if (multiple_kernels)
 		{
 			SG_DEBUG("using multiple kernels\n");
-			kernel=((CCombinedKernel*)m_kernel)->get_first_kernel();
 		}
 
 		/* iterate through all kernels for this data */
 		for (index_t i=0; i<num_kernels; ++i)
 		{
+			/* if multiple kernels should be computed, set next kernel */
+			if (multiple_kernels)
+			{
+				kernel=((CCombinedKernel*)m_kernel)->get_kernel(i);
+			}
+
 			/* compute kernel matrix diagonals */
 			kernel->init(p1, p2);
 			SGVector<float64_t> pp=kernel->get_kernel_diagonal();
@@ -231,11 +236,10 @@ void CLinearTimeMMD::compute_statistic_and_variance(
 						"variance=%f, kernel_idx=%d\n", current, delta,
 						statistic[i], variance[i], i);
 			}
-			/* if multiple kernels should be computed, set next kernel */
+
 			if (multiple_kernels)
 			{
 				SG_UNREF(kernel);
-				kernel=((CCombinedKernel*)m_kernel)->get_next_kernel();
 			}
 		}
 
@@ -327,13 +331,13 @@ void CLinearTimeMMD::compute_statistic_and_Q(
 	/* produce two kernel lists to iterate doubly nested */
 	CList* list_i=new CList();
 	CList* list_j=new CList();
-	CKernel* kernel=combined->get_first_kernel();
-	while (kernel)
+
+	for (index_t k_idx=0; k_idx<combined->get_num_kernels(); k_idx++)
 	{
+		CKernel* kernel = combined->get_kernel(k_idx);
 		list_i->append_element(kernel);
 		list_j->append_element(kernel);
 		SG_UNREF(kernel);
-		kernel=((CCombinedKernel*)m_kernel)->get_next_kernel();
 	}
 
 	/* needed for online mean and variance */

@@ -10,6 +10,7 @@
 
 #include <string.h>
 #include <math.h>
+#include <ctype.h>
 
 #include <shogun/features/Alphabet.h>
 #include <shogun/io/SGIO.h>
@@ -95,7 +96,7 @@ CAlphabet::CAlphabet(CAlphabet* a)
 : CSGObject()
 {
 	init();
-	ASSERT(a)
+	REQUIRE(a, "No Alphabet specified!\n");
 	set_alphabet(a->get_alphabet());
 	copy_histogram(a);
 }
@@ -588,7 +589,23 @@ void CAlphabet::print_histogram()
 	for (int32_t i=0; i<(int32_t) (1 <<(sizeof(uint8_t)*8)); i++)
 	{
 		if (histogram[i])
-			SG_PRINT("hist[%d]=%lld\n", i, histogram[i])
+		{
+			if (isprint(i))
+				SG_PRINT("hist['%c']=%lld", i, histogram[i])
+			else if (i == '\t')
+				SG_PRINT("hist['\\t']=%lld", histogram[i])
+			else if (i == '\n')
+				SG_PRINT("hist['\\n']=%lld", histogram[i])
+			else if (i == '\r')
+				SG_PRINT("hist['\\r']=%lld", histogram[i])
+			else
+				SG_PRINT("hist[%d]=%lld", i, histogram[i])
+
+			if (!valid_chars[i])
+				SG_PRINT(" - Character not in Alphabet.\n")
+			else
+				SG_PRINT("\n");
+		}
 	}
 }
 

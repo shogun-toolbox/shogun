@@ -81,13 +81,7 @@ namespace shogun
 			 *
 			 * @return label type (binary, multiclass, ...)
 			 */
-			virtual ELabelType get_label_type() { return LT_LATENT; }
-
-			/** helper method used to specialize a base class instance
-			 *
-			 * @param base_labels its dynamic type must be CLatentLabels
-			 */
-			static CLatentLabels* obtain_from_generic(CLabels* base_labels);
+			virtual ELabelType get_label_type() const { return LT_LATENT; }
 
 			/** Returns the name of the SGSerializable instance.
 			 *
@@ -99,7 +93,7 @@ namespace shogun
 			 *
 			 * @return the number of labels
 			 */
-			virtual int32_t get_num_labels();
+			virtual int32_t get_num_labels() const;
 
 			/** set labels
 			 *

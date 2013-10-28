@@ -17,9 +17,9 @@ public class kernel_auc_modular {
 		RealFeatures feats_train = new RealFeatures(train_real);
 		GaussianKernel subkernel = new GaussianKernel(feats_train, feats_train, width);
 
-		
+
 		BinaryLabels labels = new BinaryLabels(trainlab);
-		
+
 		AUCKernel kernel = new AUCKernel(0, subkernel);
 		kernel.setup_auc_maximization(labels);
 

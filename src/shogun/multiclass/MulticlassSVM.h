@@ -88,32 +88,32 @@ class CMulticlassSVM : public CKernelMulticlassMachine
 
 		// TODO remove if unnecessary here
 		/** get linear term of base SVM
-		 * @return linear term of base SVM 
+		 * @return linear term of base SVM
 		 */
 		SGVector<float64_t> get_linear_term() { return svm_proto()->get_linear_term(); }
 		// TODO remove if unnecessary here
 		/** get tube epsilon of base SVM
-		 * @return tube epsilon of base SVM 
+		 * @return tube epsilon of base SVM
 		 */
 		float64_t get_tube_epsilon() { return svm_proto()->get_tube_epsilon(); }
 		// TODO remove if unnecessary here
 		/** get epsilon of base SVM
-		 * @return epsilon of base SVM 
+		 * @return epsilon of base SVM
 		 */
 		float64_t get_epsilon() { return svm_proto()->get_epsilon(); }
 		// TODO remove if unnecessary here
 		/** get nu of base SVM
-		 * @return nu of base SVM 
+		 * @return nu of base SVM
 		 */
 		float64_t get_nu() { return svm_proto()->get_nu(); }
 		// TODO remove if unnecessary here
 		/** get C of base SVM
-		 * @return C of base SVM 
+		 * @return C of base SVM
 		 */
 		float64_t get_C() { return m_C; }
 		// TODO remove if unnecessary here
 		/** get qpsize of base SVM
-		 * @return qpsize of base SVM 
+		 * @return qpsize of base SVM
 		 */
 		int32_t get_qpsize() { return svm_proto()->get_qpsize(); }
 		// TODO remove if unnecessary here
@@ -123,10 +123,10 @@ class CMulticlassSVM : public CKernelMulticlassMachine
 		bool get_shrinking_enabled() { return svm_proto()->get_shrinking_enabled(); }
 		// TODO remove if unnecessary here
 		/** get objective of base SVM
-		 * @return objective of base SVM 
+		 * @return objective of base SVM
 		 */
 		float64_t get_objective() { return svm_proto()->get_objective(); }
-		
+
 		// TODO remove if unnecessary here
 		/** get bias enabled options of base SVM
 		 * @return whether bias of base SVM is enabled
@@ -143,66 +143,72 @@ class CMulticlassSVM : public CKernelMulticlassMachine
 		 */
 		bool get_batch_computation_enabled() { return svm_proto()->get_batch_computation_enabled(); }
 
-		// TODO remove in unnecessary here
+		// TODO remove if unnecessary here
 		/** set default number of support vectors
 		 * @param num_sv number of support vectors
 		 */
 		void set_defaults(int32_t num_sv=0) { svm_proto()->set_defaults(num_sv); }
-		// TODO remove in unnecessary here
+		// TODO remove if unnecessary here
 		/** set linear term
 		 * @param linear_term linear term vector
 		 */
 		void set_linear_term(SGVector<float64_t> linear_term) { svm_proto()->set_linear_term(linear_term); }
-		// TODO remove in unnecessary here
+		// TODO remove if unnecessary here
 		/** set C parameters
 		 * @param C set regularization parameter
 		 */
 		void set_C(float64_t C) { svm_proto()->set_C(C,C); m_C = C; }
-		// TODO remove in unnecessary here
+		// TODO remove if unnecessary here
 		/** set epsilon value
 		 * @param eps epsilon value
 		 */
 		void set_epsilon(float64_t eps) { svm_proto()->set_epsilon(eps); }
-		// TODO remove in unnecessary here
+		// TODO remove if unnecessary here
 		/** set nu value
 		 * @param nue nu value
 		 */
 		void set_nu(float64_t nue) { svm_proto()->set_nu(nue); }
-		// TODO remove in unnecessary here
+		// TODO remove if unnecessary here
 		/** set tube epsilon value
 		 * @param eps tube epsilon value
 		 */
 		void set_tube_epsilon(float64_t eps) { svm_proto()->set_tube_epsilon(eps); }
-		// TODO remove in unnecessary here
+		// TODO remove if unnecessary here
 		/** set set QP size
 		 * @param qps qp size
 		 */
 		void set_qpsize(int32_t qps) { svm_proto()->set_qpsize(qps); }
-		// TODO remove in unnecessary here
+		// TODO remove if unnecessary here
 		/** set shrinking option
 		 * @param enable whether shrinking should be enabled
 		 */
 		void set_shrinking_enabled(bool enable) { svm_proto()->set_shrinking_enabled(enable); }
-		// TODO remove in unnecessary here
+		// TODO remove if unnecessary here
 		/** set objective value
 		 * @param v objective value
 		 */
 		void set_objective(float64_t v) { svm_proto()->set_objective(v); }
-		// TODO remove in unnecessary here
+		// TODO remove if unnecessary here
 		/** set bias option
 		 * @param enable_bias whether bias should be enabled
 		 */
 		void set_bias_enabled(bool enable_bias) { svm_proto()->set_bias_enabled(enable_bias); }
-		// TODO remove in unnecessary here
+		// TODO remove if unnecessary here
 		/** set linadd option
 		 * @param enable whether linadd should be enabled
 		 */
 		void set_linadd_enabled(bool enable) { svm_proto()->set_linadd_enabled(enable); }
-		// TODO remove in unnecessary here
+		// TODO remove if unnecessary here
 		/** set batch computation option
 		 * @param enable whether batch computation should be enabled
 		 */
 		void set_batch_computation_enabled(bool enable) { svm_proto()->set_batch_computation_enabled(enable); }
+
+		/** @return name of SGSerializable */
+		virtual const char* get_name() const
+		{
+			return "MulticlassSVM";
+		}
 
 	protected:
 

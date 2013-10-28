@@ -16,6 +16,7 @@
 #include <shogun/lib/common.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/labels/LabelTypes.h>
+#include <shogun/labels/LabelsFactory.h>
 #include <shogun/features/SubsetStack.h>
 
 namespace shogun
@@ -52,13 +53,13 @@ class CLabels : public CSGObject
 		 *
 		 * @return number of labels
 		 */
-		virtual int32_t get_num_labels()=0;
+		virtual int32_t get_num_labels() const=0;
 
 		/** get label type
 		 *
 		 * @return label type (binary, multiclass, ...)
 		 */
-		virtual ELabelType get_label_type()=0;
+		virtual ELabelType get_label_type() const=0;
 
 		/** adds a subset of indices on top of the current subsets (possibly
 		 * subset of subset. Calls subset_changed_post() afterwards

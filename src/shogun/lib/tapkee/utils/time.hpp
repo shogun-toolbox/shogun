@@ -14,9 +14,6 @@
 #include <string>
 #include <sstream>
 
-using std::string;
-using std::stringstream;
-
 namespace tapkee
 {
 namespace tapkee_internal
@@ -34,17 +31,22 @@ namespace tapkee_internal
 struct timed_context
 {
 	CLOCK_TYPE start_clock;
-	string operation_name;
+	std::string operation_name;
 	timed_context(const std::string& name) : start_clock(CLOCK_GET), operation_name(name)
 	{
 	}
 	~timed_context()
 	{
-		stringstream msg_stream;
-		msg_stream << operation_name << " took " << double(CLOCK_GET-start_clock)/CLOCK_DIVISOR << " seconds."; 
+		std::stringstream msg_stream;
+		msg_stream << operation_name << " took " << double(CLOCK_GET-start_clock)/CLOCK_DIVISOR << " seconds.";
 		LoggingSingleton::instance().message_benchmark(msg_stream.str());
 	}
 };
 }
 }
+
+#undef CLOCK_TYPE
+#undef CLOCK_GET
+#undef CLOCK_DIVISOR
+
 #endif

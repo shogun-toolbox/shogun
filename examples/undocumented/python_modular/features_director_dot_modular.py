@@ -12,22 +12,22 @@ parameter_list = [[traindat,testdat,label_traindat,0.9,1e-3],[traindat,testdat,l
 def features_director_dot_modular (fm_train_real, fm_test_real,
 		label_train_twoclass, C, epsilon):
 	try:
-		from shogun.Features import DirectorDotFeatures
-		from shogun.Library import RealVector
+		from modshogun import DirectorDotFeatures
+		from modshogun import RealVector
 	except ImportError:
-		print "recompile shogun with --enable-swig-directors"
+		print("recompile shogun with --enable-swig-directors")
 		return
 
 	class NumpyFeatures(DirectorDotFeatures):
 
 		# variables
 		data=numpy.empty((1,1))
-		
+
 		# constructor
 		def __init__(self, d):
 			DirectorDotFeatures.__init__(self)
 			self.data = d
-		
+
 		# overloaded methods
 		def add_to_dense_sgvec(self, alpha, vec_idx1, vec2, abs):
 			if abs:
@@ -61,9 +61,9 @@ def features_director_dot_modular (fm_train_real, fm_test_real,
 	#		return NumpyFeatures(self.data-other.data)
 
 
-	#from shogun.Features import RealFeatures, SparseRealFeatures, BinaryLabels
-	#from shogun.Classifier import LibLinear, L2R_L2LOSS_SVC_DUAL
-	#from shogun.Mathematics import Math_init_random
+	#from modshogun import RealFeatures, SparseRealFeatures, BinaryLabels
+	#from modshogun import LibLinear, L2R_L2LOSS_SVC_DUAL
+	#from modshogun import Math_init_random
 	#Math_init_random(17)
 
 	#feats_train=RealFeatures(fm_train_real)

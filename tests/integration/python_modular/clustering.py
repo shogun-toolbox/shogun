@@ -2,16 +2,16 @@
 Test Clustering
 """
 
-from shogun.Distance import EuclideanDistance
-from shogun.Clustering import *
+from modshogun import EuclideanDistance
+from modshogun import *
 
 import util
 
 
 def _evaluate (indata):
-	if indata.has_key('clustering_k'):
+	if 'clustering_k' in indata:
 		first_arg=indata['clustering_k']
-	elif indata.has_key('clustering_merges'):
+	elif 'clustering_merges' in indata:
 		first_arg=indata['clustering_merges']
 	else:
 		return False
@@ -24,13 +24,13 @@ def _evaluate (indata):
 	clustering=cfun(first_arg, distance)
 	clustering.train()
 
-	if indata.has_key('clustering_radi'):
+	if 'clustering_radi' in indata:
 		radi=max(abs(clustering.get_radiuses()-indata['clustering_radi']))
 		centers=max(abs(clustering.get_cluster_centers().flatten() - \
 			indata['clustering_centers'].flat))
 		return util.check_accuracy(indata['clustering_accuracy'],
 			radi=radi, centers=centers)
-	elif indata.has_key('clustering_merge_distance'):
+	elif 'clustering_merge_distance' in indata:
 		merge_distance=max(abs(clustering.get_merge_distances()- \
 			indata['clustering_merge_distance']))
 		pairs=max(abs(clustering.get_cluster_pairs()- \

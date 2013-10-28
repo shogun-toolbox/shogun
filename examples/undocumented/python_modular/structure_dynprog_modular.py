@@ -1,10 +1,10 @@
 #!/usr/bin/env python
-#!/usr/bin/env python 
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 parameter_list=[['../data/DynProg_example_py.pickle.gz']]
 
-from shogun.Structure import *
+from modshogun import *
 
 import numpy
 from numpy import array,Inf,float64,matrix,frompyfunc,zeros
@@ -26,7 +26,7 @@ except ImportError:
 def get_ver(ver_str):
 	scipy_ver=[int(i) for i in scipy.__version__.split('.')]
 	v=0
-	for i in xrange(len(scipy_ver)):
+	for i in range(len(scipy_ver)):
 		v+=10**(len(scipy_ver)-i)*scipy_ver[i]
 	return v
 

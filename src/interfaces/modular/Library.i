@@ -5,6 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 2009 Soeren Sonnenburg
+ * Written (W) 2013 Heiko Strathmann
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  * Copyright (c) 2012 Evgeniy Andreev (gsomix)
  */
@@ -21,12 +22,19 @@
 %rename(Hash) CHash;
 %rename(StructuredData) CStructuredData;
 %rename(DynamicObjectArray) CDynamicObjectArray;
+%rename(Tokenizer) CTokenizer;
+%rename(DelimiterTokenizer) CDelimiterTokenizer;
+%rename(NGramTokenizer) CNGramTokenizer;
 
 %rename(IndexBlock) CIndexBlock;
 %rename(IndexBlockRelation) CIndexBlockRelation;
 %rename(IndexBlockGroup) CIndexBlockGroup;
 %rename(IndexBlockTree) CIndexBlockTree;
 %rename(Data) CData;
+
+%rename(IndependentComputationEngine) CIndependentComputationEngine;
+%rename(SerialComputationEngine) CSerialComputationEngine;
+
 
 %ignore RADIX_STACK_SIZE;
 %ignore NUMTRAPPEDSIGS;
@@ -95,6 +103,10 @@ namespace shogun
     %template(LongRealSparseVector) SGSparseVector<floatmax_t>;
     SERIALIZABLE_DUMMY(SGSparseVector<floatmax_t>);
 #endif
+#ifdef USE_COMPLEX128
+    %template(ComplexSparseVector) SGSparseVector<complex128_t>;
+    SERIALIZABLE_DUMMY(SGSparseVector<complex128_t>);
+#endif
 #ifdef USE_BOOL
     %template(BoolSparseMatrix) SGSparseMatrix<bool>;
     SERIALIZABLE_DUMMY(SGSparseMatrix<bool>);
@@ -142,6 +154,10 @@ namespace shogun
 #ifdef USE_FLOATMAX
     %template(LongRealSparseMatrix) SGSparseMatrix<floatmax_t>;
     SERIALIZABLE_DUMMY(SGSparseMatrix<floatmax_t>);
+#endif
+#ifdef USE_COMPLEX128
+    %template(ComplexSparseMatrix) SGSparseMatrix<complex128_t>;
+    SERIALIZABLE_DUMMY(SGSparseMatrix<complex128_t>);
 #endif
 
 #ifdef USE_BOOL
@@ -248,54 +264,68 @@ namespace shogun
 #endif
 
 #ifdef USE_BOOL
+    PROTOCOLS_SGVECTOR(BoolVector, bool, "?\0", NPY_BOOL)
     %template(BoolVector) SGVector<bool>;
     SERIALIZABLE_DUMMY(SGVector<bool>);
 #endif
 #ifdef USE_CHAR
+    PROTOCOLS_SGVECTOR(CharVector, char, "c\0", NPY_STRING)
     %template(CharVector) SGVector<char>;
     SERIALIZABLE_DUMMY(SGVector<char>);
 #endif
 #ifdef USE_UINT8
+    PROTOCOLS_SGVECTOR(ByteVector, uint8_t, "B\0", NPY_UINT8)
     %template(ByteVector) SGVector<uint8_t>;
     SERIALIZABLE_DUMMY(SGVector<uint8_t>);
 #endif
 #ifdef USE_UINT16
+    PROTOCOLS_SGVECTOR(WordVector, uint16_t, "H\0", NPY_UINT16)
     %template(WordVector) SGVector<uint16_t>;
     SERIALIZABLE_DUMMY(SGVector<uint16_t>);
 #endif
 #ifdef USE_INT16
+    PROTOCOLS_SGVECTOR(ShortVector, int16_t, "h\0", NPY_INT16)
     %template(ShortVector) SGVector<int16_t>;
     SERIALIZABLE_DUMMY(SGVector<int16_t>);
 #endif
 #ifdef USE_INT32
+    PROTOCOLS_SGVECTOR(IntVector, int32_t, "i\0", NPY_INT32)
     %template(IntVector)  SGVector<int32_t>;
     SERIALIZABLE_DUMMY(SGVector<int32_t>);
 #endif
 #ifdef USE_UINT32
+    PROTOCOLS_SGVECTOR(UIntVector, uint32_t, "I\0", NPY_UINT32)
     %template(UIntVector)  SGVector<uint32_t>;
     SERIALIZABLE_DUMMY(SGVector<uint32_t>);
 #endif
 #ifdef USE_INT64
+    PROTOCOLS_SGVECTOR(LongIntVector, int64_t, "l\0", NPY_INT64)
     %template(LongIntVector)  SGVector<int64_t>;
     SERIALIZABLE_DUMMY(SGVector<int64_t>);
 #endif
 #ifdef USE_UINT64
+    PROTOCOLS_SGVECTOR(ULongIntVector, int64_t, "L\0", NPY_UINT64)
     %template(ULongIntVector)  SGVector<uint64_t>;
     SERIALIZABLE_DUMMY(SGVector<uint64_t>);
 #endif
 #ifdef USE_FLOAT32
-	PROTOCOLS_SGVECTOR(ShortRealVector, float32_t, "f\0", NPY_FLOAT32)
+    PROTOCOLS_SGVECTOR(ShortRealVector, float32_t, "f\0", NPY_FLOAT32)
     %template(ShortRealVector) SGVector<float32_t>;
     SERIALIZABLE_DUMMY(SGVector<float32_t>);
 #endif
 #ifdef USE_FLOAT64
-	PROTOCOLS_SGVECTOR(RealVector, float64_t, "d\0", NPY_FLOAT64)
+    PROTOCOLS_SGVECTOR(RealVector, float64_t, "d\0", NPY_FLOAT64)
     %template(RealVector) SGVector<float64_t>;
     SERIALIZABLE_DUMMY(SGVector<float64_t>);
 #endif
 #ifdef USE_FLOATMAX
     %template(LongRealVector) SGVector<floatmax_t>;
     SERIALIZABLE_DUMMY(SGVector<floatmax_t>);
+#endif
+#ifdef USE_COMPLEX128
+    PROTOCOLS_SGVECTOR(ComplexVector, complex128_t, "d\0", NPY_CDOUBLE)
+    %template(ComplexVector) SGVector<complex128_t>;
+    SERIALIZABLE_DUMMY(SGVector<complex128_t>);
 #endif
 
 #ifdef USE_BOOL
@@ -345,6 +375,10 @@ namespace shogun
 #ifdef USE_FLOATMAX
     %template(LongRealMatrix) SGMatrix<floatmax_t>;
     SERIALIZABLE_DUMMY(SGMatrix<floatmax_t>);
+#endif
+#ifdef USE_COMPLEX128
+    %template(ComplexMatrix) SGMatrix<complex128_t>;
+    SERIALIZABLE_DUMMY(SGMatrix<complex128_t>);
 #endif
 
 #ifdef USE_BOOL
@@ -458,6 +492,9 @@ namespace shogun
 /* Hash */
 %include <shogun/lib/Hash.h>
 
+%include <shogun/lib/Tokenizer.h>
+%include <shogun/lib/DelimiterTokenizer.h>
+%include <shogun/lib/NGramTokenizer.h>
 %include <shogun/lib/Cache.h>
 %include <shogun/lib/List.h>
 %include <shogun/lib/Signal.h>
@@ -472,3 +509,95 @@ namespace shogun
 %include <shogun/lib/IndexBlockGroup.h>
 %include <shogun/lib/IndexBlockTree.h>
 %include <shogun/lib/Data.h>
+
+/* Computation framework */
+
+/* Computation Engine */
+%rename (IndependentComputationEngine) CIndependentComputationEngine;
+%rename (SerialComputationEngine) CSerialComputationEngine;
+
+%include <shogun/lib/computation/engine/IndependentComputationEngine.h>
+%include <shogun/lib/computation/engine/SerialComputationEngine.h>
+
+/* Independent compution-job */
+%rename (IndependentJob) CIndepenentJob;
+%include <shogun/lib/computation/job/IndependentJob.h>
+
+/* Independent computation-job results */
+%rename (JobResult) CJobResult;
+%include <shogun/lib/computation/jobresult/JobResult.h>
+%include <shogun/lib/computation/jobresult/ScalarResult.h>
+namespace shogun
+{
+#ifdef USE_CHAR
+  %template(ScalarCharResult) CScalarResult<char>;
+#endif
+#ifdef USE_BOOL
+  %template(ScalarBoolResult) CScalarResult<bool>;
+#endif
+#ifdef USE_UINT8
+  %template(ScalarByteResult) CScalarResult<uint8_t>;
+#endif
+#ifdef USE_INT16
+  %template(ScalarShortResult) CScalarResult<int16_t>;
+#endif
+#ifdef USE_UINT16
+  %template(ScalarWordResult) CScalarResult<uint16_t>;
+#endif
+#ifdef USE_INT32
+  %template(ScalarIntResult) CScalarResult<int32_t>;
+#endif
+#ifdef USE_UINT32
+  %template(ScalarUIntResult) CScalarResult<uint32_t>;
+#endif
+#ifdef USE_INT64
+  %template(ScalarLongResult) CScalarResult<int64_t>;
+#endif
+#ifdef USE_UINT64
+  %template(ScalarULongResult) CScalarResult<uint64_t>;
+#endif
+#ifdef USE_FLOAT32
+  %template(ScalarShortRealResult) CScalarResult<float32_t>;
+#endif
+#ifdef USE_FLOAT64
+  %template(ScalarRealResult) CScalarResult<float64_t>;
+#endif
+}
+
+%include <shogun/lib/computation/jobresult/VectorResult.h>
+namespace shogun
+{
+#ifdef USE_CHAR
+  %template(VectorCharResult) CVectorResult<char>;
+#endif
+#ifdef USE_BOOL
+  %template(VectorBoolResult) CVectorResult<bool>;
+#endif
+#ifdef USE_UINT8
+  %template(VectorByteResult) CVectorResult<uint8_t>;
+#endif
+#ifdef USE_INT16
+  %template(VectorShortResult) CVectorResult<int16_t>;
+#endif
+#ifdef USE_UINT16
+  %template(VectorWordResult) CVectorResult<uint16_t>;
+#endif
+#ifdef USE_INT32
+  %template(VectorIntResult) CVectorResult<int32_t>;
+#endif
+#ifdef USE_UINT32
+  %template(VectorUIntResult) CVectorResult<uint32_t>;
+#endif
+#ifdef USE_INT64
+  %template(VectorLongResult) CVectorResult<int64_t>;
+#endif
+#ifdef USE_UINT64
+  %template(VectorULongResult) CVectorResult<uint64_t>;
+#endif
+#ifdef USE_FLOAT32
+  %template(VectorShortRealResult) CVectorResult<float32_t>;
+#endif
+#ifdef USE_FLOAT64
+  %template(VectorRealResult) CVectorResult<float64_t>;
+#endif
+}

@@ -11,6 +11,7 @@
 #include <shogun/structure/TwoStateModel.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/features/MatrixFeatures.h>
+#include <shogun/structure/Plif.h>
 
 using namespace shogun;
 
@@ -143,6 +144,28 @@ void CTwoStateModel::reshape_emission_params(SGVector< float64_t >& emission_wei
 	}
 }
 
+void CTwoStateModel::reshape_emission_params(CDynamicObjectArray* plif_matrix,
+		SGVector< float64_t > w, int32_t num_feats, int32_t num_plif_nodes)
+{
+	CPlif* plif;
+	index_t p_idx, w_idx = m_num_transmission_params;
+	for ( int32_t s = 2 ; s < m_num_states ; ++s )
+	{
+		for ( int32_t f = 0 ; f < num_feats ; ++f )
+		{
+			SGVector< float64_t > penalties(num_plif_nodes);
+			p_idx = 0;
+
+			for ( int32_t i = 0 ; i < num_plif_nodes ; ++i )
+				penalties[p_idx++] = w[w_idx++];
+
+			plif = (CPlif*) plif_matrix->get_element(m_num_states*f + s);
+			plif->set_plif_penalty(penalties);
+			SG_UNREF(plif);
+		}
+	}
+}
+
 void CTwoStateModel::reshape_transmission_params(
 		SGMatrix< float64_t >& transmission_weights, SGVector< float64_t > w)
 {
@@ -198,6 +221,16 @@ void CTwoStateModel::weights_to_vector(SGVector< float64_t >& psi,
 
 }
 
+SGVector< float64_t > CTwoStateModel::weights_to_vector(SGMatrix< float64_t > transmission_weights,
+		SGVector< float64_t > emission_weights, int32_t num_feats, int32_t num_obs) const
+{
+	int32_t num_free_states = 2;
+	SGVector< float64_t > vec(num_free_states*(num_free_states + num_feats*num_obs));
+	vec.zero();
+	weights_to_vector(vec, transmission_weights, emission_weights, num_feats, num_obs);
+	return vec;
+}
+
 SGVector< int32_t > CTwoStateModel::get_monotonicity(int32_t num_free_states,
 		int32_t num_feats) const
 {
@@ -213,18 +246,11 @@ SGVector< int32_t > CTwoStateModel::get_monotonicity(int32_t num_free_states,
 	return monotonicity;
 }
 
-CHMSVMModel* CTwoStateModel::simulate_two_state_data()
+CHMSVMModel* CTwoStateModel::simulate_data(int32_t num_exm, int32_t exm_len,
+	int32_t num_features, int32_t num_noise_features)
 {
-	// Number of examples
-	int32_t num_exm = 1000;
-	// Length of each example sequence
-	int32_t exm_len = 250;
 	// Number of different states
 	int32_t num_states = 2;
-	// Total number of features
-	int32_t num_features = 10;
-	// Number of features to be pure noise
-	int32_t num_noise_features = 2;
 	// Min and max length of positive block
 	int32_t block_len[] = {10, 100};
 	// Min and max number of positive blocks per example
@@ -239,7 +265,7 @@ CHMSVMModel* CTwoStateModel::simulate_two_state_data()
 	// num_blocks[1] blocks of positive labels each of length between
 	// block_len[0] and block_len[1]
 
-	CHMSVMLabels* labels = new CHMSVMLabels(num_exm, num_states);
+	CSequenceLabels* labels = new CSequenceLabels(num_exm, num_states);
 	SGVector< int32_t > ll(num_exm*exm_len);
 	ll.zero();
 	int32_t rnb, rl, rp;
@@ -264,7 +290,7 @@ CHMSVMModel* CTwoStateModel::simulate_two_state_data()
 			}
 		}
 
-		labels->add_label(lab);
+		labels->add_vector_label(lab);
 	}
 
 	// Generate features by
@@ -310,5 +336,7 @@ CHMSVMModel* CTwoStateModel::simulate_two_state_data()
 	CMatrixFeatures< float64_t >* features =
 		new CMatrixFeatures< float64_t >(signal, exm_len, num_exm);
 
-	return new CHMSVMModel(features, labels, SMT_TWO_STATE, 3);
+	int32_t num_obs = 0; // continuous observations, dummy value
+	bool use_plifs = true;
+	return new CHMSVMModel(features, labels, SMT_TWO_STATE, num_obs, use_plifs);
 }

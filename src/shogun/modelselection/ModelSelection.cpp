@@ -5,7 +5,6 @@
  * (at your option) any later version.
  *
  * Written (W) 2011-2012 Heiko Strathmann
- *
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
@@ -16,8 +15,13 @@
 
 using namespace shogun;
 
-CModelSelection::CModelSelection(CModelSelectionParameters* model_parameters,
-		CMachineEvaluation* machine_eval)
+CModelSelection::CModelSelection()
+{
+	init();
+}
+
+CModelSelection::CModelSelection(CMachineEvaluation* machine_eval,
+	CModelSelectionParameters* model_parameters)
 {
 	init();
 
@@ -45,4 +49,3 @@ CModelSelection::~CModelSelection()
 	SG_UNREF(m_model_parameters);
 	SG_UNREF(m_machine_eval);
 }
-

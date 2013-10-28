@@ -5,7 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 2008-2009 Soeren Sonnenburg
- * Written (W) 2011-2012 Heiko Strathmann
+ * Written (W) 2011-2013 Heiko Strathmann
  * Copyright (C) 2008-2009 Fraunhofer Institute FIRST and Max Planck Society
  */
 
@@ -19,8 +19,9 @@
 #include <shogun/base/ParameterMap.h>
 #include <shogun/base/DynArray.h>
 #include <shogun/lib/Map.h>
+#include <shogun/lib/Lock.h>
 
-
+#include "class_list.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -102,6 +103,16 @@ namespace shogun
 		m_generic = PT_FLOATMAX;
 	}
 
+	template<> void CSGObject::set_generic<CSGObject*>()
+	{
+		m_generic = PT_SGOBJECT;
+	}
+
+	template<> void CSGObject::set_generic<complex128_t>()
+	{
+		m_generic = PT_COMPLEX128;
+	}
+
 } /* namespace shogun  */
 
 using namespace shogun;
@@ -110,6 +121,7 @@ CSGObject::CSGObject()
 {
 	init();
 	set_global_objects();
+	m_refcount = new RefCount(0);
 
 	SG_GCDEBUG("SGObject created (%p)\n", this)
 }
@@ -119,71 +131,50 @@ CSGObject::CSGObject(const CSGObject& orig)
 {
 	init();
 	set_global_objects();
+	m_refcount = orig.m_refcount;
+	SG_REF(this);
 }
 
 CSGObject::~CSGObject()
 {
 	SG_GCDEBUG("SGObject destroyed (%p)\n", this)
 
-#ifdef HAVE_PTHREAD
-	PTHREAD_LOCK_DESTROY(&m_ref_lock);
-#endif
 	unset_global_objects();
 	delete m_parameters;
 	delete m_model_selection_parameters;
+	delete m_gradient_parameters;
 	delete m_parameter_map;
+	delete m_refcount;
 }
 
 #ifdef USE_REFERENCE_COUNTING
-
 int32_t CSGObject::ref()
 {
-#ifdef HAVE_PTHREAD
-		PTHREAD_LOCK(&m_ref_lock);
-#endif //HAVE_PTHREAD
-		++m_refcount;
-		int32_t count=m_refcount;
-#ifdef HAVE_PTHREAD
-		PTHREAD_UNLOCK(&m_ref_lock);
-#endif //HAVE_PTHREAD
-		SG_GCDEBUG("ref() refcount %ld obj %s (%p) increased\n", count, this->get_name(), this)
-		return m_refcount;
+	int32_t count = m_refcount->ref();
+	SG_GCDEBUG("ref() refcount %ld obj %s (%p) increased\n", count, this->get_name(), this)
+	return m_refcount->ref_count();
 }
 
 int32_t CSGObject::ref_count()
 {
-#ifdef HAVE_PTHREAD
-	PTHREAD_LOCK(&m_ref_lock);
-#endif //HAVE_PTHREAD
-	int32_t count=m_refcount;
-#ifdef HAVE_PTHREAD
-	PTHREAD_UNLOCK(&m_ref_lock);
-#endif //HAVE_PTHREAD
+	int32_t count = m_refcount->ref_count();
 	SG_GCDEBUG("ref_count(): refcount %d, obj %s (%p)\n", count, this->get_name(), this)
-	return count;
+	return m_refcount->ref_count();
 }
 
 int32_t CSGObject::unref()
 {
-#ifdef HAVE_PTHREAD
-	PTHREAD_LOCK(&m_ref_lock);
-#endif //HAVE_PTHREAD
-	if (m_refcount==0 || --m_refcount==0)
+	int32_t count = m_refcount->unref();
+	if (count<=0)
 	{
-		SG_GCDEBUG("unref() refcount %ld, obj %s (%p) destroying\n", m_refcount, this->get_name(), this)
-#ifdef HAVE_PTHREAD
-		PTHREAD_UNLOCK(&m_ref_lock);
-#endif //HAVE_PTHREAD
+		SG_GCDEBUG("unref() refcount %ld, obj %s (%p) destroying\n", count, this->get_name(), this)
 		delete this;
 		return 0;
 	}
 	else
 	{
-		SG_GCDEBUG("unref() refcount %ld obj %s (%p) decreased\n", m_refcount, this->get_name(), this)
-#ifdef HAVE_PTHREAD
-		PTHREAD_UNLOCK(&m_ref_lock);
-#endif //HAVE_PTHREAD
-		return m_refcount;
+		SG_GCDEBUG("unref() refcount %ld obj %s (%p) decreased\n", count, this->get_name(), this)
+		return m_refcount->ref_count();
 	}
 }
 #endif //USE_REFERENCE_COUNTING
@@ -215,9 +206,9 @@ void CSGObject::unset_global_objects()
 
 void CSGObject::set_global_io(SGIO* new_io)
 {
+	SG_REF(new_io);
 	SG_UNREF(sg_io);
 	sg_io=new_io;
-	SG_REF(sg_io);
 }
 
 SGIO* CSGObject::get_global_io()
@@ -228,9 +219,9 @@ SGIO* CSGObject::get_global_io()
 
 void CSGObject::set_global_parallel(Parallel* new_parallel)
 {
+	SG_REF(new_parallel);
 	SG_UNREF(sg_parallel);
 	sg_parallel=new_parallel;
-	SG_REF(sg_parallel);
 }
 
 bool CSGObject::update_parameter_hash()
@@ -263,9 +254,9 @@ Parallel* CSGObject::get_global_parallel()
 
 void CSGObject::set_global_version(Version* new_version)
 {
+	SG_REF(new_version);
 	SG_UNREF(sg_version);
 	sg_version=new_version;
-	SG_REF(sg_version);
 }
 
 Version* CSGObject::get_global_version()
@@ -389,7 +380,7 @@ bool CSGObject::load_serializable(CSerializableFile* file,
 
 	if (file_version>param_version)
 	{
-		if (param_version==VERSION_PARAMETER)
+		if (param_version==Version::get_version_parameter())
 		{
 			SG_WARNING("%s%s::load_serializable(): parameter version of file "
 					"larger than the one of shogun. Try with a more recent"
@@ -1057,10 +1048,6 @@ extern CMap<void*, shogun::MemoryBlock>* sg_mallocs;
 
 void CSGObject::init()
 {
-#ifdef HAVE_PTHREAD
-	PTHREAD_LOCK_INIT(&m_ref_lock);
-#endif
-
 #ifdef TRACE_MEMORY_ALLOCS
 	if (sg_mallocs)
 	{
@@ -1073,12 +1060,12 @@ void CSGObject::init()
 	}
 #endif
 
-	m_refcount = 0;
 	io = NULL;
 	parallel = NULL;
 	version = NULL;
 	m_parameters = new Parameter();
 	m_model_selection_parameters = new Parameter();
+	m_gradient_parameters=new Parameter();
 	m_parameter_map=new ParameterMap();
 	m_generic = PT_NOT_GENERIC;
 	m_load_pre_called = false;
@@ -1186,6 +1173,7 @@ void CSGObject::get_parameter_incremental_hash(Parameter* param,
 	for (index_t i=0; i<param->get_num_parameters(); i++)
 	{
 		TParameter* p = param->get_parameter(i);
+		SG_DEBUG("Updating hash for parameter \"%s\"\n", p->m_name ? p->m_name : "(nil)");
 
 		if (!p || !p->is_valid())
 			continue;
@@ -1205,27 +1193,150 @@ void CSGObject::get_parameter_incremental_hash(Parameter* param,
 	}
 }
 
-void CSGObject::build_parameter_dictionary(CMap<TParameter*, CSGObject*>& dict)
+void CSGObject::build_gradient_parameter_dictionary(CMap<TParameter*, CSGObject*>* dict)
 {
-	if (m_parameters)
+	for (index_t i=0; i<m_gradient_parameters->get_num_parameters(); i++)
 	{
-		for (index_t i=0; i<m_parameters->get_num_parameters(); i++)
+		TParameter* p=m_gradient_parameters->get_parameter(i);
+		dict->add(p, this);
+	}
+
+	for (index_t i=0; i<m_model_selection_parameters->get_num_parameters(); i++)
+	{
+		TParameter* p=m_model_selection_parameters->get_parameter(i);
+		CSGObject* child=*(CSGObject**)(p->m_parameter);
+
+		if ((p->m_datatype.m_ptype == PT_SGOBJECT) &&
+				(p->m_datatype.m_ctype == CT_SCALAR) &&	child)
 		{
-			TParameter* p = m_parameters->get_parameter(i);
-
-			dict.add(p, this);
-
-			if ((p->m_datatype.m_ptype == PT_SGOBJECT) &&
-					(p->m_datatype.m_ctype == CT_SCALAR) &&
-					(*(CSGObject**)(p->m_parameter) != NULL))
-			{
-				CSGObject* child =
-						*((CSGObject**)(p->m_parameter));
-				if (child)
-					child->build_parameter_dictionary(dict);
-			}
-
+			child->build_gradient_parameter_dictionary(dict);
 		}
 	}
 }
 
+bool CSGObject::equals(CSGObject* other, float64_t accuracy)
+{
+	SG_DEBUG("entering %s::equals()\n", get_name());
+
+	if (other==this)
+	{
+		SG_DEBUG("leaving %s::equals(): other object is me\n", get_name());
+		return true;
+	}
+
+	if (!other)
+	{
+		SG_DEBUG("leaving %s::equals(): other object is NULL\n", get_name());
+		return false;
+	}
+
+	SG_DEBUG("comparing \"%s\" to \"%s\"\n", get_name(), other->get_name());
+
+	/* a crude type check based on the get_name */
+	if (strcmp(other->get_name(), get_name()))
+	{
+		SG_DEBUG("leaving %s::equals(): name of other object differs\n", get_name());
+		return false;
+	}
+
+	/* should not be necessary but just ot be sure that type has not changed.
+	 * Will assume that parameters are in same order with same name from here */
+	if (m_parameters->get_num_parameters()!=other->m_parameters->get_num_parameters())
+	{
+		SG_DEBUG("leaving %s::equals(): number of parameters of other object "
+				"differs\n", get_name());
+		return false;
+	}
+
+	for (index_t i=0; i<m_parameters->get_num_parameters(); ++i)
+	{
+		SG_DEBUG("comparing parameter %d\n", i);
+
+		TParameter* this_param=m_parameters->get_parameter(i);
+		TParameter* other_param=other->m_parameters->get_parameter(i);
+
+		/* some checks to make sure parameters have same order and names and
+		 * are not NULL. Should never be the case but check anyway. */
+		if (!this_param && !other_param)
+			continue;
+
+		if (!this_param && other_param)
+		{
+			SG_DEBUG("leaving %s::equals(): parameter %d is NULL where other's "
+					"parameter \"%s\" is not\n", get_name(), other_param->m_name);
+			return false;
+		}
+
+		if (this_param && !other_param)
+		{
+			SG_DEBUG("leaving %s::equals(): parameter %d is \"%s\" where other's "
+						"parameter is NULL\n", get_name(), this_param->m_name);
+			return false;
+		}
+
+		SG_DEBUG("comparing parameter \"%s\" to other's \"%s\"\n",
+				this_param->m_name, other_param->m_name);
+
+		/* hard-wired exception for DynamicObjectArray parameter num_elements */
+		if (!strcmp("DynamicObjectArray", get_name()) &&
+				!strcmp(this_param->m_name, "num_elements") &&
+				!strcmp(other_param->m_name, "num_elements"))
+		{
+			SG_DEBUG("Ignoring DynamicObjectArray::num_elements field\n");
+			continue;
+		}
+
+		/* hard-wired exception for DynamicArray parameter num_elements */
+		if (!strcmp("DynamicArray", get_name()) &&
+				!strcmp(this_param->m_name, "num_elements") &&
+				!strcmp(other_param->m_name, "num_elements"))
+		{
+			SG_DEBUG("Ignoring DynamicArray::num_elements field\n");
+			continue;
+		}
+
+		/* use equals method of TParameter from here */
+		if (!this_param->equals(other_param, accuracy))
+		{
+			SG_DEBUG("leaving %s::equals(): parameters at position %d with name"
+					" \"%s\" differs from other object parameter with name "
+					"\"%s\"\n",
+					get_name(), i, this_param->m_name, other_param->m_name);
+			return false;
+		}
+	}
+
+	SG_DEBUG("leaving %s::equals(): object are equal\n", get_name());
+	return true;
+}
+
+CSGObject* CSGObject::clone()
+{
+	SG_DEBUG("entering %s::clone()\n", get_name());
+
+	SG_DEBUG("constructing an empty instance of %s\n", get_name());
+	CSGObject* copy=new_sgserializable(get_name(), this->m_generic);
+
+	SG_REF(copy);
+
+	REQUIRE(copy, "Could not create empty instance of \"%s\". The reason for "
+			"this usually is that get_name() of the class returns something "
+			"wrong, or that a class has a wrongly set generic type.\n",
+			get_name());
+
+	for (index_t i=0; i<m_parameters->get_num_parameters(); ++i)
+	{
+		SG_DEBUG("cloning parameter \"%s\" at index %d\n",
+				m_parameters->get_parameter(i)->m_name, i);
+
+		if (!m_parameters->get_parameter(i)->copy(copy->m_parameters->get_parameter(i)))
+		{
+			SG_DEBUG("leaving %s::clone(): Clone failed. Returning NULL\n",
+					get_name());
+			return NULL;
+		}
+	}
+
+	SG_DEBUG("leaving %s::clone(): Clone successful\n", get_name());
+	return copy;
+}

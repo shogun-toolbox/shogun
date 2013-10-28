@@ -3,11 +3,11 @@
  * Copyright (c) 2012-2013 Sergey Lisitsyn
  */
 
-#ifndef TAPKEE_DIFFUSION_MAPS_H_
-#define TAPKEE_DIFFUSION_MAPS_H_
+#ifndef TAPKEE_DiffusionMapS_H_
+#define TAPKEE_DiffusionMapS_H_
 
 /* Tapkee includes */
-#include <shogun/lib/tapkee/tapkee_defines.hpp>
+#include <shogun/lib/tapkee/defines.hpp>
 #include <shogun/lib/tapkee/utils/time.hpp>
 /* End of Tapke includes */
 
@@ -33,7 +33,7 @@ namespace tapkee_internal
 //! @param width width \f$ w \f$ of the gaussian kernel
 //!
 template <class RandomAccessIterator, class DistanceCallback>
-DenseSymmetricMatrix compute_diffusion_matrix(RandomAccessIterator begin, RandomAccessIterator end, DistanceCallback callback, 
+DenseSymmetricMatrix compute_diffusion_matrix(RandomAccessIterator begin, RandomAccessIterator end, DistanceCallback callback,
                                               const IndexType timesteps, const ScalarType width)
 {
 	timed_context context("Diffusion map matrix computation");
@@ -53,7 +53,7 @@ DenseSymmetricMatrix compute_diffusion_matrix(RandomAccessIterator begin, Random
 		{
 			for (j_index_iter=i_index_iter; j_index_iter<n_vectors; ++j_index_iter)
 			{
-				ScalarType k = callback(begin[i_index_iter],begin[j_index_iter]);
+				ScalarType k = callback.distance(begin[i_index_iter],begin[j_index_iter]);
 				ScalarType gk = exp(-(k*k)/width);
 				diffusion_matrix(i_index_iter,j_index_iter) = gk;
 				diffusion_matrix(j_index_iter,i_index_iter) = gk;
@@ -70,7 +70,7 @@ DenseSymmetricMatrix compute_diffusion_matrix(RandomAccessIterator begin, Random
 
 	// compute sqrt of column sum vector
 	p = diffusion_matrix.colwise().sum().cwiseSqrt();
-	
+
 	for (IndexType i=0; i<n_vectors; i++)
 		for (IndexType j=i; j<n_vectors; j++)
 			diffusion_matrix(i,j) /= p(i)*p(j);

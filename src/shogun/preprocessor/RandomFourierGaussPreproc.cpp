@@ -210,7 +210,7 @@ bool CRandomFourierGaussPreproc::init_randomcoefficients() {
 	}
 
 
-	SG_INFO("initializing randomcoefficients \n") 
+	SG_INFO("initializing randomcoefficients \n")
 
 	float64_t pi = 3.14159265;
 
@@ -248,7 +248,7 @@ bool CRandomFourierGaussPreproc::init_randomcoefficients() {
 		}
 	}
 
-	SG_INFO("finished: initializing randomcoefficients \n") 
+	SG_INFO("finished: initializing randomcoefficients \n")
 
 	return true;
 }
@@ -351,7 +351,7 @@ SGVector<float64_t> CRandomFourierGaussPreproc::apply_to_feature_vector(SGVector
 {
 	if (!test_rfinited()) {
 		throw ShogunException(
-				"float64_t * CRandomFourierGaussPreproc::apply_to_feature_vector(...): test_rfinited()==false: you need to call before CRandomFourierGaussPreproc::init (CFeatures *f) OR 	1. set_dim_feature_space(const int32 dim), 2. set_dim_input_space(const int32 dim), 3. init_randomcoefficients() or set_randomcoefficients(...) \n");
+				"float64_t * CRandomFourierGaussPreproc::apply_to_feature_vector(...): test_rfinited()==false: you need to call before CRandomFourierGaussPreproc::init (CFeatures *f) OR	1. set_dim_feature_space(const int32 dim), 2. set_dim_input_space(const int32 dim), 3. init_randomcoefficients() or set_randomcoefficients(...) \n");
 	}
 
 	float64_t val = CMath::sqrt(2.0 / cur_dim_feature_space);

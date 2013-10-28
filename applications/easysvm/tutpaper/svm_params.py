@@ -40,7 +40,7 @@ def create_kernel(kname, features, kparam=None) :
 
     if kname == 'gauss' :
         kernel = GaussianKernel(features, features, kparam)
-    elif kname == 'linear': 
+    elif kname == 'linear':
         kernel = LinearKernel(features, features)
     elif kname == 'poly' :
         kernel = PolyKernel(features, features, kparam, True, False)
@@ -88,7 +88,7 @@ def decision_boundary_plot(svm, features, vectors, labels, kernel, fileName = No
         fontsize = args['fontsize']
     contourFontsize = 10
     if 'contourFontsize' in args :
-        contourFontsize = args['contourFontsize']    
+        contourFontsize = args['contourFontsize']
     showColorbar = True
     if 'showColorbar' in args :
         showColorbar = args['showColorbar']
@@ -140,7 +140,7 @@ def decision_boundary_plot(svm, features, vectors, labels, kernel, fileName = No
              'blue' :((0.0, 0.6, 0.6),(0.5, 0.8, 0.8),(1.0, 1.0, 1.0)),
              }
     my_cmap = matplotlib.colors.LinearSegmentedColormap('lightgray',cdict,256)
-    im = pylab.imshow(numpy.transpose(Z), 
+    im = pylab.imshow(numpy.transpose(Z),
                       interpolation='bilinear', origin='lower',
                       cmap=my_cmap, extent=(xmin,xmax,ymin,ymax) )
 
@@ -171,7 +171,7 @@ def decision_boundary_plot(svm, features, vectors, labels, kernel, fileName = No
     pylab.scatter(vec[idx,0], vec[idx,1], s=300, c='#4444ff', marker='o', alpha=0.8, zorder=100)
     idx=numpy.where(lab==+1)[0]
     pylab.scatter(vec[idx,0], vec[idx,1], s=500, c='#ff4444', marker='s', alpha=0.8, zorder=100)
-    
+
     # plot SVs
     if not 'decisionboundaryonly' in args:
         training_outputs = svm_test(svm, kernel, features, features)
@@ -274,7 +274,7 @@ def create_figures(extension = 'pdf', directory = '../../tex/figures') :
     kernel = create_kernel('linear', features)
     svm = svm_train(kernel, labels, 200)
     decision_boundary_plot(svm, features, vectors, labels, kernel,
-            title = 'Soft-Margin with C=200', ylabel="GC Content Before 'AG'", 
+            title = 'Soft-Margin with C=200', ylabel="GC Content Before 'AG'",
             xlabel="GC Content After 'AG'", fontsize=fontsize,
             contourFontsize=contourFontsize, show=False, showmovedpoint=True,
             showColorbar=showColorbar)
@@ -359,7 +359,7 @@ def create_figures(extension = 'pdf', directory = '../../tex/figures') :
     svm = svm_train(kernel, labels, 100)
     decision_boundary_plot(svm, features, vectors, labels, kernel,
             title='Gaussian Kernel Sigma=0.05',
-            fontsize=fontsize, contourFontsize=contourFontsize, show=False,showColorbar=showColorbar) 
+            fontsize=fontsize, contourFontsize=contourFontsize, show=False,showColorbar=showColorbar)
     add_percent_ticks()
 
     #pylab.subplots_adjust(bottom=0.05, top=0.95)

@@ -16,14 +16,12 @@ using namespace shogun;
 
 CANOVAKernel::CANOVAKernel(): CDotKernel(0), cardinality(1.0)
 {
-	init();
 	register_params();
 }
 
 CANOVAKernel::CANOVAKernel(int32_t cache, int32_t d)
 : CDotKernel(cache), cardinality(d)
 {
-	init();
 	register_params();
 }
 
@@ -31,7 +29,6 @@ CANOVAKernel::CANOVAKernel(
 	CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r, int32_t d, int32_t cache)
   : CDotKernel(cache), cardinality(d)
 {
-	init();
 	register_params();
 	init(l, r);
 }
@@ -47,7 +44,6 @@ bool CANOVAKernel::init(CFeatures* l, CFeatures* r)
 
 	bool result = CDotKernel::init(l,r);
 
-	allocate_arrays();
 	init_normalizer();
 	return result;
 }
@@ -95,57 +91,6 @@ float64_t CANOVAKernel::compute_rec2(int32_t idx_a, int32_t idx_b)
 	return result;
 }
 
-void CANOVAKernel::init()
-{
-	/// array for compute_recursive1
-	DP=NULL;
-
-	/// arrays for compute_recursive2
-	KD=NULL;
-	KS=NULL;
-	vec_pow=NULL;
-}
-
-void CANOVAKernel::allocate_arrays()
-{
-	cleanup();
-
-	ASSERT(lhs && rhs)
-	int32_t num_feat = ((CDenseFeatures<float64_t>*) lhs)->get_num_features();
-	ASSERT(num_feat == ((CDenseFeatures<float64_t>*) rhs)->get_num_features())
-
-	//compute_recursive1
-	DP_len=(cardinality+1)*(num_feat+1);
-	DP = SG_MALLOC(float64_t, DP_len);
-
-	//compute_recursive2
-	KD = SG_MALLOC(float64_t, cardinality+1);
-	KS = SG_MALLOC(float64_t, cardinality+1);
-	vec_pow = SG_MALLOC(float64_t, num_feat);
-}
-
-void CANOVAKernel::cleanup()
-{
-	//compute_recursive1
-	SG_FREE(DP);
-	DP=NULL;
-	DP_len=0;
-
-	//compute_recursive2
-	SG_FREE(KD);
-	KD=NULL;
-	SG_FREE(KS);
-	KS=NULL;
-	SG_FREE(vec_pow);
-	vec_pow=NULL;
-}
-
-void CANOVAKernel::load_serializable_post() throw (ShogunException)
-{
-	CKernel::load_serializable_post();
-	allocate_arrays();
-}
-
 void CANOVAKernel::register_params()
 {
 	SG_ADD(&cardinality, "cardinality", "Kernel cardinality.", MS_AVAILABLE);
@@ -154,6 +99,9 @@ void CANOVAKernel::register_params()
 
 float64_t CANOVAKernel::compute_recursive1(float64_t* avec, float64_t* bvec, int32_t len)
 {
+	int32_t DP_len=(cardinality+1)*(len+1);
+	float64_t* DP = SG_MALLOC(float64_t, DP_len);
+
 	ASSERT(DP)
 	int32_t d=cardinality;
 	int32_t offs=cardinality+1;
@@ -176,11 +124,17 @@ float64_t CANOVAKernel::compute_recursive1(float64_t* avec, float64_t* bvec, int
 
 	float64_t result=DP[d*offs+len];
 
+	SG_FREE(DP);
+
 	return result;
 }
 
 float64_t CANOVAKernel::compute_recursive2(float64_t* avec, float64_t* bvec, int32_t len)
 {
+	float64_t* KD = SG_MALLOC(float64_t, cardinality+1);
+	float64_t* KS = SG_MALLOC(float64_t, cardinality+1);
+	float64_t* vec_pow = SG_MALLOC(float64_t, len);
+
 	ASSERT(vec_pow)
 	ASSERT(KS)
 	ASSERT(KD)
@@ -215,6 +169,9 @@ float64_t CANOVAKernel::compute_recursive2(float64_t* avec, float64_t* bvec, int
 		KD[k] = sum / k;
 	}
 	float64_t result=KD[d];
+	SG_FREE(vec_pow);
+	SG_FREE(KS);
+	SG_FREE(KD);
 
 	return result;
 }

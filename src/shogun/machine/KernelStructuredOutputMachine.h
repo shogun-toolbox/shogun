@@ -27,11 +27,10 @@ class CKernelStructuredOutputMachine : public CStructuredOutputMachine
 		/** standard constructor
 		 *
 		 * @param model structured model with application specific functions
-		 * @param loss loss function
 		 * @param labs structured labels
 		 * @param kernel kernel
 		 */
-		CKernelStructuredOutputMachine(CStructuredModel* model, CLossFunction* loss, CStructuredLabels* labs, CKernel* kernel);
+		CKernelStructuredOutputMachine(CStructuredModel* model, CStructuredLabels* labs, CKernel* kernel);
 
 		/** destructor */
 		virtual ~CKernelStructuredOutputMachine();
@@ -49,9 +48,9 @@ class CKernelStructuredOutputMachine : public CStructuredOutputMachine
 		CKernel* get_kernel() const;
 
 		/** @return object name */
-		virtual const char* get_name() const 
-		{ 
-			return "KernelStructuredOutputMachine"; 
+		virtual const char* get_name() const
+		{
+			return "KernelStructuredOutputMachine";
 		}
 
 	private:

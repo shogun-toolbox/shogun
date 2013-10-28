@@ -26,7 +26,7 @@ class CLabels;
  * error (MSE) is estimated as
  *
  * \f[
- * 		\frac{1}{|L|} \sum_{i=1}^{|L|} (L_i - R_i)^2
+ *		\frac{1}{|L|} \sum_{i=1}^{|L|} (L_i - R_i)^2
  * \f]
  *
  */
@@ -46,7 +46,7 @@ public:
 	 */
 	virtual float64_t evaluate(CLabels* predicted, CLabels* ground_truth);
 
-	inline EEvaluationDirection get_evaluation_direction()
+	inline EEvaluationDirection get_evaluation_direction() const
 	{
 		return ED_MINIMIZE;
 	}

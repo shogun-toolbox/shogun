@@ -1,0 +1,11 @@
+FILE(GLOB R_EXAMPLES *.R)
+FOREACH(EXAMPLE ${R_EXAMPLES})
+	get_filename_component(EXAMPLE_NAME ${EXAMPLE} NAME_WE)
+	add_test(NAME r_modular-${EXAMPLE_NAME}
+			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+			COMMAND ${R_EXECUTABLE} --no-restore --no-save --no-readline --slave -f ${EXAMPLE})
+ENDFOREACH()
+
+install(FILES ${R_EXAMPLES}
+	DESTINATION ${R_COMPONENT_LIB_PATH}/shogun/demo
+	COMPONENT r)

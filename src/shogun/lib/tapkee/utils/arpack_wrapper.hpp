@@ -11,7 +11,7 @@
 #define EIGEN_ARPACKGENERALIZEDSELFADJOINTEIGENSOLVER_H
 
 /* Tapkee includes */
-#include <shogun/lib/tapkee/tapkee_defines.hpp>
+#include <shogun/lib/tapkee/defines.hpp>
 /* End of Tapkee includes */
 
 using Eigen::Matrix;
@@ -27,7 +27,7 @@ using Eigen::Success;
 using Eigen::NumTraits;
 
 //! Namespace that contains ARPACK routines
-namespace arpack_internal 
+namespace arpack_internal
 {
 	template<typename Scalar, typename RealScalar> struct arpack_wrapper;
 }
@@ -65,7 +65,7 @@ public:
 	*/
 	ArpackGeneralizedSelfAdjointEigenSolver() : m_eivec(), m_eivalues(), m_isInitialized(false),
 		m_eigenvectorsOk(false), m_nbrConverged(0), m_nbrIterations(0)
-	{ 
+	{
 	}
 
 	/** \brief Constructor; computes generalized eigenvalues of given matrix with respect to another matrix.
@@ -81,18 +81,18 @@ public:
 	*    largest algebraic, or smallest algebraic eigenvalues. Alternatively, this
 	*    value can contain floating point value in string form, in which case the
 	*    eigenvalues closest to this value will be found.
-	* \param[in]  parameters Can be #ComputeEigenvectors (default) or #EigenvaluesOnly.
+	* \param[in] parameters Can be ComputeEigenvectors (default) or EigenvaluesOnly.
 	* \param[in] tol What tolerance to find the eigenvalues to. Default is 0, which
 	*    means machine precision.
 	*
 	* This constructor calls compute(const MatrixType&, const MatrixType&, Index, string, int, RealScalar)
 	* to compute the eigenvalues of the matrix \p A with respect to \p B. The eigenvectors are computed if
-	* \p parameters equals #ComputeEigenvectors.
+	* \p parameters equals ComputeEigenvectors.
 	*
 	*/
 	ArpackGeneralizedSelfAdjointEigenSolver(const LMatrixType& A, const RMatrixType& B,
 	                                        Index nbrEigenvalues, std::string eigs_sigma="LM",
-	                                        int parameters=ComputeEigenvectors, RealScalar tol=0.0) : 
+	                                        int parameters=ComputeEigenvectors, RealScalar tol=0.0) :
 		m_eivec(), m_eivalues(), m_info(), m_isInitialized(false), m_eigenvectorsOk(false),
 		m_nbrConverged(0), m_nbrIterations(0)
 	{
@@ -111,17 +111,17 @@ public:
 	*    largest algebraic, or smallest algebraic eigenvalues. Alternatively, this
 	*    value can contain floating point value in string form, in which case the
 	*    eigenvalues closest to this value will be found.
-	* \param[in]  parameters Can be #ComputeEigenvectors (default) or #EigenvaluesOnly.
+	* \param[in] parameters Can be ComputeEigenvectors (default) or EigenvaluesOnly.
 	* \param[in] tol What tolerance to find the eigenvalues to. Default is 0, which
 	*    means machine precision.
 	*
 	* This constructor calls compute(const MatrixType&, Index, string, int, RealScalar)
 	* to compute the eigenvalues of the matrix \p A. The eigenvectors are computed if
-	* \p parameters equals #ComputeEigenvectors.
+	* \p parameters equals ComputeEigenvectors.
 	*
 	*/
 	ArpackGeneralizedSelfAdjointEigenSolver(const LMatrixType& A, Index nbrEigenvalues, std::string eigs_sigma="LM",
-	                                        int parameters=ComputeEigenvectors, RealScalar tol=0.0) : 
+	                                        int parameters=ComputeEigenvectors, RealScalar tol=0.0) :
 		m_eivec(), m_eivalues(), m_info(), m_isInitialized(false), m_eigenvectorsOk(false),
 		m_nbrConverged(0), m_nbrIterations(0)
 	{
@@ -139,14 +139,14 @@ public:
 	*    largest algebraic, or smallest algebraic eigenvalues. Alternatively, this
 	*    value can contain floating point value in string form, in which case the
 	*    eigenvalues closest to this value will be found.
-	* \param[in]  parameters Can be #ComputeEigenvectors (default) or #EigenvaluesOnly.
+	* \param[in] parameters Can be ComputeEigenvectors (default) or EigenvaluesOnly.
 	* \param[in] tol What tolerance to find the eigenvalues to. Default is 0, which
 	*    means machine precision.
 	*
 	* \returns    Reference to \c *this
 	*
 	* This function computes the generalized eigenvalues of \p A with respect to \p B using ARPACK.  The eigenvalues()
-	* function can be used to retrieve them.  If \p parameters equals #ComputeEigenvectors,
+	* function can be used to retrieve them.  If \p parameters equals ComputeEigenvectors,
 	* then the eigenvectors are also computed and can be retrieved by
 	* calling eigenvectors().
 	*
@@ -165,19 +165,19 @@ public:
 	*    largest algebraic, or smallest algebraic eigenvalues. Alternatively, this
 	*    value can contain floating point value in string form, in which case the
 	*    eigenvalues closest to this value will be found.
-	* \param[in]  parameters Can be #ComputeEigenvectors (default) or #EigenvaluesOnly.
+	* \param[in] parameters Can be ComputeEigenvectors (default) or EigenvaluesOnly.
 	* \param[in] tol What tolerance to find the eigenvalues to. Default is 0, which
 	*    means machine precision.
 	*
 	* \returns    Reference to \c *this
 	*
 	* This function computes the eigenvalues of \p A using ARPACK.  The eigenvalues()
-	* function can be used to retrieve them.  If \p parameters equals #ComputeEigenvectors,
+	* function can be used to retrieve them.  If \p parameters equals ComputeEigenvectors,
 	* then the eigenvectors are also computed and can be retrieved by
 	* calling eigenvectors().
 	*
 	*/
-	ArpackGeneralizedSelfAdjointEigenSolver& compute(const LMatrixType& A, Index nbrEigenvalues, 
+	ArpackGeneralizedSelfAdjointEigenSolver& compute(const LMatrixType& A, Index nbrEigenvalues,
 	                                                 std::string eigs_sigma="LM",
 	                                                 int parameters=ComputeEigenvectors, RealScalar tol=0.0);
 
@@ -194,9 +194,6 @@ public:
 	* matrix \f$ A \f$, then the matrix returned by this function is the
 	* matrix \f$ V \f$ in the eigendecomposition \f$ A V = D V \f$.
 	* For the generalized eigenproblem, the matrix returned is the solution of \f$A V = D B V \f$
-	*
-	* Example: \include SelfAdjointEigenSolver_eigenvectors.cpp
-	* Output: \verbinclude SelfAdjointEigenSolver_eigenvectors.out
 	*
 	* \sa eigenvalues()
 	*/
@@ -216,9 +213,6 @@ public:
 	* The eigenvalues are repeated according to their algebraic multiplicity,
 	* so there are as many eigenvalues as rows in the matrix. The eigenvalues
 	* are sorted in increasing order.
-	*
-	* Example: \include SelfAdjointEigenSolver_eigenvalues.cpp
-	* Output: \verbinclude SelfAdjointEigenSolver_eigenvalues.out
 	*
 	* \sa eigenvectors(), MatrixBase::eigenvalues()
 	*/
@@ -240,11 +234,7 @@ public:
 	* uses the eigendecomposition \f$ A = V D V^{-1} \f$ to compute the
 	* square root as \f$ A^{1/2} = V D^{1/2} V^{-1} \f$.
 	*
-	* Example: \include SelfAdjointEigenSolver_operatorSqrt.cpp
-	* Output: \verbinclude SelfAdjointEigenSolver_operatorSqrt.out
-	*
 	* \sa operatorInverseSqrt(),
-	*     \ref MatrixFunctions_Module "MatrixFunctions Module"
 	*/
 	Matrix<Scalar, Dynamic, Dynamic> operatorSqrt() const
 	{
@@ -265,11 +255,7 @@ public:
 	* cheaper than first computing the square root with operatorSqrt() and
 	* then its inverse with MatrixBase::inverse().
 	*
-	* Example: \include SelfAdjointEigenSolver_operatorInverseSqrt.cpp
-	* Output: \verbinclude SelfAdjointEigenSolver_operatorInverseSqrt.out
-	*
 	* \sa operatorSqrt(), MatrixBase::inverse(),
-	*     \ref MatrixFunctions_Module "MatrixFunctions Module"
 	*/
 	Matrix<Scalar, Dynamic, Dynamic> operatorInverseSqrt() const
 	{
@@ -295,7 +281,7 @@ public:
 
 	size_t getNbrIterations() const
 	{
-		return m_nbrIterations; 
+		return m_nbrIterations;
 	}
 
 protected:
@@ -326,9 +312,8 @@ ArpackGeneralizedSelfAdjointEigenSolver<LMatrixType, RMatrixType, MatrixOperatio
 ::compute(const LMatrixType& A, const RMatrixType& B, Index nbrEigenvalues,
           std::string eigs_sigma, int parameters, RealScalar tol)
 {
-	eigen_assert(A.cols() == A.rows());
 	eigen_assert(B.cols() == B.rows());
-	eigen_assert(B.rows() == 0 || A.cols() == B.rows());
+	eigen_assert(B.rows() == 0 || A.rows() == B.rows() || A.cols() == B.cols());
 	eigen_assert((parameters &~ (Eigen::EigVecMask | Eigen::GenEigMask)) == 0
 	             && (parameters & Eigen::EigVecMask) != Eigen::EigVecMask
 	             && "invalid option parameter");
@@ -338,7 +323,7 @@ ArpackGeneralizedSelfAdjointEigenSolver<LMatrixType, RMatrixType, MatrixOperatio
 	// For clarity, all parameters match their ARPACK name
 	// Always 0 on the first call
 	int ido = 0;
-	int n = (int)A.cols();
+	int n = (int)A.rows();
 	// User parameters: "LA", "SA", "SM", "LM", "BE"
 	char whch[3] = "LM";
 
@@ -408,7 +393,7 @@ ArpackGeneralizedSelfAdjointEigenSolver<LMatrixType, RMatrixType, MatrixOperatio
 	iparam[6] = mode; // The mode, 1 is standard ev problem, 2 for generalized ev, 3 for shift-and-invert
 
 	// Used during reverse communicate to notify where arrays start
-	int *ipntr = new int[11]; 
+	int *ipntr = new int[11];
 
 	// Error codes are returned in here, initial value of 0 indicates a random initial
 	// residual vector is used, any other values means resid contains the initial residual
@@ -435,7 +420,7 @@ ArpackGeneralizedSelfAdjointEigenSolver<LMatrixType, RMatrixType, MatrixOperatio
 	do
 	{
 		//std::cout << "Entering main loop\n";
-		arpack_internal::arpack_wrapper<Scalar, RealScalar>::saupd(&ido, bmat, &n, whch, &nev, &tol, resid, 
+		arpack_internal::arpack_wrapper<Scalar, RealScalar>::saupd(&ido, bmat, &n, whch, &nev, &tol, resid,
 		                                                           &ncv, v, &ldv, iparam, ipntr, workd, workl,
 		                                                           &lworkl, &cinfo);
 		if (ido == -1 || ido == 1)
@@ -496,7 +481,7 @@ ArpackGeneralizedSelfAdjointEigenSolver<LMatrixType, RMatrixType, MatrixOperatio
 		//Scalar *out = workd + ipntr[1] - 1;
 		//std::cout << Matrix<Scalar, Dynamic, 1>::Map(out, n).transpose() << std::endl;
 	} while (ido != 99);
-		
+
 	//std::cout << "Finsihed\n";
 
 	if (cinfo == 1)
@@ -526,7 +511,7 @@ ArpackGeneralizedSelfAdjointEigenSolver<LMatrixType, RMatrixType, MatrixOperatio
 		int rvec = (parameters & ComputeEigenvectors) == ComputeEigenvectors;
 
 		// "A" means "All", use "S" to choose specific eigenvalues (not yet supported in ARPACK))
-		char howmny[2] = "A"; 
+		char howmny[2] = "A";
 
 		// if howmny == "S", specifies the eigenvalues to compute (not implemented in ARPACK)
 		int *select = new int[ncv];
@@ -554,7 +539,7 @@ ArpackGeneralizedSelfAdjointEigenSolver<LMatrixType, RMatrixType, MatrixOperatio
 				for (int i=0; i<nev; i++)
 					for (int j=0; j<n; j++)
 						m_eivec(j,i) = v[i*n+j] / scale;
-  
+
 				// TODO if (mode == 1 && !isBempty && BisSPD)
 				//  internal::OP<MatrixSolver, MatrixType, Scalar, BisSPD>::project(OP, n, nev, m_eivec.data());
 
@@ -587,7 +572,7 @@ extern "C" void ssaupd_(int *ido, char *bmat, int *n, char *which,
                         int *info);
 
 extern "C" void sseupd_(int *rvec, char *All, int *select, float *d,
-                        float *z, int *ldz, float *sigma, 
+                        float *z, int *ldz, float *sigma,
                         char *bmat, int *n, char *which, int *nev,
                         float *tol, float *resid, int *ncv, float *v,
                         int *ldv, int *iparam, int *ipntr, float *workd,
@@ -602,7 +587,7 @@ extern "C" void dsaupd_(int *ido, char *bmat, int *n, char *which,
                         int *info);
 
 extern "C" void dseupd_(int *rvec, char *All, int *select, double *d,
-                        double *z, int *ldz, double *sigma, 
+                        double *z, int *ldz, double *sigma,
                         char *bmat, int *n, char *which, int *nev,
                         double *tol, double *resid, int *ncv, double *v,
                         int *ldv, int *iparam, int *ipntr, double *workd,

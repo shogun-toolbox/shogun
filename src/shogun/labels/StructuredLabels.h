@@ -40,12 +40,6 @@ class CStructuredLabels : public CLabels
 		/** destructor */
 		virtual ~CStructuredLabels();
 
-		/** helper method used to specialize a base class instance
-		 *
-		 * @param base_labels its dynamic type must be CStructuredLabels
-		 */
-		static CStructuredLabels* obtain_from_generic(CLabels* base_labels);
-
 		/** check if labeling is valid
 		 *
 		 * possible with subset
@@ -71,7 +65,7 @@ class CStructuredLabels : public CLabels
 		 * @return labels
 		 */
 		CDynamicObjectArray* get_labels() const;
-		
+
 		/** get label object for specified index
 		 *
 		 * @param idx index of the label
@@ -96,7 +90,7 @@ class CStructuredLabels : public CLabels
 		 *
 		 * @return number of labels
 		 */
-		virtual int32_t get_num_labels();
+		virtual int32_t get_num_labels() const;
 
 		/** @return object name */
 		virtual const char* get_name() const { return "StructuredLabels"; }
@@ -105,7 +99,7 @@ class CStructuredLabels : public CLabels
 		 *
 		 * @return label type LT_STRUCTURED
 		 */
-		virtual ELabelType get_label_type() { return LT_STRUCTURED; }
+		virtual ELabelType get_label_type() const { return LT_STRUCTURED; }
 
 		/** get structured data type the labels are composed of
 		 *

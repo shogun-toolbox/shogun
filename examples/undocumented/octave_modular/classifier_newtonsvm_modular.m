@@ -1,4 +1,4 @@
-init_shogun
+modshogun
 
 addpath('tools');
 label=load_matrix('../data/label_train_dna.dat');

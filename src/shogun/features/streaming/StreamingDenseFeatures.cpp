@@ -147,11 +147,6 @@ template<class T> int32_t CStreamingDenseFeatures<T>::get_num_vectors() const
 	return 1;
 }
 
-template<class T> int32_t CStreamingDenseFeatures<T>::get_size() const
-{
-	return sizeof(T);
-}
-
 template<class T>
 void CStreamingDenseFeatures<T>::set_vector_reader()
 {
@@ -194,6 +189,8 @@ void CStreamingDenseFeatures<T>::init()
 	/* needed to prevent double free memory errors */
 	current_vector.vector=NULL;
 	current_vector.vlen=-1;
+
+	set_generic<T>();
 }
 
 template<class T>

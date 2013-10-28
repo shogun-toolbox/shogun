@@ -15,11 +15,11 @@
 #include <shogun/lib/malsar/malsar_options.h>
 #include <shogun/features/DotFeatures.h>
 
-namespace shogun 
+namespace shogun
 {
 
 /**
- * Routine for learning a linear multitask 
+ * Routine for learning a linear multitask
  * logistic regression model
  * using Joint Feature algorithm.
  *

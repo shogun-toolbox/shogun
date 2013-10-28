@@ -23,7 +23,7 @@ namespace shogun
 class RelaxedTreeUtil
 {
 public:
-	
+
 	/** estimate confusion matrix with cross validation.
 	 * @param machine multiclass machine used to compute confusion matrix
 	 * @param X training data
@@ -42,7 +42,7 @@ public:
 	void get_confusion_matrix(SGMatrix<float64_t> &conf_mat, CMulticlassLabels *gt, CMulticlassLabels *pred);
 };
 
-} /* shogun */ 
+} /* shogun */
 
 #endif /* end of include guard: RELAXEDTREEUTIL_H__ */
 

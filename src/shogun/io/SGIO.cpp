@@ -17,6 +17,7 @@
 #include <shogun/lib/common.h>
 #include <shogun/lib/Time.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/lib/RefCount.h>
 
 #include <stdio.h>
 #include <stdarg.h>
@@ -45,22 +46,24 @@ char SGIO::directory_name[FBUFSIZE];
 
 SGIO::SGIO()
 : target(stdout), last_progress_time(0), progress_start_time(0),
-	last_progress(1), show_progress(false), show_file_and_line(false),
-	syntax_highlight(true), loglevel(MSG_WARN), refcount(0)
+	last_progress(1), show_progress(false), location_info(MSG_NONE),
+	syntax_highlight(true), loglevel(MSG_WARN)
 {
+	m_refcount = new RefCount();
 }
 
 SGIO::SGIO(const SGIO& orig)
 : target(orig.get_target()), last_progress_time(0),
 	progress_start_time(0), last_progress(1),
 	show_progress(orig.get_show_progress()),
-	show_file_and_line(orig.get_show_file_and_line()),
+	location_info(orig.get_location_info()),
 	syntax_highlight(orig.get_syntax_highlight()),
-	loglevel(orig.get_loglevel()), refcount(0)
+	loglevel(orig.get_loglevel())
 {
+	m_refcount = new RefCount(orig.m_refcount->ref_count());
 }
 
-void SGIO::message(EMessageType prio, const char* file,
+void SGIO::message(EMessageType prio, const char* function, const char* file,
 		int32_t line, const char *fmt, ... ) const
 {
 	const char* msg_intro=get_msg_intro(prio);
@@ -72,11 +75,22 @@ void SGIO::message(EMessageType prio, const char* file,
 		int len=strlen(msg_intro);
 		char* s=str+len;
 
-		if (show_file_and_line && line>=0)
+		/* file and line are shown for warnings and worse */
+		if (location_info==MSG_LINE_AND_FILE || prio==MSG_WARN || prio==MSG_ERROR)
 		{
 			snprintf(s, sizeof(str)-len, "In file %s line %d: ", file, line);
 			len=strlen(str);
 			s=str+len;
+		}
+		else if (location_info==MSG_FUNCTION)
+		{
+			snprintf(s, sizeof(str)-len, "%s: ", function);
+			len=strlen(str);
+			s=str+len;
+		}
+		else if (location_info==MSG_NONE)
+		{
+			;
 		}
 
 		va_list list;
@@ -170,12 +184,12 @@ void SGIO::progress(
 	if (estimate>120)
 	{
 		snprintf(str, sizeof(str), "%%s %%%d.%df%%%%    %%1.1f minutes remaining    %%1.1f minutes total    \r",decimals+3, decimals);
-		message(MSG_MESSAGEONLY, "", -1, str, prefix, v, estimate/60, total_estimate/60);
+		message(MSG_MESSAGEONLY, "", "", -1, str, prefix, v, estimate/60, total_estimate/60);
 	}
 	else
 	{
 		snprintf(str, sizeof(str), "%%s %%%d.%df%%%%    %%1.1f seconds remaining    %%1.1f seconds total    \r",decimals+3, decimals);
-		message(MSG_MESSAGEONLY, "", -1, str, prefix, v, estimate, total_estimate);
+		message(MSG_MESSAGEONLY, "", "", -1, str, prefix, v, estimate, total_estimate);
 	}
 
     fflush(target);
@@ -221,12 +235,12 @@ void SGIO::absolute_progress(
 	if (estimate>120)
 	{
 		snprintf(str, sizeof(str), "%%s %%%d.%df    %%1.1f minutes remaining    %%1.1f minutes total    \r",decimals+3, decimals);
-		message(MSG_MESSAGEONLY, "", -1, str, prefix, current_val, estimate/60, total_estimate/60);
+		message(MSG_MESSAGEONLY, "", "", -1, str, prefix, current_val, estimate/60, total_estimate/60);
 	}
 	else
 	{
 		snprintf(str, sizeof(str), "%%s %%%d.%df    %%1.1f seconds remaining    %%1.1f seconds total    \r",decimals+3, decimals);
-		message(MSG_MESSAGEONLY, "", -1, str, prefix, current_val, estimate, total_estimate);
+		message(MSG_MESSAGEONLY, "", "", -1, str, prefix, current_val, estimate, total_estimate);
 	}
 
     fflush(target);
@@ -237,7 +251,7 @@ void SGIO::done()
 	if (!show_progress)
 		return;
 
-	message(MSG_INFO, "", -1, "done.\n");
+	message(MSG_INFO, "", "", -1, "done.\n");
 }
 
 char* SGIO::skip_spaces(char* str)
@@ -356,4 +370,57 @@ uint32_t SGIO::ulong_of_substring(substring s)
 uint32_t SGIO::ss_length(substring s)
 {
 	return (s.end - s.start);
+}
+
+char* SGIO::concat_filename(const char* filename)
+{
+	if (snprintf(file_buffer, FBUFSIZE, "%s/%s", directory_name, filename) > FBUFSIZE)
+		SG_SERROR("filename too long")
+
+	SG_SDEBUG("filename=\"%s\"\n", file_buffer)
+	return file_buffer;
+}
+
+int SGIO::filter(CONST_DIRENT_T* d)
+{
+	if (d)
+	{
+		char* fname=concat_filename(d->d_name);
+
+		if (!access(fname, R_OK))
+		{
+			struct stat s;
+			if (!stat(fname, &s) && S_ISREG(s.st_mode))
+				return 1;
+		}
+	}
+
+	return 0;
+}
+
+SGIO::~SGIO()
+{
+	delete m_refcount;
+}
+
+int32_t SGIO::ref()
+{
+	return m_refcount->ref();
+}
+
+int32_t SGIO::ref_count() const
+{
+	return m_refcount->ref_count();
+}
+
+int32_t SGIO::unref()
+{
+	int32_t rc = m_refcount->unref();
+	if (rc==0)
+	{
+		delete this;
+		return 0;
+	}
+
+	return rc;
 }

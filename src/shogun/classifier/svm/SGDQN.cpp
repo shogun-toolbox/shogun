@@ -12,9 +12,9 @@
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
 
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA
+   You should have received a copy of the GNU Lesser General Public
+   License along with this library; if not, write to the Free Software
+   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
    Shogun adjustments (w) 2011 Siddharth Kherada
 */
@@ -61,10 +61,9 @@ CSGDQN::~CSGDQN()
 
 void CSGDQN::set_loss_function(CLossFunction* loss_func)
 {
-	if (loss)
-		SG_UNREF(loss);
+	SG_REF(loss_func);
+	SG_UNREF(loss);
 	loss=loss_func;
-	SG_REF(loss);
 }
 
 void CSGDQN::compute_ratio(float64_t* W,float64_t* W_1,float64_t* B,float64_t* dst,int32_t dim,float64_t lambda,float64_t loss_val)

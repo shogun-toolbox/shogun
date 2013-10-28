@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import numpy
-from shogun.Features import RealFeatures
+from modshogun import RealFeatures
 from numpy import array, float64, int64
 
 # create dense matrice
@@ -11,7 +11,7 @@ parameter_list = [[data]]
 def features_dense_zero_copy_modular (in_data=data):
 	feats = None
 	if numpy.__version__ >= '1.5':
-		feats=numpy.array(in_data, dtype=float64, order='F')		
+		feats=numpy.array(in_data, dtype=float64, order='F')
 
 		a=RealFeatures()
 		a.frombuffer(feats, False)
@@ -32,7 +32,7 @@ def features_dense_zero_copy_modular (in_data=data):
 		#print d[0:4]
 		#print e[0:4]
 	else:
-		print "numpy version >= 1.5 is needed"
+		print("numpy version >= 1.5 is needed")
 
 	return feats
 

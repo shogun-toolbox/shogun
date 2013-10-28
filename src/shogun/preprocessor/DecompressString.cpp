@@ -8,12 +8,14 @@ template <class ST>
 CDecompressString<ST>::CDecompressString() : CStringPreprocessor<ST>()
 {
 	compressor=NULL;
+	CSGObject::set_generic<ST>();
 }
 
 template <class ST>
 CDecompressString<ST>::CDecompressString(E_COMPRESSION_TYPE ct) : CStringPreprocessor<ST>()
 {
 	compressor=new CCompressor(ct);
+	CSGObject::set_generic<ST>();
 }
 
 template <class ST>

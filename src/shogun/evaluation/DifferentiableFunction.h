@@ -4,6 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
+ * Written (W) 2013 Roman Votyakov
  * Copyright (C) 2012 Jacob Walker
  */
 
@@ -12,44 +13,37 @@
 
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/Map.h>
-#include <shogun/lib/SGString.h>
-#include <shogun/lib/DynamicObjectArray.h>
+#include <shogun/lib/SGVector.h>
 
 namespace shogun
 {
 
-/** @brief DifferentiableFunction.
- *
- * This is an interface that describes a differentiable function
- * used for GradientEvaluation.
- *
+/** @brief An abstract class that describes a differentiable function used for
+ * GradientEvaluation.
  */
-class CDifferentiableFunction: public CSGObject
+class CDifferentiableFunction : public CSGObject
 {
-
 public:
-
-	/*Constructor*/
+	/** default constructor */
 	CDifferentiableFunction();
 
-	/*Destructor*/
 	virtual ~CDifferentiableFunction();
 
-	/** Get the gradient
-	 * @param para_dict dictionary to be built
-	 * @return Map of gradient. Keys are names of parameters, values are
-	 * values of derivative with respect to that parameter.
-	 */
-	virtual CMap<TParameter*, SGVector<float64_t> > get_gradient(
-			CMap<TParameter*, CSGObject*>& para_dict) = 0;
-
-	/** Get the function value
+	/** get the gradient
 	 *
-	 * @return Vector that represents the function value
+	 * @param parameters parameter's dictionary
+	 *
+	 * @return map of gradient. Keys are names of parameters, values are values
+	 * of derivative with respect to that parameter.
 	 */
-	virtual SGVector<float64_t> get_quantity() = 0;
+	virtual CMap<TParameter*, SGVector<float64_t> >* get_gradient(
+			CMap<TParameter*, CSGObject*>* parameters)=0;
+
+	/** get the function value
+	 *
+	 * @return vector that represents the function value
+	 */
+	virtual SGVector<float64_t> get_value()=0;
 };
-
-} /* namespace shogun */
-
+}
 #endif /* CDIFFERENTIABLEFUNCTION_H_ */

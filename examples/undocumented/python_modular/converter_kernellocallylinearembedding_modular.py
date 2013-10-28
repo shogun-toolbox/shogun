@@ -1,19 +1,13 @@
 #!/usr/bin/env python
-from tools.load import LoadMatrix
-
-lm=LoadMatrix()
-data = lm.load_numbers('../data/fm_train_real.dat')
-
+data = '../data/fm_train_real.dat'
 parameter_list = [[data,20],[data,30]]
 
-def converter_kernellocallylinearembedding_modular (data,k):
+def converter_kernellocallylinearembedding_modular (data_fname,k):
 	try:
-		from shogun.Features import RealFeatures
-		from shogun.Converter import KernelLocallyLinearEmbedding
-		from shogun.Kernel import LinearKernel
-		
-		features = RealFeatures(data)
-			
+		from modshogun import RealFeatures, KernelLocallyLinearEmbedding, LinearKernel, CSVFile
+
+		features = RealFeatures(CSVFile(data_fname))
+
 		kernel = LinearKernel()
 
 		converter = KernelLocallyLinearEmbedding(kernel)

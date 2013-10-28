@@ -1,0 +1,56 @@
+"""
+Blind Source Separation using the UWedgeSep Algorithm with Shogun
+
+Kevin Hughes 2013
+"""
+
+
+import numpy as np
+import pylab as pl
+
+from modshogun  import RealFeatures
+from modshogun import UWedgeSep
+
+# Generate sample data
+np.random.seed(0)
+n_samples = 2000
+time = np.linspace(0, 1, n_samples)
+
+# Source Signals
+s1 = np.sin(2*3.14*55*time)  # sin wave
+s2 = np.cos(2*3.14*100*time) # cos wave
+S = np.c_[s1, s2]
+S += 0.1 * np.random.normal(size=S.shape)  # add noise
+
+# Standardize data
+S /= S.std(axis=0)
+S = S.T
+
+# Mixing Matrix
+A = np.array([[1, 0.85], [0.55, 1]])
+#print A
+
+# Mix Signals
+X = np.dot(A,S)
+mixed_signals = RealFeatures(X)
+
+# Separating
+uwedge = UWedgeSep()
+signals = uwedge.apply(mixed_signals)
+S_ = signals.get_feature_matrix()
+A_ = uwedge.get_mixing_matrix();
+#print A_
+
+# Plot results
+pl.figure()
+pl.subplot(3, 1, 1)
+pl.plot(S.T)
+pl.title('True Sources')
+pl.subplot(3, 1, 2)
+pl.plot(X.T)
+pl.title('Mixed Sources')
+pl.subplot(3, 1, 3)
+pl.plot(S_.T)
+pl.title('Estimated Sources')
+pl.subplots_adjust(0.09, 0.04, 0.94, 0.94, 0.26, 0.36)
+pl.show()

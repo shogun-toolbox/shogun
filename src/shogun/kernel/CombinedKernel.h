@@ -13,6 +13,7 @@
 #define _COMBINEDKERNEL_H___
 
 #include <shogun/lib/List.h>
+#include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/kernel/Kernel.h>
 
@@ -111,17 +112,7 @@ class CCombinedKernel : public CKernel
 		 */
 		inline CKernel* get_first_kernel()
 		{
-			return (CKernel*) kernel_list->get_first_element();
-		}
-
-		/** get first kernel
-		 *
-		 * @param current
-		 * @return first kernel
-		 */
-		inline CKernel* get_first_kernel(CListElement*& current)
-		{
-			return (CKernel*) kernel_list->get_first_element(current);
+			return get_kernel(0);
 		}
 
 		/** get kernel
@@ -131,13 +122,7 @@ class CCombinedKernel : public CKernel
 		 */
 		inline CKernel* get_kernel(int32_t idx)
 		{
-			CKernel * k = get_first_kernel();
-			for (int32_t i=0; i<idx; i++)
-			{
-				SG_UNREF(k);
-				k = get_next_kernel();
-			}
-			return k;
+			return (CKernel*) kernel_array->get_element(idx);
 		}
 
 		/** get last kernel
@@ -146,34 +131,17 @@ class CCombinedKernel : public CKernel
 		 */
 		inline CKernel* get_last_kernel()
 		{
-			return (CKernel*) kernel_list->get_last_element();
+			return get_kernel(get_num_kernels()-1);
 		}
 
-		/** get next kernel
-		 *
-		 * @return next kernel
-		 */
-		inline CKernel* get_next_kernel()
-		{
-			return (CKernel*) kernel_list->get_next_element();
-		}
-
-		/** get next kernel multi-thread safe
-		 *
-		 * @param current
-		 * @return next kernel
-		 */
-		inline CKernel* get_next_kernel(CListElement*& current)
-		{
-			return (CKernel*) kernel_list->get_next_element(current);
-		}
-
-		/** insert kernel
+		/** insert kernel at position idx
+		 *	 idx must be < num_kernels
 		 *
 		 * @param k kernel
+		 * @param idx the index of the position where the kernel should be added
 		 * @return if inserting was successful
 		 */
-		inline bool insert_kernel(CKernel* k)
+		inline bool insert_kernel(CKernel* k, int32_t idx)
 		{
 			ASSERT(k)
 			adjust_num_lhs_rhs_initialized(k);
@@ -181,10 +149,10 @@ class CCombinedKernel : public CKernel
 			if (!(k->has_property(KP_LINADD)))
 				unset_property(KP_LINADD);
 
-			return kernel_list->insert_element(k);
+			return kernel_array->insert_element(k, idx);
 		}
 
-		/** append kernel
+		/** append kernel to the end of the array
 		 *
 		 * @param k kernel
 		 * @return if appending was successful
@@ -197,26 +165,28 @@ class CCombinedKernel : public CKernel
 			if (!(k->has_property(KP_LINADD)))
 				unset_property(KP_LINADD);
 
-			return kernel_list->append_element(k);
+			int n = get_num_kernels();
+			kernel_array->push_back(k);
+			return n+1==get_num_kernels();
 		}
 
 
 		/** delete kernel
 		 *
+		 * @param idx the index of the kernel to delete
 		 * @return if deleting was successful
 		 */
-		inline bool delete_kernel()
+		inline bool delete_kernel(int32_t idx)
 		{
-			CKernel* k=(CKernel*) kernel_list->delete_element();
-			SG_UNREF(k);
+			bool succesful_deletion = kernel_array->delete_element(idx);
 
-			if (!k)
+			if (get_num_kernels()==0)
 			{
 				num_lhs=0;
 				num_rhs=0;
 			}
 
-			return (k!=NULL);
+			return succesful_deletion;
 		}
 
 		/** check if subkernel weights are appended
@@ -236,20 +206,27 @@ class CCombinedKernel : public CKernel
 		{
 			if (append_subkernel_weights)
 			{
-				int32_t num_subkernels = 0 ;
-				CListElement* current = NULL ;
-				CKernel * k = get_first_kernel(current) ;
+				int32_t num_subkernels = 0;
 
-				while(k)
+				for (index_t k_idx=0; k_idx<get_num_kernels(); k_idx++)
 				{
-					num_subkernels += k->get_num_subkernels() ;
+					CKernel* k = get_kernel(k_idx);
+					num_subkernels += k->get_num_subkernels();
 					SG_UNREF(k);
-					k = get_next_kernel(current) ;
 				}
-				return num_subkernels ;
+				return num_subkernels;
 			}
 			else
-				return kernel_list->get_num_elements();
+				return get_num_kernels();
+		}
+
+		/** get number of contained kernels
+		 *
+		 * @return number of contained kernels
+		 */
+		int32_t get_num_kernels()
+		{
+			return kernel_array->get_num_elements();
 		}
 
 		/** test whether features have been assigned to lhs and rhs
@@ -293,11 +270,13 @@ class CCombinedKernel : public CKernel
 		 */
 		virtual float64_t compute_optimized(int32_t idx);
 
-		/** computes output for a batch of examples in an optimized fashion (favorable if kernel supports it,
-		 * i.e. has KP_BATCHEVALUATION.
-		 * to the outputvector target (of length num_vec elements) the output for the examples enumerated
-		 * in vec_idx are added. therefore make sure that it is initialized with ZERO. the following num_suppvec,
-		 * IDX, alphas arguments are the number of support vectors, their indices and weights
+		/** computes output for a batch of examples in an optimized fashion
+		 * (favorable if kernel supports it, i.e. has KP_BATCHEVALUATION.  to
+		 * the outputvector target (of length num_vec elements) the output for
+		 * the examples enumerated in vec_idx are added. therefore make sure
+		 * that it is initialized with ZERO. the following num_suppvec, IDX,
+		 * alphas arguments are the number of support vectors, their indices and
+		 * weights
 		 */
 		virtual void compute_batch(
 			int32_t num_vec, int32_t* vec_idx, float64_t* target,
@@ -316,7 +295,8 @@ class CCombinedKernel : public CKernel
 		 */
 		static void* compute_kernel_helper(void* p);
 
-		/** emulates batch computation, via linadd optimization w^t x or even down to sum_i alpha_i K(x_i,x)
+		/** emulates batch computation, via linadd optimization w^t x or even
+		 * down to sum_i alpha_i K(x_i,x)
 		 *
 		 * @param k kernel
 		 * @param num_vec number of vectors
@@ -388,19 +368,33 @@ class CCombinedKernel : public CKernel
 		/** return derivative with respect to specified parameter
 		 *
 		 * @param param the parameter
-		 * @param obj the object that owns the parameter
 		 * @param index the index of the element if parameter is a vector
 		 *
 		 * @return gradient with respect to parameter
 		 */
-		SGMatrix<float64_t> get_parameter_gradient(TParameter* param,
-				CSGObject* obj, index_t index);
+		SGMatrix<float64_t> get_parameter_gradient(const TParameter* param,
+				index_t index=-1);
 
-		/** Get the Kernel list
+		/** Get the Kernel array
 		 *
-		 * @return kernel list
+		 * @return kernel array
 		 */
-		inline CList* get_list() {SG_REF(kernel_list); return kernel_list;}
+		inline CDynamicObjectArray* get_array()
+		{
+			SG_REF(kernel_array);
+			return kernel_array;
+		}
+
+		/** Returns a list of all the different CombinedKernels produced by the
+		* cross-product between the kernel lists The returned list performs
+		* reference counting on the contained CombinedKernels.
+		*
+		* @param kernel_list a list of lists of kernels. Each sub-list must
+		* contain kernels of the same type
+		*
+		* @return a list of CombinedKernels.
+		*/
+		static CList* combine_kernels(CList* kernel_list);
 
 	protected:
 		/** compute kernel function
@@ -460,7 +454,7 @@ class CCombinedKernel : public CKernel
 
 	protected:
 		/** list of kernels */
-		CList* kernel_list;
+		CDynamicObjectArray* kernel_array;
 		/** support vector count */
 		int32_t   sv_count;
 		/** support vector index */

@@ -25,7 +25,7 @@ class CLabels;
  * error (MAE) is estimated as
  *
  * \f[
- * 		\frac{1}{|L|} \sum_{i=1}^{|L|} |L_i - R_i|
+ *		\frac{1}{|L|} \sum_{i=1}^{|L|} |L_i - R_i|
  * \f]
  *
  */
@@ -45,7 +45,7 @@ public:
 	 */
 	virtual float64_t evaluate(CLabels* predicted, CLabels* ground_truth);
 
-	inline EEvaluationDirection get_evaluation_direction()
+	inline EEvaluationDirection get_evaluation_direction() const
 	{
 		return ED_MINIMIZE;
 	}

@@ -9,9 +9,9 @@ parameter_list = [[traindat+10,testdat+10,1.4,10],[traindat+10,testdat+10,1.5,10
 
 def preprocessor_logplusone_modular (fm_train_real=traindat,fm_test_real=testdat,width=1.4,size_cache=10):
 
-	from shogun.Kernel import Chi2Kernel
-	from shogun.Features import RealFeatures
-	from shogun.Preprocessor import LogPlusOne
+	from modshogun import Chi2Kernel
+	from modshogun import RealFeatures
+	from modshogun import LogPlusOne
 
 	feats_train=RealFeatures(fm_train_real)
 	feats_test=RealFeatures(fm_test_real)
@@ -23,7 +23,7 @@ def preprocessor_logplusone_modular (fm_train_real=traindat,fm_test_real=testdat
 	feats_test.add_preprocessor(preproc)
 	feats_test.apply_preprocessor()
 
-	
+
 	kernel=Chi2Kernel(feats_train, feats_train, width, size_cache)
 
 	km_train=kernel.get_kernel_matrix()

@@ -42,6 +42,8 @@ template <class T> class CMemoryMappedFile : public CSGObject
 			address = NULL;
 			rw = 'r';
 			last_written_byte = 0;
+
+			set_generic<T>();
 		}
 
 		/** constructor
@@ -60,12 +62,14 @@ template <class T> class CMemoryMappedFile : public CSGObject
 		CMemoryMappedFile(const char* fname, char flag='r', int64_t fsize=0)
 		: CSGObject()
 		{
+			REQUIRE(flag=='w' || flag=='r', "Only 'r' and 'w' flags are allowed")
+
 			last_written_byte=0;
 			rw=flag;
 
-			int open_flags;
-			int mmap_prot;
-			int mmap_flags;
+			int open_flags=O_RDONLY;
+			int mmap_prot=PROT_READ;
+			int mmap_flags=MAP_PRIVATE;
 
 			if (rw=='w')
 			{
@@ -73,14 +77,6 @@ template <class T> class CMemoryMappedFile : public CSGObject
 				mmap_prot=PROT_READ|PROT_WRITE;
 				mmap_flags=MAP_SHARED;
 			}
-			else if (rw=='r')
-			{
-				open_flags=O_RDONLY;
-				mmap_prot=PROT_READ;
-				mmap_flags=MAP_PRIVATE;
-			}
-			else
-				SG_ERROR("Unknown flags\n")
 
 			fd = open(fname, open_flags, S_IRWXU | S_IRWXG | S_IRWXO);
 			if (fd == -1)
@@ -101,6 +97,8 @@ template <class T> class CMemoryMappedFile : public CSGObject
 			address = mmap(NULL, length, mmap_prot, mmap_flags, fd, 0);
 			if (address == MAP_FAILED)
 				SG_ERROR("Error mapping file")
+
+				set_generic<T>();
 		}
 
 		/** destructor */
@@ -155,7 +153,7 @@ template <class T> class CMemoryMappedFile : public CSGObject
 		 *
 		 * @param len length of line (returned via reference)
 		 * @param offs offset to be passed for reading next line, should be 0
-		 * 			initially (returned via reference)
+		 *			initially (returned via reference)
 		 *
 		 * @return line (NOT ZERO TERMINATED)
 		 */
@@ -181,10 +179,10 @@ template <class T> class CMemoryMappedFile : public CSGObject
 		/** write line to file
 		 *
 		 * @param line string to be written (must not contain '\n' and not
-		 * 									required to be zero terminated)
+		 *									required to be zero terminated)
 		 * @param len length of the string to be written
 		 * @param offs offset to be passed for writing next line, should be 0
-		 * 			initially (returned via reference)
+		 *			initially (returned via reference)
 		 *
 		 * @return line (NOT ZERO TERMINATED)
 		 */

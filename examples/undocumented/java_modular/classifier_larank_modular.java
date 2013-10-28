@@ -1,7 +1,7 @@
 import org.shogun.*;
 import org.jblas.*;
 
-import static org.shogun.MulticlassLabels.obtain_from_generic;
+import static org.shogun.LabelsFactory.to_multiclass;
 
 public class classifier_larank_modular {
 	static {
@@ -32,7 +32,7 @@ public class classifier_larank_modular {
 		svm.set_batch_mode(false);
 		svm.set_epsilon(epsilon);
 		svm.train();
-		DoubleMatrix out_labels = obtain_from_generic(svm.apply(feats_train)).get_labels();
+		DoubleMatrix out_labels = to_multiclass(svm.apply(feats_train)).get_labels();
 		System.out.println(out_labels.toString());
 
 		modshogun.exit_shogun();

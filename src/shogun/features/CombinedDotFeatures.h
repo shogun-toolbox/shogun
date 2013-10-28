@@ -14,14 +14,13 @@
 #define _COMBINEDDOTFEATURES_H___
 
 #include <shogun/lib/common.h>
-#include <shogun/lib/List.h>
+#include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/features/DotFeatures.h>
 
 namespace shogun
 {
 class CFeatures;
-class CList;
-class CListElement;
+class CDynamicObjectArray;
 /** @brief Features that allow stacking of a number of DotFeatures.
  *
  * They transparently provide all the operations of DotFeatures, i.e.
@@ -154,23 +153,12 @@ class CCombinedDotFeatures : public CDotFeatures
 			return C_COMBINED_DOT;
 		}
 
-		/** get the size of a single element
-		 *
-		 * @return size of a element
-		 */
-		virtual int32_t get_size() const
-		{
-			return sizeof(float64_t);
-		}
-
 		#ifndef DOXYGEN_SHOULD_SKIP_THIS
 		/** iterator for combined dotfeatures */
 		struct combined_feature_iterator
 		{
 			/** pointer to current feature object */
 			CDotFeatures* f;
-			/** pointer to list object */
-			CListElement* current;
 			/** pointer to combined feature iterator */
 			void* iterator;
 			/** the index of the vector over whose components to iterate over */
@@ -184,7 +172,7 @@ class CCombinedDotFeatures : public CDotFeatures
 		 * free_feature_iterator to cleanup
 		 *
 		 * @param vector_index the index of the vector over whose components to
-		 * 			iterate over
+		 *			iterate over
 		 * @return feature iterator (to be passed to get_next_feature)
 		 */
 		virtual void* get_feature_iterator(int32_t vector_index);
@@ -217,44 +205,21 @@ class CCombinedDotFeatures : public CDotFeatures
 		/** list feature objects */
 		void list_feature_objs();
 
-		/** get first feature object
+		/** get feature object at position idx
 		 *
-		 * @return first feature object
-		 */
-		CDotFeatures* get_first_feature_obj();
-
-		/** get first feature object
-		 *
-		 * @param current list of features
-		 * @return first feature object
-		 */
-		CDotFeatures* get_first_feature_obj(CListElement*& current);
-
-		/** get next feature object
-		 *
+		 * @param idx the index of the feature to return
 		 * @return next feature object
 		 */
-		CDotFeatures* get_next_feature_obj();
+		CDotFeatures* get_feature_obj(int32_t idx);
 
-		/** get next feature object
-		 *
-		 * @param current list of features
-		 * @return next feature object
-		 */
-		CDotFeatures* get_next_feature_obj(CListElement*& current);
-
-		/** get last feature object
-		 *
-		 * @return last feature object
-		 */
-		CDotFeatures* get_last_feature_obj();
-
-		/** insert feature object
+		/** insert feature object at position idx
+		 *  idx must be < get_num_feature_obj()
 		 *
 		 * @param obj feature object to insert
+		 * @param idx position where to insert the feature obj
 		 * @return if inserting was successful
 		 */
-		bool insert_feature_obj(CDotFeatures* obj);
+		bool insert_feature_obj(CDotFeatures* obj, int32_t idx);
 
 		/** append feature object
 		 *
@@ -263,11 +228,12 @@ class CCombinedDotFeatures : public CDotFeatures
 		 */
 		bool append_feature_obj(CDotFeatures* obj);
 
-		/** delete feature object
+		/** delete feature object at position idx
 		 *
+		 * @param idx the index of the feature object to delete
 		 * @return if deleting was successful
 		 */
-		bool delete_feature_obj();
+		bool delete_feature_obj(int32_t idx);
 
 		/** get number of feature objects
 		 *
@@ -297,9 +263,11 @@ class CCombinedDotFeatures : public CDotFeatures
 		void init();
 
 	protected:
-		/** feature list */
-		CList* feature_list;
+		/** feature array */
+		CDynamicObjectArray* feature_array;
 
+		/// idx for iterator
+		int32_t iterator_idx;
 		/// total number of vectors
 		int32_t num_vectors;
 		/// total number of dimensions

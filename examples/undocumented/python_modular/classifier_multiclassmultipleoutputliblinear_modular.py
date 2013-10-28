@@ -6,8 +6,8 @@ from tools.multiclass_shared import prepare_data
 parameter_list = [[traindat,testdat,label_traindat,label_testdat,2.1,1,1e-5],[traindat,testdat,label_traindat,label_testdat,2.2,1,1e-5]]
 
 def classifier_multiclassmultipleoutputliblinear_modular (fm_train_real=traindat,fm_test_real=testdat,label_train_multiclass=label_traindat,label_test_multiclass=label_testdat,width=2.1,C=1,epsilon=1e-5):
-	from shogun.Features import RealFeatures, MulticlassLabels, MulticlassMultipleOutputLabels
-	from shogun.Classifier import MulticlassLibLinear
+	from modshogun import RealFeatures, MulticlassLabels, MulticlassMultipleOutputLabels
+	from modshogun import MulticlassLibLinear
 
 	feats_train=RealFeatures(fm_train_real)
 	feats_test=RealFeatures(fm_test_real)

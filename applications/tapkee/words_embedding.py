@@ -4,7 +4,7 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # Written (W) 2011 Sergey Lisitsyn
 # Copyright (C) 2011 Sergey Lisitsyn
 
@@ -21,9 +21,9 @@ def word_kernel(words):
 		for j in range(i,N):
 			s = difflib.SequenceMatcher(None,words[i],words[j])
 			dist_matrix[i,j] = s.ratio()
-	dist_matrix = 0.5*(dist_matrix+dist_matrix.T) 
+	dist_matrix = 0.5*(dist_matrix+dist_matrix.T)
 	return CustomKernel(dist_matrix)
-	
+
 print 'loading'
 words = []
 f = open("../../data/toy/words.dat")

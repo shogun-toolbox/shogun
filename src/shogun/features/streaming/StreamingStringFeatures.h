@@ -217,13 +217,6 @@ public:
 	virtual int32_t get_num_vectors() const;
 
 	/**
-	 * Return the size of one T object.
-	 *
-	 * @return Size of T.
-	 */
-	virtual int32_t get_size() const;
-
-	/**
 	 * Return the number of features in the current vector.
 	 *
 	 * @return length of the vector

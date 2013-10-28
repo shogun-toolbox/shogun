@@ -13,6 +13,7 @@
 #include <shogun/io/SerializableAsciiFile.h>
 #include <shogun/base/ParameterMap.h>
 #include <shogun/features/DenseFeatures.h>
+#include <unistd.h>
 
 using namespace shogun;
 
@@ -193,8 +194,6 @@ public:
 		else if (*target==SGParamInfo("vector", CT_SGVECTOR, ST_NONE,
 				PT_INT32, 0))
 		{
-			TParameter* to_migrate=NULL;
-
 			one_to_one_migration_prepare(param_base, target, result,
 					to_migrate);
 
@@ -206,8 +205,6 @@ public:
 		else if (*target==SGParamInfo("matrix", CT_SGMATRIX, ST_NONE,
 				PT_INT32, 0))
 		{
-			TParameter* to_migrate=NULL;
-
 			one_to_one_migration_prepare(param_base, target, result,
 					to_migrate);
 
@@ -219,8 +216,6 @@ public:
 		else if (*target==SGParamInfo("matrix", CT_SGMATRIX, ST_NONE,
 				PT_FLOAT64, 1))
 		{
-			TParameter* to_migrate=NULL;
-
 			one_to_one_migration_prepare(param_base, target, result,
 					to_migrate);
 
@@ -233,8 +228,6 @@ public:
 		else if (*target==SGParamInfo("float_features", CT_SCALAR, ST_NONE,
 				PT_SGOBJECT, 1))
 		{
-			TParameter* to_migrate=NULL;
-
 			/* specify name change and thats it */
 			one_to_one_migration_prepare(param_base, target, result,
 					to_migrate, (char*) "int_features");
@@ -247,10 +240,11 @@ public:
 	}
 };
 
-const char* filename="test.txt";
-
 void test_load_file_parameter()
 {
+	char filename_tmp[] = "map_params_test.XXXXXX";
+	char* filename=mktemp(filename_tmp);
+
 	/* create one instance of each class */
 	CTestClassInt* int_instance=new CTestClassInt();
 	CTestClassFloat* float_instance=new CTestClassFloat();
@@ -388,6 +382,7 @@ void test_load_file_parameter()
 	SG_UNREF(file);
 	SG_UNREF(int_instance);
 	SG_UNREF(float_instance);
+	unlink(filename);
 }
 
 int main(int argc, char **argv)
@@ -400,4 +395,3 @@ int main(int argc, char **argv)
 
 	return 0;
 }
-

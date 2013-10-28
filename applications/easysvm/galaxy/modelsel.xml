@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <tool id="easymodelsel" name="SVM Model Selection">
 <description>Find the best combination of SVM hyper-parameters</description>
-  <command interpreter="python">easysvm.py 
-        modelsel $crossval 
-        $C 
+  <command interpreter="python">easysvm.py
+        modelsel $crossval
+        $C
 	#if $kernel.kname == "1"
 	    linear
         #elif $kernel.kname == "2"
@@ -18,7 +18,7 @@
 	#if $datatype.inputdatatype=="1"
 	    fasta $datatype.dataset_pos $datatype.dataset_neg
 	#else
-	    arff $datatype.dataset 
+	    arff $datatype.dataset
         #end if
 	$outfile
         #if $kernel.kname=="4" or $kernel.kname=="5"
@@ -27,10 +27,10 @@
             #elif $kernel.seq.stype=="protein"
                 protein $kernel.seq.con
             #end if
-        #end if 
+        #end if
   </command>
   <inputs>
-      	  <conditional name="datatype">
+	  <conditional name="datatype">
 	  <param name="inputdatatype" type="select" label="Input data type" help="There are two available formats: FASTA for sequences and the more general ARFF format for sequences or numerical attributes.">
 	  <option value="1">FASTA</option>
 	  <option value="2">ARFF</option>
@@ -55,7 +55,7 @@
 	  3 and 10.">
 	  <label>Number of cross validation repeats</label>
 	  </param>
-    <param name="C" type="text" size="10" value="0.1,1,10" 
+    <param name="C" type="text" size="10" value="0.1,1,10"
 		   help="List of regularization parameter values considered for
 		   model selection.">
       <label>SVM regularization parameter C
@@ -90,19 +90,19 @@
       </when>
       <when value="3">
         <param name="width" type="text" size="10" value="0.1,1,10" help="The
-	  kernel width controls the breadth of the Gaussian 
+	  kernel width controls the breadth of the Gaussian
 	  around each point. This can be a comma-separated list of values  to be considered for model selection.">
 	  <label>The width of the Gaussian Kernel</label>
 	</param>
       </when>
       <when value="4">
-        <param name="degree" type="text" size="10" value="4,5,6" 
+        <param name="degree" type="text" size="10" value="4,5,6"
 	  help="Degree controls the maximal length of substrings considered
 	  in the Spectrum kernel. This can be a comma-separated list of
 	  values  to be considered for model selection.">
 	  <label>The degree of the Spectrum Kernel</label>
         </param>
-        
+
         <conditional name="seq">
                <param name="stype" type="select" label="Input sequence type" help="Mention about the input data file sequence type DNA/Protein.">
                      <option value="dna">DNA</option>
@@ -148,7 +148,7 @@
 
       </when>
       <when value="5">
-        <param name="degree" type="text" size="10" value="5,10,15" 
+        <param name="degree" type="text" size="10" value="5,10,15"
 	  help="Degree controls the maximal length of substrings considered
 	  in the WD kernel. This can be a comma-separated list of values  to
 	  be considered for model selection.">
@@ -160,7 +160,7 @@
 	  of values to be considered for model selection.">
           <label>The shift parameter of the WD Kernel to allow positional variations</label>
         </param>
-        
+
         <conditional name="seq">
                <param name="stype" type="select" label="Input sequence type" help="Mention about the input data file sequence type DNA/Protein.">
                      <option value="dna">DNA</option>
@@ -213,15 +213,15 @@
   <help>
 .. class:: infomark
 
-    For every parameter combination of C and kernel parameters 
+    For every parameter combination of C and kernel parameters
     the performance is estimated using cross validation. The result is a list of
     optimal parameter combinations for several performance measures.
 
 .. class:: warningmark
 
-    Please note that the 
+    Please note that the
     total computation time scales with number of
-    cross-validation rounds and parameter combinations. 
+    cross-validation rounds and parameter combinations.
 
 ----
 

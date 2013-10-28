@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.shogun.EAlphabet.DNA;
-import static org.shogun.BinaryLabels.obtain_from_generic;
+import static org.shogun.LabelsFactory.to_binary;
 
 public class kernel_histogram_word_string_modular {
 	static {
@@ -40,7 +40,7 @@ public class kernel_histogram_word_string_modular {
 		DoubleMatrix km_train = kernel.get_kernel_matrix();
 		kernel.init(feats_train, feats_test);
 		pie.set_features(feats_test);
-		obtain_from_generic(pie.apply()).get_labels();
+		to_binary(pie.apply()).get_labels();
 		DoubleMatrix km_test=kernel.get_kernel_matrix();
 
 		modshogun.exit_shogun();

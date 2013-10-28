@@ -80,3 +80,21 @@ float64_t CChi2Kernel::compute(int32_t idx_a, int32_t idx_b)
 
 	return result;
 }
+
+float64_t CChi2Kernel::get_width()
+{
+	return width;
+}
+
+CChi2Kernel* CChi2Kernel::obtain_from_generic(CKernel* kernel)
+{
+	if (kernel->get_kernel_type()!=K_CHI2)
+	{
+		SG_SERROR("Provided kernel is "
+				"not of type CChi2Kernel!\n");
+	}
+
+	/* since an additional reference is returned */
+	SG_REF(kernel);
+	return (CChi2Kernel*)kernel;
+}

@@ -49,7 +49,8 @@ enum EDistanceType
 	D_CUSTOM = 160,
 	D_ATTENUATEDEUCLIDEAN = 170,
 	D_MAHALANOBIS = 180,
-	D_DIRECTOR = 190
+	D_DIRECTOR = 190,
+	D_CUSTOMMAHALANOBIS = 200
 };
 
 
@@ -69,7 +70,7 @@ enum EDistanceType
  * Currently distance inherited from the CDistance class should be
  * symmetric.
  *
- * The simpliest example of a distance function is the euclidean
+ * The simplest example of a distance function is the Euclidean
  * distance: @see CEuclideanDistance
  *
  * In the means of Shogun toolbox the distance function is defined
@@ -98,47 +99,13 @@ class CDistance : public CSGObject
 		  * @param idx_b feature vector b at idx_b
 		  * @return distance value
 		 */
-		virtual float64_t distance(int32_t idx_a, int32_t idx_b)
-		{
-			if (idx_a < 0 || idx_b <0)
-				return 0;
-
-			ASSERT(lhs)
-			ASSERT(rhs)
-
-			if (lhs==rhs)
-			{
-				int32_t num_vectors = lhs->get_num_vectors();
-
-				if (idx_a>=num_vectors)
-					idx_a=2*num_vectors-1-idx_a;
-
-				if (idx_b>=num_vectors)
-					idx_b=2*num_vectors-1-idx_b;
-			}
-
-			ASSERT(idx_a<lhs->get_num_vectors())
-			ASSERT(idx_b<rhs->get_num_vectors())
-
-			if (precompute_matrix && (precomputed_matrix==NULL) && (lhs==rhs))
-				do_precompute_matrix() ;
-
-			if (precompute_matrix && (precomputed_matrix!=NULL))
-			{
-				if (idx_a>=idx_b)
-					return precomputed_matrix[idx_a*(idx_a+1)/2+idx_b] ;
-				else
-					return precomputed_matrix[idx_b*(idx_b+1)/2+idx_a] ;
-			}
-
-			return compute(idx_a, idx_b);
-		}
+		virtual float64_t distance(int32_t idx_a, int32_t idx_b);
 
 		/** get distance function for lhs feature vector a
 		 *  and rhs feature vector b. The computation of the
-		 *  distance stops if the intermediate result is 
-		 *  larger than upper_bound. This is useful to use 
-		 *  with John Langford's Cover Tree and it is ONLY 
+		 *  distance stops if the intermediate result is
+		 *  larger than upper_bound. This is useful to use
+		 *  with John Langford's Cover Tree and it is ONLY
 		 *  implemented for Euclidean distance
 		 *
 		 *  @param idx_a feature vector a at idx_a
@@ -152,32 +119,44 @@ class CDistance : public CSGObject
 			return distance(idx_a, idx_b);
 		}
 
-			
 		/** get distance matrix
 		 *
 		 * @return computed distance matrix (needs to be cleaned up)
 		 */
-		SGMatrix<float64_t> get_distance_matrix();
+		SGMatrix<float64_t> get_distance_matrix()
+		{
+			return get_distance_matrix<float64_t>();
+		}
 
-		/** get distance matrix real
+		/** get distance matrix (templated)
 		 *
-		 * @param m dimension m
-		 * @param n dimension n
-		 * @param target target matrix
-		 * @return target matrix
+		 * @return the distance matrix
 		 */
-		virtual float64_t* get_distance_matrix_real(
-			int32_t &m,int32_t &n, float64_t* target);
+		template <class T> SGMatrix<T> get_distance_matrix();
 
-		/** get distance matrix short real
+		/** compute row start offset for parallel kernel matrix computation
 		 *
-		 * @param m dimension m
-		 * @param n dimension n
-		 * @param target target matrix
-		 * @return target matrix
+		 * @param offs offset
+		 * @param n number of columns
+		 * @param symmetric whether matrix is symmetric
 		 */
-		virtual float32_t* get_distance_matrix_shortreal(
-			int32_t &m,int32_t &n,float32_t* target);
+		int32_t compute_row_start(int64_t offs, int32_t n, bool symmetric)
+		{
+			int32_t i_start;
+
+			if (symmetric)
+				i_start=(int32_t) CMath::floor(n-CMath::sqrt(CMath::sq((float64_t) n)-offs));
+			else
+				i_start=(int32_t) (offs/int64_t(n));
+
+			return i_start;
+		}
+
+		/** helper for computing the kernel matrix in a parallel way
+		 *
+		 * @param p thread parameters
+		 */
+		template <class T> static void* get_distance_matrix_helper(void* p);
 
 		/** init distance
 		 *
@@ -340,7 +319,7 @@ class CDistance : public CSGObject
 		/// compute distance function for features a and b
 		/// idx_{a,b} denote the index of the feature vectors
 		/// in the corresponding feature object
-		virtual float64_t compute(int32_t x, int32_t y)=0;
+		virtual float64_t compute(int32_t idx_a, int32_t idx_b)=0;
 
 		/// matrix precomputation
 		void do_precompute_matrix();

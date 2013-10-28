@@ -15,13 +15,13 @@
 
 #include <shogun/lib/config.h>
 
-
 #include <shogun/lib/common.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/machine/LinearMachine.h>
 #include <shogun/optimization/liblinear/shogun_liblinear.h>
 #include <shogun/lib/SGSparseMatrix.h>
 
+#include <map>
 
 namespace shogun
 {
@@ -29,7 +29,7 @@ namespace shogun
 #ifdef HAVE_LAPACK
 
 
-/** @brief mapped sparse matrix for 
+/** @brief mapped sparse matrix for
  * representing graph relations of tasks
  */
 class MappedSparseMatrix
@@ -79,7 +79,7 @@ class MappedSparseMatrix
 
         }
     }
-    
+
 	/** under-the-hood data structure  */
     std::vector< std::map<index_t, float64_t> > data;
 
@@ -235,11 +235,11 @@ class CLibLinearMTL : public CLinearMachine
 		 */
 		inline SGMatrix<float64_t> get_W()
 		{
-            
+
             int32_t w_size = V.num_rows;
 
             SGMatrix<float64_t> W = SGMatrix<float64_t>(w_size, num_tasks);
-            for(int32_t k=0; k<w_size*num_tasks; k++) 
+            for(int32_t k=0; k<w_size*num_tasks; k++)
             {
                 W.matrix[k] = 0;
             }
@@ -304,7 +304,7 @@ class CLibLinearMTL : public CLinearMachine
         void init();
 
 		void solve_l2r_l1l2_svc(
-			const problem *prob, double eps, double Cp, double Cn);
+			const liblinear_problem *prob, double eps, double Cp, double Cn);
 
 
 	protected:

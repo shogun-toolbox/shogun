@@ -5,6 +5,7 @@
 
 using namespace shogun;
 
+#ifdef HAVE_LAPACK
 TEST(SVMOcasTest,train)
 {
 	index_t num_samples = 50;
@@ -37,7 +38,7 @@ TEST(SVMOcasTest,train)
 	float64_t objective = ocas->compute_primal_objective();
 
 	EXPECT_NEAR(objective, 0.022321841487323236, 1e-2);
-	
+
 	CLabels* pred = ocas->apply(test_feats);
 	for (int i = 0; i < num_samples; ++i)
 		EXPECT_EQ(ground_truth->get_int_label(i), ((CBinaryLabels*)pred)->get_int_label(i));
@@ -47,4 +48,5 @@ TEST(SVMOcasTest,train)
 	SG_UNREF(test_feats);
 	SG_UNREF(pred);
 }
+#endif // HAVE_LAPACK
 

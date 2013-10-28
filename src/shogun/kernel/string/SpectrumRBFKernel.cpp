@@ -46,15 +46,14 @@ CSpectrumRBFKernel::CSpectrumRBFKernel()
 CSpectrumRBFKernel::CSpectrumRBFKernel (int32_t size, float64_t *AA_matrix_, int32_t degree_, float64_t width_)
   : CStringKernel<char>(size), alphabet(NULL), degree(degree_), width(width_), sequences(NULL), string_features(NULL), nof_sequences(0), max_sequence_length(0)
 {
-	lhs=NULL;
-	rhs=NULL;
+	init();
+	register_param();
 
 	target_letter_0=-1 ;
 
-	AA_matrix=SG_MALLOC(float64_t, 128*128);
+	AA_matrix=SGMatrix<float64_t>(128,128);
 
-
-	memcpy(AA_matrix, AA_matrix_, 128*128*sizeof(float64_t)) ;
+	memcpy(AA_matrix.matrix, AA_matrix_, 128*128*sizeof(float64_t)) ;
 
 	read_profiles_and_sequences();
 	SGStringList<char> string_list;
@@ -64,8 +63,8 @@ CSpectrumRBFKernel::CSpectrumRBFKernel (int32_t size, float64_t *AA_matrix_, int
 
 	//string_features = new CStringFeatures<char>(sequences, nof_sequences, max_sequence_length, PROTEIN);
 	string_features = new CStringFeatures<char>(string_list, IUPAC_AMINO_ACID);
+	SG_REF(string_features)
 	init(string_features, string_features);
-	register_param();
 }
 
 CSpectrumRBFKernel::CSpectrumRBFKernel(
@@ -74,8 +73,8 @@ CSpectrumRBFKernel::CSpectrumRBFKernel(
 {
 	target_letter_0=-1 ;
 
-	AA_matrix=SG_MALLOC(float64_t, 128*128);
-	memcpy(AA_matrix, AA_matrix_, 128*128*sizeof(float64_t)) ;
+	AA_matrix=SGMatrix<float64_t>(128,128);
+	memcpy(AA_matrix.matrix, AA_matrix_, 128*128*sizeof(float64_t)) ;
 
 	init(l, r);
 	register_param();
@@ -84,14 +83,8 @@ CSpectrumRBFKernel::CSpectrumRBFKernel(
 CSpectrumRBFKernel::~CSpectrumRBFKernel()
 {
 	cleanup();
-	SG_FREE(AA_matrix);
-}
-
-
-void CSpectrumRBFKernel::remove_lhs()
-{
-
-	CKernel::remove_lhs();
+	SG_UNREF(string_features);
+	SG_FREE(sequences);
 }
 
 void CSpectrumRBFKernel::read_profiles_and_sequences()
@@ -344,9 +337,9 @@ float64_t CSpectrumRBFKernel::AA_helper(const char* path, const int seq_degree, 
 	diff+=1.4 ;
       else
 	{
-	  diff += AA_matrix[ (path[i]-1)*128 + path[i] - 1] ;
-	  diff -= 2*AA_matrix[ (path[i]-1)*128 + joint_seq[index+i] - 1] ;
-	  diff += AA_matrix[ (joint_seq[index+i]-1)*128 + joint_seq[index+i] - 1] ;
+	  diff += AA_matrix.matrix[ (path[i]-1)*128 + path[i] - 1] ;
+	  diff -= 2*AA_matrix.matrix[ (path[i]-1)*128 + joint_seq[index+i] - 1] ;
+	  diff += AA_matrix.matrix[ (joint_seq[index+i]-1)*128 + joint_seq[index+i] - 1] ;
 	  if (CMath::is_nan(diff))
 	    fprintf(stderr, "nan occurred: '%c' '%c'\n", path[i], joint_seq[index+i]) ;
 	}
@@ -384,8 +377,8 @@ bool CSpectrumRBFKernel::set_AA_matrix(
 
 	if (AA_matrix_)
 	{
-		SG_DEBUG("Setting AA_matrix\n") 
-		memcpy(AA_matrix, AA_matrix_, 128*128*sizeof(float64_t)) ;
+		SG_DEBUG("Setting AA_matrix\n")
+		memcpy(AA_matrix.matrix, AA_matrix_, 128*128*sizeof(float64_t)) ;
 		return true ;
 	}
 
@@ -395,13 +388,11 @@ bool CSpectrumRBFKernel::set_AA_matrix(
 void CSpectrumRBFKernel::register_param()
 {
 	SG_ADD(&degree, "degree", "degree of the kernel", MS_AVAILABLE);
-	SG_ADD(&AA_matrix_length, "AA_matrix_length", "the length of AA matrix",
-	    MS_NOT_AVAILABLE);
-	m_parameters->add_vector(&AA_matrix, &AA_matrix_length, "AA_matrix", "128*128 scalar product matrix");
+	SG_ADD(&AA_matrix, "AA_matrix", "128*128 scalar product matrix", MS_NOT_AVAILABLE);
 	SG_ADD(&width, "width", "width of Gaussian", MS_AVAILABLE);
 	SG_ADD(&nof_sequences, "nof_sequences", "length of the sequence",
 	    MS_NOT_AVAILABLE);
-	m_parameters->add_vector(&sequences, &nof_sequences, "the sequences as a part of profile");
+	m_parameters->add_vector(&sequences, &nof_sequences, "sequences", "the sequences as a part of profile");
 	SG_ADD(&max_sequence_length,
 	    "max_sequence_length", "max length of the sequence", MS_NOT_AVAILABLE);
 }
@@ -416,8 +407,6 @@ void CSpectrumRBFKernel::init()
 {
 	alphabet = NULL;
 	degree = 0;
-	AA_matrix = NULL;
-	AA_matrix_length = 128*128;
 	width = 0.0;
 	sequences = NULL;
 	string_features = NULL;

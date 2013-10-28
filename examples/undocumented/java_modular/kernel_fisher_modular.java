@@ -24,14 +24,14 @@ public class kernel_fisher_modular {
 		String[] fm_test_dna = Load.load_dna("../data/fm_test_dna.dat");
 		DoubleMatrix label_train_dna = Load.load_labels("../data/label_train_dna.dat");
 
-		
+
 		ArrayList fm_hmm_pos_builder = new ArrayList();
 		ArrayList fm_hmm_neg_builder = new ArrayList();
 		for(int i = 0; i < label_train_dna.getColumns(); i++) {
-			if (label_train_dna.get(i) == 1)			
+			if (label_train_dna.get(i) == 1)
 				fm_hmm_pos_builder.add(fm_train_dna[i]);
 			else
-				fm_hmm_neg_builder.add(fm_train_dna[i]);			
+				fm_hmm_neg_builder.add(fm_train_dna[i]);
 		}
 
 		int pos_size = fm_hmm_pos_builder.size();

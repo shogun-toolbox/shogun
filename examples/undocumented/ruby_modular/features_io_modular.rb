@@ -17,7 +17,7 @@ def features_io_modular(fm_train_real, label_train_twoclass)
 	feats.save(f)
 	f.close()
 
-	f=Modshogun::AsciiFile.new("fm_train_sparsereal.ascii","w")
+	f=Modshogun::LibSVMFile.new("fm_train_sparsereal.ascii","w")
 	feats.save(f)
 	f.close()
 
@@ -25,7 +25,7 @@ def features_io_modular(fm_train_real, label_train_twoclass)
 	feats2.load(f)
 	f.close()
 
-	f=Modshogun::AsciiFile.new("fm_train_sparsereal.ascii")
+	f=Modshogun::LibSVMFile.new("fm_train_sparsereal.ascii")
 	feats2.load(f)
 	f.close()
 
@@ -41,7 +41,7 @@ def features_io_modular(fm_train_real, label_train_twoclass)
 	feats.save(f)
 	f.close()
 
-	f=Modshogun::AsciiFile.new("fm_train_real.ascii","w")
+	f=Modshogun::CSVFile.new("fm_train_real.ascii","w")
 	feats.save(f)
 	f.close()
 
@@ -49,14 +49,14 @@ def features_io_modular(fm_train_real, label_train_twoclass)
 	feats2.load(f)
 	f.close()
 
-	f=Modshogun::AsciiFile.new("fm_train_real.ascii")
+	f=Modshogun::CSVFile.new("fm_train_real.ascii")
 	feats2.load(f)
 	f.close()
 
 	lab=Modshogun::MulticlassLabels.new([0.0,1.0,2.0,3.0])
 	lab2=Modshogun::MulticlassLabels.new
 
-	f=Modshogun::AsciiFile.new("label_train_twoclass.ascii","w")
+	f=Modshogun::CSVFile.new("label_train_twoclass.ascii","w")
 	lab.save(f)
 	f.close()
 
@@ -68,7 +68,7 @@ def features_io_modular(fm_train_real, label_train_twoclass)
 	lab.save(f)
 	f.close()
 
-	f=Modshogun::AsciiFile.new("label_train_twoclass.ascii")
+	f=Modshogun::CSVFile.new("label_train_twoclass.ascii")
 	lab2.load(f)
 	f.close()
 
@@ -92,7 +92,7 @@ def features_io_modular(fm_train_real, label_train_twoclass)
 	#		'label_train_real.h5', 'label_train_twoclass.ascii','label_train_twoclass.bin']:
 	#	os.unlink(f)
 	#end
-	
+
 	return feats, feats2, lab, lab2
 end
 

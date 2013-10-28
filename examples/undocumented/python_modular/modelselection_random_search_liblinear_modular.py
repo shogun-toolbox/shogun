@@ -20,17 +20,17 @@ label_traindat=concatenate((-ones(num_vectors), ones(num_vectors)));
 parameter_list = [[traindat,label_traindat]]
 
 def modelselection_random_search_liblinear_modular (traindat=traindat, label_traindat=label_traindat):
-    from shogun.Evaluation import CrossValidation, CrossValidationResult
-    from shogun.Evaluation import ContingencyTableEvaluation, ACCURACY
-    from shogun.Evaluation import StratifiedCrossValidationSplitting
-    from shogun.ModelSelection import RandomSearchModelSelection
-    from shogun.ModelSelection import ModelSelectionParameters, R_EXP
-    from shogun.ModelSelection import ParameterCombination
-    from shogun.Features import BinaryLabels
-    from shogun.Features import RealFeatures
-    from shogun.Classifier import LibLinear, L2R_L2LOSS_SVC
+    from modshogun import CrossValidation, CrossValidationResult
+    from modshogun import ContingencyTableEvaluation, ACCURACY
+    from modshogun import StratifiedCrossValidationSplitting
+    from modshogun import RandomSearchModelSelection
+    from modshogun import ModelSelectionParameters, R_EXP
+    from modshogun import ParameterCombination
+    from modshogun import BinaryLabels
+    from modshogun import RealFeatures
+    from modshogun import LibLinear, L2R_L2LOSS_SVC
 
-    # build parameter tree to select C1 and C2 
+    # build parameter tree to select C1 and C2
     param_tree_root=ModelSelectionParameters()
     c1=ModelSelectionParameters("C1");
     param_tree_root.append_child(c1)
@@ -63,8 +63,7 @@ def modelselection_random_search_liblinear_modular (traindat=traindat, label_tra
     cross_validation.set_autolock(False)
 
     # model selection instance
-    model_selection=RandomSearchModelSelection(param_tree_root,
-	    cross_validation,0.5) 
+    model_selection=RandomSearchModelSelection(cross_validation, param_tree_root, 0.5)
 
     # perform model selection with selected methods
     #print "performing model selection of"

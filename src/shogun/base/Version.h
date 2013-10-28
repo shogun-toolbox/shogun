@@ -12,14 +12,15 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>
-#include <shogun/lib/versionstring.h>
 #include <shogun/lib/config.h>
+#include <shogun/lib/RefCount.h>
 
 #ifndef VERSION_H__
 #define VERSION_H__
 
 namespace shogun
 {
+class RefCount;
 class IO;
 
 /** @brief Class Version provides version information.
@@ -63,7 +64,7 @@ public:
 	/** get version minute */
 	static int32_t get_version_minute();
 
-	/** get version parameter */
+	/** get parameter serialization version */
 	static int32_t get_version_parameter();
 
 	/** get version in minutes */
@@ -106,7 +107,7 @@ protected:
 	static const int32_t version_parameter;
 
 private:
-	int32_t refcount;
+	RefCount* m_refcount;
 };
 }
 #endif

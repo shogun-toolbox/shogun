@@ -24,14 +24,14 @@ parameter_list = [[traindat,testdat,label_traindat,2.1,1,1e-5,1e-2], \
 
 def modelselection_grid_search_krr_modular (fm_train=traindat,fm_test=testdat,label_train=label_traindat,\
 				       width=2.1,C=1,epsilon=1e-5,tube_epsilon=1e-2):
-    from shogun.Evaluation import CrossValidation, CrossValidationResult
-    from shogun.Evaluation import MeanSquaredError
-    from shogun.Evaluation import CrossValidationSplitting
-    from shogun.Features import RegressionLabels
-    from shogun.Features import RealFeatures
-    from shogun.Regression import KernelRidgeRegression
-    from shogun.ModelSelection import GridSearchModelSelection
-    from shogun.ModelSelection import ModelSelectionParameters
+    from modshogun import CrossValidation, CrossValidationResult
+    from modshogun import MeanSquaredError
+    from modshogun import CrossValidationSplitting
+    from modshogun import RegressionLabels
+    from modshogun import RealFeatures
+    from modshogun import KernelRidgeRegression
+    from modshogun import GridSearchModelSelection
+    from modshogun import ModelSelectionParameters
 
     # training data
     features_train=RealFeatures(traindat)
@@ -55,9 +55,10 @@ def modelselection_grid_search_krr_modular (fm_train=traindat,fm_test=testdat,la
     # cross-validation instance
     cross_validation=CrossValidation(predictor, features_train, labels,
 	    splitting_strategy, evaluation_criterium)
-	
-    # (optional) repeat x-val 10 times
-    cross_validation.set_num_runs(10)
+
+    # (optional) repeat x-val (set larger to get better estimates, at least two
+    # for confidence intervals)
+    cross_validation.set_num_runs(2)
 
     # (optional) request 95% confidence intervals for results (not actually needed
     # for this toy example)
@@ -71,18 +72,17 @@ def modelselection_grid_search_krr_modular (fm_train=traindat,fm_test=testdat,la
     param_tree_root=create_param_tree()
 
     # model selection instance
-    model_selection=GridSearchModelSelection(param_tree_root,
-	    cross_validation)
+    model_selection=GridSearchModelSelection(cross_validation, param_tree_root)
 
     # perform model selection with selected methods
     #print "performing model selection of"
     #print "parameter tree:"
     #param_tree_root.print_tree()
-    
+
     #print "starting model selection"
     # print the current parameter combination, if no parameter nothing is printed
     print_state=False
-    
+
     best_parameters=model_selection.select_model(print_state)
 
     # print best parameters
@@ -98,9 +98,9 @@ def modelselection_grid_search_krr_modular (fm_train=traindat,fm_test=testdat,la
 
 # creates all the parameters to optimize
 def create_param_tree():
-    from shogun.ModelSelection import ModelSelectionParameters, R_EXP, R_LINEAR
-    from shogun.ModelSelection import ParameterCombination
-    from shogun.Kernel import GaussianKernel, PolyKernel
+    from modshogun import ModelSelectionParameters, R_EXP, R_LINEAR
+    from modshogun import ParameterCombination
+    from modshogun import GaussianKernel, PolyKernel
     root=ModelSelectionParameters()
 
     tau=ModelSelectionParameters("tau")
@@ -116,24 +116,24 @@ def create_param_tree():
 
     # gaussian kernel with width
     gaussian_kernel=GaussianKernel()
-    
+
     # print all parameter available for modelselection
     # Dont worry if yours is not included but, write to the mailing list
     #gaussian_kernel.print_modsel_params()
-    
+
     param_gaussian_kernel=ModelSelectionParameters("kernel", gaussian_kernel)
     gaussian_kernel_width=ModelSelectionParameters("width");
-    gaussian_kernel_width.build_values(5.0, 8.0, R_EXP, 1.0, 2.0)
+    gaussian_kernel_width.build_values(5.0, 6.0, R_EXP, 1.0, 2.0)
     param_gaussian_kernel.append_child(gaussian_kernel_width)
     root.append_child(param_gaussian_kernel)
 
     # polynomial kernel with degree
     poly_kernel=PolyKernel()
-    
+
     # print all parameter available for modelselection
     # Dont worry if yours is not included but, write to the mailing list
     #poly_kernel.print_modsel_params()
-    
+
     param_poly_kernel=ModelSelectionParameters("kernel", poly_kernel)
 
     root.append_child(param_poly_kernel)
