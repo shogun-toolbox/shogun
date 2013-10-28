@@ -7,7 +7,7 @@ reverse <- 'n'
 
 fm_train_dna <- as.matrix(read.table('../data/fm_train_dna.dat'))
 fm_test_dna <- as.matrix(read.table('../data/fm_test_dna.dat'))
-label_train_dna <- as.real(as.matrix(read.table('../data/label_train_dna.dat')))
+label_train_dna <- as.double(as.matrix(read.table('../data/label_train_dna.dat')))
 
 # PluginEstimate
 print('PluginEstimate w/ HistogramWord')
