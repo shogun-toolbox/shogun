@@ -7109,30 +7109,40 @@ bool CSGInterface::cmd_system()
 	if (m_nrhs<2 || !create_return_values(0))
 		return false;
 
+	const int32_t MAX_LEN=10000;
 	int32_t len=0;
-	char* command=SG_MALLOC(char, 10000);
-	memset(command, 0, sizeof(char)*10000);
+	int32_t command_len=0;
+	char* command=SG_MALLOC(char, MAX_LEN+1);
+	memset(command, 0, sizeof(char)*MAX_LEN+1);
 	char* cmd=get_str_from_str_or_direct(len);
-	strncat(command, cmd, 10000);
+	strncat(command, cmd, MAX_LEN);
+	command_len+=len;
 	SG_FREE(cmd);
 
 	while (m_rhs_counter<m_nrhs)
 	{
-		strncat(command, " ", 10000);
 		char* arg=get_str_from_str_or_direct(len);
-		strncat(command, arg, 10000);
+		command_len += len + 1;
+
+		if (command_len >= MAX_LEN)
+		{
+			SG_FREE(arg);
+			return false;
+		}
+		strcat(command, " ");
+		strcat(command, arg);
 		SG_FREE(arg);
 	}
 
-	int32_t success=system(command);
-
-	return (success==0);
+	int status=system(command);
+	SG_FREE(command);
+	return (status==0);
 }
 
 bool CSGInterface::cmd_exit()
 {
 	exit(0);
-	return 0; //never reached but necessary to keep sun compiler happy
+	return true; //never reached but necessary to keep sun compiler happy
 }
 
 bool CSGInterface::cmd_exec()
