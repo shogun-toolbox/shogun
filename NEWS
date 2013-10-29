@@ -1,3 +1,14 @@
+2013-11-28 Soeren Sonnenburg <sonne@debian.org>
+
+	* SHOGUN Release version 3.0.1 (libshogun 14.0, data 0.6, parameter 1)
+	* This release also contains several enhancements, cleanups and bugfixes:
+	* Features:
+		- Todo
+	* Bugfixes:
+		- Todo
+	* Cleanup and API Changes:
+		- Todo
+
 2013-10-28 Soeren Sonnenburg <sonne@debian.org>
 
 	* SHOGUN Release version 3.0.0 (libshogun 14.0, data 0.6, parameter 1)
