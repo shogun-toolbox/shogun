@@ -51,7 +51,8 @@ template<class T> class SGMatrix : public SGReferencedData
 		 */
 		T* get_column_vector(index_t col) const
 		{
-			return &matrix[col*num_rows];
+			const int64_t c = col;
+			return &matrix[c*num_rows];
 		}
 
 		/** get a row vector
@@ -73,7 +74,8 @@ template<class T> class SGMatrix : public SGReferencedData
 		 */
 		inline const T& operator()(index_t i_row, index_t i_col) const
 		{
-		    return matrix[i_col*num_rows + i_row];
+		    const int64_t c = i_col;
+		    return matrix[c*num_rows + i_row];
 		}
 
 		/** operator overload for matrix read only access
@@ -90,7 +92,8 @@ template<class T> class SGMatrix : public SGReferencedData
 		 */
 		inline T& operator()(index_t i_row, index_t i_col)
 		{
-		    return matrix[i_col*num_rows + i_row];
+		    const int64_t c = i_col;
+		    return matrix[c*num_rows + i_row];
 		}
 
 		/** operator overload for matrix r/w access
