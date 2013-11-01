@@ -238,6 +238,16 @@ template<class T> class SGVector : public SGReferencedData
 		 * @param index dimension to access
 		 *
 		 */
+		inline T& operator[](uint64_t index)
+		{
+			return vector[index];
+		}
+
+		/** operator overload for vector r/w access
+		 *
+		 * @param index dimension to access
+		 *
+		 */
 		inline T& operator[](int64_t index)
 		{
 			return vector[index];
