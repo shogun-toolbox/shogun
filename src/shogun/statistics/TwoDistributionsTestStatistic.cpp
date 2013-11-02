@@ -129,7 +129,7 @@ float64_t CTwoDistributionsTestStatistic::compute_threshold(
 		SGVector<float64_t> values=bootstrap_null();
 
 		/* return value of (1-alpha) quantile */
-		result=values[CMath::floor(values.vlen*(1-alpha))];
+		result=values[index_t(CMath::floor(values.vlen*(1-alpha)))];
 	}
 	else
 	{
