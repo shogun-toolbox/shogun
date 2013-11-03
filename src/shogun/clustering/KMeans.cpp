@@ -40,7 +40,8 @@ CKMeans::CKMeans(int32_t k_, CDistance* d)
 	set_distance(d);
 }
 
-CKMeans::CKMeans(int32_t k_i, CDistance* d_i, float64_t* centers_i )
+CKMeans::CKMeans(int32_t k_i, CDistance* d_i, SGVector<float64_t> centers_i )
+: CDistanceMachine()
 {
 	init();
 	k = k_i;
@@ -52,11 +53,10 @@ CKMeans::~CKMeans()
 {
 }
 
-bool CKMeans::set_initial_centers(float64_t* centers)
+bool CKMeans::set_initial_centers(SGVector<float64_t> centers)
 {
 	//ASSERT(len == k*get_dimensions());
 	mus_initial = centers;
-	mus_set = true;
 	return true;	
 }
 
@@ -79,7 +79,7 @@ bool CKMeans::train_machine(CFeatures* data)
 	for (int32_t i=0; i<num; i++)
 		Weights.vector[i]=1.0;
 
-	if(mus_set) clustknb(true, mus_initial);
+	if(mus_initial.vlen>0) clustknb(true, mus_initial);
 	else clustknb(false, NULL);
 
 	return true;

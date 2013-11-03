@@ -54,7 +54,7 @@ class CKMeans : public CDistanceMachine
 		 * @param d_i distance
 		 * @param centers_i initial centers for KMeans algorithm
 		*/
-		CKMeans(int32_t k_i, CDistance* d_i, float64_t* centers_i );
+		CKMeans(int32_t k_i, CDistance* d_i, SGVector<float64_t> centers_i );
 		virtual ~CKMeans();
 
 
@@ -126,7 +126,7 @@ class CKMeans : public CDistanceMachine
 		virtual const char* get_name() const { return "KMeans"; }
 
 		/* get the initial centers */
-		virtual bool set_initial_centers(float64_t* centers);
+		virtual bool set_initial_centers(SGVector<float64_t> centers);
 
 	protected:
 		/** clustknb
@@ -168,16 +168,13 @@ class CKMeans : public CDistanceMachine
 		SGVector<float64_t> R;
 
 		///initial centers supplied
-		float64_t* mus_initial;
+		SGVector<float64_t> mus_initial;
 	private:
 		/* temporary variable for weighting over the train data */
 		SGVector<float64_t> Weights;
 
 		/* temp variable for cluster centers */
 		SGMatrix<float64_t> mus;
-
-		/* flag to indicate if initial centers have been supplied */
-		bool mus_set;
 };
 }
 #endif
