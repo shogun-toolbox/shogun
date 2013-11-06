@@ -12,6 +12,7 @@
 %warnfilter(302) apply_generic;*/
 
 %newobject apply();
+%newobject apply(CFeatures* data);
 %newobject apply_binary();
 %newobject apply_binary(CFeatures* data);
 %newobject apply_regression();

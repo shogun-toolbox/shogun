@@ -77,30 +77,6 @@ IGNORE_IN_CLASSLIST class CDirectorDistance : public CDistance
 			return CDistance::distance(idx_a, idx_b);
 		}
 
-		/** get distance matrix real
-		 *
-		 * @param m dimension m
-		 * @param n dimension n
-		 * @param target target matrix
-		 * @return target matrix
-		 */
-		virtual float64_t* get_distance_matrix_real(int32_t &m, int32_t &n, float64_t* target)
-		{
-			return CDistance::get_distance_matrix_real(m, n, target);
-		}
-
-		/** get distance matrix short real
-		 *
-		 * @param m dimension m
-		 * @param n dimension n
-		 * @param target target matrix
-		 * @return target matrix
-		 */
-		virtual float32_t* get_distance_matrix_shortreal(int32_t &m, int32_t &n, float32_t* target)
-		{
-			return CDistance::get_distance_matrix_shortreal(m, n, target);
-		}
-
 		/** init distance
 		 *
 		 *  make sure to check that your distance can deal with the
