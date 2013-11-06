@@ -622,27 +622,22 @@ static bool spmatrix_from_numpy(SGSparseMatrix<type>& sg_matrix, PyObject* obj, 
 
     shogun::SGSparseVector<type>* sfm = SG_MALLOC(shogun::SGSparseVector<type>, num_vec);
 
-    for (int32_t i=0; i<num_vec; i++)
-        new (&sfm[i]) SGSparseVector<type>();
-
     for (int32_t i=1; i<len_indptr; i++)
     {
         int32_t num = bytes_indptr[i]-bytes_indptr[i-1];
 
         if (num>0)
         {
-            shogun::SGSparseVectorEntry<type>* features=SG_MALLOC(shogun::SGSparseVectorEntry<type>, num);
+            sfm[i-1]=SGSparseVector<type>(num);
 
             for (int32_t j=0; j<num; j++)
             {
-                features[j].feat_index=*bytes_indices;
-                features[j].entry=*bytes_data;
+                sfm[i-1].features[j].feat_index=*bytes_indices;
+                sfm[i-1].features[j].entry=*bytes_data;
 
                 bytes_indices++;
                 bytes_data++;
             }
-            sfm[i-1].num_feat_entries=num;
-            sfm[i-1].features=features;
         }
     }
 
