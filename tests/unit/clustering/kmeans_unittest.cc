@@ -32,36 +32,36 @@ TEST(KMeans, manual_center_initialization_test)
 	float64_t vec[4] = {0,5,2,5};	
 	SGVector<float64_t> initial_centers(vec,4,false);
 
-	CDenseFeatures<float64_t>* features = new CDenseFeatures<float64_t>(data);
+	CDenseFeatures<float64_t>* features = new CDenseFeatures<float64_t>(rect);
 	CEuclideanDistance* distance = new CEuclideanDistance(features, features);
 	CKMeans* clustering=new CKMeans(2, distance,initial_centers);
 
 	for (int32_t loop = 0; loop < 10; loop++ )
 	{
-        	clustering->train(features);
+		clustering->train(features);
 
 		CMulticlassLabels* result=CLabelsFactory::to_multiclass(clustering->apply());
 
-	        EXPECT_EQ(0.000000, result->get_label(0));
-	        EXPECT_EQ(0.000000, result->get_label(1));
-	        EXPECT_EQ(1.000000, result->get_label(2));
-	        EXPECT_EQ(1.000000, result->get_label(3));
+		EXPECT_EQ(0.000000, result->get_label(0));
+		EXPECT_EQ(0.000000, result->get_label(1));
+		EXPECT_EQ(1.000000, result->get_label(2));
+		EXPECT_EQ(1.000000, result->get_label(3));
 	
-	        CDenseFeatures<float64_t>* learnt_centers= (CDenseFeatures<float64_t>*) distance->get_lhs();
+		CDenseFeatures<float64_t>* learnt_centers= (CDenseFeatures<float64_t>*) distance->get_lhs();
 
-	        SGMatrix<float64_t> learnt_centers_matrix= learnt_centers->get_feature_matrix();
+		SGMatrix<float64_t> learnt_centers_matrix= learnt_centers->get_feature_matrix();
 	
-	        EXPECT_EQ(0, learnt_centers_matrix(0,0));
-	        EXPECT_EQ(2, learnt_centers_matrix(0,1));
-	        EXPECT_EQ(5, learnt_centers_matrix(1,0));
-	        EXPECT_EQ(5, learnt_centers_matrix(1,1));
+		EXPECT_EQ(0, learnt_centers_matrix(0,0));
+		EXPECT_EQ(2, learnt_centers_matrix(0,1));
+		EXPECT_EQ(5, learnt_centers_matrix(1,0));
+		EXPECT_EQ(5, learnt_centers_matrix(1,1));
 		
 		SG_UNREF(learnt_centers);
 		SG_UNREF(result);
 	}
 
 	SG_UNREF(clustering);
-	SG_UNREF(distance);
+	//SG_UNREF(distance);
 	SG_UNREF(features);
 }
 

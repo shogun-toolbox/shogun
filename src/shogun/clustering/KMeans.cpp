@@ -40,7 +40,7 @@ CKMeans::CKMeans(int32_t k_, CDistance* d)
 	set_distance(d);
 }
 
-CKMeans::CKMeans(int32_t k_i, CDistance* d_i, SGVector<float64_t> centers_i )
+CKMeans::CKMeans(int32_t k_i, CDistance* d_i, SGVector<float64_t> centers_i)
 : CDistanceMachine()
 {
 	init();
