@@ -96,7 +96,7 @@ SerializableXmlReader00::read_scalar_wrapped(
 		float64_t c_real, c_imag;
 		if (sscanf(buf, "(%lg,%lg)", &c_real, &c_imag) != 2)
 			result = false;
-#ifdef HAVE_CXX11
+#if defined(HAVE_CXX11) || defined(_LIBCPP_VERSION)
 		((complex128_t*) param)->real(c_real);
 		((complex128_t*) param)->imag(c_imag);
 #else
