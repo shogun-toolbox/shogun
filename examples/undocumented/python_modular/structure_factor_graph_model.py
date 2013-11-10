@@ -122,7 +122,8 @@ def structure_factor_graph_model(tr_samples = samples, tr_labels = labels, w = w
 	#print w_truth
 
 	# evaluation
-	lbs_bmrm = LabelsFactory.to_structured(bmrm.apply())
+	eva_bmrm = bmrm.apply()
+	lbs_bmrm = LabelsFactory.to_structured(eva_bmrm)
 	acc_loss = 0.0
 	ave_loss = 0.0
 	for i in xrange(num_samples):
