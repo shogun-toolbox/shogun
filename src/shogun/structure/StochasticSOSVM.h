@@ -52,7 +52,7 @@ public:
 
 	/** get classifier type
 	 *
-	 * @return classifier type CT_PRIMALMOSEKSOSVM
+	 * @return classifier type CT_STOCHASTICSOSVM
 	 */
 	virtual EMachineType get_classifier_type() const;
 
