@@ -40,8 +40,25 @@ CKMeans::CKMeans(int32_t k_, CDistance* d)
 	set_distance(d);
 }
 
+CKMeans::CKMeans(int32_t k_i, CDistance* d_i, SGVector<float64_t> centers_i)
+: CDistanceMachine()
+{
+	init();
+	k = k_i;
+	set_distance(d_i);
+	set_initial_centers(centers_i);
+}
+
 CKMeans::~CKMeans()
 {
+}
+
+bool CKMeans::set_initial_centers(SGVector<float64_t> centers)
+{
+	dimensions = ((CDenseFeatures<float64_t>*) distance->get_lhs())->get_num_features();
+	REQUIRE(centers.vlen == k*dimensions, "Vector dimension of initial cluster centers supplied does not match expectation");
+	mus_initial = centers;
+	return true;	
 }
 
 bool CKMeans::train_machine(CFeatures* data)
@@ -63,7 +80,10 @@ bool CKMeans::train_machine(CFeatures* data)
 	for (int32_t i=0; i<num; i++)
 		Weights.vector[i]=1.0;
 
-	clustknb(false, NULL);
+	if (mus_initial.vlen>0) 
+		clustknb(true, mus_initial);
+	else 
+		clustknb(false, NULL);
 
 	return true;
 }
@@ -242,12 +262,13 @@ void CKMeans::clustknb(bool use_old_mus, float64_t *mus_start)
 		ASSERT(mus_start)
 
 		/// set rhs to mus_start
-		rhs_mus->copy_feature_matrix(SGMatrix<float64_t>(mus_start,dimensions,k));
-		float64_t* p_dists=dists;
-
-		for(int32_t idx=0;idx<XSize;idx++,p_dists+=k)
-			distances_rhs(p_dists,0,k - 1,idx);
-		p_dists=NULL;
+		rhs_mus->copy_feature_matrix(SGMatrix<float64_t>(mus_start,dimensions,k,false));
+		
+		for(int32_t idx=0;idx<XSize;idx++)
+		{
+			for(int32_t m=0;m<k;m++)
+				dists[k*idx+m] = distance->distance(idx,m);
+		}
 
 		for (i=0; i<XSize; i++)
 		{
