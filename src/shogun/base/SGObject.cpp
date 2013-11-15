@@ -19,7 +19,6 @@
 #include <shogun/base/ParameterMap.h>
 #include <shogun/base/DynArray.h>
 #include <shogun/lib/Map.h>
-#include <shogun/lib/Lock.h>
 
 #include "class_list.h"
 

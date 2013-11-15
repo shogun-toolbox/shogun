@@ -37,7 +37,6 @@ class Parameter;
 class ParameterMap;
 class SGParamInfo;
 class CSerializableFile;
-class CLock;
 
 template <class T, class K> class CMap;
 
