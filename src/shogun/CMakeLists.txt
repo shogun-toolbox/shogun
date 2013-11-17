@@ -68,6 +68,12 @@ if(SHOGUN_DEPENDS)
   add_dependencies(shogun ${SHOGUN_DEPENDS})
 endif()
 
+IF (PROTOBUF_FOUND)
+	FILE(GLOB protobuf_src io/protobuf/*.proto)
+	PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS ${protobuf_src})
+	add_dependencies(shogun ${protobuf_src} ${PROTO_SRCS} ${PROTO_HDRS})
+ENDIF()
+
 INSTALL(DIRECTORY ./
         DESTINATION include/shogun
         COMPONENT headers
