@@ -17,7 +17,7 @@
 #include <shogun/io/protobuf/Headers.pb.h>
 #include <shogun/io/protobuf/Chunks.pb.h>
 
-#include <google/protobuf/message.h>
+class google::protobuf::Message;
 
 namespace shogun
 {

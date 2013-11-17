@@ -14,6 +14,7 @@
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGSparseVector.h>
 #include <shogun/lib/SGString.h>
+#include <google/protobuf/message.h>
 
 using namespace shogun;
 
