@@ -29,7 +29,7 @@ class VectorHeader;
 class MatrixHeader;
 class SparseMatrixHeader;
 class StringListHeader;
-class ShogunVersion;
+class ShogunVersion_SGDataType'
 
 /** @brief Class for work with binary file
  * in protobuf format.
