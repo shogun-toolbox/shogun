@@ -7,14 +7,7 @@ FILE(GLOB_RECURSE LIBSHOGUN_SRC *.${EXT_SRC_CPP} *.${EXT_SRC_C})
 FILE(GLOB_RECURSE LIBSHOGUN_HEADERS *.${EXT_SRC_HEADER})
 FILE(GLOB_RECURSE LIBSHOGUN_SRC_TMP *.${EXT_CPP_TMP})
 
-IF (PROTOBUF_FOUND)
-	FILE(GLOB protobuf_src io/protobuf/*.proto)
-	PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS ${protobuf_src})
-	add_library(shogun SHARED ${protobuf_src} ${PROTO_SRCS} ${PROTO_HDRS} ${LIBSHOGUN_SRC} lib/config.h base/class_list.cpp)
-ELSE()
-	add_library(shogun SHARED ${LIBSHOGUN_SRC} lib/config.h base/class_list.cpp)
-ENDIF()
-
+add_library(shogun SHARED ${LIBSHOGUN_SRC} lib/config.h base/class_list.cpp)
 
 # Generate versionstring.h
 ADD_CUSTOM_TARGET(

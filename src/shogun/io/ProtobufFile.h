@@ -13,14 +13,19 @@
 #define __PROTOBUFFILE_H__
 
 #include <shogun/io/File.h>
-#include <shogun/io/protobuf/ShogunVersion.pb.h>
-#include <shogun/io/protobuf/Headers.pb.h>
-#include <shogun/io/protobuf/Chunks.pb.h>
 
-class google::protobuf::Message;
+namespace google::protobuf
+{
+class Message;
+}
 
 namespace shogun
 {
+
+class VectorHeader;
+class MatrixHeader;
+class SparseMatrixHeader;
+class StringListHeader;
 
 /** @brief Class for work with binary file
  * in protobuf format.
