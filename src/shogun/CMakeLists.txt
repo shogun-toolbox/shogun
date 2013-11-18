@@ -7,7 +7,12 @@ FILE(GLOB_RECURSE LIBSHOGUN_SRC *.${EXT_SRC_CPP} *.${EXT_SRC_C})
 FILE(GLOB_RECURSE LIBSHOGUN_HEADERS *.${EXT_SRC_HEADER})
 FILE(GLOB_RECURSE LIBSHOGUN_SRC_TMP *.${EXT_CPP_TMP})
 
-add_library(shogun SHARED ${LIBSHOGUN_SRC} lib/config.h base/class_list.cpp)
+# add target to compile the libshogun sources
+add_library(libshogun OBJECT ${LIBSHOGUN_SRC} base/class_list.cpp)
+set_target_properties(libshogun PROPERTIES COMPILE_DEFINITIONS "${DEFINES}")
+IF (SANITIZER_FLAGS)
+  set_target_properties(libshogun PROPERTIES COMPILE_FLAGS ${SANITIZER_FLAGS})
+ENDIF()
 
 # Generate versionstring.h
 ADD_CUSTOM_TARGET(
@@ -19,7 +24,7 @@ ADD_CUSTOM_TARGET(
                      -P ${CMAKE_MODULE_PATH}/version.cmake
     COMMENT "Generating version header"
 )
-add_dependencies(shogun version)
+add_dependencies(libshogun version)
 
 # generate source files from templates
 FOREACH(template ${LIBSHOGUN_SRC_TMP})
@@ -50,23 +55,29 @@ FOREACH(template ${LIBSHOGUN_SRC_TMP})
   ENDIF()
 
   ADD_CUSTOM_TARGET(${generated_target} DEPENDS ${generated_cpp})
-  add_dependencies(shogun ${generated_target})
+  add_dependencies(libshogun ${generated_target})
 ENDFOREACH()
 
-CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/lib/config.h.in ${CMAKE_CURRENT_SOURCE_DIR}/lib/config.h)
+# add target for dynamic
+add_library(shogun SHARED $<TARGET_OBJECTS:libshogun> lib/config.h)
 set_target_properties(shogun PROPERTIES
                       VERSION ${LIBSHOGUNVER}
-                      SOVERSION ${LIBSHOGUNSO}
-                      COMPILE_DEFINITIONS "${DEFINES}")
-IF (SANITIZER_FLAGS)
-  set_target_properties(shogun PROPERTIES COMPILE_FLAGS ${SANITIZER_FLAGS})
-ENDIF()
+                      SOVERSION ${LIBSHOGUNSO})
+
 target_link_libraries(shogun ${POSTLINKFLAGS})
 
 # add bundled libraries to dependency
 if(SHOGUN_DEPENDS)
   add_dependencies(shogun ${SHOGUN_DEPENDS})
 endif()
+
+# add target for static library if enabled
+if (BUILD_STATIC)
+  add_library(shogun-static STATIC $<TARGET_OBJECTS:libshogun> lib/config.h)
+  set_target_properties(shogun-static PROPERTIES OUTPUT_NAME shogun)
+ENDIF()
+
+CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/lib/config.h.in ${CMAKE_CURRENT_SOURCE_DIR}/lib/config.h)
 
 INSTALL(DIRECTORY ./
         DESTINATION include/shogun
