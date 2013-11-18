@@ -117,7 +117,7 @@ float64_t CFITCInferenceMethod::get_negative_log_marginal_likelihood()
 	// nlZ=sum(log(diag(utr)))+(sum(log(dg))+r'*r-be'*be+n*log(2*pi))/2
 	float64_t result=eigen_chol_utr.diagonal().array().log().sum()+
 		(eigen_dg.array().log().sum()+eigen_r.dot(eigen_r)-eigen_be.dot(eigen_be)+
-		 m_chol_utr.num_rows*CMath::log(2*CMath::PI))/2.0;
+		 m_ktrtr.num_rows*CMath::log(2*CMath::PI))/2.0;
 
 	return result;
 }
@@ -160,15 +160,11 @@ void CFITCInferenceMethod::update_train_kernel()
 	m_kernel->cleanup();
 	m_kernel->init(m_latent_features, m_latent_features);
 	m_kuu=m_kernel->get_kernel_matrix();
-	Map<MatrixXd> eigen_kuu(m_kuu.matrix, m_kuu.num_rows, m_kuu.num_cols);
-	eigen_kuu*=CMath::sq(m_scale);
 
 	// create kernel matrix for latent and training features
 	m_kernel->cleanup();
 	m_kernel->init(m_latent_features, m_features);
 	m_ktru=m_kernel->get_kernel_matrix();
-	Map<MatrixXd> eigen_ktru(m_ktru.matrix, m_ktru.num_rows, m_ktru.num_cols);
-	eigen_ktru*=CMath::sq(m_scale);
 }
 
 void CFITCInferenceMethod::update_chol()
@@ -182,9 +178,10 @@ void CFITCInferenceMethod::update_chol()
 	// and training features (m_ktru)
 	Map<MatrixXd> eigen_kuu(m_kuu.matrix, m_kuu.num_rows, m_kuu.num_cols);
 	Map<MatrixXd> eigen_ktru(m_ktru.matrix, m_ktru.num_rows, m_ktru.num_cols);
+	Map<MatrixXd> eigen_ktrtr(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
 
 	// solve Luu' * Luu = Kuu + m_ind_noise * I
-	LLT<MatrixXd> Luu(eigen_kuu+m_ind_noise*MatrixXd::Identity(
+	LLT<MatrixXd> Luu(eigen_kuu*CMath::sq(m_scale)+m_ind_noise*MatrixXd::Identity(
 		m_kuu.num_rows, m_kuu.num_cols));
 
 	// create shogun and eigen3 representation of cholesky of covariance of
@@ -194,32 +191,28 @@ void CFITCInferenceMethod::update_chol()
 		m_chol_uu.num_cols);
 	eigen_chol_uu=Luu.matrixU();
 
-	// solve Luu' * V = Ktru, and calculate sV = V.^2
-	MatrixXd V=eigen_chol_uu.triangularView<Upper>().adjoint().solve(eigen_ktru);
-	MatrixXd sV=V.cwiseProduct(V);
+	// solve Luu' * V = Ktru
+	MatrixXd V=eigen_chol_uu.triangularView<Upper>().adjoint().solve(eigen_ktru*
+			CMath::sq(m_scale));
 
 	// create shogun and eigen3 representation of
-	// dg = diag(K) + sn2 - diag(Q), and also compute idg = 1/dg
+	// dg = diag(K) + sn2 - diag(Q)
 	m_dg=SGVector<float64_t>(m_ktrtr.num_cols);
 	Map<VectorXd> eigen_dg(m_dg.vector, m_dg.vlen);
-	VectorXd eigen_idg(m_dg.vlen);
 
-	for (index_t i=0; i<m_ktrtr.num_cols; i++)
-	{
-		eigen_dg[i]=m_ktrtr(i,i)*m_scale*m_scale+sigma*sigma-sV.col(i).sum();
-		eigen_idg[i]=1.0/eigen_dg[i];
-	}
+	eigen_dg=eigen_ktrtr.diagonal()*CMath::sq(m_scale)+CMath::sq(sigma)*
+		VectorXd::Ones(m_dg.vlen)-(V.cwiseProduct(V)).colwise().sum().adjoint();
 
-	// solve Lu' * Lu = V * diag(idg) * V' + I
-	LLT<MatrixXd> Lu(V*eigen_idg.asDiagonal()*V.transpose()+
-			MatrixXd::Identity(m_kuu.num_rows, m_kuu.num_cols));
+	// solve Lu' * Lu = V * diag(1/dg) * V' + I
+	LLT<MatrixXd> Lu(V*((VectorXd::Ones(m_dg.vlen)).cwiseQuotient(eigen_dg)).asDiagonal()*
+			V.adjoint()+MatrixXd::Identity(m_kuu.num_rows, m_kuu.num_cols));
 
 	// create shogun and eigen3 representation of cholesky of covariance of
     // training features Luu (m_chol_utr and eigen_chol_utr)
 	m_chol_utr=SGMatrix<float64_t>(Lu.rows(), Lu.cols());
 	Map<MatrixXd> eigen_chol_utr(m_chol_utr.matrix, m_chol_utr.num_rows,
-		m_chol_utr.num_rows);
-	eigen_chol_utr = Lu.matrixU();
+		m_chol_utr.num_cols);
+	eigen_chol_utr=Lu.matrixU();
 
 	// create eigen representation of labels and mean vectors
 	SGVector<float64_t> y=((CRegressionLabels*) m_labels)->get_labels();
@@ -237,7 +230,7 @@ void CFITCInferenceMethod::update_chol()
 	eigen_r=(eigen_y-eigen_m).cwiseQuotient(sqrt_dg);
 
 	// compute be
-	m_be=SGVector<float64_t>(m_r.vlen);
+	m_be=SGVector<float64_t>(m_chol_utr.num_cols);
 	Map<VectorXd> eigen_be(m_be.vector, m_be.vlen);
 	eigen_be=eigen_chol_utr.triangularView<Upper>().adjoint().solve(
 		V*eigen_r.cwiseQuotient(sqrt_dg));
@@ -292,7 +285,8 @@ void CFITCInferenceMethod::update_deriv()
 	Map<VectorXd> eigen_m(m.vector, m.vlen);
 
 	// compute V=inv(Luu')*Ku
-	MatrixXd V=eigen_Luu.triangularView<Upper>().adjoint().solve(eigen_Ktru);
+	MatrixXd V=eigen_Luu.triangularView<Upper>().adjoint().solve(eigen_Ktru*
+			CMath::sq(m_scale));
 
 	// create shogun and eigen representation of al
 	m_al=SGVector<float64_t>(m.vlen);
@@ -308,19 +302,19 @@ void CFITCInferenceMethod::update_deriv()
 	iKuu=eigen_Luu.triangularView<Upper>().solve(iKuu);
 
 	// create shogun and eigen representation of B
-	m_B=SGMatrix<float64_t>(m_ktru.num_rows, m_ktru.num_cols);
+	m_B=SGMatrix<float64_t>(iKuu.rows(), eigen_Ktru.cols());
 	Map<MatrixXd> eigen_B(m_B.matrix, m_B.num_rows, m_B.num_cols);
 
-	eigen_B=iKuu*eigen_Ktru;
+	eigen_B=iKuu*eigen_Ktru*CMath::sq(m_scale);
 
 	// create shogun and eigen representation of w
-	m_w=SGVector<float64_t>(m_al.vlen);
+	m_w=SGVector<float64_t>(m_B.num_rows);
 	Map<VectorXd> eigen_w(m_w.vector, m_w.vlen);
 
 	eigen_w=eigen_B*eigen_al;
 
 	// create shogun and eigen representation of W
-	m_W=SGMatrix<float64_t>(m_chol_utr.num_rows, m_chol_utr.num_cols);
+	m_W=SGMatrix<float64_t>(m_chol_utr.num_cols, m_dg.vlen);
 	Map<MatrixXd> eigen_W(m_W.matrix, m_W.num_rows, m_W.num_cols);
 
 	// compute W=Lu'\(V./repmat(g_sn2',nu,1))
@@ -349,8 +343,8 @@ SGVector<float64_t> CFITCInferenceMethod::get_derivative_wrt_inference_method(
 
 	// create eigen representation of kernel matrices
 	Map<VectorXd> ddiagKi(deriv_trtr.vector, deriv_trtr.vlen);
-	Map<MatrixXd> dKuui(deriv_uu.matrix, deriv_uu.num_cols, deriv_uu.num_rows);
-	Map<MatrixXd> dKui(deriv_tru.matrix, deriv_tru.num_cols, deriv_tru.num_rows);
+	Map<MatrixXd> dKuui(deriv_uu.matrix, deriv_uu.num_rows, deriv_uu.num_cols);
+	Map<MatrixXd> dKui(deriv_tru.matrix, deriv_tru.num_rows, deriv_tru.num_cols);
 
 	// compute derivatives wrt scale for each kernel matrix
 	ddiagKi*=m_scale*2.0;
@@ -472,6 +466,10 @@ SGVector<float64_t> CFITCInferenceMethod::get_derivative_wrt_kernel(
 				deriv_uu.num_cols);
 		Map<MatrixXd> dKui(deriv_tru.matrix, deriv_tru.num_rows,
 				deriv_tru.num_cols);
+
+		ddiagKi*=CMath::sq(m_scale);
+		dKuui*=CMath::sq(m_scale);
+		dKui*=CMath::sq(m_scale);
 
 		// compute R=2*dKui-dKuui*B
 		MatrixXd R=2*dKui-dKuui*eigen_B;
