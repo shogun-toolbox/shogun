@@ -68,7 +68,7 @@ target_link_libraries(shogun ${POSTLINKFLAGS})
 
 # add bundled libraries to dependency
 if(SHOGUN_DEPENDS)
-  add_dependencies(shogun ${SHOGUN_DEPENDS})
+  add_dependencies(libshogun ${SHOGUN_DEPENDS})
 endif()
 
 # add target for static library if enabled
