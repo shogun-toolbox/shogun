@@ -207,3 +207,5 @@ https://github.com/shogun-toolbox/shogun.
 [17] S. Sonnenburg, G. Raetsch, C.Schaefer, and B.Schoelkopf, Large Scale
 	Multiple Kernel Learning, Journal of Machine Learning Research, 2006,
 	K.Bennett and E.P. Hernandez Editors.
+
+[![githalytics.com alpha](https://cruel-carlota.pagodabox.com/3e5ff04ff56513867eedb5b2f4261702 "githalytics.com")](http://githalytics.com/shogun-toolbox/shogun)
