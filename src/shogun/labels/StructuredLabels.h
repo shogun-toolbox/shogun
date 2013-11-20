@@ -33,7 +33,7 @@ class CStructuredLabels : public CLabels
 		 * need of allocating more memory in the future when inserting
 		 * labels with other method, e.g. add_label.
 		 *
-		 * @param num_labels number of labels
+		 * @param num_labels number of labels to pre-allocate
 		 */
 		CStructuredLabels(int32_t num_labels);
 
