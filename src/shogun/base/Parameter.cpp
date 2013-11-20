@@ -2741,6 +2741,7 @@ TParameter::load(CSerializableFile* file, const char* prefix)
 
 Parameter::Parameter()
 {
+	m_params.set_granularity(4);
 	SG_REF(sg_io);
 }
 

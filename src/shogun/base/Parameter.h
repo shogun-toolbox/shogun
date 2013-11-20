@@ -2060,7 +2060,7 @@ public:
 protected:
 
 	/** array of parameters */
-	DynArray<TParameter*> m_params(4);
+	DynArray<TParameter*> m_params;
 
 	/** add new type
 	 * @param type type to be added

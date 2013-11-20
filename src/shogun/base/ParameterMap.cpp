@@ -230,6 +230,8 @@ bool ParameterMapElement::operator>(const ParameterMapElement& other) const
 ParameterMap::ParameterMap()
 {
 	m_finalized=false;
+	m_map_elements.set_granularity(4);
+	m_multi_map_elements.set_granularity(4);
 }
 
 ParameterMap::~ParameterMap()

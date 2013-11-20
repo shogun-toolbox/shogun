@@ -215,11 +215,11 @@ public:
 
 protected:
 	/** list of CLinearMap elements, this is always kept sorted */
-	DynArray<ParameterMapElement*> m_map_elements(4);
+	DynArray<ParameterMapElement*> m_map_elements;
 
 	/** hidden internal structure which is used to hold multiple values for one
 	 * key. It is built when finalize_map() is called. */
-	DynArray<ParameterMapElement*> m_multi_map_elements(4);
+	DynArray<ParameterMapElement*> m_multi_map_elements;
 
 	/** variable that indicates if its possible to call get method */
 	bool m_finalized;
