@@ -464,6 +464,7 @@ AppendToDefines(HAVE_ISINF)
 CHECK_FUNCTION_EXISTS(isnan HAVE_ISNAN)
 AppendToDefines(HAVE_ISNAN)
 
+include(CheckCXXSourceCompiles)
 CHECK_CXX_SOURCE_COMPILES(
   "#include <cmath>\nint main() { return std::isinf( 0 ); }\n"
   HAVE_STD_ISINF )
