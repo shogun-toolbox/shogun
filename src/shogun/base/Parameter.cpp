@@ -2739,9 +2739,12 @@ TParameter::load(CSerializableFile* file, const char* prefix)
 	return true;
 }
 
-Parameter::Parameter()
+/*
+  Initializing m_params(4) with small preallocation-sizes, because Parameter
+  will be constructed several times for EACH SGObject instance.
+ */
+Parameter::Parameter() : m_params(4)
 {
-	m_params.set_granularity(4);
 	SG_REF(sg_io);
 }
 
