@@ -15,14 +15,23 @@
 #include <shogun/lib/Time.h>
 #include <shogun/lib/Lock.h>
 
+#ifdef DEV_RANDOM
+#include <fcntl.h>
+#endif
+
+#ifdef _WIN32
+#define _CRT_RAND_S
+#include <stdlib.h>
+#endif
+
 using namespace shogun;
 
 CRandom::CRandom()
- : m_seed((uint32_t)CTime::get_curtime()*100),
- m_sfmt_32(NULL),
+ : m_sfmt_32(NULL),
  m_sfmt_64(NULL),
  m_dsfmt(NULL)
 {
+	m_seed = CRandom::generate_seed();
 	init();
 }
 
@@ -303,3 +312,25 @@ void CRandom::reinit(uint32_t seed)
 	m_state_lock.unlock();
 }
 
+uint32_t CRandom::generate_seed()
+{
+	uint32_t seed;
+#if defined(_WIN32)
+	rand_s(&seed);
+#elif defined(HAVE_ARC4RANDOM)
+	seed = arc4random();
+#elif defined(DEV_RANDOM)
+	int fd = open(DEV_RANDOM, O_RDONLY);
+	ASSERT(fd > 0);
+	ssize_t actual_read = 
+		read(fd, reinterpret_cast<char*>(&seed), sizeof(seed));
+	close(fd);
+	ASSERT(actual_read == sizeof(seed));
+#else
+	SG_SWARNING("Not safe seed for the PRNG\n");
+	struct timeval tv;
+	gettimeofday(&tv, NULL);
+	seed=(uint32_t) (4223517*getpid()*tv.tv_sec*tv.tv_usec);
+#endif
+	return seed;
+}

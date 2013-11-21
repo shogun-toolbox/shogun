@@ -110,3 +110,7 @@
 #cmakedefine HAVE_STD_UNORDERED_MAP 1
 
 #cmakedefine HAVE_JBLAS 1
+
+/* random related defines */
+#cmakedefine HAVE_ARC4RANDOM 1
+#cmakedefine DEV_RANDOM "@DEV_RANDOM@"

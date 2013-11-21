@@ -490,6 +490,17 @@ IF(HAVE_SSE2)
 ENDIF(HAVE_SSE2)
 ENDIF(NOT CYGWIN)
 
+###### checks for random
+CHECK_FUNCTION_EXISTS(arc4random HAVE_ARC4RANDOM)
+IF(NOT HAVE_ARC4RANDOM)
+    # assume that /dev/random is non-blocking if /dev/urandom does not exist
+    if(EXISTS /dev/urandom)
+      set(DEV_RANDOM "/dev/urandom" CACHE INTERNAL "" FORCE)
+    elseif( EXISTS /dev/random )
+      set(DEV_RANDOM "/dev/random" CACHE INTERNAL "" FORCE)
+    endif()
+ENDIF()
+
 FIND_PACKAGE(GDB)
 IF (GDB_FOUND)
 	SET(GDB_DEFAULT_SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/src/.gdb)
