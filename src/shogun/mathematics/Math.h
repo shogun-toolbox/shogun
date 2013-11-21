@@ -1249,14 +1249,7 @@ class CMath : public CSGObject
 #endif
 
 		/// checks whether a float is finite
-		inline static int is_finite(double f)
-		{
-#if defined(isfinite) && !defined(SUNOS)
-			return isfinite(f);
-#else
-			return finite(f);
-#endif
-		}
+		static int is_finite(double f);
 
 		/// checks whether a float is infinity
 		static int is_infinity(double f);

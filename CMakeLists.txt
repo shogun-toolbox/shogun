@@ -410,6 +410,20 @@ ENDIF()
 
 ######################### LIBRARIES #########################
 
+#check for symbols
+include (CheckCXXSymbolExists)
+CHECK_CXX_SYMBOL_EXISTS(isfinite "cmath" HAVE_DECL_ISFINITE)
+AppendToDefines(HAVE_DECL_ISFINITE)
+
+CHECK_CXX_SYMBOL_EXISTS(isinf "cmath" HAVE_DECL_ISINF)
+AppendToDefines(HAVE_DECL_ISINF)
+
+CHECK_CXX_SYMBOL_EXISTS(isnan "cmath" HAVE_DECL_ISNAN)
+AppendToDefines(HAVE_DECL_ISNAN)
+
+CHECK_CXX_SYMBOL_EXISTS(signgam "cmath" HAVE_DECL_SIGNGAM)
+AppendToDefines(HAVE_DECL_SIGNGAM)
+
 # check for math functions
 include(CheckFunctionExists)
 IF(UNIX)
@@ -434,6 +448,36 @@ CHECK_FUNCTION_EXISTS(sqrtl HAVE_SQRTL)
 IF(HAVE_SQRTL)
 	LIST(APPEND DEFINES HAVE_SQRTL)
 ENDIF()
+
+CHECK_FUNCTION_EXISTS(finite HAVE_FPCLASS)
+AppendToDefines(HAVE_FPCLASS)
+
+CHECK_FUNCTION_EXISTS(fpclass HAVE_FPCLASS)
+AppendToDefines(HAVE_FPCLASS)
+
+CHECK_FUNCTION_EXISTS(isfinite HAVE_ISFINITE)
+AppendToDefines(HAVE_ISFINITE)
+
+CHECK_FUNCTION_EXISTS(isinf HAVE_ISINF)
+AppendToDefines(HAVE_ISINF)
+
+CHECK_FUNCTION_EXISTS(isnan HAVE_ISNAN)
+AppendToDefines(HAVE_ISNAN)
+
+CHECK_CXX_SOURCE_COMPILES(
+  "#include <cmath>\nint main() { return std::isinf( 0 ); }\n"
+  HAVE_STD_ISINF )
+AppendToDefines(HAVE_STD_ISINF)
+
+CHECK_CXX_SOURCE_COMPILES(
+  "#include <cmath>\nint main() { return std::isfinite( 0 ); }\n"
+  HAVE_STD_ISFINITE )
+AppendToDefines(HAVE_STD_ISFINITE)
+
+CHECK_CXX_SOURCE_COMPILES(
+  "#include <cmath>\nint main() { return std::isnan( 0 ); }\n"
+  HAVE_STD_ISNAN )
+AppendToDefines(HAVE_STD_ISNAN)
 
 # check SSE and SSE2 intrinsics header
 IF(NOT CYGWIN)
@@ -738,7 +782,7 @@ IF (SPINLOCK_FOUND)
 	LIST(APPEND DEFINES USE_SPINLOCKS)
 ENDIF()
 
-FIND_PACKAGE(Protobuf)
+#FIND_PACKAGE(Protobuf)
 IF (PROTOBUF_FOUND)
 	add_subdirectory(src/shogun/io/protobuf)
 	SET(HAVE_PROTOBUF 1)
