@@ -63,7 +63,7 @@ public:
 	 */
 	SGVector<float64_t> get_variance_vector(CFeatures* data);
 
-	/** returns probabilities \f$p(y_*=1)$ for each (test) feature \f$x_*\f$
+	/** returns probabilities \f$p(y_*=1)\f$ for each (test) feature \f$x_*\f$
 	 *
 	 * @param data (test) data to be classified
 	 *
