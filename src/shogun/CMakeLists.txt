@@ -14,6 +14,30 @@ IF (SANITIZER_FLAGS)
   set_target_properties(libshogun PROPERTIES COMPILE_FLAGS ${SANITIZER_FLAGS})
 ENDIF()
 
+IF (PROTOBUF_FOUND)
+	FILE(GLOB protobuf_src ${CMAKE_CURRENT_SOURCE_DIR}/io/protobuf/*.proto)
+
+	FOREACH(FIL ${protobuf_src})
+		get_filename_component(FIL_WE ${FIL} NAME_WE)
+
+		SET(name "${CMAKE_CURRENT_SOURCE_DIR}/io/protobuf/${FIL_WE}")
+		list(APPEND ${LIBSHOGUN_SRC}
+			"${name}.pb.cc")
+		list(APPEND ${LIBSHOGUN_HEADERS}
+			"${name}.pb.h")
+
+		ADD_CUSTOM_COMMAND(
+			 OUTPUT "${name}.pb.cc" "${name}.pb.h"
+			 COMMAND ${PROTOBUF_PROTOC_EXECUTABLE} ${FIL}
+				 --cpp_out ${CMAKE_CURRENT_SOURCE_DIR}/io/protobuf
+				 --proto_path ${CMAKE_CURRENT_SOURCE_DIR}/io/protobuf
+			 COMMENT "Running C++ protocol buffer compiler on ${FIL_WE}.proto"
+			)
+		ADD_CUSTOM_TARGET("${FIL_WE}Protobuf" DEPENDS "${name}.pb.cc")
+		add_dependencies(libshogun "${FIL_WE}Protobuf")
+	ENDFOREACH()
+ENDIF()
+
 # Generate versionstring.h
 ADD_CUSTOM_TARGET(
     version

@@ -14,22 +14,14 @@
 
 #include <shogun/io/File.h>
 
-namespace google
-{
-	namespace protobuf
-	{
-		class Message;
-	}
-}
+#include <google/protobuf/message.h>
+
+#include <shogun/io/protobuf/ShogunVersion.pb.h>
+#include <shogun/io/protobuf/Headers.pb.h>
+#include <shogun/io/protobuf/Chunks.pb.h>
 
 namespace shogun
 {
-
-class VectorHeader;
-class MatrixHeader;
-class SparseMatrixHeader;
-class StringListHeader;
-class ShogunVersion_SGDataType'
 
 /** @brief Class for work with binary file
  * in protobuf format.

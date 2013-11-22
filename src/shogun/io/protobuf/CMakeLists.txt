@@ -1,5 +1,0 @@
-IF (PROTOBUF_FOUND)
-	FILE(GLOB protobuf_src *.proto)
-	PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS ${protobuf_src})
-	add_library(sgproto STATIC ${protobuf_src} ${PROTO_SRCS} ${PROTO_HDRS})
-ENDIF()

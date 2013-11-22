@@ -15,12 +15,6 @@
 #include <shogun/lib/SGSparseVector.h>
 #include <shogun/lib/SGString.h>
 
-#include <google/protobuf/message.h>
-
-#include <shogun/io/protobuf/ShogunVersion.pb.h>
-#include <shogun/io/protobuf/Headers.pb.h>
-#include <shogun/io/protobuf/Chunks.pb.h>
-
 using namespace shogun;
 
 CProtobufFile::CProtobufFile()
