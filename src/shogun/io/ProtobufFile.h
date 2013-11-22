@@ -27,11 +27,13 @@ namespace shogun
  * in protobuf format.
  *
  * Format of serialized data in byte file:
- * <size of ShogunVersion message - big endian uint32>
- * <ShogunVersion message>
- * <size of next message - big endian uint32>
- * <data message, e.g. Int32Chunk>
+ * <pre>
+ * size of ShogunVersion message - big endian uint32
+ * ShogunVersion message
+ * size of next message - big endian uint32
+ * data message, e.g. Int32Chunk
  * ...
+ * </pre>
  */
 class CProtobufFile : public CFile
 {

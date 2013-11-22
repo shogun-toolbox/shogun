@@ -130,7 +130,7 @@ class CGaussian : public CDistribution
 
 		/** get covariance
 		 *
-		 * @param cov covariance, memory needs to be freed by user
+		 * @return cov covariance, memory needs to be freed by user
 		 */
 		virtual SGMatrix<float64_t> get_cov();
 
