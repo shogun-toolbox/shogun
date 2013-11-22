@@ -7,6 +7,17 @@ FILE(GLOB_RECURSE LIBSHOGUN_SRC *.${EXT_SRC_CPP} *.${EXT_SRC_C})
 FILE(GLOB_RECURSE LIBSHOGUN_HEADERS *.${EXT_SRC_HEADER})
 FILE(GLOB_RECURSE LIBSHOGUN_SRC_TMP *.${EXT_CPP_TMP})
 
+IF (PROTOBUF_FOUND)
+	FILE(GLOB protobuf_src ${CMAKE_CURRENT_SOURCE_DIR}/io/protobuf/*.proto)
+
+	FOREACH(FIL ${protobuf_src})
+		get_filename_component(FIL_WE ${FIL} NAME_WE)
+		SET(name "${CMAKE_CURRENT_SOURCE_DIR}/io/protobuf/${FIL_WE}")
+		list(APPEND LIBSHOGUN_SRC "${name}.pb.cc")
+		list(APPEND LIBSHOGUN_HEADERS "${name}.pb.h")
+	ENDFOREACH()
+ENDIF()
+
 # add target to compile the libshogun sources
 add_library(libshogun OBJECT ${LIBSHOGUN_SRC} base/class_list.cpp)
 set_target_properties(libshogun PROPERTIES
@@ -17,16 +28,10 @@ IF (SANITIZER_FLAGS)
 ENDIF()
 
 IF (PROTOBUF_FOUND)
-	FILE(GLOB protobuf_src ${CMAKE_CURRENT_SOURCE_DIR}/io/protobuf/*.proto)
-
 	FOREACH(FIL ${protobuf_src})
 		get_filename_component(FIL_WE ${FIL} NAME_WE)
 
 		SET(name "${CMAKE_CURRENT_SOURCE_DIR}/io/protobuf/${FIL_WE}")
-		list(APPEND ${LIBSHOGUN_SRC}
-			"${name}.pb.cc")
-		list(APPEND ${LIBSHOGUN_HEADERS}
-			"${name}.pb.h")
 
 		ADD_CUSTOM_COMMAND(
 			 OUTPUT "${name}.pb.cc" "${name}.pb.h"
