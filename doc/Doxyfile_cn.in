@@ -1321,6 +1321,7 @@ PREDEFINED             = HAVE_LAPACK \
                          HAVE_ATLAS \
                          HAVE_PYTHON \
                          HAVE_SWIG \
+                         HAVE_PROTOBUF \
                          USE_CPLEX \
                          USE_GLPK \
                          USE_SVMLIGHT \
