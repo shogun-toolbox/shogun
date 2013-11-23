@@ -187,7 +187,7 @@ ENDIF()
 # TODO: until swig 2.0.11 does not support compilation with libc++
 # There are PRs against SWIG HEAD to fix this hence it needs to be checked
 # which later version can support compilation with libc++
-IF (COMPILE_MODULAR_INTERFACE AND NOT SWIG_VERSION VERSION_GREATER "2.0.11")
+IF (COMPILE_MODULAR_INTERFACE AND ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang") AND NOT SWIG_VERSION VERSION_GREATER "2.0.11")
 	SET(CMAKE_CXX_FLAGS "-stdlib=libstdc++ ${CMAKE_CXX_FLAGS}")
 	SET(SWIG_CXX_COMPILER_FLAGS "-stdlib=libstdc++ ${SWIG_CXX_COMPILER_FLAGS}")
 ENDIF()
