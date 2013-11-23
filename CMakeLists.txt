@@ -182,8 +182,16 @@ ENDIF()
 # check for supported c++11 features
 #
 # clang with -std=c++11 and -stdlib=libc++ does not work
-# well with swig generated cxx
-# hence disable c++11 for this case.
+# well with swig generated cxx hence disable c++11 for this case.
+
+# TODO: until swig 2.0.11 does not support compilation with libc++
+# There are PRs against SWIG HEAD to fix this hence it needs to be checked
+# which later version can support compilation with libc++
+IF (COMPILE_MODULAR_INTERFACE AND NOT SWIG_VERSION VERSION_GREATER "2.0.11")
+	SET(CMAKE_CXX_FLAGS "-stdlib=libstdc++ ${CMAKE_CXX_FLAGS}")
+	SET(SWIG_CXX_COMPILER_FLAGS "-stdlib=libstdc++ ${SWIG_CXX_COMPILER_FLAGS}")
+ENDIF()
+
 IF (NOT ((CYGWIN AND ENABLE_TESTING) OR (DARWIN AND COMPILE_MODULAR_INTERFACE)))
 	INCLUDE(CheckCXX11Features)
 
@@ -793,7 +801,7 @@ ENDIF()
 #SWIG Interfaces
 SET(CMAKE_SWIG_FLAGS "${CMAKE_SWIG_FLAGS};-w473;-w454;-w312;-w325;-fvirtual")
 
-OPTION(USE_SWIG_DIRECTORS "" OFF)
+OPTION(USE_SWIG_DIRECTORS "Enable SWIG director classes" OFF)
 IF(USE_SWIG_DIRECTORS)
 	LIST(APPEND DEFINES USE_SWIG_DIRECTORS)
 ENDIF()
