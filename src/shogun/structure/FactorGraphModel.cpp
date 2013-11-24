@@ -231,14 +231,14 @@ void CFactorGraphModel::w_to_fparams(SGVector<float64_t> w)
 	ASSERT(offset == m_w_cache.size());
 }
 
-SGVector< float64_t > CFactorGraphModel::get_joint_feature_vector(int32_t feat_idx, CStructuredData* y)
+SGVector< float64_t > CFactorGraphModel::get_joint_feature_vector(int32_t feat_idx, StructuredData* y)
 {
 	// factor graph instance
 	CFactorGraphFeatures* mf = CFactorGraphFeatures::obtain_from_generic(m_features);
 	CFactorGraph* fg = mf->get_sample(feat_idx);
 
 	// ground truth states
-	CFactorGraphObservation* fg_states = CFactorGraphObservation::obtain_from_generic(y);
+	FactorGraphObservation* fg_states = FactorGraphObservation::obtain_from_generic(y);
 	SGVector<int32_t> states = fg_states->get_data();
 
 	// initialize psi
@@ -315,8 +315,8 @@ CResultSet* CFactorGraphModel::argmax(SGVector<float64_t> w, int32_t feat_idx, b
 	SG_REF(ret);
 
 	// y_truth
-	CFactorGraphObservation* y_truth =
-		CFactorGraphObservation::obtain_from_generic(m_labels->get_label(feat_idx));
+	FactorGraphObservation* y_truth =
+		FactorGraphObservation::obtain_from_generic(m_labels->get_label(feat_idx));
 
 	SGVector<int32_t> states_gt = y_truth->get_data();
 
@@ -341,7 +341,7 @@ CResultSet* CFactorGraphModel::argmax(SGVector<float64_t> w, int32_t feat_idx, b
 	infer_met.inference();
 
 	// y_star
-	CFactorGraphObservation* y_star = infer_met.get_structured_outputs();
+	FactorGraphObservation* y_star = infer_met.get_structured_outputs();
 	SGVector<int32_t> states_star = y_star->get_data();
 
 	ret->argmax = y_star;
@@ -378,10 +378,10 @@ CResultSet* CFactorGraphModel::argmax(SGVector<float64_t> w, int32_t feat_idx, b
 	return ret;
 }
 
-float64_t CFactorGraphModel::delta_loss(CStructuredData* y1, CStructuredData* y2)
+float64_t CFactorGraphModel::delta_loss(StructuredData* y1, StructuredData* y2)
 {
-	CFactorGraphObservation* y_truth = CFactorGraphObservation::obtain_from_generic(y1);
-	CFactorGraphObservation* y_pred = CFactorGraphObservation::obtain_from_generic(y2);
+	FactorGraphObservation* y_truth = FactorGraphObservation::obtain_from_generic(y1);
+	FactorGraphObservation* y_pred = FactorGraphObservation::obtain_from_generic(y2);
 	SGVector<int32_t> s_truth = y_truth->get_data();
 	SGVector<int32_t> s_pred = y_pred->get_data();
 

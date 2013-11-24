@@ -21,12 +21,12 @@ namespace shogun
 
 class CMulticlassSOLabels;
 
-/** @brief Class CRealNumber to be used in the application of Structured
+/** @brief Class RealNumber to be used in the application of Structured
  * Output (SO) learning to multiclass classification. Even though it is likely
  * that it does not make sense to consider real numbers as structured data,
  * it has been made in this way because the basic type to use in structured
- * labels needs to inherit from CStructuredData. */
-struct CRealNumber : public CStructuredData
+ * labels needs to inherit from StructuredData. */
+struct RealNumber : public StructuredData
 {
 	/** data type */
 	STRUCTURED_DATA_TYPE(SDT_REAL);
@@ -35,18 +35,18 @@ struct CRealNumber : public CStructuredData
 	 *
 	 * @param val value of the real number
 	 */
-	CRealNumber(float64_t val) : CStructuredData(), value(val) { }
+	RealNumber(float64_t val) : StructuredData(), value(val) { }
 
 	/** helper method used to specialize a base class instance
 	 *
-	 * @param base_data its dynamic type must be CRealNumber
+	 * @param base_data its dynamic type must be RealNumber
 	 */
-	static CRealNumber* obtain_from_generic(CStructuredData* base_data)
+	static RealNumber* obtain_from_generic(StructuredData* base_data)
 	{
 		if ( base_data->get_structured_data_type() == SDT_REAL )
-			return (CRealNumber*) base_data;
+			return (RealNumber*) base_data;
 		else
-			SG_SERROR("base_data must be of dynamic type CRealNumber\n")
+			SG_SERROR("base_data must be of dynamic type RealNumber\n")
 
 		return NULL;
 	}
@@ -61,7 +61,7 @@ struct CRealNumber : public CStructuredData
 /** @brief Class CMulticlassSOLabels to be used in the application of Structured
  * Output (SO) learning to multiclass classification. Each of the labels is
  * represented by a real number and it is required that the values of the labels
- * are in the set {0, 1, ..., num_classes-1}. Each label is of type CRealNumber
+ * are in the set {0, 1, ..., num_classes-1}. Each label is of type RealNumber
  * and all of them are stored in a CDynamicObjectArray. */
 class CMulticlassSOLabels : public CStructuredLabels
 {

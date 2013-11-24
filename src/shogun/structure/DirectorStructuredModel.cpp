@@ -35,13 +35,13 @@ CResultSet* CDirectorStructuredModel::argmax(SGVector< float64_t > w, int32_t fe
 
 SGVector< float64_t > CDirectorStructuredModel::get_joint_feature_vector(
 		int32_t feat_idx,
-		CStructuredData* y)
+		StructuredData* y)
 {
 	SG_ERROR("Please implemement get_joint_feature_vector(feat_idx,y) in your target language before use\n")
 	return SGVector<float64_t>();
 }
 
-float64_t CDirectorStructuredModel::delta_loss(CStructuredData* y1, CStructuredData* y2)
+float64_t CDirectorStructuredModel::delta_loss(StructuredData* y1, StructuredData* y2)
 {
 	SG_ERROR("Please implemement delta_loss(y1,y2) in your target language before use\n")
 	return 0.0;
