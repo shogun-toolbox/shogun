@@ -16,6 +16,29 @@
 
 using namespace shogun;
 
+TEST(StructuredLabels, add_one_label_and_destroy)
+{
+	int32_t num_labels = 3;
+	CStructuredLabels * l = new CStructuredLabels(num_labels);
+
+	l->add_label(new RealNumber(3));
+	EXPECT_EQ(1, l->get_num_labels());
+	SG_UNREF(l);
+}
+
+TEST(StructuredLabels, add_one_label_and_get)
+{
+	int32_t num_labels = 3;
+	CStructuredLabels * l = new CStructuredLabels(num_labels);
+
+	l->add_label(new RealNumber(3));
+	EXPECT_EQ(1, l->get_num_labels());
+
+	StructuredData * real_number = l->get_label(0);
+	SG_UNREF(real_number);
+
+	SG_UNREF(l);
+}
 
 TEST(StructuredLabels, add_label)
 {

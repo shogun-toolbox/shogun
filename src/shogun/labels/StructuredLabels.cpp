@@ -32,9 +32,11 @@ CStructuredLabels::~CStructuredLabels()
 	{
 		for (index_t i=0; i<m_labels->get_num_elements(); ++i)
 		{
-			delete m_labels->get_element(i);
+			StructuredData* label = m_labels->get_element_safe(i);
+			SG_UNREF(label);
 		}
 
+		m_labels->reset(NULL);
 		delete m_labels;
 	}
 }
@@ -56,12 +58,15 @@ CStructuredData* CStructuredLabels::get_label(int32_t idx)
 	if ( idx < 0 || idx >= get_num_labels() )
 		SG_ERROR("Index must be inside [0, num_labels-1]\n")
 
-	return (CStructuredData*) m_labels->get_element(idx);
+	CStructuredData* label = m_labels->get_element_safe(idx);
+	SG_REF(label);
+	return label;
 }
 
 void CStructuredLabels::add_label(CStructuredData* label)
 {
 	ensure_valid_sdt(label);
+	SG_REF(label);
 	m_labels->push_back(label);
 }
 
@@ -72,6 +77,10 @@ bool CStructuredLabels::set_label(int32_t idx, CStructuredData* label)
 
 	if ( real_idx < get_num_labels() )
 	{
+		StructuredData* old = m_labels->get_element_safe(real_idx);
+		SG_UNREF(old);
+
+		SG_REF(label);
 		return m_labels->set_element(label, real_idx);
 	}
 	else
