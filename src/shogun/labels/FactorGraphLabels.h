@@ -21,37 +21,37 @@ namespace shogun
 
 class CFactorGraphLabels;
 
-/** @brief Class CFactorGraphObservation is used as
+/** @brief Class FactorGraphObservation is used as
  * the structured output */
-class CFactorGraphObservation : public CStructuredData
+class FactorGraphObservation : public StructuredData
 {
 public:
 	/** data type */
 	STRUCTURED_DATA_TYPE(SDT_FACTOR_GRAPH);
 
 	/** default constructor */
-	CFactorGraphObservation() : CStructuredData() { }
+	FactorGraphObservation() : StructuredData() { }
 
 	/** constructor discrete labeling observation
 	 *
 	 * @param observed_state Discrete labeling of a set of variables.
 	 * @param loss_weights weighted loss for each variable
 	 */
-	CFactorGraphObservation(SGVector<int32_t> observed_state,
+	FactorGraphObservation(SGVector<int32_t> observed_state,
 		SGVector<float64_t> loss_weights);
 
-	~CFactorGraphObservation() { }
+	~FactorGraphObservation() { }
 
 	/** helper method used to specialize a base class instance
 	 *
-	 * @param base_data its dynamic type must be CFactorGraphObservation
+	 * @param base_data its dynamic type must be FactorGraphObservation
 	 */
-	static CFactorGraphObservation* obtain_from_generic(CStructuredData* base_data)
+	static FactorGraphObservation* obtain_from_generic(StructuredData* base_data)
 	{
 		if ( base_data->get_structured_data_type() == SDT_FACTOR_GRAPH )
-			return (CFactorGraphObservation*) base_data;
+			return (FactorGraphObservation*) base_data;
 		else
-			SG_SERROR("base_data must be of dynamic type CFactorGraphObservation\n")
+			SG_SERROR("base_data must be of dynamic type FactorGraphObservation\n")
 
 		return NULL;
 	}
@@ -82,7 +82,7 @@ protected:
 
 /** @brief Class FactorGraphLabels used e.g. in the application of Structured Output
  * (SO) learning with the FactorGraphModel. Each of the labels is represented by a
- * graph. Each label is of type CFactorGraphObservation and all of them are stored in
+ * graph. Each label is of type FactorGraphObservation and all of them are stored in
  * a CDynamicObjectArray. */
 class CFactorGraphLabels : public CStructuredLabels
 {

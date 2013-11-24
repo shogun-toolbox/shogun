@@ -56,7 +56,7 @@ class CMulticlassModel : public CStructuredModel
 		 *
 		 * @return the joint feature vector
 		 */
-		virtual SGVector< float64_t > get_joint_feature_vector(int32_t feat_idx, CStructuredData* y);
+		virtual SGVector< float64_t > get_joint_feature_vector(int32_t feat_idx, StructuredData* y);
 
 		/**
 		 * obtains the argmax of \f$ \Delta(y_{pred}, y_{truth}) +
@@ -80,7 +80,7 @@ class CMulticlassModel : public CStructuredModel
 		 *
 		 * @return loss value
 		 */
-		virtual float64_t delta_loss(CStructuredData* y1, CStructuredData* y2);
+		virtual float64_t delta_loss(StructuredData* y1, StructuredData* y2);
 
 		/** initialize the optimization problem
 		 *

@@ -57,7 +57,7 @@ class CStructuredLabels : public CLabels
 		 *
 		 * @param label label to add
 		 */
-		void add_label(CStructuredData* label);
+		void add_label(StructuredData* label);
 
 		/** get labels
 		 *
@@ -73,7 +73,7 @@ class CStructuredLabels : public CLabels
 		 *
 		 * @return label object
 		 */
-		CStructuredData* get_label(int32_t idx);
+		StructuredData* get_label(int32_t idx);
 
 		/**
 		 * set label, possible with subset. This method should be used
@@ -85,7 +85,7 @@ class CStructuredLabels : public CLabels
 		 *
 		 * @return if setting was successful
 		 */
-		bool set_label(int32_t idx, CStructuredData* label);
+		bool set_label(int32_t idx, StructuredData* label);
 
 		/** get number of labels, depending on wheter a subset is set
 		 *
@@ -113,7 +113,7 @@ class CStructuredLabels : public CLabels
 		void init();
 
 		/** ensure that the correct structured data type is used */
-		void ensure_valid_sdt(CStructuredData* label);
+		void ensure_valid_sdt(StructuredData* label);
 
 	protected:
 		/** the vector of labels */

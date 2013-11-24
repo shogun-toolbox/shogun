@@ -15,8 +15,7 @@
 
 #include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
-#include <shogun/lib/DataType.h>
-#include <shogun/lib/ShogunException.h>
+#include <shogun/io/SGIO.h>
 #include <shogun/lib/RefCount.h>
 
 /** \namespace shogun
@@ -37,17 +36,10 @@ namespace shogun
 #define SG_UNREF_NO_NULL(x)
 #endif
 
-/** @brief Class SGObject is the base class of all shogun objects.
+/** @brief Class SGRefObject is (a lightweight) base class of all shogun objects
  *
- * Apart from dealing with reference counting that is used to manage shogung
- * objects in memory (erase unused object, avoid cleaning objects when they are
- * still in use), it provides interfaces for:
- *
- * -# parallel - to determine the number of used CPUs for a method (cf. Parallel)
- * -# io - to output messages and general i/o (cf. IO)
- * -# version - to provide version information of the shogun version used (cf. Version)
- *
- * All objects can be cloned and compared (deep copy, recursively)
+ * This class is for reference counting only; if you need cloning, parameter
+ * framework, serialization, etc., then CSGObject should be used
  */
 class SGRefObject
 {

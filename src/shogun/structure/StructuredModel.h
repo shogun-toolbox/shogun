@@ -56,7 +56,7 @@ struct CResultSet : public CSGObject
 	virtual const char* get_name() const;
 
 	/** argmax */
-	CStructuredData* argmax;
+	StructuredData* argmax;
 
 	/** joint feature vector for the given truth */
 	SGVector< float64_t > psi_truth;
@@ -172,7 +172,7 @@ class CStructuredModel : public CSGObject
 		 *
 		 * @return the joint feature vector
 		 */
-		virtual SGVector< float64_t > get_joint_feature_vector(int32_t feat_idx, CStructuredData* y);
+		virtual SGVector< float64_t > get_joint_feature_vector(int32_t feat_idx, StructuredData* y);
 
 		/**
 		 * obtains the argmax of \f$ \Delta(y_{pred}, y_{truth}) +
@@ -196,7 +196,7 @@ class CStructuredModel : public CSGObject
 		 *
 		 * @return loss value
 		 */
-		float64_t delta_loss(int32_t ytrue_idx, CStructuredData* ypred);
+		float64_t delta_loss(int32_t ytrue_idx, StructuredData* ypred);
 
 		/** computes \f$ \Delta(y_{1}, y_{2}) \f$
 		 *
@@ -205,7 +205,7 @@ class CStructuredModel : public CSGObject
 		 *
 		 * @return loss value
 		 */
-		virtual float64_t delta_loss(CStructuredData* y1, CStructuredData* y2);
+		virtual float64_t delta_loss(StructuredData* y1, StructuredData* y2);
 
 		/** @return name of SGSerializable */
 		virtual const char* get_name() const { return "StructuredModel"; }

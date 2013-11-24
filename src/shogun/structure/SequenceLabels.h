@@ -21,9 +21,9 @@ namespace shogun
 
 class CSequenceLabels;
 
-/** @brief Class CSequence to be used in the application of Structured Output
+/** @brief Class Sequence to be used in the application of Structured Output
  * (SO) learning to Hidden Markov Support Vector Machines (HM-SVM). */
-class CSequence : public CStructuredData
+class Sequence : public StructuredData
 {
 public:
 	/** data type */
@@ -33,21 +33,21 @@ public:
 	 *
 	 * @param seq data sequence
 	 */
-	CSequence(SGVector< int32_t > seq = SGVector<int32_t>()) : CStructuredData(), data(seq) { }
+	Sequence(SGVector< int32_t > seq = SGVector<int32_t>()) : StructuredData(), data(seq) { }
 
 	/** destructor */
-	~CSequence() { }
+	~Sequence() { }
 
 	/** helper method used to specialize a base class instance
 	 *
-	 * @param base_data its dynamic type must be CSequence
+	 * @param base_data its dynamic type must be Sequence
 	 */
-	static CSequence* obtain_from_generic(CStructuredData* base_data)
+	static Sequence* obtain_from_generic(StructuredData* base_data)
 	{
 		if ( base_data->get_structured_data_type() == SDT_SEQUENCE )
-			return (CSequence*) base_data;
+			return (Sequence*) base_data;
 		else
-			SG_SERROR("base_data must be of dynamic type CSequence\n")
+			SG_SERROR("base_data must be of dynamic type Sequence\n")
 
 		return NULL;
 	}
@@ -68,7 +68,7 @@ protected:
 /** @brief Class CSequenceLabels used e.g. in the application of Structured Output
  * (SO) learning to Hidden Markov Support Vector Machines (HM-SVM). Each of the
  * labels is represented by a sequence of integers. Each label is of type
- * CSequence and all of them are stored in a CDynamicObjectArray. */
+ * Sequence and all of them are stored in a CDynamicObjectArray. */
 class CSequenceLabels : public CStructuredLabels
 {
 	public:
