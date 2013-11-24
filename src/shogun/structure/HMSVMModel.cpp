@@ -61,14 +61,14 @@ int32_t CHMSVMModel::get_dim() const
 
 SGVector< float64_t > CHMSVMModel::get_joint_feature_vector(
 		int32_t feat_idx,
-		CStructuredData* y)
+		StructuredData* y)
 {
 	// Shorthand for the number of features of the feature vector
 	CMatrixFeatures< float64_t >* mf = (CMatrixFeatures< float64_t >*) m_features;
 	int32_t D = mf->get_num_features();
 
 	// Get the sequence of labels
-	CSequence* label_seq = CSequence::obtain_from_generic(y);
+	Sequence* label_seq = Sequence::obtain_from_generic(y);
 
 	// Initialize psi
 	SGVector< float64_t > psi(get_dim());
@@ -229,8 +229,8 @@ CResultSet* CHMSVMModel::argmax(
 	// If argmax used while training, add to E the loss matrix (loss-augmented inference)
 	if ( training )
 	{
-		CSequence* ytrue =
-			CSequence::obtain_from_generic(m_labels->get_label(feat_idx));
+		Sequence* ytrue =
+			Sequence::obtain_from_generic(m_labels->get_label(feat_idx));
 
 		REQUIRE(ytrue->get_data().size() == T, "T, the length of the feature "
 			"x^i (%d) and the length of its corresponding label y^i "
@@ -328,7 +328,7 @@ CResultSet* CHMSVMModel::argmax(
 		opt_path[i-1] = trb[opt_path[i]*T + i];
 
 	// Populate the CResultSet object to return
-	CSequence* ypred = m_state_model->states_to_labels(opt_path);
+	Sequence* ypred = m_state_model->states_to_labels(opt_path);
 
 	ret->psi_pred = get_joint_feature_vector(feat_idx, ypred);
 	ret->argmax   = ypred;
@@ -344,10 +344,10 @@ CResultSet* CHMSVMModel::argmax(
 	return ret;
 }
 
-float64_t CHMSVMModel::delta_loss(CStructuredData* y1, CStructuredData* y2)
+float64_t CHMSVMModel::delta_loss(StructuredData* y1, StructuredData* y2)
 {
-	CSequence* seq1 = CSequence::obtain_from_generic(y1);
-	CSequence* seq2 = CSequence::obtain_from_generic(y2);
+	Sequence* seq1 = Sequence::obtain_from_generic(y1);
+	Sequence* seq2 = Sequence::obtain_from_generic(y2);
 
 	// Compute the Hamming loss, number of distinct elements in the sequences
 	return m_state_model->loss(seq1, seq2);
@@ -446,11 +446,11 @@ bool CHMSVMModel::check_training_setup() const
 	SGVector< int32_t > state_freq( hmsvm_labels->get_num_states() );
 	state_freq.zero();
 
-	CSequence* seq;
+	Sequence* seq;
 	int32_t state;
 	for ( int32_t i = 0 ; i < hmsvm_labels->get_num_labels() ; ++i )
 	{
-		seq = CSequence::obtain_from_generic(hmsvm_labels->get_label(i));
+		seq = Sequence::obtain_from_generic(hmsvm_labels->get_label(i));
 
 		SGVector<int32_t> seq_data = seq->get_data();
 		for ( int32_t j = 0 ; j < seq_data.size() ; ++j )

@@ -89,7 +89,7 @@ public:
 	 *
 	 * @param obs factor graph observation
 	 */
-	float64_t evaluate_energy(const CFactorGraphObservation* obs) const;
+	float64_t evaluate_energy(const FactorGraphObservation* obs) const;
 
 	/** @return energy table for the graph */
 	SGVector<float64_t> evaluate_energies() const;
@@ -122,7 +122,7 @@ public:
 	 *
 	 * @param gt an observation (states and loss weights are stored in it)
 	 */
-	virtual void loss_augmentation(CFactorGraphObservation* gt);
+	virtual void loss_augmentation(FactorGraphObservation* gt);
 
 	/** perform loss-augmentation
 	 *

@@ -58,7 +58,7 @@ TEST(SOSVM, sgd_check_w_helper)
 		CMAPInference infer_met(fg, TREE_MAX_PROD);
 		infer_met.inference();
 
-		CFactorGraphObservation* fg_observ = infer_met.get_structured_outputs();
+		FactorGraphObservation* fg_observ = infer_met.get_structured_outputs();
 
 		// add ground truth states
 		labels->add_label(fg_observ);

@@ -78,7 +78,7 @@ void test(int32_t num_samples)
 		CMAPInference infer_met(fg, TREE_MAX_PROD);
 		infer_met.inference();
 
-		CFactorGraphObservation* fg_observ = infer_met.get_structured_outputs();
+		FactorGraphObservation* fg_observ = infer_met.get_structured_outputs();
 
 		// add ground truth states
 		labels->add_label(fg_observ);
@@ -89,7 +89,7 @@ void test(int32_t num_samples)
 	// show labels
 	for (unsigned int n = 0; n < num_samples; ++n)
 	{
-		CFactorGraphObservation* fg_observ = CFactorGraphObservation::obtain_from_generic(labels->get_label(n));
+		FactorGraphObservation* fg_observ = FactorGraphObservation::obtain_from_generic(labels->get_label(n));
 		SG_SPRINT("- sample %d:\n", n);
 		SGVector<int32_t> fst = fg_observ->get_data();
 		SGVector<int32_t>::display_vector(fst.vector, fst.vlen);
@@ -162,8 +162,8 @@ void test(int32_t num_samples)
 
 	for (int32_t i=0; i<num_samples; ++i)
 	{
-		CStructuredData* y_pred = labels_primcp->get_label(i);
-		CStructuredData* y_truth = labels->get_label(i);
+		StructuredData* y_pred = labels_primcp->get_label(i);
+		StructuredData* y_truth = labels->get_label(i);
 		acc_loss_primcp += model->delta_loss(y_truth, y_pred);
 		SG_UNREF(y_pred);
 		SG_UNREF(y_truth);
@@ -182,8 +182,8 @@ void test(int32_t num_samples)
 
 	for (int32_t i=0; i<num_samples; ++i)
 	{
-		CStructuredData* y_pred = labels_bmrm->get_label(i);
-		CStructuredData* y_truth = labels->get_label(i);
+		StructuredData* y_pred = labels_bmrm->get_label(i);
+		StructuredData* y_truth = labels->get_label(i);
 		acc_loss_bmrm += model->delta_loss(y_truth, y_pred);
 		SG_UNREF(y_pred);
 		SG_UNREF(y_truth);
@@ -201,8 +201,8 @@ void test(int32_t num_samples)
 
 	for (int32_t i=0; i<num_samples; ++i)
 	{
-		CStructuredData* y_pred = labels_sgd->get_label(i);
-		CStructuredData* y_truth = labels->get_label(i);
+		StructuredData* y_pred = labels_sgd->get_label(i);
+		StructuredData* y_truth = labels->get_label(i);
 		acc_loss_sgd += model->delta_loss(y_truth, y_pred);
 		SG_UNREF(y_pred);
 		SG_UNREF(y_truth);

@@ -83,7 +83,7 @@ void create_tree_graph(int hh, int ww)
 	CMAPInference infer_met(fg, TREE_MAX_PROD);
 	infer_met.inference();
 
-	CFactorGraphObservation* fg_observ = infer_met.get_structured_outputs();
+	FactorGraphObservation* fg_observ = infer_met.get_structured_outputs();
 	SGVector<int32_t> assignment = fg_observ->get_data();
 	SG_UNREF(fg_observ);
 
