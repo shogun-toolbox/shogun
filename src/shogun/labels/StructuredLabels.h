@@ -4,6 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
+ * Modified (M) 2013 Thoralf Klein
  * Written (W) 2012 Fernando José Iglesias García
  * Copyright (C) 2012 Fernando José Iglesias García
  */
@@ -13,7 +14,7 @@
 
 #include <shogun/labels/Labels.h>
 #include <shogun/labels/LabelTypes.h>
-#include <shogun/lib/DynamicObjectArray.h>
+#include <shogun/base/DynArray.h>
 #include <shogun/lib/StructuredData.h>
 #include <shogun/lib/StructuredDataTypes.h>
 
@@ -64,7 +65,7 @@ class CStructuredLabels : public CLabels
 		 *
 		 * @return labels
 		 */
-		CDynamicObjectArray* get_labels() const;
+		DynArray<StructuredData*> * get_labels() const;
 
 		/** get label object for specified index
 		 *
@@ -116,7 +117,7 @@ class CStructuredLabels : public CLabels
 
 	protected:
 		/** the vector of labels */
-		CDynamicObjectArray* m_labels;
+		DynArray<StructuredData*> * m_labels;
 
 		/** the structured data type the labels are composed of */
 		EStructuredDataType m_sdt;

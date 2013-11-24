@@ -4,6 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
+ * Modified (M) 2013 Thoralf Klein
  * Written (W) 2012 Fernando José Iglesias García
  * Copyright (C) 2012 Fernando José Iglesias García
  */
@@ -22,13 +23,20 @@ CStructuredLabels::CStructuredLabels(int32_t num_labels)
 : CLabels()
 {
 	init();
-	m_labels = new CDynamicObjectArray(num_labels);
-	SG_REF(m_labels);
+	m_labels = new DynArray<StructuredData*> (num_labels);
 }
 
 CStructuredLabels::~CStructuredLabels()
 {
-	SG_UNREF(m_labels);
+	if (m_labels)
+	{
+		for (index_t i=0; i<m_labels->get_num_elements(); ++i)
+		{
+			delete m_labels->get_element(i);
+		}
+
+		delete m_labels;
+	}
 }
 
 void CStructuredLabels::ensure_valid(const char* context)
@@ -37,9 +45,8 @@ void CStructuredLabels::ensure_valid(const char* context)
 		SG_ERROR("Non-valid StructuredLabels in %s", context)
 }
 
-CDynamicObjectArray* CStructuredLabels::get_labels() const
+DynArray<StructuredData*> * CStructuredLabels::get_labels() const
 {
-	SG_REF(m_labels);
 	return m_labels;
 }
 
@@ -83,7 +90,8 @@ int32_t CStructuredLabels::get_num_labels() const
 
 void CStructuredLabels::init()
 {
-	SG_ADD((CSGObject**) &m_labels, "m_labels", "The labels", MS_NOT_AVAILABLE);
+	// TODO: m_labels is no CSGObject any more - what to do?
+	// SG_ADD((CSGObject**) &m_labels, "m_labels", "The labels", MS_NOT_AVAILABLE);
 
 	m_labels = NULL;
 	m_sdt = SDT_UNKNOWN;
