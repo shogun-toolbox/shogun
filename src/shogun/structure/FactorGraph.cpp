@@ -174,7 +174,7 @@ float64_t CFactorGraph::evaluate_energy(const SGVector<int32_t> state) const
 	return energy;
 }
 
-float64_t CFactorGraph::evaluate_energy(const CFactorGraphObservation* obs) const
+float64_t CFactorGraph::evaluate_energy(const FactorGraphObservation* obs) const
 {
 	return evaluate_energy(obs->get_data());
 }
@@ -259,7 +259,7 @@ bool CFactorGraph::is_tree_graph() const
 	return (m_has_cycle == false && m_dset->get_num_sets() == 1);
 }
 
-void CFactorGraph::loss_augmentation(CFactorGraphObservation* gt)
+void CFactorGraph::loss_augmentation(FactorGraphObservation* gt)
 {
 	loss_augmentation(gt->get_data(), gt->get_loss_weights());
 }

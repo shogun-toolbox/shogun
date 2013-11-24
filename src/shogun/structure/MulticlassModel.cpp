@@ -40,14 +40,14 @@ int32_t CMulticlassModel::get_dim() const
 	return feats_dim*num_classes;
 }
 
-SGVector< float64_t > CMulticlassModel::get_joint_feature_vector(int32_t feat_idx, CStructuredData* y)
+SGVector< float64_t > CMulticlassModel::get_joint_feature_vector(int32_t feat_idx, StructuredData* y)
 {
 	SGVector< float64_t > psi( get_dim() );
 	psi.zero();
 
 	SGVector< float64_t > x = ((CDotFeatures*) m_features)->
 		get_computed_dot_feature_vector(feat_idx);
-	CRealNumber* r = CRealNumber::obtain_from_generic(y);
+	RealNumber* r = RealNumber::obtain_from_generic(y);
 	ASSERT(r != NULL)
 	float64_t label_value = r->value;
 
@@ -100,7 +100,7 @@ CResultSet* CMulticlassModel::argmax(
 	// Build the CResultSet object to return
 	CResultSet* ret = new CResultSet();
 	SG_REF(ret);
-	CRealNumber* y  = new CRealNumber(ypred);
+	RealNumber* y  = new RealNumber(ypred);
 	SG_REF(y);
 
 	ret->psi_pred = get_joint_feature_vector(feat_idx, y);
@@ -118,10 +118,10 @@ CResultSet* CMulticlassModel::argmax(
 	return ret;
 }
 
-float64_t CMulticlassModel::delta_loss(CStructuredData* y1, CStructuredData* y2)
+float64_t CMulticlassModel::delta_loss(StructuredData* y1, StructuredData* y2)
 {
-	CRealNumber* rn1 = CRealNumber::obtain_from_generic(y1);
-	CRealNumber* rn2 = CRealNumber::obtain_from_generic(y2);
+	RealNumber* rn1 = RealNumber::obtain_from_generic(y1);
+	RealNumber* rn2 = RealNumber::obtain_from_generic(y2);
 	ASSERT(rn1 != NULL)
 	ASSERT(rn2 != NULL)
 
@@ -133,7 +133,7 @@ float64_t CMulticlassModel::delta_loss(int32_t y1_idx, float64_t y2)
 	REQUIRE(y1_idx >= 0 || y1_idx < m_labels->get_num_labels(),
 			"The label index must be inside [0, num_labels-1]\n");
 
-	CRealNumber* rn1 = CRealNumber::obtain_from_generic(m_labels->get_label(y1_idx));
+	RealNumber* rn1 = RealNumber::obtain_from_generic(m_labels->get_label(y1_idx));
 	float64_t ret = delta_loss(rn1->value, y2);
 	SG_UNREF(rn1);
 

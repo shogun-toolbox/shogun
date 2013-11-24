@@ -92,7 +92,7 @@ SGVector< float64_t > CStructuredModel::get_joint_feature_vector(
 		int32_t feat_idx,
 		int32_t lab_idx)
 {
-	CStructuredData* label = m_labels->get_label(lab_idx);
+	StructuredData* label = m_labels->get_label(lab_idx);
 	SGVector< float64_t > ret = get_joint_feature_vector(feat_idx, label);
 	SG_UNREF(label);
 
@@ -101,29 +101,29 @@ SGVector< float64_t > CStructuredModel::get_joint_feature_vector(
 
 SGVector< float64_t > CStructuredModel::get_joint_feature_vector(
 		int32_t feat_idx,
-		CStructuredData* y)
+		StructuredData* y)
 {
-	SG_ERROR("compute_joint_feature(int32_t, CStructuredData*) is not "
+	SG_ERROR("compute_joint_feature(int32_t, StructuredData*) is not "
 			"implemented for %s!\n", get_name());
 
 	return SGVector< float64_t >();
 }
 
-float64_t CStructuredModel::delta_loss(int32_t ytrue_idx, CStructuredData* ypred)
+float64_t CStructuredModel::delta_loss(int32_t ytrue_idx, StructuredData* ypred)
 {
 	REQUIRE(ytrue_idx >= 0 || ytrue_idx < m_labels->get_num_labels(),
 			"The label index must be inside [0, num_labels-1]\n");
 
-	CStructuredData* ytrue = m_labels->get_label(ytrue_idx);
+	StructuredData* ytrue = m_labels->get_label(ytrue_idx);
 	float64_t ret = delta_loss(ytrue, ypred);
 	SG_UNREF(ytrue);
 
 	return ret;
 }
 
-float64_t CStructuredModel::delta_loss(CStructuredData* y1, CStructuredData* y2)
+float64_t CStructuredModel::delta_loss(StructuredData* y1, StructuredData* y2)
 {
-	SG_ERROR("delta_loss(CStructuredData*, CStructuredData*) is not "
+	SG_ERROR("delta_loss(StructuredData*, StructuredData*) is not "
 			"implemented for %s!\n", get_name());
 
 	return 0.0;
