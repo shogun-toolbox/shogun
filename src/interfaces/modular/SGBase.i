@@ -310,11 +310,10 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
 %ignore sg_print_error;
 %ignore sg_cancel_computations;
 
-%feature("ref")   CSGRefObject "SG_REF($this);"
-%feature("unref") CSGRefObject "SG_UNREF($this);"
+%feature("ref")   SGRefObject "SG_REF($this);"
+%feature("unref") SGRefObject "SG_UNREF($this);"
 
 %rename(SGObject) CSGObject;
-%rename(SGRefObject) CSGRefObject;
 
 %include <shogun/lib/common.h>
 
@@ -334,6 +333,7 @@ namespace std {
 %include <shogun/io/SGIO.h>
 SERIALIZABLE_DUMMY(shogun::SGIO);
 
+%include <shogun/base/SGRefObject.h>
 %include <shogun/base/SGObject.h>
 %include <shogun/base/Version.h>
 SERIALIZABLE_DUMMY(shogun::Version);

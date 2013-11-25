@@ -37,17 +37,12 @@ namespace shogun
 #define SG_UNREF_NO_NULL(x)
 #endif
 
-/** @brief Class SGObject is the base class of all shogun objects.
+/** @brief Class SGRefObject is a reference count based memory management class
  *
- * Apart from dealing with reference counting that is used to manage shogung
+ * It deals with reference counting that is used to manage shogung
  * objects in memory (erase unused object, avoid cleaning objects when they are
- * still in use), it provides interfaces for:
+ * still in use)
  *
- * -# parallel - to determine the number of used CPUs for a method (cf. Parallel)
- * -# io - to output messages and general i/o (cf. IO)
- * -# version - to provide version information of the shogun version used (cf. Version)
- *
- * All objects can be cloned and compared (deep copy, recursively)
  */
 class SGRefObject
 {

@@ -17,12 +17,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-namespace shogun
-{
-	class CMath;
-
-} /* namespace shogun  */
-
 using namespace shogun;
 
 SGRefObject::SGRefObject()
@@ -98,4 +92,3 @@ void SGRefObject::init()
 #endif
 
 }
-
