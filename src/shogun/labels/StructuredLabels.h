@@ -13,7 +13,7 @@
 
 #include <shogun/labels/Labels.h>
 #include <shogun/labels/LabelTypes.h>
-#include <shogun/lib/DynamicRefObjectArray.h>
+#include <shogun/base/SGDynamicRefObjectArray.h>
 #include <shogun/lib/StructuredData.h>
 #include <shogun/lib/StructuredDataTypes.h>
 
@@ -64,7 +64,7 @@ class CStructuredLabels : public CLabels
 		 *
 		 * @return labels
 		 */
-		CDynamicRefObjectArray* get_labels() const;
+		SGDynamicRefObjectArray* get_labels() const;
 
 		/** get label object for specified index
 		 *
@@ -116,7 +116,7 @@ class CStructuredLabels : public CLabels
 
 	protected:
 		/** the vector of labels */
-		CDynamicRefObjectArray* m_labels;
+		SGDynamicRefObjectArray* m_labels;
 
 		/** the structured data type the labels are composed of */
 		EStructuredDataType m_sdt;
