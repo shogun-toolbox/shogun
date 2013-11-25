@@ -22,7 +22,7 @@ CStructuredLabels::CStructuredLabels(int32_t num_labels)
 : CLabels()
 {
 	init();
-	m_labels = new CDynamicObjectArray(num_labels);
+	m_labels = new CDynamicRefObjectArray(num_labels);
 	SG_REF(m_labels);
 }
 
@@ -37,7 +37,7 @@ void CStructuredLabels::ensure_valid(const char* context)
 		SG_ERROR("Non-valid StructuredLabels in %s", context)
 }
 
-CDynamicObjectArray* CStructuredLabels::get_labels() const
+CDynamicRefObjectArray* CStructuredLabels::get_labels() const
 {
 	SG_REF(m_labels);
 	return m_labels;
