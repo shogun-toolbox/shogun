@@ -112,6 +112,7 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
  #include <shogun/lib/DataType.h>
  #include <shogun/base/Version.h>
  #include <shogun/base/Parallel.h>
+ #include <shogun/base/SGRefObject.h>
  #include <shogun/base/SGObject.h>
 
  extern void sg_global_print_message(FILE* target, const char* str);
@@ -309,10 +310,11 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
 %ignore sg_print_error;
 %ignore sg_cancel_computations;
 
-%feature("ref")   CSGObject "SG_REF($this);"
-%feature("unref") CSGObject "SG_UNREF($this);"
+%feature("ref")   CSGRefObject "SG_REF($this);"
+%feature("unref") CSGRefObject "SG_UNREF($this);"
 
 %rename(SGObject) CSGObject;
+%rename(SGRefObject) CSGRefObject;
 
 %include <shogun/lib/common.h>
 
