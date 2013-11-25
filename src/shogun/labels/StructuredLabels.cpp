@@ -4,6 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
+ * Modified (M) 2013 Thoralf Klein
  * Written (W) 2012 Fernando José Iglesias García
  * Copyright (C) 2012 Fernando José Iglesias García
  */
@@ -22,13 +23,22 @@ CStructuredLabels::CStructuredLabels(int32_t num_labels)
 : CLabels()
 {
 	init();
-	m_labels = new CDynamicObjectArray(num_labels);
-	SG_REF(m_labels);
+	m_labels = new DynArray<StructuredData*> (num_labels);
 }
 
 CStructuredLabels::~CStructuredLabels()
 {
-	SG_UNREF(m_labels);
+	if (m_labels)
+	{
+		for (index_t i=0; i<m_labels->get_num_elements(); ++i)
+		{
+			StructuredData* label = m_labels->get_element_safe(i);
+			SG_UNREF(label);
+		}
+
+		m_labels->reset(NULL);
+		delete m_labels;
+	}
 }
 
 void CStructuredLabels::ensure_valid(const char* context)
@@ -37,34 +47,40 @@ void CStructuredLabels::ensure_valid(const char* context)
 		SG_ERROR("Non-valid StructuredLabels in %s", context)
 }
 
-CDynamicObjectArray* CStructuredLabels::get_labels() const
+DynArray<StructuredData*> * CStructuredLabels::get_labels() const
 {
-	SG_REF(m_labels);
 	return m_labels;
 }
 
-CStructuredData* CStructuredLabels::get_label(int32_t idx)
+StructuredData* CStructuredLabels::get_label(int32_t idx)
 {
 	ensure_valid("CStructuredLabels::get_label(int32_t)");
 	if ( idx < 0 || idx >= get_num_labels() )
 		SG_ERROR("Index must be inside [0, num_labels-1]\n")
 
-	return (CStructuredData*) m_labels->get_element(idx);
+	StructuredData* label = m_labels->get_element_safe(idx);
+	SG_REF(label);
+	return label;
 }
 
-void CStructuredLabels::add_label(CStructuredData* label)
+void CStructuredLabels::add_label(StructuredData* label)
 {
 	ensure_valid_sdt(label);
+	SG_REF(label);
 	m_labels->push_back(label);
 }
 
-bool CStructuredLabels::set_label(int32_t idx, CStructuredData* label)
+bool CStructuredLabels::set_label(int32_t idx, StructuredData* label)
 {
 	ensure_valid_sdt(label);
 	int32_t real_idx = m_subset_stack->subset_idx_conversion(idx);
 
 	if ( real_idx < get_num_labels() )
 	{
+		StructuredData* old = m_labels->get_element_safe(real_idx);
+		SG_UNREF(old);
+
+		SG_REF(label);
 		return m_labels->set_element(label, real_idx);
 	}
 	else
@@ -83,13 +99,14 @@ int32_t CStructuredLabels::get_num_labels() const
 
 void CStructuredLabels::init()
 {
-	SG_ADD((CSGObject**) &m_labels, "m_labels", "The labels", MS_NOT_AVAILABLE);
+	// TODO: m_labels is no CSGObject any more - what to do?
+	// SG_ADD((CSGObject**) &m_labels, "m_labels", "The labels", MS_NOT_AVAILABLE);
 
 	m_labels = NULL;
 	m_sdt = SDT_UNKNOWN;
 }
 
-void CStructuredLabels::ensure_valid_sdt(CStructuredData* label)
+void CStructuredLabels::ensure_valid_sdt(StructuredData* label)
 {
 	if ( m_sdt == SDT_UNKNOWN )
 	{
@@ -98,6 +115,6 @@ void CStructuredLabels::ensure_valid_sdt(CStructuredData* label)
 	else
 	{
 		REQUIRE(label->get_structured_data_type() == m_sdt, "All the labels must "
-				"belong to the same CStructuredData child class\n");
+				"belong to the same StructuredData child class\n");
 	}
 }

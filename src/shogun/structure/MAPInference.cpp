@@ -78,7 +78,8 @@ CMAPInference::~CMAPInference()
 void CMAPInference::init()
 {
 	SG_ADD((CSGObject**)&m_fg, "fg", "factor graph", MS_NOT_AVAILABLE);
-	SG_ADD((CSGObject**)&m_outputs, "outputs", "Structured outputs", MS_NOT_AVAILABLE);
+	// TODO: m_outputs is no CSGObject any more - what to do now?
+	// SG_ADD((CSGObject**)&m_outputs, "outputs", "Structured outputs", MS_NOT_AVAILABLE);
 	SG_ADD((CSGObject**)&m_infer_impl, "infer_impl", "Inference implementation", MS_NOT_AVAILABLE);
 	SG_ADD(&m_energy, "energy", "Minimized energy", MS_NOT_AVAILABLE);
 
@@ -98,11 +99,11 @@ void CMAPInference::inference()
 	SG_UNREF(m_outputs);
 	SGVector<float64_t> loss_weights(m_fg->get_num_vars());
 	SGVector<float64_t>::fill_vector(loss_weights.vector, loss_weights.vlen, 1.0 / loss_weights.vlen);
-	m_outputs = new CFactorGraphObservation(assignment, loss_weights); // already ref() in constructor
+	m_outputs = new FactorGraphObservation(assignment, loss_weights); // already ref() in constructor
 	SG_REF(m_outputs);
 }
 
-CFactorGraphObservation* CMAPInference::get_structured_outputs() const
+FactorGraphObservation* CMAPInference::get_structured_outputs() const
 {
 	SG_REF(m_outputs);
 	return m_outputs;

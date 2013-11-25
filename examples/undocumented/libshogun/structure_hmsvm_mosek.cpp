@@ -32,8 +32,8 @@ int main(int argc, char ** argv)
 
 	for ( int32_t i = 0 ; i < out->get_num_labels() ; ++i )
 	{
-		CSequence* pred_seq = CSequence::obtain_from_generic( out->get_label(i) );
-		CSequence* true_seq = CSequence::obtain_from_generic( labels->get_label(i) );
+		Sequence* pred_seq = Sequence::obtain_from_generic( out->get_label(i) );
+		Sequence* true_seq = Sequence::obtain_from_generic( labels->get_label(i) );
 		SG_UNREF(pred_seq);
 		SG_UNREF(true_seq);
 	}

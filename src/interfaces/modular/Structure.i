@@ -25,10 +25,10 @@
 %rename(ResultSet) CResultSet;
 %rename(MulticlassModel) CMulticlassModel;
 %rename(MulticlassSOLabels) CMulticlassSOLabels;
-%rename(RealNumber) CRealNumber;
+%rename(RealNumber) RealNumber;
 %rename(HMSVMModel) CHMSVMModel;
 %rename(SequenceLabels) CSequenceLabels;
-%rename(Sequence) CSequence;
+%rename(Sequence) Sequence;
 %rename(StateModel) CStateModel;
 %rename(TwoStateModel) CTwoStateModel;
 %rename(DirectorStructuredModel) CDirectorStructuredModel;
@@ -39,7 +39,7 @@
 %rename(Factor) CFactor;
 %rename(DisjointSet) CDisjointSet;
 %rename(FactorGraph) CFactorGraph;
-%rename(FactorGraphObservation) CFactorGraphObservation;
+%rename(FactorGraphObservation) FactorGraphObservation;
 %rename(FactorGraphLabels) CFactorGraphLabels;
 %rename(FactorGraphFeatures) CFactorGraphFeatures;
 %rename(MAPInference) CMAPInference;
