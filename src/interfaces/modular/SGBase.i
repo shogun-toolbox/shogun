@@ -334,6 +334,7 @@ namespace std {
 SERIALIZABLE_DUMMY(shogun::SGIO);
 
 %include <shogun/base/SGRefObject.h>
+SERIALIZABLE_DUMMY(shogun::SGRefObject);
 %include <shogun/base/SGObject.h>
 %include <shogun/base/Version.h>
 SERIALIZABLE_DUMMY(shogun::Version);
