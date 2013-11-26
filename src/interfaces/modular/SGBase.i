@@ -310,6 +310,9 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
 %ignore sg_print_error;
 %ignore sg_cancel_computations;
 
+%include <shogun/base/SGRefObject.h>
+SERIALIZABLE_DUMMY(shogun::SGRefObject);
+
 %feature("ref")   SGRefObject "SG_REF($this);"
 %feature("unref") SGRefObject "SG_UNREF($this);"
 
@@ -332,14 +335,11 @@ namespace std {
 #endif
 %include <shogun/io/SGIO.h>
 SERIALIZABLE_DUMMY(shogun::SGIO);
-
-%include <shogun/base/SGRefObject.h>
-SERIALIZABLE_DUMMY(shogun::SGRefObject);
-%include <shogun/base/SGObject.h>
 %include <shogun/base/Version.h>
 SERIALIZABLE_DUMMY(shogun::Version);
 %include <shogun/base/Parallel.h>
 SERIALIZABLE_DUMMY(shogun::Parallel);
+%include <shogun/base/SGObject.h>
 
 #ifdef SWIGPYTHON
 namespace shogun
