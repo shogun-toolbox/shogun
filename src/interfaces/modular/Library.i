@@ -20,7 +20,7 @@
 %rename(Signal) CSignal;
 %rename(Time) CTime;
 %rename(Hash) CHash;
-%rename(StructuredData) CStructuredData;
+%rename(StructuredData) StructuredData;
 %rename(DynamicObjectArray) CDynamicObjectArray;
 %rename(Tokenizer) CTokenizer;
 %rename(DelimiterTokenizer) CDelimiterTokenizer;

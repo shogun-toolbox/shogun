@@ -110,7 +110,7 @@ TEST(BeliefPropagation, tree_max_product_string)
 	CMAPInference infer_met(fg, TREE_MAX_PROD);
 	infer_met.inference();
 
-	CFactorGraphObservation* fg_observ = infer_met.get_structured_outputs();
+	FactorGraphObservation* fg_observ = infer_met.get_structured_outputs();
 	SGVector<int32_t> assignment = fg_observ->get_data();
 	SG_UNREF(fg_observ);
 
@@ -214,7 +214,7 @@ TEST(BeliefPropagation, tree_max_product_random)
 		CMAPInference infer_met(fg, TREE_MAX_PROD);
 		infer_met.inference();
 
-		CFactorGraphObservation* fg_observ = infer_met.get_structured_outputs();
+		FactorGraphObservation* fg_observ = infer_met.get_structured_outputs();
 		SGVector<int32_t> assignment = fg_observ->get_data();
 		SG_UNREF(fg_observ);
 
@@ -402,7 +402,7 @@ TEST(BeliefPropagation, tree_max_product_multi_states)
 	CMAPInference infer_met(fg, TREE_MAX_PROD);
 	infer_met.inference();
 
-	CFactorGraphObservation* fg_observ = infer_met.get_structured_outputs();
+	FactorGraphObservation* fg_observ = infer_met.get_structured_outputs();
 	SGVector<int32_t> assignment = fg_observ->get_data();
 	EXPECT_EQ(assignment[0],2);
 	EXPECT_EQ(assignment[1],0);

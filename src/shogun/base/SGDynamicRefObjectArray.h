@@ -12,7 +12,7 @@
 #ifndef _DYNAMIC_REFOBJECT_ARRAY_H_
 #define _DYNAMIC_REFOBJECT_ARRAY_H_
 
-#include <shogun/base/RefObject.h>
+#include <shogun/base/SGRefObject.h>
 #include <shogun/base/DynArray.h>
 #include <shogun/base/Parameter.h>
 
@@ -33,7 +33,7 @@ class SGDynamicRefObjectArray : public SGRefObject
 	public:
 		/** default constructor */
 		SGDynamicRefObjectArray()
-		: CSGObject(), m_array(), name("Array")
+		: SGRefObject(), m_array(), name("Array")
 		{
 			dim1_size=1;
 			dim2_size=1;
@@ -47,7 +47,7 @@ class SGDynamicRefObjectArray : public SGRefObject
 		 * @param dim3 dimension 3
 		 */
 		SGDynamicRefObjectArray(int32_t dim1, int32_t dim2=1, int32_t dim3=1)
-		: CSGObject(), m_array(dim1*dim2*dim3), name("Array")
+		: SGRefObject(), m_array(dim1*dim2*dim3), name("Array")
 		{
 			dim1_size=dim1;
 			dim2_size=dim2;
@@ -61,8 +61,8 @@ class SGDynamicRefObjectArray : public SGRefObject
 		 * @param p_free_array if array must be freed
 		 * @param p_copy_array if array must be copied
 		 */
-		SGDynamicRefObjectArray(CRefObject** p_array, int32_t p_dim1_size, bool p_free_array=true, bool p_copy_array=false)
-		: CSGObject(), m_array(p_array, p_dim1_size, p_free_array, p_copy_array), name("Array")
+		SGDynamicRefObjectArray(SGRefObject** p_array, int32_t p_dim1_size, bool p_free_array=true, bool p_copy_array=false)
+		: SGRefObject(), m_array(p_array, p_dim1_size, p_free_array, p_copy_array), name("Array")
 		{
 			dim1_size=p_dim1_size;
 			dim2_size=1;
@@ -77,9 +77,9 @@ class SGDynamicRefObjectArray : public SGRefObject
 		 * @param p_free_array if array must be freed
 		 * @param p_copy_array if array must be copied
 		 */
-		SGDynamicRefObjectArray(CRefObject** p_array, int32_t p_dim1_size, int32_t p_dim2_size,
+		SGDynamicRefObjectArray(SGRefObject** p_array, int32_t p_dim1_size, int32_t p_dim2_size,
 						bool p_free_array=true, bool p_copy_array=false)
-		: CSGObject(), m_array(p_array, p_dim1_size*p_dim2_size, p_free_array, p_copy_array), name("Array")
+		: SGRefObject(), m_array(p_array, p_dim1_size*p_dim2_size, p_free_array, p_copy_array), name("Array")
 		{
 			dim1_size=p_dim1_size;
 			dim2_size=p_dim2_size;
@@ -95,9 +95,9 @@ class SGDynamicRefObjectArray : public SGRefObject
 		 * @param p_free_array if array must be freed
 		 * @param p_copy_array if array must be copied
 		 */
-		SGDynamicRefObjectArray(CRefObject** p_array, int32_t p_dim1_size, int32_t p_dim2_size,
+		SGDynamicRefObjectArray(SGRefObject** p_array, int32_t p_dim1_size, int32_t p_dim2_size,
 						int32_t p_dim3_size, bool p_free_array=true, bool p_copy_array=false)
-		: CSGObject(), m_array(p_array, p_dim1_size*p_dim2_size*p_dim3_size, p_free_array, p_copy_array), name("Array")
+		: SGRefObject(), m_array(p_array, p_dim1_size*p_dim2_size*p_dim3_size, p_free_array, p_copy_array), name("Array")
 		{
 			dim1_size=p_dim1_size;
 			dim2_size=p_dim2_size;
@@ -181,9 +181,9 @@ class SGDynamicRefObjectArray : public SGRefObject
 		 * @param index index
 		 * @return array element at index
 		 */
-		inline CRefObject* get_element(int32_t index) const
+		inline SGRefObject* get_element(int32_t index) const
 		{
-			CRefObject* elem=m_array.get_element(index);
+			SGRefObject* elem=m_array.get_element(index);
 			SG_REF(elem);
 			return elem;
 		}
@@ -195,7 +195,7 @@ class SGDynamicRefObjectArray : public SGRefObject
 		 * @param idx3 index 3
 		 * @return array element at index
 		 */
-		inline CRefObject* element(int32_t idx1, int32_t idx2=0, int32_t idx3=0)
+		inline SGRefObject* element(int32_t idx1, int32_t idx2=0, int32_t idx3=0)
 		{
 			return get_element(idx1+dim1_size*(idx2+dim2_size*idx3));
 		}
@@ -204,9 +204,9 @@ class SGDynamicRefObjectArray : public SGRefObject
 		 *
 		 * @return last array element
 		 */
-		inline CRefObject* get_last_element() const
+		inline SGRefObject* get_last_element() const
 		{
-			CRefObject* e=m_array.get_last_element();
+			SGRefObject* e=m_array.get_last_element();
 			SG_REF(e);
 			return e;
 		}
@@ -218,9 +218,9 @@ class SGDynamicRefObjectArray : public SGRefObject
 		 * @param index index
 		 * @return array element at index
 		 */
-		inline CRefObject* get_element_safe(int32_t index) const
+		inline SGRefObject* get_element_safe(int32_t index) const
 		{
-			CRefObject* e=m_array.get_element_safe(index);
+			SGRefObject* e=m_array.get_element_safe(index);
 			SG_REF(e);
 			return e;
 		}
@@ -233,13 +233,13 @@ class SGDynamicRefObjectArray : public SGRefObject
 		 * @param idx3 index 2
 		 * @return if setting was successful
 		 */
-		inline bool set_element(CRefObject* e, int32_t idx1, int32_t idx2=0, int32_t idx3=0)
+		inline bool set_element(SGRefObject* e, int32_t idx1, int32_t idx2=0, int32_t idx3=0)
 		{
 			int32_t idx = idx1+dim1_size*(idx2+dim2_size*idx3);
-			CRefObject* old=NULL;
+			SGRefObject* old=NULL;
 
 			if (idx<get_num_elements())
-				old = (CRefObject*) m_array.get_element(idx);
+				old = (SGRefObject*) m_array.get_element(idx);
 
 			bool success=m_array.set_element(e, idx);
 			if (success)
@@ -258,7 +258,7 @@ class SGDynamicRefObjectArray : public SGRefObject
 		 * @param index index
 		 * @return if setting was successful
 		 */
-		inline bool insert_element(CRefObject* e, int32_t index)
+		inline bool insert_element(SGRefObject* e, int32_t index)
 		{
 			bool success=m_array.insert_element(e, index);
 			if (success)
@@ -272,7 +272,7 @@ class SGDynamicRefObjectArray : public SGRefObject
 		 * @param e element to append
 		 * @return if setting was successful
 		 */
-		inline bool append_element(CRefObject* e)
+		inline bool append_element(SGRefObject* e)
 		{
 			bool success=m_array.append_element(e);
 			if (success)
@@ -286,7 +286,7 @@ class SGDynamicRefObjectArray : public SGRefObject
 		 *
 		 * @param e element to append
 		 */
-		inline void push_back(CRefObject* e)
+		inline void push_back(SGRefObject* e)
 		{
 			SG_REF(e);
 			m_array.push_back(e);
@@ -297,7 +297,7 @@ class SGDynamicRefObjectArray : public SGRefObject
 		 */
 		inline void pop_back()
 		{
-			CRefObject* e=m_array.back();
+			SGRefObject* e=m_array.back();
 			SG_UNREF(e);
 
 			m_array.pop_back();
@@ -308,9 +308,9 @@ class SGDynamicRefObjectArray : public SGRefObject
 		 *
 		 * @return element at the end of array
 		 */
-		inline CRefObject* back() const
+		inline SGRefObject* back() const
 		{
-			CRefObject* e=m_array.back();
+			SGRefObject* e=m_array.back();
 			SG_REF(e);
 			return e;
 		}
@@ -321,7 +321,7 @@ class SGDynamicRefObjectArray : public SGRefObject
 		 * @param elem element to search for
 		 * @return index of element or -1
 		 */
-		inline int32_t find_element(CRefObject* elem) const
+		inline int32_t find_element(SGRefObject* elem) const
 		{
 			return m_array.find_element(elem);
 		}
@@ -334,7 +334,7 @@ class SGDynamicRefObjectArray : public SGRefObject
 		 */
 		inline bool delete_element(int32_t idx)
 		{
-			CRefObject* e=m_array.get_element(idx);
+			SGRefObject* e=m_array.get_element(idx);
 			SG_UNREF(e);
 			m_array.set_element(NULL, idx);
 
@@ -375,7 +375,7 @@ class SGDynamicRefObjectArray : public SGRefObject
 		}
 
 		/** @return underlying array of pointers */
-		inline CRefObject** get_array() const { return m_array.get_array(); }
+		inline SGRefObject** get_array() const { return m_array.get_array(); }
 
 		/** shuffles the array (not thread safe!) */
 		inline void shuffle() { m_array.shuffle(); }
@@ -415,7 +415,7 @@ class SGDynamicRefObjectArray : public SGRefObject
 
 	private:
 		/** underlying array */
-		DynArray<CRefObject*> m_array;
+		DynArray<SGRefObject*> m_array;
 
 		/** dimension 1 */
 		int32_t dim1_size;

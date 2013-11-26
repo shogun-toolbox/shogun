@@ -22,7 +22,7 @@ CStructuredLabels::CStructuredLabels(int32_t num_labels)
 : CLabels()
 {
 	init();
-	m_labels = new CDynamicObjectArray(num_labels);
+	m_labels = new SGDynamicRefObjectArray(num_labels);
 	SG_REF(m_labels);
 }
 
@@ -37,28 +37,28 @@ void CStructuredLabels::ensure_valid(const char* context)
 		SG_ERROR("Non-valid StructuredLabels in %s", context)
 }
 
-CDynamicObjectArray* CStructuredLabels::get_labels() const
+SGDynamicRefObjectArray* CStructuredLabels::get_labels() const
 {
 	SG_REF(m_labels);
 	return m_labels;
 }
 
-CStructuredData* CStructuredLabels::get_label(int32_t idx)
+StructuredData* CStructuredLabels::get_label(int32_t idx)
 {
 	ensure_valid("CStructuredLabels::get_label(int32_t)");
 	if ( idx < 0 || idx >= get_num_labels() )
 		SG_ERROR("Index must be inside [0, num_labels-1]\n")
 
-	return (CStructuredData*) m_labels->get_element(idx);
+	return (StructuredData*) m_labels->get_element_safe(idx);
 }
 
-void CStructuredLabels::add_label(CStructuredData* label)
+void CStructuredLabels::add_label(StructuredData* label)
 {
 	ensure_valid_sdt(label);
 	m_labels->push_back(label);
 }
 
-bool CStructuredLabels::set_label(int32_t idx, CStructuredData* label)
+bool CStructuredLabels::set_label(int32_t idx, StructuredData* label)
 {
 	ensure_valid_sdt(label);
 	int32_t real_idx = m_subset_stack->subset_idx_conversion(idx);
@@ -89,7 +89,7 @@ void CStructuredLabels::init()
 	m_sdt = SDT_UNKNOWN;
 }
 
-void CStructuredLabels::ensure_valid_sdt(CStructuredData* label)
+void CStructuredLabels::ensure_valid_sdt(StructuredData* label)
 {
 	if ( m_sdt == SDT_UNKNOWN )
 	{
@@ -98,6 +98,6 @@ void CStructuredLabels::ensure_valid_sdt(CStructuredData* label)
 	else
 	{
 		REQUIRE(label->get_structured_data_type() == m_sdt, "All the labels must "
-				"belong to the same CStructuredData child class\n");
+				"belong to the same StructuredData child class\n");
 	}
 }

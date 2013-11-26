@@ -44,7 +44,7 @@ CTwoStateModel::~CTwoStateModel()
 {
 }
 
-SGMatrix< float64_t > CTwoStateModel::loss_matrix(CSequence* label_seq)
+SGMatrix< float64_t > CTwoStateModel::loss_matrix(Sequence* label_seq)
 {
 	SGVector< int32_t > state_seq = labels_to_states(label_seq);
 	SGMatrix< float64_t > loss_mat(m_num_states, state_seq.vlen);
@@ -58,7 +58,7 @@ SGMatrix< float64_t > CTwoStateModel::loss_matrix(CSequence* label_seq)
 	return loss_mat;
 }
 
-float64_t CTwoStateModel::loss(CSequence* label_seq_lhs, CSequence* label_seq_rhs)
+float64_t CTwoStateModel::loss(Sequence* label_seq_lhs, Sequence* label_seq_rhs)
 {
 	SGVector< int32_t > state_seq_lhs = labels_to_states(label_seq_lhs);
 	SGVector< int32_t > state_seq_rhs = labels_to_states(label_seq_rhs);
@@ -72,7 +72,7 @@ float64_t CTwoStateModel::loss(CSequence* label_seq_lhs, CSequence* label_seq_rh
 	return ret;
 }
 
-SGVector< int32_t > CTwoStateModel::labels_to_states(CSequence* label_seq) const
+SGVector< int32_t > CTwoStateModel::labels_to_states(Sequence* label_seq) const
 {
 	// 0 -> start state
 	// 1 -> stop state
@@ -95,7 +95,7 @@ SGVector< int32_t > CTwoStateModel::labels_to_states(CSequence* label_seq) const
 	return state_seq;
 }
 
-CSequence* CTwoStateModel::states_to_labels(SGVector< int32_t > state_seq) const
+Sequence* CTwoStateModel::states_to_labels(SGVector< int32_t > state_seq) const
 {
 	SGVector< int32_t > label_seq(state_seq.vlen);
 
@@ -112,7 +112,7 @@ CSequence* CTwoStateModel::states_to_labels(SGVector< int32_t > state_seq) const
 			label_seq[i] = 1;
 	}
 
-	CSequence* ret = new CSequence(label_seq);
+	Sequence* ret = new Sequence(label_seq);
 	SG_REF(ret);
 	return ret;
 }

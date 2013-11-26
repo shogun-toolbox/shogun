@@ -11,8 +11,8 @@
  */
 
 #include <shogun/base/init.h>
-#include <shogun/base/SGRefObject.h>
 #include <shogun/io/SGIO.h>
+#include <shogun/base/SGRefObject.h>
 
 #include <stdlib.h>
 #include <stdio.h>

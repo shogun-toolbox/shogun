@@ -4,6 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
+ * Modified (M) 2013 Thoralf Klein
  * Written (W) 2012 Fernando José Iglesias García
  * Copyright (C) 2012 Fernando José Iglesias García
  */
@@ -11,22 +12,23 @@
 #ifndef _STRUCTUREDDATA_H__
 #define _STRUCTUREDDATA_H__
 
-#include <shogun/base/SGObject.h>
+#include <shogun/base/SGRefObject.h>
+// #include <shogun/base/SGObject.h>
 #include <shogun/lib/StructuredDataTypes.h>
 
 namespace shogun
 {
 
 /** @brief Base class of the components of StructuredLabels */
-class CStructuredData : public CSGObject
+class StructuredData : public SGRefObject
 {
 
 	public:
 		/** default constructor */
-		CStructuredData();
+		StructuredData();
 
 		/** destructor */
-		virtual ~CStructuredData();
+		virtual ~StructuredData();
 
 		/** @return object name */
 		virtual const char* get_name() const { return "StructuredData"; }

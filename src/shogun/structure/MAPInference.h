@@ -67,9 +67,9 @@ public:
 
 	/** get structured outputs
 	 *
-	 * @return CFactorGraphObservation pointer
+	 * @return FactorGraphObservation pointer
 	 */
-	CFactorGraphObservation* get_structured_outputs() const;
+	FactorGraphObservation* get_structured_outputs() const;
 
 	/** @return minimized energy */
 	float64_t get_energy() const;
@@ -83,7 +83,7 @@ protected:
 	CFactorGraph* m_fg;
 
 	/** structured outputs */
-	CFactorGraphObservation* m_outputs;
+	FactorGraphObservation* m_outputs;
 
 	/** minimized energy */
 	float64_t m_energy;
