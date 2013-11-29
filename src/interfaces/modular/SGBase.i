@@ -4,8 +4,8 @@
 
 %define SERIALIZABLE_DUMMY(SWIGCLASS)
 %extend SWIGCLASS {
-bool save_serializable(CSerializableFile* file, const char* prefix="") { return false; };
-bool load_serializable(CSerializableFile* file, const char* prefix="") { return false; };
+bool save_serializable(CSerializableFile* file, const char* prefix="", int32_t param_version=0) { return false; };
+bool load_serializable(CSerializableFile* file, const char* prefix="", int32_t param_version=0) { return false; };
 }
 %enddef
 
