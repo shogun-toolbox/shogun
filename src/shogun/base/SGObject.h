@@ -35,6 +35,7 @@ class Version;
 class Parameter;
 class ParameterMap;
 class SGParamInfo;
+class SGRefObject;
 class CSerializableFile;
 
 template <class T, class K> class CMap;

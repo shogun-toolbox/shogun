@@ -333,13 +333,13 @@ namespace std {
 #ifndef SWIGR
 %include <shogun/base/init.h>
 #endif
+%include <shogun/base/SGObject.h>
 %include <shogun/io/SGIO.h>
 SERIALIZABLE_DUMMY(shogun::SGIO);
 %include <shogun/base/Version.h>
 SERIALIZABLE_DUMMY(shogun::Version);
 %include <shogun/base/Parallel.h>
 SERIALIZABLE_DUMMY(shogun::Parallel);
-%include <shogun/base/SGObject.h>
 
 #ifdef SWIGPYTHON
 namespace shogun

@@ -90,5 +90,4 @@ void SGRefObject::init()
 		}
 	}
 #endif
-
 }
