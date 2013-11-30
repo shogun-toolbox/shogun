@@ -16,7 +16,6 @@
 #include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/DataType.h>
-#include <shogun/lib/ShogunException.h>
 #include <shogun/lib/RefCount.h>
 
 /** \namespace shogun

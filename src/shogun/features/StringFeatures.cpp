@@ -5,6 +5,7 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/base/Parameter.h>
+#include <shogun/lib/SGStringList.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>

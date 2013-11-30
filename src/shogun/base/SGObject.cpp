@@ -20,6 +20,7 @@
 #include <shogun/base/ParameterMap.h>
 #include <shogun/base/DynArray.h>
 #include <shogun/lib/Map.h>
+#include <shogun/lib/SGStringList.h>
 
 #include "class_list.h"
 

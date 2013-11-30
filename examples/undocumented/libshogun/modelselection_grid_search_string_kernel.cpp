@@ -19,6 +19,7 @@
 #include <shogun/features/StringFeatures.h>
 #include <shogun/classifier/svm/LibSVM.h>
 #include <shogun/kernel/string/DistantSegmentsKernel.h>
+#include <shogun/lib/SGStringList.h>
 
 
 using namespace shogun;

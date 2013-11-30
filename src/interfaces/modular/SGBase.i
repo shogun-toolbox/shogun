@@ -311,9 +311,6 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
 %ignore sg_cancel_computations;
 
 
-%feature("ref")   SGRefObject "SG_REF($this);"
-%feature("unref") SGRefObject "SG_UNREF($this);"
-
 %rename(SGObject) CSGObject;
 
 %include <shogun/lib/common.h>
@@ -340,6 +337,9 @@ SERIALIZABLE_DUMMY(shogun::Version);
 SERIALIZABLE_DUMMY(shogun::Parallel);
 %include <shogun/base/SGRefObject.h>
 SERIALIZABLE_DUMMY(shogun::SGRefObject);
+
+%feature("ref")   SGRefObject "SG_REF($this);"
+%feature("unref") SGRefObject "SG_UNREF($this);"
 
 #ifdef SWIGPYTHON
 namespace shogun

@@ -16,9 +16,8 @@
 #include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/DataType.h>
-#include <shogun/lib/SGStringList.h>
-#include <shogun/lib/ShogunException.h>
 #include <shogun/base/SGRefObject.h>
+#include <shogun/lib/ShogunException.h>
 
 #include <shogun/base/Parallel.h>
 #include <shogun/base/Version.h>
@@ -42,6 +41,7 @@ template <class T, class K> class CMap;
 
 struct TParameter;
 template <class T> class DynArray;
+template <class T> class SGStringList;
 
 /*******************************************************************************
  * Macros for registering parameters/model selection parameters

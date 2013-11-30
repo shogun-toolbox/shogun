@@ -28,6 +28,7 @@ class CAlphabet;
 template <class T> class CDynamicArray;
 class CFile;
 template <class T> class SGString;
+template <class T> class SGStringList;
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 struct SSKDoubleFeature

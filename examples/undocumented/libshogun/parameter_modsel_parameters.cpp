@@ -15,6 +15,7 @@
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/kernel/PowerKernel.h>
 #include <shogun/distance/MinkowskiMetric.h>
+#include <shogun/lib/SGStringList.h>
 
 using namespace shogun;
 

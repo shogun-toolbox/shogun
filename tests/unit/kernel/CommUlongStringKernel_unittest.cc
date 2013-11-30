@@ -2,6 +2,7 @@
 #include <shogun/kernel/normalizer/IdentityKernelNormalizer.h>
 #include <shogun/preprocessor/SortUlongString.h>
 #include <shogun/lib/NGramTokenizer.h>
+#include <shogun/lib/SGStringList.h>
 #include <shogun/features/HashedDocDotFeatures.h>
 #include <gtest/gtest.h>
 
