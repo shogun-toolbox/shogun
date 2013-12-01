@@ -328,15 +328,15 @@ namespace std {
 #ifndef SWIGR
 %include <shogun/base/init.h>
 #endif
+%include <shogun/base/SGRefObject.h>
 %include <shogun/base/SGObject.h>
+SERIALIZABLE_DUMMY(shogun::SGRefObject);
 %include <shogun/io/SGIO.h>
 SERIALIZABLE_DUMMY(shogun::SGIO);
 %include <shogun/base/Version.h>
 SERIALIZABLE_DUMMY(shogun::Version);
 %include <shogun/base/Parallel.h>
 SERIALIZABLE_DUMMY(shogun::Parallel);
-%include <shogun/base/SGRefObject.h>
-SERIALIZABLE_DUMMY(shogun::SGRefObject);
 
 %feature("ref")   SGRefObject "SG_REF($this);"
 %feature("unref") SGRefObject "SG_UNREF($this);"
