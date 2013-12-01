@@ -38,7 +38,7 @@ namespace shogun
 
 /** @brief Class SGRefObject is a reference count based memory management class
  *
- * It deals with reference counting that is used to manage shogung
+ * It deals with reference counting that is used to manage shogun
  * objects in memory (erase unused object, avoid cleaning objects when they are
  * still in use)
  *

@@ -2,22 +2,15 @@
 %include "stdint.i"
 %include "exception.i"
 
-%define SERIALIZABLE_DUMMY(SWIGCLASS)
-%extend SWIGCLASS {
-bool save_serializable(CSerializableFile* file, const char* prefix="", int32_t param_version=0) { return false; };
-bool load_serializable(CSerializableFile* file, const char* prefix="", int32_t param_version=0) { return false; };
-}
-%enddef
-
 #ifdef SWIGJAVA
-%typemap(javainterfaces) SWIGTYPE "java.io.Externalizable"
+%typemap(javainterfaces) SGObject "java.io.Externalizable"
 
-%typemap(javaincludes) SWIGTYPE
+%typemap(javaimports) SGObject
 %{
 import org.shogun.SerializableFile;
 import org.shogun.SerializableAsciiFile;
 %}
-%typemap(javacode) SWIGTYPE
+%typemap(javacode) SGObject
 %{
 public void writeExternal(java.io.ObjectOutput out) throws java.io.IOException {
         java.util.Random randomGenerator = new java.util.Random();
@@ -330,13 +323,9 @@ namespace std {
 #endif
 %include <shogun/base/SGRefObject.h>
 %include <shogun/base/SGObject.h>
-SERIALIZABLE_DUMMY(shogun::SGRefObject);
 %include <shogun/io/SGIO.h>
-SERIALIZABLE_DUMMY(shogun::SGIO);
 %include <shogun/base/Version.h>
-SERIALIZABLE_DUMMY(shogun::Version);
 %include <shogun/base/Parallel.h>
-SERIALIZABLE_DUMMY(shogun::Parallel);
 
 %feature("ref")   SGRefObject "SG_REF($this);"
 %feature("unref") SGRefObject "SG_UNREF($this);"
