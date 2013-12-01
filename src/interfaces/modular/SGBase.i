@@ -2,6 +2,9 @@
 %include "stdint.i"
 %include "exception.i"
 
+%feature("ref")   SGRefObject "SG_REF($this);"
+%feature("unref") SGRefObject "SG_UNREF($this);"
+
 #ifdef SWIGJAVA
 %typemap(javainterfaces) shogun::CSGObject "java.io.Externalizable"
 
@@ -326,9 +329,6 @@ namespace std {
 %include <shogun/io/SGIO.h>
 %include <shogun/base/Version.h>
 %include <shogun/base/Parallel.h>
-
-%feature("ref")   SGRefObject "SG_REF($this);"
-%feature("unref") SGRefObject "SG_UNREF($this);"
 
 #ifdef SWIGPYTHON
 namespace shogun
