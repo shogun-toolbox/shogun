@@ -3,14 +3,14 @@
 %include "exception.i"
 
 #ifdef SWIGJAVA
-%typemap(javainterfaces) SGObject "java.io.Externalizable"
+%typemap(javainterfaces) shogun::CSGObject "java.io.Externalizable"
 
-%typemap(javaimports) SGObject
+%typemap(javaimports) shogun::CSGObject
 %{
 import org.shogun.SerializableFile;
 import org.shogun.SerializableAsciiFile;
 %}
-%typemap(javacode) SGObject
+%typemap(javacode) shogun::CSGObject
 %{
 public void writeExternal(java.io.ObjectOutput out) throws java.io.IOException {
         java.util.Random randomGenerator = new java.util.Random();
