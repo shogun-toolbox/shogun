@@ -134,6 +134,9 @@ class CStructuredModel : public CSGObject
 		 */
 		CStructuredLabels* get_labels();
 
+		/** create empty StructuredLabels object */
+		virtual CStructuredLabels* structured_labels_factory(int32_t num_labels=0);
+
 		/** set features
 		 *
 		 * @param feats features

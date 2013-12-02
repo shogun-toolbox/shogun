@@ -4,6 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
+ * Written (W) 2013 Thoralf Klein
  * Written (W) 2012 Fernando José Iglesias García
  * Copyright (C) 2012 Fernando José Iglesias García
  */
@@ -37,6 +38,9 @@ class CMulticlassModel : public CStructuredModel
 
 		/** destructor */
 		virtual ~CMulticlassModel();
+
+		/** create empty StructuredLabels object */
+		virtual CStructuredLabels* structured_labels_factory(int32_t num_labels=0);
 
 		/**
 		 * return the dimensionality of the joint feature space, i.e.
