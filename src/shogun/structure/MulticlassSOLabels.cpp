@@ -59,24 +59,33 @@ CStructuredData* CMulticlassSOLabels::get_label(int32_t idx)
 
 void CMulticlassSOLabels::add_label(CStructuredData* label)
 {
+        SG_REF(label);
+        float64_t value = CRealNumber::obtain_from_generic(label)->value;
+        SG_UNREF(label);
+
 	//ensure_valid_sdt(label);
 	if (m_num_labels_set >= m_labels_vector.vlen)
 	{
 		m_labels_vector.resize_vector(m_num_labels_set + 16);
 	}
 
-	m_labels_vector[m_num_labels_set] = CRealNumber::obtain_from_generic(label)->value;
+
+	m_labels_vector[m_num_labels_set] = value;
 	m_num_labels_set++;
 }
 
 bool CMulticlassSOLabels::set_label(int32_t idx, CStructuredData* label)
 {
+        SG_REF(label);
+        float64_t value = CRealNumber::obtain_from_generic(label)->value;
+        SG_UNREF(label);
+
 	// ensure_valid_sdt(label);
 	int32_t real_idx = m_subset_stack->subset_idx_conversion(idx);
 
 	if ( real_idx < get_num_labels() )
 	{
-		m_labels_vector[real_idx] = CRealNumber::obtain_from_generic(label)->value;
+		m_labels_vector[real_idx] = value;
 		return true;
 	}
 	else
