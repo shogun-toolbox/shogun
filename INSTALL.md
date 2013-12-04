@@ -50,7 +50,8 @@ To compile the octave interface you need to have the octave developer files
 (debian package liboctave-dev) installed.
 
 To compile the java interface you need to have the java developer files
-(debian package openjdk-6-jdk or openjdk-7-jdk) installed.
+(debian package openjdk-6-jdk or openjdk-7-jdk) and jblas (debian package
+jblas) installed.
 
 To compile the python interface you need to have the python developer files
 installed (debian packages python2.7-dev or python3.X-dev) and numpy
