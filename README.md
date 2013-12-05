@@ -12,7 +12,7 @@ Quick links to this file:
 * [Introduction](#introduction)
 * [Interfaces](#interfaces)
 * [Platforms](#platforms)
-* [Directory Contents](#contents)
+* [Contents](#contents)
 * [Applications](#applications)
 * [License](#license)
 * [Download](#download)
@@ -93,7 +93,7 @@ Visit http://www.shogun-toolbox.org/doc/en/current for further information.
 Debian GNU/Linux, Mac OSX and WIN32/CYGWIN are supported platforms (see
 the [INSTALL](INSTALL.md) file for generic and platform specific installation instructions).
 
-## Directory Contents
+## Contents
 -----------
 
 The following directories are found in the source distribution.
