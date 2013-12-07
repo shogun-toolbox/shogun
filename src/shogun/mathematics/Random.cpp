@@ -321,7 +321,7 @@ uint32_t CRandom::generate_seed()
 	seed = arc4random();
 #elif defined(DEV_RANDOM)
 	int fd = open(DEV_RANDOM, O_RDONLY);
-	ASSERT(fd > 0);
+	ASSERT(fd >= 0);
 	ssize_t actual_read = 
 		read(fd, reinterpret_cast<char*>(&seed), sizeof(seed));
 	close(fd);
