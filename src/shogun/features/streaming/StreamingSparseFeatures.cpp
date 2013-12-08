@@ -5,6 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 2011 Shashwat Lal Das
+ * Modifications (W) 2013 Thoralf Klein
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 #include <shogun/features/streaming/StreamingSparseFeatures.h>
@@ -45,6 +46,7 @@ T CStreamingSparseFeatures<T>::get_feature(int32_t index)
 template <class T>
 void CStreamingSparseFeatures<T>::reset_stream()
 {
+	SG_NOTIMPLEMENTED
 }
 
 template <class T>
@@ -54,30 +56,6 @@ int32_t CStreamingSparseFeatures<T>::set_num_features(int32_t num)
 	ASSERT(n<=num)
 	current_num_features=num;
 	return n;
-}
-
-template <class T>
-void CStreamingSparseFeatures<T>::expand_if_required(float32_t*& vec, int32_t &len)
-{
-	int32_t dim = get_dim_feature_space();
-	if (dim > len)
-	{
-		vec = SG_REALLOC(float32_t, vec, len, dim);
-		memset(&vec[len], 0, (dim-len) * sizeof(float32_t));
-		len = dim;
-	}
-}
-
-template <class T>
-void CStreamingSparseFeatures<T>::expand_if_required(float64_t*& vec, int32_t &len)
-{
-	int32_t dim = get_dim_feature_space();
-	if (dim > len)
-	{
-		vec = SG_REALLOC(float64_t, vec, len, dim);
-		memset(&vec[len], 0, (dim-len) * sizeof(float64_t));
-		len = dim;
-	}
 }
 
 template <class T>
@@ -110,11 +88,6 @@ template <class T>
 float64_t CStreamingSparseFeatures<T>::dense_dot(const float64_t* vec2, int32_t vec2_len)
 {
 	ASSERT(vec2)
-	if (vec2_len < current_num_features)
-	{
-		SG_ERROR("dimension of vec2 (=%d) does not match number of features (=%d)\n",
-			 vec2_len, current_num_features);
-	}
 
 	int32_t current_length = current_sgvector.num_feat_entries;
 	SGSparseVectorEntry<T>* current_vector = current_sgvector.features;
@@ -122,8 +95,11 @@ float64_t CStreamingSparseFeatures<T>::dense_dot(const float64_t* vec2, int32_t 
 	float64_t result=0;
 	if (current_vector)
 	{
-		for (int32_t i=0; i<current_length; i++)
-			result+=vec2[current_vector[i].feat_index]*current_vector[i].entry;
+		for (int32_t i=0; i<current_length; i++) {
+			if (current_vector[i].feat_index < vec2_len) {
+				result+=vec2[current_vector[i].feat_index]*current_vector[i].entry;
+			}
+		}
 	}
 
 	return result;
@@ -133,11 +109,6 @@ template <class T>
 float32_t CStreamingSparseFeatures<T>::dense_dot(const float32_t* vec2, int32_t vec2_len)
 {
 	ASSERT(vec2)
-	if (vec2_len < current_num_features)
-	{
-		SG_ERROR("dimension of vec2 (=%d) does not match number of features (=%d)\n",
-			 vec2_len, current_num_features);
-	}
 
 	int32_t current_length = current_sgvector.num_feat_entries;
 	SGSparseVectorEntry<T>* current_vector = current_sgvector.features;
@@ -145,8 +116,11 @@ float32_t CStreamingSparseFeatures<T>::dense_dot(const float32_t* vec2, int32_t 
 	float32_t result=0;
 	if (current_vector)
 	{
-		for (int32_t i=0; i<current_length; i++)
-			result+=vec2[current_vector[i].feat_index]*current_vector[i].entry;
+		for (int32_t i=0; i<current_length; i++) {
+			if (current_vector[i].feat_index < vec2_len) {
+				result+=vec2[current_vector[i].feat_index]*current_vector[i].entry;
+			}
+		}
 	}
 
 	return result;

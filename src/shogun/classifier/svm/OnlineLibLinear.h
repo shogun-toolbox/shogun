@@ -6,6 +6,7 @@
  *
  * Written (W) 2007-2010 Soeren Sonnenburg
  * Written (W) 2011 Shashwat Lal Das
+ * Modifications (W) 2013 Thoralf Klein
  * Copyright (c) 2007-2009 The LIBLINEAR Project.
  * Copyright (C) 2007-2010 Fraunhofer Institute FIRST and Max-Planck-Society
  */
@@ -119,6 +120,8 @@ public:
 		 * @param label label of this example
 		 */
 		virtual void train_one(SGVector<float32_t> ex, float64_t label);
+
+		virtual void train_one(SGSparseVector<float32_t> ex, float64_t label);
 
 private:
 		/** Set up parameters */
