@@ -28,9 +28,9 @@ int main(int argc, char *argv[])
     init_shogun_with_defaults();
 
     float64_t C = 1.0;
-    char *train_file_name = (char*)"train_sparsereal.light";
-    char *test_file_name = (char*)"test_sparsereal.light";
-    char *test_labels_file_name = (char*)"test_sparsereal.light.labels.tmp";
+    char *train_file_name = (char*)"../data/train_sparsereal.light";
+    char *test_file_name = (char*)"../data/test_sparsereal.light";
+    char *test_labels_file_name = (char*)"../data/test_sparsereal.light.labels.tmp";
 
     if (argc > 4) {
         int32_t idx = 1;        
