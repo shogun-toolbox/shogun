@@ -9,7 +9,7 @@
  *
  * This example demonstrates use of the online learning with
  * OnlineLibLinear using sparse streaming features.  This example
- * also parsed command line options and can be used as stand-alone
+ * also parses command line options: Can be used as stand-alone
  * program to do binary classifications on user-provided inputs.
  */
 
@@ -23,7 +23,7 @@
 
 using namespace shogun;
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
     init_shogun_with_defaults();
 
@@ -53,34 +53,34 @@ int main(int argc, char *argv[])
         CTime train_time;
         train_time.start();
 
-	// Create a StreamingAsciiFile from the training data
-	CStreamingAsciiFile *train_file = new CStreamingAsciiFile(train_file_name);
-	SG_REF(train_file);
+        // Create a StreamingAsciiFile from the training data
+        CStreamingAsciiFile *train_file = new CStreamingAsciiFile(train_file_name);
+        SG_REF(train_file);
 
-	// The bool value is true if examples are labelled.
-	// 1024 is a good standard value for the number of examples for the parser to hold at a time.
-	CStreamingSparseFeatures < float32_t > *train_features =
-	    new CStreamingSparseFeatures < float32_t > (train_file, true, 1024);
-	SG_REF(train_features);
+        // The bool value is true if examples are labelled.
+        // 1024 is a good standard value for the number of examples for the parser to hold at a time.
+        CStreamingSparseFeatures < float32_t > *train_features =
+            new CStreamingSparseFeatures < float32_t > (train_file, true, 1024);
+        SG_REF(train_features);
 
-	svm->set_features(train_features);
-	svm->train();
+        svm->set_features(train_features);
+        svm->train();
 
-	train_file->close();
-	SG_UNREF(train_file);
-	SG_UNREF(train_features);
+        train_file->close();
+        SG_UNREF(train_file);
+        SG_UNREF(train_features);
 
-	train_time.stop();
+        train_time.stop();
 
-	SGVector<float32_t> w_now = svm->get_w().clone();
-	float32_t w_now_norm  = SGVector<float32_t>::twonorm(w_now.vector, w_now.vlen);
+        SGVector<float32_t> w_now = svm->get_w().clone();
+        float32_t w_now_norm  = SGVector<float32_t>::twonorm(w_now.vector, w_now.vlen);
 
-	uint64_t train_time_int = train_time.cur_time_diff();
-	fprintf(stderr,
-	    "*** total training time: %lum%lus (or %.1f sec), #dim = %d, ||w|| = %f\n",
-	    train_time_int / 60, train_time_int % 60, train_time.cur_time_diff(),
-	    w_now.vlen, w_now_norm
-	    );
+        uint64_t train_time_int = train_time.cur_time_diff();
+        fprintf(stderr,
+            "*** total training time: %lum%lus (or %.1f sec), #dim = %d, ||w|| = %f\n",
+            train_time_int / 60, train_time_int % 60, train_time.cur_time_diff(),
+            w_now.vlen, w_now_norm
+        );
     }
 
 
@@ -94,7 +94,7 @@ int main(int argc, char *argv[])
 
         // Set second parameter to 'false' if the file contains unlabelled examples
         CStreamingSparseFeatures < float32_t > *test_features =
-	    new CStreamingSparseFeatures < float32_t > (test_file, true, 1024);
+            new CStreamingSparseFeatures < float32_t > (test_file, true, 1024);
         SG_REF(test_features);
 
         // Apply on all examples and return a CBinaryLabels*
@@ -104,8 +104,7 @@ int main(int argc, char *argv[])
         test_time.stop();
         uint64_t test_time_int = test_time.cur_time_diff();
         fprintf(stderr, "*** testing took %lum%lus (or %.1f sec)\n",
-	    test_time_int / 60, test_time_int % 60,
-	    test_time.cur_time_diff());
+            test_time_int / 60, test_time_int % 60, test_time.cur_time_diff());
 
         SG_UNREF(test_features);
         SG_UNREF(test_file);
@@ -115,9 +114,8 @@ int main(int argc, char *argv[])
         FILE* fh = fopen(test_labels_file_name, "wb");
         ASSERT(fh);
 
-        for (int32_t j = 0; j < test_binary_labels->get_num_labels(); j++) {
+        for (int32_t j = 0; j < test_binary_labels->get_num_labels(); j++)
             fprintf(fh, "%d\n", test_binary_labels->get_int_label(j));
-        }
 
         fclose(fh);
         SG_UNREF(test_binary_labels);
