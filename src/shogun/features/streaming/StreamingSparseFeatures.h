@@ -5,6 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 2011 Shashwat Lal Das
+ * Modifications (W) 2013 Thoralf Klein
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 #ifndef _STREAMING_SPARSEFEATURES__H__
@@ -177,26 +178,6 @@ public:
 	 * @return dimensionality
 	 */
 	virtual int32_t get_dim_feature_space() const;
-
-	/**
-	 * Expand the vector passed so that it its length is equal to
-	 * the dimensionality of the features. The previous values are
-	 * kept intact through realloc, and the new ones are set to zero.
-	 *
-	 * @param vec float32_t* vector
-	 * @param len length of the vector
-	 */
-	virtual void expand_if_required(float32_t*& vec, int32_t &len);
-
-	/**
-	 * Expand the vector passed so that it its length is equal to
-	 * the dimensionality of the features. The previous values are
-	 * kept intact through realloc, and the new ones are set to zero.
-	 *
-	 * @param vec float64_t* vector
-	 * @param len length of the vector
-	 */
-	virtual void expand_if_required(float64_t*& vec, int32_t &len);
 
 	/**
 	 * Dot product taken with another StreamingDotFeatures object.
