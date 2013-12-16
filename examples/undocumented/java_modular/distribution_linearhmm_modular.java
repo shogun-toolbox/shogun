@@ -37,6 +37,5 @@ public class distribution_linearhmm_modular {
 		DoubleMatrix out_likelihood = hmm.get_log_likelihood();
 		double out_sample = hmm.get_log_likelihood_sample();
 
-		modshogun.exit_shogun();
 	}
 }

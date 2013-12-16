@@ -22,6 +22,5 @@ public class features_string_ulong_modular {
 		uf.obtain_from_char(cf, start,order,gap,rev);
 		uf.set_feature_vector(new DoubleMatrix(new double[][] {{1,2,3,4,5}}), 0);
 
-		modshogun.exit_shogun();
 	}
 }

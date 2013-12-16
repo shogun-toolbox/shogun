@@ -32,6 +32,5 @@ public class classifier_libsvmoneclass_modular {
 		DoubleMatrix out_labels = to_binary(svm.apply()).get_labels();
 		System.out.println(out_labels.toString());
 
-		modshogun.exit_shogun();
 	}
 }

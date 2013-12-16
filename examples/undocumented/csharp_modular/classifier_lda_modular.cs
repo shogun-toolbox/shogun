@@ -35,6 +35,5 @@ public class classifier_lda_modular {
 			Console.Write(item);
 		}
 
-		modshogun.exit_shogun();
 	}
 }

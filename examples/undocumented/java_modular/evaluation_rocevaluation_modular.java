@@ -22,6 +22,5 @@ public class evaluation_rocevaluation_modular {
 		System.out.println(evaluator.get_ROC());
 		System.out.println(evaluator.get_auROC());
 
-		modshogun.exit_shogun();
 	}
 }

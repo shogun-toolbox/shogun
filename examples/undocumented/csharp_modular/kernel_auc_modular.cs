@@ -30,6 +30,5 @@ public class kernel_auc_modular {
 			Console.Write("\n");
 		}
 
-		modshogun.exit_shogun();
 	}
 }

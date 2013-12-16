@@ -24,6 +24,5 @@ public class classifier_knn_modular {
 			Console.Write(item);
 		}
 
-		modshogun.exit_shogun();
 	}
 }

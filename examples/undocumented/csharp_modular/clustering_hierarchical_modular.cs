@@ -16,6 +16,5 @@ public class clustering_hierarchical_modular {
 		double[] out_distance = hierarchical.get_merge_distances();
 		int[,] out_cluster = hierarchical.get_cluster_pairs();
 
-		modshogun.exit_shogun();
 	}
 }

@@ -22,6 +22,5 @@ public class evaluation_multiclassaccuracy_modular {
 
 		System.out.println(accuracy);
 
-		modshogun.exit_shogun();
 	}
 }

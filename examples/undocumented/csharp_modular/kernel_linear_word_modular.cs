@@ -38,6 +38,5 @@ public class kernel_linear_word_modular {
 			Console.Write(item);
 		}
 
-		modshogun.exit_shogun();
 	}
 }

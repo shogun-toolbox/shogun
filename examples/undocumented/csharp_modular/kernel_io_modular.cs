@@ -45,6 +45,5 @@ public class kernel_io_modular {
 			Console.Write("\n");
 		}
 
-		modshogun.exit_shogun();
 	}
 }

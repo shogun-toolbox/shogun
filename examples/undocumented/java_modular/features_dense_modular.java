@@ -30,6 +30,5 @@ public class features_dense_modular {
 
 		System.out.println(result);
 
-		modshogun.exit_shogun();
 	}
 }

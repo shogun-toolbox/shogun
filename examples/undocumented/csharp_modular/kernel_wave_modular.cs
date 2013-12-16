@@ -43,6 +43,5 @@ public class kernel_wave_modular {
 			Console.Write("\n");
 		}
 
-		modshogun.exit_shogun();
 	}
 }

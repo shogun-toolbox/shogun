@@ -34,6 +34,5 @@ public class classifier_perceptron_modular {
 		DoubleMatrix out_labels = to_binary(perceptron.apply()).get_labels();
 		System.out.println(out_labels.toString());
 
-		modshogun.exit_shogun();
 	}
 }

@@ -36,6 +36,5 @@ public class classifier_multiclasslibsvm_modular {
 		DoubleMatrix out_labels = to_multiclass(svm.apply()).get_labels();
 		System.out.println(out_labels.toString());
 
-		modshogun.exit_shogun();
 	}
 }

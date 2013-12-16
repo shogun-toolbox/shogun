@@ -36,6 +36,5 @@ public class kernel_custom_modular {
 		kernel.set_full_kernel_matrix_from_full(data);
 		DoubleMatrix km_fullfull=kernel.get_kernel_matrix();
 
-		modshogun.exit_shogun();
 	}
 }

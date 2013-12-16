@@ -24,6 +24,5 @@ public class features_string_sliding_window_modular {
 
 		//f.obtain_by_position_list(8,positions);
 
-		modshogun.exit_shogun();
 	}
 }

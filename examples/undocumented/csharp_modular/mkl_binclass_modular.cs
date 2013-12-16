@@ -50,6 +50,5 @@ public class mkl_binclass_modular {
 		mkl.set_kernel(kernel2);
 		mkl.apply();
 
-		modshogun.exit_shogun();
 	}
 }

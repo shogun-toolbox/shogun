@@ -45,6 +45,5 @@ public class kernel_linear_modular {
 		}
 
 
-		modshogun.exit_shogun();
 	}
 }

@@ -43,6 +43,5 @@ public class kernel_inversemultiquadric_modular {
 			Console.Write("\n");
 		}
 
-		modshogun.exit_shogun();
 	}
 }

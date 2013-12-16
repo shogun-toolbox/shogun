@@ -42,7 +42,6 @@ public class distance_manhattenword_modular {
 			Console.Write(item);
 		}
 
-		modshogun.exit_shogun();
 	}
 }
 

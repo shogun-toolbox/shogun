@@ -46,6 +46,5 @@ public class features_string_char_compressed_modular {
 		//f2.add_preprocessor(new DecompressCharString(LZO));
 		//f2.enable_on_the_fly_preprocessing();
 
-		modshogun.exit_shogun();
 	}
 }

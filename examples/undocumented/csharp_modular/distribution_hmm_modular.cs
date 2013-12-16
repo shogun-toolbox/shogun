@@ -40,6 +40,5 @@ public class distribution_hmm_modular {
 		double[] lik_example = hmm.get_log_likelihood();
 		double lik_sample = hmm.get_log_likelihood_sample();
 
-		modshogun.exit_shogun();
 	}
 }

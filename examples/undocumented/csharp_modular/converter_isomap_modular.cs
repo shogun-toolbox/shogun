@@ -12,6 +12,5 @@ public class converter_classicisomap_modular {
 		preprocessor.set_target_dim(1);
 		preprocessor.apply(features);
 
-		modshogun.exit_shogun();
 	}
 }

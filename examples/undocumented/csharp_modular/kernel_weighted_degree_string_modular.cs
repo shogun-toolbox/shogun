@@ -36,6 +36,5 @@ public class kernel_weighted_degree_string_modular {
 			Console.Write(item);
 		}
 
-		modshogun.exit_shogun();
 	}
 }

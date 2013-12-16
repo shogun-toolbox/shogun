@@ -35,6 +35,5 @@ public class classifier_larank_modular {
 		DoubleMatrix out_labels = to_multiclass(svm.apply(feats_train)).get_labels();
 		System.out.println(out_labels.toString());
 
-		modshogun.exit_shogun();
 	}
 }

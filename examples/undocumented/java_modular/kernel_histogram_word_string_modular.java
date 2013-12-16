@@ -43,6 +43,5 @@ public class kernel_histogram_word_string_modular {
 		to_binary(pie.apply()).get_labels();
 		DoubleMatrix km_test=kernel.get_kernel_matrix();
 
-		modshogun.exit_shogun();
 	}
 }

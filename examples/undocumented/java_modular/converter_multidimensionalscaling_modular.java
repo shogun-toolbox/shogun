@@ -17,6 +17,5 @@ public class converter_multidimensionalscaling_modular {
 		mds.set_landmark(false);
 		mds.embed(features);
 
-		modshogun.exit_shogun();
 	}
 }

@@ -30,7 +30,6 @@ public class regression_libsvr_modular {
 		foreach (double item in out_labels)
 		    Console.Write(out_labels);
 
-		modshogun.exit_shogun();
 
 	}
 }

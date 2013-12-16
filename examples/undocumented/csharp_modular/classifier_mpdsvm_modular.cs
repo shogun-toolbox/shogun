@@ -33,6 +33,5 @@ public class classifier_mpdsvm_modular {
 		foreach (double item in out_labels)
 		      Console.Write(item);
 
-		modshogun.exit_shogun();
 	}
 }

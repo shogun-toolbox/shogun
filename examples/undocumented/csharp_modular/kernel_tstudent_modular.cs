@@ -43,7 +43,6 @@ public class kernel_tstudent_modular {
 			}
 			Console.Write("\n");
 		}
-		modshogun.exit_shogun();
 	}
 }
 

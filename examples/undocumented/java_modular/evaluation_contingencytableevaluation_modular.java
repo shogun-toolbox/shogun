@@ -48,6 +48,5 @@ public class evaluation_contingencytableevaluation_modular {
 
 		System.out.printf("%f, %f, %f, %f, %f, %f, %f, %f, %f\n", accuracy, errorrate, bal, wracc, f1, crosscorrelation, recall, precision, specificity);
 
-		modshogun.exit_shogun();
 	}
 }

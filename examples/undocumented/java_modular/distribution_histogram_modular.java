@@ -34,6 +34,5 @@ public class distribution_histogram_modular {
 		//DoubleMatrix out_likelihood = histo.get_log_likelihood();
 		//double out_sample = histo.get_log_likelihood_sample();
 
-		modshogun.exit_shogun();
 	}
 }

@@ -20,6 +20,5 @@ public class features_string_hashed_wd_modular {
 		StringByteFeatures f = new StringByteFeatures(RAWDNA);
 		HashedWDFeatures y = new HashedWDFeatures(f,start_order,order,from_order,hash_bits);
 
-		modshogun.exit_shogun();
 	}
 }

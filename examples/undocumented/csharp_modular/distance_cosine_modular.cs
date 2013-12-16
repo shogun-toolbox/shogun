@@ -24,6 +24,5 @@ public class distance_cosine_modular {
 			Console.Write(item);
 		}
 
-		modshogun.exit_shogun();
 	}
 }
