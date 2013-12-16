@@ -2,8 +2,8 @@
 %include "stdint.i"
 %include "exception.i"
 
-%feature("ref")   SGRefObject "SG_REF($this);"
-%feature("unref") SGRefObject "SG_UNREF($this);"
+%feature("ref")   shogun::SGRefObject "SG_REF($this);"
+%feature("unref") shogun::SGRefObject "SG_UNREF($this);"
 
 #ifdef SWIGJAVA
 %typemap(javainterfaces) shogun::CSGObject "java.io.Externalizable"
