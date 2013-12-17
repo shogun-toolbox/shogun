@@ -10,6 +10,8 @@
 #include <shogun/base/init.h>
 #include <shogun/evaluation/CrossValidationSplitting.h>
 #include <shogun/labels/RegressionLabels.h>
+#include <shogun/evaluation/StratifiedCrossValidationSplitting.h>
+#include <shogun/labels/MulticlassLabels.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;
@@ -96,9 +98,9 @@ TEST(Crossvalidation,stratified)
 		SGVector<index_t>::fill_vector(classLabels.vector, classLabels.vlen, 0);
 			
 		/*check total no. of class labels*/
-		for (index_t i=0; i<num_clases; ++i)
+		for (index_t i=0; i<num_classes; ++i)
 		{
-			for(index_t j=0, j<num_labels, ++j)
+			for(index_t j=0; j<num_labels; ++j)
 			{
 			       if ((int32_t)labels->get_label(j)==i)
 			       ++classLabels.vector[i];
