@@ -49,7 +49,7 @@ TEST(Crossvalidation,standard)
 		{
 			SGVector<index_t> subset=splitting->generate_subset_indices(i);
 			SGVector<index_t> inverse=splitting->generate_subset_inverse(i);
-			for(index_t j=0;j<inverse.vlen;++j)
+			for(index_t j=0;j<subset.vlen;++j)
 				total.vector[j+fold_sizes]=subset.vector[j];
 
 			fold_sizes+=subset.vlen;
@@ -125,7 +125,7 @@ TEST(Crossvalidation,stratified)
 			SGVector<index_t> subset=splitting->generate_subset_indices(i);
 			SGVector<index_t> inverse=splitting->generate_subset_inverse(i);
 
-			for(index_t j=0;j<inverse.vlen;++j)
+			for(index_t j=0;j<subset.vlen;++j)
 				total.vector[j+fold_sizes]=subset.vector[j];
 			
 			EXPECT_EQ(subset.vlen+inverse.vlen, num_labels);
