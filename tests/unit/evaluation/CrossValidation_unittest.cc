@@ -49,8 +49,15 @@ TEST(Crossvalidation,standard)
 		{
 			SGVector<index_t> subset=splitting->generate_subset_indices(i);
 			SGVector<index_t> inverse=splitting->generate_subset_inverse(i);
+
 			for(index_t j=0;j<subset.vlen;++j)
+			{	
+				/*check if fold indices are disjoint*/
+				SGVector<index_t> temp=total.find((index_t)subset.vector[j]);
+				EXPECT_EQ(temp.vlen,0);
+
 				total.vector[j+fold_sizes]=subset.vector[j];
+			}
 
 			fold_sizes+=subset.vlen;
 
@@ -126,8 +133,14 @@ TEST(Crossvalidation,stratified)
 			SGVector<index_t> inverse=splitting->generate_subset_inverse(i);
 
 			for(index_t j=0;j<subset.vlen;++j)
+			{
+				/*check if fold indices are disjoint*/
+				SGVector<index_t> temp=total.find((index_t)subset.vector[j]);
+				EXPECT_EQ(temp.vlen,0);
+
 				total.vector[j+fold_sizes]=subset.vector[j];
-			
+			}
+
 			EXPECT_EQ(subset.vlen+inverse.vlen, num_labels);
 			fold_sizes+=subset.vlen;
 		}
