@@ -455,7 +455,8 @@ void CKNN::store_model_features()
 	/* copy lhs of underlying distance */
 	distance->init(d_lhs->duplicate(), d_rhs);
 
-	SG_UNREF(d_lhs);
+	SG_UNREF(d_lhs); // because of d_lhs->duplicate()
+	SG_UNREF(d_lhs); // because of distance->get_lhs()
 	SG_UNREF(d_rhs);
 }
 
