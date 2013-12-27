@@ -10,17 +10,14 @@
 #ifndef __LOOCROSSVALIDATIONSPLITTING_H_
 #define __LOOCROSSVALIDATIONSPLITTING_H_
 
-#include <shogun/evaluation/SplittingStrategy.h>
+#include <shogun/evaluation/CrossValidationSplitting.h>
 
 namespace shogun
 {
-
-class CLabels;
-
 /** @brief Implementation of Leave one out cross-validation on the base of
- * CSplittingStrategy. Produces subset index sets consisting of one element,for each label.
+ * CCrossValidationSplitting. Produces subset index sets consisting of one element,for each label.
  */
-class CLOOCrossValidationSplitting: public CSplittingStrategy
+class CLOOCrossValidationSplitting: public CCrossValidationSplitting
 {
 public:
 	/** constructor */
@@ -38,11 +35,6 @@ public:
 		return "LOOCrossValidationSplitting";
 	}
 
-	/** implementation of the Leave one out cross-validation splitting strategy */
-	virtual void build_subsets();
-
-	/** custom rng if using cross validation across different threads */
-	CRandom * m_rng;
 };
 }
 
