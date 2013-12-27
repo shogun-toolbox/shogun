@@ -13,37 +13,31 @@
 
 using namespace shogun;
 
-void print_message(FILE* target, const char* str)
-{
-	fprintf(target, "%s", str);
-}
-
 int main(int argc, char **argv)
 {
-	init_shogun(&print_message, &print_message, &print_message);
+	init_shogun_with_defaults();
 
 	index_t num_labels;
-	index_t num_subsets;
 	index_t runs=10;
 
 	while (runs-->0)
 	{
 		num_labels=CMath::random(10, 50);
-		index_t desired_size=1;
 
-
-		SG_SPRINT("num_labels=%d\n\n", num_labels);
+		//SG_SPRINT("num_labels=%d\n\n", num_labels);
 
 		/* build labels */
 		CRegressionLabels* labels=new CRegressionLabels(num_labels);
 		for (index_t i=0; i<num_labels; ++i)
 		{
 			labels->set_label(i, CMath::random(-10.0, 10.0));
-			SG_SPRINT("label(%d)=%.18g\n", i, labels->get_label(i));
+		//	SG_SPRINT("label(%d)=%.18g\n", i, labels->get_label(i));
+		
 		}
-		SG_SPRINT("\n");
+		
+		//SG_SPRINT("\n");
 
-		/* build splitting strategy */
+		/* build Leave one out splitting strategy */
 		CLOOCrossValidationSplitting* splitting=
 				new CLOOCrossValidationSplitting(labels);
 
@@ -51,7 +45,7 @@ int main(int argc, char **argv)
 
 		for (index_t i=0; i<num_labels; ++i)
 		{
-			SG_SPRINT("subset %d\n", i);
+			//SG_SPRINT("subset %d\n", i);
 
 			SGVector<index_t> subset=splitting->generate_subset_indices(i);
 			SGVector<index_t> inverse=splitting->generate_subset_inverse(i);
@@ -59,13 +53,8 @@ int main(int argc, char **argv)
 			SGVector<index_t>::display_vector(subset.vector, subset.vlen, "subset indices");
 			SGVector<index_t>::display_vector(inverse.vector, inverse.vlen, "inverse indices");
 
-			SG_SPRINT("checking subset size: %d vs subset desired size %d\n",
-					subset.vlen, desired_size);
 
-			ASSERT(CMath::abs(subset.vlen-desired_size)<=1);
-			ASSERT(subset.vlen+inverse.vlen==num_labels);
-
-			for (index_t j=0; j<subset.vlen; ++j)
+			/*for (index_t j=0; j<subset.vlen; ++j)
 				SG_SPRINT("%d:(%f),", subset.vector[j], labels->get_label(subset.vector[j]));
 			SG_SPRINT("\n");
 
@@ -74,6 +63,7 @@ int main(int argc, char **argv)
 				SG_SPRINT("%d(%d),", inverse.vector[j],
 						(int32_t)labels->get_label(inverse.vector[j]));
 			SG_SPRINT("\n\n");
+			*/
 		}
 
 		/* clean up */
