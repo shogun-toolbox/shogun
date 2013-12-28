@@ -232,6 +232,8 @@ TEST(SplittingStrategy,stratified_subset_label_ratio)
 			}
 			EXPECT_EQ(total_count,class_labels.vector[i]);
 		}
+		/* clean up */
+		SG_UNREF(splitting);
 	}
 }
 
