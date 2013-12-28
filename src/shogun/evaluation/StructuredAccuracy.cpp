@@ -69,10 +69,8 @@ float64_t CStructuredAccuracy::evaluate_real(CStructuredLabels* predicted,
 
 	for ( int32_t i = 0 ; i < length ; ++i )
 	{
-		CRealNumber* truth =
-			CRealNumber::obtain_from_generic(ground_truth->get_label(i));
-		CRealNumber* pred =
-			CRealNumber::obtain_from_generic(predicted->get_label(i));
+		CRealNumber* truth = CRealNumber::obtain_from_generic(ground_truth->get_label(i));
+		CRealNumber* pred = CRealNumber::obtain_from_generic(predicted->get_label(i));
 
 		num_equal += truth->value == pred->value;
 
@@ -93,10 +91,8 @@ float64_t CStructuredAccuracy::evaluate_sequence(CStructuredLabels* predicted,
 
 	for ( int32_t i = 0 ; i < length ; ++i )
 	{
-		CSequence* true_seq =
-			CSequence::obtain_from_generic(ground_truth->get_label(i));
-		CSequence* pred_seq =
-			CSequence::obtain_from_generic(predicted->get_label(i));
+		CSequence* true_seq = CSequence::obtain_from_generic(ground_truth->get_label(i));
+		CSequence* pred_seq = CSequence::obtain_from_generic(predicted->get_label(i));
 
 		SGVector<int32_t> true_seq_data = true_seq->get_data();
 		SGVector<int32_t> pred_seq_data = pred_seq->get_data();
