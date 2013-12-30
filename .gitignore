@@ -130,3 +130,6 @@ examples/undocumented/python_modular/*
 CMakeCache.txt
 /build
 /third_party
+
+# protobuf
+src/shogun/io/protobuf/*.pb.*

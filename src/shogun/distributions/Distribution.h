@@ -43,6 +43,8 @@ class CDistribution : public CSGObject
 	public:
 		/** default constructor */
 		CDistribution();
+
+		/** destructor */
 		virtual ~CDistribution();
 
 		/** learn distribution
@@ -72,7 +74,7 @@ class CDistribution : public CSGObject
 
 		/** get model parameter (logarithmic)
 		 *
-		 * abstrac base method
+		 * abstract base method
 		 *
 		 * @return model parameter (logarithmic)
 		 */

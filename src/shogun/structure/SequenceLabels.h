@@ -59,7 +59,6 @@ public:
 	SGVector<int32_t> get_data() const { return data; }
 
 protected:
-
 	/** data sequence */
 	SGVector< int32_t > data;
 

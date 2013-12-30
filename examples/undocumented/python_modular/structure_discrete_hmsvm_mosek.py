@@ -9,9 +9,8 @@ data_dict = scipy.io.loadmat('../data/hmsvm_data_large_integer.mat', struct_as_r
 parameter_list=[[data_dict]]
 
 def structure_discrete_hmsvm_mosek (m_data_dict=data_dict):
-	from modshogun   import RealMatrixFeatures
-	from modshogun  import SequenceLabels, HMSVMModel, Sequence, TwoStateModel, SMT_TWO_STATE
-	from modshogun import StructuredAccuracy
+	from modshogun import RealMatrixFeatures, SequenceLabels, HMSVMModel, Sequence, TwoStateModel
+	from modshogun import StructuredAccuracy, SMT_TWO_STATE
 
 	try:
 		from modshogun import PrimalMosekSOSVM
