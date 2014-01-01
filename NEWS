@@ -3,7 +3,7 @@
 	* SHOGUN Release version 3.1.0 (libshogun 15.0, data 0.6, parameter 1)
 	* This release also contains several cleanups and bugfixes:
 	* Features:
-		- Add option to set k-means cluster centers [parijat]
+		- Add option to set k-means cluster centers [Parijat Mazumdar]
 		- Add leave one out crossvalidation scheme [Saurabh Mahindre]
 		- Add multiclass ipython notebook tutorials [Chiyuan Zhang]
 		- Add learning of StreamingSparseFeatures in OnlineLibLinear [Thoralf Klein]
