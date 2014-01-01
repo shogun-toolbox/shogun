@@ -167,7 +167,7 @@ TEST(SplittingStrategy,stratified_subsets_disjoint_cover)
 
 TEST(SplittingStrategy,stratified_subset_label_ratio)
 {
-	index_t num_labels, num_classes, num_subsets, fold_sizes;
+	index_t num_labels, num_classes, num_subsets;
 	index_t runs=50;
 
 	while (runs-->0)
