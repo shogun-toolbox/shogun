@@ -58,7 +58,6 @@
 %include <shogun/transfer/multitask/MultitaskClusteredLogisticRegression.h>
 
 %include <shogun/transfer/multitask/MultitaskROCEvaluation.h>
-
 %include <shogun/transfer/multitask/LibLinearMTL.h>
 
 /* Domain adaptation includes */
@@ -67,7 +66,3 @@
 #endif // USE_SVMLIGHT
 %include <shogun/transfer/domain_adaptation/DomainAdaptationSVMLinear.h>
 %include <shogun/transfer/domain_adaptation/DomainAdaptationMulticlassLibLinear.h>
-
-#ifdef HAVE_LAPACK
-SERIALIZABLE_DUMMY(shogun::MappedSparseMatrix);
-#endif
