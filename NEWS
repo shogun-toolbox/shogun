@@ -1,20 +1,26 @@
-2013-11-28 Soeren Sonnenburg <sonne@debian.org>
+2014-01-01 Soeren Sonnenburg <sonne@debian.org>
 
 	* SHOGUN Release version 3.1.0 (libshogun 15.0, data 0.6, parameter 1)
 	* This release also contains several cleanups and bugfixes:
 	* Features:
-		- Add option to set k-means cluster centers
+		- Add option to set k-means cluster centers [parijat]
+		- Add leave one out crossvalidation scheme [Saurabh Mahindre]
+		- Add multiclass ipython notebook tutorials [Chiyuan Zhang]
+		- Add learning of StreamingSparseFeatures in OnlineLibLinear [Thoralf Klein]
 	* Bugfixes:
 		- Decrease memory footprint of SGObject
 		- Fix protobuf detection
 		- Fix doxygen files and various doxygen errors
 		- Fix compile error with directors
 		- Fix memory leak in modular interfaces and apply*()
+		- Fix leak in KNN::store_model_features
 		- Notebook fixes
-		- Allow custom kernel matrices of size 2^31-1 x 2^31-1
+		- Allow custom kernel matrices of size 2^31-1 x 2^31-1 [Koen van de Sande]
+		- Fix Protobuf cmake detection
 	* Cleanup and API Changes:
 		- Introduce slim SGRefObject for refcounted objects as base class of
-		SGObject
+		SGObject [Thoralf Klein]
+
 
 2013-10-28 Soeren Sonnenburg <sonne@debian.org>
 
