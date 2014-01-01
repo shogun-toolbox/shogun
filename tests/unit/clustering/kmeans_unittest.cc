@@ -29,8 +29,8 @@ TEST(KMeans, manual_center_initialization_test)
 	rect(1,3) = 10;
 	
 	/*choose local minima points (0,5) (2,5) as initial centers*/
-	float64_t vec[4] = {0,5,2,5};	
-	SGVector<float64_t> initial_centers(vec,4,false);
+	float64_t mat[4] = {0,5,2,5};	
+	SGMatrix<float64_t> initial_centers(mat,2,2,false);
 
 	CDenseFeatures<float64_t>* features = new CDenseFeatures<float64_t>(rect);
 	CEuclideanDistance* distance = new CEuclideanDistance(features, features);
