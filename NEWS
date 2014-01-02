@@ -17,6 +17,7 @@
 		- Notebook fixes
 		- Allow custom kernel matrices of size 2^31-1 x 2^31-1 [Koen van de Sande]
 		- Fix Protobuf cmake detection
+		- Fix LabelsFactory methods' object ownership in SWIG interfaces with the %newobject directive.
 	* Cleanup and API Changes:
 		- Introduce slim SGRefObject for refcounted objects as base class of
 		SGObject [Thoralf Klein]
