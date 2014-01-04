@@ -49,6 +49,5 @@ public class classifier_domainadaptationsvm_modular {
 		dasvm.train();
 
 		DoubleMatrix out = to_binary(dasvm.apply(feats_test)).get_labels();
-		modshogun.exit_shogun();
 	}
 }

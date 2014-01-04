@@ -50,6 +50,5 @@ public class preprocessor_prunevarsubmean_modular {
 			Console.Write("\n");
 		}
 
-		modshogun.exit_shogun();
 	}
 }

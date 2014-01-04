@@ -28,6 +28,5 @@ public class kernel_multiquadric_modular {
 		}
 
 
-		modshogun.exit_shogun();
 	}
 }

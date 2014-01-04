@@ -45,13 +45,20 @@ void Version::print_version()
 	SG_SPRINT("Copyright (C) 1999-2009 Fraunhofer Institute FIRST\n")
 	SG_SPRINT("Copyright (C) 1999-2011 Max Planck Society\n")
 	SG_SPRINT("Copyright (C) 2009-2011 Berlin Institute of Technology\n")
-	SG_SPRINT("Copyright (C) 2012 Soeren Sonnenburg, Sergey Lisitsyn, Heiko Strathmann\n")
+	SG_SPRINT("Copyright (C) 2012-2014 Soeren Sonnenburg, Sergey Lisitsyn, Heiko Strathmann, Viktor Gal, Fernando Iglesias et al\n")
 	SG_SPRINT("Written   (W) 1999-2012 Soeren Sonnenburg, Gunnar Raetsch et al.\n\n")
 #ifndef USE_SVMLIGHT
 	SG_SPRINT("This is free software; see the source for copying conditions.  There is NO\n")
 	SG_SPRINT("warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n")
 #endif
-	SG_SPRINT("( configure options: \"%s\" compile flags: \"%s\" link flags: \"%s\" )\n", CONFIGURE_OPTIONS, COMPFLAGS_CPP, LINKFLAGS)
+
+#ifdef LINKFLAGS
+	SG_SPRINT("( configure options: \"%s\" compile flags: \"%s\" link flags: \"%s\" )\n", 
+		CONFIGURE_OPTIONS, COMPFLAGS_CPP, LINKFLAGS)
+#else
+	SG_SPRINT("( configure options: \"%s\" compile flags: \"%s\" link flags: None )\n", 
+		CONFIGURE_OPTIONS, COMPFLAGS_CPP)
+#endif
 }
 
 const char* Version::get_version_extra()

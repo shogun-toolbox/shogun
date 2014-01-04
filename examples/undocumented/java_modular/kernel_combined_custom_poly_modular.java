@@ -61,6 +61,5 @@ public class kernel_combined_custom_poly_modular {
 		DoubleMatrix km_train=kernel.get_kernel_matrix();
 		System.out.println(km_train.toString());
 
-		modshogun.exit_shogun();
 	}
 }

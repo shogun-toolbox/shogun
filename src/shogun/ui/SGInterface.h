@@ -21,7 +21,6 @@
 #include <shogun/ui/GUIPreprocessor.h>
 #include <shogun/ui/GUITime.h>
 #include <shogun/ui/GUIStructure.h>
-#include <shogun/ui/GUISignals.h>
 #include <shogun/ui/GUIConverter.h>
 
 namespace shogun
@@ -1017,7 +1016,6 @@ class CSGInterface : public CSGObject
 		CGUITime* ui_time;
 		/** ui structure */
 		CGUIStructure* ui_structure;
-		//CGUISignals* ui_signals;
 		/** ui_converter */
 		CGUIConverter* ui_converter;
 

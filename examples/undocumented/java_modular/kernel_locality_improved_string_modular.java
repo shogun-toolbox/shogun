@@ -24,6 +24,5 @@ public class kernel_locality_improved_string_modular {
 		DoubleMatrix km_train = kernel.get_kernel_matrix();
 		kernel.init(feats_train, feats_test);
 		DoubleMatrix km_test = kernel.get_kernel_matrix();
-		modshogun.exit_shogun();
 	}
 }

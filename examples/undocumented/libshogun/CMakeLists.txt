@@ -101,7 +101,8 @@ SET(EXAMPLES
 	base_migration_new_buggy
 	regression_libsvr
 	classifier_multiclass_prob_heuristics
-	streaming_onlineliblinear
+	streaming_onlineliblinear_sparse
+	streaming_onlineliblinear_dense
 	io_linereader
 	library_circularbuffer
 	so_factorgraph

@@ -25,6 +25,5 @@ public class clustering_hierarchical_modular {
 		DoubleMatrix out_distance = hierarchical.get_merge_distances();
 		DoubleMatrix out_cluster = hierarchical.get_cluster_pairs();
 
-		modshogun.exit_shogun();
 	}
 }

@@ -13,11 +13,12 @@
 #define __PROTOBUFFILE_H__
 
 #include <shogun/io/File.h>
+
+#include <google/protobuf/message.h>
+
 #include <shogun/io/protobuf/ShogunVersion.pb.h>
 #include <shogun/io/protobuf/Headers.pb.h>
 #include <shogun/io/protobuf/Chunks.pb.h>
-
-#include <google/protobuf/message.h>
 
 namespace shogun
 {
@@ -26,11 +27,13 @@ namespace shogun
  * in protobuf format.
  *
  * Format of serialized data in byte file:
- * <size of ShogunVersion message - big endian uint32>
- * <ShogunVersion message>
- * <size of next message - big endian uint32>
- * <data message, e.g. Int32Chunk>
+ * <pre>
+ * size of ShogunVersion message - big endian uint32
+ * ShogunVersion message
+ * size of next message - big endian uint32
+ * data message, e.g. Int32Chunk
  * ...
+ * </pre>
  */
 class CProtobufFile : public CFile
 {

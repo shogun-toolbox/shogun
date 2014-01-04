@@ -17,6 +17,5 @@ public class features_snp_modular {
 		sf.load_ascii_file(filename, false, SNP, SNP);
 		SNPFeatures snps = new SNPFeatures(sf);
 
-		modshogun.exit_shogun();
 	}
 }

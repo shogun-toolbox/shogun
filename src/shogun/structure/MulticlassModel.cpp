@@ -4,6 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
+ * Written (W) 2013 Thoralf Klein
  * Written (W) 2012 Fernando José Iglesias García
  * Copyright (C) 2012 Fernando José Iglesias García
  */
@@ -29,6 +30,11 @@ CMulticlassModel::CMulticlassModel()
 
 CMulticlassModel::~CMulticlassModel()
 {
+}
+
+CStructuredLabels* CMulticlassModel::structured_labels_factory(int32_t num_labels)
+{
+	return new CMulticlassSOLabels(num_labels);
 }
 
 int32_t CMulticlassModel::get_dim() const

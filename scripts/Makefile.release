@@ -1,0 +1,100 @@
+# Usage scenarios
+#
+# * To make a release (and tag it) run
+#
+#       make prepare-release
+#       make git-tag-release  
+#       make release
+#       make data-release
+#       make update-webpage
+#
+# * To create a debian .orig.tar.gz run
+#
+#       make release DEBIAN=yes
+#
+# * To create a snapshot run
+#
+#       make release SNAPSHOT=yes
+# 
+# * To sign/md5sum the created tarballs and copy them to the webpage
+#
+#       make update-webpage
+#
+#
+# The following additional options may be set
+#
+# COMPRESS=cruncher					-> use cruncher (bz2/gz etc as file compressor)
+# SNAPSHOT=yes						-> use git snapshot naming scheme
+# MAINVERSION=0.2.0					-> main version
+# EXTRAVERSION=+git2f0a2c8			-> extra version string
+# RELEASENAME=shogun-3.0.0+extra	-> use different releasename, here shogun-3.0.0+extra
+#
+#
+# * For example to use gzip instead of bzip2 and to append an extra version string.
+#      make release COMPRESS=gzip EXTRAVERSION=+git2f0a2c8
+#
+# * To create a debian snapshot package
+#
+#      make SNAPSHOT=yes
+#
+#
+MAINVERSION=3.0.0
+VERSIONBASE := $(shell echo $(MAINVERSION) | cut -f 1-2 -d '.')
+GITVERSION := $(shell git show --pretty='format:%h'|head -1)
+RELEASENAME := shogun-$(MAINVERSION)$(EXTRAVERSION)
+ifeq ($(SNAPSHOT),yes)
+RELEASENAME := $(RELEASENAME)+git$(GITVERSION)
+endif
+DESTDIR := ../shogun-releases/$(RELEASENAME)
+DATAMAINVERSION := $(shell awk '/Release/{print $$9;exit}' NEWS | tr -d '(,)' )
+DATARELEASENAME := shogun-data-$(DATAMAINVERSION)$(DATAEXTRAVERSION)
+DATADESTDIR := ../shogun-releases/$(DATARELEASENAME)
+COMPRESS := bzip2
+
+all:
+	echo "be cautious young padawan!"
+
+git-release:
+	git checkout develop
+	git pull
+	git submodule update
+	git clean -dfx
+	git flow release start $(MAINVERSION)
+	git flow release finish -s $(MAINVERSION)
+	(in case of merge conflicts fix them and do git commit -a ; git flow release finish -s $(MAINVERSION) )
+	git flow release finish -s $(MAINVERSION)
+	git push --tags
+
+tarball:
+	rm -rf $(DESTDIR)
+	# copy things over to shogun-releases dir
+	git checkout-index --prefix=$(DESTDIR)/ -a
+	tar -c -f $(DESTDIR).tar -C ../shogun-releases $(RELEASENAME)
+	rm -f $(DESTDIR).tar.bz2 $(DESTDIR).tar.gz
+	$(COMPRESS) -9 $(DESTDIR).tar
+	md5sum $(DESTDIR).tar.bz2 >$(DESTDIR).md5sum
+	gpg --no-emit-version -s -b -a $(DESTDIR).tar.bz2
+
+data-release:
+	cd data && git checkout-index --prefix=../$(DATADESTDIR)/ -a
+	rm -f $(DATADESTDIR).tar.bz2 $(DATADESTDIR).tar
+	tar -c -f $(DATADESTDIR).tar -C ../shogun-releases $(DATARELEASENAME)
+	$(COMPRESS) -9 $(DATADESTDIR).tar
+	md5sum $(DATADESTDIR).tar.bz2 >$(DATADESTDIR).md5sum
+	gpg --no-emit-version -s -b -a $(DATADESTDIR).tar.bz2
+
+clean:
+	rm -rf $(DESTDIR)
+
+distclean:
+	$(MAKE) -C src distclean
+	rm -rf $(DESTDIR) $(DESTDIR).tar.bz2 $(DESTDIR).tar.gz
+	rm -rf $(DATADESTDIR) $(DATADESTDIR).tar.bz2 $(DATADESTDIR).tar.gz
+
+update-webpage: 
+	ssh 7nn.de mkdir -m 0755 -p /var/www/shogun-toolbox.org/archives/shogun/releases/$(VERSIONBASE)/sources
+	rsync --progress $(DATADESTDIR).tar.bz2 $(DATADESTDIR).md5sum \
+		7nn.de:/var/www/shogun-toolbox.org/archives/shogun/data/
+	rsync --progress $(DESTDIR).tar.bz2 $(DESTDIR).tar.bz2.asc $(DESTDIR).md5sum \
+		7nn.de:/var/www/shogun-toolbox.org/archives/shogun/releases/$(VERSIONBASE)/sources/
+	ssh 7nn.de chmod 644 "/var/www/shogun-toolbox.org/archives/shogun/releases/$(VERSIONBASE)/sources/*.* /var/www/shogun-toolbox.org/archives/shogun/data/*"

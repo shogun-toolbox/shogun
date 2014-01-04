@@ -27,6 +27,5 @@ public class kernel_distance_modular {
 		System.out.println(dm_train.toString());
 		System.out.println(dm_test.toString());
 
-		modshogun.exit_shogun();
 	}
 }

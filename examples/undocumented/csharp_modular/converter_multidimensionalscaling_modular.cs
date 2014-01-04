@@ -13,7 +13,6 @@ public class converter_multidimensionalscaling_modular {
 
 		mds.apply(features);
 
-		modshogun.exit_shogun();
 	}
 }
 

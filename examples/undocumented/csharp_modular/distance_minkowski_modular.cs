@@ -26,7 +26,6 @@ public class distance_minkowski_modular {
 			Console.Write(item);
 		}
 
-		modshogun.exit_shogun();
 	}
 }
 

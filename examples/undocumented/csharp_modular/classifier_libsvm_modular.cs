@@ -32,6 +32,5 @@ public class classifier_libsvm_modular {
 			Console.Write(item);
 		}
 
-		modshogun.exit_shogun();
 	}
 }

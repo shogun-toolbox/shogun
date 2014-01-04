@@ -22,6 +22,5 @@ public class evaluation_meansquarederror_modular {
 
 		System.out.println(mse);
 
-		modshogun.exit_shogun();
 	}
 }

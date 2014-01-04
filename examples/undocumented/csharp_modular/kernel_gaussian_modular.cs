@@ -25,6 +25,5 @@ public class kernel_gaussian_modular {
 			Console.Write(item);
 		}
 
-		modshogun.exit_shogun();
 	}
 }

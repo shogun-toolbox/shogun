@@ -266,7 +266,7 @@ float64_t CQuadraticTimeMMD::compute_threshold(float64_t alpha)
 		SGVector<float64_t> null_samples=sample_null_spectrum(
 				m_num_samples_spectrum, m_num_eigenvalues_spectrum);
 		null_samples.qsort();
-		result=null_samples[CMath::floor(null_samples.vlen*(1-alpha))];
+		result=null_samples[index_t(CMath::floor(null_samples.vlen*(1-alpha)))];
 #else // HAVE_LAPACK
 		SG_ERROR("CQuadraticTimeMMD::compute_threshold(): Only possible if "
 				"shogun is compiled with LAPACK enabled\n");

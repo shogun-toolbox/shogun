@@ -16,6 +16,5 @@ public class features_string_char_modular {
 		StringCharFeatures f = new StringCharFeatures(strings, RAWBYTE);
 		f.set_feature_vector(new DoubleMatrix(new double[][] {{'t','e','s','t'}}), 0);
 
-		modshogun.exit_shogun();
 	}
 }

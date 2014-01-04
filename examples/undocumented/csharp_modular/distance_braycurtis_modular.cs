@@ -23,7 +23,6 @@ public class distance_braycurtis_modular {
     foreach (double item in dm_test)
 	Console.Write(item);
 
-    modshogun.exit_shogun();
 
     }
 }

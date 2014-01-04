@@ -92,7 +92,7 @@ class CStochasticProximityEmbedding : public CEmbeddingConverter
 
 		/** setter for strategy parameter
 		 *
-		 * @param stragegy type of SPE strategy
+		 * @param strategy type of SPE strategy
 		 */
 		void set_strategy(ESPEStrategy strategy);
 

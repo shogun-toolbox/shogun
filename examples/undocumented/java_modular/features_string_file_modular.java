@@ -19,6 +19,5 @@ public class features_string_file_modular {
 		CSVFile fil = new CSVFile(fname);
 		f.load(fil);
 
-		modshogun.exit_shogun();
 	}
 }

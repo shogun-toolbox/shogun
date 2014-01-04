@@ -56,6 +56,5 @@ public class mkl_multiclass_modular {
 		kernel.init(feats_train, feats_test);
 		double[] outMatrix = LabelsFactory.to_multiclass(mkl.apply()).get_labels();
 
-		modshogun.exit_shogun();
 	}
 }

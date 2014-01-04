@@ -10,6 +10,20 @@
 
 /*%warnfilter(302) apply;
 %warnfilter(302) apply_generic;*/
+
+%newobject apply();
+%newobject apply(CFeatures* data);
+%newobject apply_binary();
+%newobject apply_binary(CFeatures* data);
+%newobject apply_regression();
+%newobject apply_regression(CFeatures* data);
+%newobject apply_multiclass();
+%newobject apply_multiclass(CFeatures* data);
+%newobject apply_structured();
+%newobject apply_structured(CFeatures* data);
+%newobject apply_latent();
+%newobject apply_latent(CFeatures* data);
+
 #if defined(SWIGPYTHON) || defined(SWIGOCTAVE) || defined(SWIGRUBY) || defined(SWIGLUA) || defined(SWIGR)
 
 %define APPLY_MULTICLASS(CLASS)

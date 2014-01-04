@@ -78,9 +78,9 @@ TEST(MajorityVote, multiclass_combine_vector)
 	for (index_t i = 0; i < num_classifiers; ++i)
 	{
 		v[i] = sg_rand->random(0, 2);
-		if (max < ++hist[v[i]])
+		if (max < ++hist[index_t(v[i])])
 		{
-			max = hist[v[i]];
+			max = hist[index_t(v[i])];
 			max_label = v[i];
 		}
 	}

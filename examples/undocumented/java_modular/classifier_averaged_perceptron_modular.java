@@ -33,6 +33,5 @@ public class classifier_averaged_perceptron_modular{
 		perceptron.set_features(feats_test);
 		DoubleMatrix out_labels = to_binary(perceptron.apply()).get_labels();
 
-		modshogun.exit_shogun();
 	}
 }

@@ -31,6 +31,5 @@ public class classifier_gpbtsvm_modular {
 			Console.Write(item);
 		}
 
-		modshogun.exit_shogun();
 	}
 }

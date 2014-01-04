@@ -68,6 +68,5 @@ public class serialization_svmlight_modular {
 		save(fname, svm);
 		SVMLight svm_readed = (SVMLight)load(fname);
 
-		modshogun.exit_shogun();
 	}
 }

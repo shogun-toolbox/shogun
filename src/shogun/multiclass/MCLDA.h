@@ -44,7 +44,7 @@ class CMCLDA : public CNativeMulticlassMachine
 		/** constructor
 		 *
 		 * @param tolerance tolerance used in training
-		 * @param store_covs whether to store the within class covariances
+		 * @param store_cov whether to store the within class covariances
 		 */
 		CMCLDA(float64_t tolerance = 1e-4, bool store_cov = false);
 
@@ -53,7 +53,7 @@ class CMCLDA : public CNativeMulticlassMachine
 		 * @param traindat training features
 		 * @param trainlab labels for training features
 		 * @param tolerance tolerance used in training
-		 * @param store_covs whether to store the within class covariances
+		 * @param store_cov whether to store the within class covariances
 		 */
 		CMCLDA(CDenseFeatures<float64_t>* traindat, CLabels* trainlab, float64_t tolerance = 1e-4, bool store_cov = false);
 

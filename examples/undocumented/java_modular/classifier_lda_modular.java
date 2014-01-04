@@ -33,6 +33,5 @@ public class classifier_lda_modular {
 		DoubleMatrix out_labels = to_binary(lda.apply()).get_labels();
 		System.out.println(out_labels.toString());
 
-		modshogun.exit_shogun();
 	}
 }

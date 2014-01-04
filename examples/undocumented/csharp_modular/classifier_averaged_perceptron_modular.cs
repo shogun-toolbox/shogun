@@ -28,6 +28,5 @@ public class classifier_averaged_perceptron_modular{
 			Console.Write(item);
 		}
 
-		modshogun.exit_shogun();
 	}
 }

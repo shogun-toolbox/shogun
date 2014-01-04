@@ -39,7 +39,6 @@ public class kernel_const_modular {
 			Console.Write("\n");
 		}
 
-		modshogun.exit_shogun();
 	}
 }
 

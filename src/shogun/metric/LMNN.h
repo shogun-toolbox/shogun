@@ -134,7 +134,7 @@ class CLMNN : public CSGObject
 
 		/** set maximum number of iterations
 		 *
-		 * @param maximum number of iterations to set
+		 * @param maxiter maximum number of iterations to set
 		 */
 		void set_maxiter(const uint32_t maxiter);
 

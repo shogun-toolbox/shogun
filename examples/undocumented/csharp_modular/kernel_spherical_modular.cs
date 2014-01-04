@@ -43,7 +43,6 @@ public class kernel_spherical_modular {
 			Console.Write("\n");
 		}
 
-		modshogun.exit_shogun();
 	}
 }
 

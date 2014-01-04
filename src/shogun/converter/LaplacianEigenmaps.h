@@ -48,7 +48,7 @@ public:
 
 	/** apply to features
 	 * @param features to embed
-	 * @param embedding features
+	 * @return embedded features
 	 */
 	virtual CFeatures* apply(CFeatures* features);
 

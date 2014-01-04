@@ -15,6 +15,5 @@ public class features_dense_real_modular {
 			Console.Write("{0} ", item);
 		}
 
-		modshogun.exit_shogun();
 	}
 }

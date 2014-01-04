@@ -18,7 +18,7 @@
 #include <vector>
 #include <set>
 
-#if defined(HAVE_CXX0X) || defined(HAVE_CXX11)
+#ifdef HAVE_STD_UNORDERED_MAP
 	#include <unordered_map>
 #else
 	#include <tr1/unordered_map>
@@ -103,7 +103,7 @@ protected:
  */
 IGNORE_IN_CLASSLIST class CTreeMaxProduct : public CBeliefPropagation
 {
-#if defined(HAVE_CXX0X) || defined(HAVE_CXX11)
+#ifdef HAVE_STD_UNORDERED_MAP
 	typedef std::unordered_map<uint32_t, uint32_t> msg_map_type;
 	typedef std::unordered_map<uint32_t, std::set<uint32_t> > msgset_map_type;
 	typedef std::unordered_multimap<int32_t, int32_t> var_factor_map_type;

@@ -27,6 +27,5 @@ public class classifier_gaussiannaivebayes_modular {
 		DoubleMatrix out_labels = to_multiclass(gnb.apply(feats_test)).get_labels();
 		System.out.println(out_labels.toString());
 
-		modshogun.exit_shogun();
 	}
 }

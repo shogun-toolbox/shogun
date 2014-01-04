@@ -22,6 +22,14 @@
 %newobject create_merged_copy(CFeatures* other);
 %newobject copy_subset(SGVector<index_t> indices);
 
+/* methods in the labels factory do a conversion only - but need to be ref'd for modular interfaces */
+%newobject shogun::CLabelsFactory::to_binary(CLabels* base_labels);
+%newobject shogun::CLabelsFactory::to_latent(CLabels* base_labels);
+%newobject shogun::CLabelsFactory::to_multiclass(CLabels* base_labels);
+%newobject shogun::CLabelsFactory::to_regression(CLabels* base_labels);
+%newobject shogun::CLabelsFactory::to_structured(CLabels* base_labels);
+%newobject shogun::CLabelsFactory::to_multiclass_multiple_output(CLabels* base_labels);
+
 #if defined(USE_SWIG_DIRECTORS) && defined(SWIGPYTHON)
 %feature("director") shogun::CDirectorDotFeatures;
 %feature("director:except") {

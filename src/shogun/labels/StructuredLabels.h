@@ -33,7 +33,7 @@ class CStructuredLabels : public CLabels
 		 * need of allocating more memory in the future when inserting
 		 * labels with other method, e.g. add_label.
 		 *
-		 * @param num_labels number of labels
+		 * @param num_labels number of labels to pre-allocate
 		 */
 		CStructuredLabels(int32_t num_labels);
 
@@ -56,7 +56,7 @@ class CStructuredLabels : public CLabels
 		 *
 		 * @param label label to add
 		 */
-		void add_label(CStructuredData* label);
+		virtual void add_label(CStructuredData* label);
 
 		/** get labels
 		 *
@@ -72,7 +72,7 @@ class CStructuredLabels : public CLabels
 		 *
 		 * @return label object
 		 */
-		CStructuredData* get_label(int32_t idx);
+		virtual CStructuredData* get_label(int32_t idx);
 
 		/**
 		 * set label, possible with subset. This method should be used
@@ -84,7 +84,7 @@ class CStructuredLabels : public CLabels
 		 *
 		 * @return if setting was successful
 		 */
-		bool set_label(int32_t idx, CStructuredData* label);
+		virtual bool set_label(int32_t idx, CStructuredData* label);
 
 		/** get number of labels, depending on wheter a subset is set
 		 *

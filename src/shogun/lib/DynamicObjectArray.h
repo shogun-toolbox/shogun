@@ -243,9 +243,13 @@ class CDynamicObjectArray : public CSGObject
 		 */
 		inline bool set_element(CSGObject* e, int32_t idx1, int32_t idx2=0, int32_t idx3=0)
 		{
-			CSGObject* old=(CSGObject*) m_array.get_element(idx1+dim1_size*(idx2+dim2_size*idx3));
+			int32_t idx = idx1+dim1_size*(idx2+dim2_size*idx3);
+			CSGObject* old=NULL;
 
-			bool success=m_array.set_element(e, idx1+dim1_size*(idx2+dim2_size*idx3));
+			if (idx<get_num_elements())
+				old = (CSGObject*) m_array.get_element(idx);
+
+			bool success=m_array.set_element(e, idx);
 			if (success)
 			{
 				SG_REF(e);

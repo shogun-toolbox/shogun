@@ -28,6 +28,5 @@ public class classifier_knn_modular {
 		DoubleMatrix out_labels = to_multiclass(knn.apply(feats_test)).get_labels();
 		System.out.println(out_labels.toString());
 
-		modshogun.exit_shogun();
 	}
 }

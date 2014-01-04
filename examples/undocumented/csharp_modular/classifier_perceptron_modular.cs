@@ -31,7 +31,6 @@ public class classifier_perceptron_modular {
 		foreach (double item in out_labels)
 		    Console.Write(item);
 
-		modshogun.exit_shogun();
 	}
 }
 

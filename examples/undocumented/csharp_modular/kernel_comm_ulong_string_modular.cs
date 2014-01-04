@@ -37,7 +37,6 @@ public class kernel_comm_ulong_string_modular {
 	double[,] km_train = kernel.get_kernel_matrix();
 	kernel.init(feats_train, feats_test);
 	double[,] km_test = kernel.get_kernel_matrix();
-	modshogun.exit_shogun();
 
     }
 }

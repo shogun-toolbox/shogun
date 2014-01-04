@@ -150,7 +150,7 @@ float64_t CSNPStringKernel::compute(int32_t idx_a, int32_t idx_b)
 			char b1=bvec[i+l];
 			char b2=bvec[i+l+1];
 
-			if ((a1!=a2 || a1=='0' || a1=='0') && (b1!=b2 || b1=='0' || b2=='0'))
+			if ((a1!=a2 || a1=='0' || a2=='0') && (b1!=b2 || b1=='0' || b2=='0'))
 				sumab++;
 			else if (a1==a2 && b1==b2)
 			{

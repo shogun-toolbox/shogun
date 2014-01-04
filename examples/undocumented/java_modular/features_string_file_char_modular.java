@@ -15,6 +15,5 @@ public class features_string_file_char_modular {
 		String fname = "features_string_file_char_modular.java";
 		StringFileCharFeatures f = new StringFileCharFeatures(fname, RAWBYTE);
 
-		modshogun.exit_shogun();
 	}
 }

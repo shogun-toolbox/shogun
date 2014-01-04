@@ -41,6 +41,5 @@ public class kernel_poly_modular {
 			Console.Write("\n");
 		}
 
-		modshogun.exit_shogun();
 	}
 }

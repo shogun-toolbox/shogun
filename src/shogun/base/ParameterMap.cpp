@@ -227,7 +227,13 @@ bool ParameterMapElement::operator>(const ParameterMapElement& other) const
 	return *m_key>*other.m_key;
 }
 
+/*
+  Initializing m_map_elements(1), m_multi_map_elements(1) with small
+  preallocation-size, because ParameterMap will be constructed several
+  times for EACH SGObject instance.
+*/
 ParameterMap::ParameterMap()
+: m_map_elements(1), m_multi_map_elements(1)
 {
 	m_finalized=false;
 }

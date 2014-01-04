@@ -13,6 +13,7 @@
 #include <shogun/features/StringFeatures.h>
 #include <shogun/classifier/svm/SVMLight.h>
 #include <shogun/classifier/svm/LibSVM.h>
+#include <shogun/lib/SGStringList.h>
 
 using namespace shogun;
 

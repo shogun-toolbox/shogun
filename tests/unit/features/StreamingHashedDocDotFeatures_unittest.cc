@@ -9,6 +9,7 @@
 
 #include <shogun/features/streaming/StreamingHashedDocDotFeatures.h>
 #include <shogun/lib/SGString.h>
+#include <shogun/lib/SGStringList.h>
 #include <shogun/lib/DelimiterTokenizer.h>
 #include <shogun/converter/HashedDocConverter.h>
 

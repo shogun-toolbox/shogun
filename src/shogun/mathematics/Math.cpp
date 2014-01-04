@@ -201,10 +201,47 @@ void CMath::linspace(float64_t* output, float64_t start, float64_t end, int32_t 
 
 int CMath::is_nan(double f)
 {
+#ifndef HAVE_STD_ISNAN
+#if (HAVE_DECL_ISNAN == 1) || defined(HAVE_ISNAN)
+  return ::isnan(f);
+#else
+  return ((f != f) ? 1 : 0);
+#endif // #if (HAVE_DECL_ISNAN == 1) || defined(HAVE_ISNAN)
+#endif // #ifndef HAVE_STD_ISNAN
+
 	return std::isnan(f);
 }
 
 int CMath::is_infinity(double f)
 {
+#ifndef HAVE_STD_ISINF
+#if (HAVE_DECL_ISINF == 1) || defined(HAVE_ISINF)
+  return ::isinf(f);
+#elif defined(FPCLASS)
+  if (::fpclass(f) == FP_NINF) return -1;
+  else if (::fpclass(f) == FP_PINF) return 1;
+  else return 0;
+#else
+  if ((f == f) && ((f - f) != 0.0)) return (f < 0.0 ? -1 : 1);
+  else return 0;
+}
+#endif // #if (HAVE_DECL_ISINF == 1) || defined(HAVE_ISINF)
+#endif // #ifndef HAVE_STD_ISINF
+
 	return std::isinf(f);
+}
+
+int CMath::is_finite(double f)
+{
+#ifndef HAVE_STD_ISFINITE
+#if (HAVE_DECL_ISFINITE == 1) || defined(HAVE_ISFINITE)
+  return ::isfinite(f);
+#elif defined(HAVE_FINITE)
+  return ::finite(f);
+#else
+  return ((!std::isnan(f) && !std::isinf(f)) ? 1 : 0);
+#endif // #if (HAVE_DECL_ISFINITE == 1) || defined(HAVE_ISFINITE)
+#endif // #ifndef HAVE_STD_ISFINITE
+
+  return std::isfinite(f);
 }
