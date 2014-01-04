@@ -2,19 +2,15 @@
 #
 # * To make a release (and tag it) run
 #
-#       make prepare-release
-#       make git-tag-release  
-#       make release
+#
+#		make -f scripts/Makefile.release git-release
+#       make tarball
 #       make data-release
 #       make update-webpage
 #
-# * To create a debian .orig.tar.gz run
-#
-#       make release DEBIAN=yes
-#
 # * To create a snapshot run
 #
-#       make release SNAPSHOT=yes
+#       make tarball SNAPSHOT=yes
 # 
 # * To sign/md5sum the created tarballs and copy them to the webpage
 #
@@ -38,7 +34,7 @@
 #      make SNAPSHOT=yes
 #
 #
-MAINVERSION=3.0.0
+MAINVERSION := $(shell grep SHOGUN NEWS  | head -n 1 | cut -f 5 -d ' ')
 VERSIONBASE := $(shell echo $(MAINVERSION) | cut -f 1-2 -d '.')
 GITVERSION := $(shell git show --pretty='format:%h'|head -1)
 RELEASENAME := shogun-$(MAINVERSION)$(EXTRAVERSION)
@@ -56,13 +52,15 @@ all:
 
 git-release:
 	git checkout develop
+	git fetch --tags
 	git pull
 	git submodule update
 	git clean -dfx
 	git flow release start $(MAINVERSION)
 	git flow release finish -s $(MAINVERSION)
-	(in case of merge conflicts fix them and do git commit -a ; git flow release finish -s $(MAINVERSION) )
+	#(in case of merge conflicts fix them and do git commit -a ; git flow release finish -s $(MAINVERSION) )
 	git flow release finish -s $(MAINVERSION)
+	git push
 	git push --tags
 
 tarball:
