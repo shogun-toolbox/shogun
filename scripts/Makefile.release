@@ -4,17 +4,18 @@
 #
 #
 #		make -f scripts/Makefile.release git-release
-#       make tarball
-#       make data-release
-#       make update-webpage
+#       make -f scripts/Makefile.release tarball
+#       make -f scripts/Makefile.release data-release
+#       make -f scripts/Makefile.release update-webpage
+#       make -f scripts/Makefile.release update-news
 #
 # * To create a snapshot run
 #
-#       make tarball SNAPSHOT=yes
+#       make -f scripts/Makefile.release tarball SNAPSHOT=yes
 # 
 # * To sign/md5sum the created tarballs and copy them to the webpage
 #
-#       make update-webpage
+#       make -f scripts/Makefile.release update-webpage
 #
 #
 # The following additional options may be set
@@ -34,6 +35,12 @@
 #      make SNAPSHOT=yes
 #
 #
+RELEASEDATE := $(shell head -n 1 NEWS | cut -f 1 -d ' ')
+RELEASEYEAR := $(shell head -n 1 NEWS | cut -f 1 -d ' ' | cut -f 1 -d '-')
+WEBNEWSSCRIPT := ../shogun-web/util/news.py
+WEBNEWSDIR := ../shogun-web/news/$(RELEASEYEAR)
+WEBNEWSFILE := $(WEBNEWSDIR)/$(RELEASEDATE)
+
 MAINVERSION := $(shell grep SHOGUN NEWS  | head -n 1 | cut -f 5 -d ' ')
 VERSIONBASE := $(shell echo $(MAINVERSION) | cut -f 1-2 -d '.')
 GITVERSION := $(shell git show --pretty='format:%h'|head -1)
@@ -96,3 +103,8 @@ update-webpage:
 	rsync --progress $(DESTDIR).tar.bz2 $(DESTDIR).tar.bz2.asc $(DESTDIR).md5sum \
 		7nn.de:/var/www/shogun-toolbox.org/archives/shogun/releases/$(VERSIONBASE)/sources/
 	ssh 7nn.de chmod 644 "/var/www/shogun-toolbox.org/archives/shogun/releases/$(VERSIONBASE)/sources/*.* /var/www/shogun-toolbox.org/archives/shogun/data/*"
+
+update-news:
+	mkdir -p $(WEBNEWSDIR)
+	python $(WEBNEWSSCRIPT) NEWS $(WEBNEWSFILE)
+	cd ../shogun-web && make release
