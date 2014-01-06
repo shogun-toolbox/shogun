@@ -825,11 +825,15 @@ IF (PythonModular OR PythonStatic)
 			SET(TARGET_SWIGFLAGS "-builtin\;-modern\;-modernargs")
 		ENDIF()
 
-		add_subdirectory(src/interfaces/python_modular)
+		IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/python_modular)
+			add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/python_modular)
+		ENDIF()
 	ENDIF()
 
 	IF(PythonStatic)
-		add_subdirectory(src/interfaces/python_static)
+		IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/python_static)
+			add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/python_static)
+		ENDIF()
 	ENDIF()
 ENDIF()
 
@@ -843,7 +847,9 @@ IF (LuaModular)
     ENDIF ()
 	SET(LUA_EXECUTABLE lua)
 	UNSET(TARGET_SWIGFLAGS)
-	add_subdirectory(src/interfaces/lua_modular)
+	IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/lua_modular)
+		add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/lua_modular)
+	ENDIF()
 ENDIF()
 
 # java modular
@@ -865,7 +871,9 @@ IF (JavaModular)
 	ENDIF()
 
 	SET(TARGET_SWIGFLAGS "-package\;org.shogun")
-	add_subdirectory(src/interfaces/java_modular)
+	IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/java_modular)
+		add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/java_modular)
+	ENDIF()
 ENDIF()
 
 # ruby modular
@@ -874,7 +882,7 @@ IF (RubyModular)
 	FIND_PACKAGE(RubyNArray REQUIRED)
 	SET(NARRAY_LIB ${RUBY_NARRAY_LIBRARY})
 	UNSET(TARGET_SWIGFLAGS)
-	add_subdirectory(src/interfaces/ruby_modular)
+	add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/ruby_modular)
 ENDIF()
 
 # octave modular
@@ -886,11 +894,15 @@ IF (OctaveModular OR OctaveStatic)
 
 	IF(OctaveModular)
 		UNSET(TARGET_SWIGFLAGS)
-		add_subdirectory(src/interfaces/octave_modular)
+		IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/octave_modular)
+			add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/octave_modular)
+		ENDIF()
 	ENDIF()
 
 	IF(OctaveStatic)
-		add_subdirectory(src/interfaces/octave_static)
+		IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/octave_static)
+			add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/octave_static)
+		ENDIF()
 	ENDIF()
 ENDIF()
 
@@ -898,7 +910,9 @@ ENDIF()
 IF (CSharpModular)
 	FIND_PACKAGE(CSharp REQUIRED)
 	UNSET(TARGET_SWIGFLAGS)
-	add_subdirectory(src/interfaces/csharp_modular)
+	IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/csharp_modular)
+		add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/csharp_modular)
+	ENDIF()
 ENDIF()
 
 # r modular
@@ -907,11 +921,15 @@ IF (RModular OR RStatic)
 
 	IF (RModular)
 		UNSET(TARGET_SWIGFLAGS)
-		add_subdirectory(src/interfaces/r_modular)
+		IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/r_modular)
+			add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/r_modular)
+		ENDIF()
 	ENDIF()
 
 	IF (RStatic)
-		add_subdirectory(src/interfaces/r_static)
+		IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/r_static)
+			add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/r_static)
+		ENDIF()
 	ENDIF()
 ENDIF()
 
@@ -919,20 +937,26 @@ ENDIF()
 IF (PerlModular)
 	FIND_PACKAGE(FindPerlLibs REQUIRED)
 	UNSET(TARGET_SWIGFLAGS)
-	#add_subdirectory(src/interfaces/perl_modular)
+	IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/perl_modular)
+		#add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/perl_modular)
+	ENDIF()
 ENDIF()
 
 IF (MatlabStatic)
 	FIND_PACKAGE(Matlab REQUIRED)
 	IF(MATLAB_FOUND)
-		add_subdirectory(src/interfaces/matlab_static)
+		IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/matlab_modular)
+			add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/matlab_static)
+		ENDIF()
 	ELSE()
 		MESSAGE(FATAL_ERROR "Could not find Matlab, which is required for compiling matlab_static interface. Try setting MATLAB_ROOT enviroment variable to the right path")
 	ENDIF()
 ENDIF()
 
 IF (CmdLineStatic)
-	add_subdirectory(src/interfaces/cmdline_static)
+	IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/cmdline_static)
+		add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/cmdline_static)
+	ENDIF()
 ENDIF()
 
 IF (SVMLight)
@@ -957,13 +981,15 @@ IF(ENABLE_TESTING)
 		enable_testing()
 	ENDIF()
 
-	# add integration tests
-	add_subdirectory(tests/integration)
+	IF(EXISTS ${CMAKE_SOURCE_DIR}/tests)
+		# add integration tests
+		add_subdirectory(${CMAKE_SOURCE_DIR}/tests/integration)
 
 
-	# add unit tests
-	IF (NOT TRAVIS_DISABLE_UNIT_TESTS)
-		add_subdirectory(tests/unit)
+		# add unit tests
+		IF (NOT TRAVIS_DISABLE_UNIT_TESTS)
+			add_subdirectory(${CMAKE_SOURCE_DIR}/tests/unit)
+		ENDIF()
 	ENDIF()
 ENDIF()
 
@@ -973,10 +999,14 @@ SET(CONFIGURE_OPTIONS "TODO")
 SET(COMPFLAGS_CPP "${MERGED_CXX_FLAGS}")
 SET(LINKFLAGS "${POSTLINKFLAGS}")
 
-add_subdirectory(src/shogun)
+IF(EXISTS ${CMAKE_SOURCE_DIR}/src/shogun)
+	add_subdirectory(${CMAKE_SOURCE_DIR}/src/shogun)
+ENDIF()
 
-IF(BUILD_EXAMPLES OR ENABLE_TESTING)
-	add_subdirectory(examples)
+IF(EXISTS ${CMAKE_SOURCE_DIR}/examples)
+	IF(BUILD_EXAMPLES OR ENABLE_TESTING)
+		add_subdirectory(${CMAKE_SOURCE_DIR}/examples)
+	ENDIF()
 ENDIF()
 
 # general cpack settings
