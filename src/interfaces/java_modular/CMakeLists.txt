@@ -5,8 +5,21 @@ GENERATE_MODULAR_TARGET(java ${CMAKE_CURRENT_SOURCE_DIR} "")
 
 set(CMAKE_JAVA_TARGET_OUTPUT_NAME shogun)
 SET(CMAKE_JAVA_INCLUDE_PATH ${JBLAS})
-ADD_JAR(shogun_jar ${CMAKE_CURRENT_BINARY_DIR}/*.java)
-add_dependencies(shogun_jar java_modular)
+
+ADD_CUSTOM_COMMAND(TARGET java_modular POST_BUILD
+	COMMAND cmake -E echo "Compiling Java files..."
+	COMMAND cmake -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/shogun_jar
+	COMMAND ${Java_JAVAC_EXECUTABLE} *.java
+			-d ${CMAKE_CURRENT_BINARY_DIR}/shogun_jar
+			-cp "${CMAKE_JAVA_INCLUDE_PATH}"
+	COMMAND cmake -E echo "Creating jar file..."
+	COMMAND ${Java_JAR_EXECUTABLE} cvf shogun.jar
+			-C ${CMAKE_CURRENT_BINARY_DIR}/shogun_jar org
+	WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+
+
+#ADD_JAR(shogun_jar "${CMAKE_CURRENT_BINARY_DIR}/*.java")
+#add_dependencies(shogun_jar java_modular)
 
 SET(JAVA_MODULAR_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR} PARENT_SCOPE)
 INSTALL(TARGETS java_modular
