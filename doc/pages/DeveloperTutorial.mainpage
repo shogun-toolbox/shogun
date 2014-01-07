@@ -167,7 +167,7 @@ wrappers)
 
 \verbatim
 %{
-#include <shogun/kernel/ReverseLinearKernel.h>
+#include <kernel/ReverseLinearKernel.h>
 %}
 \endverbatim
 

@@ -5,8 +5,8 @@ Shogun is split up into libshogun which contains all the machine learning
 algorithms and 'static interfaces' helpers,
 the static interfaces python_static, octave_static, matlab_static, r_static and
 the modular interfaces python_modular, octave_modular and r_modular (all found
-in the src/interfaces/ subdirectory with corresponding name). See src/INSTALL on
-how to install shogun.
+in the src/interfaces/ subdirectory with corresponding name). See src/INSTALL
+on how to install shogun.
 
 In case one wants to extend shogun the best way is to start using its library.
 This can be easily done as a number of examples in examples/libshogun document.
@@ -14,7 +14,7 @@ This can be easily done as a number of examples in examples/libshogun document.
 The simplest libshogun based program would be
 
 ```
-#include <shogun/base/init.h>
+#include <base/init.h>
 
 int main(int argc, char** argv)
 {
@@ -24,9 +24,9 @@ int main(int argc, char** argv)
 }
 ```
 
-which could be compiled with g++ -lshogun minimal.cpp -o minimal and obviously
-does nothing (apart form initializing and destroying a couple of global shogun
-objects internally).
+which could be compiled with `g++ -I/usr/include/shogun -lshogun minimal.cpp
+-o minimal` and obviously does nothing (apart form initializing and destroying
+a couple of global shogun objects internally).
 
 In case one wants to redirect shoguns output functions SG_DEBUG, SG_INFO,
 SG_WARN, SG_ERROR, SG_PRINT etc, one has to pass them to init_shogun() as
@@ -57,13 +57,13 @@ e.g. we create some features and a gaussian kernel
 
 
 ```
-#include <shogun/labels/Labels.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/kernel/GaussianKernel.h>
-#include <shogun/classifier/svm/LibSVM.h>
-#include <shogun/base/init.h>
-#include <shogun/lib/common.h>
-#include <shogun/io/SGIO.h>
+#include <labels/Labels.h>
+#include <features/DenseFeatures.h>
+#include <kernel/GaussianKernel.h>
+#include <classifier/svm/LibSVM.h>
+#include <base/init.h>
+#include <lib/common.h>
+#include <io/SGIO.h>
 
 using namespace shogun;
 
@@ -137,11 +137,11 @@ an object, call SG_UNREF(obj) which will also automagically destroy it if the
 counter is <= 0 and set obj=NULL only in this case.
 
 
-Generally, all shogun C++ Objects are prefixed with C, e.g. CSVM and derived from
-CSGObject. Since variables in the upper class hierarchy, need to be initialized
-upon construction of the object, the constructor of base class needs to be
-called in the constructor, e.g. CSVM calls CKernelMachine, CKernelMachine calls
-CClassifier which finally calls CSGObject.
+Generally, all shogun C++ Objects are prefixed with C, e.g. CSVM and derived
+from CSGObject. Since variables in the upper class hierarchy, need to be
+initialized upon construction of the object, the constructor of base class
+needs to be called in the constructor, e.g. CSVM calls CKernelMachine,
+CKernelMachine calls CClassifier which finally calls CSGObject.
 
 For example if you implement your own SVM called MySVM you would in the
 constructor do
@@ -243,8 +243,8 @@ CODING CONVENTIONS:
   ```
 
 - avoid the use of inline functions where possible (little to zero performance
-		impact). nowadays compilers automagically inline code when beneficial
-		and within the same linking process
+		impact). nowadays compilers automagically inline code when
+		beneficial and within the same linking process
 
 - breaking long lines and strings
 	limit yourselves to 80 columns
@@ -327,8 +327,8 @@ instead
 - use ifdefs sparingly (really limit yourself to the ones necessary) as their
   extreme usage makes the code completely unreadable. to achieve that it may be
   necessary to wrap a function of (e.g. for
-  pthread_create()/CreateThread()/thread_create() a wrapper function to create a
-  thread and inside of it the ifdefs to do it the solaris/win32/posix way)
+  pthread_create()/CreateThread()/thread_create() a wrapper function to create
+  a thread and inside of it the ifdefs to do it the solaris/win32/posix way)
 - if you need to use ifdefs always comment the corresponding #else / #endif
   in the following way:
 
@@ -365,8 +365,8 @@ instead
 *FUNCTIONS:*
 
 - Functions should be short and sweet, and do just one thing.  They should fit
-  on one or two screenfuls of text (the ISO/ANSI screen size is 80x24, as we all
-  know), and do one thing and do that well.
+  on one or two screenfuls of text (the ISO/ANSI screen size is 80x24, as we
+  all know), and do one thing and do that well.
 - Another measure of the function is the number of local variables.  They
   shouldn't exceed 5-10, or you're doing something wrong.  Re-think the
   function, and split it into smaller pieces.  A human brain can
@@ -391,38 +391,42 @@ CLabels then the .i file should contain ```%newobject CClassifier::apply();```
 *NAMING CONVENTIONS:*
 
 - naming variables:
-	- in classes are member variables are named like m_feature_vector (to avoid
-		shadowing and the often hard to find bugs shadowing causes)
+	- in classes are member variables are named like m_feature_vector (to
+	  avoid shadowing and the often hard to find bugs shadowing causes)
 	- parameters (in functions) shall be named e.g. feature_vector
-	- don't use meaningless variable names, it is however fine to use short names
-	like i,j,k etc in loops
-	- class names start with 'C', each syllable/subword starts with a capital letter,
-	  e.g. CStringFeatures
+	- don't use meaningless variable names, it is however fine to use
+	  short names like i,j,k etc in loops
+	- class names start with 'C', each syllable/subword starts with a
+	  capital letter, e.g. CStringFeatures
 
 - constants/defined objects are UPPERCASE, i.e. REALVALUED
 
-- function are named like get_feature_vector() and should be limited to as few arguments as
-  possible (no monster functions with > 5 arguments please)
+- function are named like get_feature_vector() and should be limited to as few
+  arguments as possible (no monster functions with > 5 arguments please)
 
-- objects which can deal with features of type DREAL and class SIMPLE don't need
-  to contain Real/Dense in class name
+- objects which can deal with features of type DREAL and class SIMPLE don't
+  need to contain Real/Dense in class name
 
 - others are required to clarify class/type they can handle, e.g.
   CSparseByteLinearKernel, CSparseGaussianKernel
 
 
-- variable and function names are all lowercase (except for class Con/Destructors)
-  syllables/subwords are separated by '_', e.g. compute_kernel_value(), my_local_variable
+- variable and function names are all lowercase (except for class
+  Con/Destructors) syllables/subwords are separated by '_', e.g.
+  compute_kernel_value(), my_local_variable
 
-- class member variables all start with m_, e.g. m_member (this is to avoid shadowing)
+- class member variables all start with m_, e.g. m_member (this is to avoid
+  shadowing)
 
-- features and preprocessors are prefixed with featureclass (e.g. Dense/Sparse) followed by featuretype (Real/Byte/...)
+- features and preprocessors are prefixed with featureclass (e.g. Dense/Sparse)
+  followed by featuretype (Real/Byte/...)
 
 *VERSIONING SCHEME:*
 
 The git repo for the project is hosted on GitHub at
 https://github.com/shogun-toolbox/shogun. To get started, create your own fork
-and clone it ([howto](https://help.github.com/articles/fork-a-repo "GitHub help - Fork a repo")).
+and clone it ([howto](https://help.github.com/articles/fork-a-repo
+"GitHub help - Fork a repo")).
 Remember to set the upstream remote to the main repo by:
 
 ```
@@ -499,11 +503,11 @@ repository in github.
 6. ... rebasing ...
 7. ```git push origin my-branch```
 
-  then git will complain about non-fast-forward error and not pushing into the remote
-  my-branch branch. This is because the first push has already created the my-branch
-  branch in origin. Later when you run rebasing, which is a destructive operation for
-  the local history. Since the local history is no longer the same as those in the remote
-  branch, pushing is not allowed.
+  then git will complain about non-fast-forward error and not pushing into the
+  remote my-branch branch. This is because the first push has already created
+  the my-branch branch in origin. Later when you run rebasing, which is a
+  destructive operation for the local history. Since the local history is no
+  longer the same as those in the remote branch, pushing is not allowed.
 
   Solution for this situation is to delete your remote branch by
 
@@ -517,14 +521,15 @@ repository in github.
     git push origin my-branch
 ```
 
-  note deleting your remote branch will not delete your pull request associated with that
-  branch. And as long as you push your branch there again, your pull request will be OK.
+  note deleting your remote branch will not delete your pull request associated
+  with that branch. And as long as you push your branch there again, your pull
+  request will be OK.
 
 - Unit testing/Pre-commit hook
-  As shogun-toolbox is getting bigger and bigger code-reviews of pull requests are getting
-  harder and harder. In order to avoid breaking the functionality of the existing code, we
-  highly encourage contributors of shogun to use the supplied unit testing, that is based
-  on Google C++ Mock Framework.
+  As shogun-toolbox is getting bigger and bigger code-reviews of pull requests
+  are getting harder and harder. In order to avoid breaking the functionality
+  of the existing code, we highly encourage contributors of shogun to use the
+  supplied unit testing, that is based on Google C++ Mock Framework.
 
   In order to be able to use the unit testing framework one will need to have
   Google C++ Mock Framework installed on her machine as well as detected by
@@ -532,16 +537,16 @@ repository in github.
   the script detected it.
 
   Once it's detected if you add new classes to the code please define some basic
-  unit tests for them under ./tests/unit (see some of the examples under that directory).
-  As one can see the naming convention for files that contains the unit tests are:
-  <classname>_unittest.cc
+  unit tests for them under ./tests/unit (see some of the examples under that
+  directory). As one can see the naming convention for files that contains the
+  unit tests are: <classname>_unittest.cc
 
   Before commiting or sending a pull request please run 'make unit-tests' under
   ./src in order to check that nothing has been breaked by the modifications and
   the library is still acting as it's intended.
 
-  One possible way to do this automatically is to add into your pre-commit hook the
-  following code snippet (.git/hook/pre-commit):
+  One possible way to do this automatically is to add into your pre-commit hook
+  the following code snippet (.git/hook/pre-commit):
 
 ```
 #!/bin/sh
@@ -559,4 +564,7 @@ cd src && make unit-tests
   ```
   chmod +x .git/hook/pre-commit
   ```
-To make a release, adjust the [NEWS](NEWS) file properly, i.e. date, release version (like 3.0.0), adjust the soname if required (cf. [README_soname](README_soname.md)) and if a new data version is required add that too. If parameters have been seen changes increase the parameter version too.
+To make a release, adjust the [NEWS](NEWS) file properly, i.e. date, release
+version (like 3.0.0), adjust the soname if required (cf. [README_soname]
+(README_soname.md)) and if a new data version is required add that too. If
+parameters have been seen changes increase the parameter version too.
