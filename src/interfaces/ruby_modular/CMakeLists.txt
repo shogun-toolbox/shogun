@@ -1,5 +1,8 @@
 include(CommonModularInterface)
-INCLUDE_DIRECTORIES(${RUBY_INCLUDE_DIRS} ${RUBY_NARRAY_INCLUDE_DIR})
+include_directories(${CMAKE_SOURCE_DIR}/src/shogun
+		${CMAKE_BINARY_DIR}/src/shogun
+		${RUBY_INCLUDE_DIRS}
+		${RUBY_NARRAY_INCLUDE_DIR})
 
 GENERATE_MODULAR_TARGET(ruby ${CMAKE_CURRENT_SOURCE_DIR} ${RUBY_LIBRARY})
 set_target_properties(ruby_modular PROPERTIES PREFIX "")
