@@ -8,9 +8,9 @@
  * Copyright (C) 2012 Chiyuan Zhang
  */
 
-#include <shogun/lib/SGVector.h>
-#include <shogun/labels/MulticlassLabels.h>
-#include <shogun/evaluation/ClusteringMutualInformation.h>
+#include <lib/SGVector.h>
+#include <labels/MulticlassLabels.h>
+#include <evaluation/ClusteringMutualInformation.h>
 
 using namespace shogun;
 

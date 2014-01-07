@@ -7,10 +7,10 @@
  * Written (W) 2013 Heiko Strathmann
  */
 
-#include <shogun/statistics/MMDKernelSelectionCombMaxL2.h>
-#include <shogun/statistics/LinearTimeMMD.h>
-#include <shogun/kernel/CombinedKernel.h>
-#include <shogun/mathematics/Statistics.h>
+#include <statistics/MMDKernelSelectionCombMaxL2.h>
+#include <statistics/LinearTimeMMD.h>
+#include <kernel/CombinedKernel.h>
+#include <mathematics/Statistics.h>
 
 
 using namespace shogun;

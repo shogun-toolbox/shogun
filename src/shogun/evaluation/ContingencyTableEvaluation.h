@@ -11,10 +11,10 @@
 #ifndef CONTINGENCYTABLEEVALUATION_H_
 #define CONTINGENCYTABLEEVALUATION_H_
 
-#include <shogun/evaluation/BinaryClassEvaluation.h>
-#include <shogun/labels/Labels.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/io/SGIO.h>
+#include <evaluation/BinaryClassEvaluation.h>
+#include <labels/Labels.h>
+#include <mathematics/Math.h>
+#include <io/SGIO.h>
 
 namespace shogun
 {

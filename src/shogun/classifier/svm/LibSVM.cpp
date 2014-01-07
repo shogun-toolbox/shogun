@@ -8,9 +8,9 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/classifier/svm/LibSVM.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/labels/BinaryLabels.h>
+#include <classifier/svm/LibSVM.h>
+#include <io/SGIO.h>
+#include <labels/BinaryLabels.h>
 
 using namespace shogun;
 

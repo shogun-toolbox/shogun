@@ -10,11 +10,11 @@
 
 #ifndef _MULTICLASSLIBLINEAR_H___
 #define _MULTICLASSLIBLINEAR_H___
-#include <shogun/lib/config.h>
-#include <shogun/lib/common.h>
-#include <shogun/features/DotFeatures.h>
-#include <shogun/machine/LinearMulticlassMachine.h>
-#include <shogun/optimization/liblinear/shogun_liblinear.h>
+#include <lib/config.h>
+#include <lib/common.h>
+#include <features/DotFeatures.h>
+#include <machine/LinearMulticlassMachine.h>
+#include <optimization/liblinear/shogun_liblinear.h>
 
 namespace shogun
 {

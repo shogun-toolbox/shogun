@@ -13,8 +13,8 @@
 #ifndef _CCOMBINEDFEATURES__H__
 #define _CCOMBINEDFEATURES__H__
 
-#include <shogun/features/Features.h>
-#include <shogun/lib/DynamicObjectArray.h>
+#include <features/Features.h>
+#include <lib/DynamicObjectArray.h>
 
 namespace shogun
 {

@@ -7,7 +7,7 @@
  * Copyright (C) 2012 Sergey Lisitsyn
  */
 
-#include <shogun/lib/IndexBlockGroup.h>
+#include <lib/IndexBlockGroup.h>
 
 using namespace shogun;
 

@@ -11,10 +11,10 @@
 #ifndef _HASHEDDOCCONVERTER__H__
 #define _HASHEDDOCCONVERTER__H__
 
-#include <shogun/converter/Converter.h>
-#include <shogun/features/Features.h>
-#include <shogun/lib/Tokenizer.h>
-#include <shogun/features/SparseFeatures.h>
+#include <converter/Converter.h>
+#include <features/Features.h>
+#include <lib/Tokenizer.h>
+#include <features/SparseFeatures.h>
 
 namespace shogun
 {

@@ -8,61 +8,61 @@
  * Written (W) 1999-2008 Gunnar Raetsch
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
-#include <shogun/ui/GUIClassifier.h>
-#include <shogun/ui/SGInterface.h>
+#include <ui/GUIClassifier.h>
+#include <ui/SGInterface.h>
 
-#include <shogun/lib/config.h>
-#include <shogun/io/SGIO.h>
+#include <lib/config.h>
+#include <io/SGIO.h>
 
-#include <shogun/features/SparseFeatures.h>
-#include <shogun/features/RealFileFeatures.h>
-#include <shogun/labels/Labels.h>
+#include <features/SparseFeatures.h>
+#include <features/RealFileFeatures.h>
+#include <labels/Labels.h>
 
-#include <shogun/kernel/AUCKernel.h>
+#include <kernel/AUCKernel.h>
 
-#include <shogun/multiclass/KNN.h>
-#include <shogun/clustering/KMeans.h>
-#include <shogun/clustering/Hierarchical.h>
-#include <shogun/classifier/PluginEstimate.h>
+#include <multiclass/KNN.h>
+#include <clustering/KMeans.h>
+#include <clustering/Hierarchical.h>
+#include <classifier/PluginEstimate.h>
 
-#include <shogun/classifier/LDA.h>
-#include <shogun/classifier/LPM.h>
-#include <shogun/classifier/LPBoost.h>
-#include <shogun/classifier/Perceptron.h>
+#include <classifier/LDA.h>
+#include <classifier/LPM.h>
+#include <classifier/LPBoost.h>
+#include <classifier/Perceptron.h>
 
-#include <shogun/machine/LinearMachine.h>
+#include <machine/LinearMachine.h>
 
 #ifdef USE_SVMLIGHT
-#include <shogun/classifier/svm/SVMLight.h>
-#include <shogun/classifier/svm/SVMLightOneClass.h>
-#include <shogun/regression/svr/SVRLight.h>
+#include <classifier/svm/SVMLight.h>
+#include <classifier/svm/SVMLightOneClass.h>
+#include <regression/svr/SVRLight.h>
 #endif //USE_SVMLIGHT
 
-#include <shogun/classifier/mkl/MKLClassification.h>
-#include <shogun/regression/svr/MKLRegression.h>
-#include <shogun/classifier/mkl/MKLOneClass.h>
-#include <shogun/classifier/mkl/MKLMulticlass.h>
-#include <shogun/classifier/svm/LibSVM.h>
-#include <shogun/multiclass/LaRank.h>
-#include <shogun/classifier/svm/GPBTSVM.h>
-#include <shogun/classifier/svm/LibSVMOneClass.h>
-#include <shogun/multiclass/MulticlassLibSVM.h>
+#include <classifier/mkl/MKLClassification.h>
+#include <regression/svr/MKLRegression.h>
+#include <classifier/mkl/MKLOneClass.h>
+#include <classifier/mkl/MKLMulticlass.h>
+#include <classifier/svm/LibSVM.h>
+#include <multiclass/LaRank.h>
+#include <classifier/svm/GPBTSVM.h>
+#include <classifier/svm/LibSVMOneClass.h>
+#include <multiclass/MulticlassLibSVM.h>
 
-#include <shogun/regression/svr/LibSVR.h>
-#include <shogun/regression/KernelRidgeRegression.h>
+#include <regression/svr/LibSVR.h>
+#include <regression/KernelRidgeRegression.h>
 
-#include <shogun/classifier/svm/LibLinear.h>
-#include <shogun/classifier/svm/MPDSVM.h>
-#include <shogun/classifier/svm/GNPPSVM.h>
-#include <shogun/multiclass/GMNPSVM.h>
-#include <shogun/multiclass/ScatterSVM.h>
+#include <classifier/svm/LibLinear.h>
+#include <classifier/svm/MPDSVM.h>
+#include <classifier/svm/GNPPSVM.h>
+#include <multiclass/GMNPSVM.h>
+#include <multiclass/ScatterSVM.h>
 
-#include <shogun/classifier/svm/SVMLin.h>
-#include <shogun/classifier/svm/SVMOcas.h>
-#include <shogun/classifier/svm/SVMSGD.h>
-#include <shogun/classifier/svm/WDSVMOcas.h>
+#include <classifier/svm/SVMLin.h>
+#include <classifier/svm/SVMOcas.h>
+#include <classifier/svm/SVMSGD.h>
+#include <classifier/svm/WDSVMOcas.h>
 
-#include <shogun/io/SerializableAsciiFile.h>
+#include <io/SerializableAsciiFile.h>
 
 using namespace shogun;
 

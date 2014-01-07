@@ -11,10 +11,10 @@
  */
 
 #include <list>
-#include <shogun/lib/Signal.h>
-#include <shogun/classifier/mkl/MKL.h>
-#include <shogun/classifier/svm/LibSVM.h>
-#include <shogun/kernel/CombinedKernel.h>
+#include <lib/Signal.h>
+#include <classifier/mkl/MKL.h>
+#include <classifier/svm/LibSVM.h>
+#include <kernel/CombinedKernel.h>
 
 using namespace shogun;
 

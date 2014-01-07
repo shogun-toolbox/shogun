@@ -7,14 +7,14 @@
  * Written (W) 2013 Soumyajit De
  */
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
 #ifdef HAVE_EIGEN3
-#include <shogun/lib/SGVector.h>
-#include <shogun/lib/SGMatrix.h>
-#include <shogun/base/Parameter.h>
-#include <shogun/mathematics/eigen3.h>
-#include <shogun/mathematics/linalg/linop/DenseMatrixOperator.h>
+#include <lib/SGVector.h>
+#include <lib/SGMatrix.h>
+#include <base/Parameter.h>
+#include <mathematics/eigen3.h>
+#include <mathematics/linalg/linop/DenseMatrixOperator.h>
 
 using namespace Eigen;
 

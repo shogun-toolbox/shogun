@@ -1,6 +1,6 @@
 #include "MockLatentModel.h"
-#include <shogun/lib/config.h>
-#include <shogun/latent/LatentSVM.h>
+#include <lib/config.h>
+#include <latent/LatentSVM.h>
 
 using namespace shogun;
 using ::testing::Return;

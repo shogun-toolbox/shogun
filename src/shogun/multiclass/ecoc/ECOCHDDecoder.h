@@ -11,8 +11,8 @@
 #ifndef ECOCHDDECODER_H__
 #define ECOCHDDECODER_H__
 
-#include <shogun/multiclass/ecoc/ECOCSimpleDecoder.h>
-#include <shogun/multiclass/ecoc/ECOCUtil.h>
+#include <multiclass/ecoc/ECOCSimpleDecoder.h>
+#include <multiclass/ecoc/ECOCUtil.h>
 
 namespace shogun
 {

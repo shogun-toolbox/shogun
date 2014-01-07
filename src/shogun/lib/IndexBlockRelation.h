@@ -10,8 +10,8 @@
 #ifndef INDEXBLOCKRELATION_H_
 #define INDEXBLOCKRELATION_H_
 
-#include <shogun/base/SGObject.h>
-#include <shogun/lib/List.h>
+#include <base/SGObject.h>
+#include <lib/List.h>
 
 namespace shogun
 {

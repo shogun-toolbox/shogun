@@ -12,10 +12,10 @@
 #ifndef _SCATTERSVM_H___
 #define _SCATTERSVM_H___
 
-#include <shogun/lib/common.h>
-#include <shogun/lib/config.h>
-#include <shogun/multiclass/MulticlassSVM.h>
-#include <shogun/lib/external/shogun_libsvm.h>
+#include <lib/common.h>
+#include <lib/config.h>
+#include <multiclass/MulticlassSVM.h>
+#include <lib/external/shogun_libsvm.h>
 
 #include <stdio.h>
 

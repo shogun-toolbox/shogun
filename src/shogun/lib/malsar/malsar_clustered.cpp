@@ -8,13 +8,13 @@
  * Copyright (C) 2012 Jiayu Zhou and Jieping Ye
  */
 
-#include <shogun/lib/malsar/malsar_clustered.h>
+#include <lib/malsar/malsar_clustered.h>
 #ifdef HAVE_EIGEN3
 #ifndef HAVE_CXX11
-#include <shogun/mathematics/Math.h>
-#include <shogun/mathematics/eigen3.h>
+#include <mathematics/Math.h>
+#include <mathematics/eigen3.h>
 #include <iostream>
-#include <shogun/lib/external/libqp.h>
+#include <lib/external/libqp.h>
 
 using namespace Eigen;
 using namespace std;

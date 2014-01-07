@@ -1,10 +1,10 @@
-#include <shogun/lib/config.h>
-#include <shogun/base/init.h>
-#include <shogun/lib/common.h>
-#include <shogun/lib/SGMatrix.h>
-#include <shogun/io/MLDataHDF5File.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/mathematics/Math.h>
+#include <lib/config.h>
+#include <base/init.h>
+#include <lib/common.h>
+#include <lib/SGMatrix.h>
+#include <io/MLDataHDF5File.h>
+#include <io/SGIO.h>
+#include <mathematics/Math.h>
 
 using namespace shogun;
 

@@ -12,10 +12,10 @@
 #ifndef GAUSSIANARDKERNEL_H_
 #define GAUSSIANARDKERNEL_H_
 
-#include <shogun/lib/common.h>
-#include <shogun/kernel/DotKernel.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/kernel/LinearARDKernel.h>
+#include <lib/common.h>
+#include <kernel/DotKernel.h>
+#include <features/DenseFeatures.h>
+#include <kernel/LinearARDKernel.h>
 
 namespace shogun
 {

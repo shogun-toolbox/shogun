@@ -8,12 +8,12 @@
  * Copyright (C) 2010 Max-Planck-Society
  */
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
-#include <shogun/lib/common.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/distance/KernelDistance.h>
-#include <shogun/features/DenseFeatures.h>
+#include <lib/common.h>
+#include <io/SGIO.h>
+#include <distance/KernelDistance.h>
+#include <features/DenseFeatures.h>
 
 using namespace shogun;
 

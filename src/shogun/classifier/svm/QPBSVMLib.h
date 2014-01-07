@@ -18,11 +18,11 @@
 #include <math.h>
 #include <limits.h>
 
-#include <shogun/base/SGObject.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/lib/config.h>
-#include <shogun/lib/common.h>
-#include <shogun/kernel/Kernel.h>
+#include <base/SGObject.h>
+#include <io/SGIO.h>
+#include <lib/config.h>
+#include <lib/common.h>
+#include <kernel/Kernel.h>
 
 namespace shogun
 {

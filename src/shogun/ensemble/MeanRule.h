@@ -11,7 +11,7 @@
 #ifndef _MEAN_RULE_H_
 #define _MEAN_RULE_H_
 
-#include <shogun/ensemble/CombinationRule.h>
+#include <ensemble/CombinationRule.h>
 
 namespace shogun
 {

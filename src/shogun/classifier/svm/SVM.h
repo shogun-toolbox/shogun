@@ -11,10 +11,10 @@
 #ifndef _SVM_H___
 #define _SVM_H___
 
-#include <shogun/lib/common.h>
-#include <shogun/features/Features.h>
-#include <shogun/kernel/Kernel.h>
-#include <shogun/machine/KernelMachine.h>
+#include <lib/common.h>
+#include <features/Features.h>
+#include <kernel/Kernel.h>
+#include <machine/KernelMachine.h>
 
 namespace shogun
 {

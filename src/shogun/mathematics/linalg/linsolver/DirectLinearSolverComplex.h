@@ -10,10 +10,10 @@
 #ifndef DIRECT_LINEAR_SOLVER_COMPLEX_H_
 #define DIRECT_LINEAR_SOLVER_COMPLEX_H_
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
 #ifdef HAVE_EIGEN3
-#include <shogun/mathematics/linalg/linsolver/LinearSolver.h>
+#include <mathematics/linalg/linsolver/LinearSolver.h>
 
 namespace shogun
 {

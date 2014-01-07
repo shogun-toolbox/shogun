@@ -8,15 +8,15 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
 #ifndef ANOVAKERNEL_H_
 #define ANOVAKERNEL_H_
 
-#include <shogun/lib/common.h>
-#include <shogun/kernel/DotKernel.h>
-#include <shogun/features/Features.h>
-#include <shogun/features/DenseFeatures.h>
+#include <lib/common.h>
+#include <kernel/DotKernel.h>
+#include <features/Features.h>
+#include <features/DenseFeatures.h>
 
 namespace shogun
 {

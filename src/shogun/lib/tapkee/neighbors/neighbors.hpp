@@ -7,12 +7,12 @@
 #define TAPKEE_NEIGHBORS_H_
 
 /* Tapkee includes */
-#include <shogun/lib/tapkee/defines.hpp>
+#include <lib/tapkee/defines.hpp>
 #ifdef TAPKEE_USE_LGPL_COVERTREE
-	#include <shogun/lib/tapkee/neighbors/covertree.hpp>
+	#include <lib/tapkee/neighbors/covertree.hpp>
 #endif
-#include <shogun/lib/tapkee/neighbors/connected.hpp>
-#include <shogun/lib/tapkee/neighbors/vptree.hpp>
+#include <lib/tapkee/neighbors/connected.hpp>
+#include <lib/tapkee/neighbors/vptree.hpp>
 /* End of Tapkee includes */
 
 #include <vector>

@@ -11,11 +11,11 @@
 #ifndef _ONLINELINEARCLASSIFIER_H__
 #define _ONLINELINEARCLASSIFIER_H__
 
-#include <shogun/lib/common.h>
-#include <shogun/labels/Labels.h>
-#include <shogun/labels/RegressionLabels.h>
-#include <shogun/features/streaming/StreamingDotFeatures.h>
-#include <shogun/machine/Machine.h>
+#include <lib/common.h>
+#include <labels/Labels.h>
+#include <labels/RegressionLabels.h>
+#include <features/streaming/StreamingDotFeatures.h>
+#include <machine/Machine.h>
 
 #include <stdio.h>
 

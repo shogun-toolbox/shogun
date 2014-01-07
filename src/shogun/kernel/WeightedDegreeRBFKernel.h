@@ -1,9 +1,9 @@
 #ifndef _WEIGHTEDDEGREERBFKERNEL_H___
 #define _WEIGHTEDDEGREERBFKERNEL_H___
 
-#include <shogun/lib/common.h>
-#include <shogun/kernel/DotKernel.h>
-#include <shogun/features/DenseFeatures.h>
+#include <lib/common.h>
+#include <kernel/DotKernel.h>
+#include <features/DenseFeatures.h>
 
 namespace shogun
 {

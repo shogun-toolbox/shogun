@@ -10,8 +10,8 @@
 #ifndef MEANABSOLUTEERROR_H_
 #define MEANABSOLUTEERROR_H_
 
-#include <shogun/evaluation/Evaluation.h>
-#include <shogun/labels/Labels.h>
+#include <evaluation/Evaluation.h>
+#include <labels/Labels.h>
 
 namespace shogun
 {

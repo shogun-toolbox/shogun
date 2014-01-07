@@ -17,7 +17,7 @@
 #ifndef _SQUAREDLOSS_H__
 #define _SQUAREDLOSS_H__
 
-#include <shogun/loss/LossFunction.h>
+#include <loss/LossFunction.h>
 
 namespace shogun
 {

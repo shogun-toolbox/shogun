@@ -1,5 +1,5 @@
-#include <shogun/multiclass/MulticlassLibLinear.h>
-#include <shogun/features/DenseFeatures.h>
+#include <multiclass/MulticlassLibLinear.h>
+#include <features/DenseFeatures.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;

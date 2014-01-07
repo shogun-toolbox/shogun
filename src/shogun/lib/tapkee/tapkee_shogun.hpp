@@ -12,10 +12,10 @@
 
 #ifdef HAVE_EIGEN3
 
-#include <shogun/io/SGIO.h>
-#include <shogun/kernel/Kernel.h>
-#include <shogun/distance/Distance.h>
-#include <shogun/features/DenseFeatures.h>
+#include <io/SGIO.h>
+#include <kernel/Kernel.h>
+#include <distance/Distance.h>
+#include <features/DenseFeatures.h>
 
 using namespace shogun;
 

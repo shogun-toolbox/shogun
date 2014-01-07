@@ -12,7 +12,7 @@
 #ifndef MULTICLASSONEVSRESTSTRATEGY_H__
 #define MULTICLASSONEVSRESTSTRATEGY_H__
 
-#include <shogun/multiclass/MulticlassStrategy.h>
+#include <multiclass/MulticlassStrategy.h>
 
 namespace shogun
 {

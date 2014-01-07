@@ -8,10 +8,10 @@
  * Copyright (C) 2012 Chiyuan Zhang
  */
 
-#include <shogun/multiclass/MulticlassOneVsRestStrategy.h>
-#include <shogun/labels/BinaryLabels.h>
-#include <shogun/labels/MulticlassLabels.h>
-#include <shogun/mathematics/Math.h>
+#include <multiclass/MulticlassOneVsRestStrategy.h>
+#include <labels/BinaryLabels.h>
+#include <labels/MulticlassLabels.h>
+#include <mathematics/Math.h>
 
 using namespace shogun;
 

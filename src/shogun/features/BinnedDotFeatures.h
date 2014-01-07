@@ -10,9 +10,9 @@
 #ifndef _BINNED_DOTFEATURES_H___
 #define _BINNED_DOTFEATURES_H___
 
-#include <shogun/lib/common.h>
-#include <shogun/features/DotFeatures.h>
-#include <shogun/features/DenseFeatures.h>
+#include <lib/common.h>
+#include <features/DotFeatures.h>
+#include <features/DenseFeatures.h>
 
 namespace shogun
 {

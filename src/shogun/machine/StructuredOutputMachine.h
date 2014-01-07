@@ -12,12 +12,12 @@
 #ifndef _STRUCTURED_OUTPUT_MACHINE__H__
 #define _STRUCTURED_OUTPUT_MACHINE__H__
 
-#include <shogun/labels/StructuredLabels.h>
-#include <shogun/lib/StructuredData.h>
-#include <shogun/machine/Machine.h>
-#include <shogun/structure/StructuredModel.h>
-#include <shogun/loss/LossFunction.h>
-#include <shogun/structure/SOSVMHelper.h>
+#include <labels/StructuredLabels.h>
+#include <lib/StructuredData.h>
+#include <machine/Machine.h>
+#include <structure/StructuredModel.h>
+#include <loss/LossFunction.h>
+#include <structure/SOSVMHelper.h>
 
 namespace shogun
 {

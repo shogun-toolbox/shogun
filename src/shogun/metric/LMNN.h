@@ -11,16 +11,16 @@
 #ifndef LMNN_H_
 #define LMNN_H_
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
 #ifdef HAVE_EIGEN3
 #ifdef HAVE_LAPACK
 
-#include <shogun/base/SGObject.h>
-#include <shogun/distance/CustomMahalanobisDistance.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/labels/MulticlassLabels.h>
-#include <shogun/lib/SGMatrix.h>
+#include <base/SGObject.h>
+#include <distance/CustomMahalanobisDistance.h>
+#include <features/DenseFeatures.h>
+#include <labels/MulticlassLabels.h>
+#include <lib/SGMatrix.h>
 
 namespace shogun
 {

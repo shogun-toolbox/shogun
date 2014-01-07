@@ -8,8 +8,8 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include <shogun/evaluation/ContingencyTableEvaluation.h>
-#include <shogun/labels/BinaryLabels.h>
+#include <evaluation/ContingencyTableEvaluation.h>
+#include <labels/BinaryLabels.h>
 
 using namespace shogun;
 

@@ -9,8 +9,8 @@
  * Code adapted from CCombinedKernel
  */
 
-#include <shogun/kernel/ProductKernel.h>
-#include <shogun/kernel/CustomKernel.h>
+#include <kernel/ProductKernel.h>
+#include <kernel/CustomKernel.h>
 
 using namespace shogun;
 

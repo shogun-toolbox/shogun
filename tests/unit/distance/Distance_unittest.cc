@@ -12,9 +12,9 @@
 
 #include <gtest/gtest.h>
 
-#include <shogun/distance/CustomMahalanobisDistance.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/lib/SGMatrix.h>
+#include <distance/CustomMahalanobisDistance.h>
+#include <features/DenseFeatures.h>
+#include <lib/SGMatrix.h>
 
 using namespace shogun;
 

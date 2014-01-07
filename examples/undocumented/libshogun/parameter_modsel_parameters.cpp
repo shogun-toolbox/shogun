@@ -8,14 +8,14 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include <shogun/lib/config.h>
-#include <shogun/classifier/svm/LibSVM.h>
-#include <shogun/classifier/svm/LibLinear.h>
-#include <shogun/kernel/string/DistantSegmentsKernel.h>
-#include <shogun/kernel/GaussianKernel.h>
-#include <shogun/kernel/PowerKernel.h>
-#include <shogun/distance/MinkowskiMetric.h>
-#include <shogun/lib/SGStringList.h>
+#include <lib/config.h>
+#include <classifier/svm/LibSVM.h>
+#include <classifier/svm/LibLinear.h>
+#include <kernel/string/DistantSegmentsKernel.h>
+#include <kernel/GaussianKernel.h>
+#include <kernel/PowerKernel.h>
+#include <distance/MinkowskiMetric.h>
+#include <lib/SGStringList.h>
 
 using namespace shogun;
 

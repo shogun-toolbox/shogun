@@ -7,9 +7,9 @@
  * Copyright (C) 2012 Sergey Lisitsyn
  */
 
-#include <shogun/transfer/multitask/MultitaskLinearMachine.h>
-#include <shogun/lib/slep/slep_solver.h>
-#include <shogun/lib/slep/slep_options.h>
+#include <transfer/multitask/MultitaskLinearMachine.h>
+#include <lib/slep/slep_solver.h>
+#include <lib/slep/slep_options.h>
 
 #include <map>
 #include <vector>

@@ -7,8 +7,8 @@
  * Written (C) 2013 Soeren Sonnenburg
  */
 
-#include <shogun/mathematics/Math.h>
-#include <shogun/preprocessor/LogPlusOne.h>
+#include <mathematics/Math.h>
+#include <preprocessor/LogPlusOne.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;

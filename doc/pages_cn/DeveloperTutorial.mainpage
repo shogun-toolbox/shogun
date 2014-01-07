@@ -145,7 +145,7 @@ src/modular/Kernel.i)。你可以很容易找到一个类似的对象然后像�
 
 \verbatim
 %{
-#include <shogun/kernel/ReverseLinearKernel.h>
+#include <kernel/ReverseLinearKernel.h>
 %}
 \endverbatim
 

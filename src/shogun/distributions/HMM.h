@@ -12,13 +12,13 @@
 #ifndef __CHMM_H__
 #define __CHMM_H__
 
-#include <shogun/mathematics/Math.h>
-#include <shogun/lib/common.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/lib/config.h>
-#include <shogun/features/Features.h>
-#include <shogun/features/StringFeatures.h>
-#include <shogun/distributions/Distribution.h>
+#include <mathematics/Math.h>
+#include <lib/common.h>
+#include <io/SGIO.h>
+#include <lib/config.h>
+#include <features/Features.h>
+#include <features/StringFeatures.h>
+#include <distributions/Distribution.h>
 
 #include <stdio.h>
 

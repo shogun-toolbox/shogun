@@ -7,7 +7,7 @@
  * Written (W) 2013 Soumyajit De
  */
 
-#include <shogun/lib/common.h>
+#include <lib/common.h>
 
 #ifdef HAVE_COLPACK
 #ifdef HAVE_EIGEN3
@@ -15,13 +15,13 @@
 #include <vector>
 #include <string>
 #include <cstring>
-#include <shogun/lib/SGVector.h>
-#include <shogun/lib/SGString.h>
-#include <shogun/base/Parameter.h>
-#include <shogun/mathematics/eigen3.h>
-#include <shogun/mathematics/Random.h>
-#include <shogun/mathematics/linalg/linop/SparseMatrixOperator.h>
-#include <shogun/mathematics/linalg/ratapprox/tracesampler/ProbingSampler.h>
+#include <lib/SGVector.h>
+#include <lib/SGString.h>
+#include <base/Parameter.h>
+#include <mathematics/eigen3.h>
+#include <mathematics/Random.h>
+#include <mathematics/linalg/linop/SparseMatrixOperator.h>
+#include <mathematics/linalg/ratapprox/tracesampler/ProbingSampler.h>
 #include <ColPack/ColPackHeaders.h>
 
 using namespace Eigen;

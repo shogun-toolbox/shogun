@@ -12,8 +12,8 @@
 #ifndef _DOTFEATURES_H___
 #define _DOTFEATURES_H___
 
-#include <shogun/lib/common.h>
-#include <shogun/features/Features.h>
+#include <lib/common.h>
+#include <features/Features.h>
 
 namespace shogun
 {

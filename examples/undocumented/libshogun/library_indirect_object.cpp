@@ -1,9 +1,9 @@
-#include <shogun/base/init.h>
-#include <shogun/lib/common.h>
-#include <shogun/lib/memory.h>
-#include <shogun/lib/IndirectObject.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/base/SGObject.h>
+#include <base/init.h>
+#include <lib/common.h>
+#include <lib/memory.h>
+#include <lib/IndirectObject.h>
+#include <mathematics/Math.h>
+#include <base/SGObject.h>
 
 #include <stdio.h>
 

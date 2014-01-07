@@ -8,11 +8,11 @@
  * Copyright (C) 2007-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/lib/common.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/distance/SparseEuclideanDistance.h>
-#include <shogun/features/Features.h>
-#include <shogun/features/SparseFeatures.h>
+#include <lib/common.h>
+#include <io/SGIO.h>
+#include <distance/SparseEuclideanDistance.h>
+#include <features/Features.h>
+#include <features/SparseFeatures.h>
 
 using namespace shogun;
 

@@ -8,26 +8,26 @@
  * Copyright (C) 2012 Sergey Lisitsyn
  */
 
-#include <shogun/ui/GUIConverter.h>
-#include <shogun/ui/SGInterface.h>
+#include <ui/GUIConverter.h>
+#include <ui/SGInterface.h>
 
-#include <shogun/lib/config.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/kernel/GaussianKernel.h>
+#include <lib/config.h>
+#include <io/SGIO.h>
+#include <features/DenseFeatures.h>
+#include <kernel/GaussianKernel.h>
 
-#include <shogun/converter/LocallyLinearEmbedding.h>
-#include <shogun/converter/HessianLocallyLinearEmbedding.h>
-#include <shogun/converter/LocalTangentSpaceAlignment.h>
-#include <shogun/converter/NeighborhoodPreservingEmbedding.h>
-#include <shogun/converter/LaplacianEigenmaps.h>
-#include <shogun/converter/LocalityPreservingProjections.h>
-#include <shogun/converter/DiffusionMaps.h>
-#include <shogun/converter/LinearLocalTangentSpaceAlignment.h>
-#include <shogun/converter/MultidimensionalScaling.h>
-#include <shogun/converter/Isomap.h>
-#include <shogun/converter/EmbeddingConverter.h>
-#include <shogun/converter/ica/Jade.h>
+#include <converter/LocallyLinearEmbedding.h>
+#include <converter/HessianLocallyLinearEmbedding.h>
+#include <converter/LocalTangentSpaceAlignment.h>
+#include <converter/NeighborhoodPreservingEmbedding.h>
+#include <converter/LaplacianEigenmaps.h>
+#include <converter/LocalityPreservingProjections.h>
+#include <converter/DiffusionMaps.h>
+#include <converter/LinearLocalTangentSpaceAlignment.h>
+#include <converter/MultidimensionalScaling.h>
+#include <converter/Isomap.h>
+#include <converter/EmbeddingConverter.h>
+#include <converter/ica/Jade.h>
 
 using namespace shogun;
 

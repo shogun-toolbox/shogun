@@ -10,15 +10,15 @@
 #ifndef __STREAMING_FILE_H__
 #define __STREAMING_FILE_H__
 
-#include <shogun/lib/config.h>
-#include <shogun/base/DynArray.h>
-#include <shogun/lib/common.h>
-#include <shogun/io/File.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/lib/DataType.h>
-#include <shogun/lib/SGSparseVector.h>
-#include <shogun/io/IOBuffer.h>
-#include <shogun/classifier/vw/vw_common.h>
+#include <lib/config.h>
+#include <base/DynArray.h>
+#include <lib/common.h>
+#include <io/File.h>
+#include <io/SGIO.h>
+#include <lib/DataType.h>
+#include <lib/SGSparseVector.h>
+#include <io/IOBuffer.h>
+#include <classifier/vw/vw_common.h>
 
 #include <ctype.h>
 #include <fcntl.h>

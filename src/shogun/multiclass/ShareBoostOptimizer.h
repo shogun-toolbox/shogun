@@ -11,7 +11,7 @@
 #ifndef SHAREBOOSTOPTIMIZER_H__
 #define SHAREBOOSTOPTIMIZER_H__
 
-#include <shogun/multiclass/ShareBoost.h>
+#include <multiclass/ShareBoost.h>
 
 namespace shogun
 {

@@ -1,43 +1,43 @@
 %{
- #include <shogun/structure/PlifBase.h>
- #include <shogun/structure/Plif.h>
- #include <shogun/structure/PlifArray.h>
- #include <shogun/structure/DynProg.h>
- #include <shogun/structure/PlifMatrix.h>
- #include <shogun/structure/IntronList.h>
- #include <shogun/structure/SegmentLoss.h>
+ #include <structure/PlifBase.h>
+ #include <structure/Plif.h>
+ #include <structure/PlifArray.h>
+ #include <structure/DynProg.h>
+ #include <structure/PlifMatrix.h>
+ #include <structure/IntronList.h>
+ #include <structure/SegmentLoss.h>
 
- #include <shogun/structure/BmrmStatistics.h>
- #include <shogun/structure/StructuredModel.h>
- #include <shogun/structure/MulticlassModel.h>
- #include <shogun/structure/MulticlassSOLabels.h>
- #include <shogun/structure/HMSVMModel.h>
- #include <shogun/structure/SequenceLabels.h>
- #include <shogun/structure/StateModelTypes.h>
- #include <shogun/structure/StateModel.h>
- #include <shogun/structure/TwoStateModel.h>
- #include <shogun/structure/DirectorStructuredModel.h>
+ #include <structure/BmrmStatistics.h>
+ #include <structure/StructuredModel.h>
+ #include <structure/MulticlassModel.h>
+ #include <structure/MulticlassSOLabels.h>
+ #include <structure/HMSVMModel.h>
+ #include <structure/SequenceLabels.h>
+ #include <structure/StateModelTypes.h>
+ #include <structure/StateModel.h>
+ #include <structure/TwoStateModel.h>
+ #include <structure/DirectorStructuredModel.h>
 
- #include <shogun/structure/FactorType.h>
- #include <shogun/structure/Factor.h>
- #include <shogun/structure/DisjointSet.h>
- #include <shogun/structure/FactorGraph.h>
- #include <shogun/features/FactorGraphFeatures.h>
- #include <shogun/labels/FactorGraphLabels.h>
- #include <shogun/structure/MAPInference.h>
- #include <shogun/structure/FactorGraphModel.h>
+ #include <structure/FactorType.h>
+ #include <structure/Factor.h>
+ #include <structure/DisjointSet.h>
+ #include <structure/FactorGraph.h>
+ #include <features/FactorGraphFeatures.h>
+ #include <labels/FactorGraphLabels.h>
+ #include <structure/MAPInference.h>
+ #include <structure/FactorGraphModel.h>
 
- #include <shogun/structure/SOSVMHelper.h>
- #include <shogun/machine/StructuredOutputMachine.h>
- #include <shogun/machine/LinearStructuredOutputMachine.h>
- #include <shogun/machine/KernelStructuredOutputMachine.h>
+ #include <structure/SOSVMHelper.h>
+ #include <machine/StructuredOutputMachine.h>
+ #include <machine/LinearStructuredOutputMachine.h>
+ #include <machine/KernelStructuredOutputMachine.h>
 
- #include <shogun/structure/DualLibQPBMSOSVM.h>
+ #include <structure/DualLibQPBMSOSVM.h>
 
 #ifdef USE_MOSEK
- #include <shogun/structure/PrimalMosekSOSVM.h>
+ #include <structure/PrimalMosekSOSVM.h>
 #endif /* USE_MOSEK */
 
- #include <shogun/structure/StochasticSOSVM.h>
+ #include <structure/StochasticSOSVM.h>
 %}
 

@@ -7,22 +7,22 @@
  * Written (W) 2013 Roman Votyakov
  */
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
 // Eigen3 is required for working with this example
 #ifdef HAVE_EIGEN3
 
-#include <shogun/base/init.h>
-#include <shogun/labels/BinaryLabels.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/kernel/GaussianKernel.h>
-#include <shogun/machine/gp/LaplacianInferenceMethod.h>
-#include <shogun/machine/gp/EPInferenceMethod.h>
-#include <shogun/machine/gp/ZeroMean.h>
-#include <shogun/machine/gp/LogitLikelihood.h>
-#include <shogun/machine/gp/ProbitLikelihood.h>
-#include <shogun/classifier/GaussianProcessBinaryClassification.h>
-#include <shogun/io/CSVFile.h>
+#include <base/init.h>
+#include <labels/BinaryLabels.h>
+#include <features/DenseFeatures.h>
+#include <kernel/GaussianKernel.h>
+#include <machine/gp/LaplacianInferenceMethod.h>
+#include <machine/gp/EPInferenceMethod.h>
+#include <machine/gp/ZeroMean.h>
+#include <machine/gp/LogitLikelihood.h>
+#include <machine/gp/ProbitLikelihood.h>
+#include <classifier/GaussianProcessBinaryClassification.h>
+#include <io/CSVFile.h>
 
 using namespace shogun;
 

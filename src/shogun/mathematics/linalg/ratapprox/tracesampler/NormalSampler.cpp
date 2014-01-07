@@ -7,10 +7,10 @@
  * Written (W) 2013 Soumyajit De
  */
 
-#include <shogun/lib/common.h>
-#include <shogun/lib/SGVector.h>
-#include <shogun/mathematics/Random.h>
-#include <shogun/mathematics/linalg/ratapprox/tracesampler/NormalSampler.h>
+#include <lib/common.h>
+#include <lib/SGVector.h>
+#include <mathematics/Random.h>
+#include <mathematics/linalg/ratapprox/tracesampler/NormalSampler.h>
 
 namespace shogun
 {

@@ -8,12 +8,12 @@
  * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/ui/GUIMath.h>
-#include <shogun/ui/SGInterface.h>
+#include <ui/GUIMath.h>
+#include <ui/SGInterface.h>
 
-#include <shogun/lib/config.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/mathematics/Math.h>
+#include <lib/config.h>
+#include <io/SGIO.h>
+#include <mathematics/Math.h>
 
 using namespace shogun;
 

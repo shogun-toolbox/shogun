@@ -8,8 +8,8 @@
  * Copyright (C) 2008 Chun-Nam Yu
  */
 
-#include <shogun/structure/CCSOSVM.h>
-#include <shogun/mathematics/Mosek.h>
+#include <structure/CCSOSVM.h>
+#include <mathematics/Mosek.h>
 
 using namespace shogun;
 

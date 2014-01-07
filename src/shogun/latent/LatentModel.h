@@ -11,10 +11,10 @@
 #ifndef __LATENTMODEL_H__
 #define __LATENTMODEL_H__
 
-#include <shogun/labels/LatentLabels.h>
-#include <shogun/features/LatentFeatures.h>
-#include <shogun/features/DotFeatures.h>
-#include <shogun/features/DenseFeatures.h>
+#include <labels/LatentLabels.h>
+#include <features/LatentFeatures.h>
+#include <features/DotFeatures.h>
+#include <features/DenseFeatures.h>
 
 namespace shogun
 {

@@ -11,10 +11,10 @@
 #ifndef _DENSEPREPROCESSOR__H__
 #define _DENSEPREPROCESSOR__H__
 
-#include <shogun/features/Features.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/lib/common.h>
-#include <shogun/preprocessor/Preprocessor.h>
+#include <features/Features.h>
+#include <features/DenseFeatures.h>
+#include <lib/common.h>
+#include <preprocessor/Preprocessor.h>
 
 namespace shogun
 {

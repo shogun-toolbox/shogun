@@ -1,5 +1,5 @@
 #include <gmock/gmock.h>
-#include <shogun/features/Features.h>
+#include <features/Features.h>
 
 namespace shogun {
 

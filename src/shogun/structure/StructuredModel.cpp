@@ -9,7 +9,7 @@
  * Copyright (C) 2012 Fernando José Iglesias García
  */
 
-#include <shogun/structure/StructuredModel.h>
+#include <structure/StructuredModel.h>
 
 using namespace shogun;
 

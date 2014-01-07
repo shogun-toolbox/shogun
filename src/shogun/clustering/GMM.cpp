@@ -7,18 +7,18 @@
  * Written (W) 2011 Alesis Novik
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
 #ifdef HAVE_LAPACK
 
-#include <shogun/clustering/GMM.h>
-#include <shogun/clustering/KMeans.h>
-#include <shogun/distance/EuclideanDistance.h>
-#include <shogun/base/Parameter.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/mathematics/lapack.h>
-#include <shogun/labels/MulticlassLabels.h>
-#include <shogun/multiclass/KNN.h>
+#include <clustering/GMM.h>
+#include <clustering/KMeans.h>
+#include <distance/EuclideanDistance.h>
+#include <base/Parameter.h>
+#include <mathematics/Math.h>
+#include <mathematics/lapack.h>
+#include <labels/MulticlassLabels.h>
+#include <multiclass/KNN.h>
 
 #include <vector>
 

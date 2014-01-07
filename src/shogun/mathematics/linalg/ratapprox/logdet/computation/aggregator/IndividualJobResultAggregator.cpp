@@ -7,15 +7,15 @@
  * Written (W) 2013 Soumyajit De
  */
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
 #ifdef HAVE_EIGEN3
-#include <shogun/lib/SGVector.h>
-#include <shogun/lib/computation/jobresult/ScalarResult.h>
-#include <shogun/base/Parameter.h>
-#include <shogun/mathematics/eigen3.h>
-#include <shogun/mathematics/linalg/linop/LinearOperator.h>
-#include <shogun/mathematics/linalg/ratapprox/logdet/computation/aggregator/IndividualJobResultAggregator.h>
+#include <lib/SGVector.h>
+#include <lib/computation/jobresult/ScalarResult.h>
+#include <base/Parameter.h>
+#include <mathematics/eigen3.h>
+#include <mathematics/linalg/linop/LinearOperator.h>
+#include <mathematics/linalg/ratapprox/logdet/computation/aggregator/IndividualJobResultAggregator.h>
 
 using namespace Eigen;
 

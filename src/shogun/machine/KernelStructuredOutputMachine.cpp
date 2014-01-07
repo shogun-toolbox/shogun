@@ -8,7 +8,7 @@
  * Copyright (C) 2012 Fernando José Iglesias García
  */
 
-#include <shogun/machine/KernelStructuredOutputMachine.h>
+#include <machine/KernelStructuredOutputMachine.h>
 
 using namespace shogun;
 

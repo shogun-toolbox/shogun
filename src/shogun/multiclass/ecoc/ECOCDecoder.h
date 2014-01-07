@@ -11,9 +11,9 @@
 #ifndef ECOCDECODER_H__
 #define ECOCDECODER_H__
 
-#include <shogun/base/SGObject.h>
-#include <shogun/lib/SGMatrix.h>
-#include <shogun/lib/SGVector.h>
+#include <base/SGObject.h>
+#include <lib/SGMatrix.h>
+#include <lib/SGVector.h>
 
 namespace shogun
 {

@@ -7,19 +7,19 @@
  * Written (W) 2013 Heiko Strathmann
  */
 
-#include <shogun/base/init.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/labels/MulticlassLabels.h>
-#include <shogun/evaluation/CrossValidation.h>
-#include <shogun/evaluation/StratifiedCrossValidationSplitting.h>
-#include <shogun/evaluation/MulticlassAccuracy.h>
-#include <shogun/modelselection/ModelSelection.h>
-#include <shogun/modelselection/ModelSelectionParameters.h>
-#include <shogun/modelselection/ParameterCombination.h>
-#include <shogun/kernel/GaussianKernel.h>
-#include <shogun/multiclass/MulticlassLibSVM.h>
-#include <shogun/modelselection/GridSearchModelSelection.h>
-#include <shogun/mathematics/Math.h>
+#include <base/init.h>
+#include <features/DenseFeatures.h>
+#include <labels/MulticlassLabels.h>
+#include <evaluation/CrossValidation.h>
+#include <evaluation/StratifiedCrossValidationSplitting.h>
+#include <evaluation/MulticlassAccuracy.h>
+#include <modelselection/ModelSelection.h>
+#include <modelselection/ModelSelectionParameters.h>
+#include <modelselection/ParameterCombination.h>
+#include <kernel/GaussianKernel.h>
+#include <multiclass/MulticlassLibSVM.h>
+#include <modelselection/GridSearchModelSelection.h>
+#include <mathematics/Math.h>
 
 using namespace shogun;
 

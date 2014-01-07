@@ -7,10 +7,10 @@
 #define TAPKEE_DEFINES_H_
 
 /* Tapkee includes */
-#include <shogun/lib/tapkee/exceptions.hpp>
-#include <shogun/lib/tapkee/parameters/parameters.hpp>
-#include <shogun/lib/tapkee/traits/callbacks_traits.hpp>
-#include <shogun/lib/tapkee/traits/methods_traits.hpp>
+#include <lib/tapkee/exceptions.hpp>
+#include <lib/tapkee/parameters/parameters.hpp>
+#include <lib/tapkee/traits/callbacks_traits.hpp>
+#include <lib/tapkee/traits/methods_traits.hpp>
 /* End of Tapkee includes */
 
 #include <string>
@@ -20,14 +20,14 @@
 #define TAPKEE_MINOR_VERSION 0
 
 /* Tapkee includes */
-#include <shogun/lib/tapkee/defines/eigen3.hpp>
-#include <shogun/lib/tapkee/defines/types.hpp>
-#include <shogun/lib/tapkee/defines/methods.hpp>
-#include <shogun/lib/tapkee/defines/keywords.hpp>
-#include <shogun/lib/tapkee/defines/stdtypes.hpp>
-#include <shogun/lib/tapkee/defines/synonyms.hpp>
-#include <shogun/lib/tapkee/defines/random.hpp>
-#include <shogun/lib/tapkee/projection.hpp>
+#include <lib/tapkee/defines/eigen3.hpp>
+#include <lib/tapkee/defines/types.hpp>
+#include <lib/tapkee/defines/methods.hpp>
+#include <lib/tapkee/defines/keywords.hpp>
+#include <lib/tapkee/defines/stdtypes.hpp>
+#include <lib/tapkee/defines/synonyms.hpp>
+#include <lib/tapkee/defines/random.hpp>
+#include <lib/tapkee/projection.hpp>
 /* End of Tapkee includes */
 
 #ifdef TAPKEE_CUSTOM_PROPERTIES

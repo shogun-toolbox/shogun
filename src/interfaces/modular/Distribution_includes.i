@@ -1,14 +1,14 @@
 %{
-#include <shogun/distributions/Distribution.h>
-#include <shogun/distributions/Histogram.h>
-#include <shogun/distributions/HMM.h>
-#include <shogun/distributions/GHMM.h>
-#include <shogun/distributions/LinearHMM.h>
-#include <shogun/distributions/PositionalPWM.h>
-#include <shogun/distributions/Gaussian.h>
-#include <shogun/clustering/GMM.h>
+#include <distributions/Distribution.h>
+#include <distributions/Histogram.h>
+#include <distributions/HMM.h>
+#include <distributions/GHMM.h>
+#include <distributions/LinearHMM.h>
+#include <distributions/PositionalPWM.h>
+#include <distributions/Gaussian.h>
+#include <clustering/GMM.h>
 #ifdef HAVE_EIGEN3
-#include <shogun/distributions/classical/ProbabilityDistribution.h>
-#include <shogun/distributions/classical/GaussianDistribution.h>
+#include <distributions/classical/ProbabilityDistribution.h>
+#include <distributions/classical/GaussianDistribution.h>
 #endif // HAVE_EIGEN3
 %}

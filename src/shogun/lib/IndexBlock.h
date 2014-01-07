@@ -10,8 +10,8 @@
 #ifndef INDEXBLOCK_H_
 #define INDEXBLOCK_H_
 
-#include <shogun/lib/SGVector.h>
-#include <shogun/lib/List.h>
+#include <lib/SGVector.h>
+#include <lib/List.h>
 
 namespace shogun
 {

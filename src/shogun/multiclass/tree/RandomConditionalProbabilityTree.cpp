@@ -8,8 +8,8 @@
  * Copyright (C) 2012 Chiyuan Zhang
  */
 
-#include <shogun/mathematics/Math.h>
-#include <shogun/multiclass/tree/RandomConditionalProbabilityTree.h>
+#include <mathematics/Math.h>
+#include <multiclass/tree/RandomConditionalProbabilityTree.h>
 
 using namespace shogun;
 

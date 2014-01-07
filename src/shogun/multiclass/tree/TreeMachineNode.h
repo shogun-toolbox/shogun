@@ -11,8 +11,8 @@
 #ifndef TREEMACHINENODE_H__
 #define TREEMACHINENODE_H__
 
-#include <shogun/base/SGObject.h>
-#include <shogun/base/Parameter.h>
+#include <base/SGObject.h>
+#include <base/Parameter.h>
 
 namespace shogun
 {

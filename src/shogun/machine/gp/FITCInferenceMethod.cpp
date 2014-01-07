@@ -12,14 +12,14 @@
  * http://www.gaussianprocess.org/gpml/code/matlab/doc/
  */
 
-#include <shogun/machine/gp/FITCInferenceMethod.h>
+#include <machine/gp/FITCInferenceMethod.h>
 
 #ifdef HAVE_EIGEN3
 
-#include <shogun/machine/gp/GaussianLikelihood.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/labels/RegressionLabels.h>
-#include <shogun/mathematics/eigen3.h>
+#include <machine/gp/GaussianLikelihood.h>
+#include <mathematics/Math.h>
+#include <labels/RegressionLabels.h>
+#include <mathematics/eigen3.h>
 
 using namespace shogun;
 using namespace Eigen;

@@ -1,5 +1,8 @@
 include(CommonModularInterface)
-include_directories(${PYTHON_INCLUDE_PATH} ${NUMPY_INCLUDE_DIRS})
+include_directories(${CMAKE_SOURCE_DIR}/src/shogun
+		${CMAKE_BINARY_DIR}/src/shogun
+		${PYTHON_INCLUDE_PATH}
+		${NUMPY_INCLUDE_DIRS})
 
 #TODO: check for SWIG version where this bug has been applied already:
 # https://github.com/swig/swig/pull/70

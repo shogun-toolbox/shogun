@@ -8,18 +8,18 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
 #ifdef USE_SVMLIGHT
 
-#include <shogun/io/SGIO.h>
-#include <shogun/mathematics/lapack.h>
-#include <shogun/lib/Signal.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/regression/svr/SVRLight.h>
-#include <shogun/machine/KernelMachine.h>
-#include <shogun/kernel/CombinedKernel.h>
-#include <shogun/labels/RegressionLabels.h>
+#include <io/SGIO.h>
+#include <mathematics/lapack.h>
+#include <lib/Signal.h>
+#include <mathematics/Math.h>
+#include <regression/svr/SVRLight.h>
+#include <machine/KernelMachine.h>
+#include <kernel/CombinedKernel.h>
+#include <labels/RegressionLabels.h>
 
 #include <unistd.h>
 
@@ -29,7 +29,7 @@ extern "C" {
 }
 #endif
 
-#include <shogun/base/Parallel.h>
+#include <base/Parallel.h>
 
 #ifdef HAVE_PTHREAD
 #include <pthread.h>

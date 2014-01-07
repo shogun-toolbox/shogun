@@ -8,12 +8,12 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include <shogun/converter/DiffusionMaps.h>
-#include <shogun/converter/EmbeddingConverter.h>
-#include <shogun/lib/config.h>
+#include <converter/DiffusionMaps.h>
+#include <converter/EmbeddingConverter.h>
+#include <lib/config.h>
 #ifdef HAVE_EIGEN3
-#include <shogun/distance/EuclideanDistance.h>
-#include <shogun/lib/tapkee/tapkee_shogun.hpp>
+#include <distance/EuclideanDistance.h>
+#include <lib/tapkee/tapkee_shogun.hpp>
 
 using namespace shogun;
 

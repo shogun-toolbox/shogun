@@ -12,9 +12,9 @@
 #define mxIsLogicalScalarTrue(x) false
 #endif
 
-#include <shogun/ui/SGInterface.h>
-#include <shogun/lib/config.h>
-#include <shogun/features/StringFeatures.h>
+#include <ui/SGInterface.h>
+#include <lib/config.h>
+#include <features/StringFeatures.h>
 
 using namespace shogun;
 

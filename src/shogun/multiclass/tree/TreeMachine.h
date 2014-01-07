@@ -11,8 +11,8 @@
 #ifndef TREEMACHINE_H__
 #define TREEMACHINE_H__
 
-#include <shogun/machine/BaseMulticlassMachine.h>
-#include <shogun/multiclass/tree/TreeMachineNode.h>
+#include <machine/BaseMulticlassMachine.h>
+#include <multiclass/tree/TreeMachineNode.h>
 
 namespace shogun
 {

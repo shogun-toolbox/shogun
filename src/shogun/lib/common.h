@@ -17,7 +17,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
 /**@name Standard Types
  * Definition of Platform independent Types
@@ -64,5 +64,5 @@ typedef int32_t index_t;
 
 typedef std::complex<float64_t> complex128_t;
 
-#include <shogun/lib/memory.h>
+#include <lib/memory.h>
 #endif //__COMMON_H__

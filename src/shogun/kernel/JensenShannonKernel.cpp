@@ -8,10 +8,10 @@
  * Copyright (C) 2012 Viktor Gal
  */
 
-#include <shogun/lib/common.h>
-#include <shogun/kernel/JensenShannonKernel.h>
-#include <shogun/features/Features.h>
-#include <shogun/io/SGIO.h>
+#include <lib/common.h>
+#include <kernel/JensenShannonKernel.h>
+#include <features/Features.h>
+#include <io/SGIO.h>
 
 using namespace shogun;
 

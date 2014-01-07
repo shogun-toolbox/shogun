@@ -1,7 +1,7 @@
-#include <shogun/lib/SGSparseVector.h>
-#include <shogun/lib/SGVector.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/io/File.h>
+#include <lib/SGSparseVector.h>
+#include <lib/SGVector.h>
+#include <mathematics/Math.h>
+#include <io/File.h>
 
 namespace shogun {
 

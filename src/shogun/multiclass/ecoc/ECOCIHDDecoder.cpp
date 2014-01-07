@@ -8,14 +8,14 @@
  * Copyright (C) 2012 Chiyuan Zhang
  */
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
 #ifdef HAVE_LAPACK
 
-#include <shogun/multiclass/ecoc/ECOCIHDDecoder.h>
-#include <shogun/multiclass/ecoc/ECOCUtil.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/mathematics/lapack.h>
+#include <multiclass/ecoc/ECOCIHDDecoder.h>
+#include <multiclass/ecoc/ECOCUtil.h>
+#include <mathematics/Math.h>
+#include <mathematics/lapack.h>
 
 using namespace shogun;
 

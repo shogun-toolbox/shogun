@@ -10,10 +10,10 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/labels/Labels.h>
-#include <shogun/lib/common.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/base/Parameter.h>
+#include <labels/Labels.h>
+#include <lib/common.h>
+#include <io/SGIO.h>
+#include <base/Parameter.h>
 
 using namespace shogun;
 

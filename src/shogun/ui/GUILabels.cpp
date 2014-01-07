@@ -8,16 +8,16 @@
  * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/ui/GUILabels.h>
-#include <shogun/ui/SGInterface.h>
+#include <ui/GUILabels.h>
+#include <ui/SGInterface.h>
 
-#include <shogun/lib/config.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/io/CSVFile.h>
-#include <shogun/labels/Labels.h>
-#include <shogun/labels/BinaryLabels.h>
-#include <shogun/labels/MulticlassLabels.h>
-#include <shogun/labels/RegressionLabels.h>
+#include <lib/config.h>
+#include <io/SGIO.h>
+#include <io/CSVFile.h>
+#include <labels/Labels.h>
+#include <labels/BinaryLabels.h>
+#include <labels/MulticlassLabels.h>
+#include <labels/RegressionLabels.h>
 
 #include <string.h>
 

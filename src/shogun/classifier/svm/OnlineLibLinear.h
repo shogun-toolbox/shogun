@@ -14,12 +14,12 @@
 #ifndef _ONLINELIBLINEAR_H__
 #define _ONLINELIBLINEAR_H__
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
-#include <shogun/lib/SGVector.h>
-#include <shogun/lib/common.h>
-#include <shogun/base/Parameter.h>
-#include <shogun/machine/OnlineLinearMachine.h>
+#include <lib/SGVector.h>
+#include <lib/common.h>
+#include <base/Parameter.h>
+#include <machine/OnlineLinearMachine.h>
 
 namespace shogun
 {

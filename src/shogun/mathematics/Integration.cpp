@@ -15,11 +15,11 @@
  * http://www.gnu.org/software/octave/
  */
 
-#include <shogun/mathematics/Integration.h>
+#include <mathematics/Integration.h>
 
 #ifdef HAVE_EIGEN3
 
-#include <shogun/mathematics/eigen3.h>
+#include <mathematics/eigen3.h>
 
 using namespace shogun;
 using namespace Eigen;

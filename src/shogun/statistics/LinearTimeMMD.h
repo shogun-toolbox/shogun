@@ -10,9 +10,9 @@
 #ifndef __LINEARTIMEMMD_H_
 #define __LINEARTIMEMMD_H_
 
-#include <shogun/statistics/KernelTwoSampleTestStatistic.h>
-#include <shogun/kernel/Kernel.h>
-#include <shogun/lib/external/libqp.h>
+#include <statistics/KernelTwoSampleTestStatistic.h>
+#include <kernel/Kernel.h>
+#include <lib/external/libqp.h>
 
 namespace shogun
 {

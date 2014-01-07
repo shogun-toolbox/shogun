@@ -1,4 +1,4 @@
-#include <shogun/latent/DirectorLatentModel.h>
+#include <latent/DirectorLatentModel.h>
 
 #ifdef USE_SWIG_DIRECTORS
 

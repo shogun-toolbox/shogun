@@ -7,10 +7,10 @@
  * Written (C) 2013 Soeren Sonnenburg
  */
 
-#include <shogun/mathematics/Math.h>
-#include <shogun/preprocessor/LogPlusOne.h>
-#include <shogun/preprocessor/SumOne.h>
-#include <shogun/lib/SGVector.h>
+#include <mathematics/Math.h>
+#include <preprocessor/LogPlusOne.h>
+#include <preprocessor/SumOne.h>
+#include <lib/SGVector.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;

@@ -8,14 +8,14 @@
  * Copyright (C) 2006-2009 Fraunhofer Institute FIRST
  */
 
-#include <shogun/lib/config.h>
-#include <shogun/lib/common.h>
-#include <shogun/io/SGIO.h>
+#include <lib/config.h>
+#include <lib/common.h>
+#include <io/SGIO.h>
 
-#include <shogun/base/Parameter.h>
+#include <base/Parameter.h>
 
-#include <shogun/distance/MinkowskiMetric.h>
-#include <shogun/features/Features.h>
+#include <distance/MinkowskiMetric.h>
+#include <features/Features.h>
 
 using namespace shogun;
 

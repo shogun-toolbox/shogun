@@ -8,14 +8,14 @@
  * Copyright (C) 2008-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/lib/config.h>
-#include <shogun/lib/ShogunException.h>
-#include <shogun/lib/common.h>
-#include <shogun/lib/Map.h>
-#include <shogun/lib/SGVector.h>
-#include <shogun/lib/SGSparseVector.h>
-#include <shogun/lib/SGMatrix.h>
-#include <shogun/base/SGObject.h>
+#include <lib/config.h>
+#include <lib/ShogunException.h>
+#include <lib/common.h>
+#include <lib/Map.h>
+#include <lib/SGVector.h>
+#include <lib/SGSparseVector.h>
+#include <lib/SGMatrix.h>
+#include <base/SGObject.h>
 
 #include <string.h>
 

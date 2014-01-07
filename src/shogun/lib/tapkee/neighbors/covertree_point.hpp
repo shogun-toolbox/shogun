@@ -12,7 +12,7 @@
 #define _JL_COVERTREE_POINT_H_
 
 /* Tapkee includes */
-#include <shogun/lib/tapkee/defines.hpp>
+#include <lib/tapkee/defines.hpp>
 /* End of Tapkee includes */
 
 #include <iostream>

@@ -10,10 +10,10 @@
 #ifndef CG_M_SHIFTED_FAMILY_SOLVER_H_
 #define CG_M_SHIFTED_FAMILY_SOLVER_H_
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
 #ifdef HAVE_EIGEN3
-#include <shogun/mathematics/linalg/linsolver/IterativeShiftedLinearFamilySolver.h>
+#include <mathematics/linalg/linsolver/IterativeShiftedLinearFamilySolver.h>
 
 namespace shogun
 {

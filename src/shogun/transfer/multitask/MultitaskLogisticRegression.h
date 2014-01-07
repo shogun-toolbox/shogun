@@ -10,12 +10,12 @@
 #ifndef  MULTITASKLOGISTICREGRESSION_H_
 #define  MULTITASKLOGISTICREGRESSION_H_
 
-#include <shogun/lib/config.h>
-#include <shogun/transfer/multitask/MultitaskLinearMachine.h>
-#include <shogun/transfer/multitask/TaskRelation.h>
-#include <shogun/transfer/multitask/TaskGroup.h>
-#include <shogun/transfer/multitask/TaskTree.h>
-#include <shogun/transfer/multitask/Task.h>
+#include <lib/config.h>
+#include <transfer/multitask/MultitaskLinearMachine.h>
+#include <transfer/multitask/TaskRelation.h>
+#include <transfer/multitask/TaskGroup.h>
+#include <transfer/multitask/TaskTree.h>
+#include <transfer/multitask/Task.h>
 
 #include <vector>
 #include <set>

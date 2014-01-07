@@ -8,14 +8,14 @@
  * Copyright (C) 2008-2009 Fraunhofer Institute FIRST and Max Planck Society
  * Copyright (C) 2010 Berlin Institute of Technology
  */
-#include <shogun/kernel/GaussianKernel.h>
-#include <shogun/kernel/LinearKernel.h>
-#include <shogun/preproc/RandomFourierGaussPreproc.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/classifier/svm/LibSVM.h>
-#include <shogun/lib/Mathematics.h>
-#include <shogun/lib/common.h>
-#include <shogun/base/init.h>
+#include <kernel/GaussianKernel.h>
+#include <kernel/LinearKernel.h>
+#include <preproc/RandomFourierGaussPreproc.h>
+#include <features/DenseFeatures.h>
+#include <classifier/svm/LibSVM.h>
+#include <lib/Mathematics.h>
+#include <lib/common.h>
+#include <base/init.h>
 
 #include <stdlib.h>
 #include <stdio.h>

@@ -8,8 +8,8 @@
  * Copyright (C) 2013 Evangelos Anagnostopoulos
  */
 
-#include <shogun/features/RandomKitchenSinksDotFeatures.h>
-#include <shogun/features/DenseFeatures.h>
+#include <features/RandomKitchenSinksDotFeatures.h>
+#include <features/DenseFeatures.h>
 #include <typeinfo>
 
 namespace shogun

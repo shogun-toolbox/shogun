@@ -7,16 +7,16 @@
  * Written (W) 2013 Soumyajit De
  */
 
-#include <shogun/lib/common.h>
+#include <lib/common.h>
 #ifdef HAVE_EIGEN3
-#include <shogun/lib/SGVector.h>
-#include <shogun/lib/SGMatrix.h>
-#include <shogun/lib/computation/jobresult/ScalarResult.h>
-#include <shogun/lib/computation/aggregator/StoreScalarAggregator.h>
-#include <shogun/mathematics/eigen3.h>
-#include <shogun/mathematics/linalg/linop/DenseMatrixOperator.h>
-#include <shogun/mathematics/linalg/linsolver/CGMShiftedFamilySolver.h>
-#include <shogun/mathematics/linalg/ratapprox/logdet/computation/job/RationalApproximationCGMJob.h>
+#include <lib/SGVector.h>
+#include <lib/SGMatrix.h>
+#include <lib/computation/jobresult/ScalarResult.h>
+#include <lib/computation/aggregator/StoreScalarAggregator.h>
+#include <mathematics/eigen3.h>
+#include <mathematics/linalg/linop/DenseMatrixOperator.h>
+#include <mathematics/linalg/linsolver/CGMShiftedFamilySolver.h>
+#include <mathematics/linalg/ratapprox/logdet/computation/job/RationalApproximationCGMJob.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;

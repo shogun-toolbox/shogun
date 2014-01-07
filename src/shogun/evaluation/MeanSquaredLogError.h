@@ -11,8 +11,8 @@
 #ifndef __MEANSQUAREDLOGERROR__
 #define __MEANSQUAREDLOGERROR__
 
-#include <shogun/evaluation/Evaluation.h>
-#include <shogun/labels/Labels.h>
+#include <evaluation/Evaluation.h>
+#include <labels/Labels.h>
 
 namespace shogun
 {

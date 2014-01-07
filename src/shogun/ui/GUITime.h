@@ -11,9 +11,9 @@
 #ifndef __GUITIME__H_
 #define __GUITIME__H_
 
-#include <shogun/lib/config.h>
-#include <shogun/lib/Time.h>
-#include <shogun/base/SGObject.h>
+#include <lib/config.h>
+#include <lib/Time.h>
+#include <base/SGObject.h>
 
 namespace shogun
 {

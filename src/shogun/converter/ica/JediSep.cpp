@@ -7,15 +7,15 @@
  * Written (W) 2013 Kevin Hughes
  */
 
-#include <shogun/converter/ica/JediSep.h>
+#include <converter/ica/JediSep.h>
 
-#include <shogun/features/DenseFeatures.h>
+#include <features/DenseFeatures.h>
 
 #ifdef HAVE_EIGEN3
 
-#include <shogun/mathematics/Math.h>
-#include <shogun/mathematics/eigen3.h>
-#include <shogun/mathematics/ajd/JediDiag.h>
+#include <mathematics/Math.h>
+#include <mathematics/eigen3.h>
+#include <mathematics/ajd/JediDiag.h>
 
 using namespace shogun;
 using namespace Eigen;

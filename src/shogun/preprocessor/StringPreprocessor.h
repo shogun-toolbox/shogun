@@ -11,10 +11,10 @@
 #ifndef _CSTRINGPREPROC__H__
 #define _CSTRINGPREPROC__H__
 
-#include <shogun/features/Features.h>
-#include <shogun/features/StringFeatures.h>
-#include <shogun/lib/common.h>
-#include <shogun/preprocessor/Preprocessor.h>
+#include <features/Features.h>
+#include <features/StringFeatures.h>
+#include <lib/common.h>
+#include <preprocessor/Preprocessor.h>
 
 namespace shogun
 {

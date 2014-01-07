@@ -10,8 +10,8 @@
  * (few parts rewritten and adjusted for shogun)
  */
 
-#include <shogun/mathematics/Math.h>
-#include <shogun/mathematics/JacobiEllipticFunctions.h>
+#include <mathematics/Math.h>
+#include <mathematics/JacobiEllipticFunctions.h>
 
 using namespace shogun;
 

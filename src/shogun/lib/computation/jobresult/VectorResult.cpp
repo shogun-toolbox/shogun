@@ -8,7 +8,7 @@
  * Written (W) 2013 Heiko Strathmann
  */
 
-#include <shogun/lib/computation/jobresult/VectorResult.h>
+#include <lib/computation/jobresult/VectorResult.h>
 
 namespace shogun
 {

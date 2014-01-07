@@ -8,8 +8,8 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/lib/ShogunException.h>
-#include <shogun/lib/Signal.h>
+#include <lib/ShogunException.h>
+#include <lib/Signal.h>
 
 #include <string.h>
 #include <stdio.h>

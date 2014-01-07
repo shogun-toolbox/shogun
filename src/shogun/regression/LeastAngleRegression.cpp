@@ -8,7 +8,7 @@
  * Copyright (C) 2012 Chiyuan Zhang
  */
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
 #ifdef HAVE_LAPACK
 
@@ -16,11 +16,11 @@
 #include <limits>
 #include <algorithm>
 
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/mathematics/lapack.h>
-#include <shogun/regression/LeastAngleRegression.h>
-#include <shogun/labels/RegressionLabels.h>
+#include <features/DenseFeatures.h>
+#include <mathematics/Math.h>
+#include <mathematics/lapack.h>
+#include <regression/LeastAngleRegression.h>
+#include <labels/RegressionLabels.h>
 
 using namespace shogun;
 using namespace std;

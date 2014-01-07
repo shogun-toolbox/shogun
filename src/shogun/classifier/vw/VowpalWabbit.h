@@ -16,13 +16,13 @@
 #ifndef _VOWPALWABBIT_H__
 #define _VOWPALWABBIT_H__
 
-#include <shogun/classifier/vw/vw_common.h>
-#include <shogun/classifier/vw/learners/VwAdaptiveLearner.h>
-#include <shogun/classifier/vw/learners/VwNonAdaptiveLearner.h>
-#include <shogun/classifier/vw/VwRegressor.h>
+#include <classifier/vw/vw_common.h>
+#include <classifier/vw/learners/VwAdaptiveLearner.h>
+#include <classifier/vw/learners/VwNonAdaptiveLearner.h>
+#include <classifier/vw/VwRegressor.h>
 
-#include <shogun/features/streaming/StreamingVwFeatures.h>
-#include <shogun/machine/OnlineLinearMachine.h>
+#include <features/streaming/StreamingVwFeatures.h>
+#include <machine/OnlineLinearMachine.h>
 
 namespace shogun
 {

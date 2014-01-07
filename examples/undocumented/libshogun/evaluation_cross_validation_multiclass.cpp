@@ -8,15 +8,15 @@
  * Copyright (C) 2012 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include <shogun/base/init.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/labels/MulticlassLabels.h>
-#include <shogun/multiclass/MulticlassLibLinear.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/io/CSVFile.h>
-#include <shogun/evaluation/CrossValidation.h>
-#include <shogun/evaluation/StratifiedCrossValidationSplitting.h>
-#include <shogun/evaluation/MulticlassAccuracy.h>
+#include <base/init.h>
+#include <features/DenseFeatures.h>
+#include <labels/MulticlassLabels.h>
+#include <multiclass/MulticlassLibLinear.h>
+#include <io/SGIO.h>
+#include <io/CSVFile.h>
+#include <evaluation/CrossValidation.h>
+#include <evaluation/StratifiedCrossValidationSplitting.h>
+#include <evaluation/MulticlassAccuracy.h>
 
 using namespace shogun;
 

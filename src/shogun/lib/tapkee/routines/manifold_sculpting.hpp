@@ -7,8 +7,8 @@
 #define TAPKEE_MANIFOLD_SCULPTING_H_
 
 /* Tapkee includes */
-#include <shogun/lib/tapkee/defines.hpp>
-#include <shogun/lib/tapkee/utils/sparse.hpp>
+#include <lib/tapkee/defines.hpp>
+#include <lib/tapkee/utils/sparse.hpp>
 /* End of Tapkee includes */
 
 #include <math.h>

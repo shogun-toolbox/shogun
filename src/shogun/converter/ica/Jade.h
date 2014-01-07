@@ -10,10 +10,10 @@
 #ifndef JADE_H_
 #define JADE_H_
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 #ifdef HAVE_EIGEN3
-#include <shogun/converter/ica/ICAConverter.h>
-#include <shogun/features/Features.h>
+#include <converter/ica/ICAConverter.h>
+#include <features/Features.h>
 
 namespace shogun
 {

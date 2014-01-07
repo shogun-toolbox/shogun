@@ -9,39 +9,39 @@
  * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/ui/GUIDistance.h>
-#include <shogun/ui/SGInterface.h>
+#include <ui/GUIDistance.h>
+#include <ui/SGInterface.h>
 
 #include <string.h>
 
-#include <shogun/lib/config.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/io/CSVFile.h>
+#include <lib/config.h>
+#include <io/SGIO.h>
+#include <io/CSVFile.h>
 
-#include <shogun/distance/Distance.h>
-#include <shogun/distance/DenseDistance.h>
-#include <shogun/distance/CanberraMetric.h>
-#include <shogun/distance/ChebyshewMetric.h>
-#include <shogun/distance/GeodesicMetric.h>
-#include <shogun/distance/JensenMetric.h>
-#include <shogun/distance/ManhattanMetric.h>
-#include <shogun/distance/MinkowskiMetric.h>
-#include <shogun/distance/CanberraWordDistance.h>
-#include <shogun/distance/ManhattanWordDistance.h>
-#include <shogun/distance/HammingWordDistance.h>
-#include <shogun/distance/EuclideanDistance.h>
-#include <shogun/distance/SparseEuclideanDistance.h>
-#include <shogun/distance/TanimotoDistance.h>
-#include <shogun/distance/ChiSquareDistance.h>
-#include <shogun/distance/CosineDistance.h>
-#include <shogun/distance/BrayCurtisDistance.h>
+#include <distance/Distance.h>
+#include <distance/DenseDistance.h>
+#include <distance/CanberraMetric.h>
+#include <distance/ChebyshewMetric.h>
+#include <distance/GeodesicMetric.h>
+#include <distance/JensenMetric.h>
+#include <distance/ManhattanMetric.h>
+#include <distance/MinkowskiMetric.h>
+#include <distance/CanberraWordDistance.h>
+#include <distance/ManhattanWordDistance.h>
+#include <distance/HammingWordDistance.h>
+#include <distance/EuclideanDistance.h>
+#include <distance/SparseEuclideanDistance.h>
+#include <distance/TanimotoDistance.h>
+#include <distance/ChiSquareDistance.h>
+#include <distance/CosineDistance.h>
+#include <distance/BrayCurtisDistance.h>
 
-#include <shogun/features/RealFileFeatures.h>
-#include <shogun/features/TOPFeatures.h>
-#include <shogun/features/FKFeatures.h>
-#include <shogun/features/StringFeatures.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/features/Features.h>
+#include <features/RealFileFeatures.h>
+#include <features/TOPFeatures.h>
+#include <features/FKFeatures.h>
+#include <features/StringFeatures.h>
+#include <features/DenseFeatures.h>
+#include <features/Features.h>
 
 using namespace shogun;
 

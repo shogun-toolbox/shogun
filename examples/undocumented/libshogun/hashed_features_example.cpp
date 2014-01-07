@@ -1,8 +1,8 @@
-#include <shogun/base/init.h>
-#include <shogun/features/HashedDenseFeatures.h>
-#include <shogun/features/HashedSparseFeatures.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/kernel/PolyKernel.h>
+#include <base/init.h>
+#include <features/HashedDenseFeatures.h>
+#include <features/HashedSparseFeatures.h>
+#include <mathematics/Math.h>
+#include <kernel/PolyKernel.h>
 
 using namespace shogun;
 

@@ -12,10 +12,10 @@
 #ifndef _MULTICLASS_SO_LABELS__H__
 #define _MULTICLASS_SO_LABELS__H__
 
-#include <shogun/labels/StructuredLabels.h>
-#include <shogun/lib/SGVector.h>
-#include <shogun/lib/StructuredData.h>
-#include <shogun/lib/StructuredDataTypes.h>
+#include <labels/StructuredLabels.h>
+#include <lib/SGVector.h>
+#include <lib/StructuredData.h>
+#include <lib/StructuredDataTypes.h>
 
 namespace shogun
 {

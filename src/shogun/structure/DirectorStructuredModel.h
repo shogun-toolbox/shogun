@@ -11,8 +11,8 @@
 #define DIRECTOR_STRUCTURED_MODEL_H_
 
 #ifdef USE_SWIG_DIRECTORS
-#include <shogun/structure/StructuredModel.h>
-#include <shogun/lib/config.h>
+#include <structure/StructuredModel.h>
+#include <lib/config.h>
 namespace shogun
 {
 

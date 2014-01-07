@@ -7,13 +7,13 @@
  * Written (W) 2011 Alesis Novik
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
 #ifdef HAVE_LAPACK
 
-#include <shogun/distributions/Gaussian.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/base/Parameter.h>
+#include <distributions/Gaussian.h>
+#include <mathematics/Math.h>
+#include <base/Parameter.h>
 
 using namespace shogun;
 

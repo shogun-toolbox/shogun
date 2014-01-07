@@ -11,10 +11,10 @@
  * Copyright (C) 2007-2010 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/classifier/svm/OnlineLibLinear.h>
-#include <shogun/features/streaming/StreamingDenseFeatures.h>
-#include <shogun/features/streaming/StreamingSparseFeatures.h>
-#include <shogun/lib/Time.h>
+#include <classifier/svm/OnlineLibLinear.h>
+#include <features/streaming/StreamingDenseFeatures.h>
+#include <features/streaming/StreamingSparseFeatures.h>
+#include <lib/Time.h>
 
 using namespace shogun;
 

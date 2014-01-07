@@ -8,11 +8,11 @@
  * Copyright (C) 2012-2013 Fernando José Iglesias García
  */
 
-#include <shogun/converter/StochasticProximityEmbedding.h>
-#include <shogun/lib/config.h>
+#include <converter/StochasticProximityEmbedding.h>
+#include <lib/config.h>
 #ifdef HAVE_EIGEN3
-#include <shogun/io/SGIO.h>
-#include <shogun/lib/tapkee/tapkee_shogun.hpp>
+#include <io/SGIO.h>
+#include <lib/tapkee/tapkee_shogun.hpp>
 
 using namespace shogun;
 

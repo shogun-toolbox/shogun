@@ -11,14 +11,14 @@
 #ifndef _PLIFMATRIX_H_
 #define _PLIFMATRIX_H_
 
-#include <shogun/lib/DataType.h>
-#include <shogun/lib/SGNDArray.h>
-#include <shogun/lib/SGMatrix.h>
-#include <shogun/base/SGObject.h>
-#include <shogun/structure/Plif.h>
-#include <shogun/structure/PlifBase.h>
-#include <shogun/features/StringFeatures.h>
-#include <shogun/lib/DynamicArray.h>
+#include <lib/DataType.h>
+#include <lib/SGNDArray.h>
+#include <lib/SGMatrix.h>
+#include <base/SGObject.h>
+#include <structure/Plif.h>
+#include <structure/PlifBase.h>
+#include <features/StringFeatures.h>
+#include <lib/DynamicArray.h>
 
 namespace shogun
 {

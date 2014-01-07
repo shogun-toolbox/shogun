@@ -13,11 +13,11 @@
 #define _TRIE_H___
 
 #include <string.h>
-#include <shogun/lib/common.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/base/DynArray.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/base/SGObject.h>
+#include <lib/common.h>
+#include <io/SGIO.h>
+#include <base/DynArray.h>
+#include <mathematics/Math.h>
+#include <base/SGObject.h>
 
 namespace shogun
 {

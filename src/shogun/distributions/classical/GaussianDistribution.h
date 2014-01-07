@@ -11,8 +11,8 @@
 #ifndef GAUSSIANDISTRIBUTION_H
 #define GAUSSIANDISTRIBUTION_H
 
-#include <shogun/distributions/classical/ProbabilityDistribution.h>
-#include <shogun/lib/SGVector.h>
+#include <distributions/classical/ProbabilityDistribution.h>
+#include <lib/SGVector.h>
 
 namespace shogun
 {

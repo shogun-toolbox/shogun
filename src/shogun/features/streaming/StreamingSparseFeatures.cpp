@@ -8,7 +8,7 @@
  * Modifications (W) 2013 Thoralf Klein
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
-#include <shogun/features/streaming/StreamingSparseFeatures.h>
+#include <features/streaming/StreamingSparseFeatures.h>
 namespace shogun
 {
 

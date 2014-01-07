@@ -10,8 +10,8 @@
 #ifndef ITERATIVE_LINEAR_SOLVER_H_
 #define ITERATIVE_LINEAR_SOLVER_H_
 
-#include <shogun/lib/config.h>
-#include <shogun/mathematics/linalg/linsolver/LinearSolver.h>
+#include <lib/config.h>
+#include <mathematics/linalg/linsolver/LinearSolver.h>
 
 namespace shogun
 {

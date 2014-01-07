@@ -1,12 +1,12 @@
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 #include <gtest/gtest.h>
 
 #if defined(HAVE_HDF5) && defined( HAVE_CURL)
-#include <shogun/io/MLDataHDF5File.h>
-#include <shogun/io/HDF5File.h>
-#include <shogun/lib/SGVector.h>
-#include <shogun/lib/SGString.h>
-#include <shogun/lib/SGMatrix.h>
+#include <io/MLDataHDF5File.h>
+#include <io/HDF5File.h>
+#include <lib/SGVector.h>
+#include <lib/SGString.h>
+#include <lib/SGMatrix.h>
 
 #include <unistd.h>
 #include <hdf5.h>

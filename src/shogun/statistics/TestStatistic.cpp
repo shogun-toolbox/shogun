@@ -7,8 +7,8 @@
  * Written (W) 2012-2013 Heiko Strathmann
  */
 
-#include <shogun/statistics/TestStatistic.h>
-#include <shogun/base/Parameter.h>
+#include <statistics/TestStatistic.h>
+#include <base/Parameter.h>
 
 using namespace shogun;
 

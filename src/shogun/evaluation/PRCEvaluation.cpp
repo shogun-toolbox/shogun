@@ -8,10 +8,10 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include <shogun/evaluation/PRCEvaluation.h>
-#include <shogun/labels/RegressionLabels.h>
-#include <shogun/labels/BinaryLabels.h>
-#include <shogun/mathematics/Math.h>
+#include <evaluation/PRCEvaluation.h>
+#include <labels/RegressionLabels.h>
+#include <labels/BinaryLabels.h>
+#include <mathematics/Math.h>
 
 using namespace shogun;
 

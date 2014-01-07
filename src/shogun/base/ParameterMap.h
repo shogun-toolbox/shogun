@@ -11,7 +11,7 @@
 #ifndef __PARAMETERMAP_
 #define __PARAMETERMAP_
 
-#include <shogun/base/DynArray.h>
+#include <base/DynArray.h>
 
 namespace shogun
 {

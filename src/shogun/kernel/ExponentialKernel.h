@@ -15,10 +15,10 @@
 #ifndef _EXPONENTIALKERNEL_H___
 #define _EXPONENTIALKERNEL_H___
 
-#include <shogun/lib/common.h>
-#include <shogun/kernel/DotKernel.h>
-#include <shogun/features/DotFeatures.h>
-#include <shogun/distance/Distance.h>
+#include <lib/common.h>
+#include <kernel/DotKernel.h>
+#include <features/DotFeatures.h>
+#include <distance/Distance.h>
 
 namespace shogun
 {

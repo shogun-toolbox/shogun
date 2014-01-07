@@ -9,7 +9,7 @@
  * Copyright (c) 2011 Berlin Institute of Technology and Max-Planck-Society.
  */
 
-#include <shogun/loss/LogLoss.h>
+#include <loss/LogLoss.h>
 
 using namespace shogun;
 

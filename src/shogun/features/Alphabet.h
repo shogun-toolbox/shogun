@@ -11,8 +11,8 @@
 #ifndef _CALPHABET__H__
 #define _CALPHABET__H__
 
-#include <shogun/base/SGObject.h>
-#include <shogun/lib/common.h>
+#include <base/SGObject.h>
+#include <lib/common.h>
 
 namespace shogun
 {

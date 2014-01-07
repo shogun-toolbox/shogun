@@ -20,11 +20,11 @@
 #ifndef __MATHEMATICS_H_
 #define __MATHEMATICS_H_
 
-#include <shogun/base/SGObject.h>
-#include <shogun/lib/common.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/base/Parallel.h>
-#include <shogun/mathematics/Random.h>
+#include <base/SGObject.h>
+#include <lib/common.h>
+#include <io/SGIO.h>
+#include <base/Parallel.h>
+#include <mathematics/Random.h>
 
 #ifndef _USE_MATH_DEFINES
 #define _USE_MATH_DEFINES

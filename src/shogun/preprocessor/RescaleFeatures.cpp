@@ -8,7 +8,7 @@
  * Copyright (C) 2013 Viktor Gal
  */
 
-#include <shogun/preprocessor/RescaleFeatures.h>
+#include <preprocessor/RescaleFeatures.h>
 
 using namespace shogun;
 

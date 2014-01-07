@@ -8,16 +8,16 @@
  * Copyright (C) 2007-2011 Max-Planck-Society
  */
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
 #ifdef HAVE_LAPACK
 
-#include <shogun/transfer/domain_adaptation/DomainAdaptationSVMLinear.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/base/Parameter.h>
-#include <shogun/labels/Labels.h>
-#include <shogun/labels/BinaryLabels.h>
-#include <shogun/labels/RegressionLabels.h>
+#include <transfer/domain_adaptation/DomainAdaptationSVMLinear.h>
+#include <io/SGIO.h>
+#include <base/Parameter.h>
+#include <labels/Labels.h>
+#include <labels/BinaryLabels.h>
+#include <labels/RegressionLabels.h>
 #include <iostream>
 #include <vector>
 

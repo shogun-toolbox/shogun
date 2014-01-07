@@ -13,8 +13,8 @@
 #ifndef CLIKELIHOODMODEL_H_
 #define CLIKELIHOODMODEL_H_
 
-#include <shogun/base/SGObject.h>
-#include <shogun/labels/Labels.h>
+#include <base/SGObject.h>
+#include <labels/Labels.h>
 
 namespace shogun
 {

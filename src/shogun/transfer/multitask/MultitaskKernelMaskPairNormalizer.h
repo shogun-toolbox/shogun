@@ -11,8 +11,8 @@
 #ifndef _MULTITASKKERNELMASKPAIRNORMALIZER_H___
 #define _MULTITASKKERNELMASKPAIRNORMALIZER_H___
 
-#include <shogun/kernel/normalizer/KernelNormalizer.h>
-#include <shogun/kernel/Kernel.h>
+#include <kernel/normalizer/KernelNormalizer.h>
+#include <kernel/Kernel.h>
 
 #include <string>
 #include <vector>

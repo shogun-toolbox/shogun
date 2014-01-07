@@ -8,10 +8,10 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/features/RealFileFeatures.h>
-#include <shogun/features/Features.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/lib/memory.h>
+#include <features/RealFileFeatures.h>
+#include <features/Features.h>
+#include <io/SGIO.h>
+#include <lib/memory.h>
 
 #include <stdio.h>
 #include <string.h>

@@ -1,5 +1,5 @@
 #include <cstdio>
-#include <shogun/optimization/lbfgs/lbfgs.h>
+#include <optimization/lbfgs/lbfgs.h>
 
 static lbfgsfloatval_t evaluate(
     void *instance,

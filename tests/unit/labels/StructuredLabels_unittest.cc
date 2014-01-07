@@ -9,9 +9,9 @@
  * Copyright (C) 2013 Thoralf Klein
  */
 
-#include <shogun/base/init.h>
-#include <shogun/labels/StructuredLabels.h>
-#include <shogun/structure/MulticlassSOLabels.h>
+#include <base/init.h>
+#include <labels/StructuredLabels.h>
+#include <structure/MulticlassSOLabels.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;

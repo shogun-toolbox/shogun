@@ -7,16 +7,16 @@
  * Written (W) 2013 Roman Votyakov
  */
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
 #ifdef HAVE_EIGEN3
 
-#include <shogun/labels/BinaryLabels.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/kernel/GaussianKernel.h>
-#include <shogun/machine/gp/EPInferenceMethod.h>
-#include <shogun/machine/gp/ZeroMean.h>
-#include <shogun/machine/gp/ProbitLikelihood.h>
+#include <labels/BinaryLabels.h>
+#include <features/DenseFeatures.h>
+#include <kernel/GaussianKernel.h>
+#include <machine/gp/EPInferenceMethod.h>
+#include <machine/gp/ZeroMean.h>
+#include <machine/gp/ProbitLikelihood.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;

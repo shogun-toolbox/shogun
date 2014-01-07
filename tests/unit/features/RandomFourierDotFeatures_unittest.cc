@@ -1,4 +1,4 @@
-#include <shogun/features/RandomFourierDotFeatures.h>
+#include <features/RandomFourierDotFeatures.h>
 
 #include <gtest/gtest.h>
 

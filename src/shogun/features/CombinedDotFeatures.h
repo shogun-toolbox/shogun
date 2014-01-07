@@ -13,9 +13,9 @@
 #ifndef _COMBINEDDOTFEATURES_H___
 #define _COMBINEDDOTFEATURES_H___
 
-#include <shogun/lib/common.h>
-#include <shogun/lib/DynamicObjectArray.h>
-#include <shogun/features/DotFeatures.h>
+#include <lib/common.h>
+#include <lib/DynamicObjectArray.h>
+#include <features/DotFeatures.h>
 
 namespace shogun
 {

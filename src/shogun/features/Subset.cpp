@@ -8,8 +8,8 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include <shogun/features/Subset.h>
-#include <shogun/base/Parameter.h>
+#include <features/Subset.h>
+#include <base/Parameter.h>
 
 using namespace shogun;
 

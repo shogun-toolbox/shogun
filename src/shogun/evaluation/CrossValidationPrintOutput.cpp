@@ -8,14 +8,14 @@
  * Written (W) 2012 Heiko Strathmann
  */
 
-#include <shogun/evaluation/CrossValidationPrintOutput.h>
-#include <shogun/machine/LinearMachine.h>
-#include <shogun/machine/LinearMulticlassMachine.h>
-#include <shogun/machine/KernelMachine.h>
-#include <shogun/machine/KernelMulticlassMachine.h>
-#include <shogun/kernel/CombinedKernel.h>
-#include <shogun/classifier/mkl/MKL.h>
-#include <shogun/classifier/mkl/MKLMulticlass.h>
+#include <evaluation/CrossValidationPrintOutput.h>
+#include <machine/LinearMachine.h>
+#include <machine/LinearMulticlassMachine.h>
+#include <machine/KernelMachine.h>
+#include <machine/KernelMulticlassMachine.h>
+#include <kernel/CombinedKernel.h>
+#include <classifier/mkl/MKL.h>
+#include <classifier/mkl/MKLMulticlass.h>
 
 using namespace shogun;
 

@@ -8,7 +8,7 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/distributions/GHMM.h>
+#include <distributions/GHMM.h>
 
 using namespace shogun;
 

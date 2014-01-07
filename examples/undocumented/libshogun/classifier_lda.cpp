@@ -11,15 +11,15 @@
  *           and Matthieu Perrot (scikit-learn)
  */
 
-#include <shogun/base/init.h>
+#include <base/init.h>
 
-#include <shogun/lib/config.h>
-#include <shogun/labels/MulticlassLabels.h>
-#include <shogun/multiclass/MCLDA.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/lib/common.h>
-#include <shogun/features/DataGenerator.h>
+#include <lib/config.h>
+#include <labels/MulticlassLabels.h>
+#include <multiclass/MCLDA.h>
+#include <features/DenseFeatures.h>
+#include <io/SGIO.h>
+#include <lib/common.h>
+#include <features/DataGenerator.h>
 
 using namespace shogun;
 

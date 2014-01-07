@@ -7,7 +7,7 @@
 #define TAPKEE_VALUE_KEEPER_H_
 
 /* Tapkee includes */
-#include <shogun/lib/tapkee/parameters/policy.hpp>
+#include <lib/tapkee/parameters/policy.hpp>
 /* End of Tapkee includes */
 
 namespace tapkee

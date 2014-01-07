@@ -6,9 +6,9 @@
  *
  * Copyright (C) 2013 Soeren Sonnenburg
  */
-#include <shogun/lib/config.h>
-#include <shogun/lib/memory.h>
-#include <shogun/lib/Lock.h>
+#include <lib/config.h>
+#include <lib/memory.h>
+#include <lib/Lock.h>
 
 #ifdef HAVE_PTHREAD
 #include <pthread.h>

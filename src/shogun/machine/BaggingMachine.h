@@ -11,9 +11,9 @@
 #ifndef BAGGINGMACHINE_H
 #define BAGGINGMACHINE_H
 
-#include <shogun/machine/Machine.h>
-#include <shogun/ensemble/CombinationRule.h>
-#include <shogun/evaluation/Evaluation.h>
+#include <machine/Machine.h>
+#include <ensemble/CombinationRule.h>
+#include <evaluation/Evaluation.h>
 
 namespace shogun
 {

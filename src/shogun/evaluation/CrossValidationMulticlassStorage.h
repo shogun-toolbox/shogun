@@ -11,11 +11,11 @@
 #ifndef CROSSVALIDATIONMULTICLASSSTORAGE_H_
 #define CROSSVALIDATIONMULTICLASSSTORAGE_H_
 
-#include <shogun/evaluation/CrossValidationOutput.h>
-#include <shogun/evaluation/BinaryClassEvaluation.h>
-#include <shogun/labels/MulticlassLabels.h>
-#include <shogun/lib/SGMatrix.h>
-#include <shogun/lib/DynamicObjectArray.h>
+#include <evaluation/CrossValidationOutput.h>
+#include <evaluation/BinaryClassEvaluation.h>
+#include <labels/MulticlassLabels.h>
+#include <lib/SGMatrix.h>
+#include <lib/DynamicObjectArray.h>
 
 namespace shogun
 {

@@ -9,11 +9,11 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/lib/common.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/kernel/string/LocalityImprovedStringKernel.h>
-#include <shogun/kernel/normalizer/SqrtDiagKernelNormalizer.h>
-#include <shogun/features/StringFeatures.h>
+#include <lib/common.h>
+#include <io/SGIO.h>
+#include <kernel/string/LocalityImprovedStringKernel.h>
+#include <kernel/normalizer/SqrtDiagKernelNormalizer.h>
+#include <features/StringFeatures.h>
 
 using namespace shogun;
 

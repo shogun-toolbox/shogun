@@ -7,14 +7,14 @@
  * Written (W) 2013 Viktor Gal
  */
 
-#include <shogun/base/init.h>
-#include <shogun/machine/BaggingMachine.h>
-#include <shogun/classifier/svm/LibLinear.h>
-#include <shogun/ensemble/MajorityVote.h>
-#include <shogun/labels/BinaryLabels.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/features/streaming/generators/MeanShiftDataGenerator.h>
-#include <shogun/evaluation/ContingencyTableEvaluation.h>
+#include <base/init.h>
+#include <machine/BaggingMachine.h>
+#include <classifier/svm/LibLinear.h>
+#include <ensemble/MajorityVote.h>
+#include <labels/BinaryLabels.h>
+#include <features/DenseFeatures.h>
+#include <features/streaming/generators/MeanShiftDataGenerator.h>
+#include <evaluation/ContingencyTableEvaluation.h>
 
 using namespace shogun;
 

@@ -14,10 +14,10 @@
 
 #include <stdio.h>
 
-#include <shogun/lib/common.h>
-#include <shogun/classifier/svm/SVM.h>
-#include <shogun/lib/external/shogun_libsvm.h>
-#include <shogun/regression/Regression.h>
+#include <lib/common.h>
+#include <classifier/svm/SVM.h>
+#include <lib/external/shogun_libsvm.h>
+#include <regression/Regression.h>
 
 namespace shogun
 {

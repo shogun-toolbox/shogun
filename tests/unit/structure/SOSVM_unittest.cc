@@ -1,14 +1,14 @@
-#include <shogun/base/init.h>
-#include <shogun/lib/common.h>
-#include <shogun/lib/SGVector.h>
+#include <base/init.h>
+#include <lib/common.h>
+#include <lib/SGVector.h>
 
-#include <shogun/structure/FactorType.h>
-#include <shogun/structure/MAPInference.h>
-#include <shogun/structure/FactorGraphModel.h>
-#include <shogun/features/FactorGraphFeatures.h>
-#include <shogun/labels/FactorGraphLabels.h>
-#include <shogun/structure/StochasticSOSVM.h>
-#include <shogun/structure/SOSVMHelper.h>
+#include <structure/FactorType.h>
+#include <structure/MAPInference.h>
+#include <structure/FactorGraphModel.h>
+#include <features/FactorGraphFeatures.h>
+#include <labels/FactorGraphLabels.h>
+#include <structure/StochasticSOSVM.h>
+#include <structure/SOSVMHelper.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;

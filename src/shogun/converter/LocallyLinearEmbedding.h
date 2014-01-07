@@ -10,12 +10,12 @@
 
 #ifndef LOCALLYLINEAREMBEDDING_H_
 #define LOCALLYLINEAREMBEDDING_H_
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 #ifdef HAVE_EIGEN3
-#include <shogun/converter/EmbeddingConverter.h>
-#include <shogun/features/Features.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/distance/Distance.h>
+#include <converter/EmbeddingConverter.h>
+#include <features/Features.h>
+#include <features/DenseFeatures.h>
+#include <distance/Distance.h>
 
 namespace shogun
 {

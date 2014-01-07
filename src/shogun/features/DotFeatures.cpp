@@ -8,13 +8,13 @@
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/features/DotFeatures.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/lib/Signal.h>
-#include <shogun/lib/Time.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/base/Parallel.h>
-#include <shogun/base/Parameter.h>
+#include <features/DotFeatures.h>
+#include <io/SGIO.h>
+#include <lib/Signal.h>
+#include <lib/Time.h>
+#include <mathematics/Math.h>
+#include <base/Parallel.h>
+#include <base/Parameter.h>
 
 #ifdef HAVE_PTHREAD
 #include <pthread.h>

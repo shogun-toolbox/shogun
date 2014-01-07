@@ -11,12 +11,12 @@
 #ifndef CGRADIENTMODELSELECTION_H_
 #define CGRADIENTMODELSELECTION_H_
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
 #ifdef HAVE_NLOPT
 
-#include <shogun/modelselection/ModelSelection.h>
-#include <shogun/modelselection/ParameterCombination.h>
+#include <modelselection/ModelSelection.h>
+#include <modelselection/ParameterCombination.h>
 
 namespace shogun
 {

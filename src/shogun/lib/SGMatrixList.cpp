@@ -8,8 +8,8 @@
  * Copyright (C) 2012 Fernando José Iglesias García
  */
 
-#include <shogun/lib/SGMatrixList.h>
-#include <shogun/lib/memory.h>
+#include <lib/SGMatrixList.h>
+#include <lib/memory.h>
 
 namespace shogun {
 

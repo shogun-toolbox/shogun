@@ -7,9 +7,9 @@
  * Written (W) 2013 Soumyajit De
  */
 
-#include <shogun/lib/common.h>
-#include <shogun/lib/SGVector.h>
-#include <shogun/lib/SGSparseVector.h>
+#include <lib/common.h>
+#include <lib/SGVector.h>
+#include <lib/SGSparseVector.h>
 #include <gtest/gtest.h>
 
 #include <vector>

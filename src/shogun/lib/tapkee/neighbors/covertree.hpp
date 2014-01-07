@@ -11,7 +11,7 @@
 #define COVERTREE_H_
 
 /* Tapkee includes */
-#include <shogun/lib/tapkee/neighbors/covertree_point.hpp>
+#include <lib/tapkee/neighbors/covertree_point.hpp>
 /* End of Tapkee includes */
 
 #include <cmath>

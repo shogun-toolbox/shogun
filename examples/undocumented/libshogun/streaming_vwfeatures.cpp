@@ -11,11 +11,11 @@
  * as the features object.
  */
 
-#include <shogun/lib/common.h>
+#include <lib/common.h>
 
-#include <shogun/io/streaming/StreamingVwFile.h>
-#include <shogun/features/streaming/StreamingVwFeatures.h>
-#include <shogun/classifier/svm/OnlineSVMSGD.h>
+#include <io/streaming/StreamingVwFile.h>
+#include <features/streaming/StreamingVwFeatures.h>
+#include <classifier/svm/OnlineSVMSGD.h>
 
 using namespace shogun;
 

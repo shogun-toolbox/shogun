@@ -11,10 +11,10 @@
 #ifndef __PLIFARRAY_H__
 #define __PLIFARRAY_H__
 
-#include <shogun/lib/common.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/base/DynArray.h>
-#include <shogun/structure/PlifBase.h>
+#include <lib/common.h>
+#include <mathematics/Math.h>
+#include <base/DynArray.h>
+#include <structure/PlifBase.h>
 
 namespace shogun
 {

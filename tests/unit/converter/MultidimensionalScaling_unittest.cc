@@ -1,7 +1,7 @@
-#include <shogun/converter/MultidimensionalScaling.h>
-#include <shogun/distance/EuclideanDistance.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/features/DataGenerator.h>
+#include <converter/MultidimensionalScaling.h>
+#include <distance/EuclideanDistance.h>
+#include <features/DenseFeatures.h>
+#include <features/DataGenerator.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;

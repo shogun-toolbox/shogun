@@ -11,9 +11,9 @@
 #ifndef _STREAMING_HASHED_DENSEFEATURES__H__
 #define _STREAMING_HASHED_DENSEFEATURES__H__
 
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/features/streaming/StreamingDotFeatures.h>
-#include <shogun/io/streaming/InputParser.h>
+#include <features/DenseFeatures.h>
+#include <features/streaming/StreamingDotFeatures.h>
+#include <io/streaming/InputParser.h>
 
 namespace shogun
 {

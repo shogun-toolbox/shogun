@@ -8,22 +8,22 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include <shogun/base/init.h>
-#include <shogun/modelselection/ModelSelectionParameters.h>
-#include <shogun/modelselection/ParameterCombination.h>
-#include <shogun/classifier/svm/LibSVM.h>
-#include <shogun/kernel/GaussianKernel.h>
-#include <shogun/kernel/PowerKernel.h>
-#include <shogun/kernel/LinearKernel.h>
-#include <shogun/distance/MinkowskiMetric.h>
-#include <shogun/distance/EuclideanDistance.h>
-#include <shogun/kernel/string/DistantSegmentsKernel.h>
-#include <shogun/machine/gp/ExactInferenceMethod.h>
-#include <shogun/machine/gp/GaussianLikelihood.h>
-#include <shogun/machine/gp/ZeroMean.h>
-#include <shogun/regression/GaussianProcessRegression.h>
-#include <shogun/modelselection/ModelSelectionParameters.h>
-#include <shogun/modelselection/ParameterCombination.h>
+#include <base/init.h>
+#include <modelselection/ModelSelectionParameters.h>
+#include <modelselection/ParameterCombination.h>
+#include <classifier/svm/LibSVM.h>
+#include <kernel/GaussianKernel.h>
+#include <kernel/PowerKernel.h>
+#include <kernel/LinearKernel.h>
+#include <distance/MinkowskiMetric.h>
+#include <distance/EuclideanDistance.h>
+#include <kernel/string/DistantSegmentsKernel.h>
+#include <machine/gp/ExactInferenceMethod.h>
+#include <machine/gp/GaussianLikelihood.h>
+#include <machine/gp/ZeroMean.h>
+#include <regression/GaussianProcessRegression.h>
+#include <modelselection/ModelSelectionParameters.h>
+#include <modelselection/ParameterCombination.h>
 
 using namespace shogun;
 

@@ -10,10 +10,10 @@
 #ifndef ITERATIVE_SOLVER_ITERATOR_H_
 #define ITERATIVE_SOLVER_ITERATOR_H_
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
 #ifdef HAVE_EIGEN3
-#include <shogun/mathematics/eigen3.h>
+#include <mathematics/eigen3.h>
 
 using namespace Eigen;
 

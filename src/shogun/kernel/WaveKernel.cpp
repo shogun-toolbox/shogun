@@ -8,8 +8,8 @@
  * Copyright (C) 2007-2011 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/kernel/WaveKernel.h>
-#include <shogun/mathematics/Math.h>
+#include <kernel/WaveKernel.h>
+#include <mathematics/Math.h>
 
 using namespace shogun;
 

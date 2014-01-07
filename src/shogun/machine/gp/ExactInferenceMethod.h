@@ -12,11 +12,11 @@
 #ifndef CEXACTINFERENCEMETHOD_H_
 #define CEXACTINFERENCEMETHOD_H_
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
 #ifdef HAVE_EIGEN3
 
-#include <shogun/machine/gp/InferenceMethod.h>
+#include <machine/gp/InferenceMethod.h>
 
 namespace shogun
 {

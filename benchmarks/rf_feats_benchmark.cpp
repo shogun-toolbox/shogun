@@ -1,8 +1,8 @@
-#include <shogun/base/init.h>
-#include <shogun/features/RandomFourierDotFeatures.h>
-#include <shogun/kernel/GaussianKernel.h>
-#include <shogun/kernel/normalizer/IdentityKernelNormalizer.h>
-#include <shogun/lib/Time.h>
+#include <base/init.h>
+#include <features/RandomFourierDotFeatures.h>
+#include <kernel/GaussianKernel.h>
+#include <kernel/normalizer/IdentityKernelNormalizer.h>
+#include <lib/Time.h>
 
 using namespace shogun;
 

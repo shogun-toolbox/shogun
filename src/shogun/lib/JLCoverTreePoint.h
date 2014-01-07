@@ -12,9 +12,9 @@
 #ifndef _JLCTPOINT_H__
 #define _JLCTPOINT_H__
 
-#include <shogun/lib/config.h>
-#include <shogun/distance/Distance.h>
-#include <shogun/features/Features.h>
+#include <lib/config.h>
+#include <distance/Distance.h>
+#include <features/Features.h>
 
 namespace shogun
 {

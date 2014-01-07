@@ -8,17 +8,17 @@
  * Copyright (C) 2011-2013 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include <shogun/converter/MultidimensionalScaling.h>
+#include <converter/MultidimensionalScaling.h>
 #ifdef HAVE_EIGEN3
-#include <shogun/converter/EmbeddingConverter.h>
-#include <shogun/mathematics/lapack.h>
-#include <shogun/distance/CustomDistance.h>
-#include <shogun/lib/common.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/mathematics/Statistics.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/distance/EuclideanDistance.h>
-#include <shogun/lib/tapkee/tapkee_shogun.hpp>
+#include <converter/EmbeddingConverter.h>
+#include <mathematics/lapack.h>
+#include <distance/CustomDistance.h>
+#include <lib/common.h>
+#include <mathematics/Math.h>
+#include <mathematics/Statistics.h>
+#include <io/SGIO.h>
+#include <distance/EuclideanDistance.h>
+#include <lib/tapkee/tapkee_shogun.hpp>
 
 using namespace shogun;
 

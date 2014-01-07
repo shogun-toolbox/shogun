@@ -8,9 +8,9 @@
  * Copyright (C) 2013 Viktor Gal
  */
 
-#include <shogun/ensemble/WeightedMajorityVote.h>
-#include <shogun/base/Parameter.h>
-#include <shogun/lib/SGMatrix.h>
+#include <ensemble/WeightedMajorityVote.h>
+#include <base/Parameter.h>
+#include <lib/SGMatrix.h>
 #include <map>
 
 using namespace shogun;

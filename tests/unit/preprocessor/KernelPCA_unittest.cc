@@ -1,14 +1,14 @@
-#include <shogun/features/Features.h>
-#include <shogun/preprocessor/KernelPCA.h>
-#include <shogun/lib/tapkee/tapkee_shogun.hpp>
-#include <shogun/kernel/Kernel.h>
+#include <features/Features.h>
+#include <preprocessor/KernelPCA.h>
+#include <lib/tapkee/tapkee_shogun.hpp>
+#include <kernel/Kernel.h>
 
-#include <shogun/kernel/GaussianKernel.h>
+#include <kernel/GaussianKernel.h>
 #include <iostream>
-#include <shogun/lib/SGMatrix.h>
-#include <shogun/features/Features.h>
+#include <lib/SGMatrix.h>
+#include <features/Features.h>
 
-#include <shogun/base/init.h>
+#include <base/init.h>
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 

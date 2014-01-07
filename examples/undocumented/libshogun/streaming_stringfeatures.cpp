@@ -1,7 +1,7 @@
 // This example simply demonstrates the use/working of StreamingStringFeatures
 
-#include <shogun/io/StreamingAsciiFile.h>
-#include <shogun/features/StreamingStringFeatures.h>
+#include <io/StreamingAsciiFile.h>
+#include <features/StreamingStringFeatures.h>
 
 using namespace shogun;
 

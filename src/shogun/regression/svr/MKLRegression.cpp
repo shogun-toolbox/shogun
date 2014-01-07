@@ -1,7 +1,7 @@
-#include <shogun/regression/svr/MKLRegression.h>
-#include <shogun/regression/svr/LibSVR.h>
+#include <regression/svr/MKLRegression.h>
+#include <regression/svr/LibSVR.h>
 #ifdef USE_SVMLIGHT
-#include <shogun/regression/svr/SVRLight.h>
+#include <regression/svr/SVRLight.h>
 #endif //USE_SVMLIGHT
 
 using namespace shogun;

@@ -12,13 +12,13 @@
 #ifndef _GUISTRUCTURE_H__
 #define _GUISTRUCTURE_H__
 
-#include <shogun/lib/config.h>
-#include <shogun/base/SGObject.h>
-#include <shogun/structure/Plif.h>
-#include <shogun/structure/PlifArray.h>
-#include <shogun/structure/PlifBase.h>
-#include <shogun/structure/DynProg.h>
-#include <shogun/structure/PlifMatrix.h>
+#include <lib/config.h>
+#include <base/SGObject.h>
+#include <structure/Plif.h>
+#include <structure/PlifArray.h>
+#include <structure/PlifBase.h>
+#include <structure/DynProg.h>
+#include <structure/PlifMatrix.h>
 
 namespace shogun
 {

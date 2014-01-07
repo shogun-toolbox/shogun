@@ -8,15 +8,15 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include <shogun/evaluation/CrossValidation.h>
-#include <shogun/machine/Machine.h>
-#include <shogun/evaluation/Evaluation.h>
-#include <shogun/evaluation/SplittingStrategy.h>
-#include <shogun/base/Parameter.h>
-#include <shogun/base/ParameterMap.h>
-#include <shogun/mathematics/Statistics.h>
-#include <shogun/evaluation/CrossValidationOutput.h>
-#include <shogun/lib/List.h>
+#include <evaluation/CrossValidation.h>
+#include <machine/Machine.h>
+#include <evaluation/Evaluation.h>
+#include <evaluation/SplittingStrategy.h>
+#include <base/Parameter.h>
+#include <base/ParameterMap.h>
+#include <mathematics/Statistics.h>
+#include <evaluation/CrossValidationOutput.h>
+#include <lib/List.h>
 
 using namespace shogun;
 

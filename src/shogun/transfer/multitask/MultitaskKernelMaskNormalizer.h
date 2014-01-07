@@ -11,8 +11,8 @@
 #ifndef _MULTITASKKERNELMASKNORMALIZER_H___
 #define _MULTITASKKERNELMASKNORMALIZER_H___
 
-#include <shogun/kernel/normalizer/KernelNormalizer.h>
-#include <shogun/kernel/Kernel.h>
+#include <kernel/normalizer/KernelNormalizer.h>
+#include <kernel/Kernel.h>
 #include <set>
 #include <string>
 #include <vector>

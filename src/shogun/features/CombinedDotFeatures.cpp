@@ -9,9 +9,9 @@
  * Copyright (C) 2010 Berlin Institute of Technology
  */
 
-#include <shogun/features/CombinedDotFeatures.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/mathematics/Math.h>
+#include <features/CombinedDotFeatures.h>
+#include <io/SGIO.h>
+#include <mathematics/Math.h>
 
 using namespace shogun;
 

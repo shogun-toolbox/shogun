@@ -12,9 +12,9 @@
 #ifndef __GUIKERNEL__H
 #define __GUIKERNEL__H
 
-#include <shogun/lib/config.h>
-#include <shogun/base/SGObject.h>
-#include <shogun/kernel/Kernel.h>
+#include <lib/config.h>
+#include <base/SGObject.h>
+#include <kernel/Kernel.h>
 
 namespace shogun
 {

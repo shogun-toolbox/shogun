@@ -14,8 +14,8 @@
 #ifndef __DATATYPE_H__
 #define __DATATYPE_H__
 
-#include <shogun/lib/common.h>
-#include <shogun/io/SGIO.h>
+#include <lib/common.h>
+#include <io/SGIO.h>
 
 #define PT_NOT_GENERIC	PT_SGOBJECT
 

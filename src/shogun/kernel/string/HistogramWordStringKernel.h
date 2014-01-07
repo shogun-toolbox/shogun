@@ -12,10 +12,10 @@
 #ifndef _HISTOGRAMWORDKERNEL_H___
 #define _HISTOGRAMWORDKERNEL_H___
 
-#include <shogun/lib/common.h>
-#include <shogun/kernel/string/StringKernel.h>
-#include <shogun/classifier/PluginEstimate.h>
-#include <shogun/features/StringFeatures.h>
+#include <lib/common.h>
+#include <kernel/string/StringKernel.h>
+#include <classifier/PluginEstimate.h>
+#include <features/StringFeatures.h>
 
 namespace shogun
 {

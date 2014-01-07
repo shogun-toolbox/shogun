@@ -10,8 +10,8 @@
 #ifndef __PARSER_H__
 #define __PARSER_H__
 
-#include <shogun/lib/SGVector.h>
-#include <shogun/lib/Tokenizer.h>
+#include <lib/SGVector.h>
+#include <lib/Tokenizer.h>
 
 namespace shogun
 {

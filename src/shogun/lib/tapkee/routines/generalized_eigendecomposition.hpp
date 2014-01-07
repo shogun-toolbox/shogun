@@ -8,9 +8,9 @@
 
 /* Tapkee includes */
 #ifdef TAPKEE_WITH_ARPACK
-	#include <shogun/lib/tapkee/utils/arpack_wrapper.hpp>
+	#include <lib/tapkee/utils/arpack_wrapper.hpp>
 #endif
-#include <shogun/lib/tapkee/routines/matrix_operations.hpp>
+#include <lib/tapkee/routines/matrix_operations.hpp>
 /* End of Tapkee includes */
 
 namespace tapkee

@@ -12,12 +12,12 @@
 #ifndef _KERNELRIDGEREGRESSION_H__
 #define _KERNELRIDGEREGRESSION_H__
 
-#include <shogun/lib/config.h>
-#include <shogun/regression/Regression.h>
+#include <lib/config.h>
+#include <regression/Regression.h>
 
 #ifdef HAVE_LAPACK
 
-#include <shogun/machine/KernelMachine.h>
+#include <machine/KernelMachine.h>
 
 namespace shogun
 {

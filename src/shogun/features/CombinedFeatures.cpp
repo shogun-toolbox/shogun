@@ -10,10 +10,10 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/features/CombinedFeatures.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/lib/Set.h>
-#include <shogun/lib/Map.h>
+#include <features/CombinedFeatures.h>
+#include <io/SGIO.h>
+#include <lib/Set.h>
+#include <lib/Map.h>
 
 using namespace shogun;
 

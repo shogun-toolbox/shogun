@@ -13,14 +13,14 @@
 #ifndef _CSTRINGFEATURES__H__
 #define _CSTRINGFEATURES__H__
 
-#include <shogun/lib/common.h>
-#include <shogun/lib/Cache.h>
-#include <shogun/lib/DynamicArray.h>
-#include <shogun/lib/Compressor.h>
-#include <shogun/io/File.h>
+#include <lib/common.h>
+#include <lib/Cache.h>
+#include <lib/DynamicArray.h>
+#include <lib/Compressor.h>
+#include <io/File.h>
 
-#include <shogun/features/Features.h>
-#include <shogun/features/Alphabet.h>
+#include <features/Features.h>
+#include <features/Alphabet.h>
 
 namespace shogun
 {

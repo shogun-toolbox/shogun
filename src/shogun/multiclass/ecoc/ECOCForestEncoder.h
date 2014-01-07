@@ -11,7 +11,7 @@
 #ifndef ECOCFORESTENCODER_H__
 #define ECOCFORESTENCODER_H__
 
-#include <shogun/multiclass/ecoc/ECOCDiscriminantEncoder.h>
+#include <multiclass/ecoc/ECOCDiscriminantEncoder.h>
 
 namespace shogun
 {

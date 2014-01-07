@@ -10,9 +10,9 @@
 #ifndef _GAUSSIANPROCESSMACHINE_H_
 #define _GAUSSIANPROCESSMACHINE_H_
 
-#include <shogun/lib/config.h>
-#include <shogun/machine/Machine.h>
-#include <shogun/machine/gp/InferenceMethod.h>
+#include <lib/config.h>
+#include <machine/Machine.h>
+#include <machine/gp/InferenceMethod.h>
 
 #ifdef HAVE_EIGEN3
 

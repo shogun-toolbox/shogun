@@ -1,11 +1,11 @@
-#include <shogun/labels/LabelsFactory.h>
+#include <labels/LabelsFactory.h>
 
-#include <shogun/labels/BinaryLabels.h>
-#include <shogun/labels/LatentLabels.h>
-#include <shogun/labels/MulticlassLabels.h>
-#include <shogun/labels/RegressionLabels.h>
-#include <shogun/labels/StructuredLabels.h>
-#include <shogun/labels/MulticlassMultipleOutputLabels.h>
+#include <labels/BinaryLabels.h>
+#include <labels/LatentLabels.h>
+#include <labels/MulticlassLabels.h>
+#include <labels/RegressionLabels.h>
+#include <labels/StructuredLabels.h>
+#include <labels/MulticlassMultipleOutputLabels.h>
 
 using namespace shogun;
 

@@ -1,4 +1,4 @@
-#include <shogun/lib/Hash.h>
+#include <lib/Hash.h>
 #include <stdio.h>
 
 

@@ -1,4 +1,5 @@
-include_directories(${CMAKE_SOURCE_DIR}/src)
+include_directories(${CMAKE_SOURCE_DIR}/src/shogun
+		${CMAKE_BINARY_DIR}/src/shogun)
 
 SET(CMDLINE_STATIC_EXEC "${CMAKE_CURRENT_BINARY_DIR}/cmdline_static" PARENT_SCOPE)
 add_executable(cmdline_static cmdline.cpp CmdLineInterface.cpp)

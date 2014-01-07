@@ -11,18 +11,18 @@
  *           and Matthieu Perrot (scikit-learn)
  */
 
-#include <shogun/lib/common.h>
+#include <lib/common.h>
 
 #ifdef HAVE_EIGEN3
 
-#include <shogun/multiclass/MCLDA.h>
-#include <shogun/machine/NativeMulticlassMachine.h>
-#include <shogun/features/Features.h>
-#include <shogun/labels/Labels.h>
-#include <shogun/labels/MulticlassLabels.h>
-#include <shogun/mathematics/Math.h>
+#include <multiclass/MCLDA.h>
+#include <machine/NativeMulticlassMachine.h>
+#include <features/Features.h>
+#include <labels/Labels.h>
+#include <labels/MulticlassLabels.h>
+#include <mathematics/Math.h>
 
-#include <shogun/mathematics/eigen3.h>
+#include <mathematics/eigen3.h>
 
 using namespace shogun;
 using namespace Eigen;

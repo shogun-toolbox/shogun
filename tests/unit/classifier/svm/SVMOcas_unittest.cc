@@ -1,6 +1,6 @@
-#include <shogun/classifier/svm/SVMOcas.h>
-#include <shogun/features/DataGenerator.h>
-#include <shogun/features/DenseFeatures.h>
+#include <classifier/svm/SVMOcas.h>
+#include <features/DataGenerator.h>
+#include <features/DenseFeatures.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;

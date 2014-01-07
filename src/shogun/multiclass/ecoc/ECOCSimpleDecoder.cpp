@@ -8,7 +8,7 @@
  * Copyright (C) 2012 Chiyuan Zhang
  */
 
-#include <shogun/multiclass/ecoc/ECOCSimpleDecoder.h>
+#include <multiclass/ecoc/ECOCSimpleDecoder.h>
 
 using namespace shogun;
 

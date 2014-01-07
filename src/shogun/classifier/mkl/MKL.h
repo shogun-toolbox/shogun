@@ -11,7 +11,7 @@
 #ifndef __MKL_H__
 #define __MKL_H__
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
 #ifdef USE_GLPK
 #include <glpk.h>
@@ -23,11 +23,11 @@ extern "C" {
 }
 #endif
 
-#include <shogun/lib/common.h>
-#include <shogun/lib/Time.h>
-#include <shogun/features/Features.h>
-#include <shogun/kernel/Kernel.h>
-#include <shogun/classifier/svm/SVM.h>
+#include <lib/common.h>
+#include <lib/Time.h>
+#include <features/Features.h>
+#include <kernel/Kernel.h>
+#include <classifier/svm/SVM.h>
 
 namespace shogun
 {

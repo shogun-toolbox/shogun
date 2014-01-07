@@ -13,9 +13,9 @@
 #define __SERIALIZABLE_FILE_H__
 
 #include <stdio.h>
-#include <shogun/base/SGObject.h>
-#include <shogun/lib/DataType.h>
-#include <shogun/lib/SGSparseVector.h>
+#include <base/SGObject.h>
+#include <lib/DataType.h>
+#include <lib/SGSparseVector.h>
 
 namespace shogun
 {

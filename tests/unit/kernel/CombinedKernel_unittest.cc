@@ -1,6 +1,6 @@
-#include <shogun/kernel/CombinedKernel.h>
-#include <shogun/kernel/GaussianKernel.h>
-#include <shogun/io/SerializableAsciiFile.h>
+#include <kernel/CombinedKernel.h>
+#include <kernel/GaussianKernel.h>
+#include <io/SerializableAsciiFile.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;

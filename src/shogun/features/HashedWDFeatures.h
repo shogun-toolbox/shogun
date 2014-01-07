@@ -11,10 +11,10 @@
 #ifndef _HASHEDWDFEATURES_H___
 #define _HASHEDWDFEATURES_H___
 
-#include <shogun/lib/common.h>
-#include <shogun/features/DotFeatures.h>
-#include <shogun/features/StringFeatures.h>
-#include <shogun/lib/Hash.h>
+#include <lib/common.h>
+#include <features/DotFeatures.h>
+#include <features/StringFeatures.h>
+#include <lib/Hash.h>
 
 namespace shogun
 {

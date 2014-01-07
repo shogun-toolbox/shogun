@@ -14,8 +14,8 @@
   Modifications (w) 2012 Fernando José Iglesias García
 */
 
-#include <shogun/loss/HingeLoss.h>
-#include <shogun/mathematics/Math.h>
+#include <loss/HingeLoss.h>
+#include <mathematics/Math.h>
 
 using namespace shogun;
 

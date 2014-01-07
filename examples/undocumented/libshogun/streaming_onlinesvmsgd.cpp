@@ -11,11 +11,11 @@
  * relies on the streaming features framework.
  */
 
-#include <shogun/lib/common.h>
+#include <lib/common.h>
 
-#include <shogun/io/StreamingAsciiFile.h>
-#include <shogun/features/StreamingSparseFeatures.h>
-#include <shogun/classifier/svm/OnlineSVMSGD.h>
+#include <io/StreamingAsciiFile.h>
+#include <features/StreamingSparseFeatures.h>
+#include <classifier/svm/OnlineSVMSGD.h>
 
 using namespace shogun;
 

@@ -1,5 +1,7 @@
 include(CommonModularInterface)
-include_directories(${JNI_INCLUDE_DIRS})
+include_directories(${CMAKE_SOURCE_DIR}/src/shogun
+		${CMAKE_BINARY_DIR}/src/shogun
+		${JNI_INCLUDE_DIRS})
 
 GENERATE_MODULAR_TARGET(java ${CMAKE_CURRENT_SOURCE_DIR} "")
 

@@ -8,8 +8,8 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/base/Parallel.h>
-#include <shogun/lib/RefCount.h>
+#include <base/Parallel.h>
+#include <lib/RefCount.h>
 
 #if defined(LINUX) && defined(_SC_NPROCESSORS_ONLN)
 #include <unistd.h>

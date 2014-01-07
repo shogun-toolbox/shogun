@@ -7,16 +7,16 @@
  * Written (W) 2013 Roman Votyakov
  */
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
 #ifdef HAVE_EIGEN3
 
-#include <shogun/machine/GaussianProcessMachine.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/kernel/Kernel.h>
-#include <shogun/machine/gp/FITCInferenceMethod.h>
+#include <machine/GaussianProcessMachine.h>
+#include <mathematics/Math.h>
+#include <kernel/Kernel.h>
+#include <machine/gp/FITCInferenceMethod.h>
 
-#include <shogun/mathematics/eigen3.h>
+#include <mathematics/eigen3.h>
 
 using namespace shogun;
 using namespace Eigen;

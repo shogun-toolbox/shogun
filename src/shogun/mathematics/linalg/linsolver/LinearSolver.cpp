@@ -8,7 +8,7 @@
  * Written (W) 2013 Heiko Strathmann
  */
 
-#include <shogun/mathematics/linalg/linsolver/LinearSolver.h>
+#include <mathematics/linalg/linsolver/LinearSolver.h>
 
 namespace shogun
 {

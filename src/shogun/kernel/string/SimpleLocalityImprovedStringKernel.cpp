@@ -10,12 +10,12 @@
  * Copyright (C) 2013 Soeren Sonnenburg
  */
 
-#include <shogun/lib/common.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/kernel/string/SimpleLocalityImprovedStringKernel.h>
-#include <shogun/kernel/normalizer/SqrtDiagKernelNormalizer.h>
-#include <shogun/features/Features.h>
-#include <shogun/features/StringFeatures.h>
+#include <lib/common.h>
+#include <io/SGIO.h>
+#include <kernel/string/SimpleLocalityImprovedStringKernel.h>
+#include <kernel/normalizer/SqrtDiagKernelNormalizer.h>
+#include <features/Features.h>
+#include <features/StringFeatures.h>
 
 using namespace shogun;
 

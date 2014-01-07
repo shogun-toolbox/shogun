@@ -10,12 +10,12 @@
 #ifndef _DIRECTORDOTFEATURES_H___
 #define _DIRECTORDOTFEATURES_H___
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
 #ifdef USE_SWIG_DIRECTORS
-#include <shogun/lib/common.h>
-#include <shogun/features/Features.h>
-#include <shogun/features/DotFeatures.h>
+#include <lib/common.h>
+#include <features/Features.h>
+#include <features/DotFeatures.h>
 
 namespace shogun
 {

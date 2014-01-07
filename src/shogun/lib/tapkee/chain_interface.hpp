@@ -7,9 +7,9 @@
 #define TAPKEE_CHAIN_H_
 
 /* Tapkee includes */
-#include <shogun/lib/tapkee/embed.hpp>
-#include <shogun/lib/tapkee/callbacks/dummy_callbacks.hpp>
-#include <shogun/lib/tapkee/callbacks/eigen_callbacks.hpp>
+#include <lib/tapkee/embed.hpp>
+#include <lib/tapkee/callbacks/dummy_callbacks.hpp>
+#include <lib/tapkee/callbacks/eigen_callbacks.hpp>
 /* End of Tapkee includes */
 
 namespace tapkee

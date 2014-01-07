@@ -1,11 +1,11 @@
 #ifdef HAVE_EIGEN3
 
-#include <shogun/mathematics/ajd/JediDiag.h>
+#include <mathematics/ajd/JediDiag.h>
 
-#include <shogun/base/init.h>
+#include <base/init.h>
 
-#include <shogun/mathematics/Math.h>
-#include <shogun/mathematics/eigen3.h>
+#include <mathematics/Math.h>
+#include <mathematics/eigen3.h>
 
 using namespace shogun;
 using namespace Eigen;

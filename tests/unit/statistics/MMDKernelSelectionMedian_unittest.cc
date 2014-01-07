@@ -7,15 +7,15 @@
  * Written (W) 2013 Heiko Strathmann
  */
 
-#include <shogun/base/init.h>
-#include <shogun/statistics/QuadraticTimeMMD.h>
-#include <shogun/statistics/MMDKernelSelectionMedian.h>
-#include <shogun/features/streaming/StreamingFeatures.h>
-#include <shogun/features/streaming/StreamingDenseFeatures.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/kernel/GaussianKernel.h>
-#include <shogun/kernel/CombinedKernel.h>
-#include <shogun/mathematics/Statistics.h>
+#include <base/init.h>
+#include <statistics/QuadraticTimeMMD.h>
+#include <statistics/MMDKernelSelectionMedian.h>
+#include <features/streaming/StreamingFeatures.h>
+#include <features/streaming/StreamingDenseFeatures.h>
+#include <features/DenseFeatures.h>
+#include <kernel/GaussianKernel.h>
+#include <kernel/CombinedKernel.h>
+#include <mathematics/Statistics.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;

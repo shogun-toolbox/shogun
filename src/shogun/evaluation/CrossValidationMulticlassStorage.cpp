@@ -7,10 +7,10 @@
  * Copyright (C) 2012 Sergey Lisitsyn, Heiko Strathmann
  */
 
-#include <shogun/evaluation/CrossValidationMulticlassStorage.h>
-#include <shogun/evaluation/ROCEvaluation.h>
-#include <shogun/evaluation/PRCEvaluation.h>
-#include <shogun/evaluation/MulticlassAccuracy.h>
+#include <evaluation/CrossValidationMulticlassStorage.h>
+#include <evaluation/ROCEvaluation.h>
+#include <evaluation/PRCEvaluation.h>
+#include <evaluation/MulticlassAccuracy.h>
 
 using namespace shogun;
 

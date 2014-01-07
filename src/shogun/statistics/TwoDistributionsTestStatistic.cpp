@@ -7,8 +7,8 @@
  * Written (W) 2012-2013 Heiko Strathmann
  */
 
-#include <shogun/statistics/TwoDistributionsTestStatistic.h>
-#include <shogun/features/Features.h>
+#include <statistics/TwoDistributionsTestStatistic.h>
+#include <features/Features.h>
 
 using namespace shogun;
 

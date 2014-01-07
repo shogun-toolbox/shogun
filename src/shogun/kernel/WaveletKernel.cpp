@@ -8,9 +8,9 @@
  * Copyright (C) 2007-2011 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/lib/common.h>
-#include <shogun/kernel/WaveletKernel.h>
-#include <shogun/features/DenseFeatures.h>
+#include <lib/common.h>
+#include <kernel/WaveletKernel.h>
+#include <features/DenseFeatures.h>
 
 using namespace shogun;
 

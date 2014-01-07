@@ -11,11 +11,11 @@
 #ifndef __LIBSVMFILE_H__
 #define __LIBSVMFILE_H__
 
-#include <shogun/io/File.h>
+#include <io/File.h>
 
-#include <shogun/io/LineReader.h>
-#include <shogun/io/Parser.h>
-#include <shogun/lib/DelimiterTokenizer.h>
+#include <io/LineReader.h>
+#include <io/Parser.h>
+#include <lib/DelimiterTokenizer.h>
 
 namespace shogun
 {

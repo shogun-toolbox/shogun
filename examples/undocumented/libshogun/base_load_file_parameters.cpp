@@ -8,12 +8,12 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include <shogun/base/init.h>
-#include <shogun/base/Parameter.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/io/SerializableAsciiFile.h>
-#include <shogun/base/ParameterMap.h>
-#include <shogun/features/DenseFeatures.h>
+#include <base/init.h>
+#include <base/Parameter.h>
+#include <io/SGIO.h>
+#include <io/SerializableAsciiFile.h>
+#include <base/ParameterMap.h>
+#include <features/DenseFeatures.h>
 #include <unistd.h>
 
 using namespace shogun;

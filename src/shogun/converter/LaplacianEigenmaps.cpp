@@ -8,11 +8,11 @@
  * Copyright (C) 2011-2013 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include <shogun/converter/LaplacianEigenmaps.h>
-#include <shogun/converter/EmbeddingConverter.h>
+#include <converter/LaplacianEigenmaps.h>
+#include <converter/EmbeddingConverter.h>
 #ifdef HAVE_EIGEN3
-#include <shogun/distance/EuclideanDistance.h>
-#include <shogun/lib/tapkee/tapkee_shogun.hpp>
+#include <distance/EuclideanDistance.h>
+#include <lib/tapkee/tapkee_shogun.hpp>
 
 using namespace shogun;
 

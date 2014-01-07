@@ -11,10 +11,10 @@
 #ifndef _HMSVM_MODEL__H__
 #define _HMSVM_MODEL__H__
 
-#include <shogun/structure/StructuredModel.h>
-#include <shogun/structure/SequenceLabels.h>
-#include <shogun/structure/StateModelTypes.h>
-#include <shogun/structure/StateModel.h>
+#include <structure/StructuredModel.h>
+#include <structure/SequenceLabels.h>
+#include <structure/StateModelTypes.h>
+#include <structure/StateModel.h>
 
 namespace shogun
 {

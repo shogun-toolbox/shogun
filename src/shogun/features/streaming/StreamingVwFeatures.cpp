@@ -13,7 +13,7 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society.
  */
 
-#include <shogun/features/streaming/StreamingVwFeatures.h>
+#include <features/streaming/StreamingVwFeatures.h>
 
 using namespace shogun;
 

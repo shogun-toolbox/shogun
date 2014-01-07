@@ -24,8 +24,8 @@
 #include <math.h>
 #include <ctype.h>
 #include <string.h>
-#include <shogun/kernel/string/LocalAlignmentStringKernel.h>
-#include <shogun/kernel/normalizer/SqrtDiagKernelNormalizer.h>
+#include <kernel/string/LocalAlignmentStringKernel.h>
+#include <kernel/normalizer/SqrtDiagKernelNormalizer.h>
 
 using namespace shogun;
 

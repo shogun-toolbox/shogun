@@ -12,7 +12,7 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society.
  */
 
-#include <shogun/classifier/vw/vw_example.h>
+#include <classifier/vw/vw_example.h>
 
 using namespace shogun;
 

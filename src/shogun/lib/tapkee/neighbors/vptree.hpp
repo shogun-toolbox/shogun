@@ -7,7 +7,7 @@
 #define TAPKEE_VPTREE_H_
 
 /* Tapkee includes */
-#include <shogun/lib/tapkee/defines.hpp>
+#include <lib/tapkee/defines.hpp>
 /* End of Tapkee includes */
 
 #include <vector>

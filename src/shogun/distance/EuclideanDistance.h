@@ -11,9 +11,9 @@
 #ifndef _EUCLIDEANDISTANCE_H__
 #define _EUCLIDEANDISTANCE_H__
 
-#include <shogun/lib/common.h>
-#include <shogun/distance/RealDistance.h>
-#include <shogun/features/DenseFeatures.h>
+#include <lib/common.h>
+#include <distance/RealDistance.h>
+#include <features/DenseFeatures.h>
 
 namespace shogun
 {

@@ -10,9 +10,9 @@
 #ifndef _SPARSEPOLYFEATURES__H__
 #define _SPARSEPOLYFEATURES__H__
 
-#include <shogun/lib/common.h>
-#include <shogun/features/DotFeatures.h>
-#include <shogun/features/SparseFeatures.h>
+#include <lib/common.h>
+#include <features/DotFeatures.h>
+#include <features/SparseFeatures.h>
 
 namespace shogun
 {

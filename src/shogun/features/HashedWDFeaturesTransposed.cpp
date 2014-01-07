@@ -8,10 +8,10 @@
  * Copyright (C) 2010 Berlin Institute of Technology
  */
 
-#include <shogun/features/HashedWDFeaturesTransposed.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/lib/Signal.h>
-#include <shogun/base/Parallel.h>
+#include <features/HashedWDFeaturesTransposed.h>
+#include <io/SGIO.h>
+#include <lib/Signal.h>
+#include <base/Parallel.h>
 
 #ifdef HAVE_PTHREAD
 #include <pthread.h>

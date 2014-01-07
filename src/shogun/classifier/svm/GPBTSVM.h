@@ -10,9 +10,9 @@
 
 #ifndef _GPBTSVM_H___
 #define _GPBTSVM_H___
-#include <shogun/lib/common.h>
-#include <shogun/classifier/svm/SVM.h>
-#include <shogun/lib/external/shogun_libsvm.h>
+#include <lib/common.h>
+#include <classifier/svm/SVM.h>
+#include <lib/external/shogun_libsvm.h>
 
 #include <stdio.h>
 

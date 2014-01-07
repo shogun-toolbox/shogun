@@ -10,8 +10,8 @@
 #ifndef DENSE_MATRIX_EXACT_LOG_H_
 #define DENSE_MATRIX_EXACT_LOG_H_
 
-#include <shogun/lib/config.h>
-#include <shogun/mathematics/linalg/ratapprox/opfunc/OperatorFunction.h>
+#include <lib/config.h>
+#include <mathematics/linalg/ratapprox/opfunc/OperatorFunction.h>
 
 #ifdef HAVE_EIGEN3
 

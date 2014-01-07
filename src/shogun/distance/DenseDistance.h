@@ -11,10 +11,10 @@
 #ifndef _DENSEDISTANCE_H___
 #define _DENSEDISTANCE_H___
 
-#include <shogun/distance/Distance.h>
-#include <shogun/features/FeatureTypes.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/io/SGIO.h>
+#include <distance/Distance.h>
+#include <features/FeatureTypes.h>
+#include <features/DenseFeatures.h>
+#include <io/SGIO.h>
 
 namespace shogun
 {

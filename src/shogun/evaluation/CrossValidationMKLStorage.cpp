@@ -8,10 +8,10 @@
  * Written (W) 2012 Heiko Strathmann
  */
 
-#include <shogun/evaluation/CrossValidationMKLStorage.h>
-#include <shogun/kernel/CombinedKernel.h>
-#include <shogun/classifier/mkl/MKL.h>
-#include <shogun/classifier/mkl/MKLMulticlass.h>
+#include <evaluation/CrossValidationMKLStorage.h>
+#include <kernel/CombinedKernel.h>
+#include <classifier/mkl/MKL.h>
+#include <classifier/mkl/MKLMulticlass.h>
 
 using namespace shogun;
 

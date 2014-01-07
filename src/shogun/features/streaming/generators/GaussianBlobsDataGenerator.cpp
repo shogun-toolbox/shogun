@@ -7,7 +7,7 @@
  * Written (W) 2013 Heiko Strathmann
  */
 
-#include <shogun/features/streaming/generators/GaussianBlobsDataGenerator.h>
+#include <features/streaming/generators/GaussianBlobsDataGenerator.h>
 
 using namespace shogun;
 

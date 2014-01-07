@@ -100,16 +100,16 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
  #define SWIG_FILE_WITH_INIT
 
 #if defined(SWIGJAVA) || defined(SWIGCSHARP)
- #include <shogun/base/init.h>
+ #include <base/init.h>
 #endif
- #include <shogun/lib/common.h>
- #include <shogun/io/SGIO.h>
- #include <shogun/lib/ShogunException.h>
- #include <shogun/lib/DataType.h>
- #include <shogun/base/Version.h>
- #include <shogun/base/Parallel.h>
- #include <shogun/base/SGRefObject.h>
- #include <shogun/base/SGObject.h>
+ #include <lib/common.h>
+ #include <io/SGIO.h>
+ #include <lib/ShogunException.h>
+ #include <lib/DataType.h>
+ #include <base/Version.h>
+ #include <base/Parallel.h>
+ #include <base/SGRefObject.h>
+ #include <base/SGObject.h>
 
  extern void sg_global_print_message(FILE* target, const char* str);
  extern void sg_global_print_warning(FILE* target, const char* str);
@@ -124,9 +124,9 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
 
 #ifdef SWIGPYTHON
 
- #include <shogun/io/SerializableFile.h>
- #include <shogun/io/SerializableAsciiFile.h>
- #include <shogun/io/SerializableHdf5File.h>
+ #include <io/SerializableFile.h>
+ #include <io/SerializableAsciiFile.h>
+ #include <io/SerializableHdf5File.h>
 
  static int pickle_ascii;
 #endif

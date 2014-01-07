@@ -1,5 +1,5 @@
 #include <gmock/gmock.h>
-#include <shogun/labels/Labels.h>
+#include <labels/Labels.h>
 
 namespace shogun {
 

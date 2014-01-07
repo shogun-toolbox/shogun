@@ -10,8 +10,8 @@
 #ifndef PROBABILITYDISTRIBUTION_H
 #define PROBABILITYDISTRIBUTION_H
 
-#include <shogun/base/SGObject.h>
-#include <shogun/lib/SGMatrix.h>
+#include <base/SGObject.h>
+#include <lib/SGMatrix.h>
 
 namespace shogun
 {

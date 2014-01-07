@@ -1,13 +1,13 @@
-#include <shogun/io/CSVFile.h>
-#include <shogun/labels/MulticlassLabels.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/features/DenseSubsetFeatures.h>
-#include <shogun/base/init.h>
-#include <shogun/multiclass/tree/RelaxedTree.h>
-#include <shogun/multiclass/MulticlassLibLinear.h>
-#include <shogun/evaluation/MulticlassAccuracy.h>
-#include <shogun/kernel/GaussianKernel.h>
+#include <io/CSVFile.h>
+#include <labels/MulticlassLabels.h>
+#include <io/SGIO.h>
+#include <features/DenseFeatures.h>
+#include <features/DenseSubsetFeatures.h>
+#include <base/init.h>
+#include <multiclass/tree/RelaxedTree.h>
+#include <multiclass/MulticlassLibLinear.h>
+#include <evaluation/MulticlassAccuracy.h>
+#include <kernel/GaussianKernel.h>
 
 #define  EPSILON  1e-5
 

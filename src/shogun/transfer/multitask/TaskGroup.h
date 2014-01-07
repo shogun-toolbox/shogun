@@ -10,10 +10,10 @@
 #ifndef TASKGROUP_H_
 #define TASKGROUP_H_
 
-#include <shogun/base/SGObject.h>
-#include <shogun/transfer/multitask/Task.h>
-#include <shogun/transfer/multitask/TaskRelation.h>
-#include <shogun/lib/DynamicObjectArray.h>
+#include <base/SGObject.h>
+#include <transfer/multitask/Task.h>
+#include <transfer/multitask/TaskRelation.h>
+#include <lib/DynamicObjectArray.h>
 
 namespace shogun
 {

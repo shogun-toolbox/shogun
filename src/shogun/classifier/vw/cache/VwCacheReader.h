@@ -16,10 +16,10 @@
 #ifndef _VW_CACHEREAD_H__
 #define _VW_CACHEREAD_H__
 
-#include <shogun/base/SGObject.h>
-#include <shogun/lib/common.h>
-#include <shogun/io/IOBuffer.h>
-#include <shogun/classifier/vw/vw_common.h>
+#include <base/SGObject.h>
+#include <lib/common.h>
+#include <io/IOBuffer.h>
+#include <classifier/vw/vw_common.h>
 
 namespace shogun
 {

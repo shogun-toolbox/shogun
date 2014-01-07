@@ -11,8 +11,8 @@
 #ifndef _KERNEL_STRUCTURED_OUTPUT_MACHINE__H__
 #define _KERNEL_STRUCTURED_OUTPUT_MACHINE__H__
 
-#include <shogun/machine/StructuredOutputMachine.h>
-#include <shogun/kernel/Kernel.h>
+#include <machine/StructuredOutputMachine.h>
+#include <kernel/Kernel.h>
 
 namespace shogun
 {

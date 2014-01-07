@@ -1,7 +1,7 @@
-#include <shogun/labels/DenseLabels.h>
-#include <shogun/labels/BinaryLabels.h>
-#include <shogun/labels/MulticlassLabels.h>
-#include <shogun/base/ParameterMap.h>
+#include <labels/DenseLabels.h>
+#include <labels/BinaryLabels.h>
+#include <labels/MulticlassLabels.h>
+#include <base/ParameterMap.h>
 
 using namespace shogun;
 

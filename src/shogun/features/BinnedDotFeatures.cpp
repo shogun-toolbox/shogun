@@ -7,8 +7,8 @@
  * Copyright (C) 2012 Soeren Sonnenburg
  */
 
-#include <shogun/features/BinnedDotFeatures.h>
-#include <shogun/base/Parameter.h>
+#include <features/BinnedDotFeatures.h>
+#include <base/Parameter.h>
 
 using namespace shogun;
 

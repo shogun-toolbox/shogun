@@ -11,10 +11,10 @@
 #ifndef RELAXEDTREEUTIL_H__
 #define RELAXEDTREEUTIL_H__
 
-#include <shogun/machine/BaseMulticlassMachine.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/labels/MulticlassLabels.h>
-#include <shogun/lib/SGMatrix.h>
+#include <machine/BaseMulticlassMachine.h>
+#include <features/DenseFeatures.h>
+#include <labels/MulticlassLabels.h>
+#include <lib/SGMatrix.h>
 
 namespace shogun
 {

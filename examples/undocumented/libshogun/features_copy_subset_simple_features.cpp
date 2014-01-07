@@ -8,9 +8,9 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include <shogun/base/init.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/features/Subset.h>
+#include <base/init.h>
+#include <features/DenseFeatures.h>
+#include <features/Subset.h>
 
 using namespace shogun;
 

@@ -8,11 +8,11 @@
  * Copyright (C) 1999-2008 Center for Machine Perception, CTU FEL Prague
  */
 
-#include <shogun/io/SGIO.h>
-#include <shogun/labels/MulticlassLabels.h>
-#include <shogun/multiclass/GMNPSVM.h>
-#include <shogun/multiclass/GMNPLib.h>
-#include <shogun/multiclass/MulticlassOneVsRestStrategy.h>
+#include <io/SGIO.h>
+#include <labels/MulticlassLabels.h>
+#include <multiclass/GMNPSVM.h>
+#include <multiclass/GMNPLib.h>
+#include <multiclass/MulticlassOneVsRestStrategy.h>
 
 #define INDEX(ROW,COL,DIM) (((COL)*(DIM))+(ROW))
 #define MINUS_INF INT_MIN

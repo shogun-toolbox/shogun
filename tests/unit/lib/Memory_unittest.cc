@@ -1,7 +1,7 @@
-#include <shogun/lib/memory.h>
-#include <shogun/lib/SGMatrix.h>
-#include <shogun/lib/SGSparseVector.h>
-#include <shogun/lib/SGVector.h>
+#include <lib/memory.h>
+#include <lib/SGMatrix.h>
+#include <lib/SGSparseVector.h>
+#include <lib/SGVector.h>
 
 #include <gtest/gtest.h>
 

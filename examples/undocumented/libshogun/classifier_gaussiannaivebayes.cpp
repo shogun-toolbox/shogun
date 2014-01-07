@@ -1,9 +1,9 @@
-#include <shogun/labels/MulticlassLabels.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/multiclass/GaussianNaiveBayes.h>
-#include <shogun/base/init.h>
-#include <shogun/lib/common.h>
-#include <shogun/io/SGIO.h>
+#include <labels/MulticlassLabels.h>
+#include <features/DenseFeatures.h>
+#include <multiclass/GaussianNaiveBayes.h>
+#include <base/init.h>
+#include <lib/common.h>
+#include <io/SGIO.h>
 
 using namespace shogun;
 

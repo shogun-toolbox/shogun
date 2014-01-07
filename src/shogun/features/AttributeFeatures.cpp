@@ -8,9 +8,9 @@
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/features/Features.h>
-#include <shogun/features/AttributeFeatures.h>
-#include <shogun/lib/memory.h>
+#include <features/Features.h>
+#include <features/AttributeFeatures.h>
+#include <lib/memory.h>
 
 using namespace shogun;
 

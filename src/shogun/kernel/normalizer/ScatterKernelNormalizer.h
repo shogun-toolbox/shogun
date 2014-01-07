@@ -11,12 +11,12 @@
 #ifndef _SCATTERKERNELNORMALIZER_H___
 #define _SCATTERKERNELNORMALIZER_H___
 
-#include <shogun/kernel/normalizer/KernelNormalizer.h>
-#include <shogun/kernel/normalizer/IdentityKernelNormalizer.h>
-#include <shogun/kernel/Kernel.h>
-#include <shogun/labels/Labels.h>
-#include <shogun/labels/MulticlassLabels.h>
-#include <shogun/io/SGIO.h>
+#include <kernel/normalizer/KernelNormalizer.h>
+#include <kernel/normalizer/IdentityKernelNormalizer.h>
+#include <kernel/Kernel.h>
+#include <labels/Labels.h>
+#include <labels/MulticlassLabels.h>
+#include <io/SGIO.h>
 
 namespace shogun
 {

@@ -14,7 +14,7 @@
  */
 
 #include <algorithm>
-#include <shogun/classifier/vw/VowpalWabbit.h>
+#include <classifier/vw/VowpalWabbit.h>
 
 using namespace std;
 using namespace shogun;

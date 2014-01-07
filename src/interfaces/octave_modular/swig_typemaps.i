@@ -23,7 +23,7 @@
 #include <octave/variables.h>
 #include <octave/Cell.h>
 
-#include <shogun/lib/DataType.h>
+#include <lib/DataType.h>
 %}
 
 /* One dimensional input arrays */

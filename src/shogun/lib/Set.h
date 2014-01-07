@@ -12,10 +12,10 @@
 #ifndef _SET_H_
 #define _SET_H_
 
-#include <shogun/base/SGObject.h>
-#include <shogun/lib/common.h>
-#include <shogun/lib/Hash.h>
-#include <shogun/base/DynArray.h>
+#include <base/SGObject.h>
+#include <lib/common.h>
+#include <lib/Hash.h>
+#include <base/DynArray.h>
 
 #include <cstdio>
 

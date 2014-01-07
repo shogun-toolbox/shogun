@@ -8,11 +8,11 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/classifier/svm/GPBTSVM.h>
-#include <shogun/lib/external/gpdt.h>
-#include <shogun/lib/external/gpdtsolve.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/labels/BinaryLabels.h>
+#include <classifier/svm/GPBTSVM.h>
+#include <lib/external/gpdt.h>
+#include <lib/external/gpdtsolve.h>
+#include <io/SGIO.h>
+#include <labels/BinaryLabels.h>
 
 using namespace shogun;
 

@@ -11,14 +11,14 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include <shogun/multiclass/KNN.h>
-#include <shogun/labels/Labels.h>
-#include <shogun/labels/MulticlassLabels.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/lib/Signal.h>
-#include <shogun/lib/JLCoverTree.h>
-#include <shogun/lib/Time.h>
-#include <shogun/base/Parameter.h>
+#include <multiclass/KNN.h>
+#include <labels/Labels.h>
+#include <labels/MulticlassLabels.h>
+#include <mathematics/Math.h>
+#include <lib/Signal.h>
+#include <lib/JLCoverTree.h>
+#include <lib/Time.h>
+#include <base/Parameter.h>
 
 //#define BENCHMARK_KNN
 //#define DEBUG_KNN

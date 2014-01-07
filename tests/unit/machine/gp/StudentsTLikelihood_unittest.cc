@@ -7,15 +7,15 @@
  * Written (W) 2013 Roman Votyakov
  */
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
 #ifdef HAVE_EIGEN3
 
-#include <shogun/base/Parameter.h>
-#include <shogun/labels/RegressionLabels.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/machine/gp/StudentsTLikelihood.h>
-#include <shogun/evaluation/GradientResult.h>
+#include <base/Parameter.h>
+#include <labels/RegressionLabels.h>
+#include <features/DenseFeatures.h>
+#include <machine/gp/StudentsTLikelihood.h>
+#include <evaluation/GradientResult.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;

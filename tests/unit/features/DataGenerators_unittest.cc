@@ -7,10 +7,10 @@
  * Written (W) 2012-2013 Heiko Strathmann
  */
 
-#include <shogun/base/init.h>
-#include <shogun/mathematics/Statistics.h>
-#include <shogun/features/streaming/generators/GaussianBlobsDataGenerator.h>
-#include <shogun/features/streaming/generators/MeanShiftDataGenerator.h>
+#include <base/init.h>
+#include <mathematics/Statistics.h>
+#include <features/streaming/generators/GaussianBlobsDataGenerator.h>
+#include <features/streaming/generators/MeanShiftDataGenerator.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;

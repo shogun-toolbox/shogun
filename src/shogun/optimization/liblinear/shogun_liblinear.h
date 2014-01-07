@@ -35,10 +35,10 @@
 #ifndef _LIBLINEAR_H
 #define _LIBLINEAR_H
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
-#include <shogun/optimization/liblinear/tron.h>
-#include <shogun/features/DotFeatures.h>
+#include <optimization/liblinear/tron.h>
+#include <features/DotFeatures.h>
 #include <vector>
 
 namespace shogun

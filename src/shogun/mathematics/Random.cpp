@@ -8,12 +8,12 @@
  * Copyright (C) 2013 Viktor Gal
  */
 
-#include <shogun/mathematics/Random.h>
-#include <shogun/base/Parameter.h>
-#include <shogun/lib/external/SFMT/SFMT.h>
-#include <shogun/lib/external/dSFMT/dSFMT.h>
-#include <shogun/lib/Time.h>
-#include <shogun/lib/Lock.h>
+#include <mathematics/Random.h>
+#include <base/Parameter.h>
+#include <lib/external/SFMT/SFMT.h>
+#include <lib/external/dSFMT/dSFMT.h>
+#include <lib/Time.h>
+#include <lib/Lock.h>
 
 #ifdef DEV_RANDOM
 #include <fcntl.h>

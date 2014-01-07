@@ -1,10 +1,10 @@
-#include <shogun/labels/LatentLabels.h>
-#include <shogun/features/LatentFeatures.h>
-#include <shogun/latent/LatentSVM.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/base/init.h>
-#include <shogun/lib/common.h>
-#include <shogun/io/SGIO.h>
+#include <labels/LatentLabels.h>
+#include <features/LatentFeatures.h>
+#include <latent/LatentSVM.h>
+#include <features/DenseFeatures.h>
+#include <base/init.h>
+#include <lib/common.h>
+#include <io/SGIO.h>
 
 #include <libgen.h>
 

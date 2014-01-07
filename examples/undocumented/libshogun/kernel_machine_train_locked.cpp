@@ -8,12 +8,12 @@
  * Copyright (C) 2012 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include <shogun/base/init.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/labels/BinaryLabels.h>
-#include <shogun/kernel/LinearKernel.h>
-#include <shogun/classifier/svm/LibSVM.h>
-#include <shogun/evaluation/ContingencyTableEvaluation.h>
+#include <base/init.h>
+#include <features/DenseFeatures.h>
+#include <labels/BinaryLabels.h>
+#include <kernel/LinearKernel.h>
+#include <classifier/svm/LibSVM.h>
+#include <evaluation/ContingencyTableEvaluation.h>
 
 using namespace shogun;
 

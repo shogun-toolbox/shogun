@@ -8,10 +8,10 @@
  * Copyright (C) 2009 Max-Planck-Society
  */
 
-#include <shogun/lib/common.h>
-#include <shogun/kernel/string/RegulatoryModulesStringKernel.h>
-#include <shogun/features/Features.h>
-#include <shogun/io/SGIO.h>
+#include <lib/common.h>
+#include <kernel/string/RegulatoryModulesStringKernel.h>
+#include <features/Features.h>
+#include <io/SGIO.h>
 
 using namespace shogun;
 

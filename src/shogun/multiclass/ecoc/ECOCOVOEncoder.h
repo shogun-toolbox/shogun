@@ -11,7 +11,7 @@
 #ifndef ECOCOVOENCODER_H__
 #define ECOCOVOENCODER_H__
 
-#include <shogun/multiclass/ecoc/ECOCEncoder.h>
+#include <multiclass/ecoc/ECOCEncoder.h>
 
 namespace shogun
 {

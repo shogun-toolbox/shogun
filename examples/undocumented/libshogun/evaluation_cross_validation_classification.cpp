@@ -8,14 +8,14 @@
  * Copyright (C) 2012 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include <shogun/base/init.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/labels/BinaryLabels.h>
-#include <shogun/kernel/GaussianKernel.h>
-#include <shogun/classifier/svm/LibSVM.h>
-#include <shogun/evaluation/CrossValidation.h>
-#include <shogun/evaluation/StratifiedCrossValidationSplitting.h>
-#include <shogun/evaluation/ContingencyTableEvaluation.h>
+#include <base/init.h>
+#include <features/DenseFeatures.h>
+#include <labels/BinaryLabels.h>
+#include <kernel/GaussianKernel.h>
+#include <classifier/svm/LibSVM.h>
+#include <evaluation/CrossValidation.h>
+#include <evaluation/StratifiedCrossValidationSplitting.h>
+#include <evaluation/ContingencyTableEvaluation.h>
 
 using namespace shogun;
 

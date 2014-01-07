@@ -8,10 +8,10 @@
  * Copyright (C) 2010 Koen van de Sande / University of Amsterdam
  */
 
-#include <shogun/lib/common.h>
-#include <shogun/kernel/HistogramIntersectionKernel.h>
-#include <shogun/features/Features.h>
-#include <shogun/io/SGIO.h>
+#include <lib/common.h>
+#include <kernel/HistogramIntersectionKernel.h>
+#include <features/Features.h>
+#include <io/SGIO.h>
 
 using namespace shogun;
 

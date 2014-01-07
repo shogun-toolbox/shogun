@@ -1,9 +1,9 @@
-#include <shogun/lib/SGMatrix.h>
-#include <shogun/lib/SGSparseMatrix.h>
-#include <shogun/lib/SGSparseVector.h>
-#include <shogun/labels/RegressionLabels.h>
-#include <shogun/io/File.h>
-#include <shogun/io/SGIO.h>
+#include <lib/SGMatrix.h>
+#include <lib/SGSparseMatrix.h>
+#include <lib/SGSparseVector.h>
+#include <labels/RegressionLabels.h>
+#include <io/File.h>
+#include <io/SGIO.h>
 
 namespace shogun {
 

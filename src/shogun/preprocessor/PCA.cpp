@@ -9,17 +9,17 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  * Copyright (C) 2011 Berlin Institute of Technology
  */
-#include <shogun/preprocessor/PCA.h>
+#include <preprocessor/PCA.h>
 #ifdef HAVE_LAPACK
-#include <shogun/mathematics/lapack.h>
-#include <shogun/lib/config.h>
-#include <shogun/mathematics/Math.h>
+#include <mathematics/lapack.h>
+#include <lib/config.h>
+#include <mathematics/Math.h>
 #include <string.h>
 #include <stdlib.h>
-#include <shogun/lib/common.h>
-#include <shogun/preprocessor/DensePreprocessor.h>
-#include <shogun/features/Features.h>
-#include <shogun/io/SGIO.h>
+#include <lib/common.h>
+#include <preprocessor/DensePreprocessor.h>
+#include <features/Features.h>
+#include <io/SGIO.h>
 
 using namespace shogun;
 

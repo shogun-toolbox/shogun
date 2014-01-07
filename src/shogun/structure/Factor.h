@@ -11,10 +11,10 @@
 #ifndef __FACTOR_RELATED_H__
 #define __FACTOR_RELATED_H__
 
-#include <shogun/base/SGObject.h>
-#include <shogun/lib/SGVector.h>
-#include <shogun/lib/SGSparseVector.h>
-#include <shogun/structure/FactorType.h>
+#include <base/SGObject.h>
+#include <lib/SGVector.h>
+#include <lib/SGSparseVector.h>
+#include <structure/FactorType.h>
 
 namespace shogun
 {

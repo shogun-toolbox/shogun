@@ -8,9 +8,9 @@
  * Copyright (C) 2013 Shell Hu
  */
 
-#include <shogun/structure/MAPInference.h>
-#include <shogun/structure/BeliefPropagation.h>
-#include <shogun/labels/FactorGraphLabels.h>
+#include <structure/MAPInference.h>
+#include <structure/BeliefPropagation.h>
+#include <labels/FactorGraphLabels.h>
 
 using namespace shogun;
 

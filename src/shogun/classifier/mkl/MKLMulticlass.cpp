@@ -11,10 +11,10 @@
  *
  */
 
-#include <shogun/multiclass/MulticlassOneVsRestStrategy.h>
-#include <shogun/classifier/mkl/MKLMulticlass.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/labels/MulticlassLabels.h>
+#include <multiclass/MulticlassOneVsRestStrategy.h>
+#include <classifier/mkl/MKLMulticlass.h>
+#include <io/SGIO.h>
+#include <labels/MulticlassLabels.h>
 
 using namespace shogun;
 

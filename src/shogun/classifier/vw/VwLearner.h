@@ -16,10 +16,10 @@
 #ifndef _VW_LEARNER_H__
 #define _VW_LEARNER_H__
 
-#include <shogun/base/SGObject.h>
-#include <shogun/base/Parameter.h>
-#include <shogun/classifier/vw/vw_common.h>
-#include <shogun/classifier/vw/VwRegressor.h>
+#include <base/SGObject.h>
+#include <base/Parameter.h>
+#include <classifier/vw/vw_common.h>
+#include <classifier/vw/VwRegressor.h>
 
 namespace shogun
 {

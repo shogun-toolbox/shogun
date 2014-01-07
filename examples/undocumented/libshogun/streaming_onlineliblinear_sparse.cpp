@@ -13,13 +13,13 @@
  * program to do binary classifications on user-provided inputs.
  */
 
-#include <shogun/lib/common.h>
-#include <shogun/lib/Time.h>
+#include <lib/common.h>
+#include <lib/Time.h>
 
-#include <shogun/classifier/svm/OnlineLibLinear.h>
-#include <shogun/io/streaming/StreamingAsciiFile.h>
-#include <shogun/features/streaming/StreamingSparseFeatures.h>
-#include <shogun/labels/BinaryLabels.h>
+#include <classifier/svm/OnlineLibLinear.h>
+#include <io/streaming/StreamingAsciiFile.h>
+#include <features/streaming/StreamingSparseFeatures.h>
+#include <labels/BinaryLabels.h>
 
 using namespace shogun;
 

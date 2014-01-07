@@ -8,8 +8,8 @@
  * Copyright (C) 2012 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include <shogun/evaluation/CrossValidationSplitting.h>
-#include <shogun/labels/Labels.h>
+#include <evaluation/CrossValidationSplitting.h>
+#include <labels/Labels.h>
 
 using namespace shogun;
 

@@ -7,10 +7,10 @@
  * Written (W) 2013 Heiko Strathmann
  */
 
-#include <shogun/distributions/classical/ProbabilityDistribution.h>
-#include <shogun/base/Parameter.h>
-#include <shogun/lib/SGVector.h>
-#include <shogun/lib/SGMatrix.h>
+#include <distributions/classical/ProbabilityDistribution.h>
+#include <base/Parameter.h>
+#include <lib/SGVector.h>
+#include <lib/SGMatrix.h>
 
 using namespace shogun;
 

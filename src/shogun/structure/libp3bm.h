@@ -14,8 +14,8 @@
 #ifndef libp3bm_h
 #define libp3bm_h
 
-#include <shogun/lib/common.h>
-#include <shogun/structure/libbmrm.h>
+#include <lib/common.h>
+#include <structure/libbmrm.h>
 
 namespace shogun
 {

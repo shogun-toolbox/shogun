@@ -8,13 +8,13 @@
  * Copyright (C) 2012 Viktor Gal
  */
 
-#include <shogun/preprocessor/PNorm.h>
-#include <shogun/preprocessor/DensePreprocessor.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/features/Features.h>
+#include <preprocessor/PNorm.h>
+#include <preprocessor/DensePreprocessor.h>
+#include <mathematics/Math.h>
+#include <features/Features.h>
 
 #ifdef HAVE_LAPACK
-#include <shogun/mathematics/lapack.h>
+#include <mathematics/lapack.h>
 #endif
 
 using namespace shogun;

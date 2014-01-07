@@ -14,7 +14,7 @@
 %include pdl.i
 
 %{
-#include <shogun/lib/DataType.h>
+#include <lib/DataType.h>
 
     /* OUT typemaps */
     /****************/

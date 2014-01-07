@@ -7,11 +7,11 @@
  * Written (W) 2013 Heiko Strathmann
  */
 
-#include <shogun/base/init.h>
-#include <shogun/kernel/GaussianKernel.h>
-#include <shogun/kernel/CustomKernel.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/features/streaming/generators/MeanShiftDataGenerator.h>
+#include <base/init.h>
+#include <kernel/GaussianKernel.h>
+#include <kernel/CustomKernel.h>
+#include <features/DenseFeatures.h>
+#include <features/streaming/generators/MeanShiftDataGenerator.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;

@@ -8,14 +8,14 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
 #ifndef TSTUDENTKERNEL_H_
 #define TSTUDENTKERNEL_H_
 
-#include <shogun/lib/common.h>
-#include <shogun/kernel/Kernel.h>
-#include <shogun/distance/Distance.h>
+#include <lib/common.h>
+#include <kernel/Kernel.h>
+#include <distance/Distance.h>
 
 namespace shogun
 {

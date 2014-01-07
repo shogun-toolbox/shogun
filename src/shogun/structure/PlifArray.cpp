@@ -8,15 +8,15 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
 #include <stdio.h>
 #include <string.h>
 
-#include <shogun/io/SGIO.h>
+#include <io/SGIO.h>
 
-#include <shogun/structure/PlifArray.h>
-#include <shogun/structure/Plif.h>
+#include <structure/PlifArray.h>
+#include <structure/Plif.h>
 
 //#define PLIFARRAY_DEBUG
 

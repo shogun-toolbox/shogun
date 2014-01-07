@@ -11,8 +11,8 @@
 #ifndef DENSESUBSETFEATURES_H__
 #define DENSESUBSETFEATURES_H__
 
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/features/DotFeatures.h>
+#include <features/DenseFeatures.h>
+#include <features/DotFeatures.h>
 
 namespace shogun
 {

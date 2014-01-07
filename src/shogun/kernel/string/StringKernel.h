@@ -11,8 +11,8 @@
 #ifndef _STRINGKERNEL_H___
 #define _STRINGKERNEL_H___
 
-#include <shogun/kernel/Kernel.h>
-#include <shogun/features/StringFeatures.h>
+#include <kernel/Kernel.h>
+#include <features/StringFeatures.h>
 
 namespace shogun
 {

@@ -11,8 +11,8 @@
 #ifndef _WEIGHTED_MAJORITY_VOTE_H_
 #define _WEIGHTED_MAJORITY_VOTE_H_
 
-#include <shogun/ensemble/CombinationRule.h>
-#include <shogun/lib/SGVector.h>
+#include <ensemble/CombinationRule.h>
+#include <lib/SGVector.h>
 
 namespace shogun
 {

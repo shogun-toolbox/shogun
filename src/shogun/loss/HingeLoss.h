@@ -17,7 +17,7 @@
 #ifndef _HINGELOSS_H__
 #define _HINGELOSS_H__
 
-#include <shogun/loss/LossFunction.h>
+#include <loss/LossFunction.h>
 
 namespace shogun
 {

@@ -8,11 +8,11 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include <shogun/modelselection/GridSearchModelSelection.h>
-#include <shogun/modelselection/ParameterCombination.h>
-#include <shogun/modelselection/ModelSelectionParameters.h>
-#include <shogun/evaluation/CrossValidation.h>
-#include <shogun/machine/Machine.h>
+#include <modelselection/GridSearchModelSelection.h>
+#include <modelselection/ParameterCombination.h>
+#include <modelselection/ModelSelectionParameters.h>
+#include <evaluation/CrossValidation.h>
+#include <machine/Machine.h>
 
 using namespace shogun;
 

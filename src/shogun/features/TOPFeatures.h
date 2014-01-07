@@ -12,8 +12,8 @@
 #ifndef _CTOPFEATURES__H__
 #define _CTOPFEATURES__H__
 
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/distributions/HMM.h>
+#include <features/DenseFeatures.h>
+#include <distributions/HMM.h>
 
 namespace shogun
 {

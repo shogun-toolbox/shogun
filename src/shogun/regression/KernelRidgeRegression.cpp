@@ -9,13 +9,13 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
 #ifdef HAVE_LAPACK
-#include <shogun/regression/KernelRidgeRegression.h>
-#include <shogun/mathematics/lapack.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/labels/RegressionLabels.h>
+#include <regression/KernelRidgeRegression.h>
+#include <mathematics/lapack.h>
+#include <mathematics/Math.h>
+#include <labels/RegressionLabels.h>
 
 using namespace shogun;
 

@@ -12,9 +12,9 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society.
  */
 
-#include <shogun/classifier/vw/VwRegressor.h>
-#include <shogun/loss/SquaredLoss.h>
-#include <shogun/io/IOBuffer.h>
+#include <classifier/vw/VwRegressor.h>
+#include <loss/SquaredLoss.h>
+#include <io/IOBuffer.h>
 
 using namespace shogun;
 

@@ -14,8 +14,8 @@
   Modifications (w) 2012 Fernando José Iglesias García
 */
 
-#include <shogun/mathematics/Math.h>
-#include <shogun/loss/SquaredLoss.h>
+#include <mathematics/Math.h>
+#include <loss/SquaredLoss.h>
 
 using namespace shogun;
 

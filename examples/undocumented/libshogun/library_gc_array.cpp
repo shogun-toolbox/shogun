@@ -1,8 +1,8 @@
-#include <shogun/base/init.h>
-#include <shogun/lib/common.h>
-#include <shogun/lib/GCArray.h>
-#include <shogun/kernel/Kernel.h>
-#include <shogun/kernel/GaussianKernel.h>
+#include <base/init.h>
+#include <lib/common.h>
+#include <lib/GCArray.h>
+#include <kernel/Kernel.h>
+#include <kernel/GaussianKernel.h>
 
 #include <stdio.h>
 

@@ -8,8 +8,8 @@
  * Copyright (C) 2012 Jacob Walker
  */
 
-#include <shogun/evaluation/GradientEvaluation.h>
-#include <shogun/evaluation/GradientResult.h>
+#include <evaluation/GradientEvaluation.h>
+#include <evaluation/GradientResult.h>
 
 using namespace shogun;
 

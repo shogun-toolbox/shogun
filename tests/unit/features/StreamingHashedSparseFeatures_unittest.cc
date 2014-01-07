@@ -7,10 +7,10 @@
  * Written (W) 2013 Evangelos Anagnostopoulos
  */
 
-#include <shogun/base/init.h>
-#include <shogun/lib/Hash.h>
-#include <shogun/features/SparseFeatures.h>
-#include <shogun/features/streaming/StreamingHashedSparseFeatures.h>
+#include <base/init.h>
+#include <lib/Hash.h>
+#include <features/SparseFeatures.h>
+#include <features/streaming/StreamingHashedSparseFeatures.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;

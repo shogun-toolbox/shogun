@@ -7,7 +7,7 @@
  * Copyright (C) 2012 Sergey Lisitsyn
  */
 
-#include <shogun/transfer/multitask/TaskTree.h>
+#include <transfer/multitask/TaskTree.h>
 #include <vector>
 
 using namespace std;

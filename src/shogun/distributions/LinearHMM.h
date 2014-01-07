@@ -12,9 +12,9 @@
 #ifndef _LINEARHMM_H__
 #define _LINEARHMM_H__
 
-#include <shogun/features/StringFeatures.h>
-#include <shogun/labels/Labels.h>
-#include <shogun/distributions/Distribution.h>
+#include <features/StringFeatures.h>
+#include <labels/Labels.h>
+#include <distributions/Distribution.h>
 
 namespace shogun
 {

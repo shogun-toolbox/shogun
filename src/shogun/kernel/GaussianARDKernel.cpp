@@ -9,10 +9,10 @@
  * Adapted from WeightedDegreeRBFKernel.cpp
  */
 
-#include <shogun/lib/common.h>
-#include <shogun/kernel/GaussianARDKernel.h>
-#include <shogun/features/Features.h>
-#include <shogun/io/SGIO.h>
+#include <lib/common.h>
+#include <kernel/GaussianARDKernel.h>
+#include <features/Features.h>
+#include <io/SGIO.h>
 
 using namespace shogun;
 

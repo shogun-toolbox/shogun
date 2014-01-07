@@ -1,28 +1,28 @@
 %{
 #ifdef HAVE_EIGEN3
 
- #include <shogun/evaluation/DifferentiableFunction.h>
- #include <shogun/machine/gp/LikelihoodModel.h>
- #include <shogun/machine/gp/ProbitLikelihood.h>
- #include <shogun/machine/gp/LogitLikelihood.h>
- #include <shogun/machine/gp/GaussianLikelihood.h>
- #include <shogun/machine/gp/StudentsTLikelihood.h>
+ #include <evaluation/DifferentiableFunction.h>
+ #include <machine/gp/LikelihoodModel.h>
+ #include <machine/gp/ProbitLikelihood.h>
+ #include <machine/gp/LogitLikelihood.h>
+ #include <machine/gp/GaussianLikelihood.h>
+ #include <machine/gp/StudentsTLikelihood.h>
 
- #include <shogun/machine/gp/MeanFunction.h>
- #include <shogun/machine/gp/ZeroMean.h>
+ #include <machine/gp/MeanFunction.h>
+ #include <machine/gp/ZeroMean.h>
 
- #include <shogun/machine/gp/InferenceMethod.h>
- #include <shogun/machine/gp/LaplacianInferenceMethod.h>
- #include <shogun/machine/gp/ExactInferenceMethod.h>
- #include <shogun/machine/gp/LaplacianInferenceMethod.h>
- #include <shogun/machine/gp/FITCInferenceMethod.h>
- #include <shogun/machine/gp/EPInferenceMethod.h>
+ #include <machine/gp/InferenceMethod.h>
+ #include <machine/gp/LaplacianInferenceMethod.h>
+ #include <machine/gp/ExactInferenceMethod.h>
+ #include <machine/gp/LaplacianInferenceMethod.h>
+ #include <machine/gp/FITCInferenceMethod.h>
+ #include <machine/gp/EPInferenceMethod.h>
 
- #include <shogun/machine/gp/MeanFunction.h>
- #include <shogun/machine/gp/ZeroMean.h>
+ #include <machine/gp/MeanFunction.h>
+ #include <machine/gp/ZeroMean.h>
 
- #include <shogun/machine/GaussianProcessMachine.h>
- #include <shogun/classifier/GaussianProcessBinaryClassification.h>
- #include <shogun/regression/GaussianProcessRegression.h>
+ #include <machine/GaussianProcessMachine.h>
+ #include <classifier/GaussianProcessBinaryClassification.h>
+ #include <regression/GaussianProcessRegression.h>
 #endif //HAVE_EIGEN3
 %}

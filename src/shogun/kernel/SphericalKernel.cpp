@@ -9,8 +9,8 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include <shogun/kernel/SphericalKernel.h>
-#include <shogun/mathematics/Math.h>
+#include <kernel/SphericalKernel.h>
+#include <mathematics/Math.h>
 
 using namespace shogun;
 

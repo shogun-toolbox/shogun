@@ -1,4 +1,4 @@
 %{
- #include <shogun/metric/LMNN.h>
+ #include <metric/LMNN.h>
 %}
 

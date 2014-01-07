@@ -14,9 +14,9 @@
 #ifndef __SGVECTOR_H__
 #define __SGVECTOR_H__
 
-#include <shogun/lib/common.h>
-#include <shogun/lib/DataType.h>
-#include <shogun/lib/SGReferencedData.h>
+#include <lib/common.h>
+#include <lib/DataType.h>
+#include <lib/SGReferencedData.h>
 
 
 namespace shogun

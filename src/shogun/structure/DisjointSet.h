@@ -11,8 +11,8 @@
 #ifndef __DISJOINTSET_H__
 #define __DISJOINTSET_H__
 
-#include <shogun/base/SGObject.h>
-#include <shogun/lib/SGVector.h>
+#include <base/SGObject.h>
+#include <lib/SGVector.h>
 
 namespace shogun
 {

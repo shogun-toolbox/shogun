@@ -9,11 +9,11 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include <shogun/io/SGIO.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/base/Parameter.h>
-#include <shogun/kernel/string/DistantSegmentsKernel.h>
-#include <shogun/kernel/GaussianKernel.h>
+#include <io/SGIO.h>
+#include <mathematics/Math.h>
+#include <base/Parameter.h>
+#include <kernel/string/DistantSegmentsKernel.h>
+#include <kernel/GaussianKernel.h>
 
 using namespace shogun;
 

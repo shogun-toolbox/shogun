@@ -11,14 +11,14 @@
 #ifndef _QDA_H__
 #define _QDA_H__
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
 #ifdef HAVE_EIGEN3
 
-#include <shogun/features/DotFeatures.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/machine/NativeMulticlassMachine.h>
-#include <shogun/lib/SGNDArray.h>
+#include <features/DotFeatures.h>
+#include <features/DenseFeatures.h>
+#include <machine/NativeMulticlassMachine.h>
+#include <lib/SGNDArray.h>
 
 namespace shogun
 {

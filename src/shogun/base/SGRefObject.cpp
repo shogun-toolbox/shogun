@@ -10,9 +10,9 @@
  * Copyright (C) 2008-2009 Fraunhofer Institute FIRST and Max Planck Society
  */
 
-#include <shogun/base/init.h>
-#include <shogun/base/SGRefObject.h>
-#include <shogun/io/SGIO.h>
+#include <base/init.h>
+#include <base/SGRefObject.h>
+#include <io/SGIO.h>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -73,7 +73,7 @@ int32_t SGRefObject::unref()
 #endif //USE_REFERENCE_COUNTING
 
 #ifdef TRACE_MEMORY_ALLOCS
-#include <shogun/lib/Map.h>
+#include <lib/Map.h>
 extern CMap<void*, shogun::MemoryBlock>* sg_mallocs;
 #endif
 

@@ -8,10 +8,10 @@
  * Copyright (C) 2012 Fernando José Iglesias García
  */
 
-#include <shogun/structure/TwoStateModel.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/features/MatrixFeatures.h>
-#include <shogun/structure/Plif.h>
+#include <structure/TwoStateModel.h>
+#include <mathematics/Math.h>
+#include <features/MatrixFeatures.h>
+#include <structure/Plif.h>
 
 using namespace shogun;
 

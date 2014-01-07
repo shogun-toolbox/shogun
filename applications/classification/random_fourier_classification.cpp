@@ -6,18 +6,18 @@
  *
  * Written (W) 2013 Evangelos Anagnostopoulos
  */
-#include <shogun/base/init.h>
-#include <shogun/features/RandomFourierDotFeatures.h>
-#include <shogun/features/SparseFeatures.h>
-#include <shogun/io/LibSVMFile.h>
-#include <shogun/labels/BinaryLabels.h>
-#include <shogun/labels/MulticlassLabels.h>
-#include <shogun/classifier/svm/SVMOcas.h>
-#include <shogun/classifier/svm/LibLinear.h>
-#include <shogun/evaluation/PRCEvaluation.h>
-#include <shogun/evaluation/ROCEvaluation.h>
-#include <shogun/evaluation/ContingencyTableEvaluation.h>
-#include <shogun/lib/Time.h>
+#include <base/init.h>
+#include <features/RandomFourierDotFeatures.h>
+#include <features/SparseFeatures.h>
+#include <io/LibSVMFile.h>
+#include <labels/BinaryLabels.h>
+#include <labels/MulticlassLabels.h>
+#include <classifier/svm/SVMOcas.h>
+#include <classifier/svm/LibLinear.h>
+#include <evaluation/PRCEvaluation.h>
+#include <evaluation/ROCEvaluation.h>
+#include <evaluation/ContingencyTableEvaluation.h>
+#include <lib/Time.h>
 
 #include <stdio.h>
 

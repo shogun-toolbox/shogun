@@ -10,7 +10,7 @@
  * Copyright (C) 2012 Fernando José Iglesias García
  */
 
-#include <shogun/machine/StructuredOutputMachine.h>
+#include <machine/StructuredOutputMachine.h>
 
 using namespace shogun;
 

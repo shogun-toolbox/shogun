@@ -1,4 +1,4 @@
-#include <shogun/base/init.h>
+#include <base/init.h>
 
 using namespace shogun;
 

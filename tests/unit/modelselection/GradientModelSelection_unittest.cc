@@ -7,26 +7,26 @@
  * Written (W) 2013 Roman Votyakov
  */
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
 #if defined HAVE_EIGEN3 && defined HAVE_NLOPT
 
-#include <shogun/labels/RegressionLabels.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/kernel/GaussianKernel.h>
+#include <labels/RegressionLabels.h>
+#include <features/DenseFeatures.h>
+#include <kernel/GaussianKernel.h>
 
-#include <shogun/machine/gp/ExactInferenceMethod.h>
-#include <shogun/machine/gp/EPInferenceMethod.h>
-#include <shogun/machine/gp/ZeroMean.h>
-#include <shogun/evaluation/GradientResult.h>
-#include <shogun/machine/gp/GaussianLikelihood.h>
-#include <shogun/machine/gp/ProbitLikelihood.h>
-#include <shogun/regression/GaussianProcessRegression.h>
-#include <shogun/classifier/GaussianProcessBinaryClassification.h>
+#include <machine/gp/ExactInferenceMethod.h>
+#include <machine/gp/EPInferenceMethod.h>
+#include <machine/gp/ZeroMean.h>
+#include <evaluation/GradientResult.h>
+#include <machine/gp/GaussianLikelihood.h>
+#include <machine/gp/ProbitLikelihood.h>
+#include <regression/GaussianProcessRegression.h>
+#include <classifier/GaussianProcessBinaryClassification.h>
 
-#include <shogun/evaluation/GradientEvaluation.h>
-#include <shogun/evaluation/GradientCriterion.h>
-#include <shogun/modelselection/GradientModelSelection.h>
+#include <evaluation/GradientEvaluation.h>
+#include <evaluation/GradientCriterion.h>
+#include <modelselection/GradientModelSelection.h>
 
 #include <gtest/gtest.h>
 

@@ -8,9 +8,9 @@
  * Copyright (C) 2012 Sergey Lisitsyn
  */
 
-#include <shogun/mathematics/SparseInverseCovariance.h>
-#include <shogun/base/Parameter.h>
-#include <shogun/lib/slep/SpInvCoVa/invCov.h>
+#include <mathematics/SparseInverseCovariance.h>
+#include <base/Parameter.h>
+#include <lib/slep/SpInvCoVa/invCov.h>
 
 using namespace shogun;
 

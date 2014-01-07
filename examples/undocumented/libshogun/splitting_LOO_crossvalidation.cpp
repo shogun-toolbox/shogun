@@ -7,9 +7,9 @@
  * Written (W) 2013 Saurabh Mahindre
  */
 
-#include <shogun/base/init.h>
-#include <shogun/evaluation/LOOCrossValidationSplitting.h>
-#include <shogun/labels/RegressionLabels.h>
+#include <base/init.h>
+#include <evaluation/LOOCrossValidationSplitting.h>
+#include <labels/RegressionLabels.h>
 
 using namespace shogun;
 

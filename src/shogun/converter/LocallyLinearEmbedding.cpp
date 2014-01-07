@@ -8,14 +8,14 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include <shogun/converter/LocallyLinearEmbedding.h>
-#include <shogun/lib/config.h>
+#include <converter/LocallyLinearEmbedding.h>
+#include <lib/config.h>
 #ifdef HAVE_EIGEN3
-#include <shogun/converter/EmbeddingConverter.h>
-#include <shogun/kernel/LinearKernel.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/lib/Time.h>
-#include <shogun/lib/tapkee/tapkee_shogun.hpp>
+#include <converter/EmbeddingConverter.h>
+#include <kernel/LinearKernel.h>
+#include <io/SGIO.h>
+#include <lib/Time.h>
+#include <lib/tapkee/tapkee_shogun.hpp>
 
 using namespace shogun;
 

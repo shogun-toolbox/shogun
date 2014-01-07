@@ -11,10 +11,10 @@
 #ifndef _LINEARCLASSIFIER_H__
 #define _LINEARCLASSIFIER_H__
 
-#include <shogun/lib/common.h>
-#include <shogun/labels/Labels.h>
-#include <shogun/features/DotFeatures.h>
-#include <shogun/machine/Machine.h>
+#include <lib/common.h>
+#include <labels/Labels.h>
+#include <features/DotFeatures.h>
+#include <machine/Machine.h>
 
 #include <stdio.h>
 

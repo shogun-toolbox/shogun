@@ -7,12 +7,12 @@
  * Written (W) 2013 Roman Votyakov
  */
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
 #ifdef HAVE_EIGEN3
 
-#include <shogun/labels/BinaryLabels.h>
-#include <shogun/machine/gp/LogitLikelihood.h>
+#include <labels/BinaryLabels.h>
+#include <machine/gp/LogitLikelihood.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;

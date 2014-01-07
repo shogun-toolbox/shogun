@@ -12,8 +12,8 @@
 #include <limits>
 #include <algorithm>
 
-#include <shogun/multiclass/ecoc/ECOCRandomSparseEncoder.h>
-#include <shogun/multiclass/ecoc/ECOCUtil.h>
+#include <multiclass/ecoc/ECOCRandomSparseEncoder.h>
+#include <multiclass/ecoc/ECOCUtil.h>
 
 using namespace shogun;
 

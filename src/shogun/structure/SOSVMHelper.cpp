@@ -8,9 +8,9 @@
  * Copyright (C) 2013 Shell Hu
  */
 
-#include <shogun/structure/SOSVMHelper.h>
-#include <shogun/base/Parameter.h>
-#include <shogun/labels/StructuredLabels.h>
+#include <structure/SOSVMHelper.h>
+#include <base/Parameter.h>
+#include <labels/StructuredLabels.h>
 
 using namespace shogun;
 

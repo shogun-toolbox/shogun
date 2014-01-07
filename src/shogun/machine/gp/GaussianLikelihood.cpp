@@ -9,13 +9,13 @@
  * Copyright (C) 2013 Roman Votyakov
  */
 
-#include <shogun/machine/gp/GaussianLikelihood.h>
+#include <machine/gp/GaussianLikelihood.h>
 
 #ifdef HAVE_EIGEN3
 
-#include <shogun/labels/RegressionLabels.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/mathematics/eigen3.h>
+#include <labels/RegressionLabels.h>
+#include <mathematics/Math.h>
+#include <mathematics/eigen3.h>
 
 using namespace shogun;
 using namespace Eigen;

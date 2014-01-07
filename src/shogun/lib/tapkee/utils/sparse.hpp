@@ -7,7 +7,7 @@
 #define TAPKEE_SPARSE_H_
 
 /* Tapkee includes */
-#include <shogun/lib/tapkee/defines.hpp>
+#include <lib/tapkee/defines.hpp>
  /* End of Tapkee includes */
 
 namespace tapkee

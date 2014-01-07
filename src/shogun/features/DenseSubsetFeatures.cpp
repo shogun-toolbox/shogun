@@ -8,5 +8,5 @@
  * Copyright (C) 2012 Chiyuan Zhang
  */
 
-#include <shogun/features/DenseSubsetFeatures.h>
+#include <features/DenseSubsetFeatures.h>
 

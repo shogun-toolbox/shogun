@@ -11,8 +11,8 @@
 #ifndef __LATENTFEATURES_H__
 #define __LATENTFEATURES_H__
 
-#include <shogun/features/Features.h>
-#include <shogun/lib/Data.h>
+#include <features/Features.h>
+#include <lib/Data.h>
 
 namespace shogun
 {

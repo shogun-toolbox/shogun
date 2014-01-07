@@ -9,8 +9,8 @@
  * Copyright (C) 2012 Fernando José Iglesias García
  */
 
-#include <shogun/machine/LinearStructuredOutputMachine.h>
-#include <shogun/structure/MulticlassSOLabels.h>
+#include <machine/LinearStructuredOutputMachine.h>
+#include <structure/MulticlassSOLabels.h>
 
 using namespace shogun;
 

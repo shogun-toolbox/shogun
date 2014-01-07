@@ -7,16 +7,16 @@
  * Written (W) 2013 Evangelos Anagnostopoulos
  */
 
-#include <shogun/features/HashedDocDotFeatures.h>
-#include <shogun/features/StringFeatures.h>
-#include <shogun/features/SparseFeatures.h>
-#include <shogun/lib/SGStringList.h>
-#include <shogun/lib/SGString.h>
-#include <shogun/lib/DelimiterTokenizer.h>
-#include <shogun/lib/NGramTokenizer.h>
-#include <shogun/lib/Hash.h>
-#include <shogun/multiclass/MulticlassLibLinear.h>
-#include <shogun/base/init.h>
+#include <features/HashedDocDotFeatures.h>
+#include <features/StringFeatures.h>
+#include <features/SparseFeatures.h>
+#include <lib/SGStringList.h>
+#include <lib/SGString.h>
+#include <lib/DelimiterTokenizer.h>
+#include <lib/NGramTokenizer.h>
+#include <lib/Hash.h>
+#include <multiclass/MulticlassLibLinear.h>
+#include <base/init.h>
 #include <gtest/gtest.h>
 
 #include <iostream>

@@ -10,11 +10,11 @@
  * This example demonstrates use of the Vowpal Wabbit learning algorithm.
  */
 
-#include <shogun/lib/common.h>
+#include <lib/common.h>
 
-#include <shogun/io/StreamingAsciiFile.h>
-#include <shogun/features/StreamingDenseFeatures.h>
-#include <shogun/multiclass/tree/RandomConditionalProbabilityTree.h>
+#include <io/StreamingAsciiFile.h>
+#include <features/StreamingDenseFeatures.h>
+#include <multiclass/tree/RandomConditionalProbabilityTree.h>
 
 using namespace shogun;
 

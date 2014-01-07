@@ -7,16 +7,16 @@
  * Written (W) 2013 Soumyajit De
  */
 
-#include <shogun/lib/common.h>
-#include <shogun/lib/SGVector.h>
-#include <shogun/lib/SGMatrix.h>
-#include <shogun/lib/DynamicObjectArray.h>
-#include <shogun/lib/computation/engine/IndependentComputationEngine.h>
-#include <shogun/lib/computation/jobresult/ScalarResult.h>
-#include <shogun/lib/computation/aggregator/JobResultAggregator.h>
-#include <shogun/mathematics/linalg/ratapprox/tracesampler/TraceSampler.h>
-#include <shogun/mathematics/linalg/ratapprox/opfunc/OperatorFunction.h>
-#include <shogun/mathematics/linalg/ratapprox/logdet/LogDetEstimator.h>
+#include <lib/common.h>
+#include <lib/SGVector.h>
+#include <lib/SGMatrix.h>
+#include <lib/DynamicObjectArray.h>
+#include <lib/computation/engine/IndependentComputationEngine.h>
+#include <lib/computation/jobresult/ScalarResult.h>
+#include <lib/computation/aggregator/JobResultAggregator.h>
+#include <mathematics/linalg/ratapprox/tracesampler/TraceSampler.h>
+#include <mathematics/linalg/ratapprox/opfunc/OperatorFunction.h>
+#include <mathematics/linalg/ratapprox/logdet/LogDetEstimator.h>
 
 namespace shogun
 {

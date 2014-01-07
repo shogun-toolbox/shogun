@@ -8,7 +8,7 @@
  * Copyright (C) 2010 Berlin Institute of Technology
  */
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
 #ifdef HAVE_HDF5
 #include <stdio.h>
@@ -16,11 +16,11 @@
 #include <string.h>
 #include <hdf5.h>
 
-#include <shogun/lib/memory.h>
-#include <shogun/io/HDF5File.h>
+#include <lib/memory.h>
+#include <io/HDF5File.h>
 
-#include <shogun/features/StringFeatures.h>
-#include <shogun/features/SparseFeatures.h>
+#include <features/StringFeatures.h>
+#include <features/SparseFeatures.h>
 
 using namespace shogun;
 

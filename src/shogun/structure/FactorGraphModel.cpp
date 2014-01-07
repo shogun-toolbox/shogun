@@ -8,9 +8,9 @@
  * Copyright (C) 2013 Shell Hu
  */
 
-#include <shogun/structure/FactorGraphModel.h>
-#include <shogun/structure/Factor.h>
-#include <shogun/features/FactorGraphFeatures.h>
+#include <structure/FactorGraphModel.h>
+#include <structure/Factor.h>
+#include <features/FactorGraphFeatures.h>
 
 #ifdef HAVE_STD_UNORDERED_MAP
 	#include <unordered_map>

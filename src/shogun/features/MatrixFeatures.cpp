@@ -8,7 +8,7 @@
  * Copyright (C) 2012 Fernando Jose Iglesias Garcia
  */
 
-#include <shogun/features/MatrixFeatures.h>
+#include <features/MatrixFeatures.h>
 
 namespace shogun {
 

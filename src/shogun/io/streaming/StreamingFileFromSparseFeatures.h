@@ -10,8 +10,8 @@
 #ifndef __STREAMING_FILEFROMSPARSE_H__
 #define __STREAMING_FILEFROMSPARSE_H__
 
-#include <shogun/io/streaming/StreamingFileFromFeatures.h>
-#include <shogun/features/SparseFeatures.h>
+#include <io/streaming/StreamingFileFromFeatures.h>
+#include <features/SparseFeatures.h>
 
 namespace shogun
 {

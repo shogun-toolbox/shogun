@@ -12,10 +12,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <shogun/io/File.h>
-#include <shogun/lib/memory.h>
-#include <shogun/features/StringFeatures.h>
-#include <shogun/features/SparseFeatures.h>
+#include <io/File.h>
+#include <lib/memory.h>
+#include <features/StringFeatures.h>
+#include <features/SparseFeatures.h>
 
 using namespace shogun;
 

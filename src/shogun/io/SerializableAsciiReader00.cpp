@@ -8,8 +8,8 @@
  * Copyright (C) 2010 Berlin Institute of Technology
  */
 
-#include <shogun/io/SerializableAsciiReader00.h>
-#include <shogun/lib/common.h>
+#include <io/SerializableAsciiReader00.h>
+#include <lib/common.h>
 
 using namespace shogun;
 

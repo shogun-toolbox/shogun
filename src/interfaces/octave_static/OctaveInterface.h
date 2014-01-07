@@ -1,10 +1,10 @@
 #ifndef __OCTAVEINTERFACE__H_
 #define __OCTAVEINTERFACE__H_
 
-#include <shogun/lib/config.h>
-#include <shogun/lib/memory.h>
+#include <lib/config.h>
+#include <lib/memory.h>
 
-#include <shogun/ui/SGInterface.h>
+#include <ui/SGInterface.h>
 
 #undef HAVE_STAT
 #include <octave/config.h>

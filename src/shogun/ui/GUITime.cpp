@@ -8,8 +8,8 @@
  * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/ui/SGInterface.h>
-#include <shogun/ui/GUITime.h>
+#include <ui/SGInterface.h>
+#include <ui/GUITime.h>
 
 using namespace shogun;
 

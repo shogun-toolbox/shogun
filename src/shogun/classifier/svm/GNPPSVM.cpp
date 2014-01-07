@@ -8,10 +8,10 @@
  * Copyright (C) 1999-2008 Center for Machine Perception, CTU FEL Prague 
  */
 
-#include <shogun/io/SGIO.h>
-#include <shogun/classifier/svm/GNPPSVM.h>
-#include <shogun/classifier/svm/GNPPLib.h>
-#include <shogun/labels/BinaryLabels.h>
+#include <io/SGIO.h>
+#include <classifier/svm/GNPPSVM.h>
+#include <classifier/svm/GNPPLib.h>
+#include <labels/BinaryLabels.h>
 
 using namespace shogun;
 #define INDEX(ROW,COL,DIM) (((COL)*(DIM))+(ROW)) 

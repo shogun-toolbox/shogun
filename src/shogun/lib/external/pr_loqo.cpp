@@ -13,11 +13,11 @@
  * Copyright (C) 1997-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/lib/common.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/mathematics/lapack.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/lib/external/pr_loqo.h>
+#include <lib/common.h>
+#include <io/SGIO.h>
+#include <mathematics/lapack.h>
+#include <mathematics/Math.h>
+#include <lib/external/pr_loqo.h>
 
 #include <math.h>
 #include <time.h>

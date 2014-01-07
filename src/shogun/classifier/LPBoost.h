@@ -11,16 +11,16 @@
 #ifndef _LPBOOST_H___
 #define _LPBOOST_H___
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 #ifdef USE_CPLEX
 
 #include <stdio.h>
-#include <shogun/lib/common.h>
-#include <shogun/lib/DynamicArray.h>
+#include <lib/common.h>
+#include <lib/DynamicArray.h>
 
-#include <shogun/features/Features.h>
-#include <shogun/features/SparseFeatures.h>
-#include <shogun/machine/LinearMachine.h>
+#include <features/Features.h>
+#include <features/SparseFeatures.h>
+#include <machine/LinearMachine.h>
 
 namespace shogun
 {

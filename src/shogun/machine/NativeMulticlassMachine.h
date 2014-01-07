@@ -12,7 +12,7 @@
 #ifndef _NATIVEMULTICLASSMACHINE_H___
 #define _NATIVEMULTICLASSMACHINE_H___
 
-#include <shogun/machine/MulticlassMachine.h>
+#include <machine/MulticlassMachine.h>
 
 namespace shogun
 {

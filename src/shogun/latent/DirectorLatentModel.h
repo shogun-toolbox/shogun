@@ -10,8 +10,8 @@
 #ifndef _DIRECTOR_LATENT_MODEL_H_
 #define _DIRECTOR_LATENT_MODEL_H_
 
-#include <shogun/latent/LatentModel.h>
-#include <shogun/lib/config.h>
+#include <latent/LatentModel.h>
+#include <lib/config.h>
 #ifdef USE_SWIG_DIRECTORS
 namespace shogun
 {

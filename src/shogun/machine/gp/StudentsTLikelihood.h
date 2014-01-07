@@ -15,11 +15,11 @@
 #ifndef CSTUDENTSTLIKELIHOOD_H_
 #define CSTUDENTSTLIKELIHOOD_H_
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
 #ifdef HAVE_EIGEN3
 
-#include <shogun/machine/gp/LikelihoodModel.h>
+#include <machine/gp/LikelihoodModel.h>
 
 namespace shogun
 {

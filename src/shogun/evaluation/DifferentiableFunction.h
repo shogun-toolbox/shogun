@@ -11,9 +11,9 @@
 #ifndef CDIFFERENTIABLEFUNCTION_H_
 #define CDIFFERENTIABLEFUNCTION_H_
 
-#include <shogun/base/SGObject.h>
-#include <shogun/lib/Map.h>
-#include <shogun/lib/SGVector.h>
+#include <base/SGObject.h>
+#include <lib/Map.h>
+#include <lib/SGVector.h>
 
 namespace shogun
 {

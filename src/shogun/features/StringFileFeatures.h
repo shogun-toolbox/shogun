@@ -11,11 +11,11 @@
 #ifndef _CSTRINGFILEFEATURES__H__
 #define _CSTRINGFILEFEATURES__H__
 
-#include <shogun/features/StringFeatures.h>
-#include <shogun/features/Alphabet.h>
-#include <shogun/io/MemoryMappedFile.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/io/SGIO.h>
+#include <features/StringFeatures.h>
+#include <features/Alphabet.h>
+#include <io/MemoryMappedFile.h>
+#include <mathematics/Math.h>
+#include <io/SGIO.h>
 
 namespace shogun
 {

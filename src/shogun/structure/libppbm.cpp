@@ -11,9 +11,9 @@
  * Implementation of the Proximal Point P-BMRM
  *--------------------------------------------------------------------- */
 
-#include <shogun/structure/libp3bm.h>
-#include <shogun/lib/external/libqp.h>
-#include <shogun/lib/Time.h>
+#include <structure/libp3bm.h>
+#include <lib/external/libqp.h>
+#include <lib/Time.h>
 
 namespace shogun
 {

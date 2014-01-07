@@ -74,11 +74,11 @@
 #include <string.h>
 #include <time.h>
 
-#include <shogun/lib/external/gpm.h>
-#include <shogun/lib/external/gpdt.h>
-#include <shogun/lib/external/gpdtsolve.h>
-#include <shogun/lib/Signal.h>
-#include <shogun/io/SGIO.h>
+#include <lib/external/gpm.h>
+#include <lib/external/gpdt.h>
+#include <lib/external/gpdtsolve.h>
+#include <lib/Signal.h>
+#include <io/SGIO.h>
 
 using namespace shogun;
 

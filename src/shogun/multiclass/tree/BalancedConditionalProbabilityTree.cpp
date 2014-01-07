@@ -8,7 +8,7 @@
  * Copyright (C) 2012 Chiyuan Zhang
  */
 
-#include <shogun/multiclass/tree/BalancedConditionalProbabilityTree.h>
+#include <multiclass/tree/BalancedConditionalProbabilityTree.h>
 
 using namespace shogun;
 

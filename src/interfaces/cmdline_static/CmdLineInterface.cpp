@@ -1,11 +1,11 @@
 #include "CmdLineInterface.h"
 
-#include <shogun/lib/config.h>
-#include <shogun/lib/ShogunException.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/io/CSVFile.h>
-#include <shogun/io/LibSVMFile.h>
-#include <shogun/ui/SGInterface.h>
+#include <lib/config.h>
+#include <lib/ShogunException.h>
+#include <io/SGIO.h>
+#include <io/CSVFile.h>
+#include <io/LibSVMFile.h>
+#include <ui/SGInterface.h>
 
 #ifdef HAVE_READLINE
 #include <readline/readline.h>

@@ -10,11 +10,11 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/features/Features.h>
-#include <shogun/preprocessor/Preprocessor.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/base/Parameter.h>
-#include <shogun/lib/DynamicObjectArray.h>
+#include <features/Features.h>
+#include <preprocessor/Preprocessor.h>
+#include <io/SGIO.h>
+#include <base/Parameter.h>
+#include <lib/DynamicObjectArray.h>
 
 #include <string.h>
 

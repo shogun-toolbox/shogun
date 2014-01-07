@@ -7,11 +7,11 @@
  * Written (W) 2013 Evangelos Anagnostopoulos
  */
 
-#include <shogun/features/streaming/StreamingHashedDocDotFeatures.h>
-#include <shogun/lib/SGString.h>
-#include <shogun/lib/SGStringList.h>
-#include <shogun/lib/DelimiterTokenizer.h>
-#include <shogun/converter/HashedDocConverter.h>
+#include <features/streaming/StreamingHashedDocDotFeatures.h>
+#include <lib/SGString.h>
+#include <lib/SGStringList.h>
+#include <lib/DelimiterTokenizer.h>
+#include <converter/HashedDocConverter.h>
 
 #include <gtest/gtest.h>
 

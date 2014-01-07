@@ -10,11 +10,11 @@
 
 #ifdef USE_MOSEK
 
-#include <shogun/lib/DynamicObjectArray.h>
-#include <shogun/lib/List.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/structure/PrimalMosekSOSVM.h>
-#include <shogun/loss/HingeLoss.h>
+#include <lib/DynamicObjectArray.h>
+#include <lib/List.h>
+#include <mathematics/Math.h>
+#include <structure/PrimalMosekSOSVM.h>
+#include <loss/HingeLoss.h>
 
 using namespace shogun;
 

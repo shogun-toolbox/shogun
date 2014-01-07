@@ -2,8 +2,8 @@
 #define __RINTERFACE__H_
 
 
-#include <shogun/lib/common.h>
-#include <shogun/ui/SGInterface.h>
+#include <lib/common.h>
+#include <ui/SGInterface.h>
 
 extern "C" {
 #include <R.h>

@@ -11,8 +11,8 @@
 #ifndef _MATRIX_FEATURES__H__
 #define _MATRIX_FEATURES__H__
 
-#include <shogun/features/Features.h>
-#include <shogun/lib/SGMatrixList.h>
+#include <features/Features.h>
+#include <lib/SGMatrixList.h>
 
 
 namespace shogun

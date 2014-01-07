@@ -11,8 +11,8 @@
 #ifndef __MEMORY_H__
 #define __MEMORY_H__
 
-#include <shogun/lib/config.h>
-#include <shogun/lib/common.h>
+#include <lib/config.h>
+#include <lib/common.h>
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 #include <stdio.h>

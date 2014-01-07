@@ -8,10 +8,10 @@
  * Copyright (C) 2012 Fernando José Iglesias García
  */
 
-#include <shogun/structure/HMSVMModel.h>
-#include <shogun/features/MatrixFeatures.h>
-#include <shogun/structure/TwoStateModel.h>
-#include <shogun/structure/Plif.h>
+#include <structure/HMSVMModel.h>
+#include <features/MatrixFeatures.h>
+#include <structure/TwoStateModel.h>
+#include <structure/Plif.h>
 
 using namespace shogun;
 

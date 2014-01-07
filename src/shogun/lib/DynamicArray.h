@@ -11,9 +11,9 @@
 #ifndef _DYNAMIC_ARRAY_H_
 #define _DYNAMIC_ARRAY_H_
 
-#include <shogun/base/SGObject.h>
-#include <shogun/base/DynArray.h>
-#include <shogun/base/Parameter.h>
+#include <base/SGObject.h>
+#include <base/DynArray.h>
+#include <base/Parameter.h>
 
 namespace shogun
 {

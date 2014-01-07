@@ -13,8 +13,8 @@
 
 #ifdef USE_MOSEK
 
-#include <shogun/machine/LinearStructuredOutputMachine.h>
-#include <shogun/mathematics/Mosek.h>
+#include <machine/LinearStructuredOutputMachine.h>
+#include <mathematics/Mosek.h>
 
 namespace shogun
 {

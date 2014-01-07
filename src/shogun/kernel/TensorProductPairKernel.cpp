@@ -8,10 +8,10 @@
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/lib/common.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/kernel/TensorProductPairKernel.h>
-#include <shogun/io/SGIO.h>
+#include <lib/common.h>
+#include <mathematics/Math.h>
+#include <kernel/TensorProductPairKernel.h>
+#include <io/SGIO.h>
 
 using namespace shogun;
 

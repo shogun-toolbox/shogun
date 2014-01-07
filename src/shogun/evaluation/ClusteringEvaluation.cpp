@@ -13,9 +13,9 @@
 #include <vector>
 #include <algorithm>
 
-#include <shogun/evaluation/ClusteringEvaluation.h>
-#include <shogun/labels/MulticlassLabels.h>
-#include <shogun/mathematics/munkres.h>
+#include <evaluation/ClusteringEvaluation.h>
+#include <labels/MulticlassLabels.h>
+#include <mathematics/munkres.h>
 
 using namespace shogun;
 using namespace std;

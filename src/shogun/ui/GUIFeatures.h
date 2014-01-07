@@ -12,21 +12,21 @@
 #ifndef __GUIFEATURES__H
 #define __GUIFEATURES__H
 
-#include <shogun/lib/config.h>
-#include <shogun/base/SGObject.h>
-#include <shogun/labels/Labels.h>
-#include <shogun/features/Features.h>
-#include <shogun/features/RealFileFeatures.h>
-#include <shogun/features/TOPFeatures.h>
-#include <shogun/features/FKFeatures.h>
-#include <shogun/features/StringFeatures.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/features/SparseFeatures.h>
-#include <shogun/features/CombinedFeatures.h>
-#include <shogun/features/CombinedDotFeatures.h>
-#include <shogun/features/WDFeatures.h>
-#include <shogun/features/ExplicitSpecFeatures.h>
-#include <shogun/features/ImplicitWeightedSpecFeatures.h>
+#include <lib/config.h>
+#include <base/SGObject.h>
+#include <labels/Labels.h>
+#include <features/Features.h>
+#include <features/RealFileFeatures.h>
+#include <features/TOPFeatures.h>
+#include <features/FKFeatures.h>
+#include <features/StringFeatures.h>
+#include <features/DenseFeatures.h>
+#include <features/SparseFeatures.h>
+#include <features/CombinedFeatures.h>
+#include <features/CombinedDotFeatures.h>
+#include <features/WDFeatures.h>
+#include <features/ExplicitSpecFeatures.h>
+#include <features/ImplicitWeightedSpecFeatures.h>
 
 namespace shogun
 {

@@ -10,8 +10,8 @@
 #ifndef INDIVIDUAL_JOB_RESULT_AGGREGATOR_H_
 #define INDIVIDUAL_JOB_RESULT_AGGREGATOR_H_
 
-#include <shogun/lib/config.h>
-#include <shogun/lib/computation/aggregator/StoreVectorAggregator.h>
+#include <lib/config.h>
+#include <lib/computation/aggregator/StoreVectorAggregator.h>
 
 #ifdef HAVE_EIGEN3
 

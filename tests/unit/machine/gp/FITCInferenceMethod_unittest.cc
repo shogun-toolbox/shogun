@@ -7,16 +7,16 @@
  * Written (W) 2013 Roman Votyakov
  */
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
 #ifdef HAVE_EIGEN3
 
-#include <shogun/labels/RegressionLabels.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/kernel/GaussianKernel.h>
-#include <shogun/machine/gp/FITCInferenceMethod.h>
-#include <shogun/machine/gp/ZeroMean.h>
-#include <shogun/machine/gp/GaussianLikelihood.h>
+#include <labels/RegressionLabels.h>
+#include <features/DenseFeatures.h>
+#include <kernel/GaussianKernel.h>
+#include <machine/gp/FITCInferenceMethod.h>
+#include <machine/gp/ZeroMean.h>
+#include <machine/gp/GaussianLikelihood.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;

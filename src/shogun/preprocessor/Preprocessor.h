@@ -12,10 +12,10 @@
 #ifndef PREPROCESSOR_H_
 #define PREPROCESSOR_H_
 
-#include <shogun/lib/common.h>
-#include <shogun/base/SGObject.h>
-#include <shogun/features/FeatureTypes.h>
-#include <shogun/features/Features.h>
+#include <lib/common.h>
+#include <base/SGObject.h>
+#include <features/FeatureTypes.h>
+#include <features/Features.h>
 
 namespace shogun
 {

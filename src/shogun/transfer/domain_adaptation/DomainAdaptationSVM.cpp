@@ -8,15 +8,15 @@
  * Copyright (C) 2007-2011 Max-Planck-Society
  */
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
 #ifdef USE_SVMLIGHT
 
-#include <shogun/transfer/domain_adaptation/DomainAdaptationSVM.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/labels/Labels.h>
-#include <shogun/labels/BinaryLabels.h>
-#include <shogun/labels/RegressionLabels.h>
+#include <transfer/domain_adaptation/DomainAdaptationSVM.h>
+#include <io/SGIO.h>
+#include <labels/Labels.h>
+#include <labels/BinaryLabels.h>
+#include <labels/RegressionLabels.h>
 #include <iostream>
 #include <vector>
 

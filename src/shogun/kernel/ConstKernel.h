@@ -11,10 +11,10 @@
 #ifndef _CONSTKERNEL_H___
 #define _CONSTKERNEL_H___
 
-#include <shogun/mathematics/Math.h>
-#include <shogun/lib/common.h>
-#include <shogun/kernel/Kernel.h>
-#include <shogun/features/Features.h>
+#include <mathematics/Math.h>
+#include <lib/common.h>
+#include <kernel/Kernel.h>
+#include <features/Features.h>
 
 namespace shogun
 {

@@ -8,11 +8,11 @@
  * Copyright (C) 2012 Michal Uricar
  */
 
-#include <shogun/structure/DualLibQPBMSOSVM.h>
-#include <shogun/structure/libbmrm.h>
-#include <shogun/structure/libppbm.h>
-#include <shogun/structure/libp3bm.h>
-#include <shogun/structure/libncbm.h>
+#include <structure/DualLibQPBMSOSVM.h>
+#include <structure/libbmrm.h>
+#include <structure/libppbm.h>
+#include <structure/libp3bm.h>
+#include <structure/libncbm.h>
 
 using namespace shogun;
 

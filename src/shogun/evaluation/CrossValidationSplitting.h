@@ -11,7 +11,7 @@
 #ifndef __CROSSVALIDATIONSPLITTING_H_
 #define __CROSSVALIDATIONSPLITTING_H_
 
-#include <shogun/evaluation/SplittingStrategy.h>
+#include <evaluation/SplittingStrategy.h>
 
 namespace shogun
 {

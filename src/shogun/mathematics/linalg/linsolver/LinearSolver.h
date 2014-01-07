@@ -10,8 +10,8 @@
 #ifndef LINEAR_SOLVER_H_
 #define LINEAR_SOLVER_H_
 
-#include <shogun/lib/config.h>
-#include <shogun/base/SGObject.h>
+#include <lib/config.h>
+#include <base/SGObject.h>
 
 namespace shogun
 {

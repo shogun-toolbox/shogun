@@ -11,8 +11,8 @@
 #ifndef _GNPPSVM_H___
 #define _GNPPSVM_H___
 
-#include <shogun/lib/common.h>
-#include <shogun/classifier/svm/SVM.h>
+#include <lib/common.h>
+#include <classifier/svm/SVM.h>
 
 namespace shogun
 {

@@ -8,8 +8,8 @@
  * Copyright (C) 2007-2011 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/kernel/LogKernel.h>
-#include <shogun/mathematics/Math.h>
+#include <kernel/LogKernel.h>
+#include <mathematics/Math.h>
 
 using namespace shogun;
 

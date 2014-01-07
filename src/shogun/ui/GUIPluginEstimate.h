@@ -12,10 +12,10 @@
 #ifndef _GUIPLUGINESTIMATE_H__
 #define _GUIPLUGINESTIMATE_H__
 
-#include <shogun/lib/config.h>
-#include <shogun/base/SGObject.h>
-#include <shogun/classifier/PluginEstimate.h>
-#include <shogun/labels/Labels.h>
+#include <lib/config.h>
+#include <base/SGObject.h>
+#include <classifier/PluginEstimate.h>
+#include <labels/Labels.h>
 
 namespace shogun
 {

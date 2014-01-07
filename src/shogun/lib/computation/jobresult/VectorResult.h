@@ -10,10 +10,10 @@
 #ifndef VECTOR_RESULT_H_
 #define VECTOR_RESULT_H_
 
-#include <shogun/lib/config.h>
-#include <shogun/lib/SGVector.h>
-#include <shogun/lib/computation/jobresult/JobResult.h>
-#include <shogun/base/Parameter.h>
+#include <lib/config.h>
+#include <lib/SGVector.h>
+#include <lib/computation/jobresult/JobResult.h>
+#include <base/Parameter.h>
 
 namespace shogun
 {

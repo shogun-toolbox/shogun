@@ -10,11 +10,11 @@
 #ifndef __MMDKERNELSELECTIONCOMB_H_
 #define __MMDKERNELSELECTIONCOMB_H_
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
-#include <shogun/statistics/MMDKernelSelection.h>
-#include <shogun/lib/SGMatrix.h>
-#include <shogun/lib/external/libqp.h>
+#include <statistics/MMDKernelSelection.h>
+#include <lib/SGMatrix.h>
+#include <lib/external/libqp.h>
 
 namespace shogun
 {

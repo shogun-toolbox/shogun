@@ -10,10 +10,10 @@
 #ifndef __SERIALIZABLE_XML_READER_00_H__
 #define __SERIALIZABLE_XML_READER_00_H__
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 #ifdef HAVE_XML
 
-#include <shogun/io/SerializableXmlFile.h>
+#include <io/SerializableXmlFile.h>
 
 namespace shogun
 {

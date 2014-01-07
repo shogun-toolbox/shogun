@@ -1,10 +1,10 @@
 #ifndef __CMDLINEINTERFACE__H_
 #define __CMDLINEINTERFACE__H_
 
-#include <shogun/base/DynArray.h>
-#include <shogun/io/SGIO.h>
+#include <base/DynArray.h>
+#include <io/SGIO.h>
 
-#include <shogun/ui/SGInterface.h>
+#include <ui/SGInterface.h>
 
 namespace shogun
 {

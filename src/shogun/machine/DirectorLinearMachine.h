@@ -11,10 +11,10 @@
 #define _DIRECTORLINEARMACHINE_H___
 
 #ifdef USE_SWIG_DIRECTORS
-#include <shogun/lib/common.h>
-#include <shogun/lib/DataType.h>
-#include <shogun/machine/Machine.h>
-#include <shogun/machine/LinearMachine.h>
+#include <lib/common.h>
+#include <lib/DataType.h>
+#include <machine/Machine.h>
+#include <machine/LinearMachine.h>
 
 namespace shogun
 {

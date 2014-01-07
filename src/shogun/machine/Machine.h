@@ -12,15 +12,15 @@
 #ifndef _MACHINE_H__
 #define _MACHINE_H__
 
-#include <shogun/lib/common.h>
-#include <shogun/base/SGObject.h>
-#include <shogun/labels/Labels.h>
-#include <shogun/labels/BinaryLabels.h>
-#include <shogun/labels/RegressionLabels.h>
-#include <shogun/labels/MulticlassLabels.h>
-#include <shogun/labels/StructuredLabels.h>
-#include <shogun/labels/LatentLabels.h>
-#include <shogun/features/Features.h>
+#include <lib/common.h>
+#include <base/SGObject.h>
+#include <labels/Labels.h>
+#include <labels/BinaryLabels.h>
+#include <labels/RegressionLabels.h>
+#include <labels/MulticlassLabels.h>
+#include <labels/StructuredLabels.h>
+#include <labels/LatentLabels.h>
+#include <features/Features.h>
 
 namespace shogun
 {

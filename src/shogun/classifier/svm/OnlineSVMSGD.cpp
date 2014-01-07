@@ -20,10 +20,10 @@
    Shogun adjustments (w) 2008-2009 Soeren Sonnenburg
 */
 
-#include <shogun/classifier/svm/OnlineSVMSGD.h>
-#include <shogun/base/Parameter.h>
-#include <shogun/lib/Signal.h>
-#include <shogun/loss/HingeLoss.h>
+#include <classifier/svm/OnlineSVMSGD.h>
+#include <base/Parameter.h>
+#include <lib/Signal.h>
+#include <loss/HingeLoss.h>
 
 using namespace shogun;
 

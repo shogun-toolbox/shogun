@@ -7,10 +7,10 @@
  * Copyright (C) 2012 Sergey Lisitsyn
  */
 
-#include <shogun/transfer/multitask/MultitaskClusteredLogisticRegression.h>
-#include <shogun/lib/malsar/malsar_clustered.h>
-#include <shogun/lib/malsar/malsar_options.h>
-#include <shogun/lib/SGVector.h>
+#include <transfer/multitask/MultitaskClusteredLogisticRegression.h>
+#include <lib/malsar/malsar_clustered.h>
+#include <lib/malsar/malsar_options.h>
+#include <lib/SGVector.h>
 
 namespace shogun
 {

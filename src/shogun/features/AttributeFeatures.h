@@ -10,8 +10,8 @@
 #ifndef _CATTRIBUTE_FEATURES__H__
 #define _CATTRIBUTE_FEATURES__H__
 
-#include <shogun/features/Features.h>
-#include <shogun/base/DynArray.h>
+#include <features/Features.h>
+#include <base/DynArray.h>
 
 namespace shogun
 {

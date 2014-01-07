@@ -9,17 +9,17 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/lib/common.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/lib/Signal.h>
-#include <shogun/lib/Trie.h>
-#include <shogun/base/Parameter.h>
-#include <shogun/base/Parallel.h>
+#include <lib/common.h>
+#include <io/SGIO.h>
+#include <lib/Signal.h>
+#include <lib/Trie.h>
+#include <base/Parameter.h>
+#include <base/Parallel.h>
 
-#include <shogun/kernel/string/WeightedDegreeStringKernel.h>
-#include <shogun/kernel/normalizer/FirstElementKernelNormalizer.h>
-#include <shogun/features/Features.h>
-#include <shogun/features/StringFeatures.h>
+#include <kernel/string/WeightedDegreeStringKernel.h>
+#include <kernel/normalizer/FirstElementKernelNormalizer.h>
+#include <features/Features.h>
+#include <features/StringFeatures.h>
 
 #ifndef WIN32
 #include <pthread.h>

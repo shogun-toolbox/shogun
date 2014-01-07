@@ -12,7 +12,7 @@
 #define MKLMulticlassOPTIMIZATIONBASE_H_
 
 #include <vector>
-#include <shogun/base/SGObject.h>
+#include <base/SGObject.h>
 
 
 namespace shogun

@@ -13,8 +13,8 @@
 
 %{
 
-#include <shogun/lib/DataType.h>
-#include <shogun/lib/memory.h>
+#include <lib/DataType.h>
+#include <lib/memory.h>
 
 extern "C" {
 #include <R.h>

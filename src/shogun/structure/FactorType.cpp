@@ -8,8 +8,8 @@
  * Copyright (C) 2013 Shell Hu
  */
 
-#include <shogun/structure/FactorType.h>
-#include <shogun/base/Parameter.h>
+#include <structure/FactorType.h>
+#include <base/Parameter.h>
 
 using namespace shogun;
 

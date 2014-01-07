@@ -11,9 +11,9 @@
 #ifndef __SIMPLEFILE_H__
 #define __SIMPLEFILE_H__
 
-#include <shogun/lib/memory.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/base/SGObject.h>
+#include <lib/memory.h>
+#include <io/SGIO.h>
+#include <base/SGObject.h>
 
 #include <stdio.h>
 #include <string.h>

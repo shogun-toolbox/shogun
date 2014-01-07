@@ -8,11 +8,11 @@
  *
  */
 
-#include <shogun/structure/libncbm.h>
-#include <shogun/lib/Time.h>
+#include <structure/libncbm.h>
+#include <lib/Time.h>
 
-#include <shogun/lib/external/libqp.h>
-#include <shogun/multiclass/GMNPLib.h>
+#include <lib/external/libqp.h>
+#include <multiclass/GMNPLib.h>
 
 #include <vector>
 

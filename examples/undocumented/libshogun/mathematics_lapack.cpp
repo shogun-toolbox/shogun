@@ -9,12 +9,12 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include <shogun/base/init.h>
-#include <shogun/lib/config.h>
-#include <shogun/lib/SGVector.h>
-#include <shogun/lib/SGMatrix.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/mathematics/lapack.h>
+#include <base/init.h>
+#include <lib/config.h>
+#include <lib/SGVector.h>
+#include <lib/SGMatrix.h>
+#include <mathematics/Math.h>
+#include <mathematics/lapack.h>
 
 using namespace shogun;
 

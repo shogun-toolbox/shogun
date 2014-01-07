@@ -19,12 +19,12 @@
    Shogun adjustments (w) 2011 Siddharth Kherada
 */
 
-#include <shogun/classifier/svm/SGDQN.h>
-#include <shogun/base/Parameter.h>
-#include <shogun/lib/Signal.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/loss/HingeLoss.h>
-#include <shogun/labels/BinaryLabels.h>
+#include <classifier/svm/SGDQN.h>
+#include <base/Parameter.h>
+#include <lib/Signal.h>
+#include <mathematics/Math.h>
+#include <loss/HingeLoss.h>
+#include <labels/BinaryLabels.h>
 
 using namespace shogun;
 

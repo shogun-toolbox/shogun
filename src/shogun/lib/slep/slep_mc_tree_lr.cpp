@@ -8,15 +8,15 @@
  * Copyright (C) 2010-2012 Jun Liu, Jieping Ye
  */
 
-#include <shogun/lib/slep/slep_mc_tree_lr.h>
+#include <lib/slep/slep_mc_tree_lr.h>
 #ifdef HAVE_EIGEN3
-#include <shogun/lib/slep/tree/general_altra.h>
-#include <shogun/lib/slep/tree/altra.h>
-#include <shogun/lib/slep/q1/eppMatrix.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/mathematics/eigen3.h>
-#include <shogun/lib/Signal.h>
-#include <shogun/lib/Time.h>
+#include <lib/slep/tree/general_altra.h>
+#include <lib/slep/tree/altra.h>
+#include <lib/slep/q1/eppMatrix.h>
+#include <mathematics/Math.h>
+#include <mathematics/eigen3.h>
+#include <lib/Signal.h>
+#include <lib/Time.h>
 #include <iostream>
 
 using namespace shogun;

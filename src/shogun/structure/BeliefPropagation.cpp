@@ -8,9 +8,9 @@
  * Copyright (C) 2013 Shell Hu
  */
 
-#include <shogun/structure/BeliefPropagation.h>
-#include <shogun/lib/DynamicObjectArray.h>
-#include <shogun/io/SGIO.h>
+#include <structure/BeliefPropagation.h>
+#include <lib/DynamicObjectArray.h>
+#include <io/SGIO.h>
 #include <numeric>
 #include <algorithm>
 #include <functional>

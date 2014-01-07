@@ -11,7 +11,7 @@
 #ifndef _MAJORITY_VOTE_H_
 #define _MAJORITY_VOTE_H_
 
-#include <shogun/ensemble/WeightedMajorityVote.h>
+#include <ensemble/WeightedMajorityVote.h>
 
 namespace shogun
 {

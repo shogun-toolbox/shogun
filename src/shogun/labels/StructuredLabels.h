@@ -11,11 +11,11 @@
 #ifndef _STRUCTURED_LABELS__H__
 #define _STRUCTURED_LABELS__H__
 
-#include <shogun/labels/Labels.h>
-#include <shogun/labels/LabelTypes.h>
-#include <shogun/lib/DynamicObjectArray.h>
-#include <shogun/lib/StructuredData.h>
-#include <shogun/lib/StructuredDataTypes.h>
+#include <labels/Labels.h>
+#include <labels/LabelTypes.h>
+#include <lib/DynamicObjectArray.h>
+#include <lib/StructuredData.h>
+#include <lib/StructuredDataTypes.h>
 
 namespace shogun {
 

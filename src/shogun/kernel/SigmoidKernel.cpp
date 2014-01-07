@@ -9,8 +9,8 @@
  * Copyright (C) 2010 Berlin Institute of Technology
  */
 
-#include <shogun/lib/common.h>
-#include <shogun/kernel/SigmoidKernel.h>
+#include <lib/common.h>
+#include <kernel/SigmoidKernel.h>
 
 using namespace shogun;
 

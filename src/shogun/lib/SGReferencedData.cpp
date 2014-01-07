@@ -1,7 +1,7 @@
-#include <shogun/lib/common.h>
-#include <shogun/lib/SGReferencedData.h>
-#include <shogun/lib/RefCount.h>
-#include <shogun/io/SGIO.h>
+#include <lib/common.h>
+#include <lib/SGReferencedData.h>
+#include <lib/RefCount.h>
+#include <io/SGIO.h>
 
 
 using namespace shogun;

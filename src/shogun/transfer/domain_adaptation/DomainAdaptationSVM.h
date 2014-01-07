@@ -14,8 +14,8 @@
 #define _DomainAdaptation_SVM_H___
 
 
-#include <shogun/lib/common.h>
-#include <shogun/classifier/svm/SVMLight.h>
+#include <lib/common.h>
+#include <classifier/svm/SVMLight.h>
 
 #include <stdio.h>
 

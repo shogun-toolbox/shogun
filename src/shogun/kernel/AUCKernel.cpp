@@ -9,11 +9,11 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/lib/common.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/kernel/AUCKernel.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/labels/BinaryLabels.h>
+#include <lib/common.h>
+#include <mathematics/Math.h>
+#include <kernel/AUCKernel.h>
+#include <io/SGIO.h>
+#include <labels/BinaryLabels.h>
 
 using namespace shogun;
 

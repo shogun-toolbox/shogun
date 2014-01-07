@@ -1,18 +1,18 @@
-#include <shogun/base/init.h>
-#include <shogun/lib/common.h>
+#include <base/init.h>
+#include <lib/common.h>
 #include <gtest/gtest.h>
 
 #ifdef HAVE_EIGEN3
 
-#include <shogun/lib/SGVector.h>
-#include <shogun/lib/SGMatrix.h>
-#include <shogun/lib/SGNDArray.h>
+#include <lib/SGVector.h>
+#include <lib/SGMatrix.h>
+#include <lib/SGNDArray.h>
 
-#include <shogun/mathematics/Math.h>
-#include <shogun/mathematics/eigen3.h>
-#include <shogun/mathematics/ajd/JADiag.h>
+#include <mathematics/Math.h>
+#include <mathematics/eigen3.h>
+#include <mathematics/ajd/JADiag.h>
 
-#include <shogun/evaluation/ica/PermutationMatrix.h>
+#include <evaluation/ica/PermutationMatrix.h>
 
 using namespace Eigen;
 

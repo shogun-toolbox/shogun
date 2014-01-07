@@ -12,11 +12,11 @@
 #ifndef __GUIHMM__H
 #define __GUIHMM__H
 
-#include <shogun/lib/config.h>
-#include <shogun/base/SGObject.h>
-#include <shogun/distributions/HMM.h>
-#include <shogun/labels/Labels.h>
-#include <shogun/labels/RegressionLabels.h>
+#include <lib/config.h>
+#include <base/SGObject.h>
+#include <distributions/HMM.h>
+#include <labels/Labels.h>
+#include <labels/RegressionLabels.h>
 
 namespace shogun
 {

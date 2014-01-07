@@ -17,7 +17,7 @@
 #ifndef EPPMATRIXQ1_SLEP
 #define EPPMATRIXQ1_SLEP
 
-#include <shogun/lib/slep/q1/epph.h> /* This is the head file that contains the implementation of the used functions*/
+#include <lib/slep/q1/epph.h> /* This is the head file that contains the implementation of the used functions*/
 
 /*
  Lp Norm Regularized Euclidean Projection

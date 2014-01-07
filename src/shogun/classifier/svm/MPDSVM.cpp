@@ -8,10 +8,10 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/classifier/svm/MPDSVM.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/lib/common.h>
-#include <shogun/mathematics/Math.h>
+#include <classifier/svm/MPDSVM.h>
+#include <io/SGIO.h>
+#include <lib/common.h>
+#include <mathematics/Math.h>
 
 using namespace shogun;
 

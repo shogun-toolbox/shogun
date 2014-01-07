@@ -8,7 +8,7 @@
  * Copyright (C) 2012 Chiyuan Zhang
  */
 
-#include <shogun/multiclass/ecoc/ECOCForestEncoder.h>
+#include <multiclass/ecoc/ECOCForestEncoder.h>
 
 using namespace shogun;
 

@@ -8,8 +8,8 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST
  */
 
-#include <shogun/machine/DistanceMachine.h>
-#include <shogun/base/Parameter.h>
+#include <machine/DistanceMachine.h>
+#include <base/Parameter.h>
 
 using namespace shogun;
 

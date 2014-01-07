@@ -8,8 +8,8 @@
  * Copyright (C) 2013 Shell Hu
  */
 
-#include <shogun/structure/FactorGraph.h>
-#include <shogun/labels/FactorGraphLabels.h>
+#include <structure/FactorGraph.h>
+#include <labels/FactorGraphLabels.h>
 
 using namespace shogun;
 

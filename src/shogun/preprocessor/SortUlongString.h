@@ -11,9 +11,9 @@
 #ifndef _CSORTULONGSTRING__H__
 #define _CSORTULONGSTRING__H__
 
-#include <shogun/features/StringFeatures.h>
-#include <shogun/preprocessor/StringPreprocessor.h>
-#include <shogun/lib/common.h>
+#include <features/StringFeatures.h>
+#include <preprocessor/StringPreprocessor.h>
+#include <lib/common.h>
 
 #include <stdio.h>
 namespace shogun

@@ -13,17 +13,17 @@
 #ifndef CINFERENCEMETHOD_H_
 #define CINFERENCEMETHOD_H_
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
 #ifdef HAVE_EIGEN3
 
-#include <shogun/base/SGObject.h>
-#include <shogun/kernel/Kernel.h>
-#include <shogun/features/Features.h>
-#include <shogun/labels/Labels.h>
-#include <shogun/machine/gp/LikelihoodModel.h>
-#include <shogun/machine/gp/MeanFunction.h>
-#include <shogun/evaluation/DifferentiableFunction.h>
+#include <base/SGObject.h>
+#include <kernel/Kernel.h>
+#include <features/Features.h>
+#include <labels/Labels.h>
+#include <machine/gp/LikelihoodModel.h>
+#include <machine/gp/MeanFunction.h>
+#include <evaluation/DifferentiableFunction.h>
 
 namespace shogun
 {

@@ -7,13 +7,13 @@
  * Written (W) 2013 Sergey Lisitsyn
  */
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
 #ifdef HAVE_EIGEN3
-#include <shogun/base/init.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/converter/FactorAnalysis.h>
-#include <shogun/mathematics/Math.h>
+#include <base/init.h>
+#include <features/DenseFeatures.h>
+#include <converter/FactorAnalysis.h>
+#include <mathematics/Math.h>
 
 using namespace shogun;
 

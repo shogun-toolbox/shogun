@@ -12,9 +12,9 @@
  * Copyright (C) 2013 Soeren Sonnenburg
  *
  */
-#include <shogun/kernel/string/OligoStringKernel.h>
-#include <shogun/kernel/normalizer/SqrtDiagKernelNormalizer.h>
-#include <shogun/features/StringFeatures.h>
+#include <kernel/string/OligoStringKernel.h>
+#include <kernel/normalizer/SqrtDiagKernelNormalizer.h>
+#include <features/StringFeatures.h>
 
 #include <map>
 #include <vector>

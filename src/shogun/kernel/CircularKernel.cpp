@@ -9,8 +9,8 @@
  * Copyright (C) 2011 Indian Institute of Technology Bombay
  */
 
-#include <shogun/kernel/CircularKernel.h>
-#include <shogun/mathematics/Math.h>
+#include <kernel/CircularKernel.h>
+#include <mathematics/Math.h>
 
 using namespace shogun;
 

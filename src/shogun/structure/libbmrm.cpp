@@ -11,10 +11,10 @@
  * Implementation of the BMRM solver
  *--------------------------------------------------------------------- */
 
-#include <shogun/structure/libbmrm.h>
-#include <shogun/lib/external/libqp.h>
-#include <shogun/lib/Time.h>
-#include <shogun/io/SGIO.h>
+#include <structure/libbmrm.h>
+#include <lib/external/libqp.h>
+#include <lib/Time.h>
+#include <io/SGIO.h>
 
 namespace shogun
 {

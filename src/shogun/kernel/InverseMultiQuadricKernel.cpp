@@ -9,8 +9,8 @@
  * Copyright (C) 2011 Indian Institute of Technology Bombay
  */
 
-#include <shogun/kernel/InverseMultiQuadricKernel.h>
-#include <shogun/mathematics/Math.h>
+#include <kernel/InverseMultiQuadricKernel.h>
+#include <mathematics/Math.h>
 
 using namespace shogun;
 

@@ -10,9 +10,9 @@
 
 #ifndef _DOMAINADAPTATIONMULTICLASSLIBLINEAR_H___
 #define _DOMAINADAPTATIONMULTICLASSLIBLINEAR_H___
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 #ifdef HAVE_LAPACK
-#include <shogun/multiclass/MulticlassLibLinear.h>
+#include <multiclass/MulticlassLibLinear.h>
 
 namespace shogun
 {

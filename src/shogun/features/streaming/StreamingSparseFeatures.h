@@ -11,11 +11,11 @@
 #ifndef _STREAMING_SPARSEFEATURES__H__
 #define _STREAMING_SPARSEFEATURES__H__
 
-#include <shogun/lib/common.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/features/streaming/StreamingDotFeatures.h>
-#include <shogun/lib/DataType.h>
-#include <shogun/io/streaming/InputParser.h>
+#include <lib/common.h>
+#include <mathematics/Math.h>
+#include <features/streaming/StreamingDotFeatures.h>
+#include <lib/DataType.h>
+#include <io/streaming/InputParser.h>
 
 namespace shogun
 {

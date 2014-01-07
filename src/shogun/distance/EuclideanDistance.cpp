@@ -8,9 +8,9 @@
  * Copyright (C) 2007-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/lib/common.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/distance/EuclideanDistance.h>
+#include <lib/common.h>
+#include <io/SGIO.h>
+#include <distance/EuclideanDistance.h>
 
 using namespace shogun;
 

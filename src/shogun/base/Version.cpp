@@ -8,10 +8,10 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/base/Version.h>
-#include <shogun/base/SGObject.h>
-#include <shogun/lib/versionstring.h>
-#include <shogun/lib/RefCount.h>
+#include <base/Version.h>
+#include <base/SGObject.h>
+#include <lib/versionstring.h>
+#include <lib/RefCount.h>
 
 using namespace shogun;
 

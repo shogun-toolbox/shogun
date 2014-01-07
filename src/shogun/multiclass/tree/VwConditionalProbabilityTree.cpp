@@ -10,7 +10,7 @@
 
 #include <vector>
 #include <stack>
-#include <shogun/multiclass/tree/VwConditionalProbabilityTree.h>
+#include <multiclass/tree/VwConditionalProbabilityTree.h>
 
 using namespace shogun;
 using namespace std;

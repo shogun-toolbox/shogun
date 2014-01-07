@@ -8,10 +8,10 @@
  * Copyright (C) 2012 Jiayu Zhou and Jieping Ye
  */
 
-#include <shogun/lib/malsar/malsar_low_rank.h>
+#include <lib/malsar/malsar_low_rank.h>
 #ifdef HAVE_EIGEN3
-#include <shogun/mathematics/eigen3.h>
-#include <shogun/mathematics/Math.h>
+#include <mathematics/eigen3.h>
+#include <mathematics/Math.h>
 #include <iostream>
 
 using namespace Eigen;

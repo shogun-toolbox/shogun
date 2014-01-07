@@ -13,8 +13,8 @@
 #ifndef _SIMPLELOCALITYIMPROVEDSTRINGKERNEL_H___
 #define _SIMPLELOCALITYIMPROVEDSTRINGKERNEL_H___
 
-#include <shogun/lib/common.h>
-#include <shogun/kernel/string/StringKernel.h>
+#include <lib/common.h>
+#include <kernel/string/StringKernel.h>
 
 namespace shogun
 {

@@ -10,8 +10,8 @@
 #ifndef NORMAL_SAMPLER_H_
 #define NORMAL_SAMPLER_H_
 
-#include <shogun/lib/config.h>
-#include <shogun/mathematics/linalg/ratapprox/tracesampler/TraceSampler.h>
+#include <lib/config.h>
+#include <mathematics/linalg/ratapprox/tracesampler/TraceSampler.h>
 
 namespace shogun
 {

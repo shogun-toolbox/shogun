@@ -12,16 +12,16 @@
 #ifndef APPROXJOINTDIAGONALIZER_H_
 #define APPROXJOINTDIAGONALIZER_H_
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
 #ifdef HAVE_EIGEN3
 
-#include <shogun/lib/common.h>
-#include <shogun/lib/SGMatrix.h>
-#include <shogun/lib/SGNDArray.h>
-#include <shogun/base/SGObject.h>
+#include <lib/common.h>
+#include <lib/SGMatrix.h>
+#include <lib/SGNDArray.h>
+#include <base/SGObject.h>
 
-#include <shogun/mathematics/Math.h>
+#include <mathematics/Math.h>
 
 namespace shogun
 {

@@ -9,12 +9,12 @@
 
 #ifndef _REGRESSIONLIBLINEAR_H___
 #define _REGRESSIONLIBLINEAR_H___
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 #ifdef HAVE_LAPACK
-#include <shogun/lib/common.h>
-#include <shogun/features/DotFeatures.h>
-#include <shogun/machine/LinearMachine.h>
-#include <shogun/optimization/liblinear/shogun_liblinear.h>
+#include <lib/common.h>
+#include <features/DotFeatures.h>
+#include <machine/LinearMachine.h>
+#include <optimization/liblinear/shogun_liblinear.h>
 
 namespace shogun
 {

@@ -11,9 +11,9 @@
 #ifndef _CGHMM_H___
 #define _CGHMM_H___
 
-#include <shogun/mathematics/Math.h>
-#include <shogun/features/Features.h>
-#include <shogun/distributions/Distribution.h>
+#include <mathematics/Math.h>
+#include <features/Features.h>
+#include <distributions/Distribution.h>
 
 namespace shogun
 {

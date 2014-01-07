@@ -20,12 +20,12 @@
 #include <octave/Cell.h>
 #include <stdio.h>
 
-#include <shogun/ui/SGInterface.h>
-#include <shogun/lib/ShogunException.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/lib/config.h>
-#include <shogun/lib/memory.h>
-#include <shogun/base/init.h>
+#include <ui/SGInterface.h>
+#include <lib/ShogunException.h>
+#include <io/SGIO.h>
+#include <lib/config.h>
+#include <lib/memory.h>
+#include <base/init.h>
 
 #ifdef HAVE_PYTHON
 #include "../python_static/PythonInterface.h"

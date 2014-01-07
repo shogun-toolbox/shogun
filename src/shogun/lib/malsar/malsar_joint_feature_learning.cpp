@@ -8,11 +8,11 @@
  * Copyright (C) 2012 Jiayu Zhou and Jieping Ye
  */
 
-#include <shogun/lib/malsar/malsar_joint_feature_learning.h>
+#include <lib/malsar/malsar_joint_feature_learning.h>
 #ifdef HAVE_EIGEN3
-#include <shogun/lib/Signal.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/mathematics/eigen3.h>
+#include <lib/Signal.h>
+#include <mathematics/Math.h>
+#include <mathematics/eigen3.h>
 #include <iostream>
 
 using namespace Eigen;

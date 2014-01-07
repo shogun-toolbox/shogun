@@ -10,7 +10,7 @@
 #ifndef __KERNELINDEPENDENCESTSTATISTIC_H_
 #define __KERNELINDEPENDENCESTSTATISTIC_H_
 
-#include <shogun/statistics/TwoDistributionsTestStatistic.h>
+#include <statistics/TwoDistributionsTestStatistic.h>
 
 namespace shogun
 {

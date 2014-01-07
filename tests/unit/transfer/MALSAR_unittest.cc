@@ -1,9 +1,9 @@
-#include <shogun/features/DataGenerator.h>
-#include <shogun/transfer/multitask/MultitaskL12LogisticRegression.h>
-#include <shogun/transfer/multitask/MultitaskClusteredLogisticRegression.h>
-#include <shogun/transfer/multitask/MultitaskTraceLogisticRegression.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/labels/BinaryLabels.h>
+#include <features/DataGenerator.h>
+#include <transfer/multitask/MultitaskL12LogisticRegression.h>
+#include <transfer/multitask/MultitaskClusteredLogisticRegression.h>
+#include <transfer/multitask/MultitaskTraceLogisticRegression.h>
+#include <features/DenseFeatures.h>
+#include <labels/BinaryLabels.h>
 
 #include <gtest/gtest.h>
 

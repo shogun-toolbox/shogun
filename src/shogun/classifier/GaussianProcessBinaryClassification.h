@@ -10,11 +10,11 @@
 #ifndef _GAUSSIANPROCESSBINARYCLASSIFICATION_H_
 #define _GAUSSIANPROCESSBINARYCLASSIFICATION_H_
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
 #ifdef HAVE_EIGEN3
 
-#include <shogun/machine/GaussianProcessMachine.h>
+#include <machine/GaussianProcessMachine.h>
 
 namespace shogun
 {

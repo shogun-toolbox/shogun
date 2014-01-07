@@ -13,18 +13,18 @@
  * Copyright (C) 2012 Soeren Sonnenburg
  */
 
-#include <shogun/lib/config.h>
-#include <shogun/lib/SGVector.h>
-#include <shogun/lib/SGMatrix.h>
-#include <shogun/lib/SGSparseVector.h>
-#include <shogun/lib/SGReferencedData.h>
-#include <shogun/io/File.h>
+#include <lib/config.h>
+#include <lib/SGVector.h>
+#include <lib/SGMatrix.h>
+#include <lib/SGSparseVector.h>
+#include <lib/SGReferencedData.h>
+#include <io/File.h>
 
-#include <shogun/mathematics/Math.h>
-#include <shogun/mathematics/lapack.h>
+#include <mathematics/Math.h>
+#include <mathematics/lapack.h>
 #include <algorithm>
 
-#include <shogun/mathematics/eigen3.h>
+#include <mathematics/eigen3.h>
 
 #define COMPLEX128_ERROR_NOARG(function) \
 template <> \

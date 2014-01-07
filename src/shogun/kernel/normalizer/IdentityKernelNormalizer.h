@@ -11,7 +11,7 @@
 #ifndef _IDENTITYKERNELNORMALIZER_H___
 #define _IDENTITYKERNELNORMALIZER_H___
 
-#include <shogun/kernel/normalizer/KernelNormalizer.h>
+#include <kernel/normalizer/KernelNormalizer.h>
 
 namespace shogun
 {

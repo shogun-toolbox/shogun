@@ -11,15 +11,15 @@
 #ifndef _GAUSSIAN_H__
 #define _GAUSSIAN_H__
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
 #ifdef HAVE_LAPACK
 
-#include <shogun/distributions/Distribution.h>
-#include <shogun/features/DotFeatures.h>
-#include <shogun/lib/common.h>
-#include <shogun/mathematics/lapack.h>
-#include <shogun/mathematics/Math.h>
+#include <distributions/Distribution.h>
+#include <features/DotFeatures.h>
+#include <lib/common.h>
+#include <mathematics/lapack.h>
+#include <mathematics/Math.h>
 
 namespace shogun
 {

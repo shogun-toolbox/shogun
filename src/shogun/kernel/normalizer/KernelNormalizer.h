@@ -11,8 +11,8 @@
 #ifndef _KERNELNORMALIZER_H___
 #define _KERNELNORMALIZER_H___
 
-#include <shogun/kernel/Kernel.h>
-#include <shogun/base/Parameter.h>
+#include <kernel/Kernel.h>
+#include <base/Parameter.h>
 
 namespace shogun
 {

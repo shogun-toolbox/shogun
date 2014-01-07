@@ -11,8 +11,8 @@
 #ifndef _DomainAdaptation_SVM_LINEAR_H___
 #define _DomainAdaptation_SVM_LINEAR_H___
 
-#include <shogun/lib/common.h>
-#include <shogun/classifier/svm/LibLinear.h>
+#include <lib/common.h>
+#include <classifier/svm/LibLinear.h>
 
 #include <stdio.h>
 

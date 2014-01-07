@@ -11,7 +11,7 @@
 #ifndef RANDOMCONDITIONALPROBABILITYTREE_H__
 #define RANDOMCONDITIONALPROBABILITYTREE_H__
 
-#include <shogun/multiclass/tree/ConditionalProbabilityTree.h>
+#include <multiclass/tree/ConditionalProbabilityTree.h>
 
 namespace shogun
 {

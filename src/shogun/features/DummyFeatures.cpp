@@ -1,5 +1,5 @@
-#include <shogun/features/DummyFeatures.h>
-#include <shogun/base/Parameter.h>
+#include <features/DummyFeatures.h>
+#include <base/Parameter.h>
 
 using namespace shogun;
 

@@ -1,6 +1,6 @@
-#include <shogun/structure/TwoStateModel.h>
-#include <shogun/structure/HMSVMModel.h>
-#include <shogun/structure/DualLibQPBMSOSVM.h>
+#include <structure/TwoStateModel.h>
+#include <structure/HMSVMModel.h>
+#include <structure/DualLibQPBMSOSVM.h>
 
 using namespace shogun;
 

@@ -1,6 +1,6 @@
-#include <shogun/multiclass/MulticlassOCAS.h>
-#include <shogun/features/DataGenerator.h>
-#include <shogun/features/DenseFeatures.h>
+#include <multiclass/MulticlassOCAS.h>
+#include <features/DataGenerator.h>
+#include <features/DenseFeatures.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;

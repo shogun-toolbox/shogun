@@ -18,14 +18,14 @@
 #ifndef _INTEGRATION_H_
 #define _INTEGRATION_H_
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
 #ifdef HAVE_EIGEN3
 
-#include <shogun/base/SGObject.h>
-#include <shogun/lib/DynamicArray.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/mathematics/Function.h>
+#include <base/SGObject.h>
+#include <lib/DynamicArray.h>
+#include <mathematics/Math.h>
+#include <mathematics/Function.h>
 
 namespace shogun
 {

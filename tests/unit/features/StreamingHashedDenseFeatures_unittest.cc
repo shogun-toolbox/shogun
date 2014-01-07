@@ -7,10 +7,10 @@
  * Written (W) 2013 Evangelos Anagnostopoulos
  */
 
-#include <shogun/base/init.h>
-#include <shogun/lib/Hash.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/features/streaming/StreamingHashedDenseFeatures.h>
+#include <base/init.h>
+#include <lib/Hash.h>
+#include <features/DenseFeatures.h>
+#include <features/streaming/StreamingHashedDenseFeatures.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;

@@ -1,6 +1,6 @@
-#include <shogun/ensemble/MeanRule.h>
-#include <shogun/lib/SGVector.h>
-#include <shogun/lib/SGMatrix.h>
+#include <ensemble/MeanRule.h>
+#include <lib/SGVector.h>
+#include <lib/SGMatrix.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;

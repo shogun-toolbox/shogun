@@ -11,7 +11,7 @@
 #ifndef CZEROMEAN_H_
 #define CZEROMEAN_H_
 
-#include <shogun/machine/gp/MeanFunction.h>
+#include <machine/gp/MeanFunction.h>
 
 namespace shogun
 {

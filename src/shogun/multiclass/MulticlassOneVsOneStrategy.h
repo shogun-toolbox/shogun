@@ -9,7 +9,7 @@
  * Copyright (C) 2012 Chiyuan Zhang
  */
 
-#include <shogun/multiclass/MulticlassStrategy.h>
+#include <multiclass/MulticlassStrategy.h>
 
 namespace shogun
 {

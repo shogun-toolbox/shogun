@@ -8,7 +8,7 @@
  * Copyright (C) 2012 Fernando José Iglesias García
  */
 
-#include <shogun/lib/StructuredData.h>
+#include <lib/StructuredData.h>
 
 using namespace shogun;
 

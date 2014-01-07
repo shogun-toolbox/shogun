@@ -8,10 +8,10 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/lib/common.h>
-#include <shogun/kernel/Chi2Kernel.h>
-#include <shogun/features/Features.h>
-#include <shogun/io/SGIO.h>
+#include <lib/common.h>
+#include <kernel/Chi2Kernel.h>
+#include <features/Features.h>
+#include <io/SGIO.h>
 
 using namespace shogun;
 

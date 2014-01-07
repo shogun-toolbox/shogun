@@ -10,10 +10,10 @@
 
 #ifndef TDISTRIBUTEDSTOCHASTICNEIGHBOREMBEDDING_H_
 #define TDISTRIBUTEDSTOCHASTICNEIGHBOREMBEDDING_H_
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 #ifdef HAVE_EIGEN3
-#include <shogun/converter/EmbeddingConverter.h>
-#include <shogun/features/Features.h>
+#include <converter/EmbeddingConverter.h>
+#include <features/Features.h>
 
 namespace shogun
 {

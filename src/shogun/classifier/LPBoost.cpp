@@ -8,17 +8,17 @@
  * Copyright (C) 2007-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
 #ifdef USE_CPLEX
 
-#include <shogun/classifier/LPBoost.h>
-#include <shogun/labels/Labels.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/mathematics/Cplex.h>
-#include <shogun/lib/DynamicArray.h>
-#include <shogun/lib/Signal.h>
-#include <shogun/lib/Time.h>
+#include <classifier/LPBoost.h>
+#include <labels/Labels.h>
+#include <mathematics/Math.h>
+#include <mathematics/Cplex.h>
+#include <lib/DynamicArray.h>
+#include <lib/Signal.h>
+#include <lib/Time.h>
 
 using namespace shogun;
 

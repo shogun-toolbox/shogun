@@ -7,9 +7,9 @@
  * Written (W) 2012-2013 Heiko Strathmann
  */
 
-#include <shogun/statistics/MMDKernelSelectionCombOpt.h>
-#include <shogun/statistics/LinearTimeMMD.h>
-#include <shogun/kernel/CombinedKernel.h>
+#include <statistics/MMDKernelSelectionCombOpt.h>
+#include <statistics/LinearTimeMMD.h>
+#include <kernel/CombinedKernel.h>
 
 
 using namespace shogun;

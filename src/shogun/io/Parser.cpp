@@ -8,7 +8,7 @@
  */
 
 #include <stdlib.h>
-#include <shogun/io/Parser.h>
+#include <io/Parser.h>
 
 using namespace shogun;
 

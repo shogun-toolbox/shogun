@@ -7,16 +7,16 @@
  * Written (W) 2012 Harshit Syal
  * Copyright (C) 2012 Harshit Syal
  */
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
 #ifdef HAVE_LAPACK
-#include <shogun/classifier/svm/NewtonSVM.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/machine/LinearMachine.h>
-#include <shogun/features/DotFeatures.h>
-#include <shogun/labels/Labels.h>
-#include <shogun/labels/BinaryLabels.h>
-#include <shogun/mathematics/lapack.h>
+#include <classifier/svm/NewtonSVM.h>
+#include <mathematics/Math.h>
+#include <machine/LinearMachine.h>
+#include <features/DotFeatures.h>
+#include <labels/Labels.h>
+#include <labels/BinaryLabels.h>
+#include <mathematics/lapack.h>
 
 //#define DEBUG_NEWTON
 //#define V_NEWTON

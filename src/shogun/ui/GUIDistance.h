@@ -12,10 +12,10 @@
 #ifndef __GUIDISTANCE_H__
 #define __GUIDISTANCE_H__
 
-#include <shogun/lib/config.h>
-#include <shogun/base/SGObject.h>
-#include <shogun/distance/Distance.h>
-#include <shogun/features/Features.h>
+#include <lib/config.h>
+#include <base/SGObject.h>
+#include <distance/Distance.h>
+#include <features/Features.h>
 
 namespace shogun
 {

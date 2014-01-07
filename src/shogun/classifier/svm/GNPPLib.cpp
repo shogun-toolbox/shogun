@@ -14,12 +14,12 @@
 
 #include <math.h>
 #include <limits.h>
-#include <shogun/lib/common.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/mathematics/Math.h>
+#include <lib/common.h>
+#include <io/SGIO.h>
+#include <mathematics/Math.h>
 
-#include <shogun/classifier/svm/GNPPLib.h>
-#include <shogun/kernel/Kernel.h>
+#include <classifier/svm/GNPPLib.h>
+#include <kernel/Kernel.h>
 
 using namespace shogun;
 

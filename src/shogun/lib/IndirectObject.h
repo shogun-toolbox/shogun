@@ -10,7 +10,7 @@
 #ifndef __INDIRECTOBJECT_H__
 #define __INDIRECTOBJECT_H__
 
-#include <shogun/lib/common.h>
+#include <lib/common.h>
 
 namespace shogun
 {

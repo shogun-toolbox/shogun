@@ -7,7 +7,7 @@
  * Written (W) 2013 Evgeniy Andreev (gsomix)
  */
 
-#include <shogun/lib/CircularBuffer.h>
+#include <lib/CircularBuffer.h>
 
 #include <cstdio>
 #include <cstring>

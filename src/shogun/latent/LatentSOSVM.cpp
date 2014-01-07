@@ -8,8 +8,8 @@
  * Copyright (C) 2012 Viktor Gal
  */
 
-#include <shogun/latent/LatentSOSVM.h>
-#include <shogun/structure/DualLibQPBMSOSVM.h>
+#include <latent/LatentSOSVM.h>
+#include <structure/DualLibQPBMSOSVM.h>
 
 using namespace shogun;
 

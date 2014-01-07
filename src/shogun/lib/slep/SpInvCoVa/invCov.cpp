@@ -14,7 +14,7 @@
  *   Copyright (C) 2009 - 2012 Jun Liu and Jieping Ye 
  */
 
-#include <shogun/lib/slep/SpInvCoVa/invCov.h>
+#include <lib/slep/SpInvCoVa/invCov.h>
 
 void m_Ax(double *Ax, double  *A, double *x, int n, int ith)
 {

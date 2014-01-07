@@ -1,8 +1,8 @@
-#include <shogun/base/init.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/lib/SGMatrix.h>
-#include <shogun/io/SerializableAsciiFile.h>
-#include <shogun/features/SparseFeatures.h>
+#include <base/init.h>
+#include <io/SGIO.h>
+#include <lib/SGMatrix.h>
+#include <io/SerializableAsciiFile.h>
+#include <features/SparseFeatures.h>
 
 using namespace shogun;
 int main(int argc, char** argv)

@@ -7,16 +7,16 @@
  * Written (W) 2013 Soumyajit De
  */
 
-#include <shogun/lib/common.h>
+#include <lib/common.h>
 
 #ifdef HAVE_EIGEN3
 
-#include <shogun/lib/SGVector.h>
-#include <shogun/lib/Time.h>
-#include <shogun/mathematics/eigen3.h>
-#include <shogun/mathematics/linalg/linop/LinearOperator.h>
-#include <shogun/mathematics/linalg/linsolver/ConjugateGradientSolver.h>
-#include <shogun/mathematics/linalg/linsolver/IterativeSolverIterator.h>
+#include <lib/SGVector.h>
+#include <lib/Time.h>
+#include <mathematics/eigen3.h>
+#include <mathematics/linalg/linop/LinearOperator.h>
+#include <mathematics/linalg/linsolver/ConjugateGradientSolver.h>
+#include <mathematics/linalg/linsolver/IterativeSolverIterator.h>
 
 using namespace Eigen;
 

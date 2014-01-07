@@ -8,13 +8,13 @@
  * Copyright (C) 2012 Sergey Lisitsyn
  */
 
-#include <shogun/lib/config.h>
-#include <shogun/multiclass/MulticlassLibLinear.h>
-#include <shogun/multiclass/MulticlassOneVsRestStrategy.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/lib/v_array.h>
-#include <shogun/lib/Signal.h>
-#include <shogun/labels/MulticlassLabels.h>
+#include <lib/config.h>
+#include <multiclass/MulticlassLibLinear.h>
+#include <multiclass/MulticlassOneVsRestStrategy.h>
+#include <mathematics/Math.h>
+#include <lib/v_array.h>
+#include <lib/Signal.h>
+#include <labels/MulticlassLabels.h>
 
 using namespace shogun;
 

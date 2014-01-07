@@ -7,11 +7,11 @@
  * Written (W) 2013 Evgeniy Andreev (gsomix)
  */
 
-#include <shogun/io/LibSVMFile.h>
+#include <io/LibSVMFile.h>
 
-#include <shogun/lib/SGVector.h>
-#include <shogun/lib/SGSparseVector.h>
-#include <shogun/base/DynArray.h>
+#include <lib/SGVector.h>
+#include <lib/SGSparseVector.h>
+#include <base/DynArray.h>
 
 using namespace shogun;
 

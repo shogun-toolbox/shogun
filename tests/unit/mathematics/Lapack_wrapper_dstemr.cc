@@ -7,14 +7,14 @@
  * Written (W) 2013 Soumyajit De
  */
 
-#include <shogun/lib/common.h>
+#include <lib/common.h>
 
 #ifdef HAVE_LAPACK
 #ifdef HAVE_EIGEN3
 #ifdef HAVE_ATLAS
-#include <shogun/lib/SGVector.h>
-#include <shogun/mathematics/lapack.h>
-#include <shogun/mathematics/eigen3.h>
+#include <lib/SGVector.h>
+#include <mathematics/lapack.h>
+#include <mathematics/eigen3.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;

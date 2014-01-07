@@ -11,10 +11,10 @@
 #ifndef __PLIF_H__
 #define __PLIF_H__
 
-#include <shogun/lib/common.h>
-#include <shogun/lib/SGVector.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/structure/PlifBase.h>
+#include <lib/common.h>
+#include <lib/SGVector.h>
+#include <mathematics/Math.h>
+#include <structure/PlifBase.h>
 
 namespace shogun
 {

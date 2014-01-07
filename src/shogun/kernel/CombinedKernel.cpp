@@ -9,15 +9,15 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/lib/common.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/lib/Signal.h>
-#include <shogun/base/Parallel.h>
-#include <shogun/lib/DynamicObjectArray.h>
-#include <shogun/kernel/Kernel.h>
-#include <shogun/kernel/CombinedKernel.h>
-#include <shogun/kernel/CustomKernel.h>
-#include <shogun/features/CombinedFeatures.h>
+#include <lib/common.h>
+#include <io/SGIO.h>
+#include <lib/Signal.h>
+#include <base/Parallel.h>
+#include <lib/DynamicObjectArray.h>
+#include <kernel/Kernel.h>
+#include <kernel/CombinedKernel.h>
+#include <kernel/CustomKernel.h>
+#include <features/CombinedFeatures.h>
 #include <string.h>
 
 #ifndef WIN32

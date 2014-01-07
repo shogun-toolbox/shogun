@@ -12,9 +12,9 @@
 #include <math.h>
 #include <ctype.h>
 
-#include <shogun/features/Alphabet.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/base/Parameter.h>
+#include <features/Alphabet.h>
+#include <io/SGIO.h>
+#include <base/Parameter.h>
 
 using namespace shogun;
 

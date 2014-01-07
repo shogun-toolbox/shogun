@@ -10,10 +10,10 @@
 
 #include <algorithm>
 
-#include <shogun/mathematics/Math.h>
-#include <shogun/labels/BinaryLabels.h>
-#include <shogun/labels/MulticlassLabels.h>
-#include <shogun/multiclass/ecoc/ECOCDiscriminantEncoder.h>
+#include <mathematics/Math.h>
+#include <labels/BinaryLabels.h>
+#include <labels/MulticlassLabels.h>
+#include <multiclass/ecoc/ECOCDiscriminantEncoder.h>
 
 using namespace std;
 using namespace shogun;

@@ -8,10 +8,10 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include <shogun/base/init.h>
-#include <shogun/mathematics/Statistics.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/lib/SGVector.h>
+#include <base/init.h>
+#include <mathematics/Statistics.h>
+#include <mathematics/Math.h>
+#include <lib/SGVector.h>
 
 using namespace shogun;
 

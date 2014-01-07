@@ -12,17 +12,17 @@
  * http://www.gaussianprocess.org/gpml/code/matlab/doc/
  */
 
-#include <shogun/machine/gp/EPInferenceMethod.h>
+#include <machine/gp/EPInferenceMethod.h>
 
 #ifdef HAVE_EIGEN3
 
-#include <shogun/mathematics/Math.h>
-#include <shogun/labels/RegressionLabels.h>
-#include <shogun/features/CombinedFeatures.h>
-#include <shogun/features/DotFeatures.h>
-#include <shogun/lib/DynamicArray.h>
+#include <mathematics/Math.h>
+#include <labels/RegressionLabels.h>
+#include <features/CombinedFeatures.h>
+#include <features/DotFeatures.h>
+#include <lib/DynamicArray.h>
 
-#include <shogun/mathematics/eigen3.h>
+#include <mathematics/eigen3.h>
 
 using namespace shogun;
 using namespace Eigen;

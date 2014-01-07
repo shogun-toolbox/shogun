@@ -1,7 +1,7 @@
 %{
- #include <shogun/ensemble/CombinationRule.h>
- #include <shogun/ensemble/MeanRule.h>
- #include <shogun/ensemble/WeightedMajorityVote.h>
- #include <shogun/ensemble/MajorityVote.h>
+ #include <ensemble/CombinationRule.h>
+ #include <ensemble/MeanRule.h>
+ #include <ensemble/WeightedMajorityVote.h>
+ #include <ensemble/MajorityVote.h>
 %}
 

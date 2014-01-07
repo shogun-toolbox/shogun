@@ -7,7 +7,7 @@
  * Copyright (C) 2012 Sergey Lisitsyn
  */
 
-#include <shogun/structure/DirectorStructuredModel.h>
+#include <structure/DirectorStructuredModel.h>
 
 #ifdef USE_SWIG_DIRECTORS
 

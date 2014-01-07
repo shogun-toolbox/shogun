@@ -12,10 +12,10 @@
 #ifndef _MULTICLASSSVM_H___
 #define _MULTICLASSSVM_H___
 
-#include <shogun/lib/common.h>
-#include <shogun/features/Features.h>
-#include <shogun/classifier/svm/SVM.h>
-#include <shogun/machine/KernelMulticlassMachine.h>
+#include <lib/common.h>
+#include <features/Features.h>
+#include <classifier/svm/SVM.h>
+#include <machine/KernelMulticlassMachine.h>
 
 namespace shogun
 {

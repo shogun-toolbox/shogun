@@ -12,12 +12,12 @@
 #ifndef _PRODUCTKERNEL_H___
 #define _PRODUCTKERNEL_H___
 
-#include <shogun/lib/DynamicObjectArray.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/kernel/Kernel.h>
+#include <lib/DynamicObjectArray.h>
+#include <io/SGIO.h>
+#include <kernel/Kernel.h>
 
-#include <shogun/features/Features.h>
-#include <shogun/features/CombinedFeatures.h>
+#include <features/Features.h>
+#include <features/CombinedFeatures.h>
 
 namespace shogun
 {

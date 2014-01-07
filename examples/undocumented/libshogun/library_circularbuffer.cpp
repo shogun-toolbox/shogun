@@ -1,7 +1,7 @@
-#include <shogun/base/init.h>
-#include <shogun/lib/CircularBuffer.h>
-#include <shogun/lib/DelimiterTokenizer.h>
-#include <shogun/lib/SGVector.h>
+#include <base/init.h>
+#include <lib/CircularBuffer.h>
+#include <lib/DelimiterTokenizer.h>
+#include <lib/SGVector.h>
 
 #include <cstdio>
 #include <cstring>

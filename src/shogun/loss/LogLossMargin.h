@@ -12,7 +12,7 @@
 #ifndef _LOGLOSSMARGIN_H__
 #define _LOGLOSSMARGIN_H__
 
-#include <shogun/loss/LossFunction.h>
+#include <loss/LossFunction.h>
 
 namespace shogun
 {

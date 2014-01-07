@@ -9,7 +9,7 @@
  *
  */
 
-#include <shogun/lib/computation/jobresult/ScalarResult.h>
+#include <lib/computation/jobresult/ScalarResult.h>
 
 namespace shogun
 {

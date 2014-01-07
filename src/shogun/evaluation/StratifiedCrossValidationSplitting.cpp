@@ -8,10 +8,10 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include <shogun/evaluation/StratifiedCrossValidationSplitting.h>
-#include <shogun/labels/Labels.h>
-#include <shogun/labels/BinaryLabels.h>
-#include <shogun/labels/MulticlassLabels.h>
+#include <evaluation/StratifiedCrossValidationSplitting.h>
+#include <labels/Labels.h>
+#include <labels/BinaryLabels.h>
+#include <labels/MulticlassLabels.h>
 
 using namespace shogun;
 
