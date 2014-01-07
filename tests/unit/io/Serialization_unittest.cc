@@ -7,12 +7,12 @@
  * Written (W) 2013 Soumyajit De
  */
 
-#include <shogun/lib/common.h>
-#include <shogun/base/Parameter.h>
-#include <shogun/io/SerializableAsciiFile.h>
-#include <shogun/io/SerializableJsonFile.h>
-#include <shogun/io/SerializableXmlFile.h>
-#include <shogun/io/SerializableHdf5File.h>
+#include <lib/common.h>
+#include <base/Parameter.h>
+#include <io/SerializableAsciiFile.h>
+#include <io/SerializableJsonFile.h>
+#include <io/SerializableXmlFile.h>
+#include <io/SerializableHdf5File.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;

@@ -1,9 +1,9 @@
 %{
- #include <shogun/loss/LossFunction.h>
- #include <shogun/loss/HingeLoss.h>
- #include <shogun/loss/LogLoss.h>
- #include <shogun/loss/LogLossMargin.h>
- #include <shogun/loss/SmoothHingeLoss.h>
- #include <shogun/loss/SquaredHingeLoss.h>
- #include <shogun/loss/SquaredLoss.h>
+ #include <loss/LossFunction.h>
+ #include <loss/HingeLoss.h>
+ #include <loss/LogLoss.h>
+ #include <loss/LogLossMargin.h>
+ #include <loss/SmoothHingeLoss.h>
+ #include <loss/SquaredHingeLoss.h>
+ #include <loss/SquaredLoss.h>
 %}

@@ -14,7 +14,7 @@
  *   Copyright (C) 2009 - 2012 Jun Liu and Jieping Ye
  */
 
-#include <shogun/lib/slep/tree/altra.h>
+#include <lib/slep/tree/altra.h>
 
 void altra(double *x, double *v, int n, double *ind, int nodes, double mult)
 {

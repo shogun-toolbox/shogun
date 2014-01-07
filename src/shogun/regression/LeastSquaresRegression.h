@@ -10,13 +10,13 @@
 #ifndef _LEASTSQUARESREGRESSION_H__
 #define _LEASTSQUARESREGRESSION_H__
 
-#include <shogun/lib/config.h>
-#include <shogun/regression/Regression.h>
-#include <shogun/regression/LinearRidgeRegression.h>
+#include <lib/config.h>
+#include <regression/Regression.h>
+#include <regression/LinearRidgeRegression.h>
 
 #ifdef HAVE_LAPACK
 
-#include <shogun/machine/LinearMachine.h>
+#include <machine/LinearMachine.h>
 
 namespace shogun
 {

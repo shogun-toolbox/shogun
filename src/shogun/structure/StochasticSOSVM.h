@@ -11,8 +11,8 @@
 #ifndef __STOCHASTIC_SOSVM_H__
 #define __STOCHASTIC_SOSVM_H__
 
-#include <shogun/lib/SGVector.h>
-#include <shogun/machine/LinearStructuredOutputMachine.h>
+#include <lib/SGVector.h>
+#include <machine/LinearStructuredOutputMachine.h>
 
 namespace shogun
 {

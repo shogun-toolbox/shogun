@@ -11,14 +11,14 @@
 #ifndef __PARAMETER_H__
 #define __PARAMETER_H__
 
-#include <shogun/lib/common.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/lib/DataType.h>
-#include <shogun/lib/SGVector.h>
-#include <shogun/lib/SGMatrix.h>
-#include <shogun/lib/SGSparseMatrix.h>
-#include <shogun/io/SerializableFile.h>
-#include <shogun/base/DynArray.h>
+#include <lib/common.h>
+#include <io/SGIO.h>
+#include <lib/DataType.h>
+#include <lib/SGVector.h>
+#include <lib/SGMatrix.h>
+#include <lib/SGSparseMatrix.h>
+#include <io/SerializableFile.h>
+#include <base/DynArray.h>
 
 namespace shogun
 {

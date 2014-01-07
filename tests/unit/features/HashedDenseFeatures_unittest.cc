@@ -7,10 +7,10 @@
  * Written (W) 2012-2013 Heiko Strathmann
  */
 
-#include <shogun/base/init.h>
-#include <shogun/lib/Hash.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/features/HashedDenseFeatures.h>
+#include <base/init.h>
+#include <lib/Hash.h>
+#include <features/DenseFeatures.h>
+#include <features/HashedDenseFeatures.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;

@@ -9,12 +9,12 @@
  * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/ui/GUIFeatures.h>
-#include <shogun/ui/SGInterface.h>
+#include <ui/GUIFeatures.h>
+#include <ui/SGInterface.h>
 
-#include <shogun/lib/config.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/io/CSVFile.h>
+#include <lib/config.h>
+#include <io/SGIO.h>
+#include <io/CSVFile.h>
 
 using namespace shogun;
 

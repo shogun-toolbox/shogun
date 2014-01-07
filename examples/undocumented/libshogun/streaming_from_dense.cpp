@@ -13,13 +13,13 @@
  * making it suitable for using online learning algorithms.
  */
 
-#include <shogun/features/streaming/StreamingDenseFeatures.h>
-#include <shogun/io/streaming/StreamingFileFromDenseFeatures.h>
+#include <features/streaming/StreamingDenseFeatures.h>
+#include <io/streaming/StreamingFileFromDenseFeatures.h>
 
-#include <shogun/mathematics/Math.h>
-#include <shogun/lib/common.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/base/init.h>
+#include <mathematics/Math.h>
+#include <lib/common.h>
+#include <io/SGIO.h>
+#include <base/init.h>
 
 #include <stdlib.h>
 #include <stdio.h>

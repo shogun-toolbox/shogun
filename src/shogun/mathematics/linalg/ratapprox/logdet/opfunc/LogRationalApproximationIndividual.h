@@ -10,8 +10,8 @@
 #ifndef LOG_RATIONAL_APPROXIMATION_INDIVIDUAL_H_
 #define LOG_RATIONAL_APPROXIMATION_INDIVIDUAL_H_
 
-#include <shogun/lib/config.h>
-#include <shogun/mathematics/linalg/ratapprox/opfunc/RationalApproximation.h>
+#include <lib/config.h>
+#include <mathematics/linalg/ratapprox/opfunc/RationalApproximation.h>
 
 #ifdef HAVE_EIGEN3
 

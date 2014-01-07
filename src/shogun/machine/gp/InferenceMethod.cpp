@@ -10,14 +10,14 @@
  * Copyright (C) 2013 Roman Votyakov
  */
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
 #ifdef HAVE_EIGEN3
 
-#include <shogun/machine/gp/InferenceMethod.h>
-#include <shogun/distributions/classical/GaussianDistribution.h>
-#include <shogun/mathematics/Statistics.h>
-#include <shogun/lib/Lock.h>
+#include <machine/gp/InferenceMethod.h>
+#include <distributions/classical/GaussianDistribution.h>
+#include <mathematics/Statistics.h>
+#include <lib/Lock.h>
 
 using namespace shogun;
 

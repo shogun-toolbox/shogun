@@ -8,8 +8,8 @@
  * Copyright (C) 2010 Berlin Institute of Technology
  */
 
-#include <shogun/features/HashedWDFeatures.h>
-#include <shogun/io/SGIO.h>
+#include <features/HashedWDFeatures.h>
+#include <io/SGIO.h>
 
 using namespace shogun;
 

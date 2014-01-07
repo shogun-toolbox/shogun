@@ -7,11 +7,11 @@
  * Written (W) 2013 Fernando J. Iglesias García
  */
 
-#include <shogun/distance/EuclideanDistance.h>
-#include <shogun/features/DataGenerator.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/labels/MulticlassLabels.h>
-#include <shogun/multiclass/KNN.h>
+#include <distance/EuclideanDistance.h>
+#include <features/DataGenerator.h>
+#include <features/DenseFeatures.h>
+#include <labels/MulticlassLabels.h>
+#include <multiclass/KNN.h>
 
 using namespace shogun;
 

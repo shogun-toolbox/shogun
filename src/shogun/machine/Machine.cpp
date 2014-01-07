@@ -9,10 +9,10 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/machine/Machine.h>
-#include <shogun/base/Parameter.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/base/ParameterMap.h>
+#include <machine/Machine.h>
+#include <base/Parameter.h>
+#include <mathematics/Math.h>
+#include <base/ParameterMap.h>
 
 using namespace shogun;
 

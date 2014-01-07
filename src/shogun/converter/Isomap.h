@@ -10,13 +10,13 @@
 
 #ifndef ISOMAP_H_
 #define ISOMAP_H_
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 #ifdef HAVE_EIGEN3
-#include <shogun/converter/MultidimensionalScaling.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/features/Features.h>
-#include <shogun/distance/Distance.h>
+#include <converter/MultidimensionalScaling.h>
+#include <io/SGIO.h>
+#include <features/DenseFeatures.h>
+#include <features/Features.h>
+#include <distance/Distance.h>
 
 namespace shogun
 {

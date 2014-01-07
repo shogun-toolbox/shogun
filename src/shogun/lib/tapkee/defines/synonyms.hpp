@@ -7,8 +7,8 @@
 #define TAPKEE_DEFINES_SYNONYMS_H_
 
 /* Tapkee includes */
-#include <shogun/lib/tapkee/defines/types.hpp>
-#include <shogun/lib/tapkee/defines/stdtypes.hpp>
+#include <lib/tapkee/defines/types.hpp>
+#include <lib/tapkee/defines/stdtypes.hpp>
 /* End of Tapkee includes */
 
 namespace tapkee

@@ -8,13 +8,13 @@
  * Copyright (C) 2013 Evangelos Anagnostopoulos
  */
 
-#include <shogun/converter/HashedDocConverter.h>
-#include <shogun/lib/DelimiterTokenizer.h>
-#include <shogun/lib/Hash.h>
-#include <shogun/lib/DynamicArray.h>
-#include <shogun/features/StringFeatures.h>
-#include <shogun/features/HashedDocDotFeatures.h>
-#include <shogun/mathematics/Math.h>
+#include <converter/HashedDocConverter.h>
+#include <lib/DelimiterTokenizer.h>
+#include <lib/Hash.h>
+#include <lib/DynamicArray.h>
+#include <features/StringFeatures.h>
+#include <features/HashedDocDotFeatures.h>
+#include <mathematics/Math.h>
 
 using namespace shogun;
 

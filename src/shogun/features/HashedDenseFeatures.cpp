@@ -8,12 +8,12 @@
  * Copyright (C) 2013 Evangelos Anagnostopoulos
  */
 
-#include <shogun/features/HashedDenseFeatures.h>
-#include <shogun/base/Parameter.h>
-#include <shogun/lib/Hash.h>
-#include <shogun/lib/DynamicArray.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/mathematics/Math.h>
+#include <features/HashedDenseFeatures.h>
+#include <base/Parameter.h>
+#include <lib/Hash.h>
+#include <lib/DynamicArray.h>
+#include <io/SGIO.h>
+#include <mathematics/Math.h>
 
 #include <string.h>
 

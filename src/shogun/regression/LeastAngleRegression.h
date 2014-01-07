@@ -11,11 +11,11 @@
 #ifndef LEASTANGLEREGRESSION_H__
 #define LEASTANGLEREGRESSION_H__
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
 #ifdef HAVE_LAPACK
 #include <vector>
-#include <shogun/machine/LinearMachine.h>
+#include <machine/LinearMachine.h>
 
 namespace shogun
 {

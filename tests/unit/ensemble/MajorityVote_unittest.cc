@@ -1,7 +1,7 @@
-#include <shogun/ensemble/MajorityVote.h>
-#include <shogun/lib/SGMatrix.h>
-#include <shogun/lib/SGVector.h>
-#include <shogun/labels/Labels.h>
+#include <ensemble/MajorityVote.h>
+#include <lib/SGMatrix.h>
+#include <lib/SGVector.h>
+#include <labels/Labels.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;

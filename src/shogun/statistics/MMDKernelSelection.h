@@ -10,7 +10,7 @@
 #ifndef __MMDKERNELSELECTION_H_
 #define __MMDKERNELSELECTION_H_
 
-#include <shogun/base/SGObject.h>
+#include <base/SGObject.h>
 
 namespace shogun
 {

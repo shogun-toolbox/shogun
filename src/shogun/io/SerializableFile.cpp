@@ -9,7 +9,7 @@
  * Copyright (C) 2010 Berlin Institute of Technology
  */
 
-#include <shogun/io/SerializableFile.h>
+#include <io/SerializableFile.h>
 
 using namespace shogun;
 

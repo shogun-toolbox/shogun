@@ -7,11 +7,11 @@
  * Written (W) 2012-2013 Heiko Strathmann
  */
 
-#include <shogun/statistics/MMDKernelSelection.h>
-#include <shogun/kernel/CombinedKernel.h>
-#include <shogun/statistics/KernelTwoSampleTestStatistic.h>
-#include <shogun/statistics/LinearTimeMMD.h>
-#include <shogun/statistics/QuadraticTimeMMD.h>
+#include <statistics/MMDKernelSelection.h>
+#include <kernel/CombinedKernel.h>
+#include <statistics/KernelTwoSampleTestStatistic.h>
+#include <statistics/LinearTimeMMD.h>
+#include <statistics/QuadraticTimeMMD.h>
 
 
 using namespace shogun;

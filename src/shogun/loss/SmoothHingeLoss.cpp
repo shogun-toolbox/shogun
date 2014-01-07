@@ -9,7 +9,7 @@
  * Copyright (c) 2011 Berlin Institute of Technohingey and Max-Planck-Society.
  */
 
-#include <shogun/loss/SmoothHingeLoss.h>
+#include <loss/SmoothHingeLoss.h>
 
 using namespace shogun;
 

@@ -7,9 +7,9 @@
  * Written (W) 2013 Evangelos Anagnostopoulos
  */
 
-#include <shogun/base/init.h>
-#include <shogun/features/LBPPyrDotFeatures.h>
-#include <shogun/lib/SGMatrix.h>
+#include <base/init.h>
+#include <features/LBPPyrDotFeatures.h>
+#include <lib/SGMatrix.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;

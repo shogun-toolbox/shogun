@@ -12,8 +12,8 @@
 #ifndef _DYNARRAY_H_
 #define _DYNARRAY_H_
 
-#include <shogun/lib/common.h>
-#include <shogun/mathematics/Math.h>
+#include <lib/common.h>
+#include <mathematics/Math.h>
 
 namespace shogun
 {

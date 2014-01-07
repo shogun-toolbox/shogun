@@ -11,9 +11,9 @@
 #ifndef _MATCHWORDSTRINGKERNEL_H___
 #define _MATCHWORDSTRINGKERNEL_H___
 
-#include <shogun/lib/common.h>
-#include <shogun/kernel/string/StringKernel.h>
-#include <shogun/features/StringFeatures.h>
+#include <lib/common.h>
+#include <kernel/string/StringKernel.h>
+#include <features/StringFeatures.h>
 
 namespace shogun
 {

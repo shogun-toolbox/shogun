@@ -1,4 +1,4 @@
-#include <shogun/features/StringFileFeatures.h>
+#include <features/StringFileFeatures.h>
 
 namespace shogun
 {

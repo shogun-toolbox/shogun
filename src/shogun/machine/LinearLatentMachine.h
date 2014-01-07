@@ -11,9 +11,9 @@
 #ifndef __LATENTLINEARMACHINE_H__
 #define __LATENTLINEARMACHINE_H__
 
-#include <shogun/lib/common.h>
-#include <shogun/machine/LinearMachine.h>
-#include <shogun/latent/LatentModel.h>
+#include <lib/common.h>
+#include <machine/LinearMachine.h>
+#include <latent/LatentModel.h>
 
 namespace shogun
 {

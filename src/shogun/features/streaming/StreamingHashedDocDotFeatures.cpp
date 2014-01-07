@@ -8,9 +8,9 @@
  * Copyright (C) 2013 Evangelos Anagnostopoulos
  */
 
-#include <shogun/features/streaming/StreamingHashedDocDotFeatures.h>
-#include <shogun/features/HashedDocDotFeatures.h>
-#include <shogun/mathematics/Math.h>
+#include <features/streaming/StreamingHashedDocDotFeatures.h>
+#include <features/HashedDocDotFeatures.h>
+#include <mathematics/Math.h>
 
 using namespace shogun;
 

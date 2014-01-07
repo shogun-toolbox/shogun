@@ -8,7 +8,7 @@
  * Copyright (C) 2013 Shell Hu
  */
 
-#include <shogun/features/FactorGraphFeatures.h>
+#include <features/FactorGraphFeatures.h>
 
 using namespace shogun;
 

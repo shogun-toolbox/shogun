@@ -10,9 +10,9 @@
 #ifndef __CIRCULARBUFFER_H_
 #define __CIRCULARBUFFER_H_
 
-#include <shogun/base/SGObject.h>
-#include <shogun/lib/SGVector.h>
-#include <shogun/lib/Tokenizer.h>
+#include <base/SGObject.h>
+#include <lib/SGVector.h>
+#include <lib/Tokenizer.h>
 
 namespace shogun
 {

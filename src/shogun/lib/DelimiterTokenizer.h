@@ -11,7 +11,7 @@
 #ifndef _DELIMITERTOKENIZER__H__
 #define	_DELIMITERTOKENIZER__H__
 
-#include <shogun/lib/Tokenizer.h>
+#include <lib/Tokenizer.h>
 
 namespace shogun
 {

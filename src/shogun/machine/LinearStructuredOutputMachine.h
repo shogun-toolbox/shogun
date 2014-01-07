@@ -12,8 +12,8 @@
 #ifndef _LINEAR_STRUCTURED_OUTPUT_MACHINE__H__
 #define _LINEAR_STRUCTURED_OUTPUT_MACHINE__H__
 
-#include <shogun/features/Features.h>
-#include <shogun/machine/StructuredOutputMachine.h>
+#include <features/Features.h>
+#include <machine/StructuredOutputMachine.h>
 
 namespace shogun
 {

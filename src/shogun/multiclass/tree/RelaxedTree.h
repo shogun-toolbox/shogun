@@ -14,10 +14,10 @@
 #include <utility>
 #include <vector>
 
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/classifier/svm/LibSVM.h>
-#include <shogun/multiclass/tree/TreeMachine.h>
-#include <shogun/multiclass/tree/RelaxedTreeNodeData.h>
+#include <features/DenseFeatures.h>
+#include <classifier/svm/LibSVM.h>
+#include <multiclass/tree/TreeMachine.h>
+#include <multiclass/tree/RelaxedTreeNodeData.h>
 
 namespace shogun
 {

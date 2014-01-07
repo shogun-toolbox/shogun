@@ -10,7 +10,7 @@
 
 #ifdef HAVE_EIGEN3
 
-#include <shogun/distance/CustomMahalanobisDistance.h>
+#include <distance/CustomMahalanobisDistance.h>
 #include <Eigen/Dense>
 
 using namespace shogun;

@@ -9,9 +9,9 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/features/TOPFeatures.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/mathematics/Math.h>
+#include <features/TOPFeatures.h>
+#include <io/SGIO.h>
+#include <mathematics/Math.h>
 
 using namespace shogun;
 

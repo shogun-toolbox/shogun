@@ -11,8 +11,8 @@
 #ifndef __GUIMATH__H__
 #define __GUIMATH__H__
 
-#include <shogun/lib/config.h>
-#include <shogun/base/SGObject.h>
+#include <lib/config.h>
+#include <base/SGObject.h>
 
 namespace shogun
 {

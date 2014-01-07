@@ -7,9 +7,9 @@
  * Written (W) 2013 Soumyajit De
  */
 
-#include <shogun/lib/common.h>
-#include <shogun/base/Parameter.h>
-#include <shogun/mathematics/linalg/linsolver/IterativeLinearSolver.h>
+#include <lib/common.h>
+#include <base/Parameter.h>
+#include <mathematics/linalg/linsolver/IterativeLinearSolver.h>
 
 namespace shogun
 {

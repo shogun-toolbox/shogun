@@ -8,11 +8,11 @@
  * Copyright (C) 2011-2013 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include <shogun/converter/Isomap.h>
+#include <converter/Isomap.h>
 #ifdef HAVE_EIGEN3
-#include <shogun/io/SGIO.h>
-#include <shogun/lib/Signal.h>
-#include <shogun/lib/tapkee/tapkee_shogun.hpp>
+#include <io/SGIO.h>
+#include <lib/Signal.h>
+#include <lib/tapkee/tapkee_shogun.hpp>
 
 using namespace shogun;
 

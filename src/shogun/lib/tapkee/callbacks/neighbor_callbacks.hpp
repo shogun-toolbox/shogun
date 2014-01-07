@@ -7,7 +7,7 @@
 #define TAPKEE_NEIGHBOR_CALLBACK_H_
 
 /* Tapkee includes */
-#include <shogun/lib/tapkee/tapkee_defines.hpp>
+#include <lib/tapkee/tapkee_defines.hpp>
 /* End of Tapkee includes */
 
 template<class RandomAccessIterator>

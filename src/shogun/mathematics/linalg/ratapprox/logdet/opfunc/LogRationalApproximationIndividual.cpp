@@ -7,19 +7,19 @@
  * Written (W) 2013 Soumyajit De
  */
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
 #ifdef HAVE_EIGEN3
-#include <shogun/base/Parameter.h>
-#include <shogun/lib/SGVector.h>
-#include <shogun/lib/SGMatrix.h>
-#include <shogun/mathematics/linalg/linsolver/LinearSolver.h>
-#include <shogun/mathematics/linalg/linop/DenseMatrixOperator.h>
-#include <shogun/mathematics/linalg/linop/SparseMatrixOperator.h>
-#include <shogun/mathematics/linalg/ratapprox/logdet/opfunc/LogRationalApproximationIndividual.h>
-#include <shogun/mathematics/linalg/ratapprox/logdet/computation/job/RationalApproximationIndividualJob.h>
-#include <shogun/mathematics/linalg/ratapprox/logdet/computation/aggregator/IndividualJobResultAggregator.h>
-#include <shogun/lib/computation/engine/IndependentComputationEngine.h>
+#include <base/Parameter.h>
+#include <lib/SGVector.h>
+#include <lib/SGMatrix.h>
+#include <mathematics/linalg/linsolver/LinearSolver.h>
+#include <mathematics/linalg/linop/DenseMatrixOperator.h>
+#include <mathematics/linalg/linop/SparseMatrixOperator.h>
+#include <mathematics/linalg/ratapprox/logdet/opfunc/LogRationalApproximationIndividual.h>
+#include <mathematics/linalg/ratapprox/logdet/computation/job/RationalApproximationIndividualJob.h>
+#include <mathematics/linalg/ratapprox/logdet/computation/aggregator/IndividualJobResultAggregator.h>
+#include <lib/computation/engine/IndependentComputationEngine.h>
 #include <typeinfo>
 
 namespace shogun

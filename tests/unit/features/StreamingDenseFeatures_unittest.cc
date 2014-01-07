@@ -7,9 +7,9 @@
  * Written (W) 2013 Viktor Gal
  */
 
-#include <shogun/features/streaming/StreamingDenseFeatures.h>
-#include <shogun/io/CSVFile.h>
-#include <shogun/io/streaming/StreamingAsciiFile.h>
+#include <features/streaming/StreamingDenseFeatures.h>
+#include <io/CSVFile.h>
+#include <io/streaming/StreamingAsciiFile.h>
 #include <unistd.h>
 #include <gtest/gtest.h>
 

@@ -13,15 +13,15 @@
 #ifndef __SGOBJECT_H__
 #define __SGOBJECT_H__
 
-#include <shogun/lib/config.h>
-#include <shogun/lib/common.h>
-#include <shogun/lib/DataType.h>
-#include <shogun/base/SGRefObject.h>
-#include <shogun/lib/ShogunException.h>
+#include <lib/config.h>
+#include <lib/common.h>
+#include <lib/DataType.h>
+#include <base/SGRefObject.h>
+#include <lib/ShogunException.h>
 
-#include <shogun/base/Parallel.h>
-#include <shogun/base/Version.h>
-#include <shogun/io/SGIO.h>
+#include <base/Parallel.h>
+#include <base/Version.h>
+#include <io/SGIO.h>
 
 /** \namespace shogun
  * @brief all of classes and functions are contained in the shogun namespace

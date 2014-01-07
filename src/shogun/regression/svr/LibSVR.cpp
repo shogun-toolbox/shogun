@@ -9,9 +9,9 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/regression/svr/LibSVR.h>
-#include <shogun/labels/RegressionLabels.h>
-#include <shogun/io/SGIO.h>
+#include <regression/svr/LibSVR.h>
+#include <labels/RegressionLabels.h>
+#include <io/SGIO.h>
 
 using namespace shogun;
 

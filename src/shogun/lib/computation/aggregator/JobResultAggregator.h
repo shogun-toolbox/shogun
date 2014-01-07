@@ -10,10 +10,10 @@
 #ifndef JOB_RESULT_AGGREGATOR_H_
 #define JOB_RESULT_AGGREGATOR_H_
 
-#include <shogun/lib/config.h>
-#include <shogun/base/SGObject.h>
-#include <shogun/lib/computation/jobresult/JobResult.h>
-#include <shogun/base/Parameter.h>
+#include <lib/config.h>
+#include <base/SGObject.h>
+#include <lib/computation/jobresult/JobResult.h>
+#include <base/Parameter.h>
 
 namespace shogun
 {

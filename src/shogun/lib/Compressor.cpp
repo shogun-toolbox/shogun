@@ -7,9 +7,9 @@
  * Written (W) 2009 Soeren Sonnenburg
  * Copyright (C) 2009 Berlin Institute of Technology
  */
-#include <shogun/lib/Compressor.h>
-#include <shogun/lib/SGVector.h>
-#include <shogun/mathematics/Math.h>
+#include <lib/Compressor.h>
+#include <lib/SGVector.h>
+#include <mathematics/Math.h>
 #include <string.h>
 
 #ifdef USE_LZO

@@ -7,13 +7,13 @@
  * Written (W) 2013 Soumyajit De
  */
 
-#include <shogun/lib/config.h>
-#include <shogun/lib/SGVector.h>
-#include <shogun/lib/SGSparseMatrix.h>
-#include <shogun/lib/SGSparseVector.h>
-#include <shogun/base/Parameter.h>
-#include <shogun/mathematics/linalg/linop/SparseMatrixOperator.h>
-#include <shogun/mathematics/eigen3.h>
+#include <lib/config.h>
+#include <lib/SGVector.h>
+#include <lib/SGSparseMatrix.h>
+#include <lib/SGSparseVector.h>
+#include <base/Parameter.h>
+#include <mathematics/linalg/linop/SparseMatrixOperator.h>
+#include <mathematics/eigen3.h>
 
 namespace shogun
 {

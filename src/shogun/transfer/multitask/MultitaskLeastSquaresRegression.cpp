@@ -7,11 +7,11 @@
  * Copyright (C) 2012 Sergey Lisitsyn
  */
 
-#include <shogun/transfer/multitask/MultitaskLeastSquaresRegression.h>
-#include <shogun/transfer/multitask/TaskGroup.h>
-#include <shogun/transfer/multitask/TaskTree.h>
-#include <shogun/lib/slep/slep_solver.h>
-#include <shogun/lib/slep/slep_options.h>
+#include <transfer/multitask/MultitaskLeastSquaresRegression.h>
+#include <transfer/multitask/TaskGroup.h>
+#include <transfer/multitask/TaskTree.h>
+#include <lib/slep/slep_solver.h>
+#include <lib/slep/slep_options.h>
 
 namespace shogun
 {

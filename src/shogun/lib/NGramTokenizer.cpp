@@ -8,8 +8,8 @@
  * Copyright (C) 2013 Evangelos Anagnostopoulos
  */
 
-#include <shogun/lib/NGramTokenizer.h>
-#include <shogun/base/Parameter.h>
+#include <lib/NGramTokenizer.h>
+#include <base/Parameter.h>
 
 namespace shogun
 {

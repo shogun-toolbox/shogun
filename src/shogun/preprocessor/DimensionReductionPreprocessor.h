@@ -11,10 +11,10 @@
 #ifndef DIMENSIONREDUCTIONPREPROCESSOR_H_
 #define DIMENSIONREDUCTIONPREPROCESSOR_H_
 
-#include <shogun/preprocessor/DensePreprocessor.h>
-#include <shogun/converter/EmbeddingConverter.h>
-#include <shogun/features/Features.h>
-#include <shogun/distance/Distance.h>
+#include <preprocessor/DensePreprocessor.h>
+#include <converter/EmbeddingConverter.h>
+#include <features/Features.h>
+#include <distance/Distance.h>
 
 namespace shogun
 {

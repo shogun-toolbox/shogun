@@ -15,15 +15,15 @@
 #ifndef _KERNEL_H___
 #define _KERNEL_H___
 
-#include <shogun/lib/common.h>
-#include <shogun/lib/Signal.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/io/File.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/features/FeatureTypes.h>
-#include <shogun/base/SGObject.h>
-#include <shogun/features/Features.h>
-#include <shogun/kernel/normalizer/KernelNormalizer.h>
+#include <lib/common.h>
+#include <lib/Signal.h>
+#include <io/SGIO.h>
+#include <io/File.h>
+#include <mathematics/Math.h>
+#include <features/FeatureTypes.h>
+#include <base/SGObject.h>
+#include <features/Features.h>
+#include <kernel/normalizer/KernelNormalizer.h>
 
 namespace shogun
 {

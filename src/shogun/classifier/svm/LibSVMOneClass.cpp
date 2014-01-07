@@ -9,8 +9,8 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/classifier/svm/LibSVMOneClass.h>
-#include <shogun/io/SGIO.h>
+#include <classifier/svm/LibSVMOneClass.h>
+#include <io/SGIO.h>
 
 using namespace shogun;
 

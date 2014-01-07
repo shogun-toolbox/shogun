@@ -9,8 +9,8 @@
  * Thanks to Andreas Ziehe
  */
 
-#include <shogun/base/init.h>
-#include <shogun/lib/common.h>
+#include <base/init.h>
+#include <lib/common.h>
 
 #include <iostream>
 
@@ -18,13 +18,13 @@ using namespace shogun;
 
 #ifdef HAVE_EIGEN3
 
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/mathematics/eigen3.h>
+#include <features/DenseFeatures.h>
+#include <mathematics/Math.h>
+#include <mathematics/eigen3.h>
 
-#include <shogun/converter/ica/Jade.h>
-#include <shogun/evaluation/ica/PermutationMatrix.h>
-#include <shogun/evaluation/ica/AmariIndex.h>
+#include <converter/ica/Jade.h>
+#include <evaluation/ica/PermutationMatrix.h>
+#include <evaluation/ica/AmariIndex.h>
 
 using namespace Eigen;
 

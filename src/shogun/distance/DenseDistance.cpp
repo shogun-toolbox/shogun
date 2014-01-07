@@ -1,4 +1,4 @@
-#include <shogun/distance/DenseDistance.h>
+#include <distance/DenseDistance.h>
 
 namespace shogun {
 

@@ -7,11 +7,11 @@
  * Copyright (C) 2012 Sergey Lisitsyn
  */
 
-#include <shogun/transfer/multitask/MultitaskTraceLogisticRegression.h>
-#include <shogun/lib/malsar/malsar_low_rank.h>
-#include <shogun/lib/malsar/malsar_options.h>
-#include <shogun/lib/IndexBlockGroup.h>
-#include <shogun/lib/SGVector.h>
+#include <transfer/multitask/MultitaskTraceLogisticRegression.h>
+#include <lib/malsar/malsar_low_rank.h>
+#include <lib/malsar/malsar_options.h>
+#include <lib/IndexBlockGroup.h>
+#include <lib/SGVector.h>
 
 namespace shogun
 {

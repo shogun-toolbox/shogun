@@ -8,8 +8,8 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include <shogun/lib/memory.h>
-#include <shogun/io/streaming/StreamingFile.h>
+#include <lib/memory.h>
+#include <io/streaming/StreamingFile.h>
 
 #include <ctype.h>
 

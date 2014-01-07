@@ -13,8 +13,8 @@
 #ifndef __SGSTRING_H__
 #define __SGSTRING_H__
 
-#include <shogun/lib/config.h>
-#include <shogun/lib/DataType.h>
+#include <lib/config.h>
+#include <lib/DataType.h>
 
 namespace shogun
 {

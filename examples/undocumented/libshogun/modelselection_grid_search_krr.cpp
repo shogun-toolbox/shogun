@@ -8,18 +8,18 @@
  * Copyright (C) 2012 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include <shogun/base/init.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/features/Labels.h>
-#include <shogun/kernel/GaussianKernel.h>
-#include <shogun/kernel/PolyKernel.h>
-#include <shogun/regression/KernelRidgeRegression.h>
-#include <shogun/evaluation/CrossValidation.h>
-#include <shogun/evaluation/CrossValidationSplitting.h>
-#include <shogun/evaluation/MeanSquaredError.h>
-#include <shogun/modelselection/ModelSelectionParameters.h>
-#include <shogun/modelselection/GridSearchModelSelection.h>
-#include <shogun/modelselection/ParameterCombination.h>
+#include <base/init.h>
+#include <features/DenseFeatures.h>
+#include <features/Labels.h>
+#include <kernel/GaussianKernel.h>
+#include <kernel/PolyKernel.h>
+#include <regression/KernelRidgeRegression.h>
+#include <evaluation/CrossValidation.h>
+#include <evaluation/CrossValidationSplitting.h>
+#include <evaluation/MeanSquaredError.h>
+#include <modelselection/ModelSelectionParameters.h>
+#include <modelselection/GridSearchModelSelection.h>
+#include <modelselection/ParameterCombination.h>
 
 using namespace shogun;
 

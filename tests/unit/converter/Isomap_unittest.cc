@@ -2,12 +2,12 @@
 #include <set>
 #include <algorithm>
 
-#include <shogun/converter/Isomap.h>
-#include <shogun/distance/EuclideanDistance.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/features/DataGenerator.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/lib/SGMatrix.h>
+#include <converter/Isomap.h>
+#include <distance/EuclideanDistance.h>
+#include <features/DenseFeatures.h>
+#include <features/DataGenerator.h>
+#include <mathematics/Math.h>
+#include <lib/SGMatrix.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;

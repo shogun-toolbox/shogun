@@ -8,8 +8,8 @@
  * Copyright (C) 2012 Chiyuan Zhang
  */
 
-#include <shogun/mathematics/Math.h>
-#include <shogun/multiclass/ecoc/ECOCDecoder.h>
+#include <mathematics/Math.h>
+#include <multiclass/ecoc/ECOCDecoder.h>
 
 using namespace shogun;
 

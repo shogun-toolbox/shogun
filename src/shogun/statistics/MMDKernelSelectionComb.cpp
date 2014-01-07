@@ -7,9 +7,9 @@
  * Written (W) 2012-2013 Heiko Strathmann
  */
 
-#include <shogun/statistics/MMDKernelSelectionComb.h>
-#include <shogun/statistics/KernelTwoSampleTestStatistic.h>
-#include <shogun/kernel/CombinedKernel.h>
+#include <statistics/MMDKernelSelectionComb.h>
+#include <statistics/KernelTwoSampleTestStatistic.h>
+#include <kernel/CombinedKernel.h>
 
 using namespace shogun;
 

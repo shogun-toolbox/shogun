@@ -16,10 +16,10 @@
 #ifndef _VW_REGRESSOR_H__
 #define _VW_REGRESSOR_H__
 
-#include <shogun/base/SGObject.h>
-#include <shogun/lib/DataType.h>
-#include <shogun/classifier/vw/VwEnvironment.h>
-#include <shogun/loss/LossFunction.h>
+#include <base/SGObject.h>
+#include <lib/DataType.h>
+#include <classifier/vw/VwEnvironment.h>
+#include <loss/LossFunction.h>
 
 namespace shogun
 {

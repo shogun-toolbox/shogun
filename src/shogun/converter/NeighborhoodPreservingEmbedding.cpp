@@ -8,12 +8,12 @@
  * Copyright (C) 2011-2013 Sergey Lisitsyn
  */
 
-#include <shogun/converter/NeighborhoodPreservingEmbedding.h>
-#include <shogun/lib/config.h>
+#include <converter/NeighborhoodPreservingEmbedding.h>
+#include <lib/config.h>
 #ifdef HAVE_EIGEN3
-#include <shogun/io/SGIO.h>
-#include <shogun/kernel/LinearKernel.h>
-#include <shogun/lib/tapkee/tapkee_shogun.hpp>
+#include <io/SGIO.h>
+#include <kernel/LinearKernel.h>
+#include <lib/tapkee/tapkee_shogun.hpp>
 
 using namespace shogun;
 

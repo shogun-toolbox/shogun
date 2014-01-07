@@ -8,12 +8,12 @@
  * Copyright (C) 2013 Evangelos Anagnostopoulos
  */
 
-#include <shogun/base/init.h>
-#include <shogun/classifier/svm/SVMOcas.h>
-#include <shogun/features/HashedDocDotFeatures.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/lib/NGramTokenizer.h>
-#include <shogun/mathematics/Math.h>
+#include <base/init.h>
+#include <classifier/svm/SVMOcas.h>
+#include <features/HashedDocDotFeatures.h>
+#include <features/DenseFeatures.h>
+#include <lib/NGramTokenizer.h>
+#include <mathematics/Math.h>
 
 using namespace shogun;
 

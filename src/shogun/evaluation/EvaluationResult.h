@@ -10,7 +10,7 @@
 #ifndef CEVALUATIONRESULT_H_
 #define CEVALUATIONRESULT_H_
 
-#include <shogun/base/SGObject.h>
+#include <base/SGObject.h>
 
 namespace shogun
 {

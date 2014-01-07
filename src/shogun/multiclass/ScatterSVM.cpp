@@ -8,16 +8,16 @@
  * Written (W) 2009 Marius Kloft
  * Copyright (C) 2009 TU Berlin and Max-Planck-Society
  */
-#include <shogun/multiclass/ScatterSVM.h>
+#include <multiclass/ScatterSVM.h>
 
 #ifdef USE_SVMLIGHT
-#include <shogun/classifier/svm/SVMLightOneClass.h>
+#include <classifier/svm/SVMLightOneClass.h>
 #endif //USE_SVMLIGHT
 
-#include <shogun/kernel/Kernel.h>
-#include <shogun/kernel/normalizer/ScatterKernelNormalizer.h>
-#include <shogun/multiclass/MulticlassOneVsRestStrategy.h>
-#include <shogun/io/SGIO.h>
+#include <kernel/Kernel.h>
+#include <kernel/normalizer/ScatterKernelNormalizer.h>
+#include <multiclass/MulticlassOneVsRestStrategy.h>
+#include <io/SGIO.h>
 
 using namespace shogun;
 

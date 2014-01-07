@@ -8,7 +8,7 @@
  * Copyright (C) 2012 Fernando José Iglesias García
  */
 
-#include <shogun/structure/SequenceLabels.h>
+#include <structure/SequenceLabels.h>
 
 using namespace shogun;
 

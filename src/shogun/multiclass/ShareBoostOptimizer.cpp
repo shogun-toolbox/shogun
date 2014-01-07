@@ -10,9 +10,9 @@
 
 #include <algorithm>
 
-#include <shogun/mathematics/Math.h>
-#include <shogun/optimization/lbfgs/lbfgs.h>
-#include <shogun/multiclass/ShareBoostOptimizer.h>
+#include <mathematics/Math.h>
+#include <optimization/lbfgs/lbfgs.h>
+#include <multiclass/ShareBoostOptimizer.h>
 
 using namespace shogun;
 

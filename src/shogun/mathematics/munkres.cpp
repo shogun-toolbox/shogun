@@ -17,7 +17,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include <shogun/mathematics/munkres.h>
+#include <mathematics/munkres.h>
 
 #include <iostream>
 #include <cmath>

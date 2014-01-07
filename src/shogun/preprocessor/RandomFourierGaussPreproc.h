@@ -15,9 +15,9 @@
 #include <vector>
 #include <algorithm>
 
-#include <shogun/lib/common.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/preprocessor/DensePreprocessor.h>
+#include <lib/common.h>
+#include <mathematics/Math.h>
+#include <preprocessor/DensePreprocessor.h>
 
 namespace shogun {
 /** @brief Preprocessor CRandomFourierGaussPreproc

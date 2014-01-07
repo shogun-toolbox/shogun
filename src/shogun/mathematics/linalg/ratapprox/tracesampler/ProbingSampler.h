@@ -10,12 +10,12 @@
 #ifndef PROBING_SAMPLER_H_
 #define PROBING_SAMPLER_H_
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
 #ifdef HAVE_COLPACK
 #ifdef HAVE_EIGEN3
 
-#include <shogun/mathematics/linalg/ratapprox/tracesampler/TraceSampler.h>
+#include <mathematics/linalg/ratapprox/tracesampler/TraceSampler.h>
 
 namespace shogun
 {

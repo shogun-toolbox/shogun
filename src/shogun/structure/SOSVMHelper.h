@@ -11,9 +11,9 @@
 #ifndef __SOSVM_HELPER_H__
 #define __SOSVM_HELPER_H__
 
-#include <shogun/base/SGObject.h>
-#include <shogun/lib/SGVector.h>
-#include <shogun/structure/StructuredModel.h>
+#include <base/SGObject.h>
+#include <lib/SGVector.h>
+#include <structure/StructuredModel.h>
 
 namespace shogun
 {

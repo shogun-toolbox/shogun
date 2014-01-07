@@ -8,10 +8,10 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include <shogun/modelselection/ModelSelection.h>
-#include <shogun/modelselection/ModelSelectionParameters.h>
-#include <shogun/evaluation/CrossValidation.h>
-#include <shogun/base/Parameter.h>
+#include <modelselection/ModelSelection.h>
+#include <modelselection/ModelSelectionParameters.h>
+#include <evaluation/CrossValidation.h>
+#include <base/Parameter.h>
 
 using namespace shogun;
 

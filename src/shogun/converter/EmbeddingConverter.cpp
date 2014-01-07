@@ -8,9 +8,9 @@
  * Copyright (C) 2011 Sergey Lisitsyn
  */
 
-#include <shogun/converter/EmbeddingConverter.h>
-#include <shogun/kernel/LinearKernel.h>
-#include <shogun/distance/EuclideanDistance.h>
+#include <converter/EmbeddingConverter.h>
+#include <kernel/LinearKernel.h>
+#include <distance/EuclideanDistance.h>
 
 using namespace shogun;
 

@@ -10,11 +10,11 @@
 
 #ifndef MULTICLASSLOGISTICREGRESSION_H_
 #define MULTICLASSLOGISTICREGRESSION_H_
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 #ifdef HAVE_EIGEN3
-#include <shogun/lib/common.h>
-#include <shogun/features/DotFeatures.h>
-#include <shogun/machine/LinearMulticlassMachine.h>
+#include <lib/common.h>
+#include <features/DotFeatures.h>
+#include <machine/LinearMulticlassMachine.h>
 
 namespace shogun
 {

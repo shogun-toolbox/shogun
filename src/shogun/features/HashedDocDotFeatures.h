@@ -11,10 +11,10 @@
 #ifndef _HASHEDDOCDOTFEATURES__H__
 #define _HASHEDDOCDOTFEATURES__H__
 
-#include <shogun/features/DotFeatures.h>
-#include <shogun/features/StringFeatures.h>
-#include <shogun/converter/HashedDocConverter.h>
-#include <shogun/lib/Tokenizer.h>
+#include <features/DotFeatures.h>
+#include <features/StringFeatures.h>
+#include <converter/HashedDocConverter.h>
+#include <lib/Tokenizer.h>
 
 namespace shogun {
 template<class ST> class CStringFeatures;

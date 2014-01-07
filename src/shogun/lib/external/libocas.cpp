@@ -19,10 +19,10 @@
 #include <stdio.h>
 #include <stdint.h>
 
-#include <shogun/lib/Time.h>
-#include <shogun/lib/external/libocas.h>
-#include <shogun/lib/external/libocas_common.h>
-#include <shogun/lib/external/libqp.h>
+#include <lib/Time.h>
+#include <lib/external/libocas.h>
+#include <lib/external/libocas_common.h>
+#include <lib/external/libqp.h>
 
 namespace shogun
 {

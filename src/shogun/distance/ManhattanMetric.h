@@ -11,8 +11,8 @@
 #ifndef _MANHATTANMETRIC_H___
 #define _MANHATTANMETRIC_H___
 
-#include <shogun/lib/common.h>
-#include <shogun/distance/DenseDistance.h>
+#include <lib/common.h>
+#include <distance/DenseDistance.h>
 
 namespace shogun
 {

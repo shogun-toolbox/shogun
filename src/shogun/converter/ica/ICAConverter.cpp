@@ -7,7 +7,7 @@
  * Written (W) 2013 Kevin Hughes
  */
 
-#include <shogun/converter/ica/ICAConverter.h>
+#include <converter/ica/ICAConverter.h>
 
 #ifdef HAVE_EIGEN3
 

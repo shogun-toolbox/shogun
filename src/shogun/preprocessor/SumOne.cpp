@@ -8,10 +8,10 @@
  * Copyright (C) 2012 Sergey Lisitsyn
  */
 
-#include <shogun/preprocessor/SumOne.h>
-#include <shogun/preprocessor/DensePreprocessor.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/features/Features.h>
+#include <preprocessor/SumOne.h>
+#include <preprocessor/DensePreprocessor.h>
+#include <mathematics/Math.h>
+#include <features/Features.h>
 
 using namespace shogun;
 

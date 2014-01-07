@@ -12,11 +12,11 @@
 #ifndef _KERNELMULTICLASSMACHINE_H___
 #define _KERNELMULTICLASSMACHINE_H___
 
-#include <shogun/lib/common.h>
-#include <shogun/features/Features.h>
-#include <shogun/kernel/Kernel.h>
-#include <shogun/machine/KernelMachine.h>
-#include <shogun/machine/MulticlassMachine.h>
+#include <lib/common.h>
+#include <features/Features.h>
+#include <kernel/Kernel.h>
+#include <machine/KernelMachine.h>
+#include <machine/MulticlassMachine.h>
 
 namespace shogun
 {

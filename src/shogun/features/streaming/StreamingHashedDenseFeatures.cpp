@@ -8,9 +8,9 @@
  * Copyright (C) 2013 Evangelos Anagnostopoulos
  */
 
-#include <shogun/features/streaming/StreamingHashedDenseFeatures.h>
-#include <shogun/io/streaming/StreamingFileFromDenseFeatures.h>
-#include <shogun/features/HashedDenseFeatures.h>
+#include <features/streaming/StreamingHashedDenseFeatures.h>
+#include <io/streaming/StreamingFileFromDenseFeatures.h>
+#include <features/HashedDenseFeatures.h>
 
 namespace shogun
 {

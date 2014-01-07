@@ -10,9 +10,9 @@
 
 #include <typeinfo>
 
-#include <shogun/machine/LinearLatentMachine.h>
-#include <shogun/features/LatentFeatures.h>
-#include <shogun/features/DenseFeatures.h>
+#include <machine/LinearLatentMachine.h>
+#include <features/LatentFeatures.h>
+#include <features/DenseFeatures.h>
 
 using namespace shogun;
 

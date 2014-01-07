@@ -9,9 +9,9 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include <shogun/mathematics/Math.h>
-#include <shogun/features/streaming/StreamingDenseFeatures.h>
-#include <shogun/io/streaming/StreamingFileFromDenseFeatures.h>
+#include <mathematics/Math.h>
+#include <features/streaming/StreamingDenseFeatures.h>
+#include <io/streaming/StreamingFileFromDenseFeatures.h>
 
 namespace shogun
 {

@@ -9,10 +9,10 @@
  * Copyright (C) 2012 Fernando José Iglesias García
  */
 
-#include <shogun/features/DotFeatures.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/structure/MulticlassModel.h>
-#include <shogun/structure/MulticlassSOLabels.h>
+#include <features/DotFeatures.h>
+#include <mathematics/Math.h>
+#include <structure/MulticlassModel.h>
+#include <structure/MulticlassSOLabels.h>
 
 using namespace shogun;
 

@@ -14,10 +14,10 @@
 #ifndef libbmrm_h
 #define libbmrm_h
 
-#include <shogun/lib/common.h>
-#include <shogun/structure/BmrmStatistics.h>
-#include <shogun/structure/DualLibQPBMSOSVM.h>
-#include <shogun/io/SGIO.h>
+#include <lib/common.h>
+#include <structure/BmrmStatistics.h>
+#include <structure/DualLibQPBMSOSVM.h>
+#include <io/SGIO.h>
 
 #define LIBBMRM_PLUS_INF (-log(0.0))
 #define LIBBMRM_CALLOC(x, y) SG_CALLOC(y, x)

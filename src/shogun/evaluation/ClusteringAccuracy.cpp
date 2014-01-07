@@ -8,8 +8,8 @@
  * Copyright (C) 2012 Chiyuan Zhang
  */
 
-#include <shogun/evaluation/ClusteringAccuracy.h>
-#include <shogun/labels/MulticlassLabels.h>
+#include <evaluation/ClusteringAccuracy.h>
+#include <labels/MulticlassLabels.h>
 
 using namespace shogun;
 

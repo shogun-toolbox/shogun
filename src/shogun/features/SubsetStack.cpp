@@ -7,9 +7,9 @@
  * Written (W) 2012 Heiko Strathmann
  */
 
-#include <shogun/features/SubsetStack.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/base/Parameter.h>
+#include <features/SubsetStack.h>
+#include <io/SGIO.h>
+#include <base/Parameter.h>
 
 using namespace shogun;
 

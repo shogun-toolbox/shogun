@@ -1,10 +1,10 @@
-#include <shogun/io/CSVFile.h>
-#include <shogun/labels/MulticlassLabels.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/features/DenseSubsetFeatures.h>
-#include <shogun/base/init.h>
-#include <shogun/multiclass/ShareBoost.h>
+#include <io/CSVFile.h>
+#include <labels/MulticlassLabels.h>
+#include <io/SGIO.h>
+#include <features/DenseFeatures.h>
+#include <features/DenseSubsetFeatures.h>
+#include <base/init.h>
+#include <multiclass/ShareBoost.h>
 
 #define  EPSILON  1e-5
 

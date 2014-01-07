@@ -64,9 +64,9 @@
 #include <stdint.h>
 #include <limits.h>
 
-#include <shogun/lib/common.h>
-#include <shogun/lib/common.h>
-#include <shogun/lib/external/libqp.h>
+#include <lib/common.h>
+#include <lib/common.h>
+#include <lib/external/libqp.h>
 
 namespace shogun
 {

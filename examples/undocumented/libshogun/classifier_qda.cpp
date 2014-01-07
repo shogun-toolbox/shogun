@@ -8,13 +8,13 @@
  * Copyright (C) 2012 Fernando Jose Iglesias Garcia
  */
 
-#include <shogun/base/init.h>
-#include <shogun/labels/MulticlassLabels.h>
-#include <shogun/multiclass/QDA.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/lib/common.h>
-#include <shogun/features/DataGenerator.h>
+#include <base/init.h>
+#include <labels/MulticlassLabels.h>
+#include <multiclass/QDA.h>
+#include <features/DenseFeatures.h>
+#include <io/SGIO.h>
+#include <lib/common.h>
+#include <features/DataGenerator.h>
 
 using namespace shogun;
 

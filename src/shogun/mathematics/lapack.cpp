@@ -12,13 +12,13 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
 #ifdef HAVE_LAPACK
-#include <shogun/lib/common.h>
-#include <shogun/mathematics/lapack.h>
-#include <shogun/base/Parallel.h>
-#include <shogun/io/SGIO.h>
+#include <lib/common.h>
+#include <mathematics/lapack.h>
+#include <base/Parallel.h>
+#include <io/SGIO.h>
 
 #include <pthread.h>
 

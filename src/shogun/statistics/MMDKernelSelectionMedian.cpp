@@ -7,14 +7,14 @@
  * Written (W) 2013 Heiko Strathmann
  */
 
-#include <shogun/statistics/MMDKernelSelectionMedian.h>
-#include <shogun/statistics/LinearTimeMMD.h>
-#include <shogun/features/streaming/StreamingFeatures.h>
-#include <shogun/statistics/QuadraticTimeMMD.h>
-#include <shogun/distance/EuclideanDistance.h>
-#include <shogun/kernel/GaussianKernel.h>
-#include <shogun/kernel/CombinedKernel.h>
-#include <shogun/mathematics/Statistics.h>
+#include <statistics/MMDKernelSelectionMedian.h>
+#include <statistics/LinearTimeMMD.h>
+#include <features/streaming/StreamingFeatures.h>
+#include <statistics/QuadraticTimeMMD.h>
+#include <distance/EuclideanDistance.h>
+#include <kernel/GaussianKernel.h>
+#include <kernel/CombinedKernel.h>
+#include <mathematics/Statistics.h>
 
 
 using namespace shogun;

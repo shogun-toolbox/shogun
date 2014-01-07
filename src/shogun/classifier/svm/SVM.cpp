@@ -8,14 +8,14 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/lib/common.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/base/Parallel.h>
-#include <shogun/base/Parameter.h>
+#include <lib/common.h>
+#include <io/SGIO.h>
+#include <base/Parallel.h>
+#include <base/Parameter.h>
 
-#include <shogun/classifier/svm/SVM.h>
-#include <shogun/classifier/mkl/MKL.h>
-#include <shogun/labels/BinaryLabels.h>
+#include <classifier/svm/SVM.h>
+#include <classifier/mkl/MKL.h>
+#include <labels/BinaryLabels.h>
 
 #include <string.h>
 

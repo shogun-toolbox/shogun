@@ -7,10 +7,10 @@
  * Written (W) 2012-2013 Heiko Strathmann
  */
 
-#include <shogun/statistics/KernelTwoSampleTestStatistic.h>
-#include <shogun/features/Features.h>
-#include <shogun/kernel/Kernel.h>
-#include <shogun/kernel/CustomKernel.h>
+#include <statistics/KernelTwoSampleTestStatistic.h>
+#include <features/Features.h>
+#include <kernel/Kernel.h>
+#include <kernel/CustomKernel.h>
 
 using namespace shogun;
 

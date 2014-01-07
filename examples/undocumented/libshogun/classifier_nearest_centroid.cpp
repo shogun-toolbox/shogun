@@ -1,8 +1,8 @@
-#include <shogun/features/Labels.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/distance/EuclideanDistance.h>
-#include <shogun/classifier/NearestCentroid.h>
-#include <shogun/base/init.h>
+#include <features/Labels.h>
+#include <features/DenseFeatures.h>
+#include <distance/EuclideanDistance.h>
+#include <classifier/NearestCentroid.h>
+#include <base/init.h>
 
 using namespace shogun;
 

@@ -4,10 +4,10 @@
 #include <getopt.h>
 #include <string.h>
 
-#include <shogun/io/streaming/StreamingVwFile.h>
-#include <shogun/io/streaming/StreamingVwCacheFile.h>
-#include <shogun/features/streaming/StreamingVwFeatures.h>
-#include <shogun/classifier/vw/VowpalWabbit.h>
+#include <io/streaming/StreamingVwFile.h>
+#include <io/streaming/StreamingVwCacheFile.h>
+#include <features/streaming/StreamingVwFeatures.h>
+#include <classifier/vw/VowpalWabbit.h>
 
 using namespace shogun;
 

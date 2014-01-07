@@ -9,15 +9,15 @@
 
 #include <gtest/gtest.h>
 
-#include <shogun/lib/common.h>
-#include <shogun/lib/SGVector.h>
-#include <shogun/lib/SGSparseVector.h>
-#include <shogun/lib/SGSparseMatrix.h>
+#include <lib/common.h>
+#include <lib/SGVector.h>
+#include <lib/SGSparseVector.h>
+#include <lib/SGSparseMatrix.h>
 
 using namespace shogun;
 
 #ifdef HAVE_EIGEN3
-#include <shogun/mathematics/eigen3.h>
+#include <mathematics/eigen3.h>
 using namespace Eigen;
 
 TEST(SGSparseMatrix, multiply_float64_int32)

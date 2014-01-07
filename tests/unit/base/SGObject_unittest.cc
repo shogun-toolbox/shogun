@@ -7,18 +7,18 @@
  * Written (W) 2013 Heiko Strathmann
  */
 
-#include <shogun/labels/BinaryLabels.h>
-#include <shogun/labels/RegressionLabels.h>
+#include <labels/BinaryLabels.h>
+#include <labels/RegressionLabels.h>
 #ifdef HAVE_EIGEN3
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/kernel/GaussianKernel.h>
-#include <shogun/regression/GaussianProcessRegression.h>
-#include <shogun/machine/gp/ExactInferenceMethod.h>
-#include <shogun/machine/gp/ZeroMean.h>
-#include <shogun/machine/gp/GaussianLikelihood.h>
+#include <features/DenseFeatures.h>
+#include <kernel/GaussianKernel.h>
+#include <regression/GaussianProcessRegression.h>
+#include <machine/gp/ExactInferenceMethod.h>
+#include <machine/gp/ZeroMean.h>
+#include <machine/gp/GaussianLikelihood.h>
 #endif
-#include <shogun/io/SerializableAsciiFile.h>
-#include <shogun/statistics/QuadraticTimeMMD.h>
+#include <io/SerializableAsciiFile.h>
+#include <statistics/QuadraticTimeMMD.h>
 #include <pthread.h>
 #include <gtest/gtest.h>
 

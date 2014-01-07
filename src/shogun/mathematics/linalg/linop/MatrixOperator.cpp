@@ -8,7 +8,7 @@
  * Written (W) 2013 Heiko Strathmann
  */
 
-#include <shogun/mathematics/linalg/linop/MatrixOperator.h>
+#include <mathematics/linalg/linop/MatrixOperator.h>
 
 namespace shogun
 {

@@ -7,15 +7,15 @@
  * Written (W) 2012-2013 Heiko Strathmann
  */
 
-#include <shogun/statistics/LinearTimeMMD.h>
-#include <shogun/features/Features.h>
-#include <shogun/features/streaming/StreamingFeatures.h>
-#include <shogun/mathematics/Statistics.h>
-#include <shogun/features/CombinedFeatures.h>
-#include <shogun/kernel/CombinedKernel.h>
-#include <shogun/lib/List.h>
+#include <statistics/LinearTimeMMD.h>
+#include <features/Features.h>
+#include <features/streaming/StreamingFeatures.h>
+#include <mathematics/Statistics.h>
+#include <features/CombinedFeatures.h>
+#include <kernel/CombinedKernel.h>
+#include <lib/List.h>
 
-#include <shogun/lib/external/libqp.h>
+#include <lib/external/libqp.h>
 
 using namespace shogun;
 

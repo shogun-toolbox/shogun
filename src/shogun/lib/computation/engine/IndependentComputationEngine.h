@@ -10,8 +10,8 @@
 #ifndef INDEPENDENT_COMPUTATION_ENGINE_H_
 #define INDEPENDENT_COMPUTATION_ENGINE_H_
 
-#include <shogun/lib/config.h>
-#include <shogun/base/SGObject.h>
+#include <lib/config.h>
+#include <base/SGObject.h>
 
 namespace shogun
 {

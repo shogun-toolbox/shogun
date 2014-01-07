@@ -7,10 +7,10 @@
  * Written (W) 2011 Hidekazu Oiwa
  */
 
-#include <shogun/classifier/AveragedPerceptron.h>
-#include <shogun/labels/Labels.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/labels/BinaryLabels.h>
+#include <classifier/AveragedPerceptron.h>
+#include <labels/Labels.h>
+#include <mathematics/Math.h>
+#include <labels/BinaryLabels.h>
 
 using namespace shogun;
 

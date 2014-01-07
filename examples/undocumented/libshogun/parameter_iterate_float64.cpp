@@ -8,13 +8,13 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include <shogun/labels/BinaryLabels.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/kernel/GaussianKernel.h>
-#include <shogun/classifier/svm/LibSVM.h>
-#include <shogun/base/init.h>
-#include <shogun/lib/common.h>
-#include <shogun/io/SGIO.h>
+#include <labels/BinaryLabels.h>
+#include <features/DenseFeatures.h>
+#include <kernel/GaussianKernel.h>
+#include <classifier/svm/LibSVM.h>
+#include <base/init.h>
+#include <lib/common.h>
+#include <io/SGIO.h>
 
 using namespace shogun;
 

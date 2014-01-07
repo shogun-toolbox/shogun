@@ -10,8 +10,8 @@
 #ifndef __KERNELTWOSAMPLETESTSTATISTIC_H_
 #define __KERNELTWOSAMPLETESTSTATISTIC_H_
 
-#include <shogun/statistics/TwoDistributionsTestStatistic.h>
-#include <shogun/kernel/Kernel.h>
+#include <statistics/TwoDistributionsTestStatistic.h>
+#include <kernel/Kernel.h>
 
 namespace shogun
 {

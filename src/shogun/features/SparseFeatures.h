@@ -14,17 +14,17 @@
 #ifndef _SPARSEFEATURES__H__
 #define _SPARSEFEATURES__H__
 
-#include <shogun/lib/common.h>
-#include <shogun/lib/DataType.h>
-#include <shogun/lib/SGSparseMatrix.h>
-#include <shogun/lib/Cache.h>
-#include <shogun/io/File.h>
-#include <shogun/io/LibSVMFile.h>
+#include <lib/common.h>
+#include <lib/DataType.h>
+#include <lib/SGSparseMatrix.h>
+#include <lib/Cache.h>
+#include <io/File.h>
+#include <io/LibSVMFile.h>
 
-#include <shogun/labels/RegressionLabels.h>
-#include <shogun/features/Features.h>
-#include <shogun/features/DotFeatures.h>
-#include <shogun/features/DenseFeatures.h>
+#include <labels/RegressionLabels.h>
+#include <features/Features.h>
+#include <features/DotFeatures.h>
+#include <features/DenseFeatures.h>
 
 namespace shogun
 {

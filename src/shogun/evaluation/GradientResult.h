@@ -11,8 +11,8 @@
 #ifndef CGRADIENTRESULT_H_
 #define CGRADIENTRESULT_H_
 
-#include <shogun/evaluation/EvaluationResult.h>
-#include <shogun/lib/Map.h>
+#include <evaluation/EvaluationResult.h>
+#include <lib/Map.h>
 
 namespace shogun
 {

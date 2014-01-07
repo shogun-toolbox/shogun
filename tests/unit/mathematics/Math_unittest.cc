@@ -8,9 +8,9 @@
  * Written (W) 2013 Soumyajit De
  */
 
-#include <shogun/lib/common.h>
-#include <shogun/lib/SGVector.h>
-#include <shogun/mathematics/Math.h>
+#include <lib/common.h>
+#include <lib/SGVector.h>
+#include <mathematics/Math.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;

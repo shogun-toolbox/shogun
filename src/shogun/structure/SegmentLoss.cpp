@@ -1,11 +1,11 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <shogun/mathematics/Math.h>
-#include <shogun/lib/config.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/structure/SegmentLoss.h>
-#include <shogun/base/SGObject.h>
+#include <mathematics/Math.h>
+#include <lib/config.h>
+#include <io/SGIO.h>
+#include <structure/SegmentLoss.h>
+#include <base/SGObject.h>
 //# define DEBUG
 
 using namespace shogun;

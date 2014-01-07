@@ -7,10 +7,10 @@
  * Written (W) 2009 Soeren Sonnenburg
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
-#include <shogun/io/SGIO.h>
-#include <shogun/lib/common.h>
-#include <shogun/lib/SGVector.h>
-#include <shogun/base/DynArray.h>
+#include <io/SGIO.h>
+#include <lib/common.h>
+#include <lib/SGVector.h>
+#include <base/DynArray.h>
 
 using namespace shogun;
 

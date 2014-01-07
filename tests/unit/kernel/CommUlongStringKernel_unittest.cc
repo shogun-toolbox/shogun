@@ -1,9 +1,9 @@
-#include <shogun/kernel/string/CommUlongStringKernel.h>
-#include <shogun/kernel/normalizer/IdentityKernelNormalizer.h>
-#include <shogun/preprocessor/SortUlongString.h>
-#include <shogun/lib/NGramTokenizer.h>
-#include <shogun/lib/SGStringList.h>
-#include <shogun/features/HashedDocDotFeatures.h>
+#include <kernel/string/CommUlongStringKernel.h>
+#include <kernel/normalizer/IdentityKernelNormalizer.h>
+#include <preprocessor/SortUlongString.h>
+#include <lib/NGramTokenizer.h>
+#include <lib/SGStringList.h>
+#include <features/HashedDocDotFeatures.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;

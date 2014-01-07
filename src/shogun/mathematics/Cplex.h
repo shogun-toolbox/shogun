@@ -11,18 +11,18 @@
 #ifndef CCPLEX_H__
 #define CCPLEX_H__
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
 #ifdef USE_CPLEX
 extern "C" {
 #include <ilcplex/cplex.h>
 }
 
-#include <shogun/lib/common.h>
-#include <shogun/base/SGObject.h>
+#include <lib/common.h>
+#include <base/SGObject.h>
 
-#include <shogun/features/SparseFeatures.h>
-#include <shogun/labels/BinaryLabels.h>
+#include <features/SparseFeatures.h>
+#include <labels/BinaryLabels.h>
 
 namespace shogun
 {

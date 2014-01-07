@@ -10,9 +10,9 @@
  * Copyright (C) 2012 Soeren Sonnenburg
  */
 
-#include <shogun/lib/common.h>
-#include <shogun/lib/SGNDArray.h>
-#include <shogun/lib/SGReferencedData.h>
+#include <lib/common.h>
+#include <lib/SGNDArray.h>
+#include <lib/SGReferencedData.h>
 
 namespace shogun
 {

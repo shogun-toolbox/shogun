@@ -11,10 +11,10 @@
 #ifndef _NEWTONSVM_H___
 #define _NEWTONSVM_H___
 
-#include <shogun/lib/common.h>
-#include <shogun/machine/LinearMachine.h>
-#include <shogun/features/DotFeatures.h>
-#include <shogun/labels/Labels.h>
+#include <lib/common.h>
+#include <machine/LinearMachine.h>
+#include <features/DotFeatures.h>
+#include <labels/Labels.h>
 
 namespace shogun
 {

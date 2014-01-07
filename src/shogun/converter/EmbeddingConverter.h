@@ -11,11 +11,11 @@
 #ifndef EMBEDDINGCONVERTER_H_
 #define EMBEDDINGCONVERTER_H_
 
-#include <shogun/converter/Converter.h>
-#include <shogun/features/Features.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/distance/Distance.h>
-#include <shogun/kernel/Kernel.h>
+#include <converter/Converter.h>
+#include <features/Features.h>
+#include <features/DenseFeatures.h>
+#include <distance/Distance.h>
+#include <kernel/Kernel.h>
 
 namespace shogun
 {

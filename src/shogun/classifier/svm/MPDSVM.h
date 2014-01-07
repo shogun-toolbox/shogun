@@ -10,10 +10,10 @@
 
 #ifndef _MPDSVM_H___
 #define _MPDSVM_H___
-#include <shogun/lib/common.h>
-#include <shogun/classifier/svm/SVM.h>
-#include <shogun/lib/Cache.h>
-#include <shogun/labels/BinaryLabels.h>
+#include <lib/common.h>
+#include <classifier/svm/SVM.h>
+#include <lib/Cache.h>
+#include <labels/BinaryLabels.h>
 
 namespace shogun
 {

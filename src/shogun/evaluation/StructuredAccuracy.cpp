@@ -8,9 +8,9 @@
  * Copyright (C) 2012-2013 Fernando José Iglesias García
  */
 
-#include <shogun/evaluation/StructuredAccuracy.h>
-#include <shogun/structure/SequenceLabels.h>
-#include <shogun/structure/MulticlassSOLabels.h>
+#include <evaluation/StructuredAccuracy.h>
+#include <structure/SequenceLabels.h>
+#include <structure/MulticlassSOLabels.h>
 
 using namespace shogun;
 

@@ -7,8 +7,8 @@
  * Written (W) 2012-2013 Heiko Strathmann
  */
 
-#include <shogun/lib/common.h>
-#include <shogun/features/streaming/generators/MeanShiftDataGenerator.h>
+#include <lib/common.h>
+#include <features/streaming/generators/MeanShiftDataGenerator.h>
 
 using namespace shogun;
 

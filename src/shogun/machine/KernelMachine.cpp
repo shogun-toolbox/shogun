@@ -9,11 +9,11 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/machine/KernelMachine.h>
-#include <shogun/lib/Signal.h>
-#include <shogun/labels/RegressionLabels.h>
-#include <shogun/base/Parameter.h>
-#include <shogun/base/ParameterMap.h>
+#include <machine/KernelMachine.h>
+#include <lib/Signal.h>
+#include <labels/RegressionLabels.h>
+#include <base/Parameter.h>
+#include <base/ParameterMap.h>
 
 using namespace shogun;
 

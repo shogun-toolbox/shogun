@@ -8,8 +8,8 @@
  * Copyright (C) 2010 Berlin Institute of Technology
  */
 
-#include <shogun/io/SerializableAsciiFile.h>
-#include <shogun/io/SerializableAsciiReader00.h>
+#include <io/SerializableAsciiFile.h>
+#include <io/SerializableAsciiReader00.h>
 
 #define STR_HEADER_00                 \
 	"<<_SHOGUN_SERIALIZABLE_ASCII_FILE_V_00_>>"

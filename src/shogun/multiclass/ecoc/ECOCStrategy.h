@@ -11,9 +11,9 @@
 #ifndef ECOCSTRATEGY_H__
 #define ECOCSTRATEGY_H__
 
-#include <shogun/multiclass/MulticlassStrategy.h>
-#include <shogun/multiclass/ecoc/ECOCEncoder.h>
-#include <shogun/multiclass/ecoc/ECOCDecoder.h>
+#include <multiclass/MulticlassStrategy.h>
+#include <multiclass/ecoc/ECOCEncoder.h>
+#include <multiclass/ecoc/ECOCDecoder.h>
 
 namespace shogun
 {

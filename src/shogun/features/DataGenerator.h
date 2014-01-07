@@ -9,11 +9,11 @@
 
 #ifndef __DATAGENERATOR_H_
 #define __DATAGENERATOR_H_
-#include <shogun/lib/config.h>
-#include <shogun/base/SGObject.h>
-#include <shogun/lib/SGMatrix.h>
-#include <shogun/labels/Labels.h>
-#include <shogun/labels/MulticlassLabels.h>
+#include <lib/config.h>
+#include <base/SGObject.h>
+#include <lib/SGMatrix.h>
+#include <labels/Labels.h>
+#include <labels/MulticlassLabels.h>
 
 namespace shogun
 {

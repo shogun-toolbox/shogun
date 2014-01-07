@@ -8,11 +8,11 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/lib/common.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/kernel/string/LinearStringKernel.h>
-#include <shogun/features/StringFeatures.h>
+#include <lib/common.h>
+#include <io/SGIO.h>
+#include <mathematics/Math.h>
+#include <kernel/string/LinearStringKernel.h>
+#include <features/StringFeatures.h>
 
 using namespace shogun;
 

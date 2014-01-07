@@ -8,11 +8,11 @@
  * Copyright (C) 2011-2013 Vladyslav S. Gorbatiuk
  */
 
-#include <shogun/converter/ManifoldSculpting.h>
+#include <converter/ManifoldSculpting.h>
 #ifdef HAVE_EIGEN3
-#include <shogun/lib/tapkee/tapkee_shogun.hpp>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/distance/EuclideanDistance.h>
+#include <lib/tapkee/tapkee_shogun.hpp>
+#include <features/DenseFeatures.h>
+#include <distance/EuclideanDistance.h>
 
 using namespace shogun;
 

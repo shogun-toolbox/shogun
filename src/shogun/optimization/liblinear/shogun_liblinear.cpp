@@ -30,7 +30,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 #include <math.h>
 #include <stdio.h>
@@ -38,11 +38,11 @@
 #include <string.h>
 #include <stdarg.h>
 
-#include <shogun/mathematics/Math.h>
-#include <shogun/optimization/liblinear/shogun_liblinear.h>
-#include <shogun/optimization/liblinear/tron.h>
-#include <shogun/lib/Time.h>
-#include <shogun/lib/Signal.h>
+#include <mathematics/Math.h>
+#include <optimization/liblinear/shogun_liblinear.h>
+#include <optimization/liblinear/tron.h>
+#include <lib/Time.h>
+#include <lib/Signal.h>
 
 using namespace shogun;
 

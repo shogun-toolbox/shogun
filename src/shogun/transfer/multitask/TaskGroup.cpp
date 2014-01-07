@@ -7,7 +7,7 @@
  * Copyright (C) 2012 Sergey Lisitsyn
  */
 
-#include <shogun/transfer/multitask/TaskGroup.h>
+#include <transfer/multitask/TaskGroup.h>
 
 using namespace shogun;
 

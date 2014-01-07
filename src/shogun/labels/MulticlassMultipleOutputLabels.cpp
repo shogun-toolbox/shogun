@@ -7,7 +7,7 @@
  * Copyright (C) 2012 Sergey Lisitsyn
  */
 
-#include <shogun/labels/MulticlassMultipleOutputLabels.h>
+#include <labels/MulticlassMultipleOutputLabels.h>
 
 using namespace shogun;
 

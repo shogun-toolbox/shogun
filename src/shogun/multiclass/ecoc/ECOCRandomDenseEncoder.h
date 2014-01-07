@@ -11,7 +11,7 @@
 #ifndef ECOCRANDOMDENSEENCODER_H__
 #define ECOCRANDOMDENSEENCODER_H__
 
-#include <shogun/multiclass/ecoc/ECOCEncoder.h>
+#include <multiclass/ecoc/ECOCEncoder.h>
 
 namespace shogun
 {

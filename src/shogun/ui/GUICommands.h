@@ -11,8 +11,8 @@
 #ifndef __GUICOMMANDS_H_
 #define __GUICOMMANDS_H_
 
-#include <shogun/lib/config.h>
-#include <shogun/lib/common.h>
+#include <lib/config.h>
+#include <lib/common.h>
 
 //names of octave/python/matlab/R interface commands
 #define N_SEND_COMMAND						"send_command"

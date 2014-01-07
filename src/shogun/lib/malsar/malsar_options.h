@@ -13,8 +13,8 @@
 #define IGNORE_IN_CLASSLIST
 
 #include <stdlib.h>
-#include <shogun/lib/SGMatrix.h>
-#include <shogun/lib/SGVector.h>
+#include <lib/SGMatrix.h>
+#include <lib/SGVector.h>
 
 namespace shogun
 {

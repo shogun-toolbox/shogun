@@ -7,8 +7,8 @@
  * Written (W) 2012 Heiko Strathmann
  */
 
-#include <shogun/base/init.h>
-#include <shogun/features/SubsetStack.h>
+#include <base/init.h>
+#include <features/SubsetStack.h>
 
 using namespace shogun;
 

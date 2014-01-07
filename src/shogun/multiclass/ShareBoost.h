@@ -11,10 +11,10 @@
 #ifndef SHAREBOOST_H__
 #define SHAREBOOST_H__
 
-#include <shogun/machine/LinearMulticlassMachine.h>
-#include <shogun/multiclass/MulticlassOneVsRestStrategy.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/labels/MulticlassLabels.h>
+#include <machine/LinearMulticlassMachine.h>
+#include <multiclass/MulticlassOneVsRestStrategy.h>
+#include <features/DenseFeatures.h>
+#include <labels/MulticlassLabels.h>
 
 namespace shogun
 {

@@ -8,7 +8,7 @@
  * Copyright (C) 2012 Jacob Walker
  */
 
-#include <shogun/machine/gp/ZeroMean.h>
+#include <machine/gp/ZeroMean.h>
 
 using namespace shogun;
 

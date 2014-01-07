@@ -1,13 +1,13 @@
-#include <shogun/io/CSVFile.h>
-#include <shogun/labels/MulticlassLabels.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/multiclass/MulticlassStrategy.h>
-#include <shogun/multiclass/MulticlassOneVsOneStrategy.h>
-#include <shogun/multiclass/MulticlassOneVsRestStrategy.h>
-#include <shogun/machine/LinearMulticlassMachine.h>
-#include <shogun/classifier/svm/LibLinear.h>
-#include <shogun/base/init.h>
+#include <io/CSVFile.h>
+#include <labels/MulticlassLabels.h>
+#include <io/SGIO.h>
+#include <features/DenseFeatures.h>
+#include <multiclass/MulticlassStrategy.h>
+#include <multiclass/MulticlassOneVsOneStrategy.h>
+#include <multiclass/MulticlassOneVsRestStrategy.h>
+#include <machine/LinearMulticlassMachine.h>
+#include <classifier/svm/LibLinear.h>
+#include <base/init.h>
 
 #define  EPSILON  1e-5
 

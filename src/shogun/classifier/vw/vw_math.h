@@ -15,9 +15,9 @@
 #ifndef _VW_MATH_H__
 #define _VW_MATH_H__
 
-#include <shogun/lib/common.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/classifier/vw/vw_common.h>
+#include <lib/common.h>
+#include <mathematics/Math.h>
+#include <classifier/vw/vw_common.h>
 
 namespace shogun
 {

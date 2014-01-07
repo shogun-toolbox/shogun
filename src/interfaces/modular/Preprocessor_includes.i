@@ -1,25 +1,25 @@
 %{
-#include <shogun/lib/Compressor.h>
-#include <shogun/features/FeatureTypes.h>
-#include <shogun/preprocessor/Preprocessor.h>
-#include <shogun/preprocessor/SparsePreprocessor.h>
+#include <lib/Compressor.h>
+#include <features/FeatureTypes.h>
+#include <preprocessor/Preprocessor.h>
+#include <preprocessor/SparsePreprocessor.h>
 
-#include <shogun/preprocessor/DensePreprocessor.h>
-#include <shogun/preprocessor/SumOne.h>
-#include <shogun/preprocessor/NormOne.h>
-#include <shogun/preprocessor/LogPlusOne.h>
-#include <shogun/preprocessor/PruneVarSubMean.h>
-#include <shogun/preprocessor/RandomFourierGaussPreproc.h>
-#include <shogun/preprocessor/HomogeneousKernelMap.h>
-#include <shogun/preprocessor/PNorm.h>
-#include <shogun/preprocessor/RescaleFeatures.h>
+#include <preprocessor/DensePreprocessor.h>
+#include <preprocessor/SumOne.h>
+#include <preprocessor/NormOne.h>
+#include <preprocessor/LogPlusOne.h>
+#include <preprocessor/PruneVarSubMean.h>
+#include <preprocessor/RandomFourierGaussPreproc.h>
+#include <preprocessor/HomogeneousKernelMap.h>
+#include <preprocessor/PNorm.h>
+#include <preprocessor/RescaleFeatures.h>
 
-#include <shogun/preprocessor/DimensionReductionPreprocessor.h>
-#include <shogun/preprocessor/PCA.h>
-#include <shogun/preprocessor/KernelPCA.h>
+#include <preprocessor/DimensionReductionPreprocessor.h>
+#include <preprocessor/PCA.h>
+#include <preprocessor/KernelPCA.h>
 
-#include <shogun/preprocessor/StringPreprocessor.h>
-#include <shogun/preprocessor/DecompressString.h>
-#include <shogun/preprocessor/SortUlongString.h>
-#include <shogun/preprocessor/SortWordString.h>
+#include <preprocessor/StringPreprocessor.h>
+#include <preprocessor/DecompressString.h>
+#include <preprocessor/SortUlongString.h>
+#include <preprocessor/SortWordString.h>
 %}

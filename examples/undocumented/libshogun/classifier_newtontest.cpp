@@ -1,8 +1,8 @@
-#include <shogun/base/init.h>
-#include <shogun/features/Labels.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/classifier/svm/NewtonSVM.h>
+#include <base/init.h>
+#include <features/Labels.h>
+#include <features/DenseFeatures.h>
+#include <mathematics/Math.h>
+#include <classifier/svm/NewtonSVM.h>
 
 
 using namespace shogun;

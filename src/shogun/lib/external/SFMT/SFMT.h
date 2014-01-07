@@ -65,7 +65,7 @@ extern "C" {
   #endif
 #endif
 
-#include <shogun/lib/external/SFMT/SFMT-params.h>
+#include <lib/external/SFMT/SFMT-params.h>
 
 /*------------------------------------------
   128-bit SIMD like data type for standard C

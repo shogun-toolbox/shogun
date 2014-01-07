@@ -8,14 +8,14 @@
  * Copyright (C) 2006-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/classifier/svm/SVMLin.h>
-#include <shogun/labels/Labels.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/lib/external/ssl.h>
-#include <shogun/machine/LinearMachine.h>
-#include <shogun/features/DotFeatures.h>
-#include <shogun/labels/Labels.h>
-#include <shogun/labels/BinaryLabels.h>
+#include <classifier/svm/SVMLin.h>
+#include <labels/Labels.h>
+#include <mathematics/Math.h>
+#include <lib/external/ssl.h>
+#include <machine/LinearMachine.h>
+#include <features/DotFeatures.h>
+#include <labels/Labels.h>
+#include <labels/BinaryLabels.h>
 
 using namespace shogun;
 

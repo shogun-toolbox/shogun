@@ -8,13 +8,13 @@
  * Copyright (C) 2012 Soeren Sonnenburg
  */
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 #ifdef HAVE_LAPACK
-#include <shogun/regression/svr/LibLinearRegression.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/labels/RegressionLabels.h>
-#include <shogun/optimization/liblinear/tron.h>
-#include <shogun/lib/Signal.h>
+#include <regression/svr/LibLinearRegression.h>
+#include <mathematics/Math.h>
+#include <labels/RegressionLabels.h>
+#include <optimization/liblinear/tron.h>
+#include <lib/Signal.h>
 
 using namespace shogun;
 

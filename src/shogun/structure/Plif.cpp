@@ -11,10 +11,10 @@
 
 #include <stdio.h>
 
-#include <shogun/lib/config.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/structure/Plif.h>
-#include <shogun/lib/memory.h>
+#include <lib/config.h>
+#include <io/SGIO.h>
+#include <structure/Plif.h>
+#include <lib/memory.h>
 
 //#define PLIF_DEBUG
 

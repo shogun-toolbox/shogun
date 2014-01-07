@@ -1,5 +1,5 @@
-#include <shogun/kernel/ProductKernel.h>
-#include <shogun/kernel/GaussianKernel.h>
+#include <kernel/ProductKernel.h>
+#include <kernel/GaussianKernel.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;

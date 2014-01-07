@@ -14,8 +14,8 @@
  *   Copyright (C) 2009 - 2012 Jun Liu and Jieping Ye
  */
 
-#include <shogun/lib/slep/flsa/flsa.h>
-#include <shogun/lib/slep/flsa/sfa.h>
+#include <lib/slep/flsa/flsa.h>
+#include <lib/slep/flsa/sfa.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>

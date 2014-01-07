@@ -9,9 +9,9 @@
 
 #ifdef HAVE_EIGEN3
 
-#include <shogun/distributions/classical/GaussianDistribution.h>
-#include <shogun/base/Parameter.h>
-#include <shogun/mathematics/eigen3.h>
+#include <distributions/classical/GaussianDistribution.h>
+#include <base/Parameter.h>
+#include <mathematics/eigen3.h>
 
 using namespace shogun;
 using namespace Eigen;

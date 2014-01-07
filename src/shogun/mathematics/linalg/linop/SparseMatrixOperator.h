@@ -10,10 +10,10 @@
 #ifndef SPARSE_MATRIX_OPERATOR_H_
 #define SPARSE_MATRIX_OPERATOR_H_
 
-#include <shogun/lib/config.h>
-#include <shogun/lib/SGSparseVector.h>
-#include <shogun/lib/SGSparseMatrix.h>
-#include <shogun/mathematics/linalg/linop/MatrixOperator.h>
+#include <lib/config.h>
+#include <lib/SGSparseVector.h>
+#include <lib/SGSparseMatrix.h>
+#include <mathematics/linalg/linop/MatrixOperator.h>
 
 namespace shogun
 {

@@ -11,10 +11,10 @@
 #ifndef _GUICLASSIFIER_H__
 #define _GUICLASSIFIER_H__
 
-#include <shogun/lib/config.h>
-#include <shogun/base/SGObject.h>
-#include <shogun/machine/Machine.h>
-#include <shogun/classifier/svm/SVM.h>
+#include <lib/config.h>
+#include <base/SGObject.h>
+#include <machine/Machine.h>
+#include <classifier/svm/SVM.h>
 
 namespace shogun
 {

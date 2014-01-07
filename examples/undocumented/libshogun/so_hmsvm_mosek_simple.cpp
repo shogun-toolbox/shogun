@@ -1,8 +1,8 @@
-#include <shogun/features/MatrixFeatures.h>
-#include <shogun/loss/HingeLoss.h>
-#include <shogun/structure/SequenceLabels.h>
-#include <shogun/structure/HMSVMModel.h>
-#include <shogun/structure/PrimalMosekSOSVM.h>
+#include <features/MatrixFeatures.h>
+#include <loss/HingeLoss.h>
+#include <structure/SequenceLabels.h>
+#include <structure/HMSVMModel.h>
+#include <structure/PrimalMosekSOSVM.h>
 
 using namespace shogun;
 

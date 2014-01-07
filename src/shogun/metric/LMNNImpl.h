@@ -11,16 +11,16 @@
 #ifndef LMNNIMPL_H_
 #define LMNNIMPL_H_
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
 #ifdef HAVE_EIGEN3
 #ifdef HAVE_LAPACK
 
-#include <shogun/lib/common.h>
-#include <shogun/lib/SGMatrix.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/labels/MulticlassLabels.h>
-#include <shogun/distance/EuclideanDistance.h>
+#include <lib/common.h>
+#include <lib/SGMatrix.h>
+#include <features/DenseFeatures.h>
+#include <labels/MulticlassLabels.h>
+#include <distance/EuclideanDistance.h>
 #include <Eigen/Dense>
 
 #include <set>

@@ -9,8 +9,8 @@
  * Copyright (C) 2012 Chiyuan Zhang
  */
 
-#include <shogun/lib/Set.h>
-#include <shogun/machine/KernelMulticlassMachine.h>
+#include <lib/Set.h>
+#include <machine/KernelMulticlassMachine.h>
 
 using namespace shogun;
 

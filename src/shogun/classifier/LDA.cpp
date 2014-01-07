@@ -8,16 +8,16 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/lib/common.h>
+#include <lib/common.h>
 
 #ifdef HAVE_LAPACK
-#include <shogun/machine/Machine.h>
-#include <shogun/machine/LinearMachine.h>
-#include <shogun/classifier/LDA.h>
-#include <shogun/labels/Labels.h>
-#include <shogun/labels/BinaryLabels.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/mathematics/lapack.h>
+#include <machine/Machine.h>
+#include <machine/LinearMachine.h>
+#include <classifier/LDA.h>
+#include <labels/Labels.h>
+#include <labels/BinaryLabels.h>
+#include <mathematics/Math.h>
+#include <mathematics/lapack.h>
 
 using namespace shogun;
 

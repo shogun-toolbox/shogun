@@ -13,13 +13,13 @@
 #ifndef _LIBLINEARMTL_H___
 #define _LIBLINEARMTL_H___
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
-#include <shogun/lib/common.h>
-#include <shogun/base/Parameter.h>
-#include <shogun/machine/LinearMachine.h>
-#include <shogun/optimization/liblinear/shogun_liblinear.h>
-#include <shogun/lib/SGSparseMatrix.h>
+#include <lib/common.h>
+#include <base/Parameter.h>
+#include <machine/LinearMachine.h>
+#include <optimization/liblinear/shogun_liblinear.h>
+#include <lib/SGSparseMatrix.h>
 
 #include <map>
 

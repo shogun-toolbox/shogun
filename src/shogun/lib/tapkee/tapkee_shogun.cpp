@@ -7,21 +7,21 @@
  * Copyright (c) 2012-2013 Sergey Lisitsyn
  */
 
-#include <shogun/lib/tapkee/tapkee_shogun.hpp>
+#include <lib/tapkee/tapkee_shogun.hpp>
 
 #ifdef HAVE_EIGEN3
 
 #define CUSTOM_UNIFORM_RANDOM_INDEX_FUNCTION shogun::CMath::random()
 #define CUSTOM_UNIFORM_RANDOM_FUNCTION shogun::CMath::random(static_cast<tapkee::ScalarType>(0),static_cast<tapkee::ScalarType>(1))
 #define CUSTOM_GAUSSIAN_RANDOM_FUNCTION shogun::CMath::normal_random(static_cast<tapkee::ScalarType>(0),static_cast<tapkee::ScalarType>(1))
-#define TAPKEE_EIGEN_INCLUDE_FILE <shogun/mathematics/eigen3.h>
+#define TAPKEE_EIGEN_INCLUDE_FILE <mathematics/eigen3.h>
 
 #ifdef HAVE_ARPACK
 	#define TAPKEE_WITH_ARPACK
 #endif
 #define TAPKEE_USE_LGPL_COVERTREE
-#include <shogun/lib/tapkee/tapkee.hpp>
-#include <shogun/lib/tapkee/callbacks/pimpl_callbacks.hpp>
+#include <lib/tapkee/tapkee.hpp>
+#include <lib/tapkee/callbacks/pimpl_callbacks.hpp>
 
 using namespace shogun;
 

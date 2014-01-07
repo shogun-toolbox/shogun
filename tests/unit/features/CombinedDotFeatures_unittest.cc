@@ -7,12 +7,12 @@
  * Written (W) 2012-2013 Evangelos Anagnostopoulos
  */
 
-#include <shogun/base/init.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/features/SparseFeatures.h>
-#include <shogun/features/CombinedDotFeatures.h>
+#include <base/init.h>
+#include <features/DenseFeatures.h>
+#include <features/SparseFeatures.h>
+#include <features/CombinedDotFeatures.h>
 #include <gtest/gtest.h>
-#include <shogun/io/SGIO.h>
+#include <io/SGIO.h>
 
 using namespace shogun;
 

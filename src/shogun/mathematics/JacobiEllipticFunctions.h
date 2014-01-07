@@ -18,8 +18,8 @@
 #ifndef JACOBI_ELLIPTIC_FUNCTIONS_H_
 #define JACOBI_ELLIPTIC_FUNCTIONS_H_
 
-#include <shogun/lib/config.h>
-#include <shogun/base/SGObject.h>
+#include <lib/config.h>
+#include <base/SGObject.h>
 #include <limits>
 #include <math.h>
 

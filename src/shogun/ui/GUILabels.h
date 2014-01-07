@@ -12,9 +12,9 @@
 #ifndef __GUILABELS__H_
 #define __GUILABELS__H_
 
-#include <shogun/lib/config.h>
-#include <shogun/base/SGObject.h>
-#include <shogun/labels/Labels.h>
+#include <lib/config.h>
+#include <base/SGObject.h>
+#include <labels/Labels.h>
 
 namespace shogun
 {

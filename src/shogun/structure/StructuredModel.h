@@ -11,13 +11,13 @@
 #ifndef _STRUCTURED_MODEL__H__
 #define _STRUCTURED_MODEL__H__
 
-#include <shogun/base/SGObject.h>
-#include <shogun/features/Features.h>
-#include <shogun/labels/StructuredLabels.h>
+#include <base/SGObject.h>
+#include <features/Features.h>
+#include <labels/StructuredLabels.h>
 
-#include <shogun/lib/common.h>
-#include <shogun/lib/SGVector.h>
-#include <shogun/lib/StructuredData.h>
+#include <lib/common.h>
+#include <lib/SGVector.h>
+#include <lib/StructuredData.h>
 
 namespace shogun
 {

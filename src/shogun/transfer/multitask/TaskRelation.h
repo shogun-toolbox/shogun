@@ -10,7 +10,7 @@
 #ifndef TASKRELATION_H_
 #define TASKRELATION_H_
 #define IGNORE_IN_CLASSLIST
-#include <shogun/base/SGObject.h>
+#include <base/SGObject.h>
 
 namespace shogun
 {

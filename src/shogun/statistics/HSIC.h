@@ -10,7 +10,7 @@
 #ifndef __HSIC_H_
 #define __HSIC_H_
 
-#include <shogun/statistics/KernelIndependenceTestStatistic.h>
+#include <statistics/KernelIndependenceTestStatistic.h>
 
 namespace shogun
 {

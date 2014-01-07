@@ -12,16 +12,16 @@
 
 #include <vector>
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
 #ifdef HAVE_LAPACK
-#include <shogun/io/SGIO.h>
-#include <shogun/lib/Signal.h>
-#include <shogun/lib/Time.h>
-#include <shogun/base/Parameter.h>
-#include <shogun/transfer/multitask/LibLinearMTL.h>
-#include <shogun/optimization/liblinear/tron.h>
-#include <shogun/features/DotFeatures.h>
+#include <io/SGIO.h>
+#include <lib/Signal.h>
+#include <lib/Time.h>
+#include <base/Parameter.h>
+#include <transfer/multitask/LibLinearMTL.h>
+#include <optimization/liblinear/tron.h>
+#include <features/DotFeatures.h>
 
 using namespace shogun;
 

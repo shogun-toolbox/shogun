@@ -1,7 +1,7 @@
 #ifndef DSFMT_PARAMS_H
 #define DSFMT_PARAMS_H
 
-#include <shogun/lib/external/dSFMT/dSFMT.h>
+#include <lib/external/dSFMT/dSFMT.h>
 
 /*----------------------
   the parameters of DSFMT
@@ -55,25 +55,25 @@ define DSFMT_PCV2	UINT64_C(0x00000000)
 #endif
 
 #if DSFMT_MEXP == 521
-  #include <shogun/lib/external/dSFMT/dSFMT-params521.h>
+  #include <lib/external/dSFMT/dSFMT-params521.h>
 #elif DSFMT_MEXP == 1279
-  #include <shogun/lib/external/dSFMT/dSFMT-params1279.h>
+  #include <lib/external/dSFMT/dSFMT-params1279.h>
 #elif DSFMT_MEXP == 2203
-  #include <shogun/lib/external/dSFMT/dSFMT-params2203.h>
+  #include <lib/external/dSFMT/dSFMT-params2203.h>
 #elif DSFMT_MEXP == 4253
-  #include <shogun/lib/external/dSFMT/dSFMT-params4253.h>
+  #include <lib/external/dSFMT/dSFMT-params4253.h>
 #elif DSFMT_MEXP == 11213
-  #include <shogun/lib/external/dSFMT/dSFMT-params11213.h>
+  #include <lib/external/dSFMT/dSFMT-params11213.h>
 #elif DSFMT_MEXP == 19937
-  #include <shogun/lib/external/dSFMT/dSFMT-params19937.h>
+  #include <lib/external/dSFMT/dSFMT-params19937.h>
 #elif DSFMT_MEXP == 44497
-  #include <shogun/lib/external/dSFMT/dSFMT-params44497.h>
+  #include <lib/external/dSFMT/dSFMT-params44497.h>
 #elif DSFMT_MEXP == 86243
-  #include <shogun/lib/external/dSFMT/dSFMT-params86243.h>
+  #include <lib/external/dSFMT/dSFMT-params86243.h>
 #elif DSFMT_MEXP == 132049
-  #include <shogun/lib/external/dSFMT/dSFMT-params132049.h>
+  #include <lib/external/dSFMT/dSFMT-params132049.h>
 #elif DSFMT_MEXP == 216091
-  #include <shogun/lib/external/dSFMT/dSFMT-params216091.h>
+  #include <lib/external/dSFMT/dSFMT-params216091.h>
 #else
 #ifdef __GNUC__
   #error "DSFMT_MEXP is not valid."

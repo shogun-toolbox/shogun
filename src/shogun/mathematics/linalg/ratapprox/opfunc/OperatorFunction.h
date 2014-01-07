@@ -10,11 +10,11 @@
 #ifndef OPERATOR_FUNCTION_H_
 #define OPERATOR_FUNCTION_H_
 
-#include <shogun/lib/config.h>
-#include <shogun/base/SGObject.h>
-#include <shogun/base/Parameter.h>
-#include <shogun/mathematics/linalg/linop/LinearOperator.h>
-#include <shogun/lib/computation/engine/IndependentComputationEngine.h>
+#include <lib/config.h>
+#include <base/SGObject.h>
+#include <base/Parameter.h>
+#include <mathematics/linalg/linop/LinearOperator.h>
+#include <lib/computation/engine/IndependentComputationEngine.h>
 
 namespace shogun
 {

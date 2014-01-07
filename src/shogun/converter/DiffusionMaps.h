@@ -10,11 +10,11 @@
 
 #ifndef DIFFUSIONMAPS_H_
 #define DIFFUSIONMAPS_H_
-#include <shogun/lib/config.h>
-#include <shogun/converter/EmbeddingConverter.h>
+#include <lib/config.h>
+#include <converter/EmbeddingConverter.h>
 #ifdef HAVE_EIGEN3
-#include <shogun/features/Features.h>
-#include <shogun/kernel/Kernel.h>
+#include <features/Features.h>
+#include <kernel/Kernel.h>
 
 namespace shogun
 {

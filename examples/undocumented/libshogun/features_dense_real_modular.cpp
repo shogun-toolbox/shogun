@@ -1,7 +1,7 @@
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/base/init.h>
-#include <shogun/lib/common.h>
-#include <shogun/io/SGIO.h>
+#include <features/DenseFeatures.h>
+#include <base/init.h>
+#include <lib/common.h>
+#include <io/SGIO.h>
 
 using namespace shogun;
 

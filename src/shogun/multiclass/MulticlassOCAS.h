@@ -11,10 +11,10 @@
 #ifndef _MULTICLASSOCAS_H___
 #define _MULTICLASSOCAS_H___
 
-#include <shogun/lib/common.h>
-#include <shogun/features/DotFeatures.h>
-#include <shogun/lib/external/libocas.h>
-#include <shogun/machine/LinearMulticlassMachine.h>
+#include <lib/common.h>
+#include <features/DotFeatures.h>
+#include <lib/external/libocas.h>
+#include <machine/LinearMulticlassMachine.h>
 
 namespace shogun
 {

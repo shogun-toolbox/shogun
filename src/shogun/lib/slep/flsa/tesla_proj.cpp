@@ -21,7 +21,7 @@
 #include <stdio.h>
 #include <time.h>
 #include <math.h>
-#include <shogun/lib/slep/flsa/flsa.h>
+#include <lib/slep/flsa/flsa.h>
 
 
 /*

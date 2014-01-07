@@ -14,8 +14,8 @@
 #ifndef libppbm_h
 #define libppbm_h
 
-#include <shogun/lib/common.h>
-#include <shogun/structure/libbmrm.h>
+#include <lib/common.h>
+#include <structure/libbmrm.h>
 
 namespace shogun
 {

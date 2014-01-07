@@ -12,13 +12,13 @@
 #ifndef __PROTOBUFFILE_H__
 #define __PROTOBUFFILE_H__
 
-#include <shogun/io/File.h>
+#include <io/File.h>
 
 #include <google/protobuf/message.h>
 
-#include <shogun/io/protobuf/ShogunVersion.pb.h>
-#include <shogun/io/protobuf/Headers.pb.h>
-#include <shogun/io/protobuf/Chunks.pb.h>
+#include <io/protobuf/ShogunVersion.pb.h>
+#include <io/protobuf/Headers.pb.h>
+#include <io/protobuf/Chunks.pb.h>
 
 namespace shogun
 {

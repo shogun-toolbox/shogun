@@ -12,11 +12,11 @@
 #ifndef _SVMOCAS_H___
 #define _SVMOCAS_H___
 
-#include <shogun/lib/common.h>
-#include <shogun/machine/LinearMachine.h>
-#include <shogun/lib/external/libocas.h>
-#include <shogun/features/DotFeatures.h>
-#include <shogun/labels/Labels.h>
+#include <lib/common.h>
+#include <machine/LinearMachine.h>
+#include <lib/external/libocas.h>
+#include <features/DotFeatures.h>
+#include <labels/Labels.h>
 
 namespace shogun
 {

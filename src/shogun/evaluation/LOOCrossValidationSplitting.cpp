@@ -7,8 +7,8 @@
  * Written (W) 2013 Saurabh Mahindre
  */
 
-#include <shogun/evaluation/LOOCrossValidationSplitting.h>
-#include <shogun/labels/Labels.h>
+#include <evaluation/LOOCrossValidationSplitting.h>
+#include <labels/Labels.h>
 
 using namespace shogun;
 

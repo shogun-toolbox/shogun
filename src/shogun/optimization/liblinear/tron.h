@@ -1,9 +1,9 @@
 #ifndef _CTron_H
 #define _CTron_H
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
-#include <shogun/base/SGObject.h>
+#include <base/SGObject.h>
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 namespace shogun

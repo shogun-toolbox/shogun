@@ -1,12 +1,12 @@
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 #ifdef HAVE_EIGEN3
 
-#include <shogun/lib/SGMatrix.h>
-#include <shogun/lib/SGVector.h>
-#include <shogun/lib/SGSparseMatrix.h>
-#include <shogun/lib/SGSparseVector.h>
-#include <shogun/mathematics/Statistics.h>
-#include <shogun/mathematics/eigen3.h>
+#include <lib/SGMatrix.h>
+#include <lib/SGVector.h>
+#include <lib/SGSparseMatrix.h>
+#include <lib/SGSparseVector.h>
+#include <mathematics/Statistics.h>
+#include <mathematics/eigen3.h>
 #include <math.h>
 #include <gtest/gtest.h>
 

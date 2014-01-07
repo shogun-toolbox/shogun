@@ -10,10 +10,10 @@
 #ifndef DIRECT_SPARSE_LINEAR_SOLVER_H_
 #define DIRECT_SPARSE_LINEAR_SOLVER_H_
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
 #ifdef HAVE_EIGEN3
-#include <shogun/mathematics/linalg/linsolver/LinearSolver.h>
+#include <mathematics/linalg/linsolver/LinearSolver.h>
 
 namespace shogun
 {

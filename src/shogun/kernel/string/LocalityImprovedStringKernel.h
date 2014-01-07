@@ -12,8 +12,8 @@
 #ifndef _LOCALITYIMPROVEDSTRINGKERNEL_H___
 #define _LOCALITYIMPROVEDSTRINGKERNEL_H___
 
-#include <shogun/lib/common.h>
-#include <shogun/kernel/string/StringKernel.h>
+#include <lib/common.h>
+#include <kernel/string/StringKernel.h>
 
 namespace shogun
 {

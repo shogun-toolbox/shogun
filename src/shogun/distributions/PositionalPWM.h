@@ -11,10 +11,10 @@
 #ifndef _POSITIONAL_PWM_H__
 #define _POSITIONAL_PWM_H__
 
-#include <shogun/distributions/Distribution.h>
-#include <shogun/features/StringFeatures.h>
-#include <shogun/lib/common.h>
-#include <shogun/mathematics/Math.h>
+#include <distributions/Distribution.h>
+#include <features/StringFeatures.h>
+#include <lib/common.h>
+#include <mathematics/Math.h>
 
 namespace shogun
 {

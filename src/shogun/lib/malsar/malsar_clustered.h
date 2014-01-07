@@ -10,10 +10,10 @@
 
 #ifndef  MALSAR_CLUSTERED_H_
 #define  MALSAR_CLUSTERED_H_
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 #ifdef HAVE_EIGEN3
-#include <shogun/lib/malsar/malsar_options.h>
-#include <shogun/features/DotFeatures.h>
+#include <lib/malsar/malsar_options.h>
+#include <features/DotFeatures.h>
 
 namespace shogun
 {

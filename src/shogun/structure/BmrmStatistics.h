@@ -11,9 +11,9 @@
 #ifndef BMRM_RETURN_VALUE_H_
 #define BMRM_RETURN_VALUE_H_
 
-#include <shogun/lib/common.h>
-#include <shogun/io/SerializableFile.h>
-#include <shogun/lib/SGVector.h>
+#include <lib/common.h>
+#include <io/SerializableFile.h>
+#include <lib/SGVector.h>
 
 namespace shogun
 {

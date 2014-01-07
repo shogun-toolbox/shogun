@@ -1,42 +1,42 @@
-#include <shogun/ui/GUICommands.h>
-#include <shogun/ui/SGInterface.h>
-#include <shogun/ui/SyntaxHighLight.h>
+#include <ui/GUICommands.h>
+#include <ui/SGInterface.h>
+#include <ui/SyntaxHighLight.h>
 
-#include <shogun/lib/config.h>
-#include <shogun/lib/DataType.h>
-#include <shogun/lib/SGNDArray.h>
-#include <shogun/lib/common.h>
-#include <shogun/lib/ShogunException.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/lib/Hash.h>
-#include <shogun/lib/Map.h>
-#include <shogun/lib/Signal.h>
+#include <lib/config.h>
+#include <lib/DataType.h>
+#include <lib/SGNDArray.h>
+#include <lib/common.h>
+#include <lib/ShogunException.h>
+#include <mathematics/Math.h>
+#include <lib/Hash.h>
+#include <lib/Map.h>
+#include <lib/Signal.h>
 
-#include <shogun/classifier/svm/SVM.h>
-#include <shogun/lib/external/pr_loqo.h>
-#include <shogun/machine/LinearMachine.h>
-#include <shogun/classifier/mkl/MKL.h>
-#include <shogun/kernel/string/WeightedDegreePositionStringKernel.h>
-#include <shogun/kernel/string/WeightedDegreeStringKernel.h>
-#include <shogun/kernel/string/CommWordStringKernel.h>
-#include <shogun/kernel/string/WeightedCommWordStringKernel.h>
-#include <shogun/kernel/LinearKernel.h>
-#include <shogun/kernel/CombinedKernel.h>
-#include <shogun/kernel/CustomKernel.h>
-#include <shogun/kernel/string/SalzbergWordStringKernel.h>
-#include <shogun/kernel/WaveletKernel.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/features/PolyFeatures.h>
-#include <shogun/preprocessor/SortWordString.h>
+#include <classifier/svm/SVM.h>
+#include <lib/external/pr_loqo.h>
+#include <machine/LinearMachine.h>
+#include <classifier/mkl/MKL.h>
+#include <kernel/string/WeightedDegreePositionStringKernel.h>
+#include <kernel/string/WeightedDegreeStringKernel.h>
+#include <kernel/string/CommWordStringKernel.h>
+#include <kernel/string/WeightedCommWordStringKernel.h>
+#include <kernel/LinearKernel.h>
+#include <kernel/CombinedKernel.h>
+#include <kernel/CustomKernel.h>
+#include <kernel/string/SalzbergWordStringKernel.h>
+#include <kernel/WaveletKernel.h>
+#include <features/DenseFeatures.h>
+#include <features/PolyFeatures.h>
+#include <preprocessor/SortWordString.h>
 
-#include <shogun/labels/BinaryLabels.h>
+#include <labels/BinaryLabels.h>
 
-#include <shogun/structure/Plif.h>
-#include <shogun/structure/PlifArray.h>
-#include <shogun/structure/PlifBase.h>
-#include <shogun/structure/DynProg.h>
-#include <shogun/structure/IntronList.h>
-#include <shogun/structure/SegmentLoss.h>
+#include <structure/Plif.h>
+#include <structure/PlifArray.h>
+#include <structure/PlifBase.h>
+#include <structure/DynProg.h>
+#include <structure/IntronList.h>
+#include <structure/SegmentLoss.h>
 
 #include <ctype.h>
 

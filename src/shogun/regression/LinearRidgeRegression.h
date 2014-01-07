@@ -10,13 +10,13 @@
 #ifndef _LINEARRIDGEREGRESSION_H__
 #define _LINEARRIDGEREGRESSION_H__
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
 #ifdef HAVE_LAPACK
 
-#include <shogun/regression/Regression.h>
-#include <shogun/machine/LinearMachine.h>
-#include <shogun/features/DenseFeatures.h>
+#include <regression/Regression.h>
+#include <machine/LinearMachine.h>
+#include <features/DenseFeatures.h>
 
 namespace shogun
 {

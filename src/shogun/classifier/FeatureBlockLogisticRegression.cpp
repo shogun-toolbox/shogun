@@ -7,12 +7,12 @@
  * Copyright (C) 2012 Sergey Lisitsyn
  */
 
-#include <shogun/classifier/FeatureBlockLogisticRegression.h>
-#include <shogun/lib/slep/slep_solver.h>
-#include <shogun/lib/slep/slep_options.h>
+#include <classifier/FeatureBlockLogisticRegression.h>
+#include <lib/slep/slep_solver.h>
+#include <lib/slep/slep_options.h>
 
-#include <shogun/lib/IndexBlockGroup.h>
-#include <shogun/lib/IndexBlockTree.h>
+#include <lib/IndexBlockGroup.h>
+#include <lib/IndexBlockTree.h>
 
 namespace shogun
 {

@@ -11,12 +11,12 @@
  * a linear classifier.
  */
 
-#include <shogun/base/init.h>
-#include <shogun/features/RandomFourierDotFeatures.h>
-#include <shogun/classifier/svm/LibLinear.h>
-#include <shogun/classifier/svm/SVMOcas.h>
-#include <shogun/labels/BinaryLabels.h>
-#include <shogun/evaluation/PRCEvaluation.h>
+#include <base/init.h>
+#include <features/RandomFourierDotFeatures.h>
+#include <classifier/svm/LibLinear.h>
+#include <classifier/svm/SVMOcas.h>
+#include <labels/BinaryLabels.h>
+#include <evaluation/PRCEvaluation.h>
 
 using namespace shogun;
 

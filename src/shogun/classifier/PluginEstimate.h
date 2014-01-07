@@ -11,10 +11,10 @@
 #ifndef _PLUGINESTIMATE_H___
 #define _PLUGINESTIMATE_H___
 
-#include <shogun/machine/Machine.h>
-#include <shogun/features/StringFeatures.h>
-#include <shogun/labels/BinaryLabels.h>
-#include <shogun/distributions/LinearHMM.h>
+#include <machine/Machine.h>
+#include <features/StringFeatures.h>
+#include <labels/BinaryLabels.h>
+#include <distributions/LinearHMM.h>
 
 namespace shogun
 {

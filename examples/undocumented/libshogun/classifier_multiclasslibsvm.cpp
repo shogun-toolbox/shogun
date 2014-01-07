@@ -1,8 +1,8 @@
-#include <shogun/labels/MulticlassLabels.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/kernel/GaussianKernel.h>
-#include <shogun/multiclass/MulticlassLibSVM.h>
-#include <shogun/base/init.h>
+#include <labels/MulticlassLabels.h>
+#include <features/DenseFeatures.h>
+#include <kernel/GaussianKernel.h>
+#include <multiclass/MulticlassLibSVM.h>
+#include <base/init.h>
 
 using namespace shogun;
 

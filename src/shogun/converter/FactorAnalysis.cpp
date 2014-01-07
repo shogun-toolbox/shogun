@@ -8,10 +8,10 @@
  * Copyright (C) 2011-2013 Fernando J. Iglesias Garcia
  */
 
-#include <shogun/converter/FactorAnalysis.h>
+#include <converter/FactorAnalysis.h>
 #ifdef HAVE_EIGEN3
-#include <shogun/lib/tapkee/tapkee_shogun.hpp>
-#include <shogun/features/DenseFeatures.h>
+#include <lib/tapkee/tapkee_shogun.hpp>
+#include <features/DenseFeatures.h>
 
 using namespace shogun;
 

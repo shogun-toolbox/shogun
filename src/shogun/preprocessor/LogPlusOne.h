@@ -11,9 +11,9 @@
 #ifndef _CLOGPLUSONE__H__
 #define _CLOGPLUSONE__H__
 
-#include <shogun/preprocessor/DensePreprocessor.h>
-#include <shogun/features/Features.h>
-#include <shogun/lib/common.h>
+#include <preprocessor/DensePreprocessor.h>
+#include <features/Features.h>
+#include <lib/common.h>
 
 #include <stdio.h>
 

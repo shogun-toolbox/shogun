@@ -10,14 +10,14 @@
  * Copyright (C) 2012 Sergey Lisitsyn, Fernando José Iglesias Garcia
  */
 
-#include <shogun/multiclass/MulticlassOneVsRestStrategy.h>
-#include <shogun/machine/LinearMachine.h>
-#include <shogun/machine/KernelMachine.h>
-#include <shogun/machine/MulticlassMachine.h>
-#include <shogun/base/Parameter.h>
-#include <shogun/labels/MulticlassLabels.h>
-#include <shogun/labels/RegressionLabels.h>
-#include <shogun/mathematics/Statistics.h>
+#include <multiclass/MulticlassOneVsRestStrategy.h>
+#include <machine/LinearMachine.h>
+#include <machine/KernelMachine.h>
+#include <machine/MulticlassMachine.h>
+#include <base/Parameter.h>
+#include <labels/MulticlassLabels.h>
+#include <labels/RegressionLabels.h>
+#include <mathematics/Statistics.h>
 
 using namespace shogun;
 

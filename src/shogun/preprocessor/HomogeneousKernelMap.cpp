@@ -8,8 +8,8 @@
  * Copyright (C) 2007-12 Andrea Vedaldi and Brian Fulkerson.
  */
 
-#include <shogun/io/SGIO.h>
-#include <shogun/preprocessor/HomogeneousKernelMap.h>
+#include <io/SGIO.h>
+#include <preprocessor/HomogeneousKernelMap.h>
 
 #include <math.h>
 #include <iostream>

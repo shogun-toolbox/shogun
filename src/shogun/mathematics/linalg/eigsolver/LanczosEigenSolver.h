@@ -10,11 +10,11 @@
 #ifndef LANCZOS_EIGEN_SOLVER_H_
 #define LANCZOS_EIGEN_SOLVER_H_
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
 #ifdef HAVE_LAPACK
 #ifdef HAVE_EIGEN3
-#include <shogun/mathematics/linalg/eigsolver/EigenSolver.h>
+#include <mathematics/linalg/eigsolver/EigenSolver.h>
 
 namespace shogun
 {

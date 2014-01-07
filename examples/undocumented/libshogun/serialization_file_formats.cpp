@@ -8,12 +8,12 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include <shogun/base/init.h>
-#include <shogun/base/Parameter.h>
-#include <shogun/io/SerializableAsciiFile.h>
-#include <shogun/io/SerializableJsonFile.h>
-#include <shogun/io/SerializableXmlFile.h>
-#include <shogun/io/SerializableHdf5File.h>
+#include <base/init.h>
+#include <base/Parameter.h>
+#include <io/SerializableAsciiFile.h>
+#include <io/SerializableJsonFile.h>
+#include <io/SerializableXmlFile.h>
+#include <io/SerializableHdf5File.h>
 
 using namespace shogun;
 

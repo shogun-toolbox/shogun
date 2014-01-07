@@ -7,21 +7,21 @@
  * Written (W) 2011-2013 Heiko Strathmann
  */
 
-#include <shogun/base/init.h>
-#include <shogun/evaluation/CrossValidation.h>
-#include <shogun/evaluation/ContingencyTableEvaluation.h>
-#include <shogun/evaluation/StratifiedCrossValidationSplitting.h>
-#include <shogun/modelselection/GridSearchModelSelection.h>
-#include <shogun/modelselection/ModelSelectionParameters.h>
-#include <shogun/modelselection/ParameterCombination.h>
-#include <shogun/labels/DenseLabels.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/classifier/mkl/MKLClassification.h>
-#include <shogun/classifier/svm/LibSVM.h>
-#include <shogun/classifier/svm/SVMLight.h>
-#include <shogun/kernel/GaussianKernel.h>
-#include <shogun/kernel/CombinedKernel.h>
-#include <shogun/distance/MinkowskiMetric.h>
+#include <base/init.h>
+#include <evaluation/CrossValidation.h>
+#include <evaluation/ContingencyTableEvaluation.h>
+#include <evaluation/StratifiedCrossValidationSplitting.h>
+#include <modelselection/GridSearchModelSelection.h>
+#include <modelselection/ModelSelectionParameters.h>
+#include <modelselection/ParameterCombination.h>
+#include <labels/DenseLabels.h>
+#include <features/DenseFeatures.h>
+#include <classifier/mkl/MKLClassification.h>
+#include <classifier/svm/LibSVM.h>
+#include <classifier/svm/SVMLight.h>
+#include <kernel/GaussianKernel.h>
+#include <kernel/CombinedKernel.h>
+#include <distance/MinkowskiMetric.h>
 
 using namespace shogun;
 

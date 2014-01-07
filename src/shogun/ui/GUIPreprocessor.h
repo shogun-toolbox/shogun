@@ -12,10 +12,10 @@
 #ifndef __GUIPREPROC_H__
 #define __GUIPREPROC_H__
 
-#include <shogun/lib/config.h>
-#include <shogun/lib/List.h>
-#include <shogun/base/SGObject.h>
-#include <shogun/preprocessor/Preprocessor.h>
+#include <lib/config.h>
+#include <lib/List.h>
+#include <base/SGObject.h>
+#include <preprocessor/Preprocessor.h>
 
 namespace shogun
 {

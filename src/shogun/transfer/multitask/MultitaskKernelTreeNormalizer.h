@@ -11,8 +11,8 @@
 #ifndef _MULTITASKKERNELTREENORMALIZER_H___
 #define _MULTITASKKERNELTREENORMALIZER_H___
 
-#include <shogun/transfer/multitask/MultitaskKernelMklNormalizer.h>
-#include <shogun/kernel/Kernel.h>
+#include <transfer/multitask/MultitaskKernelMklNormalizer.h>
+#include <kernel/Kernel.h>
 #include <algorithm>
 #include <map>
 #include <set>

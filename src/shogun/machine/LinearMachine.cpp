@@ -8,9 +8,9 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/machine/LinearMachine.h>
-#include <shogun/labels/RegressionLabels.h>
-#include <shogun/base/Parameter.h>
+#include <machine/LinearMachine.h>
+#include <labels/RegressionLabels.h>
+#include <base/Parameter.h>
 
 using namespace shogun;
 

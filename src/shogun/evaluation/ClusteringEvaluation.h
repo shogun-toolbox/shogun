@@ -13,8 +13,8 @@
 
 #include <vector>
 
-#include <shogun/evaluation/Evaluation.h>
-#include <shogun/labels/Labels.h>
+#include <evaluation/Evaluation.h>
+#include <labels/Labels.h>
 
 namespace shogun
 {

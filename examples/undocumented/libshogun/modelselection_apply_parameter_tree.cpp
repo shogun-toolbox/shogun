@@ -8,13 +8,13 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include <shogun/base/init.h>
-#include <shogun/modelselection/ModelSelectionParameters.h>
-#include <shogun/modelselection/ParameterCombination.h>
-#include <shogun/kernel/GaussianKernel.h>
-#include <shogun/labels/BinaryLabels.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/classifier/svm/LibSVM.h>
+#include <base/init.h>
+#include <modelselection/ModelSelectionParameters.h>
+#include <modelselection/ParameterCombination.h>
+#include <kernel/GaussianKernel.h>
+#include <labels/BinaryLabels.h>
+#include <features/DenseFeatures.h>
+#include <classifier/svm/LibSVM.h>
 
 using namespace shogun;
 

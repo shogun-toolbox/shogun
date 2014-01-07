@@ -8,12 +8,12 @@
  * Copyright (C) 2007-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
-#include <shogun/lib/common.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/kernel/DistanceKernel.h>
-#include <shogun/features/DenseFeatures.h>
+#include <lib/common.h>
+#include <io/SGIO.h>
+#include <kernel/DistanceKernel.h>
+#include <features/DenseFeatures.h>
 
 using namespace shogun;
 

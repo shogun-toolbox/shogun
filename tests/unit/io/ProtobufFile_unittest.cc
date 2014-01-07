@@ -1,8 +1,8 @@
-#include <shogun/lib/SGVector.h>
-#include <shogun/lib/SGMatrix.h>
-#include <shogun/lib/SGSparseVector.h>
-#include <shogun/lib/SGString.h>
-#include <shogun/mathematics/Random.h>
+#include <lib/SGVector.h>
+#include <lib/SGMatrix.h>
+#include <lib/SGSparseVector.h>
+#include <lib/SGString.h>
+#include <mathematics/Random.h>
 
 #include <cstdio>
 
@@ -12,7 +12,7 @@
 using namespace shogun;
 
 #ifdef HAVE_PROTOBUF
-#include <shogun/io/ProtobufFile.h>
+#include <io/ProtobufFile.h>
 
 TEST(ProtobufFileTest, vector_int32)
 {

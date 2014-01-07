@@ -14,7 +14,7 @@
  *   Copyright (C) 2009 - 2012 Jun Liu and Jieping Ye
  */
 
-#include <shogun/lib/slep/overlapping/overlapping.h>
+#include <lib/slep/overlapping/overlapping.h>
 
 void identifySomeZeroEntries(double * u, int * zeroGroupFlag, int *entrySignFlag,
 		int *pp, int *gg,

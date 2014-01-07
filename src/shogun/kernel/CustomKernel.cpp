@@ -9,12 +9,12 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/lib/common.h>
-#include <shogun/kernel/CustomKernel.h>
-#include <shogun/features/Features.h>
-#include <shogun/features/DummyFeatures.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/base/ParameterMap.h>
+#include <lib/common.h>
+#include <kernel/CustomKernel.h>
+#include <features/Features.h>
+#include <features/DummyFeatures.h>
+#include <io/SGIO.h>
+#include <base/ParameterMap.h>
 
 using namespace shogun;
 

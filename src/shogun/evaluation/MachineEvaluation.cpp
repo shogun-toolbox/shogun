@@ -11,13 +11,13 @@
  */
 
 #include "MachineEvaluation.h"
-#include <shogun/evaluation/CrossValidation.h>
-#include <shogun/machine/Machine.h>
-#include <shogun/evaluation/Evaluation.h>
-#include <shogun/evaluation/SplittingStrategy.h>
-#include <shogun/base/Parameter.h>
-#include <shogun/base/ParameterMap.h>
-#include <shogun/mathematics/Statistics.h>
+#include <evaluation/CrossValidation.h>
+#include <machine/Machine.h>
+#include <evaluation/Evaluation.h>
+#include <evaluation/SplittingStrategy.h>
+#include <base/Parameter.h>
+#include <base/ParameterMap.h>
+#include <mathematics/Statistics.h>
 
 using namespace shogun;
 

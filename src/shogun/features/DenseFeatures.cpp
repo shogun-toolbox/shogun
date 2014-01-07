@@ -11,11 +11,11 @@
  * Copyright (C) 2010 Berlin Institute of Technology
  */
 
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/preprocessor/DensePreprocessor.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/base/Parameter.h>
-#include <shogun/mathematics/Math.h>
+#include <features/DenseFeatures.h>
+#include <preprocessor/DensePreprocessor.h>
+#include <io/SGIO.h>
+#include <base/Parameter.h>
+#include <mathematics/Math.h>
 
 #include <string.h>
 

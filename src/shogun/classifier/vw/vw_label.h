@@ -15,11 +15,11 @@
 #ifndef _VW_LABEL_H__
 #define _VW_LABEL_H__
 
-#include <shogun/lib/DataType.h>
-#include <shogun/lib/common.h>
-#include <shogun/lib/v_array.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/mathematics/Math.h>
+#include <lib/DataType.h>
+#include <lib/common.h>
+#include <lib/v_array.h>
+#include <io/SGIO.h>
+#include <mathematics/Math.h>
 
 namespace shogun
 {

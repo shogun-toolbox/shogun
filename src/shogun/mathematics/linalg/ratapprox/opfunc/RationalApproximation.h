@@ -11,8 +11,8 @@
 #ifndef RATIONAL_APPROXIMATION_H_
 #define RATIONAL_APPROXIMATION_H_
 
-#include <shogun/lib/config.h>
-#include <shogun/mathematics/linalg/ratapprox/opfunc/OperatorFunction.h>
+#include <lib/config.h>
+#include <mathematics/linalg/ratapprox/opfunc/OperatorFunction.h>
 
 namespace shogun
 {

@@ -1,10 +1,10 @@
-#include <shogun/base/init.h>
-#include <shogun/lib/common.h>
+#include <base/init.h>
+#include <lib/common.h>
 #include <gtest/gtest.h>
 
 #ifdef HAVE_EIGEN3
 
-#include <shogun/evaluation/ica/PermutationMatrix.h>
+#include <evaluation/ica/PermutationMatrix.h>
 
 using namespace shogun;
 

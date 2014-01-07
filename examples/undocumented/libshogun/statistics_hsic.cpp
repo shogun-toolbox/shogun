@@ -7,11 +7,11 @@
  * Written (W) 2012 Heiko Strathmann
  */
 
-#include <shogun/base/init.h>
-#include <shogun/statistics/HSIC.h>
-#include <shogun/kernel/GaussianKernel.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/mathematics/Statistics.h>
+#include <base/init.h>
+#include <statistics/HSIC.h>
+#include <kernel/GaussianKernel.h>
+#include <features/DenseFeatures.h>
+#include <mathematics/Statistics.h>
 
 using namespace shogun;
 

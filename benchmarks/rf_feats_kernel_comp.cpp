@@ -1,13 +1,13 @@
-#include <shogun/base/init.h>
-#include <shogun/features/RandomFourierDotFeatures.h>
-#include <shogun/kernel/GaussianKernel.h>
-#include <shogun/kernel/normalizer/SqrtDiagKernelNormalizer.h>
-#include <shogun/classifier/svm/LibLinear.h>
-#include <shogun/classifier/svm/SVMOcas.h>
-#include <shogun/classifier/svm/LibSVM.h>
-#include <shogun/labels/BinaryLabels.h>
-#include <shogun/evaluation/PRCEvaluation.h>
-#include <shogun/lib/Time.h>
+#include <base/init.h>
+#include <features/RandomFourierDotFeatures.h>
+#include <kernel/GaussianKernel.h>
+#include <kernel/normalizer/SqrtDiagKernelNormalizer.h>
+#include <classifier/svm/LibLinear.h>
+#include <classifier/svm/SVMOcas.h>
+#include <classifier/svm/LibSVM.h>
+#include <labels/BinaryLabels.h>
+#include <evaluation/PRCEvaluation.h>
+#include <lib/Time.h>
 
 #include <stdio.h>
 #include <ctime>

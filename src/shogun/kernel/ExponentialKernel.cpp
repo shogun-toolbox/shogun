@@ -11,11 +11,11 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/lib/common.h>
-#include <shogun/base/Parameter.h>
-#include <shogun/kernel/ExponentialKernel.h>
-#include <shogun/features/DotFeatures.h>
-#include <shogun/io/SGIO.h>
+#include <lib/common.h>
+#include <base/Parameter.h>
+#include <kernel/ExponentialKernel.h>
+#include <features/DotFeatures.h>
+#include <io/SGIO.h>
 
 using namespace shogun;
 

@@ -11,9 +11,9 @@
 #ifdef HAVE_EIGEN3
 #ifdef HAVE_LAPACK
 
-#include <shogun/metric/LMNN.h>
-#include <shogun/metric/LMNNImpl.h>
-#include <shogun/mathematics/Math.h>
+#include <metric/LMNN.h>
+#include <metric/LMNNImpl.h>
+#include <mathematics/Math.h>
 
 /// useful shorthands to perform operations with Eigen matrices
 

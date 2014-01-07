@@ -8,10 +8,10 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/multiclass/MulticlassLibSVM.h>
-#include <shogun/multiclass/MulticlassOneVsOneStrategy.h>
-#include <shogun/labels/MulticlassLabels.h>
-#include <shogun/io/SGIO.h>
+#include <multiclass/MulticlassLibSVM.h>
+#include <multiclass/MulticlassOneVsOneStrategy.h>
+#include <labels/MulticlassLabels.h>
+#include <io/SGIO.h>
 
 using namespace shogun;
 

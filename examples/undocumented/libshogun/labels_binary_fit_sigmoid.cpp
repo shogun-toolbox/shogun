@@ -6,7 +6,7 @@
  *
  * Written (W) 2012 Heiko Strathmann
  */
-#include <shogun/labels/BinaryLabels.h>
+#include <labels/BinaryLabels.h>
 
 using namespace shogun;
 

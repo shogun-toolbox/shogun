@@ -9,17 +9,17 @@
  * Copyright (C) 2006-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/lib/config.h>
-#include <shogun/lib/common.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/io/File.h>
-#include <shogun/lib/Time.h>
-#include <shogun/lib/Signal.h>
-#include <shogun/base/Parallel.h>
-#include <shogun/base/Parameter.h>
+#include <lib/config.h>
+#include <lib/common.h>
+#include <io/SGIO.h>
+#include <io/File.h>
+#include <lib/Time.h>
+#include <lib/Signal.h>
+#include <base/Parallel.h>
+#include <base/Parameter.h>
 
-#include <shogun/distance/Distance.h>
-#include <shogun/features/Features.h>
+#include <distance/Distance.h>
+#include <features/Features.h>
 
 #include <string.h>
 #include <unistd.h>

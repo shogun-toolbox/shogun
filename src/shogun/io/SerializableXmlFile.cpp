@@ -8,11 +8,11 @@
  * Copyright (C) 2010 Berlin Institute of Technology
  */
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 #ifdef HAVE_XML
 
-#include <shogun/io/SerializableXmlFile.h>
-#include <shogun/io/SerializableXmlReader00.h>
+#include <io/SerializableXmlFile.h>
+#include <io/SerializableXmlReader00.h>
 
 #define STR_ROOT_NAME_00 \
 	"_SHOGUN_SERIALIZABLE_XML_FILE_V_00_"

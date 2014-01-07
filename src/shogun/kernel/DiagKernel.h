@@ -11,8 +11,8 @@
 #ifndef _DIAGKERNEL_H___
 #define _DIAGKERNEL_H___
 
-#include <shogun/lib/common.h>
-#include <shogun/kernel/Kernel.h>
+#include <lib/common.h>
+#include <kernel/Kernel.h>
 
 namespace shogun
 {

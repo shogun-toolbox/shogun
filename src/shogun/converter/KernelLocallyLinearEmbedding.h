@@ -10,12 +10,12 @@
 
 #ifndef KERNELLOCALLYLINEAREMBEDDING_H_
 #define KERNELLOCALLYLINEAREMBEDDING_H_
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 #ifdef HAVE_EIGEN3
-#include <shogun/converter/LocallyLinearEmbedding.h>
-#include <shogun/features/Features.h>
-#include <shogun/distance/Distance.h>
-#include <shogun/kernel/Kernel.h>
+#include <converter/LocallyLinearEmbedding.h>
+#include <features/Features.h>
+#include <distance/Distance.h>
+#include <kernel/Kernel.h>
 
 namespace shogun
 {

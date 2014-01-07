@@ -12,10 +12,10 @@
 #ifndef _LINEARKERNEL_H___
 #define _LINEARKERNEL_H___
 
-#include <shogun/lib/common.h>
-#include <shogun/kernel/DotKernel.h>
-#include <shogun/features/DotFeatures.h>
-#include <shogun/machine/KernelMachine.h>
+#include <lib/common.h>
+#include <kernel/DotKernel.h>
+#include <features/DotFeatures.h>
+#include <machine/KernelMachine.h>
 
 namespace shogun
 {

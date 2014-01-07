@@ -10,7 +10,7 @@
 #ifndef __TESTSTATISTIC_H_
 #define __TESTSTATISTIC_H_
 
-#include <shogun/base/SGObject.h>
+#include <base/SGObject.h>
 
 namespace shogun
 {

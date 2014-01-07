@@ -11,10 +11,10 @@
 #ifndef _CUSTOMDISTANCE_H___
 #define _CUSTOMDISTANCE_H___
 
-#include <shogun/mathematics/Math.h>
-#include <shogun/lib/common.h>
-#include <shogun/distance/Distance.h>
-#include <shogun/features/Features.h>
+#include <mathematics/Math.h>
+#include <lib/common.h>
+#include <distance/Distance.h>
+#include <features/Features.h>
 
 namespace shogun
 {

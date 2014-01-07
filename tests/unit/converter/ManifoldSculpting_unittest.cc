@@ -1,6 +1,6 @@
-#include <shogun/converter/ManifoldSculpting.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/features/DataGenerator.h>
+#include <converter/ManifoldSculpting.h>
+#include <features/DenseFeatures.h>
+#include <features/DataGenerator.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;

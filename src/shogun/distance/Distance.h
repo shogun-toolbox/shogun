@@ -14,12 +14,12 @@
 
 #include <stdio.h>
 
-#include <shogun/lib/common.h>
-#include <shogun/io/File.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/base/SGObject.h>
-#include <shogun/features/FeatureTypes.h>
-#include <shogun/features/Features.h>
+#include <lib/common.h>
+#include <io/File.h>
+#include <mathematics/Math.h>
+#include <base/SGObject.h>
+#include <features/FeatureTypes.h>
+#include <features/Features.h>
 
 namespace shogun
 {

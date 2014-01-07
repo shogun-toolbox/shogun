@@ -8,9 +8,9 @@
  * Copyright (C) 2012 Chiyuan Zhang
  */
 
-#include <shogun/multiclass/ecoc/ECOCStrategy.h>
-#include <shogun/labels/BinaryLabels.h>
-#include <shogun/labels/MulticlassLabels.h>
+#include <multiclass/ecoc/ECOCStrategy.h>
+#include <labels/BinaryLabels.h>
+#include <labels/MulticlassLabels.h>
 
 using namespace shogun;
 

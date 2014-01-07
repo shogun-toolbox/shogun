@@ -11,9 +11,9 @@
 #ifndef _CSPARSEPREPROC__H__
 #define _CSPARSEPREPROC__H__
 
-#include <shogun/features/SparseFeatures.h>
-#include <shogun/lib/common.h>
-#include <shogun/preprocessor/Preprocessor.h>
+#include <features/SparseFeatures.h>
+#include <lib/common.h>
+#include <preprocessor/Preprocessor.h>
 
 #include <stdio.h>
 

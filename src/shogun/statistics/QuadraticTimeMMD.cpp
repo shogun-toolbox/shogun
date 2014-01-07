@@ -7,12 +7,12 @@
  * Written (W) 2012-2013 Heiko Strathmann
  */
 
-#include <shogun/statistics/QuadraticTimeMMD.h>
-#include <shogun/features/Features.h>
-#include <shogun/mathematics/Statistics.h>
-#include <shogun/kernel/Kernel.h>
-#include <shogun/kernel/CombinedKernel.h>
-#include <shogun/kernel/CustomKernel.h>
+#include <statistics/QuadraticTimeMMD.h>
+#include <features/Features.h>
+#include <mathematics/Statistics.h>
+#include <kernel/Kernel.h>
+#include <kernel/CombinedKernel.h>
+#include <kernel/CustomKernel.h>
 
 using namespace shogun;
 

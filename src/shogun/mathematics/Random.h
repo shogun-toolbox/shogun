@@ -11,9 +11,9 @@
 #ifndef __RANDOM_H__
 #define __RANDOM_H__
 
-#include <shogun/base/SGObject.h>
-#include <shogun/lib/config.h>
-#include <shogun/lib/Lock.h>
+#include <base/SGObject.h>
+#include <lib/config.h>
+#include <lib/Lock.h>
 #include <limits>
 
 /* opaque pointers */

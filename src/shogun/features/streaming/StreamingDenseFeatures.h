@@ -11,11 +11,11 @@
 #ifndef _STREAMINGDENSEFEATURES__H__
 #define _STREAMINGDENSEFEATURES__H__
 
-#include <shogun/lib/common.h>
-#include <shogun/features/streaming/StreamingDotFeatures.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/lib/DataType.h>
-#include <shogun/io/streaming/InputParser.h>
+#include <lib/common.h>
+#include <features/streaming/StreamingDotFeatures.h>
+#include <features/DenseFeatures.h>
+#include <lib/DataType.h>
+#include <io/streaming/InputParser.h>
 
 namespace shogun
 {

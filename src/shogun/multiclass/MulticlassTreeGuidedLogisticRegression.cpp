@@ -8,12 +8,12 @@
  * Copyright (C) 2012 Sergey Lisitsyn
  */
 
-#include <shogun/multiclass/MulticlassTreeGuidedLogisticRegression.h>
+#include <multiclass/MulticlassTreeGuidedLogisticRegression.h>
 #ifdef HAVE_EIGEN3
-#include <shogun/multiclass/MulticlassOneVsRestStrategy.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/labels/MulticlassLabels.h>
-#include <shogun/lib/slep/slep_mc_tree_lr.h>
+#include <multiclass/MulticlassOneVsRestStrategy.h>
+#include <mathematics/Math.h>
+#include <labels/MulticlassLabels.h>
+#include <lib/slep/slep_mc_tree_lr.h>
 
 using namespace shogun;
 

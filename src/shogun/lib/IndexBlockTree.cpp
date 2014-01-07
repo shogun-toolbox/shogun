@@ -7,7 +7,7 @@
  * Copyright (C) 2012 Sergey Lisitsyn
  */
 
-#include <shogun/lib/IndexBlockTree.h>
+#include <lib/IndexBlockTree.h>
 #include <vector>
 
 using namespace std;

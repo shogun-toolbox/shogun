@@ -11,10 +11,10 @@
 #ifndef __GUICONVERTER_H__
 #define __GUICONVERTER_H__
 
-#include <shogun/lib/config.h>
-#include <shogun/base/SGObject.h>
-#include <shogun/converter/Converter.h>
-#include <shogun/features/DenseFeatures.h>
+#include <lib/config.h>
+#include <base/SGObject.h>
+#include <converter/Converter.h>
+#include <features/DenseFeatures.h>
 
 namespace shogun
 {

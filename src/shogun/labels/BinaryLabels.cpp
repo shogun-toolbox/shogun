@@ -1,6 +1,6 @@
-#include <shogun/labels/DenseLabels.h>
-#include <shogun/labels/BinaryLabels.h>
-#include <shogun/mathematics/Statistics.h>
+#include <labels/DenseLabels.h>
+#include <labels/BinaryLabels.h>
+#include <mathematics/Statistics.h>
 
 using namespace shogun;
 

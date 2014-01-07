@@ -9,10 +9,10 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/preprocessor/SortUlongString.h>
-#include <shogun/features/Features.h>
-#include <shogun/features/StringFeatures.h>
-#include <shogun/mathematics/Math.h>
+#include <preprocessor/SortUlongString.h>
+#include <features/Features.h>
+#include <features/StringFeatures.h>
+#include <mathematics/Math.h>
 
 using namespace shogun;
 

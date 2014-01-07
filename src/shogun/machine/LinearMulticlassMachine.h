@@ -11,10 +11,10 @@
 #ifndef _LINEARMULTICLASSMACHINE_H___
 #define _LINEARMULTICLASSMACHINE_H___
 
-#include <shogun/lib/common.h>
-#include <shogun/features/DotFeatures.h>
-#include <shogun/machine/LinearMachine.h>
-#include <shogun/machine/MulticlassMachine.h>
+#include <lib/common.h>
+#include <features/DotFeatures.h>
+#include <machine/LinearMachine.h>
+#include <machine/MulticlassMachine.h>
 
 namespace shogun
 {

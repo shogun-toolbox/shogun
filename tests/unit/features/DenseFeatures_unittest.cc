@@ -7,8 +7,8 @@
  * Written (W) 2012-2013 Heiko Strathmann
  */
 
-#include <shogun/base/init.h>
-#include <shogun/features/DenseFeatures.h>
+#include <base/init.h>
+#include <features/DenseFeatures.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;

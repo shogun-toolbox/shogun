@@ -11,8 +11,8 @@
 #ifndef ECOCEDDECODER_H__
 #define ECOCEDDECODER_H__
 
-#include <shogun/multiclass/ecoc/ECOCSimpleDecoder.h>
-#include <shogun/mathematics/Math.h>
+#include <multiclass/ecoc/ECOCSimpleDecoder.h>
+#include <mathematics/Math.h>
 
 namespace shogun
 {

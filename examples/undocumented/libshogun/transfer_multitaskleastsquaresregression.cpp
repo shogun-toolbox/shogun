@@ -1,12 +1,12 @@
-#include <shogun/labels/RegressionLabels.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/transfer/multitask/MultitaskLeastSquaresRegression.h>
-#include <shogun/transfer/multitask/Task.h>
-#include <shogun/transfer/multitask/TaskTree.h>
-#include <shogun/transfer/multitask/TaskGroup.h>
-#include <shogun/base/init.h>
-#include <shogun/lib/common.h>
-#include <shogun/io/SGIO.h>
+#include <labels/RegressionLabels.h>
+#include <features/DenseFeatures.h>
+#include <transfer/multitask/MultitaskLeastSquaresRegression.h>
+#include <transfer/multitask/Task.h>
+#include <transfer/multitask/TaskTree.h>
+#include <transfer/multitask/TaskGroup.h>
+#include <base/init.h>
+#include <lib/common.h>
+#include <io/SGIO.h>
 
 using namespace shogun;
 

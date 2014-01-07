@@ -7,11 +7,11 @@
  * Written (W) 2013 Soumyajit De
  */
 
-#include <shogun/lib/config.h>
-#include <shogun/lib/SGMatrix.h>
-#include <shogun/lib/SGVector.h>
-#include <shogun/mathematics/eigen3.h>
-#include <shogun/mathematics/linalg/linop/DenseMatrixOperator.h>
+#include <lib/config.h>
+#include <lib/SGMatrix.h>
+#include <lib/SGVector.h>
+#include <mathematics/eigen3.h>
+#include <mathematics/linalg/linop/DenseMatrixOperator.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;

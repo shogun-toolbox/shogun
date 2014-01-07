@@ -11,11 +11,11 @@
 #ifndef __FACTORGRAPH_H__
 #define __FACTORGRAPH_H__
 
-#include <shogun/lib/DynamicObjectArray.h>
-#include <shogun/lib/SGVector.h>
-#include <shogun/structure/Factor.h>
-#include <shogun/labels/FactorGraphLabels.h>
-#include <shogun/structure/DisjointSet.h>
+#include <lib/DynamicObjectArray.h>
+#include <lib/SGVector.h>
+#include <structure/Factor.h>
+#include <labels/FactorGraphLabels.h>
+#include <structure/DisjointSet.h>
 
 namespace shogun
 {

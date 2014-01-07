@@ -10,9 +10,9 @@
 #ifndef __LINE_READER_H__
 #define __LINE_READER_H__
 
-#include <shogun/lib/SGVector.h>
-#include <shogun/lib/Tokenizer.h>
-#include <shogun/lib/CircularBuffer.h>
+#include <lib/SGVector.h>
+#include <lib/Tokenizer.h>
+#include <lib/CircularBuffer.h>
 
 namespace shogun
 {

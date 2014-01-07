@@ -7,10 +7,10 @@
  * Copyright (C) 2011 Soeren Sonnenburg, Sergey Lisitsyn
  */
 
-#include <shogun/evaluation/MeanAbsoluteError.h>
-#include <shogun/labels/Labels.h>
-#include <shogun/labels/RegressionLabels.h>
-#include <shogun/mathematics/Math.h>
+#include <evaluation/MeanAbsoluteError.h>
+#include <labels/Labels.h>
+#include <labels/RegressionLabels.h>
+#include <mathematics/Math.h>
 
 using namespace shogun;
 

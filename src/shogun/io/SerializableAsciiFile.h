@@ -10,8 +10,8 @@
 #ifndef __SERIALIZABLE_ASCII_FILE_H__
 #define __SERIALIZABLE_ASCII_FILE_H__
 
-#include <shogun/io/SerializableFile.h>
-#include <shogun/base/DynArray.h>
+#include <io/SerializableFile.h>
+#include <base/DynArray.h>
 
 #define CHAR_CONT_BEGIN            '('
 #define CHAR_CONT_END              ')'

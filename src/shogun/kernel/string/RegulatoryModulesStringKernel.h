@@ -11,9 +11,9 @@
 #ifndef _REGULATORYMODULESSTRINGKERNEL_H___
 #define _REGULATORYMODULESSTRINGKERNEL_H___
 
-#include <shogun/lib/common.h>
-#include <shogun/kernel/string/StringKernel.h>
-#include <shogun/features/DenseFeatures.h>
+#include <lib/common.h>
+#include <kernel/string/StringKernel.h>
+#include <features/DenseFeatures.h>
 
 namespace shogun
 {

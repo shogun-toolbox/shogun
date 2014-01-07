@@ -10,12 +10,12 @@
 #ifndef  MULTITASKMACHINE_H_
 #define  MULTITASKMACHINE_H_
 
-#include <shogun/lib/config.h>
-#include <shogun/machine/LinearMachine.h>
-#include <shogun/transfer/multitask/TaskRelation.h>
-#include <shogun/transfer/multitask/TaskGroup.h>
-#include <shogun/transfer/multitask/TaskTree.h>
-#include <shogun/transfer/multitask/Task.h>
+#include <lib/config.h>
+#include <machine/LinearMachine.h>
+#include <transfer/multitask/TaskRelation.h>
+#include <transfer/multitask/TaskGroup.h>
+#include <transfer/multitask/TaskTree.h>
+#include <transfer/multitask/Task.h>
 
 #include <vector>
 #include <set>

@@ -10,7 +10,7 @@
 #ifndef __MMDKERNELSELECTIONMAX_H_
 #define __MMDKERNELSELECTIONMAX_H_
 
-#include <shogun/statistics/MMDKernelSelection.h>
+#include <statistics/MMDKernelSelection.h>
 
 namespace shogun
 {

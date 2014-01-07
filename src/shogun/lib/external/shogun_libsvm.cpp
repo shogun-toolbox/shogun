@@ -35,13 +35,13 @@
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
-#include <shogun/lib/external/shogun_libsvm.h>
-#include <shogun/kernel/Kernel.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/lib/Time.h>
-#include <shogun/lib/Signal.h>
-#include <shogun/lib/common.h>
-#include <shogun/mathematics/Math.h>
+#include <lib/external/shogun_libsvm.h>
+#include <kernel/Kernel.h>
+#include <io/SGIO.h>
+#include <lib/Time.h>
+#include <lib/Signal.h>
+#include <lib/common.h>
+#include <mathematics/Math.h>
 
 #include <stdio.h>
 #include <stdlib.h>

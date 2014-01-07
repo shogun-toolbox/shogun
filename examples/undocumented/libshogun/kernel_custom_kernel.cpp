@@ -7,11 +7,11 @@
  * Written (W) 2012 Heiko Strathmann
  */
 
-#include <shogun/base/init.h>
-#include <shogun/kernel/GaussianKernel.h>
-#include <shogun/kernel/CustomKernel.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/features/DataGenerator.h>
+#include <base/init.h>
+#include <kernel/GaussianKernel.h>
+#include <kernel/CustomKernel.h>
+#include <features/DenseFeatures.h>
+#include <features/DataGenerator.h>
 
 using namespace shogun;
 

@@ -11,8 +11,8 @@
 #ifndef __CROSSVALIDATION_H_
 #define __CROSSVALIDATION_H_
 
-#include <shogun/evaluation/EvaluationResult.h>
-#include <shogun/evaluation/MachineEvaluation.h>
+#include <evaluation/EvaluationResult.h>
+#include <evaluation/MachineEvaluation.h>
 
 namespace shogun
 {

@@ -8,7 +8,7 @@
  * Written (W) 2013 Heiko Strathmann
  */
 
-#include <shogun/mathematics/linalg/ratapprox/opfunc/OperatorFunction.h>
+#include <mathematics/linalg/ratapprox/opfunc/OperatorFunction.h>
 
 namespace shogun
 {

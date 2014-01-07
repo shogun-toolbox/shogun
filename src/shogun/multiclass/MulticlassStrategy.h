@@ -12,11 +12,11 @@
 #ifndef MULTICLASSSTRATEGY_H__
 #define MULTICLASSSTRATEGY_H__
 
-#include <shogun/base/SGObject.h>
-#include <shogun/labels/BinaryLabels.h>
-#include <shogun/labels/MulticlassLabels.h>
-#include <shogun/multiclass/RejectionStrategy.h>
-#include <shogun/mathematics/Statistics.h>
+#include <base/SGObject.h>
+#include <labels/BinaryLabels.h>
+#include <labels/MulticlassLabels.h>
+#include <multiclass/RejectionStrategy.h>
+#include <mathematics/Statistics.h>
 
 namespace shogun
 {

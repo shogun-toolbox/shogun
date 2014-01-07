@@ -8,21 +8,21 @@
  * Copyright (C) 2012 Michal Uricar
  */
 
-#include <shogun/classifier/svm/LibLinear.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/labels/MulticlassLabels.h>
-#include <shogun/labels/StructuredLabels.h>
-#include <shogun/lib/common.h>
-#include <shogun/machine/LinearMulticlassMachine.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/multiclass/MulticlassOneVsRestStrategy.h>
-#include <shogun/structure/MulticlassSOLabels.h>
-#include <shogun/structure/BmrmStatistics.h>
-#include <shogun/structure/MulticlassModel.h>
-#include <shogun/structure/DualLibQPBMSOSVM.h>
-#include <shogun/io/streaming/StreamingAsciiFile.h>
-#include <shogun/features/streaming/StreamingSparseFeatures.h>
+#include <classifier/svm/LibLinear.h>
+#include <features/DenseFeatures.h>
+#include <io/SGIO.h>
+#include <labels/MulticlassLabels.h>
+#include <labels/StructuredLabels.h>
+#include <lib/common.h>
+#include <machine/LinearMulticlassMachine.h>
+#include <mathematics/Math.h>
+#include <multiclass/MulticlassOneVsRestStrategy.h>
+#include <structure/MulticlassSOLabels.h>
+#include <structure/BmrmStatistics.h>
+#include <structure/MulticlassModel.h>
+#include <structure/DualLibQPBMSOSVM.h>
+#include <io/streaming/StreamingAsciiFile.h>
+#include <features/streaming/StreamingSparseFeatures.h>
 
 using namespace shogun;
 

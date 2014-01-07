@@ -6,8 +6,8 @@
  *
  * Written (W) 2013 Heiko Strathmann
  */
-#include <shogun/labels/MulticlassLabels.h>
-#include <shogun/io/SerializableAsciiFile.h>
+#include <labels/MulticlassLabels.h>
+#include <io/SerializableAsciiFile.h>
 
 using namespace shogun;
 

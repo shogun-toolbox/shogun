@@ -16,7 +16,7 @@
 #ifndef _VW_NATIVECACHE_READ_H__
 #define _VW_NATIVECACHE_READ_H__
 
-#include <shogun/classifier/vw/cache/VwCacheReader.h>
+#include <classifier/vw/cache/VwCacheReader.h>
 
 namespace shogun
 {

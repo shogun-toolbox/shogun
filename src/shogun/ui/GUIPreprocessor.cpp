@@ -9,27 +9,27 @@
  * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/ui/GUIPreprocessor.h>
-#include <shogun/ui/SGInterface.h>
+#include <ui/GUIPreprocessor.h>
+#include <ui/SGInterface.h>
 
-#include <shogun/lib/config.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/lib/config.h>
-#include <shogun/preprocessor/LogPlusOne.h>
-#include <shogun/preprocessor/NormOne.h>
-#include <shogun/preprocessor/PruneVarSubMean.h>
-#include <shogun/preprocessor/PCA.h>
-#include <shogun/preprocessor/DecompressString.h>
-#include <shogun/preprocessor/SortWordString.h>
-#include <shogun/preprocessor/SortUlongString.h>
-#include <shogun/features/RealFileFeatures.h>
-#include <shogun/features/TOPFeatures.h>
-#include <shogun/features/FKFeatures.h>
-#include <shogun/features/StringFeatures.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/features/SparseFeatures.h>
-#include <shogun/features/CombinedFeatures.h>
-#include <shogun/features/Features.h>
+#include <lib/config.h>
+#include <io/SGIO.h>
+#include <lib/config.h>
+#include <preprocessor/LogPlusOne.h>
+#include <preprocessor/NormOne.h>
+#include <preprocessor/PruneVarSubMean.h>
+#include <preprocessor/PCA.h>
+#include <preprocessor/DecompressString.h>
+#include <preprocessor/SortWordString.h>
+#include <preprocessor/SortUlongString.h>
+#include <features/RealFileFeatures.h>
+#include <features/TOPFeatures.h>
+#include <features/FKFeatures.h>
+#include <features/StringFeatures.h>
+#include <features/DenseFeatures.h>
+#include <features/SparseFeatures.h>
+#include <features/CombinedFeatures.h>
+#include <features/Features.h>
 
 #include <string.h>
 #include <stdio.h>

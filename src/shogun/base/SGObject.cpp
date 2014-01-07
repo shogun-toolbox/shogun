@@ -10,17 +10,17 @@
  * Copyright (C) 2008-2009 Fraunhofer Institute FIRST and Max Planck Society
  */
 
-#include <shogun/lib/config.h>
-#include <shogun/base/SGObject.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/base/Parallel.h>
-#include <shogun/base/init.h>
-#include <shogun/base/Version.h>
-#include <shogun/base/Parameter.h>
-#include <shogun/base/ParameterMap.h>
-#include <shogun/base/DynArray.h>
-#include <shogun/lib/Map.h>
-#include <shogun/lib/SGStringList.h>
+#include <lib/config.h>
+#include <base/SGObject.h>
+#include <io/SGIO.h>
+#include <base/Parallel.h>
+#include <base/init.h>
+#include <base/Version.h>
+#include <base/Parameter.h>
+#include <base/ParameterMap.h>
+#include <base/DynArray.h>
+#include <lib/Map.h>
+#include <lib/SGStringList.h>
 
 #include "class_list.h"
 
@@ -1002,7 +1002,7 @@ void CSGObject::save_serializable_post() throw (ShogunException)
 }
 
 #ifdef TRACE_MEMORY_ALLOCS
-#include <shogun/lib/Map.h>
+#include <lib/Map.h>
 extern CMap<void*, shogun::MemoryBlock>* sg_mallocs;
 #endif
 

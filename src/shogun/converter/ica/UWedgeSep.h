@@ -10,11 +10,11 @@
 #ifndef UWEDGESEP_H_
 #define UWEDGESEP_H_
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 #ifdef HAVE_EIGEN3
-#include <shogun/lib/SGNDArray.h>
-#include <shogun/features/Features.h>
-#include <shogun/converter/ica/ICAConverter.h>
+#include <lib/SGNDArray.h>
+#include <features/Features.h>
+#include <converter/ica/ICAConverter.h>
 
 namespace shogun
 {

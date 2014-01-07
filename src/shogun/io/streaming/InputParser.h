@@ -11,12 +11,12 @@
 #ifndef __INPUTPARSER_H__
 #define __INPUTPARSER_H__
 
-#include <shogun/lib/common.h>
+#include <lib/common.h>
 #ifdef HAVE_PTHREAD
 
-#include <shogun/io/SGIO.h>
-#include <shogun/io/streaming/StreamingFile.h>
-#include <shogun/io/streaming/ParseBuffer.h>
+#include <io/SGIO.h>
+#include <io/streaming/StreamingFile.h>
+#include <io/streaming/ParseBuffer.h>
 #include <pthread.h>
 
 #define PARSER_DEFAULT_BUFFSIZE 100

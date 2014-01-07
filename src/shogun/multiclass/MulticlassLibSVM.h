@@ -11,10 +11,10 @@
 #ifndef _LIBSVM_MULTICLASS_H___
 #define _LIBSVM_MULTICLASS_H___
 
-#include <shogun/lib/common.h>
-#include <shogun/multiclass/MulticlassSVM.h>
-#include <shogun/lib/external/shogun_libsvm.h>
-#include <shogun/classifier/svm/LibSVM.h>
+#include <lib/common.h>
+#include <multiclass/MulticlassSVM.h>
+#include <lib/external/shogun_libsvm.h>
+#include <classifier/svm/LibSVM.h>
 
 namespace shogun
 {

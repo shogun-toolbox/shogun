@@ -7,10 +7,10 @@
  * Written (W) 2013 Soumyajit De
  */
 
-#include <shogun/lib/common.h>
-#include <shogun/lib/SGVector.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/mathematics/linalg/linsolver/IterativeShiftedLinearFamilySolver.h>
+#include <lib/common.h>
+#include <lib/SGVector.h>
+#include <mathematics/Math.h>
+#include <mathematics/linalg/linsolver/IterativeShiftedLinearFamilySolver.h>
 
 namespace shogun
 {

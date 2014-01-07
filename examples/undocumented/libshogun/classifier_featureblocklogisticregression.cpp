@@ -1,12 +1,12 @@
-#include <shogun/labels/RegressionLabels.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/classifier/FeatureBlockLogisticRegression.h>
-#include <shogun/lib/IndexBlock.h>
-#include <shogun/lib/IndexBlockTree.h>
-#include <shogun/lib/IndexBlockGroup.h>
-#include <shogun/base/init.h>
-#include <shogun/lib/common.h>
-#include <shogun/io/SGIO.h>
+#include <labels/RegressionLabels.h>
+#include <features/DenseFeatures.h>
+#include <classifier/FeatureBlockLogisticRegression.h>
+#include <lib/IndexBlock.h>
+#include <lib/IndexBlockTree.h>
+#include <lib/IndexBlockGroup.h>
+#include <base/init.h>
+#include <lib/common.h>
+#include <io/SGIO.h>
 
 using namespace shogun;
 

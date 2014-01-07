@@ -7,7 +7,7 @@
 #define TAPKEE_DEFINES_KEYWORDS_H_
 
 /* Tapkee includes */
-#include <shogun/lib/tapkee/defines/types.hpp>
+#include <lib/tapkee/defines/types.hpp>
 /* End of Tapkee includes */
 
 namespace tapkee

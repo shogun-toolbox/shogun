@@ -10,12 +10,12 @@
 
 #ifndef LINEARLOCALTANGENTSPACEALIGNMENT_H_
 #define LINEARLOCALTANGENTSPACEALIGNMENT_H_
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 #ifdef HAVE_EIGEN3
-#include <shogun/converter/LocalTangentSpaceAlignment.h>
-#include <shogun/features/Features.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/distance/Distance.h>
+#include <converter/LocalTangentSpaceAlignment.h>
+#include <features/Features.h>
+#include <features/DenseFeatures.h>
+#include <distance/Distance.h>
 
 namespace shogun
 {

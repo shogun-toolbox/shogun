@@ -66,9 +66,9 @@ licence.
 #include <cstdlib>
 #include <cmath>
 
-#include <shogun/optimization/lbfgs/lbfgs.h>
-#include <shogun/lib/SGVector.h>
-#include <shogun/lib/common.h>
+#include <optimization/lbfgs/lbfgs.h>
+#include <lib/SGVector.h>
+#include <lib/common.h>
 
 namespace shogun
 {

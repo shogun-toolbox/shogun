@@ -12,14 +12,14 @@
 #ifndef _GAUSSIANPROCESSREGRESSION_H_
 #define _GAUSSIANPROCESSREGRESSION_H_
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
 #ifdef HAVE_EIGEN3
 
-#include <shogun/machine/GaussianProcessMachine.h>
-#include <shogun/machine/gp/InferenceMethod.h>
-#include <shogun/features/Features.h>
-#include <shogun/labels/Labels.h>
+#include <machine/GaussianProcessMachine.h>
+#include <machine/gp/InferenceMethod.h>
+#include <features/Features.h>
+#include <labels/Labels.h>
 
 namespace shogun
 {

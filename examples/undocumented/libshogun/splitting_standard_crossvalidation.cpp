@@ -8,9 +8,9 @@
  * Copyright (C) 2012 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include <shogun/base/init.h>
-#include <shogun/evaluation/CrossValidationSplitting.h>
-#include <shogun/labels/RegressionLabels.h>
+#include <base/init.h>
+#include <evaluation/CrossValidationSplitting.h>
+#include <labels/RegressionLabels.h>
 
 using namespace shogun;
 

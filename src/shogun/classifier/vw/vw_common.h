@@ -15,15 +15,15 @@
 #ifndef _VW_COMMON_H__
 #define _VW_COMMON_H__
 
-#include <shogun/lib/DataType.h>
-#include <shogun/lib/common.h>
-#include <shogun/mathematics/Math.h>
+#include <lib/DataType.h>
+#include <lib/common.h>
+#include <mathematics/Math.h>
 
-#include <shogun/lib/v_array.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/classifier/vw/vw_constants.h>
-#include <shogun/classifier/vw/VwEnvironment.h>
-#include <shogun/classifier/vw/vw_label.h>
-#include <shogun/classifier/vw/vw_example.h>
+#include <lib/v_array.h>
+#include <io/SGIO.h>
+#include <classifier/vw/vw_constants.h>
+#include <classifier/vw/VwEnvironment.h>
+#include <classifier/vw/vw_label.h>
+#include <classifier/vw/vw_example.h>
 
 #endif // _VW_COMMON_H__

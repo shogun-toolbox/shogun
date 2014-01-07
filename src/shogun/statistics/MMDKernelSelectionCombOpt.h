@@ -10,7 +10,7 @@
 #ifndef __MMDKERNELSELECTIONCOMBOPT_H_
 #define __MMDKERNELSELECTIONCOMBOPT_H_
 
-#include <shogun/statistics/MMDKernelSelectionComb.h>
+#include <statistics/MMDKernelSelectionComb.h>
 
 namespace shogun
 {

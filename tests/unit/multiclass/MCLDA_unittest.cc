@@ -1,7 +1,7 @@
-#include <shogun/labels/MulticlassLabels.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/features/DataGenerator.h>
-#include <shogun/multiclass/MCLDA.h>
+#include <labels/MulticlassLabels.h>
+#include <features/DenseFeatures.h>
+#include <features/DataGenerator.h>
+#include <multiclass/MCLDA.h>
 #include <gtest/gtest.h>
 #ifdef HAVE_EIGEN3
 

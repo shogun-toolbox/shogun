@@ -1,8 +1,8 @@
-#include <shogun/base/init.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/kernel/LinearKernel.h>
-#include <shogun/labels/BinaryLabels.h>
-#include <shogun/classifier/svm/LibSVM.h>
+#include <base/init.h>
+#include <features/DenseFeatures.h>
+#include <kernel/LinearKernel.h>
+#include <labels/BinaryLabels.h>
+#include <classifier/svm/LibSVM.h>
 #include <iostream>
 
 using namespace shogun;

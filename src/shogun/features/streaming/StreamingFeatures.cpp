@@ -8,9 +8,9 @@
  * Written (W) 2012 Heiko Strathmann
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
-#include <shogun/features/streaming/StreamingFeatures.h>
-#include <shogun/features/streaming/StreamingDenseFeatures.h>
-#include <shogun/features/DenseFeatures.h>
+#include <features/streaming/StreamingFeatures.h>
+#include <features/streaming/StreamingDenseFeatures.h>
+#include <features/DenseFeatures.h>
 
 using namespace shogun;
 

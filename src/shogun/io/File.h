@@ -13,8 +13,8 @@
 #define __FILE_H__
 
 #include <stdio.h>
-#include <shogun/base/SGObject.h>
-#include <shogun/lib/DataType.h>
+#include <base/SGObject.h>
+#include <lib/DataType.h>
 
 namespace shogun
 {

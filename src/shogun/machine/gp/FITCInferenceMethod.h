@@ -15,11 +15,11 @@
 #ifndef CFITCINFERENCEMETHOD_H_
 #define CFITCINFERENCEMETHOD_H_
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
 #ifdef HAVE_EIGEN3
 
-#include <shogun/machine/gp/InferenceMethod.h>
+#include <machine/gp/InferenceMethod.h>
 
 namespace shogun
 {

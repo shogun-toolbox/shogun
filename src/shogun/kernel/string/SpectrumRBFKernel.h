@@ -12,13 +12,13 @@
 #ifndef _SPECTRUMRBFKERNEL_H___
 #define _SPECTRUMRBFKERNEL_H___
 
-#include <shogun/lib/common.h>
-#include <shogun/lib/Trie.h>
-#include <shogun/kernel/string/StringKernel.h>
-#include <shogun/features/StringFeatures.h>
+#include <lib/common.h>
+#include <lib/Trie.h>
+#include <kernel/string/StringKernel.h>
+#include <features/StringFeatures.h>
 
 
-#include <shogun/lib/DynamicArray.h>
+#include <lib/DynamicArray.h>
 
 #include <vector> // profile
 #include <string> // profile

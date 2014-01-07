@@ -11,9 +11,9 @@
 #ifndef _DISTRIBUTION_H___
 #define _DISTRIBUTION_H___
 
-#include <shogun/features/Features.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/base/SGObject.h>
+#include <features/Features.h>
+#include <mathematics/Math.h>
+#include <base/SGObject.h>
 
 namespace shogun
 {

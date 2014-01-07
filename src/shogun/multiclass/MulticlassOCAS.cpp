@@ -9,10 +9,10 @@
  * Copyright (C) 2009-2012 Vojtech Franc and Soeren Sonnenburg
  */
 
-#include <shogun/multiclass/MulticlassOCAS.h>
-#include <shogun/multiclass/MulticlassOneVsRestStrategy.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/labels/MulticlassLabels.h>
+#include <multiclass/MulticlassOCAS.h>
+#include <multiclass/MulticlassOneVsRestStrategy.h>
+#include <mathematics/Math.h>
+#include <labels/MulticlassLabels.h>
 
 using namespace shogun;
 

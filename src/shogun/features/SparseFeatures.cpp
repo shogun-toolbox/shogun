@@ -1,10 +1,10 @@
-#include <shogun/lib/memory.h>
-#include <shogun/features/SparseFeatures.h>
-#include <shogun/preprocessor/SparsePreprocessor.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/lib/DataType.h>
-#include <shogun/labels/RegressionLabels.h>
-#include <shogun/io/SGIO.h>
+#include <lib/memory.h>
+#include <features/SparseFeatures.h>
+#include <preprocessor/SparsePreprocessor.h>
+#include <mathematics/Math.h>
+#include <lib/DataType.h>
+#include <labels/RegressionLabels.h>
+#include <io/SGIO.h>
 
 #include <string.h>
 #include <stdlib.h>

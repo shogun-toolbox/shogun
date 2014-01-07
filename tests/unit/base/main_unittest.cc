@@ -1,7 +1,7 @@
 #include <iostream>
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
-#include <shogun/base/init.h>
+#include <base/init.h>
 
 using namespace shogun;
 using ::testing::Test;

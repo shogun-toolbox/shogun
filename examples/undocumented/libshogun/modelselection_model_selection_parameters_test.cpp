@@ -8,13 +8,13 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include <shogun/base/init.h>
-#include <shogun/modelselection/ModelSelectionParameters.h>
-#include <shogun/modelselection/ParameterCombination.h>
-#include <shogun/kernel/GaussianKernel.h>
-#include <shogun/kernel/PowerKernel.h>
-#include <shogun/distance/MinkowskiMetric.h>
-#include <shogun/kernel/string/DistantSegmentsKernel.h>
+#include <base/init.h>
+#include <modelselection/ModelSelectionParameters.h>
+#include <modelselection/ParameterCombination.h>
+#include <kernel/GaussianKernel.h>
+#include <kernel/PowerKernel.h>
+#include <distance/MinkowskiMetric.h>
+#include <kernel/string/DistantSegmentsKernel.h>
 
 using namespace shogun;
 

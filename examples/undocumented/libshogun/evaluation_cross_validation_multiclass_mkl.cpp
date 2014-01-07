@@ -8,17 +8,17 @@
  * Written (W) 2012 Heiko Strathmann
  */
 
-#include <shogun/io/CSVFile.h>
-#include <shogun/labels/MulticlassLabels.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/kernel/GaussianKernel.h>
-#include <shogun/kernel/LinearKernel.h>
-#include <shogun/kernel/PolyKernel.h>
-#include <shogun/kernel/CombinedKernel.h>
-#include <shogun/classifier/mkl/MKLMulticlass.h>
-#include <shogun/evaluation/StratifiedCrossValidationSplitting.h>
-#include <shogun/evaluation/CrossValidation.h>
-#include <shogun/evaluation/MulticlassAccuracy.h>
+#include <io/CSVFile.h>
+#include <labels/MulticlassLabels.h>
+#include <features/DenseFeatures.h>
+#include <kernel/GaussianKernel.h>
+#include <kernel/LinearKernel.h>
+#include <kernel/PolyKernel.h>
+#include <kernel/CombinedKernel.h>
+#include <classifier/mkl/MKLMulticlass.h>
+#include <evaluation/StratifiedCrossValidationSplitting.h>
+#include <evaluation/CrossValidation.h>
+#include <evaluation/MulticlassAccuracy.h>
 
 using namespace shogun;
 

@@ -8,14 +8,14 @@
  * Copyright (C) 2012 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include <shogun/base/init.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/labels/RegressionLabels.h>
-#include <shogun/kernel/LinearKernel.h>
-#include <shogun/regression/KernelRidgeRegression.h>
-#include <shogun/evaluation/CrossValidation.h>
-#include <shogun/evaluation/CrossValidationSplitting.h>
-#include <shogun/evaluation/MeanSquaredError.h>
+#include <base/init.h>
+#include <features/DenseFeatures.h>
+#include <labels/RegressionLabels.h>
+#include <kernel/LinearKernel.h>
+#include <regression/KernelRidgeRegression.h>
+#include <evaluation/CrossValidation.h>
+#include <evaluation/CrossValidationSplitting.h>
+#include <evaluation/MeanSquaredError.h>
 
 using namespace shogun;
 

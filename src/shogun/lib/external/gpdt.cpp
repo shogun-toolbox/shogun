@@ -73,8 +73,8 @@
 #include <string.h>
 #include <ctype.h>
 #include <math.h>
-#include <shogun/lib/external/gpdt.h>
-#include <shogun/lib/external/gpdtsolve.h>
+#include <lib/external/gpdt.h>
+#include <lib/external/gpdtsolve.h>
 
 using namespace shogun;
 

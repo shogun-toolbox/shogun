@@ -11,12 +11,12 @@
 #ifndef _DIRECTORKERNEL_H___
 #define _DIRECTORKERNEL_H___
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
 #ifdef USE_SWIG_DIRECTORS
-#include <shogun/lib/common.h>
-#include <shogun/lib/DataType.h>
-#include <shogun/kernel/Kernel.h>
+#include <lib/common.h>
+#include <lib/DataType.h>
+#include <kernel/Kernel.h>
 
 namespace shogun
 {

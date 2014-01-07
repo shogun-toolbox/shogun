@@ -7,8 +7,8 @@
  * Copyright (C) 2012 Sergey Lisitsyn
  */
 
-#include <shogun/transfer/multitask/MultitaskROCEvaluation.h>
-#include <shogun/mathematics/Math.h>
+#include <transfer/multitask/MultitaskROCEvaluation.h>
+#include <mathematics/Math.h>
 
 #include <set>
 #include <vector>

@@ -67,7 +67,7 @@
  *** Revision: 1                                                            ***
  ***                                                                        ***
  ******************************************************************************/
-#include <shogun/kernel/Kernel.h>
+#include <kernel/Kernel.h>
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 

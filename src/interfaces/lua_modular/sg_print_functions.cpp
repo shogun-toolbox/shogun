@@ -1,4 +1,4 @@
-#include <shogun/io/SGIO.h>
+#include <io/SGIO.h>
 #include <stdio.h>
 
 void sg_global_print_message(FILE* target, const char* str)

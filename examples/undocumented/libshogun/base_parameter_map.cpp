@@ -8,9 +8,9 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include <shogun/base/init.h>
-#include <shogun/base/Parameter.h>
-#include <shogun/base/ParameterMap.h>
+#include <base/init.h>
+#include <base/Parameter.h>
+#include <base/ParameterMap.h>
 
 using namespace shogun;
 

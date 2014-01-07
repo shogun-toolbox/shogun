@@ -8,12 +8,12 @@
  * Copyright (C) 2007-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/clustering/Hierarchical.h>
-#include <shogun/distance/Distance.h>
-#include <shogun/labels/Labels.h>
-#include <shogun/features/Features.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/base/Parallel.h>
+#include <clustering/Hierarchical.h>
+#include <distance/Distance.h>
+#include <labels/Labels.h>
+#include <features/Features.h>
+#include <mathematics/Math.h>
+#include <base/Parallel.h>
 
 #ifdef HAVE_PTHREAD
 #include <pthread.h>

@@ -23,7 +23,7 @@
 
 #include <math.h>
 
-#include <shogun/lib/common.h>
+#include <lib/common.h>
 namespace shogun
 {
 #define LIBQP_PLUS_INF (-log(0.0))

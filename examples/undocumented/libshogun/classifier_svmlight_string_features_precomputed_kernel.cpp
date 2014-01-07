@@ -6,14 +6,14 @@
  *
  * Written (W) 2013 Heiko Strathmann
  */
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
-#include <shogun/kernel/string/DistantSegmentsKernel.h>
-#include <shogun/labels/BinaryLabels.h>
-#include <shogun/features/StringFeatures.h>
-#include <shogun/classifier/svm/SVMLight.h>
-#include <shogun/classifier/svm/LibSVM.h>
-#include <shogun/lib/SGStringList.h>
+#include <kernel/string/DistantSegmentsKernel.h>
+#include <labels/BinaryLabels.h>
+#include <features/StringFeatures.h>
+#include <classifier/svm/SVMLight.h>
+#include <classifier/svm/LibSVM.h>
+#include <lib/SGStringList.h>
 
 using namespace shogun;
 

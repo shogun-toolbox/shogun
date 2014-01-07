@@ -9,7 +9,7 @@ extern "C" {
 #include <R_ext/Error.h>
 }
 
-#include <shogun/base/SGObject.h>
+#include <base/SGObject.h>
 #include <stdio.h>
 
 using namespace shogun;

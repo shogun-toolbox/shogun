@@ -7,8 +7,8 @@
  * Written (W) 2013 Soumyajit De
  */
 
-#include <shogun/lib/config.h>
-#include <shogun/mathematics/JacobiEllipticFunctions.h>
+#include <lib/config.h>
+#include <mathematics/JacobiEllipticFunctions.h>
 #include <gtest/gtest.h>
 
 #ifdef HAVE_ARPREC

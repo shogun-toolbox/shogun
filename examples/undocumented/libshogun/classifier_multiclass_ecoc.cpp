@@ -1,13 +1,13 @@
-#include <shogun/io/CSVFile.h>
-#include <shogun/labels/MulticlassLabels.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/multiclass/ecoc/ECOCStrategy.h>
-#include <shogun/multiclass/ecoc/ECOCOVREncoder.h>
-#include <shogun/multiclass/ecoc/ECOCHDDecoder.h>
-#include <shogun/machine/LinearMulticlassMachine.h>
-#include <shogun/classifier/svm/LibLinear.h>
-#include <shogun/base/init.h>
+#include <io/CSVFile.h>
+#include <labels/MulticlassLabels.h>
+#include <io/SGIO.h>
+#include <features/DenseFeatures.h>
+#include <multiclass/ecoc/ECOCStrategy.h>
+#include <multiclass/ecoc/ECOCOVREncoder.h>
+#include <multiclass/ecoc/ECOCHDDecoder.h>
+#include <machine/LinearMulticlassMachine.h>
+#include <classifier/svm/LibLinear.h>
+#include <base/init.h>
 
 #define  EPSILON  1e-5
 

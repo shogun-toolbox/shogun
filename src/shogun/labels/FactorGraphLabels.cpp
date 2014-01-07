@@ -1,4 +1,4 @@
-#include <shogun/labels/FactorGraphLabels.h>
+#include <labels/FactorGraphLabels.h>
 
 using namespace shogun;
 

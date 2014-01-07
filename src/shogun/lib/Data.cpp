@@ -8,7 +8,7 @@
  * Copyright (C) 2012 Viktor Gal
  */
 
-#include <shogun/lib/Data.h>
+#include <lib/Data.h>
 
 using namespace shogun;
 

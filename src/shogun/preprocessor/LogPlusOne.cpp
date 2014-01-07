@@ -8,10 +8,10 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/preprocessor/LogPlusOne.h>
-#include <shogun/preprocessor/DensePreprocessor.h>
-#include <shogun/features/Features.h>
-#include <shogun/mathematics/Math.h>
+#include <preprocessor/LogPlusOne.h>
+#include <preprocessor/DensePreprocessor.h>
+#include <features/Features.h>
+#include <mathematics/Math.h>
 
 using namespace shogun;
 

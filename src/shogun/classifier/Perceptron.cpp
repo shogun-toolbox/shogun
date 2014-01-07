@@ -8,10 +8,10 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/classifier/Perceptron.h>
-#include <shogun/labels/Labels.h>
-#include <shogun/labels/BinaryLabels.h>
-#include <shogun/mathematics/Math.h>
+#include <classifier/Perceptron.h>
+#include <labels/Labels.h>
+#include <labels/BinaryLabels.h>
+#include <mathematics/Math.h>
 
 using namespace shogun;
 

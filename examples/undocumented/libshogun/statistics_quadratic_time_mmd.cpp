@@ -7,13 +7,13 @@
  * Written (W) 2013 Heiko Strathmann
  */
 
-#include <shogun/base/init.h>
-#include <shogun/statistics/QuadraticTimeMMD.h>
-#include <shogun/kernel/GaussianKernel.h>
-#include <shogun/kernel/CustomKernel.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/features/streaming/generators/MeanShiftDataGenerator.h>
-#include <shogun/mathematics/Statistics.h>
+#include <base/init.h>
+#include <statistics/QuadraticTimeMMD.h>
+#include <kernel/GaussianKernel.h>
+#include <kernel/CustomKernel.h>
+#include <features/DenseFeatures.h>
+#include <features/streaming/generators/MeanShiftDataGenerator.h>
+#include <mathematics/Statistics.h>
 
 using namespace shogun;
 

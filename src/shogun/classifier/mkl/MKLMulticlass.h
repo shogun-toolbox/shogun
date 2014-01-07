@@ -16,13 +16,13 @@
 
 #include <vector>
 
-#include <shogun/base/SGObject.h>
-#include <shogun/kernel/Kernel.h>
-#include <shogun/kernel/CombinedKernel.h>
-#include <shogun/multiclass/GMNPSVM.h>
-#include <shogun/classifier/mkl/MKLMulticlassGLPK.h>
-#include <shogun/classifier/mkl/MKLMulticlassGradient.h>
-#include <shogun/multiclass/MulticlassSVM.h>
+#include <base/SGObject.h>
+#include <kernel/Kernel.h>
+#include <kernel/CombinedKernel.h>
+#include <multiclass/GMNPSVM.h>
+#include <classifier/mkl/MKLMulticlassGLPK.h>
+#include <classifier/mkl/MKLMulticlassGradient.h>
+#include <multiclass/MulticlassSVM.h>
 
 
 namespace shogun

@@ -8,12 +8,12 @@
  * Written (W) 1999-2008 Gunnar Raetsch
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
-#include <shogun/base/SGObject.h>
-#include <shogun/lib/common.h>
+#include <base/SGObject.h>
+#include <lib/common.h>
 #include <cmath>
-#include <shogun/mathematics/Math.h>
-#include <shogun/mathematics/lapack.h>
-#include <shogun/io/SGIO.h>
+#include <mathematics/Math.h>
+#include <mathematics/lapack.h>
+#include <io/SGIO.h>
 
 #include <stdio.h>
 #include <stdlib.h>

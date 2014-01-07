@@ -10,8 +10,8 @@
 #ifndef __MEANSHIFTDATAGENERATOR_H_
 #define __MEANSHIFTDATAGENERATOR_H_
 
-#include <shogun/lib/common.h>
-#include <shogun/features/streaming/StreamingDenseFeatures.h>
+#include <lib/common.h>
+#include <features/streaming/StreamingDenseFeatures.h>
 
 namespace shogun
 {

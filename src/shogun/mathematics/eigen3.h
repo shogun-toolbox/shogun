@@ -10,7 +10,7 @@
 #ifndef EIGEN3_H_
 #define EIGEN3_H_
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
 #ifdef HAVE_EIGEN3
 	//#define EIGEN_RUNTIME_NO_MALLOC

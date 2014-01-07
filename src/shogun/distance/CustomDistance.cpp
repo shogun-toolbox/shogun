@@ -8,12 +8,12 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/base/Parameter.h>
-#include <shogun/lib/common.h>
-#include <shogun/distance/CustomDistance.h>
-#include <shogun/features/Features.h>
-#include <shogun/features/DummyFeatures.h>
-#include <shogun/io/SGIO.h>
+#include <base/Parameter.h>
+#include <lib/common.h>
+#include <distance/CustomDistance.h>
+#include <features/Features.h>
+#include <features/DummyFeatures.h>
+#include <io/SGIO.h>
 
 using namespace shogun;
 

@@ -7,10 +7,10 @@
  * Written (W) 2013 Heiko Strathmann
  */
 
-#include <shogun/base/Parameter.h>
-#include <shogun/labels/BinaryLabels.h>
-#include <shogun/labels/RegressionLabels.h>
-#include <shogun/features/SparseFeatures.h>
+#include <base/Parameter.h>
+#include <labels/BinaryLabels.h>
+#include <labels/RegressionLabels.h>
+#include <features/SparseFeatures.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;

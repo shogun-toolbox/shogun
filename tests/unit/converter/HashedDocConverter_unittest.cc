@@ -1,11 +1,11 @@
-#include <shogun/converter/HashedDocConverter.h>
-#include <shogun/features/HashedDocDotFeatures.h>
-#include <shogun/lib/SGVector.h>
-#include <shogun/lib/SGStringList.h>
-#include <shogun/lib/SGSparseVector.h>
-#include <shogun/lib/Hash.h>
-#include <shogun/lib/DelimiterTokenizer.h>
-#include <shogun/lib/NGramTokenizer.h>
+#include <converter/HashedDocConverter.h>
+#include <features/HashedDocDotFeatures.h>
+#include <lib/SGVector.h>
+#include <lib/SGStringList.h>
+#include <lib/SGSparseVector.h>
+#include <lib/Hash.h>
+#include <lib/DelimiterTokenizer.h>
+#include <lib/NGramTokenizer.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;

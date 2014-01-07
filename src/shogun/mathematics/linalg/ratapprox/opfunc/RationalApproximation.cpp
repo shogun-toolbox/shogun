@@ -8,16 +8,16 @@
  * Written (W) 2013 Heiko Strathmann
  */
 
-#include <shogun/lib/config.h>
-#include <shogun/lib/SGVector.h>
-#include <shogun/base/Parameter.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/mathematics/JacobiEllipticFunctions.h>
-#include <shogun/mathematics/linalg/linop/LinearOperator.h>
-#include <shogun/mathematics/linalg/linsolver/LinearSolver.h>
-#include <shogun/mathematics/linalg/eigsolver/EigenSolver.h>
-#include <shogun/mathematics/linalg/ratapprox/opfunc/RationalApproximation.h>
-#include <shogun/lib/computation/engine/IndependentComputationEngine.h>
+#include <lib/config.h>
+#include <lib/SGVector.h>
+#include <base/Parameter.h>
+#include <mathematics/Math.h>
+#include <mathematics/JacobiEllipticFunctions.h>
+#include <mathematics/linalg/linop/LinearOperator.h>
+#include <mathematics/linalg/linsolver/LinearSolver.h>
+#include <mathematics/linalg/eigsolver/EigenSolver.h>
+#include <mathematics/linalg/ratapprox/opfunc/RationalApproximation.h>
+#include <lib/computation/engine/IndependentComputationEngine.h>
 
 namespace shogun
 {

@@ -8,16 +8,16 @@
  * Copyright (c) 2007-2009 The LIBLINEAR Project.
  * Copyright (C) 2007-2010 Fraunhofer Institute FIRST and Max-Planck-Society
  */
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
-#include <shogun/io/SGIO.h>
-#include <shogun/lib/Signal.h>
-#include <shogun/lib/Time.h>
-#include <shogun/base/Parameter.h>
-#include <shogun/classifier/svm/LibLinear.h>
-#include <shogun/optimization/liblinear/tron.h>
-#include <shogun/features/DotFeatures.h>
-#include <shogun/labels/BinaryLabels.h>
+#include <io/SGIO.h>
+#include <lib/Signal.h>
+#include <lib/Time.h>
+#include <base/Parameter.h>
+#include <classifier/svm/LibLinear.h>
+#include <optimization/liblinear/tron.h>
+#include <features/DotFeatures.h>
+#include <labels/BinaryLabels.h>
 
 using namespace shogun;
 

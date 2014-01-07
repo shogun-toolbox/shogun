@@ -10,9 +10,9 @@
 #ifndef __MMDKERNELSELECTIONCOMBMAXL2_H_
 #define __MMDKERNELSELECTIONCOMBMAXL2_H_
 
-#include <shogun/lib/config.h>
-#include <shogun/statistics/MMDKernelSelection.h>
-#include <shogun/statistics/MMDKernelSelectionComb.h>
+#include <lib/config.h>
+#include <statistics/MMDKernelSelection.h>
+#include <statistics/MMDKernelSelectionComb.h>
 
 namespace shogun
 {

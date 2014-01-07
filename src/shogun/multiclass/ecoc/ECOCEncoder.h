@@ -11,9 +11,9 @@
 #ifndef ECOCENCODER_H__
 #define ECOCENCODER_H__
 
-#include <shogun/base/Parameter.h>
-#include <shogun/base/SGObject.h>
-#include <shogun/lib/DataType.h>
+#include <base/Parameter.h>
+#include <base/SGObject.h>
+#include <lib/DataType.h>
 
 namespace shogun
 {

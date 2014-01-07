@@ -10,13 +10,13 @@
 
 #ifndef KERNELPCA_H__
 #define KERNELPCA_H__
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 #ifdef HAVE_LAPACK
 
-#include <shogun/preprocessor/DimensionReductionPreprocessor.h>
-#include <shogun/features/Features.h>
-#include <shogun/kernel/Kernel.h>
-#include <shogun/lib/common.h>
+#include <preprocessor/DimensionReductionPreprocessor.h>
+#include <features/Features.h>
+#include <kernel/Kernel.h>
+#include <lib/common.h>
 
 namespace shogun
 {

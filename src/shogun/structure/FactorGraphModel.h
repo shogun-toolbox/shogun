@@ -11,11 +11,11 @@
 #ifndef __FACTOR_GRAPH_MODEL_H__
 #define __FACTOR_GRAPH_MODEL_H__
 
-#include <shogun/lib/SGString.h>
-#include <shogun/lib/DynamicObjectArray.h>
-#include <shogun/structure/StructuredModel.h>
-#include <shogun/structure/FactorType.h>
-#include <shogun/structure/MAPInference.h>
+#include <lib/SGString.h>
+#include <lib/DynamicObjectArray.h>
+#include <structure/StructuredModel.h>
+#include <structure/FactorType.h>
+#include <structure/MAPInference.h>
 
 namespace shogun
 {

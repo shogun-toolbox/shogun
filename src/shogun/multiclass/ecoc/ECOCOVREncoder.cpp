@@ -8,7 +8,7 @@
  * Copyright (C) 2012 Chiyuan Zhang
  */
 
-#include <shogun/multiclass/ecoc/ECOCOVREncoder.h>
+#include <multiclass/ecoc/ECOCOVREncoder.h>
 
 using namespace shogun;
 

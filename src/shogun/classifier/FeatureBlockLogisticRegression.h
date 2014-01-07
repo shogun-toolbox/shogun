@@ -10,9 +10,9 @@
 #ifndef  FEATUREBLOCKLOGISTICREGRESSION_H_
 #define  FEATUREBLOCKLOGISTICREGRESSION_H_
 
-#include <shogun/lib/config.h>
-#include <shogun/lib/IndexBlockRelation.h>
-#include <shogun/machine/LinearMachine.h>
+#include <lib/config.h>
+#include <lib/IndexBlockRelation.h>
+#include <machine/LinearMachine.h>
 
 namespace shogun
 {

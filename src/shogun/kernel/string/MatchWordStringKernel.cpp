@@ -8,12 +8,12 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/lib/common.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/kernel/string/MatchWordStringKernel.h>
-#include <shogun/kernel/normalizer/AvgDiagKernelNormalizer.h>
-#include <shogun/features/StringFeatures.h>
+#include <lib/common.h>
+#include <mathematics/Math.h>
+#include <io/SGIO.h>
+#include <kernel/string/MatchWordStringKernel.h>
+#include <kernel/normalizer/AvgDiagKernelNormalizer.h>
+#include <features/StringFeatures.h>
 
 using namespace shogun;
 

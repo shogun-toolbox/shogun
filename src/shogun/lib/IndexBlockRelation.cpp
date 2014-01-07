@@ -7,9 +7,9 @@
  * Copyright (C) 2012 Sergey Lisitsyn
  */
 
-#include <shogun/lib/IndexBlockRelation.h>
-#include <shogun/lib/IndexBlock.h>
-#include <shogun/lib/SGVector.h>
+#include <lib/IndexBlockRelation.h>
+#include <lib/IndexBlock.h>
+#include <lib/SGVector.h>
 
 using namespace shogun;
 

@@ -11,8 +11,8 @@
 #include <algorithm>
 #include <limits>
 
-#include <shogun/multiclass/ecoc/ECOCRandomDenseEncoder.h>
-#include <shogun/multiclass/ecoc/ECOCUtil.h>
+#include <multiclass/ecoc/ECOCRandomDenseEncoder.h>
+#include <multiclass/ecoc/ECOCUtil.h>
 
 using namespace shogun;
 

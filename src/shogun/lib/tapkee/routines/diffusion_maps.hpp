@@ -7,8 +7,8 @@
 #define TAPKEE_DiffusionMapS_H_
 
 /* Tapkee includes */
-#include <shogun/lib/tapkee/defines.hpp>
-#include <shogun/lib/tapkee/utils/time.hpp>
+#include <lib/tapkee/defines.hpp>
+#include <lib/tapkee/utils/time.hpp>
 /* End of Tapke includes */
 
 namespace tapkee

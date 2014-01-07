@@ -21,11 +21,11 @@
    Shogun adjustments (w) 2008 Soeren Sonnenburg
 */
 
-#include <shogun/lib/common.h>
-#include <shogun/labels/Labels.h>
-#include <shogun/machine/OnlineLinearMachine.h>
-#include <shogun/features/streaming/StreamingDotFeatures.h>
-#include <shogun/loss/LossFunction.h>
+#include <lib/common.h>
+#include <labels/Labels.h>
+#include <machine/OnlineLinearMachine.h>
+#include <features/streaming/StreamingDotFeatures.h>
+#include <loss/LossFunction.h>
 
 namespace shogun
 {

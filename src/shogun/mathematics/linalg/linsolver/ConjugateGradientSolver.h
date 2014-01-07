@@ -10,10 +10,10 @@
 #ifndef CONJUGATE_GRADIENT_SOLVER_H_
 #define CONJUGATE_GRADIENT_SOLVER_H_
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
 #ifdef HAVE_EIGEN3
-#include <shogun/mathematics/linalg/linsolver/IterativeLinearSolver.h>
+#include <mathematics/linalg/linsolver/IterativeLinearSolver.h>
 
 namespace shogun
 {

@@ -8,12 +8,12 @@
  * Copyright (C) 2012 Sergey Lisitsyn
  */
 
-#include <shogun/modelselection/RandomSearchModelSelection.h>
-#include <shogun/modelselection/ParameterCombination.h>
-#include <shogun/modelselection/ModelSelectionParameters.h>
-#include <shogun/evaluation/CrossValidation.h>
-#include <shogun/mathematics/Statistics.h>
-#include <shogun/machine/Machine.h>
+#include <modelselection/RandomSearchModelSelection.h>
+#include <modelselection/ParameterCombination.h>
+#include <modelselection/ModelSelectionParameters.h>
+#include <evaluation/CrossValidation.h>
+#include <mathematics/Statistics.h>
+#include <machine/Machine.h>
 
 using namespace shogun;
 

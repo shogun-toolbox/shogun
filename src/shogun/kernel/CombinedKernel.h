@@ -12,13 +12,13 @@
 #ifndef _COMBINEDKERNEL_H___
 #define _COMBINEDKERNEL_H___
 
-#include <shogun/lib/List.h>
-#include <shogun/lib/DynamicObjectArray.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/kernel/Kernel.h>
+#include <lib/List.h>
+#include <lib/DynamicObjectArray.h>
+#include <io/SGIO.h>
+#include <kernel/Kernel.h>
 
-#include <shogun/features/Features.h>
-#include <shogun/features/CombinedFeatures.h>
+#include <features/Features.h>
+#include <features/CombinedFeatures.h>
 
 namespace shogun
 {

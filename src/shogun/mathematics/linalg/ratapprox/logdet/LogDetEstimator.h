@@ -10,9 +10,9 @@
 #ifndef LOG_DET_ESTIMATOR_H_
 #define LOG_DET_ESTIMATOR_H_
 
-#include <shogun/lib/config.h>
-#include <shogun/base/SGObject.h>
-#include <shogun/base/Parameter.h>
+#include <lib/config.h>
+#include <base/SGObject.h>
+#include <base/Parameter.h>
 
 namespace shogun
 {

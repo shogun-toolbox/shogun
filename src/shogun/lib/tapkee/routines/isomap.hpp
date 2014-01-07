@@ -7,10 +7,10 @@
 #define TAPKEE_Isomap_H_
 
 /* Tapkee includes */
-#include <shogun/lib/tapkee/defines.hpp>
-#include <shogun/lib/tapkee/utils/fibonacci_heap.hpp>
-#include <shogun/lib/tapkee/utils/reservable_priority_queue.hpp>
-#include <shogun/lib/tapkee/utils/time.hpp>
+#include <lib/tapkee/defines.hpp>
+#include <lib/tapkee/utils/fibonacci_heap.hpp>
+#include <lib/tapkee/utils/reservable_priority_queue.hpp>
+#include <lib/tapkee/utils/time.hpp>
 /* End of Tapkee includes */
 
 #include <limits>

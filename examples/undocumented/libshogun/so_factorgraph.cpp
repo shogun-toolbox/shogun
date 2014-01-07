@@ -1,15 +1,15 @@
-#include <shogun/io/SGIO.h>
-#include <shogun/base/init.h>
+#include <io/SGIO.h>
+#include <base/init.h>
 
-#include <shogun/lib/SGVector.h>
-#include <shogun/lib/SGString.h>
-#include <shogun/lib/SGSparseVector.h>
-#include <shogun/lib/DynamicObjectArray.h>
-#include <shogun/structure/FactorGraph.h>
-#include <shogun/structure/FactorType.h>
-#include <shogun/structure/Factor.h>
-#include <shogun/labels/FactorGraphLabels.h>
-#include <shogun/structure/MAPInference.h>
+#include <lib/SGVector.h>
+#include <lib/SGString.h>
+#include <lib/SGSparseVector.h>
+#include <lib/DynamicObjectArray.h>
+#include <structure/FactorGraph.h>
+#include <structure/FactorType.h>
+#include <structure/Factor.h>
+#include <labels/FactorGraphLabels.h>
+#include <structure/MAPInference.h>
 
 using namespace shogun;
 

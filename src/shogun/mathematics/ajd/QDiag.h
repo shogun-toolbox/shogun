@@ -12,12 +12,12 @@
 #ifndef QDIAG_H_
 #define QDIAG_H_
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
 #ifdef HAVE_EIGEN3
 
-#include <shogun/mathematics/ajd/ApproxJointDiagonalizer.h>
-#include <shogun/mathematics/Math.h>
+#include <mathematics/ajd/ApproxJointDiagonalizer.h>
+#include <mathematics/Math.h>
 
 namespace shogun
 {

@@ -1,6 +1,6 @@
-#include <shogun/lib/SGMatrix.h>
-#include <shogun/lib/SGVector.h>
-#include <shogun/mathematics/Math.h>
+#include <lib/SGMatrix.h>
+#include <lib/SGVector.h>
+#include <mathematics/Math.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;

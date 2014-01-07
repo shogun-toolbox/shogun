@@ -1,7 +1,7 @@
-#include <shogun/structure/HMSVMModel.h>
-#include <shogun/structure/DualLibQPBMSOSVM.h>
-#include <shogun/structure/StateModelTypes.h>
-#include <shogun/features/MatrixFeatures.h>
+#include <structure/HMSVMModel.h>
+#include <structure/DualLibQPBMSOSVM.h>
+#include <structure/StateModelTypes.h>
+#include <features/MatrixFeatures.h>
 
 
 using namespace shogun;

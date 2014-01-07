@@ -8,10 +8,10 @@
  * Copyright (C) 2012 Sergey Lisitsyn
  */
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 #ifdef HAVE_LAPACK
-#include <shogun/transfer/domain_adaptation/DomainAdaptationMulticlassLibLinear.h>
-#include <shogun/labels/MulticlassLabels.h>
+#include <transfer/domain_adaptation/DomainAdaptationMulticlassLibLinear.h>
+#include <labels/MulticlassLabels.h>
 
 using namespace shogun;
 

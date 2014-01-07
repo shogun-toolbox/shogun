@@ -10,10 +10,10 @@
 #ifndef ICACONVERTER_H_
 #define ICACONVERTER_H_
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 #ifdef HAVE_EIGEN3
-#include <shogun/converter/Converter.h>
-#include <shogun/features/Features.h>
+#include <converter/Converter.h>
+#include <features/Features.h>
 
 namespace shogun
 {

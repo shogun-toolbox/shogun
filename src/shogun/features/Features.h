@@ -13,15 +13,15 @@
 #ifndef _CFEATURES__H__
 #define _CFEATURES__H__
 
-#include <shogun/lib/common.h>
-#include <shogun/io/File.h>
-#include <shogun/base/SGObject.h>
-#include <shogun/preprocessor/Preprocessor.h>
-#include <shogun/features/FeatureTypes.h>
-#include <shogun/features/SubsetStack.h>
-#include <shogun/lib/List.h>
-#include <shogun/lib/DynamicObjectArray.h>
-#include <shogun/lib/DynamicArray.h>
+#include <lib/common.h>
+#include <io/File.h>
+#include <base/SGObject.h>
+#include <preprocessor/Preprocessor.h>
+#include <features/FeatureTypes.h>
+#include <features/SubsetStack.h>
+#include <lib/List.h>
+#include <lib/DynamicObjectArray.h>
+#include <lib/DynamicArray.h>
 
 namespace shogun
 {

@@ -7,14 +7,14 @@
  * Written (W) 2013 Roman Votyakov
  */
 
-#include <shogun/machine/gp/LogitLikelihood.h>
+#include <machine/gp/LogitLikelihood.h>
 
 #ifdef HAVE_EIGEN3
 
-#include <shogun/mathematics/Function.h>
-#include <shogun/mathematics/Integration.h>
-#include <shogun/labels/BinaryLabels.h>
-#include <shogun/mathematics/eigen3.h>
+#include <mathematics/Function.h>
+#include <mathematics/Integration.h>
+#include <labels/BinaryLabels.h>
+#include <mathematics/eigen3.h>
 
 using namespace shogun;
 using namespace Eigen;

@@ -7,12 +7,12 @@
  * Written (W) 2013 Saurabh Mahindre
  */
 
-#include <shogun/base/init.h>
-#include <shogun/evaluation/CrossValidationSplitting.h>
-#include <shogun/labels/RegressionLabels.h>
-#include <shogun/evaluation/StratifiedCrossValidationSplitting.h>
-#include <shogun/labels/MulticlassLabels.h>
-#include <shogun/evaluation/LOOCrossValidationSplitting.h>
+#include <base/init.h>
+#include <evaluation/CrossValidationSplitting.h>
+#include <labels/RegressionLabels.h>
+#include <evaluation/StratifiedCrossValidationSplitting.h>
+#include <labels/MulticlassLabels.h>
+#include <evaluation/LOOCrossValidationSplitting.h>
 #include <gtest/gtest.h>
 
 

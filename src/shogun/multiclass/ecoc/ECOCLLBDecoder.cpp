@@ -1,4 +1,4 @@
-#include <shogun/multiclass/ecoc/ECOCLLBDecoder.h>
+#include <multiclass/ecoc/ECOCLLBDecoder.h>
 
 using namespace shogun;
 

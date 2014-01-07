@@ -10,8 +10,8 @@
 #ifndef INDEXBLOCKTREE_H_
 #define INDEXBLOCKTREE_H_
 
-#include <shogun/lib/IndexBlock.h>
-#include <shogun/lib/IndexBlockRelation.h>
+#include <lib/IndexBlock.h>
+#include <lib/IndexBlockRelation.h>
 
 namespace shogun
 {

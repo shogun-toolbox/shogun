@@ -7,13 +7,13 @@
  * Written (W) 2013 Roman Votyakov
  */
 
-#include <shogun/machine/gp/ProbitLikelihood.h>
+#include <machine/gp/ProbitLikelihood.h>
 
 #ifdef HAVE_EIGEN3
 
-#include <shogun/labels/BinaryLabels.h>
-#include <shogun/mathematics/eigen3.h>
-#include <shogun/mathematics/Statistics.h>
+#include <labels/BinaryLabels.h>
+#include <mathematics/eigen3.h>
+#include <mathematics/Statistics.h>
 
 using namespace shogun;
 using namespace Eigen;

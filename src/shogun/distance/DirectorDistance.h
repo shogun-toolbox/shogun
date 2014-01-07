@@ -11,9 +11,9 @@
 #define _DIRECTORDISTANCE_H___
 
 #ifdef USE_SWIG_DIRECTORS
-#include <shogun/lib/common.h>
-#include <shogun/lib/DataType.h>
-#include <shogun/distance/Distance.h>
+#include <lib/common.h>
+#include <lib/DataType.h>
+#include <distance/Distance.h>
 
 namespace shogun
 {

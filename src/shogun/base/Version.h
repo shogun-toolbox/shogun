@@ -8,12 +8,12 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max Planck Society
  */
 
-#include <shogun/base/init.h>
+#include <base/init.h>
 
-#include <shogun/lib/common.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/lib/config.h>
-#include <shogun/lib/RefCount.h>
+#include <lib/common.h>
+#include <io/SGIO.h>
+#include <lib/config.h>
+#include <lib/RefCount.h>
 
 #ifndef VERSION_H__
 #define VERSION_H__

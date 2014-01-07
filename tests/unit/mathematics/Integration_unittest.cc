@@ -7,14 +7,14 @@
  * Written (W) 2013 Roman Votyakov
  */
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
 #ifdef HAVE_EIGEN3
 
-#include <shogun/mathematics/Math.h>
-#include <shogun/mathematics/Statistics.h>
-#include <shogun/mathematics/Function.h>
-#include <shogun/mathematics/Integration.h>
+#include <mathematics/Math.h>
+#include <mathematics/Statistics.h>
+#include <mathematics/Function.h>
+#include <mathematics/Integration.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;

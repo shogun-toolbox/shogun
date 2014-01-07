@@ -13,11 +13,11 @@
 #ifndef _REAL_LABELS__H__
 #define _REAL_LABELS__H__
 
-#include <shogun/lib/common.h>
-#include <shogun/io/File.h>
-#include <shogun/labels/LabelTypes.h>
-#include <shogun/labels/DenseLabels.h>
-#include <shogun/features/SubsetStack.h>
+#include <lib/common.h>
+#include <io/File.h>
+#include <labels/LabelTypes.h>
+#include <labels/DenseLabels.h>
+#include <features/SubsetStack.h>
 
 namespace shogun
 {

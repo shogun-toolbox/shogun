@@ -7,9 +7,9 @@
  * Written (W) 2013 Soumyajit De
  */
 
-#include <shogun/lib/common.h>
-#include <shogun/lib/computation/job/IndependentJob.h>
-#include <shogun/lib/computation/engine/SerialComputationEngine.h>
+#include <lib/common.h>
+#include <lib/computation/job/IndependentJob.h>
+#include <lib/computation/engine/SerialComputationEngine.h>
 
 namespace shogun
 {

@@ -8,9 +8,9 @@
  * Copyright (C) 2013 Evangelos Anagnostopoulos
  */
 
-#include <shogun/features/streaming/StreamingHashedSparseFeatures.h>
-#include <shogun/features/HashedSparseFeatures.h>
-#include <shogun/io/streaming/StreamingFileFromSparseFeatures.h>
+#include <features/streaming/StreamingHashedSparseFeatures.h>
+#include <features/HashedSparseFeatures.h>
+#include <io/streaming/StreamingFileFromSparseFeatures.h>
 
 namespace shogun
 {

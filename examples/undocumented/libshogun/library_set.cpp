@@ -1,7 +1,7 @@
-#include <shogun/lib/Set.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/base/init.h>
-#include <shogun/lib/common.h>
+#include <lib/Set.h>
+#include <io/SGIO.h>
+#include <base/init.h>
+#include <lib/common.h>
 
 using namespace shogun;
 

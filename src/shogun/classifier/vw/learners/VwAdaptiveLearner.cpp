@@ -13,7 +13,7 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society.
  */
 
-#include <shogun/classifier/vw/learners/VwAdaptiveLearner.h>
+#include <classifier/vw/learners/VwAdaptiveLearner.h>
 
 using namespace shogun;
 

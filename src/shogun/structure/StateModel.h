@@ -11,12 +11,12 @@
 #ifndef __STATE_MODEL_H__
 #define __STATE_MODEL_H__
 
-#include <shogun/base/SGObject.h>
-#include <shogun/lib/SGMatrix.h>
-#include <shogun/lib/SGVector.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/structure/SequenceLabels.h>
-#include <shogun/structure/StateModelTypes.h>
+#include <base/SGObject.h>
+#include <lib/SGMatrix.h>
+#include <lib/SGVector.h>
+#include <mathematics/Math.h>
+#include <structure/SequenceLabels.h>
+#include <structure/StateModelTypes.h>
 
 namespace shogun
 {

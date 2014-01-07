@@ -7,15 +7,15 @@
  * Written (W) 2013 Kevin Hughes
  */
 
-#include <shogun/converter/ica/UWedgeSep.h>
+#include <converter/ica/UWedgeSep.h>
 
-#include <shogun/features/DenseFeatures.h>
+#include <features/DenseFeatures.h>
 
 #ifdef HAVE_EIGEN3
 
-#include <shogun/mathematics/Math.h>
-#include <shogun/mathematics/eigen3.h>
-#include <shogun/mathematics/ajd/UWedge.h>
+#include <mathematics/Math.h>
+#include <mathematics/eigen3.h>
+#include <mathematics/ajd/UWedge.h>
 
 using namespace shogun;
 using namespace Eigen;

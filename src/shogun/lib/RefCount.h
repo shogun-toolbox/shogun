@@ -2,8 +2,8 @@
 #include <atomic>
 #endif
 
-#include <shogun/lib/common.h>
-#include <shogun/lib/Lock.h>
+#include <lib/common.h>
+#include <lib/Lock.h>
 
 #ifndef _REFCOUNT__H__
 #define _REFCOUNT__H__

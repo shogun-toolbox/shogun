@@ -11,8 +11,8 @@
 #ifndef __LATENTSOSVM_H__
 #define __LATENTSOSVM_H__
 
-#include <shogun/machine/LinearLatentMachine.h>
-#include <shogun/machine/LinearStructuredOutputMachine.h>
+#include <machine/LinearLatentMachine.h>
+#include <machine/LinearStructuredOutputMachine.h>
 
 namespace shogun
 {

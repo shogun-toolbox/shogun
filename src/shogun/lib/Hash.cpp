@@ -28,8 +28,8 @@
  * will fill a supplied 16-byte array with the digest.
  */
 
-#include <shogun/lib/common.h>
-#include <shogun/lib/Hash.h>
+#include <lib/common.h>
+#include <lib/Hash.h>
 #include <ctype.h>
 
 using namespace shogun;

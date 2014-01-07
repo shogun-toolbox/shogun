@@ -7,10 +7,10 @@
  * Written (W) 2013 Fernando J. Iglesias Garcia
  */
 
-#include <shogun/distance/EuclideanDistance.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/lib/SGMatrix.h>
-#include <shogun/base/init.h>
+#include <distance/EuclideanDistance.h>
+#include <features/DenseFeatures.h>
+#include <lib/SGMatrix.h>
+#include <base/init.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;

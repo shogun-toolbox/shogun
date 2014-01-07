@@ -8,10 +8,10 @@
  * Copyright (C) 2011-2013 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include <shogun/converter/KernelLocallyLinearEmbedding.h>
+#include <converter/KernelLocallyLinearEmbedding.h>
 #ifdef HAVE_EIGEN3
-#include <shogun/io/SGIO.h>
-#include <shogun/lib/tapkee/tapkee_shogun.hpp>
+#include <io/SGIO.h>
+#include <lib/tapkee/tapkee_shogun.hpp>
 
 #ifdef HAVE_PTHREAD
 #include <pthread.h>

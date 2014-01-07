@@ -8,9 +8,9 @@
  * Copyright (C) 2012 Chiyuan Zhang
  */
 
-#include <shogun/evaluation/CrossValidationSplitting.h>
-#include <shogun/multiclass/tree/RelaxedTreeUtil.h>
-#include <shogun/evaluation/MulticlassAccuracy.h>
+#include <evaluation/CrossValidationSplitting.h>
+#include <multiclass/tree/RelaxedTreeUtil.h>
+#include <evaluation/MulticlassAccuracy.h>
 
 using namespace shogun;
 

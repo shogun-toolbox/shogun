@@ -1,6 +1,6 @@
-#include <shogun/metric/LMNN.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/labels/MulticlassLabels.h>
+#include <metric/LMNN.h>
+#include <features/DenseFeatures.h>
+#include <labels/MulticlassLabels.h>
 
 using namespace shogun;
 

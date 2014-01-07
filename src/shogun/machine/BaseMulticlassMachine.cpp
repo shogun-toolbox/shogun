@@ -8,7 +8,7 @@
  * Copyright (C) 2012 Chiyuan Zhang
  */
 
-#include <shogun/machine/BaseMulticlassMachine.h>
+#include <machine/BaseMulticlassMachine.h>
 
 using namespace shogun;
 

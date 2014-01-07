@@ -11,9 +11,9 @@
 #ifndef BESSELKERNEL_H_
 #define BESSELKERNEL_H_
 
-#include <shogun/lib/common.h>
-#include <shogun/kernel/Kernel.h>
-#include <shogun/kernel/DistanceKernel.h>
+#include <lib/common.h>
+#include <kernel/Kernel.h>
+#include <kernel/DistanceKernel.h>
 
 namespace shogun
 {

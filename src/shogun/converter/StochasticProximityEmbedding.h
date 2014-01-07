@@ -10,11 +10,11 @@
 
 #ifndef STOCHASTICPROXIMITYEMBEDDING_H_
 #define STOCHASTICPROXIMITYEMBEDDING_H_
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 #ifdef HAVE_EIGEN3
-#include <shogun/converter/EmbeddingConverter.h>
-#include <shogun/features/Features.h>
-#include <shogun/distance/Distance.h>
+#include <converter/EmbeddingConverter.h>
+#include <features/Features.h>
+#include <distance/Distance.h>
 
 namespace shogun
 {

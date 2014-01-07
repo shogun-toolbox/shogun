@@ -7,11 +7,11 @@
  * Written (W) 2011 Soeren Sonnenburg
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
-#include <shogun/distributions/PositionalPWM.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/base/Parameter.h>
-#include <shogun/features/Alphabet.h>
-#include <shogun/features/StringFeatures.h>
+#include <distributions/PositionalPWM.h>
+#include <mathematics/Math.h>
+#include <base/Parameter.h>
+#include <features/Alphabet.h>
+#include <features/StringFeatures.h>
 
 using namespace shogun;
 

@@ -13,9 +13,9 @@
 //#define DEBUG_MOSEK
 //#define DEBUG_SOLUTION
 
-#include <shogun/mathematics/Math.h>
-#include <shogun/mathematics/Mosek.h>
-#include <shogun/lib/SGVector.h>
+#include <mathematics/Math.h>
+#include <mathematics/Mosek.h>
+#include <lib/SGVector.h>
 
 using namespace shogun;
 

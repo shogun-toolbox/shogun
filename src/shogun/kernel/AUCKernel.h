@@ -12,10 +12,10 @@
 #ifndef _AUCKERNEL_H___
 #define _AUCKERNEL_H___
 
-#include <shogun/lib/common.h>
-#include <shogun/kernel/DotKernel.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/labels/Labels.h>
+#include <lib/common.h>
+#include <kernel/DotKernel.h>
+#include <features/DenseFeatures.h>
+#include <labels/Labels.h>
 
 namespace shogun
 {

@@ -49,14 +49,14 @@
 #include <vector>
 #include <algorithm>
 
-#include <shogun/io/SGIO.h>
-#include <shogun/lib/Signal.h>
-#include <shogun/lib/Time.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/multiclass/LaRank.h>
-#include <shogun/multiclass/MulticlassOneVsRestStrategy.h>
-#include <shogun/kernel/Kernel.h>
-#include <shogun/labels/MulticlassLabels.h>
+#include <io/SGIO.h>
+#include <lib/Signal.h>
+#include <lib/Time.h>
+#include <mathematics/Math.h>
+#include <multiclass/LaRank.h>
+#include <multiclass/MulticlassOneVsRestStrategy.h>
+#include <kernel/Kernel.h>
+#include <labels/MulticlassLabels.h>
 
 using namespace shogun;
 

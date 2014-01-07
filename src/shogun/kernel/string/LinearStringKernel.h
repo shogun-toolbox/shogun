@@ -11,8 +11,8 @@
 #ifndef _LINEARSTRINGKERNEL_H___
 #define _LINEARSTRINGKERNEL_H___
 
-#include <shogun/lib/common.h>
-#include <shogun/kernel/string/StringKernel.h>
+#include <lib/common.h>
+#include <kernel/string/StringKernel.h>
 
 namespace shogun
 {

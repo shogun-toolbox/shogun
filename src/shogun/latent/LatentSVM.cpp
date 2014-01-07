@@ -10,8 +10,8 @@
 
 #include <typeinfo>
 
-#include <shogun/classifier/svm/SVMOcas.h>
-#include <shogun/latent/LatentSVM.h>
+#include <classifier/svm/SVMOcas.h>
+#include <latent/LatentSVM.h>
 
 using namespace shogun;
 

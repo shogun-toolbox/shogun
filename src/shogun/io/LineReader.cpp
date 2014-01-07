@@ -7,7 +7,7 @@
  * Written (W) 2013 Evgeniy Andreev (gsomix)
  */
 
-#include <shogun/io/LineReader.h>
+#include <io/LineReader.h>
 #include <cstdio>
 
 using namespace shogun;

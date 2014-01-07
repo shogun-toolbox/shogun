@@ -13,11 +13,11 @@
 #ifndef _MULTICLASSMACHINE_H___
 #define _MULTICLASSMACHINE_H___
 
-#include <shogun/machine/BaseMulticlassMachine.h>
-#include <shogun/lib/DynamicObjectArray.h>
-#include <shogun/multiclass/MulticlassStrategy.h>
-#include <shogun/labels/MulticlassLabels.h>
-#include <shogun/labels/MulticlassMultipleOutputLabels.h>
+#include <machine/BaseMulticlassMachine.h>
+#include <lib/DynamicObjectArray.h>
+#include <multiclass/MulticlassStrategy.h>
+#include <labels/MulticlassLabels.h>
+#include <labels/MulticlassMultipleOutputLabels.h>
 
 namespace shogun
 {

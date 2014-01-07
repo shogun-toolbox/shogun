@@ -11,9 +11,9 @@
 #ifndef GAUSSIANNAIVEBAYES_H_
 #define GAUSSIANNAIVEBAYES_H_
 
-#include <shogun/machine/NativeMulticlassMachine.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/features/DotFeatures.h>
+#include <machine/NativeMulticlassMachine.h>
+#include <mathematics/Math.h>
+#include <features/DotFeatures.h>
 
 namespace shogun {
 

@@ -8,7 +8,7 @@
  * Copyright (C) 2012 Viktor Gal
  */
 
-#include <shogun/features/LatentFeatures.h>
+#include <features/LatentFeatures.h>
 
 using namespace shogun;
 

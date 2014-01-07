@@ -7,9 +7,9 @@
  * Written (W) 2013 Soumyajit De
  */
 
-#include <shogun/lib/config.h>
-#include <shogun/lib/computation/jobresult/ScalarResult.h>
-#include <shogun/lib/computation/aggregator/StoreScalarAggregator.h>
+#include <lib/config.h>
+#include <lib/computation/jobresult/ScalarResult.h>
+#include <lib/computation/aggregator/StoreScalarAggregator.h>
 
 namespace shogun
 {

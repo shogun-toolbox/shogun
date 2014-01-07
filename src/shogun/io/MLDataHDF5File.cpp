@@ -7,7 +7,7 @@
  * Copyright (C) 2013 Zhengyang Liu (zhengyangl)
  */
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
 #if defined(HAVE_HDF5) && defined( HAVE_CURL)
 
@@ -16,11 +16,11 @@
 #include <string.h>
 #include <hdf5.h>
 #include <curl/curl.h>
-#include <shogun/lib/memory.h>
-#include <shogun/io/MLDataHDF5File.h>
+#include <lib/memory.h>
+#include <io/MLDataHDF5File.h>
 
-#include <shogun/features/StringFeatures.h>
-#include <shogun/features/SparseFeatures.h>
+#include <features/StringFeatures.h>
+#include <features/SparseFeatures.h>
 
 using namespace shogun;
 

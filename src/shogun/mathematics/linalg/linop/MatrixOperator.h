@@ -10,8 +10,8 @@
 #ifndef MATRIX_OPERATOR_H_
 #define MATRIX_OPERATOR_H_
 
-#include <shogun/lib/config.h>
-#include <shogun/mathematics/linalg/linop/LinearOperator.h>
+#include <lib/config.h>
+#include <mathematics/linalg/linop/LinearOperator.h>
 
 namespace shogun
 {

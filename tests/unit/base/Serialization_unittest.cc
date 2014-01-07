@@ -7,13 +7,13 @@
  * Written (W) 2013 Heiko Strathmann
  */
 
-#include <shogun/base/init.h>
-#include <shogun/labels/BinaryLabels.h>
-#include <shogun/labels/MulticlassLabels.h>
-#include <shogun/io/SerializableAsciiFile.h>
-#include <shogun/classifier/svm/LibLinear.h>
-#include <shogun/features/DataGenerator.h>
-#include <shogun/features/DenseFeatures.h>
+#include <base/init.h>
+#include <labels/BinaryLabels.h>
+#include <labels/MulticlassLabels.h>
+#include <io/SerializableAsciiFile.h>
+#include <classifier/svm/LibLinear.h>
+#include <features/DataGenerator.h>
+#include <features/DenseFeatures.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;

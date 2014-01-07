@@ -8,14 +8,14 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
 #ifdef HAVE_EIGEN3
-#include <shogun/base/init.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/converter/KernelLocallyLinearEmbedding.h>
-#include <shogun/kernel/LinearKernel.h>
-#include <shogun/mathematics/Math.h>
+#include <base/init.h>
+#include <features/DenseFeatures.h>
+#include <converter/KernelLocallyLinearEmbedding.h>
+#include <kernel/LinearKernel.h>
+#include <mathematics/Math.h>
 
 using namespace shogun;
 

@@ -8,9 +8,9 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include <shogun/base/init.h>
-#include <shogun/labels/MulticlassLabels.h>
-#include <shogun/mathematics/Math.h>
+#include <base/init.h>
+#include <labels/MulticlassLabels.h>
+#include <mathematics/Math.h>
 
 using namespace shogun;
 

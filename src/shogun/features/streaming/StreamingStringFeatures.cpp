@@ -1,4 +1,4 @@
-#include <shogun/features/streaming/StreamingStringFeatures.h>
+#include <features/streaming/StreamingStringFeatures.h>
 
 namespace shogun
 {

@@ -1,6 +1,6 @@
-#include <shogun/io/LibSVMFile.h>
-#include <shogun/lib/SGSparseVector.h>
-#include <shogun/mathematics/Random.h>
+#include <io/LibSVMFile.h>
+#include <lib/SGSparseVector.h>
+#include <mathematics/Random.h>
 
 #include <cstdio>
 #include <cstring>

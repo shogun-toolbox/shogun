@@ -10,8 +10,8 @@
 #ifndef __MKLCLASSIFICATION_H__
 #define __MKLCLASSIFICATION_H__
 
-#include <shogun/lib/common.h>
-#include <shogun/classifier/mkl/MKL.h>
+#include <lib/common.h>
+#include <classifier/mkl/MKL.h>
 
 namespace shogun
 {

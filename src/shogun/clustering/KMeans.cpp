@@ -9,12 +9,12 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/clustering/KMeans.h>
-#include <shogun/distance/Distance.h>
-#include <shogun/labels/Labels.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/base/Parallel.h>
+#include <clustering/KMeans.h>
+#include <distance/Distance.h>
+#include <labels/Labels.h>
+#include <features/DenseFeatures.h>
+#include <mathematics/Math.h>
+#include <base/Parallel.h>
 
 #ifdef HAVE_PTHREAD
 #include <pthread.h>

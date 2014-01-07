@@ -8,12 +8,12 @@
  * Copyright (C) 2009 Berlin Institute of Technology
  */
 
-#include <shogun/lib/common.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/kernel/string/SNPStringKernel.h>
-#include <shogun/kernel/normalizer/SqrtDiagKernelNormalizer.h>
-#include <shogun/features/Features.h>
-#include <shogun/features/StringFeatures.h>
+#include <lib/common.h>
+#include <io/SGIO.h>
+#include <kernel/string/SNPStringKernel.h>
+#include <kernel/normalizer/SqrtDiagKernelNormalizer.h>
+#include <features/Features.h>
+#include <features/StringFeatures.h>
 
 using namespace shogun;
 

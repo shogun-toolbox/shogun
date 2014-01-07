@@ -8,7 +8,7 @@
  * Copyright (C) 2012 Fernando José Iglesias García
  */
 
-#include <shogun/labels/StructuredLabels.h>
+#include <labels/StructuredLabels.h>
 
 using namespace shogun;
 

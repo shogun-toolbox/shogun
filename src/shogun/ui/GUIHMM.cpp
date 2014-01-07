@@ -9,15 +9,15 @@
  * Copyright (C) 1999-2008 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/ui/GUIHMM.h>
-#include <shogun/ui/SGInterface.h>
+#include <ui/GUIHMM.h>
+#include <ui/SGInterface.h>
 
-#include <shogun/lib/config.h>
-#include <shogun/lib/common.h>
-#include <shogun/features/StringFeatures.h>
-#include <shogun/labels/Labels.h>
-#include <shogun/labels/RegressionLabels.h>
-#include <shogun/mathematics/Statistics.h>
+#include <lib/config.h>
+#include <lib/common.h>
+#include <features/StringFeatures.h>
+#include <labels/Labels.h>
+#include <labels/RegressionLabels.h>
+#include <mathematics/Statistics.h>
 
 #include <unistd.h>
 

@@ -13,9 +13,9 @@
 
 #ifdef HAVE_EIGEN3
 
-#include <shogun/distance/RealDistance.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/lib/SGMatrix.h>
+#include <distance/RealDistance.h>
+#include <features/DenseFeatures.h>
+#include <lib/SGMatrix.h>
 
 namespace shogun
 {

@@ -8,7 +8,7 @@
  * Copyright (C) 2012 Fernando José Iglesias García
  */
 
-#include <shogun/structure/StateModel.h>
+#include <structure/StateModel.h>
 
 using namespace shogun;
 

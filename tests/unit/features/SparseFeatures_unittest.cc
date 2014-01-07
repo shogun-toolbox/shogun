@@ -1,6 +1,6 @@
-#include <shogun/io/SerializableAsciiFile.h>
-#include <shogun/lib/SGMatrix.h>
-#include <shogun/features/SparseFeatures.h>
+#include <io/SerializableAsciiFile.h>
+#include <lib/SGMatrix.h>
+#include <features/SparseFeatures.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;

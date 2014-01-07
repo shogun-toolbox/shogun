@@ -10,13 +10,13 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/labels/Labels.h>
-#include <shogun/labels/DenseLabels.h>
-#include <shogun/lib/common.h>
-#include <shogun/io/File.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/base/Parameter.h>
+#include <labels/Labels.h>
+#include <labels/DenseLabels.h>
+#include <lib/common.h>
+#include <io/File.h>
+#include <io/SGIO.h>
+#include <mathematics/Math.h>
+#include <base/Parameter.h>
 
 using namespace shogun;
 

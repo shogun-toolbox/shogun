@@ -8,9 +8,9 @@
  * Copyright (C) 2013 Evangelos Anagnostopoulos
  */
 
-#include <shogun/base/Parameter.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/features/RandomFourierDotFeatures.h>
+#include <base/Parameter.h>
+#include <mathematics/Math.h>
+#include <features/RandomFourierDotFeatures.h>
 
 namespace shogun {
 

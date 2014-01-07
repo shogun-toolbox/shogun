@@ -9,10 +9,10 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/features/FKFeatures.h>
-#include <shogun/features/StringFeatures.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/base/Parameter.h>
+#include <features/FKFeatures.h>
+#include <features/StringFeatures.h>
+#include <io/SGIO.h>
+#include <base/Parameter.h>
 
 using namespace shogun;
 

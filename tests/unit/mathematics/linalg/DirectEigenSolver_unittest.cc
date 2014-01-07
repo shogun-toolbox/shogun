@@ -7,11 +7,11 @@
  * Written (W) 2013 Soumyajit De
  */
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
 #ifdef HAVE_EIGEN3
-#include <shogun/mathematics/linalg/linop/DenseMatrixOperator.h>
-#include <shogun/mathematics/linalg/eigsolver/DirectEigenSolver.h>
+#include <mathematics/linalg/linop/DenseMatrixOperator.h>
+#include <mathematics/linalg/eigsolver/DirectEigenSolver.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;

@@ -11,14 +11,14 @@
  * Copyright (C) 2012 Soeren Sonnenburg
  */
 
-#include <shogun/lib/config.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/io/File.h>
-#include <shogun/lib/SGMatrix.h>
-#include <shogun/lib/SGVector.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/mathematics/lapack.h>
-#include <shogun/lib/SGMatrixList.h>
+#include <lib/config.h>
+#include <io/SGIO.h>
+#include <io/File.h>
+#include <lib/SGMatrix.h>
+#include <lib/SGVector.h>
+#include <mathematics/Math.h>
+#include <mathematics/lapack.h>
+#include <lib/SGMatrixList.h>
 
 namespace shogun {
 

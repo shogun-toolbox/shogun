@@ -7,10 +7,10 @@
  * Written (W) 2013 Parijat Mazumdar
  */
 
-#include <shogun/labels/MulticlassLabels.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/clustering/KMeans.h>
-#include <shogun/distance/EuclideanDistance.h>
+#include <labels/MulticlassLabels.h>
+#include <features/DenseFeatures.h>
+#include <clustering/KMeans.h>
+#include <distance/EuclideanDistance.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;

@@ -12,12 +12,12 @@
  * http://www.gaussianprocess.org/gpml/code/matlab/doc/
  */
 
-#include <shogun/regression/GaussianProcessRegression.h>
+#include <regression/GaussianProcessRegression.h>
 
 #ifdef HAVE_EIGEN3
 
-#include <shogun/io/SGIO.h>
-#include <shogun/machine/gp/FITCInferenceMethod.h>
+#include <io/SGIO.h>
+#include <machine/gp/FITCInferenceMethod.h>
 
 using namespace shogun;
 

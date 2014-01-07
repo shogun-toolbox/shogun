@@ -11,8 +11,8 @@
 #ifndef EVALUATION_H_
 #define EVALUATION_H_
 
-#include <shogun/labels/Labels.h>
-#include <shogun/base/SGObject.h>
+#include <labels/Labels.h>
+#include <base/SGObject.h>
 
 namespace shogun
 {

@@ -7,31 +7,31 @@
  * Written (W) 2013 Soumyajit De
  */
 
-#include <shogun/lib/common.h>
+#include <lib/common.h>
 
 #ifdef HAVE_EIGEN3
-#include <shogun/mathematics/eigen3.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/mathematics/Random.h>
-#include <shogun/mathematics/Statistics.h>
-#include <shogun/lib/SGVector.h>
-#include <shogun/lib/SGMatrix.h>
-#include <shogun/lib/SGSparseMatrix.h>
-#include <shogun/features/SparseFeatures.h>
-#include <shogun/mathematics/linalg/linop/DenseMatrixOperator.h>
-#include <shogun/mathematics/linalg/linop/SparseMatrixOperator.h>
-#include <shogun/mathematics/linalg/ratapprox/logdet/opfunc/DenseMatrixExactLog.h>
-#include <shogun/mathematics/linalg/ratapprox/logdet/opfunc/LogRationalApproximationIndividual.h>
-#include <shogun/mathematics/linalg/ratapprox/logdet/opfunc/LogRationalApproximationCGM.h>
-#include <shogun/mathematics/linalg/ratapprox/tracesampler/NormalSampler.h>
-#include <shogun/mathematics/linalg/ratapprox/tracesampler/ProbingSampler.h>
-#include <shogun/mathematics/linalg/eigsolver/DirectEigenSolver.h>
-#include <shogun/mathematics/linalg/eigsolver/LanczosEigenSolver.h>
-#include <shogun/mathematics/linalg/linsolver/DirectLinearSolverComplex.h>
-#include <shogun/mathematics/linalg/linsolver/CGMShiftedFamilySolver.h>
-#include <shogun/mathematics/linalg/ratapprox/logdet/LogDetEstimator.h>
-#include <shogun/lib/computation/jobresult/ScalarResult.h>
-#include <shogun/lib/computation/engine/SerialComputationEngine.h>
+#include <mathematics/eigen3.h>
+#include <mathematics/Math.h>
+#include <mathematics/Random.h>
+#include <mathematics/Statistics.h>
+#include <lib/SGVector.h>
+#include <lib/SGMatrix.h>
+#include <lib/SGSparseMatrix.h>
+#include <features/SparseFeatures.h>
+#include <mathematics/linalg/linop/DenseMatrixOperator.h>
+#include <mathematics/linalg/linop/SparseMatrixOperator.h>
+#include <mathematics/linalg/ratapprox/logdet/opfunc/DenseMatrixExactLog.h>
+#include <mathematics/linalg/ratapprox/logdet/opfunc/LogRationalApproximationIndividual.h>
+#include <mathematics/linalg/ratapprox/logdet/opfunc/LogRationalApproximationCGM.h>
+#include <mathematics/linalg/ratapprox/tracesampler/NormalSampler.h>
+#include <mathematics/linalg/ratapprox/tracesampler/ProbingSampler.h>
+#include <mathematics/linalg/eigsolver/DirectEigenSolver.h>
+#include <mathematics/linalg/eigsolver/LanczosEigenSolver.h>
+#include <mathematics/linalg/linsolver/DirectLinearSolverComplex.h>
+#include <mathematics/linalg/linsolver/CGMShiftedFamilySolver.h>
+#include <mathematics/linalg/ratapprox/logdet/LogDetEstimator.h>
+#include <lib/computation/jobresult/ScalarResult.h>
+#include <lib/computation/engine/SerialComputationEngine.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;

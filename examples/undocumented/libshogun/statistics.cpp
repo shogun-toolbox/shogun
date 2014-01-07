@@ -10,11 +10,11 @@
  * Copyright (C) 2011 Moscow State University
  */
 
-#include <shogun/base/init.h>
-#include <shogun/mathematics/Statistics.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/lib/SGVector.h>
-#include <shogun/lib/SGMatrix.h>
+#include <base/init.h>
+#include <mathematics/Statistics.h>
+#include <mathematics/Math.h>
+#include <lib/SGVector.h>
+#include <lib/SGMatrix.h>
 
 using namespace shogun;
 

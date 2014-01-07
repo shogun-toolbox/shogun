@@ -7,8 +7,8 @@
  * Copyright (W) 2012 Sergey Lisitsyn
  */
 
-#include <shogun/statistics/KernelMeanMatching.h>
-#include <shogun/lib/external/libqp.h>
+#include <statistics/KernelMeanMatching.h>
+#include <lib/external/libqp.h>
 
 
 static float64_t* kmm_K = NULL;

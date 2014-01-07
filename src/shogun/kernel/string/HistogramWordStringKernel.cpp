@@ -9,12 +9,12 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/lib/common.h>
-#include <shogun/kernel/string/HistogramWordStringKernel.h>
-#include <shogun/features/Features.h>
-#include <shogun/features/StringFeatures.h>
-#include <shogun/classifier/PluginEstimate.h>
-#include <shogun/io/SGIO.h>
+#include <lib/common.h>
+#include <kernel/string/HistogramWordStringKernel.h>
+#include <features/Features.h>
+#include <features/StringFeatures.h>
+#include <classifier/PluginEstimate.h>
+#include <io/SGIO.h>
 
 using namespace shogun;
 

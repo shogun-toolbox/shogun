@@ -1,10 +1,10 @@
-#include <shogun/lib/config.h>
-#include <shogun/mathematics/Random.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/lib/external/SFMT/SFMT.h>
-#include <shogun/lib/external/dSFMT/dSFMT.h>
-#include <shogun/mathematics/Statistics.h>
-#include <shogun/lib/SGVector.h>
+#include <lib/config.h>
+#include <mathematics/Random.h>
+#include <mathematics/Math.h>
+#include <lib/external/SFMT/SFMT.h>
+#include <lib/external/dSFMT/dSFMT.h>
+#include <mathematics/Statistics.h>
+#include <lib/SGVector.h>
 #include <gtest/gtest.h>
 #include <stdio.h>
 

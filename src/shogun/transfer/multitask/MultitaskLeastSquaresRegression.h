@@ -10,9 +10,9 @@
 #ifndef  MULTITASKLSREGRESSION_H_
 #define  MULTITASKLSREGRESSION_H_
 
-#include <shogun/lib/config.h>
-#include <shogun/transfer/multitask/TaskRelation.h>
-#include <shogun/transfer/multitask/MultitaskLinearMachine.h>
+#include <lib/config.h>
+#include <transfer/multitask/TaskRelation.h>
+#include <transfer/multitask/MultitaskLinearMachine.h>
 
 namespace shogun
 {

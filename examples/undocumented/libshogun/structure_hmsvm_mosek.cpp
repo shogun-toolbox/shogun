@@ -1,8 +1,8 @@
-#include <shogun/labels/StructuredLabels.h>
-#include <shogun/labels/LabelsFactory.h>
-#include <shogun/structure/HMSVMModel.h>
-#include <shogun/structure/PrimalMosekSOSVM.h>
-#include <shogun/structure/TwoStateModel.h>
+#include <labels/StructuredLabels.h>
+#include <labels/LabelsFactory.h>
+#include <structure/HMSVMModel.h>
+#include <structure/PrimalMosekSOSVM.h>
+#include <structure/TwoStateModel.h>
 
 using namespace shogun;
 

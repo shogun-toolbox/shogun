@@ -1,7 +1,7 @@
-#include <shogun/io/CSVFile.h>
-#include <shogun/lib/SGVector.h>
-#include <shogun/lib/SGString.h>
-#include <shogun/lib/SGMatrix.h>
+#include <io/CSVFile.h>
+#include <lib/SGVector.h>
+#include <lib/SGString.h>
+#include <lib/SGMatrix.h>
 
 #include <cstdio>
 #include <cstring>

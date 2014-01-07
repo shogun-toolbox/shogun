@@ -1,7 +1,7 @@
-#include <shogun/multiclass/MulticlassOneVsOneStrategy.h>
-#include <shogun/multiclass/MulticlassOneVsRestStrategy.h>
-#include <shogun/labels/BinaryLabels.h>
-#include <shogun/labels/MulticlassLabels.h>
+#include <multiclass/MulticlassOneVsOneStrategy.h>
+#include <multiclass/MulticlassOneVsRestStrategy.h>
+#include <labels/BinaryLabels.h>
+#include <labels/MulticlassLabels.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;

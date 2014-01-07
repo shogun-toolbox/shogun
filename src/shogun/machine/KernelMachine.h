@@ -12,12 +12,12 @@
 #ifndef _KERNEL_MACHINE_H__
 #define _KERNEL_MACHINE_H__
 
-#include <shogun/lib/common.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/kernel/Kernel.h>
-#include <shogun/kernel/CustomKernel.h>
-#include <shogun/labels/Labels.h>
-#include <shogun/machine/Machine.h>
+#include <lib/common.h>
+#include <io/SGIO.h>
+#include <kernel/Kernel.h>
+#include <kernel/CustomKernel.h>
+#include <labels/Labels.h>
+#include <machine/Machine.h>
 
 #include <stdio.h>
 

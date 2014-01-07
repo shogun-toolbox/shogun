@@ -7,7 +7,7 @@
 #define TAPKEE_PARAMETERS_H_
 
 /* Tapkee includes */
-#include <shogun/lib/tapkee/parameters/value_keeper.hpp>
+#include <lib/tapkee/parameters/value_keeper.hpp>
 /* End of Tapkee includes */
 
 #include <sstream>

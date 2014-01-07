@@ -2,7 +2,7 @@
 #define _MOCKCMACHINE_H_
 
 #include <gmock/gmock.h>
-#include <shogun/machine/Machine.h>
+#include <machine/Machine.h>
 
 namespace shogun {
 

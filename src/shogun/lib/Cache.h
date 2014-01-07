@@ -11,10 +11,10 @@
 #ifndef _CACHE_H__
 #define _CACHE_H__
 
-#include <shogun/lib/common.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/base/SGObject.h>
+#include <lib/common.h>
+#include <io/SGIO.h>
+#include <mathematics/Math.h>
+#include <base/SGObject.h>
 
 #include <stdlib.h>
 

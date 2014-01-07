@@ -11,7 +11,7 @@
 #ifndef ECOCLLBDECODER_H__
 #define ECOCLLBDECODER_H__
 
-#include <shogun/multiclass/ecoc/ECOCSimpleDecoder.h>
+#include <multiclass/ecoc/ECOCSimpleDecoder.h>
 
 namespace shogun
 {

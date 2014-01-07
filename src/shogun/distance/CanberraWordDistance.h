@@ -12,10 +12,10 @@
 #ifndef _CANBERRAWORDDISTANCE_H___
 #define _CANBERRAWORDDISTANCE_H___
 
-#include <shogun/lib/common.h>
-#include <shogun/features/Features.h>
-#include <shogun/features/StringFeatures.h>
-#include <shogun/distance/StringDistance.h>
+#include <lib/common.h>
+#include <features/Features.h>
+#include <features/StringFeatures.h>
+#include <distance/StringDistance.h>
 
 namespace shogun
 {

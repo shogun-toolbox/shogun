@@ -8,11 +8,11 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include <shogun/base/ParameterMap.h>
-#include <shogun/base/Parameter.h>
-#include <shogun/lib/memory.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/lib/DataType.h>
+#include <base/ParameterMap.h>
+#include <base/Parameter.h>
+#include <lib/memory.h>
+#include <mathematics/Math.h>
+#include <lib/DataType.h>
 
 using namespace shogun;
 

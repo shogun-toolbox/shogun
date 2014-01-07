@@ -20,27 +20,27 @@
 /*   Linadd Speedup: Gunnar Raetsch, Soeren Sonnenburg                 */
 /*                                                                     */
 /***********************************************************************/
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
 #ifdef USE_SVMLIGHT
 
-#include <shogun/io/SGIO.h>
-#include <shogun/lib/Signal.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/lib/Time.h>
-#include <shogun/mathematics/lapack.h>
+#include <io/SGIO.h>
+#include <lib/Signal.h>
+#include <mathematics/Math.h>
+#include <lib/Time.h>
+#include <mathematics/lapack.h>
 
-#include <shogun/classifier/svm/SVMLight.h>
-#include <shogun/lib/external/pr_loqo.h>
+#include <classifier/svm/SVMLight.h>
+#include <lib/external/pr_loqo.h>
 
-#include <shogun/kernel/Kernel.h>
-#include <shogun/machine/KernelMachine.h>
-#include <shogun/kernel/CombinedKernel.h>
+#include <kernel/Kernel.h>
+#include <machine/KernelMachine.h>
+#include <kernel/CombinedKernel.h>
 
 #include <unistd.h>
 
-#include <shogun/base/Parallel.h>
-#include <shogun/labels/BinaryLabels.h>
+#include <base/Parallel.h>
+#include <labels/BinaryLabels.h>
 
 #ifdef HAVE_PTHREAD
 #include <pthread.h>

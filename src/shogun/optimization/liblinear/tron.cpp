@@ -3,13 +3,13 @@
 #include <string.h>
 #include <stdarg.h>
 
-#include <shogun/lib/config.h>
-#include <shogun/lib/Signal.h>
-#include <shogun/lib/Time.h>
+#include <lib/config.h>
+#include <lib/Signal.h>
+#include <lib/Time.h>
 
-#include <shogun/mathematics/lapack.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/optimization/liblinear/tron.h>
+#include <mathematics/lapack.h>
+#include <mathematics/Math.h>
+#include <optimization/liblinear/tron.h>
 
 using namespace shogun;
 

@@ -9,8 +9,8 @@
  * Copyright (C) 2012 Chiyuan Zhang
  */
 
-#include <shogun/multiclass/MulticlassStrategy.h>
-#include <shogun/mathematics/Math.h>
+#include <multiclass/MulticlassStrategy.h>
+#include <mathematics/Math.h>
 
 using namespace shogun;
 

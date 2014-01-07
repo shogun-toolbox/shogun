@@ -27,7 +27,7 @@
 #ifndef __LBFGS_H__
 #define __LBFGS_H__
 
-#include <shogun/lib/common.h>
+#include <lib/common.h>
 
 namespace shogun
 {

@@ -8,8 +8,8 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/distributions/Distribution.h>
-#include <shogun/mathematics/Math.h>
+#include <distributions/Distribution.h>
+#include <mathematics/Math.h>
 
 using namespace shogun;
 

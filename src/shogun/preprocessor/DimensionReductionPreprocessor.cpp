@@ -1,7 +1,7 @@
-#include <shogun/preprocessor/DimensionReductionPreprocessor.h>
-#include <shogun/converter/EmbeddingConverter.h>
-#include <shogun/kernel/LinearKernel.h>
-#include <shogun/distance/EuclideanDistance.h>
+#include <preprocessor/DimensionReductionPreprocessor.h>
+#include <converter/EmbeddingConverter.h>
+#include <kernel/LinearKernel.h>
+#include <distance/EuclideanDistance.h>
 
 using namespace shogun;
 

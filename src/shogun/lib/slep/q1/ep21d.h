@@ -21,7 +21,7 @@
 #include <stdio.h>
 #include <time.h>
 #include <math.h>
-#include <shogun/lib/slep/q1/epph.h> /* This is the head file that contains the implementation of the used functions*/
+#include <lib/slep/q1/epph.h> /* This is the head file that contains the implementation of the used functions*/
 
 /*
    Euclidean Projection onto l_{2,1} Ball

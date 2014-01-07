@@ -8,13 +8,13 @@
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/base/init.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/mathematics/Random.h>
-#include <shogun/lib/common.h>
-#include <shogun/lib/Map.h>
-#include <shogun/base/Parallel.h>
-#include <shogun/base/Version.h>
+#include <base/init.h>
+#include <mathematics/Math.h>
+#include <mathematics/Random.h>
+#include <lib/common.h>
+#include <lib/Map.h>
+#include <base/Parallel.h>
+#include <base/Version.h>
 
 #ifdef TRACE_MEMORY_ALLOCS
 shogun::CMap<void*, shogun::MemoryBlock>* sg_mallocs=NULL;

@@ -10,10 +10,10 @@
 #ifndef __SUBSETSTACK_H_
 #define __SUBSETSTACK_H_
 
-#include <shogun/base/SGObject.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/lib/DynamicObjectArray.h>
-#include <shogun/features/Subset.h>
+#include <base/SGObject.h>
+#include <mathematics/Math.h>
+#include <lib/DynamicObjectArray.h>
+#include <features/Subset.h>
 
 
 namespace shogun

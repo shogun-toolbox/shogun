@@ -7,10 +7,10 @@
  * Written (W) 2013 Evgeniy Andreev (gsomix)
  */
 
-#include <shogun/io/CSVFile.h>
+#include <io/CSVFile.h>
 
-#include <shogun/lib/SGVector.h>
-#include <shogun/lib/SGMatrix.h>
+#include <lib/SGVector.h>
+#include <lib/SGMatrix.h>
 
 using namespace shogun;
 

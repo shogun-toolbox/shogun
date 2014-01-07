@@ -15,12 +15,12 @@
 #ifndef _VW_ENV_H__
 #define _VW_ENV_H__
 
-#include <shogun/base/SGObject.h>
-#include <shogun/base/DynArray.h>
-#include <shogun/lib/DataType.h>
-#include <shogun/lib/common.h>
-#include <shogun/lib/v_array.h>
-#include <shogun/classifier/vw/vw_constants.h>
+#include <base/SGObject.h>
+#include <base/DynArray.h>
+#include <lib/DataType.h>
+#include <lib/common.h>
+#include <lib/v_array.h>
+#include <classifier/vw/vw_constants.h>
 
 namespace shogun
 {

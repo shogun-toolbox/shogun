@@ -12,7 +12,7 @@
 #define ECOCIHDDECODER_H__
 #ifdef HAVE_LAPACK
 
-#include <shogun/multiclass/ecoc/ECOCDecoder.h>
+#include <multiclass/ecoc/ECOCDecoder.h>
 
 namespace shogun
 {

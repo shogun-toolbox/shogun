@@ -11,11 +11,11 @@
 
 #include <string.h>
 
-#include <shogun/base/Parameter.h>
-#include <shogun/base/class_list.h>
-#include <shogun/lib/Hash.h>
-#include <shogun/lib/memory.h>
-#include <shogun/io/SGIO.h>
+#include <base/Parameter.h>
+#include <base/class_list.h>
+#include <lib/Hash.h>
+#include <lib/memory.h>
+#include <io/SGIO.h>
 
 using namespace shogun;
 

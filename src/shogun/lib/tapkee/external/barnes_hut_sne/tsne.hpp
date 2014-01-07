@@ -33,10 +33,10 @@
 #define TSNE_H
 
 /* Tapkee includes */
-#include <shogun/lib/tapkee/utils/logging.hpp>
-#include <shogun/lib/tapkee/utils/time.hpp>
-#include <shogun/lib/tapkee/external/barnes_hut_sne/quadtree.hpp>
-#include <shogun/lib/tapkee/external/barnes_hut_sne/vptree.hpp>
+#include <lib/tapkee/utils/logging.hpp>
+#include <lib/tapkee/utils/time.hpp>
+#include <lib/tapkee/external/barnes_hut_sne/quadtree.hpp>
+#include <lib/tapkee/external/barnes_hut_sne/vptree.hpp>
 /* End of Tapkee includes */
 
 #include <math.h>

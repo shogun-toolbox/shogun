@@ -13,9 +13,9 @@
 #ifndef __SGNDARRAY_H__
 #define __SGNDARRAY_H__
 
-#include <shogun/lib/config.h>
-#include <shogun/lib/DataType.h>
-#include <shogun/lib/SGReferencedData.h>
+#include <lib/config.h>
+#include <lib/DataType.h>
+#include <lib/SGReferencedData.h>
 
 namespace shogun
 {

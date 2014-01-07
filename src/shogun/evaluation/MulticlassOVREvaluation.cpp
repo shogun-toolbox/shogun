@@ -7,11 +7,11 @@
  * Copyright (C) 2012 Sergey Lisitsyn
  */
 
-#include <shogun/evaluation/MulticlassOVREvaluation.h>
-#include <shogun/evaluation/ROCEvaluation.h>
-#include <shogun/evaluation/PRCEvaluation.h>
-#include <shogun/labels/MulticlassLabels.h>
-#include <shogun/mathematics/Statistics.h>
+#include <evaluation/MulticlassOVREvaluation.h>
+#include <evaluation/ROCEvaluation.h>
+#include <evaluation/PRCEvaluation.h>
+#include <labels/MulticlassLabels.h>
+#include <mathematics/Statistics.h>
 
 using namespace shogun;
 

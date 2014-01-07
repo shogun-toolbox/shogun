@@ -7,17 +7,17 @@
  * Written (W) 2013 Soumyajit De
  */
 
-#include <shogun/lib/common.h>
+#include <lib/common.h>
 
 #ifdef HAVE_LAPACK
 #ifdef HAVE_EIGEN3
 
-#include <shogun/base/Parameter.h>
-#include <shogun/mathematics/lapack.h>
-#include <shogun/mathematics/eigen3.h>
-#include <shogun/mathematics/linalg/linop/LinearOperator.h>
-#include <shogun/mathematics/linalg/linsolver/IterativeSolverIterator.h>
-#include <shogun/mathematics/linalg/eigsolver/LanczosEigenSolver.h>
+#include <base/Parameter.h>
+#include <mathematics/lapack.h>
+#include <mathematics/eigen3.h>
+#include <mathematics/linalg/linop/LinearOperator.h>
+#include <mathematics/linalg/linsolver/IterativeSolverIterator.h>
+#include <mathematics/linalg/eigsolver/LanczosEigenSolver.h>
 #include <vector>
 
 using namespace Eigen;

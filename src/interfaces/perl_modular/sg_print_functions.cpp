@@ -12,7 +12,7 @@ extern "C" {
 #endif
 
 
-#include <shogun/io/SGIO.h>
+#include <io/SGIO.h>
 
 void sg_global_print_message(FILE* target, const char* str)
 {

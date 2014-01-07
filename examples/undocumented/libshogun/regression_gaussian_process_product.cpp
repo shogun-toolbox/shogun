@@ -7,23 +7,23 @@
  * Written (W) 2012 Jacob Walker
  */
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 #if defined(HAVE_EIGEN3) && defined(HAVE_NLOPT)
-#include <shogun/base/init.h>
-#include <shogun/labels/RegressionLabels.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/kernel/GaussianKernel.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/machine/gp/ExactInferenceMethod.h>
-#include <shogun/machine/gp/GaussianLikelihood.h>
-#include <shogun/machine/gp/ZeroMean.h>
-#include <shogun/regression/GaussianProcessRegression.h>
-#include <shogun/evaluation/GradientEvaluation.h>
-#include <shogun/modelselection/GradientModelSelection.h>
-#include <shogun/modelselection/ModelSelectionParameters.h>
-#include <shogun/modelselection/ParameterCombination.h>
-#include <shogun/evaluation/GradientCriterion.h>
-#include <shogun/kernel/ProductKernel.h>
+#include <base/init.h>
+#include <labels/RegressionLabels.h>
+#include <features/DenseFeatures.h>
+#include <kernel/GaussianKernel.h>
+#include <mathematics/Math.h>
+#include <machine/gp/ExactInferenceMethod.h>
+#include <machine/gp/GaussianLikelihood.h>
+#include <machine/gp/ZeroMean.h>
+#include <regression/GaussianProcessRegression.h>
+#include <evaluation/GradientEvaluation.h>
+#include <modelselection/GradientModelSelection.h>
+#include <modelselection/ModelSelectionParameters.h>
+#include <modelselection/ParameterCombination.h>
+#include <evaluation/GradientCriterion.h>
+#include <kernel/ProductKernel.h>
 
 
 using namespace shogun;

@@ -7,20 +7,20 @@
  * Written (W) 2013 Soumyajit De
  */
 
-#include <shogun/lib/common.h>
+#include <lib/common.h>
 
 #ifdef HAVE_EIGEN3
 #ifdef HAVE_LAPACK
 
-#include <shogun/lib/SGMatrix.h>
-#include <shogun/lib/SGSparseMatrix.h>
-#include <shogun/features/SparseFeatures.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/mathematics/eigen3.h>
-#include <shogun/mathematics/linalg/linop/SparseMatrixOperator.h>
-#include <shogun/mathematics/linalg/linop/DenseMatrixOperator.h>
-#include <shogun/mathematics/linalg/eigsolver/DirectEigenSolver.h>
-#include <shogun/mathematics/linalg/eigsolver/LanczosEigenSolver.h>
+#include <lib/SGMatrix.h>
+#include <lib/SGSparseMatrix.h>
+#include <features/SparseFeatures.h>
+#include <mathematics/Math.h>
+#include <mathematics/eigen3.h>
+#include <mathematics/linalg/linop/SparseMatrixOperator.h>
+#include <mathematics/linalg/linop/DenseMatrixOperator.h>
+#include <mathematics/linalg/eigsolver/DirectEigenSolver.h>
+#include <mathematics/linalg/eigsolver/LanczosEigenSolver.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;

@@ -8,19 +8,19 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include <shogun/base/init.h>
-#include <shogun/evaluation/CrossValidation.h>
-#include <shogun/evaluation/ContingencyTableEvaluation.h>
-#include <shogun/evaluation/StratifiedCrossValidationSplitting.h>
-#include <shogun/modelselection/GridSearchModelSelection.h>
-#include <shogun/modelselection/ModelSelectionParameters.h>
-#include <shogun/modelselection/ParameterCombination.h>
-#include <shogun/labels/BinaryLabels.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/classifier/svm/LibSVM.h>
-#include <shogun/kernel/GaussianKernel.h>
-#include <shogun/kernel/PowerKernel.h>
-#include <shogun/distance/MinkowskiMetric.h>
+#include <base/init.h>
+#include <evaluation/CrossValidation.h>
+#include <evaluation/ContingencyTableEvaluation.h>
+#include <evaluation/StratifiedCrossValidationSplitting.h>
+#include <modelselection/GridSearchModelSelection.h>
+#include <modelselection/ModelSelectionParameters.h>
+#include <modelselection/ParameterCombination.h>
+#include <labels/BinaryLabels.h>
+#include <features/DenseFeatures.h>
+#include <classifier/svm/LibSVM.h>
+#include <kernel/GaussianKernel.h>
+#include <kernel/PowerKernel.h>
+#include <distance/MinkowskiMetric.h>
 
 
 using namespace shogun;

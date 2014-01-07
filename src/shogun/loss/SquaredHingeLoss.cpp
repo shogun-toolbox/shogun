@@ -9,7 +9,7 @@
  * Copyright (c) 2011 Berlin Institute of Technohingey and Max-Planck-Society.
  */
 
-#include <shogun/loss/SquaredHingeLoss.h>
+#include <loss/SquaredHingeLoss.h>
 
 using namespace shogun;
 

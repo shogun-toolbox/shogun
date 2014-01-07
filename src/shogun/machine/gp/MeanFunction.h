@@ -11,9 +11,9 @@
 #ifndef CMEANFUNCTION_H_
 #define CMEANFUNCTION_H_
 
-#include <shogun/base/SGObject.h>
-#include <shogun/base/Parameter.h>
-#include <shogun/features/Features.h>
+#include <base/SGObject.h>
+#include <base/Parameter.h>
+#include <features/Features.h>
 
 namespace shogun
 {

@@ -10,7 +10,7 @@
 #ifndef __TwoDistributionsTestStatistic_H_
 #define __TwoDistributionsTestStatistic_H_
 
-#include <shogun/statistics/TestStatistic.h>
+#include <statistics/TestStatistic.h>
 
 namespace shogun
 {

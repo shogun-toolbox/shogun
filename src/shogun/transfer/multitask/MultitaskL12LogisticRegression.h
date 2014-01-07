@@ -10,7 +10,7 @@
 #ifndef  MULTITASKL12LOGISTICREGRESSION_H_
 #define  MULTITASKL12LOGISTICREGRESSION_H_
 
-#include <shogun/transfer/multitask/MultitaskLogisticRegression.h>
+#include <transfer/multitask/MultitaskLogisticRegression.h>
 
 namespace shogun
 {

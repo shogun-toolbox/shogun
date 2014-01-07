@@ -13,14 +13,14 @@
  * This code specifically adapted from infLaplace.m
  */
 
-#include <shogun/machine/gp/LaplacianInferenceMethod.h>
+#include <machine/gp/LaplacianInferenceMethod.h>
 
 #ifdef HAVE_EIGEN3
 
-#include <shogun/machine/gp/StudentsTLikelihood.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/lib/external/brent.h>
-#include <shogun/mathematics/eigen3.h>
+#include <machine/gp/StudentsTLikelihood.h>
+#include <mathematics/Math.h>
+#include <lib/external/brent.h>
+#include <mathematics/eigen3.h>
 
 using namespace shogun;
 using namespace Eigen;

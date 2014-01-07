@@ -72,8 +72,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#include <shogun/lib/external/gpdt.h>
-#include <shogun/io/SGIO.h>
+#include <lib/external/gpdt.h>
+#include <io/SGIO.h>
 
 namespace shogun
 {

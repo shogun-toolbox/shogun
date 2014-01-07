@@ -10,10 +10,10 @@
 #ifndef INDEPENDENT_JOB_H_
 #define INDEPENDENT_JOB_H_
 
-#include <shogun/lib/config.h>
-#include <shogun/base/SGObject.h>
-#include <shogun/base/Parameter.h>
-#include <shogun/lib/computation/aggregator/JobResultAggregator.h>
+#include <lib/config.h>
+#include <base/SGObject.h>
+#include <base/Parameter.h>
+#include <lib/computation/aggregator/JobResultAggregator.h>
 
 namespace shogun
 {

@@ -10,12 +10,12 @@
 
 #ifdef HAVE_LAPACK
 
-#include <shogun/lib/common.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/distance/MahalanobisDistance.h>
-#include <shogun/features/Features.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/mathematics/lapack.h>
+#include <lib/common.h>
+#include <io/SGIO.h>
+#include <distance/MahalanobisDistance.h>
+#include <features/Features.h>
+#include <mathematics/Math.h>
+#include <mathematics/lapack.h>
 
 using namespace shogun;
 

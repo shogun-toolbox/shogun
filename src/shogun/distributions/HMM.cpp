@@ -8,14 +8,14 @@
  * Written (W) 1999-2008 Gunnar Raetsch
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
-#include <shogun/distributions/HMM.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/lib/config.h>
-#include <shogun/lib/Signal.h>
-#include <shogun/base/Parallel.h>
-#include <shogun/features/StringFeatures.h>
-#include <shogun/features/Alphabet.h>
+#include <distributions/HMM.h>
+#include <mathematics/Math.h>
+#include <io/SGIO.h>
+#include <lib/config.h>
+#include <lib/Signal.h>
+#include <base/Parallel.h>
+#include <features/StringFeatures.h>
+#include <features/Alphabet.h>
 
 #include <stdlib.h>
 #include <stdio.h>

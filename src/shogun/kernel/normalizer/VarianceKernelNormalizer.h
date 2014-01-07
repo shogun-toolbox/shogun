@@ -11,7 +11,7 @@
 #ifndef _VARIANCEKERNELNORMALIZER_H___
 #define _VARIANCEKERNELNORMALIZER_H___
 
-#include <shogun/kernel/normalizer/KernelNormalizer.h>
+#include <kernel/normalizer/KernelNormalizer.h>
 
 namespace shogun
 {

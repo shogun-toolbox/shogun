@@ -8,10 +8,10 @@
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/features/SNPFeatures.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/features/Alphabet.h>
-#include <shogun/lib/memory.h>
+#include <features/SNPFeatures.h>
+#include <io/SGIO.h>
+#include <features/Alphabet.h>
+#include <lib/memory.h>
 
 using namespace shogun;
 

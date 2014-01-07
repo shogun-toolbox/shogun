@@ -7,8 +7,8 @@
  * Written (W) 2012-2013 Heiko Strathmann
  */
 
-#include <shogun/statistics/MMDKernelSelectionMax.h>
-#include <shogun/statistics/KernelTwoSampleTestStatistic.h>
+#include <statistics/MMDKernelSelectionMax.h>
+#include <statistics/KernelTwoSampleTestStatistic.h>
 
 using namespace shogun;
 

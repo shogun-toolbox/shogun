@@ -13,8 +13,8 @@
 
 #ifdef HAVE_LAPACK
 
-#include <shogun/lib/common.h>
-#include <shogun/distance/RealDistance.h>
+#include <lib/common.h>
+#include <distance/RealDistance.h>
 
 namespace shogun
 {

@@ -11,8 +11,8 @@
 #include <vector>
 #include <stack>
 
-#include <shogun/multiclass/tree/ConditionalProbabilityTree.h>
-#include <shogun/classifier/svm/OnlineLibLinear.h>
+#include <multiclass/tree/ConditionalProbabilityTree.h>
+#include <classifier/svm/OnlineLibLinear.h>
 
 using namespace shogun;
 using namespace std;

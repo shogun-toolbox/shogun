@@ -11,9 +11,9 @@
 #ifndef __CCSOSVM_H__
 #define __CCSOSVM_H__
 
-#include <shogun/lib/config.h>
-#include <shogun/machine/LinearStructuredOutputMachine.h>
-#include <shogun/base/DynArray.h>
+#include <lib/config.h>
+#include <machine/LinearStructuredOutputMachine.h>
+#include <base/DynArray.h>
 
 #ifdef USE_MOSEK
 #include <mosek.h>

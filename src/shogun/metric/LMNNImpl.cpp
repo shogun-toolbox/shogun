@@ -11,10 +11,10 @@
 #ifdef HAVE_EIGEN3
 #ifdef HAVE_LAPACK
 
-#include <shogun/metric/LMNNImpl.h>
-#include <shogun/multiclass/KNN.h>
-#include <shogun/preprocessor/PruneVarSubMean.h>
-#include <shogun/preprocessor/PCA.h>
+#include <metric/LMNNImpl.h>
+#include <multiclass/KNN.h>
+#include <preprocessor/PruneVarSubMean.h>
+#include <preprocessor/PCA.h>
 
 #include <iterator>
 

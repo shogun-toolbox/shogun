@@ -7,11 +7,11 @@
  * Written (W) 2012 Heiko Strathmann
  */
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
-#include <shogun/features/DataGenerator.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/distributions/Gaussian.h>
+#include <features/DataGenerator.h>
+#include <mathematics/Math.h>
+#include <distributions/Gaussian.h>
 
 using namespace shogun;
 

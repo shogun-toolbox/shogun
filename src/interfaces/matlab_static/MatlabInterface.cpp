@@ -7,10 +7,10 @@
 #include "MatlabInterface.h"
 
 #include <stdio.h>
-#include <shogun/ui/SGInterface.h>
-#include <shogun/lib/ShogunException.h>
-#include <shogun/lib/config.h>
-#include <shogun/base/init.h>
+#include <ui/SGInterface.h>
+#include <lib/ShogunException.h>
+#include <lib/config.h>
+#include <base/init.h>
 
 #ifdef HAVE_PYTHON
 #include "../python/PythonInterface.h"

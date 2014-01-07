@@ -12,9 +12,9 @@
 #define _PERCEPTRON_H___
 
 #include <stdio.h>
-#include <shogun/lib/common.h>
-#include <shogun/features/DotFeatures.h>
-#include <shogun/machine/LinearMachine.h>
+#include <lib/common.h>
+#include <features/DotFeatures.h>
+#include <machine/LinearMachine.h>
 
 namespace shogun
 {

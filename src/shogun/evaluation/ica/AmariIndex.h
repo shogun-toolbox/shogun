@@ -1,4 +1,4 @@
-#include <shogun/lib/SGMatrix.h>
+#include <lib/SGMatrix.h>
 
 #ifdef HAVE_EIGEN3
 

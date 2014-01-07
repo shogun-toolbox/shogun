@@ -7,8 +7,8 @@
  * Written (W) 2010 Soeren Sonnenburg
  * Copyright (C) 2010 Berlin Institute of Technology
  */
-#include <shogun/features/SparsePolyFeatures.h>
-#include <shogun/lib/Hash.h>
+#include <features/SparsePolyFeatures.h>
+#include <lib/Hash.h>
 
 using namespace shogun;
 

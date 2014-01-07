@@ -6,18 +6,18 @@
  *
  * Written (W) 2012 Heiko Strathmann
  */
-#include <shogun/kernel/GaussianKernel.h>
-#include <shogun/kernel/CombinedKernel.h>
-#include <shogun/labels/BinaryLabels.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/classifier/mkl/MKLClassification.h>
-#include <shogun/classifier/svm/LibSVM.h>
-#include <shogun/evaluation/CrossValidation.h>
-#include <shogun/evaluation/CrossValidationPrintOutput.h>
-#include <shogun/evaluation/CrossValidationMKLStorage.h>
-#include <shogun/evaluation/StratifiedCrossValidationSplitting.h>
-#include <shogun/evaluation/ContingencyTableEvaluation.h>
-#include <shogun/mathematics/Statistics.h>
+#include <kernel/GaussianKernel.h>
+#include <kernel/CombinedKernel.h>
+#include <labels/BinaryLabels.h>
+#include <features/DenseFeatures.h>
+#include <classifier/mkl/MKLClassification.h>
+#include <classifier/svm/LibSVM.h>
+#include <evaluation/CrossValidation.h>
+#include <evaluation/CrossValidationPrintOutput.h>
+#include <evaluation/CrossValidationMKLStorage.h>
+#include <evaluation/StratifiedCrossValidationSplitting.h>
+#include <evaluation/ContingencyTableEvaluation.h>
+#include <mathematics/Statistics.h>
 
 using namespace shogun;
 

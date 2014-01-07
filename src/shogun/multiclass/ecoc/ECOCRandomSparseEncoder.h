@@ -11,8 +11,8 @@
 #ifndef ECOCRANDOMSPARSEENCODER_H__
 #define ECOCRANDOMSPARSEENCODER_H__
 
-#include <shogun/mathematics/Math.h>
-#include <shogun/multiclass/ecoc/ECOCEncoder.h>
+#include <mathematics/Math.h>
+#include <multiclass/ecoc/ECOCEncoder.h>
 
 namespace shogun
 {

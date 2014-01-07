@@ -1,7 +1,7 @@
-#include <shogun/structure/PlifMatrix.h>
-#include <shogun/structure/Plif.h>
-#include <shogun/structure/PlifArray.h>
-#include <shogun/structure/PlifBase.h>
+#include <structure/PlifMatrix.h>
+#include <structure/Plif.h>
+#include <structure/PlifArray.h>
+#include <structure/PlifBase.h>
 
 using namespace shogun;
 

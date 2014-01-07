@@ -10,12 +10,12 @@
 
 #include <algorithm>
 
-#include <shogun/lib/Time.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/multiclass/ShareBoost.h>
-#include <shogun/multiclass/ShareBoostOptimizer.h>
-#include <shogun/features/DenseSubsetFeatures.h>
-#include <shogun/labels/RegressionLabels.h>
+#include <lib/Time.h>
+#include <mathematics/Math.h>
+#include <multiclass/ShareBoost.h>
+#include <multiclass/ShareBoostOptimizer.h>
+#include <features/DenseSubsetFeatures.h>
+#include <labels/RegressionLabels.h>
 
 using namespace shogun;
 

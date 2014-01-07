@@ -12,16 +12,16 @@
  * http://www.gaussianprocess.org/gpml/code/matlab/doc/
  */
 
-#include <shogun/machine/gp/StudentsTLikelihood.h>
+#include <machine/gp/StudentsTLikelihood.h>
 
 #ifdef HAVE_EIGEN3
 
-#include <shogun/mathematics/Function.h>
-#include <shogun/mathematics/Integration.h>
-#include <shogun/labels/RegressionLabels.h>
-#include <shogun/mathematics/Statistics.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/mathematics/eigen3.h>
+#include <mathematics/Function.h>
+#include <mathematics/Integration.h>
+#include <labels/RegressionLabels.h>
+#include <mathematics/Statistics.h>
+#include <mathematics/Math.h>
+#include <mathematics/eigen3.h>
 
 using namespace shogun;
 using namespace Eigen;

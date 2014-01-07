@@ -8,8 +8,8 @@
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/features/ImplicitWeightedSpecFeatures.h>
-#include <shogun/io/SGIO.h>
+#include <features/ImplicitWeightedSpecFeatures.h>
+#include <io/SGIO.h>
 
 using namespace shogun;
 

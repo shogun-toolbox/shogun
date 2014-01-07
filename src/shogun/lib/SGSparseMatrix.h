@@ -13,11 +13,11 @@
 #ifndef __SGSPARSEMATRIX_H__
 #define __SGSPARSEMATRIX_H__
 
-#include <shogun/lib/common.h>
-#include <shogun/lib/DataType.h>
-#include <shogun/lib/SGSparseVector.h>
-#include <shogun/lib/SGReferencedData.h>
-#include <shogun/io/LibSVMFile.h>
+#include <lib/common.h>
+#include <lib/DataType.h>
+#include <lib/SGSparseVector.h>
+#include <lib/SGReferencedData.h>
+#include <io/LibSVMFile.h>
 
 namespace shogun
 {

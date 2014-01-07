@@ -12,10 +12,10 @@
 #ifndef _SPLINEKERNEL_H__
 #define _SPLINEKERNEL_H__
 
-#include <shogun/lib/common.h>
-#include <shogun/kernel/DotKernel.h>
-#include <shogun/features/DotFeatures.h>
-#include <shogun/machine/KernelMachine.h>
+#include <lib/common.h>
+#include <kernel/DotKernel.h>
+#include <features/DotFeatures.h>
+#include <machine/KernelMachine.h>
 
 namespace shogun
 {

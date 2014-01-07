@@ -1,9 +1,9 @@
 #include "machine/MockMachine.h"
 #include "features/MockFeatures.h"
 #include "labels/MockLabels.h"
-#include <shogun/lib/config.h>
-#include <shogun/machine/BaggingMachine.h>
-#include <shogun/ensemble/MajorityVote.h>
+#include <lib/config.h>
+#include <machine/BaggingMachine.h>
+#include <ensemble/MajorityVote.h>
 #include <gtest/gtest.h>
 
 #ifdef USE_REFERENCE_COUNTING

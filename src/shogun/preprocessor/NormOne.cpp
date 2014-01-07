@@ -8,10 +8,10 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/preprocessor/NormOne.h>
-#include <shogun/preprocessor/DensePreprocessor.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/features/Features.h>
+#include <preprocessor/NormOne.h>
+#include <preprocessor/DensePreprocessor.h>
+#include <mathematics/Math.h>
+#include <features/Features.h>
 
 using namespace shogun;
 

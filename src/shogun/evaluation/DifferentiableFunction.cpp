@@ -8,7 +8,7 @@
  * Copyright (C) 2012 Jacob Walker
  */
 
-#include <shogun/evaluation/DifferentiableFunction.h>
+#include <evaluation/DifferentiableFunction.h>
 
 using namespace shogun;
 

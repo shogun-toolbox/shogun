@@ -8,14 +8,14 @@
  * Copyright (C) 2012 Jacob Walker
  */
 
-#include <shogun/modelselection/GradientModelSelection.h>
+#include <modelselection/GradientModelSelection.h>
 
 #ifdef HAVE_NLOPT
 
-#include <shogun/evaluation/GradientResult.h>
-#include <shogun/modelselection/ParameterCombination.h>
-#include <shogun/modelselection/ModelSelectionParameters.h>
-#include <shogun/machine/Machine.h>
+#include <evaluation/GradientResult.h>
+#include <modelselection/ParameterCombination.h>
+#include <modelselection/ModelSelectionParameters.h>
+#include <machine/Machine.h>
 #include <nlopt.h>
 
 using namespace shogun;

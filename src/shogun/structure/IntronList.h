@@ -11,8 +11,8 @@
 #ifndef __INTRON_LIST__
 #define __INTRON_LIST__
 
-#include <shogun/lib/common.h>
-#include <shogun/base/SGObject.h>
+#include <lib/common.h>
+#include <base/SGObject.h>
 
 namespace shogun
 {

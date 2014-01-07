@@ -11,8 +11,8 @@
  *
  */
 
-#include <shogun/classifier/mkl/MKLMulticlassGradient.h>
-#include <shogun/mathematics/Math.h>
+#include <classifier/mkl/MKLMulticlassGradient.h>
+#include <mathematics/Math.h>
 
 using namespace shogun;
 

@@ -38,7 +38,7 @@
 #ifndef _LIBSVM_H
 #define _LIBSVM_H
 
-#include <shogun/kernel/Kernel.h>
+#include <kernel/Kernel.h>
 
 namespace shogun
 {

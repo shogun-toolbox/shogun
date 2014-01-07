@@ -8,8 +8,8 @@
  * Copyright (C) 2013 Viktor Gal
  */
 
-#include <shogun/machine/BaggingMachine.h>
-#include <shogun/base/Parameter.h>
+#include <machine/BaggingMachine.h>
+#include <base/Parameter.h>
 
 using namespace shogun;
 

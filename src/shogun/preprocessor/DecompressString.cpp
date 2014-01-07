@@ -1,4 +1,4 @@
-#include <shogun/preprocessor/DecompressString.h>
+#include <preprocessor/DecompressString.h>
 
 namespace shogun
 {

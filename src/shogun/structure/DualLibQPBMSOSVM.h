@@ -11,9 +11,9 @@
 #ifndef _DUALLIBQPBMSOSVM__H__
 #define _DUALLIBQPBMSOSVM__H__
 
-#include <shogun/machine/LinearStructuredOutputMachine.h>
-#include <shogun/features/DotFeatures.h>
-#include <shogun/structure/BmrmStatistics.h>
+#include <machine/LinearStructuredOutputMachine.h>
+#include <features/DotFeatures.h>
+#include <structure/BmrmStatistics.h>
 
 namespace shogun
 {

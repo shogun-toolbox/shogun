@@ -8,10 +8,10 @@
  * Written (W) 2012 Heiko Strathmann
  * Copyright (C) 2008-2009 Fraunhofer Institute FIRST and Max Planck Society
  */
-#include <shogun/kernel/GaussianKernel.h>
-#include <shogun/labels/BinaryLabels.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/classifier/svm/LibSVM.h>
+#include <kernel/GaussianKernel.h>
+#include <labels/BinaryLabels.h>
+#include <features/DenseFeatures.h>
+#include <classifier/svm/LibSVM.h>
 
 using namespace shogun;
 

@@ -11,8 +11,8 @@
 #ifndef  SLEP_MT_LOGISTIC_H_
 #define  SLEP_MT_LOGISTIC_H_
 
-#include <shogun/lib/slep/slep_options.h>
-#include <shogun/features/DotFeatures.h>
+#include <lib/slep/slep_options.h>
+#include <features/DotFeatures.h>
 
 namespace shogun
 {

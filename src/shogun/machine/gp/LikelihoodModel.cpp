@@ -10,7 +10,7 @@
  * Copyright (C) 2013 Roman Votyakov
  */
 
-#include <shogun/machine/gp/LikelihoodModel.h>
+#include <machine/gp/LikelihoodModel.h>
 
 using namespace shogun;
 

@@ -10,9 +10,9 @@
 
 #ifndef LOCALITYPRESERVINGPROJECTIONS_H_
 #define LOCALITYPRESERVINGPROJECTIONS_H_
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 #ifdef HAVE_EIGEN3
-#include <shogun/converter/LaplacianEigenmaps.h>
+#include <converter/LaplacianEigenmaps.h>
 
 namespace shogun
 {

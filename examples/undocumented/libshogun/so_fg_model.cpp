@@ -1,17 +1,17 @@
-#include <shogun/io/SGIO.h>
-#include <shogun/base/init.h>
-#include <shogun/lib/common.h>
-#include <shogun/lib/Time.h>
+#include <io/SGIO.h>
+#include <base/init.h>
+#include <lib/common.h>
+#include <lib/Time.h>
 
-#include <shogun/mathematics/Math.h>
-#include <shogun/structure/PrimalMosekSOSVM.h>
-#include <shogun/structure/DualLibQPBMSOSVM.h>
-#include <shogun/structure/StochasticSOSVM.h>
-#include <shogun/structure/FactorType.h>
-#include <shogun/structure/MAPInference.h>
-#include <shogun/structure/FactorGraphModel.h>
-#include <shogun/features/FactorGraphFeatures.h>
-#include <shogun/labels/FactorGraphLabels.h>
+#include <mathematics/Math.h>
+#include <structure/PrimalMosekSOSVM.h>
+#include <structure/DualLibQPBMSOSVM.h>
+#include <structure/StochasticSOSVM.h>
+#include <structure/FactorType.h>
+#include <structure/MAPInference.h>
+#include <structure/FactorGraphModel.h>
+#include <features/FactorGraphFeatures.h>
+#include <labels/FactorGraphLabels.h>
 
 using namespace shogun;
 

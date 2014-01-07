@@ -8,9 +8,9 @@
  * Copyright (C) 2013 Shell Hu
  */
 
-#include <shogun/mathematics/Math.h>
-#include <shogun/structure/StochasticSOSVM.h>
-#include <shogun/labels/LabelsFactory.h>
+#include <mathematics/Math.h>
+#include <structure/StochasticSOSVM.h>
+#include <labels/LabelsFactory.h>
 
 using namespace shogun;
 

@@ -11,8 +11,8 @@
 #ifndef __STRUCTURED_ACCURACY_H__
 #define __STRUCTURED_ACCURACY_H__
 
-#include <shogun/evaluation/Evaluation.h>
-#include <shogun/labels/StructuredLabels.h>
+#include <evaluation/Evaluation.h>
+#include <labels/StructuredLabels.h>
 
 namespace shogun
 {

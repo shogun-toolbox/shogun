@@ -10,10 +10,10 @@
 #ifndef DENSE_EXACT_LOG_JOB_H_
 #define DENSE_EXACT_LOG_JOB_H_
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
 #ifdef HAVE_EIGEN3
-#include <shogun/lib/computation/job/IndependentJob.h>
+#include <lib/computation/job/IndependentJob.h>
 
 namespace shogun
 {

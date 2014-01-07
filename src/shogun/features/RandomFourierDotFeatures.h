@@ -11,9 +11,9 @@
 #ifndef _RANDOMFOURIER_DOTFEATURES__H__
 #define _RANDOMFOURIER_DOTFEATURES__H__
 
-#include <shogun/features/RandomKitchenSinksDotFeatures.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/features/DotFeatures.h>
+#include <features/RandomKitchenSinksDotFeatures.h>
+#include <features/DenseFeatures.h>
+#include <features/DotFeatures.h>
 
 namespace shogun
 {

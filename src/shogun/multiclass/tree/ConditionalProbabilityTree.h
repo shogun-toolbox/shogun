@@ -13,9 +13,9 @@
 
 #include <map>
 
-#include <shogun/features/streaming/StreamingDenseFeatures.h>
-#include <shogun/multiclass/tree/TreeMachine.h>
-#include <shogun/multiclass/tree/ConditionalProbabilityTreeNodeData.h>
+#include <features/streaming/StreamingDenseFeatures.h>
+#include <multiclass/tree/TreeMachine.h>
+#include <multiclass/tree/ConditionalProbabilityTreeNodeData.h>
 
 namespace shogun
 {

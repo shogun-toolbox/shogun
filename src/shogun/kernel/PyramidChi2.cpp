@@ -8,12 +8,12 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/kernel/PyramidChi2.h>
-#include <shogun/lib/common.h>
-#include <shogun/kernel/GaussianKernel.h>
-#include <shogun/features/Features.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/mathematics/Math.h>
+#include <kernel/PyramidChi2.h>
+#include <lib/common.h>
+#include <kernel/GaussianKernel.h>
+#include <features/Features.h>
+#include <io/SGIO.h>
+#include <mathematics/Math.h>
 
 using namespace shogun;
 

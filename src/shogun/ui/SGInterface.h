@@ -1,27 +1,27 @@
 #ifndef __SGINTERFACE__H_
 #define __SGINTERFACE__H_
 
-#include <shogun/lib/config.h>
-#include <shogun/lib/common.h>
-#include <shogun/base/SGObject.h>
-#include <shogun/features/Features.h>
-#include <shogun/features/StringFeatures.h>
-#include <shogun/features/SparseFeatures.h>
-#include <shogun/features/AttributeFeatures.h>
-#include <shogun/kernel/Kernel.h>
+#include <lib/config.h>
+#include <lib/common.h>
+#include <base/SGObject.h>
+#include <features/Features.h>
+#include <features/StringFeatures.h>
+#include <features/SparseFeatures.h>
+#include <features/AttributeFeatures.h>
+#include <kernel/Kernel.h>
 
-#include <shogun/ui/GUIClassifier.h>
-#include <shogun/ui/GUIDistance.h>
-#include <shogun/ui/GUIFeatures.h>
-#include <shogun/ui/GUIHMM.h>
-#include <shogun/ui/GUIKernel.h>
-#include <shogun/ui/GUILabels.h>
-#include <shogun/ui/GUIMath.h>
-#include <shogun/ui/GUIPluginEstimate.h>
-#include <shogun/ui/GUIPreprocessor.h>
-#include <shogun/ui/GUITime.h>
-#include <shogun/ui/GUIStructure.h>
-#include <shogun/ui/GUIConverter.h>
+#include <ui/GUIClassifier.h>
+#include <ui/GUIDistance.h>
+#include <ui/GUIFeatures.h>
+#include <ui/GUIHMM.h>
+#include <ui/GUIKernel.h>
+#include <ui/GUILabels.h>
+#include <ui/GUIMath.h>
+#include <ui/GUIPluginEstimate.h>
+#include <ui/GUIPreprocessor.h>
+#include <ui/GUITime.h>
+#include <ui/GUIStructure.h>
+#include <ui/GUIConverter.h>
 
 namespace shogun
 {

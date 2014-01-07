@@ -21,9 +21,9 @@ extern "C" {
 
 #include <string.h>
 #include <assert.h>
-#include <shogun/lib/external/SFMT/SFMT.h>
-#include <shogun/lib/external/SFMT/SFMT-params.h>
-#include <shogun/lib/external/SFMT/SFMT-common.h>
+#include <lib/external/SFMT/SFMT.h>
+#include <lib/external/SFMT/SFMT-params.h>
+#include <lib/external/SFMT/SFMT-common.h>
 
 #if defined(__BIG_ENDIAN__) && !defined(__amd64) && !defined(BIG_ENDIAN64)
 #define BIG_ENDIAN64 1
@@ -53,7 +53,7 @@ inline static void swap(w128_t *array, int size);
 #endif
 
 #if defined(HAVE_SSE2)
-  #include <shogun/lib/external/SFMT/SFMT-sse2.h>
+  #include <lib/external/SFMT/SFMT-sse2.h>
 #endif
 
 /**

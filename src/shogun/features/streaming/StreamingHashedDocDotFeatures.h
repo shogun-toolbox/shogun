@@ -10,12 +10,12 @@
 #ifndef _STREAMING_HASHEDDOCDOTFEATURES__H__
 #define _STREAMING_HASHEDDOCDOTFEATURES__H__
 
-#include <shogun/features/StringFeatures.h>
-#include <shogun/features/streaming/StreamingDotFeatures.h>
-#include <shogun/lib/Tokenizer.h>
-#include <shogun/converter/HashedDocConverter.h>
-#include <shogun/io/streaming/InputParser.h>
-#include <shogun/io/streaming/StreamingFileFromStringFeatures.h>
+#include <features/StringFeatures.h>
+#include <features/streaming/StreamingDotFeatures.h>
+#include <lib/Tokenizer.h>
+#include <converter/HashedDocConverter.h>
+#include <io/streaming/InputParser.h>
+#include <io/streaming/StreamingFileFromStringFeatures.h>
 
 namespace shogun
 {

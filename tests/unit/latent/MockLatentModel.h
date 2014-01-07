@@ -1,5 +1,5 @@
 #include <gmock/gmock.h>
-#include <shogun/latent/LatentModel.h>
+#include <latent/LatentModel.h>
 
 namespace shogun {
 

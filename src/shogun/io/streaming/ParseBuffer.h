@@ -10,10 +10,10 @@
 #ifndef __PARSEBUFFER_H__
 #define __PARSEBUFFER_H__
 
-#include <shogun/lib/common.h>
+#include <lib/common.h>
 #ifdef HAVE_PTHREAD
 
-#include <shogun/lib/DataType.h>
+#include <lib/DataType.h>
 #include <pthread.h>
 
 namespace shogun

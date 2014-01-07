@@ -7,9 +7,9 @@
  * Written (W) 2013 Evgeniy Andreev (gsomix)
  */
 
-#include <shogun/base/init.h>
-#include <shogun/lib/CircularBuffer.h>
-#include <shogun/lib/DelimiterTokenizer.h>
+#include <base/init.h>
+#include <lib/CircularBuffer.h>
+#include <lib/DelimiterTokenizer.h>
 #include <gtest/gtest.h>
 
 #include <cstring>

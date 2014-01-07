@@ -7,7 +7,7 @@
  * Written (W) 2011 Shashwat Lal Das
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
-#include <shogun/io/streaming/StreamingVwCacheFile.h>
+#include <io/streaming/StreamingVwCacheFile.h>
 
 using namespace shogun;
 

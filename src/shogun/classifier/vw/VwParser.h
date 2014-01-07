@@ -16,11 +16,11 @@
 #ifndef _VW_PARSER_H__
 #define _VW_PARSER_H__
 
-#include <shogun/base/SGObject.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/lib/Hash.h>
-#include <shogun/classifier/vw/vw_common.h>
-#include <shogun/classifier/vw/cache/VwCacheWriter.h>
+#include <base/SGObject.h>
+#include <io/SGIO.h>
+#include <lib/Hash.h>
+#include <classifier/vw/vw_common.h>
+#include <classifier/vw/cache/VwCacheWriter.h>
 
 namespace shogun
 {

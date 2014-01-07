@@ -7,11 +7,11 @@
  * Written (W) 2009 Soeren Sonnenburg
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
-#include <shogun/io/SGIO.h>
-#include <shogun/lib/Time.h>
-#include <shogun/lib/ShogunException.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/lib/DynInt.h>
+#include <io/SGIO.h>
+#include <lib/Time.h>
+#include <lib/ShogunException.h>
+#include <mathematics/Math.h>
+#include <lib/DynInt.h>
 
 using namespace shogun;
 

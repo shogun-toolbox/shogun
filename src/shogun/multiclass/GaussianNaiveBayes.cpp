@@ -8,13 +8,13 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include <shogun/multiclass/GaussianNaiveBayes.h>
-#include <shogun/features/Features.h>
-#include <shogun/labels/Labels.h>
-#include <shogun/labels/RegressionLabels.h>
-#include <shogun/labels/MulticlassLabels.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/lib/Signal.h>
+#include <multiclass/GaussianNaiveBayes.h>
+#include <features/Features.h>
+#include <labels/Labels.h>
+#include <labels/RegressionLabels.h>
+#include <labels/MulticlassLabels.h>
+#include <mathematics/Math.h>
+#include <lib/Signal.h>
 
 using namespace shogun;
 

@@ -11,10 +11,10 @@
 #ifndef __MAP_INFERENCE_H__
 #define __MAP_INFERENCE_H__
 
-#include <shogun/base/SGObject.h>
-#include <shogun/lib/SGVector.h>
-#include <shogun/structure/FactorGraph.h>
-#include <shogun/labels/FactorGraphLabels.h>
+#include <base/SGObject.h>
+#include <lib/SGVector.h>
+#include <structure/FactorGraph.h>
+#include <labels/FactorGraphLabels.h>
 
 namespace shogun
 {

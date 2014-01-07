@@ -8,12 +8,12 @@
  * Copyright (C) 2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 #include <iostream>
-#include <shogun/io/SGIO.h>
-#include <shogun/lib/ShogunException.h>
-#include <shogun/labels/MulticlassLabels.h>
-#include <shogun/kernel/CustomKernel.h>
-#include <shogun/kernel/CombinedKernel.h>
-#include <shogun/classifier/mkl/MKLMulticlass.h>
+#include <io/SGIO.h>
+#include <lib/ShogunException.h>
+#include <labels/MulticlassLabels.h>
+#include <kernel/CustomKernel.h>
+#include <kernel/CombinedKernel.h>
+#include <classifier/mkl/MKLMulticlass.h>
 
 // g++ -Wall -O3 classifier_mklmulticlass.cpp -I /home/theseus/private/alx/shoguntrunk/compiledtmp/include -L/home/theseus/private/alx/shoguntrunk/compiledtmp/lib -lshogun
 

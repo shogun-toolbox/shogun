@@ -7,18 +7,18 @@
  * Written (W) 2013 Soumyajit De
  */
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 
 #ifdef HAVE_COLPACK
 #ifdef HAVE_EIGEN3
 
 #include <vector>
-#include <shogun/lib/SGSparseMatrix.h>
-#include <shogun/features/SparseFeatures.h>
-#include <shogun/mathematics/eigen3.h>
-#include <shogun/mathematics/Statistics.h>
-#include <shogun/mathematics/linalg/linop/SparseMatrixOperator.h>
-#include <shogun/mathematics/linalg/ratapprox/tracesampler/ProbingSampler.h>
+#include <lib/SGSparseMatrix.h>
+#include <features/SparseFeatures.h>
+#include <mathematics/eigen3.h>
+#include <mathematics/Statistics.h>
+#include <mathematics/linalg/linop/SparseMatrixOperator.h>
+#include <mathematics/linalg/ratapprox/tracesampler/ProbingSampler.h>
 #include <ColPack/ColPackHeaders.h>
 #include <gtest/gtest.h>
 

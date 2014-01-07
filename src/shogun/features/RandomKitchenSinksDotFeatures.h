@@ -11,7 +11,7 @@
 #ifndef _RANDOMKITCHENSINKS_DOT_FEATURES_H__
 #define _RANDOMKITCHENSINKS_DOT_FEATURES_H__
 
-#include <shogun/features/DotFeatures.h>
+#include <features/DotFeatures.h>
 
 namespace shogun
 {

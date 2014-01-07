@@ -8,12 +8,12 @@
  * Copyright (C) 2008 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/ui/SGInterface.h>
-#include <shogun/ui/GUIStructure.h>
+#include <ui/SGInterface.h>
+#include <ui/GUIStructure.h>
 
-#include <shogun/lib/config.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/structure/Plif.h>
+#include <lib/config.h>
+#include <io/SGIO.h>
+#include <structure/Plif.h>
 
 using namespace shogun;
 

@@ -13,10 +13,10 @@
 #include <algorithm>
 #include <functional>
 
-#include <shogun/labels/BinaryLabels.h>
-#include <shogun/multiclass/tree/RelaxedTreeUtil.h>
-#include <shogun/multiclass/tree/RelaxedTree.h>
-#include <shogun/kernel/GaussianKernel.h>
+#include <labels/BinaryLabels.h>
+#include <multiclass/tree/RelaxedTreeUtil.h>
+#include <multiclass/tree/RelaxedTree.h>
+#include <kernel/GaussianKernel.h>
 
 
 using namespace shogun;

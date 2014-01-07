@@ -8,8 +8,8 @@
  * Copyright (C) 2012 Viktor Gal
  */
 
-#include <shogun/latent/LatentModel.h>
-#include <shogun/labels/BinaryLabels.h>
+#include <latent/LatentModel.h>
+#include <labels/BinaryLabels.h>
 
 using namespace shogun;
 

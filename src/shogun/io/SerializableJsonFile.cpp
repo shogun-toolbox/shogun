@@ -8,11 +8,11 @@
  * Copyright (C) 2010 Berlin Institute of Technology
  */
 
-#include <shogun/lib/config.h>
+#include <lib/config.h>
 #ifdef HAVE_JSON
 
-#include <shogun/io/SerializableJsonFile.h>
-#include <shogun/io/SerializableJsonReader00.h>
+#include <io/SerializableJsonFile.h>
+#include <io/SerializableJsonReader00.h>
 
 #define STR_KEY_FILETYPE           "filetype"
 #define STR_FILETYPE_00 \

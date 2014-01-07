@@ -25,8 +25,8 @@
 #ifdef HAVE_PYTHON
 %{
 #include <stdio.h>
-#include <shogun/lib/DataType.h>
-#include <shogun/lib/memory.h>
+#include <lib/DataType.h>
+#include <lib/memory.h>
 
 #undef _POSIX_C_SOURCE
 extern "C" {
