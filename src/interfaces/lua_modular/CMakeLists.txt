@@ -1,5 +1,7 @@
 include(CommonModularInterface)
-include_directories(${LUA_INCLUDE_DIRS})
+include_directories(${CMAKE_SOURCE_DIR}/src/shogun
+		${CMAKE_BINARY_DIR}/src/shogun
+		${LUA_INCLUDE_DIRS})
 
 SET(LUA_MODULAR_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR} PARENT_SCOPE)
 GENERATE_MODULAR_TARGET(lua ${CMAKE_CURRENT_SOURCE_DIR} "${LUA_LDFLAGS}")

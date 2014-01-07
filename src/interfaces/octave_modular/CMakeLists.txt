@@ -1,5 +1,7 @@
 include(CommonModularInterface)
-include_directories(${OCTAVE_INCLUDE_DIRS})
+include_directories(${CMAKE_SOURCE_DIR}/src/shogun
+		${CMAKE_BINARY_DIR}/src/shogun
+		${OCTAVE_INCLUDE_DIRS})
 
 GENERATE_MODULAR_TARGET(octave ${CMAKE_CURRENT_SOURCE_DIR} ${OCTAVE_LIBRARIES})
 set_target_properties(octave_modular PROPERTIES PREFIX "")
