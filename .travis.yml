@@ -20,7 +20,7 @@ matrix:
     - compiler: clang
       python: 3.3
       language: python
-      env: CMAKE_OPTIONS="-DPythonModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON" EXTRA_PACKAGES="swig2.0" CC=clang CXX=clang++ PIP_ARGS=" -I --use-wheel --find-links=http://cache27diy-cpycloud.rhcloud.com/3.3/"
+      env: CMAKE_OPTIONS="-DPythonModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON" EXTRA_PACKAGES="swig2.0" CC=clang CXX=clang++ PIP_ARGS=" -I --no-index --find-links=http://cache27diy-cpycloud.rhcloud.com/3.3/"
     - compiler: clang
       rvm: 1.8.7
       language: ruby
@@ -45,7 +45,7 @@ matrix:
     - compiler: clang
       python: 3.3
       language: python
-      env: CMAKE_OPTIONS="-DPythonModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON" EXTRA_PACKAGES="swig2.0" CC=clang CXX=clang++ PIP_ARGS=" -I --use-wheel --find-links=http://cache27diy-cpycloud.rhcloud.com/3.3/"
+      env: CMAKE_OPTIONS="-DPythonModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON" EXTRA_PACKAGES="swig2.0" CC=clang CXX=clang++ PIP_ARGS=" -I --no-index --find-links=http://cache27diy-cpycloud.rhcloud.com/3.3/"
     - language: objective-c
       env: OSX=1
 virtualenv:
@@ -56,7 +56,7 @@ before_install:
  - if [ -z $OSX ] ; then sudo apt-get install -qq libbz2-dev cdbs libarpack2-dev libatlas-base-dev libblas-dev libglpk-dev libhdf5-serial-dev zlib1g-dev libxml2-dev libreadline6-dev libreadline-dev libsnappy-dev liblzo2-dev liblzma-dev liblapack-dev gdb cmake python-jinja2 $EXTRA_PACKAGES ; else brew install cmake ; fi
  - if [ $OSX ] ; then curl -O https://raw.github.com/rudix-mac/package-manager/master/rudix.py && sudo python rudix.py install rudix && sudo rudix install jinja2 ; fi
  - $CUSTOM_PKG
- - if [[ $TRAVIS_PYTHON_VERSION == '3.3' ]] ; then pip install -I git+https://github.com/pypa/pip@42102e9deaea99db08b681d06906c2945f6f95e2#egg=pip ; fi
+ - if [[ $TRAVIS_PYTHON_VERSION == '3.3' ]] ; then pip install -I git+https://github.com/pypa/pip@1.5#egg=pip ; fi
  - if [[ $TRAVIS_PYTHON_VERSION == '3.3' ]] ; then pip install -I -U setuptools ; fi
  - if [[ $TRAVIS_PYTHON_VERSION == '3.3' ]] ; then pip install wheel ; fi
  - if [[ $TRAVIS_PYTHON_VERSION == '3.3' ]] ; then pip install $PIP_ARGS numpy ; fi
