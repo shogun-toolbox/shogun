@@ -38,12 +38,12 @@ def mathematics_linsolver_cg (matrix=mtx,max_iter=1000,seed=10):
 		# verifying the solution via direct solving
 		from scipy.sparse.linalg import spsolve, eigsh
 		y=spsolve(A,b)
-		print sqrt(sum(map(lambda z: z*z,x-y)))
+		print(sqrt(sum(map(lambda z: z*z,x-y))))
 
 		return x
 
 	except ImportError:
-		print 'Shogun not installed with Eigen3!'
+		print('Shogun not installed with Eigen3!')
 
 if __name__=='__main__':
 	print('CG')

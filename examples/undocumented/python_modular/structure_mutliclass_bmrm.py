@@ -43,7 +43,7 @@ def structure_multiclass_bmrm(fm_train_real=traindat,label_train_multiclass=labe
 
 	out = sosvm.apply()
 	count = 0
-	for i in xrange(out.get_num_labels()):
+	for i in range(out.get_num_labels()):
 		yi_pred = RealNumber.obtain_from_generic(out.get_label(i))
 		if yi_pred.value == label_train_multiclass[i]:
 			count = count + 1
@@ -62,7 +62,7 @@ def structure_multiclass_bmrm(fm_train_real=traindat,label_train_multiclass=labe
 
 	out = sosvm.apply()
 	count = 0
-	for i in xrange(out.get_num_labels()):
+	for i in range(out.get_num_labels()):
 		yi_pred = RealNumber.obtain_from_generic(out.get_label(i))
 		if yi_pred.value == label_train_multiclass[i]:
 			count = count + 1
@@ -78,7 +78,7 @@ def structure_multiclass_bmrm(fm_train_real=traindat,label_train_multiclass=labe
 
 	out = sosvm.apply()
 	count = 0
-	for i in xrange(out.get_num_labels()):
+	for i in range(out.get_num_labels()):
 		yi_pred = RealNumber.obtain_from_generic(out.get_label(i))
 		if yi_pred.value == label_train_multiclass[i]:
 			count = count + 1

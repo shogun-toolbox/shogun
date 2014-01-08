@@ -76,12 +76,12 @@ def mathematics_logdet (matrix=mtx,max_iter_eig=1000,max_iter_lin=1000,num_sampl
 		estimated_logdet=sum(estimates)/len(estimates)
 		actual_logdet=Statistics.log_det(A)
 
-		print actual_logdet, estimated_logdet
+		print(actual_logdet, estimated_logdet)
 
 		return estimates
 
 	except ImportError:
-		print 'One or many of the dependencies (Eigen3/LaPack/ColPack) not found!'
+		print('One or many of the dependencies (Eigen3/LaPack/ColPack) not found!')
 
 if __name__=='__main__':
 	print('LogDetEstimator')
