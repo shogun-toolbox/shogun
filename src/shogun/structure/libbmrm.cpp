@@ -387,7 +387,7 @@ BmrmStatistics svm_bmrm_solver(
 	/* Verbose output */
 
 	if (verbose)
-		SG_SDEBUG("%4d: tim=%.3lf, Fp=%lf, Fd=%lf, R=%lf\n",
+		SG_SPRINT("%4d: tim=%.3lf, Fp=%lf, Fd=%lf, R=%lf\n",
 				bmrm.nIter, tstop-tstart, bmrm.Fp, bmrm.Fd, R);
 
 	/* store Fp, Fd and wdist history */
@@ -514,7 +514,7 @@ BmrmStatistics svm_bmrm_solver(
 
 		/* Verbose output */
 		if (verbose)
-			SG_SDEBUG("%4d: tim=%.3lf, Fp=%lf, Fd=%lf, (Fp-Fd)=%lf, (Fp-Fd)/Fp=%lf, R=%lf, nCP=%d, nzA=%d, QPexitflag=%d\n",
+			SG_SPRINT("%4d: tim=%.3lf, Fp=%lf, Fd=%lf, (Fp-Fd)=%lf, (Fp-Fd)/Fp=%lf, R=%lf, nCP=%d, nzA=%d, QPexitflag=%d\n",
 					bmrm.nIter, tstop-tstart, bmrm.Fp, bmrm.Fd, bmrm.Fp-bmrm.Fd,
 					(bmrm.Fp-bmrm.Fd)/bmrm.Fp, R, bmrm.nCP, bmrm.nzA, qp_exitflag.exitflag);
 
@@ -548,12 +548,18 @@ BmrmStatistics svm_bmrm_solver(
 			bmrm.exitflag=-1;
 
 		/* Debug: compute objective and training error */
-		if (verbose)
+		if (verbose && SG_UNLIKELY(sg_io->loglevel_above(MSG_DEBUG)))
 		{
+			float64_t debug_tstart=ttime.cur_time_diff(false);
+
 			SGVector<float64_t> w_debug(W, nDim, false);
 			float64_t primal = CSOSVMHelper::primal_objective(w_debug, model, _lambda);
 			float64_t train_error = CSOSVMHelper::average_loss(w_debug, model);
 			helper->add_debug_info(primal, bmrm.nIter, train_error);
+
+			float64_t debug_tstop=ttime.cur_time_diff(false);
+			SG_SPRINT("%4d: add_debug_info: tim=%.3lf, primal=%.3lf, train_error=%lf\n",
+				bmrm.nIter, debug_tstop-debug_tstart, primal, train_error);
 		}
 
 	} /* end of main loop */
