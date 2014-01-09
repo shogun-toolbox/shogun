@@ -6,4 +6,5 @@ if (RESULT)
 	#		--args ${EXECUTABLE} ${FILE} ${ARGS}
 	#			RESULT_VARIABLE GDB_RESULT)
 	#endif()
+	MESSAGE( FATAL_ERROR "FAIL:  ${ARGS}" )
 endif()
