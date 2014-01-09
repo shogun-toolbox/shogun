@@ -145,7 +145,16 @@ def tester(tests, cmp_method, tolerance, failures, missing):
 				try:
 					b = pickle.load(open(fname))
 				except:
-					b = pickle.load(open(fname, 'rb'))
+
+					try:
+						b = pickle.load(open(fname, 'rb'))
+
+					except:
+						with open(fname, 'rb') as f:
+							p = pickle._Unpickler(f)
+							p.encoding = 'latin1'
+							b = p.load()
+
 
 				try:
 					if cmp_method(a,b,tolerance):
