@@ -143,9 +143,9 @@ def tester(tests, cmp_method, tolerance, failures, missing):
 				a = run_test(mod, mod_name, i)
 
 				try:
-				b = pickle.load(open(fname))
+					b = pickle.load(open(fname))
 				except:
-				b = pickle.load(open(fname, 'rb'))
+					b = pickle.load(open(fname, 'rb'))
 
 				try:
 					if cmp_method(a,b,tolerance):
