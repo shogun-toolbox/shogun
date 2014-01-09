@@ -37,7 +37,7 @@ def compare(a, b, tolerance):
 
 		# print debug output in case of failure
 		if not result:
-			print "Equals failed with debug output"
+			print("Equals failed with debug output")
 			old_loglevel=a.io.get_loglevel()
 			a.io.set_loglevel(1)
 			a.equals(b, shogun_tolerance)
