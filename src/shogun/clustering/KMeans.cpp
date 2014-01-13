@@ -30,12 +30,13 @@ CKMeans::CKMeans()
 	init();
 }
 
-CKMeans::CKMeans(int32_t k_, CDistance* d)
+CKMeans::CKMeans(int32_t k_, CDistance* d, bool use_kmpp))
 : CDistanceMachine()
 {
 	init();
 	k=k_;
 	set_distance(d);
+	use_kmeanspp=use_kpp;
 }
 
 CKMeans::CKMeans(int32_t k_i, CDistance* d_i, SGMatrix<float64_t> centers_i)
@@ -252,6 +253,9 @@ bool CKMeans::train_machine(CFeatures* data)
 	/* cluster_centers=zeros(dimensions, k) ; */
 	memset(mus.matrix, 0, sizeof(float64_t)*XDimk);
 
+	if (use_kmeanspp)
+		mus_initial=kmeanspp();
+
 	if (mus_initial.matrix)
 		set_initial_centers(rhs_mus, weights_set, dists, ClList, XSize);
 	else
@@ -452,6 +456,65 @@ void CKMeans::store_model_features()
 	CFeatures* rhs=distance->get_rhs();
 	distance->init(cluster_centers, rhs);
 	SG_UNREF(rhs);
+}
+
+SGMatrix<float64_t> CKMeans::kmeanspp()
+{
+	int32_t cent_id, mu_1, mu_next;
+	int32_t count=0;
+	float64_t dist_temp;
+	float64_t sum;
+
+	CDenseFeatures<float64_t>* muspp=new CDenseFeatures<float64_t>(0);
+	CDenseFeatures<float64_t>* lhs=(CDenseFeatures<float64_t>*)distance->replace_lhs(muspp);
+	int32_t num=lhs->get_num_vectors();
+	int32_t dim=lhs->get_num_features();
+	muspp->set_feature_matrix(SGMatrix<float64_t>(dim,k,false)); 
+	
+	float64_t *dists = SG_CALLOC(float64_t,num);
+	
+	/* 1st center */
+	mu_1=CMath::random((int32_t) 0,num-1);
+	muspp->set_feature_vector(lhs->get_feature_vector(mu_1),0);
+	
+	/* choose a center - do k-1 times */
+	while (++count<k)
+	{
+		sum=0.0;
+		/* for each data point find distance to nearest already chosen center */
+		for (int32_t point_idx=0;point_idx<num;point_idx++)
+		{
+			dists[point_idx]=distance->distance(0,point_idx);
+			cent_id = 1;
+
+			while (cent_id<count)
+			{
+				dist_temp=distance->distance(cent_id,point_idx); 
+				if (dists[point_idx]>dist_temp)
+					dists[point_idx]=dist_temp; 
+				cent_id++;
+			}
+
+			dists[point_idx]*=dists[point_idx];
+			sum+=dists[point_idx];
+		}
+
+		/*random choosing - points weighted by square of distance from nearset center*/
+		mu_next = 0;
+		sum=CMath::random(0.0,sum);
+		while ((sum-=dists[mu_next])>0)
+			mu_next++;
+
+		muspp->set_feature_vector(lhs->get_feature_vector(mu_next),count);		
+	}
+
+	distance->replace_lhs(lhs);
+	SGMatrix<float64_t> mat=muspp->get_feature_matrix();
+	
+	delete muspp;
+	SG_FREE(dists);
+
+	return mat;
 }
 
 void CKMeans::init()

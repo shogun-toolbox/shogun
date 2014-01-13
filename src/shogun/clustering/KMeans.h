@@ -48,8 +48,9 @@ class CKMeans : public CDistanceMachine
 		 *
 		 * @param k parameter k
 		 * @param d distance
+		 * @param kmeanspp True for using KMeans++
 		 */
-		CKMeans(int32_t k, CDistance* d);
+		CKMeans(int32_t k, CDistance* d, bool kmeanspp=false);
 
 		/** constructor for supplying initial centers
 		 * @param k_i parameter k
@@ -161,6 +162,9 @@ class CKMeans : public CDistanceMachine
 
 		virtual bool train_require_labels() const { return false; }
 
+		/* kmeans++ algorithm to initialize cluster centers */	
+		SGMatrix<float64_t> kmeanspp();
+
 	private:
 		void init();
 		void set_random_centers(float64_t* weights_set, int32_t* ClList, int32_t XSize);
@@ -186,7 +190,9 @@ class CKMeans : public CDistanceMachine
 
 		///initial centers supplied
 		SGMatrix<float64_t> mus_initial;
-
+		
+		///flag to check if kmeans++ has to be used
+		bool use_kmeanspp;
 	private:
 		/* temp variable for cluster centers */
 		SGMatrix<float64_t> mus;
