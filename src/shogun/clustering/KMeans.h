@@ -95,6 +95,18 @@ class CKMeans : public CDistanceMachine
 		 */
 		int32_t get_k();
 
+		/* set use_kmeanspp attribute
+		 *
+		 * @param kmpp true=>use KMeans++ false=>don't use KMeans++
+		 */
+		void set_use_kmeanspp(bool kmpp);
+
+                /* get use_kmeanspp attribute
+                 *
+                 * @return use_kmeanspp true=>use KMeans++ false=>don't use KMeans++
+                 */
+                bool get_use_kmeanspp();
+
 		/** set fixed centers
 		 *
 		 * @param fixed true if fixed cluster centers are intended
@@ -162,7 +174,10 @@ class CKMeans : public CDistanceMachine
 
 		virtual bool train_require_labels() const { return false; }
 
-		/* kmeans++ algorithm to initialize cluster centers */	
+		/** kmeans++ algorithm to initialize cluster centers
+		* 
+		* @return initial cluster centers: matrix (k columns, dim rows)
+		*/	
 		SGMatrix<float64_t> kmeanspp();
 
 	private:

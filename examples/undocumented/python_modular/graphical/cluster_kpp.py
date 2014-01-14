@@ -1,8 +1,11 @@
-"""Graphical example illustrating improvement of convergence of KMeans when cluster centers are initialized by KMeans++ algorithm.
+"""Graphical example illustrating improvement of convergence of KMeans 
+when cluster centers are initialized by KMeans++ algorithm.
 
-In this example, 4 vertices of a rectangle are chosen: (0,0) (0,100) (10,0) (10,100). There are 500 points normally distributed about each vertex. Therefore, the ideal cluster centers for k=2 are the global minima ie (5,0) (5,100). 
+In this example, 4 vertices of a rectangle are chosen: (0,0) (0,100) (10,0) (10,100). 
+There are 500 points normally distributed about each vertex. 
+Therefore, the ideal cluster centers for k=2 are the global minima ie (5,0) (5,100). 
 
-2014-Parijat Mazumdar
+Written (W) 2014 Parijat Mazumdar
 """
 from pylab import figure,clf,plot,linspace,pi,show
 from numpy import array,ones,zeros,cos,sin,concatenate
@@ -21,12 +24,12 @@ traindata=concatenate((d1,d2,d3,d4),1)
 feat_train=RealFeatures(traindata)
 distance=EuclideanDistance(feat_train,feat_train)
 
-kmeanspp=Kmeans(k, distance, True)
-kmeanspp.train()
-centerspp=kmeanspp.get_cluster_centers()
-radipp=kmeanspp.get_radiuses()
+kmeans=Kmeans(k, distance, True)
+kmeans.train()
+centerspp=kmeans.get_cluster_centers()
+radipp=kmeans.get_radiuses()
 
-kmeans=Kmeans(k, distance)
+kmeans.set_use_kmeanspp(False)
 kmeans.train()
 centers=kmeans.get_cluster_centers()
 radi=kmeans.get_radiuses()

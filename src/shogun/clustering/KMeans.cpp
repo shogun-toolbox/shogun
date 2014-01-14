@@ -30,13 +30,13 @@ CKMeans::CKMeans()
 	init();
 }
 
-CKMeans::CKMeans(int32_t k_, CDistance* d, bool use_kmpp))
+CKMeans::CKMeans(int32_t k_, CDistance* d, bool use_kmpp)
 : CDistanceMachine()
-{
+{	
 	init();
 	k=k_;
 	set_distance(d);
-	use_kmeanspp=use_kpp;
+	use_kmeanspp=use_kmpp;
 }
 
 CKMeans::CKMeans(int32_t k_i, CDistance* d_i, SGMatrix<float64_t> centers_i)
@@ -225,6 +225,10 @@ bool CKMeans::train_machine(CFeatures* data)
 
 	ASSERT(XSize>0 && dimensions>0);
 
+	///if kmeans++ to be used
+        if (use_kmeanspp)
+                mus_initial=kmeanspp();
+
 	int32_t changed=1;
 	const int32_t XDimk=dimensions*k;
 	int32_t iter=0;
@@ -252,9 +256,6 @@ bool CKMeans::train_machine(CFeatures* data)
 
 	/* cluster_centers=zeros(dimensions, k) ; */
 	memset(mus.matrix, 0, sizeof(float64_t)*XDimk);
-
-	if (use_kmeanspp)
-		mus_initial=kmeanspp();
 
 	if (mus_initial.matrix)
 		set_initial_centers(rhs_mus, weights_set, dists, ClList, XSize);
@@ -391,6 +392,15 @@ bool CKMeans::save(FILE* dstfile)
 	return false;
 }
 
+void CKMeans::set_use_kmeanspp(bool kmpp)
+{
+	use_kmeanspp=kmpp;
+}
+
+bool CKMeans::get_use_kmeanspp()
+{
+	return use_kmeanspp;
+}
 
 void CKMeans::set_k(int32_t p_k)
 {
@@ -460,36 +470,28 @@ void CKMeans::store_model_features()
 
 SGMatrix<float64_t> CKMeans::kmeanspp()
 {
-	int32_t cent_id, mu_1, mu_next;
-	int32_t count=0;
-	float64_t dist_temp;
-	float64_t sum;
-
-	CDenseFeatures<float64_t>* muspp=new CDenseFeatures<float64_t>(0);
-	CDenseFeatures<float64_t>* lhs=(CDenseFeatures<float64_t>*)distance->replace_lhs(muspp);
-	int32_t num=lhs->get_num_vectors();
-	int32_t dim=lhs->get_num_features();
-	muspp->set_feature_matrix(SGMatrix<float64_t>(dim,k,false)); 
-	
-	float64_t *dists = SG_CALLOC(float64_t,num);
+	int32_t num=distance->get_num_vec_lhs();
+	SGVector<float64_t> dists=SGVector<float64_t>(num,false);
+	SGVector<int32_t> mu_index=SGVector<int32_t>(k,false);
 	
 	/* 1st center */
-	mu_1=CMath::random((int32_t) 0,num-1);
-	muspp->set_feature_vector(lhs->get_feature_vector(mu_1),0);
+	int32_t mu_1=CMath::random((int32_t) 0,num-1);
+	mu_index[0]=mu_1;
 	
 	/* choose a center - do k-1 times */
+	int32_t count=0;
 	while (++count<k)
 	{
-		sum=0.0;
+		float64_t sum=0.0;
 		/* for each data point find distance to nearest already chosen center */
 		for (int32_t point_idx=0;point_idx<num;point_idx++)
 		{
-			dists[point_idx]=distance->distance(0,point_idx);
-			cent_id = 1;
+			dists[point_idx]=distance->distance(mu_index[0],point_idx);
+			int32_t cent_id=1;
 
 			while (cent_id<count)
 			{
-				dist_temp=distance->distance(cent_id,point_idx); 
+				float64_t dist_temp=distance->distance(mu_index[cent_id],point_idx); 
 				if (dists[point_idx]>dist_temp)
 					dists[point_idx]=dist_temp; 
 				cent_id++;
@@ -500,20 +502,25 @@ SGMatrix<float64_t> CKMeans::kmeanspp()
 		}
 
 		/*random choosing - points weighted by square of distance from nearset center*/
-		mu_next = 0;
-		sum=CMath::random(0.0,sum);
-		while ((sum-=dists[mu_next])>0)
+		int32_t mu_next=0;
+		float64_t chosen=CMath::random(0.0,sum);
+		while ((chosen-=dists[mu_next])>0)
 			mu_next++;
 
-		muspp->set_feature_vector(lhs->get_feature_vector(mu_next),count);		
+		mu_index[count]=mu_next;
 	}
 
-	distance->replace_lhs(lhs);
-	SGMatrix<float64_t> mat=muspp->get_feature_matrix();
-	
-	delete muspp;
-	SG_FREE(dists);
-
+	CDenseFeatures<float64_t>* lhs=(CDenseFeatures<float64_t>*)distance->get_lhs();
+	int32_t dim=lhs->get_num_features();
+	SGMatrix<float64_t> mat=SGMatrix<float64_t>(dim,k,false);
+	for (int32_t c_m=0;c_m<k;c_m++)
+	{
+		SGVector<float64_t> feature=lhs->get_feature_vector(c_m);
+		for (int32_t r_m=0;r_m<dim;r_m++)
+		{
+			mat(r_m,c_m)=feature[r_m];
+		}
+	}
 	return mat;
 }
 
@@ -523,7 +530,7 @@ void CKMeans::init()
 	k=3;
 	dimensions=0;
 	fixed_centers=false;
-
+	use_kmeanspp=false;
 	SG_ADD(&max_iter, "max_iter", "Maximum number of iterations", MS_AVAILABLE);
 	SG_ADD(&k, "k", "k, the number of clusters", MS_AVAILABLE);
 	SG_ADD(&dimensions, "dimensions", "Dimensions of data", MS_NOT_AVAILABLE);
