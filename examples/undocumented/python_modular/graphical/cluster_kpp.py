@@ -43,8 +43,8 @@ plot(d4[0],d4[1],'cx',hold=True)
 
 plot(centerspp[0,:], centerspp[1,:], 'ko',hold=True)
 for i in xrange(k):
-        t = linspace(0, 2*pi, 100)
-        plot(radipp[i]*cos(t)+centerspp[0,i],radipp[i]*sin(t)+centerspp[1,i],'k-', hold=True)
+	t = linspace(0, 2*pi, 100)
+	plot(radipp[i]*cos(t)+centerspp[0,i],radipp[i]*sin(t)+centerspp[1,i],'k-', hold=True)
 
 figure('KMeans w/o KMeans++')
 clf()
@@ -55,7 +55,7 @@ plot(d4[0],d4[1],'cx',hold=True)
 
 plot(centers[0,:], centers[1,:], 'ko',hold=True)
 for i in xrange(k):
-        t = linspace(0, 2*pi, 100)
-        plot(radi[i]*cos(t)+centers[0,i],radi[i]*sin(t)+centers[1,i],'k-', hold=True)
+	t = linspace(0, 2*pi, 100)
+	plot(radi[i]*cos(t)+centers[0,i],radi[i]*sin(t)+centers[1,i],'k-', hold=True)
 
 show()

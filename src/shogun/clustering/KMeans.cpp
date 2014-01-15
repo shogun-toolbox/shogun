@@ -226,8 +226,8 @@ bool CKMeans::train_machine(CFeatures* data)
 	ASSERT(XSize>0 && dimensions>0);
 
 	///if kmeans++ to be used
-        if (use_kmeanspp)
-                mus_initial=kmeanspp();
+	if (use_kmeanspp)
+		mus_initial=kmeanspp();
 
 	int32_t changed=1;
 	const int32_t XDimk=dimensions*k;
@@ -397,7 +397,7 @@ void CKMeans::set_use_kmeanspp(bool kmpp)
 	use_kmeanspp=kmpp;
 }
 
-bool CKMeans::get_use_kmeanspp()
+const bool CKMeans::get_use_kmeanspp()
 {
 	return use_kmeanspp;
 }
@@ -517,10 +517,9 @@ SGMatrix<float64_t> CKMeans::kmeanspp()
 	{
 		SGVector<float64_t> feature=lhs->get_feature_vector(c_m);
 		for (int32_t r_m=0;r_m<dim;r_m++)
-		{
 			mat(r_m,c_m)=feature[r_m];
-		}
 	}
+	SG_UNREF(lhs);
 	return mat;
 }
 
