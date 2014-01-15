@@ -20,6 +20,9 @@ blacklist = ("__init__.py",
 		"evaluation_director_contingencytableevaluation_modular.py",
 		"distance_director_euclidean_modular.py",
 		"classifier_multiclass_ecoc_random.py",
+		# the following test fails and is not written to be used with the integration test suite,
+		# i.e. the main function does not return any objects
+		"structure_multiclass_bmrm.py",
 #the tests below all fail on travis but work fine on our buildbot
 		"classifier_lda_modular.py",
 		"classifier_liblinear_modular.py",
