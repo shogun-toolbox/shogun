@@ -471,8 +471,8 @@ void CKMeans::store_model_features()
 SGMatrix<float64_t> CKMeans::kmeanspp()
 {
 	int32_t num=distance->get_num_vec_lhs();
-	SGVector<float64_t> dists=SGVector<float64_t>(num,false);
-	SGVector<int32_t> mu_index=SGVector<int32_t>(k,false);
+	SGVector<float64_t> dists=SGVector<float64_t>(num);
+	SGVector<int32_t> mu_index=SGVector<int32_t>(k);
 	
 	/* 1st center */
 	int32_t mu_1=CMath::random((int32_t) 0,num-1);
@@ -512,7 +512,7 @@ SGMatrix<float64_t> CKMeans::kmeanspp()
 
 	CDenseFeatures<float64_t>* lhs=(CDenseFeatures<float64_t>*)distance->get_lhs();
 	int32_t dim=lhs->get_num_features();
-	SGMatrix<float64_t> mat=SGMatrix<float64_t>(dim,k,false);
+	SGMatrix<float64_t> mat=SGMatrix<float64_t>(dim,k);
 	for (int32_t c_m=0;c_m<k;c_m++)
 	{
 		SGVector<float64_t> feature=lhs->get_feature_vector(c_m);
@@ -520,6 +520,8 @@ SGMatrix<float64_t> CKMeans::kmeanspp()
 			mat(r_m,c_m)=feature[r_m];
 	}
 	SG_UNREF(lhs);
+	SG_FREE(mu_index.vector);
+	SG_FREE(dists.vector);
 	return mat;
 }
 
