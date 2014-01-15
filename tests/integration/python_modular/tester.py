@@ -203,7 +203,7 @@ if __name__=='__main__':
 			print("\t", f[0])
 
 		print()
-		print("Detailled failures:")
+		print("Detailed failures:")
 		print()
 		for f in failed:
 			print("\t", f[0])
