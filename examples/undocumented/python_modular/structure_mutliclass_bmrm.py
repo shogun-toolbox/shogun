@@ -41,14 +41,14 @@ def structure_multiclass_bmrm(fm_train_real=traindat,label_train_multiclass=labe
 	sosvm.set_verbose(True)
 	sosvm.train()
 
-	out = sosvm.apply()
+	bmrm_out = sosvm.apply()
 	count = 0
-	for i in range(out.get_num_labels()):
-		yi_pred = RealNumber.obtain_from_generic(out.get_label(i))
+	for i in range(bmrm_out.get_num_labels()):
+		yi_pred = RealNumber.obtain_from_generic(bmrm_out.get_label(i))
 		if yi_pred.value == label_train_multiclass[i]:
 			count = count + 1
 
-	#print("BMRM: Correct classification rate: %0.2f" % ( 100.0*count/out.get_num_labels() ))
+	#print("BMRM: Correct classification rate: %0.2f" % ( 100.0*count/bmrm_out.get_num_labels() ))
 	#hp = sosvm.get_helper()
 	#print hp.get_primal_values()
 	#print hp.get_train_errors()
@@ -60,14 +60,14 @@ def structure_multiclass_bmrm(fm_train_real=traindat,label_train_multiclass=labe
 	sosvm.set_verbose(True)
 	sosvm.train()
 
-	out = sosvm.apply()
+	ppbmrm_out = sosvm.apply()
 	count = 0
-	for i in range(out.get_num_labels()):
-		yi_pred = RealNumber.obtain_from_generic(out.get_label(i))
+	for i in range(ppbmrm_out.get_num_labels()):
+		yi_pred = RealNumber.obtain_from_generic(ppbmrm_out.get_label(i))
 		if yi_pred.value == label_train_multiclass[i]:
 			count = count + 1
 
-	#print("PPBMRM: Correct classification rate: %0.2f" % ( 100.0*count/out.get_num_labels() ))
+	#print("PPBMRM: Correct classification rate: %0.2f" % ( 100.0*count/ppbmrm_out.get_num_labels() ))
 
 	# P3BMRM
 	w = np.zeros(model.get_dim())
@@ -76,14 +76,15 @@ def structure_multiclass_bmrm(fm_train_real=traindat,label_train_multiclass=labe
 	sosvm.set_verbose(True)
 	sosvm.train()
 
-	out = sosvm.apply()
+	p3bmrm_out = sosvm.apply()
 	count = 0
-	for i in range(out.get_num_labels()):
-		yi_pred = RealNumber.obtain_from_generic(out.get_label(i))
+	for i in range(p3bmrm_out.get_num_labels()):
+		yi_pred = RealNumber.obtain_from_generic(p3bmrm_out.get_label(i))
 		if yi_pred.value == label_train_multiclass[i]:
 			count = count + 1
 
-	#print("P3BMRM: Correct classification rate: %0.2f" % ( 100.0*count/out.get_num_labels() ))
+	#print("P3BMRM: Correct classification rate: %0.2f" % ( 100.0*count/p3bmrm_out.get_num_labels() ))
+	return bmrm_out, ppbmrm_out, p3bmrm_out
 
 if __name__=='__main__':
 	print('SO multiclass model with bundle methods')
