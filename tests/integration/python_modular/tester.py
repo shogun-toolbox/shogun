@@ -8,7 +8,7 @@ import numpy
 import sys
 import difflib
 
-from generator import setup_tests, get_fname, blacklist, get_test_mod, run_test, MSG_DEBUG, MSG_INFO
+from generator import setup_tests, get_fname, blacklist, get_test_mod, run_test
 
 def typecheck(a, b):
 	if str(type(a)).find('shogun')>=0 and \
@@ -39,7 +39,7 @@ def compare(a, b, tolerance):
 		if not result:
 			print("Equals failed with debug output")
 			old_loglevel=a.io.get_loglevel()
-			a.io.set_loglevel(MSG_INFO)
+			a.io.set_loglevel(modshogun.MSG_INFO)
 			a.equals(b, shogun_tolerance)
 			a.io.set_loglevel(old_loglevel)
 
