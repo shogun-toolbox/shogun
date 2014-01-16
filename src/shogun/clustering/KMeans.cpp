@@ -30,12 +30,13 @@ CKMeans::CKMeans()
 	init();
 }
 
-CKMeans::CKMeans(int32_t k_, CDistance* d)
+CKMeans::CKMeans(int32_t k_, CDistance* d, bool use_kmpp)
 : CDistanceMachine()
-{
+{	
 	init();
 	k=k_;
 	set_distance(d);
+	use_kmeanspp=use_kmpp;
 }
 
 CKMeans::CKMeans(int32_t k_i, CDistance* d_i, SGMatrix<float64_t> centers_i)
@@ -224,6 +225,10 @@ bool CKMeans::train_machine(CFeatures* data)
 
 	ASSERT(XSize>0 && dimensions>0);
 
+	///if kmeans++ to be used
+	if (use_kmeanspp)
+		mus_initial=kmeanspp();
+
 	int32_t changed=1;
 	const int32_t XDimk=dimensions*k;
 	int32_t iter=0;
@@ -387,6 +392,15 @@ bool CKMeans::save(FILE* dstfile)
 	return false;
 }
 
+void CKMeans::set_use_kmeanspp(bool kmpp)
+{
+	use_kmeanspp=kmpp;
+}
+
+const bool CKMeans::get_use_kmeanspp()
+{
+	return use_kmeanspp;
+}
 
 void CKMeans::set_k(int32_t p_k)
 {
@@ -454,13 +468,70 @@ void CKMeans::store_model_features()
 	SG_UNREF(rhs);
 }
 
+SGMatrix<float64_t> CKMeans::kmeanspp()
+{
+	int32_t num=distance->get_num_vec_lhs();
+	SGVector<float64_t> dists=SGVector<float64_t>(num);
+	SGVector<int32_t> mu_index=SGVector<int32_t>(k);
+	
+	/* 1st center */
+	int32_t mu_1=CMath::random((int32_t) 0,num-1);
+	mu_index[0]=mu_1;
+	
+	/* choose a center - do k-1 times */
+	int32_t count=0;
+	while (++count<k)
+	{
+		float64_t sum=0.0;
+		/* for each data point find distance to nearest already chosen center */
+		for (int32_t point_idx=0;point_idx<num;point_idx++)
+		{
+			dists[point_idx]=distance->distance(mu_index[0],point_idx);
+			int32_t cent_id=1;
+
+			while (cent_id<count)
+			{
+				float64_t dist_temp=distance->distance(mu_index[cent_id],point_idx); 
+				if (dists[point_idx]>dist_temp)
+					dists[point_idx]=dist_temp; 
+				cent_id++;
+			}
+
+			dists[point_idx]*=dists[point_idx];
+			sum+=dists[point_idx];
+		}
+
+		/*random choosing - points weighted by square of distance from nearset center*/
+		int32_t mu_next=0;
+		float64_t chosen=CMath::random(0.0,sum);
+		while ((chosen-=dists[mu_next])>0)
+			mu_next++;
+
+		mu_index[count]=mu_next;
+	}
+
+	CDenseFeatures<float64_t>* lhs=(CDenseFeatures<float64_t>*)distance->get_lhs();
+	int32_t dim=lhs->get_num_features();
+	SGMatrix<float64_t> mat=SGMatrix<float64_t>(dim,k);
+	for (int32_t c_m=0;c_m<k;c_m++)
+	{
+		SGVector<float64_t> feature=lhs->get_feature_vector(c_m);
+		for (int32_t r_m=0;r_m<dim;r_m++)
+			mat(r_m,c_m)=feature[r_m];
+	}
+	SG_UNREF(lhs);
+	SG_FREE(mu_index.vector);
+	SG_FREE(dists.vector);
+	return mat;
+}
+
 void CKMeans::init()
 {
 	max_iter=10000;
 	k=3;
 	dimensions=0;
 	fixed_centers=false;
-
+	use_kmeanspp=false;
 	SG_ADD(&max_iter, "max_iter", "Maximum number of iterations", MS_AVAILABLE);
 	SG_ADD(&k, "k", "k, the number of clusters", MS_AVAILABLE);
 	SG_ADD(&dimensions, "dimensions", "Dimensions of data", MS_NOT_AVAILABLE);
