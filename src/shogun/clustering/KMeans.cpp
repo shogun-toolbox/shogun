@@ -397,7 +397,7 @@ void CKMeans::set_use_kmeanspp(bool kmpp)
 	use_kmeanspp=kmpp;
 }
 
-const bool CKMeans::get_use_kmeanspp()
+bool CKMeans::get_use_kmeanspp() const
 {
 	return use_kmeanspp;
 }

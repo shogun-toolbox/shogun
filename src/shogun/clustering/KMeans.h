@@ -105,7 +105,7 @@ class CKMeans : public CDistanceMachine
 		 *
 		 * @return use_kmeanspp true=>use KMeans++ false=>don't use KMeans++
 		 */
-		const bool get_use_kmeanspp();
+		bool get_use_kmeanspp() const;
 
 		/** set fixed centers
 		 *
