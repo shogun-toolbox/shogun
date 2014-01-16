@@ -115,9 +115,9 @@ def get_split_string(a):
 	strs=[]
 	for l in a:
 		if type(l) in (tuple,list):
-			e=l[0]
+			e=str(l[0])
 		else:
-			e=l
+			e=str(l)
 		strs.extend(e.replace('\\n','\n').splitlines())
 	return strs
 
@@ -197,16 +197,13 @@ if __name__=='__main__':
 	tests = setup_tests(args)
 	failed = tester(tests, cmp_method, opts.tolerance, opts.failures, opts.missing)
 	if failed:
-		print()
 		print("The following tests failed!")
 		for f in failed:
-			print("\t", f[0])
+			print("\t" + f[0])
 
-		print()
 		print("Detailed failures:")
-		print()
 		for f in failed:
-			print("\t", f[0])
+			print("\t" + f[0])
 			got=get_split_string(f[1])
 			expected=get_split_string(f[2])
 			#print "=== EXPECTED =========="
