@@ -28,9 +28,7 @@ def compare(a, b, tolerance):
 		else:
 			return numpy.all(a == b)
 	elif isinstance(a, modshogun.SGObject):
-		# old binary way to compare, via serialization and string comparison
-		#return pickle.dumps(a) == pickle.dumps(b)
-
+		a.io.set_loglevel(modshogun.MSG_ERROR)
 		# new, parameter framework based comparison up to tolerance
 		shogun_tolerance = 1e-5 if tolerance is None else tolerance
 		result = a.equals(b, shogun_tolerance)
