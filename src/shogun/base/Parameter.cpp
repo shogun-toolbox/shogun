@@ -3183,7 +3183,7 @@ bool TParameter::equals(TParameter* other, float64_t accuracy)
 					other->m_parameter,
 					accuracy))
 			{
-				SG_SDEBUG("leaving TParameter::equals(): scalar data differes\n");
+				SG_SDEBUG("leaving TParameter::equals(): scalar data differs\n");
 				return false;
 			}
 			break;
@@ -3207,7 +3207,7 @@ bool TParameter::equals(TParameter* other, float64_t accuracy)
 						m_datatype.m_ptype, pointer_a, pointer_b, accuracy))
 				{
 					SG_SDEBUG("leaving TParameter::equals(): vector element "
-							"differes\n");
+							"differs\n");
 					return false;
 				}
 
@@ -3247,7 +3247,7 @@ bool TParameter::equals(TParameter* other, float64_t accuracy)
 						m_datatype.m_ptype, pointer_a, pointer_b, accuracy))
 				{
 					SG_SDEBUG("leaving TParameter::equals(): vector element "
-							"differes\n");
+							"differs\n");
 					return false;
 				}
 
@@ -3687,7 +3687,7 @@ bool TParameter::compare_stype(EStructType stype, EPrimitiveType ptype,
 	/* If one is NULL, data are not equal */
 	if ((data1 && !data2) || (!data1 && data2))
 	{
-		SG_SDEBUG("leaving TParameter::compare_stype(): data1 is at %p while "
+		SG_SINFO("leaving TParameter::compare_stype(): data1 is at %p while "
 				"data2 is at %p\n", data1, data2);
 		return false;
 	}
@@ -3708,7 +3708,7 @@ bool TParameter::compare_stype(EStructType stype, EPrimitiveType ptype,
 
 			if (spr_ptr1->num_feat_entries != spr_ptr2->num_feat_entries)
 			{
-				SG_SDEBUG("leaving TParameter::compare_stype(): Length of "
+				SG_SINFO("leaving TParameter::compare_stype(): Length of "
 						"sparse vector1 (%d)  is different of vector 2 (%d)\n",
 						spr_ptr1->num_feat_entries, spr_ptr2->num_feat_entries);
 				return false;
@@ -3738,7 +3738,7 @@ bool TParameter::compare_stype(EStructType stype, EPrimitiveType ptype,
 				if (!TParameter::compare_ptype(ptype, pointer1,
 						pointer2, accuracy))
 				{
-					SG_SDEBUG("leaving TParameter::compare_stype(): Data of"
+					SG_SINFO("leaving TParameter::compare_stype(): Data of"
 							" sparse vector element is different\n");
 					return false;
 				}
@@ -3746,7 +3746,7 @@ bool TParameter::compare_stype(EStructType stype, EPrimitiveType ptype,
 				/* also compare feature indices */
 				if (cur2->feat_index!=cur1->feat_index)
 				{
-					SG_SDEBUG("leaving TParameter::compare_stype(): Feature "
+					SG_SINFO("leaving TParameter::compare_stype(): Feature "
 							"index of sparse vector element is different. "
 							"source: %d, target: %d\n",
 							cur1->feat_index, cur2->feat_index);
@@ -3763,7 +3763,7 @@ bool TParameter::compare_stype(EStructType stype, EPrimitiveType ptype,
 
 			if (str_ptr1->slen != str_ptr2->slen)
 			{
-				SG_SDEBUG("leaving TParameter::compare_stype(): Length of "
+				SG_SINFO("leaving TParameter::compare_stype(): Length of "
 						"string1 (%d)  is different of string2 (%d)\n",
 						str_ptr1->slen, str_ptr2->slen);
 				return false;
@@ -3780,7 +3780,7 @@ bool TParameter::compare_stype(EStructType stype, EPrimitiveType ptype,
 				if (!TParameter::compare_ptype(ptype, pointer1,
 						pointer2, accuracy))
 				{
-					SG_SDEBUG("leaving TParameter::compare_stype(): Data of"
+					SG_SINFO("leaving TParameter::compare_stype(): Data of"
 							" string element is different\n");
 					return false;
 				}
@@ -4107,7 +4107,7 @@ bool TParameter::copy(TParameter* target)
 						m_datatype.m_ptype, pointer_a, pointer_b))
 				{
 					SG_SDEBUG("leaving TParameter::copy(): vector element "
-							"differes\n");
+							"differs\n");
 					return false;
 				}
 
