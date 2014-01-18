@@ -29,9 +29,12 @@ def compare(a, b, tolerance):
 			return numpy.all(a == b)
 	elif isinstance(a, modshogun.SGObject):
 		a.io.set_loglevel(modshogun.MSG_ERROR)
-		# new, parameter framework based comparison up to tolerance
-		shogun_tolerance = 1e-5 if tolerance is None else tolerance
-		result = a.equals(b, shogun_tolerance)
+		if pickle.dumps(a) == pickle.dumps(b):
+			result = True
+		else:
+			# new, parameter framework based comparison up to tolerance
+			shogun_tolerance = 1e-5 if tolerance is None else tolerance
+			result = a.equals(b, shogun_tolerance)
 
 		# print debug output in case of failure
 		if not result:
