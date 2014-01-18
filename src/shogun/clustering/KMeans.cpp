@@ -30,22 +30,40 @@ CKMeans::CKMeans()
 	init();
 }
 
-CKMeans::CKMeans(int32_t k_, CDistance* d, bool use_kmpp)
+CKMeans::CKMeans(int32_t f)
+:CDistanceMachine()
+{
+	init();
+	use_fast=f;
+}
+
+CKMeans::CKMeans(int32_t k_, CDistance* d, int32_t f)
+:CDistanceMachine()
+{
+	init();
+	k=k_;
+	set_distance(d);
+	use_fast=f;
+}
+
+CKMeans::CKMeans(int32_t k_, CDistance* d, bool use_kmpp, int32_t f)
 : CDistanceMachine()
 {	
 	init();
 	k=k_;
 	set_distance(d);
 	use_kmeanspp=use_kmpp;
+	use_fast=f;
 }
 
-CKMeans::CKMeans(int32_t k_i, CDistance* d_i, SGMatrix<float64_t> centers_i)
+CKMeans::CKMeans(int32_t k_i, CDistance* d_i, SGMatrix<float64_t> centers_i, int32_t f)
 : CDistanceMachine()
 {
 	init();
 	k = k_i;
 	set_distance(d_i);
 	set_initial_centers(centers_i);
+	use_fast=f;
 }
 
 CKMeans::~CKMeans()
@@ -161,6 +179,78 @@ void CKMeans::set_initial_centers(CDenseFeatures<float64_t>* rhs_mus, float64_t*
 	}
 }
 
+SGVector<int32_t> CKMeans::mbchoose_rand(int32_t b, int32_t num)
+{
+	SGVector<int32_t> chosen=SGVector<int32_t>(num);
+	SGVector<int32_t> ret=SGVector<int32_t>(b);
+	chosen.zero();
+	int32_t ch=0;
+	while (ch<b)
+	{
+		const int32_t n=CMath::random(0,num-1);
+		if (chosen[n]==0)
+		{
+			chosen[n]+=1;
+			ret[ch]=n;
+			ch++;
+		}
+	}
+	return ret;
+}
+
+void CKMeans::mbKMeans()
+{
+	REQUIRE(batch_size>0,
+		"batch size not set to positive value. Current batch size %d \n", batch_size);
+	REQUIRE(minib_iter>0,
+		"number of iterations not set to positive value. Current iterations %d \n", minib_iter);
+
+	CDenseFeatures<float64_t>* lhs=(CDenseFeatures<float64_t>*) distance->get_lhs();
+	CDenseFeatures<float64_t>* rhs_mus=(CDenseFeatures<float64_t>*) distance->get_rhs();
+	int32_t XSize=lhs->get_num_vectors();
+	int32_t dims=lhs->get_num_features();
+
+	SGVector<float64_t> v=SGVector<float64_t>(k);
+	v.zero();
+
+	for (int32_t i=0; i<minib_iter; i++)
+	{
+		SGVector<int32_t> M=mbchoose_rand(batch_size,XSize);
+		SGVector<int32_t> ncent= SGVector<int32_t>(batch_size);
+		for (int32_t j=0; j<batch_size; j++)
+		{
+			SGVector<float64_t> dists=SGVector<float64_t>(k);
+			for (int32_t p=0; p<k; p++)
+				dists[p]=distance->distance(M[j],p);
+
+			int32_t imin=0;
+			float64_t min=dists[0];
+			for (int32_t p=1; p<k; p++)
+			{
+				if (dists[p]<min)
+				{
+					imin=p;
+					min=dists[p];
+				}
+			}
+			ncent[j]=imin;
+		}
+		for (int32_t j=0; j<batch_size; j++)
+		{
+			int32_t near=ncent[j];
+			SGVector<float64_t> c_alive=rhs_mus->get_feature_vector(near);
+			SGVector<float64_t> x=lhs->get_feature_vector(M[j]);
+			v[near]+=1.0;
+			float64_t eta=1.0/v[near];
+			for (int32_t c=0; c<dims; c++)
+			{
+				c_alive[c]=(1.0-eta)*c_alive[c]+eta*x[c];
+			}
+		}
+	}
+	SG_UNREF(lhs);
+}
+
 void CKMeans::compute_cluster_variances()
 {
 	/* compute the ,,variances'' of the clusters */
@@ -261,108 +351,117 @@ bool CKMeans::train_machine(CFeatures* data)
 		set_initial_centers(rhs_mus, weights_set, dists, ClList, XSize);
 	else
 		set_random_centers(weights_set, ClList, XSize);
-
-	while (changed && (iter<max_iter))
+	
+	if (use_fast==1)
 	{
-		iter++;
-		if (iter==max_iter-1)
-			SG_WARNING("kmeans clustering changed throughout %d iterations stopping...\n", max_iter-1)
+		rhs_mus->set_feature_matrix(mus);
+		mbKMeans();
+	}
+	else
+	{
 
-		if (iter%1000 == 0)
-			SG_INFO("Iteration[%d/%d]: Assignment of %i patterns changed.\n", iter, max_iter, changed)
-		changed=0;
-
-		if (!fixed_centers)
+		while (changed && (iter<max_iter))
 		{
-			/* mus=zeros(dimensions, k) ; */
-			memset(mus.matrix, 0, sizeof(float64_t)*XDimk);
+			iter++;
+			if (iter==max_iter-1)
+				SG_WARNING("kmeans clustering changed throughout %d iterations stopping...\n", max_iter-1)
+
+			if (iter%1000 == 0)
+				SG_INFO("Iteration[%d/%d]: Assignment of %i patterns changed.\n", iter, max_iter, changed)
+			changed=0;
+
+			if (!fixed_centers)
+			{
+				/* mus=zeros(dimensions, k) ; */
+				memset(mus.matrix, 0, sizeof(float64_t)*XDimk);
+
+				for (int32_t i=0; i<XSize; i++)
+				{
+					int32_t Cl=ClList[i];
+
+					vec=lhs->get_feature_vector(i, vlen, vfree);
+
+					for (int32_t j=0; j<dimensions; j++)
+						mus.matrix[Cl*dimensions+j] += vec[j];
+
+					lhs->free_feature_vector(vec, i, vfree);
+				}
+
+				for (int32_t i=0; i<k; i++)
+				{
+					if (weights_set[i]!=0.0)
+					{
+						for (int32_t j=0; j<dimensions; j++)
+							mus.matrix[i*dimensions+j] /= weights_set[i];
+					}
+				}
+			}
+			///update rhs
+			rhs_mus->copy_feature_matrix(mus);
 
 			for (int32_t i=0; i<XSize; i++)
 			{
-				int32_t Cl=ClList[i];
+				/* ks=ceil(rand(1,XSize)*XSize) ; */
+				const int32_t Pat= CMath::random(0, XSize-1);
+				const int32_t ClList_Pat=ClList[Pat];
+				int32_t imini, j;
+				float64_t mini;
 
-				vec=lhs->get_feature_vector(i, vlen, vfree);
+				/* compute the distance of this point to all centers */
+				for(int32_t idx_k=0;idx_k<k;idx_k++)
+					dists[idx_k]=distance->distance(Pat,idx_k);
 
-				for (int32_t j=0; j<dimensions; j++)
-					mus.matrix[Cl*dimensions+j] += vec[j];
+				/* [mini,imini]=min(dists(:,i)) ; */
+				imini=0 ; mini=dists[0];
+				for (j=1; j<k; j++)
+					if (dists[j]<mini)
+					{
+						mini=dists[j];
+						imini=j;
+					}
 
-				lhs->free_feature_vector(vec, i, vfree);
-			}
-
-			for (int32_t i=0; i<k; i++)
-			{
-				if (weights_set[i]!=0.0)
+				if (imini!=ClList_Pat)
 				{
-					for (int32_t j=0; j<dimensions; j++)
-						mus.matrix[i*dimensions+j] /= weights_set[i];
-				}
-			}
-		}
-		///update rhs
-		rhs_mus->copy_feature_matrix(mus);
+					changed++;
 
-		for (int32_t i=0; i<XSize; i++)
-		{
-			/* ks=ceil(rand(1,XSize)*XSize) ; */
-			const int32_t Pat= CMath::random(0, XSize-1);
-			const int32_t ClList_Pat=ClList[Pat];
-			int32_t imini, j;
-			float64_t mini;
+					/* weights_set(imini) = weights_set(imini) + 1.0 ; */
+					weights_set[imini]+= 1.0;
+					/* weights_set(j)     = weights_set(j)     - 1.0 ; */
+					weights_set[ClList_Pat]-= 1.0;
 
-			/* compute the distance of this point to all centers */
-			for(int32_t idx_k=0;idx_k<k;idx_k++)
-				dists[idx_k]=distance->distance(Pat,idx_k);
-
-			/* [mini,imini]=min(dists(:,i)) ; */
-			imini=0 ; mini=dists[0];
-			for (j=1; j<k; j++)
-				if (dists[j]<mini)
-				{
-					mini=dists[j];
-					imini=j;
-				}
-
-			if (imini!=ClList_Pat)
-			{
-				changed++;
-
-				/* weights_set(imini) = weights_set(imini) + 1.0 ; */
-				weights_set[imini]+= 1.0;
-				/* weights_set(j)     = weights_set(j)     - 1.0 ; */
-				weights_set[ClList_Pat]-= 1.0;
-
-				vec=lhs->get_feature_vector(Pat, vlen, vfree);
-
-				for (j=0; j<dimensions; j++)
-				{
-					mus.matrix[imini*dimensions+j]-=
-						(vec[j]-mus.matrix[imini*dimensions+j]) / weights_set[imini];
-				}
-
-				lhs->free_feature_vector(vec, Pat, vfree);
-
-				/* mu_new = mu_old - (x - mu_old)/(n-1) */
-				/* if weights_set(j)~=0 */
-				if (weights_set[ClList_Pat]!=0.0)
-				{
 					vec=lhs->get_feature_vector(Pat, vlen, vfree);
 
 					for (j=0; j<dimensions; j++)
 					{
-						mus.matrix[ClList_Pat*dimensions+j]-=
-								(vec[j]-mus.matrix[ClList_Pat*dimensions+j]) / weights_set[ClList_Pat];
+						mus.matrix[imini*dimensions+j]-=
+							(vec[j]-mus.matrix[imini*dimensions+j]) / weights_set[imini];
 					}
-					lhs->free_feature_vector(vec, Pat, vfree);
-				}
-				else
-				{
-					/*  mus(:,j)=zeros(dimensions,1) ; */
-					for (j=0; j<dimensions; j++)
-						mus.matrix[ClList_Pat*dimensions+j]=0;
-				}
 
-				/* ClList(i)= imini ; */
-				ClList[Pat] = imini;
+					lhs->free_feature_vector(vec, Pat, vfree);
+
+					/* mu_new = mu_old - (x - mu_old)/(n-1) */
+					/* if weights_set(j)~=0 */
+					if (weights_set[ClList_Pat]!=0.0)
+					{
+						vec=lhs->get_feature_vector(Pat, vlen, vfree);
+	
+						for (j=0; j<dimensions; j++)
+						{
+							mus.matrix[ClList_Pat*dimensions+j]-=
+									(vec[j]-mus.matrix[ClList_Pat*dimensions+j]) / weights_set[ClList_Pat];
+						}
+						lhs->free_feature_vector(vec, Pat, vfree);
+					}
+					else
+					{
+						/*  mus(:,j)=zeros(dimensions,1) ; */
+						for (j=0; j<dimensions; j++)
+							mus.matrix[ClList_Pat*dimensions+j]=0;
+					}
+
+					/* ClList(i)= imini ; */
+					ClList[Pat] = imini;
+				}
 			}
 		}
 	}
@@ -422,6 +521,46 @@ void CKMeans::set_max_iter(int32_t iter)
 float64_t CKMeans::get_max_iter()
 {
 	return max_iter;
+}
+
+void CKMeans::set_use_fast(int32_t f)
+{
+	use_fast=f;
+}
+
+int32_t CKMeans::get_use_fast()
+{
+	return use_fast;
+}
+
+void CKMeans::set_mbKMeans_batch_size(int32_t b)
+{
+	ASSERT(b>0)
+	batch_size=b;
+}
+
+int32_t CKMeans::get_mbKMeans_batch_size()
+{
+	return batch_size;
+}
+
+void CKMeans::set_mbKMeans_iter(int32_t i)
+{
+	ASSERT(i>0)
+	minib_iter=i;
+}
+
+int32_t CKMeans::get_mbKMeans_iter()
+{
+	return minib_iter;
+}
+
+void CKMeans::set_mbKMeans_params(int32_t b, int32_t t)
+{
+	ASSERT(b>0)
+	ASSERT(t>0)
+	batch_size=b;
+	minib_iter=t;
 }
 
 SGVector<float64_t> CKMeans::get_radiuses()
@@ -530,6 +669,9 @@ void CKMeans::init()
 	dimensions=0;
 	fixed_centers=false;
 	use_kmeanspp=false;
+	use_fast=0;
+	batch_size=-1;
+	minib_iter=-1;
 	SG_ADD(&max_iter, "max_iter", "Maximum number of iterations", MS_AVAILABLE);
 	SG_ADD(&k, "k", "k, the number of clusters", MS_AVAILABLE);
 	SG_ADD(&dimensions, "dimensions", "Dimensions of data", MS_NOT_AVAILABLE);
