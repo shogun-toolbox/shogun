@@ -20,6 +20,7 @@
 namespace shogun
 {
 
+class CStructuredLabels;
 class CMulticlassSOLabels;
 
 /** @brief Class CRealNumber to be used in the application of Structured

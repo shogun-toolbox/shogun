@@ -10,7 +10,7 @@ parameter_list=[[traindat,testdat,label_traindat,3,0,False],[traindat,testdat,la
 def kernel_histogram_word_string_modular (fm_train_dna=traindat,fm_test_dna=testdat,label_train_dna=label_traindat,order=3,gap=0,reverse=False):
 
 	from modshogun import StringCharFeatures, StringWordFeatures, DNA, BinaryLabels
-	from modshogun import HistogramWordStringKernel
+	from modshogun import HistogramWordStringKernel, AvgDiagKernelNormalizer
 	from modshogun import PluginEstimate#, MSG_DEBUG
 
 	reverse = reverse
@@ -32,6 +32,7 @@ def kernel_histogram_word_string_modular (fm_train_dna=traindat,fm_test_dna=test
 	pie.train()
 
 	kernel=HistogramWordStringKernel(feats_train, feats_train, pie)
+	kernel.set_normalizer(AvgDiagKernelNormalizer())
 	km_train=kernel.get_kernel_matrix()
 	kernel.init(feats_train, feats_test)
 	pie.set_features(feats_test)

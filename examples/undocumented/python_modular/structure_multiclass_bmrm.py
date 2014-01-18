@@ -25,10 +25,11 @@ traindat, label_traindat = gen_data(M,N,dim)
 parameter_list = [[traindat,label_traindat]]
 
 def structure_multiclass_bmrm(fm_train_real=traindat,label_train_multiclass=label_traindat):
-	from modshogun  import RealFeatures
-	from modshogun  import SOSVMHelper
-	from modshogun  import BMRM, PPBMRM, P3BMRM
-	from modshogun	import MulticlassModel, MulticlassSOLabels, DualLibQPBMSOSVM, RealNumber
+	from modshogun import MulticlassSOLabels
+	from modshogun import RealFeatures
+	from modshogun import SOSVMHelper
+	from modshogun import BMRM, PPBMRM, P3BMRM
+	from modshogun import MulticlassModel, DualLibQPBMSOSVM, RealNumber
 
 	labels = MulticlassSOLabels(label_train_multiclass)
 	features = RealFeatures(fm_train_real.T)
@@ -88,4 +89,4 @@ def structure_multiclass_bmrm(fm_train_real=traindat,label_train_multiclass=labe
 
 if __name__=='__main__':
 	print('SO multiclass model with bundle methods')
-	structure_multiclass_bmrm(*parameter_list[0])
+	a,b,c=structure_multiclass_bmrm(*parameter_list[0])
