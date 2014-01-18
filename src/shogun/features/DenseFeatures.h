@@ -502,6 +502,8 @@ public:
 	/** @return object name */
 	virtual const char* get_name() const { return "DenseFeatures"; }
 
+	virtual CFeatures* create_view(SGVector<index_t> indices);
+
 protected:
 	/** compute feature vector for sample num
 	 * if target is set the vector is written to target

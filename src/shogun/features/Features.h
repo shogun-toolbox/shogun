@@ -280,6 +280,10 @@ class CFeatures : public CSGObject
 		 * @return new CFeatures instance with copies of feature data
 		 */
 		virtual CFeatures* copy_subset(SGVector<index_t> indices);
+		
+		/*create view on features
+		 *NOT IMPLEMENTED*/
+		virtual CFeatures* create_view(SGVector<index_t> indices);
 
 	private:
 		void init();
