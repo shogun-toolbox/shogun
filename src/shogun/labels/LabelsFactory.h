@@ -22,6 +22,7 @@ namespace shogun
 	class CRegressionLabels;
 	class CStructuredLabels;
 	class CMulticlassMultipleOutputLabels;
+	class CMulticlassSOLabels;
 
 /** @brief The helper class to specialize base class instances of labels
  */
@@ -63,6 +64,12 @@ public:
 	 * @param base_labels its dynamic type must be CMulticlassMultipleOutputLabels
 	 */
 	static CMulticlassMultipleOutputLabels* to_multiclass_multiple_output(CLabels* base_labels);
+
+	/** specialize a base class instance to CMulticlassSOLabels
+	 *
+	 * @param base_labels its dynamic type must be CMulticlassSOLabels
+	 */
+	static CMulticlassSOLabels* to_multiclass_structured(CLabels* base_labels);
 
 	/** @return object name */
 	virtual const char* get_name() const { return "LabelsFactory"; }

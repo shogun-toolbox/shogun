@@ -29,6 +29,7 @@
 %newobject shogun::CLabelsFactory::to_regression(CLabels* base_labels);
 %newobject shogun::CLabelsFactory::to_structured(CLabels* base_labels);
 %newobject shogun::CLabelsFactory::to_multiclass_multiple_output(CLabels* base_labels);
+%newobject shogun::CLabelsFactory::to_multiclass_structured(CLabels* base_labels);
 
 #if defined(USE_SWIG_DIRECTORS) && defined(SWIGPYTHON)
 %feature("director") shogun::CDirectorDotFeatures;

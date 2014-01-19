@@ -6,6 +6,7 @@
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/labels/StructuredLabels.h>
 #include <shogun/labels/MulticlassMultipleOutputLabels.h>
+#include <shogun/structure/MulticlassSOLabels.h>
 
 using namespace shogun;
 
@@ -74,4 +75,14 @@ CMulticlassMultipleOutputLabels* CLabelsFactory::to_multiclass_multiple_output(C
 		SG_SERROR("base_labels must be of dynamic type CMulticlassMultipleOutputLabels\n")
 
 	return NULL;
+}
+
+CMulticlassSOLabels* CLabelsFactory::to_multiclass_structured(CLabels* base_labels)
+{
+	ASSERT(base_labels != NULL)
+	CMulticlassSOLabels* labels = dynamic_cast<CMulticlassSOLabels*>(base_labels);
+	if (labels == NULL)
+		SG_SERROR("base_labels must be of dynamic type CMulticlassMultipleOutputLabels\n")
+
+	return labels;
 }

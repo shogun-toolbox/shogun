@@ -25,7 +25,7 @@ traindat, label_traindat = gen_data(M,N,dim)
 parameter_list = [[traindat,label_traindat]]
 
 def structure_multiclass_bmrm(fm_train_real=traindat,label_train_multiclass=label_traindat):
-	from modshogun import MulticlassSOLabels
+	from modshogun import MulticlassSOLabels, LabelsFactory
 	from modshogun import RealFeatures
 	from modshogun import SOSVMHelper
 	from modshogun import BMRM, PPBMRM, P3BMRM
@@ -42,7 +42,7 @@ def structure_multiclass_bmrm(fm_train_real=traindat,label_train_multiclass=labe
 	sosvm.set_verbose(True)
 	sosvm.train()
 
-	bmrm_out = sosvm.apply()
+	bmrm_out = LabelsFactory.to_multiclass_structured(sosvm.apply())
 	count = 0
 	for i in range(bmrm_out.get_num_labels()):
 		yi_pred = RealNumber.obtain_from_generic(bmrm_out.get_label(i))
@@ -61,7 +61,7 @@ def structure_multiclass_bmrm(fm_train_real=traindat,label_train_multiclass=labe
 	sosvm.set_verbose(True)
 	sosvm.train()
 
-	ppbmrm_out = sosvm.apply()
+	ppbmrm_out = LabelsFactory.to_multiclass_structured(sosvm.apply())
 	count = 0
 	for i in range(ppbmrm_out.get_num_labels()):
 		yi_pred = RealNumber.obtain_from_generic(ppbmrm_out.get_label(i))
@@ -77,7 +77,7 @@ def structure_multiclass_bmrm(fm_train_real=traindat,label_train_multiclass=labe
 	sosvm.set_verbose(True)
 	sosvm.train()
 
-	p3bmrm_out = sosvm.apply()
+	p3bmrm_out = LabelsFactory.to_multiclass_structured(sosvm.apply())
 	count = 0
 	for i in range(p3bmrm_out.get_num_labels()):
 		yi_pred = RealNumber.obtain_from_generic(p3bmrm_out.get_label(i))
