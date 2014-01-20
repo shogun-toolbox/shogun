@@ -39,7 +39,9 @@ float64_t CClusteringMutualInformation::evaluate(CLabels* predicted, CLabels* gr
 	}
 
 	SGVector<float64_t> G_rowsum(n_class);
+	G_rowsum.zero();
 	SGVector<float64_t> G_colsum(n_class);
+	G_colsum.zero();
 	for (index_t i=0; i < n_class; ++i)
 	{
 		for (index_t j=0; j < n_class; ++j)

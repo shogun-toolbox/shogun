@@ -76,9 +76,7 @@ def evaluation_clustering_simple (n_data=100, sqrt_num_blobs=4, distance=5):
 	mutual_info = MIEval.evaluate(gnd_hat, gnd)
 	#print(('Clustering mutual information = %.4f' % mutual_info))
 
-	# TODO add multiclass labels and MI once the serialization works
-	#return gnd, accuracy, mutual_info
-	return accuracy
+	return gnd, accuracy, mutual_info
 
 if __name__ == '__main__':
 	print('Evaluation Clustering')
