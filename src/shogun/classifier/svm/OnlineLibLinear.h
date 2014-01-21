@@ -121,6 +121,10 @@ public:
 		 */
 		virtual void train_one(SGVector<float32_t> ex, float64_t label);
 
+		/** train on one *sparse* vector
+		 * @param ex the example being trained
+		 * @param label label of this example
+		 */
 		virtual void train_one(SGSparseVector<float32_t> ex, float64_t label);
 
 private:

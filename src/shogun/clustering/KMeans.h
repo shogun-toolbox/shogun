@@ -95,13 +95,13 @@ class CKMeans : public CDistanceMachine
 		 */
 		int32_t get_k();
 
-		/* set use_kmeanspp attribute
+		/** set use_kmeanspp attribute
 		 *
 		 * @param kmpp true=>use KMeans++ false=>don't use KMeans++
 		 */
 		void set_use_kmeanspp(bool kmpp);
 
-		/* get use_kmeanspp attribute
+		/** get use_kmeanspp attribute
 		 *
 		 * @return use_kmeanspp true=>use KMeans++ false=>don't use KMeans++
 		 */
