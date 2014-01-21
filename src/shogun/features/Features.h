@@ -281,8 +281,13 @@ class CFeatures : public CSGObject
 		 */
 		virtual CFeatures* copy_subset(SGVector<index_t> indices);
 		
-		/*create view on features
-		 *NOT IMPLEMENTED*/
+		/** Creates view on features.
+		 * 
+		 * NOT IMPLEMENTED!
+		 * 
+		 * @param indices indices to be added to the view
+		 * @return new CFeatures instance with newly created subset
+		 */
 		virtual CFeatures* create_view(SGVector<index_t> indices);
 
 	private:

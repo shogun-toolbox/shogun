@@ -32,6 +32,8 @@ CFeatures::CFeatures(const CFeatures& orig)
 {
 	init();
 
+	SG_UNREF(preproc);
+	SG_UNREF(preprocessed);
 	preproc = orig.preproc;
 	preprocessed = orig.preprocessed;
 	SG_REF(preproc);
@@ -337,4 +339,6 @@ CFeatures* CFeatures::copy_subset(SGVector<index_t> indices)
 
 CFeatures* CFeatures::create_view(SGVector<index_t> indices)
 {
+	SG_ERROR("View creation not supported yet");
+	return NULL;
 }
