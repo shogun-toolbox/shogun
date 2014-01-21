@@ -21,6 +21,7 @@
 
 namespace shogun
 {
+enum train_method {minibatch, lloyd};
 class CDistanceMachine;
 
 /** @brief KMeans clustering,  partitions the data into k (a-priori specified) clusters.
@@ -40,24 +41,44 @@ class CDistanceMachine;
  */
 class CKMeans : public CDistanceMachine
 {
+	protected:
+		///set minibatch to use mini-batch KMeans
+		train_method method;
+
 	public:
 		/** default constructor */
 		CKMeans();
 
 		/** constructor
 		 *
+		 * @param f value of train_method
+		 */
+		CKMeans(train_method f);
+
+		/** constructor
+		 *
 		 * @param k parameter k
 		 * @param d distance
-		 * @param kmeanspp True for using KMeans++
+		 * @param f train_method value
 		 */
-		CKMeans(int32_t k, CDistance* d, bool kmeanspp=false);
+		CKMeans(int32_t k, CDistance* d, train_method f);
+
+		/** constructor
+		 *
+		 * @param k parameter k
+		 * @param d distance
+		 * @param kmeanspp true for using KMeans++ (default false)
+		 * @param f train_method value
+		 */
+		CKMeans(int32_t k, CDistance* d, bool kmeanspp=false, train_method f=lloyd);
 
 		/** constructor for supplying initial centers
 		 * @param k_i parameter k
 		 * @param d_i distance
 		 * @param centers_i initial centers for KMeans algorithm
+		 * @param f train_method value
 		*/
-		CKMeans(int32_t k_i, CDistance* d_i, SGMatrix<float64_t> centers_i );
+		CKMeans(int32_t k_i, CDistance* d_i, SGMatrix<float64_t> centers_i, train_method f=lloyd);
 		virtual ~CKMeans();
 
 
@@ -157,6 +178,48 @@ class CKMeans : public CDistanceMachine
 		 * @param centers matrix with cluster centers (k colums, dim rows)
 		 */
 		virtual void set_initial_centers(SGMatrix<float64_t> centers);
+		
+		/** switch training method
+		 *
+		 *@param f minibatch if mini-batch KMeans
+		 */
+		void set_train_method(train_method f);
+
+		/** display training method
+		 *
+		 */
+		train_method get_train_method() const;
+
+		/** set batch size for mini-batch KMeans
+		 *
+		 *@param b batch size int32_t(greater than 0)
+		 */
+		void set_mbKMeans_batch_size(int32_t b);
+
+		/** get batch size for mini-batch KMeans
+		 *
+		 *@return batch size
+		 */
+		int32_t get_mbKMeans_batch_size();
+
+		/** set no. of iterations for mini-batch KMeans
+		 *
+		 *@param t no. of iterations int32_t(greater than 0)
+		 */
+		void set_mbKMeans_iter(int32_t t);
+
+		/** get no. of iterations for mini-batch KMeans
+		 *
+		 *@return no. of iterations
+		 */
+		int32_t get_mbKMeans_iter();
+
+		/** set batch size and no. of iteration for mini-batch KMeans
+		 *
+		 *@param b batch size
+		 *@param t no. of iterations
+		 */
+		void set_mbKMeans_params(int32_t b, int32_t t);
 
 	protected:
 		/** train k-means
@@ -183,8 +246,8 @@ class CKMeans : public CDistanceMachine
 	private:
 		void init();
 		void set_random_centers(float64_t* weights_set, int32_t* ClList, int32_t XSize);
-		void set_initial_centers(CDenseFeatures<float64_t>* rhs_mus, float64_t* weights_set,
-				float64_t* dists, int32_t* ClList, int32_t XSize);
+		void set_initial_centers(float64_t* weights_set, float64_t* dists, 
+						int32_t* ClList, int32_t XSize);
 		void compute_cluster_variances();
 
 	protected:
@@ -208,6 +271,12 @@ class CKMeans : public CDistanceMachine
 		
 		///flag to check if kmeans++ has to be used
 		bool use_kmeanspp;
+	
+		///batch size for mini-batch KMeans
+		int32_t batch_size;
+
+		///number of iterations for mini-batch KMeans
+		int32_t minib_iter;
 	private:
 		/* temp variable for cluster centers */
 		SGMatrix<float64_t> mus;
