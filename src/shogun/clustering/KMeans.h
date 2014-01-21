@@ -46,18 +46,34 @@ class CKMeans : public CDistanceMachine
 
 		/** constructor
 		 *
+		 * @param f value of use_fast
+		 */
+		CKMeans(int32_t f);
+
+		/** constructor
+		 *
 		 * @param k parameter k
 		 * @param d distance
-		 * @param kmeanspp True for using KMeans++
+		 * @param f use_fast value
 		 */
-		CKMeans(int32_t k, CDistance* d, bool kmeanspp=false);
+		CKMeans(int32_t k, CDistance* d, int32_t f);
+
+		/** constructor
+		 *
+		 * @param k parameter k
+		 * @param d distance
+		 * @param kmeanspp true for using KMeans++ (default false)
+		 * @param f use_fast value
+		 */
+		CKMeans(int32_t k, CDistance* d, bool kmeanspp=false, int32_t f=0);
 
 		/** constructor for supplying initial centers
 		 * @param k_i parameter k
 		 * @param d_i distance
 		 * @param centers_i initial centers for KMeans algorithm
+		 * @param f use_fast value
 		*/
-		CKMeans(int32_t k_i, CDistance* d_i, SGMatrix<float64_t> centers_i );
+		CKMeans(int32_t k_i, CDistance* d_i, SGMatrix<float64_t> centers_i, int32_t f=0);
 		virtual ~CKMeans();
 
 
@@ -157,6 +173,49 @@ class CKMeans : public CDistanceMachine
 		 * @param centers matrix with cluster centers (k colums, dim rows)
 		 */
 		virtual void set_initial_centers(SGMatrix<float64_t> centers);
+		
+		/** switch to fast training
+		 *
+		 *@param f 1 if mini-batch KMeans, classical Lloyd's KMeans otherwise
+		 */
+		void set_use_fast(int32_t f);
+
+		/** switch to fast training
+		 *
+		 *@return int32_t parameter - 1 if mini-batch KMeans, classical Lloyd's KMeans otherwise
+		 */
+		int32_t get_use_fast();
+
+		/** set batch size for mini-batch KMeans
+		 *
+		 *@param b batch size int32_t(greater than 0)
+		 */
+		void set_mbKMeans_batch_size(int32_t b);
+
+		/** get batch size for mini-batch KMeans
+		 *
+		 *@return batch size
+		 */
+		int32_t get_mbKMeans_batch_size();
+
+		/** set no. of iterations for mini-batch KMeans
+		 *
+		 *@param t no. of iterations int32_t(greater than 0)
+		 */
+		void set_mbKMeans_iter(int32_t t);
+
+		/** get no. of iterations for mini-batch KMeans
+		 *
+		 *@return no. of iterations
+		 */
+		int32_t get_mbKMeans_iter();
+
+		/** set batch size and no. of iteration for mini-batch KMeans
+		 *
+		 *@param b batch size
+		 *@param t no. of iterations
+		 */
+		void set_mbKMeans_params(int32_t b, int32_t t);
 
 	protected:
 		/** train k-means
@@ -186,6 +245,8 @@ class CKMeans : public CDistanceMachine
 		void set_initial_centers(CDenseFeatures<float64_t>* rhs_mus, float64_t* weights_set,
 				float64_t* dists, int32_t* ClList, int32_t XSize);
 		void compute_cluster_variances();
+		SGVector<int32_t> mbchoose_rand(int32_t b, int32_t num);
+		void mbKMeans();
 
 	protected:
 		/// maximum number of iterations
@@ -208,6 +269,15 @@ class CKMeans : public CDistanceMachine
 		
 		///flag to check if kmeans++ has to be used
 		bool use_kmeanspp;
+
+		///set 1 to use mini-batch KMeans
+		int32_t use_fast;
+	
+		///batch size for mini-batch KMeans
+		int32_t batch_size;
+
+		///number of iterations for mini-batch KMeans
+		int32_t minib_iter;
 	private:
 		/* temp variable for cluster centers */
 		SGMatrix<float64_t> mus;
