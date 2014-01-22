@@ -16,7 +16,7 @@ using namespace shogun;
 
 namespace shogun
 {
-void mbKMeans(int32_t k, CDistance* distance, int32_t batch_size, int32_t minib_iter, SGMatrix<float64_t> mus)
+void minibatch_KMeans(int32_t k, CDistance* distance, int32_t batch_size, int32_t minib_iter, SGMatrix<float64_t> mus)
 {
 	REQUIRE(batch_size>0,
 		"batch size not set to positive value. Current batch size %d \n", batch_size);

@@ -18,6 +18,17 @@
 
 namespace shogun
 {
-	void lKMeans(int32_t k, CDistance* distance, int32_t max_iter, SGMatrix<float64_t> mus, bool fixed_centers);
+	/** Lloyd's KMeans training method
+	 *
+	 * @param k parameter k
+	 * @param distance distance
+	 * @param max_iter max iterations allowed
+	 * @param mus cluster centers matrix (k columns)
+	 * @param ClList cluster number each data vector belongs (size no_of_vectors)
+	 * @param weights_set no. of points belonging to each cluster (size k)
+	 * @param fixed_centers keep centers fixed or not 
+	 */
+	void Lloyd_KMeans(int32_t k, CDistance* distance, int32_t max_iter, SGMatrix<float64_t> mus, 
+			SGVector<int32_t> ClList, SGVector<float64_t> weights_set, bool fixed_centers);
 }
 #endif

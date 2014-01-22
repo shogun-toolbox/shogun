@@ -17,7 +17,8 @@ using namespace shogun;
 
 namespace shogun
 {
-void lKMeans(int32_t k, CDistance* distance, int32_t max_iter, SGMatrix<float64_t> mus, bool fixed_centers)
+void Lloyd_KMeans(int32_t k, CDistance* distance, int32_t max_iter, SGMatrix<float64_t> mus, 
+		SGVector<int32_t> ClList, SGVector<float64_t> weights_set, bool fixed_centers)
 {
 	CDenseFeatures<float64_t>* lhs=(CDenseFeatures<float64_t>*) distance->get_lhs();
 	int32_t XSize=lhs->get_num_vectors();
@@ -27,35 +28,8 @@ void lKMeans(int32_t k, CDistance* distance, int32_t max_iter, SGMatrix<float64_
 	CFeatures* rhs_cache = distance->replace_rhs(rhs_mus);
 	rhs_mus->set_feature_matrix(mus);
 
-	int32_t *ClList=SG_CALLOC(int32_t, XSize);
-	float64_t *weights_set=SG_CALLOC(float64_t, k);
-	float64_t *dists=SG_CALLOC(float64_t, k*XSize);
-	for(int32_t idx=0;idx<XSize;idx++)
-	{
-		for(int32_t m=0;m<k;m++)
-			dists[k*idx+m] = distance->distance(idx,m);
-	}
-
-	for (int32_t i=0; i<XSize; i++)
-	{
-		float64_t mini=dists[i*k];
-		int32_t Cl = 0, j;
-
-		for (j=1; j<k; j++)
-		{
-			if (dists[i*k+j]<mini)
-			{
-				Cl=j;
-				mini=dists[i*k+j];
-			}
-		}
-		ClList[i]=Cl;
-	}
-	for (int32_t i=0; i<XSize; i++)
-	{
-		const int32_t Cl = ClList[i];
-		weights_set[Cl]+=1.0;
-	}
+	SGVector<float64_t> dists=SGVector<float64_t>(k*XSize);
+	dists.zero();
 
 	int32_t changed=1;
 	int32_t iter=0;
@@ -73,6 +47,34 @@ void lKMeans(int32_t k, CDistance* distance, int32_t max_iter, SGMatrix<float64_
 		if (iter%1000 == 0)
 			SG_SINFO("Iteration[%d/%d]: Assignment of %i patterns changed.\n", iter, max_iter, changed)
 		changed=0;
+
+		if (!fixed_centers)
+		{
+			/* mus=zeros(dimensions, k) ; */
+			memset(mus.matrix, 0, sizeof(float64_t)*XDimk);
+
+			for (int32_t i=0; i<XSize; i++)
+			{
+				int32_t Cl=ClList[i];
+
+				vec=lhs->get_feature_vector(i, vlen, vfree);
+
+				for (int32_t j=0; j<dimensions; j++)
+					mus.matrix[Cl*dimensions+j] += vec[j];
+
+				lhs->free_feature_vector(vec, i, vfree);
+			}
+
+			for (int32_t i=0; i<k; i++)
+			{
+				if (weights_set[i]!=0.0)
+				{
+					for (int32_t j=0; j<dimensions; j++)
+						mus.matrix[i*dimensions+j] /= weights_set[i];
+				}
+			}
+		}
+
 
 		for (int32_t i=0; i<XSize; i++)
 		{
@@ -138,40 +140,9 @@ void lKMeans(int32_t k, CDistance* distance, int32_t max_iter, SGMatrix<float64_
 				ClList[Pat] = imini;
 			}
 		}
-
-		if (!fixed_centers)
-		{
-			/* mus=zeros(dimensions, k) ; */
-			memset(mus.matrix, 0, sizeof(float64_t)*XDimk);
-
-			for (int32_t i=0; i<XSize; i++)
-			{
-				int32_t Cl=ClList[i];
-
-				vec=lhs->get_feature_vector(i, vlen, vfree);
-
-				for (int32_t j=0; j<dimensions; j++)
-					mus.matrix[Cl*dimensions+j] += vec[j];
-
-				lhs->free_feature_vector(vec, i, vfree);
-			}
-
-			for (int32_t i=0; i<k; i++)
-			{
-				if (weights_set[i]!=0.0)
-				{
-					for (int32_t j=0; j<dimensions; j++)
-						mus.matrix[i*dimensions+j] /= weights_set[i];
-				}
-			}
-		}
-
 	}
 	distance->replace_rhs(rhs_cache);
 	delete rhs_mus;
-	SG_FREE(ClList);
-	SG_FREE(weights_set);
-	SG_FREE(dists);
 	SG_UNREF(lhs);
 }
 }

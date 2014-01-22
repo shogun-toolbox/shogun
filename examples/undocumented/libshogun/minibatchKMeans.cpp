@@ -21,14 +21,9 @@
 
 using namespace shogun;
 
-void print_message(FILE* target, const char* str)
-{
-	fprintf(target, "%s", str);
-}
-
 int main(int argc, char **argv)
 {
-	init_shogun(&print_message, &print_message, &print_message);
+	init_shogun_with_defaults();
 
 	int32_t dim_features=2;
 	
@@ -42,8 +37,7 @@ int main(int argc, char **argv)
 	data(1,1) = 1000;
 	data(1,2) = 1000;
 	data(1,3) = 0;
-	SGMatrix<float64_t>::display_matrix(data.matrix, 2,
-			4, "rectangle_coordinates");
+	data.display_matrix(data.matrix, 2, 4, "rectangle_coordinates");
 
 
 	CDenseFeatures<float64_t>* features= new CDenseFeatures<float64_t> (data);
@@ -55,27 +49,30 @@ int main(int argc, char **argv)
 	clustering->train(features);
 	CMulticlassLabels* result=CLabelsFactory::to_multiclass(clustering->apply());
 	
-		for (index_t i=0; i<result->get_num_labels(); ++i)
-			SG_SPRINT("cluster index of vector %i: %f\n", i, result->get_label(i));
+	for (index_t i=0; i<result->get_num_labels(); ++i)
+		SG_SPRINT("cluster index of vector %i: %f\n", i, result->get_label(i));
 
 	CDenseFeatures<float64_t>* centers=(CDenseFeatures<float64_t>*)distance->get_lhs();
 	SGMatrix<float64_t> centers_matrix=centers->get_feature_matrix();
-	SGMatrix<float64_t>::display_matrix(centers_matrix.matrix, 
+	centers_matrix.display_matrix(centers_matrix.matrix, 
 			centers_matrix.num_rows, centers_matrix.num_cols, "learnt centers using Lloyd's KMeans");
+	
 
+	SG_UNREF(centers);
+	SG_UNREF(result);
 
-	clustering->set_train_method(shogun::minibatch);
+	clustering->set_train_method(minibatch);
 	clustering->set_mbKMeans_params(2,10);
 	clustering->train(features);
 	result=CLabelsFactory::to_multiclass(clustering->apply());
 	
-		for (index_t i=0; i<result->get_num_labels(); ++i)
-			SG_SPRINT("cluster index of vector %i: %f\n", i, result->get_label(i));
+	for (index_t i=0; i<result->get_num_labels(); ++i)
+		SG_SPRINT("cluster index of vector %i: %f\n", i, result->get_label(i));
 
 	centers=(CDenseFeatures<float64_t>*)distance->get_lhs();
 	centers_matrix=centers->get_feature_matrix();
-	SGMatrix<float64_t>::display_matrix(centers_matrix.matrix, 
-			centers_matrix.num_rows, centers_matrix.num_cols, "learnt centers using mini-batch KMeans");
+	centers_matrix.display_matrix(centers_matrix.matrix, centers_matrix.num_rows, 
+			centers_matrix.num_cols, "learnt centers using mini-batch KMeans");
 
 	
 	

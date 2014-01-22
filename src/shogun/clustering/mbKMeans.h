@@ -19,7 +19,20 @@
 
 namespace shogun
 {
+
+/* choose b integers between 0 and num-1
+ * 
+ */
 SGVector<int32_t> mbchoose_rand(int32_t b, int32_t num);
-void mbKMeans(int32_t k, CDistance* distance, int32_t batch_size, int32_t minib_iter, SGMatrix<float64_t> mus);
+
+/** mini-batch KMeans training method
+ *
+ * @param k parameter k
+ * @param distance distance
+ * @param batch_size parameter batch size
+ * @param minib_iter parameter number of iterations
+ * @param mus cluster centers matrix (k columns) 
+ */
+void minibatch_KMeans(int32_t k, CDistance* distance, int32_t batch_size, int32_t minib_iter, SGMatrix<float64_t> mus);
 }
 #endif

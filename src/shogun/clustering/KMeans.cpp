@@ -32,13 +32,6 @@ CKMeans::CKMeans()
 	init();
 }
 
-CKMeans::CKMeans(train_method f)
-:CDistanceMachine()
-{
-	init();
-	method=f;
-}
-
 CKMeans::CKMeans(int32_t k_, CDistance* d, train_method f)
 :CDistanceMachine()
 {
@@ -82,7 +75,7 @@ void CKMeans::set_initial_centers(SGMatrix<float64_t> centers)
 	mus_initial = centers;
 }
 
-void CKMeans::set_random_centers(float64_t* weights_set, int32_t* ClList, int32_t XSize)
+void CKMeans::set_random_centers(SGVector<float64_t> weights_set, SGVector<int32_t> ClList, int32_t XSize)
 {
 	CDenseFeatures<float64_t>* lhs=
 			(CDenseFeatures<float64_t>*)distance->get_lhs();
@@ -115,8 +108,8 @@ void CKMeans::set_random_centers(float64_t* weights_set, int32_t* ClList, int32_
 	}
 }
 
-void CKMeans::set_initial_centers(float64_t* weights_set, float64_t* dists, 
-						int32_t* ClList, int32_t XSize)
+void CKMeans::set_initial_centers(SGVector<float64_t> weights_set, 
+				SGVector<int32_t> ClList, int32_t XSize)
 {
 	ASSERT(mus_initial.matrix);
 
@@ -124,6 +117,9 @@ void CKMeans::set_initial_centers(float64_t* weights_set, float64_t* dists,
 	CDenseFeatures<float64_t>* rhs_mus = new CDenseFeatures<float64_t>(0);
 	CFeatures* rhs_cache = distance->replace_rhs(rhs_mus);
 	rhs_mus->copy_feature_matrix(mus_initial);
+
+	SGVector<float64_t> dists=SGVector<float64_t>(k*XSize);
+	dists.zero();
 
 	for(int32_t idx=0;idx<XSize;idx++)
 	{
@@ -253,43 +249,29 @@ bool CKMeans::train_machine(CFeatures* data)
 	R=SGVector<float64_t>(k);
 
 	mus=SGMatrix<float64_t>(dimensions, k);
-
-	int32_t *ClList=SG_CALLOC(int32_t, XSize);
-	float64_t *weights_set=SG_CALLOC(float64_t, k);
-	float64_t *dists=SG_CALLOC(float64_t, k*XSize);
-
-	///replace rhs feature vectors
-	CDenseFeatures<float64_t>* rhs_mus = new CDenseFeatures<float64_t>(0);
-	CFeatures* rhs_cache = distance->replace_rhs(rhs_mus);
-
-	/* ClList=zeros(XSize,1) ; */
-	memset(ClList, 0, sizeof(int32_t)*XSize);
-	/* weights_set=zeros(k,1) ; */
-	memset(weights_set, 0, sizeof(float64_t)*k);
-
 	/* cluster_centers=zeros(dimensions, k) ; */
 	memset(mus.matrix, 0, sizeof(float64_t)*XDimk);
 
+	SGVector<int32_t> ClList=SGVector<int32_t>(XSize);
+	ClList.zero();
+	SGVector<float64_t> weights_set=SGVector<float64_t>(k);
+	weights_set.zero();
+
 	if (mus_initial.matrix)
-		set_initial_centers(weights_set, dists, ClList, XSize);
+		set_initial_centers(weights_set, ClList, XSize);
 	else
 		set_random_centers(weights_set, ClList, XSize);
 	
 	if (method==minibatch)
 	{
-		mbKMeans(k, distance, batch_size, minib_iter, mus);
+		minibatch_KMeans(k, distance, batch_size, minib_iter, mus);
 	}
 	else
 	{
-		lKMeans(k, distance, max_iter, mus, fixed_centers);
+		Lloyd_KMeans(k, distance, max_iter, mus, ClList, weights_set, fixed_centers);
 	}
 
 	compute_cluster_variances();
-	distance->replace_rhs(rhs_cache);
-	delete rhs_mus;
-	SG_FREE(ClList);
-	SG_FREE(weights_set);
-	SG_FREE(dists);
 	SG_UNREF(lhs);
 
 	return true;
@@ -321,7 +303,7 @@ bool CKMeans::get_use_kmeanspp() const
 
 void CKMeans::set_k(int32_t p_k)
 {
-	ASSERT(p_k>0)
+	REQUIRE(p_k>0, "number of clusters should be > 0");
 	this->k=p_k;
 }
 
@@ -332,7 +314,7 @@ int32_t CKMeans::get_k()
 
 void CKMeans::set_max_iter(int32_t iter)
 {
-	ASSERT(iter>0)
+	REQUIRE(iter>0, "number of clusters should be > 0");
 	max_iter=iter;
 }
 
@@ -353,30 +335,30 @@ train_method CKMeans::get_train_method() const
 
 void CKMeans::set_mbKMeans_batch_size(int32_t b)
 {
-	ASSERT(b>0)
+	REQUIRE(b>0, "Parameter bach size should be > 0");
 	batch_size=b;
 }
 
-int32_t CKMeans::get_mbKMeans_batch_size()
+int32_t CKMeans::get_mbKMeans_batch_size() const
 {
 	return batch_size;
 }
 
 void CKMeans::set_mbKMeans_iter(int32_t i)
 {
-	ASSERT(i>0)
+	REQUIRE(i>0, "Parameter number of iterations should be > 0");
 	minib_iter=i;
 }
 
-int32_t CKMeans::get_mbKMeans_iter()
+int32_t CKMeans::get_mbKMeans_iter() const
 {
 	return minib_iter;
 }
 
 void CKMeans::set_mbKMeans_params(int32_t b, int32_t t)
 {
-	ASSERT(b>0)
-	ASSERT(t>0)
+	REQUIRE(b>0, "Parameter bach size should be > 0");
+	REQUIRE(t>0, "Parameter number of iterations should be > 0");
 	batch_size=b;
 	minib_iter=t;
 }
