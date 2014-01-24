@@ -120,7 +120,7 @@ def get_split_string(a):
 		strs.extend(e.replace('\\n','\n').splitlines())
 	return strs
 
-def tester(tests, cmp_method):
+def tester(tests, cmp_method, opts):
 	failed=[]
 	sgtolerance = opts.sgtolerance
 	tolerance = opts.tolerance
