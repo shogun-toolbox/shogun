@@ -19,7 +19,7 @@ def typecheck(a, b):
 	return type(a) == type(b)
 
 
-def compare(a, b, tolerance):
+def compare(a, b, tolerance, sgtolerance):
 	if not typecheck(a,b): return False
 
 	if type(a) == numpy.ndarray:
@@ -32,9 +32,7 @@ def compare(a, b, tolerance):
 		if pickle.dumps(a) == pickle.dumps(b):
 			result = True
 		else:
-			# new, parameter framework based comparison up to tolerance
-			shogun_tolerance = 1e-5 if tolerance is None else tolerance
-			result = a.equals(b, shogun_tolerance)
+			result = a.equals(b, sg_tolerance)
 
 		# print debug output in case of failure
 		if not result:
@@ -48,17 +46,17 @@ def compare(a, b, tolerance):
 	elif type(a) in (tuple,list):
 		if len(a) != len(b): return False
 		for obj1, obj2 in zip(a,b):
-			if not compare(obj1, obj2, tolerance): return False
+			if not compare(obj1, obj2, tolerance, sgtolerance): return False
 		return True
 
 	return a == b
 
-def compare_dbg(a, b, tolerance):
-	if not compare_dbg_helper(a, b, tolerance):
+def compare_dbg(a, b, tolerance, sgtolerance):
+	if not compare_dbg_helper(a, b, tolerance, sgtolerance):
 		import pdb
 		pdb.set_trace()
 
-def compare_dbg_helper(a, b, tolerance):
+def compare_dbg_helper(a, b, tolerance, sgtolerance):
 	if not typecheck(a,b):
 		print("Type mismatch (type(a)=%s vs type(b)=%s)" % (str(type(a)),str(type(b))))
 		return False
@@ -122,8 +120,12 @@ def get_split_string(a):
 		strs.extend(e.replace('\\n','\n').splitlines())
 	return strs
 
-def tester(tests, cmp_method, tolerance, failures, missing):
+def tester(tests, cmp_method):
 	failed=[]
+	sgtolerance = opts.sgtolerance
+	tolerance = opts.tolerance
+	failures = opts.failures
+	missing = opts.missing
 
 	for t in tests:
 		try:
@@ -186,8 +188,10 @@ if __name__=='__main__':
 				help="show only failures")
 	op.add_option("-m", "--missing", action="store_true", default=False,
 				help="show only missing tests")
-	op.add_option("-t", "--tolerance", action="store", default=None,
-	              help="tolerance used to estimate accuracy")
+	op.add_option("-t", "--tolerance", action="store", default=1e-15,
+	              help="tolerance used to compare numbers")
+	op.add_option("-s", "--sgtolerance", action="store", default=1e-5,
+	              help="shogun tolerance used to compare numbers in shogun objects")
 
 	op.set_usage("[<file1> <file2> ...]")
 	(opts, args)=op.parse_args()
@@ -196,7 +200,7 @@ if __name__=='__main__':
 	else:
 		cmp_method=compare
 	tests = setup_tests(args)
-	failed = tester(tests, cmp_method, opts.tolerance, opts.failures, opts.missing)
+	failed = tester(tests, cmp_method, opts)
 	if failed:
 		print("The following tests failed!")
 		for f in failed:
