@@ -273,7 +273,6 @@ bool CKMeans::train_machine(CFeatures* data)
 
 	compute_cluster_variances();
 	SG_UNREF(lhs);
-
 	return true;
 }
 

@@ -27,14 +27,13 @@ void Lloyd::Lloyd_KMeans(int32_t k, CDistance* distance, int32_t max_iter, SGMat
 
 	CDenseFeatures<float64_t>* rhs_mus=new CDenseFeatures<float64_t>(0);
 	CFeatures* rhs_cache=distance->replace_rhs(rhs_mus);
-	rhs_mus->set_feature_matrix(mus);
+//	rhs_mus->set_feature_matrix(mus);
 
 	SGVector<float64_t> dists=SGVector<float64_t>(k*XSize);
 	dists.zero();
 
 	int32_t changed=1;
 	int32_t iter=0;
-	const int32_t XDimk=dimensions*k;
 	int32_t vlen=0;
 	bool vfree=false;
 	float64_t* vec=NULL;
@@ -52,8 +51,8 @@ void Lloyd::Lloyd_KMeans(int32_t k, CDistance* distance, int32_t max_iter, SGMat
 		if (!fixed_centers)
 		{
 			/* mus=zeros(dimensions, k) ; */
-			memset(mus.matrix, 0, sizeof(float64_t)*XDimk);
-
+//			memset(mus.matrix, 0, sizeof(float64_t)*XDimk);
+			mus.zero();
 			for (int32_t i=0; i<XSize; i++)
 			{
 				int32_t Cl=ClList[i];
@@ -75,12 +74,11 @@ void Lloyd::Lloyd_KMeans(int32_t k, CDistance* distance, int32_t max_iter, SGMat
 				}
 			}
 		}
-
-
+		rhs_mus->copy_feature_matrix(mus);
 		for (int32_t i=0; i<XSize; i++)
 		{
 			/* ks=ceil(rand(1,XSize)*XSize) ; */
-			const int32_t Pat= CMath::random(0, XSize-1);
+			const int32_t Pat= i;//CMath::random(0, XSize-1);
 			const int32_t ClList_Pat=ClList[Pat];
 			int32_t imini, j;
 			float64_t mini;
