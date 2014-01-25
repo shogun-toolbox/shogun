@@ -160,7 +160,7 @@ def tester(tests, cmp_method, opts):
 
 
 				try:
-					if cmp_method(a,b,tolerance):
+					if cmp_method(a,b,tolerance,sgtolerance):
 						if not failures and not missing:
 							print("%-60s OK" % setting_str)
 					else:
