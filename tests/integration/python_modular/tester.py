@@ -24,7 +24,13 @@ def compare(a, b, tolerance, sgtolerance):
 
 	if type(a) == numpy.ndarray:
 		if tolerance:
-			return numpy.max(numpy.abs(a - b)) < tolerance
+			# check that the maximum difference between the elements of a and b is below
+			# the tolerance, handle inf and nan elements separately
+			if not numpy.all(numpy.isfinite(a) == numpy.isfinite(b)):
+				return False
+			finite_idxs = numpy.isfinite(a)
+			return numpy.max(numpy.abs(a[finite_idxs] - b[finite_idxs])) < tolerance and \
+					numpy.all(a[~finite_idxs] == b[~finite_idxs])
 		else:
 			return numpy.all(a == b)
 	elif isinstance(a, modshogun.SGObject):
