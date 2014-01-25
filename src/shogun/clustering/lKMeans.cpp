@@ -17,15 +17,16 @@ using namespace shogun;
 
 namespace shogun
 {
-void Lloyd_KMeans(int32_t k, CDistance* distance, int32_t max_iter, SGMatrix<float64_t> mus, 
+void Lloyd::Lloyd_KMeans(int32_t k, CDistance* distance, int32_t max_iter, SGMatrix<float64_t> mus, 
 		SGVector<int32_t> ClList, SGVector<float64_t> weights_set, bool fixed_centers)
 {
-	CDenseFeatures<float64_t>* lhs=(CDenseFeatures<float64_t>*) distance->get_lhs();
+	CDenseFeatures<float64_t>* lhs=
+		CDenseFeatures<float64_t>::obtain_from_generic(distance->get_lhs());
 	int32_t XSize=lhs->get_num_vectors();
 	int32_t dimensions=lhs->get_num_features();
 
-	CDenseFeatures<float64_t>* rhs_mus = new CDenseFeatures<float64_t>(0);
-	CFeatures* rhs_cache = distance->replace_rhs(rhs_mus);
+	CDenseFeatures<float64_t>* rhs_mus=new CDenseFeatures<float64_t>(0);
+	CFeatures* rhs_cache=distance->replace_rhs(rhs_mus);
 	rhs_mus->set_feature_matrix(mus);
 
 	SGVector<float64_t> dists=SGVector<float64_t>(k*XSize);

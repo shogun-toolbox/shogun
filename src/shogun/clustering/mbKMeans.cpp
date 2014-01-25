@@ -16,16 +16,17 @@ using namespace shogun;
 
 namespace shogun
 {
-void minibatch_KMeans(int32_t k, CDistance* distance, int32_t batch_size, int32_t minib_iter, SGMatrix<float64_t> mus)
+void minibatch::minibatch_KMeans(int32_t k, CDistance* distance, int32_t batch_size, int32_t minib_iter, SGMatrix<float64_t> mus)
 {
 	REQUIRE(batch_size>0,
 		"batch size not set to positive value. Current batch size %d \n", batch_size);
 	REQUIRE(minib_iter>0,
 		"number of iterations not set to positive value. Current iterations %d \n", minib_iter);
 
-	CDenseFeatures<float64_t>* lhs=(CDenseFeatures<float64_t>*) distance->get_lhs();
-	CDenseFeatures<float64_t>* rhs_mus = new CDenseFeatures<float64_t>(0);
-	CFeatures* rhs_cache = distance->replace_rhs(rhs_mus);
+	CDenseFeatures<float64_t>* lhs=
+		CDenseFeatures<float64_t>::obtain_from_generic(distance->get_lhs());
+	CDenseFeatures<float64_t>* rhs_mus=new CDenseFeatures<float64_t>(0);
+	CFeatures* rhs_cache=distance->replace_rhs(rhs_mus);
 	rhs_mus->set_feature_matrix(mus);
 	int32_t XSize=lhs->get_num_vectors();
 	int32_t dims=lhs->get_num_features();
@@ -36,7 +37,7 @@ void minibatch_KMeans(int32_t k, CDistance* distance, int32_t batch_size, int32_
 	for (int32_t i=0; i<minib_iter; i++)
 	{
 		SGVector<int32_t> M=mbchoose_rand(batch_size,XSize);
-		SGVector<int32_t> ncent= SGVector<int32_t>(batch_size);
+		SGVector<int32_t> ncent=SGVector<int32_t>(batch_size);
 		for (int32_t j=0; j<batch_size; j++)
 		{
 			SGVector<float64_t> dists=SGVector<float64_t>(k);
@@ -73,7 +74,7 @@ void minibatch_KMeans(int32_t k, CDistance* distance, int32_t batch_size, int32_
 	delete rhs_mus;
 }
 
-SGVector<int32_t> mbchoose_rand(int32_t b, int32_t num)
+SGVector<int32_t> minibatch::mbchoose_rand(int32_t b, int32_t num)
 {
 	SGVector<int32_t> chosen=SGVector<int32_t>(num);
 	SGVector<int32_t> ret=SGVector<int32_t>(b);

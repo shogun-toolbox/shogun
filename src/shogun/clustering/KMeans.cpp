@@ -78,7 +78,7 @@ void CKMeans::set_initial_centers(SGMatrix<float64_t> centers)
 void CKMeans::set_random_centers(SGVector<float64_t> weights_set, SGVector<int32_t> ClList, int32_t XSize)
 {
 	CDenseFeatures<float64_t>* lhs=
-			(CDenseFeatures<float64_t>*)distance->get_lhs();
+		CDenseFeatures<float64_t>::obtain_from_generic(distance->get_lhs());
 
 	for (int32_t i=0; i<XSize; i++)
 	{
@@ -114,8 +114,8 @@ void CKMeans::set_initial_centers(SGVector<float64_t> weights_set,
 	ASSERT(mus_initial.matrix);
 
 	/// set rhs to mus_start
-	CDenseFeatures<float64_t>* rhs_mus = new CDenseFeatures<float64_t>(0);
-	CFeatures* rhs_cache = distance->replace_rhs(rhs_mus);
+	CDenseFeatures<float64_t>* rhs_mus=new CDenseFeatures<float64_t>(0);
+	CFeatures* rhs_cache=distance->replace_rhs(rhs_mus);
 	rhs_mus->copy_feature_matrix(mus_initial);
 
 	SGVector<float64_t> dists=SGVector<float64_t>(k*XSize);
@@ -233,7 +233,7 @@ bool CKMeans::train_machine(CFeatures* data)
 		distance->init(data, data);
 
 	CDenseFeatures<float64_t>* lhs=
-			(CDenseFeatures<float64_t>*)distance->get_lhs();
+		CDenseFeatures<float64_t>::obtain_from_generic(distance->get_lhs());
 
 	ASSERT(lhs);
 	int32_t XSize=lhs->get_num_vectors();
@@ -264,11 +264,11 @@ bool CKMeans::train_machine(CFeatures* data)
 	
 	if (method==minibatch)
 	{
-		minibatch_KMeans(k, distance, batch_size, minib_iter, mus);
+		minibatch::minibatch_KMeans(k, distance, batch_size, minib_iter, mus);
 	}
 	else
 	{
-		Lloyd_KMeans(k, distance, max_iter, mus, ClList, weights_set, fixed_centers);
+		Lloyd::Lloyd_KMeans(k, distance, max_iter, mus, ClList, weights_set, fixed_centers);
 	}
 
 	compute_cluster_variances();

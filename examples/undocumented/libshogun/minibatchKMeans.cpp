@@ -29,21 +29,21 @@ int main(int argc, char **argv)
 	
 	/* create data around clusters */
 	SGMatrix<float64_t> data(dim_features, 4);
-	data(0,0) = 0;
-	data(0,1) = 0;
-	data(0,2) = 2;
-	data(0,3) = 2;
-	data(1,0) = 0;
-	data(1,1) = 1000;
-	data(1,2) = 1000;
-	data(1,3) = 0;
+	data(0,0)=0;
+	data(0,1)=0;
+	data(0,2)=2;
+	data(0,3)=2;
+	data(1,0)=0;
+	data(1,1)=1000;
+	data(1,2)=1000;
+	data(1,3)=0;
 	data.display_matrix(data.matrix, 2, 4, "rectangle_coordinates");
 
 
-	CDenseFeatures<float64_t>* features= new CDenseFeatures<float64_t> (data);
+	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t> (data);
 	SG_REF(features);
 
-	CEuclideanDistance* distance = new CEuclideanDistance(features, features);
+	CEuclideanDistance* distance=new CEuclideanDistance(features, features);
 	CKMeans* clustering=new CKMeans(2, distance, true);
 	
 	clustering->train(features);
@@ -52,12 +52,11 @@ int main(int argc, char **argv)
 	for (index_t i=0; i<result->get_num_labels(); ++i)
 		SG_SPRINT("cluster index of vector %i: %f\n", i, result->get_label(i));
 
-	CDenseFeatures<float64_t>* centers=(CDenseFeatures<float64_t>*)distance->get_lhs();
+	CDenseFeatures<float64_t>* centers=CDenseFeatures<float64_t>::obtain_from_generic(distance->get_lhs());
 	SGMatrix<float64_t> centers_matrix=centers->get_feature_matrix();
 	centers_matrix.display_matrix(centers_matrix.matrix, 
 			centers_matrix.num_rows, centers_matrix.num_cols, "learnt centers using Lloyd's KMeans");
 	
-
 	SG_UNREF(centers);
 	SG_UNREF(result);
 
@@ -73,9 +72,6 @@ int main(int argc, char **argv)
 	centers_matrix=centers->get_feature_matrix();
 	centers_matrix.display_matrix(centers_matrix.matrix, centers_matrix.num_rows, 
 			centers_matrix.num_cols, "learnt centers using mini-batch KMeans");
-
-	
-	
 
 	SG_UNREF(centers);
 	SG_UNREF(result);
