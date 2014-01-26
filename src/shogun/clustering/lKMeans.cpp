@@ -73,9 +73,10 @@ void Lloyd::Lloyd_KMeans(int32_t k, CDistance* distance, int32_t max_iter, SGMat
 			}
 		}
 		rhs_mus->copy_feature_matrix(mus);
-		for (int32_t Pat=0; Pat<XSize; Pat++)
+		for (int32_t i=0; i<XSize; i++)
 		{
 			/* ks=ceil(rand(1,XSize)*XSize) ; */
+			const int32_t Pat=CMath::random(0, XSize-1);
 			const int32_t ClList_Pat=ClList[Pat];
 			int32_t imini, j;
 			float64_t mini;
