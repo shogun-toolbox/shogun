@@ -157,12 +157,10 @@ void CFITCInferenceMethod::update_train_kernel()
 	CInferenceMethod::update_train_kernel();
 
 	// create kernel matrix for latent features
-	m_kernel->cleanup();
 	m_kernel->init(m_latent_features, m_latent_features);
 	m_kuu=m_kernel->get_kernel_matrix();
 
 	// create kernel matrix for latent and training features
-	m_kernel->cleanup();
 	m_kernel->init(m_latent_features, m_features);
 	m_ktru=m_kernel->get_kernel_matrix();
 }
@@ -457,8 +455,6 @@ SGVector<float64_t> CFITCInferenceMethod::get_derivative_wrt_kernel(
 			m_kernel->init(m_latent_features, m_features);
 			deriv_tru=m_kernel->get_parameter_gradient(param, i);
 		}
-
-		m_kernel->cleanup();
 
 		// create eigen representation of derivatives
 		Map<VectorXd> ddiagKi(deriv_trtr.vector, deriv_trtr.vlen);

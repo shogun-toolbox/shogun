@@ -126,8 +126,6 @@ SGVector<float64_t> CGaussianProcessMachine::get_posterior_variances(
 	// compute Kss=Kss*scale^2
 	eigen_Kss*=CMath::sq(m_method->get_scale());
 
-	kernel->cleanup();
-
 	// compute kernel matrix: K(feat, data)*scale^2
 	kernel->init(feat, data);
 
