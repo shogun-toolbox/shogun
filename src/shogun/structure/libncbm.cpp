@@ -324,6 +324,7 @@ BmrmStatistics svm_ncbm_solver(
 	int32_t w_dim = machine->get_model()->get_dim();
 
 	maxCPs = _BufSize;
+	BufSize = _BufSize;
 
 	ncbm.nCP=0;
 	ncbm.nIter=0;
@@ -523,6 +524,10 @@ BmrmStatistics svm_ncbm_solver(
 		if (ncbm.nCP >= maxCPs)
 			ncbm.exitflag = -1;
 
+		// next CP would exceed BufSize/maxCPs
+		if (ncbm.nCP+3 >= maxCPs)
+			ncbm.exitflag=-1;
+
 		tstop=ttime.cur_time_diff(false);
 
 		/* Verbose output */
@@ -530,6 +535,9 @@ BmrmStatistics svm_ncbm_solver(
 			SG_SPRINT("%4d: tim=%.3lf, Fp=%lf, Fd=%lf, (Fp-Fd)=%lf, (Fp-Fd)/Fp=%lf, R=%lf, nCP=%d, nzA=%d, QPexitflag=%d, best_fp=%f, gap=%f\n",
 					ncbm.nIter, tstop-tstart, ncbm.Fp, ncbm.Fd, ncbm.Fp-ncbm.Fd,
 					(ncbm.Fp-ncbm.Fd)/ncbm.Fp, cur_risk, ncbm.nCP, ncbm.nzA, qp_exitflag.exitflag, best_Fp, (best_Fp-ncbm.Fd)/best_Fp);
+
+		if (ncbm.exitflag!=0)
+			break;
 
 		std::vector<line_search_res> wbest_candidates;
 		if (!line_search)

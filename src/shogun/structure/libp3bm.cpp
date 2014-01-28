@@ -11,7 +11,7 @@
  * Implementation of the Proximal Point P-BMRM (p3bm)
  *--------------------------------------------------------------------- */
 
-#include <shogun/structure/libppbm.h>
+#include <shogun/structure/libp3bm.h>
 #include <shogun/lib/external/libqp.h>
 #include <shogun/lib/Time.h>
 
@@ -21,7 +21,6 @@ static const uint32_t QPSolverMaxIter=0xFFFFFFFF;
 static const float64_t epsilon=0.0;
 
 static float64_t *H, *H2;
-static uint32_t BufSize;
 
 /*----------------------------------------------------------------------
   Returns pointer at i-th column of Hessian matrix.
@@ -651,6 +650,10 @@ BmrmStatistics svm_p3bm_solver(
 					&CPList_tail, H, diag_H, beta, map,
 					cleanAfter, b, I, cp_models);
 		}
+
+		// next CP would exceed BufSize
+		if (p3bmrm.nCP+1 >= BufSize)
+			p3bmrm.exitflag=-1;
 
 		/* Debug: compute objective and training error */
 		if (verbose)
