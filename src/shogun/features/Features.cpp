@@ -32,8 +32,6 @@ CFeatures::CFeatures(const CFeatures& orig)
 {
 	init();
 
-	SG_UNREF(preproc);
-	SG_UNREF(preprocessed);
 	preproc = orig.preproc;
 	preprocessed = orig.preprocessed;
 	SG_REF(preproc);
