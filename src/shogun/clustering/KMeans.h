@@ -24,10 +24,10 @@ namespace shogun
 class CDistanceMachine;
 
 /** training method */
-enum train_method 
+enum EKMeansMethod
 {
-	minibatch,
-	lloyd
+    KMM_MINI_BATCH,
+    KMM_LLOYD
 };
 
 /** @brief KMeans clustering,  partitions the data into k (a-priori specified) clusters.
@@ -57,7 +57,7 @@ class CKMeans : public CDistanceMachine
 		 * @param d distance
 		 * @param f train_method value
 		 */
-		CKMeans(int32_t k, CDistance* d, train_method f);
+		CKMeans(int32_t k, CDistance* d, EKMeansMethod f);
 
 		/** constructor
 		 *
@@ -66,7 +66,7 @@ class CKMeans : public CDistanceMachine
 		 * @param kmeanspp true for using KMeans++ (default false)
 		 * @param f train_method value
 		 */
-		CKMeans(int32_t k, CDistance* d, bool kmeanspp=false, train_method f=lloyd);
+		CKMeans(int32_t k, CDistance* d, bool kmeanspp=false, EKMeansMethod f=KMM_LLOYD);
 
 		/** constructor for supplying initial centers
 		 * @param k_i parameter k
@@ -74,7 +74,7 @@ class CKMeans : public CDistanceMachine
 		 * @param centers_i initial centers for KMeans algorithm
 		 * @param f train_method value
 		*/
-		CKMeans(int32_t k_i, CDistance* d_i, SGMatrix<float64_t> centers_i, train_method f=lloyd);
+		CKMeans(int32_t k_i, CDistance* d_i, SGMatrix<float64_t> centers_i, EKMeansMethod f=KMM_LLOYD);
 		virtual ~CKMeans();
 
 
@@ -179,13 +179,13 @@ class CKMeans : public CDistanceMachine
 		 *
 		 *@param f minibatch if mini-batch KMeans
 		 */
-		void set_train_method(train_method f);
+		void set_train_method(EKMeansMethod f);
 
 		/** get training method
 		 *
 		 *@return training method used - minibatch or lloyd
 		 */
-		train_method get_train_method() const;
+		EKMeansMethod get_train_method() const;
 
 		/** set batch size for mini-batch KMeans
 		 *
@@ -282,7 +282,7 @@ class CKMeans : public CDistanceMachine
 		SGMatrix<float64_t> mus;
 
 		/// set minibatch to use mini-batch KMeans
-		train_method method;
+		EKMeansMethod train_method;
 };
 }
 #endif

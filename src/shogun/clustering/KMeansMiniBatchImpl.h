@@ -19,7 +19,7 @@
 
 namespace shogun
 {
-class minibatch
+class CKMeansMiniBatchImpl
 {
 	public:
 		/** mini-batch KMeans training method
