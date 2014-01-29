@@ -111,7 +111,8 @@ enum EKernelType
 	K_PRODUCT = 490,
 	K_LINEARARD = 500,
 	K_GAUSSIANARD = 510,
-	K_STREAMING = 520
+	K_STREAMING = 520,
+	K_DIFFUSION = 530
 };
 
 /** kernel property */
