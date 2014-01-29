@@ -60,7 +60,7 @@ int main(int argc, char **argv)
 	SG_UNREF(centers);
 	SG_UNREF(result);
 
-	clustering->set_train_method(minibatch);
+	clustering->set_train_method(KMM_MINI_BATCH);
 	clustering->set_mbKMeans_params(2,10);
 	clustering->train(features);
 	result=CLabelsFactory::to_multiclass(clustering->apply());

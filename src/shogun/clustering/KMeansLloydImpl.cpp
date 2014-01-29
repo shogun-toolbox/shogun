@@ -7,7 +7,7 @@
  * Written (W) 2014 Parijat Mazumdar
  */
 
-#include "shogun/clustering/lKMeans.h"
+#include "shogun/clustering/KMeansLloydImpl.h"
 #include <shogun/distance/Distance.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/mathematics/Math.h>
@@ -17,7 +17,7 @@ using namespace shogun;
 
 namespace shogun
 {
-void Lloyd::Lloyd_KMeans(int32_t k, CDistance* distance, int32_t max_iter, SGMatrix<float64_t> mus, 
+void CKMeansLloydImpl::Lloyd_KMeans(int32_t k, CDistance* distance, int32_t max_iter, SGMatrix<float64_t> mus, 
 		SGVector<int32_t> ClList, SGVector<float64_t> weights_set, bool fixed_centers)
 {
 	CDenseFeatures<float64_t>* lhs=

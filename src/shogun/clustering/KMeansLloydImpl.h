@@ -18,7 +18,7 @@
 
 namespace shogun
 {
-class Lloyd
+class CKMeansLloydImpl
 {
 	public:	
 		/** Lloyd's KMeans training method

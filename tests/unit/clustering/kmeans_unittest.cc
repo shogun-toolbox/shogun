@@ -149,7 +149,7 @@ TEST(KMeans, minibatch_training_test)
 
 	for (int32_t loop=0; loop<10; loop++)
 	{
-		clustering->set_train_method(minibatch);
+		clustering->set_train_method(KMM_MINI_BATCH);
 		clustering->set_mbKMeans_params(4,1000);
 		clustering->train(features);
 		CMulticlassLabels* result=CLabelsFactory::to_multiclass(clustering->apply());

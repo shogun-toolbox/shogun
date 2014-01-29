@@ -9,8 +9,8 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/clustering/lKMeans.h>
-#include "shogun/clustering/mbKMeans.h"
+#include <shogun/clustering/KMeansLloydImpl.h>
+#include "shogun/clustering/KMeansMiniBatchImpl.h"
 #include <shogun/clustering/KMeans.h>
 #include <shogun/distance/Distance.h>
 #include <shogun/labels/Labels.h>
@@ -32,33 +32,33 @@ CKMeans::CKMeans()
 	init();
 }
 
-CKMeans::CKMeans(int32_t k_, CDistance* d, train_method f)
+CKMeans::CKMeans(int32_t k_, CDistance* d, EKMeansMethod f)
 :CDistanceMachine()
 {
 	init();
 	k=k_;
 	set_distance(d);
-	method=f;
+	train_method=f;
 }
 
-CKMeans::CKMeans(int32_t k_, CDistance* d, bool use_kmpp, train_method f)
+CKMeans::CKMeans(int32_t k_, CDistance* d, bool use_kmpp, EKMeansMethod f)
 : CDistanceMachine()
 {	
 	init();
 	k=k_;
 	set_distance(d);
 	use_kmeanspp=use_kmpp;
-	method=f;
+	train_method=f;
 }
 
-CKMeans::CKMeans(int32_t k_i, CDistance* d_i, SGMatrix<float64_t> centers_i, train_method f)
+CKMeans::CKMeans(int32_t k_i, CDistance* d_i, SGMatrix<float64_t> centers_i, EKMeansMethod f)
 : CDistanceMachine()
 {
 	init();
 	k = k_i;
 	set_distance(d_i);
 	set_initial_centers(centers_i);
-	method=f;
+	train_method=f;
 }
 
 CKMeans::~CKMeans()
@@ -262,13 +262,13 @@ bool CKMeans::train_machine(CFeatures* data)
 	else
 		set_random_centers(weights_set, ClList, XSize);
 	
-	if (method==minibatch)
+	if (train_method==KMM_MINI_BATCH)
 	{
-		minibatch::minibatch_KMeans(k, distance, batch_size, minib_iter, mus);
+		CKMeansMiniBatchImpl::minibatch_KMeans(k, distance, batch_size, minib_iter, mus);
 	}
 	else
 	{
-		Lloyd::Lloyd_KMeans(k, distance, max_iter, mus, ClList, weights_set, fixed_centers);
+		CKMeansLloydImpl::Lloyd_KMeans(k, distance, max_iter, mus, ClList, weights_set, fixed_centers);
 	}
 
 	compute_cluster_variances();
@@ -322,14 +322,14 @@ float64_t CKMeans::get_max_iter()
 	return max_iter;
 }
 
-void CKMeans::set_train_method(train_method f)
+void CKMeans::set_train_method(EKMeansMethod f)
 {
-	method=f;
+	train_method=f;
 }
 
-train_method CKMeans::get_train_method() const
+EKMeansMethod CKMeans::get_train_method() const
 {
-	return method;
+	return train_method;
 }
 
 void CKMeans::set_mbKMeans_batch_size(int32_t b)
@@ -468,7 +468,7 @@ void CKMeans::init()
 	dimensions=0;
 	fixed_centers=false;
 	use_kmeanspp=false;
-	method=lloyd;
+	train_method=KMM_LLOYD;
 	batch_size=-1;
 	minib_iter=-1;
 	SG_ADD(&max_iter, "max_iter", "Maximum number of iterations", MS_AVAILABLE);
