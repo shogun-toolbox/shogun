@@ -1,12 +1,6 @@
 #!/usr/bin/env python
 from tools.multiclass_shared import prepare_data
 
-try:
-	from modshogun import MulticlassLogisticRegression
-except ImportError:
-	print("recompile shogun with Eigen3 support")
-	import sys
-	sys.exit(0)
 
 
 [traindat, label_traindat, testdat, label_testdat] = prepare_data(False)
@@ -15,6 +9,11 @@ parameter_list = [[traindat,testdat,label_traindat,label_testdat,2.1,1e-5],[trai
 
 def classifier_multiclasslogisticregression_modular (fm_train_real=traindat,fm_test_real=testdat,label_train_multiclass=label_traindat,label_test_multiclass=label_testdat,z=1,epsilon=1e-5):
 	from modshogun import RealFeatures, MulticlassLabels
+	try:
+		from modshogun import MulticlassLogisticRegression
+	except ImportError:
+		print("recompile shogun with Eigen3 support")
+		return
 
 	feats_train=RealFeatures(fm_train_real)
 	feats_test=RealFeatures(fm_test_real)
