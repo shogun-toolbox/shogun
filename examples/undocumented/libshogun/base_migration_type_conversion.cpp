@@ -11,6 +11,7 @@
 #include <shogun/base/init.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/io/SerializableAsciiFile.h>
+#include <shogun/io/SGIO.h>
 #include <shogun/base/ParameterMap.h>
 #include <shogun/features/DenseFeatures.h>
 #include <unistd.h>
@@ -343,7 +344,10 @@ void test_migration()
 	 * version in file. This is not true, the version is -1, which is used here
 	 * as custom version. Normally numbers >=0 are used. */
 	file=new CSerializableAsciiFile(filename, 'r');
+	// mute the warning so we don't have a false positive on the buildbot
+	float_instance->io->set_loglevel(MSG_ERROR);
 	float_instance->load_serializable(file, "", 1);
+	float_instance->io->set_loglevel(MSG_WARN);
 	file->close();
 	SG_UNREF(file);
 
