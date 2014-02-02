@@ -90,12 +90,12 @@ def generator(tests):
 		fname = ""
 
 		print("%-60s" % mod_name)
-		#print "%+60s" % "...",
+		#print("%+60s" % "...")
 		try:
 			for i in range(len(mod.parameter_list)):
 				fname = get_fname(mod_name, i)
 				a = run_test(mod, mod_name, i)
-				pickle.dump(a,open(fname, "w"))
+				pickle.dump(a,open(fname, "wb"),0)
 			print("OK")
 		except Exception as e:
 			print("ERROR generating '%s' using '%s'" % (fname,t))

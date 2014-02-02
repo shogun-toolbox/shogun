@@ -38,14 +38,14 @@ def compare(a, b, tolerance, sgtolerance):
 		if pickle.dumps(a) == pickle.dumps(b):
 			result = True
 		else:
-			result = a.equals(b, sg_tolerance)
+			result = a.equals(b, sgtolerance)
 
 		# print debug output in case of failure
 		if not result:
 			print("Equals failed with debug output")
 			old_loglevel=a.io.get_loglevel()
 			a.io.set_loglevel(modshogun.MSG_INFO)
-			a.equals(b, shogun_tolerance)
+			a.equals(b, sgtolerance)
 			a.io.set_loglevel(old_loglevel)
 
 		return result
