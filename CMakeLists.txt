@@ -192,17 +192,17 @@ ENDIF()
 # TODO: until swig 2.0.11 does not support compilation with libc++
 # There are PRs against SWIG HEAD to fix this hence it needs to be checked
 # which later version can support compilation with libc++
-OPTION(OSX_LIBSTDCXX
-	"Use libstdc++ on libshogun with OSX, possibly needed for OSX <= 10.8"
-	OFF)
-IF (COMPILE_MODULAR_INTERFACE AND ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang") AND NOT SWIG_VERSION VERSION_GREATER "2.0.11")
-	IF(OSX_LIBSTDCXX OR NOT DARWIN)
-		SET(CMAKE_CXX_FLAGS "-stdlib=libstdc++ ${CMAKE_CXX_FLAGS}")
-	ELSE(OSX_LIBSTDCXX OR NOT DARWIN)
-		SET(CMAKE_CXX_FLAGS "-stdlib=libc++ ${CMAKE_CXX_FLAGS}")
-	ENDIF(OSX_LIBSTDCXX OR NOT DARWIN)
-	SET(SWIG_CXX_COMPILER_FLAGS "-stdlib=libstdc++ ${SWIG_CXX_COMPILER_FLAGS}")
-ENDIF()
+#OPTION(OSX_LIBSTDCXX
+#	"Use libstdc++ on libshogun with OSX, possibly needed for OSX <= 10.8"
+#	OFF)
+#IF (COMPILE_MODULAR_INTERFACE AND ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang") AND NOT SWIG_VERSION VERSION_GREATER "2.0.11")
+#	IF(OSX_LIBSTDCXX OR NOT DARWIN)
+#		SET(CMAKE_CXX_FLAGS "-stdlib=libstdc++ ${CMAKE_CXX_FLAGS}")
+#	ELSE(OSX_LIBSTDCXX OR NOT DARWIN)
+#		SET(CMAKE_CXX_FLAGS "-stdlib=libc++ ${CMAKE_CXX_FLAGS}")
+#	ENDIF(OSX_LIBSTDCXX OR NOT DARWIN)
+#	SET(SWIG_CXX_COMPILER_FLAGS "-stdlib=libstdc++ ${SWIG_CXX_COMPILER_FLAGS}")
+#ENDIF()
 
 IF (NOT ((CYGWIN AND ENABLE_TESTING) OR (DARWIN AND COMPILE_MODULAR_INTERFACE)))
 	INCLUDE(CheckCXX11Features)
