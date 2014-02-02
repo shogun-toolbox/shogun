@@ -10,6 +10,9 @@ import difflib
 
 from generator import setup_tests, get_fname, blacklist, get_test_mod, run_test
 
+def is_python2():
+	return sys.version_info[0]==2
+
 def typecheck(a, b):
 	if str(type(a)).find('shogun')>=0 and \
 		str(type(a)).find('Labels')>=0 and \
@@ -42,6 +45,8 @@ def compare(a, b, tolerance, sgtolerance):
 
 		# print debug output in case of failure
 		if not result:
+			pickle.dump(a, open('/tmp/a','wb'))
+			pickle.dump(b, open('/tmp/b','wb'))
 			print("Equals failed with debug output")
 			old_loglevel=a.io.get_loglevel()
 			a.io.set_loglevel(modshogun.MSG_INFO)
@@ -93,7 +98,7 @@ def compare_dbg_helper(a, b, tolerance, sgtolerance):
 			print("Length mismatch (len(a)=%d vs len(b)=%d)" % (len(a), len(b)))
 			return False
 		for obj1, obj2 in zip(a,b):
-			if not compare_dbg(obj1, obj2, tolerance):
+			if not compare_dbg(obj1, obj2, tolerance, sgtolerance):
 				return False
 		return True
 
@@ -212,21 +217,22 @@ if __name__=='__main__':
 		for f in failed:
 			print("\t" + f[0])
 
-		print("Detailed failures:")
-		for f in failed:
-			print("\t" + f[0])
-			got=get_split_string(f[1])
-			expected=get_split_string(f[2])
-			#print "=== EXPECTED =========="
-			#import pdb
-			#pdb.set_trace()
-			#print '\n'.join(expected)
-			#print "=== GOT ==============="
-			#print '\n'.join(got)
-			print("====DIFF================")
-			print('\n'.join(difflib.unified_diff(expected, got, fromfile='expected', tofile='got')))
-			print("====EOT================")
-			print("\n\n\n")
+		if is_python2():
+			print("Detailed failures:")
+			for f in failed:
+				print("\t" + f[0])
+				got=get_split_string(f[1])
+				expected=get_split_string(f[2])
+				#print "=== EXPECTED =========="
+				#import pdb
+				#pdb.set_trace()
+				#print '\n'.join(expected)
+				#print "=== GOT ==============="
+				#print '\n'.join(got)
+				print("====DIFF================")
+				print('\n'.join(difflib.unified_diff(expected, got, fromfile='expected', tofile='got')))
+				print("====EOT================")
+				print("\n\n\n")
 
 		sys.exit(1)
 	sys.exit(0)

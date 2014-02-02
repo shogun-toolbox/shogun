@@ -3197,7 +3197,7 @@ bool TParameter::equals(TParameter* other, float64_t accuracy)
 			SG_SDEBUG("length_y: %d\n", *m_datatype.m_length_y)
 			for (index_t i=0; i<*m_datatype.m_length_y; ++i)
 			{
-				SG_SDEBUG("comparing element %d which is %d byes from start\n",
+				SG_SDEBUG("comparing element %d which is %d bytes from start\n",
 						i, x);
 
 				void* pointer_a=&((*(char**)m_parameter)[x]);
@@ -3283,7 +3283,7 @@ bool TParameter::compare_ptype(EPrimitiveType ptype, void* data1, void* data2,
 
 	if ((data1 && !data2) || (!data1 && data2))
 	{
-		SG_SDEBUG("leaving TParameter::compare_ptype(): data1 is at %p while "
+		SG_SINFO("leaving TParameter::compare_ptype(): data1 is at %p while "
 				"data2 is at %p\n", data1, data2);
 		return false;
 	}
@@ -3304,7 +3304,7 @@ bool TParameter::compare_ptype(EPrimitiveType ptype, void* data1, void* data2,
 
 		if (CMath::abs(casted1-casted2)>accuracy)
 		{
-			SG_SDEBUG("leaving TParameter::compare_ptype(): PT_BOOL: "
+			SG_SINFO("leaving TParameter::compare_ptype(): PT_BOOL: "
 					"data1=%d, data2=%d\n", casted1, casted2);
 			return false;
 		}
@@ -3317,7 +3317,7 @@ bool TParameter::compare_ptype(EPrimitiveType ptype, void* data1, void* data2,
 
 		if (CMath::abs(casted1-casted2)>accuracy)
 		{
-			SG_SDEBUG("leaving TParameter::compare_ptype(): PT_CHAR: "
+			SG_SINFO("leaving TParameter::compare_ptype(): PT_CHAR: "
 					"data1=%c, data2=%c\n", casted1, casted2);
 			return false;
 		}
@@ -3330,7 +3330,7 @@ bool TParameter::compare_ptype(EPrimitiveType ptype, void* data1, void* data2,
 
 		if (CMath::abs(casted1-casted2)>accuracy)
 		{
-			SG_SDEBUG("leaving TParameter::compare_ptype(): PT_INT8: "
+			SG_SINFO("leaving TParameter::compare_ptype(): PT_INT8: "
 					"data1=%d, data2=%d\n", casted1, casted2);
 			return false;
 		}
@@ -3343,7 +3343,7 @@ bool TParameter::compare_ptype(EPrimitiveType ptype, void* data1, void* data2,
 
 		if (CMath::abs(casted1-casted2)>accuracy)
 		{
-			SG_SDEBUG("leaving TParameter::compare_ptype(): PT_UINT8: "
+			SG_SINFO("leaving TParameter::compare_ptype(): PT_UINT8: "
 					"data1=%d, data2=%d\n", casted1, casted2);
 			return false;
 		}
@@ -3356,7 +3356,7 @@ bool TParameter::compare_ptype(EPrimitiveType ptype, void* data1, void* data2,
 
 		if (CMath::abs(casted1-casted2)>accuracy)
 		{
-			SG_SDEBUG("leaving TParameter::compare_ptype(): PT_INT16: "
+			SG_SINFO("leaving TParameter::compare_ptype(): PT_INT16: "
 					"data1=%d, data2=%d\n", casted1, casted2);
 			return false;
 		}
@@ -3369,7 +3369,7 @@ bool TParameter::compare_ptype(EPrimitiveType ptype, void* data1, void* data2,
 
 		if (CMath::abs(casted1-casted2)>accuracy)
 		{
-			SG_SDEBUG("leaving TParameter::compare_ptype(): PT_UINT16: "
+			SG_SINFO("leaving TParameter::compare_ptype(): PT_UINT16: "
 					"data1=%d, data2=%d\n", casted1, casted2);
 			return false;
 		}
@@ -3382,7 +3382,7 @@ bool TParameter::compare_ptype(EPrimitiveType ptype, void* data1, void* data2,
 
 		if (CMath::abs(casted1-casted2)>accuracy)
 		{
-			SG_SDEBUG("leaving TParameter::compare_ptype(): PT_INT32: "
+			SG_SINFO("leaving TParameter::compare_ptype(): PT_INT32: "
 					"data1=%d, data2=%d\n", casted1, casted2);
 			return false;
 		}
@@ -3395,7 +3395,7 @@ bool TParameter::compare_ptype(EPrimitiveType ptype, void* data1, void* data2,
 
 		if (CMath::abs(casted1-casted2)>accuracy)
 		{
-			SG_SDEBUG("leaving TParameter::compare_ptype(): PT_UINT32: "
+			SG_SINFO("leaving TParameter::compare_ptype(): PT_UINT32: "
 					"data1=%d, data2=%d\n", casted1, casted2);
 			return false;
 		}
@@ -3408,7 +3408,7 @@ bool TParameter::compare_ptype(EPrimitiveType ptype, void* data1, void* data2,
 
 		if (CMath::abs(casted1-casted2)>accuracy)
 		{
-			SG_SDEBUG("leaving TParameter::compare_ptype(): PT_INT64: "
+			SG_SINFO("leaving TParameter::compare_ptype(): PT_INT64: "
 					"data1=%d, data2=%d\n", casted1, casted2);
 			return false;
 		}
@@ -3421,7 +3421,7 @@ bool TParameter::compare_ptype(EPrimitiveType ptype, void* data1, void* data2,
 
 		if (CMath::abs(casted1-casted2)>accuracy)
 		{
-			SG_SDEBUG("leaving TParameter::compare_ptype(): PT_UINT64: "
+			SG_SINFO("leaving TParameter::compare_ptype(): PT_UINT64: "
 					"data1=%d, data2=%d\n", casted1, casted2);
 			return false;
 		}
@@ -3434,7 +3434,7 @@ bool TParameter::compare_ptype(EPrimitiveType ptype, void* data1, void* data2,
 
 		if (CMath::abs(casted1-casted2)>accuracy)
 		{
-			SG_SDEBUG("leaving TParameter::compare_ptype(): PT_FLOAT32: "
+			SG_SINFO("leaving TParameter::compare_ptype(): PT_FLOAT32: "
 					"data1=%f, data2=%f\n", casted1, casted2);
 			return false;
 		}
@@ -3447,7 +3447,7 @@ bool TParameter::compare_ptype(EPrimitiveType ptype, void* data1, void* data2,
 
 		if (CMath::abs(casted1-casted2)>accuracy)
 		{
-			SG_SDEBUG("leaving TParameter::compare_ptype(): PT_FLOAT64: "
+			SG_SINFO("leaving TParameter::compare_ptype(): PT_FLOAT64: "
 					"data1=%f, data2=%f\n", casted1, casted2);
 			return false;
 		}
@@ -3459,7 +3459,7 @@ bool TParameter::compare_ptype(EPrimitiveType ptype, void* data1, void* data2,
 		floatmax_t casted2=*((floatmax_t*)data2);
 		if (CMath::abs(casted1-casted2)>accuracy)
 		{
-			SG_SDEBUG("leaving TParameter::compare_ptype(): PT_FLOATMAX: "
+			SG_SINFO("leaving TParameter::compare_ptype(): PT_FLOATMAX: "
 					"data1=%f, data2=%f\n", casted1, casted2);
 			return false;
 		}
@@ -3474,7 +3474,7 @@ bool TParameter::compare_ptype(EPrimitiveType ptype, void* data1, void* data2,
 		if (CMath::abs(casted1_real-casted2_real)>accuracy ||
 			CMath::abs(casted1_imag-casted2_imag)>accuracy)
 		{
-			SG_SDEBUG("leaving TParameter::compare_ptype(): PT_COMPLEX128: "
+			SG_SINFO("leaving TParameter::compare_ptype(): PT_COMPLEX128: "
 					"data1=%f+i%f, data2=%f+i%f\n",
 					casted1_real, casted1_imag,
 					casted2_real, casted2_imag);
@@ -3499,7 +3499,7 @@ bool TParameter::compare_ptype(EPrimitiveType ptype, void* data1, void* data2,
 		{
 			if (!(casted1->equals(casted2, accuracy)))
 			{
-				SG_SDEBUG("leaving TParameter::compare_ptype(): PT_SGOBJECT "
+				SG_SINFO("leaving TParameter::compare_ptype(): PT_SGOBJECT "
 						"equals returned false\n");
 				return false;
 			}
@@ -3508,7 +3508,7 @@ bool TParameter::compare_ptype(EPrimitiveType ptype, void* data1, void* data2,
 		{
 			if (!(casted2->equals(casted1, accuracy)))
 			{
-				SG_SDEBUG("leaving TParameter::compare_ptype(): PT_SGOBJECT "
+				SG_SINFO("leaving TParameter::compare_ptype(): PT_SGOBJECT "
 						"equals returned false\n");
 				return false;
 			}

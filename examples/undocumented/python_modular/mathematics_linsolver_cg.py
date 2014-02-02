@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 
-from numpy import *
+import numpy
 from scipy.io import mmread
 
 # Loading an example sparse matrix of dimension 479x479, real, unsymmetric
-mtx=mmread('../../../data/logdet/west0479.mtx.gz')
+mtx=mmread('../../../data/logdet/west0479.mtx')
 
 parameter_list=[[mtx,6000,10]]
 
@@ -18,8 +18,8 @@ def mathematics_linsolver_cg (matrix=mtx,max_iter=1000,seed=10):
 	A=matrix.transpose()*matrix+eye(rows, cols)
 
 	# Create a random vector (b) of the system Ax=b
-	random.seed(seed)
-	b=array(random.randn(rows))
+	numpy.random.seed(seed)
+	b=numpy.array(numpy.random.randn(rows))
 
 	# create linear system with linear operator and vector
 	from scipy.sparse import csc_matrix
@@ -38,7 +38,7 @@ def mathematics_linsolver_cg (matrix=mtx,max_iter=1000,seed=10):
 		# verifying the solution via direct solving
 		from scipy.sparse.linalg import spsolve, eigsh
 		y=spsolve(A,b)
-		print(sqrt(sum(map(lambda z: z*z,x-y))))
+		print(numpy.linalg.norm(x-y))
 
 		return x
 

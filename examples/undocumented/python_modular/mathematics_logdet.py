@@ -4,7 +4,7 @@ from numpy import *
 from scipy.io import mmread
 
 # Loading an example sparse matrix of dimension 479x479, real, unsymmetric
-mtx=mmread('../../../data/logdet/west0479.mtx.gz')
+mtx=mmread('../../../data/logdet/west0479.mtx')
 
 parameter_list=[[mtx,100,60,1]]
 

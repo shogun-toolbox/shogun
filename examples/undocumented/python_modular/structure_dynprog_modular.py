@@ -65,6 +65,11 @@ def loads(str):
 	return unpickler.load()
 
 def structure_dynprog_modular (fname):
+	import sys
+
+	#pickle is not compatible between python2 -> 3
+	if sys.version_info[0]>2:
+		return
 
 	data_dict = loads(gzip.GzipFile(fname).read())
 	#data_dict = loadmat('../data/DynProg_example_py.dat.mat', appendmat=False, struct_as_record=False)
