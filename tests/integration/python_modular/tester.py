@@ -199,7 +199,7 @@ if __name__=='__main__':
 				help="show only failures")
 	op.add_option("-m", "--missing", action="store_true", default=False,
 				help="show only missing tests")
-	op.add_option("-t", "--tolerance", action="store", default=1e-15,
+	op.add_option("-t", "--tolerance", action="store", default=1e-14,
 	              help="tolerance used to compare numbers")
 	op.add_option("-s", "--sgtolerance", action="store", default=1e-5,
 	              help="shogun tolerance used to compare numbers in shogun objects")
