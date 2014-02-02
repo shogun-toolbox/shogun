@@ -22,6 +22,7 @@ blacklist = ("__init__.py",
 		"classifier_multiclass_ecoc_random.py",
 		"statistics_hsic.py",
 		"transfer_multitask_clustered_logistic_regression.py",
+		"mathematics_logdet.py",
 #the tests below all fail on travis but work fine on our buildbot
 #		"classifier_lda_modular.py",
 #		"classifier_liblinear_modular.py",
