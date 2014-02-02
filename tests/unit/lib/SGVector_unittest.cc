@@ -87,8 +87,8 @@ TEST(SGVectorTest,dot)
 	for (int32_t i = 0; i < a.vlen; ++i)
 		dot_val += a[i]*a[i];
 
-	float64_t error = CMath::abs (dot_val - a.dot(a.vector,a.vector, a.vlen));
-	EXPECT_TRUE(error < 10E-10);
+	float64_t sgdot_val = a.dot(a.vector,a.vector, a.vlen);
+	EXPECT_NEAR(dot_val, sgdot_val, 1e-10);
 }
 
 TEST(SGVectorTest,norm)
@@ -98,8 +98,9 @@ TEST(SGVectorTest,norm)
 
 	/* check l-2 norm */
 	float64_t l2_norm = CMath::sqrt(a.dot(a.vector,a.vector, a.vlen));
-	float64_t error = CMath::abs(l2_norm - SGVector<float64_t>::twonorm(a.vector, a.vlen));
-	EXPECT_TRUE(error < 10E-12);
+	float64_t sgl2_norm = SGVector<float64_t>::twonorm(a.vector, a.vlen);
+
+	EXPECT_NEAR(l2_norm, sgl2_norm, 1e-12);
 
 	float64_t l1_norm = 0.0;
 	for (int32_t i = 0; i < a.vlen; ++i)
