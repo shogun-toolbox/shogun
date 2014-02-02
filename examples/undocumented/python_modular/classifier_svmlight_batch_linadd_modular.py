@@ -6,8 +6,8 @@ train_dna=lm.load_dna('../data/fm_train_dna.dat')
 test_dna=lm.load_dna('../data/fm_test_dna.dat')
 label=lm.load_labels('../data/label_train_dna.dat')
 
-parameter_list=[[train_dna, test_dna, label, 20, 0.9, 1e-3, 1],
-		[train_dna, test_dna, label, 20, 2.3, 1e-5, 4]]
+parameter_list=[[train_dna, test_dna, label, 20, 0.9, 1e-7, 1],
+		[train_dna, test_dna, label, 20, 2.3, 1e-7, 4]]
 
 def classifier_svmlight_batch_linadd_modular (fm_train_dna, fm_test_dna,
 		label_train_dna, degree, C, epsilon, num_threads):
