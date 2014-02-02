@@ -61,6 +61,7 @@ TEST(SGVectorTest,setget)
 
 TEST(SGVectorTest,add)
 {
+	CMath::init_random(17);
 	SGVector<float64_t> a(10);
 	SGVector<float64_t> b(10);
 	a.random(0.0, 1024.0);
@@ -80,6 +81,7 @@ TEST(SGVectorTest,add)
 
 TEST(SGVectorTest,dot)
 {
+	CMath::init_random(17);
 	SGVector<float64_t> a(10);
 	a.random(0.0, 1024.0);
 	float64_t dot_val = 0.0;
@@ -93,6 +95,7 @@ TEST(SGVectorTest,dot)
 
 TEST(SGVectorTest,norm)
 {
+	CMath::init_random(17);
 	SGVector<float64_t> a(10);
 	a.random(-50.0, 1024.0);
 
@@ -116,6 +119,7 @@ TEST(SGVectorTest,norm)
 
 TEST(SGVectorTest,misc)
 {
+	CMath::init_random(17);
 	SGVector<float64_t> a(10);
 	a.random(-1024.0, 1024.0);
 
