@@ -5,7 +5,7 @@ import sys
 import pickle
 
 example_dir = '../../../examples/undocumented/python_modular'
-test_dir = '../../../tests/integration/tests'
+test_dir = '../../../tests/integration/data/python%d-tests' % sys.version_info[0]
 blacklist = ("__init__.py",
 		"classifier_libsvm_minimal_modular.py",
 		"classifier_multiclassocas_modular.py",
