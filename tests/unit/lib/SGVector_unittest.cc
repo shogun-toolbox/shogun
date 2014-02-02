@@ -90,7 +90,7 @@ TEST(SGVectorTest,dot)
 		dot_val += a[i]*a[i];
 
 	float64_t sgdot_val = a.dot(a.vector,a.vector, a.vlen);
-	EXPECT_NEAR(dot_val, sgdot_val, 1e-10);
+	EXPECT_NEAR(dot_val, sgdot_val, 1e-9);
 }
 
 TEST(SGVectorTest,norm)
