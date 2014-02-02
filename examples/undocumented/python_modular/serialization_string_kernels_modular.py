@@ -18,10 +18,7 @@ import sys
 import types
 import random
 import bz2
-try:
-    import cPickle as pickle
-except ImportError:
-    import pickle as pickle
+import pickle
 import inspect
 
 ###################################################
