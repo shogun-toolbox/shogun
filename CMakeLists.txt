@@ -973,7 +973,7 @@ OPTION(BUILD_DASHBOARD_REPORTS "Set to ON to activate reporting of Shogun builds
 IF(BUILD_DASHBOARD_REPORTS)
 	file(TO_CMAKE_PATH "${CMAKE_SOURCE_DIR}/configs/valgrind.supp" VALGRIND_SUPPRESSION_FILE)
 	SET(MEMORYCHECK_SUPPRESSIONS_FILE ${VALGRIND_SUPPRESSION_FILE} CACHE FILEPATH "File that contains suppressions for the memory checker")
-	SET(MEMORYCHECK_COMMAND_OPTIONS "--error-exitcode=-1")
+	SET(MEMORYCHECK_COMMAND_OPTIONS "-q --tool=memcheck --leak-check=yes --show-reachable=yes --workaround-gcc296-bugs=yes --num-callers=50 --error-exitcode=1")
 	include(CTest)
 ENDIF()
 
