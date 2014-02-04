@@ -122,7 +122,11 @@ inline float64_t * get_cutting_plane(bmrm_ll *ptr) { return ptr->address; }
  * @return Index of unoccupied memory field in CP physical memory
  */
 inline uint32_t find_free_idx(bool *map, uint32_t size)
-{ for(uint32_t i=0; i<size; ++i) if (map[i]) return i; return size+1; }
+{
+    for (uint32_t i=0; i<size; ++i) if (map[i]) return i;
+    SG_SERROR("No free index available in CP buffer of size %d.\n", size);
+    return size-1;
+}
 
 /** Standard BMRM Solver for Structured Output Learning
  *

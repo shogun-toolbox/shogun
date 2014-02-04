@@ -125,7 +125,7 @@ bool CDualLibQPBMSOSVM::train_machine(CFeatures* data)
 			SG_ERROR("CDualLibQPBMSOSVM: m_solver=%d is not supported", m_solver);
 	}
 
-	if (m_result.exitflag==1)
+	if (m_result.exitflag>0)
 		return true;
 	else
 		return false;
