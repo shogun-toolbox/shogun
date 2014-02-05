@@ -59,56 +59,15 @@ def compare(a, b, tolerance, sgtolerance):
 		for obj1, obj2 in zip(a,b):
 			if not compare(obj1, obj2, tolerance, sgtolerance): return False
 		return True
+	elif type(a) == float:
+		return numpy.abs(a-b) < tolerance
 
 	return a == b
 
 def compare_dbg(a, b, tolerance, sgtolerance):
-	if not compare_dbg_helper(a, b, tolerance, sgtolerance):
+	if not compare(a, b, tolerance, sgtolerance):
 		import pdb
 		pdb.set_trace()
-
-def compare_dbg_helper(a, b, tolerance, sgtolerance):
-	if not typecheck(a,b):
-		print("Type mismatch (type(a)=%s vs type(b)=%s)" % (str(type(a)),str(type(b))))
-		return False
-
-	if type(a) == numpy.ndarray:
-		if tolerance:
-			if numpy.max(numpy.abs(a - b)) < tolerance:
-				return True
-			else:
-				print("Numpy Array mismatch > max_tol")
-				print(a-b)
-				return False
-		else:
-			if numpy.all(a == b):
-				return True
-			else:
-				print("Numpy Array mismatch")
-				print(a-b)
-				return False
-	elif isinstance(a, modshogun.SGObject):
-		if pickle.dumps(a) == pickle.dumps(b):
-			return True
-		print("a", pickle.dumps(a))
-		print("b", pickle.dumps(b))
-		return False
-	elif type(a) in (tuple,list):
-		if len(a) != len(b):
-			print("Length mismatch (len(a)=%d vs len(b)=%d)" % (len(a), len(b)))
-			return False
-		for obj1, obj2 in zip(a,b):
-			if not compare_dbg(obj1, obj2, tolerance, sgtolerance):
-				return False
-		return True
-
-	if (a==b):
-		return True
-	else:
-		print("a!=b")
-		print("a", a)
-		print("b", b)
-		return False
 
 def get_fail_string(a):
 	failed_string = []
@@ -178,6 +137,7 @@ def tester(tests, cmp_method, opts):
 						if not missing:
 							failed.append((setting_str, get_fail_string(a), get_fail_string(b)))
 							print("%-60s ERROR" % setting_str)
+							print "yes"
 				except Exception as e:
 					print(setting_str, e)
 			except IOError as e:
@@ -199,7 +159,7 @@ if __name__=='__main__':
 				help="show only failures")
 	op.add_option("-m", "--missing", action="store_true", default=False,
 				help="show only missing tests")
-	op.add_option("-t", "--tolerance", action="store", default=1e-14,
+	op.add_option("-t", "--tolerance", action="store", default=1e-13,
 	              help="tolerance used to compare numbers")
 	op.add_option("-s", "--sgtolerance", action="store", default=1e-5,
 	              help="shogun tolerance used to compare numbers in shogun objects")
