@@ -4073,12 +4073,14 @@ bool TParameter::copy(TParameter* target)
 					num_bytes=*m_datatype.m_length_y * m_datatype.sizeof_stype();
 				else
 					num_bytes=*m_datatype.m_length_y *
-						(*m_datatype.m_length_y) * m_datatype.sizeof_stype();
+						(*m_datatype.m_length_x) * m_datatype.sizeof_stype();
 				*(char**)target->m_parameter=SG_MALLOC(char, num_bytes);
 
 				/* use length of source */
 				*target->m_datatype.m_length_y=*m_datatype.m_length_y;
 				*target->m_datatype.m_length_x=*m_datatype.m_length_x;
+		
+				SG_SDEBUG("%d bytes are allocated\n", num_bytes);
 			}
 
 			/* now start actual copying, assume that sizes are equal and memory
