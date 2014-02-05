@@ -137,7 +137,6 @@ def tester(tests, cmp_method, opts):
 						if not missing:
 							failed.append((setting_str, get_fail_string(a), get_fail_string(b)))
 							print("%-60s ERROR" % setting_str)
-							print "yes"
 				except Exception as e:
 					print(setting_str, e)
 			except IOError as e:
