@@ -21,21 +21,39 @@ def typecheck(a, b):
 		 return True
 	return type(a) == type(b)
 
+def compare_floats(a,b, tolerance):
+	import numpy as np
+	# we will see underflow errors and whatnot / mute them
+	np.seterr(all='ignore')
+	# inspired by http://floating-point-gui.de/errors/comparison/
+	diff = np.abs(a - b)
+
+	ok_idx = a == b
+	near_zero_idx = ((a * b) == 0) & ~ok_idx
+	other_idx = ~ (ok_idx | near_zero_idx)
+
+	ok_idx[near_zero_idx] = np.abs(a[near_zero_idx]-b[near_zero_idx]) < tolerance**2
+	ok_idx[other_idx] = np.abs(a[other_idx]-b[other_idx]) / (np.abs(a)[other_idx] + np.abs(b)[other_idx]) < tolerance
+	#if not np.all(ok_idx == True):
+	#	bad=ok_idx == False
+	#	print("a", a[bad])
+	#	print("b", a[bad])
+	#	import pdb
+	#	pdb.set_trace()
+		
+	return np.all(ok_idx == True)
+
 
 def compare(a, b, tolerance, sgtolerance):
-	if not typecheck(a,b): return False
+	if not typecheck(a,b):
+		return False
 
 	if type(a) == numpy.ndarray:
-		if tolerance:
-			# check that the maximum difference between the elements of a and b is below
-			# the tolerance, handle inf and nan elements separately
-			if not numpy.all(numpy.isfinite(a) == numpy.isfinite(b)):
-				return False
-			finite_idxs = numpy.isfinite(a)
-			return numpy.max(numpy.abs(a[finite_idxs] - b[finite_idxs])) < tolerance and \
-					numpy.all(a[~finite_idxs] == b[~finite_idxs])
-		else:
-			return numpy.all(a == b)
+		if a.dtype != b.dtype:
+			return False
+		if a.dtype != numpy.floating or tolerance == 0:
+			return numpy.all(a==b)
+		return compare_floats(a,b, tolerance)
 	elif isinstance(a, modshogun.SGObject):
 		a.io.set_loglevel(modshogun.MSG_ERROR)
 		if pickle.dumps(a) == pickle.dumps(b):
@@ -57,10 +75,11 @@ def compare(a, b, tolerance, sgtolerance):
 	elif type(a) in (tuple,list):
 		if len(a) != len(b): return False
 		for obj1, obj2 in zip(a,b):
-			if not compare(obj1, obj2, tolerance, sgtolerance): return False
+			if not compare(obj1, obj2, tolerance, sgtolerance):
+				return False
 		return True
 	elif type(a) == float:
-		return numpy.abs(a-b) < tolerance
+		return compare_floats(numpy.array([a]), numpy.array([b]), tolerance)
 
 	return a == b
 
