@@ -12,21 +12,21 @@ parameter_list = [[traindat,testdat,label_traindat,label_testdat,2.1,1,1e-5]]
 
 def classifier_multiclass_ecoc (fm_train_real=traindat,fm_test_real=testdat,label_train_multiclass=label_traindat,label_test_multiclass=label_testdat,lawidth=2.1,C=1,epsilon=1e-5):
 
-	import shogun.Classifier as Classifier
+	import modshogun
 	from modshogun import ECOCStrategy, LibLinear, L2R_L2LOSS_SVC, LinearMulticlassMachine
 	from modshogun import MulticlassAccuracy
 	from modshogun import RealFeatures, MulticlassLabels
 
 	def nonabstract_class(name):
 		try:
-		    getattr(Classifier, name)()
+		    getattr(modshogun, name)()
 		except TypeError:
 		    return False
 		return True
 
-	encoders = [x for x in dir(Classifier)
+	encoders = [x for x in dir(modshogun)
 		    if re.match(r'ECOC.+Encoder', x) and nonabstract_class(x)]
-	decoders = [x for x in dir(Classifier)
+	decoders = [x for x in dir(modshogun)
 		    if re.match(r'ECOC.+Decoder', x) and nonabstract_class(x)]
 
 	fea_train = RealFeatures(fm_train_real)
@@ -46,8 +46,8 @@ def classifier_multiclass_ecoc (fm_train_real=traindat,fm_test_real=testdat,labe
 	#print((format_str % ('s', 's', 's')) % ('encoder', 'decoder', 'codelen', 'time', 'accuracy'))
 
 	def run_ecoc(ier, idr):
-		encoder = getattr(Classifier, encoders[ier])()
-		decoder = getattr(Classifier, decoders[idr])()
+		encoder = getattr(modshogun, encoders[ier])()
+		decoder = getattr(modshogun, decoders[idr])()
 
 		# whether encoder is data dependent
 		if hasattr(encoder, 'set_labels'):
