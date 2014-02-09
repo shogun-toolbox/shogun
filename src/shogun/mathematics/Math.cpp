@@ -14,10 +14,17 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/lapack.h>
 #include <shogun/io/SGIO.h>
+#include <shogun/lib/SGVector.h>
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+
+#ifndef NAN
+#include <stdlib.h>
+#define NAN (strtod("NAN",NULL))
+#endif
+
 
 using namespace shogun;
 
@@ -34,7 +41,8 @@ int32_t CMath::LOGACCURACY         = 0; // 100000 steps per integer
 
 int32_t CMath::LOGRANGE            = 0; // range for logtable: log(1+exp(x))  -25 <= x <= 0
 
-const float64_t CMath::INFTY            =  -log(0.0);	// infinity
+const float64_t CMath::NOT_A_NUMBER    	=  NAN;
+const float64_t CMath::INFTY            =  INFINITY;	// infinity
 const float64_t CMath::ALMOST_INFTY		=  +1e+20;		//a large number
 const float64_t CMath::ALMOST_NEG_INFTY =  -1000;
 const float64_t CMath::PI=M_PI;
@@ -245,3 +253,97 @@ int CMath::is_finite(double f)
 
   return std::isfinite(f);
 }
+
+bool CMath::strtof(const char* str, float32_t* result)
+{
+	ASSERT(str);
+	ASSERT(result);
+
+	SGVector<char> buf(strlen(str)+1);
+
+	for (index_t i=0; i<buf.vlen-1; i++)
+		buf[i]=tolower(str[i]);
+	buf[buf.vlen-1]='\0';
+
+	if (strstr(buf, "inf") != NULL)
+	{
+		*result = CMath::INFTY;
+
+		if (strchr(buf,'-') != NULL)
+			*result *= -1;
+		return true;
+	}
+
+	if (strstr(buf, "nan") != NULL)
+	{
+		*result = CMath::NOT_A_NUMBER;
+		return true;
+	}
+
+	char* endptr = buf.vector;
+	*result=::strtof(str, &endptr);
+	return endptr != buf.vector;
+}
+
+bool CMath::strtod(const char* str, float64_t* result)
+{
+	ASSERT(str);
+	ASSERT(result);
+
+	SGVector<char> buf(strlen(str)+1);
+
+	for (index_t i=0; i<buf.vlen-1; i++)
+		buf[i]=tolower(str[i]);
+	buf[buf.vlen-1]='\0';
+
+	if (strstr(buf, "inf") != NULL)
+	{
+		*result = CMath::INFTY;
+
+		if (strchr(buf,'-') != NULL)
+			*result *= -1;
+		return true;
+	}
+
+	if (strstr(buf, "nan") != NULL)
+	{
+		*result = CMath::NOT_A_NUMBER;
+		return true;
+	}
+
+	char* endptr = buf.vector;
+	*result=::strtod(str, &endptr);
+	return endptr != buf.vector;
+}
+
+bool CMath::strtold(const char* str, floatmax_t* result)
+{
+	ASSERT(str);
+	ASSERT(result);
+
+	SGVector<char> buf(strlen(str)+1);
+
+	for (index_t i=0; i<buf.vlen-1; i++)
+		buf[i]=tolower(str[i]);
+	buf[buf.vlen-1]='\0';
+
+	if (strstr(buf, "inf") != NULL)
+	{
+		*result = CMath::INFTY;
+
+		if (strchr(buf,'-') != NULL)
+			*result *= -1;
+		return true;
+	}
+
+	if (strstr(buf, "nan") != NULL)
+	{
+		*result = CMath::NOT_A_NUMBER;
+		return true;
+	}
+
+	char* endptr = buf.vector;
+	*result=::strtold(str, &endptr);
+	return endptr != buf.vector;
+}
+
