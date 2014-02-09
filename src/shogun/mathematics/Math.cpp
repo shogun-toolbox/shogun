@@ -8,6 +8,7 @@
  * Written (W) 1999-2008 Gunnar Raetsch
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
+#include <shogun/lib/config.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/common.h>
 #include <cmath>
@@ -343,7 +344,14 @@ bool CMath::strtold(const char* str, floatmax_t* long_double_result)
 	}
 
 	char* endptr = buf.vector;
+
+// fall back to double on win32 / cygwin since strtold is undefined there
+#ifdef WIN32
+	*long_double_result=::strtod(str, &endptr);
+#else
 	*long_double_result=::strtold(str, &endptr);
+#endif
+
 	return endptr != buf.vector;
 }
 
