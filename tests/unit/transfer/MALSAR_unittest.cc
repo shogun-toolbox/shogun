@@ -25,14 +25,14 @@ SplittedDataset generate_data()
 
 	SGVector<index_t> train_idx(num_samples), test_idx(num_samples);
 	SGVector<float64_t> labels(num_samples);
-	for (index_t i = 0, j = 0; i < num_samples; ++i)
+	for (index_t i = 0, j = 0; i < 2*num_samples; ++i)
 	{
 		if (i % 2 == 0)
 			train_idx[j] = i;
 		else
 			test_idx[j++] = i;
 
-		labels[i] = (i < num_samples/2) ? 1.0 : -1.0;
+		labels[i/2] = (i < num_samples) ? 1.0 : -1.0;
 	}
 
 	CDenseFeatures<float64_t>* train_feats = (CDenseFeatures<float64_t>*)features->copy_subset(train_idx);
