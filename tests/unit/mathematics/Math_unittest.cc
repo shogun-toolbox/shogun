@@ -210,5 +210,5 @@ TEST(CMath, strtolongdouble)
 	EXPECT_DOUBLE_EQ(-CMath::INFTY, long_double_result);
 
 	EXPECT_TRUE(CMath::strtold("1.234567890123", &long_double_result));
-	EXPECT_EQ(long_double_result, 1.234567890123);
+	EXPECT_DOUBLE_EQ(1.234567890123, long_double_result);
 }
