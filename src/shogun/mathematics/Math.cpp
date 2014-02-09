@@ -254,10 +254,10 @@ int CMath::is_finite(double f)
   return std::isfinite(f);
 }
 
-bool CMath::strtof(const char* str, float32_t* result)
+bool CMath::strtof(const char* str, float32_t* float_result)
 {
 	ASSERT(str);
-	ASSERT(result);
+	ASSERT(float_result);
 
 	SGVector<char> buf(strlen(str)+1);
 
@@ -267,28 +267,28 @@ bool CMath::strtof(const char* str, float32_t* result)
 
 	if (strstr(buf, "inf") != NULL)
 	{
-		*result = CMath::INFTY;
+		*float_result = CMath::INFTY;
 
 		if (strchr(buf,'-') != NULL)
-			*result *= -1;
+			*float_result *= -1;
 		return true;
 	}
 
 	if (strstr(buf, "nan") != NULL)
 	{
-		*result = CMath::NOT_A_NUMBER;
+		*float_result = CMath::NOT_A_NUMBER;
 		return true;
 	}
 
 	char* endptr = buf.vector;
-	*result=::strtof(str, &endptr);
+	*float_result=::strtof(str, &endptr);
 	return endptr != buf.vector;
 }
 
-bool CMath::strtod(const char* str, float64_t* result)
+bool CMath::strtod(const char* str, float64_t* double_result)
 {
 	ASSERT(str);
-	ASSERT(result);
+	ASSERT(double_result);
 
 	SGVector<char> buf(strlen(str)+1);
 
@@ -298,28 +298,28 @@ bool CMath::strtod(const char* str, float64_t* result)
 
 	if (strstr(buf, "inf") != NULL)
 	{
-		*result = CMath::INFTY;
+		*double_result = CMath::INFTY;
 
 		if (strchr(buf,'-') != NULL)
-			*result *= -1;
+			*double_result *= -1;
 		return true;
 	}
 
 	if (strstr(buf, "nan") != NULL)
 	{
-		*result = CMath::NOT_A_NUMBER;
+		*double_result = CMath::NOT_A_NUMBER;
 		return true;
 	}
 
 	char* endptr = buf.vector;
-	*result=::strtod(str, &endptr);
+	*double_result=::strtod(str, &endptr);
 	return endptr != buf.vector;
 }
 
-bool CMath::strtold(const char* str, floatmax_t* result)
+bool CMath::strtold(const char* str, floatmax_t* long_double_result)
 {
 	ASSERT(str);
-	ASSERT(result);
+	ASSERT(long_double_result);
 
 	SGVector<char> buf(strlen(str)+1);
 
@@ -329,21 +329,21 @@ bool CMath::strtold(const char* str, floatmax_t* result)
 
 	if (strstr(buf, "inf") != NULL)
 	{
-		*result = CMath::INFTY;
+		*long_double_result = CMath::INFTY;
 
 		if (strchr(buf,'-') != NULL)
-			*result *= -1;
+			*long_double_result *= -1;
 		return true;
 	}
 
 	if (strstr(buf, "nan") != NULL)
 	{
-		*result = CMath::NOT_A_NUMBER;
+		*long_double_result = CMath::NOT_A_NUMBER;
 		return true;
 	}
 
 	char* endptr = buf.vector;
-	*result=::strtold(str, &endptr);
+	*long_double_result=::strtold(str, &endptr);
 	return endptr != buf.vector;
 }
 

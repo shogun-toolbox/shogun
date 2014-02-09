@@ -502,9 +502,9 @@ class CMath : public CSGObject
 			return area;
 		}
 
-		static bool strtof(const char* str, float32_t* result);
-		static bool strtod(const char* str, float64_t* result);
-		static bool strtold(const char* str, floatmax_t* result);
+		static bool strtof(const char* str, float32_t* float_result);
+		static bool strtod(const char* str, float64_t* double_result);
+		static bool strtold(const char* str, floatmax_t* long_double_result);
 
 		static inline int64_t factorial(int32_t n)
 		{
