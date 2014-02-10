@@ -111,7 +111,6 @@ configure.log
 /examples/undocumented/libshogun/*
 !/examples/undocumented/libshogun/*.cpp
 !/examples/undocumented/libshogun/CMakeLists.txt
-examples/undocumented/python_modular/*
 !/examples/undocumented/libshogun/tools/
 !examples/undocumented/python_modular/graphical/
 !examples/undocumented/python_modular/*.py
