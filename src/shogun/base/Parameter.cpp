@@ -4016,7 +4016,7 @@ bool TParameter::copy(TParameter* target)
 			{
 				size_t num_bytes=*m_datatype.m_length_y * m_datatype.sizeof_stype();
 				SG_SDEBUG("allocating %d bytes memory for target vector\n", num_bytes);
-				*(char**)target->m_parameter=SG_MALLOC(char, num_bytes);
+				*(char**)target->m_parameter=SG_CALLOC(char, num_bytes);
 
 				/* use length of source */
 				*target->m_datatype.m_length_y=*m_datatype.m_length_y;
