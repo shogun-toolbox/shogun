@@ -992,9 +992,9 @@ template <class T> struct K_THREAD_PARAM
 	/** end (unit row) */
 	int32_t end;
 	/** start (unit number of elements) */
-	int32_t total_start;
+	int64_t total_start;
 	/** end (unit number of elements) */
-	int32_t total_end;
+	int64_t total_end;
 	/** m */
 	int32_t m;
 	/** n */
