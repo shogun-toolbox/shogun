@@ -87,7 +87,6 @@ TEST(KMeans, KMeanspp_center_initialization_test)
 	for (int32_t loop=0; loop<10; loop++)
 	{
 		clustering->train(features);
-		CMulticlassLabels* result=CLabelsFactory::to_multiclass(clustering->apply());
 		CDenseFeatures<float64_t>* learnt_centers=CDenseFeatures<float64_t>::obtain_from_generic(distance->get_lhs());
 		SGMatrix<float64_t> learnt_centers_matrix=learnt_centers->get_feature_matrix();
 		SGVector<int32_t> count=SGVector<int32_t>(4);
@@ -118,7 +117,6 @@ TEST(KMeans, KMeanspp_center_initialization_test)
 		EXPECT_EQ(1, count[3]);
 					
 		SG_UNREF(learnt_centers);
-		SG_UNREF(result);
 	}
 
 	SG_UNREF(clustering);
@@ -143,7 +141,6 @@ TEST(KMeans, minibatch_training_test)
 	initial_centers(1,0)=0;
 
 	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(rect);
-	SG_REF(features);
 	CEuclideanDistance* distance=new CEuclideanDistance(features, features);
 	CKMeans* clustering=new CKMeans(1, distance,initial_centers);
 
@@ -152,7 +149,6 @@ TEST(KMeans, minibatch_training_test)
 		clustering->set_train_method(KMM_MINI_BATCH);
 		clustering->set_mbKMeans_params(4,1000);
 		clustering->train(features);
-		CMulticlassLabels* result=CLabelsFactory::to_multiclass(clustering->apply());
 		CDenseFeatures<float64_t>* learnt_centers=CDenseFeatures<float64_t>::obtain_from_generic(distance->get_lhs());
 		SGMatrix<float64_t> learnt_centers_matrix=learnt_centers->get_feature_matrix();
 
@@ -160,7 +156,6 @@ TEST(KMeans, minibatch_training_test)
 		EXPECT_NEAR(500,learnt_centers_matrix(1,0), 0.0001);
 
 		SG_UNREF(learnt_centers);
-		SG_UNREF(result);
 	}
 
 	SG_UNREF(clustering);
