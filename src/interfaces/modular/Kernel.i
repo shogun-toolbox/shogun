@@ -102,6 +102,7 @@ PROTOCOLS_CUSTOMKERNEL(CustomKernel, float32_t, "f\0", NPY_FLOAT32)
 %rename(JensenShannonKernel) CJensenShannonKernel;
 %rename(LinearARDKernel) CLinearARDKernel;
 %rename(GaussianARDKernel) CGaussianARDKernel;
+%rename(StringSubsequenceKernel) CStringSubsequenceKernel;
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/kernel/Kernel.h>
@@ -216,5 +217,6 @@ namespace shogun
 %include <shogun/kernel/JensenShannonKernel.h>
 %include <shogun/kernel/LinearARDKernel.h>
 %include <shogun/kernel/GaussianARDKernel.h>
+%include <shogun/kernel/string/StringSubsequenceKernel.h>
 
 EXTEND_CUSTOMKERNEL(CustomKernel, float32_t, NPY_FLOAT32)
