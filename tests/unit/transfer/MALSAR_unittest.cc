@@ -55,6 +55,7 @@ TEST(MalsarL12Test, train)
 	CMultitaskL12LogisticRegression* mtlr = new CMultitaskL12LogisticRegression(0.1,0.1,data.first.first,data.second,task_group);
 	mtlr->train();
 	mtlr->set_features(data.first.second);
+	mtlr->set_current_task(0);
 	CLabels* output = mtlr->apply();
 	SG_UNREF(output);
 	SG_UNREF(mtlr);
@@ -73,6 +74,7 @@ TEST(MalsarClusteredTest, train)
 	CMultitaskClusteredLogisticRegression* mtlr = new CMultitaskClusteredLogisticRegression(0.1,0.1,data.first.first,data.second,task_group,1);
 	mtlr->train();
 	mtlr->set_features(data.first.second);
+	mtlr->set_current_task(0);
 	CLabels* output = mtlr->apply();
 	SG_UNREF(output);
 	SG_UNREF(mtlr);
@@ -91,6 +93,7 @@ TEST(MalsarTraceTest, train)
 	CMultitaskTraceLogisticRegression* mtlr = new CMultitaskTraceLogisticRegression(0.1,data.first.first,data.second,task_group);
 	mtlr->train();
 	mtlr->set_features(data.first.second);
+	mtlr->set_current_task(0);
 	CLabels* output = mtlr->apply();
 	SG_UNREF(output);
 	SG_UNREF(mtlr);

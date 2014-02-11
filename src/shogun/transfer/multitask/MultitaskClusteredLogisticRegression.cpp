@@ -88,7 +88,9 @@ bool CMultitaskClusteredLogisticRegression::train_locked_implementation(SGVector
 #else
 	SG_WARNING("Clustered LR is unstable with C++11\n")
 	m_tasks_w = SGMatrix<float64_t>(((CDotFeatures*)features)->get_dim_feature_space(), options.n_tasks);
+	m_tasks_w.set_const(0);
 	m_tasks_c = SGVector<float64_t>(options.n_tasks);
+	m_tasks_c.set_const(0);
 #endif
 #else
 	SG_WARNING("Please install Eigen3 to use MultitaskClusteredLogisticRegression\n")
