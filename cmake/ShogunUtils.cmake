@@ -34,6 +34,12 @@ MACRO(PrintInterfaceStatus INTERFACE_NAME INTERFACE_FLAG)
 	ENDIF()
 ENDMACRO()
 
+MACRO(AppendToDefines MACRO)
+	IF (${MACRO})
+		LIST(APPEND DEFINES ${MACRO})
+	ENDIF()
+ENDMACRO()
+
 # based on compiz_discover_tests
 function (shogun_discover_tests EXECUTABLE)
 

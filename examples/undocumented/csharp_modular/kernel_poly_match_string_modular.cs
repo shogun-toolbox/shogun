@@ -17,6 +17,5 @@ public class kernel_poly_match_string_modular {
 		kernel.init(feats_train, feats_test);
 		double[,] km_test=kernel.get_kernel_matrix();
 
-		modshogun.exit_shogun();
 	}
 }

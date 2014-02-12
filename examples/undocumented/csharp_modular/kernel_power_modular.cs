@@ -27,6 +27,5 @@ public class kernel_power_modular {
 		foreach (double item in km_test)
 		    Console.Write(item);
 
-		modshogun.exit_shogun();
 	}
 }

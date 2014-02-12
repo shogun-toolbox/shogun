@@ -18,6 +18,5 @@ public class features_string_word_modular {
 		wf.obtain_from_char(cf, 0, 2, 0, false);
 		wf.set_feature_vector(new DoubleMatrix(new double[][] {{1,2,3,4,5}}), 0);
 
-		modshogun.exit_shogun();
 	}
 }

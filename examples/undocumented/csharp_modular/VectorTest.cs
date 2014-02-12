@@ -12,6 +12,5 @@ public class VectorTest
 					Console.WriteLine(r[i]);
 		}
 
-		modshogun.exit_shogun();
 	}
 }

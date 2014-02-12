@@ -11,8 +11,13 @@
 #ifndef __CCSOSVM_H__
 #define __CCSOSVM_H__
 
+#include <shogun/lib/config.h>
 #include <shogun/machine/LinearStructuredOutputMachine.h>
 #include <shogun/base/DynArray.h>
+
+#ifdef USE_MOSEK
+#include <mosek.h>
+#endif
 
 namespace shogun
 {
@@ -209,6 +214,10 @@ namespace shogun
 
 			/** QP solver type */
 			EQPType m_qp_type;
+#ifdef USE_MOSEK
+			/** Mosek environment */
+			MSKenv_t m_msk_env;
+#endif
 	};
 }
 

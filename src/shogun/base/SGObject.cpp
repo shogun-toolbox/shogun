@@ -6,6 +6,7 @@
  *
  * Written (W) 2008-2009 Soeren Sonnenburg
  * Written (W) 2011-2013 Heiko Strathmann
+ * Written (W) 2013 Thoralf Klein
  * Copyright (C) 2008-2009 Fraunhofer Institute FIRST and Max Planck Society
  */
 
@@ -19,14 +20,13 @@
 #include <shogun/base/ParameterMap.h>
 #include <shogun/base/DynArray.h>
 #include <shogun/lib/Map.h>
-#include <shogun/lib/Lock.h>
+#include <shogun/lib/SGStringList.h>
 
 #include "class_list.h"
 
 #include <stdlib.h>
 #include <stdio.h>
 
-#include <shogun/features/DenseFeatures.h>
 namespace shogun
 {
 	class CMath;
@@ -118,67 +118,27 @@ namespace shogun
 using namespace shogun;
 
 CSGObject::CSGObject()
+: SGRefObject()
 {
 	init();
 	set_global_objects();
-	m_refcount = new RefCount(0);
-
-	SG_GCDEBUG("SGObject created (%p)\n", this)
 }
 
 CSGObject::CSGObject(const CSGObject& orig)
-:io(orig.io), parallel(orig.parallel), version(orig.version)
+:SGRefObject(orig), io(orig.io), parallel(orig.parallel), version(orig.version)
 {
 	init();
 	set_global_objects();
-	m_refcount = orig.m_refcount;
-	SG_REF(this);
 }
 
 CSGObject::~CSGObject()
 {
-	SG_GCDEBUG("SGObject destroyed (%p)\n", this)
-
 	unset_global_objects();
 	delete m_parameters;
 	delete m_model_selection_parameters;
 	delete m_gradient_parameters;
 	delete m_parameter_map;
-	delete m_refcount;
 }
-
-#ifdef USE_REFERENCE_COUNTING
-int32_t CSGObject::ref()
-{
-	int32_t count = m_refcount->ref();
-	SG_GCDEBUG("ref() refcount %ld obj %s (%p) increased\n", count, this->get_name(), this)
-	return m_refcount->ref_count();
-}
-
-int32_t CSGObject::ref_count()
-{
-	int32_t count = m_refcount->ref_count();
-	SG_GCDEBUG("ref_count(): refcount %d, obj %s (%p)\n", count, this->get_name(), this)
-	return m_refcount->ref_count();
-}
-
-int32_t CSGObject::unref()
-{
-	int32_t count = m_refcount->unref();
-	if (count<=0)
-	{
-		SG_GCDEBUG("unref() refcount %ld, obj %s (%p) destroying\n", count, this->get_name(), this)
-		delete this;
-		return 0;
-	}
-	else
-	{
-		SG_GCDEBUG("unref() refcount %ld obj %s (%p) decreased\n", count, this->get_name(), this)
-		return m_refcount->ref_count();
-	}
-}
-#endif //USE_REFERENCE_COUNTING
-
 
 void CSGObject::set_global_objects()
 {

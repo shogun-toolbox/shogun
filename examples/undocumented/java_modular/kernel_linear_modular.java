@@ -27,6 +27,5 @@ public class kernel_linear_modular {
 		System.out.println(km_train.toString());
 		System.out.println(km_test.toString());
 
-		modshogun.exit_shogun();
 	}
 }

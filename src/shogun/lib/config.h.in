@@ -34,6 +34,40 @@
 #cmakedefine USE_LOGCACHE 1
 #cmakedefine USE_LOGSUMARRAY 1
 
+/* Define to 1 if you have the declaration of `isfinite', and to 0 if you
+   don't. */
+#cmakedefine HAVE_DECL_ISFINITE 1
+
+/* Define to 1 if you have the declaration of `isinf', and to 0 if you don't. */
+#cmakedefine HAVE_DECL_ISINF 1
+
+/* Define to 1 if you have the declaration of `isnan', and to 0 if you don't. */
+#cmakedefine HAVE_DECL_ISNAN 1
+
+/* Define to 1 if you have the `finite' function. */
+#cmakedefine HAVE_FINITE 1
+
+/* Define to 1 if you have the `fpclass' function. */
+#cmakedefine HAVE_FPCLASS 1
+
+/* Define to 1 if you have the `isfinite' function. */
+#cmakedefine HAVE_ISFINITE 1
+
+/* Define to 1 if you have the `isinf' function. */
+#cmakedefine HAVE_ISINF 1
+
+/* Define to 1 if you have the `isnan' function. */
+#cmakedefine HAVE_ISNAN 1
+
+/* Define to 1 if you have the `std::isfinite' function. */
+#cmakedefine HAVE_STD_ISFINITE 1
+
+/* Define to 1 if you have the `std::isinf' function. */
+#cmakedefine HAVE_STD_ISINF 1
+
+/* Define to 1 if you have the `std::isnan' function. */
+#cmakedefine HAVE_STD_ISNAN 1
+
 #cmakedefine USE_SPINLOCKS 1
 #cmakedefine USE_SHORTREAL_KERNELCACHE 1
 #cmakedefine USE_BIGSTATES 1
@@ -73,5 +107,10 @@
 #cmakedefine HAVE_CXX0X 1
 #cmakedefine HAVE_CXX11 1
 #cmakedefine HAVE_CXX11_ATOMIC 1
+#cmakedefine HAVE_STD_UNORDERED_MAP 1
 
 #cmakedefine HAVE_JBLAS 1
+
+/* random related defines */
+#cmakedefine HAVE_ARC4RANDOM 1
+#cmakedefine DEV_RANDOM "@DEV_RANDOM@"

@@ -11,6 +11,7 @@
 #include <shogun/lib/memory.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/Subset.h>
+#include <shogun/lib/SGStringList.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;

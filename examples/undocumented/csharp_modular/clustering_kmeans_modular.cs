@@ -21,6 +21,5 @@ public class clustering_kmeans_modular {
 		double[,] out_centers = kmeans.get_cluster_centers();
 		kmeans.get_radiuses();
 
-		modshogun.exit_shogun();
 	}
 }

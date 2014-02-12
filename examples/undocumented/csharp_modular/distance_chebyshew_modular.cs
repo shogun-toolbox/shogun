@@ -24,7 +24,6 @@ public class distance_chebyshew_modular {
 			Console.Write(item);
 		}
 
-		modshogun.exit_shogun();
 	}
 }
 

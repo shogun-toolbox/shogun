@@ -26,7 +26,6 @@ public class distance_normsquared_modular {
 			Console.Write(item);
 		}
 
-		modshogun.exit_shogun();
 	}
 }
 

@@ -5,7 +5,7 @@
 # $ make
 
 project(shogun)
-cmake_minimum_required(VERSION 2.8.4)
+cmake_minimum_required(VERSION 2.8.8)
 SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 include(ShogunUtils)
 
@@ -69,11 +69,7 @@ ELSEIF(${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD")
 ENDIF()
 
 # Get processor type, sets MACHINE macro
-IF(NOT WIN32)
-	execute_process(COMMAND uname -m
-	    OUTPUT_VARIABLE MACHINE_OUTPUT OUTPUT_STRIP_TRAILING_WHITESPACE)
-	SET(MACHINE ${MACHINE_OUTPUT})
-ENDIF()
+SET(MACHINE ${CMAKE_SYSTEM_PROCESSOR})
 
 SET(EXT_LIB_SWIG_RUBY_MODULAR ".so")
 if(DARWIN)
@@ -186,8 +182,16 @@ ENDIF()
 # check for supported c++11 features
 #
 # clang with -std=c++11 and -stdlib=libc++ does not work
-# well with swig generated cxx
-# hence disable c++11 for this case.
+# well with swig generated cxx hence disable c++11 for this case.
+
+# TODO: until swig 2.0.11 does not support compilation with libc++
+# There are PRs against SWIG HEAD to fix this hence it needs to be checked
+# which later version can support compilation with libc++
+IF (COMPILE_MODULAR_INTERFACE AND ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang") AND NOT SWIG_VERSION VERSION_GREATER "2.0.11")
+	SET(CMAKE_CXX_FLAGS "-stdlib=libstdc++ ${CMAKE_CXX_FLAGS}")
+	SET(SWIG_CXX_COMPILER_FLAGS "-stdlib=libstdc++ ${SWIG_CXX_COMPILER_FLAGS}")
+ENDIF()
+
 IF (NOT ((CYGWIN AND ENABLE_TESTING) OR (DARWIN AND COMPILE_MODULAR_INTERFACE)))
 	INCLUDE(CheckCXX11Features)
 
@@ -208,6 +212,12 @@ IF (NOT ((CYGWIN AND ENABLE_TESTING) OR (DARWIN AND COMPILE_MODULAR_INTERFACE)))
 	IF (HAVE_CXX11_ATOMIC)
 		LIST(APPEND DEFINES HAVE_CXX11_ATOMIC)
 	ENDIF()
+ENDIF()
+
+include(CheckIncludeFileCXX)
+CHECK_INCLUDE_FILE_CXX("unordered_map" HAVE_STD_UNORDERED_MAP)
+IF (HAVE_STD_UNORDERED_MAP)
+	LIST(APPEND DEFINES HAVE_STD_UNORDERED_MAP)
 ENDIF()
 
 IF(CMAKE_BUILD_TYPE MATCHES "Release")
@@ -396,6 +406,20 @@ ENDIF()
 
 ######################### LIBRARIES #########################
 
+#check for symbols
+include (CheckCXXSymbolExists)
+CHECK_CXX_SYMBOL_EXISTS(isfinite "cmath" HAVE_DECL_ISFINITE)
+AppendToDefines(HAVE_DECL_ISFINITE)
+
+CHECK_CXX_SYMBOL_EXISTS(isinf "cmath" HAVE_DECL_ISINF)
+AppendToDefines(HAVE_DECL_ISINF)
+
+CHECK_CXX_SYMBOL_EXISTS(isnan "cmath" HAVE_DECL_ISNAN)
+AppendToDefines(HAVE_DECL_ISNAN)
+
+CHECK_CXX_SYMBOL_EXISTS(signgam "cmath" HAVE_DECL_SIGNGAM)
+AppendToDefines(HAVE_DECL_SIGNGAM)
+
 # check for math functions
 include(CheckFunctionExists)
 IF(UNIX)
@@ -421,6 +445,37 @@ IF(HAVE_SQRTL)
 	LIST(APPEND DEFINES HAVE_SQRTL)
 ENDIF()
 
+CHECK_FUNCTION_EXISTS(finite HAVE_FPCLASS)
+AppendToDefines(HAVE_FPCLASS)
+
+CHECK_FUNCTION_EXISTS(fpclass HAVE_FPCLASS)
+AppendToDefines(HAVE_FPCLASS)
+
+CHECK_FUNCTION_EXISTS(isfinite HAVE_ISFINITE)
+AppendToDefines(HAVE_ISFINITE)
+
+CHECK_FUNCTION_EXISTS(isinf HAVE_ISINF)
+AppendToDefines(HAVE_ISINF)
+
+CHECK_FUNCTION_EXISTS(isnan HAVE_ISNAN)
+AppendToDefines(HAVE_ISNAN)
+
+include(CheckCXXSourceCompiles)
+CHECK_CXX_SOURCE_COMPILES(
+  "#include <cmath>\nint main() { return std::isinf( 0 ); }\n"
+  HAVE_STD_ISINF )
+AppendToDefines(HAVE_STD_ISINF)
+
+CHECK_CXX_SOURCE_COMPILES(
+  "#include <cmath>\nint main() { return std::isfinite( 0 ); }\n"
+  HAVE_STD_ISFINITE )
+AppendToDefines(HAVE_STD_ISFINITE)
+
+CHECK_CXX_SOURCE_COMPILES(
+  "#include <cmath>\nint main() { return std::isnan( 0 ); }\n"
+  HAVE_STD_ISNAN )
+AppendToDefines(HAVE_STD_ISNAN)
+
 # check SSE and SSE2 intrinsics header
 IF(NOT CYGWIN)
 include(CheckIncludeFile)
@@ -430,6 +485,17 @@ IF(HAVE_SSE2)
 	LIST(APPEND DEFINES HAVE_SSE2)
 ENDIF(HAVE_SSE2)
 ENDIF(NOT CYGWIN)
+
+###### checks for random
+CHECK_FUNCTION_EXISTS(arc4random HAVE_ARC4RANDOM)
+IF(NOT HAVE_ARC4RANDOM)
+    # assume that /dev/random is non-blocking if /dev/urandom does not exist
+    if(EXISTS /dev/urandom)
+      set(DEV_RANDOM "/dev/urandom" CACHE INTERNAL "" FORCE)
+    elseif( EXISTS /dev/random )
+      set(DEV_RANDOM "/dev/random" CACHE INTERNAL "" FORCE)
+    endif()
+ENDIF()
 
 FIND_PACKAGE(GDB)
 IF (GDB_FOUND)
@@ -667,7 +733,6 @@ IF (HDF5_FOUND)
 	SET(HAVE_HDF5 1)
 	LIST(APPEND DEFINES HAVE_HDF5)
 	LIST(APPEND INCLUDES ${HDF5_INCLUDE_DIRS})
-	SET(HDF5_LIBRARIES "${HDF5_LIBRARIES_RELEASE}")
 	SET(POSTLINKFLAGS ${POSTLINKFLAGS} ${HDF5_LIBRARIES})
 ENDIF()
 
@@ -725,18 +790,21 @@ IF (SPINLOCK_FOUND)
 	LIST(APPEND DEFINES USE_SPINLOCKS)
 ENDIF()
 
-#FIND_PACKAGE(Protobuf)
-#IF (PROTOBUF_FOUND)
-#	SET(HAVE_PROTOBUF 1)
-#	LIST(APPEND DEFINES HAVE_PROTOBUF)
-#	LIST(APPEND INCUDES ${PROTOBUF_INCLUDE_DIRS})
-#	SET(POSTLINKFLAGS ${POSTLINKFLAGS} ${PROTOBUF_LIBRARIES})
-#ENDIF()
+FIND_PACKAGE(Protobuf)
+IF (PROTOBUF_FOUND)
+	SET(HAVE_PROTOBUF 1)
+	LIST(APPEND DEFINES HAVE_PROTOBUF)
+	LIST(APPEND INCUDES ${PROTOBUF_INCLUDE_DIRS})
+	SET(POSTLINKFLAGS ${POSTLINKFLAGS} ${PROTOBUF_LIBRARIES})
+ENDIF()
 
 #SWIG Interfaces
 SET(CMAKE_SWIG_FLAGS "${CMAKE_SWIG_FLAGS};-w473;-w454;-w312;-w325;-fvirtual")
 
-OPTION(USE_SWIG_DIRECTORS "" OFF)
+OPTION(USE_SWIG_DIRECTORS "Enable SWIG director classes" OFF)
+IF(USE_SWIG_DIRECTORS)
+	LIST(APPEND DEFINES USE_SWIG_DIRECTORS)
+ENDIF()
 
 # python modular
 IF (PythonModular OR PythonStatic)

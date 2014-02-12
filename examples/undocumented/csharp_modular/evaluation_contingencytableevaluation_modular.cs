@@ -46,6 +46,5 @@ public class evaluation_contingencytableevaluation_modular {
 
 		Console.Write("{0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}\n", accuracy, errorrate, bal, wracc, f1, crosscorrelation, recall, precision, specificity);
 
-		modshogun.exit_shogun();
 	}
 }

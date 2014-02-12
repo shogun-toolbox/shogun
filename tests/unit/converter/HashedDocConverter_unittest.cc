@@ -1,6 +1,7 @@
 #include <shogun/converter/HashedDocConverter.h>
 #include <shogun/features/HashedDocDotFeatures.h>
 #include <shogun/lib/SGVector.h>
+#include <shogun/lib/SGStringList.h>
 #include <shogun/lib/SGSparseVector.h>
 #include <shogun/lib/Hash.h>
 #include <shogun/lib/DelimiterTokenizer.h>

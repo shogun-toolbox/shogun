@@ -43,6 +43,5 @@ public class kernel_sigmoid_modular {
 			Console.Write("\n");
 		}
 
-		modshogun.exit_shogun();
 	}
 }

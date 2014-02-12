@@ -31,6 +31,5 @@ public class regression_krr_modular {
 		DoubleMatrix out_labels = to_regression(krr.apply()).get_labels();
 		System.out.println(out_labels.toString());
 
-		modshogun.exit_shogun();
 	}
 }

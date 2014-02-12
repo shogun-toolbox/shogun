@@ -40,6 +40,5 @@ public class preprocessor_sortulongstring_modular {
 		kernel.init(feats_train, feats_test);
 		DoubleMatrix km_test = kernel.get_kernel_matrix();
 
-		modshogun.exit_shogun();
 	}
 }

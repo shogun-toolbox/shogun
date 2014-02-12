@@ -28,6 +28,7 @@ class CAlphabet;
 template <class T> class CDynamicArray;
 class CFile;
 template <class T> class SGString;
+template <class T> class SGStringList;
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 struct SSKDoubleFeature
@@ -72,10 +73,8 @@ struct SSKTripleFeature
 template <class ST> class CStringFeatures : public CFeatures
 {
 	public:
-		/** default constructor
-		 *
-		 */
-        CStringFeatures();
+		/** default constructor */
+		CStringFeatures();
 
 		/** constructor
 		 *
@@ -84,12 +83,14 @@ template <class ST> class CStringFeatures : public CFeatures
 		CStringFeatures(EAlphabet alpha);
 
 		/** constructor
+		 *
 		 * @param string_list
 		 * @param alpha alphabet (type) to use for string features
 		 */
 		CStringFeatures(SGStringList<ST> string_list, EAlphabet alpha);
 
 		/** constructor
+		 *
 		 * @param string_list
 		 * @param alpha an actual alphabet
 		 */
@@ -101,8 +102,11 @@ template <class ST> class CStringFeatures : public CFeatures
 		 */
 		CStringFeatures(CAlphabet* alpha);
 
-		/** copy constructor */
-		CStringFeatures(const CStringFeatures & orig);
+		/** copy constructor
+		 *
+		 * @param orig features to copy
+		 */
+		CStringFeatures(const CStringFeatures& orig);
 
 		/** constructor
 		 *
@@ -111,13 +115,14 @@ template <class ST> class CStringFeatures : public CFeatures
 		 */
 		CStringFeatures(CFile* loader, EAlphabet alpha=DNA);
 
+		/** destructor */
 		virtual ~CStringFeatures();
 
 		/** cleanup string features.
 		 *
 		 * removes any subset before
 		 *
-		 * */
+		 */
 		virtual void cleanup();
 
 		/** cleanup a single feature vector
@@ -125,7 +130,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * possible with subset
 		 *
 		 * @param num number of the vector
-		 * */
+		 */
 		virtual void cleanup_feature_vector(int32_t num);
 
 		/** cleanup multiple feature vectors
@@ -134,7 +139,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 *
 		 * @param start index of first vector to be cleaned
 		 * @param stop index of the last vector to be cleaned
-		 * */
+		 */
 		virtual void cleanup_feature_vectors(int32_t start, int32_t stop);
 
 		/** get feature class
@@ -166,6 +171,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * possible with subset
 		 *
 		 * @param num index of the string
+		 * @return the selected string
 		 */
 		SGVector<ST> get_feature_vector(int32_t num);
 
@@ -173,16 +179,15 @@ template <class ST> class CStringFeatures : public CFeatures
 		 *
 		 * not possible with subset
 		 *
-		 * @param vector
+		 * @param vector string to set
 		 * @param num index of the string
 		 */
 		void set_feature_vector(SGVector<ST> vector, int32_t num);
 
-		/** call this to preprocess string features upon get_feature_vector
-		 */
+		/** call this to preprocess string features upon call to get_feature_vector */
 		void enable_on_the_fly_preprocessing();
 
-		/** call this to disable on the fly feature preprocessing on
+		/** call this to disable on the fly feature preprocessing upon call to
 		 * get_feature_vector. Useful when you manually apply preprocessors.
 		 */
 		void disable_on_the_fly_preprocessing();
@@ -662,7 +667,6 @@ template <class ST> class CStringFeatures : public CFeatures
 		void init();
 
 	protected:
-
 		/** alphabet */
 		CAlphabet* alphabet;
 

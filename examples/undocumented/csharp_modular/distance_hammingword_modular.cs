@@ -33,6 +33,5 @@ public class distance_hammingword_modular {
 		double[,] dm_train = distance.get_distance_matrix();
 		distance.init(feats_train, feats_test);
 		double[,] dm_test = distance.get_distance_matrix();
-		modshogun.exit_shogun();
 	}
 }

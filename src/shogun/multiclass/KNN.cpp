@@ -82,21 +82,20 @@ bool CKNN::train_machine(CFeatures* data)
 	}
 
 	SGVector<int32_t> lab=((CMulticlassLabels*) m_labels)->get_int_labels();
-	m_train_labels.vlen=lab.vlen;
-	m_train_labels.vector=SGVector<int32_t>::clone_vector(lab.vector, lab.vlen);
+	m_train_labels=lab.clone();
 	ASSERT(m_train_labels.vlen>0)
 
-	int32_t max_class=m_train_labels.vector[0];
-	int32_t min_class=m_train_labels.vector[0];
+	int32_t max_class=m_train_labels[0];
+	int32_t min_class=m_train_labels[0];
 
 	for (int32_t i=1; i<m_train_labels.vlen; i++)
 	{
-		max_class=CMath::max(max_class, m_train_labels.vector[i]);
-		min_class=CMath::min(min_class, m_train_labels.vector[i]);
+		max_class=CMath::max(max_class, m_train_labels[i]);
+		min_class=CMath::min(min_class, m_train_labels[i]);
 	}
 
 	for (int32_t i=0; i<m_train_labels.vlen; i++)
-		m_train_labels.vector[i]-=min_class;
+		m_train_labels[i]-=min_class;
 
 	m_min_label=min_class;
 	m_num_classes=max_class-min_class+1;
@@ -456,7 +455,8 @@ void CKNN::store_model_features()
 	/* copy lhs of underlying distance */
 	distance->init(d_lhs->duplicate(), d_rhs);
 
-	SG_UNREF(d_lhs);
+	SG_UNREF(d_lhs); // because of d_lhs->duplicate()
+	SG_UNREF(d_lhs); // because of distance->get_lhs()
 	SG_UNREF(d_rhs);
 }
 

@@ -18,6 +18,5 @@ public class preprocessor_pca_modular {
 		preproc.init(features);
 		preproc.apply_to_feature_matrix(features);
 
-		modshogun.exit_shogun();
 	}
 }

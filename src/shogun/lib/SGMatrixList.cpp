@@ -102,7 +102,7 @@ SGMatrixList<T> SGMatrixList<T>::split(SGMatrix<T> matrix, int32_t num_component
 		for ( int32_t row = 0 ; row < matrix.num_rows ; ++row )
 		{
 			for ( int32_t col = 0 ; col < new_num_cols ; ++col )
-				new_matrix(row, col) = matrix(row, i*new_num_cols + col);
+				new_matrix(row, col) = matrix(row, int64_t(i)*new_num_cols + col);
 		}
 
 		out.set_matrix(i, new_matrix);

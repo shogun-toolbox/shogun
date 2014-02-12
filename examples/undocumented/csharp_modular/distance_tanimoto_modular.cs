@@ -27,7 +27,6 @@ public class distance_tanimoto_modular {
 		}
 
 
-		modshogun.exit_shogun();
 	}
 }
 

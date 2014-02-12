@@ -44,6 +44,5 @@ public class kernel_distance_modular {
 		}
 
 
-		modshogun.exit_shogun();
 	}
 }

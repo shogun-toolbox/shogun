@@ -76,13 +76,7 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 	// Interface with MOSEK
 	CMosek* mosek = new CMosek(0, M+num_aux+N);
 	SG_REF(mosek);
-	if ( mosek->get_rescode() != MSK_RES_OK )
-	{
-		SG_PRINT("Mosek object could not be properly created..."
-			 "aborting training of PrimalMosekSOSVM\n");
-
-		return false;
-	}
+	REQUIRE(mosek->get_rescode() == MSK_RES_OK, "Mosek object could not be properly created in PrimalMosekSOSVM training.\n");
 
 	// Initialize the terms of the optimization problem
 	SGMatrix< float64_t > A, B, C;
@@ -92,11 +86,8 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 	SG_DEBUG("Regularization used in PrimalMosekSOSVM equal to %.2f.\n", m_regularization);
 
 	// Input terms of the problem that do not change between iterations
-	if ( mosek->init_sosvm(M, N, num_aux, num_aux_con, C, lb, ub, A, b) != MSK_RES_OK )
-	{
-		// MOSEK error took place
-		return false;
-	}
+	REQUIRE(mosek->init_sosvm(M, N, num_aux, num_aux_con, C, lb, ub, A, b) == MSK_RES_OK,
+		"Mosek error in PrimalMosekSOSVM initializing SO-SVM.\n")
 
 	// Initialize the weight vector
 	m_w = SGVector< float64_t >(M);
@@ -119,11 +110,6 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 	// Initialize variables used in the loop
 	int32_t     num_con     = num_aux_con;	// number of constraints
 	int32_t     old_num_con = num_con;
-	float64_t   slack       = 0.0;
-	float64_t   max_slack   = 0.0;
-	CResultSet* result      = NULL;
-	CResultSet* cur_res     = NULL;
-	CList*      cur_list    = NULL;
 	bool        exception   = false;
 	index_t     iteration   = 0;
 
@@ -142,24 +128,23 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 		for ( int32_t i = 0 ; i < N ; ++i )
 		{
 			// Predict the result of the ith training example (loss-aug)
-			result = m_model->argmax(m_w, i);
+			CResultSet* result = m_model->argmax(m_w, i);
 
 			// Compute the loss associated with the prediction (surrogate loss, max(0, \tilde{H}))
-			slack = CHingeLoss().loss( compute_loss_arg(result) );
-			cur_list = (CList*) results->get_element(i);
+			float64_t slack = CHingeLoss().loss( compute_loss_arg(result) );
+			CList* cur_list = (CList*) results->get_element(i);
 
 			// Update the list of constraints
 			if ( cur_list->get_num_elements() > 0 )
 			{
 				// Find the maximum loss within the elements of
 				// the list of constraints
-				cur_res = (CResultSet*) cur_list->get_first_element();
-				max_slack = -CMath::INFTY;
+				CResultSet* cur_res = (CResultSet*) cur_list->get_first_element();
+				float64_t max_slack = -CMath::INFTY;
 
 				while ( cur_res != NULL )
 				{
-					max_slack = CMath::max(max_slack,
-							CHingeLoss().loss( compute_loss_arg(cur_res) ));
+					max_slack = CMath::max(max_slack, CHingeLoss().loss( compute_loss_arg(cur_res) ));
 
 					SG_UNREF(cur_res);
 					cur_res = (CResultSet*) cur_list->get_next_element();

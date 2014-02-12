@@ -265,6 +265,12 @@ namespace shogun
 			 */
 			float64_t std_normal_distrib() const;
 
+			/**
+			 * Generate a seed for PRNG
+			 *
+			 * @return entropy for PRNG
+			 */
+			static uint32_t generate_seed();
 
 			virtual const char* get_name() const { return "Random"; }
 

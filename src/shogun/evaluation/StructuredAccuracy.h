@@ -48,11 +48,16 @@ class CStructuredAccuracy : public CEvaluation
 		 */
 		static SGMatrix<int32_t> get_confusion_matrix(CLabels* predicted, CLabels* ground_truth);
 
+		/** whether the evaluation criterion has to be maximimed or minimized
+		*
+		* @return maximize evaluation criterion
+		*/
 		inline EEvaluationDirection get_evaluation_direction() const
 		{
 			return ED_MAXIMIZE;
 		}
 
+		/** @return name of SGSerializable */
 		virtual const char* get_name() const { return "StructuredAccuracy"; }
 
 	private:

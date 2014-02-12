@@ -23,6 +23,5 @@ public class classifier_gaussiannaivebayes_modular {
 			Console.Write(item);
 		}
 
-		modshogun.exit_shogun();
 	}
 }

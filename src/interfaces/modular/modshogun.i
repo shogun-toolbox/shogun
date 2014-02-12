@@ -68,8 +68,8 @@
 %include "GaussianProcess_includes.i"
 %include "Ensemble_includes.i"
 
-%include "Machine.i"
 %include "SGBase.i"
+%include "Machine.i"
 %include "IO.i"
 %include "Library.i"
 %include "Mathematics.i"

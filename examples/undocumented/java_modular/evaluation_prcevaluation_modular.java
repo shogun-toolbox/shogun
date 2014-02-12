@@ -22,6 +22,5 @@ public class evaluation_prcevaluation_modular {
 		System.out.println(evaluator.get_PRC());
 		System.out.println(evaluator.get_auPRC());
 
-		modshogun.exit_shogun();
 	}
 }

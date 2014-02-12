@@ -36,6 +36,5 @@ public class classifier_svmlight_modular {
 		kernel.init(feats_train, feats_test);
 		to_binary(svm.apply()).get_labels();
 
-		modshogun.exit_shogun();
 	}
 }

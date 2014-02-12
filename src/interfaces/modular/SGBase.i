@@ -2,22 +2,18 @@
 %include "stdint.i"
 %include "exception.i"
 
-%define SERIALIZABLE_DUMMY(SWIGCLASS)
-%extend SWIGCLASS {
-bool save_serializable(CSerializableFile* file, const char* prefix="") { return false; };
-bool load_serializable(CSerializableFile* file, const char* prefix="") { return false; };
-}
-%enddef
+%feature("ref")   shogun::SGRefObject "SG_REF($this);"
+%feature("unref") shogun::SGRefObject "SG_UNREF($this);"
 
 #ifdef SWIGJAVA
-%typemap(javainterfaces) SWIGTYPE "java.io.Externalizable"
+%typemap(javainterfaces) shogun::CSGObject "java.io.Externalizable"
 
-%typemap(javaincludes) SWIGTYPE
+%typemap(javaimports) shogun::CSGObject
 %{
 import org.shogun.SerializableFile;
 import org.shogun.SerializableAsciiFile;
 %}
-%typemap(javacode) SWIGTYPE
+%typemap(javacode) shogun::CSGObject
 %{
 public void writeExternal(java.io.ObjectOutput out) throws java.io.IOException {
         java.util.Random randomGenerator = new java.util.Random();
@@ -112,6 +108,7 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
  #include <shogun/lib/DataType.h>
  #include <shogun/base/Version.h>
  #include <shogun/base/Parallel.h>
+ #include <shogun/base/SGRefObject.h>
  #include <shogun/base/SGObject.h>
 
  extern void sg_global_print_message(FILE* target, const char* str);
@@ -309,8 +306,6 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
 %ignore sg_print_error;
 %ignore sg_cancel_computations;
 
-%feature("ref")   CSGObject "SG_REF($this);"
-%feature("unref") CSGObject "SG_UNREF($this);"
 
 %rename(SGObject) CSGObject;
 
@@ -329,14 +324,11 @@ namespace std {
 #ifndef SWIGR
 %include <shogun/base/init.h>
 #endif
-%include <shogun/io/SGIO.h>
-SERIALIZABLE_DUMMY(shogun::SGIO);
-
+%include <shogun/base/SGRefObject.h>
 %include <shogun/base/SGObject.h>
+%include <shogun/io/SGIO.h>
 %include <shogun/base/Version.h>
-SERIALIZABLE_DUMMY(shogun::Version);
 %include <shogun/base/Parallel.h>
-SERIALIZABLE_DUMMY(shogun::Parallel);
 
 #ifdef SWIGPYTHON
 namespace shogun

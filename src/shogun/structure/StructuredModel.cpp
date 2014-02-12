@@ -22,6 +22,11 @@ CResultSet::~CResultSet()
 	SG_UNREF(argmax)
 }
 
+CStructuredLabels* CStructuredModel::structured_labels_factory(int32_t num_labels)
+{
+	return new CStructuredLabels(num_labels);
+}
+
 const char* CResultSet::get_name() const
 {
 	return "ResultSet";

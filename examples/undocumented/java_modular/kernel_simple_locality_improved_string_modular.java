@@ -28,6 +28,5 @@ public class kernel_simple_locality_improved_string_modular {
 		System.out.println(km_train.toString());
 		System.out.println(km_test.toString());
 
-		modshogun.exit_shogun();
 	}
 }

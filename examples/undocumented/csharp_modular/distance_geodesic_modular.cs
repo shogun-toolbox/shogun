@@ -25,6 +25,5 @@ public class distance_geodesic_modular {
 			Console.Write(item);
 		}
 
-		modshogun.exit_shogun();
 	}
 }

@@ -61,6 +61,5 @@ public class classifier_libsvm_minimal_modular {
 
 		double testerr=err_num/(2*num);
 		Console.WriteLine(testerr);
-		modshogun.exit_shogun();
 	}
 }

@@ -35,10 +35,8 @@
 #include <float.h>
 #include <sys/types.h>
 #ifndef _WIN32
-#include <sys/time.h>
 #include <unistd.h>
 #endif
-#include <time.h>
 
 #ifdef HAVE_PTHREAD
 #include <pthread.h>
@@ -520,11 +518,7 @@ class CMath : public CSGObject
 		static void init_random(uint32_t initseed=0)
 		{
 			if (initseed==0)
-			{
-				struct timeval tv;
-				gettimeofday(&tv, NULL);
-				seed=(uint32_t) (4223517*getpid()*tv.tv_sec*tv.tv_usec);
-			}
+				seed = CRandom::generate_seed();
 			else
 				seed=initseed;
 
@@ -599,20 +593,7 @@ class CMath : public CSGObject
 		/// http://en.wikipedia.org/wiki/Box%E2%80%93Muller_transform#Polar_form
 		static inline float64_t normal_random(float64_t mean, float64_t std_dev)
 		{
-			float64_t ret;
-			float64_t rand_u;
-			float64_t rand_v;
-			float64_t rand_s;
-			do
-			{
-				rand_u = CMath::random(-1.0, 1.0);
-				rand_v = CMath::random(-1.0, 1.0);
-				rand_s = rand_u*rand_u + rand_v*rand_v;
-			} while ((rand_s == 0) || (rand_s >= 1));
-
-			ret = rand_u*sqrt(-2.0*log(rand_s)/rand_s);
-			ret = std_dev*ret + mean;
-			return ret;
+			return sg_rand->normal_distrib(mean, std_dev);
 		}
 
 		/// Convenience method for generating Standard Normal random numbers
@@ -626,7 +607,7 @@ class CMath : public CSGObject
 		/// Double: Mean = 0 and Standard Deviation = 1
 		static inline float64_t randn_double()
 		{
-			return normal_random(0.0, 1.0);
+			return sg_rand->std_normal_distrib();
 		}
 
 		template <class T>
@@ -1249,14 +1230,7 @@ class CMath : public CSGObject
 #endif
 
 		/// checks whether a float is finite
-		inline static int is_finite(double f)
-		{
-#if defined(isfinite) && !defined(SUNOS)
-			return isfinite(f);
-#else
-			return finite(f);
-#endif
-		}
+		static int is_finite(double f);
 
 		/// checks whether a float is infinity
 		static int is_infinity(double f);

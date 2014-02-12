@@ -124,9 +124,3 @@ namespace shogun
 %include <shogun/multiclass/QDA.h>
 %include <shogun/multiclass/MCLDA.h>
 %include <shogun/multiclass/ShareBoost.h>
-
-namespace shogun
-{
-    SERIALIZABLE_DUMMY(ConditionalProbabilityTreeNodeData);
-    SERIALIZABLE_DUMMY(RelaxedTreeNodeData);
-}

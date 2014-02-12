@@ -37,6 +37,5 @@ public class distance_canberraword_modular {
 		DoubleMatrix dm_train = distance.get_distance_matrix();
 		distance.init(feats_train, feats_test);
 		DoubleMatrix dm_test = distance.get_distance_matrix();
-		modshogun.exit_shogun();
 	}
 }

@@ -34,7 +34,7 @@ template<class T> SGNDArray<T>::SGNDArray(T* a, index_t* d, index_t nd, bool ref
 template<class T> SGNDArray<T>::SGNDArray(index_t* d, index_t nd, bool ref_counting) :
 	SGReferencedData(ref_counting), dims(d), num_dims(nd)
 {
-	index_t total = 1;
+	int64_t total = 1;
 	for (int32_t i=0; i<num_dims; i++)
 		total *= dims[i];
 	ASSERT(total>0)
@@ -82,10 +82,10 @@ template<class T> void SGNDArray<T>::transpose_matrix(index_t matIdx) const
 
 	T aux;
 	// Index to acces directly the elements of the matrix of interest
-	int32_t idx = matIdx*dims[0]*dims[1];
+	int64_t idx = int64_t(matIdx)*int64_t(dims[0])*dims[1];
 
-	for (int32_t i=0; i<dims[0]; i++)
-		for (int32_t j=0; j<i-1; j++)
+	for (int64_t i=0; i<dims[0]; i++)
+		for (int64_t j=0; j<i-1; j++)
 		{
 			aux = array[idx + i + j*dims[0]];
 			array[idx + i + j*dims[0]] = array[idx + j + i*dims[0]];

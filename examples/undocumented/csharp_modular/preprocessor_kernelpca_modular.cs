@@ -15,6 +15,5 @@ public class preprocessor_kernelpca_modular {
 		preprocessor.init(features);
 		preprocessor.apply_to_feature_matrix(features);
 
-		modshogun.exit_shogun();
 	}
 }

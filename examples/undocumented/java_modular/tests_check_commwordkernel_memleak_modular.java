@@ -64,6 +64,5 @@ public class tests_check_commwordkernel_memleak_modular {
 			DoubleMatrix K = spec.get_kernel_matrix();
 		}
 
-		modshogun.exit_shogun();
 	}
 }

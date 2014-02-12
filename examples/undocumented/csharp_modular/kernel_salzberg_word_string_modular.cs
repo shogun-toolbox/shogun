@@ -33,7 +33,6 @@ public class kernel_salzberg_word_string_modular {
 		LabelsFactory.to_binary(pie.apply()).get_labels();
 		double[,] km_test=kernel.get_kernel_matrix();
 
-		modshogun.exit_shogun();
 	}
 }
 

@@ -15,6 +15,5 @@ public class kernel_local_alignment_string_modular {
 		double[,] km_train = kernel.get_kernel_matrix();
 		kernel.init(feats_train, feats_test);
 		double[,] km_test = kernel.get_kernel_matrix();
-		modshogun.exit_shogun();
 	}
 }

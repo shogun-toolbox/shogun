@@ -54,7 +54,7 @@ that case, the  library path would be /opt/local/lib.
 
 \section from_source Installing SHOGUN from Source
 
-Download SHOGUN from http://www.shogun-toolbox.org , aswell as its requirements.
+Download SHOGUN from http://www.shogun-toolbox.org , as well as its requirements.
 
 \subsection requirements Requirements
 

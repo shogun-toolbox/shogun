@@ -35,7 +35,9 @@ class CDistanceMachine;
  *
  * Beware that this algorithm obtains only a <em>local</em> optimum.
  *
- * cf. http://en.wikipedia.org/wiki/K-means_algorithm */
+ * cf. http://en.wikipedia.org/wiki/K-means_algorithm
+ *
+ */
 class CKMeans : public CDistanceMachine
 {
 	public:
@@ -48,6 +50,13 @@ class CKMeans : public CDistanceMachine
 		 * @param d distance
 		 */
 		CKMeans(int32_t k, CDistance* d);
+
+		/** constructor for supplying initial centers
+		 * @param k_i parameter k
+		 * @param d_i distance
+		 * @param centers_i initial centers for KMeans algorithm
+		*/
+		CKMeans(int32_t k_i, CDistance* d_i, SGMatrix<float64_t> centers_i );
 		virtual ~CKMeans();
 
 
@@ -85,6 +94,18 @@ class CKMeans : public CDistanceMachine
 		 */
 		int32_t get_k();
 
+		/** set fixed centers
+		 *
+		 * @param fixed true if fixed cluster centers are intended
+		 */
+		void set_fixed_centers(bool fixed);
+
+		/** get fixed centers
+		 *
+		 * @return whether boolean centers are to be used
+		 */
+		bool get_fixed_centers();
+
 		/** set maximum number of iterations
 		 *
 		 * @param iter the new maximum
@@ -118,14 +139,13 @@ class CKMeans : public CDistanceMachine
 		/** @return object name */
 		virtual const char* get_name() const { return "KMeans"; }
 
-	protected:
-		/** clustknb
+		/** set the initial cluster centers 
 		 *
-		 * @param use_old_mus if old mus shall be used
-		 * @param mus_start mus start
+		 * @param centers matrix with cluster centers (k colums, dim rows)
 		 */
-		void clustknb(bool use_old_mus, float64_t *mus_start);
+		virtual void set_initial_centers(SGMatrix<float64_t> centers);
 
+	protected:
 		/** train k-means
 		 *
 		 * @param data training data (parameter can be avoided if distance or
@@ -143,10 +163,17 @@ class CKMeans : public CDistanceMachine
 
 	private:
 		void init();
+		void set_random_centers(float64_t* weights_set, int32_t* ClList, int32_t XSize);
+		void set_initial_centers(CDenseFeatures<float64_t>* rhs_mus, float64_t* weights_set,
+				float64_t* dists, int32_t* ClList, int32_t XSize);
+		void compute_cluster_variances();
 
 	protected:
 		/// maximum number of iterations
 		int32_t max_iter;
+
+		/// whether to keep cluster centers fixed or not
+		bool fixed_centers;
 
 		/// the k parameter in KMeans
 		int32_t k;
@@ -157,13 +184,12 @@ class CKMeans : public CDistanceMachine
 		/// radi of the clusters (size k)
 		SGVector<float64_t> R;
 
-	private:
-		/* temporary variable for weighting over the train data */
-		SGVector<float64_t> Weights;
+		///initial centers supplied
+		SGMatrix<float64_t> mus_initial;
 
+	private:
 		/* temp variable for cluster centers */
 		SGMatrix<float64_t> mus;
-
 };
 }
 #endif

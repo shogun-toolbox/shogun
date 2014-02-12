@@ -34,6 +34,5 @@ public class preprocessor_randomfouriergausspreproc_modular {
 		System.out.println(km_train.toString());
 		System.out.println(km_test.toString());
 
-		modshogun.exit_shogun();
 	}
 }

@@ -14,6 +14,5 @@ public class MatrixTest
 					Console.WriteLine(item);
 		}
 
-		modshogun.exit_shogun();
 	}
 }

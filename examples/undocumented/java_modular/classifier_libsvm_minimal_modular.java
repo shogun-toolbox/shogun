@@ -43,6 +43,5 @@ public class classifier_libsvm_minimal_modular {
 		DoubleMatrix out = to_binary(svm.apply(feats_test)).get_labels();
 
 		System.out.println("Mean Error = " + signum(out).ne(testlab).mean());
-		modshogun.exit_shogun();
 	}
 }

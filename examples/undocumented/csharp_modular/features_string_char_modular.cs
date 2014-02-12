@@ -10,6 +10,5 @@ public class features_string_char_modular {
 		  Console.WriteLine(item);
 	  }
 
-		modshogun.exit_shogun();
 	}
 }

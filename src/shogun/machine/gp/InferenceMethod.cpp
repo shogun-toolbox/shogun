@@ -17,10 +17,7 @@
 #include <shogun/machine/gp/InferenceMethod.h>
 #include <shogun/distributions/classical/GaussianDistribution.h>
 #include <shogun/mathematics/Statistics.h>
-
-#ifdef HAVE_PTHREAD
-#include <pthread.h>
-#endif
+#include <shogun/lib/Lock.h>
 
 using namespace shogun;
 
@@ -31,6 +28,7 @@ struct GRADIENT_THREAD_PARAM
 	CMap<TParameter*, SGVector<float64_t> >* grad;
 	CSGObject* obj;
 	TParameter* param;
+	CLock* lock;
 };
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
@@ -154,6 +152,9 @@ get_negative_log_marginal_likelihood_derivatives(CMap<TParameter*, CSGObject*>* 
 
 	SG_REF(result);
 
+	// create lock object
+	CLock lock;
+
 #ifdef HAVE_PTHREAD
 	if (num_deriv<2)
 	{
@@ -168,6 +169,7 @@ get_negative_log_marginal_likelihood_derivatives(CMap<TParameter*, CSGObject*>* 
 			thread_params.obj=node->data;
 			thread_params.param=node->key;
 			thread_params.grad=result;
+			thread_params.lock=&lock;
 
 			get_derivative_helper((void*) &thread_params);
 		}
@@ -187,6 +189,7 @@ get_negative_log_marginal_likelihood_derivatives(CMap<TParameter*, CSGObject*>* 
 			thread_params[t].obj=node->data;
 			thread_params[t].param=node->key;
 			thread_params[t].grad=result;
+			thread_params[t].lock=&lock;
 
 			pthread_create(&threads[t], NULL, CInferenceMethod::get_derivative_helper,
 					(void*)&thread_params[t]);
@@ -211,35 +214,42 @@ void* CInferenceMethod::get_derivative_helper(void *p)
 	CSGObject* obj=thread_param->obj;
 	CMap<TParameter*, SGVector<float64_t> >* grad=thread_param->grad;
 	TParameter* param=thread_param->param;
+	CLock* lock=thread_param->lock;
 
 	REQUIRE(param, "Parameter should not be NULL\n");
 	REQUIRE(obj, "Object of the parameter should not be NULL\n");
 
+	SGVector<float64_t> gradient;
+
 	if (obj==inf)
 	{
 		// try to find dervative wrt InferenceMethod.parameter
-		grad->add(param, inf->get_derivative_wrt_inference_method(param));
+		gradient=inf->get_derivative_wrt_inference_method(param);
 	}
 	else if (obj==inf->m_model)
 	{
 		// try to find derivative wrt LikelihoodModel.parameter
-		grad->add(param, inf->get_derivative_wrt_likelihood_model(param));
+		gradient=inf->get_derivative_wrt_likelihood_model(param);
 	}
 	else if (obj==inf->m_kernel)
 	{
 		// try to find derivative wrt Kernel.parameter
-		grad->add(param, inf->get_derivative_wrt_kernel(param));
+		gradient=inf->get_derivative_wrt_kernel(param);
 	}
 	else if (obj==inf->m_mean)
 	{
 		// try to find derivative wrt MeanFunction.parameter
-		grad->add(param, inf->get_derivative_wrt_mean(param));
+		gradient=inf->get_derivative_wrt_mean(param);
 	}
 	else
 	{
 		SG_SERROR("Can't compute derivative of negative log marginal "
 				"likelihood wrt %s.%s", obj->get_name(), param->m_name);
 	}
+
+	lock->lock();
+	grad->add(param, gradient);
+	lock->unlock();
 
 	return NULL;
 }

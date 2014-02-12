@@ -25,6 +25,5 @@ public class kernel_poly_modular {
 		System.out.println(km_train.toString());
 		System.out.println(km_test.toString());
 
-		modshogun.exit_shogun();
 	}
 }

@@ -4,7 +4,7 @@ rm -f error.log
 
 if [ -z "${MONO}" ]
 then
-	MONOC=gmcs
+	MONOC=dmcs
 	MONO=mono
 fi
 

@@ -27,6 +27,5 @@ public class regression_krr_modular {
 			Console.Write(item);
 		}
 
-		modshogun.exit_shogun();
 	}
 }

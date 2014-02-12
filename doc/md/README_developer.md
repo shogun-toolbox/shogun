@@ -77,17 +77,17 @@ int main(int argc, char** argv)
 	init_shogun(&print_message);
 
 	// create some data
-	float64_t* matrix = SG_MALLOC(float64_t, 6);
+	SGMatrix<float64_t> matrix(2,3);
 	for (int32_t i=0; i<6; i++)
-		matrix[i]=i;
+		matrix.matrix[i]=i;
 
-	// create three 2-dimensional vectors
+	// create three 2-dimensional vectors 
 	// shogun will now own the matrix created
 	CDenseFeatures<float64_t>* features= new CDenseFeatures<float64_t>();
-	features->set_feature_matrix(matrix, 2, 3);
+	features->set_feature_matrix(matrix);
 
 	// create three labels
-	CLabels* labels=new CLabels(3);
+	CBinaryLabels* labels=new CBinaryLabels(3);
 	labels->set_label(0, -1);
 	labels->set_label(1, +1);
 	labels->set_label(2, -1);
@@ -102,13 +102,14 @@ int main(int argc, char** argv)
 
 	// classify on training examples
 	for (int32_t i=0; i<3; i++)
-		SG_SPRINT("output[%d]=%f\n", i, svm->apply(i));
+		SG_SPRINT("output[%d]=%f\n", i, svm->apply_one(i));
 
 	// free up memory
 	SG_UNREF(svm);
 
 	exit_shogun();
 	return 0;
+
 }
 ```
 

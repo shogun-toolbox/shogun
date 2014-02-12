@@ -18,7 +18,7 @@
 namespace shogun
 {
 
-/** @class class CManifoldSculpting used to embed
+/** @brief class CManifoldSculpting used to embed
  * data using manifold sculpting embedding algorithm.
  *
  * Uses implementation from the Tapkee library.

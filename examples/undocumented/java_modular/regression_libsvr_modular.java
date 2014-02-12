@@ -34,6 +34,5 @@ public class regression_libsvr_modular {
 		DoubleMatrix out_labels = to_regression(svr.apply()).get_labels();
 		System.out.println(out_labels.toString());
 
-		modshogun.exit_shogun();
 	}
 }

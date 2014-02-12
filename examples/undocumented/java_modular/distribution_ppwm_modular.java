@@ -33,6 +33,5 @@ public class distribution_ppwm_modular {
 		ppwm.set_pwm(logi(pwm));
 		ppwm.compute_w(20);
 		DoubleMatrix w = ppwm.get_w();
-		modshogun.exit_shogun();
 	}
 }

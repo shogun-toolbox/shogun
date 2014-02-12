@@ -43,6 +43,5 @@ public class serialization_complex_example {
 		SerializableAsciiFile fstream = new SerializableAsciiFile("blaah.asc", 'w');
 		//svm.save_serializable(fstream);
 
-		modshogun.exit_shogun();
 	}
 }

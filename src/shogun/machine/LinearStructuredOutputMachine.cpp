@@ -4,6 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
+ * Written (W) 2013 Thoralf Klein
  * Written (W) 2012 Fernando José Iglesias García
  * Copyright (C) 2012 Fernando José Iglesias García
  */
@@ -48,22 +49,22 @@ CStructuredLabels* CLinearStructuredOutputMachine::apply_structured(CFeatures* d
 		set_features(data);
 	}
 
-	CStructuredLabels* out;
 	CFeatures* model_features = this->get_features();
 	if (!model_features)
 	{
-		out = new CStructuredLabels();
+		return m_model->structured_labels_factory();
 	}
-	else
-	{
-		out = new CStructuredLabels(model_features->get_num_vectors());
-		for ( int32_t i = 0 ; i < model_features->get_num_vectors() ; ++i )
-		{
-			CResultSet* result = m_model->argmax(m_w, i, false);
-			out->add_label(result->argmax);
 
-			SG_UNREF(result);
-		}
+	int num_input_vectors = model_features->get_num_vectors();
+	CStructuredLabels* out;
+	out = m_model->structured_labels_factory(num_input_vectors);
+
+	for ( int32_t i = 0 ; i < num_input_vectors ; ++i )
+	{
+		CResultSet* result = m_model->argmax(m_w, i, false);
+		out->add_label(result->argmax);
+
+		SG_UNREF(result);
 	}
 	SG_UNREF(model_features);
 	return out;
