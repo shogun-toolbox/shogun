@@ -59,15 +59,16 @@ float64_t CStringSubsequenceKernel::compute(int32_t idx_a, int32_t idx_b)
 	REQUIRE(lhs, "lhs feature vector is not set!\n")
 	REQUIRE(rhs, "rhs feature vector is not set!\n")
 
-	SGVector<char> avec=dynamic_cast<CStringFeatures<char>*>(lhs)
-		->get_feature_vector(idx_a);
-	SGVector<char> bvec=dynamic_cast<CStringFeatures<char>*>(rhs)
-		->get_feature_vector(idx_b);
+	int32_t alen, blen;
+	bool free_avec, free_bvec;
 
-	REQUIRE(avec.vector, "Feature vector for lhs is NULL!\n");
-	REQUIRE(bvec.vector, "Feature vector for rhs is NULL!\n");
+	char* avec=dynamic_cast<CStringFeatures<char>*>(lhs)
+		->get_feature_vector(idx_a, alen, free_avec);
+	char* bvec=dynamic_cast<CStringFeatures<char>*>(rhs)
+		->get_feature_vector(idx_b, blen, free_bvec);
 
-	int32_t alen=avec.size(), blen=bvec.size();
+	REQUIRE(avec, "Feature vector for lhs is NULL!\n");
+	REQUIRE(bvec, "Feature vector for rhs is NULL!\n");
 
 	// allocating memory for computing K' (Kp)
 	float64_t ***Kp=SG_MALLOC(float64_t**, m_maxlen+1);
@@ -93,7 +94,7 @@ float64_t CStringSubsequenceKernel::compute(int32_t idx_a, int32_t idx_b)
 			float64_t Kpp=0.0;
 			for (index_t k=0; k<blen-1; k++)
 			{
-				Kpp=m_lambda*(Kpp+m_lambda*(avec.vector[j]==bvec.vector[k])
+				Kpp=m_lambda*(Kpp+m_lambda*(avec[j]==bvec[k])
 						*Kp[i][j][k]);
 				Kp[i+1][j+1][k+1]=m_lambda*Kp[i+1][j][k+1]+Kpp;
 			}
@@ -108,13 +109,18 @@ float64_t CStringSubsequenceKernel::compute(int32_t idx_a, int32_t idx_b)
 		{
 			for (index_t k=0; k<blen; k++)
 			{
-				K+=m_lambda*m_lambda*(avec.vector[j]==bvec.vector[k])
+				K+=m_lambda*m_lambda*(avec[j]==bvec[k])
 					*Kp[i][j][k];
 			}
 		}
 	}
 
 	// cleanup
+	dynamic_cast<CStringFeatures<char>*>(lhs)->free_feature_vector(avec, idx_a,
+			free_avec);
+	dynamic_cast<CStringFeatures<char>*>(rhs)->free_feature_vector(bvec, idx_b,
+			free_bvec);
+
 	for (index_t i=0; i<m_maxlen+1; ++i)
 	{
 		for (index_t j=0; j<alen; ++j)
