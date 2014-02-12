@@ -34,6 +34,10 @@
 %rename(LibLinear) CLibLinear;
 %rename(LibSVM) CLibSVM;
 %rename(LibSVMOneClass) CLibSVMOneClass;
+#ifdef USE_SVMLIGHT
+%rename(SVMLight) CSVMLight;
+%rename(SVMLightOneClass) CSVMLightOneClass;
+#endif //USE_SVMLIGHT
 %rename(LinearMachine) CLinearMachine;
 %rename(OnlineLinearMachine) COnlineLinearMachine;
 %rename(LPBoost) CLPBoost;
@@ -57,10 +61,6 @@
 %rename(MKLClassification) CMKLClassification;
 %rename(MKLOneClass) CMKLOneClass;
 %rename(VowpalWabbit) CVowpalWabbit;
-#ifdef USE_SVMLIGHT
-%rename(SVMLight) CSVMLight;
-%rename(SVMLightOneClass) CSVMLightOneClass;
-#endif //USE_SVMLIGHT
 %rename(FeatureBlockLogisticRegression) CFeatureBlockLogisticRegression;
 %rename(DirectorLinearMachine) CDirectorLinearMachine;
 %rename(DirectorKernelMachine) CDirectorKernelMachine;
@@ -86,6 +86,20 @@
 %include <shogun/classifier/svm/LibLinear.h>
 %include <shogun/classifier/svm/LibSVM.h>
 %include <shogun/classifier/svm/LibSVMOneClass.h>
+
+#ifdef USE_SVMLIGHT
+%ignore VERSION;
+%ignore VERSION_DATE;
+%ignore MAXSHRINK;
+%ignore SHRINK_STATE;
+%ignore MODEL;
+%ignore LEARN_PARM;
+%ignore TIMING;
+
+%include <shogun/classifier/svm/SVMLight.h>
+%include <shogun/classifier/svm/SVMLightOneClass.h>
+#endif //USE_SVMLIGHT
+
 %include <shogun/classifier/LPBoost.h>
 %include <shogun/classifier/LPM.h>
 %include <shogun/classifier/svm/MPDSVM.h>
@@ -108,18 +122,3 @@
 %include <shogun/machine/DirectorLinearMachine.h>
 %include <shogun/machine/DirectorKernelMachine.h>
 %include <shogun/machine/BaggingMachine.h>
-
-#ifdef USE_SVMLIGHT
-
-%ignore VERSION;
-%ignore VERSION_DATE;
-%ignore MAXSHRINK;
-%ignore SHRINK_STATE;
-%ignore MODEL;
-%ignore LEARN_PARM;
-%ignore TIMING;
-
-%include <shogun/classifier/svm/SVMLight.h>
-%include <shogun/classifier/svm/SVMLightOneClass.h>
-
-#endif //USE_SVMLIGHT
