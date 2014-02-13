@@ -6,8 +6,9 @@ additional libraries or header files to compile shogun or its interfaces.
 
 ## Build prerequisites
 
-* Minimal requirements: standard utils like cmake, gcc/g++/clang, ldd, 
-  bash, grep, test, sed, cut, awk, ldd, uname, cat, python-2.7
+* Minimal requirements: standard utils like cmake, gcc/g++/clang, ldd,
+  wget/curl, tar/bzip2, bash, grep, test, sed, cut, awk, ldd, uname, cat,
+  python-2.7
 * Optional libraries to improve performance: lapack3-dev, atlas3-headers,
   atlas3-base-dev, libeigen3-dev
 * Depending on the enabled interfaces you may need: swig 2, r-base-dev, 
@@ -20,15 +21,23 @@ The following commands will clone the shogun repository and download
 approximately 350-400 MB of data.
 
 ```
-$ git clone https://github.com/shogun-toolbox/shogun
-$ git submodule update --init
+$ wget ftp://shogun-toolbox.org/shogun/releases/3.1/sources/shogun-3.1.1.tar.bz2
+$ tar xjf shogun-3.1.1.tar.bz2
+
+$ wget ftp://shogun-toolbox.org/shogun/data/shogun-data-0.7.tar.bz2
+$ shogun-data-0.7.tar.bz2
+
+$ rm data/
+$ ln -s ../shogun-data-0.7 data
 ```
 
 ## Compile, run test, install into home directory
 
 ```
-$ mkdir shogun/build
-$ cd shogun/build
+$ cd shogun-3.1.1
+
+$ mkdir build
+$ cd build
 $ cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTING=ON -DCMAKE_INSTALL_PREFIX="/home/$USER/shogun-install" ..
 
 $ make -j5 all 
