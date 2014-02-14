@@ -13,12 +13,13 @@ libraries or header files to compile shogun or its interfaces.
   atlas3-base-dev, libeigen3-dev
 * Depending on the enabled interfaces you may need: swig 2, r-base-dev, 
   liboctave-dev, openjdk-6-jdk/openjdk-7-jdk, jblas, jblas-dev,
-  python2.7-dev, python-numpy 
+  python2.7-dev, python-numpy
 
 ## Download sources
 
-The following commands will clone the shogun repository and download
-approximately 350-400 MB of data.
+The following commands will get the prepared shogun source archives.  If
+you choose to fetch "shogun-data" as well, approximately 250 MB of data
+will be downloaded.
 
 ```
 
@@ -50,7 +51,8 @@ $ make install
 
 Many toy examples on can be found within `share/shogun/examples/libshogun`.
 In order to run them, you need to point `LD_LIBRARY_PATH` to the location
-of the compiled library.  If everything worked fine, this should work well:
+of the compiled library.  If everything from above was successful, this
+should work well:
 
 ```
 
