@@ -21,6 +21,7 @@ The following commands will clone the shogun repository and download
 approximately 350-400 MB of data.
 
 ```
+
 $ wget ftp://shogun-toolbox.org/shogun/releases/3.1/sources/shogun-3.1.1.tar.bz2
 $ tar xjf shogun-3.1.1.tar.bz2
 
@@ -34,25 +35,35 @@ $ ln -s ../shogun-data-0.7 data
 ## Compile and install SHOGUN-TOOLBOX into home directory
 
 ```
+
 $ cd shogun-3.1.1
 
 $ mkdir build
 $ cd build
 $ cmake -DCMAKE_INSTALL_PREFIX="/home/$USER/shogun-install" ..
 
-$ make -j5 all 
+$ make -j5 all
 $ make install
 ```
 
-## Run the examples:
+## Run the examples
+
+Many toy examples on can be found within `share/shogun/examples/libshogun`.
+In order to run them, you need to point `LD_LIBRARY_PATH` to the location
+of the compiled library.  If everything worked fine, this should work well:
 
 ```
+
 $ export LD_LIBRARY_PATH="/home/$USER/shogun-install/lib:$LD_LIBRARY_PATH"
 $ cd "/home/$USER/share/shogun/examples/libshogun"
 $ chmod +x ./so_multiclass_BMRM && ./so_multiclass_BMRM
 ```
 
-# You know what you're doing: More build options
+# You know what you're doing?
+
+A small cheat sheet of available cmake options.  This list does not
+claim to be comprehensive -- it's meant to be a quick reference for
+those you know what they do.
 
 ## Enabling modular interfaces
 * `-DPythonModular=ON`, `-DOctaveModular=ON`, `-DJavaModular=ON`,
