@@ -118,9 +118,6 @@ public:
 protected:
 	/// Environment
 	CVwEnvironment* env;
-
-private:
-	void release_weight_vectors();
 };
 
 }

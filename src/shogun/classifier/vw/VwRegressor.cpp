@@ -257,10 +257,3 @@ void CVwRegressor::load_regressor(char* file)
 	source.close_file();
 }
 
-void CVwRegressor::release_weight_vectors()
-{
-	vw_size_t num_threads = env->num_threads();
-	for (vw_size_t i = 0; i < num_threads; i++)
-		SG_FREE(weight_vectors[i]);
-	SG_FREE(weight_vectors);
-}
