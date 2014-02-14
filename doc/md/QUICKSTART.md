@@ -1,8 +1,8 @@
-# Shogun Quickstart
+# SHOGUN-TOOLBOX Quickstart
 
-This quickstart assumes that you're have access to standard unix/linux
-tools, cmake and a C/C++ compiler.  It may be neccessary to install 
-additional libraries or header files to compile shogun or its interfaces.
+This quickstart assumes that you have access to standard unix/linux tools,
+cmake and a C/C++ compiler.  It may be neccessary to install additional
+libraries or header files to compile shogun or its interfaces.
 
 ## Build prerequisites
 
@@ -31,17 +31,16 @@ $ rm data/
 $ ln -s ../shogun-data-0.7 data
 ```
 
-## Compile, run test, install into home directory
+## Compile and install SHOGUN-TOOLBOX into home directory
 
 ```
 $ cd shogun-3.1.1
 
 $ mkdir build
 $ cd build
-$ cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTING=ON -DCMAKE_INSTALL_PREFIX="/home/$USER/shogun-install" ..
+$ cmake -DCMAKE_INSTALL_PREFIX="/home/$USER/shogun-install" ..
 
 $ make -j5 all 
-$ make ARGS='--output-on-failure' -j5 test
 $ make install
 ```
 
@@ -53,29 +52,25 @@ $ cd "/home/$USER/share/shogun/examples/libshogun"
 $ chmod +x ./so_multiclass_BMRM && ./so_multiclass_BMRM
 ```
 
-## Enabling additional interfaces
+# You know what you're doing: More build options
 
-### Modular interfaces:
-* `-DPythonModular=ON`
-* `-DOctaveModular=ON`
-* `-DJavaModular=ON`
-* `-DPerlModular=ON`
-* `-DRubyModular=ON`
-* `-DCSharpModular=ON`
-* `-DRModular=ON`
-* `-DLuaModular=ON`
+## Enabling modular interfaces
+* `-DPythonModular=ON`, `-DOctaveModular=ON`, `-DJavaModular=ON`,
+* `-DPerlModular=ON`, `-DRubyModular=ON`, `-DCSharpModular=ON`,
+* `-DRModular=ON`, `-DLuaModular=ON`
 
-### Enabling additional static interfaces (deprecated)
-* `-DCmdLineStatic=ON`
-* `-DPythonStatic=ON`
-* `-DOctaveStatic=ON`
-* `-DMatlabStatic=ON`
-* `-DRStatic=ON`
+## Enabling static interfaces (legacy)
+* `-DCmdLineStatic=ON`, `-DPythonStatic=ON`, `-DOctaveStatic=ON`
+* `-DMatlabStatic=ON`, `-DRStatic=ON`
 
-## Misc build options
-
+## Handy cmake options
 * `-DCMAKE_BUILD_TYPE=Debug` or `-DCMAKE_BUILD_TYPE=Release`
-* `-DENABLE_TESTING=ON`or `-DENABLE_TESTING=ON`
+* `-DENABLE_TESTING=ON` or `-DENABLE_TESTING=OFF`
 * `-DCMAKE_INCLUDE_PATH=...`
 * `-DCMAKE_LIBRARY_PATH=...`
 
+# Got stuck? Found a bug? Need help?
+
+* Bug tracker: https://github.com/shogun-toolbox/shogun/issues
+* IRC chat: Channel #shogun at irc.freenode.net
+* Mailing list: shogun-list-subscribe@shogun-toolbox.org
