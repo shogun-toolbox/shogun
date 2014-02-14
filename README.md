@@ -4,6 +4,7 @@
 Develop branch build status:
 
 [![Build Status](https://travis-ci.org/shogun-toolbox/shogun.png?branch=develop)](https://travis-ci.org/shogun-toolbox/shogun)
+[![Coverage Status](https://coveralls.io/repos/shogun-toolbox/shogun/badge.png?branch=develop)](https://coveralls.io/r/shogun-toolbox/shogun?branch=develop)
 
 Buildbot: http://buildbot.shogun-toolbox.org/waterfall.
 

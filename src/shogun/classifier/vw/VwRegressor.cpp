@@ -38,7 +38,7 @@ CVwRegressor::~CVwRegressor()
 {
 	// TODO: the number of weight_vectors depends on num_threads
 	// this should be reimplemented using SGVector (for reference counting)
-	SG_FREE(weight_vectors);
+	release_weight_vectors(weight_vectors);
 	SG_UNREF(loss);
 	SG_UNREF(env);
 }
@@ -222,7 +222,7 @@ void CVwRegressor::load_regressor(char* file)
 
 	// Initialize the weight vector
 	if (weight_vectors)
-		SG_FREE(weight_vectors);
+		release_weight_vectors();
 	init(env);
 
 	vw_size_t local_ngram;
@@ -253,4 +253,11 @@ void CVwRegressor::load_regressor(char* file)
 			= weight_vectors[hash % num_threads][(hash*stride)/num_threads] + w;
 	}
 	source.close_file();
+}
+
+void CVwRegressor::release_weight_vectors()
+{
+	for (int i = 0; i < num_threads; i++)
+		SG_FREE(weight_vectors[i]);
+	SG_FREE(weight_vectors);
 }

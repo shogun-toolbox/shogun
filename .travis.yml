@@ -72,4 +72,4 @@ script:
   - ctest --output-on-failure -j 2
 after_success:
   - cd ..
-  - coveralls -e /usr/include -e build/GoogleMock -e build/NLopt -e build/Eigen3 -e build/JSON -e build/CMakeFiles -E '.*\.h' > /dev/null
+  - coveralls -e tests -e examples -e cmake -e benchmarks -e src/interfaces -e /usr/include -e build/GoogleMock -e build/NLopt -e build/Eigen3 -e build/JSON -e build/CMakeFiles -E '.*\.h' > /dev/null
