@@ -17,31 +17,38 @@ libraries or header files to compile shogun or its interfaces.
 
 ## Download sources
 
-The following commands will get the prepared shogun source archives.  If
-you choose to fetch "shogun-data" as well, approximately 250 MB of data
-will be downloaded.
+The following commands will get the prepared shogun source archives.  Note
+that some examples might depend on "shogun-data", which is approximately
+250 MB of data to be downloaded.  The additional data is not required for
+shogun itself, so you may skip downloading them.
 
 ```
 
+$ cd "$HOME"
 $ wget ftp://shogun-toolbox.org/shogun/releases/3.1/sources/shogun-3.1.1.tar.bz2
 $ tar xjf shogun-3.1.1.tar.bz2
 
 $ wget ftp://shogun-toolbox.org/shogun/data/shogun-data-0.7.tar.bz2
 $ shogun-data-0.7.tar.bz2
 
+$ cd shogun-3.1.1
 $ rm data/
 $ ln -s ../shogun-data-0.7 data
 ```
 
 ## Compile and install SHOGUN-TOOLBOX into home directory
 
+We assume that you want to install shogun in a subdirectory `shogun-install` of
+your user home.  Installing shogun to system-directories is possible as well,
+but may require root/sudo privileges.
+
 ```
 
-$ cd shogun-3.1.1
+$ cd "$HOME/shogun-3.1.1"
 
 $ mkdir build
 $ cd build
-$ cmake -DCMAKE_INSTALL_PREFIX="/home/$USER/shogun-install" ..
+$ cmake -DCMAKE_INSTALL_PREFIX="$HOME/shogun-install" ..
 
 $ make -j5 all
 $ make install
@@ -56,8 +63,8 @@ should work well:
 
 ```
 
-$ export LD_LIBRARY_PATH="/home/$USER/shogun-install/lib:$LD_LIBRARY_PATH"
-$ cd "/home/$USER/share/shogun/examples/libshogun"
+$ export LD_LIBRARY_PATH="$HOME/shogun-install/lib:$LD_LIBRARY_PATH"
+$ cd "$HOME/shogun-install/share/shogun/examples/libshogun"
 $ chmod +x ./so_multiclass_BMRM && ./so_multiclass_BMRM
 ```
 
@@ -79,11 +86,10 @@ those you know what they do.
 ## Handy cmake options
 * `-DCMAKE_BUILD_TYPE=Debug` or `-DCMAKE_BUILD_TYPE=Release`
 * `-DENABLE_TESTING=ON` or `-DENABLE_TESTING=OFF`
-* `-DCMAKE_INCLUDE_PATH=...`
-* `-DCMAKE_LIBRARY_PATH=...`
+* `-DCMAKE_INCLUDE_PATH=...`, `-DCMAKE_LIBRARY_PATH=...`
 
 # Got stuck? Found a bug? Need help?
 
 * Bug tracker: https://github.com/shogun-toolbox/shogun/issues
-* IRC chat: Channel #shogun at irc.freenode.net
-* Mailing list: shogun-list-subscribe@shogun-toolbox.org
+* Chat: Join IRC channel #shogun at irc.freenode.net
+* Mailing list: Send an empty message to shogun-list-subscribe@shogun-toolbox.org
