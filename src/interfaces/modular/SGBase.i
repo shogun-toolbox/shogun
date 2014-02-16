@@ -452,14 +452,21 @@ except ImportError:
     import copyreg as copy_reg
 def _sg_reconstructor(cls, base, state):
     try:
-        if not isinstance(cls, str) or not cls.startswith('modshogun.'):
-            return _py_orig_reconstructor(cls, base, state)
+        if isinstance(cls, str) and cls.startswith('modshogun.'):
+            import modshogun
+            return eval(cls+'()')
+        if isinstance(cls(), SGObject):
+            if base is object:
+                 obj = cls()
+             else:
+                 obj = base.__new__(cls, state)
+                 if base.__init__ != object.__init__:
+                     base.__init__(obj, state)
+             return obj
+
+        return _py_orig_reconstructor(cls, base, state)
     except:
         return _py_orig_reconstructor(cls, base, state)
-
-    import modshogun
-    return eval(cls+'()')
-
 
 def _sg_reduce_ex(self, proto):
     try:
