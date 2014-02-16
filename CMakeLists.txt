@@ -189,8 +189,9 @@ ENDIF()
 # clang with -std=c++11 and -stdlib=libc++ does not work
 # well with swig generated cxx hence disable c++11 for this case.
 
-# this has been only fixed in swig 3.0.0 or later.
-IF (NOT ((CYGWIN AND ENABLE_TESTING) OR (DARWIN AND COMPILE_MODULAR_INTERFACE AND SWIG_VERSION VERSION_LESS "3.0.0")))
+# this has been only fixed in swig 2.0.12 or later.
+IF (NOT ((CYGWIN AND ENABLE_TESTING) OR (DARWIN AND COMPILE_MODULAR_INTERFACE
+	AND SWIG_VERSION VERSION_LESS "2.0.12")))
 	INCLUDE(CheckCXX11Features)
 
 	IF(_HAS_CXX11_FLAG)
