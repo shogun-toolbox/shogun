@@ -29,10 +29,10 @@ $ wget ftp://shogun-toolbox.org/shogun/releases/3.1/sources/shogun-3.1.1.tar.bz2
 $ tar xjf shogun-3.1.1.tar.bz2
 
 $ wget ftp://shogun-toolbox.org/shogun/data/shogun-data-0.7.tar.bz2
-$ shogun-data-0.7.tar.bz2
+$ tar xjf shogun-data-0.7.tar.bz2
 
 $ cd shogun-3.1.1
-$ rm data/
+$ rm -rv data/
 $ ln -s ../shogun-data-0.7 data
 ```
 
