@@ -44,10 +44,6 @@ matrix:
   allow_failures:
     - compiler: clang
       env: CMAKE_OPTIONS="-DRModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON" EXTRA_PACKAGES="r-base-core swig2.0" CC=clang CXX=clang++
-    - compiler: clang
-      python: 3.3
-      language: python
-      env: CMAKE_OPTIONS="-DPythonModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON" EXTRA_PACKAGES="swig2.0" CC=clang CXX=clang++ PIP_ARGS=" -I --no-index --find-links=http://cache27diy-cpycloud.rhcloud.com/3.3/"
 virtualenv:
   system_site_packages: true
 before_install:
