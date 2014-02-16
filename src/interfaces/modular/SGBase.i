@@ -458,11 +458,11 @@ def _sg_reconstructor(cls, base, state):
         if isinstance(cls(), SGObject):
             if base is object:
                  obj = cls()
-             else:
-                 obj = base.__new__(cls, state)
-                 if base.__init__ != object.__init__:
-                     base.__init__(obj, state)
-             return obj
+            else:
+                obj = base.__new__(cls, state)
+                if base.__init__ != object.__init__:
+                    base.__init__(obj, state)
+            return obj
 
         return _py_orig_reconstructor(cls, base, state)
     except:
