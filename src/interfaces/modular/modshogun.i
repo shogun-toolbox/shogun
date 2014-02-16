@@ -12,9 +12,9 @@
 %enddef
 
 #if defined(USE_SWIG_DIRECTORS) && defined(SWIGPYTHON)
-%module(directors="1", docstring=DOCSTR) modshogun
+%module(directors="1", package="modshogun", docstring=DOCSTR) modshogun
 #else
-%module(docstring=DOCSTR) modshogun
+%module(docstring=DOCSTR, package="modshogun") modshogun
 #endif
 #undef DOCSTR
 
