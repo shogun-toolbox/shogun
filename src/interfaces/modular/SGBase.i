@@ -453,8 +453,14 @@ except ImportError:
 def _sg_reconstructor(cls, base, state):
     try:
         if isinstance(cls, str) and cls.startswith('modshogun.'):
-            import modshogun
-            return eval(cls+'()')
+            if base is object:
+                import modshogun
+                return eval(cls+'()')
+            else:
+                base.__new__(cls, state)
+                if base.__init__ != object.__init__:
+                    base.__init__(obj, state)
+            return obj
         if isinstance(cls(), SGObject):
             if base is object:
                  obj = cls()
@@ -478,8 +484,24 @@ def _sg_reduce_ex(self, proto):
     base = object
     state = None
     args = ('modshogun.' + self.get_name(), base, state)
-    getstate = self.__getstate__
-    return _sg_reconstructor, args
+
+
+    try:
+        getstate = self.__getstate__
+    except AttributeError:
+        if getattr(self, "__slots__", None):
+            raise TypeError("a class that defines __slots__ without "
+                            "defining __getstate__ cannot be pickled")
+        try:
+            dict = self.__dict__
+        except AttributeError:
+            dict = None
+    else:
+        dict = getstate()
+    if dict:
+        return _sg_reconstructor, args, dict
+    else:
+        return _sg_reconstructor, args
 
 _py_orig_reduce_ex=copy_reg._reduce_ex
 _py_orig_reconstructor=copy_reg._reconstructor
