@@ -452,19 +452,27 @@ except ImportError:
     import copyreg as copy_reg
 def _sg_reconstructor(cls, base, state):
     try:
-        if not isinstance(cls(), SGObject):
-            return _py_orig_reconstructor(cls, base, state)
+        if isinstance(cls, str) and cls.startswith('modshogun.'):
+            if base is object:
+                import modshogun
+                return eval(cls+'()')
+            else:
+                base.__new__(cls, state)
+                if base.__init__ != object.__init__:
+                    base.__init__(obj, state)
+            return obj
+        if isinstance(cls(), SGObject):
+            if base is object:
+                 obj = cls()
+            else:
+                obj = base.__new__(cls, state)
+                if base.__init__ != object.__init__:
+                    base.__init__(obj, state)
+            return obj
+
+        return _py_orig_reconstructor(cls, base, state)
     except:
         return _py_orig_reconstructor(cls, base, state)
-
-    if base is object:
-        obj = cls() #object.__new__(cls)
-    else:
-        obj = base.__new__(cls, state)
-        if base.__init__ != object.__init__:
-            base.__init__(obj, state)
-    return obj
-
 
 def _sg_reduce_ex(self, proto):
     try:
@@ -473,14 +481,11 @@ def _sg_reduce_ex(self, proto):
     except:
         return _py_orig_reduce_ex(self, proto)
 
-    base = object # not really reachable
-    if base is object:
-        state = None
-    else:
-        if base is self.__class__:
-            raise TypeError("can't pickle %s objects" % base.__name__)
-        state = base(self)
-    args = (self.__class__, base, state)
+    base = object
+    state = None
+    args = ('modshogun.' + self.get_name(), base, state)
+
+
     try:
         getstate = self.__getstate__
     except AttributeError:
@@ -504,5 +509,6 @@ _py_orig_reconstructor=copy_reg._reconstructor
 copy_reg._reduce_ex=_sg_reduce_ex
 copy_reg._reconstructor=_sg_reconstructor
 %}
+
 
 #endif /* SWIGPYTHON  */

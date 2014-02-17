@@ -3,7 +3,7 @@ parameter_list=[[10,0.3,2, 1.0, 0.1]]
 
 def check_status(status,suffix):
 	# silent...
-	assert(status, "ERROR reading/writing status:%s/suffic:%s\n" % (status,suffix))
+	assert status, "ERROR reading/writing status:%s/suffic:%s\n" % (status,suffix)
 
 def serialization_complex_example (num=5, dist=1, dim=10, C=2.0, width=10):
 	import os
@@ -12,11 +12,8 @@ def serialization_complex_example (num=5, dist=1, dim=10, C=2.0, width=10):
 	from modshogun import RealFeatures, MulticlassLabels
 	from modshogun import GMNPSVM
 	from modshogun import GaussianKernel
-	try:
-		from modshogun import SerializableHdf5File,SerializableAsciiFile, \
-				SerializableJsonFile,SerializableXmlFile,MSG_DEBUG
-	except ImportError:
-		return
+	from modshogun import SerializableHdf5File,SerializableAsciiFile, \
+			SerializableJsonFile,SerializableXmlFile,MSG_DEBUG
 	from modshogun import NormOne, LogPlusOne
 
 	seed(17)
@@ -43,54 +40,54 @@ def serialization_complex_example (num=5, dist=1, dim=10, C=2.0, width=10):
 
 	#svm.print_serializable()
 
-	fstream = SerializableHdf5File("blaah.h5", "w")
+	fstream = SerializableHdf5File("tmp/blaah.h5", "w")
 	status = svm.save_serializable(fstream)
 	check_status(status,'h5')
 
-	fstream = SerializableAsciiFile("blaah.asc", "w")
+	fstream = SerializableAsciiFile("tmp/blaah.asc", "w")
 	status = svm.save_serializable(fstream)
 	check_status(status,'asc')
 
-	fstream = SerializableJsonFile("blaah.json", "w")
+	fstream = SerializableJsonFile("tmp/blaah.json", "w")
 	status = svm.save_serializable(fstream)
 	check_status(status,'json')
 
-	fstream = SerializableXmlFile("blaah.xml", "w")
+	fstream = SerializableXmlFile("tmp/blaah.xml", "w")
 	status = svm.save_serializable(fstream)
 	check_status(status,'xml')
 
-	fstream = SerializableHdf5File("blaah.h5", "r")
+	fstream = SerializableHdf5File("tmp/blaah.h5", "r")
 	new_svm=GMNPSVM()
 	status = new_svm.load_serializable(fstream)
 	check_status(status,'h5')
 	new_svm.train()
 	bias_h5 = new_svm.get_svm(0).get_bias()
 
-	fstream = SerializableAsciiFile("blaah.asc", "r")
+	fstream = SerializableAsciiFile("tmp/blaah.asc", "r")
 	new_svm=GMNPSVM()
 	status = new_svm.load_serializable(fstream)
 	check_status(status,'asc')
 	new_svm.train()
 	bias_asc = new_svm.get_svm(0).get_bias()
 
-	fstream = SerializableJsonFile("blaah.json", "r")
+	fstream = SerializableJsonFile("tmp/blaah.json", "r")
 	new_svm=GMNPSVM()
 	status = new_svm.load_serializable(fstream)
 	check_status(status,'json')
 	new_svm.train()
 	bias_json = new_svm.get_svm(0).get_bias()
 
-	fstream = SerializableXmlFile("blaah.xml", "r")
+	fstream = SerializableXmlFile("tmp/blaah.xml", "r")
 	new_svm=GMNPSVM()
 	status = new_svm.load_serializable(fstream)
 	check_status(status,'xml')
 	new_svm.train()
 	bias_xml = new_svm.get_svm(0).get_bias()
 
-	os.unlink("blaah.h5")
-	os.unlink("blaah.asc")
-	os.unlink("blaah.json")
-	os.unlink("blaah.xml")
+	os.unlink("tmp/blaah.h5")
+	os.unlink("tmp/blaah.asc")
+	os.unlink("tmp/blaah.json")
+	os.unlink("tmp/blaah.xml")
 	return svm,new_svm, bias_ref, bias_h5, bias_asc, bias_json, bias_xml
 
 

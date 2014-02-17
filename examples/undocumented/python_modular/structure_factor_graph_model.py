@@ -30,31 +30,31 @@ def gen_data(ftype, num_samples, show_data = False):
 	samples = FactorGraphFeatures(num_samples)
 	labels = FactorGraphLabels(num_samples)
 
-	for i in xrange(num_samples):
+	for i in range(num_samples):
 		vc = np.array([2,2,2], np.int32)
 		fg = FactorGraph(vc)
 
-		data1 = np.array([2.0*Math.random(0.0,1.0)-1.0 for i in xrange(2)])
+		data1 = np.array([2.0*Math.random(0.0,1.0)-1.0 for i in range(2)])
 		vind1 = np.array([0,1], np.int32)
 		fac1 = Factor(ftype[0], vind1, data1)
 		fg.add_factor(fac1)
 
-		data2 = np.array([2.0*Math.random(0.0,1.0)-1.0 for i in xrange(2)])
+		data2 = np.array([2.0*Math.random(0.0,1.0)-1.0 for i in range(2)])
 		vind2 = np.array([1,2], np.int32)
 		fac2 = Factor(ftype[0], vind2, data2)
 		fg.add_factor(fac2)
 
-		data3 = np.array([2.0*Math.random(0.0,1.0)-1.0 for i in xrange(2)])
+		data3 = np.array([2.0*Math.random(0.0,1.0)-1.0 for i in range(2)])
 		vind3 = np.array([0], np.int32)
 		fac3 = Factor(ftype[1], vind3, data3)
 		fg.add_factor(fac3)
 
-		data4 = np.array([2.0*Math.random(0.0,1.0)-1.0 for i in xrange(2)])
+		data4 = np.array([2.0*Math.random(0.0,1.0)-1.0 for i in range(2)])
 		vind4 = np.array([1], np.int32)
 		fac4 = Factor(ftype[1], vind4, data4)
 		fg.add_factor(fac4)
 
-		data5 = np.array([2.0*Math.random(0.0,1.0)-1.0 for i in xrange(2)])
+		data5 = np.array([2.0*Math.random(0.0,1.0)-1.0 for i in range(2)])
 		vind5 = np.array([2], np.int32)
 		fac5 = Factor(ftype[1], vind5, data5)
 		fg.add_factor(fac5)
@@ -81,7 +81,7 @@ def gen_data(ftype, num_samples, show_data = False):
 
 		if show_data:
 			state = fg_obs.get_data()
-			print state
+			print(state)
 
 	return samples, labels
 
@@ -125,7 +125,7 @@ def structure_factor_graph_model(tr_samples = samples, tr_labels = labels, w = w
 	lbs_bmrm = bmrm.apply()
 	acc_loss = 0.0
 	ave_loss = 0.0
-	for i in xrange(num_samples):
+	for i in range(num_samples):
 		y_pred = lbs_bmrm.get_label(i)
 		y_truth = tr_labels.get_label(i)
 		acc_loss = acc_loss + model.delta_loss(y_truth, y_pred)

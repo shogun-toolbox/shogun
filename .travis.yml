@@ -13,6 +13,8 @@ notifications:
       - "it's %{author}'s turn to pay the next round of drinks for the massacre he caused in %{repository}: %{build_url}"
 matrix:
   include:
+    - compiler: gcc
+      env: CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=Debug -DENABLE_COVERAGE=ON" CUSTOM_PKG="sudo pip install -q cpp-coveralls" COVERALLS=1
     - compiler: clang
       python: 2.7
       language: python
@@ -20,7 +22,7 @@ matrix:
     - compiler: clang
       python: 3.3
       language: python
-      env: CMAKE_OPTIONS="-DPythonModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON" EXTRA_PACKAGES="swig2.0" CC=clang CXX=clang++ PIP_ARGS=" -I --use-wheel --find-links=http://cache27diy-cpycloud.rhcloud.com/3.3/"
+      env: CMAKE_OPTIONS="-DPythonModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON" EXTRA_PACKAGES="swig2.0" CC=clang CXX=clang++ PIP_ARGS=" -I --no-index --find-links=http://cache27diy-cpycloud.rhcloud.com/3.3/"
     - compiler: clang
       rvm: 1.8.7
       language: ruby
@@ -42,21 +44,15 @@ matrix:
   allow_failures:
     - compiler: clang
       env: CMAKE_OPTIONS="-DRModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON" EXTRA_PACKAGES="r-base-core swig2.0" CC=clang CXX=clang++
-    - compiler: clang
-      python: 3.3
-      language: python
-      env: CMAKE_OPTIONS="-DPythonModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON" EXTRA_PACKAGES="swig2.0" CC=clang CXX=clang++ PIP_ARGS=" -I --use-wheel --find-links=http://cache27diy-cpycloud.rhcloud.com/3.3/"
-    - language: objective-c
-      env: OSX=1
 virtualenv:
   system_site_packages: true
 before_install:
  - if [ -z $OSX ] ; then sudo apt-add-repository -y ppa:kubuntu-ppa/backports ; sudo apt-get update -qq ; fi
  - if [ -z $OSX ] ; then sudo apt-add-repository -y ppa:dr-graef/octave-3.6.precise ; sudo apt-get update -qq ; else brew update ; fi
- - if [ -z $OSX ] ; then sudo apt-get install -qq libbz2-dev cdbs libarpack2-dev libatlas-base-dev libblas-dev libglpk-dev libhdf5-serial-dev zlib1g-dev libxml2-dev libreadline6-dev libreadline-dev libsnappy-dev liblzo2-dev liblzma-dev liblapack-dev gdb cmake python-jinja2 $EXTRA_PACKAGES ; else brew install cmake ; fi
+ - if [ -z $OSX ] ; then sudo apt-get install -qq libbz2-dev cdbs libarpack2-dev libatlas-base-dev libblas-dev libglpk-dev libhdf5-serial-dev zlib1g-dev libxml2-dev libreadline6-dev libreadline-dev libsnappy-dev liblzo2-dev liblzma-dev liblapack-dev gdb cmake python-jinja2 $EXTRA_PACKAGES ; else brew list cmake || brew install cmake ; fi
  - if [ $OSX ] ; then curl -O https://raw.github.com/rudix-mac/package-manager/master/rudix.py && sudo python rudix.py install rudix && sudo rudix install jinja2 ; fi
  - $CUSTOM_PKG
- - if [[ $TRAVIS_PYTHON_VERSION == '3.3' ]] ; then pip install -I git+https://github.com/pypa/pip@42102e9deaea99db08b681d06906c2945f6f95e2#egg=pip ; fi
+ - if [[ $TRAVIS_PYTHON_VERSION == '3.3' ]] ; then pip install -I git+https://github.com/pypa/pip@1.5#egg=pip ; fi
  - if [[ $TRAVIS_PYTHON_VERSION == '3.3' ]] ; then pip install -I -U setuptools ; fi
  - if [[ $TRAVIS_PYTHON_VERSION == '3.3' ]] ; then pip install wheel ; fi
  - if [[ $TRAVIS_PYTHON_VERSION == '3.3' ]] ; then pip install $PIP_ARGS numpy ; fi
@@ -67,6 +63,9 @@ before_script:
   - cd build
 script:
   - cmake -DENABLE_TESTING=ON -DBUNDLE_EIGEN=ON -DBUNDLE_JSON=ON -DBUNDLE_NLOPT=ON $CMAKE_OPTIONS ..
-  - if [ -z $CMAKE_OPTIONS ] ; then make -j 2 ; else make -j 4 ; fi
+  - if [ -z "$CMAKE_OPTIONS" -o -n "$COVERALLS" ] ; then make -j 2 ; else make -j 4 ; fi
   - sudo make install
   - ctest --output-on-failure -j 2
+after_success:
+  - cd ..
+  - coveralls -e tests -e examples -e cmake -e benchmarks -e src/interfaces -e /usr/include -e build/GoogleMock -e build/NLopt -e build/Eigen3 -e build/JSON -e build/CMakeFiles -E '.*\.h' > /dev/null

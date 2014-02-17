@@ -164,3 +164,51 @@ TEST(CMath, log_mean_exp)
 	values.range_fill();
 	EXPECT_NEAR(CMath::log_mean_exp(values), 1.3089936757762706, 1e-15);
 }
+
+TEST(CMath, strtofloat)
+{
+	float32_t float_result = 0;
+	EXPECT_TRUE(CMath::strtof("nan", &float_result));
+	EXPECT_TRUE(CMath::is_nan(float_result));
+
+	EXPECT_TRUE(CMath::strtof("inf", &float_result));
+	EXPECT_TRUE(CMath::is_infinity(float_result));
+
+	EXPECT_TRUE(CMath::strtof("-inf", &float_result));
+	EXPECT_DOUBLE_EQ(-CMath::INFTY, float_result);
+
+	EXPECT_TRUE(CMath::strtof("1.2345", &float_result));
+	EXPECT_FLOAT_EQ(1.2345, float_result);
+}
+
+TEST(CMath, strtodouble)
+{
+	float64_t double_result = 0;
+	EXPECT_TRUE(CMath::strtod("nan", &double_result));
+	EXPECT_TRUE(CMath::is_nan(double_result));
+
+	EXPECT_TRUE(CMath::strtod("inf", &double_result));
+	EXPECT_TRUE(CMath::is_infinity(double_result));
+
+	EXPECT_TRUE(CMath::strtod("-inf", &double_result));
+	EXPECT_DOUBLE_EQ(-CMath::INFTY, double_result);
+
+	EXPECT_TRUE(CMath::strtod("1.234567890123", &double_result));
+	EXPECT_DOUBLE_EQ(1.234567890123, double_result);
+}
+
+TEST(CMath, strtolongdouble)
+{
+	floatmax_t long_double_result = 0;
+	EXPECT_TRUE(CMath::strtold("nan", &long_double_result));
+	EXPECT_TRUE(CMath::is_nan(long_double_result));
+
+	EXPECT_TRUE(CMath::strtold("inf", &long_double_result));
+	EXPECT_TRUE(CMath::is_infinity(long_double_result));
+
+	EXPECT_TRUE(CMath::strtold("-inf", &long_double_result));
+	EXPECT_DOUBLE_EQ(-CMath::INFTY, long_double_result);
+
+	EXPECT_TRUE(CMath::strtold("1.234567890123", &long_double_result));
+	EXPECT_DOUBLE_EQ(1.234567890123, long_double_result);
+}

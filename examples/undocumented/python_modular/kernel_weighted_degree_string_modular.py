@@ -29,8 +29,8 @@ def kernel_weighted_degree_string_modular (fm_train_dna=traindat,fm_test_dna=tes
 
     #this is how to serializate the kernel
 	#import pickle
-	#pickle.dump(kernel, file('kernel_obj.dump','w'), protocol=2)
-	#k=pickle.load(file('kernel_obj.dump','r'))
+	#pickle.dump(kernel, file('tmp/kernel_obj.dump','w'), protocol=2)
+	#k=pickle.load(file('tmp/kernel_obj.dump','r'))
 
 
 	return km_train, km_test, kernel

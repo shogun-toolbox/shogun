@@ -278,7 +278,6 @@ void CInferenceMethod::check_members() const
 
 void CInferenceMethod::update_train_kernel()
 {
-	m_kernel->cleanup();
 	m_kernel->init(m_features, m_features);
 	m_ktrtr=m_kernel->get_kernel_matrix();
 }

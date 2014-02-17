@@ -66,11 +66,6 @@
 #endif
 #endif //_WIN32
 
-#ifndef NAN
-#include <stdlib.h>
-#define NAN (strtod("NAN",NULL))
-#endif
-
 /* Size of RNG seed */
 #define RNG_SEED_SIZE 256
 
@@ -506,6 +501,10 @@ class CMath : public CSGObject
 
 			return area;
 		}
+
+		static bool strtof(const char* str, float32_t* float_result);
+		static bool strtod(const char* str, float64_t* double_result);
+		static bool strtold(const char* str, floatmax_t* long_double_result);
 
 		static inline int64_t factorial(int32_t n)
 		{
@@ -1259,7 +1258,7 @@ class CMath : public CSGObject
 			if (!CMath::is_finite(q))
 			{
 				SG_SWARNING("INVALID second operand to logsum(%f,%f) expect undefined results\n", p, q)
-				return NAN;
+				return NOT_A_NUMBER;
 			}
 			diff = p - q;
 			if (diff > 0)
@@ -1325,6 +1324,8 @@ class CMath : public CSGObject
 	public:
 				/**@name constants*/
 				//@{
+				/// not a number
+				static const float64_t NOT_A_NUMBER;
 				/// infinity
 				static const float64_t INFTY;
 				static const float64_t ALMOST_INFTY;

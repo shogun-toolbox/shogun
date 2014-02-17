@@ -59,7 +59,7 @@ CEPInferenceMethod::~CEPInferenceMethod()
 
 void CEPInferenceMethod::init()
 {
-	m_max_sweep=8;
+	m_max_sweep=15;
 	m_min_sweep=2;
 	m_tol=1e-4;
 }
@@ -243,8 +243,12 @@ void CEPInferenceMethod::update()
 		update_negative_ml();
 	}
 
-	if (sweep==m_max_sweep)
-		SG_WARNING("Maximum number of sweeps reached")
+	if (sweep==m_max_sweep && CMath::abs(m_nlZ-nlZ_old)>m_tol)
+	{
+		SG_ERROR("Maximum number (%d) of sweeps reached, but tolerance (%f) was "
+				"not yet reached. You can manually set maximum number of sweeps "
+				"or tolerance to fix this problem.\n", m_max_sweep, m_tol);
+	}
 
 	// update vector alpha
 	update_alpha();

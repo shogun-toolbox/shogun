@@ -7,6 +7,10 @@
  #include <shogun/classifier/svm/LibLinear.h>
  #include <shogun/classifier/svm/LibSVM.h>
  #include <shogun/classifier/svm/LibSVMOneClass.h>
+#ifdef USE_SVMLIGHT
+ #include <shogun/classifier/svm/SVMLight.h>
+ #include <shogun/classifier/svm/SVMLightOneClass.h>
+#endif //USE_SVMLIGHT
  #include <shogun/machine/LinearMachine.h>
  #include <shogun/machine/OnlineLinearMachine.h>
  #include <shogun/classifier/LPBoost.h>
@@ -29,11 +33,6 @@
  #include <shogun/classifier/mkl/MKLOneClass.h>
  #include <shogun/classifier/vw/VowpalWabbit.h>
  #include <shogun/classifier/svm/NewtonSVM.h>
-
-#ifdef USE_SVMLIGHT
- #include <shogun/classifier/svm/SVMLight.h>
- #include <shogun/classifier/svm/SVMLightOneClass.h>
-#endif //USE_SVMLIGHT
  #include <shogun/classifier/FeatureBlockLogisticRegression.h>
  #include <shogun/machine/DirectorLinearMachine.h>
  #include <shogun/machine/DirectorKernelMachine.h>

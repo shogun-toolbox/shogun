@@ -1,3 +1,23 @@
+2014-02-17 Soeren Sonnenburg <sonne@debian.org>
+
+	* SHOGUN Release version 3.2.0 (libshogun 16.0, data 0.8, parameter 1)
+	* This release also contains several cleanups and bugfixes:
+	* Features:
+		- Fully support python3 now
+		- Add mini-batch k-means [Parijat Mazumdar]
+		- Add k-means++ [Parijat Mazumdar]
+		- Add sub-sequence string kernel [lambday]
+	* Bugfixes:
+		- Compile fixes for upcoming swig3.0
+		- Speedup for gaussian process' apply()
+		- Improve unit / integration test checks
+		- libbmrm uninitialized memory reads
+		- libocas uninitialized memory reads
+		- Octave 3.8 compile fixes [Orion Poplawski]
+		- Fix java modular compile error [Bjoern Esser]
+	* Cleanup and API Changes:
+		- None
+
 2014-01-06 Soeren Sonnenburg <sonne@debian.org>
 
 	* SHOGUN Release version 3.1.1 (libshogun 15.1, data 0.7, parameter 1)

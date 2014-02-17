@@ -65,7 +65,7 @@ ELSEIF(EXISTS "${ROOT_DIR}/NEWS")
 		SET(VERSION_SUB "0${VERSION_SUB}")
 	ENDIF()
 	SET(REVISION ${VERSION_MAJOR}${VERSION_MINOR}${VERSION_SUB})
-	EXECUTE_PROCESS(COMMAND ${PYTHON_EXECUTABLE} -c "import os.path,time;print time.strftime('%Y-%m-%d %H:%M', time.gmtime(os.path.getmtime('${ROOT_DIR}/NEWS')))"
+	EXECUTE_PROCESS(COMMAND ${PYTHON_EXECUTABLE} -c "import os.path,time;print (time.strftime('%Y-%m-%d %H:%M', time.gmtime(os.path.getmtime('${ROOT_DIR}/NEWS'))))"
 		OUTPUT_VARIABLE DATEINFO
 		OUTPUT_STRIP_TRAILING_WHITESPACE
 	)

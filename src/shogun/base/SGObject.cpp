@@ -1195,7 +1195,7 @@ bool CSGObject::equals(CSGObject* other, float64_t accuracy)
 	/* a crude type check based on the get_name */
 	if (strcmp(other->get_name(), get_name()))
 	{
-		SG_DEBUG("leaving %s::equals(): name of other object differs\n", get_name());
+		SG_INFO("leaving %s::equals(): name of other object differs\n", get_name());
 		return false;
 	}
 
@@ -1203,7 +1203,7 @@ bool CSGObject::equals(CSGObject* other, float64_t accuracy)
 	 * Will assume that parameters are in same order with same name from here */
 	if (m_parameters->get_num_parameters()!=other->m_parameters->get_num_parameters())
 	{
-		SG_DEBUG("leaving %s::equals(): number of parameters of other object "
+		SG_INFO("leaving %s::equals(): number of parameters of other object "
 				"differs\n", get_name());
 		return false;
 	}
@@ -1258,7 +1258,7 @@ bool CSGObject::equals(CSGObject* other, float64_t accuracy)
 		/* use equals method of TParameter from here */
 		if (!this_param->equals(other_param, accuracy))
 		{
-			SG_DEBUG("leaving %s::equals(): parameters at position %d with name"
+			SG_INFO("leaving %s::equals(): parameters at position %d with name"
 					" \"%s\" differs from other object parameter with name "
 					"\"%s\"\n",
 					get_name(), i, this_param->m_name, other_param->m_name);

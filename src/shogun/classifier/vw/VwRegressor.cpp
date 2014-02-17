@@ -80,6 +80,7 @@ void CVwRegressor::init(CVwEnvironment* env_to_use)
 	}
 }
 
+// TODO: remove this, as we have serialization FW
 void CVwRegressor::dump_regressor(char* reg_name, bool as_text)
 {
 	CIOBuffer io_temp;
@@ -167,6 +168,7 @@ void CVwRegressor::dump_regressor(char* reg_name, bool as_text)
 	io_temp.close_file();
 }
 
+// TODO: remove this, as we have serialization FW
 void CVwRegressor::load_regressor(char* file)
 {
 	CIOBuffer source;

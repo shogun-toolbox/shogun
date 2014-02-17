@@ -111,7 +111,7 @@ SGVector<float64_t> CGaussianDistribution::log_pdf_multiple(SGMatrix<float64_t> 
 {
 	REQUIRE(samples.num_cols>0, "Number of samples must be positive, but is %d\n",
 			samples.num_cols);
-	REQUIRE(samples.num_rows=m_dimension, "Sample dimension (%d) does not match"
+	REQUIRE(samples.num_rows==m_dimension, "Sample dimension (%d) does not match"
 			"Gaussian dimension (%d)\n", samples.num_rows, m_dimension);
 
 	/* for easier to read code */

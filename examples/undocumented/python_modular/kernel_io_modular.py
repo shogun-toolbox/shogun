@@ -12,20 +12,20 @@ def kernel_io_modular (train_fname=traindat,test_fname=testdat,width=1.9):
 
 	kernel=GaussianKernel(feats_train, feats_train, width)
 	km_train=kernel.get_kernel_matrix()
-	f=CSVFile("gaussian_train.csv","w")
+	f=CSVFile("tmp/gaussian_train.csv","w")
 	kernel.save(f)
 	del f
 
 	kernel.init(feats_train, feats_test)
 	km_test=kernel.get_kernel_matrix()
-	f=CSVFile("gaussian_test.csv","w")
+	f=CSVFile("tmp/gaussian_test.csv","w")
 	kernel.save(f)
 	del f
 
 	#clean up
 	import os
-	os.unlink("gaussian_test.csv")
-	os.unlink("gaussian_train.csv")
+	os.unlink("tmp/gaussian_test.csv")
+	os.unlink("tmp/gaussian_train.csv")
 
 	return km_train, km_test, kernel
 

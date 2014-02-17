@@ -5,7 +5,7 @@ import sys
 import pickle
 
 example_dir = '../../../examples/undocumented/python_modular'
-test_dir = '../../../tests/integration/tests'
+test_dir = '../../../tests/integration/data/python%d-tests' % sys.version_info[0]
 blacklist = ("__init__.py",
 		"classifier_libsvm_minimal_modular.py",
 		"classifier_multiclassocas_modular.py",
@@ -20,26 +20,28 @@ blacklist = ("__init__.py",
 		"evaluation_director_contingencytableevaluation_modular.py",
 		"distance_director_euclidean_modular.py",
 		"classifier_multiclass_ecoc_random.py",
-#the tests below all fail on travis but work fine on our buildbot
-		"classifier_lda_modular.py",
-		"classifier_liblinear_modular.py",
-		"classifier_svmlight_batch_linadd_modular.py",
-		"converter_tdistributedstochasticneighborembedding_modular.py",
-		"distance_mahalanobis_modular.py",
-		"mathematics_sparseinversecovariance_modular.py",
-		"preprocessor_dimensionreductionpreprocessor_modular.py",
-		"preprocessor_kernelpca_modular.py",
-		"preprocessor_pca_modular.py",
-		"regression_kernel_ridge_modular.py",
-		"regression_least_squares_modular.py",
-		"regression_linear_ridge_modular.py",
-		"regression_svrlight_modular.py",
 		"statistics_hsic.py",
-		"features_dense_protocols_modular.py",
-		"features_dense_zero_copy_modular.py",
 		"transfer_multitask_clustered_logistic_regression.py",
-		"transfer_multitask_l12_logistic_regression.py",
-		"transfer_multitask_trace_logistic_regression.py",
+		"mathematics_logdet.py",
+		"classifier_svmlight_batch_linadd_modular.py",
+		"preprocessor_randomfouriergausspreproc_modular.py",
+#the tests below all fail on travis but work fine on our buildbot
+#		"classifier_lda_modular.py",
+#		"classifier_liblinear_modular.py",
+#		"converter_tdistributedstochasticneighborembedding_modular.py",
+#		"distance_mahalanobis_modular.py",
+#		"mathematics_sparseinversecovariance_modular.py",
+#		"preprocessor_dimensionreductionpreprocessor_modular.py",
+#		"preprocessor_kernelpca_modular.py",
+#		"preprocessor_pca_modular.py",
+#		"regression_kernel_ridge_modular.py",
+#		"regression_least_squares_modular.py",
+#		"regression_linear_ridge_modular.py",
+#		"regression_svrlight_modular.py",
+#		"features_dense_protocols_modular.py",
+#		"features_dense_zero_copy_modular.py",
+#		"transfer_multitask_l12_logistic_regression.py",
+#		"transfer_multitask_trace_logistic_regression.py",
 		)
 
 def get_fname(mod_name, i):
@@ -90,12 +92,12 @@ def generator(tests):
 		fname = ""
 
 		print("%-60s" % mod_name)
-		#print "%+60s" % "...",
+		#print("%+60s" % "...")
 		try:
 			for i in range(len(mod.parameter_list)):
 				fname = get_fname(mod_name, i)
 				a = run_test(mod, mod_name, i)
-				pickle.dump(a,open(fname, "w"))
+				pickle.dump(a,open(fname, "wb"),0)
 			print("OK")
 		except Exception as e:
 			print("ERROR generating '%s' using '%s'" % (fname,t))

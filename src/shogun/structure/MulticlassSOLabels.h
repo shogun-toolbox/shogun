@@ -20,6 +20,7 @@
 namespace shogun
 {
 
+class CStructuredLabels;
 class CMulticlassSOLabels;
 
 /** @brief Class CRealNumber to be used in the application of Structured
@@ -70,6 +71,10 @@ class CMulticlassSOLabels : public CStructuredLabels
 		/** default constructor */
 		CMulticlassSOLabels();
 
+		/** create label vector of given size
+		 *
+		 * @param num_labels size of label vector
+		 */
 		CMulticlassSOLabels(int32_t num_labels);
 
 		/** constructor

@@ -194,7 +194,10 @@ def extract_classes(HEADERS, template, blacklist, supports_complex):
 	"""
 	classes=list()
 	for fname in HEADERS:
-		lines=open(fname).readlines()
+		try:
+			lines=open(fname).readlines()
+		except: # python3 workaround
+			lines=open(fname, encoding='utf-8', errors='ignore').readlines()
 		line_nr=0
 		while line_nr<len(lines):
 			line=lines[line_nr]
