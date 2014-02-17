@@ -10,6 +10,7 @@ Buildbot: http://buildbot.shogun-toolbox.org/waterfall.
 
 Quick links to this file:
 
+* [Quickstart](doc/md/QUICKSTART.md)
 * [Introduction](#introduction)
 * [Interfaces](#interfaces)
 * [Platforms](#platforms)
