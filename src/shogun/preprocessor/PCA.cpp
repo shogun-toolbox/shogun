@@ -20,8 +20,10 @@
 #include <shogun/preprocessor/DensePreprocessor.h>
 #include <shogun/features/Features.h>
 #include <shogun/io/SGIO.h>
+#include <shogun/mathematics/eigen3.h>
 
 using namespace shogun;
+using namespace Eigen;
 
 CPCA::CPCA(bool do_whitening_, EPCAMode mode_, float64_t thresh_)
 : CDimensionReductionPreprocessor(), num_dim(0), m_initialized(false),
@@ -175,6 +177,7 @@ void CPCA::cleanup()
 	m_transformation_matrix=SGMatrix<float64_t>();
 }
 
+#ifdef HAVE_EIGEN3
 SGMatrix<float64_t> CPCA::apply_to_feature_matrix(CFeatures* features)
 {
 	ASSERT(m_initialized)
@@ -183,40 +186,31 @@ SGMatrix<float64_t> CPCA::apply_to_feature_matrix(CFeatures* features)
 	int32_t num_features = m.num_rows;
 	SG_INFO("get Feature matrix: %ix%i\n", num_vectors, num_features)
 
+	MatrixXd final_feature_matrix;
+	
 	if (m.matrix)
 	{
 		SG_INFO("Preprocessing feature matrix\n")
-		float64_t* res = SG_MALLOC(float64_t, num_dim);
-		float64_t* sub_mean = SG_MALLOC(float64_t, num_features);
+		Map<MatrixXd> feature_matrix(m.matrix, num_features, num_vectors);
+		VectorXd data_mean = feature_matrix.rowwise().sum()/(float64_t) num_vectors;
+		MatrixXd feature_matrix_centered = feature_matrix.colwise()-data_mean;
 
-		for (int32_t vec=0; vec<num_vectors; vec++)
-		{
-			int32_t i;
-
-			for (i=0; i<num_features; i++)
-				sub_mean[i] = m.matrix[num_features*vec+i] - m_mean_vector.vector[i];
-
-			cblas_dgemv(CblasColMajor,CblasNoTrans,
-			            num_dim,num_features,
-			            1.0,m_transformation_matrix.matrix,num_dim,
-			            sub_mean,1,
-			            0.0,res,1);
-
-			float64_t* m_transformed = &m.matrix[num_dim*vec];
-
-			for (i=0; i<num_dim; i++)
-				m_transformed[i] = res[i];
-		}
-		SG_FREE(res);
-		SG_FREE(sub_mean);
-
-		((CDenseFeatures<float64_t>*) features)->set_num_features(num_dim);
-		((CDenseFeatures<float64_t>*) features)->get_feature_matrix(num_features, num_vectors);
-		SG_INFO("new Feature matrix: %ix%i\n", num_vectors, num_features)
+		SG_INFO("Transforming feature matrix\n")
+		Map<MatrixXd> transform_matrix(m_transformation_matrix.matrix, 
+			m_transformation_matrix.num_rows, m_transformation_matrix.num_cols);
+		final_feature_matrix = transform_matrix.transpose()*feature_matrix_centered;
 	}
+	
+	SGMatrix<float64_t> result_matrix = SGMatrix<float64_t>(num_dim, num_vectors);
+	for (int32_t c=0; c<num_vectors; c++)
+	{
+		for (int32_t r=0; r<num_dim; r++)
+			result_matrix.matrix[c*num_dim+r] = final_feature_matrix(r,c); 
+	}  
 
-	return m;
+	return result_matrix;
 }
+#endif //HAVE_EIGEN3
 
 SGVector<float64_t> CPCA::apply_to_feature_vector(SGVector<float64_t> vector)
 {
