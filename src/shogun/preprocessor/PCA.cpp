@@ -200,7 +200,8 @@ SGMatrix<float64_t> CPCA::apply_to_feature_matrix(CFeatures* features)
 			m_transformation_matrix.num_rows, m_transformation_matrix.num_cols);
 		final_feature_matrix = transform_matrix.transpose()*feature_matrix_centered;
 	}
-	
+
+	SG_INFO("Copying eigen matrix to shogun matrix\n")	
 	SGMatrix<float64_t> result_matrix = SGMatrix<float64_t>(num_dim, num_vectors);
 	for (int32_t c=0; c<num_vectors; c++)
 	{
