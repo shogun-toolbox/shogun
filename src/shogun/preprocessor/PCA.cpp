@@ -186,8 +186,9 @@ SGMatrix<float64_t> CPCA::apply_to_feature_matrix(CFeatures* features)
 	int32_t num_features = m.num_rows;
 	SG_INFO("get Feature matrix: %ix%i\n", num_vectors, num_features)
 
-	MatrixXd final_feature_matrix;
-	
+	SGMatrix<float64_t> result_matrix = SGMatrix<float64_t>(num_dim, num_vectors);
+	Map<MatrixXd> final_feature_matrix(result_matrix.matrix, num_dim, num_vectors);
+
 	if (m.matrix)
 	{
 		SG_INFO("Preprocessing feature matrix\n")
@@ -200,15 +201,7 @@ SGMatrix<float64_t> CPCA::apply_to_feature_matrix(CFeatures* features)
 			m_transformation_matrix.num_rows, m_transformation_matrix.num_cols);
 		final_feature_matrix = transform_matrix.transpose()*feature_matrix_centered;
 	}
-
-	SG_INFO("Copying eigen matrix to shogun matrix\n")	
-	SGMatrix<float64_t> result_matrix = SGMatrix<float64_t>(num_dim, num_vectors);
-	for (int32_t c=0; c<num_vectors; c++)
-	{
-		for (int32_t r=0; r<num_dim; r++)
-			result_matrix.matrix[c*num_dim+r] = final_feature_matrix(r,c); 
-	}  
-
+	((CDenseFeatures<float64_t>*) features)->set_feature_matrix(result_matrix);
 	return result_matrix;
 }
 #endif //HAVE_EIGEN3
