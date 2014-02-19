@@ -18,13 +18,13 @@ testdat = lm.load_dna('../data/fm_test_dna.dat')
 parameter_list = [[traindat,testdat,2,0.75],[traindat,testdat,3,0.75]]
 
 def kernel_ssk_string_modular (fm_train_dna=traindat, fm_test_dna=testdat, maxlen=1, decay=1):
-	from modshogun import StringSubsequenceKernel
+	from modshogun import SubsequenceStringKernel
 	from modshogun import StringCharFeatures, DNA
 
 	feats_train=StringCharFeatures(fm_train_dna, DNA)
 	feats_test=StringCharFeatures(fm_train_dna, DNA)
 
-	kernel=StringSubsequenceKernel(feats_train, feats_train, maxlen, decay)
+	kernel=SubsequenceStringKernel(feats_train, feats_train, maxlen, decay)
 
 	km_train=kernel.get_kernel_matrix()
 	# print(km_train)
@@ -34,6 +34,6 @@ def kernel_ssk_string_modular (fm_train_dna=traindat, fm_test_dna=testdat, maxle
 	return km_train,km_test,kernel
 
 if __name__=='__main__':
-	print('StringSubsequenceKernel DNA')
+	print('SubsequenceStringKernel DNA')
 	kernel_ssk_string_modular(*parameter_list[0])
 	kernel_ssk_string_modular(*parameter_list[1])

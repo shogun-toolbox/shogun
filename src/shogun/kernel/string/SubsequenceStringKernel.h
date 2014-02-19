@@ -7,8 +7,8 @@
  * Written (W) 2014 Soumyajit De
  */
 
-#ifndef STRING_SUBSEQUENCE_KERNEL_H_
-#define STRING_SUBSEQUENCE_KERNEL_H_
+#ifndef SUBSEQUENCE_STRING_KERNEL_H_
+#define SUBSEQUENCE_STRING_KERNEL_H_
 
 #include <shogun/lib/common.h>
 #include <shogun/kernel/string/StringKernel.h>
@@ -16,7 +16,7 @@
 namespace shogun
 {
 /**
- * @brief class StringSubsequenceKernel that implements String Subsequence Kernel
+ * @brief class SubsequenceStringKernel that implements String Subsequence Kernel
  * (SSK) discussed by Lodhi et. al.[1]. A subsequence is any ordered sequence
  * of \f$n\f$ characters occurring in the text, though not necessarily contiguous.
  * More formally, string \f$u\f$ is a subsequence of string \f$s\f$, iff there
@@ -50,11 +50,11 @@ namespace shogun
  * [1] Text Classification using String Kernels, Lodhi et. al. Journal of Machine
  * Learning Research 2(2002), 419-444.
  */
-class CStringSubsequenceKernel: public CStringKernel<char>
+class CSubsequenceStringKernel: public CStringKernel<char>
 {
 public:
 	/** default constructor  */
-	CStringSubsequenceKernel();
+	CSubsequenceStringKernel();
 
 	/**
 	 * constructor
@@ -63,7 +63,7 @@ public:
 	 * @param maxlen maximum length of the subsequence
 	 * @param lambda the penalty parameter
 	 */
-	CStringSubsequenceKernel(int32_t size, int32_t maxlen, float64_t lambda);
+	CSubsequenceStringKernel(int32_t size, int32_t maxlen, float64_t lambda);
 
 	/**
 	 * constructor
@@ -73,11 +73,11 @@ public:
 	 * @param maxlen maximum length of the subsequence
 	 * @param lambda the penalty parameter
 	 */
-	CStringSubsequenceKernel(CStringFeatures<char>* lhs, CStringFeatures<char>* rhs,
+	CSubsequenceStringKernel(CStringFeatures<char>* lhs, CStringFeatures<char>* rhs,
 		int32_t maxlen, float64_t lambda);
 
 	/** destructor */
-	virtual ~CStringSubsequenceKernel();
+	virtual ~CSubsequenceStringKernel();
 
 	/**
 	 * initialize kernel
@@ -100,7 +100,7 @@ public:
 	/** @return name */
 	virtual const char* get_name() const
 	{
-		return "StringSubsequenceKernel";
+		return "SubsequenceStringKernel";
 	}
 
 	/** register the parameters */
@@ -139,4 +139,4 @@ protected:
 };
 
 }
-#endif // STRING_SUBSEQUENCE_KERNEL_H_
+#endif // SUBSEQUENCE_STRING_KERNEL_H_

@@ -11,7 +11,7 @@
 #include <shogun/lib/SGString.h>
 #include <shogun/lib/SGStringList.h>
 #include <shogun/features/StringFeatures.h>
-#include <shogun/kernel/string/StringSubsequenceKernel.h>
+#include <shogun/kernel/string/SubsequenceStringKernel.h>
 #include <gtest/gtest.h>
 
 #ifdef HAVE_EIGEN3
@@ -23,7 +23,7 @@ using namespace Eigen;
 
 using namespace shogun;
 
-TEST(StringSubsequenceKernel, compute)
+TEST(SubsequenceStringKernel, compute)
 {
 	const index_t num_strings=2;
 	const index_t len=7;
@@ -47,7 +47,7 @@ TEST(StringSubsequenceKernel, compute)
 
 	// create string subsequence kernel with max subsequence length 2 and
 	// a decay factor (lambda) 1.0 (no decay)
-	CStringSubsequenceKernel* kernel=new CStringSubsequenceKernel(s_feats, s_feats, 2, 1);
+	CSubsequenceStringKernel* kernel=new CSubsequenceStringKernel(s_feats, s_feats, 2, 1);
 	SGMatrix<float64_t> kernel_matrix=kernel->get_kernel_matrix();
 
 	EXPECT_NEAR(kernel_matrix(0,0), 1.0, 1E-10);
@@ -59,7 +59,7 @@ TEST(StringSubsequenceKernel, compute)
 }
 
 #ifdef HAVE_EIGEN3
-TEST(StringSubsequenceKernel, psd_random_feat)
+TEST(SubsequenceStringKernel, psd_random_feat)
 {
 	const index_t num_strings=10;
 	const index_t max_len=20;
@@ -78,7 +78,7 @@ TEST(StringSubsequenceKernel, psd_random_feat)
 	CStringFeatures<char>* s_feats=new CStringFeatures<char>(list, ALPHANUM);
 	int32_t s_len=CMath::random(1, min_len);
 	float64_t lambda=CMath::random(0.0, 1.0);
-	CStringSubsequenceKernel* kernel=new CStringSubsequenceKernel(s_feats, s_feats, s_len, lambda);
+	CSubsequenceStringKernel* kernel=new CSubsequenceStringKernel(s_feats, s_feats, s_len, lambda);
 
 	SGMatrix<float64_t> kernel_matrix=kernel->get_kernel_matrix();
 	Map<MatrixXd> km_map(kernel_matrix.matrix, kernel_matrix.num_rows, kernel_matrix.num_cols);

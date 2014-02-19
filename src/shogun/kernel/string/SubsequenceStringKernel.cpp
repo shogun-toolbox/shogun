@@ -7,20 +7,20 @@
  * Written (W) 2014 Soumyajit De
  */
 
-#include <shogun/kernel/string/StringSubsequenceKernel.h>
+#include <shogun/kernel/string/SubsequenceStringKernel.h>
 #include <shogun/kernel/normalizer/SqrtDiagKernelNormalizer.h>
 #include <shogun/features/StringFeatures.h>
 
 using namespace shogun;
 
-CStringSubsequenceKernel::CStringSubsequenceKernel()
+CSubsequenceStringKernel::CSubsequenceStringKernel()
 : CStringKernel<char>(0), m_maxlen(1), m_lambda(1.0)
 {
 	set_normalizer(new CSqrtDiagKernelNormalizer());
 	register_params();
 }
 
-CStringSubsequenceKernel::CStringSubsequenceKernel(int32_t size, int32_t maxlen,
+CSubsequenceStringKernel::CSubsequenceStringKernel(int32_t size, int32_t maxlen,
 		float64_t lambda)
 : CStringKernel<char>(size), m_maxlen(maxlen), m_lambda(lambda)
 {
@@ -28,7 +28,7 @@ CStringSubsequenceKernel::CStringSubsequenceKernel(int32_t size, int32_t maxlen,
 	register_params();
 }
 
-CStringSubsequenceKernel::CStringSubsequenceKernel(CStringFeatures<char>* l,
+CSubsequenceStringKernel::CSubsequenceStringKernel(CStringFeatures<char>* l,
 		CStringFeatures<char>* r, int32_t maxlen, float64_t lambda)
 : CStringKernel<char>(10), m_maxlen(maxlen), m_lambda(lambda)
 {
@@ -37,23 +37,23 @@ CStringSubsequenceKernel::CStringSubsequenceKernel(CStringFeatures<char>* l,
 	register_params();
 }
 
-CStringSubsequenceKernel::~CStringSubsequenceKernel()
+CSubsequenceStringKernel::~CSubsequenceStringKernel()
 {
 	cleanup();
 }
 
-bool CStringSubsequenceKernel::init(CFeatures* l, CFeatures* r)
+bool CSubsequenceStringKernel::init(CFeatures* l, CFeatures* r)
 {
 	CStringKernel<char>::init(l, r);
 	return init_normalizer();
 }
 
-void CStringSubsequenceKernel::cleanup()
+void CSubsequenceStringKernel::cleanup()
 {
 	CKernel::cleanup();
 }
 
-float64_t CStringSubsequenceKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t CSubsequenceStringKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	// sanity check
 	REQUIRE(lhs, "lhs feature vector is not set!\n")
@@ -132,7 +132,7 @@ float64_t CStringSubsequenceKernel::compute(int32_t idx_a, int32_t idx_b)
 	return K;
 }
 
-void CStringSubsequenceKernel::register_params()
+void CSubsequenceStringKernel::register_params()
 {
 	SG_ADD(&m_maxlen, "m_maxlen", "maximum length of common subsequences", MS_AVAILABLE);
 	SG_ADD(&m_lambda, "m_lambda", "gap penalty", MS_AVAILABLE);
