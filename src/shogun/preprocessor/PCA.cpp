@@ -13,6 +13,7 @@
 #ifdef HAVE_LAPACK
 #include <shogun/mathematics/lapack.h>
 #include <shogun/lib/config.h>
+#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/Math.h>
 #include <string.h>
 #include <stdlib.h>
@@ -177,7 +178,6 @@ void CPCA::cleanup()
 	m_transformation_matrix=SGMatrix<float64_t>();
 }
 
-#ifdef HAVE_EIGEN3
 SGMatrix<float64_t> CPCA::apply_to_feature_matrix(CFeatures* features)
 {
 	ASSERT(m_initialized)
@@ -186,25 +186,32 @@ SGMatrix<float64_t> CPCA::apply_to_feature_matrix(CFeatures* features)
 	int32_t num_features = m.num_rows;
 	SG_INFO("get Feature matrix: %ix%i\n", num_vectors, num_features)
 
-	SGMatrix<float64_t> result_matrix = SGMatrix<float64_t>(num_dim, num_vectors);
-	Map<MatrixXd> final_feature_matrix(result_matrix.matrix, num_dim, num_vectors);
-
 	if (m.matrix)
 	{
 		SG_INFO("Preprocessing feature matrix\n")
 		Map<MatrixXd> feature_matrix(m.matrix, num_features, num_vectors);
 		VectorXd data_mean = feature_matrix.rowwise().sum()/(float64_t) num_vectors;
-		MatrixXd feature_matrix_centered = feature_matrix.colwise()-data_mean;
-
+		feature_matrix = feature_matrix.colwise()-data_mean;
+		
 		SG_INFO("Transforming feature matrix\n")
 		Map<MatrixXd> transform_matrix(m_transformation_matrix.matrix, 
 			m_transformation_matrix.num_rows, m_transformation_matrix.num_cols);
-		final_feature_matrix = transform_matrix.transpose()*feature_matrix_centered;
+		feature_matrix.block(0,0,num_dim,num_vectors) = transform_matrix.transpose()*feature_matrix;
+
+		SG_INFO("Form matrix of target dimension")
+		for (int32_t col=0; col<num_vectors; col++)
+		{
+			for (int32_t row=0; row<num_dim; row++)
+				m.matrix[row*num_dim+col] = feature_matrix(row,col);
+		}
+		m.matrix = (float64_t*) realloc(m.matrix,num_dim*num_vectors*sizeof(float64_t));
+		m.num_rows = num_dim;
+		m.num_cols = num_vectors;
 	}
-	((CDenseFeatures<float64_t>*) features)->set_feature_matrix(result_matrix);
-	return result_matrix;
+
+	((CDenseFeatures<float64_t>*) features)->set_feature_matrix(m);
+	return m;
 }
-#endif //HAVE_EIGEN3
 
 SGVector<float64_t> CPCA::apply_to_feature_vector(SGVector<float64_t> vector)
 {
@@ -238,5 +245,5 @@ SGVector<float64_t> CPCA::get_mean()
 {
 	return m_mean_vector;
 }
-
+#endif /* HAVE_EIGEN3 */
 #endif /* HAVE_LAPACK */
