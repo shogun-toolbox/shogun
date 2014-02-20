@@ -176,6 +176,9 @@ bool CPCA::init(CFeatures* features)
 void CPCA::cleanup()
 {
 	m_transformation_matrix=SGMatrix<float64_t>();
+        m_mean_vector = SGVector<float64_t>();
+        m_eigenvalues_vector = SGVector<float64_t>();
+	m_initialized = false;
 }
 
 SGMatrix<float64_t> CPCA::apply_to_feature_matrix(CFeatures* features)
@@ -204,7 +207,6 @@ SGMatrix<float64_t> CPCA::apply_to_feature_matrix(CFeatures* features)
 			for (int32_t row=0; row<num_dim; row++)
 				m.matrix[row*num_dim+col] = feature_matrix(row,col);
 		}
-		m.matrix = (float64_t*) realloc(m.matrix,num_dim*num_vectors*sizeof(float64_t));
 		m.num_rows = num_dim;
 		m.num_cols = num_vectors;
 	}

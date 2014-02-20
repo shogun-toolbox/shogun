@@ -34,10 +34,51 @@ TEST(PCA, PCA_output_test)
 
 	EXPECT_EQ(1,mat.num_rows);
 	EXPECT_EQ(3,mat.num_cols);
-
 	EXPECT_NEAR(-1,mat(0,0),0.0000001);
 	EXPECT_NEAR(0,mat(0,1),0.0000001);
 	EXPECT_NEAR(1,mat(0,2),0.0000001);
+
+	SG_UNREF(features);
+
+
+	SGMatrix<float64_t> data1(3,2);
+	data1(0,0)=1.0;
+	data1(0,1)=2.0;
+	data1(1,0)=1.0;
+	data1(1,1)=2.0;
+	data1(2,0)=1.0;
+	data1(2,1)=2.0;
+
+	features=new CDenseFeatures<float64_t>(data1);
+	pca->cleanup();
+	pca->init(features);
+
+	mat=pca->apply_to_feature_matrix(features);
+
+	EXPECT_EQ(1,mat.num_rows);
+	EXPECT_EQ(2,mat.num_cols);
+	EXPECT_NEAR(-CMath::sqrt(3.0)/2.0,mat(0,0),0.0000001);
+        EXPECT_NEAR(CMath::sqrt(3.0)/2.0,mat(0,1),0.0000001);
+
+	SG_UNREF(features);
+
+
+	SGMatrix<float64_t> data2(2,2);
+	data2(0,0)=1.0*cos(M_PI/3.0);
+	data2(0,1)=2.0*cos(M_PI/3.0);
+	data2(1,0)=1.0*sin(M_PI/3.0);
+	data2(1,1)=2.0*sin(M_PI/3.0);
+
+	features=new CDenseFeatures<float64_t>(data2);
+	pca->cleanup();
+	pca->init(features);
+
+	mat=pca->apply_to_feature_matrix(features);
+	
+	EXPECT_EQ(1,mat.num_rows);
+	EXPECT_EQ(2,mat.num_cols);
+	EXPECT_NEAR(-0.5,mat(0,0),0.0000001);
+	EXPECT_NEAR(0.5,mat(0,1),0.0000001);
 
 	SG_UNREF(pca);
 	SG_UNREF(features);
