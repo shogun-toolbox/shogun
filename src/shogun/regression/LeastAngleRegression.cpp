@@ -328,7 +328,7 @@ SGMatrix<float64_t> CLeastAngleRegression::cholesky_insert(
 		SGMatrix<float64_t> X, SGMatrix<float64_t> R, int32_t i_max_corr)
 {
 	// diag_k = X[:,i_max_corr]' * X[:,i_max_corr]
-	float64_t diag_k = cblas_ddot(X.num_rows, X.get_column_vector(i_max_corr), 1,
+	float64_t diag_k = cblas_ddot(X.num_cols, X.get_column_vector(i_max_corr), 1,
 		X.get_column_vector(i_max_corr), 1);
 
 	if (m_num_active == 0)
