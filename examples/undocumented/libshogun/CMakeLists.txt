@@ -42,6 +42,7 @@ SET(EXAMPLES
 	modelselection_grid_search_kernel
 	modelselection_grid_search_string_kernel
 	modelselection_grid_search_multiclass_svm
+	modelselection_grid_search_mkl
 	modelselection_combined_kernel_sub_parameters
 	features_dense_real_modular
 	features_subset_stack

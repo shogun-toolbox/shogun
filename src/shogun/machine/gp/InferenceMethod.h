@@ -5,7 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 2013 Roman Votyakov
- * Written (W) 2013 Heiko Strathmann
+ * Written (W) 2013-2014 Heiko Strathmann
  * Copyright (C) 2012 Jacob Walker
  * Copyright (C) 2013 Roman Votyakov
  */
@@ -40,11 +40,12 @@ enum EInferenceType
 
 /** @brief The Inference Method base class.
  *
- * The Inference Method computes (approximately) the posterior distribution for
- * a given Gaussian Process.
+ * The Inference Method computes (a Gaussian approximation to) the posterior
+ * distribution for a given Gaussian Process.
  *
  * It is possible to sample the (true) log-marginal likelihood on the base of
- * any implemented approximation. See log_ml_estimate.
+ * any implemented approximation. See
+ * CInferenceMethod::get_marginal_likelihood_estimate.
  */
 class CInferenceMethod : public CDifferentiableFunction
 {
@@ -92,7 +93,7 @@ public:
 	 * where \f$y\f$ are the labels, \f$X\f$ are the features (omitted from in
 	 * the following expressions), and \f$\theta\f$ represent hyperparameters.
 	 *
-	 * This is done via an approximation to the posterior
+	 * This is done via a Gaussian approximation to the posterior
 	 * \f$q(f|y, \theta)\approx p(f|y, \theta)\f$, which is computed by the
 	 * underlying CInferenceMethod instance (if implemented, otherwise error),
 	 * and then using an importance sample estimator
@@ -135,8 +136,9 @@ public:
 	 * where \f$y\f$ are the labels, \f$X\f$ are the features, and \f$\theta\f$
 	 * represent hyperparameters.
 	 */
-	virtual CMap<TParameter*, SGVector<float64_t> >* get_negative_log_marginal_likelihood_derivatives(
-			CMap<TParameter*, CSGObject*>* parameters);
+	virtual CMap<TParameter*, SGVector<float64_t> >*
+	get_negative_log_marginal_likelihood_derivatives(CMap<TParameter*,
+			CSGObject*>* parameters);
 
 	/** get alpha vector
 	 *
