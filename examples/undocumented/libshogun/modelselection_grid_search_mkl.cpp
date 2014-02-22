@@ -4,7 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2012 Heiko Strathmann
+ * Written (W) 2012-2014 Heiko Strathmann
  */
 
 #include <shogun/base/init.h>
@@ -14,7 +14,7 @@
 #include <shogun/modelselection/GridSearchModelSelection.h>
 #include <shogun/modelselection/ModelSelectionParameters.h>
 #include <shogun/modelselection/ParameterCombination.h>
-#include <shogun/features/Labels.h>
+#include <shogun/labels/BinaryLabels.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/classifier/mkl/MKLClassification.h>
 #include <shogun/classifier/svm/LibSVM.h>
@@ -22,11 +22,6 @@
 #include <shogun/kernel/CombinedKernel.h>
 
 using namespace shogun;
-
-void print_message(FILE* target, const char* str)
-{
-	fprintf(target, "%s", str);
-}
 
 CModelSelectionParameters* create_param_tree()
 {
@@ -61,34 +56,33 @@ CModelSelectionParameters* create_param_tree()
 	return root;
 }
 
-int main(int argc, char **argv)
+void test()
 {
-	init_shogun(&print_message, &print_message, &print_message);
-	sg_io->set_loglevel(MSG_INFO);
-
 	int32_t num_subsets=3;
 	int32_t num_vectors=20;
 	int32_t dim_vectors=3;
 
 	/* create some data and labels */
-	float64_t* matrix=SG_MALLOC(float64_t, num_vectors*dim_vectors);
-	CLabels* labels=new CLabels(num_vectors);
+	SGMatrix<float64_t> matrix(dim_vectors, num_vectors);
 	for (int32_t i=0; i<num_vectors*dim_vectors; i++)
-		matrix[i]=CMath::randn_double();
+		matrix.matrix[i]=CMath::randn_double();
 
-	/* create num_feautres 2-dimensional vectors */
+	/* create feature object */
 	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t> ();
-	features->set_feature_matrix(matrix, dim_vectors, num_vectors);
+	features->set_feature_matrix(matrix);
 
 	/* create combined features */
 	CCombinedFeatures* comb_features=new CCombinedFeatures();
 	comb_features->append_feature_obj(features);
 	comb_features->append_feature_obj(features);
 	comb_features->append_feature_obj(features);
+	SG_REF(comb_features);
 
 	/* create labels, two classes */
+	CBinaryLabels* labels=new CBinaryLabels(num_vectors);
+	SG_REF(labels);
 	for (index_t i=0; i<num_vectors; ++i)
-		labels->set_label(i, i%2==0 ? 1 : -1);
+		labels->set_label(i, i%2==0 ? +1 : -1);
 
 	/* works */
 //	/* create svm */
@@ -107,12 +101,12 @@ int main(int argc, char **argv)
 			new CStratifiedCrossValidationSplitting(labels, num_subsets);
 
 	/* accuracy evaluation */
-	CContingencyTableEvaluation* evaluation_criterium=
+	CContingencyTableEvaluation* evaluation_criterion=
 			new CContingencyTableEvaluation(ACCURACY);
 
 	/* cross validation class for evaluation in model selection */
 	CCrossValidation* cross=new CCrossValidation(classifier, comb_features,
-			labels, splitting_strategy, evaluation_criterium);
+			labels, splitting_strategy, evaluation_criterion);
 	cross->set_num_runs(1);
 
 	/* print all parameter available for modelselection
@@ -125,31 +119,37 @@ int main(int argc, char **argv)
 
 	/* handles all of the above structures in memory */
 	CGridSearchModelSelection* grid_search=new CGridSearchModelSelection(
-			param_tree, cross);
+			cross, param_tree);
 
-	bool print_state=true;
-	CParameterCombination* best_combination=grid_search->select_model(
+	// This unfortunately currently creates a NULL pointer read SEGFAULT :(
+	// reported on github: MKL Multiclass null pointer read
+	//bool print_state=true;
+	/*CParameterCombination* best_combination=grid_search->select_model(
 			print_state);
 	SG_SPRINT("best parameter(s):\n");
 	best_combination->print_tree();
 
-	best_combination->apply_to_machine(classifier);
+	best_combination->apply_to_machine(classifier);*/
 
 	/* larger number of runs to have tighter confidence intervals */
-	cross->set_num_runs(10);
+	/*cross->set_num_runs(10);
 	cross->set_conf_int_alpha(0.01);
 	CCrossValidationResult* result=(CCrossValidationResult*)cross->evaluate();
 
-	if (result->get_result_type() != CROSSVALIDATION_RESULT)
-		SG_ERROR("Evaluation result is not of type CCrossValidationResult!");
+	SG_SPRINT("result: %f", result->mean);*/
 
-	SG_SPRINT("result: ");
-	result.print_result();
-
-	/* clean up destroy result parameter */
-	SG_UNREF(best_combination);
+	/* clean up */
+	SG_UNREF(comb_features);
+	SG_UNREF(labels);
+	//SG_UNREF(best_combination);
 	SG_UNREF(grid_search);
+}
 
+int main(int argc, char **argv)
+{
+	init_shogun_with_defaults();
+	sg_io->set_loglevel(MSG_INFO);
+	test();
 	exit_shogun();
 
 	return 0;
