@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) The Shogun Machine Learning Toolbox
  * Copyright (c) 2012-2013 Heiko Strathmann
  * All rights reserved.
  *
