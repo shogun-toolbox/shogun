@@ -33,6 +33,15 @@ enum EPCAMode
 	FIXED_NUMBER
 };
 
+/** memory usage by PCA : In-place or through reallocation */
+enum EPCAMemoryMode
+{
+	/** The feature matrix replaced by new matrix with target dims */
+	MEM_REALLOCATE,
+	/** The feature matrix is modified in-place to generate the new matrix. Output matrix dimensions are changed to target dims, but actual matrix size remains same internally. Modifies initial data matrix */
+	MEM_IN_PLACE
+};
+
 /** @brief Preprocessor PCACut performs principial component analysis on the input
  * vectors and keeps only the n eigenvectors with eigenvalues above a certain
  * threshold.
@@ -53,8 +62,10 @@ class CPCA: public CDimensionReductionPreprocessor
 		 * @param do_whitening do whitening
 		 * @param mode mode of pca
 		 * @param thresh threshold
+		 * @param memory usage mode of PCA
 		 */
-		CPCA(bool do_whitening=false, EPCAMode mode=FIXED_NUMBER, float64_t thresh=1e-6);
+		CPCA(bool do_whitening=false, EPCAMode mode=FIXED_NUMBER, float64_t thresh=1e-6,
+							EPCAMemoryMode mem=MEM_REALLOCATE);
 
 		/** destructor */
 		virtual ~CPCA();
@@ -98,6 +109,14 @@ class CPCA: public CDimensionReductionPreprocessor
 		/** @return a type of preprocessor */
 		virtual EPreprocessorType get_type() const { return P_PCA; }
 
+		/** return the PCA memory mode being used */
+		EPCAMemoryMode get_memory_mode() const;
+
+		/** set PCA memory mode to be used
+		 * @param choice between MEM_REALLOCATE and MEM_IN_PLACE
+		 */
+		void set_memory_mode(EPCAMemoryMode e);
+
 	protected:
 
 		void init();
@@ -122,6 +141,8 @@ class CPCA: public CDimensionReductionPreprocessor
 		EPCAMode m_mode;
 		/** thresh */
 		float64_t thresh;
+		/** PCA memory mode */
+		EPCAMemoryMode mem_mode;
 };
 }
 #endif
