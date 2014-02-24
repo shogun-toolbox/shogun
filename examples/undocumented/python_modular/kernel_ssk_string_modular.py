@@ -22,7 +22,7 @@ def kernel_ssk_string_modular (fm_train_dna=traindat, fm_test_dna=testdat, maxle
 	from modshogun import StringCharFeatures, DNA
 
 	feats_train=StringCharFeatures(fm_train_dna, DNA)
-	feats_test=StringCharFeatures(fm_train_dna, DNA)
+	feats_test=StringCharFeatures(fm_test_dna, DNA)
 
 	kernel=SubsequenceStringKernel(feats_train, feats_train, maxlen, decay)
 
