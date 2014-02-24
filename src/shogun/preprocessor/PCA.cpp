@@ -60,7 +60,7 @@ void CPCA::init()
 	    MS_AVAILABLE);
 	SG_ADD((machine_int_t*) &m_mode, "mode", "PCA Mode.", MS_AVAILABLE);
 	SG_ADD(&thresh, "thresh", "Cutoff threshold.", MS_AVAILABLE);
-	SG_ADD((machine_int_t*) &mem_mode, "mem_mode", "Memory mode (in-place or reallocation).", MS_AVAILABLE);
+	SG_ADD((machine_int_t*) &mem_mode, "mem_mode", "Memory mode (in-place or reallocation).", MS_NOT_AVAILABLE);
 }
 
 CPCA::~CPCA()
