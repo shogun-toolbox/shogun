@@ -26,9 +26,9 @@
 using namespace shogun;
 using namespace Eigen;
 
-CPCA::CPCA(bool do_whitening_, EPCAMode mode_, float64_t thresh_)
+CPCA::CPCA(bool do_whitening_, EPCAMode mode_, float64_t thresh_, EPCAMemoryMode mem_)
 : CDimensionReductionPreprocessor(), num_dim(0), m_initialized(false),
-	m_whitening(do_whitening_), m_mode(mode_), thresh(thresh_)
+	m_whitening(do_whitening_), m_mode(mode_), thresh(thresh_), mem_mode(mem_)
 {
 	init();
 }
@@ -187,32 +187,51 @@ SGMatrix<float64_t> CPCA::apply_to_feature_matrix(CFeatures* features)
 	SGMatrix<float64_t> m = ((CDenseFeatures<float64_t>*) features)->get_feature_matrix();
 	int32_t num_vectors = m.num_cols;
 	int32_t num_features = m.num_rows;
-	SG_INFO("get Feature matrix: %ix%i\n", num_vectors, num_features)
 
-	if (m.matrix)
-	{
-		SG_INFO("Preprocessing feature matrix\n")
-		Map<MatrixXd> feature_matrix(m.matrix, num_features, num_vectors);
-		VectorXd data_mean = feature_matrix.rowwise().sum()/(float64_t) num_vectors;
-		feature_matrix = feature_matrix.colwise()-data_mean;
-		
-		SG_INFO("Transforming feature matrix\n")
-		Map<MatrixXd> transform_matrix(m_transformation_matrix.matrix, 
+	SG_INFO("Transforming feature matrix\n")
+	Map<MatrixXd> transform_matrix(m_transformation_matrix.matrix,
 			m_transformation_matrix.num_rows, m_transformation_matrix.num_cols);
-		feature_matrix.block(0,0,num_dim,num_vectors) = transform_matrix.transpose()*feature_matrix;
 
-		SG_INFO("Form matrix of target dimension")
-		for (int32_t col=0; col<num_vectors; col++)
+	if (mem_mode == MEM_IN_PLACE)
+	{
+		if (m.matrix)
 		{
-			for (int32_t row=0; row<num_dim; row++)
-				m.matrix[row*num_dim+col] = feature_matrix(row,col);
-		}
-		m.num_rows = num_dim;
-		m.num_cols = num_vectors;
-	}
+			SG_INFO("Preprocessing feature matrix\n")
+			Map<MatrixXd> feature_matrix(m.matrix, num_features, num_vectors);
+			VectorXd data_mean = feature_matrix.rowwise().sum()/(float64_t) num_vectors;
+			feature_matrix = feature_matrix.colwise()-data_mean;
 
-	((CDenseFeatures<float64_t>*) features)->set_feature_matrix(m);
-	return m;
+			feature_matrix.block(0,0,num_dim,num_vectors) = transform_matrix.transpose()*feature_matrix;
+	
+			SG_INFO("Form matrix of target dimension")
+			for (int32_t col=0; col<num_vectors; col++)
+			{
+				for (int32_t row=0; row<num_dim; row++)
+					m.matrix[row*num_dim+col] = feature_matrix(row,col);
+			}
+			m.num_rows = num_dim;
+			m.num_cols = num_vectors;
+		}
+
+		((CDenseFeatures<float64_t>*) features)->set_feature_matrix(m);
+		return m;
+	}
+	else
+	{
+		SGMatrix<float64_t> ret(num_dim, num_vectors);
+		Map<MatrixXd> ret_matrix(ret.matrix, num_dim, num_vectors);
+		if (m.matrix)
+		{
+			SG_INFO("Preprocessing feature matrix\n")
+			Map<MatrixXd> feature_matrix(m.matrix, num_features, num_vectors);
+			VectorXd data_mean = feature_matrix.rowwise().sum()/(float64_t) num_vectors;
+			feature_matrix = feature_matrix.colwise()-data_mean;
+
+			ret_matrix = transform_matrix.transpose()*feature_matrix;
+		}
+		((CDenseFeatures<float64_t>*) features)->set_feature_matrix(ret);
+		return ret;
+	}
 }
 
 SGVector<float64_t> CPCA::apply_to_feature_vector(SGVector<float64_t> vector)
@@ -247,5 +266,16 @@ SGVector<float64_t> CPCA::get_mean()
 {
 	return m_mean_vector;
 }
+
+EPCAMemoryMode CPCA::get_memory_mode() const
+{
+	return mem_mode;
+}
+
+void CPCA::set_memory_mode(EPCAMemoryMode e)
+{
+	mem_mode = e;
+}
+
 #endif /* HAVE_EIGEN3 */
 #endif /* HAVE_LAPACK */
