@@ -1,6 +1,6 @@
 /*
  * Copyright (c) The Shogun Machine Learning Toolbox
- * Copyright (c) 2012-2013 Heiko Strathmann
+ * Written (w) 2012-2013 Heiko Strathmann
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -25,7 +25,7 @@
  *
  * The views and conclusions contained in the software and documentation are those
  * of the authors and should not be interpreted as representing official policies,
- * either expressed or implied, of the FreeBSD Project.
+ * either expressed or implied, of the Shogun Development Team.
  */
 
 #ifndef __QUADRACTIMEMMD_H_
