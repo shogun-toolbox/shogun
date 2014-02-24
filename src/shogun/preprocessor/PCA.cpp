@@ -27,10 +27,13 @@ using namespace shogun;
 using namespace Eigen;
 
 CPCA::CPCA(bool do_whitening_, EPCAMode mode_, float64_t thresh_, EPCAMemoryMode mem_)
-: CDimensionReductionPreprocessor(), num_dim(0), m_initialized(false),
-	m_whitening(do_whitening_), m_mode(mode_), thresh(thresh_), mem_mode(mem_)
+: CDimensionReductionPreprocessor()
 {
 	init();
+	m_whitening = do_whitening_;
+	m_mode = mode_;
+	thresh = thresh_;
+	mem_mode = mem_;
 }
 
 void CPCA::init()
@@ -38,6 +41,12 @@ void CPCA::init()
 	m_transformation_matrix = SGMatrix<float64_t>();
 	m_mean_vector = SGVector<float64_t>();
 	m_eigenvalues_vector = SGVector<float64_t>();
+	num_dim = 0;
+	m_initialized = false;
+	m_whitening = false;
+	m_mode = FIXED_NUMBER;
+	thresh = 1e-6;
+	mem_mode = MEM_REALLOCATE;
 
 	SG_ADD(&m_transformation_matrix, "transformation_matrix",
 	    "Transformation matrix (Eigenvectors of covariance matrix).",
@@ -51,6 +60,7 @@ void CPCA::init()
 	    MS_AVAILABLE);
 	SG_ADD((machine_int_t*) &m_mode, "mode", "PCA Mode.", MS_AVAILABLE);
 	SG_ADD(&thresh, "thresh", "Cutoff threshold.", MS_AVAILABLE);
+	SG_ADD((machine_int_t*) &mem_mode, "mem_mode", "Memory mode (in-place or reallocation).", MS_AVAILABLE);
 }
 
 CPCA::~CPCA()

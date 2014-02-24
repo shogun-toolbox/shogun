@@ -38,7 +38,7 @@ enum EPCAMemoryMode
 {
 	/** The feature matrix replaced by new matrix with target dims */
 	MEM_REALLOCATE,
-	/** The feature matrix is modified in-place to generate the new matrix. Modifies initial data matrix */
+	/** The feature matrix is modified in-place to generate the new matrix. Output matrix dimensions are changed to target dims, but actual matrix size remains same internally. Modifies initial data matrix */
 	MEM_IN_PLACE
 };
 
