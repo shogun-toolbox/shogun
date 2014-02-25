@@ -24,6 +24,17 @@ ADD_CUSTOM_COMMAND(OUTPUT clone_unittest.cc
 	COMMENT "Generating clone_unittest.cc")
 LIST(APPEND TEMPLATE_GENERATED_UNITTEST clone_unittest.cc)
 
+ADD_CUSTOM_COMMAND(OUTPUT DynamicObjectArray_unittest.cc
+	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.py
+	${CMAKE_CURRENT_SOURCE_DIR}/base/DynamicObjectArray_unittest.cc.jinja2
+	DynamicObjectArray_unittest.cc
+	${LIBSHOGUN_SRC_DIR}/base/class_list.cpp
+	DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.py
+	${CMAKE_CURRENT_SOURCE_DIR}/base/DynamicObjectArray_unittest.cc.jinja2
+	WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+	COMMENT "Generating DynamicObjectArray_unittest.cc")
+LIST(APPEND TEMPLATE_GENERATED_UNITTEST DynamicObjectArray_unittest.cc)
+
 ADD_CUSTOM_COMMAND(OUTPUT SerializationAscii_unittest.cc
 	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/base/clone_unittest.cc.py
 	${CMAKE_CURRENT_SOURCE_DIR}/io/SerializationAscii_unittest.cc.jinja2

@@ -1,0 +1,65 @@
+/*
+ * THIS IS A GENERATED FILE!  DO NOT CHANGE THIS FILE!  CHANGE THE
+ * CORRESPONDING TEMPLATE FILE, PLEASE!
+ */
+
+#include <shogun/lib/DynamicObjectArray.h>
+#include <shogun/base/class_list.h>
+#include <gtest/gtest.h>
+
+using namespace shogun;
+
+{% set ignores = ['Set', 'ParseBuffer', 'TreeMachine'] %}
+
+{% for class in classes %}
+{% if class in ignores or class.startswith('GUI') %}
+TEST(DynamicObjectArray,DISABLED_array_{{class}}_clone_equals)
+{% else %}
+TEST(DynamicObjectArray,array_{{class}}_clone_equals)
+{% endif %}
+{
+	const char* class_name="{{class}}";
+
+	/* create source array and fill with {{class}} type objects */
+	index_t length=2;
+	CDynamicObjectArray* array1=new CDynamicObjectArray();
+	for (index_t i=0; i<length; ++i)
+		array1->push_back(new_sgserializable(class_name, PT_NOT_GENERIC));
+
+	/* test for clone and equals */
+	CDynamicObjectArray* array2=dynamic_cast<CDynamicObjectArray*>(array1->clone());
+	EXPECT_TRUE(array1->equals(array2));
+
+	/* cleanup */
+	SG_UNREF(array1);
+	SG_UNREF(array2);
+}
+{% endfor %}
+
+{% for class in template_classes %}
+{% for type in types %}
+{% if class in ignores %}
+TEST(DynamicObjectArray,DISABLED_array_{{class}}_{{type}}_clone_equals)
+{% else %}
+TEST(DynamicObjectArray,array_{{class}}_{{type}}_clone_equals)
+{% endif %}
+{
+	const char* class_name="{{class}}";
+
+	/* create source array and fill with {{class}} type objects */
+	index_t length=2;
+	CDynamicObjectArray* array1=new CDynamicObjectArray();
+	for (index_t i=0; i<length; ++i)
+		array1->push_back(new_sgserializable(class_name, {{type}}));
+
+	/* test for clone and equals */
+	CDynamicObjectArray* array2=dynamic_cast<CDynamicObjectArray*>(array1->clone());
+	EXPECT_TRUE(array1->equals(array2));
+
+	/* cleanup */
+	SG_UNREF(array1);
+	SG_UNREF(array2);
+}
+{% endfor %}
+{% endfor %}
+

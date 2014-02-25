@@ -4016,7 +4016,12 @@ bool TParameter::copy(TParameter* target)
 			{
 				size_t num_bytes=*m_datatype.m_length_y * m_datatype.sizeof_stype();
 				SG_SDEBUG("allocating %d bytes memory for target vector\n", num_bytes);
+
 				*(char**)target->m_parameter=SG_MALLOC(char, num_bytes);
+				/* check whether ptype is SGOBJECT, if yes we need to initialize
+				   the memory with NULL for the way copy_ptype handles it */
+				if (m_datatype.m_ptype==PT_SGOBJECT)
+					memset(*(void**)target->m_parameter, 0, num_bytes);
 
 				/* use length of source */
 				*target->m_datatype.m_length_y=*m_datatype.m_length_y;
@@ -4074,12 +4079,18 @@ bool TParameter::copy(TParameter* target)
 				else
 					num_bytes=*m_datatype.m_length_y *
 						(*m_datatype.m_length_x) * m_datatype.sizeof_stype();
+
 				*(char**)target->m_parameter=SG_MALLOC(char, num_bytes);
+
+				/* check whether ptype is SGOBJECT, if yes we need to initialize
+				   the memory with NULL for the way copy_ptype handles it */
+				if (m_datatype.m_ptype==PT_SGOBJECT)
+					memset(*(void**)target->m_parameter, 0, num_bytes);
 
 				/* use length of source */
 				*target->m_datatype.m_length_y=*m_datatype.m_length_y;
 				*target->m_datatype.m_length_x=*m_datatype.m_length_x;
-		
+
 				SG_SDEBUG("%d bytes are allocated\n", num_bytes);
 			}
 
