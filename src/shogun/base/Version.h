@@ -9,7 +9,6 @@
  */
 
 #include <shogun/base/init.h>
-
 #include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/config.h>

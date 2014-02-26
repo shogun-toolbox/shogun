@@ -33,6 +33,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <float.h>
+#include <typeinfo>
 #include <sys/types.h>
 #ifndef _WIN32
 #include <unistd.h>
@@ -173,21 +174,51 @@ class CMath : public CSGObject
 				else
 					return value;
 			}
-
-		///return the absolute value of a number
+		/* The original implementation */
+		// /return the absolute value of a number
+		// template <class T>
+		// 	static inline T abs(T a)
+		// 	{
+		// 		// can't be a>=0?(a):(-a), because compiler complains about
+		// 		// 'comparison always true' when T is unsigned
+		// 		if (a==0)
+		// 			return 0;
+		// 		else if (a>0)
+		// 			return a;
+		// 		else
+		// 			return -a;
+		// 	}
+		/* Modified by me : Go easy on me . Doing this for the first time :P*/  
 		template <class T>
 			static inline T abs(T a)
 			{
-				// can't be a>=0?(a):(-a), because compiler complains about
-				// 'comparison always true' when T is unsigned
-				if (a==0)
-					return 0;
-				else if (a>0)
-					return a;
-				else
+				if(a<0)
 					return -a;
+				else
+					return a;
+			}
+		template <class T>
+			static inline bool nearlyEqual(const T& a,const T& b,float epsilon)
+			{
+				const T absA = abs(a);
+				const T absB = abs(b);
+				const T diff = abs(a-b);
+
+				if (a==b)
+					return true;
+				else if( a==0 || b==0 || diff < FLT_MIN)
+					return diff < (epsilon * FLT_MIN); 
+				else
+					return diff / (absA + absB ) < epsilon ;
 			}
 
+		template <class T>
+			static inline bool nearlyEqual(const T& a,const T& b) 
+			{
+			
+				return nearlyEqual(a,b,0.000001f);				
+    		}
+    	/* end of modified by me */
 		///return the absolute value of a complex number
 		static inline float64_t abs(complex128_t a)
 		{

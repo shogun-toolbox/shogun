@@ -1,0 +1,13 @@
+export CFLAGS="-msse2"
+export CXXFLAGS="-msse2"
+mkdir build
+cd build
+
+cmake -DPythonModular=ON ..
+
+
+make -j 5
+make install
+
+export LD_LIBRARY_PATH=/home/pranet/Desktop/shogun/build/src/shogun/
+export PYTHONPATH=/home/pranet/Desktop/shogun/build/src// 
