@@ -5,8 +5,8 @@
 	* Features:
 		- None
 	* Bugfixes:
-		- Fix PCA::apply_to_feature_matrix [Parijat Mazumdar]
-		- Fix LeastAngleRegression for the case D greater than N [Parijat Mazumdar]
+		- Fix memory problem in PCA::apply_to_feature_matrix [Parijat Mazumdar]
+		- Fix crash in LeastAngleRegression for the case D greater than N [Parijat Mazumdar]
 	* Cleanup and API Changes:
 		- None
 
