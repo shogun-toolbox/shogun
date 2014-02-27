@@ -4,7 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2011-2012 Heiko Strathmann
+ * Written (W) 2011-2013 Heiko Strathmann
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  *
  * ALGLIB Copyright 1984, 1987, 1995, 2000 by Stephen L. Moshier under GPL2+
@@ -2062,21 +2062,11 @@ float64_t CStatistics::log_det(const SGSparseMatrix<float64_t> m)
 SGMatrix<float64_t> CStatistics::sample_from_gaussian(SGVector<float64_t> mean,
 	SGMatrix<float64_t> cov, int32_t N, bool precision_matrix)
 {
-	REQUIRE(cov.num_rows>0,
-		"CStatistics::sample_from_gaussian(): \
-		Number of covariance rows must be positive!\n");
-	REQUIRE(cov.num_cols>0,
-		"CStatistics::sample_from_gaussian(): \
-		Number of covariance cols must be positive!\n");
-	REQUIRE(cov.matrix,
-		"CStatistics::sample_from_gaussian(): \
-		Covariance is not initialized!\n");
-	REQUIRE(cov.num_rows==cov.num_cols,
-		"CStatistics::sample_from_gaussian(): \
-		Covariance should be square matrix!\n");
-	REQUIRE(mean.vlen==cov.num_rows,
-		"CStatistics::sample_from_gaussian(): \
-		Mean and covariance dimension mismatch!\n");
+	REQUIRE(cov.num_rows>0, "Number of covariance rows must be positive!\n");
+	REQUIRE(cov.num_cols>0,"Number of covariance cols must be positive!\n");
+	REQUIRE(cov.matrix, "Covariance is not initialized!\n");
+	REQUIRE(cov.num_rows==cov.num_cols, "Covariance should be square matrix!\n");
+	REQUIRE(mean.vlen==cov.num_rows, "Mean and covariance dimension mismatch!\n");
 
 	int32_t dim=mean.vlen;
 	Map<VectorXd> mu(mean.vector, mean.vlen);
