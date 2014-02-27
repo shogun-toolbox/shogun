@@ -39,9 +39,22 @@ using namespace shogun;
 TEST(LeastAngleRegression, lars_N_GreaterThan_D)
 {
 	SGMatrix<float64_t> data(3,5);
-	float64_t array[15]={0.044550005575722, -0.433969606728583, -0.397935396933392, -0.778754072066602, -0.620105076569903, 				-0.542538248707627, 0.334313094513960, 0.421985645755003, 0.263031426076997, 0.516043376162584, 	
-				0.159041471773470, 0.691318725364356, -0.116152404185664, 0.473047565770014, -0.013876505800334};
-	memcpy(data.matrix,array,15*sizeof(float64_t));
+	data(0,0)=0.044550005575722;
+	data(0,1)=-0.433969606728583;
+	data(0,2)=-0.397935396933392;
+	data(0,3)=-0.778754072066602;
+	data(0,4)=-0.620105076569903;
+	data(1,0)=-0.542538248707627;
+	data(1,1)=0.334313094513960;
+	data(1,2)=0.421985645755003;
+	data(1,3)=0.263031426076997;
+	data(1,4)=0.516043376162584;
+	data(2,0)=0.159041471773470;
+	data(2,1)=0.691318725364356;
+	data(2,2)=-0.116152404185664;
+	data(2,3)=0.473047565770014;
+	data(2,4)=-0.013876505800334;
+
 	SGVector<float64_t> lab(5);
 	lab[0]=-0.196155100498902;
 	lab[1]=-5.376485285422094;
@@ -57,21 +70,22 @@ TEST(LeastAngleRegression, lars_N_GreaterThan_D)
 	lars->set_labels((CLabels*) labels);
 	lars->train(features);
 
-	SGVector<float64_t> active3= SGVector<float64_t>(lars->get_w_for_var(3));
-	SGVector<float64_t> active2= SGVector<float64_t>(lars->get_w_for_var(2));
-	SGVector<float64_t> active1= SGVector<float64_t>(lars->get_w_for_var(1));
+	SGVector<float64_t> active3=SGVector<float64_t>(lars->get_w_for_var(3));
+	SGVector<float64_t> active2=SGVector<float64_t>(lars->get_w_for_var(2));
+	SGVector<float64_t> active1=SGVector<float64_t>(lars->get_w_for_var(1));
 
-	EXPECT_NEAR(active3[0],2.911072069591,0.000000000001);
-	EXPECT_NEAR(active3[1],1.290672330338,0.000000000001);
-	EXPECT_NEAR(active3[2],2.208741384416,0.000000000001);
+	float64_t epsilon=0.000000000001;
+	EXPECT_NEAR(active3[0],2.911072069591,epsilon);
+	EXPECT_NEAR(active3[1],1.290672330338,epsilon);
+	EXPECT_NEAR(active3[2],2.208741384416,epsilon);
 
-	EXPECT_NEAR(active2[0],1.747958837898,0.000000000001);
-	EXPECT_NEAR(active2[1],0.000000000000,0.000000000001);
-	EXPECT_NEAR(active2[2],1.840553057519,0.000000000001);
+	EXPECT_NEAR(active2[0],1.747958837898,epsilon);
+	EXPECT_NEAR(active2[1],0.000000000000,epsilon);
+	EXPECT_NEAR(active2[2],1.840553057519,epsilon);
 
-	EXPECT_NEAR(active1[0],0.000000000000,0.000000000001);
-	EXPECT_NEAR(active1[1],0.000000000000,0.000000000001);
-	EXPECT_NEAR(active1[2],0.092594219621,0.000000000001);
+	EXPECT_NEAR(active1[0],0.000000000000,epsilon);
+	EXPECT_NEAR(active1[1],0.000000000000,epsilon);
+	EXPECT_NEAR(active1[2],0.092594219621,epsilon);
 
 	SG_UNREF(lars);
 	SG_UNREF(features);
@@ -81,10 +95,21 @@ TEST(LeastAngleRegression, lars_N_GreaterThan_D)
 TEST(LeastAngleRegression, lars_N_LessThan_D)
 {
 	SGMatrix<float64_t> data(5,3);
-	float64_t array[15]={0.217778502400306, 0.660755393455389, 0.492143169178889, 0.668618163874328, 0.806098163441828, 
-				-0.790379818206924, -0.745771163834136, -0.810293460958058, -0.740156729710306, -0.515540473266151, 
-				0.572601315806618, 0.085015770378747, 0.318150291779169, 0.071538565835978, -0.290557690175677};
-	memcpy(data.matrix,array,15*sizeof(float64_t));
+	data(0,0)=0.217778502400306;
+	data(0,1)=0.660755393455389;
+	data(0,2)=0.492143169178889;
+	data(1,0)=0.668618163874328;
+	data(1,1)=0.806098163441828;
+	data(1,2)=-0.790379818206924;
+	data(2,0)=-0.745771163834136;
+	data(2,1)=-0.810293460958058;
+	data(2,2)=-0.740156729710306;
+	data(3,0)=-0.515540473266151;
+	data(3,1)=0.572601315806618;
+	data(3,2)=0.085015770378747;
+	data(4,0)=0.318150291779169;
+	data(4,1)=0.071538565835978;
+	data(4,2)=-0.290557690175677;
 
 	SGVector<float64_t> lab(3);
 	lab[0]=3.771471612608209;
@@ -96,23 +121,24 @@ TEST(LeastAngleRegression, lars_N_LessThan_D)
 	CRegressionLabels* labels=new CRegressionLabels(lab);
 	SG_REF(labels);	
 	CLeastAngleRegression* lars=new CLeastAngleRegression();
-	lars->set_labels((CLabels*) labels);
+	lars->set_labels(labels);
 	lars->train(features);
 
-	SGVector<float64_t> active2= SGVector<float64_t>(lars->get_w_for_var(2));
-	SGVector<float64_t> active1= SGVector<float64_t>(lars->get_w_for_var(1));
+	SGVector<float64_t> active2=SGVector<float64_t>(lars->get_w_for_var(2));
+	SGVector<float64_t> active1=SGVector<float64_t>(lars->get_w_for_var(1));
 
-	EXPECT_NEAR(active1[0],0.000000000000,0.000000000001);
-	EXPECT_NEAR(active1[1],0.000000000000,0.000000000001);
-	EXPECT_NEAR(active1[2],0.000000000000,0.000000000001);
-	EXPECT_NEAR(active1[3],0.039226231353,0.000000000001);
-	EXPECT_NEAR(active1[4],0.000000000000,0.000000000001);
+	float64_t epsilon=0.000000000001;
+	EXPECT_NEAR(active1[0],0.000000000000,epsilon);
+	EXPECT_NEAR(active1[1],0.000000000000,epsilon);
+	EXPECT_NEAR(active1[2],0.000000000000,epsilon);
+	EXPECT_NEAR(active1[3],0.039226231353,epsilon);
+	EXPECT_NEAR(active1[4],0.000000000000,epsilon);
 
-	EXPECT_NEAR(active2[0],0.000000000000,0.000000000001);
-	EXPECT_NEAR(active2[1],0.000000000000,0.000000000001);
-	EXPECT_NEAR(active2[2],0.000000000000,0.000000000001);
-	EXPECT_NEAR(active2[3],2.578863294056,0.000000000001);
-	EXPECT_NEAR(active2[4],2.539637062702,0.000000000001);
+	EXPECT_NEAR(active2[0],0.000000000000,epsilon);
+	EXPECT_NEAR(active2[1],0.000000000000,epsilon);
+	EXPECT_NEAR(active2[2],0.000000000000,epsilon);
+	EXPECT_NEAR(active2[3],2.578863294056,epsilon);
+	EXPECT_NEAR(active2[4],2.539637062702,epsilon);
 
 	SG_UNREF(lars);
 	SG_UNREF(features);
