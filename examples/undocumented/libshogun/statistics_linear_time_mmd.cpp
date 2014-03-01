@@ -43,8 +43,8 @@ void linear_time_mmd()
 
 	/* using bootstrapping (not reccomended for linear time MMD, since slow).
 	 * Also, in practice, use at least 250 iterations */
-	mmd->set_null_approximation_method(BOOTSTRAP);
-	mmd->set_bootstrap_iterations(10);
+	mmd->set_null_approximation_method(PERMUTATION);
+	mmd->set_num_permutation_iterations(10);
 	float64_t p_value_bootstrap=mmd->perform_test();
 	/* reject if p-value is smaller than test level */
 	SG_SPRINT("bootstrap: p!=q: %d\n", p_value_bootstrap<alpha);

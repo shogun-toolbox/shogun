@@ -16,7 +16,7 @@ def statistics_linear_time_mmd (n,dim,difference):
 	from modshogun import MeanShiftDataGenerator
 	from modshogun import GaussianKernel
 	from modshogun import LinearTimeMMD
-	from modshogun import BOOTSTRAP, MMD1_GAUSSIAN
+	from modshogun import PERMUTATION, MMD1_GAUSSIAN
 	from modshogun import EuclideanDistance
 	from modshogun import Statistics, Math
 
@@ -59,12 +59,12 @@ def statistics_linear_time_mmd (n,dim,difference):
 	#print "test statistic:", statistic
 
 	# do the same thing using two different way to approximate null-dstribution
-	# bootstrapping and gaussian approximation (ony for really large samples)
+	# sampling null and gaussian approximation (ony for really large samples)
 	alpha=0.05
 
-	#print "computing p-value using bootstrapping"
-	mmd.set_null_approximation_method(BOOTSTRAP)
-	mmd.set_bootstrap_iterations(50) # normally, far more iterations are needed
+	#print "computing p-value using sampling null"
+	mmd.set_null_approximation_method(PERMUTATION)
+	mmd.set_num_permutation_iterations(50) # normally, far more iterations are needed
 	p_value_boot=mmd.compute_p_value(statistic)
 	#print "p_value_boot:", p_value_boot
 	#print "p_value_boot <", alpha, ", i.e. test sais p!=q:", p_value_boot<alpha
@@ -77,9 +77,9 @@ def statistics_linear_time_mmd (n,dim,difference):
 
 	# sample from null distribution (these may be plotted or whatsoever)
 	# mean should be close to zero, variance stronly depends on data/kernel
-	mmd.set_null_approximation_method(BOOTSTRAP)
-	mmd.set_bootstrap_iterations(10) # normally, far more iterations are needed
-	null_samples=mmd.bootstrap_null()
+	mmd.set_null_approximation_method(PERMUTATION)
+	mmd.set_num_permutation_iterations(10) # normally, far more iterations are needed
+	null_samples=mmd.sample_null()
 	#print "null mean:", mean(null_samples)
 	#print "null variance:", var(null_samples)
 

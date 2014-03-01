@@ -29,7 +29,7 @@ namespace shogun
  *
  * Internally, a stack of active subsets is saved. Each time an index set is
  * added, a new element will be put on stack, using the old element to get
- * mappig. On  removal, the last element on stack will be removed. This is done
+ * mapping. On  removal, the last element on stack will be removed. This is done
  * for computational convenience.
  */
 class CSubsetStack: public CSGObject

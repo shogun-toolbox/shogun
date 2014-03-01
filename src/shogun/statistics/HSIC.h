@@ -22,7 +22,7 @@ template<class T> class SGMatrix;
  * based independence test as described in [1].
  *
  * Given samples \f$Z=\{(x_i,y_i)\}_{i=1}^m\f$ from the joint
- * distribution \f$\textbf{P}_x\textbf{P}_y\f$, does the joint distribution
+ * distribution \f$\textbf{P}_{xy}\f$, does the joint distribution
  * factorize as \f$\textbf{P}_{xy}=\textbf{P}_x\textbf{P}_y\f$?
  *
  * The HSIC is a kernel based independence criterion, which is based on the
@@ -42,16 +42,16 @@ template<class T> class SGMatrix;
  * distribution samples.
  *
  * Along with the statistic comes a method to compute a p-value based on
- * different methods. Bootstrapping, is also possible. If unsure which one to
- * use, bootstrapping with 250 iterations always is correct (but slow).
+ * different methods. Sampling from null is also possible. If unsure which one to
+ * use, sampling with 250 iterations always is correct (but slow).
  *
  * To choose, use set_null_approximation_method() and choose from
  *
  * HSIC_GAMMA: for a very fast, but not consistent test based on moment matching
  * of a Gamma distribution, as described in [1].
  *
- * BOOTSTRAPPING: For permuting available samples to sample null-distribution.
- * Bootstrapping is done on precomputed kernel matrices, since they have to
+ * PERMUTATION: For permuting available samples to sample null-distribution.
+ * This is done on precomputed kernel matrices, since they have to
  * be stored anyway when the statistic is computed.
  *
  * A very basic method for kernel selection when using CGaussianKernel is to
@@ -163,13 +163,13 @@ public:
 	SGVector<float64_t> fit_null_gamma();
 
 	/** merges both sets of samples and computes the test statistic
-	 * m_bootstrap_iteration times. This version precomputes the kenrel matrix
-	 * once by hand, then performs bootstrapping on this one. The matrix has
+	 * m_num_permutation_iteration times. This version precomputes the kenrel matrix
+	 * once by hand, then samples using this one. The matrix has
 	 * to be stored anyway when statistic is computed.
 	 *
 	 * @return vector of all statistics
 	 */
-	virtual SGVector<float64_t> bootstrap_null();
+	virtual SGVector<float64_t> sample_null();
 
 protected:
 	/** @return kernel matrix on samples from p. Distinguishes CustomKernels */

@@ -15,14 +15,14 @@
 using namespace shogun;
 
 CKernelIndependenceTestStatistic::CKernelIndependenceTestStatistic() :
-		CTwoDistributionsTestStatistic()
+		CIndependenceTestStatistic()
 {
 	init();
 }
 
 CKernelIndependenceTestStatistic::CKernelIndependenceTestStatistic(
 		CKernel* kernel_p, CKernel* kernel_q, CFeatures* p_and_q,
-		index_t q_start) : CTwoDistributionsTestStatistic(m_p_and_q, q_start)
+		index_t q_start) : CIndependenceTestStatistic(m_p_and_q, q_start)
 {
 	init();
 
@@ -34,7 +34,7 @@ CKernelIndependenceTestStatistic::CKernelIndependenceTestStatistic(
 
 CKernelIndependenceTestStatistic::CKernelIndependenceTestStatistic(
 		CKernel* kernel_p, CKernel* kernel_q, CFeatures* p, CFeatures* q) :
-		CTwoDistributionsTestStatistic(p, q)
+		CIndependenceTestStatistic(p, q)
 {
 	init();
 
@@ -61,11 +61,11 @@ void CKernelIndependenceTestStatistic::init()
 	m_kernel_q=NULL;
 }
 
-SGVector<float64_t> CKernelIndependenceTestStatistic::bootstrap_null()
+SGVector<float64_t> CKernelIndependenceTestStatistic::sample_null()
 {
-	SG_DEBUG("entering CKernelIndependenceTestStatistic::bootstrap_null()\n")
+	SG_DEBUG("entering CKernelIndependenceTestStatistic::sample_null()\n")
 
-	/* compute bootstrap statistics for null distribution */
+	/* compute sample statistics for null distribution */
 	SGVector<float64_t> results;
 
 	/* only do something if a custom kernel is used: use the power of pre-
@@ -75,20 +75,20 @@ SGVector<float64_t> CKernelIndependenceTestStatistic::bootstrap_null()
 			m_kernel_q->get_kernel_type()==K_CUSTOM)
 	{
 		/* allocate memory */
-		results=SGVector<float64_t>(m_bootstrap_iterations);
+		results=SGVector<float64_t>(m_num_permutation_iterations);
 
-		/* memory for index permutations, (would slow down loop) */
-		SGVector<index_t> ind_permutation(m_p_and_q->get_num_vectors());
+		/* memory for index permutations for only kernel matrix for p */
+		SGVector<index_t> ind_permutation(m_m);
 		ind_permutation.range_fill();
 
 		/* check if kernel is a custom kernel. In that case, changing features is
 		 * not what we want but just subsetting the kernel itself */
 		CCustomKernel* custom_kernel_p=(CCustomKernel*)m_kernel_p;
-		CCustomKernel* custom_kernel_q=(CCustomKernel*)m_kernel_q;
 
-		for (index_t i=0; i<m_bootstrap_iterations; ++i)
+		for (index_t i=0; i<m_num_permutation_iterations; ++i)
 		{
-			/* idea: merge features of p and q, shuffle, and compute statistic.
+			/* idea: merge features of p and q, shuffle samples from p while
+			 * keeping samples from q intact and compute statistic.
 			 * This is done using subsets here. add to custom kernel since
 			 * it has no features to subset. CustomKernel has not to be
 			 * re-initialised after each subset setting */
@@ -96,8 +96,6 @@ SGVector<float64_t> CKernelIndependenceTestStatistic::bootstrap_null()
 
 			custom_kernel_p->add_row_subset(ind_permutation);
 			custom_kernel_p->add_col_subset(ind_permutation);
-			custom_kernel_q->add_row_subset(ind_permutation);
-			custom_kernel_q->add_col_subset(ind_permutation);
 
 			/* compute statistic for this permutation of mixed samples */
 			results[i]=compute_statistic();
@@ -105,18 +103,16 @@ SGVector<float64_t> CKernelIndependenceTestStatistic::bootstrap_null()
 			/* remove subsets */
 			custom_kernel_p->remove_row_subset();
 			custom_kernel_p->remove_col_subset();
-			custom_kernel_q->remove_row_subset();
-			custom_kernel_q->remove_col_subset();
 		}
 	}
 	else
 	{
 		/* in this case, just use superclass method */
-		results=CTwoDistributionsTestStatistic::bootstrap_null();
+		results=CIndependenceTestStatistic::sample_null();
 	}
 
 
-	SG_DEBUG("leaving CKernelIndependenceTestStatistic::bootstrap_null()\n")
+	SG_DEBUG("leaving CKernelIndependenceTestStatistic::sample_null()\n")
 	return results;
 }
 

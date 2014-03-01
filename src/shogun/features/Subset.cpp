@@ -25,10 +25,12 @@ CSubset::CSubset(SGVector<index_t> subset_idx)
 	m_subset_idx=subset_idx;
 }
 
-CSubset::~CSubset() {
+CSubset::~CSubset()
+{
 }
 
-void CSubset::init() {
+void CSubset::init()
+{
 	SG_ADD(&m_subset_idx, "subset", "Vector of subset indices",
 			MS_NOT_AVAILABLE);
 }
