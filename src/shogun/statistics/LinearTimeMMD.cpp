@@ -620,7 +620,7 @@ float64_t CLinearTimeMMD::compute_p_value(float64_t statistic)
 		break;
 
 	default:
-		/* bootstrapping is handled here */
+		/* sampling null is handled here */
 		result=CKernelTwoSampleTestStatistic::compute_p_value(statistic);
 		break;
 	}
@@ -643,7 +643,7 @@ float64_t CLinearTimeMMD::compute_threshold(float64_t alpha)
 		break;
 
 	default:
-		/* bootstrapping is handled here */
+		/* sampling null is handled here */
 		result=CKernelTwoSampleTestStatistic::compute_threshold(alpha);
 		break;
 	}
@@ -672,7 +672,7 @@ float64_t CLinearTimeMMD::perform_test()
 		break;
 
 	default:
-		/* bootstrapping can be done separately in superclass */
+		/* sampling null can be done separately in superclass */
 		result=CTestStatistic::perform_test();
 		break;
 	}
@@ -680,9 +680,9 @@ float64_t CLinearTimeMMD::perform_test()
 	return result;
 }
 
-SGVector<float64_t> CLinearTimeMMD::bootstrap_null()
+SGVector<float64_t> CLinearTimeMMD::sample_null()
 {
-	SGVector<float64_t> samples(m_bootstrap_iterations);
+	SGVector<float64_t> samples(m_num_permutation_iterations);
 
 	/* instead of permutating samples, just samples new data all the time. */
 	CStreamingFeatures* p=m_streaming_p;
@@ -692,7 +692,7 @@ SGVector<float64_t> CLinearTimeMMD::bootstrap_null()
 
 	bool old=m_simulate_h0;
 	set_simulate_h0(true);
-	for (index_t i=0; i<m_bootstrap_iterations; ++i)
+	for (index_t i=0; i<m_num_permutation_iterations; ++i)
 	{
 		/* compute statistic for this permutation of mixed samples */
 		samples[i]=compute_statistic();

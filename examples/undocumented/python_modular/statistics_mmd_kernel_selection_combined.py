@@ -20,7 +20,7 @@ def statistics_mmd_kernel_selection_combined(m,distance,stretch,num_blobs,angle,
 	from modshogun import LinearTimeMMD
 	from modshogun import MMDKernelSelectionCombMaxL2
 	from modshogun import MMDKernelSelectionCombOpt
-	from modshogun import BOOTSTRAP, MMD1_GAUSSIAN
+	from modshogun import PERMUTATION, MMD1_GAUSSIAN
 	from modshogun import EuclideanDistance
 	from modshogun import Statistics, Math
 

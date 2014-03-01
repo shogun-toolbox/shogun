@@ -29,9 +29,7 @@ public:
 
 	/** constructor
 	 *
-	 * @param subset_idx vector of subset indices. Is always copied.
-	 * TODO, this might be changes once reference counting for SGVectors is
-	 * there
+	 * @param subset_idx vector of subset indices.
 	 */
 	CSubset(SGVector<index_t> subset_idx);
 

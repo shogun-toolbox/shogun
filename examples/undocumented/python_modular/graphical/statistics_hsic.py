@@ -14,7 +14,7 @@ from modshogun import RealFeatures
 from modshogun import DataGenerator
 from modshogun import GaussianKernel
 from modshogun import HSIC
-from modshogun import BOOTSTRAP, HSIC_GAMMA
+from modshogun import PERMUTATION, HSIC_GAMMA
 from modshogun import EuclideanDistance
 from modshogun import Statistics, Math
 
@@ -85,10 +85,10 @@ def hsic_graphical():
 		alt_samples[i]=hsic.compute_statistic()
 
 	# sample from null distribution
-	# bootstrapping, biased statistic
-	hsic.set_null_approximation_method(BOOTSTRAP)
-	hsic.set_bootstrap_iterations(num_null_samples)
-	null_samples_boot=hsic.bootstrap_null()
+	# permutation, biased statistic
+	hsic.set_null_approximation_method(PERMUTATION)
+	hsic.set_num_permutation_iterations(num_null_samples)
+	null_samples_boot=hsic.sample_null()
 
 	# fit gamma distribution, biased statistic
 	hsic.set_null_approximation_method(HSIC_GAMMA)
@@ -139,7 +139,7 @@ def hsic_graphical():
 	grid(True)
 	hist(null_samples_boot, 20, range=hist_range, normed=True);
 	axvline(thresh_boot, 0, 1, linewidth=2, color='red')
-	title('Bootstrapped Null Dist.\n' + 'Type I error is '  + str(type_one_error_boot))
+	title('Sampled Null Dist.\n' + 'Type I error is '  + str(type_one_error_boot))
 
 	# plot null distribution gamma
 	subplot(2,2,4)

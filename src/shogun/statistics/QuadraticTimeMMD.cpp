@@ -304,7 +304,7 @@ float64_t CQuadraticTimeMMD::compute_threshold(float64_t alpha)
 	}
 
 	default:
-		/* bootstrapping is handled here */
+		/* sampling null is handled here */
 		result=CKernelTwoSampleTestStatistic::compute_threshold(alpha);
 		break;
 	}

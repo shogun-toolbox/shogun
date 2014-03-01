@@ -18,7 +18,7 @@ def statistics_hsic (n, difference, angle):
 	from modshogun import DataGenerator
 	from modshogun import GaussianKernel
 	from modshogun import HSIC
-	from modshogun import BOOTSTRAP, HSIC_GAMMA
+	from modshogun import PERMUTATION, HSIC_GAMMA
 	from modshogun import EuclideanDistance
 	from modshogun import Math, Statistics, IntVector
 
@@ -69,11 +69,11 @@ def statistics_hsic (n, difference, angle):
 	#print "HSIC:", statistic
 	alpha=0.05
 
-	#print "computing p-value using bootstrapping"
-	hsic.set_null_approximation_method(BOOTSTRAP)
+	#print "computing p-value using sampling null"
+	hsic.set_null_approximation_method(PERMUTATION)
 	# normally, at least 250 iterations should be done, but that takes long
-	hsic.set_bootstrap_iterations(100)
-	# bootstrapping allows usage of unbiased or biased statistic
+	hsic.set_num_permutation_iterations(100)
+	# sampling null allows usage of unbiased or biased statistic
 	p_value_boot=hsic.compute_p_value(statistic)
 	thresh_boot=hsic.compute_threshold(alpha)
 	#print "p_value:", p_value_boot
@@ -90,11 +90,11 @@ def statistics_hsic (n, difference, angle):
 
 	# sample from null distribution (these may be plotted or whatsoever)
 	# mean should be close to zero, variance stronly depends on data/kernel
-	# bootstrapping, biased statistic
-	#print "sampling null distribution using bootstrapping"
-	hsic.set_null_approximation_method(BOOTSTRAP)
-	hsic.set_bootstrap_iterations(100)
-	null_samples=hsic.bootstrap_null()
+	# sampling null, biased statistic
+	#print "sampling null distribution using sample_null"
+	hsic.set_null_approximation_method(PERMUTATION)
+	hsic.set_num_permutation_iterations(100)
+	null_samples=hsic.sample_null()
 	#print "null mean:", mean(null_samples)
 	#print "null variance:", var(null_samples)
 	#hist(null_samples, 100); show()
