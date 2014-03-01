@@ -23,7 +23,7 @@ class CFeatures;
  * independence test. This class may be used as base class for both.
  *
  * Abstract base class. Provides all interfaces and implements approximating
- * the null distribution via bootstrapping, i.e. repeatedly merging both samples
+ * the null distribution via permutation, i.e. repeatedly merging both samples
  * and them compute the test statistic on them.
  *
  */
@@ -58,11 +58,11 @@ class CTwoDistributionsTestStatistic : public CTestStatistic
 		virtual ~CTwoDistributionsTestStatistic();
 
 		/** merges both sets of samples and computes the test statistic
-		 * m_bootstrap_iteration times
+		 * m_num_null_sample times
 		 *
 		 * @return vector of all statistics
 		 */
-		virtual SGVector<float64_t> bootstrap_null();
+		virtual SGVector<float64_t> sample_null();
 
 		/** computes a p-value based on current method for approximating the
 		 * null-distribution. The p-value is the 1-p quantile of the null-

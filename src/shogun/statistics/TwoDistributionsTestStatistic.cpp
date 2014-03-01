@@ -58,22 +58,21 @@ void CTwoDistributionsTestStatistic::init()
 	m_m=0;
 }
 
-SGVector<float64_t> CTwoDistributionsTestStatistic::bootstrap_null()
+SGVector<float64_t> CTwoDistributionsTestStatistic::sample_null()
 {
-	SG_DEBUG("entering CTwoDistributionsTestStatistic::bootstrap_null()\n")
+	SG_DEBUG("entering!\n")
 
-	REQUIRE(m_p_and_q, "CTwoDistributionsTestStatistic::bootstrap_null(): "
-			"No appended features p and q!\n");
+	REQUIRE(m_p_and_q, "No appended features p and q!\n");
 
-	/* compute bootstrap statistics for null distribution */
-	SGVector<float64_t> results(m_bootstrap_iterations);
+	/* compute sample statistics for null distribution */
+	SGVector<float64_t> results(m_num_null_samples);
 
 	/* memory for index permutations. Adding of subset has to happen
 	 * inside the loop since it may be copied if there already is one set */
-	SGVector<index_t> ind_permutation(2*m_m);
+	SGVector<index_t> ind_permutation(m_p_and_q->get_num_vectors());
 	ind_permutation.range_fill();
 
-	for (index_t i=0; i<m_bootstrap_iterations; ++i)
+	for (index_t i=0; i<m_num_null_samples; ++i)
 	{
 		/* idea: merge features of p and q, shuffle, and compute statistic.
 		 * This is done using subsets here */
@@ -88,7 +87,7 @@ SGVector<float64_t> CTwoDistributionsTestStatistic::bootstrap_null()
 		m_p_and_q->remove_subset();
 	}
 
-	SG_DEBUG("leaving CTwoDistributionsTestStatistic::bootstrap_null()\n")
+	SG_DEBUG("leaving!\n")
 	return results;
 }
 
@@ -97,10 +96,10 @@ float64_t CTwoDistributionsTestStatistic::compute_p_value(
 {
 	float64_t result=0;
 
-	if (m_null_approximation_method==BOOTSTRAP)
+	if (m_null_approximation_method==PERMUTATION)
 	{
-		/* bootstrap a bunch of MMD values from null distribution */
-		SGVector<float64_t> values=bootstrap_null();
+		/* sample a bunch of MMD values from null distribution */
+		SGVector<float64_t> values=sample_null();
 
 		/* find out percentile of parameter "statistic" in null distribution */
 		values.qsort();
@@ -111,8 +110,7 @@ float64_t CTwoDistributionsTestStatistic::compute_p_value(
 	}
 	else
 	{
-		SG_ERROR("CTwoDistributionsTestStatistics::compute_p_value(): Unknown"
-				" method to approximate null distribution!\n");
+		SG_ERROR("Unknown method to approximate null distribution!\n");
 	}
 
 	return result;
@@ -123,18 +121,17 @@ float64_t CTwoDistributionsTestStatistic::compute_threshold(
 {
 	float64_t result=0;
 
-	if (m_null_approximation_method==BOOTSTRAP)
+	if (m_null_approximation_method==PERMUTATION)
 	{
-		/* bootstrap a bunch of MMD values from null distribution */
-		SGVector<float64_t> values=bootstrap_null();
+		/* sample a bunch of MMD values from null distribution */
+		SGVector<float64_t> values=sample_null();
 
 		/* return value of (1-alpha) quantile */
 		result=values[index_t(CMath::floor(values.vlen*(1-alpha)))];
 	}
 	else
 	{
-		SG_ERROR("CTwoDistributionsTestStatistics::compute_threshold():"
-				"Unknown method to approximate null distribution!\n");
+		SG_ERROR("Unknown method to approximate null distribution!\n");
 	}
 
 	return result;

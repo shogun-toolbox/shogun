@@ -24,7 +24,7 @@ enum EStatisticType
 /** enum for different method to approximate null-distibution */
 enum ENullApproximationMethod
 {
-	BOOTSTRAP, MMD2_SPECTRUM, MMD2_GAMMA, MMD1_GAUSSIAN, HSIC_GAMMA
+	PERMUTATION, MMD2_SPECTRUM, MMD2_GAMMA, MMD1_GAUSSIAN, HSIC_GAMMA
 };
 
 /** @brief Test statistic base class. Provides an interface for statistical
@@ -107,17 +107,17 @@ class CTestStatistic : public CSGObject
 		bool perform_test(float64_t alpha);
 
 		/** merges both sets of samples and computes the test statistic
-		 * m_bootstrap_iteration times
+		 * m_num_null_samples times
 		 *
 		 * @return vector of all statistics
 		 */
-		virtual SGVector<float64_t> bootstrap_null()=0;
+		virtual SGVector<float64_t> sample_null()=0;
 
-		/** sets the number of bootstrap iterations for bootstrap_null()
+		/** sets the number of permutation iterations for sample_null()
 		 *
-		 * @param bootstrap_iterations how often bootstrapping shall be done
+		 * @param num_null_samples how often permutation shall be done
 		 */
-		virtual void set_bootstrap_iterations(index_t bootstrap_iterations);
+		virtual void set_num_null_samples(index_t num_null_samples);
 
 		/** sets the method how to approximate the null-distribution
 		 * @param null_approximation_method method to use
@@ -134,8 +134,8 @@ class CTestStatistic : public CSGObject
 		void init();
 
 	protected:
-		/** number of iterations for bootstrapping null-distributions */
-		index_t m_bootstrap_iterations;
+		/** number of iterations for sampling from null-distributions */
+		index_t m_num_null_samples;
 
 		/** Defines how the the null distribution is approximated */
 		ENullApproximationMethod m_null_approximation_method;

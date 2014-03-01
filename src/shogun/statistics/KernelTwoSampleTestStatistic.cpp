@@ -51,14 +51,15 @@ void CKernelTwoSampleTestStatistic::init()
 	m_kernel=NULL;
 }
 
-SGVector<float64_t> CKernelTwoSampleTestStatistic::bootstrap_null()
+SGVector<float64_t> CKernelTwoSampleTestStatistic::sample_null()
 {
-	REQUIRE(m_kernel, "%s::bootstrap_null(): No kernel set!\n", get_name());
-	REQUIRE(m_kernel->get_kernel_type()==K_CUSTOM || m_p_and_q,
-			"%s::bootstrap_null(): No features and no custom kernel set!\n",
-			get_name());
+	SG_DEBUG("entering!\n");
 
-	/* compute bootstrap statistics for null distribution */
+	REQUIRE(m_kernel, "No kernel set!\n");
+	REQUIRE(m_kernel->get_kernel_type()==K_CUSTOM || m_p_and_q,
+			"No features and no custom kernel set!\n");
+
+	/* compute sample statistics for null distribution */
 	SGVector<float64_t> results;
 
 	/* only do something if a custom kernel is used: use the power of pre-
@@ -67,9 +68,7 @@ SGVector<float64_t> CKernelTwoSampleTestStatistic::bootstrap_null()
 	if (m_kernel->get_kernel_type()==K_CUSTOM)
 	{
 		/* allocate memory */
-		results=SGVector<float64_t>(m_bootstrap_iterations);
-
-		/* memory for index permutations, (would slow down loop) */
+		results=SGVector<float64_t>(m_num_null_samples);
 
 		/* in case of custom kernel, there are no features */
 		index_t num_data;
@@ -78,6 +77,7 @@ SGVector<float64_t> CKernelTwoSampleTestStatistic::bootstrap_null()
 		else
 			num_data=m_p_and_q->get_num_vectors();
 
+		/* memory for index permutations, (would slow down loop) */
 		SGVector<index_t> ind_permutation(num_data);
 		ind_permutation.range_fill();
 
@@ -85,7 +85,7 @@ SGVector<float64_t> CKernelTwoSampleTestStatistic::bootstrap_null()
 		 * not what we want but just subsetting the kernel itself */
 		CCustomKernel* custom_kernel=(CCustomKernel*)m_kernel;
 
-		for (index_t i=0; i<m_bootstrap_iterations; ++i)
+		for (index_t i=0; i<m_num_null_samples; ++i)
 		{
 			/* idea: merge features of p and q, shuffle, and compute statistic.
 			 * This is done using subsets here. add to custom kernel since
@@ -107,8 +107,10 @@ SGVector<float64_t> CKernelTwoSampleTestStatistic::bootstrap_null()
 	else
 	{
 		/* in this case, just use superclass method */
-		results=CTwoDistributionsTestStatistic::bootstrap_null();
+		results=CTwoDistributionsTestStatistic::sample_null();
 	}
+
+	SG_DEBUG("leaving!\n");
 
 	return results;
 }

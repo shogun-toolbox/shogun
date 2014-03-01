@@ -154,11 +154,11 @@ TEST(QuadraticTimeMMD,test_quadratic_mmd_precomputed_kernel)
 
 	/* create MMD instance */
 	CQuadraticTimeMMD* mmd=new CQuadraticTimeMMD(kernel, p_and_q, m);
-	mmd->set_bootstrap_iterations(10);
+	mmd->set_num_null_samples(10);
 
 	/* use fixed seed */
 	sg_rand->set_seed(12345);
-	SGVector<float64_t> null_samples=mmd->bootstrap_null();
+	SGVector<float64_t> null_samples=mmd->sample_null();
 
 	float64_t mean=CStatistics::mean(null_samples);
 	float64_t var=CStatistics::variance(null_samples);
@@ -166,7 +166,7 @@ TEST(QuadraticTimeMMD,test_quadratic_mmd_precomputed_kernel)
 	//SG_SPRINT("mean %f, var %f\n", mean, var);
 
 	/* now again but with a precomputed kernel, same features.
-	 * This avoids re-computing the kernel matrix in every bootstrapping
+	 * This avoids re-computing the kernel matrix in every permutation
 	 * iteration and should be num_iterations times faster */
 
 	/* re-init kernel before kernel matrix is computed: this is due to a design
@@ -176,9 +176,9 @@ TEST(QuadraticTimeMMD,test_quadratic_mmd_precomputed_kernel)
 	SG_UNREF(mmd);
 	mmd=new CQuadraticTimeMMD(precomputed_kernel, p_and_q, m);
 	mmd->set_statistic_type(UNBIASED);
-	mmd->set_bootstrap_iterations(10);
+	mmd->set_num_null_samples(10);
 	sg_rand->set_seed(12345);
-	null_samples=mmd->bootstrap_null();
+	null_samples=mmd->sample_null();
 
 	/* assert that results do not change */
 	//SG_SPRINT("mean %f, var %f\n", CStatistics::mean(null_samples),
@@ -220,9 +220,9 @@ TEST(QuadraticTimeMMD,custom_kernel_vs_normal_kernel)
 	 * a test level of 0.05 */
 	float64_t alpha=0.05;
 
-	mmd->set_null_approximation_method(BOOTSTRAP);
+	mmd->set_null_approximation_method(PERMUTATION);
 	mmd->set_statistic_type(BIASED);
-	mmd->set_bootstrap_iterations(3);
+	mmd->set_num_null_samples(3);
 	mmd->set_num_eigenvalues_spectrum(3);
 	mmd->set_num_samples_sepctrum(250);
 
@@ -249,7 +249,7 @@ TEST(QuadraticTimeMMD,custom_kernel_vs_normal_kernel)
 		inds.permute();
 		p_and_q->add_subset(inds);
 		type_I_mmds[i]=mmd->compute_statistic();
-		mmd->set_null_approximation_method(BOOTSTRAP);
+		mmd->set_null_approximation_method(PERMUTATION);
 		type_I_threshs_boot[i]=mmd->compute_threshold(alpha);
 		mmd->set_null_approximation_method(MMD2_SPECTRUM);
 		type_I_threshs_spectrum[i]=mmd->compute_threshold(alpha);
@@ -258,7 +258,7 @@ TEST(QuadraticTimeMMD,custom_kernel_vs_normal_kernel)
 		p_and_q->remove_subset();
 
 		type_II_mmds[i]=mmd->compute_statistic();
-		mmd->set_null_approximation_method(BOOTSTRAP);
+		mmd->set_null_approximation_method(PERMUTATION);
 		type_II_threshs_boot[i]=mmd->compute_threshold(alpha);
 		mmd->set_null_approximation_method(MMD2_SPECTRUM);
 		type_II_threshs_spectrum[i]=mmd->compute_threshold(alpha);
@@ -286,8 +286,8 @@ TEST(QuadraticTimeMMD,custom_kernel_vs_normal_kernel)
 	kernel->init(p_and_q, p_and_q);
 	CCustomKernel* precomputed=new CCustomKernel(kernel);
 	CQuadraticTimeMMD* mmd2=new CQuadraticTimeMMD(precomputed, m);
-	mmd2->set_null_approximation_method(BOOTSTRAP);
-	mmd2->set_bootstrap_iterations(3);
+	mmd2->set_null_approximation_method(PERMUTATION);
+	mmd2->set_num_null_samples(3);
 	inds.range_fill();
 	CMath::init_random(1);
 	for (index_t i=0; i<num_trials; ++i)
@@ -297,7 +297,7 @@ TEST(QuadraticTimeMMD,custom_kernel_vs_normal_kernel)
 		precomputed->add_row_subset(inds);
 		precomputed->add_col_subset(inds);
 		type_I_mmds_pre[i]=mmd2->compute_statistic();
-		mmd->set_null_approximation_method(BOOTSTRAP);
+		mmd->set_null_approximation_method(PERMUTATION);
 		type_I_threshs_boot_pre[i]=mmd2->compute_threshold(alpha);
 		mmd->set_null_approximation_method(MMD2_SPECTRUM);
 		type_I_threshs_spectrum_pre[i]=mmd2->compute_threshold(alpha);
@@ -307,7 +307,7 @@ TEST(QuadraticTimeMMD,custom_kernel_vs_normal_kernel)
 		precomputed->remove_col_subset();
 
 		type_II_mmds_pre[i]=mmd2->compute_statistic();
-		mmd->set_null_approximation_method(BOOTSTRAP);
+		mmd->set_null_approximation_method(PERMUTATION);
 		type_II_threshs_boot_pre[i]=mmd2->compute_threshold(alpha);
 		mmd->set_null_approximation_method(MMD2_SPECTRUM);
 		type_II_threshs_spectrum_pre[i]=mmd2->compute_threshold(alpha);

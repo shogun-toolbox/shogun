@@ -124,7 +124,7 @@ void test_hsic_gamma()
 	SG_UNREF(hsic);
 }
 
-void test_hsic_bootstrap()
+void test_hsic_sample_null()
 {
 	CFeatures* features_p=NULL;
 	CFeatures* features_q=NULL;
@@ -137,25 +137,25 @@ void test_hsic_bootstrap()
 	SG_UNREF(features_p);
 	SG_UNREF(features_q);
 
-	/* do bootstrapping */
-	hsic->set_null_approximation_method(BOOTSTRAP);
+	/* do sampling null */
+	hsic->set_null_approximation_method(PERMUTATION);
 	float64_t p=hsic->compute_p_value(0.05);
 	SG_SPRINT("p-value: %f\n", p);
 
-	/* ensure that bootstrapping of hsic leads to same results as using
+	/* ensure that sampling null of hsic leads to same results as using
 	 * CKernelIndependenceTestStatistic */
 	CMath::init_random(1);
-	float64_t mean1=CStatistics::mean(hsic->bootstrap_null());
-	float64_t var1=CStatistics::variance(hsic->bootstrap_null());
+	float64_t mean1=CStatistics::mean(hsic->sample_null());
+	float64_t var1=CStatistics::variance(hsic->sample_null());
 	SG_SPRINT("mean1=%f, var1=%f\n", mean1, var1);
 
 	CMath::init_random(1);
 	float64_t mean2=CStatistics::mean(
-			hsic->CKernelIndependenceTestStatistic::bootstrap_null());
-	float64_t var2=CStatistics::variance(hsic->bootstrap_null());
+			hsic->CKernelIndependenceTestStatistic::sample_null());
+	float64_t var2=CStatistics::variance(hsic->sample_null());
 	SG_SPRINT("mean2=%f, var2=%f\n", mean2, var2);
 
-	/* assert than results are the same from bot bootstrapping impl. */
+	/* assert than results are the same from bot sampling null impl. */
 	ASSERT(CMath::abs(mean1-mean2)<10E-8);
 	ASSERT(CMath::abs(var1-var2)<10E-8);
 
@@ -170,7 +170,7 @@ int main(int argc, char** argv)
 
 	test_hsic_fixed();
 	test_hsic_gamma();
-	test_hsic_bootstrap();
+	test_hsic_sample_null();
 
 	exit_shogun();
 	return 0;

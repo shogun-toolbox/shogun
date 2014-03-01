@@ -24,15 +24,16 @@ CTestStatistic::~CTestStatistic()
 
 void CTestStatistic::init()
 {
-	SG_ADD(&m_bootstrap_iterations, "bootstrap_iterations",
-			"Number of iterations for bootstrapping", MS_NOT_AVAILABLE);
+	SG_ADD(&m_num_null_samples, "num_null_samples",
+			"Number of permutation iterations for sampling null",
+			MS_NOT_AVAILABLE);
 	SG_ADD((machine_int_t*)&m_null_approximation_method,
 			"null_approximation_method",
 			"Method for approximating null distribution",
 			MS_NOT_AVAILABLE);
 
-	m_bootstrap_iterations=250;
-	m_null_approximation_method=BOOTSTRAP;
+	m_num_null_samples=250;
+	m_null_approximation_method=PERMUTATION;
 }
 
 void CTestStatistic::set_null_approximation_method(
@@ -41,10 +42,10 @@ void CTestStatistic::set_null_approximation_method(
 	m_null_approximation_method=null_approximation_method;
 }
 
-void CTestStatistic::set_bootstrap_iterations(index_t
-		bootstrap_iterations)
+void CTestStatistic::set_num_null_samples(index_t
+		num_null_samples)
 {
-	m_bootstrap_iterations=bootstrap_iterations;
+	m_num_null_samples=num_null_samples;
 }
 
 float64_t CTestStatistic::perform_test()

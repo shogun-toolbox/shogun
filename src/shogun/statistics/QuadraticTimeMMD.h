@@ -78,8 +78,8 @@ enum EQuadraticMMDType
  * distribution samples.
  *
  * Along with the statistic comes a method to compute a p-value based on
- * different methods. Bootstrapping, is also possible. If unsure which one to
- * use, bootstrapping with 250 iterations always is correct (but slow).
+ * different methods. Sampling from null is also possible. If unsure which one to
+ * use, sampling with 250 permutation iterations always is correct (but slow).
  *
  * To choose, use set_null_approximation_method() and choose from.
  *
@@ -93,7 +93,7 @@ enum EQuadraticMMDType
  * MMD2_GAMMA: for a very fast, but not consistent test based on moment matching
  * of a Gamma distribution, as described in [2].
  *
- * BOOTSTRAPPING: For permuting available samples to sample null-distribution
+ * PERMUTATION: For permuting available samples to sample null-distribution
  *
  * For kernel selection see CMMDKernelSelection.
  *

@@ -16,7 +16,7 @@ def statistics_quadratic_time_mmd (m,dim,difference):
 	from modshogun import MeanShiftDataGenerator
 	from modshogun import GaussianKernel, CustomKernel
 	from modshogun import QuadraticTimeMMD
-	from modshogun import BOOTSTRAP, MMD2_SPECTRUM, MMD2_GAMMA, BIASED, UNBIASED
+	from modshogun import PERMUTATION, MMD2_SPECTRUM, MMD2_GAMMA, BIASED, UNBIASED
 	from modshogun import Statistics, IntVector, RealVector, Math
 
 	# init seed for reproducability
@@ -47,14 +47,14 @@ def statistics_quadratic_time_mmd (m,dim,difference):
 	# a test level of 0.05
 	alpha=0.05;
 
-	# using bootstrapping (slow, not the most reliable way. Consider pre-
+	# using permutation (slow, not the most reliable way. Consider pre-
 	# computing the kernel when using it, see below).
 	# Also, in practice, use at least 250 iterations
-	mmd.set_null_approximation_method(BOOTSTRAP);
-	mmd.set_bootstrap_iterations(3);
-	p_value_boot=mmd.perform_test();
+	mmd.set_null_approximation_method(PERMUTATION);
+	mmd.set_num_null_samples(3);
+	p_value_null=mmd.perform_test();
 	# reject if p-value is smaller than test level
-	#print "bootstrap: p!=q: ", p_value_boot<alpha
+	#print "bootstrap: p!=q: ", p_value_null<alpha
 
 	# using spectrum method. Use at least 250 samples from null.
 	# This is consistent but sometimes breaks, always monitor type I error.
@@ -78,13 +78,13 @@ def statistics_quadratic_time_mmd (m,dim,difference):
 	#print "gamma: p!=q: ", p_value_gamma<alpha
 
 	# compute tpye I and II error (use many more trials in practice).
-	# Type I error is not necessary if one uses bootstrapping. We do it here
+	# Type I error is not necessary if one uses permutation. We do it here
 	# anyway, but note that this is an efficient way of computing it.
 	# Also note that testing has to happen on
 	# difference data than kernel selection, but the linear time mmd does this
 	# implicitly and we used a fixed kernel here.
-	mmd.set_null_approximation_method(BOOTSTRAP);
-	mmd.set_bootstrap_iterations(5);
+	mmd.set_null_approximation_method(PERMUTATION);
+	mmd.set_num_null_samples(5);
 	num_trials=5;
 	type_I_errors=RealVector(num_trials);
 	type_II_errors=RealVector(num_trials);
@@ -107,7 +107,7 @@ def statistics_quadratic_time_mmd (m,dim,difference):
 		# on normal data, this gives type II error
 		type_II_errors[i]=mmd.perform_test()>alpha;
 
-	return type_I_errors.get(),type_I_errors.get(),p_value_boot,p_value_spectrum,p_value_gamma,
+	return type_I_errors.get(),type_I_errors.get(),p_value_null,p_value_spectrum,p_value_gamma,
 
 if __name__=='__main__':
 	print('QuadraticTimeMMD')
