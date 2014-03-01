@@ -71,61 +71,40 @@ bool CPCA::init(CFeatures* features)
 {
 	if (!m_initialized)
 	{
-		// loop varibles
-		int32_t i,j,k;
+		// loop variable
+		int32_t i;
 
 		ASSERT(features->get_feature_class()==C_DENSE)
 		ASSERT(features->get_feature_type()==F_DREAL)
 
-		int32_t num_vectors=((CDenseFeatures<float64_t>*)features)->get_num_vectors();
-		int32_t num_features=((CDenseFeatures<float64_t>*)features)->get_num_features();
+		int32_t num_vectors = ((CDenseFeatures<float64_t>*)features)->get_num_vectors();
+		int32_t num_features = ((CDenseFeatures<float64_t>*)features)->get_num_features();
 		SG_INFO("num_examples: %ld num_features: %ld \n", num_vectors, num_features)
 
+		SGMatrix<float64_t> feature_matrix = ((CDenseFeatures<float64_t>*)features)->get_feature_matrix();
 		m_mean_vector.vlen = num_features;
 		m_mean_vector.vector = SG_CALLOC(float64_t, num_features);
 
-		// sum
-		SGMatrix<float64_t> feature_matrix = ((CDenseFeatures<float64_t>*)features)->get_feature_matrix();
-		for (i=0; i<num_vectors; i++)
-		{
-			for (j=0; j<num_features; j++)
-				m_mean_vector.vector[j] += feature_matrix.matrix[i*num_features+j];
-		}
+		// center data
+		Map<MatrixXd> fmatrix(feature_matrix.matrix, num_features, num_vectors);
+		Map<VectorXd> data_mean(m_mean_vector.vector, num_features);
+ 		data_mean = fmatrix.rowwise().sum()/(float64_t) num_vectors;
+		fmatrix = fmatrix.colwise()-data_mean;
 
-		//divide
-		for (i=0; i<num_features; i++)
-			m_mean_vector.vector[i] /= num_vectors;
-
-		float64_t* cov = SG_CALLOC(float64_t, num_features*num_features);
-
-		float64_t* sub_mean = SG_MALLOC(float64_t, num_features);
-
-		for (i=0; i<num_vectors; i++)
-		{
-		for (k=0; k<num_features; k++)
-		sub_mean[k]=feature_matrix.matrix[i*num_features+k]-m_mean_vector.vector[k];
-
-		cblas_dger(CblasColMajor,
-			           num_features,num_features,
-			           1.0,sub_mean,1,
-			           sub_mean,1,
-			           cov, num_features);
-		}
-
-		SG_FREE(sub_mean);
-
-		for (i=0; i<num_features; i++)
-		{
-			for (j=0; j<num_features; j++)
-				cov[i*num_features+j]/=(num_vectors-1);
-		}
+		// covariance matrix
+		MatrixXd cov_mat(num_features, num_features);
+		cov_mat = fmatrix*fmatrix.transpose();
+		cov_mat /= (num_vectors-1);
 
 		SG_INFO("Computing Eigenvalues ... ")
-
-		m_eigenvalues_vector.vector = SGMatrix<float64_t>::compute_eigenvectors(cov,num_features,num_features);
+		// eigen value computed
+		SelfAdjointEigenSolver<MatrixXd> eigenSolve = SelfAdjointEigenSolver<MatrixXd>(cov_mat);
+		m_eigenvalues_vector.vector = SG_MALLOC(float64_t, num_features);
 		m_eigenvalues_vector.vlen = num_features;
-		num_dim=0;
+		Map<VectorXd> eigenValues(m_eigenvalues_vector.vector, num_features);
+		eigenValues = eigenSolve.eigenvalues();
 
+		num_dim=0;
 		if (m_mode == FIXED_NUMBER)
 		{
 			ASSERT(m_target_dim <= num_features)
@@ -133,10 +112,7 @@ bool CPCA::init(CFeatures* features)
 		}
 		if (m_mode == VARIANCE_EXPLAINED)
 		{
-			float64_t eig_sum = 0;
-			for (i=0; i<num_features; i++)
-				eig_sum += m_eigenvalues_vector.vector[i];
-
+			float64_t eig_sum = eigenValues.sum();
 			float64_t com_sum = 0;
 			for (i=num_features-1; i>-1; i--)
 			{
@@ -160,22 +136,19 @@ bool CPCA::init(CFeatures* features)
 		SG_INFO("Done\nReducing from %i to %i features..", num_features, num_dim)
 
 		m_transformation_matrix = SGMatrix<float64_t>(num_features,num_dim);
+		Map<MatrixXd> transformMatrix(m_transformation_matrix.matrix, num_features, num_dim);
 		num_old_dim = num_features;
 
-		int32_t offs=0;
-		for (i=num_features-num_dim; i<num_features; i++)
+		// eigenvector matrix
+		transformMatrix = eigenSolve.eigenvectors().block(0, num_features-num_dim, num_features, num_dim);
+		if (m_whitening)
 		{
-			for (k=0; k<num_features; k++)
-				if (m_whitening)
-					m_transformation_matrix.matrix[offs+k*num_dim] =
-						cov[num_features*i+k]/sqrt(m_eigenvalues_vector.vector[i]);
-				else
-					m_transformation_matrix.matrix[offs+k*num_dim] =
-						cov[num_features*i+k];
-			offs++;
+			for (i=0; i<num_dim; i++)
+				transformMatrix.col(i) /= sqrt(eigenValues[i+num_features-num_dim]);
 		}
 
-		SG_FREE(cov);
+		// restore feature matrix
+		fmatrix = fmatrix.colwise()+data_mean;
 		m_initialized = true;
 		return true;
 	}
