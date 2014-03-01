@@ -12,8 +12,10 @@
 
 #ifndef PCA_H_
 #define PCA_H_
+
 #include <shogun/lib/config.h>
-#ifdef HAVE_LAPACK
+
+#if defined(HAVE_LAPACK) && defined(HAVE_EIGEN3)
 #include <shogun/mathematics/lapack.h>
 #include <stdio.h>
 #include <shogun/preprocessor/DimensionReductionPreprocessor.h>
@@ -145,5 +147,5 @@ class CPCA: public CDimensionReductionPreprocessor
 		EPCAMemoryMode mem_mode;
 };
 }
-#endif
-#endif
+#endif // HAVE_LAPACK && HAVE_EIGEN3
+#endif // PCA_H_

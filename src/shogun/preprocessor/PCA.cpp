@@ -9,11 +9,11 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  * Copyright (C) 2011 Berlin Institute of Technology
  */
-#include <shogun/preprocessor/PCA.h>
-#ifdef HAVE_LAPACK
-#include <shogun/mathematics/lapack.h>
 #include <shogun/lib/config.h>
-#ifdef HAVE_EIGEN3
+
+#if defined(HAVE_LAPACK) && defined(HAVE_EIGEN3)
+#include <shogun/preprocessor/PCA.h>
+#include <shogun/mathematics/lapack.h>
 #include <shogun/mathematics/Math.h>
 #include <string.h>
 #include <stdlib.h>
@@ -287,5 +287,4 @@ void CPCA::set_memory_mode(EPCAMemoryMode e)
 	mem_mode = e;
 }
 
-#endif /* HAVE_EIGEN3 */
-#endif /* HAVE_LAPACK */
+#endif // HAVE_LAPACK && HAVE_EIGEN3
