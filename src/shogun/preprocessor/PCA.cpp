@@ -6,6 +6,7 @@
  *
  * Written (W) 1999-2008 Gunnar Raetsch
  * Written (W) 1999-2008,2011 Soeren Sonnenburg
+ * Written (W) 2014 Parijat Mazumdar
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  * Copyright (C) 2011 Berlin Institute of Technology
  */
@@ -22,11 +23,12 @@
 #include <shogun/features/Features.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/mathematics/eigen3.h>
-
+#include <iostream>
+using namespace std;
 using namespace shogun;
 using namespace Eigen;
 
-CPCA::CPCA(bool do_whitening_, EPCAMode mode_, float64_t thresh_, EPCAMemoryMode mem_)
+CPCA::CPCA(bool do_whitening_, EPCAMode mode_, float64_t thresh_, EPCAMemoryMode mem_, EPCAMethod meth_)
 : CDimensionReductionPreprocessor()
 {
 	init();
@@ -34,6 +36,7 @@ CPCA::CPCA(bool do_whitening_, EPCAMode mode_, float64_t thresh_, EPCAMemoryMode
 	m_mode = mode_;
 	thresh = thresh_;
 	mem_mode = mem_;
+	method = meth_;
 }
 
 void CPCA::init()
@@ -47,6 +50,7 @@ void CPCA::init()
 	m_mode = FIXED_NUMBER;
 	thresh = 1e-6;
 	mem_mode = MEM_REALLOCATE;
+	method = SVD;	
 
 	SG_ADD(&m_transformation_matrix, "transformation_matrix",
 	    "Transformation matrix (Eigenvectors of covariance matrix).",
@@ -61,6 +65,7 @@ void CPCA::init()
 	SG_ADD((machine_int_t*) &m_mode, "mode", "PCA Mode.", MS_AVAILABLE);
 	SG_ADD(&thresh, "thresh", "Cutoff threshold.", MS_AVAILABLE);
 	SG_ADD((machine_int_t*) &mem_mode, "mem_mode", "Memory mode (in-place or reallocation).", MS_NOT_AVAILABLE);
+	SG_ADD((machine_int_t*) &method, "method", "Method used for PCA calculation", MS_NOT_AVAILABLE);
 }
 
 CPCA::~CPCA()
@@ -74,77 +79,128 @@ bool CPCA::init(CFeatures* features)
 		// loop variable
 		int32_t i;
 
-		ASSERT(features->get_feature_class()==C_DENSE)
-		ASSERT(features->get_feature_type()==F_DREAL)
-
-		int32_t num_vectors = ((CDenseFeatures<float64_t>*)features)->get_num_vectors();
-		int32_t num_features = ((CDenseFeatures<float64_t>*)features)->get_num_features();
-		SG_INFO("num_examples: %ld num_features: %ld \n", num_vectors, num_features)
+		REQUIRE(features->get_feature_class()==C_DENSE, "PCA only works with dense features")
+		REQUIRE(features->get_feature_type()==F_DREAL, "PCA only works with real features")
 
 		SGMatrix<float64_t> feature_matrix = ((CDenseFeatures<float64_t>*)features)->get_feature_matrix();
-		m_mean_vector.vlen = num_features;
-		m_mean_vector.vector = SG_CALLOC(float64_t, num_features);
+		int32_t num_vectors = feature_matrix.num_cols;
+		int32_t num_features = feature_matrix.num_rows;
+		SG_INFO("num_examples: %ld num_features: %ld \n", num_vectors, num_features)
+
+		// max target dim allowed
+		int32_t max_dim_allowed = CMath::min(num_vectors, num_features);	
+		num_dim=0;
+
+		REQUIRE(m_target_dim<=max_dim_allowed,
+			 "target dimension should be less or equal to than minimum of N and D")
 
 		// center data
 		Map<MatrixXd> fmatrix(feature_matrix.matrix, num_features, num_vectors);
+		m_mean_vector = SGVector<float64_t>(num_features);
 		Map<VectorXd> data_mean(m_mean_vector.vector, num_features);
  		data_mean = fmatrix.rowwise().sum()/(float64_t) num_vectors;
 		fmatrix = fmatrix.colwise()-data_mean;
 
-		// covariance matrix
-		MatrixXd cov_mat(num_features, num_features);
-		cov_mat = fmatrix*fmatrix.transpose();
-		cov_mat /= (num_vectors-1);
+		m_eigenvalues_vector = SGVector<float64_t>(max_dim_allowed);
+		Map<VectorXd> eigenValues(m_eigenvalues_vector.vector, max_dim_allowed);
 
-		SG_INFO("Computing Eigenvalues ... ")
-		// eigen value computed
-		SelfAdjointEigenSolver<MatrixXd> eigenSolve = SelfAdjointEigenSolver<MatrixXd>(cov_mat);
-		m_eigenvalues_vector.vector = SG_MALLOC(float64_t, num_features);
-		m_eigenvalues_vector.vlen = num_features;
-		Map<VectorXd> eigenValues(m_eigenvalues_vector.vector, num_features);
-		eigenValues = eigenSolve.eigenvalues();
+		if (method == EVD)
+		{
+			// covariance matrix
+			MatrixXd cov_mat(num_features, num_features);	
+			cov_mat = fmatrix*fmatrix.transpose();
+			cov_mat /= (num_vectors-1);
 
-		num_dim=0;
-		if (m_mode == FIXED_NUMBER)
-		{
-			ASSERT(m_target_dim <= num_features)
-			num_dim = m_target_dim;
-		}
-		if (m_mode == VARIANCE_EXPLAINED)
-		{
-			float64_t eig_sum = eigenValues.sum();
-			float64_t com_sum = 0;
-			for (i=num_features-1; i>-1; i--)
+			SG_INFO("Computing Eigenvalues ... ")
+			// eigen value computed
+			SelfAdjointEigenSolver<MatrixXd> eigenSolve = SelfAdjointEigenSolver<MatrixXd>(cov_mat);
+			eigenValues = eigenSolve.eigenvalues().tail(max_dim_allowed);
+
+			if (m_mode == FIXED_NUMBER)
 			{
-				num_dim++;
-				com_sum += m_eigenvalues_vector.vector[i];
-				if (com_sum/eig_sum>=thresh)
-					break;
+				num_dim = m_target_dim;
 			}
-		}
-		if (m_mode == THRESHOLD)
-		{
-			for (i=num_features-1; i>-1; i--)
+			if (m_mode == VARIANCE_EXPLAINED)
 			{
-				if (m_eigenvalues_vector.vector[i]>thresh)
+				float64_t eig_sum = eigenValues.sum();
+				float64_t com_sum = 0;
+				for (i=num_features-1; i>-1; i--)
+				{
 					num_dim++;
-				else
-					break;
+					com_sum += m_eigenvalues_vector.vector[i];
+					if (com_sum/eig_sum>=thresh)
+						break;
+				}
+			}
+			if (m_mode == THRESHOLD)
+			{
+				for (i=num_features-1; i>-1; i--)
+				{
+					if (m_eigenvalues_vector.vector[i]>thresh)
+						num_dim++;
+					else
+						break;
+				}
+			}
+
+			SG_INFO("Done\nReducing from %i to %i features..", num_features, num_dim)
+
+			m_transformation_matrix = SGMatrix<float64_t>(num_features,num_dim);
+			Map<MatrixXd> transformMatrix(m_transformation_matrix.matrix, num_features, num_dim);
+			num_old_dim = num_features;
+
+			// eigenvector matrix
+			transformMatrix = eigenSolve.eigenvectors().block(0, num_features-num_dim, num_features,num_dim);
+			if (m_whitening)
+			{
+				for (i=0; i<num_dim; i++)
+					transformMatrix.col(i) /= sqrt(eigenValues[i+num_features-num_dim]);
 			}
 		}
 
-		SG_INFO("Done\nReducing from %i to %i features..", num_features, num_dim)
-
-		m_transformation_matrix = SGMatrix<float64_t>(num_features,num_dim);
-		Map<MatrixXd> transformMatrix(m_transformation_matrix.matrix, num_features, num_dim);
-		num_old_dim = num_features;
-
-		// eigenvector matrix
-		transformMatrix = eigenSolve.eigenvectors().block(0, num_features-num_dim, num_features, num_dim);
-		if (m_whitening)
+		else
 		{
-			for (i=0; i<num_dim; i++)
-				transformMatrix.col(i) /= sqrt(eigenValues[i+num_features-num_dim]);
+			JacobiSVD<MatrixXd> svd(fmatrix.transpose(), ComputeThinU | ComputeThinV);
+			eigenValues = svd.singularValues();
+			eigenValues = eigenValues.cwiseProduct(eigenValues)/(num_vectors-1);
+			if (m_mode == FIXED_NUMBER)
+			{
+				num_dim = m_target_dim;
+			}
+			if (m_mode == VARIANCE_EXPLAINED)
+			{
+				float64_t eig_sum = eigenValues.sum();
+				float64_t com_sum = 0;
+				for (i=0; i<num_features; i++)
+				{
+					num_dim++;
+					com_sum += m_eigenvalues_vector.vector[i];
+					if (com_sum/eig_sum>=thresh)
+						break;
+				}
+			}
+			if (m_mode == THRESHOLD)
+			{
+				for (i=0; i<num_features; i++)
+				{
+					if (m_eigenvalues_vector.vector[i]>thresh)
+						num_dim++;
+					else
+						break;
+				}
+			}
+
+			SG_INFO("Done\nReducing from %i to %i features..", num_features, num_dim)
+
+			m_transformation_matrix = SGMatrix<float64_t>(num_features,num_dim);
+			Map<MatrixXd> transformMatrix(m_transformation_matrix.matrix, num_features, num_dim);
+			num_old_dim = num_features;
+			transformMatrix = svd.matrixV().block(0, 0, num_features, num_dim);
+			if (m_whitening)
+			{
+				for (i=0; i<num_dim; i++)
+					transformMatrix.col(i) /= sqrt(eigenValues[i+num_features-num_dim]);
+			}
 		}
 
 		// restore feature matrix

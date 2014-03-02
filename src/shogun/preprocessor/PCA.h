@@ -6,6 +6,7 @@
  *
  * Written (W) 1999-2008 Gunnar Raetsch
  * Written (W) 1999-2008,2011 Soeren Sonnenburg
+ * Written (W) 2014 Parijat Mazumdar
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  * Copyright (C) 2011 Berlin Institute of Technology
  */
@@ -24,6 +25,15 @@
 
 namespace shogun
 {
+/** Method used for pca */
+enum EPCAMethod
+{
+	/** SVD based PCA. Time complexity ~14dn^2 */
+	SVD,
+	/** Eigenvalue decomposition of covariance matrix. Time complexity ~10d^3 */
+	EVD
+};
+
 /** mode of pca */
 enum EPCAMode
 {
@@ -66,8 +76,8 @@ class CPCA: public CDimensionReductionPreprocessor
 		 * @param thresh threshold
 		 * @param memory usage mode of PCA
 		 */
-		CPCA(bool do_whitening=false, EPCAMode mode=FIXED_NUMBER, float64_t thresh=1e-6,
-							EPCAMemoryMode mem=MEM_REALLOCATE);
+		CPCA(bool do_whitening=false, EPCAMode mode=FIXED_NUMBER, 
+				float64_t thresh=1e-6, EPCAMemoryMode mem=MEM_REALLOCATE, EPCAMethod meth=SVD);
 
 		/** destructor */
 		virtual ~CPCA();
@@ -145,6 +155,8 @@ class CPCA: public CDimensionReductionPreprocessor
 		float64_t thresh;
 		/** PCA memory mode */
 		EPCAMemoryMode mem_mode;
+		/** PCA method */
+		EPCAMethod method;
 };
 }
 #endif // HAVE_LAPACK && HAVE_EIGEN3
