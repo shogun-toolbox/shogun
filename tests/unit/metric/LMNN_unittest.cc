@@ -101,10 +101,10 @@ TEST(LMNN,train_pca_init)
 
 	// check linear transform solution
 	SGMatrix<float64_t> L=lmnn->get_linear_transform();
-	EXPECT_NEAR(L(1,0),0.991577280560543,1e-5);
-	EXPECT_NEAR(L(1,1),0,1e-5);
-	EXPECT_NEAR(L(0,0),0,1e-5);
-	EXPECT_NEAR(L(0,1),1.00000080000000002,1e-5);
+	EXPECT_NEAR(L(0,0),0.991577280560543,1e-5);
+	EXPECT_NEAR(L(0,1),0,1e-5);
+	EXPECT_NEAR(L(1,0),0,1e-5);
+	EXPECT_NEAR(L(1,1),1.00000080000000002,1e-5);
 
 	SG_UNREF(lmnn)
 }

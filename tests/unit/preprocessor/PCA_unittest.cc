@@ -35,9 +35,9 @@ TEST(PCA, PCA_output_test_N_greaterthan_D)
 
 	EXPECT_EQ(1,returned_matrix.num_rows);
 	EXPECT_EQ(3,returned_matrix.num_cols);
-	EXPECT_NEAR(-1,returned_matrix(0,0),0.0000001);
+	EXPECT_NEAR(1,returned_matrix(0,0),0.0000001);
 	EXPECT_NEAR(0,returned_matrix(0,1),0.0000001);
-	EXPECT_NEAR(1,returned_matrix(0,2),0.0000001);
+	EXPECT_NEAR(-1,returned_matrix(0,2),0.0000001);
 
 	SG_UNREF(pca);
 	SG_UNREF(features);
@@ -104,7 +104,8 @@ TEST(PCA, PCA_output_test_N_greaterthan_D_IN_PLACE)
 	data(1,2)=3.0*sin(M_PI/3.0);
 
 	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
-	CPCA* pca=new CPCA(false, FIXED_NUMBER, 1e-6, MEM_IN_PLACE);
+	CPCA* pca=new CPCA();
+	pca->set_memory_mode(MEM_IN_PLACE);
 	pca->set_target_dim(1);
 	pca->init(features);
 
@@ -112,9 +113,9 @@ TEST(PCA, PCA_output_test_N_greaterthan_D_IN_PLACE)
 
 	EXPECT_EQ(1,returned_matrix.num_rows);
 	EXPECT_EQ(3,returned_matrix.num_cols);
-	EXPECT_NEAR(-1,returned_matrix(0,0),0.0000001);
+	EXPECT_NEAR(1,returned_matrix(0,0),0.0000001);
 	EXPECT_NEAR(0,returned_matrix(0,1),0.0000001);
-	EXPECT_NEAR(1,returned_matrix(0,2),0.0000001);
+	EXPECT_NEAR(-1,returned_matrix(0,2),0.0000001);
 
 	SG_UNREF(pca);
 	SG_UNREF(features);
@@ -131,7 +132,8 @@ TEST(PCA, PCA_output_test_N_lessthan_D_IN_PLACE)
 	data(2,1)=2.0;
 
 	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
-	CPCA* pca=new CPCA(false, FIXED_NUMBER, 1e-6, MEM_IN_PLACE);
+	CPCA* pca=new CPCA();
+	pca->set_memory_mode(MEM_IN_PLACE);
 	pca->set_target_dim(1);
 	pca->init(features);
 
@@ -155,7 +157,8 @@ TEST(PCA, PCA_output_test_N_equals_D_IN_PLACE)
         data(1,1)=2.0*sin(M_PI/3.0);
 
         CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
-        CPCA* pca=new CPCA(false, FIXED_NUMBER, 1e-6, MEM_IN_PLACE);
+        CPCA* pca=new CPCA();
+	pca->set_memory_mode(MEM_IN_PLACE);
         pca->set_target_dim(1);
         pca->init(features);
 
@@ -190,7 +193,7 @@ TEST(PCA, PCA_rigorous_test_N_greater_D_EVD)
 	data(2,4)=0.281984063670556;
 
 	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
-	CPCA* pca=new CPCA(false, FIXED_NUMBER, 1e-6, MEM_REALLOCATE, EVD);
+	CPCA* pca=new CPCA(EVD);
 	pca->set_target_dim(3);
 	pca->init(features);
 
@@ -234,7 +237,7 @@ TEST(PCA, PCA_rigorous_test_N_greater_D_EVD)
 	SG_UNREF(features);
 }
 
-TEST(PCA, PCA_rigorous_test_N_less_D)
+TEST(PCA, PCA_rigorous_test_N_less_D_EVD)
 {
 	SGMatrix<float64_t> data(5,3);
 	data(0,0)=0.033479882244451;
@@ -254,7 +257,7 @@ TEST(PCA, PCA_rigorous_test_N_less_D)
 	data(4,2)=0.964229422631627;
 
 	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
-	CPCA* pca=new CPCA(false, FIXED_NUMBER, 1e-6, MEM_REALLOCATE, EVD);
+	CPCA* pca=new CPCA(EVD);
 	pca->set_target_dim(2);
 	pca->init(features);
 
@@ -310,7 +313,7 @@ TEST(PCA, PCA_rigorous_test_N_greater_D_SVD)
 	data(2,4)=0.281984063670556;
 
 	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
-	CPCA* pca=new CPCA();
+	CPCA* pca=new CPCA(SVD);
 	pca->set_target_dim(3);
 	pca->init(features);
 
@@ -374,7 +377,7 @@ TEST(PCA, PCA_rigorous_test_N_less_D_SVD)
 	data(4,2)=0.964229422631627;
 
 	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
-	CPCA* pca=new CPCA();
+	CPCA* pca=new CPCA(SVD);
 	pca->set_target_dim(2);
 	pca->init(features);
 
@@ -405,6 +408,46 @@ TEST(PCA, PCA_rigorous_test_N_less_D_SVD)
 	EXPECT_NEAR(-1.835430614937060,finalmat(0,0),epsilon);
 	EXPECT_NEAR(0.435473994643473,finalmat(0,1),epsilon);
 	EXPECT_NEAR(1.39995662029358,finalmat(0,2),epsilon);
+
+	SG_UNREF(pca);
+	SG_UNREF(features);
+}
+
+TEST(PCA, PCA_apply_to_feature_vector_methodTest)
+{
+	SGMatrix<float64_t> data(5,3);
+	data(0,0)=0.033479882244451;
+	data(0,1)=0.022889792751630;
+	data(0,2)=-0.979206305167302;
+	data(1,0)=-1.333677943428106;
+	data(1,1)=-0.261995434966092;
+	data(1,2)=-1.156401655664002;
+	data(2,0)=1.127492278341590;
+	data(2,1)=-1.750212368446790;
+	data(2,2)=-0.533557109315987;
+	data(3,0)=0.350179410603312;
+	data(3,1)=-0.285650971595330;
+	data(3,2)=-2.002635735883060;
+	data(4,0)=-0.299066030332982;
+	data(4,1)=-0.831366511567624;
+	data(4,2)=0.964229422631627;
+
+	SGVector<float64_t> inputVector(5);
+	inputVector[0] = 0.033479882244451;
+	inputVector[1] = -1.333677943428106;
+	inputVector[2] = 1.127492278341590;
+	inputVector[3] = 0.350179410603312;
+	inputVector[4] = -0.299066030332982;
+
+	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
+	CPCA* pca=new CPCA(SVD);
+	pca->set_target_dim(2);
+	pca->init(features);
+
+	SGVector<float64_t> finalVector=pca->apply_to_feature_vector(inputVector);
+
+	EXPECT_NEAR(-1.835430614937060, finalVector[0], 1e-13);
+	EXPECT_NEAR(0.511467003751085, finalVector[1], 1e-13);
 
 	SG_UNREF(pca);
 	SG_UNREF(features);

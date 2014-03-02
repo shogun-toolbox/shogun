@@ -27,15 +27,24 @@
 using namespace shogun;
 using namespace Eigen;
 
-CPCA::CPCA(bool do_whitening_, EPCAMode mode_, float64_t thresh_, EPCAMemoryMode mem_, EPCAMethod meth_)
+CPCA::CPCA(bool do_whitening, EPCAMode mode, float64_t thresh, EPCAMethod method, EPCAMemoryMode mem)
 : CDimensionReductionPreprocessor()
 {
 	init();
-	m_whitening = do_whitening_;
-	m_mode = mode_;
-	thresh = thresh_;
-	mem_mode = mem_;
-	method = meth_;
+	m_whitening = do_whitening;
+	m_mode = mode;
+	m_thresh = thresh;
+	mem_mode = mem;
+	m_method = method;
+}
+
+CPCA::CPCA(EPCAMethod method, bool do_whitening, EPCAMemoryMode mem)
+: CDimensionReductionPreprocessor()
+{
+	init();
+	m_whitening = do_whitening;
+	mem_mode = mem;
+	m_method = method;
 }
 
 void CPCA::init()
@@ -47,9 +56,9 @@ void CPCA::init()
 	m_initialized = false;
 	m_whitening = false;
 	m_mode = FIXED_NUMBER;
-	thresh = 1e-6;
+	m_thresh = 1e-6;
 	mem_mode = MEM_REALLOCATE;
-	method = SVD;	
+	m_method = AUTO;	
 
 	SG_ADD(&m_transformation_matrix, "transformation_matrix",
 	    "Transformation matrix (Eigenvectors of covariance matrix).",
@@ -62,9 +71,9 @@ void CPCA::init()
 	SG_ADD(&m_whitening, "whitening", "Whether data shall be whitened.",
 	    MS_AVAILABLE);
 	SG_ADD((machine_int_t*) &m_mode, "mode", "PCA Mode.", MS_AVAILABLE);
-	SG_ADD(&thresh, "thresh", "Cutoff threshold.", MS_AVAILABLE);
+	SG_ADD(&m_thresh, "m_thresh", "Cutoff threshold.", MS_AVAILABLE);
 	SG_ADD((machine_int_t*) &mem_mode, "mem_mode", "Memory mode (in-place or reallocation).", MS_NOT_AVAILABLE);
-	SG_ADD((machine_int_t*) &method, "method", "Method used for PCA calculation", MS_NOT_AVAILABLE);
+	SG_ADD((machine_int_t*) &m_method, "m_method", "Method used for PCA calculation", MS_NOT_AVAILABLE);
 }
 
 CPCA::~CPCA()
@@ -103,7 +112,10 @@ bool CPCA::init(CFeatures* features)
 		m_eigenvalues_vector = SGVector<float64_t>(max_dim_allowed);
 		Map<VectorXd> eigenValues(m_eigenvalues_vector.vector, max_dim_allowed);
 
-		if (method == EVD)
+		if (m_method == AUTO)
+			m_method = (num_vectors>num_features) ? EVD : SVD;
+
+		if (m_method == EVD)
 		{
 			// covariance matrix
 			MatrixXd cov_mat(num_features, num_features);	
@@ -127,7 +139,7 @@ bool CPCA::init(CFeatures* features)
 				{
 					num_dim++;
 					com_sum += m_eigenvalues_vector.vector[i];
-					if (com_sum/eig_sum>=thresh)
+					if (com_sum/eig_sum>=m_thresh)
 						break;
 				}
 			}
@@ -135,7 +147,7 @@ bool CPCA::init(CFeatures* features)
 			{
 				for (i=num_features-1; i>-1; i--)
 				{
-					if (m_eigenvalues_vector.vector[i]>thresh)
+					if (m_eigenvalues_vector.vector[i]>m_thresh)
 						num_dim++;
 					else
 						break;
@@ -179,7 +191,7 @@ bool CPCA::init(CFeatures* features)
 				{
 					num_dim++;
 					com_sum += m_eigenvalues_vector.vector[i];
-					if (com_sum/eig_sum>=thresh)
+					if (com_sum/eig_sum>=m_thresh)
 						break;
 				}
 			}
@@ -187,7 +199,7 @@ bool CPCA::init(CFeatures* features)
 			{
 				for (i=0; i<num_features; i++)
 				{
-					if (m_eigenvalues_vector.vector[i]>thresh)
+					if (m_eigenvalues_vector.vector[i]>m_thresh)
 						num_dim++;
 					else
 						break;
@@ -280,20 +292,19 @@ SGMatrix<float64_t> CPCA::apply_to_feature_matrix(CFeatures* features)
 
 SGVector<float64_t> CPCA::apply_to_feature_vector(SGVector<float64_t> vector)
 {
-	float64_t* result = SG_MALLOC(float64_t, num_dim);
-	float64_t* sub_mean = SG_MALLOC(float64_t, vector.vlen);
+	SGVector<float64_t> result = SGVector<float64_t>(num_dim);
+	Map<VectorXd> resultVec(result.vector, num_dim);
+	Map<VectorXd> inputVec(vector.vector, vector.vlen);
 
-	for (int32_t i=0; i<vector.vlen; i++)
-		sub_mean[i]=vector.vector[i]-m_mean_vector.vector[i];
+	Map<VectorXd> mean(m_mean_vector.vector, m_mean_vector.vlen);
+	Map<MatrixXd> transformMat(m_transformation_matrix.matrix,
+		 m_transformation_matrix.num_rows, m_transformation_matrix.num_cols);
 
-	cblas_dgemv(CblasColMajor,CblasNoTrans,
-	            num_dim,vector.vlen,
-	            1.0,m_transformation_matrix.matrix,m_transformation_matrix.num_cols,
-	            sub_mean,1,
-	            0.0,result,1);
+	inputVec = inputVec-mean;
+	resultVec = transformMat.transpose()*inputVec;
+	inputVec = inputVec+mean;
 
-	SG_FREE(sub_mean);
-	return SGVector<float64_t>(result,num_dim);
+	return result;
 }
 
 SGMatrix<float64_t> CPCA::get_transformation_matrix()

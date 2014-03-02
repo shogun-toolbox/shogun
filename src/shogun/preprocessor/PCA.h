@@ -25,12 +25,14 @@
 
 namespace shogun
 {
-/** Method used for pca */
+/** Matrix decomposition method for PCA */
 enum EPCAMethod
 {
-	/** SVD based PCA. Time complexity ~14dn^2 */
+	/** if N>D then EVD is chosen automatically else SVD is chosen (D-dimensions N-number of vectors) */
+	AUTO,	
+	/** SVD based PCA. Time complexity ~14dn^2 (d-dimensions n-number of vectors) */
 	SVD,
-	/** Eigenvalue decomposition of covariance matrix. Time complexity ~10d^3 */
+	/** Eigenvalue decomposition of covariance matrix. Time complexity ~10d^3 (d-dimensions n-number of vectors) */
 	EVD
 };
 
@@ -50,34 +52,78 @@ enum EPCAMemoryMode
 {
 	/** The feature matrix replaced by new matrix with target dims */
 	MEM_REALLOCATE,
-	/** The feature matrix is modified in-place to generate the new matrix. Output matrix dimensions are changed to target dims, but actual matrix size remains same internally. Modifies initial data matrix */
+	/** The feature matrix is modified in-place to generate the new matrix. 
+	 * Output matrix dimensions are changed to target dims, but actual matrix 
+	 * size remains same internally. Modifies initial data matrix 
+	 */
 	MEM_IN_PLACE
 };
 
-/** @brief Preprocessor PCACut performs principial component analysis on the input
- * vectors and keeps only the n eigenvectors with eigenvalues above a certain
- * threshold.
+/** @brief Preprocessor PCA performs principial component analysis on input
+ * feature vectors/matrices. When the init method in PCA is called with proper
+ * feature matrix X (with say N number of vectors and D feature dimension), a
+ * transformation matrix is computed and stored internally. This transformation
+ * matrix is then used to transform all D-dimensional feature vectors or feature
+ * matrices (with D feature dimensions) supplied via apply_to_feature_matrix or
+ * apply_to_feature_vector methods. This tranformation outputs the T-Dimensional
+ * approximation of all these input vectors and matrices (where T<=min(D,N)). The
+ * transformation matrix is essentially a DxT matrix, the columns of which correspond
+ * to the eigenvectors of the covariance matrix(XX') having top T eigenvalues.
  *
- * On preprocessing the stored covariance matrix is used to project
- * vectors into eigenspace only returning vectors of reduced dimension n.
- * Optional whitening is performed.
+ * This class provides 3 method options to compute the transformation matrix :
+ * <em>EVD</em> : Eigen Value Decomposition of Covariance Matrix (XX')
+ * The covariance matrix XX' is first formed internally and then
+ * its eigenvectors and eigenvalues are computed using QR decomposition of the matrix.
+ * The time complexity of this method is \f$~10D^3\f$ and should be used when N > D.
+ * 
+ * <em>SVD</em> : Singular Value Decomposition of feature matrix X
+ * The transpose of feature matrix, X', is decomposed using SVD. X' = UDV'
+ * The matrix V in this decomposition contains the required eigenvectors and
+ * the diagonal entries of the diagonal matrix D correspond to the non-negative
+ * eigenvalues. Eigenvalue, \f$e_i\f$, is derived from a diagonal element, \f$d_i\f$,
+ * using the formula \f$e_i = \frac{\sqrt{d_i}}{N-1}\f$. 
+ * The time complexity of this method is \f$~14DN^2\f$ and should be used when N < D.
  *
- * This is only useful if the dimensionality of the data is rather low, as the
- * covariance matrix is of size num_feat*num_feat. Note that vectors don't have
- * to have zero mean as it is substracted.
+ * <em>AUTO</em> : This mode automagically chooses one of the above modes for the user
+ * based on whether N > D (chooses EVD) or N < D (chooses SVD).
+ * 
+ * This class provides 3 modes to determine the value of T :
+ *
+ * <em>FIXED_NUMBER</em> : T is supplied by user directly using set_target_dims method
+ *
+ * <em>VARIANCE_EXPLAINED</em> : The user supplies the fractional variance that he
+ * wants preserved in the target dimension T. From this supplied fractional variance (thresh),
+ * T is calculated as the smallest k such that the ratio of sum of largest k eigenvalues
+ * over total sum of all eigenvalues is greater than thresh. 
+ *
+ * <em>THRESH</em> : The user supplies a threshold. All eigenvectors with corresponding eigenvalue
+ * greater than the supplied threshold are chosen.
+ * 
+ * Note that vectors/matrices don't have to have zero mean as it is substracted within the class.
  */
 class CPCA: public CDimensionReductionPreprocessor
 {
 	public:
 
-		/** constructor
+		/** standard constructor
+		 *
 		 * @param do_whitening do whitening
-		 * @param mode mode of pca
-		 * @param thresh threshold
-		 * @param memory usage mode of PCA
+		 * @param mode mode of pca : FIXED_NUMBER/VARIANCE_EXPLAINED/THRESHOLD
+		 * @param thresh threshold value for VARIANCE_EXPLAINED or THRESHOLD mode
+		 * @param method Matrix decomposition method used : SVD/EVD/AUTO[default] 
+		 * @param mem memory usage mode of PCA : MEM_REALLOCATE/MEM_IN_PLACE
 		 */
-		CPCA(bool do_whitening=false, EPCAMode mode=FIXED_NUMBER, 
-				float64_t thresh=1e-6, EPCAMemoryMode mem=MEM_REALLOCATE, EPCAMethod meth=SVD);
+		CPCA(bool do_whitening=false, EPCAMode mode=FIXED_NUMBER, float64_t thresh=1e-6, 
+					EPCAMethod method=AUTO, EPCAMemoryMode mem=MEM_REALLOCATE);
+
+		/** special constructor for FIXED_NUMBER mode
+		 *
+		 * @param do_whitening do whitening
+		 * @param mode mode of pca : FIXED_NUMBER/VARIANCE_EXPLAINED/THRESHOLD
+		 * @param method Matrix decomposition method used : SVD/EVD/AUTO[default]
+		 * @param mem memory usage mode of PCA : MEM_REALLOCATE/MEM_IN_PLACE
+		 */
+		CPCA(EPCAMethod method, bool do_whitening=false, EPCAMemoryMode mem=MEM_REALLOCATE);
 
 		/** destructor */
 		virtual ~CPCA();
@@ -152,11 +198,11 @@ class CPCA: public CDimensionReductionPreprocessor
 		/** PCA mode */
 		EPCAMode m_mode;
 		/** thresh */
-		float64_t thresh;
+		float64_t m_thresh;
 		/** PCA memory mode */
 		EPCAMemoryMode mem_mode;
 		/** PCA method */
-		EPCAMethod method;
+		EPCAMethod m_method;
 };
 }
 #endif // HAVE_LAPACK && HAVE_EIGEN3
