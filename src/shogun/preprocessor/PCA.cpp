@@ -23,8 +23,7 @@
 #include <shogun/features/Features.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/mathematics/eigen3.h>
-#include <iostream>
-using namespace std;
+
 using namespace shogun;
 using namespace Eigen;
 
@@ -154,15 +153,20 @@ bool CPCA::init(CFeatures* features)
 			if (m_whitening)
 			{
 				for (i=0; i<num_dim; i++)
-					transformMatrix.col(i) /= sqrt(eigenValues[i+num_features-num_dim]);
+					transformMatrix.col(i) /= sqrt(eigenValues[i+max_dim_allowed-num_dim]);
 			}
 		}
 
 		else
 		{
+			// compute SVD of data matrix
 			JacobiSVD<MatrixXd> svd(fmatrix.transpose(), ComputeThinU | ComputeThinV);
+
+			// compute non-negative eigen values from singular values
 			eigenValues = svd.singularValues();
 			eigenValues = eigenValues.cwiseProduct(eigenValues)/(num_vectors-1);
+
+			// target dimension
 			if (m_mode == FIXED_NUMBER)
 			{
 				num_dim = m_target_dim;
@@ -192,6 +196,7 @@ bool CPCA::init(CFeatures* features)
 
 			SG_INFO("Done\nReducing from %i to %i features..", num_features, num_dim)
 
+			// right singular vectors form eigenvectors
 			m_transformation_matrix = SGMatrix<float64_t>(num_features,num_dim);
 			Map<MatrixXd> transformMatrix(m_transformation_matrix.matrix, num_features, num_dim);
 			num_old_dim = num_features;
@@ -199,7 +204,7 @@ bool CPCA::init(CFeatures* features)
 			if (m_whitening)
 			{
 				for (i=0; i<num_dim; i++)
-					transformMatrix.col(i) /= sqrt(eigenValues[i+num_features-num_dim]);
+					transformMatrix.col(i) /= sqrt(eigenValues[i]);
 			}
 		}
 
