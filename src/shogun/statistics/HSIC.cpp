@@ -27,8 +27,8 @@ CHSIC::CHSIC(CKernel* kernel_p, CKernel* kernel_q, CFeatures* p_and_q,
 {
 	if (p_and_q && p_and_q->get_num_vectors()/2!=m)
 	{
-		SG_ERROR("%s: Only features with equal number of vectors are currently "
-				"possible\n", get_name());
+		SG_ERROR("Only features with equal number of vectors are currently "
+				"possible\n");
 	}
 
 	init();
@@ -40,8 +40,8 @@ CHSIC::CHSIC(CKernel* kernel_p, CKernel* kernel_q, CFeatures* p,
 {
 	if (p && q && p->get_num_vectors()!=q->get_num_vectors())
 	{
-		SG_ERROR("%s: Only features with equal number of vectors are currently "
-				"possible\n", get_name());
+		SG_ERROR("Only features with equal number of vectors are currently "
+				"possible\n");
 	}
 
 	init();
@@ -59,10 +59,9 @@ void CHSIC::init()
 
 float64_t CHSIC::compute_statistic()
 {
-	REQUIRE(m_kernel_p && m_kernel_q, "%s::fit_null_gamma(): No or only one "
-			"kernel specified!\n", get_name());
+	REQUIRE(m_kernel_p && m_kernel_q, "No or only one kernel specified!\n");
 
-	REQUIRE(m_p_and_q, "%s::compute_statistic: features needed!\n", get_name())
+	REQUIRE(m_p_and_q, "features needed!\n")
 
 	/* compute kernel matrices */
 	SGMatrix<float64_t> K=get_kernel_matrix_K();
@@ -100,7 +99,7 @@ float64_t CHSIC::compute_p_value(float64_t statistic)
 	}
 
 	default:
-		/* bootstrapping is handled there */
+		/* sampling null is handled there */
 		result=CTwoDistributionsTestStatistic::compute_p_value(statistic);
 		break;
 	}
@@ -122,7 +121,7 @@ float64_t CHSIC::compute_threshold(float64_t alpha)
 	}
 
 	default:
-		/* bootstrapping is handled there */
+		/* sampling null is handled there */
 		result=CTwoDistributionsTestStatistic::compute_threshold(alpha);
 		break;
 	}
@@ -132,10 +131,9 @@ float64_t CHSIC::compute_threshold(float64_t alpha)
 
 SGVector<float64_t> CHSIC::fit_null_gamma()
 {
-	REQUIRE(m_kernel_p && m_kernel_q, "%s::fit_null_gamma(): No or only one "
-			"kernel specified!\n", get_name());
+	REQUIRE(m_kernel_p && m_kernel_q, "No or only one kernel specified!\n");
 
-	REQUIRE(m_p_and_q, "%s::fit_null_gamma: features needed!\n", get_name())
+	REQUIRE(m_p_and_q, "features needed!\n")
 
 	index_t m=m_m;
 
@@ -212,7 +210,7 @@ SGVector<float64_t> CHSIC::fit_null_gamma()
 	result[0]=a;
 	result[1]=b;
 
-	SG_DEBUG(("leaving %s::fit_null_gamma()\n"), get_name())
+	SG_DEBUG("leaving!\n")
 	return result;
 }
 
@@ -257,8 +255,9 @@ SGMatrix<float64_t> CHSIC::get_kernel_matrix_L()
 
 	/* subset for selecting only data from one distribution */
 	SGVector<index_t> subset(m_m);
-	subset.range_fill();
-	subset.add(m_m);
+	/* setting the starting index at m_m which is the starting index for
+	 * samples from q */
+	subset.range_fill(m_m);
 
 	/* now second half of data for L */
 	if (m_kernel_q->get_kernel_type()==K_CUSTOM)
@@ -287,9 +286,9 @@ SGMatrix<float64_t> CHSIC::get_kernel_matrix_L()
 	return L;
 }
 
-SGVector<float64_t> CHSIC::bootstrap_null()
+SGVector<float64_t> CHSIC::sample_null()
 {
-	SG_DEBUG("entering CHSIC::bootstrap_null()\n")
+	SG_DEBUG("entering!\n")
 
 	/* replace current kernel via precomputed custom kernel and call superclass
 	 * method */
@@ -312,9 +311,9 @@ SGVector<float64_t> CHSIC::bootstrap_null()
 	m_kernel_p=precomputed_p;
 	m_kernel_q=precomputed_q;
 
-	/* use superclass bootstrapping which permutes custom kernels */
+	/* use superclass sample_null which permutes custom kernels */
 	SGVector<float64_t> null_samples=
-			CKernelIndependenceTestStatistic::bootstrap_null();
+			CKernelIndependenceTestStatistic::sample_null();
 
 	/* restore kernels */
 	m_kernel_p=kernel_p;
@@ -323,7 +322,6 @@ SGVector<float64_t> CHSIC::bootstrap_null()
 	SG_UNREF(precomputed_p);
 	SG_UNREF(precomputed_q);
 
-
-	SG_DEBUG("leaving CHSIC::bootstrap_null()\n")
+	SG_DEBUG("leaving!\n")
 	return null_samples;
 }

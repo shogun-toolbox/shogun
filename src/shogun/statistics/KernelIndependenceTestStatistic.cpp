@@ -61,11 +61,11 @@ void CKernelIndependenceTestStatistic::init()
 	m_kernel_q=NULL;
 }
 
-SGVector<float64_t> CKernelIndependenceTestStatistic::bootstrap_null()
+SGVector<float64_t> CKernelIndependenceTestStatistic::sample_null()
 {
-	SG_DEBUG("entering CKernelIndependenceTestStatistic::bootstrap_null()\n")
+	SG_DEBUG("entering!\n")
 
-	/* compute bootstrap statistics for null distribution */
+	/* compute sample statistics for null distribution */
 	SGVector<float64_t> results;
 
 	/* only do something if a custom kernel is used: use the power of pre-
@@ -75,10 +75,10 @@ SGVector<float64_t> CKernelIndependenceTestStatistic::bootstrap_null()
 			m_kernel_q->get_kernel_type()==K_CUSTOM)
 	{
 		/* allocate memory */
-		results=SGVector<float64_t>(m_bootstrap_iterations);
+		results=SGVector<float64_t>(m_num_null_samples);
 
-		/* memory for index permutations, (would slow down loop) */
-		SGVector<index_t> ind_permutation(m_p_and_q->get_num_vectors());
+		/* memory for index permutations */
+		SGVector<index_t> ind_permutation(2*m_m);
 		ind_permutation.range_fill();
 
 		/* check if kernel is a custom kernel. In that case, changing features is
@@ -86,9 +86,10 @@ SGVector<float64_t> CKernelIndependenceTestStatistic::bootstrap_null()
 		CCustomKernel* custom_kernel_p=(CCustomKernel*)m_kernel_p;
 		CCustomKernel* custom_kernel_q=(CCustomKernel*)m_kernel_q;
 
-		for (index_t i=0; i<m_bootstrap_iterations; ++i)
+		for (index_t i=0; i<m_num_null_samples; ++i)
 		{
-			/* idea: merge features of p and q, shuffle, and compute statistic.
+			/* idea: merge features of p and q, shuffle samples from p while
+			 * keeping samples from q intact and compute statistic.
 			 * This is done using subsets here. add to custom kernel since
 			 * it has no features to subset. CustomKernel has not to be
 			 * re-initialised after each subset setting */
@@ -112,11 +113,11 @@ SGVector<float64_t> CKernelIndependenceTestStatistic::bootstrap_null()
 	else
 	{
 		/* in this case, just use superclass method */
-		results=CTwoDistributionsTestStatistic::bootstrap_null();
+		results=CTwoDistributionsTestStatistic::sample_null();
 	}
 
 
-	SG_DEBUG("leaving CKernelIndependenceTestStatistic::bootstrap_null()\n")
+	SG_DEBUG("leaving!\n")
 	return results;
 }
 

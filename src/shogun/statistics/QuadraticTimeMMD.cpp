@@ -50,7 +50,7 @@ CQuadraticTimeMMD::CQuadraticTimeMMD(CKernel* kernel, CFeatures* p_and_q,
 
 	if (p_and_q && m!=p_and_q->get_num_vectors()/2)
 	{
-		SG_ERROR("CQuadraticTimeMMD: Only features with equal number of vectors "
+		SG_ERROR("Only features with equal number of vectors "
 				"are currently possible\n");
 	}
 }
@@ -62,7 +62,7 @@ CQuadraticTimeMMD::CQuadraticTimeMMD(CKernel* kernel, CFeatures* p,
 
 	if (p && q && p->get_num_vectors()!=q->get_num_vectors())
 	{
-		SG_ERROR("CQuadraticTimeMMD: Only features with equal number of vectors "
+		SG_ERROR("Only features with equal number of vectors "
 				"are currently possible\n");
 	}
 }
@@ -175,7 +175,7 @@ float64_t CQuadraticTimeMMD::compute_biased_statistic()
 float64_t CQuadraticTimeMMD::compute_statistic()
 {
 	if (!m_kernel)
-		SG_ERROR("%s::compute_statistic(): No kernel specified!\n", get_name())
+		SG_ERROR("No kernel specified!\n")
 
 	float64_t result=0;
 	switch (m_statistic_type)
@@ -187,8 +187,7 @@ float64_t CQuadraticTimeMMD::compute_statistic()
 		result=compute_biased_statistic();
 		break;
 	default:
-		SG_ERROR("CQuadraticTimeMMD::compute_statistic(): Unknown statistic "
-				"type!\n");
+		SG_ERROR("Unknown statistic type!\n");
 		break;
 	}
 
@@ -211,8 +210,7 @@ float64_t CQuadraticTimeMMD::compute_p_value(float64_t statistic)
 		index_t pos=null_samples.find_position_to_insert(statistic);
 		result=1.0-((float64_t)pos)/null_samples.vlen;
 #else // HAVE_LAPACK
-		SG_ERROR("CQuadraticTimeMMD::compute_p_value(): Only possible if "
-				"shogun is compiled with LAPACK enabled\n");
+		SG_ERROR("Only possible if shogun is compiled with LAPACK enabled\n");
 #endif // HAVE_LAPACK
 		break;
 	}
@@ -246,8 +244,8 @@ SGVector<float64_t> CQuadraticTimeMMD::compute_statistic(
 	else
 	{
 		REQUIRE(m_kernel->get_kernel_type()==K_COMBINED,
-			"%s::compute_statistic: multiple kernels specified,"
-			"but underlying kernel is not of type K_COMBINED\n", get_name());
+			"multiple kernels specified, but underlying kernel is not of type "
+			"K_COMBINED\n");
 
 		/* cast and allocate memory for results */
 		CCombinedKernel* combined=(CCombinedKernel*)m_kernel;
@@ -289,8 +287,7 @@ float64_t CQuadraticTimeMMD::compute_threshold(float64_t alpha)
 		null_samples.qsort();
 		result=null_samples[index_t(CMath::floor(null_samples.vlen*(1-alpha)))];
 #else // HAVE_LAPACK
-		SG_ERROR("CQuadraticTimeMMD::compute_threshold(): Only possible if "
-				"shogun is compiled with LAPACK enabled\n");
+		SG_ERROR("Only possible if shogun is compiled with LAPACK enabled\n");
 #endif // HAVE_LAPACK
 		break;
 	}
@@ -304,7 +301,7 @@ float64_t CQuadraticTimeMMD::compute_threshold(float64_t alpha)
 	}
 
 	default:
-		/* bootstrapping is handled here */
+		/* sampling null is handled here */
 		result=CKernelTwoSampleTestStatistic::compute_threshold(alpha);
 		break;
 	}
@@ -317,11 +314,11 @@ float64_t CQuadraticTimeMMD::compute_threshold(float64_t alpha)
 SGVector<float64_t> CQuadraticTimeMMD::sample_null_spectrum(index_t num_samples,
 		index_t num_eigenvalues)
 {
-	REQUIRE(m_kernel, "%s::sample_null_spectrum(%d, %d): No kernel set!\n",
-			get_name(), num_samples, num_eigenvalues);
+	REQUIRE(m_kernel, "(%d, %d): No kernel set!\n", num_samples,
+			num_eigenvalues);
 	REQUIRE(m_kernel->get_kernel_type()==K_CUSTOM || m_p_and_q,
-			"%s::sample_null_spectrum(%d, %d): No features set and no custom "
-			"kernel in use!\n", get_name(), num_samples, num_eigenvalues);
+			"(%d, %d): No features set and no custom kernel in use!\n",
+			num_samples, num_eigenvalues);
 
 	index_t num_data;
 	if (m_kernel->get_kernel_type()==K_CUSTOM)
@@ -330,36 +327,26 @@ SGVector<float64_t> CQuadraticTimeMMD::sample_null_spectrum(index_t num_samples,
 		num_data=m_p_and_q->get_num_vectors();
 
 	if (m_m!=num_data/2)
-	{
-		SG_ERROR("%s::sample_null_spectrum(): Currently, only equal "
-				"sample sizes are supported\n", get_name());
-	}
+		SG_ERROR("Currently, only equal sample sizes are supported\n");
 
 	if (num_samples<=2)
 	{
-		SG_ERROR("%s::sample_null_spectrum(): Number of samples has to be at"
-				" least 2, better in the hundreds", get_name());
+		SG_ERROR("Number of samples has to be at least 2, "
+				"better in the hundreds");
 	}
 
 	if (num_eigenvalues>2*m_m-1)
-	{
-		SG_ERROR("%s::sample_null_spectrum(): Number of Eigenvalues too large\n",
-				get_name());
-	}
+		SG_ERROR("Number of Eigenvalues too large\n");
 
 	if (num_eigenvalues<1)
-	{
-		SG_ERROR("%s::sample_null_spectrum(): Number of Eigenvalues too small\n",
-				get_name());
-	}
+		SG_ERROR("Number of Eigenvalues too small\n");
 
 	/* evtl. warn user not to use wrong statistic type */
 	if (m_statistic_type!=BIASED)
 	{
-		SG_WARNING("%s::sample_null_spectrum(): Note: provided statistic has "
+		SG_WARNING("Note: provided statistic has "
 				"to be BIASED. Please ensure that! To get rid of warning,"
-				"call %s::set_statistic_type(BIASED)\n", get_name(),
-				get_name());
+				"call %s::set_statistic_type(BIASED)\n", get_name());
 	}
 
 	/* imaginary matrix K=[K KL; KL' L] (MATLAB notation)
@@ -399,10 +386,9 @@ SGVector<float64_t> CQuadraticTimeMMD::sample_null_spectrum(index_t num_samples,
 
 SGVector<float64_t> CQuadraticTimeMMD::fit_null_gamma()
 {
-	REQUIRE(m_kernel, "%s::fit_null_gamma(): No kernel set!\n", get_name());
+	REQUIRE(m_kernel, "No kernel set!\n");
 	REQUIRE(m_kernel->get_kernel_type()==K_CUSTOM || m_p_and_q,
-			"%s::fit_null_gamma(): No features set and no custom kernel in"
-			" use!\n", get_name());
+			"No features set and no custom kernel in use!\n");
 
 	index_t num_data;
 	if (m_kernel->get_kernel_type()==K_CUSTOM)
@@ -411,18 +397,14 @@ SGVector<float64_t> CQuadraticTimeMMD::fit_null_gamma()
 		num_data=m_p_and_q->get_num_vectors();
 
 	if (m_m!=num_data/2)
-	{
-		SG_ERROR("%s::compute_p_value_gamma(): Currently, only equal "
-				"sample sizes are supported\n", get_name());
-	}
+		SG_ERROR("Currently, only equal sample sizes are supported\n");
 
 	/* evtl. warn user not to use wrong statistic type */
 	if (m_statistic_type!=BIASED)
 	{
-		SG_WARNING("%s::compute_p_value(): Note: provided statistic has "
+		SG_WARNING("Note: provided statistic has "
 				"to be BIASED. Please ensure that! To get rid of warning,"
-				"call %s::set_statistic_type(BIASED)\n", get_name(),
-				get_name());
+				"call %s::set_statistic_type(BIASED)\n", get_name());
 	}
 
 	/* imaginary matrix K=[K KL; KL' L] (MATLAB notation)

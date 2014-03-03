@@ -18,24 +18,29 @@ namespace shogun
 class CFeatures;
 class CKernel;
 
-/** @brief Independence test base class. Provides an interface for performing an
- * independence test. Given samples \f$Z=\{(x_i,y_i)\}_{i=1}^m\f$ from the joint
- * distribution \f$\textbf{P}_x\textbf{P}_y\f$, does the joint distribution
- * factorize as \f$\textbf{P}_{xy}=\textbf{P}_x\textbf{P}_y\f$? The null-
- * hypothesis says yes, i.e. no independence, the alternative hypothesis says
- * yes.
+/** @brief Kernel independence test base class. Provides an interface for
+ * performing an independence test. Given samples \f$Z=\{(x_i,y_i)\}_{i=1}^m\f$
+ * from the joint distribution \f$\textbf{P}_{xy}\f$, does the joint
+ * distribution factorize as \f$\textbf{P}_{xy}=\textbf{P}_x\textbf{P}_y\f$,
+ * i.e. product of the marginals?
+ *
+ * The null-hypothesis says yes, i.e. no dependence, the alternative hypothesis
+ * says no.
  *
  * In this class, this is done using a single kernel for each of the two sets
  * of samples
  *
- * The class also re-implements the bootstrap_null() method. If the underlying
- * kernel is a custom one (precomputed), the
+ * The class also re-implements the sample_null() method. If the underlying
+ * kernel is a custom one (precomputed), the rows and column of the kernel
+ * matrix for p is permuted using subsets. The computation falls back to
+ * CTwoDistributionsTestStatistic::sample_null() otherwise.
  *
  * Abstract base class.
  */
 class CKernelIndependenceTestStatistic: public CTwoDistributionsTestStatistic
 {
 public:
+	/** default constructor */
 	CKernelIndependenceTestStatistic();
 
 	/** Constructor
@@ -67,16 +72,17 @@ public:
 	CKernelIndependenceTestStatistic(CKernel* kernel_p, CKernel* kernel_q,
 			CFeatures* p, CFeatures* q);
 
+	/** destructor */
 	virtual ~CKernelIndependenceTestStatistic();
 
 	/** merges both sets of samples and computes the test statistic
-	 * m_bootstrap_iteration times. This version checks if a precomputed
+	 * m_num_null_samples times. This version checks if a precomputed
 	 * custom kernel is used, and, if so, just permutes it instead of re-
 	 * computing it in every iteration.
 	 *
 	 * @return vector of all statistics
 	 */
-	virtual SGVector<float64_t> bootstrap_null();
+	virtual SGVector<float64_t> sample_null();
 
 	virtual const char* get_name() const=0;
 

@@ -45,11 +45,11 @@ void quadratic_time_mmd()
 	 * a test level of 0.05 */
 	float64_t alpha=0.05;
 
-	/* using bootstrapping (slow, not the most reliable way. Consider pre-
+	/* using permutation (slow, not the most reliable way. Consider pre-
 	 * computing the kernel when using it, see below).
 	 * Also, in practice, use at least 250 iterations */
-	mmd->set_null_approximation_method(BOOTSTRAP);
-	mmd->set_bootstrap_iterations(3);
+	mmd->set_null_approximation_method(PERMUTATION);
+	mmd->set_num_null_samples(3);
 	float64_t p_value=mmd->perform_test();
 	/* reject if p-value is smaller than test level */
 	SG_SPRINT("bootstrap: p!=q: %d\n", p_value<alpha);
@@ -76,13 +76,13 @@ void quadratic_time_mmd()
 	SG_SPRINT("gamma: p!=q: %d\n", p_value<alpha);
 
 	/* compute tpye I and II error (use many more trials in practice).
-	 * Type I error is not necessary if one uses bootstrapping. We do it here
+	 * Type I error is not necessary if one uses permutation. We do it here
 	 * anyway, but note that this is an efficient way of computing it.
 	 * Also note that testing has to happen on
 	 * difference data than kernel selection, but the linear time mmd does this
 	 * implicitly and we used a fixed kernel here. */
-	mmd->set_null_approximation_method(BOOTSTRAP);
-	mmd->set_bootstrap_iterations(5);
+	mmd->set_null_approximation_method(PERMUTATION);
+	mmd->set_num_null_samples(5);
 	index_t num_trials=5;
 	SGVector<float64_t> type_I_errors(num_trials);
 	SGVector<float64_t> type_II_errors(num_trials);

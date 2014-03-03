@@ -91,7 +91,7 @@ void CSubsetStack::add_subset(SGVector<index_t> subset)
 	/* two cases: stack is empty/stack is not empty */
 	if (m_active_subsets_stack->get_num_elements())
 	{
-		/* if there are alreay subsets, we need to map given one through
+		/* if there are already subsets, we need to map given one through
 		 * existing ones */
 
 		/* get latest current subset */
