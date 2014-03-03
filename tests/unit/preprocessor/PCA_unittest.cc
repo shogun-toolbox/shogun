@@ -1,11 +1,32 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
- *
- * Written (W) 2014 Parijat Mazumdar
- */
+* Copyright (c) The Shogun Machine Learning Toolbox
+* Written (w) 2014 Parijat Mazumdar
+* All rights reserved.
+*
+* Redistribution and use in source and binary forms, with or without
+* modification, are permitted provided that the following conditions are met:
+*
+* 1. Redistributions of source code must retain the above copyright notice, this
+* list of conditions and the following disclaimer.
+* 2. Redistributions in binary form must reproduce the above copyright notice,
+* this list of conditions and the following disclaimer in the documentation
+* and/or other materials provided with the distribution.
+*
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+* ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+* WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+* DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+* ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+* (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+* LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+* ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+* (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+* SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*
+* The views and conclusions contained in the software and documentation are those
+* of the authors and should not be interpreted as representing official policies,
+* either expressed or implied, of the Shogun Development Team.
+*/
 
 #include <gtest/gtest.h>
 #include <shogun/mathematics/Math.h>
@@ -203,6 +224,7 @@ TEST(PCA, PCA_rigorous_test_N_greater_D_EVD)
 
 	float64_t epsilon = 0.00000000000001;
 
+	// comparing outputs against MATLAB 'princomp' implementation 
 	EXPECT_NEAR(0.041855883987175,eigvec[0],epsilon);
 	EXPECT_NEAR(0.291219269837891,eigvec[1],epsilon);
 	EXPECT_NEAR(5.077526030285309,eigvec[2],epsilon);
@@ -267,6 +289,7 @@ TEST(PCA, PCA_rigorous_test_N_less_D_EVD)
 
 	float64_t epsilon = 0.00000000000001;
 
+	// comparing outputs against MATLAB 'princomp' implementation
 	EXPECT_NEAR(0,eigvec[0],epsilon);
 	EXPECT_NEAR(2.327794822241147,eigvec[1],epsilon);
 	EXPECT_NEAR(2.759160840481412,eigvec[2],epsilon);
@@ -323,6 +346,8 @@ TEST(PCA, PCA_rigorous_test_N_greater_D_SVD)
 
 	float64_t epsilon = 0.0000000000001;
 
+	// comparing outputs against BRMLtoolbox MATLAB 
+	// http://web4.cs.ucl.ac.uk/staff/D.Barber/pmwiki/pmwiki.php?n=Brml.Software
 	EXPECT_NEAR(0.041855883987175,eigvec[2],epsilon);
 	EXPECT_NEAR(0.291219269837891,eigvec[1],epsilon);
 	EXPECT_NEAR(5.077526030285309,eigvec[0],epsilon);
@@ -387,6 +412,8 @@ TEST(PCA, PCA_rigorous_test_N_less_D_SVD)
 
 	float64_t epsilon = 0.0000000000001;
 
+	// comparing outputs against BRMLtoolbox MATLAB 
+	// http://web4.cs.ucl.ac.uk/staff/D.Barber/pmwiki/pmwiki.php?n=Brml.Software
 	EXPECT_NEAR(0,eigvec[2],epsilon);
 	EXPECT_NEAR(2.327794822241147,eigvec[1],epsilon);
 	EXPECT_NEAR(2.759160840481412,eigvec[0],epsilon);
@@ -446,6 +473,8 @@ TEST(PCA, PCA_apply_to_feature_vector_methodTest)
 
 	SGVector<float64_t> finalVector=pca->apply_to_feature_vector(inputVector);
 
+	// comparing outputs against BRMLtoolbox MATLAB 
+	// http://web4.cs.ucl.ac.uk/staff/D.Barber/pmwiki/pmwiki.php?n=Brml.Software
 	EXPECT_NEAR(-1.835430614937060, finalVector[0], 1e-13);
 	EXPECT_NEAR(0.511467003751085, finalVector[1], 1e-13);
 

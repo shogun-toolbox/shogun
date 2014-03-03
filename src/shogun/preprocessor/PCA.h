@@ -16,7 +16,7 @@
 
 #include <shogun/lib/config.h>
 
-#if defined(HAVE_LAPACK) && defined(HAVE_EIGEN3)
+#if defined HAVE_EIGEN3
 #include <shogun/mathematics/lapack.h>
 #include <stdio.h>
 #include <shogun/preprocessor/DimensionReductionPreprocessor.h>
@@ -28,11 +28,15 @@ namespace shogun
 /** Matrix decomposition method for PCA */
 enum EPCAMethod
 {
-	/** if N>D then EVD is chosen automatically else SVD is chosen (D-dimensions N-number of vectors) */
+	/** if N>D then EVD is chosen automatically else SVD is chosen 
+	 * (D-dimensions N-number of vectors) 
+	 */
 	AUTO,	
 	/** SVD based PCA. Time complexity ~14dn^2 (d-dimensions n-number of vectors) */
 	SVD,
-	/** Eigenvalue decomposition of covariance matrix. Time complexity ~10d^3 (d-dimensions n-number of vectors) */
+	/** Eigenvalue decomposition of covariance matrix. 
+	 * Time complexity ~10d^3 (d-dimensions n-number of vectors) 
+	 */
 	EVD
 };
 
@@ -50,7 +54,10 @@ enum EPCAMode
 /** memory usage by PCA : In-place or through reallocation */
 enum EPCAMemoryMode
 {
-	/** The feature matrix replaced by new matrix with target dims */
+	/** The feature matrix replaced by new matrix with target dims.
+	 * This requires memory for old matrix as well as new matrix
+	 * at once for a short amount of time initially.
+	 */
 	MEM_REALLOCATE,
 	/** The feature matrix is modified in-place to generate the new matrix. 
 	 * Output matrix dimensions are changed to target dims, but actual matrix 
@@ -94,10 +101,14 @@ enum EPCAMemoryMode
  * <em>VARIANCE_EXPLAINED</em> : The user supplies the fractional variance that he
  * wants preserved in the target dimension T. From this supplied fractional variance (thresh),
  * T is calculated as the smallest k such that the ratio of sum of largest k eigenvalues
- * over total sum of all eigenvalues is greater than thresh. 
+ * over total sum of all eigenvalues is greater than thresh.
  *
  * <em>THRESH</em> : The user supplies a threshold. All eigenvectors with corresponding eigenvalue
  * greater than the supplied threshold are chosen.
+ *
+ * An option for whitening the transformation matrix is also given - do_whitening. Setting this
+ * option normalizes the eigenvectors (ie. the columns of transformation matrix) by dividing them
+ * with the square root of corresponding eigenvalues.
  * 
  * Note that vectors/matrices don't have to have zero mean as it is substracted within the class.
  */
@@ -107,20 +118,19 @@ class CPCA: public CDimensionReductionPreprocessor
 
 		/** standard constructor
 		 *
-		 * @param do_whitening do whitening
+		 * @param do_whitening normalize columns(eigenvectors) in transformation matrix
 		 * @param mode mode of pca : FIXED_NUMBER/VARIANCE_EXPLAINED/THRESHOLD
 		 * @param thresh threshold value for VARIANCE_EXPLAINED or THRESHOLD mode
 		 * @param method Matrix decomposition method used : SVD/EVD/AUTO[default] 
-		 * @param mem memory usage mode of PCA : MEM_REALLOCATE/MEM_IN_PLACE
+		 * @param mem_mode memory usage mode of PCA : MEM_REALLOCATE/MEM_IN_PLACE
 		 */
 		CPCA(bool do_whitening=false, EPCAMode mode=FIXED_NUMBER, float64_t thresh=1e-6, 
-					EPCAMethod method=AUTO, EPCAMemoryMode mem=MEM_REALLOCATE);
+					EPCAMethod method=AUTO, EPCAMemoryMode mem_mode=MEM_REALLOCATE);
 
 		/** special constructor for FIXED_NUMBER mode
 		 *
-		 * @param do_whitening do whitening
-		 * @param mode mode of pca : FIXED_NUMBER/VARIANCE_EXPLAINED/THRESHOLD
 		 * @param method Matrix decomposition method used : SVD/EVD/AUTO[default]
+		 * @param do_whitening normalize columns(eigenvectors) in transformation matrix
 		 * @param mem memory usage mode of PCA : MEM_REALLOCATE/MEM_IN_PLACE
 		 */
 		CPCA(EPCAMethod method, bool do_whitening=false, EPCAMemoryMode mem=MEM_REALLOCATE);
@@ -200,10 +210,10 @@ class CPCA: public CDimensionReductionPreprocessor
 		/** thresh */
 		float64_t m_thresh;
 		/** PCA memory mode */
-		EPCAMemoryMode mem_mode;
+		EPCAMemoryMode m_mem_mode;
 		/** PCA method */
 		EPCAMethod m_method;
 };
 }
-#endif // HAVE_LAPACK && HAVE_EIGEN3
+#endif // HAVE_EIGEN3
 #endif // PCA_H_

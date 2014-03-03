@@ -12,7 +12,7 @@
  */
 #include <shogun/lib/config.h>
 
-#if defined(HAVE_LAPACK) && defined(HAVE_EIGEN3)
+#if defined HAVE_EIGEN3
 #include <shogun/preprocessor/PCA.h>
 #include <shogun/mathematics/lapack.h>
 #include <shogun/mathematics/Math.h>
@@ -27,23 +27,23 @@
 using namespace shogun;
 using namespace Eigen;
 
-CPCA::CPCA(bool do_whitening, EPCAMode mode, float64_t thresh, EPCAMethod method, EPCAMemoryMode mem)
+CPCA::CPCA(bool do_whitening, EPCAMode mode, float64_t thresh, EPCAMethod method, EPCAMemoryMode mem_mode)
 : CDimensionReductionPreprocessor()
 {
 	init();
 	m_whitening = do_whitening;
 	m_mode = mode;
 	m_thresh = thresh;
-	mem_mode = mem;
+	m_mem_mode = mem_mode;
 	m_method = method;
 }
 
-CPCA::CPCA(EPCAMethod method, bool do_whitening, EPCAMemoryMode mem)
+CPCA::CPCA(EPCAMethod method, bool do_whitening, EPCAMemoryMode mem_mode)
 : CDimensionReductionPreprocessor()
 {
 	init();
 	m_whitening = do_whitening;
-	mem_mode = mem;
+	m_mem_mode = mem_mode;
 	m_method = method;
 }
 
@@ -57,7 +57,7 @@ void CPCA::init()
 	m_whitening = false;
 	m_mode = FIXED_NUMBER;
 	m_thresh = 1e-6;
-	mem_mode = MEM_REALLOCATE;
+	m_mem_mode = MEM_REALLOCATE;
 	m_method = AUTO;	
 
 	SG_ADD(&m_transformation_matrix, "transformation_matrix",
@@ -72,8 +72,10 @@ void CPCA::init()
 	    MS_AVAILABLE);
 	SG_ADD((machine_int_t*) &m_mode, "mode", "PCA Mode.", MS_AVAILABLE);
 	SG_ADD(&m_thresh, "m_thresh", "Cutoff threshold.", MS_AVAILABLE);
-	SG_ADD((machine_int_t*) &mem_mode, "mem_mode", "Memory mode (in-place or reallocation).", MS_NOT_AVAILABLE);
-	SG_ADD((machine_int_t*) &m_method, "m_method", "Method used for PCA calculation", MS_NOT_AVAILABLE);
+	SG_ADD((machine_int_t*) &m_mem_mode, "m_mem_mode", 
+		"Memory mode (in-place or reallocation).", MS_NOT_AVAILABLE);
+	SG_ADD((machine_int_t*) &m_method, "m_method", 
+		"Method used for PCA calculation", MS_NOT_AVAILABLE);
 }
 
 CPCA::~CPCA()
@@ -84,13 +86,11 @@ bool CPCA::init(CFeatures* features)
 {
 	if (!m_initialized)
 	{
-		// loop variable
-		int32_t i;
-
 		REQUIRE(features->get_feature_class()==C_DENSE, "PCA only works with dense features")
 		REQUIRE(features->get_feature_type()==F_DREAL, "PCA only works with real features")
 
-		SGMatrix<float64_t> feature_matrix = ((CDenseFeatures<float64_t>*)features)->get_feature_matrix();
+		SGMatrix<float64_t> feature_matrix = ((CDenseFeatures<float64_t>*)features)
+									->get_feature_matrix();
 		int32_t num_vectors = feature_matrix.num_cols;
 		int32_t num_features = feature_matrix.num_rows;
 		SG_INFO("num_examples: %ld num_features: %ld \n", num_vectors, num_features)
@@ -124,48 +124,56 @@ bool CPCA::init(CFeatures* features)
 
 			SG_INFO("Computing Eigenvalues ... ")
 			// eigen value computed
-			SelfAdjointEigenSolver<MatrixXd> eigenSolve = SelfAdjointEigenSolver<MatrixXd>(cov_mat);
+			SelfAdjointEigenSolver<MatrixXd> eigenSolve = 
+					SelfAdjointEigenSolver<MatrixXd>(cov_mat);
 			eigenValues = eigenSolve.eigenvalues().tail(max_dim_allowed);
 
-			if (m_mode == FIXED_NUMBER)
+			// target dimension
+			switch (m_mode)
 			{
-				num_dim = m_target_dim;
-			}
-			if (m_mode == VARIANCE_EXPLAINED)
-			{
-				float64_t eig_sum = eigenValues.sum();
-				float64_t com_sum = 0;
-				for (i=num_features-1; i>-1; i--)
-				{
-					num_dim++;
-					com_sum += m_eigenvalues_vector.vector[i];
-					if (com_sum/eig_sum>=m_thresh)
-						break;
-				}
-			}
-			if (m_mode == THRESHOLD)
-			{
-				for (i=num_features-1; i>-1; i--)
-				{
-					if (m_eigenvalues_vector.vector[i]>m_thresh)
-						num_dim++;
-					else
-						break;
-				}
-			}
+				case FIXED_NUMBER :
+					num_dim = m_target_dim;
+					break;
 
+				case VARIANCE_EXPLAINED :
+					{
+						float64_t eig_sum = eigenValues.sum();
+						float64_t com_sum = 0;
+						for (int32_t i=num_features-1; i<-1; i++)
+						{
+							num_dim++;
+							com_sum += m_eigenvalues_vector.vector[i];
+							if (com_sum/eig_sum>=m_thresh)
+								break;
+						}
+					}
+					break;
+
+				case THRESHOLD :
+					for (int32_t i=num_features-1; i<-1; i++)
+					{
+						if (m_eigenvalues_vector.vector[i]>m_thresh)
+							num_dim++;
+						else
+							break;
+					}
+					break;
+			};
 			SG_INFO("Done\nReducing from %i to %i features..", num_features, num_dim)
 
 			m_transformation_matrix = SGMatrix<float64_t>(num_features,num_dim);
-			Map<MatrixXd> transformMatrix(m_transformation_matrix.matrix, num_features, num_dim);
+			Map<MatrixXd> transformMatrix(m_transformation_matrix.matrix,
+								 num_features, num_dim);
 			num_old_dim = num_features;
-
+                        
 			// eigenvector matrix
-			transformMatrix = eigenSolve.eigenvectors().block(0, num_features-num_dim, num_features,num_dim);
+			transformMatrix = eigenSolve.eigenvectors().block(0, 
+						num_features-num_dim, num_features,num_dim);
 			if (m_whitening)
 			{
-				for (i=0; i<num_dim; i++)
-					transformMatrix.col(i) /= sqrt(eigenValues[i+max_dim_allowed-num_dim]);
+				for (int32_t i=0; i<num_dim; i++)
+					transformMatrix.col(i) /= 
+					sqrt(eigenValues[i+max_dim_allowed-num_dim]);
 			}
 		}
 
@@ -179,33 +187,36 @@ bool CPCA::init(CFeatures* features)
 			eigenValues = eigenValues.cwiseProduct(eigenValues)/(num_vectors-1);
 
 			// target dimension
-			if (m_mode == FIXED_NUMBER)
+			switch (m_mode)
 			{
-				num_dim = m_target_dim;
-			}
-			if (m_mode == VARIANCE_EXPLAINED)
-			{
-				float64_t eig_sum = eigenValues.sum();
-				float64_t com_sum = 0;
-				for (i=0; i<num_features; i++)
-				{
-					num_dim++;
-					com_sum += m_eigenvalues_vector.vector[i];
-					if (com_sum/eig_sum>=m_thresh)
-						break;
-				}
-			}
-			if (m_mode == THRESHOLD)
-			{
-				for (i=0; i<num_features; i++)
-				{
-					if (m_eigenvalues_vector.vector[i]>m_thresh)
-						num_dim++;
-					else
-						break;
-				}
-			}
+				case FIXED_NUMBER :
+					num_dim = m_target_dim;
+					break;
 
+				case VARIANCE_EXPLAINED :
+					{
+						float64_t eig_sum = eigenValues.sum();
+						float64_t com_sum = 0;
+						for (int32_t i=0; i<num_features; i++)
+						{
+							num_dim++;
+							com_sum += m_eigenvalues_vector.vector[i];
+							if (com_sum/eig_sum>=m_thresh)
+								break;
+						}
+					}
+					break;
+
+				case THRESHOLD :
+					for (int32_t i=0; i<num_features; i++)
+					{
+						if (m_eigenvalues_vector.vector[i]>m_thresh)
+							num_dim++;
+						else
+							break;
+					}
+					break;
+			};
 			SG_INFO("Done\nReducing from %i to %i features..", num_features, num_dim)
 
 			// right singular vectors form eigenvectors
@@ -215,7 +226,7 @@ bool CPCA::init(CFeatures* features)
 			transformMatrix = svd.matrixV().block(0, 0, num_features, num_dim);
 			if (m_whitening)
 			{
-				for (i=0; i<num_dim; i++)
+				for (int32_t i=0; i<num_dim; i++)
 					transformMatrix.col(i) /= sqrt(eigenValues[i]);
 			}
 		}
@@ -248,7 +259,7 @@ SGMatrix<float64_t> CPCA::apply_to_feature_matrix(CFeatures* features)
 	Map<MatrixXd> transform_matrix(m_transformation_matrix.matrix,
 			m_transformation_matrix.num_rows, m_transformation_matrix.num_cols);
 
-	if (mem_mode == MEM_IN_PLACE)
+	if (m_mem_mode == MEM_IN_PLACE)
 	{
 		if (m.matrix)
 		{
@@ -257,7 +268,8 @@ SGMatrix<float64_t> CPCA::apply_to_feature_matrix(CFeatures* features)
 			VectorXd data_mean = feature_matrix.rowwise().sum()/(float64_t) num_vectors;
 			feature_matrix = feature_matrix.colwise()-data_mean;
 
-			feature_matrix.block(0,0,num_dim,num_vectors) = transform_matrix.transpose()*feature_matrix;
+			feature_matrix.block(0,0,num_dim,num_vectors) = 
+					transform_matrix.transpose()*feature_matrix;
 	
 			SG_INFO("Form matrix of target dimension")
 			for (int32_t col=0; col<num_vectors; col++)
@@ -324,12 +336,12 @@ SGVector<float64_t> CPCA::get_mean()
 
 EPCAMemoryMode CPCA::get_memory_mode() const
 {
-	return mem_mode;
+	return m_mem_mode;
 }
 
 void CPCA::set_memory_mode(EPCAMemoryMode e)
 {
-	mem_mode = e;
+	m_mem_mode = e;
 }
 
-#endif // HAVE_LAPACK && HAVE_EIGEN3
+#endif // HAVE_EIGEN3
