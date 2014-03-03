@@ -50,7 +50,7 @@ public:
 	 * @param lambda ridge that is added to standard deviation, a sensible value
 	 * is 10E-5 which is the default
 	 */
-	CMMDKernelSelectionCombOpt(CKernelTwoSampleTestStatistic* mmd,
+	CMMDKernelSelectionCombOpt(CKernelTwoSampleTest* mmd,
 			float64_t lambda=10E-5);
 
 	/** Destructor */

@@ -20,14 +20,14 @@
 using namespace shogun;
 
 CLinearTimeMMD::CLinearTimeMMD() :
-		CKernelTwoSampleTestStatistic()
+		CKernelTwoSampleTest()
 {
 	init();
 }
 
 CLinearTimeMMD::CLinearTimeMMD(CKernel* kernel, CStreamingFeatures* p,
 		CStreamingFeatures* q, index_t m, index_t blocksize) :
-		CKernelTwoSampleTestStatistic(kernel, NULL, m)
+		CKernelTwoSampleTest(kernel, NULL, m)
 {
 	init();
 
@@ -612,7 +612,7 @@ float64_t CLinearTimeMMD::compute_p_value(float64_t statistic)
 
 	default:
 		/* sampling null is handled here */
-		result=CKernelTwoSampleTestStatistic::compute_p_value(statistic);
+		result=CKernelTwoSampleTest::compute_p_value(statistic);
 		break;
 	}
 
@@ -635,7 +635,7 @@ float64_t CLinearTimeMMD::compute_threshold(float64_t alpha)
 
 	default:
 		/* sampling null is handled here */
-		result=CKernelTwoSampleTestStatistic::compute_threshold(alpha);
+		result=CKernelTwoSampleTest::compute_threshold(alpha);
 		break;
 	}
 
@@ -664,7 +664,7 @@ float64_t CLinearTimeMMD::perform_test()
 
 	default:
 		/* sampling null can be done separately in superclass */
-		result=CTestStatistic::perform_test();
+		result=CHypothesisTest::perform_test();
 		break;
 	}
 

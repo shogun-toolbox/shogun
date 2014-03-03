@@ -8,7 +8,7 @@
  */
 
 #include <shogun/statistics/MMDKernelSelectionComb.h>
-#include <shogun/statistics/KernelTwoSampleTestStatistic.h>
+#include <shogun/statistics/KernelTwoSampleTest.h>
 #include <shogun/kernel/CombinedKernel.h>
 
 using namespace shogun;
@@ -20,7 +20,7 @@ CMMDKernelSelectionComb::CMMDKernelSelectionComb() :
 }
 
 CMMDKernelSelectionComb::CMMDKernelSelectionComb(
-		CKernelTwoSampleTestStatistic* mmd) : CMMDKernelSelection(mmd)
+		CKernelTwoSampleTest* mmd) : CMMDKernelSelection(mmd)
 {
 	init();
 }

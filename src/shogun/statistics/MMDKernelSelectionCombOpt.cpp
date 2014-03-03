@@ -21,7 +21,7 @@ CMMDKernelSelectionCombOpt::CMMDKernelSelectionCombOpt() :
 }
 
 CMMDKernelSelectionCombOpt::CMMDKernelSelectionCombOpt(
-		CKernelTwoSampleTestStatistic* mmd, float64_t lambda) :
+		CKernelTwoSampleTest* mmd, float64_t lambda) :
 		CMMDKernelSelectionComb(mmd)
 {
 	/* currently, this method is only developed for the linear time MMD */

@@ -31,7 +31,7 @@
 #ifndef __QUADRACTIMEMMD_H_
 #define __QUADRACTIMEMMD_H_
 
-#include <shogun/statistics/KernelTwoSampleTestStatistic.h>
+#include <shogun/statistics/KernelTwoSampleTest.h>
 
 namespace shogun
 {
@@ -104,7 +104,7 @@ enum EQuadraticMMDType
  * A fast, consistent kernel two-sample test.
  *
  */
-class CQuadraticTimeMMD : public CKernelTwoSampleTestStatistic
+class CQuadraticTimeMMD : public CKernelTwoSampleTest
 {
 	public:
 		CQuadraticTimeMMD();

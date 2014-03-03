@@ -15,7 +15,7 @@
 namespace shogun
 {
 
-class CKernelTwoSampleTestStatistic;
+class CKernelTwoSampleTest;
 class CKernel;
 
 /** @brief Base class for kernel selection for MMD-based two-sample test
@@ -43,7 +43,7 @@ public:
 	 * @param mmd MMD instance to use. Has to be an MMD based kernel two-sample
 	 * test. Currently: linear or quadratic time MMD.
 	 */
-	CMMDKernelSelection(CKernelTwoSampleTestStatistic* mmd);
+	CMMDKernelSelection(CKernelTwoSampleTest* mmd);
 
 	/** Destructor */
 	virtual ~CMMDKernelSelection();
@@ -74,7 +74,7 @@ private:
 
 protected:
 	/** Underlying MMD instance */
-	CKernelTwoSampleTestStatistic* m_mmd;
+	CKernelTwoSampleTest* m_mmd;
 };
 
 }

@@ -20,7 +20,7 @@ CMMDKernelSelectionOpt::CMMDKernelSelectionOpt() :
 }
 
 CMMDKernelSelectionOpt::CMMDKernelSelectionOpt(
-		CKernelTwoSampleTestStatistic* mmd, float64_t lambda) :
+		CKernelTwoSampleTest* mmd, float64_t lambda) :
 		CMMDKernelSelection(mmd)
 {
 	init();
