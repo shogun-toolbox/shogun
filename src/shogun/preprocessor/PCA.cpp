@@ -14,7 +14,6 @@
 
 #if defined HAVE_EIGEN3
 #include <shogun/preprocessor/PCA.h>
-#include <shogun/mathematics/lapack.h>
 #include <shogun/mathematics/Math.h>
 #include <string.h>
 #include <stdlib.h>
