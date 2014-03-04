@@ -16,8 +16,11 @@
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/machine/gp/ZeroMean.h>
 #include <shogun/machine/gp/ProbitLikelihood.h>
+#include <shogun/machine/gp/LogitLikelihood.h>
 #include <shogun/machine/gp/LaplacianInferenceMethod.h>
+#include <shogun/machine/gp/EPInferenceMethod.h>
 #include <shogun/classifier/GaussianProcessBinaryClassification.h>
+#include <shogun/preprocessor/RescaleFeatures.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;
@@ -66,12 +69,14 @@ TEST(GaussianProcessBinaryClassification,get_mean_vector)
 
 	// create test features
 	for (index_t x1=-2; x1<=2; x1++)
+	{
 		for (index_t x2=-2; x2<=2; x2++)
 		{
 			feat_test(0, i)=(float64_t)x1;
 			feat_test(1, i)=(float64_t)x2;
 			i++;
 		}
+	}
 
 	// shogun representation of features and labels
 	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
@@ -169,12 +174,14 @@ TEST(GaussianProcessBinaryClassification,get_variance_vector)
 
 	// create test features
 	for (index_t x1=-2; x1<=2; x1++)
+	{
 		for (index_t x2=-2; x2<=2; x2++)
 		{
 			feat_test(0, i)=(float64_t)x1;
 			feat_test(1, i)=(float64_t)x2;
 			i++;
 		}
+	}
 
 	// shogun representation of features and labels
 	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
@@ -272,12 +279,14 @@ TEST(GaussianProcessBinaryClassification,get_probabilities)
 
 	// create test features
 	for (index_t x1=-2; x1<=2; x1++)
+	{
 		for (index_t x2=-2; x2<=2; x2++)
 		{
 			feat_test(0, i)=(float64_t)x1;
 			feat_test(1, i)=(float64_t)x2;
 			i++;
 		}
+	}
 
 	// shogun representation of features and labels
 	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
@@ -329,6 +338,125 @@ TEST(GaussianProcessBinaryClassification,get_probabilities)
 	EXPECT_NEAR(probabilities[24], 0.52083, 1E-5);
 
 	SG_UNREF(gpc);
+}
+
+TEST(GaussianProcessBinaryClassification,apply_preprocessor_and_binary)
+{
+	// create some easy random classification data
+	index_t n=10, m=25, i=0;
+
+	SGMatrix<float64_t> feat_train(2, n);
+	SGVector<float64_t> lab_train(n);
+	SGMatrix<float64_t> feat_test(2, m);
+
+	feat_train(0, 0)=0.0919736;
+	feat_train(0, 1)=-0.3813827;
+	feat_train(0, 2)=-1.8011128;
+	feat_train(0, 3)=-1.4603061;
+	feat_train(0, 4)=-0.1386884;
+	feat_train(0, 5)=0.7827657;
+	feat_train(0, 6)=-0.1369808;
+	feat_train(0, 7)=0.0058596;
+	feat_train(0, 8)=0.1059573;
+	feat_train(0, 9)=-1.3059609;
+
+	feat_train(1, 0)=1.4186892;
+	feat_train(1, 1)=0.2271813;
+	feat_train(1, 2)=0.3451326;
+	feat_train(1, 3)=0.4495962;
+	feat_train(1, 4)=1.2066144;
+	feat_train(1, 5)=-0.5425118;
+	feat_train(1, 6)=1.3479000;
+	feat_train(1, 7)=0.7181545;
+	feat_train(1, 8)=0.4036014;
+	feat_train(1, 9)=0.8928408;
+
+	lab_train[0]=1.0;
+	lab_train[1]=-1.0;
+	lab_train[2]=-1.0;
+	lab_train[3]=-1.0;
+	lab_train[4]=-1.0;
+	lab_train[5]=1.0;
+	lab_train[6]=-1.0;
+	lab_train[7]=1.0;
+	lab_train[8]=1.0;
+	lab_train[9]=-1.0;
+
+	// create test features
+	for (index_t x1=-2; x1<=2; x1++)
+	{
+		for (index_t x2=-2; x2<=2; x2++)
+		{
+			feat_test(0, i)=(float64_t)x1;
+			feat_test(1, i)=(float64_t)x2;
+			i++;
+		}
+	}
+
+	// shogun representation of features and labels
+	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
+	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
+	CDenseFeatures<float64_t>* features_test=new CDenseFeatures<float64_t>(feat_test);
+
+	CRescaleFeatures* preproc=new CRescaleFeatures();
+	preproc->init(features_train);
+
+	features_train->add_preprocessor(preproc);
+	features_train->apply_preprocessor();
+
+	features_test->add_preprocessor(preproc);
+	features_test->apply_preprocessor();
+
+	// choose Gaussian kernel with sigma = 2 and zero mean function
+	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
+	CZeroMean* mean=new CZeroMean();
+
+	// logit likelihood
+	CLogitLikelihood* likelihood=new CLogitLikelihood();
+
+	// specify GP classification with Laplacian inference
+	CEPInferenceMethod* inf=new CEPInferenceMethod(kernel, features_train,
+			mean, labels_train, likelihood);
+
+	inf->set_scale(1.5);
+
+	// train gaussian process classifier
+	CGaussianProcessBinaryClassification* gpc=new CGaussianProcessBinaryClassification(inf);
+	gpc->train();
+
+	// compare predictions with result form GPML
+	CBinaryLabels* prediction=gpc->apply_binary(features_test);
+
+	SGVector<float64_t> p=prediction->get_labels();
+
+	EXPECT_EQ(p[0], -1);
+	EXPECT_EQ(p[1], -1);
+	EXPECT_EQ(p[2], -1);
+	EXPECT_EQ(p[3], -1);
+	EXPECT_EQ(p[4], -1);
+	EXPECT_EQ(p[5], -1);
+	EXPECT_EQ(p[6], -1);
+	EXPECT_EQ(p[7], -1);
+	EXPECT_EQ(p[8], -1);
+	EXPECT_EQ(p[9], -1);
+	EXPECT_EQ(p[10], 1);
+	EXPECT_EQ(p[11], 1);
+	EXPECT_EQ(p[12], -1);
+	EXPECT_EQ(p[13], -1);
+	EXPECT_EQ(p[14], -1);
+	EXPECT_EQ(p[15], 1);
+	EXPECT_EQ(p[16], 1);
+	EXPECT_EQ(p[17], 1);
+	EXPECT_EQ(p[18], 1);
+	EXPECT_EQ(p[19], 1);
+	EXPECT_EQ(p[20], 1);
+	EXPECT_EQ(p[21], 1);
+	EXPECT_EQ(p[22], 1);
+	EXPECT_EQ(p[23], 1);
+	EXPECT_EQ(p[24], 1);
+
+	SG_UNREF(gpc);
+	SG_UNREF(prediction);
 }
 
 #endif /* HAVE_EIGEN3 */
