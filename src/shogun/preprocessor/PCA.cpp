@@ -12,7 +12,7 @@
  */
 #include <shogun/lib/config.h>
 
-#if defined HAVE_EIGEN3
+#ifdef HAVE_EIGEN3
 #include <shogun/preprocessor/PCA.h>
 #include <shogun/mathematics/Math.h>
 #include <string.h>

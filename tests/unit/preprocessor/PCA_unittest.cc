@@ -33,6 +33,8 @@
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
+
+#ifdef HAVE_EIGEN3
 #include <shogun/preprocessor/PCA.h>
 
 using namespace shogun;
@@ -481,3 +483,4 @@ TEST(PCA, PCA_apply_to_feature_vector_methodTest)
 	SG_UNREF(pca);
 	SG_UNREF(features);
 }
+#endif //HAVE_EIGEN3
