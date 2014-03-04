@@ -3,12 +3,12 @@
 	* SHOGUN Release version 3.2.1 (libshogun 16.1, data 0.8, parameter 1)
 	* This release also contains several cleanups and bugfixes:
 	* Features:
-		- None
+		- New modes for PCA matrix factorizations: SVD & EVD, in-place or reallocating [Parijat Mazumdar]
 	* Bugfixes:
 		- Fix memory problem in PCA::apply_to_feature_matrix [Parijat Mazumdar]
 		- Fix crash in LeastAngleRegression for the case D greater than N [Parijat Mazumdar]
 	* Cleanup and API Changes:
-		- None
+		- PCA now depends on Eigen3 instead of LAPACK [Parijat Mazumdar]
 
 2014-02-17 Soeren Sonnenburg <sonne@debian.org>
 

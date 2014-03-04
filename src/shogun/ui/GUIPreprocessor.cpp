@@ -61,7 +61,7 @@ CPreprocessor* CGUIPreprocessor::create_prunevarsubmean(bool divide_by_std)
 
 CPreprocessor* CGUIPreprocessor::create_pca(bool do_whitening, float64_t threshold)
 {
-#if defined HAVE_EIGEN3
+#ifdef HAVE_EIGEN3
 	CPreprocessor* preproc=new CPCA(do_whitening, THRESHOLD, threshold);
 
 	if (preproc)
