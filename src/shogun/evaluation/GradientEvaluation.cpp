@@ -51,7 +51,7 @@ void CGradientEvaluation::update_parameter_dictionary()
 
 CEvaluationResult* CGradientEvaluation::evaluate()
 {
-	if (update_parameter_hash())
+	if (parameter_hash_changed())
 		update_parameter_dictionary();
 
 	// create gradient result object
@@ -69,6 +69,8 @@ CEvaluationResult* CGradientEvaluation::evaluate()
 	result->set_paramter_dictionary(m_parameter_dictionary);
 
 	SG_UNREF(gradient);
+
+	update_parameter_hash();
 
 	return result;
 }

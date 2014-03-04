@@ -184,26 +184,32 @@ void CSGObject::set_global_parallel(Parallel* new_parallel)
 	sg_parallel=new_parallel;
 }
 
-bool CSGObject::update_parameter_hash()
+void CSGObject::update_parameter_hash()
 {
-	uint32_t new_hash = 0;
-	uint32_t carry = 0;
-	uint32_t length = 0;
+	SG_DEBUG("entering\n")
 
-	get_parameter_incremental_hash(m_parameters, new_hash,
-			carry, length);
+	uint32_t carry=0;
+	uint32_t length=0;
 
-	new_hash = CHash::FinalizeIncrementalMurmurHash3(new_hash,
-			carry, length);
+	get_parameter_incremental_hash(m_hash, carry, length);
+	m_hash=CHash::FinalizeIncrementalMurmurHash3(m_hash, carry, length);
 
-	if(new_hash != m_hash)
-	{
-		m_hash = new_hash;
-		return true;
-	}
+	SG_DEBUG("leaving\n")
+}
 
-	else
-		return false;
+bool CSGObject::parameter_hash_changed()
+{
+	SG_DEBUG("entering\n")
+
+	uint32_t hash=0;
+	uint32_t carry=0;
+	uint32_t length=0;
+
+	get_parameter_incremental_hash(hash, carry, length);
+	hash=CHash::FinalizeIncrementalMurmurHash3(hash, carry, length);
+
+	SG_DEBUG("leaving\n")
+	return (m_hash!=hash);
 }
 
 Parallel* CSGObject::get_global_parallel()
@@ -1124,32 +1130,44 @@ bool CSGObject::is_param_new(const SGParamInfo param_info) const
 	return result;
 }
 
-void CSGObject::get_parameter_incremental_hash(Parameter* param,
-		uint32_t& hash, uint32_t& carry, uint32_t& total_length)
+void CSGObject::get_parameter_incremental_hash(uint32_t& hash, uint32_t& carry,
+		uint32_t& total_length)
 {
-	if (!param)
-		return;
-
-	for (index_t i=0; i<param->get_num_parameters(); i++)
+	for (index_t i=0; i<m_parameters->get_num_parameters(); i++)
 	{
-		TParameter* p = param->get_parameter(i);
-		SG_DEBUG("Updating hash for parameter \"%s\"\n", p->m_name ? p->m_name : "(nil)");
+		TParameter* p=m_parameters->get_parameter(i);
 
-		if (!p || !p->is_valid())
-			continue;
+		SG_DEBUG("Updating hash for parameter %s.%s\n", get_name(), p->m_name);
 
-		if (p->m_datatype.m_ptype != PT_SGOBJECT)
+		if (p->m_datatype.m_ptype == PT_SGOBJECT)
 		{
-			p->get_incremental_hash(hash, carry, total_length);
-			continue;
+			if (p->m_datatype.m_ctype == CT_SCALAR)
+			{
+				CSGObject* child = *((CSGObject**)(p->m_parameter));
+
+				if (child)
+				{
+					child->get_parameter_incremental_hash(hash, carry,
+							total_length);
+				}
+			}
+			else if (p->m_datatype.m_ctype==CT_VECTOR ||
+					p->m_datatype.m_ctype==CT_SGVECTOR)
+			{
+				CSGObject** child=(*(CSGObject***)(p->m_parameter));
+
+				for (index_t j=0; j<*(p->m_datatype.m_length_y); j++)
+				{
+					if (child[j])
+					{
+						child[j]->get_parameter_incremental_hash(hash, carry,
+								total_length);
+					}
+				}
+			}
 		}
-
-		CSGObject* child = *((CSGObject**)(p->m_parameter));
-
-		if (child)
-			get_parameter_incremental_hash(
-					child->m_parameters, hash,
-					carry, total_length);
+		else
+			p->get_incremental_hash(hash, carry, total_length);
 	}
 }
 

@@ -63,6 +63,7 @@ int main(int argc, char** argv)
 	CDenseFeatures<float64_t>* feat_train=new CDenseFeatures<float64_t>(X_train);
 	CBinaryLabels* lab_train=new CBinaryLabels(y_train);
 	CDenseFeatures<float64_t>* feat_test=new CDenseFeatures<float64_t>(X_test);
+	SG_REF(feat_test);
 
 	// create Gaussian kernel with width = 2.0
 	CGaussianKernel* kernel=new CGaussianKernel(10, 2.0);
@@ -114,6 +115,7 @@ int main(int argc, char** argv)
 	// free up memory
 	SG_UNREF(gpc);
 	SG_UNREF(predictions);
+	SG_UNREF(feat_test);
 
 	exit_shogun();
 	return 0;

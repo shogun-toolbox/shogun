@@ -97,16 +97,21 @@ CLaplacianInferenceMethod::~CLaplacianInferenceMethod()
 
 void CLaplacianInferenceMethod::update()
 {
+	SG_DEBUG("entering\n");
+
 	CInferenceMethod::update();
 	update_alpha();
 	update_chol();
 	update_approx_cov();
 	update_deriv();
+	update_parameter_hash();
+
+	SG_DEBUG("leaving\n");
 }
 
 SGVector<float64_t> CLaplacianInferenceMethod::get_diagonal_vector()
 {
-	if (update_parameter_hash())
+	if (parameter_hash_changed())
 		update();
 
 	return SGVector<float64_t>(sW);
@@ -114,7 +119,7 @@ SGVector<float64_t> CLaplacianInferenceMethod::get_diagonal_vector()
 
 float64_t CLaplacianInferenceMethod::get_negative_log_marginal_likelihood()
 {
-	if (update_parameter_hash())
+	if (parameter_hash_changed())
 		update();
 
 	// create eigen representations alpha, f, W, L
@@ -155,7 +160,7 @@ float64_t CLaplacianInferenceMethod::get_negative_log_marginal_likelihood()
 
 SGVector<float64_t> CLaplacianInferenceMethod::get_alpha()
 {
-	if (update_parameter_hash())
+	if (parameter_hash_changed())
 		update();
 
 	SGVector<float64_t> result(m_alpha);
@@ -164,7 +169,7 @@ SGVector<float64_t> CLaplacianInferenceMethod::get_alpha()
 
 SGMatrix<float64_t> CLaplacianInferenceMethod::get_cholesky()
 {
-	if (update_parameter_hash())
+	if (parameter_hash_changed())
 		update();
 
 	return SGMatrix<float64_t>(m_L);
@@ -172,7 +177,7 @@ SGMatrix<float64_t> CLaplacianInferenceMethod::get_cholesky()
 
 SGVector<float64_t> CLaplacianInferenceMethod::get_posterior_mean()
 {
-	if (update_parameter_hash())
+	if (parameter_hash_changed())
 		update();
 
 	return SGVector<float64_t>(m_mu);
@@ -180,7 +185,7 @@ SGVector<float64_t> CLaplacianInferenceMethod::get_posterior_mean()
 
 SGMatrix<float64_t> CLaplacianInferenceMethod::get_posterior_covariance()
 {
-	if (update_parameter_hash())
+	if (parameter_hash_changed())
 		update();
 
 	return SGMatrix<float64_t>(m_Sigma);
