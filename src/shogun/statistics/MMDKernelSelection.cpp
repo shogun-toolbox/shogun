@@ -9,7 +9,7 @@
 
 #include <shogun/statistics/MMDKernelSelection.h>
 #include <shogun/kernel/CombinedKernel.h>
-#include <shogun/statistics/KernelTwoSampleTestStatistic.h>
+#include <shogun/statistics/KernelTwoSampleTest.h>
 #include <shogun/statistics/LinearTimeMMD.h>
 #include <shogun/statistics/QuadraticTimeMMD.h>
 
@@ -22,7 +22,7 @@ CMMDKernelSelection::CMMDKernelSelection()
 }
 
 CMMDKernelSelection::CMMDKernelSelection(
-		CKernelTwoSampleTestStatistic* mmd)
+		CKernelTwoSampleTest* mmd)
 {
 	init();
 

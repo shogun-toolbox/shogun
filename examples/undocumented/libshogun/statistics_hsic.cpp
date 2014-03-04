@@ -89,10 +89,7 @@ void test_hsic_fixed()
 
 	index_t m=features_p->get_num_vectors();
 
-	/* unref features since convienience constructor is HSIC was used */
 	CHSIC* hsic=new CHSIC(kernel_p, kernel_q, features_p, features_q);
-	SG_UNREF(features_p);
-	SG_UNREF(features_q);
 
 	/* assert matlab result, note that compute statistic computes m*hsic */
 	float64_t difference=hsic->compute_statistic();
@@ -111,10 +108,7 @@ void test_hsic_gamma()
 	CKernel* kernel_q=NULL;
 	create_fixed_data_kernel_big(features_p, features_q, kernel_p, kernel_q);
 
-	/* unref features since convienience constructor is HSIC was used */
 	CHSIC* hsic=new CHSIC(kernel_p, kernel_q, features_p, features_q);
-	SG_UNREF(features_p);
-	SG_UNREF(features_q);
 
 	hsic->set_null_approximation_method(HSIC_GAMMA);
 	float64_t p=hsic->compute_p_value(0.05);
@@ -132,10 +126,7 @@ void test_hsic_sample_null()
 	CKernel* kernel_q=NULL;
 	create_fixed_data_kernel_big(features_p, features_q, kernel_p, kernel_q);
 
-	/* unref features since convienience constructor is HSIC was used */
 	CHSIC* hsic=new CHSIC(kernel_p, kernel_q, features_p, features_q);
-	SG_UNREF(features_p);
-	SG_UNREF(features_q);
 
 	/* do sampling null */
 	hsic->set_null_approximation_method(PERMUTATION);
@@ -143,7 +134,7 @@ void test_hsic_sample_null()
 	SG_SPRINT("p-value: %f\n", p);
 
 	/* ensure that sampling null of hsic leads to same results as using
-	 * CKernelIndependenceTestStatistic */
+	 * CKernelIndependenceTest */
 	CMath::init_random(1);
 	float64_t mean1=CStatistics::mean(hsic->sample_null());
 	float64_t var1=CStatistics::variance(hsic->sample_null());
@@ -151,7 +142,7 @@ void test_hsic_sample_null()
 
 	CMath::init_random(1);
 	float64_t mean2=CStatistics::mean(
-			hsic->CKernelIndependenceTestStatistic::sample_null());
+			hsic->CKernelIndependenceTest::sample_null());
 	float64_t var2=CStatistics::variance(hsic->sample_null());
 	SG_SPRINT("mean2=%f, var2=%f\n", mean2, var2);
 

@@ -21,7 +21,7 @@ CMMDKernelSelectionCombMaxL2::CMMDKernelSelectionCombMaxL2() :
 }
 
 CMMDKernelSelectionCombMaxL2::CMMDKernelSelectionCombMaxL2(
-		CKernelTwoSampleTestStatistic* mmd) : CMMDKernelSelectionComb(mmd)
+		CKernelTwoSampleTest* mmd) : CMMDKernelSelectionComb(mmd)
 {
 	/* currently, this method is only developed for the linear time MMD */
 	REQUIRE(mmd->get_statistic_type()==S_QUADRATIC_TIME_MMD ||

@@ -37,7 +37,7 @@ public:
 	 *
 	 * @param mmd MMD instance to use
 	 */
-	CMMDKernelSelectionComb(CKernelTwoSampleTestStatistic* mmd);
+	CMMDKernelSelectionComb(CKernelTwoSampleTest* mmd);
 
 	/** Destructor */
 	virtual ~CMMDKernelSelectionComb();

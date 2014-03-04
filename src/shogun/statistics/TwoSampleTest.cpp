@@ -1,26 +1,46 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * Copyright (c) The Shogun Machine Learning Toolbox
+ * Written (w) 2012-2013 Heiko Strathmann
+ * Written (w) 2014 Soumyajit De
+ * All rights reserved.
  *
- * Written (W) 2012-2013 Heiko Strathmann
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * The views and conclusions contained in the software and documentation are those
+ * of the authors and should not be interpreted as representing official policies,
+ * either expressed or implied, of the Shogun Development Team.
  */
 
-#include <shogun/statistics/TwoDistributionsTestStatistic.h>
+#include <shogun/statistics/TwoSampleTest.h>
 #include <shogun/features/Features.h>
 
 using namespace shogun;
 
-CTwoDistributionsTestStatistic::CTwoDistributionsTestStatistic() :
-		CTestStatistic()
+CTwoSampleTest::CTwoSampleTest() : CHypothesisTest()
 {
 	init();
 }
 
-CTwoDistributionsTestStatistic::CTwoDistributionsTestStatistic(
-		CFeatures* p_and_q,
-		index_t m) : CTestStatistic()
+CTwoSampleTest::CTwoSampleTest(CFeatures* p_and_q, index_t m) :
+	CHypothesisTest()
 {
 	init();
 
@@ -30,9 +50,8 @@ CTwoDistributionsTestStatistic::CTwoDistributionsTestStatistic(
 	m_m=m;
 }
 
-CTwoDistributionsTestStatistic::CTwoDistributionsTestStatistic(
-		CFeatures* p, CFeatures* q) :
-		CTestStatistic()
+CTwoSampleTest::CTwoSampleTest(CFeatures* p, CFeatures* q) :
+		CHypothesisTest()
 {
 	init();
 
@@ -42,12 +61,12 @@ CTwoDistributionsTestStatistic::CTwoDistributionsTestStatistic(
 	m_m=p->get_num_vectors();
 }
 
-CTwoDistributionsTestStatistic::~CTwoDistributionsTestStatistic()
+CTwoSampleTest::~CTwoSampleTest()
 {
 	SG_UNREF(m_p_and_q);
 }
 
-void CTwoDistributionsTestStatistic::init()
+void CTwoSampleTest::init()
 {
 	SG_ADD((CSGObject**)&m_p_and_q, "p_and_q", "Concatenated samples p and q",
 			MS_NOT_AVAILABLE);
@@ -58,7 +77,7 @@ void CTwoDistributionsTestStatistic::init()
 	m_m=0;
 }
 
-SGVector<float64_t> CTwoDistributionsTestStatistic::sample_null()
+SGVector<float64_t> CTwoSampleTest::sample_null()
 {
 	SG_DEBUG("entering!\n")
 
@@ -79,7 +98,7 @@ SGVector<float64_t> CTwoDistributionsTestStatistic::sample_null()
 
 		/* create index permutation and add as subset. This will mix samples
 		 * from p and q */
-		SGVector<int32_t>::permute_vector(ind_permutation);
+		SGVector<index_t>::permute_vector(ind_permutation);
 
 		/* compute statistic for this permutation of mixed samples */
 		m_p_and_q->add_subset(ind_permutation);
@@ -91,8 +110,7 @@ SGVector<float64_t> CTwoDistributionsTestStatistic::sample_null()
 	return results;
 }
 
-float64_t CTwoDistributionsTestStatistic::compute_p_value(
-		float64_t statistic)
+float64_t CTwoSampleTest::compute_p_value(float64_t statistic)
 {
 	float64_t result=0;
 
@@ -109,15 +127,12 @@ float64_t CTwoDistributionsTestStatistic::compute_p_value(
 		result=1.0-i/values.vlen;
 	}
 	else
-	{
 		SG_ERROR("Unknown method to approximate null distribution!\n");
-	}
 
 	return result;
 }
 
-float64_t CTwoDistributionsTestStatistic::compute_threshold(
-		float64_t alpha)
+float64_t CTwoSampleTest::compute_threshold(float64_t alpha)
 {
 	float64_t result=0;
 
@@ -130,14 +145,12 @@ float64_t CTwoDistributionsTestStatistic::compute_threshold(
 		result=values[index_t(CMath::floor(values.vlen*(1-alpha)))];
 	}
 	else
-	{
 		SG_ERROR("Unknown method to approximate null distribution!\n");
-	}
 
 	return result;
 }
 
-void CTwoDistributionsTestStatistic::set_p_and_q(CFeatures* p_and_q)
+void CTwoSampleTest::set_p_and_q(CFeatures* p_and_q)
 {
 	/* ref before unref to avoid problems when instances are equal */
 	SG_REF(p_and_q);
@@ -145,7 +158,7 @@ void CTwoDistributionsTestStatistic::set_p_and_q(CFeatures* p_and_q)
 	m_p_and_q=p_and_q;
 }
 
-CFeatures* CTwoDistributionsTestStatistic::get_p_and_q()
+CFeatures* CTwoSampleTest::get_p_and_q()
 {
 	SG_REF(m_p_and_q);
 	return m_p_and_q;

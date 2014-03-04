@@ -10,7 +10,7 @@
 #ifndef __LINEARTIMEMMD_H_
 #define __LINEARTIMEMMD_H_
 
-#include <shogun/statistics/KernelTwoSampleTestStatistic.h>
+#include <shogun/statistics/KernelTwoSampleTest.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/lib/external/libqp.h>
 
@@ -71,7 +71,7 @@ class CFeatures;
  * [1]: Gretton, A., Borgwardt, K. M., Rasch, M. J., Schoelkopf, B., & Smola, A. (2012).
  * A Kernel Two-Sample Test. Journal of Machine Learning Research, 13, 671-721.
  */
-class CLinearTimeMMD: public CKernelTwoSampleTestStatistic
+class CLinearTimeMMD: public CKernelTwoSampleTest
 {
 public:
 	CLinearTimeMMD();

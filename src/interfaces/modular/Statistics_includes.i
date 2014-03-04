@@ -1,10 +1,11 @@
 %{
- #include <shogun/statistics/TestStatistic.h>
- #include <shogun/statistics/TwoDistributionsTestStatistic.h>
- #include <shogun/statistics/KernelTwoSampleTestStatistic.h>
+ #include <shogun/statistics/HypothesisTest.h>
+ #include <shogun/statistics/IndependenceTest.h>
+ #include <shogun/statistics/TwoSampleTest.h>
+ #include <shogun/statistics/KernelTwoSampleTest.h>
  #include <shogun/statistics/LinearTimeMMD.h>
  #include <shogun/statistics/QuadraticTimeMMD.h>
- #include <shogun/statistics/KernelIndependenceTestStatistic.h>
+ #include <shogun/statistics/KernelIndependenceTest.h>
  #include <shogun/statistics/HSIC.h>
  #include <shogun/statistics/KernelMeanMatching.h>
  #include <shogun/statistics/MMDKernelSelection.h>
