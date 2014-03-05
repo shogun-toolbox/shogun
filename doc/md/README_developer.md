@@ -527,18 +527,17 @@ repository in github.
   on Google C++ Mock Framework.
 
   In order to be able to use the unit testing framework one will need to have
-  Google C++ Mock Framework installed on her machine as well as detected by
-  the ./configure script. So, please check the produced configure.log whether
-  the script detected it.
+  Google C++ Mock Framework installed on your machine. The gmock version is 1
+  .7.0 and the gtest version is 1.6.0(or it will have some error). Then use cmak  e/ccmake with the ENABLE_TESTING switch on.
+  For example:
+	cmake -DENABLE_TESTING=on ..
 
   Once it's detected if you add new classes to the code please define some basic
   unit tests for them under ./tests/unit (see some of the examples under that directory).
   As one can see the naming convention for files that contains the unit tests are:
   <classname>_unittest.cc
 
-  Before commiting or sending a pull request please run 'make unit-tests' under
-  ./src in order to check that nothing has been breaked by the modifications and
-  the library is still acting as it's intended.
+  Before commiting or sending a pull request please run 'make unit-tests' under root directory in order to check that nothing has been breaked by the modifications and the library is still acting as it's intended.
 
   One possible way to do this automatically is to add into your pre-commit hook the
   following code snippet (.git/hook/pre-commit):
@@ -548,7 +547,7 @@ repository in github.
 
 # run unit testing for basic checks
 # and only let commiting if the unit testing runs successfully
-cd src && make unit-tests
+make unit-tests
 ```
 
   This way before each commit the unit testing will run automatically and if it
