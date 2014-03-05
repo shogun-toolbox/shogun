@@ -35,7 +35,7 @@
 #include <gtest/gtest.h>
 
 using namespace shogun;
-
+#ifdef HAVE_LAPACK
 TEST(LeastAngleRegression, lars_N_GreaterThan_D)
 {
 	SGMatrix<float64_t> data(3,5);
@@ -144,3 +144,4 @@ TEST(LeastAngleRegression, lars_N_LessThan_D)
 	SG_UNREF(features);
 	SG_UNREF(labels);
 }
+#endif
