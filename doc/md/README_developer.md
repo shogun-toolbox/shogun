@@ -528,7 +528,7 @@ repository in github.
 
   In order to be able to use the unit testing framework one will need to have
   Google C++ Mock Framework installed on your machine. The gmock version is 
-  1.7.0 and the gtest version is 1.6.0(or it will have some errors). 
+  1.7.0 and the gtest version is 1.6.0 (or it will have some errors). 
 
   +Google Mock:<https://code.google.com/p/googlemock/>
 
@@ -548,7 +548,7 @@ repository in github.
   \<classname\>_unittest.cc
 
   Before commiting or sending a pull request please run 'make unit-tests' under root 
-  directory in order to check that nothing has been breaked by the modifications and 
+  directory in order to check that nothing has been broken by the modifications and 
   the library is still acting as it's intended.
 
   One possible way to do this automatically is to add into your pre-commit hook the
