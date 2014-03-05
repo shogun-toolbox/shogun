@@ -190,18 +190,14 @@ void CLinearTimeMMD::compute_statistic_and_variance(
 		 * only once */
 		CKernel* kernel=m_kernel;
 		if (multiple_kernels)
-		{
 			SG_DEBUG("using multiple kernels\n");
-		}
 
 		/* iterate through all kernels for this data */
 		for (index_t i=0; i<num_kernels; ++i)
 		{
 			/* if multiple kernels should be computed, set next kernel */
 			if (multiple_kernels)
-			{
 				kernel=((CCombinedKernel*)m_kernel)->get_kernel(i);
-			}
 
 			/* compute kernel matrix diagonals */
 			kernel->init(p1, p2);
@@ -235,9 +231,7 @@ void CLinearTimeMMD::compute_statistic_and_variance(
 			}
 
 			if (multiple_kernels)
-			{
 				SG_UNREF(kernel);
-			}
 		}
 
 		/* clean up streamed data */
