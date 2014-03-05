@@ -3133,7 +3133,7 @@ void TParameter::copy_data(const TParameter* source)
 	SG_SDEBUG("leaving TParameter::copy_data for %s\n", m_name)
 }
 
-bool TParameter::equals(TParameter* other, float64_t accuracy)
+bool TParameter::equals(TParameter* other, float64_t accuracy, bool tolerant)
 {
 	SG_SDEBUG("entering TParameter::equals()\n");
 
@@ -3181,7 +3181,7 @@ bool TParameter::equals(TParameter* other, float64_t accuracy)
 			if (!TParameter::compare_stype(m_datatype.m_stype,
 					m_datatype.m_ptype, m_parameter,
 					other->m_parameter,
-					accuracy))
+					accuracy, tolerant))
 			{
 				SG_SDEBUG("leaving TParameter::equals(): scalar data differs\n");
 				return false;
@@ -3204,7 +3204,8 @@ bool TParameter::equals(TParameter* other, float64_t accuracy)
 				void* pointer_b=&((*(char**)other->m_parameter)[x]);
 
 				if (!TParameter::compare_stype(m_datatype.m_stype,
-						m_datatype.m_ptype, pointer_a, pointer_b, accuracy))
+						m_datatype.m_ptype, pointer_a, pointer_b,
+						accuracy, tolerant))
 				{
 					SG_SDEBUG("leaving TParameter::equals(): vector element "
 							"differs\n");
@@ -3237,14 +3238,15 @@ bool TParameter::equals(TParameter* other, float64_t accuracy)
 
 			for (index_t i=0; i<length; ++i)
 			{
-				SG_SDEBUG("comparing element %d which is %d byes from start\n",
+				SG_SDEBUG("comparing element %d which is %d bytes from start\n",
 						i, x);
 
 				void* pointer_a=&((*(char**)m_parameter)[x]);
 				void* pointer_b=&((*(char**)other->m_parameter)[x]);
 
 				if (!TParameter::compare_stype(m_datatype.m_stype,
-						m_datatype.m_ptype, pointer_a, pointer_b, accuracy))
+						m_datatype.m_ptype, pointer_a, pointer_b,
+						accuracy, tolerant))
 				{
 					SG_SDEBUG("leaving TParameter::equals(): vector element "
 							"differs\n");
@@ -3277,10 +3279,10 @@ bool TParameter::equals(TParameter* other, float64_t accuracy)
 }
 
 bool TParameter::compare_ptype(EPrimitiveType ptype, void* data1, void* data2,
-			floatmax_t accuracy)
+			float64_t accuracy, bool tolerant)
 {
 	SG_SDEBUG("entering TParameter::compare_ptype()\n");
-
+	
 	if ((data1 && !data2) || (!data1 && data2))
 	{
 		SG_SINFO("leaving TParameter::compare_ptype(): data1 is at %p while "
@@ -3431,38 +3433,33 @@ bool TParameter::compare_ptype(EPrimitiveType ptype, void* data1, void* data2,
 	{
 		float32_t casted1=*((float32_t*)data1);
 		float32_t casted2=*((float32_t*)data2);
-
-		if (CMath::abs(casted1-casted2)>accuracy)
-		{
-			SG_SINFO("leaving TParameter::compare_ptype(): PT_FLOAT32: "
-					"data1=%f, data2=%f\n", casted1, casted2);
-			return false;
-		}
+		
+		SG_SINFO("leaving TParameter::compare_ptype(): PT_FLOAT32: "
+				"data1=%f, data2=%f\n", casted1, casted2);
+		
+		return CMath::fequals<float32_t>(casted1, casted2, accuracy, tolerant);
 		break;
 	}
 	case PT_FLOAT64:
 	{
 		float64_t casted1=*((float64_t*)data1);
 		float64_t casted2=*((float64_t*)data2);
+		
+		SG_SINFO("leaving TParameter::compare_ptype(): PT_FLOAT64: "
+				"data1=%f, data2=%f\n", casted1, casted2);
 
-		if (CMath::abs(casted1-casted2)>accuracy)
-		{
-			SG_SINFO("leaving TParameter::compare_ptype(): PT_FLOAT64: "
-					"data1=%f, data2=%f\n", casted1, casted2);
-			return false;
-		}
+		return CMath::fequals<float64_t>(casted1, casted2, accuracy, tolerant);
 		break;
 	}
 	case PT_FLOATMAX:
 	{
 		floatmax_t casted1=*((floatmax_t*)data1);
 		floatmax_t casted2=*((floatmax_t*)data2);
-		if (CMath::abs(casted1-casted2)>accuracy)
-		{
-			SG_SINFO("leaving TParameter::compare_ptype(): PT_FLOATMAX: "
-					"data1=%f, data2=%f\n", casted1, casted2);
-			return false;
-		}
+		
+		SG_SINFO("leaving TParameter::compare_ptype(): PT_FLOATMAX: "
+				"data1=%f, data2=%f\n", casted1, casted2);
+		
+		return CMath::fequals<floatmax_t>(casted1, casted2, accuracy, tolerant);
 		break;
 	}
 	case PT_COMPLEX128:
@@ -3671,10 +3668,10 @@ bool TParameter::copy_ptype(EPrimitiveType ptype, void* source, void* target)
 }
 
 bool TParameter::compare_stype(EStructType stype, EPrimitiveType ptype,
-		void* data1, void* data2, floatmax_t accuracy)
+		void* data1, void* data2, float64_t accuracy, bool tolerant)
 {
 	SG_SDEBUG("entering TParameter::compare_stype()\n");
-
+	
 	size_t size_ptype=TSGDataType::sizeof_ptype(ptype);
 
 	/* Avoid comparing NULL */
@@ -3697,7 +3694,7 @@ bool TParameter::compare_stype(EStructType stype, EPrimitiveType ptype,
 		case ST_NONE:
 		{
 			SG_SDEBUG("ST_NONE\n");
-			return TParameter::compare_ptype(ptype, data1, data2, accuracy);
+			return TParameter::compare_ptype(ptype, data1, data2, accuracy, tolerant);
 			break;
 		}
 		case ST_SPARSE:
@@ -3736,7 +3733,7 @@ bool TParameter::compare_stype(EStructType stype, EPrimitiveType ptype,
 				void* pointer2=&(cur2->entry)-char_offset+ptype_offset;
 
 				if (!TParameter::compare_ptype(ptype, pointer1,
-						pointer2, accuracy))
+						pointer2, accuracy, tolerant))
 				{
 					SG_SINFO("leaving TParameter::compare_stype(): Data of"
 							" sparse vector element is different\n");
@@ -3778,7 +3775,7 @@ bool TParameter::compare_stype(EStructType stype, EPrimitiveType ptype,
 				void* pointer2=str_ptr2->string+i*size_ptype;
 
 				if (!TParameter::compare_ptype(ptype, pointer1,
-						pointer2, accuracy))
+						pointer2, accuracy, tolerant))
 				{
 					SG_SINFO("leaving TParameter::compare_stype(): Data of"
 							" string element is different\n");
