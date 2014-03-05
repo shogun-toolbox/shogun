@@ -85,7 +85,7 @@ CMLDataHDF5File::CMLDataHDF5File(char* data_name,
 	h5file = H5Fopen(fname, H5F_ACC_RDONLY, H5P_DEFAULT);
 
 	if (h5file<0)
-		SG_SWARNING("Could not open data repository '%s'\n", data_name)
+		SG_ERROR("Could not open data repository '%s'\n", data_name)
 }
 
 CMLDataHDF5File::~CMLDataHDF5File()
