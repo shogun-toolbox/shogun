@@ -12,7 +12,17 @@ int main(int argc, char** argv)
 {
 	init_shogun_with_defaults();
 #if defined(HAVE_HDF5) && defined( HAVE_CURL)
-	CMLDataHDF5File* hdf = new CMLDataHDF5File((char *)"australian", "/data/data");
+	CMLDataHDF5File* hdf = NULL;
+	try
+	{
+		hdf = new CMLDataHDF5File((char *)"australian", "/data/data");
+	}
+	catch (ShogunException& e)
+	{
+		SG_UNREF(hdf);
+		exit_shogun();
+		return 0;
+	}
 	float64_t* mat=NULL;
 	int32_t num_feat;
 	int32_t num_vec;
