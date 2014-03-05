@@ -16,7 +16,7 @@
 
 #include <shogun/lib/config.h>
 
-#if defined HAVE_EIGEN3
+#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/eigen3.h>
 #include <stdio.h>
 #include <shogun/preprocessor/DimensionReductionPreprocessor.h>
@@ -78,13 +78,13 @@ enum EPCAMemoryMode
  * to the eigenvectors of the covariance matrix(XX') having top T eigenvalues.
  *
  * This class provides 3 method options to compute the transformation matrix :
- * <em>EVD</em> : Eigen Value Decomposition of Covariance Matrix (XX')
- * The covariance matrix XX' is first formed internally and then
+ * <em>EVD</em> : Eigen Value Decomposition of Covariance Matrix (\f$XX^T\f$)
+ * The covariance matrix \f$XX^T\f$ is first formed internally and then
  * its eigenvectors and eigenvalues are computed using QR decomposition of the matrix.
  * The time complexity of this method is \f$~10D^3\f$ and should be used when N > D.
  * 
  * <em>SVD</em> : Singular Value Decomposition of feature matrix X
- * The transpose of feature matrix, X', is decomposed using SVD. X' = UDV'
+ * The transpose of feature matrix, \f$X^T\f$, is decomposed using SVD.\f$X^T = UDV^T\f$
  * The matrix V in this decomposition contains the required eigenvectors and
  * the diagonal entries of the diagonal matrix D correspond to the non-negative
  * eigenvalues. Eigenvalue, \f$e_i\f$, is derived from a diagonal element, \f$d_i\f$,

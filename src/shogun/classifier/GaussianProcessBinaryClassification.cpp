@@ -69,8 +69,7 @@ bool CGaussianProcessBinaryClassification::train_machine(CFeatures* data)
 		m_method->set_features(data);
 
 	// perform inference
-	if (m_method->update_parameter_hash())
-		m_method->update();
+	m_method->update();
 
 	return true;
 }

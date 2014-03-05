@@ -48,7 +48,7 @@ public:
 	 * median distance on. Since the median is stable, this do need need to be
 	 * all data, but a small subset is sufficient.
 	 */
-	CMMDKernelSelectionMedian(CKernelTwoSampleTestStatistic* mmd,
+	CMMDKernelSelectionMedian(CKernelTwoSampleTest* mmd,
 			index_t num_data_distance=1000);
 
 	/** Destructor */

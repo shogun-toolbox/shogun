@@ -41,7 +41,7 @@ public:
 	 * @param mmd MMD instance to use. Has to be an MMD based kernel two-sample
 	 * test. Currently: linear or quadratic time MMD.
 	 */
-	CMMDKernelSelectionMax(CKernelTwoSampleTestStatistic* mmd);
+	CMMDKernelSelectionMax(CKernelTwoSampleTest* mmd);
 
 	/** Destructor */
 	virtual ~CMMDKernelSelectionMax();

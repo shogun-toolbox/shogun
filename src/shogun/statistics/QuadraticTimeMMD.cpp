@@ -37,14 +37,14 @@
 
 using namespace shogun;
 
-CQuadraticTimeMMD::CQuadraticTimeMMD() : CKernelTwoSampleTestStatistic()
+CQuadraticTimeMMD::CQuadraticTimeMMD() : CKernelTwoSampleTest()
 {
 	init();
 }
 
 CQuadraticTimeMMD::CQuadraticTimeMMD(CKernel* kernel, CFeatures* p_and_q,
 		index_t m) :
-		CKernelTwoSampleTestStatistic(kernel, p_and_q, m)
+		CKernelTwoSampleTest(kernel, p_and_q, m)
 {
 	init();
 
@@ -56,7 +56,7 @@ CQuadraticTimeMMD::CQuadraticTimeMMD(CKernel* kernel, CFeatures* p_and_q,
 }
 
 CQuadraticTimeMMD::CQuadraticTimeMMD(CKernel* kernel, CFeatures* p,
-		CFeatures* q) : CKernelTwoSampleTestStatistic(kernel, p, q)
+		CFeatures* q) : CKernelTwoSampleTest(kernel, p, q)
 {
 	init();
 
@@ -68,7 +68,7 @@ CQuadraticTimeMMD::CQuadraticTimeMMD(CKernel* kernel, CFeatures* p,
 }
 
 CQuadraticTimeMMD::CQuadraticTimeMMD(CCustomKernel* custom_kernel, index_t m) :
-		CKernelTwoSampleTestStatistic(custom_kernel, NULL, m)
+		CKernelTwoSampleTest(custom_kernel, NULL, m)
 {
 	init();
 }
@@ -224,7 +224,7 @@ float64_t CQuadraticTimeMMD::compute_p_value(float64_t statistic)
 	}
 
 	default:
-		result=CKernelTwoSampleTestStatistic::compute_p_value(statistic);
+		result=CKernelTwoSampleTest::compute_p_value(statistic);
 		break;
 	}
 
@@ -302,7 +302,7 @@ float64_t CQuadraticTimeMMD::compute_threshold(float64_t alpha)
 
 	default:
 		/* sampling null is handled here */
-		result=CKernelTwoSampleTestStatistic::compute_threshold(alpha);
+		result=CKernelTwoSampleTest::compute_threshold(alpha);
 		break;
 	}
 

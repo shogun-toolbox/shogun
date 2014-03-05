@@ -47,7 +47,7 @@ public:
 	 * @param lambda ridge that is added to standard deviation in order to
 	 * prevent division by zero. A sensivle value is for example 1E-5.
 	 */
-	CMMDKernelSelectionOpt(CKernelTwoSampleTestStatistic* mmd,
+	CMMDKernelSelectionOpt(CKernelTwoSampleTest* mmd,
 			float64_t lambda=10E-5);
 
 	/** Destructor */

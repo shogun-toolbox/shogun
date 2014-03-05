@@ -19,7 +19,7 @@ int main(int argc, char** argv)
 	// shogun will now own the matrix created
 	CDenseFeatures<float64_t>* features= new CDenseFeatures<float64_t>(matrix);
 
-	ASSERT(features->update_parameter_hash());
+	ASSERT(features->parameter_hash_changed());
 
 	SG_UNREF(features);
 	exit_shogun();

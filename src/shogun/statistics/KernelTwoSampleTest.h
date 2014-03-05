@@ -7,10 +7,10 @@
  * Written (W) 2012-2013 Heiko Strathmann
  */
 
-#ifndef __KERNELTWOSAMPLETESTSTATISTIC_H_
-#define __KERNELTWOSAMPLETESTSTATISTIC_H_
+#ifndef KERNEL_TWO_SAMPLE_TEST_H_
+#define KERNEL_TWO_SAMPLE_TEST_H_
 
-#include <shogun/statistics/TwoDistributionsTestStatistic.h>
+#include <shogun/statistics/TwoSampleTest.h>
 #include <shogun/kernel/Kernel.h>
 
 namespace shogun
@@ -29,15 +29,15 @@ class CKernel;
  * The class also re-implements the sample_null() method. If the underlying
  * kernel is a custom one (precomputed), the rows and column of the kernel
  * matrix is permuted using subsets. The computation falls back to
- * CTwoDistributionsTestStatistic::sample_null() otherwise.
+ * CTwoSampleTest::sample_null() otherwise.
  *
  * Abstract base class.
  */
-class CKernelTwoSampleTestStatistic : public CTwoDistributionsTestStatistic
+class CKernelTwoSampleTest : public CTwoSampleTest
 {
 	public:
 		/** default constructor */
-		CKernelTwoSampleTestStatistic();
+		CKernelTwoSampleTest();
 
 		/** Constructor
 		 *
@@ -49,7 +49,7 @@ class CKernelTwoSampleTestStatistic : public CTwoDistributionsTestStatistic
 		 * @param p_and_q samples from p and q, appended
 		 * @param q_start index of first sample of q
 		 */
-		CKernelTwoSampleTestStatistic(CKernel* kernel, CFeatures* p_and_q,
+		CKernelTwoSampleTest(CKernel* kernel, CFeatures* p_and_q,
 				index_t q_start);
 
 		/** Constructor.
@@ -63,11 +63,11 @@ class CKernelTwoSampleTestStatistic : public CTwoDistributionsTestStatistic
 		 * @param q samples from distribution q, will be copied and NOT
 		 * SG_REF'ed
 		 */
-		CKernelTwoSampleTestStatistic(CKernel* kernel, CFeatures* p,
+		CKernelTwoSampleTest(CKernel* kernel, CFeatures* p,
 				CFeatures* q);
 
 		/** destructor */
-		virtual ~CKernelTwoSampleTestStatistic();
+		virtual ~CKernelTwoSampleTest();
 
 		/** Setter for the underlying kernel
 		 * @param kernel new kernel to use
@@ -121,4 +121,4 @@ class CKernelTwoSampleTestStatistic : public CTwoDistributionsTestStatistic
 
 }
 
-#endif /* __KERNELTWOSAMPLETESTSTATISTIC_H_ */
+#endif /* KERNEL_TWO_SAMPLE_TEST_H_ */

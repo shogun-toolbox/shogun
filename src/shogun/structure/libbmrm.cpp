@@ -25,7 +25,7 @@ static const uint32_t QPSolverMaxIter=0xFFFFFFFF;
 static const float64_t epsilon=0.0;
 
 static float64_t *H;
-static uint32_t BufSize;
+uint32_t BufSize;
 
 void add_cutting_plane(
 		bmrm_ll**	tail,

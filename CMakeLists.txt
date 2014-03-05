@@ -191,7 +191,7 @@ ENDIF()
 
 # this has been only fixed in swig 2.0.12 or later.
 IF (NOT ((CYGWIN AND ENABLE_TESTING) OR (DARWIN AND COMPILE_MODULAR_INTERFACE
-	AND SWIG_VERSION VERSION_LESS "2.0.12")))
+	AND SWIG_VERSION VERSION_LESS "2.0.12") OR MatlabStatic))
 	INCLUDE(CheckCXX11Features)
 
 	IF(_HAS_CXX11_FLAG)
@@ -950,7 +950,7 @@ ENDIF()
 IF (MatlabStatic)
 	FIND_PACKAGE(Matlab REQUIRED)
 	IF(MATLAB_FOUND)
-		IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/matlab_modular)
+		IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/matlab_static)
 			add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/matlab_static)
 		ENDIF()
 	ELSE()

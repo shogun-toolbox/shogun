@@ -7,22 +7,22 @@
  * Written (W) 2012-2013 Heiko Strathmann
  */
 
-#include <shogun/statistics/KernelTwoSampleTestStatistic.h>
+#include <shogun/statistics/KernelTwoSampleTest.h>
 #include <shogun/features/Features.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/kernel/CustomKernel.h>
 
 using namespace shogun;
 
-CKernelTwoSampleTestStatistic::CKernelTwoSampleTestStatistic() :
-		CTwoDistributionsTestStatistic()
+CKernelTwoSampleTest::CKernelTwoSampleTest() :
+		CTwoSampleTest()
 {
 	init();
 }
 
-CKernelTwoSampleTestStatistic::CKernelTwoSampleTestStatistic(CKernel* kernel,
+CKernelTwoSampleTest::CKernelTwoSampleTest(CKernel* kernel,
 		CFeatures* p_and_q, index_t q_start) :
-		CTwoDistributionsTestStatistic(p_and_q, q_start)
+		CTwoSampleTest(p_and_q, q_start)
 {
 	init();
 
@@ -30,8 +30,8 @@ CKernelTwoSampleTestStatistic::CKernelTwoSampleTestStatistic(CKernel* kernel,
 	SG_REF(kernel);
 }
 
-CKernelTwoSampleTestStatistic::CKernelTwoSampleTestStatistic(CKernel* kernel,
-		CFeatures* p, CFeatures* q) : CTwoDistributionsTestStatistic(p, q)
+CKernelTwoSampleTest::CKernelTwoSampleTest(CKernel* kernel,
+		CFeatures* p, CFeatures* q) : CTwoSampleTest(p, q)
 {
 	init();
 
@@ -39,19 +39,19 @@ CKernelTwoSampleTestStatistic::CKernelTwoSampleTestStatistic(CKernel* kernel,
 	SG_REF(kernel);
 }
 
-CKernelTwoSampleTestStatistic::~CKernelTwoSampleTestStatistic()
+CKernelTwoSampleTest::~CKernelTwoSampleTest()
 {
 	SG_UNREF(m_kernel);
 }
 
-void CKernelTwoSampleTestStatistic::init()
+void CKernelTwoSampleTest::init()
 {
 	SG_ADD((CSGObject**)&m_kernel, "kernel", "Kernel for two sample test",
 			MS_AVAILABLE);
 	m_kernel=NULL;
 }
 
-SGVector<float64_t> CKernelTwoSampleTestStatistic::sample_null()
+SGVector<float64_t> CKernelTwoSampleTest::sample_null()
 {
 	SG_DEBUG("entering!\n");
 
@@ -107,7 +107,7 @@ SGVector<float64_t> CKernelTwoSampleTestStatistic::sample_null()
 	else
 	{
 		/* in this case, just use superclass method */
-		results=CTwoDistributionsTestStatistic::sample_null();
+		results=CTwoSampleTest::sample_null();
 	}
 
 	SG_DEBUG("leaving!\n");
