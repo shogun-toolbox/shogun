@@ -8,6 +8,7 @@
 		- Fix memory problem in PCA::apply_to_feature_matrix [Parijat Mazumdar]
 		- Fix crash in LeastAngleRegression for the case D greater than N [Parijat Mazumdar]
 		- Fix memory violations in bundle method solvers [Thoralf Klein]
+		- Fix fail in library_mldatahdf5.cpp example when http://mldata.org is not working properly [Parijat Mazumdar]
 	* Cleanup and API Changes:
 		- PCA now depends on Eigen3 instead of LAPACK [Parijat Mazumdar]
 
