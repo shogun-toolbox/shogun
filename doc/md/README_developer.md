@@ -527,11 +527,15 @@ repository in github.
   on Google C++ Mock Framework.
 
   In order to be able to use the unit testing framework one will need to have
-  Google C++ Mock Framework installed on your machine. The gmock version is 1
-  .7.0 and the gtest version is 1.6.0(or it will have some error). Then use cmak  e/ccmake with the ENABLE_TESTING switch on.
+  Google C++ Mock Framework installed on your machine. The gmock version is 
+  1.7.0 and the gtest version is 1.6.0(or it will have some errors). 
+  [Google Mock](https://code.google.com/p/googlemock/)
+  [Google Test](https://code.google.com/p/googletest/)
+  Then use cmake/ccmake with the ENABLE_TESTING switching on.
   For example:
-	cmake -DENABLE_TESTING=on ..
-
+```
+  cmake -DENABLE_TESTING=on ..
+```
   Once it's detected if you add new classes to the code please define some basic
   unit tests for them under ./tests/unit (see some of the examples under that directory).
   As one can see the naming convention for files that contains the unit tests are:
