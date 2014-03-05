@@ -11,7 +11,7 @@
  * Implementation of the Proximal Point P-BMRM
  *--------------------------------------------------------------------- */
 
-#include <shogun/structure/libp3bm.h>
+#include <shogun/structure/libppbm.h>
 #include <shogun/lib/external/libqp.h>
 #include <shogun/lib/Time.h>
 
@@ -21,7 +21,6 @@ static const uint32_t QPSolverMaxIter=0xFFFFFFFF;
 static const float64_t epsilon=0.0;
 
 static float64_t *H, *H2;
-static uint32_t BufSize;
 
 /*----------------------------------------------------------------------
   Returns pointer at i-th column of Hessian matrix.
@@ -91,6 +90,14 @@ BmrmStatistics svm_ppbm_solver(
 	alpha=0.0;
 
 	H= (float64_t*) LIBBMRM_CALLOC(BufSize*BufSize, float64_t);
+
+	ASSERT(nDim > 0);
+	ASSERT(BufSize > 0);
+	REQUIRE(BufSize < (std::numeric_limits<size_t>::max() / nDim),
+		"overflow: %u * %u > %u -- biggest possible BufSize=%u or nDim=%u\n",
+		BufSize, nDim, std::numeric_limits<size_t>::max(),
+		(std::numeric_limits<size_t>::max() / nDim),
+		(std::numeric_limits<size_t>::max() / BufSize));
 
 	A= (float64_t*) LIBBMRM_CALLOC(nDim*BufSize, float64_t);
 
@@ -261,8 +268,8 @@ BmrmStatistics svm_ppbm_solver(
 		diag_H[ppbmrm.nCP]=H[LIBBMRM_INDEX(ppbmrm.nCP, ppbmrm.nCP, BufSize)];
 		I[ppbmrm.nCP]=1;
 
-		ppbmrm.nCP++;
 		beta[ppbmrm.nCP]=0.0; // [beta; 0]
+		ppbmrm.nCP++;
 
 		/* tune alpha cycle */
 		/* ---------------------------------------------------------------------- */
@@ -597,6 +604,10 @@ BmrmStatistics svm_ppbm_solver(
 		{
 			clean_icp(&icp_stats, ppbmrm, &CPList_head, &CPList_tail, H, diag_H, beta, map, cleanAfter, b, I);
 		}
+
+		// next CP would exceed BufSize
+		if (ppbmrm.nCP+1 >= BufSize)
+			ppbmrm.exitflag=-1;
 
 		/* Debug: compute objective and training error */
 		if (verbose)

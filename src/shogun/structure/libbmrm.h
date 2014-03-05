@@ -30,6 +30,8 @@
 
 namespace shogun
 {
+extern uint32_t BufSize;
+
 /** Linked list for cutting planes buffer management */
 IGNORE_IN_CLASSLIST struct bmrm_ll {
 	/** Pointer to previous CP entry */
