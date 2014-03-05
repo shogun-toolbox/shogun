@@ -7,6 +7,7 @@
 	* Bugfixes:
 		- Fix memory problem in PCA::apply_to_feature_matrix [Parijat Mazumdar]
 		- Fix crash in LeastAngleRegression for the case D greater than N [Parijat Mazumdar]
+		- Fix memory violations in bundle method solvers [Thoralf Klein]
 	* Cleanup and API Changes:
 		- PCA now depends on Eigen3 instead of LAPACK [Parijat Mazumdar]
 
@@ -23,7 +24,7 @@
 		- Compile fixes for upcoming swig3.0
 		- Speedup for gaussian process' apply()
 		- Improve unit / integration test checks
-		- libbmrm uninitialized memory reads
+		- libbmrm uninitialized memory reads [Thoralf Klein]
 		- libocas uninitialized memory reads
 		- Octave 3.8 compile fixes [Orion Poplawski]
 		- Fix java modular compile error [Bjoern Esser]
@@ -48,7 +49,7 @@
 		- Add multiclass ipython notebook tutorials [Chiyuan Zhang]
 		- Add learning of StreamingSparseFeatures in OnlineLibLinear [Thoralf Klein]
 	* Bugfixes:
-		- Decrease memory footprint of SGObject
+		- Decrease memory footprint of SGObject [Thoralf Klein]
 		- Fix protobuf detection
 		- Fix doxygen files and various doxygen errors
 		- Fix compile error with directors
@@ -60,7 +61,7 @@
 		- Fix LabelsFactory methods' object ownership in SWIG interfaces with the %newobject directive.
 	* Cleanup and API Changes:
 		- Introduce slim SGRefObject for refcounted objects as base class of
-		SGObject [Thoralf Klein]
+		  SGObject [Thoralf Klein]
 
 2013-10-28 Soeren Sonnenburg <sonne@debian.org>
 
@@ -112,7 +113,7 @@
 		- Fix json serialization.
 		- Fixed bugs in FITC inference method that caused wrong posterior results.
 		- Fixed bugs in GP Regression that caused negative values for the variances.
-		- Fixed two memory errors in the streaming-features framework.
+		- Fixed two memory errors in the streaming-features framework. [Thoralf Klein]
 		- Fixed bug in the Kernel Mean Matching implementation (thanks to Meghana Kshirsagar).
 	* Cleanup and API Changes:
 		- Switch compile system to cmake
