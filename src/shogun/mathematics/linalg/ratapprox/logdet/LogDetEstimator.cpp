@@ -12,11 +12,19 @@
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/lib/computation/engine/IndependentComputationEngine.h>
+#include <shogun/lib/computation/engine/SerialComputationEngine.h>
 #include <shogun/lib/computation/jobresult/ScalarResult.h>
 #include <shogun/lib/computation/aggregator/JobResultAggregator.h>
+#include <shogun/mathematics/linalg/linop/DenseMatrixOperator.h>
+#include <shogun/mathematics/linalg/linop/SparseMatrixOperator.h>
+#include <shogun/mathematics/linalg/eigsolver/LanczosEigenSolver.h>
+#include <shogun/mathematics/linalg/linsolver/CGMShiftedFamilySolver.h>
 #include <shogun/mathematics/linalg/ratapprox/tracesampler/TraceSampler.h>
+#include <shogun/mathematics/linalg/ratapprox/tracesampler/NormalSampler.h>
 #include <shogun/mathematics/linalg/ratapprox/opfunc/OperatorFunction.h>
 #include <shogun/mathematics/linalg/ratapprox/logdet/LogDetEstimator.h>
+#include <shogun/mathematics/linalg/ratapprox/logdet/opfunc/DenseMatrixExactLog.h>
+#include <shogun/mathematics/linalg/ratapprox/logdet/opfunc/LogRationalApproximationCGM.h>
 
 namespace shogun
 {
@@ -25,6 +33,33 @@ CLogDetEstimator::CLogDetEstimator()
 	: CSGObject()
 {
 	init();
+}
+CLogDetEstimator::CLogDetEstimator(SGMatrix<float64_t> mat) : CSGObject()
+{
+	init();
+	m_computation_engine = new CSerialComputationEngine;
+	SG_REF(m_computation_engine);
+	CDenseMatrixOperator<float64_t>* op = new CDenseMatrixOperator<float64_t>(mat);
+	m_operator_log = new CDenseMatrixExactLog(op,m_computation_engine);
+	SG_REF(m_operator_log);
+	m_trace_sampler = new CNormalSampler(mat.num_rows); 
+      	SG_REF(m_trace_sampler);
+}		      
+
+CLogDetEstimator::CLogDetEstimator(SGSparseMatrix<float64_t> mat) : CSGObject()
+{
+	init();
+	m_computation_engine = new CSerialComputationEngine;
+	SG_REF(m_computation_engine);
+	CSparseMatrixOperator<float64_t>* op = new CSparseMatrixOperator<float64_t>(mat);
+	float64_t accuracy=1E-5;
+	CLanczosEigenSolver* eig_solver = new CLanczosEigenSolver(op);
+	CCGMShiftedFamilySolver* linear_solver = new CCGMShiftedFamilySolver();
+	m_operator_log=new CLogRationalApproximationCGM(op,m_computation_engine,
+		eig_solver,linear_solver,accuracy);
+	SG_REF(m_operator_log);
+	m_trace_sampler=new CNormalSampler(op,1,NATURAL,DISTANCE_TWO);
+	SG_REF(m_trace_sampler);
 }
 
 CLogDetEstimator::CLogDetEstimator(CTraceSampler* trace_sampler,

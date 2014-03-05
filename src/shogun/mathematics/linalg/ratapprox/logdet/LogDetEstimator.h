@@ -35,6 +35,18 @@ public:
 	/** default constructor */
 	CLogDetEstimator();
 
+	/* constructor for SGMatrix<float64_t>
+	 *with serialcomputation engine, CNormalsampler,
+	 *CDenseMatrixExactLog as default
+	 * */
+	CLogDetEstimator(SGMatrix<float64_t> mat);
+	/* constructor for SGSparseMatrix<float64_t>
+	 *with serialcomputation engine, CNormalsampler,
+	 *CLogRationalApproximationIndividual as default
+	 * */
+	 
+	 
+	CLogDetEstimator(SGSparseMatrix<float64_t> mat);
 	/**
 	 * constructor
 	 *
