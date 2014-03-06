@@ -85,7 +85,7 @@ void GenerateData_NLessD(SGMatrix<float64_t> &data, SGVector<float64_t> &lab)
 	lab[2]=-0.553422897279663;
 }
 
-TEST(LeastAngleRegression, lars_N_GreaterThan_D_LASSO)
+TEST(LeastAngleRegression, lasso_N_GreaterThan_D)
 {
 	SGMatrix<float64_t> data(3,5);
 	SGVector<float64_t> lab(5);
@@ -121,7 +121,7 @@ TEST(LeastAngleRegression, lars_N_GreaterThan_D_LASSO)
 	SG_UNREF(labels);
 }
 
-TEST(LeastAngleRegression, lars_N_LessThan_D_LASSO)
+TEST(LeastAngleRegression, lasso_N_LessThan_D)
 {
 	SGMatrix<float64_t> data(5,3);
 	SGVector<float64_t> lab(3);
@@ -156,7 +156,7 @@ TEST(LeastAngleRegression, lars_N_LessThan_D_LASSO)
 	SG_UNREF(labels);
 }
 
-TEST(LeastAngleRegression, lars_N_GreaterThan_D_LAR)
+TEST(LeastAngleRegression, lars_N_GreaterThan_D)
 {
 	SGMatrix<float64_t> data(3,5);
 	SGVector<float64_t> lab(5);
@@ -192,7 +192,7 @@ TEST(LeastAngleRegression, lars_N_GreaterThan_D_LAR)
 	SG_UNREF(labels);
 }
 
-TEST(LeastAngleRegression, lars_N_LessThan_D_LAR)
+TEST(LeastAngleRegression, lars_N_LessThan_D)
 {
 	SGMatrix<float64_t> data(5,3);
 	SGVector<float64_t> lab(3);
