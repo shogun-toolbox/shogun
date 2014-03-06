@@ -413,9 +413,10 @@ public:
 	 *
 	 * @param other object to compare with
 	 * @param accuracy accuracy to use for comparison (optional)
+	 * @param tolerant allows linient check on float equality (within accuracy)
 	 * @return true if all parameters were equal, false if not
 	 */
-	virtual bool equals(CSGObject* other, float64_t accuracy=0.0);
+	virtual bool equals(CSGObject* other, float64_t accuracy=0.0, bool tolerant=false);
 
 	/** Creates a clone of the current object. This is done via recursively
 	 * traversing all parameters, which corresponds to a deep copy.

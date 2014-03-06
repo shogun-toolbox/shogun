@@ -1192,7 +1192,7 @@ void CSGObject::build_gradient_parameter_dictionary(CMap<TParameter*, CSGObject*
 	}
 }
 
-bool CSGObject::equals(CSGObject* other, float64_t accuracy)
+bool CSGObject::equals(CSGObject* other, float64_t accuracy, bool tolerant)
 {
 	SG_DEBUG("entering %s::equals()\n", get_name());
 
@@ -1274,7 +1274,7 @@ bool CSGObject::equals(CSGObject* other, float64_t accuracy)
 		}
 
 		/* use equals method of TParameter from here */
-		if (!this_param->equals(other_param, accuracy))
+		if (!this_param->equals(other_param, accuracy, tolerant))
 		{
 			SG_INFO("leaving %s::equals(): parameters at position %d with name"
 					" \"%s\" differs from other object parameter with name "
