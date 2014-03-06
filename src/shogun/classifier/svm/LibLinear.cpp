@@ -1170,7 +1170,7 @@ void CLibLinear::solve_l1r_lr(
 void CLibLinear::solve_l2r_lr_dual(const liblinear_problem *prob, double eps, double Cp, double Cn)
 {
 	int l = prob->l;
-	int w_size = prob->n;
+	int w_size = use_bias?prob->n-1:prob->n;
 	int i, s, iter = 0;
 	double *xTx = new double[l];
 	int max_iter = 1000;
