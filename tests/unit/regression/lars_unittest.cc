@@ -36,9 +36,10 @@
 
 using namespace shogun;
 #ifdef HAVE_LAPACK
-TEST(LeastAngleRegression, lars_N_GreaterThan_D)
+
+//Generate the Data that N is greater than D
+void generate_data_n_greater_d(SGMatrix<float64_t> &data, SGVector<float64_t> &lab)
 {
-	SGMatrix<float64_t> data(3,5);
 	data(0,0)=0.044550005575722;
 	data(1,0)=-0.433969606728583;
 	data(2,0)=-0.397935396933392;
@@ -55,12 +56,42 @@ TEST(LeastAngleRegression, lars_N_GreaterThan_D)
 	data(1,4)=0.473047565770014;
 	data(2,4)=-0.013876505800334;
 
-	SGVector<float64_t> lab(5);
 	lab[0]=-0.196155100498902;
 	lab[1]=-5.376485285422094;
 	lab[2]=-1.717489351713958;
 	lab[3]=4.506538567065213;
 	lab[4]=2.783591170569741;
+}
+
+//Generate the Data that N is less than D
+void generate_data_n_less_d(SGMatrix<float64_t> &data, SGVector<float64_t> &lab)
+{
+	data(0,0)=0.217778502400306;
+	data(1,0)=0.660755393455389;
+	data(2,0)=0.492143169178889;
+	data(3,0)=0.668618163874328;
+	data(4,0)=0.806098163441828;
+	data(0,1)=-0.790379818206924;
+	data(1,1)=-0.745771163834136;
+	data(2,1)=-0.810293460958058;
+	data(3,1)=-0.740156729710306;
+	data(4,1)=-0.515540473266151;
+	data(0,2)=0.572601315806618;
+	data(1,2)=0.085015770378747;
+	data(2,2)=0.318150291779169;
+	data(3,2)=0.071538565835978;
+	data(4,2)=-0.290557690175677;
+
+	lab[0]=3.771471612608209;
+	lab[1]=-3.218048715328546;
+	lab[2]=-0.553422897279663;
+}
+
+TEST(LeastAngleRegression, lasso_N_GreaterThan_D)
+{
+	SGMatrix<float64_t> data(3,5);
+	SGVector<float64_t> lab(5);
+	generate_data_n_greater_d(data, lab);
 
 	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
 	SG_REF(features);
@@ -92,35 +123,88 @@ TEST(LeastAngleRegression, lars_N_GreaterThan_D)
 	SG_UNREF(labels);
 }
 
+TEST(LeastAngleRegression, lasso_N_LessThan_D)
+{
+	SGMatrix<float64_t> data(5,3);
+	SGVector<float64_t> lab(3);
+	generate_data_n_less_d(data,lab);
+
+	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
+	SG_REF(features);
+	CRegressionLabels* labels=new CRegressionLabels(lab);
+	SG_REF(labels);
+	CLeastAngleRegression* lars=new CLeastAngleRegression();
+	lars->set_labels(labels);
+	lars->train(features);
+
+	SGVector<float64_t> active2=SGVector<float64_t>(lars->get_w_for_var(2));
+	SGVector<float64_t> active1=SGVector<float64_t>(lars->get_w_for_var(1));
+
+	float64_t epsilon=0.000000000001;
+	EXPECT_NEAR(active1[0],0.000000000000,epsilon);
+	EXPECT_NEAR(active1[1],0.000000000000,epsilon);
+	EXPECT_NEAR(active1[2],0.000000000000,epsilon);
+	EXPECT_NEAR(active1[3],0.039226231353,epsilon);
+	EXPECT_NEAR(active1[4],0.000000000000,epsilon);
+
+	EXPECT_NEAR(active2[0],0.000000000000,epsilon);
+	EXPECT_NEAR(active2[1],0.000000000000,epsilon);
+	EXPECT_NEAR(active2[2],0.000000000000,epsilon);
+	EXPECT_NEAR(active2[3],2.578863294056,epsilon);
+	EXPECT_NEAR(active2[4],2.539637062702,epsilon);
+
+	SG_UNREF(lars);
+	SG_UNREF(features);
+	SG_UNREF(labels);
+}
+
+TEST(LeastAngleRegression, lars_N_GreaterThan_D)
+{
+	SGMatrix<float64_t> data(3,5);
+	SGVector<float64_t> lab(5);
+	generate_data_n_greater_d(data, lab);
+
+	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
+	SG_REF(features);
+	CRegressionLabels* labels=new CRegressionLabels(lab);
+	SG_REF(labels);
+	CLeastAngleRegression* lars=new CLeastAngleRegression(false);
+	lars->set_labels((CLabels*) labels);
+	lars->train(features);
+
+	SGVector<float64_t> active3=SGVector<float64_t>(lars->get_w_for_var(3));
+	SGVector<float64_t> active2=SGVector<float64_t>(lars->get_w_for_var(2));
+	SGVector<float64_t> active1=SGVector<float64_t>(lars->get_w_for_var(1));
+
+	float64_t epsilon=0.000000000001;
+	EXPECT_NEAR(active3[0],2.911072069591,epsilon);
+	EXPECT_NEAR(active3[1],1.290672330338,epsilon);
+	EXPECT_NEAR(active3[2],2.208741384416,epsilon);
+
+	EXPECT_NEAR(active2[0],1.747958837898,epsilon);
+	EXPECT_NEAR(active2[1],0.000000000000,epsilon);
+	EXPECT_NEAR(active2[2],1.840553057519,epsilon);
+
+	EXPECT_NEAR(active1[0],0.000000000000,epsilon);
+	EXPECT_NEAR(active1[1],0.000000000000,epsilon);
+	EXPECT_NEAR(active1[2],0.092594219621,epsilon);
+
+	SG_UNREF(lars);
+	SG_UNREF(features);
+	SG_UNREF(labels);
+}
+
 TEST(LeastAngleRegression, lars_N_LessThan_D)
 {
 	SGMatrix<float64_t> data(5,3);
-	data(0,0)=0.217778502400306;
-	data(1,0)=0.660755393455389;
-	data(2,0)=0.492143169178889;
-	data(3,0)=0.668618163874328;
-	data(4,0)=0.806098163441828;
-	data(0,1)=-0.790379818206924;
-	data(1,1)=-0.745771163834136;
-	data(2,1)=-0.810293460958058;
-	data(3,1)=-0.740156729710306;
-	data(4,1)=-0.515540473266151;
-	data(0,2)=0.572601315806618;
-	data(1,2)=0.085015770378747;
-	data(2,2)=0.318150291779169;
-	data(3,2)=0.071538565835978;
-	data(4,2)=-0.290557690175677;
-
 	SGVector<float64_t> lab(3);
-	lab[0]=3.771471612608209;
-	lab[1]=-3.218048715328546;
-	lab[2]=-0.553422897279663;
+	generate_data_n_less_d(data,lab);
 
 	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
 	SG_REF(features);
 	CRegressionLabels* labels=new CRegressionLabels(lab);
 	SG_REF(labels);	
-	CLeastAngleRegression* lars=new CLeastAngleRegression();
+	CLeastAngleRegression* lars=new CLeastAngleRegression(false);
 	lars->set_labels(labels);
 	lars->train(features);
 
