@@ -47,7 +47,7 @@ TEST(SerializationJSON, {{class}})
 
 	// check whether they are equal, up to accuracy since json is lossy
 	float64_t accuracy=1e-6;
-	ASSERT(object->equals(deserializedObject, accuracy));
+	ASSERT(object->equals(deserializedObject, accuracy, true));
 
 	SG_UNREF(object)
 	SG_UNREF(deserializedObject);
@@ -89,7 +89,7 @@ TEST(SerializationJSON,{{class}}_{{type}})
 
 	// check whether they are equal, up to accuracy since json is lossy
 	float64_t accuracy=1e-6;
-	ASSERT(object->equals(deserializedObject, accuracy));
+	ASSERT(object->equals(deserializedObject, accuracy, true));
 
 	SG_UNREF(object)
 	SG_UNREF(deserializedObject);

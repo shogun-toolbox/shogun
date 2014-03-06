@@ -20,6 +20,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <float.h>
 
 #ifndef NAN
 #include <stdlib.h>
@@ -44,12 +45,18 @@ int32_t CMath::LOGRANGE            = 0; // range for logtable: log(1+exp(x))  -2
 
 const float64_t CMath::NOT_A_NUMBER    	=  NAN;
 const float64_t CMath::INFTY            =  INFINITY;	// infinity
-const float64_t CMath::ALMOST_INFTY		=  +1e+20;		//a large number
-const float64_t CMath::ALMOST_NEG_INFTY =  -1000;
+const float64_t CMath::ALMOST_INFTY		=  +1e+300;		//a large number
+const float64_t CMath::ALMOST_NEG_INFTY =  -1e+300;
 const float64_t CMath::PI=M_PI;
-const float64_t CMath::MACHINE_EPSILON=5E-16;
-const float64_t CMath::MAX_REAL_NUMBER=1E300;
-const float64_t CMath::MIN_REAL_NUMBER=1E-300;
+const float64_t CMath::MACHINE_EPSILON=DBL_EPSILON;
+const float64_t CMath::MAX_REAL_NUMBER=DBL_MAX;
+const float64_t CMath::MIN_REAL_NUMBER=DBL_MIN;
+const float32_t CMath::F_MAX_VAL32=FLT_MAX;
+const float32_t CMath::F_MIN_NORM_VAL32=FLT_MIN;
+const float64_t CMath::F_MAX_VAL64=DBL_MAX;
+const float64_t CMath::F_MIN_NORM_VAL64=DBL_MIN;
+const float32_t CMath::F_MIN_VAL32=(FLT_MIN * FLT_EPSILON);
+const float64_t CMath::F_MIN_VAL64=(DBL_MIN * DBL_EPSILON);
 
 #ifdef USE_LOGCACHE
 float64_t* CMath::logtable = NULL;
@@ -206,7 +213,6 @@ void CMath::linspace(float64_t* output, float64_t start, float64_t end, int32_t 
 	}
 	output[n-1] = end;
 }
-
 
 int CMath::is_nan(double f)
 {
