@@ -37,7 +37,8 @@
 using namespace shogun;
 #ifdef HAVE_LAPACK
 
-void GenerateData_NGreaterD(SGMatrix<float64_t> &data, SGVector<float64_t> &lab)
+//Generate the Data that N is greater than D
+void generate_data_n_greater_d(SGMatrix<float64_t> &data, SGVector<float64_t> &lab)
 {
 	data(0,0)=0.044550005575722;
 	data(1,0)=-0.433969606728583;
@@ -62,7 +63,8 @@ void GenerateData_NGreaterD(SGMatrix<float64_t> &data, SGVector<float64_t> &lab)
 	lab[4]=2.783591170569741;
 }
 
-void GenerateData_NLessD(SGMatrix<float64_t> &data, SGVector<float64_t> &lab)
+//Generate the Data that N is less than D
+void generate_data_n_less_d(SGMatrix<float64_t> &data, SGVector<float64_t> &lab)
 {
 	data(0,0)=0.217778502400306;
 	data(1,0)=0.660755393455389;
@@ -89,7 +91,7 @@ TEST(LeastAngleRegression, lasso_N_GreaterThan_D)
 {
 	SGMatrix<float64_t> data(3,5);
 	SGVector<float64_t> lab(5);
-	GenerateData_NGreaterD(data, lab);
+	generate_data_n_greater_d(data, lab);
 
 	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
 	SG_REF(features);
@@ -125,7 +127,7 @@ TEST(LeastAngleRegression, lasso_N_LessThan_D)
 {
 	SGMatrix<float64_t> data(5,3);
 	SGVector<float64_t> lab(3);
-	GenerateData_NLessD(data,lab);
+	generate_data_n_less_d(data,lab);
 
 	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
 	SG_REF(features);
@@ -160,7 +162,7 @@ TEST(LeastAngleRegression, lars_N_GreaterThan_D)
 {
 	SGMatrix<float64_t> data(3,5);
 	SGVector<float64_t> lab(5);
-	GenerateData_NGreaterD(data, lab);
+	generate_data_n_greater_d(data, lab);
 
 	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
 	SG_REF(features);
@@ -196,7 +198,7 @@ TEST(LeastAngleRegression, lars_N_LessThan_D)
 {
 	SGMatrix<float64_t> data(5,3);
 	SGVector<float64_t> lab(3);
-	GenerateData_NLessD(data,lab);
+	generate_data_n_less_d(data,lab);
 
 	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
 	SG_REF(features);
