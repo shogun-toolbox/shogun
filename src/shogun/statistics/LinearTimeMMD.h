@@ -31,7 +31,7 @@ class CFeatures;
  * The MMD is the distance of two probability distributions \f$p\f$ and \f$q\f$
  * in a RKHS.
  * \f[
- * \text{MMD}}[\mathcal{F},p,q]^2=\textbf{E}_{x,x'}\left[ k(x,x')\right]-
+ * \text{MMD}[\mathcal{F},p,q]^2=\textbf{E}_{x,x'}\left[ k(x,x')\right]-
  * 2\textbf{E}_{x,y}\left[ k(x,y)\right]
  * +\textbf{E}_{y,y'}\left[ k(y,y')\right]=||\mu_p - \mu_q||^2_\mathcal{F}
  * \f]
@@ -256,7 +256,7 @@ protected:
 	/** Number of examples processed at once, i.e. in one burst */
 	index_t m_blocksize;
 
-	/** If this is true, samples will be mixed between p and q ind any method
+	/** If this is true, samples will be mixed between p and q in any method
 	 * that computes the statistic */
 	bool m_simulate_h0;
 };
