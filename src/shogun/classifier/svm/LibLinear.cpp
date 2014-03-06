@@ -121,7 +121,7 @@ bool CLibLinear::train_machine(CFeatures* data)
 		w=SGVector<float64_t>(num_feat);
 
 	liblinear_problem prob;
-	if (use_bias)
+	if (use_bias && liblinear_solver_type!=L2R_LR_DUAL)
 	{
 		prob.n=w.vlen+1;
 		memset(w.vector, 0, sizeof(float64_t)*(w.vlen+1));
@@ -1170,7 +1170,7 @@ void CLibLinear::solve_l1r_lr(
 void CLibLinear::solve_l2r_lr_dual(const liblinear_problem *prob, double eps, double Cp, double Cn)
 {
 	int l = prob->l;
-	int w_size = use_bias?prob->n-1:prob->n;
+	int w_size = prob->n;
 	int i, s, iter = 0;
 	double *xTx = new double[l];
 	int max_iter = 1000;
