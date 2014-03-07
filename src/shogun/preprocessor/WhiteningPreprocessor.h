@@ -16,7 +16,6 @@ namespace shogun
 	it has an identity co variance matrix
 	
 	*/
-
 	class CWhiteningPreprocessor : public CDensePreprocessor<float64_t>
 	{
 		public:
@@ -29,19 +28,15 @@ namespace shogun
 
 			virtual bool init(CFeatures* features);
 
-				/// cleanup
-		virtual void cleanup();
-		/// initialize preprocessor from file
-		virtual bool load(FILE* f);
-		/// save preprocessor init-data to file
-		virtual bool save(FILE* f);
-/** @return object name */
-		virtual const char* get_name() const { return "whitening preprocessor"; }
-
-	
+			// cleanup
+			virtual void cleanup();
+			// initialize preprocessor from file
+			virtual bool load(FILE* f);
+			// save preprocessor init-data to file
+			virtual bool save(FILE* f);
+			/** @return object name */
+			virtual const char* get_name() const { return "whitening preprocessor"; }
 	};
-
-
 }
 
 #endif
