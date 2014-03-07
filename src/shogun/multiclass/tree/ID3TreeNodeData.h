@@ -1,6 +1,5 @@
 /*
  * Copyright (c) The Shogun Machine Learning Toolbox
- * Written (W) 2012 Chiyuan Zhang
  * Written (w) 2014 Parijat Mazumdar
  * All rights reserved.
  *
@@ -29,67 +28,47 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
-#ifndef TREEMACHINE_H__
-#define TREEMACHINE_H__
 
-#include <shogun/machine/BaseMulticlassMachine.h>
-#include <shogun/multiclass/tree/TreeMachineNode.h>
+#ifndef ID3TREENODEDATA_H__
+#define ID3TREENODEDATA_H__
 
 namespace shogun
 {
-
-/** @brief class TreeMachine, a base class
- * for tree based multiclass classifiers.
- * This class is derived from CBaseMulticlassMachine
- * and stores the root node (of class type 
- * CTreeMachineNode) to the tree structure.
+/** @brief structure to store data of a node of
+ * id3 tree. This can be used as a template type in
+ * TreeMachineNode class. Ex: id3 algorithm uses nodes
+ * of type CTreeMachineNode<id3TreeNodeData>
  */
-template <class T> class CTreeMachine: public CBaseMulticlassMachine
+struct id3TreeNodeData
 {
-public:
-	/** node_t type */
-	typedef CTreeMachineNode<T> node_t;
+	/** classifying attribute */
+	int32_t attribute_id;
+
+	/** feature value required to move into this node */
+	float64_t transit_if_feature_value;
+
+	/** class label of data (-1 for internal nodes) */
+	float64_t class_label;
 
 	/** constructor */
-	CTreeMachine():CBaseMulticlassMachine()
+	id3TreeNodeData()
 	{
-		m_root=NULL;
-		SG_ADD((CSGObject**)&m_root,"m_root", "tree structure", MS_NOT_AVAILABLE);
+		attribute_id=-1;
+		transit_if_feature_value=-1.0;
+		class_label=-1.0;
 	}
 
-	/** destructor */
-	virtual ~CTreeMachine()
-	{
-		SG_UNREF(m_root);
-	}
-
-	/** get name
-	 * @return class of the tree 
+	/** print data
+	 * @param data the data to be printed  
 	 */
-	virtual const char* get_name() const { return "TreeMachine"; }
-
-	/** set root
-	 * @param root the root node of the tree
-	 */
-	void set_root(CTreeMachineNode<T>* root)
+	static void print_data(const id3TreeNodeData &data)
 	{
-		m_root=root;
+		SG_SPRINT("classifying feature index=%d\n", data.attribute_id);
+		SG_SPRINT("transit feature value=%f\n", data.transit_if_feature_value);
 	}
-
-	/** get root
-	 * @return root the root node of the tree
-	 */
-	CTreeMachineNode<T>* get_root()
-	{
-		return m_root;
-	}
-
-protected:
-	/** tree root */
-	CTreeMachineNode<T> *m_root;
 };
+
 
 } /* shogun */
 
-#endif /* end of include guard: TREEMACHINE_H__ */
-
+#endif /* ID3TREENODEDATA_H__ */
