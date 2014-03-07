@@ -31,7 +31,7 @@
 
 import argparse
 import logging
-from contextlib import contextmanager
+from contextlib import contextmanager, closing
 from modshogun import (LibSVMFile, SparseRealFeatures, MulticlassLabels,
 		       GaussianKernel, MulticlassLibSVM,
 		       SerializableHdf5File, Time)
@@ -92,7 +92,8 @@ def train_multiclass(dataset, output, epsilon, capacity, width):
 
 	# Serialize to file
 	writable_file = SerializableHdf5File(output, 'w')
-	svm.save_serializable(writable_file)
+	with closing(writable_file):
+		svm.save_serializable(writable_file)
 	LOGGER.info("Serialized classifier saved in: '%s'" % output)
 
 
