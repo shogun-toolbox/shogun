@@ -16,7 +16,6 @@ from modshogun import (LibSVMFile, SparseRealFeatures, MulticlassLabels,
 		       SerializableHdf5File)
 
 logging.basicConfig(level=logging.INFO, format='[%(asctime)-15s %(module)s] %(message)s')
-logger = logging.getLogger(__file__)
 
 def parse_arguments():
 	parser = argparse.ArgumentParser(description="Train a multiclass SVM stored \
@@ -41,7 +40,9 @@ def get_features_and_labels(input_file):
 	return feats, labels
 
 
-def main(dataset, output, epsilon, capacity, width):
+def train_multiclass(dataset, output, epsilon, capacity, width):
+	logger = logging.getLogger(__file__)
+
 	logger.info("SVM Multiclass classifier")
 	logger.info("Epsilon: %s" % epsilon)
 	logger.info("Capacity: %s" % capacity)
@@ -64,6 +65,9 @@ def main(dataset, output, epsilon, capacity, width):
 	logger.info("Serialized classifier saved in: '%s'" % output)
 
 
-if __name__ == '__main__':
+def main():
 	args = parse_arguments()
-	main(args.dataset, args.output, args.epsilon, args.capacity, args.width)
+	train_multiclass(args.dataset, args.output, args.epsilon, args.capacity, args.width)
+
+if __name__ == '__main__':
+	main()
