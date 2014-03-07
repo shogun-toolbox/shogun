@@ -3,6 +3,7 @@
  #include <shogun/statistics/IndependenceTest.h>
  #include <shogun/statistics/TwoSampleTest.h>
  #include <shogun/statistics/KernelTwoSampleTest.h>
+ #include <shogun/statistics/StreamingMMD.h>
  #include <shogun/statistics/LinearTimeMMD.h>
  #include <shogun/statistics/QuadraticTimeMMD.h>
  #include <shogun/statistics/KernelIndependenceTest.h>
