@@ -34,24 +34,31 @@ def parse_arguments():
 					classifier')
 	return parser.parse_args()
 
+def get_features_and_labels(input_file):
+	feats = SparseRealFeatures()
+	label_array = feats.load_with_labels(input_file)
+	labels = MulticlassLabels(label_array)
+	return feats, labels
+
+
 def main(dataset, output, epsilon, capacity, width):
 	logger.info("SVM Multiclass classifier")
 	logger.info("Epsilon: %s" % epsilon)
 	logger.info("Capacity: %s" % capacity)
 	logger.info("Gaussian width: %s" % width)
 
-	input_file = LibSVMFile(dataset)
+	# Get features
+	feats, labels = get_features_and_labels(LibSVMFile(dataset))
 
-	sparse_feats = SparseRealFeatures()
-	label_array = sparse_feats.load_with_labels(input_file)
-	labels = MulticlassLabels(label_array)
+	# Create kernel
+	kernel = GaussianKernel(feats, feats, width)
 
-	kernel = GaussianKernel(sparse_feats , sparse_feats, width)
-
+	# Initialize and train Multiclass SVM
 	svm = MulticlassLibSVM(capacity, kernel, labels)
 	svm.set_epsilon(epsilon)
 	svm.train()
 
+	# Serialize to file
 	writable_file = SerializableHdf5File(output, 'w')
 	svm.save_serializable(writable_file)
 	logger.info("Serialized classifier saved in: '%s'" % output)
