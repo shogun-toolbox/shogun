@@ -5,11 +5,9 @@
 
 
 #ifdef HAVE_EIGEN3
-
 #include <shogun/mathematics/eigen3.h>
 
 using namespace Eigen;
-
 using namespace shogun;
 
 CWhiteningPreprocessor::CWhiteningPreprocessor()
@@ -43,20 +41,19 @@ SGMatrix<float64_t> CWhiteningPreprocessor::apply_to_feature_matrix(CFeatures* f
 	int cols = feature_matrix.num_cols;
 
 	Map<MatrixXd> Efeature_matrix(feature_matrix.matrix,rows,cols);
-	Eigen::VectorXd mean = Efeature_matrix.rowwise().sum() / (float64_t)cols;
-	Eigen::MatrixXd mean_normalized_feature_matrix = Efeature_matrix.colwise() - mean;
+	VectorXd mean = Efeature_matrix.rowwise().sum() / (float64_t)cols;
+	MatrixXd mean_normalized_feature_matrix = Efeature_matrix.colwise() - mean;
 
-	Eigen::MatrixXd cov_matrix = (mean_normalized_feature_matrix * mean_normalized_feature_matrix.transpose()) / (float64_t)cols;
+	MatrixXd cov_matrix = (mean_normalized_feature_matrix * mean_normalized_feature_matrix.transpose()) / (float64_t)cols;
 
-	Eigen::SelfAdjointEigenSolver<MatrixXd> eigen(cov_matrix);
-//	eigen.compute(cov_matrix);
+	SelfAdjointEigenSolver<MatrixXd> eigen(cov_matrix);
 
-	Eigen::VectorXd eigen_values = eigen.eigenvalues();
+	VectorXd eigen_values = eigen.eigenvalues();
 
-	Eigen::MatrixXd D = eigen_values.cwiseSqrt().cwiseInverse().asDiagonal();
-	Eigen::MatrixXd W = D*eigen.eigenvectors();
+	MatrixXd D = eigen_values.cwiseSqrt().cwiseInverse().asDiagonal();
+	MatrixXd W = D*eigen.eigenvectors();
 
-	Eigen::MatrixXd whitenedMatrix = W*Efeature_matrix;
+	MatrixXd whitenedMatrix = W*Efeature_matrix;
 
 	return SGMatrix<float64_t>(whitenedMatrix.data(),rows,cols);
 
