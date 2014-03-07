@@ -10,7 +10,13 @@
 #
 
 import argparse
-from modshogun import LibSVMFile, SparseRealFeatures, MulticlassLabels, GaussianKernel, MulticlassLibSVM, SerializableHdf5File
+import logging
+from modshogun import (LibSVMFile, SparseRealFeatures, MulticlassLabels,
+		       GaussianKernel, MulticlassLibSVM,
+		       SerializableHdf5File)
+
+logging.basicConfig(level=logging.INFO, format='[%(asctime)-15s %(module)s] %(message)s')
+logger = logging.getLogger(__file__)
 
 def parse_arguments():
 	parser = argparse.ArgumentParser(description="Train a multiclass SVM stored \
@@ -29,6 +35,11 @@ def parse_arguments():
 	return parser.parse_args()
 
 def main(dataset, output, epsilon, capacity, width):
+	logger.info("SVM Multiclass classifier")
+	logger.info("Epsilon: %s" % epsilon)
+	logger.info("Capacity: %s" % capacity)
+	logger.info("Gaussian width: %s" % width)
+
 	input_file = LibSVMFile(dataset)
 
 	sparse_feats = SparseRealFeatures()
@@ -43,7 +54,7 @@ def main(dataset, output, epsilon, capacity, width):
 
 	writable_file = SerializableHdf5File(output, 'w')
 	svm.save_serializable(writable_file)
-	print "DONE"
+	logger.info("Serialized classifier saved in: '%s'" % output)
 
 
 if __name__ == '__main__':
