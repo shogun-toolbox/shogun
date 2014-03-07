@@ -75,6 +75,79 @@ TEST(LogDetEstimator, sample)
 	SG_UNREF(op);
 	SG_UNREF(e);
 }
+
+TEST(LogDetEstimator, Dense_sample_constructor)
+{
+	const index_t size=2;
+	SGMatrix<float64_t> mat(size, size);
+	mat(0,0)=2.0;
+	mat(0,1)=1.0;
+	mat(1,0)=1.0;
+	mat(1,1)=3.0;
+	
+	CLogDetEstimator estimator(mat);
+
+	CIndependentComputationEngine* e = dynamic_cast<CIndependentComputationEngine*>(estimator.get_computation_engine());
+
+	COperatorFunction<float64_t>* op = dynamic_cast<COperatorFunction<float64_t>*>(estimator.get_operator_function());
+
+	CTraceSampler* tracer = dynamic_cast<CTraceSampler*>(estimator.get_trace_sampler());
+
+	ASSERT_TRUE(e && op && tracer);
+}
+
+TEST(LogDetEstimator, Sparse_sample_constructor)
+{
+	const index_t size=16;
+	SGMatrix<float64_t> mat(size, size);
+	mat.set_const(0.0);
+	for (index_t i=0; i<size; ++i)
+	{
+		float64_t value=CMath::abs(sg_rand->std_normal_distrib())*1000;
+		mat(i,i)=value<1.0?10.0:value;
+	}
+
+	mat(0,5)=mat(5,0)=1.0;
+	mat(0,7)=mat(7,0)=1.0;
+	mat(0,11)=mat(11,0)=1.0;
+	mat(1,8)=mat(8,1)=1.0;
+	mat(1,10)=mat(10,1)=1.0;
+	mat(1,11)=mat(11,1)=1.0;
+	mat(1,12)=mat(12,1)=1.0;
+	mat(2,8)=mat(8,2)=1.0;
+	mat(2,11)=mat(11,2)=1.0;
+	mat(2,13)=mat(13,2)=1.0;
+	mat(2,14)=mat(14,2)=1.0;
+	mat(3,8)=mat(8,3)=1.0;
+	mat(3,12)=mat(12,3)=1.0;
+	mat(3,15)=mat(15,3)=1.0;
+	mat(4,8)=mat(8,4)=1.0;
+	mat(4,14)=mat(14,4)=1.0;
+	mat(4,15)=mat(15,4)=1.0;
+	mat(5,11)=mat(11,5)=1.0;
+	mat(5,10)=mat(10,5)=1.0;
+	mat(6,10)=mat(10,6)=1.0;
+	mat(6,12)=mat(12,6)=1.0;
+	mat(7,11)=mat(11,7)=1.0;
+	mat(7,13)=mat(13,7)=1.0;
+	mat(8,11)=mat(11,8)=1.0;
+	mat(8,15)=mat(15,8)=1.0;
+	mat(9,13)=mat(13,9)=1.0;
+	mat(9,14)=mat(14,9)=1.0;
+
+	CSparseFeatures<float64_t> feat(mat);
+	SGSparseMatrix<float64_t> sm=feat.get_sparse_feature_matrix();
+	
+	CLogDetEstimator estimator(sm);
+
+	CIndependentComputationEngine* e = dynamic_cast<CIndependentComputationEngine*>(estimator.get_computation_engine());
+
+	COperatorFunction<float64_t>* op = dynamic_cast<COperatorFunction<float64_t>*>(estimator.get_operator_function());
+
+	CTraceSampler* tracer = dynamic_cast<CTraceSampler*>(estimator.get_trace_sampler());
+
+	ASSERT_TRUE(e && op && tracer);
+}
 #endif // EIGEN_VERSION_AT_LEAST(3,1,0)
 
 TEST(LogDetEstimator, sample_ratapp_dense)

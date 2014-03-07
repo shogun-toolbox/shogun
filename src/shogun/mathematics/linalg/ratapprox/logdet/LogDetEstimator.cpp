@@ -20,6 +20,7 @@
 #include <shogun/mathematics/linalg/eigsolver/LanczosEigenSolver.h>
 #include <shogun/mathematics/linalg/linsolver/CGMShiftedFamilySolver.h>
 #include <shogun/mathematics/linalg/ratapprox/tracesampler/TraceSampler.h>
+#include <shogun/mathematics/linalg/ratapprox/tracesampler/ProbingSampler.h>
 #include <shogun/mathematics/linalg/ratapprox/tracesampler/NormalSampler.h>
 #include <shogun/mathematics/linalg/ratapprox/opfunc/OperatorFunction.h>
 #include <shogun/mathematics/linalg/ratapprox/logdet/LogDetEstimator.h>
@@ -34,32 +35,54 @@ CLogDetEstimator::CLogDetEstimator()
 {
 	init();
 }
-CLogDetEstimator::CLogDetEstimator(SGMatrix<float64_t> mat) : CSGObject()
+
+CLogDetEstimator::CLogDetEstimator(SGMatrix<float64_t> dense_mat) 
+	: CSGObject()
 {
 	init();
-	m_computation_engine = new CSerialComputationEngine;
+
+	m_computation_engine = new CSerialComputationEngine();
 	SG_REF(m_computation_engine);
-	CDenseMatrixOperator<float64_t>* op = new CDenseMatrixOperator<float64_t>(mat);
+
+	CDenseMatrixOperator<float64_t>* op = new CDenseMatrixOperator<float64_t>(dense_mat);
+	
 	m_operator_log = new CDenseMatrixExactLog(op,m_computation_engine);
 	SG_REF(m_operator_log);
-	m_trace_sampler = new CNormalSampler(mat.num_rows); 
-      	SG_REF(m_trace_sampler);
-}		      
 
-CLogDetEstimator::CLogDetEstimator(SGSparseMatrix<float64_t> mat) : CSGObject()
+	m_trace_sampler = new CNormalSampler(dense_mat.num_rows);
+	SG_REF(m_trace_sampler);
+
+	SG_INFO("Using CSerialComputationEngine, CDenseMatrixExactLog, CNormalSampler as default\n");
+}
+
+CLogDetEstimator::CLogDetEstimator(SGSparseMatrix<float64_t> sparse_mat) 
+	: CSGObject()
 {
 	init();
-	m_computation_engine = new CSerialComputationEngine;
+
+	m_computation_engine = new CSerialComputationEngine();
 	SG_REF(m_computation_engine);
-	CSparseMatrixOperator<float64_t>* op = new CSparseMatrixOperator<float64_t>(mat);
+
+	CSparseMatrixOperator<float64_t>* op = new CSparseMatrixOperator<float64_t>(sparse_mat);
 	float64_t accuracy=1E-5;
 	CLanczosEigenSolver* eig_solver = new CLanczosEigenSolver(op);
 	CCGMShiftedFamilySolver* linear_solver = new CCGMShiftedFamilySolver();
+
 	m_operator_log=new CLogRationalApproximationCGM(op,m_computation_engine,
 		eig_solver,linear_solver,accuracy);
 	SG_REF(m_operator_log);
-	m_trace_sampler=new CNormalSampler(op,1,NATURAL,DISTANCE_TWO);
+
+	#ifdef HAVE_LOPACK
+	m_trace_sampler=new CProbingSampler(op,1,NATURAL,DISTANCE_TWO);
 	SG_REF(m_trace_sampler);
+
+	SG_INFO("CLogDetEstimator:using CSerialComputationEngine, CLogRationalApproximationCGM, CProbingSampler as default\n");
+
+	#else
+	m_trace_sampler = new CNormalSampler(op->get_dimension());
+
+	SG_INFO("CLogDetEstimator:using CSerialComputationEngine, CLogRationalApproximationCGM, CNormalSampler as default\n");
+	#endif
 }
 
 CLogDetEstimator::CLogDetEstimator(CTraceSampler* trace_sampler,
@@ -100,6 +123,21 @@ CLogDetEstimator::~CLogDetEstimator()
 	SG_UNREF(m_trace_sampler);
 	SG_UNREF(m_operator_log);
 	SG_UNREF(m_computation_engine);
+}
+
+CTraceSampler* CLogDetEstimator::get_trace_sampler(void) const
+{
+	return m_trace_sampler;
+}
+
+CIndependentComputationEngine* CLogDetEstimator::get_computation_engine(void) const
+{
+	return m_computation_engine;
+}
+
+COperatorFunction<float64_t>* CLogDetEstimator::get_operator_function(void) const
+{
+	return m_operator_log;
 }
 
 SGVector<float64_t> CLogDetEstimator::sample(index_t num_estimates)
