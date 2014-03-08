@@ -105,14 +105,14 @@ CMultilabelLabels::ensure_valid (const char *context)
 
 
 int32_t
-CMultilabelLabels::get_num_labels () const const
+CMultilabelLabels::get_num_labels () const
 {
 	return m_num_labels;
 }
 
 
 int16_t 
-CMultilabelLabels::get_num_classes () const const
+CMultilabelLabels::get_num_classes () const
 {
 	return m_num_classes;
 }
@@ -129,7 +129,7 @@ CMultilabelLabels::set_labels (SGVector < int16_t  > *labels)
 }
 
 
-SGVector < int32_t > **CMultilabelLabels::get_class_labels () constconst
+SGVector < int32_t > **CMultilabelLabels::get_class_labels () const
 {
 	SGVector < int32_t > **labels_list =
 		SG_MALLOC (SGVector < int32_t > *, get_num_classes ());
@@ -278,7 +278,7 @@ CMultilabelLabels::set_class_labels (SGVector < int32_t > **labels_list)
 
 
 void
-CMultilabelLabels::display () const const
+CMultilabelLabels::display () const
 {
 	SGVector < int32_t > **labels_list = get_class_labels ();
 	printf ("printing %d binary label vectors for %d multilabels:\n",
