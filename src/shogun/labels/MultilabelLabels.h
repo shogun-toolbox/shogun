@@ -46,8 +46,6 @@ namespace shogun
 	 * valid values for labels are subsets of {0, ..., num_classes-1}
 	 */
 
-	typedef int16_t mclass_t;
-
 	class CMultilabelLabels : public CLabels
 	{
 		public:
@@ -58,14 +56,14 @@ namespace shogun
 			 *
 			 * @param num_classes number of (binary) class assignments per label
 			 */
-			CMultilabelLabels(mclass_t num_classes);
+			CMultilabelLabels(int16_t  num_classes);
 
 			/** constructor
 			 *
 			 * @param num_labels  number of labels
 			 * @param num_classes number of (binary) class assignments per label
 			 */
-			CMultilabelLabels(int32_t num_labels, mclass_t num_classes);
+			CMultilabelLabels(int32_t num_labels, int16_t  num_classes);
 
 			/** destructor */
 			~CMultilabelLabels();
@@ -97,13 +95,13 @@ namespace shogun
 			 *
 			 * @return number of classes
 			 */
-			virtual mclass_t get_num_classes() const;
+			virtual int16_t  get_num_classes() const;
 
 			/** set labels
 			 *
 			 * @param labels list of sparse labels
 			 */
-			void set_labels(SGVector<mclass_t> * labels);
+			void set_labels(SGVector<int16_t > * labels);
 
 			/** get list of sparse class labels (one vector per class)
 			 *
@@ -113,9 +111,9 @@ namespace shogun
 
 			/** get sparse assignment for j-th label
 			 *
-			 * @return SGVector<mclass_t> sparse label
+			 * @return SGVector<int16_t > sparse label
 			 */
-			SGVector<mclass_t> get_label(int32_t j);
+			SGVector<int16_t > get_label(int32_t j);
 
 			/** Convert sparse label vector to dense.  The dense vector
 			 * will be {d_true; d_false}^dense_dim.  Indices in sparse
@@ -134,9 +132,9 @@ namespace shogun
 			/** set sparse assignment for j-th label
 			 *
 			 * @param int32_t label index
-			 * @param SGVector<mclass_t> sparse label
+			 * @param SGVector<int16_t > sparse label
 			 */
-			void set_label(int32_t j, SGVector<mclass_t> label);
+			void set_label(int32_t j, SGVector<int16_t > label);
 
 			/** TODO */
 			void set_class_labels(SGVector <int32_t> ** labels_list);
@@ -148,7 +146,7 @@ namespace shogun
 			void save(const char *fname);
 
 			/** read num_labels and num_classes from file fname */
-			static void load_info(const char *fname, int32_t & num_labels, mclass_t & num_classes);
+			static void load_info(const char *fname, int32_t & num_labels, int16_t  & num_classes);
 
 			/** @return CMultilabels * read from fname */
 			static CMultilabelLabels * load(const char *fname);
@@ -158,11 +156,11 @@ namespace shogun
 
 		protected:
 
-			SGVector<mclass_t> * m_labels;
+			SGVector<int16_t > * m_labels;
 			int32_t              m_num_labels;
 
 		public:
-			mclass_t             m_num_classes;
+			int16_t              m_num_classes;
 	};
 
 }

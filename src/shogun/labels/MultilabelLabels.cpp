@@ -40,27 +40,31 @@ using namespace shogun;
 
 CMultilabelLabels::CMultilabelLabels ():CLabels ()
 {
+	init ();
 	m_num_labels = 0;
 	m_num_classes = 1;
-	init ();
+	m_labels = new SGVector < int16_t >[m_num_labels];
 }
 
 
-CMultilabelLabels::CMultilabelLabels (mclass_t num_classes):CLabels ()
+CMultilabelLabels::CMultilabelLabels (int16_t  num_classes):CLabels ()
 {
+	init ();
 	m_num_labels = 0;
 	m_num_classes = num_classes;
-	init ();
+	m_labels = new SGVector < int16_t >[m_num_labels];
 }
 
 
-CMultilabelLabels::CMultilabelLabels (int32_t num_labels, mclass_t num_classes):CLabels ()
+CMultilabelLabels::CMultilabelLabels (int32_t num_labels, int16_t  num_classes):CLabels ()
 {
 	ASSERT (num_labels >= 0);
 	ASSERT (num_classes > 0);
+
+	init ();
 	m_num_labels = num_labels;
 	m_num_classes = num_classes;
-	init ();
+	m_labels = new SGVector < int16_t >[m_num_labels];
 }
 
 
@@ -73,7 +77,9 @@ CMultilabelLabels::~CMultilabelLabels ()
 void
 CMultilabelLabels::init ()
 {
-	m_labels = new SGVector < mclass_t >[m_num_labels];
+	m_num_labels = 0;
+	m_num_classes = 0;
+	m_labels = NULL;
 }
 
 
@@ -105,7 +111,7 @@ CMultilabelLabels::get_num_labels () const const
 }
 
 
-mclass_t
+int16_t 
 CMultilabelLabels::get_num_classes () const const
 {
 	return m_num_classes;
@@ -113,7 +119,7 @@ CMultilabelLabels::get_num_classes () const const
 
 
 void
-CMultilabelLabels::set_labels (SGVector < mclass_t > *labels)
+CMultilabelLabels::set_labels (SGVector < int16_t  > *labels)
 {
 	for (int32_t label_j = 0; label_j < m_num_labels; label_j++)
 	{
@@ -129,7 +135,7 @@ SGVector < int32_t > **CMultilabelLabels::get_class_labels () constconst
 		SG_MALLOC (SGVector < int32_t > *, get_num_classes ());
 	int32_t *
 		num_label_idx = SG_MALLOC (int32_t, get_num_classes ());
-	for (mclass_t class_i = 0; class_i < get_num_classes (); class_i++)
+	for (int16_t  class_i = 0; class_i < get_num_classes (); class_i++)
 	{
 		num_label_idx[class_i] = 0;
 	}
@@ -137,13 +143,13 @@ SGVector < int32_t > **CMultilabelLabels::get_class_labels () constconst
 	{
 		for (int32_t c_pos = 0; c_pos < m_labels[label_j].vlen; c_pos++)
 		{
-			mclass_t
+			int16_t 
 				class_i = m_labels[label_j][c_pos];
 			ASSERT (class_i < get_num_classes ());
 			num_label_idx[class_i]++;
 		}
 	}
-	for (mclass_t class_i = 0; class_i < get_num_classes (); class_i++)
+	for (int16_t  class_i = 0; class_i < get_num_classes (); class_i++)
 	{
 		labels_list[class_i] =
 			new SGVector < int32_t > (num_label_idx[class_i]);
@@ -151,7 +157,7 @@ SGVector < int32_t > **CMultilabelLabels::get_class_labels () constconst
 	SG_FREE (num_label_idx);
 	int32_t *
 		next_label_idx = SG_MALLOC (int32_t, get_num_classes ());
-	for (mclass_t class_i = 0; class_i < get_num_classes (); class_i++)
+	for (int16_t  class_i = 0; class_i < get_num_classes (); class_i++)
 	{
 		next_label_idx[class_i] = 0;
 	}
@@ -160,7 +166,7 @@ SGVector < int32_t > **CMultilabelLabels::get_class_labels () constconst
 		for (int32_t c_pos = 0; c_pos < m_labels[label_j].vlen; c_pos++)
 		{
 			// get class_i of current position
-			mclass_t
+			int16_t 
 				class_i = m_labels[label_j][c_pos];
 			ASSERT (class_i < get_num_classes ());
 			// next free element in m_classes[class_i]:
@@ -177,7 +183,7 @@ SGVector < int32_t > **CMultilabelLabels::get_class_labels () constconst
 }
 
 
-SGVector < mclass_t > CMultilabelLabels::get_label (int32_t j)
+SGVector < int16_t  > CMultilabelLabels::get_label (int32_t j)
 {
 	ASSERT (j < get_num_labels ());
 	return m_labels[j];
@@ -203,19 +209,19 @@ D d_false)
 
 
 template
-SGVector < float64_t > CMultilabelLabels::to_dense <mclass_t, float64_t>
-(SGVector < mclass_t > *, int32_t, float64_t, float64_t);
+SGVector < float64_t > CMultilabelLabels::to_dense <int16_t , float64_t>
+(SGVector < int16_t  > *, int32_t, float64_t, float64_t);
 
 template
-SGVector < int32_t > CMultilabelLabels::to_dense < mclass_t, int32_t > 
-(SGVector < mclass_t > *, int32_t, int32_t, int32_t);
+SGVector < int32_t > CMultilabelLabels::to_dense < int16_t , int32_t > 
+(SGVector < int16_t  > *, int32_t, int32_t, int32_t);
 
 template
 SGVector < float64_t > CMultilabelLabels::to_dense < int32_t, float64_t >
 (SGVector < int32_t > *, int32_t, float64_t, float64_t);
 
 void
-CMultilabelLabels::set_label (int32_t j, SGVector < mclass_t > label)
+CMultilabelLabels::set_label (int32_t j, SGVector < int16_t  > label)
 {
 	ASSERT (j < get_num_labels ());
 	m_labels[j] = label;
@@ -225,12 +231,12 @@ CMultilabelLabels::set_label (int32_t j, SGVector < mclass_t > label)
 void
 CMultilabelLabels::set_class_labels (SGVector < int32_t > **labels_list)
 {
-	mclass_t *num_class_idx = SG_MALLOC (mclass_t, get_num_labels ());
+	int16_t  *num_class_idx = SG_MALLOC (int16_t , get_num_labels ());
 	for (int32_t label_j = 0; label_j < get_num_labels (); label_j++)
 	{
 		num_class_idx[label_j] = 0;
 	}
-	for (mclass_t class_i = 0; class_i < get_num_classes (); class_i++)
+	for (int16_t  class_i = 0; class_i < get_num_classes (); class_i++)
 	{
 		for (int32_t l_pos = 0; l_pos < labels_list[class_i]->vlen; l_pos++)
 		{
@@ -248,12 +254,12 @@ CMultilabelLabels::set_class_labels (SGVector < int32_t > **labels_list)
 		m_labels[label_j].resize_vector (num_class_idx[label_j]);
 	}
 	SG_FREE (num_class_idx);
-	mclass_t *next_class_idx = SG_MALLOC (mclass_t, get_num_labels ());
+	int16_t  *next_class_idx = SG_MALLOC (int16_t , get_num_labels ());
 	for (int32_t label_j = 0; label_j < get_num_labels (); label_j++)
 	{
 		next_class_idx[label_j] = 0;
 	}
-	for (mclass_t class_i = 0; class_i < get_num_classes (); class_i++)
+	for (int16_t  class_i = 0; class_i < get_num_classes (); class_i++)
 	{
 		for (int32_t l_pos = 0; l_pos < labels_list[class_i]->vlen; l_pos++)
 		{
@@ -294,7 +300,7 @@ CMultilabelLabels::display () const const
 	{
 		printf ("  y_{j=%d}", j);
 		SGVector < float64_t > dense =
-			to_dense < mclass_t, float64_t > (&m_labels[j], get_num_classes (),
+			to_dense < int16_t , float64_t > (&m_labels[j], get_num_classes (),
 			+1, -1);
 		dense.display_vector ("");
 	}
@@ -308,7 +314,7 @@ CMultilabelLabels::save (const char *fname)
 	FILE *fh = fopen (fname, "wb");
 	for (int32_t label_j = 0; label_j < get_num_labels (); label_j++)
 	{
-		SGVector < mclass_t > yb = get_label (label_j);
+		SGVector < int16_t  > yb = get_label (label_j);
 		for (int32_t i_pos = 0; i_pos < yb.vlen; i_pos++)
 		{
 			fprintf (fh, "%d ", yb[i_pos]);
@@ -321,12 +327,12 @@ CMultilabelLabels::save (const char *fname)
 
 void
 CMultilabelLabels::load_info (const char *fname, int32_t & num_labels,
-mclass_t & num_classes)
+int16_t  & num_classes)
 {
 	std::ifstream labelfile (fname);
 	std::string line;
 	int32_t lineno = 0;
-	mclass_t max_class_index = 0;
+	int16_t  max_class_index = 0;
 	while (std::getline (labelfile, line))
 	{
 		ASSERT (lineno < std::numeric_limits < int32_t >::max ());
@@ -334,7 +340,7 @@ mclass_t & num_classes)
 		std::string token;
 		while (iss >> token)
 		{
-			mclass_t class_index;
+			int16_t  class_index;
 			if ((std::istringstream (token) >> class_index).fail ())
 			{
 				SG_SERROR
@@ -343,7 +349,7 @@ mclass_t & num_classes)
 				break;
 			}
 			ASSERT (class_index >= 0);
-			ASSERT (class_index < std::numeric_limits < mclass_t >::max ());
+			ASSERT (class_index < std::numeric_limits < int16_t  >::max ());
 			if (class_index > max_class_index)
 			{
 				max_class_index = class_index;
@@ -365,14 +371,14 @@ CMultilabelLabels *
 CMultilabelLabels::load (const char *fname)
 {
 	int32_t num_labels = 0;
-	mclass_t num_classes = 0;
+	int16_t  num_classes = 0;
 	CMultilabelLabels::load_info (fname, num_labels, num_classes);
 	SG_SINFO
 		("CMultilabelLabels::load(%s): found %d multilabels with %d classes\n",
 		fname, num_labels, num_classes);
-	mclass_t temp[num_classes];
-	SGVector < mclass_t > *output_rows =
-		SG_CALLOC (SGVector < mclass_t >, num_labels);
+	int16_t  temp[num_classes];
+	SGVector < int16_t  > *output_rows =
+		SG_CALLOC (SGVector < int16_t  >, num_labels);
 	std::ifstream labelfile (fname);
 	std::string line;
 	int32_t label_j = 0;
@@ -385,7 +391,7 @@ CMultilabelLabels::load (const char *fname)
 		std::string token;
 		while (iss >> token)
 		{
-			mclass_t class_i;
+			int16_t  class_i;
 			if ((std::istringstream (token) >> class_i).fail ())
 			{
 				SG_SERROR
@@ -400,8 +406,8 @@ CMultilabelLabels::load (const char *fname)
 			num_label_classes++;
 		}
 		output_rows[label_j] =
-			SGVector < mclass_t > (SGVector <
-			mclass_t >::clone_vector (temp,
+			SGVector < int16_t  > (SGVector <
+			int16_t  >::clone_vector (temp,
 			num_label_classes),
 			num_label_classes);
 		label_j++;
