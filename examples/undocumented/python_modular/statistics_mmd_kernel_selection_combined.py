@@ -20,7 +20,7 @@ def statistics_mmd_kernel_selection_combined(m,distance,stretch,num_blobs,angle,
 	from modshogun import LinearTimeMMD
 	from modshogun import MMDKernelSelectionCombMaxL2
 	from modshogun import MMDKernelSelectionCombOpt
-	from modshogun import PERMUTATION, MMD1_GAUSSIAN
+	from modshogun import PERMUTATION, MMD1_GAUSSIAN, WITHIN_BLOCK_DIRECT
 	from modshogun import EuclideanDistance
 	from modshogun import Statistics, Math
 
@@ -58,9 +58,10 @@ def statistics_mmd_kernel_selection_combined(m,distance,stretch,num_blobs,angle,
 	for i in range(len(sigmas)):
 		combined.append_kernel(GaussianKernel(10, widths[i]))
 
-	# mmd instance using streaming features, blocksize of 10000
-	block_size=10000
+	# mmd instance using streaming features, blocksize of 4
+	block_size=4
 	mmd=LinearTimeMMD(combined, gen_p, gen_q, m, block_size)
+	mmd.set_null_var_est_method(WITHIN_BLOCK_DIRECT)
 
 	# kernel selection instance (this can easily replaced by the other methods for selecting
 	# combined kernels

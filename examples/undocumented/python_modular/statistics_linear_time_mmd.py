@@ -50,8 +50,8 @@ def statistics_linear_time_mmd (n,dim,difference):
 	#print "median distance for Gaussian kernel:", sigma
 	kernel=GaussianKernel(10,sigma)
 
-	# mmd instance using streaming features, blocksize of 10000
-	mmd=LinearTimeMMD(kernel, gen_p, gen_q, n, 10000)
+	# mmd instance using streaming features, blocksize of 4
+	mmd=LinearTimeMMD(kernel, gen_p, gen_q, n, 4)
 
 	# perform test: compute p-value and test if null-hypothesis is rejected for
 	# a test level of 0.05

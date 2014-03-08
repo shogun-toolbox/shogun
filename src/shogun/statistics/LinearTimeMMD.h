@@ -39,25 +39,31 @@
 namespace shogun
 {
 
-class CStreamingFeatures;
-class CFeatures;
-
 /** @brief This class implements the linear time Maximum Mean Statistic as
- * described in [1] for streaming data (see CStreamingMMD for description).
+ * described in [1] for streaming data by keeping the blocksize small and
+ * fixed (see CStreamingMMD for background description).
  *
- * Given two sets of samples \f$\{x_i\}_{i=1}^m\sim p\f$ and
- * \f$\{y_i\}_{i=1}^m\sim q\f$
- * the (unbiased) statistic is computed as
+ * In particular, Given two sets of samples \f$\{x_i\}_{i=1}^{n_x}\sim p\f$ and
+ * \f$\{y_i\}_{i=1}^{n_y}\sim q\f$ with block-size \f$B\f$ kept fixed, the
+ * unbiased estimate of the test statistic under \f$\mathbf{H}_0\f$ follows the
+ * following asymptotic behavior
  * \f[
- * \text{MMD}_l^2[\mathcal{F},X,Y]=\frac{1}{m_2}\sum_{i=1}^{m_2}
- * h(z_{2i},z_{2i+1})
+ *	\sqrt{\frac{n_xn_y}{n_x+n_y}}\hat{\eta}_k\rightarrow\mathcal{N}\left(0,
+ *	\frac{(B-1)(B-2)}{B(B_x-1)(B_y-1)}\sigma_{k,0}^2\right)
  * \f]
- * where
+ * as \f$n\rightarrow\infty\f$.
+ *
+ * This class just defines the statistic multiplier \f$\zeta\f$ and \f$\gamma\f$
+ * as \f$\sqrt{\frac{n_xn_y}{n_x+n_y}}\f$ and \f$\frac{B_xB_y(B_x-1)(B_y-1)}
+ * {(B-1)(B-2)}\f$ respectively.
+ *
+ * When INCOMPLETE statistic is used for \f$n_x=n_y\f$, the asymptotic
+ * distribution becomes
  * \f[
- * h(z_{2i},z_{2i+1})=k(x_{2i},x_{2i+1})+k(y_{2i},y_{2i+1})-k(x_{2i},y_{2i+1})-
- * k(x_{2i+1},y_{2i})
+ *	\sqrt{\frac{n}{4}}\hat{\eta}_k\rightarrow\mathcal{N}\left(0,\frac{4}{B-2}
+ *	\sigma_{k,0}^2\right)
  * \f]
- * and \f$ m_2=\lfloor\frac{m}{2} \rfloor\f$.
+ * and then \f$\gamma\f$ becomes \f$\frac{B(B-2)}{16}\f$.
  *
  * [1]: Gretton, A., Borgwardt, K. M., Rasch, M. J., Schoelkopf, B.,
  * & Smola, A. (2012). A Kernel Two-Sample Test. Journal of Machine Learning
@@ -73,46 +79,29 @@ public:
 	 * @param kernel kernel to use
 	 * @param p streaming features p to use
 	 * @param q streaming features q to use
-	 * @param m number of samples from each distribution
+	 * @param m number of samples from both distributions
 	 * @param blocksize size of examples that are processed at once when
-	 * computing statistic/threshold. If larger than m/2, all examples will be
-	 * processed at once. Memory consumption increased linearly in the
-	 * blocksize. Choose as large as possible regarding available memory.
+	 * computing statistic/threshold. For linear time MMD, small and fixed
+	 * blocksize has to be used. Default is 4.
 	 */
-	CLinearTimeMMD(CKernel* kernel, CStreamingFeatures* p,
-			CStreamingFeatures* q, index_t m, index_t blocksize=10000);
+	CLinearTimeMMD(CKernel* kernel, CStreamingFeatures* p, CStreamingFeatures* q,
+			index_t m, index_t blocksize=4);
+
+	/** Constructor.
+	 * @param kernel kernel to use
+	 * @param p streaming features p to use
+	 * @param q streaming features q to use
+	 * @param m number of samples from first distribution, p
+	 * @param n number of samples from first distribution, q
+	 * @param blocksize size of examples that are processed at once when
+	 * computing statistic/threshold. For linear time MMD, small and fixed
+	 * blocksize has to be used.
+	 */
+	CLinearTimeMMD(CKernel* kernel, CStreamingFeatures* p, CStreamingFeatures* q,
+			index_t m, index_t n, index_t blocksize);
 
 	/** destructor */
 	virtual ~CLinearTimeMMD();
-
-	/** Computes squared MMD and a variance estimate, in linear time.
-	 * If multiple_kernels is set to true, each subkernel is evaluated on the
-	 * same data.
-	 *
-	 * @param statistic return parameter for statistic, vector with entry for
-	 * each kernel. May be allocated before but doesn not have to be
-	 *
-	 * @param variance return parameter for statistic, vector with entry for
-	 * each kernel. May be allocated before but doesn not have to be
-	 *
-	 * @param multiple_kernels optional flag, if set to true, it is assumed that
-	 * the underlying kernel is of type K_COMBINED. Then, the MMD is computed on
-	 * all subkernel separately rather than computing it on the combination.
-	 * This is used by kernel selection strategies that need to evaluate
-	 * multiple kernels on the same data. Since the linear time MMD works on
-	 * streaming data, one cannot simply compute MMD, change kernel since data
-	 * would be different for every kernel.
-	 */
-	virtual void compute_statistic_and_variance(
-			SGVector<float64_t>& statistic, SGVector<float64_t>& variance,
-			bool multiple_kernels=false);
-
-	/** Same as compute_statistic_and_variance, but computes a linear time
-	 * estimate of the covariance of the multiple-kernel-MMD.
-	 * See [1] for details.
-	 */
-	virtual void compute_statistic_and_Q(
-			SGVector<float64_t>& statistic, SGMatrix<float64_t>& Q);
 
 	/** returns the statistic type of this test statistic */
 	virtual EStatisticType get_statistic_type() const
@@ -127,29 +116,21 @@ public:
 	}
 
 protected:
-	/** method that computes the squared MMD in linear time (see class
-	 * description for the equation)
+	/** Method that computes statistic estimate multiplier \f$\zeta\f$ as
+	 * \f$\sqrt{\frac{n_xn_y}{n_x+n_y}}\f$
 	 *
-	 * @param kernel the kernel to be used for computing MMD. This will be
-	 * useful when multiple kernels are used
-	 * @param data the list of data on which kernels are computed. The order
-	 * of data in the list is \f$x,x',\cdots\sim p\f$ followed by
-	 * \f$y,y',\cdots\sim q\f$. It is assumed that detele_data flag is set
-	 * inside the list
-	 * @param num_this_run number of data points in current blocks
-	 * @return the MMD values (the h-vectors)
+	 * @return multiplier \f$\zeta\f$ for statistic estimate
 	 */
-	 virtual SGVector<float64_t> compute_squared_mmd(CKernel* kernel,
-			 CList* data, index_t num_this_run);
+	virtual float64_t compute_stat_est_multiplier();
 
-private:
-	/** helper method, same as compute_squared_mmd with an option to use
-	 * preallocated memory for faster processing */
-	void compute_squared_mmd(CKernel* kernel, CList* data,
-			SGVector<float64_t>& current, SGVector<float64_t>& pp,
-			SGVector<float64_t>& qq, SGVector<float64_t>& pq,
-			SGVector<float64_t>& qp, index_t num_this_run);
-
+	/** Method that computes variance estimate multiplier \f$\gamma\f$ for
+	 * within block permuation approach as \f$\frac{B_xB_y(B_x-1)(B_y-1)}
+	 * {(B-1)(B-2)}\f$. If INCOMPLETE statistic type is used, then it
+	 * computes \f$\gamma=\frac{B(B-2)}{16}\f$.
+	 *
+	 * @return multiplier \f$\gamma\f$ for variance estimate under null
+	 */
+	virtual float64_t compute_var_est_multiplier();
 };
 
 }

@@ -1015,7 +1015,6 @@ float64_t CKernel::sum_symmetric_block(index_t block_begin, index_t block_size,
 	SG_DEBUG("Entering\n");
 
 	REQUIRE(has_features(), "No features assigned to kernel\n")
-	REQUIRE(lhs_equals_rhs, "The kernel matrix is not symmetric!\n")
 	REQUIRE(block_begin>=0 && block_begin<num_rhs,
 			"Invalid block begin index (%d, %d)!\n", block_begin, block_begin)
 	REQUIRE(block_begin+block_size<=num_rhs,
@@ -1114,7 +1113,6 @@ SGVector<float64_t> CKernel::row_wise_sum_symmetric_block(index_t block_begin,
 	SG_DEBUG("Entering\n");
 
 	REQUIRE(has_features(), "No features assigned to kernel\n")
-	REQUIRE(lhs_equals_rhs, "The kernel matrix is not symmetric!\n")
 	REQUIRE(block_begin>=0 && block_begin<num_rhs,
 			"Invalid block begin index (%d, %d)!\n", block_begin, block_begin)
 	REQUIRE(block_begin+block_size<=num_rhs,
@@ -1168,7 +1166,6 @@ SGMatrix<float64_t> CKernel::row_wise_sum_squared_sum_symmetric_block(index_t
 	SG_DEBUG("Entering\n");
 
 	REQUIRE(has_features(), "No features assigned to kernel\n")
-	REQUIRE(lhs_equals_rhs, "The kernel matrix is not symmetric!\n")
 	REQUIRE(block_begin>=0 && block_begin<num_rhs,
 			"Invalid block begin index (%d, %d)!\n", block_begin, block_begin)
 	REQUIRE(block_begin+block_size<=num_rhs,

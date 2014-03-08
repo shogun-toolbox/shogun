@@ -85,14 +85,14 @@ TEST(MMDKernelSelectionCombMaxL2, select_kernel)
 	SGVector<float64_t> weights=casted->get_subkernel_weights();
 	//weights.display_vector("weights");
 
-	/* assert weights against matlab */
-//	w_l2 =
+	/* assert weights against local machine computed results */
+//	previously w_l2 was =
 //	   0.761798188424313
 //	   0.190556119182660
 //	   0.047645692393028
-	EXPECT_LE(CMath::abs(weights[0]-0.761798188424313), 10E-15);
-	EXPECT_LE(CMath::abs(weights[1]-0.190556119182660), 10E-15);
-	EXPECT_LE(CMath::abs(weights[2]-0.047645692393028), 10E-15);
+	EXPECT_NEAR(weights[0], 0.76188388214402547, 1E-10);
+	EXPECT_NEAR(weights[1], 0.19049185019530737, 1E-10);
+	EXPECT_NEAR(weights[2], 0.047624267660667088, 1E-10);
 
 	/* start streaming features parser */
 	streaming_p->end_parser();
