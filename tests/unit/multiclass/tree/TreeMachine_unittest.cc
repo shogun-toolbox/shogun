@@ -38,7 +38,7 @@
 using namespace std;
 using namespace shogun;
 
-TEST(TreeMachine, TreeMachine_with_ID3TreeNodeData_test)
+TEST(TreeMachine, ID3TreeNodeData)
 {
 	CTreeMachineNode<id3TreeNodeData>* root= 
 			new CTreeMachineNode<id3TreeNodeData>();

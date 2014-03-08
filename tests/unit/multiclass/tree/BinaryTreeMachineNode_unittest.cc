@@ -38,7 +38,7 @@
 using namespace std;
 using namespace shogun;
 
-TEST(BinaryTreeMachineNode, BinaryTreeMachineNode_full_test)
+TEST(BinaryTreeMachineNode, build_tree)
 {
 	CBinaryTreeMachineNode<id3TreeNodeData>* root= 
 			new CBinaryTreeMachineNode<id3TreeNodeData>();
