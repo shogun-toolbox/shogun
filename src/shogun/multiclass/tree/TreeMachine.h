@@ -34,24 +34,26 @@
 
 #include <shogun/machine/BaseMulticlassMachine.h>
 #include <shogun/multiclass/tree/TreeMachineNode.h>
+#include <shogun/multiclass/tree/BinaryTreeMachineNode.h>
 
 namespace shogun
 {
 
-/** @brief class TreeMachine, a base class
- * for tree based multiclass classifiers.
- * This class is derived from CBaseMulticlassMachine
- * and stores the root node (of class type 
- * CTreeMachineNode) to the tree structure.
+/** @brief class TreeMachine, a base class for tree based multiclass classifiers.
+ * This class is derived from CBaseMulticlassMachine and stores the root node 
+ * (of class type CTreeMachineNode) to the tree structure
  */
-template <class T> class CTreeMachine: public CBaseMulticlassMachine
+template <class T> class CTreeMachine : public CBaseMulticlassMachine
 {
 public:
-	/** node_t type */
+	/** node_t type- Tree node with many possible children */
 	typedef CTreeMachineNode<T> node_t;
 
+	/** bnode_t type- Tree node with max 2 possible children */
+	typedef CBinaryTreeMachineNode<T> bnode_t;
+
 	/** constructor */
-	CTreeMachine():CBaseMulticlassMachine()
+	CTreeMachine() : CBaseMulticlassMachine()
 	{
 		m_root=NULL;
 		SG_ADD((CSGObject**)&m_root,"m_root", "tree structure", MS_NOT_AVAILABLE);
@@ -73,6 +75,8 @@ public:
 	 */
 	void set_root(CTreeMachineNode<T>* root)
 	{
+		SG_UNREF(m_root);
+		SG_REF(root);
 		m_root=root;
 	}
 
@@ -81,15 +85,16 @@ public:
 	 */
 	CTreeMachineNode<T>* get_root()
 	{
+		SG_REF(m_root);
 		return m_root;
 	}
 
 protected:
 	/** tree root */
-	CTreeMachineNode<T> *m_root;
+	CTreeMachineNode<T>* m_root;
 };
 
-} /* shogun */
+} /* namespace shogun */
 
 #endif /* end of include guard: TREEMACHINE_H__ */
 

@@ -49,7 +49,7 @@ int32_t CConditionalProbabilityTree::apply_multiclass_example(SGVector<float32_t
 {
 	compute_conditional_probabilities(ex);
 	SGVector<float64_t> probs(m_leaves.size());
-	for (map<int32_t,node_t*>::iterator it = m_leaves.begin(); it != m_leaves.end(); ++it)
+	for (map<int32_t,bnode_t*>::iterator it = m_leaves.begin(); it != m_leaves.end(); ++it)
 	{
 		probs[it->first] = accumulate_conditional_probability(it->second);
 	}
@@ -58,12 +58,12 @@ int32_t CConditionalProbabilityTree::apply_multiclass_example(SGVector<float32_t
 
 void CConditionalProbabilityTree::compute_conditional_probabilities(SGVector<float32_t> ex)
 {
-	stack<node_t *> nodes;
-	nodes.push(m_root);
+	stack<bnode_t *> nodes;
+	nodes.push((bnode_t*) m_root);
 
 	while (!nodes.empty())
 	{
-		node_t *node = nodes.top();
+		bnode_t *node = nodes.top();
 		nodes.pop();
 		if (node->left())
 		{
@@ -76,10 +76,10 @@ void CConditionalProbabilityTree::compute_conditional_probabilities(SGVector<flo
 	}
 }
 
-float64_t CConditionalProbabilityTree::accumulate_conditional_probability(node_t *leaf)
+float64_t CConditionalProbabilityTree::accumulate_conditional_probability(bnode_t *leaf)
 {
 	float64_t prob = 1;
-	node_t *par = leaf->parent();
+	bnode_t *par = (bnode_t*) leaf->parent();
 	while (par != NULL)
 	{
 		if (leaf == par->left())
@@ -88,7 +88,7 @@ float64_t CConditionalProbabilityTree::accumulate_conditional_probability(node_t
 			prob *= par->data.p_right;
 
 		leaf = par;
-		par = leaf->parent();
+		par = (bnode_t*) leaf->parent();
 	}
 
 	return prob;
@@ -152,9 +152,9 @@ void CConditionalProbabilityTree::train_example(SGVector<float32_t> ex, int32_t 
 {
 	if (m_root == NULL)
 	{
-		m_root = new node_t();
+		m_root = new bnode_t();
 		m_root->data.label = label;
-		m_leaves.insert(make_pair(label, m_root));
+		m_leaves.insert(make_pair(label, (bnode_t*) m_root));
 		m_root->machine(create_machine(ex));
 		return;
 	}
@@ -165,7 +165,7 @@ void CConditionalProbabilityTree::train_example(SGVector<float32_t> ex, int32_t 
 	}
 	else
 	{
-		node_t *node = m_root;
+		bnode_t *node = (bnode_t*) m_root;
 		while (node->left() != NULL)
 		{
 			// not a leaf
@@ -185,7 +185,7 @@ void CConditionalProbabilityTree::train_example(SGVector<float32_t> ex, int32_t 
 
 		m_leaves.erase(node->data.label);
 
-		node_t *left_node = new node_t();
+		bnode_t *left_node = new bnode_t();
 		left_node->data.label = node->data.label;
 		node->data.label = -1;
 		COnlineLibLinear *node_mch = dynamic_cast<COnlineLibLinear *>(m_machines->get_element(node->machine()));
@@ -197,7 +197,7 @@ void CConditionalProbabilityTree::train_example(SGVector<float32_t> ex, int32_t 
 		m_leaves.insert(make_pair(left_node->data.label, left_node));
 		node->left(left_node);
 
-		node_t *right_node = new node_t();
+		bnode_t *right_node = new bnode_t();
 		right_node->data.label = label;
 		right_node->machine(create_machine(ex));
 		m_leaves.insert(make_pair(label, right_node));
@@ -205,12 +205,12 @@ void CConditionalProbabilityTree::train_example(SGVector<float32_t> ex, int32_t 
 	}
 }
 
-void CConditionalProbabilityTree::train_path(SGVector<float32_t> ex, node_t *node)
+void CConditionalProbabilityTree::train_path(SGVector<float32_t> ex, bnode_t *node)
 {
 	float64_t node_label = 0;
 	train_node(ex, node_label, node);
 
-	node_t *par = node->parent();
+	bnode_t *par = (bnode_t*) node->parent();
 	while (par != NULL)
 	{
 		if (par->left() == node)
@@ -220,11 +220,11 @@ void CConditionalProbabilityTree::train_path(SGVector<float32_t> ex, node_t *nod
 
 		train_node(ex, node_label, par);
 		node = par;
-		par = node->parent();
+		par = (bnode_t*) node->parent();
 	}
 }
 
-void CConditionalProbabilityTree::train_node(SGVector<float32_t> ex, float64_t label, node_t *node)
+void CConditionalProbabilityTree::train_node(SGVector<float32_t> ex, float64_t label, bnode_t *node)
 {
 	COnlineLibLinear *mch = dynamic_cast<COnlineLibLinear *>(m_machines->get_element(node->machine()));
 	ASSERT(mch)
@@ -232,7 +232,7 @@ void CConditionalProbabilityTree::train_node(SGVector<float32_t> ex, float64_t l
 	SG_UNREF(mch);
 }
 
-float64_t CConditionalProbabilityTree::predict_node(SGVector<float32_t> ex, node_t *node)
+float64_t CConditionalProbabilityTree::predict_node(SGVector<float32_t> ex, bnode_t *node)
 {
 	COnlineLibLinear *mch = dynamic_cast<COnlineLibLinear *>(m_machines->get_element(node->machine()));
 	ASSERT(mch)

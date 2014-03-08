@@ -56,10 +56,10 @@ protected:
 	 * @param ex the example being decided
 	 * @return true if should go left, false otherwise
 	 */
-	virtual bool which_subtree(node_t *node, SGVector<float32_t> ex);
+	virtual bool which_subtree(bnode_t *node, SGVector<float32_t> ex);
 
 private:
-	int32_t tree_depth(node_t *node);
+	int32_t tree_depth(bnode_t *node);
 
 	float64_t m_alpha; ///< trade-off parameter for tree balance
 };

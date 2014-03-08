@@ -33,7 +33,7 @@
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/multiclass/tree/ID3TreeNodeData.h>
 #include <shogun/multiclass/tree/TreeMachine.h>
-#include <vector>
+#include <shogun/lib/DynamicObjectArray.h>
 
 using namespace std;
 using namespace shogun;
@@ -68,43 +68,59 @@ TEST(TreeMachine, TreeMachine_with_ID3TreeNodeData_test)
 	child3->data.transit_if_feature_value=3.0;
 	child3->data.class_label=33.0;
 
-	vector<CTreeMachineNode<id3TreeNodeData>*> InsertChildren;
-	InsertChildren.push_back(child1);
-	InsertChildren.push_back(child2);
+	CDynamicObjectArray* InsertChildren = new CDynamicObjectArray();
+	InsertChildren->push_back(child1);
+	InsertChildren->push_back(child2);
 
-	root->set_children(&InsertChildren[0], InsertChildren.size());
+	root->set_children(InsertChildren);
 	root->add_child(child3);
 
-	CTreeMachineNode<id3TreeNodeData>* get_root=
-						tree->get_root();
-	vector<CTreeMachineNode<id3TreeNodeData>*> get_children
-					=get_root->get_children();
+	CTreeMachineNode<id3TreeNodeData>* get_root=tree->get_root();
+	CDynamicObjectArray* get_children=get_root->get_children();
 
 	EXPECT_EQ(get_root->data.attribute_id,-1);
 	EXPECT_EQ(get_root->data.transit_if_feature_value,-1.0);
 	EXPECT_EQ(get_root->data.class_label,-1.0);
 	EXPECT_EQ(get_root->machine(),-1);
 	EXPECT_TRUE(get_root->parent()==NULL);
-	EXPECT_EQ(get_children.size(),3);
+	EXPECT_EQ(get_children->get_num_elements(),3);
 
-	EXPECT_EQ(get_children[0]->data.attribute_id,1);
-	EXPECT_EQ(get_children[0]->data.transit_if_feature_value,1.0);
-	EXPECT_EQ(get_children[0]->data.class_label,11.0);
-	EXPECT_EQ(get_children[0]->machine(),1);
-	EXPECT_EQ(get_children[0]->parent()->machine(),-1);
-	EXPECT_EQ(get_children[0]->get_children().size(),0);
+	CTreeMachineNode<id3TreeNodeData>* get_child1=((CTreeMachineNode<id3TreeNodeData>*)
+							 get_children->get_element(0));
+	CTreeMachineNode<id3TreeNodeData>* get_child2=((CTreeMachineNode<id3TreeNodeData>*)
+							 get_children->get_element(1));
+	CTreeMachineNode<id3TreeNodeData>* get_child3=((CTreeMachineNode<id3TreeNodeData>*)
+							 get_children->get_element(2));
 
-	EXPECT_EQ(get_children[1]->data.attribute_id,2);
-	EXPECT_EQ(get_children[1]->data.transit_if_feature_value,2.0);
-	EXPECT_EQ(get_children[1]->data.class_label,22.0);
-	EXPECT_EQ(get_children[1]->machine(),2);
-	EXPECT_EQ(get_children[1]->parent()->machine(),-1);
-	EXPECT_EQ(get_children[1]->get_children().size(),0);
+	EXPECT_EQ(get_child1->data.attribute_id,1);
+	EXPECT_EQ(get_child1->data.transit_if_feature_value,1.0);
+	EXPECT_EQ(get_child1->data.class_label,11.0);
+	EXPECT_EQ(get_child1->machine(),1);
+	EXPECT_EQ(get_child1->parent()->machine(),-1);
+	EXPECT_EQ(get_child1->get_children()->get_num_elements(),0);
 
-	EXPECT_EQ(get_children[2]->data.attribute_id,3);
-	EXPECT_EQ(get_children[2]->data.transit_if_feature_value,3.0);
-	EXPECT_EQ(get_children[2]->data.class_label,33.0);
-	EXPECT_EQ(get_children[2]->machine(),3);
-	EXPECT_EQ(get_children[2]->parent()->machine(),-1);
-	EXPECT_EQ(get_children[2]->get_children().size(),0);
+	EXPECT_EQ(get_child2->data.attribute_id,2);
+	EXPECT_EQ(get_child2->data.transit_if_feature_value,2.0);
+	EXPECT_EQ(get_child2->data.class_label,22.0);
+	EXPECT_EQ(get_child2->machine(),2);
+	EXPECT_EQ(get_child2->parent()->machine(),-1);
+	EXPECT_EQ(get_child2->get_children()->get_num_elements(),0);
+
+	EXPECT_EQ(get_child3->data.attribute_id,3);
+	EXPECT_EQ(get_child3->data.transit_if_feature_value,3.0);
+	EXPECT_EQ(get_child3->data.class_label,33.0);
+	EXPECT_EQ(get_child3->machine(),3);
+	EXPECT_EQ(get_child3->parent()->machine(),-1);
+	EXPECT_EQ(get_child3->get_children()->get_num_elements(),0);
+
+	SG_UNREF(get_child1);
+	SG_UNREF(get_child2);
+	SG_UNREF(get_child3);
+	SG_UNREF(get_root);
+	SG_UNREF(tree);
+	SG_UNREF(root);
+	SG_UNREF(InsertChildren);
+	SG_UNREF(child1);
+	SG_UNREF(child2);
+	SG_UNREF(child3);	
 }
