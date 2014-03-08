@@ -37,18 +37,20 @@ public:
 
 	/**
 	 * constructor for SGMatrix<float64_t>
-	 * with serialcomputation engine, CNormalsampler,
+	 * with serialcomputation engine, CDenseMatrixExactLog,
+	 * CNormalsampler as default
 	 *
-	 * CDenseMatrixExactLog as default
 	 * @param dense_mat the input Dense matrix
 	 */
 	 CLogDetEstimator(SGMatrix<float64_t> dense_mat);
 
 	/**
 	 * constructor for SGSparseMatrix<float64_t>
-	 * with serialcomputation engine,CLogRationalApproximationIndividual as default
-	 * CProbingsampler is used when when HAVE_COLPACK is defined 
-	 * else CNormalsampler is used,
+	 * serialcomputation engine, CLogRationalApproximationCGM
+	 * with 1E-5 accuracy, CLanczosEigenSolver, CCGMShiftedFamilySolver,
+	 * are used as default CProbingsampler with  power=1,EOrderingVariant NATURAL,
+	 * EColoringVariant DISTANCE_TWO is used when COLPACK package
+	 * is present else CNormalsampler is used.
 	 * 
 	 * @param sparse_mat the input Sparse matrix
 	 */

@@ -53,8 +53,9 @@ CLogDetEstimator::CLogDetEstimator(SGMatrix<float64_t> dense_mat)
 	m_trace_sampler=new CNormalSampler(dense_mat.num_rows);
 	SG_REF(m_trace_sampler);
 
-	SG_INFO("Using CSerialComputationEngine, CDenseMatrixExactLog, "
-		"CNormalSampler as default\n");
+	SG_INFO("LogDetEstimator:Using %s, %s, %s as default\n",
+		m_computation_engine->get_name(), m_operator_log->get_name(),
+		m_trace_sampler->get_name());
 }
 
 CLogDetEstimator::CLogDetEstimator(SGSparseMatrix<float64_t> sparse_mat) 
@@ -67,7 +68,9 @@ CLogDetEstimator::CLogDetEstimator(SGSparseMatrix<float64_t> sparse_mat)
 
 	CSparseMatrixOperator<float64_t>* op=
 		new CSparseMatrixOperator<float64_t>(sparse_mat);
+
 	float64_t accuracy=1E-5;
+
 	CLanczosEigenSolver* eig_solver=new CLanczosEigenSolver(op);
 	CCGMShiftedFamilySolver* linear_solver=new CCGMShiftedFamilySolver();
 
@@ -85,9 +88,9 @@ CLogDetEstimator::CLogDetEstimator(SGSparseMatrix<float64_t> sparse_mat)
 
 	SG_REF(m_trace_sampler);
 
-	SG_INFO("CLogDetEstimator:using CSerialComputationEngine, "
-		"CLogRationalApproximationCGM, %s as default\n"
-		,m_trace_sampler->get_name());
+	SG_INFO("LogDetEstimator:Using %s, %s with 1E-5 accuracy, %s as default\n",
+		m_computation_engine->get_name(), m_operator_log->get_name(),
+		m_trace_sampler->get_name());
 }
 
 CLogDetEstimator::CLogDetEstimator(CTraceSampler* trace_sampler,
