@@ -191,9 +191,8 @@ SGVector < int16_t  > CMultilabelLabels::get_label (int32_t j)
 
 
 template < class S, class D >
-SGVector < D > CMultilabelLabels::to_dense (SGVector < S > *sparse,
-int32_t dense_len, D d_true,
-D d_false)
+SGVector < D > CMultilabelLabels::to_dense
+(SGVector < S > *sparse, int32_t dense_len, D d_true, D d_false)
 {
 	SGVector < D > dense (dense_len);
 	dense.set_const (d_false);
