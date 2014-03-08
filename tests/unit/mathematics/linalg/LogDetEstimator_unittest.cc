@@ -87,11 +87,16 @@ TEST(LogDetEstimator, Dense_sample_constructor)
 	
 	CLogDetEstimator estimator(mat);
 
-	CIndependentComputationEngine* e = dynamic_cast<CIndependentComputationEngine*>(estimator.get_computation_engine());
+	CIndependentComputationEngine* e=
+		dynamic_cast<CIndependentComputationEngine*>
+		(estimator.get_computation_engine());
 
-	COperatorFunction<float64_t>* op = dynamic_cast<COperatorFunction<float64_t>*>(estimator.get_operator_function());
+	COperatorFunction<float64_t>* op=
+		dynamic_cast<COperatorFunction<float64_t>*>
+		(estimator.get_operator_function());
 
-	CTraceSampler* tracer = dynamic_cast<CTraceSampler*>(estimator.get_trace_sampler());
+	CTraceSampler* tracer=
+		dynamic_cast<CTraceSampler*>(estimator.get_trace_sampler());
 
 	ASSERT_TRUE(e && op && tracer);
 }
@@ -140,11 +145,16 @@ TEST(LogDetEstimator, Sparse_sample_constructor)
 	
 	CLogDetEstimator estimator(sm);
 
-	CIndependentComputationEngine* e = dynamic_cast<CIndependentComputationEngine*>(estimator.get_computation_engine());
+	CIndependentComputationEngine* e=
+		dynamic_cast<CIndependentComputationEngine*>
+		(estimator.get_computation_engine());
 
-	COperatorFunction<float64_t>* op = dynamic_cast<COperatorFunction<float64_t>*>(estimator.get_operator_function());
+	COperatorFunction<float64_t>* op=
+		dynamic_cast<COperatorFunction<float64_t>*>
+		(estimator.get_operator_function());
 
-	CTraceSampler* tracer = dynamic_cast<CTraceSampler*>(estimator.get_trace_sampler());
+	CTraceSampler* tracer=
+		dynamic_cast<CTraceSampler*>(estimator.get_trace_sampler());
 
 	ASSERT_TRUE(e && op && tracer);
 }
