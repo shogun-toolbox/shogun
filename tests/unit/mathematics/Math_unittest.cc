@@ -212,3 +212,155 @@ TEST(CMath, strtolongdouble)
 	EXPECT_TRUE(CMath::strtold("1.234567890123", &long_double_result));
 	EXPECT_DOUBLE_EQ(1.234567890123, long_double_result);
 }
+
+TEST(CMath, fequals_regular_large_numbers)
+{
+	float64_t eps = 0.00001;
+	
+	EXPECT_TRUE(CMath::fequals<float64_t>(1000000.0, 1000000.0, eps));
+	EXPECT_TRUE(CMath::fequals<floatmax_t>(1000000.0, 1000000.0, eps));
+	EXPECT_FALSE(CMath::fequals<float64_t>(10001.0, 10000.0, eps));
+	EXPECT_FALSE(CMath::fequals<floatmax_t>(10000.0, 10001.0, eps));
+}
+
+TEST(CMath, fequals_negative_large_numbers)
+{
+	float64_t eps = 0.00001;
+	
+	EXPECT_TRUE(CMath::fequals<float64_t>(-100000.0, -100000.0, eps));
+	EXPECT_TRUE(CMath::fequals<floatmax_t>(-1000001.0, -1000001.0, eps));
+	EXPECT_FALSE(CMath::fequals<float64_t>(1000001.0, 1000000.0, eps));
+	EXPECT_FALSE(CMath::fequals<floatmax_t>(1000000.0, 1000001.0, eps));
+}
+
+TEST(CMath, fequals_numbers_around_1)
+{
+	float64_t eps = 0.00001;
+	
+	EXPECT_TRUE(CMath::fequals<float64_t>(1.0000001, 1.0000002, eps));
+	EXPECT_TRUE(CMath::fequals<floatmax_t>(1.0000002, 1.0000001, eps));
+	EXPECT_FALSE(CMath::fequals<float64_t>(1.0002, 1.0001, eps));
+	EXPECT_FALSE(CMath::fequals<floatmax_t>(1.0002, 1.0001, eps));
+}
+
+TEST(CMath, fequals_numbers_around_minus_1)
+{
+	float64_t eps = 0.00001;
+	
+	EXPECT_TRUE(CMath::fequals<float64_t>(-1.0000001, -1.0000002, eps));
+	EXPECT_TRUE(CMath::fequals<floatmax_t>(-1.0000002, -1.0000001, eps));
+	EXPECT_FALSE(CMath::fequals<float64_t>(-1.0002, -1.0001, eps));
+	EXPECT_FALSE(CMath::fequals<floatmax_t>(-1.0002, -1.0001, eps));
+}
+
+TEST(CMath, fequals_small_pos_numbers)
+{
+	float64_t eps = 0.00001;
+	
+	EXPECT_TRUE(CMath::fequals<float64_t>(0.000000001000001, 0.000000001000002, eps));
+	EXPECT_TRUE(CMath::fequals<floatmax_t>(0.000000001000002, 0.000000001000001, eps));
+	EXPECT_FALSE(CMath::fequals<float64_t>(0.000000000001002, 0.000000000001001, eps));
+	EXPECT_FALSE(CMath::fequals<floatmax_t>(0.000000000001001, 0.000000000001002, eps));
+}
+
+TEST(CMath, fequals_small_neg_numbers)
+{
+	float64_t eps = 0.00001;
+	
+	EXPECT_TRUE(CMath::fequals<float64_t>(-0.000000001000001, -0.000000001000002, eps));
+	EXPECT_TRUE(CMath::fequals<floatmax_t>(-0.000000001000002, -0.000000001000001, eps));
+	EXPECT_FALSE(CMath::fequals<float64_t>(-0.000000000001002, -0.000000000001001, eps));
+	EXPECT_FALSE(CMath::fequals<floatmax_t>(-0.000000000001001, -0.000000000001002, eps));
+}
+
+TEST(CMath, fequals_zero)
+{
+	float64_t eps = 0.00001;
+	
+	EXPECT_TRUE(CMath::fequals<float64_t>(0.0, 0.0, eps));
+	EXPECT_TRUE(CMath::fequals<float64_t>(0.0, -0.0, eps));
+	EXPECT_TRUE(CMath::fequals<float64_t>(-0.0, -0.0, eps));
+	EXPECT_FALSE(CMath::fequals<float64_t>(0.00000001, 0.0, eps));
+	EXPECT_FALSE(CMath::fequals<float64_t>(0.0, 0.00000001, eps));
+	EXPECT_FALSE(CMath::fequals<float64_t>(-0.00000001, 0.0, eps));
+	EXPECT_FALSE(CMath::fequals<float64_t>(0.0, -0.00000001, eps));
+	
+	EXPECT_TRUE(CMath::fequals<float32_t>(0.0, 1e-40, 0.01));
+	EXPECT_TRUE(CMath::fequals<float32_t>(1e-40, 0.0, 0.01));
+	EXPECT_TRUE(CMath::fequals<float32_t>(0.0, 1e-40, 0.01));
+	EXPECT_TRUE(CMath::fequals<float32_t>(1e-40, 0.0, 0.01));
+	
+	EXPECT_FALSE(CMath::fequals<float64_t>(0.0, 1e-40, 0.01));
+	EXPECT_FALSE(CMath::fequals<float64_t>(1e-40, 0.0, 0.01));
+	EXPECT_FALSE(CMath::fequals<float64_t>(1e-40, 0.0, 0.000001));
+	EXPECT_FALSE(CMath::fequals<float64_t>(0.0, 1e-40, 0.000001));
+
+	EXPECT_FALSE(CMath::fequals<float64_t>(0.0, -1e-40, 0.1));
+	EXPECT_FALSE(CMath::fequals<float64_t>(-1e-40, 0.0, 0.1));
+	EXPECT_FALSE(CMath::fequals<float64_t>(-1e-40, 0.0, 0.00000001));
+	EXPECT_FALSE(CMath::fequals<float64_t>(0.0, -1e-40, 0.00000001));
+}
+
+TEST(CMath, fequals_inf)
+{
+	float64_t eps = 0.00001;
+	
+	EXPECT_TRUE(CMath::fequals<float64_t>(CMath::INFTY, CMath::INFTY, eps));
+	EXPECT_TRUE(CMath::fequals<float64_t>(-CMath::INFTY, -CMath::INFTY, eps));
+	EXPECT_FALSE(CMath::fequals<float64_t>(-CMath::INFTY, CMath::INFTY, eps));
+	EXPECT_FALSE(CMath::fequals<float64_t>(CMath::INFTY, CMath::F_MAX_VAL64, eps));
+	EXPECT_FALSE(CMath::fequals<float64_t>(-CMath::INFTY, -CMath::F_MAX_VAL64, eps));
+}
+
+TEST(CMath, fequals_nan)
+{
+	float64_t eps = 0.00001;
+	
+	EXPECT_TRUE(CMath::fequals<float64_t>(CMath::NOT_A_NUMBER, CMath::NOT_A_NUMBER, eps));
+	EXPECT_FALSE(CMath::fequals<float64_t>(CMath::NOT_A_NUMBER, 0.0f, eps));
+	EXPECT_FALSE(CMath::fequals<float64_t>(-0.0f, CMath::NOT_A_NUMBER, eps));
+	EXPECT_FALSE(CMath::fequals<float64_t>(CMath::NOT_A_NUMBER, -0.0f, eps));
+	EXPECT_FALSE(CMath::fequals<float64_t>(0.0f, CMath::NOT_A_NUMBER, eps));
+	EXPECT_FALSE(CMath::fequals<float64_t>(CMath::NOT_A_NUMBER, CMath::INFTY, eps));
+	EXPECT_FALSE(CMath::fequals<float64_t>(CMath::INFTY, CMath::NOT_A_NUMBER, eps));
+	EXPECT_FALSE(CMath::fequals<float64_t>(CMath::NOT_A_NUMBER, -CMath::INFTY, eps));
+	EXPECT_FALSE(CMath::fequals<float64_t>(-CMath::INFTY, CMath::NOT_A_NUMBER, eps));
+	EXPECT_FALSE(CMath::fequals<float64_t>(CMath::NOT_A_NUMBER, CMath::F_MAX_VAL64, eps));
+	EXPECT_FALSE(CMath::fequals<float64_t>(CMath::F_MAX_VAL64, CMath::NOT_A_NUMBER, eps));
+	EXPECT_FALSE(CMath::fequals<float64_t>(CMath::NOT_A_NUMBER, -CMath::F_MAX_VAL64, eps));
+	EXPECT_FALSE(CMath::fequals<float64_t>(-CMath::F_MAX_VAL64, CMath::NOT_A_NUMBER, eps));
+	EXPECT_FALSE(CMath::fequals<float64_t>(CMath::NOT_A_NUMBER, CMath::F_MIN_VAL64, eps));
+	EXPECT_FALSE(CMath::fequals<float64_t>(CMath::F_MIN_VAL64, CMath::NOT_A_NUMBER, eps));
+	EXPECT_FALSE(CMath::fequals<float64_t>(CMath::NOT_A_NUMBER, -CMath::F_MIN_VAL64, eps));
+	EXPECT_FALSE(CMath::fequals<float64_t>(-CMath::F_MIN_VAL64, CMath::NOT_A_NUMBER, eps));
+}
+
+TEST(CMath, fequals_opposite_sign)
+{
+	float64_t eps = 0.00001;
+	
+	EXPECT_FALSE(CMath::fequals<float64_t>(1.000000001f, -1.0f, eps));
+	EXPECT_FALSE(CMath::fequals<float64_t>(-1.0f, 1.000000001f, eps));
+	EXPECT_FALSE(CMath::fequals<float64_t>(-1.000000001f, 1.0f, eps));
+	EXPECT_FALSE(CMath::fequals<float64_t>(1.0f, -1.000000001f, eps));
+	EXPECT_TRUE(CMath::fequals<float64_t>(10 * CMath::F_MIN_VAL64, 10 * -CMath::F_MIN_VAL64, eps));
+	EXPECT_FALSE(CMath::fequals<float32_t>(10000 * CMath::F_MIN_VAL32, 10000 * -CMath::F_MIN_VAL32, eps));
+	EXPECT_TRUE(CMath::fequals<float64_t>(10000 * CMath::F_MIN_VAL64, 10000 * -CMath::F_MIN_VAL64, eps));
+}
+
+TEST(CMath, fequals_close_to_zero)
+{
+	float64_t eps = 0.00001;
+	
+	EXPECT_TRUE(CMath::fequals<float64_t>(CMath::F_MIN_VAL64, -CMath::F_MIN_VAL64, eps));
+	EXPECT_TRUE(CMath::fequals<float64_t>(-CMath::F_MIN_VAL64, CMath::F_MIN_VAL64, eps));
+	EXPECT_TRUE(CMath::fequals<float64_t>(CMath::F_MIN_VAL64, 0, eps));
+	EXPECT_TRUE(CMath::fequals<float64_t>(0, CMath::F_MIN_VAL64, eps));
+	EXPECT_TRUE(CMath::fequals<float64_t>(-CMath::F_MIN_VAL64, 0, eps));
+	EXPECT_TRUE(CMath::fequals<float64_t>(0, -CMath::F_MIN_VAL64, eps));
+
+	EXPECT_FALSE(CMath::fequals<float64_t>(0.000000001f, -CMath::F_MIN_VAL64, eps));
+	EXPECT_FALSE(CMath::fequals<float64_t>(0.000000001f, CMath::F_MIN_VAL64, eps));
+	EXPECT_FALSE(CMath::fequals<float64_t>(CMath::F_MIN_VAL64, 0.000000001f, eps));
+	EXPECT_FALSE(CMath::fequals<float64_t>(-CMath::F_MIN_VAL64, 0.000000001f, eps));
+}

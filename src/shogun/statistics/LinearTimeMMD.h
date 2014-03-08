@@ -10,7 +10,7 @@
 #ifndef __LINEARTIMEMMD_H_
 #define __LINEARTIMEMMD_H_
 
-#include <shogun/statistics/KernelTwoSampleTestStatistic.h>
+#include <shogun/statistics/KernelTwoSampleTest.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/lib/external/libqp.h>
 
@@ -31,7 +31,7 @@ class CFeatures;
  * The MMD is the distance of two probability distributions \f$p\f$ and \f$q\f$
  * in a RKHS.
  * \f[
- * \text{MMD}}[\mathcal{F},p,q]^2=\textbf{E}_{x,x'}\left[ k(x,x')\right]-
+ * \text{MMD}[\mathcal{F},p,q]^2=\textbf{E}_{x,x'}\left[ k(x,x')\right]-
  * 2\textbf{E}_{x,y}\left[ k(x,y)\right]
  * +\textbf{E}_{y,y'}\left[ k(y,y')\right]=||\mu_p - \mu_q||^2_\mathcal{F}
  * \f]
@@ -52,12 +52,11 @@ class CFeatures;
  *
  * Along with the statistic comes a method to compute a p-value based on a
  * Gaussian approximation of the null-distribution which is also possible in
- * linear time and constant space. Bootstrapping, is also possible (no
+ * linear time and constant space. Sampling from null is also possible (no
  * permutations but new examples will be used here).
- * If unsure which one to use, bootstrapping with 250 iterations always is
+ * If unsure which one to use, sampling with 250 iterations always is
  * correct (but slow). When the sample size is large (>1000) at least,
- * the Gaussian approximation is an accurate and much faster choice than
- * bootstrapping.
+ * the Gaussian approximation is an accurate and much faster choice.
  *
  * To choose, use set_null_approximation_method() and choose from
  *
@@ -65,14 +64,14 @@ class CFeatures;
  * from at least 1000 samples. If using, check if type I error equals the
  * desired value.
  *
- * BOOTSTRAPPING: For permuting available samples to sample null-distribution
+ * PERMUTATION: For permuting available samples to sample null-distribution
  *
  * For kernel selection see CMMDKernelSelection.
  *
  * [1]: Gretton, A., Borgwardt, K. M., Rasch, M. J., Schoelkopf, B., & Smola, A. (2012).
  * A Kernel Two-Sample Test. Journal of Machine Learning Research, 13, 671-721.
  */
-class CLinearTimeMMD: public CKernelTwoSampleTestStatistic
+class CLinearTimeMMD: public CKernelTwoSampleTest
 {
 public:
 	CLinearTimeMMD();
@@ -133,7 +132,7 @@ public:
 	 * statistic and p-value are computed in the same loop, which is more
 	 * efficient than first computing statistic and then computung p-values.
 	 *
-	 * In case of bootstrapping, superclass method is called.
+	 * In case of sampling null, superclass method is called.
 	 *
 	 * The method for computing the p-value can be set via
 	 * set_null_approximation_method().
@@ -195,7 +194,7 @@ public:
 	virtual void compute_statistic_and_Q(
 			SGVector<float64_t>& statistic, SGMatrix<float64_t>& Q);
 
-	/** Mimics bootstrapping for the linear time MMD. However, samples are not
+	/** Mimics sampling null for the linear time MMD. However, samples are not
 	 * permutated but constantly streamed and then merged. Usually, this is not
 	 * necessary since there is the Gaussian approximation for the null
 	 * distribution. However, in certain cases this may fail and sampling the
@@ -204,7 +203,7 @@ public:
 	 *
 	 * @return vector of all statistics
 	 */
-	virtual SGVector<float64_t> bootstrap_null();
+	virtual SGVector<float64_t> sample_null();
 
 	/** Setter for the blocksize of examples to be processed at once
 	 * @param blocksize new blocksize to use
@@ -257,7 +256,7 @@ protected:
 	/** Number of examples processed at once, i.e. in one burst */
 	index_t m_blocksize;
 
-	/** If this is true, samples will be mixed between p and q ind any method
+	/** If this is true, samples will be mixed between p and q in any method
 	 * that computes the statistic */
 	bool m_simulate_h0;
 };

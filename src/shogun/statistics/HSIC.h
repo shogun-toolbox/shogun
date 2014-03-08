@@ -1,16 +1,38 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * Copyright (c) The Shogun Machine Learning Toolbox
+ * Written (w) 2012-2013 Heiko Strathmann
+ * Written (w) 2014 Soumyajit De
+ * All rights reserved.
  *
- * Written (W) 2012-2013 Heiko Strathmann
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * The views and conclusions contained in the software and documentation are those
+ * of the authors and should not be interpreted as representing official policies,
+ * either expressed or implied, of the Shogun Development Team.
  */
 
 #ifndef __HSIC_H_
 #define __HSIC_H_
 
-#include <shogun/statistics/KernelIndependenceTestStatistic.h>
+#include <shogun/statistics/KernelIndependenceTest.h>
 
 namespace shogun
 {
@@ -22,7 +44,7 @@ template<class T> class SGMatrix;
  * based independence test as described in [1].
  *
  * Given samples \f$Z=\{(x_i,y_i)\}_{i=1}^m\f$ from the joint
- * distribution \f$\textbf{P}_x\textbf{P}_y\f$, does the joint distribution
+ * distribution \f$\textbf{P}_{xy}\f$, does the joint distribution
  * factorize as \f$\textbf{P}_{xy}=\textbf{P}_x\textbf{P}_y\f$?
  *
  * The HSIC is a kernel based independence criterion, which is based on the
@@ -42,16 +64,16 @@ template<class T> class SGMatrix;
  * distribution samples.
  *
  * Along with the statistic comes a method to compute a p-value based on
- * different methods. Bootstrapping, is also possible. If unsure which one to
- * use, bootstrapping with 250 iterations always is correct (but slow).
+ * different methods. Sampling from null is also possible. If unsure which one to
+ * use, sampling with 250 iterations always is correct (but slow).
  *
  * To choose, use set_null_approximation_method() and choose from
  *
  * HSIC_GAMMA: for a very fast, but not consistent test based on moment matching
  * of a Gamma distribution, as described in [1].
  *
- * BOOTSTRAPPING: For permuting available samples to sample null-distribution.
- * Bootstrapping is done on precomputed kernel matrices, since they have to
+ * PERMUTATION: For permuting available samples to sample null-distribution.
+ * This is done on precomputed kernel matrices, since they have to
  * be stored anyway when the statistic is computed.
  *
  * A very basic method for kernel selection when using CGaussianKernel is to
@@ -64,40 +86,25 @@ template<class T> class SGMatrix;
  * Advances in Neural Information Processing Systems, 1-8.
  *
  */
-class CHSIC : public CKernelIndependenceTestStatistic
+class CHSIC : public CKernelIndependenceTest
 {
 public:
 	/** Constructor */
 	CHSIC();
 
-	/** Constructor
-	 *
-	 * @param p_and_q feature data. Is assumed to contain samples from both
-	 * p and q. First all samples from p, then from index m all
-	 * samples from q
-	 *
-	 * @param kernel_p kernel to use on samples from p
-	 * @param kernel_q kernel to use on samples from q
-	 * @param p_and_q samples from p and q, appended
-	 * @param m index of first sample of q
-	 */
-	CHSIC(CKernel* kernel_p, CKernel* kernel_q, CFeatures* p_and_q,
-			index_t m);
-
 	/** Constructor.
-	 * This is a convienience constructor which copies both features to one
-	 * element and then calls the other constructor. Needs twice the memory
-	 * for a short time
+	 *
+	 * Initializes the kernels and features from the two distributions and
+	 * SG_REFs them
 	 *
 	 * @param kernel_p kernel to use on samples from p
 	 * @param kernel_q kernel to use on samples from q
-	 * @param p samples from distribution p, will be copied and NOT
-	 * SG_REF'ed
-	 * @param q samples from distribution q, will be copied and NOT
-	 * SG_REF'ed
+	 * @param p samples from distribution p
+	 * @param q samples from distribution q
 	 */
 	CHSIC(CKernel* kernel_p, CKernel* kernel_q, CFeatures* p, CFeatures* q);
 
+	/** destructor */
 	virtual ~CHSIC();
 
 	/** Computes the HSIC statistic (see class description) for underlying
@@ -130,6 +137,7 @@ public:
 	 */
 	virtual float64_t compute_threshold(float64_t alpha);
 
+	/** @return the class name */
 	virtual const char* get_name() const
 	{
 		return "HSIC";
@@ -163,13 +171,13 @@ public:
 	SGVector<float64_t> fit_null_gamma();
 
 	/** merges both sets of samples and computes the test statistic
-	 * m_bootstrap_iteration times. This version precomputes the kenrel matrix
-	 * once by hand, then performs bootstrapping on this one. The matrix has
+	 * m_num_null_sample times. This version precomputes the kenrel matrix
+	 * once by hand, then samples using this one. The matrix has
 	 * to be stored anyway when statistic is computed.
 	 *
 	 * @return vector of all statistics
 	 */
-	virtual SGVector<float64_t> bootstrap_null();
+	virtual SGVector<float64_t> sample_null();
 
 protected:
 	/** @return kernel matrix on samples from p. Distinguishes CustomKernels */
@@ -179,7 +187,11 @@ protected:
 	SGMatrix<float64_t> get_kernel_matrix_L();
 
 private:
+	/** register parameters and initialize with defaults */
 	void init();
+
+	/** number of features from the distributions (should be equal for both) */
+	index_t m_num_features;
 
 };
 

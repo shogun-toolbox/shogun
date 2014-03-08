@@ -14,7 +14,7 @@ from modshogun import RealFeatures
 from modshogun import MeanShiftDataGenerator
 from modshogun import GaussianKernel, CombinedKernel
 from modshogun import LinearTimeMMD, MMDKernelSelectionOpt
-from modshogun import BOOTSTRAP, MMD1_GAUSSIAN
+from modshogun import PERMUTATION, MMD1_GAUSSIAN
 from modshogun import EuclideanDistance
 from modshogun import Statistics, Math
 
@@ -73,9 +73,9 @@ def linear_time_mmd_graphical():
 
 	# sample from null distribution
 	# bootstrapping, biased statistic
-	mmd.set_null_approximation_method(BOOTSTRAP)
-	mmd.set_bootstrap_iterations(num_null_samples)
-	null_samples_boot=mmd.bootstrap_null()
+	mmd.set_null_approximation_method(PERMUTATION)
+	mmd.set_num_null_samples(num_null_samples)
+	null_samples_boot=mmd.sample_null()
 
 	# fit normal distribution to null and sample a normal distribution
 	mmd.set_null_approximation_method(MMD1_GAUSSIAN)
@@ -145,7 +145,7 @@ def linear_time_mmd_graphical():
 	gca().yaxis.set_major_locator( MaxNLocator(nbins = 3) ) # reduce number of x-ticks
 	hist(null_samples_boot, 20, range=hist_range, normed=True);
 	axvline(thresh_boot, 0, 1, linewidth=2, color='red')
-	title('Bootstrapped Null Dist.\n' + 'Type I error is '  + str(type_one_error_boot))
+	title('Sampled Null Dist.\n' + 'Type I error is '  + str(type_one_error_boot))
 
 	# plot null distribution gaussian
 	subplot(2,3,5)

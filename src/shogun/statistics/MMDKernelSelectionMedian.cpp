@@ -26,7 +26,7 @@ CMMDKernelSelectionMedian::CMMDKernelSelectionMedian() :
 }
 
 CMMDKernelSelectionMedian::CMMDKernelSelectionMedian(
-		CKernelTwoSampleTestStatistic* mmd, index_t num_data_distance) :
+		CKernelTwoSampleTest* mmd, index_t num_data_distance) :
 		CMMDKernelSelection(mmd)
 {
 	/* assert that a combined kernel is used */

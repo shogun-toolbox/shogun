@@ -7,10 +7,10 @@
  * Written (W) 2012-2013 Heiko Strathmann
  */
 
-#ifndef __KERNELTWOSAMPLETESTSTATISTIC_H_
-#define __KERNELTWOSAMPLETESTSTATISTIC_H_
+#ifndef KERNEL_TWO_SAMPLE_TEST_H_
+#define KERNEL_TWO_SAMPLE_TEST_H_
 
-#include <shogun/statistics/TwoDistributionsTestStatistic.h>
+#include <shogun/statistics/TwoSampleTest.h>
 #include <shogun/kernel/Kernel.h>
 
 namespace shogun
@@ -19,22 +19,25 @@ namespace shogun
 class CFeatures;
 class CKernel;
 
-/** @brief Two sample test base class. Provides an interface for performing a
- * two-sample test, i.e. Given samples from two distributions \f$p\f$ and
- * \f$q\f$, the null-hypothesis is: \f$H_0: p=q\f$, the alternative hypothesis:
- * \f$H_1: p\neq q\f$.
+/** @brief Kernel two sample test base class. Provides an interface for
+ * performing a two-sample test using a kernel, i.e. Given samples from two
+ * distributions \f$p\f$ and \f$q\f$, the null-hypothesis is: \f$H_0: p=q\f$,
+ * the alternative hypothesis: \f$H_1: p\neq q\f$.
  *
  * In this class, this is done using a single kernel for the data.
  *
- * The class also re-implements the bootstrap_null() method. If the underlying
- * kernel is a custom one (precomputed), the
+ * The class also re-implements the sample_null() method. If the underlying
+ * kernel is a custom one (precomputed), the rows and column of the kernel
+ * matrix is permuted using subsets. The computation falls back to
+ * CTwoSampleTest::sample_null() otherwise.
  *
  * Abstract base class.
  */
-class CKernelTwoSampleTestStatistic : public CTwoDistributionsTestStatistic
+class CKernelTwoSampleTest : public CTwoSampleTest
 {
 	public:
-		CKernelTwoSampleTestStatistic();
+		/** default constructor */
+		CKernelTwoSampleTest();
 
 		/** Constructor
 		 *
@@ -46,7 +49,7 @@ class CKernelTwoSampleTestStatistic : public CTwoDistributionsTestStatistic
 		 * @param p_and_q samples from p and q, appended
 		 * @param q_start index of first sample of q
 		 */
-		CKernelTwoSampleTestStatistic(CKernel* kernel, CFeatures* p_and_q,
+		CKernelTwoSampleTest(CKernel* kernel, CFeatures* p_and_q,
 				index_t q_start);
 
 		/** Constructor.
@@ -60,10 +63,11 @@ class CKernelTwoSampleTestStatistic : public CTwoDistributionsTestStatistic
 		 * @param q samples from distribution q, will be copied and NOT
 		 * SG_REF'ed
 		 */
-		CKernelTwoSampleTestStatistic(CKernel* kernel, CFeatures* p,
+		CKernelTwoSampleTest(CKernel* kernel, CFeatures* p,
 				CFeatures* q);
 
-		virtual ~CKernelTwoSampleTestStatistic();
+		/** destructor */
+		virtual ~CKernelTwoSampleTest();
 
 		/** Setter for the underlying kernel
 		 * @param kernel new kernel to use
@@ -84,13 +88,13 @@ class CKernelTwoSampleTestStatistic : public CTwoDistributionsTestStatistic
 		}
 
 		/** merges both sets of samples and computes the test statistic
-		 * m_bootstrap_iteration times. This version checks if a precomputed
+		 * m_num_null_samples times. This version checks if a precomputed
 		 * custom kernel is used, and, if so, just permutes it instead of re-
 		 * computing it in every iteration.
 		 *
 		 * @return vector of all statistics
 		 */
-		virtual SGVector<float64_t> bootstrap_null();
+		virtual SGVector<float64_t> sample_null();
 
 		/** Same as compute_statistic(), but with the possibility to perform on
 		 * multiple kernels at once
@@ -117,4 +121,4 @@ class CKernelTwoSampleTestStatistic : public CTwoDistributionsTestStatistic
 
 }
 
-#endif /* __KERNELTWOSAMPLETESTSTATISTIC_H_ */
+#endif /* KERNEL_TWO_SAMPLE_TEST_H_ */

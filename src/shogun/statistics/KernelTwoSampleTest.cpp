@@ -7,22 +7,22 @@
  * Written (W) 2012-2013 Heiko Strathmann
  */
 
-#include <shogun/statistics/KernelTwoSampleTestStatistic.h>
+#include <shogun/statistics/KernelTwoSampleTest.h>
 #include <shogun/features/Features.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/kernel/CustomKernel.h>
 
 using namespace shogun;
 
-CKernelTwoSampleTestStatistic::CKernelTwoSampleTestStatistic() :
-		CTwoDistributionsTestStatistic()
+CKernelTwoSampleTest::CKernelTwoSampleTest() :
+		CTwoSampleTest()
 {
 	init();
 }
 
-CKernelTwoSampleTestStatistic::CKernelTwoSampleTestStatistic(CKernel* kernel,
+CKernelTwoSampleTest::CKernelTwoSampleTest(CKernel* kernel,
 		CFeatures* p_and_q, index_t q_start) :
-		CTwoDistributionsTestStatistic(p_and_q, q_start)
+		CTwoSampleTest(p_and_q, q_start)
 {
 	init();
 
@@ -30,8 +30,8 @@ CKernelTwoSampleTestStatistic::CKernelTwoSampleTestStatistic(CKernel* kernel,
 	SG_REF(kernel);
 }
 
-CKernelTwoSampleTestStatistic::CKernelTwoSampleTestStatistic(CKernel* kernel,
-		CFeatures* p, CFeatures* q) : CTwoDistributionsTestStatistic(p, q)
+CKernelTwoSampleTest::CKernelTwoSampleTest(CKernel* kernel,
+		CFeatures* p, CFeatures* q) : CTwoSampleTest(p, q)
 {
 	init();
 
@@ -39,26 +39,27 @@ CKernelTwoSampleTestStatistic::CKernelTwoSampleTestStatistic(CKernel* kernel,
 	SG_REF(kernel);
 }
 
-CKernelTwoSampleTestStatistic::~CKernelTwoSampleTestStatistic()
+CKernelTwoSampleTest::~CKernelTwoSampleTest()
 {
 	SG_UNREF(m_kernel);
 }
 
-void CKernelTwoSampleTestStatistic::init()
+void CKernelTwoSampleTest::init()
 {
 	SG_ADD((CSGObject**)&m_kernel, "kernel", "Kernel for two sample test",
 			MS_AVAILABLE);
 	m_kernel=NULL;
 }
 
-SGVector<float64_t> CKernelTwoSampleTestStatistic::bootstrap_null()
+SGVector<float64_t> CKernelTwoSampleTest::sample_null()
 {
-	REQUIRE(m_kernel, "%s::bootstrap_null(): No kernel set!\n", get_name());
-	REQUIRE(m_kernel->get_kernel_type()==K_CUSTOM || m_p_and_q,
-			"%s::bootstrap_null(): No features and no custom kernel set!\n",
-			get_name());
+	SG_DEBUG("entering!\n");
 
-	/* compute bootstrap statistics for null distribution */
+	REQUIRE(m_kernel, "No kernel set!\n");
+	REQUIRE(m_kernel->get_kernel_type()==K_CUSTOM || m_p_and_q,
+			"No features and no custom kernel set!\n");
+
+	/* compute sample statistics for null distribution */
 	SGVector<float64_t> results;
 
 	/* only do something if a custom kernel is used: use the power of pre-
@@ -67,9 +68,7 @@ SGVector<float64_t> CKernelTwoSampleTestStatistic::bootstrap_null()
 	if (m_kernel->get_kernel_type()==K_CUSTOM)
 	{
 		/* allocate memory */
-		results=SGVector<float64_t>(m_bootstrap_iterations);
-
-		/* memory for index permutations, (would slow down loop) */
+		results=SGVector<float64_t>(m_num_null_samples);
 
 		/* in case of custom kernel, there are no features */
 		index_t num_data;
@@ -78,6 +77,7 @@ SGVector<float64_t> CKernelTwoSampleTestStatistic::bootstrap_null()
 		else
 			num_data=m_p_and_q->get_num_vectors();
 
+		/* memory for index permutations, (would slow down loop) */
 		SGVector<index_t> ind_permutation(num_data);
 		ind_permutation.range_fill();
 
@@ -85,7 +85,7 @@ SGVector<float64_t> CKernelTwoSampleTestStatistic::bootstrap_null()
 		 * not what we want but just subsetting the kernel itself */
 		CCustomKernel* custom_kernel=(CCustomKernel*)m_kernel;
 
-		for (index_t i=0; i<m_bootstrap_iterations; ++i)
+		for (index_t i=0; i<m_num_null_samples; ++i)
 		{
 			/* idea: merge features of p and q, shuffle, and compute statistic.
 			 * This is done using subsets here. add to custom kernel since
@@ -107,8 +107,10 @@ SGVector<float64_t> CKernelTwoSampleTestStatistic::bootstrap_null()
 	else
 	{
 		/* in this case, just use superclass method */
-		results=CTwoDistributionsTestStatistic::bootstrap_null();
+		results=CTwoSampleTest::sample_null();
 	}
+
+	SG_DEBUG("leaving!\n");
 
 	return results;
 }

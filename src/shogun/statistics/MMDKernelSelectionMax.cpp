@@ -8,7 +8,7 @@
  */
 
 #include <shogun/statistics/MMDKernelSelectionMax.h>
-#include <shogun/statistics/KernelTwoSampleTestStatistic.h>
+#include <shogun/statistics/KernelTwoSampleTest.h>
 
 using namespace shogun;
 
@@ -17,7 +17,7 @@ CMMDKernelSelectionMax::CMMDKernelSelectionMax() : CMMDKernelSelection()
 }
 
 CMMDKernelSelectionMax::CMMDKernelSelectionMax(
-		CKernelTwoSampleTestStatistic* mmd) : CMMDKernelSelection(mmd)
+		CKernelTwoSampleTest* mmd) : CMMDKernelSelection(mmd)
 {
 }
 

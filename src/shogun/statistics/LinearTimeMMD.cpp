@@ -20,14 +20,14 @@
 using namespace shogun;
 
 CLinearTimeMMD::CLinearTimeMMD() :
-		CKernelTwoSampleTestStatistic()
+		CKernelTwoSampleTest()
 {
 	init();
 }
 
 CLinearTimeMMD::CLinearTimeMMD(CKernel* kernel, CStreamingFeatures* p,
 		CStreamingFeatures* q, index_t m, index_t blocksize) :
-		CKernelTwoSampleTestStatistic(kernel, NULL, m)
+		CKernelTwoSampleTest(kernel, NULL, m)
 {
 	init();
 
@@ -69,20 +69,17 @@ void CLinearTimeMMD::compute_statistic_and_variance(
 		SGVector<float64_t>& statistic, SGVector<float64_t>& variance,
 		bool multiple_kernels)
 {
-	SG_DEBUG("entering %s::compute_statistic_and_variance()\n", get_name())
+	SG_DEBUG("entering!\n")
 
-	REQUIRE(m_streaming_p, "%s::compute_statistic_and_variance: streaming "
-			"features p required!\n", get_name());
-	REQUIRE(m_streaming_q, "%s::compute_statistic_and_variance: streaming "
-			"features q required!\n", get_name());
+	REQUIRE(m_streaming_p, "streaming features p required!\n");
+	REQUIRE(m_streaming_q, "streaming features q required!\n");
 
-	REQUIRE(m_kernel, "%s::compute_statistic_and_variance: kernel needed!\n",
-			get_name());
+	REQUIRE(m_kernel, "kernel needed!\n");
 
 	/* make sure multiple_kernels flag is used only with a combined kernel */
 	REQUIRE(!multiple_kernels || m_kernel->get_kernel_type()==K_COMBINED,
-			"%s::compute_statistic_and_variance: multiple kernels specified,"
-			"but underlying kernel is not of type K_COMBINED\n", get_name());
+			"multiple kernels specified, but underlying kernel is not of type "
+			"K_COMBINED\n");
 
 	/* m is number of samples from each distribution, m_2 is half of it
 	 * using names from JLMR paper (see class documentation) */
@@ -107,13 +104,13 @@ void CLinearTimeMMD::compute_statistic_and_variance(
 		variance=SGVector<float64_t>(num_kernels);
 
 	/* ensure right dimensions */
-	REQUIRE(statistic.vlen==num_kernels, "%s::compute_statistic_and_variance: "
+	REQUIRE(statistic.vlen==num_kernels,
 			"statistic vector size (%d) does not match number of kernels (%d)\n",
-			 get_name(), statistic.vlen, num_kernels);
+			 statistic.vlen, num_kernels);
 
-	REQUIRE(variance.vlen==num_kernels, "%s::compute_statistic_and_variance: "
+	REQUIRE(variance.vlen==num_kernels,
 			"variance vector size (%d) does not match number of kernels (%d)\n",
-			 get_name(), variance.vlen, num_kernels);
+			 variance.vlen, num_kernels);
 
 	/* temp variable in the algorithm */
 	float64_t current;
@@ -193,18 +190,14 @@ void CLinearTimeMMD::compute_statistic_and_variance(
 		 * only once */
 		CKernel* kernel=m_kernel;
 		if (multiple_kernels)
-		{
 			SG_DEBUG("using multiple kernels\n");
-		}
 
 		/* iterate through all kernels for this data */
 		for (index_t i=0; i<num_kernels; ++i)
 		{
 			/* if multiple kernels should be computed, set next kernel */
 			if (multiple_kernels)
-			{
 				kernel=((CCombinedKernel*)m_kernel)->get_kernel(i);
-			}
 
 			/* compute kernel matrix diagonals */
 			kernel->init(p1, p2);
@@ -238,9 +231,7 @@ void CLinearTimeMMD::compute_statistic_and_variance(
 			}
 
 			if (multiple_kernels)
-			{
 				SG_UNREF(kernel);
-			}
 		}
 
 		/* clean up streamed data */
@@ -268,41 +259,35 @@ void CLinearTimeMMD::compute_statistic_and_variance(
 	if (io->get_loglevel()==MSG_DEBUG || io->get_loglevel()==MSG_GCDEBUG)
 		variance.display_vector("variances");
 
-	SG_DEBUG("leaving %s::compute_statistic_and_variance()\n", get_name())
+	SG_DEBUG("leaving!\n")
 }
 
 void CLinearTimeMMD::compute_statistic_and_Q(
 		SGVector<float64_t>& statistic, SGMatrix<float64_t>& Q)
 {
-	SG_DEBUG("entering %s::compute_statistic_and_Q()\n", get_name())
+	SG_DEBUG("entering!\n")
 
-	REQUIRE(m_streaming_p, "%s::compute_statistic_and_Q: streaming "
-			"features p required!\n", get_name());
-	REQUIRE(m_streaming_q, "%s::compute_statistic_and_Q: streaming "
-			"features q required!\n", get_name());
+	REQUIRE(m_streaming_p, "streaming features p required!\n");
+	REQUIRE(m_streaming_q, "streaming features q required!\n");
 
-	REQUIRE(m_kernel, "%s::compute_statistic_and_Q: kernel needed!\n",
-			get_name());
+	REQUIRE(m_kernel, "kernel needed!\n");
 
 	/* make sure multiple_kernels flag is used only with a combined kernel */
 	REQUIRE(m_kernel->get_kernel_type()==K_COMBINED,
-			"%s::compute_statistic_and_Q: underlying kernel is not of "
-			"type K_COMBINED\n", get_name());
+			"underlying kernel is not of type K_COMBINED\n");
 
 	/* cast combined kernel */
 	CCombinedKernel* combined=(CCombinedKernel*)m_kernel;
 
 	/* m is number of samples from each distribution, m_4 is quarter of it */
-	REQUIRE(m_m>=4, "%s::compute_statistic_and_Q: Need at least m>=4\n",
-			get_name());
+	REQUIRE(m_m>=4, "Need at least m>=4\n");
 	index_t m_4=m_m/4;
 
 	SG_DEBUG("m_m=%d\n", m_m)
 
 	/* find out whether single or multiple kernels (cast is safe, check above) */
 	index_t num_kernels=combined->get_num_subkernels();
-	REQUIRE(num_kernels>0, "%s::compute_statistic_and_Q: At least one kernel "
-			"is needed\n", get_name());
+	REQUIRE(num_kernels>0, "At least one kernel is needed\n");
 
 	/* allocate memory for results if vectors are empty */
 	if (!statistic.vector)
@@ -312,17 +297,17 @@ void CLinearTimeMMD::compute_statistic_and_Q(
 		Q=SGMatrix<float64_t>(num_kernels, num_kernels);
 
 	/* ensure right dimensions */
-	REQUIRE(statistic.vlen==num_kernels, "%s::compute_statistic_and_variance: "
+	REQUIRE(statistic.vlen==num_kernels,
 			"statistic vector size (%d) does not match number of kernels (%d)\n",
-			 get_name(), statistic.vlen, num_kernels);
+			 statistic.vlen, num_kernels);
 
-	REQUIRE(Q.num_rows==num_kernels, "%s::compute_statistic_and_variance: "
+	REQUIRE(Q.num_rows==num_kernels,
 			"Q number of rows does (%d) not match number of kernels (%d)\n",
-			 get_name(), Q.num_rows, num_kernels);
+			 Q.num_rows, num_kernels);
 
-	REQUIRE(Q.num_cols==num_kernels, "%s::compute_statistic_and_variance: "
+	REQUIRE(Q.num_cols==num_kernels,
 			"Q number of columns (%d) does not match number of kernels (%d)\n",
-			 get_name(), Q.num_cols, num_kernels);
+			 Q.num_cols, num_kernels);
 
 	/* initialise statistic and variance since they are cumulative */
 	statistic.zero();
@@ -567,7 +552,7 @@ void CLinearTimeMMD::compute_statistic_and_Q(
 	SG_DEBUG("Done compouting statistic, processed 4*%d examples.\n",
 			num_examples_processed);
 
-	SG_DEBUG("leaving %s::compute_statistic_and_Q()\n", get_name())
+	SG_DEBUG("leaving!\n")
 }
 
 float64_t CLinearTimeMMD::compute_statistic()
@@ -585,8 +570,8 @@ SGVector<float64_t> CLinearTimeMMD::compute_statistic(
 {
 	/* make sure multiple_kernels flag is used only with a combined kernel */
 	REQUIRE(!multiple_kernels || m_kernel->get_kernel_type()==K_COMBINED,
-			"%s::compute_statistic: multiple kernels specified,"
-			"but underlying kernel is not of type K_COMBINED\n", get_name());
+			"multiple kernels specified, but underlying kernel is not of type "
+			"K_COMBINED\n");
 
 	SGVector<float64_t> statistic;
 	SGVector<float64_t> variance;
@@ -620,8 +605,8 @@ float64_t CLinearTimeMMD::compute_p_value(float64_t statistic)
 		break;
 
 	default:
-		/* bootstrapping is handled here */
-		result=CKernelTwoSampleTestStatistic::compute_p_value(statistic);
+		/* sampling null is handled here */
+		result=CKernelTwoSampleTest::compute_p_value(statistic);
 		break;
 	}
 
@@ -643,8 +628,8 @@ float64_t CLinearTimeMMD::compute_threshold(float64_t alpha)
 		break;
 
 	default:
-		/* bootstrapping is handled here */
-		result=CKernelTwoSampleTestStatistic::compute_threshold(alpha);
+		/* sampling null is handled here */
+		result=CKernelTwoSampleTest::compute_threshold(alpha);
 		break;
 	}
 
@@ -672,17 +657,17 @@ float64_t CLinearTimeMMD::perform_test()
 		break;
 
 	default:
-		/* bootstrapping can be done separately in superclass */
-		result=CTestStatistic::perform_test();
+		/* sampling null can be done separately in superclass */
+		result=CHypothesisTest::perform_test();
 		break;
 	}
 
 	return result;
 }
 
-SGVector<float64_t> CLinearTimeMMD::bootstrap_null()
+SGVector<float64_t> CLinearTimeMMD::sample_null()
 {
-	SGVector<float64_t> samples(m_bootstrap_iterations);
+	SGVector<float64_t> samples(m_num_null_samples);
 
 	/* instead of permutating samples, just samples new data all the time. */
 	CStreamingFeatures* p=m_streaming_p;
@@ -692,7 +677,7 @@ SGVector<float64_t> CLinearTimeMMD::bootstrap_null()
 
 	bool old=m_simulate_h0;
 	set_simulate_h0(true);
-	for (index_t i=0; i<m_bootstrap_iterations; ++i)
+	for (index_t i=0; i<m_num_null_samples; ++i)
 	{
 		/* compute statistic for this permutation of mixed samples */
 		samples[i]=compute_statistic();
@@ -708,14 +693,14 @@ SGVector<float64_t> CLinearTimeMMD::bootstrap_null()
 
 void CLinearTimeMMD::set_p_and_q(CFeatures* p_and_q)
 {
-	SG_ERROR("%s::set_p_and_q(): Method not implemented since linear time mmd"
-			" is based on streaming features\n", get_name());
+	SG_ERROR("Method not implemented since linear time mmd is based on "
+			"streaming features\n");
 }
 
 CFeatures* CLinearTimeMMD::get_p_and_q()
 {
-	SG_ERROR("%s::get_p_and_q(): Method not implemented since linear time mmd"
-			" is based on streaming features\n", get_name());
+	SG_ERROR("Method not implemented since linear time mmd is based on "
+			"streaming features\n");
 	return NULL;
 }
 

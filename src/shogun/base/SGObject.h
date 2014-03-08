@@ -396,12 +396,13 @@ protected:
 	virtual void save_serializable_post() throw (ShogunException);
 
 public:
-	/** Updates the hash of current parameter combination.
-	 *
-	 * @return bool if parameter combination has changed since last
-	 * update.
+	/** Updates the hash of current parameter combination */
+	virtual void update_parameter_hash();
+
+	/**
+	 * @return whether parameter combination has changed since last update
 	 */
-	virtual bool update_parameter_hash();
+	virtual bool parameter_hash_changed();
 
 	/** Recursively compares the current SGObject to another one. Compares all
 	 * registered numerical parameters, recursion upon complex (SGObject)
@@ -412,9 +413,10 @@ public:
 	 *
 	 * @param other object to compare with
 	 * @param accuracy accuracy to use for comparison (optional)
+	 * @param tolerant allows linient check on float equality (within accuracy)
 	 * @return true if all parameters were equal, false if not
 	 */
-	virtual bool equals(CSGObject* other, float64_t accuracy=0.0);
+	virtual bool equals(CSGObject* other, float64_t accuracy=0.0, bool tolerant=false);
 
 	/** Creates a clone of the current object. This is done via recursively
 	 * traversing all parameters, which corresponds to a deep copy.
@@ -455,18 +457,16 @@ private:
 	int32_t load_parameter_version(CSerializableFile* file,
 			const char* prefix="");
 
-	/*Gets an incremental hash of all parameters as well as the parameters
-	 * of CSGObject children of the current object's parameters.
+	/** Gets an incremental hash of all parameters as well as the parameters of
+	 * CSGObject children of the current object's parameters.
 	 *
-	 * @param param Parameter to hash
-	 * @param current hash
+	 * @param hash the computed hash returned by reference
 	 * @param carry value for Murmur3 incremental hash
-	 * @param total_length total byte length of all hashed
-	 * parameters so far. Byte length of parameters will be added
-	 * to the total length
+	 * @param total_length total byte length of all hashed parameters so
+	 * far. Byte length of parameters will be added to the total length
 	 */
-	void get_parameter_incremental_hash(Parameter* param,
-			uint32_t& hash, uint32_t& carry, uint32_t& total_length);
+	void get_parameter_incremental_hash(uint32_t& hash, uint32_t& carry,
+			uint32_t& total_length);
 
 public:
 	/** io */

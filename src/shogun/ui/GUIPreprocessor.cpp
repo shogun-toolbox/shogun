@@ -61,7 +61,7 @@ CPreprocessor* CGUIPreprocessor::create_prunevarsubmean(bool divide_by_std)
 
 CPreprocessor* CGUIPreprocessor::create_pca(bool do_whitening, float64_t threshold)
 {
-#ifdef HAVE_LAPACK
+#ifdef HAVE_EIGEN3
 	CPreprocessor* preproc=new CPCA(do_whitening, THRESHOLD, threshold);
 
 	if (preproc)
@@ -70,10 +70,10 @@ CPreprocessor* CGUIPreprocessor::create_pca(bool do_whitening, float64_t thresho
 		SG_ERROR("Could not create preproc PCA, do_whitening %i threshold %e", do_whitening, threshold)
 
 	return preproc;
-#else //HAVE_LAPACK
-	SG_ERROR("Could not create preproc PCA - lapack not available at compile time\n")
+#else //HAVE_EIGEN3
+	SG_ERROR("Could not create preproc PCA - eigen3 not available at compile time\n")
 	return NULL;
-#endif //HAVE_LAPACK
+#endif //HAVE_EIGEN3
 }
 
 CPreprocessor* CGUIPreprocessor::create_generic(EPreprocessorType type)

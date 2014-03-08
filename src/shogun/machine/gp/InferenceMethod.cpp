@@ -140,7 +140,7 @@ get_negative_log_marginal_likelihood_derivatives(CMap<TParameter*, CSGObject*>* 
 	REQUIRE(params->get_num_elements(), "Number of parameters should be greater "
 			"than zero\n")
 
-	if (update_parameter_hash())
+	if (parameter_hash_changed())
 		update();
 
 	// get number of derivatives
