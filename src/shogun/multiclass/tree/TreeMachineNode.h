@@ -40,7 +40,7 @@ namespace shogun
 {
 
 /** @brief The node of the tree structure forming a TreeMachine
- * The node contains pointer to its parent and vector of
+ * The node contains a pointer to its parent and a vector of
  * pointers to its children. A node of this class can have
  * only one parent but any number of children.The node also
  * contains data which can be of any type and has to be 
@@ -60,7 +60,12 @@ public:
 	/** destructor */
 	virtual ~CTreeMachineNode()
 	{
-		SG_UNREF(m_parent)
+		for(int32_t i=0;i<m_children->get_num_elements();i++)
+		{
+			CTreeMachineNode* child=(CTreeMachineNode*) m_children->get_element(i);
+			child->parent(NULL);
+			SG_UNREF(child);
+		}
 		SG_UNREF(m_children);
 	}
 
@@ -90,8 +95,6 @@ public:
 	 */
 	void parent(CTreeMachineNode* par)
 	{
-		SG_UNREF(m_parent);
-		SG_REF(par);
 		m_parent=par;
 	}
 
@@ -100,7 +103,6 @@ public:
 	 */
 	CTreeMachineNode* parent()
 	{
-		SG_REF(m_parent);
 		return m_parent;
 	}
 
@@ -111,7 +113,11 @@ public:
 	{
 		m_children->reset_array();
 		for (int32_t i=0; i<children->get_num_elements(); i++)
-			add_child((CTreeMachineNode*) children->get_element(i));
+		{
+			CTreeMachineNode* child=(CTreeMachineNode*) children->get_element(i);
+			add_child(child);
+			SG_UNREF(child);
+		}
 	}
 
 	/** add child
@@ -128,6 +134,7 @@ public:
 	 */
 	virtual CDynamicObjectArray* get_children()
 	{
+		SG_REF(m_children);
 		return m_children;
 	}
 
@@ -156,10 +163,16 @@ protected:
 
 		data_print_func(node->data);
 
-		CDynamicObjectArray* childrenVector=node->get_children();
-		for (int32_t j=0;j<childrenVector->get_num_elements();j++)
-			debug_print_impl(data_print_func,(CTreeMachineNode<T>*)
-					 childrenVector->get_element(j),depth+1);
+		CDynamicObjectArray* children_vector=node->get_children();
+		for (int32_t j=0;j<children_vector->get_num_elements();j++)
+		{
+			CTreeMachineNode<T>* child=(CTreeMachineNode<T>*) 
+						children_vector->get_element(j);
+			debug_print_impl(data_print_func,child,depth+1);
+			SG_UNREF(child);
+		}
+
+		SG_UNREF(children_vector);
 	}
 
 private:
@@ -169,9 +182,9 @@ private:
 		m_parent=NULL;
 		m_machine=-1;
 		m_children=new CDynamicObjectArray();
+		SG_REF(m_children);
 		SG_ADD((CSGObject**)&m_parent,"m_parent", "Parent node", MS_NOT_AVAILABLE);
 		SG_ADD(&m_machine,"m_machine", "Index of associated machine", MS_NOT_AVAILABLE);
-
 	}
 
 public:

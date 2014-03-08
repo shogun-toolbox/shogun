@@ -59,9 +59,14 @@ protected:
 	virtual bool which_subtree(bnode_t *node, SGVector<float32_t> ex);
 
 private:
+	/** depth of subtree
+	 * @param node pointer to the subtree root
+	 * @return the depth of the subtree 
+	 */
 	int32_t tree_depth(bnode_t *node);
 
-	float64_t m_alpha; ///< trade-off parameter for tree balance
+	/** trade-off parameter for tree balance */
+	float64_t m_alpha;
 };
 
 } /* shogun */

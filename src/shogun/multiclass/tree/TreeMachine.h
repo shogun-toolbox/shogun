@@ -1,6 +1,6 @@
 /*
  * Copyright (c) The Shogun Machine Learning Toolbox
- * Written (W) 2012 Chiyuan Zhang
+ * Written (w) 2012 Chiyuan Zhang
  * Written (w) 2014 Parijat Mazumdar
  * All rights reserved.
  *

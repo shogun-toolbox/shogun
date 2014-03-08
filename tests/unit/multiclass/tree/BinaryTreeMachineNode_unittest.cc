@@ -31,63 +31,46 @@
 #include <gtest/gtest.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/features/DenseFeatures.h>
-#include <shogun/multiclass/tree/TreeMachine.h>
+#include <shogun/multiclass/tree/BinaryTreeMachineNode.h>
 #include <shogun/multiclass/tree/ID3TreeNodeData.h>
 #include <shogun/lib/DynamicObjectArray.h>
 
 using namespace std;
 using namespace shogun;
 
-TEST(TreeMachine, TreeMachine_with_ID3TreeNodeData_test)
+TEST(BinaryTreeMachineNode, BinaryTreeMachineNode_full_test)
 {
-	CTreeMachineNode<id3TreeNodeData>* root= 
-			new CTreeMachineNode<id3TreeNodeData>();
-	SG_REF(root);
-	
-	CTreeMachine<id3TreeNodeData>* tree=
-			new CTreeMachine<id3TreeNodeData>();
-	tree->set_root(root);
-	
-	SG_UNREF(root);
+	CBinaryTreeMachineNode<id3TreeNodeData>* root= 
+			new CBinaryTreeMachineNode<id3TreeNodeData>();
 
-	CTreeMachineNode<id3TreeNodeData>* child1= 
-			new CTreeMachineNode<id3TreeNodeData>();
+	CBinaryTreeMachineNode<id3TreeNodeData>* child1= 
+			new CBinaryTreeMachineNode<id3TreeNodeData>();
 
-	CTreeMachineNode<id3TreeNodeData>* child2= 
-			new CTreeMachineNode<id3TreeNodeData>();
+	CBinaryTreeMachineNode<id3TreeNodeData>* child2= 
+			new CBinaryTreeMachineNode<id3TreeNodeData>();
 	child2->machine(2);
 	child2->data.attribute_id=2;
 	child2->data.transit_if_feature_value=2.0;
 	child2->data.class_label=22.0;
 
-	CTreeMachineNode<id3TreeNodeData>* child3= 
-			new CTreeMachineNode<id3TreeNodeData>();
+	CBinaryTreeMachineNode<id3TreeNodeData>* child3= 
+			new CBinaryTreeMachineNode<id3TreeNodeData>();
 
-	CDynamicObjectArray* insert_children = new CDynamicObjectArray();
-	insert_children->push_back(child1);
-	insert_children->push_back(child2);
+	root->left(child1);
+	root->right(child2);
+	root->left(child2);
+	root->right(child3);
 
-	CTreeMachineNode<id3TreeNodeData>* get_root=tree->get_root();
-	get_root->set_children(insert_children);
-	get_root->add_child(child3);
+	CBinaryTreeMachineNode<id3TreeNodeData>* get_left=root->left();
+	CBinaryTreeMachineNode<id3TreeNodeData>* get_right=root->right();
 
-	CDynamicObjectArray* get_children=get_root->get_children();
-	EXPECT_EQ(get_children->get_num_elements(),3);
-	CTreeMachineNode<id3TreeNodeData>* get_child2=((CTreeMachineNode<id3TreeNodeData>*)
-							 get_children->get_element(1));
-	SG_UNREF(get_children);
-	get_children=get_child2->get_children();
+	EXPECT_EQ(get_left->data.attribute_id,2);
+	EXPECT_EQ(get_left->data.transit_if_feature_value,2.0);
+	EXPECT_EQ(get_left->data.class_label,22.0);
+	EXPECT_EQ(get_left->machine(),2);
+	EXPECT_EQ(get_left->parent()->machine(),-1);
 
-	EXPECT_EQ(get_child2->data.attribute_id,2);
-	EXPECT_EQ(get_child2->data.transit_if_feature_value,2.0);
-	EXPECT_EQ(get_child2->data.class_label,22.0);
-	EXPECT_EQ(get_child2->machine(),2);
-	EXPECT_EQ(get_child2->parent()->machine(),-1);
-	EXPECT_EQ(get_children->get_num_elements(),0);
-
-	SG_UNREF(get_child2);
-	SG_UNREF(get_root);
-	SG_UNREF(tree);
-	SG_UNREF(insert_children);
-	SG_UNREF(get_children);
+	SG_UNREF(root);
+	SG_UNREF(get_left);
+	SG_UNREF(get_right);
 }

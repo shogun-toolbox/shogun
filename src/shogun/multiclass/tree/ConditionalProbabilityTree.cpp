@@ -226,16 +226,20 @@ void CConditionalProbabilityTree::train_path(SGVector<float32_t> ex, bnode_t *no
 
 void CConditionalProbabilityTree::train_node(SGVector<float32_t> ex, float64_t label, bnode_t *node)
 {
+	REQUIRE(node, "Node must not be NULL\n");
+	REQUIRE(node->machine(), "Node's machine must not be NULL\n");
 	COnlineLibLinear *mch = dynamic_cast<COnlineLibLinear *>(m_machines->get_element(node->machine()));
-	ASSERT(mch)
+	REQUIRE(mch, "Instance of %s could not be casted to COnlineLibLinear\n", node->get_name());
 	mch->train_one(ex, label);
 	SG_UNREF(mch);
 }
 
 float64_t CConditionalProbabilityTree::predict_node(SGVector<float32_t> ex, bnode_t *node)
 {
+	REQUIRE(node, "Node must not be NULL\n");
+	REQUIRE(node->machine(), "Node's machine must not be NULL\n");
 	COnlineLibLinear *mch = dynamic_cast<COnlineLibLinear *>(m_machines->get_element(node->machine()));
-	ASSERT(mch)
+	REQUIRE(mch, "Instance of %s could not be casted to COnlineLibLinear\n", node->get_name());
 	float64_t pred = mch->apply_one(ex.vector, ex.vlen);
 	SG_UNREF(mch);
 	// use sigmoid function to turn the decision value into valid probability
