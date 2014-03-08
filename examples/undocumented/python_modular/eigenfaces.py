@@ -48,16 +48,16 @@ class EigenFaces():
         self._labels = labels;
 
         #transform the numpe vector to shogun structure
-    	features = RealFeatures(images)
+        features = RealFeatures(images)
 
         #PCA
-    	preprocessor = PCA()
+        preprocessor = PCA()
         # set dimension
         preprocessor.set_target_dim(self._num_components);
-        # compute PCA    	
+        # compute PCA     
         preprocessor.init(features)
         # get eigen vector and sort the matrix
-        eigenvectors = preprocessor.get_transformation_matrix();    	
+        eigenvectors = preprocessor.get_transformation_matrix();     
         eigenvectors =  eigenvectors.T.reshape(1, self._num_components*features.get_num_features());
         self.eigenvectors_mainComponents = np.empty( (self._num_components, (images.shape[0])))
         index = 0;
@@ -69,8 +69,7 @@ class EigenFaces():
         self.eigenvalues = preprocessor.get_eigenvalues();   
         # get mean
         self.mean = preprocessor.get_mean();  
-
-        
+       
         for sampleIdx in range(features.get_num_vectors()):
             v = features.get_feature_vector(sampleIdx);
             p = self.subspaceProject(self.eigenvectors_mainComponents, self.mean, v);
