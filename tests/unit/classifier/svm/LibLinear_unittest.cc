@@ -119,7 +119,7 @@ TEST(LibLinearTest,train_L2R_LR)
 	CContingencyTableEvaluation* eval = new CContingencyTableEvaluation();
 
 	ll->set_bias_enabled(true);
-	ll->set_features((CDenseFeatures<float64_t> *)(train_feats->clone()));
+	ll->set_features(train_feats);
 	ll->set_labels(ground_truth);
 
 	ll->set_liblinear_solver_type(liblinear_solver_type);
@@ -129,8 +129,9 @@ TEST(LibLinearTest,train_L2R_LR)
 
 	EXPECT_NEAR(liblin_accuracy, 1.0, 1e-6);
 
-	SG_UNREF(train_feats);
+	SG_UNREF(ll);
 	SG_UNREF(test_feats);
+	SG_UNREF(eval);
 	SG_UNREF(pred);
 }
 
@@ -151,7 +152,7 @@ TEST(LibLinearTest,train_L2R_L2LOSS_SVC_DUAL)
 	CContingencyTableEvaluation* eval = new CContingencyTableEvaluation();
 
 	ll->set_bias_enabled(true);
-	ll->set_features((CDenseFeatures<float64_t> *)(train_feats->clone()));
+	ll->set_features(train_feats);
 	ll->set_labels(ground_truth);
 
 	ll->set_liblinear_solver_type(liblinear_solver_type);
@@ -161,8 +162,9 @@ TEST(LibLinearTest,train_L2R_L2LOSS_SVC_DUAL)
 
 	EXPECT_NEAR(liblin_accuracy, 1.0, 1e-6);
 
-	SG_UNREF(train_feats);
+	SG_UNREF(ll);
 	SG_UNREF(test_feats);
+	SG_UNREF(eval);
 	SG_UNREF(pred);
 }
 
@@ -183,7 +185,7 @@ TEST(LibLinearTest,train_L2R_L2LOSS_SVC)
 	CContingencyTableEvaluation* eval = new CContingencyTableEvaluation();
 
 	ll->set_bias_enabled(true);
-	ll->set_features((CDenseFeatures<float64_t> *)(train_feats->clone()));
+	ll->set_features(train_feats);
 	ll->set_labels(ground_truth);
 
 	ll->set_liblinear_solver_type(liblinear_solver_type);
@@ -193,8 +195,9 @@ TEST(LibLinearTest,train_L2R_L2LOSS_SVC)
 
 	EXPECT_NEAR(liblin_accuracy, 1.0, 1e-6);
 
-	SG_UNREF(train_feats);
+	SG_UNREF(ll);
 	SG_UNREF(test_feats);
+	SG_UNREF(eval);
 	SG_UNREF(pred);
 }
 
@@ -215,7 +218,7 @@ TEST(LibLinearTest,train_L2R_L1LOSS_SVC_DUAL)
 	CContingencyTableEvaluation* eval = new CContingencyTableEvaluation();
 
 	ll->set_bias_enabled(true);
-	ll->set_features((CDenseFeatures<float64_t> *)(train_feats->clone()));
+	ll->set_features(train_feats);
 	ll->set_labels(ground_truth);
 
 	ll->set_liblinear_solver_type(liblinear_solver_type);
@@ -225,8 +228,9 @@ TEST(LibLinearTest,train_L2R_L1LOSS_SVC_DUAL)
 
 	EXPECT_NEAR(liblin_accuracy, 1.0, 1e-6);
 
-	SG_UNREF(train_feats);
+	SG_UNREF(ll);
 	SG_UNREF(test_feats);
+	SG_UNREF(eval);
 	SG_UNREF(pred);
 }
 
@@ -247,7 +251,7 @@ TEST(LibLinearTest,train_L1R_L2LOSS_SVC)
 	CContingencyTableEvaluation* eval = new CContingencyTableEvaluation();
 
 	ll->set_bias_enabled(true);
-	ll->set_features((CDenseFeatures<float64_t> *)(train_feats->clone()));
+	ll->set_features(train_feats);
 	ll->set_labels(ground_truth);
 
 	ll->set_liblinear_solver_type(liblinear_solver_type);
@@ -257,8 +261,9 @@ TEST(LibLinearTest,train_L1R_L2LOSS_SVC)
 
 	EXPECT_NEAR(liblin_accuracy, 1.0, 1e-6);
 
-	SG_UNREF(train_feats);
+	SG_UNREF(ll);
 	SG_UNREF(test_feats);
+	SG_UNREF(eval);
 	SG_UNREF(pred);
 }
 
@@ -279,7 +284,7 @@ TEST(LibLinearTest,train_L1R_LR)
 	CContingencyTableEvaluation* eval = new CContingencyTableEvaluation();
 
 	ll->set_bias_enabled(true);
-	ll->set_features((CDenseFeatures<float64_t> *)(train_feats->clone()));
+	ll->set_features(train_feats);
 	ll->set_labels(ground_truth);
 
 	ll->set_liblinear_solver_type(liblinear_solver_type);
@@ -289,8 +294,9 @@ TEST(LibLinearTest,train_L1R_LR)
 
 	EXPECT_NEAR(liblin_accuracy, 1.0, 1e-6);
 
-	SG_UNREF(train_feats);
+	SG_UNREF(ll);
 	SG_UNREF(test_feats);
+	SG_UNREF(eval);
 	SG_UNREF(pred);
 }
 
@@ -311,7 +317,7 @@ TEST(LibLinearTest,train_L2R_LR_DUAL)
 	CContingencyTableEvaluation* eval = new CContingencyTableEvaluation();
 
 	ll->set_bias_enabled(true);
-	ll->set_features((CDenseFeatures<float64_t> *)(train_feats->clone()));
+	ll->set_features(train_feats);
 	ll->set_labels(ground_truth);
 
 	ll->set_liblinear_solver_type(liblinear_solver_type);
@@ -321,8 +327,9 @@ TEST(LibLinearTest,train_L2R_LR_DUAL)
 
 	EXPECT_NEAR(liblin_accuracy, 1.0, 1e-6);
 
-	SG_UNREF(train_feats);
+	SG_UNREF(ll);
 	SG_UNREF(test_feats);
+	SG_UNREF(eval);
 	SG_UNREF(pred);
 }
 #endif //HAVE_LAPACK
