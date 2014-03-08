@@ -136,7 +136,7 @@ namespace shogun
 			 */
 			void set_label(int32_t j, SGVector<int16_t > label);
 
-			/** TODO */
+			/** assigning class labels */
 			void set_class_labels(SGVector <int32_t> ** labels_list);
 
 			/** print the current labeling */
