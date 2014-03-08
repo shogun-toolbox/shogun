@@ -26,19 +26,12 @@ CDirectEigenSolver::CDirectEigenSolver()
 	SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 }
 
-CDirectEigenSolver::CDirectEigenSolver(
-	CDenseMatrixOperator<float64_t>* linear_operator)
-	: CEigenSolver((CLinearOperator<float64_t>*)linear_operator)
-{
-	SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
-}
-
 CDirectEigenSolver::~CDirectEigenSolver()
 {
 	SG_GCDEBUG("%s destroyed (%p)\n", this->get_name(), this)
 }
 
-void CDirectEigenSolver::compute()
+void CDirectEigenSolver::compute(CLinearOperator<float64_t>* linear_operator)
 {
 	if (m_is_computed_min && m_is_computed_max)
 	{
@@ -47,16 +40,28 @@ void CDirectEigenSolver::compute()
 	}
 
 	CDenseMatrixOperator<float64_t>* op
-		=dynamic_cast<CDenseMatrixOperator<float64_t>*>(m_linear_operator);
+		=dynamic_cast<CDenseMatrixOperator<float64_t>*>(linear_operator);
 	REQUIRE(op, "Linear operator is not of CDenseMatrixOperator type!\n");
 
-	SGMatrix<float64_t> m=op->get_matrix_operator();
+	SG_REF(linear_operator);
+	this->compute(op->get_matrix_operator());
+	SG_UNREF(linear_operator);
+}
+
+void CDirectEigenSolver::compute(SGMatrix<float64_t> m)
+{
+	if (m_is_computed_min && m_is_computed_max)
+	{
+		SG_DEBUG("Minimum/maximum eigenvalues are already computed, exiting\n");
+		return;
+	}
+
 	Map<MatrixXd> map_m(m.matrix, m.num_rows, m.num_cols);
 
 	// compute the eigenvalues with Eigen3
 	SelfAdjointEigenSolver<MatrixXd> eig_solver(map_m);
 	m_min_eigenvalue=eig_solver.eigenvalues()[0];
-	m_max_eigenvalue=eig_solver.eigenvalues()[op->get_dimension()-1];
+	m_max_eigenvalue=eig_solver.eigenvalues()[m.num_cols-1];
 
 	m_is_computed_min=true;
 	m_is_computed_max=false;

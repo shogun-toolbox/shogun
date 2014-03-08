@@ -32,7 +32,7 @@ def mathematics_logdet (matrix=mtx,max_iter_eig=1000,max_iter_lin=1000,num_sampl
 		# creating the linear operator, eigen-solver
 		op=RealSparseMatrixOperator(A.tocsc())
 
-		eig_solver=LanczosEigenSolver(op)
+		eig_solver=LanczosEigenSolver()
 
 		# we can set the iteration limit high for poorly conditioned matrices
 		eig_solver.set_max_iteration_limit(max_iter_eig)

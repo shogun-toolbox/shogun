@@ -29,21 +29,16 @@ public:
 	/** default constructor */
 	CLanczosEigenSolver();
 
-	/**
-	 * constructor
-	 *
-	 * @param linear_operator self-adjoint linear operator whose eigenvalues
-	 * are to be found
-	 */
-	CLanczosEigenSolver(CLinearOperator<float64_t>* linear_operator);
-
 	/** destructor */
 	virtual ~CLanczosEigenSolver();
 
 	/**
 	 * compute method for computing eigenvalues of a real valued linear operator
+	 *
+	 * @param linear_operator real valued self-adjoint linear operator
+	 * whose eigenvalues have to be found
 	 */
-	virtual void compute();
+	virtual void compute(CLinearOperator<float64_t>* linear_operator);
 
 	/** @param max_iteration_limit to be set */
 	void set_max_iteration_limit(int64_t max_iteration_limit)

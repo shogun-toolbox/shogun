@@ -28,22 +28,25 @@ public:
 	/** default constructor */
 	CDirectEigenSolver();
 
-	/**
-	 * constructor
-	 *
-	 * @param linear_operator self-adjoint dense-matrix linear operator whose
-	 * eigenvalues have to be found
-	 */
-	CDirectEigenSolver(CDenseMatrixOperator<float64_t>* linear_operator);
-
 	/** destructor */
 	virtual ~CDirectEigenSolver();
 
 	/**
 	 * compute method for computing eigenvalues of a real valued dense matrix
 	 * linear operator
+	 *
+	 * @param linear_operator real valued self-adjoint linear operator
+	 * whose eigenvalues have to be found
 	 */
-	virtual void compute();
+	virtual void compute(CLinearOperator<float64_t>* linear_operator);
+
+	/**
+	 * compute method for computing eigenvalues of a real valued dense matrix
+	 *
+	 * @param m real valued self-adjoint matrix whose eigenvalues have to be
+	 * found
+	 */
+	void compute(SGMatrix<float64_t> m);
 
 	/** @return object name */
 	virtual const char* get_name() const

@@ -51,7 +51,7 @@ TEST(RationalApproximation, precompute)
 	CDenseMatrixOperator<float64_t>* op=new CDenseMatrixOperator<float64_t>(m);
 	SG_REF(op);
 
-	CDirectEigenSolver* eig_solver=new CDirectEigenSolver(op);
+	CDirectEigenSolver* eig_solver=new CDirectEigenSolver();
 	SG_REF(eig_solver);
 
 	CDirectLinearSolverComplex* linear_solver=new CDirectLinearSolverComplex();
@@ -125,7 +125,7 @@ TEST(RationalApproximation, trace_accuracy)
 	SG_REF(op);
 
 	// create the eigen solver for finding max/min eigenvalues
-	CDirectEigenSolver* eig_solver=new CDirectEigenSolver(op);
+	CDirectEigenSolver* eig_solver=new CDirectEigenSolver();
 	SG_REF(eig_solver);
 
 	// create the direct linear solver for solving the systems that generates from
@@ -218,7 +218,7 @@ TEST(RationalApproximation, compare_direct_vs_cocg_accuracy)
 	CDenseMatrixOperator<float64_t>* op=new CDenseMatrixOperator<float64_t>(m);
 	SG_REF(op);
 
-	CDirectEigenSolver* eig_solver=new CDirectEigenSolver(op);
+	CDirectEigenSolver* eig_solver=new CDirectEigenSolver();
 	SG_REF(eig_solver);
 
 	CDirectLinearSolverComplex* dense_solver=new CDirectLinearSolverComplex();
@@ -307,7 +307,7 @@ TEST(RationalApproximation, trace_accuracy_cg_m)
 	SG_REF(op);
 
 	// create the eigen solver for finding max/min eigenvalues
-	CDirectEigenSolver* eig_solver=new CDirectEigenSolver(op);
+	CDirectEigenSolver* eig_solver=new CDirectEigenSolver();
 	SG_REF(eig_solver);
 
 	// create the direct linear solver for solving the systems that generates from

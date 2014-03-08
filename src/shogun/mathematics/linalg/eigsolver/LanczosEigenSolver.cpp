@@ -31,13 +31,6 @@ CLanczosEigenSolver::CLanczosEigenSolver()
 	init();
 }
 
-CLanczosEigenSolver::CLanczosEigenSolver(
-	CLinearOperator<float64_t>* linear_operator)
-	: CEigenSolver(linear_operator)
-{
-	init();
-}
-
 void CLanczosEigenSolver::init()
 {
 	m_max_iteration_limit=1000;
@@ -58,7 +51,7 @@ CLanczosEigenSolver::~CLanczosEigenSolver()
 {
 }
 
-void CLanczosEigenSolver::compute()
+void CLanczosEigenSolver::compute(CLinearOperator<float64_t>* linear_operator)
 {
 	SG_DEBUG("Entering\n");
 
@@ -68,10 +61,12 @@ void CLanczosEigenSolver::compute()
 		return;
 	}
 
-	REQUIRE(m_linear_operator, "Operator is NULL!\n");
+	REQUIRE(linear_operator, "Operator is NULL!\n");
+
+	SG_REF(linear_operator);
 
 	// vector v_0
-	VectorXd v=VectorXd::Zero(m_linear_operator->get_dimension());
+	VectorXd v=VectorXd::Zero(linear_operator->get_dimension());
 
 	// vector v_i, for i=1 this is random valued with norm 1
 	SGVector<float64_t> v_(v.rows());
@@ -100,7 +95,7 @@ void CLanczosEigenSolver::compute()
 				it.get_iter_info().residual_norm);
 
 		// apply linear operator to the direction vector
-		w_=m_linear_operator->apply(v_);
+		w_=linear_operator->apply(v_);
 		Map<VectorXd> w_i(w_.vector, w_.vlen);
 
 		// compute v^{T}Av, if zero, failure
@@ -164,6 +159,7 @@ void CLanczosEigenSolver::compute()
 			SG_WARNING("Some error occured while computing eigenvalues!\n");
 	}
 
+	SG_UNREF(linear_operator);
 	SG_DEBUG("Leaving\n");
 }
 

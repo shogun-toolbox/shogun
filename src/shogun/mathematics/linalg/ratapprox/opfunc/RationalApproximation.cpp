@@ -111,7 +111,7 @@ void CRationalApproximation::set_num_shifts(index_t num_shifts)
 void CRationalApproximation::precompute()
 {
 	// compute extremal eigenvalues
-	m_eigen_solver->compute();
+	m_eigen_solver->compute(m_linear_operator);
 	SG_INFO("max_eig=%.15lf\n", m_eigen_solver->get_max_eigenvalue());
 	SG_INFO("min_eig=%.15lf\n", m_eigen_solver->get_min_eigenvalue());
 

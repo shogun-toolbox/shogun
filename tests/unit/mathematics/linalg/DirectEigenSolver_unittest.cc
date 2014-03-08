@@ -28,8 +28,8 @@ TEST(DirectEigenSolver, compute)
 	CDenseMatrixOperator<float64_t>* A=new CDenseMatrixOperator<float64_t>(m);
 	SG_REF(A);
 
-	CDirectEigenSolver eig_solver(A);
-	eig_solver.compute();
+	CDirectEigenSolver eig_solver;
+	eig_solver.compute(A);
 
 	float64_t min_eigval=eig_solver.get_min_eigenvalue();
 	float64_t max_eigval=eig_solver.get_max_eigenvalue();

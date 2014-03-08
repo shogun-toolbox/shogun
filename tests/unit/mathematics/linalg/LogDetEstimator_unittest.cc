@@ -95,7 +95,7 @@ TEST(LogDetEstimator, sample_ratapp_dense)
 	CDenseMatrixOperator<float64_t>* op=new CDenseMatrixOperator<float64_t>(mat);
 	SG_REF(op);
 
-	CDirectEigenSolver* eig_solver=new CDirectEigenSolver(op);
+	CDirectEigenSolver* eig_solver=new CDirectEigenSolver();
 	SG_REF(eig_solver);
 
 	CDirectLinearSolverComplex* linear_solver=new CDirectLinearSolverComplex();
@@ -184,7 +184,7 @@ TEST(LogDetEstimator, sample_ratapp_probing_sampler)
 	CDenseMatrixOperator<float64_t>* opd=new CDenseMatrixOperator<float64_t>(mat);
 	SG_REF(opd);
 
-	CLanczosEigenSolver* eig_solver=new CLanczosEigenSolver(op);
+	CLanczosEigenSolver* eig_solver=new CLanczosEigenSolver();
 	SG_REF(eig_solver);
 
 	CDirectLinearSolverComplex* linear_solver=new CDirectLinearSolverComplex();
@@ -269,7 +269,7 @@ TEST(LogDetEstimator, sample_ratapp_probing_sampler_cgm)
 	CSparseMatrixOperator<float64_t>* op=new CSparseMatrixOperator<float64_t>(sm);
 	SG_REF(op);
 
-	CLanczosEigenSolver* eig_solver=new CLanczosEigenSolver(op);
+	CLanczosEigenSolver* eig_solver=new CLanczosEigenSolver();
 	SG_REF(eig_solver);
 
 	CCGMShiftedFamilySolver* linear_solver=new CCGMShiftedFamilySolver();
@@ -325,7 +325,7 @@ TEST(LogDetEstimator, sample_ratapp_big_diag_matrix)
 	}
 	op->set_diagonal(diag);
 
-	CLanczosEigenSolver* eig_solver=new CLanczosEigenSolver(op);
+	CLanczosEigenSolver* eig_solver=new CLanczosEigenSolver();
 	SG_REF(eig_solver);
 
 	CCGMShiftedFamilySolver* linear_solver=new CCGMShiftedFamilySolver();
@@ -391,7 +391,7 @@ TEST(LogDetEstimator, sample_ratapp_big_matrix)
 	CSparseMatrixOperator<float64_t>* op=new CSparseMatrixOperator<float64_t>(sm);
 	SG_REF(op);
 
-	CLanczosEigenSolver* eig_solver=new CLanczosEigenSolver(op);
+	CLanczosEigenSolver* eig_solver=new CLanczosEigenSolver();
 	SG_REF(eig_solver);
 
 	CCGMShiftedFamilySolver* linear_solver=new CCGMShiftedFamilySolver();

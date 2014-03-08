@@ -44,8 +44,8 @@ TEST(LanczosEigenSolver, compute)
 	CLinearOperator<float64_t>* A=new CSparseMatrixOperator<float64_t>(mat);
 	SG_REF(A);
 
-	eig_solver=new CLanczosEigenSolver(A);
-	eig_solver->compute();
+	eig_solver=new CLanczosEigenSolver();
+	eig_solver->compute(A);
 
 	float64_t lanc_max_eig=eig_solver->get_max_eigenvalue();
 	float64_t lanc_min_eig=eig_solver->get_min_eigenvalue();
@@ -57,8 +57,8 @@ TEST(LanczosEigenSolver, compute)
 	CDenseMatrixOperator<float64_t>* B=new CDenseMatrixOperator<float64_t>(m);
 	SG_REF(B);
 
-	eig_solver=new CDirectEigenSolver(B);
-	eig_solver->compute();
+	eig_solver=new CDirectEigenSolver();
+	eig_solver->compute(B);
 
 	float64_t dir_max_eig=eig_solver->get_max_eigenvalue();
 	float64_t dir_min_eig=eig_solver->get_min_eigenvalue();
@@ -91,9 +91,9 @@ TEST(LanczosEigenSolver, compute_big_diag_matrix)
 	}
 	op->set_diagonal(diag);
 
-	CLanczosEigenSolver* eig_solver=new CLanczosEigenSolver(op);
+	CLanczosEigenSolver* eig_solver=new CLanczosEigenSolver();
 	SG_REF(eig_solver);
-	eig_solver->compute();
+	eig_solver->compute(op);
 
 	// test eigenvalues
 	Map<VectorXd> diag_map(diag.vector, diag.vlen);
@@ -118,11 +118,11 @@ TEST(LanczosEigenSolver, set_eigenvalues_externally)
 	SG_REF(A);
 	float64_t min_eigenvalue=0.0001;
 	float64_t max_eigenvalue=100000.0;
-	CLanczosEigenSolver* eig_solver=new CLanczosEigenSolver(A);
+	CLanczosEigenSolver* eig_solver=new CLanczosEigenSolver();
 	eig_solver->set_min_eigenvalue(min_eigenvalue);
 	eig_solver->set_max_eigenvalue(max_eigenvalue);
 
-	eig_solver->compute();
+	eig_solver->compute(A);
 	EXPECT_NEAR(eig_solver->get_min_eigenvalue(), min_eigenvalue, 1E-16);
 	EXPECT_NEAR(eig_solver->get_max_eigenvalue(), max_eigenvalue, 1E-16);
 

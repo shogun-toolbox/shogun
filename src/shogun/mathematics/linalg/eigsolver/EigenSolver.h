@@ -31,31 +31,19 @@ public:
 		init();
 	}
 
-	/**
-	 * constructor
-	 *
-	 * @param linear_operator real valued self-adjoint linear operator
-	 * whose eigenvalues have to be found
-	 */
-	CEigenSolver(CLinearOperator<float64_t>* linear_operator)
-	: CSGObject()
-	{
-		init();
-
-		m_linear_operator=linear_operator;
-		SG_REF(m_linear_operator);
-	}
 	/** destructor */
 	virtual ~CEigenSolver()
 	{
-		SG_UNREF(m_linear_operator);
 	}
 
 	/**
 	 * abstract compute method for computing eigenvalues of a real
 	 * valued linear operator
+	 *
+	 * @param linear_operator real valued self-adjoint linear operator
+	 * whose eigenvalues have to be found
 	 */
-	virtual void compute() = 0;
+	virtual void compute(CLinearOperator<float64_t>* linear_operator) = 0;
 
 	/** sets the min eigelvalue of a real valued self-adjoint linear operator */
 	void set_min_eigenvalue(float64_t min_eigenvalue)
@@ -95,9 +83,6 @@ protected:
 	/** max eigenvalue */
 	float64_t m_max_eigenvalue;
 
-	/** the linear solver whose eigenvalues have to be found */
-	CLinearOperator<float64_t>* m_linear_operator;
-
 	/** flag that denotes that the minimum eigenvalue is already computed */
 	bool m_is_computed_min;
 
@@ -110,7 +95,6 @@ private:
 	{
 		m_min_eigenvalue=0.0;
 		m_max_eigenvalue=0.0;
-		m_linear_operator=NULL;
 		m_is_computed_min=false;
 		m_is_computed_max=false;
 
@@ -120,10 +104,6 @@ private:
 
 		SG_ADD(&m_max_eigenvalue, "max_eigenvalue",
 			"Maximum eigenvalue of a real valued self-adjoint linear operator",
-			MS_NOT_AVAILABLE);
-
-		SG_ADD((CSGObject**)&m_linear_operator, "linear_operator",
-			"Self-adjoint linear operator",
 			MS_NOT_AVAILABLE);
 
 		SG_ADD(&m_is_computed_min, "is_computed_min",
