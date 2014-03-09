@@ -65,7 +65,7 @@ def test_multiclass(classifier, width, testset):
 
 
 	svm = MulticlassLibSVM()
-	serialized_classifier = SerializableHdf5File('/tmp/model3', 'r')
+	serialized_classifier = SerializableHdf5File(classifier, 'r')
 	with closing(serialized_classifier):
 		svm.load_serializable(serialized_classifier)
 
