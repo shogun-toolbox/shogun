@@ -36,21 +36,12 @@ public:
 	CLogDetEstimator();
 
 	/**
-	 * constructor for SGMatrix<float64_t>
-	 * with serialcomputation engine, CDenseMatrixExactLog,
-	 * CNormalsampler as default
-	 *
-	 * @param dense_mat the input Dense matrix
-	 */
-	 CLogDetEstimator(SGMatrix<float64_t> dense_mat);
-
-	/**
 	 * constructor for SGSparseMatrix<float64_t>
-	 * serialcomputation engine, CLogRationalApproximationCGM
-	 * with 1E-5 accuracy, CLanczosEigenSolver, CCGMShiftedFamilySolver,
-	 * are used as default CProbingsampler with  power=1,EOrderingVariant NATURAL,
-	 * EColoringVariant DISTANCE_TWO is used when COLPACK package
-	 * is present else CNormalsampler is used.
+	 * Using the default methods: CSerialComputationEngine,CLanczosEigenSolver,
+	 * CLogRationalApproximationCGM with 1E-5 accuracy, CCGMShiftedFamilySolver,
+	 * when COLPACK package is installed CProbingsampler with power=1,
+	 * EOrderingVariant NATURAL, EColoringVariant DISTANCE_TWO is used
+	 * else CNormalsampler is used.
 	 * 
 	 * @param sparse_mat the input Sparse matrix
 	 */
@@ -94,23 +85,13 @@ public:
 		return "LogDetEstimator";
 	}
 	
-	/**
-	*method that returns the trace sampler
-	*
-	*@return the Trace Sampler
-	*/
+	/** @return trace sampler */
 	CTraceSampler* get_trace_sampler(void) const;
 	
-	/**
-	*method that returns the computation engine
-	*@return the independent computation engine
-	*/
+	/** @return computation sampler */	
 	CIndependentComputationEngine* get_computation_engine(void) const;
 	
-	/**
-	*method that returns the operator function
-	*@return the operator function
-	*/
+	/** @return operator function */
 	COperatorFunction<float64_t>* get_operator_function(void) const;
 	
 private:

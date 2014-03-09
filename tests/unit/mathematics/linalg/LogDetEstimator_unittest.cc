@@ -76,37 +76,11 @@ TEST(LogDetEstimator, sample)
 	SG_UNREF(e);
 }
 
-TEST(LogDetEstimator, Dense_sample_constructor)
-{
-	const index_t size=2;
-	SGMatrix<float64_t> mat(size, size);
-	mat(0,0)=2.0;
-	mat(0,1)=1.0;
-	mat(1,0)=1.0;
-	mat(1,1)=3.0;
-	
-	CLogDetEstimator estimator(mat);
-
-	CIndependentComputationEngine* e=
-		dynamic_cast<CIndependentComputationEngine*>
-		(estimator.get_computation_engine());
-
-	COperatorFunction<float64_t>* op=
-		dynamic_cast<COperatorFunction<float64_t>*>
-		(estimator.get_operator_function());
-
-	CTraceSampler* tracer=
-		dynamic_cast<CTraceSampler*>(estimator.get_trace_sampler());
-
-	EXPECT_TRUE(e && op && tracer);
-}
-
 TEST(LogDetEstimator, Sparse_sample_constructor)
 {
 	const index_t size=16;
 	SGMatrix<float64_t> mat(size, size);
 	mat.set_const(0.0);
-	mat(9,14)=mat(14,9)=1.0;
 
 	CSparseFeatures<float64_t> feat(mat);
 	SGSparseMatrix<float64_t> sm=feat.get_sparse_feature_matrix();
@@ -124,7 +98,9 @@ TEST(LogDetEstimator, Sparse_sample_constructor)
 	CTraceSampler* tracer=
 		dynamic_cast<CTraceSampler*>(estimator.get_trace_sampler());
 
-	EXPECT_TRUE(e && op && tracer);
+	EXPECT_TRUE(e);
+	EXPECT_TRUE(op);
+	EXPECT_TRUE(tracer);
 }
 #endif // EIGEN_VERSION_AT_LEAST(3,1,0)
 

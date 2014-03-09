@@ -36,28 +36,6 @@ CLogDetEstimator::CLogDetEstimator()
 	init();
 }
 
-CLogDetEstimator::CLogDetEstimator(SGMatrix<float64_t> dense_mat) 
-	: CSGObject()
-{
-	init();
-
-	m_computation_engine=new CSerialComputationEngine();
-	SG_REF(m_computation_engine);
-
-	CDenseMatrixOperator<float64_t>* op=
-		new CDenseMatrixOperator<float64_t>(dense_mat);
-	
-	m_operator_log=new CDenseMatrixExactLog(op,m_computation_engine);
-	SG_REF(m_operator_log);
-
-	m_trace_sampler=new CNormalSampler(dense_mat.num_rows);
-	SG_REF(m_trace_sampler);
-
-	SG_INFO("LogDetEstimator:Using %s, %s, %s as default\n",
-		m_computation_engine->get_name(), m_operator_log->get_name(),
-		m_trace_sampler->get_name());
-}
-
 CLogDetEstimator::CLogDetEstimator(SGSparseMatrix<float64_t> sparse_mat) 
 	: CSGObject()
 {
@@ -80,10 +58,8 @@ CLogDetEstimator::CLogDetEstimator(SGSparseMatrix<float64_t> sparse_mat)
 
 	#ifdef HAVE_COLPACK
 	m_trace_sampler=new CProbingSampler(op,1,NATURAL,DISTANCE_TWO);
-
 	#else
 	m_trace_sampler=new CNormalSampler(op->get_dimension());
-
 	#endif
 
 	SG_REF(m_trace_sampler);
@@ -135,16 +111,19 @@ CLogDetEstimator::~CLogDetEstimator()
 
 CTraceSampler* CLogDetEstimator::get_trace_sampler(void) const
 {
+	SG_REF(m_trace_sampler);
 	return m_trace_sampler;
 }
 
 CIndependentComputationEngine* CLogDetEstimator::get_computation_engine(void) const
 {
+	SG_REF(m_computation_engine);
 	return m_computation_engine;
 }
 
 COperatorFunction<float64_t>* CLogDetEstimator::get_operator_function(void) const
 {
+	SG_REF(m_operator_log);
 	return m_operator_log;
 }
 
