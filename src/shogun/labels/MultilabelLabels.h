@@ -156,11 +156,9 @@ namespace shogun
 
 		protected:
 
-			SGVector<int16_t > * m_labels;
 			int32_t              m_num_labels;
-
-		public:
 			int16_t              m_num_classes;
+			SGVector<int16_t > * m_labels;
 	};
 
 }
