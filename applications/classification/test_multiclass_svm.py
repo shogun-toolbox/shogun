@@ -34,7 +34,7 @@ import logging
 from contextlib import closing
 from modshogun import (LibSVMFile, SparseRealFeatures, MulticlassLabels,
 		       MulticlassLibSVM, SerializableHdf5File,
-		       MulticlassAccuracy)
+		       MulticlassAccuracy, init_shogun_with_defaults, exit_shogun)
 
 logging.basicConfig(level=logging.INFO, format='[%(asctime)-15s %(module)s] %(message)s')
 LOGGER = logging.getLogger(__file__)
@@ -44,8 +44,6 @@ def parse_arguments():
 					 	     agains a SVMLight test file")
 	parser.add_argument('--classifier', required=True, type=str,
 					help='Path to training dataset in LibSVM format.')
-	parser.add_argument('--width', default=2.1, type=float,
-					help='Width of the Gaussian Kernel to approximate')
 	parser.add_argument('--testset', required=True, type=str,
 					help='Path to the SVMLight test file')
 	return parser.parse_args()
@@ -59,10 +57,8 @@ def get_features_and_labels(input_file):
 
 
 def test_multiclass(classifier, width, testset):
-
+	init_shogun_with_defaults()
 	LOGGER.info("SVM Multiclass evaluation")
-	LOGGER.info("Gaussian width: %s" % width)
-
 
 	svm = MulticlassLibSVM()
 	serialized_classifier = SerializableHdf5File(classifier, 'r')
@@ -70,14 +66,16 @@ def test_multiclass(classifier, width, testset):
 		svm.load_serializable(serialized_classifier)
 
 	test_feats, test_labels = get_features_and_labels(LibSVMFile(testset))
+	predicted_labels = svm.apply(test_feats)
 
-	kernel = svm.get_kernel()
-	lhs = kernel.get_lhs()
-	kernel.init(lhs, test_feats)
+	multiclass_measures = MulticlassAccuracy()
+	LOGGER.info("Accuracy = %s" % multiclass_measures.evaluate(
+		    test_labels, predicted_labels))
+	LOGGER.info("Confusion matrix:")
+	res = multiclass_measures.get_confusion_matrix(test_labels, predicted_labels)
+	print res
 
-	evaluator = MulticlassAccuracy()
-	accuracy = evaluator.evaluate(svm.apply(), test_labels)
-	LOGGER.info('Accuracy = %.4f' % accuracy)
+	exit_shogun()
 
 
 def main():
