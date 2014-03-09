@@ -56,14 +56,14 @@ namespace shogun
 			 *
 			 * @param num_classes number of (binary) class assignments per label
 			 */
-			CMultilabelLabels(int16_t  num_classes);
+			CMultilabelLabels(int16_t num_classes);
 
 			/** constructor
 			 *
 			 * @param num_labels  number of labels
 			 * @param num_classes number of (binary) class assignments per label
 			 */
-			CMultilabelLabels(int32_t num_labels, int16_t  num_classes);
+			CMultilabelLabels(int32_t num_labels, int16_t num_classes);
 
 			/** destructor */
 			~CMultilabelLabels();
@@ -152,7 +152,7 @@ namespace shogun
 			static CMultilabelLabels * load(const char *fname);
 
 		private:
-			void init();
+			void init(int32_t num_labels, int16_t num_classes);
 
 		protected:
 

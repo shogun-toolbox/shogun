@@ -33,48 +33,42 @@
 
 using namespace shogun;
 
-CMultilabelLabels::CMultilabelLabels ():CLabels ()
+CMultilabelLabels::CMultilabelLabels ()
+:CLabels ()
 {
-	init ();
-	m_num_labels = 0;
-	m_num_classes = 1;
-	m_labels = new SGVector < int16_t >[m_num_labels];
+	init (0, 1);
 }
 
 
-CMultilabelLabels::CMultilabelLabels (int16_t  num_classes):CLabels ()
+CMultilabelLabels::CMultilabelLabels (int16_t num_classes)
+:CLabels ()
 {
-	init ();
-	m_num_labels = 0;
-	m_num_classes = num_classes;
-	m_labels = new SGVector < int16_t >[m_num_labels];
+	init (0, num_classes);
 }
 
 
-CMultilabelLabels::CMultilabelLabels (int32_t num_labels, int16_t  num_classes):CLabels ()
+CMultilabelLabels::CMultilabelLabels (int32_t num_labels, int16_t num_classes)
+:CLabels ()
 {
-	ASSERT (num_labels >= 0);
-	ASSERT (num_classes > 0);
-
-	init ();
-	m_num_labels = num_labels;
-	m_num_classes = num_classes;
-	m_labels = new SGVector < int16_t >[m_num_labels];
+	init (num_labels, num_classes);
 }
 
 
 CMultilabelLabels::~CMultilabelLabels ()
 {
-	delete[]m_labels;
+	delete[] m_labels;
 }
 
 
 void
-CMultilabelLabels::init ()
+CMultilabelLabels::init (int32_t num_labels, int16_t num_classes)
 {
-	m_num_labels = 0;
-	m_num_classes = 0;
-	m_labels = NULL;
+	REQUIRE (num_labels >= 0, "num_labels should be >= 0");
+	REQUIRE (num_classes > 0, "num_classes should be > 0");
+
+	m_num_labels = num_labels;
+	m_num_classes = num_classes;
+	m_labels = new SGVector < int16_t >[m_num_labels];
 }
 
 
