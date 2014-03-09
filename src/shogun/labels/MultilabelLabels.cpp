@@ -31,11 +31,6 @@
 
 #include <shogun/labels/MultilabelLabels.h>
 
-#include <string>
-#include <iostream>
-#include <fstream>
-#include <limits>
-
 using namespace shogun;
 
 CMultilabelLabels::CMultilabelLabels ():CLabels ()
@@ -305,6 +300,14 @@ CMultilabelLabels::display () const
 	}
 	return;
 }
+
+
+// The following includes are only needed for save() and load()
+
+#include <string>
+#include <iostream>
+#include <fstream>
+#include <limits>
 
 
 void
