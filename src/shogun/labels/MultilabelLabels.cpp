@@ -69,8 +69,8 @@ CMultilabelLabels::~CMultilabelLabels ()
 void
 CMultilabelLabels::init (int32_t num_labels, int16_t num_classes)
 {
-	REQUIRE (num_labels >= 0, "num_labels should be >= 0");
-	REQUIRE (num_classes > 0, "num_classes should be > 0");
+	REQUIRE (num_labels >= 0, "num_labels=%d should be >= 0", num_labels);
+	REQUIRE (num_classes > 0, "num_classes=%d should be > 0", num_classes);
 
 	SG_ADD(&m_num_labels, "m_num_labels", "number of labels", MS_NOT_AVAILABLE);
 	SG_ADD(&m_num_classes, "m_num_classes", "number of classes", MS_NOT_AVAILABLE);
