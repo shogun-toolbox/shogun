@@ -56,7 +56,7 @@ def get_features_and_labels(input_file):
 	return feats, labels
 
 
-def test_multiclass(classifier, width, testset):
+def test_multiclass(classifier, testset):
 	init_shogun_with_defaults()
 	LOGGER.info("SVM Multiclass evaluation")
 
@@ -80,7 +80,7 @@ def test_multiclass(classifier, width, testset):
 
 def main():
 	args = parse_arguments()
-	test_multiclass(args.classifier, args.width, args.testset)
+	test_multiclass(args.classifier, args.testset)
 
 if __name__ == '__main__':
 	main()
