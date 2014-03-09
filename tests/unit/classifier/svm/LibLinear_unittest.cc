@@ -69,9 +69,15 @@ void generate_data_l1(CDenseFeatures<float64_t>* &train_feats,
 	SGMatrix<float64_t> train_matrix = train_feats->get_feature_matrix();
 	SGMatrix<float64_t>::transpose_matrix(train_matrix.matrix,
 			train_matrix.num_rows, train_matrix.num_cols);
+
+	SG_UNREF(train_feats);
+
 	train_feats = new CDenseFeatures<float64_t>(train_matrix);
 
 	ground_truth = new CBinaryLabels(labels);
+
+	SG_REF(ground_truth);
+	SG_REF(train_feats);
 }
 
 //Generate Data for L2 regularized
@@ -100,9 +106,256 @@ void generate_data_l2(CDenseFeatures<float64_t>* &train_feats,
 	train_feats = (CDenseFeatures<float64_t>*)features.copy_subset(train_idx);
 	test_feats =  (CDenseFeatures<float64_t>*)features.copy_subset(test_idx);
 	ground_truth = new CBinaryLabels(labels);
+	SG_REF(ground_truth);
 }
 
 TEST(LibLinearTest,train_L2R_LR)
+{
+	LIBLINEAR_SOLVER_TYPE liblinear_solver_type = L2R_LR;
+
+	CDenseFeatures<float64_t>* train_feats = NULL;
+	CDenseFeatures<float64_t>* test_feats = NULL;
+	CBinaryLabels* ground_truth = NULL;
+
+	generate_data_l2(train_feats, test_feats, ground_truth);
+
+	CLibLinear* ll = new CLibLinear();
+
+	CBinaryLabels* pred = NULL;
+	float64_t liblin_accuracy;
+	CContingencyTableEvaluation* eval = new CContingencyTableEvaluation();
+
+	ll->set_bias_enabled(false);
+	ll->set_features(train_feats);
+	ll->set_labels(ground_truth);
+
+	ll->set_liblinear_solver_type(liblinear_solver_type);
+	ll->train();
+	pred = ll->apply_binary(test_feats);
+
+	liblin_accuracy = eval->evaluate(pred, ground_truth);
+
+	EXPECT_NEAR(liblin_accuracy, 1.0, 1e-6);
+
+	SG_UNREF(ll);
+	SG_UNREF(train_feats);
+	SG_UNREF(test_feats);
+	SG_UNREF(ground_truth);
+	SG_UNREF(eval);
+	SG_UNREF(pred);
+}
+
+TEST(LibLinearTest,train_L2R_L2LOSS_SVC_DUAL)
+{
+	LIBLINEAR_SOLVER_TYPE liblinear_solver_type = L2R_L2LOSS_SVC_DUAL;
+
+	CDenseFeatures<float64_t>* train_feats = NULL;
+	CDenseFeatures<float64_t>* test_feats = NULL;
+	CBinaryLabels* ground_truth = NULL;
+
+	generate_data_l2(train_feats, test_feats, ground_truth);
+
+	CLibLinear* ll = new CLibLinear();
+
+	CBinaryLabels* pred = NULL;
+	float64_t liblin_accuracy;
+	CContingencyTableEvaluation* eval = new CContingencyTableEvaluation();
+
+	ll->set_bias_enabled(false);
+	ll->set_features(train_feats);
+	ll->set_labels(ground_truth);
+
+	ll->set_liblinear_solver_type(liblinear_solver_type);
+	ll->train();
+	pred = ll->apply_binary(test_feats);
+	liblin_accuracy = eval->evaluate(pred, ground_truth);
+
+	EXPECT_NEAR(liblin_accuracy, 1.0, 1e-6);
+
+	SG_UNREF(ll);
+	SG_UNREF(train_feats);
+	SG_UNREF(test_feats);
+	SG_UNREF(ground_truth);
+	SG_UNREF(eval);
+	SG_UNREF(pred);
+}
+
+TEST(LibLinearTest,train_L2R_L2LOSS_SVC)
+{
+	LIBLINEAR_SOLVER_TYPE liblinear_solver_type = L2R_L2LOSS_SVC;
+
+	CDenseFeatures<float64_t>* train_feats = NULL;
+	CDenseFeatures<float64_t>* test_feats = NULL;
+	CBinaryLabels* ground_truth = NULL;
+
+	generate_data_l2(train_feats, test_feats, ground_truth);
+
+	CLibLinear* ll = new CLibLinear();
+
+	CBinaryLabels* pred = NULL;
+	float64_t liblin_accuracy;
+	CContingencyTableEvaluation* eval = new CContingencyTableEvaluation();
+
+	ll->set_bias_enabled(false);
+	ll->set_features(train_feats);
+	ll->set_labels(ground_truth);
+
+	ll->set_liblinear_solver_type(liblinear_solver_type);
+	ll->train();
+	pred = ll->apply_binary(test_feats);
+	liblin_accuracy = eval->evaluate(pred, ground_truth);
+
+	EXPECT_NEAR(liblin_accuracy, 1.0, 1e-6);
+
+	SG_UNREF(ll);
+	SG_UNREF(train_feats);
+	SG_UNREF(test_feats);
+	SG_UNREF(ground_truth);
+	SG_UNREF(eval);
+	SG_UNREF(pred);
+}
+
+TEST(LibLinearTest,train_L2R_L1LOSS_SVC_DUAL)
+{
+	LIBLINEAR_SOLVER_TYPE liblinear_solver_type = L2R_L1LOSS_SVC_DUAL;
+
+	CDenseFeatures<float64_t>* train_feats = NULL;
+	CDenseFeatures<float64_t>* test_feats = NULL;
+	CBinaryLabels* ground_truth = NULL;
+
+	generate_data_l2(train_feats, test_feats, ground_truth);
+
+	CLibLinear* ll = new CLibLinear();
+
+	CBinaryLabels* pred = NULL;
+	float64_t liblin_accuracy;
+	CContingencyTableEvaluation* eval = new CContingencyTableEvaluation();
+
+	ll->set_bias_enabled(false);
+	ll->set_features(train_feats);
+	ll->set_labels(ground_truth);
+
+	ll->set_liblinear_solver_type(liblinear_solver_type);
+	ll->train();
+	pred = ll->apply_binary(test_feats);
+	liblin_accuracy = eval->evaluate(pred, ground_truth);
+
+	EXPECT_NEAR(liblin_accuracy, 1.0, 1e-6);
+
+	SG_UNREF(ll);
+	SG_UNREF(train_feats);
+	SG_UNREF(test_feats);
+	SG_UNREF(ground_truth);
+	SG_UNREF(eval);
+	SG_UNREF(pred);
+}
+
+TEST(LibLinearTest,train_L1R_L2LOSS_SVC)
+{
+	LIBLINEAR_SOLVER_TYPE liblinear_solver_type = L1R_L2LOSS_SVC;
+
+	CDenseFeatures<float64_t>* train_feats = NULL;
+	CDenseFeatures<float64_t>* test_feats = NULL;
+	CBinaryLabels* ground_truth = NULL;
+
+	generate_data_l1(train_feats, test_feats, ground_truth);
+
+	CLibLinear* ll = new CLibLinear();
+
+	CBinaryLabels* pred = NULL;
+	float64_t liblin_accuracy;
+	CContingencyTableEvaluation* eval = new CContingencyTableEvaluation();
+
+	ll->set_bias_enabled(false);
+	ll->set_features(train_feats);
+	ll->set_labels(ground_truth);
+
+	ll->set_liblinear_solver_type(liblinear_solver_type);
+	ll->train();
+	pred = ll->apply_binary(test_feats);
+	liblin_accuracy = eval->evaluate(pred, ground_truth);
+
+	EXPECT_NEAR(liblin_accuracy, 1.0, 1e-6);
+
+	SG_UNREF(ll);
+	SG_UNREF(train_feats);
+	SG_UNREF(test_feats);
+	SG_UNREF(ground_truth);
+	SG_UNREF(eval);
+	SG_UNREF(pred);
+}
+
+TEST(LibLinearTest,train_L1R_LR)
+{
+	LIBLINEAR_SOLVER_TYPE liblinear_solver_type = L1R_LR;
+
+	CDenseFeatures<float64_t>* train_feats = NULL;
+	CDenseFeatures<float64_t>* test_feats = NULL;
+	CBinaryLabels* ground_truth = NULL;
+
+	generate_data_l1(train_feats, test_feats, ground_truth);
+
+	CLibLinear* ll = new CLibLinear();
+
+	CBinaryLabels* pred = NULL;
+	float64_t liblin_accuracy;
+	CContingencyTableEvaluation* eval = new CContingencyTableEvaluation();
+
+	ll->set_bias_enabled(false);
+	ll->set_features(train_feats);
+	ll->set_labels(ground_truth);
+
+	ll->set_liblinear_solver_type(liblinear_solver_type);
+	ll->train();
+	pred = ll->apply_binary(test_feats);
+	liblin_accuracy = eval->evaluate(pred, ground_truth);
+
+	EXPECT_NEAR(liblin_accuracy, 1.0, 1e-6);
+
+	SG_UNREF(ll);
+	SG_UNREF(train_feats);
+	SG_UNREF(test_feats);
+	SG_UNREF(ground_truth);
+	SG_UNREF(eval);
+	SG_UNREF(pred);
+}
+
+TEST(LibLinearTest,train_L2R_LR_DUAL)
+{
+	LIBLINEAR_SOLVER_TYPE liblinear_solver_type = L2R_LR_DUAL;
+
+	CDenseFeatures<float64_t>* train_feats = NULL;
+	CDenseFeatures<float64_t>* test_feats = NULL;
+	CBinaryLabels* ground_truth = NULL;
+
+	generate_data_l2(train_feats, test_feats, ground_truth);
+
+	CLibLinear* ll = new CLibLinear();
+
+	CBinaryLabels* pred = NULL;
+	float64_t liblin_accuracy;
+	CContingencyTableEvaluation* eval = new CContingencyTableEvaluation();
+
+	ll->set_bias_enabled(false);
+	ll->set_features(train_feats);
+	ll->set_labels(ground_truth);
+
+	ll->set_liblinear_solver_type(liblinear_solver_type);
+	ll->train();
+	pred = ll->apply_binary(test_feats);
+	liblin_accuracy = eval->evaluate(pred, ground_truth);
+
+	EXPECT_NEAR(liblin_accuracy, 1.0, 1e-6);
+
+	SG_UNREF(ll);
+	SG_UNREF(train_feats);
+	SG_UNREF(test_feats);
+	SG_UNREF(ground_truth);
+	SG_UNREF(eval);
+	SG_UNREF(pred);
+}
+
+TEST(LibLinearTest,train_L2R_LR_BIAS)
 {
 	LIBLINEAR_SOLVER_TYPE liblinear_solver_type = L2R_LR;
 
@@ -125,17 +378,20 @@ TEST(LibLinearTest,train_L2R_LR)
 	ll->set_liblinear_solver_type(liblinear_solver_type);
 	ll->train();
 	pred = ll->apply_binary(test_feats);
+
 	liblin_accuracy = eval->evaluate(pred, ground_truth);
 
 	EXPECT_NEAR(liblin_accuracy, 1.0, 1e-6);
 
 	SG_UNREF(ll);
+	SG_UNREF(train_feats);
 	SG_UNREF(test_feats);
+	SG_UNREF(ground_truth);
 	SG_UNREF(eval);
 	SG_UNREF(pred);
 }
 
-TEST(LibLinearTest,train_L2R_L2LOSS_SVC_DUAL)
+TEST(LibLinearTest,train_L2R_L2LOSS_SVC_DUAL_BIAS)
 {
 	LIBLINEAR_SOLVER_TYPE liblinear_solver_type = L2R_L2LOSS_SVC_DUAL;
 
@@ -163,12 +419,14 @@ TEST(LibLinearTest,train_L2R_L2LOSS_SVC_DUAL)
 	EXPECT_NEAR(liblin_accuracy, 1.0, 1e-6);
 
 	SG_UNREF(ll);
+	SG_UNREF(train_feats);
 	SG_UNREF(test_feats);
+	SG_UNREF(ground_truth);
 	SG_UNREF(eval);
 	SG_UNREF(pred);
 }
 
-TEST(LibLinearTest,train_L2R_L2LOSS_SVC)
+TEST(LibLinearTest,train_L2R_L2LOSS_SVC_BIAS)
 {
 	LIBLINEAR_SOLVER_TYPE liblinear_solver_type = L2R_L2LOSS_SVC;
 
@@ -196,12 +454,14 @@ TEST(LibLinearTest,train_L2R_L2LOSS_SVC)
 	EXPECT_NEAR(liblin_accuracy, 1.0, 1e-6);
 
 	SG_UNREF(ll);
+	SG_UNREF(train_feats);
 	SG_UNREF(test_feats);
+	SG_UNREF(ground_truth);
 	SG_UNREF(eval);
 	SG_UNREF(pred);
 }
 
-TEST(LibLinearTest,train_L2R_L1LOSS_SVC_DUAL)
+TEST(LibLinearTest,train_L2R_L1LOSS_SVC_DUAL_BIAS)
 {
 	LIBLINEAR_SOLVER_TYPE liblinear_solver_type = L2R_L1LOSS_SVC_DUAL;
 
@@ -229,12 +489,14 @@ TEST(LibLinearTest,train_L2R_L1LOSS_SVC_DUAL)
 	EXPECT_NEAR(liblin_accuracy, 1.0, 1e-6);
 
 	SG_UNREF(ll);
+	SG_UNREF(train_feats);
 	SG_UNREF(test_feats);
+	SG_UNREF(ground_truth);
 	SG_UNREF(eval);
 	SG_UNREF(pred);
 }
 
-TEST(LibLinearTest,train_L1R_L2LOSS_SVC)
+TEST(LibLinearTest,train_L1R_L2LOSS_SVC_BIAS)
 {
 	LIBLINEAR_SOLVER_TYPE liblinear_solver_type = L1R_L2LOSS_SVC;
 
@@ -262,12 +524,14 @@ TEST(LibLinearTest,train_L1R_L2LOSS_SVC)
 	EXPECT_NEAR(liblin_accuracy, 1.0, 1e-6);
 
 	SG_UNREF(ll);
+	SG_UNREF(train_feats);
 	SG_UNREF(test_feats);
+	SG_UNREF(ground_truth);
 	SG_UNREF(eval);
 	SG_UNREF(pred);
 }
 
-TEST(LibLinearTest,train_L1R_LR)
+TEST(LibLinearTest,train_L1R_LR_BIAS)
 {
 	LIBLINEAR_SOLVER_TYPE liblinear_solver_type = L1R_LR;
 
@@ -295,12 +559,14 @@ TEST(LibLinearTest,train_L1R_LR)
 	EXPECT_NEAR(liblin_accuracy, 1.0, 1e-6);
 
 	SG_UNREF(ll);
+	SG_UNREF(train_feats);
 	SG_UNREF(test_feats);
+	SG_UNREF(ground_truth);
 	SG_UNREF(eval);
 	SG_UNREF(pred);
 }
 
-TEST(LibLinearTest,train_L2R_LR_DUAL)
+TEST(LibLinearTest,train_L2R_LR_DUAL_BIAS)
 {
 	LIBLINEAR_SOLVER_TYPE liblinear_solver_type = L2R_LR_DUAL;
 
@@ -328,7 +594,9 @@ TEST(LibLinearTest,train_L2R_LR_DUAL)
 	EXPECT_NEAR(liblin_accuracy, 1.0, 1e-6);
 
 	SG_UNREF(ll);
+	SG_UNREF(train_feats);
 	SG_UNREF(test_feats);
+	SG_UNREF(ground_truth);
 	SG_UNREF(eval);
 	SG_UNREF(pred);
 }

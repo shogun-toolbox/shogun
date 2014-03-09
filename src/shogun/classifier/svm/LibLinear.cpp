@@ -121,9 +121,16 @@ bool CLibLinear::train_machine(CFeatures* data)
 		w=SGVector<float64_t>(num_feat);
 
 	liblinear_problem prob;
-	if (use_bias && liblinear_solver_type!=L2R_LR_DUAL)
+	if (use_bias)
 	{
-		prob.n=w.vlen+1;
+		if(liblinear_solver_type!=L2R_LR_DUAL)
+		{
+			prob.n=w.vlen+1;
+		}
+		else
+		{
+			prob.n=w.vlen;
+		}
 		memset(w.vector, 0, sizeof(float64_t)*(w.vlen+1));
 	}
 	else
@@ -1172,10 +1179,10 @@ void CLibLinear::solve_l2r_lr_dual(const liblinear_problem *prob, double eps, do
 	int l = prob->l;
 	int w_size = prob->n;
 	int i, s, iter = 0;
-	double *xTx = new double[l];
+	double *xTx = SG_MALLOC(double, l);
 	int max_iter = 1000;
-	int *index = new int[l];
-	double *alpha = new double[2*l]; // store alpha and C - alpha
+	int *index = SG_MALLOC(int, l);
+	double *alpha = SG_MALLOC(double, 2*l); // store alpha and C - alpha
 	int32_t *y = SG_MALLOC(int32_t, l);
 	int max_inner_iter = 100; // for inner Newton
 	double innereps = 1e-2;
