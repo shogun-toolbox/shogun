@@ -2,7 +2,6 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include <shogun/base/init.h>
-#include <shogun/io/SGIO.h>
 
 using namespace shogun;
 using ::testing::Test;
@@ -67,9 +66,9 @@ int main(int argc, char** argv)
 	}
 
 	init_shogun_with_defaults();
-	//sg_io->set_loglevel(MSG_DEBUG);
 	int ret = RUN_ALL_TESTS();
 	exit_shogun();
 
 	return ret;
 }
+

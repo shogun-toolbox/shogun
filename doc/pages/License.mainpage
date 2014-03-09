@@ -7,8 +7,8 @@
   version 3 or any later version (cf. \ref license_sec).
 
 \section license_sec GNU General Public License
-\verbinclude LICENSE
+\verbinclude LICENSE.md
 
 \section svmlightlicense_sec SVMLight License
-\verbinclude LICENSE.SVMlight
+\include LICENSE_SVMlight.md
 */

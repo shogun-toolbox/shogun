@@ -460,7 +460,7 @@ private:
 	/** Gets an incremental hash of all parameters as well as the parameters of
 	 * CSGObject children of the current object's parameters.
 	 *
-	 * @param current hash
+	 * @param hash the computed hash returned by reference
 	 * @param carry value for Murmur3 incremental hash
 	 * @param total_length total byte length of all hashed parameters so
 	 * far. Byte length of parameters will be added to the total length

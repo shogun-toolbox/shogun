@@ -1015,6 +1015,12 @@ IF(EXISTS ${CMAKE_SOURCE_DIR}/examples)
 	ENDIF()
 ENDIF()
 
+IF(DOXYGEN_FOUND)
+	IF(EXISTS ${CMAKE_SOURCE_DIR}/doc)
+		add_subdirectory(${CMAKE_SOURCE_DIR}/doc)
+	ENDIF()
+ENDIF()
+
 # general cpack settings
 set(CPACK_PACKAGE_NAME "shogun")
 set(CPACK_PACKAGE_VENDOR "shogun")
