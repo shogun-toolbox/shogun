@@ -72,6 +72,10 @@ CMultilabelLabels::init (int32_t num_labels, int16_t num_classes)
 	REQUIRE (num_labels >= 0, "num_labels should be >= 0");
 	REQUIRE (num_classes > 0, "num_classes should be > 0");
 
+	SG_ADD(&m_num_labels, "m_num_labels", "number of labels", MS_NOT_AVAILABLE);
+	SG_ADD(&m_num_classes, "m_num_classes", "number of classes", MS_NOT_AVAILABLE);
+	// SG_ADD((CSGObject**) &m_labels, "m_labels", "The labels", MS_NOT_AVAILABLE);
+
 	m_num_labels = num_labels;
 	m_num_classes = num_classes;
 	m_labels = new SGVector < int16_t >[m_num_labels];
@@ -419,7 +423,7 @@ CMultilabelLabels::load (const char *fname)
 			temp[num_label_classes] = class_i;
 			num_label_classes++;
 		}
-		output_rows[label_j] = 	SGVector < int16_t  > (
+		output_rows[label_j] = SGVector < int16_t > (
 			SGVector <int16_t  >::clone_vector (temp, num_label_classes),
 			num_label_classes);
 		label_j++;

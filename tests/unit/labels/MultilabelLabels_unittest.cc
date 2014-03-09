@@ -35,7 +35,7 @@
 
 using namespace shogun;
 
-TEST(MultilabelLabels, constructor_0)
+TEST(MultilabelLabels, constructor_zero_args)
 {
 	CMultilabelLabels * ml = new CMultilabelLabels();
 	ASSERT_TRUE(ml != NULL);
@@ -47,7 +47,7 @@ TEST(MultilabelLabels, constructor_0)
 }
 
 
-TEST(MultilabelLabels, constructor_1)
+TEST(MultilabelLabels, constructor_one_arg)
 {
 	CMultilabelLabels * ml = new CMultilabelLabels(6);
 	ASSERT_TRUE(ml != NULL);
@@ -60,7 +60,7 @@ TEST(MultilabelLabels, constructor_1)
 }
 
 
-TEST(MultilabelLabels, constructor_2)
+TEST(MultilabelLabels, constructor_two_args)
 {
 	CMultilabelLabels * ml = new CMultilabelLabels(5,6);
 	ASSERT_TRUE(ml != NULL);
@@ -77,19 +77,21 @@ TEST(MultilabelLabels, clone)
 {
 	CMultilabelLabels * ml = new CMultilabelLabels(5,6);
 	ASSERT_TRUE(ml != NULL);
-
-	CMultilabelLabels * mlc = (CMultilabelLabels *)ml->clone();
-	ASSERT_TRUE(mlc != NULL);
-
 	EXPECT_EQ(ml->get_num_labels(), 5);
 	EXPECT_EQ(ml->get_num_classes(), 6);
 
+	CMultilabelLabels * mlc = (CMultilabelLabels *)ml->clone();
 	SG_UNREF(ml);
+
+	ASSERT_TRUE(mlc != NULL);
+	EXPECT_EQ(mlc->get_num_labels(), 5);
+	EXPECT_EQ(mlc->get_num_classes(), 6);
+
 	SG_UNREF(mlc);
 }
 
 
-TEST(MultilabelLabels, to_dense_2)
+TEST(MultilabelLabels, to_dense)
 {
 	SGVector<int16_t> sparse(2);
 	sparse[0] = 2;
