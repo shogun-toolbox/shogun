@@ -34,8 +34,7 @@ import logging
 from contextlib import contextmanager, closing
 from modshogun import (LibSVMFile, SparseRealFeatures, MulticlassLabels,
 		       GaussianKernel, MulticlassLibSVM,
-		       SerializableHdf5File, Time, init_shogun_with_defaults,
-		       exit_shogun)
+		       SerializableHdf5File, Time, exit_shogun)
 
 logging.basicConfig(level=logging.INFO, format='[%(asctime)-15s %(module)s] %(message)s')
 LOGGER = logging.getLogger(__file__)
@@ -74,7 +73,6 @@ def track_execution():
 
 def train_multiclass(dataset, output, epsilon, capacity, width):
 
-	init_shogun_with_defaults()
 	LOGGER.info("SVM Multiclass classifier")
 	LOGGER.info("Epsilon: %s" % epsilon)
 	LOGGER.info("Capacity: %s" % capacity)
@@ -97,7 +95,6 @@ def train_multiclass(dataset, output, epsilon, capacity, width):
 	with closing(writable_file):
 		svm.save_serializable(writable_file)
 	LOGGER.info("Serialized classifier saved in: '%s'" % output)
-	exit_shogun()
 
 
 def main():
