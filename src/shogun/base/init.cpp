@@ -48,8 +48,6 @@ namespace shogun
 			void (*print_error)(FILE* target, const char* str),
 			void (*cancel_computations)(bool &delayed, bool &immediately))
 	{
-		char* value;
-		
 		if (!sg_io)
 			sg_io = new shogun::SGIO();
 		if (!sg_parallel)
@@ -77,16 +75,7 @@ namespace shogun
 		sg_print_error=print_error;
 		sg_cancel_computations=cancel_computations;
 		
-		value = getenv("SHOGUN_LOG_LEVEL");
-		if (value)
-		{
-			if(strncmp(value, "DEBUG", 5) == 0)
-				sg_io->set_loglevel(MSG_DEBUG);
-			else if(strncmp(value, "WARN", 4) == 0)
-				sg_io->set_loglevel(MSG_WARN);
-			else if(strncmp(value, "ERROR", 5) == 0)
-				sg_io->set_loglevel(MSG_ERROR);
-		}
+		init_from_env();
 	}
 
 	void sg_global_print_default(FILE* target, const char* str)
@@ -184,5 +173,22 @@ namespace shogun
 	{
 		SG_REF(sg_rand);
 		return sg_rand;
+	}
+	
+	void init_from_env()
+	{
+		char* env_log_val;
+		SGIO* io = get_global_io();
+		env_log_val = getenv("SHOGUN_LOG_LEVEL");
+		if (env_log_val)
+		{
+			if(strncmp(env_log_val, "DEBUG", 5) == 0)
+				io->set_loglevel(MSG_DEBUG);
+			else if(strncmp(env_log_val, "WARN", 4) == 0)
+				io->set_loglevel(MSG_WARN);
+			else if(strncmp(env_log_val, "ERROR", 5) == 0)
+				io->set_loglevel(MSG_ERROR);
+		}
+		SG_UNREF(io);
 	}
 }
