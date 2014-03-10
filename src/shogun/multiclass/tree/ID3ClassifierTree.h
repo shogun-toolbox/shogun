@@ -1,6 +1,5 @@
 /*
  * Copyright (c) The Shogun Machine Learning Toolbox
- * Written (w) 2013 Monica Dragan
  * Written (w) 2014 Parijat Mazumdar
  * All rights reserved.
  *
@@ -38,8 +37,12 @@
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/labels/MulticlassLabels.h>
 
-namespace shogun{
+namespace shogun
+{
 
+/** @brief class ID3ClassifierTree, implements classifier tree for discrete 
+ * feature values using the ID3 algorithm.
+ */
 class CID3ClassifierTree : public CTreeMachine<id3TreeNodeData>
 {
 public:
@@ -73,8 +76,7 @@ private:
 	 * @param data training data
 	 * @return pointer to the root of the ID3 tree
 	 */
-	node_t* id3train(CFeatures* data, CMulticlassLabels* 
-					class_labels, SGVector<int32_t> values, int level = 0);
+	node_t* id3train(CFeatures* data, CMulticlassLabels* class_labels, SGVector<int32_t> values, int level = 0);
 	
 	/** informational gain attribute for selecting best feature at each node of ID3 Tree
 	 *
@@ -83,16 +85,14 @@ private:
 	 * @param class_labels classes to which corresponding data vectors belong
 	 * @return informational gain of the chosen feature
 	 */	
-	float64_t informational_gain_attribute(int32_t attr_no, CFeatures* data, 
-							CMulticlassLabels* class_labels);	
+	float64_t informational_gain_attribute(int32_t attr_no, CFeatures* data, CMulticlassLabels* class_labels);	
 	
 	/** computes entropy (aka randomness) in data
 	 *
-	 * @param labels lables of parameters chosen
+	 * @param labels labels of parameters chosen
 	 * @return entropy
 	 */		
-	float64_t entropy(CMulticlassLabels* labels, float64_t*
-			feature_values=NULL, float64_t active_value=0);
+	float64_t entropy(CMulticlassLabels* labels);
 	
 };
 } /* namespace shogun */
