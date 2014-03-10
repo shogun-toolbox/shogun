@@ -34,7 +34,7 @@ import logging
 from contextlib import closing
 from modshogun import (LibSVMFile, SparseRealFeatures, MulticlassLabels,
 		       MulticlassLibSVM, SerializableHdf5File,
-		       MulticlassAccuracy, init_shogun_with_defaults, exit_shogun)
+		       MulticlassAccuracy)
 
 logging.basicConfig(level=logging.INFO, format='[%(asctime)-15s %(module)s] %(message)s')
 LOGGER = logging.getLogger(__file__)
@@ -46,6 +46,8 @@ def parse_arguments():
 					help='Path to training dataset in LibSVM format.')
 	parser.add_argument('--testset', required=True, type=str,
 					help='Path to the SVMLight test file')
+	parser.add_argument('--output', required=True, type=str,
+					help='File path to write predicted labels')
 	return parser.parse_args()
 
 
@@ -56,8 +58,7 @@ def get_features_and_labels(input_file):
 	return feats, labels
 
 
-def test_multiclass(classifier, testset):
-	init_shogun_with_defaults()
+def test_multiclass(classifier, testset, output):
 	LOGGER.info("SVM Multiclass evaluation")
 
 	svm = MulticlassLibSVM()
@@ -68,19 +69,15 @@ def test_multiclass(classifier, testset):
 	test_feats, test_labels = get_features_and_labels(LibSVMFile(testset))
 	predicted_labels = svm.apply(test_feats)
 
-	multiclass_measures = MulticlassAccuracy()
-	LOGGER.info("Accuracy = %s" % multiclass_measures.evaluate(
-		    test_labels, predicted_labels))
-	LOGGER.info("Confusion matrix:")
-	res = multiclass_measures.get_confusion_matrix(test_labels, predicted_labels)
-	print res
-
-	exit_shogun()
+	predicted_labels_output = SerializableHdf5File(output, 'w')
+	with closing(predicted_labels_output):
+		predicted_labels.save_serializable(predicted_labels_output)
+	LOGGER.info("Predicted labels saved in: '%s'" % output)
 
 
 def main():
 	args = parse_arguments()
-	test_multiclass(args.classifier, args.testset)
+	test_multiclass(args.classifier, args.testset, args.output)
 
 if __name__ == '__main__':
 	main()
