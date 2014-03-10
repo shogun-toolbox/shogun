@@ -33,10 +33,15 @@ import argparse
 import logging
 from contextlib import contextmanager, closing
 from modshogun import (LibSVMFile, GaussianKernel, MulticlassLibSVM,
-		       SerializableHdf5File)
+		       SerializableHdf5File, LinearKernel)
 from utils import get_features_and_labels, track_execution
 
 LOGGER = logging.getLogger(__file__)
+
+KERNELS = {
+	'linear': lambda feats, width: LinearKernel(feats, feats),
+	'gaussian': lambda feats, width: GaussianKernel(feats, feats, width),
+}
 
 def parse_arguments():
 	parser = argparse.ArgumentParser(description="Train a multiclass SVM stored \
@@ -49,13 +54,17 @@ def parse_arguments():
 					help='Width of the Gaussian Kernel to approximate')
 	parser.add_argument('--epsilon', default=0.01, type=float,
 					help='SVMOcas epsilon parameter')
+	parser.add_argument('--kernel', type=str, default='linear',
+					choices=['linear', 'gaussian'],
+					help='Optionally specify a kernel type. \
+					Only Linear or Gaussian')
 	parser.add_argument('--output', required=True, type=str,
 					help='Destination path for the output serialized \
 					classifier')
 	return parser.parse_args()
 
 
-def main(dataset, output, epsilon, capacity, width):
+def main(dataset, output, epsilon, capacity, width, kernel_type):
 
 	LOGGER.info("SVM Multiclass classifier")
 	LOGGER.info("Epsilon: %s" % epsilon)
@@ -66,7 +75,10 @@ def main(dataset, output, epsilon, capacity, width):
 	feats, labels = get_features_and_labels(LibSVMFile(dataset))
 
 	# Create kernel
-	kernel = GaussianKernel(feats, feats, width)
+	try:
+		kernel = KERNELS[kernel_type](feats, width)
+	except KeyError:
+		LOGGER.error("Kernel %s not available. try Gaussian or Linear" % kernel_type)
 
 	# Initialize and train Multiclass SVM
 	svm = MulticlassLibSVM(capacity, kernel, labels)
@@ -83,4 +95,4 @@ def main(dataset, output, epsilon, capacity, width):
 
 if __name__ == '__main__':
 	args = parse_arguments()
-	main(args.dataset, args.output, args.epsilon, args.capacity, args.width)
+	main(args.dataset, args.output, args.epsilon, args.capacity, args.width, args.kernel)
