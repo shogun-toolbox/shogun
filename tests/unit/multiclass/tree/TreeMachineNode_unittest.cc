@@ -1,6 +1,5 @@
 /*
  * Copyright (c) The Shogun Machine Learning Toolbox
- * Written (w) 2012 Chiyuan Zhang
  * Written (w) 2014 Parijat Mazumdar
  * All rights reserved.
  *
@@ -29,72 +28,50 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
-#ifndef TREEMACHINE_H__
-#define TREEMACHINE_H__
-
-#include <shogun/machine/BaseMulticlassMachine.h>
+#include <gtest/gtest.h>
+#include <shogun/mathematics/Math.h>
+#include <shogun/features/DenseFeatures.h>
 #include <shogun/multiclass/tree/TreeMachineNode.h>
-#include <shogun/multiclass/tree/BinaryTreeMachineNode.h>
+#include <shogun/multiclass/tree/ID3TreeNodeData.h>
+#include <shogun/lib/DynamicObjectArray.h>
 
-namespace shogun
+using namespace std;
+using namespace shogun;
+
+TEST(TreeMachineNode, build_tree)
 {
+	CTreeMachineNode<id3TreeNodeData>* root= 
+			new CTreeMachineNode<id3TreeNodeData>();
 
-/** @brief class TreeMachine, a base class for tree based multiclass classifiers.
- * This class is derived from CBaseMulticlassMachine and stores the root node 
- * (of class type CTreeMachineNode) to the tree structure
- */
-template <class T> class CTreeMachine : public CBaseMulticlassMachine
-{
-public:
-	/** node_t type- Tree node with many possible children */
-	typedef CTreeMachineNode<T> node_t;
+	CTreeMachineNode<id3TreeNodeData>* child1= 
+			new CTreeMachineNode<id3TreeNodeData>();
+	child1->machine(1);
+	child1->data.attribute_id=1;
+	child1->data.transit_if_feature_value=1.0;
+	child1->data.class_label=11.0;
 
-	/** bnode_t type- Tree node with max 2 possible children */
-	typedef CBinaryTreeMachineNode<T> bnode_t;
+	CTreeMachineNode<id3TreeNodeData>* child2= 
+			new CTreeMachineNode<id3TreeNodeData>();
 
-	/** constructor */
-	CTreeMachine() : CBaseMulticlassMachine()
-	{
-		m_root=NULL;
-		SG_ADD((CSGObject**)&m_root,"m_root", "tree structure", MS_NOT_AVAILABLE);
-	}
+	root->add_child(child1);
 
-	/** destructor */
-	virtual ~CTreeMachine()
-	{
-		SG_UNREF(m_root);
-	}
+	CDynamicObjectArray* insert_children=new CDynamicObjectArray();
+	insert_children->push_back(child1);
+	insert_children->push_back(child2);
+	root->set_children(insert_children);
 
-	/** get name
-	 * @return class of the tree 
-	 */
-	virtual const char* get_name() const { return "TreeMachine"; }
+	CDynamicObjectArray* get_children=root->get_children();
+	CTreeMachineNode<id3TreeNodeData>* get_child1=((CTreeMachineNode<id3TreeNodeData>*)
+							 get_children->get_element(0));
 
-	/** set root
-	 * @param root the root node of the tree
-	 */
-	void set_root(CTreeMachineNode<T>* root)
-	{
-		SG_UNREF(m_root);
-		SG_REF(root);
-		m_root=root;
-	}
+	EXPECT_EQ(get_child1->data.attribute_id,1);
+	EXPECT_EQ(get_child1->data.transit_if_feature_value,1.0);
+	EXPECT_EQ(get_child1->data.class_label,11.0);
+	EXPECT_EQ(get_child1->machine(),1);
+	EXPECT_EQ(get_child1->parent()->machine(),-1);
 
-	/** get root
-	 * @return root the root node of the tree
-	 */
-	CTreeMachineNode<T>* get_root()
-	{
-		SG_REF(m_root);
-		return m_root;
-	}
-
-protected:
-	/** tree root */
-	CTreeMachineNode<T>* m_root;
-};
-
-} /* namespace shogun */
-
-#endif /* end of include guard: TREEMACHINE_H__ */
-
+	SG_UNREF(root);
+	SG_UNREF(insert_children);
+	SG_UNREF(get_children);
+	SG_UNREF(get_child1);
+}

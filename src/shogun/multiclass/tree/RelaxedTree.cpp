@@ -72,7 +72,7 @@ CMulticlassLabels* CRelaxedTree::apply_multiclass(CFeatures* data)
 
 float64_t CRelaxedTree::apply_one(int32_t idx)
 {
-	node_t *node = m_root;
+	bnode_t *node = (bnode_t*) m_root;
 	int32_t klass = -1;
 	while (node != NULL)
 	{
@@ -156,12 +156,12 @@ bool CRelaxedTree::train_machine(CFeatures* data)
 	SG_UNREF(m_root);
 	m_root = train_node(conf_mat, classes);
 
-	std::queue<node_t *> node_q;
-	node_q.push(m_root);
+	std::queue<bnode_t *> node_q;
+	node_q.push((bnode_t*) m_root);
 
 	while (node_q.size() != 0)
 	{
-		node_t *node = node_q.front();
+		bnode_t *node = node_q.front();
 
 		// left node
 		SGVector <int32_t> left_classes(m_num_classes);
@@ -178,7 +178,7 @@ bool CRelaxedTree::train_machine(CFeatures* data)
 
 		if (left_classes.vlen >= 2)
 		{
-			node_t *left_node = train_node(conf_mat, left_classes);
+			bnode_t *left_node = train_node(conf_mat, left_classes);
 			node->left(left_node);
 			node_q.push(left_node);
 		}
@@ -197,7 +197,7 @@ bool CRelaxedTree::train_machine(CFeatures* data)
 
 		if (right_classes.vlen >= 2)
 		{
-			node_t *right_node = train_node(conf_mat, right_classes);
+			bnode_t *right_node = train_node(conf_mat, right_classes);
 			node->right(right_node);
 			node_q.push(right_node);
 		}
@@ -210,7 +210,7 @@ bool CRelaxedTree::train_machine(CFeatures* data)
 	return true;
 }
 
-CRelaxedTree::node_t *CRelaxedTree::train_node(const SGMatrix<float64_t> &conf_mat, SGVector<int32_t> classes)
+CRelaxedTree::bnode_t *CRelaxedTree::train_node(const SGMatrix<float64_t> &conf_mat, SGVector<int32_t> classes)
 {
 	SGVector<int32_t> best_mu;
 	CSVM *best_svm = NULL;
@@ -239,7 +239,7 @@ CRelaxedTree::node_t *CRelaxedTree::train_node(const SGMatrix<float64_t> &conf_m
 		}
 	}
 
-	node_t *node = new node_t;
+	bnode_t *node = new bnode_t;
 	SG_REF(node);
 
 	m_machines->push_back(best_svm);

@@ -1,5 +1,5 @@
 /*! \page screenshots 使用快照
-  \section shots_modinterf_sec 静态接口
+  \section shots_statinterf_sec 静态接口
   使用shogun静态接口的快照
 
   \subsection oct_interf Octave接口
@@ -26,11 +26,8 @@
   \section shots_modinterf_sec 模块化接口
   与静态接口不同，模块化接口允许有多个相同类型的对象。因此它们可适用于更加复杂的应用，如多重分类器。目前
   模块化接口只支持python。然而缺省安装情况下，octave模块化接口也会被安装且可以正常工作，尽管octave有一个bug
-  （当存在一个没有注册的全局变量时，octave会挂掉）。因为swig有一个bug，R模块化接口只有如下的安装配置下才能工作
+  （当存在一个没有注册的全局变量时，octave会挂掉）。
 
-\verbatim
-  ./configure --disable-reference-counting
-\endverbatim
  但这样会造成内存泄漏。
   \subsection py_mod_interf python模块化接口
   python的使用例子在目录python-modular/examples下。

@@ -1,11 +1,32 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * Copyright (c) The Shogun Machine Learning Toolbox
+ * Written (w) 2012 Chiyuan Zhang
+ * Written (w) 2014 Parijat Mazumdar
+ * All rights reserved.
  *
- * Written (W) 2012 Chiyuan Zhang
- * Copyright (C) 2012 Chiyuan Zhang
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * The views and conclusions contained in the software and documentation are those
+ * of the authors and should not be interpreted as representing official policies,
+ * either expressed or implied, of the Shogun Development Team.
  */
 
 #ifndef TREEMACHINENODE_H__
@@ -13,45 +34,57 @@
 
 #include <shogun/base/SGObject.h>
 #include <shogun/base/Parameter.h>
+#include <shogun/lib/DynamicObjectArray.h>
 
 namespace shogun
 {
 
-/** The node of the tree structure forming a TreeMachine */
+/** @brief The node of the tree structure forming a TreeMachine
+ * The node contains a pointer to its parent and a vector of
+ * pointers to its children. A node of this class can have
+ * only one parent but any number of children.The node also
+ * contains data which can be of any type and has to be 
+ * specified using template specifier. 
+ */
 template <typename T>
 class CTreeMachineNode
 	: public CSGObject
 {
 public:
-    /** constructor */
-	CTreeMachineNode()
-		:m_left(NULL), m_right(NULL), m_parent(NULL), m_machine(-1)
+	/** constructor */
+	CTreeMachineNode() : CSGObject()
 	{
-		SG_ADD((CSGObject**)&m_left,"m_left", "Left subtree", MS_NOT_AVAILABLE);
-		SG_ADD((CSGObject**)&m_right,"m_right", "Right subtree", MS_NOT_AVAILABLE);
-		SG_ADD((CSGObject**)&m_parent,"m_parent", "Parent node", MS_NOT_AVAILABLE);
-		SG_ADD(&m_machine,"m_machine", "Index of associated machine", MS_NOT_AVAILABLE);
+		init();
 	}
 
-
-    /** destructor */
+	/** destructor */
 	virtual ~CTreeMachineNode()
 	{
-		SG_UNREF(m_left);
-		SG_UNREF(m_right);
+		for(int32_t i=0;i<m_children->get_num_elements();i++)
+		{
+			CTreeMachineNode* child=(CTreeMachineNode*) m_children->get_element(i);
+			child->parent(NULL);
+			SG_UNREF(child);
+		}
+		SG_UNREF(m_children);
 	}
 
-    /** get name */
-    virtual const char* get_name() const { return "TreeMachineNode"; }
+	/** get name
+	 * @return class of the node 
+	 */
+	virtual const char* get_name() const { return "TreeMachineNode"; }
 
 	/** set machine index
 	 * @param idx the machine index
 	 */
 	void machine(int32_t idx)
 	{
-		m_machine = idx;
+		m_machine=idx;
 	}
-	/** get machine */
+
+	/** get machine
+	 * @return machine index 
+	 */
 	int32_t machine()
 	{
 		return m_machine;
@@ -60,53 +93,54 @@ public:
 	/** set parent node
 	 * @param par parent node
 	 */
-	void parent(CTreeMachineNode *par)
+	void parent(CTreeMachineNode* par)
 	{
-		m_parent = par;
+		m_parent=par;
 	}
-	/** get parent node */
-	CTreeMachineNode *parent()
+
+	/** get parent node
+	 * @return pointer to parent node 
+	 */
+	CTreeMachineNode* parent()
 	{
 		return m_parent;
 	}
 
-	/** set left subtree
-	 * @param l left subtree
+	/** set children
+	 * @param children dynamic array of pointers to children
 	 */
-	void left(CTreeMachineNode *l)
+	virtual void set_children(CDynamicObjectArray* children)
 	{
-		SG_REF(l);
-		SG_UNREF(m_left);
-		m_left = l;
-		m_left->parent(this);
-	}
-	/** get left subtree */
-	CTreeMachineNode *left()
-	{
-		return m_left;
+		m_children->reset_array();
+		for (int32_t i=0; i<children->get_num_elements(); i++)
+		{
+			CTreeMachineNode* child=(CTreeMachineNode*) children->get_element(i);
+			add_child(child);
+			SG_UNREF(child);
+		}
 	}
 
-	/** set right subtree
-	 * @param r right subtree
+	/** add child
+	 * @param child pointer to child node
 	 */
-	void right(CTreeMachineNode *r)
+	virtual void add_child(CTreeMachineNode* child)
 	{
-		SG_REF(r);
-		SG_UNREF(m_right);
-		m_right = r;
-		m_right->parent(this);
-	}
-	/** get right subtree */
-	CTreeMachineNode *right()
-	{
-		return m_right;
+		m_children->push_back(child);
+		child->parent(this);
 	}
 
-	/** extra data carried by the tree node */
-	T data;
+	/** get children
+	 * @return dynamic array of pointers to children
+	 */
+	virtual CDynamicObjectArray* get_children()
+	{
+		SG_REF(m_children);
+		return m_children;
+	}
 
 	/** print function */
 	typedef void (*data_print_func_t) (const T&);
+
 	/** debug print the tree structure
 	 * @param data_print_func the function to print the data payload
 	 */
@@ -115,26 +149,61 @@ public:
 		debug_print_impl(data_print_func, this, 0);
 	}
 
-private:
-	CTreeMachineNode *m_left;    ///< left subtree
-	CTreeMachineNode *m_right;   ///< right subtree
-	CTreeMachineNode *m_parent;  ///< parent node
-	int32_t           m_machine; ///< machine index associated with this node
-
-    /** implementation of printing the tree for debugging purpose */
-	static void debug_print_impl(data_print_func_t data_print_func, CTreeMachineNode<T> *node, int32_t depth)
+protected:
+	/** implementation of printing the tree for debugging purpose
+	 * @param data_print_func function for printing data
+	 * @param node node data to print
+	 * @param depth depth of the node in the tree
+	 */
+	static void debug_print_impl(data_print_func_t data_print_func, 
+				CTreeMachineNode<T>* node, int32_t depth)
 	{
-		for (int32_t i=0; i < depth; ++i)
-			SG_SPRINT("  ")
+		for (int32_t i=0;i<depth;++i)
+			SG_SPRINT("  ");
+
 		data_print_func(node->data);
-		if (node->left())
-			debug_print_impl(data_print_func, node->left(), depth+1);
-		if (node->right())
-			debug_print_impl(data_print_func, node->right(), depth+1);
+
+		CDynamicObjectArray* children_vector=node->get_children();
+		for (int32_t j=0;j<children_vector->get_num_elements();j++)
+		{
+			CTreeMachineNode<T>* child=(CTreeMachineNode<T>*) 
+						children_vector->get_element(j);
+			debug_print_impl(data_print_func,child,depth+1);
+			SG_UNREF(child);
+		}
+
+		SG_UNREF(children_vector);
 	}
+
+private:
+	/* initialize parameters in constructor */
+	void init()
+	{
+		m_parent=NULL;
+		m_machine=-1;
+		m_children=new CDynamicObjectArray();
+		SG_REF(m_children);
+		SG_ADD((CSGObject**)&m_parent,"m_parent", "Parent node", MS_NOT_AVAILABLE);
+		SG_ADD(&m_machine,"m_machine", "Index of associated machine", MS_NOT_AVAILABLE);
+	}
+
+public:
+	/** extra data carried by the tree node */
+	T data;
+
+protected:
+	/* parent node */
+	CTreeMachineNode* m_parent;
+
+	/* machine index */
+	int32_t m_machine;
+
+	/* Dynamic array of pointers to children */ 
+	CDynamicObjectArray* m_children;
+
 };
 
-} /* shogun */
+} /* namespace shogun */
 
 #endif /* end of include guard: TREEMACHINENODE_H__ */
 

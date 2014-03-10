@@ -31,7 +31,7 @@ PROJECT_NAME           = SHOGUN
 # This could be handy for archiving the generated documentation or
 # if some version control system is used.
 
-PROJECT_NUMBER         = v2.1.0
+PROJECT_NUMBER         = @VERSION@
 
 # The OUTPUT_DIRECTORY tag is used to specify the (relative or absolute)
 # base path where the generated documentation will be put.
@@ -512,7 +512,7 @@ FILE_VERSION_FILTER    =
 # file name after the option, if omitted DoxygenLayout.xml will be used as the name
 # of the layout file.
 
-LAYOUT_FILE            = DoxygenLayout.xml
+LAYOUT_FILE            = @DOXYGEN_LAYOUT@
 
 #---------------------------------------------------------------------------
 # configuration options related to warning and progress messages
@@ -574,8 +574,11 @@ WARN_LOGFILE           =
 # directories like "/usr/src/myproject". Separate the files or directories
 # with spaces.
 
-INPUT                  = ../src/shogun/ \
-                         ./pages/
+INPUT                  = @LIBSHOGUN_SRC_DIR@ @DOXYGEN_PAGES@ \
+						 @DOXYGEN_GENERATED_PAGES@ \
+						 @MARKDOWN_DOCS@/INSTALL.md \
+						 @MARKDOWN_DOCS@/QUICKSTART.md \
+						 @MARKDOWN_DOCS@/README_developer.md
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding, which is
@@ -634,9 +637,9 @@ EXCLUDE_SYMBOLS        =
 # directories that contain example code fragments that are included (see
 # the \include command).
 
-EXAMPLE_PATH           = ../src \
-                         ./pages \
-                         ../examples/documented
+EXAMPLE_PATH           = @LIBSHOGUN_SRC_DIR@ \
+						 @DOXYGEN_PAGES@ @DOXYGEN_GENERATED_PAGES@ \
+						 @DOCUMENTED_EXAMPLES@ @MARKDOWN_DOCS@
 
 # If the value of the EXAMPLE_PATH tag contains directories, you can use the
 # EXAMPLE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp
@@ -654,8 +657,7 @@ EXAMPLE_PATTERNS       = *.cpp \
                          *.rb \
 						 *.generated \
                          LICENSE* \
-                         README* \
-						 INSTALL*
+                         *_soname.md
 
 # If the EXAMPLE_RECURSIVE tag is set to YES then subdirectories will be
 # searched for input files to be used with the \include or \dontinclude
@@ -668,7 +670,7 @@ EXAMPLE_RECURSIVE      = YES
 # directories that contain image that are included in the documentation (see
 # the \image command).
 
-IMAGE_PATH             = .
+IMAGE_PATH             = @DOXYGEN_IMAGES@
 
 # The INPUT_FILTER tag can be used to specify a program that doxygen should
 # invoke to filter for each input file. Doxygen will invoke the filter program
@@ -790,7 +792,7 @@ GENERATE_HTML          = YES
 # If a relative path is entered the value of OUTPUT_DIRECTORY will be
 # put in front of it. If left blank `html' will be used as the default path.
 
-HTML_OUTPUT            = html_cn
+HTML_OUTPUT            = @DOXYGEN_HTML_OUTPUT_DIR@
 
 # The HTML_FILE_EXTENSION tag can be used to specify the file extension for
 # each generated HTML page (for example: .htm,.php,.asp). If it is left blank
@@ -808,7 +810,7 @@ HTML_HEADER            =
 # each generated HTML page. If it is left blank doxygen will generate a
 # standard footer.
 
-HTML_FOOTER            = pages/shogun_footer.html
+HTML_FOOTER            = @DOXYGEN_PAGES@/shogun_footer.html
 
 # The HTML_STYLESHEET tag can be used to specify a user-defined cascading
 # style sheet that is used by each HTML page. It can be used to
