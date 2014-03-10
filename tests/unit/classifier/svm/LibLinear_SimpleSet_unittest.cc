@@ -269,8 +269,8 @@ TEST(LibLinearSimSetTest,train_L2R_L1LOSS_SVC_DUAL)
 	LIBLINEAR_SOLVER_TYPE liblinear_solver_type = L2R_L1LOSS_SVC_DUAL;
 
 	SGVector<float64_t> t_w(2);
-	t_w[0] = -1;
-	t_w[1] = 2.775557561562891e-17 ;
+	t_w[0] = -0.5;
+	t_w[1] = -0.1 ;
 
 	CDenseFeatures<float64_t>* train_feats = NULL;
 	CDenseFeatures<float64_t>* test_feats = NULL;
@@ -285,6 +285,7 @@ TEST(LibLinearSimSetTest,train_L2R_L1LOSS_SVC_DUAL)
 	CContingencyTableEvaluation* eval = new CContingencyTableEvaluation();
 
 	ll->set_bias_enabled(false);
+	ll->set_C(0.1,0.1);
 	ll->set_features(train_feats);
 	ll->set_labels(ground_truth);
 
@@ -297,7 +298,7 @@ TEST(LibLinearSimSetTest,train_L2R_L1LOSS_SVC_DUAL)
 	for(int i=0;i<t_w.vlen;i++)
 		EXPECT_NEAR(ll->get_w()[i], t_w[i], 1e-5);
 
-	EXPECT_NEAR(liblin_accuracy, 0.9, 1e-5);
+	EXPECT_NEAR(liblin_accuracy, 1, 1e-5);
 
 	SG_UNREF(ll);
 	SG_UNREF(train_feats);
