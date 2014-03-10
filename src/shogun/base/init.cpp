@@ -177,7 +177,7 @@ namespace shogun
 	
 	void init_from_env()
 	{
-		char* env_log_val;
+		char* env_log_val = NULL;
 		SGIO* io = get_global_io();
 		env_log_val = getenv("SHOGUN_LOG_LEVEL");
 		if (env_log_val)
