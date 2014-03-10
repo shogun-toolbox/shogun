@@ -32,11 +32,10 @@
 import argparse
 import logging
 from contextlib import contextmanager, closing
-from modshogun import (LibSVMFile, SparseRealFeatures, MulticlassLabels,
-		       GaussianKernel, MulticlassLibSVM,
-		       SerializableHdf5File, Time, exit_shogun)
+from modshogun import (LibSVMFile, GaussianKernel, MulticlassLibSVM,
+		       SerializableHdf5File)
+from utils import get_features_and_labels, track_execution
 
-logging.basicConfig(level=logging.INFO, format='[%(asctime)-15s %(module)s] %(message)s')
 LOGGER = logging.getLogger(__file__)
 
 def parse_arguments():
@@ -55,23 +54,8 @@ def parse_arguments():
 					classifier')
 	return parser.parse_args()
 
-def get_features_and_labels(input_file):
-	feats = SparseRealFeatures()
-	label_array = feats.load_with_labels(input_file)
-	labels = MulticlassLabels(label_array)
-	return feats, labels
 
-
-@contextmanager
-def track_execution():
-	LOGGER.info('Starting training.')
-	timer = Time()
-	yield
-	timer.stop()
-	LOGGER.info('Training completed, took {0:.2f}s.'.format(timer.time_diff_sec()))
-
-
-def train_multiclass(dataset, output, epsilon, capacity, width):
+def main(dataset, output, epsilon, capacity, width):
 
 	LOGGER.info("SVM Multiclass classifier")
 	LOGGER.info("Epsilon: %s" % epsilon)
@@ -97,9 +81,6 @@ def train_multiclass(dataset, output, epsilon, capacity, width):
 	LOGGER.info("Serialized classifier saved in: '%s'" % output)
 
 
-def main():
-	args = parse_arguments()
-	train_multiclass(args.dataset, args.output, args.epsilon, args.capacity, args.width)
-
 if __name__ == '__main__':
-	main()
+	args = parse_arguments()
+	main(args.dataset, args.output, args.epsilon, args.capacity, args.width)

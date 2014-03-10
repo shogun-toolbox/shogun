@@ -32,10 +32,10 @@
 import argparse
 import logging
 from contextlib import contextmanager, closing
-from modshogun import (LibSVMFile, SparseRealFeatures, MulticlassLabels,
+from modshogun import (LibSVMFile, MulticlassLabels,
 		       SerializableHdf5File, MulticlassAccuracy)
+from utils import get_features_and_labels
 
-logging.basicConfig(level=logging.INFO, format='[%(asctime)-15s %(module)s] %(message)s')
 LOGGER = logging.getLogger(__file__)
 
 def parse_arguments():
@@ -47,23 +47,8 @@ def parse_arguments():
 					help='Path to serialized predicted labels')
 	return parser.parse_args()
 
-def get_features_and_labels(input_file):
-	feats = SparseRealFeatures()
-	label_array = feats.load_with_labels(input_file)
-	labels = MulticlassLabels(label_array)
-	return feats, labels
 
-
-@contextmanager
-def track_execution():
-	LOGGER.info('Starting training.')
-	timer = Time()
-	yield
-	timer.stop()
-	LOGGER.info('Training completed, took {0:.2f}s.'.format(timer.time_diff_sec()))
-
-
-def evaluate_multiclass(actual, predicted):
+def main(actual, predicted):
 	LOGGER.info("SVM Multiclass evaluator")
 
 	# Load SVMLight dataset
@@ -78,15 +63,13 @@ def evaluate_multiclass(actual, predicted):
         multiclass_measures = MulticlassAccuracy()
         LOGGER.info("Accuracy = %s" % multiclass_measures.evaluate(
                     labels, predicted_labels))
+
         #LOGGER.info("Confusion matrix:")
         #res = multiclass_measures.get_confusion_matrix(labels, predicted_labels)
         #print res
 
 
-def main():
-	args = parse_arguments()
-	evaluate_multiclass(args.actual, args.predicted)
-
 if __name__ == '__main__':
-	main()
+	args = parse_arguments()
+	main(args.actual, args.predicted)
 

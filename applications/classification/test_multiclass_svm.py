@@ -35,8 +35,8 @@ from contextlib import closing
 from modshogun import (LibSVMFile, SparseRealFeatures, MulticlassLabels,
 		       MulticlassLibSVM, SerializableHdf5File,
 		       MulticlassAccuracy)
+from utils import get_features_and_labels
 
-logging.basicConfig(level=logging.INFO, format='[%(asctime)-15s %(module)s] %(message)s')
 LOGGER = logging.getLogger(__file__)
 
 def parse_arguments():
@@ -51,14 +51,7 @@ def parse_arguments():
 	return parser.parse_args()
 
 
-def get_features_and_labels(input_file):
-	feats = SparseRealFeatures()
-	label_array = feats.load_with_labels(input_file)
-	labels = MulticlassLabels(label_array)
-	return feats, labels
-
-
-def test_multiclass(classifier, testset, output):
+def main(classifier, testset, output):
 	LOGGER.info("SVM Multiclass evaluation")
 
 	svm = MulticlassLibSVM()
@@ -75,10 +68,7 @@ def test_multiclass(classifier, testset, output):
 	LOGGER.info("Predicted labels saved in: '%s'" % output)
 
 
-def main():
-	args = parse_arguments()
-	test_multiclass(args.classifier, args.testset, args.output)
-
 if __name__ == '__main__':
-	main()
+	args = parse_arguments()
+	main(args.classifier, args.testset, args.output)
 
