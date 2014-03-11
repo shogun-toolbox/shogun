@@ -106,6 +106,10 @@ void set_global_rand(CRandom* rand);
  */
 CRandom* get_global_rand();
 
+/** Checks environment variables and modifies global objects
+ */
+void init_from_env();
+
 /// function called to print normal messages
 extern void (*sg_print_message)(FILE* target, const char* str);
 
