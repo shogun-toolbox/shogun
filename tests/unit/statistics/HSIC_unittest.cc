@@ -26,13 +26,9 @@ void create_fixed_data_kernel_small(CFeatures*& features_p,
 	for (index_t i=0; i<2*d*m; ++i)
 		p.matrix[i]=i;
 
-//	p.display_matrix("p");
-
 	SGMatrix<float64_t> q(d,2*m);
 	for (index_t i=0; i<2*d*m; ++i)
 		q.matrix[i]=i+10;
-
-//	q.display_matrix("q");
 
 	features_p=new CDenseFeatures<float64_t>(p);
 	features_q=new CDenseFeatures<float64_t>(q);
@@ -57,13 +53,9 @@ void create_fixed_data_kernel_big(CFeatures*& features_p,
 	for (index_t i=0; i<d*m; ++i)
 		p.matrix[i]=(i+8)%3;
 
-//	p.display_matrix("p");
-
 	SGMatrix<float64_t> q(d,m);
 	for (index_t i=0; i<d*m; ++i)
 		q.matrix[i]=((i+10)*(i%4+2))%4;
-
-//	q.display_matrix("q");
 
 	features_p=new CDenseFeatures<float64_t>(p);
 	features_q=new CDenseFeatures<float64_t>(q);
@@ -80,7 +72,7 @@ void create_fixed_data_kernel_big(CFeatures*& features_p,
 
 /** tests the hsic statistic for a single fixed data case and ensures
  * equality with sma implementation */
-TEST(HSICTEST, hsic_fixed)
+TEST(HSIC, hsic_fixed)
 {
 	CFeatures* features_p=NULL;
 	CFeatures* features_q=NULL;
@@ -94,13 +86,13 @@ TEST(HSICTEST, hsic_fixed)
 
 	/* assert matlab result, note that compute statistic computes m*hsic */
 	float64_t difference=hsic->compute_statistic();
-	//SG_SPRINT("hsic fixed: %f\n", difference);
+
 	EXPECT_NEAR(difference, m*0.164761446385339, 1e-15);
 
 	SG_UNREF(hsic);
 }
 
-TEST(HSICTEST, hsic_gamma)
+TEST(HSIC, hsic_gamma)
 {
 	CFeatures* features_p=NULL;
 	CFeatures* features_q=NULL;
@@ -112,13 +104,13 @@ TEST(HSICTEST, hsic_gamma)
 
 	hsic->set_null_approximation_method(HSIC_GAMMA);
 	float64_t p=hsic->compute_p_value(0.05);
-	//SG_SPRINT("p-value: %f\n", p);
+
 	EXPECT_NEAR(p, 0.172182287884256, 1e-14);
 
 	SG_UNREF(hsic);
 }
 
-TEST(HSICTEST, hsic_sample_null)
+TEST(HSIC, hsic_sample_null)
 {
 	CFeatures* features_p=NULL;
 	CFeatures* features_q=NULL;
@@ -130,22 +122,18 @@ TEST(HSICTEST, hsic_sample_null)
 
 	/* do sampling null */
 	hsic->set_null_approximation_method(PERMUTATION);
-	float64_t p=hsic->compute_p_value(0.05);
-	//SG_SPRINT("p-value: %f\n", p);
-	//EXPECT_NEAR(p, 0.576000, 1e-14);
+	hsic->compute_p_value(0.05);
 
 	/* ensure that sampling null of hsic leads to same results as using
 	 * CKernelIndependenceTest */
 	CMath::init_random(1);
 	float64_t mean1=CStatistics::mean(hsic->sample_null());
 	float64_t var1=CStatistics::variance(hsic->sample_null());
-	//SG_SPRINT("mean1=%f, var1=%f\n", mean1, var1);
 
 	CMath::init_random(1);
 	float64_t mean2=CStatistics::mean(
 			hsic->CKernelIndependenceTest::sample_null());
 	float64_t var2=CStatistics::variance(hsic->sample_null());
-	//SG_SPRINT("mean2=%f, var2=%f\n", mean2, var2);
 
 	/* assert than results are the same from bot sampling null impl. */
 	EXPECT_NEAR(mean1, mean2, 1e-7);
