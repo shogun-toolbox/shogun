@@ -54,7 +54,7 @@ TEST(ID3ClassifierTree, classify_simple)
 {
 /* Example from  http://www.cise.ufl.edu/~ddd/cap6635/Fall-97/Short-papers/2.htm */
 
-	SGMatrix<float64_t> data(4,14);
+	SGMatrix<float64_t> data(4,15);
 
 	//vector = [Outlook Temperature Humidity Wind]
 	data(0,0)=sunny;
@@ -127,10 +127,15 @@ TEST(ID3ClassifierTree, classify_simple)
 	data(2,13)=high;
 	data(3,13)=strong;
 
+	data(0,14)=overcast;
+	data(1,14)=mild;
+	data(2,14)=high;
+	data(3,14)=strong;
+
 	CDenseFeatures<float64_t>* feats=new CDenseFeatures<float64_t>(data);
 
 	// yes 1. no 0.
-	SGVector<float64_t> lab(14);
+	SGVector<float64_t> lab(15);
 	lab[0]=0.0;
 	lab[1]=0.0;
 	lab[2]=1.0;
@@ -145,6 +150,7 @@ TEST(ID3ClassifierTree, classify_simple)
 	lab[11]=1.0;
 	lab[12]=1.0;
 	lab[13]=0.0;
+	lab[14]=0.0;
 
 	CMulticlassLabels* labels=new CMulticlassLabels(lab);
 

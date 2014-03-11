@@ -47,9 +47,9 @@ CID3ClassifierTree::~CID3ClassifierTree()
 
 CMulticlassLabels* CID3ClassifierTree::apply_multiclass(CFeatures* data)
 {
-	REQUIRE(data, "Data required for classification in apply_multiclass")
+	REQUIRE(data, "Data required for classification in apply_multiclass\n")
 
-	CDenseFeatures<float64_t>* feats = (CDenseFeatures<float64_t>*) data;
+	CDenseFeatures<float64_t>* feats = dynamic_cast<CDenseFeatures<float64_t>*>(data);
 	int32_t num_vecs = feats->get_num_vectors();
 	SGVector<float64_t> labels = SGVector<float64_t>(num_vecs);
 
@@ -64,7 +64,7 @@ CMulticlassLabels* CID3ClassifierTree::apply_multiclass(CFeatures* data)
 			int32_t flag = 0;
 			for (int32_t j=0; j<children->get_num_elements(); j++)
 			{
-				node_t* child = (node_t*) children->get_element(j);
+				node_t* child = dynamic_cast<node_t*>(children->get_element(j));
 				if (child->data.transit_if_feature_value 
 						== sample[node->data.attribute_id])
 				{
@@ -98,14 +98,14 @@ CMulticlassLabels* CID3ClassifierTree::apply_multiclass(CFeatures* data)
 
 bool CID3ClassifierTree::train_machine(CFeatures* data)
 {
-	REQUIRE(data,"Data required for training")
-	REQUIRE(data->get_feature_class()==C_DENSE, "Dense data required for training")
+	REQUIRE(data,"Data required for training\n")
+	REQUIRE(data->get_feature_class()==C_DENSE, "Dense data required for training\n")
 
-	int32_t num_features = ((CDenseFeatures<float64_t>*) data)->get_num_features();
+	int32_t num_features = (dynamic_cast<CDenseFeatures<float64_t>*>(data))->get_num_features();
 	SGVector<int32_t> feature_ids = SGVector<int32_t>(num_features);
 	feature_ids.range_fill();
 
-	set_root(id3train(data, (CMulticlassLabels*) m_labels, feature_ids, 0));
+	set_root(id3train(data, dynamic_cast<CMulticlassLabels*>(m_labels), feature_ids, 0));
 
 	return true;
 }
@@ -114,18 +114,18 @@ CTreeMachineNode<id3TreeNodeData>* CID3ClassifierTree::id3train(CFeatures* data,
 	CMulticlassLabels* class_labels, SGVector<int32_t> feature_id_vector, int32_t level)
 {
 	node_t* node = new node_t();
-	CDenseFeatures<float64_t>* feats = (CDenseFeatures<float64_t>*) data;
+	CDenseFeatures<float64_t>* feats = dynamic_cast<CDenseFeatures<float64_t>*>(data);
 	int32_t num_vecs = feats->get_num_vectors();
 
 	// if all samples belong to the same class
-	if(class_labels->get_unique_labels().size() == 1)
+	if (class_labels->get_unique_labels().size() == 1)
 	{
 		node->data.class_label = class_labels->get_unique_labels()[0];
 		return node;
 	}
 
 	// if no feature is left
-	if(feature_id_vector.vlen == 0)
+	if (feature_id_vector.vlen == 0)
 	{
 		// decide label - label occuring max times
 		SGVector<float64_t> labels = class_labels->get_labels();
@@ -134,9 +134,8 @@ CTreeMachineNode<id3TreeNodeData>* CID3ClassifierTree::id3train(CFeatures* data,
 		int32_t most_label = labels[0];
 		int32_t most_num = 1;
 		int32_t count = 1;
-		int32_t i = 1;
 
-		while (i<labels.vlen)
+		for (int32_t i=1; i<labels.vlen; i++)
 		{
 			while ((labels[i] == labels[i-1]) && (i<labels.vlen))
 			{
@@ -151,7 +150,6 @@ CTreeMachineNode<id3TreeNodeData>* CID3ClassifierTree::id3train(CFeatures* data,
 			}
 
 			count = 1;
-			i++;
 		}
 
 		node->data.class_label = most_label;
@@ -161,11 +159,11 @@ CTreeMachineNode<id3TreeNodeData>* CID3ClassifierTree::id3train(CFeatures* data,
 	// else get the feature with the highest informational gain
 	float64_t max = 0;
 	int32_t best_feature_index = -1;
-	for(int32_t i=0; i<feats->get_num_features(); i++)
+	for (int32_t i=0; i<feats->get_num_features(); i++)
 	{
 		float64_t gain = informational_gain_attribute(i,feats,class_labels);
 
-		if(gain > max)
+		if (gain >= max)
 		{
 			max = gain;
 			best_feature_index = i;
@@ -174,21 +172,21 @@ CTreeMachineNode<id3TreeNodeData>* CID3ClassifierTree::id3train(CFeatures* data,
 
 	//get feature values for the best feature chosen
 	SGVector<float64_t> best_feature_values = SGVector<float64_t>(num_vecs);
-	for(int32_t i=0; i<num_vecs; i++)
+	for (int32_t i=0; i<num_vecs; i++)
 		best_feature_values[i] = (feats->get_feature_vector(i))[best_feature_index];
 
 	CMulticlassLabels* best_feature_labels = new CMulticlassLabels(best_feature_values);
 	SGVector<float64_t> best_labels_unique = best_feature_labels->get_unique_labels();
 
-	for(int32_t i=0; i<best_labels_unique.vlen; i++)
+	for (int32_t i=0; i<best_labels_unique.vlen; i++)
 	{
 		//compute the number of vectors with active attribute value
 		int32_t num_cols = 0;
 		float64_t active_feature_value = best_labels_unique[i];
 
-		for(int32_t j=0; j<num_vecs; j++)
+		for (int32_t j=0; j<num_vecs; j++)
 		{
-			if( active_feature_value == best_feature_values[j])
+			if ( active_feature_value == best_feature_values[j])
 				num_cols++;
 		}
 
@@ -197,15 +195,15 @@ CTreeMachineNode<id3TreeNodeData>* CID3ClassifierTree::id3train(CFeatures* data,
 
 		int32_t cnt = 0;
 		//choose the samples that have the active feature value
-		for(int32_t j=0; j<num_vecs; j++)
+		for (int32_t j=0; j<num_vecs; j++)
 		{
 			SGVector<float64_t> sample = feats->get_feature_vector(j);
-			if(active_feature_value == sample[best_feature_index])
+			if (active_feature_value == sample[best_feature_index])
 			{
 				int32_t idx = -1;
-				for(int32_t k=0; k<sample.size(); k++)
+				for (int32_t k=0; k<sample.size(); k++)
 				{
-					if(k != best_feature_index)			
+					if (k != best_feature_index)			
 						mat(++idx, cnt) = sample[k];
 				}
 
@@ -217,9 +215,9 @@ CTreeMachineNode<id3TreeNodeData>* CID3ClassifierTree::id3train(CFeatures* data,
 		//remove the best_attribute from the remaining attributes index vector
 		SGVector<int32_t> new_feature_id_vector = SGVector<int32_t>(feature_id_vector.vlen-1);		
 		cnt = -1;
-		for(int32_t j=0;j<feature_id_vector.vlen;j++)
+		for (int32_t j=0;j<feature_id_vector.vlen;j++)
 		{
-			if(j!=best_feature_index)
+			if (j!=best_feature_index)
 				new_feature_id_vector[++cnt] = feature_id_vector[j];		
 		}
 
@@ -243,40 +241,40 @@ CTreeMachineNode<id3TreeNodeData>* CID3ClassifierTree::id3train(CFeatures* data,
 float64_t CID3ClassifierTree::informational_gain_attribute(int32_t attr_no, CFeatures* data, 
 								CMulticlassLabels* class_labels)
 {
-	REQUIRE(data,"Data required for information gain calculation")
+	REQUIRE(data,"Data required for information gain calculation\n")
 	REQUIRE(data->get_feature_class()==C_DENSE,
-		"Dense data required for information gain calculation")
+		"Dense data required for information gain calculation\n")
 
 	float64_t gain = 0;
-	CDenseFeatures<float64_t>* feats = (CDenseFeatures<float64_t>*) data;
+	CDenseFeatures<float64_t>* feats = dynamic_cast<CDenseFeatures<float64_t>*>(data);
 	int32_t num_vecs = feats->get_num_vectors();
 
 	//get attribute values for attribute
 	SGVector<float64_t> attribute_values = SGVector<float64_t>(num_vecs);
 
-	for(int32_t i=0; i<num_vecs; i++)
+	for (int32_t i=0; i<num_vecs; i++)
 		attribute_values[i] = (feats->get_feature_vector(i))[attr_no];
 
 	CMulticlassLabels* attribute_labels = new CMulticlassLabels(attribute_values);
 	SGVector<float64_t> attr_val_unique = attribute_labels->get_unique_labels();
 
-	for(int32_t i=0; i<attr_val_unique.vlen; i++)
+	for (int32_t i=0; i<attr_val_unique.vlen; i++)
 	{
 		//calculate class entropy for the specific attribute_value
 		int32_t attr_count=0;
 
-		for(int32_t j=0; j<num_vecs; j++)
+		for (int32_t j=0; j<num_vecs; j++)
 		{
-			if(attribute_values[j] == attr_val_unique[i])
+			if (attribute_values[j] == attr_val_unique[i])
 				attr_count++;
 		}
 
 		SGVector<float64_t> sub_class = SGVector<float64_t>(attr_count);
 		int32_t count = 0;
 
-		for(int32_t j=0; j<num_vecs; j++)
+		for (int32_t j=0; j<num_vecs; j++)
 		{
-			if(attribute_values[j] == attr_val_unique[i])
+			if (attribute_values[j] == attr_val_unique[i])
 				sub_class[count++] = class_labels->get_label(j);
 		}
 		
@@ -300,19 +298,19 @@ float64_t CID3ClassifierTree::entropy(CMulticlassLabels* labels)
 	SGVector<float64_t> log_ratios = SGVector<float64_t>
 			(labels->get_unique_labels().size());
 
-	for(int32_t i=0;i<labels->get_unique_labels().size();i++)
+	for (int32_t i=0;i<labels->get_unique_labels().size();i++)
 	{
 		int32_t count = 0;
 
-		for(int32_t j=0;j<labels->get_num_labels();j++)
+		for (int32_t j=0;j<labels->get_num_labels();j++)
 		{
-			if(labels->get_unique_labels()[i] == labels->get_label(j))
+			if (labels->get_unique_labels()[i] == labels->get_label(j))
 					count++;
 		}
 
 		log_ratios[i] = (count-0.f)/(labels->get_num_labels()-0.f);
 
-		if(log_ratios[i] != 0)
+		if (log_ratios[i] != 0)
 			log_ratios[i] = CMath::log(log_ratios[i]);			
 	}
 
