@@ -10,6 +10,7 @@
 
 #include <shogun/structure/FactorGraph.h>
 #include <shogun/labels/FactorGraphLabels.h>
+#include <shogun/io/SGIO.h>
 
 using namespace shogun;
 
@@ -317,3 +318,52 @@ void CFactorGraph::loss_augmentation(SGVector<int32_t> states_gt, SGVector<float
 	ASSERT(min_var == 1);
 }
 
+void CFactorGraph::save_UAIFile(const char* fname)
+{
+    FILE* fout = fopen(fname, "w");
+
+    // writing the PREAMBLE into the UAI FILE
+    fprintf(fout, "MARKOV\n");
+
+    // writing number of variables
+    fprintf(fout, "%d\n", m_cardinalities.size());
+    // writing each variables domain size
+    for (int32_t i=0; i<m_cardinalities.size(); i++)
+         fprintf(fout, "%d ", m_cardinalities[i]);
+    fprintf(fout, "\n");
+
+    // writing number of factors
+    fprintf(fout, "%d\n", m_factors->get_num_elements());
+
+    // writing scope of each factor
+    for (int32_t i=0; i<m_factors->get_num_elements(); i++)
+    {
+        CFactor* factor = dynamic_cast<CFactor*>(m_factors->get_element(i));
+        SGVector<int32_t> vars = factor->get_variables();
+        // writing size of scope of each factor
+        fprintf(fout, "%d ", vars.size());
+        // writing the order list of variables
+        // it is written in the reverse order as our index assignment
+        // is in reverse order according to UAI format
+        for (int32_t i=vars.size()-1; i>=0; i--)
+            fprintf(fout, "%d ", vars[i]);
+        fprintf(fout, "\n");
+        SG_UNREF(factor);
+    }
+
+    // writing FUNCTION TABLE into the UAI FILE
+    for (int32_t i=0; i<m_factors->get_num_elements(); i++)
+    {
+        CFactor* factor = dynamic_cast<CFactor*>(m_factors->get_element(i));
+        SGVector<float64_t> data = factor->get_data();
+        // writing size of data of each factor
+        fprintf(fout, "\n%d\n", data.size());
+        // writing data of each factor
+        for (int32_t i=0; i<data.size(); i++)
+            fprintf(fout, "%f ", data[i]);
+        fprintf(fout, "\n");
+        SG_UNREF(factor);
+    }
+
+    fclose(fout);
+}

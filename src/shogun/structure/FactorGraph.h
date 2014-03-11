@@ -132,6 +132,12 @@ public:
 	virtual void loss_augmentation(SGVector<int32_t> states_gt, \
 		SGVector<float64_t> loss = SGVector<float64_t>());
 
+	/** save the factor graph into a UAI file
+	 *
+	 * @param fname name of file where to save the factor graph
+	 */
+	void save_UAIFile(const char* fname);
+
 private:
 	/** register parameters */
 	void register_parameters();
