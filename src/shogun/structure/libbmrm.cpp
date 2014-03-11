@@ -49,7 +49,12 @@ void add_cutting_plane(
 		return;
 	}
 
-
+	/*
+	MOD:
+	cp->address=A+(free_idx*dim);
+	cp->prev=*tail;
+	cp->next=NULL;
+	cp->idx=free_idx;*/
 	cp->bmrm_ll_init(tail, NULL, A+(free_idx*dim), free_idx);
 	(*tail)->next=cp;
 	*tail=cp;
@@ -228,16 +233,6 @@ BmrmStatistics svm_bmrm_solver(
 	I=NULL;
 	prevW=NULL;
 
-
-	/*
-	MOD:
-	H= (float64_t*) LIBBMRM_CALLOC(BufSize*BufSize, float64_t);
-
-	if (H==NULL)
-	{
-		bmrm.exitflag=-2;
-		goto cleanup;
-	}*/
 	check_alloc(H, BufSize, 1);
 
 	ASSERT(nDim > 0);
@@ -249,18 +244,14 @@ BmrmStatistics svm_bmrm_solver(
 		(std::numeric_limits<size_t>::max() / BufSize));
 
 	check_alloc(A, BufSize, nDim);
-
-	check_alloc(B, BufSize, 1);
-	
+	check_alloc(b, BufSize, 1);
 	check_alloc(beta, BufSize, 1);
-
 	check_alloc(subgrad, nDim, 1);
-
+	check_alloc(diag_H, BufSize, 1);
 	check_alloc(I, BufSize, 1);
 	
 	ICP_stats icp_stats;
 	icp_stats.maxCPs = BufSize;
-
 	check_alloc(icp_stats.ICPcounter, BufSize, 1);
 	icp_stats.ICPs= (float64_t**) LIBBMRM_CALLOC(BufSize, float64_t*);
 	if (icp_stats.ICPs==NULL)
@@ -273,7 +264,6 @@ BmrmStatistics svm_bmrm_solver(
 
 	/* Temporary buffers for ICP removal */
 	icp_stats.H_buff= (float64_t*) LIBBMRM_CALLOC(BufSize*BufSize, float64_t);
-
 	check_alloc(icp_stats.H_buff, BufSize, 1);
 
 	map= (bool*) LIBBMRM_CALLOC(BufSize, bool);
