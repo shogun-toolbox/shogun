@@ -508,7 +508,7 @@ repository in github.
 
         chmod +x .git/hook/pre-commit
 
-    You can also test all the examples in shogun/exapmles to check whether your configuration and environment is totally okay. Please note that some of the examples are dependent on data sets, which should be downloaded beforehand, and so that you can pass all the tests of those examples. Downloading data can be easily done by calling git command (please refer to https://github.com/shogun-toolbox/shogun/blob/develop/doc/md/README_data.md). Afterwards, you can make test of the examples by:
+    You can also test all the examples in shogun/exapmles to check whether your configuration and environment is totally okay. Please note that some of the examples are dependent on data sets, which should be downloaded beforehand, and so that you can pass all the tests of those examples. Downloading data can be easily done by calling a git command (please refer to [README_data.md](https://github.com/shogun-toolbox/shogun/blob/develop/doc/md/README_data.md)). Afterwards, you can test the examples by:
 
         make test
 
