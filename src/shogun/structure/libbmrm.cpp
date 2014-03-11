@@ -49,12 +49,6 @@ void add_cutting_plane(
 		return;
 	}
 
-	/*
-	MOD:
-	cp->address=A+(free_idx*dim);
-	cp->prev=*tail;
-	cp->next=NULL;
-	cp->idx=free_idx;*/
 	cp->bmrm_ll_init(tail, NULL, A+(free_idx*dim), free_idx);
 	(*tail)->next=cp;
 	*tail=cp;
