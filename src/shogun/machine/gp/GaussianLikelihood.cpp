@@ -91,8 +91,8 @@ SGVector<float64_t> CGaussianLikelihood::get_log_probability_f(const CLabels* la
 
 	// compute log probability: lp=-(y-f).^2./sigma^2/2-log(2*pi*sigma^2)/2
 	eigen_result=eigen_y-eigen_f;
-	eigen_result=-eigen_result.cwiseProduct(eigen_result)/(2*CMath::sq(m_sigma))-
-		VectorXd::Ones(result.vlen)*log(2*CMath::PI*CMath::sq(m_sigma))/2.0;
+	eigen_result=-eigen_result.cwiseProduct(eigen_result)/(2.0*CMath::sq(m_sigma))-
+		VectorXd::Ones(result.vlen)*log(2.0*CMath::PI*CMath::sq(m_sigma))/2.0;
 
 	return result;
 }
@@ -150,7 +150,8 @@ SGVector<float64_t> CGaussianLikelihood::get_first_derivative(const CLabels* lab
 	SGVector<float64_t> y=((CRegressionLabels*)lab)->get_labels();
 	Map<VectorXd> eigen_y(y.vector, y.vlen);
 
-	// compute derivative of log probability wrt sigma:
+	// compute derivative of log probability wrt log_sigma:
+	// dlp_dlogsigma
 	// lp_dsigma=(y-f).^2/sigma^2-1
 	eigen_result=eigen_y-eigen_f;
 	eigen_result=eigen_result.cwiseProduct(eigen_result)/CMath::sq(m_sigma);
@@ -179,9 +180,10 @@ SGVector<float64_t> CGaussianLikelihood::get_second_derivative(const CLabels* la
 	SGVector<float64_t> y=((CRegressionLabels*)lab)->get_labels();
 	Map<VectorXd> eigen_y(y.vector, y.vlen);
 
-	// compute derivative of the first derivative of log probability wrt sigma:
+	// compute derivative of (the first log_sigma derivative of log probability) wrt f:
+	// d2lp_dlogsigma_df == d2lp_df_dlogsigma
 	// dlp_dsigma=2*(f-y)/sigma^2
-	eigen_result=2*(eigen_f-eigen_y)/CMath::sq(m_sigma);
+	eigen_result=2.0*(eigen_f-eigen_y)/CMath::sq(m_sigma);
 
 	return result;
 }
@@ -203,9 +205,10 @@ SGVector<float64_t> CGaussianLikelihood::get_third_derivative(const CLabels* lab
 	SGVector<float64_t> result(func.vlen);
 	Map<VectorXd> eigen_result(result.vector, result.vlen);
 
-	// compute derivative of the second derivative of log probability wrt sigma:
-	// d2lp_dsigma=1/sigma^2
-	eigen_result=2*VectorXd::Ones(result.vlen)/CMath::sq(m_sigma);
+	// compute derivative of (the derivative of the first log_sigma derivative of log probability) wrt f:
+	// d3lp_dlogsigma_df_df == d3lp_df_df_dlogsigma
+	// d2lp_dsigma=2/sigma^2
+	eigen_result=2.0*VectorXd::Ones(result.vlen)/CMath::sq(m_sigma);
 
 	return result;
 }
