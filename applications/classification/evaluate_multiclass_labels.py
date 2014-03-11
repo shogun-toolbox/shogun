@@ -31,9 +31,10 @@
 
 import argparse
 import logging
+import numpy as np
 from contextlib import contextmanager, closing
 from modshogun import (LibSVMFile, MulticlassLabels,
-		       SerializableHdf5File, MulticlassAccuracy)
+		       MulticlassAccuracy)
 from utils import get_features_and_labels
 
 LOGGER = logging.getLogger(__file__)
@@ -55,10 +56,8 @@ def main(actual, predicted):
 	feats, labels = get_features_and_labels(LibSVMFile(actual))
 
 	# Load predicted labels
-	predicted_labels = MulticlassLabels()
-	predicted_labels_file = SerializableHdf5File(predicted, 'r')
-	with closing(predicted_labels_file):
-		predicted_labels.load_serializable(predicted_labels_file)
+	with open(predicted, 'r') as f:
+		predicted_labels = MulticlassLabels(np.array([float(l) for l in f]))
 
         multiclass_measures = MulticlassAccuracy()
         LOGGER.info("Accuracy = %s" % multiclass_measures.evaluate(

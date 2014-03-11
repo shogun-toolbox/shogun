@@ -62,9 +62,10 @@ def main(classifier, testset, output):
 	test_feats, test_labels = get_features_and_labels(LibSVMFile(testset))
 	predicted_labels = svm.apply(test_feats)
 
-	predicted_labels_output = SerializableHdf5File(output, 'w')
-	with closing(predicted_labels_output):
-		predicted_labels.save_serializable(predicted_labels_output)
+	with open(output, 'w') as f:
+		for cls in predicted_labels.get_labels():
+			f.write("%s\n" % int(cls))
+
 	LOGGER.info("Predicted labels saved in: '%s'" % output)
 
 
