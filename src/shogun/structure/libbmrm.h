@@ -44,10 +44,10 @@ IGNORE_IN_CLASSLIST struct bmrm_ll {
 	uint32_t    idx;
 	void bmrm_ll_init(bmrm_ll* prv, bmrm_ll* nxt, float64_t* adrs, uint32_t id)
 	{
-	prev = prv;
-	next = nxt;
-	address = adrs;
-	idx = id;
+		prev = prv;
+		next = nxt;
+		address = adrs;
+		idx = id;
 	}
 };
 
