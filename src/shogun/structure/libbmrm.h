@@ -42,40 +42,14 @@ IGNORE_IN_CLASSLIST struct bmrm_ll {
 	float64_t   *address;
 	/** Index of CP */
 	uint32_t    idx;
-	//MOD
-	void bmrm_ll_init(bmrm_ll* prv, bmrm_ll* nxt, float64_t* adrs, uint32_t i)
+	void bmrm_ll_init(bmrm_ll* prv, bmrm_ll* nxt, float64_t* adrs, uint32_t id)
 	{
 	prev = prv;
-	next = next;
+	next = nxt;
 	address = adrs;
-	idx = i;
+	idx = id;
 	}
-	//MOD
 };
-
-//MOD : Insert templates later.
-void check_alloc(float64_t* matrix, uint32_t rowSize, uint32_t colSize)
-{
-	size_t aDim = size_t(rowSize*colSize);
-	matrix = (float64_t*) LIBBMRM_CALLOC(aDim , float64_t);
-	if (matrix==NULL)
-	{
-		bmrm.exitflag=-2;
-		goto cleanup;
-	}
-}
-
-void check_alloc(uint32_t* matrix, uint32_t rowSize, uint32_t colSize)
-{
-	size_t aDim = size_t(rowSize*colSize);
-	matrix = (uint32_t*) LIBBMRM_CALLOC(aDim , uint32_t);
-	if (matrix==NULL)
-	{
-		bmrm.exitflag=-2;
-		goto cleanup;
-	}
-}
-//MOD
 
 /** inactive cutting plane statistics */
 IGNORE_IN_CLASSLIST struct ICP_stats
@@ -105,7 +79,6 @@ IGNORE_IN_CLASSLIST struct ICP_stats
  * @param cp_data	CP data
  * @param dim		Dimension of CP data
  */
-
 void add_cutting_plane(
 		bmrm_ll**	tail,
 		bool*		map,
