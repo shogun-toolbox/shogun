@@ -510,8 +510,6 @@ repository in github.
 
     You can also test all the examples in shogun/exapmles to check whether your configuration and environment is totally okay. Please note that some of the examples are dependent on data sets, which should be downloaded beforehand, and so that you can pass all the tests of those examples. Downloading data can be easily done by calling git command (please refer to https://github.com/shogun-toolbox/shogun/blob/develop/doc/md/README_data.md). Afterwards, you can make test of the examples by:
 
-```
-	make test
-```
+        make test
 
 To make a release, adjust the [NEWS](NEWS) file properly, i.e. date, release version (like 3.0.0), adjust the soname if required (cf. [README_soname](README_soname.md)) and if a new data version is required add that too. If parameters have been seen changes increase the parameter version too.
