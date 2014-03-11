@@ -33,7 +33,7 @@ import argparse
 import logging
 from contextlib import contextmanager, closing
 from modshogun import (LibSVMFile, GaussianKernel, MulticlassLibSVM,
-		       SerializableHdf5File, LinearKernel)
+																SerializableHdf5File, LinearKernel)
 from utils import get_features_and_labels, track_execution
 
 LOGGER = logging.getLogger(__file__)
@@ -44,8 +44,8 @@ KERNELS = {
 }
 
 def parse_arguments():
-	parser = argparse.ArgumentParser(description="Train a multiclass SVM stored \
-					 	     in libsvm format")
+	parser = argparse.ArgumentParser(description="Train a multiclass SVM \
+					stored in libsvm format")
 	parser.add_argument('--dataset', required=True, type=str,
 					help='Path to training dataset in LibSVM format.')
 	parser.add_argument('--capacity', default=1.0, type=float,

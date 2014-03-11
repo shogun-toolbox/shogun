@@ -32,16 +32,14 @@
 import argparse
 import logging
 import numpy as np
-from contextlib import contextmanager, closing
-from modshogun import (LibSVMFile, MulticlassLabels,
-		       MulticlassAccuracy)
+from modshogun import (LibSVMFile, MulticlassLabels, MulticlassAccuracy)
 from utils import get_features_and_labels
 
 LOGGER = logging.getLogger(__file__)
 
 def parse_arguments():
-	parser = argparse.ArgumentParser(description="Evaluate predicted labels agains \
-					 	     bare truth")
+	parser = argparse.ArgumentParser(description="Evaluate predicted \
+					labels againsy bare truth")
 	parser.add_argument('--actual', required=True, type=str,
 					help='Path to LibSVM dataset.')
 	parser.add_argument('--predicted', required=True, type=str,
@@ -57,18 +55,15 @@ def main(actual, predicted):
 
 	# Load predicted labels
 	with open(predicted, 'r') as f:
-		predicted_labels = MulticlassLabels(np.array([float(l) for l in f]))
+		predicted_labels_arr = np.array([float(l) for l in f])
+		predicted_labels = MulticlassLabels(predicted_labels_arr)
 
-        multiclass_measures = MulticlassAccuracy()
-        LOGGER.info("Accuracy = %s" % multiclass_measures.evaluate(
-                    labels, predicted_labels))
-
-        #LOGGER.info("Confusion matrix:")
-        #res = multiclass_measures.get_confusion_matrix(labels, predicted_labels)
-        #print res
+	# Evaluate accuracy
+	multiclass_measures = MulticlassAccuracy()
+	LOGGER.info("Accuracy = %s" % multiclass_measures.evaluate(
+		labels, predicted_labels))
 
 
 if __name__ == '__main__':
 	args = parse_arguments()
 	main(args.actual, args.predicted)
-

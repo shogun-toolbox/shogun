@@ -33,15 +33,15 @@ import argparse
 import logging
 from contextlib import closing
 from modshogun import (LibSVMFile, SparseRealFeatures, MulticlassLabels,
-		       MulticlassLibSVM, SerializableHdf5File,
-		       MulticlassAccuracy)
+											MulticlassLibSVM, SerializableHdf5File,
+											MulticlassAccuracy)
 from utils import get_features_and_labels
 
 LOGGER = logging.getLogger(__file__)
 
 def parse_arguments():
-	parser = argparse.ArgumentParser(description="Test a serialized SVM classifier \
-					 	     agains a SVMLight test file")
+	parser = argparse.ArgumentParser(description="Test a serialized SVM \
+																	classifier agains a SVMLight test file")
 	parser.add_argument('--classifier', required=True, type=str,
 					help='Path to training dataset in LibSVM format.')
 	parser.add_argument('--testset', required=True, type=str,
