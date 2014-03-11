@@ -62,7 +62,7 @@ TEST(MultilabelLabels, constructor_one_arg)
 
 TEST(MultilabelLabels, constructor_two_args)
 {
-	CMultilabelLabels * ml = new CMultilabelLabels(5,6);
+	CMultilabelLabels * ml = new CMultilabelLabels(5, 6);
 	ASSERT_TRUE(ml != NULL);
 
 	EXPECT_EQ(ml->get_num_labels(), 5);
@@ -75,7 +75,7 @@ TEST(MultilabelLabels, constructor_two_args)
 
 TEST(MultilabelLabels, clone)
 {
-	CMultilabelLabels * ml = new CMultilabelLabels(5,6);
+	CMultilabelLabels * ml = new CMultilabelLabels(5, 6);
 	ASSERT_TRUE(ml != NULL);
 	EXPECT_EQ(ml->get_num_labels(), 5);
 	EXPECT_EQ(ml->get_num_classes(), 6);
@@ -109,13 +109,13 @@ TEST(MultilabelLabels, to_dense)
 
 TEST(MultilabelLabels, get_label)
 {
-	CMultilabelLabels * ml = new CMultilabelLabels(10,5);
+	CMultilabelLabels * ml = new CMultilabelLabels(10, 5);
 	ASSERT_TRUE(ml != NULL);
 
 	EXPECT_EQ(ml->get_num_labels(), 10);
 	EXPECT_EQ(ml->get_num_classes(), 5);
 
-	for (int32_t i=0; i<ml->get_num_labels(); i++)
+	for (int32_t i = 0; i < ml->get_num_labels(); i++)
 	{
 		SGVector<int16_t> sparse = ml->get_label(i);
 		EXPECT_EQ(0, sparse.size());
@@ -133,7 +133,7 @@ TEST(MultilabelLabels, get_label)
 
 TEST(MultilabelLabels, get_class_labels)
 {
-	CMultilabelLabels * ml = new CMultilabelLabels(10,5);
+	CMultilabelLabels * ml = new CMultilabelLabels(10, 5);
 	ASSERT_TRUE(ml != NULL);
 
 	EXPECT_EQ(ml->get_num_labels(), 10);
@@ -142,7 +142,7 @@ TEST(MultilabelLabels, get_class_labels)
 	SGVector<int32_t> ** class_labels = ml->get_class_labels();
 	ASSERT_TRUE(class_labels != NULL);
 
-	for (int32_t i=0; i<ml->get_num_classes(); i++)
+	for (int32_t i = 0; i < ml->get_num_classes(); i++)
 	{
 		EXPECT_EQ(0, class_labels[i]->size());
 
@@ -163,14 +163,14 @@ TEST(MultilabelLabels, set_class_labels)
 	const int32_t num_classes = 7;
 
 	SGVector<int32_t> ** class_labels = SG_MALLOC(SGVector<int32_t> *, num_classes);
-	for (int32_t i=0; i<num_classes; i++)
+	for (int32_t i = 0; i < num_classes; i++)
 	{
 		class_labels[i] = new SGVector<int32_t>(3);
 		class_labels[i]->set_const(0);
 
 		(*class_labels[i])[0] = 0;
-		(*class_labels[i])[1] = i%num_labels;
-		(*class_labels[i])[2] = (i*i)%num_labels;
+		(*class_labels[i])[1] = i % num_labels;
+		(*class_labels[i])[2] = (i * i) % num_labels;
 
 		int32_t new_size = SGVector<int32_t>::unique(class_labels[i]->vector, class_labels[i]->vlen);
 		class_labels[i]->vlen = new_size;
@@ -184,7 +184,7 @@ TEST(MultilabelLabels, set_class_labels)
 	ASSERT_EQ(num_labels, ml->get_num_labels());
 	ASSERT_EQ(num_classes, ml->get_num_classes());
 
-	for (int32_t i=0; i<num_classes; i++)
+	for (int32_t i = 0; i < num_classes; i++)
 	{
 		delete class_labels[i];
 	}
@@ -259,9 +259,9 @@ TEST(MultilabelLabels, set_class_labels_overflow)
 	EXPECT_EQ(2, (ml->get_label(32768))[0]);
 
 	ASSERT_EQ(0, ml->get_label(32769).size());
-	ASSERT_EQ(0, ml->get_label(num_labels-1).size());
+	ASSERT_EQ(0, ml->get_label(num_labels - 1).size());
 
-	for (int32_t i=0; i<num_classes; i++)
+	for (int32_t i = 0; i < num_classes; i++)
 	{
 		delete class_labels[i];
 	}
@@ -273,7 +273,7 @@ TEST(MultilabelLabels, set_class_labels_overflow)
 
 TEST(MultilabelLabels, display)
 {
-	CMultilabelLabels * ml = new CMultilabelLabels(10,5);
+	CMultilabelLabels * ml = new CMultilabelLabels(10, 5);
 	ASSERT_TRUE(ml != NULL);
 
 	EXPECT_EQ(ml->get_num_labels(), 10);
