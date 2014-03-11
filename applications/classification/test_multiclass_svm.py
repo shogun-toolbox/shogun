@@ -41,7 +41,7 @@ LOGGER = logging.getLogger(__file__)
 
 def parse_arguments():
 	parser = argparse.ArgumentParser(description="Test a serialized SVM \
-																	classifier agains a SVMLight test file")
+					classifier agains a SVMLight test file")
 	parser.add_argument('--classifier', required=True, type=str,
 					help='Path to training dataset in LibSVM format.')
 	parser.add_argument('--testset', required=True, type=str,
