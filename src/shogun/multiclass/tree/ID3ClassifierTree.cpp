@@ -32,8 +32,7 @@
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/multiclass/tree/ID3ClassifierTree.h>
-#include <iostream>
-using namespace std;
+#include <shogun/mathematics/Statistics.h>
 
 using namespace shogun;
 
@@ -99,7 +98,7 @@ CMulticlassLabels* CID3ClassifierTree::apply_multiclass(CFeatures* data)
 
 bool CID3ClassifierTree::train_machine(CFeatures* data)
 {
-	REQUIRE(data,"data required for training")
+	REQUIRE(data,"Data required for training")
 	REQUIRE(data->get_feature_class()==C_DENSE, "Dense data required for training")
 
 	int32_t num_features = ((CDenseFeatures<float64_t>*) data)->get_num_features();
@@ -298,22 +297,24 @@ float64_t CID3ClassifierTree::informational_gain_attribute(int32_t attr_no, CFea
 
 float64_t CID3ClassifierTree::entropy(CMulticlassLabels* labels)
 {
-	float64_t entr = 0;
+	SGVector<float64_t> log_ratios = SGVector<float64_t>
+			(labels->get_unique_labels().size());
 
 	for(int32_t i=0;i<labels->get_unique_labels().size();i++)
 	{
 		int32_t count = 0;
+
 		for(int32_t j=0;j<labels->get_num_labels();j++)
 		{
 			if(labels->get_unique_labels()[i] == labels->get_label(j))
 					count++;
 		}
 
-		float64_t ratio = (count-0.f)/(labels->get_num_labels()-0.f);
+		log_ratios[i] = (count-0.f)/(labels->get_num_labels()-0.f);
 
-		if(ratio != 0)
-			entr -= ratio*(CMath::log2(ratio));			
+		if(log_ratios[i] != 0)
+			log_ratios[i] = CMath::log(log_ratios[i]);			
 	}
 
-	return entr;
+	return CStatistics::entropy(log_ratios.vector, log_ratios.vlen);
 }
