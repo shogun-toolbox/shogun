@@ -15,6 +15,8 @@
 #include <shogun/lib/Map.h>
 #include <shogun/base/Parallel.h>
 #include <shogun/base/Version.h>
+#include <stdlib.h>
+#include <string.h>
 
 #ifdef TRACE_MEMORY_ALLOCS
 shogun::CMap<void*, shogun::MemoryBlock>* sg_mallocs=NULL;
@@ -72,6 +74,8 @@ namespace shogun
 		sg_print_warning=print_warning;
 		sg_print_error=print_error;
 		sg_cancel_computations=cancel_computations;
+		
+		init_from_env();
 	}
 
 	void sg_global_print_default(FILE* target, const char* str)
@@ -169,5 +173,22 @@ namespace shogun
 	{
 		SG_REF(sg_rand);
 		return sg_rand;
+	}
+	
+	void init_from_env()
+	{
+		char* env_log_val = NULL;
+		SGIO* io = get_global_io();
+		env_log_val = getenv("SHOGUN_LOG_LEVEL");
+		if (env_log_val)
+		{
+			if(strncmp(env_log_val, "DEBUG", 5) == 0)
+				io->set_loglevel(MSG_DEBUG);
+			else if(strncmp(env_log_val, "WARN", 4) == 0)
+				io->set_loglevel(MSG_WARN);
+			else if(strncmp(env_log_val, "ERROR", 5) == 0)
+				io->set_loglevel(MSG_ERROR);
+		}
+		SG_UNREF(io);
 	}
 }

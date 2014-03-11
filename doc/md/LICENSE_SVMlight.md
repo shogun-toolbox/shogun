@@ -21,7 +21,7 @@ acknowledge the use of SVM-Light. Please cite as
 
 	T. Joachims, Making large-Scale SVM Learning
 	Practical. Advances in Kernel Methods - Support Vector
-	Learning, B. Schölkopf and C. Burges and A. Smola (ed.),
+	Learning, B. Schoelkopf and C. Burges and A. Smola (ed.),
 	MIT-Press, 1999.
 	http://www-ai.cs.uni-dortmund.de/DOKUMENTE/joachims_99a.pdf
 
