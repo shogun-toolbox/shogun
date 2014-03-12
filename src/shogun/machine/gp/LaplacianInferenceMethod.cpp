@@ -144,7 +144,7 @@ float64_t CLaplacianInferenceMethod::get_negative_log_marginal_likelihood()
 		Map<MatrixXd> eigen_ktrtr(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
 
 		FullPivLU<MatrixXd> lu(MatrixXd::Identity(m_ktrtr.num_rows, m_ktrtr.num_cols)+
-			eigen_ktrtr*CMath::sq(m_scale)*eigen_sW.asDiagonal());
+			eigen_ktrtr*(eigen_sW.asDiagonal()*CMath::sq(m_scale)));
 
 		result=(eigen_alpha.dot(eigen_mu-eigen_mean))/2.0-
 			lp+log(lu.determinant())/2.0;
@@ -202,7 +202,7 @@ void CLaplacianInferenceMethod::update_approx_cov()
 
 	// compute V = L^(-1) * W^(1/2) * K, using upper triangular factor L^T
 	MatrixXd eigen_V=eigen_L.triangularView<Upper>().adjoint().solve(
-			eigen_sW.asDiagonal()*eigen_K*CMath::sq(m_scale));
+			eigen_sW.asDiagonal()*CMath::sq(m_scale)*eigen_K);
 
 	// compute covariance matrix of the posterior:
 	// Sigma = K - K * W^(1/2) * (L * L^T)^(-1) * W^(1/2) * K =
@@ -284,7 +284,7 @@ void CLaplacianInferenceMethod::update_alpha()
 		Map<VectorXd> eigen_alpha(m_alpha.vector, m_alpha.vlen);
 
 		// compute f = K * alpha + m
-		eigen_mu=eigen_ktrtr*CMath::sq(m_scale)*eigen_alpha+eigen_mean;
+		eigen_mu=eigen_ktrtr*(eigen_alpha*CMath::sq(m_scale))+eigen_mean;
 
 		// compute W = -d2lp
 		W=m_model->get_log_probability_derivative_f(m_labels, m_mu, 2);
@@ -352,7 +352,7 @@ void CLaplacianInferenceMethod::update_alpha()
 		VectorXd b=eigen_W.cwiseProduct(eigen_mu - eigen_mean)+eigen_dlp;
 
 		VectorXd dalpha=b-eigen_sW.cwiseProduct(
-			L.solve(eigen_sW.cwiseProduct(eigen_ktrtr*b*CMath::sq(m_scale))))-eigen_alpha;
+			L.solve(eigen_sW.cwiseProduct(eigen_ktrtr*(b*CMath::sq(m_scale)))))-eigen_alpha;
 
 		// perform Brent's optimization
 		CPsiLine func;
@@ -374,7 +374,7 @@ void CLaplacianInferenceMethod::update_alpha()
 	}
 
 	// compute f = K * alpha + m
-	eigen_mu=eigen_ktrtr*CMath::sq(m_scale)*eigen_alpha+eigen_mean;
+	eigen_mu=eigen_ktrtr*(eigen_alpha*CMath::sq(m_scale))+eigen_mean;
 
 	// get log probability derivatives
 	dlp=m_model->get_log_probability_derivative_f(m_labels, m_mu, 1);
@@ -419,7 +419,7 @@ void CLaplacianInferenceMethod::update_deriv()
 
 		// compute iA = (I + K * diag(W))^-1
 		FullPivLU<MatrixXd> lu(MatrixXd::Identity(m_ktrtr.num_rows, m_ktrtr.num_cols)+
-				eigen_K*CMath::sq(m_scale)*eigen_W.asDiagonal());
+				eigen_K*(eigen_W.asDiagonal()*CMath::sq(m_scale)));
 		MatrixXd iA=lu.inverse();
 
 		// compute derivative ln|L'*L| wrt W: g=sum(iA.*K,2)/2
@@ -435,7 +435,7 @@ void CLaplacianInferenceMethod::update_deriv()
 
 		// solve L'*C=diag(sW)*K
 		MatrixXd C=eigen_L.triangularView<Upper>().adjoint().solve(
-				eigen_sW.asDiagonal()*eigen_K*CMath::sq(m_scale));
+				eigen_sW.asDiagonal()*CMath::sq(m_scale)*eigen_K);
 
 		// compute derivative ln|L'*L| wrt W: g=(diag(K)-sum(C.^2,1)')/2
 		eigen_g=(eigen_K.diagonal()*CMath::sq(m_scale)-
@@ -477,7 +477,7 @@ SGVector<float64_t> CLaplacianInferenceMethod::get_derivative_wrt_inference_meth
 	VectorXd b=dK*eigen_dlp;
 
 	// compute dnlZ=dnlZ-dfhat'*(b-K*(Z*b))
-	result[0]=result[0]-eigen_dfhat.dot(b-eigen_K*CMath::sq(m_scale)*(eigen_Z*b));
+	result[0]=result[0]-eigen_dfhat.dot(b-eigen_K*(eigen_Z*(b*CMath::sq(m_scale))));
 
 	return result;
 }
@@ -511,7 +511,7 @@ SGVector<float64_t> CLaplacianInferenceMethod::get_derivative_wrt_likelihood_mod
 
 	// compute dnlZ=-g'*d2lp_dhyp-sum(lp_dhyp)-dfhat'*(b-K*(Z*b))
 	result[0]=-eigen_g.dot(eigen_d2lp_dhyp)-eigen_lp_dhyp.sum()-
-		eigen_dfhat.dot(b-eigen_K*CMath::sq(m_scale)*(eigen_Z*b));
+		eigen_dfhat.dot(b-eigen_K*(eigen_Z*(b*CMath::sq(m_scale))));
 
 	return result;
 }
@@ -559,8 +559,8 @@ SGVector<float64_t> CLaplacianInferenceMethod::get_derivative_wrt_kernel(
 		VectorXd b=eigen_dK*eigen_dlp;
 
 		// compute dnlZ=dnlZ-dfhat'*(b-K*(Z*b))
-		result[i]=result[i]-eigen_dfhat.dot(b-eigen_K*CMath::sq(m_scale)*
-				(eigen_Z*b));
+		result[i]=result[i]-eigen_dfhat.dot(b-eigen_K*
+				(eigen_Z*(b*CMath::sq(m_scale))));
 	}
 
 	return result;
@@ -603,7 +603,7 @@ SGVector<float64_t> CLaplacianInferenceMethod::get_derivative_wrt_mean(
 
 		// compute dnlZ=-alpha'*dm-dfhat'*(dm-K*(Z*dm))
 		result[i]=-eigen_alpha.dot(eigen_dmu)-eigen_dfhat.dot(eigen_dmu-
-				eigen_K*CMath::sq(m_scale)*(eigen_Z*eigen_dmu));
+				eigen_K*(eigen_Z*(eigen_dmu*CMath::sq(m_scale))));
 	}
 
 	return result;
