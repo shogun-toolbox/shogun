@@ -10,11 +10,8 @@
  * Copyright (C) 2008-2009 Fraunhofer Institute FIRST and Max Planck Society
  */
 
-#include <shogun/lib/config.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/io/SGIO.h>
-#include <shogun/base/Parallel.h>
-#include <shogun/base/init.h>
 #include <shogun/base/Version.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/base/ParameterMap.h>
@@ -26,13 +23,11 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 namespace shogun
 {
-	class CMath;
 	class Parallel;
-	class IO;
-	class Version;
 
 	extern Parallel* sg_parallel;
 	extern SGIO* sg_io;

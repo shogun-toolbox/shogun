@@ -13,16 +13,16 @@
 #ifndef __SGREFOBJECT_H__
 #define __SGREFOBJECT_H__
 
-#include <shogun/lib/config.h>
-#include <shogun/lib/common.h>
-#include <shogun/lib/DataType.h>
-#include <shogun/lib/RefCount.h>
+#include "lib/config.h"
 
 /** \namespace shogun
  * @brief all of classes and functions are contained in the shogun namespace
  */
 namespace shogun
 {
+
+class RefCount;
+class SGRefObject;
 
 // define reference counter macros
 //
