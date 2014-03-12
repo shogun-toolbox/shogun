@@ -254,7 +254,7 @@ BmrmStatistics con_bmrm_solver(
 		default : 	{	goto exitpath;
 						break;
 					}
-	};
+	}
 	
 	H=NULL;
 	b=NULL;
@@ -1582,7 +1582,7 @@ BmrmStatistics con_bmrm_solver(
 		}
 		
 		
-	};
+	}
 	
 	exitpath:
 		LIBBMRM_FREE(H);
