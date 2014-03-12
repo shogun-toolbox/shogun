@@ -49,7 +49,7 @@ namespace shogun {
     Eigen::Map<Eigen::MatrixXd>* kernel;
     Eigen::Map<Eigen::VectorXd>* mean_f;
     CSharedInfoForLBFGS()
-        :dim(0), kernel(NULL), mean_f(NULL){}
+        :dim(0), kernel(NULL), mean_f(NULL) {}
   };
 
 
