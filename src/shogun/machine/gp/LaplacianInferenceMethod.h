@@ -284,7 +284,7 @@ protected:
 private:
 	void init();
 
-private:
+protected:
 	/** amount of tolerance for Newton's iterations */
 	float64_t m_tolerance;
 
