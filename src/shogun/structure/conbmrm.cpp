@@ -2,7 +2,7 @@
 * This file contains all the methods for different convex bundle solvers.
 */
 
-#include <shogun/structure/consolver.h>
+#include <shogun/structure/conbmrm.h>
 #include <shogun/lib/external/libqp.h>
 #include <shogun/lib/Time.h>
 #include <shogun/io/SGIO.h>
