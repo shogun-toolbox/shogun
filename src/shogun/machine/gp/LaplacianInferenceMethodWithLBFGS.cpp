@@ -19,7 +19,6 @@
 #ifdef HAVE_EIGEN3
 #include <shogun/mathematics/Math.h>
 #include <shogun/optimization/lbfgs/lbfgs.h>
-#include <cstdio>
 
 namespace shogun {
 
