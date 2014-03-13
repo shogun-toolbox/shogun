@@ -12,3 +12,7 @@ $ astyle --style=allman --lineend=linux --indent=tab=8 \\
          --align-pointer=middle --align-reference=name \\
          inputfile1.cpp ...
 ```
+
+Currently, we are using `astyle`, the _Artistic Style_ code formatter.
+It is available in almost every Linux distribution or can be found on
+SourceForge: http://astyle.sourceforge.net/ .
