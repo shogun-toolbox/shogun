@@ -129,7 +129,6 @@ cscope.*
 /CMakeFiles/
 CMakeCache.txt
 /build
-/build-osx
 /third_party
 
 # protobuf
