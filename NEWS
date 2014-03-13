@@ -3,6 +3,7 @@
 	* SHOGUN Release version 3.2.1 (libshogun 16.1, data 0.8, parameter 1)
 	* This release also contains several cleanups and bugfixes:
 	* Features:
+		- ID3 algorithm for decision tree learning [Parijat Mazumdar]
 		- New modes for PCA matrix factorizations: SVD & EVD, in-place or reallocating [Parijat Mazumdar]
 	* Bugfixes:
 		- Fix memory problem in PCA::apply_to_feature_matrix [Parijat Mazumdar]

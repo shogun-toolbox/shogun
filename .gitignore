@@ -27,6 +27,7 @@ configure.log
 *.oct
 .localvimrc
 *.DS_Store
+cscope.*
 
 *~
 \#*\#

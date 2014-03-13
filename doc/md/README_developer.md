@@ -15,6 +15,8 @@ The simplest libshogun based program would be
 
     #include <shogun/base/init.h>
 
+    using namespace shogun;
+
     int main(int argc, char** argv)
     {
         init_shogun();
@@ -505,5 +507,9 @@ repository in github.
     Note that the script should be executable, i.e.
 
         chmod +x .git/hook/pre-commit
+
+    You can also test all the examples in shogun/exapmles to check whether your configuration and environment is totally okay. Please note that some of the examples are dependent on data sets, which should be downloaded beforehand, and so that you can pass all the tests of those examples. Downloading data can be easily done by calling a git command (please refer to [README_data.md](https://github.com/shogun-toolbox/shogun/blob/develop/doc/md/README_data.md)). Afterwards, you can test the examples by:
+
+        make test
 
 To make a release, adjust the [NEWS](NEWS) file properly, i.e. date, release version (like 3.0.0), adjust the soname if required (cf. [README_soname](README_soname.md)) and if a new data version is required add that too. If parameters have been seen changes increase the parameter version too.
