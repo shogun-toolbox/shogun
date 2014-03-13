@@ -943,6 +943,14 @@ template<class ST> bool CDenseFeatures<ST>::is_equal(CDenseFeatures* rhs)
 	return true;
 }
 
+template<class ST> CFeatures* CDenseFeatures<ST>::create_view(SGVector<index_t> indices)
+{
+	CFeatures* temp_feat=new CDenseFeatures(*this);
+	SG_REF(temp_feat);
+	temp_feat->add_subset(indices);
+	return temp_feat;
+}
+
 template<class ST> CFeatures* CDenseFeatures<ST>::create_merged_copy(
 		CList* others)
 {

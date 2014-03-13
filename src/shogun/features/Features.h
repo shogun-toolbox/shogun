@@ -280,6 +280,19 @@ class CFeatures : public CSGObject
 		 * @return new CFeatures instance with copies of feature data
 		 */
 		virtual CFeatures* copy_subset(SGVector<index_t> indices);
+		
+		/** Creates view on features.
+		 * This can be done by adding a new subset of indices vector to a copy of the
+		 * original features instance.
+		 * To account for thread safety only read-only calls should be made on the 
+		 * returned instance.
+		 * 
+		 * NOT IMPLEMENTED!
+		 * 
+		 * @param indices indices to be added to the view
+		 * @return new CFeatures instance with newly created subset
+		 */
+		virtual CFeatures* create_view(SGVector<index_t> indices);
 
 	private:
 		void init();

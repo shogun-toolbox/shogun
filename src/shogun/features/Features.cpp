@@ -334,3 +334,9 @@ CFeatures* CFeatures::copy_subset(SGVector<index_t> indices)
 			"not yet implemented yet. Ask developers!\n", get_name());
 	return NULL;
 }
+
+CFeatures* CFeatures::create_view(SGVector<index_t> indices)
+{
+	SG_ERROR("View creation not supported yet");
+	return NULL;
+}
