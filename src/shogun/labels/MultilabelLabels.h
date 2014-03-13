@@ -148,15 +148,6 @@ public:
 	/** print the current labeling */
 	void display() const;
 
-	/** save labels to file */
-	void save(const char * fname);
-
-	/** read num_labels and num_classes from file fname */
-	static void load_info(const char * fname, int32_t &num_labels, int16_t &num_classes);
-
-	/** @return CMultilabels * read from fname */
-	static CMultilabelLabels * load(const char * fname);
-
 private:
 	void init(int32_t num_labels, int16_t num_classes);
 
