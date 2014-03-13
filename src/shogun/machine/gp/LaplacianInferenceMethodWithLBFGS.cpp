@@ -139,11 +139,12 @@ void CLaplacianInferenceMethodWithLBFGS::update_alpha() {
    * process terminates without an error.
    * A non-zero value indicates an error. 
    */
-  if (ret != 0) {
+  if (ret != 0 && ret != LBFGS_ALREADY_MINIMIZED) {
   /*
    * If some error happened during the L-BFGS optimization, we use the original
    * Newton method.
    */
+    SG_WARNING("Error during L-BFGS optimization, using original Newton method as fallback\n");
     CLaplacianInferenceMethod::update_alpha();
     return;
   }
