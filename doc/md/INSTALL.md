@@ -78,6 +78,11 @@ For the interfaces to compile you will need swig.
     $ make
     $ sudo make install
 
+\* OSX 10.9.2 users might have such compilation error as 
+   Undefined symbols for architecture x86_64:
+     "shogun::CContingencyTableEvaluation::get_evaluation_direction() const".
+   A simple solution would be removing that ‘inline’ in src/shogun/evaluation/ContingencyTableEvaluation.cpp at line 55.
+
 to test if it is working try
 
     $ export LD_LIBRARY_PATH=SHOGUN_INSTALL_DIR/lib
