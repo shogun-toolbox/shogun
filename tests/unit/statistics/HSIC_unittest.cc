@@ -4,7 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2014 pl8787
+ * Written (W) 2014 Heiko Strathmann, pl8787
  */
 
 #include <shogun/base/init.h>
