@@ -101,6 +101,10 @@ TEST(LogDetEstimator, Sparse_sample_constructor)
 	EXPECT_TRUE(e);
 	EXPECT_TRUE(op);
 	EXPECT_TRUE(tracer);
+
+	SG_UNREF(tracer);
+	SG_UNREF(op);
+	SG_UNREF(e);
 }
 #endif // EIGEN_VERSION_AT_LEAST(3,1,0)
 
