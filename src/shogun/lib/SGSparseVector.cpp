@@ -1,3 +1,16 @@
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Written (W) 2013 Thoralf Klein
+ * Written (W) 2012 Fernando José Iglesias García
+ * Written (W) 2010,2012 Soeren Sonnenburg
+ * Copyright (C) 2010 Berlin Institute of Technology
+ * Copyright (C) 2012 Soeren Sonnenburg
+ */
+
 #include <shogun/lib/SGSparseVector.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/Math.h>
