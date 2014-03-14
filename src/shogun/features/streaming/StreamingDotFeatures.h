@@ -12,11 +12,13 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/features/streaming/StreamingFeatures.h>
-#include <shogun/features/DotFeatures.h>
-#include <shogun/io/streaming/StreamingFile.h>
+#include <shogun/features/FeatureTypes.h>
 
 namespace shogun
 {
+class CDotFeatures;
+class CStreamingFile;
+
 /** @brief Streaming features that support dot products among other operations.
  *
  * DotFeatures support the following operations:

@@ -1,9 +1,8 @@
+#include <shogun/lib/common.h>
 #include <shogun/lib/memory.h>
 #include <shogun/features/SparseFeatures.h>
 #include <shogun/preprocessor/SparsePreprocessor.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/lib/DataType.h>
-#include <shogun/labels/RegressionLabels.h>
 #include <shogun/io/SGIO.h>
 
 #include <string.h>
@@ -11,6 +10,8 @@
 
 namespace shogun
 {
+
+template <class ST> class CSparsePreprocessor;
 
 template<class ST> CSparseFeatures<ST>::CSparseFeatures(int32_t size)
 : CDotFeatures(size), feature_cache(NULL)
