@@ -29,8 +29,8 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
-#include <shogun/base/init.h>
 #include <shogun/labels/MultilabelLabels.h>
+#include <shogun/lib/SGVector.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;

@@ -30,6 +30,7 @@
  */
 
 #include <shogun/labels/MultilabelLabels.h>
+#include <shogun/io/SGIO.h>                    // for REQUIRE, SG_PRINT, etc
 
 using namespace shogun;
 
