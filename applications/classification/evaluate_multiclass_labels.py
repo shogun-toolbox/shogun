@@ -62,6 +62,9 @@ def main(actual, predicted):
 	multiclass_measures = MulticlassAccuracy()
 	LOGGER.info("Accuracy = %s" % multiclass_measures.evaluate(
 		labels, predicted_labels))
+	LOGGER.info("Confusion matrix:")
+	res = multiclass_measures.get_confusion_matrix(labels, predicted_labels)
+	print res
 
 
 if __name__ == '__main__':
