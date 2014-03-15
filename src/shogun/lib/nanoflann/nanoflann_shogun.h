@@ -44,20 +44,33 @@ template <typename CDist, class ElementType = float64_t>
 class SGDataSetAdaptor
 {
 	public:
-		const CDist *dist;
+		/** The main CDistance Object */
+		CDist *dist;
 	
-		SGDataSetAdaptor(const CDist *dist_) : dist(dist_) { }
-		inline const CDist& distance() const { return *dist; }
+		SGDataSetAdaptor(CDist *dist_) : dist(dist_) { }
+		
+		/** CRTP Helper Function
+		  * @return CDistance Object
+		  */
+		inline CDist& distance() { return *dist; }
 	
-		inline size_t kdtree_get_point_count() const
+		/** Get the number of Training Set Data Points
+		  * @return Number of features within CDistance::lhs
+		  */
+		inline size_t kdtree_get_point_count()
 		{
 			CDenseFeatures<ElementType> *f = ((CDenseFeatures<ElementType>*) distance().get_lhs());
 			size_t num =  f->get_num_vectors();
 			SG_UNREF(f);
 			return num;
 		}
-	
-		inline ElementType kdtree_get_pt(const int32_t idx, int dim) const
+		
+		/** Get the dim'th component of the idx'th feature vector
+		  * @param idx Index of the feature vector
+		  * @param dim The component of the feature vector to fetch
+		  * @return 
+		  */
+		inline ElementType kdtree_get_pt(int32_t idx, int dim)
 		{
 			ElementType val;
 			
@@ -68,9 +81,12 @@ class SGDataSetAdaptor
 			SG_UNREF(f);
 			return val;
 		}
-	
+		
+		/** Optional bounding box computation: false return value defaults to a 
+		  * standard bbox computation loop.
+		  */
 		template <class BBOX>
-			bool kdtree_get_bbox(BBOX &bb) const { return false; }
+			bool kdtree_get_bbox(BBOX &bb) { return false; }
 };
 
 #endif

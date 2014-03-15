@@ -1,4 +1,4 @@
-/***********************************************************************
+/*******************************************************************************
  * Software License Agreement (BSD License)
  *
  * Copyright 2008-2009  Marius Muja (mariusm@cs.ubc.ca). All rights reserved.
@@ -28,7 +28,12 @@
  * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *************************************************************************/
+ ******************************************************************************/
+
+/*******************************************************************************
+ * 2014 Dhruv Jawali (dhruv13.j@gmail.com) changed const qualifiers to allow
+ * 							shogun::CDistance Objects to act as data sources.
+ ******************************************************************************/
 
 #ifndef  NANOFLANN_HPP_
 #define  NANOFLANN_HPP_
@@ -299,11 +304,11 @@ namespace nanoflann
 		typedef T ElementType;
 		typedef _DistanceType DistanceType;
 
-		const DataSource &data_source;
+		DataSource &data_source;
 
-		L2_Adaptor(const DataSource &_data_source) : data_source(_data_source) { }
+		L2_Adaptor(DataSource &_data_source) : data_source(_data_source) { }
 
-		inline DistanceType operator()(const T* a, const size_t b_idx, size_t size, DistanceType worst_dist = -1) const
+		inline DistanceType operator()(T* a, size_t b_idx, size_t size, DistanceType worst_dist = -1)
 		{
 			DistanceType result = DistanceType();
 			const T* last = a + size;
@@ -748,7 +753,7 @@ namespace nanoflann
 		/**
 		 * The dataset used by this index
 		 */
-		const DatasetAdaptor &dataset; //!< The source of our data
+		DatasetAdaptor &dataset; //!< The source of our data
 
 		const KDTreeSingleIndexAdaptorParams index_params;
 
@@ -846,7 +851,7 @@ namespace nanoflann
 		 *          inputData = dataset with the input features
 		 *          params = parameters passed to the kdtree algorithm (see http://code.google.com/p/nanoflann/ for help choosing the parameters)
 		 */
-		KDTreeSingleIndexAdaptor(const int dimensionality, const DatasetAdaptor& inputData, const KDTreeSingleIndexAdaptorParams& params = KDTreeSingleIndexAdaptorParams() ) :
+		KDTreeSingleIndexAdaptor(const int dimensionality, DatasetAdaptor& inputData, const KDTreeSingleIndexAdaptorParams& params = KDTreeSingleIndexAdaptorParams() ) :
 			dataset(inputData), index_params(params), root_node(NULL), distance(inputData)
 		{
 			m_size = dataset.kdtree_get_point_count();
@@ -926,7 +931,7 @@ namespace nanoflann
 		 * \sa knnSearch, radiusSearch
 		 */
 		template <typename RESULTSET>
-		void findNeighbors(RESULTSET& result, const ElementType* vec, const SearchParams& searchParams) const
+		void findNeighbors(RESULTSET& result, ElementType* vec, const SearchParams& searchParams)
 		{
 			assert(vec);
 			if (!root_node) throw std::runtime_error("[nanoflann] findNeighbors() called before building the index.");
@@ -944,7 +949,7 @@ namespace nanoflann
 		 *  \sa radiusSearch, findNeighbors
 		 * \note nChecks_IGNORED is ignored but kept for compatibility with the original FLANN interface.
 		 */
-		inline void knnSearch(const ElementType *query_point, const size_t num_closest, IndexType *out_indices, DistanceType *out_distances_sq, const int nChecks_IGNORED = 10) const
+		inline void knnSearch(ElementType *query_point, size_t num_closest, IndexType *out_indices, DistanceType *out_distances_sq, int nChecks_IGNORED = 10)
 		{
 			nanoflann::KNNResultSet<DistanceType,IndexType> resultSet(num_closest);
 			resultSet.init(out_indices, out_distances_sq);
@@ -963,7 +968,7 @@ namespace nanoflann
 		 *  \sa knnSearch, findNeighbors
 		 * \return The number of points within the given radius (i.e. indices.size() or dists.size() )
 		 */
-		size_t radiusSearch(const ElementType *query_point,const DistanceType radius, std::vector<std::pair<IndexType,DistanceType> >& IndicesDists, const SearchParams& searchParams) const
+		size_t radiusSearch(ElementType *query_point, DistanceType radius, std::vector<std::pair<IndexType,DistanceType> >& IndicesDists, const SearchParams& searchParams)
 		{
 			RadiusResultSet<DistanceType,IndexType> resultSet(radius,IndicesDists);
 			this->findNeighbors(resultSet, query_point, searchParams);
@@ -1236,7 +1241,7 @@ namespace nanoflann
 			lim2 = left;
 		}
 
-		DistanceType computeInitialDistances(const ElementType* vec, distance_vector_t& dists) const
+		DistanceType computeInitialDistances(ElementType* vec, distance_vector_t& dists)
 		{
 			assert(vec);
 			DistanceType distsq = 0.0;
@@ -1260,15 +1265,15 @@ namespace nanoflann
 		 * \tparam RESULTSET Should be any ResultSet<DistanceType>
 		 */
 		template <class RESULTSET>
-		void searchLevel(RESULTSET& result_set, const ElementType* vec, const NodePtr node, DistanceType mindistsq,
-						 distance_vector_t& dists, const float epsError) const
+		void searchLevel(RESULTSET& result_set, ElementType* vec, NodePtr node, DistanceType mindistsq,
+						 distance_vector_t& dists, float epsError)
 		{
 			/* If this is a leaf node, then do check and return. */
 			if ((node->child1 == NULL)&&(node->child2 == NULL)) {
 				//count_leaf += (node->lr.right-node->lr.left);  // Removed since was neither used nor returned to the user.
 				DistanceType worst_dist = result_set.worstDist();
 				for (IndexType i=node->lr.left; i<node->lr.right; ++i) {
-					const IndexType index = vind[i];// reorder... : i;
+					IndexType index = vind[i];// reorder... : i;
 					DistanceType dist = distance(vec, index, (DIM>0 ? DIM : dim));
 					if (dist<worst_dist) {
 						result_set.addPoint(dist,vind[i]);
