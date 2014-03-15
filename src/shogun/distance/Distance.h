@@ -191,13 +191,13 @@ class CDistance : public CSGObject
 		 *
 		 * @return left-hand side features
 		 */
-		inline CFeatures* get_lhs() const { SG_REF(lhs); return lhs; };
+		inline CFeatures* get_lhs() { SG_REF(lhs); return lhs; };
 
 		/** get right-hand side features used in distance matrix
 		 *
 		 * @return right-hand side features
 		 */
-		inline CFeatures* get_rhs() const { SG_REF(rhs); return rhs; };
+		inline CFeatures* get_rhs() { SG_REF(rhs); return rhs; };
 
 		/** replace right-hand side features used in distance matrix
 		 *
