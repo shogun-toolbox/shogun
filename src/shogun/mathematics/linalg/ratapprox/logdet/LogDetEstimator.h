@@ -37,6 +37,7 @@ public:
 
 	/**
 	 * constructor for SGSparseMatrix<float64_t>
+	 * available only when Eigen3 library installed.
 	 * Using the default methods: CSerialComputationEngine,CLanczosEigenSolver,
 	 * CLogRationalApproximationCGM with 1E-5 accuracy, CCGMShiftedFamilySolver,
 	 * when COLPACK package is installed CProbingsampler with power=1,
