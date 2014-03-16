@@ -29,11 +29,8 @@
  */
 
 #include <gtest/gtest.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/features/DenseFeatures.h>
 #include <shogun/multiclass/tree/BinaryTreeMachineNode.h>
 #include <shogun/multiclass/tree/ID3TreeNodeData.h>
-#include <shogun/lib/DynamicObjectArray.h>
 
 using namespace std;
 using namespace shogun;

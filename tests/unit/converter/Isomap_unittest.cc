@@ -1,6 +1,6 @@
 #include <vector>
 #include <set>
-#include <algorithm>
+#include <queue>
 
 #include <shogun/converter/Isomap.h>
 #include <shogun/distance/EuclideanDistance.h>

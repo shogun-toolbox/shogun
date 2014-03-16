@@ -28,7 +28,6 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
-#include <shogun/mathematics/Math.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/multiclass/tree/ID3ClassifierTree.h>

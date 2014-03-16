@@ -7,7 +7,6 @@
  * Written (W) 2014 Thoralf Klein
  */
 
-#include <shogun/lib/config.h>
 #include <gtest/gtest.h>
 
 #include <shogun/lib/SGVector.h>
