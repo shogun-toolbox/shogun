@@ -36,6 +36,7 @@ CLogDetEstimator::CLogDetEstimator()
 	init();
 }
 
+#ifdef HAVE_EIGEN3
 CLogDetEstimator::CLogDetEstimator(SGSparseMatrix<float64_t> sparse_mat) 
 	: CSGObject()
 {
@@ -68,6 +69,7 @@ CLogDetEstimator::CLogDetEstimator(SGSparseMatrix<float64_t> sparse_mat)
 		m_computation_engine->get_name(), m_operator_log->get_name(),
 		m_trace_sampler->get_name());
 }
+#endif //HAVE_EIGEN3
 
 CLogDetEstimator::CLogDetEstimator(CTraceSampler* trace_sampler,
 	COperatorFunction<float64_t>* operator_log,
