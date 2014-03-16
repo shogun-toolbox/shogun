@@ -67,6 +67,7 @@
 %include "Metric_includes.i"
 %include "GaussianProcess_includes.i"
 %include "Ensemble_includes.i"
+%include "NeuralNets_includes.i"
 
 %include "SGBase.i"
 %include "Machine.i"
@@ -93,6 +94,7 @@
 %include "Metric.i"
 %include "GaussianProcess.i"
 %include "Ensemble.i"
+%include "NeuralNets.i"
 
 #if defined(SWIGPERL)
 %include "abstract_types_extension.i"
