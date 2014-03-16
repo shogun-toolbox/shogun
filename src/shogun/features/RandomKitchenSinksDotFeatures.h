@@ -20,17 +20,17 @@ namespace shogun
  * as mentioned in http://books.nips.cc/papers/files/nips21/NIPS2008_0885.pdf.
  *
  * The Random Kitchen Sinks algorithm expects:
- *		a dataset to work on
- *		a function phi such that |phi(x; a)| <= 1, the a's are the function parameters
- *		a probability distrubution p, from which to draw the a's
- *		the number of samples K to draw from p.
+ *              - a dataset to work on
+ *              - a function phi such that |phi(x; a)| <= 1, the a's are the function parameters
+ *              - a probability distrubution p, from which to draw the a's
+ *              - the number of samples K to draw from p.
  *
  * Then:
- *		it draws K a's from p
- *		it computes for each vector in the dataset
- *			Zi = [phi(Xi;a0), ..., phi(Xi;aK)]
- *		and then solves the empirical risk minimization problem for all Zi, either
- *			through least squares or through a linear SVM.
+ *              1. it draws K a's from p
+ *              2. it computes for each vector in the dataset
+ *                         Zi = [phi(Xi;a1), ..., phi(Xi;aK)]
+ *              3. it solves the empirical risk minimization problem for all Zi, either
+ *                 through least squares or through a linear SVM.
  *
  * This class implements the vector transformation on-the-fly whenever it is needed.
  * In order for it to work, the class expects the user to implement a subclass of
