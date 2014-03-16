@@ -41,9 +41,9 @@ const char FNAME_TEST[]  = "../../../data/multilabel/scene_test.txt";
 
 void gen_data(SGMatrix< int32_t >& labels, SGMatrix< float64_t >& feats)
 {
-    int32_t dim		     = 2;
+    int32_t dim		 = 2;
     int32_t num_sample	 = 100;
-    int32_t num_classes =	6;
+    int32_t num_classes  = 6;
     
     labels = SGMatrix<int32_t>(num_classes, num_sample);
     feats  = SGMatrix<float64_t>(dim, num_sample);
