@@ -29,8 +29,6 @@
  */
 
 #include <gtest/gtest.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/features/DenseFeatures.h>
 #include <shogun/multiclass/tree/TreeMachine.h>
 #include <shogun/multiclass/tree/ID3TreeNodeData.h>
 #include <shogun/lib/DynamicObjectArray.h>

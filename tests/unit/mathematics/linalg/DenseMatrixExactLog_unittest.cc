@@ -24,7 +24,6 @@
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/mathematics/linalg/linop/DenseMatrixOperator.h>
 #include <shogun/mathematics/linalg/ratapprox/logdet/opfunc/DenseMatrixExactLog.h>
-#include <shogun/mathematics/linalg/ratapprox/logdet/computation/job/DenseExactLogJob.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;

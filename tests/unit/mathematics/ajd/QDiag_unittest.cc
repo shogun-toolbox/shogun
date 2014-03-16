@@ -1,10 +1,8 @@
-#include <shogun/base/init.h>
 #include <shogun/lib/common.h>
 #include <gtest/gtest.h>
 
 #ifdef HAVE_EIGEN3
 
-#include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGNDArray.h>
 

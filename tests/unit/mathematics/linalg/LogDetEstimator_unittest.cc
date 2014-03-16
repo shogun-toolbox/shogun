@@ -30,7 +30,6 @@
 #include <shogun/mathematics/linalg/linsolver/DirectLinearSolverComplex.h>
 #include <shogun/mathematics/linalg/linsolver/CGMShiftedFamilySolver.h>
 #include <shogun/mathematics/linalg/ratapprox/logdet/LogDetEstimator.h>
-#include <shogun/lib/computation/jobresult/ScalarResult.h>
 #include <shogun/lib/computation/engine/SerialComputationEngine.h>
 #include <gtest/gtest.h>
 

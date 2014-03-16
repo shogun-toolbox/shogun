@@ -1,4 +1,3 @@
-#include <shogun/base/init.h>
 #include <shogun/lib/common.h>
 #include <gtest/gtest.h>
 

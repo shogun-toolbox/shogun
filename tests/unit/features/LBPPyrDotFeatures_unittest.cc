@@ -7,7 +7,6 @@
  * Written (W) 2013 Evangelos Anagnostopoulos
  */
 
-#include <shogun/base/init.h>
 #include <shogun/features/LBPPyrDotFeatures.h>
 #include <shogun/lib/SGMatrix.h>
 #include <gtest/gtest.h>
