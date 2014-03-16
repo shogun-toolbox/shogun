@@ -19,11 +19,13 @@
 #include <shogun/lib/JLCoverTree.h>
 #include <shogun/lib/Time.h>
 #include <shogun/base/Parameter.h>
+#include <shogun/lib/nanoflann/nanoflann_shogun.h>
 
 //#define BENCHMARK_KNN
 //#define DEBUG_KNN
 
 using namespace shogun;
+using namespace nanoflann;
 
 CKNN::CKNN()
 : CDistanceMachine()
@@ -31,16 +33,18 @@ CKNN::CKNN()
 	init();
 }
 
-CKNN::CKNN(int32_t k, CDistance* d, CLabels* trainlab)
+CKNN::CKNN(int32_t k, CDistance* d, CLabels* trainlab, Mode mode, int32_t leaf_size)
 : CDistanceMachine()
 {
 	init();
 
 	m_k=k;
-
+	
 	ASSERT(d)
 	ASSERT(trainlab)
 
+	set_mode(mode);
+	set_leaf_size(leaf_size);
 	set_distance(d);
 	set_labels(trainlab);
 	m_train_labels.vlen=trainlab->get_num_labels();
@@ -54,14 +58,16 @@ void CKNN::init()
 
 	m_k=3;
 	m_q=1.0;
-	m_use_covertree=false;
 	m_num_classes=0;
-
+	m_mode=BruteForce;
+	// Default value for KDTree leaf size, taken from nanoflann benchmark.
+	m_leaf_size = 20;
+	
 	/* use the method classify_multiply_k to experiment with different values
 	 * of k */
 	SG_ADD(&m_k, "m_k", "Parameter k", MS_NOT_AVAILABLE);
 	SG_ADD(&m_q, "m_q", "Parameter q", MS_AVAILABLE);
-	SG_ADD(&m_use_covertree, "m_use_covertree", "Parameter use_covertree", MS_NOT_AVAILABLE);
+	SG_ADD(&m_leaf_size, "m_leaf_size", "Parameter leaf_size", MS_NOT_AVAILABLE);
 	SG_ADD(&m_num_classes, "m_num_classes", "Number of classes", MS_NOT_AVAILABLE);
 }
 
@@ -182,7 +188,7 @@ CMulticlassLabels* CKNN::apply_multiclass(CFeatures* data)
 	float64_t tfinish, tparsed, tcreated, tqueried;
 #endif
 
-	if ( ! m_use_covertree )
+	if ( m_mode == BruteForce )
 	{
 		//get the k nearest neighbors of each example
 		SGMatrix<index_t> NN = nearest_neighbors();
@@ -205,7 +211,7 @@ CMulticlassLabels* CKNN::apply_multiclass(CFeatures* data)
 				(tfinish = tstart.cur_time_diff(false)));
 #endif
 	}
-	else	// Use cover tree
+	else if( m_mode == CoverTree )
 	{
 		// m_q != 1.0 not supported with cover tree because the neighbors
 		// are not retrieved in increasing order of distance to the query
@@ -278,6 +284,45 @@ CMulticlassLabels* CKNN::apply_multiclass(CFeatures* data)
 		SG_PRINT(">>>> JL applied in %9.4f\n", tstart.cur_time_diff(false))
 #endif
 	}
+	else // Use KDTree
+	{
+		float64_t* query;
+		int32_t len;
+		bool dofree;
+		
+		CDenseFeatures<float64_t> *f = ((CDenseFeatures<float64_t>*) distance->get_lhs());
+		float64_t *out_dist = SG_MALLOC(float64_t, m_k);
+		size_t *ret_idx = SG_MALLOC(size_t, m_k);
+		
+		typedef SGDataSetAdaptor<CDistance> SG2KD;
+		SG2KD* sg2kd = new SG2KD(distance);
+		
+		typedef KDTreeSingleIndexAdaptor< L2_Adaptor<float64_t, SG2KD> , SG2KD > 
+				my_kd_tree_t;
+		
+		my_kd_tree_t index( f->get_num_features(), 
+							*sg2kd, 
+							KDTreeSingleIndexAdaptorParams(m_leaf_size) );
+		index.buildIndex();
+		
+		for ( int32_t i = 0 ; i < num_lab ; i++ )
+		{
+			query = f->get_feature_vector(i, len, dofree);
+			index.knnSearch(&query[0], m_k, ret_idx, out_dist);
+			
+			for ( int32_t j = 0 ; j < m_k ; j++ )
+				train_lab[j] = m_train_labels[ ret_idx[j] ];
+			
+			int32_t out_idx = choose_class(classes, train_lab);
+			output->set_label(i, out_idx + m_min_label);
+			
+			f->free_feature_vector(query, len, dofree);
+		}
+		SG_UNREF(f);
+		SG_FREE(ret_idx);
+		SG_FREE(out_dist);
+		delete sg2kd;
+	}
 
 	SG_FREE(classes);
 	SG_FREE(train_lab);
@@ -330,14 +375,18 @@ CMulticlassLabels* CKNN::classify_NN()
 	return output;
 }
 
-SGMatrix<int32_t> CKNN::classify_for_multiple_k()
+SGMatrix<int32_t> CKNN::classify_for_multiple_k(CFeatures* data)
 {
+	if (data)
+		init_distance(data);
+	else if( distance->get_lhs() == distance->get_rhs())
+		SG_DEBUG("Training set and query set are the same!\n");
 	ASSERT(m_num_classes>0)
 	ASSERT(distance)
 	ASSERT(distance->get_num_vec_rhs())
 
 	int32_t num_lab=distance->get_num_vec_rhs();
-	ASSERT(m_k<=num_lab)
+	ASSERT(m_k<=distance->get_num_vec_lhs())
 
 	int32_t* output=SG_MALLOC(int32_t, m_k*num_lab);
 
@@ -350,7 +399,7 @@ SGMatrix<int32_t> CKNN::classify_for_multiple_k()
 	SG_INFO("%d test examples\n", num_lab)
 	CSignal::clear_cancel();
 
-	if ( ! m_use_covertree )
+	if ( m_mode==BruteForce )
 	{
 		//get the k nearest neighbors of each example
 		SGMatrix<index_t> NN = nearest_neighbors();
@@ -364,7 +413,7 @@ SGMatrix<int32_t> CKNN::classify_for_multiple_k()
 			choose_class_for_multiple_k(output+i, classes, train_lab, num_lab);
 		}
 	}
-	else	// Use cover tree
+	else if ( m_mode==CoverTree )
 	{
 		//allocation for distances to nearest neighbors
 		float64_t* dists=SG_MALLOC(float64_t, m_k);
@@ -412,7 +461,45 @@ SGMatrix<int32_t> CKNN::classify_for_multiple_k()
 
 		SG_FREE(dists);
 	}
-
+	else // Use KDTree
+	{
+		float64_t* query;
+		int32_t len;
+		bool dofree;
+		
+		CDenseFeatures<float64_t> *f = ((CDenseFeatures<float64_t>*) distance->get_lhs());
+		float64_t *out_dist = SG_MALLOC(float64_t, m_k);
+		size_t *ret_idx = SG_MALLOC(size_t, m_k);
+		
+		typedef SGDataSetAdaptor<CDistance> SG2KD;
+		SG2KD* sg2kd = new SG2KD(distance);
+		
+		typedef KDTreeSingleIndexAdaptor< L2_Adaptor<float64_t, SG2KD> , SG2KD > 
+				my_kd_tree_t;
+		
+		my_kd_tree_t index( f->get_num_features(), 
+							*sg2kd, 
+							KDTreeSingleIndexAdaptorParams(m_leaf_size) );
+		index.buildIndex();
+		
+		for ( int32_t i = 0 ; i < num_lab ; i++ )
+		{
+			query = f->get_feature_vector(i, len, dofree);
+			index.knnSearch(&query[0], m_k, ret_idx, out_dist);
+			
+			for ( int32_t j = 0 ; j < m_k ; j++ )
+				train_lab[j] = m_train_labels[ ret_idx[j] ];
+			
+			choose_class_for_multiple_k(output+i, classes, train_lab, num_lab);
+			
+			f->free_feature_vector(query, len, dofree);
+		}
+		SG_UNREF(f);
+		SG_FREE(ret_idx);
+		SG_FREE(out_dist);
+		delete sg2kd;
+	}
+	
 	SG_FREE(train_lab);
 	SG_FREE(classes);
 
