@@ -20,6 +20,7 @@
 #include <shogun/base/SGObject.h>
 #include <shogun/features/FeatureTypes.h>
 #include <shogun/features/Features.h>
+#include <shogun/lib/SGMatrix.h>
 
 namespace shogun
 {

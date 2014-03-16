@@ -12,6 +12,7 @@
 
 #include <shogun/lib/config.h>
 #include <shogun/mathematics/linalg/linsolver/LinearSolver.h>
+#include <shogun/lib/SGVector.h> 
 
 namespace shogun
 {

@@ -15,6 +15,7 @@
 
 #include <shogun/base/SGObject.h>
 #include <shogun/labels/Labels.h>
+#include <shogun/lib/SGMatrix.h>
 
 namespace shogun
 {

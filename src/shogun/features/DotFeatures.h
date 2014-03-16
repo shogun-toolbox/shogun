@@ -14,6 +14,7 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/features/Features.h>
+#include <shogun/lib/SGMatrix.h>
 
 namespace shogun
 {

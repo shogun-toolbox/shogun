@@ -12,6 +12,7 @@
 #ifdef HAVE_EIGEN3
 #include <shogun/mathematics/linalg/linop/DenseMatrixOperator.h>
 #include <shogun/mathematics/linalg/eigsolver/DirectEigenSolver.h>
+#include <shogun/lib/SGMatrix.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;

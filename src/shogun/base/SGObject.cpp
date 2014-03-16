@@ -18,6 +18,7 @@
 #include <shogun/base/DynArray.h>
 #include <shogun/lib/Map.h>
 #include <shogun/lib/SGStringList.h>
+#include <shogun/io/SerializableFile.h>
 
 #include "class_list.h"
 
