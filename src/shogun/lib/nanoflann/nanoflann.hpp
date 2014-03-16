@@ -31,7 +31,10 @@
  ******************************************************************************/
 
 /*******************************************************************************
+<<<<<<< HEAD
  * Changes made to handle Shogun Objects
+=======
+>>>>>>> 805e57c5dcadc804fc6b2dc4aedb7781e9c90634
  * 2014 Dhruv Jawali (dhruv13.j@gmail.com) changed const qualifiers to allow
  * 							shogun::CDistance Objects to act as data sources.
  ******************************************************************************/

@@ -1,7 +1,11 @@
 /***********************************************************************
  * Software License Agreement (BSD License)
  *
+<<<<<<< HEAD
  * Written (W) 2014 Dhruv Jawali (dhruv13.j@gmail.com)
+=======
+ * Copyright 2014 Dhruv Jawali (dhruv13.j@gmail.com)
+>>>>>>> 805e57c5dcadc804fc6b2dc4aedb7781e9c90634
  *   All rights reserved.
  *
  * THE BSD LICENSE
@@ -30,9 +34,13 @@
 
 #ifndef _SGADAPTOR_H__
 #define _SGADAPTOR_H__
+<<<<<<< HEAD
 #include <shogun/distance/Distance.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/Features.h>
+=======
+
+>>>>>>> 805e57c5dcadc804fc6b2dc4aedb7781e9c90634
 #include <shogun/lib/nanoflann/nanoflann.hpp>
 
 /** Adaptor Class to use the data stored within CDistance objects directly to 
@@ -70,7 +78,11 @@ class SGDataSetAdaptor
 		/** Get the dim'th component of the idx'th feature vector
 		  * @param idx Index of the feature vector
 		  * @param dim The component of the feature vector to fetch
+<<<<<<< HEAD
 		  * @return value
+=======
+		  * @return 
+>>>>>>> 805e57c5dcadc804fc6b2dc4aedb7781e9c90634
 		  */
 		inline ElementType kdtree_get_pt(int32_t idx, int dim)
 		{
@@ -79,7 +91,10 @@ class SGDataSetAdaptor
 			CDenseFeatures<ElementType> *f = ((CDenseFeatures<ElementType>*) distance().get_lhs());
 			SGVector<ElementType> vec = f->get_feature_vector(idx);
 			val = vec[dim];
+<<<<<<< HEAD
 			f->free_feature_vector(vec, idx);
+=======
+>>>>>>> 805e57c5dcadc804fc6b2dc4aedb7781e9c90634
 			
 			SG_UNREF(f);
 			return val;
