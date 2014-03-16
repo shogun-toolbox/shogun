@@ -10,6 +10,7 @@
 
 #include <shogun/machine/OnlineLinearMachine.h>
 #include <shogun/base/Parameter.h>
+#include <shogun/labels/RegressionLabels.h>
 
 using namespace shogun;
 

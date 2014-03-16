@@ -16,6 +16,8 @@
 
 namespace shogun
 {
+	class LatentModel;
+
 	/** @brief LatentSVM class
 	 * Latent SVM implementation based on [1].
 	 * For optimization this implementation uses SVMOcas.
