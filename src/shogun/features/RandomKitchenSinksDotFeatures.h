@@ -20,14 +20,10 @@ namespace shogun
  * as mentioned in http://books.nips.cc/papers/files/nips21/NIPS2008_0885.pdf.
  *
  * The Random Kitchen Sinks algorithm expects:
- *              - Item 1
- *                a dataset to work on
- *              - Item 2
- *                a function phi such that |phi(x; a)| <= 1, the a's are the function parameters
- *              - Item 3
- *                a probability distrubution p, from which to draw the a's
- *              - Item 4
- *                the number of samples K to draw from p.
+ *              - a dataset to work on
+ *              - a function phi such that |phi(x; a)| <= 1, the a's are the function parameters
+ *              - a probability distrubution p, from which to draw the a's
+ *              - the number of samples K to draw from p.
  *
  * Then:
  *              1. it draws K a's from p
