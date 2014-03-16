@@ -16,7 +16,7 @@
 #include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/lib/computation/engine/SerialComputationEngine.h>
 #include <shogun/lib/computation/jobresult/ScalarResult.h>
-#include <shogun/mathematics/linalg/ratapprox/logdet/computation/aggregator/IndividualJobResultAggregator.h>
+#include <shogun/lib/computation/aggregator/JobResultAggregator.h>
 #include <shogun/features/SparseFeatures.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/linalg/linop/DenseMatrixOperator.h>

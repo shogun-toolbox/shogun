@@ -8,7 +8,7 @@
  */
 
 #include <shogun/lib/memory.h>
-#include <shogun/features/DenseFeatures.h>
+#include <shogun/features/StringFeatures.h>
 #include <shogun/lib/SGStringList.h>
 #include <gtest/gtest.h>
 
