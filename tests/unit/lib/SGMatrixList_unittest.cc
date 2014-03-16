@@ -1,6 +1,5 @@
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGMatrixList.h>
-#include <shogun/lib/SGVector.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/memory.h>
 #include <gtest/gtest.h>

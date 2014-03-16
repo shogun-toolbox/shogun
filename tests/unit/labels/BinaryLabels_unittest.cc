@@ -7,7 +7,6 @@
  * Written (W) 2012-2013 Heiko Strathmann
  */
 
-#include <shogun/base/init.h>
 #include <shogun/labels/BinaryLabels.h>
 #include <gtest/gtest.h>
 

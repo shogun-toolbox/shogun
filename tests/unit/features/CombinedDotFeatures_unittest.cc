@@ -7,7 +7,6 @@
  * Written (W) 2012-2013 Evangelos Anagnostopoulos
  */
 
-#include <shogun/base/init.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/SparseFeatures.h>
 #include <shogun/features/CombinedDotFeatures.h>

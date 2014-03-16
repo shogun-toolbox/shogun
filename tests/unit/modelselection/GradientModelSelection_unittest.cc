@@ -18,7 +18,6 @@
 #include <shogun/machine/gp/ExactInferenceMethod.h>
 #include <shogun/machine/gp/EPInferenceMethod.h>
 #include <shogun/machine/gp/ZeroMean.h>
-#include <shogun/evaluation/GradientResult.h>
 #include <shogun/machine/gp/GaussianLikelihood.h>
 #include <shogun/machine/gp/ProbitLikelihood.h>
 #include <shogun/regression/GaussianProcessRegression.h>

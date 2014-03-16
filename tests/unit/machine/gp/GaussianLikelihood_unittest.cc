@@ -13,9 +13,7 @@
 
 #include <shogun/base/Parameter.h>
 #include <shogun/labels/RegressionLabels.h>
-#include <shogun/features/DenseFeatures.h>
 #include <shogun/machine/gp/GaussianLikelihood.h>
-#include <shogun/evaluation/GradientResult.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;

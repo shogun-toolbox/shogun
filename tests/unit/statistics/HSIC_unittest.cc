@@ -7,7 +7,6 @@
  * Written (W) 2014 Heiko Strathmann, pl8787
  */
 
-#include <shogun/base/init.h>
 #include <shogun/statistics/HSIC.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/features/DenseFeatures.h>
