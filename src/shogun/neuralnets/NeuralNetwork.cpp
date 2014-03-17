@@ -17,7 +17,7 @@ using namespace shogun;
 
 CNeuralNetwork::CNeuralNetwork()
 : CSGObject(), m_num_inputs(0), m_num_layers(0), m_layers(NULL),
-	m_L2_coeff(0.0), m_batch_size(1)
+	m_L2_coeff(0.0), m_total_num_parameters(), m_batch_size(1)
 	
 {
 	init();
