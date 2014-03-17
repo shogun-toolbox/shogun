@@ -32,13 +32,12 @@
 #include <shogun/distance/Distance.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/Features.h>
-#include <shogun/lib/nanoflann/nanoflann.hpp>
 
 /** Adaptor Class to use the data stored within CDistance objects directly to 
   * build and search on a kdtree. This is called within KNN.h to add kdtree mode
   * support.
   *
-  *	@param CDist Type of CDistance Object (currently supports CEuclideanDistance)
+  * @param CDist Type of CDistance Object (currently supports CEuclideanDistance)
   * @param ElementType Type of data held within CDistance::{lhs, rhs}
   */
 template <typename CDist, class ElementType = float64_t>
@@ -46,14 +45,19 @@ class SGDataSetAdaptor
 {
 	public:
 		/** The main CDistance Object */
-		CDist *dist;
+		CDist *m_dist;
 	
-		SGDataSetAdaptor(CDist *dist_) : dist(dist_) { }
+	public:
+		
+		/** Default Constructor, initializes the distance object.
+		  * @param dist Distance Object holding the data.
+		  */
+		SGDataSetAdaptor(CDist *dist) : m_dist(dist) { }
 		
 		/** CRTP Helper Function
 		  * @return CDistance Object
 		  */
-		inline CDist& distance() { return *dist; }
+		inline CDist& distance() { return *m_dist; }
 	
 		/** Get the number of Training Set Data Points
 		  * @return Number of features within CDistance::lhs
@@ -88,7 +92,7 @@ class SGDataSetAdaptor
 		  * standard bbox computation loop.
 		  */
 		template <class BBOX>
-			bool kdtree_get_bbox(BBOX &bb) { return false; }
+		bool kdtree_get_bbox(BBOX &bb) { return false; }
 };
 
 #endif
