@@ -13,6 +13,7 @@
  * program to do binary classifications on user-provided inputs.
  */
 
+#include <shogun/base/init.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/Time.h>
 

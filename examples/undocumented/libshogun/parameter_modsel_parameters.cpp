@@ -8,6 +8,7 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
+#include <shogun/base/init.h>
 #include <shogun/lib/config.h>
 #include <shogun/classifier/svm/LibSVM.h>
 #include <shogun/classifier/svm/LibLinear.h>

@@ -8,6 +8,8 @@
  * Written (W) 2012 Heiko Strathmann
  * Copyright (C) 2008-2009 Fraunhofer Institute FIRST and Max Planck Society
  */
+
+#include <shogun/base/init.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/features/DenseFeatures.h>

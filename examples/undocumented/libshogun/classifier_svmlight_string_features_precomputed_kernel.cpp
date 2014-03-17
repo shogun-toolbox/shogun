@@ -6,6 +6,8 @@
  *
  * Written (W) 2013 Heiko Strathmann
  */
+
+#include <shogun/base/init.h>
 #include <shogun/lib/config.h>
 
 #include <shogun/kernel/string/DistantSegmentsKernel.h>
