@@ -9,6 +9,7 @@
 #include <shogun/lib/config.h>
 
 #include <shogun/kernel/string/DistantSegmentsKernel.h>
+#include <shogun/kernel/CustomKernel.h>
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/features/StringFeatures.h>
 #include <shogun/classifier/svm/SVMLight.h>
