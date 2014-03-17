@@ -1,3 +1,33 @@
+/*
+ * Copyright (c) The Shogun Machine Learning Toolbox
+ * Written (w) 2014 Parijat Mazumdar
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * The views and conclusions contained in the software and documentation are those
+ * of the authors and should not be interpreted as representing official policies,
+ * either expressed or implied, of the Shogun Development Team.
+ */
+
 #include <shogun/machine/gp/SoftMaxLikelihood.h>
 
 #ifdef HAVE_EIGEN3
@@ -27,11 +57,19 @@ SGVector<float64_t> CSoftMaxLikelihood::get_log_probability_f(const CLabels* lab
 	for (int32_t i=0;i<labels.vlen;i++)
 		REQUIRE(((labels[i]>-1)&&(labels[i]<func.vlen/labels.vlen)),
 		 "Labels must be between 0 and C(ie %d here). Currently labels[%d] is"
-		"%d",func.vlen/labels.vlen,i,labels[i]);
+		"%d\n",func.vlen/labels.vlen,i,labels[i]);
 
 	// labels.vlen=num_rows  func.vlen/num_rows=num_cols
 	Map<MatrixXd> eigen_f(func.vector,labels.vlen,func.vlen/labels.vlen);
-	VectorXd log_sum_exp=((eigen_f.array().exp()).rowwise().sum()).log();
+
+	// log_sum_exp trick
+	VectorXd max_coeff=eigen_f.rowwise().maxCoeff();
+	eigen_f=eigen_f-max_coeff*MatrixXd::Ones(1,eigen_f.cols());
+	VectorXd log_sum_exp=((eigen_f.array().exp()).rowwise().sum()).array().log();
+	log_sum_exp=log_sum_exp+max_coeff;
+
+	// restore original matrix
+	eigen_f=eigen_f+max_coeff*MatrixXd::Ones(1,eigen_f.cols());
 
 	SGVector<float64_t> ret=SGVector<float64_t>(labels.vlen);
 	Map<VectorXd> eigen_ret(ret.vector,ret.vlen);
@@ -72,7 +110,7 @@ SGVector<float64_t> CSoftMaxLikelihood::get_log_probability_derivative1_f(
 	for (int32_t i=0;i<labels.vlen;i++)
 		REQUIRE(((labels[i]>-1)&&(labels[i]<func.num_cols)),
 		 "Labels must be between 0 and C(ie %d here). Currently labels[%d] is"
-		"%d",func.num_cols,i,labels[i]);
+		"%d\n",func.num_cols,i,labels[i]);
 
 	SGVector<float64_t> ret=SGVector<float64_t>(func.num_rows*func.num_cols);
 	memcpy(ret.vector,func.matrix,func.num_rows*func.num_cols*sizeof(float64_t));
