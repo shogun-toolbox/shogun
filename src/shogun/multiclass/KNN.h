@@ -64,7 +64,14 @@ class CKNN : public CDistanceMachine
 		  * 2) CoverTree.
 		  * 3) KDTree.
 		  */
-		enum Mode { BruteForce, CoverTree, KDTree };
+		enum EKNNMode 
+		{
+		    BruteForce,
+		    CoverTree,
+		#ifdef HAVE_NANOFLANN
+		    KDTree
+		#endif
+		};
 
 		/** default constructor */
 		CKNN();
@@ -77,7 +84,7 @@ class CKNN : public CDistanceMachine
 		 * @param mode Mode of Operation, default value = BruteForce
 		 * @param leaf_size Leaf Size for KDTree, default value = 20
 		 */
-		CKNN(int32_t k, CDistance* d, CLabels* trainlab, Mode mode = BruteForce,
+		CKNN(int32_t k, CDistance* d, CLabels* trainlab, EKNNMode mode = BruteForce,
 			 int32_t leaf_size = 20);
 		virtual ~CKNN();
 
@@ -167,22 +174,23 @@ class CKNN : public CDistanceMachine
 		/** set Mode of Operation for KNN
 		 * @param mode
 		 */
-		inline void set_mode(Mode mode) { m_mode = mode; }
+		inline void set_mode(EKNNMode mode) { m_mode = mode; }
 		
 		/** get Mode of Operation for KNN
 		 * @return mode
 		 */
-		inline bool get_use_covertree() const { return m_mode; }
+		inline EKNNMode get_mode() const { return m_mode; }
 
-		/** set Mode of Operation for KNN
-		 * @param mode
+
+		/** set Leaf Size of KDTree
+		 * @param ls
 		 */
 		inline void set_leaf_size(int32_t ls) { m_leaf_size = ls; }
 		
-		/** get Mode of Operation for KNN
-		 * @return mode
+		/** get Leaf Size of KDTree
+		 * @return leaf_size
 		 */
-		inline bool get_leaf_size() const { return m_leaf_size; }
+		inline int32_t get_leaf_size() const { return m_leaf_size; }
 		
 		/** @return object name */
 		virtual const char* get_name() const { return "KNN"; }
@@ -247,7 +255,7 @@ class CKNN : public CDistanceMachine
 	
 	protected:
 		/// the Mode of Operation
-		Mode m_mode;
+		EKNNMode m_mode;
 		
 		/// the k parameter in KNN
 		int32_t m_k;

@@ -29,38 +29,49 @@
 
 #ifndef _SGADAPTOR_H__
 #define _SGADAPTOR_H__
+
+#include <shogun/lib/config.h>
+
 #include <shogun/distance/Distance.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/Features.h>
-#include <shogun/lib/nanoflann/nanoflann.hpp>
+
+#ifdef HAVE_NANOFLANN
+
+#include <nanoflann.hpp>
 
 /** Adaptor Class to use the data stored within CDistance objects directly to 
   * build and search on a kdtree. This is called within KNN.h to add kdtree mode
   * support.
   *
-  *	@param CDist Type of CDistance Object (currently supports CEuclideanDistance)
+  * @param CDist Type of CDistance Object (currently supports CEuclideanDistance)
   * @param ElementType Type of data held within CDistance::{lhs, rhs}
   */
 template <typename CDist, class ElementType = float64_t>
 class SGDataSetAdaptor
 {
-	public:
+	private:
 		/** The main CDistance Object */
-		CDist *dist;
+		const CDist *m_dist;
 	
-		SGDataSetAdaptor(CDist *dist_) : dist(dist_) { }
+	public:
 		
-		/** CRTP Helper Function
+		/** Default Constructor, initializes the distance object.
+		  * @param dist Distance Object holding the data.
+		  */
+		SGDataSetAdaptor(const CDist *dist) : m_dist(dist) { }
+		
+		/** Helper Function
 		  * @return CDistance Object
 		  */
-		inline CDist& distance() { return *dist; }
+		inline const CDist& distance() const { return *m_dist; }
 	
 		/** Get the number of Training Set Data Points
 		  * @return Number of features within CDistance::lhs
 		  */
-		inline size_t kdtree_get_point_count()
+		inline size_t kdtree_get_point_count() const
 		{
-			CDenseFeatures<ElementType> *f = ((CDenseFeatures<ElementType>*) distance().get_lhs());
+			CDenseFeatures<ElementType> *f = CDenseFeatures<ElementType>::obtain_from_generic( const_cast<CDist&>( distance() ).get_lhs() );
 			size_t num =  f->get_num_vectors();
 			SG_UNREF(f);
 			return num;
@@ -71,11 +82,11 @@ class SGDataSetAdaptor
 		  * @param dim The component of the feature vector to fetch
 		  * @return value
 		  */
-		inline ElementType kdtree_get_pt(int32_t idx, int dim)
+		inline ElementType kdtree_get_pt(const int32_t idx, const int32_t dim) const
 		{
 			ElementType val;
 			
-			CDenseFeatures<ElementType> *f = ((CDenseFeatures<ElementType>*) distance().get_lhs());
+			CDenseFeatures<ElementType> *f = CDenseFeatures<ElementType>::obtain_from_generic( const_cast<CDist&>( distance() ).get_lhs() );
 			SGVector<ElementType> vec = f->get_feature_vector(idx);
 			val = vec[dim];
 			f->free_feature_vector(vec, idx);
@@ -88,7 +99,8 @@ class SGDataSetAdaptor
 		  * standard bbox computation loop.
 		  */
 		template <class BBOX>
-			bool kdtree_get_bbox(BBOX &bb) { return false; }
+		bool kdtree_get_bbox(BBOX &bb) const { return false; }
 };
 
 #endif
+#endif //HAVE_NANOFLANN
