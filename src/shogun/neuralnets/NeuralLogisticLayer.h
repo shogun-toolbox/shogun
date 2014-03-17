@@ -10,8 +10,6 @@
 #ifndef __NEURALLOGISTICLAYER_H__
 #define __NEURALLOGISTICLAYER_H__
 
-#include <shogun/lib/config.h>
-#include <shogun/lib/common.h>
 #include <shogun/neuralnets/NeuralLinearLayer.h>
 
 #ifdef HAVE_EIGEN3
@@ -52,7 +50,7 @@ public:
 	 * previous layer, matrix of size previous_layer_num_neurons * batch_size
 	 */
 	virtual void compute_activations(float64_t* parameters,
-									float64_t* previous_layer_activations);
+			float64_t* previous_layer_activations);
 	
 	/** Computes the gradients of the error with respect to this layer's
 	 * activations. Results are stored in m_local_gradients. 

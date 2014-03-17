@@ -85,13 +85,3 @@ void CNeuralLayer::shallow_copy(const CNeuralLayer &orig)
 	m_input_gradients = SGVector<float64_t>(orig.m_input_gradients);
 	m_local_gradients = SGVector<float64_t>(orig.m_local_gradients);
 }
-
-
-
-
-
-
-
-
-
-

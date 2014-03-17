@@ -29,7 +29,7 @@ CNeuralLinearLayer(num_neurons)
 }
 
 void CNeuralLogisticLayer::compute_activations(float64_t* parameters,
-										float64_t* previous_layer_activations)
+		float64_t* previous_layer_activations)
 {
 	CNeuralLinearLayer::compute_activations(parameters, 
 											previous_layer_activations);
@@ -41,7 +41,7 @@ void CNeuralLogisticLayer::compute_activations(float64_t* parameters,
 }
 
 void CNeuralLogisticLayer::compute_local_gradients(bool is_output, 
-														float64_t* p)
+		float64_t* p)
 {
 	CNeuralLinearLayer::compute_local_gradients(is_output,p);
 	
@@ -50,13 +50,3 @@ void CNeuralLogisticLayer::compute_local_gradients(bool is_output,
 	for (int32_t i=0; i<length; i++)
 		m_local_gradients[i] *= m_activations[i] * (1.0-m_activations[i]);
 }
-
-
-
-
-
-
-
-
-
-

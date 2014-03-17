@@ -76,7 +76,7 @@ CNeuralNetwork::~CNeuralNetwork()
 }
 
 CDenseFeatures<float64_t>* CNeuralNetwork::apply(
-											CDenseFeatures<float64_t>* inputs)
+		CDenseFeatures<float64_t>* inputs)
 {
 	ASSERT(inputs->get_num_features()==m_num_inputs);
 	
@@ -101,12 +101,12 @@ CDenseFeatures<float64_t>* CNeuralNetwork::apply(
 }
 
 void CNeuralNetwork::train_gradient_descent(
-										CDenseFeatures< float64_t >* inputs,	
-										CDenseFeatures< float64_t >* targets,
-										int32_t max_num_epochs,
-										int32_t batch_size, 
-										float64_t learning_rate,		
-										float64_t momentum)
+		CDenseFeatures< float64_t >* inputs,	
+		CDenseFeatures< float64_t >* targets,
+		int32_t max_num_epochs,
+		int32_t batch_size, 
+		float64_t learning_rate,		
+		float64_t momentum)
 {
 	int32_t training_set_size = inputs->get_num_vectors();
 	int32_t _batch_size = batch_size;
@@ -321,20 +321,3 @@ void CNeuralNetwork::shallow_copy(const CNeuralNetwork& orig)
 	m_param_gradients = SGVector<float64_t>(orig.m_param_gradients);
 	m_param_regularizable = SGVector<bool>(orig.m_param_regularizable);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

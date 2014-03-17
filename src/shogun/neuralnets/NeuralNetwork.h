@@ -91,11 +91,11 @@ public:
 	 * @param momentum momentum multiplier
 	 */
 	virtual void train_gradient_descent(CDenseFeatures<float64_t>* inputs,
-										CDenseFeatures<float64_t>* targets,
-										int32_t max_num_epochs = 1000,
-										int32_t batch_size = 0,
-										float64_t learning_rate = 0.1,
-										float64_t momentum = 0.9);
+			CDenseFeatures<float64_t>* targets,
+			int32_t max_num_epochs = 1000,
+			int32_t batch_size = 0,
+			float64_t learning_rate = 0.1,
+			float64_t momentum = 0.9);
 	
 	/** Checks if the gradients computed using backpropagation are correct by 
 	 * comparing them with gradients computed using numerical approximation.
@@ -109,7 +109,7 @@ public:
 	 * @return true if the gradients are correct, false otherwise
 	 */
 	virtual bool check_gradients(float64_t epsilon=1.0e-06, 
-								 float64_t tolerance=1.0e-09);
+			float64_t tolerance=1.0e-09);
 	
 	/** returns the totat number of parameters in the network */
 	int32_t get_num_parameters() {return m_total_num_parameters;}
@@ -177,7 +177,7 @@ protected:
 	 * update the activations before the error is computed.
 	 */
 	virtual float64_t compute_error(float64_t* targets, 
-									float64_t* inputs=NULL);
+			float64_t* inputs=NULL);
 	
 private:
 	/** returns a pointer to layer i in the network */

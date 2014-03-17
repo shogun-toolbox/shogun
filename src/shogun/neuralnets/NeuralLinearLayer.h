@@ -64,8 +64,8 @@ public:
 	 * parameters
 	 */
 	virtual void initialize_parameters(float64_t* parameters,
-										bool* parameter_regularizable,
-										float64_t sigma = 0.01f);
+			bool* parameter_regularizable,
+			float64_t sigma = 0.01f);
 	
 	/** Computes the activations of the neurons in this layer, results should 
 	 * be stored in m_activations
@@ -77,7 +77,7 @@ public:
 	 * previous layer, matrix of size previous_layer_num_neurons * batch_size
 	 */
 	virtual void compute_activations(float64_t* parameters,
-									float64_t* previous_layer_activations);
+			float64_t* previous_layer_activations);
 	
 	/** Computes the gradients that are relevent to this layer:
 	 *		- The gradients of the error with respect to the layer's parameters
@@ -104,10 +104,10 @@ public:
 	 * layer
 	 */
 	virtual void compute_gradients(float64_t* parameters, 
-									bool is_output,
-									float64_t* p,
-									float64_t* previous_layer_activations,
-									float64_t* parameter_gradients);
+			bool is_output,
+			float64_t* p,
+			float64_t* previous_layer_activations,
+			float64_t* parameter_gradients);
 	
 	/** Computes the error between the layer's current activations and the given
 	 * target activations. Should only be used with output layers
