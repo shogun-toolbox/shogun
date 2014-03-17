@@ -63,7 +63,7 @@ void CNeuralNetwork::initialize(int32_t num_inputs, CDynamicObjectArray* layers)
 	for (int32_t i=0; i<m_num_layers; i++)
 	{
 		get_layer(i)->initialize_parameters(get_layer_params(i),	
-											get_layer_param_regularizable(i));
+				get_layer_param_regularizable(i));
 		
 		get_layer(i)->set_batch_size(m_batch_size);
 	}
@@ -140,7 +140,7 @@ void CNeuralNetwork::train_gradient_descent(
 		for (int32_t j=0; j < training_set_size; j += _batch_size)
 		{
 			if (j+_batch_size>training_set_size) j = 
-												training_set_size-_batch_size;
+					training_set_size-_batch_size;
 			
 			float64_t* targets_batch = targets_matrix + j*get_num_outputs();
 			float64_t* inputs_batch = inputs_matrix + j*m_num_inputs;
@@ -151,7 +151,7 @@ void CNeuralNetwork::train_gradient_descent(
 			for (int32_t k=0; k<n_param; k++)
 			{
 				param_updates[k] = momentum*param_updates[k]
-									-learning_rate*m_param_gradients[k];
+						-learning_rate*m_param_gradients[k];
 					
 				m_params[k] += param_updates[k];
 			}
@@ -170,7 +170,7 @@ void CNeuralNetwork::forward_propagate(float64_t* inputs)
 	
 	for (int i=1; i<m_num_layers; i++)
 		get_layer(i)->compute_activations(get_layer_params(i),
-											get_layer(i-1)->get_activations());
+				get_layer(i-1)->get_activations());
 }
 
 void CNeuralNetwork::compute_gradients(float64_t* inputs, float64_t* targets)
@@ -180,7 +180,7 @@ void CNeuralNetwork::compute_gradients(float64_t* inputs, float64_t* targets)
 	if (m_num_layers==1)
 	{
 		get_layer(0)->compute_gradients(get_layer_params(0), true, targets, 
-										inputs ,get_layer_param_gradients(0));
+				inputs ,get_layer_param_gradients(0));
 	}
 	else
 	{
@@ -190,21 +190,21 @@ void CNeuralNetwork::compute_gradients(float64_t* inputs, float64_t* targets)
 			if (i==m_num_layers-1)
 			{
 				get_layer(i)->compute_gradients(get_layer_params(i), true, 
-								targets, get_layer(i-1)->get_activations(),
-								get_layer_param_gradients(i));
+						targets, get_layer(i-1)->get_activations(),
+						get_layer_param_gradients(i));
 			}
 			else if (i==0)
 			{
 				get_layer(i)->compute_gradients(get_layer_params(i), false,
-										get_layer(i+1)->get_input_gradients(),
-										inputs, get_layer_param_gradients(i));
+						get_layer(i+1)->get_input_gradients(),
+						inputs, get_layer_param_gradients(i));
 			}
 			else 
 			{
 				get_layer(i)->compute_gradients(get_layer_params(i), false,
-										get_layer(i+1)->get_input_gradients(),
-										get_layer(i-1)->get_activations(),
-										get_layer_param_gradients(i));
+						get_layer(i+1)->get_input_gradients(),
+						get_layer(i-1)->get_activations(),
+						get_layer_param_gradients(i));
 			}
 		}
 		
@@ -296,16 +296,17 @@ void CNeuralNetwork::init()
 	SG_ADD(&m_batch_size, "batch_size",
 	       "Batch Size", MS_NOT_AVAILABLE);
 	SG_ADD(&m_index_offsets, "index_offsets",
-					"Index Offsets", MS_NOT_AVAILABLE);
+		"Index Offsets", MS_NOT_AVAILABLE);
 	SG_ADD(&m_params, "params",
-					"Parameters", MS_NOT_AVAILABLE);
+		"Parameters", MS_NOT_AVAILABLE);
 	SG_ADD(&m_param_gradients, "param_gradients",
-					"Parameter Gradients", MS_NOT_AVAILABLE);
+		"Parameter Gradients", MS_NOT_AVAILABLE);
 	SG_ADD(&m_param_regularizable, "param_regularizable",
-					"Parameter Regularizable", MS_NOT_AVAILABLE);
+		"Parameter Regularizable", MS_NOT_AVAILABLE);
 	
 	SG_ADD((CSGObject**)&m_layers, "layers", 
-			"DynamicObjectArray of NeuralNetwork objects", MS_NOT_AVAILABLE);
+		"DynamicObjectArray of NeuralNetwork objects",
+		MS_NOT_AVAILABLE);
 }
 
 void CNeuralNetwork::shallow_copy(const CNeuralNetwork& orig)

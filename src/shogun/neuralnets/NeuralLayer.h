@@ -109,11 +109,11 @@ public:
 	 * previous layer, matrix of size previous_layer_num_neurons * batch_size
 	 */
 	virtual void compute_activations(float64_t* parameters,
-									float64_t* previous_layer_activations) = 0;
+			float64_t* previous_layer_activations) = 0;
 	
 	/** Computes the gradients that are relevent to this layer:
-	 *		- The gradients of the error with respect to the layer's parameters
-	 * 		- The gradients of the error with respect to the layer's inputs
+	 *- The gradients of the error with respect to the layer's parameters
+	 * -The gradients of the error with respect to the layer's inputs
 	 * 
 	 * The input gradients are stored in m_input_gradients
 	 *

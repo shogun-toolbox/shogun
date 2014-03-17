@@ -36,8 +36,8 @@ int32_t CNeuralLinearLayer::get_num_parameters()
 }
 
 void CNeuralLinearLayer::initialize_parameters(float64_t* parameters, 
-										bool* parameter_regularizable, 
-										float64_t sigma)
+		bool* parameter_regularizable, 
+		float64_t sigma)
 {
 	CRandom random_generator(CRandom::generate_seed());
 	
@@ -54,7 +54,7 @@ void CNeuralLinearLayer::initialize_parameters(float64_t* parameters,
 
 
 void CNeuralLinearLayer::compute_activations(float64_t* parameters, 
-										float64_t* previous_layer_activations)
+		float64_t* previous_layer_activations)
 {
 	float64_t* weights = parameters;
 	float64_t* biases = parameters + m_num_neurons*m_previous_layer_num_neurons;
@@ -72,9 +72,9 @@ void CNeuralLinearLayer::compute_activations(float64_t* parameters,
 }
 
 void CNeuralLinearLayer::compute_gradients(float64_t* parameters,
-										bool is_output, float64_t* p,
-										float64_t* previous_layer_activations,
-										float64_t* parameter_gradients)
+		bool is_output, float64_t* p,
+		float64_t* previous_layer_activations,
+		float64_t* parameter_gradients)
 {
 	float64_t* weights = parameters;
 	
@@ -130,13 +130,3 @@ float64_t CNeuralLinearLayer::computer_error(float64_t* targets)
 	sum *= (0.5/m_batch_size);
 	return sum;
 }
-
-
-
-
-
-
-
-
-
-
