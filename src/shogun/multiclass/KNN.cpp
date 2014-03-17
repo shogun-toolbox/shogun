@@ -292,13 +292,13 @@ CMulticlassLabels* CKNN::apply_multiclass(CFeatures* data)
 		
 		CDenseFeatures<float64_t> *f = ((CDenseFeatures<float64_t>*) distance->get_lhs());
 		float64_t *out_dist = SG_MALLOC(float64_t, m_k);
-		size_t *ret_idx = SG_MALLOC(size_t, m_k);
+		uint32_t *ret_idx = SG_MALLOC(uint32_t, m_k);
 		
 		typedef SGDataSetAdaptor<CDistance> SG2KD;
 		SG2KD* sg2kd = new SG2KD(distance);
 		
-		typedef KDTreeSingleIndexAdaptor< L2_Adaptor<float64_t, SG2KD> , SG2KD > 
-				my_kd_tree_t;
+		typedef KDTreeSingleIndexAdaptor< L2_Adaptor<float64_t, SG2KD> , SG2KD, 
+				-1, uint32_t > my_kd_tree_t;
 		
 		my_kd_tree_t index( f->get_num_features(), 
 							*sg2kd, 
@@ -469,13 +469,13 @@ SGMatrix<int32_t> CKNN::classify_for_multiple_k(CFeatures* data)
 		
 		CDenseFeatures<float64_t> *f = ((CDenseFeatures<float64_t>*) distance->get_lhs());
 		float64_t *out_dist = SG_MALLOC(float64_t, m_k);
-		size_t *ret_idx = SG_MALLOC(size_t, m_k);
+		uint32_t *ret_idx = SG_MALLOC(uint32_t, m_k);
 		
 		typedef SGDataSetAdaptor<CDistance> SG2KD;
 		SG2KD* sg2kd = new SG2KD(distance);
 		
-		typedef KDTreeSingleIndexAdaptor< L2_Adaptor<float64_t, SG2KD> , SG2KD > 
-				my_kd_tree_t;
+		typedef KDTreeSingleIndexAdaptor< L2_Adaptor<float64_t, SG2KD> , SG2KD, 
+				-1, uint32_t > my_kd_tree_t;
 		
 		my_kd_tree_t index( f->get_num_features(), 
 							*sg2kd, 
