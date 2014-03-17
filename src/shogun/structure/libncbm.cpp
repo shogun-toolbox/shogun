@@ -321,7 +321,9 @@ BmrmStatistics svm_ncbm_solver(
 {
 	BmrmStatistics ncbm;
 	libqp_state_T qp_exitflag={0, 0, 0, 0};
-	int32_t w_dim = machine->get_model()->get_dim();
+
+	CStructuredModel* model = machine->get_model();
+	int32_t w_dim = model->get_dim();
 
 	maxCPs = _BufSize;
 	BufSize = _BufSize;
@@ -755,6 +757,17 @@ BmrmStatistics svm_ncbm_solver(
 	LIBBMRM_FREE(icp_stats.ICPs);
 	LIBBMRM_FREE(icp_stats.ACPs);
 	LIBBMRM_FREE(icp_stats.H_buff);
+
+        cp_ptr=CPList_head;
+        while(cp_ptr!=NULL)
+        {
+                bmrm_ll * cp_ptr_this=cp_ptr;
+                cp_ptr=cp_ptr->next;
+                LIBBMRM_FREE(cp_ptr_this);
+                cp_ptr_this=NULL;
+        }
+
+	SG_UNREF(model);
 
 	return ncbm;
 }
