@@ -62,7 +62,8 @@ enum EQuadraticMMDType
  *
  * \f[
  * \text{MMD}_u^2[\mathcal{F},X,Y]=\frac{1}{m(m-1)}\sum_{i=1}^m\sum_{j\neq i}^m
- * k(x_i,x_j) + \frac{1}{n(n-1)}\sum_{i=1}^n\sum_{j\neq i}^nk(y_i,y_j) - \frac{2}{mn}\sum_{i=1}^m\sum_{j=1}^nk(x_i,y_j)
+ * k(x_i,x_j) + \frac{1}{n(n-1)}\sum_{i=1}^n\sum_{j\neq i}^nk(y_i,y_j)
+ * - \frac{2}{mn}\sum_{i=1}^m\sum_{j=1}^nk(x_i,y_j)
  * \f]
  *
  * A biased version is
@@ -74,7 +75,9 @@ enum EQuadraticMMDType
  * \f]
  *
  * The type (biased/unbiased) can be selected via set_statistic_type().
- * Note that computing the statistic returns m*MMD; same holds for the null
+ * Note that computing the statistic returns \f$m\text{MMD}^2\f$ when \f$m\f$
+ * equals \f$n\f$, i.e. number of samples from both distributions are same,
+ * and \f$(m+n)\text{MMD}^2\f$ in general case; same holds for the null
  * distribution samples.
  *
  * Along with the statistic comes a method to compute a p-value based on
@@ -106,187 +109,209 @@ enum EQuadraticMMDType
  */
 class CQuadraticTimeMMD : public CKernelTwoSampleTest
 {
-	public:
-		CQuadraticTimeMMD();
+public:
+	/** default constructor */
+	CQuadraticTimeMMD();
 
-		/** Constructor
-		 *
-		 * @param p_and_q feature data. Is assumed to contain samples from both
-		 * p and q. First all samples from p, then from index m all
-		 * samples from q
-		 *
-		 * @param kernel kernel to use
-		 * @param p_and_q samples from p and q, appended
-		 * @param m index of first sample of q
-		 */
-		CQuadraticTimeMMD(CKernel* kernel, CFeatures* p_and_q, index_t m);
+	/** Constructor
+	 *
+	 * @param p_and_q feature data. Is assumed to contain samples from both
+	 * p and q. First all samples from p, then from index m all
+	 * samples from q
+	 *
+	 * @param kernel kernel to use
+	 * @param p_and_q samples from p and q, appended
+	 * @param m index of first sample of q
+	 */
+	CQuadraticTimeMMD(CKernel* kernel, CFeatures* p_and_q, index_t m);
 
-		/** Constructor.
-		 * This is a convienience constructor which copies both features to one
-		 * element and then calls the other constructor. Needs twice the memory
-		 * for a short time
-		 *
-		 * @param kernel kernel for MMD
-		 * @param p samples from distribution p, will be copied and NOT
-		 * SG_REF'ed
-		 * @param q samples from distribution q, will be copied and NOT
-		 * SG_REF'ed
-		 */
-		CQuadraticTimeMMD(CKernel* kernel, CFeatures* p, CFeatures* q);
+	/** Constructor.
+	 * This is a convienience constructor which copies both features to one
+	 * element and then calls the other constructor. Needs twice the memory
+	 * for a short time
+	 *
+	 * @param kernel kernel for MMD
+	 * @param p samples from distribution p, will be copied and NOT
+	 * SG_REF'ed
+	 * @param q samples from distribution q, will be copied and NOT
+	 * SG_REF'ed
+	 */
+	CQuadraticTimeMMD(CKernel* kernel, CFeatures* p, CFeatures* q);
 
-		/** Constructor.
-		 * This is a convienience constructor which copies allows to only specify
-		 * a custom kernel. In this case, the features are completely ignored
-		 * and all computations will be done on the custom kernel
-		 *
-		 * @param custom_kernel custom kernel for MMD, which is a kernel between
-		 * the appended features p and q
-		 * @param m index of first sample of q
-		 */
-		CQuadraticTimeMMD(CCustomKernel* custom_kernel, index_t m);
+	/** Constructor.
+	 * This is a convienience constructor which copies allows to only specify
+	 * a custom kernel. In this case, the features are completely ignored
+	 * and all computations will be done on the custom kernel
+	 *
+	 * @param custom_kernel custom kernel for MMD, which is a kernel between
+	 * the appended features p and q
+	 * @param m index of first sample of q
+	 */
+	CQuadraticTimeMMD(CCustomKernel* custom_kernel, index_t m);
 
-		virtual ~CQuadraticTimeMMD();
+	/** destructor */
+	virtual ~CQuadraticTimeMMD();
 
-		/** Computes the squared quadratic time MMD for the current data. Note
-		 * that the type (biased/unbiased) can be specified with
-		 * set_statistic_type() method. Note that it returns m*MMD.
-		 *
-		 * @return (biased or unbiased) squared quadratic time MMD
-		 */
-		virtual float64_t compute_statistic();
+	/** Computes the squared quadratic time MMD for the current data. Note
+	 * that the type (biased/unbiased) can be specified with
+	 * set_statistic_type() method. Note that it returns m*MMD.
+	 *
+	 * @return (biased or unbiased) squared quadratic time MMD
+	 */
+	virtual float64_t compute_statistic();
 
-		/** Same as compute_statistic(), but with the possibility to perform on
-		 * multiple kernels at once
-		 *
-		 * @param multiple_kernels if true, and underlying kernel is K_COMBINED,
-		 * method will be executed on all subkernels on the same data
-		 * @return vector of results for subkernels
-		 */
-		virtual SGVector<float64_t> compute_statistic(bool multiple_kernels);
+	/** Same as compute_statistic(), but with the possibility to perform on
+	 * multiple kernels at once
+	 *
+	 * @param multiple_kernels if true, and underlying kernel is K_COMBINED,
+	 * method will be executed on all subkernels on the same data
+	 * @return vector of results for subkernels
+	 */
+	virtual SGVector<float64_t> compute_statistic(bool multiple_kernels);
 
-		/** computes a p-value based on current method for approximating the
-		 * null-distribution. The p-value is the 1-p quantile of the null-
-		 * distribution where the given statistic lies in.
-		 *
-		 * Not all methods for computing the p-value are compatible with all
-		 * methods of computing the statistic (biased/unbiased).
-		 *
-		 * @param statistic statistic value to compute the p-value for
-		 * @return p-value parameter statistic is the (1-p) percentile of the
-		 * null distribution
-		 */
-		virtual float64_t compute_p_value(float64_t statistic);
+	/** computes a p-value based on current method for approximating the
+	 * null-distribution. The p-value is the 1-p quantile of the null-
+	 * distribution where the given statistic lies in.
+	 *
+	 * Not all methods for computing the p-value are compatible with all
+	 * methods of computing the statistic (biased/unbiased).
+	 *
+	 * @param statistic statistic value to compute the p-value for
+	 * @return p-value parameter statistic is the (1-p) percentile of the
+	 * null distribution
+	 */
+	virtual float64_t compute_p_value(float64_t statistic);
 
-		/** computes a threshold based on current method for approximating the
-		 * null-distribution. The threshold is the value that a statistic has
-		 * to have in ordner to reject the null-hypothesis.
-		 *
-		 * Not all methods for computing the p-value are compatible with all
-		 * methods of computing the statistic (biased/unbiased).
-		 *
-		 * @param alpha test level to reject null-hypothesis
-		 * @return threshold for statistics to reject null-hypothesis
-		 */
-		virtual float64_t compute_threshold(float64_t alpha);
+	/** computes a threshold based on current method for approximating the
+	 * null-distribution. The threshold is the value that a statistic has
+	 * to have in ordner to reject the null-hypothesis.
+	 *
+	 * Not all methods for computing the p-value are compatible with all
+	 * methods of computing the statistic (biased/unbiased).
+	 *
+	 * @param alpha test level to reject null-hypothesis
+	 * @return threshold for statistics to reject null-hypothesis
+	 */
+	virtual float64_t compute_threshold(float64_t alpha);
 
-		virtual const char* get_name() const
-		{
-			return "QuadraticTimeMMD";
-		};
+	/** @return the class name */
+	virtual const char* get_name() const
+	{
+		return "QuadraticTimeMMD";
+	};
 
-		/** returns the statistic type of this test statistic */
-		virtual EStatisticType get_statistic_type() const
-		{
-			return S_QUADRATIC_TIME_MMD;
-		}
+	/** returns the statistic type of this test statistic */
+	virtual EStatisticType get_statistic_type() const
+	{
+		return S_QUADRATIC_TIME_MMD;
+	}
 
-#ifdef HAVE_LAPACK
-		/** Returns a set of samples of an estimate of the null distribution
-		 * using the Eigen-spectrum of the centered kernel matrix of the merged
-		 * samples of p and q. May be used to compute p_value (easy)
-		 *
-		 * kernel matrix needs to be stored in memory
-		 *
-		 * Note that the provided statistic HAS to be the biased version
-		 * (see paper for details). Note that m*Null-distribution is returned,
-		 * which is fine since the statistic is also m*MMD:
-		 *
-		 * Works well if the kernel matrix is NOT diagonal dominant.
-		 * See Gretton, A., Fukumizu, K., & Harchaoui, Z. (2011).
-		 * A fast, consistent kernel two-sample test.
-		 *
-		 * @param num_samples number of samples to draw
-		 * @param num_eigenvalues number of eigenvalues to use to draw samples
-		 * Maximum number of 2m-1 where m is the size of both sets of samples.
-		 * It is usually safe to use a smaller number since they decay very
-		 * fast, however, a conservative approach would be to use all (-1 does
-		 * this). See paper for details.
-		 * @return samples from the estimated null distribution
-		 */
-		SGVector<float64_t> sample_null_spectrum(index_t num_samples,
-				index_t num_eigenvalues);
-#endif // HAVE_LAPACK
+#ifdef HAVE_EIGEN3
+	/** Returns a set of samples of an estimate of the null distribution
+	 * using the Eigen-spectrum of the centered kernel matrix of the merged
+	 * samples of p and q. May be used to compute p_value (easy).
+	 *
+	 * The unbiased version uses
+	 * \f[
+	 *	t\text{MMD}_u^2[\mathcal{F},X,Y]\xrightarrow{D}\sum_{l=1}^\infty
+	 *	\lambda_l\left((a_l\rho_x^{-\frac{1}{{2}}}
+	 *	-b_l\rho_y^{-\frac{1}{{2}}})^2-(\rho_x\rho_y)^{-1} \right)
+	 * \f]
+	 * where \f$t=m+n\f$, \f$\lim_{m,n\rightarrow\infty}m/t\rightarrow
+	 * \rho_x\f$ and \f$\rho_y\f$ likewise (equation 10 from [1]) and
+	 * \f$\lambda_l\f$ are estimated as \f$\frac{\nu_l}{(m+n)}\f$, where
+	 * \f$\nu_l\f$ are the eigenvalues of centered kernel matrix HKH.
+	 *
+	 * The biased version uses
+	 * \f[
+	 * 	t\text{MMD}_b^2[\mathcal{F},X,Y]\xrightarrow{D}\sum_{l=1}^\infty
+	 *	\lambda_l\left((a_l\rho_x^{-\frac{1}{{2}}}-
+	 *	b_l\rho_y^{-\frac{1}{{2}}})^2\right)
+	 * \f]
+	 *
+	 * kernel matrix needs to be stored in memory
+	 *
+	 * Note that (m+n)*Null-distribution is returned,
+	 * which is fine since the statistic is also (m+n)*MMD:
+	 *
+	 * Works well if the kernel matrix is NOT diagonal dominant.
+	 * See Gretton, A., Fukumizu, K., & Harchaoui, Z. (2011).
+	 * A fast, consistent kernel two-sample test.
+	 *
+	 * @param num_samples number of samples to draw
+	 * @param num_eigenvalues number of eigenvalues to use to draw samples
+	 * Maximum number of m+n-1 where m and n are the sizes of samples from
+	 * p and q respectively.
+	 * It is usually safe to use a smaller number since they decay very
+	 * fast, however, a conservative approach would be to use all (-1 does
+	 * this). See paper for details.
+	 * @return samples from the estimated null distribution
+	 */
+	SGVector<float64_t> sample_null_spectrum(index_t num_samples,
+			index_t num_eigenvalues);
+#endif // HAVE_EIGEN3
 
-		/** setter for number of samples to use in spectrum based p-value
-		 * computation.
-		 *
-		 * @param num_samples_spectrum number of samples to draw from
-		 * approximate null-distributrion
-		 */
-		void set_num_samples_sepctrum(index_t num_samples_spectrum);
+	/** setter for number of samples to use in spectrum based p-value
+	 * computation.
+	 *
+	 * @param num_samples_spectrum number of samples to draw from
+	 * approximate null-distributrion
+	 */
+	void set_num_samples_sepctrum(index_t num_samples_spectrum);
 
-		/** setter for number of eigenvalues to use in spectrum based p-value
-		 * computation. Maximum is 2*m_m-1
-		 *
-		 * @param num_eigenvalues_spectrum number of eigenvalues to use to
-		 * approximate null-distributrion
-		 */
-		void set_num_eigenvalues_spectrum(index_t num_eigenvalues_spectrum);
+	/** setter for number of eigenvalues to use in spectrum based p-value
+	 * computation. Maximum is m_m+m_n-1
+	 *
+	 * @param num_eigenvalues_spectrum number of eigenvalues to use to
+	 * approximate null-distributrion
+	 */
+	void set_num_eigenvalues_spectrum(index_t num_eigenvalues_spectrum);
 
-		/** @param statistic_type statistic type (biased/unbiased) to use */
-		void set_statistic_type(EQuadraticMMDType statistic_type);
+	/** @param statistic_type statistic type (biased/unbiased) to use */
+	void set_statistic_type(EQuadraticMMDType statistic_type);
 
-		/** Approximates the null-distribution by the two parameter gamma
-		 * distribution. It works in O(m^2) where m is the number of samples
-		 * from each distribution. Its very fast, but may be inaccurate.
-		 * However, there are cases where it performs very well.
-		 * Returns parameters of gamma distribution that is fitted.
-		 *
-		 * Called by compute_p_value() if null approximation method is set to
-		 * MMD2_GAMMA.
-		 *
-		 * Note that when being used for constructing a test, the provided
-		 * statistic HAS to be the biased version
-		 * (see paper for details). Note that m*Null-distribution is fitted,
-		 * which is fine since the statistic is also m*MMD.
-		 *
-		 * See Gretton, A., Fukumizu, K., & Harchaoui, Z. (2011).
-		 * A fast, consistent kernel two-sample test.
-		 *
-		 * @return vector with two parameter for gamma distribution. To use:
-		 * call gamma_cdf(statistic, a, b).
-		 */
-		SGVector<float64_t> fit_null_gamma();
+	/** Approximates the null-distribution by the two parameter gamma
+	 * distribution. It works in O(m^2) where m is the number of samples
+	 * from each distribution. Its very fast, but may be inaccurate.
+	 * However, there are cases where it performs very well.
+	 * Returns parameters of gamma distribution that is fitted.
+	 *
+	 * Called by compute_p_value() if null approximation method is set to
+	 * MMD2_GAMMA.
+	 *
+	 * Note that when being used for constructing a test, the provided
+	 * statistic HAS to be the biased version
+	 * (see paper for details). Note that m*Null-distribution is fitted,
+	 * which is fine since the statistic is also m*MMD.
+	 *
+	 * See Gretton, A., Fukumizu, K., & Harchaoui, Z. (2011).
+	 * A fast, consistent kernel two-sample test.
+	 *
+	 * @return vector with two parameter for gamma distribution. To use:
+	 * call gamma_cdf(statistic, a, b).
+	 */
+	SGVector<float64_t> fit_null_gamma();
 
-	protected:
-		/** helper method to compute m*unbiased squared quadratic time MMD */
-		virtual float64_t compute_unbiased_statistic();
+protected:
+	/** helper method to compute unbiased squared quadratic time MMD */
+	virtual float64_t compute_unbiased_statistic();
 
-		/** helper method to compute m*biased squared quadratic time MMD */
-		virtual float64_t compute_biased_statistic();
+	/** helper method to compute biased squared quadratic time MMD */
+	virtual float64_t compute_biased_statistic();
 
-	private:
-		void init();
+private:
+	/** register parameters and initialize with defaults */
+	void init();
 
-	protected:
-		/** number of samples for spectrum null-dstribution-approximation */
-		index_t m_num_samples_spectrum;
+protected:
+	/** number of samples for spectrum null-dstribution-approximation */
+	index_t m_num_samples_spectrum;
 
-		/** number of Eigenvalues for spectrum null-dstribution-approximation */
-		index_t m_num_eigenvalues_spectrum;
+	/** number of Eigenvalues for spectrum null-dstribution-approximation */
+	index_t m_num_eigenvalues_spectrum;
 
-		/** type of statistic (biased/unbiased) */
-		EQuadraticMMDType m_statistic_type;
+	/** type of statistic (biased/unbiased) */
+	EQuadraticMMDType m_statistic_type;
 };
 
 }

@@ -51,7 +51,7 @@ CTwoSampleTest::CTwoSampleTest(CFeatures* p_and_q, index_t m) :
 }
 
 CTwoSampleTest::CTwoSampleTest(CFeatures* p, CFeatures* q) :
-		CHypothesisTest()
+	CHypothesisTest()
 {
 	init();
 
@@ -156,6 +156,15 @@ void CTwoSampleTest::set_p_and_q(CFeatures* p_and_q)
 	SG_REF(p_and_q);
 	SG_UNREF(m_p_and_q);
 	m_p_and_q=p_and_q;
+}
+
+void CTwoSampleTest::set_m(index_t m)
+{
+	REQUIRE(m_p_and_q, "Samples are not specified!\n");
+	REQUIRE(m_p_and_q->get_num_vectors()>m, "Provided sample size for p"
+			"(%d) is greater than total number of samples (%d)!\n",
+			m, m_p_and_q->get_num_vectors());
+	m_m=m;
 }
 
 CFeatures* CTwoSampleTest::get_p_and_q()

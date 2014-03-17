@@ -118,6 +118,9 @@ public:
 	 */
 	virtual CFeatures* get_p_and_q();
 
+	/** @param m number of samples from first distribution p */
+	void set_m(index_t m);
+
 	/** @return number of to be used samples m */
 	index_t get_m() { return m_m; }
 
