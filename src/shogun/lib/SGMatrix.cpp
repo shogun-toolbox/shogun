@@ -18,7 +18,6 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/lapack.h>
-#include <shogun/lib/SGMatrixList.h>
 
 namespace shogun {
 

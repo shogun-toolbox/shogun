@@ -1,3 +1,4 @@
+#include <shogun/lib/common.h>
 #include <shogun/lib/SGString.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/io/File.h>

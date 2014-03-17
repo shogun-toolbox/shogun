@@ -10,11 +10,14 @@
 #ifndef INDEXBLOCKTREE_H_
 #define INDEXBLOCKTREE_H_
 
-#include <shogun/lib/IndexBlock.h>
 #include <shogun/lib/IndexBlockRelation.h>
+#include <shogun/lib/SGMatrix.h>
+#include <shogun/lib/SGVector.h>
+#include <shogun/lib/common.h>
 
 namespace shogun
 {
+class CIndexBlock;
 
 /** @brief class IndexBlockTree used to represent
  * tree guided feature relation.

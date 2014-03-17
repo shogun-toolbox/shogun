@@ -20,6 +20,7 @@
 #include <shogun/machine/LinearMachine.h>
 #include <shogun/optimization/liblinear/shogun_liblinear.h>
 #include <shogun/lib/SGSparseMatrix.h>
+#include <shogun/lib/SGSparseVector.h>
 
 #include <map>
 

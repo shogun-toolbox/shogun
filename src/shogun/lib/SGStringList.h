@@ -12,14 +12,14 @@
 #ifndef __SGSTRINGLIST_H__
 #define __SGSTRINGLIST_H__
 
-#include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
-#include <shogun/lib/DataType.h>
 #include <shogun/lib/SGReferencedData.h>
 #include <shogun/lib/SGString.h>
 
 namespace shogun
 {
+class CFile;
+template <class T> class SGString;
 
 /** @brief template class SGStringList */
 template <class T> class SGStringList : public SGReferencedData

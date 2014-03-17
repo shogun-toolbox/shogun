@@ -9,6 +9,9 @@
  */
 
 #include <shogun/lib/StructuredData.h>
+#include <shogun/base/SGObject.h>
+#include <shogun/io/SGIO.h>
+#include <shogun/lib/StructuredDataTypes.h>
 
 using namespace shogun;
 

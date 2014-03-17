@@ -10,12 +10,13 @@
 #ifndef __CIRCULARBUFFER_H_
 #define __CIRCULARBUFFER_H_
 
+#include <shogun/lib/common.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/SGVector.h>
-#include <shogun/lib/Tokenizer.h>
 
 namespace shogun
 {
+class CTokenizer;
 
 /** @brief Implementation of circular buffer
  * This buffer has logical structure such as queue (FIFO).

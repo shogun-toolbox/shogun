@@ -10,11 +10,11 @@
 #ifndef SERIAL_COMPUTATION_ENGINE_H_
 #define SERIAL_COMPUTATION_ENGINE_H_
 
-#include <shogun/lib/config.h>
 #include <shogun/lib/computation/engine/IndependentComputationEngine.h>
 
 namespace shogun
 {
+class CIndependentJob;
 
 /** @brief Class that computes multiple independent instances of
  * computation jobs sequentially
