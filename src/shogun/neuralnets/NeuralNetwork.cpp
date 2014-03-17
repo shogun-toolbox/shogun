@@ -21,13 +21,6 @@ CNeuralNetwork::CNeuralNetwork()
 	init();
 }
 
-CNeuralNetwork::CNeuralNetwork(const CNeuralNetwork& orig) :CSGObject()
-{
-	shallow_copy(orig);
-	init();
-}
-
-
 void CNeuralNetwork::initialize(int32_t num_inputs, CDynamicObjectArray* layers)
 {
 	m_num_inputs = num_inputs;
@@ -305,18 +298,4 @@ void CNeuralNetwork::init()
 	SG_ADD((CSGObject**)&m_layers, "layers", 
 		"DynamicObjectArray of NeuralNetwork objects",
 		MS_NOT_AVAILABLE);
-}
-
-void CNeuralNetwork::shallow_copy(const CNeuralNetwork& orig)
-{
-	m_num_inputs = orig.m_num_inputs;
-	m_L2_coeff = orig.m_L2_coeff;
-	m_layers = orig.m_layers;
-	m_num_inputs = orig.m_num_inputs;
-	m_num_layers = orig.m_num_layers;
-	m_total_num_parameters = orig.m_total_num_parameters;
-	m_batch_size = orig.m_batch_size;
-	m_params = SGVector<float64_t>(orig.m_params);
-	m_param_gradients = SGVector<float64_t>(orig.m_param_gradients);
-	m_param_regularizable = SGVector<bool>(orig.m_param_regularizable);
 }

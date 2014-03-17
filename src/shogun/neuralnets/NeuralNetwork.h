@@ -45,9 +45,6 @@ public:
 	/** default constuctor */
 	CNeuralNetwork();
 	
-	/** copy constructor */
-	CNeuralNetwork(const CNeuralNetwork &orig);
-	
 	/** Initializes the network
 	 * 
 	 * @param num_inputs number of inputs the network takes
@@ -208,8 +205,6 @@ private:
 	}
 	
 	void init();
-	
-	void shallow_copy(const CNeuralNetwork& orig);
 	
 protected:
 	/** number of neurons in the input layer */

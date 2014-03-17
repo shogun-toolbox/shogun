@@ -27,13 +27,6 @@ CNeuralLayer::CNeuralLayer(int32_t num_neurons)
 	init();
 }
 
-CNeuralLayer::CNeuralLayer(const CNeuralLayer& orig) : CSGObject()
-{
-	shallow_copy(orig);
-	init();
-}
-
-
 CNeuralLayer::~CNeuralLayer()
 {
 }
@@ -74,14 +67,4 @@ void CNeuralLayer::init()
 	       "Input Gradients", MS_NOT_AVAILABLE);
 	SG_ADD(&m_local_gradients, "local_gradients",
 	       "Local Gradients", MS_NOT_AVAILABLE);
-}
-
-void CNeuralLayer::shallow_copy(const CNeuralLayer &orig)
-{
-	m_num_neurons = orig.m_num_neurons;
-	m_previous_layer_num_neurons = orig.m_previous_layer_num_neurons;
-	m_batch_size = orig.m_batch_size;
-	m_activations = SGVector<float64_t>(orig.m_activations);
-	m_input_gradients = SGVector<float64_t>(orig.m_input_gradients);
-	m_local_gradients = SGVector<float64_t>(orig.m_local_gradients);
 }
