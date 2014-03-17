@@ -13,7 +13,6 @@
 #include <shogun/lib/common.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/SGVector.h>
-#include <shogun/lib/SGMatrix.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/neuralnets/NeuralLayer.h>

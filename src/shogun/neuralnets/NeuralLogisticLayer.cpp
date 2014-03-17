@@ -32,7 +32,7 @@ void CNeuralLogisticLayer::compute_activations(float64_t* parameters,
 		float64_t* previous_layer_activations)
 {
 	CNeuralLinearLayer::compute_activations(parameters, 
-											previous_layer_activations);
+		previous_layer_activations);
 	
 	// apply logistic activation function
 	int32_t length = m_num_neurons*m_batch_size;

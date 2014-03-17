@@ -11,9 +11,7 @@
 #include <shogun/base/Parameter.h>
 #include <shogun/neuralnets/NeuralNetwork.h>
 
-
 using namespace shogun;
-
 
 CNeuralNetwork::CNeuralNetwork()
 : CSGObject(), m_num_inputs(0), m_num_layers(0), m_layers(NULL),

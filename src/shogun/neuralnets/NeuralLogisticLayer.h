@@ -12,10 +12,6 @@
 
 #include <shogun/neuralnets/NeuralLinearLayer.h>
 
-#ifdef HAVE_EIGEN3
-#include <shogun/mathematics/eigen3.h>
-#endif
-
 namespace shogun
 {
 /** @brief Neural layer with linear neurons, with a logistic activation 

@@ -10,6 +10,10 @@
 #include <shogun/neuralnets/NeuralLinearLayer.h>
 #include <shogun/mathematics/Random.h>
 
+#ifdef HAVE_EIGEN3
+#include <shogun/mathematics/eigen3.h>
+#endif
+
 using namespace shogun;
 
 CNeuralLinearLayer::CNeuralLinearLayer() : CNeuralLayer()
@@ -60,11 +64,12 @@ void CNeuralLinearLayer::compute_activations(float64_t* parameters,
 	float64_t* biases = parameters + m_num_neurons*m_previous_layer_num_neurons;
 	
 #ifdef HAVE_EIGEN3
-	EMatrix W(weights, m_num_neurons, m_previous_layer_num_neurons);
-	EMatrix X(previous_layer_activations, 
-			  m_previous_layer_num_neurons, m_batch_size);
-	EMatrix A(m_activations, m_num_neurons, m_batch_size);
-	EVector B(biases, m_num_neurons);
+	Eigen::Map<Eigen::MatrixXd> W(weights, m_num_neurons, 
+			m_previous_layer_num_neurons);
+	Eigen::Map<Eigen::MatrixXd> X(previous_layer_activations, 
+			m_previous_layer_num_neurons, m_batch_size);
+	Eigen::Map<Eigen::MatrixXd>  A(m_activations, m_num_neurons, m_batch_size);
+	Eigen::Map<Eigen::VectorXd>  B(biases, m_num_neurons);
 	
 	A = W*X;
 	A.colwise() += B;
@@ -81,15 +86,18 @@ void CNeuralLinearLayer::compute_gradients(float64_t* parameters,
 	compute_local_gradients(is_output, p);
 	
 #ifdef HAVE_EIGEN3
-	EMatrix X(previous_layer_activations, 
-			  m_previous_layer_num_neurons, m_batch_size);
-	EMatrix W(weights, m_num_neurons, m_previous_layer_num_neurons);
-	EMatrix LG(m_local_gradients, m_num_neurons, m_batch_size);
-	EMatrix WG(parameter_gradients, 
-			   m_num_neurons, m_previous_layer_num_neurons);
-	EVector BG(parameter_gradients + 
+	Eigen::Map<Eigen::MatrixXd> X(previous_layer_activations, 
+			m_previous_layer_num_neurons, m_batch_size);
+	Eigen::Map<Eigen::MatrixXd>  W(weights, m_num_neurons, 
+			m_previous_layer_num_neurons);
+	Eigen::Map<Eigen::MatrixXd> LG(m_local_gradients, m_num_neurons, 
+			m_batch_size);
+	Eigen::Map<Eigen::MatrixXd> WG(parameter_gradients, 
+			m_num_neurons, m_previous_layer_num_neurons);
+	Eigen::Map<Eigen::VectorXd> BG(parameter_gradients + 
 				m_num_neurons*m_previous_layer_num_neurons, m_num_neurons);
-	EMatrix IG(m_input_gradients, m_previous_layer_num_neurons, m_batch_size);
+	Eigen::Map<Eigen::MatrixXd>  IG(m_input_gradients, 
+			   m_previous_layer_num_neurons, m_batch_size);
 	
 	// compute parameter gradients
 	WG = (LG*X.transpose())/m_batch_size;

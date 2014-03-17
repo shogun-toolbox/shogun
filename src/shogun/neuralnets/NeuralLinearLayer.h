@@ -10,13 +10,8 @@
 #ifndef __NEURALLINEARLAYER_H__
 #define __NEURALLINEARLAYER_H__
 
-#include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
 #include <shogun/neuralnets/NeuralLayer.h>
-
-#ifdef HAVE_EIGEN3
-#include <shogun/mathematics/eigen3.h>
-#endif
 
 namespace shogun
 {
@@ -134,13 +129,6 @@ public:
 	virtual void compute_local_gradients(bool is_output, float64_t* p);
 	
 	virtual const char* get_name() const { return "NeuralLinearLayer"; }
-	
-protected:
-#ifdef HAVE_EIGEN3
-	typedef Eigen::Map<Eigen::MatrixXd> EMatrix;
-	typedef Eigen::Map<Eigen::VectorXd> EVector;
-#endif
-
 };
 	
 }
