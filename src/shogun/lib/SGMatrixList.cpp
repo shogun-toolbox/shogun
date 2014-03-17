@@ -10,6 +10,7 @@
 
 #include <shogun/lib/SGMatrixList.h>
 #include <shogun/lib/memory.h>
+#include <shogun/io/SGIO.h>
 
 namespace shogun {
 
