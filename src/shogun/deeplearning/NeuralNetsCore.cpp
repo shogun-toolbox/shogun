@@ -1,10 +1,8 @@
 #include "NeuralNets.h"
-#include <ctime>
 #include <iostream>
 
 NeuralNets::NeuralNets()
 {
-	srand(time(NULL));
 	m_weights = new EigenDenseMat[MAXLAYERS];
 	m_bias = new EigenDenseRowVec[MAXLAYERS];
 	for (int32_t i = 0; i < NNConfig::layers - 1; ++i)

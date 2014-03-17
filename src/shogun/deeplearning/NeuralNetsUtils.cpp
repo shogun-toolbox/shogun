@@ -1,7 +1,6 @@
 #include "NeuralNets.h"
 #include "DataAdapter.h"
 #include <iostream>
-#include <ctime>
 
 void NeuralNets::SetDataAdapter(DataAdapter* _data_adapter)
 {
@@ -12,7 +11,7 @@ void NeuralNets::SetDenseOutputLabels(std::vector<int32_t> &outputLabels)
 {
 	ground_truth.resize(outputLabels.size(), NNConfig::length[NNConfig::layers - 1]);
 	memset(ground_truth.data(), 0, sizeof(float32_t)* ground_truth.size());
-	for (int i = 0; i < outputLabels.size(); ++i)
+	for (int32_t i = 0; i < outputLabels.size(); ++i)
 		ground_truth(i, outputLabels[i]) = 1;
 }
 
@@ -74,7 +73,7 @@ void NeuralNets::TrainEpoch(int32_t cur_epoch)
 	float32_t total_loss = 0.0;
 	while (1)
 	{
-		int cnt = nn_data_adapter->GetBatchSamples(NNConfig::batchsize, samples);
+		int32_t cnt = nn_data_adapter->GetBatchSamples(NNConfig::batchsize, samples);
 		if (cnt == 0)
 			break;
 		total += cnt;
@@ -90,12 +89,30 @@ void NeuralNets::TrainEpoch(int32_t cur_epoch)
 void NeuralNets::TrainAll()
 {
 	nn_data_adapter->Init(NNConfig::trainx, NNConfig::trainy);
-	time_t begin = clock();
-	for (int cur_epoch = 0; cur_epoch < NNConfig::epoch; ++cur_epoch)
+	for (int32_t cur_epoch = 0; cur_epoch < NNConfig::epoch; ++cur_epoch)
 	{
 		TrainEpoch(cur_epoch);
 	}
-	time_t end = clock();
-	std::cout << "total training time: " << (double)(end - begin) / CLOCKS_PER_SEC << std::endl;
+	nn_data_adapter->Destroy();
+}
+
+void NeuralNets::TestAll()
+{
+	nn_data_adapter->Init(NNConfig::testx, NNConfig::testy);
+	nn_data_adapter->Open();
+	
+	int total = 0, err_num = 0;
+	void* res = malloc(sizeof(int32_t));
+	void* samples = NULL;
+	while (1)
+	{
+		int32_t cnt = nn_data_adapter->GetBatchSamples(NNConfig::batchsize, samples);
+		if (cnt == 0) break;
+		total += cnt;
+		TestMiniBatch(samples, res);
+		err_num += *(int32_t*)res;
+	}
+
+	nn_data_adapter->Close();
 	nn_data_adapter->Destroy();
 }

@@ -14,13 +14,11 @@ struct RuntimeConfig
 {
 	float32_t learning_rate;
 	float32_t momentum;
-	bool is_testing;
 	
 	RuntimeConfig()
 	{
 		learning_rate = 1;
 		momentum = 0.5;
-		is_testing = false;
 	}
 };
 
@@ -28,9 +26,9 @@ struct TrainingOptions
 {
 	FuncType act_type;
     FuncType out_type;
-    double weightPenaltyL2;
-    double learningRateScaling;
-    double inputZeroMaskedFraction;
+    float32_t weightPenaltyL2;
+	float32_t learningRateScaling;
+	float32_t inputZeroMaskedFraction;
     bool isGradChecking;
     TrainingOptions();
 };

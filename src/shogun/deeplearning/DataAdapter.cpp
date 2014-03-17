@@ -18,13 +18,13 @@ void DataAdapter::Open()
 	//Currently for MNIST data, and should be edited more generally later
 	int32_t row_cnt;
 	fopen_s(&fid_feat, feature_file, "rb");
-	fread_s(&row_cnt, sizeof(int32_t), sizeof(int32_t), 1, fid_feat);			//For MNIST: 60000
-	fread_s(&feat_cnt, sizeof(int32_t), sizeof(int32_t), 1, fid_feat);			//For MNIST: 784
+	fread_s(&row_cnt, sizeof(int32_t), sizeof(int32_t), 1, fid_feat); //For MNIST: 60000
+	fread_s(&feat_cnt, sizeof(int32_t), sizeof(int32_t), 1, fid_feat); //For MNIST: 784
 	feat_buffer.resize(NNConfig::batchsize, feat_cnt);
 
 	fopen_s(&fid_label, label_file, "rb");
-	fread_s(&row_cnt, sizeof(int32_t), sizeof(int32_t), 1, fid_label);			//For MNIST: 60000
-	fread_s(&label_cnt, sizeof(int32_t), sizeof(int32_t), 1, fid_label);		//For MNIST: 10
+	fread_s(&row_cnt, sizeof(int32_t), sizeof(int32_t), 1, fid_label); //For MNIST: 60000
+	fread_s(&label_cnt, sizeof(int32_t), sizeof(int32_t), 1, fid_label); //For MNIST: 10
 	label_buffer.resize(NNConfig::batchsize, label_cnt);
 }
 
@@ -44,12 +44,12 @@ int32_t DataAdapter::GetBatchSamples(int32_t batch_size, void*& samples)
 
 	int32_t lines = LoadBuffer();
 	data->feats = feat_buffer;
-	for (int li = 0; li < lines; ++li)
+	for (int32_t li = 0; li < lines; ++li)
 	{
 		//For MNIST, label file is recorded in 1-hot fashion, i.e. 0000100000
 		//Fetch the only one true label by simple linear search
-		int label = -1, max_dim = -1;
-		for (int i = 0; i < label_cnt; ++i)
+		int32_t label = -1, max_dim = -1;
+		for (int32_t i = 0; i < label_cnt; ++i)
 		{
 			if (label_buffer(li, i) > max_dim)
 			{
@@ -79,7 +79,7 @@ void DataAdapter::Destroy()
 	feature_file = label_file = NULL;
 }
 
-int32_t DataAdapter::LoadMatrix(EigenDenseMat &m, int rows, int cols, FILE* fid)
+int32_t DataAdapter::LoadMatrix(EigenDenseMat &m, int32_t rows, int32_t cols, FILE* fid)
 {
 	m.resize(rows, cols);
 	int32_t loaded_row_num = 0;
