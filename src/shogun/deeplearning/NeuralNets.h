@@ -15,14 +15,15 @@ public:
 	NeuralNets();
 	//Implemented in NeuralNetsUtils.cpp
 	void SetDataAdapter(DataAdapter* _data_adapter);
-	void SetDenseOutputLabels(std::vector<int32_t> &outputLabels);
-	void InitEpoch(int32_t cur_epoch);
-	void TrainAll();
-	void TestAll();
+	void SetDenseOutputLabels(std::vector<int32_t> &outputLabels);	
 	float32_t TrainMiniBatch(void * samples);
 	void TestMiniBatch(void* samples, void*& result);
+	void InitEpoch(int32_t cur_epoch);
+	void TrainEpoch(int32_t cur_epoch);
+	void TrainAll();
+	void TestAll();
 
-	EigenDenseMat std_output;
+	EigenDenseMat ground_truth;
 	DataAdapter* nn_data_adapter;
 
 protected:
