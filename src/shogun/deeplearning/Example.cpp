@@ -7,13 +7,10 @@ int main(int argc, char* argv[])
 {
 	NNConfig::Initialize();
 	DataAdapter* data_adapter = new DataAdapter();
-	NeuralNets nets;
-	
+	NeuralNets nets;	
 	nets.SetDataAdapter(data_adapter);
-
-
-
-
+	nets.TrainAll();
+	nets.TestAll();
 
 	return 0;
 }

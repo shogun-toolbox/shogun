@@ -60,7 +60,7 @@ int32_t DataAdapter::GetBatchSamples(int32_t batch_size, void*& samples)
 		data->labels.push_back(label);
 	}
 
-	return 0;
+	return data->labels.size();
 }
 
 void DataAdapter::Close()
@@ -83,7 +83,7 @@ int32_t DataAdapter::LoadMatrix(EigenDenseMat &m, int32_t rows, int32_t cols, FI
 {
 	m.resize(rows, cols);
 	int32_t loaded_row_num = 0;
-	float32_t data;
+	float64_t data;
 	for (int32_t i = 0; i < rows; ++i)
 	{
 		for (int32_t j = 0; j < cols; ++j)
