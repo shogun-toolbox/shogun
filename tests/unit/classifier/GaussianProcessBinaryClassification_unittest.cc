@@ -24,6 +24,58 @@
 #include <gtest/gtest.h>
 
 using namespace shogun;
+/*clear all; close all;*/
+//x1=[0.0919736
+//-0.3813827
+//-1.8011128
+//-1.4603061
+//-0.1386884
+//0.7827657
+//-0.1369808
+//0.0058596
+//0.1059573
+//-1.3059609];
+//x2=[1.4186892
+//0.2271813
+//0.3451326
+//0.4495962
+//1.2066144
+//-0.5425118
+//1.3479000
+//0.7181545
+//0.4036014
+//0.8928408];
+//x = [x1 x2];
+//y=[1.0
+//-1.0
+//-1.0
+//-1.0
+//-1.0
+//1.0
+//-1.0
+//1.0
+//1.0
+//-1.0];
+//x1_test=repmat(-2:2,5,1);
+//x1_test=x1_test(:)
+//x2_test=repmat(-2:2,1,5)'
+//x_test=[x1_test x2_test]
+//meanfunc = @meanZero; hyp.mean=[];
+//covfunc = @covSEiso; hyp.cov = log([1.0 1.0]);
+//likfunc = @likErf; hyp.lik=[];
+//covfunc = {covfunc}
+//meanfunc = {meanfunc};
+//likfunc = {likfunc};
+//%[post nlZ dnlZ] = infLaplace(hyp, meanfunc, covfunc, likfunc, x, y);
+//[ymu ys2 fmu fs2]=gp(hyp, @infLaplace, meanfunc, covfunc, likfunc, x, y, x_test);
+//ymu %get_mean_vector
+//ys2 %get_variance_vector
+//%in order to generate the result for get_probabilities, 
+//%you need to modify the last fifth line at gp.m 
+//%from varargout = {ymu, ys2, fmu, fs2, [], post};
+//%to varargout = {ymu, ys2, fmu, fs2, exp(lp) , post};   
+//%and using [ymu ys2 fmu fs2 prob]=gp(hyp, @infLaplace, meanfunc, covfunc, likfunc, x, y, x_test);
+/*prob %get_probabilities*/
 
 TEST(GaussianProcessBinaryClassification,get_mean_vector)
 {
