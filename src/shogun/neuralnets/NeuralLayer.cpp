@@ -21,8 +21,8 @@ CNeuralLayer::CNeuralLayer()
 
 
 CNeuralLayer::CNeuralLayer(int32_t num_neurons)
-: CSGObject(), m_num_neurons(0), 
-	m_previous_layer_num_neurons(0), m_batch_size(0)
+: CSGObject(), m_num_neurons(num_neurons), 
+m_previous_layer_num_neurons(0), m_batch_size(0)
 {
 	init();
 }
