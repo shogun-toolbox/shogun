@@ -9,7 +9,10 @@
  */
 
 #include <shogun/io/streaming/StreamingAsciiFile.h>
-#include <shogun/mathematics/Math.h>
+#include <shogun/io/CSVFile.h>
+#include <shogun/io/SGIO.h>
+#include <shogun/lib/SGSparseVector.h>
+#include <shogun/base/DynArray.h>
 
 #include <ctype.h>
 

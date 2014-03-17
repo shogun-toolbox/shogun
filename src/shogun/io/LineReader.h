@@ -11,11 +11,13 @@
 #define __LINE_READER_H__
 
 #include <shogun/lib/SGVector.h>
-#include <shogun/lib/Tokenizer.h>
-#include <shogun/lib/CircularBuffer.h>
+#include <shogun/base/SGObject.h>
 
 namespace shogun
 {
+class CCircularBuffer;
+class CTokenizer;
+
 /** @brief Class for buffered reading from a ascii file */
 class CLineReader : public CSGObject
 {

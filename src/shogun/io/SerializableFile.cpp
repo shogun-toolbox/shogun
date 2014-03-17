@@ -10,6 +10,7 @@
  */
 
 #include <shogun/io/SerializableFile.h>
+#include <shogun/io/SGIO.h>
 
 using namespace shogun;
 

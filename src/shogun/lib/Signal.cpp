@@ -18,6 +18,7 @@
 
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/Signal.h>
+#include <shogun/base/init.h>
 
 using namespace shogun;
 

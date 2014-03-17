@@ -11,21 +11,16 @@
 #define __STREAMING_FILE_H__
 
 #include <shogun/lib/config.h>
-#include <shogun/base/DynArray.h>
 #include <shogun/lib/common.h>
-#include <shogun/io/File.h>
 #include <shogun/io/SGIO.h>
-#include <shogun/lib/DataType.h>
-#include <shogun/lib/SGSparseVector.h>
+#include <shogun/base/SGObject.h>
 #include <shogun/io/IOBuffer.h>
 #include <shogun/classifier/vw/vw_common.h>
 
-#include <ctype.h>
-#include <fcntl.h>
-#include <unistd.h>
-
 namespace shogun
 {
+template <class ST> struct SGSparseVectorEntry;
+
 /** @brief A Streaming File access class.
  *
  * - Vectors are read as one vector per line

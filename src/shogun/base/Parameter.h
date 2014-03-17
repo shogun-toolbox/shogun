@@ -14,6 +14,7 @@
 #include <shogun/lib/common.h>
 #include <shogun/lib/DataType.h>
 #include <shogun/base/DynArray.h>
+#include <shogun/lib/SGVector.h>
 
 namespace shogun
 {
@@ -24,7 +25,6 @@ template <class ST> class SGString;
 template <class T> class SGMatrix;
 template <class T> class SGSparseMatrix;
 template <class T> class SGSparseVector;
-template <class T> class SGVector;
 
 /** @brief parameter struct */
 struct TParameter
