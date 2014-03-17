@@ -22,6 +22,7 @@
 
 #include <shogun/machine/gp/LaplacianInferenceMethod.h>
 #include <shogun/mathematics/eigen3.h>
+#include <shogun/optimization/lbfgs/lbfgs.h>
 
 
 namespace shogun {
@@ -81,6 +82,68 @@ namespace shogun {
     virtual const char* get_name() const {
       return "LaplacianInferenceMethodWithLBFGS";}
 
+/*    int             m;*/
+
+    //float64_t epsilon;
+
+    //int             past;
+
+    //float64_t delta;
+
+    //int             max_iterations;
+
+    //int             linesearch;
+
+    //int             max_linesearch;
+
+    //float64_t min_step;
+
+    //float64_t max_step;
+
+    //float64_t ftol;
+
+    //float64_t wolfe;
+
+    //float64_t gtol;
+
+    //float64_t xtol;
+
+    //float64_t orthantwise_c;
+
+    //int             orthantwise_start;
+
+    //int             orthantwise_end;
+//} lbfgs_parameter_t;
+////
+////static const lbfgs_parameter_t _defparam = {
+    //6, 1e-5, 0, 1e-5,
+    //0, LBFGS_LINESEARCH_DEFAULT, 40,
+    //1e-20, 1e20, 1e-4, 0.9, 0.9, 1.0e-16,
+    //0.0, 0, -1,
+/*};*/
+    virtual lbfgs_parameter_t get_lbfgs_parameter() const;
+
+    virtual void set_lbfgs_parameter(const lbfgs_parameter_t & lbfgs_param,
+                                     bool enable_newton_if_fail = true);
+
+    virtual void set_lbfgs_parameter(int m, 
+                                     int max_linesearch = 40,
+                                     int linesearch = LBFGS_LINESEARCH_DEFAULT,
+                                     int max_iterations = 0,
+                                     float64_t delta = 1e-5, 
+                                     int past = 0, 
+                                     float64_t epsilon = 1e-5,
+                                     bool enable_newton_if_fail = true,
+                                     float64_t min_step = 1e-20,
+                                     float64_t max_step = 1e+20,
+                                     float64_t ftol = 1e-4,
+                                     float64_t wolfe = 0.9,
+                                     float64_t gtol = 0.9,
+                                     float64_t xtol = 1e-16,
+                                     float64_t orthantwise_c = 0.0,
+                                     int orthantwise_start = 0,
+                                     int orthantwise_end = 1);
+
    protected:
     /** update alpha using the LBFGS method*/
     virtual void update_alpha();
@@ -94,14 +157,19 @@ namespace shogun {
                                    float64_t* psi);
 
     /** variables needed to compute gradient and function value*/
-    CSharedInfoForLBFGS m_shared;
+    CSharedInfoForLBFGS m_shared_variables;
 
    private:
+    // m_variablename where m_ means data member for short
+    lbfgs_parameter_t m_lbfgs_param;
+    void init();
     static float64_t evaluate(void *obj,
                               const float64_t *alpha,
                               float64_t *gradient,
                               const int dim,
                               const float64_t step);
+
+    bool m_enable_newton_if_fail;
   };
 
 } /* namespace shogun */
