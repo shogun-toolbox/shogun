@@ -20,13 +20,6 @@ CNeuralLinearLayer::CNeuralLinearLayer() : CNeuralLayer()
 {
 }
 
-CNeuralLinearLayer::CNeuralLinearLayer(const CNeuralLinearLayer& orig)
-: CNeuralLayer(orig)
-{
-
-}
-
-
 CNeuralLinearLayer::CNeuralLinearLayer(int32_t num_neurons): 
 CNeuralLayer(num_neurons)
 {	

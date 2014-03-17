@@ -16,13 +16,6 @@ CNeuralLogisticLayer::CNeuralLogisticLayer() : CNeuralLinearLayer()
 {
 }
 
-CNeuralLogisticLayer::CNeuralLogisticLayer(const CNeuralLogisticLayer& orig)
-: CNeuralLinearLayer(orig)
-{
-
-}
-
-
 CNeuralLogisticLayer::CNeuralLogisticLayer(int32_t num_neurons): 
 CNeuralLinearLayer(num_neurons)
 {

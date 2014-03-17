@@ -26,9 +26,6 @@ public:
 	/** default constructor */
 	CNeuralLinearLayer();
 	
-	/** copy constructor */
-	CNeuralLinearLayer(const CNeuralLinearLayer &orig);
-	
 	/** Constuctor
 	 * 
 	 * @param num_neurons Number of neurons in this layer
