@@ -7,7 +7,6 @@
  * Written (W) 2013 Saurabh Mahindre
  */
 
-#include <shogun/base/init.h>
 #include <shogun/evaluation/CrossValidationSplitting.h>
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/evaluation/StratifiedCrossValidationSplitting.h>

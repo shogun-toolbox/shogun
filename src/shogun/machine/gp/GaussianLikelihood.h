@@ -216,7 +216,7 @@ public:
 	virtual float64_t get_first_moment(SGVector<float64_t> mu,
 			SGVector<float64_t> s2, const CLabels* lab, index_t i) const;
 
-	/** returns the second moment of a given (unnormalized) probability
+	/** returns the second central moment of a given (unnormalized) probability
 	 * distribution \f$q(f_i) = Z_i^-1
 	 * p(y_i|f_i)\mathcal{N}(f_i|\mu,\sigma^2)\f$, where \f$ Z_i=\int
 	 * p(y_i|f_i)\mathcal{N}(f_i|\mu,\sigma^2) df_i\f$.

@@ -36,6 +36,19 @@ public:
 	CLogDetEstimator();
 
 	/**
+	 * constructor for SGSparseMatrix<float64_t>
+	 * available only when Eigen3 library installed.
+	 * Using the default methods: CSerialComputationEngine,CLanczosEigenSolver,
+	 * CLogRationalApproximationCGM with 1E-5 accuracy, CCGMShiftedFamilySolver,
+	 * when COLPACK package is installed CProbingsampler with power=1,
+	 * EOrderingVariant NATURAL, EColoringVariant DISTANCE_TWO is used
+	 * else CNormalsampler is used.
+	 * 
+	 * @param sparse_mat the input Sparse matrix
+	 */
+	CLogDetEstimator(SGSparseMatrix<float64_t> sparse_mat);
+
+	/**
 	 * constructor
 	 *
 	 * @param trace_sampler the trace sampler
@@ -72,7 +85,16 @@ public:
 	{
 		return "LogDetEstimator";
 	}
-
+	
+	/** @return trace sampler */
+	CTraceSampler* get_trace_sampler(void) const;
+	
+	/** @return computation sampler */	
+	CIndependentComputationEngine* get_computation_engine(void) const;
+	
+	/** @return operator function */
+	COperatorFunction<float64_t>* get_operator_function(void) const;
+	
 private:
 	/** the trace sampler */
 	CTraceSampler* m_trace_sampler;

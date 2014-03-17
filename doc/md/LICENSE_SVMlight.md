@@ -1,15 +1,13 @@
 SVM-Light is available from http://svmlight.joachims.org/
 
-```
-Author: Thorsten Joachims
-	thorsten@joachims.org
+	Author: Thorsten Joachims
+		thorsten@joachims.org
 
-	Cornell University
-	Department of Computer Science
-	4153 Upson Hall
-	Ithaca, NY 14853
-	USA
-```
+		Cornell University
+		Department of Computer Science
+		4153 Upson Hall
+		Ithaca, NY 14853
+		USA
 
 LICENSING TERMS
 ===============
@@ -21,13 +19,11 @@ for commercial purposes.
 Scientific results produced using the software provided shall
 acknowledge the use of SVM-Light. Please cite as
 
-```
-       T. Joachims, Making large-Scale SVM Learning
-       Practical. Advances in Kernel Methods - Support Vector
-       Learning, B. Schölkopf and C. Burges and A. Smola (ed.),
-       MIT-Press, 1999.
-       http://www-ai.cs.uni-dortmund.de/DOKUMENTE/joachims_99a.pdf
-```
+	T. Joachims, Making large-Scale SVM Learning
+	Practical. Advances in Kernel Methods - Support Vector
+	Learning, B. Schoelkopf and C. Burges and A. Smola (ed.),
+	MIT-Press, 1999.
+	http://www-ai.cs.uni-dortmund.de/DOKUMENTE/joachims_99a.pdf
 
 Moreover shall the author of SVM-Light be informed about the
 publication.

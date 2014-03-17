@@ -6,7 +6,6 @@
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/lib/SGVector.h>
 #include <gtest/gtest.h>
-#include <stdio.h>
 
 using namespace shogun;
 

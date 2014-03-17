@@ -10,7 +10,6 @@
 #ifdef HAVE_EIGEN3
 
 #include <shogun/distributions/classical/GaussianDistribution.h>
-#include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
 #include <gtest/gtest.h>
 

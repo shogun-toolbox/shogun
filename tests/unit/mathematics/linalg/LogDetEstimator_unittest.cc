@@ -30,7 +30,6 @@
 #include <shogun/mathematics/linalg/linsolver/DirectLinearSolverComplex.h>
 #include <shogun/mathematics/linalg/linsolver/CGMShiftedFamilySolver.h>
 #include <shogun/mathematics/linalg/ratapprox/logdet/LogDetEstimator.h>
-#include <shogun/lib/computation/jobresult/ScalarResult.h>
 #include <shogun/lib/computation/engine/SerialComputationEngine.h>
 #include <gtest/gtest.h>
 
@@ -72,6 +71,37 @@ TEST(LogDetEstimator, sample)
 
 	SG_UNREF(trace_sampler);
 	SG_UNREF(op_func);
+	SG_UNREF(op);
+	SG_UNREF(e);
+}
+
+TEST(LogDetEstimator, Sparse_sample_constructor)
+{
+	const index_t size=16;
+	SGMatrix<float64_t> mat(size, size);
+	mat.set_const(0.0);
+
+	CSparseFeatures<float64_t> feat(mat);
+	SGSparseMatrix<float64_t> sm=feat.get_sparse_feature_matrix();
+	
+	CLogDetEstimator estimator(sm);
+
+	CIndependentComputationEngine* e=
+		dynamic_cast<CIndependentComputationEngine*>
+		(estimator.get_computation_engine());
+
+	COperatorFunction<float64_t>* op=
+		dynamic_cast<COperatorFunction<float64_t>*>
+		(estimator.get_operator_function());
+
+	CTraceSampler* tracer=
+		dynamic_cast<CTraceSampler*>(estimator.get_trace_sampler());
+
+	EXPECT_TRUE(e);
+	EXPECT_TRUE(op);
+	EXPECT_TRUE(tracer);
+
+	SG_UNREF(tracer);
 	SG_UNREF(op);
 	SG_UNREF(e);
 }

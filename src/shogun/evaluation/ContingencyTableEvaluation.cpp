@@ -52,7 +52,7 @@ float64_t CContingencyTableEvaluation::evaluate(CLabels* predicted, CLabels* gro
 	return 42;
 }
 
-inline EEvaluationDirection CContingencyTableEvaluation::get_evaluation_direction() const
+EEvaluationDirection CContingencyTableEvaluation::get_evaluation_direction() const
 {
 	switch (m_type)
 	{

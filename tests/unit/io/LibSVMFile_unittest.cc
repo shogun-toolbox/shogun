@@ -3,7 +3,6 @@
 #include <shogun/mathematics/Random.h>
 
 #include <cstdio>
-#include <cstring>
 
 #include <gtest/gtest.h>
 
