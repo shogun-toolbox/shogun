@@ -170,17 +170,17 @@ class CKNN : public CDistanceMachine
 		/** get Mode of Operation for KNN
 		 * @return mode
 		 */
-		inline bool get_use_covertree() const { return m_mode; }
+		inline Mode get_mode() const { return m_mode; }
 
-		/** set Mode of Operation for KNN
-		 * @param mode
+		/** set Leaf Size of KDTree
+		 * @param leaf_size
 		 */
 		inline void set_leaf_size(int32_t ls) { m_leaf_size = ls; }
 		
-		/** get Mode of Operation for KNN
-		 * @return mode
+		/** get Leaf Size of KDTree
+		 * @return leaf_size
 		 */
-		inline bool get_leaf_size() const { return m_leaf_size; }
+		inline int32_t get_leaf_size() const { return m_leaf_size; }
 		
 		/** @return object name */
 		virtual const char* get_name() const { return "KNN"; }
