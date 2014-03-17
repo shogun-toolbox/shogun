@@ -16,25 +16,32 @@
 namespace shogun
 {
 
-/** @brief class that implements the Random Kitchen Sinks for the DotFeatures
+/** @brief class that implements the Random Kitchen Sinks (RKS) for the DotFeatures
  * as mentioned in http://books.nips.cc/papers/files/nips21/NIPS2008_0885.pdf.
  *
- * The Random Kitchen Sinks algorithm expects:
- *		- a dataset to work on
- *		- a function phi such that |phi(x; a)| <= 1, the a's are the function parameters
- *		- a probability distrubution p, from which to draw the a's
- *		- the number of samples K to draw from p.
+ * RKS input:
+ *		- a dataset $\{x_i, y_i\}_{i=1,\dots,m}$ of $m$ points to work on
+ *		- $\phi(x; w)$: a bounded feature function s.t. $|\phi(x; w)| \leq 1$, where $w$ is the function parameter
+ *		- $p(w)$: a probability distrubution function, from which to draw the $w$
+ *		- $K$: the number of samples to draw from $p(w)$
+ * 		- $C$: a scalar, which is chosen to be large enough in practice.
  *
- * Then:
- *		1. it draws K a's from p
- *		2. it computes for each vector in the dataset
- *			   Zi = [phi(Xi;a1), ..., phi(Xi;aK)]
- *		3. it solves the empirical risk minimization problem for all Zi, either
- *		   through least squares or through a linear SVM.
+ * RKS output:
+ * 		A function $\hat{f}(x) = \sum_{k=1}^{K} \phi(x; w_k)\alpha_k$
+ *		1. Draw $w_1,\dots,w_K$ iid from $p(w)$
+ *		2. Featurize the input: $z_i = [\phi(x_i; w_1),\dots,\phi(x_i; w_K)]^{\top}$
+ *		3. With $w$ fixed, solve the empirical risk minimization problem:
+ * 		\begin{equation}
+ * 		\underset{\alpha \in \mathbf{R}^K}{\text{minimize}} \quad \frac{1}{m}\sum_{i=1}^{m} c(\alpha^{\top} z_i, y_i)
+ * 		\end{equation}
+ * 		\begin{equation}
+ * 		\text{s.t.} \quad \|\alpha\|_{\infty} \leq C/K.
+ * 		\end{equation}
+ *		  for vector $\alpha$, either through least squares when $c(y', y)$ is the quadratic loss or through a linear SVM when $c(y', y)$ is the hinge loss.
  *
  * This class implements the vector transformation on-the-fly whenever it is needed.
  * In order for it to work, the class expects the user to implement a subclass of
- * CRKSFunctions and implement in there the functions phi and p and then pass an
+ * CRKSFunctions and implement in there the functions $\phi$ and $p$ and then pass an
  * instantiated object of that class to the constructor.
  *
  * Further useful resources, include :
