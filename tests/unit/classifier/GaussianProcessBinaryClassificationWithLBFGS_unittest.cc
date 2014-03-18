@@ -57,77 +57,77 @@ TEST(GaussianProcessBinaryClassificationWithLBFGS,get_mean_vector)
 {
   float64_t abs_tolorance;
   float64_t rel_tolorance=1e-2;
-	// create some easy random classification data
-	index_t n=10, m1=25, i=0;
+  // create some easy random classification data
+  index_t n=10, m1=25, i=0;
 
-	SGMatrix<float64_t> feat_train(2, n);
-	SGVector<float64_t> lab_train(n);
-	SGMatrix<float64_t> feat_test(2, m1);
+  SGMatrix<float64_t> feat_train(2, n);
+  SGVector<float64_t> lab_train(n);
+  SGMatrix<float64_t> feat_test(2, m1);
 
-	feat_train(0, 0)=0.0919736;
-	feat_train(0, 1)=-0.3813827;
-	feat_train(0, 2)=-1.8011128;
-	feat_train(0, 3)=-1.4603061;
-	feat_train(0, 4)=-0.1386884;
-	feat_train(0, 5)=0.7827657;
-	feat_train(0, 6)=-0.1369808;
-	feat_train(0, 7)=0.0058596;
-	feat_train(0, 8)=0.1059573;
-	feat_train(0, 9)=-1.3059609;
+  feat_train(0, 0)=0.0919736;
+  feat_train(0, 1)=-0.3813827;
+  feat_train(0, 2)=-1.8011128;
+  feat_train(0, 3)=-1.4603061;
+  feat_train(0, 4)=-0.1386884;
+  feat_train(0, 5)=0.7827657;
+  feat_train(0, 6)=-0.1369808;
+  feat_train(0, 7)=0.0058596;
+  feat_train(0, 8)=0.1059573;
+  feat_train(0, 9)=-1.3059609;
 
-	feat_train(1, 0)=1.4186892;
-	feat_train(1, 1)=0.2271813;
-	feat_train(1, 2)=0.3451326;
-	feat_train(1, 3)=0.4495962;
-	feat_train(1, 4)=1.2066144;
-	feat_train(1, 5)=-0.5425118;
-	feat_train(1, 6)=1.3479000;
-	feat_train(1, 7)=0.7181545;
-	feat_train(1, 8)=0.4036014;
-	feat_train(1, 9)=0.8928408;
+  feat_train(1, 0)=1.4186892;
+  feat_train(1, 1)=0.2271813;
+  feat_train(1, 2)=0.3451326;
+  feat_train(1, 3)=0.4495962;
+  feat_train(1, 4)=1.2066144;
+  feat_train(1, 5)=-0.5425118;
+  feat_train(1, 6)=1.3479000;
+  feat_train(1, 7)=0.7181545;
+  feat_train(1, 8)=0.4036014;
+  feat_train(1, 9)=0.8928408;
 
-	lab_train[0]=1.0;
-	lab_train[1]=-1.0;
-	lab_train[2]=-1.0;
-	lab_train[3]=-1.0;
-	lab_train[4]=-1.0;
-	lab_train[5]=1.0;
-	lab_train[6]=-1.0;
-	lab_train[7]=1.0;
-	lab_train[8]=1.0;
-	lab_train[9]=-1.0;
+  lab_train[0]=1.0;
+  lab_train[1]=-1.0;
+  lab_train[2]=-1.0;
+  lab_train[3]=-1.0;
+  lab_train[4]=-1.0;
+  lab_train[5]=1.0;
+  lab_train[6]=-1.0;
+  lab_train[7]=1.0;
+  lab_train[8]=1.0;
+  lab_train[9]=-1.0;
 
-	// create test features
-	for (index_t x1=-2; x1<=2; x1++)
-	{
-		for (index_t x2=-2; x2<=2; x2++)
-		{
-			feat_test(0, i)=(float64_t)x1;
-			feat_test(1, i)=(float64_t)x2;
-			i++;
-		}
-	}
+  // create test features
+  for (index_t x1=-2; x1<=2; x1++)
+  {
+    for (index_t x2=-2; x2<=2; x2++)
+    {
+      feat_test(0, i)=(float64_t)x1;
+      feat_test(1, i)=(float64_t)x2;
+      i++;
+    }
+  }
 
-	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
-	CDenseFeatures<float64_t>* features_test=new CDenseFeatures<float64_t>(feat_test);
+  // shogun representation of features and labels
+  CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
+  CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
+  CDenseFeatures<float64_t>* features_test=new CDenseFeatures<float64_t>(feat_test);
 
-	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
-	CZeroMean* mean=new CZeroMean();
+  // choose Gaussian kernel with sigma = 2 and zero mean function
+  CGaussianKernel* kernel=new CGaussianKernel(10, 2);
+  CZeroMean* mean=new CZeroMean();
 
-	// probit likelihood
-	CProbitLikelihood* likelihood=new CProbitLikelihood();
+  // probit likelihood
+  CProbitLikelihood* likelihood=new CProbitLikelihood();
 
-	// specify GP classification with Laplacian inference
-	CLaplacianInferenceMethodWithLBFGS* inf
+  // specify GP classification with Laplacian inference
+  CLaplacianInferenceMethodWithLBFGS* inf
       = new CLaplacianInferenceMethodWithLBFGS(kernel,
                                                features_train,
                                                mean,
                                                labels_train,
                                                likelihood);
-  
+
   int m = 100;
   int max_linesearch = 1000;
   int linesearch = 0;
@@ -146,39 +146,39 @@ TEST(GaussianProcessBinaryClassificationWithLBFGS,get_mean_vector)
                            enable_newton_if_fail
                           );
 
-	// train Gaussian process binary classifier
-	CGaussianProcessBinaryClassification* gpc=new CGaussianProcessBinaryClassification(inf);
-	gpc->train();
+  // train Gaussian process binary classifier
+  CGaussianProcessBinaryClassification* gpc=new CGaussianProcessBinaryClassification(inf);
+  gpc->train();
 
-	// compare mean vector with result form GPML with the minfunc function
-	SGVector<float64_t> mean_vector=gpc->get_mean_vector(features_test);
+  // compare mean vector with result form GPML with the minfunc function
+  SGVector<float64_t> mean_vector=gpc->get_mean_vector(features_test);
 
   /* mean =
-  -0.023547066779433
-  -0.164420972889231
-  -0.447812356229495
-  -0.472428809447940
-  -0.205391227282142
-  -0.011335213830652
-  -0.131012850981580
-  -0.427259580375569
-  -0.527281189501774
-  -0.274684117023014
-   0.055529455358847
-   0.152023871056183
-   0.174282413372574
-   0.010823181344098
-  -0.072772631266962
-   0.090191676357209
-   0.288417744414623
-   0.409275122823904
-   0.281220920795101
-   0.088382525159406
-   0.043796091667543
-   0.130461505967524
-   0.170564691797896
-   0.113006930991411
-   0.041654120309486
+     -0.023547066779433
+     -0.164420972889231
+     -0.447812356229495
+     -0.472428809447940
+     -0.205391227282142
+     -0.011335213830652
+     -0.131012850981580
+     -0.427259580375569
+     -0.527281189501774
+     -0.274684117023014
+     0.055529455358847
+     0.152023871056183
+     0.174282413372574
+     0.010823181344098
+     -0.072772631266962
+     0.090191676357209
+     0.288417744414623
+     0.409275122823904
+     0.281220920795101
+     0.088382525159406
+     0.043796091667543
+     0.130461505967524
+     0.170564691797896
+     0.113006930991411
+     0.041654120309486
   */ 
 
   abs_tolorance = get_abs_tolorance_classifier(-0.023547066779433, rel_tolorance);
@@ -270,40 +270,40 @@ TEST(GaussianProcessBinaryClassificationWithLBFGS,get_variance_vector)
 
   lab_train[0]=1.0;
   lab_train[1]=-1.0;
-	lab_train[2]=-1.0;
-	lab_train[3]=-1.0;
-	lab_train[4]=-1.0;
-	lab_train[5]=1.0;
-	lab_train[6]=-1.0;
-	lab_train[7]=1.0;
-	lab_train[8]=1.0;
-	lab_train[9]=-1.0;
+  lab_train[2]=-1.0;
+  lab_train[3]=-1.0;
+  lab_train[4]=-1.0;
+  lab_train[5]=1.0;
+  lab_train[6]=-1.0;
+  lab_train[7]=1.0;
+  lab_train[8]=1.0;
+  lab_train[9]=-1.0;
 
-	// create test features
-	for (index_t x1=-2; x1<=2; x1++)
-	{
-		for (index_t x2=-2; x2<=2; x2++)
-		{
-			feat_test(0, i)=(float64_t)x1;
-			feat_test(1, i)=(float64_t)x2;
-			i++;
-		}
-	}
+  // create test features
+  for (index_t x1=-2; x1<=2; x1++)
+  {
+    for (index_t x2=-2; x2<=2; x2++)
+    {
+      feat_test(0, i)=(float64_t)x1;
+      feat_test(1, i)=(float64_t)x2;
+      i++;
+    }
+  }
 
-	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
-	CDenseFeatures<float64_t>* features_test=new CDenseFeatures<float64_t>(feat_test);
+  // shogun representation of features and labels
+  CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
+  CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
+  CDenseFeatures<float64_t>* features_test=new CDenseFeatures<float64_t>(feat_test);
 
-	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
-	CZeroMean* mean=new CZeroMean();
+  // choose Gaussian kernel with sigma = 2 and zero mean function
+  CGaussianKernel* kernel=new CGaussianKernel(10, 2);
+  CZeroMean* mean=new CZeroMean();
 
-	// probit likelihood
-	CProbitLikelihood* likelihood=new CProbitLikelihood();
+  // probit likelihood
+  CProbitLikelihood* likelihood=new CProbitLikelihood();
 
-	// specify GP classification with Laplacian inference
-	CLaplacianInferenceMethodWithLBFGS* inf
+  // specify GP classification with Laplacian inference
+  CLaplacianInferenceMethodWithLBFGS* inf
       = new CLaplacianInferenceMethodWithLBFGS(kernel,
                                                features_train,
                                                mean,
@@ -328,38 +328,38 @@ TEST(GaussianProcessBinaryClassificationWithLBFGS,get_variance_vector)
                            enable_newton_if_fail
                           );
 
-	// train gaussian process classifier
-	CGaussianProcessBinaryClassification* gpc=new CGaussianProcessBinaryClassification(inf);
-	gpc->train();
+  // train gaussian process classifier
+  CGaussianProcessBinaryClassification* gpc=new CGaussianProcessBinaryClassification(inf);
+  gpc->train();
 
-	// compare variance vector with result form GPML with the minfunc function
-	SGVector<float64_t> variance_vector=gpc->get_variance_vector(features_test);
+  // compare variance vector with result form GPML with the minfunc function
+  SGVector<float64_t> variance_vector=gpc->get_variance_vector(features_test);
   /* variance =
-   0.999445535646085
-   0.972965743674159
-   0.799464093608188
-   0.776811020003602
-   0.957814443755535
-   0.999871512927413
-   0.982835632877678
-   0.817449250977293
-   0.721974547197594
-   0.924548635855287
-   0.996916479587550
-   0.976888742629093
-   0.969625640389031
-   0.999882858745593
-   0.994704144138483
-   0.991865461515876
-   0.916815204706781
-   0.832493873837478
-   0.920914793707155
-   0.992188529246447
-   0.998081902354648
-   0.982979795460686
-   0.970907685911889
-   0.987229433547902
-   0.998264934261243
+     0.999445535646085
+     0.972965743674159
+     0.799464093608188
+     0.776811020003602
+     0.957814443755535
+     0.999871512927413
+     0.982835632877678
+     0.817449250977293
+     0.721974547197594
+     0.924548635855287
+     0.996916479587550
+     0.976888742629093
+     0.969625640389031
+     0.999882858745593
+     0.994704144138483
+     0.991865461515876
+     0.916815204706781
+     0.832493873837478
+     0.920914793707155
+     0.992188529246447
+     0.998081902354648
+     0.982979795460686
+     0.970907685911889
+     0.987229433547902
+     0.998264934261243
   */
 
   abs_tolorance = get_abs_tolorance_classifier(0.999445535646085, rel_tolorance);
@@ -412,7 +412,7 @@ TEST(GaussianProcessBinaryClassificationWithLBFGS,get_variance_vector)
   EXPECT_NEAR(variance_vector[23],  0.987229433547902,  abs_tolorance);
   abs_tolorance = get_abs_tolorance_classifier(0.998264934261243, rel_tolorance);
   EXPECT_NEAR(variance_vector[24],  0.998264934261243,  abs_tolorance);
-  
+
 
   SG_UNREF(gpc);
 }
@@ -421,7 +421,7 @@ TEST(GaussianProcessBinaryClassificationWithLBFGS,get_probabilities)
 {
   float64_t abs_tolorance;
   float64_t rel_tolorance=1e-2;
-// create some easy random classification data
+  // create some easy random classification data
   index_t n=10, m1=25, i=0;
 
   SGMatrix<float64_t> feat_train(2, n);
@@ -486,7 +486,7 @@ TEST(GaussianProcessBinaryClassificationWithLBFGS,get_probabilities)
 
   // specify GP classification with Laplacian inference
   CLaplacianInferenceMethodWithLBFGS* inf=new CLaplacianInferenceMethodWithLBFGS(kernel,
-    features_train,	mean, labels_train, likelihood);
+                                                                                 features_train,	mean, labels_train, likelihood);
 
   int m = 100;
   int max_linesearch = 1000;
@@ -514,31 +514,31 @@ TEST(GaussianProcessBinaryClassificationWithLBFGS,get_probabilities)
   SGVector<float64_t> probabilities=gpc->get_probabilities(features_test);
 
   /* probabilities =
-   0.488226466245922
-   0.417789511180478
-   0.276093816652870
-   0.263785590738910
-   0.397304384814469
-   0.494332392690781
-   0.434493572227885
-   0.286370205408434
-   0.236359403085941
-   0.362657942090414
-   0.527764727350733
-   0.576011934382649
-   0.587141206106800
-   0.505411594361785
-   0.463613688406351
-   0.545095837900176
-   0.644208871583211
-   0.704637561752594
-   0.640610463004653
-   0.544191265146420
-   0.521898045707522
-   0.565230752690983
-   0.585282345866324
-   0.556503466053284
-   0.520827060710866
+     0.488226466245922
+     0.417789511180478
+     0.276093816652870
+     0.263785590738910
+     0.397304384814469
+     0.494332392690781
+     0.434493572227885
+     0.286370205408434
+     0.236359403085941
+     0.362657942090414
+     0.527764727350733
+     0.576011934382649
+     0.587141206106800
+     0.505411594361785
+     0.463613688406351
+     0.545095837900176
+     0.644208871583211
+     0.704637561752594
+     0.640610463004653
+     0.544191265146420
+     0.521898045707522
+     0.565230752690983
+     0.585282345866324
+     0.556503466053284
+     0.520827060710866
   */  
 
   abs_tolorance = get_abs_tolorance_classifier(0.488226466245922, rel_tolorance);
