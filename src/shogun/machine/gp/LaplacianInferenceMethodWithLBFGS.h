@@ -43,64 +43,62 @@ namespace shogun {
  */
 
 /** Wrapper class used for the LBFGS minimizer */
-  class CSharedInfoForLBFGS {
-   public:
-    index_t dim;
-    Eigen::Map<Eigen::MatrixXd>* kernel;
-    Eigen::Map<Eigen::VectorXd>* mean_f;
-    CSharedInfoForLBFGS()
-        :dim(0), kernel(NULL), mean_f(NULL){}
-  };
+class CSharedInfoForLBFGS {
+public:
+ index_t dim;
+ Eigen::Map<Eigen::MatrixXd>* kernel;
+ Eigen::Map<Eigen::VectorXd>* mean_f;
+ CSharedInfoForLBFGS()
+     :dim(0), kernel(NULL), mean_f(NULL){}
+};
 
 
-  class CLaplacianInferenceMethodWithLBFGS: public CLaplacianInferenceMethod {
-   public:
-    /** default constructor */
-    CLaplacianInferenceMethodWithLBFGS();
+class CLaplacianInferenceMethodWithLBFGS: public CLaplacianInferenceMethod {
+public:
+ /** default constructor */
+ CLaplacianInferenceMethodWithLBFGS();
 
-    /** constructor
-     *
-     * @param kernel covariance function
-     * @param features features to use in inference
-     * @param mean mean function
-     * @param labels labels of the features
-     * @param model Likelihood model to use
-     */
-    CLaplacianInferenceMethodWithLBFGS(CKernel* kernel,
-                                       CFeatures* features,
-                                       CMeanFunction* mean,
-                                       CLabels* labels,
-                                       CLikelihoodModel* model);
+ /** constructor
+  *
+  * @param kernel covariance function
+  * @param features features to use in inference
+  * @param mean mean function
+  * @param labels labels of the features
+  * @param model Likelihood model to use
+  */
+ CLaplacianInferenceMethodWithLBFGS(CKernel* kernel, 
+                                   CFeatures* features,
+                                   CMeanFunction* mean, 
+                                   CLabels* labels, 
+                                   CLikelihoodModel* model);
 
-    virtual ~CLaplacianInferenceMethodWithLBFGS();
+ virtual ~CLaplacianInferenceMethodWithLBFGS();
 
-    /** returns the name of the inference method
-     *
-     * @return name LaplacianWithLBFGS
-     */
-    virtual const char* get_name() const {
-      return "LaplacianInferenceMethodWithLBFGS";}
+ /** returns the name of the inference method
+  *
+  * @return name LaplacianWithLBFGS
+  */
+ virtual const char* get_name() const { return "LaplacianInferenceMethodWithLBFGS"; }
 
-   protected:
-    /** update alpha using the LBFGS method*/
-    virtual void update_alpha();
+protected:
+ /** update alpha using the LBFGS method*/
+ virtual void update_alpha();
 
-    /** compute the gradient given the current alpha*/
-    virtual void get_gradient_wrt_alpha(Eigen::Map<Eigen::VectorXd>* alpha,
-                                        Eigen::Map<Eigen::VectorXd>* gradient);
+ /** compute the gradient given the current alpha*/
+ virtual void get_gradient_wrt_alpha(Eigen::Map<Eigen::VectorXd>* alpha,
+                                     Eigen::Map<Eigen::VectorXd>* gradient);
 
-    /** compute the function value given the current alpha*/
-    virtual void get_psi_wrt_alpha(Eigen::Map<Eigen::VectorXd>* alpha,
-                                   float64_t* psi);
+ /** compute the function value given the current alpha*/
+ virtual void get_psi_wrt_alpha(Eigen::Map<Eigen::VectorXd>* alpha, 
+                                float64_t* psi);
 
-    /** variables needed to compute gradient and function value*/
-    CSharedInfoForLBFGS m_shared;
+ /** only uses for dimension check*/
+ void check(int left, int right, int line);
 
-   private:
-    /** only uses for dimension checking */
-    void check(int left, int right, int line);
-  };
+ /** variables needed to compute gradient and function value*/
+ CSharedInfoForLBFGS m_shared;
+};
 
-} /* namespace shogun */
+}
 #endif /* HAVE_EIGEN3 */
 #endif /* CLAPLACIANINFERENCEMETHODWITHLBFGS_H_ */
