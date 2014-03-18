@@ -9,6 +9,7 @@
  */
 
 #include <shogun/machine/KernelStructuredOutputMachine.h>
+#include <shogun/kernel/Kernel.h>
 
 using namespace shogun;
 

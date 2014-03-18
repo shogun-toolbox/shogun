@@ -19,6 +19,7 @@
 #include <shogun/mathematics/linalg/linsolver/IterativeSolverIterator.h>
 #include <shogun/mathematics/linalg/eigsolver/LanczosEigenSolver.h>
 #include <vector>
+#include <shogun/lib/SGVector.h>
 
 using namespace Eigen;
 

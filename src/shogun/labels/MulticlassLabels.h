@@ -18,6 +18,7 @@
 #include <shogun/labels/LabelTypes.h>
 #include <shogun/labels/DenseLabels.h>
 #include <shogun/features/SubsetStack.h>
+#include <shogun/lib/SGMatrix.h>
 
 namespace shogun
 {

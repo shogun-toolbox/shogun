@@ -16,6 +16,7 @@
 #include <shogun/lib/config.h>
 #include <shogun/lib/DataType.h>
 #include <shogun/lib/SGReferencedData.h>
+#include <shogun/io/SGIO.h>
 
 namespace shogun
 {

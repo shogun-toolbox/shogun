@@ -11,6 +11,9 @@
 
 #include <shogun/lib/Set.h>
 #include <shogun/machine/KernelMulticlassMachine.h>
+#include <shogun/features/Features.h>
+#include <shogun/kernel/Kernel.h>
+#include <shogun/machine/KernelMachine.h>
 
 using namespace shogun;
 

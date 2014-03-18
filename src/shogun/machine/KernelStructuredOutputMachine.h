@@ -12,10 +12,11 @@
 #define _KERNEL_STRUCTURED_OUTPUT_MACHINE__H__
 
 #include <shogun/machine/StructuredOutputMachine.h>
-#include <shogun/kernel/Kernel.h>
 
 namespace shogun
 {
+
+class CKernel;
 
 /** TODO doc */
 class CKernelStructuredOutputMachine : public CStructuredOutputMachine

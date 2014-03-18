@@ -14,10 +14,9 @@
 #include <shogun/machine/LinearMachine.h>
 #include <shogun/machine/KernelMachine.h>
 #include <shogun/machine/MulticlassMachine.h>
-#include <shogun/base/Parameter.h>
 #include <shogun/labels/MulticlassLabels.h>
-#include <shogun/labels/RegressionLabels.h>
 #include <shogun/mathematics/Statistics.h>
+#include <shogun/labels/MulticlassMultipleOutputLabels.h>
 
 using namespace shogun;
 

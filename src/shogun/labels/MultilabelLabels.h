@@ -35,7 +35,6 @@
 #include <shogun/lib/common.h>
 #include <shogun/labels/LabelTypes.h>
 #include <shogun/labels/Labels.h>
-#include <shogun/labels/BinaryLabels.h>
 #include <shogun/lib/SGVector.h>
 
 namespace shogun

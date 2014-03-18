@@ -9,16 +9,18 @@
  */
 
 #include <shogun/base/init.h>
+#include <shogun/lib/memory.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/Random.h>
-#include <shogun/lib/common.h>
-#include <shogun/lib/Map.h>
+#include <shogun/io/SGIO.h>
 #include <shogun/base/Parallel.h>
 #include <shogun/base/Version.h>
+#include <shogun/base/SGRefObject.h>
 #include <stdlib.h>
 #include <string.h>
 
 #ifdef TRACE_MEMORY_ALLOCS
+#include <shogun/lib/Map.h>
 shogun::CMap<void*, shogun::MemoryBlock>* sg_mallocs=NULL;
 #endif
 

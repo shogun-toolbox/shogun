@@ -14,6 +14,7 @@
 #ifdef HAVE_EIGEN3
 #include <shogun/converter/Converter.h>
 #include <shogun/features/Features.h>
+#include <shogun/lib/SGMatrix.h>
 
 namespace shogun
 {

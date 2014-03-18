@@ -16,14 +16,14 @@
 #include <shogun/machine/BaseMulticlassMachine.h>
 #include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/multiclass/MulticlassStrategy.h>
-#include <shogun/labels/MulticlassLabels.h>
-#include <shogun/labels/MulticlassMultipleOutputLabels.h>
 
 namespace shogun
 {
 
 class CFeatures;
 class CLabels;
+class CMulticlassLabels;
+class CMulticlassMultipleOutputLabels;
 
 /** @brief experimental abstract generic multiclass machine class */
 class CMulticlassMachine : public CBaseMulticlassMachine

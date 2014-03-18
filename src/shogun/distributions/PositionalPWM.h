@@ -16,6 +16,9 @@
 #include <shogun/lib/common.h>
 #include <shogun/mathematics/Math.h>
 
+#include <shogun/lib/SGVector.h>
+#include <shogun/lib/SGMatrix.h>
+
 namespace shogun
 {
 /** @brief Positional PWM */

@@ -13,10 +13,13 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/machine/LinearMachine.h>
-#include <shogun/latent/LatentModel.h>
 
 namespace shogun
 {
+	class CFeatures;
+	class CLatentLabels;
+	class CLatentModel;
+
 	/** @brief abstract implementaion of Linear Machine with latent variable
 	 * This is the base implementation of all linear machines with latent variable.
 	 */
@@ -136,4 +139,3 @@ namespace shogun
 }
 
 #endif /* __LATENTLINEARMACHINE_H__ */
-

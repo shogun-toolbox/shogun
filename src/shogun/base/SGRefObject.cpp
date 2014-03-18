@@ -10,12 +10,12 @@
  * Copyright (C) 2008-2009 Fraunhofer Institute FIRST and Max Planck Society
  */
 
-#include <shogun/base/init.h>
+#include <shogun/lib/config.h>
+#include <shogun/lib/memory.h>
+
 #include <shogun/base/SGRefObject.h>
 #include <shogun/io/SGIO.h>
-
-#include <stdlib.h>
-#include <stdio.h>
+#include <shogun/lib/RefCount.h>
 
 using namespace shogun;
 

@@ -17,6 +17,13 @@
 #include <shogun/lib/memory.h>
 #include <shogun/io/SGIO.h>
 
+#include <shogun/lib/SGString.h>
+#include <shogun/lib/SGVector.h>
+#include <shogun/lib/SGSparseVector.h>
+#include <shogun/lib/SGMatrix.h>
+#include <shogun/lib/SGSparseMatrix.h> 
+#include <shogun/io/SerializableFile.h>
+
 using namespace shogun;
 
 

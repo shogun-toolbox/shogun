@@ -12,11 +12,13 @@
 #ifndef _LINEAR_STRUCTURED_OUTPUT_MACHINE__H__
 #define _LINEAR_STRUCTURED_OUTPUT_MACHINE__H__
 
-#include <shogun/features/Features.h>
 #include <shogun/machine/StructuredOutputMachine.h>
+#include <shogun/lib/SGVector.h>
 
 namespace shogun
 {
+
+class CFeatures;
 
 /** TODO doc */
 class CLinearStructuredOutputMachine : public CStructuredOutputMachine

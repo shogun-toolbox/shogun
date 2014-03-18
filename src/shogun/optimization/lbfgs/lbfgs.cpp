@@ -63,12 +63,13 @@ licence.
 
 #include <algorithm>
 #include <cstdio>
-#include <cstdlib>
 #include <cmath>
+#include <string.h>
 
 #include <shogun/optimization/lbfgs/lbfgs.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/common.h>
+#include <shogun/lib/memory.h>
 
 namespace shogun
 {

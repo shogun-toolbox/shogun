@@ -12,7 +12,7 @@
 #include <shogun/base/Parameter.h>
 #include <shogun/lib/memory.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/lib/DataType.h>
+#include <shogun/io/SGIO.h>
 
 using namespace shogun;
 

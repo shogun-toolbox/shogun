@@ -14,6 +14,9 @@
 #include <shogun/labels/Labels.h>
 #include <shogun/base/SGObject.h>
 
+#include <shogun/lib/SGVector.h>
+#include <shogun/lib/SGMatrix.h>
+
 namespace shogun
 {
 class CLabels;

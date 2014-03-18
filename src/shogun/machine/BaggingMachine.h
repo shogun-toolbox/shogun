@@ -12,15 +12,16 @@
 #define BAGGINGMACHINE_H
 
 #include <shogun/machine/Machine.h>
-#include <shogun/ensemble/CombinationRule.h>
-#include <shogun/evaluation/Evaluation.h>
 
 namespace shogun
 {
+	class CCombinationRule;
+	class CEvaluation;
+
 	/**
 	 * @brief: Bagging algorithm
 	 * i.e. bootstrap aggregating
-     */
+	 */
 	class CBaggingMachine : public CMachine
 	{
 		public:

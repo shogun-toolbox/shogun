@@ -8,6 +8,7 @@
  */
 
 #include <shogun/lib/IndexBlockTree.h>
+#include <shogun/lib/SGMatrix.h>
 #include <vector>
 
 using namespace std;

@@ -21,6 +21,8 @@
 #include <shogun/features/StringFeatures.h>
 #include <shogun/lib/DataType.h>
 
+#include <shogun/lib/SGMatrix.h>
+
 namespace shogun {
 template<class ST> class CStringFeatures;
 template<class ST> class CDenseFeatures;
