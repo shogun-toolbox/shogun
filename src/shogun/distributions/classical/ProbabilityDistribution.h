@@ -70,6 +70,57 @@ public:
 	/** @return name of the SGSerializable */
 	virtual const char* get_name() const=0;
 
+    /** Computes the minimum and maximum for 1000 sample points
+     * list of tuples with
+     * minimum and maximum for each dimension
+     *
+     * @return list of tuples with
+     * minimum and maximum for each dimension
+     */
+     virtual SGMatrix<float64_t> get_plotting_bounds() const;
+
+    /** Compute points for propsal distributition, which might for example
+     * be used in Metropolis_Hastings
+     *
+     * @param num_samples Number of Samples required
+     * @return Array of sample points
+     */
+     virtual SGVector<float64_t> get_proposal_points(int32_t num_samples) const;
+
+    /** Compute points for acceptance distributition, which might for example
+     * be used in Metropolis_Hastings
+     *
+     * @param num_samples Number of Samples required
+     * @return Array of sample points
+     */
+     virtual SGVector<float64_t> get_acceptance_points(int32_t num_samples) const;
+
+    /** Compute Samples for taking log-likelihood
+     *
+     * @param num_samples Number of Samples taken
+     * @return Array of sample points
+     */
+     virtual SGVector<float64_t> get_log_likelihood_samples(int32_t
+                                                            num_samples) const;
+
+    /** Compute log partial derivatives for maximum log likelihood function
+     *
+     * @param sample_vec Array of samples taken already
+     * @return Array of computed derivatives
+     */
+     virtual SGVector<float64_t> get_log_partial_derivatives(SGVector<float64_t>
+                                                             sample_vec) const;
+
+    /** Compute maximum log likelihood
+     *
+     * @param partial_derivatives_vec Array of derivatives
+     * @return maximum log-likelihood
+     */
+     virtual float64_t get_maximum_log_likelihood(SGVector<float64_t>
+                                                             partial_derivatives_vec) const;
+
+
+
 private:
 
 	/** Initialses and registers parameters */
