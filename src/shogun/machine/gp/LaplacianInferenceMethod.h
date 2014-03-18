@@ -283,6 +283,8 @@ protected:
 
 private:
 	void init();
+
+protected:
 	/** amount of tolerance for Newton's iterations */
 	float64_t m_tolerance;
 
@@ -295,7 +297,6 @@ private:
 	/** max iterations for Brent's minimization method */
 	float64_t m_opt_max;
 
-protected:
 	/** mean vector of the approximation to the posterior */
 	SGVector<float64_t> m_mu;
 
