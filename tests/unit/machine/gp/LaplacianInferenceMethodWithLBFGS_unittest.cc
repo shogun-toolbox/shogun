@@ -123,12 +123,12 @@ TEST(LaplacianInferenceMethodWithLBFGS,get_cholesky_probit_likelihood)
 
   // comparison the result from GPML package with the minfunc function:
   /* L =
-   1.229795134715245   0.000000424572149   0.000004284193391   0.001003171160332   0.000023929911208
-                   0   1.229105947500809   0.000000000003423   0.006798109390543   0.000001919569807
-                   0                   0   1.229704014299049   0.000051622815564  -0.000000000083370
-                   0                   0                   0   1.229171826524023   0.000000008722897
-                   0                   0                   0                   0   1.229706246172444
-   */
+     1.229795134715245   0.000000424572149   0.000004284193391   0.001003171160332   0.000023929911208
+     0   1.229105947500809   0.000000000003423   0.006798109390543   0.000001919569807
+     0                   0   1.229704014299049   0.000051622815564  -0.000000000083370
+     0                   0                   0   1.229171826524023   0.000000008722897
+     0                   0                   0                   0   1.229706246172444
+  */
   SGMatrix<float64_t> L=inf->get_cholesky();
 
   abs_tolorance = get_abs_tolorance_lbfgs(1.229795134715245, rel_tolorance);
@@ -238,11 +238,11 @@ TEST(LaplacianInferenceMethodWithLBFGS,get_alpha_probit_likelihood)
 
   // comparison the result from GPML package with the minfunc function:
   /* alpha = 
-  -0.506457945471096
-   0.503267616409653
-   0.506035061915211
-   0.503660487331861
-  -0.506045417007059
+     -0.506457945471096
+     0.503267616409653
+     0.506035061915211
+     0.503660487331861
+     -0.506045417007059
   */
 
   SGVector<float64_t> alpha=inf->get_alpha();
@@ -329,7 +329,7 @@ TEST(LaplacianInferenceMethodWithLBFGS,get_negative_marginal_likelihood_probit_l
 
   // comparison the result from GPML package with the minfunc function:
   /* nlZ =
-   3.499023867961728
+     3.499023867961728
    */
   float64_t nml=inf->get_negative_log_marginal_likelihood();
 
@@ -422,8 +422,8 @@ TEST(LaplacianInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_probi
 
   // comparison the result from GPML package with the minfunc function:
   /* cov =
-  -0.034178423415816
-   0.108245557597861
+     -0.034178423415816
+     0.108245557597861
   */ 
   abs_tolorance = get_abs_tolorance_lbfgs(-0.034178423415816, rel_tolorance);
   EXPECT_NEAR(dnlZ_ell,  -0.034178423415816,  abs_tolorance);
@@ -505,11 +505,11 @@ TEST(LaplacianInferenceMethodWithLBFGS,get_posterior_mean_probit_likelihood)
 
   // comparison the result from GPML package with the minfunc function:
   /* post_mean =
-  -0.505266873736866
-   0.511503478056012
-   0.506092360239034
-   0.510734359252274
-  -0.506072142343126
+     -0.505266873736866
+     0.511503478056012
+     0.506092360239034
+     0.510734359252274
+     -0.506072142343126
   */
   SGVector<float64_t> approx_mean=inf->get_posterior_mean();
   abs_tolorance = get_abs_tolorance_lbfgs(-0.505266873736866, rel_tolorance);
@@ -596,11 +596,11 @@ TEST(LaplacianInferenceMethodWithLBFGS,get_posterior_covariance_probit_likelihoo
 
   // comparison the result from GPML package with the minfunc function:
   /* post_cov =
-   0.661201597203589  -0.000005390820393   0.000004452771639   0.001055214193939   0.000025118418563
-  -0.000005390820393   0.661904520588521  -0.000000300481742   0.007166673826843   0.000002019329325
-   0.000004452771639  -0.000000300481742   0.661300448052085   0.000054316971105  -0.000000000087921
-   0.001055214193939   0.007166673826843   0.000054316971105   0.661812036831663   0.000000009174084
-   0.000025118418563   0.000002019329325  -0.000000000087921   0.000000009174084   0.661298049137338
+     0.661201597203589  -0.000005390820393   0.000004452771639   0.001055214193939   0.000025118418563
+     -0.000005390820393   0.661904520588521  -0.000000300481742   0.007166673826843   0.000002019329325
+     0.000004452771639  -0.000000300481742   0.661300448052085   0.000054316971105  -0.000000000087921
+     0.001055214193939   0.007166673826843   0.000054316971105   0.661812036831663   0.000000009174084
+     0.000025118418563   0.000002019329325  -0.000000000087921   0.000000009174084   0.661298049137338
   */
   abs_tolorance = get_abs_tolorance_lbfgs(0.661201597203589, rel_tolorance);
   EXPECT_NEAR(approx_cov(0,0),  0.661201597203589,  abs_tolorance);
@@ -709,11 +709,11 @@ TEST(LaplacianInferenceMethodWithLBFGS,get_cholesky_logit_likelihood)
 
   // comparison the result from GPML package with the minfunc function:
   /* L =
-   1.116951738967970   0.035936999465803   0.044634190304333   0.091234784330075   0.076228914213078
-                   0   1.103969927331121   0.038656810617333   0.158332612953232   0.147925959238743
-                   0                   0   1.114697377759363   0.090486956943561   0.014201836455373
-                   0                   0                   0   1.092971984807804   0.113570818492124
-                   0                   0                   0                   0   1.088750747273819
+     1.116951738967970   0.035936999465803   0.044634190304333   0.091234784330075   0.076228914213078
+     0   1.103969927331121   0.038656810617333   0.158332612953232   0.147925959238743
+     0                   0   1.114697377759363   0.090486956943561   0.014201836455373
+     0                   0                   0   1.092971984807804   0.113570818492124
+     0                   0                   0                   0   1.088750747273819
   */
   SGMatrix<float64_t> L=inf->get_cholesky();
   abs_tolorance = get_abs_tolorance_lbfgs(1.116951738967970, rel_tolorance);
@@ -826,11 +826,11 @@ TEST(LaplacianInferenceMethodWithLBFGS,get_alpha_logit_likelihood)
   SGVector<float64_t> alpha=inf->get_alpha();
   // comparison the result from GPML package with the minfunc function:
   /* alpha =
-   0.450818570957885
-  -0.326913504639893
-   0.437046061211033
-  -0.382393225390073
-  -0.345634045169136
+     0.450818570957885
+     -0.326913504639893
+     0.437046061211033
+     -0.382393225390073
+     -0.345634045169136
   */
   abs_tolorance = get_abs_tolorance_lbfgs(0.450818570957885, rel_tolorance);
   EXPECT_NEAR(alpha[0],  0.450818570957885,  abs_tolorance);
@@ -916,7 +916,7 @@ TEST(LaplacianInferenceMethodWithLBFGS,get_negative_marginal_likelihood_logit_li
 
   // comparison the result from GPML package with the minfunc function:
   /* nlZ =
-  3.387608216855656
+     3.387608216855656
   */
   float64_t nml=inf->get_negative_log_marginal_likelihood();
 
@@ -1011,8 +1011,8 @@ TEST(LaplacianInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_logit
 
   // comparison the result from GPML package with the minfunc function:
   /* cov =
-   0.266463865609896
-  -0.068636643738048
+     0.266463865609896
+     -0.068636643738048
   */
   abs_tolorance = get_abs_tolorance_lbfgs(0.266463865609896, rel_tolorance);
   EXPECT_NEAR(dnlZ_ell,  0.266463865609896,  abs_tolorance);
@@ -1088,11 +1088,11 @@ TEST(LaplacianInferenceMethodWithLBFGS,get_cholesky_gaussian_likelihood)
 
   // comparison the result from GPML package with the minfunc function:
   /* L =
-   1.414213562373095   0.492949892971257   0.433406478663272   0.323461940381075   0.019293928650029
-                   0   1.325518918393708   0.585882848653472   0.575780055183854   0.133086861715402
-                   0                   0   1.211981894215584   0.403409348006210   0.125152120934987
-                   0                   0                   0   1.183685177367104   0.189875111083568
-                   0                   0                   0                   0   1.389316385987177
+     1.414213562373095   0.492949892971257   0.433406478663272   0.323461940381075   0.019293928650029
+     0   1.325518918393708   0.585882848653472   0.575780055183854   0.133086861715402
+     0                   0   1.211981894215584   0.403409348006210   0.125152120934987
+     0                   0                   0   1.183685177367104   0.189875111083568
+     0                   0                   0                   0   1.389316385987177
   */
 
   SGMatrix<float64_t> L=inf->get_cholesky();
@@ -1197,11 +1197,11 @@ TEST(LaplacianInferenceMethodWithLBFGS,get_alpha_gaussian_likelihood)
 
   // comparison the result from GPML package with the minfunc function:
   /* alpha = 
-   0.112589537139413
-   0.030951587759558
-   0.265522614808735
-   0.372392096573089
-   0.660353604050175
+     0.112589537139413
+     0.030951587759558
+     0.265522614808735
+     0.372392096573089
+     0.660353604050175
   */
   SGVector<float64_t> alpha=inf->get_alpha();
   abs_tolorance = get_abs_tolorance_lbfgs(0.112589537139413, rel_tolorance);
@@ -1281,8 +1281,8 @@ TEST(LaplacianInferenceMethodWithLBFGS,get_negative_marginal_likelihood_gaussian
 
   // comparison the result from GPML package with the minfunc function:
   /* nlZ =
-  6.861543230523298
-  */
+     6.861543230523298
+     */
   float64_t nml=inf->get_negative_log_marginal_likelihood();
 
   abs_tolorance = get_abs_tolorance_lbfgs(6.861543230523298, rel_tolorance);
@@ -1373,10 +1373,10 @@ TEST(LaplacianInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_gauss
 
   // comparison the result from GPML package with the minfunc function:
   /* cov = 
-  -0.851031385976160
-  -0.570516239076101]
+     -0.851031385976160
+     -0.570516239076101]
      lik =
-   0.007407293825117
+     0.007407293825117
   */ 
   abs_tolorance = get_abs_tolorance_lbfgs(0.007407293825117, rel_tolorance);
   EXPECT_NEAR(dnlZ_lik,  0.007407293825117,  abs_tolorance);
@@ -1454,11 +1454,11 @@ TEST(LaplacianInferenceMethodWithLBFGS,get_cholesky_t_likelihood)
 
   // comparison the result from GPML package with the minfunc function:
   /* L =
-   1.523700622513149   0.607340583120219   0.521037907065038   0.378596005447475   0.019953356735640
-                   0   1.401561489176888   0.693360672949196   0.669737448715427   0.139806033095216
-                   0                   0   1.231732036088494   0.432550803635198   0.123874068633327
-                   0                   0                   0   1.193424304765556   0.189334517311970
-                   0                   0                   0                   0   1.366835295900706
+     1.523700622513149   0.607340583120219   0.521037907065038   0.378596005447475   0.019953356735640
+     0   1.401561489176888   0.693360672949196   0.669737448715427   0.139806033095216
+     0                   0   1.231732036088494   0.432550803635198   0.123874068633327
+     0                   0                   0   1.193424304765556   0.189334517311970
+     0                   0                   0                   0   1.366835295900706
   */
   SGMatrix<float64_t> L=inf->get_cholesky();
 
@@ -1563,12 +1563,12 @@ TEST(LaplacianInferenceMethodWithLBFGS,get_alpha_t_likelihood)
 
   // comparison the result from GPML package with the minfunc function:
   /* alpha = 
-   0.124677478636837
-  -0.011322148653691
-   0.291185918072183
-   0.414106934704980
-   0.710852596742621
-   */
+     0.124677478636837
+     -0.011322148653691
+     0.291185918072183
+     0.414106934704980
+     0.710852596742621
+  */
   SGVector<float64_t> alpha=inf->get_alpha();
   abs_tolorance = get_abs_tolorance_lbfgs(0.124677478636837, rel_tolorance);
   EXPECT_NEAR(alpha[0],  0.124677478636837,  abs_tolorance);
@@ -1647,7 +1647,7 @@ TEST(LaplacianInferenceMethodWithLBFGS,get_negative_marginal_likelihood_t_likeli
 
   // comparison the result from GPML package with the minfunc function:
   /* nlZ =
-  7.489169113992463
+     7.489169113992463
   */
   float64_t nml=inf->get_negative_log_marginal_likelihood();
 
@@ -1740,11 +1740,11 @@ TEST(LaplacianInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_t_lik
 
   // comparison the result from GPML package with the minfunc function:
   /* cov =
-  -0.843641535114105
-  -0.301771081861900
+     -0.843641535114105
+     -0.301771081861900
      lik =
-  -0.649318379107740
-  -0.155672464565009
+     -0.649318379107740
+     -0.155672464565009
   */ 
   abs_tolorance = get_abs_tolorance_lbfgs(-0.649318379107740, rel_tolorance);
   EXPECT_NEAR(dnlZ_df,  -0.649318379107740,  abs_tolorance);
