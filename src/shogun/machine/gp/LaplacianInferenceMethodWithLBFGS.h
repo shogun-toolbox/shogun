@@ -214,8 +214,8 @@ private:
 
   void init();
 
-  /* helper function used to compute function value and gradient 
-   * given a current alpha. Note that this function should be static and
+  /* helper function is passed to the LBFGS API
+   * Note that this function should be static and
    * private.
    * */
   static float64_t evaluate(void *obj,
