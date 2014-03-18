@@ -97,11 +97,8 @@ namespace shogun {
     CSharedInfoForLBFGS m_shared;
 
    private:
-    static float64_t evaluate(void *obj,
-                              const float64_t *alpha,
-                              float64_t *gradient,
-                              const int dim,
-                              const float64_t step);
+    /** only uses for dimension checking */
+    void check(int left, int right, int line);
   };
 
 } /* namespace shogun */
