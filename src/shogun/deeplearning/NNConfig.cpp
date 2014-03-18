@@ -16,7 +16,7 @@ const char* NNConfig::testy = NULL;
 
 TrainingOptions::TrainingOptions()
 {
-	act_type = FuncType::SIGM;
+	act_type = FuncType::RECTIFIED;
 	out_type = FuncType::SOFTMAX;
 	weightPenaltyL2 = 0.001;
 	isGradChecking = false; //Flag for gradient checking
@@ -29,7 +29,8 @@ void NNConfig::Initialize()
 	batchsize = 100;
 
 	std::stringstream layer_config;
-	layer_config << "3 784 1024 10";
+	//config string for layer setting: layer#, followed by unit# in each layer
+	layer_config << "4 784 1024 1024 10";
 	layer_config >> layers;
 	length = (int32_t*)malloc(sizeof(int32_t) * layers);
 	for (int32_t i = 0; i < layers; ++i)

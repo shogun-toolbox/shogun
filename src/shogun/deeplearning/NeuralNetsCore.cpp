@@ -24,14 +24,17 @@ float32_t NeuralNets::FeedForward(EigenDenseMat &inputs, const EigenDenseMat& gr
 			m_activations[cur_layer] = inputs * m_weights[cur_layer - 1].transpose();
 		else
 			m_activations[cur_layer] = m_activations[cur_layer - 1] * m_weights[cur_layer - 1].transpose();
+
 		//Add bias vector
 		m_activations[cur_layer] += m_bias[cur_layer - 1].replicate(m_activations[cur_layer].rows(), 1);
-		//Apply activation function 
-		if (NNConfig::opt.act_type != FuncType::LINEAR)
+
+		//Apply activation function
+		if (cur_layer != NNConfig::layers - 1
+			&& NNConfig::opt.act_type != FuncType::LINEAR)
 			ApplyActivationFunc(m_activations[cur_layer], NNConfig::opt.act_type);
 	}
 
-	//For output
+	//For output layer
 	if (NNConfig::opt.out_type != FuncType::LINEAR)
 		ApplyActivationFunc(m_activations[NNConfig::layers - 1], NNConfig::opt.out_type);
 

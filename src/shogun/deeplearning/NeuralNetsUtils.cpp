@@ -1,6 +1,7 @@
 #include "NeuralNets.h"
 #include "DataAdapter.h"
 #include <iostream>
+#include <ctime>
 
 void NeuralNets::SetDataAdapter(DataAdapter* _data_adapter)
 {
@@ -76,6 +77,7 @@ void NeuralNets::TrainEpoch(int32_t cur_epoch)
 		int32_t cnt = nn_data_adapter->GetBatchSamples(NNConfig::batchsize, samples);
 		if (cnt == 0)
 			break;
+
 		total += cnt;
 		float32_t loss = TrainMiniBatch(samples);
 		total_loss += loss;
@@ -88,11 +90,17 @@ void NeuralNets::TrainEpoch(int32_t cur_epoch)
 
 void NeuralNets::TrainAll()
 {
+	time_t begin = clock();
+
 	nn_data_adapter->Init(NNConfig::trainx, NNConfig::trainy);
 	for (int32_t cur_epoch = 0; cur_epoch < NNConfig::epoch; ++cur_epoch)
 	{
 		TrainEpoch(cur_epoch);
 	}
+
+	time_t end = clock();
+	std::cout << "total training time: " << (double)(end - begin) / CLOCKS_PER_SEC << std::endl;
+
 	nn_data_adapter->Destroy();
 }
 
@@ -112,6 +120,9 @@ void NeuralNets::TestAll()
 		TestMiniBatch(samples, res);
 		err_num += *(int32_t*)res;
 	}
+
+	if (total)
+		std::cout << "Accuracy: " << (double)(total - err_num) / total * 100.0 << "\%" << std::endl;
 
 	nn_data_adapter->Close();
 	nn_data_adapter->Destroy();

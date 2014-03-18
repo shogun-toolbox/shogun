@@ -78,14 +78,14 @@ void maths::ComputeDerivatives(EigenDenseMat& data, FuncType type)
 	{
 		switch (type)
 		{
-		case FuncType::RECTIFIED:
-			data(i, j) = data(i, j) > 0 ? 1 : 0;
-			break;
 		case FuncType::SIGM:
 			data(i, j) *= (1 - data(i, j));
 			break;
 		case FuncType::TANH:
 			data(i, j) = 1 - data(i, j) * data(i, j);
+			break;
+		case FuncType::RECTIFIED:
+			data(i, j) = data(i, j) > 0 ? 1 : 0;
 			break;
 		default:
 			break;

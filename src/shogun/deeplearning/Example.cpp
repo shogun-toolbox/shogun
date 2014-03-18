@@ -12,5 +12,7 @@ int main(int argc, char* argv[])
 	nets.TrainAll();
 	nets.TestAll();
 
+	getchar();
+
 	return 0;
 }
