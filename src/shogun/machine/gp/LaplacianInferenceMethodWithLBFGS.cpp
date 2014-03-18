@@ -55,6 +55,104 @@ CLaplacianInferenceMethodWithLBFGS::CLaplacianInferenceMethodWithLBFGS(
       init();
 }
 
+void CLaplacianInferenceMethodWithLBFGS::set_lbfgs_parameter(
+    int m,
+    int max_linesearch,
+    int linesearch,
+    int max_iterations,
+    float64_t delta,
+    int past,
+    float64_t epsilon,
+    bool enable_newton_if_fail,
+    float64_t min_step,
+    float64_t max_step,
+    float64_t ftol,
+    float64_t wolfe,
+    float64_t gtol,
+    float64_t xtol,
+    float64_t orthantwise_c,
+    int orthantwise_start,
+    int orthantwise_end)
+{
+  m_m = m;
+  m_max_linesearch = max_linesearch;
+  m_linesearch = linesearch;
+  m_max_iterations = max_iterations;
+  m_delta = delta;
+  m_past = past;
+  m_epsilon = epsilon;
+  m_min_step = min_step;
+  m_max_step = max_step;
+  m_ftol = ftol;
+  m_wolfe = wolfe;
+  m_gtol = gtol;
+  m_xtol = xtol;
+  m_orthantwise_c = orthantwise_c;
+  m_orthantwise_start = orthantwise_start;
+  m_orthantwise_end = orthantwise_end;
+  m_enable_newton_if_fail = enable_newton_if_fail;
+}
+
+void CLaplacianInferenceMethodWithLBFGS::init()
+{
+  set_lbfgs_parameter();
+  m_mean_f = NULL;
+  SG_ADD(&m_m, "m",
+         "The number of corrections to approximate the inverse hessian matrix",
+         MS_NOT_AVAILABLE);
+  SG_ADD(&m_max_linesearch, "max_linesearch",
+         "The maximum number of trials to do line search for each L-BFGS update",
+         MS_NOT_AVAILABLE);
+  SG_ADD(&m_linesearch, "linesearch",
+         "The line search algorithm",
+         MS_NOT_AVAILABLE);
+  SG_ADD(&m_max_iterations, "max_iterations",
+         "The maximum number of iterations for L-BFGS update",
+         MS_NOT_AVAILABLE);
+  SG_ADD(&m_delta, "delta",
+         "Delta for convergence test based on the change of function value",
+         MS_NOT_AVAILABLE);
+  SG_ADD(&m_past, "past",
+         "Distance for delta-based convergence test",
+         MS_NOT_AVAILABLE);
+  SG_ADD(&m_epsilon, "epsilon",
+         "Epsilon for convergence test based on the change of gradient",
+         MS_NOT_AVAILABLE);
+  SG_ADD(&m_min_step, "min_step",
+         "The minimum step of the line search",
+         MS_NOT_AVAILABLE);
+  SG_ADD(&m_max_step, "max_step",
+         "The maximum step of the line search",
+         MS_NOT_AVAILABLE);
+  SG_ADD(&m_ftol, "ftol",
+         "A parameter used in Armijo condition",
+         MS_NOT_AVAILABLE);
+  SG_ADD(&m_wolfe, "wolfe",
+         "A parameter used in curvature condition",
+         MS_NOT_AVAILABLE);
+  SG_ADD(&m_gtol, "gtol",
+         "A parameter used in Morethuente linesearch to control the accuracy",
+         MS_NOT_AVAILABLE);
+  SG_ADD(&m_xtol, "xtol",
+         "The machine precision for floating-point values",
+         MS_NOT_AVAILABLE);
+  SG_ADD(&m_orthantwise_c, "orthantwise_c",
+         "Coeefficient for the L1 norm of variables",
+         MS_NOT_AVAILABLE);
+  SG_ADD(&m_orthantwise_start, "orthantwise_start",
+         "Start index for computing L1 norm of the variables",
+         MS_NOT_AVAILABLE);
+  SG_ADD(&m_orthantwise_end, "orthantwise_end",
+         "End index for computing L1 norm of the variables",
+         MS_NOT_AVAILABLE);
+  SG_ADD(&m_enable_newton_if_fail, "enable_newton_if_fail",
+         "Enable the original Newton method if the L-BFGS method fails",
+         MS_NOT_AVAILABLE);
+}
+
+CLaplacianInferenceMethodWithLBFGS::~CLaplacianInferenceMethodWithLBFGS()
+{
+}
 
 } /* namespace shogun */
 #endif /* HAVE_EIGEN3 */
