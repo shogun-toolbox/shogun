@@ -43,12 +43,9 @@ public:
 	static int32_t* length;
     static RuntimeConfig rtc;
     static TrainingOptions opt;
-    static TaskType task;
 
 private:
     static void ParseLayers(const char* layers_config);
-    static TaskType GetTaskType(const char* task_type);
-    static FuncType GetFuncType(const char* func_type);
 };
 
 #endif

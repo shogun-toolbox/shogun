@@ -26,7 +26,7 @@ float32_t maths::Exponential(float32_t x)
 
 float32_t maths::Logarithm(float32_t x)
 {
-	assert(x < 0);
+	assert(x > 0);
 	return log(x);
 }
 
@@ -101,9 +101,9 @@ float32_t maths::GetSquareLoss(const EigenDenseMat& err)
 	return loss;
 }
 
-float32_t maths::GetLogLoss(const EigenDenseMat& output, const EigenDenseMat& true_labels)
+float32_t maths::GetLogLoss(const EigenDenseMat& output, const EigenDenseMat& ground_truth)
 {
-	EigenDenseMat tmp = output.unaryExpr(std::ptr_fun(maths::Logarithm));
-
-	return 0;
+	EigenDenseMat log_proba = output.unaryExpr(std::ptr_fun(maths::Logarithm));
+	EigenDenseMat log_loss = log_proba.cwiseProduct(ground_truth);
+	return -log_loss.sum() / log_loss.rows();;
 }

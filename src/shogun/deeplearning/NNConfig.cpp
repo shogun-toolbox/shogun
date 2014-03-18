@@ -29,7 +29,7 @@ void NNConfig::Initialize()
 	batchsize = 100;
 
 	std::stringstream layer_config;
-	layer_config << "4 784 1024 1024 10";
+	layer_config << "3 784 1024 10";
 	layer_config >> layers;
 	length = (int32_t*)malloc(sizeof(int32_t) * layers);
 	for (int32_t i = 0; i < layers; ++i)

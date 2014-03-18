@@ -15,15 +15,6 @@ namespace shogun
 				RECTIFIED,
 				SOFTMAX
 			};
-
-			enum class TaskType
-			{
-				UNRECOGNIZED,
-				TRAIN_ALL,
-				TEST_ALL,
-				TRAIN_TEST_ALL,
-				TRAIN_TEST_EPOCHS
-			};
 		}
 	}
 }

@@ -15,9 +15,9 @@ NeuralNets::NeuralNets()
 	}
 }
 
-float32_t NeuralNets::FeedForward(EigenDenseMat &inputs, const EigenDenseMat& outputs)
+float32_t NeuralNets::FeedForward(EigenDenseMat &inputs, const EigenDenseMat& ground_truth)
 {
-	for (int32_t cur_layer = 1; cur_layer < NNConfig::layers - 1; ++cur_layer)
+	for (int32_t cur_layer = 1; cur_layer < NNConfig::layers; ++cur_layer)
 	{
 		//Calulate weighted sum from previous layer's activations
 		if (cur_layer == 1)
@@ -35,7 +35,7 @@ float32_t NeuralNets::FeedForward(EigenDenseMat &inputs, const EigenDenseMat& ou
 	if (NNConfig::opt.out_type != FuncType::LINEAR)
 		ApplyActivationFunc(m_activations[NNConfig::layers - 1], NNConfig::opt.out_type);
 
-	return CalcErr(m_activations[NNConfig::layers - 1], outputs, m_err);
+	return CalcErr(m_activations[NNConfig::layers - 1], ground_truth, m_err);
 }
 
 void NeuralNets::BackPropogation(EigenDenseMat &inputs)
@@ -98,10 +98,10 @@ void NeuralNets::ApplyGradients()
 	}
 }
 
-float32_t NeuralNets::CalcErr(EigenDenseMat& output, const EigenDenseMat& true_outputs, EigenDenseMat& err)
+float32_t NeuralNets::CalcErr(EigenDenseMat& output, const EigenDenseMat& ground_truth, EigenDenseMat& err)
 {
 	float32_t loss = 0;
-	err = output - true_outputs;
+	err = output - ground_truth;
 
 	switch (NNConfig::opt.out_type)
 	{
@@ -112,7 +112,7 @@ float32_t NeuralNets::CalcErr(EigenDenseMat& output, const EigenDenseMat& true_o
 		loss = GetSquareLoss(err);
 		break;
 	case FuncType::SOFTMAX:
-		loss = GetLogLoss(output, true_outputs);
+		loss = GetLogLoss(output, ground_truth);
 	default:
 		break;
 	}
