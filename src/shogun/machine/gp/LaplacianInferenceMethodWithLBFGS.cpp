@@ -177,7 +177,130 @@ float64_t CLaplacianInferenceMethodWithLBFGS::evaluate(
   return psi;
 }
 
+void CLaplacianInferenceMethodWithLBFGS::update_alpha()
+{
+  float64_t psi_new;
+  float64_t psi_def;
 
+  /* get mean vector and create eigen representation of it*/
+  SGVector<float64_t> mean_f = m_mean->get_mean_vector(m_features);
+  Eigen::Map<Eigen::VectorXd> eigen_mean_f(mean_f.vector, mean_f.vlen);
+
+  /* create eigen representation of kernel matrix*/
+  Eigen::Map<Eigen::MatrixXd> eigen_ktrtr(m_ktrtr.matrix,
+                                          m_ktrtr.num_rows,
+                                          m_ktrtr.num_cols);
+
+  /* create shogun and eigen representation of function vector*/
+  m_mu = SGVector<float64_t>(mean_f.vlen);
+  Eigen::Map<Eigen::VectorXd> eigen_mu(m_mu, m_mu.vlen);
+
+  if (m_alpha.vlen != m_labels->get_num_labels())
+  {
+    /* set alpha a zero vector*/
+    m_alpha = SGVector<float64_t>(m_labels->get_num_labels());
+    m_alpha.zero();
+
+    /* f = mean, if length of alpha and length of y doesn't match*/
+    eigen_mu = eigen_mean_f;
+    psi_new = -SGVector<float64_t>::sum(
+        m_model->get_log_probability_f(m_labels, m_mu));
+  }
+  else
+  {
+    /* compute f = K * alpha + m*/
+    Eigen::Map<Eigen::VectorXd> eigen_alpha(m_alpha.vector, m_alpha.vlen);
+    eigen_mu = eigen_ktrtr * (eigen_alpha * CMath::sq(m_scale)) + eigen_mean_f;
+    psi_new = eigen_alpha.dot(eigen_mu - eigen_mean_f) / 2.0;
+    psi_new -= SGVector<float64_t>::sum(m_model->get_log_probability_f(m_labels, m_mu));
+
+    psi_def = -SGVector<float64_t>::sum(
+        m_model->get_log_probability_f(m_labels, mean_f));
+
+    /* if default is better, then use it*/
+    if (psi_def < psi_new)
+    {
+      m_alpha.zero();
+      eigen_mu = eigen_mean_f;
+      psi_new = psi_def;
+    }
+  }
+  Eigen::Map<Eigen::VectorXd> eigen_alpha(m_alpha.vector, m_alpha.vlen);
+  lbfgs_parameter_t lbfgs_param;
+  lbfgs_param.m = m_m;
+  lbfgs_param.max_linesearch = m_max_linesearch;
+  lbfgs_param.linesearch = m_linesearch;
+  lbfgs_param.max_iterations = m_max_iterations;
+  lbfgs_param.delta = m_delta;
+  lbfgs_param.past = m_past;
+  lbfgs_param.epsilon = m_epsilon;
+  lbfgs_param.min_step = m_min_step;
+  lbfgs_param.max_step = m_max_step;
+  lbfgs_param.ftol = m_ftol;
+  lbfgs_param.wolfe = m_wolfe;
+  lbfgs_param.gtol = m_gtol;
+  lbfgs_param.xtol = m_xtol;
+  lbfgs_param.orthantwise_c = m_orthantwise_c;
+  lbfgs_param.orthantwise_start = m_orthantwise_start;
+  lbfgs_param.orthantwise_end = m_orthantwise_end;
+
+  /* use for passing variables to compute function value and gradient*/
+  m_mean_f = &mean_f;
+
+  /* In order to use the provided lbfgs function, we have to pass the object via
+   * void * pointer, which the evaluate method will use static_cast to cast
+   * the pointer to an object pointer.
+   * Therefore, make sure the evaluate method is a private method of the class. 
+   * Because the evaluate method is defined in a class, we have to pass the
+   * method pointer to the lbfgs function via static method
+   * If we also use the progress method, make sure the method is static and
+   * private. 
+   */
+  void * obj_prt = static_cast<void *>(this);
+
+  int ret = lbfgs(m_alpha.vlen, m_alpha.vector, &psi_new,
+                  CLaplacianInferenceMethodWithLBFGS::evaluate,
+                  NULL, obj_prt, &lbfgs_param);
+  /* clean up*/
+  m_mean_f = NULL;
+
+  /* Note that ret should be zero if the minimization 
+   * process terminates without an error.
+   * A non-zero value indicates an error. 
+   */
+  if (m_enable_newton_if_fail && ret != 0 && ret != LBFGS_ALREADY_MINIMIZED)
+  {
+    /* If some error happened during the L-BFGS optimization, we use the original
+     * Newton method.
+     */
+    SG_WARNING("Error during L-BFGS optimization, using original Newton method as fallback\n");
+    CLaplacianInferenceMethod::update_alpha();
+    return;
+  }
+
+  /* compute f = K * alpha + m*/
+  eigen_mu = eigen_ktrtr * (eigen_alpha * CMath::sq(m_scale)) + eigen_mean_f;
+
+  /* get log probability derivatives*/
+  dlp  = m_model->get_log_probability_derivative_f(m_labels, m_mu, 1);
+  d2lp = m_model->get_log_probability_derivative_f(m_labels, m_mu, 2);
+  d3lp = m_model->get_log_probability_derivative_f(m_labels, m_mu, 3);
+
+  /* W = -d2lp*/
+  W = d2lp.clone();
+  W.scale(-1.0);
+
+  /* compute sW*/
+  Eigen::Map<Eigen::VectorXd> eigen_W(W.vector, W.vlen);
+  /* create shogun and eigen representation of sW*/
+  sW = SGVector<float64_t>(W.vlen);
+  Eigen::Map<Eigen::VectorXd> eigen_sW(sW.vector, sW.vlen);
+
+  if (eigen_W.minCoeff() > 0)
+    eigen_sW = eigen_W.cwiseSqrt();
+  else
+    eigen_sW.setZero();
+}
 
 void CLaplacianInferenceMethodWithLBFGS::get_psi_wrt_alpha(
     Eigen::Map<Eigen::VectorXd>* alpha,
