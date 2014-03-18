@@ -119,8 +119,6 @@ public:
      virtual float64_t get_maximum_log_likelihood(SGVector<float64_t>
                                                              partial_derivatives_vec) const;
 
-
-
 private:
 
 	/** Initialses and registers parameters */
