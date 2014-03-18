@@ -233,6 +233,7 @@ public:
 	 *
 	 * Note that (m+n)*Null-distribution is returned,
 	 * which is fine since the statistic is also (m+n)*MMD:
+	 * except when m and n are equal, then m*MMD^2 is returned
 	 *
 	 * Works well if the kernel matrix is NOT diagonal dominant.
 	 * See Gretton, A., Fukumizu, K., & Harchaoui, Z. (2011).
