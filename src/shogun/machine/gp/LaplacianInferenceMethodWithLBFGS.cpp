@@ -18,13 +18,12 @@
 
 #ifdef HAVE_EIGEN3
 #include <shogun/mathematics/Math.h>
-#include <cstring>
+#include <shogun/optimization/lbfgs/lbfgs.h>
 
 namespace shogun {
 
 CLaplacianInferenceMethodWithLBFGS::CLaplacianInferenceMethodWithLBFGS()
     : CLaplacianInferenceMethod() {
-      init();
 }
 
 CLaplacianInferenceMethodWithLBFGS::CLaplacianInferenceMethodWithLBFGS(
@@ -34,60 +33,6 @@ CLaplacianInferenceMethodWithLBFGS::CLaplacianInferenceMethodWithLBFGS(
     CLabels* lab,
     CLikelihoodModel* mod)
     : CLaplacianInferenceMethod(kern, feat, m, lab, mod) {
-      init();
-}
-
-lbfgs_parameter_t CLaplacianInferenceMethodWithLBFGS::get_lbfgs_parameter() const {
-  return m_lbfgs_param;
-}
-void CLaplacianInferenceMethodWithLBFGS::set_lbfgs_parameter(
-    const lbfgs_parameter_t & lbfgs_param,
-    bool enable_newton_if_fail) {
-  const lbfgs_parameter_t * param_ptr = &lbfgs_param;
-  memcpy(&m_lbfgs_param, param_ptr, sizeof(lbfgs_param));
-  m_enable_newton_if_fail = enable_newton_if_fail;
-}
-
-void CLaplacianInferenceMethodWithLBFGS::set_lbfgs_parameter(int m, 
-                                                             int max_linesearch,
-                                                             int linesearch,
-                                                             int max_iterations,
-                                                             float64_t delta, 
-                                                             int past, 
-                                                             float64_t epsilon,
-                                                             bool enable_newton_if_fail,
-                                                             float64_t min_step,
-                                                             float64_t max_step,
-                                                             float64_t ftol,
-                                                             float64_t wolfe,
-                                                             float64_t gtol,
-                                                             float64_t xtol,
-                                                             float64_t orthantwise_c,
-                                                             int orthantwise_start,
-                                                             int orthantwise_end) {
-  m_lbfgs_param.m = m;
-  m_lbfgs_param.max_linesearch = max_linesearch;
-  m_lbfgs_param.linesearch = linesearch;
-  m_lbfgs_param.max_iterations = max_iterations;
-  m_lbfgs_param.delta = delta;
-  m_lbfgs_param.past = past;
-  m_lbfgs_param.epsilon = epsilon;
-  m_lbfgs_param.min_step = min_step;
-  m_lbfgs_param.max_step = max_step;
-  m_lbfgs_param.ftol = ftol;
-  m_lbfgs_param.wolfe = wolfe;
-  m_lbfgs_param.gtol = gtol;
-  m_lbfgs_param.xtol = xtol;
-  m_lbfgs_param.orthantwise_c = orthantwise_c;
-  m_lbfgs_param.orthantwise_start = orthantwise_start;
-  m_lbfgs_param.orthantwise_end = orthantwise_end;
-  m_enable_newton_if_fail = enable_newton_if_fail;
-}
-
-void CLaplacianInferenceMethodWithLBFGS::init(){
-  /* Initialize the default parameters for the L-BFGS optimization. */
-  lbfgs_parameter_init(&m_lbfgs_param);
-  m_enable_newton_if_fail = true;
 }
 
 CLaplacianInferenceMethodWithLBFGS::~CLaplacianInferenceMethodWithLBFGS() {
@@ -162,9 +107,14 @@ void CLaplacianInferenceMethodWithLBFGS::update_alpha() {
   index_t dim = m_alpha.vlen;
 
   // use for passing variables to compute function value and gradient
-  m_shared_variables.dim = dim;
-  m_shared_variables.kernel = &eigen_ktrtr;
-  m_shared_variables.mean_f = &eigen_mean_f;
+  m_shared.dim = dim;
+  m_shared.kernel = &eigen_ktrtr;
+  m_shared.mean_f = &eigen_mean_f;
+
+  lbfgs_parameter_t param;
+
+  /* Initialize the default parameters for the L-BFGS optimization. */
+  lbfgs_parameter_init(&param);
 
   /* In order to use the provided lbfgs function, we have to pass the object via
    * void * pointer, which the evaluate method will use static_cast to cast
@@ -179,19 +129,21 @@ void CLaplacianInferenceMethodWithLBFGS::update_alpha() {
 
   int ret = lbfgs(m_alpha.vlen, m_alpha.vector, &psi_new,
                   CLaplacianInferenceMethodWithLBFGS::evaluate,
-                  NULL, obj_prt, &m_lbfgs_param);
+                  NULL, obj_prt, &param);
   // clean up
-  m_shared_variables.dim = 0;
-  m_shared_variables.kernel = NULL;
-  m_shared_variables.mean_f = NULL;
+  m_shared.dim = 0;
+  m_shared.kernel = NULL;
+  m_shared.mean_f = NULL;
 
   /* Note that ret should be zero if the minimization 
    * process terminates without an error.
    * A non-zero value indicates an error. 
    */
-  if (m_enable_newton_if_fail && ret != 0 && ret != LBFGS_ALREADY_MINIMIZED) {
-   //If some error happened during the L-BFGS optimization, we use the original
-   //Newton method.
+  if (ret != 0 && ret != LBFGS_ALREADY_MINIMIZED) {
+  /*
+   * If some error happened during the L-BFGS optimization, we use the original
+   * Newton method.
+   */
     SG_WARNING("Error during L-BFGS optimization, using original Newton method as fallback\n");
     CLaplacianInferenceMethod::update_alpha();
     return;
@@ -224,34 +176,34 @@ void CLaplacianInferenceMethodWithLBFGS::update_alpha() {
 void CLaplacianInferenceMethodWithLBFGS::get_psi_wrt_alpha(
     Eigen::Map<Eigen::VectorXd>* alpha,
     float64_t* psi) {
-  SGVector<float64_t> f(m_shared_variables.dim);
+  SGVector<float64_t> f(m_shared.dim);
   Eigen::Map<Eigen::VectorXd> eigen_f(f.vector, f.vlen);
 
   //  f=K*alpha+mean_f given alpha
-  eigen_f = (*m_shared_variables.kernel) * ((*alpha) * CMath::sq(m_scale)) \
-            + (*m_shared_variables.mean_f);
+  eigen_f = (*m_shared.kernel) * ((*alpha) * CMath::sq(m_scale)) \
+            + (*m_shared.mean_f);
 
   //  psi=0.5*alpha.*(f-m)-sum(dlp)
-  *psi = alpha->dot(eigen_f - *m_shared_variables.mean_f) * 0.5 -
+  *psi = alpha->dot(eigen_f - *m_shared.mean_f) * 0.5 -
       SGVector<float64_t>::sum(m_model->get_log_probability_f(m_labels, f));
 }
 
 void CLaplacianInferenceMethodWithLBFGS::get_gradient_wrt_alpha(
     Eigen::Map<Eigen::VectorXd>* alpha,
     Eigen::Map<Eigen::VectorXd>* gradient) {
-  SGVector<float64_t> f((m_shared_variables.dim));
+  SGVector<float64_t> f((m_shared.dim));
   Eigen::Map<Eigen::VectorXd> eigen_f(f.vector, f.vlen);
 
-  //  f=K*alpha+(m_shared_variables.mean_f) given alpha
-  eigen_f = (*m_shared_variables.kernel) * ((*alpha) * CMath::sq(m_scale)) \
-            + *(m_shared_variables.mean_f);
+  //  f=K*alpha+(m_shared.mean_f) given alpha
+  eigen_f = (*m_shared.kernel) * ((*alpha) * CMath::sq(m_scale)) \
+            + *(m_shared.mean_f);
 
   SGVector<float64_t> dlp_f \
       = m_model->get_log_probability_derivative_f(m_labels, f, 1);
   Eigen::Map<Eigen::VectorXd> eigen_dlp_f(dlp_f.vector, dlp_f.vlen);
 
   //  g_alpha=K*(alpha-dlp_f)
-  *gradient = *(m_shared_variables.kernel) \
+  *gradient = *(m_shared.kernel) \
               * ((*alpha - eigen_dlp_f) * CMath::sq(m_scale));
 }
 
