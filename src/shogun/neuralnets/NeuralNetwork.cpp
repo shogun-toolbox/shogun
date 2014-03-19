@@ -1,9 +1,33 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
- *
+ * Copyright (c) 2014, Shogun Toolbox Foundation
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without 
+ * modification, are permitted provided that the following conditions are met:
+
+ * 1. Redistributions of source code must retain the above copyright notice, 
+ * this list of conditions and the following disclaimer.
+ * 
+ * 2. Redistributions in binary form must reproduce the above copyright notice, 
+ * this list of conditions and the following disclaimer in the documentation 
+ * and/or other materials provided with the distribution.
+ * 
+ * 3. Neither the name of the copyright holder nor the names of its 
+ * contributors may be used to endorse or promote products derived from this 
+ * software without specific prior written permission.
+
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE 
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * POSSIBILITY OF SUCH DAMAGE.
+ * 
  * Written (W) 2014 Khaled Nasr
  */
 
@@ -14,14 +38,16 @@
 using namespace shogun;
 
 CNeuralNetwork::CNeuralNetwork()
-: CSGObject(), m_num_inputs(0), m_num_layers(0), m_layers(NULL),
-	m_L2_coeff(0.0), m_total_num_parameters(), m_batch_size(1)
-	
+: CMachine(), mini_batch_size(0), max_num_epochs(100), 
+	gd_learning_rate(0.1), gd_momentum(0.9), m_num_inputs(0), 
+	m_num_layers(0), m_layers(NULL), m_L2_coeff(0.0), 
+	m_total_num_parameters(), m_batch_size(1)
 {
 	init();
 }
 
-void CNeuralNetwork::initialize(int32_t num_inputs, CDynamicObjectArray* layers)
+void CNeuralNetwork::initialize(int32_t num_inputs, 
+		CDynamicObjectArray* layers)
 {
 	m_num_inputs = num_inputs;
 	m_num_layers = layers->get_num_elements();
@@ -60,89 +86,76 @@ void CNeuralNetwork::initialize(int32_t num_inputs, CDynamicObjectArray* layers)
 	}
 }
 
-
 CNeuralNetwork::~CNeuralNetwork()
 {	
 	SG_UNREF(m_layers);
 }
 
-CDenseFeatures<float64_t>* CNeuralNetwork::apply(
-		CDenseFeatures<float64_t>* inputs)
+CMulticlassLabels* CNeuralNetwork::apply_multiclass(CFeatures* data)
 {
-	ASSERT(inputs->get_num_features()==m_num_inputs);
-	
-	set_batch_size(inputs->get_num_vectors());
-	
-	float64_t* inputs_matrix;
-	int32_t dummy;
-	inputs_matrix = inputs->get_feature_matrix(dummy, dummy);
-	
-	forward_propagate(inputs_matrix);
-	
-	SGMatrix<float64_t> result(get_num_outputs(), m_batch_size);
-	
-	int32_t length = get_num_outputs()*m_batch_size;
+	float64_t* inputs = features_to_raw(data);
+	set_batch_size(data->get_num_vectors());	
+	forward_propagate(inputs);
 	
 	float64_t* output_activations =get_layer(m_num_layers-1)->get_activations();
+	SGVector<float64_t> labels_vec(m_batch_size);
 	
-	for (int32_t i=0; i<length; i++)
-		result.matrix[i] = output_activations[i];
-
-	return new CDenseFeatures<float64_t>(result);
+	for (int32_t i=0; i<m_batch_size; i++)
+	{
+		labels_vec[i] = SGVector<float64_t>::arg_max(
+			output_activations+i*get_num_outputs(), 1, get_num_outputs());
+	}
+	
+	return new CMulticlassLabels(labels_vec);
 }
 
-void CNeuralNetwork::train_gradient_descent(
-		CDenseFeatures< float64_t >* inputs,	
-		CDenseFeatures< float64_t >* targets,
-		int32_t max_num_epochs,
-		int32_t batch_size, 
-		float64_t learning_rate,		
-		float64_t momentum)
+bool CNeuralNetwork::train_machine(CFeatures* data)
 {
-	int32_t training_set_size = inputs->get_num_vectors();
-	int32_t _batch_size = batch_size;
-	if (_batch_size==0) _batch_size = training_set_size;
+	float64_t* inputs = features_to_raw(data);
 	
-	ASSERT(training_set_size >= _batch_size);
-	ASSERT(inputs->get_num_features()==m_num_inputs);
-	ASSERT(targets->get_num_features()==get_num_outputs());
-	ASSERT(targets->get_num_vectors()==inputs->get_num_vectors());
+	CMulticlassLabels* labels = (CMulticlassLabels*) m_labels;
 	
-	ASSERT(learning_rate>0);
+	ASSERT(labels->get_num_classes()==get_num_outputs());
+	ASSERT(labels->get_num_labels()==data->get_num_vectors());
+	
 	ASSERT(max_num_epochs>0);
-	ASSERT(momentum>=0);
+	ASSERT(gd_learning_rate>0);
+	ASSERT(gd_momentum>=0);
 	
-	float64_t* inputs_matrix; 
-	float64_t* targets_matrix;
-	int32_t dummy;
-	inputs_matrix = inputs->get_feature_matrix(dummy, dummy);
-	targets_matrix = targets->get_feature_matrix(dummy, dummy);
+	int32_t training_set_size = data->get_num_vectors();
+	if (mini_batch_size==0) mini_batch_size = training_set_size;
+	set_batch_size(mini_batch_size);
+	
+	SGMatrix<float64_t> targets_matrix(get_num_outputs(), training_set_size);
+	targets_matrix.zero();
+	
+	for (int32_t i=0; i<training_set_size; i++)
+		targets_matrix((int32_t)labels->get_label(i), i) = 1.0;
+
+	float64_t* targets = targets_matrix.matrix;
 	
 	int32_t n_param = get_num_parameters();
 	
 	// needed for momentum
-	float64_t* param_updates = SG_MALLOC(float64_t, n_param);
-	for (int32_t i=0; i<n_param; i++) param_updates[i] = 0.0;
-	
-	set_batch_size(_batch_size);	
-	
+	float64_t* param_updates = SG_CALLOC(float64_t, n_param);
+		
 	for (int32_t i=0; i<max_num_epochs; i++)
 	{
-		for (int32_t j=0; j < training_set_size; j += _batch_size)
+		for (int32_t j=0; j < training_set_size; j += mini_batch_size)
 		{
-			if (j+_batch_size>training_set_size) j = 
-					training_set_size-_batch_size;
+			if (j+mini_batch_size>training_set_size) 
+				j = training_set_size-mini_batch_size;
 			
-			float64_t* targets_batch = targets_matrix + j*get_num_outputs();
-			float64_t* inputs_batch = inputs_matrix + j*m_num_inputs;
+			float64_t* targets_batch = targets+ j*get_num_outputs();
+			float64_t* inputs_batch = inputs + j*m_num_inputs;
 			
 			compute_gradients(inputs_batch, targets_batch);
 			float64_t error = compute_error(targets_batch);
 			
 			for (int32_t k=0; k<n_param; k++)
 			{
-				param_updates[k] = momentum*param_updates[k]
-						-learning_rate*m_param_gradients[k];
+				param_updates[k] = gd_momentum*param_updates[k]
+						-gd_learning_rate*m_param_gradients[k];
 					
 				m_params[k] += param_updates[k];
 			}
@@ -152,6 +165,8 @@ void CNeuralNetwork::train_gradient_descent(
 	}
 	
 	SG_FREE(param_updates);
+	
+	return true;
 }
 
 void CNeuralNetwork::forward_propagate(float64_t* inputs)
@@ -274,8 +289,29 @@ void CNeuralNetwork::set_batch_size(int32_t batch_size)
 	}
 }
 
+float64_t* CNeuralNetwork::features_to_raw(CFeatures* features)
+{
+	ASSERT(features->get_feature_type() == F_DREAL);
+	ASSERT(features->get_feature_class() == C_DENSE);
+	
+	CDenseFeatures<float64_t>* inputs = (CDenseFeatures<float64_t>*) features;
+	ASSERT(inputs->get_num_features()==m_num_inputs);
+	
+	int32_t dummy;
+	float64_t* inputs_matrix = inputs->get_feature_matrix(dummy, dummy);
+	return inputs_matrix;
+}
+
 void CNeuralNetwork::init()
 {
+	SG_ADD(&mini_batch_size, "mini_batch_size",
+	       "Mini-batch size", MS_NOT_AVAILABLE);
+	SG_ADD(&max_num_epochs, "max_num_epochs",
+	       "Max number of Epochs", MS_NOT_AVAILABLE);
+	SG_ADD(&gd_learning_rate, "gd_learning_rate",
+	       "Gradient descent learning rate", MS_NOT_AVAILABLE);
+	SG_ADD(&gd_momentum, "gd_momentum",
+	       "Gradient Descent Momentum", MS_NOT_AVAILABLE);
 	SG_ADD(&m_num_inputs, "num_inputs",
 	       "Number of Inputs", MS_NOT_AVAILABLE);
 	SG_ADD(&m_num_layers, "num_layers",
@@ -294,7 +330,6 @@ void CNeuralNetwork::init()
 		"Parameter Gradients", MS_NOT_AVAILABLE);
 	SG_ADD(&m_param_regularizable, "param_regularizable",
 		"Parameter Regularizable", MS_NOT_AVAILABLE);
-	
 	SG_ADD((CSGObject**)&m_layers, "layers", 
 		"DynamicObjectArray of NeuralNetwork objects",
 		MS_NOT_AVAILABLE);

@@ -1,9 +1,33 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
- *
+ * Copyright (c) 2014, Shogun Toolbox Foundation
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without 
+ * modification, are permitted provided that the following conditions are met:
+
+ * 1. Redistributions of source code must retain the above copyright notice, 
+ * this list of conditions and the following disclaimer.
+ * 
+ * 2. Redistributions in binary form must reproduce the above copyright notice, 
+ * this list of conditions and the following disclaimer in the documentation 
+ * and/or other materials provided with the distribution.
+ * 
+ * 3. Neither the name of the copyright holder nor the names of its 
+ * contributors may be used to endorse or promote products derived from this 
+ * software without specific prior written permission.
+
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE 
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * POSSIBILITY OF SUCH DAMAGE.
+ * 
  * Written (W) 2014 Khaled Nasr
  */
 
@@ -11,7 +35,7 @@
 #define __NEURALNETWORK_H__
 
 #include <shogun/lib/common.h>
-#include <shogun/base/SGObject.h>
+#include <shogun/machine/Machine.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/lib/DynamicObjectArray.h>
@@ -24,6 +48,11 @@ namespace shogun
  * NeuralNetwork is constructed using an array of NeuralLayer objects. The
  * NeuralLayer class defines the interface necessary for forward and 
  * backpropagation.
+ * 
+ * The network takes as input CDenseFeatures<float64_t> and outputs
+ * CMulticlassLabels.
+ * 
+ * Computations are performed using Eigen3
  * 
  * The network stores the parameters (and parameter gradients) of all the 
  * layers in a single array. This makes it easy to train a network of any
@@ -39,7 +68,7 @@ namespace shogun
  * When implemnting new layer types, the function check_gradients() can be used
  * to make sure the gradient computations are correct.
  */
-class CNeuralNetwork : public CSGObject
+class CNeuralNetwork : public CMachine
 {
 public:
 	/** default constuctor */
@@ -66,32 +95,20 @@ public:
 		m_L2_coeff = L2_coeff;
 	}
 	
-	/** Computes the output of the network
-	 * 
-	 * @param inputs inputs matrix, size: num_inputs*num_cases,
-	 * a column for each test case
-	 * 
-	 * @return pointer to a newly allocated outputs matrix
-	 * size: num_neurons_output_layer*num_cases, a column for each test case
-	 */
-	virtual CDenseFeatures<float64_t>* apply(CDenseFeatures<float64_t>* inputs);
+	/** apply machine to data in means of multiclass classification problem */
+	virtual CMulticlassLabels* apply_multiclass(CFeatures* data);
 	
-	/** Trains the network using the mini-batch gradient descent algorithm
-	 * 
-	 * @param inputs training examples, matrix of size num_inputs*num_cases
-	 * @param targets desired values for the network's output, matrix of size
-	 * num_inputs*num_cases
-	 * @param learning_rate learning rate
-	 * @param batch_size mini-batch size, if 0 the entire training set is used
-	 * @param max_num_epochs maximum number of iterations over the training set
-	 * @param momentum momentum multiplier
+	/** get classifier type
+	 *
+	 * @return classifier type CT_NEURALNETWORK
 	 */
-	virtual void train_gradient_descent(CDenseFeatures<float64_t>* inputs,
-			CDenseFeatures<float64_t>* targets,
-			int32_t max_num_epochs = 1000,
-			int32_t batch_size = 0,
-			float64_t learning_rate = 0.1,
-			float64_t momentum = 0.9);
+	virtual EMachineType get_classifier_type() {return CT_NEURALNETWORK;}
+	
+	/** returns type of problem machine solves */
+	virtual EProblemType get_machine_problem_type() const
+	{
+		return PT_MULTICLASS;
+	}
 	
 	/** Checks if the gradients computed using backpropagation are correct by 
 	 * comparing them with gradients computed using numerical approximation.
@@ -127,7 +144,10 @@ public:
 	
 	virtual const char* get_name() const { return "NeuralNetwork";}
 	
-protected:
+protected:	
+	/** trains the network using gradient descent */
+	virtual bool train_machine(CFeatures* data=NULL);
+	
 	/** Applies forward propagation, computes the activations of each layer
 	 * 
 	 * @param inputs inputs to the network, a matrix of size 
@@ -175,6 +195,11 @@ protected:
 	virtual float64_t compute_error(float64_t* targets, 
 			float64_t* inputs=NULL);
 	
+	virtual bool is_label_valid(CLabels *lab) const
+	{
+		return lab->get_label_type() == LT_MULTICLASS;
+	}
+	
 private:
 	/** returns a pointer to layer i in the network */
 	CNeuralLayer* get_layer(int32_t i)
@@ -204,7 +229,27 @@ private:
 		return m_param_regularizable.vector+m_index_offsets[i];
 	}
 	
+	/** returns a pointer to the raw data of the given features */
+	float64_t* features_to_raw(CFeatures* features);
+	
 	void init();
+	
+public:
+	/** size of the mini-batch used during training, if 0 full-batch training is
+	 * performed
+	 */
+	int32_t mini_batch_size;
+	
+	/** training parameters, maximum number of iterations over the training set
+	 * defualt value is 100
+	 */
+	int32_t max_num_epochs;
+	
+	/** gradient descent learning rate, defualt value 0.1 */
+	float64_t gd_learning_rate;
+	
+	/** gradient descent momentum multiplier, default value 0.9 */
+	float64_t gd_momentum;
 	
 protected:
 	/** number of neurons in the input layer */
