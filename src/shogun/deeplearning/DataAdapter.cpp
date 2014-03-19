@@ -1,34 +1,34 @@
 #include "DataAdapter.h"
 #include <iostream>
 
-DataAdapter::DataAdapter()
+CDataAdapter::CDataAdapter()
 {
 	fid_feat = fid_label = NULL;
 	feature_file = label_file = NULL;
 }
 
-void DataAdapter::Init(const char* _feature_file, const char* _label_file)
+void CDataAdapter::Init(const char* _feature_file, const char* _label_file)
 {
 	feature_file = _feature_file;
 	label_file = _label_file;
 }
 
-void DataAdapter::Open()
+void CDataAdapter::Open()
 {
 	//Currently for MNIST data, and should be edited more generally later
 	int32_t row_cnt;
 	fopen_s(&fid_feat, feature_file, "rb");
 	fread_s(&row_cnt, sizeof(int32_t), sizeof(int32_t), 1, fid_feat); //For MNIST: 60000
 	fread_s(&feat_cnt, sizeof(int32_t), sizeof(int32_t), 1, fid_feat); //For MNIST: 784
-	feat_buffer.resize(NNConfig::batchsize, feat_cnt);
+	feat_buffer.resize(CNNConfig::batchsize, feat_cnt);
 
 	fopen_s(&fid_label, label_file, "rb");
 	fread_s(&row_cnt, sizeof(int32_t), sizeof(int32_t), 1, fid_label); //For MNIST: 60000
 	fread_s(&label_cnt, sizeof(int32_t), sizeof(int32_t), 1, fid_label); //For MNIST: 10
-	label_buffer.resize(NNConfig::batchsize, label_cnt);
+	label_buffer.resize(CNNConfig::batchsize, label_cnt);
 }
 
-int32_t DataAdapter::GetBatchSamples(int32_t batch_size, void*& samples)
+int32_t CDataAdapter::GetBatchSamples(int32_t batch_size, void*& samples)
 {
 	FeatLabelPair* data;
 	if (samples)
@@ -63,7 +63,7 @@ int32_t DataAdapter::GetBatchSamples(int32_t batch_size, void*& samples)
 	return data->labels.size();
 }
 
-void DataAdapter::Close()
+void CDataAdapter::Close()
 {
 	if (fid_feat)
 		fclose(fid_feat);
@@ -73,13 +73,13 @@ void DataAdapter::Close()
 	fid_feat = fid_label = NULL;
 }
 
-void DataAdapter::Destroy()
+void CDataAdapter::Destroy()
 {
 	Close();
 	feature_file = label_file = NULL;
 }
 
-int32_t DataAdapter::LoadMatrix(EigenDenseMat &m, int32_t rows, int32_t cols, FILE* fid)
+int32_t CDataAdapter::LoadMatrix(EigenDenseMat &m, int32_t rows, int32_t cols, FILE* fid)
 {
 	m.resize(rows, cols);
 	int32_t loaded_row_num = 0;
@@ -100,10 +100,10 @@ int32_t DataAdapter::LoadMatrix(EigenDenseMat &m, int32_t rows, int32_t cols, FI
 	return loaded_row_num;
 }
 
-int32_t DataAdapter::LoadBuffer()
+int32_t CDataAdapter::LoadBuffer()
 {
-	int32_t feat_row_num = LoadMatrix(feat_buffer, NNConfig::batchsize, feat_cnt, fid_feat);
-	int32_t label_row_num = LoadMatrix(label_buffer, NNConfig::batchsize, label_cnt, fid_label);
+	int32_t feat_row_num = LoadMatrix(feat_buffer, CNNConfig::batchsize, feat_cnt, fid_feat);
+	int32_t label_row_num = LoadMatrix(label_buffer, CNNConfig::batchsize, label_cnt, fid_label);
 	//Ensure the loaded row# of feature and label files keep the same
 	assert(feat_row_num == label_row_num);
 

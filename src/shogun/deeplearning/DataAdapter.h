@@ -18,10 +18,10 @@ struct FeatLabelPair
 	}
 };
 
-class DataAdapter
+class CDataAdapter
 {
 public:
-	DataAdapter();
+	CDataAdapter();
 
 	//Call before training
 	void Init(const char* _feature_file, const char* _label_file);

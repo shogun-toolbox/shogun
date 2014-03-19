@@ -9,12 +9,12 @@ using namespace shogun::deeplearning::typedefine;
 using namespace shogun::deeplearning::enums;
 using namespace shogun::deeplearning::maths;
 
-class NeuralNets
+class CNeuralNets
 {
 public:
-	NeuralNets();
+	CNeuralNets();
 	//Implemented in NeuralNetsUtils.cpp
-	void SetDataAdapter(DataAdapter* _data_adapter);
+	void SetDataAdapter(CDataAdapter* _data_adapter);
 	void SetDenseOutputLabels(std::vector<int32_t> &outputLabels);	
 	float32_t TrainMiniBatch(void * samples);
 	void TestMiniBatch(void* samples, void*& result);
@@ -24,7 +24,7 @@ public:
 	void TestAll();
 
 	EigenDenseMat ground_truth;
-	DataAdapter* nn_data_adapter;
+	CDataAdapter* nn_data_adapter;
 
 protected:
 	//Implemented in NeuralNetsCore.cpp

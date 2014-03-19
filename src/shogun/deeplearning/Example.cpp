@@ -5,14 +5,12 @@ using namespace shogun;
 
 int main(int argc, char* argv[])
 {
-	NNConfig::Initialize();
-	DataAdapter* data_adapter = new DataAdapter();
-	NeuralNets nets;	
+	CNNConfig::Initialize();
+	CDataAdapter* data_adapter = new CDataAdapter();
+	CNeuralNets nets;	
 	nets.SetDataAdapter(data_adapter);
 	nets.TrainAll();
 	nets.TestAll();
-
-	getchar();
 
 	return 0;
 }

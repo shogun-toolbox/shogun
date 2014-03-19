@@ -7,7 +7,7 @@ namespace shogun
 	{
 		namespace enums
 		{
-			enum class FuncType
+			enum class CFuncType
 			{
 				SIGM,
 				TANH,

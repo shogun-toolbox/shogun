@@ -24,8 +24,8 @@ struct RuntimeConfig
 
 struct TrainingOptions
 {
-	FuncType act_type;
-    FuncType out_type;
+	CFuncType act_type;
+    CFuncType out_type;
     float32_t weightPenaltyL2;
 	float32_t learningRateScaling;
 	float32_t inputZeroMaskedFraction;
@@ -33,7 +33,7 @@ struct TrainingOptions
     TrainingOptions();
 };
 
-class NNConfig
+class CNNConfig
 {
 public:
     static void Initialize();

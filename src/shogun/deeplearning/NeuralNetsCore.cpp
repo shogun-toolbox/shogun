@@ -1,23 +1,23 @@
 #include "NeuralNets.h"
 #include <iostream>
 
-NeuralNets::NeuralNets()
+CNeuralNets::CNeuralNets()
 {
 	m_weights = new EigenDenseMat[MAXLAYERS];
 	m_bias = new EigenDenseRowVec[MAXLAYERS];
-	for (int32_t i = 0; i < NNConfig::layers - 1; ++i)
+	for (int32_t i = 0; i < CNNConfig::layers - 1; ++i)
 	{
-		m_weights[i] = EigenDenseMat::Random(NNConfig::length[i + 1], NNConfig::length[i]) * 0.1;
-		m_bias[i] = EigenDenseRowVec::Zero(NNConfig::length[i + 1]);
-		m_db[i] = EigenDenseVec::Zero(NNConfig::length[i + 1]);
-		m_vw[i] = EigenDenseMat::Zero(NNConfig::length[i + 1], NNConfig::length[i]);
-		m_vb[i] = EigenDenseVec::Zero(NNConfig::length[i + 1]);		
+		m_weights[i] = EigenDenseMat::Random(CNNConfig::length[i + 1], CNNConfig::length[i]) * 0.1;
+		m_bias[i] = EigenDenseRowVec::Zero(CNNConfig::length[i + 1]);
+		m_db[i] = EigenDenseVec::Zero(CNNConfig::length[i + 1]);
+		m_vw[i] = EigenDenseMat::Zero(CNNConfig::length[i + 1], CNNConfig::length[i]);
+		m_vb[i] = EigenDenseVec::Zero(CNNConfig::length[i + 1]);		
 	}
 }
 
-float32_t NeuralNets::FeedForward(EigenDenseMat &inputs, const EigenDenseMat& ground_truth)
+float32_t CNeuralNets::FeedForward(EigenDenseMat &inputs, const EigenDenseMat& ground_truth)
 {
-	for (int32_t cur_layer = 1; cur_layer < NNConfig::layers; ++cur_layer)
+	for (int32_t cur_layer = 1; cur_layer < CNNConfig::layers; ++cur_layer)
 	{
 		//Calulate weighted sum from previous layer's activations
 		if (cur_layer == 1)
@@ -29,23 +29,23 @@ float32_t NeuralNets::FeedForward(EigenDenseMat &inputs, const EigenDenseMat& gr
 		m_activations[cur_layer] += m_bias[cur_layer - 1].replicate(m_activations[cur_layer].rows(), 1);
 
 		//Apply activation function
-		if (cur_layer != NNConfig::layers - 1
-			&& NNConfig::opt.act_type != FuncType::LINEAR)
-			ApplyActivationFunc(m_activations[cur_layer], NNConfig::opt.act_type);
+		if (cur_layer != CNNConfig::layers - 1
+			&& CNNConfig::opt.act_type != CFuncType::LINEAR)
+			ApplyActivationFunc(m_activations[cur_layer], CNNConfig::opt.act_type);
 	}
 
 	//For output layer
-	if (NNConfig::opt.out_type != FuncType::LINEAR)
-		ApplyActivationFunc(m_activations[NNConfig::layers - 1], NNConfig::opt.out_type);
+	if (CNNConfig::opt.out_type != CFuncType::LINEAR)
+		ApplyActivationFunc(m_activations[CNNConfig::layers - 1], CNNConfig::opt.out_type);
 
-	return CalcErr(m_activations[NNConfig::layers - 1], ground_truth, m_err);
+	return CalcErr(m_activations[CNNConfig::layers - 1], ground_truth, m_err);
 }
 
-void NeuralNets::BackPropogation(EigenDenseMat &inputs)
+void CNeuralNets::BackPropogation(EigenDenseMat &inputs)
 {
 	//cur_layer ranges from 0 to (layers - 1)
 	//weights[cur_layer] connects cur_layer and (cur_layer + 1)
-	for (int32_t cur_layer = NNConfig::layers - 2; cur_layer >= 0; --cur_layer)
+	for (int32_t cur_layer = CNNConfig::layers - 2; cur_layer >= 0; --cur_layer)
 	{
 		if (cur_layer == 0)
 			//For weights that connect input layer
@@ -56,7 +56,7 @@ void NeuralNets::BackPropogation(EigenDenseMat &inputs)
 		//Average by the number of samples
 		m_dw[cur_layer] /= inputs.rows();
 		
-		for (int32_t j = 0; j < NNConfig::length[cur_layer + 1]; ++j)
+		for (int32_t j = 0; j < CNNConfig::length[cur_layer + 1]; ++j)
 		{
 			m_db[cur_layer](j) = 0;
 			for (int32_t k = 0; k < m_err.rows(); ++k)
@@ -66,55 +66,55 @@ void NeuralNets::BackPropogation(EigenDenseMat &inputs)
 
 		if (cur_layer == 0) break;
 
-		if (NNConfig::opt.act_type != FuncType::LINEAR)
+		if (CNNConfig::opt.act_type != CFuncType::LINEAR)
 			//After next line, m_activations stores the derivatives of the activation function
-			ComputeDerivatives(m_activations[cur_layer], NNConfig::opt.act_type);
+			ComputeDerivatives(m_activations[cur_layer], CNNConfig::opt.act_type);
 
 		m_err *= m_weights[cur_layer];
 
-		if (NNConfig::opt.act_type != FuncType::LINEAR)
+		if (CNNConfig::opt.act_type != CFuncType::LINEAR)
 			m_err = m_err.cwiseProduct(m_activations[cur_layer]);
 	}
 }
 
-void NeuralNets::ApplyGradients()
+void CNeuralNets::ApplyGradients()
 {
-	for (int32_t cur_layer = 0; cur_layer < NNConfig::layers - 1; ++cur_layer)
+	for (int32_t cur_layer = 0; cur_layer < CNNConfig::layers - 1; ++cur_layer)
 	{
-		if (NNConfig::opt.weightPenaltyL2 > 0)
+		if (CNNConfig::opt.weightPenaltyL2 > 0)
 		{
-			m_dw[cur_layer] += m_weights[cur_layer] * NNConfig::opt.weightPenaltyL2;
+			m_dw[cur_layer] += m_weights[cur_layer] * CNNConfig::opt.weightPenaltyL2;
 		}
-		m_dw[cur_layer] *= NNConfig::rtc.learning_rate;
-		m_vw[cur_layer] *= NNConfig::rtc.momentum;
+		m_dw[cur_layer] *= CNNConfig::rtc.learning_rate;
+		m_vw[cur_layer] *= CNNConfig::rtc.momentum;
 
 		m_vw[cur_layer] += m_dw[cur_layer];
 		m_weights[cur_layer] -= m_vw[cur_layer];
 
-		for (int32_t j = 0; j < NNConfig::length[cur_layer + 1]; ++j)
+		for (int32_t j = 0; j < CNNConfig::length[cur_layer + 1]; ++j)
 		{
-			m_db[cur_layer](j) *= NNConfig::rtc.learning_rate;
-			m_vb[cur_layer](j) *= NNConfig::rtc.momentum;
+			m_db[cur_layer](j) *= CNNConfig::rtc.learning_rate;
+			m_vb[cur_layer](j) *= CNNConfig::rtc.momentum;
 			m_vb[cur_layer](j) += m_db[cur_layer](j);
 			m_bias[cur_layer](j) -= m_vb[cur_layer](j);
 		}
 	}
 }
 
-float32_t NeuralNets::CalcErr(EigenDenseMat& output, const EigenDenseMat& ground_truth, EigenDenseMat& err)
+float32_t CNeuralNets::CalcErr(EigenDenseMat& output, const EigenDenseMat& ground_truth, EigenDenseMat& err)
 {
 	float32_t loss = 0;
 	err = output - ground_truth;
 
-	switch (NNConfig::opt.out_type)
+	switch (CNNConfig::opt.out_type)
 	{
-	case FuncType::LINEAR:
+	case CFuncType::LINEAR:
 		loss = GetSquareLoss(err);
 		break;
-	case FuncType::SIGM:
+	case CFuncType::SIGM:
 		loss = GetSquareLoss(err);
 		break;
-	case FuncType::SOFTMAX:
+	case CFuncType::SOFTMAX:
 		loss = GetLogLoss(output, ground_truth);
 	default:
 		break;

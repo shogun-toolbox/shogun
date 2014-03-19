@@ -1,28 +1,28 @@
 #include "NNConfig.h"
 
 //Basic parameters of NN
-int32_t NNConfig::epoch = 0;
-int32_t NNConfig::batchsize = 0;
-int32_t NNConfig::layers = 0;
-int32_t* NNConfig::length = NULL;
-RuntimeConfig NNConfig::rtc;
-TrainingOptions NNConfig::opt;
+int32_t CNNConfig::epoch = 0;
+int32_t CNNConfig::batchsize = 0;
+int32_t CNNConfig::layers = 0;
+int32_t* CNNConfig::length = NULL;
+RuntimeConfig CNNConfig::rtc;
+TrainingOptions CNNConfig::opt;
 
 //Datasets for train/test
-const char* NNConfig::trainx = NULL;
-const char* NNConfig::trainy = NULL;
-const char* NNConfig::testx = NULL;
-const char* NNConfig::testy = NULL;
+const char* CNNConfig::trainx = NULL;
+const char* CNNConfig::trainy = NULL;
+const char* CNNConfig::testx = NULL;
+const char* CNNConfig::testy = NULL;
 
 TrainingOptions::TrainingOptions()
 {
-	act_type = FuncType::RECTIFIED;
-	out_type = FuncType::SOFTMAX;
+	act_type = CFuncType::RECTIFIED;
+	out_type = CFuncType::SOFTMAX;
 	weightPenaltyL2 = 0.001;
 	isGradChecking = false; //Flag for gradient checking
 }
 
-void NNConfig::Initialize()
+void CNNConfig::Initialize()
 {
 	//To be further updated as parameters setting interfaces
 	epoch = 1;
