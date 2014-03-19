@@ -13,7 +13,7 @@
 #ifndef __SGREFOBJECT_H__
 #define __SGREFOBJECT_H__
 
-#include "lib/config.h"
+#include <shogun/lib/config.h>
 
 /** \namespace shogun
  * @brief all of classes and functions are contained in the shogun namespace
