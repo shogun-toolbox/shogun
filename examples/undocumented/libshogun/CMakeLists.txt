@@ -107,6 +107,7 @@ SET(EXAMPLES
 	io_linereader
 	library_circularbuffer
 	so_factorgraph
+	io_libsvm_multilabel
 )
 
 IF (USE_MOSEK)
