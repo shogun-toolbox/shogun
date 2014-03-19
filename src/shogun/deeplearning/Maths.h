@@ -1,8 +1,8 @@
 #ifndef MATHS
 #define MATHS
 
-#include "TypeDefine.h";
-#include "Enums.h";
+#include "TypeDefine.h"
+#include "Enums.h"
 
 using namespace shogun::deeplearning::typedefine;
 using namespace shogun::deeplearning::enums;

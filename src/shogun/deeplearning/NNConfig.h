@@ -3,7 +3,6 @@
 
 #include "Enums.h"
 #include "TypeDefine.h"
-//#include <vector>
 
 using namespace shogun::deeplearning::typedefine;
 using namespace shogun::deeplearning::enums;

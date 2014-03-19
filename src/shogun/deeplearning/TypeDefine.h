@@ -1,8 +1,8 @@
 #ifndef TYPE_DEFINE
 #define TYPE_DEFINE
 
-#include "shogun/lib/common.h";
-#include "shogun/base/init.h";
+#include "shogun/lib/common.h"
+#include "shogun/base/init.h"
 #include "Eigen/Dense"
 
 namespace shogun

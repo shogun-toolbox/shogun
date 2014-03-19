@@ -16,6 +16,7 @@ void CDataAdapter::Init(const char* _feature_file, const char* _label_file)
 void CDataAdapter::Open()
 {
 	//Currently for MNIST data, and should be edited more generally later
+	/*	
 	int32_t row_cnt;
 	fopen_s(&fid_feat, feature_file, "rb");
 	fread_s(&row_cnt, sizeof(int32_t), sizeof(int32_t), 1, fid_feat); //For MNIST: 60000
@@ -26,6 +27,7 @@ void CDataAdapter::Open()
 	fread_s(&row_cnt, sizeof(int32_t), sizeof(int32_t), 1, fid_label); //For MNIST: 60000
 	fread_s(&label_cnt, sizeof(int32_t), sizeof(int32_t), 1, fid_label); //For MNIST: 10
 	label_buffer.resize(CNNConfig::batchsize, label_cnt);
+	*/
 }
 
 int32_t CDataAdapter::GetBatchSamples(int32_t batch_size, void*& samples)
