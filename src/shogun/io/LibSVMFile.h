@@ -4,6 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
+ * Written (W) 2014 Jiaolong Xu
  * Written (W) 2013 Evgeniy Andreev (gsomix)
  * Written (W) 2010 Soeren Sonnenburg
  */
@@ -262,6 +263,56 @@ public:
 			int32_t& max_string_len) { };
 	//@}
 
+        /** @name Sparse Matrix Access Functions With Multiple Labels
+	 *
+	 * Functions to access sparse matrices of one of the several base data types.
+	 * These functions are used when loading sparse matrices from e.g. file
+	 * and return the sparse matrices and its dimensions num_feat and num_vec
+	 * by reference
+	 */
+	//@{
+
+	void get_sparse_matrix(
+	        SGSparseVector<bool>*& matrix_feat, int32_t & num_feat, int32_t & num_vec,
+	        SGSparseVector<float64_t>*& matrix_label, int32_t & num_classes);
+        void get_sparse_matrix(
+	        SGSparseVector<uint8_t>*& matrix_feat, int32_t & num_feat, int32_t & num_vec,
+	        SGSparseVector<float64_t>*& matrix_label, int32_t & num_classes);
+	void get_sparse_matrix(
+	        SGSparseVector<int8_t>*& matrix_feat, int32_t & num_feat, int32_t & num_vec,
+	        SGSparseVector<float64_t>*& matrix_label, int32_t & num_classes);
+	void get_sparse_matrix(
+	        SGSparseVector<char>*& matrix_feat, int32_t & num_feat, int32_t & num_vec,
+	        SGSparseVector<float64_t>*& matrix_label, int32_t & num_classes);
+	void get_sparse_matrix(
+	        SGSparseVector<int32_t>*& matrix_feat, int32_t & num_feat, int32_t & num_vec,
+	        SGSparseVector<float64_t>*& matrix_label, int32_t & num_classes);
+	void get_sparse_matrix(
+	        SGSparseVector<uint32_t>*& matrix_feat, int32_t & num_feat, int32_t & num_vec,
+	        SGSparseVector<float64_t>*& matrix_label, int32_t & num_classes);
+	void get_sparse_matrix(
+	        SGSparseVector<int64_t>*& matrix_feat, int32_t & num_feat, int32_t & num_vec,
+	        SGSparseVector<float64_t>*& matrix_label, int32_t & num_classes);
+	void get_sparse_matrix(
+	        SGSparseVector<uint64_t>*& matrix_feat, int32_t & num_feat, int32_t & num_vec,
+	        SGSparseVector<float64_t>*& matrix_label, int32_t & num_classes);
+	void get_sparse_matrix(
+	        SGSparseVector<int16_t>*& matrix_feat, int32_t & num_feat, int32_t & num_vec,
+	        SGSparseVector<float64_t>*& matrix_label, int32_t & num_classes);
+	void get_sparse_matrix(
+	        SGSparseVector<uint16_t>*& matrix_feat, int32_t & num_feat, int32_t & num_vec,
+	        SGSparseVector<float64_t>*& matrix_label, int32_t & num_classes);
+	void get_sparse_matrix(
+	        SGSparseVector<float32_t>*& matrix_feat, int32_t & num_feat, int32_t & num_vec,
+	        SGSparseVector<float64_t>*& matrix_label, int32_t & num_classes);
+	void get_sparse_matrix(
+	        SGSparseVector<float64_t>*& matrix_feat, int32_t & num_feat, int32_t & num_vec,
+	        SGSparseVector<float64_t>*& matrix_label, int32_t & num_classes);
+	void get_sparse_matrix(
+	        SGSparseVector<floatmax_t>*& matrix_feat, int32_t & num_feat, int32_t & num_vec,
+	        SGSparseVector<float64_t>*& matrix_label, int32_t & num_classes);
+	//@}
+
 	/** vector access functions */
 	/*virtual void get_vector(void*& vector, int32_t& len, DataType& dtype);*/
 
@@ -450,23 +501,29 @@ private:
 	int32_t get_num_lines();
 
 private:
-	/** delimiter for index and data in sparse entries */
-	char m_delimiter;
+        /** delimiter for index and data in sparse entries */
+	char m_delimiter_feat;
+
+	/** delimiter for multiple labels*/
+	char m_delimiter_label;
 
 	/** object for reading lines from file */
-	CLineReader* m_line_reader;
+	CLineReader * m_line_reader;
 
 	/** parser of lines */
-	CParser* m_parser;
+	CParser * m_parser;
 
 	/** tokenizer for line_reader */
-	CDelimiterTokenizer* m_line_tokenizer;
+	CDelimiterTokenizer * m_line_tokenizer;
 
 	/** delimiter for parsing lines */
-	CDelimiterTokenizer* m_whitespace_tokenizer;
+	CDelimiterTokenizer * m_whitespace_tokenizer;
 
 	/** delimiter for parsing sparse entries */
-	CDelimiterTokenizer* m_delimiter_tokenizer;
+	CDelimiterTokenizer * m_delimiter_feat_tokenizer;
+
+	/** delimiter for parsing multiple labels */
+	CDelimiterTokenizer * m_delimiter_label_tokenizer;
 };
 
 }

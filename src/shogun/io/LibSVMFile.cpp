@@ -4,6 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
+ * Written (W) 2014 Jiaolong Xu
  * Written (W) 2013 Evgeniy Andreev (gsomix)
  */
 
@@ -40,7 +41,8 @@ CLibSVMFile::CLibSVMFile(const char* fname, char rw, const char* name) :
 CLibSVMFile::~CLibSVMFile()
 {
 	SG_UNREF(m_whitespace_tokenizer);
-	SG_UNREF(m_delimiter_tokenizer);
+	SG_UNREF(m_delimiter_feat_tokenizer);
+	SG_UNREF(m_delimiter_label_tokenizer);
 	SG_UNREF(m_line_tokenizer);
 	SG_UNREF(m_parser);
 	SG_UNREF(m_line_reader);
@@ -48,10 +50,12 @@ CLibSVMFile::~CLibSVMFile()
 
 void CLibSVMFile::init()
 {
-	m_delimiter=0;
-
+	m_delimiter_feat=0;
+        m_delimiter_label=0;
+    
 	m_whitespace_tokenizer=NULL;
-	m_delimiter_tokenizer=NULL;
+	m_delimiter_feat_tokenizer=NULL;
+	m_delimiter_label_tokenizer=NULL;
 	m_line_tokenizer=NULL;
 	m_parser=NULL;
 	m_line_reader=NULL;
@@ -59,16 +63,21 @@ void CLibSVMFile::init()
 
 void CLibSVMFile::init_with_defaults()
 {
-	m_delimiter=':';
+	m_delimiter_feat=':';
+	m_delimiter_label=',';
 
 	m_whitespace_tokenizer=new CDelimiterTokenizer(true);
 	m_whitespace_tokenizer->delimiters[' ']=1;
 	SG_REF(m_whitespace_tokenizer);
 
-	m_delimiter_tokenizer=new CDelimiterTokenizer(true);
-	m_delimiter_tokenizer->delimiters[m_delimiter]=1;
-	SG_REF(m_delimiter_tokenizer);
+	m_delimiter_feat_tokenizer=new CDelimiterTokenizer(true);
+	m_delimiter_feat_tokenizer->delimiters[m_delimiter_feat]=1;
+	SG_REF(m_delimiter_feat_tokenizer);
 
+        m_delimiter_label_tokenizer=new CDelimiterTokenizer(true);
+	m_delimiter_label_tokenizer->delimiters[m_delimiter_label]=1;
+	SG_REF(m_delimiter_label_tokenizer);
+	
 	m_line_tokenizer=new CDelimiterTokenizer(true);
 	m_line_tokenizer->delimiters['\n']=1;
 	SG_REF(m_line_tokenizer);
@@ -141,7 +150,7 @@ void CLibSVMFile::get_sparse_matrix(SGSparseVector<sg_type>*& matrix, int32_t& n
 		matrix[current_line_ind]=SGSparseVector<sg_type>(num_entries); \
 		for (int32_t i=0; i<num_entries; i++) \
 		{ \
-			m_parser->set_tokenizer(m_delimiter_tokenizer); \
+			m_parser->set_tokenizer(m_delimiter_feat_tokenizer); \
 			m_parser->set_text(entries[i]); \
 			\
 			int32_t feat_index=0; \
@@ -183,6 +192,115 @@ GET_LABELED_SPARSE_MATRIX(read_long, int64_t)
 GET_LABELED_SPARSE_MATRIX(read_ulong, uint64_t)
 #undef GET_LABELED_SPARSE_MATRIX
 
+#define GET_MULTI_LABELED_SPARSE_MATRIX(read_func, sg_type) \
+void CLibSVMFile::get_sparse_matrix(SGSparseVector<sg_type>*& mat_feat, int32_t& num_feat, int32_t& num_vec, \
+					SGSparseVector<float64_t>*& mat_label, int32_t& num_classes) \
+{ \
+	num_feat=0; \
+	\
+	SG_INFO("counting line numbers in file %s\n", filename) \
+	num_vec=get_num_lines(); \
+	\
+	int32_t current_line_ind=0; \
+	SGVector<char> line; \
+	\
+	int32_t num_feat_entries=0; \
+	DynArray<SGVector<char> > entries_feat; \
+        DynArray<int32_t > entries_label; \
+	\
+	mat_feat=SG_MALLOC(SGSparseVector<sg_type>, num_vec); \
+	mat_label=SG_MALLOC(SGSparseVector<float64_t>, num_vec); \
+	\
+        num_classes=0; \
+	SG_SET_LOCALE_C; \
+	\
+	while (m_line_reader->has_next()) \
+	{ \
+		num_feat_entries=0; \
+		entries_feat.reset(SGVector<char>(false)); \
+		line=m_line_reader->read_line(); \
+		\
+		m_parser->set_tokenizer(m_whitespace_tokenizer); \
+		m_parser->set_text(line); \
+		\
+                SGVector<char> entry_label; \
+                if (m_parser->has_next()) \
+                { \
+			entry_label=m_parser->read_string(); \
+                } \
+		\
+		while (m_parser->has_next()) \
+		{ \
+			entries_feat.push_back(m_parser->read_string()); \
+			num_feat_entries++; \
+		} \
+		\
+		mat_feat[current_line_ind]=SGSparseVector<sg_type>(num_feat_entries); \
+		for (int32_t i=0; i<num_feat_entries; i++) \
+		{ \
+			m_parser->set_tokenizer(m_delimiter_feat_tokenizer); \
+			m_parser->set_text(entries_feat[i]); \
+			\
+			int32_t feat_index=0; \
+			if (m_parser->has_next()) \
+				feat_index=m_parser->read_int(); \
+			\
+			sg_type entry=0; \
+			if (m_parser->has_next()) \
+				entry=m_parser->read_func(); \
+			\
+			if (feat_index>num_feat) \
+				num_feat=feat_index; \
+			\
+			mat_feat[current_line_ind].features[i].feat_index=feat_index-1; \
+			mat_feat[current_line_ind].features[i].entry=entry; \
+		} \
+                \
+                m_parser->set_tokenizer(m_delimiter_label_tokenizer); \
+                m_parser->set_text(entry_label); \
+                \
+	        int32_t num_label_entries=0; \
+                entries_label.reset(0); \
+                while (m_parser->has_next()) \
+                { \
+                        num_label_entries++; \
+                        int32_t label_index=(int32_t)m_parser->read_real(); \
+                        if (label_index+1>=num_classes) \
+                                num_classes = label_index+1; \
+                        \
+                        entries_label.push_back(label_index); \
+                } \
+                mat_label[current_line_ind]=SGSparseVector<float64_t>(num_label_entries); \
+                for (int32_t j=0; j < num_label_entries; j++) \
+                { \
+                        mat_label[current_line_ind].features[j].feat_index=entries_label[j]; \
+                        mat_label[current_line_ind].features[j].entry=1.0; \
+                } \
+		\
+		current_line_ind++; \
+		SG_PROGRESS(current_line_ind, 0, num_vec, 1, "LOADING:\t") \
+	} \
+	\
+	SG_RESET_LOCALE; \
+	\
+	SG_INFO("file successfully read\n") \
+}
+
+GET_MULTI_LABELED_SPARSE_MATRIX(read_bool, bool)
+GET_MULTI_LABELED_SPARSE_MATRIX(read_char, int8_t)
+GET_MULTI_LABELED_SPARSE_MATRIX(read_byte, uint8_t)
+GET_MULTI_LABELED_SPARSE_MATRIX(read_char, char)
+GET_MULTI_LABELED_SPARSE_MATRIX(read_int, int32_t)
+GET_MULTI_LABELED_SPARSE_MATRIX(read_uint, uint32_t)
+GET_MULTI_LABELED_SPARSE_MATRIX(read_short_real, float32_t)
+GET_MULTI_LABELED_SPARSE_MATRIX(read_real, float64_t)
+GET_MULTI_LABELED_SPARSE_MATRIX(read_long_real, floatmax_t)
+GET_MULTI_LABELED_SPARSE_MATRIX(read_short, int16_t)
+GET_MULTI_LABELED_SPARSE_MATRIX(read_word, uint16_t)
+GET_MULTI_LABELED_SPARSE_MATRIX(read_long, int64_t)
+GET_MULTI_LABELED_SPARSE_MATRIX(read_ulong, uint64_t)
+#undef GET_MULTI_LABELED_SPARSE_MATRIX
+
 #define SET_SPARSE_MATRIX(format, sg_type) \
 void CLibSVMFile::set_sparse_matrix( \
 			const SGSparseVector<sg_type>* matrix, int32_t num_feat, int32_t num_vec) \
@@ -221,7 +339,7 @@ void CLibSVMFile::set_sparse_matrix( \
 		{ \
 			fprintf(file, "%d%c%" format " ", \
 				matrix[i].features[j].feat_index+1, \
-				m_delimiter, \
+				m_delimiter_feat, \
 				matrix[i].features[j].entry); \
 		} \
 		fprintf(file, "\n"); \
