@@ -1,3 +1,4 @@
+#include <shogun/base/init.h>
 #include <shogun/classifier/svm/LibLinear.h>
 #include <shogun/evaluation/MulticlassAccuracy.h>
 #include <shogun/evaluation/StructuredAccuracy.h>
