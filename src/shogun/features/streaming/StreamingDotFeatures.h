@@ -13,6 +13,7 @@
 #include <shogun/lib/common.h>
 #include <shogun/features/streaming/StreamingFeatures.h>
 #include <shogun/features/FeatureTypes.h>
+#include <shogun/lib/SGSparseVector.h>
 
 namespace shogun
 {

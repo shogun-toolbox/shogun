@@ -15,13 +15,14 @@
 
 namespace shogun
 {
-class CTokenizer;
+template <class T> class SGVector;
 
 /** @brief The class CNGramTokenizer is used to tokenize
  *  a SGVector<char> into n-grams
  */
 class CNGramTokenizer: public CTokenizer
 {
+
 public:
     /** Constructor
 	 *

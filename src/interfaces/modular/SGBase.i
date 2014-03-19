@@ -99,9 +99,7 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
  /* required for python */
  #define SWIG_FILE_WITH_INIT
 
-#if defined(SWIGJAVA) || defined(SWIGCSHARP)
  #include <shogun/base/init.h>
-#endif
  #include <shogun/lib/common.h>
  #include <shogun/io/SGIO.h>
  #include <shogun/lib/ShogunException.h>

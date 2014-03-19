@@ -11,13 +11,13 @@
 #include <shogun/lib/config.h>
 #include <shogun/lib/ShogunException.h>
 #include <shogun/lib/common.h>
-#include <shogun/lib/Map.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGSparseVector.h>
 #include <shogun/lib/SGMatrix.h>
-#include <shogun/base/SGObject.h>
 
 #include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 #ifdef USE_JEMALLOC
 #include <jemalloc/jemalloc.h>
@@ -28,6 +28,7 @@
 using namespace shogun;
 
 #ifdef TRACE_MEMORY_ALLOCS
+#include <shogun/lib/Map.h>
 extern CMap<void*, shogun::MemoryBlock>* sg_mallocs;
 
 MemoryBlock::MemoryBlock() : ptr(NULL), size(0), file(NULL),

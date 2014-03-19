@@ -9,6 +9,7 @@
 
 #include <stdlib.h>
 #include <shogun/io/Parser.h>
+#include <shogun/lib/Tokenizer.h>
 
 using namespace shogun;
 

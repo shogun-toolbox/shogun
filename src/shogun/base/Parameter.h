@@ -23,8 +23,8 @@ class CSerializableFile;
 template <class ST> class SGString;
 template <class T> class SGMatrix;
 template <class T> class SGSparseMatrix;
-template <class T> class SGSparseVector;
 template <class T> class SGVector;
+template <class T> class SGSparseVector;
 
 /** @brief parameter struct */
 struct TParameter

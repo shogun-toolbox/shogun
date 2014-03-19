@@ -12,13 +12,15 @@
 
 #include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
-#include <shogun/base/SGObject.h>
-#include <shogun/io/SGIO.h>
 #include <shogun/io/SimpleFile.h>
 #include <shogun/io/File.h>
 
 namespace shogun
 {
+struct TSGDataType;
+template <class ST> class SGString;
+template <class T> class SGSparseVector;
+
 /** @brief A Binary file access class.
  *
  * A file consists of a SG00 fourcc header then an alternation of a type header and

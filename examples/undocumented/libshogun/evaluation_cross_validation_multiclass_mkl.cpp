@@ -8,6 +8,7 @@
  * Written (W) 2012 Heiko Strathmann
  */
 
+#include <shogun/base/init.h>
 #include <shogun/io/CSVFile.h>
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/features/DenseFeatures.h>

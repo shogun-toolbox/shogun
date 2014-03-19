@@ -9,12 +9,11 @@
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/lib/config.h>
-
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/ShogunException.h>
-#include <shogun/lib/Signal.h>
 #include <shogun/lib/common.h>
+#include <shogun/base/init.h>
+#include <shogun/lib/memory.h>
 #include <shogun/lib/Time.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/RefCount.h>
@@ -22,7 +21,9 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <ctype.h>
-
+#include <dirent.h>
+#include <sys/stat.h>
+#include <unistd.h>
 #include <stdlib.h>
 
 using namespace shogun;

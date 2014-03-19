@@ -12,6 +12,8 @@
 
 #include <shogun/io/SerializableFile.h>
 #include <shogun/base/DynArray.h>
+#include <shogun/lib/DataType.h>
+#include <shogun/lib/common.h>
 
 #define CHAR_CONT_BEGIN            '('
 #define CHAR_CONT_END              ')'
@@ -30,6 +32,8 @@
 
 namespace shogun
 {
+template <class T> struct SGSparseVectorEntry;
+
 /** @brief serializable ascii file */
 class CSerializableAsciiFile :public CSerializableFile
 {

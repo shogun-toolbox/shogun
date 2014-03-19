@@ -12,6 +12,9 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGSparseVector.h>
 #include <shogun/base/DynArray.h>
+#include <shogun/io/LineReader.h>
+#include <shogun/io/Parser.h>
+#include <shogun/lib/DelimiterTokenizer.h>
 
 using namespace shogun;
 

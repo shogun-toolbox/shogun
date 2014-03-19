@@ -13,6 +13,7 @@
 
 #include <shogun/io/SerializableHdf5File.h>
 #include <shogun/io/SerializableHdf5Reader00.h>
+#include <shogun/lib/SGSparseVector.h>
 
 #define NOT_OPEN                   ((hid_t) -1)
 

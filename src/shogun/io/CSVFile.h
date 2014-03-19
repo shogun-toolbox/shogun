@@ -10,15 +10,18 @@
 #ifndef __CSVFILE_H__
 #define __CSVFILE_H__
 
+#include <shogun/lib/common.h>
 #include <shogun/io/File.h>
-
-#include <shogun/io/LineReader.h>
-#include <shogun/io/Parser.h>
-#include <shogun/lib/DelimiterTokenizer.h>
-#include <shogun/lib/v_array.h>
 
 namespace shogun
 {
+class CDelimiterTokenizer;
+class CLineReader;
+class CParser;
+struct substring;
+template <class ST> class SGString;
+template <class T> class SGSparseVector;
+template <class T> class v_array;
 
 /** @brief Class CSVFile used to read data from comma-separated values (CSV)
  * files. See http://en.wikipedia.org/wiki/Comma-separated_values.

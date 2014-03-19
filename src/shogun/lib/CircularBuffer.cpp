@@ -8,6 +8,7 @@
  */
 
 #include <shogun/lib/CircularBuffer.h>
+#include <shogun/lib/Tokenizer.h>
 
 #include <cstdio>
 #include <cstring>

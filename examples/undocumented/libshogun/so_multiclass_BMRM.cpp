@@ -8,6 +8,7 @@
  * Copyright (C) 2012 Michal Uricar
  */
 
+#include <shogun/base/init.h>
 #include <shogun/classifier/svm/LibLinear.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/io/SGIO.h>

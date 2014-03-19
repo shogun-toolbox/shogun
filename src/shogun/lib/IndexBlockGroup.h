@@ -10,11 +10,14 @@
 #ifndef INDEXBLOCKGROUP_H_
 #define INDEXBLOCKGROUP_H_
 
-#include <shogun/lib/IndexBlock.h>
+#include <shogun/lib/SGVector.h>
 #include <shogun/lib/IndexBlockRelation.h>
 
 namespace shogun
 {
+
+class CIndexBlock;
+class CList;
 
 /** @brief class IndexBlockGroup used to represent
  * group-based feature relation.

@@ -10,18 +10,23 @@
 #ifndef __STREAMING_ASCIIFILE_H__
 #define __STREAMING_ASCIIFILE_H__
 
-#include <shogun/io/CSVFile.h>
 #include <shogun/io/streaming/StreamingFile.h>
-#include <shogun/features/SparseFeatures.h>
+#include <shogun/lib/v_array.h>
 
 namespace shogun
 {
+
+struct substring;
+template <class ST> struct SGSparseVectorEntry;
+template <class T> class DynArray;
+
 /** @brief Class StreamingAsciiFile to read vector-by-vector from ASCII files.
  *
  * The object must be initialized like a CCSVFile.
  */
 class CStreamingAsciiFile: public CStreamingFile
 {
+
 public:
 	/**
 	 * Default constructor

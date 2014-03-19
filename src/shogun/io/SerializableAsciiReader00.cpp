@@ -9,6 +9,7 @@
  */
 
 #include <shogun/io/SerializableAsciiReader00.h>
+#include <shogun/io/SerializableAsciiFile.h>
 #include <shogun/lib/common.h>
 
 using namespace shogun;
