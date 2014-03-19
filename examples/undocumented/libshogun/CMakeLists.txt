@@ -4,6 +4,7 @@ if(SYSTEM_INCLUDES)
 endif()
 
 SET(EXAMPLES
+	ElogLik
 	basic_minimal
 	classifier_libsvm
 	classifier_libsvm_probabilities
