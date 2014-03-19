@@ -15,11 +15,10 @@
 #include <stdio.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/DataType.h>
-#include <shogun/lib/SGSparseVector.h>
 
 namespace shogun
 {
-	class CSGObject;
+template <class T> struct SGSparseVectorEntry;
 
 /** @brief serializable file */
 class CSerializableFile :public CSGObject

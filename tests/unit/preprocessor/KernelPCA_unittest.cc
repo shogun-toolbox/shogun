@@ -1,16 +1,8 @@
-#include <shogun/features/Features.h>
 #include <shogun/preprocessor/KernelPCA.h>
-#include <shogun/lib/tapkee/tapkee_shogun.hpp>
-#include <shogun/kernel/Kernel.h>
-
 #include <shogun/kernel/GaussianKernel.h>
-#include <iostream>
 #include <shogun/lib/SGMatrix.h>
-#include <shogun/features/Features.h>
 
-#include <shogun/base/init.h>
 #include <gtest/gtest.h>
-#include <gmock/gmock.h>
 
 using ::testing::Test;
 using namespace shogun;

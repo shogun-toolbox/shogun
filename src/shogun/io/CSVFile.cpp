@@ -10,7 +10,11 @@
 #include <shogun/io/CSVFile.h>
 
 #include <shogun/lib/SGVector.h>
-#include <shogun/lib/SGMatrix.h>
+#include <shogun/lib/SGSparseVector.h>
+#include <shogun/io/LineReader.h>
+#include <shogun/io/Parser.h>
+#include <shogun/lib/DelimiterTokenizer.h>
+#include <shogun/lib/v_array.h>
 
 using namespace shogun;
 

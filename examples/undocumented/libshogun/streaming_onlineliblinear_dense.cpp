@@ -11,6 +11,7 @@
  * relies on the streaming features framework.
  */
 
+#include <shogun/base/init.h>
 #include <shogun/lib/common.h>
 
 #include <shogun/io/streaming/StreamingAsciiFile.h>

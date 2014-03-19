@@ -12,6 +12,7 @@
 
 #include <shogun/classifier/svm/SVMOcas.h>
 #include <shogun/latent/LatentSVM.h>
+#include <shogun/latent/LatentModel.h>
 
 using namespace shogun;
 

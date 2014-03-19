@@ -14,7 +14,7 @@
 #define __SGSTRING_H__
 
 #include <shogun/lib/config.h>
-#include <shogun/lib/DataType.h>
+#include <shogun/lib/common.h>
 
 namespace shogun
 {

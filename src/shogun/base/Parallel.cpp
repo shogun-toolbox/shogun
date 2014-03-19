@@ -10,6 +10,8 @@
 
 #include <shogun/base/Parallel.h>
 #include <shogun/lib/RefCount.h>
+#include <shogun/lib/config.h>
+#include <shogun/lib/memory.h>
 
 #if defined(LINUX) && defined(_SC_NPROCESSORS_ONLN)
 #include <unistd.h>

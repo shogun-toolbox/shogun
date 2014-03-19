@@ -30,6 +30,7 @@
 
 #include <shogun/statistics/HypothesisTest.h>
 #include <shogun/base/Parameter.h>
+#include <shogun/lib/SGVector.h>
 
 using namespace shogun;
 

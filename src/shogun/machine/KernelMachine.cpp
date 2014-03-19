@@ -12,8 +12,12 @@
 #include <shogun/machine/KernelMachine.h>
 #include <shogun/lib/Signal.h>
 #include <shogun/labels/RegressionLabels.h>
-#include <shogun/base/Parameter.h>
+#include <shogun/io/SGIO.h>
 #include <shogun/base/ParameterMap.h>
+
+#include <shogun/kernel/Kernel.h>
+#include <shogun/kernel/CustomKernel.h>
+#include <shogun/labels/Labels.h>
 
 using namespace shogun;
 

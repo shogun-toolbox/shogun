@@ -7,7 +7,6 @@
  * Written (W) 2013 Heiko Strathmann
  */
 
-#include <shogun/base/init.h>
 #include <shogun/statistics/LinearTimeMMD.h>
 #include <shogun/statistics/MMDKernelSelectionCombOpt.h>
 #include <shogun/features/streaming/StreamingFeatures.h>
@@ -15,7 +14,6 @@
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/kernel/CombinedKernel.h>
-#include <shogun/mathematics/Statistics.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;

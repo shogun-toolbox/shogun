@@ -7,11 +7,10 @@
  * Written (W) 2013 Soumyajit De
  */
 
-#include <shogun/lib/config.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/computation/jobresult/VectorResult.h>
 #include <shogun/lib/computation/aggregator/StoreVectorAggregator.h>
-#include <shogun/base/Parameter.h>
+#include <shogun/lib/computation/aggregator/JobResultAggregator.h>
 
 namespace shogun
 {

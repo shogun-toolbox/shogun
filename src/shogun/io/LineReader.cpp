@@ -8,6 +8,8 @@
  */
 
 #include <shogun/io/LineReader.h>
+#include <shogun/lib/CircularBuffer.h>
+#include <shogun/lib/Tokenizer.h>
 #include <cstdio>
 
 using namespace shogun;

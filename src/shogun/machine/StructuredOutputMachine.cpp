@@ -11,6 +11,9 @@
  */
 
 #include <shogun/machine/StructuredOutputMachine.h>
+#include <shogun/labels/StructuredLabels.h>
+#include <shogun/loss/LossFunction.h>
+#include <shogun/structure/StructuredModel.h>
 
 using namespace shogun;
 

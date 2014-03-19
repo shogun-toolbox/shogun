@@ -16,7 +16,8 @@
 namespace shogun
 {
 
-class CMachine;
+class CDynamicObjectArray;
+class CLabels;
 
 /** Base class of all Multiclass Machines.
  */

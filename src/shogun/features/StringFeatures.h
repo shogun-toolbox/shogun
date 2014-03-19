@@ -21,6 +21,7 @@
 
 #include <shogun/features/Features.h>
 #include <shogun/features/Alphabet.h>
+#include <shogun/lib/SGString.h>
 
 namespace shogun
 {

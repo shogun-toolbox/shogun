@@ -1,3 +1,6 @@
+#ifndef __SHOGUN_LIB_CONFIG_H__
+#define __SHOGUN_LIB_CONFIG_H__
+
 #cmakedefine MACHINE "@MACHINE@"
 #cmakedefine CONFIGURE_OPTIONS "@CONFIGURE_OPTIONS@"
 #cmakedefine COMPFLAGS_CPP "@COMPFLAGS_CPP@"
@@ -114,3 +117,5 @@
 /* random related defines */
 #cmakedefine HAVE_ARC4RANDOM 1
 #cmakedefine DEV_RANDOM "@DEV_RANDOM@"
+
+#endif /* __SHOGUN_LIB_CONFIG_H__ */

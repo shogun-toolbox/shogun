@@ -10,6 +10,7 @@
 
 #include <shogun/structure/CCSOSVM.h>
 #include <shogun/mathematics/Mosek.h>
+#include <shogun/lib/SGSparseVector.h>
 
 using namespace shogun;
 

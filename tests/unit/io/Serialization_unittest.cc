@@ -15,6 +15,9 @@
 #include <shogun/io/SerializableHdf5File.h>
 #include <gtest/gtest.h>
 
+#include <shogun/lib/SGVector.h>
+#include <shogun/lib/SGMatrix.h>
+
 using namespace shogun;
 
 TEST(Serialization, Ascii_scalar_equal_BOOL)

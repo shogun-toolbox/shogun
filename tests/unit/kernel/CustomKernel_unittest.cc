@@ -7,7 +7,6 @@
  * Written (W) 2013 Heiko Strathmann
  */
 
-#include <shogun/base/init.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/kernel/CustomKernel.h>
 #include <shogun/features/DenseFeatures.h>

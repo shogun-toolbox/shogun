@@ -12,6 +12,8 @@
 #define __PARAMETERMAP_
 
 #include <shogun/base/DynArray.h>
+#include <shogun/lib/DataType.h>
+#include <shogun/lib/common.h>
 
 namespace shogun
 {

@@ -15,6 +15,7 @@
 #include <shogun/lib/DataType.h>
 #include <shogun/lib/SGString.h>
 #include <shogun/lib/SGSparseVector.h>
+#include <shogun/io/SGIO.h>
 
 using namespace shogun;
 

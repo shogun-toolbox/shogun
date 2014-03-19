@@ -8,7 +8,6 @@
  * Written (W) 2013 Heiko Strathmann
  */
 
-#include <shogun/base/init.h>
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/evaluation/ROCEvaluation.h>
 #include <gtest/gtest.h>

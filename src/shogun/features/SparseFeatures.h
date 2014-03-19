@@ -15,27 +15,21 @@
 #define _SPARSEFEATURES__H__
 
 #include <shogun/lib/common.h>
-#include <shogun/lib/DataType.h>
-#include <shogun/lib/SGSparseMatrix.h>
-#include <shogun/lib/Cache.h>
-#include <shogun/io/File.h>
-#include <shogun/io/LibSVMFile.h>
-
-#include <shogun/labels/RegressionLabels.h>
-#include <shogun/features/Features.h>
-#include <shogun/features/DotFeatures.h>
 #include <shogun/features/DenseFeatures.h>
+#include <shogun/features/DotFeatures.h>
+#include <shogun/lib/SGMatrix.h>
+#include <shogun/lib/SGSparseMatrix.h>
+#include <shogun/lib/SGVector.h>
+#include <shogun/lib/SGSparseVector.h>
 
 namespace shogun
 {
 
 class CFile;
 class CLibSVMFile;
-class CRegressionLabels;
 class CFeatures;
-class CDotFeatures;
 template <class ST> class CDenseFeatures;
-template <class ST> class SGSparseMatrix;
+template <class T> class CCache;
 
 /** @brief Template class SparseFeatures implements sparse matrices.
  *

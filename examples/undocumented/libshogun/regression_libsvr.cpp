@@ -6,12 +6,13 @@
  *
  * Written (W) 2013 Heiko Strathmann
  */
+
+#include <shogun/base/init.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/regression/svr/LibSVR.h>
 #include <shogun/evaluation/MeanSquaredError.h>
-
 
 using namespace shogun;
 

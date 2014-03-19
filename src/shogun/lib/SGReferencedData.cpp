@@ -1,8 +1,5 @@
-#include <shogun/lib/common.h>
 #include <shogun/lib/SGReferencedData.h>
 #include <shogun/lib/RefCount.h>
-#include <shogun/io/SGIO.h>
-
 
 using namespace shogun;
 

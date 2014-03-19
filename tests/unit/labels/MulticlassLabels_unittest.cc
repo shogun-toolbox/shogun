@@ -7,7 +7,6 @@
  * Written (W) 2013 Sergey Lisitsyn
  */
 
-#include <shogun/base/init.h>
 #include <shogun/labels/MulticlassLabels.h>
 #include <gtest/gtest.h>
 

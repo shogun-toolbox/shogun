@@ -17,6 +17,8 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <sys/types.h>
+
 #include <shogun/lib/config.h>
 
 /**@name Standard Types

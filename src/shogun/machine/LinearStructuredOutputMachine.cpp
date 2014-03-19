@@ -10,7 +10,7 @@
  */
 
 #include <shogun/machine/LinearStructuredOutputMachine.h>
-#include <shogun/structure/MulticlassSOLabels.h>
+#include <shogun/features/Features.h>
 
 using namespace shogun;
 

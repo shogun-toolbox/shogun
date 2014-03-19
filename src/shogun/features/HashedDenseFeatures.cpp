@@ -15,6 +15,9 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/mathematics/Math.h>
 
+#include <shogun/lib/SGVector.h>
+#include <shogun/lib/SGSparseVector.h>
+
 #include <string.h>
 
 namespace shogun {

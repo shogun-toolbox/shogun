@@ -13,14 +13,12 @@
 #define _KERNELMULTICLASSMACHINE_H___
 
 #include <shogun/lib/common.h>
-#include <shogun/features/Features.h>
-#include <shogun/kernel/Kernel.h>
-#include <shogun/machine/KernelMachine.h>
 #include <shogun/machine/MulticlassMachine.h>
 
 namespace shogun
 {
 
+class CFeatures;
 class CKernel;
 class CKernelMachine;
 

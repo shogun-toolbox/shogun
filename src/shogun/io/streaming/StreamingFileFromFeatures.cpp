@@ -8,6 +8,7 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 #include <shogun/io/streaming/StreamingFileFromFeatures.h>
+#include <shogun/features/Features.h>
 
 using namespace shogun;
 

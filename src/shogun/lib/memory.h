@@ -15,8 +15,6 @@
 #include <shogun/lib/common.h>
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-#include <stdio.h>
-#include <stdlib.h>
 
 #include <new>
 

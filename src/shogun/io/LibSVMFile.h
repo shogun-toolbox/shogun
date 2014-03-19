@@ -13,12 +13,14 @@
 
 #include <shogun/io/File.h>
 
-#include <shogun/io/LineReader.h>
-#include <shogun/io/Parser.h>
-#include <shogun/lib/DelimiterTokenizer.h>
-
 namespace shogun
 {
+
+class CDelimiterTokenizer;
+class CLineReader;
+class CParser;
+template <class ST> class SGString;
+template <class T> class SGSparseVector;
 
 /** @brief read sparse real valued features in svm light format
  * e.g. -1 1:10.0 2:100.2 1000:1.3

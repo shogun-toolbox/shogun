@@ -13,13 +13,11 @@
 #ifndef __SGOBJECT_H__
 #define __SGOBJECT_H__
 
-#include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/DataType.h>
 #include <shogun/base/SGRefObject.h>
 #include <shogun/lib/ShogunException.h>
 
-#include <shogun/base/Parallel.h>
 #include <shogun/base/Version.h>
 #include <shogun/io/SGIO.h>
 
@@ -28,13 +26,10 @@
  */
 namespace shogun
 {
-class IO;
 class Parallel;
-class Version;
 class Parameter;
 class ParameterMap;
 class SGParamInfo;
-class SGRefObject;
 class CSerializableFile;
 
 template <class T, class K> class CMap;

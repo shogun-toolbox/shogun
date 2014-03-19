@@ -30,7 +30,6 @@
 #include <shogun/mathematics/linalg/linsolver/DirectLinearSolverComplex.h>
 #include <shogun/mathematics/linalg/linsolver/CGMShiftedFamilySolver.h>
 #include <shogun/mathematics/linalg/ratapprox/logdet/LogDetEstimator.h>
-#include <shogun/lib/computation/jobresult/ScalarResult.h>
 #include <shogun/lib/computation/engine/SerialComputationEngine.h>
 #include <gtest/gtest.h>
 
@@ -101,6 +100,10 @@ TEST(LogDetEstimator, Sparse_sample_constructor)
 	EXPECT_TRUE(e);
 	EXPECT_TRUE(op);
 	EXPECT_TRUE(tracer);
+
+	SG_UNREF(tracer);
+	SG_UNREF(op);
+	SG_UNREF(e);
 }
 #endif // EIGEN_VERSION_AT_LEAST(3,1,0)
 

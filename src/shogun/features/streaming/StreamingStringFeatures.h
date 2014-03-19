@@ -16,6 +16,7 @@
 #include <shogun/lib/DataType.h>
 #include <shogun/io/streaming/InputParser.h>
 
+#include <shogun/lib/SGString.h>
 #include <shogun/features/streaming/StreamingFeatures.h>
 #include <shogun/features/Alphabet.h>
 

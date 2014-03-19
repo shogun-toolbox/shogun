@@ -13,19 +13,15 @@
 #define _DISTANCE_MACHINE_H__
 
 #include <shogun/lib/common.h>
-#include <shogun/distance/Distance.h>
-#include <shogun/labels/Labels.h>
-#include <shogun/labels/RegressionLabels.h>
 #include <shogun/machine/Machine.h>
 
 #include <stdio.h>
 
 namespace shogun
 {
-	class CLabels;
-	class CRegressionLabels;
 	class CDistance;
-	class CMachine;
+	class CFeatures;
+	class CMulticlassLabels;
 
 /** @brief A generic DistanceMachine interface.
  *

@@ -18,6 +18,7 @@
 #include <shogun/labels/LabelTypes.h>
 #include <shogun/labels/DenseLabels.h>
 #include <shogun/features/SubsetStack.h>
+#include <shogun/lib/SGMatrix.h>
 
 namespace shogun
 {
@@ -60,8 +61,8 @@ class CMulticlassLabels : public CDenseLabels
 		/** Make sure the label is valid, otherwise raise SG_ERROR.
 		 *
 		 * possible with subset
-         *
-         * @param context optional message to convey the context
+		 *
+		 * @param context optional message to convey the context
 		 */
 		virtual void ensure_valid(const char* context=NULL);
 

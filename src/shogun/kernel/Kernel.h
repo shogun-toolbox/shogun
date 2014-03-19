@@ -22,6 +22,7 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/features/FeatureTypes.h>
 #include <shogun/base/SGObject.h>
+#include <shogun/lib/SGMatrix.h>
 #include <shogun/features/Features.h>
 #include <shogun/kernel/normalizer/KernelNormalizer.h>
 

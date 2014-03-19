@@ -10,12 +10,15 @@
  */
 
 #include <stdio.h>
-#include <stdlib.h>
+#include <string.h>
 
 #include <shogun/io/File.h>
+#include <shogun/io/SGIO.h>
+#include <shogun/base/SGObject.h>
+
 #include <shogun/lib/memory.h>
-#include <shogun/features/StringFeatures.h>
-#include <shogun/features/SparseFeatures.h>
+#include <shogun/lib/SGSparseVector.h>
+#include <shogun/lib/SGString.h>
 
 using namespace shogun;
 
