@@ -16,6 +16,7 @@
 #include <shogun/lib/memory.h>
 
 #include <stdio.h>
+#include <sys/stat.h>
 
 namespace shogun
 {
