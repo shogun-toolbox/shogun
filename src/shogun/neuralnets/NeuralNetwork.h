@@ -59,9 +59,6 @@ namespace shogun
  * combination of arbitrary layer types using any optimization method (gradient
  * descent, L-BFGS, ..)
  * 
- * The network can use L2 regularization during gradient computation, this is
- * enabled by calling set_L2_regularization()
- * 
  * All the matrices the network (and related classes) deal with are in 
  * column-major format
  * 
@@ -84,16 +81,6 @@ public:
 	virtual void initialize(int32_t num_inputs, CDynamicObjectArray* layers);
 	
 	virtual ~CNeuralNetwork();
-	
-	/** Sets the L2 regularization coefficient used during gradient computation
-	 * 
-	 * @param L2_coeff L2 regularization coefficient, if 0.0, L2 regularization 
-	 * is disabled
-	 */
-	virtual void set_L2_regularization(float64_t L2_coeff)
-	{
-		m_L2_coeff = L2_coeff;
-	}
 	
 	/** apply machine to data in means of multiclass classification problem */
 	virtual CMulticlassLabels* apply_multiclass(CFeatures* data);
@@ -235,6 +222,9 @@ private:
 	void init();
 	
 public:
+	/** L2 Regularization coeff, default value is 0.0*/
+	float64_t l2_coefficient;
+	
 	/** size of the mini-batch used during training, if 0 full-batch training is
 	 * performed
 	 */
@@ -260,9 +250,6 @@ protected:
 	
 	/** network's layers */
 	CDynamicObjectArray* m_layers;
-	
-	/** L2 regularization coeff, defualt value is 0.0 */
-	float64_t m_L2_coeff;
 	
 	/** total number of parameters in the network */
 	int32_t m_total_num_parameters;

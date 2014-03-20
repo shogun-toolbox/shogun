@@ -40,7 +40,7 @@ using namespace shogun;
 CNeuralNetwork::CNeuralNetwork()
 : CMachine(), mini_batch_size(0), max_num_epochs(100), 
 	gd_learning_rate(0.1), gd_momentum(0.9), m_num_inputs(0), 
-	m_num_layers(0), m_layers(NULL), m_L2_coeff(0.0), 
+	m_num_layers(0), m_layers(NULL), l2_coefficient(0.0), 
 	m_total_num_parameters(), m_batch_size(1)
 {
 	init();
@@ -217,12 +217,12 @@ void CNeuralNetwork::compute_gradients(float64_t* inputs, float64_t* targets)
 	}
 	
 	// L2 regularization
-	if (m_L2_coeff != 0.0)
+	if (l2_coefficient != 0.0)
 	{
 		for (int32_t i=0; i<m_total_num_parameters; i++)
 		{
 			if (m_param_regularizable[i])
-				m_param_gradients[i] += m_L2_coeff*m_params[i];
+				m_param_gradients[i] += l2_coefficient*m_params[i];
 		}
 	}
 }
@@ -244,8 +244,8 @@ bool CNeuralNetwork::check_gradients(float64_t epsilon, float64_t tolerance)
 	set_batch_size(1);
 	
 	// disable regularization
-	float64_t L2_coeff = m_L2_coeff;
-	set_L2_regularization(0.0);
+	float64_t l2_coefficient_backup = l2_coefficient;
+	l2_coefficient = 0.0;
 	
 	// numerically compute gradients
 	float64_t* gradients_numerical =SG_MALLOC(float64_t,m_total_num_parameters);
@@ -272,7 +272,7 @@ bool CNeuralNetwork::check_gradients(float64_t epsilon, float64_t tolerance)
 	}
 	
 	// restore regularization parameter
-	set_L2_regularization(L2_coeff);
+	l2_coefficient = l2_coefficient_backup;
 	
 	SG_FREE(gradients_numerical);
 	return true;
@@ -316,7 +316,7 @@ void CNeuralNetwork::init()
 	       "Number of Inputs", MS_NOT_AVAILABLE);
 	SG_ADD(&m_num_layers, "num_layers",
 	       "Number of Layers", MS_NOT_AVAILABLE);
-	SG_ADD(&m_L2_coeff, "L2_coeff",
+	SG_ADD(&l2_coefficient, "l2_coefficient",
 	       "L2 regularization coeff", MS_NOT_AVAILABLE);
 	SG_ADD(&m_total_num_parameters, "total_num_parameters",
 	       "Total number of parameters", MS_NOT_AVAILABLE);
