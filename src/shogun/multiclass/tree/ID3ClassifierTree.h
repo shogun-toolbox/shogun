@@ -43,26 +43,29 @@ namespace shogun
 /** @brief class ID3ClassifierTree, implements classifier tree for discrete feature 
  * values using the ID3 algorithm. The training algorithm implemented is as follows :
  *
- * function ID3 (R: a set of non-categorical attributes,
- *		 C: the categorical attribute,
- *		 S: a training set) returns a decision tree;
- * begin
- *	If S consists of records all with the same value for 
- *	   the categorical attribute, 
+ * function ID3 (R: a set of non-categorical attributes, C: the categorical attribute, S: a training set)\n
+ * returns a decision tree;
+ *
+ * begin \n
+ *	If S consists of records all with the same value for the categorical attribute,\n
  *	   return a single node with that value;
- *	If R is empty, then return a single node with as value
- *	   the most frequent of the values of the categorical attribute
- *	   that are found in records of S; [note that then there
- *	   will be errors, that is, records that will be improperly
- *	   classified];
+ *
+ *	If R is empty,\n
+ * 	   return a single node with as value the most frequent 
+ * of the values of the categorical attribute that are found in records of S;\n 
+ * [note that then there will be errors, that is, records that will be improperly classified];
+ *
  *	Let D be the attribute with largest Gain(D,S) 
- *	   among attributes in R;
- *	Let \f${d_j| j=1,2, .., m}\f$ be the values of attribute D;
+ * among attributes in R;
+ *
+ *	Let \f${d_j| j=1,2, .., m}\f$ be the values of attribute D;\n
  *	Let \f${S_j| j=1,2, .., m}\f$ be the subsets of S consisting 
- *	   respectively of records with value dj for attribute D;
+ * respectively of records with value dj for attribute D;
+ *
  *	Return a tree with root labeled D and arcs labeled 
- *	  \f$d_1, d_2, .., d_m\f$ going respectively to the trees 
+ * \f$d_1, d_2, .., d_m\f$ going respectively to the trees \n
  *	ID3(R-{D}, C, \f$S_1\f$), .., ID3(R-{D}, C, \f$S_m\f$);
+ *
  * end ID3;
  *
  */
