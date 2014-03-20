@@ -20,29 +20,26 @@ namespace shogun
  * as mentioned in http://books.nips.cc/papers/files/nips21/NIPS2008_0885.pdf.
  *
  * RKS input:
- *		- a dataset $\{x_i, y_i\}_{i=1,\dots,m}$ of $m$ points to work on
- *		- $\phi(x; w)$: a bounded feature function s.t. $|\phi(x; w)| \leq 1$, where $w$ is the function parameter
- *		- $p(w)$: a probability distrubution function, from which to draw the $w$
- *		- $K$: the number of samples to draw from $p(w)$
- * 		- $C$: a scalar, which is chosen to be large enough in practice.
+ *		- a dataset \f$\{x_i, y_i\}_{i=1,\dots,m}\f$ of \f$m\f$ points to work on
+ *		- \f$\phi(x; w)\f$: a bounded feature function s.t. \f$|\phi(x; w)| \leq 1\f$, where \f$w\f$ is the function parameter
+ *		- \f$p(w)\f$: a probability distrubution function, from which to draw the \f$w\f$
+ *		- \f$K\f$: the number of samples to draw from \f$p(w)\f$
+ * 		- \f$C\f$: a scalar, which is chosen to be large enough in practice.
  *
  * RKS output:
- * 		A function $\hat{f}(x) = \sum_{k=1}^{K} \phi(x; w_k)\alpha_k$
- *		1. Draw $w_1,\dots,w_K$ iid from $p(w)$
- *		2. Featurize the input: $z_i = [\phi(x_i; w_1),\dots,\phi(x_i; w_K)]^{\top}$
- *		3. With $w$ fixed, solve the empirical risk minimization problem:
- * 		\begin{equation}
- * 		\underset{\alpha \in \mathbf{R}^K}{\text{minimize}} \quad \frac{1}{m}\sum_{i=1}^{m} c(\alpha^{\top} z_i, y_i)
- * 		\end{equation}
- * 		\begin{equation}
- * 		\text{s.t.} \quad \|\alpha\|_{\infty} \leq C/K.
- * 		\end{equation}
- *		  for vector $\alpha$, either through least squares when $c(y', y)$ is the quadratic loss or through a linear SVM when $c(y', y)$ is the hinge loss.
+ * 		A function \f$\hat{f}(x) = \sum_{k=1}^{K} \phi(x; w_k)\alpha_k\f$
+ *		1. Draw \f$w_1,\dots,w_K\f$ iid from \f$p(w)\f$
+ *		2. Featurize the input: \f$z_i = [\phi(x_i; w_1),\dots,\phi(x_i; w_K)]^{\top}\f$
+ *		3. With \f$w\f$ fixed, solve the empirical risk minimization problem:
+ * 		\f[ \underset{\alpha \in \mathbf{R}^K}{\text{minimize}} \quad \frac{1}{m}\sum_{i=1}^{m} c(\alpha^{\top} z_i, y_i) \f]
+ * 		\f[ \text{s.t.} \quad \|\alpha\|_{\infty} \leq C/K. \f]
+ *		  for vector \f$\alpha\f$, either through least squares when \f$c(y', y)\f$ is the quadratic loss or through a linear SVM when \f$c(y', y)\f$ is the hinge loss.
  *
  * This class implements the vector transformation on-the-fly whenever it is needed.
  * In order for it to work, the class expects the user to implement a subclass of
- * CRKSFunctions and implement in there the functions $\phi$ and $p$ and then pass an
- * instantiated object of that class to the constructor.
+ * CRKSFunctions and implement in there the functions \f$\phi\f$ and \f$p\f$ and then pass an
+ * instantiated object of that class to the constructor. For example, in the derived class CRandomFourierDotFeatures,
+ * random fourier features are implemented as \f$ z(x) = \sqrt{2/K}\cos(w^{\top}x + b)\f$, where \f$w\f$ drawn from a Gaussian distribution and \f$b\f$ from a uniform distribution.
  *
  * Further useful resources, include :
  *	http://www.shloosl.com/~ali/random-features/
