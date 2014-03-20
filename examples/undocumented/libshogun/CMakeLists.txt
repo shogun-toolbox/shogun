@@ -107,6 +107,7 @@ SET(EXAMPLES
 	io_linereader
 	library_circularbuffer
 	so_factorgraph
+	ElogLik
 )
 
 IF (USE_MOSEK)
