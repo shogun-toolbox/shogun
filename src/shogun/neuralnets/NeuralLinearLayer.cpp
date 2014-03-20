@@ -93,6 +93,32 @@ void CNeuralLinearLayer::compute_activations(float64_t* parameters,
 	
 	A = W*X;
 	A.colwise() += B;
+#else
+	// activations = weights*previous_layer_activations
+	for (int32_t i=0; i<m_num_neurons; i++)
+	{
+		for (int32_t j=0; j<m_batch_size; j++)
+		{
+			float64_t sum = 0;
+			for (int32_t k=0; k<m_previous_layer_num_neurons; k++)
+			{
+				sum += weights[i+k*m_num_neurons]*
+					previous_layer_activations[k+j*m_previous_layer_num_neurons]
+					;
+			}
+			m_activations[i+j*m_num_neurons] = sum;
+		}
+	}
+	
+	// add biases
+	for (int32_t i=0; i<m_num_neurons; i++)
+	{
+		for (int32_t j=0; j<m_batch_size; j++)
+		{
+			m_activations[i+j*m_num_neurons] += biases[i];
+		}
+	}
+	
 #endif
 }
 
@@ -128,7 +154,53 @@ void CNeuralLinearLayer::compute_gradients(float64_t* parameters,
 	
 	// compute input gradients
 	IG = W.transpose()*LG;
-#endif	
+#else
+	float64_t* weight_gradients = parameter_gradients;
+	float64_t* bias_gradients = parameter_gradients + 
+		m_num_neurons*m_previous_layer_num_neurons;
+		
+	// weight_gradients=local_gradients*previous_layer_activations.T/batch_size
+	for (int32_t i=0; i<m_num_neurons; i++)
+	{
+		for (int32_t j=0; j<m_previous_layer_num_neurons; j++)
+		{
+			float64_t sum = 0;
+			for (int32_t k=0; k<m_batch_size; k++)
+			{
+				sum += m_local_gradients[i+k*m_num_neurons]*
+					previous_layer_activations[j+k*m_previous_layer_num_neurons]
+					;
+			}
+			weight_gradients[i+j*m_num_neurons] = sum/m_batch_size;
+		}
+	}
+	
+	// bias_gradients = local_gradients.row_sum()/batch_size
+	for (int32_t i=0; i<m_num_neurons; i++)
+	{
+		float64_t sum = 0;
+		for (int32_t j=0; j<m_batch_size; j++)
+		{
+			sum += m_local_gradients[i+j*m_num_neurons];
+		}
+		bias_gradients[i] = sum/m_batch_size;
+	}
+	
+	// input_gradients = weights.T*local_gradients
+	for (int32_t i=0; i<m_previous_layer_num_neurons; i++)
+	{
+		for (int32_t j=0; j<m_batch_size; j++)
+		{
+			float64_t sum = 0;
+			for (int32_t k=0; k<m_num_neurons; k++)
+			{
+				sum += weights[k+i*m_num_neurons]*
+					m_local_gradients[k+j*m_num_neurons];
+			}
+			m_input_gradients[i+j*m_previous_layer_num_neurons] = sum;
+		}
+	}
+#endif
 }
 
 void CNeuralLinearLayer::compute_local_gradients(bool is_output, float64_t* p)
