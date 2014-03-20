@@ -51,7 +51,7 @@ CLibSVMFile::~CLibSVMFile()
 void CLibSVMFile::init()
 {
 	m_delimiter_feat=0;
-    m_delimiter_label=0;
+        m_delimiter_label=0;
     
 	m_whitespace_tokenizer=NULL;
 	m_delimiter_feat_tokenizer=NULL;
@@ -74,7 +74,7 @@ void CLibSVMFile::init_with_defaults()
 	m_delimiter_feat_tokenizer->delimiters[m_delimiter_feat]=1;
 	SG_REF(m_delimiter_feat_tokenizer);
 
-    m_delimiter_label_tokenizer=new CDelimiterTokenizer(true);
+        m_delimiter_label_tokenizer=new CDelimiterTokenizer(true);
 	m_delimiter_label_tokenizer->delimiters[m_delimiter_label]=1;
 	SG_REF(m_delimiter_label_tokenizer);
 	

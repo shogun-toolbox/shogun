@@ -272,43 +272,43 @@ public:
 	 */
 	//@{
 
-	virtual void get_sparse_matrix(
+	void get_sparse_matrix(
 	        SGSparseVector<bool>*& matrix_feat, int32_t & num_feat, int32_t & num_vec,
 	        SGSparseVector<float64_t>*& matrix_label, int32_t & num_classes);
-	virtual void get_sparse_matrix(
+        void get_sparse_matrix(
 	        SGSparseVector<uint8_t>*& matrix_feat, int32_t & num_feat, int32_t & num_vec,
 	        SGSparseVector<float64_t>*& matrix_label, int32_t & num_classes);
-	virtual void get_sparse_matrix(
+	void get_sparse_matrix(
 	        SGSparseVector<int8_t>*& matrix_feat, int32_t & num_feat, int32_t & num_vec,
 	        SGSparseVector<float64_t>*& matrix_label, int32_t & num_classes);
-	virtual void get_sparse_matrix(
+	void get_sparse_matrix(
 	        SGSparseVector<char>*& matrix_feat, int32_t & num_feat, int32_t & num_vec,
 	        SGSparseVector<float64_t>*& matrix_label, int32_t & num_classes);
-	virtual void get_sparse_matrix(
+	void get_sparse_matrix(
 	        SGSparseVector<int32_t>*& matrix_feat, int32_t & num_feat, int32_t & num_vec,
 	        SGSparseVector<float64_t>*& matrix_label, int32_t & num_classes);
-	virtual void get_sparse_matrix(
+	void get_sparse_matrix(
 	        SGSparseVector<uint32_t>*& matrix_feat, int32_t & num_feat, int32_t & num_vec,
 	        SGSparseVector<float64_t>*& matrix_label, int32_t & num_classes);
-	virtual void get_sparse_matrix(
+	void get_sparse_matrix(
 	        SGSparseVector<int64_t>*& matrix_feat, int32_t & num_feat, int32_t & num_vec,
 	        SGSparseVector<float64_t>*& matrix_label, int32_t & num_classes);
-	virtual void get_sparse_matrix(
+	void get_sparse_matrix(
 	        SGSparseVector<uint64_t>*& matrix_feat, int32_t & num_feat, int32_t & num_vec,
 	        SGSparseVector<float64_t>*& matrix_label, int32_t & num_classes);
-	virtual void get_sparse_matrix(
+	void get_sparse_matrix(
 	        SGSparseVector<int16_t>*& matrix_feat, int32_t & num_feat, int32_t & num_vec,
 	        SGSparseVector<float64_t>*& matrix_label, int32_t & num_classes);
-	virtual void get_sparse_matrix(
+	void get_sparse_matrix(
 	        SGSparseVector<uint16_t>*& matrix_feat, int32_t & num_feat, int32_t & num_vec,
 	        SGSparseVector<float64_t>*& matrix_label, int32_t & num_classes);
-	virtual void get_sparse_matrix(
+	void get_sparse_matrix(
 	        SGSparseVector<float32_t>*& matrix_feat, int32_t & num_feat, int32_t & num_vec,
 	        SGSparseVector<float64_t>*& matrix_label, int32_t & num_classes);
-	virtual void get_sparse_matrix(
+	void get_sparse_matrix(
 	        SGSparseVector<float64_t>*& matrix_feat, int32_t & num_feat, int32_t & num_vec,
 	        SGSparseVector<float64_t>*& matrix_label, int32_t & num_classes);
-	virtual void get_sparse_matrix(
+	void get_sparse_matrix(
 	        SGSparseVector<floatmax_t>*& matrix_feat, int32_t & num_feat, int32_t & num_vec,
 	        SGSparseVector<float64_t>*& matrix_label, int32_t & num_classes);
 	//@}
