@@ -82,8 +82,18 @@ public:
 	
 	virtual ~CNeuralNetwork();
 	
+	/** apply machine to data in means of binary classification problem */
+	virtual CBinaryLabels* apply_binary(CFeatures* data);
+	/** apply machine to data in means of regression problem */
+	virtual CRegressionLabels* apply_regression(CFeatures* data);
 	/** apply machine to data in means of multiclass classification problem */
 	virtual CMulticlassLabels* apply_multiclass(CFeatures* data);
+	
+	/** set labels
+	*
+	* @param lab labels
+	*/
+	virtual void set_labels(CLabels* lab);
 	
 	/** get classifier type
 	 *
@@ -92,10 +102,7 @@ public:
 	virtual EMachineType get_classifier_type() {return CT_NEURALNETWORK;}
 	
 	/** returns type of problem machine solves */
-	virtual EProblemType get_machine_problem_type() const
-	{
-		return PT_MULTICLASS;
-	}
+	virtual EProblemType get_machine_problem_type() const;
 	
 	/** Checks if the gradients computed using backpropagation are correct by 
 	 * comparing them with gradients computed using numerical approximation.
@@ -137,10 +144,19 @@ protected:
 	
 	/** Applies forward propagation, computes the activations of each layer
 	 * 
+	 * @param data input features
+	 * @return pointer to the activations of the last layer
+	 */
+	virtual float64_t* forward_propagate(CFeatures* data);
+	
+	/** Applies forward propagation, computes the activations of each layer
+	 * 
 	 * @param inputs inputs to the network, a matrix of size 
 	 * m_input_layer_num_neurons*m_batch_size
+	 * 
+	 * @return pointer to the activations of the last layer
 	 */
-	virtual void forward_propagate(float64_t* inputs);
+	virtual float64_t* forward_propagate(float64_t* inputs);
 	
 	/** Sets the batch size (the number of train/test cases) the network is 
 	 * expected to deal with. 
@@ -182,10 +198,7 @@ protected:
 	virtual float64_t compute_error(float64_t* targets, 
 			float64_t* inputs=NULL);
 	
-	virtual bool is_label_valid(CLabels *lab) const
-	{
-		return lab->get_label_type() == LT_MULTICLASS;
-	}
+	virtual bool is_label_valid(CLabels *lab) const;
 	
 private:
 	/** returns a pointer to layer i in the network */
@@ -218,6 +231,12 @@ private:
 	
 	/** returns a pointer to the raw data of the given features */
 	float64_t* features_to_raw(CFeatures* features);
+	
+	/** converts the given labels into an array suitable for use with network
+	 * 
+	 * @return newly allocated matrix of size get_num_outputs()*num_labels
+	 */
+	float64_t* labels_to_raw(CLabels* labs);
 	
 	void init();
 	

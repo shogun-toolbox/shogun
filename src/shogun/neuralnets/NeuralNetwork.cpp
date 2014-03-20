@@ -38,10 +38,9 @@
 using namespace shogun;
 
 CNeuralNetwork::CNeuralNetwork()
-: CMachine(), mini_batch_size(0), max_num_epochs(100), 
+: CMachine(),l2_coefficient(0.0), mini_batch_size(0), max_num_epochs(100), 
 	gd_learning_rate(0.1), gd_momentum(0.9), m_num_inputs(0), 
-	m_num_layers(0), m_layers(NULL), l2_coefficient(0.0), 
-	m_total_num_parameters(), m_batch_size(1)
+	m_num_layers(0), m_layers(NULL), m_total_num_parameters(), m_batch_size(1)
 {
 	init();
 }
@@ -91,13 +90,44 @@ CNeuralNetwork::~CNeuralNetwork()
 	SG_UNREF(m_layers);
 }
 
+CBinaryLabels* CNeuralNetwork::apply_binary(CFeatures* data)
+{
+	float64_t* output_activations = forward_propagate(data);
+	SGVector<float64_t> labels_vec(m_batch_size);
+	
+	for (int32_t i=0; i<m_batch_size; i++)
+	{
+		if (get_num_outputs()==1)
+		{
+			if (output_activations[i]>0.5) labels_vec[i] = 1;
+			else labels_vec[i] = -1;
+		}
+		else if (get_num_outputs()==2)
+		{
+			if (output_activations[2*i]>output_activations[2*i+1])
+				labels_vec[i] = 1;
+			else labels_vec[i] = -1;
+		}
+	}
+	
+	return new CBinaryLabels(labels_vec);
+}
+
+CRegressionLabels* CNeuralNetwork::apply_regression(CFeatures* data)
+{
+	float64_t* output_activations = forward_propagate(data);
+	SGVector<float64_t> labels_vec(m_batch_size);
+	
+	for (int32_t i=0; i<m_batch_size; i++)
+			labels_vec[i] = output_activations[i];
+	
+	return new CRegressionLabels(labels_vec);
+}
+
+
 CMulticlassLabels* CNeuralNetwork::apply_multiclass(CFeatures* data)
 {
-	float64_t* inputs = features_to_raw(data);
-	set_batch_size(data->get_num_vectors());	
-	forward_propagate(inputs);
-	
-	float64_t* output_activations =get_layer(m_num_layers-1)->get_activations();
+	float64_t* output_activations = forward_propagate(data);
 	SGVector<float64_t> labels_vec(m_batch_size);
 	
 	for (int32_t i=0; i<m_batch_size; i++)
@@ -113,11 +143,6 @@ bool CNeuralNetwork::train_machine(CFeatures* data)
 {
 	float64_t* inputs = features_to_raw(data);
 	
-	CMulticlassLabels* labels = (CMulticlassLabels*) m_labels;
-	
-	ASSERT(labels->get_num_classes()==get_num_outputs());
-	ASSERT(labels->get_num_labels()==data->get_num_vectors());
-	
 	ASSERT(max_num_epochs>0);
 	ASSERT(gd_learning_rate>0);
 	ASSERT(gd_momentum>=0);
@@ -125,14 +150,8 @@ bool CNeuralNetwork::train_machine(CFeatures* data)
 	int32_t training_set_size = data->get_num_vectors();
 	if (mini_batch_size==0) mini_batch_size = training_set_size;
 	set_batch_size(mini_batch_size);
-	
-	SGMatrix<float64_t> targets_matrix(get_num_outputs(), training_set_size);
-	targets_matrix.zero();
-	
-	for (int32_t i=0; i<training_set_size; i++)
-		targets_matrix((int32_t)labels->get_label(i), i) = 1.0;
 
-	float64_t* targets = targets_matrix.matrix;
+	float64_t* targets = labels_to_raw(m_labels);
 	
 	int32_t n_param = get_num_parameters();
 	
@@ -165,11 +184,20 @@ bool CNeuralNetwork::train_machine(CFeatures* data)
 	}
 	
 	SG_FREE(param_updates);
+	SG_FREE(targets);
 	
 	return true;
 }
 
-void CNeuralNetwork::forward_propagate(float64_t* inputs)
+float64_t* CNeuralNetwork::forward_propagate(CFeatures* data)
+{
+	float64_t* inputs = features_to_raw(data);
+	set_batch_size(data->get_num_vectors());	
+	return forward_propagate(inputs);
+}
+
+
+float64_t* CNeuralNetwork::forward_propagate(float64_t* inputs)
 {
 	// forward propagation
 	get_layer(0)->compute_activations(get_layer_params(0), inputs);
@@ -177,6 +205,8 @@ void CNeuralNetwork::forward_propagate(float64_t* inputs)
 	for (int i=1; i<m_num_layers; i++)
 		get_layer(i)->compute_activations(get_layer_params(i),
 				get_layer(i-1)->get_activations());
+	
+	return get_layer(m_num_layers-1)->get_activations();
 }
 
 void CNeuralNetwork::compute_gradients(float64_t* inputs, float64_t* targets)
@@ -301,6 +331,92 @@ float64_t* CNeuralNetwork::features_to_raw(CFeatures* features)
 	float64_t* inputs_matrix = inputs->get_feature_matrix(dummy, dummy);
 	return inputs_matrix;
 }
+
+float64_t* CNeuralNetwork::labels_to_raw(CLabels* labs)
+{
+	float64_t* targets = SG_CALLOC(float64_t, 
+		get_num_outputs()*labs->get_num_labels());
+	
+	if (labs->get_label_type() == LT_MULTICLASS)
+	{
+		CMulticlassLabels* labels_mc = (CMulticlassLabels*) labs;
+		ASSERT(labels_mc->get_num_classes()==get_num_outputs());
+		
+		for (int32_t i=0; i<labels_mc->get_num_labels(); i++)
+			targets[((int32_t)labels_mc->get_label(i))+ i*get_num_outputs()] 
+				= 1.0;
+	}
+	else if (labs->get_label_type() == LT_BINARY)
+	{
+		CBinaryLabels* labels_bin = (CBinaryLabels*) labs;
+		if (get_num_outputs()==1)
+		{
+			for (int32_t i=0; i<labels_bin->get_num_labels(); i++)
+				targets[i] = (labels_bin->get_label(i)==1);
+		}
+		else if (get_num_outputs()==2)
+		{
+			for (int32_t i=0; i<labels_bin->get_num_labels(); i++)
+			{
+				targets[i*2] = (labels_bin->get_label(i)==1);
+				targets[i*2+1] = (labels_bin->get_label(i)==-1);
+			}
+		}
+	}
+	else if (labs->get_label_type() == LT_REGRESSION)
+	{
+		CRegressionLabels* labels_reg = (CRegressionLabels*) labs;
+		for (int32_t i=0; i<labels_reg->get_num_labels(); i++)
+			targets[i] = labels_reg->get_label(i);
+	}
+	return targets;
+}
+
+
+EProblemType CNeuralNetwork::get_machine_problem_type() const
+{
+	// problem type depends on the type of labels given to the network
+	// if no labels are given yet, just return PT_MULTICLASS
+	if (m_labels==NULL) 
+		return PT_MULTICLASS;
+	
+	if (m_labels->get_label_type() == LT_BINARY)
+		return PT_BINARY;
+	else if (m_labels->get_label_type() == LT_REGRESSION)
+		return PT_REGRESSION;
+	else return PT_MULTICLASS;
+}
+
+bool CNeuralNetwork::is_label_valid(CLabels* lab) const
+{
+	return (lab->get_label_type() == LT_MULTICLASS ||
+		lab->get_label_type() == LT_BINARY ||
+		lab->get_label_type() == LT_REGRESSION);
+}
+
+void CNeuralNetwork::set_labels(CLabels* lab)
+{
+	if (lab->get_label_type() == LT_BINARY)
+	{
+		if (get_num_outputs() > 2)
+		{
+			SG_ERROR("Cannot use %s in a neural network with more that 2"	
+				" output neurons", lab->get_name());
+			return;
+		}	
+	}
+	else if (lab->get_label_type() == LT_REGRESSION)
+	{
+		if (get_num_outputs() > 1)
+		{
+			SG_ERROR("Cannot use %s in a neural network with more that 1"	
+				" output neuron", lab->get_name());
+			return;
+		}
+	}
+	shogun::CMachine::set_labels(lab);
+}
+
 
 void CNeuralNetwork::init()
 {
