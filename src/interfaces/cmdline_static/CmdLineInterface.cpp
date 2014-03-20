@@ -1,5 +1,6 @@
 #include "CmdLineInterface.h"
 
+#include <shogun/base/init.h>
 #include <shogun/lib/config.h>
 #include <shogun/lib/ShogunException.h>
 #include <shogun/io/SGIO.h>
