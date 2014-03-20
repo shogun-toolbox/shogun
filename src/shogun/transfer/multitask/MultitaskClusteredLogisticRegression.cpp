@@ -11,6 +11,8 @@
 #include <shogun/lib/malsar/malsar_clustered.h>
 #include <shogun/lib/malsar/malsar_options.h>
 #include <shogun/lib/SGVector.h>
+#include <shogun/features/DotFeatures.h>
+#include <shogun/lib/SGMatrix.h>
 
 namespace shogun
 {
