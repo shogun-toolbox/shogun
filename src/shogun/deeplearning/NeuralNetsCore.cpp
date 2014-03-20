@@ -30,12 +30,12 @@ float32_t CNeuralNets::FeedForward(EigenDenseMat &inputs, const EigenDenseMat& g
 
 		//Apply activation function
 		if (cur_layer != CNNConfig::layers - 1
-			&& CNNConfig::opt.act_type != CFuncType::LINEAR)
+			&& CNNConfig::opt.act_type != FuncType::LINEAR)
 			ApplyActivationFunc(m_activations[cur_layer], CNNConfig::opt.act_type);
 	}
 
 	//For output layer
-	if (CNNConfig::opt.out_type != CFuncType::LINEAR)
+	if (CNNConfig::opt.out_type != FuncType::LINEAR)
 		ApplyActivationFunc(m_activations[CNNConfig::layers - 1], CNNConfig::opt.out_type);
 
 	return CalcErr(m_activations[CNNConfig::layers - 1], ground_truth, m_err);
@@ -66,13 +66,13 @@ void CNeuralNets::BackPropogation(EigenDenseMat &inputs)
 
 		if (cur_layer == 0) break;
 
-		if (CNNConfig::opt.act_type != CFuncType::LINEAR)
+		if (CNNConfig::opt.act_type != FuncType::LINEAR)
 			//After next line, m_activations stores the derivatives of the activation function
 			ComputeDerivatives(m_activations[cur_layer], CNNConfig::opt.act_type);
 
 		m_err *= m_weights[cur_layer];
 
-		if (CNNConfig::opt.act_type != CFuncType::LINEAR)
+		if (CNNConfig::opt.act_type != FuncType::LINEAR)
 			m_err = m_err.cwiseProduct(m_activations[cur_layer]);
 	}
 }
@@ -108,13 +108,13 @@ float32_t CNeuralNets::CalcErr(EigenDenseMat& output, const EigenDenseMat& groun
 
 	switch (CNNConfig::opt.out_type)
 	{
-	case CFuncType::LINEAR:
+	case FuncType::LINEAR:
 		loss = GetSquareLoss(err);
 		break;
-	case CFuncType::SIGM:
+	case FuncType::SIGM:
 		loss = GetSquareLoss(err);
 		break;
-	case CFuncType::SOFTMAX:
+	case FuncType::SOFTMAX:
 		loss = GetLogLoss(output, ground_truth);
 	default:
 		break;

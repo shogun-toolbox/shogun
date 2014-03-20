@@ -50,20 +50,20 @@ void maths::SoftMax(EigenDenseMat& m)
 	}
 }
 
-void maths::ApplyActivationFunc(EigenDenseMat& m, CFuncType func)
+void maths::ApplyActivationFunc(EigenDenseMat& m, FuncType func)
 {
 	switch (func)
 	{
-	case CFuncType::SIGM:
+	case FuncType::SIGM:
 		m = m.unaryExpr(std::ptr_fun(maths::Sigmoid));
 		break;
-	case CFuncType::TANH:
+	case FuncType::TANH:
 		m = m.unaryExpr(std::ptr_fun(maths::TangentH));
 		break;
-	case CFuncType::RECTIFIED:
+	case FuncType::RECTIFIED:
 		m = m.unaryExpr(std::ptr_fun(maths::Rectify));
 		break;
-	case CFuncType::SOFTMAX:
+	case FuncType::SOFTMAX:
 		SoftMax(m);
 		break;
 	default:
@@ -71,20 +71,20 @@ void maths::ApplyActivationFunc(EigenDenseMat& m, CFuncType func)
 	}
 }
 
-void maths::ComputeDerivatives(EigenDenseMat& data, CFuncType type)
+void maths::ComputeDerivatives(EigenDenseMat& data, FuncType type)
 {
 	for (int32_t j = 0; j < data.cols(); ++j)
 	for (int32_t i = 0; i < data.rows(); ++i)
 	{
 		switch (type)
 		{
-		case CFuncType::SIGM:
+		case FuncType::SIGM:
 			data(i, j) *= (1 - data(i, j));
 			break;
-		case CFuncType::TANH:
+		case FuncType::TANH:
 			data(i, j) = 1 - data(i, j) * data(i, j);
 			break;
-		case CFuncType::RECTIFIED:
+		case FuncType::RECTIFIED:
 			data(i, j) = data(i, j) > 0 ? 1 : 0;
 			break;
 		default:

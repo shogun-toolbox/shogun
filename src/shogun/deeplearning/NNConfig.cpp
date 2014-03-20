@@ -16,8 +16,8 @@ const char* CNNConfig::testy = NULL;
 
 TrainingOptions::TrainingOptions()
 {
-	act_type = CFuncType::RECTIFIED;
-	out_type = CFuncType::SOFTMAX;
+	act_type = FuncType::RECTIFIED;
+	out_type = FuncType::SOFTMAX;
 	weightPenaltyL2 = 0.001;
 	isGradChecking = false; //Flag for gradient checking
 }

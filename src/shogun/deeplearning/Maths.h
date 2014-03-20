@@ -25,8 +25,8 @@ namespace shogun
 
 			//Computational functions in Neural Networks
 			void SoftMax(EigenDenseMat& m);
-			void ApplyActivationFunc(EigenDenseMat& m, CFuncType func);
-			void ComputeDerivatives(EigenDenseMat& data, CFuncType type);
+			void ApplyActivationFunc(EigenDenseMat& m, FuncType func);
+			void ComputeDerivatives(EigenDenseMat& data, FuncType type);
 
 			float32_t GetSquareLoss(const EigenDenseMat& err);
 			float32_t GetLogLoss(const EigenDenseMat& output, const EigenDenseMat& true_labels);
