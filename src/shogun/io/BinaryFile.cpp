@@ -11,7 +11,7 @@
 #include <shogun/io/File.h>
 #include <shogun/io/BinaryFile.h>
 #include <shogun/io/SGIO.h>
-#include "lib/DataType.h"
+#include <shogun/lib/DataType.h>
 #include <shogun/lib/SGSparseVector.h>
 #include <shogun/lib/SGString.h>
 #include <shogun/mathematics/Math.h>
