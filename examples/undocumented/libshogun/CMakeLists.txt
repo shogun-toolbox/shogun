@@ -107,7 +107,6 @@ SET(EXAMPLES
 	io_linereader
 	library_circularbuffer
 	so_factorgraph
-	test
 )
 
 IF (USE_MOSEK)
