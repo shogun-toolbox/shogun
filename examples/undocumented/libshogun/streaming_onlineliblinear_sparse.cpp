@@ -31,7 +31,8 @@ int main(int argc, char* argv[])
     float64_t C = 1.0;
     char *train_file_name = (char*)"../data/train_sparsereal.light";
     char *test_file_name = (char*)"../data/test_sparsereal.light";
-    char *test_labels_file_name = (char*)"../data/test_sparsereal.light.labels.tmp";
+    char filename_tmp[] = "test_sparsereal.light.labels.XXXXXX";
+    char *test_labels_file_name = mktemp(filename_tmp);
 
     if (argc > 4) {
         int32_t idx = 1;        
@@ -120,6 +121,7 @@ int main(int argc, char* argv[])
 
         fclose(fh);
         SG_UNREF(test_binary_labels);
+        unlink(test_labels_file_name);
     }
 
     SG_UNREF(svm);
