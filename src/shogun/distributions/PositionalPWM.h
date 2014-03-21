@@ -11,6 +11,8 @@
 #ifndef _POSITIONAL_PWM_H__
 #define _POSITIONAL_PWM_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/distributions/Distribution.h>
 #include <shogun/features/StringFeatures.h>
 #include <shogun/lib/common.h>

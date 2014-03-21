@@ -10,6 +10,8 @@
 #ifndef PROBABILITYDISTRIBUTION_H
 #define PROBABILITYDISTRIBUTION_H
 
+#include <shogun/lib/config.h>
+
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/SGMatrix.h>
 
