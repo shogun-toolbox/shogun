@@ -13,6 +13,8 @@
 
 #include <map>
 
+#include <shogun/lib/config.h>
+
 #include <shogun/multiclass/tree/TreeMachine.h>
 #include <shogun/classifier/vw/VowpalWabbit.h>
 

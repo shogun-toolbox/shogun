@@ -32,6 +32,8 @@
 #ifndef _ID3CLASSIFIERTREE_H__
 #define _ID3CLASSIFIERTREE_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/multiclass/tree/TreeMachine.h>
 #include <shogun/multiclass/tree/ID3TreeNodeData.h>
 #include <shogun/features/DenseFeatures.h>

@@ -11,6 +11,8 @@
 #ifndef CONDITIONALPROBABILITYTREENODEDATA_H__
 #define CONDITIONALPROBABILITYTREENODEDATA_H__
 
+#include <shogun/lib/config.h>
+
 namespace shogun
 {
 /** @brief struct to store data of node of
