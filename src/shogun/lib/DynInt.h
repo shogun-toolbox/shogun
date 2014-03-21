@@ -11,6 +11,8 @@
 #ifndef __DYNINT_H__
 #define __DYNINT_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/mathematics/Math.h>

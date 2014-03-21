@@ -11,6 +11,8 @@
 #ifndef _SHOGUN_EXCEPTION_H_
 #define _SHOGUN_EXCEPTION_H_
 
+#include <shogun/lib/config.h>
+
 namespace shogun
 {
 /** @brief Class ShogunException defines an exception which is thrown whenever an

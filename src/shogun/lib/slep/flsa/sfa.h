@@ -17,6 +17,8 @@
 #ifndef  SFA_SLEP
 #define  SFA_SLEP
 
+#include <shogun/lib/config.h>
+
 /* 
    Revision History
 

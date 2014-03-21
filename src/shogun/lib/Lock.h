@@ -8,6 +8,9 @@
  */
 #ifndef __LOCK_H__
 #define __LOCK_H__
+
+#include <shogun/lib/config.h>
+
 namespace shogun
 {
 /** @brief Class Lock used for synchronization in concurrent programs. */

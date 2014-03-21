@@ -2,6 +2,8 @@
 #ifndef SFMT_PARAMS1279_H
 #define SFMT_PARAMS1279_H
 
+#include <shogun/lib/config.h>
+
 #define SFMT_POS1	7
 #define SFMT_SL1	14
 #define SFMT_SL2	3

@@ -11,6 +11,7 @@
 #define __SERIALIZABLE_XML_FILE_H__
 
 #include <shogun/lib/config.h>
+
 #ifdef HAVE_XML
 
 #include <shogun/io/SerializableFile.h>

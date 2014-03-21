@@ -36,6 +36,8 @@
 #define DA_INNER_ITERMAX 100 /* maximum fixed temperature iterations for DA */
 #define DA_OUTER_ITERMAX 30 /* maximum number of outer loops for DA */
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/common.h>
 #include <shogun/features/DotFeatures.h>
 

@@ -14,6 +14,8 @@
 #ifndef __SGVECTOR_H__
 #define __SGVECTOR_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/common.h>
 #include <shogun/lib/SGReferencedData.h>
 

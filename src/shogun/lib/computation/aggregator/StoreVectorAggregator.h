@@ -10,6 +10,8 @@
 #ifndef STORE_VECTOR_AGGREGATOR_H_
 #define STORE_VECTOR_AGGREGATOR_H_
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/computation/aggregator/JobResultAggregator.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/common.h>

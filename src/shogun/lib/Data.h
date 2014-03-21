@@ -11,6 +11,8 @@
 #ifndef __DATA_H__
 #define __DATA_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/base/SGObject.h>
 
 namespace shogun

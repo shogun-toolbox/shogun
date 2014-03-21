@@ -17,6 +17,8 @@
 #ifndef  INVCOV_SLEP
 #define  INVCOV_SLEP
 
+#include <shogun/lib/config.h>
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>

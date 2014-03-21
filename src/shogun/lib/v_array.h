@@ -20,6 +20,8 @@
 #ifndef VARRAY_H__
 #define VARRAY_H__
 
+#include <shogun/lib/config.h>
+
 namespace shogun
 {
 /** @brief Class v_array is a templated class used to
