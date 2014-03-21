@@ -10,9 +10,7 @@
 
 #include <shogun/lib/memory.h>
 #include <shogun/io/streaming/StreamingFile.h>
-#include <shogun/lib/SGSparseVector.h>
-
-#include <ctype.h>
+#include <shogun/classifier/vw/vw_common.h>
 #include <fcntl.h>
 
 namespace shogun

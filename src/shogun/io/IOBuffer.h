@@ -20,8 +20,6 @@
 #include <shogun/lib/common.h>
 #include <shogun/base/SGObject.h>
 
-#include <fcntl.h>
-
 #ifndef O_LARGEFILE //for OSX
 #define O_LARGEFILE 0
 #endif
