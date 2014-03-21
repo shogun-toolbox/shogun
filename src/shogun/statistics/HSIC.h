@@ -32,6 +32,8 @@
 #ifndef __HSIC_H_
 #define __HSIC_H_
 
+#include <shogun/lib/config.h>
+
 #include <shogun/statistics/KernelIndependenceTest.h>
 
 namespace shogun

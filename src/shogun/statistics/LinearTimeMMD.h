@@ -32,6 +32,8 @@
 #ifndef LINEAR_TIME_MMD_H_
 #define LINEAR_TIME_MMD_H_
 
+#include <shogun/lib/config.h>
+
 #include <shogun/statistics/StreamingMMD.h>
 
 namespace shogun

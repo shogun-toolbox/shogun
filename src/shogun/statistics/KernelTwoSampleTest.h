@@ -10,6 +10,8 @@
 #ifndef KERNEL_TWO_SAMPLE_TEST_H_
 #define KERNEL_TWO_SAMPLE_TEST_H_
 
+#include <shogun/lib/config.h>
+
 #include <shogun/statistics/TwoSampleTest.h>
 #include <shogun/kernel/Kernel.h>
 
