@@ -13,6 +13,8 @@
 #ifndef _MULTICLASSMACHINE_H___
 #define _MULTICLASSMACHINE_H___
 
+#include <shogun/lib/config.h>
+
 #include <shogun/machine/BaseMulticlassMachine.h>
 #include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/multiclass/MulticlassStrategy.h>

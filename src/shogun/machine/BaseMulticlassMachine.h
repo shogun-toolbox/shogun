@@ -11,6 +11,8 @@
 #ifndef BASEMULTICLASSMACHINE_H__
 #define BASEMULTICLASSMACHINE_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/machine/Machine.h>
 
 namespace shogun
