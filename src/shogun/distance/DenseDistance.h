@@ -11,6 +11,8 @@
 #ifndef _DENSEDISTANCE_H___
 #define _DENSEDISTANCE_H___
 
+#include <shogun/lib/config.h>
+
 #include <shogun/distance/Distance.h>
 #include <shogun/features/FeatureTypes.h>
 #include <shogun/features/DenseFeatures.h>
