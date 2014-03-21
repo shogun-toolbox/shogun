@@ -28,6 +28,7 @@ configure.log
 .localvimrc
 *.DS_Store
 cscope.*
+cpplint.py
 
 *~
 \#*\#
