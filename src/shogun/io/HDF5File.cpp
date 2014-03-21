@@ -12,15 +12,12 @@
 
 #ifdef HAVE_HDF5
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <hdf5.h>
 
 #include <shogun/lib/memory.h>
 #include <shogun/io/HDF5File.h>
-
-#include <shogun/features/StringFeatures.h>
-#include <shogun/features/SparseFeatures.h>
+#include <shogun/io/SGIO.h>
 
 using namespace shogun;
 

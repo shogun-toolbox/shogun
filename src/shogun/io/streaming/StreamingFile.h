@@ -20,6 +20,7 @@
 namespace shogun
 {
 template <class ST> struct SGSparseVectorEntry;
+class VwExample;
 
 /** @brief A Streaming File access class.
  *

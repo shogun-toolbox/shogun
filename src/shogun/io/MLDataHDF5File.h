@@ -15,13 +15,13 @@
 #include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/io/File.h>
-#include <shogun/base/SGObject.h>
 #include <hdf5.h>
 
 namespace shogun
 {
 template <class ST> class SGString;
 template <class ST> class SGSparseVector;
+struct TSGDataType;
 
 /** @brief A HDF5 File access class.
  *
