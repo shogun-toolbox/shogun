@@ -1,6 +1,7 @@
 #ifndef __CMDLINEINTERFACE__H_
 #define __CMDLINEINTERFACE__H_
 
+#include <shogun/lib/config.h>
 #include <shogun/base/DynArray.h>
 #include <shogun/io/SGIO.h>
 
