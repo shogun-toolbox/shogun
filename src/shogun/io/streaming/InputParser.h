@@ -11,6 +11,8 @@
 #ifndef __INPUTPARSER_H__
 #define __INPUTPARSER_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/common.h>
 #ifdef HAVE_PTHREAD
 
