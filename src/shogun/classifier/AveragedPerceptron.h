@@ -10,6 +10,8 @@
 #ifndef _AVERAGEDPERCEPTRON_H___
 #define _AVERAGEDPERCEPTRON_H___
 
+#include <shogun/lib/config.h>
+
 #include <stdio.h>
 #include <shogun/lib/common.h>
 #include <shogun/features/DotFeatures.h>

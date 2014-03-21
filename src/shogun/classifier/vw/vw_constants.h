@@ -15,6 +15,8 @@
 #ifndef _VW_CONSTANTS_H__
 #define _VW_CONSTANTS_H__
 
+#include <shogun/lib/config.h>
+
 namespace shogun
 {
 /// Hash function typedef, takes a substring and seed as parameters
