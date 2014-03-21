@@ -10,6 +10,8 @@
 #ifndef MULTICLASSMULTIPLEOUTPUTLABELS_H_
 #define MULTICLASSMULTIPLEOUTPUTLABELS_H_
 
+#include <shogun/lib/config.h>
+
 #include <shogun/labels/Labels.h>
 #include <shogun/labels/LabelTypes.h>
 #include <shogun/lib/DynamicObjectArray.h>
