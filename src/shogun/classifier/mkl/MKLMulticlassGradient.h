@@ -14,6 +14,8 @@
 #ifndef MKLMulticlassGRADIENT_H_
 #define MKLMulticlassGRADIENT_H_
 
+#include <shogun/lib/config.h>
+
 #include <vector>
 #include <cmath>
 #include <cassert>

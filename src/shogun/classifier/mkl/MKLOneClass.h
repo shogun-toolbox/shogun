@@ -10,6 +10,8 @@
 #ifndef __MKLONECLASS_H__
 #define __MKLONECLASS_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/common.h>
 #include <shogun/classifier/mkl/MKL.h>
 

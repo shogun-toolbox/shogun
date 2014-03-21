@@ -14,6 +14,8 @@
 #ifndef MKLMulticlassGLPK_H_
 #define MKLMulticlassGLPK_H_
 
+#include <shogun/lib/config.h>
+
 #include <vector>
 #include <shogun/base/SGObject.h>
 #include <shogun/classifier/mkl/MKLMulticlassOptimizationBase.h>

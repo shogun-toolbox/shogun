@@ -11,6 +11,8 @@
 #ifndef _PLUGINESTIMATE_H___
 #define _PLUGINESTIMATE_H___
 
+#include <shogun/lib/config.h>
+
 #include <shogun/machine/Machine.h>
 #include <shogun/features/StringFeatures.h>
 #include <shogun/labels/BinaryLabels.h>
