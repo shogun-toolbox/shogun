@@ -11,6 +11,8 @@
 #ifndef MKLMulticlassOPTIMIZATIONBASE_H_
 #define MKLMulticlassOPTIMIZATIONBASE_H_
 
+#include <shogun/lib/config.h>
+
 #include <vector>
 #include <shogun/base/SGObject.h>
 

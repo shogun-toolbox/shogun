@@ -10,6 +10,9 @@
 
 #ifndef _CPLEXSVM_H___
 #define _CPLEXSVM_H___
+
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/common.h>
 
 #ifdef USE_CPLEX
