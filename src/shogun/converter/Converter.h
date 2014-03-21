@@ -11,6 +11,8 @@
 #ifndef CONVERTER_H_
 #define CONVERTER_H_
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/common.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/features/Features.h>
