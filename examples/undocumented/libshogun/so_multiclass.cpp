@@ -17,6 +17,7 @@
 #include <shogun/structure/DualLibQPBMSOSVM.h>
 #include <shogun/structure/StochasticSOSVM.h>
 #include <shogun/lib/Time.h>
+#include <shogun/base/init.h>
 
 #include <stdio.h>
 
