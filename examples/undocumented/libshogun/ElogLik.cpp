@@ -12,7 +12,6 @@
 // temporally disabled, since API was changed
 #ifdef HAVE_EIGEN3
 
-#include <iostream>
 #include <shogun/base/init.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
@@ -23,17 +22,17 @@
 using namespace shogun;
 using namespace Eigen;
 
-#define ZEROTH_MOMENT 1
-#define GRAD_MEAN 2
-#define GRAD_VAR 4
-#define HM 8
+static const int ZEROTH_MOMENT = 1;
+static const int GRAD_MEAN = 2;
+static const int GRAD_VAR = 4;
+static const int HM = 8;
 
 // Type of Prob Name
 typedef enum _probName
 {
 	poisson,
 	bernLogit
-}ProbName;
+} ProbName;
 
 // Type of Bsxfun Operation
 typedef enum _bsxfunOp
@@ -41,12 +40,11 @@ typedef enum _bsxfunOp
 	plus,
 	minus,
 	times
-}BsxfunOp;
+} BsxfunOp;
 
-// Debug information
-void debug(const char * msg)
+void print_message(FILE* target, const char* str)
 {
-	std::cout<<msg<<std::endl;
+	fprintf(target, "%s", str);
 }
 
 float64_t _normpdf(float64_t x)
@@ -135,41 +133,41 @@ bool Ellp(
 	{
 		if(v(i)<0)
 		{
-			std::cout<<"Normal variance must be strictly positive"<<std::endl;
+			SG_SPRINT("Normal variance must be strictly positive.\n");
 			return false;
 		}
 	}
 	// get piecewise bound parameters
 	// (a,b,c) are parameters for quadratic pieces and (l,h) are lower and upper limit of each piece
-	debug("c = bound(1,:)';");
+	SG_SPRINT("c = bound(1,:)';\n");
 	MatrixXd c = bound.row(0);
-	debug("b = bound(2,:)';");
+	SG_SPRINT("b = bound(2,:)';\n");
 	MatrixXd b = bound.row(1);
-	debug("a = bound(3,:)';");
+	SG_SPRINT("a = bound(3,:)';\n");
 	MatrixXd a = bound.row(2);
-	debug("l = bound(4,:)';");
+	SG_SPRINT("l = bound(4,:)';\n");
 	MatrixXd l = bound.row(3);
-	debug("h = bound(5,:)';");
+	SG_SPRINT("h = bound(5,:)';\n");
 	MatrixXd h = bound.row(4);
 
 	// compute pdf and cdfs
-	debug("zl = bsxfun(@times, bsxfun(@minus,l,m), 1./sqrt(v))");
+	SG_SPRINT("zl = bsxfun(@times, bsxfun(@minus,l,m), 1./sqrt(v))\n");
 	MatrixXd v_sq_inv = v.array().sqrt().inverse().matrix();
 	MatrixXd zl = bsxfun(times, bsxfun(minus,l,m), v_sq_inv);
 
-	debug("zh = bsxfun(@times, bsxfun(@minus,h,m), 1./sqrt(v))");
+	SG_SPRINT("zh = bsxfun(@times, bsxfun(@minus,h,m), 1./sqrt(v))\n");
 	MatrixXd zh = bsxfun(times, bsxfun(minus,h,m), v_sq_inv);
 
-	debug("pl = bsxfun(@times, normpdf(zl), 1./sqrt(v));"); //normal pdf
+	SG_SPRINT("pl = bsxfun(@times, normpdf(zl), 1./sqrt(v));\n"); //normal pdf
 	MatrixXd pl = bsxfun(times, normpdf(zl), v_sq_inv);
 
-	debug("ph = bsxfun(@times, normpdf(zh), 1./sqrt(v));"); //normal pdf
+	SG_SPRINT("ph = bsxfun(@times, normpdf(zh), 1./sqrt(v));\n"); //normal pdf
 	MatrixXd ph = bsxfun(times, normpdf(zh), v_sq_inv);
 
-	debug("cl = 0.5*erf(zl/sqrt(2));"); //normal cdf -const
+	SG_SPRINT("cl = 0.5*erf(zl/sqrt(2));\n"); //normal cdf -const
 	MatrixXd cl = normcdf(zl);
 
-	debug("ch = 0.5*erf(zh/sqrt(2));"); //normal cdf -cosnt
+	SG_SPRINT("ch = 0.5*erf(zh/sqrt(2));\n"); //normal cdf -cosnt
 	MatrixXd ch = normcdf(zh);
 
 	// zero out the inf and -inf in l and h
@@ -184,25 +182,25 @@ bool Ellp(
 	if(mode & ZEROTH_MOMENT)
 	{
 		//Compute truncated zeroth moment
-		debug("ex0 = ch-cl;");
+		SG_SPRINT("ex0 = ch-cl;\n");
 		MatrixXd ex0 = ch - cl;
 		//Compute truncated first moment
 		//ex1= v.*(pl-ph) + m.*(ch-cl);
-		debug("ex1= bsxfun(@times, v, (pl-ph)) + bsxfun(@times, m,(ch-cl));");
+		SG_SPRINT("ex1= bsxfun(@times, v, (pl-ph)) + bsxfun(@times, m,(ch-cl));\n");
 		MatrixXd ex1 = bsxfun(times, v, pl-ph) + bsxfun(times, m, ch-cl);
 		//Compute truncated second moment
 		//ex2=  v.*((l+m).*pl - (h+m).*ph) + (v+m.^2).*(ch - cl);
-		debug("ex2 = bsxfun(@times, v, (bsxfun(@plus, l, m)).*pl... \
+		SG_SPRINT("ex2 = bsxfun(@times, v, (bsxfun(@plus, l, m)).*pl... \
 		- (bsxfun(@plus, h, m)).*ph) \
-		+ bsxfun(@times, (v+m.^2), (ch-cl));");
+		+ bsxfun(@times, (v+m.^2), (ch-cl));\n");
 		MatrixXd ex2 = bsxfun(times, v, bsxfun(plus, l, m)).cwiseProduct(pl) \
 					   - bsxfun(plus, h, m).cwiseProduct(ph) \
 					   + bsxfun(times, v+m.array().square().matrix(), ch-cl);
 		// compute f
 		//fr = a.*ex2 + b.*ex1 + c.*ex0;
-		debug("fr = bsxfun(@times, a, ex2) + bsxfun(@times, b, ex1) + bsxfun(@times, c, ex0);");
+		SG_SPRINT("fr = bsxfun(@times, a, ex2) + bsxfun(@times, b, ex1) + bsxfun(@times, c, ex0);\n");
 		MatrixXd fr = bsxfun(times, a, ex2) + bsxfun(times, b, ex1) + bsxfun(times, c, ex0);
-		debug("f = sum(fr,1)';");
+		SG_SPRINT("f = sum(fr,1)';\n");
 		f = fr.rowwise().sum();
 	}
 
@@ -210,51 +208,51 @@ bool Ellp(
 	if(mode & GRAD_MEAN)
 	{
 		//gm = a.*( (l.^2+2*v).*pl - (h.^2+2*v).*ph) + a.*2.*m.*(ch-cl);
-		debug("gm = bsxfun(@times, a, bsxfun(@plus, l.^2, 2*v).*pl \
+		SG_SPRINT("gm = bsxfun(@times, a, bsxfun(@plus, l.^2, 2*v).*pl \
 		  - bsxfun(@plus, h.^2, 2*v).*ph)... \
-		  + 2*bsxfun(@times, a, m).*(ch - cl);");
+		  + 2*bsxfun(@times, a, m).*(ch - cl);\n");
 		MatrixXd gmr = bsxfun(times, a, bsxfun(plus, l.array().square().matrix(), 2*v).cwiseProduct(pl) \
 				- bsxfun(plus, h.array().square().matrix(), 2*v).cwiseProduct(ph)) \
 				+ 2*bsxfun(times, a, m).cwiseProduct(ch-cl);
 		//gm = gm + b.*(l.*pl-h.*ph) + b.*(ch-cl);
-		debug("gm = gm + bsxfun(@times, b, bsxfun(@times, l, pl) - bsxfun(@times, h, ph))... \
-		       + bsxfun(@times, b, ch-cl);");
+		SG_SPRINT("gm = gm + bsxfun(@times, b, bsxfun(@times, l, pl) - bsxfun(@times, h, ph))... \
+		       + bsxfun(@times, b, ch-cl);\n");
 		gmr = gmr + bsxfun(times, b, bsxfun(times, l, pl) - bsxfun(times, h, ph)) \
 				+ bsxfun(times, b, ch-cl);
 		//gm = gm + c.*(pl-ph);
-		debug("gm = gm + bsxfun(@times, c, pl-ph);");
+		SG_SPRINT("gm = gm + bsxfun(@times, c, pl-ph);\n");
 		gmr = gmr + bsxfun(times, c, pl-ph);
-		debug("gm = sum(gm,1)';");
+		SG_SPRINT("gm = sum(gm,1)';\n");
 		gm = gmr.rowwise().sum();
 	}
 
 	//Compute Gradient wrt to variance
 	if(mode & GRAD_VAR)
 	{
-		debug("t1 = bsxfun(@plus, 2*bsxfun(@times, v, l), l.^3) - bsxfun(@times, l.^2, m);");
+		SG_SPRINT("t1 = bsxfun(@plus, 2*bsxfun(@times, v, l), l.^3) - bsxfun(@times, l.^2, m);\n");
 		MatrixXd t1 = bsxfun(plus, 2 * bsxfun(times, v, l), l.array().pow(3).matrix()) \
 					  - bsxfun(times, l.array().square().matrix(), m);
 
-		debug("t2 = bsxfun(@plus, 2*bsxfun(@times, v, h), h.^3) - bsxfun(@times, h.^2, m);");
+		SG_SPRINT("t2 = bsxfun(@plus, 2*bsxfun(@times, v, h), h.^3) - bsxfun(@times, h.^2, m);\n");
 		MatrixXd t2 = bsxfun(plus, 2 * bsxfun(times, v, h), h.array().pow(3).matrix()) \
 					  - bsxfun(times, h.array().square().matrix(), m);
 
 		MatrixXd v_inv = v.array().inverse().matrix();
 
-		debug("gv = bsxfun(@times, a/2, 1./v).*(t1.*pl - t2.*ph) + bsxfun(@times, a, ch-cl);");
+		SG_SPRINT("gv = bsxfun(@times, a/2, 1./v).*(t1.*pl - t2.*ph) + bsxfun(@times, a, ch-cl);\n");
 		MatrixXd gvr = bsxfun(times, a/2, v_inv).cwiseProduct(t1.cwiseProduct(pl) - t2.cwiseProduct(ph)) \
 					   + bsxfun(times, a, ch-cl);
 
-		debug("gv = gv + bsxfun(@times, b/2, 1./v).*...\
+		SG_SPRINT("gv = gv + bsxfun(@times, b/2, 1./v).*...\
 		    ((bsxfun(@plus, l.^2, v) - bsxfun(@times, l, m)).*pl ...\
-		    - (bsxfun(@plus, h.^2, v) - bsxfun(@times, h, m)).*ph);");
+		    - (bsxfun(@plus, h.^2, v) - bsxfun(@times, h, m)).*ph);\n");
 		gvr = gvr + bsxfun(times, b/2, v_inv).cwiseProduct( \
 				    (bsxfun(plus, l.array().square().matrix(), v) - bsxfun(times, l, m)).cwiseProduct(pl) \
 				    - (bsxfun(plus, h.array().square().matrix(), v) - bsxfun(times, h, m)).cwiseProduct(ph) \
 			   );
 
-		debug("gv = gv + bsxfun(@times, c/2, 1./v).*...\
-		    ((bsxfun(@minus,l,m)).*pl - (bsxfun(@minus,h,m)).*ph);");
+		SG_SPRINT("gv = gv + bsxfun(@times, c/2, 1./v).*...\
+		    ((bsxfun(@minus,l,m)).*pl - (bsxfun(@minus,h,m)).*ph);\n");
 		gvr = gvr + bsxfun(times, c/2, v_inv).cwiseProduct( \
 				  bsxfun(minus, l, m).cwiseProduct(pl) - bsxfun(minus, h, m).cwiseProduct(ph) \
 				);
@@ -262,16 +260,16 @@ bool Ellp(
 		//gv = a/2./v.*( (2*v*l + l.^3 -l.^2*m).*pl - (2*v*h + h.^3 -h.^2*m).*ph) +a.*(ch-cl);
 		//gv = gv + b/2./v.*( (l.^2+v-l*m).*pl - (h.^2+v-h*m).*ph);
 		//gv = gv + c/2./v.*((l-m).*pl-(h-m).*ph);
-		debug("gv = sum(gv,1)';");
+		SG_SPRINT("gv = sum(gv,1)';\n");
 		gv = gvr.rowwise().sum();
 	}
 
 	if(mode & HM)
 	{
 		MatrixXd v_inv = v.array().inverse().matrix();
-		debug("hm = bsxfun(@times, a, bsxfun(@times, 1./v, \
-			  bsxfun(@plus, l.^3, -l.^2*m + 2*l*v).*pl - bsxfun(@plus, h.^3, -h.^2*m + 2*h*v).*ph) ...");
-		//  + 2.*(ch - cl));
+		SG_SPRINT("hm = bsxfun(@times, a, bsxfun(@times, 1./v, \
+			  bsxfun(@plus, l.^3, -l.^2*m + 2*l*v).*pl - bsxfun(@plus, h.^3, -h.^2*m + 2*h*v).*ph) \
+			  + 2.*(ch - cl));\n");
 		MatrixXd hmr = bsxfun(times, a, \
 				         bsxfun(times, v_inv, \
 				           bsxfun(plus, l.array().pow(3).matrix(), \
@@ -281,8 +279,8 @@ bool Ellp(
 				         ) - 2*(ch-cl)
 				       );
 
-		debug("hm = hm + bsxfun(@times, b, bsxfun(@times, 1./v, bsxfun(@minus, l.^2, l*m).*pl \
-				- bsxfun(@minus, h.^2, h*m).*ph) + (pl - ph));");
+		SG_SPRINT("hm = hm + bsxfun(@times, b, bsxfun(@times, 1./v, bsxfun(@minus, l.^2, l*m).*pl \
+				- bsxfun(@minus, h.^2, h*m).*ph) + (pl - ph));\n");
 		hmr = hmr + bsxfun(times, b, \
 					  bsxfun(times, v_inv, \
 					    bsxfun(minus, l.array().square().matrix(), m*l).cwiseProduct(pl) \
@@ -290,13 +288,13 @@ bool Ellp(
 					  ) + pl - ph
 					);
 
-		debug("hm = hm + bsxfun(@times, c, 1./v).* \
-				((bsxfun(@minus,l,m)).*pl - (bsxfun(@minus,h,m)).*ph);");
+		SG_SPRINT("hm = hm + bsxfun(@times, c, 1./v).* \
+				((bsxfun(@minus,l,m)).*pl - (bsxfun(@minus,h,m)).*ph);\n");
 		hmr = hmr + bsxfun(times, c, v_inv).cwiseProduct( \
 				      bsxfun(minus, l, m).cwiseProduct(pl) - bsxfun(minus, h, m).cwiseProduct(ph) \
 					);
 
-		debug("hm = sum(hm,1)'");
+		SG_SPRINT("hm = sum(hm,1)'\n");
 		MatrixXd hm = hmr.rowwise().sum();
 	}
 	return true;
@@ -370,14 +368,16 @@ Modified on March 8, 2014
 		eigen_gv = -eigen_gv;
 		break;
 	default:
-		std::cout<<"no such name"<<std::endl;
+		SG_SPRINT("no such name\n");
 		return false;
 	}
 	return true;
 }
 
-int main()
+int main(int argc,char *argv[])
 {
+	init_shogun(&print_message, &print_message, &print_message);
+
 	index_t row = 5;
 	index_t col = 20;
 	SGMatrix<float64_t> bound(row, col);
@@ -502,6 +502,7 @@ int main()
 	v[0] = 1;
 	v[1] = 2;
 
+	//Test the poisson distribution
 	ElogLik(poisson, y, m, v, bound, f, gm, gv);
 
 	for(index_t i = 0; i < dim; i++)
@@ -509,12 +510,20 @@ int main()
 		printf("f[%d]=%.10f gm[%d]=%.10f gv[%d]=%.10f\n", i, f[i], i, gm[i], i, gv[i]);
 	}
 
+	//Test the bernLogit distribution
 	ElogLik(bernLogit, y, m, v, bound, f, gm, gv);
 
 	for(index_t i = 0; i < dim; i++)
 	{
 		printf("f[%d]=%.10f gm[%d]=%.10f gv[%d]=%.10f\n", i, f[i], i, gm[i], i, gv[i]);
 	}
+
+	exit_shogun();
+	return 0;
+}
+#else
+int main(int argc, char **argv)
+{
 	return 0;
 }
 #endif
