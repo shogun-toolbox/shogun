@@ -16,6 +16,8 @@
 #ifndef _VW_PARSER_H__
 #define _VW_PARSER_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/base/SGObject.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/Hash.h>
