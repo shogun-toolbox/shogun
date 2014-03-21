@@ -11,6 +11,8 @@
 #ifndef __SG_INIT_H__
 #define __SG_INIT_H__
 
+#include <shogun/lib/config.h>
+
 #include <stdio.h>
 
 namespace shogun

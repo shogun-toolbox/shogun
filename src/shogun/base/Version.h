@@ -13,6 +13,8 @@
 #ifndef VERSION_H__
 #define VERSION_H__
 
+#include <shogun/lib/config.h>
+
 namespace shogun
 {
 class RefCount;
