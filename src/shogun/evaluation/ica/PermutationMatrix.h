@@ -2,6 +2,8 @@
 
 #ifdef HAVE_EIGEN3
 
+#include <shogun/lib/config.h>
+
 /*
 Function that tests if a SGMatrix is a permutation matrix
 */

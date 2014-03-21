@@ -13,6 +13,8 @@
 #ifndef CMACHINEEVALUATION_H_
 #define CMACHINEEVALUATION_H_
 
+#include <shogun/lib/config.h>
+
 #include <shogun/base/SGObject.h>
 #include <shogun/evaluation/Evaluation.h>
 #include <shogun/evaluation/EvaluationResult.h>

@@ -11,6 +11,8 @@
 #ifndef __CLUSTERINGEVALUATION_H__
 #define __CLUSTERINGEVALUATION_H__
 
+#include <shogun/lib/config.h>
+
 #include <vector>
 
 #include <shogun/evaluation/Evaluation.h>
