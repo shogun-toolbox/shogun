@@ -11,6 +11,8 @@
 #ifndef __MODELSELECTIONPARAMETERS_H_
 #define __MODELSELECTIONPARAMETERS_H_
 
+#include <shogun/lib/config.h>
+
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/lib/SGVector.h>
