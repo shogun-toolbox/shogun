@@ -79,4 +79,10 @@ or, in general:
 $ cmake -DPYTHON_INCLUDE_DIR=/path/to/python/include/dir -DPYTHON_LIBRARY=path/to/python/libpythonVERSION.so ..
 ```
 
-* Under Linux, one may need to switch between different versions of Python, in which case the following options need to be included: `-DPYTHON_EXECUTABLE:FILEPATH=/path/to/python/version` and `-DPYTHON_INCLUDE_DIR=/path/to/dist-packages`
+* Under Linux, one may need to switch between different versions of Python, in which case the following options need to be included: `-DPYTHON_EXECUTABLE:FILEPATH=/path/to/python/version`, `-DPYTHON_INCLUDE_DIR=/path/to/includes` and `-DPYTHON_PACKAGES_PATH=/path/to/dist/packages`
+
+For example:
+
+```
+cmake -DPYTHON_INCLUDE_DIR=/usr/include/python3.3 -DPYTHON_EXECUTABLE:FILEPATH=/usr/bin/python3 -DPYTHON_PACKAGES_PATH=/usr/local/lib/python3.3/dist-packages -DPythonModular=ON ..
+```
