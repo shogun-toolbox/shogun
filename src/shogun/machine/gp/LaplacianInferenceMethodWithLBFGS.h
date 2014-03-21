@@ -26,6 +26,7 @@
  * The views and conclusions contained in the software and documentation are those
  * of the authors and should not be interpreted as representing official policies,
  * either expressed or implied, of the Shogun Development Team.
+ *
  * Code adapted from Gaussian Process Machine Learning Toolbox
  * http://www.gaussianprocess.org/gpml/code/matlab/doc/
  */
@@ -65,172 +66,170 @@ namespace shogun
 class CLaplacianInferenceMethodWithLBFGS: public CLaplacianInferenceMethod
 {
 public:
-  /* default constructor */
-  CLaplacianInferenceMethodWithLBFGS();
+	/* default constructor */
+	CLaplacianInferenceMethodWithLBFGS();
 
-  /* constructor
-   *
-   * @param kernel covariance function
-   * @param features features to use in inference
-   * @param mean mean function
-   * @param labels labels of the features
-   * @param model Likelihood model to use
-   */
-  CLaplacianInferenceMethodWithLBFGS(CKernel* kernel,
-                                     CFeatures* features,
-                                     CMeanFunction* mean,
-                                     CLabels* labels,
-                                     CLikelihoodModel* model);
+	/* constructor
+	 *
+	 * @param kernel covariance function
+	 * @param features features to use in inference
+	 * @param mean mean function
+	 * @param labels labels of the features
+	 * @param model Likelihood model to use
+	 */
+	CLaplacianInferenceMethodWithLBFGS(CKernel* kernel,
+			CFeatures* features,
+			CMeanFunction* mean,
+			CLabels* labels,
+			CLikelihoodModel* model);
 
-  virtual ~CLaplacianInferenceMethodWithLBFGS();
+	virtual ~CLaplacianInferenceMethodWithLBFGS();
 
-  /* returns the name of the inference method
-   *
-   * @return name LaplacianWithLBFGS
-   */
-  virtual const char* get_name() const
-  {return "LaplacianInferenceMethodWithLBFGS";}
+	/* returns the name of the inference method
+	 *
+	 * @return name LaplacianWithLBFGS
+	 */
+	virtual const char* get_name() const
+	{return "LaplacianInferenceMethodWithLBFGS";}
 
-  /* set L-BFGS parameters
-   * For details please see shogun/optimization/lbfgs/lbfgs.h
-   * @param m The number of corrections to approximate the inverse hessian matrix. 
-   * Default value is 100.
-   * @param max_linesearch The maximum number of trials to do line search for each L-BFGS update. 
-   * Default value is 1000.
-   * @param linesearch The line search algorithm. 
-   * Default value is using the Morethuente line search
-   * @param max_iterations The maximum number of iterations for L-BFGS update. 
-   * Default value is 1000.
-   * @param delta Delta for convergence test based on the change of function value.
-   * Default value is 0.  
-   * @param past Distance for delta-based convergence test.
-   * Default value is 0. 
-   * @param epsilon Epsilon for convergence test based on the change of gradient.
-   * Default value is 1e-5
-   * @param enable_newton_if_fail if LBFGS optimizer fails, should we use Newton method.
-   * Default value is true.  
-   * @param min_step The minimum step of the line search.
-   * The default value is 1e-20
-   * @param max_step The maximum step of the line search.
-   * The default value is 1e+20
-   * @param ftol A parameter used in Armijo condition.
-   * Default value is 1e-4
-   * @param wolfe A parameter used in curvature condition.
-   * Default value is 0.9
-   * @param gtol A parameter used in Morethuente linesearch to control the accuracy.
-   * Default value is 0.9
-   * @param xtol The machine precision for floating-point values.
-   * Default value is 1e-16.
-   * @param orthantwise_c Coeefficient for the L1 norm of variables.
-   * This parameter should be set to zero for standard minimization problems.
-   * Setting this parameter to a positive value activates 
-   * Orthant-Wise Limited-memory Quasi-Newton (OWL-QN) method. Default value is 0.
-   * @param orthantwise_start Start index for computing L1 norm of the variables.
-   * This parameter is valid only for OWL-QN method. Default value is 0.
-   * @param orthantwise_end End index for computing L1 norm of the variables.
-   * Default value is 1.
-   */
-  virtual void set_lbfgs_parameter(int m = 100,
-                                   int max_linesearch = 1000,
-                                   int linesearch = LBFGS_LINESEARCH_DEFAULT,
-                                   int max_iterations = 1000,
-                                   float64_t delta = 0.0,
-                                   int past = 0,
-                                   float64_t epsilon = 1e-5,
-                                   bool enable_newton_if_fail = true,
-                                   float64_t min_step = 1e-20,
-                                   float64_t max_step = 1e+20,
-                                   float64_t ftol = 1e-4,
-                                   float64_t wolfe = 0.9,
-                                   float64_t gtol = 0.9,
-                                   float64_t xtol = 1e-16,
-                                   float64_t orthantwise_c = 0.0,
-                                   int orthantwise_start = 0,
-                                   int orthantwise_end = 1);
+	/* set L-BFGS parameters
+	 * For details please see shogun/optimization/lbfgs/lbfgs.h
+	 * @param m The number of corrections to approximate the inverse hessian matrix. 
+	 * Default value is 100.
+	 * @param max_linesearch The maximum number of trials to do line search for each L-BFGS update. 
+	 * Default value is 1000.
+	 * @param linesearch The line search algorithm. 
+	 * Default value is using the Morethuente line search
+	 * @param max_iterations The maximum number of iterations for L-BFGS update. 
+	 * Default value is 1000.
+	 * @param delta Delta for convergence test based on the change of function value.
+	 * Default value is 0.  
+	 * @param past Distance for delta-based convergence test.
+	 * Default value is 0. 
+	 * @param epsilon Epsilon for convergence test based on the change of gradient.
+	 * Default value is 1e-5
+	 * @param enable_newton_if_fail if LBFGS optimizer fails, should we use Newton method.
+	 * Default value is true.  
+	 * @param min_step The minimum step of the line search.
+	 * The default value is 1e-20
+	 * @param max_step The maximum step of the line search.
+	 * The default value is 1e+20
+	 * @param ftol A parameter used in Armijo condition.
+	 * Default value is 1e-4
+	 * @param wolfe A parameter used in curvature condition.
+	 * Default value is 0.9
+	 * @param gtol A parameter used in Morethuente linesearch to control the accuracy.
+	 * Default value is 0.9
+	 * @param xtol The machine precision for floating-point values.
+	 * Default value is 1e-16.
+	 * @param orthantwise_c Coeefficient for the L1 norm of variables.
+	 * This parameter should be set to zero for standard minimization problems.
+	 * Setting this parameter to a positive value activates 
+	 * Orthant-Wise Limited-memory Quasi-Newton (OWL-QN) method. Default value is 0.
+	 * @param orthantwise_start Start index for computing L1 norm of the variables.
+	 * This parameter is valid only for OWL-QN method. Default value is 0.
+	 * @param orthantwise_end End index for computing L1 norm of the variables.
+	 * Default value is 1.
+	 */
+	virtual void set_lbfgs_parameters(int m = 100,
+			int max_linesearch = 1000,
+			int linesearch = LBFGS_LINESEARCH_DEFAULT,
+			int max_iterations = 1000,
+			float64_t delta = 0.0,
+			int past = 0,
+			float64_t epsilon = 1e-5,
+			bool enable_newton_if_fail = true,
+			float64_t min_step = 1e-20,
+			float64_t max_step = 1e+20,
+			float64_t ftol = 1e-4,
+			float64_t wolfe = 0.9,
+			float64_t gtol = 0.9,
+			float64_t xtol = 1e-16,
+			float64_t orthantwise_c = 0.0,
+			int orthantwise_start = 0,
+			int orthantwise_end = 1);
+
 
 protected:
-  /* update alpha using the LBFGS method*/
-  virtual void update_alpha();
+	/* update alpha using the LBFGS method*/
+	virtual void update_alpha();
 
 private:
-  /* lbfgs_parameter for the LBFGS build-in function*/
-  lbfgs_parameter_t m_lbfgs_param;
+	/* a parameter used to compute function value and gradient for LBFGS update*/
+	SGVector<float64_t> * m_mean_f;
 
-  /* a parameter used to compute function value and gradient for LBFGS update*/
-  SGVector<float64_t> * m_mean_f;
+	/* should we enable the original Newton method
+	 * if the L-BFGS method fails
+	 * */
+	bool m_enable_newton_if_fail;
 
-  /* should we enable the original Newton method
-   * if the L-BFGS method fails
-   * */
-  bool m_enable_newton_if_fail;
+	/* The number of corrections to approximate the inverse hessian matrix.*/
+	int m_m;
 
-  /* The number of corrections to approximate the inverse hessian matrix.*/
-  int m_m;
+	/* The maximum number of trials to do line search for each L-BFGS update.*/
+	int m_max_linesearch;
 
-  /* The maximum number of trials to do line search for each L-BFGS update.*/
-  int m_max_linesearch;
+	/* The line search algorithm.*/
+	int m_linesearch;
 
-  /* The line search algorithm.*/
-  int m_linesearch;
+	/* The maximum number of iterations for L-BFGS update.*/
+	int m_max_iterations;
 
-  /* The maximum number of iterations for L-BFGS update.*/
-  int m_max_iterations;
+	/* Delta for convergence test based on the change of function value.*/
+	float64_t m_delta;
 
-  /* Delta for convergence test based on the change of function value.*/
-  float64_t m_delta;
+	/* Distance for delta-based convergence test.*/
+	int m_past;
 
-  /* Distance for delta-based convergence test.*/
-  int m_past;
+	/* Epsilon for convergence test based on the change of gradient.*/
+	float64_t m_epsilon;
 
-  /* Epsilon for convergence test based on the change of gradient.*/
-  float64_t m_epsilon;
+	/* The minimum step of the line search.*/
+	float64_t m_min_step;
 
-  /* The minimum step of the line search.*/
-  float64_t m_min_step;
+	/* The maximum step of the line search.*/
+	float64_t m_max_step;
 
-  /* The maximum step of the line search.*/
-  float64_t m_max_step;
+	/* A parameter used in Armijo condition.*/
+	float64_t m_ftol;
 
-  /* A parameter used in Armijo condition.*/
-  float64_t m_ftol;
+	/* A parameter used in curvature condition.*/
+	float64_t m_wolfe;
 
-  /* A parameter used in curvature condition.*/
-  float64_t m_wolfe;
+	/* A parameter used in Morethuente linesearch to control the accuracy.*/
+	float64_t m_gtol;
 
-  /* A parameter used in Morethuente linesearch to control the accuracy.*/
-  float64_t m_gtol;
+	/* The machine precision for floating-point values.*/
+	float64_t m_xtol;
 
-  /* The machine precision for floating-point values.*/
-  float64_t m_xtol;
+	/* Coeefficient for the L1 norm of variables.*/
+	float64_t m_orthantwise_c;
 
-  /* Coeefficient for the L1 norm of variables.*/
-  float64_t m_orthantwise_c;
+	/* Start index for computing L1 norm of the variables.*/
+	int m_orthantwise_start;
 
-  /* Start index for computing L1 norm of the variables.*/
-  int m_orthantwise_start;
+	/* End index for computing L1 norm of the variables.*/
+	int m_orthantwise_end;
 
-  /* End index for computing L1 norm of the variables.*/
-  int m_orthantwise_end;
+	void init();
 
-  void init();
+	/* helper function is passed to the LBFGS API
+	 * Note that this function should be static and
+	 * private.
+	 * */
+	static float64_t evaluate(void *obj,
+			const float64_t *alpha,
+			float64_t *gradient,
+			const int dim,
+			const float64_t step);
 
-  /* helper function is passed to the LBFGS API
-   * Note that this function should be static and
-   * private.
-   * */
-  static float64_t evaluate(void *obj,
-                            const float64_t *alpha,
-                            float64_t *gradient,
-                            const int dim,
-                            const float64_t step);
+	/* compute the gradient given the current alpha*/
+	void get_gradient_wrt_alpha(Eigen::Map<Eigen::VectorXd>* alpha,
+			Eigen::Map<Eigen::VectorXd>* gradient);
 
-  /* compute the gradient given the current alpha*/
-  void get_gradient_wrt_alpha(Eigen::Map<Eigen::VectorXd>* alpha,
-                              Eigen::Map<Eigen::VectorXd>* gradient);
-
-  /* compute the function value given the current alpha*/
-  void get_psi_wrt_alpha(Eigen::Map<Eigen::VectorXd>* alpha,
-                         float64_t* psi);
+	/* compute the function value given the current alpha*/
+	void get_psi_wrt_alpha(Eigen::Map<Eigen::VectorXd>* alpha,
+			float64_t* psi);
 };
 
 } /* namespace shogun */
