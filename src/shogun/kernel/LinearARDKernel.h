@@ -12,6 +12,8 @@
 #ifndef LINEARARDKERNEL_H_
 #define LINEARARDKERNEL_H_
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/common.h>
 #include <shogun/kernel/DotKernel.h>
 #include <shogun/features/DenseFeatures.h>
