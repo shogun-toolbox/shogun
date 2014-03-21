@@ -10,6 +10,8 @@
 #ifndef  MULTITASKCLUSTEREDLOGISTICREGRESSION_H_
 #define  MULTITASKCLUSTEREDLOGISTICREGRESSION_H_
 
+#include <shogun/lib/config.h>
+
 #include <shogun/transfer/multitask/MultitaskLogisticRegression.h>
 
 namespace shogun
