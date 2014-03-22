@@ -37,18 +37,17 @@
 using namespace shogun;
 
 CNeuralLayer::CNeuralLayer() 
-: CSGObject(), m_num_neurons(0), m_previous_layer_num_neurons(0),
-	m_batch_size(0)
+: CSGObject()
 {
 	init();
 }
 
 
 CNeuralLayer::CNeuralLayer(int32_t num_neurons)
-: CSGObject(), m_num_neurons(num_neurons), 
-	m_previous_layer_num_neurons(0), m_batch_size(0)
+: CSGObject()
 {
 	init();
+	m_num_neurons = num_neurons;
 }
 
 CNeuralLayer::~CNeuralLayer()
@@ -79,6 +78,10 @@ void CNeuralLayer::set_batch_size(int32_t batch_size)
 
 void CNeuralLayer::init()
 {
+	m_num_neurons = 0; 
+	m_previous_layer_num_neurons = 0;
+	m_batch_size = 0;
+	
 	SG_ADD(&m_num_neurons, "num_neurons",
 	       "Number of Neurons", MS_NOT_AVAILABLE);
 	SG_ADD(&m_previous_layer_num_neurons, "previous_layer_num_neurons",

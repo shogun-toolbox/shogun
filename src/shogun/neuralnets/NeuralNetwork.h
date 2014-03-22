@@ -204,7 +204,9 @@ private:
 	/** returns a pointer to layer i in the network */
 	CNeuralLayer* get_layer(int32_t i)
 	{
-		return (CNeuralLayer*)m_layers->element(i);
+		CNeuralLayer* layer = (CNeuralLayer*)m_layers->element(i);
+		SG_UNREF(layer);
+		return layer;
 	}
 	
 	/** returns a pointer to the portion of m_params that belongs to layer i */

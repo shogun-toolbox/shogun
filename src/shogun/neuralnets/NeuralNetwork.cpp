@@ -38,9 +38,7 @@
 using namespace shogun;
 
 CNeuralNetwork::CNeuralNetwork()
-: CMachine(),l2_coefficient(0.0), mini_batch_size(0), max_num_epochs(100), 
-	gd_learning_rate(0.1), gd_momentum(0.9), m_num_inputs(0), 
-	m_num_layers(0), m_layers(NULL), m_total_num_parameters(), m_batch_size(1)
+: CMachine()
 {
 	init();
 }
@@ -420,6 +418,17 @@ void CNeuralNetwork::set_labels(CLabels* lab)
 
 void CNeuralNetwork::init()
 {
+	l2_coefficient = 0.0; 
+	mini_batch_size = 0;
+	max_num_epochs = 100; 
+	gd_learning_rate = 0.1; 
+	gd_momentum = 0.9; 
+	m_num_inputs = 0;
+	m_num_layers = 0;
+	m_layers = NULL;
+	m_total_num_parameters = 0;
+	m_batch_size = 1;
+	
 	SG_ADD(&mini_batch_size, "mini_batch_size",
 	       "Mini-batch size", MS_NOT_AVAILABLE);
 	SG_ADD(&max_num_epochs, "max_num_epochs",
