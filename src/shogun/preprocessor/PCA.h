@@ -31,13 +31,13 @@ enum EPCAMethod
 	/** if N>D then EVD is chosen automatically else SVD is chosen 
 	 * (D-dimensions N-number of vectors) 
 	 */
-	AUTO,	
+	AUTO = 10,	
 	/** SVD based PCA. Time complexity ~14dn^2 (d-dimensions n-number of vectors) */
-	SVD,
+	SVD = 20,
 	/** Eigenvalue decomposition of covariance matrix. 
 	 * Time complexity ~10d^3 (d-dimensions n-number of vectors) 
 	 */
-	EVD
+	EVD = 30
 };
 
 /** mode of pca */

@@ -172,7 +172,7 @@ bool CPCA::init(CFeatures* features)
 			{
 				for (int32_t i=0; i<num_dim; i++)
 					transformMatrix.col(i) /= 
-					sqrt(eigenValues[i+max_dim_allowed-num_dim]);
+					sqrt(eigenValues[i+max_dim_allowed-num_dim]*(num_vectors-1)+1e-15);
 			}
 		}
 
@@ -226,7 +226,7 @@ bool CPCA::init(CFeatures* features)
 			if (m_whitening)
 			{
 				for (int32_t i=0; i<num_dim; i++)
-					transformMatrix.col(i) /= sqrt(eigenValues[i]);
+					transformMatrix.col(i) /= sqrt(eigenValues[i]*(num_vectors-1)+1e-15);
 			}
 		}
 
@@ -274,7 +274,7 @@ SGMatrix<float64_t> CPCA::apply_to_feature_matrix(CFeatures* features)
 			for (int32_t col=0; col<num_vectors; col++)
 			{
 				for (int32_t row=0; row<num_dim; row++)
-					m.matrix[row*num_dim+col] = feature_matrix(row,col);
+					m.matrix[col*num_dim+row] = feature_matrix(row,col);
 			}
 			m.num_rows = num_dim;
 			m.num_cols = num_vectors;
