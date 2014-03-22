@@ -20,8 +20,6 @@
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/features/DataGenerator.h>
 #include <ctime>
-#include <cstdio>
-#include <iostream>
 
 using namespace shogun;
 using namespace Eigen;
@@ -108,6 +106,7 @@ MatrixXd bsxfun(BsxfunOp op,const MatrixBase<M1> &x,const MatrixBase<M2> &y)
 		return xx;
 	}
 }
+// added by Wu Lin
 MatrixXd bsxfun_vec(BsxfunOp op, const MatrixXd & x, const VectorXd & y, bool is_col_vec)
 {
 	switch(op)
@@ -130,20 +129,25 @@ MatrixXd bsxfun_vec(BsxfunOp op, const MatrixXd & x, const VectorXd & y, bool is
 
 }
 
+// added by Wu Lin
 template<typename M1, typename M2>
-MatrixXd bsxfun2(BsxfunOp op,const MatrixBase<M1> &x,const MatrixBase<M2> &y)
+MatrixXd bsxfun2(BsxfunOp op, const MatrixBase<M1> &x, const MatrixBase<M2> &y)
 {
 	ASSERT((x.rows()==y.rows() || x.rows()==1 || y.rows()==1) && (x.cols()==y.cols() || x.cols()==1 || y.cols()==1));
 	if ((x.rows() > 1 && x.cols() >1) && (y.rows() == 1 || y.cols() ==1))
 	{
 		if (y.rows() >1)
+			// matrix_op_col_vec
 			return bsxfun_vec(op, x, y, true);
+			// matrix_op_row_vec
 		return bsxfun_vec(op, x, y, false);
 	}
 	else if ((y.rows() > 1 && y.cols() > 1) && (x.rows() ==1 || x.cols() ==1))
 	{
 		if (y.rows() >1)
+			// col_vec_op_matrix
 			return bsxfun_vec(op, y, x, true);
+			// row_vec_op_matrix
 		return bsxfun_vec(op, y, x, false);
 	}
 	return bsxfun(op, x, y);
@@ -563,6 +567,8 @@ int main(int argc,char *argv[])
 		printf("f[%d]=%.10f gm[%d]=%.10f gv[%d]=%.10f\n", i, f[i], i, gm[i], i, gv[i]);
 	}
 
+	// added by Wu Lin
+	// performance test
 	const index_t row_i= 5000;
 	const index_t col_j = row_i;
 	SGMatrix<float64_t> A(row_i, col_j);
@@ -592,8 +598,8 @@ int main(int argc,char *argv[])
 		bsxfun(plus, eigen_A, eigen_b);
 	end = clock();
 	elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
-	printf("bsxfun:elapsed_secs=%.5f\n", elapsed_secs);
-//bsxfun:elapsed_secs=79.81000
+	SG_SPRINT("bsxfun:elapsed_secs=%.5f\n", elapsed_secs);
+// bsxfun:elapsed_secs=79.81000
 
 	begin = clock();
 	for(index_t t = 0; t < times; t++)
@@ -601,8 +607,8 @@ int main(int argc,char *argv[])
 		bsxfun2(plus, eigen_A, eigen_b);
 	end = clock();
 	elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
-	printf("bsxfun2:elapsed_secs=%.5f\n", elapsed_secs);
-//bsxfun2:elapsed_secs=16.99000
+	SG_SPRINT("bsxfun2:elapsed_secs=%.5f\n", elapsed_secs);
+// bsxfun2:elapsed_secs=16.99000
 
 
 
@@ -610,20 +616,20 @@ int main(int argc,char *argv[])
 
 	begin = clock();
 	for(index_t t = 0; t < times; t++)
-		// matrix by col_vec
+		// matrix by row_vec
 		bsxfun2(plus, eigen_A_t, eigen_b.transpose());
 	end = clock();
 	elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
-	printf("bsxfun2:elapsed_secs=%.5f\n", elapsed_secs);
+	SG_SPRINT("bsxfun2:elapsed_secs=%.5f\n", elapsed_secs);
 //bsxfun2:elapsed_secs=15.99000
 
 	begin = clock();
 	for(index_t t = 0; t < times; t++)
-		// matrix by col_vec
+		// matrix by row_vec
 		bsxfun(plus, eigen_A_t, eigen_b.transpose());
 	end = clock();
 	elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
-	printf("bsxfun:elapsed_secs=%.5f\n", elapsed_secs);
+	SG_SPRINT("bsxfun:elapsed_secs=%.5f\n", elapsed_secs);
 //bsxfun:elapsed_secs=24.70000
 
 
