@@ -153,12 +153,11 @@ MatrixXd bsxfun2(BsxfunOp op, const MatrixBase<M1> &x, const MatrixBase<M2> &y)
 	else if (x.rows() != y.rows() || x.cols() != y.cols())
 	{
 		if(x.rows()==1)
+			// row_vec_op_col_vec
 			return bsxfun_vec(op, x.replicate(y.rows(), 1), y, true);
-			//xx = x.replicate(y.rows(), 1);
 		else if(x.cols()==1)
+			// col_vec_op_row_vec
 			return bsxfun_vec(op, y.replicate(x.rows(), 1), x, true);
-			//xx = x.replicate(1, y.cols());
-
 	}
 	switch(op)
 	{
