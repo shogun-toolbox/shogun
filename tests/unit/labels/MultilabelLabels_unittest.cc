@@ -93,13 +93,13 @@ TEST(MultilabelLabels, clone)
 
 TEST(MultilabelLabels, to_dense)
 {
-	SGVector<int16_t> sparse(2);
+	SGVector<int32_t> sparse(2);
 	sparse[0] = 2;
 	sparse[1] = 5;
 
 	EXPECT_EQ(2, sparse.size());
 
-	SGVector<float64_t> dense = CMultilabelLabels::to_dense<int16_t, float64_t> (&sparse, 20, +1, 0);
+	SGVector<float64_t> dense = CMultilabelLabels::to_dense<int32_t, float64_t> (&sparse, 20, +1, 0);
 	EXPECT_EQ(20, dense.size());
 	EXPECT_EQ(+1, dense[2]);
 	EXPECT_EQ(+1, dense[5]);
@@ -117,10 +117,10 @@ TEST(MultilabelLabels, get_label)
 
 	for (int32_t i = 0; i < ml->get_num_labels(); i++)
 	{
-		SGVector<int16_t> sparse = ml->get_label(i);
+		SGVector<int32_t> sparse = ml->get_label(i);
 		EXPECT_EQ(0, sparse.size());
 
-		SGVector<float64_t> dense = CMultilabelLabels::to_dense<int16_t, float64_t> (&sparse, ml->get_num_labels(), +1, -1);
+		SGVector<float64_t> dense = CMultilabelLabels::to_dense<int32_t, float64_t> (&sparse, ml->get_num_labels(), +1, -1);
 		EXPECT_EQ(ml->get_num_labels(), dense.size());
 	}
 
