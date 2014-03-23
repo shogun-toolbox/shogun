@@ -37,16 +37,12 @@
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/labels/MulticlassLabels.h>
-#include <shogun/mathematics/Random.h>
 #include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/neuralnets/NeuralNetwork.h>
 #include <shogun/neuralnets/NeuralLogisticLayer.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;
-
-#include <iostream>
-using namespace std;
 
 /** Tests gradients computed using backpropagation against gradients computed
  * by numerical approximation
@@ -102,11 +98,9 @@ TEST(NeuralNetwork, binary_classification)
 	CNeuralNetwork* network = new CNeuralNetwork();
 	network->initialize(2, layers);
 	
-	// initialize the parameters with fixed-seed random values, 
-	// for repeatability
-	CRandom random_generator = CRandom(10);
+	// initialize the weights deterministically
 	for (int32_t i=0; i<network->get_num_parameters(); i++)
-		network->get_parameters()[i] = random_generator.normal_distrib(0, 1e-1);
+		network->get_parameters()[i] = i * 1.0e-1;
 	
 	network->epsilon = 1e-12;
 	
@@ -159,11 +153,9 @@ TEST(NeuralNetwork, multiclass_classification)
 	CNeuralNetwork* network = new CNeuralNetwork();
 	network->initialize(2, layers);
 	
-	// initialize the parameters with fixed-seed random values, 
-	// for repeatability
-	CRandom random_generator = CRandom(10);
+	// initialize the weights deterministically
 	for (int32_t i=0; i<network->get_num_parameters(); i++)
-		network->get_parameters()[i] = random_generator.normal_distrib(0, 1e-1);
+		network->get_parameters()[i] = i * 1.0e-1;
 	
 	network->epsilon = 1e-12;
 	
@@ -206,12 +198,10 @@ TEST(NeuralNetwork, regression)
 	CNeuralNetwork* network = new CNeuralNetwork();
 	network->initialize(1, layers);
 	
-	// initialize the parameters with fixed-seed random values, 
-	// for repeatability
-	CRandom random_generator = CRandom(10);
+	// initialize the weights deterministically
 	for (int32_t i=0; i<network->get_num_parameters(); i++)
-		network->get_parameters()[i] = random_generator.normal_distrib(0, 1e-4);
-	
+		network->get_parameters()[i] = i * 1.0e-5;
+
 	network->print_during_training = false;
 	network->set_labels(labels);
 	network->train(features);
@@ -261,15 +251,13 @@ TEST(NeuralNetwork, gradient_descent)
 	CNeuralNetwork* network = new CNeuralNetwork();
 	network->initialize(2, layers);
 	
-	// initialize the parameters with fixed-seed random values, 
-	// for repeatability
-	CRandom random_generator = CRandom(10);
+	// initialize the weights deterministically
 	for (int32_t i=0; i<network->get_num_parameters(); i++)
-		network->get_parameters()[i] = random_generator.normal_distrib(0, 1.0);
+		network->get_parameters()[i] = i * 1.0e-1;
 	
 	network->optimization_method = NNOM_GRADIENT_DESCENT;
-	network->gd_learning_rate = 1.0;
-	network->epsilon = 1e-4;
+	network->gd_learning_rate = 10.0;
+	network->epsilon = 1.0e-4;
 	
 	network->print_during_training = false;
 	network->set_labels(labels);
