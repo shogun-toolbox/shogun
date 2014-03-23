@@ -81,7 +81,7 @@ public:
 	 */
 	virtual void initialize_parameters(float64_t* parameters,
 			bool* parameter_regularizable,
-			float64_t sigma = 0.01f);
+			float64_t sigma);
 	
 	/** Computes the activations of the neurons in this layer, results should 
 	 * be stored in m_activations

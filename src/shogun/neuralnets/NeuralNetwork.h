@@ -43,16 +43,28 @@
 
 namespace shogun
 {
+	
+/** optimization method for neural networks */
+enum ENNOptimizationMethod
+{
+	NNOM_GRADIENT_DESCENT=0,
+	NNOM_LBFGS=1
+};	
+
 /** @brief A generic multi-layer neural network
  *
  * NeuralNetwork is constructed using an array of NeuralLayer objects. The
  * NeuralLayer class defines the interface necessary for forward and 
  * backpropagation.
  * 
- * The network takes as input CDenseFeatures<float64_t> and outputs
- * CMulticlassLabels.
+ * Supported feature types: DenseFeatures<float64_t>
+ * Supported label types:
+ * 	- BinaryLabels
+ *  - MulticlassLabels
+ *  - RegressionLabels
  * 
- * Computations are performed using Eigen3
+ * The neural network can be trained using L-BFGS (default) or mini-batch
+ * gradient descent
  * 
  * The network stores the parameters (and parameter gradients) of all the 
  * layers in a single array. This makes it easy to train a network of any
@@ -77,8 +89,13 @@ public:
 	 * 
 	 * @param layers An array of NeuralLayer objects specifying the hidden 
 	 * and output layers in the network.
+	 * 
+	 * @param sigma standard deviation of the gaussian used to randomly 
+	 * initialize the parameters
 	 */
-	virtual void initialize(int32_t num_inputs, CDynamicObjectArray* layers);
+	virtual void initialize(int32_t num_inputs, 
+			CDynamicObjectArray* layers,
+			float64_t sigma = 0.01f);
 	
 	virtual ~CNeuralNetwork();
 	
@@ -108,14 +125,14 @@ public:
 	 * comparing them with gradients computed using numerical approximation.
 	 * Used for testing purposes only.
 	 * 
-	 * @param epsilon constant used during gradient approximation
+	 * @param approx_epsilon constant used during gradient approximation
 	 * 
 	 * @param tolerance maximum difference allowed between backpropagation 
 	 * gradients and numerical approximation gradients
 	 * 
 	 * @return true if the gradients are correct, false otherwise
 	 */
-	virtual bool check_gradients(float64_t epsilon=1.0e-06, 
+	virtual bool check_gradients(float64_t approx_epsilon=1.0e-06, 
 			float64_t tolerance=1.0e-09);
 	
 	/** returns the totat number of parameters in the network */
@@ -139,8 +156,18 @@ public:
 	virtual const char* get_name() const { return "NeuralNetwork";}
 	
 protected:	
-	/** trains the network using gradient descent */
+	/** trains the network */
 	virtual bool train_machine(CFeatures* data=NULL);
+	
+	/** trains the network using gradient descent*/
+	virtual bool train_gradient_descent(float64_t* inputs, 
+			float64_t* targets,
+			int32_t training_set_size);
+	
+	/** trains the network using L-BFGS*/
+	virtual bool train_lbfgs(float64_t* inputs, 
+			float64_t* targets,
+			int32_t training_set_size);
 	
 	/** Applies forward propagation, computes the activations of each layer
 	 * 
@@ -178,8 +205,13 @@ protected:
 	 * 
 	 * @param targets desired values for the output layer's activations. matrix 
 	 * of size m_layers[m_num_layers-1].get_num_neurons()*m_batch_size
+	 * 
+	 * @param gradients array to be filled with gradient values. If NULL,
+	 * m_param_gradients is used instead
 	 */
-	virtual void compute_gradients(float64_t* inputs, float64_t* targets);
+	virtual void compute_gradients(float64_t* inputs, 
+			float64_t* targets,
+			float64_t* gradients=NULL);
 	
 	/** Computes the error between the output layer's activations and the given
 	 * target activations.
@@ -205,7 +237,9 @@ private:
 	CNeuralLayer* get_layer(int32_t i)
 	{
 		CNeuralLayer* layer = (CNeuralLayer*)m_layers->element(i);
-		SG_UNREF(layer);
+		// needed because m_layers->element(i) increases the reference count of
+		// layer i
+		SG_UNREF(layer); 
 		return layer;
 	}
 	
@@ -242,26 +276,67 @@ private:
 	
 	void init();
 	
+	/** callback for l-bfgs */
+	static float64_t lbfgs_evaluate(void *userdata, 
+			const float64_t *W, 
+			float64_t *grad, 
+			const int32_t n, 
+			const float64_t step);
+
+	/** callback for l-bfgs */
+	static int lbfgs_progress(void *instance,
+			const float64_t *x,
+			const float64_t *g,
+			const float64_t fx,
+			const float64_t xnorm,
+			const float64_t gnorm,
+			const float64_t step,
+			int n,
+			int k,
+			int ls
+			);
+	
 public:
+	/** Optimization method, default is NNOM_LBFGS */
+	ENNOptimizationMethod optimization_method;
+	
+	/** controls whether the errors are printed during training, default true */
+	bool print_during_training;
+	
 	/** L2 Regularization coeff, default value is 0.0*/
 	float64_t l2_coefficient;
 	
-	/** size of the mini-batch used during training, if 0 full-batch training is
-	 * performed
+	/** convergence criteria
+	 * training stops when (E'- E)/E < epsilon
+	 * where E is the error at the current iterations and E' is the error at the
+	 * previous iteration
+	 * default value is 1.0e-5
+	 * 
+	 * NOTE: epsilon is currently ignored by gradient descent, unless full-batch
+	 * training is used.
 	 */
-	int32_t mini_batch_size;
+	float64_t epsilon;
 	
-	/** training parameters, maximum number of iterations over the training set
-	 * defualt value is 100
+	/** maximum number of iterations over the training set.
+	 * If 0, training will continue until convergence. 
+	 * defualt value is 0
 	 */
 	int32_t max_num_epochs;
+	
+	/** size of the mini-batch used during gradient descent training, 
+	 * if 0 full-batch training is performed
+	 * default value is 0
+	 * 
+	 * NOTE: epsilon is currently ignored by gradient descent, unless full-batch
+	 * training is used.
+	 */
+	int32_t gd_mini_batch_size;
 	
 	/** gradient descent learning rate, defualt value 0.1 */
 	float64_t gd_learning_rate;
 	
 	/** gradient descent momentum multiplier, default value 0.9 */
 	float64_t gd_momentum;
-	
 protected:
 	/** number of neurons in the input layer */
 	int32_t m_num_inputs;
@@ -298,6 +373,13 @@ protected:
 	 * defaul value is 1
 	 */
 	int32_t m_batch_size;
+	
+private:
+	/** temperary pointers to the training data, used to pass the data to L-BFGS
+	 * routines 
+	 */
+	float64_t* m_lbfgs_temp_inputs;
+	float64_t* m_lbfgs_temp_targets;
 };
 	
 }

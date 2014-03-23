@@ -34,6 +34,7 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/neuralnets/NeuralNetwork.h>
+#include <shogun/optimization/lbfgs/lbfgs.h>
 
 using namespace shogun;
 
@@ -44,7 +45,8 @@ CNeuralNetwork::CNeuralNetwork()
 }
 
 void CNeuralNetwork::initialize(int32_t num_inputs, 
-		CDynamicObjectArray* layers)
+		CDynamicObjectArray* layers,
+		float64_t sigma)
 {
 	m_num_inputs = num_inputs;
 	m_num_layers = layers->get_num_elements();
@@ -77,7 +79,7 @@ void CNeuralNetwork::initialize(int32_t num_inputs,
 	for (int32_t i=0; i<m_num_layers; i++)
 	{
 		get_layer(i)->initialize_parameters(get_layer_params(i),	
-				get_layer_param_regularizable(i));
+				get_layer_param_regularizable(i), sigma);
 		
 		get_layer(i)->set_batch_size(m_batch_size);
 	}
@@ -139,35 +141,57 @@ CMulticlassLabels* CNeuralNetwork::apply_multiclass(CFeatures* data)
 
 bool CNeuralNetwork::train_machine(CFeatures* data)
 {
-	float64_t* inputs = features_to_raw(data);
+	ASSERT(max_num_epochs>=0);
 	
-	ASSERT(max_num_epochs>0);
+	float64_t* inputs = features_to_raw(data);
+	float64_t* targets = labels_to_raw(m_labels);
+	
+	int32_t training_set_size = data->get_num_vectors();
+	
+	bool result = false;
+	if (optimization_method==NNOM_GRADIENT_DESCENT)
+		result = train_gradient_descent(inputs, targets, training_set_size);
+	else if (optimization_method==NNOM_LBFGS)
+		result = train_lbfgs(inputs, targets, training_set_size);
+	
+	SG_FREE(targets);
+	return result;
+}
+
+bool CNeuralNetwork::train_gradient_descent(float64_t* inputs, 
+		float64_t* targets, 
+		int32_t training_set_size)
+{
 	ASSERT(gd_learning_rate>0);
 	ASSERT(gd_momentum>=0);
 	
-	int32_t training_set_size = data->get_num_vectors();
-	if (mini_batch_size==0) mini_batch_size = training_set_size;
-	set_batch_size(mini_batch_size);
-
-	float64_t* targets = labels_to_raw(m_labels);
+	if (gd_mini_batch_size==0) gd_mini_batch_size = training_set_size;
+	set_batch_size(gd_mini_batch_size);
+	
+	bool full_batch = (training_set_size==gd_mini_batch_size);
 	
 	int32_t n_param = get_num_parameters();
 	
 	// needed for momentum
 	float64_t* param_updates = SG_CALLOC(float64_t, n_param);
-		
-	for (int32_t i=0; i<max_num_epochs; i++)
+	
+	float64_t error_last_time = -1.0, error = 0;
+	
+	for (int32_t i=0; true; i++)
 	{
-		for (int32_t j=0; j < training_set_size; j += mini_batch_size)
+		if (max_num_epochs!=0)
+			if (i>max_num_epochs) break;
+			
+		for (int32_t j=0; j < training_set_size; j += gd_mini_batch_size)
 		{
-			if (j+mini_batch_size>training_set_size) 
-				j = training_set_size-mini_batch_size;
+			if (j+gd_mini_batch_size>training_set_size) 
+				j = training_set_size-gd_mini_batch_size;
 			
 			float64_t* targets_batch = targets+ j*get_num_outputs();
 			float64_t* inputs_batch = inputs + j*m_num_inputs;
 			
 			compute_gradients(inputs_batch, targets_batch);
-			float64_t error = compute_error(targets_batch);
+			error = compute_error(targets_batch);
 			
 			for (int32_t k=0; k<n_param; k++)
 			{
@@ -177,15 +201,94 @@ bool CNeuralNetwork::train_machine(CFeatures* data)
 				m_params[k] += param_updates[k];
 			}
 			
-			SG_SPRINT("Epoch %i: Error = %f\n",i, error);
+			if (print_during_training)
+				SG_SPRINT("Epoch %i: Error = %f\n",i, error);
 		}
+		if (full_batch && error_last_time!=-1.0)
+			if (CMath::abs(error_last_time-error)/error < epsilon) break;
+		
+		error_last_time = error;
 	}
 	
 	SG_FREE(param_updates);
-	SG_FREE(targets);
 	
 	return true;
 }
+
+bool CNeuralNetwork::train_lbfgs(float64_t* inputs, 
+		float64_t* targets, 
+		int32_t training_set_size)
+{
+	set_batch_size(training_set_size);
+	
+	lbfgs_parameter_t lbfgs_param;
+	lbfgs_parameter_init(&lbfgs_param);
+	lbfgs_param.max_iterations = max_num_epochs;
+	lbfgs_param.epsilon = 0;
+	lbfgs_param.past = 1;
+	lbfgs_param.delta = epsilon;
+	
+	m_lbfgs_temp_inputs = inputs;
+	m_lbfgs_temp_targets = targets;
+
+	int32_t result = lbfgs(m_total_num_parameters, 
+			m_params, 
+			NULL, 
+			&CNeuralNetwork::lbfgs_evaluate, 
+			&CNeuralNetwork::lbfgs_progress, 
+			this, 
+			&lbfgs_param);
+	
+	m_lbfgs_temp_inputs = NULL;
+	m_lbfgs_temp_targets = NULL;
+	
+	if (result==LBFGS_SUCCESS || 1) 
+	{
+		if (print_during_training) SG_SPRINT("L-BFGS Optimization Converged\n");
+	}
+	else if (result==LBFGSERR_MAXIMUMITERATION)
+	{
+		if (print_during_training) 
+			SG_SPRINT("L-BFGS Max Number of Epochs reached\n");
+	}
+	else
+	{
+		if (print_during_training) 
+			SG_SPRINT("L-BFGS optimization ended with return code %i\n",result);
+	}
+	return true;
+}
+
+float64_t CNeuralNetwork::lbfgs_evaluate(void* userdata, 
+		const float64_t* W, 
+		float64_t* grad, 
+		const int32_t n, 
+		const float64_t step)
+{
+	CNeuralNetwork* network = static_cast<CNeuralNetwork*>(userdata);
+	
+	network->compute_gradients(network->m_lbfgs_temp_inputs, 
+			network->m_lbfgs_temp_targets, 
+			grad);
+	
+	return network->compute_error(network->m_lbfgs_temp_targets);
+}
+
+int CNeuralNetwork::lbfgs_progress(void* instance, 
+		const float64_t* x, 
+		const float64_t* g, 
+		const float64_t fx, 
+		const float64_t xnorm, 
+		const float64_t gnorm, 
+		const float64_t step, 
+		int n, int k, int ls)
+{
+	CNeuralNetwork* network = static_cast<CNeuralNetwork*>(instance);
+	if (network->print_during_training) 
+		SG_SPRINT("Epoch %i: Error = %f\n",k, fx);
+	return 0;
+}
+
 
 float64_t* CNeuralNetwork::forward_propagate(CFeatures* data)
 {
@@ -207,10 +310,15 @@ float64_t* CNeuralNetwork::forward_propagate(float64_t* inputs)
 	return get_layer(m_num_layers-1)->get_activations();
 }
 
-void CNeuralNetwork::compute_gradients(float64_t* inputs, float64_t* targets)
+void CNeuralNetwork::compute_gradients(float64_t* inputs, 
+		float64_t* targets,
+		float64_t* gradients)
 {
+	float64_t* param_gradients_backup = m_param_gradients.vector;
+	if (gradients!=NULL) m_param_gradients.vector = gradients;
+	
 	forward_propagate(inputs);
-
+	
 	if (m_num_layers==1)
 	{
 		get_layer(0)->compute_gradients(get_layer_params(0), true, targets, 
@@ -253,16 +361,30 @@ void CNeuralNetwork::compute_gradients(float64_t* inputs, float64_t* targets)
 				m_param_gradients[i] += l2_coefficient*m_params[i];
 		}
 	}
+	
+	m_param_gradients.vector = param_gradients_backup;
 }
 
 float64_t CNeuralNetwork::compute_error(float64_t* targets, float64_t* inputs)
 {
 	if (inputs!=NULL) forward_propagate(inputs);
 	
-	return get_layer(m_num_layers-1)->computer_error(targets);
+	float64_t error = get_layer(m_num_layers-1)->computer_error(targets);
+	
+	// L2 regularization
+	if (l2_coefficient != 0.0)
+	{
+		for (int32_t i=0; i<m_total_num_parameters; i++)
+		{
+			if (m_param_regularizable[i]) 
+				error += 0.5*l2_coefficient*m_params[i]*m_params[i];
+		}
+	}
+	
+	return error;
 }
 
-bool CNeuralNetwork::check_gradients(float64_t epsilon, float64_t tolerance)
+bool CNeuralNetwork::check_gradients(float64_t approx_epsilon, float64_t tolerance)
 {
 	// some random inputs and ouputs
 	SGVector<float64_t> x(m_num_inputs);
@@ -271,21 +393,17 @@ bool CNeuralNetwork::check_gradients(float64_t epsilon, float64_t tolerance)
 	y.random(0.0, 1.0);
 	set_batch_size(1);
 	
-	// disable regularization
-	float64_t l2_coefficient_backup = l2_coefficient;
-	l2_coefficient = 0.0;
-	
 	// numerically compute gradients
 	float64_t* gradients_numerical =SG_MALLOC(float64_t,m_total_num_parameters);
 	for (int32_t i=0; i<m_total_num_parameters; i++)
 	{
-		m_params[i] += epsilon;
+		m_params[i] += approx_epsilon;
 		float64_t error_plus = compute_error(y.vector, x.vector);
-		m_params[i] -= 2*epsilon;
+		m_params[i] -= 2*approx_epsilon;
 		float64_t error_minus = compute_error(y.vector, x.vector);
-		m_params[i] += epsilon;
+		m_params[i] += approx_epsilon;
 		
-		gradients_numerical[i] = (error_plus-error_minus)/(2*epsilon);
+		gradients_numerical[i] = (error_plus-error_minus)/(2*approx_epsilon);
 	}
 	
 	// compute gradients using backpropagation
@@ -298,9 +416,6 @@ bool CNeuralNetwork::check_gradients(float64_t epsilon, float64_t tolerance)
 		
 		if (CMath::abs(diff) > tolerance) return false;
 	}
-	
-	// restore regularization parameter
-	l2_coefficient = l2_coefficient_backup;
 	
 	SG_FREE(gradients_numerical);
 	return true;
@@ -418,25 +533,36 @@ void CNeuralNetwork::set_labels(CLabels* lab)
 
 void CNeuralNetwork::init()
 {
+	optimization_method = NNOM_LBFGS;
+	print_during_training = true;
 	l2_coefficient = 0.0; 
-	mini_batch_size = 0;
-	max_num_epochs = 100; 
+	gd_mini_batch_size = 0;
+	max_num_epochs = 0; 
 	gd_learning_rate = 0.1; 
 	gd_momentum = 0.9; 
+	epsilon = 1.0e-5;
 	m_num_inputs = 0;
 	m_num_layers = 0;
 	m_layers = NULL;
 	m_total_num_parameters = 0;
 	m_batch_size = 1;
+	m_lbfgs_temp_inputs = NULL;
+	m_lbfgs_temp_targets = NULL;
 	
-	SG_ADD(&mini_batch_size, "mini_batch_size",
-	       "Mini-batch size", MS_NOT_AVAILABLE);
+	SG_ADD((machine_int_t*)&optimization_method, "optimization_method",
+	       "Optimization Method", MS_NOT_AVAILABLE);
+	SG_ADD(&print_during_training, "print_during_training",
+	       "Print During Training", MS_NOT_AVAILABLE);
+	SG_ADD(&gd_mini_batch_size, "gd_mini_batch_size",
+	       "Gradient Descent Mini-batch size", MS_NOT_AVAILABLE);
 	SG_ADD(&max_num_epochs, "max_num_epochs",
 	       "Max number of Epochs", MS_NOT_AVAILABLE);
 	SG_ADD(&gd_learning_rate, "gd_learning_rate",
 	       "Gradient descent learning rate", MS_NOT_AVAILABLE);
 	SG_ADD(&gd_momentum, "gd_momentum",
 	       "Gradient Descent Momentum", MS_NOT_AVAILABLE);
+	SG_ADD(&epsilon, "epsilon",
+	       "Epsilon", MS_NOT_AVAILABLE);
 	SG_ADD(&m_num_inputs, "num_inputs",
 	       "Number of Inputs", MS_NOT_AVAILABLE);
 	SG_ADD(&m_num_layers, "num_layers",
