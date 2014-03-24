@@ -13,6 +13,7 @@
   Shogun adjustments (w) 2011 Shashwat Lal Das
 */
 
+#include <shogun/lib/config.h>
 #include <stdlib.h>
 #include <shogun/lib/common.h>
 #include <shogun/mathematics/Math.h>

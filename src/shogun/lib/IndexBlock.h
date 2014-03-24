@@ -10,6 +10,7 @@
 #ifndef INDEXBLOCK_H_
 #define INDEXBLOCK_H_
 
+#include <shogun/lib/config.h>
 #include <shogun/base/SGObject.h>
 
 namespace shogun

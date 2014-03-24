@@ -10,6 +10,7 @@
 #ifndef INDEXBLOCKTREE_H_
 #define INDEXBLOCKTREE_H_
 
+#include <shogun/lib/config.h>
 #include <shogun/lib/IndexBlockRelation.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>

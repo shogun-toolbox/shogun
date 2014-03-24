@@ -11,6 +11,7 @@
 #ifndef __SGMATRIX_LIST_H__
 #define __SGMATRIX_LIST_H__
 
+#include <shogun/lib/config.h>
 #include <shogun/lib/SGReferencedData.h>
 #include <shogun/lib/SGMatrix.h>
 
