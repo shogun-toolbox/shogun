@@ -15,6 +15,7 @@
 #include <vector>
 #include <algorithm>
 
+#include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/preprocessor/DensePreprocessor.h>

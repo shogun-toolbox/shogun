@@ -11,6 +11,7 @@
 #ifndef _CDECOMPRESS_STRING__H__
 #define _CDECOMPRESS_STRING__H__
 
+#include <shogun/lib/config.h>
 #include <shogun/features/Features.h>
 #include <shogun/features/StringFeatures.h>
 #include <shogun/lib/common.h>
