@@ -10,6 +10,7 @@
 #ifndef TASKTREE_H_
 #define TASKTREE_H_
 
+#include <shogun/lib/config.h>
 #include <shogun/transfer/multitask/Task.h>
 #include <shogun/transfer/multitask/TaskRelation.h>
 
