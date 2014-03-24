@@ -13,6 +13,7 @@
 #ifndef _BINARY_LABELS__H__
 #define _BINARY_LABELS__H__
 
+#include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
 #include <shogun/labels/LabelTypes.h>
 #include <shogun/labels/DenseLabels.h>

@@ -10,6 +10,7 @@
 #ifndef _LABELS_FACTORY__H__
 #define _LABELS_FACTORY__H__
 
+#include <shogun/lib/config.h>
 #include <shogun/base/SGObject.h>
 
 namespace shogun

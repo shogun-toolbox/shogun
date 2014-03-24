@@ -32,6 +32,7 @@
 #ifndef _MULTILABEL_LABELS__H__
 #define _MULTILABEL_LABELS__H__
 
+#include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
 #include <shogun/labels/LabelTypes.h>
 #include <shogun/labels/Labels.h>
