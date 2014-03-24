@@ -10,6 +10,7 @@
 #ifndef _CATTRIBUTE_FEATURES__H__
 #define _CATTRIBUTE_FEATURES__H__
 
+#include <shogun/lib/config.h>
 #include <shogun/features/Features.h>
 #include <shogun/base/DynArray.h>
 

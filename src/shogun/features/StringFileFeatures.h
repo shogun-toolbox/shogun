@@ -11,6 +11,7 @@
 #ifndef _CSTRINGFILEFEATURES__H__
 #define _CSTRINGFILEFEATURES__H__
 
+#include <shogun/lib/config.h>
 #include <shogun/features/StringFeatures.h>
 #include <shogun/features/Alphabet.h>
 #include <shogun/io/MemoryMappedFile.h>

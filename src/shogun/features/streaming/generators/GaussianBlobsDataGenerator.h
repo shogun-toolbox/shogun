@@ -10,6 +10,7 @@
 #ifndef __GAUSSIANBLOBSDATAGENERATOR_H_
 #define __GAUSSIANBLOBSDATAGENERATOR_H_
 
+#include <shogun/lib/config.h>
 #include <shogun/features/streaming/StreamingDenseFeatures.h>
 
 namespace shogun

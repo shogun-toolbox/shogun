@@ -11,6 +11,7 @@
 #ifndef _STREAMING_SPARSEFEATURES__H__
 #define _STREAMING_SPARSEFEATURES__H__
 
+#include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
 #include <shogun/features/streaming/StreamingDotFeatures.h>
 #include <shogun/io/streaming/InputParser.h>
