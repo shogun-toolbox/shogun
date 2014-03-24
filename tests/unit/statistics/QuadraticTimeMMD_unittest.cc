@@ -114,6 +114,80 @@ TEST(QuadraticTimeMMD,test_quadratic_mmd_unbiased)
 	SG_UNREF(features_q);
 }
 
+TEST(QuadraticTimeMMD, test_quadratic_mmd_unbiased_different_num_samples)
+{
+	const index_t m=5;
+	const index_t n=6;
+	const index_t d=1;
+	float64_t data[] = {0.61318059, -0.69222999, 0.94424411, -0.48769626,
+		-0.00709551,  0.35025598, 0.20741384, -0.63622519, -1.21315264,
+	   	-0.77349617, -0.42707091};
+
+	/* create data matrix for each features (appended is not supported) */
+	SGMatrix<float64_t> data_p(d, m);
+	memcpy(&(data_p.matrix[0]), &(data[0]), sizeof(float64_t)*m);
+
+	SGMatrix<float64_t> data_q(d, n);
+	memcpy(&(data_q.matrix[0]), &(data[m]), sizeof(float64_t)*n);
+
+	CDenseFeatures<float64_t>* features_p=new CDenseFeatures<float64_t>(data_p);
+	CDenseFeatures<float64_t>* features_q=new CDenseFeatures<float64_t>(data_q);
+
+	/* shoguns kernel width is different */
+	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
+
+	/* create MMD instance, convienience constructor */
+	CQuadraticTimeMMD* mmd=new CQuadraticTimeMMD(kernel, features_p, features_q);
+	mmd->set_statistic_type(UNBIASED);
+
+	/* assert python result at
+	 * https://github.com/lambday/shogun-hypothesis-testing/blob/master/mmd.py */
+	float64_t statistic=mmd->compute_statistic();
+	EXPECT_NEAR(statistic, -0.151251364436, 1E-9);
+
+	/* clean up */
+	SG_UNREF(mmd);
+	SG_UNREF(features_p);
+	SG_UNREF(features_q);
+}
+
+TEST(QuadraticTimeMMD, test_quadratic_mmd_biased_different_num_samples)
+{
+	const index_t m=5;
+	const index_t n=6;
+	const index_t d=1;
+	float64_t data[] = {-0.47616889, -2.1767364, -0.04185537, -1.20787529,
+		1.94875193, -0.16695709, 2.51282666, -0.58116389, 1.52366887,
+		0.18985099, 0.76120258};
+
+	/* create data matrix for each features (appended is not supported) */
+	SGMatrix<float64_t> data_p(d, m);
+	memcpy(&(data_p.matrix[0]), &(data[0]), sizeof(float64_t)*m);
+
+	SGMatrix<float64_t> data_q(d, n);
+	memcpy(&(data_q.matrix[0]), &(data[m]), sizeof(float64_t)*n);
+
+	CDenseFeatures<float64_t>* features_p=new CDenseFeatures<float64_t>(data_p);
+	CDenseFeatures<float64_t>* features_q=new CDenseFeatures<float64_t>(data_q);
+
+	/* shoguns kernel width is different */
+	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
+
+	/* create MMD instance, convienience constructor */
+	CQuadraticTimeMMD* mmd=new CQuadraticTimeMMD(kernel, features_p, features_q);
+	mmd->set_statistic_type(BIASED);
+
+	/* assert python result at
+	 * https://github.com/lambday/shogun-hypothesis-testing/blob/master/mmd.py */
+	float64_t statistic=mmd->compute_statistic();
+	EXPECT_NEAR(statistic, 2.1948962593, 1E-8);
+
+	/* clean up */
+	SG_UNREF(mmd);
+	SG_UNREF(features_p);
+	SG_UNREF(features_q);
+}
+
 TEST(QuadraticTimeMMD,test_quadratic_mmd_precomputed_kernel)
 {
 	index_t m=8;
