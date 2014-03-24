@@ -31,6 +31,7 @@
 #ifndef __QUADRACTIMEMMD_H_
 #define __QUADRACTIMEMMD_H_
 
+#include <shogun/lib/config.h>
 #include <shogun/statistics/KernelTwoSampleTest.h>
 
 namespace shogun

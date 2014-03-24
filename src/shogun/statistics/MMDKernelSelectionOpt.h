@@ -10,6 +10,7 @@
 #ifndef __MMDKERNELSELECTIONOPTSINGLE_H_
 #define __MMDKERNELSELECTIONOPTSINGLE_H_
 
+#include <shogun/lib/config.h>
 #include <shogun/statistics/MMDKernelSelection.h>
 
 namespace shogun

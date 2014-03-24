@@ -32,6 +32,7 @@
 #ifndef STREAMING_MMD_H_
 #define STREAMING_MMD_H_
 
+#include <shogun/lib/config.h>
 #include <shogun/statistics/KernelTwoSampleTest.h>
 
 namespace shogun

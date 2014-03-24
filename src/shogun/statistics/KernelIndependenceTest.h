@@ -32,6 +32,7 @@
 #ifndef KERNEL_INDEPENDENCE_TEST_H_
 #define KERNEL_INDEPENDENCE_TEST_H_
 
+#include <shogun/lib/config.h>
 #include <shogun/statistics/IndependenceTest.h>
 
 namespace shogun
