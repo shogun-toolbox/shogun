@@ -11,6 +11,7 @@
 #ifndef CROSSVALIDATIONMULTICLASSSTORAGE_H_
 #define CROSSVALIDATIONMULTICLASSSTORAGE_H_
 
+#include <shogun/lib/config.h>
 #include <shogun/evaluation/CrossValidationOutput.h>
 #include <shogun/evaluation/BinaryClassEvaluation.h>
 #include <shogun/labels/MulticlassLabels.h>

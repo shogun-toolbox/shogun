@@ -11,6 +11,7 @@
 #ifndef __CROSSVALIDATION_H_
 #define __CROSSVALIDATION_H_
 
+#include <shogun/lib/config.h>
 #include <shogun/evaluation/EvaluationResult.h>
 #include <shogun/evaluation/MachineEvaluation.h>
 

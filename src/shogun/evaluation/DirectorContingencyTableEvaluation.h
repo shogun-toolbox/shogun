@@ -10,6 +10,7 @@
 #ifndef DIRECTORCONTINGENCYTABLEEVALUATION_H_
 #define DIRECTORCONTINGENCYTABLEEVALUATION_H_
 
+#include <shogun/lib/config.h>
 #include <shogun/evaluation/ContingencyTableEvaluation.h>
 #include <shogun/lib/config.h>
 #ifdef USE_SWIG_DIRECTORS

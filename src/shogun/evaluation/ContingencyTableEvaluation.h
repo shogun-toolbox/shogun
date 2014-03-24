@@ -11,6 +11,7 @@
 #ifndef CONTINGENCYTABLEEVALUATION_H_
 #define CONTINGENCYTABLEEVALUATION_H_
 
+#include <shogun/lib/config.h>
 #include <shogun/evaluation/BinaryClassEvaluation.h>
 #include <shogun/labels/Labels.h>
 #include <shogun/mathematics/Math.h>

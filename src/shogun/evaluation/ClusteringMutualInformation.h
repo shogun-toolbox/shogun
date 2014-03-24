@@ -11,6 +11,7 @@
 #ifndef __CLUSTERINGMUTUALINFORMATION_H__
 #define __CLUSTERINGMUTUALINFORMATION_H__
 
+#include <shogun/lib/config.h>
 #include <shogun/evaluation/ClusteringEvaluation.h>
 
 namespace shogun

@@ -11,7 +11,7 @@
 #define CGRADIENTCRITERION_H_
 
 #include <shogun/evaluation/Evaluation.h>
-
+#include <shogun/lib/config.h>
 namespace shogun
 {
 
