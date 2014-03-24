@@ -11,6 +11,8 @@
 #ifndef _REJECTIONSTRATEGY_H___
 #define _REJECTIONSTRATEGY_H___
 
+#include <shogun/lib/config.h>
+
 namespace shogun
 {
 

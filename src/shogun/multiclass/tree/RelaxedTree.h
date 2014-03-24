@@ -11,6 +11,7 @@
 #ifndef RELAXEDTREE_H__
 #define RELAXEDTREE_H__
 
+#include <shogun/lib/config.h>
 #include <utility>
 #include <vector>
 

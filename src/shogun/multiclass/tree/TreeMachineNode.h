@@ -32,6 +32,7 @@
 #ifndef TREEMACHINENODE_H__
 #define TREEMACHINENODE_H__
 
+#include <shogun/lib/config.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/lib/DynamicObjectArray.h>

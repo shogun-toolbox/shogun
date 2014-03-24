@@ -17,6 +17,7 @@
 #include <shogun/multiclass/ecoc/ECOCEncoder.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/labels/Labels.h>
+#include <shogun/lib/config.h>
 
 namespace shogun
 {

@@ -59,6 +59,7 @@
 #define std_hash_map std::map
 #define std_hash_set std::set
 
+#include <shogun/lib/config.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/multiclass/MulticlassSVM.h>

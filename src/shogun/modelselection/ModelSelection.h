@@ -11,6 +11,7 @@
 #ifndef __MODELSELECTION_H_
 #define __MODELSELECTION_H_
 
+#include <shogun/lib/config.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/evaluation/MachineEvaluation.h>
 

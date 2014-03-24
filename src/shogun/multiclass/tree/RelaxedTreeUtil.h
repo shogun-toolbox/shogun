@@ -11,6 +11,7 @@
 #ifndef RELAXEDTREEUTIL_H__
 #define RELAXEDTREEUTIL_H__
 
+#include <shogun/lib/config.h>
 #include <shogun/machine/BaseMulticlassMachine.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/labels/MulticlassLabels.h>

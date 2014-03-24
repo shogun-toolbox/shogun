@@ -11,6 +11,7 @@
 #ifndef RANDOMSEARCHMODELSELECTION_H_
 #define RANDOMSEARCHMODELSELECTION_H_
 
+#include <shogun/lib/config.h>
 #include <shogun/modelselection/ModelSelection.h>
 #include <shogun/base/DynArray.h>
 

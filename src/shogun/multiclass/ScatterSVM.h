@@ -12,6 +12,7 @@
 #ifndef _SCATTERSVM_H___
 #define _SCATTERSVM_H___
 
+#include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/config.h>
 #include <shogun/multiclass/MulticlassSVM.h>

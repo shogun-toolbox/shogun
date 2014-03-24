@@ -10,6 +10,7 @@
  */
 
 #include <shogun/multiclass/MulticlassStrategy.h>
+#include <shogun/lib/config.h>
 
 namespace shogun
 {
