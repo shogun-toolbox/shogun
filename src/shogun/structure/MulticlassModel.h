@@ -12,6 +12,7 @@
 #ifndef _MULTICLASS_MODEL__H__
 #define _MULTICLASS_MODEL__H__
 
+#include <shogun/lib/config.h>
 #include <shogun/structure/StructuredModel.h>
 
 namespace shogun

@@ -11,6 +11,7 @@
 #ifndef __FACTOR_TYPE_H__
 #define __FACTOR_TYPE_H__
 
+#include <shogun/lib/config.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/SGVector.h>
 

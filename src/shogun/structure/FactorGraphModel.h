@@ -11,6 +11,7 @@
 #ifndef __FACTOR_GRAPH_MODEL_H__
 #define __FACTOR_GRAPH_MODEL_H__
 
+#include <shogun/lib/config.h>
 #include <shogun/lib/SGString.h>
 #include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/structure/StructuredModel.h>

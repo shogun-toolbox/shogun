@@ -11,6 +11,7 @@
 #ifndef _STRUCTURED_MODEL__H__
 #define _STRUCTURED_MODEL__H__
 
+#include <shogun/lib/config.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/features/Features.h>
 #include <shogun/labels/StructuredLabels.h>

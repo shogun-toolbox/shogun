@@ -12,6 +12,7 @@
 #ifndef _MULTICLASS_SO_LABELS__H__
 #define _MULTICLASS_SO_LABELS__H__
 
+#include <shogun/lib/config.h>
 #include <shogun/labels/StructuredLabels.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/StructuredData.h>

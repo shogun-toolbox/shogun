@@ -11,6 +11,7 @@
 #ifndef __MAP_INFERENCE_H__
 #define __MAP_INFERENCE_H__
 
+#include <shogun/lib/config.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/structure/FactorGraph.h>

@@ -11,6 +11,7 @@
 #ifndef _HMSVM_MODEL__H__
 #define _HMSVM_MODEL__H__
 
+#include <shogun/lib/config.h>
 #include <shogun/structure/StructuredModel.h>
 #include <shogun/structure/SequenceLabels.h>
 #include <shogun/structure/StateModelTypes.h>
