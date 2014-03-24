@@ -16,6 +16,7 @@
 #ifndef __STATISTICS_H_
 #define __STATISTICS_H_
 
+#include <shogun/lib/config.h>
 #include <math.h>
 #include <shogun/lib/config.h>
 #include <shogun/base/SGObject.h>
