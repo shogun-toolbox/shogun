@@ -12,9 +12,11 @@
 #ifndef _DYNAMIC_REFOBJECT_ARRAY_H_
 #define _DYNAMIC_REFOBJECT_ARRAY_H_
 
+#include <shogun/lib/config.h>
 #include <shogun/base/RefObject.h>
 #include <shogun/base/DynArray.h>
 #include <shogun/base/Parameter.h>
+
 
 namespace shogun
 {
