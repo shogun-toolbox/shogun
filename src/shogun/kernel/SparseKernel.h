@@ -11,6 +11,7 @@
 #ifndef _SPARSEKERNEL_H___
 #define _SPARSEKERNEL_H___
 
+#include <shogun/lib/config.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/features/SparseFeatures.h>
 

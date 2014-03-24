@@ -11,6 +11,7 @@
 #ifndef _COMMULONGSTRINGKERNEL_H___
 #define _COMMULONGSTRINGKERNEL_H___
 
+#include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/DynamicArray.h>

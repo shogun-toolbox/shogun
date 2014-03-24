@@ -12,6 +12,7 @@
 #ifndef _COMMWORDSTRINGKERNEL_H___
 #define _COMMWORDSTRINGKERNEL_H___
 
+#include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/kernel/string/StringKernel.h>

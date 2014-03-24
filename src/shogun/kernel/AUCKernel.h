@@ -12,6 +12,7 @@
 #ifndef _AUCKERNEL_H___
 #define _AUCKERNEL_H___
 
+#include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
 #include <shogun/kernel/DotKernel.h>
 #include <shogun/features/DenseFeatures.h>

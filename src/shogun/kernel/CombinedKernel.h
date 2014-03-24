@@ -12,6 +12,8 @@
 #ifndef _COMBINEDKERNEL_H___
 #define _COMBINEDKERNEL_H___
 
+
+#include <shogun/lib/config.h>
 #include <shogun/lib/List.h>
 #include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/io/SGIO.h>

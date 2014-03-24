@@ -14,6 +14,7 @@
 #ifndef _OLIGOSTRINGKERNEL_H_
 #define _OLIGOSTRINGKERNEL_H_
 
+#include <shogun/lib/config.h>
 #include <shogun/kernel/string/StringKernel.h>
 
 #include <vector>
