@@ -308,6 +308,41 @@ public:
 	 * @return false
 	 */
 	virtual bool supports_multiclass() const { return false; }
+
+	/** returns the expection of the logarithm of a given probability distribution 
+	 * wrt the variational distribution.
+	 *
+	 * @param lab labels used
+	 * @param mu mean of the variational distribution
+	 * @param s2 variance of the variational distribution
+	 *
+	 * @return expection
+	 */
+	virtual SGVector<float64_t> get_variational_expection(SGVector<float64_t> mu,
+			SGVector<float64_t> s2, const CLabels* lab)
+	{
+		SG_ERROR("Can't compute expection wrt variational distribution\n");
+		return SGVector<float64_t>();
+	}
+
+	/** get derivative of the variational expection of log likelihood 
+	 * with respect to given parameter
+	 *
+	 * @param lab labels used
+	 * @param mu mean of the variational distribution
+	 * @param s2 variance of the variational distribution
+	 * @param param parameter
+	 *
+	 * @return derivative
+	 */
+	virtual SGVector<float64_t> get_variational_first_derivative(const CLabels* lab,
+			SGVector<float64_t> mu, SGVector<float64_t> s2, 
+			const TParameter* param) const
+	{
+		SG_ERROR("Can't compute variational derivative wrt %s parameter\n",
+			param->m_name)
+		return SGVector<float64_t>();
+	}
 };
 }
 #endif /* CLIKELIHOODMODEL_H_ */
