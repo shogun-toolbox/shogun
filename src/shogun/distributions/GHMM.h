@@ -11,6 +11,7 @@
 #ifndef _CGHMM_H___
 #define _CGHMM_H___
 
+#include <shogun/lib/config.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/features/Features.h>
 #include <shogun/distributions/Distribution.h>

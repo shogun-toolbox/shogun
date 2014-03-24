@@ -16,6 +16,7 @@
 #ifndef _VW_CACHEWRITE_H__
 #define _VW_CACHEWRITE_H__
 
+#include <shogun/lib/config.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/common.h>
 #include <shogun/io/IOBuffer.h>

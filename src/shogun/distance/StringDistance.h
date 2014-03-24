@@ -11,6 +11,7 @@
 #ifndef _STRINGDISTANCE_H___
 #define _STRINGDISTANCE_H___
 
+#include <shogun/lib/config.h>
 #include <shogun/distance/Distance.h>
 #include <shogun/features/StringFeatures.h>
 

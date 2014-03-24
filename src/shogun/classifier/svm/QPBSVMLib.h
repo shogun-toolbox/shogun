@@ -15,6 +15,7 @@
 #ifndef QPBSVMLIB_H__
 #define QPBSVMLIB_H__
 
+#include <shogun/lib/config.h>
 #include <math.h>
 #include <limits.h>
 

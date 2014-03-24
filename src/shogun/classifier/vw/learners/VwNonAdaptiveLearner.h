@@ -16,6 +16,7 @@
 #ifndef _VW_NONADAPTIVE_H__
 #define _VW_NONADAPTIVE_H__
 
+#include <shogun/lib/config.h>
 #include <shogun/classifier/vw/VwLearner.h>
 #include <shogun/classifier/vw/vw_common.h>
 

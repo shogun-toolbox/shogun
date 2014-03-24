@@ -12,6 +12,7 @@
 #ifndef __CHMM_H__
 #define __CHMM_H__
 
+
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>
