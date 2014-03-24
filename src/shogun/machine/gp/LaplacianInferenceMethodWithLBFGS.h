@@ -30,8 +30,8 @@
  * Code adapted from Gaussian Process Machine Learning Toolbox
  * http://www.gaussianprocess.org/gpml/code/matlab/doc/
  */
-#ifndef CLAPLACIANINFERENCEMETHODWITHLBFGS_H_
-#define CLAPLACIANINFERENCEMETHODWITHLBFGS_H_
+#ifndef _CLAPLACIANINFERENCEMETHODWITHLBFGS_H_
+#define _CLAPLACIANINFERENCEMETHODWITHLBFGS_H_
 
 #include <shogun/lib/config.h>
 
@@ -234,4 +234,4 @@ private:
 
 } /* namespace shogun */
 #endif /* HAVE_EIGEN3 */
-#endif /* CLAPLACIANINFERENCEMETHODWITHLBFGS_H_ */
+#endif /* _CLAPLACIANINFERENCEMETHODWITHLBFGS_H_ */
