@@ -10,6 +10,7 @@
 #ifndef __LINE_READER_H__
 #define __LINE_READER_H__
 
+#include <shogun/lib/config.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/base/SGObject.h>
 #include <stdio.h>

@@ -10,6 +10,7 @@
 #ifndef __STREAMING_VWFILE_H__
 #define __STREAMING_VWFILE_H__
 
+#include <shogun/lib/config.h>
 #include <shogun/io/streaming/StreamingFile.h>
 #include <shogun/classifier/vw/vw_common.h>
 #include <shogun/classifier/vw/VwParser.h>
