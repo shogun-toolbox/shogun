@@ -11,6 +11,7 @@
 #ifndef BAGGINGMACHINE_H
 #define BAGGINGMACHINE_H
 
+#include <shogun/lib/config.h>
 #include <shogun/machine/Machine.h>
 
 namespace shogun
