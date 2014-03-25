@@ -75,6 +75,7 @@ TEST(LogDetEstimator, sample)
 	SG_UNREF(e);
 }
 
+#ifdef HAVE_LAPACK
 TEST(LogDetEstimator, Sparse_sample_constructor)
 {
 	const index_t size=16;
@@ -105,6 +106,7 @@ TEST(LogDetEstimator, Sparse_sample_constructor)
 	SG_UNREF(op);
 	SG_UNREF(e);
 }
+#endif //HAVE_LAPACK
 #endif // EIGEN_VERSION_AT_LEAST(3,1,0)
 
 TEST(LogDetEstimator, sample_ratapp_dense)
