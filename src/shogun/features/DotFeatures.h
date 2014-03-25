@@ -12,6 +12,7 @@
 #ifndef _DOTFEATURES_H___
 #define _DOTFEATURES_H___
 
+#include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
 #include <shogun/features/Features.h>
 #include <shogun/lib/SGMatrix.h>

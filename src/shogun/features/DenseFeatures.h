@@ -14,6 +14,7 @@
 #ifndef _DENSEFEATURES__H__
 #define _DENSEFEATURES__H__
 
+#include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/Cache.h>
 #include <shogun/io/File.h>

@@ -11,6 +11,7 @@
 #ifndef _HASHED_SPARSEFEATURES_H__
 #define _HASHED_SPARSEFEATURES_H__
 
+#include <shogun/lib/config.h>
 #include <shogun/features/SparseFeatures.h>
 #include <shogun/features/DotFeatures.h>
 #include <shogun/lib/SGSparseVector.h>

@@ -11,6 +11,7 @@
 #ifndef __PLIF_BASE_H__
 #define __PLIF_BASE_H__
 
+#include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/mathematics/Math.h>

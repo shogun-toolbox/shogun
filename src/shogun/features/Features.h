@@ -13,6 +13,7 @@
 #ifndef _CFEATURES__H__
 #define _CFEATURES__H__
 
+#include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
 #include <shogun/io/File.h>
 #include <shogun/base/SGObject.h>

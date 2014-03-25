@@ -12,6 +12,7 @@
 #ifndef __PARAMETERCOMBINATION_H__
 #define __PARAMETERCOMBINATION_H__
 
+#include <shogun/lib/config.h>
 #include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/lib/Map.h>
 

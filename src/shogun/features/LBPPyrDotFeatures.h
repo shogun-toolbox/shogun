@@ -12,6 +12,7 @@
 #ifndef _LBP_PYR_DOTFEATURES__H__
 #define _LBP_PYR_DOTFEATURES__H__
 
+#include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
 #include <shogun/features/DotFeatures.h>
 #include <shogun/features/DenseFeatures.h>

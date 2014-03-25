@@ -11,6 +11,7 @@
 #ifndef __SPLITTINGSTRATEGY_H_
 #define __SPLITTINGSTRATEGY_H_
 
+#include <shogun/lib/config.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/DynamicArray.h>
 #include <shogun/lib/DynamicObjectArray.h>

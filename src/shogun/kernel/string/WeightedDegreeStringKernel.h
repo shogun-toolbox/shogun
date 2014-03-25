@@ -12,6 +12,7 @@
 #ifndef _WEIGHTEDDEGREESTRINGKERNEL_H___
 #define _WEIGHTEDDEGREESTRINGKERNEL_H___
 
+#include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/Trie.h>
 #include <shogun/kernel/string/StringKernel.h>

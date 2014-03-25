@@ -13,6 +13,7 @@
 #ifndef _LIST_H_
 #define _LIST_H_
 
+#include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/base/Parameter.h>

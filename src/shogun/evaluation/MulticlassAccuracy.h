@@ -11,6 +11,7 @@
 #ifndef MULTICLASSACCURACY_H_
 #define MULTICLASSACCURACY_H_
 
+#include <shogun/lib/config.h>
 #include <shogun/evaluation/Evaluation.h>
 #include <shogun/labels/Labels.h>
 

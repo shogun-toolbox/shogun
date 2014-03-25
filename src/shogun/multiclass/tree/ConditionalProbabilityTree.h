@@ -11,6 +11,7 @@
 #ifndef CONDITIONALPROBABILITYTREE_H__
 #define CONDITIONALPROBABILITYTREE_H__
 
+#include <shogun/lib/config.h>
 #include <map>
 
 #include <shogun/features/streaming/StreamingDenseFeatures.h>

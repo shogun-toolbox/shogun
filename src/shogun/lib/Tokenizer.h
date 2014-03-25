@@ -11,6 +11,7 @@
 #ifndef _TOKENIZER__H__
 #define _TOKENIZER__H__
 
+#include <shogun/lib/config.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/SGString.h>
 #include <shogun/lib/SGVector.h>

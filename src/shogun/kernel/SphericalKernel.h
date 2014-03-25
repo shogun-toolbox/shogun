@@ -9,11 +9,12 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include <shogun/lib/config.h>
+
 
 #ifndef _SPHERICALKERNEL_H__
 #define _SPHERICALKERNEL_H__
 
+#include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/distance/Distance.h>

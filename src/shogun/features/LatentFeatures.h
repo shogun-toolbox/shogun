@@ -11,6 +11,7 @@
 #ifndef __LATENTFEATURES_H__
 #define __LATENTFEATURES_H__
 
+#include <shogun/lib/config.h>
 #include <shogun/features/Features.h>
 #include <shogun/lib/Data.h>
 

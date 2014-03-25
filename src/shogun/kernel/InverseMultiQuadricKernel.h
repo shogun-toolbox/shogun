@@ -9,11 +9,12 @@
  * Copyright (C) 2011 Indian Institute of Technology Bombay
  */
 
-#include <shogun/lib/config.h>
+
 
 #ifndef INVERSEMULTIQUADRIC_H_
 #define INVERSEMULTIQUADRIC_H_
 
+#include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/distance/Distance.h>

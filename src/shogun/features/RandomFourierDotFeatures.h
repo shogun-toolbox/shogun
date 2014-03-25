@@ -11,6 +11,7 @@
 #ifndef _RANDOMFOURIER_DOTFEATURES__H__
 #define _RANDOMFOURIER_DOTFEATURES__H__
 
+#include <shogun/lib/config.h>
 #include <shogun/features/RandomKitchenSinksDotFeatures.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/DotFeatures.h>

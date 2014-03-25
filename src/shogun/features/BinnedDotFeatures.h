@@ -10,6 +10,7 @@
 #ifndef _BINNED_DOTFEATURES_H___
 #define _BINNED_DOTFEATURES_H___
 
+#include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
 #include <shogun/features/DotFeatures.h>
 #include <shogun/features/DenseFeatures.h>

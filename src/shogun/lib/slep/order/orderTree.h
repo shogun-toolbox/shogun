@@ -17,6 +17,8 @@
 #ifndef  ORDERTREE_SLEP
 #define  ORDERTREE_SLEP
 
+#include <shogun/lib/config.h>
+
 #define IGNORE_IN_CLASSLIST
 
 #include <stdlib.h>

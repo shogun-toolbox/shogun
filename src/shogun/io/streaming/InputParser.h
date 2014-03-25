@@ -14,6 +14,7 @@
 #include <shogun/lib/common.h>
 #ifdef HAVE_PTHREAD
 
+#include <shogun/lib/config.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/io/streaming/StreamingFile.h>
 #include <shogun/io/streaming/ParseBuffer.h>

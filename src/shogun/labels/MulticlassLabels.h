@@ -13,6 +13,7 @@
 #ifndef _MULTICLASS_LABELS__H__
 #define _MULTICLASS_LABELS__H__
 
+#include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
 #include <shogun/io/File.h>
 #include <shogun/labels/LabelTypes.h>

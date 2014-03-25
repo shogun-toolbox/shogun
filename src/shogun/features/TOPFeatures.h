@@ -12,6 +12,7 @@
 #ifndef _CTOPFEATURES__H__
 #define _CTOPFEATURES__H__
 
+#include <shogun/lib/config.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/distributions/HMM.h>
 

@@ -12,6 +12,7 @@
 #ifndef __CROSSVALIDATIONOUTPUT_H_
 #define __CROSSVALIDATIONOUTPUT_H_
 
+#include <shogun/lib/config.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/SGVector.h>
 

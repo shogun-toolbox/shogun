@@ -11,6 +11,7 @@
 #ifndef _GAUSSIANSHIFTKERNEL_H___
 #define _GAUSSIANSHIFTKERNEL_H___
 
+#include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/features/DenseFeatures.h>

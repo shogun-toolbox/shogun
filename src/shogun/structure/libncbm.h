@@ -11,6 +11,7 @@
 #ifndef libncbm_h
 #define libncbm_h
 
+#include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
 #include <shogun/structure/libbmrm.h>
 

@@ -12,6 +12,7 @@
 #ifndef _TRIE_H___
 #define _TRIE_H___
 
+#include <shogun/lib/config.h>
 #include <string.h>
 #include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>

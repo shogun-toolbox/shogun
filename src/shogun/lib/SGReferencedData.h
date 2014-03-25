@@ -9,6 +9,7 @@
 #ifndef __SGREFERENCED_DATA_H__
 #define __SGREFERENCED_DATA_H__
 
+#include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
 
 namespace shogun

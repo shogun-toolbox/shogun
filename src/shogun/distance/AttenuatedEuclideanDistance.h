@@ -11,6 +11,7 @@
 #ifndef _ATTENUATEDEuclideanDISTANCE_H__
 #define _ATTENUATEDEuclideanDISTANCE_H__
 
+#include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
 #include <shogun/distance/RealDistance.h>
 #include <shogun/features/DenseFeatures.h>

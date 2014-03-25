@@ -8,11 +8,12 @@
  * Copyright (C) 2007-2011 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include <shogun/lib/config.h>
+
 
 #ifndef MULTIQUADRIC_H_
 #define MULTIQUADRIC_H_
 
+#include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/distance/Distance.h>

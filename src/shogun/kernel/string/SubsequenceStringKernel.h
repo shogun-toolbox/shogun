@@ -10,6 +10,7 @@
 #ifndef SUBSEQUENCE_STRING_KERNEL_H_
 #define SUBSEQUENCE_STRING_KERNEL_H_
 
+#include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
 #include <shogun/kernel/string/StringKernel.h>
 

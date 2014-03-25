@@ -11,6 +11,7 @@
 #ifndef _CSORTWORDSTRING__H__
 #define _CSORTWORDSTRING__H__
 
+#include <shogun/lib/config.h>
 #include <shogun/features/StringFeatures.h>
 #include <shogun/preprocessor/StringPreprocessor.h>
 #include <shogun/lib/common.h>

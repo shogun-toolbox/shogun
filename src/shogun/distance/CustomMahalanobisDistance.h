@@ -12,7 +12,7 @@
 #define CUSTOM_MAHALANOBIS_DISTANCE_
 
 #ifdef HAVE_EIGEN3
-
+#include <shogun/lib/config.h>
 #include <shogun/distance/RealDistance.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/lib/SGMatrix.h>

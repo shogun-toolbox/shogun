@@ -11,6 +11,7 @@
 #ifndef __CLUSTERINGACCURACY_H__
 #define __CLUSTERINGACCURACY_H__
 
+#include <shogun/lib/config.h>
 #include <shogun/evaluation/ClusteringEvaluation.h>
 
 namespace shogun

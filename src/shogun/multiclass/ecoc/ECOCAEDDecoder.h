@@ -14,6 +14,7 @@
 
 #include <shogun/multiclass/ecoc/ECOCSimpleDecoder.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/lib/config.h>
 
 namespace shogun
 {

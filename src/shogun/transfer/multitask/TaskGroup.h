@@ -10,6 +10,7 @@
 #ifndef TASKGROUP_H_
 #define TASKGROUP_H_
 
+#include <shogun/lib/config.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/transfer/multitask/Task.h>
 #include <shogun/transfer/multitask/TaskRelation.h>

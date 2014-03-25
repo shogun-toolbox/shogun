@@ -11,6 +11,7 @@
 #ifndef _LINEARMULTICLASSMACHINE_H___
 #define _LINEARMULTICLASSMACHINE_H___
 
+#include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
 #include <shogun/features/DotFeatures.h>
 #include <shogun/machine/LinearMachine.h>

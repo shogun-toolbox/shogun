@@ -13,6 +13,7 @@
 #ifndef _REAL_LABELS__H__
 #define _REAL_LABELS__H__
 
+#include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
 #include <shogun/io/File.h>
 #include <shogun/labels/LabelTypes.h>

@@ -13,7 +13,7 @@
 #ifndef _DomainAdaptation_SVM_H___
 #define _DomainAdaptation_SVM_H___
 
-
+#include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
 #include <shogun/classifier/svm/SVMLight.h>
 

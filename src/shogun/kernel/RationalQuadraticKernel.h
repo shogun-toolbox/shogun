@@ -8,11 +8,12 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include <shogun/lib/config.h>
+
 
 #ifndef RATIONAL_QUADRATIC_KERNEL_H_
 #define RATIONAL_QUADRATIC_KERNEL_H_
 
+#include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/distance/Distance.h>

@@ -14,6 +14,7 @@
 #ifndef libbmrm_h
 #define libbmrm_h
 
+#include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
 #include <shogun/structure/BmrmStatistics.h>
 #include <shogun/structure/DualLibQPBMSOSVM.h>

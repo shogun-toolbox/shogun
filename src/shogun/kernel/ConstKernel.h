@@ -11,6 +11,8 @@
 #ifndef _CONSTKERNEL_H___
 #define _CONSTKERNEL_H___
 
+
+#include <shogun/lib/config.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/common.h>
 #include <shogun/kernel/Kernel.h>

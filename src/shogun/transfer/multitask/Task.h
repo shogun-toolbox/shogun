@@ -10,6 +10,7 @@
 #ifndef TASK_H_
 #define TASK_H_
 
+#include <shogun/lib/config.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/List.h>
 

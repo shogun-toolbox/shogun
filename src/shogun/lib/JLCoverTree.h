@@ -1,6 +1,7 @@
 #ifndef JLCOVERTREE_H
 #define JLCOVERTREE_H
 
+#include <shogun/lib/config.h>
 #include <shogun/lib/JLCoverTreePoint.h>
 #include <shogun/mathematics/Math.h>
 

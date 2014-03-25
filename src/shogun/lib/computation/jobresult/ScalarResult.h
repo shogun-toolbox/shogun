@@ -10,6 +10,7 @@
 #ifndef SCALAR_RESULT_H_
 #define SCALAR_RESULT_H_
 
+#include <shogun/lib/config.h>
 #include <shogun/lib/computation/jobresult/JobResult.h>
 #include <shogun/io/SGIO.h>
 

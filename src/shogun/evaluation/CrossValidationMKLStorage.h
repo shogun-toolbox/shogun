@@ -11,6 +11,7 @@
 #ifndef __CROSSVALIDATIONMKLSTORAGE_H_
 #define __CROSSVALIDATIONMKLSTORAGE_H_
 
+#include <shogun/lib/config.h>
 #include <shogun/evaluation/CrossValidationOutput.h>
 #include <shogun/lib/SGMatrix.h>
 

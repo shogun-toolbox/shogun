@@ -11,6 +11,7 @@
 #ifndef _STRUCTUREDDATA_H__
 #define _STRUCTUREDDATA_H__
 
+#include <shogun/lib/config.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/StructuredDataTypes.h>
 

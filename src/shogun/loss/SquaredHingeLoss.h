@@ -12,6 +12,7 @@
 #ifndef _SQUAREDHINGELOSS_H__
 #define _SQUAREDHINGELOSS_H__
 
+#include <shogun/lib/config.h>
 #include <shogun/loss/LossFunction.h>
 
 namespace shogun

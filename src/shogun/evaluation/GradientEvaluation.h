@@ -14,7 +14,7 @@
 #include <shogun/evaluation/MachineEvaluation.h>
 #include <shogun/evaluation/DifferentiableFunction.h>
 #include <shogun/evaluation/EvaluationResult.h>
-
+#include <shogun/lib/config.h>
 namespace shogun
 {
 

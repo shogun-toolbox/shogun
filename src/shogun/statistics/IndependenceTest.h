@@ -32,6 +32,7 @@
 #ifndef INDEPENDENCE_TEST_H_
 #define INDEPENDENCE_TEST_H_
 
+#include <shogun/lib/config.h>
 #include <shogun/statistics/HypothesisTest.h>
 
 namespace shogun

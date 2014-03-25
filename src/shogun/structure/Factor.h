@@ -11,6 +11,7 @@
 #ifndef __FACTOR_RELATED_H__
 #define __FACTOR_RELATED_H__
 
+#include <shogun/lib/config.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGSparseVector.h>

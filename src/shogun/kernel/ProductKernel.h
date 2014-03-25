@@ -12,6 +12,7 @@
 #ifndef _PRODUCTKERNEL_H___
 #define _PRODUCTKERNEL_H___
 
+#include <shogun/lib/config.h>
 #include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/kernel/Kernel.h>

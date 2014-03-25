@@ -13,6 +13,7 @@
 #ifndef __SGSPARSEMATRIX_H__
 #define __SGSPARSEMATRIX_H__
 
+#include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/SGReferencedData.h>
 #include <shogun/lib/SGVector.h>

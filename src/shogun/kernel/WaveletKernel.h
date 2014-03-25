@@ -11,6 +11,7 @@
 #ifndef _WAVELETKERNEL_H___
 #define _WAVELETKERNEL_H___
 
+#include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
 #include <shogun/kernel/DotKernel.h>
 #include <shogun/features/DotFeatures.h>

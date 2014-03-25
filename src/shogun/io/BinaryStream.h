@@ -11,6 +11,7 @@
 #ifndef __BINARYSTREAM_H__
 #define __BINARYSTREAM_H__
 
+#include <shogun/lib/config.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/memory.h>

@@ -8,11 +8,11 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include <shogun/lib/config.h>
 
 #ifndef CAUCHYKERNEL_H_
 #define CAUCHYKERNEL_H_
 
+#include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/distance/Distance.h>

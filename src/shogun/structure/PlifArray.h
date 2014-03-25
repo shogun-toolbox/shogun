@@ -11,6 +11,7 @@
 #ifndef __PLIFARRAY_H__
 #define __PLIFARRAY_H__
 
+#include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/base/DynArray.h>

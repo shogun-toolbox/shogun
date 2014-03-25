@@ -10,6 +10,7 @@
 #ifndef __STREAMING_ASCIIFILE_H__
 #define __STREAMING_ASCIIFILE_H__
 
+#include <shogun/lib/config.h>
 #include <shogun/io/streaming/StreamingFile.h>
 #include <shogun/lib/v_array.h>
 

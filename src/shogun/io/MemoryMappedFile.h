@@ -11,6 +11,7 @@
 #ifndef __MEMORYMAPPEDFILE_H__
 #define __MEMORYMAPPEDFILE_H__
 
+#include <shogun/lib/config.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/base/SGObject.h>
 

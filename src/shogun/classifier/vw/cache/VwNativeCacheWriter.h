@@ -16,6 +16,7 @@
 #ifndef _VW_NATIVECACHE_WRITE_H__
 #define _VW_NATIVECACHE_WRITE_H__
 
+#include <shogun/lib/config.h>
 #include <shogun/classifier/vw/cache/VwCacheWriter.h>
 
 namespace shogun

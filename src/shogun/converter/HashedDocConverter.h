@@ -11,6 +11,7 @@
 #ifndef _HASHEDDOCCONVERTER__H__
 #define _HASHEDDOCCONVERTER__H__
 
+#include <shogun/lib/config.h>
 #include <shogun/converter/Converter.h>
 #include <shogun/features/Features.h>
 #include <shogun/lib/Tokenizer.h>

@@ -11,6 +11,8 @@
 #ifndef __STATE_MODEL_TYPES_H__
 #define __STATE_MODEL_TYPES_H__
 
+#include <shogun/lib/config.h>
+
 namespace shogun
 {
 

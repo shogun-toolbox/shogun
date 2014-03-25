@@ -11,6 +11,7 @@
 #ifndef ECOCSTRATEGY_H__
 #define ECOCSTRATEGY_H__
 
+#include <shogun/lib/config.h>
 #include <shogun/multiclass/MulticlassStrategy.h>
 #include <shogun/multiclass/ecoc/ECOCEncoder.h>
 #include <shogun/multiclass/ecoc/ECOCDecoder.h>

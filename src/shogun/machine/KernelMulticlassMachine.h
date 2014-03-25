@@ -12,6 +12,7 @@
 #ifndef _KERNELMULTICLASSMACHINE_H___
 #define _KERNELMULTICLASSMACHINE_H___
 
+#include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
 #include <shogun/machine/MulticlassMachine.h>
 

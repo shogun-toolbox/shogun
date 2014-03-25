@@ -10,6 +10,7 @@
 #ifndef __CIRCULARBUFFER_H_
 #define __CIRCULARBUFFER_H_
 
+#include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/SGVector.h>

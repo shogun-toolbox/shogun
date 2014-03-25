@@ -11,6 +11,7 @@
 #ifndef BINARYCLASSEVALUATION_H_
 #define BINARYCLASSEVALUATION_H_
 
+#include <shogun/lib/config.h>
 #include <shogun/evaluation/Evaluation.h>
 #include <shogun/labels/BinaryLabels.h>
 

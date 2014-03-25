@@ -13,6 +13,7 @@
 #ifndef _DENSE_LABELS__H__
 #define _DENSE_LABELS__H__
 
+#include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
 #include <shogun/io/File.h>
 #include <shogun/labels/Labels.h>

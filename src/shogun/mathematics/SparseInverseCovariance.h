@@ -7,10 +7,12 @@
  * Copyright (C) 2012 Sergey Lisitsyn
  */
 
+
 #ifndef SPINVCOV_H_
 #define SPINVCOV_H_
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/SGMatrix.h>
+#include <shogun/lib/config.h>
 
 namespace shogun
 {

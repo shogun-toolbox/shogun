@@ -11,6 +11,7 @@
 #ifndef _HASHEDDOCDOTFEATURES__H__
 #define _HASHEDDOCDOTFEATURES__H__
 
+#include <shogun/lib/config.h>
 #include <shogun/features/DotFeatures.h>
 #include <shogun/features/StringFeatures.h>
 #include <shogun/converter/HashedDocConverter.h>

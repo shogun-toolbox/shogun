@@ -10,6 +10,7 @@
 #ifndef _STREAMING_DOTFEATURES__H__
 #define _STREAMING_DOTFEATURES__H__
 
+#include <shogun/lib/config.h>
 #include <shogun/lib/common.h>
 #include <shogun/features/streaming/StreamingFeatures.h>
 #include <shogun/features/FeatureTypes.h>

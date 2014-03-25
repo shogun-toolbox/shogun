@@ -11,6 +11,7 @@
 #ifndef __STRATIFIEDCROSSVALIDATIONSPLITTING_H_
 #define __STRATIFIEDCROSSVALIDATIONSPLITTING_H_
 
+#include <shogun/lib/config.h>
 #include <shogun/evaluation/SplittingStrategy.h>
 
 namespace shogun
