@@ -9,7 +9,7 @@
 
 using namespace shogun;
 
-{% set ignores = ['Set', 'ParseBuffer', 'TreeMachine', 'NeuralNetwork', 'NeuralLinearLayer', 'NeuralLogisticLayer'] %}
+{% set ignores = ['Set', 'ParseBuffer', 'TreeMachine'] %}
 
 {% for class in classes %}
 {% if class in ignores or class.startswith('GUI') %}
