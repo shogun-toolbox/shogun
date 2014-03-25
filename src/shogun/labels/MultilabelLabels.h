@@ -55,14 +55,14 @@ public:
 	 *
 	 * @param num_classes number of (binary) class assignments per label
 	 */
-	CMultilabelLabels(int16_t num_classes);
+	CMultilabelLabels(int32_t num_classes);
 
 	/** constructor
 	 *
 	 * @param num_labels  number of labels
 	 * @param num_classes number of (binary) class assignments per label
 	 */
-	CMultilabelLabels(int32_t num_labels, int16_t num_classes);
+	CMultilabelLabels(int32_t num_labels, int32_t num_classes);
 
 	/** destructor */
 	~CMultilabelLabels();
@@ -100,13 +100,13 @@ public:
 	 *
 	 * @return number of classes
 	 */
-	virtual int16_t  get_num_classes() const;
+	virtual int32_t  get_num_classes() const;
 
 	/** set labels
 	 *
 	 * @param labels list of sparse labels
 	 */
-	void set_labels(SGVector<int16_t> * labels);
+	void set_labels(SGVector<int32_t> * labels);
 
 	/** get list of sparse class labels (one vector per class)
 	 *
@@ -116,9 +116,9 @@ public:
 
 	/** get sparse assignment for j-th label
 	 *
-	 * @return SGVector<int16_t > sparse label
+	 * @return SGVector<int32_t > sparse label
 	 */
-	SGVector<int16_t> get_label(int32_t j);
+	SGVector<int32_t> get_label(int32_t j);
 
 	/** Convert sparse label vector to dense.  The dense vector
 	 * will be {d_true; d_false}^dense_dim.  Indices in sparse
@@ -137,9 +137,9 @@ public:
 	/** set sparse assignment for j-th label
 	 *
 	 * @param int32_t label index
-	 * @param SGVector<int16_t > sparse label
+	 * @param SGVector<int32_t > sparse label
 	 */
-	void set_label(int32_t j, SGVector<int16_t> label);
+	void set_label(int32_t j, SGVector<int32_t> label);
 
 	/** assigning class labels */
 	void set_class_labels(SGVector <int32_t> ** labels_list);
@@ -148,13 +148,13 @@ public:
 	void display() const;
 
 private:
-	void init(int32_t num_labels, int16_t num_classes);
+	void init(int32_t num_labels, int32_t num_classes);
 
 protected:
 
 	int32_t             m_num_labels;
-	int16_t             m_num_classes;
-	SGVector<int16_t> * m_labels;
+	int32_t             m_num_classes;
+	SGVector<int32_t> * m_labels;
 };
 
 }
