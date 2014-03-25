@@ -35,6 +35,7 @@ SET(EXAMPLES
 	regression_gaussian_process_ard
 	regression_gaussian_process_laplace
 	regression_gaussian_process_simple_exact
+	regression_gaussian_process_movielens
 	modelselection_model_selection_parameters_test
 	modelselection_parameter_tree
 	modelselection_apply_parameter_tree
