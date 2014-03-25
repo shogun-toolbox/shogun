@@ -17,6 +17,8 @@
 #ifndef EPPHQ1_SLEP
 #define EPPHQ1_SLEP
 
+#include <shogun/lib/config.h>
+
 /* -------------------------- Function eplb -----------------------------
 
    Euclidean Projection onto l1 Ball (eplb)

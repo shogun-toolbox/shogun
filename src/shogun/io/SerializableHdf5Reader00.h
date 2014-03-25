@@ -11,6 +11,7 @@
 #define __SERIALIZABLE_HDF5_READER_00_H__
 
 #include <shogun/lib/config.h>
+
 #ifdef HAVE_HDF5
 
 #include <shogun/io/SerializableHdf5File.h>

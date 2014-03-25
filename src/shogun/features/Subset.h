@@ -11,6 +11,8 @@
 #ifndef __SUBSET_H_
 #define __SUBSET_H_
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/common.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/mathematics/Math.h>

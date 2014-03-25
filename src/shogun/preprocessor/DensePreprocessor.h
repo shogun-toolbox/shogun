@@ -11,6 +11,8 @@
 #ifndef _DENSEPREPROCESSOR__H__
 #define _DENSEPREPROCESSOR__H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/features/Features.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/lib/common.h>

@@ -12,6 +12,8 @@
 #ifndef _STRUCTURED_OUTPUT_MACHINE__H__
 #define _STRUCTURED_OUTPUT_MACHINE__H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/common.h>
 #include <shogun/machine/Machine.h>
 #include <shogun/structure/SOSVMHelper.h>

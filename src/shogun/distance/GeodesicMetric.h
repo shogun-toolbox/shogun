@@ -11,6 +11,8 @@
 #ifndef _GEODESICMETRIC_H___
 #define _GEODESICMETRIC_H___
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/common.h>
 #include <shogun/distance/DenseDistance.h>
 

@@ -12,6 +12,8 @@
 #ifndef __CROSSVALIDATIONPRINTOUTPUT_H_
 #define __CROSSVALIDATIONPRINTOUTPUT_H_
 
+#include <shogun/lib/config.h>
+
 #include <shogun/evaluation/CrossValidationOutput.h>
 
 namespace shogun

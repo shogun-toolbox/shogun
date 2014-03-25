@@ -13,6 +13,8 @@
 #ifndef __SGOBJECT_H__
 #define __SGOBJECT_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/common.h>
 #include <shogun/lib/DataType.h>
 #include <shogun/base/SGRefObject.h>

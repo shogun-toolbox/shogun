@@ -11,6 +11,8 @@
 #ifndef __PARAMETER_H__
 #define __PARAMETER_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/common.h>
 #include <shogun/lib/DataType.h>
 #include <shogun/base/DynArray.h>

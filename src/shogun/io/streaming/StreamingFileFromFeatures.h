@@ -10,6 +10,8 @@
 #ifndef __STREAMING_FILEFROMFEATURES_H__
 #define __STREAMING_FILEFROMFEATURES_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/io/streaming/StreamingFile.h>
 #include <shogun/io/SGIO.h>
 

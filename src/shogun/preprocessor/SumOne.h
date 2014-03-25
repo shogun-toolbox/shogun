@@ -11,6 +11,8 @@
 #ifndef _CSUMONE__H__
 #define _CSUMONE__H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/preprocessor/DensePreprocessor.h>
 #include <shogun/features/Features.h>
 #include <shogun/lib/common.h>

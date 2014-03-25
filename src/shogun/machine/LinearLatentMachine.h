@@ -11,6 +11,8 @@
 #ifndef __LATENTLINEARMACHINE_H__
 #define __LATENTLINEARMACHINE_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/common.h>
 #include <shogun/machine/LinearMachine.h>
 

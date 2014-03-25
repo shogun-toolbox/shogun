@@ -17,6 +17,8 @@
 #ifndef  EPPVECTOR_SLEP
 #define  EPPVECTOR_SLEP
 
+#include <shogun/lib/config.h>
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>

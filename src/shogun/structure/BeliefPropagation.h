@@ -11,6 +11,8 @@
 #ifndef __BELIEF_PROPAGATION_H__
 #define __BELIEF_PROPAGATION_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/SGVector.h>
 #include <shogun/structure/FactorGraph.h>
 #include <shogun/structure/MAPInference.h>

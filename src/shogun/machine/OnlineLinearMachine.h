@@ -11,6 +11,8 @@
 #ifndef _ONLINELINEARCLASSIFIER_H__
 #define _ONLINELINEARCLASSIFIER_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/common.h>
 #include <shogun/features/streaming/StreamingDotFeatures.h>
 #include <shogun/machine/Machine.h>

@@ -11,6 +11,8 @@
 #ifndef ECOCUTIL_H__
 #define ECOCUTIL_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/mathematics/Math.h>
 
 namespace shogun

@@ -10,6 +10,8 @@
 #ifndef KERNELMEANMATCHING_H_
 #define KERNELMEANMATCHING_H_
 
+#include <shogun/lib/config.h>
+
 #include <shogun/base/SGObject.h>
 #include <shogun/kernel/Kernel.h>
 

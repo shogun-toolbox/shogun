@@ -10,6 +10,8 @@
 #ifndef __COMPRESSOR_H__
 #define __COMPRESSOR_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/common.h>
 #include <shogun/base/SGObject.h>
 

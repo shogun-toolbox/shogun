@@ -12,6 +12,8 @@
 #ifndef _MANHATTANWORDDISTANCE_H___
 #define _MANHATTANWORDDISTANCE_H___
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/common.h>
 #include <shogun/features/Features.h>
 #include <shogun/features/StringFeatures.h>

@@ -17,6 +17,8 @@
 #ifndef  FLSA_SLEP
 #define  FLSA_SLEP
 
+#include <shogun/lib/config.h>
+
 /*
 
    In this file, we solve the Fused Lasso Signal Approximator (FLSA) problem:

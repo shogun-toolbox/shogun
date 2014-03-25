@@ -8,6 +8,10 @@
  */
 #ifndef _LABEL_TYPES__H__
 #define _LABEL_TYPES__H__
+
+#include <shogun/lib/config.h>
+
+
 enum ELabelType
 {
 	/// binary labels +1/-1

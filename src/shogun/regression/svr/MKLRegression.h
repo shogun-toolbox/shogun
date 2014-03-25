@@ -10,6 +10,8 @@
 #ifndef __MKLREGRESSION_H__
 #define __MKLREGRESSION_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/common.h>
 #include <shogun/classifier/mkl/MKL.h>
 

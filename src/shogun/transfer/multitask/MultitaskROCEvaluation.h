@@ -10,6 +10,8 @@
 #ifndef MULTITASKROCEVALUATION_H_
 #define MULTITASKROCEVALUATION_H_
 
+#include <shogun/lib/config.h>
+
 #include <shogun/transfer/multitask/TaskRelation.h>
 #include <shogun/evaluation/ROCEvaluation.h>
 

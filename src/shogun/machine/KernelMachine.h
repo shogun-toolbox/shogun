@@ -12,6 +12,8 @@
 #ifndef _KERNEL_MACHINE_H__
 #define _KERNEL_MACHINE_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/common.h>
 #include <shogun/machine/Machine.h>
 #include <shogun/lib/SGVector.h>

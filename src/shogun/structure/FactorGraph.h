@@ -11,6 +11,8 @@
 #ifndef __FACTORGRAPH_H__
 #define __FACTORGRAPH_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/structure/Factor.h>

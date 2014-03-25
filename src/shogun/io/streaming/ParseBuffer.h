@@ -10,6 +10,8 @@
 #ifndef __PARSEBUFFER_H__
 #define __PARSEBUFFER_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/common.h>
 #ifdef HAVE_PTHREAD
 

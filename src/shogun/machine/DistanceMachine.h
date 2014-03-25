@@ -12,6 +12,8 @@
 #ifndef _DISTANCE_MACHINE_H__
 #define _DISTANCE_MACHINE_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/common.h>
 #include <shogun/machine/Machine.h>
 

@@ -4,6 +4,8 @@
 #undef _POSIX_C_SOURCE
 #undef HAVE_STAT
 
+#include <shogun/lib/config.h>
+
 extern "C" {
 #include <Python.h>
 #include <numpy/arrayobject.h>

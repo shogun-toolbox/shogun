@@ -10,6 +10,8 @@
 #ifndef __SERIALIZABLE_ASCII_FILE_H__
 #define __SERIALIZABLE_ASCII_FILE_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/io/SerializableFile.h>
 #include <shogun/base/DynArray.h>
 #include <shogun/lib/DataType.h>

@@ -12,6 +12,8 @@
 #ifndef _MACHINE_H__
 #define _MACHINE_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/common.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/labels/BinaryLabels.h>

@@ -9,6 +9,7 @@
 
 #ifndef __DATAGENERATOR_H_
 #define __DATAGENERATOR_H_
+
 #include <shogun/lib/config.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/SGMatrix.h>

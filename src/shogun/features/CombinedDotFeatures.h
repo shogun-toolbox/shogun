@@ -13,6 +13,8 @@
 #ifndef _COMBINEDDOTFEATURES_H___
 #define _COMBINEDDOTFEATURES_H___
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/common.h>
 #include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/features/DotFeatures.h>

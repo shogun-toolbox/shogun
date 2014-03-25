@@ -10,6 +10,8 @@
 #ifndef _FUNCTION_H_
 #define _FUNCTION_H_
 
+#include <shogun/lib/config.h>
+
 #include <shogun/base/SGObject.h>
 
 namespace shogun

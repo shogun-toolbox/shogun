@@ -11,6 +11,8 @@
 #ifndef __LATENTLABELS_H__
 #define __LATENTLABELS_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/labels/Labels.h>
 #include <shogun/lib/Data.h>
 #include <shogun/lib/DynamicObjectArray.h>

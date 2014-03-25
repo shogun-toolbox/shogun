@@ -10,6 +10,8 @@
 #ifndef _STREAMING_STRINGFEATURES__H__
 #define _STREAMING_STRINGFEATURES__H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/common.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/base/Parameter.h>

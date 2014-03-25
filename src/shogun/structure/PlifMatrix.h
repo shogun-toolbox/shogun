@@ -11,6 +11,8 @@
 #ifndef _PLIFMATRIX_H_
 #define _PLIFMATRIX_H_
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/DataType.h>
 #include <shogun/lib/SGNDArray.h>
 #include <shogun/lib/SGMatrix.h>

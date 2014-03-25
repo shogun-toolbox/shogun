@@ -11,6 +11,8 @@
 #ifndef PARALLEL_H__
 #define PARALLEL_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/common.h>
 
 namespace shogun

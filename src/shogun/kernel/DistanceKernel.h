@@ -10,7 +10,6 @@
 
 #include <shogun/lib/config.h>
 
-
 #ifndef _DISTANCEKERNEL_H___
 #define _DISTANCEKERNEL_H___
 

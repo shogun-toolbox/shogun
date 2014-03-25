@@ -32,6 +32,8 @@
 #ifndef ID3TREENODEDATA_H__
 #define ID3TREENODEDATA_H__
 
+#include <shogun/lib/config.h>
+
 namespace shogun
 {
 /** @brief structure to store data of a node of
