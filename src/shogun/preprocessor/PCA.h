@@ -185,6 +185,16 @@ class CPCA: public CDimensionReductionPreprocessor
 		 */
 		void set_memory_mode(EPCAMemoryMode e);
 
+		/** set zero tolerance of eigenvalues during data whitening
+		 * @param eigenvalue_zero_tolerance zero tolerance value
+		 */
+		void set_eigenvalue_zero_tolerance(float64_t eigenvalue_zero_tolerance=1e-15);
+
+		/** get zero tolerance of eigenvalues during data whitening
+		 * @return zero tolerance value
+		 */
+		float64_t get_eigenvalue_zero_tolerance() const;
+
 	protected:
 
 		void init();
@@ -213,6 +223,11 @@ class CPCA: public CDimensionReductionPreprocessor
 		EPCAMemoryMode m_mem_mode;
 		/** PCA method */
 		EPCAMethod m_method;
+		/** eigenvalues within zero tolerance
+		 * region are considered 0 while
+		 * whitening to tackle numerical issues
+		 */
+		float64_t m_eigenvalue_zero_tolerance;
 };
 }
 #endif // HAVE_EIGEN3
