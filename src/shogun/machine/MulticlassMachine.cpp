@@ -16,7 +16,7 @@
 #include <shogun/machine/MulticlassMachine.h>
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/mathematics/Statistics.h>
-#include <shogun/labels/MulticlassMultipleOutputLabels.h>
+//#include <shogun/labels/MultilabelLabels.h>
 
 using namespace shogun;
 
@@ -192,9 +192,9 @@ CMulticlassLabels* CMulticlassMachine::apply_multiclass(CFeatures* data)
 	return return_labels;
 }
 
-CMulticlassMultipleOutputLabels* CMulticlassMachine::apply_multiclass_multiple_output(CFeatures* data, int32_t n_outputs)
+CMultilabelLabels* CMulticlassMachine::apply_multiclass_multiple_output(CFeatures* data, int32_t n_outputs)
 {
-	CMulticlassMultipleOutputLabels* return_labels=NULL;
+	CMultilabelLabels* return_labels=NULL;
 
 	if (data)
 		init_machines_for_apply(data);
@@ -212,7 +212,7 @@ CMulticlassMultipleOutputLabels* CMulticlassMachine::apply_multiclass_multiple_o
 			SG_ERROR("num_machines = %d, did you train your machine?", num_machines)
 		REQUIRE(n_outputs<=num_machines,"You request more outputs than machines available")
 
-		CMulticlassMultipleOutputLabels* result=new CMulticlassMultipleOutputLabels(num_vectors);
+		CMultilabelLabels* result=new CMultilabelLabels(num_vectors, n_outputs);
 		CBinaryLabels** outputs=SG_MALLOC(CBinaryLabels*, num_machines);
 
 		for (int32_t i=0; i < num_machines; ++i)

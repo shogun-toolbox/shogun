@@ -80,7 +80,7 @@ PROTOCOLS_DENSELABELS(CRegressionLabels, RegressionLabels, float64_t, "d\0", NPY
 
 %rename(StructuredLabels) CStructuredLabels;
 %rename(LatentLabels) CLatentLabels;
-%rename(MulticlassMultipleOutputLabels) CMulticlassMultipleOutputLabels;
+%rename(MultilabelLabels) CMultilabelLabels;
 %rename(RealFileFeatures) CRealFileFeatures;
 %rename(FKFeatures) CFKFeatures;
 %rename(TOPFeatures) CTOPFeatures;
@@ -503,7 +503,7 @@ namespace shogun
 %include <shogun/labels/MulticlassLabels.h>
 %include <shogun/labels/RegressionLabels.h>
 %include <shogun/labels/StructuredLabels.h>
-%include <shogun/labels/MulticlassMultipleOutputLabels.h>
+%include <shogun/labels/MultilabelLabels.h>
 
 %include <shogun/features/RealFileFeatures.h>
 %include <shogun/features/FKFeatures.h>

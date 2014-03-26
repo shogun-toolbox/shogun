@@ -5,7 +5,7 @@
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/labels/StructuredLabels.h>
-#include <shogun/labels/MulticlassMultipleOutputLabels.h>
+//#include <shogun/labels/MultilabelLabels.h>
 #include <shogun/structure/MulticlassSOLabels.h>
 
 using namespace shogun;
@@ -65,24 +65,24 @@ CStructuredLabels* CLabelsFactory::to_structured(CLabels* base_labels)
 	return NULL;
 }
 
-
-CMulticlassMultipleOutputLabels* CLabelsFactory::to_multiclass_multiple_output(CLabels* base_labels)
+/*
+CMultilabelLabels* CLabelsFactory::to_multiclass_multiple_output(CLabels* base_labels)
 {
 	ASSERT(base_labels != NULL)
-	if (base_labels->get_label_type() == LT_MULTICLASS_MULTIPLE_OUTPUT)
-		return static_cast<CMulticlassMultipleOutputLabels*>(base_labels);
+	if (base_labels->get_label_type() == LT_SPARSE_MULTILABEL)
+		return static_cast<CMultilabelLabels*>(base_labels);
 	else
-		SG_SERROR("base_labels must be of dynamic type CMulticlassMultipleOutputLabels\n")
+		SG_SERROR("base_labels must be of dynamic type CMultilabelLabels\n")
 
 	return NULL;
-}
+}*/
 
 CMulticlassSOLabels* CLabelsFactory::to_multiclass_structured(CLabels* base_labels)
 {
 	ASSERT(base_labels != NULL)
 	CMulticlassSOLabels* labels = dynamic_cast<CMulticlassSOLabels*>(base_labels);
 	if (labels == NULL)
-		SG_SERROR("base_labels must be of dynamic type CMulticlassMultipleOutputLabels\n")
+		SG_SERROR("base_labels must be of dynamic type CMulticlassSOLabels\n")
 
 	return labels;
 }

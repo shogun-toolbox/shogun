@@ -203,6 +203,22 @@ SGVector <int32_t> ** CMultilabelLabels::get_class_labels() const
 	return labels_list;
 }
 
+SGMatrix<int32_t>  CMultilabelLabels::get_labels() const
+{
+	if (m_num_labels==0)
+	        return SGMatrix<int32_t>();
+        int32_t n_outputs = m_labels[0].vlen;
+        SGMatrix<int32_t> labels(m_num_labels, n_outputs);
+        for (int32_t i=0; i<m_num_labels; i++)
+        {
+                REQUIRE(m_labels[i].vlen==n_outputs,
+                        "This function is valid only for multiclass multiple output lables.");
+
+                for (int32_t j=0; j<n_outputs; j++)
+                        labels(i,j) = m_labels[i][j];
+        }
+        return labels;
+}
 
 SGVector <int32_t> CMultilabelLabels::get_label(int32_t j)
 {

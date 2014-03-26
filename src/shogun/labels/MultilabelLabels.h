@@ -38,6 +38,7 @@
 #include <shogun/labels/LabelTypes.h>
 #include <shogun/labels/Labels.h>
 #include <shogun/lib/SGVector.h>
+#include <shogun/lib/SGMatrix.h>
 
 namespace shogun
 {
@@ -115,8 +116,14 @@ public:
 	 * @return SGVector<int32_t> **
 	 */
 	SGVector<int32_t> ** get_class_labels() const;
-
-	/** get sparse assignment for j-th label
+        
+        /** get sparse assignment for j-th label
+	 *
+	 * @return SGVector<int32_t > sparse label
+	 */
+	SGMatrix<int32_t> get_labels() const;
+	
+        /** get sparse assignment for j-th label
 	 *
 	 * @return SGVector<int32_t > sparse label
 	 */
