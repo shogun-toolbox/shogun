@@ -37,6 +37,7 @@
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/kernel/GaussianKernel.h>
+#include <shogun/kernel/LinearKernel.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/machine/gp/ExactInferenceMethod.h>
 #include <shogun/machine/gp/GaussianLikelihood.h>
@@ -147,7 +148,7 @@ void generate_features(SGMatrix<float64_t> &ratings, SGMatrix<float64_t> &items,
 		if (ratings(0,i)==uid && (ratings(2,i)==1 || ratings(2,i)==5))
 		{
 			for (int j=1; j<items.num_rows; j++)
-				feature(j-1, k)=items(j, (int)ratings(2,i));
+				feature(j-1, k)=items(j, (int)ratings(1,i)-1);
 			target[k]=ratings(2,i)==1 ? -1:1;
 			k++;
 		}
@@ -207,7 +208,9 @@ void gp_regression_movielens(float64_t &error_train, float64_t &error_test)
 
 		// Allocate our Kernel
 		CGaussianKernel* kernel = new CGaussianKernel(10, 2);
+		// CLinearKernel * kernel = new CLinearKernel();
 		SG_REF(kernel);
+		kernel->init(feat_train, feat_train);
 
 		// Allocate our mean function
 		CZeroMean* mean = new CZeroMean();
@@ -216,7 +219,7 @@ void gp_regression_movielens(float64_t &error_train, float64_t &error_test)
 		// Allocate our likelihood function
 		CGaussianLikelihood* lik = new CGaussianLikelihood();
 		SG_REF(lik);
-		lik->set_sigma(1);
+		lik->set_sigma(0.1);
 
 		// Allocate our inference method
 		CExactInferenceMethod* inf = new CExactInferenceMethod(kernel,
@@ -284,8 +287,8 @@ int main(int argc, char** argv)
 
 	gp_regression_movielens(error_train, error_test);
 
-	SG_SPRINT("Mean Squared Error on Train:%lf\n", error_train);
-	SG_SPRINT("Mean Squared Error on Test:%lf\n", error_test);
+	SG_SPRINT("Root Mean Squared Error on Train:%lf\n", CMath::sqrt(error_train));
+	SG_SPRINT("Root Mean Squared Error on Test:%lf\n", CMath::sqrt(error_test));
 
 	exit_shogun();
 	return 0;
