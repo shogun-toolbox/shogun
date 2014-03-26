@@ -63,7 +63,7 @@ def statistics_quadratic_time_mmd (m,dim,difference):
 	mmd.set_statistic_type(BIASED);
 	mmd.set_null_approximation_method(MMD2_SPECTRUM);
 	mmd.set_num_eigenvalues_spectrum(3);
-	mmd.set_num_samples_sepctrum(250);
+	mmd.set_num_samples_spectrum(250);
 	p_value_spectrum=mmd.perform_test();
 	# reject if p-value is smaller than test level
 	#print "spectrum: p!=q: ", p_value_spectrum<alpha
