@@ -77,45 +77,48 @@ SGMatrix<float64_t> read_items_data(const char* fname)
 	int32_t current_line_idx=0;
 	SGVector<char> line;
 
-	CDelimiterTokenizer *m_line_tokenizer=new CDelimiterTokenizer(true);
-	m_line_tokenizer->delimiters['\n'] = 1;
-	CDelimiterTokenizer *m_tokenizer=new CDelimiterTokenizer(true);
-	m_tokenizer->delimiters['|'] = 1;
-	CLineReader m_line_reader(file_items,m_line_tokenizer);
-	CParser m_parser;
-	m_parser.set_tokenizer(m_tokenizer);
+	CDelimiterTokenizer *line_tokenizer=new CDelimiterTokenizer(true);
+	line_tokenizer->delimiters['\n'] = 1;
+	CDelimiterTokenizer *tokenizer=new CDelimiterTokenizer(true);
+	tokenizer->delimiters['|'] = 1;
+	CLineReader *line_reader=new CLineReader(file_items,line_tokenizer);
+	SG_REF(line_reader);
+	CParser *parser=new CParser();
+	SG_REF(parser);
+	parser->set_tokenizer(tokenizer);
 
-	while (m_line_reader.has_next())
+	while (line_reader->has_next())
 	{
 		num_lines++;
-		m_line_reader.skip_line();
+		line_reader->skip_line();
 	}
 
-	m_line_reader.reset();
+	line_reader->reset();
 
 	SGMatrix<float64_t> x(num_tokens, num_lines);
 
-	while (m_line_reader.has_next())
+	while (line_reader->has_next())
 	{
-		line=m_line_reader.read_line();
-		m_parser.set_text(line);
+		line=line_reader->read_line();
+		parser->set_text(line);
 
 		int current_token_idx=0;
 		for (int32_t i=0; i<num_tokens+4; i++)
 		{
-			if(i>=1 && i<=4)
+			if (i>=1 && i<=4)
 			{
-				m_parser.skip_token();
+				parser->skip_token();
 				continue;
 			}
-			x(current_token_idx, current_line_idx)=m_parser.read_real();
+			x(current_token_idx, current_line_idx)=parser->read_real();
 			current_token_idx++;
 		}
 		current_line_idx++;
 	}
 
-	// SG_SPRINT("x:%dx%d\n", x.num_rows, x.num_cols);
 	fclose(file_items);
+	SG_UNREF(parser);
+	SG_UNREF(line_reader);
 	return x;
 }
 
@@ -125,28 +128,25 @@ void generate_features(SGMatrix<float64_t> &ratings, SGMatrix<float64_t> &items,
 {
 	int item_len = 0;
 	int next_start_idx = 0;
-	for(int i=start_idx;i<ratings.num_cols; i++)
+	for (int i=start_idx;i<ratings.num_cols; i++)
 	{
-		if(ratings(0,i)==uid && (ratings(2,i)==1 || ratings(2,i)==5))
+		if (ratings(0,i)==uid && (ratings(2,i)==1 || ratings(2,i)==5))
 			item_len++;
-		if(ratings(0,i)!=uid)
+		if (ratings(0,i)!=uid)
 		{
 			next_start_idx = i;
 			break;
 		}
 	}
 
-	feature.matrix = new float64_t[(items.num_rows-1)*(item_len)];
-	target.vector = new float64_t[item_len];
-	feature.num_rows = items.num_rows-1;
-	feature.num_cols = item_len;
-	target.vlen = item_len;
+	feature = SGMatrix<float64_t>(items.num_rows-1,item_len);
+	target = SGVector<float64_t>(item_len);
 
-	for(int i=start_idx, k=0; i<ratings.num_cols && k<item_len; i++)
+	for (int i=start_idx, k=0; i<ratings.num_cols && k<item_len; i++)
 	{
-		if(ratings(0,i)==uid && (ratings(2,i)==1 || ratings(2,i)==5))
+		if (ratings(0,i)==uid && (ratings(2,i)==1 || ratings(2,i)==5))
 		{
-			for(int j=1; j<items.num_rows; j++)
+			for (int j=1; j<items.num_rows; j++)
 				feature(j-1, k)=items(j, (int)ratings(2,i));
 			target[k]=ratings(2,i)==1 ? -1:1;
 			k++;
@@ -154,15 +154,10 @@ void generate_features(SGMatrix<float64_t> &ratings, SGMatrix<float64_t> &items,
 	}
 
 	start_idx = next_start_idx;
-
-	// SG_SPRINT("feature:%dx%d\n", feature->num_rows, feature->num_cols);
-	// SG_SPRINT("target:%d\n", target->vlen);
 }
 
-int main(int argc, char** argv)
+void gp_regression_movielens(float64_t &error_train, float64_t &error_test)
 {
-	init_shogun_with_defaults();
-
 	// Basic information
 	int user_cnt = 943;
 	//int item_cnt = 1682;
@@ -182,10 +177,8 @@ int main(int argc, char** argv)
 	int uid = 1;
 	int start_idx_train = 0;
 	int start_idx_test = 0;
-	float64_t error_test = 0.0;
-	float64_t error_train = 0.0;
 
-	for(uid = 1;uid<user_cnt;uid++)
+	for (uid = 1;uid<user_cnt;uid++)
 	{
 		SGMatrix<float64_t> M_train;
 		SGMatrix<float64_t> M_test;
@@ -196,12 +189,10 @@ int main(int argc, char** argv)
 		generate_features(M_train_ratings, M_items, uid, start_idx_train, M_train, V_train);
 		generate_features(M_test_ratings, M_items, uid, start_idx_test, M_test, V_test);
 
-		// SG_SPRINT("uid:%d\ntrain_pointer:%d\ntest_pointer:%d\n",uid,start_idx_train,start_idx_test);
-
-		if(V_train.vlen==0 && V_test.vlen!=0)
+		if (V_train.vlen==0 && V_test.vlen!=0)
 			loss_user_count++;
 
-		if(V_train.vlen==0 || V_test.vlen==0)
+		if (V_train.vlen==0 || V_test.vlen==0)
 			continue;
 
 		// Convert training and testing data into shogun representation
@@ -252,8 +243,7 @@ int main(int argc, char** argv)
 			// perform inference on test
 			CRegressionLabels* predictions_test=gpr->apply_regression(feat_test);
 			SG_REF(predictions_test);
-			//predictions->get_labels().display_vector("predictions");
-			//V_test->display_vector("groundtruth");
+
 			error_train += eval->evaluate(predictions_train, lab_train) * V_train.vlen;
 			error_test += eval->evaluate(predictions_test, lab_test) * V_test.vlen;
 			SG_SPRINT("Processing User:%d\n", uid);
@@ -262,7 +252,7 @@ int main(int argc, char** argv)
 			SG_UNREF(predictions_train);
 			SG_UNREF(predictions_test);
 		}
-		catch(ShogunException & sh)
+		catch (ShogunException & sh)
 		{
 			SG_SERROR("\n%s\n",sh.get_exception_string());
 		}
@@ -279,9 +269,23 @@ int main(int argc, char** argv)
 		SG_UNREF(eval);
 	}
 
-	SG_SPRINT("Mean Squared Error on Train:%lf\n",error_train/pred_pair_count_train);
-	SG_SPRINT("Mean Squared Error on Test:%lf\n",error_test/pred_pair_count_test);
+	error_train/=pred_pair_count_train;
+	error_test/=pred_pair_count_test;
+
 	SG_SPRINT("Loss User Count in Test:%d\n", loss_user_count);
+}
+
+int main(int argc, char** argv)
+{
+	init_shogun_with_defaults();
+
+	float64_t error_test = 0.0;
+	float64_t error_train = 0.0;
+
+	gp_regression_movielens(error_train, error_test);
+
+	SG_SPRINT("Mean Squared Error on Train:%lf\n", error_train);
+	SG_SPRINT("Mean Squared Error on Test:%lf\n", error_test);
 
 	exit_shogun();
 	return 0;
