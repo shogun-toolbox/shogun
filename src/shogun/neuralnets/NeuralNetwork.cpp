@@ -390,7 +390,13 @@ bool CNeuralNetwork::check_gradients(float64_t approx_epsilon, float64_t toleran
 	SGVector<float64_t> x(m_num_inputs);
 	SGVector<float64_t> y(get_num_outputs());
 	x.random(0.0, 1.0);
+	
+	// the outputs are set up in the form of a probability distribution (in case
+	// that is required by the output layer, i.e softmax)
 	y.random(0.0, 1.0);
+	float64_t y_sum = SGVector<float64_t>::sum(y.vector, y.vlen);
+	for (int32_t i=0; i<y.vlen; i++) y[i] /= y_sum;
+	
 	set_batch_size(1);
 	
 	// numerically compute gradients
