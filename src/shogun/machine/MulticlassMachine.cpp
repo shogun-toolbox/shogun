@@ -16,7 +16,7 @@
 #include <shogun/machine/MulticlassMachine.h>
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/mathematics/Statistics.h>
-//#include <shogun/labels/MultilabelLabels.h>
+#include <shogun/labels/MultilabelLabels.h>
 
 using namespace shogun;
 

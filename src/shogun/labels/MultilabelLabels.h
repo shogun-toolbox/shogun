@@ -117,9 +117,9 @@ public:
 	 */
 	SGVector<int32_t> ** get_class_labels() const;
         
-        /** get sparse assignment for j-th label
+        /** get label maxtrix, only for multiclass multiple output labels
 	 *
-	 * @return SGVector<int32_t > sparse label
+	 * @return  SGMatrix<int32_t > label
 	 */
 	SGMatrix<int32_t> get_labels() const;
 	
