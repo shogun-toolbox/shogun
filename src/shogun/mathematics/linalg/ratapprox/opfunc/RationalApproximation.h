@@ -18,7 +18,7 @@ namespace shogun
 {
 
 template<class T> class SGVector;
-template<class T> class CLinearOperator;
+template<class RetType, class OperandType> class CLinearOperator;
 class CIndependentComputationEngine;
 class CJobResultAggregator;
 class CEigenSolver;
@@ -79,7 +79,7 @@ public:
 	 * @param function_type operator function type
 	 */
 	CRationalApproximation(
-		CLinearOperator<float64_t>* linear_operator,
+		CLinearOperator< SGVector<float64_t>, SGVector<float64_t> >* linear_operator,
 		CIndependentComputationEngine* computation_engine,
 		CEigenSolver* eigen_solver,
 		float64_t desired_accuracy,

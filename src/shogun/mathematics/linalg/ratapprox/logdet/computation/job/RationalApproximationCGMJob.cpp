@@ -32,7 +32,7 @@ CRationalApproximationCGMJob::CRationalApproximationCGMJob()
 CRationalApproximationCGMJob::CRationalApproximationCGMJob(
 	CStoreScalarAggregator<float64_t>* aggregator,
 	CCGMShiftedFamilySolver* linear_solver,
-	CLinearOperator<float64_t>* linear_operator,
+	CLinearOperator< SGVector<float64_t>, SGVector<float64_t> >* linear_operator,
 	SGVector<float64_t> vector,
 	SGVector<complex128_t> shifts,
 	SGVector<complex128_t> weights,
