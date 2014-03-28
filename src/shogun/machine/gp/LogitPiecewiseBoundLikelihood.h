@@ -44,11 +44,15 @@
 
 namespace shogun
 {
-
-
-
-/** @brief Class that models Logit likelihood with variational piecewise bound
- *
+/** @brief Class that models Logit likelihood and 
+ * uses variational piecewise bound to approximate 
+ * the following variational expection of log likelihood
+ * \f[
+ * \sum_{{i=1}^n}{E_{q(f_i|{\mu}_i,{\sigma}^2_i)}[logP(y_i|f_i)]}
+ * \f] where
+ * \f[
+ * p(y_i|f_i) = \frac{exp(y_i*f_i)}{1+exp(f_i)}, y_i \in \{0,1\}
+ * \f]
  */
 class CLogitPiecewiseBoundLikelihood : public CLogitLikelihood
 {
@@ -67,9 +71,6 @@ public:
 	 * @return name LogitPiecewiseBoundLikelihood
 	 */
 	virtual const char* get_name() const { return "LogitPiecewiseBoundLikelihood"; }
-
-
-
 
 	/** set the variational piecewise bound for logit likelihood
 	 *
@@ -90,6 +91,11 @@ public:
 	/** returns the expection of the logarithm of a logit distribution 
 	 * wrt the variational distribution using piecewise bound
 	 *
+	 * For each sample i, using the piecewise bound to
+	 * approximate \f[
+	 * E_{q(f_i|{\mu}_i,{\sigma}^2_i)}[logP(y_i|f_i)]
+	 * \f] given mu_i and sigma2_i
+	 *
 	 * @return expection
 	 */
 	virtual SGVector<float64_t> get_variational_expection();
@@ -97,7 +103,11 @@ public:
 	/** get derivative of the variational expection of log LogitLikelihood
 	 * using the piecewise bound with respect to given parameter
 	 *
-	 * @param param parameter
+	 *compute the derivative of \f[
+	 * E_{q(f_i|{\mu}_i,{\sigma}^2_i)}[logP(y_i|f_i)]
+	 * \f] given mu_i and sigma2_i with repect to param using the piecewise bound
+	 *
+	 * @param param parameter(mu or sigma2)
 	 *
 	 * @return derivative
 	 */
@@ -111,25 +121,37 @@ private:
 
 	void init_matrix(SGMatrix<float64_t> ** ptr, index_t num_rows, index_t num_cols);
 
+	/*Variational piecewise bound for logit likelihood*/
 	SGMatrix<float64_t> * m_bound;
 
+	/*The mean of variational normal distribution*/
 	SGVector<float64_t> * m_mu;
 
+	/*The variance of variational normal distribution*/
 	SGVector<float64_t> * m_s2;
 
+	/*The data/labels (must be 0 or 1) drawn from the distribution
+	 * Note that if the input labels are -1 and 1, the method _convert_label
+	 * will converte them to 0 and 1 repectively.
+	 * */
 	SGVector<float64_t> * m_lab;
 
-	//rows = l.size   cols = m.size
+	/*The pdf given the lower range and parameters(mu and variance)*/
 	SGMatrix<float64_t> * m_pl;
 
+	/*The pdf given the higher range and parameters(mu and variance)*/
 	SGMatrix<float64_t> * m_ph;
 
+	/*The CDF difference between the lower and higher range given the parameters(mu and variance)*/
 	SGMatrix<float64_t> * m_cdf_diff;
 
+	/*The result of l^2 + sigma^2*/
 	SGMatrix<float64_t> * m_l2_plus_s2;
 
+	/*The result of h^2 + sigma^2"*/
 	SGMatrix<float64_t> * m_h2_plus_s2;
 
+	/*The result of l*pdf(l_norm)-h*pdf(h_norm)*/
 	SGMatrix<float64_t> * m_weighted_pdf_diff;
 
 
@@ -151,10 +173,22 @@ private:
 
 	template<typename M1>
 	static Eigen::MatrixXd normal_cdf_minus_const(const Eigen::MatrixBase<M1> &x);
-
-	static float64_t _check_variance(float64_t x);
-	static float64_t _convert_label(float64_t x);
 	// end for "temporarily add for unit test"
+	
+	/** use to check whether the variance is positive or not
+	 *
+	 * @return dummy value
+	 */
+	static float64_t _check_variance(float64_t x);
+
+	/** use to convert the input label to standard label used in the model
+	 *
+	 *  Note that Shogun use  -1 and 1 as labels and this function converts
+	 *  them to 0 and 1 repectively.
+	 *
+	 * @return standard label
+	 */
+	static float64_t _convert_label(float64_t x);
 };
 }
 #endif /* HAVE_EIGEN3 */
