@@ -315,6 +315,13 @@ template<class T> class SGVector : public SGReferencedData
 		 */
 		bool equals(SGVector<T>& other);
 
+		
+		//TODO document method 		
+		bool equals(SGVector<float>& other, float accuracy=0, bool tolerant=false) ;
+
+		
+
+		
 		/** permute vector */
 		static void permute_vector(SGVector<T> vec);
 

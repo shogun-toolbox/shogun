@@ -401,6 +401,21 @@ bool SGVector<T>::equals(SGVector<T>& other)
 	return true;
 }
 
+template <>
+bool SGVector<float>::equals(SGVector<float>& other, float accuracy, bool tolerant)
+{
+	if(other.vlen != vlen)
+		return false ;
+
+	for(int i=0 ; i<other.vlen ; i++){
+		if(!CMath::fequals<float>(vector[i],other.vector[i] , accuracy, tolerant))
+		{
+			return false ;
+		}
+	}
+	return true ;
+}
+
 template<class T>
 void SGVector<T>::display_vector(const char* name,
 		const char* prefix) const

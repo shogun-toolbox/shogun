@@ -273,6 +273,20 @@ TEST(SGVectorTest,equals_equal)
 	EXPECT_TRUE(a.equals(b));
 }
 
+TEST(SGVectorTest,equals2_equal)
+{
+	SGVector<float> a(3);
+	SGVector<float> b(3);
+	a[0]=0;
+	a[1]=1;
+	a[2]=2;
+	b[0]=0;
+	b[1]=1;
+	b[2]=2;
+	
+	EXPECT_TRUE(a.equals(b,0,false));
+}
+
 TEST(SGVectorTest,equals_different)
 {
 	SGVector<float64_t> a(3);
