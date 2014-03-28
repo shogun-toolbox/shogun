@@ -514,7 +514,7 @@ SGVector<float64_t> CQuadraticTimeMMD::fit_null_gamma()
 	return result;
 }
 
-void CQuadraticTimeMMD::set_num_samples_sepctrum(index_t
+void CQuadraticTimeMMD::set_num_samples_spectrum(index_t
 		num_samples_spectrum)
 {
 	m_num_samples_spectrum=num_samples_spectrum;

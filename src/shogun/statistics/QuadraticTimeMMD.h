@@ -260,7 +260,7 @@ public:
 	 * @param num_samples_spectrum number of samples to draw from
 	 * approximate null-distributrion
 	 */
-	void set_num_samples_sepctrum(index_t num_samples_spectrum);
+	void set_num_samples_spectrum(index_t num_samples_spectrum);
 
 	/** setter for number of eigenvalues to use in spectrum based p-value
 	 * computation. Maximum is m_m+m_n-1
