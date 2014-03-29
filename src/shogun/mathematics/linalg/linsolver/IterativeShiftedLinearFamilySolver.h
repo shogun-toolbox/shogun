@@ -52,7 +52,7 @@ public:
 	 * @param b the vector of the system
 	 * @return the solution vector
 	 */
-	virtual SGVector<T> solve(CLinearOperator< SGVector<T>, SGVector<T> >* A, SGVector<T> b) = 0;
+	virtual SGVector<T> solve(CLinearOperator<SGVector<T>, SGVector<T> >* A, SGVector<T> b) = 0;
 
 	/**
 	 * abstract method that solves the shifted family of linear systems, multiples
@@ -65,7 +65,7 @@ public:
 	 * @param weights the weights to be multiplied with each solution for each
 	 * shift
 	 */
-	virtual SGVector<ST> solve_shifted_weighted(CLinearOperator< SGVector<T>, SGVector<T> >* A,
+	virtual SGVector<ST> solve_shifted_weighted(CLinearOperator<SGVector<T>, SGVector<T> >* A,
 		SGVector<T> b, SGVector<ST> shifts, SGVector<ST> weights) = 0;
 
 	/** @return object name */

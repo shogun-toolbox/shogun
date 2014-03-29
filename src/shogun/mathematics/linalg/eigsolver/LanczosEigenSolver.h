@@ -35,7 +35,7 @@ public:
 	 * @param linear_operator self-adjoint linear operator whose eigenvalues
 	 * are to be found
 	 */
-	CLanczosEigenSolver(CLinearOperator< SGVector<float64_t>, SGVector<float64_t> >* linear_operator);
+	CLanczosEigenSolver(CLinearOperator<SGVector<float64_t>, SGVector<float64_t> >* linear_operator);
 
 	/** destructor */
 	virtual ~CLanczosEigenSolver();

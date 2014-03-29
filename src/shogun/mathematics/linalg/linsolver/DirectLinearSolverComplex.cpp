@@ -41,7 +41,7 @@ CDirectLinearSolverComplex::~CDirectLinearSolverComplex()
 }
 
 SGVector<complex128_t> CDirectLinearSolverComplex::solve(
-		CLinearOperator< SGVector<complex128_t>, SGVector<complex128_t> >* A, SGVector<float64_t> b)
+		CLinearOperator<SGVector<complex128_t>, SGVector<complex128_t> >* A, SGVector<float64_t> b)
 {
 	SGVector<complex128_t> x(b.vlen);
 

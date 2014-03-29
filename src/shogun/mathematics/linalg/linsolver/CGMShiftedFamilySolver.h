@@ -50,7 +50,7 @@ public:
 	 * @param b the vector of the system
 	 * @return the solution vector
 	 */
-	virtual SGVector<float64_t> solve(CLinearOperator< SGVector<float64_t>, SGVector<float64_t> >* A,
+	virtual SGVector<float64_t> solve(CLinearOperator<SGVector<float64_t>, SGVector<float64_t> >* A,
 		SGVector<float64_t> b);
 
 	/**
@@ -65,7 +65,7 @@ public:
 	 * shift
 	 */
 	virtual SGVector<complex128_t> solve_shifted_weighted(
-		CLinearOperator< SGVector<float64_t>, SGVector<float64_t> >* A, SGVector<float64_t> b,
+		CLinearOperator<SGVector<float64_t>, SGVector<float64_t> >* A, SGVector<float64_t> b,
 		SGVector<complex128_t> shifts, SGVector<complex128_t> weights);
 
 	/** @return object name */

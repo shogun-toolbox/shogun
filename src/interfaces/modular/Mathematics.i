@@ -27,10 +27,10 @@
 namespace shogun
 {
 #ifdef USE_FLOAT64
-    %template(RealLinearOperator) CLinearOperator< SGVector<float64_t>,SGVector<float64_t> >;
+    %template(RealLinearOperator) CLinearOperator<SGVector<float64_t>, SGVector<float64_t> >;
 #endif
 #ifdef USE_COMPLEX128
-    %template(ComplexLinearOperator) CLinearOperator< SGVector<complex128_t>,SGVector<complex128_t> >;
+    %template(ComplexLinearOperator) CLinearOperator<SGVector<complex128_t>, SGVector<complex128_t> >;
 #endif
 }
 

@@ -55,7 +55,7 @@ public:
 	 * @param engine the computation engine for the independent jobs
 	 * @param type the type of the operator function (sqrt, log, etc)
 	 */
-	COperatorFunction(CLinearOperator< SGVector<T>, SGVector<T> >* op,
+	COperatorFunction(CLinearOperator<SGVector<T>, SGVector<T> >* op,
 		CIndependentComputationEngine* engine,
 		EOperatorFunction type=OF_UNDEFINED)
 	: CSGObject(),
@@ -78,7 +78,7 @@ public:
 	}
 
 	/** @return the operator */
-	CLinearOperator< SGVector<T>, SGVector<T> >* get_operator() const
+	CLinearOperator<SGVector<T>, SGVector<T> >* get_operator() const
 	{
 		return m_linear_operator;
 	}
@@ -109,7 +109,7 @@ public:
 	}
 protected:
 	/** the linear operator */
-	CLinearOperator< SGVector<T>, SGVector<T> >* m_linear_operator;
+	CLinearOperator<SGVector<T>, SGVector<T> >* m_linear_operator;
 
 	/** the computation engine */
 	CIndependentComputationEngine* m_computation_engine;

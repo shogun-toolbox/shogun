@@ -49,7 +49,7 @@ public:
 	 * the number of shifts automatically
 	 */
 	CLogRationalApproximationCGM(
-		CLinearOperator< SGVector<float64_t>, SGVector<float64_t> >* linear_operator,
+		CLinearOperator<SGVector<float64_t>, SGVector<float64_t> >* linear_operator,
 		CIndependentComputationEngine* computation_engine,
 		CEigenSolver* eigen_solver,
 		CCGMShiftedFamilySolver* linear_solver,

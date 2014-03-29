@@ -44,7 +44,7 @@ public:
 	 * @param const_multiplier the constant multiplier to be multiplied with
 	 * the final vector-vector product to give final result
 	 */
-	CIndividualJobResultAggregator(CLinearOperator< SGVector<float64_t>, SGVector<float64_t> >*
+	CIndividualJobResultAggregator(CLinearOperator<SGVector<float64_t>, SGVector<float64_t> >*
 		linear_operator, SGVector<float64_t> vector,
 		const float64_t& const_multiplier);
 
@@ -64,7 +64,7 @@ public:
 	}
 private:
 	/** the linear operator */
-	CLinearOperator< SGVector<float64_t>, SGVector<float64_t> >* m_linear_operator;
+	CLinearOperator<SGVector<float64_t>, SGVector<float64_t> >* m_linear_operator;
 
 	/** the sample vector */
 	SGVector<float64_t> m_vector;

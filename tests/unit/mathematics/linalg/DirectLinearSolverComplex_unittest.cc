@@ -37,7 +37,7 @@ TEST(DirectLinearSolverComplex, solve_SVD)
 
 	CDirectLinearSolverComplex solver(DS_SVD);
 	SGVector<complex128_t> x
-		=solver.solve((CLinearOperator< SGVector<complex128_t>, SGVector<complex128_t> >*)A, b);
+		=solver.solve((CLinearOperator<SGVector<complex128_t>, SGVector<complex128_t> >*)A, b);
 
 	SGVector<complex128_t> bp=A->apply(x);
 	Map<VectorXd> map_b(b.vector, b.vlen);
@@ -66,7 +66,7 @@ TEST(DirectLinearSolverComplex, solve_QR_NOPERM)
 
 	CDirectLinearSolverComplex solver(DS_QR_NOPERM);
 	SGVector<complex128_t> x
-		=solver.solve((CLinearOperator< SGVector<complex128_t>, SGVector<complex128_t> >*)A, b);
+		=solver.solve((CLinearOperator<SGVector<complex128_t>, SGVector<complex128_t> >*)A, b);
 
 	SGVector<complex128_t> bp=A->apply(x);
 	Map<VectorXd> map_b(b.vector, b.vlen);
@@ -95,7 +95,7 @@ TEST(DirectLinearSolverComplex, solve_QR_COLPERM)
 
 	CDirectLinearSolverComplex solver(DS_QR_COLPERM);
 	SGVector<complex128_t> x
-		=solver.solve((CLinearOperator< SGVector<complex128_t>, SGVector<complex128_t> >*)A, b);
+		=solver.solve((CLinearOperator<SGVector<complex128_t>, SGVector<complex128_t> >*)A, b);
 
 	SGVector<complex128_t> bp=A->apply(x);
 	Map<VectorXd> map_b(b.vector, b.vlen);
@@ -124,7 +124,7 @@ TEST(DirectLinearSolverComplex, solve_QR_FULLPERM)
 
 	CDirectLinearSolverComplex solver(DS_QR_FULLPERM);
 	SGVector<complex128_t> x
-		=solver.solve((CLinearOperator< SGVector<complex128_t>, SGVector<complex128_t> >*)A, b);
+		=solver.solve((CLinearOperator<SGVector<complex128_t>, SGVector<complex128_t> >*)A, b);
 
 	SGVector<complex128_t> bp=A->apply(x);
 	Map<VectorXd> map_b(b.vector, b.vlen);
@@ -154,7 +154,7 @@ TEST(DirectLinearSolverComplex, solve_LLT)
 
 	CDirectLinearSolverComplex solver(DS_LLT);
 	SGVector<complex128_t> x
-		=solver.solve((CLinearOperator< SGVector<complex128_t>, SGVector<complex128_t> >*)A, b);
+		=solver.solve((CLinearOperator<SGVector<complex128_t>, SGVector<complex128_t> >*)A, b);
 
 	SGVector<complex128_t> bp=A->apply(x);
 	Map<VectorXd> map_b(b.vector, b.vlen);

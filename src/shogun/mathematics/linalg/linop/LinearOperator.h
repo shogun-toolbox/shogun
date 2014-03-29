@@ -61,10 +61,10 @@ public:
 	}
 
 	/**
-	 * abstract method that applies the linear operator to a vector
+	 * abstract method that applies the linear operator to Operand(eg. a vector)
 	 *
-	 * @param b the vector to which the linear operator applies
-	 * @return the result vector
+	 * @param b the Operand to which the linear operator applies
+	 * @return the result(eg. a vector)
 	 */
 	virtual RetType apply(OperandType b) const = 0;
 

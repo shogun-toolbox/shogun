@@ -79,7 +79,7 @@ public:
 	 * @param function_type operator function type
 	 */
 	CRationalApproximation(
-		CLinearOperator< SGVector<float64_t>, SGVector<float64_t> >* linear_operator,
+		CLinearOperator<SGVector<float64_t>, SGVector<float64_t> >* linear_operator,
 		CIndependentComputationEngine* computation_engine,
 		CEigenSolver* eigen_solver,
 		float64_t desired_accuracy,
