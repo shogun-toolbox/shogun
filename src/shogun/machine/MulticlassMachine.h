@@ -25,7 +25,7 @@ namespace shogun
 class CFeatures;
 class CLabels;
 class CMulticlassLabels;
-class CMulticlassMultipleOutputLabels;
+class CMultilabelLabels;
 
 /** @brief experimental abstract generic multiclass machine class */
 class CMulticlassMachine : public CBaseMulticlassMachine
@@ -99,7 +99,7 @@ class CMulticlassMachine : public CBaseMulticlassMachine
 		 *
 		 * @return resulting labels
 		 */
-		virtual CMulticlassMultipleOutputLabels* apply_multiclass_multiple_output(CFeatures* data=NULL, int32_t n_outputs=5);
+		virtual CMultilabelLabels* apply_multiclass_multiple_output(CFeatures* data=NULL, int32_t n_outputs=5);
 
 		/** classify one example
 		 * @param vec_idx
