@@ -24,9 +24,7 @@ enum ELabelType
 	LT_STRUCTURED = 4,
 	/// latent latent labels
 	LT_LATENT = 5,
-	/// multiple output multiclass
-	LT_MULTICLASS_MULTIPLE_OUTPUT = 6,
 	/// sparse label class for multilabel classification (sets of labels)
-	LT_SPARSE_MULTILABEL = 7,
+	LT_SPARSE_MULTILABEL = 6,
 };
 #endif
