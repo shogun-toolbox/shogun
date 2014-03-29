@@ -259,8 +259,7 @@ TEST(SGVectorTest,complex128_tests)
 	}
 }
 
-TEST(SGVectorTest,equals2_equal)
-
+TEST(SGVectorTest,equals_float_equal)
 {
 	SGVector<float> a(3);
 	SGVector<float> b(3);
@@ -273,7 +272,46 @@ TEST(SGVectorTest,equals2_equal)
 
 	EXPECT_TRUE(a.equals(b,0.2,true));
 }
+TEST(SGVectorTest,equals_double_equal)
+{
+	SGVector<double> a(3);
+	SGVector<double> b(3);
+	a[0]=0;
+	a[1]=1;
+	a[2]=2;
+	b[0]=0.1;
+	b[1]=1.01;
+	b[2]=2 ;
 
+	EXPECT_TRUE(a.equals(b,0.2,true));
+}
+
+TEST(SGVectorTest,equals_double_not_equal)
+{
+	SGVector<double> a(3);
+	SGVector<double> b(3);
+	a[0]=0;
+	a[1]=1;
+	a[2]=2;
+	b[0]=0.23;
+	b[1]=1.23;
+	b[2]=2.22 ;
+
+	EXPECT_FALSE(a.equals(b,0.2,true));
+}
+TEST(SGVectorTest,equals_float_not_equal)
+{
+	SGVector<float> a(3);
+	SGVector<float> b(3);
+	a[0]=0;
+	a[1]=1;
+	a[2]=2;
+	b[0]=0.23;
+	b[1]=1.23;
+	b[2]=2.22 ;
+
+	EXPECT_FALSE(a.equals(b,0.2,true));
+}
 
 TEST(SGVectorTest,equals_equal)
 {

@@ -387,15 +387,30 @@ void SGVector<T>::free_data()
 }
 
 template <>
-
 bool SGVector<float>::equals(SGVector<float>& other, float accuracy, bool tolerant)
 {
 	if(other.vlen != vlen)
 		return false ;
 
-	for(int i=0 ; i<other.vlen ; i++){
+	for(int i=0 ; i<other.vlen ; i++)
+	{
 		if(!CMath::fequals<float>(vector[i],other.vector[i] , accuracy, tolerant))
+		{
+			return false ;
+		}
+	}
+	return true ;
+}
 
+template <>
+bool SGVector<double>::equals(SGVector<double>& other, float accuracy, bool tolerant)
+{
+	if(other.vlen != vlen)
+		return false ;
+
+	for(int i=0 ; i<other.vlen ; i++)
+	{
+		if(!CMath::fequals<double>(vector[i],other.vector[i] , accuracy, tolerant))
 		{
 			return false ;
 		}
@@ -414,7 +429,6 @@ bool SGVector<T>::equals(SGVector<T>& other)
 		if (other.vector[i]!=vector[i])
 			return false;
 	}
-
 	return true;
 }
 
