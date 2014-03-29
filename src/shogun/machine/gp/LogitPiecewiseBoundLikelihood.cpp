@@ -134,44 +134,30 @@ CLogitPiecewiseBoundLikelihood::CLogitPiecewiseBoundLikelihood()
 
 CLogitPiecewiseBoundLikelihood::~CLogitPiecewiseBoundLikelihood()
 {
-	clean();
 }
 
-void CLogitPiecewiseBoundLikelihood::clean()
-{
-	SG_UNREF((SGRefObject *&)m_bound);
-	SG_UNREF((SGRefObject *&)m_mu);
-	SG_UNREF((SGRefObject *&)m_s2);
-	SG_UNREF((SGRefObject *&)m_lab);
-	SG_UNREF((SGRefObject *&)m_pl);
-	SG_UNREF((SGRefObject *&)m_ph);
-	SG_UNREF((SGRefObject *&)m_cdf_diff);
-	SG_UNREF((SGRefObject *&)m_l2_plus_s2);
-	SG_UNREF((SGRefObject *&)m_h2_plus_s2);
-	SG_UNREF((SGRefObject *&)m_weighted_pdf_diff);
-}
 
 void CLogitPiecewiseBoundLikelihood::set_bound(SGMatrix<float64_t> bound)
 {
-	*m_bound = bound;
+	m_bound = bound;
 }
 
 SGVector<float64_t> CLogitPiecewiseBoundLikelihood::get_variational_expection()
 {
-	Map<VectorXd> eigen_c(m_bound->get_column_vector(0), m_bound->num_rows);
-	Map<VectorXd> eigen_b(m_bound->get_column_vector(1), m_bound->num_rows);
-	Map<VectorXd> eigen_a(m_bound->get_column_vector(2), m_bound->num_rows);
-	Map<VectorXd> eigen_l(m_bound->get_column_vector(3), m_bound->num_rows);
-	Map<VectorXd> eigen_h(m_bound->get_column_vector(4), m_bound->num_rows);
-	Map<VectorXd> eigen_mu(m_mu->vector, m_mu->vlen);
-	Map<VectorXd> eigen_s2(m_s2->vector, m_s2->vlen);
+	const Map<VectorXd> eigen_c(m_bound.get_column_vector(0), m_bound.num_rows);
+	const Map<VectorXd> eigen_b(m_bound.get_column_vector(1), m_bound.num_rows);
+	const Map<VectorXd> eigen_a(m_bound.get_column_vector(2), m_bound.num_rows);
+	const Map<VectorXd> eigen_mu(m_mu.vector, m_mu.vlen);
+	const Map<VectorXd> eigen_s2(m_s2.vector, m_s2.vlen);
+	Map<VectorXd> eigen_l(m_bound.get_column_vector(3), m_bound.num_rows);
+	Map<VectorXd> eigen_h(m_bound.get_column_vector(4), m_bound.num_rows);
 
-	index_t num_rows = m_bound->num_rows; 
-	index_t num_cols = m_mu->vlen;
+	index_t num_rows = m_bound.num_rows; 
+	index_t num_cols = m_mu.vlen;
 
-	Map<Eigen::MatrixXd> eigen_cdf_diff(m_cdf_diff->matrix, num_rows, num_cols);
-	Map<Eigen::MatrixXd> eigen_pl(m_pl->matrix, num_rows, num_cols);
-	Map<Eigen::MatrixXd> eigen_ph(m_ph->matrix, num_rows, num_cols);
+	const Map<Eigen::MatrixXd> eigen_cdf_diff(m_cdf_diff.matrix, num_rows, num_cols);
+	const Map<Eigen::MatrixXd> eigen_pl(m_pl.matrix, num_rows, num_cols);
+	const Map<Eigen::MatrixXd> eigen_ph(m_ph.matrix, num_rows, num_cols);
 
 	float64_t l_bak = eigen_l(0);
 	eigen_l(0) = 0;
@@ -180,7 +166,7 @@ SGVector<float64_t> CLogitPiecewiseBoundLikelihood::get_variational_expection()
 	eigen_h(eigen_h.size()-1) = 0;
 
 	//ex0 = ch-cl;
-	Map<MatrixXd> & eigen_ex0 = eigen_cdf_diff;
+	const Map<MatrixXd> & eigen_ex0 = eigen_cdf_diff;
 
 	//%ex1= v.*(pl-ph) + m.*(ch-cl);
 	MatrixXd eigen_ex1 = my_bsxfun(times, eigen_pl - eigen_ph, eigen_s2.transpose()) 
@@ -194,7 +180,7 @@ SGVector<float64_t> CLogitPiecewiseBoundLikelihood::get_variational_expection()
 			+ eigen_s2.array()).matrix().transpose());
 
 
-	SGVector<float64_t> f(m_mu->vlen);
+	SGVector<float64_t> f(m_mu.vlen);
 	Map<VectorXd> eigen_f(f.vector, f.vlen);
 
 	//%f = sum((a.*ex2 + b.*ex1 + c.*ex0),1);
@@ -206,7 +192,7 @@ SGVector<float64_t> CLogitPiecewiseBoundLikelihood::get_variational_expection()
 	eigen_l(0) = l_bak;
 	eigen_h(eigen_h.size()-1) = h_bak;
 
-	Map<VectorXd>eigen_lab(m_lab->vector, m_lab->vlen);
+	Map<VectorXd>eigen_lab(m_lab.vector, m_lab.vlen);
 	eigen_f = eigen_lab.cwiseProduct(eigen_mu) - eigen_f; 
 	return f;
 }
@@ -222,27 +208,27 @@ SGVector<float64_t> CLogitPiecewiseBoundLikelihood::get_variational_first_deriva
 		"wrt %s.%s parameter",
 		get_name(), param->m_name);
 
-	Map<VectorXd> eigen_c(m_bound->get_column_vector(0), m_bound->num_rows);
-	Map<VectorXd> eigen_b(m_bound->get_column_vector(1), m_bound->num_rows);
-	Map<VectorXd> eigen_a(m_bound->get_column_vector(2), m_bound->num_rows);
-	Map<VectorXd> eigen_l(m_bound->get_column_vector(3), m_bound->num_rows);
-	Map<VectorXd> eigen_h(m_bound->get_column_vector(4), m_bound->num_rows);
-	Map<VectorXd> eigen_mu(m_mu->vector, m_mu->vlen);
-	Map<VectorXd> eigen_s2(m_s2->vector, m_s2->vlen);
-	index_t num_rows = m_bound->num_rows; 
-	index_t num_cols = m_mu->vlen;
-	Map<Eigen::MatrixXd> eigen_cdf_diff(m_cdf_diff->matrix, num_rows, num_cols);
-	Map<Eigen::MatrixXd> eigen_pl(m_pl->matrix, num_rows, num_cols);
-	Map<Eigen::MatrixXd> eigen_ph(m_ph->matrix, num_rows, num_cols);
-	Map<Eigen::MatrixXd> eigen_weighted_pdf_diff(m_weighted_pdf_diff->matrix, num_rows, num_cols);
-	Map<Eigen::MatrixXd> eigen_h2_plus_s2(m_h2_plus_s2->matrix, num_rows, num_cols);
-	Map<Eigen::MatrixXd> eigen_l2_plus_s2(m_l2_plus_s2->matrix, num_rows, num_cols);
+	const Map<VectorXd> eigen_c(m_bound.get_column_vector(0), m_bound.num_rows);
+	const Map<VectorXd> eigen_b(m_bound.get_column_vector(1), m_bound.num_rows);
+	const Map<VectorXd> eigen_a(m_bound.get_column_vector(2), m_bound.num_rows);
+	const Map<VectorXd> eigen_mu(m_mu.vector, m_mu.vlen);
+	const Map<VectorXd> eigen_s2(m_s2.vector, m_s2.vlen);
+	Map<VectorXd> eigen_l(m_bound.get_column_vector(3), m_bound.num_rows);
+	Map<VectorXd> eigen_h(m_bound.get_column_vector(4), m_bound.num_rows);
+	index_t num_rows = m_bound.num_rows; 
+	index_t num_cols = m_mu.vlen;
+	const Map<Eigen::MatrixXd> eigen_cdf_diff(m_cdf_diff.matrix, num_rows, num_cols);
+	const Map<Eigen::MatrixXd> eigen_pl(m_pl.matrix, num_rows, num_cols);
+	const Map<Eigen::MatrixXd> eigen_ph(m_ph.matrix, num_rows, num_cols);
+	const Map<Eigen::MatrixXd> eigen_weighted_pdf_diff(m_weighted_pdf_diff.matrix, num_rows, num_cols);
+	const Map<Eigen::MatrixXd> eigen_h2_plus_s2(m_h2_plus_s2.matrix, num_rows, num_cols);
+	const Map<Eigen::MatrixXd> eigen_l2_plus_s2(m_l2_plus_s2.matrix, num_rows, num_cols);
 	float64_t l_bak = eigen_l(0);
 	eigen_l(0) = 0;
 	float64_t h_bak = eigen_h(eigen_h.size()-1);
 	eigen_h(eigen_h.size()-1) = 0;
 
-	SGVector<float64_t> result(m_mu->vlen);
+	SGVector<float64_t> result(m_mu.vlen);
 	if (strcmp(param->m_name, "mu") ==0)
 	{
 		MatrixXd eigen_dmu2 = my_bsxfun(plus, eigen_l2_plus_s2, eigen_s2.transpose()).cwiseProduct(eigen_pl)
@@ -255,7 +241,7 @@ SGVector<float64_t> CLogitPiecewiseBoundLikelihood::get_variational_first_deriva
 			+ my_bsxfun(times, eigen_weighted_pdf_diff + eigen_cdf_diff, eigen_b)
 			+ my_bsxfun(times, eigen_pl - eigen_ph, eigen_c)).colwise().sum();
 
-		Map<VectorXd>eigen_lab(m_lab->vector, m_lab->vlen);
+		Map<VectorXd>eigen_lab(m_lab.vector, m_lab.vlen);
 		eigen_gmu = eigen_lab - eigen_gmu;
 	}
 	else
@@ -307,122 +293,90 @@ void CLogitPiecewiseBoundLikelihood::set_distribution(SGVector<float64_t> mu,
 	REQUIRE(lab->get_label_type()==LT_BINARY,
 		"Labels must be type of CBinaryLabels\n");
 
-	
-	Map<VectorXd> eigen_s2(s2.vector, s2.vlen);
-	eigen_s2.unaryExpr(std::ptr_fun(CLogitPiecewiseBoundLikelihood::_check_variance));
+	for(index_t i = 0; i < s2.vlen; ++i)
+		ASSERT(s2[i] > 0.0);
 
-	*m_lab = ((CBinaryLabels*)lab)->get_labels();
-	Map<VectorXd>eigen_lab(m_lab->vector, m_lab->vlen);
-	eigen_lab = eigen_lab.unaryExpr(std::ptr_fun(CLogitPiecewiseBoundLikelihood::_convert_label));
+	m_lab = ((CBinaryLabels*)lab)->get_labels();
+	Map<VectorXd>eigen_lab(m_lab.vector, m_lab.vlen);
+	eigen_lab = eigen_lab.unaryExpr(std::ptr_fun(CLogitPiecewiseBoundLikelihood::convert_label));
 
 
-	*m_mu = mu;
+	m_mu = mu;
 
-	*m_s2 = s2;
+	m_s2 = s2;
 
 	precompute();
 }
 
 void CLogitPiecewiseBoundLikelihood::init()
 {
-
-	m_bound = new SGMatrix<float64_t>();
-	SG_REF((SGRefObject *)m_bound);
-	SG_ADD((CSGObject**)&m_bound, "bound", 
+	SG_ADD(&m_bound, "bound", 
 		"Variational piecewise bound for logit likelihood",
 		MS_NOT_AVAILABLE);
-	m_mu = new SGVector<float64_t>();
-	SG_REF((SGRefObject *)m_mu);
-	SG_ADD((CSGObject**)&m_mu, "mu", 
+
+	SG_ADD(&m_mu, "mu", 
 		"The mean of variational normal distribution",
 		MS_AVAILABLE, GRADIENT_AVAILABLE);
-	m_s2 =  new SGVector<float64_t>();
-	SG_REF((SGRefObject *)m_s2);
-	SG_ADD((CSGObject**)&m_s2, "sigma2", 
+
+	SG_ADD(&m_s2, "sigma2", 
 		"The variance of variational normal distribution",
 		MS_AVAILABLE,GRADIENT_AVAILABLE);
 
-	m_lab =  new SGVector<float64_t>();
-	SG_REF((SGRefObject *)m_lab);
-	SG_ADD((CSGObject**)&m_lab, "y", 
+	SG_ADD(&m_lab, "y", 
 		"The data/labels (must be 0 or 1) drawn from the distribution",
 		MS_NOT_AVAILABLE);
 
-	m_pl = NULL;
-	SG_REF((SGRefObject *)m_pl);
-	SG_ADD((CSGObject**)&m_pl, "pdf_l", 
+	SG_ADD(&m_pl, "pdf_l", 
 		"The pdf given the lower range and parameters(mu and variance)",
 		MS_NOT_AVAILABLE);
-
-	m_ph = NULL;
-	SG_REF((SGRefObject *)m_ph);
-	SG_ADD((CSGObject**)&m_ph, "pdf_h", 
+	SG_ADD(&m_ph, "pdf_h", 
 		"The pdf given the higher range and parameters(mu and variance)",
 		MS_NOT_AVAILABLE);
-
-	m_cdf_diff = NULL;
-	SG_REF((SGRefObject *)m_cdf_diff);
-	SG_ADD((CSGObject**)&m_cdf_diff, "cdf_h_minus_cdf_l", 
+	SG_ADD(&m_cdf_diff, "cdf_h_minus_cdf_l", 
 		"The CDF difference between the lower and higher range given the parameters(mu and variance)",
 		MS_NOT_AVAILABLE);
-
-	m_l2_plus_s2 = NULL;
-	SG_REF((SGRefObject *)m_l2_plus_s2);
-	SG_ADD((CSGObject**)&m_l2_plus_s2, "l2_plus_sigma2", 
+	SG_ADD(&m_l2_plus_s2, "l2_plus_sigma2", 
 		"The result of l^2 + sigma^2",
 		MS_NOT_AVAILABLE);
-
-	m_h2_plus_s2 = NULL;
-	SG_REF((SGRefObject *)m_h2_plus_s2);
-	SG_ADD((CSGObject**)&m_h2_plus_s2, "h2_plus_sigma2", 
+	SG_ADD(&m_h2_plus_s2, "h2_plus_sigma2", 
 		"The result of h^2 + sigma^2",
 		MS_NOT_AVAILABLE);
-
-	m_weighted_pdf_diff = NULL;
-	SG_REF((SGRefObject *)m_weighted_pdf_diff);
-	SG_ADD((CSGObject**)&m_weighted_pdf_diff, "weighted_pdf_diff", 
+	SG_ADD(&m_weighted_pdf_diff, "weighted_pdf_diff", 
 		"The result of l*pdf(l_norm)-h*pdf(h_norm)",
 		MS_NOT_AVAILABLE);
-}
-void CLogitPiecewiseBoundLikelihood::init_matrix(SGMatrix<float64_t> ** ptr, index_t num_rows, index_t num_cols)
-{
-	SG_UNREF((SGRefObject *&)(*ptr));
-	(*ptr) = new SGMatrix<float64_t>(num_rows, num_cols);
-	SG_REF((SGRefObject *)(*ptr));
 }
 
 void CLogitPiecewiseBoundLikelihood::precompute()
 {
-	Map<VectorXd> eigen_c(m_bound->get_column_vector(0), m_bound->num_rows);
-	Map<VectorXd> eigen_b(m_bound->get_column_vector(1), m_bound->num_rows);
-	Map<VectorXd> eigen_a(m_bound->get_column_vector(2), m_bound->num_rows);
-	Map<VectorXd> eigen_l(m_bound->get_column_vector(3), m_bound->num_rows);
-	Map<VectorXd> eigen_h(m_bound->get_column_vector(4), m_bound->num_rows);
+	const Map<VectorXd> eigen_c(m_bound.get_column_vector(0), m_bound.num_rows);
+	const Map<VectorXd> eigen_b(m_bound.get_column_vector(1), m_bound.num_rows);
+	const Map<VectorXd> eigen_a(m_bound.get_column_vector(2), m_bound.num_rows);
+	const Map<VectorXd> eigen_mu(m_mu.vector, m_mu.vlen);
+	const Map<VectorXd> eigen_s2(m_s2.vector, m_s2.vlen);
+	Map<VectorXd> eigen_l(m_bound.get_column_vector(3), m_bound.num_rows);
+	Map<VectorXd> eigen_h(m_bound.get_column_vector(4), m_bound.num_rows);
 
-	index_t num_rows = m_bound->num_rows; 
-	index_t num_cols = m_mu->vlen;
+	index_t num_rows = m_bound.num_rows; 
+	index_t num_cols = m_mu.vlen;
 
-	init_matrix(&m_pl, num_rows, num_cols);
-	Map<Eigen::MatrixXd> eigen_pl(m_pl->matrix, num_rows, num_cols);
+	m_pl = SGMatrix<float64_t>(num_rows,num_cols);
+	m_ph = SGMatrix<float64_t>(num_rows,num_cols);
+	m_cdf_diff = SGMatrix<float64_t>(num_rows,num_cols);
+	m_l2_plus_s2 = SGMatrix<float64_t>(num_rows,num_cols);
+	m_h2_plus_s2 = SGMatrix<float64_t>(num_rows,num_cols);
+	m_weighted_pdf_diff = SGMatrix<float64_t>(num_rows,num_cols);
 
-	init_matrix(&m_ph, num_rows, num_cols);
-	Map<Eigen::MatrixXd> eigen_ph(m_ph->matrix, num_rows, num_cols);
+	Map<Eigen::MatrixXd> eigen_pl(m_pl.matrix, num_rows, num_cols);
 
-	init_matrix(&m_cdf_diff, num_rows, num_cols);
-	Map<Eigen::MatrixXd> eigen_cdf_diff(m_cdf_diff->matrix, num_rows, num_cols);
+	Map<Eigen::MatrixXd> eigen_ph(m_ph.matrix, num_rows, num_cols);
 
-	init_matrix(&m_l2_plus_s2, num_rows, num_cols);
-	Map<Eigen::MatrixXd> eigen_l2_plus_s2(m_l2_plus_s2->matrix, num_rows, num_cols);
+	Map<Eigen::MatrixXd> eigen_cdf_diff(m_cdf_diff.matrix, num_rows, num_cols);
 
-	init_matrix(&m_h2_plus_s2, num_rows, num_cols);
-	Map<Eigen::MatrixXd> eigen_h2_plus_s2(m_h2_plus_s2->matrix, num_rows, num_cols);
+	Map<Eigen::MatrixXd> eigen_l2_plus_s2(m_l2_plus_s2.matrix, num_rows, num_cols);
 
-	init_matrix(&m_weighted_pdf_diff, num_rows, num_cols);
-	Map<Eigen::MatrixXd> eigen_weighted_pdf_diff(m_weighted_pdf_diff->matrix, num_rows, num_cols);
+	Map<Eigen::MatrixXd> eigen_h2_plus_s2(m_h2_plus_s2.matrix, num_rows, num_cols);
 
-
-	Map<VectorXd> eigen_mu(m_mu->vector, m_mu->vlen);
-	Map<VectorXd> eigen_s2(m_s2->vector, m_s2->vlen);
+	Map<Eigen::MatrixXd> eigen_weighted_pdf_diff(m_weighted_pdf_diff.matrix, num_rows, num_cols);
 
 
 	MatrixXd eigen_zl = my_bsxfun(plus, eigen_l, (-eigen_mu).transpose());
@@ -463,19 +417,6 @@ void CLogitPiecewiseBoundLikelihood::precompute()
 
 	eigen_l(0) = l_bak;
 	eigen_h(eigen_h.size()-1) = h_bak;
-
-}
-
-float64_t CLogitPiecewiseBoundLikelihood::_check_variance(float64_t x)
-{
-	REQUIRE(x > 0.0, "Variance should always be positive\n");
-	return x;
-}
-float64_t CLogitPiecewiseBoundLikelihood::_convert_label(float64_t x)
-{
-	if (x <= 0.0)
-		return 0.0;
-	return 1.0;
 }
 
 #endif /* HAVE_EIGEN3 */

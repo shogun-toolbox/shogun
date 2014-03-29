@@ -115,44 +115,40 @@ public:
 private:
 	void init();
 
-	void clean();
-
 	void precompute();
 
-	void init_matrix(SGMatrix<float64_t> ** ptr, index_t num_rows, index_t num_cols);
-
 	/*Variational piecewise bound for logit likelihood*/
-	SGMatrix<float64_t> * m_bound;
+	SGMatrix<float64_t> m_bound;
 
 	/*The mean of variational normal distribution*/
-	SGVector<float64_t> * m_mu;
+	SGVector<float64_t> m_mu;
 
 	/*The variance of variational normal distribution*/
-	SGVector<float64_t> * m_s2;
+	SGVector<float64_t> m_s2;
 
 	/*The data/labels (must be 0 or 1) drawn from the distribution
 	 * Note that if the input labels are -1 and 1, the method _convert_label
 	 * will converte them to 0 and 1 repectively.
 	 * */
-	SGVector<float64_t> * m_lab;
+	SGVector<float64_t> m_lab;
 
 	/*The pdf given the lower range and parameters(mu and variance)*/
-	SGMatrix<float64_t> * m_pl;
+	SGMatrix<float64_t> m_pl;
 
 	/*The pdf given the higher range and parameters(mu and variance)*/
-	SGMatrix<float64_t> * m_ph;
+	SGMatrix<float64_t> m_ph;
 
 	/*The CDF difference between the lower and higher range given the parameters(mu and variance)*/
-	SGMatrix<float64_t> * m_cdf_diff;
+	SGMatrix<float64_t> m_cdf_diff;
 
 	/*The result of l^2 + sigma^2*/
-	SGMatrix<float64_t> * m_l2_plus_s2;
+	SGMatrix<float64_t> m_l2_plus_s2;
 
 	/*The result of h^2 + sigma^2"*/
-	SGMatrix<float64_t> * m_h2_plus_s2;
+	SGMatrix<float64_t> m_h2_plus_s2;
 
 	/*The result of l*pdf(l_norm)-h*pdf(h_norm)*/
-	SGMatrix<float64_t> * m_weighted_pdf_diff;
+	SGMatrix<float64_t> m_weighted_pdf_diff;
 
 
 	// It seems that pl8787 tries to include it into the cade base
@@ -175,12 +171,6 @@ private:
 	static Eigen::MatrixXd normal_cdf_minus_const(const Eigen::MatrixBase<M1> &x);
 	// end for "temporarily add for unit test"
 	
-	/** use to check whether the variance is positive or not
-	 *
-	 * @return dummy value
-	 */
-	static float64_t _check_variance(float64_t x);
-
 	/** use to convert the input label to standard label used in the model
 	 *
 	 *  Note that Shogun use  -1 and 1 as labels and this function converts
@@ -188,7 +178,7 @@ private:
 	 *
 	 * @return standard label
 	 */
-	static float64_t _convert_label(float64_t x);
+	static float64_t convert_label(float64_t x) { return CMath::max(x,0.0); }
 };
 }
 #endif /* HAVE_EIGEN3 */
