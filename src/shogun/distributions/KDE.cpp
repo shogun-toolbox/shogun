@@ -63,7 +63,7 @@ SGMatrix<float64_t> CKDE::compute_nn(CFeatures* data, int32_t rows, int32_t cols
 	bool worked;
 	CKNN* nn_calculator = new CKNN();
 	//Auxiliar matrix
-	//SGMatrix<index_t> aux = new SGMatrix<index_t>(rows,cols,true);
+	SGMatrix<index_t> aux = new SGMatrix<index_t>(rows,cols,true);
 	SGMatrix<float64_t> samples = new SGMatrix<float64_t>(rows,cols,true);
 	//Worked will return true is the nn_calculator was successful in training the data
 	nn_calculator->set_k(3);
