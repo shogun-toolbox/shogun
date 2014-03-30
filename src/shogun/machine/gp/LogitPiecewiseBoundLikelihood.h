@@ -39,6 +39,7 @@
 #include <shogun/machine/gp/LogitLikelihood.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/Statistics.h>
+#include <shogun/distributions/classical/GaussianDistribution.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/labels/BinaryLabels.h>
 
@@ -56,11 +57,6 @@ namespace shogun
  */
 class CLogitPiecewiseBoundLikelihood : public CLogitLikelihood
 {
-typedef enum _my_bsxfunOp
-{
-	plus,
-	times
-} MyBsxfunOp;
 public:
 	CLogitPiecewiseBoundLikelihood();
 
@@ -127,8 +123,8 @@ private:
 	SGVector<float64_t> m_s2;
 
 	/*The data/labels (must be 0 or 1) drawn from the distribution
-	 * Note that if the input labels are -1 and 1, the method _convert_label
-	 * will converte them to 0 and 1 repectively.
+	 * Note that if the input labels are -1 and 1, it will
+	 * automatically converte them to 0 and 1 repectively.
 	 * */
 	SGVector<float64_t> m_lab;
 
@@ -149,36 +145,6 @@ private:
 
 	/*The result of l*pdf(l_norm)-h*pdf(h_norm)*/
 	SGMatrix<float64_t> m_weighted_pdf_diff;
-
-
-	// It seems that pl8787 tries to include it into the cade base
-	// Temporarily add here for unit test
-	static Eigen::MatrixXd my_bsxfun_vec(MyBsxfunOp op, const Eigen::MatrixXd & x,
-		const Eigen::VectorXd & y, bool is_col_vec);
-
-	template<typename M1, typename M2>
-	static Eigen::MatrixXd my_bsxfun(MyBsxfunOp op, const Eigen::MatrixBase<M1> & x,
-		const Eigen::MatrixBase<M2> & y);
-
-	static float64_t _standard_norm_pdf(float64_t x);
-
-	template<typename M1>
-	static Eigen::MatrixXd standard_norm_pdf(const Eigen::MatrixBase<M1> &x);
-
-	static float64_t _norm_cdf_minus_const(float64_t x);
-
-	template<typename M1>
-	static Eigen::MatrixXd normal_cdf_minus_const(const Eigen::MatrixBase<M1> &x);
-	// end for "temporarily add for unit test"
-	
-	/** use to convert the input label to standard label used in the model
-	 *
-	 *  Note that Shogun use  -1 and 1 as labels and this function converts
-	 *  them to 0 and 1 repectively.
-	 *
-	 * @return standard label
-	 */
-	static float64_t convert_label(float64_t x) { return CMath::max(x,0.0); }
 };
 }
 #endif /* HAVE_EIGEN3 */
