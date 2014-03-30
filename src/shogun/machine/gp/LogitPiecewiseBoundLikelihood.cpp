@@ -35,96 +35,8 @@
 #include <shogun/machine/gp/LogitPiecewiseBoundLikelihood.h>
 
 
-
 using namespace shogun;
 using namespace Eigen;
-
-MatrixXd CLogitPiecewiseBoundLikelihood::my_bsxfun_vec(MyBsxfunOp op, const MatrixXd & x,
-	const VectorXd & y, bool is_col_vec)
-{
-
-	ASSERT(op == plus || op == times);
-	switch(op)
-	{
-	case plus:
-		if (is_col_vec)
-			return (x.array().colwise()+y.array()).matrix();
-		return (x.array().rowwise()+y.array().transpose()).matrix();
-	case times:
-		if (is_col_vec)
-			return (x.array().colwise()*y.array()).matrix();
-		return (x.array().rowwise()*y.array().transpose()).matrix();
-	}
-	return x;
-
-}
-
-template<typename M1, typename M2>
-MatrixXd CLogitPiecewiseBoundLikelihood::my_bsxfun(MyBsxfunOp op, const MatrixBase<M1> & x,
-	const MatrixBase<M2> & y)
-{
-
-	ASSERT(op == plus || op == times);
-	ASSERT((x.rows()==y.rows() || x.rows()==1 || y.rows()==1) && (x.cols()==y.cols() || x.cols()==1 || y.cols()==1));
-	if ((x.rows() > 1 && x.cols() >1) && (y.rows() == 1 || y.cols() ==1))
-	{
-		if (y.rows() >1)
-			// matrix_op_col_vec
-			return my_bsxfun_vec(op, x, y, true);
-		// matrix_op_row_vec
-		return my_bsxfun_vec(op, x, y, false);
-	}
-	else if ((y.rows() > 1 && y.cols() > 1) && (x.rows() ==1 || x.cols() ==1))
-	{
-		if (y.rows() >1)
-			// col_vec_op_matrix
-			return my_bsxfun_vec(op, y, x, true);
-		// row_vec_op_matrix
-		return my_bsxfun_vec(op, y, x, false);
-	}
-	else if (x.rows() != y.rows() || x.cols() != y.cols())
-	{
-		if(x.rows()==1)
-			// row_vec_op_col_vec
-			return my_bsxfun_vec(op, x.replicate(y.rows(), 1), y, true);
-		else if(x.cols()==1)
-			// col_vec_op_row_vec
-			return my_bsxfun_vec(op, y.replicate(x.rows(), 1), x, true);
-	}
-	switch(op)
-	{
-	case plus:
-		return x+y;
-	case times:
-		return (x.array() * y.array()).matrix();
-	}
-	return x;
-}
-
-float64_t CLogitPiecewiseBoundLikelihood::_standard_norm_pdf(float64_t x)
-{
-	if(x == CMath::INFTY || x == -CMath::INFTY)
-		return 0.0;
-	else
-		return CMath::exp(-0.5*(x*x + CMath::log(2.0*CMath::PI)));
-}
-
-template<typename M1>
-Eigen::MatrixXd CLogitPiecewiseBoundLikelihood::standard_norm_pdf(const Eigen::MatrixBase<M1> &x)
-{
-	return x.unaryExpr(std::ptr_fun(CLogitPiecewiseBoundLikelihood::_standard_norm_pdf));
-}
-
-float64_t CLogitPiecewiseBoundLikelihood::_norm_cdf_minus_const(float64_t x)
-{
-	return CStatistics::normal_cdf(x) - 0.5;
-}
-
-template<typename M1>
-Eigen::MatrixXd CLogitPiecewiseBoundLikelihood::normal_cdf_minus_const(const Eigen::MatrixBase<M1> &x)
-{
-	return x.unaryExpr(std::ptr_fun(CLogitPiecewiseBoundLikelihood::_norm_cdf_minus_const));
-}
 
 CLogitPiecewiseBoundLikelihood::CLogitPiecewiseBoundLikelihood()
 	: CLogitLikelihood()
@@ -155,9 +67,9 @@ SGVector<float64_t> CLogitPiecewiseBoundLikelihood::get_variational_expection()
 	index_t num_rows = m_bound.num_rows; 
 	index_t num_cols = m_mu.vlen;
 
-	const Map<Eigen::MatrixXd> eigen_cdf_diff(m_cdf_diff.matrix, num_rows, num_cols);
-	const Map<Eigen::MatrixXd> eigen_pl(m_pl.matrix, num_rows, num_cols);
-	const Map<Eigen::MatrixXd> eigen_ph(m_ph.matrix, num_rows, num_cols);
+	const Map<MatrixXd> eigen_cdf_diff(m_cdf_diff.matrix, num_rows, num_cols);
+	const Map<MatrixXd> eigen_pl(m_pl.matrix, num_rows, num_cols);
+	const Map<MatrixXd> eigen_ph(m_ph.matrix, num_rows, num_cols);
 
 	float64_t l_bak = eigen_l(0);
 	eigen_l(0) = 0;
@@ -169,24 +81,24 @@ SGVector<float64_t> CLogitPiecewiseBoundLikelihood::get_variational_expection()
 	const Map<MatrixXd> & eigen_ex0 = eigen_cdf_diff;
 
 	//%ex1= v.*(pl-ph) + m.*(ch-cl);
-	MatrixXd eigen_ex1 = my_bsxfun(times, eigen_pl - eigen_ph, eigen_s2.transpose()) 
-		+ my_bsxfun(times, eigen_cdf_diff, eigen_mu.transpose());
+	MatrixXd eigen_ex1 = ((eigen_pl - eigen_ph).array().rowwise()*eigen_s2.array().transpose() 
+		+ eigen_cdf_diff.array().rowwise()*eigen_mu.array().transpose()).matrix();
 
 	//ex2 = bsxfun(@times, v, (bsxfun(@plus, l, m)).*pl - (bsxfun(@plus, h, m)).*ph) + bsxfun(@times, (v+m.^2), ex0);
-	MatrixXd eigen_ex2 = my_bsxfun(plus, eigen_l, eigen_mu.transpose()).cwiseProduct(eigen_pl)
-		- my_bsxfun(plus, eigen_h, eigen_mu.transpose()).cwiseProduct(eigen_ph);
-	eigen_ex2 = my_bsxfun(times, eigen_ex2, eigen_s2.transpose());
-	eigen_ex2 += my_bsxfun(times, eigen_cdf_diff, (eigen_mu.array().pow(2)
-			+ eigen_s2.array()).matrix().transpose());
+	MatrixXd eigen_ex2 = ((eigen_mu.replicate(1,eigen_l.rows()).array().transpose().colwise() + eigen_l.array())*eigen_pl.array()
+		- (eigen_mu.replicate(1,eigen_h.rows()).array().transpose().colwise() + eigen_h.array())*eigen_ph.array()).matrix();
 
+	eigen_ex2 = (eigen_ex2.array().rowwise()*eigen_s2.array().transpose()).matrix();
+	eigen_ex2 += (eigen_cdf_diff.array().rowwise()*(eigen_mu.array().pow(2)
+			+ eigen_s2.array()).transpose()).matrix();
 
 	SGVector<float64_t> f(m_mu.vlen);
 	Map<VectorXd> eigen_f(f.vector, f.vlen);
 
 	//%f = sum((a.*ex2 + b.*ex1 + c.*ex0),1);
-	eigen_f = (my_bsxfun(times, eigen_ex2, eigen_a) 
-		+ my_bsxfun(times, eigen_ex1, eigen_b) 
-		+ my_bsxfun(times, eigen_ex0, eigen_c)).colwise().sum();
+	eigen_f = (eigen_ex2.array().colwise()*eigen_a.array() 
+		+ eigen_ex1.array().colwise()*eigen_b.array() 
+		+ eigen_ex0.array().colwise()*eigen_c.array()).colwise().sum().matrix();
 
 
 	eigen_l(0) = l_bak;
@@ -217,60 +129,61 @@ SGVector<float64_t> CLogitPiecewiseBoundLikelihood::get_variational_first_deriva
 	Map<VectorXd> eigen_h(m_bound.get_column_vector(4), m_bound.num_rows);
 	index_t num_rows = m_bound.num_rows; 
 	index_t num_cols = m_mu.vlen;
-	const Map<Eigen::MatrixXd> eigen_cdf_diff(m_cdf_diff.matrix, num_rows, num_cols);
-	const Map<Eigen::MatrixXd> eigen_pl(m_pl.matrix, num_rows, num_cols);
-	const Map<Eigen::MatrixXd> eigen_ph(m_ph.matrix, num_rows, num_cols);
-	const Map<Eigen::MatrixXd> eigen_weighted_pdf_diff(m_weighted_pdf_diff.matrix, num_rows, num_cols);
-	const Map<Eigen::MatrixXd> eigen_h2_plus_s2(m_h2_plus_s2.matrix, num_rows, num_cols);
-	const Map<Eigen::MatrixXd> eigen_l2_plus_s2(m_l2_plus_s2.matrix, num_rows, num_cols);
+	const Map<MatrixXd> eigen_cdf_diff(m_cdf_diff.matrix, num_rows, num_cols);
+	const Map<MatrixXd> eigen_pl(m_pl.matrix, num_rows, num_cols);
+	const Map<MatrixXd> eigen_ph(m_ph.matrix, num_rows, num_cols);
+	const Map<MatrixXd> eigen_weighted_pdf_diff(m_weighted_pdf_diff.matrix, num_rows, num_cols);
+	const Map<MatrixXd> eigen_h2_plus_s2(m_h2_plus_s2.matrix, num_rows, num_cols);
+	const Map<MatrixXd> eigen_l2_plus_s2(m_l2_plus_s2.matrix, num_rows, num_cols);
 	float64_t l_bak = eigen_l(0);
 	eigen_l(0) = 0;
 	float64_t h_bak = eigen_h(eigen_h.size()-1);
 	eigen_h(eigen_h.size()-1) = 0;
 
 	SGVector<float64_t> result(m_mu.vlen);
+
 	if (strcmp(param->m_name, "mu") ==0)
 	{
-		MatrixXd eigen_dmu2 = my_bsxfun(plus, eigen_l2_plus_s2, eigen_s2.transpose()).cwiseProduct(eigen_pl)
-			- my_bsxfun(plus, eigen_h2_plus_s2, eigen_s2.transpose()).cwiseProduct(eigen_ph);
-		eigen_dmu2 += my_bsxfun(times, eigen_cdf_diff, (2.0*eigen_mu).transpose());
+		MatrixXd eigen_dmu2 = ((eigen_l2_plus_s2.array().rowwise()+eigen_s2.array().transpose())*eigen_pl.array()
+			- (eigen_h2_plus_s2.array().rowwise()+eigen_s2.array().transpose())*eigen_ph.array()).matrix();
+		eigen_dmu2 += (eigen_cdf_diff.array().rowwise()*(2.0*eigen_mu).array().transpose()).matrix();
 
 		SGVector<float64_t> & gmu = result;
 		Map<VectorXd> eigen_gmu(gmu.vector, gmu.vlen);
-		eigen_gmu = (my_bsxfun(times, eigen_dmu2, eigen_a) 
-			+ my_bsxfun(times, eigen_weighted_pdf_diff + eigen_cdf_diff, eigen_b)
-			+ my_bsxfun(times, eigen_pl - eigen_ph, eigen_c)).colwise().sum();
+		eigen_gmu = ((eigen_dmu2.array().colwise()*eigen_a.array()) 
+			+ ((eigen_weighted_pdf_diff + eigen_cdf_diff).array().colwise()*eigen_b.array())
+			+ ( (eigen_pl - eigen_ph).array().colwise()*eigen_c.array())).colwise().sum().matrix();
 
 		Map<VectorXd>eigen_lab(m_lab.vector, m_lab.vlen);
 		eigen_gmu = eigen_lab - eigen_gmu;
 	}
 	else
 	{
-		MatrixXd eigen_gs2_0 = my_bsxfun(plus, eigen_l, (-eigen_mu).transpose()).cwiseProduct(eigen_pl) 
-			- (my_bsxfun(plus, eigen_h, (-eigen_mu).transpose())).cwiseProduct(eigen_ph);
-		eigen_gs2_0 = my_bsxfun(times, eigen_gs2_0, eigen_c);
 
+		MatrixXd eigen_gs2_0 = (((-eigen_mu).replicate(1,eigen_l.rows()).array().transpose().colwise() + eigen_l.array())*eigen_pl.array()
+			- ((-eigen_mu).replicate(1,eigen_h.rows()).array().transpose().colwise() + eigen_h.array())*eigen_ph.array()).matrix();
+		eigen_gs2_0 = (eigen_gs2_0.array().colwise()*eigen_c.array()).matrix();
 
-		MatrixXd tmpl = (eigen_l2_plus_s2 - my_bsxfun(times, eigen_l, eigen_mu.transpose())
+		MatrixXd tmpl = (eigen_l2_plus_s2 - (eigen_mu.replicate(1,eigen_l.rows()).array().transpose().colwise()*eigen_l.array()).matrix()
 			).cwiseProduct(eigen_pl);
-		MatrixXd tmph = (eigen_h2_plus_s2 - my_bsxfun(times, eigen_h, eigen_mu.transpose())
+
+		MatrixXd tmph = (eigen_h2_plus_s2 - (eigen_mu.replicate(1,eigen_h.rows()).array().transpose().colwise()*eigen_h.array()).matrix()
 			).cwiseProduct(eigen_ph);
 
-		MatrixXd eigen_gs2_1 = my_bsxfun(times, tmpl - tmph, eigen_b);
+		MatrixXd eigen_gs2_1 = ((tmpl - tmph).array().colwise()*eigen_b.array()).matrix();
 
-		MatrixXd eigen_gs2_2 = my_bsxfun(times, tmpl, eigen_l) - my_bsxfun(times, tmph, eigen_h);
+		MatrixXd eigen_gs2_2 = (tmpl.array().colwise()*eigen_l.array() - tmph.array().colwise()*eigen_h.array()).matrix();
 
-		eigen_gs2_2 = my_bsxfun(times, eigen_gs2_2, eigen_a);
+		eigen_gs2_2 = (eigen_gs2_2.array().colwise()*eigen_a.array()).matrix();
 
 		SGVector<float64_t> & gs2 = result;
 		Map<VectorXd> eigen_gs2(gs2.vector, gs2.vlen);
 
-		eigen_gs2 = (my_bsxfun(times, eigen_cdf_diff + 0.5*eigen_weighted_pdf_diff, eigen_a)
-			+ my_bsxfun(times, eigen_gs2_0 + eigen_gs2_1
-				+ eigen_gs2_2, (2.0*eigen_s2).array().inverse().matrix().transpose())
-			).colwise().sum();
+		eigen_gs2 = ((eigen_cdf_diff + 0.5*eigen_weighted_pdf_diff).array().colwise()*eigen_a.array()
+			+ (eigen_gs2_0 + eigen_gs2_1 + eigen_gs2_2).array().rowwise()/(2.0*eigen_s2).array().transpose()
+			).colwise().sum().matrix();
 
-		eigen_gs2 = - eigen_gs2;
+		eigen_gs2 = -eigen_gs2;
 
 	}
 	eigen_l(0) = l_bak;
@@ -297,9 +210,14 @@ void CLogitPiecewiseBoundLikelihood::set_distribution(SGVector<float64_t> mu,
 		ASSERT(s2[i] > 0.0);
 
 	m_lab = ((CBinaryLabels*)lab)->get_labels();
-	Map<VectorXd>eigen_lab(m_lab.vector, m_lab.vlen);
-	eigen_lab = eigen_lab.unaryExpr(std::ptr_fun(CLogitPiecewiseBoundLikelihood::convert_label));
-
+	/** convert the input label to standard label used in the class
+	 *
+	 *  Note that Shogun uses  -1 and 1 as labels and this class uses 
+	 *  0 and 1 repectively.
+	 *
+	 */
+	for(index_t i = 0; i < m_lab.size(); ++i)
+		m_lab[i] = CMath::max(m_lab[i], 0.0);
 
 	m_mu = mu;
 
@@ -366,41 +284,62 @@ void CLogitPiecewiseBoundLikelihood::precompute()
 	m_h2_plus_s2 = SGMatrix<float64_t>(num_rows,num_cols);
 	m_weighted_pdf_diff = SGMatrix<float64_t>(num_rows,num_cols);
 
-	Map<Eigen::MatrixXd> eigen_pl(m_pl.matrix, num_rows, num_cols);
+	Map<MatrixXd> eigen_pl(m_pl.matrix, num_rows, num_cols);
 
-	Map<Eigen::MatrixXd> eigen_ph(m_ph.matrix, num_rows, num_cols);
+	Map<MatrixXd> eigen_ph(m_ph.matrix, num_rows, num_cols);
 
-	Map<Eigen::MatrixXd> eigen_cdf_diff(m_cdf_diff.matrix, num_rows, num_cols);
+	Map<MatrixXd> eigen_cdf_diff(m_cdf_diff.matrix, num_rows, num_cols);
 
-	Map<Eigen::MatrixXd> eigen_l2_plus_s2(m_l2_plus_s2.matrix, num_rows, num_cols);
+	Map<MatrixXd> eigen_l2_plus_s2(m_l2_plus_s2.matrix, num_rows, num_cols);
 
-	Map<Eigen::MatrixXd> eigen_h2_plus_s2(m_h2_plus_s2.matrix, num_rows, num_cols);
+	Map<MatrixXd> eigen_h2_plus_s2(m_h2_plus_s2.matrix, num_rows, num_cols);
 
-	Map<Eigen::MatrixXd> eigen_weighted_pdf_diff(m_weighted_pdf_diff.matrix, num_rows, num_cols);
+	Map<MatrixXd> eigen_weighted_pdf_diff(m_weighted_pdf_diff.matrix, num_rows, num_cols);
 
 
-	MatrixXd eigen_zl = my_bsxfun(plus, eigen_l, (-eigen_mu).transpose());
-	MatrixXd eigen_zh = my_bsxfun(plus, eigen_h, (-eigen_mu).transpose());
+	SGMatrix<float64_t> zl(num_rows, num_cols);
+	Map<MatrixXd> eigen_zl(zl.matrix, num_rows, num_cols);
+
+	SGMatrix<float64_t> zh(num_rows, num_cols);
+	Map<MatrixXd> eigen_zh(zh.matrix, num_rows, num_cols);
+
+	eigen_zl = ((-eigen_mu).replicate(1,eigen_l.rows()).array().transpose().colwise() + eigen_l.array()).matrix();
+	eigen_zh = ((-eigen_mu).replicate(1,eigen_h.rows()).array().transpose().colwise() + eigen_h.array()).matrix();
 
 	VectorXd eigen_s_inv = eigen_s2.array().sqrt().inverse().matrix(); 
 
 	//zl = bsxfun(@times, bsxfun(@minus,l,m), 1./sqrt(v))
-	eigen_zl = my_bsxfun(times, eigen_zl, eigen_s_inv.transpose());
+	eigen_zl = (eigen_zl.array().rowwise()*eigen_s_inv.array().transpose()).matrix();
 	//zh = bsxfun(@times, bsxfun(@minus,h,m), 1./sqrt(v))
-	eigen_zh = my_bsxfun(times, eigen_zh, eigen_s_inv.transpose());
+	eigen_zh = (eigen_zh.array().rowwise()*eigen_s_inv.array().transpose()).matrix();
+
+
+	for (index_t r = 0; r < zl.num_rows; r++)
+		for (index_t c = 0; c < zl.num_cols; c++)
+		{
+			m_pl(r, c) = CGaussianDistribution::get_univariate_pdf(zl(r, c));
+			m_ph(r, c) = CGaussianDistribution::get_univariate_pdf(zh(r, c));
+		}
 
 	//pl = bsxfun(@times, normpdf(zl), 1./sqrt(v));
-	eigen_pl = my_bsxfun(times, standard_norm_pdf(eigen_zl), eigen_s_inv.transpose());
+	eigen_pl = (eigen_pl.array().rowwise()*eigen_s_inv.array().transpose()).matrix();
 	//ph = bsxfun(@times, normpdf(zh), 1./sqrt(v));
-	eigen_ph = my_bsxfun(times, standard_norm_pdf(eigen_zh), eigen_s_inv.transpose());
+	eigen_ph = (eigen_ph.array().rowwise()*eigen_s_inv.array().transpose()).matrix();
 
-	MatrixXd & eigen_cl = eigen_zl;
-	MatrixXd & eigen_ch = eigen_zh;
+	SGMatrix<float64_t> & cl = zl; 
+	SGMatrix<float64_t> & ch = zh;
 
 	//cl = 0.5*erf(zl/sqrt(2)); %normal cdf -const
-	eigen_cl = normal_cdf_minus_const(eigen_zl);
 	//ch = 0.5*erf(zl/sqrt(2)); %normal cdf -const
-	eigen_ch = normal_cdf_minus_const(eigen_zh);
+	for (index_t r = 0; r < zl.num_rows; r++)
+		for (index_t c = 0; c < zl.num_cols; c++)
+		{
+			cl(r, c) = CStatistics::normal_cdf(zl(r, c)) - 0.5;
+			ch(r, c) = CStatistics::normal_cdf(zh(r, c)) - 0.5;
+		}
+
+	Map<MatrixXd> eigen_cl(cl.matrix, num_rows, num_cols);
+	Map<MatrixXd> eigen_ch(ch.matrix, num_rows, num_cols);
 
 	eigen_cdf_diff = eigen_ch - eigen_cl;
 
@@ -410,9 +349,9 @@ void CLogitPiecewiseBoundLikelihood::precompute()
 	float64_t h_bak = eigen_h(eigen_h.size()-1);
 	eigen_h(eigen_h.size()-1) = 0;
 
-	eigen_l2_plus_s2 = my_bsxfun(plus, eigen_l.array().pow(2).matrix(), eigen_s2.transpose());
-	eigen_h2_plus_s2 = my_bsxfun(plus, eigen_h.array().pow(2).matrix(), eigen_s2.transpose());
-	eigen_weighted_pdf_diff = my_bsxfun(times, eigen_pl, eigen_l) - my_bsxfun(times, eigen_ph, eigen_h);
+	eigen_l2_plus_s2 = (eigen_s2.replicate(1,eigen_l.rows()).array().transpose().colwise() + eigen_l.array().pow(2)).matrix();
+	eigen_h2_plus_s2 = (eigen_s2.replicate(1,eigen_h.rows()).array().transpose().colwise() + eigen_h.array().pow(2)).matrix();
+	eigen_weighted_pdf_diff = (eigen_pl.array().colwise()*eigen_l.array() - eigen_ph.array().colwise()*eigen_h.array()).matrix();
 
 
 	eigen_l(0) = l_bak;
