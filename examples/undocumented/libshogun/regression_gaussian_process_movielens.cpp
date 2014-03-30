@@ -37,7 +37,6 @@
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/kernel/GaussianKernel.h>
-#include <shogun/kernel/LinearKernel.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/machine/gp/ExactInferenceMethod.h>
 #include <shogun/machine/gp/GaussianLikelihood.h>
@@ -58,6 +57,7 @@ const char* fname_items="../data/ml-100k/u.item";
 // file with testing data
 const char* fname_ratings_test="../data/ml-100k/u1.test";
 
+// Read movielens ratings data (uid \t mid \t ratting \t timestamp)
 SGMatrix<float64_t> read_ratings_data(const char* fname)
 {
 	SGMatrix<float64_t> x;
@@ -70,6 +70,8 @@ SGMatrix<float64_t> read_ratings_data(const char* fname)
 	return x;
 }
 
+// Read movielens movie's features
+// (Movie gener, ignore string features such as movie name)
 SGMatrix<float64_t> read_items_data(const char* fname)
 {
 	FILE* file_items=fopen(fname,"rb");
@@ -123,6 +125,8 @@ SGMatrix<float64_t> read_items_data(const char* fname)
 	return x;
 }
 
+// Generate feature matrix and target vector for one user specific by uid
+// start_idx is the start line for searching in the rating file
 void generate_features(SGMatrix<float64_t> &ratings, SGMatrix<float64_t> &items,
 		int &uid, int &start_idx,
 		SGMatrix<float64_t> &feature, SGVector<float64_t> &target)
@@ -133,6 +137,7 @@ void generate_features(SGMatrix<float64_t> &ratings, SGMatrix<float64_t> &items,
 	{
 		if (ratings(0,i)==uid && (ratings(2,i)==1 || ratings(2,i)==5))
 			item_len++;
+
 		if (ratings(0,i)!=uid)
 		{
 			next_start_idx = i;
@@ -157,6 +162,7 @@ void generate_features(SGMatrix<float64_t> &ratings, SGMatrix<float64_t> &items,
 	start_idx = next_start_idx;
 }
 
+// Do the GP regression on movielens dataset
 void gp_regression_movielens(float64_t &error_train, float64_t &error_test)
 {
 	// Basic information
@@ -172,14 +178,24 @@ void gp_regression_movielens(float64_t &error_train, float64_t &error_test)
 	// where uid is in increased order
 	SGMatrix<float64_t> M_train_ratings=read_ratings_data(fname_ratings_train);
 	SGMatrix<float64_t> M_test_ratings=read_ratings_data(fname_ratings_test);
+
 	// Read movielens movie genre data from u.item
 	SGMatrix<float64_t> M_items=read_items_data(fname_items);
+
+	// Allocate our mean function
+	CZeroMean* mean = new CZeroMean();
+	SG_REF(mean);
+
+	// Allocate our likelihood function
+	CGaussianLikelihood* lik = new CGaussianLikelihood();
+	SG_REF(lik);
+	lik->set_sigma(0.1);
 
 	int uid = 1;
 	int start_idx_train = 0;
 	int start_idx_test = 0;
 
-	for (uid = 1;uid<user_cnt;uid++)
+	for (uid = 1;uid<=user_cnt;uid++)
 	{
 		SGMatrix<float64_t> M_train;
 		SGMatrix<float64_t> M_test;
@@ -208,18 +224,8 @@ void gp_regression_movielens(float64_t &error_train, float64_t &error_test)
 
 		// Allocate our Kernel
 		CGaussianKernel* kernel = new CGaussianKernel(10, 2);
-		// CLinearKernel * kernel = new CLinearKernel();
 		SG_REF(kernel);
 		kernel->init(feat_train, feat_train);
-
-		// Allocate our mean function
-		CZeroMean* mean = new CZeroMean();
-		SG_REF(mean);
-
-		// Allocate our likelihood function
-		CGaussianLikelihood* lik = new CGaussianLikelihood();
-		SG_REF(lik);
-		lik->set_sigma(0.1);
 
 		// Allocate our inference method
 		CExactInferenceMethod* inf = new CExactInferenceMethod(kernel,
@@ -238,46 +244,51 @@ void gp_regression_movielens(float64_t &error_train, float64_t &error_test)
 		pred_pair_count_train+=V_train.vlen;
 		pred_pair_count_test+=V_test.vlen;
 
-		try
-		{
-			// perform inference on train
-			CRegressionLabels* predictions_train=gpr->apply_regression(feat_train);
-			SG_REF(predictions_train);
-			// perform inference on test
-			CRegressionLabels* predictions_test=gpr->apply_regression(feat_test);
-			SG_REF(predictions_test);
+		// perform inference on train
+		CRegressionLabels* predictions_train=gpr->apply_regression(feat_train);
+		SG_REF(predictions_train);
 
-			error_train += eval->evaluate(predictions_train, lab_train) * V_train.vlen;
-			error_test += eval->evaluate(predictions_test, lab_test) * V_test.vlen;
-			SG_SPRINT("Processing User:%d\n", uid);
-			SG_SPRINT("Mean Squared Error on Train:%lf\n",error_train/pred_pair_count_train);
-			SG_SPRINT("Mean Squared Error on Test:%lf\n",error_test/pred_pair_count_test);
-			SG_UNREF(predictions_train);
-			SG_UNREF(predictions_test);
-		}
-		catch (ShogunException & sh)
-		{
-			SG_SERROR("\n%s\n",sh.get_exception_string());
-		}
+		// perform inference on test
+		CRegressionLabels* predictions_test=gpr->apply_regression(feat_test);
+		SG_REF(predictions_test);
 
+		error_train += eval->evaluate(predictions_train, lab_train) * V_train.vlen;
+		error_test += eval->evaluate(predictions_test, lab_test) * V_test.vlen;
+
+		SG_SPRINT("Processing User:%d\n", uid);
+		SG_SPRINT("Train Vlen: %d\n", V_train.vlen);
+		SG_SPRINT("Test Vlen: %d\n", V_test.vlen);
+		SG_SPRINT("Squared Error Train: %lf\n", error_train);
+		SG_SPRINT("Squared Error Test: %lf\n", error_test);
+		SG_SPRINT("Mean Squared Error on Train:%lf\n",error_train/pred_pair_count_train);
+		SG_SPRINT("Mean Squared Error on Test:%lf\n",error_test/pred_pair_count_test);
+		SG_SPRINT("\n");
+
+		SG_UNREF(predictions_train);
+		SG_UNREF(predictions_test);
 		SG_UNREF(feat_train);
 		SG_UNREF(lab_train);
 		SG_UNREF(feat_test);
 		SG_UNREF(lab_test);
 		SG_UNREF(kernel);
-		SG_UNREF(mean);
-		SG_UNREF(lik);
 		SG_UNREF(inf);
 		SG_UNREF(gpr);
 		SG_UNREF(eval);
 	}
 
+	SG_SPRINT("Train Pairs: %d\n",pred_pair_count_train);
+	SG_SPRINT("Test Pairs: %d\n",pred_pair_count_test);
+
 	error_train/=pred_pair_count_train;
 	error_test/=pred_pair_count_test;
 
 	SG_SPRINT("Loss User Count in Test:%d\n", loss_user_count);
+
+	SG_UNREF(mean);
+	SG_UNREF(lik);
 }
 
+// Main of this GP on movielens example
 int main(int argc, char** argv)
 {
 	init_shogun_with_defaults();
@@ -291,13 +302,6 @@ int main(int argc, char** argv)
 	SG_SPRINT("Root Mean Squared Error on Test:%lf\n", CMath::sqrt(error_test));
 
 	exit_shogun();
-	return 0;
-}
-
-#else
-
-int main(int argc, char **argv)
-{
 	return 0;
 }
 
