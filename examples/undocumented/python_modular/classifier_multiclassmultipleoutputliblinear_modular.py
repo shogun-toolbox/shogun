@@ -17,7 +17,7 @@ def classifier_multiclassmultipleoutputliblinear_modular (fm_train_real=traindat
 	classifier = MulticlassLibLinear(C,feats_train,labels)
 	classifier.train()
 
-	label_pred = classifier.apply_multiclass_multiple_output(feats_test,2)
+	label_pred = classifier.apply_multilabel_output(feats_test,2)
 	out = label_pred.get_labels()
 	#print out
 	return out
