@@ -332,8 +332,9 @@ SGVector<float64_t> create_label(SGVector<float64_t> mu, SGMatrix<float64_t> sig
 	return y;
 }
 
-
-//implementing an example based on the Matlab code,example.m
+/*
+ * This is an example based on the Matlab code, example.m
+ */
 class CProblem
 {
 public:
@@ -360,7 +361,8 @@ private:
 
 };
 
-CProblem::CProblem(SGMatrix<float64_t> bound, SGVector<float64_t> mu, SGMatrix<float64_t> data,  SGVector<float64_t> label, SGMatrix<float64_t> sigma)
+CProblem::CProblem(SGMatrix<float64_t> bound, SGVector<float64_t> mu, SGMatrix<float64_t> data,
+	SGVector<float64_t> label, SGMatrix<float64_t> sigma)
 {
 	REQUIRE(data.num_rows == label.vlen,
 		"The size of features and labels should be the same\n");
@@ -377,17 +379,22 @@ CProblem::CProblem(SGMatrix<float64_t> bound, SGVector<float64_t> mu, SGMatrix<f
 
 	Eigen::Map<Eigen::MatrixXd> eigen_data(m_feature.matrix, m_feature.num_rows, m_feature.num_cols);
 	Eigen::Map<Eigen::MatrixXd> eigen_omega(m_omega.matrix, m_omega.num_rows, m_omega.num_cols);
-	//Sigma = X*X' + eye(N); % linear kernel
 	Eigen::FullPivLU<Eigen::MatrixXd>lu (eigen_sigma);
 	ASSERT(lu.isInvertible());
 	//Omega = inv(Sigma);
 	eigen_omega = lu.inverse();
+	//We want to find the best variational normal distribution
+	//by optimizing the mean(m) and variance(s2) together
+	//That is why the length of m_variables is twice than m_feature.
+	//Although we currently fix the variance, this example will be extended
+	//to optimize mean and variance together for implementing a KL method.
 	m_variables = SGVector<float64_t>(m_feature.num_rows*2);
 }
 
 CProblem::~CProblem()
 {
 }
+
 void CProblem::inti_lbfgs_parameters()
 {
 	m_lbfgs_param.m = 100;
@@ -423,6 +430,11 @@ void CProblem::find_optima()
 
 	float64_t f_value = 0.0;
 	void * obj_prt = static_cast<void *>(this);
+	//Using L-BFGS to optimize the function wrt m
+	//Note that this function from Shogun API need to pass
+	//(1)a variable(m) that L-BFGS will find to make the target function minimun,
+	//(2)a function pointer to compute the target function value and gradient given a current variable and
+	//(3)a void pointer that contains information to help compute the gradient and the target function value.
 	int ret = lbfgs(m_variables.vlen, m_variables.vector, &f_value,
 		CProblem::evaluate, NULL, obj_prt, &m_lbfgs_param);
 
@@ -436,20 +448,34 @@ void CProblem::find_optima()
 }
 
 
+/*
+ * The L-BFGS function will call this evaluate function to compute the gradient of the "variable"
+ * and the function value that we try to mininize given the current "variable"
+ */
 float64_t CProblem::evaluate(void *obj, const float64_t *variable,
 	float64_t *gradient, const int dim, const float64_t step)
 {
 	CProblem * obj_prt = static_cast<CProblem *>(obj);
+	//Note the the current "variable" in fact is
+	//the private data member of the CProblem class
 	obj_prt->init_computation();
 
+	//get the function value based on the current "variable"
 	float64_t value = obj_prt->get_function_value();
 	//currently we assume variance is fixed
+	//The L-BFGS can optimize mu and s2 at the same time and current we assume s2 is fixed
+	//Note that we use the "variable" vector that contains m and s2 value together.
+	//That is why "dim" is divided by 2 at here 
 	Eigen::Map<Eigen::VectorXd> eigen_gradient(gradient, dim/2);
+	//get the gradient based on the current variable
 	obj_prt->get_mu_gradient(&eigen_gradient);
 	return value;
 }
 
-
+/*
+ * This function is used to pre-compute some result that will later be used
+ * for computing the target function value and gradient.
+ */
 void CProblem::init_computation()
 {
 	CBinaryLabels lab(m_label);
@@ -469,9 +495,13 @@ void CProblem::init_computation()
 	//g = Omega*e;
 	eigen_g = eigen_omega*(eigen_m - eigen_mu);
 }
-
+/*
+ * Compute the target function value given the current "variable".
+ * Note that the current variable is a private data member---"m_variables".
+ */
 float64_t CProblem::get_function_value()
 {
+	//[fi, gmi, gvi] = ElogLik('bernLogit', y, m, v, bound); get fi at here
 	SGVector<float64_t> fi = m_lik.get_variational_expection(); 
 
 	Eigen::Map<Eigen::VectorXd> eigen_m(m_variables.vector, m_feature.num_rows);
@@ -485,9 +515,15 @@ float64_t CProblem::get_function_value()
 	//f = -f;
 	return -f;
 }
+
+/*
+ * We only need to compute the "mu" gradient given the current "variable" since "s2" is fixed.
+ * Note that the current variable is a private data member---"m_variables".
+ */
 void CProblem::get_mu_gradient(Eigen::Map<Eigen::VectorXd> * eigen_gradient)
 {
 	TParameter* mu_param=m_lik.m_gradient_parameters->get_parameter("mu");
+	//[fi, gmi, gvi] = ElogLik('bernLogit', y, m, v, bound); get gmi at here
 	SGVector<float64_t> gmi = m_lik.get_variational_first_derivative(mu_param);
 
 	Eigen::Map<Eigen::VectorXd> eigen_g(m_g.vector, m_g.vlen);
