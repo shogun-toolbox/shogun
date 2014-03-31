@@ -82,7 +82,7 @@ SGMatrix<float64_t> read_items_data(const char* fname)
 
 	CDelimiterTokenizer *line_tokenizer=new CDelimiterTokenizer(true);
 	line_tokenizer->delimiters['\n'] = 1;
-	CDelimiterTokenizer *tokenizer=new CDelimiterTokenizer(true);
+	CDelimiterTokenizer *tokenizer=new CDelimiterTokenizer(false);
 	tokenizer->delimiters['|'] = 1;
 	CLineReader *line_reader=new CLineReader(file_items,line_tokenizer);
 	SG_REF(line_reader);
@@ -191,6 +191,10 @@ void gp_regression_movielens(float64_t &error_train, float64_t &error_test)
 	SG_REF(lik);
 	lik->set_sigma(0.1);
 
+	// Calculate mean squared error of train and test
+	CMeanSquaredError* eval = new CMeanSquaredError();
+	SG_REF(eval);
+
 	int uid = 1;
 	int start_idx_train = 0;
 	int start_idx_test = 0;
@@ -223,7 +227,8 @@ void gp_regression_movielens(float64_t &error_train, float64_t &error_test)
 		SG_REF(lab_test);
 
 		// Allocate our Kernel
-		CGaussianKernel* kernel = new CGaussianKernel(10, 2);
+		float64_t kernel_sigma = 2;
+		CGaussianKernel* kernel = new CGaussianKernel(10, kernel_sigma);
 		SG_REF(kernel);
 		kernel->init(feat_train, feat_train);
 
@@ -231,14 +236,11 @@ void gp_regression_movielens(float64_t &error_train, float64_t &error_test)
 		CExactInferenceMethod* inf = new CExactInferenceMethod(kernel,
 							  feat_train, mean, lab_train, lik);
 		SG_REF(inf);
+		inf->set_scale(1.0);	// Parameter of kernel scale
 
 		// Finally use these to allocate the Gaussian Process Object
 		CGaussianProcessRegression* gpr = new CGaussianProcessRegression(inf);
 		SG_REF(gpr);
-
-		// Calculate mean squared error of train and test
-		CMeanSquaredError* eval = new CMeanSquaredError();
-		SG_REF(eval);
 
 		pred_user_count++;
 		pred_pair_count_train+=V_train.vlen;
@@ -273,7 +275,6 @@ void gp_regression_movielens(float64_t &error_train, float64_t &error_test)
 		SG_UNREF(kernel);
 		SG_UNREF(inf);
 		SG_UNREF(gpr);
-		SG_UNREF(eval);
 	}
 
 	SG_SPRINT("Train Pairs: %d\n",pred_pair_count_train);
@@ -286,6 +287,7 @@ void gp_regression_movielens(float64_t &error_train, float64_t &error_test)
 
 	SG_UNREF(mean);
 	SG_UNREF(lik);
+	SG_UNREF(eval);
 }
 
 // Main of this GP on movielens example
