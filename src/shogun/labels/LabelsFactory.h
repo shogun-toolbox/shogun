@@ -65,7 +65,7 @@ public:
 	 *
 	 * @param base_labels its dynamic type must be CMultilabelLabels
 	 */
-	static CMultilabelLabels* to_multiclass_multiple_output(CLabels* base_labels);
+	static CMultilabelLabels* to_multilabel_output(CLabels* base_labels);
 
 	/** specialize a base class instance to CMulticlassSOLabels
 	 *

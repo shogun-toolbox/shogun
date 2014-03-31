@@ -66,7 +66,7 @@ CStructuredLabels* CLabelsFactory::to_structured(CLabels* base_labels)
 }
 
 
-CMultilabelLabels* CLabelsFactory::to_multiclass_multiple_output(CLabels* base_labels)
+CMultilabelLabels* CLabelsFactory::to_multilabel_output(CLabels* base_labels)
 {
 	ASSERT(base_labels != NULL)
 	if (base_labels->get_label_type() == LT_SPARSE_MULTILABEL)
