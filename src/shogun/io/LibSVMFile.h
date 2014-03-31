@@ -276,43 +276,43 @@ public:
 
 	void get_sparse_matrix(
 	        SGSparseVector<bool>*& matrix_feat, int32_t & num_feat, int32_t & num_vec,
-	        SGVector<float64_t>*& matrix_label, int32_t & num_classes, bool load_labels=true);
+	        SGVector<float64_t>*& multilabel, int32_t & num_classes, bool load_labels=true);
         void get_sparse_matrix(
 	        SGSparseVector<uint8_t>*& matrix_feat, int32_t & num_feat, int32_t & num_vec,
-	        SGVector<float64_t>*& matrix_label, int32_t & num_classes, bool load_labels=true);
+	        SGVector<float64_t>*& multilabel, int32_t & num_classes, bool load_labels=true);
 	void get_sparse_matrix(
 	        SGSparseVector<int8_t>*& matrix_feat, int32_t & num_feat, int32_t & num_vec,
-	        SGVector<float64_t>*& matrix_label, int32_t & num_classes, bool load_labels=true);
+	        SGVector<float64_t>*& multilabel, int32_t & num_classes, bool load_labels=true);
 	void get_sparse_matrix(
 	        SGSparseVector<char>*& matrix_feat, int32_t & num_feat, int32_t & num_vec,
-	        SGVector<float64_t>*& matrix_label, int32_t & num_classes, bool load_labels=true);
+	        SGVector<float64_t>*& multilabel, int32_t & num_classes, bool load_labels=true);
 	void get_sparse_matrix(
 	        SGSparseVector<int32_t>*& matrix_feat, int32_t & num_feat, int32_t & num_vec,
-	        SGVector<float64_t>*& matrix_label, int32_t & num_classes, bool load_labels=true);
+	        SGVector<float64_t>*& multilabel, int32_t & num_classes, bool load_labels=true);
 	void get_sparse_matrix(
 	        SGSparseVector<uint32_t>*& matrix_feat, int32_t & num_feat, int32_t & num_vec,
-	        SGVector<float64_t>*& matrix_label, int32_t & num_classes, bool load_labels=true);
+	        SGVector<float64_t>*& multilabel, int32_t & num_classes, bool load_labels=true);
 	void get_sparse_matrix(
 	        SGSparseVector<int64_t>*& matrix_feat, int32_t & num_feat, int32_t & num_vec,
-	        SGVector<float64_t>*& matrix_label, int32_t & num_classes, bool load_labels=true);
+	        SGVector<float64_t>*& multilabel, int32_t & num_classes, bool load_labels=true);
 	void get_sparse_matrix(
 	        SGSparseVector<uint64_t>*& matrix_feat, int32_t & num_feat, int32_t & num_vec,
-	        SGVector<float64_t>*& matrix_label, int32_t & num_classes, bool load_labels=true);
+	        SGVector<float64_t>*& multilabel, int32_t & num_classes, bool load_labels=true);
 	void get_sparse_matrix(
 	        SGSparseVector<int16_t>*& matrix_feat, int32_t & num_feat, int32_t & num_vec,
-	        SGVector<float64_t>*& matrix_label, int32_t & num_classes, bool load_labels=true);
+	        SGVector<float64_t>*& multilabel, int32_t & num_classes, bool load_labels=true);
 	void get_sparse_matrix(
 	        SGSparseVector<uint16_t>*& matrix_feat, int32_t & num_feat, int32_t & num_vec,
-	        SGVector<float64_t>*& matrix_label, int32_t & num_classes, bool load_labels=true);
+	        SGVector<float64_t>*& multilabel, int32_t & num_classes, bool load_labels=true);
 	void get_sparse_matrix(
 	        SGSparseVector<float32_t>*& matrix_feat, int32_t & num_feat, int32_t & num_vec,
-	        SGVector<float64_t>*& matrix_label, int32_t & num_classes, bool load_labels=true);
+	        SGVector<float64_t>*& multilabel, int32_t & num_classes, bool load_labels=true);
 	void get_sparse_matrix(
 	        SGSparseVector<float64_t>*& matrix_feat, int32_t & num_feat, int32_t & num_vec,
-	        SGVector<float64_t>*& matrix_label, int32_t & num_classes, bool load_labels=true);
+	        SGVector<float64_t>*& multilabel, int32_t & num_classes, bool load_labels=true);
 	void get_sparse_matrix(
 	        SGSparseVector<floatmax_t>*& matrix_feat, int32_t & num_feat, int32_t & num_vec,
-	        SGVector<float64_t>*& matrix_label, int32_t & num_classes, bool load_labels=true);
+	        SGVector<float64_t>*& multilabel, int32_t & num_classes, bool load_labels=true);
 	//@}
 
 	/** vector access functions */
@@ -454,7 +454,54 @@ public:
 			const SGSparseVector<floatmax_t>* matrix, int32_t num_feat, int32_t num_vec,
 			const float64_t* labels);
 	//@}
-
+        
+        /** @name Sparse Matrix Access Functions With Labels
+	 *
+	 * Functions to access sparse matrices of one of the several base data types.
+	 * These functions are used when writing sparse matrices of num_feat rows and
+	 * num_vec columns to e.g. a file
+	 */
+	//@{
+	void set_sparse_matrix(
+			const SGSparseVector<bool>* matrix, int32_t num_feat, int32_t num_vec,
+			const SGVector<float64_t>* multilabel);
+	void set_sparse_matrix(
+			const SGSparseVector<uint8_t>* matrix, int32_t num_feat, int32_t num_vec,
+			const SGVector<float64_t>* multilabel);
+	void set_sparse_matrix(
+			const SGSparseVector<int8_t>* matrix, int32_t num_feat, int32_t num_vec,
+			const SGVector<float64_t>* multilabel);
+	void set_sparse_matrix(
+			const SGSparseVector<char>* matrix, int32_t num_feat, int32_t num_vec,
+			const SGVector<float64_t>* multilabel);
+	void set_sparse_matrix(
+			const SGSparseVector<int32_t>* matrix, int32_t num_feat, int32_t num_vec,
+			const SGVector<float64_t>* multilabel);
+	void set_sparse_matrix(
+			const SGSparseVector<uint32_t>* matrix, int32_t num_feat, int32_t num_vec,
+			const SGVector<float64_t>* multilabel);
+	void set_sparse_matrix(
+			const SGSparseVector<int64_t>* matrix, int32_t num_feat, int32_t num_vec,
+			const SGVector<float64_t>* multilabel);
+	void set_sparse_matrix(
+			const SGSparseVector<uint64_t>* matrix, int32_t num_feat, int32_t num_vec,
+			const SGVector<float64_t>* multilabel);
+	void set_sparse_matrix(
+			const SGSparseVector<int16_t>* matrix, int32_t num_feat, int32_t num_vec,
+			const SGVector<float64_t>* multilabel);
+	void set_sparse_matrix(
+			const SGSparseVector<uint16_t>* matrix, int32_t num_feat, int32_t num_vec,
+			const SGVector<float64_t>* multilabel);
+	void set_sparse_matrix(
+			const SGSparseVector<float32_t>* matrix, int32_t num_feat, int32_t num_vec,
+			const SGVector<float64_t>* multilabel);
+	void set_sparse_matrix(
+			const SGSparseVector<float64_t>* matrix, int32_t num_feat, int32_t num_vec,
+			const SGVector<float64_t>* multilabel);
+	void set_sparse_matrix(
+			const SGSparseVector<floatmax_t>* matrix, int32_t num_feat, int32_t num_vec,
+			const SGVector<float64_t>* multilabel);
+	//@}
 
 	/** @name String Access Functions
 	 *
@@ -502,6 +549,8 @@ private:
 	/** get number of lines */
 	int32_t get_num_lines();
 
+	/** is it a feature entry */
+        bool is_feat_entry(const SGVector<char> entry);
 private:
         /** delimiter for index and data in sparse entries */
 	char m_delimiter_feat;
