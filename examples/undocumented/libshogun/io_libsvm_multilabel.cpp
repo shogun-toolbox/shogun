@@ -9,7 +9,6 @@
  */
 #include <shogun/io/LibSVMFile.h>
 #include <shogun/lib/SGVector.h>
-#include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGSparseVector.h>
 #include <shogun/base/DynArray.h>
 #include <shogun/base/init.h>
@@ -23,16 +22,18 @@ const char fname_svm_multilabel[] = "../../../../data/multilabel/yeast_test.svm"
 
 void test_libsvmfile_multilabel(const char* fname)
 {
-	FILE * pfile = fopen(fname, "r");
-	if (pfile == NULL)
+	FILE* pfile = fopen(fname, "r");
+	
+    if (pfile == NULL)
 	{
 		SG_SPRINT("Unable to open file: %s\n", fname);
 		return;
 	}
-        fclose(pfile);
+	
+    fclose(pfile);
 
 	/* sparse data from matrix*/
-	CLibSVMFile * svmfile = new CLibSVMFile(fname);
+	CLibSVMFile* svmfile = new CLibSVMFile(fname);
 
 	SGSparseVector<float64_t>* feats;
 	SGVector<float64_t>* labels;
@@ -43,22 +44,20 @@ void test_libsvmfile_multilabel(const char* fname)
 	svmfile->get_sparse_matrix(feats, dim_feat, num_samples, labels, num_classes);
 
 #ifdef SHOW_DATA
-	/*
-	 for (int32_t i=0; i<num_samples; i++)
-	         feats[i].display_vector();
-	 */
 	// Display the labels
 	for (int32_t i = 0; i < num_samples; i++)
 	{
 		labels[i].display_vector();
 	}
-
-	SG_UNREF(svmfile);
 #endif
 
-        SG_SPRINT("Number of the samples: %d\n", num_samples);
+	SG_SPRINT("Number of the samples: %d\n", num_samples);
 	SG_SPRINT("Dimention of the feature: %d\n", dim_feat);
 	SG_SPRINT("Number of classes: %d\n", num_classes);
+
+	SG_UNREF(svmfile);
+	SG_FREE(feats);
+	SG_FREE(labels);
 }
 
 int main(int argc, char ** argv)
