@@ -358,6 +358,22 @@ public:
 	static float64_t inverse_incomplete_gamma_completed(float64_t a,
 			float64_t y0);
 
+	/** Normal probability density function (PDF).
+	 *
+	 * Returns the pdf of the normal distribution with mean 0 and standard
+	 * deviation std_dev, evaluated at the value in x.
+	 *
+	 * Default value for std_dev = 1.
+	 *
+	 * \f[
+	 * \text{normal\_pdf}(x)=\frac{1}{\sqrt{2\pi\sigma}}
+	 * \exp \left( -\frac{x^2}{2\sigma^2} \right)
+	 * \f]
+	 *
+	 * Added by pl8787
+	 */
+	static float64_t normal_pdf(float64_t x, float64_t std_dev=1);
+
 	/** Normal distribution function
 	 *
 	 * Returns the area under the Gaussian probability density

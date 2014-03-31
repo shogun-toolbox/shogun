@@ -1684,6 +1684,14 @@ float64_t CStatistics::inverse_incomplete_gamma_completed(float64_t a,
 	return result;
 }
 
+float64_t CStatistics::normal_pdf(float64_t x, float64_t std_dev)
+{
+	if(x == CMath::INFTY || x == -CMath::INFTY)
+		return 0.0;
+	else
+		return CMath::exp(-0.5*(x*x + CMath::log(2.0*CMath::PI)));
+}
+
 float64_t CStatistics::normal_cdf(float64_t x, float64_t std_dev)
 {
 	return 0.5*(error_function(x/std_dev/1.41421356237309504880)+1);
