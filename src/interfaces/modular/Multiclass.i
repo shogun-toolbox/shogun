@@ -32,7 +32,7 @@
 %rename(MulticlassSVM) CMulticlassSVM;
 %rename(MKLMulticlass) CMKLMulticlass;
 
-%newobject apply_multiclass_multiple_output();
+%newobject apply_multilabel_output();
 
 %rename(ECOCStrategy) CECOCStrategy;
 %rename(ECOCEncoder) CECOCEncoder;
