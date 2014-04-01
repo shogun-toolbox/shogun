@@ -5,7 +5,8 @@
 	* Features:
 		- ID3 algorithm for decision tree learning [Parijat Mazumdar]
 		- New modes for PCA matrix factorizations: SVD & EVD, in-place or reallocating [Parijat Mazumdar]
-		- Added kernel multiclass strategy examples in multiclass notebook [Saurabh Mahindre]
+		- Add kernel multiclass strategy examples in multiclass notebook [Saurabh Mahindre]
+		- Add decision trees notebook containing examples for ID3 algorithm [Parijat Mazumdar]
 	* Bugfixes:
 		- Fix memory problem in PCA::apply_to_feature_matrix [Parijat Mazumdar]
 		- Fix crash in LeastAngleRegression for the case D greater than N [Parijat Mazumdar]
