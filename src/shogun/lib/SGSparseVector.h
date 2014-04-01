@@ -14,6 +14,8 @@
 #ifndef __SGSPARSEVECTOR_H__
 #define __SGSPARSEVECTOR_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/SGReferencedData.h>
 #include <shogun/lib/SGVector.h>
 

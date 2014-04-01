@@ -17,6 +17,8 @@
 #ifndef  EP21D_SLEP
 #define  EP21D_SLEP
 
+#include <shogun/lib/config.h>
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>

@@ -13,6 +13,8 @@
 #ifndef _LABELS__H__
 #define _LABELS__H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/common.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/labels/LabelsFactory.h>

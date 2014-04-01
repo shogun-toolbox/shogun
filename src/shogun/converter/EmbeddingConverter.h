@@ -11,6 +11,8 @@
 #ifndef EMBEDDINGCONVERTER_H_
 #define EMBEDDINGCONVERTER_H_
 
+#include <shogun/lib/config.h>
+
 #include <shogun/converter/Converter.h>
 #include <shogun/features/Features.h>
 #include <shogun/features/DenseFeatures.h>

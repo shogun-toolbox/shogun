@@ -11,6 +11,8 @@
 #ifndef _JENSENMETRIC_H___
 #define _JENSENMETRIC_H___
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/common.h>
 #include <shogun/distance/DenseDistance.h>
 

@@ -12,6 +12,8 @@
 #ifndef _WEIGHTEDCOMMWORDSTRINGKERNEL_H___
 #define _WEIGHTEDCOMMWORDSTRINGKERNEL_H___
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/common.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/kernel/string/CommWordStringKernel.h>

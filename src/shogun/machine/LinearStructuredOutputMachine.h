@@ -12,6 +12,8 @@
 #ifndef _LINEAR_STRUCTURED_OUTPUT_MACHINE__H__
 #define _LINEAR_STRUCTURED_OUTPUT_MACHINE__H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/machine/StructuredOutputMachine.h>
 #include <shogun/lib/SGVector.h>
 

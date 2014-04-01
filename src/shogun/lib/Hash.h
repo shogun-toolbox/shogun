@@ -32,6 +32,8 @@
 #ifndef HASH_H
 #define HASH_H
 
+#include <shogun/lib/config.h>
+
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/common.h>
 

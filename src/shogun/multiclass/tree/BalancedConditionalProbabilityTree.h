@@ -11,6 +11,8 @@
 #ifndef BALANCEDCONDITIONALPROBABILITYTREE_H__
 #define BALANCEDCONDITIONALPROBABILITYTREE_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/multiclass/tree/ConditionalProbabilityTree.h>
 
 namespace shogun

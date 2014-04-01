@@ -57,7 +57,8 @@ void CPCA::init()
 	m_mode = FIXED_NUMBER;
 	m_thresh = 1e-6;
 	m_mem_mode = MEM_REALLOCATE;
-	m_method = AUTO;	
+	m_method = AUTO;
+	m_eigenvalue_zero_tolerance=1e-15;	
 
 	SG_ADD(&m_transformation_matrix, "transformation_matrix",
 	    "Transformation matrix (Eigenvectors of covariance matrix).",
@@ -75,6 +76,8 @@ void CPCA::init()
 		"Memory mode (in-place or reallocation).", MS_NOT_AVAILABLE);
 	SG_ADD((machine_int_t*) &m_method, "m_method", 
 		"Method used for PCA calculation", MS_NOT_AVAILABLE);
+	SG_ADD(&m_eigenvalue_zero_tolerance, "eigenvalue_zero_tolerance", "zero tolerance"
+	" for determining zero eigenvalues during whitening to avoid numerical issues", MS_NOT_AVAILABLE);
 }
 
 CPCA::~CPCA()
@@ -171,8 +174,22 @@ bool CPCA::init(CFeatures* features)
 			if (m_whitening)
 			{
 				for (int32_t i=0; i<num_dim; i++)
+				{
+					if (CMath::fequals_abs<float64_t>(0.0, eigenValues[i+max_dim_allowed-num_dim], 
+											m_eigenvalue_zero_tolerance))
+					{
+						SG_WARNING("Covariance matrix has almost zero Eigenvalue (ie "
+							"Eigenvalue within a tolerance of %E around 0) at "
+							"dimension %d. Consider reducing its dimension.", 
+							m_eigenvalue_zero_tolerance, i+max_dim_allowed-num_dim+1)
+
+						transformMatrix.col(i) = MatrixXd::Zero(num_features,1);
+						continue;
+					}
+
 					transformMatrix.col(i) /= 
-					sqrt(eigenValues[i+max_dim_allowed-num_dim]);
+					sqrt(eigenValues[i+max_dim_allowed-num_dim]*(num_vectors-1));
+				}
 			}
 		}
 
@@ -226,7 +243,21 @@ bool CPCA::init(CFeatures* features)
 			if (m_whitening)
 			{
 				for (int32_t i=0; i<num_dim; i++)
-					transformMatrix.col(i) /= sqrt(eigenValues[i]);
+				{
+					if (CMath::fequals_abs<float64_t>(0.0, eigenValues[i], 
+								m_eigenvalue_zero_tolerance))
+					{
+						SG_WARNING("Covariance matrix has almost zero Eigenvalue (ie "
+							"Eigenvalue within a tolerance of %E around 0) at "
+							"dimension %d. Consider reducing its dimension.", 
+							m_eigenvalue_zero_tolerance, i+1)
+
+						transformMatrix.col(i) = MatrixXd::Zero(num_features,1);
+						continue;
+					}
+
+					transformMatrix.col(i) /= sqrt(eigenValues[i]*(num_vectors-1));
+				}
 			}
 		}
 
@@ -274,7 +305,7 @@ SGMatrix<float64_t> CPCA::apply_to_feature_matrix(CFeatures* features)
 			for (int32_t col=0; col<num_vectors; col++)
 			{
 				for (int32_t row=0; row<num_dim; row++)
-					m.matrix[row*num_dim+col] = feature_matrix(row,col);
+					m.matrix[col*num_dim+row] = feature_matrix(row,col);
 			}
 			m.num_rows = num_dim;
 			m.num_cols = num_vectors;
@@ -341,6 +372,16 @@ EPCAMemoryMode CPCA::get_memory_mode() const
 void CPCA::set_memory_mode(EPCAMemoryMode e)
 {
 	m_mem_mode = e;
+}
+
+void CPCA::set_eigenvalue_zero_tolerance(float64_t eigenvalue_zero_tolerance)
+{
+	m_eigenvalue_zero_tolerance = eigenvalue_zero_tolerance;
+}
+
+float64_t CPCA::get_eigenvalue_zero_tolerance() const
+{
+	return m_eigenvalue_zero_tolerance;
 }
 
 #endif // HAVE_EIGEN3

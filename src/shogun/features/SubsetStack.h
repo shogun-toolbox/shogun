@@ -10,6 +10,8 @@
 #ifndef __SUBSETSTACK_H_
 #define __SUBSETSTACK_H_
 
+#include <shogun/lib/config.h>
+
 #include <shogun/base/SGObject.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/DynamicObjectArray.h>

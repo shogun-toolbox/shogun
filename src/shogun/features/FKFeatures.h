@@ -12,6 +12,8 @@
 #ifndef _CFKFEATURES__H__
 #define _CFKFEATURES__H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/distributions/HMM.h>
 

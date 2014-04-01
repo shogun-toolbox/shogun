@@ -14,6 +14,8 @@
 #ifndef _KERNELDISTANCE_H___
 #define _KERNELDISTANCE_H___
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/common.h>
 #include <shogun/distance/Distance.h>
 #include <shogun/kernel/Kernel.h>

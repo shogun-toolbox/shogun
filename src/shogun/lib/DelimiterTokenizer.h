@@ -11,6 +11,8 @@
 #ifndef _DELIMITERTOKENIZER__H__
 #define	_DELIMITERTOKENIZER__H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/Tokenizer.h>
 #include <shogun/lib/SGVector.h>
 

@@ -39,164 +39,7 @@
 
 using namespace shogun;
 
-TEST(PCA, PCA_output_test_N_greaterthan_D)
-{
-	SGMatrix<float64_t> data(2,3);
-	data(0,0)=1.0*cos(M_PI/3.0);
-	data(0,1)=2.0*cos(M_PI/3.0);
-	data(0,2)=3.0*cos(M_PI/3.0);
-	data(1,0)=1.0*sin(M_PI/3.0);
-	data(1,1)=2.0*sin(M_PI/3.0);
-	data(1,2)=3.0*sin(M_PI/3.0);
-
-	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
-	CPCA* pca=new CPCA();
-	pca->set_target_dim(1);
-	pca->init(features);
-	
-	SGMatrix<float64_t> returned_matrix=pca->apply_to_feature_matrix(features);
-
-	EXPECT_EQ(1,returned_matrix.num_rows);
-	EXPECT_EQ(3,returned_matrix.num_cols);
-	EXPECT_NEAR(1,returned_matrix(0,0),0.0000001);
-	EXPECT_NEAR(0,returned_matrix(0,1),0.0000001);
-	EXPECT_NEAR(-1,returned_matrix(0,2),0.0000001);
-
-	SG_UNREF(pca);
-	SG_UNREF(features);
-}
-
-TEST(PCA, PCA_output_test_N_lessthan_D)
-{
-	SGMatrix<float64_t> data(3,2);
-	data(0,0)=1.0;
-	data(0,1)=2.0;
-	data(1,0)=1.0;
-	data(1,1)=2.0;
-	data(2,0)=1.0;
-	data(2,1)=2.0;
-
-	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
-	CPCA* pca=new CPCA();
-	pca->set_target_dim(1);
-	pca->init(features);
-
-	SGMatrix<float64_t> returned_matrix=pca->apply_to_feature_matrix(features);
-
-	EXPECT_EQ(1,returned_matrix.num_rows);
-	EXPECT_EQ(2,returned_matrix.num_cols);
-	EXPECT_NEAR(CMath::sqrt(3.0)/2.0,returned_matrix(0,0),0.0000001);
-	EXPECT_NEAR(-CMath::sqrt(3.0)/2.0,returned_matrix(0,1),0.0000001);
-	
-	SG_UNREF(pca);
-        SG_UNREF(features);
-}
-
-TEST(PCA, PCA_output_test_N_equals_D)
-{
-	SGMatrix<float64_t> data(2,2);
-	data(0,0)=1.0*cos(M_PI/3.0);
-	data(0,1)=2.0*cos(M_PI/3.0);
-	data(1,0)=1.0*sin(M_PI/3.0);
-	data(1,1)=2.0*sin(M_PI/3.0);
-
-	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
-	CPCA* pca=new CPCA();
-	pca->set_target_dim(1);
-	pca->init(features);
-
-	SGMatrix<float64_t> returned_matrix=pca->apply_to_feature_matrix(features);
-
-	EXPECT_EQ(1,returned_matrix.num_rows);
-	EXPECT_EQ(2,returned_matrix.num_cols);
-	EXPECT_NEAR(-0.5,returned_matrix(0,0),0.0000001);
-	EXPECT_NEAR(0.5,returned_matrix(0,1),0.0000001);
-
-	SG_UNREF(pca);
-	SG_UNREF(features);
-}
-
-TEST(PCA, PCA_output_test_N_greaterthan_D_IN_PLACE)
-{
-	SGMatrix<float64_t> data(2,3);
-	data(0,0)=1.0*cos(M_PI/3.0);
-	data(0,1)=2.0*cos(M_PI/3.0);
-	data(0,2)=3.0*cos(M_PI/3.0);
-	data(1,0)=1.0*sin(M_PI/3.0);
-	data(1,1)=2.0*sin(M_PI/3.0);
-	data(1,2)=3.0*sin(M_PI/3.0);
-
-	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
-	CPCA* pca=new CPCA();
-	pca->set_memory_mode(MEM_IN_PLACE);
-	pca->set_target_dim(1);
-	pca->init(features);
-
-	SGMatrix<float64_t> returned_matrix=pca->apply_to_feature_matrix(features);
-
-	EXPECT_EQ(1,returned_matrix.num_rows);
-	EXPECT_EQ(3,returned_matrix.num_cols);
-	EXPECT_NEAR(1,returned_matrix(0,0),0.0000001);
-	EXPECT_NEAR(0,returned_matrix(0,1),0.0000001);
-	EXPECT_NEAR(-1,returned_matrix(0,2),0.0000001);
-
-	SG_UNREF(pca);
-	SG_UNREF(features);
-}
-
-TEST(PCA, PCA_output_test_N_lessthan_D_IN_PLACE)
-{
-	SGMatrix<float64_t> data(3,2);
-	data(0,0)=1.0;
-	data(0,1)=2.0;
-	data(1,0)=1.0;
-	data(1,1)=2.0;
-	data(2,0)=1.0;
-	data(2,1)=2.0;
-
-	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
-	CPCA* pca=new CPCA();
-	pca->set_memory_mode(MEM_IN_PLACE);
-	pca->set_target_dim(1);
-	pca->init(features);
-
-	SGMatrix<float64_t> returned_matrix=pca->apply_to_feature_matrix(features);
-
-	EXPECT_EQ(1,returned_matrix.num_rows);
-	EXPECT_EQ(2,returned_matrix.num_cols);
-	EXPECT_NEAR(CMath::sqrt(3.0)/2.0,returned_matrix(0,0),0.0000001);
-	EXPECT_NEAR(-CMath::sqrt(3.0)/2.0,returned_matrix(0,1),0.0000001);
-
-	SG_UNREF(pca);
-	SG_UNREF(features);
-}
-
-TEST(PCA, PCA_output_test_N_equals_D_IN_PLACE)
-{
-        SGMatrix<float64_t> data(2,2);
-        data(0,0)=1.0*cos(M_PI/3.0);
-        data(0,1)=2.0*cos(M_PI/3.0);
-        data(1,0)=1.0*sin(M_PI/3.0);
-        data(1,1)=2.0*sin(M_PI/3.0);
-
-        CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
-        CPCA* pca=new CPCA();
-	pca->set_memory_mode(MEM_IN_PLACE);
-        pca->set_target_dim(1);
-        pca->init(features);
-
-        SGMatrix<float64_t> returned_matrix=pca->apply_to_feature_matrix(features);
-
-	EXPECT_EQ(1,returned_matrix.num_rows);
-	EXPECT_EQ(2,returned_matrix.num_cols);
-	EXPECT_NEAR(-0.5,returned_matrix(0,0),0.0000001);
-	EXPECT_NEAR(0.5,returned_matrix(0,1),0.0000001);
-
-	SG_UNREF(pca);
-	SG_UNREF(features);
-}
-
-TEST(PCA, PCA_rigorous_test_N_greater_D_EVD)
+TEST(PCA, PCA_N_greater_D_EVD)
 {
 	SGMatrix<float64_t> data(3,5);
 	data(0,0)=2.908008030729362;
@@ -261,7 +104,60 @@ TEST(PCA, PCA_rigorous_test_N_greater_D_EVD)
 	SG_UNREF(features);
 }
 
-TEST(PCA, PCA_rigorous_test_N_less_D_EVD)
+TEST(PCA, PCA_N_equals_D_EVD)
+{
+	SGMatrix<float64_t> data(3,3);
+	data(0,0)=2.908008030729362;
+	data(0,1)=-1.058180257987362;
+	data(0,2)=1.098424617888623;
+	data(1,0)=0.825218894228491;
+	data(1,1)=-0.468615581100624;
+	data(1,2)=-0.277871932787639;
+	data(2,0)=1.378971977916614;
+	data(2,1)=-0.272469409250187;
+	data(2,2)=0.701541458163284;
+
+	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
+	CPCA* pca=new CPCA(EVD);
+	pca->set_target_dim(3);
+	pca->init(features);
+
+	SGMatrix<float64_t> transmat=pca->get_transformation_matrix();
+	SGMatrix<float64_t> finalmat=pca->apply_to_feature_matrix(features);
+	SGVector<float64_t> eigvec=pca->get_eigenvalues();
+
+	float64_t epsilon = 0.00000001;
+
+	// comparing outputs against MATLAB 'princomp' implementation 
+	EXPECT_NEAR(0.0,eigvec[0],epsilon);
+	EXPECT_NEAR(0.084750433,eigvec[1],epsilon);
+	EXPECT_NEAR(5.03495863,eigvec[2],epsilon);
+
+	EXPECT_NEAR(0.41770275,transmat(0,0),epsilon);
+	EXPECT_NEAR(0.20781429,transmat(0,1),epsilon);
+	EXPECT_NEAR(0.88449852,transmat(0,2),epsilon);
+	EXPECT_NEAR(-0.13328384,transmat(1,0),epsilon);
+	EXPECT_NEAR(-0.94894524,transmat(1,1),epsilon);
+	EXPECT_NEAR(0.28589918,transmat(1,2),epsilon);
+	EXPECT_NEAR(-0.8987546,transmat(2,0),epsilon);
+	EXPECT_NEAR(0.23731023,transmat(2,1),epsilon);
+	EXPECT_NEAR(0.36867875,transmat(2,2),epsilon);
+
+	EXPECT_NEAR(0.0,finalmat(0,0),epsilon);
+	EXPECT_NEAR(0.0,finalmat(0,1),epsilon);
+	EXPECT_NEAR(0.0,finalmat(0,2),epsilon);
+	EXPECT_NEAR(-0.173865951,finalmat(1,0),epsilon);
+	EXPECT_NEAR(-0.162222411,finalmat(1,1),epsilon);
+	EXPECT_NEAR(0.336088362,finalmat(1,2),epsilon);
+	EXPECT_NEAR(2.21751537,finalmat(2,0),epsilon);
+	EXPECT_NEAR(-2.26932988,finalmat(2,1),epsilon);
+	EXPECT_NEAR(0.0518145101,finalmat(2,2),epsilon);
+
+	SG_UNREF(pca);
+	SG_UNREF(features);
+}
+
+TEST(PCA, PCA_N_less_D_EVD)
 {
 	SGMatrix<float64_t> data(5,3);
 	data(0,0)=0.033479882244451;
@@ -318,7 +214,7 @@ TEST(PCA, PCA_rigorous_test_N_less_D_EVD)
 	SG_UNREF(features);
 }
 
-TEST(PCA, PCA_rigorous_test_N_greater_D_SVD)
+TEST(PCA, PCA_N_greater_D_SVD)
 {
 	SGMatrix<float64_t> data(3,5);
 	data(0,0)=2.908008030729362;
@@ -384,7 +280,60 @@ TEST(PCA, PCA_rigorous_test_N_greater_D_SVD)
 	SG_UNREF(features);
 }
 
-TEST(PCA, PCA_rigorous_test_N_less_D_SVD)
+TEST(PCA, PCA_N_equals_D_SVD)
+{
+	SGMatrix<float64_t> data(3,3);
+	data(0,0)=2.908008030729362;
+	data(0,1)=-1.058180257987362;
+	data(0,2)=1.098424617888623;
+	data(1,0)=0.825218894228491;
+	data(1,1)=-0.468615581100624;
+	data(1,2)=-0.277871932787639;
+	data(2,0)=1.378971977916614;
+	data(2,1)=-0.272469409250187;
+	data(2,2)=0.701541458163284;
+
+	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
+	CPCA* pca=new CPCA(SVD);
+	pca->set_target_dim(3);
+	pca->init(features);
+
+	SGMatrix<float64_t> transmat=pca->get_transformation_matrix();
+	SGMatrix<float64_t> finalmat=pca->apply_to_feature_matrix(features);
+	SGVector<float64_t> eigvec=pca->get_eigenvalues();
+
+	float64_t epsilon = 0.00000001;
+
+	// comparing outputs against MATLAB 'princomp' implementation 
+	EXPECT_NEAR(5.03495863,eigvec[0],epsilon);
+	EXPECT_NEAR(0.084750433,eigvec[1],epsilon);
+	EXPECT_NEAR(0.0,eigvec[2],epsilon);
+
+	EXPECT_NEAR(-0.41770275,transmat(0,2),epsilon);
+	EXPECT_NEAR(-0.20781429,transmat(0,1),epsilon);
+	EXPECT_NEAR(0.88449852,transmat(0,0),epsilon);
+	EXPECT_NEAR(0.13328384,transmat(1,2),epsilon);
+	EXPECT_NEAR(0.94894524,transmat(1,1),epsilon);
+	EXPECT_NEAR(0.28589918,transmat(1,0),epsilon);
+	EXPECT_NEAR(0.8987546,transmat(2,2),epsilon);
+	EXPECT_NEAR(-0.23731023,transmat(2,1),epsilon);
+	EXPECT_NEAR(0.36867875,transmat(2,0),epsilon);
+
+	EXPECT_NEAR(0.0,finalmat(2,0),epsilon);
+	EXPECT_NEAR(0.0,finalmat(2,1),epsilon);
+	EXPECT_NEAR(0.0,finalmat(2,2),epsilon);
+	EXPECT_NEAR(0.173865951,finalmat(1,0),epsilon);
+	EXPECT_NEAR(0.162222411,finalmat(1,1),epsilon);
+	EXPECT_NEAR(-0.336088362,finalmat(1,2),epsilon);
+	EXPECT_NEAR(2.21751537,finalmat(0,0),epsilon);
+	EXPECT_NEAR(-2.26932988,finalmat(0,1),epsilon);
+	EXPECT_NEAR(0.0518145101,finalmat(0,2),epsilon);
+
+	SG_UNREF(pca);
+	SG_UNREF(features);
+}
+
+TEST(PCA, PCA_N_less_D_SVD)
 {
 	SGMatrix<float64_t> data(5,3);
 	data(0,0)=0.033479882244451;
@@ -442,6 +391,59 @@ TEST(PCA, PCA_rigorous_test_N_less_D_SVD)
 	SG_UNREF(features);
 }
 
+TEST(PCA, PCA_MEM_IN_PLACE)
+{
+	SGMatrix<float64_t> data(3,3);
+	data(0,0)=2.908008030729362;
+	data(0,1)=-1.058180257987362;
+	data(0,2)=1.098424617888623;
+	data(1,0)=0.825218894228491;
+	data(1,1)=-0.468615581100624;
+	data(1,2)=-0.277871932787639;
+	data(2,0)=1.378971977916614;
+	data(2,1)=-0.272469409250187;
+	data(2,2)=0.701541458163284;
+
+	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
+	CPCA* pca=new CPCA(AUTO,false,MEM_IN_PLACE);
+	pca->set_target_dim(3);
+	pca->init(features);
+
+	SGMatrix<float64_t> transmat=pca->get_transformation_matrix();
+	SGMatrix<float64_t> finalmat=pca->apply_to_feature_matrix(features);
+	SGVector<float64_t> eigvec=pca->get_eigenvalues();
+
+	float64_t epsilon = 0.00000001;
+
+	// comparing outputs against MATLAB 'princomp' implementation 
+	EXPECT_NEAR(5.03495863,eigvec[0],epsilon);
+	EXPECT_NEAR(0.084750433,eigvec[1],epsilon);
+	EXPECT_NEAR(0.0,eigvec[2],epsilon);
+
+	EXPECT_NEAR(-0.41770275,transmat(0,2),epsilon);
+	EXPECT_NEAR(-0.20781429,transmat(0,1),epsilon);
+	EXPECT_NEAR(0.88449852,transmat(0,0),epsilon);
+	EXPECT_NEAR(0.13328384,transmat(1,2),epsilon);
+	EXPECT_NEAR(0.94894524,transmat(1,1),epsilon);
+	EXPECT_NEAR(0.28589918,transmat(1,0),epsilon);
+	EXPECT_NEAR(0.8987546,transmat(2,2),epsilon);
+	EXPECT_NEAR(-0.23731023,transmat(2,1),epsilon);
+	EXPECT_NEAR(0.36867875,transmat(2,0),epsilon);
+
+	EXPECT_NEAR(0.0,finalmat(2,0),epsilon);
+	EXPECT_NEAR(0.0,finalmat(2,1),epsilon);
+	EXPECT_NEAR(0.0,finalmat(2,2),epsilon);
+	EXPECT_NEAR(0.173865951,finalmat(1,0),epsilon);
+	EXPECT_NEAR(0.162222411,finalmat(1,1),epsilon);
+	EXPECT_NEAR(-0.336088362,finalmat(1,2),epsilon);
+	EXPECT_NEAR(2.21751537,finalmat(0,0),epsilon);
+	EXPECT_NEAR(-2.26932988,finalmat(0,1),epsilon);
+	EXPECT_NEAR(0.0518145101,finalmat(0,2),epsilon);
+
+	SG_UNREF(pca);
+	SG_UNREF(features);
+}
+
 TEST(PCA, PCA_apply_to_feature_vector_methodTest)
 {
 	SGMatrix<float64_t> data(5,3);
@@ -483,4 +485,93 @@ TEST(PCA, PCA_apply_to_feature_vector_methodTest)
 	SG_UNREF(pca);
 	SG_UNREF(features);
 }
+
+TEST(PCA, PCA_WHITEN_SVD)
+{
+	SGMatrix<float64_t> data(5,3);
+	data(0,0)=0.033479882244451;
+	data(0,1)=0.022889792751630;
+	data(0,2)=-0.979206305167302;
+	data(1,0)=-1.333677943428106;
+	data(1,1)=-0.261995434966092;
+	data(1,2)=-1.156401655664002;
+	data(2,0)=1.127492278341590;
+	data(2,1)=-1.750212368446790;
+	data(2,2)=-0.533557109315987;
+	data(3,0)=0.350179410603312;
+	data(3,1)=-0.285650971595330;
+	data(3,2)=-2.002635735883060;
+	data(4,0)=-0.299066030332982;
+	data(4,1)=-0.831366511567624;
+	data(4,2)=0.964229422631627;
+
+	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
+	CPCA* pca=new CPCA(SVD,true);
+	pca->set_target_dim(3);
+	pca->init(features);
+
+	SGMatrix<float64_t> finalmat=pca->apply_to_feature_matrix(features);
+
+	SGMatrix<float64_t> covariance_mat=finalmat.matrix_multiply(finalmat,finalmat,false,true);
+
+	float64_t epsilon = 0.0000001;
+
+	EXPECT_NEAR(1.0,covariance_mat(0,0),epsilon);
+	EXPECT_NEAR(0.0,covariance_mat(0,1),epsilon);
+	EXPECT_NEAR(0.0,covariance_mat(0,2),epsilon);
+	EXPECT_NEAR(0.0,covariance_mat(1,0),epsilon);
+	EXPECT_NEAR(1.0,covariance_mat(1,1),epsilon);
+	EXPECT_NEAR(0.0,covariance_mat(1,2),epsilon);
+	EXPECT_NEAR(0.0,covariance_mat(2,0),epsilon);
+	EXPECT_NEAR(0.0,covariance_mat(2,1),epsilon);
+	EXPECT_NEAR(0.0,covariance_mat(2,2),epsilon);
+
+	SG_UNREF(pca);
+	SG_UNREF(features);
+}
+
+TEST(PCA, PCA_WHITEN_EVD)
+{
+	SGMatrix<float64_t> data(5,3);
+	data(0,0)=0.033479882244451;
+	data(0,1)=0.022889792751630;
+	data(0,2)=-0.979206305167302;
+	data(1,0)=-1.333677943428106;
+	data(1,1)=-0.261995434966092;
+	data(1,2)=-1.156401655664002;
+	data(2,0)=1.127492278341590;
+	data(2,1)=-1.750212368446790;
+	data(2,2)=-0.533557109315987;
+	data(3,0)=0.350179410603312;
+	data(3,1)=-0.285650971595330;
+	data(3,2)=-2.002635735883060;
+	data(4,0)=-0.299066030332982;
+	data(4,1)=-0.831366511567624;
+	data(4,2)=0.964229422631627;
+
+	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
+	CPCA* pca=new CPCA(EVD,true);
+	pca->set_target_dim(3);
+	pca->init(features);
+
+	SGMatrix<float64_t> finalmat=pca->apply_to_feature_matrix(features);
+
+	SGMatrix<float64_t> covariance_mat=finalmat.matrix_multiply(finalmat,finalmat,false,true);
+
+	float64_t epsilon = 0.0000001;
+
+	EXPECT_NEAR(0.0,covariance_mat(0,0),epsilon);
+	EXPECT_NEAR(0.0,covariance_mat(0,1),epsilon);
+	EXPECT_NEAR(0.0,covariance_mat(0,2),epsilon);
+	EXPECT_NEAR(0.0,covariance_mat(1,0),epsilon);
+	EXPECT_NEAR(1.0,covariance_mat(1,1),epsilon);
+	EXPECT_NEAR(0.0,covariance_mat(1,2),epsilon);
+	EXPECT_NEAR(0.0,covariance_mat(2,0),epsilon);
+	EXPECT_NEAR(0.0,covariance_mat(2,1),epsilon);
+	EXPECT_NEAR(1.0,covariance_mat(2,2),epsilon);
+
+	SG_UNREF(pca);
+	SG_UNREF(features);
+}
+
 #endif //HAVE_EIGEN3

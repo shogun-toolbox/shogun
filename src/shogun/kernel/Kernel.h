@@ -15,6 +15,8 @@
 #ifndef _KERNEL_H___
 #define _KERNEL_H___
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/common.h>
 #include <shogun/lib/Signal.h>
 #include <shogun/io/SGIO.h>

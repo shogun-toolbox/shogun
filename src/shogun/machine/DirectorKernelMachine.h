@@ -10,6 +10,8 @@
 #ifndef _DIRECTORKERNELMACHINE_H___
 #define _DIRECTORKERNELMACHINE_H___
 
+#include <shogun/lib/config.h>
+
 #ifdef USE_SWIG_DIRECTORS
 #include <shogun/lib/common.h>
 #include <shogun/lib/DataType.h>

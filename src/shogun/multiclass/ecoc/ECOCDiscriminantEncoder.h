@@ -14,6 +14,8 @@
 #include <vector>
 #include <set>
 
+#include <shogun/lib/config.h>
+
 #include <shogun/multiclass/ecoc/ECOCEncoder.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/labels/Labels.h>

@@ -12,6 +12,8 @@
 #ifndef __PROTOBUFFILE_H__
 #define __PROTOBUFFILE_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/io/File.h>
 
 #include <google/protobuf/message.h>

@@ -10,6 +10,8 @@
 #ifndef __SEGMENT_LOSS__
 #define __SEGMENT_LOSS__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/common.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/DynamicArray.h>

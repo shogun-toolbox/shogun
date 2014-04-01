@@ -61,7 +61,7 @@ void quadratic_time_mmd()
 	mmd->set_statistic_type(BIASED);
 	mmd->set_null_approximation_method(MMD2_SPECTRUM);
 	mmd->set_num_eigenvalues_spectrum(3);
-	mmd->set_num_samples_sepctrum(250);
+	mmd->set_num_samples_spectrum(250);
 	p_value=mmd->perform_test();
 	/* reject if p-value is smaller than test level */
 	SG_SPRINT("spectrum: p!=q: %d\n", p_value<alpha);

@@ -9,6 +9,9 @@
 
 #ifndef SPINVCOV_H_
 #define SPINVCOV_H_
+
+#include <shogun/lib/config.h>
+
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/SGMatrix.h>
 

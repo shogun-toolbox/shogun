@@ -17,6 +17,8 @@
 #ifndef _LOSSFUNCTION_H__
 #define _LOSSFUNCTION_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/common.h>
 #include <math.h>

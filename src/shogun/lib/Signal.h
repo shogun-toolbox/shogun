@@ -11,6 +11,8 @@
 #ifndef __SIGNAL__H_
 #define __SIGNAL__H_
 
+#include <shogun/lib/config.h>
+
 #ifndef DISABLE_CANCEL_CALLBACK
 namespace shogun
 {

@@ -1,6 +1,7 @@
 #ifndef __RINTERFACE__H_
 #define __RINTERFACE__H_
 
+#include <shogun/lib/config.h>
 
 #include <shogun/lib/common.h>
 #include <shogun/ui/SGInterface.h>

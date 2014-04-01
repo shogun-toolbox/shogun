@@ -46,7 +46,11 @@ public:
 	 * 
 	 * @param sparse_mat the input Sparse matrix
 	 */
+	#ifdef HAVE_EIGEN3
+	#ifdef HAVE_LAPACK
 	CLogDetEstimator(SGSparseMatrix<float64_t> sparse_mat);
+	#endif //HAVE_LAPACK
+	#endif //HAVE_EIGEN3
 
 	/**
 	 * constructor

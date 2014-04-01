@@ -16,6 +16,8 @@
 #ifndef IOBUFFER_H__
 #define IOBUFFER_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/v_array.h>
 #include <shogun/lib/common.h>
 #include <shogun/base/SGObject.h>

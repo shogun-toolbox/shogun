@@ -11,6 +11,8 @@
 #ifndef __PLIF_H__
 #define __PLIF_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/common.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/Math.h>

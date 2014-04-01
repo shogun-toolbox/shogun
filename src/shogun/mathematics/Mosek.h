@@ -13,6 +13,8 @@
 
 #ifdef USE_MOSEK
 
+#include <shogun/lib/config.h>
+
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/SGMatrix.h>
 

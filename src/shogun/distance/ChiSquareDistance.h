@@ -11,6 +11,8 @@
 #ifndef __CHISQUAREDISTANCE_H__
 #define __CHISQUAREDISTANCE_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/common.h>
 #include <shogun/distance/DenseDistance.h>
 

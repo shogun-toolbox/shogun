@@ -14,6 +14,8 @@
 #ifndef _KNN_H__
 #define _KNN_H__
 
+#include <shogun/lib/config.h>
+
 #include <stdio.h>
 #include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>

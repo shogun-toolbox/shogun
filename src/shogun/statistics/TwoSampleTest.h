@@ -32,6 +32,8 @@
 #ifndef TWO_SAMPLE_TEST_H_
 #define TWO_SAMPLE_TEST_H_
 
+#include <shogun/lib/config.h>
+
 #include <shogun/statistics/HypothesisTest.h>
 
 namespace shogun

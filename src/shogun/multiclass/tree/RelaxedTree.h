@@ -14,6 +14,8 @@
 #include <utility>
 #include <vector>
 
+#include <shogun/lib/config.h>
+
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/classifier/svm/LibSVM.h>
 #include <shogun/multiclass/tree/TreeMachine.h>

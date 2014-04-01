@@ -11,6 +11,8 @@
 #ifndef _NGRAMTOKENIZER__H__
 #define	_NGRAMTOKENIZER__H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/Tokenizer.h>
 
 namespace shogun

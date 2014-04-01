@@ -11,6 +11,8 @@
 #ifndef RELAXEDTREENODEDATA_H__
 #define RELAXEDTREENODEDATA_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/SGVector.h>
 
 namespace shogun

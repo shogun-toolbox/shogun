@@ -11,6 +11,8 @@
 #ifndef PRCEVALUATION_H_
 #define PRCEVALUATION_H_
 
+#include <shogun/lib/config.h>
+
 #include <shogun/evaluation/BinaryClassEvaluation.h>
 
 namespace shogun

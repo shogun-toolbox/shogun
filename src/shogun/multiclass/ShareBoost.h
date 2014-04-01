@@ -11,6 +11,8 @@
 #ifndef SHAREBOOST_H__
 #define SHAREBOOST_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/machine/LinearMulticlassMachine.h>
 #include <shogun/multiclass/MulticlassOneVsRestStrategy.h>
 #include <shogun/features/DenseFeatures.h>

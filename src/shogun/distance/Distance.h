@@ -12,6 +12,8 @@
 #ifndef _DISTANCE_H___
 #define _DISTANCE_H___
 
+#include <shogun/lib/config.h>
+
 #include <stdio.h>
 
 #include <shogun/lib/common.h>

@@ -13,6 +13,8 @@
 
 #include <map>
 
+#include <shogun/lib/config.h>
+
 #include <shogun/features/streaming/StreamingDenseFeatures.h>
 #include <shogun/multiclass/tree/TreeMachine.h>
 #include <shogun/multiclass/tree/ConditionalProbabilityTreeNodeData.h>

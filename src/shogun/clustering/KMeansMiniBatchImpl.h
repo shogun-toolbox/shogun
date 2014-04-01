@@ -10,6 +10,7 @@
 #ifndef _MBKMEANS_H__
 #define _MBKMEANS_H__
 
+#include <shogun/lib/config.h>
 
 #include <stdio.h>
 #include <shogun/lib/common.h>

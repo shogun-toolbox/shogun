@@ -10,6 +10,8 @@
 #ifndef __PARSER_H__
 #define __PARSER_H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/SGVector.h>
 #include <shogun/base/SGObject.h>
 

@@ -10,6 +10,8 @@
 #ifndef _STREAMING_HASHEDDOCDOTFEATURES__H__
 #define _STREAMING_HASHEDDOCDOTFEATURES__H__
 
+#include <shogun/lib/config.h>
+
 #include <shogun/features/StringFeatures.h>
 #include <shogun/features/streaming/StreamingDotFeatures.h>
 #include <shogun/lib/Tokenizer.h>

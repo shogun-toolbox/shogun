@@ -1,6 +1,8 @@
 #ifndef DSFMT_PARAMS521_H
 #define DSFMT_PARAMS521_H
 
+#include <shogun/lib/config.h>
+
 /* #define DSFMT_N	4 */
 /* #define DSFMT_MAXDEGREE	544 */
 #define DSFMT_POS1	3

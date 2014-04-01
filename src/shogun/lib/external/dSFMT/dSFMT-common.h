@@ -21,6 +21,8 @@
 #ifndef DSFMT_COMMON_H
 #define DSFMT_COMMON_H
 
+#include <shogun/lib/config.h>
+
 #include <shogun/lib/external/dSFMT/dSFMT.h>
 
 #if defined(HAVE_SSE2)
