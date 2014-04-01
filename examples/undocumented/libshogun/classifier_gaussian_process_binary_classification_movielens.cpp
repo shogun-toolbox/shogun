@@ -173,11 +173,15 @@ void generate_features(SGMatrix<float64_t> &ratings, SGMatrix<float64_t> &items,
 }
 
 // Do the GP binary classification on movielens dataset
-void gp_classification_movielens(float64_t &accuracy_train, float64_t &accuracy_test,
+void gp_classification_movielens(float64_t &error_train, float64_t &error_test,
+		float64_t &accuracy_train, float64_t &accuracy_test,
 		float64_t kernel_log_scale, float64_t kernel_log_sigma)
 {
 	accuracy_test = 0.0;
 	accuracy_train = 0.0;
+
+	error_test = 0.0;
+	error_train = 0.0;
 
 	// Basic information
 	int user_cnt = 943;
@@ -262,13 +266,20 @@ void gp_classification_movielens(float64_t &accuracy_train, float64_t &accuracy_
 		// perform inference on train
 		CBinaryLabels* predictions_train=gpc->apply_binary(feat_train);
 		SG_REF(predictions_train);
+		SGVector<float64_t> predictions_train_p= gpc->get_probabilities(feat_train);
 
 		// perform inference on test
 		CBinaryLabels* predictions_test=gpc->apply_binary(feat_test);
 		SG_REF(predictions_test);
+		SGVector<float64_t> predictions_test_p= gpc->get_probabilities(feat_test);
 
 		accuracy_train += eval->evaluate(predictions_train, lab_train) * V_train.vlen;
 		accuracy_test += eval->evaluate(predictions_test, lab_test) * V_test.vlen;
+
+		for(int i=0; i<predictions_train_p.vlen; i++)
+			error_train += CMath::sq(2*predictions_train_p[i]-1-V_train[i]);
+		for(int i=0; i<predictions_test_p.vlen; i++)
+			error_test += CMath::sq(2*predictions_test_p[i]-1-V_test[i]);
 
 		// SG_SPRINT("Processing User:%d\n", uid);
 		// SG_SPRINT("Train Vlen: %d\n", V_train.vlen);
@@ -295,6 +306,9 @@ void gp_classification_movielens(float64_t &accuracy_train, float64_t &accuracy_
 	accuracy_train/=pred_pair_count_train;
 	accuracy_test/=pred_pair_count_test;
 
+	error_train/=pred_pair_count_train;
+	error_test/=pred_pair_count_test;
+
 	SG_SPRINT("Loss User Count in Test:%d\n", loss_user_count);
 
 	SG_UNREF(mean);
@@ -310,6 +324,8 @@ int main(int argc, char** argv)
 
 	float64_t accuracy_test = 0.0;
 	float64_t accuracy_train = 0.0;
+	float64_t error_test = 0.0;
+	float64_t error_train = 0.0;
 	float64_t kernel_log_sigma = 0;
 	float64_t kernel_log_scale = 0;
 
@@ -317,46 +333,56 @@ int main(int argc, char** argv)
 	SG_SPRINT("\nDataset U1\n");
 	fname_ratings_train = fname_ratings_train_u1;
 	fname_ratings_test = fname_ratings_test_u1;
-	gp_classification_movielens(accuracy_train, accuracy_test,
+	gp_classification_movielens(error_train, error_test, accuracy_train, accuracy_test,
 			kernel_log_sigma, kernel_log_scale);
 	SG_SPRINT("Accuracy on Train: %lf%%\n", accuracy_train*100);
 	SG_SPRINT("Accuracy on Test: %lf%%\n", accuracy_test*100);
+	SG_SPRINT("RMSE on Train: %lf\n", error_train);
+	SG_SPRINT("RMSE on Test: %lf\n", error_test);
 
 	// Dataset u2
 	SG_SPRINT("\nDataset U2\n");
 	fname_ratings_train = fname_ratings_train_u2;
 	fname_ratings_test = fname_ratings_test_u2;
-	gp_classification_movielens(accuracy_train, accuracy_test,
+	gp_classification_movielens(error_train, error_test, accuracy_train, accuracy_test,
 			kernel_log_sigma, kernel_log_scale);
 	SG_SPRINT("Accuracy on Train: %lf%%\n", accuracy_train*100);
 	SG_SPRINT("Accuracy on Test: %lf%%\n", accuracy_test*100);
+	SG_SPRINT("RMSE on Train: %lf\n", error_train);
+	SG_SPRINT("RMSE on Test: %lf\n", error_test);
 
 	// Dataset u3
 	SG_SPRINT("\nDataset U3\n");
 	fname_ratings_train = fname_ratings_train_u3;
 	fname_ratings_test = fname_ratings_test_u3;
-	gp_classification_movielens(accuracy_train, accuracy_test,
+	gp_classification_movielens(error_train, error_test, accuracy_train, accuracy_test,
 			kernel_log_sigma, kernel_log_scale);
 	SG_SPRINT("Accuracy on Train: %lf%%\n", accuracy_train*100);
 	SG_SPRINT("Accuracy on Test: %lf%%\n", accuracy_test*100);
+	SG_SPRINT("RMSE on Train: %lf\n", error_train);
+	SG_SPRINT("RMSE on Test: %lf\n", error_test);
 
 	// Dataset u4
 	SG_SPRINT("\nDataset U4\n");
 	fname_ratings_train = fname_ratings_train_u4;
 	fname_ratings_test = fname_ratings_test_u4;
-	gp_classification_movielens(accuracy_train, accuracy_test,
+	gp_classification_movielens(error_train, error_test, accuracy_train, accuracy_test,
 			kernel_log_sigma, kernel_log_scale);
 	SG_SPRINT("Accuracy on Train: %lf%%\n", accuracy_train*100);
 	SG_SPRINT("Accuracy on Test: %lf%%\n", accuracy_test*100);
+	SG_SPRINT("RMSE on Train: %lf\n", error_train);
+	SG_SPRINT("RMSE on Test: %lf\n", error_test);
 
 	// Dataset u5
 	SG_SPRINT("\nDataset U5\n");
 	fname_ratings_train = fname_ratings_train_u5;
 	fname_ratings_test = fname_ratings_test_u5;
-	gp_classification_movielens(accuracy_train, accuracy_test,
+	gp_classification_movielens(error_train, error_test, accuracy_train, accuracy_test,
 			kernel_log_sigma, kernel_log_scale);
 	SG_SPRINT("Accuracy on Train: %lf%%\n", accuracy_train*100);
 	SG_SPRINT("Accuracy on Test: %lf%%\n", accuracy_test*100);
+	SG_SPRINT("RMSE on Train: %lf\n", error_train);
+	SG_SPRINT("RMSE on Test: %lf\n", error_test);
 
 	exit_shogun();
 	return 0;
