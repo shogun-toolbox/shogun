@@ -168,7 +168,7 @@ public:
 	 * @param targets desired values for the layer's activations, matrix of size
 	 * num_neurons*batch_size
 	 */
-	virtual float64_t computer_error(float64_t* targets) = 0;
+	virtual float64_t compute_error(float64_t* targets) = 0;
 	
 	/** Gets the number of neurons in the layer
 	 * 

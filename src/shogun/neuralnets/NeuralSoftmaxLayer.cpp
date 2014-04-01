@@ -85,15 +85,17 @@ void CNeuralSoftmaxLayer::compute_local_gradients(bool is_output,
 	}
 }
 
-float64_t CNeuralSoftmaxLayer::computer_error(float64_t* targets)
+float64_t CNeuralSoftmaxLayer::compute_error(float64_t* targets)
 {	
 	int32_t len = m_num_neurons*m_batch_size;
 	float64_t sum = 0;
 	for (int32_t i=0; i< len; i++)
 	{
 		// to prevent taking the log of a zero
-		if (m_activations[i]==0) sum += targets[i]*CMath::log(1e-50);
-		else sum += targets[i]*CMath::log(m_activations[i]);
+		if (m_activations[i]==0) 
+			sum += targets[i]*CMath::log(1e-50);
+		else 
+			sum += targets[i]*CMath::log(m_activations[i]);
 	}
 	return -1*sum/m_batch_size;
 }

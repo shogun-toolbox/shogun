@@ -92,7 +92,7 @@ public:
 	 * @param targets desired values for the layer's activations, matrix of size
 	 * num_neurons*batch_size
 	 */
-	virtual float64_t computer_error(float64_t* targets);
+	virtual float64_t compute_error(float64_t* targets);
 	
 	virtual const char* get_name() const { return "NeuralSoftmaxLayer"; }
 };

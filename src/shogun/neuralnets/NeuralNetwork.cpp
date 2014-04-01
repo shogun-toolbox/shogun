@@ -369,7 +369,7 @@ float64_t CNeuralNetwork::compute_error(float64_t* targets, float64_t* inputs)
 {
 	if (inputs!=NULL) forward_propagate(inputs);
 	
-	float64_t error = get_layer(m_num_layers-1)->computer_error(targets);
+	float64_t error = get_layer(m_num_layers-1)->compute_error(targets);
 	
 	// L2 regularization
 	if (l2_coefficient != 0.0)
