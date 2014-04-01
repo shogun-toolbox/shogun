@@ -176,6 +176,9 @@ void generate_features(SGMatrix<float64_t> &ratings, SGMatrix<float64_t> &items,
 void gp_regression_movielens(float64_t &error_train, float64_t &error_test,
 		float64_t kernel_log_scale, float64_t kernel_log_sigma, float64_t sigma2)
 {
+	error_test = 0.0;
+	error_train = 0.0;
+
 	// Basic information
 	int user_cnt = 943;
 	//int item_cnt = 1682;
