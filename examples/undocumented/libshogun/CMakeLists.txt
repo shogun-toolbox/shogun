@@ -10,6 +10,7 @@ SET(EXAMPLES
 	classifier_minimal_svm
 	classifier_mklmulticlass
 	classifier_gaussian_process_binary_classification
+	classifier_gaussian_process_binary_classification_movielens
 	classifier_gaussiannaivebayes
 	classifier_multiclasslibsvm
 	classifier_qda
