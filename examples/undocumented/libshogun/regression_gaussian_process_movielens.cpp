@@ -51,11 +51,21 @@
 using namespace shogun;
 
 // files with training data
-const char* fname_ratings_train="../data/ml-100k/u1.base";
+const char* fname_ratings_train_u1="../data/ml-100k/u1.base";
+const char* fname_ratings_train_u2="../data/ml-100k/u2.base";
+const char* fname_ratings_train_u3="../data/ml-100k/u3.base";
+const char* fname_ratings_train_u4="../data/ml-100k/u4.base";
+const char* fname_ratings_train_u5="../data/ml-100k/u5.base";
+const char* fname_ratings_train=NULL;
 const char* fname_items="../data/ml-100k/u.item";
 
 // file with testing data
-const char* fname_ratings_test="../data/ml-100k/u1.test";
+const char* fname_ratings_test_u1="../data/ml-100k/u1.test";
+const char* fname_ratings_test_u2="../data/ml-100k/u2.test";
+const char* fname_ratings_test_u3="../data/ml-100k/u3.test";
+const char* fname_ratings_test_u4="../data/ml-100k/u4.test";
+const char* fname_ratings_test_u5="../data/ml-100k/u5.test";
+const char* fname_ratings_test=NULL;
 
 // Read movielens ratings data (uid \t mid \t ratting \t timestamp)
 SGMatrix<float64_t> read_ratings_data(const char* fname)
@@ -66,7 +76,7 @@ SGMatrix<float64_t> read_ratings_data(const char* fname)
 	x.load(file_ratings);
 	SG_UNREF(file_ratings);
 
-	SG_SPRINT("x:%dx%d\n", x.num_rows, x.num_cols);
+	// SG_SPRINT("x:%dx%d\n", x.num_rows, x.num_cols);
 	return x;
 }
 
@@ -163,7 +173,8 @@ void generate_features(SGMatrix<float64_t> &ratings, SGMatrix<float64_t> &items,
 }
 
 // Do the GP regression on movielens dataset
-void gp_regression_movielens(float64_t &error_train, float64_t &error_test)
+void gp_regression_movielens(float64_t &error_train, float64_t &error_test,
+		float64_t kernel_log_scale, float64_t kernel_log_sigma, float64_t sigma2)
 {
 	// Basic information
 	int user_cnt = 943;
@@ -189,7 +200,12 @@ void gp_regression_movielens(float64_t &error_train, float64_t &error_test)
 	// Allocate our likelihood function
 	CGaussianLikelihood* lik = new CGaussianLikelihood();
 	SG_REF(lik);
-	lik->set_sigma(0.1);
+	lik->set_sigma(CMath::sqrt(sigma2));
+
+	// Allocate our Kernel
+	float64_t kernel_sigma = 2*CMath::exp(2*kernel_log_sigma);
+	CGaussianKernel* kernel = new CGaussianKernel(10, kernel_sigma);
+	SG_REF(kernel);
 
 	// Calculate mean squared error of train and test
 	CMeanSquaredError* eval = new CMeanSquaredError();
@@ -226,17 +242,11 @@ void gp_regression_movielens(float64_t &error_train, float64_t &error_test)
 		SG_REF(feat_test);
 		SG_REF(lab_test);
 
-		// Allocate our Kernel
-		float64_t kernel_sigma = 2;
-		CGaussianKernel* kernel = new CGaussianKernel(10, kernel_sigma);
-		SG_REF(kernel);
-		kernel->init(feat_train, feat_train);
-
 		// Allocate our inference method
 		CExactInferenceMethod* inf = new CExactInferenceMethod(kernel,
 							  feat_train, mean, lab_train, lik);
 		SG_REF(inf);
-		inf->set_scale(1.0);	// Parameter of kernel scale
+		inf->set_scale(CMath::exp(kernel_log_scale));	// Parameter of kernel scale
 
 		// Finally use these to allocate the Gaussian Process Object
 		CGaussianProcessRegression* gpr = new CGaussianProcessRegression(inf);
@@ -257,14 +267,14 @@ void gp_regression_movielens(float64_t &error_train, float64_t &error_test)
 		error_train += eval->evaluate(predictions_train, lab_train) * V_train.vlen;
 		error_test += eval->evaluate(predictions_test, lab_test) * V_test.vlen;
 
-		SG_SPRINT("Processing User:%d\n", uid);
-		SG_SPRINT("Train Vlen: %d\n", V_train.vlen);
-		SG_SPRINT("Test Vlen: %d\n", V_test.vlen);
-		SG_SPRINT("Squared Error Train: %lf\n", error_train);
-		SG_SPRINT("Squared Error Test: %lf\n", error_test);
-		SG_SPRINT("Mean Squared Error on Train:%lf\n",error_train/pred_pair_count_train);
-		SG_SPRINT("Mean Squared Error on Test:%lf\n",error_test/pred_pair_count_test);
-		SG_SPRINT("\n");
+		// SG_SPRINT("Processing User:%d\n", uid);
+		// SG_SPRINT("Train Vlen: %d\n", V_train.vlen);
+		// SG_SPRINT("Test Vlen: %d\n", V_test.vlen);
+		// SG_SPRINT("Squared Error Train: %lf\n", error_train);
+		// SG_SPRINT("Squared Error Test: %lf\n", error_test);
+		// SG_SPRINT("Mean Squared Error on Train:%lf\n",error_train/pred_pair_count_train);
+		// SG_SPRINT("Mean Squared Error on Test:%lf\n",error_test/pred_pair_count_test);
+		// SG_SPRINT("\n");
 
 		SG_UNREF(predictions_train);
 		SG_UNREF(predictions_test);
@@ -272,7 +282,6 @@ void gp_regression_movielens(float64_t &error_train, float64_t &error_test)
 		SG_UNREF(lab_train);
 		SG_UNREF(feat_test);
 		SG_UNREF(lab_test);
-		SG_UNREF(kernel);
 		SG_UNREF(inf);
 		SG_UNREF(gpr);
 	}
@@ -287,6 +296,7 @@ void gp_regression_movielens(float64_t &error_train, float64_t &error_test)
 
 	SG_UNREF(mean);
 	SG_UNREF(lik);
+	SG_UNREF(kernel);
 	SG_UNREF(eval);
 }
 
@@ -297,9 +307,52 @@ int main(int argc, char** argv)
 
 	float64_t error_test = 0.0;
 	float64_t error_train = 0.0;
+	float64_t kernel_log_sigma = 0;
+	float64_t kernel_log_scale = 0;
+	float64_t sigma2 = 0.01;
 
-	gp_regression_movielens(error_train, error_test);
+	// Dataset u1
+	SG_SPRINT("\nDataset U1\n");
+	fname_ratings_train = fname_ratings_train_u1;
+	fname_ratings_test = fname_ratings_test_u1;
+	gp_regression_movielens(error_train, error_test,
+			kernel_log_sigma, kernel_log_scale, sigma2);
+	SG_SPRINT("Root Mean Squared Error on Train:%lf\n", CMath::sqrt(error_train));
+	SG_SPRINT("Root Mean Squared Error on Test:%lf\n", CMath::sqrt(error_test));
 
+	// Dataset u2
+	SG_SPRINT("\nDataset U2\n");
+	fname_ratings_train = fname_ratings_train_u2;
+	fname_ratings_test = fname_ratings_test_u2;
+	gp_regression_movielens(error_train, error_test,
+			kernel_log_sigma, kernel_log_scale, sigma2);
+	SG_SPRINT("Root Mean Squared Error on Train:%lf\n", CMath::sqrt(error_train));
+	SG_SPRINT("Root Mean Squared Error on Test:%lf\n", CMath::sqrt(error_test));
+
+	// Dataset u3
+	SG_SPRINT("\nDataset U3\n");
+	fname_ratings_train = fname_ratings_train_u3;
+	fname_ratings_test = fname_ratings_test_u3;
+	gp_regression_movielens(error_train, error_test,
+			kernel_log_sigma, kernel_log_scale, sigma2);
+	SG_SPRINT("Root Mean Squared Error on Train:%lf\n", CMath::sqrt(error_train));
+	SG_SPRINT("Root Mean Squared Error on Test:%lf\n", CMath::sqrt(error_test));
+
+	// Dataset u4
+	SG_SPRINT("\nDataset U4\n");
+	fname_ratings_train = fname_ratings_train_u4;
+	fname_ratings_test = fname_ratings_test_u4;
+	gp_regression_movielens(error_train, error_test,
+			kernel_log_sigma, kernel_log_scale, sigma2);
+	SG_SPRINT("Root Mean Squared Error on Train:%lf\n", CMath::sqrt(error_train));
+	SG_SPRINT("Root Mean Squared Error on Test:%lf\n", CMath::sqrt(error_test));
+
+	// Dataset u5
+	SG_SPRINT("\nDataset U5\n");
+	fname_ratings_train = fname_ratings_train_u5;
+	fname_ratings_test = fname_ratings_test_u5;
+	gp_regression_movielens(error_train, error_test,
+			kernel_log_sigma, kernel_log_scale, sigma2);
 	SG_SPRINT("Root Mean Squared Error on Train:%lf\n", CMath::sqrt(error_train));
 	SG_SPRINT("Root Mean Squared Error on Test:%lf\n", CMath::sqrt(error_test));
 
