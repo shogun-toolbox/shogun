@@ -337,8 +337,8 @@ int main(int argc, char** argv)
 			kernel_log_sigma, kernel_log_scale);
 	SG_SPRINT("Accuracy on Train: %lf%%\n", accuracy_train*100);
 	SG_SPRINT("Accuracy on Test: %lf%%\n", accuracy_test*100);
-	SG_SPRINT("RMSE on Train: %lf\n", error_train);
-	SG_SPRINT("RMSE on Test: %lf\n", error_test);
+	SG_SPRINT("RMSE on Train: %lf\n", CMath::sqrt(error_train));
+	SG_SPRINT("RMSE on Test: %lf\n", CMath::sqrt(error_test));
 
 	// Dataset u2
 	SG_SPRINT("\nDataset U2\n");
@@ -348,8 +348,8 @@ int main(int argc, char** argv)
 			kernel_log_sigma, kernel_log_scale);
 	SG_SPRINT("Accuracy on Train: %lf%%\n", accuracy_train*100);
 	SG_SPRINT("Accuracy on Test: %lf%%\n", accuracy_test*100);
-	SG_SPRINT("RMSE on Train: %lf\n", error_train);
-	SG_SPRINT("RMSE on Test: %lf\n", error_test);
+	SG_SPRINT("RMSE on Train: %lf\n", CMath::sqrt(error_train));
+	SG_SPRINT("RMSE on Test: %lf\n", CMath::sqrt(error_test));
 
 	// Dataset u3
 	SG_SPRINT("\nDataset U3\n");
@@ -359,8 +359,8 @@ int main(int argc, char** argv)
 			kernel_log_sigma, kernel_log_scale);
 	SG_SPRINT("Accuracy on Train: %lf%%\n", accuracy_train*100);
 	SG_SPRINT("Accuracy on Test: %lf%%\n", accuracy_test*100);
-	SG_SPRINT("RMSE on Train: %lf\n", error_train);
-	SG_SPRINT("RMSE on Test: %lf\n", error_test);
+	SG_SPRINT("RMSE on Train: %lf\n", CMath::sqrt(error_train));
+	SG_SPRINT("RMSE on Test: %lf\n", CMath::sqrt(error_test));
 
 	// Dataset u4
 	SG_SPRINT("\nDataset U4\n");
@@ -370,8 +370,8 @@ int main(int argc, char** argv)
 			kernel_log_sigma, kernel_log_scale);
 	SG_SPRINT("Accuracy on Train: %lf%%\n", accuracy_train*100);
 	SG_SPRINT("Accuracy on Test: %lf%%\n", accuracy_test*100);
-	SG_SPRINT("RMSE on Train: %lf\n", error_train);
-	SG_SPRINT("RMSE on Test: %lf\n", error_test);
+	SG_SPRINT("RMSE on Train: %lf\n", CMath::sqrt(error_train));
+	SG_SPRINT("RMSE on Test: %lf\n", CMath::sqrt(error_test));
 
 	// Dataset u5
 	SG_SPRINT("\nDataset U5\n");
@@ -381,8 +381,8 @@ int main(int argc, char** argv)
 			kernel_log_sigma, kernel_log_scale);
 	SG_SPRINT("Accuracy on Train: %lf%%\n", accuracy_train*100);
 	SG_SPRINT("Accuracy on Test: %lf%%\n", accuracy_test*100);
-	SG_SPRINT("RMSE on Train: %lf\n", error_train);
-	SG_SPRINT("RMSE on Test: %lf\n", error_test);
+	SG_SPRINT("RMSE on Train: %lf\n", CMath::sqrt(error_train));
+	SG_SPRINT("RMSE on Test: %lf\n", CMath::sqrt(error_test));
 
 	exit_shogun();
 	return 0;
