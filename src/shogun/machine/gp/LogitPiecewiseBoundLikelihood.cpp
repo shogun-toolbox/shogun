@@ -72,9 +72,11 @@ SGVector<float64_t> CLogitPiecewiseBoundLikelihood::get_variational_expection()
 	const Map<MatrixXd> eigen_ph(m_ph.matrix, num_rows, num_cols);
 
 	float64_t l_bak = eigen_l(0);
+	//l(1) = 0; 
 	eigen_l(0) = 0;
 
 	float64_t h_bak = eigen_h(eigen_h.size()-1);
+	//h(end) = 0; 
 	eigen_h(eigen_h.size()-1) = 0;
 
 	//ex0 = ch-cl;
@@ -85,10 +87,15 @@ SGVector<float64_t> CLogitPiecewiseBoundLikelihood::get_variational_expection()
 		+ eigen_cdf_diff.array().rowwise()*eigen_mu.array().transpose()).matrix();
 
 	//ex2 = bsxfun(@times, v, (bsxfun(@plus, l, m)).*pl - (bsxfun(@plus, h, m)).*ph) + bsxfun(@times, (v+m.^2), ex0);
+	
+	//bsxfun(@plus, l, m)).*pl - (bsxfun(@plus, h, m)).*ph
 	MatrixXd eigen_ex2 = ((eigen_mu.replicate(1,eigen_l.rows()).array().transpose().colwise() + eigen_l.array())*eigen_pl.array()
 		- (eigen_mu.replicate(1,eigen_h.rows()).array().transpose().colwise() + eigen_h.array())*eigen_ph.array()).matrix();
 
+	//bsxfun(@times, v, (bsxfun(@plus, l, m)).*pl - (bsxfun(@plus, h, m)).*ph)
 	eigen_ex2 = (eigen_ex2.array().rowwise()*eigen_s2.array().transpose()).matrix();
+
+	//ex2 = bsxfun(@times, v, (bsxfun(@plus, l, m)).*pl - (bsxfun(@plus, h, m)).*ph) + bsxfun(@times, (v+m.^2), ex0);
 	eigen_ex2 += (eigen_cdf_diff.array().rowwise()*(eigen_mu.array().pow(2)
 			+ eigen_s2.array()).transpose()).matrix();
 
@@ -136,20 +143,27 @@ SGVector<float64_t> CLogitPiecewiseBoundLikelihood::get_variational_first_deriva
 	const Map<MatrixXd> eigen_h2_plus_s2(m_h2_plus_s2.matrix, num_rows, num_cols);
 	const Map<MatrixXd> eigen_l2_plus_s2(m_l2_plus_s2.matrix, num_rows, num_cols);
 	float64_t l_bak = eigen_l(0);
+	//l(1) = 0; 
 	eigen_l(0) = 0;
 	float64_t h_bak = eigen_h(eigen_h.size()-1);
+	//h(end) = 0; 
 	eigen_h(eigen_h.size()-1) = 0;
 
 	SGVector<float64_t> result(m_mu.vlen);
 
 	if (strcmp(param->m_name, "mu") ==0)
 	{
+		//bsxfun(@plus, l2_plus_v, v).*pl - bsxfun(@plus, h2_plus_v, v).*ph;
 		MatrixXd eigen_dmu2 = ((eigen_l2_plus_s2.array().rowwise()+eigen_s2.array().transpose())*eigen_pl.array()
 			- (eigen_h2_plus_s2.array().rowwise()+eigen_s2.array().transpose())*eigen_ph.array()).matrix();
+		//bsxfun(@times, ch-cl, (2.0*mu))
 		eigen_dmu2 += (eigen_cdf_diff.array().rowwise()*(2.0*eigen_mu).array().transpose()).matrix();
 
 		SGVector<float64_t> & gmu = result;
 		Map<VectorXd> eigen_gmu(gmu.vector, gmu.vlen);
+
+		//gmu = bsxfun(@times, dmu2, _a) + bsxfun(@times, pl.*l - ph.*h + ch - chl, b) + bsxfun(@times, pl - ph, c)
+		//gmu = sum(gmu,1)
 		eigen_gmu = ((eigen_dmu2.array().colwise()*eigen_a.array()) 
 			+ ((eigen_weighted_pdf_diff + eigen_cdf_diff).array().colwise()*eigen_b.array())
 			+ ( (eigen_pl - eigen_ph).array().colwise()*eigen_c.array())).colwise().sum().matrix();
@@ -160,31 +174,41 @@ SGVector<float64_t> CLogitPiecewiseBoundLikelihood::get_variational_first_deriva
 	else
 	{
 
+		//gv_0 = bsxfun(@plus, l, -mu).*pl - bsxfun(@plus, h, -mu).*ph;
 		MatrixXd eigen_gs2_0 = (((-eigen_mu).replicate(1,eigen_l.rows()).array().transpose().colwise() + eigen_l.array())*eigen_pl.array()
 			- ((-eigen_mu).replicate(1,eigen_h.rows()).array().transpose().colwise() + eigen_h.array())*eigen_ph.array()).matrix();
+		//gv_0 = bsxfun(times, gv_0, c);
 		eigen_gs2_0 = (eigen_gs2_0.array().colwise()*eigen_c.array()).matrix();
 
+		//tmpl = l2_plus_v - bsxfun(@times, l, mu)
 		MatrixXd tmpl = (eigen_l2_plus_s2 - (eigen_mu.replicate(1,eigen_l.rows()).array().transpose().colwise()*eigen_l.array()).matrix()
 			).cwiseProduct(eigen_pl);
 
+		//tmph = h2_plus_v - bsxfun(@times, h, mu)
 		MatrixXd tmph = (eigen_h2_plus_s2 - (eigen_mu.replicate(1,eigen_h.rows()).array().transpose().colwise()*eigen_h.array()).matrix()
 			).cwiseProduct(eigen_ph);
 
+		//gv_1 = bsxfun(@times, tmpl - tmph, b);
 		MatrixXd eigen_gs2_1 = ((tmpl - tmph).array().colwise()*eigen_b.array()).matrix();
 
+		//gv_2 = bsxfun(@times, tmpl, l) - bsxfun(@times, tmph, h);
 		MatrixXd eigen_gs2_2 = (tmpl.array().colwise()*eigen_l.array() - tmph.array().colwise()*eigen_h.array()).matrix();
 
+		//gv_2 = bsxfun(@times, gv_2, a);
 		eigen_gs2_2 = (eigen_gs2_2.array().colwise()*eigen_a.array()).matrix();
 
 		SGVector<float64_t> & gs2 = result;
 		Map<VectorXd> eigen_gs2(gs2.vector, gs2.vlen);
 
+
+		//gv = (bsxfun(@times, ch - cl + 0.5*pl.*l - ph.*h, a) + bsxfun(@times, gv_0 + gv_1 + gv_2, 1.0/(2.0*v))
+		//gv = sum(gv,1);
 		eigen_gs2 = ((eigen_cdf_diff + 0.5*eigen_weighted_pdf_diff).array().colwise()*eigen_a.array()
 			+ (eigen_gs2_0 + eigen_gs2_1 + eigen_gs2_2).array().rowwise()/(2.0*eigen_s2).array().transpose()
 			).colwise().sum().matrix();
 
+		//gv = -gv
 		eigen_gs2 = -eigen_gs2;
-
 	}
 	eigen_l(0) = l_bak;
 	eigen_h(eigen_h.size()-1) = h_bak;
@@ -303,7 +327,9 @@ void CLogitPiecewiseBoundLikelihood::precompute()
 	SGMatrix<float64_t> zh(num_rows, num_cols);
 	Map<MatrixXd> eigen_zh(zh.matrix, num_rows, num_cols);
 
+	//bsxfun(@minus,l,m)
 	eigen_zl = ((-eigen_mu).replicate(1,eigen_l.rows()).array().transpose().colwise() + eigen_l.array()).matrix();
+	//bsxfun(@minus,h,m)
 	eigen_zh = ((-eigen_mu).replicate(1,eigen_h.rows()).array().transpose().colwise() + eigen_h.array()).matrix();
 
 	VectorXd eigen_s_inv = eigen_s2.array().sqrt().inverse().matrix(); 
@@ -329,12 +355,12 @@ void CLogitPiecewiseBoundLikelihood::precompute()
 	SGMatrix<float64_t> & cl = zl; 
 	SGMatrix<float64_t> & ch = zh;
 
-	//cl = 0.5*erf(zl/sqrt(2)); %normal cdf -const
-	//ch = 0.5*erf(zl/sqrt(2)); %normal cdf -const
 	for (index_t r = 0; r < zl.num_rows; r++)
 		for (index_t c = 0; c < zl.num_cols; c++)
 		{
+			//cl = 0.5*erf(zl/sqrt(2)); %normal cdf -const
 			cl(r, c) = CStatistics::normal_cdf(zl(r, c)) - 0.5;
+			//ch = 0.5*erf(zl/sqrt(2)); %normal cdf -const
 			ch(r, c) = CStatistics::normal_cdf(zh(r, c)) - 0.5;
 		}
 
@@ -349,10 +375,12 @@ void CLogitPiecewiseBoundLikelihood::precompute()
 	float64_t h_bak = eigen_h(eigen_h.size()-1);
 	eigen_h(eigen_h.size()-1) = 0;
 
+	//bsxfun(@plus, l.^2, v)
 	eigen_l2_plus_s2 = (eigen_s2.replicate(1,eigen_l.rows()).array().transpose().colwise() + eigen_l.array().pow(2)).matrix();
+	//bsxfun(@plus, h.^2, v)
 	eigen_h2_plus_s2 = (eigen_s2.replicate(1,eigen_h.rows()).array().transpose().colwise() + eigen_h.array().pow(2)).matrix();
+	//pl.*l - ph.*h
 	eigen_weighted_pdf_diff = (eigen_pl.array().colwise()*eigen_l.array() - eigen_ph.array().colwise()*eigen_h.array()).matrix();
-
 
 	eigen_l(0) = l_bak;
 	eigen_h(eigen_h.size()-1) = h_bak;
