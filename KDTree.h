@@ -1,15 +1,24 @@
-// Represents a kd-tree data structure, used for the binary partitioning of k-dimensional space.
-// This class implements simple KD tree structure without using Shogun or other extrenal libraries(from scratch).
-// Features of this tree does not have labels.
+/*
+* This program is free software and you can redistribute it and/or modify
+* it under the terms of the GNU General Public License
+* This class implements simple KD tree structure without integration with KNN.
+*
+* Written (W) 2014 Zharmagambetov Arman armanform@gmail.com
+*/
 
 #ifndef _KDTREE_H_
 #define _KDTREE_H_
 
 #include <cmath>
 #include <vector>
-#include <queue>
+#include <stdexcept>
+#include <algorithm>
+
+#include <shogun/labels/BinaryLabels.h>
+#include <shogun/features/DenseFeatures.h>
 
 using namespace std;
+using namespace shogun;
 
 // Forward references
 template <typename T> class KDTree;
@@ -22,7 +31,6 @@ class KDTNode {
 protected:
 	KDTNode *left, *right;	// left/right child
 	vector<T> data;		// the actual data item
-
 	// access to the node contents
 	// this is a bit dangerous, hence private
 	vector<T>& content() {
@@ -63,7 +71,7 @@ class KDTree {
 protected:
 	KDTNode<T> *root;	// root of tree
 	int count;        // size of tree
-	int dimensionOfFeatures;
+	index_t dimensionOfFeatures;
 
 public:
 	KDTree() : root(NULL), count(0) {}
@@ -72,35 +80,65 @@ public:
 		return count;
 	}
 
-	void Construct(vector<vector<T>> elements);
+	void train_kd(SGMatrix<T> features, SGVector<T> labels);
 	vector<T> FindNearestNeighbor(vector<T> location);
-	vector<vector<T>> FindNearestNNeighbor(vector<T> location, int numNeighbors);
-	
+	vector<vector<T> > FindNearestNNeighbor(vector<T> location, int numNeighbors);
+	T apply_one(vector<T> location, int k_nn);
+
 protected:
 	bool vectorComparer(vector<T> v1, vector<T> v2);
-	KDTNode<T>* construct_helper(KDTNode<T>*& nodep, int dimension, int startIndex, int endIndex, int depth, vector<vector<T>> elements);
-	void sortByDimension(vector<vector<T>>& elements, int start, int end, int currentDim);
-	int sortPartition(vector<vector<T>>& elements, int start, int end, int currentDim);
+	KDTNode<T>* construct_helper(KDTNode<T>*& nodep, int dimension, int startIndex, int endIndex,
+								int depth, vector<vector<T> > elements);
+	void sortByDimension(vector<vector<T> >& elements, int start, int end, int currentDim);
+	int sortPartition(vector<vector<T> >& elements, int start, int end, int currentDim);
 	double distanceByEuclidean(vector<T> v1, vector<T> v2);
-	vector<T> FindNearestNeighborHelper(vector<T> location, KDTNode<T>*& nodep, vector<T> bestValue, double bestDistance, int depth);
-	void FindNearestNNeighborHelper(vector<T> location, KDTNode<T>*& nodep, vector<T>& bestValue, double& bestDistance, 
-		int numNeighbors, vector<vector<T>>& valuesList, int depth);
-	void sortByDistance(vector<vector<T>>& valuesList, int start, int end, vector<T> location);
-	int sortDistancePartition(vector<vector<T>>& valuesList, int start, int end, vector<T> location);
+	vector<T> FindNearestNeighborHelper(vector<T> location, KDTNode<T>*& nodep,
+		vector<T> bestValue, double bestDistance, int depth);
+	void FindNearestNNeighborHelper(vector<T> location, KDTNode<T>*& nodep, vector<T>& bestValue, double& bestDistance,
+		int numNeighbors, vector<vector<T> >& valuesList, int depth);
+	void sortByDistance(vector<vector<T> >& valuesList, int start, int end, vector<T> location);
+	int sortDistancePartition(vector<vector<T> >& valuesList, int start, int end, vector<T> location);
+	vector<vector<T> > featureToVector(SGMatrix<T> features);
 };
 
 //Constructs a kd-tree from the specified collection of elements.
 template<typename T>
-void KDTree<T>::Construct(vector<vector<T>> elements)
+void KDTree<T>::train_kd(SGMatrix<T> features, SGVector<T> labels)
 {
-	dimensionOfFeatures = elements[0].size();
+	if (features.num_cols != labels.vlen)
+		throw invalid_argument("Invalid input arguments");
+
+	dimensionOfFeatures = features.num_rows;
+	vector<vector<T> > elements = featureToVector(features);
+	for (int i = 0; i < elements.size(); i++)
+	{
+		if (elements[i].size() != dimensionOfFeatures)
+			throw invalid_argument("Dimension of feature vectors are not the same");
+		elements[i].push_back(labels[i]);
+	}
 	// Construct nodes of the tree.
 	root = construct_helper(root, dimensionOfFeatures, 0, elements.size()-1, 0, elements);
 }
 
+// convert our feature matrix to the set of vectors
+template<typename T>
+vector<vector<T> > KDTree<T>::featureToVector(SGMatrix<T> features)
+{
+	vector<vector<T> > elem;
+	for(int i = 0; i < features.num_cols; i++)
+	{
+		float64_t* cols = features.get_column_vector(i);
+		vector<T> column(cols, cols + features.num_rows);
+		elem.push_back(column);
+	}
+	return elem;
+}
+
+
 //Recursively construct kd-tree from input array of features
 template<typename T>
-KDTNode<T>* KDTree<T>::construct_helper(KDTNode<T>*& nodep, int dimension, int startIndex, int endIndex, int depth, vector<vector<T>> elements)
+KDTNode<T>* KDTree<T>::construct_helper(KDTNode<T>*& nodep, int dimension, int startIndex,
+	int endIndex, int depth, vector<vector<T> > elements)
 {
 	int length = endIndex - startIndex + 1;
 	if (length == 0)
@@ -118,13 +156,13 @@ KDTNode<T>* KDTree<T>::construct_helper(KDTNode<T>*& nodep, int dimension, int s
 	nodep = new KDTNode<T>(medianElement);
 	nodep->left = construct_helper(nodep->left, dimension, startIndex, medianIndex - 1, depth + 1, elements);
 	nodep->right = construct_helper(nodep->right, dimension, medianIndex + 1, endIndex, depth + 1, elements);
-	
+
 	return nodep;
 }
 
 //sort features in particular dimension, i.e. it implements quicksort algorithm
 template<typename T>
-void KDTree<T>::sortByDimension(vector<vector<T>>& elements, int start, int end, int currentDim)
+void KDTree<T>::sortByDimension(vector<vector<T> >& elements, int start, int end, int currentDim)
 {
 	// top = subscript of beginning of array
 	// bottom = subscript of end of array
@@ -139,8 +177,10 @@ void KDTree<T>::sortByDimension(vector<vector<T>>& elements, int start, int end,
 	return;
 }
 
+// helper for quicksort algorithm, it returns middle element, and
+// reorganize elements
 template<typename T>
-int KDTree<T>::sortPartition(vector<vector<T>>& elements, int start, int end, int currentDim)
+int KDTree<T>::sortPartition(vector<vector<T> >& elements, int start, int end, int currentDim)
 {
 	vector<T> x = elements[start];
 	int i = start - 1;
@@ -165,17 +205,19 @@ int KDTree<T>::sortPartition(vector<vector<T>>& elements, int start, int end, in
 			elements[j] = temp;
 		}
 	} while (i < j);
-	return j;           // returns middle subscript  
+	return j;           // returns middle subscript
 }
 
-//Find ONE nearest neighbor 
+//Find ONE nearest neighbor
 template <typename T>
 vector<T> KDTree<T>::FindNearestNeighbor(vector<T> location)
 {
 	if (location.empty())
-		throw "Argument is null";
-
-	return FindNearestNeighborHelper(location, root, root->data, distanceByEuclidean(root->data, location), 0);
+		throw invalid_argument("Argument is null");
+	T tempClassifier = 0;
+	location.push_back(tempClassifier);
+	double maxDistance = 27070707;
+	return FindNearestNeighborHelper(location, root, root->data, maxDistance, 0);
 }
 
 //Recursively iterate through leafs of kd-tree to find the nearest neighbour
@@ -234,9 +276,10 @@ double KDTree<T>::distanceByEuclidean(vector<T> v1, vector<T> v2)
 	double sum = 0.0;
 
 	if (v1.size() != v2.size())
-		throw "Invalid arguments exception!";
+		throw invalid_argument("Invalid arguments exception!");
 
-	for (int i = 0; i < v1.size(); i++)
+	//the last member is label, therefore iterate until last element
+	for (int i = 0; i < v1.size() - 1; i++)
 	{
 		sum = sum + pow(abs(v1[i] - v2[i]), 2.0);
 	}
@@ -248,29 +291,33 @@ double KDTree<T>::distanceByEuclidean(vector<T> v1, vector<T> v2)
 
 // Finds the N values in the tree that are nearest to the specified location.
 template <typename T>
-vector<vector<T>> KDTree<T>::FindNearestNNeighbor(vector<T> location, int numNeighbors)
+vector<vector<T> > KDTree<T>::FindNearestNNeighbor(vector<T> location, int numNeighbors)
 {
 	if (location.empty())
-		throw "Argument is null";
+		throw invalid_argument("Argument is null");
 
-	vector<vector<T>> nodesList;
+	T tempClassifier = 0;
+	location.push_back(tempClassifier);
+	vector<vector<T> > nodesList;
 	vector<T> minBestValue = root->data;
-	double minBestDistance = 1000;
+	double minBestDistance = 27070707;
 
-	FindNearestNNeighborHelper(location, 
-		root, 
-		minBestValue, 
-		minBestDistance, 
-		numNeighbors, 
-		nodesList, 
+	FindNearestNNeighborHelper(location,
+		root,
+		minBestValue,
+		minBestDistance,
+		numNeighbors,
+		nodesList,
 		0);
 
 	return nodesList;
 }
 
+
+// reqursively search in the tree for nearest n neighbors and insert it in priority queue
 template <typename T>
 void KDTree<T>::FindNearestNNeighborHelper(vector<T> location, KDTNode<T>*& nodep, vector<T>& bestValue, double& bestDistance,
-	int numNeighbors, vector<vector<T>>& valuesList, int depth)
+	int numNeighbors, vector<vector<T> >& valuesList, int depth)
 {
 	if (nodep == NULL)
 		return;
@@ -286,7 +333,7 @@ void KDTree<T>::FindNearestNNeighborHelper(vector<T> location, KDTNode<T>*& node
 		if (valuesList.size() == numNeighbors)
 			valuesList[valuesList.size() - 1] = nodeLocation;
 		else valuesList.push_back(nodeLocation);
-	    
+
 		sortByDistance(valuesList, 0, valuesList.size() - 1, location);
 
 		if (valuesList.size() == numNeighbors)
@@ -301,7 +348,7 @@ void KDTree<T>::FindNearestNNeighborHelper(vector<T> location, KDTNode<T>*& node
 		nodep->left : nodep->right;
 	if (nearChildNode != NULL)
 	{
-		FindNearestNNeighborHelper(location, nearChildNode, bestValue, bestDistance, numNeighbors, 
+		FindNearestNNeighborHelper(location, nearChildNode, bestValue, bestDistance, numNeighbors,
 			valuesList, depth + 1);
 	}
 
@@ -320,8 +367,9 @@ void KDTree<T>::FindNearestNNeighborHelper(vector<T> location, KDTNode<T>*& node
 
 }
 
+//sort features matrix and reorganise it as priority queue , i.e. it implements quicksort algorithm
 template <typename T>
-void KDTree<T>::sortByDistance(vector<vector<T>>& valuesList, int start, int end, vector<T> location)
+void KDTree<T>::sortByDistance(vector<vector<T> >& valuesList, int start, int end, vector<T> location)
 {
 	// top = subscript of beginning of array
 	// bottom = subscript of end of array
@@ -335,8 +383,11 @@ void KDTree<T>::sortByDistance(vector<vector<T>>& valuesList, int start, int end
 	}
 	return;
 }
+
+// helper for quicksort algorithm, it returns middle element, and
+// reorganize elements
 template <typename T>
-int KDTree<T>::sortDistancePartition(vector<vector<T>>& valuesList, int start, int end, vector<T> location)
+int KDTree<T>::sortDistancePartition(vector<vector<T> >& valuesList, int start, int end, vector<T> location)
 {
 	vector<T> x = valuesList[start];
 	int i = start - 1;
@@ -361,8 +412,41 @@ int KDTree<T>::sortDistancePartition(vector<vector<T>>& valuesList, int start, i
 			valuesList[j] = temp;
 		}
 	} while (i < j);
-	return j;           // returns middle subscript  
+	return j;           // returns middle subscript
 }
 
+// basic classification algorithm, it finds nearest n neighbors and determine the
+// class of input vector
+template <typename T>
+T KDTree<T>::apply_one(vector<T> location, int k_nn)
+{
+	vector<vector<T> > knns = FindNearestNNeighbor(location, k_nn);
+	vector<T> labelsOfNeighbors;
+
+	if (knns.empty())
+	{
+		return 0;
+	}
+
+	int sizeOfFeatureVector = knns[0].size();
+
+	for (int i = 0; i < knns.size(); i++)
+	{
+		labelsOfNeighbors.push_back(knns[i][sizeOfFeatureVector - 1]);
+	}
+
+	int max = 0;
+	T mostFrequentLabel = labelsOfNeighbors[0];
+	for (int i = 0; i < labelsOfNeighbors.size(); i++)
+	{
+		int countTemp = std::count(labelsOfNeighbors.begin(), labelsOfNeighbors.end(), labelsOfNeighbors[i]);
+		if (countTemp > max){
+			max = countTemp;
+			mostFrequentLabel = labelsOfNeighbors[i];
+		}
+	}
+
+	return mostFrequentLabel;
+}
 
 #endif
