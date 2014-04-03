@@ -33,7 +33,7 @@ CLanczosEigenSolver::CLanczosEigenSolver()
 }
 
 CLanczosEigenSolver::CLanczosEigenSolver(
-	CLinearOperator<float64_t>* linear_operator)
+	CLinearOperator<SGVector<float64_t>, SGVector<float64_t> >* linear_operator)
 	: CEigenSolver(linear_operator)
 {
 	init();

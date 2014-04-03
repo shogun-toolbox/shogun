@@ -41,7 +41,7 @@ TEST(LanczosEigenSolver, compute)
 	SGSparseMatrix<float64_t> mat=feat.get_sparse_feature_matrix();
 	CEigenSolver* eig_solver=NULL;
 
-	CLinearOperator<float64_t>* A=new CSparseMatrixOperator<float64_t>(mat);
+	CLinearOperator<SGVector<float64_t>, SGVector<float64_t> >* A=new CSparseMatrixOperator<float64_t>(mat);
 	SG_REF(A);
 
 	eig_solver=new CLanczosEigenSolver(A);
