@@ -124,4 +124,109 @@ void CLogitPiecewiseBoundLikelihood::init()
 		"The result of l*pdf(l_norm)-h*pdf(h_norm)",
 		MS_NOT_AVAILABLE);
 }
+
+void CLogitPiecewiseBoundLikelihood::precompute()
+{
+	const Map<VectorXd> eigen_c(m_bound.get_column_vector(0), m_bound.num_rows);
+	const Map<VectorXd> eigen_b(m_bound.get_column_vector(1), m_bound.num_rows);
+	const Map<VectorXd> eigen_a(m_bound.get_column_vector(2), m_bound.num_rows);
+	const Map<VectorXd> eigen_mu(m_mu.vector, m_mu.vlen);
+	const Map<VectorXd> eigen_s2(m_s2.vector, m_s2.vlen);
+	Map<VectorXd> eigen_l(m_bound.get_column_vector(3), m_bound.num_rows);
+	Map<VectorXd> eigen_h(m_bound.get_column_vector(4), m_bound.num_rows);
+
+	index_t num_rows = m_bound.num_rows; 
+	index_t num_cols = m_mu.vlen;
+
+	m_pl = SGMatrix<float64_t>(num_rows,num_cols);
+	m_ph = SGMatrix<float64_t>(num_rows,num_cols);
+	m_cdf_diff = SGMatrix<float64_t>(num_rows,num_cols);
+	m_l2_plus_s2 = SGMatrix<float64_t>(num_rows,num_cols);
+	m_h2_plus_s2 = SGMatrix<float64_t>(num_rows,num_cols);
+	m_weighted_pdf_diff = SGMatrix<float64_t>(num_rows,num_cols);
+
+	Map<MatrixXd> eigen_pl(m_pl.matrix, num_rows, num_cols);
+
+	Map<MatrixXd> eigen_ph(m_ph.matrix, num_rows, num_cols);
+
+	Map<MatrixXd> eigen_cdf_diff(m_cdf_diff.matrix, num_rows, num_cols);
+
+	Map<MatrixXd> eigen_l2_plus_s2(m_l2_plus_s2.matrix, num_rows, num_cols);
+
+	Map<MatrixXd> eigen_h2_plus_s2(m_h2_plus_s2.matrix, num_rows, num_cols);
+
+	Map<MatrixXd> eigen_weighted_pdf_diff(m_weighted_pdf_diff.matrix, num_rows, num_cols);
+
+
+	SGMatrix<float64_t> zl(num_rows, num_cols);
+	Map<MatrixXd> eigen_zl(zl.matrix, num_rows, num_cols);
+
+	SGMatrix<float64_t> zh(num_rows, num_cols);
+	Map<MatrixXd> eigen_zh(zh.matrix, num_rows, num_cols);
+
+	//bsxfun(@minus,l,m)
+	eigen_zl = ((-eigen_mu).replicate(1,eigen_l.rows()).array().transpose().colwise() + eigen_l.array()).matrix();
+	//bsxfun(@minus,h,m)
+	eigen_zh = ((-eigen_mu).replicate(1,eigen_h.rows()).array().transpose().colwise() + eigen_h.array()).matrix();
+
+	VectorXd eigen_s_inv = eigen_s2.array().sqrt().inverse().matrix(); 
+
+	//zl = bsxfun(@times, bsxfun(@minus,l,m), 1./sqrt(v))
+	eigen_zl = (eigen_zl.array().rowwise()*eigen_s_inv.array().transpose()).matrix();
+	//zh = bsxfun(@times, bsxfun(@minus,h,m), 1./sqrt(v))
+	eigen_zh = (eigen_zh.array().rowwise()*eigen_s_inv.array().transpose()).matrix();
+
+
+	for (index_t r = 0; r < zl.num_rows; r++)
+		for (index_t c = 0; c < zl.num_cols; c++)
+		{
+			if (zl(r, c) == CMath::INFTY || zl(r, c) == -CMath::INFTY)
+				m_pl(r, c) = 0;
+			else
+				m_pl(r, c) = CMath::exp(CGaussianDistribution::univariate_log_pdf(zl(r, c)));
+			if (zh(r, c) == CMath::INFTY || zh(r, c) == -CMath::INFTY)
+				m_ph(r, c) = 0;
+			else
+				m_ph(r, c) = CMath::exp(CGaussianDistribution::univariate_log_pdf(zh(r, c)));
+		}
+
+	//pl = bsxfun(@times, normpdf(zl), 1./sqrt(v));
+	eigen_pl = (eigen_pl.array().rowwise()*eigen_s_inv.array().transpose()).matrix();
+	//ph = bsxfun(@times, normpdf(zh), 1./sqrt(v));
+	eigen_ph = (eigen_ph.array().rowwise()*eigen_s_inv.array().transpose()).matrix();
+
+	SGMatrix<float64_t> & cl = zl; 
+	SGMatrix<float64_t> & ch = zh;
+
+	for (index_t r = 0; r < zl.num_rows; r++)
+		for (index_t c = 0; c < zl.num_cols; c++)
+		{
+			//cl = 0.5*erf(zl/sqrt(2)); %normal cdf -const
+			cl(r, c) = CStatistics::normal_cdf(zl(r, c)) - 0.5;
+			//ch = 0.5*erf(zl/sqrt(2)); %normal cdf -const
+			ch(r, c) = CStatistics::normal_cdf(zh(r, c)) - 0.5;
+		}
+
+	Map<MatrixXd> eigen_cl(cl.matrix, num_rows, num_cols);
+	Map<MatrixXd> eigen_ch(ch.matrix, num_rows, num_cols);
+
+	eigen_cdf_diff = eigen_ch - eigen_cl;
+
+	float64_t l_bak = eigen_l(0);
+	eigen_l(0) = 0;
+
+	float64_t h_bak = eigen_h(eigen_h.size()-1);
+	eigen_h(eigen_h.size()-1) = 0;
+
+	//bsxfun(@plus, l.^2, v)
+	eigen_l2_plus_s2 = (eigen_s2.replicate(1,eigen_l.rows()).array().transpose().colwise() + eigen_l.array().pow(2)).matrix();
+	//bsxfun(@plus, h.^2, v)
+	eigen_h2_plus_s2 = (eigen_s2.replicate(1,eigen_h.rows()).array().transpose().colwise() + eigen_h.array().pow(2)).matrix();
+	//pl.*l - ph.*h
+	eigen_weighted_pdf_diff = (eigen_pl.array().colwise()*eigen_l.array() - eigen_ph.array().colwise()*eigen_h.array()).matrix();
+
+	eigen_l(0) = l_bak;
+	eigen_h(eigen_h.size()-1) = h_bak;
+}
+
 #endif /* HAVE_EIGEN3 */
