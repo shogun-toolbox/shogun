@@ -212,9 +212,8 @@ void CLaplacianInferenceMethodWithLBFGS::set_lbfgs_parameters(
 		/* compute f = K * alpha + m*/
 		Eigen::Map<Eigen::VectorXd> eigen_alpha(m_alpha.vector, m_alpha.vlen);
 		eigen_mu = eigen_ktrtr * (eigen_alpha * CMath::sq(m_scale)) + eigen_mean_f;
-	psi_new = eigen_alpha.dot(eigen_mu - eigen_mean_f) / 2.0;
+		psi_new = eigen_alpha.dot(eigen_mu - eigen_mean_f) / 2.0;
 		psi_new -= SGVector<float64_t>::sum(m_model->get_log_probability_f(m_labels, m_mu));
-
 		psi_def = -SGVector<float64_t>::sum(
 			m_model->get_log_probability_f(m_labels, mean_f));
 
@@ -306,7 +305,7 @@ void CLaplacianInferenceMethodWithLBFGS::set_lbfgs_parameters(
 	void CLaplacianInferenceMethodWithLBFGS::get_psi_wrt_alpha(
 		Eigen::Map<Eigen::VectorXd>* alpha,
 		float64_t* psi)
-	{
+{
 		SGVector<float64_t> f(alpha->rows());
 		Eigen::Map<Eigen::VectorXd> eigen_f(f.vector, f.vlen);
 		Eigen::Map<Eigen::MatrixXd> kernel(m_ktrtr.matrix,
@@ -321,12 +320,12 @@ void CLaplacianInferenceMethodWithLBFGS::set_lbfgs_parameters(
 		/* psi = 0.5 * alpha .* (f - m) - sum(dlp)*/
 		*psi = alpha->dot(eigen_f - eigen_mean_f) * 0.5;
 		*psi -= SGVector<float64_t>::sum(m_model->get_log_probability_f(m_labels, f));
-	}
+}
 
 	void CLaplacianInferenceMethodWithLBFGS::get_gradient_wrt_alpha(
 		Eigen::Map<Eigen::VectorXd>* alpha,
 		Eigen::Map<Eigen::VectorXd>* gradient)
-	{
+{
 		SGVector<float64_t> f(alpha->rows());
 		Eigen::Map<Eigen::VectorXd> eigen_f(f.vector, f.vlen);
 		Eigen::Map<Eigen::MatrixXd> kernel(m_ktrtr.matrix,
@@ -345,7 +344,7 @@ void CLaplacianInferenceMethodWithLBFGS::set_lbfgs_parameters(
 
 		/* g_alpha = K * (alpha - dlp_f)*/
 		*gradient = kernel * ((*alpha - eigen_dlp_f) * CMath::sq(m_scale));
-	}
+}
 
 } /* namespace shogun */
 #endif /* HAVE_EIGEN3 */
