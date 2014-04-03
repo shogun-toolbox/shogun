@@ -54,6 +54,70 @@ void CLogitPiecewiseBoundLikelihood::set_bound(SGMatrix<float64_t> bound)
 	m_bound = bound;
 }
 
+SGVector<float64_t> CLogitPiecewiseBoundLikelihood::get_variational_expection()
+{
+	const Map<VectorXd> eigen_c(m_bound.get_column_vector(0), m_bound.num_rows);
+	const Map<VectorXd> eigen_b(m_bound.get_column_vector(1), m_bound.num_rows);
+	const Map<VectorXd> eigen_a(m_bound.get_column_vector(2), m_bound.num_rows);
+	const Map<VectorXd> eigen_mu(m_mu.vector, m_mu.vlen);
+	const Map<VectorXd> eigen_s2(m_s2.vector, m_s2.vlen);
+	Map<VectorXd> eigen_l(m_bound.get_column_vector(3), m_bound.num_rows);
+	Map<VectorXd> eigen_h(m_bound.get_column_vector(4), m_bound.num_rows);
+
+	index_t num_rows = m_bound.num_rows; 
+	index_t num_cols = m_mu.vlen;
+
+	const Map<MatrixXd> eigen_cdf_diff(m_cdf_diff.matrix, num_rows, num_cols);
+	const Map<MatrixXd> eigen_pl(m_pl.matrix, num_rows, num_cols);
+	const Map<MatrixXd> eigen_ph(m_ph.matrix, num_rows, num_cols);
+
+	float64_t l_bak = eigen_l(0);
+	//l(1) = 0; 
+	eigen_l(0) = 0;
+
+	float64_t h_bak = eigen_h(eigen_h.size()-1);
+	//h(end) = 0; 
+	eigen_h(eigen_h.size()-1) = 0;
+
+	//ex0 = ch-cl;
+	const Map<MatrixXd> & eigen_ex0 = eigen_cdf_diff;
+
+	//%ex1= v.*(pl-ph) + m.*(ch-cl);
+	MatrixXd eigen_ex1 = ((eigen_pl - eigen_ph).array().rowwise()*eigen_s2.array().transpose() 
+		+ eigen_cdf_diff.array().rowwise()*eigen_mu.array().transpose()).matrix();
+
+	//ex2 = bsxfun(@times, v, (bsxfun(@plus, l, m)).*pl - (bsxfun(@plus, h, m)).*ph) + bsxfun(@times, (v+m.^2), ex0);
+	
+	//bsxfun(@plus, l, m)).*pl - (bsxfun(@plus, h, m)).*ph
+	MatrixXd eigen_ex2 = ((eigen_mu.replicate(1,eigen_l.rows()).array().transpose().colwise() + eigen_l.array())*eigen_pl.array()
+		- (eigen_mu.replicate(1,eigen_h.rows()).array().transpose().colwise() + eigen_h.array())*eigen_ph.array()).matrix();
+
+	//bsxfun(@times, v, (bsxfun(@plus, l, m).*pl - bsxfun(@plus, h, m).*ph
+	eigen_ex2 = (eigen_ex2.array().rowwise()*eigen_s2.array().transpose()).matrix();
+
+	//ex2 = bsxfun(@times, v, (bsxfun(@plus, l, m)).*pl - (bsxfun(@plus, h, m)).*ph) + bsxfun(@times, (v+m.^2), ex0);
+	eigen_ex2 += (eigen_cdf_diff.array().rowwise()*(eigen_mu.array().pow(2)
+			+ eigen_s2.array()).transpose()).matrix();
+
+	SGVector<float64_t> f(m_mu.vlen);
+	Map<VectorXd> eigen_f(f.vector, f.vlen);
+
+	//%f = sum((a.*ex2 + b.*ex1 + c.*ex0),1);
+	eigen_f = (eigen_ex2.array().colwise()*eigen_a.array() 
+		+ eigen_ex1.array().colwise()*eigen_b.array() 
+		+ eigen_ex0.array().colwise()*eigen_c.array()).colwise().sum().matrix();
+
+
+	eigen_l(0) = l_bak;
+	eigen_h(eigen_h.size()-1) = h_bak;
+
+	Map<VectorXd>eigen_lab(m_lab.vector, m_lab.vlen);
+	eigen_f = eigen_lab.cwiseProduct(eigen_mu) - eigen_f; 
+	return f;
+}
+
+
+
 void CLogitPiecewiseBoundLikelihood::set_distribution(SGVector<float64_t> mu,
 	SGVector<float64_t> s2, const CLabels* lab)
 {
