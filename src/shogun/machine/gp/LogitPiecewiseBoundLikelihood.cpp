@@ -171,7 +171,44 @@ SGVector<float64_t> CLogitPiecewiseBoundLikelihood::get_variational_first_deriva
 		Map<VectorXd>eigen_lab(m_lab.vector, m_lab.vlen);
 		eigen_gmu = eigen_lab - eigen_gmu;
 	}
+	else
+	{
 
+		//gv_0 = bsxfun(@plus, l, -mu).*pl - bsxfun(@plus, h, -mu).*ph;
+		MatrixXd eigen_gs2_0 = (((-eigen_mu).replicate(1,eigen_l.rows()).array().transpose().colwise() + eigen_l.array())*eigen_pl.array()
+			- ((-eigen_mu).replicate(1,eigen_h.rows()).array().transpose().colwise() + eigen_h.array())*eigen_ph.array()).matrix();
+		//gv_0 = bsxfun(times, gv_0, c);
+		eigen_gs2_0 = (eigen_gs2_0.array().colwise()*eigen_c.array()).matrix();
+
+		//tmpl = l2_plus_v - bsxfun(@times, l, mu)
+		MatrixXd tmpl = (eigen_l2_plus_s2 - (eigen_mu.replicate(1,eigen_l.rows()).array().transpose().colwise()*eigen_l.array()).matrix()
+			).cwiseProduct(eigen_pl);
+
+		//tmph = h2_plus_v - bsxfun(@times, h, mu)
+		MatrixXd tmph = (eigen_h2_plus_s2 - (eigen_mu.replicate(1,eigen_h.rows()).array().transpose().colwise()*eigen_h.array()).matrix()
+			).cwiseProduct(eigen_ph);
+
+		//gv_1 = bsxfun(@times, tmpl - tmph, b);
+		MatrixXd eigen_gs2_1 = ((tmpl - tmph).array().colwise()*eigen_b.array()).matrix();
+
+		//gv_2 = bsxfun(@times, tmpl, l) - bsxfun(@times, tmph, h);
+		MatrixXd eigen_gs2_2 = (tmpl.array().colwise()*eigen_l.array() - tmph.array().colwise()*eigen_h.array()).matrix();
+
+		//gv_2 = bsxfun(@times, gv_2, a);
+		eigen_gs2_2 = (eigen_gs2_2.array().colwise()*eigen_a.array()).matrix();
+
+		SGVector<float64_t> & gs2 = result;
+		Map<VectorXd> eigen_gs2(gs2.vector, gs2.vlen);
+
+		//gv = (bsxfun(@times, ch - cl + 0.5*pl.*l - ph.*h, a) + bsxfun(@times, gv_0 + gv_1 + gv_2, 1.0/(2.0*v))
+		//gv = sum(gv,1);
+		eigen_gs2 = ((eigen_cdf_diff + 0.5*eigen_weighted_pdf_diff).array().colwise()*eigen_a.array()
+			+ (eigen_gs2_0 + eigen_gs2_1 + eigen_gs2_2).array().rowwise()/(2.0*eigen_s2).array().transpose()
+			).colwise().sum().matrix();
+
+		//gv = -gv
+		eigen_gs2 = -eigen_gs2;
+	}
 	eigen_l(0) = l_bak;
 	eigen_h(eigen_h.size()-1) = h_bak;
 
