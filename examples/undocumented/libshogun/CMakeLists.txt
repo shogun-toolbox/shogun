@@ -51,7 +51,8 @@ SET(EXAMPLES
 	features_copy_subset_sparse_features
 	labels_binary_fit_sigmoid
 	mathematics_confidence_intervals
-	clustering_kmeans base_parameter_map
+	clustering_kmeans
+	base_parameter_map
 	base_load_file_parameters
 	base_load_all_file_parameters
 	base_map_parameters
@@ -126,7 +127,7 @@ FOREACH(EXAMPLE ${EXAMPLES})
 	LIST(APPEND INSTALL_EXAMPLES ${CMAKE_CURRENT_BINARY_DIR}/${EXAMPLE})
 ENDFOREACH()
 
-INSTALL(FILES ${INSTALL_EXAMPLES}
+INSTALL(PROGRAMS ${INSTALL_EXAMPLES}
 	DESTINATION share/shogun/examples/libshogun
 	COMPONENT libshogun-examples)
 
