@@ -116,8 +116,8 @@ public:
 	/** Computes the univariate pdf for one given sample.
 	 *
 	 * @param sample is a given sample 
-	 * @param mu is the mean of univariate Normal distribution (defaul value is 0.0)
-	 * @param sigma2 is the variance of univariate Normal distribution (defaul value is 1.0)
+	 * @param mu is the mean of univariate Normal distribution (default value is 0.0)
+	 * @param sigma2 is the variance of univariate Normal distribution (default value is 1.0)
 	 * @return the pdf of the distribution given the sample
 	 */
 	static float64_t univariate_log_pdf(float64_t sample, float64_t mu = 0.0, float64_t sigma2 = 1.0)
