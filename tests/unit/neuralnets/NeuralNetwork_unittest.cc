@@ -40,6 +40,7 @@
 #include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/neuralnets/NeuralNetwork.h>
 #include <shogun/neuralnets/NeuralLogisticLayer.h>
+#include <shogun/neuralnets/NeuralSoftmaxLayer.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;
@@ -49,19 +50,40 @@ using namespace shogun;
  */
 TEST(NeuralNetwork, compute_gradients)
 {
-	// create a neural network with an arbitrary structure
-	CDynamicObjectArray* layers = new CDynamicObjectArray();
+	CDynamicObjectArray* layers;
+	CNeuralNetwork* network;
+	
+	layers = new CDynamicObjectArray();
+	layers->append_element(new CNeuralLinearLayer(3));
+	layers->append_element(new CNeuralLinearLayer(6));
 	layers->append_element(new CNeuralLinearLayer(4));
-	layers->append_element(new CNeuralLogisticLayer(10));
-	layers->append_element(new CNeuralLogisticLayer(6));;
-	CNeuralNetwork* network = new CNeuralNetwork();
+	network = new CNeuralNetwork();
 	network->initialize(5, layers);
-	
 	network->l2_coefficient = 0.01;
+	EXPECT_EQ(true, network->check_gradients())
+		<< "CNeuralLinearLayer gradient check failed";
+	SG_UNREF(network);
 	
-	// run a gradient check
-	EXPECT_EQ(network->check_gradients(), true);
+	layers = new CDynamicObjectArray();
+	layers->append_element(new CNeuralLogisticLayer(3));
+	layers->append_element(new CNeuralLogisticLayer(6));
+	layers->append_element(new CNeuralLogisticLayer(4));
+	network = new CNeuralNetwork();
+	network->initialize(5, layers);
+	network->l2_coefficient = 0.01;
+	EXPECT_EQ(true, network->check_gradients())
+		<< "CNeuralLogisticLayer gradient check failed";
+	SG_UNREF(network);
 	
+	layers = new CDynamicObjectArray();
+	layers->append_element(new CNeuralLinearLayer(3));
+	layers->append_element(new CNeuralLinearLayer(6));
+	layers->append_element(new CNeuralSoftmaxLayer(4));
+	network = new CNeuralNetwork();
+	network->initialize(5, layers);
+	network->l2_coefficient = 0.01;
+	EXPECT_EQ(true, network->check_gradients())
+		<< "CNeuralSoftmaxLayer gradient check failed";
 	SG_UNREF(network);
 }
 

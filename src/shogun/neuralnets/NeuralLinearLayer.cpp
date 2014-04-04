@@ -223,7 +223,7 @@ void CNeuralLinearLayer::compute_local_gradients(bool is_output, float64_t* p)
 	
 }
 
-float64_t CNeuralLinearLayer::computer_error(float64_t* targets)
+float64_t CNeuralLinearLayer::compute_error(float64_t* targets)
 {
 	// error = 0.5*(sum(targets-activations)^2)/batch_size
 	float64_t sum = 0;

@@ -131,7 +131,7 @@ public:
 	 * @param targets desired values for the layer's activations, matrix of size
 	 * num_neurons*batch_size
 	 */
-	virtual float64_t computer_error(float64_t* targets);
+	virtual float64_t compute_error(float64_t* targets);
 	
 	/** Computes the gradients of the error with respect to this layer's
 	 * activations. Results are stored in m_local_gradients. 
