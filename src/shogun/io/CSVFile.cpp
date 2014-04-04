@@ -76,14 +76,14 @@ int32_t CCSVFile::get_stats(int32_t& num_tokens)
 {
 	int32_t num_lines=0;
 	num_tokens=-1;
+	SGVector<char> line;
 
 	while (m_line_reader->has_next())
 	{
+		line=m_line_reader->read_line();
+		m_tokenizer->set_text(line);
 		if (num_tokens==-1)
 		{
-			SGVector<char> line=m_line_reader->read_line();
-			m_tokenizer->set_text(line);
-
 			num_tokens=0;
 			while (m_tokenizer->has_next())
 			{
@@ -92,8 +92,6 @@ int32_t CCSVFile::get_stats(int32_t& num_tokens)
 				num_tokens++;
 			}
 		}
-		else
-			m_line_reader->skip_line();
 		num_lines++;
 	}
 	m_line_reader->reset();
