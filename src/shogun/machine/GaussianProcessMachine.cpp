@@ -48,6 +48,8 @@ CGaussianProcessMachine::~CGaussianProcessMachine()
 SGVector<float64_t> CGaussianProcessMachine::get_posterior_means(CFeatures* data)
 {
 	REQUIRE(m_method, "Inference method should not be NULL\n")
+	REQUIRE(m_method->get_kernel()->get_kernel_type()!=K_CUSTOM,
+			"Kernel type is custom kernel, data index vector needed\n");
 
 	CFeatures* feat;
 
@@ -102,6 +104,8 @@ SGVector<float64_t> CGaussianProcessMachine::get_posterior_variances(
 		CFeatures* data)
 {
 	REQUIRE(m_method, "Inference method should not be NULL\n")
+	REQUIRE(m_method->get_kernel()->get_kernel_type()!=K_CUSTOM,
+			"Kernel type is custom kernel, data index vector needed\n");
 
 	CFeatures* feat;
 
@@ -176,6 +180,25 @@ SGVector<float64_t> CGaussianProcessMachine::get_posterior_variances(
 	}
 
 	return s2;
+}
+
+SGVector<float64_t> CGaussianProcessMachine::get_posterior_means(SGVector<index_t> &data_idx)
+{
+	REQUIRE(m_method, "Inference method should not be NULL\n")
+	REQUIRE(m_method->get_kernel()->get_kernel_type()==K_CUSTOM,
+			"Kernel type is not custom kernel, data vector needed\n");
+
+	return SGVector<float64_t>();
+}
+
+SGVector<float64_t> CGaussianProcessMachine::get_posterior_variances(
+		SGVector<index_t> &data_idx)
+{
+	REQUIRE(m_method, "Inference method should not be NULL\n")
+	REQUIRE(m_method->get_kernel()->get_kernel_type()==K_CUSTOM,
+			"Kernel type is not custom kernel, data vector needed\n");
+
+	return  SGVector<float64_t>();
 }
 
 #endif /* HAVE_EIGEN3 */

@@ -64,6 +64,17 @@ public:
 	CInferenceMethod(CKernel* kernel, CFeatures* features,
 			CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model);
 
+	/** constructor
+	 *
+	 * @param kernel covariance function
+	 * @param features_idx features index to use in inference
+	 * @param mean mean function
+	 * @param labels labels of the features
+	 * @param model likelihood model to use
+	 */
+	CInferenceMethod(CKernel* kernel, SGVector<index_t> features_idx,
+			CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model);
+
 	virtual ~CInferenceMethod();
 
 	/** return what type of inference we are, e.g. exact, FITC, Laplacian, etc.
@@ -253,6 +264,21 @@ public:
 		m_features=feat;
 	}
 
+	/** get features index
+	*
+	* @return features
+	*/
+	virtual SGVector<index_t> get_features_index() { return m_features_idx; }
+
+	/** set features index
+	*
+	* @param feat features index to set
+	*/
+	virtual void set_features_index(SGVector<index_t>& feat_idx)
+	{
+		m_features_idx=feat_idx;
+	}
+
 	/** get kernel
 	 *
 	 * @return kernel
@@ -435,6 +461,9 @@ protected:
 
 	/** features to use */
 	CFeatures* m_features;
+
+	/** feature index to use, for CustomKernel only */
+	SGVector<index_t> m_features_idx;
 
 	/** labels of features */
 	CLabels* m_labels;

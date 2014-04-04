@@ -49,6 +49,18 @@ CInferenceMethod::CInferenceMethod(CKernel* kernel, CFeatures* features,
 	set_mean(mean);
 }
 
+CInferenceMethod::CInferenceMethod(CKernel* kernel, SGVector<index_t> features_idx,
+		CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model)
+{
+	init();
+
+	set_kernel(kernel);
+	set_features_index(features_idx);
+	set_labels(labels);
+	set_model(model);
+	set_mean(mean);
+}
+
 CInferenceMethod::~CInferenceMethod()
 {
 	SG_UNREF(m_kernel);
@@ -67,6 +79,7 @@ void CInferenceMethod::init()
 	SG_ADD((CSGObject**)&m_mean, "mean_function", "Mean function", MS_AVAILABLE);
 	SG_ADD((CSGObject**)&m_labels, "labels", "Labels", MS_NOT_AVAILABLE);
 	SG_ADD((CSGObject**)&m_features, "features", "Features", MS_NOT_AVAILABLE);
+	SG_ADD((CSGObject**)&m_features_idx, "features_idx", "Features Index", MS_NOT_AVAILABLE);
 
 	m_kernel=NULL;
 	m_model=NULL;
