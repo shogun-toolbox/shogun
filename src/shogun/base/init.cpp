@@ -24,6 +24,10 @@
 shogun::CMap<void*, shogun::MemoryBlock>* sg_mallocs=NULL;
 #endif
 
+#ifdef HAVE_PROTOBUF
+#include <shogun/io/protobuf/Headers.pb.h>
+#endif
+
 namespace shogun
 {
 	Parallel* sg_parallel=NULL;
@@ -110,6 +114,9 @@ namespace shogun
 		SG_UNREF(sg_parallel);
 		SG_UNREF(sg_io);
 
+#ifdef HAVE_PROTOBUF
+		::google::protobuf::ShutdownProtobufLibrary();
+#endif
 	}
 
 	void set_global_io(SGIO* io)
