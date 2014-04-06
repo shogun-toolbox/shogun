@@ -79,7 +79,6 @@ void CInferenceMethod::init()
 	SG_ADD((CSGObject**)&m_mean, "mean_function", "Mean function", MS_AVAILABLE);
 	SG_ADD((CSGObject**)&m_labels, "labels", "Labels", MS_NOT_AVAILABLE);
 	SG_ADD((CSGObject**)&m_features, "features", "Features", MS_NOT_AVAILABLE);
-	SG_ADD((CSGObject**)&m_features_idx, "features_idx", "Features Index", MS_NOT_AVAILABLE);
 
 	m_kernel=NULL;
 	m_model=NULL;
