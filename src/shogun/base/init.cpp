@@ -10,6 +10,8 @@
 
 #include <shogun/base/init.h>
 #include <shogun/lib/memory.h>
+#include <shogun/lib/config.h>
+
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/Random.h>
 #include <shogun/io/SGIO.h>
@@ -25,7 +27,7 @@ shogun::CMap<void*, shogun::MemoryBlock>* sg_mallocs=NULL;
 #endif
 
 #ifdef HAVE_PROTOBUF
-#include <shogun/io/protobuf/Headers.pb.h>
+#include <google/protobuf/stubs/common.h>
 #endif
 
 namespace shogun

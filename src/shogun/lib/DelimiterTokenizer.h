@@ -15,6 +15,7 @@
 
 #include <shogun/lib/Tokenizer.h>
 #include <shogun/lib/SGVector.h>
+#include <shogun/lib/common.h>
 
 namespace shogun
 {
