@@ -1,0 +1,366 @@
+/*
+* Copyright (c) The Shogun Machine Learning Toolbox
+* Written (w) 2014 pl8787
+* All rights reserved.
+*
+* Redistribution and use in source and binary forms, with or without
+* modification, are permitted provided that the following conditions are met:
+*
+* 1. Redistributions of source code must retain the above copyright notice, this
+* list of conditions and the following disclaimer.
+* 2. Redistributions in binary form must reproduce the above copyright notice,
+* this list of conditions and the following disclaimer in the documentation
+* and/or other materials provided with the distribution.
+*
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+* ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+* WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+* DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+* ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+* (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+* LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+* ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+* (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+* SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*
+* The views and conclusions contained in the software and documentation are those
+* of the authors and should not be interpreted as representing official policies,
+* either expressed or implied, of the Shogun Development Team.
+*/
+
+#include <shogun/lib/config.h>
+
+// Eigen3 is required for working with this example
+#ifdef HAVE_EIGEN3
+
+#include <shogun/base/init.h>
+#include <shogun/labels/RegressionLabels.h>
+#include <shogun/features/DenseFeatures.h>
+#include <shogun/kernel/GaussianKernel.h>
+#include <shogun/mathematics/Math.h>
+#include <shogun/machine/gp/ExactInferenceMethod.h>
+#include <shogun/machine/gp/GaussianLikelihood.h>
+#include <shogun/machine/gp/ZeroMean.h>
+#include <shogun/regression/GaussianProcessRegression.h>
+#include <shogun/evaluation/MeanSquaredError.h>
+#include <shogun/io/CSVFile.h>
+#include <shogun/io/LineReader.h>
+#include <shogun/io/Parser.h>
+#include <shogun/lib/DelimiterTokenizer.h>
+
+using namespace shogun;
+
+// files with training data
+const char* fname_ratings_train_u1="../data/ml-100k/u1.base";
+const char* fname_ratings_train_u2="../data/ml-100k/u2.base";
+const char* fname_ratings_train_u3="../data/ml-100k/u3.base";
+const char* fname_ratings_train_u4="../data/ml-100k/u4.base";
+const char* fname_ratings_train_u5="../data/ml-100k/u5.base";
+const char* fname_ratings_train=NULL;
+const char* fname_items="../data/ml-100k/u.item";
+
+// file with testing data
+const char* fname_ratings_test_u1="../data/ml-100k/u1.test";
+const char* fname_ratings_test_u2="../data/ml-100k/u2.test";
+const char* fname_ratings_test_u3="../data/ml-100k/u3.test";
+const char* fname_ratings_test_u4="../data/ml-100k/u4.test";
+const char* fname_ratings_test_u5="../data/ml-100k/u5.test";
+const char* fname_ratings_test=NULL;
+
+// Read movielens ratings data (uid \t mid \t ratting \t timestamp)
+SGMatrix<float64_t> read_ratings_data(const char* fname)
+{
+	SGMatrix<float64_t> x;
+	CCSVFile* file_ratings=new CCSVFile(fname);
+	file_ratings->set_delimiter('\t');
+	x.load(file_ratings);
+	SG_UNREF(file_ratings);
+
+	// SG_SPRINT("x:%dx%d\n", x.num_rows, x.num_cols);
+	return x;
+}
+
+// Read movielens movie's features
+// (Movie gener, ignore string features such as movie name)
+SGMatrix<float64_t> read_items_data(const char* fname)
+{
+	FILE* file_items=fopen(fname,"rb");
+	int32_t num_lines=0;
+	int32_t num_tokens=20;
+	int32_t current_line_idx=0;
+	SGVector<char> line;
+
+	CDelimiterTokenizer *line_tokenizer=new CDelimiterTokenizer(true);
+	line_tokenizer->delimiters['\n'] = 1;
+	CDelimiterTokenizer *tokenizer=new CDelimiterTokenizer(false);
+	tokenizer->delimiters['|'] = 1;
+	CLineReader *line_reader=new CLineReader(file_items,line_tokenizer);
+	SG_REF(line_reader);
+	CParser *parser=new CParser();
+	SG_REF(parser);
+	parser->set_tokenizer(tokenizer);
+
+	while (line_reader->has_next())
+	{
+		num_lines++;
+		line_reader->skip_line();
+	}
+
+	line_reader->reset();
+
+	SGMatrix<float64_t> x(num_tokens, num_lines);
+
+	while (line_reader->has_next())
+	{
+		line=line_reader->read_line();
+		parser->set_text(line);
+
+		int current_token_idx=0;
+		for (int32_t i=0; i<num_tokens+4; i++)
+		{
+			if (i>=1 && i<=4)
+			{
+				parser->skip_token();
+				continue;
+			}
+			x(current_token_idx, current_line_idx)=parser->read_real();
+			current_token_idx++;
+		}
+		current_line_idx++;
+	}
+
+	fclose(file_items);
+	SG_UNREF(parser);
+	SG_UNREF(line_reader);
+	return x;
+}
+
+// Generate feature matrix and target vector for one user specific by uid
+// start_idx is the start line for searching in the rating file
+void generate_features(SGMatrix<float64_t> &ratings, SGMatrix<float64_t> &items,
+		int &uid, int &start_idx,
+		SGMatrix<float64_t> &feature, SGVector<float64_t> &target)
+{
+	int item_len = 0;
+	int next_start_idx = 0;
+	for (int i=start_idx;i<ratings.num_cols; i++)
+	{
+		if (ratings(0,i)==uid && (ratings(2,i)==1 || ratings(2,i)==5))
+			item_len++;
+
+		if (ratings(0,i)!=uid)
+		{
+			next_start_idx = i;
+			break;
+		}
+	}
+
+	feature = SGMatrix<float64_t>(items.num_rows-1,item_len);
+	target = SGVector<float64_t>(item_len);
+
+	for (int i=start_idx, k=0; i<ratings.num_cols && k<item_len; i++)
+	{
+		if (ratings(0,i)==uid && (ratings(2,i)==1 || ratings(2,i)==5))
+		{
+			for (int j=1; j<items.num_rows; j++)
+				feature(j-1, k)=items(j, (int)ratings(1,i)-1);
+			target[k]=ratings(2,i)==1 ? -1:1;
+			k++;
+		}
+	}
+
+	start_idx = next_start_idx;
+}
+
+// Do the GP regression on movielens dataset
+void gp_regression_movielens(float64_t &error_train, float64_t &error_test,
+		float64_t kernel_log_scale, float64_t kernel_log_sigma, float64_t sigma2)
+{
+	error_test = 0.0;
+	error_train = 0.0;
+
+	// Basic information
+	int user_cnt = 943;
+	//int item_cnt = 1682;
+
+	int pred_user_count = 0;
+	int loss_user_count = 0;
+	int pred_pair_count_train = 0;
+	int pred_pair_count_test = 0;
+
+	// Read movielens ratings data from u1.base and u1.test
+	// where uid is in increased order
+	SGMatrix<float64_t> M_train_ratings=read_ratings_data(fname_ratings_train);
+	SGMatrix<float64_t> M_test_ratings=read_ratings_data(fname_ratings_test);
+
+	// Read movielens movie genre data from u.item
+	SGMatrix<float64_t> M_items=read_items_data(fname_items);
+
+	// Allocate our mean function
+	CZeroMean* mean = new CZeroMean();
+	SG_REF(mean);
+
+	// Allocate our likelihood function
+	CGaussianLikelihood* lik = new CGaussianLikelihood();
+	SG_REF(lik);
+	lik->set_sigma(CMath::sqrt(sigma2));
+
+	// Allocate our Kernel
+	float64_t kernel_sigma = 2*CMath::exp(2*kernel_log_sigma);
+	CGaussianKernel* kernel = new CGaussianKernel(10, kernel_sigma);
+	SG_REF(kernel);
+
+	// Calculate mean squared error of train and test
+	CMeanSquaredError* eval = new CMeanSquaredError();
+	SG_REF(eval);
+
+	int uid = 1;
+	int start_idx_train = 0;
+	int start_idx_test = 0;
+
+	for (uid = 1;uid<=user_cnt;uid++)
+	{
+		SGMatrix<float64_t> M_train;
+		SGMatrix<float64_t> M_test;
+		SGVector<float64_t> V_train;
+		SGVector<float64_t> V_test;
+
+		// Generate train and test data from u1.base and u1.test
+		generate_features(M_train_ratings, M_items, uid, start_idx_train, M_train, V_train);
+		generate_features(M_test_ratings, M_items, uid, start_idx_test, M_test, V_test);
+
+		if (V_train.vlen==0 && V_test.vlen!=0)
+			loss_user_count++;
+
+		if (V_train.vlen==0 || V_test.vlen==0)
+			continue;
+
+		// Convert training and testing data into shogun representation
+		CDenseFeatures<float64_t>* feat_train=new CDenseFeatures<float64_t>(M_train);
+		CRegressionLabels* lab_train=new CRegressionLabels(V_train);
+		CDenseFeatures<float64_t>* feat_test=new CDenseFeatures<float64_t>(M_test);
+		CRegressionLabels* lab_test=new CRegressionLabels(V_test);
+		SG_REF(feat_train);
+		SG_REF(lab_train);
+		SG_REF(feat_test);
+		SG_REF(lab_test);
+
+		// Allocate our inference method
+		CExactInferenceMethod* inf = new CExactInferenceMethod(kernel,
+							  feat_train, mean, lab_train, lik);
+		SG_REF(inf);
+		inf->set_scale(CMath::exp(kernel_log_scale));	// Parameter of kernel scale
+
+		// Finally use these to allocate the Gaussian Process Object
+		CGaussianProcessRegression* gpr = new CGaussianProcessRegression(inf);
+		SG_REF(gpr);
+
+		pred_user_count++;
+		pred_pair_count_train+=V_train.vlen;
+		pred_pair_count_test+=V_test.vlen;
+
+		// perform inference on train
+		CRegressionLabels* predictions_train=gpr->apply_regression(feat_train);
+		SG_REF(predictions_train);
+
+		// perform inference on test
+		CRegressionLabels* predictions_test=gpr->apply_regression(feat_test);
+		SG_REF(predictions_test);
+
+		error_train += eval->evaluate(predictions_train, lab_train) * V_train.vlen;
+		error_test += eval->evaluate(predictions_test, lab_test) * V_test.vlen;
+
+		// SG_SPRINT("Processing User:%d\n", uid);
+		// SG_SPRINT("Train Vlen: %d\n", V_train.vlen);
+		// SG_SPRINT("Test Vlen: %d\n", V_test.vlen);
+		// SG_SPRINT("Squared Error Train: %lf\n", error_train);
+		// SG_SPRINT("Squared Error Test: %lf\n", error_test);
+		// SG_SPRINT("Mean Squared Error on Train:%lf\n",error_train/pred_pair_count_train);
+		// SG_SPRINT("Mean Squared Error on Test:%lf\n",error_test/pred_pair_count_test);
+		// SG_SPRINT("\n");
+
+		SG_UNREF(predictions_train);
+		SG_UNREF(predictions_test);
+		SG_UNREF(feat_train);
+		SG_UNREF(lab_train);
+		SG_UNREF(feat_test);
+		SG_UNREF(lab_test);
+		SG_UNREF(inf);
+		SG_UNREF(gpr);
+	}
+
+	SG_SPRINT("Train Pairs: %d\n",pred_pair_count_train);
+	SG_SPRINT("Test Pairs: %d\n",pred_pair_count_test);
+
+	error_train/=pred_pair_count_train;
+	error_test/=pred_pair_count_test;
+
+	SG_SPRINT("Loss User Count in Test:%d\n", loss_user_count);
+
+	SG_UNREF(mean);
+	SG_UNREF(lik);
+	SG_UNREF(kernel);
+	SG_UNREF(eval);
+}
+
+// Main of this GP on movielens example
+int main(int argc, char** argv)
+{
+	init_shogun_with_defaults();
+
+	float64_t error_test = 0.0;
+	float64_t error_train = 0.0;
+	float64_t kernel_log_sigma = 0;
+	float64_t kernel_log_scale = 0;
+	float64_t sigma2 = 0.01;
+
+	// Dataset u1
+	SG_SPRINT("\nDataset U1\n");
+	fname_ratings_train = fname_ratings_train_u1;
+	fname_ratings_test = fname_ratings_test_u1;
+	gp_regression_movielens(error_train, error_test,
+			kernel_log_sigma, kernel_log_scale, sigma2);
+	SG_SPRINT("Root Mean Squared Error on Train:%lf\n", CMath::sqrt(error_train));
+	SG_SPRINT("Root Mean Squared Error on Test:%lf\n", CMath::sqrt(error_test));
+
+	// Dataset u2
+	SG_SPRINT("\nDataset U2\n");
+	fname_ratings_train = fname_ratings_train_u2;
+	fname_ratings_test = fname_ratings_test_u2;
+	gp_regression_movielens(error_train, error_test,
+			kernel_log_sigma, kernel_log_scale, sigma2);
+	SG_SPRINT("Root Mean Squared Error on Train:%lf\n", CMath::sqrt(error_train));
+	SG_SPRINT("Root Mean Squared Error on Test:%lf\n", CMath::sqrt(error_test));
+
+	// Dataset u3
+	SG_SPRINT("\nDataset U3\n");
+	fname_ratings_train = fname_ratings_train_u3;
+	fname_ratings_test = fname_ratings_test_u3;
+	gp_regression_movielens(error_train, error_test,
+			kernel_log_sigma, kernel_log_scale, sigma2);
+	SG_SPRINT("Root Mean Squared Error on Train:%lf\n", CMath::sqrt(error_train));
+	SG_SPRINT("Root Mean Squared Error on Test:%lf\n", CMath::sqrt(error_test));
+
+	// Dataset u4
+	SG_SPRINT("\nDataset U4\n");
+	fname_ratings_train = fname_ratings_train_u4;
+	fname_ratings_test = fname_ratings_test_u4;
+	gp_regression_movielens(error_train, error_test,
+			kernel_log_sigma, kernel_log_scale, sigma2);
+	SG_SPRINT("Root Mean Squared Error on Train:%lf\n", CMath::sqrt(error_train));
+	SG_SPRINT("Root Mean Squared Error on Test:%lf\n", CMath::sqrt(error_test));
+
+	// Dataset u5
+	SG_SPRINT("\nDataset U5\n");
+	fname_ratings_train = fname_ratings_train_u5;
+	fname_ratings_test = fname_ratings_test_u5;
+	gp_regression_movielens(error_train, error_test,
+			kernel_log_sigma, kernel_log_scale, sigma2);
+	SG_SPRINT("Root Mean Squared Error on Train:%lf\n", CMath::sqrt(error_train));
+	SG_SPRINT("Root Mean Squared Error on Test:%lf\n", CMath::sqrt(error_test));
+
+	exit_shogun();
+	return 0;
+}
+
+#endif /* HAVE_EIGEN3 */
