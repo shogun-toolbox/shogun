@@ -27,6 +27,8 @@
  * of the authors and should not be interpreted as representing official policies,
  * either expressed or implied, of the Shogun Development Team.
  *
+ * Code adapted from 
+ * https://github.com/emtiyaz/VariationalApproxExample
  */
 
 #ifndef _LOGITPIECEWISEBOUNDLIKELIHOOD_H_
@@ -54,6 +56,11 @@ namespace shogun
  * \f[
  * p(y_i|f_i) = \frac{exp(y_i*f_i)}{1+exp(f_i)}, y_i \in \{0,1\}
  * \f]
+ *
+ * The memory requirement for this class is O(n*m), where
+ * n is the size of sample, which is the size of mu or sigma2 passed in set_distribution
+ * m is the size of the pre-defined bound, which is the num_rows of bound passed in set_bound
+ * (In the reference Matlab code, m is 20)
  */
 class CLogitPiecewiseBoundLikelihood : public CLogitLikelihood
 {
@@ -73,7 +80,6 @@ public:
 	 *  @param bound variational piecewise bound
 	 */
 	virtual void set_bound(SGMatrix<float64_t> bound);
-
 
 	/** set the variational normal distribution given data and parameters
 	 *
@@ -113,37 +119,37 @@ private:
 
 	void precompute();
 
-	/*Variational piecewise bound for logit likelihood*/
+	/** Variational piecewise bound for logit likelihood */
 	SGMatrix<float64_t> m_bound;
 
-	/*The mean of variational normal distribution*/
+	/** The mean of variational normal distribution */
 	SGVector<float64_t> m_mu;
 
-	/*The variance of variational normal distribution*/
+	/** The variance of variational normal distribution */
 	SGVector<float64_t> m_s2;
 
-	/*The data/labels (must be 0 or 1) drawn from the distribution
-	 * Note that if the input labels are -1 and 1, it will
-	 * automatically converte them to 0 and 1 repectively.
-	 * */
+	/** The data/labels (must be 0 or 1) drawn from the distribution
+	 *  Note that if the input labels are -1 and 1, it will
+	 *  automatically converte them to 0 and 1 repectively.
+	 */
 	SGVector<float64_t> m_lab;
 
-	/*The pdf given the lower range and parameters(mu and variance)*/
+	/** The pdf given the lower range and parameters(mu and variance) */
 	SGMatrix<float64_t> m_pl;
 
-	/*The pdf given the higher range and parameters(mu and variance)*/
+	/** The pdf given the higher range and parameters(mu and variance) */
 	SGMatrix<float64_t> m_ph;
 
-	/*The CDF difference between the lower and higher range given the parameters(mu and variance)*/
+	/** The CDF difference between the lower and higher range given the parameters(mu and variance) */
 	SGMatrix<float64_t> m_cdf_diff;
 
-	/*The result of l^2 + sigma^2*/
+	/** The result of l^2 + sigma^2 */
 	SGMatrix<float64_t> m_l2_plus_s2;
 
-	/*The result of h^2 + sigma^2"*/
+	/** The result of h^2 + sigma^2 */
 	SGMatrix<float64_t> m_h2_plus_s2;
 
-	/*The result of l*pdf(l_norm)-h*pdf(h_norm)*/
+	/** The result of l*pdf(l_norm)-h*pdf(h_norm) */
 	SGMatrix<float64_t> m_weighted_pdf_diff;
 };
 }

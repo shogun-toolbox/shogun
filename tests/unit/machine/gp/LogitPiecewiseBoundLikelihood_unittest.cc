@@ -27,6 +27,9 @@
  * of the authors and should not be interpreted as representing official policies,
  * either expressed or implied, of the Shogun Development Team.
  *
+ *
+ * Code adapted from 
+ * https://github.com/emtiyaz/VariationalApproxExample
  * 
  */
 
@@ -47,17 +50,16 @@ float64_t get_abs_tolorance_logit_piece(float64_t true_value, float64_t rel_tolo
 	return true_value==0.0 ? rel_tolorance : CMath::abs(true_value * rel_tolorance);
 }
 
-
-
-
 TEST(LogitPiecewiseBoundLikelihood,get_variational_expection)
 {
 	float64_t rel_tolorance = 1e-2;
 	float64_t abs_tolorance;
 
+	//load('llp.mat'); from the Matlab code example.m 
 	index_t row = 20;
 	index_t col= 5;
 	SGMatrix<float64_t> bound(row, col);
+
 	bound(0,0)=0.000188712193000;
 	bound(1,0)=0.028090310300000;
 	bound(2,0)=0.110211757000000;
@@ -142,7 +144,6 @@ TEST(LogitPiecewiseBoundLikelihood,get_variational_expection)
 	bound(18,3)=5.933689180000000;
 	bound(19,3)=8.575194939999999;
 
-
 	bound(0,4)=-8.575194939999999;
 	bound(1,4)=-5.933689180000000;
 	bound(2,4)=-4.525933600000000;
@@ -207,9 +208,7 @@ TEST(LogitPiecewiseBoundLikelihood,get_variational_expection)
 	CBinaryLabels* lab = new CBinaryLabels(y);
 	lik->set_distribution(m, v, lab);
 
-
 	SGVector<float64_t> fi = lik->get_variational_expection();
-
 
 	// comparison of the result with result from the Matlab code
 	abs_tolorance = get_abs_tolorance_logit_piece(-0.6456754556952, rel_tolorance);
@@ -233,12 +232,9 @@ TEST(LogitPiecewiseBoundLikelihood,get_variational_expection)
 	abs_tolorance = get_abs_tolorance_logit_piece(-128.0001894653420, rel_tolorance);
 	EXPECT_NEAR(fi[9],  -128.0001894653420,  abs_tolorance);
 
-
-
 	// clean up
 	SG_UNREF(lik);
 }
-
 
 TEST(LogitPiecewiseBoundLikelihood,get_variational_first_derivative_wrt_sigma2)
 {
@@ -248,6 +244,7 @@ TEST(LogitPiecewiseBoundLikelihood,get_variational_first_derivative_wrt_sigma2)
 	index_t row = 20;
 	index_t col= 5;
 	SGMatrix<float64_t> bound(row, col);
+
 	bound(0,0)=0.000188712193000;
 	bound(1,0)=0.028090310300000;
 	bound(2,0)=0.110211757000000;
@@ -332,7 +329,6 @@ TEST(LogitPiecewiseBoundLikelihood,get_variational_first_derivative_wrt_sigma2)
 	bound(18,3)=5.933689180000000;
 	bound(19,3)=8.575194939999999;
 
-
 	bound(0,4)=-8.575194939999999;
 	bound(1,4)=-5.933689180000000;
 	bound(2,4)=-4.525933600000000;
@@ -397,11 +393,9 @@ TEST(LogitPiecewiseBoundLikelihood,get_variational_first_derivative_wrt_sigma2)
 	CBinaryLabels* lab = new CBinaryLabels(y);
 	lik->set_distribution(m, v, lab);
 
-
 	TParameter* s2_param=lik->m_gradient_parameters->get_parameter("sigma2");
 
 	SGVector<float64_t> gvi = lik->get_variational_first_derivative(s2_param);
-
 
 	// comparison of the result with result from the Matlab code
 	abs_tolorance = get_abs_tolorance_logit_piece(-0.124427581470330, rel_tolorance);
@@ -425,6 +419,8 @@ TEST(LogitPiecewiseBoundLikelihood,get_variational_first_derivative_wrt_sigma2)
 	abs_tolorance = get_abs_tolorance_logit_piece(-0.000000017317396, rel_tolorance);
 	EXPECT_NEAR(gvi[9],  -0.000000017317396,  abs_tolorance);
 
+	// clean up
+	SG_UNREF(lik);
 }
 
 TEST(LogitPiecewiseBoundLikelihood,get_variational_first_derivative_wrt_mu)
@@ -435,6 +431,7 @@ TEST(LogitPiecewiseBoundLikelihood,get_variational_first_derivative_wrt_mu)
 	index_t row = 20;
 	index_t col= 5;
 	SGMatrix<float64_t> bound(row, col);
+
 	bound(0,0)=0.000188712193000;
 	bound(1,0)=0.028090310300000;
 	bound(2,0)=0.110211757000000;
@@ -519,7 +516,6 @@ TEST(LogitPiecewiseBoundLikelihood,get_variational_first_derivative_wrt_mu)
 	bound(18,3)=5.933689180000000;
 	bound(19,3)=8.575194939999999;
 
-
 	bound(0,4)=-8.575194939999999;
 	bound(1,4)=-5.933689180000000;
 	bound(2,4)=-4.525933600000000;
@@ -584,11 +580,9 @@ TEST(LogitPiecewiseBoundLikelihood,get_variational_first_derivative_wrt_mu)
 	CBinaryLabels* lab = new CBinaryLabels(y);
 	lik->set_distribution(m, v, lab);
 
-
 	TParameter* mu_param=lik->m_gradient_parameters->get_parameter("mu");
 
 	SGVector<float64_t> gmi = lik->get_variational_first_derivative(mu_param);
-
 
 	// comparison of the result with result from the Matlab code
 	abs_tolorance = get_abs_tolorance_logit_piece(0.474998473339850, rel_tolorance);
@@ -612,6 +606,8 @@ TEST(LogitPiecewiseBoundLikelihood,get_variational_first_derivative_wrt_mu)
 	abs_tolorance = get_abs_tolorance_logit_piece(-0.999999835858964, rel_tolorance);
 	EXPECT_NEAR(gmi[9],  -0.999999835858964,  abs_tolorance);
 
+	// clean up
+	SG_UNREF(lik);
 }
 
 #endif /* HAVE_EIGEN3 */
