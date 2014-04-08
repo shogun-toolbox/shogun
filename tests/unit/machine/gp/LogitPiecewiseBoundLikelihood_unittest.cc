@@ -30,6 +30,11 @@
  *
  * Code adapted from 
  * https://github.com/emtiyaz/VariationalApproxExample
+ *
+ * and the reference paper is
+ * Marlin, Benjamin M., Mohammad Emtiyaz Khan, and Kevin P. Murphy.
+ * "Piecewise Bounds for Estimating Bernoulli-Logistic Latent Gaussian Models." ICML. 2011.
+ *
  * 
  */
 
@@ -233,6 +238,7 @@ TEST(LogitPiecewiseBoundLikelihood,get_variational_expection)
 	EXPECT_NEAR(fi[9],  -128.0001894653420,  abs_tolorance);
 
 	// clean up
+	SG_UNREF(lab);
 	SG_UNREF(lik);
 }
 
@@ -420,6 +426,7 @@ TEST(LogitPiecewiseBoundLikelihood,get_variational_first_derivative_wrt_sigma2)
 	EXPECT_NEAR(gvi[9],  -0.000000017317396,  abs_tolorance);
 
 	// clean up
+	SG_UNREF(lab);
 	SG_UNREF(lik);
 }
 
@@ -607,6 +614,7 @@ TEST(LogitPiecewiseBoundLikelihood,get_variational_first_derivative_wrt_mu)
 	EXPECT_NEAR(gmi[9],  -0.999999835858964,  abs_tolorance);
 
 	// clean up
+	SG_UNREF(lab);
 	SG_UNREF(lik);
 }
 

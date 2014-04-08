@@ -29,6 +29,10 @@
  *
  * Code adapted from 
  * https://github.com/emtiyaz/VariationalApproxExample
+ * and the reference paper is
+ * Marlin, Benjamin M., Mohammad Emtiyaz Khan, and Kevin P. Murphy.
+ * "Piecewise Bounds for Estimating Bernoulli-Logistic Latent Gaussian Models." ICML. 2011.
+ *
  * This code specifically adapted from ElogLik.m
  * and from the formula of the appendix
  * http://www.cs.ubc.ca/~emtiyaz/papers/truncatedGaussianMoments.pdf
@@ -67,10 +71,13 @@ SGVector<float64_t> CLogitPiecewiseBoundLikelihood::get_variational_expection()
 	const Map<VectorXd> eigen_a(m_bound.get_column_vector(2), m_bound.num_rows);
 	const Map<VectorXd> eigen_mu(m_mu.vector, m_mu.vlen);
 	const Map<VectorXd> eigen_s2(m_s2.vector, m_s2.vlen);
+
 	Map<VectorXd> eigen_l(m_bound.get_column_vector(3), m_bound.num_rows);
 	Map<VectorXd> eigen_h(m_bound.get_column_vector(4), m_bound.num_rows);
+
 	index_t num_rows = m_bound.num_rows; 
 	index_t num_cols = m_mu.vlen;
+
 	const Map<MatrixXd> eigen_cdf_diff(m_cdf_diff.matrix, num_rows, num_cols);
 	const Map<MatrixXd> eigen_pl(m_pl.matrix, num_rows, num_cols);
 	const Map<MatrixXd> eigen_ph(m_ph.matrix, num_rows, num_cols);
@@ -126,8 +133,8 @@ SGVector<float64_t> CLogitPiecewiseBoundLikelihood::get_variational_first_deriva
 	//This function is based on the Matlab code
 	//function [f, gm, gv] = Ellp(m, v, bound, ind), to compute gm and gv
 	//and the formula of the appendix
-	
-	REQUIRE(param, "Param name is required (param should not be NULL)\n");
+	REQUIRE(param, "Param is required (param should not be NULL)\n");
+	REQUIRE(param->m_name, "Param name is required (param->m_name should not be NULL)\n");
 	//We take the derivative wrt to param. Only mu or sigma2 can be the param 
 	REQUIRE(!(strcmp(param->m_name, "mu") && strcmp(param->m_name, "sigma2")),
 		"Can't compute derivative of the variational expection ", 
@@ -140,10 +147,13 @@ SGVector<float64_t> CLogitPiecewiseBoundLikelihood::get_variational_first_deriva
 	const Map<VectorXd> eigen_a(m_bound.get_column_vector(2), m_bound.num_rows);
 	const Map<VectorXd> eigen_mu(m_mu.vector, m_mu.vlen);
 	const Map<VectorXd> eigen_s2(m_s2.vector, m_s2.vlen);
+
 	Map<VectorXd> eigen_l(m_bound.get_column_vector(3), m_bound.num_rows);
 	Map<VectorXd> eigen_h(m_bound.get_column_vector(4), m_bound.num_rows);
+
 	index_t num_rows = m_bound.num_rows; 
 	index_t num_cols = m_mu.vlen;
+
 	const Map<MatrixXd> eigen_cdf_diff(m_cdf_diff.matrix, num_rows, num_cols);
 	const Map<MatrixXd> eigen_pl(m_pl.matrix, num_rows, num_cols);
 	const Map<MatrixXd> eigen_ph(m_ph.matrix, num_rows, num_cols);
@@ -241,18 +251,17 @@ void CLogitPiecewiseBoundLikelihood::set_distribution(SGVector<float64_t> mu,
 		"Labels must be type of CBinaryLabels\n");
 
 	for(index_t i = 0; i < s2.vlen; ++i)
-		ASSERT(s2[i] > 0.0);
+		REQUIRE(s2[i] > 0.0, "Variance should always be positive (s2 should be a positive vector)\n");
 
 	m_lab = ((CBinaryLabels*)lab)->get_labels();
+
 	//Convert the input label to standard label used in the class
-	//Note that Shogun uses  -1 and 1 as labels and this class uses 
+	//Note that Shogun uses  -1 and 1 as labels and this class internally uses 
 	//0 and 1 repectively.
-	
 	for(index_t i = 0; i < m_lab.size(); ++i)
 		m_lab[i] = CMath::max(m_lab[i], 0.0);
 
 	m_mu = mu;
-
 	m_s2 = s2;
 
 	precompute();
@@ -307,22 +316,27 @@ void CLogitPiecewiseBoundLikelihood::precompute()
 	const Map<VectorXd> eigen_a(m_bound.get_column_vector(2), m_bound.num_rows);
 	const Map<VectorXd> eigen_mu(m_mu.vector, m_mu.vlen);
 	const Map<VectorXd> eigen_s2(m_s2.vector, m_s2.vlen);
+
 	Map<VectorXd> eigen_l(m_bound.get_column_vector(3), m_bound.num_rows);
 	Map<VectorXd> eigen_h(m_bound.get_column_vector(4), m_bound.num_rows);
+
 	index_t num_rows = m_bound.num_rows; 
 	index_t num_cols = m_mu.vlen;
+
 	m_pl = SGMatrix<float64_t>(num_rows,num_cols);
 	m_ph = SGMatrix<float64_t>(num_rows,num_cols);
 	m_cdf_diff = SGMatrix<float64_t>(num_rows,num_cols);
 	m_l2_plus_s2 = SGMatrix<float64_t>(num_rows,num_cols);
 	m_h2_plus_s2 = SGMatrix<float64_t>(num_rows,num_cols);
 	m_weighted_pdf_diff = SGMatrix<float64_t>(num_rows,num_cols);
+
 	Map<MatrixXd> eigen_pl(m_pl.matrix, num_rows, num_cols);
 	Map<MatrixXd> eigen_ph(m_ph.matrix, num_rows, num_cols);
 	Map<MatrixXd> eigen_cdf_diff(m_cdf_diff.matrix, num_rows, num_cols);
 	Map<MatrixXd> eigen_l2_plus_s2(m_l2_plus_s2.matrix, num_rows, num_cols);
 	Map<MatrixXd> eigen_h2_plus_s2(m_h2_plus_s2.matrix, num_rows, num_cols);
 	Map<MatrixXd> eigen_weighted_pdf_diff(m_weighted_pdf_diff.matrix, num_rows, num_cols);
+
 	SGMatrix<float64_t> zl(num_rows, num_cols);
 	Map<MatrixXd> eigen_zl(zl.matrix, num_rows, num_cols);
 	SGMatrix<float64_t> zh(num_rows, num_cols);
@@ -340,6 +354,8 @@ void CLogitPiecewiseBoundLikelihood::precompute()
 	//zh = bsxfun(@times, bsxfun(@minus,h,m), 1./sqrt(v))
 	eigen_zh = (eigen_zh.array().rowwise()*eigen_s_inv.array().transpose()).matrix();
 
+	//Usually we use pdf in log-domain and the log_sum_exp trick
+	//to avoid numerical underflow in particular for IID samples
 	for (index_t r = 0; r < zl.num_rows; r++)
 	{
 		for (index_t c = 0; c < zl.num_cols; c++)

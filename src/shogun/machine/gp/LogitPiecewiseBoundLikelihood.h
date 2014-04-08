@@ -29,6 +29,9 @@
  *
  * Code adapted from 
  * https://github.com/emtiyaz/VariationalApproxExample
+ * and the reference paper is
+ * Marlin, Benjamin M., Mohammad Emtiyaz Khan, and Kevin P. Murphy.
+ * "Piecewise Bounds for Estimating Bernoulli-Logistic Latent Gaussian Models." ICML. 2011.
  */
 
 #ifndef _LOGITPIECEWISEBOUNDLIKELIHOOD_H_
@@ -105,7 +108,7 @@ public:
 	/** get derivative of the variational expection of log LogitLikelihood
 	 * using the piecewise bound with respect to given parameter
 	 *
-	 *compute the derivative of \f[
+	 * compute the derivative of \f[
 	 * E_{q(f_i|{\mu}_i,{\sigma}^2_i)}[logP(y_i|f_i)]
 	 * \f] given mu_i and sigma2_i with repect to param using the piecewise bound
 	 *
@@ -115,8 +118,14 @@ public:
 	 */
 	virtual SGVector<float64_t> get_variational_first_derivative(const TParameter* param) const;
 private:
+
+	/** initialize private data members for this class */
 	void init();
 
+	/** compute common variables later used in get_variational_expection
+	 * and get_variational_first_derivative.
+	 * Note that this method will automatically be called when set_distribution is called
+	 */
 	void precompute();
 
 	/** Variational piecewise bound for logit likelihood */
