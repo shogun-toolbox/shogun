@@ -8,6 +8,7 @@
  * Written (W) 1999-2009 Soeren Sonnenburg
  * Written (W) 2011 Sergey Lisitsyn
  * Written (W) 2012 Fernando José Iglesias García, cover tree support
+ * Written (W) 2014 Zharmagambetov Arman (armanform@gmail.com), kd-tree basic implementation
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
@@ -23,10 +24,59 @@
 #include <shogun/distance/Distance.h>
 #include <shogun/machine/DistanceMachine.h>
 
+// libraries needed for kd-tree
+#include <cmath>
+#include <vector>
+#include <cassert>
+#include <limits>
+#include <algorithm>
+// ---------------------------
+
+using namespace std;
+
 namespace shogun
 {
 
 class CDistanceMachine;
+
+class KDTNode {
+	friend class CKNN;
+
+protected:
+	KDTNode *left, *right;	// left/right child
+	vector<float> data;		// the actual data item
+	// access to the node contents
+	// this is a bit dangerous, hence private
+	inline vector<float>& content() {
+		return data;
+	}
+
+public:
+	KDTNode(const vector<float>& x) : left(NULL), right(NULL), data(x) {}
+
+	inline KDTNode* get_left() {
+		return left;
+	}
+	inline KDTNode* get_right() {
+		return right;
+	}
+	inline vector<float> get_data() {
+		return data;
+	}
+
+	// remove whole subtree
+	// note that one must unlink a node
+	// before destroying it in KDTree::remove()
+	// otherwise the whole subtree will disappear
+	~KDTNode() {
+		if (left) {
+			delete left;
+		}
+		if (right) {
+			delete right;
+		}
+	}
+};
 
 /** @brief Class KNN, an implementation of the standard k-nearest neigbor
  * classifier.
@@ -54,6 +104,7 @@ class CDistanceMachine;
  * multi-class-classification. And finally, in case of k=1 classification will
  * take less time with an special optimization provided.
  */
+
 class CKNN : public CDistanceMachine
 {
 	public:
@@ -170,6 +221,7 @@ class CKNN : public CDistanceMachine
 		/** @return object name */
 		virtual const char* get_name() const { return "KNN"; }
 
+
 	protected:
 		/** Stores feature data of underlying model.
 		 *
@@ -246,6 +298,66 @@ class CKNN : public CDistanceMachine
 
 		/** the actual trainlabels */
 		SGVector<int32_t> m_train_labels;
+
+
+		/** Kd-tree implementation area */
+		protected:
+		KDTNode *root;	// root of tree
+		int count;        // size of tree
+		int dimensionOfFeatures;
+
+public:
+	
+	inline int size() const {
+		return count;
+	}
+
+	//Constructs a kd-tree from the specified collection of elements.
+	void train_kd(SGMatrix<float64_t> features, SGVector<float64_t> labels);
+
+	//Find ONE nearest neighbor
+	vector<float> FindNearestNeighbor(vector<float> location);
+
+	// Finds the N values in the tree that are nearest to the specified location.
+	vector<vector<float> > FindNearestNNeighbor(vector<float> location, int numNeighbors);
+	
+	// basic classification algorithm, it finds nearest n neighbors and determine the
+	// class of input vector
+	float apply_one_kd(vector<float> location, int k_nn);
+
+protected:
+
+	// Recursively construct kd-tree from input array of features
+	KDTNode* construct_helper(KDTNode*& nodep, int dimension, int startIndex, int endIndex, int depth, vector<vector<float> > elements);
+	
+	// sort features in particular dimension, i.e. it implements quicksort algorithm
+	void sortByDimension(vector<vector<float> >& elements, int start, int end, int currentDim);
+
+	// helper for quicksort algorithm, it returns middle element, and
+	// reorganize elements
+	int sortPartition(vector<vector<float> >& elements, int start, int end, int currentDim);
+
+	// Calculate distance by Euclidean
+	double distanceByEuclidean(vector<float> v1, vector<float> v2);
+
+	// Recursively iterate through leafs of kd-tree to find the nearest neighbour
+	vector<float> FindNearestNeighborHelper(vector<float> location, KDTNode*& nodep, vector<float> bestValue, double bestDistance, int depth);
+	
+	// reqursively search in the tree for nearest n neighbors and insert it in priority queue
+	void FindNearestNNeighborHelper(vector<float> location, KDTNode*& nodep, vector<float>& bestValue, double& bestDistance,
+		int numNeighbors, vector<vector<float> >& valuesList, int depth);
+
+	// sort features matrix and reorganise it as priority queue , i.e. it implements quicksort algorithm
+	void sortByDistance(vector<vector<float> >& valuesList, int start, int end, vector<float> location);
+	
+	// helper for quicksort algorithm, it returns middle element, and
+	// reorganize elements
+	int sortDistancePartition(vector<vector<float> >& valuesList, int start, int end, vector<float> location);
+	
+	// transform SGMatrix to 2d vetor
+	vector<vector<float> > featureToVector(SGMatrix<float64_t> features);
+
+	bool vectorComparer(vector<float> v1, vector<float> v2);
 };
 
 }
