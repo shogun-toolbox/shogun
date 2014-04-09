@@ -365,6 +365,8 @@ float64_t CMath::get_abs_tolorance(float64_t true_value, float64_t rel_tolorance
 {
 	REQUIRE(rel_tolorance > 0 && rel_tolorance < 1.0,
 		"Relative tolorance should be less than 1.0 and positive");
+	REQUIRE(is_finite(true_value),
+		"The true_value should be finite");
 	float64_t abs_tolorance = 0.0;
 	if (abs(true_value)>0.0)
 	{
