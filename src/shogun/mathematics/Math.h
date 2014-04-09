@@ -265,6 +265,24 @@ class CMath : public CSGObject
 				}
 			}
 
+		/* Get the corresponding absolute tolerance for unit test given a relative tolerance
+		 *
+		 * Note that a unit test will be passed only when 
+		 * \f[
+		 * |v_{true} - v_{predict}| <= tol_{relative} * |v_{true}|
+		 * \f] which is equivalent to 
+		 * \f[
+		 * |v_{true} - v_{predict}| <= tol_{absolute}
+		 * \f] where
+		 * \f[
+		 * tol_{absolute} = tol_{relative} * |v_{true}|
+		 * \f]
+		 *
+		 * @param true_value true value should be finite (Neither NAN nor INF)
+		 * @param rel_tolorance relative tolerance should be positive and less than 1.0
+		 *
+		 * @return the corresponding absolute tolerance
+		 * */
 		static float64_t get_abs_tolorance(float64_t true_value, float64_t rel_tolorance);
 		
 		static inline float64_t round(float64_t d)
