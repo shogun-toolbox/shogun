@@ -49,6 +49,18 @@ CInferenceMethod::CInferenceMethod(CKernel* kernel, CFeatures* features,
 	set_mean(mean);
 }
 
+CInferenceMethod::CInferenceMethod(CKernel* kernel, SGVector<index_t> features_idx,
+		CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model)
+{
+	init();
+
+	set_kernel(kernel);
+	set_features_index(features_idx);
+	set_labels(labels);
+	set_model(model);
+	set_mean(mean);
+}
+
 CInferenceMethod::~CInferenceMethod()
 {
 	SG_UNREF(m_kernel);
