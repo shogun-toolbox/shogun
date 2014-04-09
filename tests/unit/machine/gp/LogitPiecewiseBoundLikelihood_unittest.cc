@@ -49,12 +49,6 @@
 
 using namespace shogun;
 
-float64_t get_abs_tolorance_logit_piece(float64_t true_value, float64_t rel_tolorance)
-{
-	rel_tolorance = CMath::abs(rel_tolorance);
-	return true_value==0.0 ? rel_tolorance : CMath::abs(true_value * rel_tolorance);
-}
-
 TEST(LogitPiecewiseBoundLikelihood,get_variational_expection)
 {
 	float64_t rel_tolorance = 1e-2;
@@ -216,25 +210,25 @@ TEST(LogitPiecewiseBoundLikelihood,get_variational_expection)
 	SGVector<float64_t> fi = lik->get_variational_expection();
 
 	// comparison of the result with result from the Matlab code
-	abs_tolorance = get_abs_tolorance_logit_piece(-0.6456754556952, rel_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(-0.6456754556952, rel_tolorance);
 	EXPECT_NEAR(fi[0],  -0.6456754556952,  abs_tolorance);
-	abs_tolorance = get_abs_tolorance_logit_piece(-0.4788252132355, rel_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(-0.4788252132355, rel_tolorance);
 	EXPECT_NEAR(fi[1],  -0.4788252132355,  abs_tolorance);
-	abs_tolorance = get_abs_tolorance_logit_piece(-0.3376385737846, rel_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(-0.3376385737846, rel_tolorance);
 	EXPECT_NEAR(fi[2],  -0.3376385737846,  abs_tolorance);
-	abs_tolorance = get_abs_tolorance_logit_piece(-0.1355429430892, rel_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(-0.1355429430892, rel_tolorance);
 	EXPECT_NEAR(fi[3],  -0.1355429430892,  abs_tolorance);
-	abs_tolorance = get_abs_tolorance_logit_piece(-0.0291926624830, rel_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(-0.0291926624830, rel_tolorance);
 	EXPECT_NEAR(fi[4],  -0.0291926624830,  abs_tolorance);
-	abs_tolorance = get_abs_tolorance_logit_piece(-8.0024833587412, rel_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(-8.0024833587412, rel_tolorance);
 	EXPECT_NEAR(fi[5],  -8.0024833587412,  abs_tolorance);
-	abs_tolorance = get_abs_tolorance_logit_piece(-16.0003769229306, rel_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(-16.0003769229306, rel_tolorance);
 	EXPECT_NEAR(fi[6],  -16.0003769229306,  abs_tolorance);
-	abs_tolorance = get_abs_tolorance_logit_piece(-32.0001965353636, rel_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(-32.0001965353636, rel_tolorance);
 	EXPECT_NEAR(fi[7],  -32.0001965353636,  abs_tolorance);
-	abs_tolorance = get_abs_tolorance_logit_piece(-64.0001887120000, rel_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(-64.0001887120000, rel_tolorance);
 	EXPECT_NEAR(fi[8],  -64.0001887120000,  abs_tolorance);
-	abs_tolorance = get_abs_tolorance_logit_piece(-128.0001894653420, rel_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(-128.0001894653420, rel_tolorance);
 	EXPECT_NEAR(fi[9],  -128.0001894653420,  abs_tolorance);
 
 	// clean up
@@ -404,25 +398,25 @@ TEST(LogitPiecewiseBoundLikelihood,get_variational_first_derivative_wrt_sigma2)
 	SGVector<float64_t> gvi = lik->get_variational_first_derivative(s2_param);
 
 	// comparison of the result with result from the Matlab code
-	abs_tolorance = get_abs_tolorance_logit_piece(-0.124427581470330, rel_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(-0.124427581470330, rel_tolorance);
 	EXPECT_NEAR(gvi[0],  -0.124427581470330,  abs_tolorance);
-	abs_tolorance = get_abs_tolorance_logit_piece(-0.116464777495544, rel_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(-0.116464777495544, rel_tolorance);
 	EXPECT_NEAR(gvi[1],  -0.116464777495544,  abs_tolorance);
-	abs_tolorance = get_abs_tolorance_logit_piece(-0.095944910771785, rel_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(-0.095944910771785, rel_tolorance);
 	EXPECT_NEAR(gvi[2],  -0.095944910771785,  abs_tolorance);
-	abs_tolorance = get_abs_tolorance_logit_piece(-0.053928836060417, rel_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(-0.053928836060417, rel_tolorance);
 	EXPECT_NEAR(gvi[3],  -0.053928836060417,  abs_tolorance);
-	abs_tolorance = get_abs_tolorance_logit_piece(-0.013150889239670, rel_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(-0.013150889239670, rel_tolorance);
 	EXPECT_NEAR(gvi[4],  -0.013150889239670,  abs_tolorance);
-	abs_tolorance = get_abs_tolorance_logit_piece(-0.001100858445787, rel_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(-0.001100858445787, rel_tolorance);
 	EXPECT_NEAR(gvi[5],  -0.001100858445787,  abs_tolorance);
-	abs_tolorance = get_abs_tolorance_logit_piece(-0.000067933801262, rel_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(-0.000067933801262, rel_tolorance);
 	EXPECT_NEAR(gvi[6],  -0.000067933801262,  abs_tolorance);
-	abs_tolorance = get_abs_tolorance_logit_piece(-0.000001623384590, rel_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(-0.000001623384590, rel_tolorance);
 	EXPECT_NEAR(gvi[7],  -0.000001623384590,  abs_tolorance);
-	abs_tolorance = get_abs_tolorance_logit_piece(-0.00000000000000220044, rel_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(-0.00000000000000220044, rel_tolorance);
 	EXPECT_NEAR(gvi[8],  -0.00000000000000220044, abs_tolorance);
-	abs_tolorance = get_abs_tolorance_logit_piece(-0.000000017317396, rel_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(-0.000000017317396, rel_tolorance);
 	EXPECT_NEAR(gvi[9],  -0.000000017317396,  abs_tolorance);
 
 	// clean up
@@ -592,25 +586,25 @@ TEST(LogitPiecewiseBoundLikelihood,get_variational_first_derivative_wrt_mu)
 	SGVector<float64_t> gmi = lik->get_variational_first_derivative(mu_param);
 
 	// comparison of the result with result from the Matlab code
-	abs_tolorance = get_abs_tolorance_logit_piece(0.474998473339850, rel_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(0.474998473339850, rel_tolorance);
 	EXPECT_NEAR(gmi[0],  0.474998473339850,  abs_tolorance);
-	abs_tolorance = get_abs_tolorance_logit_piece(0.378585673900550, rel_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(0.378585673900550, rel_tolorance);
 	EXPECT_NEAR(gmi[1],  0.378585673900550,  abs_tolorance);
-	abs_tolorance = get_abs_tolorance_logit_piece(0.279385305091804, rel_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(0.279385305091804, rel_tolorance);
 	EXPECT_NEAR(gmi[2],  0.279385305091804,  abs_tolorance);
-	abs_tolorance = get_abs_tolorance_logit_piece(0.125526678446964, rel_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(0.125526678446964, rel_tolorance);
 	EXPECT_NEAR(gmi[3],  0.125526678446964,  abs_tolorance);
-	abs_tolorance = get_abs_tolorance_logit_piece(0.028103686914264, rel_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(0.028103686914264, rel_tolorance);
 	EXPECT_NEAR(gmi[4],  0.028103686914264,  abs_tolorance);
-	abs_tolorance = get_abs_tolorance_logit_piece(-0.997696157382387, rel_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(-0.997696157382387, rel_tolorance);
 	EXPECT_NEAR(gmi[5],  -0.997696157382387,  abs_tolorance);
-	abs_tolorance = get_abs_tolorance_logit_piece(-0.999836111483197, rel_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(-0.999836111483197, rel_tolorance);
 	EXPECT_NEAR(gmi[6],  -0.999836111483197,  abs_tolorance);
-	abs_tolorance = get_abs_tolorance_logit_piece(-0.999994859133653, rel_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(-0.999994859133653, rel_tolorance);
 	EXPECT_NEAR(gmi[7],  -0.999994859133653,  abs_tolorance);
-	abs_tolorance = get_abs_tolorance_logit_piece(-0.999999999999995, rel_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(-0.999999999999995, rel_tolorance);
 	EXPECT_NEAR(gmi[8],  -0.999999999999995,  abs_tolorance);
-	abs_tolorance = get_abs_tolorance_logit_piece(-0.999999835858964, rel_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(-0.999999835858964, rel_tolorance);
 	EXPECT_NEAR(gmi[9],  -0.999999835858964,  abs_tolorance);
 
 	// clean up
