@@ -364,3 +364,14 @@ TEST(CMath, fequals_close_to_zero)
 	EXPECT_FALSE(CMath::fequals<float64_t>(CMath::F_MIN_VAL64, 0.000000001f, eps));
 	EXPECT_FALSE(CMath::fequals<float64_t>(-CMath::F_MIN_VAL64, 0.000000001f, eps));
 }
+
+TEST(CMath, get_abs_tolorance)
+{
+	EXPECT_EQ(CMath::get_abs_tolorance(0.0, 0.01), 0.0);
+	EXPECT_NEAR(CMath::get_abs_tolorance(-0.01, 0.01), 0.0001, 1E-15);
+	EXPECT_NEAR(CMath::get_abs_tolorance(-9.5367431640625e-7, 0.01), 9.5367431640625e-9, 1E-15);
+	EXPECT_NEAR(CMath::get_abs_tolorance(9.5367431640625e-7, 0.01), 9.5367431640625e-9, 1E-15);
+	EXPECT_EQ(CMath::get_abs_tolorance(-CMath::F_MIN_VAL64, 0.01), CMath::F_MIN_VAL64);
+	EXPECT_EQ(CMath::get_abs_tolorance(CMath::F_MIN_VAL64, 0.01), CMath::F_MIN_VAL64);
+
+}

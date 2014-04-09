@@ -264,6 +264,8 @@ class CMath : public CSGObject
 					return (check < eps);
 				}
 			}
+
+		static float64_t get_abs_tolorance(float64_t true_value, float64_t rel_tolorance);
 		
 		static inline float64_t round(float64_t d)
 		{
