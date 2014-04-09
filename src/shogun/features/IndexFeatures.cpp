@@ -9,14 +9,17 @@ CIndexFeatures::CIndexFeatures()
 	num_vectors = 0;
 }
 
-CIndexFeatures::CIndexFeatures(SGVector<index_t> vector) : CDummyFeatures(vector.vlen)
+CIndexFeatures::CIndexFeatures(SGVector<index_t> vector)
 {
 	init();
+	num_vectors = vector.vlen;
+	set_feature_index(vector);
 }
 
-CIndexFeatures::CIndexFeatures(const CIndexFeatures &orig) : CDummyFeatures(orig.feature_index.vlen)
+CIndexFeatures::CIndexFeatures(const CIndexFeatures &orig)
 {
 	init();
+	num_vectors = orig.num_vectors;
 	set_feature_index(orig.feature_index);
 	if (orig.m_subset_stack != NULL)
 	{
@@ -40,7 +43,7 @@ CFeatures* CIndexFeatures::duplicate() const
 	return new CIndexFeatures(*this);
 }
 
-inline EFeatureType CIndexFeatures::get_feature_type() const
+EFeatureType CIndexFeatures::get_feature_type() const
 {
 	return F_INT;
 }
@@ -84,7 +87,6 @@ void CIndexFeatures::free_feature_index()
 
 void CIndexFeatures::init()
 {
-	SG_ADD(&num_vectors, "num_vectors", "Number of vectors.", MS_NOT_AVAILABLE);
 	SG_ADD(&feature_index, "feature_index",
 				"Vector of feature index.", MS_NOT_AVAILABLE);
 }
