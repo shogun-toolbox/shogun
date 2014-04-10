@@ -349,6 +349,22 @@ SGVector<float64_t> CPCA::apply_to_feature_vector(SGVector<float64_t> vector)
 	return result;
 }
 
+SGVector<float64_t> CPCA::apply_inverse(SGVector<float64_t> vector)
+{
+	SGVector<float64_t> result = SGVector<float64_t>(m_transformation_matrix.num_rows);
+	Map<VectorXd> resultVec(result.vector, m_transformation_matrix.num_rows);
+	Map<VectorXd> inputVec(vector.vector, vector.vlen);
+
+	Map<VectorXd> mean(m_mean_vector.vector, m_mean_vector.vlen);
+	Map<MatrixXd> transformMat(m_transformation_matrix.matrix,
+		 m_transformation_matrix.num_rows, m_transformation_matrix.num_cols);
+
+	resultVec = transformMat*inputVec;
+	resultVec = resultVec+mean;
+
+	return result;
+}
+
 SGMatrix<float64_t> CPCA::get_transformation_matrix()
 {
 	return m_transformation_matrix;

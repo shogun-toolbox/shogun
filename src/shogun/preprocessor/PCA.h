@@ -158,6 +158,12 @@ class CPCA: public CDimensionReductionPreprocessor
 		 */
 		virtual SGVector<float64_t> apply_to_feature_vector(SGVector<float64_t> vector);
 
+		/** Approximate reconstruction of the original data. \f$\mathbf{x}^n\f$ is given by : \f$ \tilde{\mathbf{x}}^n \approx m + \mathbf{E} \mathbf{y}^n \f$
+		 * @param vector feature vector
+		 * @return processed feature vector
+		 */
+		SGVector<float64_t> apply_inverse(SGVector<float64_t> vector);
+
 		/** get transformation matrix, i.e. eigenvectors (potentially scaled if
 		 * do_whitening is true)
 		 */
