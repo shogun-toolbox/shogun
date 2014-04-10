@@ -6,21 +6,18 @@ using namespace shogun;
 CIndexFeatures::CIndexFeatures()
 {
 	init();
-	num_vectors = 0;
 }
 
-CIndexFeatures::CIndexFeatures(SGVector<index_t> vector)
+CIndexFeatures::CIndexFeatures(SGVector<index_t> feature_index)
 {
 	init();
-	num_vectors = vector.vlen;
-	set_feature_index(vector);
+	set_feature_index(feature_index);
 }
 
 CIndexFeatures::CIndexFeatures(const CIndexFeatures &orig)
 {
 	init();
-	num_vectors = orig.num_vectors;
-	set_feature_index(orig.feature_index);
+	set_feature_index(orig.m_feature_index);
 	if (orig.m_subset_stack != NULL)
 	{
 		SG_UNREF(m_subset_stack);
@@ -56,37 +53,38 @@ EFeatureClass CIndexFeatures::get_feature_class() const
 SGVector<index_t> CIndexFeatures::get_feature_index()
 {
 	if (!m_subset_stack->has_subsets())
-		return feature_index;
+		return m_feature_index;
 
-	SGVector<index_t> subvector(get_num_vectors());
+	SGVector<index_t> sub_feature_index(get_num_vectors());
 
 	/* copy a subset vector wise */
-	for (int32_t i=0; i<subvector.vlen; ++i)
+	for (int32_t i=0; i<sub_feature_index.vlen; ++i)
 	{
 		int32_t real_i = m_subset_stack->subset_idx_conversion(i);
-		subvector[i] = feature_index[real_i];
+		sub_feature_index[i] = m_feature_index[real_i];
 	}
 
-	return subvector;
+	return sub_feature_index;
 }
 
-void CIndexFeatures::set_feature_index(SGVector<index_t> vector)
+void CIndexFeatures::set_feature_index(SGVector<index_t> feature_index)
 {
 	m_subset_stack->remove_all_subsets();
 	free_feature_index();
-	feature_index = vector;
-	num_vectors = vector.vlen;
+	m_feature_index = feature_index;
+	num_vectors = feature_index.vlen;
 }
 
 void CIndexFeatures::free_feature_index()
 {
 	m_subset_stack->remove_all_subsets();
-	feature_index=SGVector<index_t>();
+	m_feature_index=SGVector<index_t>();
 	num_vectors = 0;
 }
 
 void CIndexFeatures::init()
 {
-	SG_ADD(&feature_index, "feature_index",
+	num_vectors = 0;
+	SG_ADD(&m_feature_index, "m_feature_index",
 				"Vector of feature index.", MS_NOT_AVAILABLE);
 }

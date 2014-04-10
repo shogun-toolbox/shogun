@@ -35,7 +35,7 @@ using namespace shogun;
 
 TEST(IndexFeaturesTest,basic_create)
 {
-	int vlen = 10;
+	index_t vlen = 10;
 	SGVector<index_t> index_vector(vlen);
 	index_vector.range_fill();
 	CIndexFeatures* index_features = new CIndexFeatures(index_vector);
@@ -44,15 +44,17 @@ TEST(IndexFeaturesTest,basic_create)
 	EXPECT_EQ(index_features->get_feature_class(), C_INDEX);
 	EXPECT_EQ(index_features->get_feature_type(), F_INT);
 
+	SGVector<index_t> v_index_feature = index_features->get_feature_index();
+
 	for(index_t i=0; i<vlen; i++)
-		EXPECT_EQ(index_features->get_feature_index()[i], index_vector[i]);
+		EXPECT_EQ(v_index_feature[i], index_vector[i]);
 
 	SG_UNREF(index_features);
 }
 
 TEST(IndexFeaturesTest,subset_copy)
 {
-	int vlen = 10;
+	index_t vlen = 10;
 	SGVector<index_t> index_vector(vlen);
 	index_vector.range_fill();
 	index_vector.permute();
@@ -69,8 +71,10 @@ TEST(IndexFeaturesTest,subset_copy)
 	EXPECT_EQ(index_features->get_feature_class(), C_INDEX);
 	EXPECT_EQ(index_features->get_feature_type(), F_INT);
 
+	SGVector<index_t> v_index_feature = index_features->get_feature_index();
+
 	for(index_t i=0; i<vlen/2; i++)
-		EXPECT_EQ(index_features->get_feature_index()[i], index_vector[sub_idx[i]]);
+		EXPECT_EQ(v_index_feature[i], index_vector[sub_idx[i]]);
 
 	SG_UNREF(index_features);
 }

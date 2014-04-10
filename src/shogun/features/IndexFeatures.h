@@ -41,7 +41,9 @@
 namespace shogun
 {
 /** @brief The class IndexFeatures implements features that
- *  have contain the index of the features
+ *  contain the index of the features. This features used in
+ *  the CCustomKernel::init to make the subset of the kernel
+ *  matrix.
  *
  * This is used in the CCustomKernel.*/
 class CIndexFeatures : public CDummyFeatures
@@ -52,35 +54,53 @@ class CIndexFeatures : public CDummyFeatures
 
 		/** constructor
 		 *
-		 * @param num number of feature vectors
+		 * @param feature_index feature index vector
 		 */
-		CIndexFeatures(SGVector<index_t> vector);
+		CIndexFeatures(SGVector<index_t> feature_index);
 
-		/** copy constructor */
+		/** copy constructor
+		 *
+		 * @param orig reference to a CIndexFeatures instance
+		 */
 		CIndexFeatures(const CIndexFeatures &orig);
 
 		/** destructor */
 		virtual ~CIndexFeatures();
 
-		/** get number of feature vectors */
+		/** get number of feature vectors
+		 *
+		 * @return number of feature vectors
+		 */
 		virtual int32_t get_num_vectors() const;
 
-		/** duplicate features */
+		/** duplicate features
+		 *
+		 * @return the copy of this CIndexFeatures
+		 */
 		virtual CFeatures* duplicate() const;
 
-		/** get feature type (INT) */
+		/** get feature type (INT)
+		 *
+		 * @return F_INT
+		 */
 		virtual EFeatureType get_feature_type() const;
 
-		/** get feature class (INDEX) */
+		/** get feature class (INDEX)
+		 *
+		 * @return C_INDEX
+		 */
 		virtual EFeatureClass get_feature_class() const;
 
-		/** @return object name */
+		/** get the name of the class
+		 *
+		 * @return object name
+		 */
 		virtual const char* get_name() const { return "IndexFeatures"; }
 
 		/** Getter the feature index
 		 *
-		 * in-place without subset
-		 * a copy with subset
+		 * a copy of m_feature_index without subset
+		 * a copy of sub_feature_index with subset
 		 *
 		 * @return matrix feature index
 		 */
@@ -89,14 +109,12 @@ class CIndexFeatures : public CDummyFeatures
 		/** Setter for feature index
 		 *
 		 * any subset is removed
+		 * set the m_feature_index
 		 *
-		 * vlen is number of feature vectors
-		 * see below for definition of feature_index
-		 *
-		 * @param vector feature index to set
+		 * @param feature_index feature index to set
 		 *
 		 */
-		void set_feature_index(SGVector<index_t> vector);
+		void set_feature_index(SGVector<index_t> feature_index);
 
 		/** free feature index
 		 *
@@ -105,11 +123,16 @@ class CIndexFeatures : public CDummyFeatures
 		void free_feature_index();
 
 	private:
+		/** Initialize CIndexFeatures
+		 *
+		 * set num_vectors to 0
+		 * add m_feature_index to m_parameters
+		 */
 		void init();
 
 	protected:
 		/** feature index */
-		SGVector<index_t> feature_index;
+		SGVector<index_t> m_feature_index;
 };
 }
 #endif
