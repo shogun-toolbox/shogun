@@ -10,6 +10,7 @@
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/kernel/CustomKernel.h>
 #include <shogun/features/DenseFeatures.h>
+#include <shogun/features/IndexFeatures.h>
 #include <shogun/features/streaming/generators/MeanShiftDataGenerator.h>
 #include <gtest/gtest.h>
 
@@ -105,4 +106,59 @@ TEST(CustomKernelTest,add_row_subset_constructor)
 	SG_UNREF(main_kernel);
 	SG_UNREF(copy);
 	SG_UNREF(gen);
+}
+
+TEST(CustomKernelTest,index_features_subset)
+{
+	index_t n=4;
+	CMeanShiftDataGenerator* gen=new CMeanShiftDataGenerator(1, 2, 0);
+	SG_REF(gen);
+	CDenseFeatures<float64_t>* feats=
+			(CDenseFeatures<float64_t>*)gen->get_streamed_features(n);
+	SG_REF(feats);
+	CGaussianKernel* gaussian=new CGaussianKernel(feats, feats, 2, 10);
+	SG_REF(gaussian);
+	CCustomKernel* main_kernel=new CCustomKernel(gaussian);
+	SG_REF(main_kernel);
+
+	/* create custom kernel copy of gaussien and assert equalness */
+	SGMatrix<float64_t> kmg=gaussian->get_kernel_matrix();
+	SGMatrix<float64_t> km=main_kernel->get_kernel_matrix();
+
+	for (index_t i=0; i<n; ++i)
+	{
+		for (index_t j=0; j<n; ++j)
+			EXPECT_LE(CMath::abs(kmg(i, j)-km(i, j)), 1E-7);
+	}
+
+	/* add a subset to the custom kernel, create copy, create another kernel
+	 * from this, assert equalness */
+	SGVector<index_t> r_idx(n);
+	SGVector<index_t> c_idx(n);
+	r_idx.range_fill();
+	r_idx.permute();
+	c_idx.range_fill();
+	c_idx.permute();
+
+	/* Create IndexFeatures instances */
+	CIndexFeatures * feat_r_idx = new CIndexFeatures(r_idx);
+	CIndexFeatures * feat_c_idx = new CIndexFeatures(c_idx);
+	SG_REF(feat_r_idx);
+	SG_REF(feat_c_idx);
+
+	main_kernel->init(feat_r_idx,feat_c_idx);
+	SGMatrix<float64_t> main_subset_matrix = main_kernel->get_kernel_matrix();
+
+	for (index_t i=0; i<n; ++i)
+	{
+		for (index_t j=0; j<n; ++j)
+			EXPECT_LE(CMath::abs(main_subset_matrix(i, j)-kmg(r_idx[i], c_idx[j])), 1e-7);
+	}
+
+	SG_UNREF(gaussian);
+	SG_UNREF(main_kernel);
+	SG_UNREF(gen);
+	SG_UNREF(feats);
+	SG_UNREF(feat_r_idx);
+	SG_UNREF(feat_c_idx);
 }

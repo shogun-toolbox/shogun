@@ -44,6 +44,10 @@ namespace shogun
  *  contain the index of the features. This features used in
  *  the CCustomKernel::init to make the subset of the kernel
  *  matrix.
+ *  Initial CIndexFeature of row_idx and col_idx, pass them
+ *  to the CCustomKernel::init(row_idx, col_idx), then use
+ *  CCustomKernel::get_kernel_matrix() will get the sub kernel
+ *  matrix specified by the row_idx and col_idx.
  *
  * This is used in the CCustomKernel.*/
 class CIndexFeatures : public CDummyFeatures
@@ -54,11 +58,16 @@ class CIndexFeatures : public CDummyFeatures
 
 		/** constructor
 		 *
+		 * set the m_feature_index and num_vector to
+		 * the length of the m_feature_index
+		 *
 		 * @param feature_index feature index vector
 		 */
 		CIndexFeatures(SGVector<index_t> feature_index);
 
 		/** copy constructor
+		 *
+		 * deep copy of this instance
 		 *
 		 * @param orig reference to a CIndexFeatures instance
 		 */
@@ -69,11 +78,16 @@ class CIndexFeatures : public CDummyFeatures
 
 		/** get number of feature vectors
 		 *
+		 * return the length of the m_feature_index without subset
+		 * return the subset size with subset
+		 *
 		 * @return number of feature vectors
 		 */
 		virtual int32_t get_num_vectors() const;
 
 		/** duplicate features
+		 *
+		 * return the copy of this instance
 		 *
 		 * @return the copy of this CIndexFeatures
 		 */
@@ -81,17 +95,23 @@ class CIndexFeatures : public CDummyFeatures
 
 		/** get feature type (INT)
 		 *
+		 * return the Feature Type
+		 *
 		 * @return F_INT
 		 */
 		virtual EFeatureType get_feature_type() const;
 
 		/** get feature class (INDEX)
 		 *
+		 * return the Feature Class Type
+		 *
 		 * @return C_INDEX
 		 */
 		virtual EFeatureClass get_feature_class() const;
 
 		/** get the name of the class
+		 *
+		 * return the name of the class in string
 		 *
 		 * @return object name
 		 */

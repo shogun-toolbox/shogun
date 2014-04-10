@@ -13,6 +13,7 @@
 #include <shogun/kernel/CustomKernel.h>
 #include <shogun/features/Features.h>
 #include <shogun/features/DummyFeatures.h>
+#include <shogun/features/IndexFeatures.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/base/ParameterMap.h>
 
@@ -122,6 +123,30 @@ bool CCustomKernel::init(CFeatures* l, CFeatures* r)
 	if (!r)
 		r=rhs;
 
+	/* Make sure l and r have the same type of CFeatures */
+	ASSERT(l->get_feature_class()==r->get_feature_class())
+	ASSERT(l->get_feature_type()==r->get_feature_type())
+
+	/* If l and r are the type of CIndexFeatures,
+	 * init function add sub set to kernel matrix.
+	 * Then call get_kernel_matrix will get the submatrix
+	 * of the kernel matrix.
+	 */
+	if(l->get_feature_class()==C_INDEX && r->get_feature_class()==C_INDEX)
+	{
+		CIndexFeatures* l_idx = (CIndexFeatures*)l;
+		CIndexFeatures* r_idx = (CIndexFeatures*)r;
+
+		remove_all_col_subsets();
+		remove_all_row_subsets();
+
+		add_row_subset(l_idx->get_feature_index());
+		add_col_subset(r_idx->get_feature_index());
+
+		return true;
+	}
+
+	/* For other types of CFeatures do the default actions below */
 	CKernel::init(l, r);
 
 	SG_DEBUG("num_vec_lhs: %d vs num_rows %d\n", l->get_num_vectors(), kmatrix.num_rows)
