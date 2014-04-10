@@ -9,6 +9,7 @@
 #ifdef HAVE_PROTOBUF
 
 #include <shogun/io/ProtobufFile.h>
+#include <shogun/io/SGIO.h>
 
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>

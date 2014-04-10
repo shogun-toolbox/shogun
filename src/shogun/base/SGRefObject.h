@@ -84,10 +84,7 @@ public:
 	virtual const char* get_name() const = 0;
 
 #ifdef TRACE_MEMORY_ALLOCS
-	static void list_memory_allocs()
-	{
-		shogun::list_memory_allocs();
-	}
+	void list_memory_allocs();
 #endif
 
 private:

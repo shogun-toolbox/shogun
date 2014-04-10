@@ -19,15 +19,14 @@
 #include <shogun/lib/DataType.h>
 #include <shogun/base/SGRefObject.h>
 #include <shogun/lib/ShogunException.h>
-
 #include <shogun/base/Version.h>
-#include <shogun/io/SGIO.h>
 
 /** \namespace shogun
  * @brief all of classes and functions are contained in the shogun namespace
  */
 namespace shogun
 {
+class SGIO;
 class Parallel;
 class Parameter;
 class ParameterMap;
@@ -111,20 +110,12 @@ public:
 	/** A shallow copy.
 	 * All the SGObject instance variables will be simply assigned and SG_REF-ed.
 	 */
-	virtual CSGObject *shallow_copy() const
-	{
-		SG_NOTIMPLEMENTED
-		return NULL;
-	}
+	virtual CSGObject *shallow_copy() const;
 
 	/** A deep copy.
 	 * All the instance variables will also be copied.
 	 */
-	virtual CSGObject *deep_copy() const
-	{
-		SG_NOTIMPLEMENTED
-		return NULL;
-	}
+	virtual CSGObject *deep_copy() const;
 
 	/** Returns the name of the SGSerializable instance.  It MUST BE
 	 *  the CLASS NAME without the prefixed `C'.

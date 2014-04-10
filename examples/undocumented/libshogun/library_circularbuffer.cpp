@@ -2,6 +2,7 @@
 #include <shogun/lib/CircularBuffer.h>
 #include <shogun/lib/DelimiterTokenizer.h>
 #include <shogun/lib/SGVector.h>
+#include <shogun/io/SGIO.h>
 
 #include <cstdio>
 #include <cstring>
