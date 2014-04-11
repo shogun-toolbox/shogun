@@ -90,6 +90,14 @@ public:
 	 */
 	virtual CMulticlassLabels* apply_multiclass(CFeatures* data=NULL);
 
+	/** prune id3 decision tree
+	 * @param validation_data feature vectors from validation dataset
+	 * @param validation_labels multiclass labels from validation dataset
+	 *
+	 * @return true if pruning successful
+	 */
+	virtual bool prune_tree(CDenseFeatures<float64_t>* validation_data, CMulticlassLabels* validation_labels);
+
 protected:
 	
 	/** train machine - build ID3 Tree from training data
@@ -121,7 +129,22 @@ private:
 	 * @return entropy
 	 */		
 	float64_t entropy(CMulticlassLabels* labels);
-	
+
+	/** recursive tree pruning method - called within prune_tree method
+	 *
+	 * @param feats feature set to use for pruning
+	 * @param gnd_truth ground truth labels
+	 * @param current root of current subtree
+	 */
+	void prune_tree_machine(CDenseFeatures<float64_t>* feats, CMulticlassLabels* gnd_truth, node_t* current);
+
+	/** uses current subtree to classify data
+	 *
+	 * @param feats data to be classified
+	 * @param current root of current subtree
+	 * @return classification labels of input data
+	 */
+	CMulticlassLabels* apply_multiclass_from_current_node(CDenseFeatures<float64_t>* feats, node_t* current);
 };
 } /* namespace shogun */
 
