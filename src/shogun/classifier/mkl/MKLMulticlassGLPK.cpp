@@ -12,6 +12,8 @@
  */
 
 #include <shogun/classifier/mkl/MKLMulticlassGLPK.h>
+#include <shogun/io/SGIO.h>
+
 #ifdef USE_GLPK
 #include <glpk.h>
 #endif

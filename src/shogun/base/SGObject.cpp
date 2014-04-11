@@ -137,6 +137,18 @@ CSGObject::~CSGObject()
 	delete m_parameter_map;
 }
 
+CSGObject * CSGObject::shallow_copy() const
+{
+	SG_NOTIMPLEMENTED
+	return NULL;
+}
+
+CSGObject * CSGObject::deep_copy() const
+{
+	SG_NOTIMPLEMENTED
+	return NULL;
+}
+
 void CSGObject::set_global_objects()
 {
 	if (!sg_io || !sg_parallel || !sg_version)

@@ -10,6 +10,7 @@
  */
 
 #include <shogun/loss/SquaredHingeLoss.h>
+#include <shogun/io/SGIO.h>
 
 using namespace shogun;
 

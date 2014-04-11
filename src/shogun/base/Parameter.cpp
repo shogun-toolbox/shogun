@@ -16,6 +16,9 @@
 #include <shogun/lib/Hash.h>
 #include <shogun/lib/memory.h>
 #include <shogun/io/SGIO.h>
+#include <shogun/mathematics/Math.h>
+#include <shogun/lib/common.h>
+#include <shogun/lib/DataType.h>
 
 #include <shogun/lib/SGString.h>
 #include <shogun/lib/SGVector.h>
