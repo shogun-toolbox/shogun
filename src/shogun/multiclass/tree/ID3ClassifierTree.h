@@ -90,13 +90,16 @@ public:
 	 */
 	virtual CMulticlassLabels* apply_multiclass(CFeatures* data=NULL);
 
-	/** prune id3 decision tree
+	/** prune id3 decision tree - uses reduced error pruning algorithm
+	 * cf. http://en.wikipedia.org/wiki/Pruning_%28decision_trees%29#Reduced_error_pruning
+	 *
 	 * @param validation_data feature vectors from validation dataset
 	 * @param validation_labels multiclass labels from validation dataset
+	 * @param epsilon prune subtree even if there is epsilon loss in accuracy
 	 *
 	 * @return true if pruning successful
 	 */
-	virtual bool prune_tree(CDenseFeatures<float64_t>* validation_data, CMulticlassLabels* validation_labels);
+	bool prune_tree(CDenseFeatures<float64_t>* validation_data, CMulticlassLabels* validation_labels, float64_t epsilon=0.f);
 
 protected:
 	
@@ -135,8 +138,9 @@ private:
 	 * @param feats feature set to use for pruning
 	 * @param gnd_truth ground truth labels
 	 * @param current root of current subtree
+	 * @param epsilon prune subtree even if there is epsilon loss in accuracy
 	 */
-	void prune_tree_machine(CDenseFeatures<float64_t>* feats, CMulticlassLabels* gnd_truth, node_t* current);
+	void prune_tree_machine(CDenseFeatures<float64_t>* feats, CMulticlassLabels* gnd_truth, node_t* current, float64_t epsilon);
 
 	/** uses current subtree to classify data
 	 *
