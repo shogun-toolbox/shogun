@@ -372,6 +372,7 @@ T SGSparseVector<T>::dot_prod_asymmetric(const SGSparseVector<T>& a, const SGSpa
 template <class T>
 T SGSparseVector<T>::dot_prod_symmetric(const SGSparseVector<T>& a, const SGSparseVector<T>& b)
 {
+	SG_SERROR("Prevented using broken sparse_dot function\n");
 	ASSERT(a.num_feat_entries > 0 && b.num_feat_entries > 0)
 	T dot_prod = 0;
 	index_t a_idx = 0, b_idx = 0;
