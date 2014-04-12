@@ -91,7 +91,18 @@ public:
 	virtual CMulticlassLabels* apply_multiclass(CFeatures* data=NULL);
 
 	/** prune id3 decision tree - uses reduced error pruning algorithm
+	 * 
 	 * cf. http://en.wikipedia.org/wiki/Pruning_%28decision_trees%29#Reduced_error_pruning
+	 *
+	 * At each node, starting from leaf nodes up to the root node, this
+	 * algorithm checks if removing the subtree gives better results (or
+	 * somewhat comparable results). If so, it replaces the subtree with
+	 * a leaf node. The algorithm implemented is recursive which starts with
+	 * the root node. At each node, it prunes its children first and then itself.
+	 * As the algorithm goes down each level during recursion, it creates the new
+	 * set of features by pushing subset into subset stack. While retracting, it pops
+	 * these subsets to access previous state of feature matrix (see add_subset() and 
+	 * remove_subset() in Shogun documentation). 
 	 *
 	 * @param validation_data feature vectors from validation dataset
 	 * @param validation_labels multiclass labels from validation dataset
