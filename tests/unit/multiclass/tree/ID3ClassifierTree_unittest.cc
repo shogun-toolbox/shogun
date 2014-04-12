@@ -197,3 +197,125 @@ TEST(ID3ClassifierTree, classify_simple)
 	SG_UNREF(id3);
 	SG_UNREF(feats);
 }
+
+TEST(ID3ClassifierTree, tree_prune)
+{
+
+	// form toy data
+	SGMatrix<float64_t> data(4,16);
+	float64_t num=0.0;
+
+	for (int32_t i=0;i<2;i++)
+	{
+		for (int32_t a=0;a<8;a++)
+			data(0,i*8+a)=num;
+	
+		num++;
+	}
+
+	num=0.0;
+	for (int32_t i=0;i<4;i++)
+	{
+		for (int32_t a=0;a<4;a++)
+			data(0,i*4+a)=num;
+
+		num=(num==1.0)?0.0:1.0;
+	}
+
+	num=0.0;
+	for (int32_t i=0;i<8;i++)
+	{
+		for (int32_t a=0;a<2;a++)
+			data(0,i*2+a)=num;
+
+		num=(num==1.0)?0.0:1.0;
+	}
+
+	num=0.0;
+	for (int32_t i=0;i<8;i++)
+	{
+		for (int32_t a=0;a<2;a++)
+			data(0,i+a)=num;
+
+		num=(num==1.0)?0.0:1.0;
+	}
+
+	// form toy labels
+	SGVector<float64_t> train_labels(16);
+	train_labels[0]=0;
+	train_labels[1]=0;
+	train_labels[2]=0;
+	train_labels[3]=1;
+	train_labels[4]=1;
+	train_labels[5]=1;
+	train_labels[6]=1;
+	train_labels[7]=1;
+	train_labels[8]=1;
+	train_labels[9]=1;
+	train_labels[10]=1;
+	train_labels[11]=1;
+	train_labels[12]=1;
+	train_labels[13]=1;
+	train_labels[14]=1;
+	train_labels[15]=1;
+
+	SGVector<float64_t> validation_labels(16);
+	validation_labels[0]=0;
+	validation_labels[1]=1;
+	validation_labels[2]=1;
+	validation_labels[3]=1;
+	validation_labels[4]=0;
+	validation_labels[5]=1;
+	validation_labels[6]=1;
+	validation_labels[7]=1;
+	validation_labels[8]=1;
+	validation_labels[9]=0;
+	validation_labels[10]=1;
+	validation_labels[11]=0;
+	validation_labels[12]=1;
+	validation_labels[13]=1;
+	validation_labels[14]=1;
+	validation_labels[15]=1;
+
+	// test features
+	SGMatrix<float64_t> test_data(4,4);
+	test_data(0,0)=0;
+	test_data(0,1)=0;
+	test_data(0,2)=0;
+	test_data(0,3)=1;
+	test_data(1,0)=0;
+	test_data(1,1)=0;
+	test_data(1,2)=1;
+	test_data(1,3)=0;
+	test_data(2,0)=0;
+	test_data(2,1)=0;
+	test_data(2,2)=0;
+	test_data(2,3)=1;
+	test_data(3,0)=0;
+	test_data(3,1)=1;
+	test_data(3,2)=0;
+	test_data(3,3)=1;
+
+	CDenseFeatures<float64_t>* train_features=new CDenseFeatures<float64_t>(data);
+	CDenseFeatures<float64_t>* test_features=new CDenseFeatures<float64_t>(test_data); 
+	CMulticlassLabels* train_lab=new CMulticlassLabels(train_labels);
+	CMulticlassLabels* validation_lab=new CMulticlassLabels(validation_labels);
+
+	CID3ClassifierTree* id3tree=new CID3ClassifierTree();
+	id3tree->set_labels(train_lab);
+	id3tree->train(train_features);
+	id3tree->prune_tree(train_features,validation_lab);
+
+	CMulticlassLabels* result=(CMulticlassLabels*) id3tree->apply(test_features);
+	SGVector<float64_t> res_vector=result->get_labels();
+
+	EXPECT_EQ(1.0,res_vector[0]);
+	EXPECT_EQ(1.0,res_vector[1]);
+	EXPECT_EQ(1.0,res_vector[2]);
+	EXPECT_EQ(1.0,res_vector[3]);
+
+	SG_UNREF(train_features);
+	SG_UNREF(test_features);
+	SG_UNREF(validation_lab);
+	SG_UNREF(result);
+}

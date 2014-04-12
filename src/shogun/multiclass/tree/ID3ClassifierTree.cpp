@@ -33,6 +33,7 @@
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/multiclass/tree/ID3ClassifierTree.h>
 #include <shogun/mathematics/Statistics.h>
+#include <shogun/evaluation/MulticlassAccuracy.h>
 
 using namespace shogun;
 
@@ -49,51 +50,21 @@ CMulticlassLabels* CID3ClassifierTree::apply_multiclass(CFeatures* data)
 {
 	REQUIRE(data, "Data required for classification in apply_multiclass\n")
 
-	CDenseFeatures<float64_t>* feats = dynamic_cast<CDenseFeatures<float64_t>*>(data);
-	int32_t num_vecs = feats->get_num_vectors();
-	SGVector<float64_t> labels = SGVector<float64_t>(num_vecs);
+	node_t* current = get_root();
+	CMulticlassLabels* ret = apply_multiclass_from_current_node((CDenseFeatures<float64_t>*) data, current);
 
-	for (int32_t i=0; i<num_vecs; i++)
-	{
-		SGVector<float64_t> sample = feats->get_feature_vector(i);
-		node_t* node = get_root();
-		CDynamicObjectArray* children = node->get_children();
-
-		while (children->get_num_elements())
-		{
-			int32_t flag = 0;
-			for (int32_t j=0; j<children->get_num_elements(); j++)
-			{
-				node_t* child = dynamic_cast<node_t*>(children->get_element(j));
-				if (child->data.transit_if_feature_value 
-						== sample[node->data.attribute_id])
-				{
-					flag = 1;
-
-					SG_UNREF(node);
-					node = child;
-
-					SG_UNREF(children);
-					children = node->get_children();
-
-					break;
-				}
-
-				SG_UNREF(child);
-			}
-
-			if (!flag)
-				break;
-		}
-		
-		labels[i] = node->data.class_label;
-
-		SG_UNREF(node);
-		SG_UNREF(children);
-	}
-	
-	CMulticlassLabels* ret = new CMulticlassLabels(labels);
+	SG_UNREF(current);
 	return ret;
+}
+
+bool CID3ClassifierTree::prune_tree(CDenseFeatures<float64_t>* validation_data, 
+			CMulticlassLabels* validation_labels, float64_t epsilon)
+{
+	node_t* current = get_root();
+	prune_tree_machine(validation_data, validation_labels, current, epsilon);
+
+	SG_UNREF(current);
+	return true;
 }
 
 bool CID3ClassifierTree::train_machine(CFeatures* data)
@@ -117,44 +88,40 @@ CTreeMachineNode<id3TreeNodeData>* CID3ClassifierTree::id3train(CFeatures* data,
 	CDenseFeatures<float64_t>* feats = dynamic_cast<CDenseFeatures<float64_t>*>(data);
 	int32_t num_vecs = feats->get_num_vectors();
 
-	// if all samples belong to the same class
-	if (class_labels->get_unique_labels().size() == 1)
+	// set class_label for the node as the mode of occurring multiclass labels  
+	SGVector<float64_t> labels = class_labels->get_labels_copy();
+	labels.qsort();
+	
+	int32_t most_label = labels[0];
+	int32_t most_num = 1;
+	int32_t count = 1;
+	
+	for (int32_t i=1; i<labels.vlen; i++)
 	{
-		node->data.class_label = class_labels->get_unique_labels()[0];
-		return node;
+		while ((labels[i] == labels[i-1]) && (i<labels.vlen))
+		{
+			count++;
+			i++;
+		}
+	
+		if (count>most_num)
+		{
+			most_num = count;
+			most_label = labels[i-1];
+		}
+	
+		count = 1;
 	}
+
+	node->data.class_label = most_label;
+
+	// if all samples belong to the same class
+	if (most_num == labels.vlen)
+		return node;
 
 	// if no feature is left
 	if (feature_id_vector.vlen == 0)
-	{
-		// decide label - label occuring max times
-		SGVector<float64_t> labels = class_labels->get_labels();
-		labels.qsort();
-
-		int32_t most_label = labels[0];
-		int32_t most_num = 1;
-		int32_t count = 1;
-
-		for (int32_t i=1; i<labels.vlen; i++)
-		{
-			while ((labels[i] == labels[i-1]) && (i<labels.vlen))
-			{
-				count++;
-				i++;
-			}
-
-			if (count>most_num)
-			{
-				most_num = count;
-				most_label = labels[i-1];
-			}
-
-			count = 1;
-		}
-
-		node->data.class_label = most_label;
 		return node;
-	}
 
 	// else get the feature with the highest informational gain
 	float64_t max = 0;
@@ -170,7 +137,7 @@ CTreeMachineNode<id3TreeNodeData>* CID3ClassifierTree::id3train(CFeatures* data,
 		}
 	}	
 
-	//get feature values for the best feature chosen
+	// get feature values for the best feature chosen
 	SGVector<float64_t> best_feature_values = SGVector<float64_t>(num_vecs);
 	for (int32_t i=0; i<num_vecs; i++)
 		best_feature_values[i] = (feats->get_feature_vector(i))[best_feature_index];
@@ -180,7 +147,7 @@ CTreeMachineNode<id3TreeNodeData>* CID3ClassifierTree::id3train(CFeatures* data,
 
 	for (int32_t i=0; i<best_labels_unique.vlen; i++)
 	{
-		//compute the number of vectors with active attribute value
+		// compute the number of vectors with active attribute value
 		int32_t num_cols = 0;
 		float64_t active_feature_value = best_labels_unique[i];
 
@@ -194,7 +161,7 @@ CTreeMachineNode<id3TreeNodeData>* CID3ClassifierTree::id3train(CFeatures* data,
 		SGVector<float64_t> new_labels_vector = SGVector<float64_t>(num_cols);
 
 		int32_t cnt = 0;
-		//choose the samples that have the active feature value
+		// choose the samples that have the active feature value
 		for (int32_t j=0; j<num_vecs; j++)
 		{
 			SGVector<float64_t> sample = feats->get_feature_vector(j);
@@ -212,7 +179,7 @@ CTreeMachineNode<id3TreeNodeData>* CID3ClassifierTree::id3train(CFeatures* data,
 			}
 		}
 
-		//remove the best_attribute from the remaining attributes index vector
+		// remove the best_attribute from the remaining attributes index vector
 		SGVector<int32_t> new_feature_id_vector = SGVector<int32_t>(feature_id_vector.vlen-1);		
 		cnt = -1;
 		for (int32_t j=0;j<feature_id_vector.vlen;j++)
@@ -249,7 +216,7 @@ float64_t CID3ClassifierTree::informational_gain_attribute(int32_t attr_no, CFea
 	CDenseFeatures<float64_t>* feats = dynamic_cast<CDenseFeatures<float64_t>*>(data);
 	int32_t num_vecs = feats->get_num_vectors();
 
-	//get attribute values for attribute
+	// get attribute values for attribute
 	SGVector<float64_t> attribute_values = SGVector<float64_t>(num_vecs);
 
 	for (int32_t i=0; i<num_vecs; i++)
@@ -260,7 +227,7 @@ float64_t CID3ClassifierTree::informational_gain_attribute(int32_t attr_no, CFea
 
 	for (int32_t i=0; i<attr_val_unique.vlen; i++)
 	{
-		//calculate class entropy for the specific attribute_value
+		// calculate class entropy for the specific attribute_value
 		int32_t attr_count=0;
 
 		for (int32_t j=0; j<num_vecs; j++)
@@ -315,4 +282,126 @@ float64_t CID3ClassifierTree::entropy(CMulticlassLabels* labels)
 	}
 
 	return CStatistics::entropy(log_ratios.vector, log_ratios.vlen);
+}
+
+void CID3ClassifierTree::prune_tree_machine(CDenseFeatures<float64_t>* feats,
+		CMulticlassLabels* gnd_truth, node_t* current, float64_t epsilon)
+{
+	SGMatrix<float64_t> feature_matrix = feats->get_feature_matrix();
+	CDynamicObjectArray* children = current->get_children();
+
+	for (int32_t i=0; i<children->get_num_elements(); i++)
+	{
+		// count number of feature vectors which transit into the child
+		int32_t count = 0;
+		node_t* child = dynamic_cast<node_t*>(children->get_element(i));
+
+		for (int32_t j=0; j<feature_matrix.num_cols; j++)
+		{
+			float child_transit = child->data.transit_if_feature_value;
+
+			if (child_transit == feature_matrix(current->data.attribute_id,j))
+				count++;
+		}
+
+		// form new subset of features and labels
+		SGVector<index_t> subset = SGVector<index_t>(count);
+		int32_t k = 0;
+
+		for (int32_t j=0; j<feature_matrix.num_cols;j++)
+		{
+			float child_transit = child->data.transit_if_feature_value;
+
+			if (child_transit == feature_matrix(current->data.attribute_id,j))
+			{
+				subset[k] = (index_t) j;
+				k++;
+			}
+		}
+
+		feats->add_subset(subset);
+		gnd_truth->add_subset(subset);
+
+		// prune the child subtree
+		prune_tree_machine(feats, gnd_truth, child, epsilon);
+
+		feats->remove_subset();
+		gnd_truth->remove_subset();
+
+		SG_UNREF(child);
+	}
+
+	SG_UNREF(children);
+
+	CMulticlassLabels* predicted_unpruned = apply_multiclass_from_current_node(feats, current);
+	SGVector<float64_t> pruned_labels = SGVector<float64_t>(feature_matrix.num_cols);
+	for (int32_t i=0; i<feature_matrix.num_cols; i++)
+		pruned_labels[i] = current->data.class_label;
+
+	CMulticlassLabels* predicted_pruned = new CMulticlassLabels(pruned_labels);
+
+	CMulticlassAccuracy* accuracy = new CMulticlassAccuracy();
+	float64_t unpruned_accuracy = accuracy->evaluate(predicted_unpruned, gnd_truth);
+	float64_t pruned_accuracy = accuracy->evaluate(predicted_pruned, gnd_truth);
+	
+	if (unpruned_accuracy<pruned_accuracy+epsilon)
+		current->set_children(new CDynamicObjectArray());
+
+	SG_UNREF(accuracy);
+	SG_UNREF(predicted_pruned);
+	SG_UNREF(predicted_unpruned);
+}
+
+CMulticlassLabels* CID3ClassifierTree::apply_multiclass_from_current_node(CDenseFeatures<float64_t>* feats, 
+											node_t* current)
+{
+	int32_t num_vecs = feats->get_num_vectors();
+	SGVector<float64_t> labels = SGVector<float64_t>(num_vecs);
+
+	// classify vectors in feature matrix taking one at a time
+	for (int32_t i=0; i<num_vecs; i++)
+	{
+		// choose the current subtree as the entry point
+		SGVector<float64_t> sample = feats->get_feature_vector(i);
+		node_t* node = current;
+		SG_REF(node);
+		CDynamicObjectArray* children = node->get_children();
+
+		// traverse the subtree until leaf node is reached
+		while (children->get_num_elements())
+		{
+			bool flag = false;
+			for (int32_t j=0; j<children->get_num_elements(); j++)
+			{
+				node_t* child = dynamic_cast<node_t*>(children->get_element(j));
+				if (child->data.transit_if_feature_value 
+						== sample[node->data.attribute_id])
+				{
+					flag = true;
+
+					SG_UNREF(node);
+					node = child;
+
+					SG_UNREF(children);
+					children = node->get_children();
+
+					break;
+				}
+
+				SG_UNREF(child);
+			}
+
+			if (!flag)
+				break;
+		}
+		
+		// class_label of leaf node is the class to which chosen vector belongs
+		labels[i] = node->data.class_label;
+
+		SG_UNREF(node);
+		SG_UNREF(children);
+	}
+	
+	CMulticlassLabels* ret = new CMulticlassLabels(labels);
+	return ret;
 }
