@@ -41,16 +41,15 @@
 #include <shogun/labels/Labels.h>
 #include <shogun/distributions/Distribution.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/base/SGObject.h>
 
 using namespace shogun;
 
 
-/* This class is used for the calculation of the Kernel Density Estimation of a given 
+/** This class is used for the calculation of the Kernel Density Estimation of a given 
  * data.
  * First it uses the K-Nearest Neighbor algorithm to classify the data into the correct
- * bin. Secondly the Probability Density Function is then calculated over every row of
- * the data SGMatrix. Thirdly, the function: \f$\frac{1}{(n \times h\)} \times \Sigma\ K(frac{x-xi}{h})\f$, where:
+ * bin. Secondly the Probability Density Function is then calculated. Thirdly, the function: 
+ * \f$\frac{1}{(n \times h\)} \times \sum_{K(frac{x-xi}{h}}^)\f$ is calculated, where:
  * h = bandwidth, K equals the Gaussian PDF calculation (the kernel used), and n = The number of features.
 */
 
@@ -59,7 +58,7 @@ class CKDE : public CDistribution
 {
     public:
 
-        /*Constructor
+        /** @brief sets the values of the private variables.
          * @param num_points
          */
         CKDE(index_t num_points);
@@ -67,50 +66,47 @@ class CKDE : public CDistribution
         /** Destructor */
         virtual ~CKDE();
 
-        /*         Calls the methods compute_nn and compute_pdf
-         *         that will respectively calculate the NN matrix
-         *         using the data and the PDF of the NN matrix.
+        /** @brief Calls the methods compute_nn and compute_pdf
+         *that will respectively calculate the NN matrix
+         *using the data and the PDF of the NN matrix.
          *
-         * @param  Method takes CFeatures (data) as an argument and
-         *         k, which is the k parameter in the Nearest Neighbor algorithm.
+         * @param takes CFeatures (data) as an argument and
+         *k, which is the k parameter in the Nearest Neighbor algorithm.
          *
-         * @return Returns the value of the Kernel Density Estimation function
-         *         of the given data.
+         * @return the value of the Kernel Density Estimation function
+         *of the given data.
          */
         float64_t compute_kde(CFeatures* data,int32_t k);
 
-        /*        The nearest neighbor algorithm is executed and saved
-         *        in the values SGVector.
+        /** @brief The nearest neighbor algorithm is executed and saved
+         * in the values SGVector.
          *
          * @param Method takes CFeatures (data)
-         *        k, which is the k parameter in the Nearest Neighbor algorithm.
+         * k, which is the k parameter in the Nearest Neighbor algorithm.
          *
-         * @return Returns the SGVector values.
+         * @return the SGVector values.
          */
         SGVector<float64_t> compute_nn(CFeatures* data,int32_t k);
 
-        /*        Density is calculated based on the SGVector m_values.
-         *        To calculate density, it will be the log pdf of a vector, 
-         *        divided by the bandwidth, calculated by the Gaussian method.
-         *        The final value of density is then multiplied by 1/(n*bandwidth).
-         *    
-         *        
-         * @return density is returned.
+        /** @brief Density is calculated based on the SGVector m_values.
+         * To calculate density, it will be the log pdf of a vector, 
+         * divided by the bandwidth, calculated by the Gaussian method.
+         * The final value of density is then multiplied by 1/(n*bandwidth).
+         *            
+         * @return density.
          */
         float64_t compute_pdf();
 
-        /*        The method sets the value of m_bandwidth equal to the
-         *        value of the parameter bandwidth.
+        /** @brief The method sets the value of m_bandwidth equal to the
+         * value of the parameter bandwidth.
          *
-         * @param Method takes an integer as an argument.        
+         * @param takes an integer as an argument.        
          */
         void set_bandwidth(int32_t bandwidth) {m_bandwidth = bandwidth;}
 
-        /* @return Method returns the value of m_bandwidth.
+        /* @return the value of m_bandwidth.
          */
         int32_t get_bandwidth() {return m_bandwidth;}
-
-        /* CDistribution's Virtual Methods */
 
         /** learn distribution
          *

@@ -38,14 +38,13 @@
 #include <shogun/features/Features.h>
 #include <shogun/labels/Labels.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/base/SGObject.h>
 
 using namespace shogun;
 
 //Constructor of the class. All predefined values are assinged
 CKDE::CKDE(index_t num_points)
 {
-	  m_values = SGVector<float64_t>(num_points,true);
+	m_values = SGVector<float64_t>(num_points,true);
     m_log_density = 0;
     m_bandwidth = 1;
     m_pdf = new CGaussian();
@@ -82,11 +81,11 @@ SGVector<float64_t> CKDE::compute_nn(CFeatures* data,int32_t k)
 //Method that computes the PDF of each row
 //Returns an SGVector with the value of each kernel function in each set of points
 float64_t CKDE::compute_pdf()
-{ 
-	float64_t density = 0;
+{
+  	float64_t density = 0;
 
-  density = m_pdf->compute_PDF(m_values.get())/m_bandwidth;
-  density *= (1/(m_values.size()*m_bandwidth));
+  	density = m_pdf->compute_PDF(m_values.get())/m_bandwidth;
+  	density *= (1/(m_values.size()*m_bandwidth));
 
 	SG_UNREF(m_pdf);
 	return density;
