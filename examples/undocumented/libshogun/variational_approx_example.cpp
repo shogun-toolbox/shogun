@@ -328,53 +328,53 @@ int main(int argc, char** argv)
 {
 	init_shogun_with_defaults();
 
-	const char * bound_file = "../data/variational/bounds";
+	const char * bound_file = "../data/toy/variational/bounds";
 
 	//dataset1
-	const char * x_file = "../data/variational/X_dataset1";
-	const char * y_file = "../data/variational/y_dataset1";
-	const char * m_file = "../data/variational/m_dataset1";
-	const char * loglik_file = "../data/variational/logLik_dataset1";
+	const char * x_file = "../data/toy/variational/X_dataset1";
+	const char * y_file = "../data/toy/variational/y_dataset1";
+	const char * m_file = "../data/toy/variational/m_dataset1";
+	const char * loglik_file = "../data/toy/variational/logLik_dataset1";
 	SG_SPRINT("For dataset 1\n")
 	run(x_file, y_file, bound_file, m_file, loglik_file);
 
 	//dataset2
-	x_file = "../data/variational/X_dataset2";
-	y_file = "../data/variational/y_dataset2";
-	m_file = "../data/variational/m_dataset2";
-	loglik_file = "../data/variational/logLik_dataset2";
+	x_file = "../data/toy/variational/X_dataset2";
+	y_file = "../data/toy/variational/y_dataset2";
+	m_file = "../data/toy/variational/m_dataset2";
+	loglik_file = "../data/toy/variational/logLik_dataset2";
 	SG_SPRINT("For dataset 2\n")
 	run(x_file, y_file, bound_file, m_file, loglik_file);
 
 	//dataset3
-	x_file = "../data/variational/X_dataset3";
-	y_file = "../data/variational/y_dataset3";
-	m_file = "../data/variational/m_dataset3";
-	loglik_file = "../data/variational/logLik_dataset3";
+	x_file = "../data/toy/variational/X_dataset3";
+	y_file = "../data/toy/variational/y_dataset3";
+	m_file = "../data/toy/variational/m_dataset3";
+	loglik_file = "../data/toy/variational/logLik_dataset3";
 	SG_SPRINT("For dataset 3\n")
 	run(x_file, y_file, bound_file, m_file, loglik_file);
 
 	//dataset4
-	x_file = "../data/variational/X_dataset4";
-	y_file = "../data/variational/y_dataset4";
-	m_file = "../data/variational/m_dataset4";
-	loglik_file = "../data/variational/logLik_dataset4";
+	x_file = "../data/toy/variational/X_dataset4";
+	y_file = "../data/toy/variational/y_dataset4";
+	m_file = "../data/toy/variational/m_dataset4";
+	loglik_file = "../data/toy/variational/logLik_dataset4";
 	SG_SPRINT("For dataset 4\n")
 	run(x_file, y_file, bound_file, m_file, loglik_file);
 
 	//dataset5
-	x_file = "../data/variational/X_dataset5";
-	y_file = "../data/variational/y_dataset5";
-	m_file = "../data/variational/m_dataset5";
-	loglik_file = "../data/variational/logLik_dataset5";
+	x_file = "../data/toy/variational/X_dataset5";
+	y_file = "../data/toy/variational/y_dataset5";
+	m_file = "../data/toy/variational/m_dataset5";
+	loglik_file = "../data/toy/variational/logLik_dataset5";
 	SG_SPRINT("For dataset 5\n")
 	run(x_file, y_file, bound_file, m_file, loglik_file);
 
 	//dataset6
-	x_file = "../data/variational/X_dataset6";
-	y_file = "../data/variational/y_dataset6";
-	m_file = "../data/variational/m_dataset6";
-	loglik_file = "../data/variational/logLik_dataset6";
+	x_file = "../data/toy/variational/X_dataset6";
+	y_file = "../data/toy/variational/y_dataset6";
+	m_file = "../data/toy/variational/m_dataset6";
+	loglik_file = "../data/toy/variational/logLik_dataset6";
 	SG_SPRINT("For dataset 6\n")
 	run(x_file, y_file, bound_file, m_file, loglik_file);
 
