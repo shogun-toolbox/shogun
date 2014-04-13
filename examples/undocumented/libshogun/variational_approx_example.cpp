@@ -47,44 +47,52 @@
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/io/CSVFile.h>
+#include <cstdio>
 
 using namespace shogun;
 
+//init the variational Piecewise bound 
 SGMatrix<float64_t> init_piecewise_bound(const char * fname)
 {
 	SGMatrix<float64_t> bound;
-	CCSVFile* bound_file =new CCSVFile(fname);
+	CCSVFile* bound_file = new CCSVFile(fname);
 	bound_file->set_delimiter('\t');
 	bound.load(bound_file);
 	SG_UNREF(bound_file);
 	return bound;
 }
 
+//The following pre-init value is used to verify the correctness
+//The following code will be removed.
 SGVector<float64_t> load_m_from_matlab(const char * fname)
 {
 	SGVector<float64_t> m_from_matlab;
-	CCSVFile* m_file =new CCSVFile(fname);
+	CCSVFile* m_file = new CCSVFile(fname);
 	m_file->set_delimiter('\t');
 	m_from_matlab.load(m_file);
 	SG_UNREF(m_file);
 	return m_from_matlab;
 }
 
+//The following pre-init value is used to verify the correctness
+//The following code will be removed.
 float64_t load_loglik_from_matlab(const char * fname)
 {
 	SGVector<float64_t> f_from_matlab;
-	CCSVFile* f_file =new CCSVFile(fname);
+	CCSVFile* f_file = new CCSVFile(fname);
 	f_file->set_delimiter('\t');
 	f_from_matlab.load(f_file);
 	SG_UNREF(f_file);
-	ASSERT(f_from_matlab.vlen == 1);
+	REQUIRE(f_from_matlab.vlen == 1, "logLik is a scalar");
 	return f_from_matlab[0];
 }
 
-SGMatrix<float64_t> create_feature(const char *fname, index_t num_sample, index_t num_dim)
+//Randomly generating the input feature (X)
+SGMatrix<float64_t> create_feature(const char *fname, index_t num_sample,
+	index_t num_dim)
 {
-	ASSERT(num_sample % 2 == 0);
-	
+
+	REQUIRE(num_sample % 2 == 0, "For this example we assume the num_sample is even");
 	/*
 	//X = [5*rand(N/2,D); -5*rand(N/2,D)]; 
 	//The following code is used to generate synthetic data
@@ -102,17 +110,22 @@ SGMatrix<float64_t> create_feature(const char *fname, index_t num_sample, index_
 	*/
 
 	//The following pre-init value is used to verify the correctness
+	//The following code will be removed.
 	SGMatrix<float64_t> X;
-	CCSVFile* X_file =new CCSVFile(fname);
+	CCSVFile* X_file = new CCSVFile(fname);
 	X_file->set_delimiter('\t');
 	X.load(X_file);
 	SG_UNREF(X_file);
 	return X;
 }
 
-SGVector<float64_t> create_label(const char * fname, SGVector<float64_t> mu, SGMatrix<float64_t> sigma)
+//Randomly generating the observated labels (y) followed by Guassian distribution (synthetic data)
+SGVector<float64_t> create_label(const char * fname, SGVector<float64_t> mu,
+	SGMatrix<float64_t> sigma)
 {
-	ASSERT(sigma.num_rows == mu.vlen && sigma.num_rows == sigma.num_cols);
+
+	REQUIRE(sigma.num_rows == sigma.num_cols, "Sigma should be a covariance (square) matrix");
+	REQUIRE(sigma.num_rows == mu.vlen, "Sigma and mu should have the same dimensionality");
 
 	/*
 	//The following code is used to generate synthetic data
@@ -121,7 +134,7 @@ SGVector<float64_t> create_label(const char * fname, SGVector<float64_t> mu, SGM
 	Eigen::Map<Eigen::MatrixXd> eigen_sigma(sigma.matrix, sigma.num_rows, sigma.num_cols);
 
 	//y = mvnrnd(mu, Sigma, 1);
-	CProbabilityDistribution * dist =new CGaussianDistribution(mu, sigma);
+	CProbabilityDistribution * dist = new CGaussianDistribution(mu, sigma);
 	y = dist->sample();
 	//y = (y(:)>0);
 	//Note that Shogun uses -1 and 1 as labels
@@ -136,12 +149,14 @@ SGVector<float64_t> create_label(const char * fname, SGVector<float64_t> mu, SGM
 	*/
 
 	//The following pre-init value is used to verify the correctness
+	//The following code will be removed.
 	//Note that Shogun uses -1 and 1 as labels
 	SGVector<float64_t> y;
-	CCSVFile* y_file =new CCSVFile(fname);
+	CCSVFile* y_file = new CCSVFile(fname);
 	y_file->set_delimiter('\t');
 	y.load(y_file);
 	SG_UNREF(y_file);
+
 	for(index_t i = 0; i < y.vlen; i++)
 	{
 		if (y[i] > 0)
@@ -149,10 +164,13 @@ SGVector<float64_t> create_label(const char * fname, SGVector<float64_t> mu, SGM
 		else
 			y[i] = -1;
 	}
-	ASSERT(y.vlen == mu.vlen);
+
+	REQUIRE(y.vlen == mu.vlen,
+		"The labels loaded from the file should have the same dimensionality of mu");
 	return y;
 }
 
+//The following struct is used to pass information when using the build-in L-BFGS component
 struct Shared 
 {
 	CLogitPiecewiseBoundLikelihood *lik;
@@ -167,6 +185,7 @@ struct Shared
 	SGMatrix<float64_t> bound;
 };
 
+//Init the parameters used for L-BFGS
 lbfgs_parameter_t inti_lbfgs_parameters()
 {
 	lbfgs_parameter_t tmp;
@@ -190,8 +209,8 @@ lbfgs_parameter_t inti_lbfgs_parameters()
 }
 
 //This function is similar to the Matlab code, simpleVariational.m
-float64_t evaluate(void *obj, const float64_t *variable,
-	float64_t *gradient, const int dim, const float64_t step)
+float64_t evaluate(void *obj, const float64_t *variable, float64_t *gradient,
+	const int dim, const float64_t step)
 {
 	Shared * obj_prt = static_cast<Shared *>(obj);
 
@@ -203,13 +222,15 @@ float64_t evaluate(void *obj, const float64_t *variable,
 	//[fi, gmi, gvi] = ElogLik('bernLogit', y, m, v, bound); get fi at here
 	SGVector<float64_t> fi = obj_prt->lik->get_variational_expection(); 
 
-	TParameter* mu_param=obj_prt->lik->m_gradient_parameters->get_parameter("mu");
+	TParameter* mu_param = obj_prt->lik->m_gradient_parameters->get_parameter("mu");
 	//[fi, gmi, gvi] = ElogLik('bernLogit', y, m, v, bound); get gmi at here
-	SGVector<float64_t> gmi = obj_prt->lik->get_variational_first_derivative(mu_param);
+	SGVector<float64_t> gmi =
+		obj_prt->lik->get_variational_first_derivative(mu_param);
 
 	SGVector<float64_t> g(dim);
 	Eigen::Map<Eigen::VectorXd> eigen_g(g.vector, g.vlen);
-	Eigen::Map<Eigen::MatrixXd> eigen_omega(obj_prt->omega.matrix, obj_prt->omega.num_rows, obj_prt->omega.num_cols);
+	Eigen::Map<Eigen::MatrixXd> eigen_omega(obj_prt->omega.matrix,
+		obj_prt->omega.num_rows, obj_prt->omega.num_cols);
 	//e = m-mu;
 	//g = Omega*e;
 	eigen_g = eigen_omega*(eigen_m - eigen_mu);
@@ -230,10 +251,11 @@ float64_t evaluate(void *obj, const float64_t *variable,
 	return -f;
 }
 
-void run(const char * x_file, const char * y_file, const char * bound_file, const char * m_file, const char * loglik_file)
+void run(const char * x_file, const char * y_file, const char * bound_file,
+	const char * m_file, const char * loglik_file)
 {
 	//N = 20; % number of data examples
-	index_t num_sample= 20;
+	index_t num_sample = 20;
 	//D = 5; % feature dimensionality
 	index_t num_dim = 5;
 
@@ -250,10 +272,13 @@ void run(const char * x_file, const char * y_file, const char * bound_file, cons
 
 	//Sigma = X*X' + eye(N); % linear kernel
 	obj.sigma = SGMatrix<float64_t> (num_sample, num_sample);
-	Eigen::Map<Eigen::MatrixXd> eigen_data(obj.data.matrix, obj.data.num_rows, obj.data.num_cols);
-	Eigen::Map<Eigen::MatrixXd> eigen_sigma(obj.sigma.matrix, obj.sigma.num_rows, obj.sigma.num_cols);
+	Eigen::Map<Eigen::MatrixXd> eigen_data(obj.data.matrix, obj.data.num_rows,
+		obj.data.num_cols);
+	Eigen::Map<Eigen::MatrixXd> eigen_sigma(obj.sigma.matrix,
+		obj.sigma.num_rows, obj.sigma.num_cols);
 	//Sigma = X*X' + eye(N);
-	eigen_sigma = eigen_data * (eigen_data.transpose()) + Eigen::MatrixXd::Identity(num_sample, num_sample);
+	eigen_sigma = eigen_data * (eigen_data.transpose()) +
+		Eigen::MatrixXd::Identity(num_sample, num_sample);
 
 	//mu = zeros(N,1); % zero mean
 	obj.mu = SGVector<float64_t> (num_sample);
@@ -294,7 +319,8 @@ void run(const char * x_file, const char * y_file, const char * bound_file, cons
 
 	//Omega = inv(Sigma);
 	obj.omega = SGMatrix<float64_t>(num_sample, num_sample);
-	Eigen::Map<Eigen::MatrixXd> eigen_omega(obj.omega.matrix, obj.omega.num_rows, obj.omega.num_cols);
+	Eigen::Map<Eigen::MatrixXd> eigen_omega(obj.omega.matrix,
+		obj.omega.num_rows, obj.omega.num_cols);
 	Eigen::FullPivLU<Eigen::MatrixXd>lu (eigen_sigma);
 	ASSERT(lu.isInvertible());
 	eigen_omega = lu.inverse();
@@ -311,80 +337,53 @@ void run(const char * x_file, const char * y_file, const char * bound_file, cons
 	SG_SPRINT("lbfgs status =%d\n",ret);
 	SG_SPRINT("logLik from Shogun =%.10f from Matlab =%.10f\n", logLik, logLik_from_matlab);
 	SG_SPRINT("opt m =\n");
+
 	for(index_t i = 0; i < obj.m0.vlen; ++i)
 	{
 		float64_t relative_diff;
+
 		if (m_from_matlab[i] != 0.0)
 			relative_diff = CMath::abs(obj.m0[i]/m_from_matlab[i] - 1);
 		else
 			relative_diff = CMath::abs(obj.m0[i]);
+
 		SG_SPRINT("m[%d] from Shogun =%.10f from Matlab = %.10f relative_diff = %.10f\n", i+1,
 			obj.m0[i], m_from_matlab[i], relative_diff);
 	}
+
 	SG_UNREF(obj.lik);
+}
+
+void test_datasets()
+{
+	const index_t buff_size = 1024;
+	const char * data_path = "../data/toy/variational";
+
+	char bound_path_buffer[buff_size];
+	char x_path_buffer[buff_size];
+	char y_path_buffer[buff_size];
+	char m_path_buffer[buff_size];
+	char loglik_path_buffer[buff_size];
+
+	snprintf(bound_path_buffer, buff_size, "%s/bounds", data_path);
+
+	for (index_t i = 1; i <= 6; i++)
+	{
+		snprintf(x_path_buffer, buff_size, "%s/X_dataset%d", data_path, i);
+		snprintf(y_path_buffer, buff_size, "%s/y_dataset%d", data_path, i);
+		snprintf(m_path_buffer, buff_size, "%s/m_dataset%d", data_path, i);
+		snprintf(loglik_path_buffer, buff_size, "%s/logLik_dataset%d", data_path, i);
+		SG_SPRINT("\nDataset %d\n", i);
+		run(x_path_buffer, y_path_buffer, bound_path_buffer, m_path_buffer, loglik_path_buffer);
+	}
+
 }
 
 int main(int argc, char** argv)
 {
 	init_shogun_with_defaults();
-
-	const char * bound_file = "../data/toy/variational/bounds";
-
-	//dataset1
-	const char * x_file = "../data/toy/variational/X_dataset1";
-	const char * y_file = "../data/toy/variational/y_dataset1";
-	const char * m_file = "../data/toy/variational/m_dataset1";
-	const char * loglik_file = "../data/toy/variational/logLik_dataset1";
-	SG_SPRINT("For dataset 1\n")
-	run(x_file, y_file, bound_file, m_file, loglik_file);
-
-	//dataset2
-	x_file = "../data/toy/variational/X_dataset2";
-	y_file = "../data/toy/variational/y_dataset2";
-	m_file = "../data/toy/variational/m_dataset2";
-	loglik_file = "../data/toy/variational/logLik_dataset2";
-	SG_SPRINT("For dataset 2\n")
-	run(x_file, y_file, bound_file, m_file, loglik_file);
-
-	//dataset3
-	x_file = "../data/toy/variational/X_dataset3";
-	y_file = "../data/toy/variational/y_dataset3";
-	m_file = "../data/toy/variational/m_dataset3";
-	loglik_file = "../data/toy/variational/logLik_dataset3";
-	SG_SPRINT("For dataset 3\n")
-	run(x_file, y_file, bound_file, m_file, loglik_file);
-
-	//dataset4
-	x_file = "../data/toy/variational/X_dataset4";
-	y_file = "../data/toy/variational/y_dataset4";
-	m_file = "../data/toy/variational/m_dataset4";
-	loglik_file = "../data/toy/variational/logLik_dataset4";
-	SG_SPRINT("For dataset 4\n")
-	run(x_file, y_file, bound_file, m_file, loglik_file);
-
-	//dataset5
-	x_file = "../data/toy/variational/X_dataset5";
-	y_file = "../data/toy/variational/y_dataset5";
-	m_file = "../data/toy/variational/m_dataset5";
-	loglik_file = "../data/toy/variational/logLik_dataset5";
-	SG_SPRINT("For dataset 5\n")
-	run(x_file, y_file, bound_file, m_file, loglik_file);
-
-	//dataset6
-	x_file = "../data/toy/variational/X_dataset6";
-	y_file = "../data/toy/variational/y_dataset6";
-	m_file = "../data/toy/variational/m_dataset6";
-	loglik_file = "../data/toy/variational/logLik_dataset6";
-	SG_SPRINT("For dataset 6\n")
-	run(x_file, y_file, bound_file, m_file, loglik_file);
-
+	test_datasets();
 	exit_shogun();
 	return 0;
-}
-
-#else
-int main(int argc, char **argv)
-{
-  return 0;
 }
 #endif /* HAVE_EIGEN3 */
