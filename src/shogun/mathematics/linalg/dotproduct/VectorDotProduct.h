@@ -35,39 +35,32 @@
 #define VECTOR_DOT_PRODUCT_H_
 
 #include <shogun/lib/config.h>
-#include <shogun/base/SGObject.h>
+#include <shogun/lib/common.h>
 
 namespace shogun
 {
+
 /** @brief Abstract template base class for vector dot product computers */
-template <class T, class Vector >
-class CVectorDotProduct : public CSGObject
+template <class T, class Vector> class VectorDotProduct
 {
 public:
-    /** constructor */
-    CVectorDotProduct() : CSGObject()
+    /** Constructor */
+    VectorDotProduct()
     {
-        SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
     }
 
-    /** compute method for computing dot product of two vectors
+    /** Compute method for computing dot product of two vectors
      *  @param vector1 input vector
      *  @param vector2 input vector
      *  @return the result of dot product operation
      */
     virtual T compute(Vector vector1, Vector vector2) const = 0;
 
-    /** destructor */
-    virtual ~CVectorDotProduct()
+    /** Destructor */
+    virtual ~VectorDotProduct()
     {
-        SG_GCDEBUG("%s destroyed (%p)\n", this->get_name(), this)
-    }
-
-    /** @return object name */
-    virtual const char* get_name() const
-    {
-        return "VectorDotProduct";
     }
 };
+
 }
 #endif //VECTOR_DOT_PRODUCT_H_

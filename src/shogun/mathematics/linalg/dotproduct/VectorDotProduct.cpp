@@ -32,37 +32,38 @@
  */
 
 #include<shogun/mathematics/linalg/dotproduct/VectorDotProduct.h>
-#include <shogun/lib/SGVector.h>
-#include <shogun/lib/SGSparseVector.h>
+
 namespace shogun
 {
-template class CVectorDotProduct<bool, SGVector<bool> >;
-template class CVectorDotProduct<char,  SGVector<char> >;
-template class CVectorDotProduct<int8_t, SGVector<int8_t> >;
-template class CVectorDotProduct<uint8_t, SGVector<uint8_t> >;
-template class CVectorDotProduct<int16_t, SGVector<int16_t> >;
-template class CVectorDotProduct<uint16_t, SGVector<uint16_t> >;
-template class CVectorDotProduct<int32_t, SGVector<int32_t> >;
-template class CVectorDotProduct<uint32_t, SGVector<uint32_t> >;
-template class CVectorDotProduct<int64_t, SGVector<int64_t> >;
-template class CVectorDotProduct<uint64_t, SGVector<uint64_t> >;
-template class CVectorDotProduct<float32_t, SGVector<float32_t> >;
-template class CVectorDotProduct<float64_t, SGVector<float64_t> >;
-template class CVectorDotProduct<floatmax_t, SGVector<floatmax_t> >;
-template class CVectorDotProduct<complex128_t, SGVector<complex128_t> >;
 
-template class CVectorDotProduct<bool, SGSparseVector<bool> >;
-template class CVectorDotProduct<char,  SGSparseVector<char> >;
-template class CVectorDotProduct<int8_t, SGSparseVector<int8_t> >;
-template class CVectorDotProduct<uint8_t, SGSparseVector<uint8_t> >;
-template class CVectorDotProduct<int16_t, SGSparseVector<int16_t> >;
-template class CVectorDotProduct<uint16_t, SGSparseVector<uint16_t> >;
-template class CVectorDotProduct<int32_t, SGSparseVector<int32_t> >;
-template class CVectorDotProduct<uint32_t, SGSparseVector<uint32_t> >;
-template class CVectorDotProduct<int64_t, SGSparseVector<int64_t> >;
-template class CVectorDotProduct<uint64_t, SGSparseVector<uint64_t> >;
-template class CVectorDotProduct<float32_t, SGSparseVector<float32_t> >;
-template class CVectorDotProduct<float64_t, SGSparseVector<float64_t> >;
-template class CVectorDotProduct<floatmax_t, SGSparseVector<floatmax_t> >;
-template class CVectorDotProduct<complex128_t, SGSparseVector<complex128_t> >;
+template class VectorDotProduct<bool, SGVector<bool> >;
+template class VectorDotProduct<char,  SGVector<char> >;
+template class VectorDotProduct<int8_t, SGVector<int8_t> >;
+template class VectorDotProduct<uint8_t, SGVector<uint8_t> >;
+template class VectorDotProduct<int16_t, SGVector<int16_t> >;
+template class VectorDotProduct<uint16_t, SGVector<uint16_t> >;
+template class VectorDotProduct<int32_t, SGVector<int32_t> >;
+template class VectorDotProduct<uint32_t, SGVector<uint32_t> >;
+template class VectorDotProduct<int64_t, SGVector<int64_t> >;
+template class VectorDotProduct<uint64_t, SGVector<uint64_t> >;
+template class VectorDotProduct<float32_t, SGVector<float32_t> >;
+template class VectorDotProduct<float64_t, SGVector<float64_t> >;
+template class VectorDotProduct<floatmax_t, SGVector<floatmax_t> >;
+template class VectorDotProduct<complex128_t, SGVector<complex128_t> >;
+
+template class VectorDotProduct<bool, SGSparseVector<bool> >;
+template class VectorDotProduct<char,  SGSparseVector<char> >;
+template class VectorDotProduct<int8_t, SGSparseVector<int8_t> >;
+template class VectorDotProduct<uint8_t, SGSparseVector<uint8_t> >;
+template class VectorDotProduct<int16_t, SGSparseVector<int16_t> >;
+template class VectorDotProduct<uint16_t, SGSparseVector<uint16_t> >;
+template class VectorDotProduct<int32_t, SGSparseVector<int32_t> >;
+template class VectorDotProduct<uint32_t, SGSparseVector<uint32_t> >;
+template class VectorDotProduct<int64_t, SGSparseVector<int64_t> >;
+template class VectorDotProduct<uint64_t, SGSparseVector<uint64_t> >;
+template class VectorDotProduct<float32_t, SGSparseVector<float32_t> >;
+template class VectorDotProduct<float64_t, SGSparseVector<float64_t> >;
+template class VectorDotProduct<floatmax_t, SGSparseVector<floatmax_t> >;
+template class VectorDotProduct<complex128_t, SGSparseVector<complex128_t> >;
+
 }

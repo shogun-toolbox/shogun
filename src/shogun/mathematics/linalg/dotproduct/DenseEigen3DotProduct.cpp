@@ -34,33 +34,38 @@
 #include <shogun/lib/config.h>
 
 #ifdef HAVE_EIGEN3
-#include<shogun/mathematics/linalg/dotproduct/VectorDotProduct.h>
-#include<shogun/mathematics/linalg/dotproduct/DenseEigen3DotProduct.h>
+#include <shogun/mathematics/linalg/dotproduct/VectorDotProduct.h>
+#include <shogun/mathematics/linalg/dotproduct/DenseEigen3DotProduct.h>
+#include <shogun/lib/SGVector.h>
+#include <shogun/io/SGIO.h>
+
 namespace shogun
 {
+
 template<class T>
-T CDenseEigen3DotProduct<T>::compute(SGVector<T> vector1, SGVector<T> vector2) const
+T DenseEigen3DotProduct<T>::compute(SGVector<T> vector1, SGVector<T> vector2) const
 {
-    //if (vector1.vlen != vector2.vlen)
-    //SG_ERROR("dimension mismatch")
+    REQUIRE(vector1.vlen==vector2.vlen, "Dimension mismatch!\n");
+
     Map<Matrix<T, Dynamic, 1> > vec1(vector1.vector, vector1.vlen);
     Map<Matrix<T, Dynamic, 1> > vec2(vector2.vector, vector2.vlen);
     return vec1.dot(vec2);
 }
 
-template class CDenseEigen3DotProduct<bool>;
-template class CDenseEigen3DotProduct<char>;
-template class CDenseEigen3DotProduct<int8_t>;
-template class CDenseEigen3DotProduct<uint8_t>;
-template class CDenseEigen3DotProduct<int16_t>;
-template class CDenseEigen3DotProduct<uint16_t>;
-template class CDenseEigen3DotProduct<int32_t>;
-template class CDenseEigen3DotProduct<uint32_t>;
-template class CDenseEigen3DotProduct<int64_t>;
-template class CDenseEigen3DotProduct<uint64_t>;
-template class CDenseEigen3DotProduct<float32_t>;
-template class CDenseEigen3DotProduct<float64_t>;
-template class CDenseEigen3DotProduct<floatmax_t>;
-template class CDenseEigen3DotProduct<complex128_t>;
+template class DenseEigen3DotProduct<bool>;
+template class DenseEigen3DotProduct<char>;
+template class DenseEigen3DotProduct<int8_t>;
+template class DenseEigen3DotProduct<uint8_t>;
+template class DenseEigen3DotProduct<int16_t>;
+template class DenseEigen3DotProduct<uint16_t>;
+template class DenseEigen3DotProduct<int32_t>;
+template class DenseEigen3DotProduct<uint32_t>;
+template class DenseEigen3DotProduct<int64_t>;
+template class DenseEigen3DotProduct<uint64_t>;
+template class DenseEigen3DotProduct<float32_t>;
+template class DenseEigen3DotProduct<float64_t>;
+template class DenseEigen3DotProduct<floatmax_t>;
+template class DenseEigen3DotProduct<complex128_t>;
+
 }
 #endif //HAVE_EIGEN3

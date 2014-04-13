@@ -39,43 +39,38 @@
 #ifdef HAVE_EIGEN3
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/linalg/dotproduct/VectorDotProduct.h>
-#include <shogun/lib/SGVector.h>
-#include <shogun/lib/SGSparseVector.h>
 
 using namespace Eigen;
 
 namespace shogun
 {
-/** @brief template class for Eigen3 dot product that performs dot product
- *  operation using Eigen3 Library
+template<class T> class SGVector;
+
+/** @brief Template class for Eigen3 dot product that performs dot product
+ *  operation(\f$result = a\cdot b\f$ where a, b are vectors and result is a scalar)
+ *  using Eigen3 Library
  */
-template <class T> class CDenseEigen3DotProduct : public CVectorDotProduct<T, SGVector<T> >
+template <class T> class DenseEigen3DotProduct : public VectorDotProduct<T, SGVector<T> >
 {
 public:
-    /** constructor */
-    CDenseEigen3DotProduct() : CVectorDotProduct<T, SGVector<T> >()
+    /** Constructor */
+    DenseEigen3DotProduct() : VectorDotProduct<T, SGVector<T> >()
     {
-        CSGObject::set_generic<T>();
     }
 
-    /** compute method which performs dot product operation
-     *  @param vector1 input dense vector
-     *  @param vector2 input dense vector
+    /** Compute method which performs dot product operation
+     *  @param vector1 input vector
+     *  @param vector2 input vector
      *  @return the result
      */
     virtual T compute(SGVector<T> vector1, SGVector<T> vector2) const;
 
-    /** destructor */
-    virtual ~CDenseEigen3DotProduct()
+    /** Destructor */
+    virtual ~DenseEigen3DotProduct()
     {
-    }
-
-    /** @return object name */
-    virtual const char* get_name() const
-    {
-        return "DenseEigen3DotProduct";
     }
 };
+
 }
 #endif //EIGEN3_DOT_PRODUCT_H_
 #endif //HAVE_EIGEN3

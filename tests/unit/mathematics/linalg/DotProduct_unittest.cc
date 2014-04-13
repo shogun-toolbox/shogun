@@ -47,11 +47,10 @@ TEST(Eigen3DotProduct, eigen3_dot_product_dense)
     a.set_const(1.0);
     b.set_const(2.0);
 
-    CDenseEigen3DotProduct<float64_t>* A=new CDenseEigen3DotProduct<float64_t>();
-    SG_REF(A);
+    DenseEigen3DotProduct<float64_t>* A=new DenseEigen3DotProduct<float64_t>();
 
     EXPECT_NEAR(A->compute(a,b), 20.0, 1E-15);
 
-    SG_UNREF(A);
+    delete A;
 }
 #endif //HAVE_EIGEN3
