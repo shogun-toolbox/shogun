@@ -66,6 +66,9 @@ enum ENNOptimizationMethod
  * The neural network can be trained using L-BFGS (default) or mini-batch
  * gradient descent
  * 
+ * During training, the error at each iteration is logged as MSG_INFO. (to turn
+ * on info messages call io.set_loglevel(MSG_INFO)).
+ * 
  * The network stores the parameters of all the  layers in a single array. This 
  * makes it easy to train a network of any combination of arbitrary layer types 
  * using any optimization method (gradient descent, L-BFGS, ..)
@@ -285,9 +288,6 @@ public:
 	/** Optimization method, default is NNOM_LBFGS */
 	ENNOptimizationMethod optimization_method;
 	
-	/** controls whether the errors are printed during training, default true */
-	bool print_during_training;
-	
 	/** L2 Regularization coeff, default value is 0.0*/
 	float64_t l2_coefficient;
 	
@@ -323,6 +323,18 @@ public:
 	
 	/** gradient descent momentum multiplier, default value 0.9 */
 	float64_t gd_momentum;
+	
+	/** Used to damp the error fluctuations when stochastic gradient descent is 
+	 * used. damping is done according to: 
+	 * error_damped(i) = c*error(i) + (1-c)*error_damped(i-1)
+	 * where c is the damping coefficient
+	 * 
+	 * If -1, the damping coefficient is automatically computed according to:
+	 * c = 0.99*gd_mini_batch_size/training_set_size + 1e-2;
+	 * 
+	 * default value is -1
+	 */
+	float64_t gd_error_damping_coeff;
 protected:
 	/** number of neurons in the input layer */
 	int32_t m_num_inputs;

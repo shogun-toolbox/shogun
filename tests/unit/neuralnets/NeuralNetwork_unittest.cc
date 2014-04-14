@@ -126,7 +126,6 @@ TEST(NeuralNetwork, binary_classification)
 	
 	network->epsilon = 1e-12;
 	
-	network->print_during_training = false;
 	network->set_labels(labels);
 	network->train(features);
 	
@@ -181,7 +180,6 @@ TEST(NeuralNetwork, multiclass_classification)
 	
 	network->epsilon = 1e-12;
 	
-	network->print_during_training = false;
 	network->set_labels(labels);
 	network->train(features);
 	
@@ -224,7 +222,6 @@ TEST(NeuralNetwork, regression)
 	for (int32_t i=0; i<network->get_num_parameters(); i++)
 		network->get_parameters()[i] = i * 1.0e-5;
 
-	network->print_during_training = false;
 	network->set_labels(labels);
 	network->train(features);
 	
@@ -281,7 +278,6 @@ TEST(NeuralNetwork, gradient_descent)
 	network->gd_learning_rate = 10.0;
 	network->epsilon = 1.0e-4;
 	
-	network->print_during_training = false;
 	network->set_labels(labels);
 	network->train(features);
 	
