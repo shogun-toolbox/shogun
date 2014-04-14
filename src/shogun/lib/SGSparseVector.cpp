@@ -226,6 +226,25 @@ void SGSparseVector<T>::sort_features(bool stable_pointer)
 }
 
 template<class T>
+bool SGSparseVector<T>::is_sorted() const
+{
+	if (num_feat_entries == 0 || num_feat_entries == 1)
+	{
+		return true;
+	}
+
+	for (index_t j=1; j<num_feat_entries; j++)
+	{
+		if (features[j-1].feat_index >= features[j].feat_index)
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
+template<class T>
 T SGSparseVector<T>::get_feature(int32_t index)
 {
 	T ret = 0;
@@ -372,6 +391,12 @@ T SGSparseVector<T>::dot_prod_asymmetric(const SGSparseVector<T>& a, const SGSpa
 template <class T>
 T SGSparseVector<T>::dot_prod_symmetric(const SGSparseVector<T>& a, const SGSparseVector<T>& b)
 {
+	bool both_sorted = a.is_sorted() && b.is_sorted();
+	if (!both_sorted)
+	{
+		SG_SERROR("Prevented using broken sparse_dot function (on unsorted vectors)\n");
+	}
+
 	ASSERT(a.num_feat_entries > 0 && b.num_feat_entries > 0)
 	T dot_prod = 0;
 	index_t a_idx = 0, b_idx = 0;

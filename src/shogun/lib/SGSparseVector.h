@@ -127,6 +127,11 @@ public:
 	void sort_features(bool stable_pointer = false);
 
 	/**
+	 * Utility function to tell if feature indices are sorted
+	 */
+	bool is_sorted() const;
+
+	/**
 	 * get feature value for index
 	 *
 	 * @param index
