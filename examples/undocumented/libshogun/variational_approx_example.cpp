@@ -180,9 +180,9 @@ struct Shared
 	SGVector<float64_t> m0;
 	SGVector<float64_t> v;
 	SGMatrix<float64_t> sigma;
-	SGMatrix<float64_t> omega;
 	SGMatrix<float64_t> data;
 	SGMatrix<float64_t> bound;
+	Eigen::LDLT<Eigen::MatrixXd> ldlt;
 };
 
 //Init the parameters used for L-BFGS
@@ -229,11 +229,10 @@ float64_t evaluate(void *obj, const float64_t *variable, float64_t *gradient,
 
 	SGVector<float64_t> g(dim);
 	Eigen::Map<Eigen::VectorXd> eigen_g(g.vector, g.vlen);
-	Eigen::Map<Eigen::MatrixXd> eigen_omega(obj_prt->omega.matrix,
-		obj_prt->omega.num_rows, obj_prt->omega.num_cols);
+
 	//e = m-mu;
 	//g = Omega*e;
-	eigen_g = eigen_omega*(eigen_m - eigen_mu);
+	eigen_g = obj_prt->ldlt.solve(eigen_m - eigen_mu);
 
 	//f = -e'*g/2 + sum(fi);
 	Eigen::VectorXd ff = -0.5*((eigen_m-eigen_mu).transpose()*eigen_g);
@@ -318,12 +317,9 @@ void run(const char * x_file, const char * y_file, const char * bound_file,
 	eigen_v.fill(1);
 
 	//Omega = inv(Sigma);
-	obj.omega = SGMatrix<float64_t>(num_sample, num_sample);
-	Eigen::Map<Eigen::MatrixXd> eigen_omega(obj.omega.matrix,
-		obj.omega.num_rows, obj.omega.num_cols);
-	Eigen::FullPivLU<Eigen::MatrixXd>lu (eigen_sigma);
-	ASSERT(lu.isInvertible());
-	eigen_omega = lu.inverse();
+	obj.ldlt.compute(eigen_sigma);
+	//sigma is positive definitive
+	ASSERT(obj.ldlt.isPositive());
 
 	float64_t logLik = 0.0;
 	//[m, logLik] = minFunc(@simpleVariational, m0, optMinFunc, y, X, mu, Omega, v, bound);
