@@ -423,7 +423,7 @@ TEST(SGSparseVector, sort_features_loop)
 	}
 }
 
-TEST(SGSparseVector, DISABLED_sparse_dot_not_uniq_features_equal_length)
+TEST(SGSparseVector, sparse_dot_not_uniq_features_equal_length)
 {
 	SGSparseVector<int32_t> v1 = SGSparseVector<int32_t>(2);
 	v1.features[0].feat_index = 1;
@@ -443,7 +443,7 @@ TEST(SGSparseVector, DISABLED_sparse_dot_not_uniq_features_equal_length)
 	EXPECT_EQ(16, SGSparseVector<int32_t>::sparse_dot(v2, v2));
 }
 
-TEST(SGSparseVector, DISABLED_sparse_dot_not_sorted_features_equal_length)
+TEST(SGSparseVector, sparse_dot_not_sorted_features_equal_length)
 {
 	SGSparseVector<int32_t> v1 = SGSparseVector<int32_t>(2);
 	v1.features[0].feat_index = 1;
@@ -463,7 +463,7 @@ TEST(SGSparseVector, DISABLED_sparse_dot_not_sorted_features_equal_length)
 	EXPECT_EQ(8, SGSparseVector<int32_t>::sparse_dot(v2, v2));
 }
 
-TEST(SGSparseVector, DISABLED_sparse_dot_not_uniq_features_different_length)
+TEST(SGSparseVector, sparse_dot_not_uniq_features_different_length)
 {
 	SGSparseVector<int32_t> v1 = SGSparseVector<int32_t>(2);
 	v1.features[0].feat_index = 1;
