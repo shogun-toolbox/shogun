@@ -60,16 +60,18 @@ enum ENNOptimizationMethod
  * Supported feature types: DenseFeatures<float64_t>
  * Supported label types:
  * 	- BinaryLabels
- *  - MulticlassLabels
- *  - RegressionLabels
+ * 	- MulticlassLabels
+ * 	- RegressionLabels
  * 
  * The neural network can be trained using L-BFGS (default) or mini-batch
  * gradient descent
  * 
- * The network stores the parameters (and parameter gradients) of all the 
- * layers in a single array. This makes it easy to train a network of any
- * combination of arbitrary layer types using any optimization method (gradient
- * descent, L-BFGS, ..)
+ * During training, the error at each iteration is logged as MSG_INFO. (to turn
+ * on info messages call io.set_loglevel(MSG_INFO)).
+ * 
+ * The network stores the parameters of all the  layers in a single array. This 
+ * makes it easy to train a network of any combination of arbitrary layer types 
+ * using any optimization method (gradient descent, L-BFGS, ..)
  * 
  * All the matrices the network (and related classes) deal with are in 
  * column-major format
@@ -141,9 +143,6 @@ public:
 	/** returns a pointer to the network's parameter array */
 	float64_t* get_parameters() {return m_params;}
 	
-	/** returns a pointer to the network's parameter gradients array */
-	float64_t* get_parameter_gradients() {return m_param_gradients;}
-	
 	/** returns the number of inputs the network takes*/
 	int32_t get_num_inputs() {return m_num_inputs;}
 	
@@ -196,9 +195,7 @@ protected:
 	virtual void set_batch_size(int32_t batch_size);
 	
 	/** Applies backpropagation to compute the gradients of the error with
-	 * repsect to every parameter in the network. Results are stored in 
-	 * m_param_gradients and can be accessed by calling 
-	 * get_parameter_gradients()
+	 * repsect to every parameter in the network.
 	 *
 	 * @param inputs inputs to the network, a matrix of size 
 	 * m_input_layer_num_neurons*m_batch_size
@@ -206,17 +203,16 @@ protected:
 	 * @param targets desired values for the output layer's activations. matrix 
 	 * of size m_layers[m_num_layers-1].get_num_neurons()*m_batch_size
 	 * 
-	 * @param gradients array to be filled with gradient values. If NULL,
-	 * m_param_gradients is used instead
+	 * @param gradients array to be filled with gradient values.
+	 * 
+	 * @return error between the targets and the activations of the last layer
 	 */
-	virtual void compute_gradients(float64_t* inputs, 
+	virtual float64_t compute_gradients(float64_t* inputs, 
 			float64_t* targets,
-			float64_t* gradients=NULL);
+			float64_t* gradients);
 	
 	/** Computes the error between the output layer's activations and the given
 	 * target activations.
-	 *
-	 * Regularization error is ignored.
 	 * 
 	 * @param targets desired values for the network's output, matrix of size
 	 * num_neurons_output_layer*batch_size
@@ -247,14 +243,6 @@ private:
 	float64_t* get_layer_params(int32_t i)
 	{
 		return m_params.vector+m_index_offsets[i];
-	}
-	
-	/** returns a pointer to the portion of m_param_gradients that belongs to
-	 * layer i
-	 */
-	float64_t* get_layer_param_gradients(int32_t i)
-	{
-		return m_param_gradients.vector+m_index_offsets[i];
 	}
 	
 	/** returns a pointer to the portion of m_param_regularizable that belongs
@@ -300,9 +288,6 @@ public:
 	/** Optimization method, default is NNOM_LBFGS */
 	ENNOptimizationMethod optimization_method;
 	
-	/** controls whether the errors are printed during training, default true */
-	bool print_during_training;
-	
 	/** L2 Regularization coeff, default value is 0.0*/
 	float64_t l2_coefficient;
 	
@@ -311,9 +296,6 @@ public:
 	 * where E is the error at the current iterations and E' is the error at the
 	 * previous iteration
 	 * default value is 1.0e-5
-	 * 
-	 * NOTE: epsilon is currently ignored by gradient descent, unless full-batch
-	 * training is used.
 	 */
 	float64_t epsilon;
 	
@@ -326,17 +308,33 @@ public:
 	/** size of the mini-batch used during gradient descent training, 
 	 * if 0 full-batch training is performed
 	 * default value is 0
-	 * 
-	 * NOTE: epsilon is currently ignored by gradient descent, unless full-batch
-	 * training is used.
 	 */
 	int32_t gd_mini_batch_size;
 	
 	/** gradient descent learning rate, defualt value 0.1 */
 	float64_t gd_learning_rate;
 	
+	/** gradient descent learning rate decay
+	 * learning rate is updated at each iteration i according to: 
+	 * alpha(i)=decay*alpha(i-1)
+	 * default value is 1.0 (no decay)
+	 */
+	float64_t gd_learning_rate_decay;
+	
 	/** gradient descent momentum multiplier, default value 0.9 */
 	float64_t gd_momentum;
+	
+	/** Used to damp the error fluctuations when stochastic gradient descent is 
+	 * used. damping is done according to: 
+	 * error_damped(i) = c*error(i) + (1-c)*error_damped(i-1)
+	 * where c is the damping coefficient
+	 * 
+	 * If -1, the damping coefficient is automatically computed according to:
+	 * c = 0.99*gd_mini_batch_size/training_set_size + 1e-2;
+	 * 
+	 * default value is -1
+	 */
+	float64_t gd_error_damping_coeff;
 protected:
 	/** number of neurons in the input layer */
 	int32_t m_num_inputs;
@@ -352,11 +350,6 @@ protected:
 	
 	/** array where all the parameters of the network are stored */
 	SGVector<float64_t> m_params;
-	
-	/** array where the gradients of the error with respect to the parameters 
-	 * are stored
-	 */
-	SGVector<float64_t> m_param_gradients;
 	
 	/** Array that specifies which parameters are to be regularized. This is 
 	 * used to turn off regularization for bias parameters
