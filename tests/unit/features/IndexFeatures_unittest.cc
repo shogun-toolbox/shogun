@@ -42,7 +42,7 @@ TEST(IndexFeaturesTest,basic_create)
 
 	EXPECT_EQ(index_features->get_num_vectors(), vlen);
 	EXPECT_EQ(index_features->get_feature_class(), C_INDEX);
-	EXPECT_EQ(index_features->get_feature_type(), F_INT);
+	EXPECT_EQ(index_features->get_feature_type(), F_ANY);
 
 	SGVector<index_t> v_index_feature = index_features->get_feature_index();
 
@@ -69,7 +69,7 @@ TEST(IndexFeaturesTest,subset_copy)
 
 	EXPECT_EQ(index_features->get_num_vectors(), vlen/2);
 	EXPECT_EQ(index_features->get_feature_class(), C_INDEX);
-	EXPECT_EQ(index_features->get_feature_type(), F_INT);
+	EXPECT_EQ(index_features->get_feature_type(), F_ANY);
 
 	SGVector<index_t> v_index_feature = index_features->get_feature_index();
 

@@ -93,11 +93,11 @@ class CIndexFeatures : public CDummyFeatures
 		 */
 		virtual CFeatures* duplicate() const;
 
-		/** get feature type (INT)
+		/** get feature type (ANY)
 		 *
 		 * return the Feature Type
 		 *
-		 * @return F_INT
+		 * @return F_ANY
 		 */
 		virtual EFeatureType get_feature_type() const;
 

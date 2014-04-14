@@ -123,16 +123,22 @@ bool CCustomKernel::init(CFeatures* l, CFeatures* r)
 	if (!r)
 		r=rhs;
 
+    /* Make sure l and r should not be NULL */
+    REQUIRE(l and r,"CFeatures l or r should not be NULL\n")
 	/* Make sure l and r have the same type of CFeatures */
-	ASSERT(l->get_feature_class()==r->get_feature_class())
-	ASSERT(l->get_feature_type()==r->get_feature_type())
+	REQUIRE(l->get_feature_class()==r->get_feature_class(),
+            "Different FeatureClass: l is %d, r is %d\n",
+            l->get_feature_class(),r->get_feature_class())
+	REQUIRE(l->get_feature_type()==r->get_feature_type(),
+            "Different FeatureType: l is %d, r is %d\n",
+            l->get_feature_type(),r->get_feature_type())
 
 	/* If l and r are the type of CIndexFeatures,
-	 * init function add sub set to kernel matrix.
+	 * the init function adds a subset to kernel matrix.
 	 * Then call get_kernel_matrix will get the submatrix
 	 * of the kernel matrix.
 	 */
-	if(l->get_feature_class()==C_INDEX && r->get_feature_class()==C_INDEX)
+	if (l->get_feature_class()==C_INDEX && r->get_feature_class()==C_INDEX)
 	{
 		CIndexFeatures* l_idx = (CIndexFeatures*)l;
 		CIndexFeatures* r_idx = (CIndexFeatures*)r;

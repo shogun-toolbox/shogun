@@ -17,7 +17,7 @@ CIndexFeatures::CIndexFeatures(SGVector<index_t> feature_index)
 CIndexFeatures::CIndexFeatures(const CIndexFeatures &orig)
 {
 	init();
-	set_feature_index(orig.m_feature_index);
+	set_feature_index(orig.m_feature_index.clone());
 	if (orig.m_subset_stack != NULL)
 	{
 		SG_UNREF(m_subset_stack);
@@ -42,7 +42,7 @@ CFeatures* CIndexFeatures::duplicate() const
 
 EFeatureType CIndexFeatures::get_feature_type() const
 {
-	return F_INT;
+	return F_ANY;
 }
 
 EFeatureClass CIndexFeatures::get_feature_class() const
