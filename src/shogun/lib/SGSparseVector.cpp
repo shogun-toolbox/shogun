@@ -126,8 +126,9 @@ T SGSparseVector<T>::sparse_dot(const SGSparseVector<T>& a, const SGSparseVector
 		{
 			b_idx++;
 		}
-		else // a.features[a_idx].feat_index == b.features[b_idx].feat_index
+		else
 		{
+			// a.features[a_idx].feat_index == b.features[b_idx].feat_index
 			dot_prod += a.features[a_idx].entry * b.features[b_idx].entry;
 			a_idx++;
 			b_idx++;
