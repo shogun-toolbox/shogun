@@ -51,6 +51,16 @@
 
 using namespace shogun;
 
+/** @brief This variational_approx_example program
+ * demonstrates the usage of Shogun's L-BFGS API and the LogitPiecewiseBoundLikelihood class.
+ * First, we generate synthetic data (labels) from a Gaussian distribution with logistic link function.
+ * Then, we use the KL method (Nickisch, Hannes, and Carl Edward Rasmussen,
+ * "Approximations for Binary Gaussian Process Classification." JMLR (2008)) to find model parameters.
+ * In this example, we use a Gaussian distribution with identity covariance matrix
+ * to approximate the posterior distribution by directly minimizing the KL divergence
+ * between these distributions via the L-BFGS technique.
+ */
+
 //init the variational Piecewise bound 
 SGMatrix<float64_t> init_piecewise_bound(const char * fname)
 {
