@@ -130,6 +130,7 @@ void generate_data(SGMatrix<float64_t> &data)
 
 TEST(CustomKernelTest,index_features_subset)
 {
+	float64_t epsilon=1e-7;
 	index_t n=5;
 	SGMatrix<float64_t> data(3,n);
 	CDenseFeatures<float64_t>* feats=new CDenseFeatures<float64_t>(data);
@@ -146,7 +147,7 @@ TEST(CustomKernelTest,index_features_subset)
 	for (index_t i=0; i<n; ++i)
 	{
 		for (index_t j=0; j<n; ++j)
-			EXPECT_EQ(kmg(i, j), km(i, j));
+			EXPECT_NEAR(kmg(i, j), km(i, j), epsilon);
 	}
 
 	/* add a subset to the custom kernel, create copy, create another kernel
@@ -170,7 +171,7 @@ TEST(CustomKernelTest,index_features_subset)
 	for (index_t i=0; i<n; ++i)
 	{
 		for (index_t j=0; j<n; ++j)
-			EXPECT_EQ(main_subset_matrix(i, j), kmg(r_idx[i], c_idx[j]));
+			EXPECT_NEAR(main_subset_matrix(i, j), kmg(r_idx[i], c_idx[j]), epsilon);
 	}
 
 	SG_UNREF(gaussian);
