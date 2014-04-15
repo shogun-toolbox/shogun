@@ -8,7 +8,7 @@
  * Written (W) 1999-2009 Soeren Sonnenburg
  * Written (W) 2011 Sergey Lisitsyn
  * Written (W) 2012 Fernando José Iglesias García, cover tree support
- * Written (W) 2014 Zharmagambetov Arman (armanform@gmail.com), kd-tree basic implementation
+ * Written (W) 2014 Zharmagambetov Arman, kd tree support
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
@@ -21,14 +21,9 @@
 #include <shogun/features/Features.h>
 #include <shogun/distance/Distance.h>
 #include <shogun/machine/DistanceMachine.h>
-
-// libraries needed for kd-tree
-#include <cmath>
+#include <shogun/features/DenseFeatures.h>
 #include <vector>
-#include <cassert>
-#include <limits>
-#include <algorithm>
-// ---------------------------
+#include <shogun/lib/KDTree.h>
 
 using namespace std;
 
@@ -37,47 +32,6 @@ namespace shogun
 
 class CDistanceMachine;
 
-/**
-* The class, which represents one node of the kd-tree
-*/
-class KDTNode {
-	friend class CKNN;
-
-protected:
-	KDTNode *left, *right;	// left/right child
-	vector<float> data;		// the actual data item
-	// access to the node contents
-	// this is a bit dangerous, hence private
-	inline vector<float>& content() {
-		return data;
-	}
-
-public:
-	KDTNode(const vector<float>& x) : left(NULL), right(NULL), data(x) {}
-
-	inline KDTNode* get_left() {
-		return left;
-	}
-	inline KDTNode* get_right() {
-		return right;
-	}
-	inline vector<float> get_data() {
-		return data;
-	}
-
-	// remove whole subtree
-	// note that one must unlink a node
-	// before destroying it in KDTree::remove()
-	// otherwise the whole subtree will disappear
-	~KDTNode() {
-		if (left) {
-			delete left;
-		}
-		if (right) {
-			delete right;
-		}
-	}
-};
 
 /** @brief Class KNN, an implementation of the standard k-nearest neigbor
  * classifier.
@@ -212,12 +166,27 @@ class CKNN : public CDistanceMachine
 		inline void set_use_covertree(bool use_covertree)
 		{
 			m_use_covertree = use_covertree;
+			if(use_covertree) m_use_kdtree = false;
 		}
 
 		/** get whether to use cover trees for fast KNN
 		 * @return use_covertree parameter
 		 */
 		inline bool get_use_covertree() const { return m_use_covertree; }
+
+		/** set whether to use kd trees
+		* @param use_kdtree parameter
+		*/
+		inline void set_use_kdtree(bool use_kdtree)
+		{
+			m_use_kdtree = use_kdtree;
+			if(use_kdtree) m_use_covertree = false;
+		}
+
+		/** get whether to use kd trees
+		* @return use_kdtree parameter
+		*/
+		inline bool get_use_kdtree() const { return m_use_kdtree; }
 
 		/** @return object name */
 		virtual const char* get_name() const { return "KNN"; }
@@ -291,6 +260,9 @@ class CKNN : public CDistanceMachine
 		/// parameter to enable cover tree support
 		bool m_use_covertree;
 
+		/// parameter to enable kd tree support
+		bool m_use_kdtree;
+
 		///	number of classes (i.e. number of values labels can take)
 		int32_t m_num_classes;
 
@@ -300,65 +272,8 @@ class CKNN : public CDistanceMachine
 		/** the actual trainlabels */
 		SGVector<int32_t> m_train_labels;
 
-
-		/** Kd-tree implementation area */
-		protected:
-		KDTNode *root;	// root of tree
-		int count;        // size of tree
-		int dimensionOfFeatures;
-
-public:
-	
-	inline int size() const {
-		return count;
-	}
-
-	//Constructs a kd-tree from the specified collection of elements.
-	void train_kd(SGMatrix<float64_t> features, SGVector<float64_t> labels);
-
-	//Find ONE nearest neighbor
-	vector<float> FindNearestNeighbor(vector<float> location);
-
-	// Finds the N values in the tree that are nearest to the specified location.
-	vector<vector<float> > FindNearestNNeighbor(vector<float> location, int numNeighbors);
-	
-	// basic classification algorithm, it finds nearest n neighbors and determine the
-	// class of input vector
-	float apply_one_kd(vector<float> location, int k_nn);
-
-protected:
-
-	// Recursively construct kd-tree from input array of features
-	KDTNode* construct_helper(KDTNode*& nodep, int dimension, int startIndex, int endIndex, int depth, vector<vector<float> > elements);
-	
-	// sort features in particular dimension, i.e. it implements quicksort algorithm
-	void sortByDimension(vector<vector<float> >& elements, int start, int end, int currentDim);
-
-	// helper for quicksort algorithm, it returns middle element, and
-	// reorganize elements
-	int sortPartition(vector<vector<float> >& elements, int start, int end, int currentDim);
-
-	// Calculate distance by Euclidean
-	double distanceByEuclidean(vector<float> v1, vector<float> v2);
-
-	// Recursively iterate through leafs of kd-tree to find the nearest neighbour
-	vector<float> FindNearestNeighborHelper(vector<float> location, KDTNode*& nodep, vector<float> bestValue, double bestDistance, int depth);
-	
-	// reqursively search in the tree for nearest n neighbors and insert it in priority queue
-	void FindNearestNNeighborHelper(vector<float> location, KDTNode*& nodep, vector<float>& bestValue, double& bestDistance,
-		int numNeighbors, vector<vector<float> >& valuesList, int depth);
-
-	// sort features matrix and reorganise it as priority queue , i.e. it implements quicksort algorithm
-	void sortByDistance(vector<vector<float> >& valuesList, int start, int end, vector<float> location);
-	
-	// helper for quicksort algorithm, it returns middle element, and
-	// reorganize elements
-	int sortDistancePartition(vector<vector<float> >& valuesList, int start, int end, vector<float> location);
-	
-	// transform SGMatrix to 2d vetor
-	vector<vector<float> > featureToVector(SGMatrix<float64_t> features);
-
-	bool vectorComparer(vector<float> v1, vector<float> v2);
+		/// kd tree instance
+		CKDTree *kdtree;
 };
 
 }
