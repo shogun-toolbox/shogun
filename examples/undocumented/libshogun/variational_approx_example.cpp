@@ -59,6 +59,7 @@ using namespace shogun;
  * In this example, we use a Gaussian distribution with identity covariance matrix
  * to approximate the posterior distribution by directly minimizing the KL divergence
  * between these distributions via the L-BFGS technique.
+ * Note that we use the LogitPiecewiseBoundLikelihood class to compute gradient and function value during the L-BFGS iteration.
  */
 
 //init the variational Piecewise bound 
