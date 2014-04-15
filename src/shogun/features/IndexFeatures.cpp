@@ -14,18 +14,6 @@ CIndexFeatures::CIndexFeatures(SGVector<index_t> feature_index)
 	set_feature_index(feature_index);
 }
 
-CIndexFeatures::CIndexFeatures(const CIndexFeatures &orig)
-{
-	init();
-	set_feature_index(orig.m_feature_index.clone());
-	if (orig.m_subset_stack != NULL)
-	{
-		SG_UNREF(m_subset_stack);
-		m_subset_stack=new CSubsetStack(*orig.m_subset_stack);
-		SG_REF(m_subset_stack);
-	}
-}
-
 CIndexFeatures::~CIndexFeatures()
 {
 }
@@ -37,7 +25,15 @@ int32_t CIndexFeatures::get_num_vectors() const
 
 CFeatures* CIndexFeatures::duplicate() const
 {
-	return new CIndexFeatures(*this);
+	CIndexFeatures* indexfeature_dup =
+			new CIndexFeatures(m_feature_index.clone());
+	if (m_subset_stack != NULL)
+	{
+		SG_UNREF(indexfeature_dup->m_subset_stack);
+		indexfeature_dup->m_subset_stack=new CSubsetStack(*m_subset_stack);
+		SG_REF(indexfeature_dup->m_subset_stack);
+	}
+	return indexfeature_dup;
 }
 
 EFeatureType CIndexFeatures::get_feature_type() const

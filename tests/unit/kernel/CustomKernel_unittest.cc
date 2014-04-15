@@ -111,28 +111,27 @@ TEST(CustomKernelTest,add_row_subset_constructor)
 //Generate the Data 
 void generate_data(SGMatrix<float64_t> &data)
 {
-    data(0,0)=0.044550005575722;
-    data(1,0)=-0.433969606728583;
-    data(2,0)=-0.397935396933392;
-    data(0,1)=-0.778754072066602;
-    data(1,1)=-0.620105076569903;
-    data(2,1)=-0.542538248707627;
-    data(0,2)=0.334313094513960;
-    data(1,2)=0.421985645755003;
-    data(2,2)=0.263031426076997;
-    data(0,3)=0.516043376162584;
-    data(1,3)=0.159041471773470;
-    data(2,3)=0.691318725364356;
-    data(0,4)=-0.116152404185664;
-    data(1,4)=0.473047565770014;
-    data(2,4)=-0.013876505800334;
+	data(0,0)=0.044550005575722;
+	data(1,0)=-0.433969606728583;
+	data(2,0)=-0.397935396933392;
+	data(0,1)=-0.778754072066602;
+	data(1,1)=-0.620105076569903;
+	data(2,1)=-0.542538248707627;
+	data(0,2)=0.334313094513960;
+	data(1,2)=0.421985645755003;
+	data(2,2)=0.263031426076997;
+	data(0,3)=0.516043376162584;
+	data(1,3)=0.159041471773470;
+	data(2,3)=0.691318725364356;
+	data(0,4)=-0.116152404185664;
+	data(1,4)=0.473047565770014;
+	data(2,4)=-0.013876505800334;
 }
 
 TEST(CustomKernelTest,index_features_subset)
 {
-    float64_t epsilon=1e-7;
 	index_t n=5;
-    SGMatrix<float64_t> data(3,n);
+	SGMatrix<float64_t> data(3,n);
 	CDenseFeatures<float64_t>* feats=new CDenseFeatures<float64_t>(data);
 	SG_REF(feats);
 	CGaussianKernel* gaussian=new CGaussianKernel(feats, feats, 2, 10);
@@ -147,7 +146,7 @@ TEST(CustomKernelTest,index_features_subset)
 	for (index_t i=0; i<n; ++i)
 	{
 		for (index_t j=0; j<n; ++j)
-			EXPECT_NEAR(kmg(i, j), km(i, j), epsilon);
+			EXPECT_EQ(kmg(i, j), km(i, j));
 	}
 
 	/* add a subset to the custom kernel, create copy, create another kernel
@@ -171,7 +170,7 @@ TEST(CustomKernelTest,index_features_subset)
 	for (index_t i=0; i<n; ++i)
 	{
 		for (index_t j=0; j<n; ++j)
-			EXPECT_NEAR(main_subset_matrix(i, j), kmg(r_idx[i], c_idx[j]), epsilon);
+			EXPECT_EQ(main_subset_matrix(i, j), kmg(r_idx[i], c_idx[j]));
 	}
 
 	SG_UNREF(gaussian);

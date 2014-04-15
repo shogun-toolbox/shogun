@@ -65,14 +65,6 @@ class CIndexFeatures : public CDummyFeatures
 		 */
 		CIndexFeatures(SGVector<index_t> feature_index);
 
-		/** copy constructor
-		 *
-		 * deep copy of this instance
-		 *
-		 * @param orig reference to a CIndexFeatures instance
-		 */
-		CIndexFeatures(const CIndexFeatures &orig);
-
 		/** destructor */
 		virtual ~CIndexFeatures();
 
