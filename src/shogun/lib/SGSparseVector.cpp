@@ -4,7 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2013 Thoralf Klein
+ * Written (W) 2013,2014 Thoralf Klein
  * Written (W) 2012 Fernando José Iglesias García
  * Written (W) 2010,2012 Soeren Sonnenburg
  * Copyright (C) 2010 Berlin Institute of Technology
@@ -105,22 +105,36 @@ template <class T>
 T SGSparseVector<T>::sparse_dot(const SGSparseVector<T>& a, const SGSparseVector<T>& b)
 {
 	if (a.num_feat_entries == 0 || b.num_feat_entries == 0)
+	{
 		return 0;
+	}
 
-	int32_t cmp = cmp_dot_prod_symmetry_fast(a.num_feat_entries, b.num_feat_entries);
+	if (!a.is_sorted() || !b.is_sorted())
+	{
+		return dot_prod_expensive_unsorted(a, b);
+	}
 
-	if (cmp == 0) // symmetric
+	T dot_prod = 0;
+	index_t a_idx = 0, b_idx = 0;
+	while (a_idx < a.num_feat_entries && b_idx < b.num_feat_entries)
 	{
-		return dot_prod_symmetric(a, b);
+		if (a.features[a_idx].feat_index < b.features[b_idx].feat_index)
+		{
+			a_idx++;
+		}
+		else if (a.features[a_idx].feat_index > b.features[b_idx].feat_index)
+		{
+			b_idx++;
+		}
+		else
+		{
+			// a.features[a_idx].feat_index == b.features[b_idx].feat_index
+			dot_prod += a.features[a_idx].entry * b.features[b_idx].entry;
+			a_idx++;
+			b_idx++;
+		}
 	}
-	else if (cmp > 0) // b has more element
-	{
-		return dot_prod_asymmetric(a, b);
-	}
-	else // a has more element
-	{
-		return dot_prod_asymmetric(b, a);
-	}
+	return dot_prod;
 }
 
 template<class T>
@@ -358,72 +372,19 @@ void SGSparseVector<T>::free_data()
 }
 
 template <class T>
-int32_t SGSparseVector<T>::cmp_dot_prod_symmetry_fast(index_t alen, index_t blen)
+T SGSparseVector<T>::dot_prod_expensive_unsorted(const SGSparseVector<T>& a, const SGSparseVector<T>& b)
 {
-	if (alen > blen) // no need for floats here
-	{
-		return (blen * CMath::floor_log(alen) < alen) ? -1 : 0;
-	}
-	else // alen <= blen
-	{
-		return (alen * CMath::floor_log(blen) < blen) ? 1 : 0;
-	}
-}
+	SG_SWARNING("Computing sparse_dot(a,b) on unsorted vectors is very expensive: O(n^2)\n");
+	SG_SWARNING("Using fallback to give correct results because upstream code does not sort.\n");
 
-template <class T>
-T SGSparseVector<T>::dot_prod_asymmetric(const SGSparseVector<T>& a, const SGSparseVector<T>& b)
-{
 	T dot_prod = 0;
 	for(index_t b_idx = 0; b_idx < b.num_feat_entries; ++b_idx)
 	{
 		const T tmp = b.features[b_idx].entry;
-		if (a.features[a.num_feat_entries-1].feat_index < b.features[b_idx].feat_index)
-			break;
 		for (index_t a_idx = 0; a_idx < a.num_feat_entries; ++a_idx)
 		{
 			if (a.features[a_idx].feat_index == b.features[b_idx].feat_index)
 				dot_prod += tmp * a.features[a_idx].entry;
-		}
-	}
-	return dot_prod;
-}
-
-template <class T>
-T SGSparseVector<T>::dot_prod_symmetric(const SGSparseVector<T>& a, const SGSparseVector<T>& b)
-{
-	bool both_sorted = a.is_sorted() && b.is_sorted();
-	if (!both_sorted)
-	{
-		SG_SERROR("Prevented using broken sparse_dot function (on unsorted vectors)\n");
-	}
-
-	ASSERT(a.num_feat_entries > 0 && b.num_feat_entries > 0)
-	T dot_prod = 0;
-	index_t a_idx = 0, b_idx = 0;
-	while (true)
-	{
-		if (a.features[a_idx].feat_index == b.features[b_idx].feat_index)
-		{
-			dot_prod += a.features[a_idx].entry * b.features[b_idx].entry;
-
-			a_idx++;
-			if (a.num_feat_entries == a_idx)
-				break;
-			b_idx++;
-			if (b.num_feat_entries == b_idx)
-				break;
-		}
-		else if (a.features[a_idx].feat_index < b.features[b_idx].feat_index)
-		{
-			a_idx++;
-			if (a.num_feat_entries == a_idx)
-				break;
-		}
-		else
-		{
-			b_idx++;
-			if (b.num_feat_entries == b_idx)
-				break;
 		}
 	}
 	return dot_prod;
@@ -571,4 +532,3 @@ template class SGSparseVector<float64_t>;
 template class SGSparseVector<floatmax_t>;
 template class SGSparseVector<complex128_t>;
 }
-

@@ -4,7 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2013 Thoralf Klein
+ * Written (W) 2013,2014 Thoralf Klein
  * Written (W) 2012 Fernando José Iglesias García
  * Written (W) 2010,2012 Soeren Sonnenburg
  * Copyright (C) 2010 Berlin Institute of Technology
@@ -128,6 +128,8 @@ public:
 
 	/**
 	 * Utility function to tell if feature indices are sorted
+	 *
+	 * @return bool (true if sorted, else false)
 	 */
 	bool is_sorted() const;
 
@@ -185,41 +187,16 @@ protected:
 
 	virtual void free_data();
 
-	/** helper function to compute dot product
+	/** helper function to compute dot product for unsorted sparse vectors
 	 *
-	 * determines whether symmetric (similar number of non-zero elements in
-	 * both sparse vectors) or asymetric (logarithmically more elements in one vector)
-	 * dot product computation routine shall be taken
-	 *
-	 * @param alen length of vector a
-	 * @param blen length of vector b
-	 *
-	 * @return -1,0,1 if asymetric(b,a), symmetric(a,b) respectively
-	 * asymmetric(a,b) shall be called
-	 */
-	static int32_t cmp_dot_prod_symmetry_fast(index_t alen, index_t blen);
-
-	/** compute dot product between vectors a and b
-	 *
-	 * particularly fast if len(a) << len(b)
+	 * You should not use this at all, since computational complexity is in O(n^2)
 	 *
 	 * @param a vector a
 	 * @param b vector b
 	 *
 	 * @return dot product
 	 */
-	static T dot_prod_asymmetric(const SGSparseVector<T>& a, const SGSparseVector<T>& b);
-
-	/** compute dot product between vectors a and b
-	 *
-	 * particularly fast if len(a) ~= len(b)
-	 *
-	 * @param a vector a
-	 * @param b vector b
-	 *
-	 * @return dot product
-	 */
-	static T dot_prod_symmetric(const SGSparseVector<T>& a, const SGSparseVector<T>& b);
+	static T dot_prod_expensive_unsorted(const SGSparseVector<T>& a, const SGSparseVector<T>& b);
 
 public:
 	/** number of feature entries */
