@@ -710,8 +710,10 @@ SGMatrix<float64_t> SGMatrix<T>::create_centering_matrix(index_t size)
 	float64_t subtract=1.0/size;
 	for (index_t i=0; i<size; ++i)
 	{
-		for (index_t j=0; j<0; ++j)
+		for (index_t j=0; j<size; ++j)
+		{
 			H(i,j)-=subtract;
+		}
 	}
 
 	return H;
