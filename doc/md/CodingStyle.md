@@ -7,7 +7,7 @@ files to be committed:
 
 ```
 $ astyle --style=allman --lineend=linux --indent=tab=8 \\
-         --unpad-paren --pad-header --pad-oper \\
+         --break-blocks --unpad-paren --pad-header --pad-oper \\
          --close-templates --add-brackets \\
          --align-pointer=middle --align-reference=name \\
          inputfile1.cpp ...
