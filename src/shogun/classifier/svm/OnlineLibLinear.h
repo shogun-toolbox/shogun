@@ -146,8 +146,7 @@ private:
 		float64_t C, d, G;
 		float64_t QD;
 
-		// y and alpha for example being processed
-		int32_t y_current;
+		// alpha for example being processed
 		float64_t alpha_current;
 
 		// Cost constants
