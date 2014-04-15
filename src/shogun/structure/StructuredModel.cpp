@@ -13,7 +13,8 @@
 
 using namespace shogun;
 
-CResultSet::CResultSet() : CSGObject(), argmax(NULL)
+CResultSet::CResultSet()
+: CSGObject(), argmax(NULL), score(0), delta(0)
 {
 }
 
