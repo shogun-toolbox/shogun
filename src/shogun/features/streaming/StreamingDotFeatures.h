@@ -185,10 +185,6 @@ public:
 	 */
 	virtual void free_feature_iterator(void* iterator);
 
-protected:
-
-	/// feature weighting in combined dot features
-	float32_t combined_weight;
 };
 }
 #endif // _STREAMING_DOTFEATURES__H__
