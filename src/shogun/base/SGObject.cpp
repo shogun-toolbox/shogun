@@ -1045,6 +1045,8 @@ void CSGObject::init()
 	m_generic = PT_NOT_GENERIC;
 	m_load_pre_called = false;
 	m_load_post_called = false;
+	m_save_pre_called = false;
+	m_save_post_called = false;
 	m_hash = 0;
 }
 
