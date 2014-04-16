@@ -779,7 +779,7 @@ void SGMatrix<T>::inverse(SGMatrix<float64_t> matrix)
 template <class T>
 SGVector<float64_t> SGMatrix<T>::compute_eigenvectors(SGMatrix<float64_t> matrix)
 {
-	if (matrix.num_rows!=matrix.num_rows)
+	if (matrix.num_rows!=matrix.num_cols)
 	{
 		SG_SERROR("SGMatrix::compute_eigenvectors(SGMatrix<float64_t>): matrix"
 				" rows and columns are not equal!\n");
