@@ -109,7 +109,6 @@ SET(EXAMPLES
 	library_circularbuffer
 	so_factorgraph
 	io_libsvm_multilabel
-	variational_approx_example
 )
 
 IF (USE_MOSEK)
