@@ -166,7 +166,7 @@ bool COnlineSVMSGD::train(CFeatures* data)
 void COnlineSVMSGD::calibrate(int32_t max_vec_num)
 {
 	int32_t c_dim=1;
-	float32_t* c=new float32_t;
+	float32_t* c=SG_CALLOC(float32_t, c_dim);
 
 	// compute average gradient size
 	int32_t n = 0;
