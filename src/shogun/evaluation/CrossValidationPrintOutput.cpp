@@ -136,7 +136,7 @@ char* CCrossValidationPrintOutput::append_tab_to_string(const char* string)
 	/* allocate memory, concatenate and add termination character */
 	index_t len=strlen(string);
 	char* new_prefix=SG_MALLOC(char, len+2);
-	memcpy(new_prefix, string, sizeof(char*)*len);
+	memcpy(new_prefix, string, sizeof(char)*len);
 	new_prefix[len]='\t';
 	new_prefix[len+1]='\0';
 
