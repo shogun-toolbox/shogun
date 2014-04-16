@@ -55,6 +55,7 @@ CVowpalWabbit::CVowpalWabbit(CVowpalWabbit *vw)
 	prediction_fd = vw->prediction_fd;
 
 	w = reg->weight_vectors[0];
+	reg->weight_vectors[0] = NULL;
 	copy(vw->w, vw->w+vw->w_dim, w);
 	w_dim = vw->w_dim;
 	bias = vw->bias;
@@ -78,6 +79,7 @@ void CVowpalWabbit::reinitialize_weights()
 
 	reg->init(env);
 	w = reg->weight_vectors[0];
+	reg->weight_vectors[0] = NULL;
 }
 
 void CVowpalWabbit::set_adaptive(bool adaptive_learning)
@@ -108,6 +110,7 @@ void CVowpalWabbit::load_regressor(char* file_name)
 {
 	reg->load_regressor(file_name);
 	w = reg->weight_vectors[0];
+	reg->weight_vectors[0] = NULL;
 	w_dim = 1 << env->num_bits;
 }
 
@@ -263,6 +266,7 @@ void CVowpalWabbit::init(CStreamingVwFeatures* feat)
 	prediction_fd = -1;
 
 	w = reg->weight_vectors[0];
+	reg->weight_vectors[0] = NULL;
 	w_dim = 1 << env->num_bits;
 	bias = 0.;
 }

@@ -38,6 +38,15 @@ CVwRegressor::~CVwRegressor()
 {
 	// TODO: the number of weight_vectors depends on num_threads
 	// this should be reimplemented using SGVector (for reference counting)
+	if (weight_vectors)
+	{
+		vw_size_t num_threads = 1;
+		for (vw_size_t i = 0; i < num_threads; i++)
+		{
+			SG_FREE(weight_vectors[i]);
+		}
+	}
+
 	SG_FREE(weight_vectors);
 	SG_UNREF(loss);
 	SG_UNREF(env);
