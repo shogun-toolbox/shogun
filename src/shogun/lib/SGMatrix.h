@@ -153,19 +153,6 @@ template<class T> class SGMatrix : public SGReferencedData
 		 */
 		static SGMatrix<T> create_identity_matrix(index_t size, T scale);
 
-		/** returns the centering matrix, given by H=I-1/n*O, where
-		 * I is the identity matrix, O is a square matrix of ones of size n
-		 * Multiplied from the left hand side, subtracts from each column
-		 * its mean.
-		 * Multiplied from the right hand side, subtracts from each row
-		 * its mean (so from each dimension of a SHOGUN feature)
-		 *
-		 * Note that H*H=H=H^T
-		 *
-		 * @param size size of centering matrix
-		 */
-		static SGMatrix<float64_t> create_centering_matrix(index_t size);
-
 #ifdef HAVE_LAPACK
 		/** compute eigenvalues and eigenvectors of symmetric matrix using
 		 * LAPACK
