@@ -210,12 +210,14 @@ void test_load_file_parameters()
 
 	/* ensure that its the same as of the instance */
 	current=file_loaded_number->get_element(0);
+	current->m_delete_data = true; // TODO: This shouldn't be necessary!
 	int32_t value_number=*((int32_t*)current->m_parameter);
 	SG_SPRINT("%i\n", value_number);
 	ASSERT(value_number=int_instance->m_number);
 
 	/* same for the vector */
 	current=file_loaded_vector->get_element(0);
+	current->m_delete_data = true; // TODO: This shouldn't be necessary!
 	int32_t* value_vector=*((int32_t**)current->m_parameter);
 	SGVector<int32_t>::display_vector(value_vector, int_instance->m_vector_length);
 	for (index_t i=0; i<int_instance->m_vector_length; ++i)
@@ -223,6 +225,7 @@ void test_load_file_parameters()
 
 	/* and for the matrix */
 	current=file_loaded_matrix->get_element(0);
+	current->m_delete_data = true; // TODO: This shouldn't be necessary!
 	int32_t* value_matrix=*((int32_t**)current->m_parameter);
 	SGMatrix<int32_t>::display_matrix(value_matrix, int_instance->m_matrix_rows,
 			int_instance->m_matrix_cols);
@@ -234,6 +237,7 @@ void test_load_file_parameters()
 
 	/* and for the feature object */
 	current=file_loaded_sgobject->get_element(0);
+	current->m_delete_data = true; // TODO: This shouldn't be necessary!
 	CDenseFeatures<int32_t>* features=
 			*((CDenseFeatures<int32_t>**)current->m_parameter);
 	SGMatrix<int32_t> feature_matrix_loaded=

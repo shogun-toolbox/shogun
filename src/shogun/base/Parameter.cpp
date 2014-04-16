@@ -2035,7 +2035,7 @@ TParameter::new_cont(SGVector<index_t> dims)
 {
 	char* s=SG_MALLOC(char, 200);
 	m_datatype.to_string(s, 200);
-	SG_SDEBUG("entering TParameter::new_cont for \"%s\" of type %s with",
+	SG_SDEBUG("entering TParameter::new_cont for \"%s\" of type %s\n",
 			s, m_name ? m_name : "(nil)");
 	SG_FREE(s);
 	delete_cont();
