@@ -1292,9 +1292,9 @@ void CLibLinear::solve_l2r_lr_dual(const liblinear_problem *prob, double eps, do
 			}
 		}
 
-		iter++;
 		if(iter == 0)
 			Gmax_init = Gmax;
+		iter++;
 
 		SG_SABS_PROGRESS(Gmax, -CMath::log10(Gmax), -CMath::log10(Gmax_init), -CMath::log10(eps*Gmax_init), 6)
 
