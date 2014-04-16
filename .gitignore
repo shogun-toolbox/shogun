@@ -134,3 +134,6 @@ CMakeCache.txt
 
 # protobuf
 src/shogun/io/protobuf/*.pb.*
+
+# ipython notebook
+.ipynb_checkpoints/

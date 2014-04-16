@@ -157,6 +157,12 @@ void CCustomKernel::add_row_subset(SGVector<index_t> subset)
 	row_subset_changed_post();
 }
 
+void CCustomKernel::add_row_subset_in_place(SGVector<index_t> subset)
+{
+	m_row_subset_stack->add_subset_in_place(subset);
+	row_subset_changed_post();
+}
+
 void CCustomKernel::remove_row_subset()
 {
 	m_row_subset_stack->remove_subset();
@@ -180,6 +186,12 @@ void CCustomKernel::row_subset_changed_post()
 void CCustomKernel::add_col_subset(SGVector<index_t> subset)
 {
 	m_col_subset_stack->add_subset(subset);
+	col_subset_changed_post();
+}
+
+void CCustomKernel::add_col_subset_in_place(SGVector<index_t> subset)
+{
+	m_col_subset_stack->add_subset_in_place(subset);
 	col_subset_changed_post();
 }
 
