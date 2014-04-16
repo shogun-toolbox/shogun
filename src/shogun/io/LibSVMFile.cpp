@@ -125,6 +125,7 @@ void CLibSVMFile::get_sparse_matrix(SGSparseVector<sg_type>*& mat_feat, int32_t&
 	\
 	for (int32_t i=0; i<num_vec; i++) \
 		labels[i]=multilabel[i][0]; \
+	SG_FREE(multilabel); \
 } \
 
 GET_LABELED_SPARSE_MATRIX(read_bool, bool)
