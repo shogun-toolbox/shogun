@@ -3014,6 +3014,7 @@ bool CHMM::load_model(FILE* file)
 					{
 						state=COMMENT;
 					}
+					break;
 				case ARRAYs:	// when n,m, order are known p,a,b arrays are allowed to be read
 					if (value=='p')
 					{
