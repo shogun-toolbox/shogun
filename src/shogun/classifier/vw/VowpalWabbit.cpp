@@ -65,6 +65,10 @@ CVowpalWabbit::~CVowpalWabbit()
 	SG_UNREF(env);
 	SG_UNREF(reg);
 	SG_UNREF(learner);
+
+	// Need to unset w, because we're allocating w as well.  Otherwise
+	// OnlineLinearMachine may try to free it as well: (double-free)...
+	w = NULL;
 }
 
 void CVowpalWabbit::reinitialize_weights()
