@@ -30,7 +30,7 @@ namespace shogun
  *
  * Label objects need to overload get_num_labels() and is_valid()
  *
- * (Multiple) Subsets (of subsets) may are (partly) supported.
+ * (Multiple) Subsets (of subsets) are (partly) supported.
  * Sub-classes may want to overwrite the subset_changed_post() method which is
  * called automatically after each subset change. See method documentations to
  * see how behaviour is changed when subsets are active.

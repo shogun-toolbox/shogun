@@ -55,7 +55,7 @@ namespace shogun
  *   (dense real valued feature matrices) are derived.
  *
  *
- * (Multiple) Subsets (of subsets) may are supported.
+ * (Multiple) Subsets (of subsets) are supported.
  * Sub-classes may want to overwrite the subset_changed_post() method which is
  * called automatically after each subset change. See method documentations to
  * see how behaviour is changed when subsets are active.
