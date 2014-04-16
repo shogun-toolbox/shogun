@@ -47,7 +47,7 @@ namespace shogun
  * - obtain the feature class (like Simple dense matrices, sparse or strings)
  * - obtain the number of feature "vectors"
  *
- *   In addition it provides helpers to check e.g. for compability of feature objects.
+ *   In addition it provides helpers to check e.g. for compatibility of feature objects.
  *
  *   Currently there are 3 general feature classes, which are CDenseFeatures
  *   (dense matrices), CSparseFeatures (sparse matrices), CStringFeatures (a
@@ -55,11 +55,15 @@ namespace shogun
  *   (dense real valued feature matrices) are derived.
  *
  *
- *   (Multiple) Subsets (of subsets) may be supported by inheriting classes.
- *   Sub-classes may want to overwrite the subset_changed_post() method which is
- *   called automatically after each subset change.
- *   A subset is put onto a stack using the add_subset() method. The last added
- *   subset may be removed via remove_subset()
+ * (Multiple) Subsets (of subsets) may are supported.
+ * Sub-classes may want to overwrite the subset_changed_post() method which is
+ * called automatically after each subset change. See method documentations to
+ * see how behaviour is changed when subsets are active.
+ * A subset is put onto a stack using the add_subset() method. The last added
+ * subset may be removed via remove_subset(). There is also the possibility to
+ * add subsets in place (this only stores one index vector in memory as opposed
+ * to many when add_subset() is called many times) with add_subset_in_place().
+ * The latter does not allow to remove such modifications one-by-one.
  */
 class CFeatures : public CSGObject
 {
@@ -248,12 +252,28 @@ class CFeatures : public CSGObject
 			return NULL;
 		}
 
-		/** adds a subset of indices on top of the current subsets (possibly
-		 * subset o subset. Calls subset_changed_post() afterwards
+		/** Adds a subset of indices on top of the current subsets (possibly
+		 * subset of subset). Every call causes a new active index vector
+		 * to be stored. Added subsets can be removed one-by-one. If this is not
+		 * needed, add_subset_in_place() should be used (does not store
+		 * intermediate index vectors)
+		 *
+		 * Calls subset_changed_post() afterwards
 		 *
 		 * @param subset subset of indices to add
 		 * */
 		virtual void add_subset(SGVector<index_t> subset);
+
+		/** Sets/changes latest added subset. This allows to add multiple subsets
+		 * with in-place memory requirements. They cannot be removed one-by-one
+		 * afterwards, only the latest active can. If this is needed, use
+		 * add_subset(). If no subset is active, this just adds.
+		 *
+		 * Calls subset_changed_post() afterwards
+		 *
+		 * @param subset subset of indices to replace the latest one with.
+		 * */
+		virtual void add_subset_in_place(SGVector<index_t> subset);
 
 		/** removes that last added subset from subset stack, if existing
 		 * Calls subset_changed_post() afterwards */

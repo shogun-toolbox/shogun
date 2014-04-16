@@ -310,6 +310,12 @@ void CFeatures::add_subset(SGVector<index_t> subset)
 	subset_changed_post();
 }
 
+void CFeatures::add_subset_in_place(SGVector<index_t> subset)
+{
+	m_subset_stack->add_subset_in_place(subset);
+	subset_changed_post();
+}
+
 void CFeatures::remove_subset()
 {
 	m_subset_stack->remove_subset();
@@ -324,6 +330,7 @@ void CFeatures::remove_all_subsets()
 
 CSubsetStack* CFeatures::get_subset_stack()
 {
+	SG_REF(m_subset_stack);
 	return m_subset_stack;
 }
 

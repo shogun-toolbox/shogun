@@ -28,7 +28,8 @@ namespace shogun
  * is or can be internally converted into (or directly given in) upper triangle
  * representation. Also note that values are stored as 32bit floats.
  *
- * The custom kernel supports subsets each on the rows and the columns.
+ * The custom kernel supports subsets each on the rows and the columns. See
+ * documentation in CFeatures, CLabels how this works. The interface is similar.
  *
  *
  */
@@ -300,12 +301,28 @@ class CCustomKernel: public CKernel
 			return true;
 		}
 
-		/** adds a row subset of indices on top of the current subsets (possibly
-		 * subset o subset. Calls subset_changed_post() afterwards
+		/** Adds a row subset of indices on top of the current subsets (possibly
+		 * subset of subset). Every call causes a new active index vector
+		 * to be stored. Added subsets can be removed one-by-one. If this is not
+		 * needed, add_row_subset_in_place() should be used (does not store
+		 * intermediate index vectors)
+		 *
+		 * Calls row_subset_changed_post() afterwards
 		 *
 		 * @param subset subset of indices to add
 		 * */
 		virtual void add_row_subset(SGVector<index_t> subset);
+
+		/** Sets/changes latest added row subset. This allows to add multiple subsets
+		 * with in-place memory requirements. They cannot be removed one-by-one
+		 * afterwards, only the latest active can. If this is needed, use
+		 * add_row_subset(). If no subset is active, this just adds.
+		 *
+		 * Calls row_subset_changed_post() afterwards
+		 *
+		 * @param subset subset of indices to replace the latest one with.
+		 * */
+		virtual void add_row_subset_in_place(SGVector<index_t> subset);
 
 		/** removes that last added row subset from subset stack, if existing
 		 * Calls subset_changed_post() afterwards */
@@ -318,12 +335,28 @@ class CCustomKernel: public CKernel
 		/** method may be overwritten to update things that depend on subset */
 		virtual void row_subset_changed_post();
 
-		/** adds a col subset of indices on top of the current subsets (possibly
-		 * subset o subset. Calls subset_changed_post() afterwards
+		/** Adds a column subset of indices on top of the current subsets (possibly
+		 * subset of subset). Every call causes a new active index vector
+		 * to be stored. Added subsets can be removed one-by-one. If this is not
+		 * needed, add_col_subset_in_place() should be used (does not store
+		 * intermediate index vectors)
+		 *
+		 * Calls col_subset_changed_post() afterwards
 		 *
 		 * @param subset subset of indices to add
 		 * */
 		virtual void add_col_subset(SGVector<index_t> subset);
+
+		/** Sets/changes latest added column subset. This allows to add multiple subsets
+		 * with in-place memory requirements. They cannot be removed one-by-one
+		 * afterwards, only the latest active can. If this is needed, use
+		 * add_col_subset(). If no subset is active, this just adds.
+		 *
+		 * Calls col_subset_changed_post() afterwards
+		 *
+		 * @param subset subset of indices to replace the latest one with.
+		 * */
+		virtual void add_col_subset_in_place(SGVector<index_t> subset);
 
 		/** removes that last added col subset from subset stack, if existing
 		 * Calls subset_changed_post() afterwards */

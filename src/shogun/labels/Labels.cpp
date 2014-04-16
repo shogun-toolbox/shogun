@@ -41,6 +41,11 @@ void CLabels::add_subset(SGVector<index_t> subset)
 	m_subset_stack->add_subset(subset);
 }
 
+void CLabels::add_subset_in_place(SGVector<index_t> subset)
+{
+	m_subset_stack->add_subset_in_place(subset);
+}
+
 void CLabels::remove_subset()
 {
 	m_subset_stack->remove_subset();
