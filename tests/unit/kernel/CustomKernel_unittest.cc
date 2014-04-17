@@ -132,9 +132,14 @@ TEST(CustomKernelTest,index_features_subset)
 {
 	float64_t epsilon=1e-7;
 	index_t n=5;
+
+	// Generate the features
 	SGMatrix<float64_t> data(3,n);
+	generate_data(data);
 	CDenseFeatures<float64_t>* feats=new CDenseFeatures<float64_t>(data);
 	SG_REF(feats);
+
+	// Generate the Kernels
 	CGaussianKernel* gaussian=new CGaussianKernel(feats, feats, 2, 10);
 	SG_REF(gaussian);
 	CCustomKernel* main_kernel=new CCustomKernel(gaussian);
