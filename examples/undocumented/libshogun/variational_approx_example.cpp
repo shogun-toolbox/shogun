@@ -375,6 +375,16 @@ void test_datasets()
 
 	snprintf(bound_path_buffer, buff_size, "%s/bounds", data_path);
 
+	FILE* pfile = fopen(bound_path_buffer, "r");
+
+	if (pfile == NULL)
+	{
+		SG_SPRINT("Unable to open file: %s\n", bound_path_buffer);
+		return;
+	}
+
+	fclose(pfile);
+	
 	for (index_t i = 1; i <= 6; i++)
 	{
 		snprintf(x_path_buffer, buff_size, "%s/X_dataset%d", data_path, i);
