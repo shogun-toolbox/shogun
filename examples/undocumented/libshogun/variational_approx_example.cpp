@@ -365,7 +365,7 @@ void run(const char * x_file, const char * y_file, const char * bound_file,
 void test_datasets()
 {
 	const index_t buff_size = 1024;
-	const char * data_path = "../data/toy/variational";
+	const char * data_path = "../data/variational";
 
 	char bound_path_buffer[buff_size];
 	char x_path_buffer[buff_size];

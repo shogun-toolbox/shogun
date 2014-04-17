@@ -13,6 +13,7 @@
 #include <shogun/kernel/CustomKernel.h>
 #include <shogun/features/Features.h>
 #include <shogun/features/DummyFeatures.h>
+#include <shogun/features/IndexFeatures.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/base/ParameterMap.h>
 
@@ -122,6 +123,37 @@ bool CCustomKernel::init(CFeatures* l, CFeatures* r)
 	if (!r)
 		r=rhs;
 
+	/* Make sure l and r should not be NULL */
+	REQUIRE(l, "CFeatures l should not be NULL\n")
+	REQUIRE(r, "CFeatures r should not be NULL\n")
+	/* Make sure l and r have the same type of CFeatures */
+	REQUIRE(l->get_feature_class()==r->get_feature_class(),
+			"Different FeatureClass: l is %d, r is %d\n",
+			l->get_feature_class(),r->get_feature_class())
+	REQUIRE(l->get_feature_type()==r->get_feature_type(),
+			"Different FeatureType: l is %d, r is %d\n",
+			l->get_feature_type(),r->get_feature_type())
+
+	/* If l and r are the type of CIndexFeatures,
+	 * the init function adds a subset to kernel matrix.
+	 * Then call get_kernel_matrix will get the submatrix
+	 * of the kernel matrix.
+	 */
+	if (l->get_feature_class()==C_INDEX && r->get_feature_class()==C_INDEX)
+	{
+		CIndexFeatures* l_idx = (CIndexFeatures*)l;
+		CIndexFeatures* r_idx = (CIndexFeatures*)r;
+
+		remove_all_col_subsets();
+		remove_all_row_subsets();
+
+		add_row_subset(l_idx->get_feature_index());
+		add_col_subset(r_idx->get_feature_index());
+
+		return true;
+	}
+
+	/* For other types of CFeatures do the default actions below */
 	CKernel::init(l, r);
 
 	SG_DEBUG("num_vec_lhs: %d vs num_rows %d\n", l->get_num_vectors(), kmatrix.num_rows)
@@ -157,6 +189,12 @@ void CCustomKernel::add_row_subset(SGVector<index_t> subset)
 	row_subset_changed_post();
 }
 
+void CCustomKernel::add_row_subset_in_place(SGVector<index_t> subset)
+{
+	m_row_subset_stack->add_subset_in_place(subset);
+	row_subset_changed_post();
+}
+
 void CCustomKernel::remove_row_subset()
 {
 	m_row_subset_stack->remove_subset();
@@ -180,6 +218,12 @@ void CCustomKernel::row_subset_changed_post()
 void CCustomKernel::add_col_subset(SGVector<index_t> subset)
 {
 	m_col_subset_stack->add_subset(subset);
+	col_subset_changed_post();
+}
+
+void CCustomKernel::add_col_subset_in_place(SGVector<index_t> subset)
+{
+	m_col_subset_stack->add_subset_in_place(subset);
 	col_subset_changed_post();
 }
 

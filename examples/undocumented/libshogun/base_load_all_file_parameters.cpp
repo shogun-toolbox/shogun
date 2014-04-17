@@ -182,6 +182,7 @@ void test_load_file_parameter()
 	for (index_t i=0; i<params->get_num_elements(); ++i)
 	{
 		TParameter* current=params->get_element(i);
+		current->m_delete_data = true; // TODO: This shouldn't be necessary!
 
 		/* ensure that data is same as of the instance for all parameters */
 		if (!strcmp(current->m_name, "number"))

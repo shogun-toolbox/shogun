@@ -701,22 +701,6 @@ SGMatrix<complex128_t> SGMatrix<complex128_t>::create_identity_matrix(index_t si
 	return I;
 }
 
-
-template <class T>
-SGMatrix<float64_t> SGMatrix<T>::create_centering_matrix(index_t size)
-{
-	SGMatrix<float64_t> H=SGMatrix<float64_t>::create_identity_matrix(size, 1.0);
-
-	float64_t subtract=1.0/size;
-	for (index_t i=0; i<size; ++i)
-	{
-		for (index_t j=0; j<0; ++j)
-			H(i,j)-=subtract;
-	}
-
-	return H;
-}
-
 //Howto construct the pseudo inverse (from "The Matrix Cookbook")
 //
 //Assume A does not have full rank, i.e. A is n \times m and rank(A) = r < min(n;m).
@@ -779,7 +763,7 @@ void SGMatrix<T>::inverse(SGMatrix<float64_t> matrix)
 template <class T>
 SGVector<float64_t> SGMatrix<T>::compute_eigenvectors(SGMatrix<float64_t> matrix)
 {
-	if (matrix.num_rows!=matrix.num_rows)
+	if (matrix.num_rows!=matrix.num_cols)
 	{
 		SG_SERROR("SGMatrix::compute_eigenvectors(SGMatrix<float64_t>): matrix"
 				" rows and columns are not equal!\n");

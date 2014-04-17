@@ -30,10 +30,15 @@ namespace shogun
  *
  * Label objects need to overload get_num_labels() and is_valid()
  *
- * Labels support subset access is supported (partly).
- * Simple use the set_subset(), remove_subset() functions.
- * If done, all calls that work with features are translated to the subset.
- * See comments to find out whether it is supported for that method
+ * (Multiple) Subsets (of subsets) are (partly) supported.
+ * Sub-classes may want to overwrite the subset_changed_post() method which is
+ * called automatically after each subset change. See method documentations to
+ * see how behaviour is changed when subsets are active.
+ * A subset is put onto a stack using the add_subset() method. The last added
+ * subset may be removed via remove_subset(). There is also the possibility to
+ * add subsets in place (this only stores one index vector in memory as opposed
+ * to many when add_subset() is called many times) with add_subset_in_place().
+ * The latter does not allow to remove such modifications one-by-one.
  */
 class CLabels : public CSGObject
 {
@@ -64,12 +69,24 @@ public:
 	 */
 	virtual ELabelType get_label_type() const = 0;
 
-	/** adds a subset of indices on top of the current subsets (possibly
-	 * subset of subset. Calls subset_changed_post() afterwards
+	/** Adds a subset of indices on top of the current subsets (possibly
+	 * subset of subset). Every call causes a new active index vector
+	 * to be stored. Added subsets can be removed one-by-one. If this is not
+	 * needed, add_subset_in_place() should be used (does not store
+	 * intermediate index vectors)
 	 *
 	 * @param subset subset of indices to add
 	 * */
 	virtual void add_subset(SGVector<index_t> subset);
+
+	/** Sets/changes latest added subset. This allows to add multiple subsets
+	 * with in-place memory requirements. They cannot be removed one-by-one
+	 * afterwards, only the latest active can. If this is needed, use
+	 * add_subset(). If no subset is active, this just adds.
+	 *
+	 * @param subset subset of indices to replace the latest one with.
+	 * */
+	virtual void add_subset_in_place(SGVector<index_t> subset);
 
 	/** removes that last added subset from subset stack, if existing
 	 * Calls subset_changed_post() afterwards */

@@ -42,7 +42,7 @@ TEST(IndexFeaturesTest,basic_create)
 
 	EXPECT_EQ(index_features->get_num_vectors(), vlen);
 	EXPECT_EQ(index_features->get_feature_class(), C_INDEX);
-	EXPECT_EQ(index_features->get_feature_type(), F_INT);
+	EXPECT_EQ(index_features->get_feature_type(), F_ANY);
 
 	SGVector<index_t> v_index_feature = index_features->get_feature_index();
 
@@ -69,7 +69,7 @@ TEST(IndexFeaturesTest,subset_copy)
 
 	EXPECT_EQ(index_features->get_num_vectors(), vlen/2);
 	EXPECT_EQ(index_features->get_feature_class(), C_INDEX);
-	EXPECT_EQ(index_features->get_feature_type(), F_INT);
+	EXPECT_EQ(index_features->get_feature_type(), F_ANY);
 
 	SGVector<index_t> v_index_feature = index_features->get_feature_index();
 
@@ -77,4 +77,24 @@ TEST(IndexFeaturesTest,subset_copy)
 		EXPECT_EQ(v_index_feature[i], index_vector[sub_idx[i]]);
 
 	SG_UNREF(index_features);
+}
+
+TEST(IndexFeaturesTest,duplicate)
+{
+	index_t vlen = 10;
+	SGVector<index_t> index_vector(vlen);
+	index_vector.range_fill();
+	CIndexFeatures* index_features = new CIndexFeatures(index_vector);
+	CIndexFeatures* index_features_dup = (CIndexFeatures *)index_features->duplicate();
+
+	EXPECT_EQ(index_features->get_num_vectors(), index_features_dup->get_num_vectors());
+
+	SGVector<index_t> v_index_feature = index_features->get_feature_index();
+	SGVector<index_t> v_index_feature_dup = index_features_dup->get_feature_index();
+
+	for(index_t i=0; i<vlen; i++)
+		EXPECT_EQ(v_index_feature[i], v_index_feature_dup[i]);
+
+	SG_UNREF(index_features);
+	SG_UNREF(index_features_dup);
 }
