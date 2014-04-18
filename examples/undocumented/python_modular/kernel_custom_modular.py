@@ -37,7 +37,7 @@ def kernel_custom_modular (dim=7):
 	col_idx_feat=IndexFeatures(col_idx)
 	kernel.init(row_idx_feat, col_idx_feat)
 	km_sub_kernel=kernel.get_kernel_matrix()
-	print 'Subkernel(3x2):\n%s'%km_sub_kernel
+	# print('Subkernel(3x2):\n%s'%km_sub_kernel)
 	kernel.remove_all_col_subsets()
 	kernel.remove_all_row_subsets()
 
