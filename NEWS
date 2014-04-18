@@ -9,6 +9,7 @@
 		- Add decision trees notebook containing examples for ID3 algorithm [Parijat Mazumdar]
 		- Add sudoku recognizer ipython notebook [Alejandro Hernandez]
 		- Add in-place subsets on features, labels, and custom kernels [Heiko Strathmann]
+		- Add Principal Component Analysis notebook [Abhijeet Kislay]
 	* Bugfixes:
 		- Fix memory problem in PCA::apply_to_feature_matrix [Parijat Mazumdar]
 		- Fix crash in LeastAngleRegression for the case D greater than N [Parijat Mazumdar]
