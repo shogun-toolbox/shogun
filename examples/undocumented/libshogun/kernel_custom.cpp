@@ -16,7 +16,7 @@
 
 using namespace shogun;
 
-void test_costom_kernel_index_subsets()
+void test_custom_kernel_index_subsets()
 {
 	/* create some data */
 	index_t m=10;
@@ -39,17 +39,17 @@ void test_costom_kernel_index_subsets()
 	col_subset.permute();
 
 	/* create index features */
-	CIndexFeatures* row_idx_feat = new CIndexFeatures(row_subset);
-	CIndexFeatures* col_idx_feat = new CIndexFeatures(col_subset);
+	CIndexFeatures* row_idx_feat=new CIndexFeatures(row_subset);
+	CIndexFeatures* col_idx_feat=new CIndexFeatures(col_subset);
 	SG_REF(row_idx_feat);
 	SG_REF(col_idx_feat);
 
 	custom_kernel->init(row_idx_feat, col_idx_feat);
 
-	SGMatrix<float64_t> gaussian_kernel_matrix =
+	SGMatrix<float64_t> gaussian_kernel_matrix=
 			gaussian_kernel->get_kernel_matrix();
 
-	SGMatrix<float64_t> custom_kernel_matrix =
+	SGMatrix<float64_t> custom_kernel_matrix=
 			custom_kernel->get_kernel_matrix();
 
 	for (index_t i=0; i<m; ++i)
@@ -126,7 +126,7 @@ int main(int argc, char** argv)
 	//sg_io->set_loglevel(MSG_DEBUG);
 
 	test_custom_kernel_subsets();
-	test_costom_kernel_index_subsets();
+	test_custom_kernel_index_subsets();
 
 	exit_shogun();
 	return 0;
