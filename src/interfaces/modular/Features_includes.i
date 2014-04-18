@@ -51,4 +51,5 @@
 #include <shogun/features/streaming/generators/GaussianBlobsDataGenerator.h>
 #include <shogun/features/LatentFeatures.h>
 #include <shogun/features/MatrixFeatures.h>
+#include <shogun/features/IndexFeatures.h>
 %}
