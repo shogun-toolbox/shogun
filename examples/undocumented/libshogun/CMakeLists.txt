@@ -16,7 +16,7 @@ SET(EXAMPLES
 	classifier_lda
 	classifier_multiclasslinearmachine
 	classifier_knn
-	kernel_gaussian kernel_revlin kernel_custom
+	kernel_gaussian kernel_revlin kernel_custom kernel_custom_index
 	library_dyn_int library_gc_array library_indirect_object
 	library_hash parameter_set_from_parameters
 	parameter_iterate_float64 parameter_iterate_sgobject
