@@ -318,4 +318,5 @@ TEST(ID3ClassifierTree, tree_prune)
 	SG_UNREF(test_features);
 	SG_UNREF(validation_lab);
 	SG_UNREF(result);
+	SG_UNREF(id3tree);
 }
