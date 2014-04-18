@@ -110,6 +110,7 @@ SET(EXAMPLES
 	so_factorgraph
 	io_libsvm_multilabel
 	variational_approx_example
+	so_fg_multilabel
 )
 
 IF (USE_MOSEK)
