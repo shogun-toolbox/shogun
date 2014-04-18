@@ -21,7 +21,7 @@ TEST(SerializationAscii, {{class}})
 {% endif %}
 {
 	std::string class_name("{{class}}");
-	std::string file_template = "/tmp/" + class_name + ".XXXXXX";
+	std::string file_template = "/tmp/shogun-unittest-serialization-ascii-" + class_name + ".XXXXXX";
 	char* filename = mktemp(const_cast<char*>(file_template.c_str()));
 	CSGObject* object = new_sgserializable(class_name.c_str(), PT_NOT_GENERIC);
 	ASSERT_TRUE(object != NULL);
@@ -63,7 +63,7 @@ TEST(SerializationAscii,{{class}}_{{type}})
 {% endif %}
 {
 	std::string class_name("{{class}}");
-	std::string file_template = "/tmp/" + class_name + "_{{type}}" + ".XXXXXX";
+	std::string file_template = "/tmp/shogun-unittest-serialization-ascii-" + class_name + "_{{type}}" + ".XXXXXX";
 	char* filename = mktemp(const_cast<char*>(file_template.c_str()));
 	CSGObject* object = new_sgserializable(class_name.c_str(), {{type}});
 	ASSERT_TRUE(object != NULL);
