@@ -1009,6 +1009,272 @@ template <class T> struct K_THREAD_PARAM
 };
 }
 
+float64_t CKernel::sum_symmetric_block(index_t block_begin, index_t block_size,
+		bool no_diag)
+{
+	SG_DEBUG("Entering\n");
+
+	REQUIRE(has_features(), "No features assigned to kernel\n")
+	REQUIRE(lhs_equals_rhs, "The kernel matrix is not symmetric!\n")
+	REQUIRE(block_begin>=0 && block_begin<num_rhs,
+			"Invalid block begin index (%d, %d)!\n", block_begin, block_begin)
+	REQUIRE(block_begin+block_size<=num_rhs,
+			"Invalid block size (%d) at starting index (%d, %d)! "
+			"Please use smaller blocks!", block_size, block_begin, block_begin)
+	REQUIRE(block_size>=1, "Invalid block size (%d)!\n", block_size)
+
+	float64_t sum=0.0;
+
+	// since the block is symmetric with main diagonal inside, we can save half
+	// the computation with using only the upper triangular part.
+	// this can be done in parallel
+#pragma omp parallel for
+	for (index_t i=0; i<block_size; ++i)
+	{
+		// compute the kernel values on the upper triangular part of the kernel
+		// matrix and compute sum on the fly
+		for (index_t j=i+1; j<block_size; ++j)
+		{
+			float64_t k=kernel(i+block_begin, j+block_begin);
+#pragma omp atomic
+			sum+=k;
+		}
+	}
+
+	// the actual sum would be twice of what we computed
+	sum*=2;
+
+	// add the diagonal elements if required - keeping this check
+	// outside of the loop to save cycles
+	if (!no_diag)
+	{
+#pragma omp parallel for
+		for (index_t i=0; i<block_size; ++i)
+		{
+			float64_t diag=kernel(i+block_begin, i+block_begin);
+#pragma omp atomic
+			sum+=diag;
+		}
+	}
+
+	SG_DEBUG("Leaving\n");
+
+	return sum;
+}
+
+float64_t CKernel::sum_block(index_t block_begin_row, index_t block_begin_col,
+		index_t block_size_row, index_t block_size_col, bool no_diag)
+{
+	SG_DEBUG("Entering\n");
+
+	REQUIRE(has_features(), "No features assigned to kernel\n")
+	REQUIRE(block_begin_row>=0 && block_begin_row<num_lhs &&
+			block_begin_col>=0 && block_begin_col<num_rhs,
+			"Invalid block begin index (%d, %d)!\n",
+			block_begin_row, block_begin_col)
+	REQUIRE(block_begin_row+block_size_row<=num_lhs &&
+			block_begin_col+block_size_col<=num_rhs,
+			"Invalid block size (%d, %d) at starting index (%d, %d)! "
+			"Please use smaller blocks!", block_size_row, block_size_col,
+			block_begin_row, block_begin_col)
+	REQUIRE(block_size_row>=1 && block_size_col>=1,
+			"Invalid block size (%d, %d)!\n", block_size_row, block_size_col)
+
+	// check if removal of diagonal is required/valid
+	if (no_diag && block_size_row!=block_size_col)
+	{
+		SG_WARNING("Not removing the main diagonal since block is not square!\n");
+		no_diag=false;
+	}
+
+	float64_t sum=0.0;
+
+	// this can be done in parallel for the rows/cols
+#pragma omp parallel for
+	for (index_t i=0; i<block_size_row; ++i)
+	{
+		// compute the kernel values and compute sum on the fly
+		for (index_t j=0; j<block_size_col; ++j)
+		{
+			float64_t k=no_diag && i==j ? 0 :
+				kernel(i+block_begin_row, j+block_begin_col);
+#pragma omp atomic
+			sum+=k;
+		}
+	}
+
+	SG_DEBUG("Leaving\n");
+
+	return sum;
+}
+
+SGVector<float64_t> CKernel::row_wise_sum_symmetric_block(index_t block_begin,
+		index_t block_size, bool no_diag)
+{
+	SG_DEBUG("Entering\n");
+
+	REQUIRE(has_features(), "No features assigned to kernel\n")
+	REQUIRE(lhs_equals_rhs, "The kernel matrix is not symmetric!\n")
+	REQUIRE(block_begin>=0 && block_begin<num_rhs,
+			"Invalid block begin index (%d, %d)!\n", block_begin, block_begin)
+	REQUIRE(block_begin+block_size<=num_rhs,
+			"Invalid block size (%d) at starting index (%d, %d)! "
+			"Please use smaller blocks!", block_size, block_begin, block_begin)
+	REQUIRE(block_size>=1, "Invalid block size (%d)!\n", block_size)
+
+	// initialize the vector that accumulates the row/col-wise sum on the go
+	SGVector<float64_t> row_sum(block_size);
+	row_sum.set_const(0.0);
+
+	// since the block is symmetric with main diagonal inside, we can save half
+	// the computation with using only the upper triangular part.
+	// this can be done in parallel for the rows/cols
+#pragma omp parallel for
+	for (index_t i=0; i<block_size; ++i)
+	{
+		// compute the kernel values on the upper triangular part of the kernel
+		// matrix and compute row-wise sum on the fly
+		for (index_t j=i+1; j<block_size; ++j)
+		{
+			float64_t k=kernel(i+block_begin, j+block_begin);
+#pragma omp critical
+			{
+				row_sum[i]+=k;
+				row_sum[j]+=k;
+			}
+		}
+	}
+
+	// add the diagonal elements if required - keeping this check
+	// outside of the loop to save cycles
+	if (!no_diag)
+	{
+#pragma omp parallel for
+		for (index_t i=0; i<block_size; ++i)
+		{
+			float64_t diag=kernel(i+block_begin, i+block_begin);
+			row_sum[i]+=diag;
+		}
+	}
+
+	SG_DEBUG("Leaving\n");
+
+	return row_sum;
+}
+
+SGMatrix<float64_t> CKernel::row_wise_sum_squared_sum_symmetric_block(index_t
+		block_begin, index_t block_size, bool no_diag)
+{
+	SG_DEBUG("Entering\n");
+
+	REQUIRE(has_features(), "No features assigned to kernel\n")
+	REQUIRE(lhs_equals_rhs, "The kernel matrix is not symmetric!\n")
+	REQUIRE(block_begin>=0 && block_begin<num_rhs,
+			"Invalid block begin index (%d, %d)!\n", block_begin, block_begin)
+	REQUIRE(block_begin+block_size<=num_rhs,
+			"Invalid block size (%d) at starting index (%d, %d)! "
+			"Please use smaller blocks!", block_size, block_begin, block_begin)
+	REQUIRE(block_size>=1, "Invalid block size (%d)!\n", block_size)
+
+	// initialize the matrix that accumulates the row/col-wise sum on the go
+	// the first column stores the sum of kernel values
+	// the second column stores the sum of squared kernel values
+	SGMatrix<float64_t> row_sum(block_size, 2);
+	row_sum.set_const(0.0);
+
+	// since the block is symmetric with main diagonal inside, we can save half
+	// the computation with using only the upper triangular part
+	// this can be done in parallel for the rows/cols
+#pragma omp parallel for
+	for (index_t i=0; i<block_size; ++i)
+	{
+		// compute the kernel values on the upper triangular part of the kernel
+		// matrix and compute row-wise sum and squared sum on the fly
+		for (index_t j=i+1; j<block_size; ++j)
+		{
+			float64_t k=kernel(i+block_begin, j+block_begin);
+#pragma omp critical
+			{
+				row_sum(i, 0)+=k;
+				row_sum(j, 0)+=k;
+				row_sum(i, 1)+=k*k;
+				row_sum(j, 1)+=k*k;
+			}
+		}
+	}
+
+	// add the diagonal elements if required - keeping this check
+	// outside of the loop to save cycles
+	if (!no_diag)
+	{
+#pragma omp parallel for
+		for (index_t i=0; i<block_size; ++i)
+		{
+			float64_t diag=kernel(i+block_begin, i+block_begin);
+			row_sum(i, 0)+=diag;
+			row_sum(i, 1)+=diag*diag;
+		}
+	}
+
+	SG_DEBUG("Leaving\n");
+
+	return row_sum;
+}
+
+SGVector<float64_t> CKernel::row_col_wise_sum_block(index_t block_begin_row,
+		index_t block_begin_col, index_t block_size_row,
+		index_t block_size_col, bool no_diag)
+{
+	SG_DEBUG("Entering\n");
+
+	REQUIRE(has_features(), "No features assigned to kernel\n")
+	REQUIRE(block_begin_row>=0 && block_begin_row<num_lhs &&
+			block_begin_col>=0 && block_begin_col<num_rhs,
+			"Invalid block begin index (%d, %d)!\n",
+			block_begin_row, block_begin_col)
+	REQUIRE(block_begin_row+block_size_row<=num_lhs &&
+			block_begin_col+block_size_col<=num_rhs,
+			"Invalid block size (%d, %d) at starting index (%d, %d)! "
+			"Please use smaller blocks!", block_size_row, block_size_col,
+			block_begin_row, block_begin_col)
+	REQUIRE(block_size_row>=1 && block_size_col>=1,
+			"Invalid block size (%d, %d)!\n", block_size_row, block_size_col)
+
+	// check if removal of diagonal is required/valid
+	if (no_diag && block_size_row!=block_size_col)
+	{
+		SG_WARNING("Not removing the main diagonal since block is not square!\n");
+		no_diag=false;
+	}
+
+	// initialize the vector that accumulates the row/col-wise sum on the go
+	// the first block_size_row entries store the row-wise sum of kernel values
+	// the nextt block_size_col entries store the col-wise sum of kernel values
+	SGVector<float64_t> sum(block_size_row+block_size_col);
+	sum.set_const(0.0);
+
+	// this can be done in parallel for the rows/cols
+#pragma omp parallel for
+	for (index_t i=0; i<block_size_row; ++i)
+	{
+		// compute the kernel values and compute sum on the fly
+		for (index_t j=0; j<block_size_col; ++j)
+		{
+			float64_t k=no_diag && i==j ? 0 :
+				kernel(i+block_begin_row, j+block_begin_col);
+#pragma omp critical
+			{
+				sum[i]+=k;
+				sum[j+block_size_row]+=k;
+			}
+		}
+	}
+
+	SG_DEBUG("Leaving\n");
+
+	return sum;
+}
+
 template <class T> void* CKernel::get_kernel_matrix_helper(void* p)
 {
 	K_THREAD_PARAM<T>* params= (K_THREAD_PARAM<T>*) p;
