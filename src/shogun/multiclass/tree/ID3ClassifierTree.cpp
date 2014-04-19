@@ -98,19 +98,20 @@ CTreeMachineNode<id3TreeNodeData>* CID3ClassifierTree::id3train(CFeatures* data,
 	
 	for (int32_t i=1; i<labels.vlen; i++)
 	{
-		while ((labels[i] == labels[i-1]) && (i<labels.vlen))
+		if (labels[i] == labels[i-1])
 		{
 			count++;
-			i++;
 		}
-	
-		if (count>most_num)
+		else if (count>most_num)
 		{
 			most_num = count;
 			most_label = labels[i-1];
+			count = 1;
 		}
-	
-		count = 1;
+		else
+		{
+			count = 1;
+		}	
 	}
 
 	node->data.class_label = most_label;
@@ -345,7 +346,11 @@ void CID3ClassifierTree::prune_tree_machine(CDenseFeatures<float64_t>* feats,
 	float64_t pruned_accuracy = accuracy->evaluate(predicted_pruned, gnd_truth);
 	
 	if (unpruned_accuracy<pruned_accuracy+epsilon)
-		current->set_children(new CDynamicObjectArray());
+	{
+		CDynamicObjectArray* null_children = new CDynamicObjectArray();
+		current->set_children(null_children);
+		SG_UNREF(null_children);
+	}
 
 	SG_UNREF(accuracy);
 	SG_UNREF(predicted_pruned);
