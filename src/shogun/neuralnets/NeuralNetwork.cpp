@@ -507,14 +507,8 @@ void CNeuralNetwork::set_batch_size(int32_t batch_size)
 		for (int32_t i=0; i<m_num_layers; i++)
 			get_layer(i)->set_batch_size(m_batch_size);
 		
-		SG_FREE(m_inputs.vector);
-		m_inputs.vlen = m_num_inputs*m_batch_size;
-		m_inputs.vector = SG_MALLOC(float64_t, m_inputs.vlen);
-		
-		SG_FREE(m_input_dropout_mask.vector);
-		m_input_dropout_mask.vlen = m_num_inputs*m_batch_size;
-		m_input_dropout_mask.vector =
-			SG_MALLOC(bool, m_input_dropout_mask.vlen);
+		m_inputs = SGVector<float64_t>(m_num_inputs*m_batch_size);
+		m_input_dropout_mask = SGVector<bool>(m_num_inputs*m_batch_size);
 	}
 }
 
@@ -621,7 +615,7 @@ void CNeuralNetwork::set_labels(CLabels* lab)
 
 SGVector<float64_t>* CNeuralNetwork::get_layer_parameters(int32_t i)
 {
-	REQUIRE(i<m_num_layers, "Layer index (%i) out of range", i);
+	REQUIRE(i<m_num_layers && i >= 0, "Layer index (%i) out of range", i);
 	
 	int32_t n = get_layer(i)->get_num_parameters();
 	SGVector<float64_t>* p = new SGVector<float64_t>(n);

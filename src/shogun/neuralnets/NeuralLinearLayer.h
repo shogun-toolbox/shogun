@@ -45,7 +45,9 @@ namespace shogun
  * Each neuron in the layer is connected to all the neurons in the previous
  * layer
  * 
- * When used as an output layer, a squared error measure is used
+ * When used as an output layer, a 
+ * [squared error measure](http://en.wikipedia.org/wiki/Mean_squared_error) is 
+ * used
  */
 class CNeuralLinearLayer : public CNeuralLayer
 {

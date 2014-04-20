@@ -84,8 +84,6 @@ public:
 	/** Initializes the layer
 	 * 
 	 * @param previous_layer_num_neurons number of neurons in the previous layer
-	 * 
-	 * @param dropout probabilty of dropping out a neuron in the layer
 	 */
 	virtual void initialize(int32_t previous_layer_num_neurons);
 	
@@ -139,8 +137,8 @@ public:
 	 *- The gradients of the error with respect to the layer's parameters
 	 * -The gradients of the error with respect to the layer's inputs
 	 * 
-	 * Deriving classes should make sure to account for dropout during gradient 
-	 * computations
+	 * Deriving classes should make sure to account for 
+	 * [dropout](http://arxiv.org/abs/1207.0580) during gradient computations
 	 * 
 	 * The input gradients are stored in m_input_gradients
 	 *
@@ -187,7 +185,8 @@ public:
 	virtual void enforce_max_norm(float64_t* parameters, 
 			float64_t max_norm) = 0;
 	
-	/** Applies dropout to the activations of the layer 
+	/** Applies [dropout](http://arxiv.org/abs/1207.0580) to the activations
+	 * of the layer 
 	 * 
 	 * If is_training is true, fills m_dropout_mask with random values 
 	 * (according to dropout_prop) and multiplies it into the activations, 

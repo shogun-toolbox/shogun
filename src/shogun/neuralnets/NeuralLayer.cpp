@@ -64,20 +64,11 @@ void CNeuralLayer::set_batch_size(int32_t batch_size)
 {
 	m_batch_size = batch_size;
 	
-	if (m_activations.vector!=NULL) SG_FREE(m_activations.vector);
-	if (m_input_gradients.vector!=NULL) SG_FREE(m_input_gradients.vector);
-	if (m_local_gradients.vector!=NULL) SG_FREE(m_local_gradients.vector);
-	if (m_dropout_mask.vector!=NULL) SG_FREE(m_dropout_mask.vector);
-	
-	m_activations.vlen = m_num_neurons * m_batch_size;
-	m_input_gradients.vlen = m_previous_layer_num_neurons * m_batch_size;
-	m_local_gradients.vlen = m_num_neurons * m_batch_size;
-	m_dropout_mask.vlen = m_num_neurons * m_batch_size;
-	
-	m_activations.vector = SG_MALLOC(float64_t, m_activations.vlen);
-	m_input_gradients.vector = SG_MALLOC(float64_t, m_input_gradients.vlen);
-	m_local_gradients.vector = SG_MALLOC(float64_t, m_local_gradients.vlen);
-	m_dropout_mask.vector = SG_MALLOC(bool, m_dropout_mask.vlen);
+	m_activations = SGVector<float64_t>(m_num_neurons*m_batch_size);
+	m_input_gradients = 
+		SGVector<float64_t>(m_previous_layer_num_neurons*m_batch_size);
+	m_local_gradients = SGVector<float64_t>(m_num_neurons*m_batch_size);
+	m_dropout_mask = SGVector<bool>(m_num_neurons*m_batch_size);
 }
 
 void CNeuralLayer::dropout_activations()

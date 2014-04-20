@@ -53,18 +53,21 @@ enum ENNOptimizationMethod
 
 /** @brief A generic multi-layer neural network
  *
- * NeuralNetwork is constructed using an array of NeuralLayer objects. The
- * NeuralLayer class defines the interface necessary for forward and 
- * backpropagation.
+ * A [Neural network](http://en.wikipedia.org/wiki/Artificial_neural_network) 
+ * is constructed using an array of CNeuralLayer objects. The NeuralLayer 
+ * class defines the interface necessary for forward and 
+ * [backpropagation](http://en.wikipedia.org/wiki/Backpropagation).
  * 
- * Supported feature types: DenseFeatures<float64_t>
+ * Supported feature types: CDenseFeatures<float64_t>
  * Supported label types:
- * 	- BinaryLabels
- * 	- MulticlassLabels
- * 	- RegressionLabels
+ * 	- CBinaryLabels
+ * 	- CMulticlassLabels
+ * 	- CRegressionLabels
  * 
- * The neural network can be trained using L-BFGS (default) or mini-batch
- * gradient descent.
+ * The neural network can be trained using 
+ * [L-BFGS](http://en.wikipedia.org/wiki/Limited-memory_BFGS) (default) or 
+ * [mini-batch gradient descent]
+ * (http://en.wikipedia.org/wiki/Stochastic_gradient_descent).
  * 
  * NOTE: LBFGS does not work properly when using dropout/max-norm regularization
  * due to their stochastic nature. Use gradient descent instead.
@@ -305,8 +308,11 @@ public:
 	
 	/** Probabilty that a hidden layer neuron will be dropped out
 	 * When using this, the recommended value is 0.5
-	 *
+	 * 
 	 * default value 0.0 (no dropout)
+	 * 
+	 * For more details on dropout, see this 
+	 * [paper](http://arxiv.org/abs/1207.0580)
 	 */
 	float64_t dropout_hidden;
 	
@@ -314,6 +320,9 @@ public:
 	 * When using this, a good value might be 0.2
 	 *
 	 * default value 0.0 (no dropout)
+	 * 
+	 * For more details on dropout, see this 
+	 * [paper](http://arxiv.org/abs/1207.0580)
 	 */
 	float64_t dropout_input;
 	
@@ -356,12 +365,10 @@ public:
 	
 	/** gradient descent momentum multiplier
 	 * 
-	 * parameter updates are computed according to:
-	 * $v_t = \mu v_{t-1} - \alpha \nabla f(\theta + \mu v_{t-1}) $
-	 * where $\v_t$ is weight update at iteration $t$ and $\alpha$ is the 
-	 * learning rate and $\mu$ is the momentum multiplier
-	 * 
 	 * default value is 0.9
+	 * 
+	 * For more details on momentum, see this 
+	 * [paper](http://jmlr.org/proceedings/papers/v28/sutskever13.html)
 	 */
 	float64_t gd_momentum;
 	
