@@ -2,6 +2,8 @@
  * Copyright (c) 2014, Shogun Toolbox Foundation
  * All rights reserved.
  *
+ * Written (W) 2014 Sunil K. Mahendrakar
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
 
@@ -28,7 +30,6 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * Written (W) 2014 Sunil K. Mahendrakar
  */
 
 #ifndef EIGEN3_DOT_PRODUCT_H_
@@ -47,7 +48,7 @@ namespace shogun
 template<class T> class SGVector;
 
 /** @brief Template class for Eigen3 dot product that performs dot product
- *  operation(\f$result = a\cdot b\f$ where a, b are vectors and result is a scalar)
+ *  operation(\f$\sum_{i=1}^d a_ib_i$ where $a,b$ are $d$-dimensional vectors)
  *  using Eigen3 Library
  */
 template <class T> class DenseEigen3DotProduct : public VectorDotProduct<T, SGVector<T> >
@@ -59,6 +60,7 @@ public:
     }
 
     /** Compute method which performs dot product operation
+     *  (\f$\sum_{i=1}^d a_ib_i$ where $a,b$ are $d$-dimensional vectors)
      *  @param vector1 input vector
      *  @param vector2 input vector
      *  @return the result

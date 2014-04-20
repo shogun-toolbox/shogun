@@ -2,6 +2,8 @@
  * Copyright (c) 2014, Shogun Toolbox Foundation
  * All rights reserved.
  *
+ * Written (W) 2014 Sunil K. Mahendrakar
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
 
@@ -28,14 +30,12 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * Written (W) 2014 Sunil K. Mahendrakar
  */
 
 #ifndef VECTOR_DOT_PRODUCT_H_
 #define VECTOR_DOT_PRODUCT_H_
 
 #include <shogun/lib/config.h>
-#include <shogun/lib/common.h>
 
 namespace shogun
 {
@@ -50,6 +50,7 @@ public:
     }
 
     /** Compute method for computing dot product of two vectors
+     *  (\f$\sum_{i=1}^d a_ib_i$ where $a,b$ are $d$-dimensional vectors)
      *  @param vector1 input vector
      *  @param vector2 input vector
      *  @return the result of dot product operation

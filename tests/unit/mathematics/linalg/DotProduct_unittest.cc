@@ -2,6 +2,8 @@
  * Copyright (c) 2014, Shogun Toolbox Foundation
  * All rights reserved.
  *
+ * Written (W) 2014 Sunil K. Mahendrakar
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
 
@@ -28,7 +30,6 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * Written (W) 2014 Sunil K. Mahendrakar
  */
 
 #include <shogun/lib/config.h>
@@ -47,10 +48,11 @@ TEST(Eigen3DotProduct, eigen3_dot_product_dense)
     a.set_const(1.0);
     b.set_const(2.0);
 
-    DenseEigen3DotProduct<float64_t>* A=new DenseEigen3DotProduct<float64_t>();
+    DenseEigen3DotProduct<float64_t>* A=SG_MALLOC(DenseEigen3DotProduct<float64_t>, 1);
+    new(A) DenseEigen3DotProduct<float64_t>;
 
     EXPECT_NEAR(A->compute(a,b), 20.0, 1E-15);
 
-    delete A;
+    SG_FREE(A);
 }
 #endif //HAVE_EIGEN3

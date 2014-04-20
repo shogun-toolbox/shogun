@@ -2,6 +2,8 @@
  * Copyright (c) 2014, Shogun Toolbox Foundation
  * All rights reserved.
  *
+ * Written (W) 2014 Sunil K. Mahendrakar
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
 
@@ -28,7 +30,6 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * Written (W) 2014 Sunil K. Mahendrakar
  */
 
 #include <shogun/lib/config.h>
@@ -45,7 +46,9 @@ namespace shogun
 template<class T>
 T DenseEigen3DotProduct<T>::compute(SGVector<T> vector1, SGVector<T> vector2) const
 {
-    REQUIRE(vector1.vlen==vector2.vlen, "Dimension mismatch!\n");
+    REQUIRE(vector1.vlen==vector2.vlen,
+            "Dimension of vector1 (%d) is not equal to that of vector2 (%d)",
+            vector1.vlen, vector2.vlen);
 
     Map<Matrix<T, Dynamic, 1> > vec1(vector1.vector, vector1.vlen);
     Map<Matrix<T, Dynamic, 1> > vec2(vector2.vector, vector2.vlen);
