@@ -1,11 +1,32 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
- *
- * Written (W) 2012 Heiko Strathmann
- */
+* Copyright (c) The Shogun Machine Learning Toolbox
+* Written (w) 2014 pl8787
+* All rights reserved.
+*
+* Redistribution and use in source and binary forms, with or without
+* modification, are permitted provided that the following conditions are met:
+*
+* 1. Redistributions of source code must retain the above copyright notice, this
+* list of conditions and the following disclaimer.
+* 2. Redistributions in binary form must reproduce the above copyright notice,
+* this list of conditions and the following disclaimer in the documentation
+* and/or other materials provided with the distribution.
+*
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+* ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+* WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+* DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+* ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+* (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+* LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+* ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+* (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+* SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*
+* The views and conclusions contained in the software and documentation are those
+* of the authors and should not be interpreted as representing official policies,
+* either expressed or implied, of the Shogun Development Team.
+*/
 
 #include <shogun/base/init.h>
 #include <shogun/kernel/GaussianKernel.h>
@@ -55,16 +76,7 @@ void test_custom_kernel_index_subsets()
 	SGMatrix<float64_t> custom_kernel_matrix=
 			custom_kernel->get_kernel_matrix();
 
-	for (index_t i=0; i<num_sub_row; ++i)
-	{
-		for (index_t j=0; j<num_sub_col; ++j)
-		{
-			SG_SPRINT("Custom(%d,%d)=%f, Gaussian(%d,%d)=%f\n",
-					i, j, custom_kernel_matrix(i, j),
-					row_subset[i], col_subset[j],
-					gaussian_kernel_matrix(row_subset[i], col_subset[j]));
-		}
-	}
+	custom_kernel_matrix.display_matrix("subset");
 
 	SG_UNREF(gaussian_kernel);
 	SG_UNREF(custom_kernel);

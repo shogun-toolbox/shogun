@@ -52,7 +52,7 @@ def kernel_custom_modular (dim=7):
 
 	kernel.set_full_kernel_matrix_from_full(symdata)
 	km_fullfull=kernel.get_kernel_matrix()
-	return km_fullfull,kernel
+	return km_fullfull,kernel,km_sub_kernel
 
 if __name__=='__main__':
 	print('Custom')
