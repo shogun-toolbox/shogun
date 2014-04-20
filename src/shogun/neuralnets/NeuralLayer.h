@@ -177,7 +177,7 @@ public:
 	virtual float64_t compute_error(float64_t* targets) = 0;
 	
 	/** Constrains the weights of each neuron in the layer to have an L2 norm of
-	 * atmost max_norm
+	 * at most max_norm
 	 * 
 	 * @param parameters pointer to the layer's parameters, array of size 
 	 * get_num_parameters()
