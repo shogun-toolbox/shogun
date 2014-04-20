@@ -40,18 +40,19 @@ void CKernelPCA::init()
 {
 	m_initialized = false;
 	m_init_features = NULL;
-	m_transformation_matrix = SGMatrix<float64_t>(NULL, 0, 0, false);
-	m_bias_vector = SGVector<float64_t>(NULL, 0, false);
+	m_transformation_matrix = SGMatrix<float64_t>();
+	m_bias_vector = SGVector<float64_t>();
 
 	SG_ADD(&m_transformation_matrix, "transformation_matrix",
-      "matrix used to transform data", MS_NOT_AVAILABLE);
+		"matrix used to transform data", MS_NOT_AVAILABLE);
 	SG_ADD(&m_bias_vector, "bias_vector",
-      "bias vector used to transform data", MS_NOT_AVAILABLE);
+		"bias vector used to transform data", MS_NOT_AVAILABLE);
 }
 
 void CKernelPCA::cleanup()
 {
 	m_transformation_matrix = SGMatrix<float64_t>();
+	m_bias_vector = SGVector<float64_t>();
 
 	if (m_init_features)
 		SG_UNREF(m_init_features);
