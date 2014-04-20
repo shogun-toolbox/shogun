@@ -42,6 +42,9 @@ namespace shogun
 /** @brief Neural layer with linear neurons, with an identity activation 
  * function. can be used as a hidden layer or an output layer
  * 
+ * Each neuron in the layer is connected to all the neurons in the previous
+ * layer
+ * 
  * When used as an output layer, a squared error measure is used
  */
 class CNeuralLinearLayer : public CNeuralLayer
@@ -132,6 +135,17 @@ public:
 	 * num_neurons*batch_size
 	 */
 	virtual float64_t compute_error(float64_t* targets);
+	
+	/** Constrains the weights of each neuron in the layer to have an L2 norm of
+	 * atmost max_norm
+	 * 
+	 * @param parameters pointer to the layer's parameters, array of size 
+	 * get_num_parameters()
+	 * 
+	 * @param max_norm maximum allowable norm for a neuron's weights
+	 */
+	virtual void enforce_max_norm(float64_t* parameters, 
+			float64_t max_norm);
 	
 	/** Computes the gradients of the error with respect to this layer's
 	 * activations. Results are stored in m_local_gradients. 
