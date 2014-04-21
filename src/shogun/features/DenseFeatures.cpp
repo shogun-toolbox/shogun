@@ -997,7 +997,7 @@ template<class ST> CFeatures* CDenseFeatures<ST>::create_merged_copy(
 	/* count number of vectors (not elements) processed so far */
 	index_t num_processed=num_vectors;
 
-	/* now copy data of other features bock wise */
+	/* now copy data of other features block wise */
 	other=others->get_first_element();
 	while (other)
 	{
