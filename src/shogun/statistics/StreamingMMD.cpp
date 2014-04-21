@@ -253,9 +253,15 @@ CList* CStreamingMMD::stream_data_blocks(index_t num_blocks,
 		SG_DEBUG("merging and premuting features!\n");
 
 		/* use the first element to merge rest of the data into */
-		CFeatures* merged=(CFeatures*)data->get_first_element();
+		CFeatures* merged_orig=(CFeatures*)data->get_first_element();
+		// TODO: There's a bug in CList: merged_orig->ref_count() == 2, but should be == 1!
 		data->delete_element();
-		merged=merged->create_merged_copy(data);
+		CFeatures* merged=merged_orig->create_merged_copy(data);
+
+		// TODO: UNREF to workaround get_first_element/CList bug
+		SG_UNREF(merged_orig);
+		// UNREF because delete_element() only shrinks list, but does not free data.
+		SG_UNREF(merged_orig);
 
 		/* get rid of unnecessary feature objects */
 		data->delete_all_elements();
