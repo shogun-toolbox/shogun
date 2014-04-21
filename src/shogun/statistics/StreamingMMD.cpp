@@ -253,11 +253,18 @@ CList* CStreamingMMD::stream_data_blocks(index_t num_blocks,
 		SG_DEBUG("merging and premuting features!\n");
 
 		/* use the first element to merge rest of the data into */
-		CFeatures* merged=(CFeatures*)data->get_first_element();
-		data->delete_element();
-		merged=merged->create_merged_copy(data);
+		CFeatures* first=(CFeatures*)data->get_first_element();
 
-		/* get rid of unnecessary feature objects */
+		/* this delete element doesn't deallocate first element but just removes
+		 * from the list and does a SG_UNREF. But its not deleted because
+		 * get_first_element() does a SG_REF before returning so we need to later
+		 * manually take care of its destruction via SG_UNREF here itself */
+		data->delete_element();
+
+		CFeatures* merged=first->create_merged_copy(data);
+
+		/* now we can get rid of unnecessary feature objects */
+		SG_UNREF(first);
 		data->delete_all_elements();
 
 		/* permute */

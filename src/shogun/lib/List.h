@@ -117,15 +117,20 @@ class CList : public CSGObject
 		/** deletes all elements from list */
 		inline void delete_all_elements()
 		{
+			// move to the first element and then delete sequentially
+			CSGObject* d=get_first_element();
+
+			// important to unref because get_first_elements() SG_REFs it
+			if (delete_data)
+				SG_UNREF(d);
+
 			while (get_num_elements())
 			{
-				CSGObject* d=delete_element();
+				d=delete_element();
 
-				if (delete_data)
-				{
-					SG_DEBUG("SG_UNREF List Element %p\n", d)
-					SG_UNREF(d);
-				}
+				// we don't need to check for delete_data flag here
+				// delete_element() takes care of whether or not
+				// data should be SG_UNREF'ed
 			}
 
 			first=NULL;
@@ -317,14 +322,18 @@ class CList : public CSGObject
 		}
 		//@}
 
-		/** append element AFTER the current element
+		/** append element AFTER the current element and move to the newly
+		 * added element
 		 *
 		 * @param data data element to append
 		 * @return if appending was successful
 		 */
 		inline bool append_element(CSGObject* data)
 		{
-			if (current != NULL)    // none available, case is shattered in insert_element()
+			SG_DEBUG("Entering\n");
+
+			// none available, case is shattered in insert_element()
+			if (current != NULL)
 			{
 				CSGObject* e=get_next_element();
 				if (e)
@@ -332,6 +341,7 @@ class CList : public CSGObject
 					if (delete_data)
 						SG_UNREF(e);
 					// if successor exists use insert_element()
+					SG_DEBUG("Leaving\n");
 					return insert_element(data);
 				}
 				else
@@ -350,14 +360,22 @@ class CList : public CSGObject
 						if (delete_data)
 							SG_REF(data);
 
+						SG_DEBUG("Leaving\n");
 						return true;
 					}
 					else
+					{
+						SG_WARNING("Error in allocating memory for new element!\n");
+						SG_DEBUG("Leaving\n");
 						return false;
+					}
 				}
 			}
 			else
+			{
+				SG_DEBUG("Leaving\n");
 				return insert_element(data);
+			}
 		}
 
 		/** append at end of list
@@ -420,7 +438,8 @@ class CList : public CSGObject
 				return false;
 		}
 
-		/** insert element BEFORE the current element
+		/** insert element BEFORE the current element and move to the newly
+		 * added element
 		 *
 		 * @param data data element to insert
 		 * @return if inserting was successful
@@ -445,7 +464,10 @@ class CList : public CSGObject
 					return true;
 				}
 				else
+				{
+					SG_WARNING("Error in allocating memory for new element!\n");
 					return false;
+				}
 			}
 			else
 			{
@@ -464,7 +486,10 @@ class CList : public CSGObject
 					return true;
 				}
 				else
+				{
+					SG_WARNING("Error in allocating memory for new element!\n");
 					return false;
+				}
 			}
 		}
 
@@ -476,7 +501,8 @@ class CList : public CSGObject
 		 */
 		inline CSGObject* delete_element()
 		{
-			CSGObject* data = get_current_element();
+			SG_DEBUG("Entering\n");
+			CSGObject* data = current ? current->data : NULL;
 
 			if (num_elements>0)
 				num_elements--;
@@ -484,7 +510,11 @@ class CList : public CSGObject
 			if (data)
 			{
 				if (delete_data)
+				{
+					SG_GCDEBUG("Decreasing refcount of %s(%p)!\n",
+							data->get_name(), data);
 					SG_UNREF(data);
+				}
 
 				CListElement *element = current;
 
@@ -507,9 +537,11 @@ class CList : public CSGObject
 
 				delete element;
 
+				SG_DEBUG("Leaving\n");
 				return data;
 			}
 
+			SG_DEBUG("Leaving\n");
 			return NULL;
 		}
 
