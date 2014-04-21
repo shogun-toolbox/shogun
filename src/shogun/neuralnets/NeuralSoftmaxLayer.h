@@ -38,9 +38,12 @@
 
 namespace shogun
 {
-/** @brief Neural layer with linear neurons, with a softmax activation 
- * function. can be only be used as an output layer. Cross entropy error measure
- * is used.
+/** @brief Neural layer with linear neurons, with a 
+ * [softmax activation](http://en.wikipedia.org/wiki/Softmax_function) function. 
+ * can be only be used as an output layer. 
+ * [Cross entropy](http://en.wikipedia.org/wiki/Cross_entropy) error measure is 
+ * used.
+ * 
  */
 class CNeuralSoftmaxLayer : public CNeuralLinearLayer
 {

@@ -53,18 +53,24 @@ enum ENNOptimizationMethod
 
 /** @brief A generic multi-layer neural network
  *
- * NeuralNetwork is constructed using an array of NeuralLayer objects. The
- * NeuralLayer class defines the interface necessary for forward and 
- * backpropagation.
+ * A [Neural network](http://en.wikipedia.org/wiki/Artificial_neural_network) 
+ * is constructed using an array of CNeuralLayer objects. The NeuralLayer 
+ * class defines the interface necessary for forward and 
+ * [backpropagation](http://en.wikipedia.org/wiki/Backpropagation).
  * 
- * Supported feature types: DenseFeatures<float64_t>
+ * Supported feature types: CDenseFeatures<float64_t>
  * Supported label types:
- * 	- BinaryLabels
- * 	- MulticlassLabels
- * 	- RegressionLabels
+ * 	- CBinaryLabels
+ * 	- CMulticlassLabels
+ * 	- CRegressionLabels
  * 
- * The neural network can be trained using L-BFGS (default) or mini-batch
- * gradient descent
+ * The neural network can be trained using 
+ * [L-BFGS](http://en.wikipedia.org/wiki/Limited-memory_BFGS) (default) or 
+ * [mini-batch gradient descent]
+ * (http://en.wikipedia.org/wiki/Stochastic_gradient_descent).
+ * 
+ * NOTE: LBFGS does not work properly when using dropout/max-norm regularization
+ * due to their stochastic nature. Use gradient descent instead.
  * 
  * During training, the error at each iteration is logged as MSG_INFO. (to turn
  * on info messages call io.set_loglevel(MSG_INFO)).
@@ -136,6 +142,12 @@ public:
 	 */
 	virtual bool check_gradients(float64_t approx_epsilon=1.0e-06, 
 			float64_t tolerance=1.0e-09);
+	
+	/** returns a copy of a layer's parameters array 
+	 * 
+	 * @param i index of the layer
+	 */
+	SGVector<float64_t>* get_layer_parameters(int32_t i);
 	
 	/** returns the totat number of parameters in the network */
 	int32_t get_num_parameters() {return m_total_num_parameters;}
@@ -291,6 +303,36 @@ public:
 	/** L2 Regularization coeff, default value is 0.0*/
 	float64_t l2_coefficient;
 	
+	/** L1 Regularization coeff, default value is 0.0*/
+	float64_t l1_coefficient;
+	
+	/** Probabilty that a hidden layer neuron will be dropped out
+	 * When using this, the recommended value is 0.5
+	 * 
+	 * default value 0.0 (no dropout)
+	 * 
+	 * For more details on dropout, see this 
+	 * [paper](http://arxiv.org/abs/1207.0580)
+	 */
+	float64_t dropout_hidden;
+	
+	/** Probabilty that a input layer neuron will be dropped out
+	 * When using this, a good value might be 0.2
+	 *
+	 * default value 0.0 (no dropout)
+	 * 
+	 * For more details on dropout, see this 
+	 * [paper](http://arxiv.org/abs/1207.0580)
+	 */
+	float64_t dropout_input;
+	
+	/** Maximum allowable L2 norm for a neurons weights
+	 *When using this, a good value might be 15
+	 * 
+	 * default value -1 (max-norm regularization disabled)
+	 */
+	float64_t max_norm;
+	
 	/** convergence criteria
 	 * training stops when (E'- E)/E < epsilon
 	 * where E is the error at the current iterations and E' is the error at the
@@ -321,7 +363,13 @@ public:
 	 */
 	float64_t gd_learning_rate_decay;
 	
-	/** gradient descent momentum multiplier, default value 0.9 */
+	/** gradient descent momentum multiplier
+	 * 
+	 * default value is 0.9
+	 * 
+	 * For more details on momentum, see this 
+	 * [paper](http://jmlr.org/proceedings/papers/v28/sutskever13.html)
+	 */
 	float64_t gd_momentum;
 	
 	/** Used to damp the error fluctuations when stochastic gradient descent is 
@@ -366,6 +414,22 @@ protected:
 	 * defaul value is 1
 	 */
 	int32_t m_batch_size;
+	
+	/** Stores the inputs currently being used by the network
+	 * length num_inputs * batch_size
+	 */
+	SGVector<float64_t> m_inputs;
+	
+	/** binary mask that determines whether an input will be kept or dropped out
+	 * during the current iteration of training 
+	 * length num_inputs * batch_size
+	 */
+	SGVector<bool> m_input_dropout_mask;
+	
+	/** True if the network is currently being trained
+	 * initial value is false
+	 */
+	bool m_is_training;
 	
 private:
 	/** temperary pointers to the training data, used to pass the data to L-BFGS

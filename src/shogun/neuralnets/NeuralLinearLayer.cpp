@@ -131,6 +131,13 @@ void CNeuralLinearLayer::compute_gradients(float64_t* parameters,
 	
 	compute_local_gradients(is_output, p);
 	
+	// apply dropout to the local gradients
+	if (dropout_prop>0.0)
+	{
+		for (int32_t i=0; i<m_local_gradients.vlen; i++)
+			m_local_gradients[i] *= m_dropout_mask[i];
+	}
+	
 #ifdef HAVE_EIGEN3
 	typedef Eigen::Map<Eigen::MatrixXd> EMappedMatrix;
 	typedef Eigen::Map<Eigen::VectorXd> EMappedVector;
@@ -232,4 +239,22 @@ float64_t CNeuralLinearLayer::compute_error(float64_t* targets)
 		sum += (targets[i]-m_activations[i])*(targets[i]-m_activations[i]);
 	sum *= (0.5/m_batch_size);
 	return sum;
+}
+
+void CNeuralLinearLayer::enforce_max_norm(float64_t* parameters, 
+		float64_t max_norm)
+{
+	int32_t length = m_num_neurons*m_previous_layer_num_neurons;
+	for (int32_t i=0; i<length; i+=m_previous_layer_num_neurons)
+	{
+		float64_t norm = 
+			SGVector<float64_t>::twonorm(parameters+i, m_num_neurons);
+		
+		if (norm > max_norm)
+		{
+			float64_t multiplier = max_norm/norm;
+			for (int32_t j=0; j<m_previous_layer_num_neurons; j++)
+				parameters[i+j] *= multiplier;
+		}
+	}
 }

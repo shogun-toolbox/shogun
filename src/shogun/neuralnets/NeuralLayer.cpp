@@ -33,6 +33,7 @@
 
 #include <shogun/base/Parameter.h>
 #include <shogun/neuralnets/NeuralLayer.h>
+#include <shogun/mathematics/Math.h>
 
 using namespace shogun;
 
@@ -63,17 +64,30 @@ void CNeuralLayer::set_batch_size(int32_t batch_size)
 {
 	m_batch_size = batch_size;
 	
-	if (m_activations.vector!=NULL) SG_FREE(m_activations.vector);
-	if (m_input_gradients.vector!=NULL) SG_FREE(m_input_gradients.vector);
-	if (m_local_gradients.vector!=NULL) SG_FREE(m_local_gradients.vector);
+	m_activations = SGVector<float64_t>(m_num_neurons*m_batch_size);
+	m_input_gradients = 
+		SGVector<float64_t>(m_previous_layer_num_neurons*m_batch_size);
+	m_local_gradients = SGVector<float64_t>(m_num_neurons*m_batch_size);
+	m_dropout_mask = SGVector<bool>(m_num_neurons*m_batch_size);
+}
+
+void CNeuralLayer::dropout_activations()
+{
+	if (dropout_prop==0.0) return;
 	
-	m_activations.vlen = m_num_neurons * m_batch_size;
-	m_input_gradients.vlen = m_previous_layer_num_neurons * m_batch_size;
-	m_local_gradients.vlen = m_num_neurons * m_batch_size;
-	
-	m_activations.vector = SG_MALLOC(float64_t, m_activations.vlen);
-	m_input_gradients.vector = SG_MALLOC(float64_t, m_input_gradients.vlen);
-	m_local_gradients.vector = SG_MALLOC(float64_t, m_local_gradients.vlen);
+	if (is_training)
+	{
+		for (int32_t i=0; i<m_activations.vlen; i++)
+		{
+			m_dropout_mask[i] = CMath::random(0.0,1.0) >= dropout_prop;
+			m_activations[i] *= m_dropout_mask[i];
+		}
+	}
+	else
+	{
+		for (int32_t i=0; i<m_activations.vlen; i++)
+			m_activations[i] *= (1.0-dropout_prop);
+	}
 }
 
 void CNeuralLayer::init()
@@ -81,9 +95,15 @@ void CNeuralLayer::init()
 	m_num_neurons = 0; 
 	m_previous_layer_num_neurons = 0;
 	m_batch_size = 0;
+	dropout_prop = 0.0;
+	is_training = false;
 	
 	SG_ADD(&m_num_neurons, "num_neurons",
 	       "Number of Neurons", MS_NOT_AVAILABLE);
+	SG_ADD(&dropout_prop, "dropout_prop",
+	       "Dropout Probabilty", MS_NOT_AVAILABLE);
+	SG_ADD(&is_training, "is_training",
+	       "is_training", MS_NOT_AVAILABLE);
 	SG_ADD(&m_previous_layer_num_neurons, "previous_layer_num_neurons",
 	       "Number of neurons in the previous layer", MS_NOT_AVAILABLE);
 	SG_ADD(&m_batch_size, "batch_size",
@@ -94,4 +114,6 @@ void CNeuralLayer::init()
 	       "Input Gradients", MS_NOT_AVAILABLE);
 	SG_ADD(&m_local_gradients, "local_gradients",
 	       "Local Gradients", MS_NOT_AVAILABLE);
+	SG_ADD(&m_dropout_mask, "dropout_mask",
+	       "Dropout mask", MS_NOT_AVAILABLE);
 }

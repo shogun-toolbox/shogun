@@ -38,10 +38,13 @@
 
 namespace shogun
 {
-/** @brief Neural layer with linear neurons, with a logistic activation 
- * function. can be used as a hidden layer or an output layer
+/** @brief Neural layer with linear neurons, with a [logistic activation 
+ * function](http://en.wikipedia.org/wiki/Logistic_function). can be used as a 
+ * hidden layer or an output layer.
  * 
- * When used as an output layer, a squared error measure is used
+ * When used as an output layer, a 
+ * [squared error measure](http://en.wikipedia.org/wiki/Mean_squared_error) is 
+ * used
  */
 class CNeuralLogisticLayer : public CNeuralLinearLayer
 {

@@ -60,6 +60,7 @@ TEST(NeuralNetwork, compute_gradients)
 	network = new CNeuralNetwork();
 	network->initialize(5, layers);
 	network->l2_coefficient = 0.01;
+	network->l1_coefficient = 0.03;
 	EXPECT_EQ(true, network->check_gradients())
 		<< "CNeuralLinearLayer gradient check failed";
 	SG_UNREF(network);
@@ -70,6 +71,7 @@ TEST(NeuralNetwork, compute_gradients)
 	layers->append_element(new CNeuralLogisticLayer(4));
 	network = new CNeuralNetwork();
 	network->initialize(5, layers);
+	network->l1_coefficient = 0.03;
 	network->l2_coefficient = 0.01;
 	EXPECT_EQ(true, network->check_gradients())
 		<< "CNeuralLogisticLayer gradient check failed";
@@ -81,6 +83,7 @@ TEST(NeuralNetwork, compute_gradients)
 	layers->append_element(new CNeuralSoftmaxLayer(4));
 	network = new CNeuralNetwork();
 	network->initialize(5, layers);
+	network->l1_coefficient = 0.03;
 	network->l2_coefficient = 0.01;
 	EXPECT_EQ(true, network->check_gradients())
 		<< "CNeuralSoftmaxLayer gradient check failed";
@@ -273,10 +276,11 @@ TEST(NeuralNetwork, gradient_descent)
 	// initialize the weights deterministically
 	for (int32_t i=0; i<network->get_num_parameters(); i++)
 		network->get_parameters()[i] = i * 1.0e-1;
-	
+
 	network->optimization_method = NNOM_GRADIENT_DESCENT;
 	network->gd_learning_rate = 10.0;
-	network->epsilon = 1.0e-4;
+	network->epsilon = 0.0;
+	network->max_num_epochs = 1000;
 	
 	network->set_labels(labels);
 	network->train(features);

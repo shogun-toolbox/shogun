@@ -54,7 +54,8 @@ namespace shogun
  * - get_num_parameters()
  * - compute_activations()
  * - compute_gradients()
- * - computer_error() [only if the layer can be used as an output layer]
+ * - compute_error() [only if the layer can be used as an output layer]
+ * - enforce_max_norm()
  * 
  * The memory for the layer's parameters (weights and biases) is not allocated
  * by the layer itself, instead it is allocated by the network that the layer
@@ -136,6 +137,9 @@ public:
 	 *- The gradients of the error with respect to the layer's parameters
 	 * -The gradients of the error with respect to the layer's inputs
 	 * 
+	 * Deriving classes should make sure to account for 
+	 * [dropout](http://arxiv.org/abs/1207.0580) during gradient computations
+	 * 
 	 * The input gradients are stored in m_input_gradients
 	 *
 	 * @param parameters pointer to the layer's parameters, array of size 
@@ -170,6 +174,27 @@ public:
 	 */
 	virtual float64_t compute_error(float64_t* targets) = 0;
 	
+	/** Constrains the weights of each neuron in the layer to have an L2 norm of
+	 * at most max_norm
+	 * 
+	 * @param parameters pointer to the layer's parameters, array of size 
+	 * get_num_parameters()
+	 * 
+	 * @param max_norm maximum allowable norm for a neuron's weights
+	 */
+	virtual void enforce_max_norm(float64_t* parameters, 
+			float64_t max_norm) = 0;
+	
+	/** Applies [dropout](http://arxiv.org/abs/1207.0580) to the activations
+	 * of the layer 
+	 * 
+	 * If is_training is true, fills m_dropout_mask with random values 
+	 * (according to dropout_prop) and multiplies it into the activations, 
+	 * otherwise, multiplies the activations by (1-dropout_prop) to compensate 
+	 * for using dropout during training
+	 */
+	virtual void dropout_activations();
+	
 	/** Gets the number of neurons in the layer
 	 * 
 	 * @return number of neurons in the layer
@@ -193,8 +218,15 @@ public:
 
 private:
 	void init();
+
+public:
+	/** Should be true if the layer is currently used during training 
+	 * initial value is false
+	 */
+	bool is_training;
 	
-	void shallow_copy(const CNeuralLayer &orig);
+	/** probabilty of dropping out a neuron in the layer */
+	float64_t dropout_prop;
 	
 protected:
 	/** Number of neurons in this layer */
@@ -221,7 +253,13 @@ protected:
 	 * length num_neurons * batch_size
 	 */
 	SGVector<float64_t> m_local_gradients;
-};
 	
+	/** binary mask that determines whether a neuron will be kept or dropped out
+	 * during the current iteration of training 
+	 * length num_neurons * batch_size
+	 */
+	SGVector<bool> m_dropout_mask;
+};
+
 }
 #endif
