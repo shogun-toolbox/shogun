@@ -129,7 +129,7 @@ cpplint.py
 # cmake
 /CMakeFiles/
 CMakeCache.txt
-/build
+/build*
 /third_party
 
 # protobuf
