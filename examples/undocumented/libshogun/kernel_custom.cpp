@@ -12,6 +12,7 @@
 #include <shogun/kernel/CustomKernel.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/DataGenerator.h>
+#include <shogun/features/IndexFeatures.h>
 
 using namespace shogun;
 
@@ -67,7 +68,7 @@ int main(int argc, char** argv)
 {
 	init_shogun_with_defaults();
 
-//	sg_io->set_loglevel(MSG_DEBUG);
+	//sg_io->set_loglevel(MSG_DEBUG);
 
 	test_custom_kernel_subsets();
 

@@ -56,6 +56,7 @@
 %rename(StreamingDotFeatures) CStreamingDotFeatures;
 %rename(StreamingVwFeatures) CStreamingVwFeatures;
 %rename(DummyFeatures) CDummyFeatures;
+%rename(IndexFeatures) CIndexFeatures;
 %rename(AttributeFeatures) CAttributeFeatures;
 %rename(CombinedFeatures) CCombinedFeatures;
 %rename(CombinedDotFeatures) CCombinedDotFeatures;
@@ -487,6 +488,7 @@ namespace shogun
 }
 
 %include <shogun/features/DummyFeatures.h>
+%include <shogun/features/IndexFeatures.h>
 %include <shogun/features/AttributeFeatures.h>
 %include <shogun/features/CombinedFeatures.h>
 %include <shogun/features/CombinedDotFeatures.h>
