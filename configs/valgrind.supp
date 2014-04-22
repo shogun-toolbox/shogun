@@ -75,3 +75,18 @@
    obj:/usr/lib/x86_64-linux-gnu/libxml2.so.2.8.0
    fun:*
 }
+
+{
+   uninitialized reads of libhdf5 < 1.8.12
+   Memcheck:Param
+   write(buf)
+   fun:__write_nocancel
+   obj:*/libhdf5.so.*
+   fun:H5FD_write
+   fun:H5F_accum_write
+   fun:H5F_block_write
+   fun:H5D__flush_sieve_buf
+   obj:*/libhdf5.so.*
+   fun:H5D__flush_real
+   fun:H5D_close
+}
