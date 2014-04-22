@@ -13,6 +13,7 @@
 		- Add Multiple Kernel Learning notebook [Saurabh Mahindre]
 		- Add Multi-Label classes to enable Multi-Label classification [Thoralf Klein]
 	* Bugfixes:
+		- Fix reference counting bugs in CList when reference counting is on [Heiko Strathmann, Thoralf Klein, lambday]
 		- Fix memory problem in PCA::apply_to_feature_matrix [Parijat Mazumdar]
 		- Fix crash in LeastAngleRegression for the case D greater than N [Parijat Mazumdar]
 		- Fix memory violations in bundle method solvers [Thoralf Klein]

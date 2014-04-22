@@ -21,6 +21,8 @@
 %newobject get_transposed();
 %newobject create_merged_copy(CFeatures* other);
 %newobject copy_subset(SGVector<index_t> indices);
+%newobject get_streamed_features(index_t num_elements);
+
 
 /* methods in the labels factory do a conversion only - but need to be ref'd for modular interfaces */
 %newobject shogun::CLabelsFactory::to_binary(CLabels* base_labels);
