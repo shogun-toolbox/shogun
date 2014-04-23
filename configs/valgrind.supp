@@ -17,12 +17,11 @@
 #
 
 {
-   shogun pthread_create warnings for CInputParser<T>::start_parser()
+   shogun pthread_create warnings
    Memcheck:Leak
    fun:calloc
    fun:_dl_allocate_tls
    fun:pthread_create@@GLIBC_*
-   fun:_ZN6shogun12CInputParserI*12start_parserEv
 }
 
 {
@@ -87,6 +86,6 @@
    fun:H5F_block_write
    fun:H5D__flush_sieve_buf
    obj:*/libhdf5.so.*
-   fun:H5D__flush_real
+   obj:*/libhdf5.so.*
    fun:H5D_close
 }
