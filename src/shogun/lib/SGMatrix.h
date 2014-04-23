@@ -130,6 +130,17 @@ template<class T> class SGMatrix : public SGReferencedData
 		/** fill matrix with zeros */
 		void zero();
 
+		/**
+		 * Checks whether the matrix is symmetric or not. The equality check
+		 * is performed using '==' operators for discrete types (int, char,
+		 * bool) and using CMath::fequals method for floating types (float,
+		 * double, long double, std::complex<double>) with default espilon
+		 * values from std::numeric_limits
+		 *
+		 * @return whether the matrix is symmetric
+		 */
+		bool is_symmetric();
+
 		/** returns the maximum single element of the matrix */
 		T max_single();
 
