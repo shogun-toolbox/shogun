@@ -120,49 +120,46 @@ void gp_regression_custom_kernel()
 	CExactInferenceMethod* inf = new CExactInferenceMethod(kernel,
 						  feat_idx_train, mean, lab_train, lik);
 	SG_REF(inf);
-	inf->set_scale(CMath::exp(kernel_log_scale));	// Parameter of kernel scale
+	// Parameter of kernel scale
+	inf->set_scale(CMath::exp(kernel_log_scale));
 
 	// Finally use these to allocate the Gaussian Process Object
 	CGaussianProcessRegression* gpr = new CGaussianProcessRegression(inf);
 	SG_REF(gpr);
 
-	for (index_t i=0;i<10;i++)
-	{
-		SGVector<index_t> train_idx_v(80);
-		SGVector<index_t> test_idx_v(20);
+	SGVector<index_t> train_idx_v(180);
+	SGVector<index_t> test_idx_v(20);
 
-		train_idx_v.random(0,n-1);
-		test_idx_v.random(0,n-1);
+	train_idx_v.range_fill(0);
+	test_idx_v.range_fill(180);
 
-		SG_SPRINT("Iter %d:\n", i);
-		train_idx_v.display_vector("Train Index");
-		test_idx_v.display_vector("Test Index");
+	train_idx_v.display_vector("Train Index");
+	test_idx_v.display_vector("Test Index");
 
-		feat_idx_train->add_subset(train_idx_v);
-		lab_train->add_subset(train_idx_v);
-		feat_idx_test->add_subset(test_idx_v);
-		lab_test->add_subset(test_idx_v);
+	feat_idx_train->add_subset(train_idx_v);
+	lab_train->add_subset(train_idx_v);
+	feat_idx_test->add_subset(test_idx_v);
+	lab_test->add_subset(test_idx_v);
 
-		// perform inference on train
-		CRegressionLabels* predictions_train=gpr->apply_regression(feat_idx_train);
-		SG_REF(predictions_train);
-		float64_t error_train = eval->evaluate(predictions_train, lab_train);
+	// perform inference on train
+	CRegressionLabels* predictions_train=gpr->apply_regression(feat_idx_train);
+	SG_REF(predictions_train);
+	float64_t error_train = eval->evaluate(predictions_train, lab_train);
 
-		// perform inference on test
-		CRegressionLabels* predictions_test=gpr->apply_regression(feat_idx_test);
-		SG_REF(predictions_test);
-		float64_t error_test = eval->evaluate(predictions_test, lab_test);
+	// perform inference on test
+	CRegressionLabels* predictions_test=gpr->apply_regression(feat_idx_test);
+	SG_REF(predictions_test);
+	float64_t error_test = eval->evaluate(predictions_test, lab_test);
 
-		feat_idx_train->remove_all_subsets();
-		feat_idx_test->remove_all_subsets();
-		lab_train->remove_all_subsets();
-		lab_test->remove_all_subsets();
+	feat_idx_train->remove_all_subsets();
+	feat_idx_test->remove_all_subsets();
+	lab_train->remove_all_subsets();
+	lab_test->remove_all_subsets();
 
-		SG_SPRINT("Train Error:%f, Test Error:%f\n", error_train, error_test);
+	SG_SPRINT("Train Error:%f, Test Error:%f\n", error_train, error_test);
 
-		SG_UNREF(predictions_train);
-		SG_UNREF(predictions_test);
-	}
+	SG_UNREF(predictions_train);
+	SG_UNREF(predictions_test);
 
 	SG_UNREF(mean);
 	SG_UNREF(lik);
