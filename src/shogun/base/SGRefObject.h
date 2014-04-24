@@ -49,9 +49,6 @@ public:
 	/** default constructor */
 	SGRefObject();
 
-	/** copy constructor */
-	SGRefObject(const SGRefObject& orig);
-
 	/** destructor */
 	virtual ~SGRefObject();
 

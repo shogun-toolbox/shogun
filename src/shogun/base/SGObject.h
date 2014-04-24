@@ -101,9 +101,6 @@ public:
 	/** default constructor */
 	CSGObject();
 
-	/** copy constructor */
-	CSGObject(const CSGObject& orig);
-
 	/** destructor */
 	virtual ~CSGObject();
 
