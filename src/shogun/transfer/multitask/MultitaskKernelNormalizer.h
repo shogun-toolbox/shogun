@@ -13,8 +13,8 @@
 
 #include <shogun/lib/config.h>
 
-#include <shogun/kernel/normalizer/KernelNormalizer.h>
 #include <shogun/kernel/Kernel.h>
+#include <shogun/kernel/normalizer/KernelNormalizer.h>
 #include <algorithm>
 #include <vector>
 
