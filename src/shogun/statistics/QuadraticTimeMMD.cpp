@@ -37,7 +37,9 @@
 #include <shogun/kernel/CustomKernel.h>
 
 using namespace shogun;
+#ifdef HAVE_EIGEN3
 using namespace Eigen;
+#endif
 
 CQuadraticTimeMMD::CQuadraticTimeMMD() : CKernelTwoSampleTest()
 {
