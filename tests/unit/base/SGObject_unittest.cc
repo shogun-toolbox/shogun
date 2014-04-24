@@ -66,7 +66,7 @@ void* stress_test(void* args)
 }
 
 #ifdef USE_REFERENCE_COUNTING
-TEST(SGObject,ref_unref)
+TEST(SGObject,ref_unref_stress_test)
 {
 	CBinaryLabels* labs = new CBinaryLabels(10);
 	EXPECT_EQ(labs->ref_count(), 0);
@@ -86,6 +86,31 @@ TEST(SGObject,ref_unref)
 	SG_UNREF(labs);
 	EXPECT_TRUE(labs == NULL);
 	delete [] threads;
+}
+
+TEST(SGObject,ref_unref_leaking_copy_constructor)
+{
+	CBinaryLabels* labs = new CBinaryLabels(10);
+	EXPECT_EQ(labs->ref_count(), 0);
+	SG_REF(labs);
+	EXPECT_EQ(labs->ref_count(), 1);
+
+	CBinaryLabels* labs_2 = new CBinaryLabels(*labs);
+	SG_UNREF(labs_2);
+
+	SG_UNREF(labs);
+	EXPECT_TRUE(labs == NULL);
+}
+
+TEST(SGObject,ref_unref_simple)
+{
+	CBinaryLabels* labs = new CBinaryLabels(10);
+	EXPECT_EQ(labs->ref_count(), 0);
+	SG_REF(labs);
+	EXPECT_EQ(labs->ref_count(), 1);
+
+	SG_UNREF(labs);
+	EXPECT_TRUE(labs == NULL);
 }
 #endif
 
