@@ -12,5 +12,5 @@ c 0.017
 train_classifier
 
 set_features TEST ../data/fm_test_real.dat
-out.txt = classify
-! rm out.txt
+out-classifier_libsvmmulticlass.txt = classify
+! rm out-classifier_libsvmmulticlass.txt
