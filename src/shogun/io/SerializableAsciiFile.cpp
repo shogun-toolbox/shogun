@@ -62,6 +62,8 @@ CSerializableAsciiFile::ignore()
 CSerializableFile::TSerializableReader*
 CSerializableAsciiFile::new_reader(char* dest_version, size_t n)
 {
+	REQUIRE(m_fstream != NULL, "provided fstream should be != NULL\n");
+
 	string_t buf;
 	if (fscanf(m_fstream, "%" STRING_LEN_STR"s\n", buf) != 1)
 		return NULL;

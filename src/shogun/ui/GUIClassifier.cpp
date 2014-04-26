@@ -805,6 +805,8 @@ bool CGUIClassifier::load(char* filename, char* type)
 	if (new_classifier(type))
 	{
 		FILE* model_file=fopen(filename, "r");
+		REQUIRE(model_file != NULL, "SVM/Classifier loading failed on file %s.\n", filename);
+
 		CSerializableAsciiFile* ascii_file = new CSerializableAsciiFile(model_file,'r');
 
 		if (ascii_file)

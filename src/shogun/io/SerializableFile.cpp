@@ -23,31 +23,32 @@ CSerializableFile::CSerializableFile()
 CSerializableFile::CSerializableFile(FILE* fstream, char rw)
 	:CSGObject(), m_filename(NULL)
 {
+	REQUIRE(fstream != NULL, "provided fstream should be != NULL\n");
 	init(fstream, rw, "(file)");
 }
 
 CSerializableFile::CSerializableFile(const char* fname, char rw)
 	:CSGObject(), m_filename(NULL)
 {
-	char mode[3] = {rw, 'b', '\0'};
+	const char mode[3] = {rw, 'b', '\0'};
 
-	init(NULL, rw, fname);
-
-	if (m_filename == NULL || *m_filename == '\0') {
-		SG_WARNING("Filename not given for opening file!\n")
+	if (fname == NULL || *fname == '\0') {
+		SG_ERROR("Filename not given for opening file!\n")
 		close(); return;
 	}
 
 	if (rw != 'r' && rw != 'w') {
-		SG_WARNING("Unknown mode '%c'!\n", mode[0])
+		SG_ERROR("Unknown mode '%c'!\n", mode[0])
 		close(); return;
 	}
 
-	m_fstream = fopen(m_filename, mode);
-	if (!is_opened()) {
-		SG_WARNING("Error opening file '%s'\n", m_filename)
+	FILE* fstream = fopen(fname, mode);
+	if (!fstream) {
+		SG_ERROR("Error opening file '%s'\n", fname)
 		close(); return;
 	}
+
+	init(fstream, rw, fname);
 }
 
 CSerializableFile::~CSerializableFile()
