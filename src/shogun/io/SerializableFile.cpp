@@ -23,7 +23,7 @@ CSerializableFile::CSerializableFile()
 CSerializableFile::CSerializableFile(FILE* fstream, char rw)
 	:CSGObject(), m_filename(NULL)
 {
-	REQUIRE(fstream != NULL, "provided fstream should be != NULL\n");
+	REQUIRE(fstream != NULL, "Provided fstream should be != NULL\n");
 	init(fstream, rw, "(file)");
 }
 
