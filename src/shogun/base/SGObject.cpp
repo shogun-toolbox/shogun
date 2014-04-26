@@ -320,7 +320,7 @@ bool CSGObject::save_serializable(CSerializableFile* file,
 bool CSGObject::load_serializable(CSerializableFile* file,
 		const char* prefix, int32_t param_version)
 {
-	REQUIRE(file != NULL, "serializable file object should be != NULL\n");
+	REQUIRE(file != NULL, "Serializable file object should be != NULL\n");
 
 	SG_DEBUG("START LOADING CSGObject '%s'\n", get_name())
 	try
@@ -989,7 +989,7 @@ bool CSGObject::save_parameter_version(CSerializableFile* file,
 int32_t CSGObject::load_parameter_version(CSerializableFile* file,
 		const char* prefix)
 {
-	REQUIRE(file != NULL, "serializable file object should be != NULL");
+	REQUIRE(file != NULL, "Serializable file object should be != NULL");
 
 	TSGDataType t(CT_SCALAR, ST_NONE, PT_INT32);
 	int32_t v;
