@@ -133,15 +133,19 @@ public:
 	 * comparing them with gradients computed using numerical approximation.
 	 * Used for testing purposes only.
 	 * 
-	 * @param approx_epsilon constant used during gradient approximation
+	 * Gradients are numerically approximated according to:
+	 * \f[ c = max(\epsilon x, s) \f]
+	 * \f[ f'(x) = \frac{f(x + c)-f(x - c)}{2c} \f]
 	 * 
-	 * @param tolerance maximum difference allowed between backpropagation 
-	 * gradients and numerical approximation gradients
+	 * @param approx_epsilon Constant used during gradient approximation
 	 * 
-	 * @return true if the gradients are correct, false otherwise
+	 * @param s Some small value, used to prevent division by zero
+	 * 
+	 * @return Average difference between numerical gradients and 
+	 * backpropagation gradients
 	 */
-	virtual bool check_gradients(float64_t approx_epsilon=1.0e-06, 
-			float64_t tolerance=1.0e-09);
+	virtual float64_t check_gradients(float64_t approx_epsilon=1.0e-3, 
+			float64_t s = 1.0e-9);
 	
 	/** returns a copy of a layer's parameters array 
 	 * 

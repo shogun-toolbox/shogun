@@ -455,7 +455,7 @@ float64_t CNeuralNetwork::compute_error(float64_t* targets, float64_t* inputs)
 	return error;
 }
 
-bool CNeuralNetwork::check_gradients(float64_t approx_epsilon, float64_t tolerance)
+float64_t CNeuralNetwork::check_gradients(float64_t approx_epsilon, float64_t s)
 {
 	// some random inputs and ouputs
 	SGVector<float64_t> x(m_num_inputs);
@@ -474,30 +474,30 @@ bool CNeuralNetwork::check_gradients(float64_t approx_epsilon, float64_t toleran
 	SGVector<float64_t> gradients_numerical(m_total_num_parameters);
 	for (int32_t i=0; i<m_total_num_parameters; i++)
 	{
-		m_params[i] += approx_epsilon;
-		float64_t error_plus = compute_error(y.vector, x.vector);
-		m_params[i] -= 2*approx_epsilon;
-		float64_t error_minus = compute_error(y.vector, x.vector);
-		m_params[i] += approx_epsilon;
+		float64_t c = 
+			CMath::max<float64_t>(CMath::abs(approx_epsilon*m_params[i]),s);
 		
-		gradients_numerical[i] = (error_plus-error_minus)/(2*approx_epsilon);
+		m_params[i] += c;
+		float64_t error_plus = compute_error(y.vector, x.vector);
+		m_params[i] -= 2*c;
+		float64_t error_minus = compute_error(y.vector, x.vector);
+		m_params[i] += c;
+		
+		gradients_numerical[i] = (error_plus-error_minus)/(2*c);
 	}
 	
 	// compute gradients using backpropagation
 	SGVector<float64_t> gradients_backprop(m_total_num_parameters);
 	compute_gradients(x.vector, y.vector, gradients_backprop);
 	
-	// compare
+	float64_t sum = 0.0;
 	for (int32_t i=0; i<m_total_num_parameters; i++)
 	{
-		float64_t diff = gradients_backprop[i] - gradients_numerical[i];
-		
-		if (CMath::abs(diff) > tolerance) return false;
+		sum += CMath::abs(gradients_backprop[i]-gradients_numerical[i]);
 	}
 
-	return true;
+	return sum/m_total_num_parameters;
 }
-
 
 void CNeuralNetwork::set_batch_size(int32_t batch_size)
 {
