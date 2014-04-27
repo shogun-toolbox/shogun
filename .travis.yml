@@ -61,9 +61,10 @@ before_install:
 before_script:
   - mkdir build
   - cd build
-script:
   - cmake -DENABLE_TESTING=ON -DBUNDLE_EIGEN=ON -DBUNDLE_JSON=ON -DBUNDLE_NLOPT=ON $CMAKE_OPTIONS ..
+script:
   - if [ -z "$CMAKE_OPTIONS" -o -n "$COVERALLS" ] ; then make -j 2 ; else make -j 4 ; fi
+after_script:
   - sudo make install
   - ctest --output-on-failure -j 2
 after_success:
