@@ -112,7 +112,31 @@ public:
 	 */
 	bool prune_tree(CDenseFeatures<float64_t>* validation_data, CMulticlassLabels* validation_labels, float64_t epsilon=0.f);
 
+	/** print decision tree to a file in DOT format
+	 *
+	 * This function can be used to write the decision tree in a file. The tree is
+	 * written in DOT format which can be read by graphviz graph plotting tool. Once this
+	 * method is used to create the required dot file, the following command can be used
+	 * (in terminal) to visualize the decision tree in a pdf file :
+	 *
+	 * dot -Tpdf decision_tree.dot -o <output filename>.pdf
+	 * Alternatively pydot library can be used in python to render the tree in a pdf file
+	 *
+	 * @return true if successful 
+	 */
+	bool export_to_graphviz_format();
+
 protected:
+
+	/** prints node labels and tree edges in dot format for given subtree
+	 * aids export_to_graphviz_format method
+	 * 
+	 * @param file output file handle
+	 * @param root root of required subtree
+	 * @param index the identifying index number of the root
+	 * @return maximum index number among the nodes of the subtree
+	 */
+	int32_t print_subtree(FILE* file, node_t* root, int32_t index);
 	
 	/** train machine - build ID3 Tree from training data
 	 * @param data training data

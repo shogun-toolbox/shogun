@@ -67,6 +67,42 @@ bool CID3ClassifierTree::prune_tree(CDenseFeatures<float64_t>* validation_data,
 	return true;
 }
 
+bool CID3ClassifierTree::export_to_graphviz_format()
+{
+	FILE* file = fopen("decision_tree.dot","w+");
+
+	fprintf(file,"digraph ID3Tree {\n");
+	node_t* current = get_root();
+	print_subtree(file, current, 1);
+	fprintf(file,"}");
+
+	fclose(file);
+	SG_UNREF(current);
+	return true;
+}
+
+int32_t CID3ClassifierTree::print_subtree(FILE* file, node_t* root, int32_t index)
+{
+	CDynamicObjectArray* children = root->get_children();
+	int32_t root_index = index;
+	int32_t child_index = index+1;
+	fprintf(file,"\t%d [label=\"Attribute id : %d\\nClass Label : %f\"]\n",
+			index,root->data.attribute_id,root->data.class_label);
+
+	for (int32_t i=0; i<children->get_num_elements(); i++)
+	{
+		node_t* current = dynamic_cast<node_t*>(children->get_element(i));
+		fprintf(file,"\t%d->%d [label=\"%f\"];\n",root_index,child_index,
+					current->data.transit_if_feature_value);
+		child_index = print_subtree(file, current, child_index);
+
+		SG_UNREF(current);
+	}
+
+	SG_UNREF(children);
+	return child_index;
+}
+
 bool CID3ClassifierTree::train_machine(CFeatures* data)
 {
 	REQUIRE(data,"Data required for training\n")
@@ -99,19 +135,15 @@ CTreeMachineNode<id3TreeNodeData>* CID3ClassifierTree::id3train(CFeatures* data,
 	for (int32_t i=1; i<labels.vlen; i++)
 	{
 		if (labels[i] == labels[i-1])
-		{
 			count++;
-		}
-		else if (count>most_num)
+		else
+			count = 1;
+
+		if (count>most_num)
 		{
 			most_num = count;
-			most_label = labels[i-1];
-			count = 1;
+			most_label = labels[i];
 		}
-		else
-		{
-			count = 1;
-		}	
 	}
 
 	node->data.class_label = most_label;
@@ -136,7 +168,7 @@ CTreeMachineNode<id3TreeNodeData>* CID3ClassifierTree::id3train(CFeatures* data,
 			max = gain;
 			best_feature_index = i;
 		}
-	}	
+	}
 
 	// get feature values for the best feature chosen
 	SGVector<float64_t> best_feature_values = SGVector<float64_t>(num_vecs);
