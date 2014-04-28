@@ -41,6 +41,7 @@
 #include <shogun/neuralnets/NeuralNetwork.h>
 #include <shogun/neuralnets/NeuralLogisticLayer.h>
 #include <shogun/neuralnets/NeuralSoftmaxLayer.h>
+#include <shogun/neuralnets/NeuralRectifiedLinearLayer.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;
@@ -53,6 +54,8 @@ TEST(NeuralNetwork, compute_gradients)
 	CDynamicObjectArray* layers;
 	CNeuralNetwork* network;
 	
+	float64_t tolerance = 1e-3;
+	
 	layers = new CDynamicObjectArray();
 	layers->append_element(new CNeuralLinearLayer(3));
 	layers->append_element(new CNeuralLinearLayer(6));
@@ -61,7 +64,7 @@ TEST(NeuralNetwork, compute_gradients)
 	network->initialize(5, layers);
 	network->l2_coefficient = 0.01;
 	network->l1_coefficient = 0.03;
-	EXPECT_EQ(true, network->check_gradients())
+	EXPECT_NEAR(network->check_gradients(), 0.0, tolerance)
 		<< "CNeuralLinearLayer gradient check failed";
 	SG_UNREF(network);
 	
@@ -73,7 +76,7 @@ TEST(NeuralNetwork, compute_gradients)
 	network->initialize(5, layers);
 	network->l1_coefficient = 0.03;
 	network->l2_coefficient = 0.01;
-	EXPECT_EQ(true, network->check_gradients())
+	EXPECT_NEAR(network->check_gradients(), 0.0, tolerance)
 		<< "CNeuralLogisticLayer gradient check failed";
 	SG_UNREF(network);
 	
@@ -85,8 +88,20 @@ TEST(NeuralNetwork, compute_gradients)
 	network->initialize(5, layers);
 	network->l1_coefficient = 0.03;
 	network->l2_coefficient = 0.01;
-	EXPECT_EQ(true, network->check_gradients())
+	EXPECT_NEAR(network->check_gradients(), 0.0, tolerance)
 		<< "CNeuralSoftmaxLayer gradient check failed";
+	SG_UNREF(network);
+	
+	layers = new CDynamicObjectArray();
+	layers->append_element(new CNeuralRectifiedLinearLayer(3));
+	layers->append_element(new CNeuralRectifiedLinearLayer(6));
+	layers->append_element(new CNeuralLogisticLayer(4));
+	network = new CNeuralNetwork();
+	network->initialize(5, layers);
+	network->l1_coefficient = 0.03;
+	network->l2_coefficient = 0.01;
+	EXPECT_NEAR(network->check_gradients(), 0.0, tolerance)
+		<< "CNeuralRectifiedLinearLayer gradient check failed";
 	SG_UNREF(network);
 }
 
