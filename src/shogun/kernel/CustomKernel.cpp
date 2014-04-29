@@ -26,6 +26,7 @@ CCustomKernel::init()
 	SG_REF(m_row_subset_stack)
 	m_col_subset_stack=new CSubsetStack();
 	SG_REF(m_col_subset_stack)
+	m_is_symmetric=false;
 	m_free_km=true;
 
 	SG_ADD((CSGObject**)&m_row_subset_stack, "row_subset_stack",
@@ -34,6 +35,8 @@ CCustomKernel::init()
 			"Subset stack of columns", MS_NOT_AVAILABLE);
 	SG_ADD(&m_free_km, "free_km", "Whether kernel matrix should be freed in "
 			"destructor", MS_NOT_AVAILABLE);
+	SG_ADD(&m_is_symmetric, "is_symmetric", "Whether kernel matrix is symmetric",
+			MS_NOT_AVAILABLE);
 	SG_ADD(&kmatrix, "kmatrix", "Kernel matrix.", MS_NOT_AVAILABLE);
 	SG_ADD(&upper_diagonal, "upper_diagonal", "Upper diagonal", MS_NOT_AVAILABLE);
 
@@ -74,38 +77,42 @@ CCustomKernel::CCustomKernel(CKernel* k)
 	if (k->get_kernel_type()==K_CUSTOM)
 	{
 		CCustomKernel* casted=(CCustomKernel*)k;
+		m_is_symmetric=casted->m_is_symmetric;
 		set_full_kernel_matrix_from_full(casted->get_float32_kernel_matrix());
 		m_free_km=false;
 	}
 	else
+	{
+		m_is_symmetric=k->get_lhs_equals_rhs();
 		set_full_kernel_matrix_from_full(k->get_kernel_matrix());
+	}
 }
 
 CCustomKernel::CCustomKernel(SGMatrix<float64_t> km)
 : CKernel(10), upper_diagonal(false)
 {
-	SG_DEBUG("Entering CCustomKernel::CCustomKernel(SGMatrix<float64_t>)\n")
+	SG_DEBUG("Entering\n")
 	init();
-	set_full_kernel_matrix_from_full(km);
-	SG_DEBUG("Leaving CCustomKernel::CCustomKernel(SGMatrix<float64_t>)\n")
+	set_full_kernel_matrix_from_full(km, true);
+	SG_DEBUG("Leaving\n")
 }
 
 CCustomKernel::CCustomKernel(SGMatrix<float32_t> km)
 : CKernel(10), upper_diagonal(false)
 {
-	SG_DEBUG("Entering CCustomKernel::CCustomKernel(SGMatrix<float64_t>)\n")
+	SG_DEBUG("Entering\n")
 	init();
-	set_full_kernel_matrix_from_full(km);
-	SG_DEBUG("Leaving CCustomKernel::CCustomKernel(SGMatrix<float64_t>)\n")
+	set_full_kernel_matrix_from_full(km, true);
+	SG_DEBUG("Leaving\n")
 }
 
 CCustomKernel::~CCustomKernel()
 {
-	SG_DEBUG("Entering CCustomKernel::~CCustomKernel()\n")
+	SG_DEBUG("Entering\n")
 	cleanup();
 	SG_UNREF(m_row_subset_stack);
 	SG_UNREF(m_col_subset_stack);
-	SG_DEBUG("Leaving CCustomKernel::~CCustomKernel()\n")
+	SG_DEBUG("Leaving\n")
 }
 
 bool CCustomKernel::dummy_init(int32_t rows, int32_t cols)
@@ -126,6 +133,7 @@ bool CCustomKernel::init(CFeatures* l, CFeatures* r)
 	/* Make sure l and r should not be NULL */
 	REQUIRE(l, "CFeatures l should not be NULL\n")
 	REQUIRE(r, "CFeatures r should not be NULL\n")
+
 	/* Make sure l and r have the same type of CFeatures */
 	REQUIRE(l->get_feature_class()==r->get_feature_class(),
 			"Different FeatureClass: l is %d, r is %d\n",
@@ -150,11 +158,15 @@ bool CCustomKernel::init(CFeatures* l, CFeatures* r)
 		add_row_subset(l_idx->get_feature_index());
 		add_col_subset(r_idx->get_feature_index());
 
+		lhs_equals_rhs=m_is_symmetric;
+
 		return true;
 	}
 
 	/* For other types of CFeatures do the default actions below */
 	CKernel::init(l, r);
+
+	lhs_equals_rhs=m_is_symmetric;
 
 	SG_DEBUG("num_vec_lhs: %d vs num_rows %d\n", l->get_num_vectors(), kmatrix.num_rows)
 	SG_DEBUG("num_vec_rhs: %d vs num_cols %d\n", r->get_num_vectors(), kmatrix.num_cols)
@@ -165,20 +177,18 @@ bool CCustomKernel::init(CFeatures* l, CFeatures* r)
 
 void CCustomKernel::cleanup_custom()
 {
-	SG_DEBUG("Entering CCustomKernel::cleanup_custom()\n")
+	SG_DEBUG("Entering\n")
 	remove_all_row_subsets();
 	remove_all_col_subsets();
 
 	kmatrix=SGMatrix<float32_t>();
 	upper_diagonal=false;
 
-	SG_DEBUG("Leaving CCustomKernel::cleanup_custom()\n")
+	SG_DEBUG("Leaving\n")
 }
 
 void CCustomKernel::cleanup()
 {
-	remove_all_row_subsets();
-	remove_all_col_subsets();
 	cleanup_custom();
 	CKernel::cleanup();
 }

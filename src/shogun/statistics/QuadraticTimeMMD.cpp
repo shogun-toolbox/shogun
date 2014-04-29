@@ -107,32 +107,15 @@ float64_t CQuadraticTimeMMD::compute_unbiased_statistic()
 	m_kernel->init(m_p_and_q, m_p_and_q);
 
 	/* first term */
-	float64_t first=0;
-	for (index_t i=0; i<m; ++i)
-	{
-		/* ensure i!=j while adding up */
-		for (index_t j=0; j<m; ++j)
-			first+=i==j ? 0 : m_kernel->kernel(i,j);
-	}
+	float64_t first=m_kernel->sum_symmetric_block(0, m);
 	first/=m*(m-1);
 
 	/* second term */
-	float64_t second=0;
-	for (index_t i=m; i<m+n; ++i)
-	{
-		/* ensure i!=j while adding up */
-		for (index_t j=m; j<m+n; ++j)
-			second+=i==j ? 0 : m_kernel->kernel(i,j);
-	}
+	float64_t second=m_kernel->sum_symmetric_block(m, n);
 	second/=n*(n-1);
 
 	/* third term */
-	float64_t third=0;
-	for (index_t i=0; i<m; ++i)
-	{
-		for (index_t j=m; j<m+n; ++j)
-			third+=m_kernel->kernel(i,j);
-	}
+	float64_t third=m_kernel->sum_block(0, m, m, n);
 	third*=2.0/m/n;
 
 	SG_DEBUG("first=%f, second=%f, third=%f\n", first, second, third);
@@ -168,30 +151,15 @@ float64_t CQuadraticTimeMMD::compute_biased_statistic()
 	m_kernel->init(m_p_and_q, m_p_and_q);
 
 	/* first term */
-	float64_t first=0;
-	for (index_t i=0; i<m; ++i)
-	{
-		for (index_t j=0; j<m; ++j)
-			first+=m_kernel->kernel(i,j);
-	}
+	float64_t first=m_kernel->sum_symmetric_block(0, m, false);
 	first/=m*m;
 
 	/* second term */
-	float64_t second=0;
-	for (index_t i=m; i<m+n; ++i)
-	{
-		for (index_t j=m; j<m+n; ++j)
-			second+=m_kernel->kernel(i,j);
-	}
+	float64_t second=m_kernel->sum_symmetric_block(m, n, false);
 	second/=n*n;
 
 	/* third term */
-	float64_t third=0;
-	for (index_t i=0; i<m; ++i)
-	{
-		for (index_t j=m; j<m+n; ++j)
-			third+=m_kernel->kernel(i,j);
-	}
+	float64_t third=m_kernel->sum_block(0, m, m, n);
 	third*=2.0/m/n;
 
 	SG_DEBUG("first=%f, second=%f, third=%f\n", first, second, third);

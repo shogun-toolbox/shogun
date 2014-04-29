@@ -187,6 +187,7 @@ class CCustomKernel: public CKernel
 			for (int64_t i=0; i<len; i++)
 				kmatrix.matrix[i]=tri_kernel_matrix.vector[i];
 
+			m_is_symmetric=true;
 			dummy_init(cols,cols);
 			return true;
 		}
@@ -242,6 +243,7 @@ class CCustomKernel: public CKernel
 				}
 			}
 
+			m_is_symmetric=true;
 			dummy_init(rows, cols);
 			return true;
 		}
@@ -252,10 +254,14 @@ class CCustomKernel: public CKernel
 		 *
 		 * works NOT with subset
 		 *
+		 * @param full_kernel_matrix the original kernel matrix to be set from
+		 * @param check_symmetry whether checking for symmetry of the kernel
+		 * matrix is required
+		 *
 		 * @return if setting was successful
 		 */
 		bool set_full_kernel_matrix_from_full(
-			SGMatrix<float32_t> full_kernel_matrix)
+			SGMatrix<float32_t> full_kernel_matrix, bool check_symmetry=false)
 		{
 			if (m_row_subset_stack->has_subsets() || m_col_subset_stack->has_subsets())
 			{
@@ -265,6 +271,10 @@ class CCustomKernel: public CKernel
 
 			cleanup_custom();
 			kmatrix=full_kernel_matrix;
+
+			if (check_symmetry)
+				m_is_symmetric=kmatrix.is_symmetric();
+
 			dummy_init(kmatrix.num_rows, kmatrix.num_cols);
 			return true;
 		}
@@ -275,10 +285,14 @@ class CCustomKernel: public CKernel
 		 *
 		 * works NOT with subset
 		 *
+		 * @param full_kernel_matrix the original kernel matrix to be set from
+		 * @param check_symmetry whether checking for symmetry of the kernel
+		 * matrix is required
+		 *
 		 * @return if setting was successful
 		 */
 		bool set_full_kernel_matrix_from_full(
-			SGMatrix<float64_t> full_kernel_matrix)
+			SGMatrix<float64_t> full_kernel_matrix, bool check_symmetry=false)
 		{
 			if (m_row_subset_stack->has_subsets() || m_col_subset_stack->has_subsets())
 			{
@@ -296,6 +310,9 @@ class CCustomKernel: public CKernel
 
 			for (int64_t i=0; i<int64_t(rows) * cols; i++)
 				kmatrix.matrix[i]=full_kernel_matrix.matrix[i];
+
+			if (check_symmetry)
+				m_is_symmetric=kmatrix.is_symmetric();
 
 			dummy_init(kmatrix.num_rows, kmatrix.num_cols);
 			return true;
@@ -468,8 +485,12 @@ class CCustomKernel: public CKernel
 		/** upper diagonal */
 		bool upper_diagonal;
 
+		/** whether the kernel matrix is symmetric */
+		bool m_is_symmetric;
+
 		/** row subset stack */
 		CSubsetStack* m_row_subset_stack;
+
 		/** column subset stack */
 		CSubsetStack* m_col_subset_stack;
 

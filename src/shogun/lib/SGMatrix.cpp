@@ -18,6 +18,7 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/lapack.h>
+#include <limits>
 
 namespace shogun {
 
@@ -103,6 +104,92 @@ void SGMatrix<complex128_t>::zero()
 {
 	if (matrix && (int64_t(num_rows)*num_cols))
 		set_const(complex128_t(0.0));
+}
+
+template <class T>
+bool SGMatrix<T>::is_symmetric()
+{
+	if (num_rows!=num_cols)
+		return false;
+	for (int i=0; i<num_rows; ++i)
+	{
+		for (int j=i+1; j<num_cols; ++j)
+		{
+			if (matrix[j*num_rows+i]!=matrix[i*num_rows+j])
+				return false;
+		}
+	}
+	return true;
+}
+
+template <>
+bool SGMatrix<float32_t>::is_symmetric()
+{
+	if (num_rows!=num_cols)
+		return false;
+	for (int i=0; i<num_rows; ++i)
+	{
+		for (int j=i+1; j<num_cols; ++j)
+		{
+			if (!CMath::fequals<float32_t>(matrix[j*num_rows+i],
+						matrix[i*num_rows+j], FLT_EPSILON))
+				return false;
+		}
+	}
+	return true;
+}
+
+template <>
+bool SGMatrix<float64_t>::is_symmetric()
+{
+	if (num_rows!=num_cols)
+		return false;
+	for (int i=0; i<num_rows; ++i)
+	{
+		for (int j=i+1; j<num_cols; ++j)
+		{
+			if (!CMath::fequals<float64_t>(matrix[j*num_rows+i],
+						matrix[i*num_rows+j], DBL_EPSILON))
+				return false;
+		}
+	}
+	return true;
+}
+
+template <>
+bool SGMatrix<floatmax_t>::is_symmetric()
+{
+	if (num_rows!=num_cols)
+		return false;
+	for (int i=0; i<num_rows; ++i)
+	{
+		for (int j=i+1; j<num_cols; ++j)
+		{
+			if (!CMath::fequals<floatmax_t>(matrix[j*num_rows+i],
+						matrix[i*num_rows+j], LDBL_EPSILON))
+				return false;
+		}
+	}
+	return true;
+}
+
+template <>
+bool SGMatrix<complex128_t>::is_symmetric()
+{
+	if (num_rows!=num_cols)
+		return false;
+	for (int i=0; i<num_rows; ++i)
+	{
+		for (int j=i+1; j<num_cols; ++j)
+		{
+			if (!(CMath::fequals<float64_t>(matrix[j*num_rows+i].real(),
+						matrix[i*num_rows+j].real(), DBL_EPSILON) &&
+					CMath::fequals<float64_t>(matrix[j*num_rows+i].imag(),
+						matrix[i*num_rows+j].imag(), DBL_EPSILON)))
+				return false;
+		}
+	}
+	return true;
 }
 
 template <class T>
