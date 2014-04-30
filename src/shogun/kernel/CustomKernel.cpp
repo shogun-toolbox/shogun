@@ -16,11 +16,12 @@
 #include <shogun/features/IndexFeatures.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/base/ParameterMap.h>
+#include <shogun/mathematics/eigen3.h>
 
 using namespace shogun;
+using namespace Eigen;
 
-void
-CCustomKernel::init()
+void CCustomKernel::init()
 {
 	m_row_subset_stack=new CSubsetStack();
 	SG_REF(m_row_subset_stack)
@@ -174,6 +175,284 @@ bool CCustomKernel::init(CFeatures* l, CFeatures* r)
 	ASSERT(r->get_num_vectors()==kmatrix.num_cols)
 	return init_normalizer();
 }
+
+#ifdef HAVE_EIGEN3
+float64_t CCustomKernel::sum_symmetric_block(index_t block_begin,
+		index_t block_size, bool no_diag)
+{
+	SG_DEBUG("Entering\n");
+
+	if (m_row_subset_stack->has_subsets() || m_col_subset_stack->has_subsets())
+	{
+		SG_INFO("Row/col subsets initialized! Falling back to "
+				"CKernel::sum_symmetric_block (slower)!\n");
+		return CKernel::sum_symmetric_block(block_begin, block_size, no_diag);
+	}
+
+	REQUIRE(kmatrix.matrix, "The kernel matrix is not initialized!\n")
+	REQUIRE(m_is_symmetric, "The kernel matrix is not symmetric!\n")
+	REQUIRE(block_begin>=0 && block_begin<kmatrix.num_cols,
+			"Invalid block begin index (%d, %d)!\n", block_begin, block_begin)
+	REQUIRE(block_begin+block_size<=kmatrix.num_cols,
+			"Invalid block size (%d) at starting index (%d, %d)! "
+			"Please use smaller blocks!", block_size, block_begin, block_begin)
+	REQUIRE(block_size>=1, "Invalid block size (%d)!\n", block_size)
+
+	Map<MatrixXf> k_m(kmatrix.matrix, kmatrix.num_rows, kmatrix.num_cols);
+	const MatrixXf& k_m_block=k_m.block(block_begin, block_begin, block_size,
+			block_size);
+
+	// since the block is symmetric with main diagonal inside, we can save half
+	// the computation with using only the upper triangular part.
+	const MatrixXf& k_m_upper=k_m_block.triangularView<StrictlyUpper>();
+	float64_t sum=k_m_upper.sum();
+
+	// the actual sum would be twice of what we computed
+	sum*=2;
+
+	// add the diagonal elements if required
+	if (!no_diag)
+		sum+=k_m_block.diagonal().sum();
+
+	SG_DEBUG("Leaving\n");
+
+	return sum;
+}
+
+float64_t CCustomKernel::sum_block(index_t block_begin_row,
+		index_t block_begin_col, index_t block_size_row,
+		index_t block_size_col, bool no_diag)
+{
+	SG_DEBUG("Entering\n");
+
+	if (m_row_subset_stack->has_subsets() || m_col_subset_stack->has_subsets())
+	{
+		SG_INFO("Row/col subsets initialized! Falling back to "
+				"CKernel::sum_block (slower)!\n");
+		return CKernel::sum_block(block_begin_row, block_begin_col,
+				block_size_row, block_size_col, no_diag);
+	}
+
+	REQUIRE(kmatrix.matrix, "The kernel matrix is not initialized!\n")
+	REQUIRE(block_begin_row>=0 && block_begin_row<kmatrix.num_rows &&
+			block_begin_col>=0 && block_begin_col<kmatrix.num_cols,
+			"Invalid block begin index (%d, %d)!\n",
+			block_begin_row, block_begin_col)
+	REQUIRE(block_begin_row+block_size_row<=kmatrix.num_rows &&
+			block_begin_col+block_size_col<=kmatrix.num_cols,
+			"Invalid block size (%d, %d) at starting index (%d, %d)! "
+			"Please use smaller blocks!", block_size_row, block_size_col,
+			block_begin_row, block_begin_col)
+	REQUIRE(block_size_row>=1 && block_size_col>=1,
+			"Invalid block size (%d, %d)!\n", block_size_row, block_size_col)
+
+	// check if removal of diagonal is required/valid
+	if (no_diag && block_size_row!=block_size_col)
+	{
+		SG_WARNING("Not removing the main diagonal since block is not square!\n");
+		no_diag=false;
+	}
+
+	Map<MatrixXf> k_m(kmatrix.matrix, kmatrix.num_rows, kmatrix.num_cols);
+	const MatrixXf& k_m_block=k_m.block(block_begin_row, block_begin_col,
+			block_size_row, block_size_col);
+
+	float64_t sum=k_m_block.sum();
+
+	// remove diagonal if specified
+	if (no_diag)
+		sum-=k_m_block.diagonal().sum();
+
+	SG_DEBUG("Leaving\n");
+
+	return sum;
+}
+
+SGVector<float64_t> CCustomKernel::row_wise_sum_symmetric_block(index_t
+		block_begin, index_t block_size, bool no_diag)
+{
+	SG_DEBUG("Entering\n");
+
+	if (m_row_subset_stack->has_subsets() || m_col_subset_stack->has_subsets())
+	{
+		SG_INFO("Row/col subsets initialized! Falling back to "
+				"CKernel::row_wise_sum_symmetric_block (slower)!\n");
+		return CKernel::row_wise_sum_symmetric_block(block_begin, block_size,
+				no_diag);
+	}
+
+	REQUIRE(kmatrix.matrix, "The kernel matrix is not initialized!\n")
+	REQUIRE(m_is_symmetric, "The kernel matrix is not symmetric!\n")
+	REQUIRE(block_begin>=0 && block_begin<kmatrix.num_cols,
+			"Invalid block begin index (%d, %d)!\n", block_begin, block_begin)
+	REQUIRE(block_begin+block_size<=kmatrix.num_cols,
+			"Invalid block size (%d) at starting index (%d, %d)! "
+			"Please use smaller blocks!", block_size, block_begin, block_begin)
+	REQUIRE(block_size>=1, "Invalid block size (%d)!\n", block_size)
+
+	// initialize the vector that accumulates the row/col-wise sum on the go
+	SGVector<float64_t> row_sum(block_size);
+	row_sum.set_const(0.0);
+
+	Map<MatrixXf> k_m(kmatrix.matrix, kmatrix.num_rows, kmatrix.num_cols);
+	const MatrixXf& k_m_block=k_m.block(block_begin, block_begin, block_size,
+			block_size);
+
+	// compute row/col-wise sum
+	for (index_t i=0; i<block_size; ++i)
+		row_sum[i]=k_m_block.col(i).sum();
+
+	// remove the diagonal elements if specified
+	if (no_diag)
+	{
+		const VectorXf& diag=k_m_block.diagonal();
+		for (index_t i=0; i<block_size; ++i)
+			row_sum[i]-=diag[i];
+	}
+
+	SG_DEBUG("Leaving\n");
+
+	return row_sum;
+}
+
+SGMatrix<float64_t> CCustomKernel::row_wise_sum_squared_sum_symmetric_block(
+		index_t block_begin, index_t block_size, bool no_diag)
+{
+	SG_DEBUG("Entering\n");
+
+	if (m_row_subset_stack->has_subsets() || m_col_subset_stack->has_subsets())
+	{
+		SG_INFO("Row/col subsets initialized! Falling back to "
+				"CKernel::row_wise_sum_squared_sum_symmetric_block (slower)!\n");
+		return CKernel::row_wise_sum_squared_sum_symmetric_block(block_begin,
+				block_size, no_diag);
+	}
+
+	REQUIRE(kmatrix.matrix, "The kernel matrix is not initialized!\n")
+	REQUIRE(m_is_symmetric, "The kernel matrix is not symmetric!\n")
+	REQUIRE(block_begin>=0 && block_begin<kmatrix.num_cols,
+			"Invalid block begin index (%d, %d)!\n", block_begin, block_begin)
+	REQUIRE(block_begin+block_size<=kmatrix.num_cols,
+			"Invalid block size (%d) at starting index (%d, %d)! "
+			"Please use smaller blocks!", block_size, block_begin, block_begin)
+	REQUIRE(block_size>=1, "Invalid block size (%d)!\n", block_size)
+
+	// initialize the matrix that accumulates the row/col-wise sum on the go
+	// the first column stores the sum of kernel values
+	// the second column stores the sum of squared kernel values
+	SGMatrix<float64_t> row_sum(block_size, 2);
+	row_sum.set_const(0.0);
+
+	Map<MatrixXf> k_m(kmatrix.matrix, kmatrix.num_rows, kmatrix.num_cols);
+	const MatrixXf& k_m_block=k_m.block(block_begin, block_begin, block_size,
+			block_size);
+
+	// compute row/col-wise sum - includes diagonal entries
+	for (index_t i=0; i<block_size; ++i)
+		row_sum(i, 0)=k_m_block.col(i).sum();
+
+	// compute row/col-wise sum of squared kernel values
+	// since the block is symmetric with main diagonal inside, we can save half
+	// the computation with using only the upper triangular part
+	for (index_t i=0; i<block_size; ++i)
+	{
+		// use the kernel values on the upper triangular part of the kernel
+		// matrix and compute row-wise sum and squared sum on the fly
+		// this doesn't include diagonal entries
+		for (index_t j=i+1; j<block_size; ++j)
+		{
+			float64_t k=k_m_block(i, j);
+			row_sum(i, 1)+=k*k;
+			row_sum(j, 1)+=k*k;
+		}
+	}
+
+	// add/remove the diagonal elements as specified
+	const VectorXf& diag=k_m_block.diagonal();
+	if (no_diag)
+	{
+		for (index_t i=0; i<block_size; ++i)
+			row_sum(i, 0)-=diag[i];
+	}
+	else
+	{
+		for (index_t i=0; i<block_size; ++i)
+			row_sum(i, 1)+=diag[i]*diag[i];
+	}
+
+	SG_DEBUG("Leaving\n");
+
+	return row_sum;
+}
+
+SGVector<float64_t> CCustomKernel::row_col_wise_sum_block(index_t
+		block_begin_row, index_t block_begin_col, index_t block_size_row,
+		index_t block_size_col, bool no_diag)
+{
+	SG_DEBUG("Entering\n");
+
+	if (m_row_subset_stack->has_subsets() || m_col_subset_stack->has_subsets())
+	{
+		SG_INFO("Row/col subsets initialized! Falling back to "
+				"CKernel::row_col_wise_sum_block (slower)!\n");
+		return CKernel::row_col_wise_sum_block(block_begin_row, block_begin_col,
+				block_size_row, block_size_col, no_diag);
+	}
+
+	REQUIRE(kmatrix.matrix, "The kernel matrix is not initialized!\n")
+	REQUIRE(block_begin_row>=0 && block_begin_row<kmatrix.num_rows &&
+			block_begin_col>=0 && block_begin_col<kmatrix.num_cols,
+			"Invalid block begin index (%d, %d)!\n",
+			block_begin_row, block_begin_col)
+	REQUIRE(block_begin_row+block_size_row<=kmatrix.num_rows &&
+			block_begin_col+block_size_col<=kmatrix.num_cols,
+			"Invalid block size (%d, %d) at starting index (%d, %d)! "
+			"Please use smaller blocks!", block_size_row, block_size_col,
+			block_begin_row, block_begin_col)
+	REQUIRE(block_size_row>=1 && block_size_col>=1,
+			"Invalid block size (%d, %d)!\n", block_size_row, block_size_col)
+
+	// check if removal of diagonal is required/valid
+	if (no_diag && block_size_row!=block_size_col)
+	{
+		SG_WARNING("Not removing the main diagonal since block is not square!\n");
+		no_diag=false;
+	}
+
+	// initialize the vector that accumulates the row/col-wise sum on the go
+	// the first block_size_row entries store the row-wise sum of kernel values
+	// the nextt block_size_col entries store the col-wise sum of kernel values
+	SGVector<float64_t> sum(block_size_row+block_size_col);
+	sum.set_const(0.0);
+
+	Map<MatrixXf> k_m(kmatrix.matrix, kmatrix.num_rows, kmatrix.num_cols);
+	const MatrixXf& k_m_block=k_m.block(block_begin_row, block_begin_col,
+			block_size_row, block_size_col);
+
+	// computing row-wise sum
+	for (index_t i=0; i<block_size_row; ++i)
+		sum[i]=k_m_block.row(i).sum();
+
+	// computing col-wise sum
+	for (index_t i=0; i<block_size_col; ++i)
+		sum[i+block_size_row]=k_m_block.col(i).sum();
+
+	// remove diagonal entries if specified
+	if (no_diag)
+	{
+		const VectorXf& diag=k_m_block.diagonal();
+		for (index_t i=0; i<diag.rows(); ++i)
+		{
+			sum[i]-=diag[i];
+			sum[i+block_size_row]-=diag[i];
+		}
+	}
+
+	SG_DEBUG("Leaving\n");
+
+	return sum;
+}
+#endif // HAVE_EIGEN3
 
 void CCustomKernel::cleanup_custom()
 {
