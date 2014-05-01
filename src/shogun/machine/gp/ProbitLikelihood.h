@@ -22,10 +22,10 @@ namespace shogun
 /** @brief Class that models Probit likelihood.
  *
  * \f[
- * p(y|f) = \prod_{i=1}^n \text{normal\_cdf}(y_i * f_i)
+ * p(y|f) = \prod_{i=1}^n \Phi(y_i * f_i)
  * \f]
  *
- * where \f$\text{normal\_cdf}(z)\f$ - cumulative distribution function (CDF) of
+ * where \f$\Phi: \mathbb{R} \mapsto [0, 1]\f$ is the cumulative distribution function (CDF) of
  * the normal distribution \f$\mathcal{N}(0, 1)\f$.
  */
 class CProbitLikelihood : public CLikelihoodModel
