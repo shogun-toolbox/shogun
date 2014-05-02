@@ -439,7 +439,7 @@ TEST(QuadraticTimeMMD,custom_kernel_vs_normal_kernel)
 		EXPECT_NEAR(type_I_threshs_boot, type_I_threshs_boot_pre, 1E-6);
 		EXPECT_NEAR(type_I_threshs_spectrum, type_I_threshs_spectrum_pre, 1E-6);
 		EXPECT_NEAR(type_I_threshs_gamma, type_I_threshs_gamma_pre, 1E-6);
-		EXPECT_NEAR(type_II_mmds, type_II_mmds_pre, 1E-6);
+		EXPECT_NEAR(type_II_mmds, type_II_mmds_pre, 1E-5);
 		EXPECT_NEAR(type_II_threshs_boot, type_II_threshs_boot_pre, 1E-6);
 		EXPECT_NEAR(type_II_threshs_spectrum, type_II_threshs_spectrum_pre, 1E-6);
 		EXPECT_NEAR(type_II_threshs_gamma, type_II_threshs_gamma_pre, 1E-6);
