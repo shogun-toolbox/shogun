@@ -76,7 +76,7 @@ int32_t SGRefObject::unref()
 #include <shogun/lib/Map.h>
 extern CMap<void*, shogun::MemoryBlock>* sg_mallocs;
 
-static void SGRefObject::list_memory_allocs()
+void SGRefObject::list_memory_allocs()
 {
 	shogun::list_memory_allocs();
 }
