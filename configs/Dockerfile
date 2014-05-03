@@ -25,18 +25,17 @@ RUN pip install ipython
 #	./configure;\
 #	make install
 
-RUN ls; ls /root
-RUN git clone https://github.com/shogun-toolbox/shogun-data.git /data
+ADD . /shogun
+RUN ls /shogun
 
-ADD doc/ipython-notebooks /tmp/notebooks
-
-RUN mkdir build;\
-	cd build;\
+RUN mkdir /shogun/build;\
+	cd /shogun/build;\
 	cmake -DPythonModular=ON -DUSE_SWIG_DIRECTORS=ON -DBUNDLE_EIGEN=ON -DBUNDLE_JSON=ON ..;\
 	make;\
 	make install
 
-EXPOSE 8888
+VOLUME ['/shogun/doc/ipython-notebooks']
 
-WORKDIR /tmp/notebooks
-CMD ['ipython', 'notebook', '--pylab=inline', '--ip=*']
+WORKDIR /shogun/doc/ipython-notebooks
+EXPOSE 8888
+CMD ['ipython', 'notebook', '--pylab=inline', '--ip=*', '--MappingKernelManager.time_to_dead=10', '--MappingKernelManager.first_beat=3']
