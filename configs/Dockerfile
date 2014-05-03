@@ -28,7 +28,8 @@ RUN cd /tmp;\
 	./configure;\
 	make install
 
-ADD data /data
+RUN git clone https://github.com/shogun-toolbox/shogun-data.git
+ADD shogun-data /data
 ADD doc/ipython-notebooks /tmp/notebooks
 
 RUN mkdir build;\
