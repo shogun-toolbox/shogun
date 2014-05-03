@@ -28,10 +28,10 @@ RUN cd /tmp;\
 	./configure;\
 	make install
 
-ADD shogun/data /data
-ADD shogun/doc/ipython-notebooks /tmp/notebooks
+ADD data /data
+ADD doc/ipython-notebooks /tmp/notebooks
 
-RUN mkdir shogun/build;\
+RUN mkdir build;\
 	cd build;\
 	cmake -DPythonModular=ON -DUSE_SWIG_DIRECTORS=ON -DBUNDLE_EIGEN=ON -DBUNDLE_JSON=ON ..;\
 	make;\
