@@ -33,6 +33,7 @@
 
 #include <shogun/neuralnets/NeuralRectifiedLinearLayer.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/lib/SGVector.h>
 
 using namespace shogun;
 
@@ -45,8 +46,9 @@ CNeuralLinearLayer(num_neurons)
 {
 }
 
-void CNeuralRectifiedLinearLayer::compute_activations(float64_t* parameters,
-		float64_t* previous_layer_activations)
+void CNeuralRectifiedLinearLayer::compute_activations(
+		SGVector<float64_t> parameters,
+		SGMatrix<float64_t> previous_layer_activations)
 {
 	CNeuralLinearLayer::compute_activations(parameters, 
 		previous_layer_activations);
@@ -54,15 +56,15 @@ void CNeuralRectifiedLinearLayer::compute_activations(float64_t* parameters,
 	int32_t len = m_num_neurons*m_batch_size;
 	for (int32_t i=0; i<len; i++)
 	{
-		if (m_activations[i] < 0)
-			m_activations[i] = 0;
+		m_activations[i] = CMath::max<float64_t>(0, m_activations[i]);
 	}
 }
 
 void CNeuralRectifiedLinearLayer::compute_local_gradients(bool is_output, 
-		float64_t* p)
+		SGMatrix<float64_t> p)
 {
-	if (is_output) SG_ERROR("Cannot be used as an output layer");
+	if (is_output) 
+		SG_ERROR("Cannot be used as an output layer\n");
 	
 	int32_t len = m_num_neurons*m_batch_size;
 	for (int32_t i=0; i< len; i++)

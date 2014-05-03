@@ -33,6 +33,7 @@
 
 #include <shogun/neuralnets/NeuralLogisticLayer.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/lib/SGVector.h>
 
 using namespace shogun;
 
@@ -45,8 +46,9 @@ CNeuralLinearLayer(num_neurons)
 {
 }
 
-void CNeuralLogisticLayer::compute_activations(float64_t* parameters,
-		float64_t* previous_layer_activations)
+void CNeuralLogisticLayer::compute_activations(
+		SGVector<float64_t> parameters,
+		SGMatrix<float64_t> previous_layer_activations)
 {
 	CNeuralLinearLayer::compute_activations(parameters, 
 		previous_layer_activations);
@@ -58,7 +60,7 @@ void CNeuralLogisticLayer::compute_activations(float64_t* parameters,
 }
 
 void CNeuralLogisticLayer::compute_local_gradients(bool is_output, 
-		float64_t* p)
+		SGMatrix<float64_t> p)
 {
 	CNeuralLinearLayer::compute_local_gradients(is_output,p);
 	

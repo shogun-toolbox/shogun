@@ -33,6 +33,7 @@
 
 #include <shogun/neuralnets/NeuralSoftmaxLayer.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/lib/SGVector.h>
 
 using namespace shogun;
 
@@ -45,8 +46,9 @@ CNeuralLinearLayer(num_neurons)
 {
 }
 
-void CNeuralSoftmaxLayer::compute_activations(float64_t* parameters,
-		float64_t* previous_layer_activations)
+void CNeuralSoftmaxLayer::compute_activations(
+		SGVector<float64_t> parameters,
+		SGMatrix<float64_t> previous_layer_activations)
 {
 	CNeuralLinearLayer::compute_activations(parameters, 
 		previous_layer_activations);
@@ -55,7 +57,7 @@ void CNeuralSoftmaxLayer::compute_activations(float64_t* parameters,
 	// subtracted from all the activations and the computations are done in the
 	// log domain
 	
-	float64_t max = SGVector<float64_t>::max(m_activations, m_activations.vlen);
+	float64_t max = m_activations.max_single();
 	
 	for (int32_t j=0; j<m_batch_size; j++)
 	{
@@ -74,9 +76,10 @@ void CNeuralSoftmaxLayer::compute_activations(float64_t* parameters,
 }
 
 void CNeuralSoftmaxLayer::compute_local_gradients(bool is_output, 
-		float64_t* p)
+		SGMatrix<float64_t> p)
 {
-	if (!is_output) SG_ERROR("%s cannot be used as a hidden layer", get_name());
+	if (!is_output) 
+		SG_ERROR("Cannot be used as a hidden layer\n");
 	
 	int32_t len = m_num_neurons*m_batch_size;
 	for (int32_t i=0; i< len; i++)
@@ -85,7 +88,7 @@ void CNeuralSoftmaxLayer::compute_local_gradients(bool is_output,
 	}
 }
 
-float64_t CNeuralSoftmaxLayer::compute_error(float64_t* targets)
+float64_t CNeuralSoftmaxLayer::compute_error(SGMatrix<float64_t> targets)
 {	
 	int32_t len = m_num_neurons*m_batch_size;
 	float64_t sum = 0;

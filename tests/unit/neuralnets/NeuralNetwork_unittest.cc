@@ -54,7 +54,9 @@ TEST(NeuralNetwork, compute_gradients)
 	CDynamicObjectArray* layers;
 	CNeuralNetwork* network;
 	
-	float64_t tolerance = 1e-3;
+	float64_t tolerance = 1e-9;
+	
+	CMath::init_random(10);
 	
 	layers = new CDynamicObjectArray();
 	layers->append_element(new CNeuralLinearLayer(3));
