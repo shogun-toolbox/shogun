@@ -1,4 +1,4 @@
-FROM ubuntu:12.10
+FROM ubuntu:14.04
 MAINTAINER shogun@shogun-toolbox.org
 
 RUN apt-get install -qq software-properties-common lsb-release
@@ -28,16 +28,10 @@ RUN cd /tmp;\
 	./configure;\
 	make install
 
-RUN cd /tmp;\
-	git clone https://github.com/shogun-toolbox/shogun.git;\
-	cd shogun;\
-	git submodule init
+ADD shogun/data /data
+ADD shogun/doc/ipython-notebooks /tmp/notebooks
 
-RUN ln -s /tmp/shogun/data /data
-RUN mkdir /tmp/notebooks;\
-	find /tmp/shogun/shogun/doc/ipython-notebooks -name '*ipyn' -exec cp '{}' /tmp/notebooks
-
-RUN mkdir /tmp/shogun/build;\
+RUN mkdir shogun/build;\
 	cd build;\
 	cmake -DPythonModular=ON -DUSE_SWIG_DIRECTORS=ON -DBUNDLE_EIGEN=ON -DBUNDLE_JSON=ON ..;\
 	make;\
@@ -46,4 +40,4 @@ RUN mkdir /tmp/shogun/build;\
 EXPOSE 8888
 
 WORKDIR /tmp/notebooks
-CMD ipython notebook --pylab=inline --ip=*
+CMD ['ipython', 'notebook', '--pylab=inline', '--ip=*']
