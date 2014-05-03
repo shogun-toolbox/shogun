@@ -2,7 +2,7 @@ FROM ubuntu:14.04
 MAINTAINER shogun@shogun-toolbox.org
 
 RUN apt-get install -qq software-properties-common lsb-release
-RUN add-apt-repository "deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc) main universe restricted multiverse"
+RUN add-apt-repository "deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc) multiverse"
 RUN apt-get update -qq
 RUN apt-get upgrade -y
 
@@ -25,9 +25,9 @@ RUN pip install ipython
 #	./configure;\
 #	make install
 
-RUN echo $PWD
+RUN ls; ls /root
+RUN git clone https://github.com/shogun-toolbox/shogun-data.git /data
 
-ADD data /data
 ADD doc/ipython-notebooks /tmp/notebooks
 
 RUN mkdir build;\
