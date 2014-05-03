@@ -17,7 +17,7 @@ matrix:
     - compiler: gcc
       env: CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=Debug -DENABLE_COVERAGE=ON" CUSTOM_PKG="sudo pip install -q cpp-coveralls" COVERALLS=1
     - compiler: clang
-      python: 2.7
+      python: "2.7_with_system_site_packages"
       language: python
       env: CMAKE_OPTIONS="-DPythonModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON" EXTRA_PACKAGES="python-scipy swig2.0" CC=clang CXX=clang++
     - compiler: clang
@@ -45,8 +45,6 @@ matrix:
   allow_failures:
     - compiler: clang
       env: CMAKE_OPTIONS="-DRModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON" EXTRA_PACKAGES="r-base-core swig2.0" CC=clang CXX=clang++
-virtualenv:
-  system_site_packages: true
 before_install:
  - if [ -z $OSX ] ; then sudo apt-add-repository -y ppa:kubuntu-ppa/backports ; sudo apt-get update -qq ; fi
  - if [ -z $OSX ] ; then sudo apt-add-repository -y ppa:dr-graef/octave-3.6.precise ; sudo apt-get update -qq ; else brew update ; fi
@@ -69,4 +67,4 @@ script:
   - sudo make install
   - ctest --output-on-failure -j 2
 after_success:
-  - if [ -z $COVERALLS ] ; then cd .. && coveralls -e tests -e examples -e cmake -e benchmarks -e src/interfaces -e /usr/include -e build/GoogleMock -e build/NLopt -e build/Eigen3 -e build/JSON -e build/CMakeFiles -E '.*\.h' > /dev/null ; fi
+  - if [ $COVERALLS ] ; then cd .. ; coveralls -e tests -e examples -e cmake -e benchmarks -e src/interfaces -e /usr/include -e build/GoogleMock -e build/NLopt -e build/Eigen3 -e build/JSON -e build/CMakeFiles -E '.*\.h' > /dev/null ; fi
