@@ -36,10 +36,12 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/base/SGObject.h>
-#include <shogun/lib/SGVector.h>
+#include <shogun/lib/SGMatrix.h>
 
 namespace shogun
 {
+template <class T> class SGVector;	
+
 /** @brief Base class for neural network layers
  * 
  * A Neural layer represents an group of neurons and is the basic building block
@@ -106,10 +108,10 @@ public:
 	/** Initializes the layer's parameters. The layer should fill the given 
 	 * arrays with the initial value for its parameters
 	 *
-	 * @param parameters preallocated array of size get_num_parameters()
+	 * @param parameters Vector of size get_num_parameters()
 	 * 
-	 * @param parameter_regularizable preallocated array of size 
-	 * get_num_parameters(). This controls which of the layer's parameter are
+	 * @param parameter_regularizable Vector of size get_num_parameters().
+	 * This controls which of the layer's parameter are 
 	 * subject to regularization, i.e to turn off regularization for parameter 
 	 * i, set parameter_regularizable[i] = false. This is usally used to turn 
 	 * off regularization for bias parameters.
@@ -117,33 +119,34 @@ public:
 	 * @param sigma standard deviation of the gaussian used to random the
 	 * parameters
 	 */
-	virtual void initialize_parameters(float64_t* parameters,
-			bool* parameter_regularizable,
+	virtual void initialize_parameters(SGVector<float64_t> parameters,
+			SGVector<bool> parameter_regularizable,
 			float64_t sigma) = 0;
 	
 	/** Computes the activations of the neurons in this layer, results should 
 	 * be stored in m_activations
 	 * 
-	 * @param parameters pointer to the layer's parameters, array of size 
-	 * get_num_parameters() 
+	 * @param parameters Vector of size get_num_parameters(), contains the 
+	 * parameters of the layer
 	 * 
 	 * @param previous_layer_activations activations of the neurons in the 
 	 * previous layer, matrix of size previous_layer_num_neurons * batch_size
 	 */
-	virtual void compute_activations(float64_t* parameters,
-			float64_t* previous_layer_activations) = 0;
+	virtual void compute_activations(SGVector<float64_t> parameters,
+			SGMatrix<float64_t> previous_layer_activations) = 0;
 	
 	/** Computes the gradients that are relevent to this layer:
 	 *- The gradients of the error with respect to the layer's parameters
 	 * -The gradients of the error with respect to the layer's inputs
 	 * 
 	 * Deriving classes should make sure to account for 
-	 * [dropout](http://arxiv.org/abs/1207.0580) during gradient computations
+	 * [dropout](http://arxiv.org/abs/1207.0580) [Hinton, 2012] during gradient 
+	 * computations
 	 * 
 	 * The input gradients are stored in m_input_gradients
 	 *
-	 * @param parameters pointer to the layer's parameters, array of size 
-	 * get_num_parameters() 
+	 * @param parameters Vector of size get_num_parameters(), contains the 
+	 * parameters of the layer
 	 * 
 	 * @param is_output specifies if the layer is used as an output layer or a
 	 * hidden layer
@@ -156,15 +159,15 @@ public:
 	 * @param previous_layer_activations activations of the neurons in the
 	 * previous layer, matrix of size previous_layer_num_neurons * batch_size
 	 * 
-	 * @param parameter_gradients preallocated array of size
-	 * get_num_parameters(), to be filled with the parameter gradients of this 
+	 * @param parameter_gradients Vector of size get_num_parameters(). To be 
+	 * filled with gradients of the error with respect to each parameter of the 
 	 * layer
 	 */
-	virtual void compute_gradients(float64_t* parameters, 
+	virtual void compute_gradients(SGVector<float64_t> parameters, 
 			bool is_output,
-			float64_t* p,
-			float64_t* previous_layer_activations,
-			float64_t* parameter_gradients) = 0;
+			SGMatrix<float64_t> p,
+			SGMatrix<float64_t> previous_layer_activations,
+			SGVector<float64_t> parameter_gradients) = 0;
 	
 	/** Computes the error between the layer's current activations and the given
 	 * target activations. Should only be used with output layers
@@ -172,7 +175,7 @@ public:
 	 * @param targets desired values for the layer's activations, matrix of size
 	 * num_neurons*batch_size
 	 */
-	virtual float64_t compute_error(float64_t* targets) = 0;
+	virtual float64_t compute_error(SGMatrix<float64_t> targets) = 0;
 	
 	/** Constrains the weights of each neuron in the layer to have an L2 norm of
 	 * at most max_norm
@@ -182,11 +185,11 @@ public:
 	 * 
 	 * @param max_norm maximum allowable norm for a neuron's weights
 	 */
-	virtual void enforce_max_norm(float64_t* parameters, 
+	virtual void enforce_max_norm(SGVector<float64_t> parameters, 
 			float64_t max_norm) = 0;
 	
-	/** Applies [dropout](http://arxiv.org/abs/1207.0580) to the activations
-	 * of the layer 
+	/** Applies [dropout](http://arxiv.org/abs/1207.0580) [Hinton, 2012] to the 
+	 * activations of the layer 
 	 * 
 	 * If is_training is true, fills m_dropout_mask with random values 
 	 * (according to dropout_prop) and multiplies it into the activations, 
@@ -199,20 +202,23 @@ public:
 	 * 
 	 * @return number of neurons in the layer
 	 */
-	virtual int32_t get_num_neurons() {return m_num_neurons;}
+	virtual int32_t get_num_neurons() { return m_num_neurons; }
 	
 	/** Gets the layer's activations, a matrix of size num_neurons * batch_size
 	 * 
 	 * @return layer's activations
 	 */
-	virtual float64_t* get_activations() {return m_activations;}
+	virtual SGMatrix<float64_t> get_activations() { return m_activations; }
 	
 	/** Gets the layer's input gradients, a matrix of size
 	 * previous_layer_num_neurons * batch_size
 	 * 
 	 * @return layer's input gradients
 	 */
-	virtual float64_t* get_input_gradients() {return m_input_gradients;}
+	virtual SGMatrix<float64_t> get_input_gradients() 
+	{
+		return m_input_gradients;
+	}
 	
 	virtual const char* get_name() const { return "NeuralLayer"; }
 
@@ -239,26 +245,26 @@ protected:
 	int32_t m_batch_size;
 	
 	/** activations of the neurons in this layer
-	 * length num_neurons * batch_size
+	 * size num_neurons * batch_size
 	 */
-	SGVector<float64_t> m_activations;
+	SGMatrix<float64_t> m_activations;
 	
 	/** gradients of the error with respect to the layer's inputs
-	 * length previous_layer_num_neurons * batch_size
+	 * size previous_layer_num_neurons * batch_size
 	 */
-	SGVector<float64_t> m_input_gradients;
+	SGMatrix<float64_t> m_input_gradients;
 	
 	/** gradients of the error with respect to the layer's activations, this is
 	 * usually used as a buffer when computing the input gradients
-	 * length num_neurons * batch_size
+	 * size num_neurons * batch_size
 	 */
-	SGVector<float64_t> m_local_gradients;
+	SGMatrix<float64_t> m_local_gradients;
 	
 	/** binary mask that determines whether a neuron will be kept or dropped out
 	 * during the current iteration of training 
-	 * length num_neurons * batch_size
+	 * size num_neurons * batch_size
 	 */
-	SGVector<bool> m_dropout_mask;
+	SGMatrix<bool> m_dropout_mask;
 };
 
 }

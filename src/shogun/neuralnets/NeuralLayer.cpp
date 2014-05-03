@@ -33,6 +33,7 @@
 
 #include <shogun/base/Parameter.h>
 #include <shogun/neuralnets/NeuralLayer.h>
+#include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/Math.h>
 
 using namespace shogun;
@@ -64,11 +65,11 @@ void CNeuralLayer::set_batch_size(int32_t batch_size)
 {
 	m_batch_size = batch_size;
 	
-	m_activations = SGVector<float64_t>(m_num_neurons*m_batch_size);
+	m_activations = SGMatrix<float64_t>(m_num_neurons, m_batch_size);
 	m_input_gradients = 
-		SGVector<float64_t>(m_previous_layer_num_neurons*m_batch_size);
-	m_local_gradients = SGVector<float64_t>(m_num_neurons*m_batch_size);
-	m_dropout_mask = SGVector<bool>(m_num_neurons*m_batch_size);
+		SGMatrix<float64_t>(m_previous_layer_num_neurons, m_batch_size);
+	m_local_gradients = SGMatrix<float64_t>(m_num_neurons, m_batch_size);
+	m_dropout_mask = SGMatrix<bool>(m_num_neurons, m_batch_size);
 }
 
 void CNeuralLayer::dropout_activations()
@@ -77,7 +78,8 @@ void CNeuralLayer::dropout_activations()
 	
 	if (is_training)
 	{
-		for (int32_t i=0; i<m_activations.vlen; i++)
+		int32_t len = m_num_neurons*m_batch_size;
+		for (int32_t i=0; i<len; i++)
 		{
 			m_dropout_mask[i] = CMath::random(0.0,1.0) >= dropout_prop;
 			m_activations[i] *= m_dropout_mask[i];
@@ -85,7 +87,8 @@ void CNeuralLayer::dropout_activations()
 	}
 	else
 	{
-		for (int32_t i=0; i<m_activations.vlen; i++)
+		int32_t len = m_num_neurons*m_batch_size;
+		for (int32_t i=0; i<len; i++)
 			m_activations[i] *= (1.0-dropout_prop);
 	}
 }

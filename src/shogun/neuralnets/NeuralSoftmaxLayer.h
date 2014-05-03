@@ -62,21 +62,21 @@ public:
 	/** Computes the activations of the neurons in this layer, results should 
 	 * be stored in m_activations
 	 * 
-	 * @param parameters pointer to the layer's parameters, array of size 
-	 * get_num_parameters() 
+	 * @param parameters Vector of size get_num_parameters(), contains the 
+	 * parameters of the layer
 	 * 
 	 * @param previous_layer_activations activations of the neurons in the 
 	 * previous layer, matrix of size previous_layer_num_neurons * batch_size
 	 */
-	virtual void compute_activations(float64_t* parameters,
-			float64_t* previous_layer_activations);
+	virtual void compute_activations(SGVector<float64_t> parameters,
+			SGMatrix<float64_t> previous_layer_activations);
 	
 	/** Computes the gradients of the error with respect to this layer's
 	 * activations. Results are stored in m_local_gradients. 
 	 * 
 	 * This is used by compute_gradients() and can be overriden to implement 
 	 * layers with different activation functions
-	 * 
+	 *
 	 * @param is_output specifies if the layer is used as an output layer or a
 	 * hidden layer
 	 * 
@@ -84,18 +84,17 @@ public:
 	 * is the desired values for the layer's activations, else it is the
 	 * gradients of the error with respect to this layer's activations (the 
 	 * input gradients of the next layer).
-	 * 
-	 * @return if is_output is true returns the error, else retruns 0
 	 */
-	virtual void compute_local_gradients(bool is_output, float64_t* p);
+	virtual void compute_local_gradients(bool is_output, 
+			SGMatrix<float64_t> p);
 	
 	/** Computes the error between the layer's current activations and the given
 	 * target activations. Should only be used with output layers
-	 * 
+	 *
 	 * @param targets desired values for the layer's activations, matrix of size
 	 * num_neurons*batch_size
 	 */
-	virtual float64_t compute_error(float64_t* targets);
+	virtual float64_t compute_error(SGMatrix<float64_t> targets);
 	
 	virtual const char* get_name() const { return "NeuralSoftmaxLayer"; }
 };
