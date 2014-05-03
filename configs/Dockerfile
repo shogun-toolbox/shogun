@@ -28,17 +28,13 @@ RUN cd /tmp;\
 	./configure;\
 	make install
 
-RUN git clone https://github.com/shogun-toolbox/shogun-data.git
-ADD shogun-data /data
-ADD doc/ipython-notebooks /tmp/notebooks
-
-RUN mkdir build;\
-	cd build;\
+RUN mkdir /build;\
+	cd /build;\
 	cmake -DPythonModular=ON -DUSE_SWIG_DIRECTORS=ON -DBUNDLE_EIGEN=ON -DBUNDLE_JSON=ON ..;\
 	make;\
 	make install
 
 EXPOSE 8888
 
-WORKDIR /tmp/notebooks
+WORKDIR /doc/ipython-notebooks
 CMD ['ipython', 'notebook', '--pylab=inline', '--ip=*']
