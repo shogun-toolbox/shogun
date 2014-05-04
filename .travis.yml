@@ -12,6 +12,7 @@ notifications:
     template:
       - "it's %{author}'s turn to pay the next round of drinks for the massacre he caused in %{repository}: %{build_url}"
 matrix:
+  fast_finish: true
   include:
     - compiler: gcc
       env:
@@ -90,7 +91,7 @@ before_install:
  - if [[ $TRAVIS_PYTHON_VERSION == '3.3' ]] ; then wget http://repo.continuum.io/miniconda/Miniconda3-3.3.0-Linux-x86_64.sh -O miniconda.sh ; fi
  - if [[ $TRAVIS_PYTHON_VERSION == '3.3' ]] ; then chmod +x miniconda.sh ; fi
  - if [[ $TRAVIS_PYTHON_VERSION == '3.3' ]] ; then ./miniconda.sh -b ; fi
- - if [[ $TRAVIS_PYTHON_VERSION == '3.3' ]] ; then export PATH=/home/travis/anaconda/bin:$PATH ; fi
+ - if [[ $TRAVIS_PYTHON_VERSION == '3.3' ]] ; then export PATH=/home/travis/miniconda3/bin:$PATH ; fi
  - if [[ $TRAVIS_PYTHON_VERSION == '3.3' ]] ; then conda update --yes conda ; fi
 install:
  - if [ -z $OSX ] ; then sudo apt-get install -qq libbz2-dev cdbs libarpack2-dev libatlas-base-dev libblas-dev libglpk-dev libhdf5-serial-dev zlib1g-dev libxml2-dev libreadline6-dev libreadline-dev libsnappy-dev liblzo2-dev liblzma-dev liblapack-dev gdb cmake python-jinja2 ccache $EXTRA_PACKAGES ; else brew install cmake ccache; fi
