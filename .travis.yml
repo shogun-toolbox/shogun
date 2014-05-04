@@ -31,7 +31,7 @@ matrix:
       python: 3.3
       language: python
       env:
-      - CMAKE_OPTIONS="-DPythonModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON"
+      - CMAKE_OPTIONS="-DPythonModular=ON -DPYTHON_LIBRARY=/home/travis/miniconda/envs/testenv/lib -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON"
       - EXTRA_PACKAGES="swig2.0"
       - CC=clang
       - CXX=clang++
