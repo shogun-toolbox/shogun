@@ -22,6 +22,7 @@ namespace shogun
 	class Version;
 	class Parallel;
 	class CRandom;
+	class CLinearAlgebra;
 
 /** This function must be called before libshogun is used. Usually shogun does
  * not provide any output messages (neither debugging nor error; apart from
@@ -107,6 +108,18 @@ void set_global_rand(CRandom* rand);
  * @return random object
  */
 CRandom* get_global_rand();
+
+/** set the global Linear Algebra object
+ *
+ * @param linalg Linear Algebra object to use
+ */
+void set_global_linalg(CLinearAlgebra* linalg);
+
+/** get the global Linear Algebra object
+ *
+ * @return linalg the Linear Algebra object
+ */
+CLinearAlgebra* get_global_linalg();
 
 /** Checks environment variables and modifies global objects
  */

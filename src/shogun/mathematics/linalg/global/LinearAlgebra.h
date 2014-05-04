@@ -32,28 +32,63 @@
  *
  */
 
+#ifndef __LINALG_H__
+#define __LINALG_H__
+
 #include <shogun/lib/config.h>
+#include <shogun/base/SGObject.h>
+#include <shogun/base/Parameter.h>
+#include<shogun/mathematics/linalg/dotproduct/VectorDotProduct.h>
 
-#ifdef HAVE_EIGEN3
-#include <shogun/mathematics/linalg/dotproduct/VectorDotOperator.h>
-#include <shogun/lib/SGVector.h>
-#include <gtest/gtest.h>
-
-using namespace shogun;
-
-TEST(Eigen3DotProduct, eigen3_dot_product_dense)
+namespace shogun
 {
-    const index_t size=10;
-    SGVector<float64_t> a(size), b(size);
-    a.set_const(1.0);
-    b.set_const(2.0);
+/** Linear Algebra Backend options */
+enum ELinAlgBackend
+{
+#ifdef HAVE_EIGEN3
+Eigen3
+#endif
+};
 
-    VectorDotOperator<float64_t, SGVector<float64_t> >* op=new VectorDotOperator<float64_t, SGVector<float64_t> >(a);
-    SG_REF(op);
+/** Vector types available in shogun */
+enum VectorTypes {PT_SGVector, PT_SGSparseVector};
 
-    EXPECT_NEAR(op->apply(b), 20.0, 1E-15);
+/** @brief Linear Algebra class which contains global settings 
+ *  for backends.
+ */
+class CLinearAlgebra : public CSGObject
+{
+public:
+	/** Default Constructor for Linear Algebra class */
+	CLinearAlgebra();
 
-    SG_UNREF(op);
+	/** Method to set backend for all linear algebra operations 
+	 *  @param backend choice is Eigen3.
+	 */
+	void set_backend(ELinAlgBackend backend);
+
+	/** Template getter for dot product computer */
+	template <class T, class Vector>
+	VectorDotProduct<T, Vector>* get_dot_computer();
+
+	/** Destructor */
+	~CLinearAlgebra();
+
+	/** @return object name */
+	virtual const char* get_name() const
+	{
+	    return "LinearAlgebra";
+	}
+
+private:
+	/** Initialize with default values. The backend is set to Eigen3
+         *  if eigen3 library is installed.
+	 */
+	void init();
+
+	/** 2-d array of dot product computers */
+	void ***dot_computers;
+};
+
 }
-
-#endif //HAVE_EIGEN3
+#endif //__LINALG_H__

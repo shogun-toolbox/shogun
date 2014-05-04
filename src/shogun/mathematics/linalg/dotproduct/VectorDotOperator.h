@@ -32,28 +32,52 @@
  *
  */
 
+#ifndef DENSE_VECTOR_DOT_OPERATOR_H_
+#define DENSE_VECTOR_DOT_OPERATOR_H_
+
 #include <shogun/lib/config.h>
+#include<shogun/mathematics/linalg/global/LinearAlgebra.h>
+#include<shogun/mathematics/linalg/linop/LinearOperator.h>
 
-#ifdef HAVE_EIGEN3
-#include <shogun/mathematics/linalg/dotproduct/VectorDotOperator.h>
-#include <shogun/lib/SGVector.h>
-#include <gtest/gtest.h>
-
-using namespace shogun;
-
-TEST(Eigen3DotProduct, eigen3_dot_product_dense)
+namespace shogun
 {
-    const index_t size=10;
-    SGVector<float64_t> a(size), b(size);
-    a.set_const(1.0);
-    b.set_const(2.0);
+extern CLinearAlgebra* sg_linalg;
 
-    VectorDotOperator<float64_t, SGVector<float64_t> >* op=new VectorDotOperator<float64_t, SGVector<float64_t> >(a);
-    SG_REF(op);
+/** @brief Abstract template base class that represents a Vector Dot operator
+ */
+template <class T, class Vector>
+class VectorDotOperator : public CLinearOperator<T, Vector>
+{
+public:
+	/** Default Constructor
+	*  @param vec input vector on which the dot operator can apply
+	*/
+	VectorDotOperator(Vector vec) 
+	: CLinearOperator<T, Vector>(), vector(vec)
+	{
+		SG_SGCDEBUG("%s created (%p)\n", this->get_name(), this)
+	}
 
-    EXPECT_NEAR(op->apply(b), 20.0, 1E-15);
+	/** Abstract method that applies the dot operator to a vector
+     	* (\f$\sum_{i=1}^d a_ib_i$ where $a,b$ are $d$-dimensional vectors)
+	* @param other the operand vector to which the dot operator applies
+	* @return the result
+	*/
+	virtual T apply(Vector other) const
+	{
+		return sg_linalg->get_dot_computer<T, Vector>()->compute(vector, other);
+	}
 
-    SG_UNREF(op);
+	/** @return object name */
+	virtual const char* get_name() const
+	{
+		return "VectorDotOperator";
+	}
+
+private:
+	/** The input vector on which the dot operator can apply */
+	Vector vector;	
+};
+
 }
-
-#endif //HAVE_EIGEN3
+#endif //DENSE_VECTOR_DOT_OPERATOR_H_

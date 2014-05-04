@@ -33,27 +33,22 @@
  */
 
 #include <shogun/lib/config.h>
-
-#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/linalg/dotproduct/VectorDotOperator.h>
-#include <shogun/lib/SGVector.h>
-#include <gtest/gtest.h>
+#include<shogun/lib/SGVector.h>
 
-using namespace shogun;
-
-TEST(Eigen3DotProduct, eigen3_dot_product_dense)
+namespace shogun
 {
-    const index_t size=10;
-    SGVector<float64_t> a(size), b(size);
-    a.set_const(1.0);
-    b.set_const(2.0);
+template class VectorDotOperator<int8_t, SGVector<int8_t> >;
+template class VectorDotOperator<uint8_t, SGVector<uint8_t> >;
+template class VectorDotOperator<int16_t, SGVector<int16_t> >;
+template class VectorDotOperator<uint16_t, SGVector<uint16_t> >;
+template class VectorDotOperator<int32_t, SGVector<int32_t> >;
+template class VectorDotOperator<uint32_t, SGVector<uint32_t> >;
+template class VectorDotOperator<int64_t, SGVector<int64_t> >;
+template class VectorDotOperator<uint64_t, SGVector<uint64_t> >;
+template class VectorDotOperator<float32_t, SGVector<float32_t> >;
+template class VectorDotOperator<float64_t, SGVector<float64_t> >;
+template class VectorDotOperator<floatmax_t, SGVector<floatmax_t> >;
+template class VectorDotOperator<complex128_t, SGVector<complex128_t> >;
 
-    VectorDotOperator<float64_t, SGVector<float64_t> >* op=new VectorDotOperator<float64_t, SGVector<float64_t> >(a);
-    SG_REF(op);
-
-    EXPECT_NEAR(op->apply(b), 20.0, 1E-15);
-
-    SG_UNREF(op);
 }
-
-#endif //HAVE_EIGEN3
