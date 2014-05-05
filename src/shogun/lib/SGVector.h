@@ -315,7 +315,9 @@ template<class T> class SGVector : public SGReferencedData
 		 * true otherwise
 		 */
 		bool equals(SGVector<T>& other);
-
+		bool equals(SGVector<double>& other, float accuracy, bool tolerant) ;
+		bool equals(SGVector<float>& other, float accuracy, bool tolerant) ;
+		
 		/** permute vector */
 		static void permute_vector(SGVector<T> vec);
 
