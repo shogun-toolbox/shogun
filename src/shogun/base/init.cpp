@@ -76,7 +76,7 @@ namespace shogun
 		SG_REF(sg_parallel);
 		SG_REF(sg_version);
 		SG_REF(sg_math);
-		SG_REF(sg_rand);
+		SG_REF(sg_rand);	
 
 		sg_print_message=print_message;
 		sg_print_warning=print_warning;
@@ -185,7 +185,7 @@ namespace shogun
 		SG_REF(sg_rand);
 		return sg_rand;
 	}
-	
+
 	void init_from_env()
 	{
 		char* env_log_val = NULL;
