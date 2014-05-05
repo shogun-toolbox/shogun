@@ -52,7 +52,7 @@ public:
 	/** destructor */
 	virtual ~SGRefObject();
 
-	SGRefObject(const SGRefObject& other) = delete;
+	// SGRefObject(const SGRefObject& other) = delete;
 	// SGRefObject& operator=(const SGRefObject& other) = delete;
 
 #ifdef USE_REFERENCE_COUNTING
