@@ -47,63 +47,86 @@
 using namespace shogun;
 
 /** Tests gradients computed using backpropagation against gradients computed
- * by numerical approximation
+ * by numerical approximation. Uses a CNeuralLinearLayer-based network.
  */
-TEST(NeuralNetwork, compute_gradients)
+TEST(NeuralNetwork, backpropagation_linear)
 {
-	CDynamicObjectArray* layers;
-	CNeuralNetwork* network;
-	
 	float64_t tolerance = 1e-9;
 	
 	CMath::init_random(10);
 	
-	layers = new CDynamicObjectArray();
+	CDynamicObjectArray* layers = new CDynamicObjectArray();
 	layers->append_element(new CNeuralLinearLayer(3));
 	layers->append_element(new CNeuralLinearLayer(6));
 	layers->append_element(new CNeuralLinearLayer(4));
-	network = new CNeuralNetwork();
+	CNeuralNetwork* network = new CNeuralNetwork();
 	network->initialize(5, layers);
 	network->l2_coefficient = 0.01;
 	network->l1_coefficient = 0.03;
-	EXPECT_NEAR(network->check_gradients(), 0.0, tolerance)
-		<< "CNeuralLinearLayer gradient check failed";
+	EXPECT_NEAR(network->check_gradients(), 0.0, tolerance);
 	SG_UNREF(network);
+}
+
+/** Tests gradients computed using backpropagation against gradients computed
+ * by numerical approximation. Uses a CNeuralLogisticLayer-based network.
+ */
+TEST(NeuralNetwork, backpropagation_logistic)
+{
+	float64_t tolerance = 1e-9;
 	
-	layers = new CDynamicObjectArray();
+	CMath::init_random(10);
+	
+	CDynamicObjectArray* layers = new CDynamicObjectArray();
 	layers->append_element(new CNeuralLogisticLayer(3));
 	layers->append_element(new CNeuralLogisticLayer(6));
 	layers->append_element(new CNeuralLogisticLayer(4));
-	network = new CNeuralNetwork();
+	CNeuralNetwork* network = new CNeuralNetwork();
 	network->initialize(5, layers);
 	network->l1_coefficient = 0.03;
 	network->l2_coefficient = 0.01;
-	EXPECT_NEAR(network->check_gradients(), 0.0, tolerance)
-		<< "CNeuralLogisticLayer gradient check failed";
+	EXPECT_NEAR(network->check_gradients(), 0.0, tolerance);
 	SG_UNREF(network);
+}
+
+/** Tests gradients computed using backpropagation against gradients computed
+ * by numerical approximation. Uses a CNeuralSoftmaxLayer-based network.
+ */
+TEST(NeuralNetwork, backpropagation_softmax)
+{
+	float64_t tolerance = 1e-9;
 	
-	layers = new CDynamicObjectArray();
+	CMath::init_random(10);
+	
+	CDynamicObjectArray* layers = new CDynamicObjectArray();
 	layers->append_element(new CNeuralLinearLayer(3));
 	layers->append_element(new CNeuralLinearLayer(6));
 	layers->append_element(new CNeuralSoftmaxLayer(4));
-	network = new CNeuralNetwork();
+	CNeuralNetwork* network = new CNeuralNetwork();
 	network->initialize(5, layers);
 	network->l1_coefficient = 0.03;
 	network->l2_coefficient = 0.01;
-	EXPECT_NEAR(network->check_gradients(), 0.0, tolerance)
-		<< "CNeuralSoftmaxLayer gradient check failed";
+	EXPECT_NEAR(network->check_gradients(), 0.0, tolerance);
 	SG_UNREF(network);
+}
+
+/** Tests gradients computed using backpropagation against gradients computed
+ * by numerical approximation. Uses a CNeuralRectifiedLinearLayer-based network.
+ */
+TEST(NeuralNetwork, backpropagation_rectified_linear)
+{
+	float64_t tolerance = 1e-9;
 	
-	layers = new CDynamicObjectArray();
+	CMath::init_random(10);
+
+	CDynamicObjectArray* layers = new CDynamicObjectArray();
 	layers->append_element(new CNeuralRectifiedLinearLayer(3));
 	layers->append_element(new CNeuralRectifiedLinearLayer(6));
-	layers->append_element(new CNeuralLogisticLayer(4));
-	network = new CNeuralNetwork();
+	layers->append_element(new CNeuralLinearLayer(4));
+	CNeuralNetwork*  network = new CNeuralNetwork();
 	network->initialize(5, layers);
 	network->l1_coefficient = 0.03;
 	network->l2_coefficient = 0.01;
-	EXPECT_NEAR(network->check_gradients(), 0.0, tolerance)
-		<< "CNeuralRectifiedLinearLayer gradient check failed";
+	EXPECT_NEAR(network->check_gradients(), 0.0, tolerance);
 	SG_UNREF(network);
 }
 
