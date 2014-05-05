@@ -35,7 +35,7 @@ matrix:
       - EXTRA_PACKAGES="swig2.0"
       - CC=clang
       - CXX=clang++
-      - CUSTOM_PKG="conda create -n testenv python=$TRAVIS_PYTHON_VERSION numpy scipy && source activate testenv"
+      - CUSTOM_PKG="conda create -n testenv python=${TRAVIS_PYTHON_VERSION} numpy scipy && source activate testenv"
     - compiler: clang
       rvm: 1.8.7
       language: ruby
@@ -87,8 +87,13 @@ matrix:
       - CC=clang
       - CXX=clang++
 before_install:
-  - if [ -z $OSX ] ; then sudo apt-add-repository -y ppa:kubuntu-ppa/backports ; sudo apt-get update -qq ; fi
-  - if [ -z $OSX ] ; then sudo apt-add-repository -y ppa:dr-graef/octave-3.6.precise ; sudo apt-get update -qq ; else brew update ; fi
+  - if [ -z $OSX ] ; then
+      sudo apt-add-repository -y ppa:kubuntu-ppa/backports ;
+      sudo apt-add-repository -y ppa:dr-graef/octave-3.6.precise ;
+      sudo apt-get update -qq ;
+    else
+      brew update ;
+    fi
   - if [[ $TRAVIS_PYTHON_VERSION == '3.3' ]] ; then
       wget http://repo.continuum.io/miniconda/Miniconda3-3.4.2-Linux-x86_64.sh -O miniconda.sh ;
       bash miniconda.sh -b -p $HOME/miniconda ;
