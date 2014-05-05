@@ -41,7 +41,6 @@
 
 namespace shogun
 {
-extern CLinearAlgebra* sg_linalg;
 
 /** @brief Abstract template base class that represents a Vector Dot operator
  */
@@ -55,6 +54,9 @@ public:
 	VectorDotOperator(Vector vec) 
 	: CLinearOperator<T, Vector>(), vector(vec)
 	{
+		linalg=new CLinearAlgebra();
+		SG_REF(linalg);		
+		
 		SG_SGCDEBUG("%s created (%p)\n", this->get_name(), this)
 	}
 
@@ -65,7 +67,7 @@ public:
 	*/
 	virtual T apply(Vector other) const
 	{
-		return sg_linalg->get_dot_computer<T, Vector>()->compute(vector, other);
+		return linalg->get_dot_computer<T, Vector>()->compute(vector, other);
 	}
 
 	/** @return object name */
@@ -74,9 +76,20 @@ public:
 		return "VectorDotOperator";
 	}
 
+	/** Destructor */
+	virtual ~VectorDotOperator()
+	{
+		SG_UNREF(linalg);
+
+    	SG_SGCDEBUG("%s destroyed (%p)\n", this->get_name(), this)
+	}
+
 private:
 	/** The input vector on which the dot operator can apply */
 	Vector vector;	
+	
+	/** The Linear Algebra class */
+	CLinearAlgebra* linalg;
 };
 
 }

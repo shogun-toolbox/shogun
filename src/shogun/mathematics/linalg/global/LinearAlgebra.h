@@ -88,6 +88,13 @@ private:
 
 	/** 2-d array of dot product computers */
 	void ***dot_computers;
+	
+	/** Delete dot computer(call the destructor) */
+	template<class T, class Vector>
+	void delete_dot_computer();
+
+	/** Delete all dot computers */
+	void delete_all_dot_computers();
 };
 
 }

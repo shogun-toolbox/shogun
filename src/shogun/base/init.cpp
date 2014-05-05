@@ -14,7 +14,6 @@
 
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/Random.h>
-#include <shogun/mathematics/linalg/global/LinearAlgebra.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/base/Parallel.h>
 #include <shogun/base/Version.h>
@@ -38,7 +37,6 @@ namespace shogun
 	Version* sg_version=NULL;
 	CMath* sg_math=NULL;
 	CRandom* sg_rand=NULL;
-	CLinearAlgebra* sg_linalg=NULL;
 
 	/// function called to print normal messages
 	void (*sg_print_message)(FILE* target, const char* str) = NULL;
@@ -68,8 +66,6 @@ namespace shogun
 			sg_math = new shogun::CMath();
 		if (!sg_rand)
 			sg_rand = new shogun::CRandom();
-		if (!sg_linalg)
-			sg_linalg = new shogun::CLinearAlgebra();
 #ifdef TRACE_MEMORY_ALLOCS
 		if (!sg_mallocs)
 			sg_mallocs = new shogun::CMap<void*, MemoryBlock>(631, 1024, false);
@@ -80,8 +76,7 @@ namespace shogun
 		SG_REF(sg_parallel);
 		SG_REF(sg_version);
 		SG_REF(sg_math);
-		SG_REF(sg_rand);
-		SG_REF(sg_linalg);		
+		SG_REF(sg_rand);	
 
 		sg_print_message=print_message;
 		sg_print_warning=print_warning;
@@ -120,7 +115,6 @@ namespace shogun
 		SG_UNREF(sg_version);
 		SG_UNREF(sg_parallel);
 		SG_UNREF(sg_io);
-		SG_UNREF(sg_linalg);
 
 #ifdef HAVE_PROTOBUF
 		::google::protobuf::ShutdownProtobufLibrary();
@@ -190,19 +184,6 @@ namespace shogun
 	{
 		SG_REF(sg_rand);
 		return sg_rand;
-	}
-
-	void set_global_linalg(CLinearAlgebra* linalg)
-	{
-		SG_REF(linalg);
-		SG_UNREF(sg_linalg);
-		sg_linalg=linalg;
-	}
-
-	CLinearAlgebra* get_global_linalg()
-	{
-		SG_REF(sg_linalg);
-		return sg_linalg;
 	}
 
 	void init_from_env()

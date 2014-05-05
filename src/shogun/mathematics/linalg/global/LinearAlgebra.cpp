@@ -34,6 +34,7 @@
 
 #include<shogun/mathematics/linalg/global/LinearAlgebra.h>
 #include<shogun/lib/DataType.h>
+#include<shogun/lib/SGVector.h>
 #include<shogun/mathematics/linalg/dotproduct/DenseEigen3DotProduct.h>
 
 namespace shogun
@@ -47,27 +48,34 @@ CLinearAlgebra::CLinearAlgebra() : CSGObject()
 
 CLinearAlgebra::~CLinearAlgebra()
 {
-    delete[] dot_computers;
+    delete_all_dot_computers();
 
+	for(int i=0; i < 2; ++i)
+    	    delete dot_computers[i];
+	delete	dot_computers;
+    
     SG_GCDEBUG("%s destroyed (%p)\n", this->get_name(), this)
 }
 
 void CLinearAlgebra::init()
 {
+	dot_computers=NULL;
     #ifdef HAVE_EIGEN3
     set_backend(Eigen3);
-    #else
-    dot_computers=NULL;
     #endif
 }
 
 void CLinearAlgebra::set_backend(ELinAlgBackend linalg_backend)
 {
-    if(!dot_computers)
+    if(dot_computers)
     {    
-	dot_computers=new void**[2]();
-        for(int i=0; i < 2; ++i)
-	    	dot_computers[i]=new void*[12];
+		delete_all_dot_computers();
+    }
+    else
+    {	
+		dot_computers=new void**[2]();
+    	for(int i=0; i < 2; ++i)
+    	    dot_computers[i]=new void*[12];
     }
 
     switch (linalg_backend)
@@ -107,28 +115,53 @@ void CLinearAlgebra::set_backend(ELinAlgBackend linalg_backend)
 
 }
 
-template <class T, class Vector>
+template<class T, class Vector>
 VectorDotProduct<T, Vector>* CLinearAlgebra::get_dot_computer()
 {
 }
 
-#define GET_DOT_COMPUTER(T, Vector, PTYPE, VectorType) \
+template<class T, class Vector>
+void CLinearAlgebra::delete_dot_computer()
+{
+}
+
+#define DOT_COMPUTER(T, Vector, PTYPE, VectorType) \
+template<> \
+void CLinearAlgebra::delete_dot_computer<T, Vector >() \
+{\
+delete static_cast<VectorDotProduct<T, Vector>*>(dot_computers[VectorType][PTYPE]); \
+}\
 template<> \
 VectorDotProduct<T, Vector>* CLinearAlgebra::get_dot_computer<T, Vector >() \
 { \
 return reinterpret_cast<VectorDotProduct<T, Vector >*>(dot_computers[VectorType][PTYPE]); \
 }
-GET_DOT_COMPUTER(int8_t, SGVector<int8_t>, PT_INT8, PT_SGVector)
-GET_DOT_COMPUTER(uint8_t, SGVector<uint8_t>, PT_UINT8, PT_SGVector)
-GET_DOT_COMPUTER(int16_t, SGVector<int16_t>, PT_INT16, PT_SGVector)
-GET_DOT_COMPUTER(uint16_t, SGVector<uint16_t>, PT_UINT16, PT_SGVector)
-GET_DOT_COMPUTER(int32_t, SGVector<int32_t>, PT_INT32, PT_SGVector)
-GET_DOT_COMPUTER(uint32_t, SGVector<uint32_t>, PT_UINT32, PT_SGVector)
-GET_DOT_COMPUTER(int64_t, SGVector<int64_t>, PT_INT64, PT_SGVector)
-GET_DOT_COMPUTER(uint64_t, SGVector<uint64_t>, PT_UINT64, PT_SGVector)
-GET_DOT_COMPUTER(float32_t, SGVector<float32_t>, PT_FLOAT32, PT_SGVector)
-GET_DOT_COMPUTER(float64_t, SGVector<float64_t>, PT_FLOAT64, PT_SGVector)
-GET_DOT_COMPUTER(floatmax_t, SGVector<floatmax_t>, PT_FLOATMAX, PT_SGVector)
-GET_DOT_COMPUTER(complex128_t, SGVector<complex128_t>, PT_COMPLEX128, PT_SGVector)
+DOT_COMPUTER(int8_t, SGVector<int8_t>, PT_INT8, PT_SGVector)
+DOT_COMPUTER(uint8_t, SGVector<uint8_t>, PT_UINT8, PT_SGVector)
+DOT_COMPUTER(int16_t, SGVector<int16_t>, PT_INT16, PT_SGVector)
+DOT_COMPUTER(uint16_t, SGVector<uint16_t>, PT_UINT16, PT_SGVector)
+DOT_COMPUTER(int32_t, SGVector<int32_t>, PT_INT32, PT_SGVector)
+DOT_COMPUTER(uint32_t, SGVector<uint32_t>, PT_UINT32, PT_SGVector)
+DOT_COMPUTER(int64_t, SGVector<int64_t>, PT_INT64, PT_SGVector)
+DOT_COMPUTER(uint64_t, SGVector<uint64_t>, PT_UINT64, PT_SGVector)
+DOT_COMPUTER(float32_t, SGVector<float32_t>, PT_FLOAT32, PT_SGVector)
+DOT_COMPUTER(float64_t, SGVector<float64_t>, PT_FLOAT64, PT_SGVector)
+DOT_COMPUTER(floatmax_t, SGVector<floatmax_t>, PT_FLOATMAX, PT_SGVector)
+DOT_COMPUTER(complex128_t, SGVector<complex128_t>, PT_COMPLEX128, PT_SGVector)
 
+void CLinearAlgebra::delete_all_dot_computers()
+{
+	delete_dot_computer<int8_t, SGVector<int8_t> >();
+	delete_dot_computer<uint8_t, SGVector<uint8_t> >();
+	delete_dot_computer<int16_t, SGVector<int16_t> >();
+	delete_dot_computer<uint16_t, SGVector<uint16_t> >();
+	delete_dot_computer<int32_t, SGVector<int32_t> >();
+	delete_dot_computer<uint32_t, SGVector<uint32_t> >();
+	delete_dot_computer<int64_t, SGVector<int64_t> >();
+	delete_dot_computer<uint64_t, SGVector<uint64_t> >();
+	delete_dot_computer<float32_t, SGVector<float32_t> >();
+	delete_dot_computer<float64_t, SGVector<float64_t> >();
+	delete_dot_computer<floatmax_t, SGVector<floatmax_t> >();
+	delete_dot_computer<complex128_t, SGVector<complex128_t> >();
+}
 }
