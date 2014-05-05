@@ -8,5 +8,5 @@ new_classifier LDA
 train_classifier
 
 set_features TEST ../data/fm_test_real.dat
-out.txt = classify
-! rm out.txt
+out-classifier_lda.txt = classify
+! rm out-classifier_lda.txt

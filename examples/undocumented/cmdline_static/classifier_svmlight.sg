@@ -13,8 +13,8 @@
 	train_classifier
 
 	set_features TEST ../data/fm_test_dna.dat DNA
-	out.txt = classify
-	! rm out.txt
+	out-classifier_svmlight.txt = classify
+	! rm out-classifier_svmlight.txt
 %catch
 %	print No support for SVMLight available.
 %end
