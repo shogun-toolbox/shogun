@@ -27,16 +27,9 @@ CHashedDocDotFeatures::CHashedDocDotFeatures(int32_t hash_bits, CStringFeatures<
 	init(hash_bits, docs, tzer, normalize, n_grams, skips);
 }
 
-CHashedDocDotFeatures::CHashedDocDotFeatures(const CHashedDocDotFeatures& orig)
-: CDotFeatures(orig)
-{
-	init(orig.num_bits, orig.doc_collection, orig.tokenizer, orig.should_normalize,
-			orig.ngrams, orig.tokens_to_skip);
-}
-
 CHashedDocDotFeatures::CHashedDocDotFeatures(CFile* loader)
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 }
 
 void CHashedDocDotFeatures::init(int32_t hash_bits, CStringFeatures<char>* docs,
@@ -282,19 +275,19 @@ int32_t CHashedDocDotFeatures::get_nnz_features_for_vector(int32_t num)
 
 void* CHashedDocDotFeatures::get_feature_iterator(int32_t vector_index)
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 	return NULL;
 }
 
 bool CHashedDocDotFeatures::get_next_feature(int32_t& index, float64_t& value, void* iterator)
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 	return false;
 }
 
 void CHashedDocDotFeatures::free_feature_iterator(void* iterator)
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 }
 
 const char* CHashedDocDotFeatures::get_name() const
@@ -304,7 +297,9 @@ const char* CHashedDocDotFeatures::get_name() const
 
 CFeatures* CHashedDocDotFeatures::duplicate() const
 {
-	return new CHashedDocDotFeatures(*this);
+	SG_NOTIMPLEMENTED
+	// return new CHashedDocDotFeatures(*this);
+	return NULL;
 }
 
 EFeatureType CHashedDocDotFeatures::get_feature_type() const

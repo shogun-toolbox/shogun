@@ -32,12 +32,6 @@ public:
 	 */
     CNGramTokenizer(int32_t ns=3);
 
-    /** copy constructor
-	 *
-	 * @param orig the original NGramTokenizer
-	 */
-    CNGramTokenizer(const CNGramTokenizer& orig);
-
     /** destructor */
     virtual ~CNGramTokenizer() {}
 

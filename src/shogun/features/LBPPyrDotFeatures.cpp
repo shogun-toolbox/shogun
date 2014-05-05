@@ -292,7 +292,9 @@ uint8_t CLBPPyrDotFeatures::create_lbp_pattern(uint32_t* img, int32_t x, int32_t
 
 CFeatures* CLBPPyrDotFeatures::duplicate() const
 {
-	return new CLBPPyrDotFeatures(*this);
+	// return new CLBPPyrDotFeatures(*this);
+	SG_NOTIMPLEMENTED
+	return NULL;
 }
 
 uint32_t CLBPPyrDotFeatures::liblbp_pyr_get_dim(uint16_t nPyramids)

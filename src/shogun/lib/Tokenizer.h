@@ -32,9 +32,6 @@ public:
 	/** Constructor */
 	CTokenizer();
 
-	/** Copy constructor */
-	CTokenizer(const CTokenizer& orig);
-
 	/** Destructor */
 	virtual ~CTokenizer() { };
 

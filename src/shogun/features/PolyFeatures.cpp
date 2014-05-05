@@ -371,7 +371,9 @@ int32_t CPolyFeatures::bico(int32_t n, int32_t k)
 }
 CFeatures* CPolyFeatures::duplicate() const
 {
-	return new CPolyFeatures(*this);
+	SG_NOTIMPLEMENTED
+	// return new CPolyFeatures(*this);
+	return NULL;
 }
 
 void CPolyFeatures::register_parameters()

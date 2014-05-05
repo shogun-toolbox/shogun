@@ -22,14 +22,6 @@ CNGramTokenizer::CNGramTokenizer(int32_t ns) : CTokenizer()
 	init();
 }
 
-CNGramTokenizer::CNGramTokenizer(const CNGramTokenizer& orig)
-: CTokenizer(orig)
-{
-	CTokenizer::set_text(orig.text);
-	n = orig.n;
-	init();
-}
-
 void CNGramTokenizer::init()
 {
 	SG_ADD(&n, "n", "Size of n-grams",

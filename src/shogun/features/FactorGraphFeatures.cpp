@@ -33,7 +33,9 @@ CFactorGraphFeatures::~CFactorGraphFeatures()
 
 CFeatures* CFactorGraphFeatures::duplicate() const
 {
-	return new CFactorGraphFeatures(*this);
+	// return new CFactorGraphFeatures(*this);
+	SG_NOTIMPLEMENTED
+	return NULL;
 }
 
 EFeatureType CFactorGraphFeatures::get_feature_type() const

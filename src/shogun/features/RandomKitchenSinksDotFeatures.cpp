@@ -54,7 +54,7 @@ SGMatrix<float64_t> CRandomKitchenSinksDotFeatures::generate_random_coefficients
 
 CRandomKitchenSinksDotFeatures::CRandomKitchenSinksDotFeatures(CFile* loader)
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 }
 
 CRandomKitchenSinksDotFeatures::CRandomKitchenSinksDotFeatures(
@@ -149,20 +149,20 @@ int32_t CRandomKitchenSinksDotFeatures::get_nnz_features_for_vector(int32_t num)
 
 void* CRandomKitchenSinksDotFeatures::get_feature_iterator(int32_t vector_index)
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 	return NULL;
 }
 
 bool CRandomKitchenSinksDotFeatures::get_next_feature(int32_t& index,
 	float64_t& value, void* iterator)
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 	return false;
 }
 
 void CRandomKitchenSinksDotFeatures::free_feature_iterator(void* iterator)
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 }
 
 EFeatureType CRandomKitchenSinksDotFeatures::get_feature_type() const
@@ -187,7 +187,7 @@ const char* CRandomKitchenSinksDotFeatures::get_name() const
 
 CFeatures* CRandomKitchenSinksDotFeatures::duplicate() const
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 	return NULL;
 }
 

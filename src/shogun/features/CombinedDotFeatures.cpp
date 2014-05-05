@@ -23,18 +23,11 @@ CCombinedDotFeatures::CCombinedDotFeatures() : CDotFeatures()
 	update_dim_feature_space_and_num_vec();
 }
 
-CCombinedDotFeatures::CCombinedDotFeatures(const CCombinedDotFeatures & orig)
-: CDotFeatures(orig), num_vectors(orig.num_vectors),
-	num_dimensions(orig.num_dimensions)
-{
-	init();
-
-	feature_array=new CDynamicObjectArray();
-}
-
 CFeatures* CCombinedDotFeatures::duplicate() const
 {
-	return new CCombinedDotFeatures(*this);
+	SG_NOTIMPLEMENTED
+	// return new CCombinedDotFeatures(*this);
+	return NULL;
 }
 
 CCombinedDotFeatures::~CCombinedDotFeatures()

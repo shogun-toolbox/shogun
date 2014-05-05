@@ -51,6 +51,7 @@ template< class ST > CMatrixFeatures< ST >::CMatrixFeatures(
 /* TODO */
 template< class ST > CFeatures* CMatrixFeatures< ST >::duplicate() const
 {
+	SG_NOTIMPLEMENTED
 	return NULL;
 }
 

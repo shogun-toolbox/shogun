@@ -126,7 +126,7 @@ void CSubsetStack::add_subset(SGVector<index_t> subset)
 
 void CSubsetStack::add_subset_in_place(SGVector<index_t> subset)
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 }
 
 void CSubsetStack::remove_subset()

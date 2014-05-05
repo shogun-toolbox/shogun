@@ -91,14 +91,6 @@ bool CImplicitWeightedSpecFeatures::set_weights(float64_t* w, int32_t d)
 	return true;
 }
 
-CImplicitWeightedSpecFeatures::CImplicitWeightedSpecFeatures(const CImplicitWeightedSpecFeatures& orig) : CDotFeatures(orig),
-	num_strings(orig.num_strings),
-	alphabet_size(orig.alphabet_size), spec_size(orig.spec_size)
-{
-	SG_NOTIMPLEMENTED
-	SG_REF(strings);
-}
-
 CImplicitWeightedSpecFeatures::~CImplicitWeightedSpecFeatures()
 {
 	SG_UNREF(strings);
@@ -242,7 +234,9 @@ void CImplicitWeightedSpecFeatures::add_to_dense_vec(float64_t alpha, int32_t ve
 
 CFeatures* CImplicitWeightedSpecFeatures::duplicate() const
 {
-	return new CImplicitWeightedSpecFeatures(*this);
+	SG_NOTIMPLEMENTED
+	// return new CImplicitWeightedSpecFeatures(*this);
+	return NULL;
 }
 
 int32_t CImplicitWeightedSpecFeatures::get_dim_feature_space() const

@@ -18,14 +18,6 @@ CBinnedDotFeatures::CBinnedDotFeatures(int32_t size)
 	init();
 }
 
-
-CBinnedDotFeatures::CBinnedDotFeatures(const CBinnedDotFeatures & orig)
-	: CDotFeatures(orig), m_bins(orig.m_bins), m_fill(orig.m_fill),
-	m_norm_one(orig.m_norm_one)
-{
-	init();
-}
-
 CBinnedDotFeatures::CBinnedDotFeatures(CDenseFeatures<float64_t>* sf, SGMatrix<float64_t> bins)
 {
 	init();
@@ -311,7 +303,9 @@ const char* CBinnedDotFeatures::get_name() const
 
 CFeatures* CBinnedDotFeatures::duplicate() const
 {
-	return new CBinnedDotFeatures(*this);
+	SG_NOTIMPLEMENTED
+	// return new CBinnedDotFeatures(*this);
+	return NULL;
 }
 
 EFeatureType CBinnedDotFeatures::get_feature_type() const

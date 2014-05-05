@@ -246,7 +246,9 @@ void CSparsePolyFeatures::store_normalization_values()
 
 CFeatures* CSparsePolyFeatures::duplicate() const
 {
-	return new CSparsePolyFeatures(*this);
+	SG_NOTIMPLEMENTED
+	// return new CSparsePolyFeatures(*this);
+	return NULL;
 }
 
 void CSparsePolyFeatures::init()

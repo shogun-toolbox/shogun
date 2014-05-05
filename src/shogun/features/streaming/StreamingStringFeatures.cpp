@@ -83,7 +83,9 @@ floatmax_t CStreamingStringFeatures<T>::get_num_symbols()
 template <class T>
 CFeatures* CStreamingStringFeatures<T>::duplicate() const
 {
-	return new CStreamingStringFeatures<T>(*this);
+	SG_NOTIMPLEMENTED
+	// return new CStreamingStringFeatures<T>(*this);
+	return NULL;
 }
 
 template <class T>

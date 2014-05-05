@@ -83,9 +83,6 @@ class CTOPFeatures : public CDenseFeatures<float64_t>
 		 */
 		CTOPFeatures(int32_t size, CHMM* p, CHMM* n, bool neglin, bool poslin);
 
-		/** copy constructor */
-		CTOPFeatures(const CTOPFeatures &orig);
-
 		virtual ~CTOPFeatures();
 
 		/** set HMMs

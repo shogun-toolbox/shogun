@@ -29,11 +29,6 @@ CFKFeatures::CFKFeatures(int32_t size, CHMM* p, CHMM* n)
 	set_models(p,n);
 }
 
-CFKFeatures::CFKFeatures(const CFKFeatures &orig)
-: CDenseFeatures<float64_t>(orig), pos(orig.pos), neg(orig.neg), weight_a(orig.weight_a)
-{
-}
-
 CFKFeatures::~CFKFeatures()
 {
 	SG_UNREF(pos);

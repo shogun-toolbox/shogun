@@ -139,7 +139,9 @@ template<class T> int32_t CStreamingDenseFeatures<T>::get_nnz_features_for_vecto
 
 template<class T> CFeatures* CStreamingDenseFeatures<T>::duplicate() const
 {
-	return new CStreamingDenseFeatures<T>(*this);
+	// return new CStreamingDenseFeatures<T>(*this);
+	SG_NOTIMPLEMENTED
+	return NULL;
 }
 
 template<class T> int32_t CStreamingDenseFeatures<T>::get_num_vectors() const

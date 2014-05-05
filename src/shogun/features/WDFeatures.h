@@ -41,9 +41,6 @@ class CWDFeatures : public CDotFeatures
 		 */
 		CWDFeatures(CStringFeatures<uint8_t>* str, int32_t order, int32_t from_order);
 
-		/** copy constructor */
-		CWDFeatures(const CWDFeatures & orig);
-
 		/** destructor */
 		virtual ~CWDFeatures();
 

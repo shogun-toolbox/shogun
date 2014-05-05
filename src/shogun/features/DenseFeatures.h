@@ -75,9 +75,6 @@ public:
 	 */
 	CDenseFeatures(int32_t size = 0);
 
-	/** copy constructor */
-	CDenseFeatures(const CDenseFeatures & orig);
-
 	/** constructor
 	 *
 	 * @param matrix feature matrix

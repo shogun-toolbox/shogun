@@ -137,7 +137,9 @@ int32_t CStreamingHashedDenseFeatures<ST>::get_num_vectors() const
 template <class ST>
 CFeatures* CStreamingHashedDenseFeatures<ST>::duplicate() const
 {
-	return new CStreamingHashedDenseFeatures<ST>(*this);
+	SG_NOTIMPLEMENTED
+	// return new CStreamingHashedDenseFeatures<ST>(*this);
+	return NULL;
 }
 
 template <class ST>

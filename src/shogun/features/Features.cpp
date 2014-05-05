@@ -27,17 +27,6 @@ CFeatures::CFeatures(int32_t size)
 	cache_size = size;
 }
 
-CFeatures::CFeatures(const CFeatures& orig)
-: CSGObject(orig)
-{
-	init();
-
-	preproc = orig.preproc;
-	preprocessed = orig.preprocessed;
-	SG_REF(preproc);
-	SG_REF(preprocessed);
-}
-
 CFeatures::CFeatures(CFile* loader)
 : CSGObject()
 {

@@ -31,16 +31,6 @@ CTOPFeatures::CTOPFeatures(
 	set_models(p,n);
 }
 
-CTOPFeatures::CTOPFeatures(const CTOPFeatures &orig)
-: CDenseFeatures<float64_t>(orig)
-{
-	init();
-	pos=orig.pos;
-	neg=orig.neg;
-	neglinear=orig.neglinear;
-	poslinear=orig.poslinear;
-}
-
 CTOPFeatures::~CTOPFeatures()
 {
 	SG_FREE(pos_relevant_indizes.idx_p);

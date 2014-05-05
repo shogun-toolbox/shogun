@@ -33,7 +33,9 @@ CLatentFeatures::~CLatentFeatures()
 
 CFeatures* CLatentFeatures::duplicate() const
 {
-	return new CLatentFeatures(*this);
+	SG_NOTIMPLEMENTED
+	return NULL;
+	// return new CLatentFeatures(*this);
 }
 
 EFeatureType CLatentFeatures::get_feature_type() const

@@ -61,34 +61,6 @@ CHashedWDFeatures::CHashedWDFeatures(CStringFeatures<uint8_t>* str,
 	set_normalization_const();
 }
 
-CHashedWDFeatures::CHashedWDFeatures(const CHashedWDFeatures& orig)
-	: CDotFeatures(orig), strings(orig.strings),
-	degree(orig.degree), start_degree(orig.start_degree),
-	from_degree(orig.from_degree), m_hash_bits(orig.m_hash_bits),
-	normalization_const(orig.normalization_const)
-{
-
-
-	SG_REF(strings);
-	if (strings)
-	{
-		string_length=strings->get_max_vector_length();
-		num_strings=strings->get_num_vectors();
-		CAlphabet* alpha=strings->get_alphabet();
-		alphabet_size=alpha->get_num_symbols();
-		SG_UNREF(alpha);
-	}
-	else
-	{
-		string_length = 0;
-		num_strings = 0;
-		alphabet_size = 0;
-	}
-
-	if (degree>0)
-		set_wd_weights();
-}
-
 CHashedWDFeatures::~CHashedWDFeatures()
 {
 	SG_UNREF(strings);
@@ -276,7 +248,9 @@ void CHashedWDFeatures::set_normalization_const(float64_t n)
 
 CFeatures* CHashedWDFeatures::duplicate() const
 {
-	return new CHashedWDFeatures(*this);
+	SG_NOTIMPLEMENTED
+	// return new CHashedWDFeatures(*this);
+	return NULL;
 }
 
 

@@ -70,48 +70,6 @@ template<class ST> CStringFeatures<ST>::CStringFeatures(CAlphabet* alpha)
 	original_num_symbols=num_symbols;
 }
 
-template<class ST> CStringFeatures<ST>::CStringFeatures(const CStringFeatures & orig)
-: CFeatures(orig), num_vectors(orig.num_vectors),
-	single_string(orig.single_string),
-	length_of_single_string(orig.length_of_single_string),
-	max_string_length(orig.max_string_length),
-	num_symbols(orig.num_symbols),
-	original_num_symbols(orig.original_num_symbols),
-	order(orig.order), preprocess_on_get(false),
-	feature_cache(NULL)
-{
-	init();
-
-	ASSERT(orig.single_string == NULL) //not implemented
-
-	alphabet=orig.alphabet;
-	SG_REF(alphabet);
-
-	if (orig.features)
-	{
-		features=SG_MALLOC(SGString<ST>, orig.num_vectors);
-
-		for (int32_t i=0; i<num_vectors; i++)
-		{
-			features[i].string=SG_MALLOC(ST, orig.features[i].slen);
-			features[i].slen=orig.features[i].slen;
-			memcpy(features[i].string, orig.features[i].string, sizeof(ST)*orig.features[i].slen);
-		}
-	}
-
-	if (orig.symbol_mask_table)
-	{
-		symbol_mask_table=SG_MALLOC(ST, 256);
-		symbol_mask_table_len=256;
-
-		for (int32_t i=0; i<256; i++)
-			symbol_mask_table[i]=orig.symbol_mask_table[i];
-	}
-
-	m_subset_stack=orig.m_subset_stack;
-	SG_REF(m_subset_stack);
-}
-
 template<class ST> CStringFeatures<ST>::CStringFeatures(CFile* loader, EAlphabet alpha)
 : CFeatures(), num_vectors(0),
   features(NULL), single_string(NULL), length_of_single_string(0),
@@ -217,7 +175,9 @@ template<class ST> CAlphabet* CStringFeatures<ST>::get_alphabet()
 
 template<class ST> CFeatures* CStringFeatures<ST>::duplicate() const
 {
-	return new CStringFeatures<ST>(*this);
+	SG_NOTIMPLEMENTED
+	// return new CStringFeatures<ST>(*this);
+	return NULL;
 }
 
 template<class ST> SGVector<ST> CStringFeatures<ST>::get_feature_vector(int32_t num)
