@@ -21,6 +21,7 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/external/brent.h>
 #include <shogun/mathematics/eigen3.h>
+#include <shogun/machine/gp/MatrixOperations.h>
 
 using namespace shogun;
 using namespace Eigen;
@@ -143,11 +144,12 @@ float64_t CLaplacianInferenceMethod::get_negative_log_marginal_likelihood()
 		Map<VectorXd> eigen_sW(sW.vector, sW.vlen);
 		Map<MatrixXd> eigen_ktrtr(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
 
-		FullPivLU<MatrixXd> lu(MatrixXd::Identity(m_ktrtr.num_rows, m_ktrtr.num_cols)+
+		float64_t log_det = CMatrixOperations::get_log_det(
+			MatrixXd::Identity(m_ktrtr.num_rows, m_ktrtr.num_cols)+
 			eigen_ktrtr*CMath::sq(m_scale)*eigen_sW.asDiagonal());
 
 		result=(eigen_alpha.dot(eigen_mu-eigen_mean))/2.0-
-			lp+log(lu.determinant())/2.0;
+			lp+log_det/2.0;
 	}
 	else
 	{
@@ -193,6 +195,7 @@ SGMatrix<float64_t> CLaplacianInferenceMethod::get_posterior_covariance()
 
 void CLaplacianInferenceMethod::update_approx_cov()
 {
+
 	Map<MatrixXd> eigen_L(m_L.matrix, m_L.num_rows, m_L.num_cols);
 	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
 	Map<VectorXd> eigen_sW(sW.vector, sW.vlen);
@@ -200,15 +203,7 @@ void CLaplacianInferenceMethod::update_approx_cov()
 	m_Sigma=SGMatrix<float64_t>(m_ktrtr.num_rows, m_ktrtr.num_cols);
 	Map<MatrixXd> eigen_Sigma(m_Sigma.matrix, m_Sigma.num_rows,	m_Sigma.num_cols);
 
-	// compute V = L^(-1) * W^(1/2) * K, using upper triangular factor L^T
-	MatrixXd eigen_V=eigen_L.triangularView<Upper>().adjoint().solve(
-			eigen_sW.asDiagonal()*eigen_K*CMath::sq(m_scale));
-
-	// compute covariance matrix of the posterior:
-	// Sigma = K - K * W^(1/2) * (L * L^T)^(-1) * W^(1/2) * K =
-	// K - (K * W^(1/2)) * (L^T)^(-1) * L^(-1) * W^(1/2) * K =
-	// K - (W^(1/2) * K)^T * (L^(-1))^T * L^(-1) * W^(1/2) * K = K - V^T * V
-	eigen_Sigma=eigen_K*CMath::sq(m_scale)-eigen_V.adjoint()*eigen_V;
+	eigen_Sigma = CMatrixOperations::get_inverse(eigen_L, eigen_K, eigen_sW, m_scale);
 }
 
 void CLaplacianInferenceMethod::update_chol()
@@ -222,28 +217,9 @@ void CLaplacianInferenceMethod::update_chol()
 	m_L=SGMatrix<float64_t>(m_ktrtr.num_rows, m_ktrtr.num_cols);
 	Map<MatrixXd> eigen_L(m_L.matrix, m_L.num_rows, m_L.num_cols);
 
-	if (eigen_W.minCoeff() < 0)
-	{
-		// compute inverse of diagonal noise: iW = 1/W
-		VectorXd eigen_iW = (VectorXd::Ones(W.vlen)).cwiseQuotient(eigen_W);
+	Map<VectorXd> eigen_sW(sW.vector, sW.vlen);
 
-		FullPivLU<MatrixXd> lu(
-			eigen_ktrtr*CMath::sq(m_scale)+MatrixXd(eigen_iW.asDiagonal()));
-
-		// compute cholesky: L = -(K + iW)^-1
-		eigen_L = -lu.inverse();
-	}
-	else
-	{
-		Map<VectorXd> eigen_sW(sW.vector, sW.vlen);
-
-		// compute cholesky: L = chol(sW * sW' .* K + I)
-		LLT<MatrixXd> L(
-			(eigen_sW*eigen_sW.transpose()).cwiseProduct(eigen_ktrtr*CMath::sq(m_scale))+
-			MatrixXd::Identity(m_ktrtr.num_rows, m_ktrtr.num_cols));
-
-		eigen_L = L.matrixU();
-	}
+	eigen_L = CMatrixOperations::get_choleksy(eigen_W, eigen_sW, eigen_ktrtr, m_scale);
 }
 
 void CLaplacianInferenceMethod::update_alpha()
