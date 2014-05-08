@@ -84,7 +84,7 @@ void CNeuralSoftmaxLayer::compute_local_gradients(bool is_output,
 	int32_t len = m_num_neurons*m_batch_size;
 	for (int32_t i=0; i< len; i++)
 	{
-		m_local_gradients[i] = m_activations[i]-p[i];
+		m_local_gradients[i] = (m_activations[i]-p[i])/m_batch_size;
 	}
 }
 

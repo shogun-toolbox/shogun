@@ -220,6 +220,16 @@ public:
 		return m_input_gradients;
 	}
 	
+	/** Gets the layer's local gradients, a matrix of size
+	 * num_neurons * batch_size
+	 * 
+	 * @return layer's local gradients
+	 */
+	virtual SGMatrix<float64_t> get_local_gradients() 
+	{
+		return m_local_gradients;
+	}
+	
 	virtual const char* get_name() const { return "NeuralLayer"; }
 
 private:
