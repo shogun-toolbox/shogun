@@ -320,7 +320,7 @@ public:
 	 * @param lab labels/data used
 	 *
 	 */
-	virtual void set_distribution(SGVector<float64_t> mu, SGVector<float64_t> s2, const CLabels* lab)
+	virtual void set_variational_distribution(SGVector<float64_t> mu, SGVector<float64_t> s2, const CLabels* lab)
 	{
 		SG_ERROR("Set variational distribution not implemented for %s\n", get_name());
 	}

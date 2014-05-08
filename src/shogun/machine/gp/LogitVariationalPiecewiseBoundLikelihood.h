@@ -34,8 +34,8 @@
  * "Piecewise Bounds for Estimating Bernoulli-Logistic Latent Gaussian Models." ICML. 2011.
  */
 
-#ifndef _LOGITPIECEWISEBOUNDLIKELIHOOD_H_
-#define _LOGITPIECEWISEBOUNDLIKELIHOOD_H_
+#ifndef _LOGITVARIATIONALPIECEWISEBOUNDLIKELIHOOD_H_
+#define _LOGITVARIATIONALPIECEWISEBOUNDLIKELIHOOD_H_
 
 #include <shogun/lib/config.h>
 
@@ -65,24 +65,24 @@ namespace shogun
  * m is the size of the pre-defined bound, which is the num_rows of bound passed in set_bound
  * (In the reference Matlab code, m is 20)
  */
-class CLogitPiecewiseBoundLikelihood : public CLogitLikelihood
+class CLogitVariationalPiecewiseBoundLikelihood : public CLogitLikelihood
 {
 public:
-	CLogitPiecewiseBoundLikelihood();
+	CLogitVariationalPiecewiseBoundLikelihood();
 
-	virtual ~CLogitPiecewiseBoundLikelihood();
+	virtual ~CLogitVariationalPiecewiseBoundLikelihood();
 
 	/** returns the name of the likelihood model
 	 *
 	 * @return name LogitPiecewiseBoundLikelihood
 	 */
-	virtual const char* get_name() const { return "LogitPiecewiseBoundLikelihood"; }
+	virtual const char* get_name() const { return "LogitVariationalPiecewiseBoundLikelihood"; }
 
 	/** set the variational piecewise bound for logit likelihood
 	 *
 	 *  @param bound variational piecewise bound
 	 */
-	virtual void set_bound(SGMatrix<float64_t> bound);
+	virtual void set_variational_bound(SGMatrix<float64_t> bound);
 
 	/** set the variational normal distribution given data and parameters
 	 *
@@ -91,7 +91,7 @@ public:
 	 * @param lab labels/data used
 	 *
 	 */
-	virtual void set_distribution(SGVector<float64_t> mu, SGVector<float64_t> s2, const CLabels* lab);
+	virtual void set_variational_distribution(SGVector<float64_t> mu, SGVector<float64_t> s2, const CLabels* lab);
 
 	/** returns the expection of the logarithm of a logit distribution 
 	 * wrt the variational distribution using piecewise bound
@@ -124,7 +124,7 @@ private:
 
 	/** compute common variables later used in get_variational_expection
 	 * and get_variational_first_derivative.
-	 * Note that this method will automatically be called when set_distribution is called
+	 * Note that this method will automatically be called when set_variational_distribution is called
 	 */
 	void precompute();
 
@@ -163,4 +163,4 @@ private:
 };
 }
 #endif /* HAVE_EIGEN3 */
-#endif /* _LOGITPIECEWISEBOUNDLIKELIHOOD_H_ */
+#endif /* _LOGITVARIATIONALPIECEWISEBOUNDLIKELIHOOD_H_ */

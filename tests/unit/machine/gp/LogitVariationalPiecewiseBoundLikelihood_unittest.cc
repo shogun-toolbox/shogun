@@ -43,7 +43,7 @@
 #ifdef HAVE_EIGEN3
 
 #include <shogun/labels/BinaryLabels.h>
-#include <shogun/machine/gp/LogitPiecewiseBoundLikelihood.h>
+#include <shogun/machine/gp/LogitVariationalPiecewiseBoundLikelihood.h>
 #include <shogun/mathematics/Math.h>
 #include <gtest/gtest.h>
 
@@ -164,7 +164,7 @@ SGMatrix<float64_t> init_bound()
 	return bound;
 }
 
-TEST(LogitPiecewiseBoundLikelihood,get_variational_expection)
+TEST(LogitVariationalPiecewiseBoundLikelihood,get_variational_expection)
 {
 	float64_t rel_tolorance = 1e-2;
 	float64_t abs_tolorance;
@@ -209,10 +209,10 @@ TEST(LogitPiecewiseBoundLikelihood,get_variational_expection)
 	v[8] = 64;
 	v[9] = 625;
 
-	CLogitPiecewiseBoundLikelihood *lik = new CLogitPiecewiseBoundLikelihood();
-	lik->set_bound(bound);
+	CLogitVariationalPiecewiseBoundLikelihood *lik = new CLogitVariationalPiecewiseBoundLikelihood();
+	lik->set_variational_bound(bound);
 	CBinaryLabels* lab = new CBinaryLabels(y);
-	lik->set_distribution(m, v, lab);
+	lik->set_variational_distribution(m, v, lab);
 
 	SGVector<float64_t> fi = lik->get_variational_expection();
 
@@ -243,7 +243,7 @@ TEST(LogitPiecewiseBoundLikelihood,get_variational_expection)
 	SG_UNREF(lik);
 }
 
-TEST(LogitPiecewiseBoundLikelihood,get_variational_first_derivative_wrt_sigma2)
+TEST(LogitVariationalPiecewiseBoundLikelihood,get_variational_first_derivative_wrt_sigma2)
 {
 	float64_t rel_tolorance = 1e-2;
 	float64_t abs_tolorance;
@@ -288,10 +288,10 @@ TEST(LogitPiecewiseBoundLikelihood,get_variational_first_derivative_wrt_sigma2)
 	v[8] = 64;
 	v[9] = 625;
 
-	CLogitPiecewiseBoundLikelihood *lik = new CLogitPiecewiseBoundLikelihood();
-	lik->set_bound(bound);
+	CLogitVariationalPiecewiseBoundLikelihood *lik = new CLogitVariationalPiecewiseBoundLikelihood();
+	lik->set_variational_bound(bound);
 	CBinaryLabels* lab = new CBinaryLabels(y);
-	lik->set_distribution(m, v, lab);
+	lik->set_variational_distribution(m, v, lab);
 
 	TParameter* s2_param=lik->m_gradient_parameters->get_parameter("sigma2");
 
@@ -324,7 +324,7 @@ TEST(LogitPiecewiseBoundLikelihood,get_variational_first_derivative_wrt_sigma2)
 	SG_UNREF(lik);
 }
 
-TEST(LogitPiecewiseBoundLikelihood,get_variational_first_derivative_wrt_mu)
+TEST(LogitVariationalPiecewiseBoundLikelihood,get_variational_first_derivative_wrt_mu)
 {
 	float64_t rel_tolorance = 1e-2;
 	float64_t abs_tolorance;
@@ -369,10 +369,10 @@ TEST(LogitPiecewiseBoundLikelihood,get_variational_first_derivative_wrt_mu)
 	v[8] = 64;
 	v[9] = 625;
 
-	CLogitPiecewiseBoundLikelihood *lik = new CLogitPiecewiseBoundLikelihood();
-	lik->set_bound(bound);
+	CLogitVariationalPiecewiseBoundLikelihood *lik = new CLogitVariationalPiecewiseBoundLikelihood();
+	lik->set_variational_bound(bound);
 	CBinaryLabels* lab = new CBinaryLabels(y);
-	lik->set_distribution(m, v, lab);
+	lik->set_variational_distribution(m, v, lab);
 
 	TParameter* mu_param=lik->m_gradient_parameters->get_parameter("mu");
 

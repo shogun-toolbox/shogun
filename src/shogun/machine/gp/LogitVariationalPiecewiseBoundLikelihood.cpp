@@ -40,27 +40,29 @@
 
 #ifdef HAVE_EIGEN3
 
-#include <shogun/machine/gp/LogitPiecewiseBoundLikelihood.h>
+#include <shogun/machine/gp/LogitVariationalPiecewiseBoundLikelihood.h>
 
-using namespace shogun;
 using namespace Eigen;
 
-CLogitPiecewiseBoundLikelihood::CLogitPiecewiseBoundLikelihood()
+namespace shogun
+{
+
+CLogitVariationalPiecewiseBoundLikelihood::CLogitVariationalPiecewiseBoundLikelihood()
 	: CLogitLikelihood()
 {
 	init();
 }
 
-CLogitPiecewiseBoundLikelihood::~CLogitPiecewiseBoundLikelihood()
+CLogitVariationalPiecewiseBoundLikelihood::~CLogitVariationalPiecewiseBoundLikelihood()
 {
 }
 
-void CLogitPiecewiseBoundLikelihood::set_bound(SGMatrix<float64_t> bound)
+void CLogitVariationalPiecewiseBoundLikelihood::set_variational_bound(SGMatrix<float64_t> bound)
 {
 	m_bound = bound;
 }
 
-SGVector<float64_t> CLogitPiecewiseBoundLikelihood::get_variational_expection()
+SGVector<float64_t> CLogitVariationalPiecewiseBoundLikelihood::get_variational_expection()
 {
 	//This function is based on the Matlab code,
 	//function [f, gm, gv] = Ellp(m, v, bound, ind), to compute f
@@ -127,7 +129,7 @@ SGVector<float64_t> CLogitPiecewiseBoundLikelihood::get_variational_expection()
 }
 
 
-SGVector<float64_t> CLogitPiecewiseBoundLikelihood::get_variational_first_derivative(
+SGVector<float64_t> CLogitVariationalPiecewiseBoundLikelihood::get_variational_first_derivative(
 		const TParameter* param) const
 {
 	//This function is based on the Matlab code
@@ -237,7 +239,7 @@ SGVector<float64_t> CLogitPiecewiseBoundLikelihood::get_variational_first_deriva
 	return result;
 }
 
-void CLogitPiecewiseBoundLikelihood::set_distribution(SGVector<float64_t> mu,
+void CLogitVariationalPiecewiseBoundLikelihood::set_variational_distribution(SGVector<float64_t> mu,
 	SGVector<float64_t> s2, const CLabels* lab)
 {
 	REQUIRE(lab, "Labels are required (lab should not be NULL)\n");
@@ -267,7 +269,7 @@ void CLogitPiecewiseBoundLikelihood::set_distribution(SGVector<float64_t> mu,
 	precompute();
 }
 
-void CLogitPiecewiseBoundLikelihood::init()
+void CLogitVariationalPiecewiseBoundLikelihood::init()
 {
 	SG_ADD(&m_bound, "bound", 
 		"Variational piecewise bound for logit likelihood",
@@ -305,7 +307,7 @@ void CLogitPiecewiseBoundLikelihood::init()
 		MS_NOT_AVAILABLE);
 }
 
-void CLogitPiecewiseBoundLikelihood::precompute()
+void CLogitVariationalPiecewiseBoundLikelihood::precompute()
 {
 	//This function is based on the Matlab code
 	//function [f, gm, gv] = Ellp(m, v, bound, ind), to compute common variables later
@@ -413,4 +415,5 @@ void CLogitPiecewiseBoundLikelihood::precompute()
 	eigen_h(eigen_h.size()-1) = h_bak;
 }
 
+} /* namespace shogun */
 #endif /* HAVE_EIGEN3 */

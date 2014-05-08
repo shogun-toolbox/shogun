@@ -40,7 +40,7 @@
 #include <shogun/lib/config.h>
 #ifdef HAVE_EIGEN3
 #include <shogun/base/init.h>
-#include <shogun/machine/gp/LogitPiecewiseBoundLikelihood.h>
+#include <shogun/machine/gp/LogitVariationalPiecewiseBoundLikelihood.h>
 #include <shogun/distributions/classical/GaussianDistribution.h>
 #include <shogun/optimization/lbfgs/lbfgs.h>
 #include <shogun/mathematics/Math.h>
@@ -173,7 +173,7 @@ SGVector<float64_t> create_label(const char * fname, SGVector<float64_t> mu,
 //The following struct is used to pass information when using the build-in L-BFGS component
 struct Shared 
 {
-	CLogitPiecewiseBoundLikelihood *lik;
+	CLogitVariationalPiecewiseBoundLikelihood *lik;
 	SGVector<float64_t> y;
 	SGVector<float64_t> mu;
 	lbfgs_parameter_t lbfgs_param;
@@ -215,7 +215,7 @@ float64_t evaluate(void *obj, const float64_t *variable, float64_t *gradient,
 	Shared * obj_prt = static_cast<Shared *>(obj);
 
 	CBinaryLabels lab(obj_prt->y);
-	obj_prt->lik->set_distribution(obj_prt->m0, obj_prt->v, &lab);
+	obj_prt->lik->set_variational_distribution(obj_prt->m0, obj_prt->v, &lab);
 	Eigen::Map<Eigen::VectorXd> eigen_mu(obj_prt->mu.vector, obj_prt->mu.vlen);
 	Eigen::Map<Eigen::VectorXd> eigen_m(obj_prt->m0.vector, obj_prt->m0.vlen);
 
@@ -302,8 +302,8 @@ void run(const char * x_file, const char * y_file, const char * bound_file,
 
 	//load('llp.mat'); 
 	obj.bound = init_piecewise_bound(bound_file);
-	obj.lik = new CLogitPiecewiseBoundLikelihood();
-	obj.lik->set_bound(obj.bound);
+	obj.lik = new CLogitVariationalPiecewiseBoundLikelihood();
+	obj.lik->set_variational_bound(obj.bound);
 
 	//m0 = mu; % initial value all zero
 	obj.m0 = SGVector<float64_t> (num_sample);
