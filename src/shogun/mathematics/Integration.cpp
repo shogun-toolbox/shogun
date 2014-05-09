@@ -1,10 +1,32 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
- *
+ * Copyright (c) The Shogun Machine Learning Toolbox
+ * Written (w) 2014 Wu Lin
  * Written (W) 2013 Roman Votyakov
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * The views and conclusions contained in the software and documentation are those
+ * of the authors and should not be interpreted as representing official policies,
+ * either expressed or implied, of the Shogun Development Team.
  *
  * The abscissae and weights for Gauss-Kronrod rules are taken form
  * QUADPACK, which is in public domain.
@@ -13,6 +35,10 @@
  * See header file for which functions are adapted from GNU Octave,
  * file quadgk.m: Copyright (C) 2008-2012 David Bateman under GPLv3
  * http://www.gnu.org/software/octave/
+ *
+ * See header file for which functions are adapted from
+ * Gaussian Process Machine Learning Toolbox
+ * http://www.gaussianprocess.org/gpml/code/matlab/doc/
  */
 
 #include <shogun/mathematics/Integration.h>
@@ -431,6 +457,21 @@ float64_t CIntegration::integrate_quadgh(CFunction* f)
 	return q;
 }
 
+float64_t CIntegration::integrate_quadgh_customized(CFunction* f,
+	SGVector<float64_t> xgh, SGVector<float64_t> wgh)
+{
+	REQUIRE(xgh.vlen == wgh.vlen,
+		"The length of node array and weight array should be the same\n")
+
+	SG_REF(f);
+
+	float64_t q=evaluate_quadgh(f, xgh.vlen, xgh.vector, wgh.vector);
+
+	SG_UNREF(f);
+
+	return q;
+}
+
 void CIntegration::evaluate_quadgk(CFunction* f, CDynamicArray<float64_t>* subs,
 		CDynamicArray<float64_t>* q, CDynamicArray<float64_t>* err, index_t n,
 		float64_t* xgk, float64_t* wg, float64_t* wgk)
@@ -483,6 +524,99 @@ void CIntegration::evaluate_quadgk(CFunction* f, CDynamicArray<float64_t>* subs,
 	VectorXd eigen_err=(((yg*eigen_wg.asDiagonal()).rowwise().sum()).cwiseProduct(
 		eigen_hw)-eigen_q).array().abs();
 	err->set_array(eigen_err.data(), eigen_err.size());
+}
+
+void CIntegration::generate_gauher(SGVector<float64_t> xgh, SGVector<float64_t> wgh)
+{
+	REQUIRE(xgh.vlen == wgh.vlen, "The length of xgh and wgh should be the same\n");
+
+	index_t n = xgh.vlen;
+
+	Map<VectorXd> eigen_xgh(xgh.vector, xgh.vlen);
+	Map<VectorXd> eigen_wgh(wgh.vector, wgh.vlen);
+
+	eigen_xgh = MatrixXd::Zero(n,1);
+	eigen_wgh = MatrixXd::Ones(n,1);
+
+	if (n > 1)
+	{
+		MatrixXd v = MatrixXd::Zero(n,n);
+
+		//b = sqrt( (1:N-1)/2 )';    
+		//[V,D] = eig( diag(b,1) + diag(b,-1) );
+		v.block(0, 1, n-1, n-1).diagonal() = (0.5*ArrayXd::LinSpaced(n-1,1,n-1)).sqrt();
+		v.block(1, 0, n-1, n-1).diagonal() = v.block(0, 1, n-1, n-1).diagonal();
+		EigenSolver<MatrixXd> eig(v);
+		
+		//w = V(1,:)'.^2
+		eigen_wgh = eig.eigenvectors().row(0).transpose().real().array().pow(2);
+
+		//x = sqrt(2)*diag(D)
+		eigen_xgh = eig.eigenvalues().real()*sqrt(2.0);
+	}
+}
+
+void CIntegration::generate_gauher20(SGVector<float64_t> xgh, SGVector<float64_t> wgh)
+{
+	REQUIRE(xgh.vlen == wgh.vlen, "The length of xgh and wgh should be the same\n");
+	REQUIRE(xgh.vlen == 20, "The length of xgh and wgh should be 20\n");
+
+	static const index_t n = 20;
+	static float64_t wgh_pre[n]=
+	{
+		0.0000000000001257800672437920121938444754,
+		0.0000000002482062362315158465220083577413,
+		0.0000000612749025998290679114578012251502,
+		0.0000044021210902308611768963750310312832,
+		0.0001288262799619289543807260089991473251,
+		0.0018301031310804880686271545187082665507,
+		0.0139978374471010288959682554832397727296,
+		0.0615063720639768204967445797137770568952,
+		0.1617393339840000332507941038784338161349,
+		0.2607930634495548849471902030927594751120,
+		0.2607930634495547739248877405771054327488,
+		0.1617393339840003108065502601675689220428,
+		0.0615063720639767788633811562704067910090,
+		0.0139978374471010080792865437615546397865,
+		0.0018301031310804856833823750505985117343,
+		0.0001288262799619298488475183095403053812,
+		0.0000044021210902308865878847926600414553,
+		0.0000000612749025998294252534824241331057,
+		0.0000000002482062362315177593771748866178,
+		0.0000000000001257800672437921636551382778
+	};
+
+	static float64_t xgh_pre[n]=
+	{
+		-7.6190485416797573137159815814811736345291,
+		-6.5105901570136559541879250900819897651672,
+		-5.5787388058932032564030123467091470956802,
+		-4.7345813340460569662582201999612152576447,
+		-3.9439673506573176275935566081898286938667,
+		-3.1890148165533904744961546384729444980621,
+		-2.4586636111723669806394809711491689085960,
+		-1.7452473208141270344384565760265104472637,
+		-1.0429453488027506935509336472023278474808,
+		-0.3469641570813560282893206476728664711118,
+		0.3469641570813561393116231101885205134749,
+		1.0429453488027513596847484222962521016598,
+		1.7452473208141265903492467259638942778111,
+		2.4586636111723669806394809711491689085960,
+		3.1890148165533904744961546384729444980621,
+		3.9439673506573162953259270580019801855087,
+		4.7345813340460569662582201999612152576447,
+		5.5787388058932014800461729464586824178696,
+		6.5105901570136532896526659897062927484512,
+		7.6190485416797573137159815814811736345291
+		
+	};
+
+	for (index_t idx = 0; idx < n; idx++)
+	{
+		wgh[idx] = wgh_pre[idx];
+		xgh[idx] = xgh_pre[idx];
+	}
+
 }
 
 void CIntegration::evaluate_quadgk15(CFunction* f, CDynamicArray<float64_t>* subs,

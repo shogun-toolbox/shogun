@@ -1,10 +1,32 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
- *
+ * Copyright (c) The Shogun Machine Learning Toolbox
+ * Written (w) 2014 Wu Lin
  * Written (W) 2013 Roman Votyakov
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * The views and conclusions contained in the software and documentation are those
+ * of the authors and should not be interpreted as representing official policies,
+ * either expressed or implied, of the Shogun Development Team.
  *
  * The abscissae and weights for Gauss-Kronrod rules are taken form
  * QUADPACK, which is in public domain.
@@ -13,7 +35,12 @@
  * See method comments which functions are adapted from GNU Octave,
  * file quadgk.m: Copyright (C) 2008-2012 David Bateman under GPLv3
  * http://www.gnu.org/software/octave/
- */
+ *
+ * See method comments which functions are adapted from
+ * Gaussian Process Machine Learning Toolbox, file util/gauher.m,
+ * http://www.gaussianprocess.org/gpml/code/matlab/doc/
+ *
+ */ 
 
 #ifndef _INTEGRATION_H_
 #define _INTEGRATION_H_
@@ -26,6 +53,7 @@
 #include <shogun/lib/DynamicArray.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/Function.h>
+#include <shogun/lib/SGVector.h>
 
 namespace shogun
 {
@@ -90,6 +118,57 @@ public:
 	 * integral \f$\int_{-\infty}^{\infty}e^{-x^2}f(x)dx\f$
 	 */
 	static float64_t integrate_quadgh(CFunction* f);
+
+	/** numerically evaluate integral of the following kind
+	 *
+	 * \f[
+	 * \int_{-\infty}^{\infty}e^{-x^2}f(x)dx
+	 * \f]
+	 *
+	 * using provided Gauss-Hermite points
+	 *
+	 * \f[
+	 * \int_{-\infty}^{\infty}e^{-x^2}f(x)dx \approx
+	 * \sum_{i=1}^{64} w_if(x_i)
+	 * \f]
+	 *
+	 * where x_i and w_i - ith node and weight for the provided 
+	 * Gauss-Hermite formula respectively.
+	 *
+	 * @param f integrable function of one variable
+	 * @param x the provided array of nodes  
+	 * @param w the provided array of weights
+	 *
+	 * @return approximate value of the
+	 * integral \f$\int_{-\infty}^{\infty}e^{-x^2}f(x)dx\f$
+	 */
+
+	static float64_t integrate_quadgh_customized(CFunction* f,
+		SGVector<float64_t> xgh, SGVector<float64_t> wgh);
+
+
+	/** generate Gauss-Hermite nodes
+	 *
+	 * Adapted form Gaussian Process Machine Learning Toolbox
+	 * (file util/gauher.m)
+	 *
+	 * @param xgh nodes are saved in this pre-allocated array  
+	 * @param wgh weights are saved in this pre-allocated array
+	 *
+	 */
+	static void generate_gauher(SGVector<float64_t> xgh, SGVector<float64_t> wgh);
+
+
+	/** generate 20 Gauss-Hermite nodes using precomputed result
+	 *
+	 * Adapted form Gaussian Process Machine Learning Toolbox
+	 * (file util/gauher.m)
+	 *
+	 * @param xgh nodes are saved in this pre-allocated array  
+	 * @param wgh weights are saved in this pre-allocated array
+	 *
+	 */
+	static void generate_gauher20(SGVector<float64_t> xgh, SGVector<float64_t> wgh);
 
 	/** get object name
 	 *
