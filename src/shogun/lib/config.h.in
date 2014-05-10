@@ -37,6 +37,19 @@
 #cmakedefine USE_LOGCACHE 1
 #cmakedefine USE_LOGSUMARRAY 1
 
+/* for linear algebra global backend setups */
+#cmakedefine USE_EIGEN3 1
+#cmakedefine USE_VIENNACL 1
+
+#cmakedefine USE_EIGEN3_REDUX 1
+#cmakedefine USE_VIENNACL_REDUX 1
+
+#cmakedefine USE_EIGEN3_LINSLV 1
+#cmakedefine USE_VIENNACL_LINSLV 1
+
+#cmakedefine USE_EIGEN3_EIGSLV 1
+#cmakedefine USE_VIENNACL_EIGSLV 1
+
 /* Define to 1 if you have the declaration of `isfinite', and to 0 if you
    don't. */
 #cmakedefine HAVE_DECL_ISFINITE 1

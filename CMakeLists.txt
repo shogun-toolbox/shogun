@@ -805,6 +805,56 @@ IF (PROTOBUF_FOUND)
 	SET(POSTLINKFLAGS ${POSTLINKFLAGS} ${PROTOBUF_LIBRARIES})
 ENDIF()
 
+# Linear algebra default global backend setups
+OPTION (SetLinAlgLib "Set global linear algebra backend library for all modules")
+IF (SetLinAlgLib STREQUAL "EIGEN3")
+	SET(USE_EIGEN3 1)
+	LIST(APPEND DEFINES USE_EIGEN3)
+	MESSAGE("-- Eigen3 set as default global linear algebra backend library")
+ELSEIF (SetLinAlgLib STREQUAL "VIENNACL")
+	SET(USE_VIENNACL 1)
+	LIST(APPEND DEFINES USE_VIENNACL)
+	MESSAGE("-- ViennaCL set as default global linear algebra backend library")
+ENDIF ()
+
+# Linear algebra default module specific backend setup
+
+# Reduction module
+OPTION (SetReduxLib "Set linear algebra backend library for reduction module")
+IF (SetReduxLib STREQUAL "EIGEN3")
+	SET(USE_EIGEN3_REDUX 1)
+	LIST(APPEND DEFINES USE_EIGEN3_REDUX)
+	MESSAGE("-- Eigen3 set as default reduction module (linalg) backend library")
+ELSEIF (SetReduxLib STREQUAL "VIENNACL")
+	SET(USE_VIENNACL_REDUX 1)
+	LIST(APPEND DEFINES USE_VIENNACL_REDUX)
+	MESSAGE("-- ViennaCL set as default reduction module (linalg) backend library")
+ENDIF ()
+
+# Linear solver module
+OPTION (SetLinSlvLib "Set linear algebra backend library for linear solver module")
+IF (SetLinSlvLib STREQUAL "EIGEN3")
+	SET(USE_EIGEN3_LINSLV 1)
+	LIST(APPEND DEFINES USE_EIGEN3_LINSLV)
+	MESSAGE("-- Eigen3 set as default linear solver module (linalg) backend library")
+ELSEIF (SetLinSlvLib STREQUAL "VIENNACL")
+	SET(USE_VIENNACL_LINSLV 1)
+	LIST(APPEND DEFINES USE_VIENNACL_LINSLV)
+	MESSAGE("-- ViennaCL set as default linear solver module (linalg) backend library")
+ENDIF ()
+
+# Eigen solver module
+OPTION (SetEigSlvLib "Set linear algebra backend library for eigen solver module")
+IF (SetEigSlvLib STREQUAL "EIGEN3")
+	SET(USE_EIGEN3_EIGSLV 1)
+	LIST(APPEND DEFINES USE_EIGEN3_EIGSLV)
+	MESSAGE("-- Eigen3 set as default eigen solver module (linalg) backend library")
+ELSEIF (SetEigSlvLib STREQUAL "VIENNACL")
+	SET(USE_VIENNACL_EIGSLV 1)
+	LIST(APPEND DEFINES USE_VIENNACL_EIGSLV)
+	MESSAGE("-- ViennaCL set as default eigen solver module (linalg) backend library")
+ENDIF ()
+
 #SWIG Interfaces
 SET(CMAKE_SWIG_FLAGS "${CMAKE_SWIG_FLAGS};-w473;-w454;-w312;-w325;-fvirtual")
 
