@@ -30,8 +30,9 @@ SGRefObject::SGRefObject()
 SGRefObject::SGRefObject(const SGRefObject& orig)
 {
 	init();
-	m_refcount = orig.m_refcount;
-	SG_REF(this);
+	m_refcount = new RefCount(0);
+
+	SG_SGCDEBUG("SGRefObject copied (%p)\n", this)
 }
 
 SGRefObject::~SGRefObject()

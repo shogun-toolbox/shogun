@@ -5,6 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 2013 Heiko Strathmann
+ * Written (W) 2014 Thoralf Klein
  */
 
 #include <shogun/labels/BinaryLabels.h>
@@ -66,26 +67,32 @@ void* stress_test(void* args)
 }
 
 #ifdef USE_REFERENCE_COUNTING
-TEST(SGObject,ref_unref)
+TEST(SGObject,DISABLED_ref_copy_constructor)
 {
 	CBinaryLabels* labs = new CBinaryLabels(10);
 	EXPECT_EQ(labs->ref_count(), 0);
+
 	SG_REF(labs);
 	EXPECT_EQ(labs->ref_count(), 1);
 
-	pthread_t* threads = new pthread_t[10];
-	for (index_t i=0; i<10; i++)
-	{
-		pthread_create(&threads[i], NULL, stress_test, static_cast<void* >(labs));
-	}
-	for (index_t i=0; i<10; i++)
-	{
-		pthread_join(threads[i], NULL);
-		//SG_UNREF(labs);
-	}
+	// TODO: This causes memory corruptions; disabled test until fixed
+	CBinaryLabels* labs_2 = new CBinaryLabels(*labs);
+	SG_UNREF(labs_2);
+
 	SG_UNREF(labs);
 	EXPECT_TRUE(labs == NULL);
-	delete [] threads;
+}
+
+TEST(SGObject,ref_unref_simple)
+{
+	CBinaryLabels* labs = new CBinaryLabels(10);
+	EXPECT_EQ(labs->ref_count(), 0);
+
+	SG_REF(labs);
+	EXPECT_EQ(labs->ref_count(), 1);
+
+	SG_UNREF(labs);
+	EXPECT_TRUE(labs == NULL);
 }
 #endif
 
