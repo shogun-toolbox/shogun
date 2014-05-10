@@ -74,13 +74,6 @@ void CHashedSparseFeatures<ST>::init(CSparseFeatures<ST>* feats, int32_t d, bool
 }
 
 template <class ST>
-CHashedSparseFeatures<ST>::CHashedSparseFeatures(const CHashedSparseFeatures& orig)
-: CDotFeatures(orig)
-{
-	init(orig.sparse_feats, orig.dim, orig.use_quadratic, orig.keep_linear_terms);
-}
-
-template <class ST>
 CHashedSparseFeatures<ST>::~CHashedSparseFeatures()
 {
 	SG_UNREF(sparse_feats);
@@ -89,7 +82,9 @@ CHashedSparseFeatures<ST>::~CHashedSparseFeatures()
 template <class ST>
 CFeatures* CHashedSparseFeatures<ST>::duplicate() const
 {
-	return new CHashedSparseFeatures<ST>(*this);
+	// return new CHashedSparseFeatures<ST>(*this);
+	SG_NOTIMPLEMENTED
+	return NULL;
 }
 
 template <class ST>
@@ -290,20 +285,20 @@ int32_t CHashedSparseFeatures<ST>::get_nnz_features_for_vector(int32_t num)
 template <class ST>
 void* CHashedSparseFeatures<ST>::get_feature_iterator(int32_t vector_index)
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 	return NULL;
 }
 template <class ST>
 bool CHashedSparseFeatures<ST>::get_next_feature(int32_t& index, float64_t& value,
 	void* iterator)
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 	return false;
 }
 template <class ST>
 void CHashedSparseFeatures<ST>::free_feature_iterator(void* iterator)
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 }
 
 template <class ST>

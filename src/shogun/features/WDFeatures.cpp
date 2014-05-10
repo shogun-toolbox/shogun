@@ -52,33 +52,6 @@ CWDFeatures::CWDFeatures(CStringFeatures<uint8_t>* str,
 
 }
 
-CWDFeatures::CWDFeatures(const CWDFeatures& orig)
-	: CDotFeatures(orig), strings(orig.strings),
-	degree(orig.degree), from_degree(orig.from_degree),
-	normalization_const(orig.normalization_const)
-{
-	SG_REF(strings);
-
-	if (strings)
-	{
-		string_length=strings->get_max_vector_length();
-		num_strings=strings->get_num_vectors();
-		CAlphabet* alpha=strings->get_alphabet();
-		alphabet_size=alpha->get_num_symbols();
-		SG_UNREF(alpha);
-	}
-	else
-	{
-		string_length = 0;
-		num_strings = 0;
-		alphabet_size = 0;
-	}
-
-	wd_weights=NULL;
-	if (degree>0)
-		set_wd_weights();
-}
-
 CWDFeatures::~CWDFeatures()
 {
 	SG_UNREF(strings);
@@ -302,7 +275,9 @@ void CWDFeatures::free_feature_iterator(void* iterator)
 
 CFeatures* CWDFeatures::duplicate() const
 {
-	return new CWDFeatures(*this);
+	SG_NOTIMPLEMENTED
+	// return new CWDFeatures(*this);
+	return NULL;
 }
 
 int32_t CWDFeatures::get_dim_feature_space() const

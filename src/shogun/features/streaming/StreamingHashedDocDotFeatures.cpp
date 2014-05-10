@@ -126,7 +126,9 @@ const char* CStreamingHashedDocDotFeatures::get_name() const
 
 CFeatures* CStreamingHashedDocDotFeatures::duplicate() const
 {
-	return new CStreamingHashedDocDotFeatures(*this);
+	SG_NOTIMPLEMENTED
+	// return new CStreamingHashedDocDotFeatures(*this);
+	return NULL;
 }
 
 EFeatureType CStreamingHashedDocDotFeatures::get_feature_type() const

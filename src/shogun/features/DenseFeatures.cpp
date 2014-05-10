@@ -26,21 +26,6 @@ template<class ST> CDenseFeatures<ST>::CDenseFeatures(int32_t size) : CDotFeatur
 	init();
 }
 
-template<class ST> CDenseFeatures<ST>::CDenseFeatures(const CDenseFeatures & orig) :
-		CDotFeatures(orig)
-{
-	init();
-	set_feature_matrix(orig.feature_matrix);
-	initialize_cache();
-
-	if (orig.m_subset_stack != NULL)
-	{
-		SG_UNREF(m_subset_stack);
-		m_subset_stack=new CSubsetStack(*orig.m_subset_stack);
-		SG_REF(m_subset_stack);
-	}
-}
-
 template<class ST> CDenseFeatures<ST>::CDenseFeatures(SGMatrix<ST> matrix) :
 		CDotFeatures()
 {
@@ -63,7 +48,9 @@ template<class ST> CDenseFeatures<ST>::CDenseFeatures(CFile* loader) :
 
 template<class ST> CFeatures* CDenseFeatures<ST>::duplicate() const
 {
-	return new CDenseFeatures<ST>(*this);
+	SG_NOTIMPLEMENTED
+	// return new CDenseFeatures<ST>(*this);
+	return NULL;
 }
 
 template<class ST> CDenseFeatures<ST>::~CDenseFeatures()

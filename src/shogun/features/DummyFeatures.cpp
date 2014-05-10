@@ -31,7 +31,9 @@ int32_t CDummyFeatures::get_num_vectors() const
 
 CFeatures* CDummyFeatures::duplicate() const
 {
-	return new CDummyFeatures(*this);
+	SG_NOTIMPLEMENTED
+	// return new CDummyFeatures(*this);
+	return NULL;
 }
 
 inline EFeatureType CDummyFeatures::get_feature_type() const

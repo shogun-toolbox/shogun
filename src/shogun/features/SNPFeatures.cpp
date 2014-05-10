@@ -52,30 +52,6 @@ CSNPFeatures::CSNPFeatures(CStringFeatures<uint8_t>* str) : CDotFeatures(),
 
 }
 
-CSNPFeatures::CSNPFeatures(const CSNPFeatures& orig)
-	: CDotFeatures(orig), strings(orig.strings),
-	normalization_const(orig.normalization_const),
-	m_str_min(NULL), m_str_maj(NULL)
-{
-	SG_REF(strings);
-
-	if (strings)
-	{
-		string_length=strings->get_max_vector_length();
-		ASSERT((string_length & 1) == 0) // length divisible by 2
-			w_dim=3*string_length;
-		num_strings=strings->get_num_vectors();
-	}
-	else
-	{
-		string_length = 0;
-		w_dim = 0;
-		num_strings = 0;
-	}
-
-	obtain_base_strings();
-}
-
 CSNPFeatures::~CSNPFeatures()
 {
 	SG_UNREF(strings);
@@ -348,7 +324,9 @@ void CSNPFeatures::free_feature_iterator(void* iterator)
 
 CFeatures* CSNPFeatures::duplicate() const
 {
-	return new CSNPFeatures(*this);
+	// return new CSNPFeatures(*this);
+	SG_NOTIMPLEMENTED
+	return NULL;
 }
 
 SGMatrix<float64_t> CSNPFeatures::get_histogram(bool normalize)

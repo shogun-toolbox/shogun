@@ -27,13 +27,6 @@ SGRefObject::SGRefObject()
 	SG_SGCDEBUG("SGRefObject created (%p)\n", this)
 }
 
-SGRefObject::SGRefObject(const SGRefObject& orig)
-{
-	init();
-	m_refcount = orig.m_refcount;
-	SG_REF(this);
-}
-
 SGRefObject::~SGRefObject()
 {
 	SG_SGCDEBUG("SGRefObject destroyed (%p)\n", this)

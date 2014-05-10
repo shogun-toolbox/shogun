@@ -46,13 +46,6 @@ CDotFeatures::CDotFeatures(int32_t size)
 }
 
 
-CDotFeatures::CDotFeatures(const CDotFeatures & orig)
-	:CFeatures(orig), combined_weight(orig.combined_weight)
-{
-	init();
-}
-
-
 CDotFeatures::CDotFeatures(CFile* loader)
 	:CFeatures(loader)
 {

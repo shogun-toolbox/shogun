@@ -222,7 +222,9 @@ void CStreamingSparseFeatures<T>::sort_features()
 template <class T>
 CFeatures* CStreamingSparseFeatures<T>::duplicate() const
 {
-	return new CStreamingSparseFeatures<T>(*this);
+	SG_NOTIMPLEMENTED
+	// return new CStreamingSparseFeatures<T>(*this);
+	return NULL;
 }
 
 template <class T>

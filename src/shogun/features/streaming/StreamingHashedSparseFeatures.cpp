@@ -139,7 +139,9 @@ int32_t CStreamingHashedSparseFeatures<ST>::get_num_vectors() const
 template <class ST>
 CFeatures* CStreamingHashedSparseFeatures<ST>::duplicate() const
 {
-	return new CStreamingHashedSparseFeatures<ST>(*this);
+	SG_NOTIMPLEMENTED
+	// return new CStreamingHashedSparseFeatures<ST>(*this);
+	return NULL;
 }
 
 template <class ST>

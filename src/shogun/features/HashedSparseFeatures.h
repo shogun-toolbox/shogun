@@ -68,9 +68,6 @@ public:
 	CHashedSparseFeatures(CFile* loader, int32_t d, bool use_quadr = false,
 			bool keep_lin_terms = true);
 
-	/** copy constructor */
-	CHashedSparseFeatures(const CHashedSparseFeatures & orig);
-
 	/** duplicate */
 	virtual CFeatures* duplicate() const;
 

@@ -54,9 +54,6 @@ class CFKFeatures: public CDenseFeatures<float64_t>
 		 */
 		CFKFeatures(int32_t size, CHMM* p, CHMM* n);
 
-		/** copy constructor */
-		CFKFeatures(const CFKFeatures &orig);
-
 		virtual ~CFKFeatures();
 
 		/** set HMMs

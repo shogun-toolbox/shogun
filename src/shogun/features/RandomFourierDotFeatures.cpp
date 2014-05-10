@@ -39,7 +39,7 @@ CRandomFourierDotFeatures::CRandomFourierDotFeatures(CDotFeatures* features,
 
 CRandomFourierDotFeatures::CRandomFourierDotFeatures(CFile* loader)
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 }
 
 CRandomFourierDotFeatures::CRandomFourierDotFeatures(const CRandomFourierDotFeatures& orig)
@@ -68,7 +68,9 @@ void CRandomFourierDotFeatures::init(KernelName kernel_name, SGVector<float64_t>
 
 CFeatures* CRandomFourierDotFeatures::duplicate() const
 {
-	return new CRandomFourierDotFeatures(*this);
+	SG_NOTIMPLEMENTED
+	// return new CRandomFourierDotFeatures(*this);
+	return NULL;
 }
 
 const char* CRandomFourierDotFeatures::get_name() const

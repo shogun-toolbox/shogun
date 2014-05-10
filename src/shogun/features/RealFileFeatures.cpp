@@ -65,18 +65,6 @@ CRealFileFeatures::~CRealFileFeatures()
 	SG_FREE(labels);
 }
 
-CRealFileFeatures::CRealFileFeatures(const CRealFileFeatures & orig)
-: CDenseFeatures<float64_t>(orig), working_file(orig.working_file), status(orig.status)
-{
-	if (orig.working_filename)
-		working_filename=get_strdup(orig.working_filename);
-	if (orig.labels && get_num_vectors())
-	{
-		labels=SG_MALLOC(int32_t, get_num_vectors());
-		memcpy(labels, orig.labels, sizeof(int32_t)*get_num_vectors());
-	}
-}
-
 float64_t* CRealFileFeatures::compute_feature_vector(
 	int32_t num, int32_t &len, float64_t* target)
 {

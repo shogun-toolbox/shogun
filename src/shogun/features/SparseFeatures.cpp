@@ -35,15 +35,6 @@ template<class ST> CSparseFeatures<ST>::CSparseFeatures(SGMatrix<ST> dense)
 	set_full_feature_matrix(dense);
 }
 
-template<class ST> CSparseFeatures<ST>::CSparseFeatures(const CSparseFeatures & orig)
-: CDotFeatures(orig), sparse_feature_matrix(orig.sparse_feature_matrix),
-	feature_cache(orig.feature_cache)
-{
-	init();
-
-	m_subset_stack=orig.m_subset_stack;
-	SG_REF(m_subset_stack);
-}
 template<class ST> CSparseFeatures<ST>::CSparseFeatures(CFile* loader)
 : CDotFeatures(), feature_cache(NULL)
 {
@@ -59,7 +50,9 @@ template<class ST> CSparseFeatures<ST>::~CSparseFeatures()
 
 template<class ST> CFeatures* CSparseFeatures<ST>::duplicate() const
 {
-	return new CSparseFeatures<ST>(*this);
+	SG_NOTIMPLEMENTED
+	// return new CSparseFeatures<ST>(*this);
+	return NULL;
 }
 
 template<class ST> ST CSparseFeatures<ST>::get_feature(int32_t num, int32_t index)
@@ -198,7 +191,7 @@ template<>
 void CSparseFeatures<complex128_t>::add_to_dense_vec(float64_t alpha,
 	int32_t num, float64_t* vec, int32_t dim, bool abs_val)
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 }
 
 template<class ST> void CSparseFeatures<ST>::free_sparse_feature_vector(int32_t num)
@@ -325,7 +318,7 @@ template<class ST> void CSparseFeatures<ST>::obtain_from_simple(CDenseFeatures<S
 
 template<> void CSparseFeatures<complex128_t>::obtain_from_simple(CDenseFeatures<complex128_t>* sf)
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 }
 
 template<class ST> int32_t  CSparseFeatures<ST>::get_num_vectors() const
@@ -390,7 +383,7 @@ template<class ST> float64_t* CSparseFeatures<ST>::compute_squared(float64_t* sq
 
 template<> float64_t* CSparseFeatures<complex128_t>::compute_squared(float64_t* sq)
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 	return sq;
 }
 
@@ -480,7 +473,7 @@ template<class ST> float64_t CSparseFeatures<ST>::dot(int32_t vec_idx1,
 template<> float64_t CSparseFeatures<complex128_t>::dot(int32_t vec_idx1,
 		CDotFeatures* df, int32_t vec_idx2)
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 	return 0.0;
 }
 
@@ -517,7 +510,7 @@ template<class ST> float64_t CSparseFeatures<ST>::dense_dot(int32_t vec_idx1, co
 template<> float64_t CSparseFeatures<complex128_t>::dense_dot(int32_t vec_idx1,
 	const float64_t* vec2, int32_t vec2_len)
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 	return 0.0;
 }
 
@@ -557,7 +550,7 @@ template<class ST> bool CSparseFeatures<ST>::get_next_feature(int32_t& index, fl
 template<> bool CSparseFeatures<complex128_t>::get_next_feature(int32_t& index,
 	float64_t& value, void* iterator)
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 	return false;
 }
 

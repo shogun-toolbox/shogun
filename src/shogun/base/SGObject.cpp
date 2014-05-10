@@ -121,13 +121,6 @@ CSGObject::CSGObject()
 	set_global_objects();
 }
 
-CSGObject::CSGObject(const CSGObject& orig)
-:SGRefObject(orig), io(orig.io), parallel(orig.parallel), version(orig.version)
-{
-	init();
-	set_global_objects();
-}
-
 CSGObject::~CSGObject()
 {
 	unset_global_objects();

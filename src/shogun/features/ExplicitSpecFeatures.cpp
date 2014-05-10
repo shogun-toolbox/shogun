@@ -40,14 +40,6 @@ CExplicitSpecFeatures::CExplicitSpecFeatures(CStringFeatures<uint16_t>* str, boo
 	SG_DEBUG("SPEC size=%d, num_str=%d\n", spec_size, num_strings)
 }
 
-CExplicitSpecFeatures::CExplicitSpecFeatures(const CExplicitSpecFeatures& orig) : CDotFeatures(orig),
-	num_strings(orig.num_strings), alphabet_size(orig.alphabet_size), spec_size(orig.spec_size)
-{
-	k_spectrum= SG_MALLOC(float64_t*, num_strings);
-	for (int32_t i=0; i<num_strings; i++)
-		k_spectrum[i]=SGVector<float64_t>::clone_vector(k_spectrum[i], spec_size);
-}
-
 CExplicitSpecFeatures::~CExplicitSpecFeatures()
 {
 	delete_kmer_spectrum();
@@ -147,7 +139,9 @@ void CExplicitSpecFeatures::delete_kmer_spectrum()
 
 CFeatures* CExplicitSpecFeatures::duplicate() const
 {
-	return new CExplicitSpecFeatures(*this);
+	SG_NOTIMPLEMENTED
+	// return new CExplicitSpecFeatures(*this);
+	return NULL;
 }
 
 

@@ -48,7 +48,9 @@ CStreamingVwFeatures::~CStreamingVwFeatures()
 
 CFeatures* CStreamingVwFeatures::duplicate() const
 {
-	return new CStreamingVwFeatures(*this);
+	SG_NOTIMPLEMENTED
+	// return new CStreamingVwFeatures(*this);
+	return NULL;
 }
 
 void CStreamingVwFeatures::set_vector_reader()

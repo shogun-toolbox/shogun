@@ -38,7 +38,9 @@ CCombinedFeatures::CCombinedFeatures(const CCombinedFeatures& orig)
 
 CFeatures* CCombinedFeatures::duplicate() const
 {
-	return new CCombinedFeatures(*this);
+	SG_NOTIMPLEMENTED
+	// return new CCombinedFeatures(*this);
+	return NULL;
 }
 
 CCombinedFeatures::~CCombinedFeatures()

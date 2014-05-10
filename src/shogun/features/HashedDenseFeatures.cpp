@@ -82,13 +82,6 @@ void CHashedDenseFeatures<ST>::init(CDenseFeatures<ST>* feats, int32_t d, bool u
 }
 
 template <class ST>
-CHashedDenseFeatures<ST>::CHashedDenseFeatures(const CHashedDenseFeatures& orig)
-: CDotFeatures(orig)
-{
-	init(orig.dense_feats, orig.dim, orig.use_quadratic, orig.keep_linear_terms);
-}
-
-template <class ST>
 CHashedDenseFeatures<ST>::~CHashedDenseFeatures()
 {
 	SG_UNREF(dense_feats);
@@ -97,7 +90,9 @@ CHashedDenseFeatures<ST>::~CHashedDenseFeatures()
 template <class ST>
 CFeatures* CHashedDenseFeatures<ST>::duplicate() const
 {
-	return new CHashedDenseFeatures<ST>(*this);
+	SG_NOTIMPLEMENTED
+	// return new CHashedDenseFeatures<ST>(*this);
+	return NULL;
 }
 
 template <class ST>
@@ -220,20 +215,20 @@ int32_t CHashedDenseFeatures<ST>::get_nnz_features_for_vector(int32_t num)
 template <class ST>
 void* CHashedDenseFeatures<ST>::get_feature_iterator(int32_t vector_index)
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 	return NULL;
 }
 template <class ST>
 bool CHashedDenseFeatures<ST>::get_next_feature(int32_t& index, float64_t& value,
 	void* iterator)
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 	return false;
 }
 template <class ST>
 void CHashedDenseFeatures<ST>::free_feature_iterator(void* iterator)
 {
-	SG_NOTIMPLEMENTED;
+	SG_NOTIMPLEMENTED
 }
 
 template <class ST>

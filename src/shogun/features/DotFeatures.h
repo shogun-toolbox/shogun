@@ -51,9 +51,6 @@ class CDotFeatures : public CFeatures
 		 */
 		CDotFeatures(int32_t size=0);
 
-		/** copy constructor */
-		CDotFeatures(const CDotFeatures & orig);
-
 		/** constructor
 		 *
 		 * @param loader File object via which to load data
