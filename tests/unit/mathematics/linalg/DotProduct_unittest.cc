@@ -3,6 +3,7 @@
  * All rights reserved.
  *
  * Written (W) 2014 Sunil K. Mahendrakar
+ * Written (W) 2014 Soumyajit De
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -34,25 +35,47 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef HAVE_EIGEN3
-#include <shogun/mathematics/linalg/dotproduct/DenseEigen3DotProduct.h>
+#include <shogun/mathematics/linalg/linalg.h>
+
+#ifdef HAVE_DEFAULT
 #include <shogun/lib/SGVector.h>
 #include <gtest/gtest.h>
 
+#ifdef HAVE_EIGEN3
+#include <shogun/mathematics/eigen3.h>
+
+using namespace Eigen;
+#endif // HAVE_EIGEN3
+
 using namespace shogun;
 
-TEST(Eigen3DotProduct, eigen3_dot_product_dense)
+TEST(DotProduct, SGVector_default_backend)
 {
     const index_t size=10;
     SGVector<float64_t> a(size), b(size);
     a.set_const(1.0);
     b.set_const(2.0);
 
-    DenseEigen3DotProduct<float64_t>* A=SG_MALLOC(DenseEigen3DotProduct<float64_t>, 1);
-    new(A) DenseEigen3DotProduct<float64_t>;
-
-    EXPECT_NEAR(A->compute(a,b), 20.0, 1E-15);
-
-    SG_FREE(A);
+    EXPECT_NEAR(linalg::dot(a, b), 20.0, 1E-15);
 }
-#endif //HAVE_EIGEN3
+
+#ifdef HAVE_EIGEN3
+TEST(DotProduct, Eigen3_Vector_dynamic_size)
+{
+	index_t size=10;
+	VectorXd a=VectorXd::Constant(size, 1);
+	VectorXd b=VectorXd::Constant(size, 2);
+
+    EXPECT_NEAR(linalg::dot(a, b), 20.0, 1E-15);
+}
+
+TEST(DotProduct, Eigen3_Vector_fixed_size)
+{
+	Vector3d a=Vector3d::Constant(1);
+	Vector3d b=Vector3d::Constant(2);
+
+    EXPECT_NEAR(linalg::dot(a, b), 6.0, 1E-15);
+}
+#endif // HAVE_EIGEN3
+
+#endif // HAVE_DEFAULT
