@@ -53,7 +53,7 @@ namespace impl
  * is specialized for different types of vectors and backend, providing a mean
  * to deal with various vectors directly without having to convert
  */
-template <class Info,template<class,Info...>class Vector,class T,enum Backend,Info... I>
+template <class Info,enum Backend,template<class,Info...>class Vector,class T,Info... I>
 struct dot
 {
 	typedef Vector<T,I...> vector_type;
@@ -76,7 +76,7 @@ struct dot
  * matter what global backend was set
  */
 template <> template <class T,int... Info>
-struct dot<int,Eigen::Matrix,T,Backend::EIGEN3,Info...>
+struct dot<int,Backend::EIGEN3,Eigen::Matrix,T,Info...>
 {
 	typedef Eigen::Matrix<T,Info...> vector_type;
 
@@ -99,7 +99,7 @@ struct dot<int,Eigen::Matrix,T,Backend::EIGEN3,Info...>
  * as backend for computing dot.
  */
 template <> template <class T>
-struct dot<int,shogun::SGVector,T,Backend::EIGEN3>
+struct dot<int,Backend::EIGEN3,shogun::SGVector,T>
 {
 	typedef shogun::SGVector<T> vector_type;
 

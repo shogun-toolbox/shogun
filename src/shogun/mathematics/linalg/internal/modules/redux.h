@@ -51,7 +51,7 @@ namespace linalg
 template <template <class,int...> class Vector, class T, int... Info>
 T dot(Vector<T,Info...> a, Vector<T,Info...> b)
 {
-	return impl::dot<int,Vector,T,linalg_traits<Redux>::backend,Info...>::compute(a, b);
+	return impl::dot<int,linalg_traits<Redux>::backend,Vector,T,Info...>::compute(a, b);
 }
 
 /**
@@ -70,7 +70,7 @@ T dot(Vector<T,Info...> a, Vector<T,Info...> b)
 template <template <class,unsigned int> class Vector, class T, unsigned int Info>
 T dot(Vector<T,Info> a, Vector<T,Info> b)
 {
-	return impl::dot<unsigned int,Vector,T,linalg_traits<Redux>::backend,Info>::compute(a, b);
+	return impl::dot<unsigned int,linalg_traits<Redux>::backend,Vector,T,Info>::compute(a, b);
 }
 
 }

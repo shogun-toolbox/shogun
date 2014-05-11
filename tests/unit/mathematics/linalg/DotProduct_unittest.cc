@@ -75,6 +75,18 @@ TEST(DotProduct, Eigen3_Vector_fixed_size)
 
 	EXPECT_NEAR(linalg::dot(a, b), 6.0, 1E-15);
 }
+
+TEST(DotProduct, SGVector_explicit_eigen3_backend)
+{
+	const index_t size=10;
+	SGVector<float64_t> a(size), b(size);
+	a.set_const(1.0);
+	b.set_const(2.0);
+
+	float64_t result=linalg::impl::dot<Eigen3_Backend,SGVector,float64_t>::compute(a, b);
+
+	EXPECT_NEAR(result, 20.0, 1E-15);
+}
 #endif // HAVE_EIGEN3
 
 #endif // HAVE_LINALG_LIB
