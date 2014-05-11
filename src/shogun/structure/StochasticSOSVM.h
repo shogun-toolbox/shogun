@@ -13,7 +13,6 @@
 
 #include <shogun/lib/config.h>
 
-#include <shogun/lib/SGVector.h>
 #include <shogun/machine/LinearStructuredOutputMachine.h>
 
 namespace shogun
