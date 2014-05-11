@@ -94,7 +94,7 @@ void CLaplacianInferenceMethodWithLBFGS::set_lbfgs_parameters(
 	m_enable_newton_if_fail = enable_newton_if_fail;
 }
 
-	void CLaplacianInferenceMethodWithLBFGS::init()
+void CLaplacianInferenceMethodWithLBFGS::init()
 {
 	set_lbfgs_parameters();
 	m_mean_f = NULL;
@@ -151,11 +151,11 @@ void CLaplacianInferenceMethodWithLBFGS::set_lbfgs_parameters(
 		MS_NOT_AVAILABLE);
 }
 
-	CLaplacianInferenceMethodWithLBFGS::~CLaplacianInferenceMethodWithLBFGS()
+CLaplacianInferenceMethodWithLBFGS::~CLaplacianInferenceMethodWithLBFGS()
 {
 }
 
-	float64_t CLaplacianInferenceMethodWithLBFGS::evaluate(
+float64_t CLaplacianInferenceMethodWithLBFGS::evaluate(
 		void *obj,
 		const float64_t *alpha,
 		float64_t *gradient,
@@ -178,7 +178,7 @@ void CLaplacianInferenceMethodWithLBFGS::set_lbfgs_parameters(
 	return psi;
 }
 
-	void CLaplacianInferenceMethodWithLBFGS::update_alpha()
+void CLaplacianInferenceMethodWithLBFGS::update_alpha()
 {
 	float64_t psi_new;
 	float64_t psi_def;
@@ -212,7 +212,7 @@ void CLaplacianInferenceMethodWithLBFGS::set_lbfgs_parameters(
 		/* compute f = K * alpha + m*/
 		Eigen::Map<Eigen::VectorXd> eigen_alpha(m_alpha.vector, m_alpha.vlen);
 		eigen_mu = eigen_ktrtr * (eigen_alpha * CMath::sq(m_scale)) + eigen_mean_f;
-	psi_new = eigen_alpha.dot(eigen_mu - eigen_mean_f) / 2.0;
+		psi_new = eigen_alpha.dot(eigen_mu - eigen_mean_f) / 2.0;
 		psi_new -= SGVector<float64_t>::sum(m_model->get_log_probability_f(m_labels, m_mu));
 
 		psi_def = -SGVector<float64_t>::sum(
@@ -303,7 +303,7 @@ void CLaplacianInferenceMethodWithLBFGS::set_lbfgs_parameters(
 		eigen_sW.setZero();
 }
 
-	void CLaplacianInferenceMethodWithLBFGS::get_psi_wrt_alpha(
+void CLaplacianInferenceMethodWithLBFGS::get_psi_wrt_alpha(
 		Eigen::Map<Eigen::VectorXd>* alpha,
 		float64_t* psi)
 	{
@@ -323,7 +323,7 @@ void CLaplacianInferenceMethodWithLBFGS::set_lbfgs_parameters(
 		*psi -= SGVector<float64_t>::sum(m_model->get_log_probability_f(m_labels, f));
 	}
 
-	void CLaplacianInferenceMethodWithLBFGS::get_gradient_wrt_alpha(
+void CLaplacianInferenceMethodWithLBFGS::get_gradient_wrt_alpha(
 		Eigen::Map<Eigen::VectorXd>* alpha,
 		Eigen::Map<Eigen::VectorXd>* gradient)
 	{
