@@ -51,21 +51,6 @@ TEST(SGObject,equals_NULL_parameter)
 }
 #endif //HAVE_EIGEN3
 
-void* stress_test(void* args)
-{
-	CBinaryLabels* labs = (CBinaryLabels* ) args;
-	CBinaryLabels* labs_2 = new CBinaryLabels(*labs);
-	for (index_t i=0; i<1000000; i++)
-	{
-		SG_REF(labs);
-		SG_REF(labs_2);
-		SG_UNREF(labs_2);
-		SG_UNREF(labs);
-	}
-	SG_UNREF(labs_2);
-	pthread_exit(0);
-}
-
 #ifdef USE_REFERENCE_COUNTING
 TEST(SGObject,DISABLED_ref_copy_constructor)
 {
