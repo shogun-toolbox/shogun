@@ -39,14 +39,18 @@
 
 /**
  * This namespace contains all linear algebra specific modules and operations.
+ * The rest of the library is available only when the one of the supported
+ * backend exists in the local system
  */
+
+#ifdef HAVE_LINALG_LIB
 namespace linalg
 {
 
 /**
  * Developer's Note :
  * - Changing the default backend would just require to change it in the following
- *   enum and in the following ifdef
+ *   enum
  * - Please use the same names as HAVE_<BACKEND> macros (e.g. HAVE_EIGEN3)
  */
 
@@ -56,31 +60,22 @@ namespace linalg
  * backend, which will be used for all the tasks if any particular backend is
  * not set explicitly via cmake options.
  *
- * Note - Currently EIGEN3 is the default.
+ * The enum defines these backends in order of priority as default backend, as
+ * in, first defined one will be used as default
+ *
+ * Note - Currently EIGEN3 is the default (if its available)
  *
  */
 enum class Backend
 {
-	EIGEN3,
-	VIENNACL,
-	DEFAULT=EIGEN3
-};
-
-}
-
-/** set default */
 #ifdef HAVE_EIGEN3
-#define HAVE_DEFAULT 1
-#endif // HAVE_EIGEN3
-
-/**
- * The rest of the library is available only when the default backend exists in
- * the local system
- */
-
-#ifdef HAVE_DEFAULT
-namespace linalg
-{
+	EIGEN3,
+#endif
+#ifdef HAVE_VIENNACL
+	VIENNACL,
+#endif
+	DEFAULT = 0
+};
 
 /**
  * @brief
@@ -96,21 +91,6 @@ struct linalg_traits : Module
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
 /**
- * Make the compilation fail in static assertion if a particular backend was
- * requested and not found in the local system
- */
-#if defined USE_EIGEN3 | USE_EIGEN3_REDUX | USE_EIGEN3_LINSLV | USE_EIGEN3_EIGSLV
-#ifndef HAVE_EIGEN3
-static_assert(false, "Eigen3 not found! Please check if properly installed!\n");
-#endif // HAVE_EIGEN3
-#elif defined USE_VIENNACL | USE_VIENNACL_REDUX | USE_VIENNACL_LINSLV \
-	| USE_VIENNACL_EIGSLV
-#ifndef HAVE_VIENNACL
-static_assert(false, "ViennaCL not found! Please check if properly installed!\n");
-#endif // HAVE_VIENNACL
-#endif
-
-/**
  * Define the modules as type with information about backend
  */
 #ifndef SET_MODULE_BACKEND
@@ -124,52 +104,51 @@ struct MODULE \
 /**
  * Set global backend should define all the module types with same backend.
  * Currently supported modules are
- * Redux		- For reduction to a scalar from vector or matrix
- *				  (e.g. norm, sum, dot)
- * Linsolver	- Solvers for linear systems (SVD, Cholesky, QR etc)
- * Eigsolver	- Different eigensolvers
+ * Redux        - For reduction to a scalar from vector or matrix (e.g. norm, sum, dot)
+ * Linsolver    - Solvers for linear systems (SVD, Cholesky, QR etc)
+ * Eigsolver    - Different eigensolvers
  */
 #ifndef SET_GLOBAL_BACKEND
 #define SET_GLOBAL_BACKEND(BACKEND) \
-SET_MODULE_BACKEND(Redux, BACKEND) \
-SET_MODULE_BACKEND(Linsolver, BACKEND) \
-SET_MODULE_BACKEND(Eigsolver, BACKEND)
+	SET_MODULE_BACKEND(Redux, BACKEND) \
+	SET_MODULE_BACKEND(Linsolver, BACKEND) \
+	SET_MODULE_BACKEND(Eigsolver, BACKEND)
 #endif // SET_GLOBAL_BACKEND
 
 /** set global backend for all modules if a particular backend is specified */
 #ifdef USE_EIGEN3
-SET_GLOBAL_BACKEND(EIGEN3)
+	SET_GLOBAL_BACKEND(EIGEN3)
 #elif USE_VIENNACL
-SET_GLOBAL_BACKEND(VIENNACL)
+	SET_GLOBAL_BACKEND(VIENNACL)
 #else
 
 /** set module specific backends */
 
 /** Reduction module */
 #ifdef USE_EIGEN3_REDUX
-SET_MODULE_BACKEND(Redux, EIGEN3)
+	SET_MODULE_BACKEND(Redux, EIGEN3)
 #elif USE_VIENNACL_REDUX
-SET_MODULE_BACKEND(Redux, VIENNACL)
+	SET_MODULE_BACKEND(Redux, VIENNACL)
 #else // the default case
-SET_MODULE_BACKEND(Redux, DEFAULT)
+	SET_MODULE_BACKEND(Redux, DEFAULT)
 #endif
 
 /** Linear solver module */
 #ifdef USE_EIGEN3_LINSLV
-SET_MODULE_BACKEND(Linsolver, EIGEN3)
+	SET_MODULE_BACKEND(Linsolver, EIGEN3)
 #elif USE_VIENNACL_LINSLV
-SET_MODULE_BACKEND(Linsolver, VIENNACL)
+	SET_MODULE_BACKEND(Linsolver, VIENNACL)
 #else // the default case
-SET_MODULE_BACKEND(Linsolver, DEFAULT)
+	SET_MODULE_BACKEND(Linsolver, DEFAULT)
 #endif
 
 /** Eigen solver module */
 #ifdef USE_EIGEN3_EIGSLV
-SET_MODULE_BACKEND(Eigsolver, EIGEN3)
+	SET_MODULE_BACKEND(Eigsolver, EIGEN3)
 #elif USE_VIENNACL_EIGSLV
-SET_MODULE_BACKEND(Eigsolver, VIENNACL)
+	SET_MODULE_BACKEND(Eigsolver, VIENNACL)
 #else // the default case
-SET_MODULE_BACKEND(Eigsolver, DEFAULT)
+	SET_MODULE_BACKEND(Eigsolver, DEFAULT)
 #endif
 
 #endif // end of global settings
@@ -184,6 +163,6 @@ SET_MODULE_BACKEND(Eigsolver, DEFAULT)
 
 #include <shogun/mathematics/linalg/internal/modules/redux.h>
 
-#endif // HAVE_DEFAULT
+#endif // HAVE_LINALG_LIB
 
 #endif // LINALG_H_

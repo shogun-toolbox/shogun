@@ -51,7 +51,7 @@ namespace impl
 /**
  * @brief Generic class dot which provides a static compute method. This class
  * is specialized for different types of vectors and backend, providing a mean
- * to directly deal with various vectors directly without having to convert
+ * to deal with various vectors directly without having to convert
  */
 template <class Info,template<class,Info...>class Vector,class T,enum Backend,Info... I>
 struct dot

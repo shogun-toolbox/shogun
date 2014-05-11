@@ -21,6 +21,7 @@
 
 #cmakedefine HAVE_ARPACK 1
 #cmakedefine HAVE_EIGEN3 1
+#cmakedefine HAVE_VIENNACL 1
 #cmakedefine HAVE_CATLAS 1
 #cmakedefine HAVE_ATLAS 1
 #cmakedefine HAVE_NLOPT 1
@@ -38,6 +39,8 @@
 #cmakedefine USE_LOGSUMARRAY 1
 
 /* for linear algebra global backend setups */
+#cmakedefine HAVE_LINALG_LIB 1
+
 #cmakedefine USE_EIGEN3 1
 #cmakedefine USE_VIENNACL 1
 

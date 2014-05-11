@@ -35,9 +35,8 @@
 
 #include <shogun/lib/config.h>
 
+#ifdef HAVE_LINALG_LIB
 #include <shogun/mathematics/linalg/linalg.h>
-
-#ifdef HAVE_DEFAULT
 #include <shogun/lib/SGVector.h>
 #include <gtest/gtest.h>
 
@@ -51,12 +50,12 @@ using namespace shogun;
 
 TEST(DotProduct, SGVector_default_backend)
 {
-    const index_t size=10;
-    SGVector<float64_t> a(size), b(size);
-    a.set_const(1.0);
-    b.set_const(2.0);
+	const index_t size=10;
+	SGVector<float64_t> a(size), b(size);
+	a.set_const(1.0);
+	b.set_const(2.0);
 
-    EXPECT_NEAR(linalg::dot(a, b), 20.0, 1E-15);
+	EXPECT_NEAR(linalg::dot(a, b), 20.0, 1E-15);
 }
 
 #ifdef HAVE_EIGEN3
@@ -66,7 +65,7 @@ TEST(DotProduct, Eigen3_Vector_dynamic_size)
 	VectorXd a=VectorXd::Constant(size, 1);
 	VectorXd b=VectorXd::Constant(size, 2);
 
-    EXPECT_NEAR(linalg::dot(a, b), 20.0, 1E-15);
+	EXPECT_NEAR(linalg::dot(a, b), 20.0, 1E-15);
 }
 
 TEST(DotProduct, Eigen3_Vector_fixed_size)
@@ -74,8 +73,8 @@ TEST(DotProduct, Eigen3_Vector_fixed_size)
 	Vector3d a=Vector3d::Constant(1);
 	Vector3d b=Vector3d::Constant(2);
 
-    EXPECT_NEAR(linalg::dot(a, b), 6.0, 1E-15);
+	EXPECT_NEAR(linalg::dot(a, b), 6.0, 1E-15);
 }
 #endif // HAVE_EIGEN3
 
-#endif // HAVE_DEFAULT
+#endif // HAVE_LINALG_LIB
