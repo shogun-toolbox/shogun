@@ -159,18 +159,6 @@ struct MODULE \
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 }
 
-/**
- * useful macros for avoiding unnecessary template parameters while using
- * explicit backends for linalg methods
- */
-#ifndef Eigen3_Backend
-#define Eigen3_Backend int,linalg::Backend::EIGEN3
-#endif
-
-#ifndef ViennaCL_Backend
-#define ViennaCL_Backend unsigned int,linalg::Backend::VIENNACL
-#endif
-
 /** include all the modules here */
 
 #include <shogun/mathematics/linalg/internal/modules/redux.h>

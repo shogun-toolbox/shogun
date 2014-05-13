@@ -41,6 +41,8 @@ namespace linalg
  * with generic vectors with first templated-argument as its value-type and
  * other (optional) templated-arguments of int type for compile time information
  *
+ * Uses default backend
+ *
  * Suited for Shogun's SGVector, Eigen3's Vector etc
  *
  * @param \f$\mathbf{a}\f$ first vector
@@ -60,6 +62,8 @@ T dot(Vector<T,Info...> a, Vector<T,Info...> b)
  * other (optional) templated-arguments of unsigned int type for compile time
  * information
  *
+ * Uses default backend
+ *
  * Suited for ViennaCL vectors
  *
  * @param \f$\mathbf{a}\f$ first vector
@@ -71,6 +75,47 @@ template <template <class,unsigned int> class Vector, class T, unsigned int Info
 T dot(Vector<T,Info> a, Vector<T,Info> b)
 {
 	return impl::dot<unsigned int,linalg_traits<Redux>::backend,Vector,T,Info>::compute(a, b);
+}
+
+/**
+ * Wrapper method for internal implementation of vector dot-product that works
+ * with generic vectors with first templated-argument as its value-type and
+ * other (optional) templated-arguments of int type for compile time information
+ *
+ * Uses templated specified backend
+ *
+ * Suited for Shogun's SGVector, Eigen3's Vector etc
+ *
+ * @param \f$\mathbf{a}\f$ first vector
+ * @param \f$\mathbf{b}\f$ second vector
+ * @return the dot product of \f$\mathbf{a}\f$ and \$\mathbf{b}\f$, represented
+ * as \f$\sum_i a_i b_i\f$
+ */
+template <Backend backend,template <class,int...> class Vector, class T, int... Info>
+T dot(Vector<T,Info...> a, Vector<T,Info...> b)
+{
+	return impl::dot<int,backend,Vector,T,Info...>::compute(a, b);
+}
+
+/**
+ * Wrapper method for internal implementation of vector dot-product that works
+ * with generic vectors with first templated-argument as its value-type and
+ * other (optional) templated-arguments of unsigned int type for compile time
+ * information
+ *
+ * Uses templated specified backend
+ *
+ * Suited for ViennaCL vectors
+ *
+ * @param \f$\mathbf{a}\f$ first vector
+ * @param \f$\mathbf{b}\f$ second vector
+ * @return the dot product of \f$\mathbf{a}\f$ and \$\mathbf{b}\f$, represented
+ * as \f$\sum_i a_i b_i\f$
+ */
+template <Backend backend,template <class,unsigned int> class Vector, class T, unsigned int Info>
+T dot(Vector<T,Info> a, Vector<T,Info> b)
+{
+	return impl::dot<unsigned int,backend,Vector,T,Info>::compute(a, b);
 }
 
 }
