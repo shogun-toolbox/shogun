@@ -313,7 +313,7 @@ IF(CMAKE_SIZEOF_VOID_P EQUAL 8 AND NOT DARWIN)
 ENDIF()
 
 #integration 
-OPTION(OpenCVIntegration "OpenCV Integration" OFF)
+OPTION(OpenCV "OpenCV Integration" OFF)
 
 #interfaces
 OPTION(PythonModular "Python Modular" OFF)
@@ -631,7 +631,7 @@ ELSE()
 	ENDIF()
 ENDIF()
 
-IF (OpenCVIntegration)
+IF (OpenCV)
 	# find OpenCV library if intended by the user.
 	FIND_PACKAGE( OpenCV)
 	IF (OpenCV_FOUND)
@@ -1062,7 +1062,7 @@ feature_summary(WHAT ALL)
 message(STATUS "===================================================================================================================")
 message(STATUS "Enabled Integration")
 
-PrintInterfaceStatus("opencv integration" OpenCVIntegration)
+PrintInterfaceStatus("OpenCV Integration" OpenCV)
 
 message(STATUS
 "===================================================================================================================")
