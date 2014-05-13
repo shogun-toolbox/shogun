@@ -5,13 +5,15 @@
  * (at your option) any later version.
  *
  * Written (W) 2006 Christian Gehl
- * Written (W) 2006-2009 Soeren Sonnenburg
+ * Written (W) 1999-2009 Soeren Sonnenburg
  * Written (W) 2011 Sergey Lisitsyn
  * Written (W) 2012 Fernando José Iglesias García, cover tree support
+ * Written (W) 2014 Zharmagambetov Arman, kd tree support
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
 #include <shogun/multiclass/KNN.h>
+#include <shogun/lib/KDTree.h>
 #include <shogun/labels/Labels.h>
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/mathematics/Math.h>
@@ -29,12 +31,14 @@ CKNN::CKNN()
 : CDistanceMachine()
 {
 	init();
+	kdtree = new CKDTree();
 }
 
 CKNN::CKNN(int32_t k, CDistance* d, CLabels* trainlab)
 : CDistanceMachine()
 {
 	init();
+	kdtree =new CKDTree();
 
 	m_k=k;
 
@@ -55,6 +59,7 @@ void CKNN::init()
 	m_k=3;
 	m_q=1.0;
 	m_use_covertree=false;
+	m_use_kdtree = false;
 	m_num_classes=0;
 
 	/* use the method classify_multiply_k to experiment with different values
@@ -84,6 +89,11 @@ bool CKNN::train_machine(CFeatures* data)
 	SGVector<int32_t> lab=((CMulticlassLabels*) m_labels)->get_int_labels();
 	m_train_labels=lab.clone();
 	ASSERT(m_train_labels.vlen>0)
+
+	if(m_use_kdtree)
+	{
+		kdtree->train_kd((CDenseFeatures<float64_t>) data, m_train_labels);
+	}
 
 	int32_t max_class=m_train_labels[0];
 	int32_t min_class=m_train_labels[0];
@@ -156,7 +166,7 @@ CMulticlassLabels* CKNN::apply_multiclass(CFeatures* data)
 		init_distance(data);
 
 	//redirecting to fast (without sorting) classify if k==1
-	if (m_k == 1)
+	if (m_k == 1 && !m_use_kdtree)
 		return classify_NN();
 
 	ASSERT(m_num_classes>0)
@@ -182,7 +192,7 @@ CMulticlassLabels* CKNN::apply_multiclass(CFeatures* data)
 	float64_t tfinish, tparsed, tcreated, tqueried;
 #endif
 
-	if ( ! m_use_covertree )
+	if ( ! m_use_covertree && ! m_use_kdtree)
 	{
 		//get the k nearest neighbors of each example
 		SGMatrix<index_t> NN = nearest_neighbors();
@@ -205,7 +215,7 @@ CMulticlassLabels* CKNN::apply_multiclass(CFeatures* data)
 				(tfinish = tstart.cur_time_diff(false)));
 #endif
 	}
-	else	// Use cover tree
+	else if(m_use_covertree)	// Use cover tree
 	{
 		// m_q != 1.0 not supported with cover tree because the neighbors
 		// are not retrieved in increasing order of distance to the query
@@ -279,6 +289,32 @@ CMulticlassLabels* CKNN::apply_multiclass(CFeatures* data)
 #endif
 	}
 
+	else if(m_use_kdtree)
+	{
+		CDenseFeatures<float64_t> features = (CDenseFeatures<float64_t>) data;
+		vector<vector<float> > featuresVec= kdtree->featureToVector(features.get_feature_matrix());
+		if(m_k == 1)
+		{
+			for(int i = 0; i < featuresVec.size(); i++)
+			{
+				vector<float> temp = kdtree->FindNearestNeighbor(featuresVec[i]);
+				//get the class of the 'nearest' neighbor
+				int32_t out_idx = temp[temp.size()-1];
+				//write the label of 'nearest' in the output
+				output->set_label(i, out_idx);
+			}
+		}
+		else
+		{
+			for(int i = 0; i < featuresVec.size(); i++)
+			{
+				//get the index of the 'nearest' class
+				float out_idx = kdtree->ClassifyKNierestNeighbor(featuresVec[i], m_k);
+				//write the label of 'nearest' in the output
+				output->set_label(i, out_idx);
+			}
+		}
+	}
 	SG_FREE(classes);
 	SG_FREE(train_lab);
 

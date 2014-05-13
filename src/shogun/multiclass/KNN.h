@@ -8,13 +8,12 @@
  * Written (W) 1999-2009 Soeren Sonnenburg
  * Written (W) 2011 Sergey Lisitsyn
  * Written (W) 2012 Fernando José Iglesias García, cover tree support
+ * Written (W) 2014 Zharmagambetov Arman, kd tree support
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
 #ifndef _KNN_H__
 #define _KNN_H__
-
-#include <shogun/lib/config.h>
 
 #include <stdio.h>
 #include <shogun/lib/common.h>
@@ -22,11 +21,17 @@
 #include <shogun/features/Features.h>
 #include <shogun/distance/Distance.h>
 #include <shogun/machine/DistanceMachine.h>
+#include <shogun/features/DenseFeatures.h>
+#include <vector>
+#include <shogun/lib/KDTree.h>
+
+using namespace std;
 
 namespace shogun
 {
 
 class CDistanceMachine;
+
 
 /** @brief Class KNN, an implementation of the standard k-nearest neigbor
  * classifier.
@@ -54,6 +59,7 @@ class CDistanceMachine;
  * multi-class-classification. And finally, in case of k=1 classification will
  * take less time with an special optimization provided.
  */
+
 class CKNN : public CDistanceMachine
 {
 	public:
@@ -160,6 +166,7 @@ class CKNN : public CDistanceMachine
 		inline void set_use_covertree(bool use_covertree)
 		{
 			m_use_covertree = use_covertree;
+			if(use_covertree) m_use_kdtree = false;
 		}
 
 		/** get whether to use cover trees for fast KNN
@@ -167,8 +174,23 @@ class CKNN : public CDistanceMachine
 		 */
 		inline bool get_use_covertree() const { return m_use_covertree; }
 
+		/** set whether to use kd trees
+		* @param use_kdtree parameter
+		*/
+		inline void set_use_kdtree(bool use_kdtree)
+		{
+			m_use_kdtree = use_kdtree;
+			if(use_kdtree) m_use_covertree = false;
+		}
+
+		/** get whether to use kd trees
+		* @return use_kdtree parameter
+		*/
+		inline bool get_use_kdtree() const { return m_use_kdtree; }
+
 		/** @return object name */
 		virtual const char* get_name() const { return "KNN"; }
+
 
 	protected:
 		/** Stores feature data of underlying model.
@@ -238,6 +260,9 @@ class CKNN : public CDistanceMachine
 		/// parameter to enable cover tree support
 		bool m_use_covertree;
 
+		/// parameter to enable kd tree support
+		bool m_use_kdtree;
+
 		///	number of classes (i.e. number of values labels can take)
 		int32_t m_num_classes;
 
@@ -246,6 +271,9 @@ class CKNN : public CDistanceMachine
 
 		/** the actual trainlabels */
 		SGVector<int32_t> m_train_labels;
+
+		/// kd tree instance
+		CKDTree *kdtree;
 };
 
 }
