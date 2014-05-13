@@ -61,7 +61,7 @@ SGIO::SGIO(const SGIO& orig)
 	syntax_highlight(orig.get_syntax_highlight()),
 	loglevel(orig.get_loglevel())
 {
-	m_refcount = new RefCount(orig.m_refcount->ref_count());
+	m_refcount = new RefCount();
 }
 
 void SGIO::message(EMessageType prio, const char* function, const char* file,
