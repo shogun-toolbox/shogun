@@ -31,7 +31,11 @@
 #ifndef REDUX_H_
 #define REDUX_H_
 
-#include <shogun/mathematics/linalg/internal/impl/redux.h>
+#include <shogun/mathematics/linalg/internal/implementation/Dot.h>
+#include <shogun/mathematics/linalg/internal/implementation/Sum.h>
+
+namespace shogun
+{
 
 namespace linalg
 {
@@ -53,7 +57,7 @@ namespace linalg
 template <template <class,int...> class Vector, class T, int... Info>
 T dot(Vector<T,Info...> a, Vector<T,Info...> b)
 {
-	return impl::dot<int,linalg_traits<Redux>::backend,Vector,T,Info...>::compute(a, b);
+	return implementation::dot<int,linalg_traits<Redux>::backend,Vector,T,Info...>::compute(a, b);
 }
 
 /**
@@ -74,7 +78,7 @@ T dot(Vector<T,Info...> a, Vector<T,Info...> b)
 template <template <class,unsigned int> class Vector, class T, unsigned int Info>
 T dot(Vector<T,Info> a, Vector<T,Info> b)
 {
-	return impl::dot<unsigned int,linalg_traits<Redux>::backend,Vector,T,Info>::compute(a, b);
+	return implementation::dot<unsigned int,linalg_traits<Redux>::backend,Vector,T,Info>::compute(a, b);
 }
 
 /**
@@ -94,7 +98,7 @@ T dot(Vector<T,Info> a, Vector<T,Info> b)
 template <Backend backend,template <class,int...> class Vector, class T, int... Info>
 T dot(Vector<T,Info...> a, Vector<T,Info...> b)
 {
-	return impl::dot<int,backend,Vector,T,Info...>::compute(a, b);
+	return implementation::dot<int,backend,Vector,T,Info...>::compute(a, b);
 }
 
 /**
@@ -115,9 +119,88 @@ T dot(Vector<T,Info...> a, Vector<T,Info...> b)
 template <Backend backend,template <class,unsigned int> class Vector, class T, unsigned int Info>
 T dot(Vector<T,Info> a, Vector<T,Info> b)
 {
-	return impl::dot<unsigned int,backend,Vector,T,Info>::compute(a, b);
+	return implementation::dot<unsigned int,backend,Vector,T,Info>::compute(a, b);
+}
+
+/**
+ * Wrapper method for internal implementation of matrix sum of values that works
+ * with generic dense matrices with first templated-argument as its value-type and
+ * other (optional) templated-arguments of int type for compile time information
+ *
+ * Uses default backend
+ *
+ * Suited for Shogun's SGMatrix, Eigen3's Matrix etc
+ *
+ * @param \f$\mathbf{m}\f$ the matrix whose sum of co-efficients has to be computed
+ * @param no_diag if true, diagonal entries are excluded from the sum (default - false)
+ * @return the sum of co-efficients computed as \f$\sum_{i,j}m_{i,j}\f$
+ */
+template <template <class,int...> class Matrix, class T, int... Info>
+T sum(Matrix<T,Info...> m, bool no_diag=false)
+{
+	return implementation::sum<int,linalg_traits<Redux>::backend,Matrix,T,Info...>
+		::compute(m, no_diag);
+}
+
+/**
+ * Wrapper method for internal implementation of symmetric matrix sum of values that works
+ * with generic dense matrices with first templated-argument as its value-type and
+ * other (optional) templated-arguments of int type for compile time information
+ *
+ * Uses default backend
+ *
+ * Suited for Shogun's SGMatrix, Eigen3's Matrix etc
+ *
+ * @param \f$\mathbf{m}\f$ the matrix whose sum of co-efficients has to be computed
+ * @param no_diag if true, diagonal entries are excluded from the sum (default - false)
+ * @return the sum of co-efficients computed as \f$\sum_{i,j}m_{i,j}\f$
+ */
+template <template <class,int...> class Matrix, class T, int... Info>
+T sum_symmetric(Matrix<T,Info...> m, bool no_diag=false)
+{
+	return implementation::sum_symmetric<int,linalg_traits<Redux>::backend,Matrix,T,Info...>
+		::compute(m, no_diag);
+}
+
+/**
+ * Wrapper method for internal implementation of matrix sum of values that works
+ * with generic dense matrices with first templated-argument as its value-type and
+ * other (optional) templated-arguments of int type for compile time information
+ *
+ * Uses templated specified backend
+ *
+ * Suited for Shogun's SGMatrix, Eigen3's Matrix etc
+ *
+ * @param \f$\mathbf{m}\f$ the matrix whose sum of co-efficients has to be computed
+ * @param no_diag if true, diagonal entries are excluded from the sum (default - false)
+ * @return the sum of co-efficients computed as \f$\sum_{i,j}m_{i,j}\f$
+ */
+template <Backend backend, template <class,int...> class Matrix, class T, int... Info>
+T sum(Matrix<T,Info...> m, bool no_diag=false)
+{
+	return implementation::sum<int,backend,Matrix,T,Info...>::compute(m, no_diag);
+}
+
+/**
+ * Wrapper method for internal implementation of symmetric matrix sum of values that works
+ * with generic dense matrices with first templated-argument as its value-type and
+ * other (optional) templated-arguments of int type for compile time information
+ *
+ * Uses templated specified backend
+ *
+ * Suited for Shogun's SGMatrix, Eigen3's Matrix etc
+ *
+ * @param \f$\mathbf{m}\f$ the matrix whose sum of co-efficients has to be computed
+ * @param no_diag if true, diagonal entries are excluded from the sum (default - false)
+ * @return the sum of co-efficients computed as \f$\sum_{i,j}m_{i,j}\f$
+ */
+template <Backend backend,template <class,int...> class Matrix, class T, int... Info>
+T sum_symmetric(Matrix<T,Info...> m, bool no_diag=false)
+{
+	return implementation::sum_symmetric<int,backend,Matrix,T,Info...>::compute(m, no_diag);
 }
 
 }
 
+}
 #endif // REDUX_H_
