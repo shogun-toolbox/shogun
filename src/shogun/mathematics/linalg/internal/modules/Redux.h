@@ -31,7 +31,10 @@
 #ifndef REDUX_H_
 #define REDUX_H_
 
-#include <shogun/mathematics/linalg/internal/impl/redux.h>
+#include <shogun/mathematics/linalg/internal/implementation/DotProduct.h>
+
+namespace shogun
+{
 
 namespace linalg
 {
@@ -53,7 +56,7 @@ namespace linalg
 template <template <class,int...> class Vector, class T, int... Info>
 T dot(Vector<T,Info...> a, Vector<T,Info...> b)
 {
-	return impl::dot<int,linalg_traits<Redux>::backend,Vector,T,Info...>::compute(a, b);
+	return implementation::dot<int,linalg_traits<Redux>::backend,Vector,T,Info...>::compute(a, b);
 }
 
 /**
@@ -74,7 +77,7 @@ T dot(Vector<T,Info...> a, Vector<T,Info...> b)
 template <template <class,unsigned int> class Vector, class T, unsigned int Info>
 T dot(Vector<T,Info> a, Vector<T,Info> b)
 {
-	return impl::dot<unsigned int,linalg_traits<Redux>::backend,Vector,T,Info>::compute(a, b);
+	return implementation::dot<unsigned int,linalg_traits<Redux>::backend,Vector,T,Info>::compute(a, b);
 }
 
 /**
@@ -94,7 +97,7 @@ T dot(Vector<T,Info> a, Vector<T,Info> b)
 template <Backend backend,template <class,int...> class Vector, class T, int... Info>
 T dot(Vector<T,Info...> a, Vector<T,Info...> b)
 {
-	return impl::dot<int,backend,Vector,T,Info...>::compute(a, b);
+	return implementation::dot<int,backend,Vector,T,Info...>::compute(a, b);
 }
 
 /**
@@ -115,9 +118,10 @@ T dot(Vector<T,Info...> a, Vector<T,Info...> b)
 template <Backend backend,template <class,unsigned int> class Vector, class T, unsigned int Info>
 T dot(Vector<T,Info> a, Vector<T,Info> b)
 {
-	return impl::dot<unsigned int,backend,Vector,T,Info>::compute(a, b);
+	return implementation::dot<unsigned int,backend,Vector,T,Info>::compute(a, b);
 }
 
 }
 
+}
 #endif // REDUX_H_

@@ -44,6 +44,9 @@
  */
 
 #ifdef HAVE_LINALG_LIB
+namespace shogun
+{
+
 namespace linalg
 {
 
@@ -159,9 +162,11 @@ struct MODULE \
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 }
 
+}
+
 /** include all the modules here */
 
-#include <shogun/mathematics/linalg/internal/modules/redux.h>
+#include <shogun/mathematics/linalg/internal/modules/Redux.h>
 
 #endif // HAVE_LINALG_LIB
 

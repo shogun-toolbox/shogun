@@ -28,13 +28,11 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
-#ifndef REDUX_IMPL_H_
-#define REDUX_IMPL_H_
+#ifndef DOT_PRODUCT_IMPL_H_
+#define DOT_PRODUCT_IMPL_H_
 
 #include <shogun/lib/config.h>
 #include <shogun/lib/SGVector.h>
-#include <shogun/lib/SGMatrix.h>
-#include <algorithm>
 
 #ifdef HAVE_EIGEN3
 #include <shogun/mathematics/eigen3.h>
@@ -43,7 +41,11 @@
 #ifdef HAVE_VIENNACL
 #include <viennacl/vector.hpp>
 #include <viennacl/linalg/inner_prod.hpp>
+#include <algorithm>
 #endif // HAVE_VIENNACL
+
+namespace shogun
+{
 
 namespace linalg
 {
@@ -51,7 +53,7 @@ namespace linalg
 /**
  * All backend specific implementations are defined within this namespace
  */
-namespace impl
+namespace implementation
 {
 
 /**
@@ -239,4 +241,6 @@ struct dot<unsigned int,Backend::EIGEN3,viennacl::vector,T,Info>
 }
 
 }
-#endif // REDUX_IMPL_H_
+
+}
+#endif // DOT_PRODUCT_IMPL_H_
