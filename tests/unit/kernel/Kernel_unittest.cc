@@ -381,7 +381,7 @@ TEST(Kernel, row_col_wise_sum_block_with_diag)
 		float64_t row_wise_sum=0;
 		for (index_t j=0; j<km.num_cols; ++j)
 			row_wise_sum+=km(i, j);
-		EXPECT_NEAR(row_wise_sum, row_col_wise_sum[i], 1E-15);
+		EXPECT_NEAR(row_wise_sum, row_col_wise_sum[i], 1E-14);
 	}
 
 	for (index_t i=0; i<km.num_cols; i++)
@@ -389,7 +389,7 @@ TEST(Kernel, row_col_wise_sum_block_with_diag)
 		float64_t col_wise_sum=0;
 		for (index_t j=0; j<km.num_rows; ++j)
 			col_wise_sum+=km(j, i);
-		EXPECT_NEAR(col_wise_sum, row_col_wise_sum[i+num_feats_p], 1E-15);
+		EXPECT_NEAR(col_wise_sum, row_col_wise_sum[i+num_feats_p], 1E-14);
 	}
 
 	// cleanup
