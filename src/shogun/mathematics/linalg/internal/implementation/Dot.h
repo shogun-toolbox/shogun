@@ -28,8 +28,8 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
-#ifndef DOT_PRODUCT_IMPL_H_
-#define DOT_PRODUCT_IMPL_H_
+#ifndef DOT_IMPL_H_
+#define DOT_IMPL_H_
 
 #include <shogun/lib/config.h>
 #include <shogun/lib/SGVector.h>
@@ -243,4 +243,4 @@ struct dot<unsigned int,Backend::EIGEN3,viennacl::vector,T,Info>
 }
 
 }
-#endif // DOT_PRODUCT_IMPL_H_
+#endif // DOT_IMPL_H_
