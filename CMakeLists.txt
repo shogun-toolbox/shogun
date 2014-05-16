@@ -633,7 +633,7 @@ ENDIF()
 
 IF (OpenCV)
 	# find OpenCV library if intended by the user.
-	FIND_PACKAGE( OpenCV)
+	FIND_PACKAGE(OpenCV)
 	IF (OpenCV_FOUND)
 		SET(HAVE_OPENCV 1)
 		LIST(APPEND DEFINES HAVE_OPENCV)
