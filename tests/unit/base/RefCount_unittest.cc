@@ -51,4 +51,5 @@ TEST(RefCount, stress_test)
 	rc->unref();
 	EXPECT_EQ(rc->ref_count(), 0);
 	delete [] threads;
+	delete rc;
 }
