@@ -45,7 +45,7 @@ namespace linalg
  * with generic vectors with first templated-argument as its value-type and
  * other (optional) templated-arguments of int type for compile time information
  *
- * Uses default backend
+ * Uses globally set backend
  *
  * Suited for Shogun's SGVector, Eigen3's Vector etc
  *
@@ -66,7 +66,7 @@ T dot(Vector<T,Info...> a, Vector<T,Info...> b)
  * other (optional) templated-arguments of unsigned int type for compile time
  * information
  *
- * Uses default backend
+ * Uses globally set backend
  *
  * Suited for ViennaCL vectors
  *
@@ -127,7 +127,7 @@ T dot(Vector<T,Info> a, Vector<T,Info> b)
  * with generic dense matrices with first templated-argument as its value-type and
  * other (optional) templated-arguments of int type for compile time information
  *
- * Uses default backend
+ * Uses globally set backend
  *
  * Suited for Shogun's SGMatrix, Eigen3's Matrix etc
  *
@@ -143,11 +143,31 @@ T sum(Matrix<T,Info...> m, bool no_diag=false)
 }
 
 /**
+ * Wrapper method for internal implementation of matrix-block sum of values that works
+ * with generic dense matricx blocks with first templated-argument as its value-type and
+ * other (optional) templated-arguments of int type for compile time information
+ *
+ * Uses globally set backend
+ *
+ * Suited for Shogun's SGMatrix, Eigen3's Matrix blocks etc
+ *
+ * @param \f$\mathbf{m}\f$ the matrix whose sum of co-efficients has to be computed
+ * @param no_diag if true, diagonal entries are excluded from the sum (default - false)
+ * @return the sum of co-efficients computed as \f$\sum_{i,j}m_{i,j}\f$
+ */
+template <template <class,int...> class Matrix, class T, int... Info>
+T sum(Block<int,Matrix,T,Info...> block, bool no_diag=false)
+{
+	return implementation::sum<int,linalg_traits<Redux>::backend,Matrix,T,Info...>
+		::compute(block, no_diag);
+}
+
+/**
  * Wrapper method for internal implementation of symmetric matrix sum of values that works
  * with generic dense matrices with first templated-argument as its value-type and
  * other (optional) templated-arguments of int type for compile time information
  *
- * Uses default backend
+ * Uses globally set backend
  *
  * Suited for Shogun's SGMatrix, Eigen3's Matrix etc
  *
@@ -160,6 +180,26 @@ T sum_symmetric(Matrix<T,Info...> m, bool no_diag=false)
 {
 	return implementation::sum_symmetric<int,linalg_traits<Redux>::backend,Matrix,T,Info...>
 		::compute(m, no_diag);
+}
+
+/**
+ * Wrapper method for internal implementation of symmetric matrix-block sum of values that works
+ * with generic dense matricx blocks with first templated-argument as its value-type and
+ * other (optional) templated-arguments of int type for compile time information
+ *
+ * Uses globally set backend
+ *
+ * Suited for Shogun's SGMatrix, Eigen3's Matrix blocks etc
+ *
+ * @param \f$\mathbf{m}\f$ the matrix-block whose sum of co-efficients has to be computed
+ * @param no_diag if true, diagonal entries are excluded from the sum (default - false)
+ * @return the sum of co-efficients computed as \f$\sum_{i,j}m_{i,j}\f$
+ */
+template <template <class,int...> class Matrix, class T, int... Info>
+T sum_symmetric(Block<int,Matrix,T,Info...> block, bool no_diag=false)
+{
+	return implementation::sum_symmetric<int,linalg_traits<Redux>::backend,Matrix,T,Info...>
+		::compute(block, no_diag);
 }
 
 /**
@@ -198,6 +238,45 @@ template <Backend backend,template <class,int...> class Matrix, class T, int... 
 T sum_symmetric(Matrix<T,Info...> m, bool no_diag=false)
 {
 	return implementation::sum_symmetric<int,backend,Matrix,T,Info...>::compute(m, no_diag);
+}
+
+/**
+ * Wrapper method for internal implementation of matrix-block sum of values that works
+ * with generic dense matricx blocks with first templated-argument as its value-type and
+ * other (optional) templated-arguments of int type for compile time information
+ *
+ * Uses templated specified backend
+ *
+ * Suited for Shogun's SGMatrix, Eigen3's Matrix blocks etc
+ *
+ * @param \f$\mathbf{m}\f$ the matrix whose sum of co-efficients has to be computed
+ * @param no_diag if true, diagonal entries are excluded from the sum (default - false)
+ * @return the sum of co-efficients computed as \f$\sum_{i,j}m_{i,j}\f$
+ */
+template <Backend backend,template <class,int...> class Matrix, class T, int... Info>
+T sum(Block<int,Matrix,T,Info...> block, bool no_diag=false)
+{
+	return implementation::sum<int,backend,Matrix,T,Info...>::compute(block, no_diag);
+}
+
+/**
+ * Wrapper method for internal implementation of symmetric matrix-block sum of values that works
+ * with generic dense matricx blocks with first templated-argument as its value-type and
+ * other (optional) templated-arguments of int type for compile time information
+ *
+ * Uses templated specified backend
+ *
+ * Suited for Shogun's SGMatrix, Eigen3's Matrix blocks etc
+ *
+ * @param \f$\mathbf{m}\f$ the matrix-block whose sum of co-efficients has to be computed
+ * @param no_diag if true, diagonal entries are excluded from the sum (default - false)
+ * @return the sum of co-efficients computed as \f$\sum_{i,j}m_{i,j}\f$
+ */
+template <Backend backend,template <class,int...> class Matrix, class T, int... Info>
+T sum_symmetric(Block<int,Matrix,T,Info...> block, bool no_diag=false)
+{
+	return implementation::sum_symmetric<int,backend,Matrix,T,Info...>
+		::compute(block, no_diag);
 }
 
 }

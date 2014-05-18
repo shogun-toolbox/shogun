@@ -34,6 +34,7 @@
 #include <shogun/lib/config.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/io/SGIO.h>
+#include <shogun/mathematics/linalg/internal/Block.h>
 
 #ifdef HAVE_EIGEN3
 #include <shogun/mathematics/eigen3.h>
@@ -69,6 +70,15 @@ struct sum
 	 * @return the sum of co-efficients computed as \f$\sum_{i,j}m_{i,j}\f$
 	 */
 	static T compute(matrix_type m, bool no_diag);
+
+	/**
+	 * Method that computes the sum of co-efficients of a symmetric dense matrix blocks
+	 *
+	 * @param \f$\mathbf{m}\f$ the matrix-block whose sum of co-efficients has to be computed
+	 * @param no_diag if true, diagonal entries are excluded from the sum
+	 * @return the sum of co-efficients computed as \f$\sum_{i,j}m_{i,j}\f$
+	 */
+	static T compute(Block<Info,Matrix,T,I...> m, bool no_diag);
 };
 
 /**
@@ -89,6 +99,15 @@ struct sum_symmetric
 	 * @return the sum of co-efficients computed as \f$\sum_{i,j}m_{i,j}\f$
 	 */
 	static T compute(matrix_type m, bool no_diag);
+
+	/**
+	 * Method that computes the sum of co-efficients of a symmetric dense matrix blocks
+	 *
+	 * @param \f$\mathbf{m}\f$ the matrix-block whose sum of co-efficients has to be computed
+	 * @param no_diag if true, diagonal entries are excluded from the sum
+	 * @return the sum of co-efficients computed as \f$\sum_{i,j}m_{i,j}\f$
+	 */
+	static T compute(Block<Info,Matrix,T,I...> m, bool no_diag);
 };
 
 #ifdef HAVE_EIGEN3
@@ -113,13 +132,28 @@ struct sum<int,Backend::EIGEN3,shogun::SGMatrix,T>
 		typedef Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> MatrixXt;
 		Eigen::Map<MatrixXt> eig_m(m.matrix, m.num_rows, m.num_cols);
 
-		T sum=eig_m.sum();
+		return sum<int,Backend::EIGEN3,Eigen::Matrix,T,Eigen::Dynamic,Eigen::Dynamic>
+			::compute(eig_m, no_diag);
+	}
 
-		// remove the main diagonal elements if required
-		if (no_diag)
-			sum-=eig_m.diagonal().sum();
+	/**
+	 * Method that computes the sum of co-efficients of SGMatrix blocks using Eigen3
+	 *
+	 * @param \f$\mathbf{m}\f$ the matrix-block whose sum of co-efficients has to be computed
+	 * @param no_diag if true, diagonal entries are excluded from the sum
+	 * @return the sum of co-efficients computed as \f$\sum_{i,j}m_{i,j}\f$
+	 */
+	static T compute(Block<int,shogun::SGMatrix,T> b, bool no_diag)
+	{
+		typedef Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> MatrixXt;
+		Eigen::Map<MatrixXt> eig_m(b.m_matrix.matrix, b.m_matrix.num_rows,
+				b.m_matrix.num_cols);
 
-		return sum;
+		const MatrixXt& block=eig_m.template block(b.m_row_begin, b.m_col_begin,
+				b.m_row_size, b.m_col_size);
+
+		return sum<int,Backend::EIGEN3,Eigen::Matrix,T,Eigen::Dynamic,Eigen::Dynamic>
+			::compute(block, no_diag);
 	}
 };
 
@@ -149,6 +183,21 @@ struct sum<int,Backend::EIGEN3,Eigen::Matrix,T,Info...>
 
 		return sum;
 	}
+
+	/**
+	 * Method that computes the sum of co-efficients of Eigen3 Matrix blocks using Eigen3
+	 *
+	 * @param \f$\mathbf{m}\f$ the matrix-block whose sum of co-efficients has to be computed
+	 * @param no_diag if true, diagonal entries are excluded from the sum
+	 * @return the sum of co-efficients computed as \f$\sum_{i,j}m_{i,j}\f$
+	 */
+	static T compute(Block<int,Eigen::Matrix,T,Info...> b, bool no_diag)
+	{
+		const matrix_type& block=b.m_matrix.template block(b.m_row_begin, b.m_col_begin,
+				b.m_row_size, b.m_col_size);
+
+		return compute(block, no_diag);
+	}
 };
 
 /**
@@ -169,24 +218,31 @@ struct sum_symmetric<int,Backend::EIGEN3,shogun::SGMatrix,T>
 	 */
 	static T compute(matrix_type m, bool no_diag)
 	{
-		REQUIRE(m.num_rows==m.num_cols, "Matrix is not symmetric!\n");
-
 		typedef Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> MatrixXt;
 		Eigen::Map<MatrixXt> eig_m(m.matrix, m.num_rows, m.num_cols);
 
-		// since the matrix is symmetric with main diagonal inside, we can save half
-		// the computation with using only the upper triangular part.
-		const MatrixXt& m_upper=eig_m.template triangularView<Eigen::StrictlyUpper>();
-		T sum=m_upper.sum();
+		return sum_symmetric<int,Backend::EIGEN3,Eigen::Matrix,T,Eigen::Dynamic,Eigen::Dynamic>
+			::compute(eig_m, no_diag);
+	}
 
-		// the actual sum would be twice of what we computed
-		sum*=2;
+	/**
+	 * Method that computes the sum of co-efficients of symmetric SGMatrix blocks using Eigen3
+	 *
+	 * @param \f$\mathbf{m}\f$ the matrix-block whose sum of co-efficients has to be computed
+	 * @param no_diag if true, diagonal entries are excluded from the sum
+	 * @return the sum of co-efficients computed as \f$\sum_{i,j}m_{i,j}\f$
+	 */
+	static T compute(Block<int,shogun::SGMatrix,T> b, bool no_diag)
+	{
+		typedef Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> MatrixXt;
+		Eigen::Map<MatrixXt> eig_m(b.m_matrix.matrix, b.m_matrix.num_rows,
+				b.m_matrix.num_cols);
 
-		// add the diagonal elements if required
-		if (!no_diag)
-			sum+=eig_m.diagonal().sum();
+		const MatrixXt& block=eig_m.template block(b.m_row_begin, b.m_col_begin,
+				b.m_row_size, b.m_col_size);
 
-		return sum;
+		return sum_symmetric<int,Backend::EIGEN3,Eigen::Matrix,T,Eigen::Dynamic,Eigen::Dynamic>
+			::compute(block, no_diag);
 	}
 };
 
@@ -223,6 +279,21 @@ struct sum_symmetric<int,Backend::EIGEN3,Eigen::Matrix,T,Info...>
 			sum+=m.diagonal().sum();
 
 		return sum;
+	}
+
+	/**
+	 * Method that computes the sum of co-efficients of symmetric Eigen3 Matrix blocks using Eigen3
+	 *
+	 * @param \f$\mathbf{m}\f$ the matrix-block whose sum of co-efficients has to be computed
+	 * @param no_diag if true, diagonal entries are excluded from the sum
+	 * @return the sum of co-efficients computed as \f$\sum_{i,j}m_{i,j}\f$
+	 */
+	static T compute(Block<int,Eigen::Matrix,T,Info...> b, bool no_diag)
+	{
+		const matrix_type& block=b.m_matrix.template block(b.m_row_begin, b.m_col_begin,
+				b.m_row_size, b.m_col_size);
+
+		return compute(block, no_diag);
 	}
 };
 #endif // HAVE_EIGEN3
