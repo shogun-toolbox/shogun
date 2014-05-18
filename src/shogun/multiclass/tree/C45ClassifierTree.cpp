@@ -31,8 +31,11 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/multiclass/tree/C45ClassifierTree.h>
 #include <shogun/mathematics/Statistics.h>
+#include <shogun/evaluation/MulticlassAccuracy.h>
 
 using namespace shogun;
+
+const float64_t CC45ClassifierTree::MISSING=CMath::NOT_A_NUMBER; 
 
 CC45ClassifierTree::CC45ClassifierTree()
 : CTreeMachine<C45TreeNodeData>()
@@ -50,10 +53,24 @@ CMulticlassLabels* CC45ClassifierTree::apply_multiclass(CFeatures* data)
 
 	// apply multiclass starting from root
 	node_t* current=get_root();
-	CMulticlassLabels* ret=apply_multiclass_from_current_node(dynamic_cast<CDenseFeatures<float64_t>*>(data), current);
+	CMulticlassLabels* ret=apply_multiclass_from_current_node(dynamic_cast<CDenseFeatures<float64_t>*>(data), current, true);
 
 	SG_UNREF(current);
 	return ret;
+}
+
+bool CC45ClassifierTree::prune_tree(CDenseFeatures<float64_t>* validation_data, CMulticlassLabels* validation_labels, float64_t epsilon)
+{
+	node_t* current=get_root();
+	prune_tree_from_current_node(validation_data,validation_labels,current,epsilon);
+
+	SG_UNREF(current);
+	return true;
+}
+
+SGVector<float64_t> CC45ClassifierTree::get_certainty_vector() const
+{
+	return m_certainty;
 }
 
 void CC45ClassifierTree::set_weights(SGVector<float64_t> w)
@@ -173,7 +190,10 @@ CTreeMachineNode<C45TreeNodeData>* CC45ClassifierTree::C45train(CFeatures* data,
 	node->data.total_weight=weights.sum(weights.vector,weights.vlen);
 	node->data.weight_minus=0.0;
 	for (int32_t i=0;i<labels.vlen;i++)
-		node->data.weight_minus=(labels[i]==most_label) ? node->data.weight_minus : node->data.weight_minus+weights[i];
+	{
+		if (class_labels->get_label(i)!=most_label)
+			node->data.weight_minus+=weights[i];
+	}
 
 	// if all samples belong to the same class
 	if (class_labels->get_unique_labels().size()==1)
@@ -189,52 +209,56 @@ CTreeMachineNode<C45TreeNodeData>* CC45ClassifierTree::C45train(CFeatures* data,
 	float64_t threshold=0.;
 	for (int32_t i=0; i<feats->get_num_features(); i++)
 	{
-		float64_t gain=0.;
 		if (m_nominal[feature_id_vector[i]])
 		{
-			gain=informational_gain_attribute(i,feats,weights,class_labels);
+			float64_t gain=informational_gain_attribute(i,feats,weights,class_labels);
+			if (gain>=max)
+			{
+				max=gain;
+				best_feature_index=i;
+			}
 		}
 		else
 		{
 			SGVector<float64_t> feature_values(num_vecs);
+			float64_t max_value=CMath::MIN_REAL_NUMBER;
 			for (int32_t k=0; k<num_vecs; k++)
+			{
 				feature_values[k]=(feats->get_feature_vector(k))[i];
 
-			float64_t max_value=feature_values.max(feature_values.vector,feature_values.vlen);
+				if (!CMath::fequals(feature_values[k],MISSING,0) && feature_values[k]>max_value)
+					max_value=feature_values[k];
+			}
+
 			for (int32_t k=0;k<num_vecs;k++)
 			{
-				if (feature_values[k]!=max_value)
+				if (feature_values[k]!=max_value && !CMath::fequals(feature_values[k],MISSING,0))
 				{
 					// form temporary dense features to calculate gain (continuous->nominal conversion)
 					float64_t z=feature_values[k];
 					SGMatrix<float64_t> temp_feat_mat=SGMatrix<float64_t>(1,num_vecs);
 					for (int32_t l=0;l<num_vecs;l++)
 					{
-						if (feature_values[l]<=z)
+						if (CMath::fequals(feature_values[l],MISSING,0))
+							temp_feat_mat(0,l)=MISSING;
+						else if (feature_values[l]<=z)
 							temp_feat_mat(0,l)=0.;
 						else
 							temp_feat_mat(0,l)=1.;
 					}
 
-					CDenseFeatures<float64_t>* temp_feats=new CDenseFeatures<float64_t>
-									(temp_feat_mat); 
-					float64_t gain_z=informational_gain_attribute(0,temp_feats,weights,
-											class_labels);
-					if (gain_z>gain)
+					CDenseFeatures<float64_t>* temp_feats=new CDenseFeatures<float64_t>(temp_feat_mat); 
+					float64_t gain=informational_gain_attribute(0,temp_feats,weights,class_labels);
+					if (gain>max)
 					{
 						threshold=z;
-						gain=gain_z;
+						max=gain;
+						best_feature_index=i;
 					}
 
 					SG_UNREF(temp_feats);
 				}
 			}
-		}
-
-		if (gain>=max)
-		{
-			max=gain;
-			best_feature_index=i;
 		}
 	}
 
@@ -249,7 +273,9 @@ CTreeMachineNode<C45TreeNodeData>* CC45ClassifierTree::C45train(CFeatures* data,
 		for(int32_t p=0;p<num_vecs;p++)
 		{
 			feature_cache[p]=modified_feat_mat(best_feature_index,p);
-			if (modified_feat_mat(best_feature_index,p)<=threshold)
+			if (CMath::fequals(modified_feat_mat(best_feature_index,p),MISSING,0))
+				modified_feat_mat(best_feature_index,p)=MISSING;
+			else if (modified_feat_mat(best_feature_index,p)<=threshold)
 				modified_feat_mat(best_feature_index,p)=0.;
 			else
 				modified_feat_mat(best_feature_index,p)=1.;
@@ -263,10 +289,29 @@ CTreeMachineNode<C45TreeNodeData>* CC45ClassifierTree::C45train(CFeatures* data,
 	for (int32_t i=0; i<num_vecs; i++)
 		best_feature_values[i]=(feats->get_feature_vector(i))[best_feature_index];
 
-	// prepare vector of unique feature values
-	SGVector<float64_t> best_features_unique=best_feature_values.clone();
+	// prepare vector of unique feature values excluding MISSING , also calculate total weight associated with missing attributes
+	int32_t num_missing=0;
+	float64_t weight_missing=0.;
+	for (int32_t j=0;j<num_vecs;j++)
+	{
+		if (CMath::fequals(best_feature_values[j],MISSING,0))
+		{
+			num_missing++;
+			weight_missing+=weights[j];
+		}
+	}
+
+	SGVector<float64_t> best_features_unique(num_vecs-num_missing);
+	int32_t index=0;
+	for (int32_t j=0;j<num_vecs;j++)
+	{
+		if (!CMath::fequals(best_feature_values[j],MISSING,0))
+			best_features_unique[index++]=best_feature_values[j];
+	}
+
 	int32_t uniques_num=best_features_unique.unique(best_features_unique.vector,best_features_unique.vlen);
 
+	// create child node for each unique value
 	for (int32_t i=0; i<uniques_num; i++)
 	{
 		//compute the number of vectors with active attribute value
@@ -275,7 +320,7 @@ CTreeMachineNode<C45TreeNodeData>* CC45ClassifierTree::C45train(CFeatures* data,
 
 		for (int32_t j=0; j<num_vecs; j++)
 		{
-			if (active_feature_value==best_feature_values[j])
+			if (active_feature_value==best_feature_values[j] || CMath::fequals(best_feature_values[j],MISSING,0))
 				num_cols++;
 		}
 
@@ -288,7 +333,7 @@ CTreeMachineNode<C45TreeNodeData>* CC45ClassifierTree::C45train(CFeatures* data,
 		for (int32_t j=0; j<num_vecs; j++)
 		{
 			SGVector<float64_t> sample=feats->get_feature_vector(j);
-			if (active_feature_value==sample[best_feature_index])
+			if (active_feature_value==sample[best_feature_index] || CMath::fequals(sample[best_feature_index],MISSING,0))
 			{
 				int32_t idx=-1;
 				for (int32_t k=0; k<sample.size(); k++)
@@ -298,11 +343,27 @@ CTreeMachineNode<C45TreeNodeData>* CC45ClassifierTree::C45train(CFeatures* data,
 				}
 	
 				new_labels_vector[cnt]=class_labels->get_labels()[j];
-				new_weights[cnt]=weights[j];
+				if (!CMath::fequals(sample[best_feature_index],MISSING,0))
+					new_weights[cnt]=weights[j];
+				else
+					new_weights[cnt]=0.;
+
 				cnt++;
 			}
 		}
-	
+
+		// rectify weights of data points with missing attributes (set zero previously)
+		float64_t numer=new_weights.sum(new_weights.vector,new_weights.vlen);
+		float64_t rec_weight=numer/(node->data.total_weight-weight_missing);
+		cnt=0;
+		for (int32_t j=0;j<num_vecs;j++)
+		{
+			if (CMath::fequals(best_feature_values[j],MISSING,0))
+				new_weights[cnt++]=rec_weight;
+			else if (best_feature_values[j]==active_feature_value)
+				cnt++;
+		}
+
 		//remove the best_attribute from the remaining attributes index vector
 		SGVector<int32_t> new_feature_id_vector(feature_id_vector.vlen-1);		
 		cnt=-1;
@@ -344,6 +405,140 @@ CTreeMachineNode<C45TreeNodeData>* CC45ClassifierTree::C45train(CFeatures* data,
 	return node;
 }
 
+void CC45ClassifierTree::prune_tree_from_current_node(CDenseFeatures<float64_t>* feats,
+		CMulticlassLabels* gnd_truth, node_t* current, float64_t epsilon)
+{
+	// if leaf node then skip pruning
+	if (current->data.attribute_id==-1)
+		return;
+
+	SGMatrix<float64_t> feature_matrix=feats->get_feature_matrix();
+	CDynamicObjectArray* children=current->get_children();
+
+	if (m_nominal[current->data.attribute_id])
+	{
+		for (int32_t i=0; i<children->get_num_elements(); i++)
+		{
+			// count number of feature vectors which transit into the child
+			int32_t count=0;
+			node_t* child=dynamic_cast<node_t*>(children->get_element(i));
+
+			for (int32_t j=0; j<feature_matrix.num_cols; j++)
+			{
+				float64_t child_transit=child->data.transit_if_feature_value;
+
+				if (child_transit==feature_matrix(current->data.attribute_id,j))
+					count++;
+			}
+
+			if (count==0)
+				continue;
+
+			// form new subset of features and labels
+			SGVector<index_t> subset=SGVector<index_t>(count);
+			int32_t k=0;
+	
+			for (int32_t j=0; j<feature_matrix.num_cols;j++)
+			{
+				float64_t child_transit=child->data.transit_if_feature_value;
+	
+				if (child_transit==feature_matrix(current->data.attribute_id,j))
+				{
+					subset[k]=(index_t) j;
+					k++;
+				}
+			}
+	
+			feats->add_subset(subset);
+			gnd_truth->add_subset(subset);
+	
+			// prune the child subtree
+			prune_tree_from_current_node(feats,gnd_truth,child,epsilon);
+	
+			feats->remove_subset();
+			gnd_truth->remove_subset();
+	
+			SG_UNREF(child);
+		}
+	}
+	else
+	{
+		REQUIRE(children->get_num_elements()==2,"The chosen attribute in current node is nominal. Expected number of"
+					" children is 2 but current node has %d children.",children->get_num_elements())
+
+		node_t* left_child=dynamic_cast<node_t*>(children->get_element(0));
+		node_t* right_child=dynamic_cast<node_t*>(children->get_element(1));
+
+		int32_t count_left=0;
+		for (int32_t k=0;k<feature_matrix.num_cols;k++)
+		{
+			if (feature_matrix(current->data.attribute_id,k)<=left_child->data.transit_if_feature_value)
+				count_left++;
+		}
+
+		SGVector<int32_t> left_subset(count_left);
+		SGVector<int32_t> right_subset(feature_matrix.num_cols-count_left);
+		int32_t l=0;
+		int32_t r=0;
+		for (int32_t k=0;k<feature_matrix.num_cols;k++)
+		{
+			if (feature_matrix(current->data.attribute_id,k)<=left_child->data.transit_if_feature_value)
+				left_subset[l++]=k;
+			else
+				right_subset[r++]=k;
+		}
+
+		// count_left is 0 if entire validation data in current node moves to only right child
+		if (count_left>0)
+		{
+			feats->add_subset(left_subset);
+			gnd_truth->add_subset(left_subset);
+			// prune the left child subtree
+			prune_tree_from_current_node(feats,gnd_truth,left_child,epsilon);
+			feats->remove_subset();
+			gnd_truth->remove_subset();
+		}
+
+		// count_left is equal to num_cols if entire validation data in current node moves only to left child 
+		if (count_left<feature_matrix.num_cols)
+		{
+			feats->add_subset(right_subset);
+			gnd_truth->add_subset(right_subset);
+			// prune the right child subtree
+			prune_tree_from_current_node(feats,gnd_truth,right_child,epsilon);
+			feats->remove_subset();
+			gnd_truth->remove_subset();
+		}
+
+		SG_UNREF(left_child);
+		SG_UNREF(right_child);
+	}
+
+	SG_UNREF(children);
+
+	CMulticlassLabels* predicted_unpruned=apply_multiclass_from_current_node(feats, current);
+	SGVector<float64_t> pruned_labels=SGVector<float64_t>(feature_matrix.num_cols);
+	for (int32_t i=0; i<feature_matrix.num_cols; i++)
+		pruned_labels[i]=current->data.class_label;
+
+	CMulticlassLabels* predicted_pruned=new CMulticlassLabels(pruned_labels);
+
+	CMulticlassAccuracy* accuracy=new CMulticlassAccuracy();
+	float64_t unpruned_accuracy=accuracy->evaluate(predicted_unpruned, gnd_truth);
+	float64_t pruned_accuracy=accuracy->evaluate(predicted_pruned, gnd_truth);
+	
+	if (unpruned_accuracy<pruned_accuracy+epsilon)
+	{
+		CDynamicObjectArray* null_children=new CDynamicObjectArray();
+		current->set_children(null_children);
+		SG_UNREF(null_children);
+	}
+
+	SG_UNREF(accuracy);
+	SG_UNREF(predicted_pruned);
+	SG_UNREF(predicted_unpruned);
+}
+
 float64_t CC45ClassifierTree::informational_gain_attribute(int32_t attr_no, CFeatures* data, 
 				SGVector<float64_t> weights, CMulticlassLabels* class_labels)
 {
@@ -354,15 +549,46 @@ float64_t CC45ClassifierTree::informational_gain_attribute(int32_t attr_no, CFea
 	float64_t gain=0;
 	CDenseFeatures<float64_t>* feats=dynamic_cast<CDenseFeatures<float64_t>*>(data);
 	int32_t num_vecs=feats->get_num_vectors();
-	float64_t total_weight=weights.sum(weights.vector,weights.vlen);
+	SGVector<float64_t> gain_attribute_values;
+	SGVector<float64_t> gain_weights=weights;
+	CMulticlassLabels* gain_labels=class_labels;
 
-	// get attribute values for attribute
-	SGVector<float64_t> attribute_values(num_vecs);
+	int32_t num_missing=0;
+	for (int32_t i=0;i<num_vecs;i++)
+	{
+		if (CMath::fequals((feats->get_feature_vector(i))[attr_no],MISSING,0))
+			num_missing++;
+	}
 
-	for (int32_t i=0; i<num_vecs; i++)
-		attribute_values[i]=(feats->get_feature_vector(i))[attr_no];
+	if (num_missing==0)
+	{
+		gain_attribute_values=SGVector<float64_t>(num_vecs);
+		for (int32_t i=0; i<num_vecs; i++)
+			gain_attribute_values[i]=(feats->get_feature_vector(i))[attr_no];
+	}
+	else
+	{
+		gain_attribute_values=SGVector<float64_t>(num_vecs-num_missing);
+		gain_weights=SGVector<float64_t>(num_vecs-num_missing);
+		SGVector<float64_t> label_vector(num_vecs-num_missing);
+		int32_t index=0;
+		for (int32_t i=0; i<num_vecs; i++)
+		{
+			if (!CMath::fequals((feats->get_feature_vector(i))[attr_no],MISSING,0))
+			{
+				gain_attribute_values[index]=(feats->get_feature_vector(i))[attr_no];
+				gain_weights[index]=weights[i];
+				label_vector[index++]=class_labels->get_label(i);
+			}
+		}
 
-	SGVector<float64_t> attr_val_unique=attribute_values.clone();
+		num_vecs-=num_missing;
+		gain_labels=new CMulticlassLabels(label_vector);
+	}
+
+	float64_t total_weight=gain_weights.sum(gain_weights.vector,gain_weights.vlen);
+
+	SGVector<float64_t> attr_val_unique=gain_attribute_values.clone();
 	int32_t uniques_num=attr_val_unique.unique(attr_val_unique.vector,attr_val_unique.vlen);
 
 	for (int32_t i=0; i<uniques_num; i++)
@@ -373,9 +599,9 @@ float64_t CC45ClassifierTree::informational_gain_attribute(int32_t attr_no, CFea
 
 		for (int32_t j=0; j<num_vecs; j++)
 		{
-			if (attribute_values[j]==attr_val_unique[i])
+			if (gain_attribute_values[j]==attr_val_unique[i])
 			{
-				weight_count+=weights[j];
+				weight_count+=gain_weights[j];
 				attr_count++;
 			}
 		}
@@ -386,10 +612,10 @@ float64_t CC45ClassifierTree::informational_gain_attribute(int32_t attr_no, CFea
 
 		for (int32_t j=0; j<num_vecs; j++)
 		{
-			if (attribute_values[j]==attr_val_unique[i])
+			if (gain_attribute_values[j]==attr_val_unique[i])
 			{
-				sub_weights[count]=weights[j];
-				sub_class[count++]=class_labels->get_label(j);
+				sub_weights[count]=gain_weights[j];
+				sub_class[count++]=gain_labels->get_label(j);
 			}
 		}
 		
@@ -400,8 +626,14 @@ float64_t CC45ClassifierTree::informational_gain_attribute(int32_t attr_no, CFea
 		SG_UNREF(sub_labels);
 	}
 
-	float64_t data_entropy=entropy(class_labels,weights);
+	float64_t data_entropy=entropy(gain_labels,gain_weights);
 	gain = data_entropy-gain;
+
+	if (num_missing!=0)
+	{
+		gain*=(num_vecs-0.f)/(num_vecs+num_missing-0.f);
+		SG_UNREF(gain_labels);
+	}
 
 	return gain;
 }
@@ -432,10 +664,12 @@ float64_t CC45ClassifierTree::entropy(CMulticlassLabels* labels, SGVector<float6
 }
 
 CMulticlassLabels* CC45ClassifierTree::apply_multiclass_from_current_node(CDenseFeatures<float64_t>* feats,
-											node_t* current)
+									node_t* current, bool set_certainty)
 {
 	int32_t num_vecs=feats->get_num_vectors();
 	SGVector<float64_t> labels(num_vecs);
+	if (set_certainty)
+		m_certainty=SGVector<float64_t>(num_vecs);
 
 	// classify vectors in feature matrix taking one at a time
 	for (int32_t i=0; i<num_vecs; i++)
@@ -507,6 +741,9 @@ CMulticlassLabels* CC45ClassifierTree::apply_multiclass_from_current_node(CDense
 		// class_label of leaf node is the class to which chosen vector belongs
 		labels[i]=node->data.class_label;
 
+		if (set_certainty)
+			m_certainty[i]=(node->data.total_weight-node->data.weight_minus)/node->data.total_weight;
+
 		SG_UNREF(node);
 		SG_UNREF(children);
 	}
@@ -519,11 +756,13 @@ void CC45ClassifierTree::init()
 {
 	m_nominal=SGVector<bool>();
 	m_weights=SGVector<float64_t>();
+	m_certainty=SGVector<float64_t>();
 	m_types_set=false;
 	m_weights_set=false;
 
 	SG_ADD(&m_nominal,"m_nominal", "feature types", MS_NOT_AVAILABLE);
 	SG_ADD(&m_weights,"m_weights", "weights", MS_NOT_AVAILABLE);
+	SG_ADD(&m_certainty,"m_certainty", "certainty", MS_NOT_AVAILABLE);
 	SG_ADD(&m_weights_set,"m_weights_set", "weights set", MS_NOT_AVAILABLE);
 	SG_ADD(&m_types_set,"m_types_set", "feature types set", MS_NOT_AVAILABLE);
 }

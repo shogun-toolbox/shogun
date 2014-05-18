@@ -355,3 +355,256 @@ TEST(C45ClassifierTree, classify_continuous_plus_categorical_data)
 	SG_UNREF(feats);
 }
 
+TEST(C45ClassifierTree, missing_attribute)
+{
+	SGMatrix<float64_t> data(1,8);
+
+	data(0,0)=20.;
+	data(0,1)=30.;
+	data(0,2)=40.;
+	data(0,3)=50.;
+	data(0,4)=60.;
+	data(0,5)=70.;
+	data(0,6)=80.;
+	data(0,7)=CC45ClassifierTree::MISSING;
+
+	CDenseFeatures<float64_t>* feats=new CDenseFeatures<float64_t>(data);
+
+	SGVector<float64_t> lab(8);
+	lab[0]=0.0;
+	lab[1]=0.0;
+	lab[2]=0.0;
+	lab[3]=1.0;
+	lab[4]=1.0;
+	lab[5]=2.0;
+	lab[6]=2.0;
+	lab[7]=1.0;
+
+	SGVector<bool> ft=SGVector<bool>(1);
+	ft[0]=false;
+
+	CMulticlassLabels* labels=new CMulticlassLabels(lab);
+
+	CC45ClassifierTree* c45=new CC45ClassifierTree();
+	c45->set_labels(labels);
+	c45->set_feature_types(ft);
+	c45->train(feats);
+
+	SGMatrix<float64_t> test(1,2);
+	test(0,0)=32;
+	test(0,1)=75;
+
+	CDenseFeatures<float64_t>* test_feats=new CDenseFeatures<float64_t>(test);
+	CMulticlassLabels* result=(CMulticlassLabels*) c45->apply(test_feats);
+	SGVector<float64_t> certainty=c45->get_certainty_vector();
+	SGVector<float64_t> res_vector=result->get_labels();
+
+	EXPECT_EQ(0.0,res_vector[0]);
+	EXPECT_EQ(1.0,res_vector[1]);
+	EXPECT_EQ(0.875,certainty[0]);
+	EXPECT_EQ(0.5625,certainty[1]);
+
+	SG_UNREF(test_feats);
+	SG_UNREF(result);
+	SG_UNREF(c45);
+	SG_UNREF(feats);
+}
+
+TEST(C45ClassifierTree, tree_prune_categorical_attributes)
+{
+
+	// form toy data
+	SGMatrix<float64_t> data(4,16);
+	float64_t num=0.0;
+
+	for (int32_t i=0;i<2;i++)
+	{
+		for (int32_t a=0;a<8;a++)
+			data(0,i*8+a)=num;
+	
+		num++;
+	}
+
+	num=0.0;
+	for (int32_t i=0;i<4;i++)
+	{
+		for (int32_t a=0;a<4;a++)
+			data(1,i*4+a)=num;
+
+		num=(num==1.0)?0.0:1.0;
+	}
+
+	num=0.0;
+	for (int32_t i=0;i<8;i++)
+	{
+		for (int32_t a=0;a<2;a++)
+			data(2,i*2+a)=num;
+
+		num=(num==1.0)?0.0:1.0;
+	}
+
+	num=0.0;
+	for (int32_t i=0;i<16;i++)
+	{
+		data(3,i)=num;
+		num=(num==1.0)?0.0:1.0;
+	}
+
+	SGVector<bool> feature_types(4);
+	feature_types[0]=true;
+	feature_types[1]=true;
+	feature_types[2]=true;
+	feature_types[3]=true;
+
+	// form toy labels
+	SGVector<float64_t> train_labels(16);
+	train_labels[0]=1;
+	train_labels[1]=1;
+	train_labels[2]=1;
+	train_labels[3]=0;
+	train_labels[4]=0;
+	train_labels[5]=0;
+	train_labels[6]=0;
+	train_labels[7]=0;
+	train_labels[8]=1;
+	train_labels[9]=1;
+	train_labels[10]=1;
+	train_labels[11]=1;
+	train_labels[12]=1;
+	train_labels[13]=1;
+	train_labels[14]=1;
+	train_labels[15]=1;
+
+	SGVector<float64_t> validation_labels(16);
+	validation_labels[0]=1;
+	validation_labels[1]=0;
+	validation_labels[2]=0;
+	validation_labels[3]=0;
+	validation_labels[4]=1;
+	validation_labels[5]=0;
+	validation_labels[6]=0;
+	validation_labels[7]=0;
+	validation_labels[8]=1;
+	validation_labels[9]=0;
+	validation_labels[10]=1;
+	validation_labels[11]=0;
+	validation_labels[12]=1;
+	validation_labels[13]=1;
+	validation_labels[14]=1;
+	validation_labels[15]=1;
+
+	CDenseFeatures<float64_t>* train_features=new CDenseFeatures<float64_t>(data);
+	CMulticlassLabels* train_lab=new CMulticlassLabels(train_labels);
+	CMulticlassLabels* validation_lab=new CMulticlassLabels(validation_labels);
+
+	CC45ClassifierTree* c45tree=new CC45ClassifierTree();
+	c45tree->set_labels(train_lab);
+	c45tree->set_feature_types(feature_types);
+	c45tree->train(train_features);
+	c45tree->prune_tree(train_features,validation_lab);
+
+	CMulticlassLabels* result=(CMulticlassLabels*) c45tree->apply(train_features);
+	SGVector<float64_t> res_vector=result->get_labels();
+
+	EXPECT_EQ(1.0,res_vector[0]);
+	EXPECT_EQ(0.0,res_vector[1]);
+	EXPECT_EQ(1.0,res_vector[2]);
+	EXPECT_EQ(0.0,res_vector[3]);
+	EXPECT_EQ(0.0,res_vector[4]);
+	EXPECT_EQ(0.0,res_vector[5]);
+	EXPECT_EQ(0.0,res_vector[6]);
+	EXPECT_EQ(0.0,res_vector[7]);
+	EXPECT_EQ(1.0,res_vector[8]);
+	EXPECT_EQ(1.0,res_vector[9]);
+	EXPECT_EQ(1.0,res_vector[10]);
+	EXPECT_EQ(1.0,res_vector[11]);
+	EXPECT_EQ(1.0,res_vector[12]);
+	EXPECT_EQ(1.0,res_vector[13]);
+	EXPECT_EQ(1.0,res_vector[14]);
+	EXPECT_EQ(1.0,res_vector[15]);
+
+	SG_UNREF(train_features);
+	SG_UNREF(validation_lab);
+	SG_UNREF(result);
+	SG_UNREF(c45tree);
+}
+
+TEST(C45ClassifierTree, tree_prune_continuous_attributes)
+{
+
+	// form toy data
+	SGMatrix<float64_t> data(2,8);
+	data(0,0)=20;
+	data(0,1)=30;
+	data(0,2)=40;
+	data(0,3)=50;
+	data(0,4)=60;
+	data(0,5)=70;
+	data(0,6)=80;
+	data(0,7)=90;
+	data(1,0)=10;
+	data(1,1)=20;
+	data(1,2)=30;
+	data(1,3)=10;
+	data(1,4)=20;
+	data(1,5)=30;
+	data(1,6)=40;
+	data(1,7)=50;
+
+	SGVector<bool> feature_types(2);
+	feature_types[0]=false;
+	feature_types[1]=false;
+
+	// form toy labels
+	SGVector<float64_t> train_labels(8);
+	train_labels[0]=1;
+	train_labels[1]=1;
+	train_labels[2]=1;
+	train_labels[3]=2;
+	train_labels[4]=2;
+	train_labels[5]=3;
+	train_labels[6]=3;
+	train_labels[7]=2;
+
+	SGMatrix<float64_t> validation_data(2,3);
+	validation_data(0,0)=75;
+	validation_data(0,1)=78;
+	validation_data(0,2)=33;
+	validation_data(1,0)=33;
+	validation_data(1,1)=44;
+	validation_data(1,2)=21;
+
+	SGVector<float64_t> validation_labels(3);
+	validation_labels[0]=2;
+	validation_labels[1]=2;
+	validation_labels[2]=1;
+
+	CDenseFeatures<float64_t>* train_features=new CDenseFeatures<float64_t>(data);
+	CMulticlassLabels* train_lab=new CMulticlassLabels(train_labels);
+	CDenseFeatures<float64_t>* validation_features=new CDenseFeatures<float64_t>(validation_data);
+	CMulticlassLabels* validation_lab=new CMulticlassLabels(validation_labels);
+
+	CC45ClassifierTree* c45tree=new CC45ClassifierTree();
+	c45tree->set_labels(train_lab);
+	c45tree->set_feature_types(feature_types);
+	c45tree->train(train_features);
+	c45tree->prune_tree(validation_features,validation_lab);
+
+	CMulticlassLabels* result=(CMulticlassLabels*) c45tree->apply(train_features);
+	SGVector<float64_t> res_vector=result->get_labels();
+
+	EXPECT_EQ(1.0,res_vector[0]);
+	EXPECT_EQ(1.0,res_vector[1]);
+	EXPECT_EQ(1.0,res_vector[2]);
+	EXPECT_EQ(2.0,res_vector[3]);
+	EXPECT_EQ(2.0,res_vector[4]);
+	EXPECT_EQ(2.0,res_vector[5]);
+	EXPECT_EQ(2.0,res_vector[6]);
+	EXPECT_EQ(2.0,res_vector[7]);
+
+	SG_UNREF(train_features);
+	SG_UNREF(validation_features);
+	SG_UNREF(validation_lab);
+	SG_UNREF(result);
+	SG_UNREF(c45tree);
+}
