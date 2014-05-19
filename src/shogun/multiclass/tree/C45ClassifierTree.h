@@ -109,10 +109,8 @@ public:
 	 * @param validation_data feature vectors from validation dataset
 	 * @param validation_labels multiclass labels from validation dataset
 	 * @param epsilon prune subtree even if there is epsilon loss in accuracy
-	 *
-	 * @return true if pruning successful
 	 */
-	bool prune_tree(CDenseFeatures<float64_t>* validation_data, CMulticlassLabels* validation_labels, float64_t epsilon=0.f);
+	void prune_tree(CDenseFeatures<float64_t>* validation_data, CMulticlassLabels* validation_labels, float64_t epsilon=0.f);
 
 	/** certainty of classification done by apply_multiclass.
 	 * For each data point reaching a leaf node, it computes the ratio of weight of training data 
