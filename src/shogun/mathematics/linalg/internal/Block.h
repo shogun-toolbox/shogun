@@ -41,7 +41,8 @@ namespace linalg
 
 /**
  * @brief Generic class Block which wraps a matrix class and contains block
- * and backend, providing a uniform way to deal with matrix blocks
+ * specific information, providing a uniform way to deal with matrix blocks
+ * for all supported backend matrices
  */
 template <class Info,template<class,Info...>class Matrix,class T,Info... I>
 struct Block
