@@ -69,9 +69,9 @@ struct dot
 	/**
 	 * Method that computes the dot product
 	 *
-	 * @param \f$\mathbf{a}\f$ first vector
-	 * @param \f$\mathbf{b}\f$ second vector
-	 * @return the dot product of \f$\mathbf{a}\f$ and \$\mathbf{b}\f$, computed
+	 * @param a first vector
+	 * @param b second vector
+	 * @return the dot product of \f$\mathbf{a}\f$ and \f$\mathbf{b}\f$, computed
 	 * as \f$\sum_i a_i b_i\f$
 	 */
 	static T compute(vector_type a, vector_type b);
@@ -90,9 +90,9 @@ struct dot<int,Backend::EIGEN3,shogun::SGVector,T>
 	/**
 	 * Method that computes the dot product of SGVectors using Eigen3
 	 *
-	 * @param \f$\mathbf{a}\f$ first vector
-	 * @param \f$\mathbf{b}\f$ second vector
-	 * @return the dot product of \f$\mathbf{a}\f$ and \$\mathbf{b}\f$, computed
+	 * @param a first vector
+	 * @param b second vector
+	 * @return the dot product of \f$\mathbf{a}\f$ and \f$\mathbf{b}\f$, computed
 	 * as \f$\sum_i a_i b_i\f$
 	 */
 	static T compute(vector_type a, vector_type b)
@@ -116,9 +116,9 @@ struct dot<int,Backend::EIGEN3,Eigen::Matrix,T,Info...>
 	/**
 	 * Method that computes the dot product of Eigen3 vectors using Eigen3
 	 *
-	 * @param \f$\mathbf{a}\f$ first vector
-	 * @param \f$\mathbf{b}\f$ second vector
-	 * @return the dot product of \f$\mathbf{a}\f$ and \$\mathbf{b}\f$, computed
+	 * @param a first vector
+	 * @param b second vector
+	 * @return the dot product of \f$\mathbf{a}\f$ and \f$\mathbf{b}\f$, computed
 	 * as \f$\sum_i a_i b_i\f$
 	 */
 	static T compute(vector_type a, vector_type b)
@@ -140,9 +140,9 @@ struct dot<int,Backend::VIENNACL,Eigen::Matrix,T,Info...>
 	/**
 	 * Method that computes the dot product of Eigen3 vectors using ViennaCL
 	 *
-	 * @param \f$\mathbf{a}\f$ first vector
-	 * @param \f$\mathbf{b}\f$ second vector
-	 * @return the dot product of \f$\mathbf{a}\f$ and \$\mathbf{b}\f$, computed
+	 * @param a first vector
+	 * @param b second vector
+	 * @return the dot product of \f$\mathbf{a}\f$ and \f$\mathbf{b}\f$, computed
 	 * as \f$\sum_i a_i b_i\f$
 	 */
 	static T compute(vector_type a, vector_type b)
@@ -170,9 +170,9 @@ struct dot<int,Backend::VIENNACL,shogun::SGVector,T>
 	/**
 	 * Method that computes the dot product of SGVectors using Eigen3
 	 *
-	 * @param \f$\mathbf{a}\f$ first vector
-	 * @param \f$\mathbf{b}\f$ second vector
-	 * @return the dot product of \f$\mathbf{a}\f$ and \$\mathbf{b}\f$, computed
+	 * @param a first vector
+	 * @param b second vector
+	 * @return the dot product of \f$\mathbf{a}\f$ and \f$\mathbf{b}\f$, computed
 	 * as \f$\sum_i a_i b_i\f$
 	 */
 	static T compute(vector_type a, vector_type b)
@@ -197,9 +197,9 @@ struct dot<unsigned int,Backend::VIENNACL,viennacl::vector,T,Info>
 	/**
 	 * Method that computes the dot product of ViennaCL vectors using ViennaCL
 	 *
-	 * @param \f$\mathbf{a}\f$ first vector
-	 * @param \f$\mathbf{b}\f$ second vector
-	 * @return the dot product of \f$\mathbf{a}\f$ and \$\mathbf{b}\f$, computed
+	 * @param a first vector
+	 * @param b second vector
+	 * @return the dot product of \f$\mathbf{a}\f$ and \f$\mathbf{b}\f$, computed
 	 * as \f$\sum_i a_i b_i\f$
 	 */
 	static T compute(vector_type a, vector_type b)
@@ -221,9 +221,9 @@ struct dot<unsigned int,Backend::EIGEN3,viennacl::vector,T,Info>
 	/**
 	 * Method that computes the dot product of ViennaCL vectors using Eigen3
 	 *
-	 * @param \f$\mathbf{a}\f$ first vector
-	 * @param \f$\mathbf{b}\f$ second vector
-	 * @return the dot product of \f$\mathbf{a}\f$ and \$\mathbf{b}\f$, computed
+	 * @param a first vector
+	 * @param b second vector
+	 * @return the dot product of \f$\mathbf{a}\f$ and \f$\mathbf{b}\f$, computed
 	 * as \f$\sum_i a_i b_i\f$
 	 */
 	static T compute(vector_type a, vector_type b)
