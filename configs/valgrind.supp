@@ -7,7 +7,7 @@
 # Adding new entries:
 #    If you want to generate suppression entries for your warnings, simply
 #    run "valgrind --gen-suppressions=yes" on your program.  It will ask
-#    on every warnings if you want to see the entry.  Running valgrind with
+#    on every warning if you want to see the entry.  Running valgrind with
 #    "--gen-suppressions=all" will generate all entries without asking.
 #
 # See also:
