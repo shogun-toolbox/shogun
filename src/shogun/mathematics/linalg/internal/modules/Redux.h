@@ -33,6 +33,7 @@
 
 #include <shogun/mathematics/linalg/internal/implementation/Dot.h>
 #include <shogun/mathematics/linalg/internal/implementation/Sum.h>
+#include <shogun/mathematics/linalg/internal/implementation/Square.h>
 
 namespace shogun
 {
@@ -144,7 +145,7 @@ T sum(Matrix<T,Info...> m, bool no_diag=false)
 
 /**
  * Wrapper method for internal implementation of matrix-block sum of values that works
- * with generic dense matricx blocks with first templated-argument as its value-type and
+ * with generic dense matrix blocks with first templated-argument as its value-type and
  * other (optional) templated-arguments of int type for compile time information
  *
  * Uses globally set backend
@@ -184,7 +185,7 @@ T sum_symmetric(Matrix<T,Info...> m, bool no_diag=false)
 
 /**
  * Wrapper method for internal implementation of symmetric matrix-block sum of values that works
- * with generic dense matricx blocks with first templated-argument as its value-type and
+ * with generic dense matrix blocks with first templated-argument as its value-type and
  * other (optional) templated-arguments of int type for compile time information
  *
  * Uses globally set backend
@@ -242,7 +243,7 @@ T sum_symmetric(Matrix<T,Info...> m, bool no_diag=false)
 
 /**
  * Wrapper method for internal implementation of matrix-block sum of values that works
- * with generic dense matricx blocks with first templated-argument as its value-type and
+ * with generic dense matrix blocks with first templated-argument as its value-type and
  * other (optional) templated-arguments of int type for compile time information
  *
  * Uses templated specified backend
@@ -261,7 +262,7 @@ T sum(Block<int,Matrix,T,Info...> b, bool no_diag=false)
 
 /**
  * Wrapper method for internal implementation of symmetric matrix-block sum of values that works
- * with generic dense matricx blocks with first templated-argument as its value-type and
+ * with generic dense matrix blocks with first templated-argument as its value-type and
  * other (optional) templated-arguments of int type for compile time information
  *
  * Uses templated specified backend
@@ -277,6 +278,82 @@ T sum_symmetric(Block<int,Matrix,T,Info...> b, bool no_diag=false)
 {
 	return implementation::sum_symmetric<int,backend,Matrix,T,Info...>
 		::compute(b, no_diag);
+}
+
+/**
+ * Wrapper method for internal implementation of square of co-efficients that works
+ * with generic dense matrices with first templated-argument as its value-type and
+ * other (optional) templated-arguments of int type for compile time information
+ *
+ * Uses globally set backend
+ *
+ * Suited for Shogun's SGMatrix, Eigen3's Matrix blocks etc
+ *
+ * @param m the matrix whose squared co-efficients matrix has to be computed
+ * @return another matrix whose co-efficients are \f$m'_{i,j}=m_(i,j}^2\f$
+ * for all \f$i,j\f$
+ */
+template <template <class,int...> class Matrix, class T, int... Info>
+Matrix<T,Info...> square(Matrix<T,Info...> m)
+{
+	return implementation::square<int,linalg_traits<Redux>::backend,Matrix,T,Info...>::compute(m);
+}
+
+/**
+ * Wrapper method for internal implementation of square of co-efficients that works
+ * with generic dense matrix blocks with first templated-argument as its value-type and
+ * other (optional) templated-arguments of int type for compile time information
+ *
+ * Uses globally set backend
+ *
+ * Suited for Shogun's SGMatrix, Eigen3's Matrix blocks etc
+ *
+ * @param b the matrix-block whose squared co-efficients matrix has to be computed
+ * @return another matrix whose co-efficients are \f$m'_{i,j}=b_(i,j}^2\f$
+ * for all \f$i,j\f$
+ */
+template <template <class,int...> class Matrix, class T, int... Info>
+Matrix<T,Info...> square(Block<int,Matrix,T,Info...> b)
+{
+	return implementation::square<int,linalg_traits<Redux>::backend,Matrix,T,Info...>::compute(b);
+}
+
+/**
+ * Wrapper method for internal implementation of square of co-efficients that works
+ * with generic dense matrices with first templated-argument as its value-type and
+ * other (optional) templated-arguments of int type for compile time information
+ *
+ * Uses templated specified backend
+ *
+ * Suited for Shogun's SGMatrix, Eigen3's Matrix blocks etc
+ *
+ * @param m the matrix whose squared co-efficients matrix has to be computed
+ * @return another matrix whose co-efficients are \f$m'_{i,j}=m_(i,j}^2\f$
+ * for all \f$i,j\f$
+ */
+template <Backend backend,template <class,int...> class Matrix, class T, int... Info>
+Matrix<T,Info...> square(Matrix<T,Info...> m)
+{
+	return implementation::square<int,backend,Matrix,T,Info...>::compute(m);
+}
+
+/**
+ * Wrapper method for internal implementation of square of co-efficients that works
+ * with generic dense matrix blocks with first templated-argument as its value-type and
+ * other (optional) templated-arguments of int type for compile time information
+ *
+ * Uses templated specified backend
+ *
+ * Suited for Shogun's SGMatrix, Eigen3's Matrix blocks etc
+ *
+ * @param b the matrix-block whose squared co-efficients matrix has to be computed
+ * @return another matrix whose co-efficients are \f$m'_{i,j}=b_(i,j}^2\f$
+ * for all \f$i,j\f$
+ */
+template <Backend backend,template <class,int...> class Matrix, class T, int... Info>
+Matrix<T,Info...> square(Block<int,Matrix,T,Info...> b)
+{
+	return implementation::square<int,backend,Matrix,T,Info...>::compute(b);
 }
 
 }
