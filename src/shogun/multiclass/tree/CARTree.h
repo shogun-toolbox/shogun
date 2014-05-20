@@ -124,11 +124,33 @@ private:
 	 * @param data training data
 	 * @param weights vector of weights of data points
 	 * @param labels labels of data points
-	 * @param id_values vector of id numbers of features in data
-	 * @param level tree depth
 	 * @return pointer to the root of the CART subtree
 	 */
-	bnode_t* CARTtrain(CFeatures* data, SGVector<float64_t> weights, CLabels* labels, SGVector<int32_t> id_values, int level=0);
+	CBinaryTreeMachineNode<CARTreeNodeData>* CARTtrain(CFeatures* data, SGVector<float64_t> weights, CLabels* labels);
+
+	/** returns gain in Gini impurity measure
+	 *
+	 * @param labels labels of data in the node
+	 * @param weights weights of the data points in the node
+	 * @param is_left whether a data point is proposed to be moved to left child node
+	 * @return Gini gain acheived after spliting the node
+	 */
+	float64_t gain(CLabels* labels, SGVector<float64_t> weights, SGVector<bool> is_left);
+
+	/** returns Gini impurity of a node
+	 * 
+	 * @param labels labels of data in the node
+	 * @param weights weights of the data points in the node
+	 * @return Gini index of the node
+	 */
+	float64_t gini_impurity_index(CMulticlassLabels* labels, SGVector<float64_t> weights);
+
+	/** returns least squares deviation
+	 * 
+	 * @param labels regression labels
+	 * @param weights weights of regression data points
+	 */
+	float64_t least_squares_deviation(CRegressionLabels* labels, SGVector<float64_t> weights);
 
 	/** uses current subtree to classify/regress data
 	 *
