@@ -40,29 +40,34 @@
 
 #ifdef HAVE_EIGEN3
 
-#include <shogun/machine/gp/LogitVariationalPiecewiseBoundLikelihood.h>
+#include <shogun/machine/gp/LogitVGPiecewiseBoundLikelihood.h>
+#include <shogun/mathematics/Statistics.h>
+#include <shogun/distributions/classical/GaussianDistribution.h>
+#include <shogun/mathematics/Math.h>
+#include <shogun/labels/BinaryLabels.h>
 
 using namespace Eigen;
 
 namespace shogun
 {
 
-CLogitVariationalPiecewiseBoundLikelihood::CLogitVariationalPiecewiseBoundLikelihood()
-	: CLogitLikelihood()
+CLogitVGPiecewiseBoundLikelihood::CLogitVGPiecewiseBoundLikelihood()
+	: CVariationalGaussianLikelihood()
 {
 	init();
 }
 
-CLogitVariationalPiecewiseBoundLikelihood::~CLogitVariationalPiecewiseBoundLikelihood()
+CLogitVGPiecewiseBoundLikelihood::~CLogitVGPiecewiseBoundLikelihood()
 {
+	SG_UNREF(likelihood);
 }
 
-void CLogitVariationalPiecewiseBoundLikelihood::set_variational_bound(SGMatrix<float64_t> bound)
+void CLogitVGPiecewiseBoundLikelihood::set_variational_bound(SGMatrix<float64_t> bound)
 {
 	m_bound = bound;
 }
 
-SGVector<float64_t> CLogitVariationalPiecewiseBoundLikelihood::get_variational_expection()
+SGVector<float64_t> CLogitVGPiecewiseBoundLikelihood::get_variational_expection()
 {
 	//This function is based on the Matlab code,
 	//function [f, gm, gv] = Ellp(m, v, bound, ind), to compute f
@@ -129,7 +134,7 @@ SGVector<float64_t> CLogitVariationalPiecewiseBoundLikelihood::get_variational_e
 }
 
 
-SGVector<float64_t> CLogitVariationalPiecewiseBoundLikelihood::get_variational_first_derivative(
+SGVector<float64_t> CLogitVGPiecewiseBoundLikelihood::get_variational_first_derivative(
 		const TParameter* param) const
 {
 	//This function is based on the Matlab code
@@ -239,7 +244,7 @@ SGVector<float64_t> CLogitVariationalPiecewiseBoundLikelihood::get_variational_f
 	return result;
 }
 
-void CLogitVariationalPiecewiseBoundLikelihood::set_variational_distribution(SGVector<float64_t> mu,
+void CLogitVGPiecewiseBoundLikelihood::set_variational_distribution(SGVector<float64_t> mu,
 	SGVector<float64_t> s2, const CLabels* lab)
 {
 	REQUIRE(lab, "Labels are required (lab should not be NULL)\n");
@@ -269,8 +274,10 @@ void CLogitVariationalPiecewiseBoundLikelihood::set_variational_distribution(SGV
 	precompute();
 }
 
-void CLogitVariationalPiecewiseBoundLikelihood::init()
+void CLogitVGPiecewiseBoundLikelihood::init()
 {
+	likelihood = new CLogitLikelihood();
+
 	SG_ADD(&m_bound, "bound", 
 		"Variational piecewise bound for logit likelihood",
 		MS_NOT_AVAILABLE);
@@ -307,7 +314,7 @@ void CLogitVariationalPiecewiseBoundLikelihood::init()
 		MS_NOT_AVAILABLE);
 }
 
-void CLogitVariationalPiecewiseBoundLikelihood::precompute()
+void CLogitVGPiecewiseBoundLikelihood::precompute()
 {
 	//This function is based on the Matlab code
 	//function [f, gm, gv] = Ellp(m, v, bound, ind), to compute common variables later

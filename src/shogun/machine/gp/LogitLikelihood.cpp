@@ -388,7 +388,7 @@ float64_t CLogitLikelihood::get_first_moment(SGVector<float64_t> mu,
 			"Length of the vector of means (%d), length of the vector of "
 			"variances (%d) and number of labels (%d) should be the same\n",
 			mu.vlen, s2.vlen, lab->get_num_labels())
-	REQUIRE(i>=0 && i<=mu.vlen, "Index (%d) out of bounds!\n", i)
+	REQUIRE(i>=0 && i<mu.vlen, "Index (%d) out of bounds!\n", i)
 	REQUIRE(lab->get_label_type()==LT_BINARY,
 			"Labels must be type of CBinaryLabels\n")
 
@@ -432,7 +432,7 @@ float64_t CLogitLikelihood::get_second_moment(SGVector<float64_t> mu,
 			"Length of the vector of means (%d), length of the vector of "
 			"variances (%d) and number of labels (%d) should be the same\n",
 			mu.vlen, s2.vlen, lab->get_num_labels())
-	REQUIRE(i>=0 && i<=mu.vlen, "Index (%d) out of bounds!\n", i)
+	REQUIRE(i>=0 && i<mu.vlen, "Index (%d) out of bounds!\n", i)
 	REQUIRE(lab->get_label_type()==LT_BINARY,
 			"Labels must be type of CBinaryLabels\n")
 
