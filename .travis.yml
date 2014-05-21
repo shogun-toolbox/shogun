@@ -15,6 +15,10 @@ matrix:
     - compiler: clang
     - compiler: gcc
       env:
+      - CMAKE_OPTIONS="-DOpenCV=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON"
+      - EXTRA_PACKAGES="libopencv-dev build-essential checkinstall pkg-config yasm libjpeg-dev libjasper-dev libavcodec-dev libavformat-dev libswscale-dev libdc1394-22-dev libxine-dev libgstreamer0.10-dev libgstreamer-plugins-base0.10-dev libv4l-dev python-dev python-numpy libtbb-dev libqt4-dev libgtk2.0-dev libfaac-dev libmp3lame-dev libopencore-amrnb-dev libopencore-amrwb-dev libtheora-dev libvorbis-dev libxvidcore-dev x264 v4l-utils ffmpeg"
+    - compiler: gcc
+      env:
       - CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=Debug -DENABLE_COVERAGE=ON -DENABLE_CCACHE=OFF"
       - CUSTOM_PKG="sudo pip install -q cpp-coveralls"
       - COVERALLS=1
@@ -108,17 +112,9 @@ install:
   - eval $CUSTOM_PKG
   - if [[ $TRAVIS_PYTHON_VERSION == '3.3' ]] ; then conda create -n testenv python=$TRAVIS_PYTHON_VERSION numpy scipy && source activate testenv ; fi
 before_script:
-  - git clone https://github.com/Itseez/opencv.git
-  - cd opencv
   - mkdir build
   - cd build
-  - cmake ..
-  - make -j2
-  - sudo make -j2 install
-  - cd ../..
-  - mkdir build
-  - cd build
-  - cmake -DENABLE_TESTING=ON -DBUNDLE_EIGEN=ON -DBUNDLE_JSON=ON -DBUNDLE_NLOPT=ON -DOpenCV=ON $CMAKE_OPTIONS ..
+  - cmake -DENABLE_TESTING=ON -DBUNDLE_EIGEN=ON -DBUNDLE_JSON=ON -DBUNDLE_NLOPT=ON CMAKE_OPTIONS ..
 script:
   - if [ -z "$CMAKE_OPTIONS" -o -n "$COVERALLS" ] ; then
       make -j 2 ;
