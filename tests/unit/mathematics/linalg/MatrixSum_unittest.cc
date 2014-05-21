@@ -306,6 +306,461 @@ TEST(MatrixSum, Eigen3_Matrix_symmetric_block_eigen3_backend_no_diag)
 	EXPECT_NEAR(sum, 26.0, 1E-15);
 }
 
+TEST(MatrixSum, SGMatrix_asymmetric_colwise_eigen3_backend_with_diag)
+{
+	const index_t m=2;
+	const index_t n=3;
+	SGMatrix<float64_t> mat(m, n);
+
+	for (index_t i=0; i<m; ++i)
+	{
+		for (index_t j=0; j<n; ++j)
+			mat(i, j)=i*10+j+1;
+	}
+
+	SGVector<float64_t> s=linalg::colwise_sum<linalg::Backend::EIGEN3>(mat);
+
+	for (index_t j=0; j<n; ++j)
+	{
+		float64_t sum=0;
+		for (index_t i=0; i<m; ++i)
+			sum+=mat(i, j);
+		EXPECT_NEAR(sum, s[j], 1E-15);
+	}
+}
+
+TEST(MatrixSum, SGMatrix_symmetric_colwise_eigen3_backend_with_diag)
+{
+	const index_t n=3;
+	SGMatrix<float64_t> mat(n, n);
+
+	for (index_t i=0; i<n; ++i)
+	{
+		for (index_t j=0; j<n; ++j)
+			mat(i, j)=i*10+j+1;
+	}
+
+	SGVector<float64_t> s=linalg::colwise_sum<linalg::Backend::EIGEN3>(mat);
+
+	for (index_t j=0; j<n; ++j)
+	{
+		float64_t sum=0;
+		for (index_t i=0; i<n; ++i)
+			sum+=mat(i, j);
+		EXPECT_NEAR(sum, s[j], 1E-15);
+	}
+}
+
+TEST(MatrixSum, Eigen3_Matrix_asymmetric_colwise_eigen3_backend_with_diag)
+{
+	const index_t m=2;
+	const index_t n=3;
+	Eigen::MatrixXd mat(m, n);
+
+	for (index_t i=0; i<m; ++i)
+	{
+		for (index_t j=0; j<n; ++j)
+			mat(i, j)=i*10+j+1;
+	}
+
+	SGVector<float64_t> s=linalg::colwise_sum<linalg::Backend::EIGEN3>(mat);
+
+	for (index_t j=0; j<n; ++j)
+	{
+		float64_t sum=0;
+		for (index_t i=0; i<m; ++i)
+			sum+=mat(i, j);
+		EXPECT_NEAR(sum, s[j], 1E-15);
+	}
+}
+
+TEST(MatrixSum, Eigen3_Matrix_symmetric_colwise_eigen3_backend_with_diag)
+{
+	const index_t n=3;
+	Eigen::MatrixXd mat(n, n);
+
+	for (index_t i=0; i<n; ++i)
+	{
+		for (index_t j=0; j<n; ++j)
+			mat(i, j)=i*10+j+1;
+	}
+
+	SGVector<float64_t> s=linalg::colwise_sum<linalg::Backend::EIGEN3>(mat);
+
+	for (index_t j=0; j<n; ++j)
+	{
+		float64_t sum=0;
+		for (index_t i=0; i<n; ++i)
+			sum+=mat(i, j);
+		EXPECT_NEAR(sum, s[j], 1E-15);
+	}
+}
+
+TEST(MatrixSum, SGMatrix_asymmetric_colwise_eigen3_backend_no_diag)
+{
+	const index_t m=2;
+	const index_t n=3;
+	SGMatrix<float64_t> mat(m, n);
+
+	for (index_t i=0; i<m; ++i)
+	{
+		for (index_t j=0; j<n; ++j)
+			mat(i, j)=i*10+j+1;
+	}
+
+	SGVector<float64_t> s=linalg::colwise_sum<linalg::Backend::EIGEN3>(mat, true);
+
+	for (index_t j=0; j<n; ++j)
+	{
+		float64_t sum=0;
+		for (index_t i=0; i<m; ++i)
+			sum+=i==j ? 0 : mat(i, j);
+		EXPECT_NEAR(sum, s[j], 1E-15);
+	}
+}
+
+TEST(MatrixSum, SGMatrix_symmetric_colwise_eigen3_backend_no_diag)
+{
+	const index_t n=3;
+	SGMatrix<float64_t> mat(n, n);
+
+	for (index_t i=0; i<n; ++i)
+	{
+		for (index_t j=0; j<n; ++j)
+			mat(i, j)=i*10+j+1;
+	}
+
+	SGVector<float64_t> s=linalg::colwise_sum<linalg::Backend::EIGEN3>(mat, true);
+
+	for (index_t j=0; j<n; ++j)
+	{
+		float64_t sum=0;
+		for (index_t i=0; i<n; ++i)
+			sum+=i==j ? 0 : mat(i, j);
+		EXPECT_NEAR(sum, s[j], 1E-15);
+	}
+}
+
+TEST(MatrixSum, Eigen3_Matrix_asymmetric_colwise_eigen3_backend_no_diag)
+{
+	const index_t m=2;
+	const index_t n=3;
+	Eigen::MatrixXd mat(m, n);
+
+	for (index_t i=0; i<m; ++i)
+	{
+		for (index_t j=0; j<n; ++j)
+			mat(i, j)=i*10+j+1;
+	}
+
+	SGVector<float64_t> s=linalg::colwise_sum<linalg::Backend::EIGEN3>(mat, true);
+
+	for (index_t j=0; j<n; ++j)
+	{
+		float64_t sum=0;
+		for (index_t i=0; i<m; ++i)
+			sum+=i==j ? 0 : mat(i, j);
+		EXPECT_NEAR(sum, s[j], 1E-15);
+	}
+}
+
+TEST(MatrixSum, Eigen3_Matrix_symmetric_colwise_eigen3_backend_no_diag)
+{
+	const index_t n=3;
+	Eigen::MatrixXd mat(n, n);
+
+	for (index_t i=0; i<n; ++i)
+	{
+		for (index_t j=0; j<n; ++j)
+			mat(i, j)=i*10+j+1;
+	}
+
+	SGVector<float64_t> s=linalg::colwise_sum<linalg::Backend::EIGEN3>(mat, true);
+
+	for (index_t j=0; j<n; ++j)
+	{
+		float64_t sum=0;
+		for (index_t i=0; i<n; ++i)
+			sum+=i==j ? 0 : mat(i, j);
+		EXPECT_NEAR(sum, s[j], 1E-15);
+	}
+}
+
+TEST(MatrixSum, SGMatrix_block_colwise_eigen3_backend_with_diag)
+{
+	const index_t m=2;
+	const index_t n=3;
+	SGMatrix<float64_t> mat(m, n);
+
+	for (index_t i=0; i<m; ++i)
+	{
+		for (index_t j=0; j<n; ++j)
+			mat(i, j)=i*10+j+1;
+	}
+
+	SGVector<float64_t> s=linalg::colwise_sum<linalg::Backend::EIGEN3>(
+			linalg::block(mat, 0, 0, 2, 2));
+
+	for (index_t j=0; j<2; ++j)
+	{
+		float64_t sum=0;
+		for (index_t i=0; i<2; ++i)
+			sum+=mat(i, j);
+		EXPECT_NEAR(sum, s[j], 1E-15);
+	}
+}
+
+TEST(MatrixSum, Eigen3_Matrix_block_colwise_eigen3_backend_with_diag)
+{
+	const index_t m=2;
+	const index_t n=3;
+	Eigen::MatrixXd mat(m, n);
+
+	for (index_t i=0; i<m; ++i)
+	{
+		for (index_t j=0; j<n; ++j)
+			mat(i, j)=i*10+j+1;
+	}
+
+	SGVector<float64_t> s=linalg::colwise_sum<linalg::Backend::EIGEN3>(
+			linalg::block(mat, 0, 0, 2, 2));
+
+	for (index_t j=0; j<2; ++j)
+	{
+		float64_t sum=0;
+		for (index_t i=0; i<2; ++i)
+			sum+=mat(i, j);
+		EXPECT_NEAR(sum, s[j], 1E-15);
+	}
+}
+
+TEST(MatrixSum, SGMatrix_asymmetric_rowwise_eigen3_backend_with_diag)
+{
+	const index_t m=2;
+	const index_t n=3;
+	SGMatrix<float64_t> mat(m, n);
+
+	for (index_t i=0; i<m; ++i)
+	{
+		for (index_t j=0; j<n; ++j)
+			mat(i, j)=i*10+j+1;
+	}
+
+	SGVector<float64_t> s=linalg::rowwise_sum<linalg::Backend::EIGEN3>(mat);
+
+	for (index_t i=0; i<m; ++i)
+	{
+		float64_t sum=0;
+		for (index_t j=0; j<n; ++j)
+			sum+=mat(i, j);
+		EXPECT_NEAR(sum, s[i], 1E-15);
+	}
+}
+
+TEST(MatrixSum, SGMatrix_symmetric_rowwise_eigen3_backend_with_diag)
+{
+	const index_t n=3;
+	SGMatrix<float64_t> mat(n, n);
+
+	for (index_t i=0; i<n; ++i)
+	{
+		for (index_t j=0; j<n; ++j)
+			mat(i, j)=i*10+j+1;
+	}
+
+	SGVector<float64_t> s=linalg::rowwise_sum<linalg::Backend::EIGEN3>(mat);
+
+	for (index_t i=0; i<n; ++i)
+	{
+		float64_t sum=0;
+		for (index_t j=0; j<n; ++j)
+			sum+=mat(i, j);
+		EXPECT_NEAR(sum, s[i], 1E-15);
+	}
+}
+
+TEST(MatrixSum, Eigen3_Matrix_asymmetric_rowwise_eigen3_backend_with_diag)
+{
+	const index_t m=2;
+	const index_t n=3;
+	Eigen::MatrixXd mat(m, n);
+
+	for (index_t i=0; i<m; ++i)
+	{
+		for (index_t j=0; j<n; ++j)
+			mat(i, j)=i*10+j+1;
+	}
+
+	SGVector<float64_t> s=linalg::rowwise_sum<linalg::Backend::EIGEN3>(mat);
+
+	for (index_t i=0; i<m; ++i)
+	{
+		float64_t sum=0;
+		for (index_t j=0; j<n; ++j)
+			sum+=mat(i, j);
+		EXPECT_NEAR(sum, s[i], 1E-15);
+	}
+}
+
+TEST(MatrixSum, Eigen3_Matrix_symmetric_rowwise_eigen3_backend_with_diag)
+{
+	const index_t n=3;
+	Eigen::MatrixXd mat(n, n);
+
+	for (index_t i=0; i<n; ++i)
+	{
+		for (index_t j=0; j<n; ++j)
+			mat(i, j)=i*10+j+1;
+	}
+
+	SGVector<float64_t> s=linalg::rowwise_sum<linalg::Backend::EIGEN3>(mat);
+
+	for (index_t i=0; i<n; ++i)
+	{
+		float64_t sum=0;
+		for (index_t j=0; j<n; ++j)
+			sum+=mat(i, j);
+		EXPECT_NEAR(sum, s[i], 1E-15);
+	}
+}
+
+TEST(MatrixSum, SGMatrix_asymmetric_rowwise_eigen3_backend_no_diag)
+{
+	const index_t m=2;
+	const index_t n=3;
+	SGMatrix<float64_t> mat(m, n);
+
+	for (index_t i=0; i<m; ++i)
+	{
+		for (index_t j=0; j<n; ++j)
+			mat(i, j)=i*10+j+1;
+	}
+
+	SGVector<float64_t> s=linalg::rowwise_sum<linalg::Backend::EIGEN3>(mat, true);
+
+	for (index_t i=0; i<m; ++i)
+	{
+		float64_t sum=0;
+		for (index_t j=0; j<n; ++j)
+			sum+=i==j ? 0 : mat(i, j);
+		EXPECT_NEAR(sum, s[i], 1E-15);
+	}
+}
+
+TEST(MatrixSum, SGMatrix_symmetric_rowwise_eigen3_backend_no_diag)
+{
+	const index_t n=3;
+	SGMatrix<float64_t> mat(n, n);
+
+	for (index_t i=0; i<n; ++i)
+	{
+		for (index_t j=0; j<n; ++j)
+			mat(i, j)=i*10+j+1;
+	}
+
+	SGVector<float64_t> s=linalg::rowwise_sum<linalg::Backend::EIGEN3>(mat, true);
+
+	for (index_t i=0; i<n; ++i)
+	{
+		float64_t sum=0;
+		for (index_t j=0; j<n; ++j)
+			sum+=i==j ? 0 : mat(i, j);
+		EXPECT_NEAR(sum, s[i], 1E-15);
+	}
+}
+
+TEST(MatrixSum, Eigen3_Matrix_asymmetric_rowwise_eigen3_backend_no_diag)
+{
+	const index_t m=2;
+	const index_t n=3;
+	Eigen::MatrixXd mat(m, n);
+
+	for (index_t i=0; i<m; ++i)
+	{
+		for (index_t j=0; j<n; ++j)
+			mat(i, j)=i*10+j+1;
+	}
+
+	SGVector<float64_t> s=linalg::rowwise_sum<linalg::Backend::EIGEN3>(mat, true);
+
+	for (index_t i=0; i<m; ++i)
+	{
+		float64_t sum=0;
+		for (index_t j=0; j<n; ++j)
+			sum+=i==j ? 0 : mat(i, j);
+		EXPECT_NEAR(sum, s[i], 1E-15);
+	}
+}
+
+TEST(MatrixSum, Eigen3_Matrix_symmetric_rowwise_eigen3_backend_no_diag)
+{
+	const index_t n=3;
+	Eigen::MatrixXd mat(n, n);
+
+	for (index_t i=0; i<n; ++i)
+	{
+		for (index_t j=0; j<n; ++j)
+			mat(i, j)=i*10+j+1;
+	}
+
+	SGVector<float64_t> s=linalg::rowwise_sum<linalg::Backend::EIGEN3>(mat, true);
+
+	for (index_t i=0; i<n; ++i)
+	{
+		float64_t sum=0;
+		for (index_t j=0; j<n; ++j)
+			sum+=i==j ? 0 : mat(i, j);
+		EXPECT_NEAR(sum, s[i], 1E-15);
+	}
+}
+
+TEST(MatrixSum, SGMatrix_block_rowwise_eigen3_backend_with_diag)
+{
+	const index_t m=2;
+	const index_t n=3;
+	SGMatrix<float64_t> mat(m, n);
+
+	for (index_t i=0; i<m; ++i)
+	{
+		for (index_t j=0; j<n; ++j)
+			mat(i, j)=i*10+j+1;
+	}
+
+	SGVector<float64_t> s=linalg::rowwise_sum<linalg::Backend::EIGEN3>(
+			linalg::block(mat, 0, 0, 2, 2));
+
+	for (index_t i=0; i<2; ++i)
+	{
+		float64_t sum=0;
+		for (index_t j=0; j<2; ++j)
+			sum+=mat(i, j);
+		EXPECT_NEAR(sum, s[i], 1E-15);
+	}
+}
+
+TEST(MatrixSum, Eigen3_Matrix_block_rowwise_eigen3_backend_with_diag)
+{
+	const index_t m=2;
+	const index_t n=3;
+	Eigen::MatrixXd mat(m, n);
+
+	for (index_t i=0; i<m; ++i)
+	{
+		for (index_t j=0; j<n; ++j)
+			mat(i, j)=i*10+j+1;
+	}
+
+	SGVector<float64_t> s=linalg::rowwise_sum<linalg::Backend::EIGEN3>(
+			linalg::block(mat, 0, 0, 2, 2));
+
+	for (index_t i=0; i<2; ++i)
+	{
+		float64_t sum=0;
+		for (index_t j=0; j<2; ++j)
+			sum+=mat(i, j);
+		EXPECT_NEAR(sum, s[i], 1E-15);
+	}
+}
 #endif // HAVE_EIGEN3
 
 #endif // HAVE_LINALG_LIB
