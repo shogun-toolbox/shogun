@@ -89,3 +89,31 @@
    obj:*/libhdf5.so.*
    fun:H5D_close
 }
+
+{
+   fscanf triggers "Conditional jump [...] on uninitialized values"
+   Memcheck:Cond
+   fun:__GI___strncasecmp_l
+   fun:____strtod_l_internal
+   fun:_IO_vfscanf
+   fun:fscanf
+   fun:*SerializableAsciiReader00*read_scalar_wrapped*
+}
+
+{
+   fscanf triggers "Uninitialized value of size 8"
+   Memcheck:Value8
+   fun:__GI___strncasecmp_l
+   fun:____strtod_l_internal
+   fun:_IO_vfscanf
+   fun:fscanf
+   fun:*SerializableAsciiReader00*read_scalar_wrapped*
+}
+
+{
+   strod triggers "Invalid read of size 8"
+   Memcheck:Addr8
+   fun:__GI___strncasecmp_l
+   fun:____strtod_l_internal
+   fun:*CParser*read_real*
+}
