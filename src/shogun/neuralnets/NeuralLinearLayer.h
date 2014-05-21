@@ -42,8 +42,19 @@ namespace shogun
 /** @brief Neural layer with linear neurons, with an identity activation 
  * function. can be used as a hidden layer or an output layer
  * 
- * Each neuron in the layer is connected to all the neurons in the previous
- * layer
+ * Each neuron in the layer is connected to all the neurons in all the layers 
+ * that connect into this layer.
+ * 
+ * Activations for each train/test case are computed according to 
+ * \f$ b + \sum_i W_i x_i \f$ where \f$ b \f$ is the bias vector, \f$ W_i \f$ 
+ * is the weights matrix between this layer and layer i of its inputs, and 
+ * \f$ x_i \f$ is the activations vector of layer i.
+ * 
+ * The layout of the parameter vector of this layer is as follows:
+ * 	- The first num_neurons elements correspond to the biases
+ * 	- The following elements correspond to the weight matrices. For each layer 
+ * i that connects into this layer as input, a weight matrix of size 
+ * num_neurons*num_neurons_i is stored in column major format. 
  * 
  * When used as an output layer, a 
  * [squared error measure](http://en.wikipedia.org/wiki/Mean_squared_error) is 
@@ -63,12 +74,17 @@ public:
 	
 	virtual ~CNeuralLinearLayer() {}
 	
-	/** Gets the number of parameters (weights and biases) needed for this 
-	 * layer
+	/** Initializes the layer, computes the number of parameters needed for 
+	 * the layer
 	 * 
-	 * @return number of parameters (weights and biases) needed for this layer
+	 * @param layers Array of layers that form the network that this layer is 
+	 * being used with
+	 * 
+	 * @param input_indices  Indices of the layers that are connected to this 
+	 * layer as input
 	 */
-	virtual int32_t get_num_parameters();
+	virtual void initialize(CDynamicObjectArray* layers, 
+			SGVector<int32_t> input_indices);
 	
 	/** Initializes the layer's parameters. The layer should fill the given 
 	 * arrays with the initial value for its parameters
@@ -89,49 +105,45 @@ public:
 			float64_t sigma);
 	
 	/** Computes the activations of the neurons in this layer, results should 
-	 * be stored in m_activations
+	 * be stored in m_activations. To be used only with non-input layers
 	 * 
 	 * @param parameters Vector of size get_num_parameters(), contains the 
 	 * parameters of the layer
 	 * 
-	 * @param previous_layer_activations activations of the neurons in the 
-	 * previous layer, matrix of size previous_layer_num_neurons * batch_size
+	 * @param layers Array of layers that form the network that this layer is 
+	 * being used with
 	 */
 	virtual void compute_activations(SGVector<float64_t> parameters,
-			SGMatrix<float64_t> previous_layer_activations);
+			CDynamicObjectArray* layers);
 	
 	/** Computes the gradients that are relevent to this layer:
 	 *- The gradients of the error with respect to the layer's parameters
 	 * -The gradients of the error with respect to the layer's inputs
 	 * 
+	 * Input gradients for layer i that connects into this layer as input are 
+	 * added to m_layers.element(i).get_activation_gradients()
+	 * 
 	 * Deriving classes should make sure to account for 
 	 * [dropout](http://arxiv.org/abs/1207.0580) [Hinton, 2012] during gradient 
 	 * computations
-	 * 
-	 * The input gradients are stored in m_input_gradients
 	 *
 	 * @param parameters Vector of size get_num_parameters(), contains the 
 	 * parameters of the layer
 	 * 
-	 * @param is_output specifies if the layer is used as an output layer or a
-	 * hidden layer
+	 * @param targets a matrix of size num_neurons*batch_size. If the layer is 
+	 * being used as an output layer, targets is the desired values for the 
+	 * layer's activations, otherwise it's an empty matrix
 	 * 
-	 * @param p a matrix of size num_neurons*batch_size. If is_output is true,p 
-	 * is the desired values for the layer's activations, else it is the
-	 * gradients of the error with respect to this layer's activations (the 
-	 * input gradients of the next layer).
-	 *
-	 * @param previous_layer_activations activations of the neurons in the
-	 * previous layer, matrix of size previous_layer_num_neurons * batch_size
+	 * @param layers Array of layers that form the network that this layer is 
+	 * being used with
 	 * 
 	 * @param parameter_gradients Vector of size get_num_parameters(). To be 
 	 * filled with gradients of the error with respect to each parameter of the 
 	 * layer
 	 */
 	virtual void compute_gradients(SGVector<float64_t> parameters, 
-			bool is_output,
-			SGMatrix<float64_t> p,
-			SGMatrix<float64_t> previous_layer_activations,
+			SGMatrix<float64_t> targets,
+			CDynamicObjectArray* layers,
 			SGVector<float64_t> parameter_gradients);
 	
 	/** Computes the error between the layer's current activations and the given
@@ -154,20 +166,16 @@ public:
 			float64_t max_norm);
 	
 	/** Computes the gradients of the error with respect to this layer's
-	 * activations. Results are stored in m_local_gradients. 
+	 * pre-activations. Results are stored in m_local_gradients. 
 	 * 
 	 * This is used by compute_gradients() and can be overriden to implement 
 	 * layers with different activation functions
 	 *
-	 * @param is_output specifies if the layer is used as an output layer or a
-	 * hidden layer
-	 * 
-	 * @param p a matrix of size num_neurons*batch_size. If is_output is true,p 
-	 * is the desired values for the layer's activations, else it is the
-	 * gradients of the error with respect to this layer's activations (the 
-	 * input gradients of the next layer).
+	 * @param targets a matrix of size num_neurons*batch_size. If the layer is 
+	 * being used as an output layer, targets is the desired values for the 
+	 * layer's activations, otherwise it's an empty matrix
 	 */
-	virtual void compute_local_gradients(bool is_output, SGMatrix<float64_t> p);
+	virtual void compute_local_gradients(SGMatrix<float64_t> targets);
 	
 	virtual const char* get_name() const { return "NeuralLinearLayer"; }
 };

@@ -46,21 +46,78 @@ CNeuralNetwork::CNeuralNetwork()
 	init();
 }
 
-void CNeuralNetwork::initialize(int32_t num_inputs, 
-		CDynamicObjectArray* layers,
-		float64_t sigma)
+CNeuralNetwork::CNeuralNetwork(CDynamicObjectArray* layers)
 {
-	m_num_inputs = num_inputs;
-	m_inputs = SGMatrix<float64_t>(num_inputs, m_batch_size);
-	m_input_dropout_mask = SGMatrix<bool>(num_inputs, m_batch_size);
-	m_num_layers = layers->get_num_elements();
+	init();
+	set_layers(layers);
+}
+
+void CNeuralNetwork::set_layers(CDynamicObjectArray* layers)
+{
+	SG_UNREF(m_layers);
+	SG_REF(layers);
 	m_layers = layers;
 	
-	SG_REF(m_layers);
+	m_num_layers = m_layers->get_num_elements();
+	m_adj_matrix = SGMatrix<bool>(m_num_layers, m_num_layers);
+	m_adj_matrix.zero();
 	
-	get_layer(0)->initialize(m_num_inputs);
+	m_num_inputs = 0;
+	for (int32_t i=0; i<m_num_layers; i++)
+	{
+		if (get_layer(i)->is_input())
+			m_num_inputs += get_layer(i)->get_num_neurons();
+	}
+}
+
+void CNeuralNetwork::connect(int32_t i, int32_t j)
+{
+	REQUIRE("i<j", "i(%i) must be less that j(%i)\n", i, j);
+	m_adj_matrix(i,j) = true;
+}
+
+void CNeuralNetwork::quick_connect()
+{
+	m_adj_matrix.zero();
 	for (int32_t i=1; i<m_num_layers; i++)
-		get_layer(i)->initialize(get_layer(i-1)->get_num_neurons());
+		m_adj_matrix(i-1, i) = true;
+}
+
+void CNeuralNetwork::disconnect(int32_t i, int32_t j)
+{
+	m_adj_matrix(i,j) = false;
+}
+
+void CNeuralNetwork::disconnect_all()
+{
+	m_adj_matrix.zero();
+}
+
+void CNeuralNetwork::initialize(float64_t sigma)
+{
+	for (int32_t j=0; j<m_num_layers; j++)
+	{
+		if (!get_layer(j)->is_input())
+		{
+			int32_t num_inputs = 0;
+			for (int32_t i=0; i<m_num_layers; i++)
+				num_inputs += m_adj_matrix(i,j);
+			
+			SGVector<int32_t> input_indices(num_inputs);
+
+			int32_t k = 0;
+			for (int i=0; i<m_num_layers; i++)
+			{
+				if (m_adj_matrix(i,j))
+				{
+					input_indices[k] = i;
+					k++;
+				}
+			}
+
+			get_layer(j)->initialize(m_layers, input_indices);
+		}
+	}
 	
 	m_index_offsets = SGVector<int32_t>(m_num_layers);
 	
@@ -154,7 +211,10 @@ bool CNeuralNetwork::train_machine(CFeatures* data)
 	SGMatrix<float64_t> targets = labels_to_matrix(m_labels);
 	
 	for (int32_t i=0; i<m_num_layers-1; i++)
-		get_layer(i)->dropout_prop = dropout_hidden;
+	{
+		get_layer(i)->dropout_prop = 
+			get_layer(i)->is_input() ? dropout_input : dropout_hidden;
+	}
 	get_layer(m_num_layers-1)->dropout_prop = 0.0;
 
 	m_is_training = true;
@@ -332,35 +392,16 @@ SGMatrix<float64_t> CNeuralNetwork::forward_propagate(CFeatures* data)
 
 SGMatrix<float64_t> CNeuralNetwork::forward_propagate(SGMatrix<float64_t> inputs)
 {
-	int32_t len = inputs.num_rows*inputs.num_cols;
-	for (int32_t i=0; i<len; i++)
+	for (int32_t i=0; i<m_num_layers; i++)
 	{
-		if (dropout_input>0)
-		{
-			if (m_is_training)
-			{
-				m_input_dropout_mask[i] = 
-					CMath::random(0.0,1.0) >= dropout_input;
-				m_inputs[i] = inputs[i]*m_input_dropout_mask[i];
-			}
-			else
-				m_inputs[i] = inputs[i]*(1.0-dropout_input);
-		}
+		CNeuralLayer* layer = get_layer(i);
+		
+		if (layer->is_input()) 
+			layer->compute_activations(inputs);
 		else
-		{
-			m_inputs[i] = inputs[i];
-		}
-	}
-	
-	// forward propagation
-	get_layer(0)->compute_activations(get_section(m_params, 0), m_inputs);
-	get_layer(0)->dropout_activations();
-
-	for (int i=1; i<m_num_layers; i++)
-	{
-		get_layer(i)->compute_activations(get_section(m_params, i),
-				get_layer(i-1)->get_activations());
-		get_layer(i)->dropout_activations();
+			layer->compute_activations(get_section(m_params, i), m_layers);
+		
+		layer->dropout_activations();
 	}
 	
 	return get_layer(m_num_layers-1)->get_activations();
@@ -371,38 +412,17 @@ float64_t CNeuralNetwork::compute_gradients(SGMatrix<float64_t> inputs,
 {	
 	forward_propagate(inputs);
 	
-	if (m_num_layers==1)
+	for (int32_t i=0; i<m_num_layers; i++)
+		get_layer(i)->get_activation_gradients().zero();
+	
+	for (int32_t i=m_num_layers-1; i>=0; i--)
 	{
-		get_layer(0)->compute_gradients(m_params, true, targets, 
-			inputs, gradients);
-	}
-	else
-	{
-		// backpropagation
-		for (int32_t i=m_num_layers-1; i>=0; i--)
-		{
-			SGVector<float64_t> layer_param_gradients = get_section(gradients,i);
-			
-			if (i==m_num_layers-1)
-			{
-				get_layer(i)->compute_gradients(get_section(m_params,i), true, 
-						targets, get_layer(i-1)->get_activations(),
-						layer_param_gradients);
-			}
-			else if (i==0)
-			{
-				get_layer(i)->compute_gradients(get_section(m_params,i), false,
-						get_layer(i+1)->get_input_gradients(),
-						inputs, layer_param_gradients);
-			}
-			else 
-			{
-				get_layer(i)->compute_gradients(get_section(m_params,i), false,
-						get_layer(i+1)->get_input_gradients(),
-						get_layer(i-1)->get_activations(),
-						layer_param_gradients);
-			}
-		}
+		if (i==m_num_layers-1)
+			get_layer(i)->compute_gradients(get_section(m_params,i), targets, 
+				m_layers, get_section(gradients,i));
+		else
+			get_layer(i)->compute_gradients(get_section(m_params,i), 
+				SGMatrix<float64_t>(), m_layers, get_section(gradients,i));
 	}
 	
 	// L2 regularization
@@ -496,6 +516,7 @@ float64_t CNeuralNetwork::check_gradients(float64_t approx_epsilon, float64_t s)
 	
 	// numerically compute gradients
 	SGVector<float64_t> gradients_numerical(m_total_num_parameters);
+
 	for (int32_t i=0; i<m_total_num_parameters; i++)
 	{
 		float64_t c = 
@@ -513,7 +534,7 @@ float64_t CNeuralNetwork::check_gradients(float64_t approx_epsilon, float64_t s)
 	// compute gradients using backpropagation
 	SGVector<float64_t> gradients_backprop(m_total_num_parameters);
 	compute_gradients(x, y, gradients_backprop);
-
+	
 	float64_t sum = 0.0;
 	for (int32_t i=0; i<m_total_num_parameters; i++)
 	{
@@ -530,9 +551,6 @@ void CNeuralNetwork::set_batch_size(int32_t batch_size)
 		m_batch_size = batch_size;
 		for (int32_t i=0; i<m_num_layers; i++)
 			get_layer(i)->set_batch_size(m_batch_size);
-		
-		m_inputs = SGMatrix<float64_t>(m_num_inputs,m_batch_size);
-		m_input_dropout_mask = SGMatrix<bool>(m_num_inputs,m_batch_size);
 	}
 }
 
@@ -667,6 +685,12 @@ int32_t CNeuralNetwork::get_num_outputs()
 	return get_layer(m_num_layers-1)->get_num_neurons();
 }
 
+CDynamicObjectArray* CNeuralNetwork::get_layers()
+{
+	SG_REF(m_layers);
+	return m_layers;
+}
+
 void CNeuralNetwork::init()
 {
 	optimization_method = NNOM_LBFGS;
@@ -711,6 +735,8 @@ void CNeuralNetwork::init()
 	       "Number of Inputs", MS_NOT_AVAILABLE);
 	SG_ADD(&m_num_layers, "num_layers",
 	       "Number of Layers", MS_NOT_AVAILABLE);
+	SG_ADD(&m_adj_matrix, "adj_matrix",
+	       "Adjacency Matrix", MS_NOT_AVAILABLE);
 	SG_ADD(&l2_coefficient, "l2_coefficient",
 	       "L2 regularization coeff", MS_NOT_AVAILABLE);
 	SG_ADD(&l1_coefficient, "l1_coefficient",
@@ -734,9 +760,6 @@ void CNeuralNetwork::init()
 	SG_ADD((CSGObject**)&m_layers, "layers", 
 		"DynamicObjectArray of NeuralNetwork objects",
 		MS_NOT_AVAILABLE);
-	SG_ADD(&m_input_dropout_mask, "input_dropout_mask",
-		"Input Dropout Mask", MS_NOT_AVAILABLE);
 	SG_ADD(&m_is_training, "is_training",
 		"is_training", MS_NOT_AVAILABLE);
-	SG_ADD(&m_inputs, "inputs", "Inputs", MS_NOT_AVAILABLE);
 }

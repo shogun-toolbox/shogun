@@ -59,6 +59,24 @@ enum ENNOptimizationMethod
  * class defines the interface necessary for forward and 
  * [backpropagation](http://en.wikipedia.org/wiki/Backpropagation).
  * 
+ * The network can be constructed as any arbitrary directed acyclic graph.  
+ * 
+ * How to use the network:
+ * 	- Prepare a CDynamicObjectArray of CNeuralLayer-based objects that specify 
+ * the type of layers used in the network. The array must contain at least one 
+ * input layer. The last layer in the array is treated as the output layer. 
+ * Also note that forward propagation is performed in the order at which the 
+ * layers appear in the array. So if layer j takes its input from layer i then 
+ * i must be less than j.
+ * 	- Specify how the layers are connected together. This can be done using 
+ * either connect() or quick_connect().
+ * 	- Call initialize()
+ * 	- Specify the training parameters if needed
+ * 	- Train set_labels() and train()
+ * 	- If needed, the network with the learned parameters can be stored on disk 
+ * using save_serializable() (loaded using load_serializable())
+ * 	- Apply the network using apply()
+ * 
  * Supported feature types: CDenseFeatures<float64_t>
  * Supported label types:
  * 	- CBinaryLabels
@@ -92,19 +110,44 @@ public:
 	/** default constuctor */
 	CNeuralNetwork();
 	
+	/** Sets the layers of the network
+	 * 
+	 * @param layers An array of CNeuralLayer objects specifying the layers of 
+	 * the network. Must contain at least one input layer. The last layer in 
+	 * the array is treated as the output layer
+	 */
+	CNeuralNetwork(CDynamicObjectArray* layers);
+	
+	/** Sets the layers of the network
+	 * 
+	 * @param layers An array of CNeuralLayer objects specifying the layers of 
+	 * the network. Must contain at least one input layer. The last layer in 
+	 * the array is treated as the output layer
+	 */
+	virtual void set_layers(CDynamicObjectArray* layers);
+	
+	/** Connects layer i as input to layer j. In order for forward and 
+	 * backpropagation to work correctly, i must be less that j
+	 */
+	virtual void connect(int32_t i, int32_t j);
+	
+	/** Connects each layer to the layer after it. That is, connects layer i to 
+	 * as input to layer i+1 for all i.
+	 */
+	virtual void quick_connect();
+	
+	/** Disconnects layer i from layer j */
+	virtual void disconnect(int32_t i, int32_t j);
+	
+	/** Removes all connections in the network */
+	virtual void disconnect_all();
+	
 	/** Initializes the network
-	 * 
-	 * @param num_inputs number of inputs the network takes
-	 * 
-	 * @param layers An array of NeuralLayer objects specifying the hidden 
-	 * and output layers in the network.
 	 * 
 	 * @param sigma standard deviation of the gaussian used to randomly 
 	 * initialize the parameters
 	 */
-	virtual void initialize(int32_t num_inputs, 
-			CDynamicObjectArray* layers,
-			float64_t sigma = 0.01f);
+	virtual void initialize(float64_t sigma = 0.01f);
 	
 	virtual ~CNeuralNetwork();
 	
@@ -165,6 +208,8 @@ public:
 	
 	/** returns the number of neurons in the output layer */
 	int32_t get_num_outputs();
+	
+	CDynamicObjectArray* get_layers();
 	
 	virtual const char* get_name() const { return "NeuralNetwork";}
 	
@@ -382,6 +427,8 @@ protected:
 	/** network's layers */
 	CDynamicObjectArray* m_layers;
 	
+	SGMatrix<bool> m_adj_matrix;
+	
 	/** total number of parameters in the network */
 	int32_t m_total_num_parameters;
 	
@@ -403,17 +450,6 @@ protected:
 	 * Default value is 1
 	 */
 	int32_t m_batch_size;
-	
-	/** Stores the inputs currently being used by the network
-	 * size num_inputs * batch_size
-	 */
-	SGMatrix<float64_t> m_inputs;
-	
-	/** binary mask that determines whether an input will be kept or dropped out
-	 * during the current iteration of training 
-	 * size num_inputs * batch_size
-	 */
-	SGMatrix<bool> m_input_dropout_mask;
 	
 	/** True if the network is currently being trained
 	 * initial value is false
