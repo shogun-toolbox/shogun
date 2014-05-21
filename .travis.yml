@@ -108,9 +108,17 @@ install:
   - eval $CUSTOM_PKG
   - if [[ $TRAVIS_PYTHON_VERSION == '3.3' ]] ; then conda create -n testenv python=$TRAVIS_PYTHON_VERSION numpy scipy && source activate testenv ; fi
 before_script:
+  - git clone https://github.com/Itseez/opencv.git
+  - cd opencv
   - mkdir build
   - cd build
-  - cmake -DENABLE_TESTING=ON -DBUNDLE_EIGEN=ON -DBUNDLE_JSON=ON -DBUNDLE_NLOPT=ON $CMAKE_OPTIONS ..
+  - cmake ..
+  - make -j2
+  - sudo make -j2 install
+  - cd ../..
+  - mkdir build
+  - cd build
+  - cmake -DENABLE_TESTING=ON -DBUNDLE_EIGEN=ON -DBUNDLE_JSON=ON -DBUNDLE_NLOPT=ON -DOpenCV=ON $CMAKE_OPTIONS ..
 script:
   - if [ -z "$CMAKE_OPTIONS" -o -n "$COVERALLS" ] ; then
       make -j 2 ;
