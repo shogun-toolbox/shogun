@@ -40,7 +40,7 @@
 #include <shogun/lib/config.h>
 #ifdef HAVE_EIGEN3
 #include <shogun/base/init.h>
-#include <shogun/machine/gp/LogitVariationalPiecewiseBoundLikelihood.h>
+#include <shogun/machine/gp/LogitVGPiecewiseBoundLikelihood.h>
 #include <shogun/distributions/classical/GaussianDistribution.h>
 #include <shogun/optimization/lbfgs/lbfgs.h>
 #include <shogun/mathematics/Math.h>
@@ -173,7 +173,7 @@ SGVector<float64_t> create_label(const char * fname, SGVector<float64_t> mu,
 //The following struct is used to pass information when using the build-in L-BFGS component
 struct Shared 
 {
-	CLogitVariationalPiecewiseBoundLikelihood *lik;
+	CLogitVGPiecewiseBoundLikelihood *lik;
 	SGVector<float64_t> y;
 	SGVector<float64_t> mu;
 	lbfgs_parameter_t lbfgs_param;
@@ -302,7 +302,7 @@ void run(const char * x_file, const char * y_file, const char * bound_file,
 
 	//load('llp.mat'); 
 	obj.bound = init_piecewise_bound(bound_file);
-	obj.lik = new CLogitVariationalPiecewiseBoundLikelihood();
+	obj.lik = new CLogitVGPiecewiseBoundLikelihood();
 	obj.lik->set_variational_bound(obj.bound);
 
 	//m0 = mu; % initial value all zero

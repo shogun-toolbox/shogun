@@ -34,8 +34,8 @@
  * "Piecewise Bounds for Estimating Bernoulli-Logistic Latent Gaussian Models." ICML. 2011.
  */
 
-#ifndef _LOGITVARIATIONALPIECEWISEBOUNDLIKELIHOOD_H_
-#define _LOGITVARIATIONALPIECEWISEBOUNDLIKELIHOOD_H_
+#ifndef _LOGITVGPIECEWISEBOUNDLIKELIHOOD_H_
+#define _LOGITVGPIECEWISEBOUNDLIKELIHOOD_H_
 
 #include <shogun/lib/config.h>
 
@@ -43,10 +43,7 @@
 
 #include <shogun/machine/gp/LogitLikelihood.h>
 #include <shogun/mathematics/eigen3.h>
-#include <shogun/mathematics/Statistics.h>
-#include <shogun/distributions/classical/GaussianDistribution.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/labels/BinaryLabels.h>
+#include <shogun/machine/gp/VariationalGaussianLikelihood.h>
 
 namespace shogun
 {
@@ -65,18 +62,18 @@ namespace shogun
  * m is the size of the pre-defined bound, which is the num_rows of bound passed in set_bound
  * (In the reference Matlab code, m is 20)
  */
-class CLogitVariationalPiecewiseBoundLikelihood : public CLogitLikelihood
+class CLogitVGPiecewiseBoundLikelihood : public CVariationalGaussianLikelihood
 {
 public:
-	CLogitVariationalPiecewiseBoundLikelihood();
+	CLogitVGPiecewiseBoundLikelihood();
 
-	virtual ~CLogitVariationalPiecewiseBoundLikelihood();
+	virtual ~CLogitVGPiecewiseBoundLikelihood();
 
 	/** returns the name of the likelihood model
 	 *
-	 * @return name LogitPiecewiseBoundLikelihood
+	 * @return name LogitVGPiecewiseBoundLikelihood
 	 */
-	virtual const char* get_name() const { return "LogitVariationalPiecewiseBoundLikelihood"; }
+	virtual const char* get_name() const { return "LogitVGPiecewiseBoundLikelihood"; }
 
 	/** set the variational piecewise bound for logit likelihood
 	 *
@@ -117,7 +114,44 @@ public:
 	 * @return derivative
 	 */
 	virtual SGVector<float64_t> get_variational_first_derivative(const TParameter* param) const;
+
+
+	// The following methods will be subjected to change
+	virtual ELikelihoodModelType get_model_type() const { return LT_LOGIT; }
+
+	virtual SGVector<float64_t> get_predictive_means(SGVector<float64_t> mu,
+			SGVector<float64_t> s2, const CLabels* lab=NULL) const
+	{ return likelihood->get_predictive_means(mu, s2, lab); }
+
+	virtual SGVector<float64_t> get_predictive_variances(SGVector<float64_t> mu,
+			SGVector<float64_t> s2, const CLabels* lab=NULL) const
+	{ return likelihood->get_predictive_variances(mu, s2, lab); }
+
+	virtual SGVector<float64_t> get_log_probability_f(const CLabels* lab,
+			SGVector<float64_t> func) const
+	{ return likelihood->get_log_probability_f(lab, func); }
+
+	virtual SGVector<float64_t> get_log_probability_derivative_f(
+			const CLabels* lab, SGVector<float64_t> func, index_t i) const
+	{ return likelihood->get_log_probability_derivative_f(lab, func, i); }
+
+	virtual bool supports_binary() const { return likelihood->supports_binary(); }
+
+	virtual SGVector<float64_t> get_log_zeroth_moments(SGVector<float64_t> mu,
+			SGVector<float64_t> s2, const CLabels* lab) const
+	{ return likelihood->get_log_zeroth_moments(mu, s2, lab); }
+
+	virtual float64_t get_first_moment(SGVector<float64_t> mu,
+			SGVector<float64_t> s2, const CLabels* lab, index_t i) const
+	{ return likelihood->get_first_moment(mu, s2, lab, i); }
+
+	virtual float64_t get_second_moment(SGVector<float64_t> mu,
+			SGVector<float64_t> s2, const CLabels* lab, index_t i) const
+	{ return likelihood->get_second_moment(mu, s2, lab, i); }
+
 private:
+
+	CLogitLikelihood * likelihood;
 
 	/** initialize private data members for this class */
 	void init();
@@ -163,4 +197,4 @@ private:
 };
 }
 #endif /* HAVE_EIGEN3 */
-#endif /* _LOGITVARIATIONALPIECEWISEBOUNDLIKELIHOOD_H_ */
+#endif /* _LOGITVGPIECEWISEBOUNDLIKELIHOOD_H_ */
