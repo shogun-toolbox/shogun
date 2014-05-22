@@ -9,6 +9,7 @@
 #include <shogun/mathematics/eigen3.h>
 #include <math.h>
 #include <gtest/gtest.h>
+#include <shogun/mathematics/Math.h>
 
 using namespace shogun;
 using namespace Eigen;
@@ -328,6 +329,48 @@ TEST(Statistics, lnormal_cdf)
 
 	lphi=CStatistics::lnormal_cdf(20.0);
 	EXPECT_NEAR(lphi, 0.0, 1e-6);
+
+	const index_t dim=10;
+	SGVector<float64_t> t(dim);
+	t[0]=0.197197002817524946749;
+	t[1]=0.0056939283141627128337;
+	t[2]=11.17348207854067787537;
+	t[3]=0.513878566283254256675;
+	t[4]=4.34696415708135575073;
+	t[5]=-8.69392831416271150147;
+	t[6]=-17.38785662832542300293;
+	t[7]=-34.42874909956949380785;
+	t[8]=-67.46964157081356461276;
+	t[9]=-136.67410392703391153191;
+
+	SGVector<float64_t> res(dim);
+	for(index_t i = 0; i < dim; i++)
+		res[i]=CStatistics::lnormal_cdf(t[i]);
+
+	float64_t rel_tolorance = 1e-2;
+	float64_t abs_tolorance;
+
+	abs_tolorance = CMath::get_abs_tolorance(-0.54789890348158110100, rel_tolorance);
+	EXPECT_NEAR(res[0],  -0.54789890348158110100,  abs_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(-0.68861439622252362813, rel_tolorance);
+	EXPECT_NEAR(res[1],  -0.68861439622252362813,  abs_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(0.00000000000000000000, rel_tolorance);
+	EXPECT_NEAR(res[2],  0.00000000000000000000,  abs_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(-0.36192936264423153370, rel_tolorance);
+	EXPECT_NEAR(res[3],  -0.36192936264423153370,  abs_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(-0.00000690176209610232, rel_tolorance);
+	EXPECT_NEAR(res[4],  -0.00000690176209610232,  abs_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(-40.88657697941886226545, rel_tolorance);
+	EXPECT_NEAR(res[5],  -40.88657697941886226545,  abs_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(-154.94677031185918281153, rel_tolorance);
+	EXPECT_NEAR(res[6],  -154.94677031185918281153,  abs_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(-597.12805462746462126233, rel_tolorance);
+	EXPECT_NEAR(res[7],  -597.12805462746462126233,  abs_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(-2281.20710267821459638071, rel_tolorance);
+	EXPECT_NEAR(res[8],  -2281.20710267821459638071,  abs_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(-9345.74193347713662660681, rel_tolorance);
+	EXPECT_NEAR(res[9],  -9345.74193347713662660681,  abs_tolorance);
+	
 }
 
 #endif // HAVE_EIGEN3
