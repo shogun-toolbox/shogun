@@ -22,43 +22,34 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/multiclass/KNN.h>
 
-using namespace std;
 using namespace shogun;
 
-void gen_rand_data(SGVector<float64_t> &lab, SGMatrix<float64_t> &feat)
-{
-	index_t dims=feat.num_rows;
-	index_t num=lab.vlen;
+void gen_rand_data(SGVector<float64_t> &lab, SGMatrix<float64_t> &feat) {
+	index_t dims = feat.num_rows;
+	index_t num = lab.vlen;
 
-	for (int32_t i=0; i<num; i++)
-	{
-		if (i<num/2)
-		{
+	for (int32_t i = 0; i < num; i++) {
+		if (i < num / 2) {
 			lab[i] = 0;
 
-			for (int32_t j=0; j<dims; j++)
-				feat(j, i)=CMath::random(-10.0, 10.0);
-		}
-		else
-		{
-			lab[i]=1.0;
+			for (int32_t j = 0; j < dims; j++)
+				feat(j, i) = CMath::random(-10.0, 10.0);
+		} else {
+			lab[i] = 1.0;
 
-			for (int32_t j=0; j<dims; j++)
-				feat(j, i)=CMath::random(-10.0, 10.0);
+			for (int32_t j = 0; j < dims; j++)
+				feat(j, i) = CMath::random(-10.0, 10.0);
 		}
 	}
-	lab.display_vector("lab");
-	feat.display_matrix("feat");
 }
 
-int main()
-{
+int main() {
 	init_shogun_with_defaults();
 
 	index_t num = 6;
 	index_t dim = 2;
 
-	SGMatrix<float64_t> features(dim,num);
+	SGMatrix<float64_t> features(dim, num);
 
 	SGVector<float64_t> labels(num);
 
@@ -66,25 +57,29 @@ int main()
 
 	CMulticlassLabels* multilabels = new CMulticlassLabels(labels);
 
-	CDenseFeatures<float64_t>* denseFeatures = new CDenseFeatures<float64_t>(features);
+	CDenseFeatures<float64_t>* denseFeatures = new CDenseFeatures<float64_t>(
+			features);
 
-	CKNN* kdtree = new CKNN(3, new CEuclideanDistance(denseFeatures,denseFeatures), multilabels);
+	CKNN* kdtree = new CKNN(3,
+			new CEuclideanDistance(denseFeatures, denseFeatures), multilabels,
+			CKNN::KDTree);
 
-	//train
-	kdtree->set_use_kdtree(true);
 	kdtree->train();
 
-	SGMatrix<float64_t> test(2,1);
-	test(0,0) = 4.0;
-	test(1,0) = 3.0;
+	SGMatrix<float64_t> test(2, 1);
+	test(0, 0) = 4.0;
+	test(1, 0) = 3.0;
 
-	CDenseFeatures<float64_t>* testFeatures = new CDenseFeatures<float64_t>(test);
+	CDenseFeatures<float64_t>* testFeatures = new CDenseFeatures<float64_t>(
+			test);
 
 	CMulticlassLabels* multiTestLab = kdtree->apply_multiclass(testFeatures);
-	SGVector<int32_t> lab = ((CMulticlassLabels*) multiTestLab)->get_int_labels();
+	SGVector<int32_t> lab =
+			((CMulticlassLabels*) multiTestLab)->get_int_labels();
 
-	cout<<"The classification: "<<lab[0]<<endl;
+	SG_SPRINT("The classification: %d \n", lab[0]);
 
+	SG_UNREF(kdtree);
 	exit_shogun();
 
 	return 0;

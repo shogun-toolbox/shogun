@@ -6,8 +6,7 @@
  *
  * Written (W) 2014 Zharmagambetov Arman, kd tree data structure
  */
-
-
+ 
 #ifndef _KDTREE_H_
 #define _KDTREE_H_
 
@@ -21,7 +20,6 @@
 #include <shogun/io/SGIO.h>
 #include <cmath>
 #include <vector>
-#include <cassert>
 #include <limits>
 #include <algorithm>
 
@@ -41,7 +39,9 @@ protected:
 	/** access to the node contents
 	* this is a bit dangerous, hence private
 	*/
-	inline vector<float>& content() { return data; }
+	inline vector<float>& content() {
+		return data;
+	}
 
 public:
 	/** constructor
@@ -52,17 +52,23 @@ public:
 	/** get left subtree
 	* @return left node
 	*/
-	inline KDTNode* get_left() { return left; }
-
-	/** get left subtree
-	* @return left node
-	*/
-	inline KDTNode* get_right() { return right; }
+	inline KDTNode* get_left() {
+		return left;
+	}
 	
 	/** get left subtree
 	* @return left node
 	*/
-	inline vector<float> get_data() { return data; }
+	inline KDTNode* get_right() {
+		return right;
+	}
+	
+	/** get left subtree
+	* @return left node
+	*/
+	inline vector<float> get_data() {
+		return data;
+	}
 
 	/** remove whole subtree
 	* note that one must unlink a node
@@ -98,12 +104,14 @@ class CKDTree
 		 * @param count the number of elements
 		 */
 		CKDTree() : root(NULL), count(0) {}
-
+		
 		/** the actual size of the tree
 		* @return the size of the tree
 		*/
-		inline int size() const { return count; }
-
+		inline int size() const {
+			return count;
+		}
+		
 		/** Constructs a kd-tree from the specified collection of elements.
 		*
 		* @param elements training data (parameter can be avoided if distance or
@@ -118,29 +126,29 @@ class CKDTree
 		* @param location one entry data which need to classify
 		* @return the nearest point to the data
 		*/
-		vector<float> FindNearestNeighbor(vector<float> location);
+		vector<float> find_nearest_neighbor(vector<float> location);
 		
 		/** Finds the N values in the tree that are nearest to the specified location.
 		* @param location one entry data which need to classify
 		* @return nearest N points
 		*/
-		vector<vector<float> > FindNearestNNeighbor(vector<float> location, int numNeighbors);
+		vector<vector<float> > find_nearest_nneighbor(vector<float> location, int numNeighbors);
 		
 		/** basic classification algorithm, it finds nearest n neighbors and determine the
 		* class of input vector
 		* @param location one entry data which need to classify
 		* @return class which most related to entry data
 		*/
-		float ClassifyKNierestNeighbor(vector<float> location, int k_nn);
+		float classify_knierest_neighbor(vector<float> location, int k_nn);
 		
 		/** transform SGMatrix to 2d vetor
 		* @param feature matrix
 		* @return two dimensional array
 		*/
-		vector<vector<float> > featureToVector(SGMatrix<float64_t> features);
+		vector<vector<float> > feature_to_vector(SGMatrix<float64_t> features);
 
 	protected:
-
+	
 		/** Recursively construct kd-tree from input array of features
 		* @param nodep pointer to the current node of the tree
 		* @param dimension dimension to differentiate the points
@@ -160,7 +168,7 @@ class CKDTree
 		* @param the last point in the tree
 		* @param dimension used to sort the points
 		*/
-		void sortByDimension(vector<vector<float> >& elements, int start, int end, int currentDim);
+		void sort_by_dimension(vector<vector<float> >& elements, int start, int end, int currentDim);
 		
 		/** helper for quicksort algorithm, it returns middle element, and
 		* reorganize elements
@@ -171,7 +179,7 @@ class CKDTree
 		*
 		* @return index of pivot element
 		*/
-		int sortPartition(vector<vector<float> >& elements, int start, int end, int currentDim);
+		int sort_partition(vector<vector<float> >& elements, int start, int end, int currentDim);
 		
 		/** Calculate distance by Euclidean
 		* @param v1 first feature(point coordinates)
@@ -179,7 +187,7 @@ class CKDTree
 		*
 		* @return distance between points
 		*/
-		double distanceByEuclidean(vector<float> v1, vector<float> v2);
+		double distance_by_euclidean(vector<float> v1, vector<float> v2);
 		
 		/** Recursively iterate through leafs of kd-tree to find the nearest neighbour
 		* @param location one entry data which need to classify
@@ -190,7 +198,7 @@ class CKDTree
 		*
 		* @return nearest point
 		*/
-		vector<float> FindNearestNeighborHelper(vector<float> location, KDTNode*& nodep,
+		vector<float> find_nearest_neighbor_helper(vector<float> location, KDTNode*& nodep,
 			vector<float> bestValue, double bestDistance, int depth);
 		
 		/** reqursively search in the tree for nearest n neighbors and insert it in priority queue
@@ -202,7 +210,7 @@ class CKDTree
 		* @param nearest point coordinates
 		* @param depth to which locate the node of the tree
 		*/
-		void FindNearestNNeighborHelper(vector<float> location, KDTNode*& nodep, vector<float>& bestValue, double& bestDistance,
+		void find_nearest_nneighbor_helper(vector<float> location, KDTNode*& nodep, vector<float>& bestValue, double& bestDistance,
 			int numNeighbors, vector<vector<float> >& valuesList, int depth);
 		
 		/** sort features matrix and reorganise it as priority queue , i.e. it implements quicksort algorithm
@@ -211,7 +219,7 @@ class CKDTree
 		* @param the last point in the tree
 		* @param distance to other point
 		*/
-		void sortByDistance(vector<vector<float> >& valuesList, int start, int end, vector<float> location);
+		void sort_by_distance(vector<vector<float> >& valuesList, int start, int end, vector<float> location);
 		
 		/** helper for quicksort algorithm, it returns middle element, and
  		* reorganize elements
@@ -222,7 +230,9 @@ class CKDTree
 		*
 		* @return index of pivot element
 		*/
-		int sortDistancePartition(vector<vector<float> >& valuesList, int start, int end, vector<float> location);
+		int sort_distance_partition(vector<vector<float> >& valuesList, int start, int end, vector<float> location);
 };
+
+/** KNN classifier with KD-tree*/
 
 #endif
