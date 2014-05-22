@@ -100,6 +100,7 @@ float64_t CHypothesisTest::compute_threshold(float64_t alpha)
 		SGVector<float64_t> values=sample_null();
 
 		/* return value of (1-alpha) quantile */
+		values.qsort();
 		result=values[index_t(CMath::floor(values.vlen*(1-alpha)))];
 	}
 	else
