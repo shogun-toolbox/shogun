@@ -394,6 +394,15 @@ public:
 	 */
 	static float64_t lnormal_cdf(float64_t x);
 
+
+	/* use to estimates erfc(x) valid for -100 < x < -8
+	 *
+	 * @param x real value
+	 *
+	 * @return weighted sum
+	 */
+	static float64_t erfc8_weighted_sum(float64_t x);
+
 	/** Error function
 	 *
 	 * The integral is
@@ -564,6 +573,11 @@ public:
 	SGSparseMatrix<float64_t> cov, int32_t N=1, bool precision_matrix=false);
 #endif //HAVE_EIGEN3
 
+	/* Magic number for computing lnormal_cdf */
+	static const float64_t ERFC_CASE1;
+
+	/* Magic number for computing lnormal_cdf */
+	static const float64_t ERFC_CASE2;
 
 protected:
 	/** Power series for incomplete beta integral.
