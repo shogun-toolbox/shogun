@@ -36,7 +36,7 @@
 using namespace std;
 using namespace shogun;
 
-TEST(TreeMachine, ID3TreeNodeData)
+TEST(TreeMachine, tree_building_test)
 {
 	CTreeMachineNode<id3TreeNodeData>* root= 
 			new CTreeMachineNode<id3TreeNodeData>();
@@ -86,6 +86,56 @@ TEST(TreeMachine, ID3TreeNodeData)
 	SG_UNREF(get_child2);
 	SG_UNREF(get_root);
 	SG_UNREF(tree);
+	SG_UNREF(insert_children);
+	SG_UNREF(get_children);
+}
+
+TEST(TreeMachine, clone_tree_test)
+{
+	CTreeMachineNode<id3TreeNodeData>* root=new CTreeMachineNode<id3TreeNodeData>();
+	SG_REF(root);
+	
+	CTreeMachine<id3TreeNodeData>* tree=new CTreeMachine<id3TreeNodeData>();
+	tree->set_root(root);
+	SG_UNREF(root);
+
+	CTreeMachineNode<id3TreeNodeData>* child1= new CTreeMachineNode<id3TreeNodeData>();
+	CTreeMachineNode<id3TreeNodeData>* child2= new CTreeMachineNode<id3TreeNodeData>();
+	CTreeMachineNode<id3TreeNodeData>* child3=new CTreeMachineNode<id3TreeNodeData>();
+	child2->machine(2);
+	child2->data.attribute_id=2;
+	child2->data.transit_if_feature_value=2.0;
+	child2->data.class_label=22.0;
+
+	CDynamicObjectArray* insert_children=new CDynamicObjectArray();
+	insert_children->push_back(child1);
+	insert_children->push_back(child2);
+	insert_children->push_back(child3);
+	CTreeMachineNode<id3TreeNodeData>* get_root=tree->get_root();
+	get_root->set_children(insert_children);
+
+	CTreeMachine<id3TreeNodeData>* tree_clone=tree->clone_tree();
+	SG_UNREF(tree);
+	SG_UNREF(get_root);
+
+	get_root=tree_clone->get_root();
+	CDynamicObjectArray* get_children=get_root->get_children();
+	EXPECT_EQ(get_children->get_num_elements(),3);
+	CTreeMachineNode<id3TreeNodeData>* get_child2=dynamic_cast<CTreeMachineNode<id3TreeNodeData>*>
+									(get_children->get_element(1));
+	SG_UNREF(get_children);
+	get_children=get_child2->get_children();
+
+	EXPECT_EQ(get_child2->data.attribute_id,2);
+	EXPECT_EQ(get_child2->data.transit_if_feature_value,2.0);
+	EXPECT_EQ(get_child2->data.class_label,22.0);
+	EXPECT_EQ(get_child2->machine(),2);
+	EXPECT_EQ(get_child2->parent()->machine(),-1);
+	EXPECT_EQ(get_children->get_num_elements(),0);
+
+	SG_UNREF(get_child2);
+	SG_UNREF(get_root);
+	SG_UNREF(tree_clone);
 	SG_UNREF(insert_children);
 	SG_UNREF(get_children);
 }
