@@ -77,6 +77,9 @@ enum ENNOptimizationMethod
  * using save_serializable() (loaded using load_serializable())
  * 	- Apply the network using apply()
  * 
+ * The network can also be initialized from a JSON file using 
+ * CNeuralNetworkFileReader.
+ * 
  * Supported feature types: CDenseFeatures<float64_t>
  * Supported label types:
  * 	- CBinaryLabels
