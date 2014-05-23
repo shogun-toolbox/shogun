@@ -30,39 +30,26 @@
  * 
  * Written (W) 2014 Khaled Nasr
  */
-
-#include <shogun/neuralnets/NeuralLogisticLayer.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/lib/SGVector.h>
+#include <shogun/neuralnets/NeuralInputLayer.h>
+#include <shogun/lib/SGMatrix.h>
+#include <gtest/gtest.h>
 
 using namespace shogun;
 
-CNeuralLogisticLayer::CNeuralLogisticLayer() : CNeuralLinearLayer()
+TEST(NeuralInputLayer, compute_activations)
 {
-}
-
-CNeuralLogisticLayer::CNeuralLogisticLayer(int32_t num_neurons): 
-CNeuralLinearLayer(num_neurons)
-{
-}
-
-void CNeuralLogisticLayer::compute_activations(SGVector<float64_t> parameters,
-		CDynamicObjectArray* layers)
-{
-	CNeuralLinearLayer::compute_activations(parameters, layers);
+	CMath::init_random(100);
+	SGMatrix<float64_t> x(12,3);
+	for (int32_t i=0; i<x.num_rows*x.num_cols; i++)
+		x[i] = CMath::random(-10.0,10.0);
 	
-	// apply logistic activation function
-	int32_t length = m_num_neurons*m_batch_size;
-	for (int32_t i=0; i<length; i++)
-		m_activations[i] = 1.0/(1.0+CMath::exp(-1.0*m_activations[i]));
-}
-
-void CNeuralLogisticLayer::compute_local_gradients(SGMatrix<float64_t> targets)
-{
-	CNeuralLinearLayer::compute_local_gradients(targets);
+	CNeuralInputLayer layer(5, 4);
+	layer.set_batch_size(x.num_cols);
 	
-	// multiply by the derivative of the logistic function
-	int32_t length = m_num_neurons*m_batch_size;
-	for (int32_t i=0; i<length; i++)
-		m_local_gradients[i] *= m_activations[i] * (1.0-m_activations[i]);
+	layer.compute_activations(x);
+	SGMatrix<float64_t> A = layer.get_activations();
+	
+	for (int32_t i=0; i<A.num_rows; i++)
+		for (int32_t j=0; j<A.num_cols; j++)
+			EXPECT_EQ(x(i+layer.get_start_index(), j), A(i,j));
 }

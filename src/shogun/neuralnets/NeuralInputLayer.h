@@ -31,61 +31,69 @@
  * Written (W) 2014 Khaled Nasr
  */
 
-#ifndef __NEURALLOGISTICLAYER_H__
-#define __NEURALLOGISTICLAYER_H__
+#ifndef __NEURALINPUTLAYER_H__
+#define __NEURALINPUTLAYER_H__
 
-#include <shogun/neuralnets/NeuralLinearLayer.h>
+#include <shogun/lib/common.h>
+#include <shogun/neuralnets/NeuralLayer.h>
 
 namespace shogun
 {
-/** @brief Neural layer with linear neurons, with a [logistic activation 
- * function](http://en.wikipedia.org/wiki/Logistic_function). can be used as a 
- * hidden layer or an output layer.
- * 
- * When used as an output layer, a 
- * [squared error measure](http://en.wikipedia.org/wiki/Mean_squared_error) is 
- * used
+/** @brief Represents an input layer. The layer can be either 
+ * connected to all the input features that a network receives (default) or 
+ * connected to just a small part of those features
  */
-class CNeuralLogisticLayer : public CNeuralLinearLayer
+class CNeuralInputLayer : public CNeuralLayer
 {
 public:
 	/** default constructor */
-	CNeuralLogisticLayer();
+	CNeuralInputLayer();
 	
 	/** Constuctor
 	 * 
 	 * @param num_neurons Number of neurons in this layer
+	 * 
+	 * @param start_index Index of the first feature that the layer connects to, 
+	 * i.e the activations of the layer are copied from 
+	 * input_features[start_index:start_index+num_neurons]
 	 */
-	CNeuralLogisticLayer(int32_t num_neurons);
+	CNeuralInputLayer(int32_t num_neurons, int32_t start_index = 0);
 	
-	virtual ~CNeuralLogisticLayer() {}
+	virtual ~CNeuralInputLayer() {}
 	
-	/** Computes the activations of the neurons in this layer, results should 
-	 * be stored in m_activations. To be used only with non-input layers
+	/** Returns true */
+	virtual bool is_input() { return true; }
+	
+	/** Copies inputs[start_index:start_index+num_neurons, :] into the 
+	 * layer's activations
 	 * 
-	 * @param parameters Vector of size get_num_parameters(), contains the 
-	 * parameters of the layer
-	 * 
-	 * @param layers Array of layers that form the network that this layer is 
-	 * being used with
+	 * @param inputs Input features matrix, size num_features*num_cases
 	 */
-	virtual void compute_activations(SGVector<float64_t> parameters,
-			CDynamicObjectArray* layers);
+	virtual void compute_activations(SGMatrix<float64_t> inputs);
 	
-	/** Computes the gradients of the error with respect to this layer's
-	 * pre-activations. Results are stored in m_local_gradients. 
-	 * 
-	 * This is used by compute_gradients() and can be overriden to implement 
-	 * layers with different activation functions
-	 * 
-	 * @param targets a matrix of size num_neurons*batch_size. If the layer is 
-	 * being used as an output layer, targets is the desired values for the 
-	 * layer's activations, otherwise it's an empty matrix
+	/** Gets the index of the first feature that the layer connects to, 
+	 * i.e the activations of the layer are copied from 
+	 * input_features[start_index:start_index+num_neurons]
 	 */
-	virtual void compute_local_gradients(SGMatrix<float64_t> targets);
+	virtual int32_t get_start_index() { return m_start_index; }
 	
-	virtual const char* get_name() const { return "NeuralLogisticLayer"; }
+	/** Sets the index of the first feature that the layer connects to, 
+	 * i.e the activations of the layer are copied from 
+	 * input_features[start_index:start_index+num_neurons]
+	 */
+	virtual void set_start_index(int32_t i) { m_start_index = i; }
+	
+	virtual const char* get_name() const { return "NeuralInputLayer"; }
+	
+private:
+	void init();
+
+protected:
+	/** Index of the first feature that the layer connects to, 
+	 * i.e the activations of the layer are copied from 
+	 * input_features[start_index:start_index+num_neurons]
+	 */
+	int32_t m_start_index;
 };
-	
 }
 #endif

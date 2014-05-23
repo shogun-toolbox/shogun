@@ -32,6 +32,7 @@
  */
 
 #include <shogun/neuralnets/NeuralLogisticLayer.h>
+#include <shogun/neuralnets/NeuralInputLayer.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/mathematics/Math.h>
@@ -52,27 +53,41 @@ TEST(NeuralLogisticLayer, compute_activations)
 	for (int32_t i=0; i<x.num_rows*x.num_cols; i++)
 		x[i] = CMath::random(-10.0,10.0);
 	
+	CNeuralInputLayer* input = new CNeuralInputLayer (x.num_rows);
+	input->set_batch_size(x.num_cols);
+	
+	CDynamicObjectArray* layers = new CDynamicObjectArray();
+	layers->append_element(input);
+	
+	SGVector<int32_t> input_indices(1);
+	input_indices[0] = 0;
+	
 	// initialize the layer
-	layer.initialize(x.num_rows);
+	layer.initialize(layers, input_indices);
 	SGVector<float64_t> params(layer.get_num_parameters());
 	SGVector<bool> param_regularizable(layer.get_num_parameters());
 	layer.initialize_parameters(params, param_regularizable, 1.0);
 	layer.set_batch_size(x.num_cols);
 	
 	// compute the layer's activations
-	layer.compute_activations(params, x);
+	input->compute_activations(x);
+	layer.compute_activations(params, layers);
 	SGMatrix<float64_t> A = layer.get_activations();
 	
 	// manually compute the layer's activations
 	SGMatrix<float64_t> A_ref(layer.get_num_neurons(), x.num_cols);
 	
+	float64_t* biases = params.vector;
+	float64_t* weights = biases + layer.get_num_neurons();
+	
 	for (int32_t i=0; i<A_ref.num_rows; i++)
 	{
 		for (int32_t j=0; j<A_ref.num_cols; j++)
 		{
-			A_ref(i,j) = params[layer.get_num_neurons()*x.num_rows+i]; // bias
+			A_ref(i,j) = biases[i];
+			
 			for (int32_t k=0; k<x.num_rows; k++)
-				A_ref(i,j) += params[i+k*A_ref.num_rows]*x(k,j);
+				A_ref(i,j) += weights[i+k*A_ref.num_rows]*x(k,j);
 			
 			A_ref(i,j) = 1/(1+CMath::exp(-1*A_ref(i,j)));
 		}
@@ -83,6 +98,8 @@ TEST(NeuralLogisticLayer, compute_activations)
 	EXPECT_EQ(A_ref.num_cols, A.num_cols);
 	for (int32_t i=0; i<A.num_rows*A.num_cols; i++)
 		EXPECT_NEAR(A_ref[i], A[i], 1e-12);
+	
+	SG_UNREF(layers);
 }
 
 /** Compares the local gradients computed using the layer against gradients 
@@ -90,27 +107,37 @@ TEST(NeuralLogisticLayer, compute_activations)
  */
 TEST(NeuralLogisticLayer, compute_local_gradients)
 {
-	// initialize some random inputs and outputs
+	CNeuralLogisticLayer layer(9);
+	
 	CMath::init_random(100);
 	SGMatrix<float64_t> x(12,3);
 	for (int32_t i=0; i<x.num_rows*x.num_cols; i++)
 		x[i] = CMath::random(-10.0,10.0);
 	
-	SGMatrix<float64_t> y(9,3);
+	CNeuralInputLayer* input = new CNeuralInputLayer (x.num_rows);
+	input->set_batch_size(x.num_cols);
+	
+	CDynamicObjectArray* layers = new CDynamicObjectArray();
+	layers->append_element(input);
+	
+	SGVector<int32_t> input_indices(1);
+	input_indices[0] = 0;
+	
+	// initialize the layer
+	layer.initialize(layers, input_indices);
+	SGVector<float64_t> params(layer.get_num_parameters());
+	SGVector<bool> param_regularizable(layer.get_num_parameters());
+	layer.initialize_parameters(params, param_regularizable, 1.0);
+	layer.set_batch_size(x.num_cols);
+	
+	SGMatrix<float64_t> y(layer.get_num_neurons(), x.num_cols);
 	for (int32_t i=0; i<y.num_rows*y.num_cols; i++)
 		y[i] = CMath::random(0.0,1.0);
 	
-	// initialize the layer
-	CNeuralLogisticLayer layer(y.num_rows);
-	layer.initialize(x.num_rows);
-	SGVector<float64_t> params(layer.get_num_parameters());
-	SGVector<bool> param_regularizable(layer.get_num_parameters());
-	layer.initialize_parameters(params, param_regularizable, 0.01);
-	layer.set_batch_size(x.num_cols);
-	
 	// compute the layer's local gradients
-	layer.compute_activations(params, x);
-	layer.compute_local_gradients(true, y);
+	input->compute_activations(x);
+	layer.compute_activations(params, layers);
+	layer.compute_local_gradients(y);
 	SGMatrix<float64_t> LG = layer.get_local_gradients();
 	
 	// manually compute local gradients 
@@ -134,4 +161,6 @@ TEST(NeuralLogisticLayer, compute_local_gradients)
 	EXPECT_EQ(LG_numerical.num_cols, LG.num_cols);
 	for (int32_t i=0; i<LG.num_rows*LG.num_cols; i++)
 		EXPECT_NEAR(LG_numerical[i], LG[i], 1e-6);
+	
+	SG_UNREF(layers);
 }

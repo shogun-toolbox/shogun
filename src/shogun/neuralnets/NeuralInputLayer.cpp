@@ -31,38 +31,40 @@
  * Written (W) 2014 Khaled Nasr
  */
 
-#include <shogun/neuralnets/NeuralLogisticLayer.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/lib/SGVector.h>
+#include <shogun/neuralnets/NeuralInputLayer.h>
 
 using namespace shogun;
 
-CNeuralLogisticLayer::CNeuralLogisticLayer() : CNeuralLinearLayer()
+CNeuralInputLayer::CNeuralInputLayer() : CNeuralLayer()
 {
+	init();
 }
 
-CNeuralLogisticLayer::CNeuralLogisticLayer(int32_t num_neurons): 
-CNeuralLinearLayer(num_neurons)
+CNeuralInputLayer::CNeuralInputLayer(int32_t num_neurons, int32_t start_index): 
+CNeuralLayer(num_neurons)
 {
+	init();
+	m_start_index = start_index;
 }
 
-void CNeuralLogisticLayer::compute_activations(SGVector<float64_t> parameters,
-		CDynamicObjectArray* layers)
+void CNeuralInputLayer::compute_activations(SGMatrix< float64_t > inputs)
 {
-	CNeuralLinearLayer::compute_activations(parameters, layers);
-	
-	// apply logistic activation function
-	int32_t length = m_num_neurons*m_batch_size;
-	for (int32_t i=0; i<length; i++)
-		m_activations[i] = 1.0/(1.0+CMath::exp(-1.0*m_activations[i]));
+	if (m_start_index == 0)
+	{
+		memcpy(m_activations.matrix, inputs.matrix, 
+			m_num_neurons*m_batch_size*sizeof(float64_t));
+	}
+	else
+	{
+		for (int32_t i=0; i<m_num_neurons; i++)
+			for (int32_t j=0; j<m_batch_size; j++)
+				m_activations(i,j) = inputs(m_start_index+i, j);
+	}
 }
 
-void CNeuralLogisticLayer::compute_local_gradients(SGMatrix<float64_t> targets)
+void CNeuralInputLayer::init()
 {
-	CNeuralLinearLayer::compute_local_gradients(targets);
-	
-	// multiply by the derivative of the logistic function
-	int32_t length = m_num_neurons*m_batch_size;
-	for (int32_t i=0; i<length; i++)
-		m_local_gradients[i] *= m_activations[i] * (1.0-m_activations[i]);
+	m_start_index = 0;
+	SG_ADD(&m_start_index, "start_index",
+	       "Start Index", MS_NOT_AVAILABLE);
 }
