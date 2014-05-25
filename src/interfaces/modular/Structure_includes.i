@@ -29,6 +29,7 @@
  #include <shogun/features/FactorGraphFeatures.h>
  #include <shogun/labels/FactorGraphLabels.h>
  #include <shogun/structure/MAPInference.h>
+ #include <shogun/structure/GraphCut.h>
  #include <shogun/structure/FactorGraphModel.h>
 
  #include <shogun/structure/SOSVMHelper.h>

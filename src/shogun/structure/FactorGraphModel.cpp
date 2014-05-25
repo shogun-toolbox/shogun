@@ -50,7 +50,7 @@ void CFactorGraphModel::init()
 	m_inf_type = TREE_MAX_PROD;
 	m_factor_types = new CDynamicObjectArray();
 	m_verbose = false;
-
+	
 	SG_REF(m_factor_types);
 }
 
@@ -327,7 +327,6 @@ CResultSet* CFactorGraphModel::argmax(SGVector<float64_t> w, int32_t feat_idx, b
 	ret->score = energy_gt;
 
 	// - min_y [ E(x_i, y; w) - delta(y_i, y) ]
-	CMAPInference infer_met(fg, m_inf_type);
 	if (training)
 	{
 		fg->loss_augmentation(y_truth); // wrong assignments -delta()
@@ -339,6 +338,7 @@ CResultSet* CFactorGraphModel::argmax(SGVector<float64_t> w, int32_t feat_idx, b
 		}
 	}
 
+	CMAPInference infer_met(fg, m_inf_type);
 	infer_met.inference();
 
 	// y_star
@@ -413,4 +413,58 @@ void CFactorGraphModel::init_primal_opt(
 		SGMatrix< float64_t > & C)
 {
 	C = SGMatrix< float64_t >::create_identity_matrix(get_dim(), regularization);
+	REQUIRE(m_factor_types != NULL, "%s::init_primal_opt(): no factor types!\n", get_name());
+
+	int32_t dim_w = get_dim();
+	
+	switch (m_inf_type)
+	{
+		case GRAPH_CUT:	
+			lb.resize_vector(dim_w);
+			ub.resize_vector(dim_w);
+			SGVector< float64_t >::fill_vector(lb.vector, lb.vlen, -CMath::INFTY);
+			SGVector< float64_t >::fill_vector(ub.vector, ub.vlen, CMath::INFTY);
+
+			for (int32_t fi = 0; fi < m_factor_types->get_num_elements(); ++fi)
+			{
+				CFactorType* ftype = dynamic_cast<CFactorType*>(m_factor_types->get_element(fi));
+				int32_t w_dim = ftype->get_w_dim();
+				SGVector<int32_t> card = ftype->get_cardinalities();
+		
+				// TODO: Features of pairwise factor are assume to be 1. Consider more general case, e.g., edge features are availabel.
+				// for pairwise factors with binary labels
+				if (card.size() == 2 &&  card[0] == 2 && card[1] == 2)
+				{
+					REQUIRE(w_dim == 4, "GraphCut doesn't support edge features currently.");
+					SGVector<float64_t> fw = ftype->get_w();
+					SGVector<int32_t> fw_map = get_params_mapping(ftype->get_type_id());
+					ASSERT(fw_map.size() == fw.size());
+
+					// submodularity constrain
+					// E(0,1) + E(1,0) - E(0,0) + E(1,1) > 0
+					// For pairwise factors, data term = 1,
+					// energy table indeces are defined as follows:
+					// w[0]*1 = E(0, 0)
+					// w[1]*1 = E(1, 0)
+					// w[2]*1 = E(0, 1)
+					// w[3]*1 = E(1, 1)
+					// thus, w[2] + w[1] - w[0] - w[3] > 0
+					// since factor graph model is over-parametering, 
+					// the constrain can be written as w[2] > 0, w[1] > 0, w[0] = 0, w[3] = 0		
+					lb[fw_map[0]] = 0;
+					ub[fw_map[0]] = 0;
+					lb[fw_map[3]] = 0;
+					ub[fw_map[3]] = 0;
+					lb[fw_map[1]] = 0;
+					lb[fw_map[2]] = 0;
+				}		
+				SG_UNREF(ftype);
+			}
+			break;
+		case TREE_MAX_PROD:
+		case LOOPY_MAX_PROD:
+		case LP_RELAXATION:
+		case TRWS_MAX_PROD:
+			break;
+	}
 }
