@@ -1,4 +1,8 @@
+#include <shogun/lib/config.h>
 #ifdef HAVE_OPENCV
+
+#ifndef __CV2FEATURESFACTORY_H__
+#define __CV2FEATURESFACTORY_H__
 
 #include <opencv2/highgui/highgui.hpp>
 #include <shogun/lib/SGMatrix.h>
@@ -27,4 +31,5 @@ template<typename T> CDenseFeatures<T>* CV2FeaturesFactory::getDenseFeatures(cv:
 
 }
 
+#endif /* __CV2FEATURESFACTORY_H__  */
 #endif /* HAVE_OPENCV */

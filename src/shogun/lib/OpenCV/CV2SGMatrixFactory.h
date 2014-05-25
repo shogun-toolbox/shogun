@@ -1,4 +1,9 @@
+#include <shogun/lib/config.h>
 #ifdef HAVE_OPENCV
+
+#ifndef __CV2SGMATRIXFACTORY_H__
+#define __CV2SGMATRIXFACTORY_H__
+
 
 #include <opencv2/highgui/highgui.hpp>
 #include <shogun/lib/SGMatrix.h>
@@ -85,10 +90,20 @@ template<typename T> SGMatrix<T> CV2SGMatrixFactory::getMatrix(cv::Mat cvMat, CV
 		{
 			SGMatrix<T> sgMat(nRows, nCols);
 			memcpy(sgMat.matrix, cvMat.data, nRows*nCols*sizeof(T));
+			SGMatrix<T>::transpose_matrix(sgMat.matrix,nRows,nCols);
+			return sgMat;
+		}
+		
+		default:
+		{
+			SGMatrix<T> sgMat(nRows, nCols);
+			memcpy(sgMat.matrix, cvMat.data, nRows*nCols*sizeof(T));
+			SGMatrix<T>::transpose_matrix(sgMat.matrix,nRows,nCols);
 			return sgMat;
 		}
 	}
 }
 
 }
+#endif /*__CV2SGMATRIXFACTORY_H__*/
 #endif /* HAVE_OPENCV */

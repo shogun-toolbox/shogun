@@ -1,13 +1,12 @@
-#include <gtest/gtest.h>
-
+#include <shogun/lib/config.h>
 #ifdef HAVE_OPENCV
 
+#include <gtest/gtest.h>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
-#include <iostream>
  
 using namespace cv;
- 
+
 TEST(OpenCV, OpenCV_Integration_Test)
 {
 	Mat cvMat = Mat::eye(3,3,CV_64FC1);

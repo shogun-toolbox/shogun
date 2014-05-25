@@ -1,4 +1,8 @@
+#include <shogun/lib/config.h>
 #ifdef HAVE_OPENCV
+
+#ifndef __SG2CVMATFACTORY_H__
+#define __SG2CVMATFACTORY_H__
 
 #include <opencv2/highgui/highgui.hpp>
 #include <shogun/lib/SGMatrix.h>
@@ -72,6 +76,7 @@ template <typename T> cv::Mat SG2CVMatFactory::getMatrix(CDenseFeatures<float64_
 		{
 			cv::Mat cvMat(nRows, nCols, CV_64FC1, (void*)sgMat.matrix);
 			cvMat.convertTo(cvMat,myType);
+			cvMat.t();
 			return cvMat;
 		}
 		
@@ -90,10 +95,22 @@ template <typename T> cv::Mat SG2CVMatFactory::getMatrix(CDenseFeatures<float64_
 			cv::Mat cvMat(nRows, nCols, CV_64FC1);
 			memcpy((double*)cvMat.data, sgMat.matrix, nRows*nCols*sizeof(double));
 			cvMat.convertTo(cvMat,myType);
+			cvMat.t();
+			return cvMat;
+		}
+		
+		default:
+		{
+			cv::Mat cvMat(nRows, nCols, CV_64FC1);
+			memcpy((double*)cvMat.data, sgMat.matrix, nRows*nCols*sizeof(double));
+			cvMat.convertTo(cvMat,myType);
+			cvMat.t();
 			return cvMat;
 		}
 	}
 }
 
 }
+
+#endif /*__SG2CVMATFACTORY_H__*/
 #endif /* HAVE_OPENCV */
