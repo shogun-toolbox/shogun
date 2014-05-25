@@ -11,7 +11,8 @@
  * Written (W) 2014 Zharmagambetov Arman, kd tree support
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
- 
+
+
 #include <iostream>
 #include <vector>
 
@@ -61,9 +62,8 @@ int main() {
 			features);
 
 	CKNN* kdtree = new CKNN(3,
-			new CEuclideanDistance(denseFeatures, denseFeatures), multilabels,
-			CKNN::KDTree);
-
+			new CEuclideanDistance(denseFeatures, denseFeatures), multilabels);
+	kdtree->set_mode(kdtree->KDTree);
 	kdtree->train();
 
 	SGMatrix<float64_t> test(2, 1);

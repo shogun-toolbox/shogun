@@ -315,4 +315,3 @@ float CKDTree::classify_knierest_neighbor(vector<float> location, int k_nn) {
 
 	return mostFrequentLabel;
 }
-

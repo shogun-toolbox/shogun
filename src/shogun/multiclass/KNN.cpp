@@ -517,4 +517,3 @@ void CKNN::choose_class_for_multiple_k(int32_t* output, int32_t* classes,
 		output[j * step] = out_idx + m_min_label;
 	}
 }
-

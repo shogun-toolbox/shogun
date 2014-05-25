@@ -159,14 +159,14 @@ public:
 	inline float64_t get_q() {
 		return m_q;
 	}
-	
+
 	/** set mode
 	* @param mode of the KNN
 	*/
 	inline void set_mode(KNNMode mode) {
 		m_mode = mode;
 	}
-	
+
 	/** get mode
 	* @return mode of the KNN
 	*/
