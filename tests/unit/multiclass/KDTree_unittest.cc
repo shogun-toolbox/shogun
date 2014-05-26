@@ -1,23 +1,11 @@
-/*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
- *
- * Written (W) 2006 Christian Gehl
- * Written (W) 1999-2009 Soeren Sonnenburg
- * Written (W) 2011 Sergey Lisitsyn
- * Written (W) 2012 Fernando José Iglesias García, cover tree support
- * Written (W) 2014 Zharmagambetov Arman, kd tree support
- * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
- */
-
 #include <shogun/distance/EuclideanDistance.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/lib/SGMatrix.h>
-#include <shogun/lib/SGVector.h>
 #include <shogun/multiclass/KNN.h>
+#include <shogun/lib/SGVector.h>
+#include <shogun/base/init.h>
+#include <gtest/gtest.h>
 
 using namespace shogun;
 
@@ -41,9 +29,11 @@ void gen_rand_data(SGVector<float64_t> &lab, SGMatrix<float64_t> &feat)
 	}
 }
 
-int main() {
-	init_shogun_with_defaults();
 
+void test_knn(CKNN::KNNMode mode)
+{
+	init_shogun_with_defaults();
+	
 	index_t num = 6;
 	index_t dim = 2;
 
@@ -56,28 +46,42 @@ int main() {
 	CMulticlassLabels* multilabels = new CMulticlassLabels(labels);
 
 	CDenseFeatures<float64_t>* denseFeatures = new CDenseFeatures<float64_t>(
-			features);
+				features);
 
 	CKNN* kdtree = new CKNN(3,
-			new CEuclideanDistance(denseFeatures, denseFeatures), multilabels);
+				new CEuclideanDistance(denseFeatures, denseFeatures), multilabels);
 	kdtree->set_mode(kdtree->KDTree);
 	kdtree->train();
 
 	SGMatrix<float64_t> test(2, 1);
-	test(0, 0) = 4.0;
-	test(1, 0) = 3.0;
+		test(0, 0) = 4.0;
+		test(1, 0) = 3.0;
 
 	CDenseFeatures<float64_t>* testFeatures = new CDenseFeatures<float64_t>(
-			test);
+				test);
 
 	CMulticlassLabels* multiTestLab = kdtree->apply_multiclass(testFeatures);
 	SGVector<int32_t> lab =
-			((CMulticlassLabels*) multiTestLab)->get_int_labels();
+				((CMulticlassLabels*) multiTestLab)->get_int_labels();
 
-	SG_SPRINT("The classification: %d \n", lab[0]);
+	CKNN* knn = new CKNN(3,
+					new CEuclideanDistance(denseFeatures, denseFeatures), multilabels);
+	knn->train();
+
+	CMulticlassLabels* multitest_at = knn->apply_multiclass(testFeatures);
+	SGVector<int32_t> lab_at =
+					((CMulticlassLabels*) multitest_at)->get_int_labels();
+
+	ASSERT_NE(0, lab_at.size());
+	ASSERT_NE(0, lab.size());
+	ASSERT_EQ(lab.size(), lab_at.size());
+	ASSERT_EQ(lab_at[0], lab[0]);
 
 	SG_UNREF(kdtree);
 	exit_shogun();
+}
 
-	return 0;
+TEST(KNN, KDTREE)
+{
+	test_knn(CKNN::KDTree);
 }
