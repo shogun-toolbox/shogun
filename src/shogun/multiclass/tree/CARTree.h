@@ -41,7 +41,40 @@
 namespace shogun
 {
 
-/** @brief
+/** @brief This class implements the Classification And Regression Trees algorithm by Breiman et al for decision tree learning.
+ * A CART tree is a binary decision tree that is constructed by splitting a node into two child nodes repeatedly, beginning with 
+ * the root node that contains the whole dataset. \n \n
+ * TREE GROWING PROCESS : \n
+ * During the tree growing process, we recursively split a node into left child and right child so that the resulting nodes are "purest".
+ * We do this until any of the stopping criteria is met. To find the best split, we scan through all possible splits in all predictive  
+ * attributes. The best split is one that maximises some splitting criterion. For classification tasks, ie. when the dependent attribute
+ * is categorical, the Gini index is used. For regression tasks, ie. when the dependent variable is continuous, least squares deviation is
+ * used. The algorithm uses two stopping criteria : if node becomes completely "pure", ie. all its members have identical dependent
+ * variable, or all of them have identical predictive attributes (independent variables). \n \n
+ * 
+ * COST-COMPLEXITY PRUNING : \n
+ * The maximal tree, $fT_max$f grown during tree growing process is bound to overfit. Hence pruning becomes necessary. Cost-Complexity
+ * pruning yields a list of subtrees of varying depths using the complexity normalized resubstitution error, $fR_\alpha(T)$f. The
+ * resubstitution error R(T) is a measure of how well a decision tree fits the training data. This measure favours larger trees over
+ * smaller ones. However, complexity normalized resubstitution error, adds penalty for increased complexity and hence counters overfitting.\n
+ * $fR_\alpha(T)=R(T)+\alpha \times (num_leaves)$f \n
+ * The best subtree among the list of subtrees can be chosen using cross validation or using best-fit in the test dataset. \n
+ * cf. https://onlinecourses.science.psu.edu/stat557/node/93 \n \n
+ *
+ * HANDLING MISSING VALUES : \n
+ * While choosing the best split at a node, missing attribute values are left out. But data vectors with missing values of the best attribute
+ * chosen are sent to left child or right child using a surrogate split. A surrogate split is one that imitates the best split as closely
+ * as possible. While choosing a surrogate split, all splits alternative to the best split are scaned and the degree of closeness between the
+ * two is measured using a metric called predictive measure of association, $f\lambda_{i,j}$f. \n
+ * $f\lambda_{i,j} = \frac{min(P_L,P_R)-(1-P_{L_iL_j}-P_{R_iR_j})}{min(P_L,P_R)}$f \n
+ * where $fP_L$f and $fP_R$f are the node probabilities for the optimal split of node i into left and right nodes respectively, 
+ * $fP_{L_iL_j}$f ($fP_{R_iR_j}$f resp.) is the probability that both (optimal) node i and (surrogate) node j send an observation 
+ * to the Left (Right resp.). \n 
+ * We use best surrogate split, 2nd best surrogate split and so on until all data points with missing attributes in a node 
+ * have been sent to left/right child. If all possible surrogate splits are used up but some data points are still to be 
+ * assigned left/right child, majority rule is used, ie. the data points are assigned the child where majority of data points
+ * have gone from the node. \n
+ * cf. http://pic.dhe.ibm.com/infocenter/spssstat/v20r0m0/index.jsp?topic=%2Fcom.ibm.spss.statistics.help%2Falg_tree-cart.htm
  */
 class CCARTree : public CTreeMachine<CARTreeNodeData>
 {
@@ -111,7 +144,40 @@ public:
 	/** clear feature types of various features */
 	void clear_feature_types();
 
+	/** cost-complexity pruning
+	 *
+	 * @return CDynamicObjectArray of pruned trees
+	 */
+	CDynamicObjectArray* prune_tree();
+
+	/** returns vector of alpha values correponding to the sequence of pruned subtrees
+	 *
+	 * @return vector of alpha values
+	 */
+	SGVector<float64_t> get_alphas() const;
+
 protected:
+
+	/** recursively finds alpha corresponding to weakest link(s)
+	 *
+	 * @param node the root of subtree whose weakest link it finds
+	 * @return alpha value corresponding to the weakest link in subtree
+	 */
+	float64_t find_weakest_alpha(bnode_t* node);
+
+	/** recursively cuts weakest link(s) in a tree
+	 *
+	 * @param node the root of subtree whose weakest link is cut
+	 * @param alpha alpha value corresponding to weakest link
+	 */
+	void cut_weakest_link(bnode_t* node, float64_t alpha);
+
+	/** recursively forms base case $ft_1$f tree from $ft_max$f during pruning
+	 *
+	 * @param node the root of current subtree
+	 */
+	void form_t1(bnode_t* node);
+
 	/** train machine - build CART from training data
 	 * @param data training data
 	 * @return true
@@ -128,29 +194,73 @@ private:
 	 */
 	CBinaryTreeMachineNode<CARTreeNodeData>* CARTtrain(CFeatures* data, SGVector<float64_t> weights, CLabels* labels);
 
+	/** handles missing values through surrogate splits
+	 *
+	 * @param data training data matrix
+	 * @param weights vector of weights of data points
+	 * @param nm_left whether a data point is put into left child (available for only data points with non-missing attribute attr)
+	 * @param attr best attribute chosen for split 
+	 * @return vector denoting whether a data point goes to left child for all data points including ones with missing attributes
+	 */
+	SGVector<bool> surrogate_split(SGMatrix<float64_t> data, SGVector<float64_t> weights, SGVector<bool> nm_left, int32_t attr);
+
+
+	/** handles missing values for a chosen continuous surrogate attribute
+	 *
+	 * @param m training data matrix
+	 * @param missing_vecs column indices of vectors with missing attribute in data matrix
+	 * @param association_index stores the final lambda values used to address members of missing_vecs
+	 * @param intersect_vecs column indices of vectors with known values for the best attribute as well as the chosen surrogate
+	 * @param is_left whether a vector goes into left child
+	 * @param weights weights of training data vectors
+	 * @param p min(p_l,p_r) in the lambda formula
+	 * @param attr surrogate attribute chosen for split 
+	 * @return vector denoting whether a data point goes to left child for all data points including ones with missing attributes
+	 */
+	void handle_missing_vecs_for_continuous_surrogate(SGMatrix<float64_t> m, CDynamicArray<int32_t>* missing_vecs, 
+		CDynamicArray<float64_t>* association_index, CDynamicArray<int32_t>* intersect_vecs, SGVector<bool> is_left, 
+									SGVector<float64_t> weights, float64_t p, int32_t attr);
+
+	/** handles missing values for a chosen nominal surrogate attribute
+	 *
+	 * @param m training data matrix
+	 * @param missing_vecs column indices of vectors with missing attribute in data matrix
+	 * @param association_index stores the final lambda values used to address members of missing_vecs
+	 * @param intersect_vecs column indices of vectors with known values for the best attribute as well as the chosen surrogate
+	 * @param is_left whether a vector goes into left child
+	 * @param weights weights of training data vectors
+	 * @param p min(p_l,p_r) in the lambda formula
+	 * @param attr surrogate attribute chosen for split 
+	 * @return vector denoting whether a data point goes to left child for all data points including ones with missing attributes
+	 */
+	void handle_missing_vecs_for_nominal_surrogate(SGMatrix<float64_t> m, CDynamicArray<int32_t>* missing_vecs, 
+		CDynamicArray<float64_t>* association_index, CDynamicArray<int32_t>* intersect_vecs, SGVector<bool> is_left, 
+									SGVector<float64_t> weights, float64_t p, int32_t attr);
+
 	/** returns gain in Gini impurity measure
 	 *
-	 * @param labels labels of data in the node
+	 * @param lab labels of data in the node
 	 * @param weights weights of the data points in the node
 	 * @param is_left whether a data point is proposed to be moved to left child node
-	 * @return Gini gain acheived after spliting the node
+	 * @return Gini gain achieved after spliting the node
 	 */
-	float64_t gain(CLabels* labels, SGVector<float64_t> weights, SGVector<bool> is_left);
+	float64_t gain(SGVector<float64_t> lab, SGVector<float64_t> weights, SGVector<bool> is_left);
 
 	/** returns Gini impurity of a node
 	 * 
-	 * @param labels labels of data in the node
+	 * @param lab labels of data in the node
 	 * @param weights weights of the data points in the node
 	 * @return Gini index of the node
 	 */
-	float64_t gini_impurity_index(CMulticlassLabels* labels, SGVector<float64_t> weights);
+	float64_t gini_impurity_index(SGVector<float64_t> lab, SGVector<float64_t> weights);
 
 	/** returns least squares deviation
 	 * 
-	 * @param labels regression labels
+	 * @param lab regression labels
 	 * @param weights weights of regression data points
+	 * @return least squares deviation of the data
 	 */
-	float64_t least_squares_deviation(CRegressionLabels* labels, SGVector<float64_t> weights);
+	float64_t least_squares_deviation(SGVector<float64_t> lab, SGVector<float64_t> weights);
 
 	/** uses current subtree to classify/regress data
 	 *
@@ -182,6 +292,9 @@ private:
 
 	/** Problem type : PT_MULTICLASS or PT_REGRESSION **/
 	EProblemType m_mode;
+
+	/** stores $f\alpha_k$f values evaluated in cost-complexity pruning **/
+	CDynamicArray<float64_t>* m_alphas;
 
 };
 } /* namespace shogun */

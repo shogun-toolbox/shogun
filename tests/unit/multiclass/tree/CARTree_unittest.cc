@@ -344,3 +344,161 @@ TEST(CARTree, classify_non_nominal)
 	SG_UNREF(c);
 	SG_UNREF(feats);
 }
+
+TEST(CARTree, handle_missing_nominal)
+{
+	SGMatrix<float64_t> data(3,9);
+	data(0,0)=1;
+	data(1,0)=3;
+	data(2,0)=6;
+
+	data(0,1)=1;
+	data(1,1)=3;
+	data(2,1)=8;
+
+	data(0,2)=1;
+	data(1,2)=3;
+	data(2,2)=6;
+
+	data(0,3)=2;
+	data(1,3)=5;
+	data(2,3)=7;
+
+	data(0,4)=2;
+	data(1,4)=4;
+	data(2,4)=8;
+
+	data(0,5)=CCARTree::MISSING;
+	data(1,5)=5;
+	data(2,5)=8;
+
+	data(0,6)=3;
+	data(1,6)=4;
+	data(2,6)=8;
+
+	data(0,7)=3;
+	data(1,7)=4;
+	data(2,7)=8;
+
+	data(0,8)=3;
+	data(1,8)=4;
+	data(2,8)=8;
+
+	SGVector<float64_t> lab(9);
+	lab[0]=1;
+	lab[1]=1;
+	lab[2]=1;
+	lab[3]=1;
+	lab[4]=1;
+	lab[5]=1;
+	lab[6]=2;
+	lab[7]=2;
+	lab[8]=2;
+
+	SGVector<bool> ft=SGVector<bool>(3);
+	ft[0]=true;
+	ft[1]=true;
+	ft[2]=true;
+
+	CDenseFeatures<float64_t>* feats=new CDenseFeatures<float64_t>(data);
+	CMulticlassLabels* labels=new CMulticlassLabels(lab);
+
+	CCARTree* c=new CCARTree();
+	c->set_labels(labels);
+	c->set_feature_types(ft);
+	c->train(feats);
+
+	CBinaryTreeMachineNode<CARTreeNodeData>* root=dynamic_cast<CBinaryTreeMachineNode<CARTreeNodeData>*>(c->get_root());
+	CBinaryTreeMachineNode<CARTreeNodeData>* left=root->left();
+	CBinaryTreeMachineNode<CARTreeNodeData>* right=root->right();
+
+	EXPECT_EQ(0.0,root->data.attribute_id);
+	EXPECT_EQ(9.0,root->data.total_weight);
+	EXPECT_EQ(6.0,left->data.total_weight);
+	EXPECT_EQ(3.0,right->data.total_weight);
+
+	SG_UNREF(root);
+	SG_UNREF(left);
+	SG_UNREF(right);
+	SG_UNREF(c);
+	SG_UNREF(feats);
+}
+
+TEST(CARTree, handle_missing_continuous)
+{
+	SGMatrix<float64_t> data(3,9);
+	data(0,0)=1;
+	data(1,0)=3;
+	data(2,0)=6;
+
+	data(0,1)=1;
+	data(1,1)=3;
+	data(2,1)=6;
+
+	data(0,2)=1;
+	data(1,2)=3;
+	data(2,2)=6;
+
+	data(0,3)=2;
+	data(1,3)=5;
+	data(2,3)=7;
+
+	data(0,4)=2;
+	data(1,4)=4;
+	data(2,4)=8;
+
+	data(0,5)=CCARTree::MISSING;
+	data(1,5)=5;
+	data(2,5)=7;
+
+	data(0,6)=3;
+	data(1,6)=4;
+	data(2,6)=8;
+
+	data(0,7)=3;
+	data(1,7)=4;
+	data(2,7)=8;
+
+	data(0,8)=3;
+	data(1,8)=4;
+	data(2,8)=8;
+
+	SGVector<float64_t> lab(9);
+	lab[0]=1;
+	lab[1]=1;
+	lab[2]=1;
+	lab[3]=1;
+	lab[4]=1;
+	lab[5]=1;
+	lab[6]=2;
+	lab[7]=2;
+	lab[8]=2;
+
+	SGVector<bool> ft=SGVector<bool>(3);
+	ft[0]=false;
+	ft[1]=false;
+	ft[2]=false;
+
+	CDenseFeatures<float64_t>* feats=new CDenseFeatures<float64_t>(data);
+	CMulticlassLabels* labels=new CMulticlassLabels(lab);
+
+	CCARTree* c=new CCARTree();
+	c->set_labels(labels);
+	c->set_feature_types(ft);
+	c->train(feats);
+
+	CBinaryTreeMachineNode<CARTreeNodeData>* root=dynamic_cast<CBinaryTreeMachineNode<CARTreeNodeData>*>(c->get_root());
+	CBinaryTreeMachineNode<CARTreeNodeData>* left=root->left();
+	CBinaryTreeMachineNode<CARTreeNodeData>* right=root->right();
+
+	EXPECT_EQ(0.0,root->data.attribute_id);
+	EXPECT_EQ(9.0,root->data.total_weight);
+	EXPECT_EQ(6.0,left->data.total_weight);
+	EXPECT_EQ(3.0,right->data.total_weight);
+
+	SG_UNREF(root);
+	SG_UNREF(left);
+	SG_UNREF(right);
+	SG_UNREF(c);
+	SG_UNREF(feats);
+}
