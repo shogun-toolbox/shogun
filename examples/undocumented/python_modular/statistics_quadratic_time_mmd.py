@@ -16,7 +16,7 @@ def statistics_quadratic_time_mmd (m,dim,difference):
 	from modshogun import MeanShiftDataGenerator
 	from modshogun import GaussianKernel, CustomKernel
 	from modshogun import QuadraticTimeMMD
-	from modshogun import PERMUTATION, MMD2_SPECTRUM, MMD2_GAMMA, BIASED, UNBIASED
+	from modshogun import PERMUTATION, MMD2_SPECTRUM, MMD2_GAMMA, BIASED, BIASED_DEPRECATED
 	from modshogun import Statistics, IntVector, RealVector, Math
 
 	# init seed for reproducability
@@ -59,7 +59,6 @@ def statistics_quadratic_time_mmd (m,dim,difference):
 	# using spectrum method. Use at least 250 samples from null.
 	# This is consistent but sometimes breaks, always monitor type I error.
 	# See tutorial for number of eigenvalues to use .
-	# Only works with BIASED statistic
 	mmd.set_statistic_type(BIASED);
 	mmd.set_null_approximation_method(MMD2_SPECTRUM);
 	mmd.set_num_eigenvalues_spectrum(3);
@@ -70,8 +69,8 @@ def statistics_quadratic_time_mmd (m,dim,difference):
 
 	# using gamma method. This is a quick hack, which works most of the time
 	# but is NOT guaranteed to. See tutorial for details.
-	# Only works with BIASED statistic
-	mmd.set_statistic_type(BIASED);
+	# Only works with BIASED_DEPRECATED statistic
+	mmd.set_statistic_type(BIASED_DEPRECATED);
 	mmd.set_null_approximation_method(MMD2_GAMMA);
 	p_value_gamma=mmd.perform_test();
 	# reject if p-value is smaller than test level
@@ -83,6 +82,7 @@ def statistics_quadratic_time_mmd (m,dim,difference):
 	# Also note that testing has to happen on
 	# difference data than kernel selection, but the linear time mmd does this
 	# implicitly and we used a fixed kernel here.
+	mmd.set_statistic_type(BIASED);
 	mmd.set_null_approximation_method(PERMUTATION);
 	mmd.set_num_null_samples(5);
 	num_trials=5;
