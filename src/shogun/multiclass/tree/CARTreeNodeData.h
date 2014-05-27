@@ -52,12 +52,28 @@ struct CARTreeNodeData
 	/** classification/regression label of data */
 	float64_t node_label;
 
+	/** total weight of training samples passing through this node **/
+	float64_t total_weight;
+
+	/** total weight of misclassified samples in node/ weighted sum of squared deviation in case of regression **/
+	float64_t weight_minus_node;
+
+	/** total weight of misclassified samples in subtree/ weighted sum of squared deviation in case of regression **/
+	float64_t weight_minus_branch;
+
+	/** number of leaves in the subtree beginning at this node **/
+	int32_t num_leaves;
+
 	/** constructor */
 	CARTreeNodeData()
 	{
 		attribute_id=-1;
 		transit_into_values=SGVector<float64_t>();
 		node_label=-1.0;
+		total_weight=0.;
+		weight_minus_node=0.;
+		weight_minus_branch=0.;
+		num_leaves=0;
 	}
 
 	/** print data
@@ -66,8 +82,11 @@ struct CARTreeNodeData
 	static void print_data(const CARTreeNodeData &data)
 	{
 		SG_SPRINT("classifying feature index=%d\n", data.attribute_id);
-		SG_SPRINT("node label=%f\n", data.node_label);
 		data.transit_into_values.display_vector(data.transit_into_values.vector,data.transit_into_values.vlen, "transit values");
+		SG_SPRINT("total weight=%f\n", data.total_weight);
+		SG_SPRINT("errored weight of node=%f\n", data.weight_minus_node);
+		SG_SPRINT("errored weight of subtree=%f\n", data.weight_minus_branch);
+		SG_SPRINT("number of leaves in subtree=%d\n", data.num_leaves);
 	}
 };
 
