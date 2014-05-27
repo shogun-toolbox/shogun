@@ -50,6 +50,7 @@ void CVariationalLikelihood::set_likelihood(CLikelihoodModel * lik)
 {
 	SG_UNREF(m_likelihood);
 	m_likelihood=lik;
+	SG_REF(m_likelihood);
 }
 
 void CVariationalLikelihood::init()
@@ -57,6 +58,7 @@ void CVariationalLikelihood::init()
 	//m_likelihood will be specified by its subclass 
 	//via the init_likelihood method
 	m_likelihood = NULL;
+	SG_REF(m_likelihood);
 
 	SG_ADD(&m_lab, "labels", 
 		"The label of the data\n",
@@ -71,7 +73,7 @@ SGVector<float64_t> CVariationalLikelihood::get_predictive_means(
 	SGVector<float64_t> mu, SGVector<float64_t> s2,
 	const CLabels* lab) const
 {
-	ASSERT(m_likelihood != NULL);
+	REQUIRE(m_likelihood != NULL, "The likelihood should be initialized\n");
 	return m_likelihood->get_predictive_means(mu, s2, lab);
 }
 
@@ -79,27 +81,27 @@ SGVector<float64_t> CVariationalLikelihood::get_predictive_variances(
 	SGVector<float64_t> mu, SGVector<float64_t> s2,
 	const CLabels* lab) const
 {
-	ASSERT(m_likelihood != NULL);
+	REQUIRE(m_likelihood != NULL, "The likelihood should be initialized\n");
 	return m_likelihood->get_predictive_variances(mu, s2, lab);
 }
 
 ELikelihoodModelType CVariationalLikelihood::get_model_type() const
 {
-	ASSERT(m_likelihood != NULL);
+	REQUIRE(m_likelihood != NULL, "The likelihood should be initialized\n");
 	return m_likelihood->get_model_type();
 }
 
 SGVector<float64_t> CVariationalLikelihood::get_log_probability_f(
 	const CLabels* lab, SGVector<float64_t> func) const
 {
-	ASSERT(m_likelihood != NULL);
+	REQUIRE(m_likelihood != NULL, "The likelihood should be initialized\n");
 	return m_likelihood->get_log_probability_f(lab, func);
 }
 
 SGVector<float64_t> CVariationalLikelihood::get_log_probability_derivative_f(
 	const CLabels* lab, SGVector<float64_t> func, index_t i) const
 {
-	ASSERT(m_likelihood != NULL);
+	REQUIRE(m_likelihood != NULL, "The likelihood should be initialized\n");
 	return m_likelihood->get_log_probability_derivative_f(lab, func, i);
 }
 
@@ -107,7 +109,7 @@ SGVector<float64_t> CVariationalLikelihood::get_log_zeroth_moments(
 	SGVector<float64_t> mu, SGVector<float64_t> s2,
 	const CLabels* lab) const
 {
-	ASSERT(m_likelihood != NULL);
+	REQUIRE(m_likelihood != NULL, "The likelihood should be initialized\n");
 	return m_likelihood->get_log_zeroth_moments(mu, s2, lab);
 }
 
@@ -115,7 +117,7 @@ float64_t CVariationalLikelihood::get_first_moment(
 	SGVector<float64_t> mu, SGVector<float64_t> s2,
 	const CLabels* lab, index_t i) const
 {
-	ASSERT(m_likelihood != NULL);
+	REQUIRE(m_likelihood != NULL, "The likelihood should be initialized\n");
 	return m_likelihood->get_first_moment(mu, s2, lab, i);
 }
 
@@ -123,26 +125,25 @@ float64_t CVariationalLikelihood::get_second_moment(
 	SGVector<float64_t> mu, SGVector<float64_t> s2,
 	const CLabels* lab, index_t i) const
 {
-	ASSERT(m_likelihood != NULL);
+	REQUIRE(m_likelihood != NULL, "The likelihood should be initialized\n");
 	return m_likelihood->get_second_moment(mu, s2, lab, i);
 }
 
 bool CVariationalLikelihood::supports_regression() const
 {
-	ASSERT(m_likelihood != NULL);
+	REQUIRE(m_likelihood != NULL, "The likelihood should be initialized\n");
 	return m_likelihood->supports_regression();
 }
 
-
 bool CVariationalLikelihood::supports_binary() const
 {
-	ASSERT(m_likelihood != NULL);
+	REQUIRE(m_likelihood != NULL, "The likelihood should be initialized\n");
 	return m_likelihood->supports_binary();
 }
 
 bool CVariationalLikelihood::supports_multiclass() const
 {
-	ASSERT(m_likelihood != NULL);
+	REQUIRE(m_likelihood != NULL, "The likelihood should be initialized\n");
 	return m_likelihood->supports_multiclass();
 }
 
