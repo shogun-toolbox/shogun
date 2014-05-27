@@ -11,6 +11,7 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/structure/StochasticSOSVM.h>
 #include <shogun/labels/LabelsFactory.h>
+#include <shogun/lib/SGVector.h>
 
 using namespace shogun;
 

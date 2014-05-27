@@ -30,8 +30,9 @@ SGRefObject::SGRefObject()
 SGRefObject::SGRefObject(const SGRefObject& orig)
 {
 	init();
-	m_refcount = orig.m_refcount;
-	SG_REF(this);
+	m_refcount = new RefCount(0);
+
+	SG_SGCDEBUG("SGRefObject copied (%p)\n", this)
 }
 
 SGRefObject::~SGRefObject()
@@ -76,7 +77,7 @@ int32_t SGRefObject::unref()
 #include <shogun/lib/Map.h>
 extern CMap<void*, shogun::MemoryBlock>* sg_mallocs;
 
-static void SGRefObject::list_memory_allocs()
+void SGRefObject::list_memory_allocs()
 {
 	shogun::list_memory_allocs();
 }

@@ -47,7 +47,12 @@ enum EStatisticType
 /** enum for different method to approximate null-distibution */
 enum ENullApproximationMethod
 {
-	PERMUTATION, MMD2_SPECTRUM, MMD2_GAMMA, MMD1_GAUSSIAN, HSIC_GAMMA
+	PERMUTATION,
+	MMD2_SPECTRUM_DEPRECATED,
+	MMD2_SPECTRUM,
+	MMD2_GAMMA,
+	MMD1_GAUSSIAN,
+	HSIC_GAMMA
 };
 
 /** @brief Hypothesis test base class. Provides an interface for statistical

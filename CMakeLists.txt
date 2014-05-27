@@ -312,6 +312,9 @@ IF(CMAKE_SIZEOF_VOID_P EQUAL 8 AND NOT DARWIN)
 	SET(CMAKE_SWIG_FLAGS -DSWIGWORDSIZE64)
 ENDIF()
 
+#integration 
+OPTION(OpenCV "OpenCV Integration" OFF)
+
 #interfaces
 OPTION(PythonModular "Python Modular" OFF)
 OPTION(LuaModular "Lua Modular" OFF)
@@ -628,6 +631,15 @@ ELSE()
 	ENDIF()
 ENDIF()
 
+IF (OpenCV)
+	# find OpenCV library if intended by the user.
+	FIND_PACKAGE(OpenCV)
+	IF (OpenCV_FOUND)
+		SET(HAVE_OPENCV 1)
+		LIST(APPEND DEFINES HAVE_OPENCV)
+	ENDIF()
+ENDIF()
+
 # COLPACK
 OPTION(BUNDLE_COLPACK "Bundle COLPACK" OFF)
 IF(BUNDLE_COLPACK)
@@ -817,7 +829,6 @@ ENDIF()
 IF (PythonModular OR PythonStatic)
 	# find python library for the found python interpreter
 	# i.e. versions should match!
-	set(Python_ADDITIONAL_VERSIONS ${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR})
 	FIND_PACKAGE(PythonLibs REQUIRED)
 	FIND_PACKAGE(NumPy REQUIRED)
 
@@ -1048,6 +1059,12 @@ include(FeatureSummary)
 feature_summary(WHAT ALL)
 
 message(STATUS "===================================================================================================================")
+message(STATUS "Enabled Integration")
+
+PrintInterfaceStatus("OpenCV Integration" OpenCV)
+
+message(STATUS
+"===================================================================================================================")
 message(STATUS "Enabled Interfaces")
 
 message(STATUS "  libshogun is ON")

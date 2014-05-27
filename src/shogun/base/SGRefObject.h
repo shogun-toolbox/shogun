@@ -84,7 +84,7 @@ public:
 	virtual const char* get_name() const = 0;
 
 #ifdef TRACE_MEMORY_ALLOCS
-	void list_memory_allocs();
+	static void list_memory_allocs();
 #endif
 
 private:

@@ -11,5 +11,5 @@ c 0.42
 train_classifier
 
 set_features TEST ../data/fm_test_sparsereal.dat
-out.txt = classify
-! rm out.txt
+out-classifier_svmsgd.txt = classify
+! rm out-classifier_svmsgd.txt

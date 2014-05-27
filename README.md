@@ -16,8 +16,9 @@ Quick links to this file:
 * [Platforms](#platforms)
 * [Contents](#contents)
 * [Applications](#applications)
-* [License](#license)
 * [Download](#download)
+* [License](#license)
+* [Contributions](#contributions)
 * [References](#references)
 
 Other links that may be useful:
@@ -120,6 +121,12 @@ Splice Form Prediction [8], Alternative Splicing [9] and Promotor
 Prediction [15]. Some of them come with no less than 10
 million training examples, others with 7 billion test examples.
 
+## Download
+-----------
+
+SHOGUN can be downloaded from http://www.shogun-toolbox.org and GitHub at
+https://github.com/shogun-toolbox/shogun.
+
 ## License
 ----------
 
@@ -133,11 +140,31 @@ generally licensed under the GPL version 3 or any later version (cf.
 libraries from various places (cf. [CONTRIBUTIONS](doc/md/CONTRIBUTIONS.md)). See also
 [LICENSE\_msufsort](doc/md/LICENSE_msufsort.md) and  [LICENSE\_tapkee](doc/md/LICENSE_tapkee.md).
 
-## Download
------------
+## Contributions
+----------------
 
-SHOGUN can be downloaded from http://www.shogun-toolbox.org and GitHub at
-https://github.com/shogun-toolbox/shogun.
+We include numerous lines of code from various standalone free libraries including the following:
+
+- [LibSVM](http://www.csie.ntu.edu.tw/~cjlin/libsvm/) by Chih-Chung Chang and Chih-Jen Lin
+- [LibLinear](http://www.csie.ntu.edu.tw/~cjlin/liblinear/) by Xiang-Rui Wang and Chih-Jen Lin
+- [SLEP](http://www.public.asu.edu/~jye02/Software/SLEP/) by J. Liu, S. Ji and J. Ye
+- [MALSAR](http://www.public.asu.edu/~jye02/Software/MALSAR/) by J. Zhou, J. Chen and J. Y
+- LaRank by A. Bordes
+- [GPBT](http://dm.unife.it/gpdt/) by T. Serafini, L. Zanni and G. Zanghirati
+- [LibOCAS](http://cmp.felk.cvut.cz/~xfrancv/ocas/html/) by V. Franc and S. Sonnenburg
+- [SVMLin](http://vikas.sindhwani.org/svmlin.html) by V. Sindhwani
+- [SGDSVM](http://leon.bottou.org/projects/sgd) by Leon Bottou
+- [Vowpal](http://hunch.net/~vw/) Wabbit by John Langford
+- [Cover](http://hunch.net/~jl/projects/cover_tree/cover_tree.html) Tree for Nearest Neighbour calculation by John Langford
+- [GPML](http://www.gaussianprocess.org/gpml/code/matlab/doc/) by Carl Edward Rasmussen and Hannes Nickisch
+
+as well as take inspiration from many other libraries:
+
+- [LMNN](http://www.cse.wustl.edu/~kilian/code/lmnn/lmnn.html) by Kilian Q. Weinberger
+- [Hidden Markov Support Vector Machines](http://mloss.org/software/view/250/) by Georg Zeller, Gunnar Raetsch and Pramod Mudrakarta
+- [Matlab Toolbox for Dimensionality Reduction](http://homepage.tudelft.nl/19j49/Matlab_Toolbox_for_Dimensionality_Reduction.html) by Laurens van der Maaten
+
+Please let us know if we missed your name in this page, we will do our best to acknowledge your contributions.
 
 ## References
 -------------

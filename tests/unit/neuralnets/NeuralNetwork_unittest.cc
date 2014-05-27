@@ -39,6 +39,7 @@
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/neuralnets/NeuralNetwork.h>
+#include <shogun/neuralnets/NeuralInputLayer.h>
 #include <shogun/neuralnets/NeuralLogisticLayer.h>
 #include <shogun/neuralnets/NeuralSoftmaxLayer.h>
 #include <shogun/neuralnets/NeuralRectifiedLinearLayer.h>
@@ -47,67 +48,139 @@
 using namespace shogun;
 
 /** Tests gradients computed using backpropagation against gradients computed
- * by numerical approximation
+ * by numerical approximation. Uses a CNeuralLinearLayer-based network.
  */
-TEST(NeuralNetwork, compute_gradients)
+TEST(NeuralNetwork, backpropagation_linear)
 {
-	CDynamicObjectArray* layers;
-	CNeuralNetwork* network;
+	float64_t tolerance = 1e-9;
 	
-	float64_t tolerance = 1e-3;
+	CMath::init_random(10);
 	
-	layers = new CDynamicObjectArray();
+	CDynamicObjectArray* layers = new CDynamicObjectArray();
+	layers->append_element(new CNeuralInputLayer(5));
+	layers->append_element(new CNeuralInputLayer(7));
 	layers->append_element(new CNeuralLinearLayer(3));
 	layers->append_element(new CNeuralLinearLayer(6));
+	layers->append_element(new CNeuralLinearLayer(5));
 	layers->append_element(new CNeuralLinearLayer(4));
-	network = new CNeuralNetwork();
-	network->initialize(5, layers);
+	CNeuralNetwork* network = new CNeuralNetwork(layers);
+	
+	network->connect(0,2);
+	network->connect(1,2);
+	network->connect(2,3);
+	network->connect(2,4);
+	network->connect(3,5);
+	network->connect(4,5);
+	
+	network->initialize();
 	network->l2_coefficient = 0.01;
 	network->l1_coefficient = 0.03;
-	EXPECT_NEAR(network->check_gradients(), 0.0, tolerance)
-		<< "CNeuralLinearLayer gradient check failed";
+
+	EXPECT_NEAR(network->check_gradients(), 0.0, tolerance);
 	SG_UNREF(network);
+}
+
+/** Tests gradients computed using backpropagation against gradients computed
+ * by numerical approximation. Uses a CNeuralLogisticLayer-based network.
+ */
+TEST(NeuralNetwork, backpropagation_logistic)
+{
+	float64_t tolerance = 1e-9;
 	
-	layers = new CDynamicObjectArray();
+	CMath::init_random(10);
+	
+	CDynamicObjectArray* layers = new CDynamicObjectArray();
+	layers->append_element(new CNeuralInputLayer(5));
+	layers->append_element(new CNeuralInputLayer(7));
 	layers->append_element(new CNeuralLogisticLayer(3));
 	layers->append_element(new CNeuralLogisticLayer(6));
+	layers->append_element(new CNeuralLogisticLayer(5));
 	layers->append_element(new CNeuralLogisticLayer(4));
-	network = new CNeuralNetwork();
-	network->initialize(5, layers);
+	CNeuralNetwork* network = new CNeuralNetwork(layers);
+	
+	network->connect(0,2);
+	network->connect(1,2);
+	network->connect(2,3);
+	network->connect(2,4);
+	network->connect(3,5);
+	network->connect(4,5);
+	
+	network->initialize();
 	network->l1_coefficient = 0.03;
 	network->l2_coefficient = 0.01;
-	EXPECT_NEAR(network->check_gradients(), 0.0, tolerance)
-		<< "CNeuralLogisticLayer gradient check failed";
+	EXPECT_NEAR(network->check_gradients(), 0.0, tolerance);
 	SG_UNREF(network);
+}
+
+/** Tests gradients computed using backpropagation against gradients computed
+ * by numerical approximation. Uses a CNeuralSoftmaxLayer-based network.
+ */
+TEST(NeuralNetwork, backpropagation_softmax)
+{
+	float64_t tolerance = 1e-9;
 	
-	layers = new CDynamicObjectArray();
+	CMath::init_random(10);
+	
+	CDynamicObjectArray* layers = new CDynamicObjectArray();
+	layers->append_element(new CNeuralInputLayer(5));
+	layers->append_element(new CNeuralInputLayer(7));
 	layers->append_element(new CNeuralLinearLayer(3));
 	layers->append_element(new CNeuralLinearLayer(6));
+	layers->append_element(new CNeuralLinearLayer(5));
 	layers->append_element(new CNeuralSoftmaxLayer(4));
-	network = new CNeuralNetwork();
-	network->initialize(5, layers);
+	CNeuralNetwork* network = new CNeuralNetwork(layers);
+	
+	network->connect(0,2);
+	network->connect(1,2);
+	network->connect(2,3);
+	network->connect(2,4);
+	network->connect(3,5);
+	network->connect(4,5);
+	
+	network->initialize();
 	network->l1_coefficient = 0.03;
 	network->l2_coefficient = 0.01;
-	EXPECT_NEAR(network->check_gradients(), 0.0, tolerance)
-		<< "CNeuralSoftmaxLayer gradient check failed";
+	EXPECT_NEAR(network->check_gradients(), 0.0, tolerance);
 	SG_UNREF(network);
+}
+
+/** Tests gradients computed using backpropagation against gradients computed
+ * by numerical approximation. Uses a CNeuralRectifiedLinearLayer-based network.
+ */
+TEST(NeuralNetwork, backpropagation_rectified_linear)
+{
+	float64_t tolerance = 1e-9;
 	
-	layers = new CDynamicObjectArray();
+	CMath::init_random(10);
+
+	CDynamicObjectArray* layers = new CDynamicObjectArray();
+	layers->append_element(new CNeuralInputLayer(5));
+	layers->append_element(new CNeuralInputLayer(7));
 	layers->append_element(new CNeuralRectifiedLinearLayer(3));
 	layers->append_element(new CNeuralRectifiedLinearLayer(6));
-	layers->append_element(new CNeuralLogisticLayer(4));
-	network = new CNeuralNetwork();
-	network->initialize(5, layers);
+	layers->append_element(new CNeuralRectifiedLinearLayer(5));
+	layers->append_element(new CNeuralLinearLayer(4));
+	CNeuralNetwork* network = new CNeuralNetwork(layers);
+	
+	network->connect(0,2);
+	network->connect(1,2);
+	network->connect(2,3);
+	network->connect(2,4);
+	network->connect(3,5);
+	network->connect(4,5);
+	
+	network->initialize();
 	network->l1_coefficient = 0.03;
 	network->l2_coefficient = 0.01;
-	EXPECT_NEAR(network->check_gradients(), 0.0, tolerance)
-		<< "CNeuralRectifiedLinearLayer gradient check failed";
+	EXPECT_NEAR(network->check_gradients(), 0.0, tolerance);
 	SG_UNREF(network);
 }
 
 /** tests a neural network on the binary XOR problem */
 TEST(NeuralNetwork, binary_classification)
 {
+	CMath::init_random(100);
+	
 	SGMatrix<float64_t> inputs_matrix(2,4);
 	SGVector<float64_t> targets_vector(4);
 	inputs_matrix(0,0) = -1.0;
@@ -132,17 +205,15 @@ TEST(NeuralNetwork, binary_classification)
 	CBinaryLabels* labels = new CBinaryLabels(targets_vector);
 	
 	CDynamicObjectArray* layers = new CDynamicObjectArray();
+	layers->append_element(new CNeuralInputLayer(2));
 	layers->append_element(new CNeuralLogisticLayer(2));
 	layers->append_element(new CNeuralLogisticLayer(1));
 
-	CNeuralNetwork* network = new CNeuralNetwork();
-	network->initialize(2, layers);
+	CNeuralNetwork* network = new CNeuralNetwork(layers);
+	network->quick_connect();
+	network->initialize(0.1);
 	
-	// initialize the weights deterministically
-	for (int32_t i=0; i<network->get_num_parameters(); i++)
-		network->get_parameters()[i] = i * 1.0e-1;
-	
-	network->epsilon = 1e-12;
+	network->epsilon = 1e-8;
 	
 	network->set_labels(labels);
 	network->train(features);
@@ -162,6 +233,8 @@ TEST(NeuralNetwork, binary_classification)
  */
 TEST(NeuralNetwork, multiclass_classification)
 {
+	CMath::init_random(100);
+	
 	SGMatrix<float64_t> inputs_matrix(2,4);
 	SGVector<float64_t> targets_vector(4);
 	inputs_matrix(0,0) = -1.0;
@@ -186,17 +259,15 @@ TEST(NeuralNetwork, multiclass_classification)
 	CMulticlassLabels* labels = new CMulticlassLabels(targets_vector);
 	
 	CDynamicObjectArray* layers = new CDynamicObjectArray();
+	layers->append_element(new CNeuralInputLayer(2));
 	layers->append_element(new CNeuralLogisticLayer(2));
 	layers->append_element(new CNeuralLogisticLayer(2));
 
-	CNeuralNetwork* network = new CNeuralNetwork();
-	network->initialize(2, layers);
+	CNeuralNetwork* network = new CNeuralNetwork(layers);
+	network->quick_connect();
+	network->initialize(0.1);
 	
-	// initialize the weights deterministically
-	for (int32_t i=0; i<network->get_num_parameters(); i++)
-		network->get_parameters()[i] = i * 1.0e-1;
-	
-	network->epsilon = 1e-12;
+	network->epsilon = 1e-8;
 	
 	network->set_labels(labels);
 	network->train(features);
@@ -214,6 +285,8 @@ TEST(NeuralNetwork, multiclass_classification)
 /** tests a neural network on a very simple regression problem */
 TEST(NeuralNetwork, regression)
 {
+	CMath::init_random(100);
+	
 	int32_t N = 20;
 	SGMatrix<float64_t> inputs_matrix(1,N);
 	SGVector<float64_t> targets_vector(N);
@@ -230,15 +303,15 @@ TEST(NeuralNetwork, regression)
 	CRegressionLabels* labels = new CRegressionLabels(targets_vector);
 	
 	CDynamicObjectArray* layers = new CDynamicObjectArray();
+	layers->append_element(new CNeuralInputLayer(1));
 	layers->append_element(new CNeuralLogisticLayer(20));
 	layers->append_element(new CNeuralLinearLayer(1));
 	
-	CNeuralNetwork* network = new CNeuralNetwork();
-	network->initialize(1, layers);
+	CNeuralNetwork* network = new CNeuralNetwork(layers);
+	network->quick_connect();
+	network->initialize(1e-6);
 	
-	// initialize the weights deterministically
-	for (int32_t i=0; i<network->get_num_parameters(); i++)
-		network->get_parameters()[i] = i * 1.0e-5;
+	network->epsilon = 1e-6;
 
 	network->set_labels(labels);
 	network->train(features);
@@ -258,6 +331,8 @@ TEST(NeuralNetwork, regression)
  */
 TEST(NeuralNetwork, gradient_descent)
 {
+	CMath::init_random(100);
+	
 	SGMatrix<float64_t> inputs_matrix(2,4);
 	SGVector<float64_t> targets_vector(4);
 	inputs_matrix(0,0) = -1.0;
@@ -282,15 +357,13 @@ TEST(NeuralNetwork, gradient_descent)
 	CBinaryLabels* labels = new CBinaryLabels(targets_vector);
 	
 	CDynamicObjectArray* layers = new CDynamicObjectArray();
+	layers->append_element(new CNeuralInputLayer(2));
 	layers->append_element(new CNeuralLogisticLayer(2));
 	layers->append_element(new CNeuralLogisticLayer(1));
 
-	CNeuralNetwork* network = new CNeuralNetwork();
-	network->initialize(2, layers);
-	
-	// initialize the weights deterministically
-	for (int32_t i=0; i<network->get_num_parameters(); i++)
-		network->get_parameters()[i] = i * 1.0e-1;
+	CNeuralNetwork* network = new CNeuralNetwork(layers);
+	network->quick_connect();
+	network->initialize(0.1);
 
 	network->optimization_method = NNOM_GRADIENT_DESCENT;
 	network->gd_learning_rate = 10.0;

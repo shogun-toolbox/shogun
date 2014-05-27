@@ -33,6 +33,7 @@
 
 #include <shogun/base/Parameter.h>
 #include <shogun/neuralnets/NeuralLayer.h>
+#include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/Math.h>
 
 using namespace shogun;
@@ -55,20 +56,33 @@ CNeuralLayer::~CNeuralLayer()
 {
 }
 
-void CNeuralLayer::initialize(int32_t previous_layer_num_neurons)
+void CNeuralLayer::initialize(CDynamicObjectArray* layers, 
+		SGVector< int32_t > input_indices)
 {
-	m_previous_layer_num_neurons = previous_layer_num_neurons;
+	m_input_indices = input_indices;
+	m_input_sizes = SGVector<int32_t>(input_indices.vlen);
+	
+	for (int32_t i=0; i<m_input_sizes.vlen; i++)
+	{
+		CNeuralLayer* layer = (CNeuralLayer*)layers->element(m_input_indices[i]);
+		m_input_sizes[i] = layer->get_num_neurons();
+		SG_UNREF(layer);
+	}
 }
 
 void CNeuralLayer::set_batch_size(int32_t batch_size)
 {
 	m_batch_size = batch_size;
 	
-	m_activations = SGVector<float64_t>(m_num_neurons*m_batch_size);
-	m_input_gradients = 
-		SGVector<float64_t>(m_previous_layer_num_neurons*m_batch_size);
-	m_local_gradients = SGVector<float64_t>(m_num_neurons*m_batch_size);
-	m_dropout_mask = SGVector<bool>(m_num_neurons*m_batch_size);
+	m_activations = SGMatrix<float64_t>(m_num_neurons, m_batch_size);
+	m_dropout_mask = SGMatrix<bool>(m_num_neurons, m_batch_size);
+	
+	if (!is_input())
+	{
+		m_activation_gradients = 
+			SGMatrix<float64_t>(m_num_neurons, m_batch_size);
+		m_local_gradients = SGMatrix<float64_t>(m_num_neurons, m_batch_size);
+	}
 }
 
 void CNeuralLayer::dropout_activations()
@@ -77,7 +91,8 @@ void CNeuralLayer::dropout_activations()
 	
 	if (is_training)
 	{
-		for (int32_t i=0; i<m_activations.vlen; i++)
+		int32_t len = m_num_neurons*m_batch_size;
+		for (int32_t i=0; i<len; i++)
 		{
 			m_dropout_mask[i] = CMath::random(0.0,1.0) >= dropout_prop;
 			m_activations[i] *= m_dropout_mask[i];
@@ -85,7 +100,8 @@ void CNeuralLayer::dropout_activations()
 	}
 	else
 	{
-		for (int32_t i=0; i<m_activations.vlen; i++)
+		int32_t len = m_num_neurons*m_batch_size;
+		for (int32_t i=0; i<len; i++)
 			m_activations[i] *= (1.0-dropout_prop);
 	}
 }
@@ -93,25 +109,29 @@ void CNeuralLayer::dropout_activations()
 void CNeuralLayer::init()
 {
 	m_num_neurons = 0; 
-	m_previous_layer_num_neurons = 0;
+	m_num_parameters = 0;
 	m_batch_size = 0;
 	dropout_prop = 0.0;
 	is_training = false;
 	
 	SG_ADD(&m_num_neurons, "num_neurons",
 	       "Number of Neurons", MS_NOT_AVAILABLE);
+	SG_ADD(&m_num_parameters, "num_parameters",
+	       "Number of Parameters", MS_NOT_AVAILABLE);
+	SG_ADD(&m_input_indices, "input_indices",
+	       "Input Indices", MS_NOT_AVAILABLE);
+	SG_ADD(&m_input_sizes, "input_sizes",
+	       "Input Sizes", MS_NOT_AVAILABLE);
 	SG_ADD(&dropout_prop, "dropout_prop",
 	       "Dropout Probabilty", MS_NOT_AVAILABLE);
 	SG_ADD(&is_training, "is_training",
 	       "is_training", MS_NOT_AVAILABLE);
-	SG_ADD(&m_previous_layer_num_neurons, "previous_layer_num_neurons",
-	       "Number of neurons in the previous layer", MS_NOT_AVAILABLE);
 	SG_ADD(&m_batch_size, "batch_size",
 	       "Batch Size", MS_NOT_AVAILABLE);
 	SG_ADD(&m_activations, "activations",
 	       "Activations", MS_NOT_AVAILABLE);
-	SG_ADD(&m_input_gradients, "input_gradients",
-	       "Input Gradients", MS_NOT_AVAILABLE);
+	SG_ADD(&m_activation_gradients, "activation_gradients",
+	       "Activation Gradients", MS_NOT_AVAILABLE);
 	SG_ADD(&m_local_gradients, "local_gradients",
 	       "Local Gradients", MS_NOT_AVAILABLE);
 	SG_ADD(&m_dropout_mask, "dropout_mask",

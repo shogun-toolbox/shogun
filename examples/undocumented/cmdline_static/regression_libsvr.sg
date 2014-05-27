@@ -10,5 +10,5 @@ c 0.017
 train_regression
 
 set_features TEST ../data/fm_test_real.dat
-out.txt = classify
-! rm out.txt
+out-regression_libsvr.txt = classify
+! rm out-regression_libsvr.txt

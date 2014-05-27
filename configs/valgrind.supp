@@ -7,7 +7,7 @@
 # Adding new entries:
 #    If you want to generate suppression entries for your warnings, simply
 #    run "valgrind --gen-suppressions=yes" on your program.  It will ask
-#    on every warnings if you want to see the entry.  Running valgrind with
+#    on every warning if you want to see the entry.  Running valgrind with
 #    "--gen-suppressions=all" will generate all entries without asking.
 #
 # See also:
@@ -84,8 +84,36 @@
    fun:H5FD_write
    fun:H5F_accum_write
    fun:H5F_block_write
-   fun:H5D__flush_sieve_buf
+   fun:H5D_*flush_sieve_buf
    obj:*/libhdf5.so.*
    obj:*/libhdf5.so.*
    fun:H5D_close
+}
+
+{
+   fscanf triggers "Conditional jump [...] on uninitialized values"
+   Memcheck:Cond
+   fun:__GI___strncasecmp_l
+   fun:____strtod_l_internal
+   fun:_IO_vfscanf
+   fun:fscanf
+   fun:*SerializableAsciiReader00*read_scalar_wrapped*
+}
+
+{
+   fscanf triggers "Uninitialized value of size 8"
+   Memcheck:Value8
+   fun:__GI___strncasecmp_l
+   fun:____strtod_l_internal
+   fun:_IO_vfscanf
+   fun:fscanf
+   fun:*SerializableAsciiReader00*read_scalar_wrapped*
+}
+
+{
+   strod triggers "Invalid read of size 8"
+   Memcheck:Addr8
+   fun:__GI___strncasecmp_l
+   fun:____strtod_l_internal
+   fun:*CParser*read_real*
 }

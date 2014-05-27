@@ -32,7 +32,7 @@ Parallel::Parallel()
 Parallel::Parallel(const Parallel& orig)
 {
 	num_threads=orig.get_num_threads();
-	m_refcount = new RefCount(orig.m_refcount->ref_count());
+	m_refcount = new RefCount();
 }
 
 Parallel::~Parallel()

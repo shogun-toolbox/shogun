@@ -33,6 +33,7 @@
 
 #include <shogun/neuralnets/NeuralLogisticLayer.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/lib/SGVector.h>
 
 using namespace shogun;
 
@@ -45,11 +46,10 @@ CNeuralLinearLayer(num_neurons)
 {
 }
 
-void CNeuralLogisticLayer::compute_activations(float64_t* parameters,
-		float64_t* previous_layer_activations)
+void CNeuralLogisticLayer::compute_activations(SGVector<float64_t> parameters,
+		CDynamicObjectArray* layers)
 {
-	CNeuralLinearLayer::compute_activations(parameters, 
-		previous_layer_activations);
+	CNeuralLinearLayer::compute_activations(parameters, layers);
 	
 	// apply logistic activation function
 	int32_t length = m_num_neurons*m_batch_size;
@@ -57,10 +57,9 @@ void CNeuralLogisticLayer::compute_activations(float64_t* parameters,
 		m_activations[i] = 1.0/(1.0+CMath::exp(-1.0*m_activations[i]));
 }
 
-void CNeuralLogisticLayer::compute_local_gradients(bool is_output, 
-		float64_t* p)
+void CNeuralLogisticLayer::compute_local_gradients(SGMatrix<float64_t> targets)
 {
-	CNeuralLinearLayer::compute_local_gradients(is_output,p);
+	CNeuralLinearLayer::compute_local_gradients(targets);
 	
 	// multiply by the derivative of the logistic function
 	int32_t length = m_num_neurons*m_batch_size;
