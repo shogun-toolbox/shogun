@@ -33,6 +33,7 @@
 
 #include <shogun/mathematics/linalg/internal/implementation/Dot.h>
 #include <shogun/mathematics/linalg/internal/implementation/Sum.h>
+#include <shogun/mathematics/linalg/internal/implementation/VectorSum.h>
 #include <shogun/mathematics/linalg/internal/implementation/Square.h>
 
 namespace shogun
@@ -510,6 +511,44 @@ template <Backend backend,template <class,int...> class Matrix, class T, int... 
 Matrix<T,Info...> square(Block<int,Matrix,T,Info...> b)
 {
 	return implementation::square<int,backend,Matrix,T,Info...>::compute(b);
+}
+
+
+/**
+ * Wrapper method for internal implementation of vector sum of values that works
+ * with generic dense vectors with first templated-argument as its value-type and
+ * other (optional) templated-arguments of int type for compile time information
+ *
+ * Uses globally set backend
+ *
+ * Suited for Shogun's SGVector, Eigen3's Vector etc
+ *
+ * @param a vector whose sum has to be computed
+ * @return the vector sum \f$\sum_i a_i\f$
+ */
+template <template <class,int...> class Vector, class T, int... Info>
+T vector_sum(Vector<T,Info...> a)
+{
+	return implementation::vector_sum<int,linalg_traits<Redux>::backend,Vector,T,Info...>
+		::compute(a);
+}
+
+/**
+ * Wrapper method for internal implementation of vector sum of values that works
+ * with generic dense vectors with first templated-argument as its value-type and
+ * other (optional) templated-arguments of int type for compile time information
+ *
+ * Uses templated specified backend
+ *
+ * Suited for Shogun's SGVector, Eigen3's Vector etc
+ *
+ * @param a vector whose sum has to be computed
+ * @return the vector sum \f$\sum_i a_i\f$
+ */
+template <Backend backend,template <class,int...> class Vector, class T, int... Info>
+T vector_sum(Vector<T,Info...> a)
+{
+	return implementation::vector_sum<int,backend,Vector,T,Info...>::compute(a);
 }
 
 }
