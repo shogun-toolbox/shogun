@@ -374,3 +374,27 @@ TEST(Statistics, lnormal_cdf)
 }
 
 #endif // HAVE_EIGEN3
+
+TEST(Statistics, chi2_cdf)
+{
+	float64_t chi2c=CStatistics::chi2_cdf(1.0, 5.0);
+	EXPECT_NEAR(chi2c, 0.03743423, 1e-7);
+
+	chi2c=CStatistics::chi2_cdf(10.0, 5.0);
+	EXPECT_NEAR(chi2c, 0.92476475, 1e-7);
+
+	chi2c=CStatistics::chi2_cdf(1.0, 15.0);
+	EXPECT_NEAR(chi2c, 0.00000025, 1e-7);
+}
+
+TEST(Statistics, fdistribution_cdf)
+{
+	float64_t fdcdf=CStatistics::fdistribution_cdf(0.5, 3.0, 5.0);
+	EXPECT_NEAR(fdcdf,0.30154736, 1e-7);
+
+	fdcdf=CStatistics::fdistribution_cdf(100, 3.0, 5.0);
+	EXPECT_NEAR(fdcdf, 0.99993031, 1e-7);
+
+	fdcdf=CStatistics::fdistribution_cdf(1.0, 30.0, 15.0);
+	EXPECT_NEAR(fdcdf, 0.48005131, 1e-7);
+}

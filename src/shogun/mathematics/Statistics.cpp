@@ -1760,6 +1760,18 @@ float64_t CStatistics::lnormal_cdf(float64_t x)
 	return CMath::log(normal_cdf(x));
 }
 
+float64_t CStatistics::chi2_cdf(float64_t x, float64_t k)
+{
+	/* F(x,k) = incomplete_gamma(k/2,x/2) divided by true gamma(k/2) */
+	return incomplete_gamma(k/2.0,x/2.0);
+}
+
+float64_t CStatistics::fdistribution_cdf(float64_t x, float64_t d1, float64_t d2)
+{
+	/* F(x;d1,d2) = incomplete_beta(d1/2, d2/2, d1*x/(d1*x+d2)) divided by beta(d1/2,d2/2)*/
+	return incomplete_beta(d1/2.0,d2/2.0,d1*x/(d1*x+d2));
+}
+
 float64_t CStatistics::erfc8_weighted_sum(float64_t x)
 {
 	/* This is based on index 5725 in Hart et al */
