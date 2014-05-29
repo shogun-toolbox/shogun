@@ -394,6 +394,24 @@ public:
 	 */
 	static float64_t lnormal_cdf(float64_t x);
 
+	/** Evaluates the CDF of the chi square distribution with 
+	 * parameter k at \f$x\f$. Based on Wikipedia definition.
+	 *
+	 * @param x position to evaluate
+	 * @param k parameter
+	 * @return chi square CDF at \f$x\f$
+	 */
+	static float64_t chi2_cdf(float64_t x, float64_t k);
+
+	/** Evaluates the CDF of the F-distribution with parameters
+	 * \f$d1,d2\f$ at \f$x\f$. Based on Wikipedia definition.
+	 *
+	 * @param x position to evaluate
+	 * @param d1 parameter 1
+	 * @param d2 parameter 2
+	 * @return F-distribution CDF at \f$x\f$
+	 */
+	static float64_t fdistribution_cdf(float64_t x, float64_t d1, float64_t d2);
 
 	/* use to estimates erfc(x) valid for -100 < x < -8
 	 *
