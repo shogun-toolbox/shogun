@@ -140,6 +140,13 @@ public:
 	 */
 	virtual bool set_label(int32_t j, CStructuredData * label);
 
+	/** add a new label to the vector of labels.
+	 * This method should be used when inserting labels for the first time.
+	 *
+	 * @param label sparse label to add
+	 */
+	virtual void add_label(CStructuredData * label);
+
 	/** get sparse assigment for j-th label
 	 *
 	 * @param j label index
@@ -174,6 +181,7 @@ public:
 
 private:
 	CMultilabelLabels * m_multilabel_labels;
+	int32_t m_last_set_label;
 
 private:
 	void init();
