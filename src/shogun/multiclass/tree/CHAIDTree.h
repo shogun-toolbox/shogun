@@ -53,9 +53,9 @@ namespace shogun
  * \n \n
  * MERGING : \n
  * During the merging step, allowable pairs of categories of a predictor are evaluated for similarity. If the similarity
- * of a pair is above threshold, the categories constituting the pair are merged into a single category. The process is 
+ * of a pair is above a threshold, the categories constituting the pair are merged into a single category. The process is 
  * repeated until there is no pair left having high similarity between its categories. Similarity between categories is
- * evaluated using p-value
+ * evaluated using the p-value
  * \n \n
  * SPLITTING : \n
  * The splitting step selects which predictor to be used to best split the node. Selection is accomplished by comparing
@@ -71,7 +71,7 @@ namespace shogun
  * 4. If the size of a node is less than the user-specified minimum node size value, the node will not be split.
  * \n \n
  * p-VALUE CALCULATIONS FOR NOMINAL DEPENDENT VARIABLE: \n
- * If dependent variable is nominal categorical, a contingency (or count) table is formed using classes of Y as 
+ * If the dependent variable is nominal categorical, a contingency (or count) table is formed using classes of Y as 
  * columns and categories of the predictor X as rows. The p-value is computed using the entries of this table and 
  * Pearson chi-squared statistic, For more details, please see : 
  * http://pic.dhe.ibm.com/infocenter/spssstat/v20r0m0/index.jsp?topic=%2Fcom.ibm.spss.statistics.help%2Falg_tree-chaid_pvalue_categorical.htm 
@@ -147,13 +147,23 @@ public:
 	 */
 	void set_feature_types(SGVector<int32_t> ft);
 
-	/** set feature types of various features
+	/** get feature types of various features
 	 * @return vector with feature types : 0-nominal, 1-ordinal or 2-continuous
 	 */
 	SGVector<int32_t> get_feature_types() const;
 
 	/** clear feature types of various features */
 	void clear_feature_types();
+
+	/** set dependent variable type : 0 for nominal, 1 for ordinal and 2 for continuous 
+	 * @param var integer corresponding to the dependent variable type
+	 */
+	void set_dependent_vartype(int32_t var); 
+
+	/** get dependent variable type : 0 for nominal, 1 for ordinal and 2 for continuous 
+	 * @return integer corresponding to the dependent variable type
+	 */
+	int32_t get_dependent_vartype() { return m_dependent_vartype; }
 
 protected:
 	/** train machine - build CHAID from training data
@@ -180,6 +190,76 @@ private:
 	 */
 	CLabels* apply_from_current_node(CDenseFeatures<float64_t>* feats, node_t* current);
 
+	/** calculates adjusted p-value using Bonferroni adjustments
+	 * 
+	 * @param p-value unadjusted p-value 
+	 * @param inum_cat number of categories of a predictor before merging
+	 * @param fnum_cat number of categories of a predictor after merging
+	 * @param ft feature type : 0 for nominal 1 for ordinal
+	 * @param is_missing whether missing values are present. Affects adjustment factor for ordinal feature type
+	 * @return adjusted p-value
+	 */
+	float64_t adjusted_p_value(float64_t p_value, int32_t inum_cat, int32_t fnum_cat, int32_t ft, bool is_missing);
+
+	/** calculates unadjusted p-value
+	 *
+	 * @param feat chosen attribute values of all data vectors 
+	 * @param labels labels associated with data
+	 * @param weights weights associated with data
+	 * @return p-value of the data
+	 */
+	float64_t p_value(SGVector<float64_t> feat, SGVector<float64_t> labels, SGVector<float64_t> weights);
+
+	/** calculates ANOVA F-statistic
+	 *
+	 * @param feat chosen attribute values of all data vectors 
+	 * @param labels labels associated with data
+	 * @param weights weights associated with data
+	 * @param r stores unique feature categories
+	 * @return  ANOVA F-statistic of the data
+	 */
+	float64_t anova_f_statistic(SGVector<float64_t> feat, SGVector<float64_t> labels, SGVector<float64_t> weights, int32_t &r);
+
+	/** calculates likelihood ratio statistic
+	 *
+	 * @param feat chosen attribute values of all data vectors 
+	 * @param labels labels associated with data
+	 * @param weights weights associated with data
+	 * @param r stores number of rows in contingency table
+	 * @param c stores number of columns in contingency table
+	 * @return  likelihood ratio of the data
+	 */
+	float64_t likelihood_ratio_statistic(SGVector<float64_t> feat, SGVector<float64_t> labels, SGVector<float64_t> weights,
+													 int32_t &r, int32_t &c);
+
+	/** calculates Pearson's Chi-squared statistic
+	 *
+	 * @param feat chosen attribute values of all data vectors 
+	 * @param labels labels associated with data
+	 * @param weights weights associated with data
+	 * @param r stores number of rows in contingency table
+	 * @param c stores number of columns in contingency table
+	 * @return  Pearson's Chi-squared statistic of the data
+	 */
+	float64_t pchi2_statistic(SGVector<float64_t> feat, SGVector<float64_t> labels, SGVector<float64_t> weights, int32_t &r, int32_t &c);
+
+	/** calculates hypothesis under row effects model
+	 *
+	 * @param ct contingency table 
+	 * @param wt weight table [Note : the weight table is modified by the method]
+	 * @param score score of class of columns [Note : the score vector is modified by the method]
+	 * @return  matrix containing estimated cell frequencies 
+	 */
+	SGMatrix<float64_t> expected_cf_row_effects_model(SGMatrix<int32_t> ct, SGMatrix<float64_t> wt, SGVector<float64_t> score);
+
+	/** calculates null hypothesis of independence
+	 *
+	 * @param ct contingency table 
+	 * @param wt weight table [Note : the weight table is modified by the method]
+	 * @return  matrix containing estimated cell frequencies 
+	 */
+	SGMatrix<float64_t> expected_cf_indep_model(SGMatrix<int32_t> ct, SGMatrix<float64_t> wt);
+
 	/** initializes members of class */
 	void init();
 
@@ -188,14 +268,20 @@ public:
 	static const float64_t MISSING;
 
 private:
-	/** vector depicting whether various feature dimensions are nominal ordinal or continuous **/
+	/** vector depicting whether various feature dimensions are nominal(0) ordinal(1) or continuous(2) **/
 	SGVector<int32_t> m_feature_types;
 
 	/** weights of samples in training set **/
 	SGVector<float64_t> m_weights;
 
+	/** whether weights are set */
+	bool m_weights_set;
+
 	/** Problem type : PT_MULTICLASS or PT_REGRESSION **/
 	EProblemType m_mode;
+
+	/** whether dependent variable is nominal(0), ordinal(1) or continuous(2) */
+	int32_t m_dependent_vartype;
 
 };
 } /* namespace shogun */
