@@ -85,12 +85,14 @@ bool CMultilabelSOLabels::set_label(int32_t j, CStructuredData * label)
 {
 	CSparseMultilabel * slabel = CSparseMultilabel::obtain_from_generic(label);
 	m_multilabel_labels->set_label(j, slabel->get_data());
+	SG_UNREF(slabel);
 	return true;
 }
 
 CStructuredData * CMultilabelSOLabels::get_label(int32_t j)
 {
 	CSparseMultilabel * slabel = new CSparseMultilabel(m_multilabel_labels->get_label(j));
+	SG_REF(slabel);
 	return (CStructuredData *)slabel;
 }
 
@@ -109,6 +111,7 @@ SGVector<float64_t> CMultilabelSOLabels::to_dense(CStructuredData * label,
 {
 	CSparseMultilabel * slabel = CSparseMultilabel::obtain_from_generic(label);
 	SGVector<int32_t> slabel_data = slabel->get_data();
+	SG_UNREF(slabel);
 	return CMultilabelLabels::to_dense<int32_t, float64_t>(&slabel_data,
 	                dense_dim, d_true, d_false);
 }
