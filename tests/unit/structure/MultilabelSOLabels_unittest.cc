@@ -50,15 +50,19 @@ TEST(MultilabelSOLabels, constructor_two_args)
 TEST(MultilabelSOLabels, set_sparse_label)
 {
 	CMultilabelSOLabels * ml = new CMultilabelSOLabels(1, 2);
+	SG_REF(ml);
 	ASSERT_TRUE(ml != NULL);
 
 	EXPECT_EQ(ml->get_num_labels(), 1);
 	EXPECT_EQ(ml->get_num_classes(), 2);
 
-	int lab[] = {0, 1};
-	ml->set_sparse_label(0, SGVector<int32_t>(lab, 2));
+	SGVector<int32_t> lab(2);
+	lab[0] = 0;
+	lab[1] = 1;
+	ml->set_sparse_label(0, lab);
 
-	CSparseMultilabel * slabel = CSparseMultilabel::obtain_from_generic(ml->get_label(0));
+	CSparseMultilabel * slabel = CSparseMultilabel::obtain_from_generic(
+	                                     ml->get_label(0));
 	SGVector<int32_t> slabel_data = slabel->get_data();
 
 	for (int i = 0; i < slabel_data.vlen; i++)
@@ -66,29 +70,34 @@ TEST(MultilabelSOLabels, set_sparse_label)
 		EXPECT_EQ(lab[i], slabel_data[i]);
 	}
 
+	SG_UNREF(slabel);
 	SG_UNREF(ml);
 }
 
 TEST(MultilabelSOLabels, set_label)
 {
 	CMultilabelSOLabels * ml = new CMultilabelSOLabels(1, 2);
-	ASSERT_TRUE(ml != NULL);
+	SG_REF(ml);
+	ASSERT(ml != NULL);
 
 	EXPECT_EQ(ml->get_num_labels(), 1);
 	EXPECT_EQ(ml->get_num_classes(), 2);
 
-	int lab[] = {0, 1};
-	CSparseMultilabel * slabel = new CSparseMultilabel(SGVector<int32_t>(lab, 2));
-	ml->set_label(0, slabel);
+	SGVector<int32_t> lab(2);
+	lab[0] = 0;
+	lab[1] = 1;
+	ml->set_label(0, new CSparseMultilabel(lab));
 
-	CSparseMultilabel * slabel_out = CSparseMultilabel::obtain_from_generic(ml->get_label(0));
+	CSparseMultilabel * slabel_out = CSparseMultilabel::obtain_from_generic(
+	                ml->get_label(0));
 	SGVector<int32_t> slabel_data = slabel_out->get_data();
 
-	for (int i = 0; i < slabel_data.vlen; i++)
+	for (index_t i = 0; i < slabel_data.vlen; i++)
 	{
 		EXPECT_EQ(lab[i], slabel_data[i]);
 	}
 
+	SG_UNREF(slabel_out);
 	SG_UNREF(ml);
 }
 
@@ -124,6 +133,8 @@ TEST(MultilabelSOLabels, set_sparse_labels)
 		{
 			EXPECT_EQ(lab[j], slabel_data[j]);
 		}
+
+		SG_UNREF(slabel);
 	}
 
 	delete [] labels;
@@ -154,7 +165,9 @@ TEST(MultilabelSOLabels, to_dense)
 	for (int i = 0; i < ml->get_num_labels(); i++)
 	{
 		CSparseMultilabel * slabel = CSparseMultilabel::obtain_from_generic(ml->get_label(0));
+		SG_REF(slabel);
 		SGVector<float64_t> slabel_dense_data = CMultilabelSOLabels::to_dense(slabel, ml->get_num_classes(), 1, 0);
+		SG_UNREF(slabel);
 		EXPECT_EQ(slabel_dense_data.vlen, ml->get_num_classes());
 	}
 
