@@ -38,6 +38,14 @@
 
 namespace shogun
 {
+
+enum EConvMapActivationFunction
+{
+	CMAF_IDENTITY = 0,
+	CMAF_LOGISTIC = 1,
+	CMAF_RECTIFIED_LINEAR = 2
+};
+
 template <class T> class SGVector;
 template <class T> class SGMatrix;
 class CDynamicObjectArray;
@@ -63,7 +71,8 @@ public:
 	 * its outputs in.
 	 */
 	CConvolutionalFeatureMap(int32_t width, int32_t height, 
-			int32_t radius_x, int32_t radius_y, int32_t index=0);
+			int32_t radius_x, int32_t radius_y, int32_t index=0,
+			EConvMapActivationFunction function = CMAF_IDENTITY);
 	
 	/** Computes the activations of the feature map
 	 * 
@@ -93,6 +102,8 @@ public:
 	 * @param parameters Vector of parameters for the map. length 
 	 * width*height+(2*radius_x+1)+(2*radius_y+1)
 	 * 
+	 * @param activations Activations of the map
+	 * 
 	 * @param activation_gradients Gradients of the error with respect to the 
 	 * map's activations
 	 * 
@@ -108,6 +119,7 @@ public:
 	 * stored
 	 */
 	void compute_gradients(SGVector<float64_t> parameters,
+			SGMatrix<float64_t> activations,
 			SGMatrix<float64_t> activation_gradients,
 			CDynamicObjectArray* layers,
 			SGVector<int32_t> input_indices,
@@ -179,6 +191,9 @@ protected:
 	 * part of the activations/activation_gradients matrix that map will use
 	 */
 	int32_t m_index;
+	
+	/** The map's activation function */
+	EConvMapActivationFunction m_activation_function;
 };
 
 }

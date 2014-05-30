@@ -42,9 +42,11 @@ using namespace shogun;
 
 CConvolutionalFeatureMap::CConvolutionalFeatureMap(
 	int32_t width, int32_t height, 
-	int32_t radius_x, int32_t radius_y, int32_t index) :
+	int32_t radius_x, int32_t radius_y, int32_t index, 
+	EConvMapActivationFunction function) :
 	m_width(width), m_height(height), 
-	m_radius_x(radius_x), m_radius_y(radius_y), m_index(index)
+	m_radius_x(radius_x), m_radius_y(radius_y), m_index(index),
+	m_activation_function(function)
 {
 
 }
@@ -99,10 +101,26 @@ void CConvolutionalFeatureMap::compute_activations(
 			activations(i+row_offset,j) += biases[i];
 		}
 	}
+	
+	if (m_activation_function==CMAF_LOGISTIC)
+	{
+		for (int32_t i=0; i<num_neurons; i++)
+			for (int32_t j=0; j<batch_size; j++)
+				activations(i+row_offset,j) = 
+					1.0/(1.0+CMath::exp(-1.0*activations(i+row_offset,j)));
+	}
+	else if (m_activation_function==CMAF_RECTIFIED_LINEAR)
+	{
+		for (int32_t i=0; i<num_neurons; i++)
+			for (int32_t j=0; j<batch_size; j++)
+				activations(i+row_offset,j) = 
+					CMath::max<float64_t>(0, activations(i+row_offset,j));
+	}
 }
 
 void CConvolutionalFeatureMap::compute_gradients(
-	SGVector< float64_t > parameters, 
+	SGVector< float64_t > parameters,
+	SGMatrix<float64_t> activations,
 	SGMatrix< float64_t > activation_gradients, 
 	CDynamicObjectArray* layers, 
 	SGVector< int32_t > input_indices,
@@ -111,6 +129,26 @@ void CConvolutionalFeatureMap::compute_gradients(
 	int32_t num_neurons = m_width*m_height;
 	int32_t batch_size = activation_gradients.num_cols;
 	int32_t row_offset = m_index*num_neurons;
+	
+	if (m_activation_function==CMAF_LOGISTIC)
+	{
+		for (int32_t i=0; i<num_neurons; i++)
+		{
+			for (int32_t j=0; j<batch_size; j++)
+			{
+				activation_gradients(i+row_offset,j) *= 
+					activation_gradients(i+row_offset,j) * 
+					(1.0-activation_gradients(i+row_offset,j));
+			}
+		}
+	}
+	else if (m_activation_function==CMAF_RECTIFIED_LINEAR)
+	{
+		for (int32_t i=0; i<num_neurons; i++)
+			for (int32_t j=0; j<batch_size; j++)
+				if (activations(i+row_offset,j)==0)
+					activation_gradients(i+row_offset,j) = 0;
+	}
 	
 	float64_t* bias_gradients = parameter_gradients.vector;
 	for (int32_t i=0; i<num_neurons; i++)
