@@ -125,6 +125,25 @@ public:
 			SGVector<int32_t> input_indices,
 			SGVector<float64_t> parameter_gradients);
 	
+	/** Applies max pooling to the activations
+	 * 
+	 * @param activations Activations of the map
+	 * 
+	 * @param pooling_width Width of the pooling region
+	 * 
+	 * @param pooling_height Height of the pooling region
+	 * 
+	 * @param pooled_activations Result of the pooling process
+	 * 
+	 * @param max_indices Row indices of the max elements for each pooling 
+	 * region
+	 */
+	void pool_activations(SGMatrix<float64_t> activations,
+			int32_t pooling_width, 
+			int32_t pooling_height,
+			SGMatrix<float64_t> pooled_activations,
+			SGMatrix<float64_t> max_indices);
+	
 protected:
 	/** Perfoms convolution
 	 * 

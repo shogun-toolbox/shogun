@@ -189,6 +189,58 @@ void CConvolutionalFeatureMap::compute_gradients(
 	}
 }
 
+void CConvolutionalFeatureMap::pool_activations(
+	SGMatrix< float64_t > activations, 
+	int32_t pooling_width, int32_t pooling_height, 
+	SGMatrix< float64_t > pooled_activations, 
+	SGMatrix< float64_t > max_indices)
+{
+	int32_t activations_row_offset = m_index*m_width*m_height;
+	
+	int32_t pooled_activations_row_offset = 
+		activations_row_offset/(pooling_width*pooling_height);
+	
+	for (int32_t i=0; i<pooled_activations.num_cols; i++)
+	{
+		SGMatrix<float64_t> image(
+			activations.matrix+i*activations.num_rows + activations_row_offset, 
+			m_height, m_width, false);
+		
+		SGMatrix<float64_t> result(
+			pooled_activations.matrix+i*pooled_activations.num_rows 
+			+ pooled_activations_row_offset, 
+			m_height/pooling_height, m_width/pooling_width, false);
+		
+		SGMatrix<float64_t> indices(
+			max_indices.matrix+i*max_indices.num_rows 
+			+ pooled_activations_row_offset, 
+			m_height/pooling_height, m_width/pooling_width, false);
+		
+		for (int32_t x=0; x<m_width; x+=pooling_width)
+		{
+			for (int32_t y=0; y<m_height; y+=pooling_height)
+			{
+				float64_t max = image(y,x);
+				int32_t max_index = activations_row_offset+y+x*image.num_rows;
+				
+				for (int32_t x1=x; x1<x+pooling_width; x1++)
+				{
+					for (int32_t y1=y; y1<y+pooling_height; y1++)
+					{
+						if (image(y1,x1) > max)
+						{
+							max = image(y1,x1);
+							max_index = activations_row_offset+y1+x1*image.num_rows;
+						}
+					}
+				}
+				result(y/pooling_height, x/pooling_width) = max;
+				indices(y/pooling_height, x/pooling_width) = max_index;
+			}
+		}
+	}
+}
+
 void CConvolutionalFeatureMap::convolve(
 	SGMatrix< float64_t > inputs, 
 	SGMatrix< float64_t > weights, 

@@ -581,3 +581,40 @@ TEST(ConvolutionalFeatureMap, compute_input_gradients)
 	SG_UNREF(layers);
 }
 
+TEST(ConvolutionalFeatureMap, pool_activations)
+{
+	const int32_t w = 6;
+	const int32_t h = 4;
+	const int32_t pw = 2;
+	const int32_t ph = 2;
+	const int32_t b = 2;
+	const int32_t map_index = 1;
+	const int32_t num_maps = 3;
+	
+	SGMatrix<float64_t> activations(num_maps*w*h,b);
+	for (int32_t i=0; i<activations.num_rows*activations.num_cols; i++)
+		activations[i] = i;
+	
+	SGMatrix<float64_t> pooled(num_maps*w*h/(pw*ph),b);
+	SGMatrix<float64_t> max_indices(num_maps*w*h/(pw*ph),b);
+	
+	pooled.zero();
+	max_indices.zero();
+	
+	CConvolutionalFeatureMap map(w,h,1,1, map_index);
+	
+	map.pool_activations(activations, pw, ph, pooled, max_indices);
+	
+	float64_t ref_pooled[] = { 0,0,0,0,0,0,29,31,37,39,45,47,0,0,0,0,0,0,0,0,0,0,
+		0,0,101,103,109,111,117,119,0,0,0,0,0,0};
+		
+	float64_t ref_max_indices[] = { 0,0,0,0,0,0,29,31,37,39,45,47,0,0,0,0,0,0,0,
+		0,0,0,0,0,29,31,37,39,45,47,0,0,0,0,0,0};
+	
+	for (int32_t i=0; i<pooled.num_rows*pooled.num_cols; i++)
+		EXPECT_EQ(ref_pooled[i], pooled[i]);
+	
+	for (int32_t i=0; i<max_indices.num_rows*max_indices.num_cols; i++)
+		EXPECT_EQ(ref_max_indices[i], max_indices[i]);
+}
+
