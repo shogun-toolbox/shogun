@@ -111,6 +111,7 @@ SET(EXAMPLES
 	io_libsvm_multilabel
 	variational_approx_example
 	so_fg_multilabel
+	so_multilabel
 )
 
 IF (USE_MOSEK)
