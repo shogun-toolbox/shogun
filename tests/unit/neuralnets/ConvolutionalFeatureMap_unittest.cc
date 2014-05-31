@@ -74,7 +74,7 @@ TEST(ConvolutionalFeatureMap, compute_activations)
 	input_indices[0] = 0;
 	input_indices[1] = 1;
 	
-	CConvolutionalFeatureMap map(w,h,rx,ry,map_index);
+	CConvolutionalFeatureMap map(w,h,rx,ry,1,1,map_index);
 	SGVector<float64_t> params(w*h+(2*rx+1)*(2*ry+1));
 	for (int32_t i=0; i<params.vlen; i++)
 		params[i] = float64_t(i)/4;
@@ -83,7 +83,7 @@ TEST(ConvolutionalFeatureMap, compute_activations)
 	input2->compute_activations(x2);
 	
 	SGMatrix<float64_t> A(num_maps*w*h,b);
-	SGMatrix<float64_t> buffer(num_maps*w*h,b);
+	SGMatrix<float64_t> buffer(w*h,b);
 	map.compute_activations(params, layers, input_indices, A, buffer);
 	
 	// reference numbers generated using scipy.signal.convolve2d
@@ -102,6 +102,73 @@ TEST(ConvolutionalFeatureMap, compute_activations)
 	for (int32_t i=0; i<w*h; i++)
 		for (int32_t j=0; j<A.num_cols; j++)
 			EXPECT_NEAR(ref[i+j*w*h], A(i+map_index*w*h,j), 1.0e-15);
+			
+	SG_UNREF(layers);
+}
+
+TEST(ConvolutionalFeatureMap, compute_activations_with_stride)
+{
+	const int32_t w = 12;
+	const int32_t h = 10;
+	const int32_t rx = 1;
+	const int32_t ry = 1;
+	const int32_t b = 2;
+	const int32_t map_index = 1;
+	const int32_t num_maps = 3;
+	
+	int32_t stride_x = 3;
+	int32_t stride_y = 2;
+	int32_t w_out = w/stride_x;
+	int32_t h_out = h/stride_y;
+	
+	SGMatrix<float64_t> x1(w*h,b);
+	for (int32_t i=0; i<x1.num_rows*x1.num_cols; i++)
+		x1[i] = i;
+	
+	CNeuralInputLayer* input1 = new CNeuralInputLayer (x1.num_rows);
+	input1->set_batch_size(x1.num_cols);
+	
+	// two channels
+	SGMatrix<float64_t> x2(2*w*h,b);
+	for (int32_t i=0; i<x2.num_rows*x2.num_cols; i++)
+		x2[i] = float64_t(i)/8;
+	
+	CNeuralInputLayer* input2 = new CNeuralInputLayer (x2.num_rows);
+	input2->set_batch_size(x2.num_cols);
+	
+	CDynamicObjectArray* layers = new CDynamicObjectArray();
+	layers->append_element(input1);
+	layers->append_element(input2);
+	
+	SGVector<int32_t> input_indices(2);
+	input_indices[0] = 0;
+	input_indices[1] = 1;
+	
+	CConvolutionalFeatureMap map(w,h,rx,ry,stride_x,stride_y,map_index);
+	SGVector<float64_t> params(w_out*h_out+(2*rx+1)*(2*ry+1));
+	for (int32_t i=0; i<params.vlen; i++)
+		params[i] = float64_t(i)/4;
+	
+	input1->compute_activations(x1);
+	input2->compute_activations(x2);
+	
+	SGMatrix<float64_t> A(num_maps*w_out*h_out,b);
+	SGMatrix<float64_t> buffer(w*h,b);
+	map.compute_activations(params, layers, input_indices, A, buffer);
+	
+	// reference numbers generated using scipy.signal.convolve2d
+	float64_t ref[] = { 
+		471.56250, 786.50000, 871.12500, 955.75000,1040.37500,1835.93750,
+		2913.37500,3048.62500,3183.87500,3319.12500,3159.06250,4939.62500,
+		5074.87500,5210.12500,5345.37500,4482.18750,6965.87500,7101.12500,
+		7236.37500,7371.62500,4431.56250,6861.50000,6946.12500,7030.75000,
+		7115.37500,8180.93750,12633.37500,12768.62500,12903.87500,13039.12500,
+		9504.06250,14659.62500,14794.87500,14930.12500,15065.37500,10827.18750,
+		16685.87500,16821.12500,16956.37500,17091.62500 };
+
+	for (int32_t i=0; i<w_out*h_out; i++)
+		for (int32_t j=0; j<A.num_cols; j++)
+			EXPECT_NEAR(ref[i+j*w_out*h_out], A(i+map_index*w_out*h_out,j), 1.0e-15);
 			
 	SG_UNREF(layers);
 }
@@ -139,7 +206,7 @@ TEST(ConvolutionalFeatureMap, compute_activations_logistic)
 	input_indices[0] = 0;
 	input_indices[1] = 1;
 	
-	CConvolutionalFeatureMap map(w,h,rx,ry,map_index,CMAF_LOGISTIC);
+	CConvolutionalFeatureMap map(w,h,rx,ry,1,1,map_index,CMAF_LOGISTIC);
 	SGVector<float64_t> params(w*h+(2*rx+1)*(2*ry+1));
 	for (int32_t i=0; i<params.vlen; i++)
 		params[i] = float64_t(i)*1e-4;
@@ -148,7 +215,7 @@ TEST(ConvolutionalFeatureMap, compute_activations_logistic)
 	input2->compute_activations(x2);
 	
 	SGMatrix<float64_t> A(num_maps*w*h,b);
-	SGMatrix<float64_t> buffer(num_maps*w*h,b);
+	SGMatrix<float64_t> buffer(w*h,b);
 	map.compute_activations(params, layers, input_indices, A, buffer);
 	
 	float64_t ref[] = { 
@@ -203,7 +270,7 @@ TEST(ConvolutionalFeatureMap, compute_activations_rectified_linear)
 	input_indices[0] = 0;
 	input_indices[1] = 1;
 	
-	CConvolutionalFeatureMap map(w,h,rx,ry,map_index,CMAF_RECTIFIED_LINEAR);
+	CConvolutionalFeatureMap map(w,h,rx,ry,1,1,map_index,CMAF_RECTIFIED_LINEAR);
 	SGVector<float64_t> params(w*h+(2*rx+1)*(2*ry+1));
 	for (int32_t i=0; i<params.vlen; i++)
 		params[i] = float64_t(i)/4 - 8;
@@ -212,7 +279,7 @@ TEST(ConvolutionalFeatureMap, compute_activations_rectified_linear)
 	input2->compute_activations(x2);
 	
 	SGMatrix<float64_t> A(num_maps*w*h,b);
-	SGMatrix<float64_t> buffer(num_maps*w*h,b);
+	SGMatrix<float64_t> buffer(w*h,b);
 	map.compute_activations(params, layers, input_indices, A, buffer);
 	
 	float64_t ref[] = { 
@@ -269,7 +336,7 @@ TEST(ConvolutionalFeatureMap, compute_parameter_gradients)
 	input_indices[0] = 0;
 	input_indices[1] = 1;
 	
-	CConvolutionalFeatureMap map(w,h,rx,ry,map_index);
+	CConvolutionalFeatureMap map(w,h,rx,ry,1,1,map_index);
 	SGVector<float64_t> params(w*h+(2*rx+1)*(2*ry+1));
 	for (int32_t i=0; i<params.vlen; i++)
 		params[i] = CMath::normal_random(0.0,0.01);
@@ -278,7 +345,7 @@ TEST(ConvolutionalFeatureMap, compute_parameter_gradients)
 	input2->compute_activations(x2);
 	
 	SGMatrix<float64_t> A(num_maps*w*h,b);
-	SGMatrix<float64_t> buffer(num_maps*w*h,b);
+	SGMatrix<float64_t> buffer(w*h,b);
 	A.zero();
 	
 	map.compute_activations(params, layers, input_indices, A, buffer);
@@ -286,6 +353,99 @@ TEST(ConvolutionalFeatureMap, compute_parameter_gradients)
 	// compute activation gradients with respect to some function
 	// assuming the function is 0.5*sum(A[i]^2)
 	SGMatrix<float64_t> AG(num_maps*w*h,b);
+	for (int32_t i=0; i<AG.num_rows*AG.num_cols; i++)
+		AG[i] = A[i];
+	
+	// compute parameter gradients
+	SGVector<float64_t> PG(params.vlen);
+	map.compute_gradients(params, A, AG, layers, input_indices, PG);
+	
+	// approximate parameter gradients
+	SGVector<float64_t> PG_numerical(params.vlen);
+	float64_t epsilon = 1e-9;
+	for (int32_t i=0; i<params.vlen; i++)
+	{
+		params[i] += epsilon;
+		map.compute_activations(params, layers, input_indices, A, buffer);
+		float64_t error_plus = 0;
+		for (int32_t k=0; k<A.num_rows*A.num_cols; k++)
+			error_plus += 0.5*A[k]*A[k];
+		
+		params[i] -= 2*epsilon;
+		map.compute_activations(params, layers, input_indices, A, buffer);
+		float64_t error_minus = 0;
+		for (int32_t k=0; k<A.num_rows*A.num_cols; k++)
+			error_minus += 0.5*A[k]*A[k];
+		
+		params[i] += epsilon;
+		
+		PG_numerical[i] = (error_plus-error_minus)/(2*epsilon);
+	}
+	
+	// compare
+	for (int32_t i=0; i<PG.vlen; i++)
+		EXPECT_NEAR(PG_numerical[i], PG[i], 1e-5);
+	
+	SG_UNREF(layers);
+}
+
+TEST(ConvolutionalFeatureMap, compute_parameter_gradients_with_stride)
+{
+	const int32_t w = 12;
+	const int32_t h = 10;
+	const int32_t rx = 1;
+	const int32_t ry = 1;
+	const int32_t b = 2;
+	const int32_t map_index = 1;
+	const int32_t num_maps = 3;
+	
+	int32_t stride_x = 3;
+	int32_t stride_y = 2;
+	int32_t w_out = w/stride_x;
+	int32_t h_out = h/stride_y;
+	
+	CMath::init_random(10);
+	
+	SGMatrix<float64_t> x1(w*h,b);
+	for (int32_t i=0; i<x1.num_rows*x1.num_cols; i++)
+		x1[i] = CMath::random(-10.0,10.0);
+	
+	CNeuralInputLayer* input1 = new CNeuralInputLayer (x1.num_rows);
+	input1->set_batch_size(x1.num_cols);
+	
+	// two channels
+	SGMatrix<float64_t> x2(2*w*h,b);
+	for (int32_t i=0; i<x2.num_rows*x2.num_cols; i++)
+		x2[i] = CMath::random(-10.0,10.0);
+	
+	CNeuralInputLayer* input2 = new CNeuralInputLayer (x2.num_rows);
+	input2->set_batch_size(x2.num_cols);
+	
+	CDynamicObjectArray* layers = new CDynamicObjectArray();
+	layers->append_element(input1);
+	layers->append_element(input2);
+	
+	SGVector<int32_t> input_indices(2);
+	input_indices[0] = 0;
+	input_indices[1] = 1;
+	
+	CConvolutionalFeatureMap map(w,h,rx,ry,stride_x,stride_y,map_index);
+	SGVector<float64_t> params(w_out*h_out+(2*rx+1)*(2*ry+1));
+	for (int32_t i=0; i<params.vlen; i++)
+		params[i] = CMath::normal_random(0.0,0.01);
+	
+	input1->compute_activations(x1);
+	input2->compute_activations(x2);
+	
+	SGMatrix<float64_t> A(num_maps*w_out*h_out,b);
+	SGMatrix<float64_t> buffer(w*h,b);
+	A.zero();
+	
+	map.compute_activations(params, layers, input_indices, A, buffer);
+	
+	// compute activation gradients with respect to some function
+	// assuming the function is 0.5*sum(A[i]^2)
+	SGMatrix<float64_t> AG(num_maps*w_out*h_out,b);
 	for (int32_t i=0; i<AG.num_rows*AG.num_cols; i++)
 		AG[i] = A[i];
 	
@@ -345,7 +505,7 @@ TEST(ConvolutionalFeatureMap, compute_parameter_gradients_logistic)
 	SGVector<int32_t> input_indices(1);
 	input_indices[0] = 0;
 	
-	CConvolutionalFeatureMap map(w,h,rx,ry,0, CMAF_LOGISTIC);
+	CConvolutionalFeatureMap map(w,h,rx,ry,1,1,0, CMAF_LOGISTIC);
 	SGVector<float64_t> params(w*h+(2*rx+1)*(2*ry+1));
 	for (int32_t i=0; i<params.vlen; i++)
 		params[i] = CMath::normal_random(0.0,0.01);
@@ -420,7 +580,7 @@ TEST(ConvolutionalFeatureMap, compute_parameter_gradients_rectified_linear)
 	SGVector<int32_t> input_indices(1);
 	input_indices[0] = 0;
 	
-	CConvolutionalFeatureMap map(w,h,rx,ry,0, CMAF_RECTIFIED_LINEAR);
+	CConvolutionalFeatureMap map(w,h,rx,ry,1,1,0, CMAF_RECTIFIED_LINEAR);
 	SGVector<float64_t> params(w*h+(2*rx+1)*(2*ry+1));
 	for (int32_t i=0; i<params.vlen; i++)
 		params[i] = CMath::normal_random(0.0,0.01);
@@ -505,7 +665,7 @@ TEST(ConvolutionalFeatureMap, compute_input_gradients)
 	input_indices[0] = 0;
 	input_indices[1] = 1;
 	
-	CConvolutionalFeatureMap map(w,h,rx,ry,map_index);
+	CConvolutionalFeatureMap map(w,h,rx,ry,1,1,map_index);
 	SGVector<float64_t> params(w*h+(2*rx+1)*(2*ry+1));
 	for (int32_t i=0; i<params.vlen; i++)
 		params[i] = CMath::normal_random(0.0,0.01);
@@ -601,7 +761,7 @@ TEST(ConvolutionalFeatureMap, pool_activations)
 	pooled.zero();
 	max_indices.zero();
 	
-	CConvolutionalFeatureMap map(w,h,1,1, map_index);
+	CConvolutionalFeatureMap map(w,h,1,1,1,1, map_index);
 	
 	map.pool_activations(activations, pw, ph, pooled, max_indices);
 	
@@ -617,4 +777,3 @@ TEST(ConvolutionalFeatureMap, pool_activations)
 	for (int32_t i=0; i<max_indices.num_rows*max_indices.num_cols; i++)
 		EXPECT_EQ(ref_max_indices[i], max_indices[i]);
 }
-

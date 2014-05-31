@@ -58,20 +58,28 @@ class CConvolutionalFeatureMap
 public:	
 	/** Constuctor
 	 * 
-	 * @param width Width of the input
+	 * @param input_width Width of the input
 	 * 
-	 * @param height Height of the input
+	 * @param input_height Height of the input
 	 * 
 	 * @param radius_x Radius of the convolution filter on the x (width) axis
 	 * 
 	 * @param radius_y Radius of the convolution filter on the y (height) axis
 	 * 
+	 * @param stride_x Stride in the x direction
+	 * 
+	 * @param stride_y Stride in the y direction
+	 * 
 	 * @param index Index of this feature map in its layer. This affects which
 	 * part of the activations/activation_gradients matrix the map will store 
 	 * its outputs in.
+	 * 
+	 * @param function Activation function
 	 */
-	CConvolutionalFeatureMap(int32_t width, int32_t height, 
-			int32_t radius_x, int32_t radius_y, int32_t index=0,
+	CConvolutionalFeatureMap(int32_t input_width, int32_t input_height, 
+			int32_t radius_x, int32_t radius_y, 
+			int32_t stride_x=1, int32_t stride_y=1,
+			int32_t index=0,
 			EConvMapActivationFunction function = CMAF_IDENTITY);
 	
 	/** Computes the activations of the feature map
@@ -87,8 +95,8 @@ public:
 	 * 
 	 * @param activations Matrix in which the activations are to be stored
 	 * 
-	 * @param buffer Matrix of the same size as activations. Used as a buffer 
-	 * during computations
+	 * @param buffer Matrix of size (input_width*input_height)xbatch_size. 
+	 * Used as a buffer during computations
 	 */
 	void compute_activations(SGVector<float64_t> parameters, 
 			CDynamicObjectArray* layers,
@@ -195,16 +203,22 @@ protected:
 	
 protected:
 	/** Width of the input */
-	int32_t m_width;
+	int32_t m_input_width;
 	
 	/** Height of the input */
-	int32_t m_height;
+	int32_t m_input_height;
 	
 	/** Radius of the convolution filter on the x (width) axis */
 	int32_t m_radius_x;
 	
 	/** Radius of the convolution filter on the y (height) axis */
 	int32_t m_radius_y;
+	
+	/** Stride in the x direction */
+	int32_t m_stride_x;
+	
+	/** Stride in the y direcetion */
+	int32_t m_stride_y;
 	
 	/** Index of this feature map in its layer. This affects which
 	 * part of the activations/activation_gradients matrix that map will use
@@ -213,6 +227,27 @@ protected:
 	
 	/** The map's activation function */
 	EConvMapActivationFunction m_activation_function;
+	
+	/** Width of the convolution's output image */
+	int32_t m_output_width;
+	
+	/** Height of the convolution's output image */
+	int32_t m_output_height;
+	
+	/** Number of neurons in the input */
+	int32_t m_input_num_neurons;
+	
+	/** Number of neurons in the output */
+	int32_t m_output_num_neurons;
+	
+	/** Row offset for accessing the activations */
+	int32_t m_row_offset;
+	
+	/** Width of the convolution filter */
+	int32_t m_filter_width;
+	
+	/** Height of the convolution filter */
+	int32_t m_filter_height;
 };
 
 }
