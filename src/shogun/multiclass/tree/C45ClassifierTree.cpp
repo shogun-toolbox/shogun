@@ -149,6 +149,8 @@ bool CC45ClassifierTree::train_machine(CFeatures* data)
 CTreeMachineNode<C45TreeNodeData>* CC45ClassifierTree::C45train(CFeatures* data, SGVector<float64_t> weights, 
 	CMulticlassLabels* class_labels, SGVector<int32_t> feature_id_vector, int32_t level)
 {
+	REQUIRE(data,"data matrix cannot be NULL\n");
+	REQUIRE(class_labels,"class labels cannot be NULL\n");
 	node_t* node=new node_t();
 	CDenseFeatures<float64_t>* feats=dynamic_cast<CDenseFeatures<float64_t>*>(data);
 	int32_t num_vecs=feats->get_num_vectors();
@@ -688,7 +690,13 @@ CMulticlassLabels* CC45ClassifierTree::apply_multiclass_from_current_node(CDense
 			{
 				for (int32_t j=0; j<children->get_num_elements(); j++)
 				{
-					node_t* child=dynamic_cast<node_t*>(children->get_element(j));
+					CSGObject* el=children->get_element(j);
+					node_t* child=NULL;
+					if (el!=NULL)
+						child=dynamic_cast<node_t*>(el);
+					else
+						SG_ERROR("%d element of children is NULL\n",j);
+
 					if (child->data.transit_if_feature_value==sample[node->data.attribute_id])
 					{
 						flag=true;
@@ -711,8 +719,20 @@ CMulticlassLabels* CC45ClassifierTree::apply_multiclass_from_current_node(CDense
 			// if not nominal attribute check if greater or less than threshold
 			else
 			{
-				node_t* left_child=dynamic_cast<node_t*>(children->get_element(0));
-				node_t* right_child=dynamic_cast<node_t*>(children->get_element(1));
+				CSGObject* el=children->get_element(0);
+				node_t* left_child=NULL;
+				if (el!=NULL)
+					left_child=dynamic_cast<node_t*>(el);
+				else
+					SG_ERROR("left child is NULL\n")
+
+				el=children->get_element(1);
+				node_t* right_child=NULL;
+				if (el!=NULL)
+					right_child=dynamic_cast<node_t*>(el);
+				else
+					SG_ERROR("left child is NULL\n")
+
 				if (left_child->data.transit_if_feature_value>=sample[node->data.attribute_id])
 				{
 					SG_UNREF(node);
