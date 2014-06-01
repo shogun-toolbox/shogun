@@ -121,10 +121,10 @@ public:
 	/** uses test dataset to choose best pruned subtree
 	 *
 	 * @param feats test data to be used
-	 * @param weights weights of data points
 	 * @param gnd_truth test labels
+	 * @param weights weights of data points
 	 */
-	void prune_using_test_dataset(CDenseFeatures<float64_t>* feats, SGVector<float64_t> weights, CLabels* gnd_truth);
+	void prune_using_test_dataset(CDenseFeatures<float64_t>* feats, CLabels* gnd_truth, SGVector<float64_t> weights=SGVector<float64_t>());
 
 	/** set weights of data points
 	 * @param w vector of weights 
@@ -156,7 +156,7 @@ public:
 	 * 
 	 * @return number of folds used in cross validation
 	 */
-	int32_t get_num_folds();
+	int32_t get_num_folds() const;
 
 	/** set number of subsets for cross validation
 	 *
@@ -278,7 +278,7 @@ private:
 	 * @param labels the labels whose error needs to be calculated
 	 * @param reference actual labels against which test labels are compared
 	 * @param weights weights associated with the labels
-	 * @return float64_t error evaluated
+	 * @return error evaluated
 	 */
 	float64_t compute_error(CLabels* labels, CLabels* reference, SGVector<float64_t> weights);
 

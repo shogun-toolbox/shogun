@@ -85,8 +85,14 @@ CRegressionLabels* CCARTree::apply_regression(CFeatures* data)
 	return dynamic_cast<CRegressionLabels*>(ret);
 }
 
-void CCARTree::prune_using_test_dataset(CDenseFeatures<float64_t>* feats, SGVector<float64_t> weights, CLabels* gnd_truth)
+void CCARTree::prune_using_test_dataset(CDenseFeatures<float64_t>* feats, CLabels* gnd_truth, SGVector<float64_t> weights)
 {
+	if (weights.vlen==0)
+	{
+		weights=SGVector<float64_t>(feats->get_num_vectors());
+		weights.fill_vector(weights.vector,weights.vlen,1);
+	}
+
 	CDynamicObjectArray* pruned_trees=prune_tree(this);
 
 	int32_t min_index=-1;
@@ -159,7 +165,7 @@ void CCARTree::clear_feature_types()
 	m_types_set=false;
 }
 
-int32_t CCARTree::get_num_folds()
+int32_t CCARTree::get_num_folds() const
 {
 	return m_folds;
 }
@@ -215,6 +221,9 @@ bool CCARTree::train_machine(CFeatures* data)
 CBinaryTreeMachineNode<CARTreeNodeData>* CCARTree::CARTtrain(CFeatures* data, SGVector<float64_t> weights, CLabels* labels)
 {
 
+	REQUIRE(labels,"labels have to be supplied\n");
+	REQUIRE(data,"data matrix has to be supplied\n");
+
 	bnode_t* node=new bnode_t();
 	SGVector<float64_t> labels_vec=(dynamic_cast<CDenseLabels*>(labels))->get_labels();
 	SGMatrix<float64_t> mat=(dynamic_cast<CDenseFeatures<float64_t>*>(data))->get_feature_matrix();
@@ -244,7 +253,7 @@ CBinaryTreeMachineNode<CARTreeNodeData>* CCARTree::CARTtrain(CFeatures* data, SG
 			}
 		case PT_MULTICLASS:
 			{
-				SGVector<float64_t> lab=(dynamic_cast<CMulticlassLabels*>(labels))->get_labels_copy();	
+				SGVector<float64_t> lab=labels_vec.clone();	
 				lab.qsort();
 				// stores max total weight for a single label 
 				int32_t max=weights[0];
@@ -288,7 +297,7 @@ CBinaryTreeMachineNode<CARTreeNodeData>* CCARTree::CARTtrain(CFeatures* data, SG
 
 	// check stopping rules
 	// case 1 : all labels same
-	SGVector<float64_t> lab=(dynamic_cast<CDenseLabels*>(labels))->get_labels_copy();
+	SGVector<float64_t> lab=labels_vec.clone();
 	int32_t unique=lab.unique(lab.vector,lab.vlen);
 	if (unique==1)
 	{
@@ -712,7 +721,7 @@ void CCARTree::handle_missing_vecs_for_nominal_surrogate(SGMatrix<float64_t> m, 
 						if (numer>=numerc)
 							is_left[missing_vecs->get_element(k)]=feats_left[q];
 						else
-							is_left[missing_vecs->get_element(k)]=~feats_left[q];
+							is_left[missing_vecs->get_element(k)]=!feats_left[q];
 
 						break;
 					}
@@ -1098,7 +1107,13 @@ CDynamicObjectArray* CCARTree::prune_tree(CTreeMachine<CARTreeNodeData>* tree)
 	m_alphas->push_back(0);
 	CTreeMachine<CARTreeNodeData>* t1=tree->clone_tree();
 	SG_REF(t1);
-	bnode_t* t1_root=dynamic_cast<bnode_t*>(t1->get_root());
+	node_t* t1root=t1->get_root();
+	bnode_t* t1_root=NULL;
+	if (t1root!=NULL)
+		t1_root=dynamic_cast<bnode_t*>(t1root);
+	else
+		SG_ERROR("t1_root is NULL. This is not expected\n")
+
 	form_t1(t1_root);
 	trees->push_back(t1_root);
 	while(t1_root->data.num_leaves>1)
@@ -1106,15 +1121,22 @@ CDynamicObjectArray* CCARTree::prune_tree(CTreeMachine<CARTreeNodeData>* tree)
 		CTreeMachine<CARTreeNodeData>* t2=t1->clone_tree();
 		SG_REF(t2);
 
-		bnode_t* t2_root=dynamic_cast<bnode_t*>(t2->get_root());
+		node_t* t2root=t2->get_root();
+		bnode_t* t2_root=NULL;
+		if (t2root!=NULL)
+			t2_root=dynamic_cast<bnode_t*>(t2root);
+		else
+			SG_ERROR("t1_root is NULL. This is not expected\n")
+
 		float64_t a_k=find_weakest_alpha(t2_root);
 		m_alphas->push_back(a_k);
 		cut_weakest_link(t2_root,a_k);
 		trees->push_back(t2_root);
 
 		SG_UNREF(t1);
-		SG_UNREF(t2_root);
+		SG_UNREF(t1_root);
 		t1=t2;
+		t1_root=t2_root;
 	}
 
 	SG_UNREF(t1);
@@ -1185,7 +1207,7 @@ void CCARTree::form_t1(bnode_t* node)
 
 		node->data.num_leaves=left->data.num_leaves+right->data.num_leaves;
 		node->data.weight_minus_branch=left->data.weight_minus_branch+right->data.weight_minus_branch;
-		if (node->data.weight_minus_node==node->data.weight_minus_branch);
+		if (node->data.weight_minus_node==node->data.weight_minus_branch)
 		{
 			node->data.num_leaves=1;
 			CDynamicObjectArray* children=new CDynamicObjectArray();
