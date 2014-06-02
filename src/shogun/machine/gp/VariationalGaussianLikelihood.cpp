@@ -49,7 +49,7 @@ void CVariationalGaussianLikelihood::init()
 
 	SG_ADD(&m_s2, "sigma2", 
 		"The variance of variational normal distribution\n",
-		MS_AVAILABLE,GRADIENT_AVAILABLE);
+		MS_AVAILABLE, GRADIENT_AVAILABLE);
 }
 
 }
