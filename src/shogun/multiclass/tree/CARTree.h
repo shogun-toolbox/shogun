@@ -118,6 +118,14 @@ public:
 	 */
 	virtual CRegressionLabels* apply_regression(CFeatures* data=NULL);
 
+	/** uses test dataset to choose best pruned subtree
+	 *
+	 * @param feats test data to be used
+	 * @param gnd_truth test labels
+	 * @param weights weights of data points
+	 */
+	void prune_using_test_dataset(CDenseFeatures<float64_t>* feats, CLabels* gnd_truth, SGVector<float64_t> weights=SGVector<float64_t>());
+
 	/** set weights of data points
 	 * @param w vector of weights 
 	 */
@@ -144,39 +152,25 @@ public:
 	/** clear feature types of various features */
 	void clear_feature_types();
 
-	/** cost-complexity pruning
-	 *
-	 * @return CDynamicObjectArray of pruned trees
+	/** get number of subsets used for cross validation 
+	 * 
+	 * @return number of folds used in cross validation
 	 */
-	CDynamicObjectArray* prune_tree();
+	int32_t get_num_folds() const;
 
-	/** returns vector of alpha values correponding to the sequence of pruned subtrees
+	/** set number of subsets for cross validation
 	 *
-	 * @return vector of alpha values
+	 * @param folds number of folds used in cross validation
 	 */
-	SGVector<float64_t> get_alphas() const;
+	void set_num_folds(int32_t folds);
+
+	/** apply cross validation pruning */
+	void set_cv_pruning() { m_apply_cv_pruning=true; }
+
+	/** do not apply cross validation pruning */
+	void unset_cv_pruning() { m_apply_cv_pruning=false; }
 
 protected:
-
-	/** recursively finds alpha corresponding to weakest link(s)
-	 *
-	 * @param node the root of subtree whose weakest link it finds
-	 * @return alpha value corresponding to the weakest link in subtree
-	 */
-	float64_t find_weakest_alpha(bnode_t* node);
-
-	/** recursively cuts weakest link(s) in a tree
-	 *
-	 * @param node the root of subtree whose weakest link is cut
-	 * @param alpha alpha value corresponding to weakest link
-	 */
-	void cut_weakest_link(bnode_t* node, float64_t alpha);
-
-	/** recursively forms base case $ft_1$f tree from $ft_max$f during pruning
-	 *
-	 * @param node the root of current subtree
-	 */
-	void form_t1(bnode_t* node);
 
 	/** train machine - build CART from training data
 	 * @param data training data
@@ -270,6 +264,51 @@ private:
 	 */
 	CLabels* apply_from_current_node(CDenseFeatures<float64_t>* feats, bnode_t* current);
 
+	/** prune by cross validation
+	 *
+	 * @param data training data
+	 * @param folds the integer V for V-fold cross validation
+	 */
+	void prune_by_cross_validation(CDenseFeatures<float64_t>* data, int32_t folds);
+
+	/** computes error in classification/regression
+	 * for classification it eveluates weight_missclassified/total_weight
+	 * for regression it evaluates weighted sum of squared error/total_weight
+	 *
+	 * @param labels the labels whose error needs to be calculated
+	 * @param reference actual labels against which test labels are compared
+	 * @param weights weights associated with the labels
+	 * @return error evaluated
+	 */
+	float64_t compute_error(CLabels* labels, CLabels* reference, SGVector<float64_t> weights);
+
+	/** cost-complexity pruning
+	 *
+	 * @param tree the tree to be pruned
+	 * @return CDynamicObjectArray of pruned trees
+	 */
+	CDynamicObjectArray* prune_tree(CTreeMachine<CARTreeNodeData>* tree);
+
+	/** recursively finds alpha corresponding to weakest link(s)
+	 *
+	 * @param node the root of subtree whose weakest link it finds
+	 * @return alpha value corresponding to the weakest link in subtree
+	 */
+	float64_t find_weakest_alpha(bnode_t* node);
+
+	/** recursively cuts weakest link(s) in a tree
+	 *
+	 * @param node the root of subtree whose weakest link it cuts
+	 * @param alpha alpha value corresponding to weakest link
+	 */
+	void cut_weakest_link(bnode_t* node, float64_t alpha);
+
+	/** recursively forms base case $ft_1$f tree from $ft_max$f during pruning
+	 *
+	 * @param node the root of current subtree
+	 */
+	void form_t1(bnode_t* node);
+
 	/** initializes members of class */
 	void init();
 
@@ -289,6 +328,12 @@ private:
 
 	/** flag storing whether weights of samples are specified using weights vector **/
 	bool m_weights_set;
+
+	/** flag indicating whether cross validation pruning has to be applied or not - false by default **/
+	bool m_apply_cv_pruning;
+
+	/** V in V-fold cross validation - 5 by default **/
+	int32_t m_folds;
 
 	/** Problem type : PT_MULTICLASS or PT_REGRESSION **/
 	EProblemType m_mode;

@@ -97,19 +97,40 @@ public:
 	CTreeMachine* clone_tree()
 	{
 		CTreeMachine<T>* cloned_tree=new CTreeMachine<T>();
-		node_t* clone_root=new node_t();
-		SG_REF(clone_root);
+		node_t* clone_root;
+		if (!strcmp(m_root->get_name(),"TreeMachineNode"))
+		{
+			clone_root=new node_t();
+			SG_REF(clone_root);
+		}
+		else
+		{
+			clone_root=new bnode_t();
+			SG_REF(clone_root);
+		}
+
 		cloned_tree->set_root(clone_root);
 		clone_root->data=m_root->data;
 		clone_root->machine(m_root->machine());
 		CDynamicObjectArray* children=m_root->get_children();
 		for (int32_t i=0;i<children->get_num_elements();i++)
 		{
-			node_t* child=dynamic_cast<node_t*>(children->get_element(i));
+			node_t* child;
+			if (!strcmp(m_root->get_name(),"TreeMachineNode"))
+				child=dynamic_cast<node_t*>(children->get_element(i));
+			else
+				child=dynamic_cast<bnode_t*>(children->get_element(i));
+
 			CTreeMachine* child_tree=new CTreeMachine();
 			child_tree->set_root(child);
 			CTreeMachine* clone_child_tree=child_tree->clone_tree();
-			node_t* child_node_copy=clone_child_tree->get_root();
+
+			node_t* child_node_copy;
+			if (!strcmp(m_root->get_name(),"TreeMachineNode"))
+				child_node_copy=clone_child_tree->get_root();
+			else
+				child_node_copy=dynamic_cast<bnode_t*>(clone_child_tree->get_root());
+
 			clone_root->add_child(child_node_copy);
 
 			SG_UNREF(child_node_copy);
