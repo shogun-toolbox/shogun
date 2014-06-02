@@ -34,7 +34,7 @@
 
 using namespace shogun;
 
-const float64_t CCHAIDTree::MISSING=CMath::NOT_A_NUMBER;
+const float64_t CCHAIDTree::MISSING=CMath::MAX_REAL_NUMBER;
 
 CCHAIDTree::CCHAIDTree()
 : CTreeMachine<CHAIDTreeNodeData>()
@@ -42,23 +42,49 @@ CCHAIDTree::CCHAIDTree()
 	init();
 }
 
+CCHAIDTree::CCHAIDTree(int32_t dependent_vartype)
+: CTreeMachine<CHAIDTreeNodeData>()
+{
+	init();
+	m_dependent_vartype=dependent_vartype;
+}
+
 CCHAIDTree::~CCHAIDTree()
 {
 }
 
-void CCHAIDTree::set_machine_problem_type(EProblemType mode)
+EProblemType CCHAIDTree::get_machine_problem_type() const
 {
-	m_mode=mode;
+	switch (m_dependent_vartype)
+	{
+		case 0:
+			return PT_MULTICLASS;
+		case 1:
+			return PT_MULTICLASS;
+		case 2:
+			return PT_REGRESSION;
+		default:
+			SG_ERROR("Invalid dependent variable type set (%d). Problem type undefined\n",m_dependent_vartype);
+	}
+
+	return PT_MULTICLASS;
 }
 
 bool CCHAIDTree::is_label_valid(CLabels* lab) const
 {
-	if (m_mode==PT_MULTICLASS && lab->get_label_type()==LT_MULTICLASS)
-		return true;
-	else if (m_mode==PT_REGRESSION && lab->get_label_type()==LT_REGRESSION)
-		return true;
-	else
-		return false;
+	switch (m_dependent_vartype)
+	{
+		case 0:
+			return lab->get_label_type()==LT_MULTICLASS;
+		case 1:
+			return lab->get_label_type()==LT_MULTICLASS;
+		case 2:
+			return lab->get_label_type()==LT_REGRESSION;
+		default:
+			SG_ERROR("Invalid dependent variable type set (%d). Problem type undefined\n",m_dependent_vartype);
+	}
+
+	return false;
 }
 
 CMulticlassLabels* CCHAIDTree::apply_multiclass(CFeatures* data)
@@ -117,6 +143,46 @@ void CCHAIDTree::set_dependent_vartype(int32_t var)
 bool CCHAIDTree::train_machine(CFeatures* data)
 {
 	REQUIRE(data, "Data required for training\n")
+	REQUIRE(data->get_feature_class()==C_DENSE,"Dense data required for training\n")
+
+	SGMatrix<float64_t> fmat=(dynamic_cast<CDenseFeatures<float64_t>*>(data))->get_feature_matrix();
+
+	REQUIRE(m_feature_types.vlen==fmat.num_rows,"Either feature types are not set or number of feature types specified" 
+		"(%d here) is not same is number of features in data matrix (%d here)\n",m_feature_types.vlen,fmat.num_rows)
+
+	if (m_weights_set)
+	{
+		REQUIRE(m_weights.vlen==fmat.num_cols,"Length of weights vector (currently %d) should be same as" 
+					" number of vectors in data (presently %d)",m_weights.vlen,fmat.num_cols)
+	}
+	else
+	{
+		// all weights are equal to 1
+		m_weights=SGVector<float64_t>(fmat.num_cols);
+		m_weights.fill_vector(m_weights.vector,m_weights.vlen,1.0);
+	}
+
+	// continuous to ordinal conversion - NOTE: data matrix gets updated
+	bool updated=continuous_to_ordinal(fmat);
+
+	SGVector<int32_t> feature_types_cache;
+	if (updated)
+	{
+		// change m_feature_types momentarily
+		feature_types_cache=m_feature_types.clone();
+		for (int32_t i=0;i<m_feature_types.vlen;i++)
+		{
+			if (m_feature_types[i]==2)
+				m_feature_types[i]=1;
+		}
+	}
+
+	set_root(CHAIDtrain(data,m_weights,m_labels,0));
+
+	// restore feature types
+	if (updated)
+		m_feature_types=feature_types_cache;
+
 	return true;
 }
 
@@ -194,7 +260,7 @@ CTreeMachineNode<CHAIDTreeNodeData>* CCHAIDTree::CHAIDtrain(CFeatures* data, SGV
 	{
 		for (int32_t f=0;f<num_feats;f++)
 		{
-			if (!(CMath::fequals(mat(f,v),MISSING,0)) && !(CMath::fequals(mat(f,v-1),MISSING,0)))
+			if ((mat(f,v)!=MISSING) && (mat(f,v-1)!=MISSING))
 			{
 				if (mat(f,v)!=mat(f,v-1))
 				{
@@ -294,27 +360,29 @@ CTreeMachineNode<CHAIDTreeNodeData>* CCHAIDTree::CHAIDtrain(CFeatures* data, SGV
 
 		node->data.attribute_id=attr_min;
 		int32_t c=0;
-		for (int32_t j=0;j<cat_min.vlen;j++)
+		SGVector<int32_t> feat_class=cat_min.clone();
+		for (int32_t j=0;j<feat_class.vlen;j++)
 		{
-			if (cat_min[j]!=j)
+			if (feat_class[j]!=j)
 			{
 				continue;
 			}
 			else if (j==c)
 			{
 				c++;
-				break;
+				continue;
 			}
 
-			for (int32_t k=j;k<cat_min.vlen;k++)
+			for (int32_t k=j;k<feat_class.vlen;k++)
 			{
-				if (cat_min[k]==j)
-					cat_min[k]=c;
+				if (feat_class[k]==j)
+					feat_class[k]=c;
 			}
 
 			c++;
 		}
-		node->data.feature_class=cat_min;
+
+		node->data.feature_class=feat_class;
 		node->data.distinct_features=SGVector<float64_t>(unum);
 		for (int32_t j=0;j<unum;j++)
 			node->data.distinct_features[j]=ufeats_best[j];
@@ -332,15 +400,28 @@ SGVector<int32_t> CCHAIDTree::merge_categories_ordinal(SGVector<float64_t> feats
 {
 	SGVector<float64_t> ufeats=feats.clone();
 	int32_t inum_cat=ufeats.unique(ufeats.vector,ufeats.vlen);
-	int32_t fnum_cat=inum_cat; 
-
 	SGVector<int32_t> cat(inum_cat);
 	cat.range_fill(0);
 
-	// if chosen attribute X(feats here) has 1 category only
 	if (inum_cat==1)
 	{
 		pv=1.0;
+		return cat;
+	}
+
+	bool missing=false;
+	if (ufeats[inum_cat-1]==MISSING)
+	{
+		missing=true;
+		inum_cat--;
+	}
+
+	int32_t fnum_cat=inum_cat; 
+
+	// if chosen attribute (MISSING excluded) has 1 category only
+	if (inum_cat==1)
+	{
+		pv=adjusted_p_value(p_value(feats,labels,weights),2,2,1,true);
 		return cat;
 	}
 
@@ -352,7 +433,7 @@ SGVector<int32_t> CCHAIDTree::merge_categories_ordinal(SGVector<float64_t> feats
 		// scan all allowable pairs of categories to find most similar one 
 		int32_t cat_index_max=-1;
 		float64_t max_merge_pv=CMath::MIN_REAL_NUMBER;
-		for (int32_t i=0;i<cat.vlen-1;i++)
+		for (int32_t i=0;i<inum_cat-1;i++)
 		{
 			if (cat[i]==cat[i+1])
 				continue;
@@ -361,14 +442,23 @@ SGVector<int32_t> CCHAIDTree::merge_categories_ordinal(SGVector<float64_t> feats
 
 			// compute p-value
 			CDynamicArray<int32_t>* feat_index=new CDynamicArray<int32_t>();
+			CDynamicArray<int32_t>* feat_cat=new CDynamicArray<int32_t>();
 			for (int32_t j=0;j<feats.vlen;j++)
 			{
 				for (int32_t k=0;k<inum_cat;k++)
 				{
 					if (feats[j]==ufeats[k])
 					{
-						if ((cat[k]==cat[cat_index]) || (cat[k]==cat[cat_index+1]))
+						if (cat[k]==cat[cat_index])
+						{
 							feat_index->push_back(j);
+							feat_cat->push_back(cat[cat_index]);
+						}
+						else if (cat[k]==cat[cat_index+1])
+						{
+							feat_index->push_back(j);
+							feat_cat->push_back(cat[cat_index+1]);
+						}
 					}
 				}
 			}
@@ -378,27 +468,29 @@ SGVector<int32_t> CCHAIDTree::merge_categories_ordinal(SGVector<float64_t> feats
 			SGVector<float64_t> subweights(feat_index->get_num_elements());
 			for (int32_t j=0;j<feat_index->get_num_elements();j++)
 			{
-				subfeats[j]=feats[feat_index->get_element(j)];
+				subfeats[j]=feat_cat->get_element(j);
 				sublabels[j]=labels[feat_index->get_element(j)];
 				subweights[j]=weights[feat_index->get_element(j)];
 			}
 
 			float64_t pvalue=p_value(subfeats,sublabels,subweights);
-			if (pv>max_merge_pv)
+			if (pvalue>max_merge_pv)
 			{
 				max_merge_pv=pvalue;
 				cat_index_max=cat_index;
 			}
 
 			SG_UNREF(feat_index);
+			SG_UNREF(feat_cat);
 		}
 
 		if (max_merge_pv>m_alpha_merge)
 		{
 			// merge
-			for (int32_t i=cat_index_max+1;i<cat.vlen;i++)
+			int32_t cat2=cat[cat_index_max+1];
+			for (int32_t i=cat_index_max+1;i<inum_cat;i++)
 			{
-				if (cat[cat_index_max+1]==cat[i])
+				if (cat2==cat[i])
 					cat[i]=cat[cat_index_max];
 				else
 					break;
@@ -412,7 +504,35 @@ SGVector<int32_t> CCHAIDTree::merge_categories_ordinal(SGVector<float64_t> feats
 		}
 	}
 
-	pv=adjusted_p_value(p_value(feats,labels,weights),inum_cat,fnum_cat,1,false);
+	SGVector<float64_t> feats_cat(feats.vlen);
+	for (int32_t i=0;i<feats.vlen;i++)
+	{
+		if (feats[i]==MISSING)
+		{
+			feats_cat[i]=MISSING;
+			continue;
+		}
+
+		for (int32_t j=0;j<inum_cat;j++)
+		{
+			if (feats[i]==ufeats[j])
+				feats_cat[i]=cat[j];
+		}
+	}
+
+	if (missing)
+	{
+		bool merged=handle_missing_ordinal(cat,feats_cat,labels,weights);
+		if (!merged)
+			fnum_cat+=1;
+
+		pv=adjusted_p_value(p_value(feats_cat,labels,weights),inum_cat+1,fnum_cat,1,true);
+	}
+	else
+	{
+		pv=adjusted_p_value(p_value(feats_cat,labels,weights),inum_cat,fnum_cat,1,false);
+	}
+
 	return cat;
 }
 
@@ -455,14 +575,23 @@ SGVector<int32_t> CCHAIDTree::merge_categories_nominal(SGVector<float64_t> feats
 			for (int32_t j=i+1;j<leftcat->get_num_elements();j++)
 			{
 				CDynamicArray<int32_t>* feat_index=new CDynamicArray<int32_t>();
+				CDynamicArray<int32_t>* feat_cat=new CDynamicArray<int32_t>();
 				for (int32_t k=0;k<feats.vlen;k++)
 				{
-					for (int32_t l=0;l<ufeats.vlen;l++)
+					for (int32_t l=0;l<inum_cat;l++)
 					{
 						if (feats[k]==ufeats[l])
 						{
-							if ((cat[l]==leftcat->get_element(i))||(cat[l]==leftcat->get_element(j)))
+							if (cat[l]==leftcat->get_element(i))
+							{
 								feat_index->push_back(k);
+								feat_cat->push_back(leftcat->get_element(i));
+							}
+							else if (cat[l]==leftcat->get_element(j))
+							{
+								feat_index->push_back(k);
+								feat_cat->push_back(leftcat->get_element(j));
+							}
 						}
 					}
 				}
@@ -472,13 +601,13 @@ SGVector<int32_t> CCHAIDTree::merge_categories_nominal(SGVector<float64_t> feats
 				SGVector<float64_t> subweights(feat_index->get_num_elements());
 				for (int32_t k=0;k<feat_index->get_num_elements();k++)
 				{
-					subfeats[k]=feats[feat_index->get_element(k)];
+					subfeats[k]=feat_cat->get_element(k);
 					sublabels[k]=labels[feat_index->get_element(k)];
 					subweights[k]=weights[feat_index->get_element(k)];
 				}
 
 				float64_t pvalue=p_value(subfeats,sublabels,subweights);
-				if (pv>max_merge_pv)
+				if (pvalue>max_merge_pv)
 				{
 					max_merge_pv=pvalue;
 					cat1_max=leftcat->get_element(i);
@@ -486,6 +615,7 @@ SGVector<int32_t> CCHAIDTree::merge_categories_nominal(SGVector<float64_t> feats
 				}
 
 				SG_UNREF(feat_index);
+				SG_UNREF(feat_cat);
 			}
 		}
 
@@ -508,8 +638,90 @@ SGVector<int32_t> CCHAIDTree::merge_categories_nominal(SGVector<float64_t> feats
 		}
 	}
 
-	pv=adjusted_p_value(p_value(feats,labels,weights),inum_cat,fnum_cat,0,false);
+	SGVector<float64_t> feats_cat(feats.vlen);
+	for (int32_t i=0;i<feats.vlen;i++)
+	{
+		for (int32_t j=0;j<inum_cat;j++)
+		{
+			if (feats[i]==ufeats[j])
+				feats_cat[i]=cat[j];
+		}
+	}
+
+	pv=adjusted_p_value(p_value(feats_cat,labels,weights),inum_cat,fnum_cat,0,false);
 	return cat;
+}
+
+bool CCHAIDTree::handle_missing_ordinal(SGVector<int32_t> cat, SGVector<float64_t> feats, SGVector<float64_t> labels,
+									 		SGVector<float64_t> weights)
+{
+	// assimilate category indices other than missing (last cell of cat vector stores category index for missing)
+	// sanity check
+	REQUIRE(cat[cat.vlen-1]==cat.vlen-1,"last category is expected to be stored for MISSING. Hence it is expected to be un-merged\n")
+	CDynamicArray<int32_t>* cat_ind=new CDynamicArray<int32_t>();
+	for (int32_t i=0;i<cat.vlen-1;i++)
+	{
+		if (cat[i]==i)
+			cat_ind->push_back(i);
+	}
+
+	// find most similar category to MISSING
+	float64_t max_pv_pair=CMath::MIN_REAL_NUMBER;
+	int32_t cindex_max=-1;
+	for (int32_t i=0;i<cat_ind->get_num_elements();i++)
+	{
+		CDynamicArray<int32_t>* feat_index=new CDynamicArray<int32_t>();
+		for (int32_t j=0;j<feats.vlen;j++)
+		{
+			if ((feats[j]==cat_ind->get_element(i)) || feats[j]==MISSING)
+				feat_index->push_back(j);
+		}
+
+		SGVector<float64_t> subfeats(feat_index->get_num_elements());
+		SGVector<float64_t> sublabels(feat_index->get_num_elements());
+		SGVector<float64_t> subweights(feat_index->get_num_elements());
+		for (int32_t j=0;j<feat_index->get_num_elements();j++)
+		{
+			subfeats[j]=feats[feat_index->get_element(j)];
+			sublabels[j]=labels[feat_index->get_element(j)];
+			subweights[j]=weights[feat_index->get_element(j)];
+		}
+
+		float64_t pvalue=p_value(subfeats,sublabels,subweights);
+		if (pvalue>max_pv_pair)
+		{
+			max_pv_pair=pvalue;
+			cindex_max=cat_ind->get_element(i);
+		}
+
+		SG_UNREF(feat_index);
+	}
+
+	// compare if MISSING being merged is better than not being merged 
+	SGVector<float64_t> feats_copy(feats.vlen);
+	for (int32_t i=0;i<feats.vlen;i++)
+	{
+		if (feats[i]==MISSING)
+			feats_copy[i]=cindex_max;
+		else
+			feats_copy[i]=feats[i];
+	}
+
+	float64_t pv_merged=p_value(feats_copy, labels, weights);
+	float64_t pv_unmerged=p_value(feats, labels, weights);
+	if (pv_merged>pv_unmerged)
+	{
+		cat[cat.vlen-1]=cindex_max;
+		for (int32_t i=0;i<feats.vlen;i++)
+		{
+			if (feats[i]==MISSING)
+				feats[i]=cindex_max;
+		}
+
+		return true;
+	}
+
+	return false;
 }
 
 float64_t CCHAIDTree::adjusted_p_value(float64_t up_value, int32_t inum_cat, int32_t fnum_cat, int32_t ft, bool is_missing)
@@ -992,21 +1204,91 @@ float64_t CCHAIDTree::sum_of_squared_deviation(SGVector<float64_t> lab, SGVector
 	return dev;
 }
 
+bool CCHAIDTree::continuous_to_ordinal(SGMatrix<float64_t> featmat)
+{
+	// assimilate continuous breakpoints
+	CDynamicArray<int32_t>* cont_ind=new CDynamicArray<int32_t>();
+	for (int32_t i=0;i<featmat.num_rows;i++)
+	{
+		if (m_feature_types[i]==2)
+			cont_ind->push_back(i);
+	}
+
+	if (cont_ind->get_num_elements()==0)
+	{
+		SG_UNREF(cont_ind);
+		return false;
+	}
+
+	// form breakpoints matrix
+	m_cont_breakpoints=SGMatrix<float64_t>(m_num_breakpoints,cont_ind->get_num_elements());
+	int32_t bin_size=featmat.num_cols/m_num_breakpoints;
+	for (int32_t i=0;i<cont_ind->get_num_elements();i++)
+	{
+		int32_t left=featmat.num_cols%m_num_breakpoints;
+		int32_t end_pt=-1;
+
+		SGVector<float64_t> values(featmat.num_cols);
+		for (int32_t j=0;j<values.vlen;j++)
+			values[j]=featmat(cont_ind->get_element(i),j);
+
+		values.qsort();
+
+		for (int32_t j=0;j<m_num_breakpoints;j++)
+		{
+			if (left>0)
+			{
+				left--;
+				end_pt+=bin_size+1;
+				m_cont_breakpoints(j,i)=values[end_pt];
+			}
+			else
+			{
+				end_pt+=bin_size;
+				m_cont_breakpoints(j,i)=values[end_pt];
+			}
+		}
+	}
+
+	// update data matrix
+	for (int32_t i=0;i<cont_ind->get_num_elements();i++)
+	{
+		for (int32_t j=0;j<featmat.num_cols;j++)
+		{
+			// find right bin
+			for (int32_t k=0;k<m_num_breakpoints;k++)
+			{
+				if (featmat(cont_ind->get_element(i),j)<m_cont_breakpoints(i,k))
+					featmat(cont_ind->get_element(i),j)=m_cont_breakpoints(i,k);
+			} 
+		}
+	}
+
+	SG_UNREF(cont_ind);
+	return true;
+}
+
 void CCHAIDTree::init()
 {
 	m_feature_types=SGVector<int32_t>();
 	m_weights=SGVector<float64_t>();
-	m_dependent_vartype=-1;
+	m_dependent_vartype=0;
 	m_weights_set=false;
 	m_max_tree_depth=0;
+	m_min_node_size=0;
 	m_alpha_merge=0.05;
 	m_alpha_split=0.05;
+	m_cont_breakpoints=SGMatrix<float64_t>();
+	m_num_breakpoints=5;
 
 	SG_ADD(&m_weights,"m_weights", "weights", MS_NOT_AVAILABLE);
 	SG_ADD(&m_weights_set,"m_weights_set", "weights set", MS_NOT_AVAILABLE);
 	SG_ADD(&m_feature_types,"m_feature_types", "feature types", MS_NOT_AVAILABLE);
 	SG_ADD(&m_dependent_vartype,"m_dependent_vartype", "dependent variable type", MS_NOT_AVAILABLE);
 	SG_ADD(&m_max_tree_depth,"m_max_tree_depth", "max tree depth", MS_NOT_AVAILABLE);
+	SG_ADD(&m_min_node_size,"m_min_node_size", "min node size", MS_NOT_AVAILABLE);
 	SG_ADD(&m_alpha_merge,"m_alpha_merge", "alpha-merge", MS_NOT_AVAILABLE);
 	SG_ADD(&m_alpha_split,"m_alpha_split", "alpha-split", MS_NOT_AVAILABLE);
+	SG_ADD(&m_cont_breakpoints,"m_cont_breakpoints", "breakpoints in continuous attributes", MS_NOT_AVAILABLE);
+	SG_ADD(&m_num_breakpoints,"m_num_breakpoints", "number of breakpoints", MS_NOT_AVAILABLE);
 }

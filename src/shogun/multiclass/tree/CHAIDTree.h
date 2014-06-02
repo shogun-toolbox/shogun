@@ -90,8 +90,13 @@ namespace shogun
 class CCHAIDTree : public CTreeMachine<CHAIDTreeNodeData>
 {
 public:
-	/** constructor */
+	/** default constructor */
 	CCHAIDTree();
+
+	/** constructor
+	 * @param dependent_vartype feature type for dependent variable (0-nominal, 1-ordinal or 2-continuous)  
+	 */
+	CCHAIDTree(int32_t dependent_vartype);
 
 	/** destructor */
 	virtual ~CCHAIDTree();
@@ -104,12 +109,7 @@ public:
 	/** get problem type - multiclass classification or regression
 	 * @return PT_MULTICLASS or PT_REGRESSION
 	 */
-	virtual EProblemType get_machine_problem_type() const { return m_mode; } 
-
-	/** set problem type - multiclass classification or regression
-	 * @param mode EProblemType PT_MULTICLASS or PT_REGRESSION
-	 */
-	void set_machine_problem_type(EProblemType mode);
+	virtual EProblemType get_machine_problem_type() const;
 
 	/** whether labels supplied are valid for current problem type
 	 * @param lab labels supplied
@@ -205,6 +205,16 @@ public:
 	 */
 	float64_t get_alpha_split() const { return m_alpha_split; }
 
+	/** set number of breakpoints
+	 * @param b number of breakpoints
+	 */
+	void set_num_breakpoints(int32_t b) { m_num_breakpoints=b; }
+
+	/** get number of breakpoints
+	 * @return number of breakpoints
+	 */
+	float64_t get_num_breakpoints() const { return m_num_breakpoints; }
+
 protected:
 	/** train machine - build CHAID from training data
 	 * @param data training data
@@ -252,6 +262,16 @@ private:
 	 * @return classification/regression labels of input data
 	 */
 	CLabels* apply_from_current_node(CDenseFeatures<float64_t>* feats, node_t* current);
+
+	/** handles missing values category for ordinal feature type
+	 *
+	 * @param cat category vector
+	 * @param feats feature vector represented in terms of categories
+	 * @param labels labels associated with features
+	 * @param weights weights associated with features
+	 * @return whether missing values category is merged 
+	 */
+	bool handle_missing_ordinal(SGVector<int32_t> cat, SGVector<float64_t> feats, SGVector<float64_t> labels, SGVector<float64_t> weights);
 
 	/** calculates adjusted p_value using Bonferroni adjustments
 	 * 
@@ -323,7 +343,7 @@ private:
 	 */
 	SGMatrix<float64_t> expected_cf_indep_model(SGMatrix<int32_t> ct, SGMatrix<float64_t> wt);
 
-	/** calculated node label for continuous dependent variable using sum of squared deviation
+	/** calculates node label for continuous dependent variable using sum of squared deviation
 	 * @param lab labels
 	 * @param weights associated weights
 	 * @param mean stores the mean label
@@ -331,11 +351,20 @@ private:
 	 */
 	float64_t sum_of_squared_deviation(SGVector<float64_t> lab, SGVector<float64_t> weights, float64_t &mean);
 
+	/** converts continuous features to ordinal via binning. Forms conversion matrix m_cont_breakpoints.
+	 * NOTE : This method changes data matrix. The continuous feature values
+	 * are replaced with the actual feature values used.
+	 * 
+	 * @param featmat feature matrix
+	 * @return whether data matrix is updated
+	 */
+	bool continuous_to_ordinal(SGMatrix<float64_t> featmat);
+
 	/** initializes members of class */
 	void init();
 
 public:
-	/** denotes that a feature in a vector is missing MISSING = NOT_A_NUMBER */
+	/** denotes that a feature in a vector is missing MISSING = MAX_REAL_NUMBER */
 	static const float64_t MISSING;
 
 private:
@@ -347,9 +376,6 @@ private:
 
 	/** whether weights are set */
 	bool m_weights_set;
-
-	/** Problem type : PT_MULTICLASS or PT_REGRESSION **/
-	EProblemType m_mode;
 
 	/** whether dependent variable is nominal(0), ordinal(1) or continuous(2) */
 	int32_t m_dependent_vartype;
@@ -365,6 +391,12 @@ private:
 
 	/** alpha_split value */
 	float64_t m_alpha_split;
+
+	/** continuous to ordinal conversion matrix */
+	SGMatrix<float64_t> m_cont_breakpoints;
+
+	/** number of breakpoints for continuous to ordinal conversion */
+	int32_t m_num_breakpoints;
 
 };
 } /* namespace shogun */
