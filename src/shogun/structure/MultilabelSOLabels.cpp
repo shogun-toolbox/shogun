@@ -53,11 +53,21 @@ CMultilabelSOLabels::~CMultilabelSOLabels()
 
 void CMultilabelSOLabels::set_sparse_label(int32_t j, SGVector<int32_t> label)
 {
+	if (m_sdt == SDT_UNKNOWN)
+	{
+		m_sdt = SDT_SPARSE_MULTILABEL;
+	}
+
 	m_multilabel_labels->set_label(j, label);
 }
 
 void CMultilabelSOLabels::set_sparse_labels(SGVector<int32_t> * labels)
 {
+	if (m_sdt == SDT_UNKNOWN)
+	{
+		m_sdt = SDT_SPARSE_MULTILABEL;
+	}
+
 	m_multilabel_labels->set_labels(labels);
 }
 
@@ -85,8 +95,18 @@ int32_t CMultilabelSOLabels::get_num_classes() const
 	}
 }
 
+CMultilabelLabels * CMultilabelSOLabels::get_multilabel_labels()
+{
+	return m_multilabel_labels;
+}
+
 bool CMultilabelSOLabels::set_label(int32_t j, CStructuredData * label)
 {
+	if (m_sdt == SDT_UNKNOWN)
+	{
+		m_sdt = label->get_structured_data_type();
+	}
+
 	CSparseMultilabel * slabel = CSparseMultilabel::obtain_from_generic(label);
 	m_multilabel_labels->set_label(j, slabel->get_data());
 	return true;

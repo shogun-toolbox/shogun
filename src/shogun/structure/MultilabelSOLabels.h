@@ -120,6 +120,9 @@ public:
 	/** @return number of classes (per label) */
 	virtual int32_t get_num_classes() const;
 
+	/** @return multilabel-labels object */
+	virtual CMultilabelLabels * get_multilabel_labels();
+
 	/** set sparse labels
 	 *
 	 * @param labels list of sparse labels
