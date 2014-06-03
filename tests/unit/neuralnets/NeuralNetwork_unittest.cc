@@ -43,6 +43,7 @@
 #include <shogun/neuralnets/NeuralLogisticLayer.h>
 #include <shogun/neuralnets/NeuralSoftmaxLayer.h>
 #include <shogun/neuralnets/NeuralRectifiedLinearLayer.h>
+#include <shogun/neuralnets/NeuralConvolutionalLayer.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;
@@ -159,6 +160,41 @@ TEST(NeuralNetwork, backpropagation_rectified_linear)
 	layers->append_element(new CNeuralRectifiedLinearLayer(3));
 	layers->append_element(new CNeuralRectifiedLinearLayer(6));
 	layers->append_element(new CNeuralRectifiedLinearLayer(5));
+	layers->append_element(new CNeuralLinearLayer(4));
+	CNeuralNetwork* network = new CNeuralNetwork(layers);
+	
+	network->connect(0,2);
+	network->connect(1,2);
+	network->connect(2,3);
+	network->connect(2,4);
+	network->connect(3,5);
+	network->connect(4,5);
+	
+	network->initialize();
+	network->l1_coefficient = 0.03;
+	network->l2_coefficient = 0.01;
+	EXPECT_NEAR(network->check_gradients(), 0.0, tolerance);
+	SG_UNREF(network);
+}
+
+/** Tests gradients computed using backpropagation against gradients computed
+ * by numerical approximation. Uses a CNeuralConvolutionalLayer-based network.
+ */
+TEST(NeuralNetwork, backpropagation_convolutional)
+{
+	float64_t tolerance = 1e-9;
+	
+	CMath::init_random(10);
+	
+	CDynamicObjectArray* layers = new CDynamicObjectArray();
+	layers->append_element(new CNeuralInputLayer(6*4));
+	layers->append_element(new CNeuralInputLayer(6*4));
+	layers->append_element(new CNeuralConvolutionalLayer(
+		CMAF_LOGISTIC,1, 6,4, 1,1, 1,1, 1,1));
+	layers->append_element(new CNeuralConvolutionalLayer(
+		CMAF_LOGISTIC,1, 6,4, 1,1, 1,1, 1,1));
+	layers->append_element(new CNeuralConvolutionalLayer(
+		CMAF_LOGISTIC,1, 6,4, 1,1, 1,1, 1,1));
 	layers->append_element(new CNeuralLinearLayer(4));
 	CNeuralNetwork* network = new CNeuralNetwork(layers);
 	
