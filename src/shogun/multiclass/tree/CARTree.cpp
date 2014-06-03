@@ -172,6 +172,7 @@ int32_t CCARTree::get_num_folds() const
 
 void CCARTree::set_num_folds(int32_t folds)
 {
+	REQUIRE(folds>1,"Number of folds is expected to be greater than 1. Supplied value is %d\n",folds)
 	m_folds=folds;
 }
 
