@@ -115,21 +115,23 @@ public:
 		CDynamicObjectArray* children=m_root->get_children();
 		for (int32_t i=0;i<children->get_num_elements();i++)
 		{
-			node_t* child;
-			if (!strcmp(m_root->get_name(),"TreeMachineNode"))
-				child=dynamic_cast<node_t*>(children->get_element(i));
-			else
-				child=dynamic_cast<bnode_t*>(children->get_element(i));
+			CSGObject* el=children->get_element(i);
+			node_t* child=NULL;
+			if (el!=NULL)
+			{
+				if (!strcmp(m_root->get_name(),"TreeMachineNode"))
+					child=dynamic_cast<node_t*>(el);
+				else
+					child=dynamic_cast<bnode_t*>(el);
+			}
 
 			CTreeMachine* child_tree=new CTreeMachine();
 			child_tree->set_root(child);
 			CTreeMachine* clone_child_tree=child_tree->clone_tree();
 
-			node_t* child_node_copy;
-			if (!strcmp(m_root->get_name(),"TreeMachineNode"))
-				child_node_copy=clone_child_tree->get_root();
-			else
-				child_node_copy=dynamic_cast<bnode_t*>(clone_child_tree->get_root());
+			node_t* child_node_copy=clone_child_tree->get_root();
+			if ((!strcmp(m_root->get_name(),"BinaryTreeMachineNode")) && (child_node_copy!=NULL))
+				child_node_copy=dynamic_cast<bnode_t*>(child_node_copy);
 
 			clone_root->add_child(child_node_copy);
 
