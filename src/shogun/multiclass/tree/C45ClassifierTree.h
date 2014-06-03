@@ -45,29 +45,29 @@ namespace shogun
  * learning. The algorithm steps are briefy explained below : \n
  *
  * function C4.5 (R: a set of non-categorical attributes, C: the categorical attribute, S: a training set):\n
- * \t returns a decision tree; \n
+ *    returns a decision tree; \n
  *
  * begin \n
- * \t If S consists of records all with the same value for the categorical attribute,\n
- * \t\t return a single node with that value; \n
+ *    If S consists of records all with the same value for the categorical attribute,\n
+ *      return a single node with that value; \n
  *
- * \t If R is empty,\n
- * \t\t return a single node with as value the most frequent\n 
- * \t\t of the values of the categorical attribute in C;\n 
- * \t\t [note that then there will be errors, that is, records that will be improperly classified]; \n
+ *    If R is empty,\n
+ *      return a single node with as value the most frequent\n 
+ *      of the values of the categorical attribute in C;\n 
+ *      [note that then there will be errors, that is, records that will be improperly classified]; \n
  *
- * \t For each non-categorical attribute NC in R : \n
- * \t\t If NC is continuous then first convert it to nominal attribute by separating into 2 classes about a threshold \n
- * \t\t Find Gain of all attributes \n
+ *    For each non-categorical attribute NC in R : \n
+ *      If NC is continuous then first convert it to nominal attribute by separating into 2 classes about a threshold \n
+ *      Find Gain of all attributes \n
  *
- * \t Let D be the attribute with largest Gain(D,S) among attributes in R;\n
- * \t Let \f${d_j| j=1,2, .., m}\f$ be the values of attribute D;\n
- * \t Let \f${S_j| j=1,2, .., m}\f$ be the subsets of S consisting respectively of records with value \f$d_j\f$ 
+ *    Let D be the attribute with largest Gain(D,S) among attributes in R;\n
+ *    Let \f${d_j| j=1,2, .., m}\f$ be the values of attribute D;\n
+ *    Let \f${S_j| j=1,2, .., m}\f$ be the subsets of S consisting respectively of records with value \f$d_j\f$ 
  * for attribute D; \n
  *
- * \t Return a tree with root labeled D and arcs labeled \f$d_1, d_2, .., d_m\f$ going respectively to the trees \n
+ *    Return a tree with root labeled D and arcs labeled \f$d_1, d_2, .., d_m\f$ going respectively to the trees \n
  *
- * \t C4.5(R-{D}, C, \f$S_1\f$), .., C4.5(R-{D}, C, \f$S_m\f$);\n
+ *    C4.5(R-{D}, C, \f$S_1\f$), .., C4.5(R-{D}, C, \f$S_m\f$);\n
  * end C4.5;
  *
  * cf. http://tesis-algoritmo-c45.googlecode.com/files/C45.ppt

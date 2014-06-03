@@ -178,7 +178,7 @@ protected:
 	}
 
 private:
-	/* initialize parameters in constructor */
+	/** initialize parameters in constructor */
 	void init()
 	{
 		m_parent=NULL;
@@ -194,13 +194,13 @@ public:
 	T data;
 
 protected:
-	/* parent node */
+	/** parent node */
 	CTreeMachineNode* m_parent;
 
-	/* machine index */
+	/** machine index */
 	int32_t m_machine;
 
-	/* Dynamic array of pointers to children */ 
+	/** Dynamic array of pointers to children */ 
 	CDynamicObjectArray* m_children;
 
 };
