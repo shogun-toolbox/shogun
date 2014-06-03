@@ -145,10 +145,10 @@ bool CCHAIDTree::train_machine(CFeatures* data)
 	REQUIRE(data, "Data required for training\n")
 	REQUIRE(data->get_feature_class()==C_DENSE,"Dense data required for training\n")
 
-	SGMatrix<float64_t> fmat=(dynamic_cast<CDenseFeatures<float64_t>*>(data))->get_feature_matrix();
+	SGMatrix<float64_t> fmat=(CDenseFeatures<float64_t>::obtain_from_generic(data))->get_feature_matrix();
 
 	REQUIRE(m_feature_types.vlen==fmat.num_rows,"Either feature types are not set or number of feature types specified" 
-		"(%d here) is not same is number of features in data matrix (%d here)\n",m_feature_types.vlen,fmat.num_rows)
+		" (%d here) is not same is number of features in data matrix (%d here)\n",m_feature_types.vlen,fmat.num_rows)
 
 	if (m_weights_set)
 	{
@@ -193,7 +193,7 @@ CTreeMachineNode<CHAIDTreeNodeData>* CCHAIDTree::CHAIDtrain(CFeatures* data, SGV
 
 	node_t* node=new node_t();
 	SGVector<float64_t> labels_vec=(dynamic_cast<CDenseLabels*>(labels))->get_labels();
-	SGMatrix<float64_t> mat=(dynamic_cast<CDenseFeatures<float64_t>*>(data))->get_feature_matrix();
+	SGMatrix<float64_t> mat=(CDenseFeatures<float64_t>::obtain_from_generic(data))->get_feature_matrix();
 	int32_t num_feats=mat.num_rows;
 	int32_t num_vecs=mat.num_cols;
 
@@ -1207,30 +1207,35 @@ float64_t CCHAIDTree::sum_of_squared_deviation(SGVector<float64_t> lab, SGVector
 bool CCHAIDTree::continuous_to_ordinal(SGMatrix<float64_t> featmat)
 {
 	// assimilate continuous breakpoints
-	CDynamicArray<int32_t>* cont_ind=new CDynamicArray<int32_t>();
+	int32_t count_cont=0;
 	for (int32_t i=0;i<featmat.num_rows;i++)
 	{
 		if (m_feature_types[i]==2)
-			cont_ind->push_back(i);
+			count_cont++;
 	}
 
-	if (cont_ind->get_num_elements()==0)
-	{
-		SG_UNREF(cont_ind);
+	if (count_cont==0)
 		return false;
+
+	SGVector<int32_t> cont_ind(count_cont);
+	int32_t ci=0;
+	for (int32_t i=0;i<featmat.num_rows;i++)
+	{
+		if (m_feature_types[i]==2)
+			cont_ind[ci++]=i;
 	}
 
 	// form breakpoints matrix
-	m_cont_breakpoints=SGMatrix<float64_t>(m_num_breakpoints,cont_ind->get_num_elements());
+	m_cont_breakpoints=SGMatrix<float64_t>(m_num_breakpoints,count_cont);
 	int32_t bin_size=featmat.num_cols/m_num_breakpoints;
-	for (int32_t i=0;i<cont_ind->get_num_elements();i++)
+	for (int32_t i=0;i<count_cont;i++)
 	{
 		int32_t left=featmat.num_cols%m_num_breakpoints;
 		int32_t end_pt=-1;
 
 		SGVector<float64_t> values(featmat.num_cols);
 		for (int32_t j=0;j<values.vlen;j++)
-			values[j]=featmat(cont_ind->get_element(i),j);
+			values[j]=featmat(cont_ind[i],j);
 
 		values.qsort();
 
@@ -1251,20 +1256,19 @@ bool CCHAIDTree::continuous_to_ordinal(SGMatrix<float64_t> featmat)
 	}
 
 	// update data matrix
-	for (int32_t i=0;i<cont_ind->get_num_elements();i++)
+	for (int32_t i=0;i<count_cont;i++)
 	{
 		for (int32_t j=0;j<featmat.num_cols;j++)
 		{
 			// find right bin
 			for (int32_t k=0;k<m_num_breakpoints;k++)
 			{
-				if (featmat(cont_ind->get_element(i),j)<m_cont_breakpoints(i,k))
-					featmat(cont_ind->get_element(i),j)=m_cont_breakpoints(i,k);
+				if (featmat(cont_ind[i],j)<m_cont_breakpoints(i,k))
+					featmat(cont_ind[i],j)=m_cont_breakpoints(i,k);
 			} 
 		}
 	}
 
-	SG_UNREF(cont_ind);
 	return true;
 }
 
