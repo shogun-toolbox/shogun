@@ -255,13 +255,20 @@ private:
 	SGVector<int32_t> merge_categories_nominal(SGVector<float64_t> feats, SGVector<float64_t> labels, 
 								SGVector<float64_t> weights, float64_t &pv);
 
+	/** applies the decision tree learnt to test data
+	 *
+	 * @param data test data to be classified/regressed
+	 * @return classification/regression labels of input data
+	 */
+	CLabels* apply_tree(CFeatures* data);
+
 	/** uses current subtree to classify/regress data
 	 *
-	 * @param feats data to be classified/regressed
+	 * @param fmat data matrix to be classified/regressed
 	 * @param current root of current subtree
 	 * @return classification/regression labels of input data
 	 */
-	CLabels* apply_from_current_node(CDenseFeatures<float64_t>* feats, node_t* current);
+	CLabels* apply_from_current_node(SGMatrix<float64_t> fmat, node_t* current);
 
 	/** handles missing values category for ordinal feature type
 	 *
