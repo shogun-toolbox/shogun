@@ -127,7 +127,7 @@ SGMatrix<float64_t> return_data()
 	return data;
 }
 
-TEST(CHAIDTree, classify_simple)
+TEST(CHAIDTree, test_tree_structure)
 {
 	CDenseFeatures<float64_t>* feats=new CDenseFeatures<float64_t>(return_data());
 
@@ -225,4 +225,99 @@ TEST(CHAIDTree, classify_simple)
 	SG_UNREF(feats);
 	SG_UNREF(node);
 	SG_UNREF(children);
+}
+
+TEST(CHAIDTree, test_classify_multiclass)
+{
+	CDenseFeatures<float64_t>* feats=new CDenseFeatures<float64_t>(return_data());
+
+	// yes 1. no 0.
+	SGVector<float64_t> lab(14);
+	lab[0]=0.0;
+	lab[1]=0.0;
+	lab[2]=1.0;
+	lab[3]=1.0;
+	lab[4]=1.0;
+	lab[5]=0.0;
+	lab[6]=1.0;
+	lab[7]=0.0;
+	lab[8]=1.0;
+	lab[9]=1.0;
+	lab[10]=1.0;
+	lab[11]=1.0;
+	lab[12]=1.0;
+	lab[13]=0.0;
+
+	SGVector<int32_t> ft=SGVector<int32_t>(4);
+	ft[0]=0;
+	ft[1]=0;
+	ft[2]=0;
+	ft[3]=0;
+
+	CMulticlassLabels* labels=new CMulticlassLabels(lab);
+
+	CCHAIDTree* c=new CCHAIDTree(0);
+	c->set_labels(labels);
+	c->set_feature_types(ft);
+	c->set_alpha_merge(CMath::MIN_REAL_NUMBER);
+	c->set_alpha_split(CMath::MAX_REAL_NUMBER);
+	c->train(feats);
+
+	SGMatrix<float64_t> test(4,5);
+	test(0,0)=overcast;
+	test(0,1)=rain;
+	test(0,2)=sunny;
+	test(0,3)=rain;
+	test(0,4)=sunny;
+
+	test(1,0)=hot;
+	test(1,1)=cool;
+	test(1,2)=mild;
+	test(1,3)=mild;
+	test(1,4)=hot;
+
+	test(2,0)=normal;
+	test(2,1)=high;
+	test(2,2)=high;
+	test(2,3)=normal;
+	test(2,4)=normal;
+
+	test(3,0)=strong;
+	test(3,1)=strong;
+	test(3,2)=weak;
+	test(3,3)=weak;
+	test(3,4)=strong;
+
+	CDenseFeatures<float64_t>* test_feats=new CDenseFeatures<float64_t>(test);
+	CMulticlassLabels* result=c->apply_multiclass(test_feats);
+	SGVector<float64_t> res_vector=result->get_labels();
+
+	EXPECT_EQ(1.0,res_vector[0]);
+	EXPECT_EQ(0.0,res_vector[1]);
+	EXPECT_EQ(0.0,res_vector[2]);
+	EXPECT_EQ(1.0,res_vector[3]);
+	EXPECT_EQ(1.0,res_vector[4]);	
+
+
+	ft[0]=1;
+	ft[1]=1;
+	ft[2]=1;
+	ft[3]=1;
+	c->set_feature_types(ft);
+	c->train(feats);
+
+	SG_UNREF(result);
+	result=c->apply_multiclass(test_feats);
+	res_vector=result->get_labels();
+
+	EXPECT_EQ(1.0,res_vector[0]);
+	EXPECT_EQ(0.0,res_vector[1]);
+	EXPECT_EQ(0.0,res_vector[2]);
+	EXPECT_EQ(1.0,res_vector[3]);
+	EXPECT_EQ(1.0,res_vector[4]);	
+
+	SG_UNREF(test_feats);
+	SG_UNREF(result);
+	SG_UNREF(c);
+	SG_UNREF(feats);
 }

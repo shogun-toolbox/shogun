@@ -90,13 +90,15 @@ bool CCHAIDTree::is_label_valid(CLabels* lab) const
 CMulticlassLabels* CCHAIDTree::apply_multiclass(CFeatures* data)
 {
 	REQUIRE(data, "Data required for classification in apply_multiclass\n")
-	return new CMulticlassLabels(); 
+
+	return CLabelsFactory::to_multiclass(apply_tree(data));
 }
 
 CRegressionLabels* CCHAIDTree::apply_regression(CFeatures* data)
 {
 	REQUIRE(data, "Data required for regression in apply_regression\n")
-	return new CRegressionLabels();
+
+	return CLabelsFactory::to_regression(apply_tree(data));
 }
 
 void CCHAIDTree::set_weights(SGVector<float64_t> w)
@@ -650,6 +652,94 @@ SGVector<int32_t> CCHAIDTree::merge_categories_nominal(SGVector<float64_t> feats
 
 	pv=adjusted_p_value(p_value(feats_cat,labels,weights),inum_cat,fnum_cat,0,false);
 	return cat;
+}
+
+CLabels* CCHAIDTree::apply_tree(CFeatures* data)
+{
+	SGMatrix<float64_t> fmat=(CDenseFeatures<float64_t>::obtain_from_generic(data))->get_feature_matrix();
+
+	// modify test data matrix (continuous to ordinal)
+	if (m_cont_breakpoints.num_cols>0)
+	{
+		int32_t c=0;
+		for (int32_t i=0;i<fmat.num_rows;i++)
+		{
+			if (m_feature_types[i]!=2)
+				continue;
+
+			// continuous to ordinal conversion
+			for (int32_t j=0;j<fmat.num_cols;j++)
+			{
+				for (int32_t k=0;k<m_num_breakpoints;k++)
+				{
+					if (fmat(i,j)<=m_cont_breakpoints(c,k))
+						fmat(i,j)=m_cont_breakpoints(c,k);
+				}
+			}
+
+			c++;
+		}
+	}
+
+	return apply_from_current_node(fmat, m_root);
+}
+
+CLabels* CCHAIDTree::apply_from_current_node(SGMatrix<float64_t> fmat, node_t* current)
+{
+	int32_t num_vecs=fmat.num_cols;
+
+	SGVector<float64_t> labels(num_vecs);
+	for (int32_t i=0;i<num_vecs;i++)
+	{
+		node_t* node=current;
+		SG_REF(node);
+		CDynamicObjectArray* children=node->get_children();
+		// while leaf node not reached
+		while(children->get_num_elements()>0)
+		{
+			// find feature class (or index of child node) of chosen vector in current node
+			int32_t index=-1;
+			for (int32_t j=0;j<(node->data.distinct_features).vlen;j++)
+			{
+				if (fmat(node->data.attribute_id,i)==node->data.distinct_features[j])
+				{
+					index=j;
+					break;
+				}
+			}
+
+			if (index==-1)
+				break;
+
+			CSGObject* el=children->get_element(node->data.feature_class[index]);
+			if (el!=NULL)
+			{
+				SG_UNREF(node);
+				node=dynamic_cast<node_t*>(el);
+			}
+			else
+				SG_ERROR("%d child is expected to be present. But it is NULL\n",index)
+
+			SG_UNREF(children);
+			children=node->get_children();
+		}
+
+		labels[i]=node->data.node_label;
+		SG_UNREF(node);
+		SG_UNREF(children);
+	}
+
+	switch (get_machine_problem_type())
+	{
+		case PT_MULTICLASS:
+			return new CMulticlassLabels(labels);
+		case PT_REGRESSION:
+			return new CRegressionLabels(labels);
+		default:
+			SG_ERROR("Undefined problem type\n")
+	}
+
+	return new CMulticlassLabels();
 }
 
 bool CCHAIDTree::handle_missing_ordinal(SGVector<int32_t> cat, SGVector<float64_t> feats, SGVector<float64_t> labels,
@@ -1263,7 +1353,7 @@ bool CCHAIDTree::continuous_to_ordinal(SGMatrix<float64_t> featmat)
 			// find right bin
 			for (int32_t k=0;k<m_num_breakpoints;k++)
 			{
-				if (featmat(cont_ind[i],j)<m_cont_breakpoints(i,k))
+				if (featmat(cont_ind[i],j)<=m_cont_breakpoints(i,k))
 					featmat(cont_ind[i],j)=m_cont_breakpoints(i,k);
 			} 
 		}
