@@ -124,6 +124,9 @@ private:
 	/** id3train - recursive id3 training method
 	 *
 	 * @param data training data
+	 * @param class_labels labels associated with data
+	 * @param values feature indices left in current node
+	 * @param level current depth of tree
 	 * @return pointer to the root of the ID3 tree
 	 */
 	node_t* id3train(CFeatures* data, CMulticlassLabels* class_labels, SGVector<int32_t> values, int level = 0);
