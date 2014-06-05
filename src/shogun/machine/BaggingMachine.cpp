@@ -97,7 +97,6 @@ SGVector<float64_t> CBaggingMachine::apply_get_outputs(CFeatures* data)
 bool CBaggingMachine::train_machine(CFeatures* data)
 {
 	REQUIRE(m_machine != NULL, "Machine is not set!");
-	REQUIRE(m_bag_size > 0, "Bag size is not set!");
 	REQUIRE(m_num_bags > 0, "Number of bag is not set!");
 
 	if (data)
@@ -109,8 +108,9 @@ bool CBaggingMachine::train_machine(CFeatures* data)
 		ASSERT(m_features->get_num_vectors() == m_labels->get_num_labels());
 	}
 
-	// bag size << number of feature vector
-	ASSERT(m_bag_size < m_features->get_num_vectors());
+	// bag size less than equal to number of feature vector
+	REQUIRE((get_bag_size() <= m_features->get_num_vectors()) && (get_bag_size() > 0), "bag size (%d currently) "
+	" should be greater than 0 but less than equal to number of training vectors (%d here)\n",get_bag_size());
 
 	// clear the array, if previously trained
 	m_bags->reset_array();
@@ -131,7 +131,7 @@ bool CBaggingMachine::train_machine(CFeatures* data)
 	{
 		CMachine* c = dynamic_cast<CMachine*>(m_machine->clone());
 		ASSERT(c != NULL);
-		SGVector<index_t> idx(m_bag_size);
+		SGVector<index_t> idx(get_bag_size());
 		idx.random(0, m_features->get_num_vectors()-1);
 		m_labels->add_subset(idx);
 		/* TODO:
@@ -151,6 +151,7 @@ bool CBaggingMachine::train_machine(CFeatures* data)
 		}
 		*/
 		m_features->add_subset(idx);
+		set_machine_parameters(c,idx);
 		c->set_labels(m_labels);
 		c->train(m_features);
 		m_features->remove_subset();
@@ -165,6 +166,10 @@ bool CBaggingMachine::train_machine(CFeatures* data)
 	}
 
 	return true;
+}
+
+void CBaggingMachine::set_machine_parameters(CMachine* m, SGVector<index_t> idx)
+{
 }
 
 void CBaggingMachine::register_parameters()

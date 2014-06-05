@@ -178,7 +178,6 @@ protected:
 	 */
 	virtual bool train_machine(CFeatures* data=NULL);
 
-private:
 	/** CARTtrain - recursive CART training method
 	 *
 	 * @param data training data
@@ -186,7 +185,7 @@ private:
 	 * @param labels labels of data points
 	 * @return pointer to the root of the CART subtree
 	 */
-	CBinaryTreeMachineNode<CARTreeNodeData>* CARTtrain(CFeatures* data, SGVector<float64_t> weights, CLabels* labels);
+	virtual CBinaryTreeMachineNode<CARTreeNodeData>* CARTtrain(CFeatures* data, SGVector<float64_t> weights, CLabels* labels);
 
 	/** handles missing values through surrogate splits
 	 *
@@ -316,7 +315,7 @@ public:
 	/** denotes that a feature in a vector is missing MISSING = NOT_A_NUMBER */
 	static const float64_t MISSING;
 
-private:
+protected:
 	/** vector depicting whether various feature dimensions are nominal or not **/
 	SGVector<bool> m_nominal;
 

@@ -64,7 +64,7 @@ namespace shogun
 			 *
 			 * @param bag_size number of vectors to use for a bag
 			 */
-			void set_bag_size(int32_t bag_size);
+			virtual void set_bag_size(int32_t bag_size);
 
 			/**
 			 * Get number of feature vectors that are use
@@ -72,7 +72,7 @@ namespace shogun
 			 *
 			 * @return number of vectors used for training for each bag.
 			 */
-			int32_t get_bag_size() const;
+			virtual int32_t get_bag_size() const;
 
 			/**
 			 * Get machine for bagging
@@ -86,7 +86,7 @@ namespace shogun
 			 *
 			 * @param machine the machine to use for bagging
 			 */
-			void set_machine(CMachine* machine);
+			virtual void set_machine(CMachine* machine);
 
 			/**
 			 * Set the combination rule to use for aggregating the classification
@@ -123,6 +123,14 @@ namespace shogun
 		protected:
 			virtual bool train_machine(CFeatures* data=NULL);
 
+			/**
+			 * sets parameters of CMachine - useful in Random Forest
+			 *
+			 * @param m machine
+			 * @param idx indices of training vectors chosen in current bag			 
+			 */
+			virtual void set_machine_parameters(CMachine* m, SGVector<index_t> idx);
+
 			/** helper function for the apply_{regression,..} functions that
 			 * computes the output
 			 *
@@ -131,7 +139,6 @@ namespace shogun
 			 */
 			SGVector<float64_t> apply_get_outputs(CFeatures* data);
 
-		private:
 			void register_parameters();
 			void init();
 
@@ -146,7 +153,7 @@ namespace shogun
 
 			void clear_oob_indicies();
 
-		private:
+		protected:
 			/** bags array */
 			CDynamicObjectArray* m_bags;
 

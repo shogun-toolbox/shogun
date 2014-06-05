@@ -221,7 +221,6 @@ bool CCARTree::train_machine(CFeatures* data)
 
 CBinaryTreeMachineNode<CARTreeNodeData>* CCARTree::CARTtrain(CFeatures* data, SGVector<float64_t> weights, CLabels* labels)
 {
-
 	REQUIRE(labels,"labels have to be supplied\n");
 	REQUIRE(data,"data matrix has to be supplied\n");
 
