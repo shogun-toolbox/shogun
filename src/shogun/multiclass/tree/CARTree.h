@@ -187,6 +187,24 @@ protected:
 	 */
 	virtual CBinaryTreeMachineNode<CARTreeNodeData>* CARTtrain(CFeatures* data, SGVector<float64_t> weights, CLabels* labels);
 
+	/** computes best attribute for CARTtrain
+	 *
+	 * @param mat data matrix
+	 * @param weights data weights
+	 * @param labels_vec data labels
+	 * @param left stores feature values for left transition
+	 * @param right stores feature values for right transition
+	 * @param is_left_final stores which feature vectors go to the left child
+	 * @param num_missing number of missing attributes
+	 * @param count_left stores number of feature values for left transition
+	 * @param count_right stores number of feature values for right transition
+	 * @return index to the best attribute
+	 */
+	virtual int32_t compute_best_attribute(SGMatrix<float64_t> mat, SGVector<float64_t> weights, SGVector<float64_t> labels_vec, 	
+	SGVector<float64_t> left, SGVector<float64_t> right, SGVector<bool> is_left_final, int32_t &num_missing, int32_t &count_left,
+														 int32_t &count_right);
+
+
 	/** handles missing values through surrogate splits
 	 *
 	 * @param data training data matrix

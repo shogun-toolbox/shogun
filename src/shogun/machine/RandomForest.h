@@ -36,21 +36,26 @@
 
 namespace shogun
 {
+
+/** @brief This class implements the Random Forests algorithm. In Random Forests algorithm, we train a number of randomized CART trees 
+ * (see class CRandomCARTree) using the supplied training data. The number of trees to be trained is a parameter (called number of bags)  
+ * controlled by the user. Test feature vectors are classified/regressed by combining the outputs of all these trained candidate trees using a
+ * combination rule (see class CCombinationRule). The feature for calculating out-of-box error is also provided to help determine the  
+ * appropriate number of bags. The evaluatin criteria for calculating this out-of-box error is specified by the user (see class CEvaluation).
+ */
 class CRandomForest : public CBaggingMachine
 {
 public:
 	/** constructor */
 	CRandomForest();
 
-	/**
-	 * constructor
+	/** constructor
 	 *
 	 * @param rand_numfeats number of attributes chosen randomly during node split in candidate trees 
 	 */
 	CRandomForest(int32_t rand_numfeats);
 
-	/**
-	 * constructor
+	/** constructor
 	 *
 	 * @param features training features
 	 * @param labels training labels
@@ -58,8 +63,7 @@ public:
 	 */
 	CRandomForest(CFeatures* features, CLabels* labels, int32_t rand_numfeats=0);
 
-	/**
-	 * constructor
+	/** constructor
 	 *
 	 * @param features training features
 	 * @param labels training labels
@@ -68,94 +72,84 @@ public:
 	 */
 	CRandomForest(CFeatures* features, CLabels* labels, SGVector<float64_t> weights, int32_t rand_numfeats=0);
 
-	/**
-	 * Bag size is set at number of training feature vectors and cannot be changed.
+	/** destructor */
+	virtual ~CRandomForest();
+
+	/** Bag size is set to number of training feature vectors and cannot be changed.
 	 *
 	 * @param bag_size number of vectors to use for a bag
 	 */
 	virtual void set_bag_size(int32_t bag_size);
 
-	/**
-	 * Get number of feature vectors that are use
+	/** Get number of feature vectors that are use
 	 * for training each bag/machine
 	 *
 	 * @return number of vectors used for training for each bag.
 	 */
 	virtual int32_t get_bag_size() const;
 
-	/**
-	 * get name
+	/** get name
 	 *
 	 * @return RandomForest
 	 */
 	virtual const char* get_name() const { return "RandomForest"; }
 
-	/**
-	 * machine is set to modified CART(RandomCART) and cannot be changed
+	/** machine is set to modified CART(RandomCART) and cannot be changed
 	 *
 	 * @param machine the machine to use for bagging
 	 */
 	virtual void set_machine(CMachine* machine);
 
-	/**
-	 * set weights
+	/** set weights
 	 *
 	 * @param weights of training feature vectors
 	 */
 	void set_weights(SGVector<float64_t> weights);
 
-	/**
-	 * get weights
+	/** get weights
 	 *
 	 * @return weights of training feature vectors
 	 */
 	SGVector<float64_t> get_weights() const;
 
-	/**
-	 * set feature types of various features
+	/** set feature types of various features
 	 * 
 	 * @param ft bool vector true for nominal feature false for continuous feature type 
 	 */
 	void set_feature_types(SGVector<bool> ft);
 
-	/**
-	 * get feature types of various features
+	/** get feature types of various features
 	 *
 	 * @return bool vector - true for nominal feature false for continuous feature type 
 	 */
 	SGVector<bool> get_feature_types() const;
 
-	/**
-	 * get problem type - multiclass classification or regression
+	/** get problem type - multiclass classification or regression
 	 *
 	 * @return PT_MULTICLASS or PT_REGRESSION
 	 */
 	virtual EProblemType get_machine_problem_type() const; 
 
-	/**
-	 * set problem type - multiclass classification or regression
+	/** set problem type - multiclass classification or regression
 	 *
 	 * @param mode EProblemType PT_MULTICLASS or PT_REGRESSION
 	 */
 	void set_machine_problem_type(EProblemType mode);
 
-	/**
-	 * set number of random features to be chosen during node splits
+	/** set number of random features to be chosen during node splits
 	 *
 	 * @param rand_featsize number of randomly chosen features during each node split
 	 */
-	void set_random_features_num(int32_t rand_featsize);
+	void set_num_random_features(int32_t rand_featsize);
 
-	/**
-	 * get number of random features to be chosen during node splits
+	/** get number of random features to be chosen during node splits
 	 *
 	 * @return number of randomly chosen features during each node split
 	 */
-	int32_t get_random_features_num() const;
+	int32_t get_num_random_features() const;
 
 protected:
-	/**
-	 * sets parameters of CARTree - sets machine labels and weights here
+	/** sets parameters of CARTree - sets machine labels and weights here
 	 *
 	 * @param m machine
 	 * @param idx indices of training vectors chosen in current bag

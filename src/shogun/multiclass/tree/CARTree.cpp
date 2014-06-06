@@ -334,16 +334,95 @@ CBinaryTreeMachineNode<CARTreeNodeData>* CCARTree::CARTtrain(CFeatures* data, SG
 	}
 
 	// choose best attribute
+	// transit_into_values for left child
+	SGVector<float64_t> left(num_feats);
+	// transit_into_values for right child
+	SGVector<float64_t> right(num_feats);
+	// final data distribution among children
+	SGVector<bool> left_final(num_vecs);
+	int32_t num_missing_final=0;
+	int32_t c_left=-1;
+	int32_t c_right=-1;
+
+	int32_t best_attribute=compute_best_attribute(mat,weights,labels_vec,left,right,left_final,num_missing_final,c_left,c_right);
+
+	if (best_attribute==-1)
+	{
+		node->data.num_leaves=1;
+		node->data.weight_minus_branch=node->data.weight_minus_node;
+		return node;
+	}
+
+	SGVector<bool> is_left_final(left_final.vector,num_vecs-num_missing_final,false);
+	SGVector<float64_t> left_transit(c_left);
+	SGVector<float64_t> right_transit(c_right);
+	memcpy(left_transit.vector,left.vector,c_left*sizeof(float64_t));
+	memcpy(right_transit.vector,right.vector,c_right*sizeof(float64_t));
+
+	SGVector<bool> is_left(num_vecs);
+	if (num_missing_final>0)
+		is_left=surrogate_split(mat,weights,is_left_final,best_attribute);
+	else
+		is_left=is_left_final;
+
+	int32_t count_left=0;
+	for (int32_t c=0;c<num_vecs;c++)
+		count_left=(is_left[c])?count_left+1:count_left;
+
+	SGVector<index_t> subsetl(count_left);
+	SGVector<float64_t> weightsl(count_left);
+	SGVector<index_t> subsetr(num_vecs-count_left);
+	SGVector<float64_t> weightsr(num_vecs-count_left);
+	index_t l=0;
+	index_t r=0;
+	for (int32_t c=0;c<num_vecs;c++)
+	{
+		if (is_left[c])
+		{
+			subsetl[l]=c;
+			weightsl[l++]=weights[c];
+		}
+		else
+		{
+			subsetr[r]=c;
+			weightsr[r++]=weights[c];
+		}
+	}
+
+	// left child
+	data->add_subset(subsetl);
+	labels->add_subset(subsetl);
+	bnode_t* left_child=CARTtrain(data,weightsl,labels);
+	data->remove_subset();
+	labels->remove_subset();
+
+	// right child
+	data->add_subset(subsetr);
+	labels->add_subset(subsetr);
+	bnode_t* right_child=CARTtrain(data,weightsr,labels);
+	data->remove_subset();
+	labels->remove_subset();
+
+	// set node parameters
+	node->data.attribute_id=best_attribute;
+	node->left(left_child);
+	node->right(right_child);
+	left_child->data.transit_into_values=left_transit;
+	right_child->data.transit_into_values=right_transit;
+	node->data.num_leaves=left_child->data.num_leaves+right_child->data.num_leaves;
+	node->data.weight_minus_branch=left_child->data.weight_minus_branch+right_child->data.weight_minus_branch;
+
+	return node;
+}
+
+int32_t CCARTree::compute_best_attribute(SGMatrix<float64_t> mat, SGVector<float64_t> weights, SGVector<float64_t> labels_vec, 	
+			SGVector<float64_t> left, SGVector<float64_t> right, SGVector<bool> is_left_final, int32_t &num_missing_final, 
+											int32_t &count_left, int32_t &count_right)
+{
 	float64_t max_gain=-1;
 	int32_t best_attribute=-1;
-	// transit_into_values for left child
-	SGVector<float64_t> left;
-	// transit_into_values for right child
-	SGVector<float64_t> right;
-	// final data distribution among children
-	SGVector<bool> is_left_final;
-	int32_t num_missing_final=0;
-
+	int32_t num_vecs=mat.num_cols;
+	int32_t num_feats=mat.num_rows;
 	for (int32_t i=0;i<num_feats;i++)
 	{
 		// find number of missing data points for chosen attribute
@@ -414,15 +493,15 @@ CBinaryTreeMachineNode<CARTreeNodeData>* CCARTree::CARTtrain(CFeatures* data, SG
 				{
 					best_attribute=i;
 					max_gain=g;
-					is_left_final=is_left.clone();
+					memcpy(is_left_final.vector,is_left.vector,is_left.vlen*sizeof(bool));
 					num_missing_final=num_missing;
 
-					int32_t count_left=0;
+					count_left=0;
 					for (int32_t l=0;l<num_unique;l++)
 						count_left=(feats_left[l])?count_left+1:count_left;
 
-					left=SGVector<float64_t>(count_left);
-					right=SGVector<float64_t>(num_unique-count_left);
+					count_right=num_unique-count_left;
+
 					int32_t l=0;
 					int32_t r=0;
 					for (int32_t w=0;w<num_unique;w++)
@@ -453,70 +532,19 @@ CBinaryTreeMachineNode<CARTreeNodeData>* CCARTree::CARTtrain(CFeatures* data, SG
 					max_gain=g;
 					best_attribute=i;
 					num_missing_final=num_missing;
-					left=SGVector<float64_t>(1);
-					right=SGVector<float64_t>(1);
+
+					count_left=1;
+					count_right=1;
 					left[0]=z;
 					right[0]=z;
-					is_left_final=is_left.clone();
+
+					memcpy(is_left_final.vector,is_left.vector,is_left.vlen*sizeof(bool));
 				}
 			}
 		}
 	}
 
-	SGVector<bool> is_left(num_vecs);
-	if (num_missing_final>0)
-		is_left=surrogate_split(mat,weights,is_left_final,best_attribute);
-	else
-		is_left=is_left_final;
-
-	int32_t count_left=0;
-	for (int32_t c=0;c<num_vecs;c++)
-		count_left=(is_left[c])?count_left+1:count_left;
-
-	SGVector<index_t> subsetl(count_left);
-	SGVector<float64_t> weightsl(count_left);
-	SGVector<index_t> subsetr(num_vecs-count_left);
-	SGVector<float64_t> weightsr(num_vecs-count_left);
-	index_t l=0;
-	index_t r=0;
-	for (int32_t c=0;c<num_vecs;c++)
-	{
-		if (is_left[c])
-		{
-			subsetl[l]=c;
-			weightsl[l++]=weights[c];
-		}
-		else
-		{
-			subsetr[r]=c;
-			weightsr[r++]=weights[c];
-		}
-	}
-
-	// left child
-	data->add_subset(subsetl);
-	labels->add_subset(subsetl);
-	bnode_t* left_child=CARTtrain(data,weightsl,labels);
-	data->remove_subset();
-	labels->remove_subset();
-
-	// right child
-	data->add_subset(subsetr);
-	labels->add_subset(subsetr);
-	bnode_t* right_child=CARTtrain(data,weightsr,labels);
-	data->remove_subset();
-	labels->remove_subset();
-
-	// set node parameters
-	node->data.attribute_id=best_attribute;
-	node->left(left_child);
-	node->right(right_child);
-	left_child->data.transit_into_values=left;
-	right_child->data.transit_into_values=right;
-	node->data.num_leaves=left_child->data.num_leaves+right_child->data.num_leaves;
-	node->data.weight_minus_branch=left_child->data.weight_minus_branch+right_child->data.weight_minus_branch;
-
-	return node;
+	return best_attribute;
 }
 
 SGVector<bool> CCARTree::surrogate_split(SGMatrix<float64_t> m,SGVector<float64_t> weights, SGVector<bool> nm_left, int32_t attr)
@@ -795,7 +823,7 @@ float64_t CCARTree::gain(SGVector<float64_t> lab, SGVector<float64_t> weights, S
 float64_t CCARTree::gini_impurity_index(SGVector<float64_t> lab, SGVector<float64_t> weights)
 {
 	if (weights.vlen==1)
-		return 1.0;
+		return 0.0;
 
 	float64_t total_weight=weights.sum(weights);
 	SGVector<index_t> sorted_args=lab.argsort();

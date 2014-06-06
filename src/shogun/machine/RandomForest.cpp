@@ -70,6 +70,10 @@ CRandomForest::CRandomForest(CFeatures* features, CLabels* labels, SGVector<floa
 	dynamic_cast<CRandomCARTree*>(m_machine)->set_feature_subset_size(rand_numfeats);
 }
 
+CRandomForest::~CRandomForest()
+{
+}
+
 void CRandomForest::set_bag_size(int32_t bag_size)
 {
 	SG_ERROR("Bag Size is set to be equal to number of training vectors and cannot be changed\n")
@@ -116,12 +120,12 @@ void CRandomForest::set_machine_problem_type(EProblemType mode)
 	dynamic_cast<CRandomCARTree*>(m_machine)->set_machine_problem_type(mode);
 }
 
-void CRandomForest::set_random_features_num(int32_t rand_featsize)
+void CRandomForest::set_num_random_features(int32_t rand_featsize)
 {
 	dynamic_cast<CRandomCARTree*>(m_machine)->set_feature_subset_size(rand_featsize);
 }
 
-int32_t CRandomForest::get_random_features_num() const
+int32_t CRandomForest::get_num_random_features() const
 {
 	return dynamic_cast<CRandomCARTree*>(m_machine)->get_feature_subset_size();
 } 
@@ -132,8 +136,16 @@ void CRandomForest::set_machine_parameters(CMachine* m, SGVector<index_t> idx)
 	CRandomCARTree* tree=dynamic_cast<CRandomCARTree*>(m);
 
 	SGVector<float64_t> weights(idx.vlen);
-	for (int32_t i=0;i<idx.vlen;i++)
-		weights[i]=m_weights[idx[i]];
+
+	if (m_weights.vlen==0)
+	{
+		weights.fill_vector(weights.vector,weights.vlen,1.0);
+	}
+	else
+	{
+		for (int32_t i=0;i<idx.vlen;i++)
+			weights[i]=m_weights[idx[i]];
+	}
 
 	tree->set_weights(weights);
 }
@@ -141,4 +153,5 @@ void CRandomForest::set_machine_parameters(CMachine* m, SGVector<index_t> idx)
 void CRandomForest::init()
 {
 	m_machine=new CRandomCARTree();
+	SG_REF(m_machine);
 }

@@ -81,7 +81,7 @@ SGVector<float64_t> CBaggingMachine::apply_get_outputs(CFeatures* data)
 	{
 		CMachine* m = dynamic_cast<CMachine*>(m_bags->get_element(i));
 		CLabels* l = m->apply(data);
-		SGVector<float64_t> lv = l->get_values();
+		SGVector<float64_t> lv = dynamic_cast<CDenseLabels*>(l)->get_labels();
 		float64_t* bag_results = output.get_column_vector(i);
 		memcpy(bag_results, lv.vector, lv.vlen*sizeof(float64_t));
 
@@ -108,9 +108,9 @@ bool CBaggingMachine::train_machine(CFeatures* data)
 		ASSERT(m_features->get_num_vectors() == m_labels->get_num_labels());
 	}
 
-	// bag size less than equal to number of feature vector
+	// bag size less than or equal to number of feature vector
 	REQUIRE((get_bag_size() <= m_features->get_num_vectors()) && (get_bag_size() > 0), "bag size (%d currently) "
-	" should be greater than 0 but less than equal to number of training vectors (%d here)\n",get_bag_size());
+	" should be greater than 0 but less than or equal to number of training vectors (%d here)\n",get_bag_size());
 
 	// clear the array, if previously trained
 	m_bags->reset_array();
@@ -129,7 +129,7 @@ bool CBaggingMachine::train_machine(CFeatures* data)
 	*/
 	for (int32_t i = 0; i < m_num_bags; ++i)
 	{
-		CMachine* c = dynamic_cast<CMachine*>(m_machine->clone());
+		CMachine* c=dynamic_cast<CMachine*>(m_machine->clone());
 		ASSERT(c != NULL);
 		SGVector<index_t> idx(get_bag_size());
 		idx.random(0, m_features->get_num_vectors()-1);
@@ -163,6 +163,8 @@ bool CBaggingMachine::train_machine(CFeatures* data)
 
 		// add trained machine to bag array
 		m_bags->append_element(c);
+
+		SG_UNREF(c);
 	}
 
 	return true;
@@ -268,11 +270,10 @@ float64_t CBaggingMachine::get_oob_error(CEvaluation* eval) const
 			= dynamic_cast<CDynamicArray<index_t>*>(m_oob_indices->get_element(i));
 
 		SGVector<index_t> oob(current_oob->get_array(), current_oob->get_num_elements(), false);
-		oob.display_vector();
 		m_features->add_subset(oob);
 
 		CLabels* l = m->apply(m_features);
-		SGVector<float64_t> lv = l->get_values();
+		SGVector<float64_t> lv = dynamic_cast<CDenseLabels*>(l)->get_labels();
 
 		// assign the values in the matrix (NAN) that are in-bag!
 		for (index_t j = 0; j < oob.vlen; j++)
@@ -283,7 +284,6 @@ float64_t CBaggingMachine::get_oob_error(CEvaluation* eval) const
 		SG_UNREF(m);
 		SG_UNREF(l);
 	}
-	output.display_matrix();
 
 	DynArray<index_t> idx;
 	for (index_t i = 0; i < m_features->get_num_vectors(); i++)
@@ -293,19 +293,23 @@ float64_t CBaggingMachine::get_oob_error(CEvaluation* eval) const
 	}
 
 	SGVector<float64_t> combined = m_combination_rule->combine(output);
+	SGVector<float64_t> lab(idx.get_num_elements());
+	for (int32_t i=0;i<lab.vlen;i++)
+		lab[i]=combined[idx.get_element(i)];
+
 	CLabels* predicted = NULL;
 	switch (m_labels->get_label_type())
 	{
 		case LT_BINARY:
-			predicted = new CBinaryLabels(combined);
+			predicted = new CBinaryLabels(lab);
 			break;
 
 		case LT_MULTICLASS:
-			predicted = new CMulticlassLabels(combined);
+			predicted = new CMulticlassLabels(lab);
 			break;
 
 		case LT_REGRESSION:
-			predicted = new CRegressionLabels(combined);
+			predicted = new CRegressionLabels(lab);
 			break;
 
 		default:
@@ -316,6 +320,7 @@ float64_t CBaggingMachine::get_oob_error(CEvaluation* eval) const
 	float64_t res = eval->evaluate(predicted, m_labels);
 	m_labels->remove_subset();
 
+	SG_UNREF(predicted);
 	return res;
 }
 
