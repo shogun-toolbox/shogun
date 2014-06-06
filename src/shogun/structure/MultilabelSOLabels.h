@@ -1,7 +1,9 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
+ * Written (W) 2013 Thoralf Klein
  * Written (W) 2014 Abinash Panda
+ * Copyright (C) 2013 Thoralf Klein and Zuse-Institute-Berlin (ZIB)
  * Copyright (C) 2014 Abinash Panda
  */
 
@@ -194,4 +196,3 @@ private:
 } /* namespace shogun */
 
 #endif /* _MULTILABEL_SO_LABELS__H__ */
-
