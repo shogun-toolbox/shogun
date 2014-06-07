@@ -81,7 +81,12 @@ SGVector<float64_t> CBaggingMachine::apply_get_outputs(CFeatures* data)
 	{
 		CMachine* m = dynamic_cast<CMachine*>(m_bags->get_element(i));
 		CLabels* l = m->apply(data);
-		SGVector<float64_t> lv = dynamic_cast<CDenseLabels*>(l)->get_labels();
+		SGVector<float64_t> lv;
+		if (l!=NULL)
+			lv = dynamic_cast<CDenseLabels*>(l)->get_labels();
+		else
+			SG_ERROR("NULL returned by apply method\n");
+
 		float64_t* bag_results = output.get_column_vector(i);
 		memcpy(bag_results, lv.vector, lv.vlen*sizeof(float64_t));
 
@@ -162,7 +167,7 @@ bool CBaggingMachine::train_machine(CFeatures* data)
 		m_oob_indices->push_back(oob);
 
 		// add trained machine to bag array
-		m_bags->append_element(c);
+		m_bags->push_back(c);
 
 		SG_UNREF(c);
 	}
@@ -273,7 +278,11 @@ float64_t CBaggingMachine::get_oob_error(CEvaluation* eval) const
 		m_features->add_subset(oob);
 
 		CLabels* l = m->apply(m_features);
-		SGVector<float64_t> lv = dynamic_cast<CDenseLabels*>(l)->get_labels();
+		SGVector<float64_t> lv;
+		if (l!=NULL)
+			lv = dynamic_cast<CDenseLabels*>(l)->get_labels();
+		else
+			SG_ERROR("NULL returned by apply method\n");
 
 		// assign the values in the matrix (NAN) that are in-bag!
 		for (index_t j = 0; j < oob.vlen; j++)

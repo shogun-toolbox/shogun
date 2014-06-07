@@ -66,7 +66,7 @@ CRandomForest::CRandomForest(CFeatures* features, CLabels* labels, SGVector<floa
 	SG_REF(features);
 	m_features=features;
 	set_labels(labels);
-	dynamic_cast<CRandomCARTree*>(m_machine)->set_weights(weights);
+	m_weights=weights;
 	dynamic_cast<CRandomCARTree*>(m_machine)->set_feature_subset_size(rand_numfeats);
 }
 
@@ -153,5 +153,7 @@ void CRandomForest::set_machine_parameters(CMachine* m, SGVector<index_t> idx)
 void CRandomForest::init()
 {
 	m_machine=new CRandomCARTree();
-	SG_REF(m_machine);
+	m_weights=SGVector<float64_t>();
+
+	SG_ADD(&m_weights,"m_weights","weights",MS_NOT_AVAILABLE)
 }
