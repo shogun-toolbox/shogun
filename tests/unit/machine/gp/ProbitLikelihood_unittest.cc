@@ -360,7 +360,6 @@ TEST(ProbitLikelihood,get_log_probability_derivative_f)
 	abs_tolorance = CMath::get_abs_tolorance(-176.1961607265705254121712641790509223937988, rel_tolorance);
 	EXPECT_NEAR(dlp[9],  -176.1961607265705254121712641790509223937988,  abs_tolorance);
 
-
 	abs_tolorance = CMath::get_abs_tolorance(-0.0000000000000000000000000000000000000000, rel_tolorance);
 	EXPECT_NEAR(d2lp[0],  -0.0000000000000000000000000000000000000000,  abs_tolorance);
 	abs_tolorance = CMath::get_abs_tolorance(-0.1092109765719768421643465217130142264068, rel_tolorance);
@@ -405,7 +404,7 @@ TEST(ProbitLikelihood,get_log_probability_derivative_f)
 
 
 	SG_UNREF(likelihood);
-
+	SG_UNREF(labels);
 }
 
 TEST(ProbitLikelihood,get_first_moments)
