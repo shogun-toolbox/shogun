@@ -1,7 +1,9 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
+ * Written (W) 2013 Thoralf Klein
  * Written (W) 2014 Abinash Panda
+ * Copyright (C) 2013 Thoralf Klein and Zuse-Institute-Berlin (ZIB)
  * Copyright (C) 2014 Abinash Panda
  */
 
@@ -33,6 +35,7 @@ CMultilabelSOLabels::CMultilabelSOLabels(CMultilabelLabels * multilabel_labels)
 	: CStructuredLabels()
 {
 	init();
+	SG_REF(multilabel_labels);
 	m_multilabel_labels = multilabel_labels;
 }
 
@@ -77,10 +80,8 @@ int32_t CMultilabelSOLabels::get_num_labels() const
 	{
 		return 0;
 	}
-	else
-	{
-		return m_multilabel_labels->get_num_labels();
-	}
+
+	return m_multilabel_labels->get_num_labels();
 }
 
 int32_t CMultilabelSOLabels::get_num_classes() const
@@ -89,10 +90,8 @@ int32_t CMultilabelSOLabels::get_num_classes() const
 	{
 		return 0;
 	}
-	else
-	{
-		return m_multilabel_labels->get_num_classes();
-	}
+
+	return m_multilabel_labels->get_num_classes();
 }
 
 CMultilabelLabels * CMultilabelSOLabels::get_multilabel_labels()
@@ -146,4 +145,3 @@ void CMultilabelSOLabels::add_label(CStructuredData * label)
 	set_label(m_last_set_label, label);
 	m_last_set_label++;
 }
-
