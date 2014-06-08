@@ -80,7 +80,39 @@ void CNumericalVGLikelihood::init()
 	SG_ADD(&m_wgh, "wgh", 
 		"Gaussian-Hermite quadrature weight factors\n",
 		MS_NOT_AVAILABLE);
+}
 
+SGVector<float64_t> CNumericalVGLikelihood::get_first_derivative_wrt_hyperparameter(
+	const TParameter* param) const
+{	
+	REQUIRE(param, "Param is required (param should not be NULL)\n");
+	REQUIRE(param->m_name, "Param name is required (param->m_name should not be NULL)\n");
+	if (!(strcmp(param->m_name, "mu") && strcmp(param->m_name, "sigma2")))
+		return SGVector<float64_t> ();
+
+	SGVector<float64_t> res(m_lab.vlen);
+	res.zero();
+	Map<VectorXd> eigen_res(res.vector, res.vlen);
+
+	//ll  = ll  + w(i)*lp;
+	CLabels* lab=NULL;
+
+	if (supports_binary())
+		lab=new CBinaryLabels(m_lab);
+	else if (supports_regression())
+		lab=new CRegressionLabels(m_lab);
+
+	for (index_t cidx = 0; cidx < m_log_lam.num_cols; cidx++)
+	{
+		SGVector<float64_t> tmp(m_log_lam.get_column_vector(cidx), m_log_lam.num_rows, false); 
+		SGVector<float64_t> lp=get_first_derivative(lab, tmp, param);
+		Map<VectorXd> eigen_lp(lp.vector, lp.vlen);
+		eigen_res+=eigen_lp*m_wgh[cidx];
+	}
+
+	SG_UNREF(lab);
+
+	return res;
 }
 
 SGVector<float64_t> CNumericalVGLikelihood::get_variational_expection()

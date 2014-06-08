@@ -415,5 +415,11 @@ void CLogitVariationalPiecewiseBoundLikelihood::precompute()
 	eigen_h(eigen_h.size()-1) = h_bak;
 }
 
+SGVector<float64_t> CLogitVariationalPiecewiseBoundLikelihood::get_first_derivative_wrt_hyperparameter(
+	const TParameter* param) const
+{
+	return SGVector<float64_t>();
+}
+
 } /* namespace shogun */
 #endif /* HAVE_EIGEN3 */

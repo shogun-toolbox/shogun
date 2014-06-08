@@ -68,6 +68,14 @@ public:
 	 */
 	virtual const char* get_name() const { return "LogitVGLikelihood"; }
 
+	/** return whether likelihood function supports
+	 * computing the derivative wrt hyperparameter
+	 * Note that variational parameters are NOT considered as hyperparameters
+	 *
+	 * @return boolean
+	 */
+	virtual bool supports_derivative_wrt_hyperparameter() const { return false; }
+
 protected:
 
 	/** The function used to initialize m_likelihood*/

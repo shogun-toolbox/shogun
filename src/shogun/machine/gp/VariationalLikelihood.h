@@ -213,6 +213,36 @@ public:
 	 */
 	virtual bool supports_multiclass() const;
 
+	/** get derivative of log likelihood \f$log(p(y|f))\f$ with respect to given
+	 * parameter
+	 *
+	 * @param lab labels used
+	 * @param func function location
+	 * @param param parameter
+	 *
+	 * @return derivative
+	 */
+	virtual SGVector<float64_t> get_first_derivative(const CLabels* lab,
+			SGVector<float64_t> func, const TParameter* param) const;
+
+	/** return whether likelihood function supports
+	 * computing the derivative wrt hyperparameter
+	 * Note that variational parameters are NOT considered as hyperparameters
+	 *
+	 * @return boolean
+	 */
+	virtual bool supports_derivative_wrt_hyperparameter() const=0;
+
+	/** get derivative of log likelihood \f$log(p(y|f))\f$ with respect to given
+	 * hyperparameter
+	 * Note that variational parameters are NOT considered as hyperparameters
+	 *
+	 * @param param parameter
+	 *
+	 * @return derivative
+	 */
+	virtual SGVector<float64_t> get_first_derivative_wrt_hyperparameter(const TParameter* param) const=0;
+
 protected:
 	void set_likelihood(CLikelihoodModel * lik);
 
