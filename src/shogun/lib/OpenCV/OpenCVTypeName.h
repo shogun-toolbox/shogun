@@ -29,20 +29,21 @@
  */
 
 #include <shogun/lib/config.h>
-
 #ifdef HAVE_OPENCV
 
-#include <shogun/lib/OpenCV/SG2CVMatFactory.h>
+#ifndef OPEN_CV_TYPE_H
+#define OPEN_CV_TYPE_H
 
-using namespace shogun;
+#include <opencv2/core/core.hpp>
+#include <shogun/lib/common.h>
+namespace shogun{
 
-SG2CVMatFactory::SG2CVMatFactory()
+template <typename T>class OpenCVTypeName
 {
+    public:
+	static int get_opencv_type() ;
+};
 
 }
-
-SG2CVMatFactory::~SG2CVMatFactory()
-{
-
-}
+#endif /* OPEN_CV_TYPE_H  */
 #endif /* HAVE_OPENCV */

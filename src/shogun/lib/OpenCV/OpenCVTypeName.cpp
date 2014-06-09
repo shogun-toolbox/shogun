@@ -32,17 +32,23 @@
 
 #ifdef HAVE_OPENCV
 
-#include <shogun/lib/OpenCV/SG2CVMatFactory.h>
+#include <shogun/lib/OpenCV/OpenCVTypeName.h>
 
-using namespace shogun;
+namespace shogun{
 
-SG2CVMatFactory::SG2CVMatFactory()
-{
-
+#define GET_OPENCV_TYPE(opencv_type, sg_type)	\
+template<>int OpenCVTypeName<sg_type>::get_opencv_type()  \
+{																			\
+	return opencv_type;															\
 }
-
-SG2CVMatFactory::~SG2CVMatFactory()
-{
+GET_OPENCV_TYPE(CV_8U, uint8_t)
+GET_OPENCV_TYPE(CV_8S, int8_t)
+GET_OPENCV_TYPE(CV_16S, int16_t)
+GET_OPENCV_TYPE(CV_16U, uint16_t)
+GET_OPENCV_TYPE(CV_32S, int32_t)
+GET_OPENCV_TYPE(CV_32F, float32_t)
+GET_OPENCV_TYPE(CV_64F, float64_t)
+#undef GET_OPENCV_TYPE
 
 }
 #endif /* HAVE_OPENCV */

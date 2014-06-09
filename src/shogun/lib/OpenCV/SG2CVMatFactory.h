@@ -37,131 +37,93 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/features/DenseFeatures.h>
+#include <shogun/lib/OpenCV/OpenCVTypeName.h>
 
 namespace shogun{
 
 enum SG2CVOptions {SG2CV_CONSTRUCTOR, SG2CV_MANUAL, SG2CV_MEMCPY};
 
-template <typename T> struct SG2CVTypeName;
-
-template<> struct SG2CVTypeName<uint8_t>
-{
-	static const int get()
-	{
-		return 0;
-	}
-};
-
-template<> struct SG2CVTypeName<int8_t>
-{
-	static const int get()
-	{
-		return 1;
-	}
-};
-
-template<> struct SG2CVTypeName<uint16_t>
-{
-	static const int get()
-	{
-		return 2;
-	}
-};
-
-template<> struct SG2CVTypeName<int16_t>
-{
-	static const int get()
-	{
-		return 3;
-	}
-};
-
-template<> struct SG2CVTypeName<int32_t>
-{
-	static const int get()
-	{
-		return 4;
-	}
-};
-
-template<> struct SG2CVTypeName<float32_t>
-{
-	static const int get()
-	{
-		return 5;
-	}
-};
-
-template<> struct SG2CVTypeName<float64_t>
-{
-    static const int get()
-    {
-    	return 6;
-    }
-};
 
 class SG2CVMatFactory
 {
+
+private:
+    template<typename T1, typename T2> static cv::Mat getMatUsingManual(SGMatrix<T1>, int, int, int, int);
+    template<typename T1, typename T2> static cv::Mat getMatUsingMemcpy(SGMatrix<T1>, int, int, int, int);
+    template<typename T1, typename T2> static cv::Mat getMatUsingConstructor(SGMatrix<T1>, int, int, int, int);
+
 public:
-	
-	SG2CVMatFactory();	
-	
+	SG2CVMatFactory();		
 	~SG2CVMatFactory();
-	
-	template <typename T> static cv::Mat getMatrix(CDenseFeatures<float64_t>* A,
-			SG2CVOptions=SG2CV_CONSTRUCTOR);
+	template <typename T1, typename T2> static cv::Mat getcvMat(CDenseFeatures<T1>* A,
+			SG2CVOptions=SG2CV_MEMCPY);
 };
 
-template <typename T> cv::Mat SG2CVMatFactory::getMatrix(CDenseFeatures<float64_t>* A,
-		SG2CVOptions option)
+template<typename T1, typename T2> cv::Mat SG2CVMatFactory::getMatUsingManual(SGMatrix<T1> sgMat, int num_rows, int num_cols, int myType, int initType)
 {
-	SGMatrix<float64_t> sgMat=((CDenseFeatures<float64_t>*)A)->get_feature_matrix();
+    cv::Mat cvMat(num_rows, num_cols, myType);
+	for(int i=0; i<num_rows; i++)
+	{
+		for(int j=0; j<num_cols; j++)
+		{
+			cvMat.at<T2>(i, j)=sgMat(i, j);
+		}
+	}
+	return cvMat;
+}
+
+template<typename T1, typename T2> cv::Mat SG2CVMatFactory::getMatUsingMemcpy(SGMatrix<T1> sgMat, int num_rows, int num_cols, int myType, int initType)
+{
+    cv::Mat cvMat(num_rows, num_cols, initType);
+	memcpy((T1*)cvMat.data, sgMat.matrix, num_rows*num_cols*sizeof(T1));
+	cvMat.convertTo(cvMat,myType);
+	return cvMat;
+
+}
+
+template<typename T1, typename T2> cv::Mat SG2CVMatFactory::getMatUsingConstructor(SGMatrix<T1> sgMat, int num_rows, int num_cols, int myType, int initType)
+{
+    cv::Mat cvMat(num_rows, num_cols, initType, (void*)sgMat.matrix);
+	cvMat.convertTo(cvMat, myType);
+	return cvMat;
+
+}
+
+template <typename T1, typename T2> cv::Mat SG2CVMatFactory::getcvMat(CDenseFeatures<T1>* A, SG2CVOptions option)
+{
+	SGMatrix<T1> sgMat=((CDenseFeatures<T1>*)A)->get_feature_matrix();
 	int num_rows=sgMat.num_rows;
 	int num_cols=sgMat.num_cols;
-	const int myType=SG2CVTypeName<T>::get();
+	const int myType=OpenCVTypeName<T2>::get_opencv_type();
+	const int initType=OpenCVTypeName<T1>::get_opencv_type();
 
 	switch(option)
 	{
-		case SG2CV_CONSTRUCTOR:
+		case SG2CV_MEMCPY:
 		{
-			cv::Mat cvMat(num_rows, num_cols, CV_64FC1, (void*)sgMat.matrix);
-			cvMat.convertTo(cvMat, myType);
-			cvMat.t();
-			return cvMat;
+            cv::Mat cvMat = SG2CVMatFactory::getMatUsingMemcpy<T1, T2>(sgMat, num_rows, num_cols, myType, initType); 
+            return cvMat;
 		}
 		
 		case SG2CV_MANUAL:
 		{
-			cv::Mat cvMat(num_rows, num_cols, CV_64FC1);
-			for(int i=0; i<num_rows; i++)
-			{
-				for(int j=0; j<num_cols; j++)
-				{
-					cvMat.at<double>(i, j)=sgMat(i, j);
-				}
-			}
-			cvMat.convertTo(cvMat, myType);
-			return cvMat;
-		}
+            cv::Mat cvMat = SG2CVMatFactory::getMatUsingManual<T1, T2>(sgMat, num_rows, num_cols, myType, initType); 
+            return cvMat;
+        }
 
-		case SG2CV_MEMCPY:
+		case SG2CV_CONSTRUCTOR:
 		{
-			cv::Mat cvMat(num_rows, num_cols, CV_64FC1);
-			memcpy((double*)cvMat.data, sgMat.matrix, num_rows*num_cols*sizeof(double));
-			cvMat.convertTo(cvMat,myType);
-			cvMat.t();
-			return cvMat;
-		}
+            cv::Mat cvMat = SG2CVMatFactory::getMatUsingConstructor<T1, T2>(sgMat, num_rows, num_cols, myType, initType); 
+            return cvMat;
+        }
 		
 		default:
 		{
-			cv::Mat cvMat(num_rows, num_cols, CV_64FC1);
-			memcpy((double*)cvMat.data, sgMat.matrix, num_rows*num_cols*sizeof(double));
-			cvMat.convertTo(cvMat, myType);
-			cvMat.t();
-			return cvMat;
-		}
+            cv::Mat cvMat = SG2CVMatFactory::getMatUsingMemcpy<T1, T2>(sgMat, num_rows, num_cols, myType, initType); 
+            return cvMat;
+	    }
 	}
+
 }
 
 }

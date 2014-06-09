@@ -37,85 +37,50 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/features/DenseFeatures.h>
+#include <shogun/lib/OpenCV/OpenCVTypeName.h>
 
 namespace shogun{
 
 enum CV2SGOptions {CV2SG_CONSTRUCTOR, CV2SG_MANUAL, CV2SG_MEMCPY};
 
-template <typename T> struct CV2SGTypeName;
-
-template<> struct CV2SGTypeName<uint8_t>
-{
-	static const int get()
-	{
-		return 0;
-	}
-};
-
-template<> struct CV2SGTypeName<int8_t>
-{
-	static const int get()
-	{
-		return 1;
-	}
-};
-
-template<> struct CV2SGTypeName<uint16_t>
-{
-	static const int get()
-	{
-		return 2;
-	}
-};
-
-template<> struct CV2SGTypeName<int16_t>
-{
-	static const int get()
-	{
-		return 3;
-	}
-};
-
-template<> struct CV2SGTypeName<int32_t>
-{
-	static const int get()
-	{
-		return 4;
-	}
-};
-
-template<> struct CV2SGTypeName<float32_t>
-{
-	static const int get()
-	{
-		return 5;
-	}
-};
-
-template<> struct CV2SGTypeName<float64_t>
-{
-    static const int get()
-    {
-    	return 6;
-    }
-};
-
 class CV2SGMatrixFactory
 {
+	private:
+	template<typename T> static SGMatrix<T> getMatrixUsingManual(cv::Mat, int, int);
+	template<typename T> static SGMatrix<T> getMatrixUsingMemcpy(cv::Mat, int, int);
+	
 	public:
-	
 	CV2SGMatrixFactory();
-	
 	~CV2SGMatrixFactory();
-	
-	template <typename T> static SGMatrix<T> getMatrix(cv::Mat, CV2SGOptions=CV2SG_CONSTRUCTOR);
+	template <typename T> static SGMatrix<T> getSGMatrix(cv::Mat, CV2SGOptions=CV2SG_MEMCPY);
 };
 
-template<typename T> SGMatrix<T> CV2SGMatrixFactory::getMatrix(cv::Mat cvMat, CV2SGOptions option)
+template<typename T> SGMatrix<T> CV2SGMatrixFactory::getMatrixUsingManual(cv::Mat cvMat, int num_rows, int num_cols)
+{
+	SGMatrix<T> sgMat(num_rows, num_cols);
+	for(int i=0; i<num_rows; i++)
+	{
+		for(int j=0; j<num_cols; j++)
+		{
+			sgMat(i,j)=cvMat.at<T>(i, j);
+		}
+	}
+	return sgMat;
+}
+
+template<typename T> SGMatrix<T> CV2SGMatrixFactory::getMatrixUsingMemcpy(cv::Mat cvMat, int num_rows, int num_cols)
+{
+	SGMatrix<T> sgMat(num_rows, num_cols);
+	memcpy(sgMat.matrix, cvMat.data, num_rows*num_cols*sizeof(T));
+	SGMatrix<T>::transpose_matrix(sgMat.matrix, num_cols, num_rows);
+	return sgMat;
+}
+
+template<typename T> SGMatrix<T> CV2SGMatrixFactory::getSGMatrix(cv::Mat cvMat, CV2SGOptions option)
 {
 	int num_rows=cvMat.rows;
 	int num_cols=cvMat.cols;
-	const int myType=CV2SGTypeName<T>::get();
+	const int myType=OpenCVTypeName<T>::get_opencv_type();
 	cvMat.convertTo(cvMat,myType);
 	switch (option)
 	{
@@ -128,31 +93,19 @@ template<typename T> SGMatrix<T> CV2SGMatrixFactory::getMatrix(cv::Mat cvMat, CV
 
 		case CV2SG_MANUAL:
 		{
-			SGMatrix<T> sgMat(num_rows, num_cols);
-
-			for(int i=0; i<num_rows; i++)
-			{
-				for(int j=0; j<num_cols; j++)
-				{
-					sgMat(i,j)=cvMat.at<T>(i, j);
-				}
-			}
+			SGMatrix<T> sgMat = CV2SGMatrixFactory::getMatrixUsingManual<T>(cvMat, num_rows, num_cols);
 			return sgMat;
 		}
 
 		case CV2SG_MEMCPY:
 		{
-			SGMatrix<T> sgMat(num_rows, num_cols);
-			memcpy(sgMat.matrix, cvMat.data, num_rows*num_cols*sizeof(T));
-			SGMatrix<T>::transpose_matrix(sgMat.matrix,num_rows,num_cols);
-			return sgMat;
+			SGMatrix<T> sgMat = CV2SGMatrixFactory::getMatrixUsingMemcpy<T>(cvMat, num_rows, num_cols);
+			return sgMat;			
 		}
 		
 		default:
 		{
-			SGMatrix<T> sgMat(num_rows, num_cols);
-			memcpy(sgMat.matrix, cvMat.data, num_rows*num_cols*sizeof(T));
-			SGMatrix<T>::transpose_matrix(sgMat.matrix,num_rows,num_cols);
+			SGMatrix<T> sgMat = CV2SGMatrixFactory::getMatrixUsingMemcpy<T>(cvMat, num_rows, num_cols);
 			return sgMat;
 		}
 	}
