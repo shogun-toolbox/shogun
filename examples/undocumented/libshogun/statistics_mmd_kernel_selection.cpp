@@ -57,7 +57,8 @@ void kernel_choice_linear_time_mmd_opt_single()
 	}
 
 	/* create MMD instance */
-	CLinearTimeMMD* mmd=new CLinearTimeMMD(combined, gen_p, gen_q, m);
+	index_t blocksize=100;
+	CLinearTimeMMD* mmd=new CLinearTimeMMD(combined, gen_p, gen_q, m, blocksize);
 
 	/* kernel selection instance with regularisation term. May be replaced by
 	 * other methods for selecting single kernels */
@@ -150,7 +151,8 @@ void kernel_choice_linear_time_mmd_opt_comb()
 	}
 
 	/* create MMD instance */
-	CLinearTimeMMD* mmd=new CLinearTimeMMD(combined, gen_p, gen_q, m);
+	index_t blocksize=100;
+	CLinearTimeMMD* mmd=new CLinearTimeMMD(combined, gen_p, gen_q, m, blocksize);
 
 	/* kernel selection instance with regularisation term. May be replaced by
 	 * other methods for selecting single kernels */

@@ -9,6 +9,8 @@
 %rename(NeuralLogisticLayer) CNeuralLogisticLayer;
 %rename(NeuralSoftmaxLayer) CNeuralSoftmaxLayer;
 %rename(NeuralRectifiedLinearLayer) CNeuralRectifiedLinearLayer;
+%rename(ConvolutionalFeatureMap) CConvolutionalFeatureMap;
+%rename(NeuralConvolutionalLayer) CNeuralConvolutionalLayer;
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/neuralnets/NeuralNetwork.h>
@@ -18,3 +20,5 @@
 %include <shogun/neuralnets/NeuralLogisticLayer.h>
 %include <shogun/neuralnets/NeuralSoftmaxLayer.h>
 %include <shogun/neuralnets/NeuralRectifiedLinearLayer.h>
+%include <shogun/neuralnets/ConvolutionalFeatureMap.h>
+%include <shogun/neuralnets/NeuralConvolutionalLayer.h>

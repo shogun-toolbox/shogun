@@ -69,6 +69,14 @@ public:
 	 */
 	virtual const char* get_name() const { return "StudentsTVGLikelihood"; }
 
+	/** return whether likelihood function supports
+	 * computing the derivative wrt hyperparameter
+	 * Note that variational parameters are NOT considered as hyperparameters
+	 *
+	 * @return boolean
+	 */
+	virtual bool supports_derivative_wrt_hyperparameter() const { return true; }
+
 protected:
 	/** The function used to initialize m_likelihood*/
 	virtual void init_likelihood();

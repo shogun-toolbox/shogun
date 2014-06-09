@@ -42,6 +42,7 @@ namespace shogun
 {
 
 /** @brief The variational Gaussian Likelihood base class.
+ * The variational distribution is Gaussian
  *
  */
 class CVariationalGaussianLikelihood : public CVariationalLikelihood

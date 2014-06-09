@@ -14,6 +14,7 @@
 		- Add Multi-Label classes to enable Multi-Label classification [Thoralf Klein]
 		- Add C4.5 algorithm for multiclass classification using decision trees [Parijat Mazumdar]
 		- Add CART algorithm for classification and regression using decision trees [Parijat Mazumdar]
+		- Add CHAID algorithm for multiclass classification and regression using decision trees [Parijat Mazumdar]
 	* Bugfixes:
 		- Fix reference counting bugs in CList when reference counting is on [Heiko Strathmann, Thoralf Klein, lambday]
 		- Fix memory problem in PCA::apply_to_feature_matrix [Parijat Mazumdar]

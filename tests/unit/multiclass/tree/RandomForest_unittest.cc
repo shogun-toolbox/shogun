@@ -1,14 +1,41 @@
-#include "machine/MockMachine.h"
-#include "features/MockFeatures.h"
-#include "labels/MockLabels.h"
+/*
+ * Copyright (c) The Shogun Machine Learning Toolbox
+ * Written (w) 2014 Parijat Mazumdar
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * The views and conclusions contained in the software and documentation are those
+ * of the authors and should not be interpreted as representing official policies,
+ * either expressed or implied, of the Shogun Development Team.
+ */
+
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/lib/SGMatrix.h>
-#include <shogun/multiclass/tree/CARTree.h>
-#include <shogun/lib/config.h>
-#include <shogun/machine/BaggingMachine.h>
-#include <shogun/evaluation/MulticlassAccuracy.h>
+#include <shogun/machine/RandomForest.h>
 #include <shogun/ensemble/MajorityVote.h>
+#include <shogun/evaluation/MulticlassAccuracy.h>
 #include <gtest/gtest.h>
+
+using namespace shogun;
 
 #define sunny 1.
 #define overcast 2.
@@ -24,66 +51,10 @@
 #define weak 1.
 #define strong 2.
 
-#ifdef USE_REFERENCE_COUNTING
-using namespace shogun;
-using ::testing::Return;
-
-/** gmock REV 443 and freebsd doesn't play nicely */
-#ifdef FREEBSD
-TEST(BaggingMachine, DISABLED_mock_train)
-#else
-TEST(BaggingMachine, mock_train)
-#endif
-{
-	using ::testing::NiceMock;
-	using ::testing::_;
-	using ::testing::InSequence;
-	using ::testing::Mock;
-	using ::testing::DefaultValue;
-
-	int32_t bag_size = 20;
-	int32_t num_bags = 10;
-
-	NiceMock<MockCFeatures> features; features.ref();
-	NiceMock<MockCLabels> labels; labels.ref();
-	CBaggingMachine* bm = new CBaggingMachine(&features, &labels);
-	NiceMock<MockCMachine> mm; mm.ref();
-	CMajorityVote* mv = new CMajorityVote();
-
-	bm->set_machine(&mm);
-	bm->set_bag_size(bag_size);
-	bm->set_num_bags(num_bags);
-	bm->set_combination_rule(mv);
-
-	ON_CALL(mm, train_machine(_))
-		.WillByDefault(Return(true));
-
-	ON_CALL(features, get_num_vectors())
-		.WillByDefault(Return(100));
-
-	{
-		InSequence s;
-		for (int i = 0; i < num_bags; i++) {
-			EXPECT_CALL(mm, clone())
-				.Times(1)
-				.WillRepeatedly(Return(&mm));
-
-			EXPECT_CALL(mm, train_machine(_))
-				.Times(1)
-				.WillRepeatedly(Return(true));
-
-			mm.ref();
-		}
-	}
-
-	bm->train();
-
-	SG_UNREF(bm);
-}
-
-TEST(BaggingMachine,classify_CART)
+TEST(RandomForest,classify_test)
 {
 	sg_rand->set_seed(10);
+
 	SGMatrix<float64_t> data(4,14);
 
 	//vector = [Outlook Temperature Humidity Wind]
@@ -184,14 +155,11 @@ TEST(BaggingMachine,classify_CART)
 
 	CMulticlassLabels* labels=new CMulticlassLabels(lab);
 
-	CCARTree* cart=new CCARTree();
-	CMajorityVote* cv=new CMajorityVote();
-	cart->set_feature_types(ft);
-	CBaggingMachine* c=new CBaggingMachine(feats,labels);
-	c->set_machine(cart);
-	c->set_bag_size(14);
-	c->set_num_bags(10);
-	c->set_combination_rule(cv);
+	CRandomForest* c=new CRandomForest(feats, labels, 2);
+	c->set_feature_types(ft);
+	c->set_num_bags(100);
+	CMajorityVote* mv = new CMajorityVote();
+	c->set_combination_rule(mv);
 	c->train(feats);
 
 	SGMatrix<float64_t> test(4,5);
@@ -220,21 +188,22 @@ TEST(BaggingMachine,classify_CART)
 	test(3,4)=strong;
 
 	CDenseFeatures<float64_t>* test_feats=new CDenseFeatures<float64_t>(test);
-	CMulticlassLabels* result=c->apply_multiclass(test_feats);
+	CMulticlassLabels* result=(CMulticlassLabels*) c->apply(test_feats);
 	SGVector<float64_t> res_vector=result->get_labels();
 
 	EXPECT_EQ(1.0,res_vector[0]);
 	EXPECT_EQ(0.0,res_vector[1]);
 	EXPECT_EQ(0.0,res_vector[2]);
 	EXPECT_EQ(1.0,res_vector[3]);
-	EXPECT_EQ(0.0,res_vector[4]);
+	EXPECT_EQ(1.0,res_vector[4]);
+
 
 	CMulticlassAccuracy* eval=new CMulticlassAccuracy();
-	EXPECT_EQ(0.5,c->get_oob_error(eval));
+	EXPECT_NEAR(0.642857,c->get_oob_error(eval),1e-6);
+
 
 	SG_UNREF(test_feats);
 	SG_UNREF(result);
 	SG_UNREF(c);
 	SG_UNREF(eval);
 }
-#endif

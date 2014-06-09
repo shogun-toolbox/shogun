@@ -53,11 +53,11 @@ namespace shogun
  * variable, or all of them have identical predictive attributes (independent variables). \n \n
  * 
  * COST-COMPLEXITY PRUNING : \n
- * The maximal tree, $fT_max$f grown during tree growing process is bound to overfit. Hence pruning becomes necessary. Cost-Complexity
- * pruning yields a list of subtrees of varying depths using the complexity normalized resubstitution error, $fR_\alpha(T)$f. The
+ * The maximal tree, \f$T_max\f$ grown during tree growing process is bound to overfit. Hence pruning becomes necessary. Cost-Complexity
+ * pruning yields a list of subtrees of varying depths using the complexity normalized resubstitution error, \f$R_\alpha(T)\f$. The
  * resubstitution error R(T) is a measure of how well a decision tree fits the training data. This measure favours larger trees over
  * smaller ones. However, complexity normalized resubstitution error, adds penalty for increased complexity and hence counters overfitting.\n
- * $fR_\alpha(T)=R(T)+\alpha \times (num_leaves)$f \n
+ * \f$R_\alpha(T)=R(T)+\alpha \times (num_leaves)\f$ \n
  * The best subtree among the list of subtrees can be chosen using cross validation or using best-fit in the test dataset. \n
  * cf. https://onlinecourses.science.psu.edu/stat557/node/93 \n \n
  *
@@ -65,10 +65,10 @@ namespace shogun
  * While choosing the best split at a node, missing attribute values are left out. But data vectors with missing values of the best attribute
  * chosen are sent to left child or right child using a surrogate split. A surrogate split is one that imitates the best split as closely
  * as possible. While choosing a surrogate split, all splits alternative to the best split are scaned and the degree of closeness between the
- * two is measured using a metric called predictive measure of association, $f\lambda_{i,j}$f. \n
- * $f\lambda_{i,j} = \frac{min(P_L,P_R)-(1-P_{L_iL_j}-P_{R_iR_j})}{min(P_L,P_R)}$f \n
+ * two is measured using a metric called predictive measure of association, \f$\lambda_{i,j}\f$. \n
+ * \f$\lambda_{i,j} = \frac{min(P_L,P_R)-(1-P_{L_iL_j}-P_{R_iR_j})}{min(P_L,P_R)}\f$ \n
  * where $fP_L$f and $fP_R$f are the node probabilities for the optimal split of node i into left and right nodes respectively, 
- * $fP_{L_iL_j}$f ($fP_{R_iR_j}$f resp.) is the probability that both (optimal) node i and (surrogate) node j send an observation 
+ * \f$P_{L_iL_j}$f ($fP_{R_iR_j}\f$ resp.) is the probability that both (optimal) node i and (surrogate) node j send an observation 
  * to the Left (Right resp.). \n 
  * We use best surrogate split, 2nd best surrogate split and so on until all data points with missing attributes in a node 
  * have been sent to left/right child. If all possible surrogate splits are used up but some data points are still to be 
@@ -178,7 +178,6 @@ protected:
 	 */
 	virtual bool train_machine(CFeatures* data=NULL);
 
-private:
 	/** CARTtrain - recursive CART training method
 	 *
 	 * @param data training data
@@ -186,7 +185,25 @@ private:
 	 * @param labels labels of data points
 	 * @return pointer to the root of the CART subtree
 	 */
-	CBinaryTreeMachineNode<CARTreeNodeData>* CARTtrain(CFeatures* data, SGVector<float64_t> weights, CLabels* labels);
+	virtual CBinaryTreeMachineNode<CARTreeNodeData>* CARTtrain(CFeatures* data, SGVector<float64_t> weights, CLabels* labels);
+
+	/** computes best attribute for CARTtrain
+	 *
+	 * @param mat data matrix
+	 * @param weights data weights
+	 * @param labels_vec data labels
+	 * @param left stores feature values for left transition
+	 * @param right stores feature values for right transition
+	 * @param is_left_final stores which feature vectors go to the left child
+	 * @param num_missing number of missing attributes
+	 * @param count_left stores number of feature values for left transition
+	 * @param count_right stores number of feature values for right transition
+	 * @return index to the best attribute
+	 */
+	virtual int32_t compute_best_attribute(SGMatrix<float64_t> mat, SGVector<float64_t> weights, SGVector<float64_t> labels_vec, 	
+	SGVector<float64_t> left, SGVector<float64_t> right, SGVector<bool> is_left_final, int32_t &num_missing, int32_t &count_left,
+														 int32_t &count_right);
+
 
 	/** handles missing values through surrogate splits
 	 *
@@ -316,7 +333,7 @@ public:
 	/** denotes that a feature in a vector is missing MISSING = NOT_A_NUMBER */
 	static const float64_t MISSING;
 
-private:
+protected:
 	/** vector depicting whether various feature dimensions are nominal or not **/
 	SGVector<bool> m_nominal;
 

@@ -107,6 +107,17 @@ public:
 	 */
 	virtual SGVector<float64_t> get_variational_first_derivative(const TParameter* param) const;
 
+	/** get derivative of log likelihood \f$log(p(y|f))\f$ with respect to given
+	 * hyperparameter
+	 * Note that variational parameters (mu and sigma) are NOT considered as hyperparameters
+	 *
+	 * @param param parameter
+	 *
+	 * @return derivative
+	 */
+	virtual SGVector<float64_t> get_first_derivative_wrt_hyperparameter(const TParameter* param) const;
+
+	//virtual bool supports_derivative_wrt_hyperparameter() const=0;
 protected:
 
 	/** The function used to initialize m_likelihood defined in CVariationalLikelihood
@@ -115,6 +126,7 @@ protected:
 	virtual void init_likelihood()=0;
 
 private:
+
 	/** initialize private data members for this class */
 	void init();
 

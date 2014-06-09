@@ -56,6 +56,14 @@ IF (
 	RubyModular OR CSharpModular
    )
 	FIND_PACKAGE(SWIG 2.0.4 REQUIRED)
+
+	# SWIG >= 3.0.0 has some new handling with C# (Mono) and breaks
+	# typemapping created for earlier versions of SWIG.
+	# see: http://www.swig.org/Doc3.0/CSharp.html#CSharp_introduction_swig2_compatibility
+	IF(NOT "${SWIG_VERSION}" VERSION_LESS "3.0.0")
+		LIST(APPEND CMAKE_SWIG_FLAGS "-DSWIG2_CSHARP")
+	ENDIF(NOT "${SWIG_VERSION}" VERSION_LESS "3.0.0")
+
 	# use our own UseSWIG.cmake in order to be able to enable ccache-swig
 	SET(SWIG_USE_FILE ${CMAKE_SOURCE_DIR}/cmake/UseSWIG.cmake)
 	IF(ENABLE_CCACHE AND CCACHE_SWIG)
@@ -309,7 +317,7 @@ ENDIF()
 
 # detect word size
 IF(CMAKE_SIZEOF_VOID_P EQUAL 8 AND NOT DARWIN)
-	SET(CMAKE_SWIG_FLAGS -DSWIGWORDSIZE64)
+	LIST(APPEND CMAKE_SWIG_FLAGS "-DSWIGWORDSIZE64")
 ENDIF()
 
 #integration 
@@ -818,7 +826,11 @@ IF (PROTOBUF_FOUND)
 ENDIF()
 
 #SWIG Interfaces
-SET(CMAKE_SWIG_FLAGS "${CMAKE_SWIG_FLAGS};-w473;-w454;-w312;-w325;-fvirtual")
+LIST(APPEND CMAKE_SWIG_FLAGS "-w473")
+LIST(APPEND CMAKE_SWIG_FLAGS "-w454")
+LIST(APPEND CMAKE_SWIG_FLAGS "-w312")
+LIST(APPEND CMAKE_SWIG_FLAGS "-w325")
+LIST(APPEND CMAKE_SWIG_FLAGS "-fvirtual")
 
 OPTION(USE_SWIG_DIRECTORS "Enable SWIG director classes" OFF)
 IF(USE_SWIG_DIRECTORS)

@@ -78,6 +78,8 @@ void CStudentsTVGLikelihood::init_likelihood()
 void CStudentsTVGLikelihood::init()
 {
 	init_likelihood();
+	SG_ADD(&m_df, "df", "Degrees of freedom", MS_AVAILABLE, GRADIENT_AVAILABLE);
+	SG_ADD(&m_sigma, "sigma", "Scale parameter", MS_AVAILABLE, GRADIENT_AVAILABLE);
 }
 
 } /* namespace shogun */

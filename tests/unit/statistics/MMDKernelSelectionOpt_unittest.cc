@@ -18,6 +18,7 @@
 
 using namespace shogun;
 
+#ifdef HAVE_EIGEN3
 TEST(MMDKernelSelectionOpt,select_kernel)
 {
 	index_t m=8;
@@ -70,6 +71,7 @@ TEST(MMDKernelSelectionOpt,select_kernel)
 	/* create MMD instance */
 	CLinearTimeMMD* mmd=new CLinearTimeMMD(combined_kernel, streaming_p,
 			streaming_q, m);
+	mmd->set_null_var_est_method(WITHIN_BLOCK_DIRECT);
 
 	/* kernel selection instance with regularisation term */
 	CMMDKernelSelectionOpt* selection=
@@ -87,9 +89,9 @@ TEST(MMDKernelSelectionOpt,select_kernel)
 //	   0.947668253683719
 //	   0.336041393822230
 //	   0.093824478467851
-	EXPECT_LE(CMath::abs(ratios[0]-0.947668253683719), 10E-15);
-	EXPECT_LE(CMath::abs(ratios[1]-0.336041393822230), 10E-15);
-	EXPECT_LE(CMath::abs(ratios[2]-0.093824478467851), 10E-15);
+	EXPECT_NEAR(ratios[0], 1.651406350527248, 1E-15);
+	EXPECT_NEAR(ratios[1], 0.81518528754182584, 1E-15);
+	EXPECT_NEAR(ratios[2], 0.26944183937235494, 1E-15);
 
 	/* start streaming features parser */
 	streaming_p->end_parser();
@@ -97,3 +99,4 @@ TEST(MMDKernelSelectionOpt,select_kernel)
 
 	SG_UNREF(selection);
 }
+#endif // HAVE_EIGEN3
