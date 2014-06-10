@@ -95,7 +95,7 @@ void CCARTree::prune_using_test_dataset(CDenseFeatures<float64_t>* feats, CLabel
 
 	CDynamicObjectArray* pruned_trees=prune_tree(this);
 
-	int32_t min_index=-1;
+	int32_t min_index=0;
 	float64_t min_error=CMath::MAX_REAL_NUMBER;
 	for (int32_t i=0;i<m_alphas->get_num_elements();i++)
 	{
