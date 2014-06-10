@@ -68,6 +68,11 @@ public:
 	 * used for testing/evaluation!
 	 */
 	virtual SGVector<float64_t> compute_measures();
+#else
+	/** In absense of LAPACK this method is pure virtual. Required to put this
+	 * here in order to prevent failure in class_list.cpp when LAPACK is absent
+	 */
+	virtual SGVector<float64_t> compute_measures()=0;
 #endif
 
 	/** @return name of the SGSerializable */
