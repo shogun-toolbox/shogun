@@ -67,7 +67,7 @@ public:
 	virtual CKernel* select_kernel();
 
 	/** @return name of the SGSerializable */
-	const char* get_name() const { return "MMDKernelSelectionMedian"; }
+	virtual const char* get_name() const { return "MMDKernelSelectionMedian"; }
 
 private:
 	/* initialises and registers member variables */

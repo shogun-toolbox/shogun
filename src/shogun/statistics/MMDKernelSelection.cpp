@@ -21,28 +21,23 @@ CMMDKernelSelection::CMMDKernelSelection()
 	init();
 }
 
-CMMDKernelSelection::CMMDKernelSelection(
-		CKernelTwoSampleTest* mmd)
+CMMDKernelSelection::CMMDKernelSelection(CKernelTwoSampleTest* mmd)
 {
 	init();
 
 	/* ensure that mmd contains an instance of a MMD related class */
-	REQUIRE(mmd, "CMMDKernelSelection::CMMDKernelSelection(): No MMD instance "
-			"provided!\n");
+	REQUIRE(mmd, "No MMD instance provided!\n");
 	REQUIRE(mmd->get_statistic_type()==S_LINEAR_TIME_MMD ||
 			mmd->get_statistic_type()==S_QUADRATIC_TIME_MMD,
-			"CMMDKernelSelection::CMMDKernelSelection(): provided instance "
-			"for kernel two sample testing has to be a MMD-based class! The "
-			"provided is of class \"%s\"\n", mmd->get_name());
+			"Provided instance for kernel two sample testing has to be a MMD-"
+			"based class! The provided is of class \"%s\"\n", mmd->get_name());
 
 	/* ensure that there is a combined kernel */
 	CKernel* kernel=mmd->get_kernel();
-	REQUIRE(kernel, "CMMDKernelSelection::CMMDKernelSelection(): underlying "
-			"\"%s\" has no kernel set!\n", mmd->get_name());
-	REQUIRE(kernel->get_kernel_type()==K_COMBINED, "CMMDKernelSelection::"
-			"CMMDKernelSelection(): kernel of underlying \"%s\" is of type \"%s\""
-			" but is has to be CCombinedKernel\n", mmd->get_name(),
-			kernel->get_name());
+	REQUIRE(kernel, "Underlying \"%s\" has no kernel set!\n", mmd->get_name());
+	REQUIRE(kernel->get_kernel_type()==K_COMBINED, "Kernel of underlying \"%s\" "
+			"is of type \"%s\" but is has to be CCombinedKernel\n",
+			mmd->get_name(), kernel->get_name());
 	SG_UNREF(kernel);
 
 	m_mmd=mmd;
@@ -65,7 +60,7 @@ void CMMDKernelSelection::init()
 
 CKernel* CMMDKernelSelection::select_kernel()
 {
-	SG_DEBUG("entering CMMDKernelSelection::select_kernel()\n")
+	SG_DEBUG("entering\n")
 
 	/* compute measures and return single kernel with maximum measure */
 	SGVector<float64_t> measures=compute_measures();
@@ -87,7 +82,7 @@ CKernel* CMMDKernelSelection::select_kernel()
 	CKernel* current=combined->get_kernel(max_idx);
 
 	SG_UNREF(combined);
-	SG_DEBUG("leaving CMMDKernelSelection::select_kernel()\n");
+	SG_DEBUG("leaving\n");
 
 	/* current is not SG_UNREF'ed nor SG_REF'ed since the counter needs to be
 	 * incremented exactly by one */

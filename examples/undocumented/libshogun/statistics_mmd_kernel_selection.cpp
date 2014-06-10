@@ -24,7 +24,7 @@
 
 using namespace shogun;
 
-
+#ifdef HAVE_LAPACK
 void kernel_choice_linear_time_mmd_opt_single()
 {
 	/* Note that the linear time mmd is designed for large datasets. Results on
@@ -195,17 +195,20 @@ void kernel_choice_linear_time_mmd_opt_comb()
 
 	SG_UNREF(selection);
 }
+#endif // HAVE_LAPACK
 
 int main(int argc, char** argv)
 {
 	init_shogun_with_defaults();
 //	sg_io->set_loglevel(MSG_DEBUG);
 
+#ifdef HAVE_LAPACK
 	/* select a single kernel for linear time MMD */
 	kernel_choice_linear_time_mmd_opt_single();
 
 	/* select combined kernels for linear time MMD */
 	kernel_choice_linear_time_mmd_opt_comb();
+#endif
 
 	exit_shogun();
 	return 0;

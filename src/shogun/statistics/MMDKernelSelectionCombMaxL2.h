@@ -71,7 +71,10 @@ public:
 #endif
 
 	/** @return name of the SGSerializable */
-	const char* get_name() const { return "MMDKernelSelectionCombMaxL2"; }
+	virtual const char* get_name() const
+	{
+		return "MMDKernelSelectionCombMaxL2";
+	}
 };
 
 }

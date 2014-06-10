@@ -46,6 +46,19 @@ void CMMDKernelSelectionComb::init()
 #endif
 }
 
+CKernel* CMMDKernelSelectionComb::select_kernel()
+{
+	/* cast is safe due to assertion in constructor */
+	CCombinedKernel* combined=(CCombinedKernel*)m_mmd->get_kernel();
+
+	/* optimise for kernel weights and set them */
+	SGVector<float64_t> weights=compute_measures();
+	combined->set_subkernel_weights(weights);
+
+	/* note that kernel is SG_REF'ed from getter above */
+	return combined;
+}
+
 #ifdef HAVE_LAPACK
 /* no reference counting, use the static context constructor of SGMatrix */
 SGMatrix<float64_t> CMMDKernelSelectionComb::m_Q=SGMatrix<float64_t>(false);
@@ -58,21 +71,7 @@ const float64_t* CMMDKernelSelectionComb::get_Q_col(uint32_t i)
 /** helper function that prints current state */
 void CMMDKernelSelectionComb::print_state(libqp_state_T state)
 {
-	SG_SDEBUG("CMMDKernelSelectionComb::print_state: libqp state:"
-			" primal=%f\n", state.QP);
-}
-
-CKernel* CMMDKernelSelectionComb::select_kernel()
-{
-	/* cast is safe due to assertion in constructor */
-	CCombinedKernel* combined=(CCombinedKernel*)m_mmd->get_kernel();
-
-	/* optimise for kernel weights and set them */
-	SGVector<float64_t> weights=compute_measures();
-	combined->set_subkernel_weights(weights);
-
-	/* note that kernel is SG_REF'ed from getter above */
-	return combined;
+	SG_SDEBUG("libqp state: primal=%f\n", state.QP);
 }
 
 SGVector<float64_t> CMMDKernelSelectionComb::solve_optimization(
@@ -111,9 +110,8 @@ SGVector<float64_t> CMMDKernelSelectionComb::solve_optimization(
 
 	if (!one_pos)
 	{
-		SG_WARNING("CMMDKernelSelectionComb::solve_optimization(): all mmd "
-				"estimates are negative. This is techically possible, although "
-				"extremely rare. Consider using different kernels. "
+		SG_WARNING("All mmd estimates are negative. This is techically possible,"
+				"although extremely rare. Consider using different kernels. "
 				"This combination will lead to a bad two-sample test. Since any"
 				"combination is bad, will now just return equally distributed "
 				"kernel weights\n");
@@ -169,30 +167,5 @@ SGVector<float64_t> CMMDKernelSelectionComb::solve_optimization(
 	}
 
 	return weights;
-}
-#else
-CKernel* CMMDKernelSelectionComb::select_kernel()
-{
-	SG_ERROR("CMMDKernelSelectionComb::select_kernel(): LAPACK needs to be "
-			"installed in order to use weight optimisation for combined "
-			"kernels!\n");
-	return NULL;
-}
-
-SGVector<float64_t> CMMDKernelSelectionComb::compute_measures()
-{
-	SG_ERROR("CMMDKernelSelectionComb::select_kernel(): LAPACK needs to be "
-			"installed in order to use weight optimisation for combined "
-			"kernels!\n");
-	return SGVector<float64_t>();
-}
-
-SGVector<float64_t> CMMDKernelSelectionComb::solve_optimization(
-		SGVector<float64_t> mmds)
-{
-	SG_ERROR("CMMDKernelSelectionComb::solve_optimization(): LAPACK needs to be "
-			"installed in order to use weight optimisation for combined "
-			"kernels!\n");
-	return SGVector<float64_t>();
 }
 #endif
