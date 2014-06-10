@@ -373,7 +373,7 @@ void test_datasets()
 
 	fclose(pfile);
 	
-	for (index_t i = 1; i <= 6; i++)
+	for (index_t i = 4; i <= 6; i++)
 	{
 		snprintf(x_path_buffer, buff_size, "%s/X_dataset%d", data_path, i);
 		snprintf(y_path_buffer, buff_size, "%s/y_dataset%d", data_path, i);
