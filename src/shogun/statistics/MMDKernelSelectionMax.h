@@ -52,7 +52,7 @@ public:
 	virtual SGVector<float64_t> compute_measures();
 
 	/** @return name of the SGSerializable */
-	const char* get_name() const { return "MMDKernelSelectionMax"; }
+	virtual const char* get_name() const { return "MMDKernelSelectionMax"; }
 };
 
 }
