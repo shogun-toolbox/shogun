@@ -220,3 +220,16 @@ CResultSet * CMultilabelModel::argmax(SGVector<float64_t> w, int32_t feat_idx,
 	return ret;
 }
 
+void CMultilabelModel::init_primal_opt(
+        float64_t regularization,
+        SGMatrix<float64_t> &A,
+        SGVector<float64_t> a,
+        SGMatrix<float64_t> B,
+        SGVector<float64_t> &b,
+        SGVector<float64_t> lb,
+        SGVector<float64_t> ub,
+        SGMatrix<float64_t> &C)
+{
+	C = SGMatrix<float64_t>::create_identity_matrix(get_dim(), regularization);
+}
+

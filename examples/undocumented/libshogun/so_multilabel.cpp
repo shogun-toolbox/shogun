@@ -15,6 +15,7 @@
 #include <shogun/structure/MultilabelSOLabels.h>
 #include <shogun/structure/StochasticSOSVM.h>
 #include <shogun/structure/DualLibQPBMSOSVM.h>
+#include <shogun/structure/PrimalMosekSOSVM.h>
 #include <shogun/lib/Time.h>
 
 using namespace shogun;
@@ -79,8 +80,10 @@ int main(int argc, char ** argv)
 {
 	init_shogun_with_defaults();
 
-	const char train_file_name[] = "../../../data/multilabel/yeast_train.svm";
-	const char test_file_name[] = "../../../data/multilabel/yeast_test.svm";
+	sg_io->set_loglevel(MSG_DEBUG);
+
+	const char train_file_name[] = "../../../../data/multilabel/yeast_train.svm";
+	const char test_file_name[] = "../../../../data/multilabel/yeast_test.svm";
 
 	SGMatrix<float64_t> feats_matrix;
 	SGVector<int32_t> * multilabels;
@@ -121,8 +124,24 @@ int main(int argc, char ** argv)
 	bundle->set_verbose(false);
 	SG_REF(bundle);
 
+	CPrimalMosekSOSVM * sosvm = new CPrimalMosekSOSVM(model, mlabels);
+	SG_REF(sosvm);
+
+	CTime * start = new CTime();
+	SG_REF(start);
 	sgd->train();
+	float64_t t1 = start->cur_time_diff(false);
 	bundle->train();
+	float64_t t2 = start->cur_time_diff(false);
+	sosvm->train();
+	float64_t t3 = start->cur_time_diff(false);
+
+	SG_SPRINT(">>> Time taken for training using %s = %f\n", sgd->get_name(),
+	          t1);
+	SG_SPRINT(">>> Time taken for training using %s = %f\n", bundle->get_name(),
+	          t2 - t1);
+	SG_SPRINT(">>> Time taken for learning using %s = %f\n", sosvm->get_name(),
+	          t3 - t2);
 
 	SGMatrix<float64_t> test_feats_matrix;
 	SGVector<int32_t> * test_multilabels;
@@ -150,25 +169,34 @@ int main(int argc, char ** argv)
 	CStructuredLabels * bout = CLabelsFactory::to_structured(
 	                                   bundle->apply(test_features));
 
+	CStructuredLabels * sout = CLabelsFactory::to_structured(
+	                                   sosvm->apply(test_features));
+
 
 	CStructuredAccuracy * evaluator = new CStructuredAccuracy();
 	SG_REF(evaluator);
-	SG_SPRINT(">>> Accuracy of multilabel classification using SOSVM  =  %f\n",
-	          evaluator->evaluate(out, test_labels));
+	SG_SPRINT(">>> Accuracy of multilabel classification using %s = %f\n",
+	          sgd->get_name(), evaluator->evaluate(out, test_labels));
 
-	SG_SPRINT(">>> Accuracy of multilabel classification using BMRM   =  %f\n",
-	          evaluator->evaluate(bout, test_labels));
+	SG_SPRINT(">>> Accuracy of multilabel classification using %s = %f\n",
+	          bundle->get_name(), evaluator->evaluate(bout, test_labels));
 
-	SG_UNREF(mlabels);
-	SG_UNREF(features);
-	SG_UNREF(model);
-	SG_UNREF(sgd);
-	SG_UNREF(test_features);
-	SG_UNREF(test_labels);
-	SG_UNREF(out);
+	SG_SPRINT(">>> Accuracy of multilabel classification using %s = %f\n",
+	          sosvm->get_name(), evaluator->evaluate(sout, test_labels));
+
 	SG_UNREF(bout);
 	SG_UNREF(bundle);
 	SG_UNREF(evaluator);
+	SG_UNREF(features);
+	SG_UNREF(mlabels);
+	SG_UNREF(model);
+	SG_UNREF(out);
+	SG_UNREF(sgd);
+	SG_UNREF(sosvm);
+	SG_UNREF(sout);
+	SG_UNREF(start);
+	SG_UNREF(test_features);
+	SG_UNREF(test_labels);
 	SG_FREE(multilabels);
 	SG_FREE(test_multilabels);
 
