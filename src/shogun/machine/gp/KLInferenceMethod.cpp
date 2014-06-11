@@ -53,14 +53,36 @@ CKLInferenceMethod::CKLInferenceMethod(CKernel* kern,
 	init();
 }
 
+bool CKLInferenceMethod::is_variational_likelihood(CLikelihoodModel* mod) const
+{
+	if (mod!=NULL)
+	{
+		CVariationalLikelihood * lik= dynamic_cast<CVariationalLikelihood *>(mod);
+		if (lik ==NULL)
+			return false;
+	}
+	return true;
+
+}
+
+void CKLInferenceMethod::set_model(CLikelihoodModel* mod)
+{
+	REQUIRE(is_variational_likelihood(mod),
+		"The provided likelihood model must support variational inference. ",
+		"Please use a Variational Likelihood model\n");
+	CInferenceMethod::set_model(mod);
+}
+
 void CKLInferenceMethod::init()
 {
 	set_lbfgs_parameters();
-	CVariationalLikelihood * lik= dynamic_cast<CVariationalLikelihood *>(m_model);
-	REQUIRE(lik, "The provided likelihood model must support variational inference. ",
+
+	REQUIRE(is_variational_likelihood(m_model),
+		"The provided likelihood model must support variational inference. ",
 		"Please use a Variational Likelihood model\n");
+
 	SG_ADD(&m_m, "m",
-		"The number of corrections to approximate the inverse hessian matrix",
+		"The number of corrections to approximate the inverse Hessian matrix",
 		MS_NOT_AVAILABLE);
 	SG_ADD(&m_max_linesearch, "max_linesearch",
 		"The maximum number of trials to do line search for each L-BFGS update",
@@ -160,7 +182,7 @@ float64_t CKLInferenceMethod::evaluate(void *obj, const float64_t *parameters,
 	CKLInferenceMethod * obj_prt
 		= static_cast<CKLInferenceMethod *>(obj);
 
-	obj_prt->lbfgs_precomput();
+	obj_prt->lbfgs_precompute();
 	float64_t nlml=obj_prt->get_nlml_wrt_parameters();
 
 	SGVector<float64_t> sg_gradient(gradient, dim, false);
