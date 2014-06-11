@@ -234,7 +234,7 @@ void CNumericalVGLikelihood::set_variational_distribution(SGVector<float64_t> mu
 	for(index_t i = 0; i < s2.vlen; ++i)
 	{
 		REQUIRE(s2[i] > 0.0,
-			"Variance should always be positive (s2 should be a positive vector)\n");
+			"Variational variance should always be positive (s2 should be a positive vector)\n");
 	}
 
 	if (supports_binary())

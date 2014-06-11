@@ -80,7 +80,7 @@ public:
 
 	/** return what type of inference we are
 	 */
-	//virtual EInferenceType get_inference_type() const;
+	virtual EInferenceType get_inference_type() const { return INF_KL; }
 
 	/** returns the name of the inference method
 	 *
@@ -154,6 +154,12 @@ public:
 		check_members();
 		return m_model->supports_binary();
 	}
+
+	/** set variational likelihood model
+	 *
+	 * @param mod model to set
+	 */
+	virtual void set_model(CLikelihoodModel* mod);
 
 	/** update data all matrices */
 	virtual void update();
@@ -233,6 +239,12 @@ public:
 	virtual SGMatrix<float64_t> get_cholesky();
 
 protected:
+	/**
+	 * @param mod the provided likelihood model
+	 *
+	 * @return whether the provided likelihood model supports variational inference or not
+	 */
+	virtual bool is_variational_likelihood(CLikelihoodModel* mod) const;
 
 	/** update covariance matrix of the approximation to the posterior */
 	virtual void update_approx_cov()=0;
@@ -321,7 +333,7 @@ protected:
 	 * get_gradient_of_nlml_wrt_parameters(SGVector<float64_t> gradient)
 	 *
 	 */
-	virtual void lbfgs_precomput()=0;
+	virtual void lbfgs_precompute()=0;
 
 	/** mean vector of the approximation to the posterior
 	 * Note that m_mu is also a variational parameter
