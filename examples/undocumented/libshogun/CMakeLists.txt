@@ -111,11 +111,10 @@ SET(EXAMPLES
 	io_libsvm_multilabel
 	variational_approx_example
 	so_fg_multilabel
-	so_multilabel
 )
 
 IF (USE_MOSEK)
-	LIST(APPEND EXAMPLES so_fg_model so_multiclass)
+	LIST(APPEND EXAMPLES so_fg_model so_multiclass so_multilabel)
 ENDIF ()
 
 FOREACH(EXAMPLE ${EXAMPLES})

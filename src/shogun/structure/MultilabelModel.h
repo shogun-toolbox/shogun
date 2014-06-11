@@ -87,6 +87,27 @@ public:
 	virtual void set_misclass_cost(float64_t false_positive,
 	                               float64_t false_negative);
 
+	/** initialize the optimization problem
+	 *
+	 * @param regularization regularization strength
+	 * @param A is [-dPsi(y) | -I_N ] with M+N columns => max, M+1 nnz per row
+	 * @param a unused input
+	 * @param B unused input
+	 * @param b upper bound of the constraints, Ax <= b
+	 * @param lb lower bounds for w
+	 * @param ub upper bounds for w
+	 * @param C regularization matrix, w'Cw
+	 */
+	virtual void init_primal_opt(
+	        float64_t regularization,
+	        SGMatrix<float64_t> &A,
+	        SGVector<float64_t> a,
+	        SGMatrix<float64_t> B,
+	        SGVector<float64_t> &b,
+	        SGVector<float64_t> lb,
+	        SGVector<float64_t> ub,
+	        SGMatrix<float64_t> &C);
+
 	/** @return name of the SGSerializable */
 	virtual const char * get_name() const
 	{
