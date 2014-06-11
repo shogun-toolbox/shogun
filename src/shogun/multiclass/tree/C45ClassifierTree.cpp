@@ -270,19 +270,17 @@ CTreeMachineNode<C45TreeNodeData>* CC45ClassifierTree::C45train(CFeatures* data,
 	if (!m_nominal[feature_id_vector[best_feature_index]])
 	{
 		// convert continuous feature to nominal. Store cache for restoration
-		SGMatrix<float64_t> modified_feat_mat=feats->get_feature_matrix();
 		for(int32_t p=0;p<num_vecs;p++)
 		{
-			feature_cache[p]=modified_feat_mat(best_feature_index,p);
-			if (CMath::fequals(modified_feat_mat(best_feature_index,p),MISSING,0))
-				modified_feat_mat(best_feature_index,p)=MISSING;
-			else if (modified_feat_mat(best_feature_index,p)<=threshold)
-				modified_feat_mat(best_feature_index,p)=0.;
-			else
-				modified_feat_mat(best_feature_index,p)=1.;
-		}
+			feature_cache[p]=feats->get_feature_vector(p)[best_feature_index];
+			if (CMath::fequals(feature_cache[p],MISSING,0))
+				continue;
 
-		feats->set_feature_matrix(modified_feat_mat);
+			if (feature_cache[p]<=threshold)
+				feats->get_feature_vector(p)[best_feature_index]=0.;
+			else
+				feats->get_feature_vector(p)[best_feature_index]=1.;
+		}
 	}
 
 	// get feature values for the best feature chosen - shorthand for the features values of the best feature chosen
@@ -396,11 +394,8 @@ CTreeMachineNode<C45TreeNodeData>* CC45ClassifierTree::C45train(CFeatures* data,
 	if (!m_nominal[feature_id_vector[best_feature_index]])
 	{
 		// restore data matrix
-		SGMatrix<float64_t> feat_mat=feats->get_feature_matrix();
 		for(int32_t p=0;p<num_vecs;p++)
-			feat_mat(best_feature_index,p)=feature_cache[p];
-
-		feats->set_feature_matrix(feat_mat);
+			feats->get_feature_vector(p)[best_feature_index]=feature_cache[p];
 	}
 
 	return node;
@@ -464,7 +459,7 @@ void CC45ClassifierTree::prune_tree_from_current_node(CDenseFeatures<float64_t>*
 	}
 	else
 	{
-		REQUIRE(children->get_num_elements()==2,"The chosen attribute in current node is nominal. Expected number of"
+		REQUIRE(children->get_num_elements()==2,"The chosen attribute in current node is continuous. Expected number of"
 					" children is 2 but current node has %d children.",children->get_num_elements())
 
 		node_t* left_child=dynamic_cast<node_t*>(children->get_element(0));
