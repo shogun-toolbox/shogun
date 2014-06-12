@@ -13,6 +13,8 @@
  #include <shogun/multiclass/tree/ID3ClassifierTree.h>
  #include <shogun/multiclass/tree/C45TreeNodeData.h>
  #include <shogun/multiclass/tree/C45ClassifierTree.h>
+ #include <shogun/multiclass/tree/CARTreeNodeData.h>
+ #include <shogun/multiclass/tree/CARTree.h>
 
  #include <shogun/multiclass/RejectionStrategy.h>
  #include <shogun/multiclass/MulticlassStrategy.h>

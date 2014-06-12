@@ -57,7 +57,7 @@ namespace shogun
  * pruning yields a list of subtrees of varying depths using the complexity normalized resubstitution error, \f$R_\alpha(T)\f$. The
  * resubstitution error R(T) is a measure of how well a decision tree fits the training data. This measure favours larger trees over
  * smaller ones. However, complexity normalized resubstitution error, adds penalty for increased complexity and hence counters overfitting.\n
- * \f$R_\alpha(T)=R(T)+\alpha \times (num_leaves)\f$ \n
+ * \f$R_\alpha(T)=R(T)+\alpha \times (numleaves)\f$ \n
  * The best subtree among the list of subtrees can be chosen using cross validation or using best-fit in the test dataset. \n
  * cf. https://onlinecourses.science.psu.edu/stat557/node/93 \n \n
  *
@@ -67,8 +67,8 @@ namespace shogun
  * as possible. While choosing a surrogate split, all splits alternative to the best split are scaned and the degree of closeness between the
  * two is measured using a metric called predictive measure of association, \f$\lambda_{i,j}\f$. \n
  * \f$\lambda_{i,j} = \frac{min(P_L,P_R)-(1-P_{L_iL_j}-P_{R_iR_j})}{min(P_L,P_R)}\f$ \n
- * where $fP_L$f and $fP_R$f are the node probabilities for the optimal split of node i into left and right nodes respectively, 
- * \f$P_{L_iL_j}$f ($fP_{R_iR_j}\f$ resp.) is the probability that both (optimal) node i and (surrogate) node j send an observation 
+ * where \f$P_L\f$ and \f$P_R\f$ are the node probabilities for the optimal split of node i into left and right nodes respectively, 
+ * \f$P_{L_iL_j}\f$ (\f$P_{R_iR_j}\f$ resp.) is the probability that both (optimal) node i and (surrogate) node j send an observation 
  * to the Left (Right resp.). \n 
  * We use best surrogate split, 2nd best surrogate split and so on until all data points with missing attributes in a node 
  * have been sent to left/right child. If all possible surrogate splits are used up but some data points are still to be 
@@ -79,8 +79,22 @@ namespace shogun
 class CCARTree : public CTreeMachine<CARTreeNodeData>
 {
 public:
-	/** constructor */
+	/** default constructor */
 	CCARTree();
+
+	/** constructor
+	 * @param attribute_types type of each predictive attribute (true for nominal, false for ordinal/continuous)
+	 * @param prob_type machine problem type - PT_MULTICLASS or PT_REGRESSION 
+	 */
+	CCARTree(SGVector<bool> attribute_types, EProblemType prob_type=PT_MULTICLASS);
+
+	/** constructor - to be used while using cross-validation pruning
+	 * @param attribute_types type of each predictive attribute (true for nominal, false for ordinal/continuous) 
+	 * @param num_folds number of subsets used in cross-valiation
+	 * @param prob_type machine problem type - PT_MULTICLASS or PT_REGRESSION 
+	 * @param cv_prune - whether to use cross-validation pruning, True by default
+	 */
+	CCARTree(SGVector<bool> attribute_types, int32_t num_folds, EProblemType prob_type=PT_MULTICLASS, bool cv_prune=true);
 
 	/** destructor */
 	virtual ~CCARTree();
@@ -164,6 +178,30 @@ public:
 	 */
 	void set_num_folds(int32_t folds);
 
+	/** get max allowed tree depth
+	 *
+	 * @return max allowed tree depth
+	 */
+	int32_t get_max_depth() const;
+
+	/** set max allowed tree depth
+	 *
+	 * @param depth max allowed tree depth
+	 */
+	void set_max_depth(int32_t depth);
+
+	/** get min allowed node size
+	 *
+	 * @return min allowed node size
+	 */
+	int32_t get_min_node_size() const;
+
+	/** set min allowed node size
+	 *
+	 * @param min allowed node size
+	 */
+	void set_min_node_size(int32_t nsize);
+
 	/** apply cross validation pruning */
 	void set_cv_pruning() { m_apply_cv_pruning=true; }
 
@@ -183,9 +221,10 @@ protected:
 	 * @param data training data
 	 * @param weights vector of weights of data points
 	 * @param labels labels of data points
+	 * @param level current tree depth
 	 * @return pointer to the root of the CART subtree
 	 */
-	virtual CBinaryTreeMachineNode<CARTreeNodeData>* CARTtrain(CFeatures* data, SGVector<float64_t> weights, CLabels* labels);
+	virtual CBinaryTreeMachineNode<CARTreeNodeData>* CARTtrain(CFeatures* data, SGVector<float64_t> weights, CLabels* labels, int32_t level);
 
 	/** computes best attribute for CARTtrain
 	 *
@@ -355,9 +394,14 @@ protected:
 	/** Problem type : PT_MULTICLASS or PT_REGRESSION **/
 	EProblemType m_mode;
 
-	/** stores $f\alpha_k$f values evaluated in cost-complexity pruning **/
+	/** stores \f$\alpha_k\f$ values evaluated in cost-complexity pruning **/
 	CDynamicArray<float64_t>* m_alphas;
 
+	/** max allowed depth of tree **/
+	int32_t m_max_depth;
+
+	/** minimum number of feature vectors required in a node **/
+	int32_t m_min_node_size;
 };
 } /* namespace shogun */
 
