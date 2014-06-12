@@ -18,6 +18,7 @@
 %rename(VwConditionalProbabilityTree) VwConditionalProbabilityTree;
 %rename(ID3ClassifierTree) CID3ClassifierTree;
 %rename(C45ClassifierTree) CC45ClassifierTree;
+%rename(CARTree) CCARTree;
 
 %rename(RejectionStrategy) CRejectionStrategy;
 %rename(ThresholdRejectionStrategy) CThresholdRejectionStrategy;
@@ -78,6 +79,7 @@ namespace shogun
     %template(TreeMachineWithRelaxedTreeNodeData) CTreeMachine<RelaxedTreeNodeData>;
     %template(TreeMachineWithID3TreeNodeData) CTreeMachine<id3TreeNodeData>;
     %template(TreeMachineWithC45TreeNodeData) CTreeMachine<C45TreeNodeData>;
+    %template(TreeMachineWithCARTreeNodeData) CTreeMachine<CARTreeNodeData>;
 }
 
 %include <shogun/multiclass/tree/ConditionalProbabilityTree.h>
@@ -88,6 +90,7 @@ namespace shogun
 %include <shogun/multiclass/tree/VwConditionalProbabilityTree.h>
 %include <shogun/multiclass/tree/ID3ClassifierTree.h>
 %include <shogun/multiclass/tree/C45ClassifierTree.h>
+%include <shogun/multiclass/tree/CARTree.h>
 
 %include <shogun/multiclass/RejectionStrategy.h>
 %include <shogun/multiclass/MulticlassStrategy.h>

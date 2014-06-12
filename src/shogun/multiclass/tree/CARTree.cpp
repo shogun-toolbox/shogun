@@ -41,6 +41,25 @@ CCARTree::CCARTree()
 	init();
 }
 
+CCARTree::CCARTree(SGVector<bool> attribute_types, EProblemType prob_type)
+: CTreeMachine<CARTreeNodeData>()
+{
+	init();
+	set_feature_types(attribute_types);
+	set_machine_problem_type(prob_type);
+}
+
+CCARTree::CCARTree(SGVector<bool> attribute_types, int32_t num_folds, EProblemType prob_type, bool cv_prune)
+: CTreeMachine<CARTreeNodeData>()
+{
+	init();
+	set_feature_types(attribute_types);
+	set_machine_problem_type(prob_type);
+	set_num_folds(num_folds);
+	if (cv_prune)
+		set_cv_pruning();
+}
+
 CCARTree::~CCARTree()
 {
 	SG_UNREF(m_alphas);
@@ -176,6 +195,28 @@ void CCARTree::set_num_folds(int32_t folds)
 	m_folds=folds;
 }
 
+int32_t CCARTree::get_max_depth() const
+{
+	return m_max_depth;
+}
+
+void CCARTree::set_max_depth(int32_t depth)
+{
+	REQUIRE(depth>0,"Max allowed tree depth should be greater than 0. Supplied value is %d\n",depth)
+	m_max_depth=depth;
+}
+
+int32_t CCARTree::get_min_node_size() const
+{
+	return m_min_node_size;
+}
+
+void CCARTree::set_min_node_size(int32_t nsize)
+{
+	REQUIRE(nsize>0,"Min allowed node size should be greater than 0. Supplied value is %d\n",nsize)
+	m_min_node_size=nsize;
+}
+
 bool CCARTree::train_machine(CFeatures* data)
 {
 	REQUIRE(data,"Data required for training\n")
@@ -208,7 +249,7 @@ bool CCARTree::train_machine(CFeatures* data)
 		m_nominal.fill_vector(m_nominal.vector,m_nominal.vlen,false);
 	}
 
-	set_root(CARTtrain(data,m_weights,m_labels));
+	set_root(CARTtrain(data,m_weights,m_labels,0));
 
 	if (m_apply_cv_pruning)
 	{
@@ -219,7 +260,7 @@ bool CCARTree::train_machine(CFeatures* data)
 	return true;
 }
 
-CBinaryTreeMachineNode<CARTreeNodeData>* CCARTree::CARTtrain(CFeatures* data, SGVector<float64_t> weights, CLabels* labels)
+CBinaryTreeMachineNode<CARTreeNodeData>* CCARTree::CARTtrain(CFeatures* data, SGVector<float64_t> weights, CLabels* labels, int32_t level)
 {
 	REQUIRE(labels,"labels have to be supplied\n");
 	REQUIRE(data,"data matrix has to be supplied\n");
@@ -296,7 +337,23 @@ CBinaryTreeMachineNode<CARTreeNodeData>* CCARTree::CARTtrain(CFeatures* data, SG
 	}
 
 	// check stopping rules
-	// case 1 : all labels same
+	// case 1 : max tree depth reached if max_depth set
+	if ((m_max_depth>0) && (level==m_max_depth))
+	{
+		node->data.num_leaves=1;
+		node->data.weight_minus_branch=node->data.weight_minus_node;
+		return node;
+	}
+
+	// case 2 : min node size violated if min_node_size specified
+	if ((m_min_node_size>1) && (labels_vec.vlen<=m_min_node_size))
+	{
+		node->data.num_leaves=1;
+		node->data.weight_minus_branch=node->data.weight_minus_node;
+		return node;
+	}
+
+	// case 3 : all labels same
 	SGVector<float64_t> lab=labels_vec.clone();
 	int32_t unique=lab.unique(lab.vector,lab.vlen);
 	if (unique==1)
@@ -306,7 +363,7 @@ CBinaryTreeMachineNode<CARTreeNodeData>* CCARTree::CARTtrain(CFeatures* data, SG
 		return node;
 	}
 
-	// case 2 : all non-dependent attributes (not MISSING) are same
+	// case 4 : all non-dependent attributes (not MISSING) are same
 	bool flag=true;
 	for (int32_t v=1;v<num_vecs;v++)
 	{
@@ -392,14 +449,14 @@ CBinaryTreeMachineNode<CARTreeNodeData>* CCARTree::CARTtrain(CFeatures* data, SG
 	// left child
 	data->add_subset(subsetl);
 	labels->add_subset(subsetl);
-	bnode_t* left_child=CARTtrain(data,weightsl,labels);
+	bnode_t* left_child=CARTtrain(data,weightsl,labels,level+1);
 	data->remove_subset();
 	labels->remove_subset();
 
 	// right child
 	data->add_subset(subsetr);
 	labels->add_subset(subsetr);
-	bnode_t* right_child=CARTtrain(data,weightsr,labels);
+	bnode_t* right_child=CARTtrain(data,weightsr,labels,level+1);
 	data->remove_subset();
 	labels->remove_subset();
 
@@ -986,7 +1043,7 @@ void CCARTree::prune_by_cross_validation(CDenseFeatures<float64_t>* data, int32_
 			subset_weights[j]=m_weights[train_indices->get_element(j)];
 
 		// train with training subset
-		bnode_t* root=CARTtrain(data,subset_weights,m_labels);
+		bnode_t* root=CARTtrain(data,subset_weights,m_labels,0);
 
 		// prune trained tree
 		CTreeMachine<CARTreeNodeData>* tmax=new CTreeMachine<CARTreeNodeData>();
@@ -1260,11 +1317,15 @@ void CCARTree::init()
 	m_folds=5;
 	m_alphas=new CDynamicArray<float64_t>();
 	SG_REF(m_alphas);
+	m_max_depth=0;
+	m_min_node_size=0;
 
 	SG_ADD(&m_nominal,"m_nominal", "feature types", MS_NOT_AVAILABLE);
 	SG_ADD(&m_weights,"m_weights", "weights", MS_NOT_AVAILABLE);
 	SG_ADD(&m_weights_set,"m_weights_set", "weights set", MS_NOT_AVAILABLE);
 	SG_ADD(&m_types_set,"m_types_set", "feature types set", MS_NOT_AVAILABLE);
 	SG_ADD(&m_apply_cv_pruning,"m_apply_cv_pruning", "apply cross validation pruning", MS_NOT_AVAILABLE);
-	SG_ADD(&m_folds,"m_folds", "number of subsets for cross validation", MS_NOT_AVAILABLE);
+	SG_ADD(&m_folds,"m_folds","number of subsets for cross validation", MS_NOT_AVAILABLE);
+	SG_ADD(&m_max_depth,"m_max_depth","max allowed tree depth",MS_NOT_AVAILABLE)
+	SG_ADD(&m_min_node_size,"m_min_node_size","min allowed node size",MS_NOT_AVAILABLE)
 }
