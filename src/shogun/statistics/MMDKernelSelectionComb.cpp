@@ -31,7 +31,6 @@ CMMDKernelSelectionComb::~CMMDKernelSelectionComb()
 
 void CMMDKernelSelectionComb::init()
 {
-#ifdef HAVE_LAPACK
 	SG_ADD(&m_opt_max_iterations, "opt_max_iterations", "Maximum number of "
 			"iterations for qp solver", MS_NOT_AVAILABLE);
 	SG_ADD(&m_opt_epsilon, "opt_epsilon", "Stopping criterion for qp solver",
@@ -43,7 +42,6 @@ void CMMDKernelSelectionComb::init()
 	m_opt_max_iterations=10000;
 	m_opt_epsilon=10E-15;
 	m_opt_low_cut=10E-7;
-#endif
 }
 
 CKernel* CMMDKernelSelectionComb::select_kernel()
@@ -59,7 +57,6 @@ CKernel* CMMDKernelSelectionComb::select_kernel()
 	return combined;
 }
 
-#ifdef HAVE_LAPACK
 /* no reference counting, use the static context constructor of SGMatrix */
 SGMatrix<float64_t> CMMDKernelSelectionComb::m_Q=SGMatrix<float64_t>(false);
 
@@ -168,4 +165,3 @@ SGVector<float64_t> CMMDKernelSelectionComb::solve_optimization(
 
 	return weights;
 }
-#endif

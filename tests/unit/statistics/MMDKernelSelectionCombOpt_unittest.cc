@@ -18,7 +18,6 @@
 
 using namespace shogun;
 
-#ifdef HAVE_LAPACK
 TEST(MMDKernelSelectionCombOpt, select_kernel)
 {
 	index_t m=8;
@@ -103,4 +102,3 @@ TEST(MMDKernelSelectionCombOpt, select_kernel)
 	SG_UNREF(selection);
 	SG_UNREF(result);
 }
-#endif // HAVE_LAPACK
