@@ -55,7 +55,8 @@ namespace shogun
  *
  * This class just defines the statistic multiplier \f$\zeta\f$ and \f$\gamma\f$
  * as \f$\sqrt{\frac{n_xn_y}{n_x+n_y}}\f$ and \f$\frac{B_xB_y(B_x-1)(B_y-1)}
- * {(B-1)(B-2)}\f$ respectively.
+ * {(B-1)(B-2)}\f$ respectively. It also computes the multiplier for Gaussian
+ * approximation as well (see above).
  *
  * When INCOMPLETE statistic is used for \f$n_x=n_y\f$, the asymptotic
  * distribution becomes
@@ -131,6 +132,15 @@ protected:
 	 * @return multiplier \f$\gamma\f$ for variance estimate under null
 	 */
 	virtual float64_t compute_var_est_multiplier();
+
+	/** Method that computes multiplier for Gaussian approximation of
+	 * asymptotic distribution under null as \f$\frac{(B-1)(B-2)}
+	 * {B(B_x-1)(B_y-1)}\f$ for S_UNBIASED statistic type and as
+	 * \f$\frac{4}{B-2}\f$ for S_INCOMPLETE statistic type.
+	 *
+	 * @return multiplier for Gaussian approximation
+	 */
+	virtual float64_t compute_gaussian_multiplier();
 };
 
 }

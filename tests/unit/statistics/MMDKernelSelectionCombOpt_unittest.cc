@@ -22,6 +22,10 @@ TEST(MMDKernelSelectionCombOpt, select_kernel)
 {
 	index_t m=8;
 	index_t d=3;
+
+	/* use fixed seed for reproducibility */
+	CMath::init_random(1);
+
 	SGMatrix<float64_t> data(d,2*m);
 	for (index_t i=0; i<2*d*m; ++i)
 		data.matrix[i]=i;
@@ -90,9 +94,9 @@ TEST(MMDKernelSelectionCombOpt, select_kernel)
 //	   0.761798190146441
 //	   0.190556117891148
 //	   0.047645691962411
-	EXPECT_NEAR(weights[0], 0.76188388885305303, 1E-10);
-	EXPECT_NEAR(weights[1], 0.1904918451635951, 1E-10);
-	EXPECT_NEAR(weights[2], 0.047624265983351941, 1E-10);
+	EXPECT_NEAR(weights[0], 0.76199742065014331, 1E-10);
+	EXPECT_NEAR(weights[1], 0.19040328781860755, 1E-10);
+	EXPECT_NEAR(weights[2], 0.04759929153124931, 1E-10);
 
 
 	/* start streaming features parser */

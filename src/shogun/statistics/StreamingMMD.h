@@ -89,10 +89,15 @@ enum EStreamingStatisticType
  * by \f$B\f$ and \f$B_x\f$ and \f$B_y\f$ are integers. If provided blocksize
  * disagrees with this, an error message is displayed.
  *
- * The data blocks are streamed from both the streaming features which returns
- * a merged feature of \f$B_x\f$ samples from \f$p\f$ followed by \f$B_y\f$
- * samples from \f$q\f$. The total number of features returned by this method
- * is always equal to \f$B\f$.
+ * For faster execution, a number of data blocks of size \f$B\f$ are streamed
+ * from both the streaming features in each burst which returns a merged feature
+ * of \f$s\times B_x\f$ samples from \f$p\f$ followed by \f$s\times B_y\f$
+ * samples from \f$q\f$ which are then processed blockwise. The total number
+ * of features returned by this method is always equal to \f$s\times B\f$.
+ * \f$s\f$ by default is set as 1000 but its verified and adjusted internally
+ * based on how many total samples are there and how many of them are left to
+ * be processed.
+ *
  * If PERMUTATION test is desired, this method optionally shuffles this merged
  * features to accomplish the effect of randomly merging and redistributing
  * samples between these two distributions.
@@ -168,12 +173,13 @@ enum EStreamingStatisticType
  * Blockwise computation of kernel functions for statistic/variance is done via
  *
  * compute_blockwise_statistic_variance() method: used with direct within
- * -block variance estimation which returns a vector of statistic estimate
- * \f$\hat{\eta}_{k,b}\f$ and variance estimate \f$\left(\hat{\sigma}_{k,0}^2
- * \right )^{(b)}\f$.
+ * -block variance estimation which returns a matrix of statistic estimate
+ * \f$\hat{\eta}_{k,b}\f$ in its first column and variance estimate
+ * \f$\left(\hat{\sigma}_{k,0}^2\right )^{(b)}\f$ in its second column.
  *
  * compute_blockwise_statistic() method : used with permutation within-block
- * variance estimation which returns a single value \f$\hat{\eta}_{k,b}\f$.
+ * variance estimation which returns a vector of values \f$\hat{\eta}_{k,b}\f$,
+ * one entry per block in the current burst
  *
  * For computing mean of statistic and variance, a linear time online algorithm
  * by D. Knuth (see wikipedia) is used. Computing covariance matrix (Q) for
@@ -204,9 +210,9 @@ enum EStreamingStatisticType
  * S. Balakrishnan, M. Pontil, K. Fukumizu: Optimal kernel choice for large-
  * -scale two-sample tests. NIPS 2012.
  *
- * Please note that \f$n_x\f$, \f$n_x\f$, \f$B\f$, \f$B_x\f$, \f$B_y\f$ are
- * denoted as m, n, blocksize, blocksize_p, blocksize_q respectively, in the
- * implementation
+ * Please note that \f$n_x\f$, \f$n_x\f$, \f$B\f$, \f$B_x\f$, \f$B_y\f$, \f$s\f$
+ * are denoted as m, n, blocksize, blocksize_p, blocksize_q and num_blocks
+ * respectively, in the implementation
  */
 class CStreamingMMD: public CKernelTwoSampleTest
 {
@@ -341,16 +347,33 @@ public:
 	virtual SGVector<float64_t> sample_null();
 
 	/** Setter for the blocksize of examples to be processed at once. This
-	 * method internally computes the number of samples to be streamed from
-	 * each of the distribution, blocksize_p and blocksize_q internally.
-	 * (see class documentation for details).
+	 * method internally computes the number of samples to be processed from
+	 * each of the distribution at once, blocksize_p and blocksize_q.
+	 * (see class documentation for details). This method internally sets
+	 * the number of blocks to be streamed in one burst as well and verifies
+	 * whether it is valid (see set_num_blocks() documentation)
 	 *
 	 * @param blocksize new blocksize to use
 	 */
 	void set_blocksize(index_t blocksize);
 
+	/** Setter for the number of blocks to be streamed at once. This method
+	 * internally verifies the number provided. For example, if total number
+	 * of samples are 1000 from p and 1200 from q and the corresponding
+	 * blocksizes are 10 and 12, at max 100 such blocks can be streamed. If
+	 * given num_blocks is greater than this, it sets num_blocks as maximum
+	 * value possible (i.e. 100 in this case). Can only be used once the
+	 * blocksize is set.
+	 *
+	 * @param num_blocks number of blocks to be streamed at once
+	 */
+	void set_num_blocks(index_t num_blocks);
+
 	/** @return blocksize being used */
 	index_t get_blocksize();
+
+	/** @return the number of blocks to be streamed at once */
+	index_t get_num_blocks();
 
 	/** Not implemented for streaming MMD since it uses streaming feautres */
 	virtual void set_p_and_q(CFeatures* p_and_q);
@@ -407,11 +430,12 @@ public:
 
 protected:
 	/**
-	 * Streams data from each distribution with blocks of size blocksize_p
-	 * and blocksize_q. If m_simulate_h0 is set, it shuffles the samples
+	 * Streams m_num_blocks blocks of data from each distribution with blocks
+	 * of size m_blocksize. If m_simulate_h0 is set, it shuffles the samples
 	 *
-	 * @return merged features for samples from both distribution with samples
-	 * from p followed by samples from q. (see class description)
+	 * @return merged features for samples from both distribution with
+	 * m_num_blocks*m_blocksize_p samples from p followed by m_num_blocks*
+	 * m_blocksize_q samples from q. (see class description)
 	 */
 	CFeatures* stream_data_blocks();
 
@@ -422,15 +446,17 @@ protected:
 	 *
 	 * @param kernel the kernel to be used for computing MMD. This will be
 	 * useful when multiple kernels are used
-	 * @param p_and_q_current_block the merged features within current block,
-	 * with samples from p followed by samples from q.
-	 * @return a vector of two values, first statistic estimate in current block
-	 * \f$\hat{\eta}_{k,b}\f$, and second variance estimate
+	 * @param p_and_q_current_burst the merged features within current burst,
+	 * with m_num_blocks*m_blocksize_p samples from p followed by
+	 * m_num_blocks*m_blocksize_q samples from q.
+	 * @return a matrix of m_num_blocks rows with two entries in each column
+	 * for each block, first entry is the statistic estimate in current block
+	 * \f$\hat{\eta}_{k,b}\f$, and second entry is the variance estimate
 	 * \f$\left(\hat{\sigma}_{k,0}^2\right )^{(b)}\f$ for within-block direct
 	 * estimation
 	 */
-	SGVector<float64_t> compute_blockwise_statistic_variance(CKernel*
-			kernel, CFeatures* p_and_q_current_block);
+	SGMatrix<float64_t> compute_blockwise_statistic_variance(CKernel*
+			kernel, CFeatures* p_and_q_current_burst);
 #endif // HAVE_EIGEN3
 
 	/**
@@ -439,12 +465,14 @@ protected:
 	 *
 	 * @param kernel the kernel to be used for computing MMD. This will be
 	 * useful when multiple kernels are used
-	 * @param p_and_q_current_block the merged features within current block,
-	 * with samples from p followed by samples from q.
-	 * @return statistic estimate in current block, \f$\hat{\eta}_{k,b}\f$
+	 * @param p_and_q_current_burst the merged features within current burst,
+	 * with m_num_blocks*m_blocksize_p samples from p followed by
+	 * m_num_blocks*m_blocksize_q samples from q.
+	 * @return a vector of statistic estimates for each block in the current
+	 * burst, \f$\hat{\eta}_{k,b}\f$
 	 */
-	float64_t compute_blockwise_statistic(CKernel* kernel,
-			CFeatures* p_and_q_current_block);
+	SGVector<float64_t> compute_blockwise_statistic(CKernel* kernel,
+			CFeatures* p_and_q_current_burst);
 
 	/** Abstract method that computes statistic estimate multiplier. This varies
 	 * In the subclasses
@@ -460,6 +488,13 @@ protected:
 	 * when using within-block permutation method
 	 */
 	virtual float64_t compute_var_est_multiplier()=0;
+
+	/** Abstract method that computes multiplier for Gaussian approximation of
+	 * asymptotic distribution of test-statistic under null
+	 *
+	 * @return multiplier for Gaussian approximation of asymptotic distribution
+	 */
+	virtual float64_t compute_gaussian_multiplier()=0;
 
 	/** Streaming feature objects that are used instead of merged samples */
 	CStreamingFeatures* m_streaming_p;
@@ -478,6 +513,10 @@ protected:
 
 	/** Number of samples from q processed at once, i.e. in one burst */
 	index_t m_blocksize_q;
+
+	/** Number of blocks to be streamed at one burst Use higher number for
+	 * faster execution. Default is 1000 */
+	index_t m_num_blocks;
 
 	/** If this is true, samples will be mixed between p and q in any method
 	 * that computes the statistic */

@@ -9,7 +9,7 @@
 #
 from numpy import *
 
-parameter_list = [[1000,2,0.5]]
+parameter_list = [[5000,2,0.5]]
 
 def statistics_linear_time_mmd (n,dim,difference):
 	from modshogun import RealFeatures

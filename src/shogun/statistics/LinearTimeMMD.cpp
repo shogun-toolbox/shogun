@@ -79,3 +79,20 @@ float64_t CLinearTimeMMD::compute_var_est_multiplier()
 	}
 }
 
+float64_t CLinearTimeMMD::compute_gaussian_multiplier()
+{
+	index_t B=m_blocksize;
+	index_t Bx=m_blocksize_p;
+	index_t By=m_blocksize_q;
+
+	if (m_statistic_type==S_UNBIASED)
+		return float64_t((B-1)*(B-2))/B/(Bx-1)/(By-1);
+	else if (m_statistic_type==S_INCOMPLETE)
+		return 4.0/(B-2);
+	else
+	{
+		SG_ERROR("Unknown statistic type\n");
+		return 0;
+	}
+}
+

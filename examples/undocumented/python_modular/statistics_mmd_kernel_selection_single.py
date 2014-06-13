@@ -20,12 +20,12 @@ def statistics_mmd_kernel_selection_single(m,distance,stretch,num_blobs,angle,se
 	from modshogun import MMDKernelSelectionMedian
 	from modshogun import MMDKernelSelectionMax
 	from modshogun import MMDKernelSelectionOpt
-	from modshogun import PERMUTATION, MMD1_GAUSSIAN, WITHIN_BLOCK_DIRECT
+	from modshogun import PERMUTATION, MMD1_GAUSSIAN
 	from modshogun import EuclideanDistance
 	from modshogun import Statistics, Math
 
 	# init seed for reproducability
-	Math.init_random(1)
+	Math.init_random(1234)
 
 	# note that the linear time statistic is designed for much larger datasets
 	# results for this low number will be bad (unstable, type I error wrong)
@@ -64,10 +64,9 @@ def statistics_mmd_kernel_selection_single(m,distance,stretch,num_blobs,angle,se
 	for i in range(len(sigmas)):
 		combined.append_kernel(GaussianKernel(10, widths[i]))
 
-	# mmd instance using streaming features, blocksize of 4
-	block_size=4
+	# mmd instance using streaming features, blocksize of 8
+	block_size=8
 	mmd=LinearTimeMMD(combined, gen_p, gen_q, m, block_size)
-	mmd.set_null_var_est_method(WITHIN_BLOCK_DIRECT)
 
 	# kernel selection instance (this can easily replaced by the other methods for selecting
 	# single kernels
