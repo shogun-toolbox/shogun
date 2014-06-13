@@ -48,7 +48,6 @@ void CMMDKernelSelectionCombOpt::init()
 			MS_NOT_AVAILABLE);
 }
 
-#ifdef HAVE_LAPACK
 SGVector<float64_t> CMMDKernelSelectionCombOpt::compute_measures()
 {
 	/* cast is safe due to assertion in constructor */
@@ -95,4 +94,3 @@ SGVector<float64_t> CMMDKernelSelectionCombOpt::compute_measures()
 	return result;
 }
 
-#endif

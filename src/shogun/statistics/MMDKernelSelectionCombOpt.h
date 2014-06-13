@@ -58,7 +58,6 @@ public:
 	/** Destructor */
 	virtual ~CMMDKernelSelectionCombOpt();
 
-#ifdef HAVE_LAPACK
 	/** Computes optimal kernel weights using the ratio of the squared MMD by its
 	 * standard deviation as a criterion, where both expressions are estimated
 	 * in linear time.
@@ -73,12 +72,6 @@ public:
 	 * used for testing/evaluation!
 	 */
 	virtual SGVector<float64_t> compute_measures();
-#else
-	/** In absense of LAPACK this method is pure virtual. Required to put this
-	 * here in order to prevent failure in class_list.cpp when LAPACK is absent
-	 */
-	virtual SGVector<float64_t> compute_measures()=0;
-#endif
 
 	/** @return name of the SGSerializable */
 	virtual const char* get_name() const

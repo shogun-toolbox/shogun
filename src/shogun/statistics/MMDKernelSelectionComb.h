@@ -53,7 +53,6 @@ public:
 	virtual const char* get_name() const=0;
 
 protected:
-#ifdef HAVE_LAPACK
 	/** Solves the quadratic program
 	 * \f[
 	 * \min_\beta \{\beta^T Q \beta \quad \text{s.t.}\quad \beta^T \eta=1, \beta\succeq 0\},
@@ -85,7 +84,6 @@ protected:
 
 	/** matrix for selection of kernel weights (static because of libqp) */
 	static SGMatrix<float64_t> m_Q;
-#endif
 
 private:
 	/** initializer */
