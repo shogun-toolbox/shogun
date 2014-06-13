@@ -216,9 +216,9 @@ CResultSet * CHashedMultilabelModel::argmax(SGVector<float64_t> w,
 		if (score > 0)
 		{
 			y_pred.push_back(c);
+			total_score += score;
 		}
 
-		total_score += score;
 	}
 
 	SGVector<int32_t> y_pred_sparse(y_pred.get_num_elements());
