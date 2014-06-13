@@ -8,4 +8,5 @@
 #include <shogun/neuralnets/NeuralRectifiedLinearLayer.h>
 #include <shogun/neuralnets/ConvolutionalFeatureMap.h>
 #include <shogun/neuralnets/NeuralConvolutionalLayer.h>
+#include <shogun/neuralnets/RBM.h>
 %}
