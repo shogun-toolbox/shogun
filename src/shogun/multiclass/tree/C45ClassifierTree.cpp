@@ -204,6 +204,26 @@ CTreeMachineNode<C45TreeNodeData>* CC45ClassifierTree::C45train(CFeatures* data,
 	if (feature_id_vector.vlen==0)
 		return node;
 
+	// if all remaining attributes are identical
+	bool flag=true;
+	for (int32_t i=1;i<num_vecs;i++)
+	{
+		for (int32_t j=0;j<feats->get_num_features();j++)
+		{
+			if (feats->get_feature_vector(i)[j]!=feats->get_feature_vector(i-1)[j])
+			{
+				flag=false;
+				break;
+			}
+		}
+
+		if (!flag)
+			break;
+	}
+
+	if (flag)
+		return node;
+
 	// else get the feature with the highest informational gain. threshold is used for continuous features only.
 	float64_t max=0;
 	int32_t best_feature_index=-1;
