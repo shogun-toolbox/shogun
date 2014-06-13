@@ -98,6 +98,13 @@ public:
 	 */
 	CCHAIDTree(int32_t dependent_vartype);
 
+	/** constructor
+	 * @param dependent_vartype feature type for dependent variable (0-nominal, 1-ordinal or 2-continuous)  
+	 * @param feature_types type of various attributes (0-nominal, 1-ordinal or 2-continuous)
+	 * @param num_breakpoints number of breakpoints for continuous to ordinal conversion of attributes
+	 */
+	CCHAIDTree(int32_t dependent_vartype, SGVector<int32_t> feature_types, int32_t num_breakpoints=0);
+
 	/** destructor */
 	virtual ~CCHAIDTree();
 
@@ -117,13 +124,17 @@ public:
 	 */
 	virtual bool is_label_valid(CLabels* lab) const;
 
-	/** classify data using Classification Tree
+	/** classify data using Classification Tree 
+	 * NOTE : This method replaces all values of continuous attributes in supplied
+	 * data with the actual breakpoint values used for classification
 	 * @param data data to be classified
 	 * @return MulticlassLabels corresponding to labels of various test vectors 
 	 */
 	virtual CMulticlassLabels* apply_multiclass(CFeatures* data=NULL);
 
 	/** Get regression labels using Regression Tree
+	 * NOTE : This method replaces all values of continuous attributes in supplied
+	 * data with the actual breakpoint values used for classification
 	 * @param data data whose regression output is needed 
 	 * @return Regression output for various test vectors 
 	 */
@@ -362,10 +373,17 @@ private:
 	 * NOTE : This method changes data matrix. The continuous feature values
 	 * are replaced with the actual feature values used.
 	 * 
-	 * @param featmat feature matrix
+	 * @param feats features
 	 * @return whether data matrix is updated
 	 */
-	bool continuous_to_ordinal(SGMatrix<float64_t> featmat);
+	bool continuous_to_ordinal(CDenseFeatures<float64_t>* feats);
+
+	/** converts continuous features to ordinal using conversion matrix m_cont_breakpoints.
+	 * NOTE : This method changes data matrix.
+	 * 
+	 * @param feats features
+	 */
+	void modify_data_matrix(CDenseFeatures<float64_t>* feats);
 
 	/** initializes members of class */
 	void init();

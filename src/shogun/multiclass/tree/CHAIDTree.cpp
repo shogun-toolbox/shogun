@@ -49,6 +49,15 @@ CCHAIDTree::CCHAIDTree(int32_t dependent_vartype)
 	m_dependent_vartype=dependent_vartype;
 }
 
+CCHAIDTree::CCHAIDTree(int32_t dependent_vartype, SGVector<int32_t> feature_types, int32_t num_breakpoints)
+: CTreeMachine<CHAIDTreeNodeData>()
+{
+	init();
+	m_dependent_vartype=dependent_vartype;
+	set_feature_types(feature_types);
+	m_num_breakpoints=num_breakpoints;
+}
+
 CCHAIDTree::~CCHAIDTree()
 {
 }
@@ -147,25 +156,25 @@ bool CCHAIDTree::train_machine(CFeatures* data)
 	REQUIRE(data, "Data required for training\n")
 	REQUIRE(data->get_feature_class()==C_DENSE,"Dense data required for training\n")
 
-	SGMatrix<float64_t> fmat=(CDenseFeatures<float64_t>::obtain_from_generic(data))->get_feature_matrix();
+	CDenseFeatures<float64_t>* feats=CDenseFeatures<float64_t>::obtain_from_generic(data);
 
-	REQUIRE(m_feature_types.vlen==fmat.num_rows,"Either feature types are not set or number of feature types specified" 
-		" (%d here) is not same is number of features in data matrix (%d here)\n",m_feature_types.vlen,fmat.num_rows)
+	REQUIRE(m_feature_types.vlen==feats->get_num_features(),"Either feature types are not set or number of feature types specified" 
+		" (%d here) is not same is number of features in data matrix (%d here)\n",m_feature_types.vlen,feats->get_num_features())
 
 	if (m_weights_set)
 	{
-		REQUIRE(m_weights.vlen==fmat.num_cols,"Length of weights vector (currently %d) should be same as" 
-					" number of vectors in data (presently %d)",m_weights.vlen,fmat.num_cols)
+		REQUIRE(m_weights.vlen==feats->get_num_vectors(),"Length of weights vector (currently %d) should be same as" 
+					" number of vectors in data (presently %d)",m_weights.vlen,feats->get_num_vectors())
 	}
 	else
 	{
 		// all weights are equal to 1
-		m_weights=SGVector<float64_t>(fmat.num_cols);
+		m_weights=SGVector<float64_t>(feats->get_num_vectors());
 		m_weights.fill_vector(m_weights.vector,m_weights.vlen,1.0);
 	}
 
 	// continuous to ordinal conversion - NOTE: data matrix gets updated
-	bool updated=continuous_to_ordinal(fmat);
+	bool updated=continuous_to_ordinal(feats);
 
 	SGVector<int32_t> feature_types_cache;
 	if (updated)
@@ -656,31 +665,13 @@ SGVector<int32_t> CCHAIDTree::merge_categories_nominal(SGVector<float64_t> feats
 
 CLabels* CCHAIDTree::apply_tree(CFeatures* data)
 {
-	SGMatrix<float64_t> fmat=(CDenseFeatures<float64_t>::obtain_from_generic(data))->get_feature_matrix();
+	CDenseFeatures<float64_t>* feats=CDenseFeatures<float64_t>::obtain_from_generic(data);
 
 	// modify test data matrix (continuous to ordinal)
 	if (m_cont_breakpoints.num_cols>0)
-	{
-		int32_t c=0;
-		for (int32_t i=0;i<fmat.num_rows;i++)
-		{
-			if (m_feature_types[i]!=2)
-				continue;
+		modify_data_matrix(feats);
 
-			// continuous to ordinal conversion
-			for (int32_t j=0;j<fmat.num_cols;j++)
-			{
-				for (int32_t k=0;k<m_num_breakpoints;k++)
-				{
-					if (fmat(i,j)<=m_cont_breakpoints(c,k))
-						fmat(i,j)=m_cont_breakpoints(c,k);
-				}
-			}
-
-			c++;
-		}
-	}
-
+	SGMatrix<float64_t> fmat=feats->get_feature_matrix();
 	return apply_from_current_node(fmat, m_root);
 }
 
@@ -1294,11 +1285,11 @@ float64_t CCHAIDTree::sum_of_squared_deviation(SGVector<float64_t> lab, SGVector
 	return dev;
 }
 
-bool CCHAIDTree::continuous_to_ordinal(SGMatrix<float64_t> featmat)
+bool CCHAIDTree::continuous_to_ordinal(CDenseFeatures<float64_t>* feats)
 {
 	// assimilate continuous breakpoints
 	int32_t count_cont=0;
-	for (int32_t i=0;i<featmat.num_rows;i++)
+	for (int32_t i=0;i<feats->get_num_features();i++)
 	{
 		if (m_feature_types[i]==2)
 			count_cont++;
@@ -1307,9 +1298,11 @@ bool CCHAIDTree::continuous_to_ordinal(SGMatrix<float64_t> featmat)
 	if (count_cont==0)
 		return false;
 
+	REQUIRE(m_num_breakpoints>0,"Number of breakpoints for continuous to ordinal conversion not set.\n")
+
 	SGVector<int32_t> cont_ind(count_cont);
 	int32_t ci=0;
-	for (int32_t i=0;i<featmat.num_rows;i++)
+	for (int32_t i=0;i<feats->get_num_features();i++)
 	{
 		if (m_feature_types[i]==2)
 			cont_ind[ci++]=i;
@@ -1317,15 +1310,15 @@ bool CCHAIDTree::continuous_to_ordinal(SGMatrix<float64_t> featmat)
 
 	// form breakpoints matrix
 	m_cont_breakpoints=SGMatrix<float64_t>(m_num_breakpoints,count_cont);
-	int32_t bin_size=featmat.num_cols/m_num_breakpoints;
+	int32_t bin_size=feats->get_num_vectors()/m_num_breakpoints;
 	for (int32_t i=0;i<count_cont;i++)
 	{
-		int32_t left=featmat.num_cols%m_num_breakpoints;
+		int32_t left=feats->get_num_vectors()%m_num_breakpoints;
 		int32_t end_pt=-1;
 
-		SGVector<float64_t> values(featmat.num_cols);
+		SGVector<float64_t> values(feats->get_num_vectors());
 		for (int32_t j=0;j<values.vlen;j++)
-			values[j]=featmat(cont_ind[i],j);
+			values[j]=feats->get_feature_vector(j)[cont_ind[i]];
 
 		values.qsort();
 
@@ -1346,20 +1339,34 @@ bool CCHAIDTree::continuous_to_ordinal(SGMatrix<float64_t> featmat)
 	}
 
 	// update data matrix
-	for (int32_t i=0;i<count_cont;i++)
-	{
-		for (int32_t j=0;j<featmat.num_cols;j++)
-		{
-			// find right bin
-			for (int32_t k=0;k<m_num_breakpoints;k++)
-			{
-				if (featmat(cont_ind[i],j)<=m_cont_breakpoints(i,k))
-					featmat(cont_ind[i],j)=m_cont_breakpoints(i,k);
-			} 
-		}
-	}
+	modify_data_matrix(feats);
 
 	return true;
+}
+
+void CCHAIDTree::modify_data_matrix(CDenseFeatures<float64_t>* feats)
+{
+	int32_t c=0;
+	for (int32_t i=0;i<feats->get_num_features();i++)
+	{
+		if (m_feature_types[i]!=2)
+			continue;
+
+		// continuous to ordinal conversion
+		for (int32_t j=0;j<feats->get_num_vectors();j++)
+		{
+			for (int32_t k=0;k<m_num_breakpoints;k++)
+			{
+				if (feats->get_feature_vector(j)[i]<=m_cont_breakpoints(k,c))
+				{
+					feats->get_feature_vector(j)[i]=m_cont_breakpoints(k,c);
+					break;
+				}
+			}
+		}
+
+		c++;
+	}
 }
 
 void CCHAIDTree::init()
@@ -1373,7 +1380,7 @@ void CCHAIDTree::init()
 	m_alpha_merge=0.05;
 	m_alpha_split=0.05;
 	m_cont_breakpoints=SGMatrix<float64_t>();
-	m_num_breakpoints=5;
+	m_num_breakpoints=0;
 
 	SG_ADD(&m_weights,"m_weights", "weights", MS_NOT_AVAILABLE);
 	SG_ADD(&m_weights_set,"m_weights_set", "weights set", MS_NOT_AVAILABLE);
