@@ -158,13 +158,13 @@ bool CCHAIDTree::train_machine(CFeatures* data)
 
 	CDenseFeatures<float64_t>* feats=CDenseFeatures<float64_t>::obtain_from_generic(data);
 
-	REQUIRE(m_feature_types.vlen==feats->get_num_features(),"Either feature types are not set or number of feature types specified" 
-		" (%d here) is not same is number of features in data matrix (%d here)\n",m_feature_types.vlen,feats->get_num_features())
+	REQUIRE(m_feature_types.vlen==feats->get_num_features(),"Either feature types are not set or the number of feature types specified" 
+	" (%d here) is not the same as the number of features in data matrix (%d here)\n",m_feature_types.vlen,feats->get_num_features())
 
 	if (m_weights_set)
 	{
 		REQUIRE(m_weights.vlen==feats->get_num_vectors(),"Length of weights vector (currently %d) should be same as" 
-					" number of vectors in data (presently %d)",m_weights.vlen,feats->get_num_vectors())
+				" the number of vectors in data (presently %d)",m_weights.vlen,feats->get_num_vectors())
 	}
 	else
 	{
