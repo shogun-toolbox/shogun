@@ -1,5 +1,6 @@
 %newobject apply(CFeatures* data);
 %newobject apply_multiclass(CFeatures* data);
+%newobject visible_state_features();
  
 /* Remove C Prefix */
 %rename(NeuralNetwork) CNeuralNetwork;
@@ -11,6 +12,7 @@
 %rename(NeuralRectifiedLinearLayer) CNeuralRectifiedLinearLayer;
 %rename(ConvolutionalFeatureMap) CConvolutionalFeatureMap;
 %rename(NeuralConvolutionalLayer) CNeuralConvolutionalLayer;
+%rename(RBM) CRBM;
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/neuralnets/NeuralNetwork.h>
@@ -22,3 +24,4 @@
 %include <shogun/neuralnets/NeuralRectifiedLinearLayer.h>
 %include <shogun/neuralnets/ConvolutionalFeatureMap.h>
 %include <shogun/neuralnets/NeuralConvolutionalLayer.h>
+%include <shogun/neuralnets/RBM.h>
