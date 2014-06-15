@@ -15,6 +15,8 @@
  #include <shogun/multiclass/tree/C45ClassifierTree.h>
  #include <shogun/multiclass/tree/CARTreeNodeData.h>
  #include <shogun/multiclass/tree/CARTree.h>
+ #include <shogun/multiclass/tree/CHAIDTreeNodeData.h>
+ #include <shogun/multiclass/tree/CHAIDTree.h>
 
  #include <shogun/multiclass/RejectionStrategy.h>
  #include <shogun/multiclass/MulticlassStrategy.h>
