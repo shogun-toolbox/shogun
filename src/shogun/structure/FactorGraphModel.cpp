@@ -281,7 +281,7 @@ SGVector< float64_t > CFactorGraphModel::get_joint_feature_vector(int32_t feat_i
 // E(x_i, y; w) - E(x_i, y_i; w) >= L(y_i, y) - xi_i
 // xi_i >= max oracle
 // max oracle := argmax_y { L(y_i, y) - E(x_i, y; w) + E(x_i, y_i; w) }
-//            := argmin_y { -L(y_i, y) + E(x_i, y; w) } - E(x_i, y_i; w)
+//			:= argmin_y { -L(y_i, y) + E(x_i, y; w) } - E(x_i, y_i; w)
 // we do energy minimization in inference, so get back to max oracle value is:
 // [ L(y_i, y_star) - E(x_i, y_star; w) ] + E(x_i, y_i; w)
 CResultSet* CFactorGraphModel::argmax(SGVector<float64_t> w, int32_t feat_idx, bool const training)
@@ -321,7 +321,6 @@ CResultSet* CFactorGraphModel::argmax(SGVector<float64_t> w, int32_t feat_idx, b
 	SGVector<int32_t> states_gt = y_truth->get_data();
 
 	// E(x_i, y_i; w)
-	ret->psi_truth = get_joint_feature_vector(feat_idx, y_truth);
 	float64_t energy_gt = fg->evaluate_energy(states_gt);
 	ret->score = energy_gt;
 
@@ -345,26 +344,28 @@ CResultSet* CFactorGraphModel::argmax(SGVector<float64_t> w, int32_t feat_idx, b
 	SGVector<int32_t> states_star = y_star->get_data();
 
 	ret->argmax = y_star;
-	ret->psi_pred = get_joint_feature_vector(feat_idx, y_star);
 	float64_t l_energy_pred = fg->evaluate_energy(states_star);
 	ret->score -= l_energy_pred;
 	ret->delta = delta_loss(y_truth, y_star);
 
 	if (m_verbose)
 	{
-		float64_t dot_pred = SGVector< float64_t >::dot(w.vector, ret->psi_pred.vector, w.vlen);
-		float64_t dot_truth = SGVector< float64_t >::dot(w.vector, ret->psi_truth.vector, w.vlen);
+		SGVector<float64_t> psi_pred = get_joint_feature_vector(feat_idx, y_star);
+		SGVector<float64_t> psi_truth = get_joint_feature_vector(feat_idx, y_truth);
+
+		float64_t dot_pred = SGVector< float64_t >::dot(w.vector, psi_pred.vector, w.vlen);
+		float64_t dot_truth = SGVector< float64_t >::dot(w.vector, psi_truth.vector, w.vlen);
 		float64_t slack =  dot_pred + ret->delta - dot_truth;
 
 		SG_SPRINT("\n");
 		w.display_vector("w");
 
-		ret->psi_pred.display_vector("psi_pred");
+		psi_pred.display_vector("psi_pred");
 		states_star.display_vector("state_pred");
 
 		SG_SPRINT("dot_pred = %f, energy_pred = %f, delta = %f\n\n", dot_pred, l_energy_pred, ret->delta);
 
-		ret->psi_truth.display_vector("psi_truth");
+		psi_truth.display_vector("psi_truth");
 		states_gt.display_vector("state_gt");
 
 		SG_SPRINT("dot_truth = %f, energy_gt = %f\n\n", dot_truth, energy_gt);

@@ -119,8 +119,9 @@ float64_t CStructuredOutputMachine::risk_nslack_margin_rescale(float64_t* subgra
 	for (int32_t i=from; i<to; i++)
 	{
 		CResultSet* result = m_model->argmax(SGVector<float64_t>(W,dim,false), i, true);
-		SGVector<float64_t> psi_pred = result->psi_pred;
-		SGVector<float64_t> psi_truth = result->psi_truth;
+		SGVector<float64_t> psi_pred = m_model->get_joint_feature_vector(i,
+                result->argmax);
+		SGVector<float64_t> psi_truth = m_model->get_joint_feature_vector(i, i);
 		SGVector<float64_t>::vec1_plus_scalar_times_vec2(subgrad, 1.0, psi_pred.vector, dim);
 		SGVector<float64_t>::vec1_plus_scalar_times_vec2(subgrad, -1.0, psi_truth.vector, dim);
 		R += result->score;
