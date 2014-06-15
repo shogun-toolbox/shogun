@@ -102,31 +102,37 @@ SGVector<float64_t> CRandomForest::get_weights() const
 
 void CRandomForest::set_feature_types(SGVector<bool> ft)
 {
+	REQUIRE(m_machine,"m_machine is NULL. It is expected to be RandomCARTree\n")
 	dynamic_cast<CRandomCARTree*>(m_machine)->set_feature_types(ft);
 }
 
 SGVector<bool> CRandomForest::get_feature_types() const
 {
+	REQUIRE(m_machine,"m_machine is NULL. It is expected to be RandomCARTree\n")
 	return dynamic_cast<CRandomCARTree*>(m_machine)->get_feature_types();
 }
 
 EProblemType CRandomForest::get_machine_problem_type() const
 {
+	REQUIRE(m_machine,"m_machine is NULL. It is expected to be RandomCARTree\n")
 	return dynamic_cast<CRandomCARTree*>(m_machine)->get_machine_problem_type();
 }
 
 void CRandomForest::set_machine_problem_type(EProblemType mode)
 {
+	REQUIRE(m_machine,"m_machine is NULL. It is expected to be RandomCARTree\n")
 	dynamic_cast<CRandomCARTree*>(m_machine)->set_machine_problem_type(mode);
 }
 
 void CRandomForest::set_num_random_features(int32_t rand_featsize)
 {
+	REQUIRE(m_machine,"m_machine is NULL. It is expected to be RandomCARTree\n")
 	dynamic_cast<CRandomCARTree*>(m_machine)->set_feature_subset_size(rand_featsize);
 }
 
 int32_t CRandomForest::get_num_random_features() const
 {
+	REQUIRE(m_machine,"m_machine is NULL. It is expected to be RandomCARTree\n")
 	return dynamic_cast<CRandomCARTree*>(m_machine)->get_feature_subset_size();
 } 
 
