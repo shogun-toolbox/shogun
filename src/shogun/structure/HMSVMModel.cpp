@@ -330,13 +330,13 @@ CResultSet* CHMSVMModel::argmax(
 	// Populate the CResultSet object to return
 	CSequence* ypred = m_state_model->states_to_labels(opt_path);
 
-	ret->psi_pred = get_joint_feature_vector(feat_idx, ypred);
 	ret->argmax   = ypred;
 	if ( training )
 	{
 		ret->delta     = CStructuredModel::delta_loss(feat_idx, ypred);
-		ret->psi_truth = CStructuredModel::get_joint_feature_vector(feat_idx, feat_idx);
-		ret->score    -= SGVector< float64_t >::dot(w.vector, ret->psi_truth.vector, dim);
+		SGVector<float64_t>psi_truth = CStructuredModel::get_joint_feature_vector(
+                feat_idx, feat_idx);
+		ret->score    -= SGVector< float64_t >::dot(w.vector, psi_truth.vector, dim);
 	}
 
 	return ret;
