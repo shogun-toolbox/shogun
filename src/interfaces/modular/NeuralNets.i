@@ -1,8 +1,11 @@
 %newobject apply(CFeatures* data);
 %newobject apply_multiclass(CFeatures* data);
 %newobject visible_state_features();
+%newobject sample_group(int32_t V, int32_t num_gibbs_steps, int32_t batch_size);
+%newobject sample_group_with_evidence(int32_t V, int32_t E, CDenseFeatures<float64_t>* evidence,int32_t num_gibbs_steps);
+
  
-/* Remove C Prefix */
+/* Remove C Prefix */ 
 %rename(NeuralNetwork) CNeuralNetwork;
 %rename(NeuralLayer) CNeuralLayer;
 %rename(NeuralInputLayer) CNeuralInputLayer;

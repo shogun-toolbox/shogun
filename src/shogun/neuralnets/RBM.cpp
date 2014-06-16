@@ -52,7 +52,6 @@ CRBM::CRBM(int32_t num_hidden)
 	m_num_hidden = num_hidden;
 }
 
-
 CRBM::CRBM(int32_t num_hidden, int32_t num_visible, 
 	ERBMVisibleUnitType visible_unit_type) : CSGObject()
 {
@@ -106,10 +105,14 @@ void CRBM::set_batch_size(int32_t batch_size)
 	reset_chain();
 }
 
-void CRBM::train(CFeatures* features)
+void CRBM::train(CDenseFeatures<float64_t>* features)
 {
-	SGMatrix<float64_t> inputs = 
-		((CDenseFeatures<float64_t>*)features)->get_feature_matrix();
+	REQUIRE(features != NULL, "Invalid (NULL) feature pointer\n");
+	REQUIRE(features->get_num_features()==m_num_visible, 
+		"Number of features (%i) must match the RBM's number of visible units "
+		"(%i)\n", features->get_num_features(), m_num_visible);
+	
+	SGMatrix<float64_t> inputs = features->get_feature_matrix();
 		
 	int32_t training_set_size = inputs.num_cols;
 	if (gd_mini_batch_size==0) gd_mini_batch_size = training_set_size;
@@ -177,7 +180,7 @@ void CRBM::sample(int32_t num_gibbs_steps,
 	int32_t batch_size)
 {
 	set_batch_size(batch_size);
-	
+
 	for (int32_t i=0; i<num_gibbs_steps; i++)
 	{
 		mean_hidden(visible_state, hidden_state);
@@ -186,6 +189,78 @@ void CRBM::sample(int32_t num_gibbs_steps,
 		if (i<num_gibbs_steps-1) 
 			sample_visible(visible_state, visible_state);
 	}
+}
+
+CDenseFeatures< float64_t >* CRBM::sample_group(int32_t V, 
+	int32_t num_gibbs_steps, int32_t batch_size)
+{
+	REQUIRE(V<m_num_visible_groups, 
+		"Visible group index (%i) out of bounds (%i)\n", V, m_num_visible);
+	
+	sample(num_gibbs_steps, batch_size);
+	
+	SGMatrix<float64_t> result(m_visible_group_sizes->element(V), m_batch_size);
+	
+	int32_t offset = m_visible_state_offsets->element(V);
+	for (int32_t i=0; i<m_visible_group_sizes->element(V); i++)
+		for (int32_t j=0; j<m_batch_size; j++)
+			result(i,j) = visible_state(i+offset,j);
+		
+	return new CDenseFeatures<float64_t>(result);
+}
+
+void CRBM::sample_with_evidence(
+	int32_t E, CDenseFeatures< float64_t >* evidence, int32_t num_gibbs_steps)
+{
+	REQUIRE(E<m_num_visible_groups, 
+		"Visible group index (%i) out of bounds (%i)\n", E, m_num_visible);
+	
+	set_batch_size(evidence->get_num_vectors());
+	
+	SGMatrix<float64_t> evidence_matrix = evidence->get_feature_matrix();
+	
+	int32_t offset = m_visible_state_offsets->element(E);
+	
+	for (int32_t i=0; i<m_visible_group_sizes->element(E); i++)
+		for (int32_t j=0; j<m_batch_size; j++)
+			visible_state(i+offset,j) = evidence_matrix(i,j);
+	
+	for (int32_t n=0; n<num_gibbs_steps; n++)
+	{
+		mean_hidden(visible_state, hidden_state);
+		sample_hidden(hidden_state, hidden_state);
+		mean_visible(hidden_state, visible_state);
+		if (n<num_gibbs_steps-1)
+		{
+			for (int32_t k=0; k<m_num_visible_groups; k++)
+				if (k!=E)
+					sample_visible(k, visible_state, visible_state);
+		}
+		
+		for (int32_t i=0; i<m_visible_group_sizes->element(E); i++)
+			for (int32_t j=0; j<m_batch_size; j++)
+				visible_state(i+offset,j) = evidence_matrix(i,j);
+	}
+}
+
+CDenseFeatures< float64_t >* CRBM::sample_group_with_evidence(int32_t V, 
+	int32_t E, CDenseFeatures< float64_t >* evidence, int32_t num_gibbs_steps)
+{
+	REQUIRE(V<m_num_visible_groups, 
+		"Visible group index (%i) out of bounds (%i)\n", V, m_num_visible);
+	REQUIRE(E<m_num_visible_groups, 
+		"Visible group index (%i) out of bounds (%i)\n", E, m_num_visible);
+	
+	sample_with_evidence(E, evidence, num_gibbs_steps);
+	
+	SGMatrix<float64_t> result(m_visible_group_sizes->element(V), m_batch_size);
+	
+	int32_t offset = m_visible_state_offsets->element(V);
+	for (int32_t i=0; i<m_visible_group_sizes->element(V); i++)
+		for (int32_t j=0; j<m_batch_size; j++)
+			result(i,j) = visible_state(i+offset,j);
+	
+	return new CDenseFeatures<float64_t>(result);
 }
 
 void CRBM::reset_chain()
@@ -294,7 +369,8 @@ void CRBM::contrastive_divergence(SGMatrix< float64_t > visible_batch,
 			mean_hidden(visible_state, hidden_state);
 		sample_hidden(hidden_state, hidden_state);
 		mean_visible(hidden_state, visible_state);
-		sample_visible(visible_state, visible_state);
+		if (cd_sample_visible) 
+			sample_visible(visible_state, visible_state);
 	}
 	
 	// negative phase
@@ -346,8 +422,8 @@ float64_t CRBM::pseudo_likelihood(SGMatrix< float64_t > visible,
 	SGMatrix< float64_t > buffer)
 {
 	for (int32_t k=0; k<m_num_visible_groups; k++)
-		if (m_visible_group_types->element(k)==RBMVUT_GAUSSIAN)
-			SG_ERROR("Pseudo-likelihood is not supported for gaussian units\n");
+		if (m_visible_group_types->element(k)!=RBMVUT_BINARY)
+			SG_ERROR("Pseudo-likelihood is only supported for binary visible units\n");
 	
 	set_batch_size(visible.num_cols);
 	
@@ -413,6 +489,31 @@ void CRBM::mean_visible(SGMatrix< float64_t > hidden, SGMatrix< float64_t > resu
 				for (int32_t j=0; j<m_batch_size; j++)
 					result(i+offset,j) = 1.0/(1.0+CMath::exp(-1.0*result(i+offset,j)));
 		}
+		if (m_visible_group_types->element(k)==RBMVUT_SOFTMAX)
+		{
+			// to avoid exponentiating large numbers, the maximum activation is 
+			// subtracted from all the activations and the computations are done 
+			// in thelog domain
+			
+			float64_t max = result(offset,0);
+			for (int32_t i=0; i<m_visible_group_sizes->element(k); i++)
+				for (int32_t j=0; j<m_batch_size; j++)
+					if (result(i+offset,j) > max)
+						max = result(i+offset,j);
+			
+			for (int32_t j=0; j<m_batch_size; j++)
+			{
+				float64_t sum = 0;
+				for (int32_t i=0; i<m_visible_group_sizes->element(k); i++)
+					sum += CMath::exp(result(i+offset,j)-max);
+				
+				float64_t normalizer = CMath::log(sum);
+				
+				for (int32_t i=0; i<m_visible_group_sizes->element(k); i++)
+					result(i+offset,j) =
+						CMath::exp(result(i+offset,j)-max-normalizer);
+			}
+		}
 	}
 }
 
@@ -427,16 +528,45 @@ void CRBM::sample_visible(SGMatrix< float64_t > mean, SGMatrix< float64_t > resu
 {
 	for (int32_t k=0; k<m_num_visible_groups; k++)
 	{
-		int32_t offset = m_visible_state_offsets->element(k);
+		sample_visible(k, mean, result);
+	}
+}
+
+void CRBM::sample_visible(int32_t index, 
+	SGMatrix< float64_t > mean, SGMatrix< float64_t > result)
+{
+	int32_t offset = m_visible_state_offsets->element(index);
 		
-		if (m_visible_group_types->element(k)==RBMVUT_BINARY)
+	if (m_visible_group_types->element(index)==RBMVUT_BINARY)
+	{
+		for (int32_t i=0; i<m_visible_group_sizes->element(index); i++)
+			for (int32_t j=0; j<m_batch_size; j++)
+				result(i+offset,j) = CMath::random(0.0,1.0) < mean(i+offset,j);
+	}
+	
+	if (m_visible_group_types->element(index)==RBMVUT_SOFTMAX)
+	{
+		for (int32_t i=0; i<m_visible_group_sizes->element(index); i++)
+			for (int32_t j=0; j<m_batch_size; j++)
+				result(i+offset,j) = 0;
+		
+		for (int32_t j=0; j<m_batch_size; j++)
 		{
-			for (int32_t i=0; i<m_visible_group_sizes->element(k); i++)
-				for (int32_t j=0; j<m_batch_size; j++)
-					result(i+offset,j) = CMath::random(0.0,1.0) < mean(i+offset,j);
+			int32_t r = CMath::random(0.0,1.0);
+			float64_t sum = 0;
+			for (int32_t i=0; i<m_visible_group_sizes->element(index); i++)
+			{
+				sum += mean(i+offset,j);
+				if (r<=sum)
+				{
+					result(i+offset,j) = 1;
+					break;
+				}
+			}
 		}
 	}
 }
+
 
 SGMatrix< float64_t > CRBM::get_weights(SGVector< float64_t > p)
 {
@@ -470,6 +600,7 @@ void CRBM::init()
 {
 	cd_num_steps = 1;
 	cd_persistent = true;
+	cd_sample_visible = false;
 	l2_coefficient = 0.0;
 	l1_coefficient = 0.0;
 	monitoring_method = RBMMM_RECONSTRUCTION_ERROR;
@@ -492,6 +623,8 @@ void CRBM::init()
 	
 	SG_ADD(&cd_num_steps, "cd_num_steps", "Number of CD Steps", MS_NOT_AVAILABLE);
 	SG_ADD(&cd_persistent, "cd_persistent", "Whether to use PCD", MS_NOT_AVAILABLE);
+	SG_ADD(&cd_sample_visible, "sample_visible", 
+		"Whether to sample the visible units during (P)CD", MS_NOT_AVAILABLE);
 	SG_ADD(&l2_coefficient, "l2_coefficient",
 	       "L2 regularization coeff", MS_NOT_AVAILABLE);
 	SG_ADD(&l1_coefficient, "l1_coefficient",
