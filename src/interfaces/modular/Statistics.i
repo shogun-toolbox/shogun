@@ -14,6 +14,7 @@
 %rename(KernelTwoSampleTest) CKernelTwoSampleTest;
 %rename(StreamingMMD) CStreamingMMD;
 %rename(LinearTimeMMD) CLinearTimeMMD;
+%rename(BTestMMD) CBTestMMD;
 %rename(QuadraticTimeMMD) CQuadraticTimeMMD;
 %rename(KernelIndependenceTest) CKernelIndependenceTest;
 %rename(HSIC) CHSIC;
@@ -34,6 +35,7 @@
 %include <shogun/statistics/KernelTwoSampleTest.h>
 %include <shogun/statistics/StreamingMMD.h>
 %include <shogun/statistics/LinearTimeMMD.h>
+%include <shogun/statistics/BTestMMD.h>
 %include <shogun/statistics/QuadraticTimeMMD.h>
 %include <shogun/statistics/KernelIndependenceTest.h>
 %include <shogun/statistics/HSIC.h>
