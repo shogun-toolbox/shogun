@@ -84,6 +84,8 @@ void CStreamingMMD::init()
 			"at once", MS_NOT_AVAILABLE);
 	SG_ADD(&m_blocksize_q, "blocksize_q", "Number of samples from q processed "
 			"at once", MS_NOT_AVAILABLE);
+	SG_ADD(&m_num_blocks, "num_blocks", "Number of blocks streamed in one burst",
+				MS_NOT_AVAILABLE);
 	SG_ADD(&m_n, "n", "Number of samples from second distribution",
 				MS_NOT_AVAILABLE);
 	SG_ADD(&m_simulate_h0, "simulate_h0", "Whether p and q are mixed",
@@ -98,151 +100,192 @@ void CStreamingMMD::init()
 	m_blocksize=0;
 	m_blocksize_p=0;
 	m_blocksize_q=0;
+	m_num_blocks=1000;
 	m_n=0;
 	m_simulate_h0=false;
 	m_statistic_type=S_UNBIASED;
 	m_null_var_est_method=WITHIN_BLOCK_PERMUTATION;
 }
 
-float64_t CStreamingMMD::compute_blockwise_statistic(CKernel* kernel,
-		CFeatures* p_and_q_current_block)
+SGVector<float64_t> CStreamingMMD::compute_blockwise_statistic(CKernel* kernel,
+		CFeatures* p_and_q_current_burst)
 {
 	SG_DEBUG("Entering!\n")
 
-	/* init kernel with features. NULL check is handled in compute_statistic */
-	kernel->init(p_and_q_current_block, p_and_q_current_block);
+	/* results, one entry per block */
+	SGVector<float64_t> mmds(m_num_blocks);
 
 	index_t Bx=m_blocksize_p;
 	index_t By=m_blocksize_q;
 
-	/* compute kernel values and their sum on the go */
-	float64_t xx_sum=kernel->sum_symmetric_block(0, Bx);
-	float64_t yy_sum=kernel->sum_symmetric_block(Bx, By);
+	/* init kernel with features for all blocks in the current burst.
+	   NULL check is handled in compute_statistic */
+	kernel->init(p_and_q_current_burst, p_and_q_current_burst);
 
-	float64_t xy_sum=0.0;
+	index_t offset=Bx*m_num_blocks;
 
-	/* remove diagonal entries if statistic type is incomplete */
-	if (m_statistic_type==S_UNBIASED)
-		xy_sum=kernel->sum_block(0, Bx, Bx, By);
-	else if (m_statistic_type==S_INCOMPLETE)
-		xy_sum=kernel->sum_block(0, Bx, Bx, By, true);
-	else
-		SG_ERROR("Unknown statistic type!\n");
+	/* compute blockwise estimate for each m_num_blocks */
+	for (index_t i=0; i<m_num_blocks; ++i)
+	{
+		SG_DEBUG("Processing block %d of %d of the current burst!\n",
+				i+1, m_num_blocks);
+
+		/* compute kernel values for the next block and their sum on the go */
+		float64_t xx_sum=kernel->sum_symmetric_block(Bx*i, Bx);
+		float64_t yy_sum=kernel->sum_symmetric_block(offset+By*i, By);
+
+		float64_t xy_sum=0.0;
+
+		/* remove diagonal entries if statistic type is incomplete */
+		if (m_statistic_type==S_UNBIASED)
+			xy_sum=kernel->sum_block(offset+By*i, Bx*i, By, Bx);
+		else if (m_statistic_type==S_INCOMPLETE)
+			xy_sum=kernel->sum_block(offset+By*i, Bx*i, By, Bx, true);
+		else
+			SG_ERROR("Unknown statistic type %d!\n", m_statistic_type);
+
+		/* split computations into three terms from JLMR paper (see documentation )*/
+
+		/* first term */
+		float64_t first=xx_sum/Bx/(Bx-1);
+
+		/* second term */
+		float64_t second=yy_sum/By/(By-1);
+
+		/* third term */
+		float64_t third=2.0*xy_sum;
+		if (m_statistic_type==S_UNBIASED)
+			third/=Bx*By;
+		else
+			third/=Bx*(Bx-1);
+
+		/* finally computing the statistic */
+		mmds[i]=first+second-third;
+
+		SG_INFO("Computed statistic for current block!\n");
+		SG_DEBUG("statistic(%f)=first(%f)+second(%f)-third(%f)\n", mmds[i],
+				first, second, third);
+	}
 
 	/* release feature objects */
 	kernel->remove_lhs_and_rhs();
 
-	/* split computations into three terms from JLMR paper (see documentation )*/
-
-	/* first term */
-	float64_t first=xx_sum/Bx/(Bx-1);
-
-	/* second term */
-	float64_t second=yy_sum/By/(By-1);
-
-	/* third term */
-	float64_t third=2.0*xy_sum;
-	if (m_statistic_type==S_UNBIASED)
-		third/=Bx*By;
-	else
-		third/=Bx*(Bx-1);
-
-	/* finally computing the statistic */
-	float64_t statistic=first+second-third;
-
-	SG_INFO("Computed statistic for current block!\n");
-	SG_DEBUG("statistic(%f)=first(%f)+second(%f)-third(%f)\n", statistic,
-			first, second, third);
-
 	SG_DEBUG("Leaving!\n")
 
-	return statistic;
+	return mmds;
 }
 
 // TODO replace this with linalg methods when its merged with develop
 #ifdef HAVE_EIGEN3
-SGVector<float64_t> CStreamingMMD::compute_blockwise_statistic_variance(CKernel*
-		kernel, CFeatures* p_and_q_current_block)
+SGMatrix<float64_t> CStreamingMMD::compute_blockwise_statistic_variance(CKernel*
+		kernel, CFeatures* p_and_q_current_burst)
 {
 	SG_DEBUG("Entering!\n")
 
-	/* init kernel with features. NULL check is handled in compute_statistic */
-	kernel->init(p_and_q_current_block, p_and_q_current_block);
-
-	/* get the kernel matrix, required for computing matrix-matrix product */
-	SGMatrix<float64_t> km=kernel->get_kernel_matrix();
-
-	/* release feature objects */
-	kernel->remove_lhs_and_rhs();
+	/* results, one row per block. first entry statistic estimate, 2nd entry
+	   variance estimate */
+	SGMatrix<float64_t> results(m_num_blocks, 2);
 
 	index_t B=m_blocksize;
 	index_t Bx=m_blocksize_p;
 	index_t By=m_blocksize_q;
 
-	Map<MatrixXd> k_m(km.matrix, km.num_rows, km.num_cols);
-	k_m.diagonal().setZero();
+	/* since the feature provided is merged samples of m_num_blocks blocks
+	   from both distributions, we use subset to process this per block to
+	   compute mmd estimate */
+	SGVector<index_t> inds(m_blocksize);
+	for (index_t i=0; i<Bx; ++i)
+		inds[i]=i;
+	for (index_t i=0; i<By; ++i)
+		inds[i+Bx]=i+Bx*m_num_blocks;
 
-	/* compute kernel values and their sum on the go */
-	float64_t xx_sum=k_m.block(0, 0, Bx, Bx).sum();
-	float64_t yy_sum=k_m.block(Bx, Bx, By, By).sum();
+	/* compute blockwise estimate for each m_num_blocks */
+	for (index_t i=0; i<m_num_blocks; ++i)
+	{
+		SG_DEBUG("Processing block %d of %d of the current burst! Samples being"
+				" processed are\n", i+1, m_num_blocks);
+		if (io->get_loglevel()==MSG_DEBUG || io->get_loglevel()==MSG_GCDEBUG)
+			inds.display_vector("feat indices");
 
-	float64_t xy_sum=k_m.block(0, Bx, Bx, By).sum();
+		p_and_q_current_burst->add_subset(inds);
 
-	/* remove diagonal entries if statistic type is incomplete */
-	if (m_statistic_type==S_INCOMPLETE)
-		xy_sum-=k_m.block(0, Bx, Bx, By).diagonal().sum();
+		/* init kernel with features. NULL check is handled in compute_statistic */
+		kernel->init(p_and_q_current_burst, p_and_q_current_burst);
 
-	/* computing statistic estimate */
+		/* get the kernel matrix, required for computing matrix-matrix product */
+		SGMatrix<float64_t> km=kernel->get_kernel_matrix();
 
-	/* split computations into three terms from JLMR paper (see documentation )*/
+		/* release feature objects */
+		kernel->remove_lhs_and_rhs();
 
-	/* first term */
-	float64_t first=xx_sum/Bx/(Bx-1);
+		Map<MatrixXd> k_m(km.matrix, km.num_rows, km.num_cols);
+		k_m.diagonal().setZero();
 
-	/* second term */
-	float64_t second=yy_sum/By/(By-1);
+		/* compute kernel values and their sum on the go */
+		float64_t xx_sum=k_m.block(0, 0, Bx, Bx).sum();
+		float64_t yy_sum=k_m.block(Bx, Bx, By, By).sum();
 
-	/* third term */
-	float64_t third=2.0*xy_sum;
-	if (m_statistic_type==S_UNBIASED)
-		third/=Bx*By;
-	else
-		third/=Bx*(Bx-1);
+		float64_t xy_sum=k_m.block(0, Bx, Bx, By).sum();
 
-	/* finally computing the statistic */
-	float64_t statistic=first+second-third;
+		/* remove diagonal entries if statistic type is incomplete */
+		if (m_statistic_type==S_INCOMPLETE)
+			xy_sum-=k_m.block(0, Bx, Bx, By).diagonal().sum();
 
-	SG_INFO("Computed statistic for current block!\n");
-	SG_DEBUG("statistic(%f)=first(%f)+second(%f)-third(%f)\n", statistic,
+		/* computing statistic estimate */
+
+		/* split computations into three terms from JLMR paper (see documentation )*/
+
+		/* first term */
+		float64_t first=xx_sum/Bx/(Bx-1);
+
+		/* second term */
+		float64_t second=yy_sum/By/(By-1);
+
+		/* third term */
+		float64_t third=2.0*xy_sum;
+		if (m_statistic_type==S_UNBIASED)
+			third/=Bx*By;
+		else
+			third/=Bx*(Bx-1);
+
+		/* finally computing the statistic */
+		results(i,0)=first+second-third;
+
+		SG_INFO("Computed statistic for current block!\n");
+		SG_DEBUG("statistic(%f)=first(%f)+second(%f)-third(%f)\n", results(i,0),
 			first, second, third);
 
-	/* computing variance estimate */
+		/* computing variance estimate */
 
-	/* split computations into three terms (see documentation )*/
+		/* split computations into three terms (see documentation )*/
 
-	/* first term */
-	first=k_m.array().square().sum();
+		/* first term */
+		first=k_m.array().square().sum();
 
-	/* second term */
-	second=CMath::sq(k_m.sum())/(B-1)/(B-2);
+		/* second term */
+		second=CMath::sq(k_m.sum())/(B-1)/(B-2);
 
-	/* third term */
-	third=2*(k_m*k_m).sum()/(B-2);
+		/* third term */
+		third=2*(k_m*k_m).sum()/(B-2);
 
-	/* finally computing the variance */
-	float64_t variance=2.0/B/(B-3)*(first+second-third);
+		/* finally computing the variance */
+		results(i,1)=2.0/B/(B-3)*(first+second-third);
 
-	SG_INFO("Computed variance for current block!\n");
-	SG_DEBUG("first=%f, second=%f, third=%f, variance=%f\n", first, second,
-			third, variance);
+		SG_INFO("Computed variance for current block!\n");
+		SG_DEBUG("first=%f, second=%f, third=%f, variance=%f\n", first, second,
+			third, results(i,1));
 
-	SGVector<float64_t> result(2);
-	result[0]=statistic;
-	result[1]=variance;
+		/* prepare for next block */
+		p_and_q_current_burst->remove_subset();
+		for (index_t j=0; j<Bx; ++j)
+			inds[j]+=Bx;
+		for (index_t j=0; j<By; ++j)
+			inds[j+Bx]+=By;
+	}
 
 	SG_DEBUG("Leaving!\n")
 
-	return result;
+	return results;
 }
 #endif // HAVE_EIGEN3
 
@@ -299,13 +342,22 @@ void CStreamingMMD::compute_statistic_and_variance(SGVector<float64_t>&
 	term_counters.set_const(1);
 
 	index_t total_num_examples=m_m+m_n;
+	SG_DEBUG("Total %d examples are to be processed!\n", total_num_examples);
 
 	/* term counter to compute online mean and variance */
 	index_t num_examples_processed=0;
 	while (num_examples_processed<total_num_examples)
 	{
+		/* number of blocks to stream at in this burst */
+		index_t num_blocks_this_run=CMath::min(m_num_blocks,(total_num_examples
+				-num_examples_processed)/m_blocksize);
+
+		/* temporarily replace num_blocks */
+		index_t orig_num_blocks=m_num_blocks;
+		m_num_blocks=num_blocks_this_run;
+
 		SG_DEBUG("Processing %d more examples. %d so far processed!\n",
-				m_blocksize, num_examples_processed);
+				m_blocksize*m_num_blocks, num_examples_processed);
 
 		/* stream blocks from each distribution. data is merged samples */
 		CFeatures* data=stream_data_blocks();
@@ -326,7 +378,8 @@ void CStreamingMMD::compute_statistic_and_variance(SGVector<float64_t>&
 			if (m_null_var_est_method==WITHIN_BLOCK_PERMUTATION)
 			{
 				/* compute blockwise statistic */
-				float64_t current=compute_blockwise_statistic(kernel, data);
+				SGVector<float64_t> current
+					=compute_blockwise_statistic(kernel, data);
 
 				SG_DEBUG("Permuting the samples for estimating the variance "
 						"under null using within-block permutation method!\n")
@@ -338,46 +391,59 @@ void CStreamingMMD::compute_statistic_and_variance(SGVector<float64_t>&
 				inds.range_fill();
 				inds.permute();
 				data->add_subset(inds);
-				float64_t shuffled=compute_blockwise_statistic(kernel, data);
+				SGVector<float64_t> shuffled
+					=compute_blockwise_statistic(kernel, data);
 				data->remove_subset();
 
 				/* single variances for all kernels. Update mean and variance
 				 * using Knuth's online variance algorithm.
 				 * C.f. for example Wikipedia */
 
-				/* compute online mean of blockwise statistic estimates */
-				float64_t delta=current-statistic[i];
-				statistic[i]+=delta/term_counters[i];
-				SG_DEBUG("Burst: current=%f, delta=%f, statistic=%f\n", current,
-						delta, statistic[i]);
+				for (index_t j=0; j<m_num_blocks; ++j)
+				{
+					/* compute online mean of blockwise statistic estimates */
+					float64_t delta=current[j]-statistic[i];
+					statistic[i]+=delta/term_counters[i];
+					SG_DEBUG("Burst: current=%f, delta=%f, statistic=%f\n", current[j],
+							delta, statistic[i]);
 
-				/* D. Knuth's online variance algorithm for current kernel */
-				delta=shuffled-temp[i];
-				temp[i]+=delta/term_counters[i];
-				variance[i]+=delta*(shuffled-temp[i]);
-				SG_DEBUG("Burst: shuffled=%f, delta=%f, mean=%f, variance %f\n",
-						shuffled, delta, temp[i], variance[i]);
+					/* D. Knuth's online variance algorithm for current kernel */
+					delta=shuffled[j]-temp[i];
+					temp[i]+=delta/term_counters[i];
+					variance[i]+=delta*(shuffled[j]-temp[i]);
+					SG_DEBUG("Burst: shuffled=%f, delta=%f, mean=%f, variance %f\n",
+							shuffled[j], delta, temp[i], variance[i]);
+
+					/* remember to increament term counters per kernel */
+					term_counters[i]++;
+				}
 			}
 			else if(m_null_var_est_method==WITHIN_BLOCK_DIRECT)
 			{
 				/* compute blockwise statistic and variance */
-				SGVector<float64_t> current=compute_blockwise_statistic_variance(
+				SGMatrix<float64_t> current=compute_blockwise_statistic_variance(
 						kernel, data);
 
 				SG_DEBUG("Computed statistic and variance under null using "
 						"within-block direct estimation method!\n")
 
-				/* compute online mean of blockwise statistic estimates */
-				float64_t delta=current[0]-statistic[i];
-				statistic[i]+=delta/term_counters[i];
-				SG_DEBUG("Burst: current=%f, delta=%f, statistic=%f\n", current[0],
-						delta, statistic[i]);
+				for (index_t j=0; j<m_num_blocks; ++j)
+				{
+					/* compute online mean of blockwise statistic estimates */
+					float64_t delta=current(j,0)-statistic[i];
+					statistic[i]+=delta/term_counters[i];
+					SG_DEBUG("Burst: current=%f, delta=%f, statistic=%f\n", current(j,0),
+							delta, statistic[i]);
 
-				/* compute online mean of blockwise variance estimates */
-				delta=current[1]-variance[i];
-				variance[i]+=delta/term_counters[i];
-				SG_DEBUG("Burst: current=%f, delta=%f, variance=%f\n", current[1],
-						delta, variance[i]);
+					/* compute online mean of blockwise variance estimates */
+					delta=current(j,1)-variance[i];
+					variance[i]+=delta/term_counters[i];
+					SG_DEBUG("Burst: current=%f, delta=%f, variance=%f\n", current(j,1),
+							delta, variance[i]);
+
+					/* remember to increament term counters per kernel */
+					term_counters[i]++;
+				}
 			}
 			else
 				SG_ERROR("Unknown variance estimation method specified\n");
@@ -385,16 +451,16 @@ void CStreamingMMD::compute_statistic_and_variance(SGVector<float64_t>&
 			/* reduces refcounting that was increased by get_kernel call */
 			if (multiple_kernels)
 				SG_UNREF(kernel);
-
-			/* remember to increament term counters per kernel */
-			term_counters[i]++;
 		}
 
 		/* clean up streamed data, this frees the feature objects  */
 		SG_UNREF(data);
 
 		/* add number of processed examples for this run */
-		num_examples_processed+=m_blocksize;
+		num_examples_processed+=m_blocksize*m_num_blocks;
+
+		/* restore original num_blocks */
+		m_num_blocks=orig_num_blocks;
 	}
 
 	SG_DEBUG("Done computing statistic, processed %d examples.\n",
@@ -501,16 +567,30 @@ void CStreamingMMD::compute_statistic_and_Q(SGVector<float64_t>& statistic,
 	term_counters_Q.set_const(1);
 
 	index_t total_num_examples=m_m+m_n;
+	SG_DEBUG("Total %d examples are to be processed!\n", total_num_examples);
+
 	index_t num_examples_processed=0;
 
 	while (num_examples_processed<total_num_examples)
 	{
-		SG_DEBUG("Processing %d more examples. %d so far processed. Blocksize "
-				"is %d\n", 2*m_blocksize, num_examples_processed, m_blocksize);
+		/* number of blocks to stream at in this burst */
+		index_t num_blocks_this_run=CMath::min(m_num_blocks,(total_num_examples
+				-num_examples_processed)/2/m_blocksize);
 
-		/* stream 2 data blocks from each distribution */
+		/* temporarily replace num_blocks */
+		index_t orig_num_blocks=m_num_blocks;
+		m_num_blocks=num_blocks_this_run;
+
+		SG_DEBUG("Processing %d more examples. %d so far processed!\n",
+				m_blocksize*m_num_blocks, num_examples_processed);
+
+		/* stream 2*m_num_blocks data blocks from each distribution */
 		CFeatures* data_a=stream_data_blocks();
 		CFeatures* data_b=stream_data_blocks();
+
+		/* required for index permutation for computing covariance */
+		SGVector<index_t> inds_a(data_a->get_num_vectors());
+		SGVector<index_t> inds_b(data_b->get_num_vectors());
 
 		/* now for each of these streamed data instances, iterate through all
 		 * kernels and update Q matrix while also computing MMD statistic */
@@ -519,11 +599,44 @@ void CStreamingMMD::compute_statistic_and_Q(SGVector<float64_t>& statistic,
 		CKernel* kernel_i=(CKernel*)list_i->get_first_element();
 		for (index_t i=0; i<num_kernels; ++i)
 		{
+			/* compute the statistic on both the a and b-parts */
+			SGVector<float64_t> h_i_a
+				=compute_blockwise_statistic(kernel_i, data_a);
+			SGVector<float64_t> h_i_b
+				=compute_blockwise_statistic(kernel_i, data_b);
+
+			/* update MMD statistic online computation for kernel i, using
+			 * blockwise estimates that were computed above */
+
+			for (index_t j=0; j<m_num_blocks; ++j)
+			{
+				/* update statistic for kernel i (outer loop) and update using
+			 	* all the h_i_a, h_i_b estimates */
+				statistic[i]+=(h_i_a[j]-statistic[i])/term_counters_statistic[i]++;
+
+				/* Make sure to use all data, i.e. part a and b */
+				statistic[i]+=(h_i_b[j]-statistic[i])/term_counters_statistic[i]++;
+			}
+
+			SG_DEBUG("Permuting the samples for estimating covariance "
+					"using within-block permutation method!\n")
+
+			/* randomly permute the samples using index permutation. This
+			 * is equivalent to splitting the data randomly in the same
+			 * proportions between p and q for current blocks */
+			inds_a.range_fill();
+			inds_a.permute();
+			data_a->add_subset(inds_a);
+
+			inds_b.range_fill();
+			inds_b.permute();
+			data_b->add_subset(inds_b);
+
 			/* first kernel, a-part */
-			float64_t h_i_a=compute_blockwise_statistic(kernel_i, data_a);
+			h_i_a=compute_blockwise_statistic(kernel_i, data_a);
 
 			/* first kernel, b-part */
-			float64_t h_i_b=compute_blockwise_statistic(kernel_i, data_b);
+			h_i_b=compute_blockwise_statistic(kernel_i, data_b);
 
 			/* iterate through j, but use symmetry in order to save half of the
 			 * computations */
@@ -531,17 +644,22 @@ void CStreamingMMD::compute_statistic_and_Q(SGVector<float64_t>& statistic,
 			for (index_t j=0; j<=i; ++j)
 			{
 				/* second kernel, a-part */
-				float64_t h_j_a=compute_blockwise_statistic(kernel_j, data_a);
+				SGVector<float64_t> h_j_a
+					=compute_blockwise_statistic(kernel_j, data_a);
 
 				/* second kernel, b-part */
-				float64_t h_j_b=compute_blockwise_statistic(kernel_j, data_b);
+				SGVector<float64_t> h_j_b
+					=compute_blockwise_statistic(kernel_j, data_b);
 
-				float64_t term=(h_i_a-h_i_b)*(h_j_a-h_j_b);
+				for (index_t it=0; it<m_num_blocks; ++it)
+				{
+					float64_t term=(h_i_a[it]-h_i_b[it])*(h_j_a[it]-h_j_b[it]);
 
-				/* update covariance element for the current burst. This is a
-				 * running average of the product of the h_delta terms of each
-				 * kernel */
-				Q(i, j)+=(term-Q(i, j))/term_counters_Q(i, j)++;
+					/* update covariance element for the current burst. This is a
+				 	* running average of the product of the h_delta terms of each
+				 	* kernel */
+					Q(i, j)+=(term-Q(i, j))/term_counters_Q(i, j)++;
+				}
 
 				/* use symmetry */
 				Q(j, i)=Q(i, j);
@@ -550,15 +668,9 @@ void CStreamingMMD::compute_statistic_and_Q(SGVector<float64_t>& statistic,
 				kernel_j=(CKernel*)list_j->get_next_element();
 			}
 
-			/* update MMD statistic online computation for kernel i, using
-			 * blockwise estimates that were computed above */
-
-			/* update statistic for kernel i (outer loop) and update using
-			 * all the h_i_a, h_i_b estimates */
-			statistic[i]+=(h_i_a-statistic[i])/term_counters_statistic[i]++;
-
-			/* Make sure to use all data, i.e. part a and b */
-			statistic[i]+=(h_i_b-statistic[i])/term_counters_statistic[i]++;
+			/* restore original order of samples for next iteration */
+			data_a->remove_subset();
+			data_b->remove_subset();
 
 			/* next kernel i */
 			kernel_i=(CKernel*)list_i->get_next_element();
@@ -569,17 +681,26 @@ void CStreamingMMD::compute_statistic_and_Q(SGVector<float64_t>& statistic,
 		SG_UNREF(data_b);
 
 		/* add number of processed examples for this run */
-		num_examples_processed+=2*m_blocksize;
+		num_examples_processed+=2*m_blocksize*m_num_blocks;
+
+		/* restore original num_blocks */
+		m_num_blocks=orig_num_blocks;
 	}
 
 	/* scale the statistic for computing p-value */
 	statistic.scale(compute_stat_est_multiplier());
 
+	if (io->get_loglevel()==MSG_DEBUG || io->get_loglevel()==MSG_GCDEBUG)
+	{
+		statistic.display_vector("statistics");
+		Q.display_matrix("Q");
+	}
+
 	/* clean up */
 	SG_UNREF(list_i);
 	SG_UNREF(list_j);
 
-	SG_DEBUG("Done compouting statistic, processed 4*%d examples.\n",
+	SG_DEBUG("Done compouting statistic, processed %d examples.\n",
 			num_examples_processed);
 
 	SG_DEBUG("Leaving!\n")
@@ -628,7 +749,8 @@ float64_t CStreamingMMD::compute_p_value(float64_t statistic)
 	case MMD1_GAUSSIAN:
 		{
 			/* compute variance and use to estimate Gaussian distribution */
-			float64_t std_dev=CMath::sqrt(compute_variance_estimate());
+			float64_t m=compute_gaussian_multiplier();
+			float64_t std_dev=CMath::sqrt(m*compute_variance_estimate());
 			SG_DEBUG("std_dev = %f\n", std_dev);
 			result=1.0-CStatistics::normal_cdf(statistic, std_dev);
 		}
@@ -652,7 +774,8 @@ float64_t CStreamingMMD::compute_threshold(float64_t alpha)
 	case MMD1_GAUSSIAN:
 		{
 			/* compute variance and use to estimate Gaussian distribution */
-			float64_t std_dev=CMath::sqrt(compute_variance_estimate());
+			float64_t m=compute_gaussian_multiplier();
+			float64_t std_dev=CMath::sqrt(m*compute_variance_estimate());
 			result=1.0-CStatistics::inverse_normal_cdf(1-alpha, 0, std_dev);
 		}
 		break;
@@ -681,8 +804,9 @@ float64_t CStreamingMMD::perform_test()
 			compute_statistic_and_variance(statistic, variance, false);
 
 			/* estimate Gaussian distribution */
+			float64_t m=compute_gaussian_multiplier();
 			result=1.0-CStatistics::normal_cdf(statistic[0],
-					CMath::sqrt(variance[0]));
+					CMath::sqrt(m*variance[0]));
 		}
 		break;
 
@@ -731,12 +855,16 @@ CFeatures* CStreamingMMD::stream_data_blocks()
 
 	/* sanity checks are not required since this method is not availble in the
 	 * public API and will only be called from within the class */
-	SG_DEBUG("Streaming %d samples from p and %d samples from q!\n",
-			m_blocksize_p, m_blocksize_q);
+	SG_DEBUG("Streaming %dx%d samples from p and %dx%d samples from q!\n",
+			m_num_blocks, m_blocksize_p, m_num_blocks, m_blocksize_q);
 
 	/* stream data from p and q */
-	CFeatures* first=m_streaming_p->get_streamed_features(m_blocksize_p);
-	CFeatures* second=m_streaming_q->get_streamed_features(m_blocksize_q);
+	CFeatures* first=m_streaming_p->
+		get_streamed_features(m_blocksize_p*m_num_blocks);
+
+	CFeatures* second=m_streaming_q->
+		get_streamed_features(m_blocksize_q*m_num_blocks);
+
 	CFeatures* merged=first->create_merged_copy(second);
 
 	/* now we can get rid of unnecessary feature objects */
@@ -805,10 +933,14 @@ CStreamingFeatures* CStreamingMMD::get_streaming_q()
 
 void CStreamingMMD::set_blocksize(index_t blocksize)
 {
+	index_t n=m_m+m_n;
+
+	REQUIRE(blocksize>0 && blocksize<=n, "Blocksize (%d provided) must be "
+			"positive and smaller than total number of samples (%d)!\n",
+			blocksize, n);
+
 	m_blocksize=blocksize;
 	SG_DEBUG("Blocksize set as %d!\n", m_blocksize);
-
-	index_t n=m_m+m_n;
 
 	if(n%m_blocksize!=0)
 	{
@@ -823,11 +955,40 @@ void CStreamingMMD::set_blocksize(index_t blocksize)
 
 	m_blocksize_p=m_blocksize*m_m/n;
 	m_blocksize_q=m_blocksize*m_n/n;
+
+	// ensure that m_num_blocks is set to a valid number of blocks
+	set_num_blocks(m_num_blocks);
+}
+
+void CStreamingMMD::set_num_blocks(index_t num_blocks)
+{
+	REQUIRE(m_blocksize>0, "Blocksize is not set!\n");
+	REQUIRE(num_blocks>0, "Number of blocks is not positive (%d)!\n",
+			num_blocks);
+
+	index_t max_num_blocks=m_m/m_blocksize_p;
+
+	if (num_blocks>max_num_blocks)
+	{
+		SG_DEBUG("Provided number of blocks (%d) exceeds the maximum number of "
+				"blocks (%d)!\n", num_blocks, max_num_blocks);
+		m_num_blocks=max_num_blocks;
+	}
+	else
+		m_num_blocks=num_blocks;
+
+	SG_DEBUG("Number of blocks to be streamed in one burst is set as %d!\n",
+			m_num_blocks);
 }
 
 index_t CStreamingMMD::get_blocksize()
 {
 	return m_blocksize;
+}
+
+index_t CStreamingMMD::get_num_blocks()
+{
+	return m_num_blocks;
 }
 
 void CStreamingMMD::set_statistic_type(EStreamingStatisticType statistic_type)
@@ -852,7 +1013,7 @@ void CStreamingMMD::set_null_var_est_method(ENullVarianceEstimationMethod
 	if (m_null_var_est_method==WITHIN_BLOCK_DIRECT)
 	{
 #ifndef HAVE_EIGEN3
-		SG_ERROR("Only possible with Eigen3 installed!\n")
+		SG_WARNING("Only possible with Eigen3 installed!\n")
 #endif
 	}
 }
