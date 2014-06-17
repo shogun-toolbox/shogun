@@ -83,6 +83,16 @@ SGVector<float64_t> CMultilabelModel::get_joint_feature_vector(int32_t feat_idx,
 	return psi;
 }
 
+SGSparseVector< float64_t > CMultilabelModel::get_sparse_joint_feature_vector(
+		int32_t feat_idx,
+		CStructuredData* y)
+{
+	SG_ERROR("compute_sparse_joint_feature(int32_t, CStructuredData*) is not "
+			"implemented for %s!\n", get_name());
+
+	return SGSparseVector< float64_t >();
+}
+
 float64_t CMultilabelModel::delta_loss(CStructuredData * y1, CStructuredData * y2)
 {
 	CSparseMultilabel * y1_slabel = CSparseMultilabel::obtain_from_generic(y1);

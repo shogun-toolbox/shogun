@@ -278,6 +278,16 @@ SGVector< float64_t > CFactorGraphModel::get_joint_feature_vector(int32_t feat_i
 	return psi;
 }
 
+SGSparseVector< float64_t > CFactorGraphModel::get_sparse_joint_feature_vector(
+		int32_t feat_idx,
+		CStructuredData* y)
+{
+	SG_ERROR("compute_sparse_joint_feature(int32_t, CStructuredData*) is not "
+			"implemented for %s!\n", get_name());
+
+	return SGSparseVector< float64_t >();
+}
+
 // E(x_i, y; w) - E(x_i, y_i; w) >= L(y_i, y) - xi_i
 // xi_i >= max oracle
 // max oracle := argmax_y { L(y_i, y) - E(x_i, y; w) + E(x_i, y_i; w) }

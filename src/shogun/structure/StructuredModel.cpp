@@ -115,6 +115,27 @@ SGVector< float64_t > CStructuredModel::get_joint_feature_vector(
 	return SGVector< float64_t >();
 }
 
+SGSparseVector< float64_t > CStructuredModel::get_sparse_joint_feature_vector(
+		int32_t feat_idx,
+		int32_t lab_idx)
+{
+	CStructuredData* label = m_labels->get_label(lab_idx);
+	SGSparseVector< float64_t > ret = get_sparse_joint_feature_vector(feat_idx, label);
+	SG_UNREF(label);
+
+	return ret;
+}
+
+SGSparseVector< float64_t > CStructuredModel::get_sparse_joint_feature_vector(
+		int32_t feat_idx,
+		CStructuredData* y)
+{
+	SG_ERROR("compute_sparse_joint_feature(int32_t, CStructuredData*) is not "
+			"implemented for %s!\n", get_name());
+
+	return SGSparseVector< float64_t >();
+}
+
 float64_t CStructuredModel::delta_loss(int32_t ytrue_idx, CStructuredData* ypred)
 {
 	REQUIRE(ytrue_idx >= 0 || ytrue_idx < m_labels->get_num_labels(),

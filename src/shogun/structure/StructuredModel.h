@@ -19,6 +19,7 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/lib/SGVector.h>
+#include <shogun/lib/SGSparseVector.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGSparseVector.h>
 #include <shogun/lib/StructuredData.h>
@@ -189,6 +190,36 @@ class CStructuredModel : public CSGObject
 		 * @return the joint feature vector
 		 */
 		virtual SGVector< float64_t > get_joint_feature_vector(int32_t feat_idx, CStructuredData* y);
+
+		/**
+		 * gets joint feature vector
+		 *
+		 * \f[
+		 * \vec{\Psi}(\bf{x}_\text{feat\_idx}, \bf{y}_\text{lab\_idx})
+		 * \f]
+		 *
+		 * @param feat_idx index of the feature vector to use
+		 * @param lab_idx index of the structured label to use
+		 *
+		 * @return the joint feature vector
+		 */
+		SGSparseVector< float64_t > get_sparse_joint_feature_vector(int32_t feat_idx,
+				int32_t lab_idx);
+
+		/**
+		 * get joint feature vector
+		 *
+		 * \f[
+		 * \vec{\Psi}(\bf{x}_\text{feat\_idx}, \bf{y})
+		 * \f]
+		 *
+		 * @param feat_idx index of the feature vector to use
+		 * @param y structured label to use
+		 *
+		 * @return the joint feature vector
+		 */
+		virtual SGSparseVector< float64_t > get_sparse_joint_feature_vector(int32_t feat_idx,
+				CStructuredData* y);
 
 		/**
 		 * obtains the argmax of \f$ \Delta(y_{pred}, y_{truth}) +

@@ -63,6 +63,16 @@ SGVector< float64_t > CMulticlassModel::get_joint_feature_vector(int32_t feat_id
 	return psi;
 }
 
+SGSparseVector< float64_t > CMulticlassModel::get_sparse_joint_feature_vector(
+		int32_t feat_idx,
+		CStructuredData* y)
+{
+	SG_ERROR("compute_sparse_joint_feature(int32_t, CStructuredData*) is not "
+			"implemented for %s!\n", get_name());
+
+	return SGSparseVector< float64_t >();
+}
+
 CResultSet* CMulticlassModel::argmax(
 		SGVector< float64_t > w,
 		int32_t feat_idx,
