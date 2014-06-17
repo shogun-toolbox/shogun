@@ -192,15 +192,19 @@ CResultSet * CMultilabelModel::argmax(SGVector<float64_t> w, int32_t feat_idx,
 		if (score > 0)
 		{
 			y_pred_dense[c] = 1;
+			total_score += score;
 		}
 
-		total_score += score;
 	}
 
 	SGVector<int32_t> y_pred_sparse = to_sparse(y_pred_dense, 1, 0);
 
 	CResultSet * ret = new CResultSet();
 	SG_REF(ret);
+	ret->psi_computed_sparse = false;
+	ret->psi_pred_sparse = SGSparseVector<float64_t>(0);
+	ret->psi_truth_sparse = SGSparseVector<float64_t>(0);
+
 	CSparseMultilabel * y_pred = new CSparseMultilabel(y_pred_sparse);
 	SG_REF(y_pred);
 

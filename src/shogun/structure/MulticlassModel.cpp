@@ -106,6 +106,10 @@ CResultSet* CMulticlassModel::argmax(
 	// Build the CResultSet object to return
 	CResultSet* ret = new CResultSet();
 	SG_REF(ret);
+	ret->psi_computed_sparse = false;
+	ret->psi_pred_sparse = SGSparseVector<float64_t>(0);
+	ret->psi_truth_sparse = SGSparseVector<float64_t>(0);
+
 	CRealNumber* y  = new CRealNumber(ypred);
 	SG_REF(y);
 

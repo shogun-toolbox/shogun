@@ -127,8 +127,30 @@ bool CStochasticSOSVM::train_machine(CFeatures* data)
 			SGVector<float64_t> psi_i(M);
 			SGVector<float64_t> w_s(M);
 
-			SGVector<float64_t>::add(psi_i.vector,
-				1.0, result->psi_truth.vector, -1.0, result->psi_pred.vector, psi_i.vlen);
+			if (!result->psi_computed_sparse)
+			{
+				SGVector<float64_t>::add(psi_i.vector,
+					1.0, result->psi_truth.vector, -1.0, result->psi_pred.vector,
+					psi_i.vlen);
+			}
+			else
+			{
+				psi_i.zero();
+
+				SGSparseVector<float64_t> psi_pred_sparse = result->psi_pred_sparse;
+				for (int32_t i = 0; i < psi_pred_sparse.num_feat_entries; i++)
+				{
+					psi_i[psi_pred_sparse.features[i].feat_index] +=
+						psi_pred_sparse.features[i].entry;
+				}
+
+				SGSparseVector<float64_t> psi_truth_sparse = result->psi_truth_sparse;
+				for (int32_t i = 0; i < psi_truth_sparse.num_feat_entries; i++)
+				{
+					psi_i[psi_truth_sparse.features[i].feat_index] -=
+						psi_truth_sparse.features[i].entry;
+				}
+			}
 
 			w_s = psi_i.clone();
 			w_s.scale(1.0 / (N*m_lambda));

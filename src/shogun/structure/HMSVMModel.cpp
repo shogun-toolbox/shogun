@@ -306,6 +306,10 @@ CResultSet* CHMSVMModel::argmax(
 	SGVector< int32_t > opt_path(T);
 	CResultSet* ret = new CResultSet();
 	SG_REF(ret);
+	ret->psi_computed_sparse = false;
+	ret->psi_pred_sparse = SGSparseVector<float64_t>(0);
+	ret->psi_truth_sparse = SGSparseVector<float64_t>(0);
+
 	ret->score = -CMath::INFTY;
 	opt_path[T-1] = -1;
 
