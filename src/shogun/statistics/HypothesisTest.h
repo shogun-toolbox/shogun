@@ -41,7 +41,7 @@ namespace shogun
 /** enum for different statistic types */
 enum EStatisticType
 {
-	S_LINEAR_TIME_MMD, S_QUADRATIC_TIME_MMD, S_HSIC
+	S_LINEAR_TIME_MMD, S_QUADRATIC_TIME_MMD, S_HSIC, S_BTEST_MMD
 };
 
 /** enum for different method to approximate null-distibution */
