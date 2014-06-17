@@ -534,9 +534,12 @@ SGSparseVector<float64_t> CCCSOSVM::find_cutting_plane(float64_t* margin)
 	for (index_t i = 0; i < num_samples; i++)
 	{
 		CResultSet* result = m_model->argmax(m_w, i);
-		new_constraint.add(result->psi_truth);
-		result->psi_pred.scale(-1.0);
-		new_constraint.add(result->psi_pred);
+		SGVector<float64_t> psi_truth = m_model->get_joint_feature_vector(i, i);
+		new_constraint.add(psi_truth);
+		SGVector<float64_t> psi_pred = m_model->get_joint_feature_vector(i,
+				result->argmax);
+		psi_pred.scale(-1.0);
+		new_constraint.add(psi_pred);
 		/*
 		printf("%.16lf %.16lf\n",
 				SGVector<float64_t>::dot(result->psi_truth.vector, result->psi_truth.vector, result->psi_truth.vlen),

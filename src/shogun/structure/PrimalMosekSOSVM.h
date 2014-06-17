@@ -94,9 +94,10 @@ class CPrimalMosekSOSVM : public CLinearStructuredOutputMachine
 		/** computes the result of TODO equation
 		 *
 		 * @param result CResultSet structure with any argmax output
+		 * @param train_idx training example associated to this loss
 		 * @return result of the operation
 		 */
-		float64_t compute_loss_arg(CResultSet* result) const;
+		float64_t compute_loss_arg(CResultSet* result, int32_t train_idx) const;
 
 		/** insert element in the list of argmax results
 		 *

@@ -109,16 +109,15 @@ CResultSet* CMulticlassModel::argmax(
 	CRealNumber* y  = new CRealNumber(ypred);
 	SG_REF(y);
 
-	ret->psi_pred = get_joint_feature_vector(feat_idx, y);
 	ret->score    = max_score;
 	ret->argmax   = y;
 	if ( training )
 	{
 		ret->delta     = CStructuredModel::delta_loss(feat_idx, y);
-		ret->psi_truth = CStructuredModel::get_joint_feature_vector(
+		SGVector<float64_t> psi_truth = CStructuredModel::get_joint_feature_vector(
 					feat_idx, feat_idx);
 		ret->score    -= SGVector< float64_t >::dot(w.vector,
-					ret->psi_truth.vector, dim);
+					psi_truth.vector, dim);
 	}
 
 	return ret;

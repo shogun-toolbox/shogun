@@ -127,8 +127,12 @@ bool CStochasticSOSVM::train_machine(CFeatures* data)
 			SGVector<float64_t> psi_i(M);
 			SGVector<float64_t> w_s(M);
 
+			SGVector<float64_t> psi_pred = m_model->get_joint_feature_vector(i,
+					result->argmax);
+			SGVector<float64_t> psi_truth = m_model->get_joint_feature_vector(i, i);
+
 			SGVector<float64_t>::add(psi_i.vector,
-				1.0, result->psi_truth.vector, -1.0, result->psi_pred.vector, psi_i.vlen);
+				1.0, psi_truth.vector, -1.0, psi_pred.vector, psi_i.vlen);
 
 			w_s = psi_i.clone();
 			w_s.scale(1.0 / (N*m_lambda));

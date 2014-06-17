@@ -61,12 +61,6 @@ struct CResultSet : public CSGObject
 	/** argmax */
 	CStructuredData* argmax;
 
-	/** joint feature vector for the given truth */
-	SGVector< float64_t > psi_truth;
-
-	/** joint feature vector for the prediction */
-	SGVector< float64_t > psi_pred;
-
 	/** \f$ \Delta(y_{pred}, y_{truth}) + \langle w,
 	 *  \Psi(x_{truth}, y_{pred}) - \Psi(x_{truth}, y_{truth}) \rangle \f$ */
 	float64_t score;
