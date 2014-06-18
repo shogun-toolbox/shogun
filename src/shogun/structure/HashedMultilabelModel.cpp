@@ -262,6 +262,7 @@ CResultSet * CHashedMultilabelModel::argmax(SGVector<float64_t> w,
 
 	SGVector<float64_t> y_pred_dense(m_num_classes);
 	y_pred_dense.zero();
+	int32_t count = 0;
 
 	for (int32_t c = 0; c < m_num_classes; c++)
 	{
@@ -278,11 +279,13 @@ CResultSet * CHashedMultilabelModel::argmax(SGVector<float64_t> w,
 		{
 			y_pred_dense[c] = 1;
 			total_score += score;
+			count++;
 		}
 
 	}
 
 	SGVector<int32_t> y_pred_sparse = to_sparse(y_pred_dense, 1, 0);
+	ASSERT(count == y_pred_sparse.vlen);
 
 	CResultSet * ret = new CResultSet();
 	SG_REF(ret);

@@ -14,7 +14,15 @@
 using namespace shogun;
 
 CResultSet::CResultSet()
-: CSGObject(), argmax(NULL), score(0), delta(0)
+: CSGObject(), argmax(NULL),
+	psi_computed_sparse(false),
+	psi_computed(false),
+	psi_truth(SGVector<float64_t>(0)),
+	psi_pred(SGVector<float64_t>(0)),
+	psi_truth_sparse(SGSparseVector<float64_t>(0)),
+	psi_pred_sparse(SGSparseVector<float64_t>(0)),
+	score(0),
+	delta(0)
 {
 }
 
