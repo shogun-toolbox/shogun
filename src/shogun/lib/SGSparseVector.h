@@ -171,6 +171,16 @@ public:
 	 */
 	void save(CFile* saver);
 
+	/** add a sparse feature vector onto a dense one
+	 * dense += alpha*sparse
+	 *
+	 * @param alpha scalar to multiply with
+	 * @vec dense vector
+	 * @dim length of the dense vector
+	 * @param abs_val if true, do dense+=alpha*abs(sparse)
+	 */
+	void add_to_dense(T alpha, T * vec, int32_t dim, bool abs_val = false);
+
 
 	/** display vector
 	 *
