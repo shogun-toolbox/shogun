@@ -66,7 +66,7 @@ struct CResultSet : public CSGObject
 	bool psi_computed_sparse = false;
 
 	/** whether joint feature vector is dense or not */
-	bool psi_computed = true;
+	bool psi_computed = false;
 
 	/** joint feature vector for the given truth */
 	SGVector< float64_t > psi_truth = SGVector<float64_t>(0);

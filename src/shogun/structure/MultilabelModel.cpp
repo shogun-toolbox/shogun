@@ -201,6 +201,7 @@ CResultSet * CMultilabelModel::argmax(SGVector<float64_t> w, int32_t feat_idx,
 
 	CResultSet * ret = new CResultSet();
 	SG_REF(ret);
+	ret->psi_computed = true;
 
 	CSparseMultilabel * y_pred = new CSparseMultilabel(y_pred_sparse);
 	SG_REF(y_pred);

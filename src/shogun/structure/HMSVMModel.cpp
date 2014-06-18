@@ -306,6 +306,7 @@ CResultSet* CHMSVMModel::argmax(
 	SGVector< int32_t > opt_path(T);
 	CResultSet* ret = new CResultSet();
 	SG_REF(ret);
+	ret->psi_computed = true;
 	ret->score = -CMath::INFTY;
 	opt_path[T-1] = -1;
 

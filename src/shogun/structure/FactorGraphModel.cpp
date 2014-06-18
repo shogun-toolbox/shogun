@@ -313,6 +313,7 @@ CResultSet* CFactorGraphModel::argmax(SGVector<float64_t> w, int32_t feat_idx, b
 	// prepare CResultSet
 	CResultSet* ret = new CResultSet();
 	SG_REF(ret);
+	ret->psi_computed = true;
 
 	// y_truth
 	CFactorGraphObservation* y_truth =
