@@ -19,7 +19,6 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/lib/SGVector.h>
-#include <shogun/lib/SGSparseVector.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGSparseVector.h>
 #include <shogun/lib/StructuredData.h>

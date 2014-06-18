@@ -547,6 +547,11 @@ SGSparseVector<float64_t> CCCSOSVM::find_cutting_plane(float64_t* margin)
 			result->psi_pred_sparse.add_to_dense(-1.0, new_constraint.vector,
 					new_constraint.vlen);
 		}
+		else
+		{
+			SG_ERROR("model(%s) should have either of psi_computed or psi_computed_sparse"
+					"to be set true\n", m_model->get_name());
+		}
 		/*
 		printf("%.16lf %.16lf\n",
 				SGVector<float64_t>::dot(result->psi_truth.vector, result->psi_truth.vector, result->psi_truth.vlen),

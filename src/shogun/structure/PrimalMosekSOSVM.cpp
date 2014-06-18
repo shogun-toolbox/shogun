@@ -227,6 +227,12 @@ float64_t CPrimalMosekSOSVM::compute_loss_arg(CResultSet* result) const
 			result->delta -
 			result->psi_truth_sparse.dense_dot(1.0, m_w.vector, m_w.vlen, 0);
 	}
+	else
+	{
+		SG_ERROR("model(%s) should have either of psi_computed or psi_computed_sparse"
+				"to be set true\n", m_model->get_name());
+		return 0;
+	}
 }
 
 bool CPrimalMosekSOSVM::insert_result(CList* result_list, CResultSet* result) const
@@ -261,6 +267,11 @@ bool CPrimalMosekSOSVM::add_constraint(
 		dPsi.zero();
 		result->psi_pred_sparse.add_to_dense(1.0, dPsi.vector, dPsi.vlen);
 		result->psi_truth_sparse.add_to_dense(-1.0, dPsi.vector, dPsi.vlen);
+	}
+	else
+	{
+		SG_ERROR("model(%s) should have either of psi_computed or psi_computed_sparse"
+				"to be set true\n", m_model->get_name());
 	}
 
 	return ( mosek->add_constraint_sosvm(dPsi, con_idx, train_idx,
