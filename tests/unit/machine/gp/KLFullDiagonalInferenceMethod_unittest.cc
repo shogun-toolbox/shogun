@@ -27,6 +27,7 @@
  * of the authors and should not be interpreted as representing official policies,
  * either expressed or implied, of the Shogun Development Team.
  *
+ *
  */
 #include <shogun/lib/config.h>
 
@@ -83,6 +84,9 @@ TEST(KLFullDiagonalInferenceMethod,get_cholesky_t_likelihood)
 	CKLFullDiagonalInferenceMethod* inf=new CKLFullDiagonalInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
+	//Reference result is generated from the Matlab code, which can be found at
+	//https://gist.github.com/yorkerlin/b64a015491833562d11a
+	//
 	// L =
 	//
 	//1.407423685644243   0.515497460024622   0.443065894253950   0.319410344939164   0.016180892181750
@@ -196,6 +200,9 @@ TEST(KLFullDiagonalInferenceMethod,get_cholesky_logit_likelihood)
 	CKLFullDiagonalInferenceMethod* inf=new CKLFullDiagonalInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
+	//Reference result is generated from the Matlab code, which can be found at
+	//https://gist.github.com/yorkerlin/b64a015491833562d11a
+	//
 	// comparison of posterior cholesky with result:
 	// L =
 	//1.101033636127231   0.031935435514485   0.038838470404416   0.080505388829644   0.067456404131013
@@ -309,6 +316,9 @@ TEST(KLFullDiagonalInferenceMethod,get_cholesky_probit_likelihood)
 	CKLFullDiagonalInferenceMethod* inf=new CKLFullDiagonalInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
+	//Reference result is generated from the Matlab code, which can be found at
+	//https://gist.github.com/yorkerlin/b64a015491833562d11a
+	//
 	// comparison of posterior cholesky with result:
 	// L =
 	//1.216420672271186   0.000000401780554   0.000004054670173   0.000949334832622   0.000022647889665
@@ -417,6 +427,9 @@ TEST(KLFullDiagonalInferenceMethod,get_posterior_mean_t_likelihood)
 	CKLFullDiagonalInferenceMethod* inf=new CKLFullDiagonalInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
+	//Reference result is generated from the Matlab code, which can be found at
+	//https://gist.github.com/yorkerlin/b64a015491833562d11a
+	//
 	// comparison of posterior posterior_mean with result:
 	// posterior_mean =
 	//0.489965084229748
@@ -480,6 +493,9 @@ TEST(KLFullDiagonalInferenceMethod,get_posterior_covariance_t_likelihood)
 	CKLFullDiagonalInferenceMethod* inf=new CKLFullDiagonalInferenceMethod(kernel,
 		features_train,	covariance, labels_train, likelihood);
 
+	//Reference result is generated from the Matlab code, which can be found at
+	//https://gist.github.com/yorkerlin/b64a015491833562d11a
+	//
 	// comparison of posterior posterior_covariance with result:
 	// posterior_covariance =
 	//0.414373949946085   0.143666705039313   0.094429636121475   0.017776032079365  -0.025310137089717
@@ -593,6 +609,9 @@ TEST(KLFullDiagonalInferenceMethod,get_posterior_mean_logit_likelihood)
 	CKLFullDiagonalInferenceMethod* inf=new CKLFullDiagonalInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
+	//Reference result is generated from the Matlab code, which can be found at
+	//https://gist.github.com/yorkerlin/b64a015491833562d11a
+	//
 	// comparison of posterior posterior_mean with result:
 	// posterior_mean =
 	//0.195075001254701
@@ -661,6 +680,9 @@ TEST(KLFullDiagonalInferenceMethod,get_posterior_covariance_logit_likelihood)
 	CKLFullDiagonalInferenceMethod* inf=new CKLFullDiagonalInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
+	//Reference result is generated from the Matlab code, which can be found at
+	//https://gist.github.com/yorkerlin/b64a015491833562d11a
+	//
 	// comparison of posterior posterior_covariance with result:
 	// posterior_covariance =
 	//0.788613922080216   0.055365603952762   0.113585701478720   0.250515288102739   0.211318414874201
@@ -774,6 +796,9 @@ TEST(KLFullDiagonalInferenceMethod,get_posterior_mean_probit_likelihood)
 	CKLFullDiagonalInferenceMethod* inf=new CKLFullDiagonalInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
+	//Reference result is generated from the Matlab code, which can be found at
+	//https://gist.github.com/yorkerlin/b64a015491833562d11a
+	//
 	// comparison of posterior posterior_mean with result:
 	// posterior_mean =
 	//-0.562633450485667
@@ -844,6 +869,9 @@ TEST(KLFullDiagonalInferenceMethod,get_posterior_covariance_probit_likelihood)
 	CKLFullDiagonalInferenceMethod* inf=new CKLFullDiagonalInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
+	//Reference result is generated from the Matlab code, which can be found at
+	//https://gist.github.com/yorkerlin/b64a015491833562d11a
+	//
 	// comparison of posterior posterior_covariance with result:
 	// posterior_covariance =
 	//0.675821281453662  -0.000005367710037   0.000004653883433   0.001102425357803   0.000026241600793
@@ -952,6 +980,9 @@ TEST(KLFullDiagonalInferenceMethod,get_negative_marginal_likelihood_t_likelihood
 	CKLFullDiagonalInferenceMethod* inf=new CKLFullDiagonalInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
+	//Reference result is generated from the Matlab code, which can be found at
+	//https://gist.github.com/yorkerlin/b64a015491833562d11a
+	//
 	// nlZ =
 	// 7.38335326307118311462
 	float64_t nml=inf->get_negative_log_marginal_likelihood();
@@ -1008,6 +1039,9 @@ TEST(KLFullDiagonalInferenceMethod,get_negative_marginal_likelihood_logit_likeli
 	CKLFullDiagonalInferenceMethod* inf=new CKLFullDiagonalInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
+	//Reference result is generated from the Matlab code, which can be found at
+	//https://gist.github.com/yorkerlin/b64a015491833562d11a
+	//
 	// comparison of posterior negative marginal likelihood with
 	// nlZ =
 	// 3.359093542091840
@@ -1063,6 +1097,9 @@ TEST(KLFullDiagonalInferenceMethod,get_negative_marginal_likelihood_probit_likel
 	CKLFullDiagonalInferenceMethod* inf=new CKLFullDiagonalInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
+	//Reference result is generated from the Matlab code, which can be found at
+	//https://gist.github.com/yorkerlin/b64a015491833562d11a
+	//
 	// comparison of posterior negative marginal likelihood with
 	// nlZ =
 	//3.468786292404183
@@ -1131,8 +1168,11 @@ TEST(KLFullDiagonalInferenceMethod,get_marginal_likelihood_derivatives_t_likelih
 	float64_t dnlZ_ell=4*ell*ell*(gradient->get_element(width_param))[0];
 	float64_t dnlZ_df=(gradient->get_element(df_param))[0];
 	float64_t dnlZ_sigma=(gradient->get_element(sigma_param))[0];
-	float64_t dnlZ_sf2=(gradient->get_element(scale_param))[0];
+	float64_t dnlZ_sf2=1.0*(gradient->get_element(scale_param))[0];
 
+	//Reference result is generated from the Matlab code, which can be found at
+	//https://gist.github.com/yorkerlin/b64a015491833562d11a
+	//
 	// lik =
 	//-0.208254635605496
 	//0.024939622917056
@@ -1215,8 +1255,11 @@ TEST(KLFullDiagonalInferenceMethod,get_marginal_likelihood_derivatives_logit_lik
 	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("scale");
 
 	float64_t dnlZ_ell=4*(gradient->get_element(width_param))[0];
-	float64_t dnlZ_sf2=(gradient->get_element(scale_param))[0];
+	float64_t dnlZ_sf2=1.0*(gradient->get_element(scale_param))[0];
 
+	//Reference result is generated from the Matlab code, which can be found at
+	//https://gist.github.com/yorkerlin/b64a015491833562d11a
+	//
 	// comparison of partial derivatives of negative marginal likelihood with
 	// cov =
 	//0.275308215764774
@@ -1290,8 +1333,11 @@ TEST(KLFullDiagonalInferenceMethod,get_marginal_likelihood_derivatives_probit_li
 	TParameter* scale_param=inf->m_gradient_parameters->get_parameter("scale");
 
 	float64_t dnlZ_ell=4*(gradient->get_element(width_param))[0];
-	float64_t dnlZ_sf2=(gradient->get_element(scale_param))[0];
+	float64_t dnlZ_sf2=1.0*(gradient->get_element(scale_param))[0];
 
+	//Reference result is generated from the Matlab code, which can be found at
+	//https://gist.github.com/yorkerlin/b64a015491833562d11a
+	//
 	// comparison of partial derivatives of negative marginal likelihood with
 	// cov =
 	//-0.034304800769586

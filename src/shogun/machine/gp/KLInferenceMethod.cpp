@@ -51,35 +51,26 @@ CKLInferenceMethod::CKLInferenceMethod(CKernel* kern,
 		: CInferenceMethod(kern, feat, m, lab, mod)
 {
 	init();
+	check_variational_likelihood(m_model);
 }
 
-bool CKLInferenceMethod::is_variational_likelihood(CLikelihoodModel* mod) const
+void CKLInferenceMethod::check_variational_likelihood(CLikelihoodModel* mod) const
 {
-	if (mod!=NULL)
-	{
-		CVariationalLikelihood * lik= dynamic_cast<CVariationalLikelihood *>(mod);
-		if (lik ==NULL)
-			return false;
-	}
-	return true;
-
+	CVariationalLikelihood * lik= dynamic_cast<CVariationalLikelihood *>(mod);
+	REQUIRE(lik,
+		"The provided likelihood model must support variational inference. ",
+		"Please use a Variational Likelihood model\n");
 }
 
 void CKLInferenceMethod::set_model(CLikelihoodModel* mod)
 {
-	REQUIRE(is_variational_likelihood(mod),
-		"The provided likelihood model must support variational inference. ",
-		"Please use a Variational Likelihood model\n");
+	check_variational_likelihood(mod);
 	CInferenceMethod::set_model(mod);
 }
 
 void CKLInferenceMethod::init()
 {
 	set_lbfgs_parameters();
-
-	REQUIRE(is_variational_likelihood(m_model),
-		"The provided likelihood model must support variational inference. ",
-		"Please use a Variational Likelihood model\n");
 
 	SG_ADD(&m_m, "m",
 		"The number of corrections to approximate the inverse Hessian matrix",
@@ -129,7 +120,6 @@ void CKLInferenceMethod::init()
 	SG_ADD(&m_orthantwise_end, "orthantwise_end",
 		"End index for computing L1 norm of the variables",
 		MS_NOT_AVAILABLE);
-
 	SG_ADD(&m_s2, "s2",
 		"Variational parameter sigma2",
 		MS_NOT_AVAILABLE);
@@ -245,6 +235,8 @@ float64_t CKLInferenceMethod::get_negative_log_marginal_likelihood()
 SGVector<float64_t> CKLInferenceMethod::get_derivative_wrt_likelihood_model(const TParameter* param)
 {
 	CVariationalLikelihood * lik= dynamic_cast<CVariationalLikelihood *>(m_model);
+	REQUIRE(lik, "The likelihood model must support variational inference.",
+		"Please use variational likelihood model\n");
 
 	if (!lik->supports_derivative_wrt_hyperparameter())
 		return SGVector<float64_t> ();
@@ -372,7 +364,7 @@ SGVector<float64_t> CKLInferenceMethod::get_derivative_wrt_kernel(const TParamet
 
 		Map<MatrixXd> eigen_dK(dK.matrix, dK.num_cols, dK.num_rows);
 
-		result[i]=get_derivative_related_cov(eigen_dK);
+		result[i]=get_derivative_related_cov(eigen_dK*CMath::sq(m_scale));
 	}
 
 	return result;

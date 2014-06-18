@@ -523,6 +523,22 @@ public:
 #ifdef HAVE_EIGEN3
 	/** The log determinant of a dense matrix
 	 *
+	 * If determinant of the input matrix is positive, it returns the logarithm of the value.
+	 * If not, it returns CMath::INFTY 
+	 * Note that the input matrix is not required to be symmetric positive definite.
+	 * This method is slower than log_det() if input matrix is known to be symmetric positive definite
+	 *
+	 * It is adapted from Gaussian Process Machine Learning Toolbox
+	 * http://www.gaussianprocess.org/gpml/code/matlab/doc/
+	 *
+	 * @param A input matrix
+	 * @return the log determinant value
+	 */
+
+	static float64_t log_det_general(const SGMatrix<float64_t> A);
+
+	/** The log determinant of a dense matrix
+	 *
 	 * The log determinant of a positive definite symmetric real valued
 	 * matrix is calculated as
 	 * \f[

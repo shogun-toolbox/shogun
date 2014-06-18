@@ -58,6 +58,14 @@ namespace shogun
  * via minimizing the KL divergence between variational Gaussian distribution
  * and posterior distribution.
  *
+ * Code adapted from 
+ * http://hannes.nickisch.org/code/approxXX.tar.gz
+ * and Gaussian Process Machine Learning Toolbox
+ * http://www.gaussianprocess.org/gpml/code/matlab/doc/
+ * and the reference paper is
+ * Nickisch, Hannes, and Carl Edward Rasmussen.
+ * "Approximations for Binary Gaussian Process Classification."
+ * Journal of Machine Learning Research 9.10 (2008).
  */
 class CKLInferenceMethod: public CInferenceMethod
 {
@@ -244,7 +252,7 @@ protected:
 	 *
 	 * @return whether the provided likelihood model supports variational inference or not
 	 */
-	virtual bool is_variational_likelihood(CLikelihoodModel* mod) const;
+	virtual void check_variational_likelihood(CLikelihoodModel* mod) const;
 
 	/** update covariance matrix of the approximation to the posterior */
 	virtual void update_approx_cov()=0;

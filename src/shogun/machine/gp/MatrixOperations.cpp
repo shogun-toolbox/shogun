@@ -28,9 +28,8 @@
  * either expressed or implied, of the Shogun Development Team.
  *
  * Code adapted from 
- * xxx
- * and the reference paper is
- * xxx
+ * Gaussian Process Machine Learning Toolbox
+ * http://www.gaussianprocess.org/gpml/code/matlab/doc/
  */
 
 #include <shogun/machine/gp/MatrixOperations.h>
@@ -167,67 +166,6 @@ SGMatrix<float64_t> CMatrixOperations::get_inverse(SGMatrix<float64_t> L,
 	Map<MatrixXd> eigen_V(V.matrix, V.num_rows, V.num_cols);
 	
 	return get_inverse(eigen_L, eigen_kernel, eigen_sW, eigen_V, scale);
-}
-
-float64_t CMatrixOperations::get_log_det(const MatrixXd eigen_A)
-{
-
-	REQUIRE(eigen_A.rows()==eigen_A.cols(),
-		"Input matrix should be a sqaure matrix row(%d) col(%d)\n",
-		eigen_A.rows(), eigen_A.cols());
-
-	PartialPivLU<MatrixXd> lu(eigen_A);
-	VectorXd tmp(eigen_A.rows());
-
-	for(index_t idx=0; idx<tmp.rows(); idx++)
-		tmp[idx]=idx+1;
-
-	VectorXd p=lu.permutationP()*tmp;
-	int detP=1;
-
-	for(index_t idx=0; idx<p.rows(); idx++)
-	{
-		if (p[idx]!=idx+1)
-		{
-			detP*=-1;
-			index_t j=idx+1;
-			while(j<p.rows())
-			{
-				if (p[j]==idx+1)
-					break;
-				j++;
-			}
-			p[j]=p[idx];
-		}
-	}
-
-	VectorXd u=lu.matrixLU().diagonal();
-	int check_u=1;
-
-	for(int idx=0; idx<u.rows(); idx++)
-	{
-		if (u[idx]<0)
-			check_u*=-1;
-		else if (u[idx]==0)
-		{
-			check_u=0;
-			break;
-		}
-	}
-
-	float64_t result=CMath::INFTY;
-
-	if (check_u==detP)
-		result=u.array().abs().log().sum();
-
-	return result;
-
-}
-
-float64_t CMatrixOperations::get_log_det(const SGMatrix<float64_t> A)
-{
-	Map<MatrixXd> eigen_A(A.matrix, A.num_rows, A.num_cols);
-	return get_log_det(eigen_A);
 }
 
 } /* namespace shogun */

@@ -83,6 +83,9 @@ TEST(KLApproxDiagonalInferenceMethod,get_cholesky_t_likelihood)
 	CKLApproxDiagonalInferenceMethod* inf=new CKLApproxDiagonalInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
+	//Reference result is generated from the Matlab code, which can be found at
+	//https://gist.github.com/yorkerlin/d8acb388d03c6976728e
+	//
 	// L =
 	//
 	//29.63405683123 -612.02565401263 856.26722752838 -280.16777275207 10.21240287952 
@@ -198,6 +201,9 @@ TEST(KLApproxDiagonalInferenceMethod,get_cholesky_logit_likelihood)
 	CKLApproxDiagonalInferenceMethod* inf=new CKLApproxDiagonalInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
+	//Reference result is generated from the Matlab code, which can be found at
+	//https://gist.github.com/yorkerlin/d8acb388d03c6976728e
+	//
 	// comparison of posterior cholesky with result:
 	// L =
 	//0.305566275391344   1.588768886781588   0.319850350212507  -1.286405366165323  -0.648640619917849
@@ -315,6 +321,9 @@ TEST(KLApproxDiagonalInferenceMethod,get_cholesky_probit_likelihood)
 	CKLApproxDiagonalInferenceMethod* inf=new CKLApproxDiagonalInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
+	//Reference result is generated from the Matlab code, which can be found at
+	//https://gist.github.com/yorkerlin/d8acb388d03c6976728e
+	//
 	// comparison of posterior cholesky with result:
 	// L =
 	//92.55758851904 132.10723436942 23.49497816231 -182.27780561275 -62.82862008990 
@@ -423,6 +432,9 @@ TEST(KLApproxDiagonalInferenceMethod,get_posterior_mean_t_likelihood)
 	CKLApproxDiagonalInferenceMethod* inf=new CKLApproxDiagonalInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
+	//Reference result is generated from the Matlab code, which can be found at
+	//https://gist.github.com/yorkerlin/d8acb388d03c6976728e
+	//
 	// comparison of posterior posterior_mean with result:
 	// posterior_mean =
 	//0.504263183608509
@@ -487,6 +499,9 @@ TEST(KLApproxDiagonalInferenceMethod,get_posterior_covariance_t_likelihood)
 	CKLApproxDiagonalInferenceMethod* inf=new CKLApproxDiagonalInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
+	//Reference result is generated from the Matlab code, which can be found at
+	//https://gist.github.com/yorkerlin/d8acb388d03c6976728e
+	//
 	// comparison of posterior posterior_covariance with result:
 	// posterior_covariance =
 	//0.066339535327499                   0                   0                   0                   0
@@ -600,6 +615,9 @@ TEST(KLApproxDiagonalInferenceMethod,get_posterior_mean_logit_likelihood)
 	CKLApproxDiagonalInferenceMethod* inf=new CKLApproxDiagonalInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
+	//Reference result is generated from the Matlab code, which can be found at
+	//https://gist.github.com/yorkerlin/d8acb388d03c6976728e
+	//
 	// comparison of posterior posterior_mean with result:
 	// posterior_mean =
 	//0.198743176851626
@@ -669,6 +687,9 @@ TEST(KLApproxDiagonalInferenceMethod,get_posterior_covariance_logit_likelihood)
 	CKLApproxDiagonalInferenceMethod* inf=new CKLApproxDiagonalInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
+	//Reference result is generated from the Matlab code, which can be found at
+	//https://gist.github.com/yorkerlin/d8acb388d03c6976728e
+	//
 	// comparison of posterior posterior_covariance with result:
 	// posterior_covariance =
 	//0.603527438532628                   0                   0                   0                   0
@@ -784,6 +805,9 @@ TEST(KLApproxDiagonalInferenceMethod,get_posterior_mean_probit_likelihood)
 	CKLApproxDiagonalInferenceMethod* inf=new CKLApproxDiagonalInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
+	//Reference result is generated from the Matlab code, which can be found at
+	//https://gist.github.com/yorkerlin/d8acb388d03c6976728e
+	//
 	// comparison of posterior posterior_mean with result:
 	// posterior_mean =
 	//0.103563174064572
@@ -854,6 +878,9 @@ TEST(KLApproxDiagonalInferenceMethod,get_posterior_covariance_probit_likelihood)
 	CKLApproxDiagonalInferenceMethod* inf=new CKLApproxDiagonalInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
+	//Reference result is generated from the Matlab code, which can be found at
+	//https://gist.github.com/yorkerlin/d8acb388d03c6976728e
+	//
 	// comparison of posterior posterior_covariance with result:
 	// posterior_covariance =
 	//0.017367535014875                   0                   0                   0                   0
@@ -963,6 +990,9 @@ TEST(KLApproxDiagonalInferenceMethod,get_negative_marginal_likelihood_t_likeliho
 	CKLApproxDiagonalInferenceMethod* inf=new CKLApproxDiagonalInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
+	//Reference result is generated from the Matlab code, which can be found at
+	//https://gist.github.com/yorkerlin/d8acb388d03c6976728e
+	//
 	// nlZ =
 	//13.703509228407690
 	float64_t nml=inf->get_negative_log_marginal_likelihood();
@@ -1019,6 +1049,9 @@ TEST(KLApproxDiagonalInferenceMethod,get_negative_marginal_likelihood_logit_like
 	CKLApproxDiagonalInferenceMethod* inf=new CKLApproxDiagonalInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
+	//Reference result is generated from the Matlab code, which can be found at
+	//https://gist.github.com/yorkerlin/d8acb388d03c6976728e
+	//
 	// comparison of posterior negative marginal likelihood with
 	// nlZ =
 	//4.160543707929570
@@ -1075,6 +1108,9 @@ TEST(KLApproxDiagonalInferenceMethod,get_negative_marginal_likelihood_probit_lik
 	CKLApproxDiagonalInferenceMethod* inf=new CKLApproxDiagonalInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
+	//Reference result is generated from the Matlab code, which can be found at
+	//https://gist.github.com/yorkerlin/d8acb388d03c6976728e
+	//
 	// comparison of posterior negative marginal likelihood with
 	// nlZ =
 	// 7.744342191099269
@@ -1145,6 +1181,9 @@ TEST(KLApproxDiagonalInferenceMethod,get_marginal_likelihood_derivatives_t_likel
 	float64_t dnlZ_sigma=(gradient->get_element(sigma_param))[0];
 	float64_t dnlZ_sf2=(gradient->get_element(scale_param))[0];
 
+	//Reference result is generated from the Matlab code, which can be found at
+	//https://gist.github.com/yorkerlin/d8acb388d03c6976728e
+	//
 	// lik =
 	//-0.208510139631534
 	//0.027396140581594
@@ -1228,6 +1267,9 @@ TEST(KLApproxDiagonalInferenceMethod,get_marginal_likelihood_derivatives_logit_l
 	float64_t dnlZ_ell=4.0*(gradient->get_element(width_param))[0];
 	float64_t dnlZ_sf2=(gradient->get_element(scale_param))[0];
 
+	//Reference result is generated from the Matlab code, which can be found at
+	//https://gist.github.com/yorkerlin/d8acb388d03c6976728e
+	//
 	// comparison of partial derivatives of negative marginal likelihood with
 	// cov =
 	//2.285921615561960
@@ -1304,6 +1346,9 @@ TEST(KLApproxDiagonalInferenceMethod,get_marginal_likelihood_derivatives_probit_
 	float64_t dnlZ_ell=4*ell*ell*(gradient->get_element(width_param))[0];
 	float64_t dnlZ_sf2=(gradient->get_element(scale_param))[0];
 
+	//Reference result is generated from the Matlab code, which can be found at
+	//https://gist.github.com/yorkerlin/d8acb388d03c6976728e
+	//
 	// comparison of partial derivatives of negative marginal likelihood with
 	// cov =
 	//4.180258730739274
