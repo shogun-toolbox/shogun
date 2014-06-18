@@ -43,30 +43,31 @@
 
 #ifdef HAVE_EIGEN3
 #include <shogun/mathematics/Math.h>
-#include <shogun/machine/gp/MatrixOperations.h>
-#include <iostream>
+#include <shogun/mathematics/Statistics.h>
 
 using namespace Eigen;
 
 namespace shogun
 {
 
-CKLApproxDiagonalInferenceMethod::CKLApproxDiagonalInferenceMethod() : CKLInferenceMethod()
+CKLApproxDiagonalInferenceMethod::CKLApproxDiagonalInferenceMethod() : CKLLowerTriangularInferenceMethod()
 {
 	init();
 }
 
 CKLApproxDiagonalInferenceMethod::CKLApproxDiagonalInferenceMethod(CKernel* kern,
 		CFeatures* feat, CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod)
-		: CKLInferenceMethod(kern, feat, m, lab, mod)
+		: CKLLowerTriangularInferenceMethod(kern, feat, m, lab, mod)
 {
 	init();
 }
 
 void CKLApproxDiagonalInferenceMethod::init()
-{
+{	
+	SG_ADD(&m_InvK, "invK",
+		"The K^{-1} matrix",
+		MS_NOT_AVAILABLE);
 }
-
 
 SGVector<float64_t> CKLApproxDiagonalInferenceMethod::get_alpha()
 {
@@ -115,7 +116,6 @@ void CKLApproxDiagonalInferenceMethod::lbfgs_precompute()
 
 void CKLApproxDiagonalInferenceMethod::get_gradient_of_nlml_wrt_parameters(SGVector<float64_t> gradient)
 {
-
 	REQUIRE(gradient.vlen==m_alpha.vlen,
 		"The length of gradients (%d) should the same as the length of parameters (%d)\n",
 		gradient.vlen, m_alpha.vlen);
@@ -169,65 +169,13 @@ float64_t CKLApproxDiagonalInferenceMethod::get_negative_log_marginal_likelihood
 	return result;
 }
 
-float64_t CKLApproxDiagonalInferenceMethod::get_derivative_related_cov(MatrixXd eigen_dK)
-{
-	Map<VectorXd> eigen_alpha(m_alpha.vector, m_mu.vlen);
-	Map<VectorXd> eigen_mu(m_mu.vector, m_mu.vlen);
-	Map<MatrixXd> eigen_InvK_Sigma(m_InvK_Sigma.matrix, m_InvK_Sigma.num_rows, m_InvK_Sigma.num_cols);
-
-	//dnlZ(j)=0.5*sum(sum(dK.*(K\((eye(n)- (invK_V+alpha*m'))')),2),1);
-	MatrixXd tmp1=eigen_InvK_Sigma+eigen_alpha*(eigen_mu.transpose());
-	MatrixXd tmp2=(MatrixXd::Identity(m_ktrtr.num_rows,m_ktrtr.num_cols)-tmp1).transpose();
-	MatrixXd tmp3=m_ldlt.solve(tmp2);
-	return 0.5*(tmp3.array()*eigen_dK.array()).sum();
-}
-
-void CKLApproxDiagonalInferenceMethod::update_deriv()
-{
-	/** get_derivative_related_cov(MatrixXd eigen_dK) does the similar job
-	* Therefore, this function body is empty
-	*/
-}
-
-void CKLApproxDiagonalInferenceMethod::update_approx_cov()
-{
-	/** The variational co-variational matrix,
-	* which is automatically computed when update_alpha is called,
-	* is an approximated posterior co-variance matrix
-	* Therefore, this function body is empty
-	*/
-
-}
-
-void CKLApproxDiagonalInferenceMethod::update_chol()
-{
-	m_Sigma=SGMatrix<float64_t>(m_mu.vlen, m_mu.vlen);
-	Map<MatrixXd> eigen_Sigma(m_Sigma.matrix, m_Sigma.num_rows, m_Sigma.num_cols);
-	Map<VectorXd> eigen_s2(m_s2.vector, m_s2.vlen);
-	eigen_Sigma=eigen_s2.asDiagonal();
-
-	m_InvK_Sigma=SGMatrix<float64_t>(m_ktrtr.num_rows, m_ktrtr.num_cols);
-	Map<MatrixXd> eigen_InvK_Sigma(m_InvK_Sigma.matrix, m_InvK_Sigma.num_rows, m_InvK_Sigma.num_cols);
-	eigen_InvK_Sigma=m_ldlt.solve(eigen_Sigma);
-
-	m_L=SGMatrix<float64_t>(m_ktrtr.num_rows, m_ktrtr.num_cols);
-	Map<MatrixXd> eigen_L(m_L.matrix, m_L.num_rows, m_L.num_cols);
-
-	MatrixXd tmp2=(eigen_InvK_Sigma-MatrixXd::Identity(m_ktrtr.num_rows,m_ktrtr.num_cols)).transpose();
-	eigen_L=m_ldlt.solve(tmp2);
-}
-
 void CKLApproxDiagonalInferenceMethod::update_alpha()
 {
+	update_init();
 	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
-	m_ldlt.compute(eigen_K);
-	ASSERT(m_ldlt.isPositive());
 	m_InvK=SGMatrix<float64_t>(m_ktrtr.num_rows, m_ktrtr.num_cols);
 	Map<MatrixXd> eigen_InvK(m_InvK.matrix, m_InvK.num_rows, m_InvK.num_cols);
-	eigen_InvK=m_ldlt.solve(MatrixXd::Identity(m_ktrtr.num_rows,m_ktrtr.num_cols));
-
-	m_log_det_Kernel=CMatrixOperations::get_log_det(m_ktrtr);
-	m_mean_vec=m_mean->get_mean_vector(m_features);
+	eigen_InvK=solve_inverse(MatrixXd::Identity(m_ktrtr.num_rows,m_ktrtr.num_cols));
 
 	float64_t nlml_new=0;
 	float64_t nlml_def=0;
@@ -264,12 +212,20 @@ void CKLApproxDiagonalInferenceMethod::update_alpha()
 	nlml_new=lbfgs_optimization();
 }
 
-SGVector<float64_t> CKLApproxDiagonalInferenceMethod::get_diagonal_vector()
+void CKLApproxDiagonalInferenceMethod::update_Sigma()
 {
-	/** The diagonal vector W is NOT used in this KL method
-	* Therefore, return empty vector
-	*/
-	return SGVector<float64_t>();
+	m_Sigma=SGMatrix<float64_t>(m_mu.vlen, m_mu.vlen);
+	Map<MatrixXd> eigen_Sigma(m_Sigma.matrix, m_Sigma.num_rows, m_Sigma.num_cols);
+	Map<VectorXd> eigen_s2(m_s2.vector, m_s2.vlen);
+	eigen_Sigma=eigen_s2.asDiagonal();
+}
+
+void CKLApproxDiagonalInferenceMethod::update_InvK_Sigma()
+{
+	m_InvK_Sigma=SGMatrix<float64_t>(m_ktrtr.num_rows, m_ktrtr.num_cols);
+	Map<MatrixXd> eigen_InvK_Sigma(m_InvK_Sigma.matrix, m_InvK_Sigma.num_rows, m_InvK_Sigma.num_cols);
+	Map<MatrixXd> eigen_Sigma(m_Sigma.matrix, m_Sigma.num_rows, m_Sigma.num_cols);
+	eigen_InvK_Sigma=solve_inverse(eigen_Sigma);
 }
 
 } /* namespace shogun */
