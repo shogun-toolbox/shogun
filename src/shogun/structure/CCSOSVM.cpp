@@ -534,19 +534,18 @@ SGSparseVector<float64_t> CCCSOSVM::find_cutting_plane(float64_t* margin)
 	for (index_t i = 0; i < num_samples; i++)
 	{
 		CResultSet* result = m_model->argmax(m_w, i);
-		if (!result->psi_computed_sparse)
+		if (result->psi_computed)
 		{
 			new_constraint.add(result->psi_truth);
 			result->psi_pred.scale(-1.0);
 			new_constraint.add(result->psi_pred);
 		}
-		else
+		else if(result->psi_computed_sparse)
 		{
-			new_constraint.add(result->psi_truth_sparse.get_dense(psi_size));
-			SGVector<float64_t> psi_pred_dense =
-				result->psi_pred_sparse.get_dense(psi_size);
-			psi_pred_dense.scale(-1.0);
-			new_constraint.add(psi_pred_dense);
+			result->psi_truth_sparse.add_to_dense(1.0, new_constraint.vector,
+					new_constraint.vlen);
+			result->psi_pred_sparse.add_to_dense(-1.0, new_constraint.vector,
+					new_constraint.vlen);
 		}
 		/*
 		printf("%.16lf %.16lf\n",

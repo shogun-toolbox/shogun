@@ -215,16 +215,16 @@ float64_t CPrimalMosekSOSVM::compute_loss_arg(CResultSet* result) const
 	// Dimensionality of the joint feature space
 	int32_t M = m_w.vlen;
 
-	if(!result->psi_computed_sparse)
+	if(result->psi_computed)
 	{
 		return	SGVector< float64_t >::dot(m_w.vector, result->psi_pred.vector, M) +
 			result->delta -
 			SGVector< float64_t >::dot(m_w.vector, result->psi_truth.vector, M);
 	}
-	else
+	else if(result->psi_computed_sparse)
 	{
-		return result->psi_pred_sparse.dense_dot(1.0, m_w.vector, m_w.vlen, 0) -
-			result->delta +
+		return result->psi_pred_sparse.dense_dot(1.0, m_w.vector, m_w.vlen, 0) +
+			result->delta -
 			result->psi_truth_sparse.dense_dot(1.0, m_w.vector, m_w.vlen, 0);
 	}
 }
@@ -251,28 +251,16 @@ bool CPrimalMosekSOSVM::add_constraint(
 	int32_t M = m_model->get_dim();
 	SGVector< float64_t > dPsi(M);
 
-	if (!result->psi_computed_sparse)
+	if (result->psi_computed)
 	{
 		for ( int i = 0 ; i < M ; ++i )
 			dPsi[i] = result->psi_pred[i] - result->psi_truth[i]; // -dPsi(y)
 	}
-	else
+	else if(result->psi_computed_sparse)
 	{
 		dPsi.zero();
-
-		SGSparseVector<float64_t> psi_pred_sparse = result->psi_pred_sparse;
-		for (int32_t i = 0; i < psi_pred_sparse.num_feat_entries; i++)
-		{
-			dPsi[psi_pred_sparse.features[i].feat_index] +=
-				psi_pred_sparse.features[i].entry;
-		}
-
-		SGSparseVector<float64_t> psi_truth_sparse = result->psi_truth_sparse;
-		for (int32_t i = 0; i < psi_truth_sparse.num_feat_entries; i++)
-		{
-			dPsi[psi_truth_sparse.features[i].feat_index] -=
-				psi_truth_sparse.features[i].entry;
-		}
+		result->psi_pred_sparse.add_to_dense(1.0, dPsi.vector, dPsi.vlen);
+		result->psi_truth_sparse.add_to_dense(-1.0, dPsi.vector, dPsi.vlen);
 	}
 
 	return ( mosek->add_constraint_sosvm(dPsi, con_idx, train_idx,

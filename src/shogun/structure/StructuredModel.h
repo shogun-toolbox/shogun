@@ -64,19 +64,22 @@ struct CResultSet : public CSGObject
 	CStructuredData* argmax;
 
 	/** whether joint feature vector is sparse or not */
-	bool psi_computed_sparse;
+	bool psi_computed_sparse = false;
+
+	/** whether joint feature vector is dense or not */
+	bool psi_computed = true;
 
 	/** joint feature vector for the given truth */
-	SGVector< float64_t > psi_truth;
+	SGVector< float64_t > psi_truth = SGVector<float64_t>(0);
 
 	/** joint feature vector for the prediction */
-	SGVector< float64_t > psi_pred;
+	SGVector< float64_t > psi_pred = SGVector<float64_t>(0);
 
 	/** joint feature vector for the given truth */
-	SGSparseVector< float64_t > psi_truth_sparse;
+	SGSparseVector< float64_t > psi_truth_sparse = SGSparseVector<float64_t>(0);
 
 	/** joint feature vector for the prediction */
-	SGSparseVector< float64_t > psi_pred_sparse;
+	SGSparseVector< float64_t > psi_pred_sparse = SGSparseVector<float64_t>(0);
 
 	/** \f$ \Delta(y_{pred}, y_{truth}) + \langle w,
 	 *  \Psi(x_{truth}, y_{pred}) - \Psi(x_{truth}, y_{truth}) \rangle \f$ */

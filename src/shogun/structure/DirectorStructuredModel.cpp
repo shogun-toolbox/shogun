@@ -41,14 +41,6 @@ SGVector< float64_t > CDirectorStructuredModel::get_joint_feature_vector(
 	return SGVector<float64_t>();
 }
 
-SGSparseVector< float64_t > CDirectorStructuredModel::get_sparse_joint_feature_vector(
-		int32_t feat_idx,
-		CStructuredData* y)
-{
-	SG_ERROR("Please implemement get_sparse_joint_feature_vector(feat_idx,y) in your target language before use\n")
-	return SGSparseVector<float64_t>();
-}
-
 float64_t CDirectorStructuredModel::delta_loss(CStructuredData* y1, CStructuredData* y2)
 {
 	SG_ERROR("Please implemement delta_loss(y1,y2) in your target language before use\n")

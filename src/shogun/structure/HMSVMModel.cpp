@@ -155,16 +155,6 @@ SGVector< float64_t > CHMSVMModel::get_joint_feature_vector(
 	return psi;
 }
 
-SGSparseVector< float64_t > CHMSVMModel::get_sparse_joint_feature_vector(
-		int32_t feat_idx,
-		CStructuredData* y)
-{
-	SG_ERROR("compute_sparse_joint_feature(int32_t, CStructuredData*) is not "
-			"implemented for %s!\n", get_name());
-
-	return SGSparseVector< float64_t >();
-}
-
 CResultSet* CHMSVMModel::argmax(
 		SGVector< float64_t > w,
 		int32_t feat_idx,
@@ -316,10 +306,6 @@ CResultSet* CHMSVMModel::argmax(
 	SGVector< int32_t > opt_path(T);
 	CResultSet* ret = new CResultSet();
 	SG_REF(ret);
-	ret->psi_computed_sparse = false;
-	ret->psi_pred_sparse = SGSparseVector<float64_t>(0);
-	ret->psi_truth_sparse = SGSparseVector<float64_t>(0);
-
 	ret->score = -CMath::INFTY;
 	opt_path[T-1] = -1;
 
