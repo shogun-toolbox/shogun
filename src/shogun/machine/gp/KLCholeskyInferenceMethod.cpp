@@ -43,39 +43,45 @@
 
 #ifdef HAVE_EIGEN3
 #include <shogun/mathematics/Math.h>
-#include <shogun/machine/gp/MatrixOperations.h>
-#include <iostream>
+#include <shogun/mathematics/Statistics.h>
 
 using namespace Eigen;
 
 namespace shogun
 {
 
-CKLCholeskyInferenceMethod::CKLCholeskyInferenceMethod() : CKLInferenceMethod()
+CKLCholeskyInferenceMethod::CKLCholeskyInferenceMethod() : CKLLowerTriangularInferenceMethod()
 {
 	init();
 }
 
 CKLCholeskyInferenceMethod::CKLCholeskyInferenceMethod(CKernel* kern,
 		CFeatures* feat, CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod)
-		: CKLInferenceMethod(kern, feat, m, lab, mod)
+		: CKLLowerTriangularInferenceMethod(kern, feat, m, lab, mod)
 {
 	init();
 }
 
 void CKLCholeskyInferenceMethod::init()
 {
+	SG_ADD(&m_C, "C",
+		"The Cholesky represention of the variational co-variance matrix",
+		MS_NOT_AVAILABLE);
+	SG_ADD(&m_InvK_C, "invK_C",
+		" The K^{-1}C matrix",
+		MS_NOT_AVAILABLE);
 }
 
-/** Note that m_alpha contains not only the alpha vector defined in the reference
- * but also a vector corresponding to the lower triangular of C 
- *
- * Note that alpha=K^{-1}(mu-mean), where mean is generated from mean function,
- * K is generated from cov function
- * and mu is not only the posterior mean but also the variational mean
- */
+
 SGVector<float64_t> CKLCholeskyInferenceMethod::get_alpha()
 {
+	/** Note that m_alpha contains not only the alpha vector defined in the reference
+	 * but also a vector corresponding to the lower triangular of C 
+	 *
+	 * Note that alpha=K^{-1}(mu-mean), where mean is generated from mean function,
+	 * K is generated from cov function
+	 * and mu is not only the posterior mean but also the variational mean
+	 */
 	if (parameter_hash_changed())
 		update();
 
@@ -115,12 +121,11 @@ void CKLCholeskyInferenceMethod::lbfgs_precompute()
 	m_model->set_variational_distribution(m_mu, m_s2, m_labels);
 	Map<MatrixXd> eigen_InvK_C(m_InvK_C.matrix, m_InvK_C.num_rows, m_InvK_C.num_cols);
 
-	eigen_InvK_C=m_ldlt.solve(eigen_C);
+	eigen_InvK_C=solve_inverse(eigen_C);
 }
 
 void CKLCholeskyInferenceMethod::get_gradient_of_nlml_wrt_parameters(SGVector<float64_t> gradient)
 {
-
 	REQUIRE(gradient.vlen==m_alpha.vlen,
 		"The length of gradients (%d) should the same as the length of parameters (%d)\n",
 		gradient.vlen, m_alpha.vlen);
@@ -142,7 +147,7 @@ void CKLCholeskyInferenceMethod::get_gradient_of_nlml_wrt_parameters(SGVector<fl
 	Map<VectorXd> eigen_df(df.vector, df.vlen);
 
 	Map<VectorXd> eigen_dnlz_alpha(gradient.vector, len);
-   //dnlZ_alpha  = -K*(df-alpha);
+	//dnlZ_alpha  = -K*(df-alpha);
 	eigen_dnlz_alpha=eigen_K*CMath::sq(m_scale)*(-eigen_df+eigen_alpha);
 
 	Map<VectorXd> eigen_dnlz_C_seq(gradient.vector+len, gradient.vlen-len);
@@ -189,7 +194,7 @@ float64_t CKLCholeskyInferenceMethod::get_negative_log_marginal_likelihood_helpe
 
 	float64_t a=SGVector<float64_t>::sum(m_model->get_variational_expection());
 
-	//float64_t log_det=2.0*CMatrixOperations::get_log_det(eigen_C)-m_log_det_Kernel;
+	//float64_t log_det=2.0*log_det(eigen_C)-m_log_det_Kernel;
 	float64_t log_det=2.0*eigen_C.diagonal().array().abs().log().sum()-m_log_det_Kernel;
 	float64_t trace=(eigen_InvK_C.array()*eigen_C.array()).sum();
 
@@ -199,26 +204,10 @@ float64_t CKLCholeskyInferenceMethod::get_negative_log_marginal_likelihood_helpe
 	return result;
 }
 
-float64_t CKLCholeskyInferenceMethod::get_derivative_related_cov(MatrixXd eigen_dK)
-{
-	Map<VectorXd> eigen_alpha(m_alpha.vector, m_mu.vlen);
-	Map<VectorXd> eigen_mu(m_mu.vector, m_mu.vlen);
-	Map<MatrixXd> eigen_InvK_Sigma(m_InvK_Sigma.matrix, m_InvK_Sigma.num_rows, m_InvK_Sigma.num_cols);
-
-	//dnlZ(j)=0.5*sum(sum(dK.*(K\((eye(n)- (invK_V+alpha*m'))')),2),1);
-	MatrixXd tmp1=eigen_InvK_Sigma+eigen_alpha*(eigen_mu.transpose());
-	MatrixXd tmp2=(MatrixXd::Identity(m_C.num_rows,m_C.num_cols)-tmp1).transpose();
-	MatrixXd tmp3=m_ldlt.solve(tmp2);
-	return 0.5*(tmp3.array()*eigen_dK.array()).sum();
-}
-
 void CKLCholeskyInferenceMethod::update_alpha()
 {
+	update_init();
 	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
-	m_ldlt.compute(eigen_K);
-	ASSERT(m_ldlt.isPositive());
-	m_log_det_Kernel=CMatrixOperations::get_log_det(m_ktrtr);
-	m_mean_vec=m_mean->get_mean_vector(m_features);
 
 	float64_t nlml_new=0;
 	float64_t nlml_def=0;
@@ -235,7 +224,7 @@ void CKLCholeskyInferenceMethod::update_alpha()
 		eigen_s2.fill(1.0);
 		m_model->set_variational_distribution(m_mean_vec, s2_tmp, m_labels);
 		float64_t a=SGVector<float64_t>::sum(m_model->get_variational_expection());
-		MatrixXd inv_K=m_ldlt.solve(MatrixXd::Identity(m_ktrtr.num_rows, m_ktrtr.num_cols));
+		MatrixXd inv_K=solve_inverse(MatrixXd::Identity(m_ktrtr.num_rows, m_ktrtr.num_cols));
 		float64_t trace=inv_K.diagonal().array().sum();
 		nlml_def=-a+0.5*(-eigen_K.rows()+trace+m_log_det_Kernel);
 
@@ -260,7 +249,6 @@ void CKLCholeskyInferenceMethod::update_alpha()
 				count++;
 			}
 		}
-
 		m_InvK_C=SGMatrix<float64_t>(len, len);
 		m_C=SGMatrix<float64_t>(len, len);
 		m_C.zero();
@@ -306,13 +294,7 @@ void CKLCholeskyInferenceMethod::get_lower_triangular_vector(SGMatrix<float64_t>
 	}
 }
 
-//get_derivative_related_cov(MatrixXd eigen_dK) does the similar job
-//Therefore, this function body is empty
-void CKLCholeskyInferenceMethod::update_deriv()
-{
-}
-
-void CKLCholeskyInferenceMethod::update_approx_cov()
+void CKLCholeskyInferenceMethod::update_Sigma()
 {
 	m_Sigma=SGMatrix<float64_t>(m_mu.vlen, m_mu.vlen);
 	Map<MatrixXd> eigen_Sigma(m_Sigma.matrix, m_Sigma.num_rows, m_Sigma.num_cols);
@@ -320,27 +302,13 @@ void CKLCholeskyInferenceMethod::update_approx_cov()
 	eigen_Sigma=eigen_C*(eigen_C.transpose());
 }
 
-void CKLCholeskyInferenceMethod::update_chol()
+void CKLCholeskyInferenceMethod::update_InvK_Sigma()
 {
 	m_InvK_Sigma=SGMatrix<float64_t>(m_ktrtr.num_rows, m_ktrtr.num_cols);
 	Map<MatrixXd> eigen_InvK_Sigma(m_InvK_Sigma.matrix, m_InvK_Sigma.num_rows, m_InvK_Sigma.num_cols);
 	Map<MatrixXd> eigen_InvK_C(m_InvK_C.matrix, m_InvK_C.num_rows, m_InvK_C.num_cols);
 	Map<MatrixXd> eigen_C(m_C.matrix, m_C.num_rows, m_C.num_cols);
 	eigen_InvK_Sigma=eigen_InvK_C*(eigen_C.transpose());
-
-	m_L=SGMatrix<float64_t>(m_ktrtr.num_rows, m_ktrtr.num_cols);
-	Map<MatrixXd> eigen_L(m_L.matrix, m_L.num_rows, m_L.num_cols);
-
-	MatrixXd tmp2=(eigen_InvK_Sigma-MatrixXd::Identity(m_C.num_rows,m_C.num_cols)).transpose();
-
-	eigen_L=m_ldlt.solve(tmp2);
-}
-
-//The diagonal vector W is NOT used in this KL method
-//Therefore, return empty vector
-SGVector<float64_t> CKLCholeskyInferenceMethod::get_diagonal_vector()
-{
-	return SGVector<float64_t>();
 }
 
 } /* namespace shogun */

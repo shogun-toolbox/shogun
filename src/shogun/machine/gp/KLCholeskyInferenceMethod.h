@@ -44,7 +44,7 @@
 #include <shogun/lib/config.h>
 
 #ifdef HAVE_EIGEN3
-#include <shogun/machine/gp/KLInferenceMethod.h>
+#include <shogun/machine/gp/KLLowerTriangularInferenceMethod.h>
 #include <shogun/mathematics/eigen3.h>
 
 namespace shogun
@@ -52,12 +52,26 @@ namespace shogun
 
 /** @brief The KL approximation inference method class.
  *
- * The class is implemented based on the KL method in the Challis's paper
+ * The class is implemented based on the KL method in the Challis's paper,
+ * which uses full Cholesky represention.
+ * Note that C is not unique according to the definition of C in the paper. 
+ *
+ * Code adapted from 
+ * http://hannes.nickisch.org/code/approxXX.tar.gz
+ * and Gaussian Process Machine Learning Toolbox
+ * http://www.gaussianprocess.org/gpml/code/matlab/doc/
+ * and the reference paper is
+ * Challis, Edward, and David Barber.
+ * "Concave Gaussian variational approximations for inference in large-scale Bayesian linear models."
+ * International conference on Artificial Intelligence and Statistics. 2011.
+ *
+ * The adapted Matlab code can be found at
+ * https://gist.github.com/yorkerlin/bb400ebded2dbe90c58d
  *
  * Note that "Cholesky" means Cholesky represention of the variational co-variance matrix
  * is explicitly used in inference
  */
-class CKLCholeskyInferenceMethod: public CKLInferenceMethod
+class CKLCholeskyInferenceMethod: public CKLLowerTriangularInferenceMethod
 {
 public:
 	/** default constructor */
@@ -88,24 +102,9 @@ public:
 	 */
 	virtual SGVector<float64_t> get_alpha();
 
-	/** get diagonal vector
-	 *
-	 * @return diagonal of matrix used to calculate posterior covariance matrix:
-	 *
-	 * Note that this vector is not avaliable for the KL method 
-	 */
-	virtual SGVector<float64_t> get_diagonal_vector();
 protected:
 	/** update alpha vector */
 	virtual void update_alpha();
-
-	/** update cholesky matrix */
-	virtual void update_chol();
-
-	/** update matrices which are required to compute negative log marginal
-	 * likelihood derivatives wrt hyperparameter
-	 */
-	virtual void update_deriv();
 
 	/** the helper function to compute
 	 * the negative log marginal likelihood
@@ -130,21 +129,11 @@ protected:
 	 */
 	virtual void lbfgs_precompute();
 
-	/** compute matrices which are required to compute negative log marginal
-	 * likelihood derivatives wrt  hyperparameter in cov function
-	 * Note that 
-	 * get_derivative_wrt_inference_method(const TParameter* param)
-	 * and
-	 * get_derivative_wrt_kernel(const TParameter* param)
-	 * will call this function
-	 *
-	 * @param the gradient wrt hyperparameter related to cov
-	 */
-	virtual float64_t get_derivative_related_cov(Eigen::MatrixXd eigen_dK);
+	/** compute posterior Sigma matrix*/
+	virtual void update_Sigma();
 
-	/** update covariance matrix of the approximation to the posterior */
-	virtual void update_approx_cov();
-
+	/** compute inv(corrected_Kernel)*Sigma matrix */
+	virtual void update_InvK_Sigma();
 private:
 	void init();
 
@@ -156,31 +145,14 @@ private:
 	 */
 	void get_lower_triangular_vector(SGMatrix<float64_t> square_matrix, SGVector<float64_t> target);
 
-
-	/** The linear solver used to compute kernel inverse
-	 */
-	Eigen::LDLT<Eigen::MatrixXd> m_ldlt;
-
 	/** The Cholesky represention of the variational co-variance matrix
 	 *  Note that Sigma=CC', where C is a lower triangular matrix, C is NOT unique
 	 */
 	SGMatrix<float64_t> m_C;
 
-	/** The K^{-1}C matrix
-	 */
+	/** The K^{-1}C matrix */
 	SGMatrix<float64_t> m_InvK_C; 
 
-	/** The K^{-1}CC' matrix
-	 */
-	SGMatrix<float64_t> m_InvK_Sigma;
-
-	/** The mean vector generated from mean function
-	 */
-	SGVector<float64_t> m_mean_vec;
-
-	/** The Log-Determinant of Kernel 
-	 */
-	float64_t m_log_det_Kernel;
 };
 }
 #endif /* HAVE_EIGEN3 */

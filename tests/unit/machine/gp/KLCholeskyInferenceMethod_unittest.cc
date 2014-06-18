@@ -27,6 +27,7 @@
  * of the authors and should not be interpreted as representing official policies,
  * either expressed or implied, of the Shogun Development Team.
  *
+ *
  */
 #include <shogun/lib/config.h>
 
@@ -83,6 +84,9 @@ TEST(KLCholeskyInferenceMethod,get_cholesky_t_likelihood)
 	CKLCholeskyInferenceMethod* inf=new CKLCholeskyInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
+	//Reference result is generated from the Matlab code, which can be found at
+	//https://gist.github.com/yorkerlin/bb400ebded2dbe90c58d
+	//
 	// L =
 	//
 	//-0.582190787031602   0.155565709978604   0.097792483316752   0.017152606325211  -0.017632413884922
@@ -197,7 +201,9 @@ TEST(KLCholeskyInferenceMethod,get_cholesky_logit_likelihood)
 	// specify GP classification with KL inference
 	CKLCholeskyInferenceMethod* inf=new CKLCholeskyInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
-
+	//Reference result is generated from the Matlab code, which can be found at
+	//https://gist.github.com/yorkerlin/bb400ebded2dbe90c58d
+	//
 	// comparison of posterior cholesky with result:
 	// L =
 	//-0.176739629317949   0.002314507852889   0.005090523727770   0.011082454381435   0.009003906401798
@@ -313,6 +319,9 @@ TEST(KLCholeskyInferenceMethod,get_cholesky_probit_likelihood)
 	CKLCholeskyInferenceMethod* inf=new CKLCholeskyInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
+	//Reference result is generated from the Matlab code, which can be found at
+	//https://gist.github.com/yorkerlin/bb400ebded2dbe90c58d
+	//
 	// comparison of posterior cholesky with result:
 	// L =
 	//-0.516395175487306   0.074256393102732   0.087938852628901   0.087869435051116   0.101286220204603
@@ -421,6 +430,9 @@ TEST(KLCholeskyInferenceMethod,get_posterior_mean_t_likelihood)
 	CKLCholeskyInferenceMethod* inf=new CKLCholeskyInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
+	//Reference result is generated from the Matlab code, which can be found at
+	//https://gist.github.com/yorkerlin/bb400ebded2dbe90c58d
+	//
 	// comparison of posterior posterior_mean with result:
 	// posterior_mean =
 	//0.489964784217491
@@ -484,6 +496,9 @@ TEST(KLCholeskyInferenceMethod,get_posterior_covariance_t_likelihood)
 	CKLCholeskyInferenceMethod* inf=new CKLCholeskyInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
+	//Reference result is generated from the Matlab code, which can be found at
+	//https://gist.github.com/yorkerlin/bb400ebded2dbe90c58d
+	//
 	// comparison of posterior posterior_covariance with result:
 	// posterior_covariance =
 	//0.414374171867591   0.143666984642054   0.094429894160241   0.017776219176013  -0.025310583164083
@@ -597,6 +612,9 @@ TEST(KLCholeskyInferenceMethod,get_posterior_mean_logit_likelihood)
 	CKLCholeskyInferenceMethod* inf=new CKLCholeskyInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
+	//Reference result is generated from the Matlab code, which can be found at
+	//https://gist.github.com/yorkerlin/bb400ebded2dbe90c58d
+	//
 	// comparison of posterior posterior_mean with result:
 	// posterior_mean =
 	//0.195075026543215
@@ -665,6 +683,9 @@ TEST(KLCholeskyInferenceMethod,get_posterior_covariance_logit_likelihood)
 	CKLCholeskyInferenceMethod* inf=new CKLCholeskyInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
+	//Reference result is generated from the Matlab code, which can be found at
+	//https://gist.github.com/yorkerlin/bb400ebded2dbe90c58d
+	//
 	// comparison of posterior posterior_covariance with result:
 	// posterior_covariance =
 	//0.788613876131317   0.055365607754537   0.113585694023662   0.250515273722783   0.211318428812988
@@ -781,6 +802,9 @@ TEST(KLCholeskyInferenceMethod,get_posterior_mean_probit_likelihood)
 	CKLCholeskyInferenceMethod* inf=new CKLCholeskyInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
+	//Reference result is generated from the Matlab code, which can be found at
+	//https://gist.github.com/yorkerlin/bb400ebded2dbe90c58d
+	//
 	// comparison of posterior posterior_mean with result:
 	// posterior_mean =
 	//0.113297373330173
@@ -852,6 +876,9 @@ TEST(KLCholeskyInferenceMethod,get_posterior_covariance_probit_likelihood)
 	CKLCholeskyInferenceMethod* inf=new CKLCholeskyInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
+	//Reference result is generated from the Matlab code, which can be found at
+	//https://gist.github.com/yorkerlin/bb400ebded2dbe90c58d
+	//
 	// comparison of posterior posterior_covariance with result:
 	// posterior_covariance =
 	//0.308346066129894   0.206868307317793   0.258036061496451   0.249092866479063   0.259977028483369
@@ -961,6 +988,9 @@ TEST(KLCholeskyInferenceMethod,get_negative_marginal_likelihood_t_likelihood)
 	CKLCholeskyInferenceMethod* inf=new CKLCholeskyInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
+	//Reference result is generated from the Matlab code, which can be found at
+	//https://gist.github.com/yorkerlin/bb400ebded2dbe90c58d
+	//
 	// nlZ =
 	// 7.383353794839424
 	float64_t nml=inf->get_negative_log_marginal_likelihood();
@@ -1017,6 +1047,9 @@ TEST(KLCholeskyInferenceMethod,get_negative_marginal_likelihood_logit_likelihood
 	CKLCholeskyInferenceMethod* inf=new CKLCholeskyInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
+	//Reference result is generated from the Matlab code, which can be found at
+	//https://gist.github.com/yorkerlin/bb400ebded2dbe90c58d
+	//
 	// comparison of posterior negative marginal likelihood with
 	// nlZ =
 	//3.359093542091830
@@ -1073,6 +1106,9 @@ TEST(KLCholeskyInferenceMethod,get_negative_marginal_likelihood_probit_likelihoo
 	CKLCholeskyInferenceMethod* inf=new CKLCholeskyInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
+	//Reference result is generated from the Matlab code, which can be found at
+	//https://gist.github.com/yorkerlin/bb400ebded2dbe90c58d
+	//
 	// comparison of posterior negative marginal likelihood with
 	// nlZ =
 	//3.900050836490685
@@ -1144,6 +1180,9 @@ TEST(KLCholeskyInferenceMethod,get_marginal_likelihood_derivatives_t_likelihood)
 	float64_t dnlZ_sigma=(gradient->get_element(sigma_param))[0];
 	float64_t dnlZ_sf2=(gradient->get_element(scale_param))[0];
 
+	//Reference result is generated from the Matlab code, which can be found at
+	//https://gist.github.com/yorkerlin/bb400ebded2dbe90c58d
+	//
 	// lik =
 	//-0.208254633811686
 	//0.024939620577627
@@ -1230,6 +1269,9 @@ TEST(KLCholeskyInferenceMethod,get_marginal_likelihood_derivatives_logit_likelih
 	float64_t dnlZ_ell=4.0*(gradient->get_element(width_param))[0];
 	float64_t dnlZ_sf2=(gradient->get_element(scale_param))[0];
 
+	//Reference result is generated from the Matlab code, which can be found at
+	//https://gist.github.com/yorkerlin/bb400ebded2dbe90c58d
+	//
 	// comparison of partial derivatives of negative marginal likelihood with
 	// cov =
 	// 0.275308238001720
@@ -1306,6 +1348,9 @@ TEST(KLCholeskyInferenceMethod,get_marginal_likelihood_derivatives_probit_likeli
 	float64_t dnlZ_ell=4*ell*ell*(gradient->get_element(width_param))[0];
 	float64_t dnlZ_sf2=(gradient->get_element(scale_param))[0];
 
+	//Reference result is generated from the Matlab code, which can be found at
+	//https://gist.github.com/yorkerlin/bb400ebded2dbe90c58d
+	//
 	// comparison of partial derivatives of negative marginal likelihood with
 	// cov =
 	//0.299593140038451
