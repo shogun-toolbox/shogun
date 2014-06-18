@@ -287,8 +287,7 @@ CResultSet * CHashedMultilabelModel::argmax(SGVector<float64_t> w,
 	CResultSet * ret = new CResultSet();
 	SG_REF(ret);
 	ret->psi_computed_sparse = true;
-	ret->psi_pred = SGVector<float64_t>(0);
-	ret->psi_truth = SGVector<float64_t>(0);
+	ret->psi_computed = false;
 
 	CSparseMultilabel * y_pred_label = new CSparseMultilabel(y_pred_sparse);
 	SG_REF(y_pred_label);
