@@ -2129,6 +2129,60 @@ float64_t CStatistics::dlgamma(float64_t x)
 }
 
 #ifdef HAVE_EIGEN3
+float64_t CStatistics::log_det_general(const SGMatrix<float64_t> A)
+{
+	Map<MatrixXd> eigen_A(A.matrix, A.num_rows, A.num_cols);
+	REQUIRE(eigen_A.rows()==eigen_A.cols(),
+		"Input matrix should be a sqaure matrix row(%d) col(%d)\n",
+		eigen_A.rows(), eigen_A.cols());
+
+	PartialPivLU<MatrixXd> lu(eigen_A);
+	VectorXd tmp(eigen_A.rows());
+
+	for (index_t idx=0; idx<tmp.rows(); idx++)
+		tmp[idx]=idx+1;
+
+	VectorXd p=lu.permutationP()*tmp;
+	int detP=1;
+
+	for (index_t idx=0; idx<p.rows(); idx++)
+	{
+		if (p[idx]!=idx+1)
+		{
+			detP*=-1;
+			index_t j=idx+1;
+			while(j<p.rows())
+			{
+				if (p[j]==idx+1)
+					break;
+				j++;
+			}
+			p[j]=p[idx];
+		}
+	}
+
+	VectorXd u=lu.matrixLU().diagonal();
+	int check_u=1;
+
+	for (int idx=0; idx<u.rows(); idx++)
+	{
+		if (u[idx]<0)
+			check_u*=-1;
+		else if (u[idx]==0)
+		{
+			check_u=0;
+			break;
+		}
+	}
+
+	float64_t result=CMath::INFTY;
+
+	if (check_u==detP)
+		result=u.array().abs().log().sum();
+
+	return result;
+}
+
 float64_t CStatistics::log_det(SGMatrix<float64_t> m)
 {
 	/* map the matrix to eigen3 to perform cholesky */

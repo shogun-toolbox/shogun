@@ -398,3 +398,127 @@ TEST(Statistics, fdistribution_cdf)
 	fdcdf=CStatistics::fdistribution_cdf(1.0, 30.0, 15.0);
 	EXPECT_NEAR(fdcdf, 0.48005131, 1e-7);
 }
+
+// TEST 1
+TEST(Statistics, log_det_general_test_1)
+{
+	// create a small test matrix, symmetric positive definite
+	index_t size = 3;
+	SGMatrix<float64_t> m(size, size);
+
+	// initialize the matrix
+	m(0, 0) =   4; m(0, 1) =  12; m(0, 2) = -16;
+	m(1, 0) =  12; m(1, 1) =  37; m(1, 2) = -43;
+	m(2, 0) = -16; m(2, 1) = -43; m(2, 2) =  98;
+
+	/* the cholesky decomposition gives m = L.L', where
+	 * L = [(2, 0, 0), (6, 1, 0), (-8, 5, 3)].
+	 * 2 * (log(2) + log(1) + log(3)) = 3.58351893846
+	 */
+	Map<MatrixXd> M(m.matrix, m.num_rows, m.num_cols);
+	EXPECT_NEAR(CStatistics::log_det_general(m), log(M.determinant()), 1E-10);
+
+}
+
+// TEST 2
+TEST(Statistics, log_det_general_test_2)
+{
+	// create a fixed symmetric positive definite matrix
+	index_t size = 100;
+	VectorXd A = VectorXd::LinSpaced(size, 1, size);
+	MatrixXd M = A * A.transpose() + MatrixXd::Identity(size, size);
+
+	// copy the matrix to a SGMatrix to pass it to log_det
+	SGMatrix<float64_t> K(size,size);
+	for( int32_t j = 0; j < size; ++j ) {
+		for( int32_t i = 0; i < size; ++i ) {
+			K(i,j) = M(i,j);
+		}
+	}
+
+	// check if log_det is equal to log(det(M))
+	EXPECT_NEAR(CStatistics::log_det_general(K), 12.731839097176634, 1E-10);
+}
+
+TEST(Statistics,log_det_general_test_3)
+{
+	float64_t rel_tolorance = 1e-10;
+	float64_t abs_tolorance, result;
+
+	index_t size = 5;
+	SGMatrix<float64_t> A(size, size);
+	A(0,0) = 17.0;
+	A(0,1) = 24.0;
+	A(0,2) = 1.0;
+	A(0,3) = 8.0;
+	A(0,4) = 15.0;
+	A(1,0) = 23.0;
+	A(1,1) = 5.0;
+	A(1,2) = 7.0;
+	A(1,3) = 14.0;
+	A(1,4) = 16.0;
+	A(2,0) = 4.0;
+	A(2,1) = 6.0;
+	A(2,2) = 13.0;
+	A(2,3) = 20.0;
+	A(2,4) = 22.0;
+	A(3,0) = 10.0;
+	A(3,1) = 12.0;
+	A(3,2) = 19.0;
+	A(3,3) = 21.0;
+	A(3,4) = 3.0;
+	A(4,0) = 11.0;
+	A(4,1) = 18.0;
+	A(4,2) = 25.0;
+	A(4,3) = 2.0;
+	A(4,4) = 9.0;
+	result = CStatistics::log_det_general(A);
+	abs_tolorance = CMath::get_abs_tolorance(15.438851375567365, rel_tolorance);
+	EXPECT_NEAR(result, 15.438851375567365, abs_tolorance);
+}
+
+TEST(Statistics,log_det_general_test_4)
+{
+	float64_t rel_tolorance = 1e-10;
+	float64_t abs_tolorance, result;
+	index_t size = 6;
+	SGMatrix<float64_t> A(size, size);
+	A(0,0) = 35.000000;
+	A(0,1) = 1.000000;
+	A(0,2) = 6.000000;
+	A(0,3) = 26.000000;
+	A(0,4) = 19.000000;
+	A(0,5) = 24.000000;
+	A(1,0) = 3.000000;
+	A(1,1) = 32.000000;
+	A(1,2) = 7.000000;
+	A(1,3) = 21.000000;
+	A(1,4) = 23.000000;
+	A(1,5) = 25.000000;
+	A(2,0) = 31.000000;
+	A(2,1) = 9.000000;
+	A(2,2) = 2.000000;
+	A(2,3) = 22.000000;
+	A(2,4) = 27.000000;
+	A(2,5) = 20.000000;
+	A(3,0) = 8.000000;
+	A(3,1) = 28.000000;
+	A(3,2) = 33.000000;
+	A(3,3) = 17.000000;
+	A(3,4) = 10.000000;
+	A(3,5) = 15.000000;
+	A(4,0) = 30.000000;
+	A(4,1) = 5.000000;
+	A(4,2) = 34.000000;
+	A(4,3) = 12.000000;
+	A(4,4) = 14.000000;
+	A(4,5) = 16.000000;
+	A(5,0) = 4.000000;
+	A(5,1) = 36.000000;
+	A(5,2) = 29.000000;
+	A(5,3) = 13.000000;
+	A(5,4) = 18.000000;
+	A(5,5) = 11.000000;
+	result = CStatistics::log_det_general(A);
+	EXPECT_EQ(result, CMath::INFTY);
+}
