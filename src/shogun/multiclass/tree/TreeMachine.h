@@ -147,6 +147,11 @@ public:
 	}
 
 protected:
+
+	/**  enable unlocked cross-validation - no model features to store */
+	virtual void store_model_features() { }
+
+protected:
 	/** tree root */
 	CTreeMachineNode<T>* m_root;
 };
