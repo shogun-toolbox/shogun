@@ -54,7 +54,7 @@ public:
 	 * @param num_rand_feats number of attributes chosen randomly during node split in candidate trees 
 	 * @param num_bags number of trees in forest 
 	 */
-	CRandomForest(int32_t num_rand_feats, int32_t num_bags=0);
+	CRandomForest(int32_t num_rand_feats, int32_t num_bags=10);
 
 	/** constructor
 	 *
@@ -63,7 +63,7 @@ public:
 	 * @param num_bags number of trees in forest
 	 * @param num_rand_feats number of attributes chosen randomly during node split in candidate trees  
 	 */
-	CRandomForest(CFeatures* features, CLabels* labels, int32_t num_bags=0, int32_t num_rand_feats=0);
+	CRandomForest(CFeatures* features, CLabels* labels, int32_t num_bags=10, int32_t num_rand_feats=0);
 
 	/** constructor
 	 *
@@ -72,7 +72,7 @@ public:
 	 * @param weights weights of training feature vectors
 	 * @param num_rand_feats number of attributes chosen randomly during node split in candidate trees 
 	 */
-	CRandomForest(CFeatures* features, CLabels* labels, SGVector<float64_t> weights, int32_t num_bags=0, int32_t num_rand_feats=0);
+	CRandomForest(CFeatures* features, CLabels* labels, SGVector<float64_t> weights, int32_t num_bags=10, int32_t num_rand_feats=0);
 
 	/** destructor */
 	virtual ~CRandomForest();

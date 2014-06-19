@@ -44,8 +44,8 @@ CRandomForest::CRandomForest(int32_t rand_numfeats, int32_t num_bags)
 {
 	init();
 
-	if (num_bags>0)
-		set_num_bags(num_bags);
+
+	set_num_bags(num_bags);
 
 	if (rand_numfeats>0)
 		dynamic_cast<CRandomCARTree*>(m_machine)->set_feature_subset_size(rand_numfeats);
@@ -60,8 +60,7 @@ CRandomForest::CRandomForest(CFeatures* features, CLabels* labels, int32_t num_b
 	m_features=features;
 	set_labels(labels);
 
-	if (num_bags>0)
-		set_num_bags(num_bags);
+	set_num_bags(num_bags);
 
 	if (rand_numfeats>0)
 		dynamic_cast<CRandomCARTree*>(m_machine)->set_feature_subset_size(rand_numfeats);
@@ -77,8 +76,7 @@ CRandomForest::CRandomForest(CFeatures* features, CLabels* labels, SGVector<floa
 	set_labels(labels);
 	m_weights=weights;
 
-	if (num_bags>0)
-		set_num_bags(num_bags);
+	set_num_bags(num_bags);
 
 	if (rand_numfeats>0)
 		dynamic_cast<CRandomCARTree*>(m_machine)->set_feature_subset_size(rand_numfeats);
