@@ -75,6 +75,27 @@ T SGSparseVector<T>::dense_dot(T alpha, T * vec, int32_t dim, T b)
 }
 
 template <class T>
+void SGSparseVector<T>::add_to_dense(T alpha, T * vec, int32_t dim, bool abs_val)
+{
+	REQUIRE(vec, "vec must not be NULL\n");
+
+	if (abs_val)
+	{
+		for (int32_t i = 0; i < num_feat_entries; i++)
+		{
+			vec[features[i].feat_index] += alpha*CMath::abs(features[i].entry);
+		}
+	}
+	else
+	{
+		for (int32_t i = 0; i < num_feat_entries; i++)
+		{
+			vec[features[i].feat_index] += alpha*features[i].entry;
+		}
+	}
+}
+
+template <class T>
 template <typename ST>
 T SGSparseVector<T>::dense_dot(SGVector<ST> vec)
 {

@@ -127,8 +127,23 @@ bool CStochasticSOSVM::train_machine(CFeatures* data)
 			SGVector<float64_t> psi_i(M);
 			SGVector<float64_t> w_s(M);
 
-			SGVector<float64_t>::add(psi_i.vector,
-				1.0, result->psi_truth.vector, -1.0, result->psi_pred.vector, psi_i.vlen);
+			if (result->psi_computed)
+			{
+				SGVector<float64_t>::add(psi_i.vector,
+					1.0, result->psi_truth.vector, -1.0, result->psi_pred.vector,
+					psi_i.vlen);
+			}
+			else if(result->psi_computed_sparse)
+			{
+				psi_i.zero();
+				result->psi_pred_sparse.add_to_dense(1.0, psi_i.vector, psi_i.vlen);
+				result->psi_truth_sparse.add_to_dense(-1.0, psi_i.vector, psi_i.vlen);
+			}
+			else
+			{
+				SG_ERROR("model(%s) should have either of psi_computed or psi_computed_sparse"
+						"to be set true\n", m_model->get_name());
+			}
 
 			w_s = psi_i.clone();
 			w_s.scale(1.0 / (N*m_lambda));

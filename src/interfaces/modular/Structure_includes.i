@@ -17,6 +17,9 @@
  #include <shogun/structure/StateModel.h>
  #include <shogun/structure/TwoStateModel.h>
  #include <shogun/structure/DirectorStructuredModel.h>
+ #include <shogun/structure/MultilabelSOLabels.h>
+ #include <shogun/structure/MultilabelModel.h>
+ #include <shogun/structure/HashedMultilabelModel.h>
 
  #include <shogun/structure/FactorType.h>
  #include <shogun/structure/Factor.h>
