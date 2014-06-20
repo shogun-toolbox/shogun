@@ -136,6 +136,9 @@ public:
 	/** @return adjacent variables */
 	const SGVector<int32_t> get_variables() const;
 
+	/** @return number of the adjacent variables */
+	const int32_t get_num_vars() const;
+
 	/** set variables
 	 *
 	 * @param vars indices of variables
