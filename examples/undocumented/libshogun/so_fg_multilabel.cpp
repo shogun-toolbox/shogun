@@ -27,10 +27,34 @@
 
 using namespace shogun;
 
-#define NUM_STATUS 2
+#define NUM_STATUS 2 // each class has binary labels
 
 const char FNAME_TRAIN[] = "../../../../data/multilabel/scene_train";
 const char FNAME_TEST[]  = "../../../../data/multilabel/scene_test";
+
+enum EGraphStructure
+{
+	TREE = 0, // tree-structure graph
+	FULL = 1  // full-connected graph
+};
+
+struct MultilabelParameter
+{
+	EGraphStructure graph_type;
+	EMAPInferType infer_type;
+	
+	int32_t sgd_num_iter;
+	float64_t sgd_lambda;
+
+	MultilabelParameter() {}
+
+	MultilabelParameter(EGraphStructure graph, EMAPInferType infer,
+			int32_t num_iter = 200, float64_t lambda = 0.0001)
+		: graph_type(graph), infer_type(infer), sgd_num_iter(num_iter), sgd_lambda(lambda)
+	{}
+
+	~MultilabelParameter() {}
+};
 
 void read_data(const char * fname, SGMatrix<int32_t>& labels, SGMatrix<float64_t>& feats)
 {
@@ -73,7 +97,8 @@ void read_data(const char * fname, SGMatrix<int32_t>& labels, SGMatrix<float64_t
 	SG_FREE(pv_labels);
 }
 
-SGMatrix< int32_t > get_tree_index()
+/** get tree-structured graph */
+SGMatrix< int32_t > get_edges_tree()
 {
 	SGMatrix< int32_t > label_tree_index;
 	
@@ -95,8 +120,56 @@ SGMatrix< int32_t > get_tree_index()
 	
 	return label_tree_index;
 }
+/** get full-connected graph */
+SGMatrix< int32_t > get_edges_full(const int32_t num_classes)
+{	
+	// A full-connected graph is defined by a 2-d matrix where
+	// each row stores the indecies of a pair of connected nodes
+	int32_t num_rows =  num_classes*(num_classes - 1)/2;
+	ASSERT(num_rows > 0);
 
-void build_factor_graph(SGMatrix<float64_t> feats, SGMatrix<int32_t> labels,
+	SGMatrix< int32_t > mat(num_rows, 2);
+	int32_t k = 0;
+
+	for (int32_t i = 0; i < num_classes - 1; i++)
+	{
+		for (int32_t j = i + 1; j < num_classes; j++)
+		{
+			mat[num_rows + k] = j;
+			mat[k++] = i;
+		}
+	}
+	
+	return mat;
+}
+
+/** Get graph structure
+ *
+ * @param graph_type tree structure or full-connected graph
+ * @param num_classes number of classes
+ *
+ * @return a matrix contains the indeces of the pairwise edges*/
+SGMatrix<int32_t> get_edge_list(EGraphStructure graph_type, int32_t num_classes)
+{
+	SGMatrix<int32_t> mat;
+
+	switch (graph_type)
+	{
+		case TREE:
+			mat = get_edges_tree();
+			break;
+		case FULL:
+			mat = get_edges_full(num_classes);
+			break;
+		default:
+			mat = get_edges_tree();
+			break;
+	}
+
+	return mat;
+}
+
+void build_factor_graph(MultilabelParameter param, SGMatrix<float64_t> feats, SGMatrix<int32_t> labels,
 		CFactorGraphFeatures * fg_feats, CFactorGraphLabels * fg_labels,
 		const DynArray<CTableFactorType *>& v_ftp_u,
 		const DynArray<CTableFactorType *>& v_ftp_t)
@@ -105,8 +178,8 @@ void build_factor_graph(SGMatrix<float64_t> feats, SGMatrix<int32_t> labels,
 	int32_t num_classes       = labels.num_rows;
 	int32_t dim               = feats.num_rows;
 
-	SGMatrix< int32_t > tree_index = get_tree_index();
-	int32_t num_edges = tree_index.num_rows;
+	SGMatrix< int32_t > mat_edges = get_edge_list(param.graph_type, num_classes);
+	int32_t num_edges = mat_edges.num_rows;
 
 	// prepare features and labels in factor graph
 	for (int32_t n = 0; n < num_sample; n++)
@@ -129,12 +202,12 @@ void build_factor_graph(SGMatrix<float64_t> feats, SGMatrix<int32_t> labels,
 			fg->add_factor(fac_u);
 		}
 
-		// add tree-structred factors
+		// add pairwise factors
 		for (int32_t t = 0; t < num_edges; t++)
 		{
 			SGVector<float64_t> data_t(1);
 			data_t[0] = 1.0;
-			SGVector<int32_t> var_index_t = tree_index.get_row_vector(t);
+			SGVector<int32_t> var_index_t = mat_edges.get_row_vector(t);
 			CFactor * fac_t = new CFactor(v_ftp_t[t], var_index_t, data_t);
 			fg->add_factor(fac_t);
 		}
@@ -171,15 +244,16 @@ void evaluate(CFactorGraphModel * model, int32_t num_samples, CStructuredLabels 
 	ave_error = acc_loss_sgd / static_cast<float64_t>(num_samples);
 }
 
-void test(SGMatrix<int32_t> labels_train, SGMatrix<float64_t> feats_train, SGMatrix<int32_t> labels_test, SGMatrix<float64_t> feats_test)
+void test(MultilabelParameter param, SGMatrix<int32_t> labels_train, SGMatrix<float64_t> feats_train, 
+		SGMatrix<int32_t> labels_test, SGMatrix<float64_t> feats_test)
 {
 	int32_t num_sample_train  = labels_train.num_cols;
 	int32_t num_classes       = labels_train.num_rows;
 	int32_t dim               = feats_train.num_rows;
 
 	// Build factor graph
-	SGMatrix< int32_t > tree_index = get_tree_index();
-	int32_t num_edges = tree_index.num_rows;
+	SGMatrix< int32_t > mat_edges = get_edge_list(param.graph_type, num_classes);
+	int32_t num_edges = mat_edges.num_rows;
 
 	int32_t tid;
 	// we have l = num_classes different weights: w_1, w_2, ..., w_l
@@ -217,11 +291,11 @@ void test(SGMatrix<int32_t> labels_train, SGMatrix<float64_t> feats_train, SGMat
 	CFactorGraphLabels * fg_labels_train = new CFactorGraphLabels(num_sample_train);
 	SG_REF(fg_labels_train);
 
-	build_factor_graph(feats_train, labels_train, fg_feats_train, fg_labels_train, v_ftp_u, v_ftp_t);
+	build_factor_graph(param, feats_train, labels_train, fg_feats_train, fg_labels_train, v_ftp_u, v_ftp_t);
 
 	SG_SPRINT("----------------------------------------------------\n");
 
-	CFactorGraphModel * model = new CFactorGraphModel(fg_feats_train, fg_labels_train, TREE_MAX_PROD, false);
+	CFactorGraphModel * model = new CFactorGraphModel(fg_feats_train, fg_labels_train, param.infer_type, false);
 	SG_REF(model);
 
 	// initialize model parameters
@@ -233,8 +307,8 @@ void test(SGMatrix<int32_t> labels_train, SGMatrix<float64_t> feats_train, SGMat
 
 	// create SGD solver
 	CStochasticSOSVM * sgd = new CStochasticSOSVM(model, fg_labels_train, true);
-	sgd->set_num_iter(200);
-	sgd->set_lambda(0.0001);
+	sgd->set_num_iter(param.sgd_num_iter);
+	sgd->set_lambda(param.sgd_lambda);
 	SG_REF(sgd);
 
 	// timer
@@ -243,7 +317,7 @@ void test(SGMatrix<int32_t> labels_train, SGMatrix<float64_t> feats_train, SGMat
 	sgd->train();
 	float64_t t2 = start.cur_time_diff(false);
 
-	SG_SPRINT(">>>> SGD trained in %9.4f\n", t2);
+	SG_SPRINT("SGD trained in %9.4f\n", t2);
 
 	// Evaluation SGD
 	CStructuredLabels * labels_sgd = CLabelsFactory::to_structured(sgd->apply());
@@ -258,15 +332,13 @@ void test(SGMatrix<int32_t> labels_train, SGMatrix<float64_t> feats_train, SGMat
 
 	if(labels_test.num_cols > 0)
 	{
-		SG_SPRINT("----------------------------------------------------\n");	
-
 		// prepare features and labels in factor graph
 		int32_t num_sample_test  = labels_test.num_cols;
 		CFactorGraphFeatures * fg_feats_test = new CFactorGraphFeatures(num_sample_test);
 		SG_REF(fg_feats_test);
 		CFactorGraphLabels * fg_labels_test = new CFactorGraphLabels(num_sample_test);
 		SG_REF(fg_labels_test);
-		build_factor_graph(feats_test, labels_test, fg_feats_test, fg_labels_test, v_ftp_u, v_ftp_t);
+		build_factor_graph(param, feats_test, labels_test, fg_feats_test, fg_labels_test, v_ftp_u, v_ftp_t);
 
 		sgd->set_features(fg_feats_test);
 		sgd->set_labels(fg_labels_test);
@@ -325,8 +397,20 @@ int main(int argc, char * argv[])
 	
 	read_data(FNAME_TRAIN, labels_train, feats_train);
 	read_data(FNAME_TEST, labels_test, feats_test);
+
+	MultilabelParameter param;
 	
-	test(labels_train, feats_train, labels_test, feats_test);
+	SG_SPRINT("\nExample 1: tree structure, max-product inference\n");
+	param = MultilabelParameter(TREE, TREE_MAX_PROD);
+	test(param, labels_train, feats_train, labels_test, feats_test);
+
+	SG_SPRINT("\nExample 2.1: tree structure, graph-cuts inference\n");
+	param = MultilabelParameter(TREE, GRAPH_CUT);
+	test(param, labels_train, feats_train, labels_test, feats_test);
+
+	SG_SPRINT("\nExample 2.2: full-connected graph, graph-cuts inference\n");
+	param = MultilabelParameter(FULL, GRAPH_CUT);
+	test(param, labels_train, feats_train, labels_test, feats_test);
 	
 	exit_shogun();
 
