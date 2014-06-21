@@ -320,8 +320,8 @@ IF(CMAKE_SIZEOF_VOID_P EQUAL 8 AND NOT DARWIN)
 	LIST(APPEND CMAKE_SWIG_FLAGS "-DSWIGWORDSIZE64")
 ENDIF()
 
-#integration 
-OPTION(OpenCV "OpenCV Integration" OFF)
+#integration
+OPTION(OPENCV "OpenCV Integration" OFF)
 
 #interfaces
 OPTION(PythonModular "Python Modular" OFF)
@@ -639,7 +639,7 @@ ELSE()
 	ENDIF()
 ENDIF()
 
-IF (OpenCV)
+IF (OPENCV)
 	# find OpenCV library if intended by the user.
 	FIND_PACKAGE(OpenCV)
 	IF (OpenCV_FOUND)
