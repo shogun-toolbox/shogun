@@ -870,6 +870,10 @@ float64_t CCHAIDTree::p_value(SGVector<float64_t> feat, SGVector<float64_t> labe
 			int32_t nf=feat.vlen;
 			int32_t num_cat=0;
 			float64_t f=anova_f_statistic(feat,labels,weights,num_cat);
+
+			if (nf==num_cat)
+				return 1.0;
+
 			return 1-CStatistics::fdistribution_cdf(f,num_cat-1,nf-num_cat);
 		}
 		default:
@@ -925,8 +929,10 @@ float64_t CCHAIDTree::anova_f_statistic(SGVector<float64_t> feat, SGVector<float
 	}
 
 	nu/=(r-1.0);
-	de/=(feat.vlen-r-0.f);
+	if (de==0)
+		return nu;
 
+	de/=(feat.vlen-r-0.f);
 	return nu/de;
 }
 
