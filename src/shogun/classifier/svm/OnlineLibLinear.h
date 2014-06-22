@@ -31,8 +31,8 @@ namespace shogun
  * batch classification, see CLibLinear, for batch regression, see
  * CLibLinearRegression.
  *
- * This class offers L2R_L1LOSS_SVC_DUAL only.
- * See the LIBLINEAR_SOLVER_TYPE enum for types of solvers for batch SVM.
+ * This class offers ::L2R_L1LOSS_SVC_DUAL only.
+ * See the ::LIBLINEAR_SOLVER_TYPE enum for types of solvers for batch SVM.
  *
  * [1] http://www.csie.ntu.edu.tw/~cjlin/liblinear/
  * */
