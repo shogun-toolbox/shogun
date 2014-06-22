@@ -60,9 +60,11 @@ void CGraphCut::init()
 	m_num_factors_at_order = SGVector<int32_t> (4);
 	m_num_factors_at_order.zero();
 
-	for (int32_t i = 0; i < m_fg->get_num_factors(); i++)
+	for (int32_t i = 0; i < facs->get_num_elements(); i++)
 	{
 		CFactor* fac = dynamic_cast<CFactor*>(facs->get_element(i));
+		SG_REF(fac);
+		
 		int32_t num_vars = fac->get_num_vars();
 		
 		SG_UNREF(fac);
@@ -122,6 +124,7 @@ void CGraphCut::init_maxflow()
 	m_active_first[1] = NULL;
 	m_active_last[1] = NULL;
 	m_orphan_first = NULL;
+	m_orphan_last = NULL;
 
 	m_timestamp = 0;
 
