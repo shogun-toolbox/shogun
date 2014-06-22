@@ -39,76 +39,81 @@
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/lib/OpenCV/OpenCVTypeName.h>
 
-namespace shogun{
+#include <iostream>
+
+namespace shogun {
 
 enum CV2SGOptions {CV2SG_CONSTRUCTOR, CV2SG_MANUAL, CV2SG_MEMCPY};
 
+
 class CV2SGMatrixFactory
 {
-	private:
-	template<typename T> static SGMatrix<T> getMatrixUsingManual(cv::Mat, int, int);
-	template<typename T> static SGMatrix<T> getMatrixUsingMemcpy(cv::Mat, int, int);
-	
-	public:
-	CV2SGMatrixFactory();
-	~CV2SGMatrixFactory();
-	template <typename T> static SGMatrix<T> getSGMatrix(cv::Mat, CV2SGOptions=CV2SG_MEMCPY);
+  public:
+  CV2SGMatrixFactory();
+  ~CV2SGMatrixFactory();
+  template <typename SG_T> static SGMatrix<SG_T> getSGMatrix(cv::Mat, CV2SGOptions=CV2SG_MEMCPY);
+
+  private:
+  template<typename SG_T> static SGMatrix<SG_T> getMatrixUsingManual(cv::Mat, int, int);
+  template<typename SG_T> static SGMatrix<SG_T> getMatrixUsingMemcpy(cv::Mat, int, int);
+  template<typename SG_T> static SGMatrix<SG_T> getMatrixUsingConstructor(cv::Mat, int, int);
 };
 
-template<typename T> SGMatrix<T> CV2SGMatrixFactory::getMatrixUsingManual(cv::Mat cvMat, int num_rows, int num_cols)
+template<typename SG_T> SGMatrix<SG_T> CV2SGMatrixFactory::getSGMatrix(cv::Mat cvMat, CV2SGOptions option)
 {
-	SGMatrix<T> sgMat(num_rows, num_cols);
-	for(int i=0; i<num_rows; i++)
-	{
-		for(int j=0; j<num_cols; j++)
-		{
-			sgMat(i,j)=cvMat.at<T>(i, j);
-		}
-	}
-	return sgMat;
+  SGMatrix<SG_T> sgMat;
+
+  int num_rows = cvMat.rows;
+  int num_cols = cvMat.cols;
+
+  const int myType=OpenCVTypeName<SG_T>::get_opencv_type();
+
+  cvMat.convertTo(cvMat,myType);
+
+  switch (option)
+  {
+    case CV2SG_CONSTRUCTOR:
+      sgMat = CV2SGMatrixFactory::getMatrixUsingConstructor<SG_T>(cvMat, num_rows, num_cols);
+      break;
+
+    case CV2SG_MANUAL:
+      sgMat = CV2SGMatrixFactory::getMatrixUsingManual<SG_T>(cvMat, num_rows, num_cols);
+      break;
+
+    case CV2SG_MEMCPY:
+      sgMat = CV2SGMatrixFactory::getMatrixUsingMemcpy<SG_T>(cvMat, num_rows, num_cols);
+      break;
+  }
+
+  return sgMat;
 }
 
-template<typename T> SGMatrix<T> CV2SGMatrixFactory::getMatrixUsingMemcpy(cv::Mat cvMat, int num_rows, int num_cols)
+template<typename SG_T> SGMatrix<SG_T> CV2SGMatrixFactory::getMatrixUsingManual(cv::Mat cvMat, int num_rows, int num_cols)
 {
-	SGMatrix<T> sgMat(num_rows, num_cols);
-	memcpy(sgMat.matrix, cvMat.data, num_rows*num_cols*sizeof(T));
-	SGMatrix<T>::transpose_matrix(sgMat.matrix, num_cols, num_rows);
-	return sgMat;
+  SGMatrix<SG_T> sgMat(num_rows, num_cols);
+  for(int i=0; i<num_rows; i++)
+  {
+    for(int j=0; j<num_cols; j++)
+    {
+      sgMat(i,j)=cvMat.at<SG_T>(i, j);
+    }
+  }
+  return sgMat;
 }
 
-template<typename T> SGMatrix<T> CV2SGMatrixFactory::getSGMatrix(cv::Mat cvMat, CV2SGOptions option)
+template<typename SG_T> SGMatrix<SG_T> CV2SGMatrixFactory::getMatrixUsingMemcpy(cv::Mat cvMat, int num_rows, int num_cols)
 {
-	int num_rows=cvMat.rows;
-	int num_cols=cvMat.cols;
-	const int myType=OpenCVTypeName<T>::get_opencv_type();
-	cvMat.convertTo(cvMat,myType);
-	switch (option)
-	{
+  SGMatrix<SG_T> sgMat(num_rows, num_cols);
+  memcpy(sgMat.matrix, cvMat.data, num_rows*num_cols*sizeof(SG_T));
+  SGMatrix<SG_T>::transpose_matrix(sgMat.matrix, num_cols, num_rows);
+  return sgMat;
+}
 
-		case CV2SG_CONSTRUCTOR:
-		{
-			SGMatrix<T> sgMat((T*)cvMat.data, num_rows, num_cols, false);
-			return sgMat;
-		}
-
-		case CV2SG_MANUAL:
-		{
-			SGMatrix<T> sgMat = CV2SGMatrixFactory::getMatrixUsingManual<T>(cvMat, num_rows, num_cols);
-			return sgMat;
-		}
-
-		case CV2SG_MEMCPY:
-		{
-			SGMatrix<T> sgMat = CV2SGMatrixFactory::getMatrixUsingMemcpy<T>(cvMat, num_rows, num_cols);
-			return sgMat;			
-		}
-		
-		default:
-		{
-			SGMatrix<T> sgMat = CV2SGMatrixFactory::getMatrixUsingMemcpy<T>(cvMat, num_rows, num_cols);
-			return sgMat;
-		}
-	}
+template<typename SG_T> SGMatrix<SG_T> CV2SGMatrixFactory::getMatrixUsingConstructor(cv::Mat cvMat, int num_rows, int num_cols)
+{
+  cvMat = cvMat.t();
+  SGMatrix<SG_T> sgMat((SG_T*)cvMat.data, num_rows, num_cols, false);
+  return sgMat;
 }
 
 }
