@@ -39,7 +39,7 @@ namespace shogun
  * - L2-regularized support vector regression.
  * - L2-loss linear SVR and L1-loss linear SVR.
  *
- * See the LIBLINEAR_REGRESSION_TYPE enum for types of solvers.
+ * See the ::LIBLINEAR_REGRESSION_TYPE enum for types of solvers.
  *
  * [1] http://www.csie.ntu.edu.tw/~cjlin/liblinear/
  * */
