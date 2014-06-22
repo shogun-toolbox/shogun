@@ -34,8 +34,8 @@
  * "Piecewise Bounds for Estimating Bernoulli-Logistic Latent Gaussian Models." ICML. 2011.
  */
 
-#ifndef _LOGITVARIATIONALPIECEWISEBOUNDLIKELIHOOD_H_
-#define _LOGITVARIATIONALPIECEWISEBOUNDLIKELIHOOD_H_
+#ifndef _LOGITVGPIECEWISEBOUNDLIKELIHOOD_H_
+#define _LOGITVGPIECEWISEBOUNDLIKELIHOOD_H_
 
 #include <shogun/lib/config.h>
 
@@ -43,10 +43,7 @@
 
 #include <shogun/machine/gp/LogitLikelihood.h>
 #include <shogun/mathematics/eigen3.h>
-#include <shogun/mathematics/Statistics.h>
-#include <shogun/distributions/classical/GaussianDistribution.h>
-#include <shogun/mathematics/Math.h>
-#include <shogun/labels/BinaryLabels.h>
+#include <shogun/machine/gp/VariationalGaussianLikelihood.h>
 
 namespace shogun
 {
@@ -65,18 +62,18 @@ namespace shogun
  * m is the size of the pre-defined bound, which is the num_rows of bound passed in set_bound
  * (In the reference Matlab code, m is 20)
  */
-class CLogitVariationalPiecewiseBoundLikelihood : public CLogitLikelihood
+class CLogitVGPiecewiseBoundLikelihood : public CVariationalGaussianLikelihood
 {
 public:
-	CLogitVariationalPiecewiseBoundLikelihood();
+	CLogitVGPiecewiseBoundLikelihood();
 
-	virtual ~CLogitVariationalPiecewiseBoundLikelihood();
+	virtual ~CLogitVGPiecewiseBoundLikelihood();
 
 	/** returns the name of the likelihood model
 	 *
-	 * @return name LogitPiecewiseBoundLikelihood
+	 * @return name LogitVGPiecewiseBoundLikelihood
 	 */
-	virtual const char* get_name() const { return "LogitVariationalPiecewiseBoundLikelihood"; }
+	virtual const char* get_name() const { return "LogitVGPiecewiseBoundLikelihood"; }
 
 	/** set the variational piecewise bound for logit likelihood
 	 *
@@ -118,16 +115,6 @@ public:
 	 */
 	virtual SGVector<float64_t> get_variational_first_derivative(const TParameter* param) const;
 
-	/** get derivative of log likelihood \f$log(p(y|f))\f$ with respect to given
-	 * hyperparameter
-	 * Note that variational parameters (mu and sigma) are NOT considered as hyperparameters
-	 *
-	 * @param param parameter
-	 *
-	 * @return derivative
-	 */
-	virtual SGVector<float64_t> get_first_derivative_wrt_hyperparameter(const TParameter* param) const;
-
 	/** return whether likelihood function supports
 	 * computing the derivative wrt hyperparameter
 	 * Note that variational parameters are NOT considered as hyperparameters
@@ -135,8 +122,24 @@ public:
 	 * @return boolean
 	 */
 	virtual bool supports_derivative_wrt_hyperparameter() const { return false; }
-private:
 
+
+	/** get derivative of log likelihood \f$log(p(y|f))\f$ with respect to given
+	 * hyperparameter
+	 * Note that variational parameters are NOT considered as hyperparameters
+	 *
+	 * @param param parameter
+	 *
+	 * @return derivative
+	 */
+	virtual SGVector<float64_t> get_first_derivative_wrt_hyperparameter(const TParameter* param) const;
+
+protected:
+
+	/** The function used to initialize m_likelihood*/
+	virtual void init_likelihood();
+
+private:
 	/** initialize private data members for this class */
 	void init();
 
@@ -148,18 +151,6 @@ private:
 
 	/** Variational piecewise bound for logit likelihood */
 	SGMatrix<float64_t> m_bound;
-
-	/** The mean of variational normal distribution */
-	SGVector<float64_t> m_mu;
-
-	/** The variance of variational normal distribution */
-	SGVector<float64_t> m_s2;
-
-	/** The data/labels (must be 0 or 1) drawn from the distribution
-	 *  Note that if the input labels are -1 and 1, it will
-	 *  automatically converte them to 0 and 1 repectively.
-	 */
-	SGVector<float64_t> m_lab;
 
 	/** The pdf given the lower range and parameters(mu and variance) */
 	SGMatrix<float64_t> m_pl;
@@ -181,4 +172,4 @@ private:
 };
 }
 #endif /* HAVE_EIGEN3 */
-#endif /* _LOGITVARIATIONALPIECEWISEBOUNDLIKELIHOOD_H_ */
+#endif /* _LOGITVGPIECEWISEBOUNDLIKELIHOOD_H_ */
