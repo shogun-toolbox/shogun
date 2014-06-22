@@ -39,15 +39,19 @@ CRandomForest::CRandomForest()
 	init();
 }
 
-CRandomForest::CRandomForest(int32_t rand_numfeats)
+CRandomForest::CRandomForest(int32_t rand_numfeats, int32_t num_bags)
 : CBaggingMachine()
 {
 	init();
 
-	dynamic_cast<CRandomCARTree*>(m_machine)->set_feature_subset_size(rand_numfeats);
+
+	set_num_bags(num_bags);
+
+	if (rand_numfeats>0)
+		dynamic_cast<CRandomCARTree*>(m_machine)->set_feature_subset_size(rand_numfeats);
 }
 
-CRandomForest::CRandomForest(CFeatures* features, CLabels* labels, int32_t rand_numfeats)
+CRandomForest::CRandomForest(CFeatures* features, CLabels* labels, int32_t num_bags, int32_t rand_numfeats)
 : CBaggingMachine()
 {
 	init();
@@ -55,10 +59,14 @@ CRandomForest::CRandomForest(CFeatures* features, CLabels* labels, int32_t rand_
 	SG_REF(features);
 	m_features=features;
 	set_labels(labels);
-	dynamic_cast<CRandomCARTree*>(m_machine)->set_feature_subset_size(rand_numfeats);
+
+	set_num_bags(num_bags);
+
+	if (rand_numfeats>0)
+		dynamic_cast<CRandomCARTree*>(m_machine)->set_feature_subset_size(rand_numfeats);
 }
 
-CRandomForest::CRandomForest(CFeatures* features, CLabels* labels, SGVector<float64_t> weights, int32_t rand_numfeats)
+CRandomForest::CRandomForest(CFeatures* features, CLabels* labels, SGVector<float64_t> weights, int32_t num_bags, int32_t rand_numfeats)
 : CBaggingMachine()
 {
 	init();
@@ -67,22 +75,15 @@ CRandomForest::CRandomForest(CFeatures* features, CLabels* labels, SGVector<floa
 	m_features=features;
 	set_labels(labels);
 	m_weights=weights;
-	dynamic_cast<CRandomCARTree*>(m_machine)->set_feature_subset_size(rand_numfeats);
+
+	set_num_bags(num_bags);
+
+	if (rand_numfeats>0)
+		dynamic_cast<CRandomCARTree*>(m_machine)->set_feature_subset_size(rand_numfeats);
 }
 
 CRandomForest::~CRandomForest()
 {
-}
-
-void CRandomForest::set_bag_size(int32_t bag_size)
-{
-	SG_ERROR("Bag Size is set to be equal to number of training vectors and cannot be changed\n")
-}
-
-int32_t CRandomForest::get_bag_size() const
-{
-	REQUIRE(m_features,"Training features not set yet. Bag size cannot be determined\n")
-	return (CDenseFeatures<float64_t>::obtain_from_generic(m_features))->get_num_vectors();
 }
 
 void CRandomForest::set_machine(CMachine* machine)
@@ -127,6 +128,8 @@ void CRandomForest::set_machine_problem_type(EProblemType mode)
 void CRandomForest::set_num_random_features(int32_t rand_featsize)
 {
 	REQUIRE(m_machine,"m_machine is NULL. It is expected to be RandomCARTree\n")
+	REQUIRE(rand_featsize>0,"feature subset size should be greater than 0\n")
+
 	dynamic_cast<CRandomCARTree*>(m_machine)->set_feature_subset_size(rand_featsize);
 }
 
@@ -139,6 +142,8 @@ int32_t CRandomForest::get_num_random_features() const
 void CRandomForest::set_machine_parameters(CMachine* m, SGVector<index_t> idx)
 {
 	REQUIRE(m,"Machine supplied is NULL\n")
+	REQUIRE(m_machine,"Reference Machine is NULL\n")
+
 	CRandomCARTree* tree=dynamic_cast<CRandomCARTree*>(m);
 
 	SGVector<float64_t> weights(idx.vlen);
@@ -154,6 +159,9 @@ void CRandomForest::set_machine_parameters(CMachine* m, SGVector<index_t> idx)
 	}
 
 	tree->set_weights(weights);
+
+	// equate the machine problem types - cloning does not do this
+	tree->set_machine_problem_type(dynamic_cast<CRandomCARTree*>(m_machine)->get_machine_problem_type());
 }
 
 void CRandomForest::init()

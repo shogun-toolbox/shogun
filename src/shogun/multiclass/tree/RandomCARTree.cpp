@@ -58,8 +58,12 @@ int32_t CRandomCARTree::compute_best_attribute(SGMatrix<float64_t> mat, SGVector
 	int32_t num_vecs=mat.num_cols;
 	int32_t num_feats=mat.num_rows;
 
-	REQUIRE(m_randsubset_size<=num_feats, "Feature subset size(set %d) should be less than"
-	" or eqal to the total number of features(%d here)\n",m_randsubset_size,num_feats)
+	REQUIRE(m_randsubset_size<=num_feats, "The Feature subset size(set %d) should be less than"
+	" or equal to the total number of features(%d here)\n",m_randsubset_size,num_feats)
+
+	// if subset size is not set choose sqrt(num_feats) by default
+	if (m_randsubset_size==0)
+		m_randsubset_size=CMath::sqrt(num_feats-0.f);
 
 	// randomly choose w/o replacement the attributes from which best will be chosen
 	// randomly permute and choose 1st randsubset_size elements
