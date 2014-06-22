@@ -39,26 +39,24 @@
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/lib/OpenCV/CV2SGMatrixFactory.h>
 
-namespace shogun{
+namespace shogun {
 
 class CV2FeaturesFactory
 {
-	public:
-	
-	CV2FeaturesFactory();
-	
-	~CV2FeaturesFactory();
-			
-	template <typename T> static CDenseFeatures<T>* getDenseFeatures(cv::Mat,
-	 CV2SGOptions=CV2SG_MEMCPY);
+  public:
+
+  CV2FeaturesFactory();
+  ~CV2FeaturesFactory();
+
+  template <typename T> static CDenseFeatures<T>* getDenseFeatures(cv::Mat, CV2SGOptions=CV2SG_MEMCPY);
 };
 
 template<typename T> CDenseFeatures<T>* CV2FeaturesFactory::getDenseFeatures
 (cv::Mat cvMat, CV2SGOptions option)
 {
-	SGMatrix<T> sgMat=CV2SGMatrixFactory::getSGMatrix<T>(cvMat, option);
-	CDenseFeatures<T>* features=new CDenseFeatures<T>(sgMat);
-	return features;
+  SGMatrix<T> sgMat=CV2SGMatrixFactory::getSGMatrix<T>(cvMat, option);
+  CDenseFeatures<T>* features=new CDenseFeatures<T>(sgMat);
+  return features;
 }
 
 }
