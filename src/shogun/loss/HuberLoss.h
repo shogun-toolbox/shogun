@@ -39,7 +39,7 @@
 namespace shogun
 {
 /** @brief CHuberLoss implements the Huber loss function. It behaves like
- * SquaredLoss function at values below Huber delta and like absolute deviation.
+ * SquaredLoss function at values below Huber delta and like absolute deviation
  * at values greater than the delta.
  */
 class CHuberLoss: public CLossFunction
@@ -47,7 +47,7 @@ class CHuberLoss: public CLossFunction
 public:
 	/** constructor
 	 *
-	 * @param delta huber delta 
+	 * @param delta Huber delta 
 	 */
 	CHuberLoss(float64_t delta=CMath::MAX_REAL_NUMBER);
 
@@ -64,7 +64,7 @@ public:
 	 *
 	 * @return Huber delta
 	 */
-	float64_t get_delta() { return m_delta; }
+	float64_t get_delta() const { return m_delta; }
 
 	/** Get loss for an example
 	 *
@@ -137,6 +137,10 @@ public:
 	 */
 	virtual ELossType get_loss_type() { return L_HUBERLOSS; }
 
+	/** Return name
+	 *
+	 * @return HuberLoss
+	 */
 	virtual const char* get_name() const { return "HuberLoss"; }
 
 private:
@@ -144,7 +148,7 @@ private:
 	void init();
 
 private:
-	/** huber delta */
+	/** Huber delta */
 	float64_t m_delta;
 };
 

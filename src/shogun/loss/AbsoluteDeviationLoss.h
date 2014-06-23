@@ -120,6 +120,10 @@ public:
 	 */
 	virtual ELossType get_loss_type() { return L_ABSOLUTEDEVIATIONLOSS; }
 
+	/** Return name
+	 *
+	 * @return AbsoluteDeviationLoss
+	 */
 	virtual const char* get_name() const { return "AbsoluteDeviationLoss"; }
 };
 
