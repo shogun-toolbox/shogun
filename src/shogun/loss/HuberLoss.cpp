@@ -29,6 +29,7 @@
  */
 
 #include <shogun/loss/HuberLoss.h>
+#include <shogun/base/Parameter.h>
 
 using namespace shogun;
 
@@ -93,4 +94,6 @@ float64_t CHuberLoss::get_square_grad(float64_t prediction, float64_t label)
 void CHuberLoss::init()
 {
 	m_delta=0;
+
+	SG_ADD(&m_delta,"m_delta","delta",MS_NOT_AVAILABLE);
 }

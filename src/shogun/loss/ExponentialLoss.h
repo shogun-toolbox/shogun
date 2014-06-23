@@ -120,6 +120,10 @@ public:
 	 */
 	virtual ELossType get_loss_type() { return L_EXPONENTIALLOSS; }
 
+	/** Return name
+	 *
+	 * @return ExponentialLoss
+	 */
 	virtual const char* get_name() const { return "ExponentialLoss"; }
 };
 
