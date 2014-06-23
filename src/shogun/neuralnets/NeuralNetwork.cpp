@@ -202,6 +202,13 @@ CMulticlassLabels* CNeuralNetwork::apply_multiclass(CFeatures* data)
 	return new CMulticlassLabels(labels_vec);
 }
 
+CDenseFeatures< float64_t >* CNeuralNetwork::transform(
+	CDenseFeatures< float64_t >* data)
+{
+	SGMatrix<float64_t> output_activations = forward_propagate(data);
+	return new CDenseFeatures<float64_t>(output_activations);
+}
+
 bool CNeuralNetwork::train_machine(CFeatures* data)
 {
 	REQUIRE(max_num_epochs>=0, 

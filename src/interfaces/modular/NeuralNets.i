@@ -3,9 +3,10 @@
 %newobject visible_state_features();
 %newobject sample_group(int32_t V, int32_t num_gibbs_steps, int32_t batch_size);
 %newobject sample_group_with_evidence(int32_t V, int32_t E, CDenseFeatures<float64_t>* evidence,int32_t num_gibbs_steps);
+%newobject sample_layer(int32_t V, int32_t num_gibbs_steps, int32_t batch_size);
+%newobject sample_layer_with_evidence(int32_t V, int32_t E, CDenseFeatures<float64_t>* evidence,int32_t num_gibbs_steps);
 
- 
-/* Remove C Prefix */ 
+/* Remove C Prefix */
 %rename(NeuralNetwork) CNeuralNetwork;
 %rename(NeuralLayer) CNeuralLayer;
 %rename(NeuralInputLayer) CNeuralInputLayer;
@@ -16,6 +17,7 @@
 %rename(ConvolutionalFeatureMap) CConvolutionalFeatureMap;
 %rename(NeuralConvolutionalLayer) CNeuralConvolutionalLayer;
 %rename(RBM) CRBM;
+%rename(DeepBeliefNetwork) CDeepBeliefNetwork;
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/neuralnets/NeuralNetwork.h>
@@ -28,3 +30,5 @@
 %include <shogun/neuralnets/ConvolutionalFeatureMap.h>
 %include <shogun/neuralnets/NeuralConvolutionalLayer.h>
 %include <shogun/neuralnets/RBM.h>
+%include <shogun/neuralnets/DeepBeliefNetwork.h>
+

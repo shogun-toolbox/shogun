@@ -122,6 +122,8 @@ enum ERBMVisibleUnitType
  */
 class CRBM : public CSGObject
 {
+friend class CDeepBeliefNetwork;
+
 public:
 	/** default constructor */
 	CRBM();
@@ -171,6 +173,15 @@ public:
 	 * are visible units in the RBM.
 	 */
 	virtual void train(CDenseFeatures<float64_t>* features);
+	
+	/** Transforms the given features using the RBM.
+	 * 
+	 * @param features Input features. Should have as many features as there 
+	 * are visible units in the RBM.
+	 * 
+	 * @return Mean activations of the hidden units given the features
+	 */
+	virtual CDenseFeatures<float64_t>* transform(CDenseFeatures<float64_t>* features);
 	
 	/** Draws samples from the marginal distribution of the visible units using
 	 * Gibbs sampling. The sampling starts from the values in the RBM's 
