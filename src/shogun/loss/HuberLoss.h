@@ -34,7 +34,6 @@
 #include <shogun/lib/config.h>
 
 #include <shogun/loss/LossFunction.h>
-#include <shogun/mathematics/Math.h>
 
 namespace shogun
 {
@@ -45,11 +44,14 @@ namespace shogun
 class CHuberLoss: public CLossFunction
 {
 public:
+	/** default constructor */
+	CHuberLoss() { init(); }
+
 	/** constructor
 	 *
 	 * @param delta Huber delta 
 	 */
-	CHuberLoss(float64_t delta=CMath::MAX_REAL_NUMBER);
+	CHuberLoss(float64_t delta);
 
 	/** Destructor */
 	~CHuberLoss() {};
