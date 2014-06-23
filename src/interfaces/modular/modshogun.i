@@ -69,6 +69,7 @@
 %include "Ensemble_includes.i"
 %include "NeuralNets_includes.i"
 %include "bagging_includes.i"
+%include "Boost_includes.i"
 
 %include "SGBase.i"
 %include "Machine.i"
@@ -97,6 +98,7 @@
 %include "Ensemble.i"
 %include "NeuralNets.i"
 %include "bagging.i"
+%include "Boost.i"
 
 #if defined(SWIGPERL)
 %include "abstract_types_extension.i"
