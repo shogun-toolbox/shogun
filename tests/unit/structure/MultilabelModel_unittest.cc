@@ -54,19 +54,31 @@ TEST(MultilabelModel, get_joint_feature_vector)
 
 	for (index_t i = 0; i < psi_1.vlen; i++)
 	{
-		if (i < 3 || i > 5)
+		if (i < 4 || i > 7)
 		{
 			EXPECT_EQ(psi_1[i], 0);
 		}
+		else if (i == 4)
+		{
+			EXPECT_EQ(psi_1[i], 1);
+		}
 		else
 		{
-			EXPECT_EQ(psi_1[i], feats[i - 3]);
+			EXPECT_EQ(psi_1[i], feats[(i % 4) - 1]);
 		}
 	}
 
 	for (index_t i = 0; i < psi_2.vlen; i++)
 	{
-		EXPECT_EQ(psi_2[i], feats[(i % 3) + 3]);
+		if (i % 4 == 0)
+		{
+			EXPECT_EQ(psi_2[i], 1);
+		}
+		else
+		{
+			EXPECT_EQ(psi_2[i], feats[(i % 4) - 1 + 3]);
+		}
+
 	}
 
 	SG_UNREF(slabel_1);
@@ -174,6 +186,9 @@ TEST(MultilabelModel, argmax)
 	w[6] = 0;
 	w[7] = -1;
 	w[8] = 1;
+	w[9] = 1;
+	w[10] = -1;
+	w[11] = 0;
 
 	CResultSet * ret_1 = model->argmax(w, 0, true);
 	CResultSet * ret_2 = model->argmax(w, 1, true);
@@ -181,9 +196,8 @@ TEST(MultilabelModel, argmax)
 	SGVector<int32_t>y_1_expected(2);
 	y_1_expected[0] = 0;
 	y_1_expected[1] = 2;
-	SGVector<int32_t>y_2_expected(2);
-	y_2_expected[0] = 0;
-	y_2_expected[1] = 1;
+	SGVector<int32_t>y_2_expected(1);
+	y_2_expected[0] = 2;
 
 	CSparseMultilabel * y_1 = CSparseMultilabel::obtain_from_generic(
 	                                  ret_1->argmax);
@@ -197,14 +211,17 @@ TEST(MultilabelModel, argmax)
 
 	for (index_t i = 0; i < psi_truth_1.vlen; i++)
 	{
-		if (i < 6)
+		if (i < 8)
 		{
 			EXPECT_EQ(psi_truth_1[i], 0);
 		}
-
+		else if (i == 8)
+		{
+			EXPECT_EQ(psi_truth_1[i], 1);
+		}
 		else
 		{
-			EXPECT_EQ(psi_truth_1[i], feats[i % 3]);
+			EXPECT_EQ(psi_truth_1[i], feats[(i % 4) - 1]);
 		}
 	}
 
@@ -222,18 +239,22 @@ TEST(MultilabelModel, argmax)
 
 	for (index_t i = 0; i < psi_truth_2.vlen; i++)
 	{
-		if (i >= 6)
+		if (i > 7)
 		{
 			EXPECT_EQ(psi_truth_2[i], 0);
 		}
 
+		else if (i % 4 == 0 && i != 8)
+		{
+			EXPECT_EQ(psi_truth_2[i], 1);
+		}
 		else
 		{
-			EXPECT_EQ(psi_truth_2[i], feats[(i % 3) + 3]);
+			EXPECT_EQ(psi_truth_2[i], feats[(i % 4) - 1 + 3]);
 		}
 	}
 
-	EXPECT_EQ(ret_2->delta, 0);
+	EXPECT_EQ(ret_2->delta, 3);
 
 	CResultSet * ret_3 = model->argmax(w, 0, false);
 	CResultSet * ret_4 = model->argmax(w, 1, false);
@@ -250,14 +271,18 @@ TEST(MultilabelModel, argmax)
 
 	for (index_t i = 0; i < psi_pred_3.vlen; i++)
 	{
-		if (i > 2 && i < 6)
+		if (i > 3 && i < 8)
 		{
 			EXPECT_EQ(psi_pred_3[i], 0);
 		}
 
+		else if (i % 4 == 0)
+		{
+			EXPECT_EQ(psi_pred_3[i], 1);
+		}
 		else
 		{
-			EXPECT_EQ(psi_pred_3[i], feats[i % 3]);
+			EXPECT_EQ(psi_pred_3[i], feats[(i % 4) - 1]);
 		}
 	}
 
@@ -273,14 +298,18 @@ TEST(MultilabelModel, argmax)
 
 	for (index_t i = 0; i < psi_pred_4.vlen; i++)
 	{
-		if (i >= 6)
+		if (i < 8)
 		{
 			EXPECT_EQ(psi_pred_4[i], 0);
 		}
 
+		else if (i % 4 == 0)
+		{
+			EXPECT_EQ(psi_pred_4[i], 1);
+		}
 		else
 		{
-			EXPECT_EQ(psi_pred_4[i], feats[(i % 3) + 3]);
+			EXPECT_EQ(psi_pred_4[i], feats[(i % 4) - 1 + 3]);
 		}
 	}
 
