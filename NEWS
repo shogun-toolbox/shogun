@@ -21,6 +21,7 @@
 		- Add Convolutional Neural Networks [Khaled Nasr]
 		- Add Random Forests algorithm for ensemble learning using CART [Parijat Mazumdar] 
 		- Add Restricted Botlzmann Machines [Khaled Nasr]
+		- Add Stochastic Gradient Boosting algorithm for ensemble learning [Parijat Mazumdar]
 	* Bugfixes:
 		- Fix reference counting bugs in CList when reference counting is on [Heiko Strathmann, Thoralf Klein, lambday]
 		- Fix memory problem in PCA::apply_to_feature_matrix [Parijat Mazumdar]
