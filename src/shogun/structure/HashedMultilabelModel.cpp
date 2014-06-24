@@ -68,7 +68,7 @@ void CHashedMultilabelModel::init(int32_t dim)
 
 int32_t CHashedMultilabelModel::get_dim() const
 {
-	return m_dim;
+	return m_dim + 1;
 }
 
 void CHashedMultilabelModel::set_misclass_cost(float64_t false_positive,
@@ -104,8 +104,11 @@ SGSparseVector<float64_t> CHashedMultilabelModel::get_sparse_joint_feature_vecto
 	ASSERT(slabel != NULL);
 	SGVector<int32_t> slabel_data = slabel->get_data();
 
-	SGSparseVector<float64_t> psi(vec.num_feat_entries * slabel_data.vlen);
+	SGSparseVector<float64_t> psi(vec.num_feat_entries * slabel_data.vlen + 1);
 	index_t k = 0;
+	psi.features[k].feat_index = 0;
+	psi.features[k].entry = 1;
+	k++;
 
 	for (int32_t i = 0; i < slabel_data.vlen; i++)
 	{
@@ -117,7 +120,7 @@ SGSparseVector<float64_t> CHashedMultilabelModel::get_sparse_joint_feature_vecto
 			uint32_t hash = CHash::MurmurHash3(
 			                        (uint8_t *)&vec.features[j].feat_index,
 			                        sizeof(index_t), seed);
-			psi.features[k].feat_index = (hash >> 1) % m_dim;
+			psi.features[k].feat_index = (hash >> 1) % m_dim + 1;
 			psi.features[k++].entry =
 			        (hash % 2 == 1 ? -1.0 : 1.0) * vec.features[j].entry;
 		}
@@ -184,14 +187,16 @@ SGSparseVector<float64_t> CHashedMultilabelModel::get_hashed_feature_vector(
 	SGSparseVector<float64_t> vec = ((CSparseFeatures<float64_t> *)m_features)->
 	                                get_sparse_feature_vector(feat_idx);
 
-	SGSparseVector<float64_t> h_vec(vec.num_feat_entries);
+	SGSparseVector<float64_t> h_vec(vec.num_feat_entries + 1);
+	h_vec.features[0].feat_index = 0;
+	h_vec.features[0].entry = 1;
 
 	for (int32_t j = 0; j < vec.num_feat_entries; j++)
 	{
 		uint32_t hash = CHash::MurmurHash3(
 		                        (uint8_t *)&vec.features[j].feat_index,
 		                        sizeof(index_t), seed);
-		h_vec.features[j].feat_index = (hash >> 1) % m_dim;
+		h_vec.features[j].feat_index = (hash >> 1) % m_dim + 1;
 		h_vec.features[j].entry =
 		        (hash % 2 == 1 ? -1.0 : 1.0) * vec.features[j].entry;
 	}
