@@ -33,7 +33,7 @@
 #include <shogun/classifier/LDA.h>
 #include <gtest/gtest.h>
 
-#ifdef HAVE_EIGEN3
+#ifdef HAVE_LAPACK
 using namespace shogun;
 class LDATest: public::testing::Test
 {
@@ -133,4 +133,4 @@ TEST_F(LDATest, CheckProjection)
 	EXPECT_NEAR(+271.14418463, projection[8], epsilon);
 	EXPECT_NEAR(+291.21213655, projection[9], epsilon);
 }
-#endif //HAVE_EIGEN3
+#endif //HAVE_LAPACK
