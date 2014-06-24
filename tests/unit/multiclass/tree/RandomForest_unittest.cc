@@ -155,9 +155,8 @@ TEST(RandomForest,classify_test)
 
 	CMulticlassLabels* labels=new CMulticlassLabels(lab);
 
-	CRandomForest* c=new CRandomForest(feats, labels, 2);
+	CRandomForest* c=new CRandomForest(feats, labels, 100,2);
 	c->set_feature_types(ft);
-	c->set_num_bags(100);
 	CMajorityVote* mv = new CMajorityVote();
 	c->set_combination_rule(mv);
 	c->train(feats);

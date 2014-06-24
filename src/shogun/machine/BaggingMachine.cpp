@@ -113,9 +113,9 @@ bool CBaggingMachine::train_machine(CFeatures* data)
 		ASSERT(m_features->get_num_vectors() == m_labels->get_num_labels());
 	}
 
-	// bag size less than or equal to number of feature vector
-	REQUIRE((get_bag_size() <= m_features->get_num_vectors()) && (get_bag_size() > 0), "bag size (%d currently) "
-	" should be greater than 0 but less than or equal to number of training vectors (%d here)\n",get_bag_size());
+	// if bag size is not provided, set it equal to number of training vectors
+	if (m_bag_size==0)
+		m_bag_size = m_features->get_num_vectors();
 
 	// clear the array, if previously trained
 	m_bags->reset_array();

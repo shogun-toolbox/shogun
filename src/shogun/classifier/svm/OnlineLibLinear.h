@@ -23,8 +23,19 @@
 
 namespace shogun
 {
-/** @brief Class implementing a purely online version of LibLinear,
+/** @brief Class implementing a purely online version of CLibLinear,
  * using the L2R_L1LOSS_SVC_DUAL solver only. */
+
+/** @brief This class provides an interface to the LibLinear library for large-
+ * scale linear learning [1] focusing on SVM. This is the online-classification interface. For
+ * batch classification, see CLibLinear, for batch regression, see
+ * CLibLinearRegression.
+ *
+ * This class offers ::L2R_L1LOSS_SVC_DUAL only.
+ * See the ::LIBLINEAR_SOLVER_TYPE enum for types of solvers for batch SVM.
+ *
+ * [1] http://www.csie.ntu.edu.tw/~cjlin/liblinear/
+ * */
 class COnlineLibLinear : public COnlineLinearMachine
 {
 public:

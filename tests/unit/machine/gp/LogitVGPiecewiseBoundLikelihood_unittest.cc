@@ -43,13 +43,13 @@
 #ifdef HAVE_EIGEN3
 
 #include <shogun/labels/BinaryLabels.h>
-#include <shogun/machine/gp/LogitVariationalPiecewiseBoundLikelihood.h>
+#include <shogun/machine/gp/LogitVGPiecewiseBoundLikelihood.h>
 #include <shogun/mathematics/Math.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;
 
-SGMatrix<float64_t> init_bound()
+SGMatrix<float64_t> init_piecewise_bound()
 {
 	//load('llp.mat'); from the Matlab code example.m 
 	index_t row = 20;
@@ -164,12 +164,12 @@ SGMatrix<float64_t> init_bound()
 	return bound;
 }
 
-TEST(LogitVariationalPiecewiseBoundLikelihood,get_variational_expection)
+TEST(LogitVGPiecewiseBoundLikelihood,get_variational_expection)
 {
 	float64_t rel_tolorance = 1e-2;
 	float64_t abs_tolorance;
 
-	SGMatrix<float64_t> bound = init_bound();
+	SGMatrix<float64_t> bound = init_piecewise_bound();
 
 	const index_t dim = 10;
 	SGVector<float64_t> y(dim);
@@ -209,7 +209,7 @@ TEST(LogitVariationalPiecewiseBoundLikelihood,get_variational_expection)
 	v[8] = 64;
 	v[9] = 625;
 
-	CLogitVariationalPiecewiseBoundLikelihood *lik = new CLogitVariationalPiecewiseBoundLikelihood();
+	CLogitVGPiecewiseBoundLikelihood *lik = new CLogitVGPiecewiseBoundLikelihood();
 	lik->set_variational_bound(bound);
 	CBinaryLabels* lab = new CBinaryLabels(y);
 	lik->set_variational_distribution(m, v, lab);
@@ -243,12 +243,12 @@ TEST(LogitVariationalPiecewiseBoundLikelihood,get_variational_expection)
 	SG_UNREF(lik);
 }
 
-TEST(LogitVariationalPiecewiseBoundLikelihood,get_variational_first_derivative_wrt_sigma2)
+TEST(LogitVGPiecewiseBoundLikelihood,get_variational_first_derivative_wrt_sigma2)
 {
 	float64_t rel_tolorance = 1e-2;
 	float64_t abs_tolorance;
 
-	SGMatrix<float64_t> bound = init_bound();
+	SGMatrix<float64_t> bound = init_piecewise_bound();
 
 	const index_t dim = 10;
 	SGVector<float64_t> y(dim);
@@ -288,7 +288,7 @@ TEST(LogitVariationalPiecewiseBoundLikelihood,get_variational_first_derivative_w
 	v[8] = 64;
 	v[9] = 625;
 
-	CLogitVariationalPiecewiseBoundLikelihood *lik = new CLogitVariationalPiecewiseBoundLikelihood();
+	CLogitVGPiecewiseBoundLikelihood *lik = new CLogitVGPiecewiseBoundLikelihood();
 	lik->set_variational_bound(bound);
 	CBinaryLabels* lab = new CBinaryLabels(y);
 	lik->set_variational_distribution(m, v, lab);
@@ -324,12 +324,12 @@ TEST(LogitVariationalPiecewiseBoundLikelihood,get_variational_first_derivative_w
 	SG_UNREF(lik);
 }
 
-TEST(LogitVariationalPiecewiseBoundLikelihood,get_variational_first_derivative_wrt_mu)
+TEST(LogitVGPiecewiseBoundLikelihood,get_variational_first_derivative_wrt_mu)
 {
 	float64_t rel_tolorance = 1e-2;
 	float64_t abs_tolorance;
 
-	SGMatrix<float64_t> bound = init_bound();
+	SGMatrix<float64_t> bound = init_piecewise_bound();
 
 	const index_t dim = 10;
 	SGVector<float64_t> y(dim);
@@ -369,7 +369,7 @@ TEST(LogitVariationalPiecewiseBoundLikelihood,get_variational_first_derivative_w
 	v[8] = 64;
 	v[9] = 625;
 
-	CLogitVariationalPiecewiseBoundLikelihood *lik = new CLogitVariationalPiecewiseBoundLikelihood();
+	CLogitVGPiecewiseBoundLikelihood *lik = new CLogitVGPiecewiseBoundLikelihood();
 	lik->set_variational_bound(bound);
 	CBinaryLabels* lab = new CBinaryLabels(y);
 	lik->set_variational_distribution(m, v, lab);

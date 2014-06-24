@@ -55,7 +55,8 @@ enum ERBMMonitoringMethod
 enum ERBMVisibleUnitType
 {
 	RBMVUT_BINARY=0,
-	RBMVUT_GAUSSIAN=1
+	RBMVUT_GAUSSIAN=1,
+	RBMVUT_SOFTMAX=2
 };
 
 /** @brief A Restricted Boltzmann Machine
@@ -110,6 +111,14 @@ enum ERBMVisibleUnitType
  * [pseudo-log-likelihood](http://en.wikipedia.org/wiki/Pseudolikelihood) which 
  * is an approximation to the log-likelihood. However, this is currently only 
  * supported for binary visible units.
+ * 
+ * The rows of the visible_state matrix are divided into groups, one for each
+ * group of visible units. For example, if we have 3 groups of visible units: 
+ * group 0 with 10 units, group 1 with 5 units, and group 2 with 6 units, the 
+ * states of group 0 will be stored in visible_state[0:10,:], the states of 
+ * group 1 will stored in visible_state[10:15,:], and the states of group 2
+ * will be stored in visible_state[15:21,:]. Note that the groups are numbered 
+ * by the order in which they where added to the RBM using add_visible_group()
  */
 class CRBM : public CSGObject
 {
@@ -161,7 +170,7 @@ public:
 	 * @param features Input features. Should have as many features as there 
 	 * are visible units in the RBM.
 	 */
-	virtual void train(CFeatures* features);
+	virtual void train(CDenseFeatures<float64_t>* features);
 	
 	/** Draws samples from the marginal distribution of the visible units using
 	 * Gibbs sampling. The sampling starts from the values in the RBM's 
@@ -172,6 +181,51 @@ public:
 	 * for each sample
 	 */
 	virtual void sample(int32_t num_gibbs_steps=1, int32_t batch_size=1);
+	
+	/** Draws Samples from \f$ P(V) \f$ where \f$ V \f$  is one of the visible 
+	 * unit groups. The sampling starts from the values in the RBM's 
+	 * visible_state matrix and result of the sampling is stored there too.
+	 * 
+	 * @param V Index of the visible unit group to be sampled
+	 * @param num_gibbs_steps Number of Gibbs sampling steps
+	 * @param batch_size Number of samples to be drawn. A seperate chain is used 
+	 * for each sample
+	 * 
+	 * @return Sampled states of group V
+	 */
+	virtual CDenseFeatures<float64_t>* sample_group(
+			int32_t V, 
+			int32_t num_gibbs_steps=1, int32_t batch_size=1);
+	
+	/** Draws Samples from \f$ P(V|E=evidence) \f$ where \f$ E \f$ is one of 
+	 * the visible unit groups and \f$ V \f$ is all the visible unit excluding 
+	 * the ones in group \f$ E \f$. The sampling starts from the values in the 
+	 * RBM's visible_state matrix and result of the sampling is stored there too.
+	 * 
+	 * @param E Index of the evidence visible unit group
+	 * @param evidence States of the evidence visible unit group
+	 * @param num_gibbs_steps Number of Gibbs sampling steps
+	 */
+	virtual void sample_with_evidence(
+			int32_t E, CDenseFeatures<float64_t>* evidence,
+			int32_t num_gibbs_steps=1);
+	
+	/** Draws Samples from \f$ P(V|E=evidence) \f$ where \f$ E \f$ is one of 
+	 * the visible unit groups and \f$ V \f$ is another visible unit group. 
+	 * The sampling starts from the values in the RBM's visible_state matrix 
+	 * and result of the sampling is stored there too.
+	 * 
+	 * @param V Index of the visible unit group to be sampled
+	 * @param E Index of the evidence visible unit group
+	 * @param evidence States of the evidence visible unit group
+	 * @param num_gibbs_steps Number of Gibbs sampling steps
+	 * 
+	 * @return Sampled states of group V
+	 */
+	virtual CDenseFeatures<float64_t>* sample_group_with_evidence(
+			int32_t V, 
+			int32_t E, CDenseFeatures<float64_t>* evidence,
+			int32_t num_gibbs_steps=1);
 	
 	/** Resets the state of the markov chain used for sampling, which is stored 
 	 * in the visible_state matrix, to random values
@@ -303,6 +357,10 @@ protected:
 	/** Samples the visible states according to the provided means */
 	virtual void sample_visible(SGMatrix<float64_t> mean, SGMatrix<float64_t> result);
 	
+	/** Samples one group of visible states according to the provided means */
+	virtual void sample_visible(int32_t index, 
+			SGMatrix<float64_t> mean, SGMatrix<float64_t> result);
+	
 private:
 	void init();
 	
@@ -315,6 +373,12 @@ public:
 	/** If true, persistent contrastive divergence is used. Default value is true.
 	 */
 	bool cd_persistent;
+	
+	/** If true, the visible units are sampled during contrastive divergence. If 
+	 * false, the visible units are not sampled, and their mean values are used 
+	 * instead. Default value is false
+	 */
+	bool cd_sample_visible;
 	
 	/** L2 Regularization coeff, default value is 0.0*/
 	float64_t l2_coefficient;

@@ -99,6 +99,11 @@ public:
 	/** destructor */
 	virtual ~CCARTree();
 
+	/** set labels - automagically switch machine problem type based on type of labels supplied
+	 * @param lab labels
+	 */
+	virtual void set_labels(CLabels* lab);
+
 	/** get name
 	 * @return class name CARTree
 	 */

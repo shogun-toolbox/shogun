@@ -65,6 +65,20 @@ CCARTree::~CCARTree()
 	SG_UNREF(m_alphas);
 }
 
+void CCARTree::set_labels(CLabels* lab)
+{
+	if (lab->get_label_type()==LT_MULTICLASS)
+		set_machine_problem_type(PT_MULTICLASS);
+	else if (lab->get_label_type()==LT_REGRESSION)
+		set_machine_problem_type(PT_REGRESSION);
+	else
+		SG_ERROR("label type supplied is not supported\n")
+
+	SG_REF(lab);
+	SG_UNREF(m_labels);
+	m_labels=lab;
+}
+
 void CCARTree::set_machine_problem_type(EProblemType mode)
 {
 	m_mode=mode;

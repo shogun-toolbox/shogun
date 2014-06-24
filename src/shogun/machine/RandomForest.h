@@ -51,42 +51,31 @@ public:
 
 	/** constructor
 	 *
-	 * @param rand_numfeats number of attributes chosen randomly during node split in candidate trees 
+	 * @param num_rand_feats number of attributes chosen randomly during node split in candidate trees 
+	 * @param num_bags number of trees in forest 
 	 */
-	CRandomForest(int32_t rand_numfeats);
+	CRandomForest(int32_t num_rand_feats, int32_t num_bags=10);
 
 	/** constructor
 	 *
 	 * @param features training features
 	 * @param labels training labels
-	 * @param rand_numfeats number of attributes chosen randomly during node split in candidate trees 
+	 * @param num_bags number of trees in forest
+	 * @param num_rand_feats number of attributes chosen randomly during node split in candidate trees  
 	 */
-	CRandomForest(CFeatures* features, CLabels* labels, int32_t rand_numfeats=0);
+	CRandomForest(CFeatures* features, CLabels* labels, int32_t num_bags=10, int32_t num_rand_feats=0);
 
 	/** constructor
 	 *
 	 * @param features training features
 	 * @param labels training labels
 	 * @param weights weights of training feature vectors
-	 * @param rand_numfeats number of attributes chosen randomly during node split in candidate trees 
+	 * @param num_rand_feats number of attributes chosen randomly during node split in candidate trees 
 	 */
-	CRandomForest(CFeatures* features, CLabels* labels, SGVector<float64_t> weights, int32_t rand_numfeats=0);
+	CRandomForest(CFeatures* features, CLabels* labels, SGVector<float64_t> weights, int32_t num_bags=10, int32_t num_rand_feats=0);
 
 	/** destructor */
 	virtual ~CRandomForest();
-
-	/** Bag size is set to number of training feature vectors and cannot be changed.
-	 *
-	 * @param bag_size number of vectors to use for a bag
-	 */
-	virtual void set_bag_size(int32_t bag_size);
-
-	/** Get number of feature vectors that are use
-	 * for training each bag/machine
-	 *
-	 * @return number of vectors used for training for each bag.
-	 */
-	virtual int32_t get_bag_size() const;
 
 	/** get name
 	 *

@@ -53,8 +53,24 @@ namespace shogun
 /** @brief The KL approximation inference method class.
  *
  * The class is implemented based on the KL method in the Nickisch's paper
+ * Note that lambda (m_W) is a diagonal vector defined in the paper.
+ * The implementation apply L-BFGS to finding optimal solution of negative log likelihood.
+ * Since lambda is always non-positive according to the paper,
+ * this implementation uses log(-lambda) as representation, which assumes lambda is always negative.
  *
- * Note that "Full Diagonal" means the W matrix mentioned in the paper is a diagonal matrix 
+ * Code adapted from 
+ * http://hannes.nickisch.org/code/approxXX.tar.gz
+ * and Gaussian Process Machine Learning Toolbox
+ * http://www.gaussianprocess.org/gpml/code/matlab/doc/
+ * and the reference paper is
+ * Nickisch, Hannes, and Carl Edward Rasmussen.
+ * "Approximations for Binary Gaussian Process Classification."
+ * Journal of Machine Learning Research 9.10 (2008).
+ *
+ * The adapted Matlab code can be found at
+ * https://gist.github.com/yorkerlin/b64a015491833562d11a
+ *
+ * Note that "Full Diagonal" means the Lambda matrix mentioned in the paper is a diagonal matrix 
  * and this is 'exact' variational approximation, which does NOT enforce some structure
  * on the variational co-variance matrix
  */
@@ -177,12 +193,10 @@ private:
 	 */
 	SGMatrix<float64_t> m_A;
 
-	/** the gradient of the variational expection wrt sigma2
-	 */
+	/** the gradient of the variational expection wrt sigma2*/
 	SGVector<float64_t> m_dv;
 
-	/** the gradient of the variational expection wrt mu
-	 */
+	/** the gradient of the variational expection wrt mu*/
 	SGVector<float64_t> m_df;
 
 };

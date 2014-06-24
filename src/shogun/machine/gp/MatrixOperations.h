@@ -27,6 +27,10 @@
  * of the authors and should not be interpreted as representing official policies,
  * either expressed or implied, of the Shogun Development Team.
  *
+ * Code adapted from 
+ * Gaussian Process Machine Learning Toolbox
+ * http://www.gaussianprocess.org/gpml/code/matlab/doc/
+ *
  */
 
 #ifndef _MATRIXOPERATIONS_H_
@@ -66,10 +70,6 @@ public:
 
 	static SGMatrix<float64_t> get_inverse(Eigen::MatrixXd eigen_L, Eigen::MatrixXd eigen_kernel,
 		Eigen::VectorXd eigen_sW, float64_t scale);
-
-	static float64_t get_log_det(const Eigen::MatrixXd eigen_A);
-
-	static float64_t get_log_det(const SGMatrix<float64_t> A);
 
 };
 }

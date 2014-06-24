@@ -84,15 +84,16 @@ void CKLFullDiagonalInferenceMethod::init()
 		MS_NOT_AVAILABLE);
 }
 
-/** Note that m_alpha contains not only the alpha vector defined in the reference
- * but also a vector corresponding to the diagonal part of W 
- *
- * Note that alpha=K^{-1}(mu-mean), where mean is generated from mean function,
- * K is generated from cov function
- * and mu is not only the posterior mean but also the variational mean
- */
+
 SGVector<float64_t> CKLFullDiagonalInferenceMethod::get_alpha()
 {
+	/** Note that m_alpha contains not only the alpha vector defined in the reference
+	 * but also a vector corresponding to the diagonal part of W 
+	 *
+	 * Note that alpha=K^{-1}(mu-mean), where mean is generated from mean function,
+	 * K is generated from cov function
+	 * and mu is not only the posterior mean but also the variational mean
+	 */
 	if (parameter_hash_changed())
 		update();
 
@@ -144,7 +145,7 @@ void CKLFullDiagonalInferenceMethod::lbfgs_precompute()
 	Map<VectorXd> eigen_s2(m_s2.vector, m_s2.vlen);
 	//Sigma=inv(inv(K)-2*diag(lambda))=K-K*diag(sW)*inv(L)'*inv(L)*diag(sW)*K
 	//v=abs(diag(Sigma))
-	eigen_s2=(eigen_K.diagonal().array()-(eigen_V.array().pow(2).colwise().sum().transpose())).abs().matrix();
+	eigen_s2=(eigen_K.diagonal().array()*CMath::sq(m_scale)-(eigen_V.array().pow(2).colwise().sum().transpose())).abs().matrix();
 	m_model->set_variational_distribution(m_mu, m_s2, m_labels);
 }
 
@@ -219,7 +220,6 @@ float64_t CKLFullDiagonalInferenceMethod::get_negative_log_marginal_likelihood_h
 	//nlZ = -a -logdet(V*inv(K))/2 -n/2 +(alpha'*K*alpha)/2 +trace(V*inv(K))/2;	
 	float64_t result=-a+eigen_L.diagonal().array().log().sum();
 	result+=0.5*(-eigen_K.rows()+eigen_alpha.dot(eigen_mu-eigen_mean)+trace);
-
 	return result;
 }
 
@@ -247,7 +247,6 @@ float64_t CKLFullDiagonalInferenceMethod::get_derivative_related_cov(Eigen::Matr
 
 	//dnlZ(j) = alpha'*dK*(alpha/2-df) - z'*dv;
 	return eigen_alpha.dot(eigen_dK*(eigen_alpha/2.0-eigen_df))-z.dot(eigen_dv);
-
 }
 
 void CKLFullDiagonalInferenceMethod::update_alpha()
@@ -273,7 +272,7 @@ void CKLFullDiagonalInferenceMethod::update_alpha()
 		MatrixXd eigen_V=LL.triangularView<Upper>().adjoint().solve(eigen_K*CMath::sq(m_scale));
 		SGVector<float64_t> s2_tmp(m_s2.vlen);
 		Map<VectorXd> eigen_s2(s2_tmp.vector, s2_tmp.vlen);
-		eigen_s2=(eigen_K.diagonal().array()-(eigen_V.array().pow(2).colwise().sum().transpose())).abs().matrix();
+		eigen_s2=(eigen_K.diagonal().array()*CMath::sq(m_scale)-(eigen_V.array().pow(2).colwise().sum().transpose())).abs().matrix();
 		SGVector<float64_t> mean=m_mean->get_mean_vector(m_features);
 		m_model->set_variational_distribution(mean, s2_tmp, m_labels);
 		float64_t a=SGVector<float64_t>::sum(m_model->get_variational_expection());
@@ -320,24 +319,27 @@ SGVector<float64_t> CKLFullDiagonalInferenceMethod::get_diagonal_vector()
 	return SGVector<float64_t>(m_sW);
 }
 
-//get_derivative_related_cov(MatrixXd eigen_dK) does the similar job
-//Therefore, this function body is empty
 void CKLFullDiagonalInferenceMethod::update_deriv()
 {
+	/** get_derivative_related_cov(MatrixXd eigen_dK) does the similar job
+	 * Therefore, this function body is empty
+	 */
 }
 
-//L is automatically updated when update_alpha is called
-//Therefore, this function body is empty
 void CKLFullDiagonalInferenceMethod::update_chol()
 {
+	/** L is automatically updated when update_alpha is called
+	 * Therefore, this function body is empty
+	 */
 }
 
-//The variational co-variational matrix,
-//which is automatically computed when update_alpha is called,
-//is an approximated posterior co-variance matrix
-//Therefore, this function body is empty
 void CKLFullDiagonalInferenceMethod::update_approx_cov()
 {
+	/** The variational co-variational matrix,
+	 * which is automatically computed when update_alpha is called,
+	 * is an approximated posterior co-variance matrix
+	 * Therefore, this function body is empty
+	 */
 }
 
 } /* namespace shogun */
