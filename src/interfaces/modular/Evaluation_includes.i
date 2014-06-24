@@ -7,6 +7,7 @@
  #include <shogun/evaluation/ClusteringMutualInformation.h>
  #include <shogun/evaluation/ContingencyTableEvaluation.h>
  #include <shogun/evaluation/MulticlassAccuracy.h>
+ #include <shogun/evaluation/MultilabelAccuracy.h>
  #include <shogun/evaluation/MeanAbsoluteError.h>
  #include <shogun/evaluation/MeanSquaredError.h>
  #include <shogun/evaluation/MeanSquaredLogError.h>

@@ -19,8 +19,99 @@ CMultilabelAccuracy::~CMultilabelAccuracy()
 {
 }
 
-float64_t CMultilabelAccuracy::evaluate(CLabels* predicted,
-        CLabels* ground_truth)
+float64_t CMultilabelAccuracy::evaluate(CLabels * predicted,
+        CLabels * ground_truth)
+{
+	float64_t accuracy, score;
+	SGVector<int32_t> tp, fp, fn;
+
+	evaluate(
+			predicted,
+			ground_truth,
+			accuracy,
+			score,
+			tp,
+			fp,
+			fn);
+	return accuracy;
+}
+
+float64_t CMultilabelAccuracy::get_f1_score(CLabels * predicted,
+		CLabels * ground_truth)
+{
+	float64_t accuracy, score;
+	SGVector<int32_t> tp, fp, fn;
+
+	evaluate(
+			predicted,
+			ground_truth,
+			accuracy,
+			score,
+			tp,
+			fp,
+			fn);
+	return score;
+}
+
+SGVector<int32_t> CMultilabelAccuracy::get_true_pos(CLabels * predicted,
+		CLabels * ground_truth)
+{
+	float64_t accuracy, score;
+	SGVector<int32_t> tp, fp, fn;
+
+	evaluate(
+			predicted,
+			ground_truth,
+			accuracy,
+			score,
+			tp,
+			fp,
+			fn);
+	return tp;
+}
+
+SGVector<int32_t> CMultilabelAccuracy::get_false_pos(CLabels * predicted,
+		CLabels * ground_truth)
+{
+	float64_t accuracy, score;
+	SGVector<int32_t> tp, fp, fn;
+
+	evaluate(
+			predicted,
+			ground_truth,
+			accuracy,
+			score,
+			tp,
+			fp,
+			fn);
+	return fp;
+}
+
+SGVector<int32_t> CMultilabelAccuracy::get_false_neg(CLabels * predicted,
+		CLabels * ground_truth)
+{
+	float64_t accuracy, score;
+	SGVector<int32_t> tp, fp, fn;
+
+	evaluate(
+			predicted,
+			ground_truth,
+			accuracy,
+			score,
+			tp,
+			fp,
+			fn);
+	return fn;
+}
+
+void CMultilabelAccuracy::evaluate(
+		CLabels* predicted,
+        CLabels* ground_truth,
+		float64_t & accuracy,
+		float64_t & score,
+		SGVector<int32_t> & tp,
+		SGVector<int32_t> & fp,
+		SGVector<int32_t> & fn)
 {
     REQUIRE(predicted->get_label_type() == LT_SPARSE_MULTILABEL,
             "predicted label should be of multilabels type\n");
@@ -38,7 +129,15 @@ float64_t CMultilabelAccuracy::evaluate(CLabels* predicted,
             "predicted labels and actual labels should have same number of classes\n");
 
     int32_t num_labels = predicted->get_num_labels();
-    float64_t accuracy = 0.0;
+
+    accuracy = 0.0;
+	score = 0.0;
+	tp = SGVector<int32_t>(num_labels);
+	fp = SGVector<int32_t>(num_labels);
+	fn = SGVector<int32_t>(num_labels);
+
+	float64_t precision = 0.0;
+	float64_t recall = 0.0;
 
     for (index_t k=0; k<num_labels; k++)
     {
@@ -71,8 +170,15 @@ float64_t CMultilabelAccuracy::evaluate(CLabels* predicted,
 
         accuracy += ((float)true_pos /
                      (float)(slabel_true.vlen + slabel_pred.vlen - true_pos));
+		precision += ((float)true_pos / (float)slabel_pred.vlen);
+		recall += ((float)true_pos / (float)slabel_true.vlen);
+		tp[k] = true_pos;
+		fp[k] = (slabel_pred.vlen - true_pos);
+		fn[k] = (slabel_true.vlen - true_pos);
     }
 
-    return accuracy/num_labels;
+    accuracy /= num_labels;
+	precision /= num_labels;
+	recall /= num_labels;
+	score = (2 * (precision * recall)) / (precision + recall);
 }
-
