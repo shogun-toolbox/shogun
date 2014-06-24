@@ -51,7 +51,7 @@ int32_t CMultilabelModel::get_dim() const
 	int32_t num_classes = ((CMultilabelSOLabels *)m_labels)->get_num_classes();
 	int32_t feats_dim = ((CDotFeatures *)m_features)->get_dim_feature_space();
 
-	return feats_dim * num_classes;
+	return (feats_dim * num_classes) + num_classes;
 }
 
 void CMultilabelModel::set_misclass_cost(float64_t false_positive, float64_t false_negative)
@@ -74,7 +74,11 @@ SGVector<float64_t> CMultilabelModel::get_joint_feature_vector(int32_t feat_idx,
 
 	for (index_t i = 0; i < slabel_data.vlen; i++)
 	{
-		for (index_t j = 0, k = slabel_data[i] * x.vlen; j < x.vlen; j++, k++)
+		index_t k = slabel_data[i] * (x.vlen + 1);
+		psi[k] = 1;
+		k++;
+
+		for (index_t j = 0; j < x.vlen; j++, k++)
 		{
 			psi[k] = x[j];
 		}
@@ -182,7 +186,8 @@ CResultSet * CMultilabelModel::argmax(SGVector<float64_t> w, int32_t feat_idx,
 
 	for (int32_t c = 0; c < m_num_classes; c++)
 	{
-		score = dot_feats->dense_dot(feat_idx, w.vector + c * feats_dim, feats_dim);
+		score = dot_feats->dense_dot(feat_idx, w.vector + (c * (feats_dim + 1)) + 1,
+		                             feats_dim) + w[c * (feats_dim + 1)];
 
 		if (score > 0)
 		{
