@@ -30,50 +30,44 @@
  * 
  * Written (W) 2014 Khaled Nasr
  */
-
+#include <shogun/neuralnets/Autoencoder.h>
 #include <shogun/neuralnets/NeuralInputLayer.h>
+#include <shogun/neuralnets/NeuralRectifiedLinearLayer.h>
+#include <shogun/lib/SGMatrix.h>
+#include <shogun/features/DenseFeatures.h>
+#include <shogun/mathematics/Math.h>
+#include <gtest/gtest.h>
 
 using namespace shogun;
 
-CNeuralInputLayer::CNeuralInputLayer() : CNeuralLayer()
+TEST(Autoencoder, train)
 {
-	init();
-}
+	CMath::init_random(100);
+	
+	int32_t num_features = 10;
+	int32_t num_examples = 100;
+	int32_t num_hid = 10;
+	
+	SGMatrix<float64_t> data(num_features, num_examples);
+	for (int32_t i=0; i<num_features*num_examples; i++)
+		data[i] = CMath::random(-1.0,1.0);
 
-CNeuralInputLayer::CNeuralInputLayer(int32_t num_neurons, int32_t start_index): 
-CNeuralLayer(num_neurons)
-{
-	init();
-	m_start_index = start_index;
-}
-
-void CNeuralInputLayer::compute_activations(SGMatrix< float64_t > inputs)
-{
-	if (m_start_index == 0)
-	{
-		memcpy(m_activations.matrix, inputs.matrix, 
-			m_num_neurons*m_batch_size*sizeof(float64_t));
-	}
-	else
-	{
-		for (int32_t i=0; i<m_num_neurons; i++)
-			for (int32_t j=0; j<m_batch_size; j++)
-				m_activations(i,j) = inputs(m_start_index+i, j);
-	}
-	if (gaussian_noise > 0)
-	{
-		int32_t len = m_num_neurons*m_batch_size;
-		for (int32_t k=0; k<len; k++)
-			m_activations[k] += CMath::normal_random(0.0, gaussian_noise);
-	}
-}
-
-void CNeuralInputLayer::init()
-{
-	m_start_index = 0;
-	gaussian_noise = 0;
-	SG_ADD(&m_start_index, "start_index",
-	       "Start Index", MS_NOT_AVAILABLE);
-	SG_ADD(&gaussian_noise, "gaussian_noise",
-	       "Gaussian Noise Standard Deviation", MS_NOT_AVAILABLE);
+	CAutoencoder ae(num_features, new CNeuralRectifiedLinearLayer(num_hid));
+	ae.initialize();
+	
+	CDenseFeatures<float64_t>* features = new CDenseFeatures<float64_t>(data);
+	
+	ae.train(features);
+	
+	CDenseFeatures<float64_t>* reconstructed = ae.reconstruct(features);
+	SGMatrix<float64_t> reconstructed_data = reconstructed->get_feature_matrix();
+	
+	float64_t avg_diff = 0;
+	for (int32_t i=0; i<num_features*num_examples; i++)
+		avg_diff += CMath::abs(reconstructed_data[i]-data[i])/(num_examples*num_features);
+	
+	EXPECT_NEAR(0.0, avg_diff, 1e-6);
+	
+	SG_UNREF(features);
+	SG_UNREF(reconstructed);
 }
