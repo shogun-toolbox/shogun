@@ -176,6 +176,22 @@ void CRBM::train(CDenseFeatures<float64_t>* features)
 	}
 }
 
+CDenseFeatures< float64_t >* CRBM::transform(CDenseFeatures< float64_t >* features)
+{
+	REQUIRE(features != NULL, "Invalid (NULL) feature pointer\n");
+	REQUIRE(features->get_num_features()==m_num_visible, 
+		"Number of features (%i) must match the RBM's number of visible units "
+		"(%i)\n", features->get_num_features(), m_num_visible);
+	
+	set_batch_size(features->get_num_vectors());
+	
+	SGMatrix<float64_t> result(m_num_hidden, m_batch_size);
+	
+	mean_hidden(features->get_feature_matrix(), result);
+	
+	return new CDenseFeatures<float64_t>(result);
+}
+
 void CRBM::sample(int32_t num_gibbs_steps, 
 	int32_t batch_size)
 {
@@ -651,6 +667,11 @@ void CRBM::init()
 	       "Number of Visible Units", MS_NOT_AVAILABLE);
 	SG_ADD(&m_batch_size, "batch_size",
 	       "Batch Size", MS_NOT_AVAILABLE);
+	
+	SG_ADD(&hidden_state, "hidden_state",
+	       "States of the Hidden Units", MS_NOT_AVAILABLE);
+	SG_ADD(&visible_state, "visible_state",
+	       "States of the Visible Units", MS_NOT_AVAILABLE);
 	
 	SG_ADD(&m_num_visible_groups, "num_visible_groups",
 	       "Number of Visible Unit Groups", MS_NOT_AVAILABLE);

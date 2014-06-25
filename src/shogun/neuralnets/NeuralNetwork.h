@@ -106,6 +106,8 @@ enum ENNOptimizationMethod
  */
 class CNeuralNetwork : public CMachine
 {
+friend class CDeepBeliefNetwork;
+
 public:
 	/** default constuctor */
 	CNeuralNetwork();
@@ -157,6 +159,18 @@ public:
 	virtual CRegressionLabels* apply_regression(CFeatures* data);
 	/** apply machine to data in means of multiclass classification problem */
 	virtual CMulticlassLabels* apply_multiclass(CFeatures* data);
+	
+	/** Applies the network as a feature transformation
+	 * 
+	 * Forward-propagates the data through the network and returns the 
+	 * activations of the last layer
+	 * 
+	 * @param data Input features
+	 * 
+	 * @return Transformed features
+	 */
+	virtual CDenseFeatures<float64_t>* transform(
+		CDenseFeatures<float64_t>* data);
 	
 	/** set labels
 	*
