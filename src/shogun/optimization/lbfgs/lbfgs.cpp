@@ -83,6 +83,7 @@ struct tag_callback_data {
     void *instance;
     lbfgs_evaluate_t proc_evaluate;
     lbfgs_progress_t proc_progress;
+    lbfgs_adjust_step_t proc_adjust_step;
 };
 typedef struct tag_callback_data callback_data_t;
 
@@ -210,7 +211,8 @@ int32_t lbfgs(
     lbfgs_evaluate_t proc_evaluate,
     lbfgs_progress_t proc_progress,
     void *instance,
-    lbfgs_parameter_t *_param
+    lbfgs_parameter_t *_param,
+    lbfgs_adjust_step_t proc_adjust_step
     )
 {
     int32_t ret;
@@ -237,6 +239,7 @@ int32_t lbfgs(
     cd.instance = instance;
     cd.proc_evaluate = proc_evaluate;
     cd.proc_progress = proc_progress;
+    cd.proc_adjust_step=proc_adjust_step;
 
     /* Check the input parameters for errors. */
     if (n <= 0) {
@@ -631,8 +634,11 @@ static int32_t line_search_backtracking(
     dgtest = param->ftol * dginit;
 
     for (;;) {
-		std::copy(xp,xp+n,x);
-		SGVector<float64_t>::add(x, 1, x, *stp, s, n);
+        std::copy(xp,xp+n,x);
+        if (cd->proc_adjust_step)
+            *stp=cd->proc_adjust_step(cd->instance, x, s, cd->n, *stp);
+
+        SGVector<float64_t>::add(x, 1, x, *stp, s, n);
 
         /* Evaluate the function and gradient values. */
         *f = cd->proc_evaluate(cd->instance, x, g, cd->n, *stp);
@@ -717,8 +723,10 @@ static int32_t line_search_backtracking_owlqn(
 
     for (;;) {
         /* Update the current point. */
-		std::copy(xp,xp+n,x);
-		SGVector<float64_t>::add(x, 1, x, *stp, s, n);
+        std::copy(xp,xp+n,x);
+        if (cd->proc_adjust_step)
+            *stp=cd->proc_adjust_step(cd->instance, x, s, cd->n, *stp);
+        SGVector<float64_t>::add(x, 1, x, *stp, s, n);
 
         /* The current point is projected onto the orthant. */
         owlqn_project(x, wp, param->orthantwise_start, param->orthantwise_end);
@@ -791,7 +799,7 @@ static int32_t line_search_morethuente(
     }
 
     /* Compute the initial gradient in the search direction. */
-	dginit = SGVector<float64_t>::dot(g, s, n);
+    dginit = SGVector<float64_t>::dot(g, s, n);
 
     /* Make sure that s points to a descent direction. */
     if (0 < dginit) {
@@ -848,12 +856,14 @@ static int32_t line_search_morethuente(
             Compute the current value of x:
                 x <- x + (*stp) * s.
          */
-		std::copy(xp,xp+n,x);
-		SGVector<float64_t>::add(x, 1, x, *stp, s, n);
+        std::copy(xp,xp+n,x);
+        if (cd->proc_adjust_step)
+            *stp=cd->proc_adjust_step(cd->instance, x, s, cd->n, *stp);
+        SGVector<float64_t>::add(x, 1, x, *stp, s, n);
 
         /* Evaluate the function and gradient values. */
         *f = cd->proc_evaluate(cd->instance, x, g, cd->n, *stp);
-		dg = SGVector<float64_t>::dot(g, s, n);
+        dg = SGVector<float64_t>::dot(g, s, n);
 
         ftest1 = finit + *stp * dgtest;
         ++count;
