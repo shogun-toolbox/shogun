@@ -86,10 +86,10 @@ public:
 	 */
 	virtual float64_t get_negative_log_marginal_likelihood()=0;
 
-	/** Computes an unbiased estimate of the log-marginal-likelihood,
+	/** Computes an unbiased estimate of the marginal-likelihood,
 	 *
 	 * \f[
-	 * log(p(y|X,\theta)),
+	 * p(y|X,\theta),
 	 * \f]
 	 * where \f$y\f$ are the labels, \f$X\f$ are the features (omitted from in
 	 * the following expressions), and \f$\theta\f$ represent hyperparameters.
@@ -118,8 +118,9 @@ public:
 	 * approximation to stabilise things. Increase if Cholesky factorization
 	 * fails.
 	 *
-	 * @return unbiased estimate of the log of the marginal likelihood function
-	 * \f$ log(p(y|\theta)) \f$
+	 * @return Unbiased estimate of the the marginal likelihood
+	 * \f$ p(y|\theta)\f$. Note this is not an estimate for the log-marginal
+	 * likelihood but the marginal likelihood itself (using log-sum-exp).
 	 */
 	float64_t get_marginal_likelihood_estimate(int32_t num_importance_samples=1,
 			float64_t ridge_size=1e-15);
