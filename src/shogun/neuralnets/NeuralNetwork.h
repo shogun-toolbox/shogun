@@ -225,21 +225,28 @@ protected:
 	virtual bool train_lbfgs(SGMatrix<float64_t> inputs, 
 			SGMatrix<float64_t> targets);
 	
-	/** Applies forward propagation, computes the activations of each layer
+	/** Applies forward propagation, computes the activations of each layer up 
+	 * to layer j
 	 * 
 	 * @param data input features
+	 * @param j layer index at which the propagation should stop. If -1, the 
+	 * propagation continues up to the last layer
+	 * 
 	 * @return activations of the last layer
 	 */
-	virtual SGMatrix<float64_t> forward_propagate(CFeatures* data);
+	virtual SGMatrix<float64_t> forward_propagate(CFeatures* data, int32_t j=-1);
 	
-	/** Applies forward propagation, computes the activations of each layer
+	/** Applies forward propagation, computes the activations of each layer up 
+	 * to layer j
 	 * 
 	 * @param inputs inputs to the network, a matrix of size 
 	 * m_num_inputs*m_batch_size
+	 * @param j layer index at which the propagation should stop. If -1, the 
+	 * propagation continues up to the last layer
 	 * 
 	 * @return activations of the last layer
 	 */
-	virtual SGMatrix<float64_t> forward_propagate(SGMatrix<float64_t> inputs);
+	virtual SGMatrix<float64_t> forward_propagate(SGMatrix<float64_t> inputs, int32_t j=-1);
 	
 	/** Sets the batch size (the number of train/test cases) the network is 
 	 * expected to deal with. 
@@ -289,7 +296,6 @@ protected:
 	
 	virtual bool is_label_valid(CLabels *lab) const;
 	
-private:
 	/** returns a pointer to layer i in the network */
 	CNeuralLayer* get_layer(int32_t i);
 	
@@ -303,7 +309,8 @@ private:
 	 * @return matrix of size get_num_outputs()*num_labels
 	 */
 	SGMatrix<float64_t> labels_to_matrix(CLabels* labs);
-	
+
+private:
 	void init();
 	
 	/** callback for l-bfgs */
