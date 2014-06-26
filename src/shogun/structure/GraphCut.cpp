@@ -63,7 +63,6 @@ void CGraphCut::init()
 	for (int32_t i = 0; i < facs->get_num_elements(); i++)
 	{
 		CFactor* fac = dynamic_cast<CFactor*>(facs->get_element(i));
-		SG_REF(fac);
 		
 		int32_t num_vars = fac->get_num_vars();
 		
