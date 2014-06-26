@@ -56,7 +56,7 @@ template<class T> class SGMatrix;
  *
  * This class can compute empirical biased estimates:
  * \f[
- * m\text{HSIC}(Z)[,p,q]^2)=\frac{1}{m^2}\text{trace}\textbf{KHLH}
+ * m\text{HSIC}^2\left(X,Y\right)=\frac{1}{m}\text{trace}\textbf{KHLH}
  * \f]
  * where \f$\textbf{H}=\textbf{I}-\frac{1}{m}\textbf{11}^T\f$ is a centering
  * matrix and \f$\textbf{K}, \textbf{L}\f$ are kernel matrices of both sets
@@ -69,12 +69,12 @@ template<class T> class SGMatrix;
  * different methods. Sampling from null is also possible. If unsure which one to
  * use, sampling with 250 iterations always is correct (but slow).
  *
- * To choose, use set_null_approximation_method() and choose from
+ * To choose, use set_null_approximation_method() and choose one from ::ENullApproximationMethod
  *
- * HSIC_GAMMA: for a very fast, but not consistent test based on moment matching
+ * ::HSIC_GAMMA: for a very fast, but not consistent test based on moment matching
  * of a Gamma distribution, as described in [1].
  *
- * PERMUTATION: For permuting available samples to sample null-distribution.
+ * ::PERMUTATION: For permuting available samples to sample null-distribution.
  * This is done on precomputed kernel matrices, since they have to
  * be stored anyway when the statistic is computed.
  *
