@@ -100,8 +100,10 @@ protected:
 
 		//Test.
 		CRegressionLabels* results=(lda.apply_regression(features));
+		SG_REF(results);
 		projection=results->get_labels();
 		w = lda.get_w();
+		SG_UNREF(results);
 	}
 	SGVector<float64_t> projection;
 	SGVector<float64_t> w;
