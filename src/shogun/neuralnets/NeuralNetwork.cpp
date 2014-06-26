@@ -383,16 +383,20 @@ int CNeuralNetwork::lbfgs_progress(void* instance,
 	return 0;
 }
 
-SGMatrix<float64_t> CNeuralNetwork::forward_propagate(CFeatures* data)
+SGMatrix<float64_t> CNeuralNetwork::forward_propagate(CFeatures* data, int32_t j)
 {
 	SGMatrix<float64_t> inputs = features_to_matrix(data);
 	set_batch_size(data->get_num_vectors());	
-	return forward_propagate(inputs);
+	return forward_propagate(inputs, j);
 }
 
-SGMatrix<float64_t> CNeuralNetwork::forward_propagate(SGMatrix<float64_t> inputs)
+SGMatrix<float64_t> CNeuralNetwork::forward_propagate(
+	SGMatrix<float64_t> inputs, int32_t j)
 {
-	for (int32_t i=0; i<m_num_layers; i++)
+	if (j==-1)
+		j = m_num_layers-1;
+	
+	for (int32_t i=0; i<=j; i++)
 	{
 		CNeuralLayer* layer = get_layer(i);
 		
@@ -404,7 +408,7 @@ SGMatrix<float64_t> CNeuralNetwork::forward_propagate(SGMatrix<float64_t> inputs
 		layer->dropout_activations();
 	}
 	
-	return get_layer(m_num_layers-1)->get_activations();
+	return get_layer(j)->get_activations();
 }
 
 float64_t CNeuralNetwork::compute_gradients(SGMatrix<float64_t> inputs, 

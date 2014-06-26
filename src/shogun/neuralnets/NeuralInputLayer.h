@@ -88,6 +88,12 @@ public:
 private:
 	void init();
 
+public:
+	/** Standard deviation of the gaussian noise added to the activations of 
+	 * the layer. Useful for denoising autoencoders. Default value is 0.0.
+	 */
+	float64_t gaussian_noise;
+
 protected:
 	/** Index of the first feature that the layer connects to, 
 	 * i.e the activations of the layer are copied from 
