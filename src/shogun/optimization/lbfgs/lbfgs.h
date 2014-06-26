@@ -392,11 +392,11 @@ typedef int (*lbfgs_progress_t)(
     );
 
 /**
- * Callback interface to adjust step size based on constrains.
+ * Callback interface to adjust step size based on constraints.
  *
- *  If the function pointer is not NULL, the lbfgs() function call
+ *  If the function pointer is not NULL, the lbfgs() function calls
  *  this function to adjust its step size. A client program can implement this function
- *  to adjust the step size used in lbfgs update based on user-defined constrains.
+ *  to adjust the step size used in lbfgs update based on user-defined constraints.
  *  Note that the update is x_new = x + step * d, where step is positive.
  *
  *  @param  instance    The user data sent for lbfgs() function by the client.
@@ -470,8 +470,8 @@ In this formula, ||.|| denotes the Euclidean norm.
  *                      parameter to \c NULL to use the default parameters.
  *                      Call lbfgs_parameter_init() function to fill a
  *                      structure with the default values.
- *  @param  proc_adjust_step   The callback function to adjust step size based on constrains.
- *                          This argument can be set to \c NULL if there is not constrain.
+ *  @param  proc_adjust_step   The callback function to adjust step size based on constraints.
+ *                          This argument can be set to \c NULL if there is not constraint.
  *
  *  @retval int         The status code. This function returns zero if the
  *                      minimization process terminates without an error. A
