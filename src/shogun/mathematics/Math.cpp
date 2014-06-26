@@ -364,9 +364,9 @@ bool CMath::strtold(const char* str, floatmax_t* long_double_result)
 float64_t CMath::get_abs_tolorance(float64_t true_value, float64_t rel_tolorance)
 {
 	REQUIRE(rel_tolorance > 0 && rel_tolorance < 1.0,
-		"Relative tolorance should be less than 1.0 and positive");
+		"Relative tolorance (%f) should be less than 1.0 and positive\n", rel_tolorance);
 	REQUIRE(is_finite(true_value),
-		"The true_value should be finite");
+		"The true_value should be finite\n");
 	float64_t abs_tolorance = rel_tolorance;
 	if (abs(true_value)>0.0)
 	{

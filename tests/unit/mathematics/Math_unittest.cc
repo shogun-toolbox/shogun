@@ -367,7 +367,7 @@ TEST(CMath, fequals_close_to_zero)
 
 TEST(CMath, get_abs_tolorance)
 {
-	EXPECT_EQ(CMath::get_abs_tolorance(0.0, 0.01), 0.0);
+	EXPECT_EQ(CMath::get_abs_tolorance(0.0, 0.01), 0.01);
 	EXPECT_NEAR(CMath::get_abs_tolorance(-0.01, 0.01), 0.0001, 1E-15);
 	EXPECT_NEAR(CMath::get_abs_tolorance(-9.5367431640625e-7, 0.01), 9.5367431640625e-9, 1E-15);
 	EXPECT_NEAR(CMath::get_abs_tolorance(9.5367431640625e-7, 0.01), 9.5367431640625e-9, 1E-15);
