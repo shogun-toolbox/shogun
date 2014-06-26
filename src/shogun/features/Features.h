@@ -303,6 +303,17 @@ class CFeatures : public CSGObject
 		 */
 		virtual CFeatures* copy_subset(SGVector<index_t> indices);
 
+		/** Creates a new CFeatures instance containing only the dimensions
+		 * of the feature vector which are specified by the provided indices.
+		 *
+		 * This method is needed for feature selection tasks
+		 * NOT IMPLEMENTED!
+		 *
+		 * @param dims indices of feature dimensions to copy
+		 * @return new CFeatures instance with copies of specified features
+		 */
+		virtual CFeatures* copy_dimension_subset(SGVector<index_t> dims);
+
 	private:
 		void init();
 

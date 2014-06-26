@@ -137,9 +137,8 @@ CFeatures* CStringPreprocessor<ST>::apply(CFeatures* features)
 			"has to be of C_STRING (%d) class!\n",
 			features->get_feature_class(), C_STRING);
 
-	if (apply_to_string_features(features))
-		return features;
-	return NULL;
+	apply_to_string_features(features);
+	return features;
 }
 
 }

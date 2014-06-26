@@ -54,3 +54,68 @@ TEST(DenseFeaturesTest,create_merged_copy)
 	SG_UNREF(features_1);
 	SG_UNREF(features_2);
 }
+
+TEST(DenseFeaturesTest, copy_dimension_subset)
+{
+	index_t dim=5;
+	index_t n=10;
+
+	SGMatrix<float64_t> data(dim, n);
+	for (index_t i=0; i<dim*n; ++i)
+		data.matrix[i]=i;
+
+	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
+
+	SGVector<index_t> dims(dim/2);
+	for (index_t i=0; i<dims.vlen; ++i)
+		dims[i]=CMath::random(0, dim-1);
+
+	CDenseFeatures<float64_t>* f_reduced=(CDenseFeatures<float64_t>*)
+		features->copy_dimension_subset(dims);
+
+	SGMatrix<float64_t> data_reduced=f_reduced->get_feature_matrix();
+
+	for (index_t i=0; i<data_reduced.num_rows; ++i)
+	{
+		for (index_t j=0; j<data_reduced.num_cols; ++j)
+			EXPECT_NEAR(data(dims[i], j), data_reduced(i, j), 1E-16);
+	}
+
+	SG_UNREF(features);
+	SG_UNREF(f_reduced);
+}
+
+TEST(DenseFeaturesTest, copy_dimension_subset_with_subsets)
+{
+	index_t dim=5;
+	index_t n=10;
+
+	SGMatrix<float64_t> data(dim, n);
+	for (index_t i=0; i<dim*n; ++i)
+		data.matrix[i]=i;
+
+	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
+
+	SGVector<index_t> inds(n/2);
+	for (index_t i=0; i<inds.vlen; ++i)
+		inds[i]=CMath::random(0, n-1);
+
+	features->add_subset(inds);
+
+	SGVector<index_t> dims(dim/2);
+	for (index_t i=0; i<dims.vlen; ++i)
+		dims[i]=CMath::random(0, dim-1);
+
+	CDenseFeatures<float64_t>* f_reduced=(CDenseFeatures<float64_t>*)
+		features->copy_dimension_subset(dims);
+
+	SGMatrix<float64_t> data_reduced=f_reduced->get_feature_matrix();
+	for (index_t i=0; i<data_reduced.num_rows; ++i)
+	{
+		for (index_t j=0; j<data_reduced.num_cols; ++j)
+			EXPECT_NEAR(data(dims[i], inds[j]), data_reduced(i, j), 1E-16);
+	}
+
+	SG_UNREF(features);
+	SG_UNREF(f_reduced);
+}

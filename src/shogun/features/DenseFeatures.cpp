@@ -606,6 +606,33 @@ template<class ST> CFeatures* CDenseFeatures<ST>::copy_subset(SGVector<index_t> 
 	return result;
 }
 
+template<class ST>
+CFeatures* CDenseFeatures<ST>::copy_dimension_subset(SGVector<index_t> dims)
+{
+	SG_DEBUG("Entering!\n");
+
+	REQUIRE(SGVector<index_t>::max(dims.vector, dims.vlen)<num_features &&
+			SGVector<index_t>::min(dims.vector, dims.vlen)>=0,
+			"Provided dimensions have to be within [0, %d]!\n", num_features);
+
+	SGMatrix<ST> feature_matrix_copy(dims.vlen, get_num_vectors());
+
+	for (index_t i=0; i<dims.vlen; ++i)
+	{
+		for (index_t j=0; j<get_num_vectors(); ++j)
+		{
+			index_t real_idx=m_subset_stack->subset_idx_conversion(j);
+			feature_matrix_copy(i, j)=feature_matrix(dims[i], real_idx);
+		}
+	}
+
+	CFeatures* result=new CDenseFeatures(feature_matrix_copy);
+	SG_REF(result);
+
+	SG_DEBUG("Leaving!\n");
+	return result;
+}
+
 template<class ST> ST* CDenseFeatures<ST>::compute_feature_vector(int32_t num, int32_t& len,
 		ST* target)
 {

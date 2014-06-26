@@ -45,11 +45,8 @@ TEST(Preprocessor, dense_apply)
 	const index_t dim=2;
 	const index_t size=4;
 	SGMatrix<float64_t> data(dim, size);
-	for (index_t i=0; i<dim; ++i)
-	{
-		for (index_t j=0; j<size; ++j)
-			data(i, j)=CMath::randn_double();
-	}
+	for (index_t i=0; i<dim*size; ++i)
+		data.matrix[i]=CMath::randn_double();
 
 	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(data);
 	CDensePreprocessor<float64_t>* preproc=new CNormOne();
@@ -57,7 +54,7 @@ TEST(Preprocessor, dense_apply)
 
 	CFeatures* preprocessed=preproc->apply(features);
 
-	ASSERT(preprocessed);
+	ASSERT_NE(preprocessed, (CFeatures*)NULL);
 	EXPECT_EQ(preprocessed->get_feature_class(), C_DENSE);
 
 	SG_UNREF(preproc);
@@ -80,15 +77,7 @@ TEST(Preprocessor, string_apply)
 
 		/* fill with random uppercase letters (ASCII) */
 		for (index_t j=0; j<len; ++j)
-		{
 			current.string[j]=(uint16_t)CMath::random('A', 'Z');
-
-			/* attach \0 to print letter */
-			uint16_t* string=SG_MALLOC(uint16_t, 2);
-			string[0]=current.string[j];
-			string[1]='\0';
-			SG_FREE(string);
-		}
 
 		strings.strings[i]=current;
 	}
@@ -100,10 +89,9 @@ TEST(Preprocessor, string_apply)
 
 	CFeatures* preprocessed=preproc->apply(features);
 
-	ASSERT(preprocessed);
+	ASSERT_NE(preprocessed, (CFeatures*)NULL);
 	EXPECT_EQ(preprocessed->get_feature_class(), C_STRING);
 
 	SG_UNREF(preproc);
-	SG_UNREF(preprocessed);
 	SG_UNREF(features);
 }
