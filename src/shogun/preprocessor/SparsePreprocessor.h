@@ -39,6 +39,18 @@ public:
 	 */
 	CSparsePreprocessor() : CPreprocessor() {}
 
+	/** generic interface for applying the preprocessor. used as a wrapper
+	 * for apply_to_sparse_feature_matrix() method
+	 *
+	 * @param features the sparse input features
+	 * @return the result feature object after applying the preprocessor
+	 */
+	virtual CFeatures* apply(CFeatures* features)
+	{
+		SG_NOTIMPLEMENTED
+		return NULL;
+	}
+
 	/// apply preproc on feature matrix
 	/// result in feature matrix
 	/// return pointer to feature_matrix, i.e. f->get_feature_matrix();
