@@ -47,7 +47,7 @@ const float64_t lower_bound=1;
 const float64_t strict_scale=1e-5;
 
 //Init the parameters used for L-BFGS
-lbfgs_parameter_t inti_lbfgs_parameters()
+lbfgs_parameter_t init_lbfgs_parameters()
 {
 	lbfgs_parameter_t tmp;
 	tmp.m = 100;
@@ -198,7 +198,7 @@ TEST(lbfgs, original_lbfgs)
 	SGVector<float64_t> x(len);
 	Map<VectorXd> eigen_x(x.vector, x.vlen);
 	eigen_x.fill(10);
-	lbfgs_parameter_t lbfgs_param=inti_lbfgs_parameters();
+	lbfgs_parameter_t lbfgs_param=init_lbfgs_parameters();
 	float64_t opt_value=CMath::INFTY;
 	lbfgs(x.vlen, x.vector, &opt_value,
 		evaluate, NULL, NULL, &lbfgs_param);
@@ -231,7 +231,7 @@ TEST(lbfgs, lbfgs_with_adjust_step_test1)
 	SGVector<float64_t> x(len);
 	Map<VectorXd> eigen_x(x.vector, x.vlen);
 	eigen_x.fill(10);
-	lbfgs_parameter_t lbfgs_param=inti_lbfgs_parameters();
+	lbfgs_parameter_t lbfgs_param=init_lbfgs_parameters();
 	float64_t opt_value=CMath::INFTY;
 	lbfgs(x.vlen, x.vector, &opt_value,
 		evaluate_bounded, NULL, NULL, &lbfgs_param, &adjust_step_bounded);
@@ -265,7 +265,7 @@ TEST(lbfgs, lbfgs_with_adjust_step_test2)
 	SGVector<float64_t> x(len);
 	Map<VectorXd> eigen_x(x.vector, x.vlen);
 	eigen_x.fill(10);
-	lbfgs_parameter_t lbfgs_param=inti_lbfgs_parameters();
+	lbfgs_parameter_t lbfgs_param=init_lbfgs_parameters();
 	float64_t opt_value=CMath::INFTY;
 	lbfgs(x.vlen, x.vector, &opt_value,
 		evaluate_strict_bounded, NULL, NULL, &lbfgs_param, &adjust_step_strict_bounded);
