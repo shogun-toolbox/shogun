@@ -232,6 +232,11 @@ void CNeuralLinearLayer::compute_gradients(
 #endif
 		SG_UNREF(layer);
 	}
+	
+	if (contraction_coefficient != 0)
+	{
+		compute_contraction_term_gradients(parameters, parameter_gradients);
+	}
 }
 
 void CNeuralLinearLayer::compute_local_gradients(SGMatrix<float64_t> targets)
@@ -286,3 +291,20 @@ void CNeuralLinearLayer::enforce_max_norm(SGVector<float64_t> parameters,
 		}
 	}
 }
+
+float64_t CNeuralLinearLayer::compute_contraction_term(SGVector<float64_t> parameters)
+{
+	float64_t contraction_term = 0;
+	for (int32_t i=m_num_neurons; i<parameters.vlen; i++)
+		contraction_term += parameters[i]*parameters[i];
+	
+	return contraction_coefficient*contraction_term;
+}
+
+void CNeuralLinearLayer::compute_contraction_term_gradients(
+	SGVector< float64_t > parameters, SGVector< float64_t > gradients)
+{
+	for (int32_t i=m_num_neurons; i<parameters.vlen; i++)
+			gradients[i] += 2*contraction_coefficient*parameters[i];
+}
+

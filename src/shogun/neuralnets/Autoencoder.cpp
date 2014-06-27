@@ -82,7 +82,7 @@ bool CAutoencoder::train(CFeatures* data)
 			get_layer(i)->is_input() ? dropout_input : dropout_hidden;
 	}
 	get_layer(m_num_layers-1)->dropout_prop = 0.0;
-
+	
 	m_is_training = true;
 	for (int32_t i=0; i<m_num_layers; i++)
 		get_layer(i)->is_training = true;
@@ -120,13 +120,34 @@ CDenseFeatures< float64_t >* CAutoencoder::reconstruct(
 	return new CDenseFeatures<float64_t>(reconstructed); 
 }
 
+float64_t CAutoencoder::compute_error(SGMatrix< float64_t > targets)
+{
+	float64_t error = CNeuralNetwork::compute_error(targets);
+	
+	if (m_contraction_coefficient != 0.0)
+		error += 
+			get_layer(1)->compute_contraction_term(get_section(m_params,1)); 
+		
+	return error;
+}
+
+template <class T>
+SGVector<T> CAutoencoder::get_section(SGVector<T> v, int32_t i)
+{
+	return SGVector<T>(v.vector+m_index_offsets[i], 
+		get_layer(i)->get_num_parameters(), false);
+}
+
 void CAutoencoder::init()
 {
 	noise_type = AENT_NONE;
 	noise_parameter = 0.0;
+	m_contraction_coefficient = 0.0;
 	
 	SG_ADD((machine_int_t*)&noise_type, "noise_type",
 		"Noise Type", MS_NOT_AVAILABLE);
 	SG_ADD(&noise_parameter, "noise_parameter", 
 		"Noise Parameter", MS_NOT_AVAILABLE);
+	SG_ADD(&m_contraction_coefficient, "contraction_coefficient",
+	       "Contraction Coefficient", MS_NOT_AVAILABLE);
 }

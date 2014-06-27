@@ -72,6 +72,39 @@ public:
 	virtual void compute_activations(SGVector<float64_t> parameters,
 			CDynamicObjectArray* layers);
 	
+	/** Computes 
+	 * \f[ \frac{\lambda}{N} \sum_{k=0}^{N-1} \left \| J(x_k) \right \|^2_F \f]
+	 * where \f$ \left \| J(x_k)) \right \|^2_F \f$ is the Frobenius norm of 
+	 * the Jacobian of the activations of the hidden layer with respect to its 
+	 * inputs, \f$ N \f$ is the batch size, and \f$ \lambda \f$ is the 
+	 * contraction coefficient.
+	 * 
+	 * Should be implemented by layers that support being used as a hidden 
+	 * layer in a contractive autoencoder.
+	 * 
+	 * @param parameters Vector of size get_num_parameters(), contains the 
+	 * parameters of the layer
+	 */
+	virtual float64_t compute_contraction_term(SGVector<float64_t> parameters);
+	
+	/** Adds the gradients of 
+	 * \f[ \frac{\lambda}{N} \sum_{k=0}^{N-1} \left \| J(x_k) \right \|^2_F \f]
+	 * to the gradients vector, where \f$ \left \| J(x_k)) \right \|^2_F \f$ is 
+	 * the Frobenius norm of the Jacobian of the activations of the hidden layer 
+	 * with respect to its inputs, \f$ N \f$ is the batch size, and 
+	 * \f$ \lambda \f$ is the contraction coefficient.
+	 * 
+	 * Should be implemented by layers that support being used as a hidden 
+	 * layer in a contractive autoencoder.
+	 * 
+	 * @param parameters Vector of size get_num_parameters(), contains the 
+	 * parameters of the layer
+	 * @param gradients Vector of size get_num_parameters(). Gradients of the 
+	 * contraction term will be added to it
+	 */
+	virtual void compute_contraction_term_gradients(
+		SGVector<float64_t> parameters, SGVector<float64_t> gradients);
+	
 	/** Computes the gradients of the error with respect to this layer's
 	 * pre-activations. Results are stored in m_local_gradients. 
 	 * 
