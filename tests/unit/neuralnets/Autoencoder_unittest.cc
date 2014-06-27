@@ -33,6 +33,7 @@
 #include <shogun/neuralnets/Autoencoder.h>
 #include <shogun/neuralnets/NeuralInputLayer.h>
 #include <shogun/neuralnets/NeuralRectifiedLinearLayer.h>
+#include <shogun/neuralnets/NeuralLogisticLayer.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/mathematics/Math.h>
@@ -70,4 +71,58 @@ TEST(Autoencoder, train)
 	
 	SG_UNREF(features);
 	SG_UNREF(reconstructed);
+}
+
+/** Tests gradients computed using backpropagation against gradients computed
+ * by numerical approximation. Uses a CNeuralLinearLayer-based contractive 
+ * autoencoder.
+ */
+TEST(Autoencoder, contractive_linear)
+{
+	float64_t tolerance = 1e-9;
+	
+	CMath::init_random(10);
+	
+	CAutoencoder ae(10, new CNeuralLinearLayer(15));
+	ae.initialize();
+	
+	ae.set_contraction_coefficient(10.0);
+	
+	EXPECT_NEAR(ae.check_gradients(), 0.0, tolerance);
+}
+
+/** Tests gradients computed using backpropagation against gradients computed
+ * by numerical approximation. Uses a CNeuralRectifiedLinearLayer-based contractive 
+ * autoencoder.
+ */
+TEST(Autoencoder, contractive_rectified_linear)
+{
+	float64_t tolerance = 1e-9;
+	
+	CMath::init_random(10);
+	
+	CAutoencoder ae(10, new CNeuralRectifiedLinearLayer(15));
+	ae.initialize();
+	
+	ae.set_contraction_coefficient(10.0);
+	
+	EXPECT_NEAR(ae.check_gradients(), 0.0, tolerance);
+}
+
+/** Tests gradients computed using backpropagation against gradients computed
+ * by numerical approximation. Uses a CNeuralLogisticLayer-based contractive 
+ * autoencoder.
+ */
+TEST(Autoencoder, contractive_logistic)
+{
+	float64_t tolerance = 1e-6;
+	
+	CMath::init_random(10);
+	
+	CAutoencoder ae(10, new CNeuralLogisticLayer(15));
+	ae.initialize();
+	
+	ae.set_contraction_coefficient(1.0);
+	
+	EXPECT_NEAR(ae.check_gradients(), 0.0, tolerance);
 }

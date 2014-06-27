@@ -36,10 +36,10 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/neuralnets/NeuralNetwork.h>
+#include <shogun/neuralnets/NeuralLayer.h>
 
 namespace shogun
 {
-class CNeuralLayer;
 template <class T> class CDenseFeatures;
 
 enum EAENoiseType
@@ -61,6 +61,14 @@ enum EAENoiseType
  * [denoising autoencoders](http://www.iro.umontreal.ca/~lisa/publications2/index.php/publications/show/217)
  * [Vincent, 2008]. To use denoising autoencoders set noise_type and noise_parameter 
  * to specify the type and strength of the noise.
+ * 
+ * NOTE: LBFGS does not work properly with denoising autoencoders due to their 
+ * stochastic nature. Use gradient descent instead.
+ * 
+ * [Contractive autoencoders](http://machinelearning.wustl.edu/mlpapers/paper_files/ICML2011Rifai_455.pdf) 
+ * [Rifai, 2011] are also supported. To use them, call set_contraction_coefficient().
+ * Denoising can also be used with contractive autoencoders through noise_type 
+ * and noise_parameter.
  */
 class CAutoencoder : public CNeuralNetwork
 {
@@ -106,12 +114,42 @@ public:
 	virtual CDenseFeatures<float64_t>* reconstruct(
 		CDenseFeatures<float64_t>* data);
 	
+	/** Sets the contraction coefficient
+	 * 
+	 * For contractive autoencoders [Rifai, 2011], a term:
+	 * \f[ \frac{\lambda}{N} \sum_{k=0}^{N-1} \left \| J(x_k) \right \|^2_F \f]
+	 * is added to the error, where \f$ \left \| J(x_k)) \right \|^2_F \f$ is the 
+	 * Frobenius norm of the Jacobian of the activations of the hidden layer 
+	 * with respect to its inputs, \f$ N \f$ is the batch size, and 
+	 * \f$ \lambda \f$ is the contraction coefficient. 
+	 * 
+	 * @param lambda Contraction coefficient
+	 */
+	virtual void set_contraction_coefficient(float64_t lambda)
+	{
+		m_contraction_coefficient = lambda;
+		get_layer(1)->contraction_coefficient = lambda;
+	}
+	
 	virtual ~CAutoencoder() {}
 	
 	virtual const char* get_name() const { return "Autoencoder"; }
+
+protected:
+	/** Computes the error between the output layer's activations and the given
+	 * target activations.
+	 * 
+	 * @param targets desired values for the network's output, matrix of size
+	 * num_neurons_output_layer*batch_size
+	 */
+	virtual float64_t compute_error(SGMatrix<float64_t> targets);
 	
 private:
 	void init();
+	
+	/** Returns the section of vector v that belongs to layer i */
+	template<class T>
+	SGVector<T> get_section(SGVector<T> v, int32_t i);
 	
 public:
 	/** Noise type for denoising autoencoders. 
@@ -128,6 +166,18 @@ public:
 	
 	/** Controls the strength of the noise, depending on noise_type */
 	float64_t noise_parameter;
+
+protected:
+	/** For contractive autoencoders [Rifai, 2011], a term:
+	 * \f[ \frac{\lambda}{N} \sum_{k=0}^{N-1} \left \| J(x_k) \right \|^2_F \f] 
+	 * is added to the error, where \f$ \left \| J(x_k)) \right \|^2_F \f$ is the 
+	 * Frobenius norm of the Jacobian of the activations of the hidden layer 
+	 * with respect to its inputs, \f$ N \f$ is the batch size, and 
+	 * \f$ \lambda \f$ is the contraction coefficient. 
+	 * 
+	 * Default value is 0.0.
+	 */
+	float64_t m_contraction_coefficient;
 };
 }
 #endif

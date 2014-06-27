@@ -160,6 +160,9 @@ public:
 	 * Deriving classes should make sure to account for 
 	 * [dropout](http://arxiv.org/abs/1207.0580) [Hinton, 2012] during gradient 
 	 * computations
+	 * 
+	 * Deriving classes should also account for contraction_coefficient if they 
+	 * can be used in as a hidden layer in a contractive autoencoder.
 	 *
 	 * @param parameters Vector of size get_num_parameters(), contains the 
 	 * parameters of the layer
@@ -208,6 +211,24 @@ public:
 	 * for using dropout during training
 	 */
 	virtual void dropout_activations();
+	
+	/** Computes 
+	 * \f[ \frac{\lambda}{N} \sum_{k=0}^{N-1} \left \| J(x_k) \right \|^2_F \f]
+	 * where \f$ \left \| J(x_k)) \right \|^2_F \f$ is the Frobenius norm of 
+	 * the Jacobian of the activations of the hidden layer with respect to its 
+	 * inputs, \f$ N \f$ is the batch size, and \f$ \lambda \f$ is the 
+	 * contraction coefficient.
+	 * 
+	 * Should be implemented by layers that support being used as a hidden 
+	 * layer in a contractive autoencoder.
+	 * 
+	 * @param parameters Vector of size get_num_parameters(), contains the 
+	 * parameters of the layer
+	 */
+	virtual float64_t compute_contraction_term(SGVector<float64_t> parameters) 
+	{ 
+		return 0.0; 
+	}
 	
 	/** Gets the number of neurons in the layer
 	 * 
@@ -260,6 +281,17 @@ public:
 	
 	/** probabilty of dropping out a neuron in the layer */
 	float64_t dropout_prop;
+	
+	/** For hidden layers in a contractive autoencoders [Rifai, 2011] a term:
+	 * \f[ \frac{\lambda}{N} \sum_{k=0}^{N-1} \left \| J(x_k) \right \|^2_F \f] 
+	 * is added to the error, where \f$ \left \| J(x_k)) \right \|^2_F \f$ is the 
+	 * Frobenius norm of the Jacobian of the activations of the hidden layer 
+	 * with respect to its inputs, \f$ N \f$ is the batch size, and 
+	 * \f$ \lambda \f$ is the contraction coefficient. 
+	 * 
+	 * Default value is 0.0.
+	 */ 
+	float64_t contraction_coefficient;
 	
 protected:
 	/** Number of neurons in this layer */

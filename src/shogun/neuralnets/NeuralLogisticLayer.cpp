@@ -57,6 +57,60 @@ void CNeuralLogisticLayer::compute_activations(SGVector<float64_t> parameters,
 		m_activations[i] = 1.0/(1.0+CMath::exp(-1.0*m_activations[i]));
 }
 
+float64_t CNeuralLogisticLayer::compute_contraction_term(
+	SGVector< float64_t > parameters)
+{
+	int32_t num_inputs = SGVector<int32_t>::sum(m_input_sizes.vector, m_input_sizes.vlen);
+	
+	SGMatrix<float64_t> W(parameters.vector+m_num_neurons, 
+		m_num_neurons, num_inputs, false);
+	
+	float64_t contraction_term = 0;
+	for (int32_t i=0; i<m_num_neurons; i++)
+	{
+		float64_t sum_j = 0;
+		for (int32_t j=0; j<num_inputs; j++)
+			sum_j += W(i,j)*W(i,j);
+		
+		for (int32_t k=0; k<m_batch_size; k++)
+		{
+			float64_t h_ = m_activations(i,k)*(1-m_activations(i,k));
+			contraction_term += h_*h_*sum_j;
+		}
+	}
+	
+	return (contraction_coefficient/m_batch_size) * contraction_term;
+}
+
+void CNeuralLogisticLayer::compute_contraction_term_gradients(
+	SGVector< float64_t > parameters, SGVector< float64_t > gradients)
+{
+	int32_t num_inputs = SGVector<int32_t>::sum(m_input_sizes.vector, m_input_sizes.vlen);
+	
+	SGMatrix<float64_t> W(parameters.vector+m_num_neurons, 
+		m_num_neurons, num_inputs, false);
+	SGMatrix<float64_t> WG(gradients.vector+m_num_neurons, 
+		m_num_neurons, num_inputs, false);
+	
+	for (int32_t k = 0; k<m_batch_size; k++)
+	{
+		for (int32_t i=0; i<m_num_neurons; i++)
+		{
+			for (int32_t j=0; j<num_inputs; j++)
+			{
+				float64_t h = m_activations(i,k);
+				float64_t w = W(i,j);
+				float64_t h_ = w*h*(1-h);
+				
+				float64_t g = 2*w*(h-1)*h*(h*(2*w*h_-1)-w*h_+h*h);
+				
+				WG(i,j) += (contraction_coefficient/m_batch_size)*g;
+			}
+		}
+	}
+}
+
+
 void CNeuralLogisticLayer::compute_local_gradients(SGMatrix<float64_t> targets)
 {
 	CNeuralLinearLayer::compute_local_gradients(targets);
