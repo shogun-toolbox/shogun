@@ -126,3 +126,31 @@ SGVector<float64_t> CKernelIndependenceTest::sample_null()
 	return results;
 }
 
+void CKernelIndependenceTest::set_kernel_p(CKernel* kernel_p)
+{
+	/* ref before unref to avoid problems when instances are equal */
+	SG_REF(kernel_p);
+	SG_UNREF(m_kernel_p);
+	m_kernel_p=kernel_p;
+}
+
+void CKernelIndependenceTest::set_kernel_q(CKernel* kernel_q)
+{
+	/* ref before unref to avoid problems when instances are equal */
+	SG_REF(kernel_q);
+	SG_UNREF(m_kernel_q);
+	m_kernel_q=kernel_q;
+}
+
+CKernel* CKernelIndependenceTest::get_kernel_p()
+{
+	SG_REF(m_kernel_p);
+	return m_kernel_p;
+}
+
+CKernel* CKernelIndependenceTest::get_kernel_q()
+{
+	SG_REF(m_kernel_q);
+	return m_kernel_q;
+}
+
