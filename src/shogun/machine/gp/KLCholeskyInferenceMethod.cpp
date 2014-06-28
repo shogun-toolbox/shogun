@@ -44,6 +44,7 @@
 #ifdef HAVE_EIGEN3
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/Statistics.h>
+#include <shogun/machine/gp/VariationalGaussianLikelihood.h>
 
 using namespace Eigen;
 
@@ -118,7 +119,8 @@ void CKLCholeskyInferenceMethod::lbfgs_precompute()
 	//s2=sum(C.*C,2);
 	eigen_s2=(eigen_C.array()*eigen_C.array()).rowwise().sum().matrix();
 
-	m_model->set_variational_distribution(m_mu, m_s2, m_labels);
+	CVariationalGaussianLikelihood * lik=get_variational_likelihood();
+	lik->set_variational_distribution(m_mu, m_s2, m_labels);
 	Map<MatrixXd> eigen_InvK_C(m_InvK_C.matrix, m_InvK_C.num_rows, m_InvK_C.num_cols);
 
 	eigen_InvK_C=solve_inverse(eigen_C);
@@ -137,13 +139,14 @@ void CKLCholeskyInferenceMethod::get_gradient_of_nlml_wrt_parameters(SGVector<fl
 	Map<VectorXd> eigen_alpha(m_alpha.vector, len);
 	Map<VectorXd> eigen_C_seq(m_alpha.vector+len, m_alpha.vlen-len);
 
+	CVariationalGaussianLikelihood * lik=get_variational_likelihood();
 	//[a,df,dV] = a_related2(mu,s2,y,lik);
-	TParameter* s2_param=m_model->m_gradient_parameters->get_parameter("sigma2");
-	SGVector<float64_t> dv=m_model->get_variational_first_derivative(s2_param);
+	TParameter* s2_param=lik->m_gradient_parameters->get_parameter("sigma2");
+	SGVector<float64_t> dv=lik->get_variational_first_derivative(s2_param);
 	Map<VectorXd> eigen_dv(dv.vector, dv.vlen);
 
-	TParameter* mu_param=m_model->m_gradient_parameters->get_parameter("mu");
-	SGVector<float64_t> df=m_model->get_variational_first_derivative(mu_param);
+	TParameter* mu_param=lik->m_gradient_parameters->get_parameter("mu");
+	SGVector<float64_t> df=lik->get_variational_first_derivative(mu_param);
 	Map<VectorXd> eigen_df(df.vector, df.vlen);
 
 	Map<VectorXd> eigen_dnlz_alpha(gradient.vector, len);
@@ -192,7 +195,8 @@ float64_t CKLCholeskyInferenceMethod::get_negative_log_marginal_likelihood_helpe
 	Map<MatrixXd> eigen_InvK_C(m_InvK_C.matrix, m_InvK_C.num_rows, m_InvK_C.num_cols);
 	Map<MatrixXd> eigen_C(m_C.matrix, m_C.num_rows, m_C.num_cols);
 
-	float64_t a=SGVector<float64_t>::sum(m_model->get_variational_expection());
+	CVariationalGaussianLikelihood * lik=get_variational_likelihood();
+	float64_t a=SGVector<float64_t>::sum(lik->get_variational_expection());
 
 	//float64_t log_det=2.0*log_det(eigen_C)-m_log_det_Kernel;
 	float64_t log_det=2.0*eigen_C.diagonal().array().abs().log().sum()-m_log_det_Kernel;
@@ -222,14 +226,15 @@ void CKLCholeskyInferenceMethod::update_alpha()
 		SGVector<float64_t> s2_tmp(m_s2.vlen);
 		Map<VectorXd> eigen_s2(s2_tmp.vector, s2_tmp.vlen);
 		eigen_s2.fill(1.0);
-		m_model->set_variational_distribution(m_mean_vec, s2_tmp, m_labels);
-		float64_t a=SGVector<float64_t>::sum(m_model->get_variational_expection());
+		CVariationalGaussianLikelihood * lik=get_variational_likelihood();
+		lik->set_variational_distribution(m_mean_vec, s2_tmp, m_labels);
+		float64_t a=SGVector<float64_t>::sum(lik->get_variational_expection());
 		MatrixXd inv_K=solve_inverse(MatrixXd::Identity(m_ktrtr.num_rows, m_ktrtr.num_cols));
 		float64_t trace=inv_K.diagonal().array().sum();
 		nlml_def=-a+0.5*(-eigen_K.rows()+trace+m_log_det_Kernel);
 
 		if (nlml_new<=nlml_def)
-			m_model->set_variational_distribution(m_mu, m_s2, m_labels);
+			lik->set_variational_distribution(m_mu, m_s2, m_labels);
 	}
 
 	if (m_alpha.vlen*2 != total_len || nlml_def<nlml_new)

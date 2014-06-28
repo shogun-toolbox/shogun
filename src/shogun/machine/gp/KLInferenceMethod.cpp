@@ -34,7 +34,6 @@
 
 #ifdef HAVE_EIGEN3
 #include <shogun/mathematics/Math.h>
-#include <shogun/machine/gp/VariationalLikelihood.h>
 
 using namespace Eigen;
 
@@ -56,10 +55,10 @@ CKLInferenceMethod::CKLInferenceMethod(CKernel* kern,
 
 void CKLInferenceMethod::check_variational_likelihood(CLikelihoodModel* mod) const
 {
-	CVariationalLikelihood * lik= dynamic_cast<CVariationalLikelihood *>(mod);
+	CVariationalGaussianLikelihood* lik= dynamic_cast<CVariationalGaussianLikelihood*>(mod);
 	REQUIRE(lik,
-		"The provided likelihood model must support variational inference. ",
-		"Please use a Variational Likelihood model\n");
+		"The provided likelihood model must support variational Gaussian inference. ",
+		"Please use a Variational Gaussian Likelihood model\n");
 }
 
 void CKLInferenceMethod::set_model(CLikelihoodModel* mod)
@@ -172,6 +171,8 @@ float64_t CKLInferenceMethod::evaluate(void *obj, const float64_t *parameters,
 	CKLInferenceMethod * obj_prt
 		= static_cast<CKLInferenceMethod *>(obj);
 
+	ASSERT(obj_prt != NULL);
+
 	obj_prt->lbfgs_precompute();
 	float64_t nlml=obj_prt->get_nlml_wrt_parameters();
 
@@ -181,9 +182,17 @@ float64_t CKLInferenceMethod::evaluate(void *obj, const float64_t *parameters,
 	return nlml;
 }
 
+CVariationalGaussianLikelihood* CKLInferenceMethod::get_variational_likelihood() const
+{
+	check_variational_likelihood(m_model);
+	CVariationalGaussianLikelihood* lik= dynamic_cast<CVariationalGaussianLikelihood*>(m_model);
+	return lik;
+}
+
 float64_t CKLInferenceMethod::get_nlml_wrt_parameters()
 {
-	m_model->set_variational_distribution(m_mu, m_s2, m_labels);
+	CVariationalGaussianLikelihood * lik=get_variational_likelihood();
+	lik->set_variational_distribution(m_mu, m_s2, m_labels);
 	return get_negative_log_marginal_likelihood_helper();
 }
 
@@ -234,9 +243,7 @@ float64_t CKLInferenceMethod::get_negative_log_marginal_likelihood()
 
 SGVector<float64_t> CKLInferenceMethod::get_derivative_wrt_likelihood_model(const TParameter* param)
 {
-	CVariationalLikelihood * lik= dynamic_cast<CVariationalLikelihood *>(m_model);
-	REQUIRE(lik, "The likelihood model must support variational inference.",
-		"Please use variational likelihood model\n");
+	CVariationalLikelihood * lik=get_variational_likelihood();
 
 	if (!lik->supports_derivative_wrt_hyperparameter())
 		return SGVector<float64_t> ();
@@ -377,8 +384,6 @@ SGMatrix<float64_t> CKLInferenceMethod::get_cholesky()
 
 	return SGMatrix<float64_t>(m_L);
 }
-
-
 
 } /* namespace shogun */
 
