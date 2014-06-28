@@ -124,7 +124,7 @@ void CLogitDVGLikelihood::init_likelihood()
 
 void CLogitDVGLikelihood::init()
 {
-    init_likelihood();
+	init_likelihood();
 }
 
 } /* namespace shogun */
