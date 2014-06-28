@@ -117,6 +117,72 @@ TEST(BTestMMD, statistic_single_kernel_fixed_incomplete)
 	SG_UNREF(mmd);
 }
 
+TEST(BTestMMD, p_value_gaussian_large_num_samples)
+{
+	index_t m=50000;
+	index_t d=2;
+	float64_t sigma=2;
+	float64_t sq_sigma_twice=sigma*sigma*2;
+
+	// test power
+	float64_t alpha=0.05;
+
+	// use fixed seed for reproducibility
+	CMath::init_random(1);
+
+	// generate data from N(0,1) and N(mu,1)
+	float64_t mu=0.5;
+	SGMatrix<float64_t> data(d, 2*m);
+
+	for (index_t i=0; i<d*m; ++i)
+		data.matrix[i]=CMath::randn_double();
+
+	for (index_t i=d*m; i<2*d*m; ++i)
+		data.matrix[i]=CMath::randn_double()+mu;
+
+	// create data matrix for each features (appended is not supported)
+	SGMatrix<float64_t> data_p(d, m);
+	memcpy(&(data_p.matrix[0]), &(data.matrix[0]), sizeof(float64_t)*d*m);
+
+	SGMatrix<float64_t> data_q(d, m);
+	memcpy(&(data_q.matrix[0]), &(data.matrix[d*m]), sizeof(float64_t)*d*m);
+
+	CDenseFeatures<float64_t>* features_p=new CDenseFeatures<float64_t>(data_p);
+	CDenseFeatures<float64_t>* features_q=new CDenseFeatures<float64_t>(data_q);
+
+	// create stremaing features from dense features
+	CStreamingFeatures* streaming_p=new CStreamingDenseFeatures<float64_t>(
+			features_p);
+	CStreamingFeatures* streaming_q=new CStreamingDenseFeatures<float64_t>(
+			features_q);
+
+	// shoguns kernel width is different
+	CGaussianKernel* kernel=new CGaussianKernel(10, sq_sigma_twice);
+
+	// create MMD instance with blocksize 100
+	index_t blocksize=100;
+	CBTestMMD* mmd=new CBTestMMD(kernel, streaming_p, streaming_q,
+			m, blocksize);
+
+	// use Gaussian approximation for null distribution
+	mmd->set_null_approximation_method(MMD1_GAUSSIAN);
+
+	// start streaming features parser
+	streaming_p->start_parser();
+	streaming_q->start_parser();
+
+	// assert local machine computed result
+	float64_t p_value=mmd->perform_test();
+	EXPECT_NEAR(p_value, 0.0, 1E-15);
+	EXPECT_TRUE(p_value<alpha);
+
+	// stop streaming features parser
+	streaming_p->end_parser();
+	streaming_q->end_parser();
+
+	SG_UNREF(mmd);
+}
+
 TEST(BTestMMD, statistic_and_Q_fixed)
 {
 	index_t m=8;

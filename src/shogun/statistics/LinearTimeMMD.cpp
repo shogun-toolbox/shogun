@@ -57,42 +57,44 @@ CLinearTimeMMD::~CLinearTimeMMD()
 {
 }
 
-float64_t CLinearTimeMMD::compute_stat_est_multiplier()
+float64_t CLinearTimeMMD::compute_statistic_normalizing_constant()
 {
-	return CMath::sqrt(1.0/(m_m+m_n)*m_m*m_n);
+	if (m_statistic_type!=S_INCOMPLETE_DEPRECATED)
+		return CMath::sqrt(1.0/(m_m+m_n)*m_m*m_n);
+	return 1;
 }
 
-float64_t CLinearTimeMMD::compute_var_est_multiplier()
+float64_t CLinearTimeMMD::compute_variance_normalizing_constant()
 {
 	index_t B=m_blocksize;
 	index_t Bx=m_blocksize_p;
 	index_t By=m_blocksize_q;
 
-	if (m_statistic_type==S_UNBIASED)
-		return 1.0/(B-1)/(B-2)*Bx*By*(Bx-1)*(By-1);
-	else if (m_statistic_type==S_INCOMPLETE)
-		return 1.0/16.0*B*(B-2);
-	else
+	switch (m_statistic_type)
 	{
-		SG_ERROR("Unknown statistic type\n");
-		return 0;
+		case S_UNBIASED:
+			return 1.0/(B-1)/(B-2)*Bx*By*(Bx-1)*(By-1);
+		case S_INCOMPLETE:
+			return 1.0/16.0*B*(B-2);
+		default:
+			return 1;
 	}
 }
 
-float64_t CLinearTimeMMD::compute_gaussian_multiplier()
+float64_t CLinearTimeMMD::compute_gaussian_variance(float64_t variance)
 {
 	index_t B=m_blocksize;
 	index_t Bx=m_blocksize_p;
 	index_t By=m_blocksize_q;
 
-	if (m_statistic_type==S_UNBIASED)
-		return 1.0/B/(Bx-1)/(By-1)*(B-1)*(B-2);
-	else if (m_statistic_type==S_INCOMPLETE)
-		return 4.0/(B-2);
-	else
+	switch (m_statistic_type)
 	{
-		SG_ERROR("Unknown statistic type\n");
-		return 0;
+		case S_UNBIASED:
+			return variance/B/(Bx-1)/(By-1)*(B-1)*(B-2);
+		case S_INCOMPLETE:
+			return variance*4.0/(B-2);
+		default:
+			return variance;
 	}
 }
 

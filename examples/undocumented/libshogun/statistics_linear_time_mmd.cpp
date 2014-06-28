@@ -34,7 +34,7 @@ void linear_time_mmd()
 	CGaussianKernel* kernel=new CGaussianKernel(10, width);
 
 	/* create linear time mmd instance */
-	index_t blocksize=10;
+	index_t blocksize=4;
 	CLinearTimeMMD* mmd=new CLinearTimeMMD(kernel, gen_p, gen_q, m, blocksize);
 
 	/* perform test: compute p-value and test if null-hypothesis is rejected for

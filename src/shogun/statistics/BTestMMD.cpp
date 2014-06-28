@@ -56,13 +56,13 @@ CBTestMMD::~CBTestMMD()
 {
 }
 
-float64_t CBTestMMD::compute_stat_est_multiplier()
+float64_t CBTestMMD::compute_statistic_normalizing_constant()
 {
 	index_t n=m_m+m_n;
 	return 1.0/n*m_m*m_n*CMath::sqrt(m_blocksize/float64_t(n));
 }
 
-float64_t CBTestMMD::compute_var_est_multiplier()
+float64_t CBTestMMD::compute_variance_normalizing_constant()
 {
 	index_t Bx=m_blocksize_p;
 	index_t By=m_blocksize_q;
@@ -70,8 +70,8 @@ float64_t CBTestMMD::compute_var_est_multiplier()
 	return CMath::sq(1.0/(Bx+By)*Bx*By);
 }
 
-float64_t CBTestMMD::compute_gaussian_multiplier()
+float64_t CBTestMMD::compute_gaussian_variance(float64_t variance)
 {
-	return 1.0;
+	return variance;
 }
 
