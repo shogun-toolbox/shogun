@@ -59,7 +59,7 @@ CLinearTimeMMD::~CLinearTimeMMD()
 
 float64_t CLinearTimeMMD::compute_stat_est_multiplier()
 {
-	return CMath::sqrt(float64_t(m_m*m_n)/(m_m+m_n));
+	return CMath::sqrt(1.0/(m_m+m_n)*m_m*m_n);
 }
 
 float64_t CLinearTimeMMD::compute_var_est_multiplier()
@@ -69,9 +69,9 @@ float64_t CLinearTimeMMD::compute_var_est_multiplier()
 	index_t By=m_blocksize_q;
 
 	if (m_statistic_type==S_UNBIASED)
-		return float64_t(Bx*By*(Bx-1)*(By-1))/(B-1)/(B-2);
+		return 1.0/(B-1)/(B-2)*Bx*By*(Bx-1)*(By-1);
 	else if (m_statistic_type==S_INCOMPLETE)
-		return B*(B-2)/16.0;
+		return 1.0/16.0*B*(B-2);
 	else
 	{
 		SG_ERROR("Unknown statistic type\n");
@@ -86,7 +86,7 @@ float64_t CLinearTimeMMD::compute_gaussian_multiplier()
 	index_t By=m_blocksize_q;
 
 	if (m_statistic_type==S_UNBIASED)
-		return float64_t((B-1)*(B-2))/B/(Bx-1)/(By-1);
+		return 1.0/B/(Bx-1)/(By-1)*(B-1)*(B-2);
 	else if (m_statistic_type==S_INCOMPLETE)
 		return 4.0/(B-2);
 	else

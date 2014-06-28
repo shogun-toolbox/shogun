@@ -59,7 +59,7 @@ CBTestMMD::~CBTestMMD()
 float64_t CBTestMMD::compute_stat_est_multiplier()
 {
 	index_t n=m_m+m_n;
-	return float64_t(m_m*m_n)/n*CMath::sqrt(m_blocksize/float64_t(n));
+	return 1.0/n*m_m*m_n*CMath::sqrt(m_blocksize/float64_t(n));
 }
 
 float64_t CBTestMMD::compute_var_est_multiplier()
@@ -67,7 +67,7 @@ float64_t CBTestMMD::compute_var_est_multiplier()
 	index_t Bx=m_blocksize_p;
 	index_t By=m_blocksize_q;
 
-	return CMath::sq(float64_t(Bx*By)/(Bx+By));
+	return CMath::sq(1.0/(Bx+By)*Bx*By);
 }
 
 float64_t CBTestMMD::compute_gaussian_multiplier()
