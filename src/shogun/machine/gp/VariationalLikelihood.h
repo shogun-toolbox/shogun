@@ -244,21 +244,19 @@ public:
 	virtual SGVector<float64_t> get_first_derivative_wrt_hyperparameter(const TParameter* param) const=0;
 
 protected:
-	void set_likelihood(CLikelihoodModel * lik);
-
-	/** this method used to initialize m_likelihood*/
+	/** this method is called to initialize m_likelihood in init()*/
 	virtual void init_likelihood()=0;
-
 
 	/** the label of data*/
 	SGVector<float64_t> m_lab;
 
-private:
 	/** the distribution used to model data */
 	CLikelihoodModel* m_likelihood;
 
+	/** this method used to set m_likelihood*/
+	void set_likelihood(CLikelihoodModel * lik);
+private:
 	void init();
-
 };
 }
 #endif /* _VARIATIONALLIKELIHOODMODEL_H_ */
