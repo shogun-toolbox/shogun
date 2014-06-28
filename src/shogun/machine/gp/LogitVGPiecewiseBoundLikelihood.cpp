@@ -259,7 +259,7 @@ void CLogitVGPiecewiseBoundLikelihood::set_variational_distribution(SGVector<flo
 	for(index_t i = 0; i < s2.vlen; ++i)
 		REQUIRE(s2[i] > 0.0, "Variance should always be positive (s2 should be a positive vector)\n");
 
-	m_lab = ((CBinaryLabels*)lab)->get_labels();
+	m_lab = (((CBinaryLabels*)lab)->get_labels()).clone();
 
 	//Convert the input label to standard label used in the class
 	//Note that Shogun uses  -1 and 1 as labels and this class internally uses 
