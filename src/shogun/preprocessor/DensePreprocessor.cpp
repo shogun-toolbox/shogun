@@ -85,6 +85,19 @@ EPreprocessorType CDensePreprocessor<ST>::get_type() const
 	return P_UNKNOWN;
 }
 
+template <class ST>
+CFeatures* CDensePreprocessor<ST>::apply(CFeatures* features)
+{
+	REQUIRE(features->get_feature_class()==C_DENSE, "Provided features (%d) "
+			"has to be of C_DENSE (%d) class!\n",
+			features->get_feature_class(), C_DENSE);
+
+	SGMatrix<ST> feat_matrix=apply_to_feature_matrix(features);
+	CDenseFeatures<ST>* preprocessed=new CDenseFeatures<ST>(feat_matrix);
+	SG_REF(preprocessed);
+	return preprocessed;
+}
+
 template class CDensePreprocessor<bool>;
 template class CDensePreprocessor<char>;
 template class CDensePreprocessor<int8_t>;

@@ -341,3 +341,10 @@ CFeatures* CFeatures::copy_subset(SGVector<index_t> indices)
 			"not yet implemented yet. Ask developers!\n", get_name());
 	return NULL;
 }
+
+CFeatures* CFeatures::copy_dimension_subset(SGVector<index_t> dims)
+{
+	SG_WARNING("%s::copy_dimension_subset():: Is not yet implemented!\n",
+			get_name());
+	return NULL;
+}

@@ -36,6 +36,14 @@ template <class ST> class CStringPreprocessor : public CPreprocessor
 		 */
 		CStringPreprocessor() : CPreprocessor() {}
 
+		/** generic interface for applying the preprocessor. used as a wrapper
+		 * for apply_to_string_features() method
+		 *
+		 * @param features the string input features
+		 * @return the result feature object after applying the preprocessor
+		 */
+		virtual CFeatures* apply(CFeatures* features);
+
 		/// apply preproc on feature matrix
 		/// result in feature matrix
 		/// return pointer to feature_matrix, i.e. f->get_feature_matrix();
@@ -120,6 +128,17 @@ template<> inline EFeatureType CStringPreprocessor<float64_t>::get_feature_type(
 template<> inline EFeatureType CStringPreprocessor<floatmax_t>::get_feature_type()
 {
 	return F_LONGREAL;
+}
+
+template <class ST>
+CFeatures* CStringPreprocessor<ST>::apply(CFeatures* features)
+{
+	REQUIRE(features->get_feature_class()==C_STRING, "Provided features (%d) "
+			"has to be of C_STRING (%d) class!\n",
+			features->get_feature_class(), C_STRING);
+
+	apply_to_string_features(features);
+	return features;
 }
 
 }
