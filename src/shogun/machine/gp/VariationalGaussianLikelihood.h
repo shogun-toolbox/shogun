@@ -37,6 +37,7 @@
 #include <shogun/machine/gp/VariationalLikelihood.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/labels/Labels.h>
+#include <shogun/mathematics/Math.h>
 
 namespace shogun
 {
