@@ -29,7 +29,7 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
-#include <shogun/statistics/MMDKernelSelection.h>
+#include <shogun/statistics/KernelSelection.h>
 #include <shogun/kernel/CombinedKernel.h>
 #include <shogun/statistics/KernelTwoSampleTest.h>
 #include <shogun/statistics/LinearTimeMMD.h>
@@ -37,53 +37,50 @@
 
 using namespace shogun;
 
-CMMDKernelSelection::CMMDKernelSelection()
+CKernelSelection::CKernelSelection()
 {
+	init();
 }
 
-CMMDKernelSelection::CMMDKernelSelection(CKernelTwoSampleTest* mmd)
-	: CKernelSelection(mmd)
+CKernelSelection::CKernelSelection(CKernelTwoSampleTest* estimator)
 {
-	/* ensure that mmd contains an instance of a MMD related class
-	   TODO - Add S_BTEST_MMD when feature/mmd is merged with develop */
-	REQUIRE(mmd->get_statistic_type()==S_LINEAR_TIME_MMD ||
-			mmd->get_statistic_type()==S_QUADRATIC_TIME_MMD,
-			"Provided instance for kernel two sample testing has to be a MMD-"
-			"based class! The provided is of class \"%s\"\n", mmd->get_name());
+	init();
+	set_estimator(estimator);
 }
 
-CMMDKernelSelection::~CMMDKernelSelection()
+CKernelSelection::~CKernelSelection()
 {
+	SG_UNREF(m_estimator);
 }
 
-CKernel* CMMDKernelSelection::select_kernel()
+void CKernelSelection::init()
 {
-	SG_DEBUG("entering\n")
+	SG_ADD((CSGObject**)&m_estimator, "estimator",
+			"Underlying CKernelTwoSampleTest instance", MS_NOT_AVAILABLE);
 
-	/* compute measures and return single kernel with maximum measure */
-	SGVector<float64_t> measures=compute_measures();
-
-	/* find maximum and return corresponding kernel */
-	float64_t max=measures[0];
-	index_t max_idx=0;
-	for (index_t i=1; i<measures.vlen; ++i)
-	{
-		if (measures[i]>max)
-		{
-			max=measures[i];
-			max_idx=i;
-		}
-	}
-
-	/* find kernel with corresponding index */
-	CCombinedKernel* combined=(CCombinedKernel*)m_estimator->get_kernel();
-	CKernel* current=combined->get_kernel(max_idx);
-
-	SG_UNREF(combined);
-	SG_DEBUG("leaving\n");
-
-	/* current is not SG_UNREF'ed nor SG_REF'ed since the counter needs to be
-	 * incremented exactly by one */
-	return current;
+	m_estimator=NULL;
 }
 
+void CKernelSelection::set_estimator(CKernelTwoSampleTest* estimator)
+{
+	REQUIRE(estimator, "No CKernelTwoSampleTest instance provided!\n");
+
+	/* ensure that there is a combined kernel */
+	CKernel* kernel=estimator->get_kernel();
+	REQUIRE(kernel, "Underlying \"%s\" has no kernel set!\n",
+			estimator->get_name());
+	REQUIRE(kernel->get_kernel_type()==K_COMBINED, "Kernel of underlying \"%s\" "
+			"is of type \"%s\" but is has to be CCombinedKernel\n",
+			estimator->get_name(), kernel->get_name());
+	SG_UNREF(kernel);
+
+	SG_REF(estimator);
+	SG_UNREF(m_estimator);
+	m_estimator=estimator;
+}
+
+CKernelTwoSampleTest* CKernelSelection::get_estimator() const
+{
+	SG_REF(m_estimator);
+	return m_estimator;
+}

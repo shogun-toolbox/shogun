@@ -29,11 +29,11 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
-#ifndef __MMDKERNELSELECTION_H_
-#define __MMDKERNELSELECTION_H_
+#ifndef KERNEL_SELECTION_H_
+#define KERNEL_SELECTION_H_
 
 #include <shogun/lib/config.h>
-#include <shogun/statistics/KernelSelection.h>
+#include <shogun/base/SGObject.h>
 
 namespace shogun
 {
@@ -41,35 +41,26 @@ namespace shogun
 class CKernelTwoSampleTest;
 class CKernel;
 
-/** @brief Base class for kernel selection for MMD-based two-sample test
- * statistic implementations.
+/** @brief Base class for kernel selection for kernel two-sample test
+ * statistic implementations (e.g. MMD).
  * Provides abstract methods for selecting kernels and computing criteria or
  * kernel weights for the implemented method. In order to implement new methods
  * for kernel selection, simply write a new implementation of this class.
- *
- * Kernel selection works this way: One passes an instance of CCombinedKernel
- * to the MMD statistic and appends all kernels that should be considered.
- * Depending on the type of kernel selection implementation, a single one or
- * a combination of those baseline kernels is selected and returned to the user.
- * This kernel can then be passed to the MMD instance to perform a test.
- *
  */
-class CMMDKernelSelection: public CKernelSelection
+class CKernelSelection: public CSGObject
 {
 public:
-
 	/** Default constructor */
-	CMMDKernelSelection();
+	CKernelSelection();
 
-	/** Constructor that initialises the underlying MMD instance
+	/** Constructor that initialises the underlying CKernelTwoSampleTest instance
 	 *
-	 * @param mmd MMD instance to use. Has to be an MMD based kernel two-sample
-	 * test. Currently: linear or quadratic time MMD.
+	 * @param estimator CKernelTwoSampleTest instance to use.
 	 */
-	CMMDKernelSelection(CKernelTwoSampleTest* mmd);
+	CKernelSelection(CKernelTwoSampleTest* estimator);
 
 	/** Destructor */
-	virtual ~CMMDKernelSelection();
+	virtual ~CKernelSelection();
 
 	/** If the the implemented method selects a single kernel, this computes
 	 * criteria for all underlying kernels. If the method selects combined
@@ -79,22 +70,35 @@ public:
 	 */
 	virtual SGVector<float64_t> compute_measures()=0;
 
-	/** Performs kernel selection on the base of the compute_measures() method
-	 * and returns the selected kernel which is either a single or a combined
-	 * one (with weights set)
+	/** Abstract method that performs kernel selection on the base of the
+	 * compute_measures() method and returns the selected kernel which is
+	 * either a single or a combined one (with weights set)
 	 *
 	 * @return selected kernel (SG_REF'ed)
 	 */
-	virtual CKernel* select_kernel();
+	virtual CKernel* select_kernel()=0;
+
+	/** @param estimator the underlying CKernelTwoSampleTest instance */
+	void set_estimator(CKernelTwoSampleTest* estimator);
+
+	/** @return the underlying CKernelTwoSampleTest instance */
+	CKernelTwoSampleTest* get_estimator() const;
 
 	/** @return name of the SGSerializable */
 	virtual const char* get_name() const
 	{
-		return "MMDKernelSelection";
+		return "KernelSelection";
 	}
 
+private:
+	/** Register parameters and initialize with default */
+	void init();
+
+protected:
+	/** Underlying kernel two-sample test instance */
+	CKernelTwoSampleTest* m_estimator;
 };
 
 }
 
-#endif /* __MMDKERNELSELECTION_H_ */
+#endif /* KERNEL_SELECTION_H_ */
