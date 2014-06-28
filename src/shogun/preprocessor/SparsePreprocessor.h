@@ -47,8 +47,7 @@ public:
 	 */
 	virtual CFeatures* apply(CFeatures* features)
 	{
-		SG_WARNING("%s::apply():: Is not yet implemented!\n",
-				get_name());
+		SG_ERROR("Is not yet implemented!\n");
 		return NULL;
 	}
 
