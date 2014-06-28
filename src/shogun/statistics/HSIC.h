@@ -151,6 +151,18 @@ public:
 		return S_HSIC;
 	}
 
+	/** Setter for features from distribution p, SG_REFs it
+	 *
+	 * @param p features from p
+	 */
+	virtual void set_p(CFeatures* p);
+
+	/** Setter for features from distribution q, SG_REFs it
+	 *
+	 * @param q features from q
+	 */
+	virtual void set_q(CFeatures* q);
+
 	/** Approximates the null-distribution by a two parameter gamma
 	 * distribution. Returns parameters.
 	 *
