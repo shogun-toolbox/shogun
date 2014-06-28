@@ -140,7 +140,7 @@ public:
 	virtual SGVector<float64_t> get_variance_dual_parameter() const;
 
 protected:
-	/** The function used to initialize m_likelihood*/
+	/** this method is called to initialize m_likelihood in init()*/
 	virtual void init_likelihood();
 
 private:

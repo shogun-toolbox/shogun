@@ -254,7 +254,7 @@ protected:
 	CLikelihoodModel* m_likelihood;
 
 	/** this method used to set m_likelihood*/
-	void set_likelihood(CLikelihoodModel * lik);
+	virtual void set_likelihood(CLikelihoodModel * lik);
 private:
 	void init();
 };
