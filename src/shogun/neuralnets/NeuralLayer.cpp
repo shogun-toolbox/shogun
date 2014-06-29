@@ -112,6 +112,7 @@ void CNeuralLayer::init()
 	m_num_parameters = 0;
 	m_batch_size = 0;
 	dropout_prop = 0.0;
+	contraction_coefficient = 0.0;
 	is_training = false;
 	
 	SG_ADD(&m_num_neurons, "num_neurons",
@@ -124,6 +125,8 @@ void CNeuralLayer::init()
 	       "Input Sizes", MS_NOT_AVAILABLE);
 	SG_ADD(&dropout_prop, "dropout_prop",
 	       "Dropout Probabilty", MS_NOT_AVAILABLE);
+	SG_ADD(&contraction_coefficient, "contraction_coefficient",
+	       "Contraction Coefficient", MS_NOT_AVAILABLE);
 	SG_ADD(&is_training, "is_training",
 	       "is_training", MS_NOT_AVAILABLE);
 	SG_ADD(&m_batch_size, "batch_size",
