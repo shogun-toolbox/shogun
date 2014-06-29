@@ -491,10 +491,10 @@ TEST(CARTree, handle_missing_continuous)
 	CBinaryTreeMachineNode<CARTreeNodeData>* left=root->left();
 	CBinaryTreeMachineNode<CARTreeNodeData>* right=root->right();
 
-	EXPECT_EQ(0.0,root->data.attribute_id);
+	EXPECT_EQ(2.0,root->data.attribute_id);
 	EXPECT_EQ(9.0,root->data.total_weight);
-	EXPECT_EQ(6.0,left->data.total_weight);
-	EXPECT_EQ(3.0,right->data.total_weight);
+	EXPECT_EQ(5.0,left->data.total_weight);
+	EXPECT_EQ(4.0,right->data.total_weight);
 
 	SG_UNREF(root);
 	SG_UNREF(left);
