@@ -28,5 +28,5 @@ CMMDKernelSelectionMax::~CMMDKernelSelectionMax()
 SGVector<float64_t> CMMDKernelSelectionMax::compute_measures()
 {
 	/* simply return vector with MMDs */
-	return m_mmd->compute_statistic(true);
+	return m_estimator->compute_statistic(true);
 }

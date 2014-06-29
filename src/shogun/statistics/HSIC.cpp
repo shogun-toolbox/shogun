@@ -87,6 +87,8 @@ float64_t CHSIC::compute_statistic()
 
 	/* compute MATLAB: sum(sum(Kc' .* (L))), which is biased HSIC */
 	index_t m=m_num_features;
+	SG_DEBUG("Number of samples %d!\n", m);
+
 	float64_t result=0;
 	for (index_t i=0; i<m; ++i)
 	{
@@ -325,3 +327,16 @@ SGVector<float64_t> CHSIC::sample_null()
 	SG_DEBUG("leaving!\n")
 	return null_samples;
 }
+
+void CHSIC::set_p(CFeatures* p)
+{
+	CIndependenceTest::set_p(p);
+	m_num_features=p->get_num_vectors();
+}
+
+void CHSIC::set_q(CFeatures* q)
+{
+	CIndependenceTest::set_q(q);
+	m_num_features=q->get_num_vectors();
+}
+

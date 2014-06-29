@@ -51,7 +51,7 @@ void CMMDKernelSelectionCombOpt::init()
 SGVector<float64_t> CMMDKernelSelectionCombOpt::compute_measures()
 {
 	/* cast is safe due to assertion in constructor */
-	CCombinedKernel* kernel=(CCombinedKernel*)m_mmd->get_kernel();
+	CCombinedKernel* kernel=(CCombinedKernel*)m_estimator->get_kernel();
 	index_t num_kernels=kernel->get_num_subkernels();
 	SG_UNREF(kernel);
 
@@ -66,7 +66,7 @@ SGVector<float64_t> CMMDKernelSelectionCombOpt::compute_measures()
 	m_Q=SGMatrix<float64_t>(num_kernels, num_kernels, false);
 
 	/* online compute mmds and covariance matrix Q of kernels */
-	((CLinearTimeMMD*)m_mmd)->compute_statistic_and_Q(mmds, m_Q);
+	((CLinearTimeMMD*)m_estimator)->compute_statistic_and_Q(mmds, m_Q);
 
 	/* evtl regularize to avoid numerical problems (see NIPS paper) */
 	if (m_lambda)

@@ -611,9 +611,12 @@ CFeatures* CDenseFeatures<ST>::copy_dimension_subset(SGVector<index_t> dims)
 {
 	SG_DEBUG("Entering!\n");
 
-	REQUIRE(SGVector<index_t>::max(dims.vector, dims.vlen)<num_features &&
-			SGVector<index_t>::min(dims.vector, dims.vlen)>=0,
-			"Provided dimensions have to be within [0, %d]!\n", num_features);
+	// sanity checks
+	index_t max=SGVector<index_t>::max(dims.vector, dims.vlen);
+	index_t min=SGVector<index_t>::min(dims.vector, dims.vlen);
+	REQUIRE(max<num_features && min>=0,
+			"Provided dimensions is in the range [%d, %d] but they "
+			"have to be within [0, %d]! But it \n", min, max, num_features);
 
 	SGMatrix<ST> feature_matrix_copy(dims.vlen, get_num_vectors());
 

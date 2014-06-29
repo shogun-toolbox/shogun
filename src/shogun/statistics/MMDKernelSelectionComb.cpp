@@ -47,7 +47,7 @@ void CMMDKernelSelectionComb::init()
 CKernel* CMMDKernelSelectionComb::select_kernel()
 {
 	/* cast is safe due to assertion in constructor */
-	CCombinedKernel* combined=(CCombinedKernel*)m_mmd->get_kernel();
+	CCombinedKernel* combined=(CCombinedKernel*)m_estimator->get_kernel();
 
 	/* optimise for kernel weights and set them */
 	SGVector<float64_t> weights=compute_measures();

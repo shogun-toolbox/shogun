@@ -95,6 +95,30 @@ public:
 	 */
 	virtual SGVector<float64_t> sample_null();
 
+	/** Setter for kernel for features from distribution p, SG_REFs it
+	 *
+	 * @param kernel_p kernel for features from p
+	 */
+	virtual void set_kernel_p(CKernel* kernel_p);
+
+	/** Setter for kernel for features from distribution q, SG_REFs it
+	 *
+	 * @param kernel_q kernel for features from q
+	 */
+	virtual void set_kernel_q(CKernel* kernel_q);
+
+	/** Getter for kernel for features from p, SG_REF'ed
+	 *
+	 * @return kernel for features from p
+	 */
+	virtual CKernel* get_kernel_p();
+
+	/** Getter for kernel for features from q, SG_REF'ed
+	 *
+	 * @return kernel for features from q
+	 */
+	virtual CKernel* get_kernel_q();
+
 	/** @return the class name */
 	virtual const char* get_name() const=0;
 
