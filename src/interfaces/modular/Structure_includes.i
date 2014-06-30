@@ -42,5 +42,6 @@
 #endif /* USE_MOSEK */
 
  #include <shogun/structure/StochasticSOSVM.h>
+ #include <shogun/structure/FWSOSVM.h>
 %}
 
