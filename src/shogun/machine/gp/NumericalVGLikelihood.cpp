@@ -63,12 +63,6 @@ CNumericalVGLikelihood::~CNumericalVGLikelihood()
 
 void CNumericalVGLikelihood::init()
 {
-	//Use default Gaussian-Hermite quadrature 20 points
-	index_t N=20;
-	m_xgh=SGVector<float64_t>(N);
-	m_wgh=SGVector<float64_t>(N);
-	CIntegration::generate_gauher(m_xgh, m_wgh);
-
 	SG_ADD(&m_log_lam, "log_lam", 
 		"The result of used for computing variational expection\n",
 		MS_NOT_AVAILABLE);
@@ -80,6 +74,27 @@ void CNumericalVGLikelihood::init()
 	SG_ADD(&m_wgh, "wgh", 
 		"Gaussian-Hermite quadrature weight factors\n",
 		MS_NOT_AVAILABLE);
+
+	SG_ADD(&m_GHQ_N, "GHQ_N", 
+		"The number of Gaussian-Hermite quadrature point\n",
+		MS_NOT_AVAILABLE);
+
+	SG_ADD(&m_is_init_GHQ, "is_init_GHQ", 
+		"Whether Gaussian-Hermite quadrature points are initialized or not\n",
+		MS_NOT_AVAILABLE);
+
+	m_GHQ_N=20;
+	m_is_init_GHQ=false;
+}
+
+void CNumericalVGLikelihood::set_GHQ_number(index_t n)
+{
+	REQUIRE(n>0, "The number (%d) of Gaussian Hermite point should be positive\n",n);
+	if (m_GHQ_N!=n)
+	{
+		m_GHQ_N=n;
+		m_is_init_GHQ=false;
+	}
 }
 
 SGVector<float64_t> CNumericalVGLikelihood::get_first_derivative_wrt_hyperparameter(
@@ -244,6 +259,14 @@ void CNumericalVGLikelihood::set_variational_distribution(SGVector<float64_t> mu
 
 	m_mu=mu;
 	m_s2=s2;
+
+	if (!m_is_init_GHQ)
+	{
+		m_xgh=SGVector<float64_t>(m_GHQ_N);
+		m_wgh=SGVector<float64_t>(m_GHQ_N);
+		CIntegration::generate_gauher(m_xgh, m_wgh);
+		m_is_init_GHQ=true;
+	}
 
 	precompute();
 }
