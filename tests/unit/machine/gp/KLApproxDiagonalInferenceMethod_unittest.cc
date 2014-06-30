@@ -96,7 +96,7 @@ TEST(KLApproxDiagonalInferenceMethod,get_cholesky_t_likelihood)
 
 	SGMatrix<float64_t> L=inf->get_cholesky();
 
-	float64_t rel_tolorance = 1e-2;
+	float64_t rel_tolorance = 1e-3;
 	float64_t abs_tolorance;
 
 	abs_tolorance = CMath::get_abs_tolorance(29.63405683123, rel_tolorance);
@@ -216,7 +216,7 @@ TEST(KLApproxDiagonalInferenceMethod,get_cholesky_logit_likelihood)
 
 
 	SGMatrix<float64_t> L=inf->get_cholesky();
-	float64_t rel_tolorance = 1e-2;
+	float64_t rel_tolorance = 1e-3;
 	float64_t abs_tolorance;
 
 	abs_tolorance = CMath::get_abs_tolorance(0.305566275391344, rel_tolorance);
@@ -333,7 +333,7 @@ TEST(KLApproxDiagonalInferenceMethod,get_cholesky_probit_likelihood)
 	//-62.82862008990 -81.76913567091 -12.95847578171 116.71505545158 38.71428242973 
 
 	SGMatrix<float64_t> L=inf->get_cholesky();
-	float64_t rel_tolorance = 1e-2;
+	float64_t rel_tolorance = 1e-3;
 	float64_t abs_tolorance;
 
 	abs_tolorance = CMath::get_abs_tolorance(92.55758851904, rel_tolorance);
@@ -446,7 +446,7 @@ TEST(KLApproxDiagonalInferenceMethod,get_posterior_mean_t_likelihood)
 	// 
 	SGVector<float64_t> posterior_mean=inf->get_posterior_mean();
 
-	float64_t rel_tolorance = 1e-2;
+	float64_t rel_tolorance = 1e-3;
 	float64_t abs_tolorance;
 	abs_tolorance = CMath::get_abs_tolorance(0.504263183608509, rel_tolorance);
 	EXPECT_NEAR(posterior_mean[0],  0.504263183608509,  abs_tolorance);
@@ -511,7 +511,7 @@ TEST(KLApproxDiagonalInferenceMethod,get_posterior_covariance_t_likelihood)
 	//0                   0                   0                   0   0.318754271084796
 
 	SGMatrix<float64_t> posterior_covariance=inf->get_posterior_covariance();
-	float64_t rel_tolorance = 1e-2;
+	float64_t rel_tolorance = 1e-3;
 	float64_t abs_tolorance;
 
 	abs_tolorance = CMath::get_abs_tolorance(0.066339535327499, rel_tolorance);
@@ -627,7 +627,7 @@ TEST(KLApproxDiagonalInferenceMethod,get_posterior_mean_logit_likelihood)
 	//-0.650341037910017
 
 	SGVector<float64_t> posterior_mean=inf->get_posterior_mean();
-	float64_t rel_tolorance = 1e-2;
+	float64_t rel_tolorance = 1e-3;
 	float64_t abs_tolorance;
 
 	abs_tolorance = CMath::get_abs_tolorance(0.198743176851626, rel_tolorance);
@@ -700,7 +700,7 @@ TEST(KLApproxDiagonalInferenceMethod,get_posterior_covariance_logit_likelihood)
 
 
 	SGMatrix<float64_t> posterior_covariance=inf->get_posterior_covariance();
-	float64_t rel_tolorance = 1e-2;
+	float64_t rel_tolorance = 1e-3;
 	float64_t abs_tolorance;
 
 	abs_tolorance = CMath::get_abs_tolorance(0.603527438532628, rel_tolorance);
@@ -818,7 +818,7 @@ TEST(KLApproxDiagonalInferenceMethod,get_posterior_mean_probit_likelihood)
 
 	SGVector<float64_t> posterior_mean=inf->get_posterior_mean();
 
-	float64_t rel_tolorance = 1e-2;
+	float64_t rel_tolorance = 1e-3;
 	float64_t abs_tolorance;
 
 	abs_tolorance = CMath::get_abs_tolorance(0.103563174064572, rel_tolorance);
@@ -892,7 +892,7 @@ TEST(KLApproxDiagonalInferenceMethod,get_posterior_covariance_probit_likelihood)
 
 	SGMatrix<float64_t> posterior_covariance=inf->get_posterior_covariance();
 
-	float64_t rel_tolorance = 1e-2;
+	float64_t rel_tolorance = 1e-3;
 	float64_t abs_tolorance;
 
 	abs_tolorance = CMath::get_abs_tolorance(0.017367535014875, rel_tolorance);
@@ -997,7 +997,7 @@ TEST(KLApproxDiagonalInferenceMethod,get_negative_marginal_likelihood_t_likeliho
 	//13.703509228407690
 	float64_t nml=inf->get_negative_log_marginal_likelihood();
 
-	float64_t rel_tolorance = 1e-2;
+	float64_t rel_tolorance = 1e-3;
 	float64_t abs_tolorance;
 
 	abs_tolorance = CMath::get_abs_tolorance(13.703509228407690, rel_tolorance);
@@ -1056,7 +1056,7 @@ TEST(KLApproxDiagonalInferenceMethod,get_negative_marginal_likelihood_logit_like
 	// nlZ =
 	//4.160543707929570
 	float64_t nml=inf->get_negative_log_marginal_likelihood();
-	float64_t rel_tolorance = 1e-2;
+	float64_t rel_tolorance = 1e-3;
 	float64_t abs_tolorance;
 
 	abs_tolorance = CMath::get_abs_tolorance(4.160543707929570, rel_tolorance);
@@ -1115,7 +1115,7 @@ TEST(KLApproxDiagonalInferenceMethod,get_negative_marginal_likelihood_probit_lik
 	// nlZ =
 	// 7.744342191099269
 	float64_t nml=inf->get_negative_log_marginal_likelihood();
-	float64_t rel_tolorance = 1e-2;
+	float64_t rel_tolorance = 1e-3;
 	float64_t abs_tolorance;
 
 	abs_tolorance = CMath::get_abs_tolorance(7.744342191099269, rel_tolorance);
@@ -1191,7 +1191,7 @@ TEST(KLApproxDiagonalInferenceMethod,get_marginal_likelihood_derivatives_t_likel
 	//-0.802268825425508
 	//-0.421067396716859
 
-	float64_t rel_tolorance = 1e-2;
+	float64_t rel_tolorance = 1e-3;
 	float64_t abs_tolorance;
 
 	abs_tolorance = CMath::get_abs_tolorance(-0.208510139631534, rel_tolorance);
@@ -1275,7 +1275,7 @@ TEST(KLApproxDiagonalInferenceMethod,get_marginal_likelihood_derivatives_logit_l
 	//2.285921615561960
 	//-0.432276087896124
 	
-	float64_t rel_tolorance = 1e-2;
+	float64_t rel_tolorance = 1e-3;
 	float64_t abs_tolorance;
 
 	abs_tolorance = CMath::get_abs_tolorance(2.285921615561960, rel_tolorance);
@@ -1354,7 +1354,7 @@ TEST(KLApproxDiagonalInferenceMethod,get_marginal_likelihood_derivatives_probit_
 	//4.180258730739274
 	//-0.462089650290405
 
-	float64_t rel_tolorance = 1e-2;
+	float64_t rel_tolorance = 1e-3;
 	float64_t abs_tolorance;
 
 	abs_tolorance = CMath::get_abs_tolorance(4.180258730739274, rel_tolorance);
