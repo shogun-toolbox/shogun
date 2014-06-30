@@ -45,7 +45,7 @@ CAutoencoder::CAutoencoder() : CNeuralNetwork()
 }
 
 CAutoencoder::CAutoencoder(int32_t num_inputs, CNeuralLayer* hidden_layer,
-	CNeuralLayer* decoding_layer) : CNeuralNetwork()
+	CNeuralLayer* decoding_layer, float64_t sigma) : CNeuralNetwork()
 {
 	init();
 	
@@ -60,6 +60,8 @@ CAutoencoder::CAutoencoder(int32_t num_inputs, CNeuralLayer* hidden_layer,
 	set_layers(layers);
 	
 	quick_connect();
+	
+	initialize(sigma);
 }
 
 bool CAutoencoder::train(CFeatures* data)
