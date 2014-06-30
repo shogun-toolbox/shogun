@@ -83,7 +83,7 @@ TEST(BaggingMachine, mock_train)
 
 TEST(BaggingMachine,classify_CART)
 {
-	sg_rand->set_seed(10);
+	sg_rand->set_seed(1);
 	SGMatrix<float64_t> data(4,14);
 
 	//vector = [Outlook Temperature Humidity Wind]
@@ -227,10 +227,10 @@ TEST(BaggingMachine,classify_CART)
 	EXPECT_EQ(0.0,res_vector[1]);
 	EXPECT_EQ(0.0,res_vector[2]);
 	EXPECT_EQ(1.0,res_vector[3]);
-	EXPECT_EQ(0.0,res_vector[4]);
+	EXPECT_EQ(1.0,res_vector[4]);
 
 	CMulticlassAccuracy* eval=new CMulticlassAccuracy();
-	EXPECT_EQ(0.5,c->get_oob_error(eval));
+	EXPECT_NEAR(0.642857,c->get_oob_error(eval),1e-6);
 
 	SG_UNREF(test_feats);
 	SG_UNREF(result);

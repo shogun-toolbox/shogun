@@ -76,7 +76,9 @@ SGVector<float64_t> CBaggingMachine::apply_get_outputs(CFeatures* data)
 	SGMatrix<float64_t> output(data->get_num_vectors(), m_num_bags);
 	output.zero();
 
+	/*
 	#pragma omp parallel for num_threads(parallel->get_num_threads())
+	*/
 	for (int32_t i = 0; i < m_num_bags; ++i)
 	{
 		CMachine* m = dynamic_cast<CMachine*>(m_bags->get_element(i));

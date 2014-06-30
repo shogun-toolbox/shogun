@@ -213,6 +213,18 @@ public:
 	/** do not apply cross validation pruning */
 	void unset_cv_pruning() { m_apply_cv_pruning=false; }
 
+	/** get label epsilon
+	 * 
+	 * @return equality range for regression labels
+	 */
+	 float64_t get_label_epsilon() { return m_label_epsilon; }
+
+	/** set label epsilon
+	 * 
+	 * @param epsilon equality range for regression labels
+	 */
+	 void set_label_epsilon(float64_t epsilon);
+
 protected:
 
 	/** train machine - build CART from training data
@@ -231,6 +243,14 @@ protected:
 	 */
 	virtual CBinaryTreeMachineNode<CARTreeNodeData>* CARTtrain(CFeatures* data, SGVector<float64_t> weights, CLabels* labels, int32_t level);
 
+	/** modify labels for compute_best_attribute
+	 *
+	 * @param labels_vec labels vector
+	 * @param n_ulabels stores number of unique labels
+	 * @return unique labels
+	 */
+	SGVector<float64_t> get_unique_labels(SGVector<float64_t> labels_vec, int32_t &n_ulabels);
+
 	/** computes best attribute for CARTtrain
 	 *
 	 * @param mat data matrix
@@ -244,9 +264,9 @@ protected:
 	 * @param count_right stores number of feature values for right transition
 	 * @return index to the best attribute
 	 */
-	virtual int32_t compute_best_attribute(SGMatrix<float64_t> mat, SGVector<float64_t> weights, SGVector<float64_t> labels_vec, 	
-	SGVector<float64_t> left, SGVector<float64_t> right, SGVector<bool> is_left_final, int32_t &num_missing, int32_t &count_left,
-														 int32_t &count_right);
+	virtual int32_t compute_best_attribute(SGMatrix<float64_t> mat, SGVector<float64_t> weights, SGVector<float64_t> labels_vec, 
+		SGVector<float64_t> left, SGVector<float64_t> right, SGVector<bool> is_left_final, int32_t &num_missing, 
+		int32_t &count_left, int32_t &count_right);
 
 
 	/** handles missing values through surrogate splits
@@ -292,30 +312,41 @@ protected:
 		CDynamicArray<float64_t>* association_index, CDynamicArray<int32_t>* intersect_vecs, SGVector<bool> is_left, 
 									SGVector<float64_t> weights, float64_t p, int32_t attr);
 
+	/** returns gain in regression case
+	 *
+	 * @param wleft left child weight distribution
+	 * @param wright right child weights distribution
+	 * @param wtotal weight distribution in current node
+	 * @param labels regression labels
+	 * @return least squared deviation gain achieved after spliting the node
+	 */
+	float64_t gain(SGVector<float64_t> wleft, SGVector<float64_t> wright, SGVector<float64_t> wtotal, SGVector<float64_t> labels);
+
 	/** returns gain in Gini impurity measure
 	 *
-	 * @param lab labels of data in the node
-	 * @param weights weights of the data points in the node
-	 * @param is_left whether a data point is proposed to be moved to left child node
+	 * @param wleft left child label distribution
+	 * @param wright right child label distribution
+	 * @param wtotal label distribution in current node
 	 * @return Gini gain achieved after spliting the node
 	 */
-	float64_t gain(SGVector<float64_t> lab, SGVector<float64_t> weights, SGVector<bool> is_left);
+	float64_t gain(SGVector<float64_t> wleft, SGVector<float64_t> wright, SGVector<float64_t> wtotal);
 
 	/** returns Gini impurity of a node
 	 * 
-	 * @param lab labels of data in the node
-	 * @param weights weights of the data points in the node
+	 * @param weighted_lab_classes vector of weights associated with various labels
+	 * @param total_weight stores the total weight of all classes
 	 * @return Gini index of the node
 	 */
-	float64_t gini_impurity_index(SGVector<float64_t> lab, SGVector<float64_t> weights);
+	float64_t gini_impurity_index(SGVector<float64_t> weighted_lab_classes, float64_t &total_weight);
 
 	/** returns least squares deviation
 	 * 
-	 * @param lab regression labels
+	 * @param labels regression labels
 	 * @param weights weights of regression data points
+	 * @param total_weight stores sum of weights in weights vector
 	 * @return least squares deviation of the data
 	 */
-	float64_t least_squares_deviation(SGVector<float64_t> lab, SGVector<float64_t> weights);
+	float64_t least_squares_deviation(SGVector<float64_t> labels, SGVector<float64_t> weights, float64_t &total_weight);
 
 	/** uses current subtree to classify/regress data
 	 *
@@ -377,7 +408,16 @@ public:
 	/** denotes that a feature in a vector is missing MISSING = NOT_A_NUMBER */
 	static const float64_t MISSING;
 
+	/** min gain for splitting to be allowed */
+	static const float64_t MIN_SPLIT_GAIN;
+
+	/** equality epsilon */
+	static const float64_t EQ_DELTA;
+
 protected:
+	/** equality range for regression labels */
+	float64_t m_label_epsilon;
+
 	/** vector depicting whether various feature dimensions are nominal or not **/
 	SGVector<bool> m_nominal;
 
