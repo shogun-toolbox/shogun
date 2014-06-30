@@ -79,6 +79,7 @@ int32_t CRandomCARTree::compute_best_attribute(SGMatrix<float64_t> mat, SGVector
 			{
 				simple_labels[i]=j;
 				total_wclasses[j]+=weights[i];
+				break;
 			}
 				
 		}
