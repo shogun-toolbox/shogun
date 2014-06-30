@@ -7,6 +7,7 @@
 #include <shogun/structure/PrimalMosekSOSVM.h>
 #include <shogun/structure/DualLibQPBMSOSVM.h>
 #include <shogun/structure/StochasticSOSVM.h>
+#include <shogun/structure/FWSOSVM.h>
 #include <shogun/structure/FactorType.h>
 #include <shogun/structure/MAPInference.h>
 #include <shogun/structure/FactorGraphModel.h>
@@ -108,6 +109,7 @@ void test(int32_t num_samples)
 	factortype->set_w(w);
 	model->add_factor_type(factortype);
 
+#undef USE_MOSEK
 #ifdef USE_MOSEK
 	// create primal mosek solver
 	CPrimalMosekSOSVM* primcp = new CPrimalMosekSOSVM(model, labels);
@@ -126,12 +128,22 @@ void test(int32_t num_samples)
 	sgd->set_lambda(0.01);
 	SG_REF(sgd);
 
+	// create FW solver
+	CFWSOSVM* fw = new CFWSOSVM(model, labels);
+	fw->set_num_iter(100);
+	fw->set_lambda(0.01);
+	fw->set_gap_threshold(0.01);
+	SG_REF(fw);
+
 	// timer
 	CTime start;
+	float64_t t1 = start.cur_time_diff(false);
 
+#ifdef USE_MOSEK
 	// train PrimalMosek
 	primcp->train();
 	float64_t t1 = start.cur_time_diff(false);
+#endif
 
 	// train BMRM
 	bmrm->train();
@@ -141,15 +153,23 @@ void test(int32_t num_samples)
 	sgd->train();
 	float64_t t3 = start.cur_time_diff(false);
 
+	// train FW
+	fw->train();
+	float64_t t4 = start.cur_time_diff(false);
+
 	SG_SPRINT(">>>> PrimalMosekSOSVM trained in %9.4f\n", t1);
 	SG_SPRINT(">>>> BMRM trained in %9.4f\n", t2-t1);
 	SG_SPRINT(">>>> SGD trained in %9.4f\n", t3-t2);
+	SG_SPRINT(">>>> FW trained in %9.4f\n", t4-t3);
 
 	// check w
+#ifdef USE_MOSEK
 	primcp->get_slacks().display_vector("slacks");
 	primcp->get_w().display_vector("w_mosek");
+#endif 
 	bmrm->get_w().display_vector("w_bmrm");
 	sgd->get_w().display_vector("w_sgd");
+	fw->get_w().display_vector("w_fw");
 	w_truth.display_vector("w_truth");
 
 #ifdef USE_MOSEK
@@ -211,12 +231,33 @@ void test(int32_t num_samples)
 	ave_loss_sgd = acc_loss_sgd / static_cast<float64_t>(num_samples);
 	SG_SPRINT("sgd solver: average training loss = %f\n", ave_loss_sgd);
 
+	// Evaluation FW
+	CStructuredLabels* labels_fw = CLabelsFactory::to_structured(fw->apply());
+	SG_REF(labels_fw);
+
+	float64_t acc_loss_fw = 0.0;
+	float64_t ave_loss_fw = 0.0;
+
+	for (int32_t i=0; i<num_samples; ++i)
+	{
+		CStructuredData* y_pred = labels_fw->get_label(i);
+		CStructuredData* y_truth = labels->get_label(i);
+		acc_loss_fw += model->delta_loss(y_truth, y_pred);
+		SG_UNREF(y_pred);
+		SG_UNREF(y_truth);
+	}
+
+	ave_loss_fw = acc_loss_fw / static_cast<float64_t>(num_samples);
+	SG_SPRINT("fw solver: average training loss = %f\n", ave_loss_fw);
+
 #ifdef USE_MOSEK
 	SG_UNREF(labels_primcp);
 	SG_UNREF(primcp);
 #endif
+	SG_UNREF(labels_fw);
 	SG_UNREF(labels_sgd);
 	SG_UNREF(labels_bmrm);
+	SG_UNREF(fw);
 	SG_UNREF(sgd);
 	SG_UNREF(bmrm);
 	SG_UNREF(model);
