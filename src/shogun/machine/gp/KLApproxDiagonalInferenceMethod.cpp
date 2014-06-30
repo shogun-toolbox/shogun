@@ -44,6 +44,7 @@
 #ifdef HAVE_EIGEN3
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/Statistics.h>
+#include <shogun/machine/gp/VariationalGaussianLikelihood.h>
 
 using namespace Eigen;
 
@@ -111,7 +112,8 @@ void CKLApproxDiagonalInferenceMethod::lbfgs_precompute()
 	//s2=sum(C.*C,2);
 	eigen_s2=eigen_log_v.array().exp();
 
-	m_model->set_variational_distribution(m_mu, m_s2, m_labels);
+	CVariationalGaussianLikelihood * lik=get_variational_likelihood();
+	lik->set_variational_distribution(m_mu, m_s2, m_labels);
 }
 
 void CKLApproxDiagonalInferenceMethod::get_gradient_of_nlml_wrt_parameters(SGVector<float64_t> gradient)
@@ -127,13 +129,14 @@ void CKLApproxDiagonalInferenceMethod::get_gradient_of_nlml_wrt_parameters(SGVec
 	Map<VectorXd> eigen_alpha(m_alpha.vector, len);
 	Map<VectorXd> eigen_s2(m_s2.vector, m_s2.vlen);
 
+	CVariationalGaussianLikelihood * lik=get_variational_likelihood();
 	//[a,df,dV] = a_related2(mu,s2,y,lik);
-	TParameter* s2_param=m_model->m_gradient_parameters->get_parameter("sigma2");
-	SGVector<float64_t> dv=m_model->get_variational_first_derivative(s2_param);
+	TParameter* s2_param=lik->m_gradient_parameters->get_parameter("sigma2");
+	SGVector<float64_t> dv=lik->get_variational_first_derivative(s2_param);
 	Map<VectorXd> eigen_dv(dv.vector, dv.vlen);
 
-	TParameter* mu_param=m_model->m_gradient_parameters->get_parameter("mu");
-	SGVector<float64_t> df=m_model->get_variational_first_derivative(mu_param);
+	TParameter* mu_param=lik->m_gradient_parameters->get_parameter("mu");
+	SGVector<float64_t> df=lik->get_variational_first_derivative(mu_param);
 	Map<VectorXd> eigen_df(df.vector, df.vlen);
 
 	Map<VectorXd> eigen_dnlz_alpha(gradient.vector, len);
@@ -159,7 +162,8 @@ float64_t CKLApproxDiagonalInferenceMethod::get_negative_log_marginal_likelihood
 	Map<VectorXd> eigen_s2(m_s2.vector, m_s2.vlen);
 	Map<MatrixXd> eigen_InvK(m_InvK.matrix, m_InvK.num_rows, m_InvK.num_cols);
 
-	float64_t a=SGVector<float64_t>::sum(m_model->get_variational_expection());
+	CVariationalGaussianLikelihood * lik=get_variational_likelihood();
+	float64_t a=SGVector<float64_t>::sum(lik->get_variational_expection());
 	float64_t log_det=eigen_log_v.array().sum()-m_log_det_Kernel;
 	float64_t trace=(eigen_s2.array()*eigen_InvK.diagonal().array()).sum();
 
@@ -190,13 +194,14 @@ void CKLApproxDiagonalInferenceMethod::update_alpha()
 		SGVector<float64_t> s2_tmp(m_s2.vlen);
 		Map<VectorXd> eigen_s2(s2_tmp.vector, s2_tmp.vlen);
 		eigen_s2.fill(1.0);
-		m_model->set_variational_distribution(m_mean_vec, s2_tmp, m_labels);
-		float64_t a=SGVector<float64_t>::sum(m_model->get_variational_expection());
+		CVariationalGaussianLikelihood * lik=get_variational_likelihood();
+		lik->set_variational_distribution(m_mean_vec, s2_tmp, m_labels);
+		float64_t a=SGVector<float64_t>::sum(lik->get_variational_expection());
 		float64_t trace=eigen_InvK.diagonal().array().sum();
 		nlml_def=-a+0.5*(-eigen_K.rows()+trace+m_log_det_Kernel);
 
 		if (nlml_new<=nlml_def)
-			m_model->set_variational_distribution(m_mu, m_s2, m_labels);
+			lik->set_variational_distribution(m_mu, m_s2, m_labels);
 	}
 
 	if (m_alpha.vlen != total_len || nlml_def<nlml_new)

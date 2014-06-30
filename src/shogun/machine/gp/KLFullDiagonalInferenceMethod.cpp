@@ -44,6 +44,7 @@
 #ifdef HAVE_EIGEN3
 #include <shogun/mathematics/Math.h>
 #include <shogun/machine/gp/MatrixOperations.h>
+#include <shogun/machine/gp/VariationalGaussianLikelihood.h>
 
 using namespace Eigen;
 
@@ -146,7 +147,9 @@ void CKLFullDiagonalInferenceMethod::lbfgs_precompute()
 	//Sigma=inv(inv(K)-2*diag(lambda))=K-K*diag(sW)*inv(L)'*inv(L)*diag(sW)*K
 	//v=abs(diag(Sigma))
 	eigen_s2=(eigen_K.diagonal().array()*CMath::sq(m_scale)-(eigen_V.array().pow(2).colwise().sum().transpose())).abs().matrix();
-	m_model->set_variational_distribution(m_mu, m_s2, m_labels);
+
+	CVariationalGaussianLikelihood * lik=get_variational_likelihood();
+	lik->set_variational_distribution(m_mu, m_s2, m_labels);
 }
 
 void CKLFullDiagonalInferenceMethod::get_gradient_of_nlml_wrt_parameters(SGVector<float64_t> gradient)
@@ -165,13 +168,16 @@ void CKLFullDiagonalInferenceMethod::get_gradient_of_nlml_wrt_parameters(SGVecto
 	Map<VectorXd> eigen_alpha(m_alpha.vector, len);
 	Map<VectorXd> eigen_log_neg_lambda(m_alpha.vector+len, len);
 
+	CVariationalGaussianLikelihood * lik=get_variational_likelihood();
+	lik->set_variational_distribution(m_mu, m_s2, m_labels);
+
 	//[a,df,dV] = a_related2(mu,s2,y,lik);
-	TParameter* s2_param=m_model->m_gradient_parameters->get_parameter("sigma2");
-	m_dv=m_model->get_variational_first_derivative(s2_param);
+	TParameter* s2_param=lik->m_gradient_parameters->get_parameter("sigma2");
+	m_dv=lik->get_variational_first_derivative(s2_param);
 	Map<VectorXd> eigen_dv(m_dv.vector, m_dv.vlen);
 
-	TParameter* mu_param=m_model->m_gradient_parameters->get_parameter("mu");
-	m_df=m_model->get_variational_first_derivative(mu_param);
+	TParameter* mu_param=lik->m_gradient_parameters->get_parameter("mu");
+	m_df=lik->get_variational_first_derivative(mu_param);
 	Map<VectorXd> eigen_df(m_df.vector, m_df.vlen);
 	//U=inv(L')*diag(sW)
 	MatrixXd eigen_U=eigen_L.triangularView<Upper>().adjoint().solve(MatrixXd(eigen_sW.asDiagonal()));
@@ -207,7 +213,8 @@ float64_t CKLFullDiagonalInferenceMethod::get_negative_log_marginal_likelihood_h
 	SGVector<float64_t> mean=m_mean->get_mean_vector(m_features);
 	Map<VectorXd> eigen_mean(mean.vector, mean.vlen);
 
-	float64_t a=SGVector<float64_t>::sum(m_model->get_variational_expection());
+	CVariationalGaussianLikelihood * lik=get_variational_likelihood();
+	float64_t a=SGVector<float64_t>::sum(lik->get_variational_expection());
 
 	float64_t trace=0;
 	//L_inv=L\eye(n);
@@ -243,8 +250,6 @@ float64_t CKLFullDiagonalInferenceMethod::get_derivative_related_cov(Eigen::Matr
 	VectorXd z=AdK.diagonal()+(eigen_A.array()*AdK.array()).rowwise().sum().matrix()
 		-(eigen_A.transpose().array()*AdK.array()).colwise().sum().transpose().matrix();
 
-	SGVector<float64_t> result(1);
-
 	//dnlZ(j) = alpha'*dK*(alpha/2-df) - z'*dv;
 	return eigen_alpha.dot(eigen_dK*(eigen_alpha/2.0-eigen_df))-z.dot(eigen_dv);
 }
@@ -274,14 +279,16 @@ void CKLFullDiagonalInferenceMethod::update_alpha()
 		Map<VectorXd> eigen_s2(s2_tmp.vector, s2_tmp.vlen);
 		eigen_s2=(eigen_K.diagonal().array()*CMath::sq(m_scale)-(eigen_V.array().pow(2).colwise().sum().transpose())).abs().matrix();
 		SGVector<float64_t> mean=m_mean->get_mean_vector(m_features);
-		m_model->set_variational_distribution(mean, s2_tmp, m_labels);
-		float64_t a=SGVector<float64_t>::sum(m_model->get_variational_expection());
+
+		CVariationalGaussianLikelihood * lik=get_variational_likelihood();
+		lik->set_variational_distribution(mean, s2_tmp, m_labels);
+		float64_t a=SGVector<float64_t>::sum(lik->get_variational_expection());
 
 		nlml_def=-a+LL.diagonal().array().log().sum();
 		nlml_def+=0.5*(-eigen_K.rows()+trace);
 
 		if (nlml_new<=nlml_def)
-			m_model->set_variational_distribution(m_mu, m_s2, m_labels);
+			lik->set_variational_distribution(m_mu, m_s2, m_labels);
 	}
 
 	if (m_alpha.vlen != m_labels->get_num_labels()*2 || nlml_def<nlml_new)

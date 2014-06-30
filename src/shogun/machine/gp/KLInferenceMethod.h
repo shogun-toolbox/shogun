@@ -47,6 +47,7 @@
 #include <shogun/machine/gp/InferenceMethod.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/optimization/lbfgs/lbfgs.h>
+#include <shogun/machine/gp/VariationalGaussianLikelihood.h>
 
 namespace shogun
 {
@@ -247,7 +248,13 @@ public:
 	virtual SGMatrix<float64_t> get_cholesky();
 
 protected:
-	/**
+
+	/** this method is used to dynamic-cast the likelihood model, m_model,
+	 * to variational likelihood model.
+	 */
+	virtual CVariationalGaussianLikelihood* get_variational_likelihood() const;
+
+	/**check the provided likelihood model supports variational inference
 	 * @param mod the provided likelihood model
 	 *
 	 * @return whether the provided likelihood model supports variational inference or not
@@ -269,8 +276,7 @@ protected:
 	 */
 	virtual float64_t get_derivative_related_cov(Eigen::MatrixXd eigen_dK)=0;
 
-	/** Using L-BFGS to estimate posterior parameters
-	 */
+	/** Using L-BFGS to estimate posterior parameters */
 	virtual float64_t lbfgs_optimization();
 
 	/** returns derivative of negative log marginal likelihood wrt parameter of
@@ -356,9 +362,6 @@ protected:
 	 */
 	SGVector<float64_t> m_s2;
 
-private:
-	void init();
-
 	/* The number of corrections to approximate the inverse hessian matrix.*/
 	int m_m;
 
@@ -406,6 +409,9 @@ private:
 
 	/* End index for computing L1 norm of the variables.*/
 	int m_orthantwise_end;
+
+private:
+	void init();
 
 	/** helper function is passed to the LBFGS API
 	 * Note that this function should be static

@@ -139,6 +139,7 @@ void CKLLowerTriangularInferenceMethod::update_init()
 	}
 	MatrixXd Kernel_L=ldlt.matrixL();
 	m_Kernel_LsD=SGMatrix<float64_t>(m_ktrtr.num_rows, m_ktrtr.num_cols);
+	m_Kernel_LsD.zero();
 	Map<MatrixXd> eigen_Kernel_LsD(m_Kernel_LsD.matrix, m_Kernel_LsD.num_rows, m_Kernel_LsD.num_cols);
 	eigen_Kernel_LsD.triangularView<Lower>()=Kernel_L*Kernel_D.array().sqrt().matrix().asDiagonal(); 
 	m_log_det_Kernel=2.0*eigen_Kernel_LsD.diagonal().array().abs().log().sum();
@@ -160,12 +161,18 @@ MatrixXd CKLLowerTriangularInferenceMethod::solve_inverse(MatrixXd eigen_A)
 	//re-construct the Permutation Matrix
 	PermutationMatrix<Dynamic> P(m_Kernel_P.vlen);
 	P.setIdentity();
-	for (index_t i=0; i<m_Kernel_P.vlen; i++)
+	SGVector<index_t> tmp=m_Kernel_P.clone();
+	for (index_t i=0; i<tmp.vlen; i++)
 	{
-		if (m_Kernel_P[i]>i)
-			P.applyTranspositionOnTheLeft(i,m_Kernel_P[i]);
+		while(tmp[i]>i)
+		{
+			P.applyTranspositionOnTheLeft(i,tmp[i]);
+			index_t idx=tmp[i];
+			tmp[i]=tmp[idx];
+			tmp[idx]=idx;
+		}
 	}
-
+	P=P.transpose();
 	//(P'LDL'P)\eigen_A
 	MatrixXd tmp1=P*eigen_A;
 	MatrixXd tmp2=eigen_Kernel_LsD.triangularView<Lower>().solve(tmp1);
