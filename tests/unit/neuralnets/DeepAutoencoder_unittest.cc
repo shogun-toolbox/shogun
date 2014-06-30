@@ -30,34 +30,41 @@
  * 
  * Written (W) 2014 Khaled Nasr
  */
-#include <shogun/neuralnets/Autoencoder.h>
+#include <shogun/neuralnets/DeepAutoencoder.h>
 #include <shogun/neuralnets/NeuralInputLayer.h>
 #include <shogun/neuralnets/NeuralRectifiedLinearLayer.h>
 #include <shogun/neuralnets/NeuralLogisticLayer.h>
 #include <shogun/lib/SGMatrix.h>
+#include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/mathematics/Math.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;
 
-TEST(Autoencoder, train)
+TEST(DeepAutoencoder, pre_train)
 {
-	CMath::init_random(100);
+	CMath::init_random(10);
 	
 	int32_t num_features = 10;
 	int32_t num_examples = 100;
-	int32_t num_hid = 10;
 	
 	SGMatrix<float64_t> data(num_features, num_examples);
 	for (int32_t i=0; i<num_features*num_examples; i++)
 		data[i] = CMath::random(-1.0,1.0);
-
-	CAutoencoder ae(num_features, new CNeuralRectifiedLinearLayer(num_hid));
+	
+	CDynamicObjectArray* layers = new CDynamicObjectArray();
+	layers->append_element(new CNeuralInputLayer(num_features));
+	layers->append_element(new CNeuralLogisticLayer(12));
+	layers->append_element(new CNeuralLogisticLayer(15));
+	layers->append_element(new CNeuralLogisticLayer(12));
+	layers->append_element(new CNeuralLinearLayer(num_features));
+	
+	CDeepAutoencoder ae(layers);
 	
 	CDenseFeatures<float64_t>* features = new CDenseFeatures<float64_t>(data);
 	
-	ae.train(features);
+	ae.pre_train(features);
 	
 	CDenseFeatures<float64_t>* reconstructed = ae.reconstruct(features);
 	SGMatrix<float64_t> reconstructed_data = reconstructed->get_feature_matrix();
@@ -66,60 +73,48 @@ TEST(Autoencoder, train)
 	for (int32_t i=0; i<num_features*num_examples; i++)
 		avg_diff += CMath::abs(reconstructed_data[i]-data[i])/(num_examples*num_features);
 	
-	EXPECT_NEAR(0.0, avg_diff, 1e-6);
+	EXPECT_NEAR(0.0, avg_diff, 0.01);
 	
 	SG_UNREF(features);
 	SG_UNREF(reconstructed);
 }
 
-/** Tests gradients computed using backpropagation against gradients computed
- * by numerical approximation. Uses a CNeuralLinearLayer-based contractive 
- * autoencoder.
- */
-TEST(Autoencoder, contractive_linear)
+TEST(DeepAutoencoder, convert_to_neural_network)
 {
-	float64_t tolerance = 1e-9;
-	
-	CMath::init_random(10);
-	
-	CAutoencoder ae(10, new CNeuralLinearLayer(15));
-	
-	ae.set_contraction_coefficient(10.0);
-	
-	EXPECT_NEAR(ae.check_gradients(), 0.0, tolerance);
-}
+	CMath::init_random(100);
 
-/** Tests gradients computed using backpropagation against gradients computed
- * by numerical approximation. Uses a CNeuralRectifiedLinearLayer-based contractive 
- * autoencoder.
- */
-TEST(Autoencoder, contractive_rectified_linear)
-{
-	float64_t tolerance = 1e-9;
+	CDynamicObjectArray* layers = new CDynamicObjectArray();
+	layers->append_element(new CNeuralInputLayer(10));
+	layers->append_element(new CNeuralLogisticLayer(12));
+	layers->append_element(new CNeuralLogisticLayer(15));
+	layers->append_element(new CNeuralLogisticLayer(12));
+	layers->append_element(new CNeuralLinearLayer(10));
 	
-	CMath::init_random(10);
-	
-	CAutoencoder ae(10, new CNeuralRectifiedLinearLayer(15));
-	
-	ae.set_contraction_coefficient(10.0);
-	
-	EXPECT_NEAR(ae.check_gradients(), 0.0, tolerance);
-}
+	CDeepAutoencoder ae(layers);
 
-/** Tests gradients computed using backpropagation against gradients computed
- * by numerical approximation. Uses a CNeuralLogisticLayer-based contractive 
- * autoencoder.
- */
-TEST(Autoencoder, contractive_logistic)
-{
-	float64_t tolerance = 1e-6;
+	CNeuralNetwork* nn = ae.convert_to_neural_network();
+
+	SGMatrix<float64_t> x(10, 3);
+	for (int32_t i=0; i<x.num_rows*x.num_cols; i++)
+		x[i] = CMath::random(0.0,1.0);
+
+	CDenseFeatures<float64_t> f(x);
 	
-	CMath::init_random(10);
+	CDenseFeatures<float64_t>* f_transformed_nn = nn->transform(&f);
+	CDenseFeatures<float64_t>* f_transformed_ae = ae.transform(&f);
 	
-	CAutoencoder ae(10, new CNeuralLogisticLayer(15));
-	ae.initialize();
+
+	SGMatrix<float64_t> x_transformed_ae = 
+		f_transformed_ae->get_feature_matrix();
+
+	SGMatrix<float64_t> x_transformed_nn = 
+		f_transformed_nn->get_feature_matrix();
 	
-	ae.set_contraction_coefficient(1.0);
-	
-	EXPECT_NEAR(ae.check_gradients(), 0.0, tolerance);
+		
+	for (int32_t i=0; i< x_transformed_ae.num_rows*x_transformed_ae.num_cols; i++)
+		EXPECT_NEAR(x_transformed_ae[i], x_transformed_nn[i], 1e-15);
+
+	SG_UNREF(nn);
+	SG_UNREF(f_transformed_ae);
+	SG_UNREF(f_transformed_nn);
 }

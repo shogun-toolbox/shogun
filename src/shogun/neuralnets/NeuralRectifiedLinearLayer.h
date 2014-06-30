@@ -44,7 +44,7 @@ namespace shogun
  * Activations are computed according to max(0,W*x+b) where W is the weight 
  * matrix, b is the bias vector, and x is the input vector.
  * 
- * Can be only be used as an hidden layer. 
+ * When used as an output layer, a squared error measure is used
  */
 class CNeuralRectifiedLinearLayer : public CNeuralLinearLayer
 {

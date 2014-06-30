@@ -84,9 +84,11 @@ public:
 	 * @param decoding_layer Decoding layer. Must have the same number of neurons 
 	 * as num_inputs. Can be any CNeuralLayer based object that supports being 
 	 * used as an output layer. If NULL, a CNeuralLinearLayer is used.
+	 * @param sigma Standard deviation of the gaussian used to initialize the 
+	 * parameters
 	 */
 	CAutoencoder(int32_t num_inputs, CNeuralLayer* hidden_layer, 
-		CNeuralLayer* decoding_layer=NULL);
+		CNeuralLayer* decoding_layer=NULL, float64_t sigma = 0.01);
 	
 	/** Trains the autoencoder 
 	 * 

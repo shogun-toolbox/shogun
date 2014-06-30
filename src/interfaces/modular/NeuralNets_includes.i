@@ -10,4 +10,5 @@
 #include <shogun/neuralnets/NeuralConvolutionalLayer.h>
 #include <shogun/neuralnets/RBM.h>
 #include <shogun/neuralnets/Autoencoder.h>
+#include <shogun/neuralnets/DeepAutoencoder.h>
 %}
