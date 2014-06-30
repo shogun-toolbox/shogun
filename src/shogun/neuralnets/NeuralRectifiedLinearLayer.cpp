@@ -111,8 +111,17 @@ void CNeuralRectifiedLinearLayer::compute_contraction_term_gradients(
 void CNeuralRectifiedLinearLayer::compute_local_gradients(
 		SGMatrix<float64_t> targets)
 {
-	if (targets.num_rows != 0) 
-		SG_ERROR("Cannot be used as an output layer\n");
+	if (targets.num_rows != 0)
+	{
+		int32_t length = m_num_neurons*m_batch_size;
+		for (int32_t i=0; i<length; i++)
+		{
+			if (m_activations[i]==0)
+				m_local_gradients[i] = 0;
+			else
+				m_local_gradients[i] = (m_activations[i]-targets[i])/m_batch_size;
+		}
+	}
 	
 	int32_t len = m_num_neurons*m_batch_size;
 	for (int32_t i=0; i< len; i++)
