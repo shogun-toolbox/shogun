@@ -54,8 +54,12 @@ CDualVariationalGaussianLikelihood::~CDualVariationalGaussianLikelihood()
 
 CVariationalGaussianLikelihood* CDualVariationalGaussianLikelihood::get_variational_likelihood() const
 {
+	REQUIRE(m_likelihood, "The likelihood model must not be NULL\n");
 	CVariationalGaussianLikelihood* var_lik=dynamic_cast<CVariationalGaussianLikelihood *>(m_likelihood);
-	REQUIRE(var_lik, "The likelihood model does NOT support variational guassian inference\n");
+	REQUIRE(var_lik,
+		"The likelihood model (%s) does NOT support variational guassian inference\n",
+		m_likelihood->get_name());
+
 	return var_lik;
 }
 
@@ -125,7 +129,7 @@ float64_t CDualVariationalGaussianLikelihood::adjust_step_wrt_dual_parameter(SGV
 		if (lower_bound!=-CMath::INFTY && attempt<lower_bound)
 		{
 			adjust=(m_lambda[i]-lower_bound)/CMath::abs(direction[i]);
-			if (is_dual_lower_bound_strict())
+			if (dual_lower_bound_strict())
 				adjust*=(1-m_strict_scale);
 			if (adjust<min_step)
 				min_step=adjust;
@@ -134,7 +138,7 @@ float64_t CDualVariationalGaussianLikelihood::adjust_step_wrt_dual_parameter(SGV
 		if (upper_bound!=CMath::INFTY && attempt>upper_bound)
 		{
 			adjust=(upper_bound-m_lambda[i])/CMath::abs(direction[i]);
-			if (is_dual_upper_bound_strict())
+			if (dual_upper_bound_strict())
 				adjust*=(1-m_strict_scale);
 			if (adjust<min_step)
 				min_step=adjust;
@@ -153,7 +157,8 @@ void CDualVariationalGaussianLikelihood::set_dual_parameters(SGVector<float64_t>
 		"and number of labels (%d) should be the same\n",
 		lambda.vlen, lab->get_num_labels());
 	REQUIRE(lab->get_label_type()==LT_BINARY,
-		"Labels must be type of CBinaryLabels\n");
+		"Labels (%s) must be type of CBinaryLabels\n",
+		lab->get_name());
 
 	m_lab=(((CBinaryLabels*)lab)->get_labels()).clone();
 
@@ -168,7 +173,7 @@ void CDualVariationalGaussianLikelihood::set_dual_parameters(SGVector<float64_t>
 	precompute();
 }
 
-bool CDualVariationalGaussianLikelihood::is_dual_parameters_valid() const
+bool CDualVariationalGaussianLikelihood::dual_parameters_valid() const
 {
 	float64_t lower_bound=get_dual_lower_bound();
 	float64_t upper_bound=get_dual_upper_bound();
@@ -180,7 +185,7 @@ bool CDualVariationalGaussianLikelihood::is_dual_parameters_valid() const
 			return false;
 		else
 		{
-			if (is_dual_lower_bound_strict() && value==lower_bound)
+			if (dual_lower_bound_strict() && value==lower_bound)
 				return false;
 			else
 			{
@@ -188,7 +193,7 @@ bool CDualVariationalGaussianLikelihood::is_dual_parameters_valid() const
 					return false;
 				else
 				{
-					if (is_dual_upper_bound_strict() && value==upper_bound)
+					if (dual_upper_bound_strict() && value==upper_bound)
 						return false;
 
 				}
@@ -201,7 +206,7 @@ bool CDualVariationalGaussianLikelihood::is_dual_parameters_valid() const
 
 void CDualVariationalGaussianLikelihood::precompute()
 {
-	m_is_valid=is_dual_parameters_valid();
+	m_is_valid=dual_parameters_valid();
 }
 
 void CDualVariationalGaussianLikelihood::init()

@@ -118,6 +118,15 @@ public:
 	virtual SGVector<float64_t> get_first_derivative_wrt_hyperparameter(const TParameter* param) const;
 
 	//virtual bool supports_derivative_wrt_hyperparameter() const=0;
+
+	/** set the number of Gaussian Hermite point used to compute variational expection
+	 *
+	 * @param n number of Gaussian Hermite point
+	 *
+	 * The default value is 20.
+	 */
+	virtual void set_GHQ_number(index_t n);
+
 protected:
 
 	/** The function used to initialize m_likelihood defined in CVariationalLikelihood
@@ -127,6 +136,12 @@ protected:
 
 private:
 
+	/** Using N Gaussian-Hermite quadrature points */
+	index_t m_GHQ_N;
+
+	/** whether Gaussian-Hermite quadrature points are are initialized or not */
+	bool m_is_init_GHQ;
+	
 	/** initialize private data members for this class */
 	void init();
 

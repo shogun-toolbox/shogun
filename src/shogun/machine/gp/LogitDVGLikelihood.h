@@ -76,6 +76,7 @@ namespace shogun
 class CLogitDVGLikelihood : public CDualVariationalGaussianLikelihood
 {
 public:
+	/** default constructor */
 	CLogitDVGLikelihood();
 
 	virtual ~CLogitDVGLikelihood();
@@ -116,13 +117,13 @@ public:
 	 *
 	 * @return true if the upper bound is strict
 	 */
-	virtual bool is_dual_upper_bound_strict() const {return true;};
+	virtual bool dual_upper_bound_strict() const {return true;};
 
 	/** whether the lower bound is strict
 	 *
 	 * @return true if the lower bound is strict
 	 */
-	virtual bool is_dual_lower_bound_strict() const {return true;};
+	virtual bool dual_lower_bound_strict() const {return true;};
 
 	/** get the dual parameter (alpha) for variational mu
 	 *

@@ -55,10 +55,12 @@ CKLInferenceMethod::CKLInferenceMethod(CKernel* kern,
 
 void CKLInferenceMethod::check_variational_likelihood(CLikelihoodModel* mod) const
 {
+	REQUIRE(mod, "the likelihood model must not be NULL\n")
 	CVariationalGaussianLikelihood* lik= dynamic_cast<CVariationalGaussianLikelihood*>(mod);
 	REQUIRE(lik,
-		"The provided likelihood model must support variational Gaussian inference. ",
-		"Please use a Variational Gaussian Likelihood model\n");
+		"The provided likelihood model (%s) must support variational Gaussian inference. ",
+		"Please use a Variational Gaussian Likelihood model\n",
+		mod->get_name());
 }
 
 void CKLInferenceMethod::set_model(CLikelihoodModel* mod)
@@ -171,7 +173,7 @@ float64_t CKLInferenceMethod::evaluate(void *obj, const float64_t *parameters,
 	CKLInferenceMethod * obj_prt
 		= static_cast<CKLInferenceMethod *>(obj);
 
-	ASSERT(obj_prt != NULL);
+	REQUIRE(obj_prt, "The instance object passed to L-BFGS optimizer should not be NULL\n");
 
 	obj_prt->lbfgs_precompute();
 	float64_t nlml=obj_prt->get_nlml_wrt_parameters();
@@ -244,7 +246,6 @@ float64_t CKLInferenceMethod::get_negative_log_marginal_likelihood()
 SGVector<float64_t> CKLInferenceMethod::get_derivative_wrt_likelihood_model(const TParameter* param)
 {
 	CVariationalLikelihood * lik=get_variational_likelihood();
-
 	if (!lik->supports_derivative_wrt_hyperparameter())
 		return SGVector<float64_t> ();
 

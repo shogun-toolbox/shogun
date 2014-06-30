@@ -64,6 +64,7 @@ namespace shogun
 class CDualVariationalGaussianLikelihood : public CVariationalGaussianLikelihood
 {
 public:
+	/** default constructor */
 	CDualVariationalGaussianLikelihood();
 
 	virtual ~CDualVariationalGaussianLikelihood();
@@ -123,7 +124,7 @@ public:
 	 * 
 	 *  @return true if dual parameters are valid
 	 */
-	virtual bool is_dual_parameters_valid() const;
+	virtual bool dual_parameters_valid() const;
 
 	/** this method is used for adjusting step size
 	 * to ensure the updated value satisfied lower/upper bound constrain  
@@ -175,13 +176,13 @@ public:
 	 *
 	 * @return true if the upper bound is strict
 	 */
-	virtual bool is_dual_upper_bound_strict() const=0;
+	virtual bool dual_upper_bound_strict() const=0;
 
 	/** whether the lower bound is strict
 	 *
 	 * @return true if the lower bound is strict
 	 */
-	virtual bool is_dual_lower_bound_strict() const=0;
+	virtual bool dual_lower_bound_strict() const=0;
 
 	/** evaluate the dual objective function
 	 *
