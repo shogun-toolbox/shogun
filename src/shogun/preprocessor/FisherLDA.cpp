@@ -96,7 +96,7 @@ bool CFisherLDA::init (CFeatures *features, CLabels *labels, int32_t num_dimensi
 	// holds the total mean
 	m_mean_vector=SGVector<float64_t>(num_features);
 	Map<VectorXd>mean_total (m_mean_vector.vector, num_features);
-
+	mean_total=VectorXd::Zero(num_features);
 	// holds the mean for each class
 	vector<VectorXd> mean_class(C);
 
