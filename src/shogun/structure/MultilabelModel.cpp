@@ -174,20 +174,10 @@ CResultSet * CMultilabelModel::argmax(SGVector<float64_t> w, int32_t feat_idx,
 	float64_t score = 0, total_score = 0;
 	SGVector<float64_t> y_pred_dense(m_num_classes);
 	y_pred_dense.zero();
-	CSparseMultilabel * slabel = CSparseMultilabel::obtain_from_generic(
-	                                     multi_labs->get_label(feat_idx));
-	SGVector<float64_t> y_truth = CMultilabelSOLabels::to_dense(slabel,
-	                              m_num_classes, 1, 0);
-	SG_UNREF(slabel);
 
 	for (int32_t c = 0; c < m_num_classes; c++)
 	{
 		score = dot_feats->dense_dot(feat_idx, w.vector + c * feats_dim, feats_dim);
-
-		if (training)
-		{
-			score += delta_loss(y_truth[c], 1);
-		}
 
 		if (score > 0)
 		{
@@ -215,8 +205,8 @@ CResultSet * CMultilabelModel::argmax(SGVector<float64_t> w, int32_t feat_idx,
 		ret->delta = CStructuredModel::delta_loss(feat_idx, y_pred);
 		ret->psi_truth = CStructuredModel::get_joint_feature_vector(
 		                         feat_idx, feat_idx);
-		ret->score -= SGVector<float64_t>::dot(w.vector, ret->psi_truth.vector,
-		                                       dim);
+		ret->score += (ret->delta - SGVector<float64_t>::dot(w.vector,
+		                ret->psi_truth.vector, dim));
 	}
 
 	return ret;

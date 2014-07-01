@@ -270,11 +270,6 @@ CResultSet * CHashedMultilabelModel::argmax(SGVector<float64_t> w,
 		                                m_seeds[c]);
 		score = phi.dense_dot(1.0, w.vector, w.vlen, 0);
 
-		if (training)
-		{
-			score += delta_loss(y_truth[c], 1);
-		}
-
 		if (score > 0)
 		{
 			y_pred_dense[c] = 1;
@@ -304,7 +299,8 @@ CResultSet * CHashedMultilabelModel::argmax(SGVector<float64_t> w,
 		ret->delta = CStructuredModel::delta_loss(feat_idx, y_pred_label);
 		ret->psi_truth_sparse = CStructuredModel::get_sparse_joint_feature_vector(
 		                                feat_idx, feat_idx);
-		ret->score -= ret->psi_truth_sparse.dense_dot(1, w.vector, w.vlen, 0);
+		ret->score += (ret->delta - ret->psi_truth_sparse.dense_dot(1, w.vector,
+		                w.vlen, 0));
 	}
 
 	return ret;
