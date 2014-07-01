@@ -62,21 +62,21 @@ enum EFeatureRemovalPolicy
 
 /** @brief Template class CFeatureSelection, base class for all feature
  * selection preprocessors which select a subset of features (dimensions in the
- * feature matrix) to achieve a specified number of dimensions, m_target_dim
+ * feature matrix) to achieve a specified number of dimensions, #m_target_dim
  * from a given set of features. This class showcases all feature selection
  * algorithms via a generic interface. Supported algorithms are specified by
- * the enum EFeatureSelectionAlgorithm which can be set via set_algorithm()
+ * the enum #EFeatureSelectionAlgorithm which can be set via set_algorithm()
  * call. Supported wrapper algorithms are
  *
  * - ::BACKWARD_ELIMINATION: apply_backward_elimination() method implements
- * this algorithm. This runs inside a loop till it reaches m_target_dim. In
+ * this algorithm. This runs inside a loop till it reaches #m_target_dim. In
  * each iteration, inside another loop that runs for all current dimensions we
  * compute measures and store the scores for each current dimension. Based on
  * those measures a number of features are removed at once.
  *
  * - ::FORWARD_SELECTION: apply_forward_selection() method implements this
  * algorithm. Inside a loop it adds selected features to an empty feature set
- * till it reaches m_target_dim. In each iteration, inside another loop that
+ * till it reaches #m_target_dim. In each iteration, inside another loop that
  * runs for all current dimensions we compute measures and store the scores for
  * each current dimension. Based on those measures a number of features are
  * removed from the original feature set and added to the new feature set.
@@ -86,10 +86,10 @@ enum EFeatureRemovalPolicy
  * in the subclasses as appropriate.
  *
  * The apply() method acts as a wrapper which decides which above methods to
- * call based on the algorithm specified by m_algorithm. This method makes
- * a deep copy of the original feature object and then performs feature
- * selection on it. The actual memory requirement depends on how copying
- * a dimension subset is handled in CFeature::copy_dimension_subset()
+ * call based on the algorithm specified by #m_algorithm. This method makes
+ * a deep copy of the original feature object using CSGObject::clone and then
+ * performs feature selection on it. The actual memory requirement depends on
+ * how copying a dimension subset is handled in CFeatures::copy_dimension_subset
  * implementation.
  *
  * For computing the measures that are used to rank the features for feature
@@ -97,8 +97,8 @@ enum EFeatureRemovalPolicy
  * is defined in the subclasses.
  *
  * Due to the difference in the measure, the removal policy for features can be
- * different which is specified by the EFeatureRemovalPolicy enum and can be set by
- * set_policy() call. The supported policies are
+ * different which is specified by the #EFeatureRemovalPolicy enum and can be
+ * set by set_policy() call. The supported policies are
  *
  * - ::N_SMALLEST: Features corresponding to N smallest measures are removed
  * - ::PERCENTILE_SMALLEST: Features corresponding to smallest N% measures are
@@ -134,13 +134,13 @@ enum EFeatureRemovalPolicy
 template <class ST> class CFeatureSelection : public CPreprocessor
 {
 public:
-	/** default constructor */
+	/** Default constructor */
 	CFeatureSelection();
 
-	/** destructor */
+	/** Destructor */
 	virtual ~CFeatureSelection();
 
-	/** generic interface for applying the feature selection preprocessor.
+	/** Generic interface for applying the feature selection preprocessor.
 	 * Acts as a wrapper which decides which actual method to call based on the
 	 * algorithm specified.
 	 *
@@ -150,7 +150,7 @@ public:
 	virtual CFeatures* apply(CFeatures* features);
 
 	/**
-	 * applies backward elimination algorithm for performing feature selection.
+	 * Applies backward elimination algorithm for performing feature selection.
 	 * After performing necessary precomputing (defined by subclasses), it
 	 * iteratively eliminates a number of features based on a measure until
 	 * target dimension is reached.
@@ -161,7 +161,7 @@ public:
 	virtual CFeatures* apply_backward_elimination(CFeatures* features);
 
 	/**
-	 * abstract method that is defined in the subclasses to compute the
+	 * Abstract method that is defined in the subclasses to compute the
 	 * measures for the provided features based on which feature selection
 	 * is performed.
 	 *
@@ -173,8 +173,8 @@ public:
 	virtual float64_t compute_measures(CFeatures* features, index_t idx)=0;
 
 	/**
-	 * abstract method which is defined in the subclasses to handle the removal
-	 * of features based on removal policy (see class  documentation).
+	 * Abstract method which is defined in the subclasses to handle the removal
+	 * of features based on removal policy (see class documentation).
 	 *
 	 * @param features the features object from which specific features has
 	 * to be removed
@@ -185,7 +185,7 @@ public:
 	virtual CFeatures* remove_feats(CFeatures* features,
 			SGVector<index_t> argsorted)=0;
 
-	/** @return the feature class (C_ANY) */
+	/** @return the feature class, ::C_ANY */
 	virtual EFeatureClass get_feature_class();
 
 	/** @return feature type */
@@ -201,7 +201,7 @@ public:
 	index_t get_target_dim() const;
 
 	/**
-	 * abstract method which is overridden in the subclasses to set accepted
+	 * Abstract method which is overridden in the subclasses to set accepted
 	 * feature selection algorithm
 	 *
 	 * @param algorithm the feature selection algorithm to use
@@ -212,7 +212,7 @@ public:
 	EFeatureSelectionAlgorithm get_algorithm() const;
 
 	/**
-	 * abstract method which is overridden in the subclasses to set accepted
+	 * Abstract method which is overridden in the subclasses to set accepted
 	 * feature removal policies based on the measure they use
 	 *
 	 * @param policy the feature removal policy
@@ -223,7 +223,7 @@ public:
 	EFeatureRemovalPolicy get_policy() const;
 
 	/**
-	 * use this method to set the number or percentile of features to be
+	 * Use this method to set the number or percentile of features to be
 	 * removed in each iteration.
 	 *
 	 * @param num_remove number or percentage of features to be removed in
@@ -251,14 +251,14 @@ public:
 
 protected:
 	/**
-	 * performs the tasks which can be computed beforehand before the actual
+	 * Performs the tasks which can be computed beforehand before the actual
 	 * algorithm begins. This method is overridden in the subclasses. Here
 	 * it does nothing.
 	 */
 	virtual void precompute();
 
 	/**
-	 * tunes the parameters which are required to compute the measure based on
+	 * Tunes the parameters which are required to compute the measure based on
 	 * current features. Overridden in the subclasses. Here it does nothing.
 	 *
 	 * @param features the features based on which parameters are needed to be
@@ -267,7 +267,7 @@ protected:
 	virtual void adapt_params(CFeatures* features);
 
 	/**
-	 * returns the number of features of the provided feature object. Since the
+	 * Returns the number of features of the provided feature object. Since the
 	 * number of features doesn't make sense for all types of features, this
 	 * helper method checks whether obtaining a num_features is possible and
 	 * then calls get_num_features() on those features after proper type-cast
@@ -277,16 +277,16 @@ protected:
 	 */
 	index_t get_num_features(CFeatures* features) const;
 
-	/** target dimension */
+	/** Target dimension */
 	index_t m_target_dim;
 
-	/** wrapper algorithm for feature selection */
+	/** Wrapper algorithm for feature selection */
 	EFeatureSelectionAlgorithm m_algorithm;
 
-	/** feature removal policy */
+	/** Feature removal policy */
 	EFeatureRemovalPolicy m_policy;
 
-	/** number or percentage of features to be removed. When the policy is set
+	/** Number or percentage of features to be removed. When the policy is set
 	 * as ::N_SMALLEST or ::N_LARGEST, this number decides how many features in
 	 * an iteration. For ::PERCENTILE_SMALLEST or ::PERCENTILE_LARGEST, this
 	 * decides the percentage of current number of features to be removed in
@@ -294,11 +294,11 @@ protected:
 	 */
 	index_t m_num_remove;
 
-	/** the labels for the feature vectors */
+	/** The labels for the feature vectors */
 	CLabels* m_labels;
 
 private:
-	/** register params and initialize with default values */
+	/** Register params and initialize with default values */
 	void init();
 
 };
