@@ -52,7 +52,8 @@ enum EPreprocessorType
 	P_HOMOGENEOUSKERNELMAP = 180,
 	P_PNORM = 190,
 	P_RESCALEFEATURES = 200,
-	P_FISHERLDA = 210
+	P_FISHERLDA = 210,
+	P_BAHSIC = 220
 };
 
 /** @brief Class Preprocessor defines a preprocessor interface.

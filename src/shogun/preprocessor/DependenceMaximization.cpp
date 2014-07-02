@@ -74,36 +74,18 @@ bool CDependenceMaximization::init(CFeatures* features)
 	return true;
 }
 
-void CDependenceMaximization::precompute()
-{
-	SG_DEBUG("Entering!\n");
-
-	REQUIRE(m_labels, "Labels are not initialized!\n");
-	REQUIRE(m_estimator, "Estimator is not initialized!\n");
-
-	// convert the CLabels object to CDenseFeatures
-	SG_UNREF(m_labels_feats);
-
-	SGMatrix<float64_t> labels_matrix(1, m_labels->get_num_labels());
-	for (index_t i=0; i<labels_matrix.num_cols; ++i)
-		labels_matrix.matrix[i]=m_labels->get_value(i);
-
-	m_labels_feats=new CDenseFeatures<float64_t>(labels_matrix);
-	SG_REF(m_labels_feats);
-
-	// and set this to the estimator
-	m_estimator->set_q(m_labels_feats);
-
-	SG_DEBUG("Leaving!\n");
-}
-
 CFeatures* CDependenceMaximization::create_transformed_copy(CFeatures* features,
 		index_t idx)
 {
 	SG_DEBUG("Entering!\n");
 
 	// remove the dimension specified by the index, i.e. get X\X_i
+	// NULL check is handled in CFeatureSelection::get_num_features call
 	index_t num_features=get_num_features(features);
+	REQUIRE(num_features>idx, "Specified dimension to remove (%d) is greater "
+			"than the total number of current features (%d)!\n",
+			idx, num_features);
+
 	SGVector<index_t> dims(num_features-1);
 	index_t n_dims=0;
 	for (index_t i=0; i<num_features; ++i)
@@ -127,6 +109,7 @@ float64_t CDependenceMaximization::compute_measures(CFeatures* features,
 
 	// remove the dimension (feat) specified by the index idx
 	CFeatures* reduced_feats=create_transformed_copy(features, idx);
+	ASSERT(reduced_feats);
 
 	// perform an independence test for X\X_i ~ p and Y ~ q with
 	// H_0: P(X\X_i, Y) = P(X\X_i) * P(Y)
@@ -153,6 +136,11 @@ CFeatures* CDependenceMaximization::remove_feats(CFeatures* features,
 	REQUIRE(m_policy==N_SMALLEST || m_policy==PERCENTILE_SMALLEST,
 			"Only N_SMALLEST and PERCENTILE_SMALLEST removal policy can work "
 			"with %s!\n", get_name());
+	REQUIRE(features, "Features is not intialized!\n");
+	REQUIRE(argsorted.vector, "The argsorted vector is not initialized!\n");
+	REQUIRE(get_num_features(features)==argsorted.vlen,
+			"argsorted vector should be equal to the number of features (%d)! "
+			"But it was %d!\n", argsorted.vlen);
 
 	// compute a threshold to remove for both the policies
 	index_t threshold=m_num_remove;
@@ -160,7 +148,10 @@ CFeatures* CDependenceMaximization::remove_feats(CFeatures* features,
 		threshold*=argsorted.vlen*0.01;
 
 	// make sure that the threshold is valid given the current number of feats
-	ASSERT(threshold<argsorted.vlen)
+	REQUIRE(threshold<argsorted.vlen, "The threshold of removal is too high "
+			"(asked to remove %d features out of %d)! Please use a smaller "
+			"number for removal using set_num_remove() call",
+			threshold, argsorted.vlen);
 
 	// remove the lowest threshold rank holders by storing indices
 	SGVector<index_t> inds(argsorted.vlen-threshold);
@@ -185,4 +176,24 @@ void CDependenceMaximization::set_policy(EFeatureRemovalPolicy policy)
 			"Only N_SMALLEST and PERCENTILE_SMALLEST removal policy can work "
 			"with %s!\n", get_name());
 	m_policy=policy;
+}
+
+void CDependenceMaximization::set_labels(CLabels* labels)
+{
+	// NULL check is handled in base class CFeatureSelection
+	CFeatureSelection::set_labels(labels);
+
+	// convert the CLabels object to CDenseFeatures
+	SG_UNREF(m_labels_feats);
+
+	SGMatrix<float64_t> labels_matrix(1, m_labels->get_num_labels());
+	for (index_t i=0; i<labels_matrix.num_cols; ++i)
+		labels_matrix.matrix[i]=m_labels->get_value(i);
+
+	m_labels_feats=new CDenseFeatures<float64_t>(labels_matrix);
+	SG_REF(m_labels_feats);
+
+	// we need to set this to the estimator which is set internally
+	ASSERT(m_estimator);
+	m_estimator->set_q(m_labels_feats);
 }

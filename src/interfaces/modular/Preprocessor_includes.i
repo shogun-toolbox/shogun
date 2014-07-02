@@ -22,4 +22,9 @@
 #include <shogun/preprocessor/DecompressString.h>
 #include <shogun/preprocessor/SortUlongString.h>
 #include <shogun/preprocessor/SortWordString.h>
+
+#include <shogun/preprocessor/FeatureSelection.h>
+#include <shogun/preprocessor/DependenceMaximization.h>
+#include <shogun/preprocessor/KernelDependenceMaximization.h>
+#include <shogun/preprocessor/BAHSIC.h>
 %}
