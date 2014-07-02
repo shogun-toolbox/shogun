@@ -84,6 +84,7 @@ CFeatures* CFeatureSelection<ST>::apply_backward_elimination(CFeatures* features
 	// precompute whenever appropriate for performing the rest of the tasks
 	precompute();
 
+	// NULL check for features is handled in get_num_features
 	index_t num_features=get_num_features(features);
 	SG_DEBUG("Initial number of features %d!\n", num_features);
 
@@ -208,6 +209,8 @@ void CFeatureSelection<ST>::adapt_params(CFeatures* features)
 template <class ST>
 index_t CFeatureSelection<ST>::get_num_features(CFeatures* features) const
 {
+	REQUIRE(features, "Features not initialized!\n");
+
 	EFeatureClass f_class=features->get_feature_class();
 
 	switch (f_class)

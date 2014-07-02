@@ -28,8 +28,6 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
-#include <shogun/features/Features.h>
-#include <shogun/kernel/Kernel.h>
 #include <shogun/kernel/CustomKernel.h>
 #include <shogun/statistics/KernelIndependenceTest.h>
 #include <shogun/preprocessor/KernelDependenceMaximization.h>
@@ -63,11 +61,20 @@ void CKernelDependenceMaximization::precompute()
 {
 	SG_DEBUG("Entering!\n");
 
+	REQUIRE(m_labels_feats, "Features for labels is not initialized!\n");
 	REQUIRE(m_kernel_labels, "Kernel for labels is not initialized!\n");
 
-	// convert labels instance into a dense feature object and set it
-	// to the estimator
-	CDependenceMaximization::precompute();
+	// ASSERT here because the estimator is set internally and cannot
+	// be set via public API
+	ASSERT(m_estimator);
+
+	CFeatureSelection::precompute();
+
+	// make sure that we have an instance of CKernelIndependenceTest via
+	// proper cast and set this kernel to the estimator
+	CKernelIndependenceTest* estimator
+		=dynamic_cast<CKernelIndependenceTest*>(m_estimator);
+	ASSERT(estimator);
 
 	// precompute the kernel for labels
 	m_kernel_labels->init(m_labels_feats, m_labels_feats);
@@ -83,12 +90,7 @@ void CKernelDependenceMaximization::precompute()
 	SG_UNREF(m_labels_feats);
 	m_labels_feats=NULL;
 
-	// check proper cast set this kernel to the estimator
-	CKernelIndependenceTest* estimator
-		=dynamic_cast<CKernelIndependenceTest*>(m_estimator);
-	REQUIRE(estimator, "An instance of CKernelIndependenceTest expected!"
-			"Got an instance of %s instead!\n", estimator->get_name());
-
+	// finally set this as kernel for the labels
 	estimator->set_kernel_q(m_kernel_labels);
 
 	SG_DEBUG("Leaving!\n");
@@ -96,28 +98,32 @@ void CKernelDependenceMaximization::precompute()
 
 void CKernelDependenceMaximization::set_kernel_features(CKernel* kernel)
 {
+	// sanity check. using assert here because estimator instances are
+	// set internally and cannot be set via public API.
+	ASSERT(m_estimator);
+	CKernelIndependenceTest* estimator
+		=dynamic_cast<CKernelIndependenceTest*>(m_estimator);
+	ASSERT(estimator);
+
 	SG_REF(kernel);
 	SG_UNREF(m_kernel_features);
 	m_kernel_features=kernel;
-
-	CKernelIndependenceTest* estimator
-		=dynamic_cast<CKernelIndependenceTest*>(m_estimator);
-	REQUIRE(estimator, "An instance of CKernelIndependenceTest expected!"
-			"Got an instance of %s instead!\n", estimator->get_name());
 
 	estimator->set_kernel_p(m_kernel_features);
 }
 
 void CKernelDependenceMaximization::set_kernel_labels(CKernel* kernel)
 {
+	// sanity check. using assert here because estimator instances are
+	// set internally and cannot be set via public API.
+	ASSERT(m_estimator);
+	CKernelIndependenceTest* estimator
+		=dynamic_cast<CKernelIndependenceTest*>(m_estimator);
+	ASSERT(estimator);
+
 	SG_REF(kernel);
 	SG_UNREF(m_kernel_labels);
 	m_kernel_labels=kernel;
-
-	CKernelIndependenceTest* estimator=dynamic_cast<CKernelIndependenceTest*>
-		(m_estimator);
-	REQUIRE(estimator, "An instance of CKernelIndependenceTest expected!"
-			"Got an instance of %s instead!\n", estimator->get_name());
 
 	estimator->set_kernel_q(m_kernel_labels);
 }

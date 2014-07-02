@@ -60,7 +60,7 @@ class CIndependenceTest;
  * The estimator cannot be set via user interface, rather its subclasses
  * initialize this estimator with appropriate instances internally.
  *
- * This class also overrides precompute() method to create a feature object from
+ * This class also overrides set_labels() method to create a feature object from
  * the labels and sets this as features \f$\mathbf{Y}\sim q\f$ to the estimator
  * which is required to compute the measure.
  */
@@ -119,6 +119,16 @@ public:
 	 */
 	virtual bool init(CFeatures* features);
 
+	/**
+	 * Setter for labels. This method is overridden to internally convert the
+	 * labels to a dense feature object and set this feature in the
+	 * independence test estimator. These labels serve as samples
+	 * \f$\mathbf{Y}\sim q\f$ in the independence test
+	 *
+	 * @param labels the labels
+	 */
+	virtual void set_labels(CLabels* labels);
+
 	/** @return the class name */
 	virtual const char* get_name() const
 	{
@@ -136,13 +146,6 @@ protected:
 	 * @return a new feature object with the specified dimension removed
 	 */
 	virtual CFeatures* create_transformed_copy(CFeatures* features, index_t idx);
-
-	/**
-	 * Creates a dense feature object from the labels provided, #m_labels and
-	 * sets this feature in the independence test estimator. These labels serve
-	 * as samples \f$\mathbf{Y}\sim q\f$ in the independence test
-	 */
-	virtual void precompute();
 
 	/**
 	 * The estimator for performing statistical tests for independence which

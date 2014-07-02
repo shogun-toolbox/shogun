@@ -28,72 +28,59 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
-#ifndef KERNEL_DEPENDENCE_MAXIMIZATION_H__
-#define KERNEL_DEPENDENCE_MAXIMIZATION_H__
+#ifndef BAHSIC_H__
+#define BAHSIC_H__
 
 #include <shogun/lib/config.h>
-#include <shogun/preprocessor/DependenceMaximization.h>
+#include <shogun/preprocessor/KernelDependenceMaximization.h>
 
 namespace shogun
 {
 
-class CFeatures;
-class CKernelSelection;
-
-/** @brief Class CKernelDependenceMaximization, that uses an implementation
- * of CKernelIndependenceTest to compute dependence measures for feature
- * selection. Different kernels are used for labels and data. For the sake
- * of computational convenience, the precompute() method is overridden to
- * precompute the kernel for labels and save as an instance of CCustomKernel
+/** @brief Class CBAHSIC, that extends CKernelDependenceMaximization and uses
+ * HSIC [1] to compute dependence measures for feature selection using a
+ * backward elimination approach as described in [1]. This class serves as a
+ * convenience class that initializes the CDependenceMaximization#m_estimator
+ * with an instance of CHSIC and allows only ::BACKWARD_ELIMINATION algorithm
+ * to use which is set internally. Therefore, trying to use other algorithms
+ * by set_algorithm() will not work. Plese see the class documentation of CHSIC
+ * and [2] for more details on mathematical description of HSIC.
+ *
+ * Refrences:
+ * [1] Song, Le and Bedo, Justin and Borgwardt, Karsten M. and Gretton, Arthur
+ * and Smola, Alex. (2007). Gene Selection via the BAHSIC Family of Algorithms.
+ * Journal Bioinformatics. Volume 23 Issue Pages i490-i498. Oxford University
+ * Press Oxford, UK
+ * [2]: Gretton, A., Fukumizu, K., Teo, C., & Song, L. (2008). A kernel
+ * statistical test of independence. Advances in Neural Information Processing
+ * Systems, 1-8.
  */
-class CKernelDependenceMaximization : public CDependenceMaximization
+class CBAHSIC : public CKernelDependenceMaximization
 {
 public:
 	/** Default constructor */
-	CKernelDependenceMaximization();
+	CBAHSIC();
 
 	/** Destructor */
-	virtual ~CKernelDependenceMaximization();
-
-	/** @param kernel the kernel for features (data) */
-	void set_kernel_features(CKernel* kernel);
-
-	/** @return the kernel for features */
-	CKernel* get_kernel_features() const;
-
-	/** @param kernel the kernel for labels */
-	void set_kernel_labels(CKernel* kernel);
-
-	/** @return the kernel for labels */
-	CKernel* get_kernel_labels() const;
+	virtual ~CBAHSIC();
 
 	/**
-	 * Abstract method which is overridden in the subclasses to set accepted
-	 * feature selection algorithm
+	 * Since only ::BACKWARD_ELIMINATION algorithm is applicable for BAHSIC,
+	 * and this is set internally, this method is overridden to prevent this
+	 * to be set from public API.
 	 *
 	 * @param algorithm the feature selection algorithm to use
 	 */
-	virtual void set_algorithm(EFeatureSelectionAlgorithm algorithm)=0;
+	virtual void set_algorithm(EFeatureSelectionAlgorithm algorithm);
+
+	/** @return the preprocessor type */
+	virtual EPreprocessorType get_type() const;
 
 	/** @return the class name */
 	virtual const char* get_name() const
 	{
-		return "KernelDependenceMaximization";
+		return "BAHSIC";
 	}
-
-protected:
-	/**
-	 * Precomputes the kernel on labels and replaces the #m_kernel_labels
-	 * with an instance of CCustomKernel. Labels features are set via
-	 * CDependenceMaximization::set_labels call.
-	 */
-	virtual void precompute();
-
-	/** The kernel for data (features) to be used in CKernelIndependenceTest */
-	CKernel* m_kernel_features;
-
-	/** The kernel for labels to be used in CKernelIndependenceTest */
-	CKernel* m_kernel_labels;
 
 private:
 	/** Register params and initialize with default values */
@@ -102,4 +89,4 @@ private:
 };
 
 }
-#endif // KERNEL_DEPENDENCE_MAXIMIZATION_H__
+#endif // BAHSIC_H__

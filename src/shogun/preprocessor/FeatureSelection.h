@@ -109,7 +109,7 @@ enum EFeatureRemovalPolicy
  *
  * Note that not all policies can be adapted for a specific feature seleciton
  * approaches. In general, in classes where feature selection is performed by
- * removing the features which corresponds to lowest measure, the policy
+ * removing the features which correspond to lowest measure, the policies
  * ::N_SMALLEST and ::PERCENTILE_SMALLEST are appropriate. When features
  * corresponding to highest measures are removed (e.g. training error in a
  * cross-validation scenario), ::N_LARGEST and ::PERCENTILE_LARGEST are
@@ -148,17 +148,6 @@ public:
 	 * @return the result feature object after applying the preprocessor
 	 */
 	virtual CFeatures* apply(CFeatures* features);
-
-	/**
-	 * Applies backward elimination algorithm for performing feature selection.
-	 * After performing necessary precomputing (defined by subclasses), it
-	 * iteratively eliminates a number of features based on a measure until
-	 * target dimension is reached.
-	 *
-	 * @param features the input features
-	 * @return the result feature object after applying the preprocessor
-	 */
-	virtual CFeatures* apply_backward_elimination(CFeatures* features);
 
 	/**
 	 * Abstract method that is defined in the subclasses to compute the
@@ -234,8 +223,17 @@ public:
 	/** @return number or percentage of features removed in each iteration */
 	index_t get_num_remove() const;
 
-	/** @param the labels */
-	void set_labels(CLabels* labels);
+	/**
+	 * Setter for labels. This method may be overridden in subclasses if
+	 * necessary to set some additional parameters associated with it. For
+	 * example, in CDependenceMaximization, we need a feature instance of
+	 * the labels which is used in the estimator. So this method is overridden
+	 * there to internally convert the labels to a dense feature object in
+	 * this set call only
+	 *
+	 * @param labels the labels
+	 */
+	virtual void set_labels(CLabels* labels);
 
 	/** @return the labels */
 	CLabels* get_labels() const;
@@ -250,6 +248,17 @@ public:
 	}
 
 protected:
+	/**
+	 * Applies backward elimination algorithm for performing feature selection.
+	 * After performing necessary precomputing (defined by subclasses), it
+	 * iteratively eliminates a number of features based on a measure until
+	 * target dimension is reached.
+	 *
+	 * @param features the input features
+	 * @return the result feature object after applying the preprocessor
+	 */
+	virtual CFeatures* apply_backward_elimination(CFeatures* features);
+
 	/**
 	 * Performs the tasks which can be computed beforehand before the actual
 	 * algorithm begins. This method is overridden in the subclasses. Here

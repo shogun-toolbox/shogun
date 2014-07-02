@@ -9,6 +9,7 @@
  #include <shogun/statistics/KernelIndependenceTest.h>
  #include <shogun/statistics/HSIC.h>
  #include <shogun/statistics/KernelMeanMatching.h>
+ #include <shogun/statistics/KernelSelection.h>
  #include <shogun/statistics/MMDKernelSelection.h>
  #include <shogun/statistics/MMDKernelSelectionComb.h>
  #include <shogun/statistics/MMDKernelSelectionMedian.h>
