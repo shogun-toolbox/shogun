@@ -1,3 +1,36 @@
+/*
+ * Copyright (c) 2014, Shogun Toolbox Foundation
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without 
+ * modification, are permitted provided that the following conditions are met:
+
+ * 1. Redistributions of source code must retain the above copyright notice, 
+ * this list of conditions and the following disclaimer.
+ * 
+ * 2. Redistributions in binary form must reproduce the above copyright notice, 
+ * this list of conditions and the following disclaimer in the documentation 
+ * and/or other materials provided with the distribution.
+ * 
+ * 3. Neither the name of the copyright holder nor the names of its 
+ * contributors may be used to endorse or promote products derived from this 
+ * software without specific prior written permission.
+
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE 
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * POSSIBILITY OF SUCH DAMAGE.
+ * 
+ * Written (W) 2014 Abhijeet Kislay
+ */
+
 #ifndef LDA_H_
 #define LDA_H_
 
@@ -15,7 +48,7 @@ namespace shogun
 	/** Matrix decomposition method for Fisher LDA */
 	enum EFLDAMethod
 	{
-		/** if N>D then CLASSIC_FLDA is chosen automatically else CANVAR_FLDA is chosen 
+		/** if N>D then ::CLASSIC_FLDA is chosen automatically else ::CANVAR_FLDA is chosen 
 		 * (D-dimensions N-number of vectors) 
 		 */
 		AUTO_FLDA = 10,
@@ -37,7 +70,7 @@ namespace shogun
 	 *
 	 * This class provides 3 method options to compute the transformation matrix :
 	 *
-	 * <em>CLASSIC_FLDA</em> : This method selects W in such a way that the ratio of the 
+	 * <em>::CLASSIC_FLDA</em> : This method selects W in such a way that the ratio of the 
 	 * between-class scatter and the within class scatter is maximized.
 	 * The between class matrix is :
 	 * \f$\sum_b = \sum_{i=1}^C{\bf{(\mu_i-\mu)(\mu_i-\mu)^T}}\f$
@@ -45,7 +78,7 @@ namespace shogun
 	 * \f$\sum_w = \sum_{i=1}^C{\sum_{x_k\in}^c{\bf{(\mu_i-\mu)(\mu_i-\mu)^T}}}\f$
 	 * This should be choosen when N>D
 	 *
-	 * <em>CANVAR_FLDA</em> : This method performs Canonical Variates which 
+	 * <em>::CANVAR_FLDA</em> : This method performs Canonical Variates which 
 	 * generalises Fisher's method to projection of more than one dimension. 
 	 * This is equipped to handle the cases where the within class matrix
 	 * are non-invertible. Can be used for both cases(D>N or D<N). See the
@@ -53,16 +86,16 @@ namespace shogun
 	 * , Section 16.3
 	 *
 	 *
-	 * <em>AUTO_FLDA</em> : Automagically, the appropriate method is selected based on 
-	 * whether D>N (chooses CANVAR_FLDA) or D<N(chooses CLASSIC_FLDA)
+	 * <em>::AUTO_FLDA</em> : Automagically, the appropriate method is selected based on 
+	 * whether D>N (chooses ::CANVAR_FLDA) or D<N(chooses ::CLASSIC_FLDA)
 	 */
 class CFisherLDA: public CDimensionReductionPreprocessor
 {
 	public:
 
 		/** standard constructor
-		 * @param method LDA based on : CLASSIC_FLDA/CANVAR_FLDA/AUTO_FLDA[default]
-		 * @param thresh threshold value for CANVAR_FLD only. This is used to reject
+		 * @param method LDA based on : ::CLASSIC_FLDA/::CANVAR_FLDA/::AUTO_FLDA[default]
+		 * @param thresh threshold value for ::CANVAR_FLDA only. This is used to reject
 		 * those basis whose singular values are less than the provided threshold.
 		 * The default one is 0.01.
 		 */

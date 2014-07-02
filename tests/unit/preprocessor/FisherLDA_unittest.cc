@@ -206,7 +206,7 @@ TEST_F(FLDATest, CLASSIC_FLDA_Unit_test)
 }
 
 
-TEST(FLDATesti, CANVAR_FLDA_for_D_grreater_than_N )
+TEST(FLDATesti, CANVAR_FLDA_for_D_greater_than_N )
 { 
 	SGMatrix<float64_t> test_matrix(6,5);
 	SGVector<float64_t> labels_vector(5);
