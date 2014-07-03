@@ -38,6 +38,9 @@
 #cmakedefine USE_LOGCACHE 1
 #cmakedefine USE_LOGSUMARRAY 1
 
+/* Tells ViennaCL to use OpenCL as computation backend */
+#cmakedefine VIENNACL_WITH_OPENCL 1
+
 /* for linear algebra global backend setups */
 #cmakedefine HAVE_LINALG_LIB 1
 

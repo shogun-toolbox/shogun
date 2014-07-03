@@ -3,6 +3,10 @@
 #include <shogun/mathematics/Math.h>
 #include <gtest/gtest.h>
 
+#ifdef HAVE_EIGEN3
+#include <shogun/mathematics/eigen3.h>
+#endif
+
 using namespace shogun;
 
 TEST(SGMatrixTest,ctor_zero_const)
@@ -419,3 +423,37 @@ TEST(SGMatrixTest,is_symmetric_complex128_true)
 	}
 	EXPECT_TRUE(mat.is_symmetric());
 }
+
+#ifdef HAVE_EIGEN3
+
+TEST(SGMatrixTest, to_eigen3)
+{
+	const int nrows = 3;
+	const int ncols = 4;
+	
+	SGMatrix<float64_t> sg_mat(nrows,ncols);
+ 	for (int32_t i=0; i<nrows*ncols; i++)
+ 		sg_mat[i] = i;
+	
+	Eigen::MatrixXd eigen_mat = sg_mat;
+	
+	for (int32_t i=0; i<nrows*ncols; i++)
+		EXPECT_EQ(sg_mat[i], eigen_mat(i));
+}
+ 
+TEST(SGMatrixTest, from_eigen3)
+{
+	const int nrows = 3;
+	const int ncols = 4;
+	
+	Eigen::MatrixXd eigen_mat(nrows,ncols);
+	for (int32_t i=0; i<nrows*ncols; i++)
+		eigen_mat(i) = i;
+	
+	SGMatrix<float64_t> sg_mat = eigen_mat;
+	
+	for (int32_t i=0; i<nrows*ncols; i++)
+		EXPECT_EQ(eigen_mat(i), sg_mat[i]);
+}
+
+#endif

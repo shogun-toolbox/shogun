@@ -17,6 +17,10 @@
 #include <shogun/lib/common.h>
 #include <shogun/lib/SGReferencedData.h>
 
+#ifdef HAVE_EIGEN3
+#include <shogun/mathematics/eigen3.h>
+#endif
+
 namespace shogun
 {
 	template<class T> class SGVector;
@@ -35,12 +39,34 @@ template<class T> class SGMatrix : public SGReferencedData
 
 		/** constructor for setting params */
 		SGMatrix(T* m, index_t nrows, index_t ncols, bool ref_counting=true);
-
+		
+		/** Wraps a matrix around an existing memory segment with an offset */
+		SGMatrix(T* m, index_t nrows, index_t ncols, index_t offset) 
+			: SGReferencedData(false), matrix(m+offset),
+			num_rows(nrows), num_cols(ncols) { }
+		
 		/** constructor to create new matrix in memory */
 		SGMatrix(index_t nrows, index_t ncols, bool ref_counting=true);
 
 		/** copy constructor */
 		SGMatrix(const SGMatrix &orig);
+
+#ifndef SWIG // SWIG should skip this part
+#ifdef HAVE_EIGEN3
+		/** Wraps a matrix around the data of an Eigen3 matrix */
+		template <class Derived>
+		SGMatrix(Eigen::PlainObjectBase<Derived>& mat) 
+			: SGReferencedData(false), matrix(mat.data()), 
+		num_rows(mat.rows()), num_cols(mat.cols()) { }
+		
+		/** Wraps an Eigen3 matrix around the data of this matrix */
+		operator Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>() const
+		{ 
+			return Eigen::Map<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> >(
+				matrix, num_rows, num_cols);
+		}
+#endif
+#endif
 
 		/** empty destructor */
 		virtual ~SGMatrix();
