@@ -11,6 +11,7 @@
 #include <shogun/structure/MAPInference.h>
 #include <shogun/structure/BeliefPropagation.h>
 #include <shogun/structure/GraphCut.h>
+#include <shogun/structure/MPLP.h>
 #include <shogun/labels/FactorGraphLabels.h>
 
 using namespace shogun;
@@ -43,8 +44,7 @@ CMAPInference::CMAPInference(CFactorGraph* fg, EMAPInferType inference_method)
 				get_name());
 			break;
 		case LP_RELAXATION:
-			SG_ERROR("%s::CMAPInference(): LPRelaxation has not been implemented!\n",
-				get_name());
+			m_infer_impl = new CMPLP(fg);
 			break;
 		case TRWS_MAX_PROD:
 			SG_ERROR("%s::CMAPInference(): TRW-S has not been implemented!\n",
