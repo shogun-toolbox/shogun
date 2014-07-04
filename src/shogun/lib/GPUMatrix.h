@@ -55,7 +55,7 @@ namespace shogun
  * as backend for managing GPU memory.
  * 
  * It supports conversion to/from SGMatrix objects and Eigen3 matrices. Native 
- * ViennaCL methods can also be using on this class through vcl_matrix()
+ * ViennaCL methods can also be used on the data of the matrix through vcl_matrix()
  * 
  * Supported scalar types: char, uint8_t, int16_t, uint16_t, int32_t, 
  * uint32_t, int64_t, uint64_t, float32_t, float64_t.
@@ -87,12 +87,12 @@ public:
 	CGPUMatrix(VCLMemoryArray mem, index_t nrows, index_t ncols, index_t mem_offset=0);
 	
 	/** Creates a gpu matrix using data from an SGMatrix */
-	CGPUMatrix(SGMatrix<T>& cpu_mat);
+	CGPUMatrix(const SGMatrix<T>& cpu_mat);
 
 #ifdef HAVE_EIGEN3
 	/** Creates a gpu matrix using data from an Eigen3 matrix */
 	template <class Derived>
-	CGPUMatrix(Eigen::PlainObjectBase<Derived>& cpu_mat)
+	CGPUMatrix(const Eigen::PlainObjectBase<Derived>& cpu_mat)
 	{
 		init();
 		

@@ -57,10 +57,10 @@ template<class T> class SGMatrix : public SGReferencedData
 		template <class Derived>
 		SGMatrix(Eigen::PlainObjectBase<Derived>& mat) 
 			: SGReferencedData(false), matrix(mat.data()), 
-		num_rows(mat.rows()), num_cols(mat.cols()) { }
+			num_rows(mat.rows()), num_cols(mat.cols()) { }
 		
 		/** Wraps an Eigen3 matrix around the data of this matrix */
-		operator Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>() const
+		operator Eigen::Map<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> >() const
 		{ 
 			return Eigen::Map<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> >(
 				matrix, num_rows, num_cols);
