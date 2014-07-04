@@ -69,6 +69,17 @@ TEST(GPUVector, zero)
 		EXPECT_EQ(0, vec[i]);
 }
 
+TEST(GPUVector, set_const)
+{
+	const int n = 9;
+	
+	CGPUVector<float64_t> vec(n);
+	vec.set_const(3);
+	
+	for (int32_t i=0; i<n; i++)
+		EXPECT_EQ(3, vec[i]);
+}
+
 /** Tests element access operations on a vector that was created with an offset */
 TEST(GPUVector, element_access_with_offset)
 {

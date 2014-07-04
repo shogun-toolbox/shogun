@@ -126,6 +126,16 @@ public:
 		vcl_matrix().clear();
 	}
 	
+	/** Sets all the elements of the matrix to a constant value 
+	 * 
+	 * @param value New value for all the elements in the matrix
+	 */ 
+	void set_const(T value)
+	{
+		VCLMatrixBase m = vcl_matrix();
+		viennacl::linalg::matrix_assign(m, value);
+	}
+	
 	/** Displays the matrix */
 	void display_matrix(const char* name="matrix") const
 	{

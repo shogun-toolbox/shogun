@@ -91,6 +91,18 @@ TEST(GPUMatrix, zero)
 		EXPECT_EQ(0, mat[i]);
 }
 
+TEST(GPUMatrix, set_const)
+{
+	const int nrows = 3;
+	const int ncols = 4;
+	
+	CGPUMatrix<float64_t> mat(nrows,ncols);
+	mat.set_const(3);
+	
+	for (int32_t i=0; i<nrows*ncols; i++)
+		EXPECT_EQ(3, mat[i]);
+}
+
 /** Tests element access operations on a matrix that was created with an offset */
 TEST(GPUMatrix, element_access_with_offset)
 {

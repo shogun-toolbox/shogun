@@ -126,6 +126,16 @@ public:
 		vcl_vector().clear();
 	}
 	
+	/** Sets all the elements of the vector to a constant value 
+	 * 
+	 * @param value New value for all the elements in the vector
+	 */ 
+	void set_const(T value)
+	{
+		VCLVectorBase v = vcl_vector();
+		viennacl::linalg::vector_assign(v, value);
+	}
+	
 	/** Displays the vector */
 	void display_vector(const char* name="vector") const
 	{
