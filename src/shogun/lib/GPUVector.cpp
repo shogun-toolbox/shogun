@@ -35,96 +35,103 @@
 
 #ifdef HAVE_VIENNACL
 
-#include <shogun/lib/GPUMatrix.h>
+#include <shogun/lib/GPUVector.h>
 
 namespace shogun
 {
 
 template <class T> 
-CGPUMatrix<T>::CGPUMatrix()
+CGPUVector<T>::CGPUVector()
 {
 	init();
 }
 
 template <class T> 
-CGPUMatrix<T>::CGPUMatrix(index_t nrows, index_t ncols)
+CGPUVector<T>::CGPUVector(index_t length)
 {
 	init();
 	
-	num_rows = nrows;
-	num_cols = ncols;
-	viennacl::backend::memory_create(matrix, sizeof(T)*num_rows*num_cols, 
+	vlen = length;
+	
+	viennacl::backend::memory_create(vector, sizeof(T)*vlen, 
 		viennacl::context());
 }
 
 template <class T> 
-CGPUMatrix<T>::CGPUMatrix(VCLMemoryArray mem, index_t nrows, index_t ncols, 
-	index_t mem_offset)
+CGPUVector<T>::CGPUVector(VCLMemoryArray mem, index_t length, index_t mem_offset)
 {
 	init();
 	
-	matrix = mem;
-	num_rows = nrows;
-	num_cols = ncols;
+	vector = mem;
+	vlen = length;
 	offset = mem_offset;
 }
 
 template <class T> 
-CGPUMatrix<T>::CGPUMatrix(const SGMatrix< T >& cpu_mat)
+CGPUVector<T>::CGPUVector(const SGVector<T>& cpu_vec)
 {
 	init();
+	vlen = cpu_vec.vlen;
 	
-	num_rows = cpu_mat.num_rows;
-	num_cols = cpu_mat.num_cols;
-	viennacl::backend::memory_create(matrix, sizeof(T)*num_rows*num_cols, 
+	viennacl::backend::memory_create(vector, sizeof(T)*vlen, 
 		viennacl::context());
 	
-	viennacl::backend::memory_write(matrix, 0, num_rows*num_cols*sizeof(T), 
-		cpu_mat.matrix);
+	viennacl::backend::memory_write(vector, 0, vlen*sizeof(T), 
+		cpu_vec.vector);
 }
 
 #ifdef HAVE_EIGEN3
 template <class T> 
-CGPUMatrix<T>::operator Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>() const
+CGPUVector<T>::operator Eigen::Matrix<T, Eigen::Dynamic, 1>() const
 {
-	Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> cpu_mat(num_rows, num_cols);
+	Eigen::Matrix<T, Eigen::Dynamic, 1> cpu_vec(vlen);
 	
-	viennacl::backend::memory_read(matrix, offset*sizeof(T), num_rows*num_cols*sizeof(T), 
-		cpu_mat.data());
+	viennacl::backend::memory_read(vector, offset*sizeof(T), vlen*sizeof(T), 
+		cpu_vec.data());
 
-	return cpu_mat;
+	return cpu_vec;
+}
+
+template <class T> 
+CGPUVector<T>::operator Eigen::Matrix<T, 1, Eigen::Dynamic>() const
+{
+	Eigen::Matrix<T, 1, Eigen::Dynamic> cpu_vec(vlen);
+	
+	viennacl::backend::memory_read(vector, offset*sizeof(T), vlen*sizeof(T), 
+		cpu_vec.data());
+
+	return cpu_vec;
 }
 #endif
 
 template <class T> 
-CGPUMatrix<T>::operator SGMatrix<T>() const
+CGPUVector<T>::operator SGVector<T>() const
 {
-	SGMatrix<T> cpu_mat(num_rows, num_cols);
+	SGVector<T> cpu_vec(vlen);
 	
-	viennacl::backend::memory_read(matrix, offset*sizeof(T), num_rows*num_cols*sizeof(T), 
-		cpu_mat.matrix);
+	viennacl::backend::memory_read(vector, offset*sizeof(T), vlen*sizeof(T), 
+		cpu_vec.vector);
 
-	return cpu_mat;
+	return cpu_vec;
 }
 
 template <class T> 
-void CGPUMatrix<T>::init()
+void CGPUVector<T>::init()
 {
-	num_rows = 0;
-	num_cols = 0;
+	vlen = 0;
 	offset = 0;
 }
 
-template class CGPUMatrix<char>;
-template class CGPUMatrix<uint8_t>;
-template class CGPUMatrix<int16_t>;
-template class CGPUMatrix<uint16_t>;
-template class CGPUMatrix<int32_t>;
-template class CGPUMatrix<uint32_t>;
-template class CGPUMatrix<int64_t>;
-template class CGPUMatrix<uint64_t>;
-template class CGPUMatrix<float32_t>;
-template class CGPUMatrix<float64_t>;
+template class CGPUVector<char>;
+template class CGPUVector<uint8_t>;
+template class CGPUVector<int16_t>;
+template class CGPUVector<uint16_t>;
+template class CGPUVector<int32_t>;
+template class CGPUVector<uint32_t>;
+template class CGPUVector<int64_t>;
+template class CGPUVector<uint64_t>;
+template class CGPUVector<float32_t>;
+template class CGPUVector<float64_t>;
 }
 
 #endif
