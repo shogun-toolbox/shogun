@@ -106,8 +106,6 @@ public:
 	 * SGVector::set_const() method.
 	 * 
 	 * @param data Training examples
-	 * @param sigma Standard deviation of the gaussian used to initialize the 
-	 * parameters of each autoencoder
 	 */
 	virtual void pre_train(CFeatures* data);
 	
