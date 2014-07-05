@@ -66,6 +66,8 @@ template <class T> class CGPUVector
 	typedef viennacl::backend::mem_handle VCLMemoryArray;
 	
 public:
+	typedef T Scalar;
+	
 	/** Default Constructor */ 
 	CGPUVector();
 	

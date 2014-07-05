@@ -34,6 +34,8 @@ namespace shogun
 template<class T> class SGVector : public SGReferencedData
 {
 	public:
+		typedef T Scalar;
+		
 		/** default constructor */
 		SGVector();
 
