@@ -221,6 +221,7 @@ public:
 	/** returns the number of neurons in the output layer */
 	int32_t get_num_outputs();
 	
+	/** Returns an array holding the network's layers */
 	CDynamicObjectArray* get_layers();
 	
 	virtual const char* get_name() const { return "NeuralNetwork";}
@@ -446,6 +447,9 @@ protected:
 	/** network's layers */
 	CDynamicObjectArray* m_layers;
 	
+	/** Describes the connections in the network: if there's a connection from
+	 * layer i to layer j then m_adj_matrix(i,j) = 1.
+	 */
 	SGMatrix<bool> m_adj_matrix;
 	
 	/** total number of parameters in the network */

@@ -42,10 +42,16 @@ namespace shogun
 {
 template <class T> class CDenseFeatures;
 
+/** @brief Determines the noise type for denoising autoencoders */
 enum EAENoiseType
 {
+	/** No noise is applied */
 	AENT_NONE=0,
+	
+	/** Each neuron in the input layer is randomly set to zero with some probability */
 	AENT_DROPOUT=1,
+	
+	/** Gaussian noise is added to neurons in the input layer */
 	AENT_GAUSSIAN=2
 };	
 
@@ -125,12 +131,12 @@ public:
 	 * with respect to its inputs, \f$ N \f$ is the batch size, and 
 	 * \f$ \lambda \f$ is the contraction coefficient. 
 	 * 
-	 * @param lambda Contraction coefficient
+	 * @param coeff Contraction coefficient
 	 */
-	virtual void set_contraction_coefficient(float64_t lambda)
+	virtual void set_contraction_coefficient(float64_t coeff)
 	{
-		m_contraction_coefficient = lambda;
-		get_layer(1)->contraction_coefficient = lambda;
+		m_contraction_coefficient = coeff;
+		get_layer(1)->contraction_coefficient = coeff;
 	}
 	
 	virtual ~CAutoencoder() {}
