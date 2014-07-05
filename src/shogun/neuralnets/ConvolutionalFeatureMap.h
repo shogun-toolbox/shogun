@@ -39,10 +39,18 @@
 namespace shogun
 {
 
+/** @brief Determines the activation function for neurons in a convolutional 
+ * feature map
+ */
 enum EConvMapActivationFunction
 {
+	/** Identity activation function: \f$ f(x) = x \f$ */
 	CMAF_IDENTITY = 0,
+	
+	/** Logistic activation function: \f$ f(x) = \frac{1}{1+exp(-x)} \f$ */ 
 	CMAF_LOGISTIC = 1,
+	
+	/** Rectified linear activation function: \f$ f(x) = max(x,0) \f$ */
 	CMAF_RECTIFIED_LINEAR = 2
 };
 
@@ -121,9 +129,7 @@ public:
 	 * @param input_indices Indices of the layers that are connected to the map
 	 * as input
 	 * 
-	 * @param activations Matrix to store the activations in
-	 * 
-	 * @param parameters Vector in which the parameters gradients are to be 
+	 * @param parameter_gradients Vector in which the parameters gradients are to be 
 	 * stored
 	 */
 	void compute_gradients(SGVector<float64_t> parameters,
