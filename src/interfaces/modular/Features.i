@@ -21,6 +21,7 @@
 %newobject get_transposed();
 %newobject create_merged_copy(CFeatures* other);
 %newobject copy_subset(SGVector<index_t> indices);
+%newobject copy_dimension_subset(SGVector<index_t> indices);
 %newobject get_streamed_features(index_t num_elements);
 
 
