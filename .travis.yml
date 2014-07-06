@@ -66,7 +66,7 @@ matrix:
     - compiler: clang
       env:
       - CMAKE_OPTIONS="-DOpenCV=ON"
-      - EXTRA_PACKAGES="libopencv-dev"
+      - EXTRA_PACKAGES="libopencv-dev checkinstall pkg-config yasm libjpeg-dev libjasper-dev libavcodec-dev libavformat-dev libswscale-dev libdc1394-22-dev libxine-dev libgstreamer0.10-dev libgstreamer-plugins-base0.10-dev libv4l-dev libtbb-dev libfaac-dev libmp3lame-dev libopencore-amrnb-dev libopencore-amrwb-dev libtheora-dev libvorbis-dev libxvidcore-dev x264 v4l-utils ffmpeg"
     - compiler: gcc
       env:
       - CMAKE_OPTIONS="-DOctaveModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON"
