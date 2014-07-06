@@ -113,7 +113,6 @@ bool CFisherLDA::init (CFeatures *features, CLabels *labels, int32_t num_dimensi
 	int32_t j=0;
 
 	m_num_dim=num_dimensions;
-	m_num_old_dim=num_features;
 	// max target dimension allowed.
 	// int32_t max_dim_allowed=C-1;
 
