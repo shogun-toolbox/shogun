@@ -69,8 +69,8 @@ void CStructuredModel::init_primal_opt(
 		SGVector< float64_t > a,
 		SGMatrix< float64_t > B,
 		SGVector< float64_t > & b,
-		SGVector< float64_t > lb,
-		SGVector< float64_t > ub,
+		SGVector< float64_t > & lb,
+		SGVector< float64_t > & ub,
 		SGMatrix< float64_t > & C)
 {
 	SG_ERROR("init_primal_opt is not implemented for %s!\n", get_name())
