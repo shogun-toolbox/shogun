@@ -105,12 +105,8 @@ template<typename SG_T> SGMatrix<SG_T> CV2SGFactory::getMatrixUsingManual
 {
 	SGMatrix<SG_T> sgMat(num_rows, num_cols);
 	for(int i=0; i<num_rows; i++)
-	{
 		for(int j=0; j<num_cols; j++)
-		{
 			sgMat(i,j)=cvMat.at<SG_T>(i, j);
-		}
-	}
 	return sgMat;
 }
 
@@ -128,7 +124,8 @@ template<typename SG_T> SGMatrix<SG_T> CV2SGFactory::getMatrixUsingConstructor
 {
 	cvMat=cvMat.t();
 	SGMatrix<SG_T> sgMat((SG_T*)cvMat.data, num_rows, num_cols, false);
-	return sgMat;
+	SGMatrix<SG_T> sgMatnew=sgMat.clone();
+	return sgMatnew;
 }
 }
 #endif /*CV2_SGMATRIX_FACTORY_H_*/
