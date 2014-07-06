@@ -100,31 +100,6 @@ public:
 	 */
 	virtual SGVector<float64_t> get_diagonal_vector();
 
-	/** set noise factor to ensure Kernel matrix to be positive definite
-	 * by adding non-negative noise to diagonal elements of Kernel matrix
-	 *
-	 * @param noise_factor should be non-negative
-	 * default value is 1e-16
-	 *
-	 */
-	virtual void set_noise_factor(float64_t noise_factor);
-
-	/** set max attempt to ensure Kernel matrix to be positive definite
-	 *
-	 * @param max_attempt should be non-negative. 0 means infinity attempts
-	 * default value is 10
-	 *
-	 */
-	virtual void set_max_attempt(index_t max_attempt);
-
-	/** set exp factor to exponentially increase noise factor
-	 *
-	 * @param exp_factor should be greater than 1.0
-	 * default value is 2
-	 *
-	 */
-	virtual void set_exp_factor(float64_t exp_factor);
-
 protected:
 	/** update cholesky matrix */
 	virtual void update_chol();
@@ -157,15 +132,6 @@ protected:
 
 	/** The Log-determinant of Kernel */
 	float64_t m_log_det_Kernel;
-
-	/** The factor used to ensure kernel matrix to be positive definite */
-	float64_t m_noise_factor;
-
-	/** The factor used to exponentially increase noise_factor */
-	float64_t m_exp_factor;
-
-	/** Max number of attempt to correct kernel matrix to be positive definite */
-	index_t m_max_attempt;
 
 	/**The L*sqrt(D) matrix, where L and D are defined in LDLT factorization on Kernel*sq(m_scale) */
 	SGMatrix<float64_t> m_Kernel_LsD; 
