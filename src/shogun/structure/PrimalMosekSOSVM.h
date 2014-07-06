@@ -4,6 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
+ * Written (W) 2014 Shell Hu
  * Written (W) 2012 Fernando José Iglesias García
  * Copyright (C) 2012 Fernando José Iglesias García
  */
@@ -80,6 +81,16 @@ class CPrimalMosekSOSVM : public CLinearStructuredOutputMachine
 		 */
 		void set_epsilon(float64_t epsilon);
 
+		/** set lower bounds
+		 * @param lb lower bounds
+		 */
+		void set_lower_bounds(SGVector< float64_t > lb);
+
+		/** set upper bounds
+		 * @param ub upper bounds
+		 */
+		void set_upper_bounds(SGVector< float64_t > ub);
+
 	protected:
 		/** train primal SO-SVM
 		 *
@@ -142,6 +153,12 @@ class CPrimalMosekSOSVM : public CLinearStructuredOutputMachine
 
 		/** epsilon */
 		float64_t m_epsilon;
+
+		/** lower bounds */
+		SGVector< float64_t > m_lb;
+
+		/** upper bounds */
+		SGVector< float64_t > m_ub;
 
 }; /* class CPrimalMosekSOSVM */
 
