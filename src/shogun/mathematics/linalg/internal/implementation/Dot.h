@@ -39,9 +39,8 @@
 #endif // HAVE_EIGEN3
 
 #ifdef HAVE_VIENNACL
-#include <viennacl/vector.hpp>
+#include <shogun/lib/GPUVector.h>
 #include <viennacl/linalg/inner_prod.hpp>
-#include <algorithm>
 #endif // HAVE_VIENNACL
 
 namespace shogun
@@ -61,11 +60,11 @@ namespace implementation
  * is specialized for different types of vectors and backend, providing a mean
  * to deal with various vectors directly without having to convert
  */
-template <class Info,enum Backend,template<class,Info...>class Vector,class T,Info... I>
+template <enum Backend, class Vector>
 struct dot
 {
-	typedef Vector<T,I...> vector_type;
-
+	typedef typename Vector::Scalar T;
+	
 	/**
 	 * Method that computes the dot product
 	 *
@@ -74,45 +73,34 @@ struct dot
 	 * @return the dot product of \f$\mathbf{a}\f$ and \f$\mathbf{b}\f$, computed
 	 * as \f$\sum_i a_i b_i\f$
 	 */
-	static T compute(vector_type a, vector_type b);
+	static T compute(Vector a, Vector b);
 };
 
 #ifdef HAVE_EIGEN3
 /**
- * @brief Specialization of generic dot which works with SGVectors and uses Eigen3
- * as backend for computing dot.
+ * @brief Specialization of generic dot for the Eigen3 backend
  */
-template <> template <class T>
-struct dot<int,Backend::EIGEN3,shogun::SGVector,T>
+template <> template <class Vector>
+struct dot<Backend::EIGEN3, Vector>
 {
-	typedef shogun::SGVector<T> vector_type;
+	typedef typename Vector::Scalar T;
 
 	/**
-	 * Method that computes the dot product of SGVectors using Eigen3
+	 * Method that computes the dot product of SGVectors/GPUVectors using Eigen3
 	 *
 	 * @param a first vector
 	 * @param b second vector
 	 * @return the dot product of \f$\mathbf{a}\f$ and \f$\mathbf{b}\f$, computed
 	 * as \f$\sum_i a_i b_i\f$
 	 */
-	static T compute(vector_type a, vector_type b)
+	static T compute(shogun::SGVector<T> a, shogun::SGVector<T> b)
 	{
 		typedef Eigen::Matrix<T, Eigen::Dynamic, 1> VectorXt;
-		Eigen::Map<VectorXt> vec_a(a.vector, a.vlen);
-		Eigen::Map<VectorXt> vec_b(b.vector, b.vlen);
-		return vec_a.dot(vec_b);
+		Eigen::Map<VectorXt> vec_a = a;
+		Eigen::Map<VectorXt> vec_b = b;
+		return compute(vec_a, vec_b);
 	}
-};
-
-/**
- * @brief Specialization of generic dot which works with Eigen3 vectors using
- * Eigen3 backend for computing dot.
- */
-template <> template <class T,int... Info>
-struct dot<int,Backend::EIGEN3,Eigen::Matrix,T,Info...>
-{
-	typedef Eigen::Matrix<T,Info...> vector_type;
-
+	
 	/**
 	 * Method that computes the dot product of Eigen3 vectors using Eigen3
 	 *
@@ -121,123 +109,38 @@ struct dot<int,Backend::EIGEN3,Eigen::Matrix,T,Info...>
 	 * @return the dot product of \f$\mathbf{a}\f$ and \f$\mathbf{b}\f$, computed
 	 * as \f$\sum_i a_i b_i\f$
 	 */
-	static T compute(vector_type a, vector_type b)
+	template <class Derived1, class Derived2>
+	static T compute(const Eigen::MatrixBase<Derived1>& a, const Eigen::MatrixBase<Derived2>& b)
 	{
 		return a.dot(b);
 	}
 };
-
-#ifdef HAVE_VIENNACL
-/**
- * @brief Specialization of generic dot which works with Eigen3 vectors using
- * ViennaCL backend for computing dot.
- */
-template <> template <class T,int... Info>
-struct dot<int,Backend::VIENNACL,Eigen::Matrix,T,Info...>
-{
-	typedef Eigen::Matrix<T,Info...> vector_type;
-
-	/**
-	 * Method that computes the dot product of Eigen3 vectors using ViennaCL
-	 *
-	 * @param a first vector
-	 * @param b second vector
-	 * @return the dot product of \f$\mathbf{a}\f$ and \f$\mathbf{b}\f$, computed
-	 * as \f$\sum_i a_i b_i\f$
-	 */
-	static T compute(vector_type a, vector_type b)
-	{
-		viennacl::vector<T> gpu_a(a.size());
-		viennacl::vector<T> gpu_b(b.size());
-		copy(a.data(), a.data()+a.size(), gpu_a.begin());
-		copy(b.data(), b.data()+b.size(), gpu_b.begin());
-		return viennacl::linalg::inner_prod(gpu_a, gpu_b);
-	}
-};
-#endif // HAVE_VIENNACL
 #endif // HAVE_EIGEN3
 
 #ifdef HAVE_VIENNACL
 /**
- * @brief Specialization of generic dot which works with SGVectors and uses
- * ViennaCL as backend for computing dot.
+ * @brief Specialization of generic dot for the ViennaCL backend
  */
-template <> template <class T>
-struct dot<int,Backend::VIENNACL,shogun::SGVector,T>
+template <> template <class Vector>
+struct dot<Backend::VIENNACL, Vector>
 {
-	typedef shogun::SGVector<T> vector_type;
-
+	typedef typename Vector::Scalar T;
+	
 	/**
-	 * Method that computes the dot product of SGVectors using Eigen3
+	 * Method that computes the dot product using ViennaCL
 	 *
 	 * @param a first vector
 	 * @param b second vector
 	 * @return the dot product of \f$\mathbf{a}\f$ and \f$\mathbf{b}\f$, computed
 	 * as \f$\sum_i a_i b_i\f$
 	 */
-	static T compute(vector_type a, vector_type b)
+	static T compute(shogun::CGPUVector<T> a, shogun::CGPUVector<T> b)
 	{
-		viennacl::vector<T> gpu_a(a.vlen);
-		viennacl::vector<T> gpu_b(b.vlen);
-		copy(a.vector, a.vector+a.vlen, gpu_a.begin());
-		copy(b.vector, b.vector+b.vlen, gpu_b.begin());
-		return viennacl::linalg::inner_prod(gpu_a, gpu_b);
+		return viennacl::linalg::inner_prod(a.vcl_vector(), b.vcl_vector());
 	}
 };
-
-/**
- * @brief Specialization of generic dot which works with ViennaCL vectors using
- * ViennaCL backend for computing dot.
- */
-template <> template <class T,unsigned int Info>
-struct dot<unsigned int,Backend::VIENNACL,viennacl::vector,T,Info>
-{
-	typedef viennacl::vector<T,Info> vector_type;
-
-	/**
-	 * Method that computes the dot product of ViennaCL vectors using ViennaCL
-	 *
-	 * @param a first vector
-	 * @param b second vector
-	 * @return the dot product of \f$\mathbf{a}\f$ and \f$\mathbf{b}\f$, computed
-	 * as \f$\sum_i a_i b_i\f$
-	 */
-	static T compute(vector_type a, vector_type b)
-	{
-		return viennacl::linalg::inner_prod(a, b);
-	}
-};
-
-#ifdef HAVE_EIGEN3
-/**
- * @brief Specialization of generic dot which works with ViennaCL vectors using
- * Eigen3 backend for computing dot.
- */
-template <> template <class T,unsigned int Info>
-struct dot<unsigned int,Backend::EIGEN3,viennacl::vector,T,Info>
-{
-	typedef viennacl::vector<T,Info> vector_type;
-
-	/**
-	 * Method that computes the dot product of ViennaCL vectors using Eigen3
-	 *
-	 * @param a first vector
-	 * @param b second vector
-	 * @return the dot product of \f$\mathbf{a}\f$ and \f$\mathbf{b}\f$, computed
-	 * as \f$\sum_i a_i b_i\f$
-	 */
-	static T compute(vector_type a, vector_type b)
-	{
-		typedef Eigen::Matrix<T, Eigen::Dynamic, 1> VectorXt;
-		VectorXt eig_a(a.size());
-		VectorXt eig_b(b.size());
-		copy(a.begin(), a.end(), eig_a.data());
-		copy(b.begin(), b.end(), eig_b.data());
-		return eig_a.dot(eig_b);
-	}
-};
-#endif // HAVE_EIGEN3
 #endif // HAVE_VIENNACL
+
 }
 
 }

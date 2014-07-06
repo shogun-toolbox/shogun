@@ -44,84 +44,36 @@ namespace linalg
 
 /**
  * Wrapper method for internal implementation of vector dot-product that works
- * with generic vectors with first templated-argument as its value-type and
- * other (optional) templated-arguments of int type for compile time information
+ * with generic vectors.
  *
  * Uses globally set backend
  *
- * Suited for Shogun's SGVector, Eigen3's Vector etc
- *
  * @param a first vector
  * @param b second vector
  * @return the dot product of \f$\mathbf{a}\f$ and \f$\mathbf{b}\f$, represented
  * as \f$\sum_i a_i b_i\f$
  */
-template <template <class,int...> class Vector, class T, int... Info>
-T dot(Vector<T,Info...> a, Vector<T,Info...> b)
+template <class Vector>
+typename Vector::Scalar dot(const Vector& a, const Vector& b)
 {
-	return implementation::dot<int,linalg_traits<Redux>::backend,Vector,T,Info...>::compute(a, b);
+	return implementation::dot<linalg_traits<Redux>::backend,Vector>::compute(a, b);
 }
 
 /**
  * Wrapper method for internal implementation of vector dot-product that works
- * with generic vectors with first templated-argument as its value-type and
- * other (optional) templated-arguments of unsigned int type for compile time
- * information
- *
- * Uses globally set backend
- *
- * Suited for ViennaCL vectors
- *
- * @param a first vector
- * @param b second vector
- * @return the dot product of \f$\mathbf{a}\f$ and \f$\mathbf{b}\f$, represented
- * as \f$\sum_i a_i b_i\f$
- */
-template <template <class,unsigned int> class Vector, class T, unsigned int Info>
-T dot(Vector<T,Info> a, Vector<T,Info> b)
-{
-	return implementation::dot<unsigned int,linalg_traits<Redux>::backend,Vector,T,Info>::compute(a, b);
-}
-
-/**
- * Wrapper method for internal implementation of vector dot-product that works
- * with generic vectors with first templated-argument as its value-type and
- * other (optional) templated-arguments of int type for compile time information
+ * with generic vectors.
  *
  * Uses templated specified backend
  *
- * Suited for Shogun's SGVector, Eigen3's Vector etc
- *
  * @param a first vector
  * @param b second vector
  * @return the dot product of \f$\mathbf{a}\f$ and \f$\mathbf{b}\f$, represented
  * as \f$\sum_i a_i b_i\f$
  */
-template <Backend backend,template <class,int...> class Vector, class T, int... Info>
-T dot(Vector<T,Info...> a, Vector<T,Info...> b)
+template <Backend backend, class Vector>
+typename Vector::Scalar dot(const Vector& a, const Vector& b)
 {
-	return implementation::dot<int,backend,Vector,T,Info...>::compute(a, b);
-}
-
-/**
- * Wrapper method for internal implementation of vector dot-product that works
- * with generic vectors with first templated-argument as its value-type and
- * other (optional) templated-arguments of unsigned int type for compile time
- * information
- *
- * Uses templated specified backend
- *
- * Suited for ViennaCL vectors
- *
- * @param a first vector
- * @param b second vector
- * @return the dot product of \f$\mathbf{a}\f$ and \f$\mathbf{b}\f$, represented
- * as \f$\sum_i a_i b_i\f$
- */
-template <Backend backend,template <class,unsigned int> class Vector, class T, unsigned int Info>
-T dot(Vector<T,Info> a, Vector<T,Info> b)
-{
-	return implementation::dot<unsigned int,backend,Vector,T,Info>::compute(a, b);
+	return implementation::dot<backend,Vector>::compute(a, b);
 }
 
 /**

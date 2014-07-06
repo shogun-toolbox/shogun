@@ -46,7 +46,7 @@
 #endif // HAVE_EIGEN3
 
 #ifdef HAVE_VIENNACL
-#include <viennacl/vector.hpp>
+#include <shogun/lib/GPUVector.h>
 #endif // HAVE_VIENNACL
 
 using namespace shogun;
@@ -144,9 +144,9 @@ TEST(DotProduct, SGVector_explicit_viennacl_backend)
 TEST(DotProduct, ViennaCL_default_backend)
 {
 	const index_t size=10;
-	viennacl::vector<float32_t> a(size), b(size);
-	std::fill(a.begin(), a.end(), 1.0f);
-	std::fill(b.begin(), b.end(), 2.0f);
+	CGPUVector<float32_t> a(size), b(size);
+	a.set_const(1.0);
+	b.set_const(2.0);
 
 	EXPECT_NEAR(linalg::dot(a, b), 20.0, 1E-15);
 }
@@ -154,9 +154,9 @@ TEST(DotProduct, ViennaCL_default_backend)
 TEST(DotProduct, ViennaCL_explicit_viennacl_backend)
 {
 	const index_t size=10;
-	viennacl::vector<float32_t> a(size), b(size);
-	std::fill(a.begin(), a.end(), 1.0f);
-	std::fill(b.begin(), b.end(), 2.0f);
+	CGPUVector<float32_t> a(size), b(size);
+	a.set_const(1.0);
+	b.set_const(2.0);
 
 	float32_t result=linalg::dot<linalg::Backend::VIENNACL>(a, b);
 
@@ -167,9 +167,9 @@ TEST(DotProduct, ViennaCL_explicit_viennacl_backend)
 TEST(DotProduct, ViennaCL_explicit_eigen3_backend)
 {
 	const index_t size=10;
-	viennacl::vector<float32_t> a(size), b(size);
-	std::fill(a.begin(), a.end(), 1.0f);
-	std::fill(b.begin(), b.end(), 2.0f);
+	CGPUVector<float32_t> a(size), b(size);
+	a.set_const(1.0);
+	b.set_const(2.0);
 
 	float32_t result=linalg::dot<linalg::Backend::EIGEN3>(a, b);
 

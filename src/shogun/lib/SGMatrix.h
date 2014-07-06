@@ -30,6 +30,8 @@ namespace shogun
 template<class T> class SGMatrix : public SGReferencedData
 {
 	public:
+		typedef T Scalar;
+		
 		/** default constructor */
 		SGMatrix();
 
