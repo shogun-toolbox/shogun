@@ -39,6 +39,7 @@
 #ifdef HAVE_EIGEN3
 #include <shogun/preprocessor/DimensionReductionPreprocessor.h>
 #include <shogun/preprocessor/Preprocessor.h>
+#include <shogun/labels/Labels.h>
 #include <shogun/features/Features.h>
 #include <shogun/mathematics/eigen3.h>
 
@@ -154,8 +155,6 @@ class CFisherLDA: public CDimensionReductionPreprocessor
 		SGMatrix<float64_t> m_transformation_matrix;
 		/** num dim */
 		int32_t m_num_dim;
-		/** num old dim */
-		int32_t m_num_old_dim;
 		/** m_threshold */
 		float64_t m_threshold;
 		/** m_method */
