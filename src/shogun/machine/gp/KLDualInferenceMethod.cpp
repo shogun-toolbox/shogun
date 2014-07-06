@@ -110,6 +110,10 @@ void CKLDualInferenceMethod::init()
 	SG_ADD(&m_df, "df",
 		"the gradient of the variational expection wrt mu",
 		MS_NOT_AVAILABLE);
+	SG_ADD(&m_is_dual_valid, "is_dual_valid",
+		"whether the lambda (m_W) is valid or not",
+		MS_NOT_AVAILABLE);
+	m_is_dual_valid=false;
 }
 
 void CKLDualInferenceMethod::lbfgs_precompute()

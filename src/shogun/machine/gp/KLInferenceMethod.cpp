@@ -71,8 +71,20 @@ void CKLInferenceMethod::set_model(CLikelihoodModel* mod)
 
 void CKLInferenceMethod::init()
 {
-	set_lbfgs_parameters();
+	m_noise_factor=1e-10;
+	m_max_attempt=0;
+	m_exp_factor=2;
+	SG_ADD(&m_noise_factor, "noise_factor",
+		"The noise factor used for correcting Kernel matrix",
+		MS_NOT_AVAILABLE);
+	SG_ADD(&m_exp_factor, "exp_factor",
+		"The exponential factor used for increasing noise_factor",
+		MS_NOT_AVAILABLE);
+	SG_ADD(&m_max_attempt, "max_attempt",
+		"The max number of attempt to correct Kernel matrix",
+		MS_NOT_AVAILABLE);
 
+	set_lbfgs_parameters();
 	SG_ADD(&m_m, "m",
 		"The number of corrections to approximate the inverse Hessian matrix",
 		MS_NOT_AVAILABLE);
@@ -141,6 +153,7 @@ void CKLInferenceMethod::update()
 	SG_DEBUG("entering\n");
 
 	CInferenceMethod::update();
+	update_init();
 	update_alpha();
 	update_chol();
 	update_approx_cov();
@@ -148,6 +161,58 @@ void CKLInferenceMethod::update()
 	update_parameter_hash();
 
 	SG_DEBUG("leaving\n");
+}
+
+void CKLInferenceMethod::set_noise_factor(float64_t noise_factor)
+{
+	REQUIRE(noise_factor>=0, "The noise_factor should be non-negative\n");
+	m_noise_factor=noise_factor;
+}
+
+void CKLInferenceMethod::set_max_attempt(index_t max_attempt)
+{
+	REQUIRE(max_attempt>=0, "The max_attempt should be non-negative. 0 means inifity attempts\n");
+	m_max_attempt=max_attempt;
+}
+
+void CKLInferenceMethod::set_exp_factor(float64_t exp_factor)
+{
+	REQUIRE(exp_factor>1.0, "The exp_factor should be greater than 1.0.\n");
+	m_exp_factor=exp_factor;
+}
+
+void CKLInferenceMethod::update_init()
+{
+	update_init_helper();
+}
+
+Eigen::LDLT<Eigen::MatrixXd> CKLInferenceMethod::update_init_helper()
+{
+	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
+
+	eigen_K=eigen_K+m_noise_factor*MatrixXd::Identity(m_ktrtr.num_rows, m_ktrtr.num_cols);
+
+	Eigen::LDLT<Eigen::MatrixXd> ldlt;
+	ldlt.compute(eigen_K*CMath::sq(m_scale));
+
+	float64_t attempt_count=0;
+	MatrixXd Kernel_D=ldlt.vectorD();
+	while (Kernel_D.minCoeff()<=0)
+	{
+		if (m_max_attempt>0 && attempt_count>m_max_attempt)
+			SG_ERROR("The Kernel matrix is highly non-positive definite",
+				" even when adding %f noise to the diagonal elements at max %d attempts\n",
+				m_noise_factor, m_max_attempt);
+		attempt_count++;
+		float64_t pre_noise_factor=m_noise_factor;
+		m_noise_factor*=m_exp_factor;
+		//updat the noise  eigen_K=eigen_K+m_noise_factor*(m_exp_factor^attempt_count)*Identity()
+		eigen_K=eigen_K+(m_noise_factor-pre_noise_factor)*MatrixXd::Identity(m_ktrtr.num_rows, m_ktrtr.num_cols);
+		ldlt.compute(eigen_K*CMath::sq(m_scale));
+		Kernel_D=ldlt.vectorD();
+	}
+
+	return ldlt;
 }
 
 SGVector<float64_t> CKLInferenceMethod::get_posterior_mean()

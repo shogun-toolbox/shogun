@@ -247,7 +247,51 @@ public:
 	 */
 	virtual SGMatrix<float64_t> get_cholesky();
 
+	/** set noise factor to ensure Kernel matrix to be positive definite
+	 * by adding non-negative noise to diagonal elements of Kernel matrix
+	 *
+	 * @param noise_factor should be non-negative
+	 * default value is 1e-10
+	 *
+	 */
+	virtual void set_noise_factor(float64_t noise_factor);
+
+	/** set max attempt to ensure Kernel matrix to be positive definite
+	 *
+	 * @param max_attempt should be non-negative. 0 means infinity attempts
+	 * default value is 0
+	 *
+	 */
+	virtual void set_max_attempt(index_t max_attempt);
+
+	/** set exp factor to exponentially increase noise factor
+	 *
+	 * @param exp_factor should be greater than 1.0
+	 * default value is 2
+	 *
+	 */
+	virtual void set_exp_factor(float64_t exp_factor);
 protected:
+
+	/** The factor used to ensure kernel matrix to be positive definite */
+	float64_t m_noise_factor;
+
+	/** The factor used to exponentially increase noise_factor */
+	float64_t m_exp_factor;
+
+	/** Max number of attempt to correct kernel matrix to be positive definite */
+	index_t m_max_attempt;
+
+	/** correct the kernel matrix and factorizated the corrected Kernel matrix
+	 * for update
+	 */
+	virtual void update_init();
+
+	/** a helper function used to correct the kernel matrix using LDLT factorization
+	 *
+	 * @return the LDLT factorization of the corrected kernel matrix
+	 */
+	virtual Eigen::LDLT<Eigen::MatrixXd> update_init_helper();
 
 	/** this method is used to dynamic-cast the likelihood model, m_model,
 	 * to variational likelihood model.

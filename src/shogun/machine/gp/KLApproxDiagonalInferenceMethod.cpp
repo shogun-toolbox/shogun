@@ -175,7 +175,6 @@ float64_t CKLApproxDiagonalInferenceMethod::get_negative_log_marginal_likelihood
 
 void CKLApproxDiagonalInferenceMethod::update_alpha()
 {
-	update_init();
 	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
 	m_InvK=SGMatrix<float64_t>(m_ktrtr.num_rows, m_ktrtr.num_cols);
 	Map<MatrixXd> eigen_InvK(m_InvK.matrix, m_InvK.num_rows, m_InvK.num_cols);
