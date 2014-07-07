@@ -88,7 +88,7 @@ void CNumericalVGLikelihood::init()
 		MS_NOT_AVAILABLE);
 	m_GHQ_N=20;
 	m_is_init_GHQ=false;
-	m_noise_factor=1e-15;
+	m_noise_factor=1e-6;
 }
 
 void CNumericalVGLikelihood::set_GHQ_number(index_t n)
