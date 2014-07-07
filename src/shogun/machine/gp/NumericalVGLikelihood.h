@@ -117,8 +117,6 @@ public:
 	 */
 	virtual SGVector<float64_t> get_first_derivative_wrt_hyperparameter(const TParameter* param) const;
 
-	//virtual bool supports_derivative_wrt_hyperparameter() const=0;
-
 	/** set the number of Gaussian Hermite point used to compute variational expection
 	 *
 	 * @param n number of Gaussian Hermite point
@@ -127,6 +125,14 @@ public:
 	 */
 	virtual void set_GHQ_number(index_t n);
 
+	/** set a non-negative noise factor in order to correct the variance if variance is close to zero or negative
+	 * setting 0 means correction is not applied
+	 *
+	 * @param noise_factor noise factor
+	 *
+	 * The default value is 1e-15.
+	 */
+	virtual void set_noise_factor(float64_t noise_factor);
 protected:
 
 	/** The function used to initialize m_likelihood defined in CVariationalLikelihood
@@ -135,6 +141,9 @@ protected:
 	virtual void init_likelihood()=0;
 
 private:
+
+	/** use to correct the variance if variance is close to zero or negative*/
+	float64_t m_noise_factor;
 
 	/** Using N Gaussian-Hermite quadrature points */
 	index_t m_GHQ_N;
