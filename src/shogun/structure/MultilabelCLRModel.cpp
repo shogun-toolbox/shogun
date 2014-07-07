@@ -1,8 +1,9 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Copyright(C) 2014 Abinash Panda
- * Written(W) 2014 Abinash Panda
+ * Copyright(C) 2014 Thoralf Klein
+ * Written(W) 2014 Thoralf Klein
+ * Written(W) 2014 Abinash Panda 
  */
 
 #include <shogun/features/DotFeatures.h>
