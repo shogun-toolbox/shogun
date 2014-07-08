@@ -73,15 +73,7 @@ void CKLLowerTriangularInferenceMethod::init()
 	SG_ADD(&m_log_det_Kernel, "log_det_kernel",
 		"The Log-determinant of Kernel",
 		MS_NOT_AVAILABLE);
-	SG_ADD(&m_noise_factor, "noise_factor",
-		"The noise factor used for correcting Kernel matrix",
-		MS_NOT_AVAILABLE);
-	SG_ADD(&m_exp_factor, "exp_factor",
-		"The exponential factor used for increasing noise_factor",
-		MS_NOT_AVAILABLE);
-	SG_ADD(&m_max_attempt, "max_attempt",
-		"The max number of attempt to correct Kernel matrix",
-		MS_NOT_AVAILABLE);
+
 	SG_ADD(&m_Kernel_LsD, "L_sqrt_D",
 		"The L*sqrt(D) matrix, where L and D are defined in LDLT factorization on Kernel*sq(m_scale)",
 		MS_NOT_AVAILABLE);
@@ -89,9 +81,6 @@ void CKLLowerTriangularInferenceMethod::init()
 		"The permutation sequence of P, where P are defined in LDLT factorization on Kernel*sq(m_scale)",
 		MS_NOT_AVAILABLE);
 	m_log_det_Kernel=0;
-	m_noise_factor=1e-16;
-	m_max_attempt=10;
-	m_exp_factor=2;
 }
 
 CKLLowerTriangularInferenceMethod::~CKLLowerTriangularInferenceMethod()
@@ -115,28 +104,8 @@ void CKLLowerTriangularInferenceMethod::update_deriv()
 
 void CKLLowerTriangularInferenceMethod::update_init()
 {
-	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
-
-	eigen_K=eigen_K+m_noise_factor*MatrixXd::Identity(m_ktrtr.num_rows, m_ktrtr.num_cols);
-
-	Eigen::LDLT<Eigen::MatrixXd> ldlt;
-	ldlt.compute(eigen_K*CMath::sq(m_scale));
-
-	float64_t attempt_count=0;
+	Eigen::LDLT<Eigen::MatrixXd> ldlt=update_init_helper();
 	MatrixXd Kernel_D=ldlt.vectorD();
-	while (Kernel_D.minCoeff()<=0)
-	{
-		if (m_max_attempt>0 && attempt_count>m_max_attempt)
-			SG_ERROR("The Kernel matrix is highly non-positive definite",
-				" even when adding %f noise to the diagonal elements at max %d attempts\n", m_noise_factor, m_max_attempt);
-		attempt_count++;
-		float64_t pre_noise_factor=m_noise_factor;
-		m_noise_factor*=m_exp_factor;
-		//updat the noise  eigen_K=eigen_K+m_noise_factor*(m_exp_factor^attempt_count)*Identity()
-		eigen_K=eigen_K+(m_noise_factor-pre_noise_factor)*MatrixXd::Identity(m_ktrtr.num_rows, m_ktrtr.num_cols);
-		ldlt.compute(eigen_K*CMath::sq(m_scale));
-		Kernel_D=ldlt.vectorD();
-	}
 	MatrixXd Kernel_L=ldlt.matrixL();
 	m_Kernel_LsD=SGMatrix<float64_t>(m_ktrtr.num_rows, m_ktrtr.num_cols);
 	m_Kernel_LsD.zero();
@@ -212,25 +181,6 @@ void CKLLowerTriangularInferenceMethod::update_chol()
 
 	eigen_L=solve_inverse(tmp2);
 }
-
-void CKLLowerTriangularInferenceMethod::set_noise_factor(float64_t noise_factor)
-{
-	REQUIRE(noise_factor>=0, "The noise_factor should be non-negative\n");
-	m_noise_factor=noise_factor;
-}
-
-void CKLLowerTriangularInferenceMethod::set_max_attempt(index_t max_attempt)
-{
-	REQUIRE(max_attempt>=0, "The max_attempt should be non-negative. 0 means inifity attempts\n");
-	m_max_attempt=max_attempt;
-}
-
-void CKLLowerTriangularInferenceMethod::set_exp_factor(float64_t exp_factor)
-{
-	REQUIRE(exp_factor>1.0, "The exp_factor should be greater than 1.0.\n");
-	m_exp_factor=exp_factor;
-}
-
 
 } /* namespace shogun */
 

@@ -83,8 +83,12 @@ void CNumericalVGLikelihood::init()
 		"Whether Gaussian-Hermite quadrature points are initialized or not\n",
 		MS_NOT_AVAILABLE);
 
+	SG_ADD(&m_noise_factor, "noise_factor", 
+		"Correct the variance if variance is close to zero or negative\n",
+		MS_NOT_AVAILABLE);
 	m_GHQ_N=20;
 	m_is_init_GHQ=false;
+	m_noise_factor=1e-6;
 }
 
 void CNumericalVGLikelihood::set_GHQ_number(index_t n)
@@ -220,6 +224,12 @@ SGVector<float64_t> CNumericalVGLikelihood::get_variational_first_derivative(
 	return res;
 }
 
+void CNumericalVGLikelihood::set_noise_factor(float64_t noise_factor)
+{
+	REQUIRE(noise_factor>=0, "The noise_factor (%f) should be non negative\n", noise_factor);
+	m_noise_factor=noise_factor;
+}
+
 void CNumericalVGLikelihood::set_variational_distribution(SGVector<float64_t> mu,
 	SGVector<float64_t> s2, const CLabels* lab)
 {
@@ -248,8 +258,11 @@ void CNumericalVGLikelihood::set_variational_distribution(SGVector<float64_t> mu
 
 	for(index_t i = 0; i < s2.vlen; ++i)
 	{
-		REQUIRE(s2[i] > 0.0,
-			"Variational variance should always be positive (s2 should be a positive vector)\n");
+		REQUIRE(s2[i]+m_noise_factor>0.0,
+			"Corrected variational variance (original s2=%f) should always be positive after noise correction (%f)\n",
+			s2[i], m_noise_factor);
+		if (!(s2[i]>0.0))
+			s2[i]+=m_noise_factor;
 	}
 
 	if (supports_binary())

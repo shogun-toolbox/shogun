@@ -114,7 +114,6 @@ void CKLCholeskyInferenceMethod::lbfgs_precompute()
 
 	update_C();
 	Map<MatrixXd> eigen_C(m_C.matrix, m_C.num_rows, m_C.num_cols);
-
 	Map<VectorXd> eigen_s2(m_s2.vector, m_s2.vlen);
 	//s2=sum(C.*C,2);
 	eigen_s2=(eigen_C.array()*eigen_C.array()).rowwise().sum().matrix();
@@ -204,13 +203,11 @@ float64_t CKLCholeskyInferenceMethod::get_negative_log_marginal_likelihood_helpe
 
 	//nlZ = -a -logdet(V*inv(K))/2 -n/2 +(alpha'*K*alpha)/2 +trace(V*inv(K))/2;	
 	float64_t result=-a+0.5*(-eigen_K.rows()+eigen_alpha.dot(eigen_mu-eigen_mean)+trace-log_det);
-
 	return result;
 }
 
 void CKLCholeskyInferenceMethod::update_alpha()
 {
-	update_init();
 	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
 
 	float64_t nlml_new=0;
