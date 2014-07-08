@@ -11,7 +11,6 @@
 
 #include <gtest/gtest.h>
 #include <opencv2/core/core.hpp>
-#include <opencv2/highgui/highgui.hpp>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/lib/OpenCV/SG2CVFactory.h>

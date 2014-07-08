@@ -33,7 +33,7 @@
 #ifndef SG2_CVMAT_FACTORY_H_
 #define SG2_CVMAT_FACTORY_H_
 
-#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/core/core.hpp>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/lib/OpenCV/OpenCVTypeName.h>
