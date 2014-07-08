@@ -1,6 +1,7 @@
 /*
  * Copyright (c) The Shogun Machine Learning Toolbox
  * Written (w) 2014 Soumyajit De
+ * Written (w) 2014 Khaled Nasr
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,7 +45,7 @@ namespace linalg
  * specific information, providing a uniform way to deal with matrix blocks
  * for all supported backend matrices
  */
-template <class Info,template<class,Info...>class Matrix,class T,Info... I>
+template <class Matrix>
 struct Block
 {
 	/**
@@ -60,7 +61,7 @@ struct Block
 	 * represents the block that starts at index (0,4) in the matrix and
 	 * goes upto (0+5-1,4+6-1) i.e. (4,9) both inclusive
 	 */
-	Block<Info,Matrix,T,I...>(Matrix<T,I...> matrix,
+	Block<Matrix>(Matrix matrix,
 			index_t row_begin, index_t col_begin,
 			index_t row_size, index_t col_size)
 		: m_matrix(matrix), m_row_begin(row_begin), m_col_begin(col_begin),
@@ -69,7 +70,7 @@ struct Block
 	}
 
 	/** the matrix on which the block is defined */
-	Matrix<T,I...> m_matrix;
+	Matrix m_matrix;
 
 	/** the row index at which the block starts */
 	index_t m_row_begin;
@@ -94,28 +95,11 @@ struct Block
  * @param col_size the number of cols in the block
  * @return a block object on this matrix
  */
-template <template<class,int...> class Matrix,class T,int... I>
-Block<int,Matrix,T,I...> block(Matrix<T,I...> matrix, index_t row_begin,
+template <class Matrix>
+Block<Matrix> block(Matrix matrix, index_t row_begin,
 		index_t col_begin, index_t row_size, index_t col_size)
 {
-	return Block<int,Matrix,T,I...>(matrix, row_begin, col_begin, row_size, col_size);
-}
-
-/**
- * Method that returns a block object. Suited for ViennaCL matrix
- *
- * @param matrix the matrix on which the block is defined
- * @param row_begin the row index at which the block starts
- * @param col_begin the col index at which the block starts
- * @param row_size the number of rows in the block
- * @param col_size the number of cols in the block
- * @return a block object on this matrix
- */
-template <template<class,unsigned int> class Matrix,class T,unsigned int I>
-Block<unsigned int,Matrix,T,I> block(Matrix<T,I> matrix, index_t row_begin,
-		index_t col_begin, index_t row_size, index_t col_size)
-{
-	return Block<unsigned int,Matrix,T,I>(matrix, row_begin, col_begin, row_size, col_size);
+	return Block<Matrix>(matrix, row_begin, col_begin, row_size, col_size);
 }
 
 }

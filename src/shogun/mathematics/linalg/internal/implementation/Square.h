@@ -79,7 +79,7 @@ struct square
 	 * @return another matrix whose co-efficients are \f$m'_{i,j}=b_(i,j}^2\f$
 	 * for all \f$i,j\f$
 	 */
-	static matrix_type compute(Block<Info,Matrix,T,I...> b);
+	static matrix_type compute(Block<Matrix<T,I...> > b);
 };
 
 #ifdef HAVE_EIGEN3
@@ -119,7 +119,7 @@ struct square<int,Backend::EIGEN3,shogun::SGMatrix,T>
 	 * @return another matrix whose co-efficients are \f$m'_{i,j}=b_(i,j}^2\f$
 	 * for all \f$i,j\f$
 	 */
-	static matrix_type compute(Block<int,shogun::SGMatrix,T> b)
+	static matrix_type compute(Block<shogun::SGMatrix<T> > b)
 	{
 		typedef Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> MatrixXt;
 		Eigen::Map<MatrixXt> eig_m(b.m_matrix.matrix, b.m_matrix.num_rows,
@@ -165,7 +165,7 @@ struct square<int,Backend::EIGEN3,Eigen::Matrix,T,Info...>
 	 * @return another matrix whose co-efficients are \f$m'_{i,j}=m_(i,j}^2\f$
 	 * for all \f$i,j\f$
 	 */
-	static matrix_type compute(Block<int,Eigen::Matrix,T,Info...> b)
+	static matrix_type compute(Block<Eigen::Matrix<T,Info...> > b)
 	{
 		const matrix_type& block=b.m_matrix.template block(b.m_row_begin, b.m_col_begin,
 				b.m_row_size, b.m_col_size);

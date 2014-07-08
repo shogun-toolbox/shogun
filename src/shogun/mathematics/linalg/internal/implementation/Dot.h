@@ -1,6 +1,7 @@
 /*
  * Copyright (c) The Shogun Machine Learning Toolbox
  * Written (w) 2014 Soumyajit De
+ * Written (w) 2014 Khaled Nasr
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
