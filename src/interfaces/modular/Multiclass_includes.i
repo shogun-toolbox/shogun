@@ -17,6 +17,8 @@
  #include <shogun/multiclass/tree/CARTree.h>
  #include <shogun/multiclass/tree/CHAIDTreeNodeData.h>
  #include <shogun/multiclass/tree/CHAIDTree.h>
+ #include <shogun/multiclass/tree/KDTreeNodeData.h>
+ #include <shogun/multiclass/tree/KDTree.h>
 
  #include <shogun/multiclass/RejectionStrategy.h>
  #include <shogun/multiclass/MulticlassStrategy.h>
