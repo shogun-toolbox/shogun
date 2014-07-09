@@ -19,7 +19,10 @@
 #include <shogun/mathematics/eigen3.h>
 
 using namespace shogun;
+
+#ifdef HAVE_EIGEN3
 using namespace Eigen;
+#endif // HAVE_EIGEN3
 
 void CCustomKernel::init()
 {
