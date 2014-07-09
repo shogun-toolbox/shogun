@@ -601,14 +601,14 @@ bool COctaveInterface::cmd_run_r()
 
 void COctaveInterface::recover_from_exception(void)
 {
-#if OCTAVE_APIVERSION < 37
+#if defined(OCTAVE_APIVERSION) && OCTAVE_APIVERSION < 37
   unwind_protect::run_all ();
 #endif
   can_interrupt = true;
   octave_interrupt_immediately = 0;
   octave_interrupt_state = 0;
 
-#if OCTAVE_APIVERSION >= 37
+#if !defined(OCTAVE_APIVERSION) || OCTAVE_APIVERSION >= 37
   octave_exception_state = octave_no_exception;
 #else
   octave_allocation_error = 0;
@@ -643,7 +643,11 @@ void COctaveInterface::run_octave_init()
 
 void COctaveInterface::run_octave_exit()
 {
+#if defined(OCTAVE_MAJOR_VERSION) && OCTAVE_MAJOR_VERSION >= 3 && defined(OCTAVE_MINOR_VERSION) && OCTAVE_MINOR_VERSION >= 8
+	clean_up_and_exit (0); 
+#else
 	do_octave_atexit();
+#endif
 }
 
 bool COctaveInterface::run_octave_helper(CSGInterface* from_if)
@@ -656,7 +660,7 @@ bool COctaveInterface::run_octave_helper(CSGInterface* from_if)
 #if defined (USE_EXCEPTIONS_FOR_INTERRUPTS)
 		panic_impossible ();
 #else
-#if OCTAVE_APIVERSION < 37
+#if defined(OCTAVE_APIVERSION) && OCTAVE_APIVERSION < 37
 		unwind_protect::run_all ();
 #endif
 		raw_mode (0);
@@ -693,7 +697,7 @@ bool COctaveInterface::run_octave_helper(CSGInterface* from_if)
 				COctaveInterface* in = new COctaveInterface(args, 1, false);
 				in->create_return_values(1);
 				from_if->translate_arg(from_if, in);
-#if OCTAVE_APIVERSION >= 37
+#if !defined(OCTAVE_APIVERSION) || OCTAVE_APIVERSION >= 37
 				symbol_table::varref (var_name) = in->get_return_values()(0);
 #else
 				set_global_value(var_name, in->get_return_values()(0));
@@ -703,7 +707,7 @@ bool COctaveInterface::run_octave_helper(CSGInterface* from_if)
 			}
 		}
 
-#if OCTAVE_APIVERSION >= 37
+#if !defined(OCTAVE_APIVERSION) || OCTAVE_APIVERSION >= 37
 #else
 		symbol_table* old=curr_sym_tab;
 		curr_sym_tab = global_sym_tab;
@@ -715,7 +719,7 @@ bool COctaveInterface::run_octave_helper(CSGInterface* from_if)
 		int32_t sz=0;
 		octave_value_list results;
 
-#if OCTAVE_APIVERSION >= 37
+#if !defined(OCTAVE_APIVERSION) || OCTAVE_APIVERSION >= 37
 		if (symbol_table::is_variable("results"))
 		{
 			results = symbol_table::varval("results");
@@ -760,7 +764,7 @@ bool COctaveInterface::run_octave_helper(CSGInterface* from_if)
 			}
 		}
 
-#if OCTAVE_APIVERSION >= 37
+#if !defined(OCTAVE_APIVERSION) || OCTAVE_APIVERSION >= 37
 #else
 		curr_sym_tab=old;
 #endif
