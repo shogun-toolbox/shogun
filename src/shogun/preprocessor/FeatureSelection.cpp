@@ -59,7 +59,7 @@ void CFeatureSelection<ST>::init()
 
 	m_target_dim=0;
 	m_algorithm=BACKWARD_ELIMINATION;
-	m_policy=N_SMALLEST;
+	m_policy=N_LARGEST;
 	m_num_remove=1;
 	m_labels=NULL;
 }

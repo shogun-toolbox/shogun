@@ -58,8 +58,9 @@ TEST(FeatureSelection, remove_feats)
 	CBAHSIC* fs=new CBAHSIC();
 	index_t target_dim=dim/2;
 	fs->set_num_remove(dim-target_dim);
+	fs->set_policy(N_LARGEST);
 
-	// create a dummy argsorted vector to remove first dim/2 features
+	// create a dummy argsorted vector to remove last dim/2 features
 	SGVector<index_t> argsorted(dim);
 	argsorted.range_fill();
 
@@ -70,7 +71,7 @@ TEST(FeatureSelection, remove_feats)
 	for (index_t i=0; i<target_dim; ++i)
 	{
 		for (index_t j=0; j<num_data; ++j)
-			EXPECT_NEAR(data(i+dim-target_dim, j), reduced_data(i, j), 1E-15);
+			EXPECT_NEAR(data(i, j), reduced_data(i, j), 1E-15);
 	}
 
 	SG_UNREF(reduced);

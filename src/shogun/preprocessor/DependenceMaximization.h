@@ -51,9 +51,12 @@ class CIndependenceTest;
  * 	\textbf{H}_0 : P\left(\mathbf{X}\setminus \mathbf{X}_i, \mathbf{Y}\right)
  *	=P\left(\mathbf{X}\setminus \mathbf{X}_i\right)P\left(\mathbf{Y}\right)
  * \f]
- * The test statistic is then used as a measure. Lowest measure signifies
- * lowest dependence. Therefore, lowest scoring features are removed. The
- * removal policy thus can only be ::N_SMALLEST and ::PERCENTILE_SMALLEST and
+ * The test statistic is then used as a measure which signifies the independence
+ * between the rest of the features and the labels - higher the value of the
+ * test statistic, greater the dependency between the rest of the features
+ * and the class labels, and therefore lesser significant the current feature
+ * becomes. Therefore, highest scoring features are removed. The removal policy
+ * thus can only be ::N_LARGEST and ::PERCENTILE_LARGEST and
  * it can be set via set_policy() call. remove_feats() method handles the
  * removal of features based on the specified policy.
  *
@@ -88,8 +91,8 @@ public:
 	/**
 	 * Method which handles the removal of features based on removal policy.
 	 * see documentation of CFeatureSelection. For dependence maximization
-	 * approach, the lowest scoring features are removed. Therefore, only
-	 * #m_policy can only be N_SMALLEST, PERCENTILE_SMALLEST. see set_policy()
+	 * approach, the highest scoring features are removed. Therefore, only
+	 * #m_policy can only be N_LARGEST, PERCENTILE_LARGEST. see set_policy()
 	 * method for specifying the exact policy
 	 *
 	 * @param features the features object from which specific features has
