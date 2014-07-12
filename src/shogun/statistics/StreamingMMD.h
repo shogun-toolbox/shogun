@@ -62,7 +62,6 @@ enum EStreamingStatisticType
 {
 	S_UNBIASED,
 	S_INCOMPLETE,
-	S_INCOMPLETE_DEPRECATED
 };
 
 /** @brief Abstract base class that provides an interface for performing kernel
@@ -120,7 +119,7 @@ enum EStreamingStatisticType
  * The statistic returned is always \f$\theta_1\times\hat{\eta}_k\f$ where the
  * normalizing constant \f$\theta_1\f$ is computed in subclasses.
  *
- * Presently there are three methods for computing the statistic.
+ * Presently there are two methods for computing the statistic.
  *
  * - ::S_UNBIASED:
  * The default setup. Within block \f$b\f$, the statistic estimate is computed
@@ -140,10 +139,6 @@ enum EStreamingStatisticType
  * \f]
  * where for each pair \f$z=(x,y)\f$, \f$h(z,z')=k(x,x')+k(y,y')-k(x,y')-
  * k(x',y)\f$.
- *
- * - ::S_INCOMPLETE_DEPRECATED:
- * This is similar to ::S_INCOMPLETE except that the normalizing constant
- * for statistic \f$\theta_1\f$ is 1 (See CLinearTimeMMD or CBTestMMD).
  *
  * The statistic type can be specified via set_statistic_type() method
  *
@@ -179,7 +174,7 @@ enum EStreamingStatisticType
  *
  * - ::NO_PERMUTATION_DEPRECATED:
  * This is an incorrest estimation of the variance under null. If specified,
- * this just computes a runtime variance based on the statistic computed for
+ * this just computes an online variance based on the statistic computed for
  * each burst without permuting the samples.
  *
  * Use set_null_var_est_method() to set the variance estimation method. The
@@ -214,10 +209,6 @@ enum EStreamingStatisticType
  * - ::MMD1_GAUSSIAN: Approximates the null-distribution with a Gaussian. Only use
  * from at least 1000 samples. If using, check if type I error equals the
  * desired value.
- *
- * - ::MMD1_GAUSSIAN_DEPRECATED: Used with ::S_INCOMPLETE_DEPRECATED statistic type.
- * The Gaussian approximation of the null-distribution uses variance
- * estimation computed by ::NO_PERMUTATION_DEPRECATED approximation method.
  *
  * - ::PERMUTATION: For permuting available samples to sample null-distribution.
  *
@@ -332,10 +323,10 @@ public:
 	 * is set to true, each subkernel is evaluated on the same data.
 	 *
 	 * @param statistic return parameter for statistic, vector with entry for
-	 * each kernel. May be allocated before but doesn not have to be
+	 * each kernel. May be preallocated but does not have to be
 	 *
 	 * @param variance return parameter for statistic, vector with entry for
-	 * each kernel. May be allocated before but doesn not have to be
+	 * each kernel. May be preallocated but does not have to be
 	 *
 	 * @param multiple_kernels optional flag, if set to true, it is assumed that
 	 * the underlying kernel is of type K_COMBINED. Then, the MMD is computed on
@@ -359,7 +350,7 @@ public:
 	 * constantly streamed and then merged. Usually, this is not necessary
 	 * since there is the Gaussian approximation for the null distribution.
 	 * However, in certain cases this may fail and sampling the null
-	 * distribution might be numerically more stable. Ovewrite superclass
+	 * distribution might be numerically more stable. Overwrites superclass
 	 * method that merges samples.
 	 *
 	 * @return vector of all null samples

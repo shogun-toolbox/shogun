@@ -140,8 +140,10 @@ SGVector<float64_t> CStreamingMMD::compute_blockwise_statistic(CKernel* kernel,
 		/* remove diagonal entries if statistic type is incomplete */
 		if (m_statistic_type==S_UNBIASED)
 			xy_sum=kernel->sum_block(offset+By*i, Bx*i, By, Bx);
-		else
+		else if (m_statistic_type==S_INCOMPLETE)
 			xy_sum=kernel->sum_block(offset+By*i, Bx*i, By, Bx, true);
+		else
+			SG_ERROR("Unknown statistic type %d!\n", m_statistic_type);
 
 		/* split computations into three terms from JLMR paper (see documentation )*/
 
@@ -228,7 +230,7 @@ SGMatrix<float64_t> CStreamingMMD::compute_blockwise_statistic_variance(CKernel*
 		float64_t xy_sum=k_m.block(0, Bx, Bx, By).sum();
 
 		/* remove diagonal entries if statistic type is incomplete */
-		if (m_statistic_type!=S_UNBIASED)
+		if (m_statistic_type==S_INCOMPLETE)
 			xy_sum-=k_m.block(0, Bx, Bx, By).diagonal().sum();
 
 		/* computing statistic estimate */
@@ -375,30 +377,37 @@ void CStreamingMMD::compute_statistic_and_variance(SGVector<float64_t>&
 			if (multiple_kernels)
 				kernel=((CCombinedKernel*)m_kernel)->get_kernel(i);
 
-			if (m_null_var_est_method==WITHIN_BURST_PERMUTATION)
+			if (m_null_var_est_method!=WITHIN_BLOCK_DIRECT)
 			{
 				/* compute blockwise statistic */
 				SGVector<float64_t> current
 					=compute_blockwise_statistic(kernel, data);
 
-				SG_DEBUG("Permuting the samples for estimating the variance "
-						"under null using within-block permutation method!\n")
+				/* use the same statistic for variance estimate if DEPRECATED
+				   variance estimtion is used. otherwise, permute the samples and
+				   recompute statistic for the current burst to estimate variance
+				 */
+				SGVector<float64_t> eta=current;
 
-				/* randomly permute the samples using index permutation. This
-				 * is equivalent to splitting the data randomly in the same
-				 * proportions between p and q for current block */
-				SGVector<index_t> inds(data->get_num_vectors());
-				inds.range_fill();
-				inds.permute();
-				data->add_subset(inds);
-				SGVector<float64_t> shuffled
-					=compute_blockwise_statistic(kernel, data);
-				data->remove_subset();
+				if (m_null_var_est_method==WITHIN_BURST_PERMUTATION)
+				{
+					SG_DEBUG("Permuting the samples for estimating the variance "
+							"under null using within-block permutation method!\n")
+
+					/* randomly permute the samples using index permutation. This
+					 * is equivalent to splitting the data randomly in the same
+					 * proportions between p and q for current block */
+					SGVector<index_t> inds(data->get_num_vectors());
+					inds.range_fill();
+					inds.permute();
+					data->add_subset(inds);
+					eta=compute_blockwise_statistic(kernel, data);
+					data->remove_subset();
+				}
 
 				/* single variances for all kernels. Update mean and variance
 				 * using Knuth's online variance algorithm.
 				 * C.f. for example Wikipedia */
-
 				for (index_t j=0; j<m_num_blocks_per_burst; ++j)
 				{
 					/* compute online mean of blockwise statistic estimates */
@@ -408,11 +417,22 @@ void CStreamingMMD::compute_statistic_and_variance(SGVector<float64_t>&
 							delta, statistic[i]);
 
 					/* D. Knuth's online variance algorithm for current kernel */
-					delta=shuffled[j]-temp[i];
-					temp[i]+=delta/term_counters[i];
-					variance[i]+=delta*(shuffled[j]-temp[i]);
-					SG_DEBUG("Burst: shuffled=%f, delta=%f, mean=%f, variance %f\n",
-							shuffled[j], delta, temp[i], variance[i]);
+					if (m_null_var_est_method==WITHIN_BURST_PERMUTATION)
+					{
+						/* compute the estimated variance using statistic computed
+						   on randomly shuffled samples (see class documentation) */
+						delta=eta[j]-temp[i];
+						temp[i]+=delta/term_counters[i];
+						variance[i]+=delta*(eta[j]-temp[i]);
+					}
+					else
+					{
+						/* simply compute online variance of the statistic estimates */
+						variance[i]+=delta*(current[j]-statistic[i]);
+					}
+
+					SG_DEBUG("Burst: eta=%f, delta=%f, mean=%f, variance %f\n",
+							eta[j], delta, temp[i], variance[i]);
 
 					/* remember to increament term counters per kernel */
 					term_counters[i]++;
@@ -445,32 +465,6 @@ void CStreamingMMD::compute_statistic_and_variance(SGVector<float64_t>&
 					term_counters[i]++;
 				}
 			}
-			else if(m_null_var_est_method==NO_PERMUTATION_DEPRECATED)
-			{
-				/* compute blockwise statistic */
-				SGVector<float64_t> current
-					=compute_blockwise_statistic(kernel, data);
-
-				/* single variances for all kernels. Update mean and variance
-				 * using Knuth's online variance algorithm.
-				 * C.f. for example Wikipedia */
-
-				for (index_t j=0; j<current.vlen; ++j)
-				{
-					/* compute online mean of blockwise statistic estimates */
-					float64_t delta=current[j]-statistic[i];
-					statistic[i]+=delta/term_counters[i];
-
-					/* D. Knuth's online variance algorithm for current kernel */
-					variance[i]+=delta*(current[j]-statistic[i]);
-					SG_DEBUG("Burst: current=%f, delta=%f, statistic=%f, "
-							"variance=%f\n", current[j], delta,
-							statistic[i], variance[i]);
-
-					/* remember to increament term counters per kernel */
-					term_counters[i]++;
-				}
-			}
 			else
 				SG_ERROR("Unknown variance estimation method specified\n");
 
@@ -493,9 +487,7 @@ void CStreamingMMD::compute_statistic_and_variance(SGVector<float64_t>&
 			num_examples_processed);
 
 	/* scale the statistic for computing p-value. The multiplier is different
-	   for different subclasses. Note that with deprecated version, the
-	   statistic returned is m/2*MMD^2 instead, m being the number of samples
-	   from both the distributions */
+	   for different subclasses. */
 	statistic.scale(compute_statistic_normalizing_constant());
 
 	if (io->get_loglevel()==MSG_DEBUG || io->get_loglevel()==MSG_GCDEBUG)
@@ -505,19 +497,10 @@ void CStreamingMMD::compute_statistic_and_variance(SGVector<float64_t>&
 	   the variance, then it needs to be divided by #terms-1 in order to
 	   get variance of null-distribution. Note that the multiplier is different
 	   for subclasses */
-	if (m_null_var_est_method==WITHIN_BURST_PERMUTATION)
+	if (m_null_var_est_method!=WITHIN_BLOCK_DIRECT)
 	{
 		float64_t multiplier=compute_variance_normalizing_constant();
 		variance.scale(multiplier/(term_counters[0]-1));
-	}
-	else if (m_null_var_est_method==NO_PERMUTATION_DEPRECATED)
-	{
-		/* Note that the variance needs to be divided by m_2 in order to get
-		 * variance of null-distribution */
-		REQUIRE(m_m==m_n, "Deprecated variance estimation works only with "
-				"equal number of samples from p(%d) and q(%d)!\n", m_m, m_n);
-		index_t m_2=m_m/2;
-		variance.scale(1.0/(m_2-1)/m_2);
 	}
 
 	if (io->get_loglevel()==MSG_DEBUG || io->get_loglevel()==MSG_GCDEBUG)
@@ -798,14 +781,6 @@ float64_t CStreamingMMD::compute_p_value(float64_t statistic)
 			result=1.0-CStatistics::normal_cdf(statistic, std_dev);
 		}
 		break;
-	case MMD1_GAUSSIAN_DEPRECATED:
-		{
-			/* compute variance and use to estimate Gaussian distribution */
-			float64_t std_dev=CMath::sqrt(compute_variance_estimate());
-			SG_DEBUG("std_dev = %f\n", std_dev);
-			result=1.0-CStatistics::normal_cdf(statistic, std_dev);
-		}
-		break;
 	default:
 		/* permutation test is handled here */
 		result=CKernelTwoSampleTest::compute_p_value(statistic);
@@ -826,13 +801,6 @@ float64_t CStreamingMMD::compute_threshold(float64_t alpha)
 			/* compute variance and use to estimate Gaussian distribution */
 			float64_t m=compute_gaussian_variance(compute_variance_estimate());
 			float64_t std_dev=CMath::sqrt(m);
-			result=1.0-CStatistics::inverse_normal_cdf(1-alpha, 0, std_dev);
-		}
-		break;
-	case MMD1_GAUSSIAN_DEPRECATED:
-		{
-			/* compute variance and use to estimate Gaussian distribution */
-			float64_t std_dev=CMath::sqrt(compute_variance_estimate());
 			result=1.0-CStatistics::inverse_normal_cdf(1-alpha, 0, std_dev);
 		}
 		break;
@@ -862,31 +830,6 @@ float64_t CStreamingMMD::perform_test()
 			/* estimate Gaussian distribution */
 			float64_t m=compute_gaussian_variance(variance[0]);
 			result=1.0-CStatistics::normal_cdf(statistic[0],CMath::sqrt(m));
-		}
-		break;
-	case MMD1_GAUSSIAN_DEPRECATED:
-		{
-			/* compute variance and use to estimate Gaussian distribution, use
-			 * wrapper method and compute for single kernel */
-			SGVector<float64_t> statistic;
-			SGVector<float64_t> variance;
-
-			/* use S_INCOMPLETE_DEPRECATED for statistic and
-			   NO_PERMUTATION_DEPRECATED for variance estimation */
-			EStreamingStatisticType orig_stat_type=m_statistic_type;
-			ENullVarianceEstimationMethod orig_var_est_method=m_null_var_est_method;
-			m_statistic_type=S_INCOMPLETE_DEPRECATED;
-			m_null_var_est_method=NO_PERMUTATION_DEPRECATED;
-
-			compute_statistic_and_variance(statistic, variance, false);
-
-			/* estimate Gaussian distribution */
-			result=1.0-CStatistics::normal_cdf(statistic[0],
-					CMath::sqrt(variance[0]));
-
-			/* restore original statistic type and var estimation methods */
-			m_statistic_type=orig_stat_type;
-			m_null_var_est_method=orig_var_est_method;
 		}
 		break;
 	default:

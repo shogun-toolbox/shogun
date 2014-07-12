@@ -69,6 +69,155 @@ TEST(BTestMMD, statistic_single_kernel_fixed_unbiased)
 	SG_UNREF(mmd);
 }
 
+TEST(BTestMMD, variance_single_kernel_fixed_unbiased_WITHIN_BURST_PERMUTATION)
+{
+	index_t m=8;
+	index_t d=3;
+	float64_t sigma=2;
+	float64_t sq_sigma_twice=sigma*sigma*2;
+	SGMatrix<float64_t> data(d, 2*m);
+	for (index_t i=0; i<2*d*m; ++i)
+		data.matrix[i]=i;
+
+	/* use fixed seed for reproducibility */
+	CMath::init_random(123);
+
+	/* create data matrix for each features (appended is not supported) */
+	SGMatrix<float64_t> data_p(d, m);
+	memcpy(&(data_p.matrix[0]), &(data.matrix[0]), sizeof(float64_t)*d*m);
+
+	SGMatrix<float64_t> data_q(d, m);
+	memcpy(&(data_q.matrix[0]), &(data.matrix[d*m]), sizeof(float64_t)*d*m);
+
+	CDenseFeatures<float64_t>* features_p=new CDenseFeatures<float64_t>(data_p);
+	CDenseFeatures<float64_t>* features_q=new CDenseFeatures<float64_t>(data_q);
+
+	/* create stremaing features from dense features */
+	CStreamingFeatures* streaming_p=new CStreamingDenseFeatures<float64_t>(
+			features_p);
+	CStreamingFeatures* streaming_q=new CStreamingDenseFeatures<float64_t>(
+			features_q);
+
+	/* shoguns kernel width is different */
+	CGaussianKernel* kernel=new CGaussianKernel(10, sq_sigma_twice);
+
+	/* create MMD instance with blocksize 4 */
+	CBTestMMD* mmd=new CBTestMMD(kernel, streaming_p, streaming_q, m, 4);
+	mmd->set_null_var_est_method(WITHIN_BURST_PERMUTATION);
+
+	/* start streaming features parser */
+	streaming_p->start_parser();
+	streaming_q->start_parser();
+
+	/* assert python result */
+	float64_t variance=mmd->compute_variance_estimate();
+	EXPECT_NEAR(variance, 0.0002012639932351693, 1E-15);
+
+	/* start streaming features parser */
+	streaming_p->end_parser();
+	streaming_q->end_parser();
+
+	SG_UNREF(mmd);
+}
+
+#ifdef HAVE_EIGEN3
+TEST(BTestMMD, variance_single_kernel_fixed_unbiased_WITHIN_BLOCK_DIRECT)
+{
+	index_t m=8;
+	index_t d=3;
+	float64_t sigma=2;
+	float64_t sq_sigma_twice=sigma*sigma*2;
+	SGMatrix<float64_t> data(d, 2*m);
+	for (index_t i=0; i<2*d*m; ++i)
+		data.matrix[i]=i;
+
+	/* create data matrix for each features (appended is not supported) */
+	SGMatrix<float64_t> data_p(d, m);
+	memcpy(&(data_p.matrix[0]), &(data.matrix[0]), sizeof(float64_t)*d*m);
+
+	SGMatrix<float64_t> data_q(d, m);
+	memcpy(&(data_q.matrix[0]), &(data.matrix[d*m]), sizeof(float64_t)*d*m);
+
+	CDenseFeatures<float64_t>* features_p=new CDenseFeatures<float64_t>(data_p);
+	CDenseFeatures<float64_t>* features_q=new CDenseFeatures<float64_t>(data_q);
+
+	/* create stremaing features from dense features */
+	CStreamingFeatures* streaming_p=new CStreamingDenseFeatures<float64_t>(
+			features_p);
+	CStreamingFeatures* streaming_q=new CStreamingDenseFeatures<float64_t>(
+			features_q);
+
+	/* shoguns kernel width is different */
+	CGaussianKernel* kernel=new CGaussianKernel(10, sq_sigma_twice);
+
+	/* create MMD instance with blocksize 4 */
+	CBTestMMD* mmd=new CBTestMMD(kernel, streaming_p, streaming_q, m, 4);
+	mmd->set_null_var_est_method(WITHIN_BLOCK_DIRECT);
+
+	/* start streaming features parser */
+	streaming_p->start_parser();
+	streaming_q->start_parser();
+
+	/* assert python result */
+	float64_t variance=mmd->compute_variance_estimate();
+	EXPECT_NEAR(variance, 0.0015611728277215653, 1E-15);
+
+	/* start streaming features parser */
+	streaming_p->end_parser();
+	streaming_q->end_parser();
+
+	SG_UNREF(mmd);
+}
+#endif // HAVE_EIGEN3
+
+TEST(BTestMMD, variance_single_kernel_fixed_unbiased_DEPRECATED)
+{
+	index_t m=8;
+	index_t d=3;
+	float64_t sigma=2;
+	float64_t sq_sigma_twice=sigma*sigma*2;
+	SGMatrix<float64_t> data(d, 2*m);
+	for (index_t i=0; i<2*d*m; ++i)
+		data.matrix[i]=i;
+
+	/* create data matrix for each features (appended is not supported) */
+	SGMatrix<float64_t> data_p(d, m);
+	memcpy(&(data_p.matrix[0]), &(data.matrix[0]), sizeof(float64_t)*d*m);
+
+	SGMatrix<float64_t> data_q(d, m);
+	memcpy(&(data_q.matrix[0]), &(data.matrix[d*m]), sizeof(float64_t)*d*m);
+
+	CDenseFeatures<float64_t>* features_p=new CDenseFeatures<float64_t>(data_p);
+	CDenseFeatures<float64_t>* features_q=new CDenseFeatures<float64_t>(data_q);
+
+	/* create stremaing features from dense features */
+	CStreamingFeatures* streaming_p=new CStreamingDenseFeatures<float64_t>(
+			features_p);
+	CStreamingFeatures* streaming_q=new CStreamingDenseFeatures<float64_t>(
+			features_q);
+
+	/* shoguns kernel width is different */
+	CGaussianKernel* kernel=new CGaussianKernel(10, sq_sigma_twice);
+
+	/* create MMD instance with blocksize 4 */
+	CBTestMMD* mmd=new CBTestMMD(kernel, streaming_p, streaming_q, m, 4);
+	mmd->set_null_var_est_method(NO_PERMUTATION_DEPRECATED);
+
+	/* start streaming features parser */
+	streaming_p->start_parser();
+	streaming_q->start_parser();
+
+	/* assert python result */
+	float64_t variance=mmd->compute_variance_estimate();
+	EXPECT_NEAR(variance, 0.0, 1E-15);
+
+	/* start streaming features parser */
+	streaming_p->end_parser();
+	streaming_q->end_parser();
+
+	SG_UNREF(mmd);
+}
+
 TEST(BTestMMD, statistic_single_kernel_fixed_incomplete)
 {
 	index_t m=2;
@@ -108,7 +257,7 @@ TEST(BTestMMD, statistic_single_kernel_fixed_incomplete)
 
 	/* assert python result */
 	float64_t statistic=mmd->compute_statistic();
-	EXPECT_NEAR(statistic, 0.034218118311602, 1E-15);
+	EXPECT_NEAR(statistic, 0.034218118311601715, 1E-15);
 
 	/* start streaming features parser */
 	streaming_p->end_parser();
@@ -117,9 +266,161 @@ TEST(BTestMMD, statistic_single_kernel_fixed_incomplete)
 	SG_UNREF(mmd);
 }
 
-TEST(BTestMMD, p_value_gaussian_large_num_samples)
+TEST(BTestMMD, variance_single_kernel_fixed_incomplete_WITHIN_BURST_PERMUTATION)
 {
-	index_t m=50000;
+	index_t m=8;
+	index_t d=3;
+	float64_t sigma=2;
+	float64_t sq_sigma_twice=sigma*sigma*2;
+	SGMatrix<float64_t> data(d, 2*m);
+	for (index_t i=0; i<2*d*m; ++i)
+		data.matrix[i]=i;
+
+	/* use fixed seed for reproducibility */
+	CMath::init_random(123);
+
+	/* create data matrix for each features (appended is not supported) */
+	SGMatrix<float64_t> data_p(d, m);
+	memcpy(&(data_p.matrix[0]), &(data.matrix[0]), sizeof(float64_t)*d*m);
+
+	SGMatrix<float64_t> data_q(d, m);
+	memcpy(&(data_q.matrix[0]), &(data.matrix[d*m]), sizeof(float64_t)*d*m);
+
+	CDenseFeatures<float64_t>* features_p=new CDenseFeatures<float64_t>(data_p);
+	CDenseFeatures<float64_t>* features_q=new CDenseFeatures<float64_t>(data_q);
+
+	/* create stremaing features from dense features */
+	CStreamingFeatures* streaming_p=new CStreamingDenseFeatures<float64_t>(
+			features_p);
+	CStreamingFeatures* streaming_q=new CStreamingDenseFeatures<float64_t>(
+			features_q);
+
+	/* shoguns kernel width is different */
+	CGaussianKernel* kernel=new CGaussianKernel(10, sq_sigma_twice);
+
+	/* create MMD instance with blocksize 4 */
+	CBTestMMD* mmd=new CBTestMMD(kernel, streaming_p, streaming_q, m, 4);
+	mmd->set_statistic_type(S_INCOMPLETE);
+	mmd->set_null_var_est_method(WITHIN_BURST_PERMUTATION);
+
+	/* start streaming features parser */
+	streaming_p->start_parser();
+	streaming_q->start_parser();
+
+	/* assert python result */
+	float64_t variance=mmd->compute_variance_estimate();
+	EXPECT_NEAR(variance, 0.00021955165821832144, 1E-15);
+
+	/* start streaming features parser */
+	streaming_p->end_parser();
+	streaming_q->end_parser();
+
+	SG_UNREF(mmd);
+}
+
+#ifdef HAVE_EIGEN3
+TEST(BTestMMD, variance_single_kernel_fixed_incomplete_WITHIN_BLOCK_DIRECT)
+{
+	index_t m=8;
+	index_t d=3;
+	float64_t sigma=2;
+	float64_t sq_sigma_twice=sigma*sigma*2;
+	SGMatrix<float64_t> data(d, 2*m);
+	for (index_t i=0; i<2*d*m; ++i)
+		data.matrix[i]=i;
+
+	/* create data matrix for each features (appended is not supported) */
+	SGMatrix<float64_t> data_p(d, m);
+	memcpy(&(data_p.matrix[0]), &(data.matrix[0]), sizeof(float64_t)*d*m);
+
+	SGMatrix<float64_t> data_q(d, m);
+	memcpy(&(data_q.matrix[0]), &(data.matrix[d*m]), sizeof(float64_t)*d*m);
+
+	CDenseFeatures<float64_t>* features_p=new CDenseFeatures<float64_t>(data_p);
+	CDenseFeatures<float64_t>* features_q=new CDenseFeatures<float64_t>(data_q);
+
+	/* create stremaing features from dense features */
+	CStreamingFeatures* streaming_p=new CStreamingDenseFeatures<float64_t>(
+			features_p);
+	CStreamingFeatures* streaming_q=new CStreamingDenseFeatures<float64_t>(
+			features_q);
+
+	/* shoguns kernel width is different */
+	CGaussianKernel* kernel=new CGaussianKernel(10, sq_sigma_twice);
+
+	/* create MMD instance with blocksize 4 */
+	CBTestMMD* mmd=new CBTestMMD(kernel, streaming_p, streaming_q, m, 4);
+	mmd->set_statistic_type(S_INCOMPLETE);
+	mmd->set_null_var_est_method(WITHIN_BLOCK_DIRECT);
+
+	/* start streaming features parser */
+	streaming_p->start_parser();
+	streaming_q->start_parser();
+
+	/* assert python result */
+	float64_t variance=mmd->compute_variance_estimate();
+	EXPECT_NEAR(variance, 0.0015611728277215653, 1E-15);
+
+	/* start streaming features parser */
+	streaming_p->end_parser();
+	streaming_q->end_parser();
+
+	SG_UNREF(mmd);
+}
+#endif // HAVE_EIGEN3
+
+TEST(BTestMMD, variance_single_kernel_fixed_incomplete_DEPRECATED)
+{
+	index_t m=8;
+	index_t d=3;
+	float64_t sigma=2;
+	float64_t sq_sigma_twice=sigma*sigma*2;
+	SGMatrix<float64_t> data(d, 2*m);
+	for (index_t i=0; i<2*d*m; ++i)
+		data.matrix[i]=i;
+
+	/* create data matrix for each features (appended is not supported) */
+	SGMatrix<float64_t> data_p(d, m);
+	memcpy(&(data_p.matrix[0]), &(data.matrix[0]), sizeof(float64_t)*d*m);
+
+	SGMatrix<float64_t> data_q(d, m);
+	memcpy(&(data_q.matrix[0]), &(data.matrix[d*m]), sizeof(float64_t)*d*m);
+
+	CDenseFeatures<float64_t>* features_p=new CDenseFeatures<float64_t>(data_p);
+	CDenseFeatures<float64_t>* features_q=new CDenseFeatures<float64_t>(data_q);
+
+	/* create stremaing features from dense features */
+	CStreamingFeatures* streaming_p=new CStreamingDenseFeatures<float64_t>(
+			features_p);
+	CStreamingFeatures* streaming_q=new CStreamingDenseFeatures<float64_t>(
+			features_q);
+
+	/* shoguns kernel width is different */
+	CGaussianKernel* kernel=new CGaussianKernel(10, sq_sigma_twice);
+
+	/* create MMD instance with blocksize 4 */
+	CBTestMMD* mmd=new CBTestMMD(kernel, streaming_p, streaming_q, m, 4);
+	mmd->set_statistic_type(S_INCOMPLETE);
+	mmd->set_null_var_est_method(NO_PERMUTATION_DEPRECATED);
+
+	/* start streaming features parser */
+	streaming_p->start_parser();
+	streaming_q->start_parser();
+
+	/* assert python result */
+	float64_t variance=mmd->compute_variance_estimate();
+	EXPECT_NEAR(variance, 0.0, 1E-15);
+
+	/* start streaming features parser */
+	streaming_p->end_parser();
+	streaming_q->end_parser();
+
+	SG_UNREF(mmd);
+}
+
+TEST(BTestMMD, DISABLED_p_value_gaussian_large_num_samples)
+{
+	index_t m=10000;
 	index_t d=2;
 	float64_t sigma=2;
 	float64_t sq_sigma_twice=sigma*sigma*2;
@@ -159,8 +460,8 @@ TEST(BTestMMD, p_value_gaussian_large_num_samples)
 	// shoguns kernel width is different
 	CGaussianKernel* kernel=new CGaussianKernel(10, sq_sigma_twice);
 
-	// create MMD instance with blocksize 100
-	index_t blocksize=100;
+	// create MMD instance with blocksize 50
+	index_t blocksize=50;
 	CBTestMMD* mmd=new CBTestMMD(kernel, streaming_p, streaming_q,
 			m, blocksize);
 
@@ -284,6 +585,7 @@ TEST(BTestMMD, statistic_and_Q_fixed)
 	SG_UNREF(mmd_2);
 }
 
+#ifdef HAVE_EIGEN3
 TEST(BTestMMD, statistic_and_variance_multiple_kernels_fixed_same_num_samples)
 {
 	index_t m=8;
@@ -445,3 +747,4 @@ TEST(BTestMMD, statistic_and_variance_fixed_multiple_kernels_different_num_sampl
 
 	SG_UNREF(mmd);
 }
+#endif // HAVE_EIGEN3

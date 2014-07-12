@@ -118,8 +118,7 @@ public:
 
 protected:
 	/** Method that computes normalizing constant \f$theta_1\f$ for
-	 * statistic estimate as \f$\sqrt{\frac{n_xn_y}{n_x+n_y}}\f$. If
-	 * ::S_INCOMPLETE_DEPRECATED statistic is used, \f$\theta_1\f$ is 1.
+	 * statistic estimate as \f$\sqrt{\frac{n_xn_y}{n_x+n_y}}\f$.
 	 *
 	 * @return normalizing constant \f$theta_1\f$ for statistic estimate for
 	 * computing p-value/threshold
@@ -129,8 +128,7 @@ protected:
 	/** Method that computes normalizing constant \f$\theta_2\f$ for
 	 * variance estimate under null for within burst permuation approach. as
 	 * \f$\frac{B_xB_y(B_x-1)(B_y-1)}{(B-1)(B-2)}\f$. If ::S_INCOMPLETE statistic
-	 * type is used, then it computes \f$\theta_2=\frac{B(B-2)}{16}\f$. If
-	 * ::S_INCOMPLETE_DEPRECATED is used, then \f$\theta_2=1\f$.
+	 * type is used, then it computes \f$\theta_2=\frac{B(B-2)}{16}\f$.
 	 *
 	 * @return normalizing constant \f$theta_2\f$ for variance estimate of the
 	 * statistic under null when using within-burst permutation method

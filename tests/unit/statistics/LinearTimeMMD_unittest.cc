@@ -9,10 +9,15 @@
  */
 
 #include <shogun/statistics/LinearTimeMMD.h>
+#include <shogun/statistics/MMDKernelSelectionCombOpt.h>
+#include <shogun/statistics/MMDKernelSelectionOpt.h>
+#include <shogun/mathematics/Statistics.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/kernel/CombinedKernel.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/streaming/StreamingDenseFeatures.h>
+#include <shogun/features/streaming/generators/MeanShiftDataGenerator.h>
+#include <shogun/features/streaming/generators/GaussianBlobsDataGenerator.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;
@@ -69,9 +74,60 @@ TEST(LinearTimeMMD, statistic_single_kernel_fixed_unbiased)
 	SG_UNREF(mmd);
 }
 
-TEST(LinearTimeMMD, statistic_single_kernel_fixed_unbiased_DEPRECATED)
+TEST(LinearTimeMMD, variance_single_kernel_fixed_unbiased_WITHIN_BURST_PERMUTATION)
 {
-	index_t m=2;
+	index_t m=8;
+	index_t d=3;
+	float64_t sigma=2;
+	float64_t sq_sigma_twice=sigma*sigma*2;
+	SGMatrix<float64_t> data(d, 2*m);
+	for (index_t i=0; i<2*d*m; ++i)
+		data.matrix[i]=i;
+
+	/* use fixed seed for reproducibility */
+	CMath::init_random(123);
+
+	/* create data matrix for each features (appended is not supported) */
+	SGMatrix<float64_t> data_p(d, m);
+	memcpy(&(data_p.matrix[0]), &(data.matrix[0]), sizeof(float64_t)*d*m);
+
+	SGMatrix<float64_t> data_q(d, m);
+	memcpy(&(data_q.matrix[0]), &(data.matrix[d*m]), sizeof(float64_t)*d*m);
+
+	CDenseFeatures<float64_t>* features_p=new CDenseFeatures<float64_t>(data_p);
+	CDenseFeatures<float64_t>* features_q=new CDenseFeatures<float64_t>(data_q);
+
+	/* create stremaing features from dense features */
+	CStreamingFeatures* streaming_p=new CStreamingDenseFeatures<float64_t>(
+			features_p);
+	CStreamingFeatures* streaming_q=new CStreamingDenseFeatures<float64_t>(
+			features_q);
+
+	/* shoguns kernel width is different */
+	CGaussianKernel* kernel=new CGaussianKernel(10, sq_sigma_twice);
+
+	/* create MMD instance */
+	CLinearTimeMMD* mmd=new CLinearTimeMMD(kernel, streaming_p, streaming_q, m);
+	mmd->set_null_var_est_method(WITHIN_BURST_PERMUTATION);
+
+	/* start streaming features parser */
+	streaming_p->start_parser();
+	streaming_q->start_parser();
+
+	float64_t variance=mmd->compute_variance_estimate();
+	EXPECT_NEAR(variance, 0.00013417599549011286, 1E-15);
+
+	/* start streaming features parser */
+	streaming_p->end_parser();
+	streaming_q->end_parser();
+
+	SG_UNREF(mmd);
+}
+
+#ifdef HAVE_EIGEN3
+TEST(LinearTimeMMD, variance_single_kernel_fixed_unbiased_WITHIN_BLOCK_DIRECT)
+{
+	index_t m=8;
 	index_t d=3;
 	float64_t sigma=2;
 	float64_t sq_sigma_twice=sigma*sigma*2;
@@ -100,7 +156,54 @@ TEST(LinearTimeMMD, statistic_single_kernel_fixed_unbiased_DEPRECATED)
 
 	/* create MMD instance */
 	CLinearTimeMMD* mmd=new CLinearTimeMMD(kernel, streaming_p, streaming_q, m);
-	mmd->set_statistic_type(S_INCOMPLETE_DEPRECATED);
+	mmd->set_null_var_est_method(WITHIN_BLOCK_DIRECT);
+
+	/* start streaming features parser */
+	streaming_p->start_parser();
+	streaming_q->start_parser();
+
+	float64_t variance=mmd->compute_variance_estimate();
+	EXPECT_NEAR(variance, 0.0015611728277215653, 1E-15);
+
+	/* start streaming features parser */
+	streaming_p->end_parser();
+	streaming_q->end_parser();
+
+	SG_UNREF(mmd);
+}
+#endif // HAVE_EIGEN3
+
+TEST(LinearTimeMMD, variance_single_kernel_fixed_unbiased_DEPRECATED)
+{
+	index_t m=8;
+	index_t d=3;
+	float64_t sigma=2;
+	float64_t sq_sigma_twice=sigma*sigma*2;
+	SGMatrix<float64_t> data(d, 2*m);
+	for (index_t i=0; i<2*d*m; ++i)
+		data.matrix[i]=i;
+
+	/* create data matrix for each features (appended is not supported) */
+	SGMatrix<float64_t> data_p(d, m);
+	memcpy(&(data_p.matrix[0]), &(data.matrix[0]), sizeof(float64_t)*d*m);
+
+	SGMatrix<float64_t> data_q(d, m);
+	memcpy(&(data_q.matrix[0]), &(data.matrix[d*m]), sizeof(float64_t)*d*m);
+
+	CDenseFeatures<float64_t>* features_p=new CDenseFeatures<float64_t>(data_p);
+	CDenseFeatures<float64_t>* features_q=new CDenseFeatures<float64_t>(data_q);
+
+	/* create stremaing features from dense features */
+	CStreamingFeatures* streaming_p=new CStreamingDenseFeatures<float64_t>(
+			features_p);
+	CStreamingFeatures* streaming_q=new CStreamingDenseFeatures<float64_t>(
+			features_q);
+
+	/* shoguns kernel width is different */
+	CGaussianKernel* kernel=new CGaussianKernel(10, sq_sigma_twice);
+
+	/* create MMD instance */
+	CLinearTimeMMD* mmd=new CLinearTimeMMD(kernel, streaming_p, streaming_q, m);
 	mmd->set_null_var_est_method(NO_PERMUTATION_DEPRECATED);
 
 	/* start streaming features parser */
@@ -108,8 +211,8 @@ TEST(LinearTimeMMD, statistic_single_kernel_fixed_unbiased_DEPRECATED)
 	streaming_q->start_parser();
 
 	/* assert matlab result */
-	float64_t statistic=mmd->compute_statistic();
-	EXPECT_NEAR(statistic, 0.034218118311602, 1E-15);
+	float64_t variance=mmd->compute_variance_estimate();
+	EXPECT_NEAR(variance, 0.0, 1E-15);
 
 	/* start streaming features parser */
 	streaming_p->end_parser();
@@ -166,30 +269,20 @@ TEST(LinearTimeMMD, statistic_single_kernel_fixed_incomplete)
 	SG_UNREF(mmd);
 }
 
-TEST(LinearTimeMMD, p_value_gaussian_large_num_samples)
+TEST(LinearTimeMMD, variance_single_kernel_fixed_incomplete_WITHIN_BURST_PERMUTATION)
 {
-	index_t m=10000;
-	index_t d=2;
+	index_t m=8;
+	index_t d=3;
 	float64_t sigma=2;
 	float64_t sq_sigma_twice=sigma*sigma*2;
-
-	// test power
-	float64_t alpha=0.05;
-
-	// use fixed seed for reproducibility
-	CMath::init_random(1);
-
-	// generate data from N(0,1) and N(mu,1)
-	float64_t mu=0.5;
 	SGMatrix<float64_t> data(d, 2*m);
+	for (index_t i=0; i<2*d*m; ++i)
+		data.matrix[i]=i;
 
-	for (index_t i=0; i<d*m; ++i)
-		data.matrix[i]=CMath::randn_double();
+	/* use fixed seed for reproducibility */
+	CMath::init_random(123);
 
-	for (index_t i=d*m; i<2*d*m; ++i)
-		data.matrix[i]=CMath::randn_double()+mu;
-
-	// create data matrix for each features (appended is not supported)
+	/* create data matrix for each features (appended is not supported) */
 	SGMatrix<float64_t> data_p(d, m);
 	memcpy(&(data_p.matrix[0]), &(data.matrix[0]), sizeof(float64_t)*d*m);
 
@@ -199,31 +292,129 @@ TEST(LinearTimeMMD, p_value_gaussian_large_num_samples)
 	CDenseFeatures<float64_t>* features_p=new CDenseFeatures<float64_t>(data_p);
 	CDenseFeatures<float64_t>* features_q=new CDenseFeatures<float64_t>(data_q);
 
-	// create stremaing features from dense features
+	/* create stremaing features from dense features */
 	CStreamingFeatures* streaming_p=new CStreamingDenseFeatures<float64_t>(
 			features_p);
 	CStreamingFeatures* streaming_q=new CStreamingDenseFeatures<float64_t>(
 			features_q);
 
-	// shoguns kernel width is different
+	/* shoguns kernel width is different */
 	CGaussianKernel* kernel=new CGaussianKernel(10, sq_sigma_twice);
 
-	// create MMD instance with default blocksize 4
+	/* create MMD instance */
 	CLinearTimeMMD* mmd=new CLinearTimeMMD(kernel, streaming_p, streaming_q, m);
+	mmd->set_statistic_type(S_INCOMPLETE);
+	mmd->set_null_var_est_method(WITHIN_BURST_PERMUTATION);
 
-	// use Gaussian approximation for null distribution
-	mmd->set_null_approximation_method(MMD1_GAUSSIAN);
-
-	// start streaming features parser
+	/* start streaming features parser */
 	streaming_p->start_parser();
 	streaming_q->start_parser();
 
-	// assert local machine computed result
-	float64_t p_value=mmd->perform_test();
-	EXPECT_NEAR(p_value, 0.0, 1E-15);
-	EXPECT_TRUE(p_value<alpha);
+	/* assert python result */
+	float64_t variance=mmd->compute_variance_estimate();
+	EXPECT_NEAR(variance, 0.00010977582910916072, 1E-15);
 
-	// stop streaming features parser
+	/* start streaming features parser */
+	streaming_p->end_parser();
+	streaming_q->end_parser();
+
+	SG_UNREF(mmd);
+}
+
+#ifdef HAVE_EIGEN3
+TEST(LinearTimeMMD, variance_single_kernel_fixed_incomplete_WITHIN_BLOCK_DIRECT)
+{
+	index_t m=8;
+	index_t d=3;
+	float64_t sigma=2;
+	float64_t sq_sigma_twice=sigma*sigma*2;
+	SGMatrix<float64_t> data(d, 2*m);
+	for (index_t i=0; i<2*d*m; ++i)
+		data.matrix[i]=i;
+
+	/* create data matrix for each features (appended is not supported) */
+	SGMatrix<float64_t> data_p(d, m);
+	memcpy(&(data_p.matrix[0]), &(data.matrix[0]), sizeof(float64_t)*d*m);
+
+	SGMatrix<float64_t> data_q(d, m);
+	memcpy(&(data_q.matrix[0]), &(data.matrix[d*m]), sizeof(float64_t)*d*m);
+
+	CDenseFeatures<float64_t>* features_p=new CDenseFeatures<float64_t>(data_p);
+	CDenseFeatures<float64_t>* features_q=new CDenseFeatures<float64_t>(data_q);
+
+	/* create stremaing features from dense features */
+	CStreamingFeatures* streaming_p=new CStreamingDenseFeatures<float64_t>(
+			features_p);
+	CStreamingFeatures* streaming_q=new CStreamingDenseFeatures<float64_t>(
+			features_q);
+
+	/* shoguns kernel width is different */
+	CGaussianKernel* kernel=new CGaussianKernel(10, sq_sigma_twice);
+
+	/* create MMD instance */
+	CLinearTimeMMD* mmd=new CLinearTimeMMD(kernel, streaming_p, streaming_q, m);
+	mmd->set_statistic_type(S_INCOMPLETE);
+	mmd->set_null_var_est_method(WITHIN_BLOCK_DIRECT);
+
+	/* start streaming features parser */
+	streaming_p->start_parser();
+	streaming_q->start_parser();
+
+	/* assert python result */
+	float64_t variance=mmd->compute_variance_estimate();
+	EXPECT_NEAR(variance, 0.0015611728277215653, 1E-15);
+
+	/* start streaming features parser */
+	streaming_p->end_parser();
+	streaming_q->end_parser();
+
+	SG_UNREF(mmd);
+}
+#endif // HAVE_EIGEN3
+
+TEST(LinearTimeMMD, variance_single_kernel_fixed_incomplete_DEPRECATED)
+{
+	index_t m=8;
+	index_t d=3;
+	float64_t sigma=2;
+	float64_t sq_sigma_twice=sigma*sigma*2;
+	SGMatrix<float64_t> data(d, 2*m);
+	for (index_t i=0; i<2*d*m; ++i)
+		data.matrix[i]=i;
+
+	/* create data matrix for each features (appended is not supported) */
+	SGMatrix<float64_t> data_p(d, m);
+	memcpy(&(data_p.matrix[0]), &(data.matrix[0]), sizeof(float64_t)*d*m);
+
+	SGMatrix<float64_t> data_q(d, m);
+	memcpy(&(data_q.matrix[0]), &(data.matrix[d*m]), sizeof(float64_t)*d*m);
+
+	CDenseFeatures<float64_t>* features_p=new CDenseFeatures<float64_t>(data_p);
+	CDenseFeatures<float64_t>* features_q=new CDenseFeatures<float64_t>(data_q);
+
+	/* create stremaing features from dense features */
+	CStreamingFeatures* streaming_p=new CStreamingDenseFeatures<float64_t>(
+			features_p);
+	CStreamingFeatures* streaming_q=new CStreamingDenseFeatures<float64_t>(
+			features_q);
+
+	/* shoguns kernel width is different */
+	CGaussianKernel* kernel=new CGaussianKernel(10, sq_sigma_twice);
+
+	/* create MMD instance */
+	CLinearTimeMMD* mmd=new CLinearTimeMMD(kernel, streaming_p, streaming_q, m);
+	mmd->set_statistic_type(S_INCOMPLETE);
+	mmd->set_null_var_est_method(NO_PERMUTATION_DEPRECATED);
+
+	/* start streaming features parser */
+	streaming_p->start_parser();
+	streaming_q->start_parser();
+
+	/* assert python result */
+	float64_t variance=mmd->compute_variance_estimate();
+	EXPECT_NEAR(variance, 0.0, 1E-15);
+
+	/* start streaming features parser */
 	streaming_p->end_parser();
 	streaming_q->end_parser();
 
@@ -443,6 +634,7 @@ TEST(LinearTimeMMD, statistic_and_Q_fixed_DEPRECATED)
 	SG_UNREF(mmd_2);
 }
 
+#ifdef HAVE_EIGEN3
 TEST(LinearTimeMMD, statistic_and_variance_multiple_kernels_fixed_same_num_samples)
 {
 	index_t m=8;
@@ -527,6 +719,7 @@ TEST(LinearTimeMMD, statistic_and_variance_multiple_kernels_fixed_same_num_sampl
 
 	SG_UNREF(mmd);
 }
+#endif // HAVE_EIGEN3
 
 TEST(LinearTimeMMD, statistic_and_variance_multiple_kernels_fixed_DEPRECATED)
 {
@@ -574,7 +767,6 @@ TEST(LinearTimeMMD, statistic_and_variance_multiple_kernels_fixed_DEPRECATED)
 
 	/* create MMD instance */
 	CLinearTimeMMD* mmd=new CLinearTimeMMD(kernel, streaming_p, streaming_q, m);
-	mmd->set_statistic_type(S_INCOMPLETE_DEPRECATED);
 	mmd->set_null_var_est_method(NO_PERMUTATION_DEPRECATED);
 
 	/* start streaming features parser */
@@ -586,13 +778,13 @@ TEST(LinearTimeMMD, statistic_and_variance_multiple_kernels_fixed_DEPRECATED)
 	SGVector<float64_t> vars;
 	mmd->compute_statistic_and_variance(mmds, vars, true);
 
-	EXPECT_NEAR(mmds[0], 0.00025363731337291195, 1E-15);
-	EXPECT_NEAR(mmds[1], 0.00006341684175759088, 1E-15);
-	EXPECT_NEAR(mmds[2], 0.00001585468008052926, 1E-15);
+	EXPECT_NEAR(mmds[0], 0.000482892712133, 1E-15);
+	EXPECT_NEAR(mmds[1], 0.000120736411855, 1E-15);
+	EXPECT_NEAR(mmds[2], 0.000030184930162, 1E-15);
 
-	EXPECT_NEAR(vars[0], 1.7441397282197432e-08, 1E-14);
-	EXPECT_NEAR(vars[1], 1.090413580583456e-09, 1E-14);
-	EXPECT_NEAR(vars[2], 6.8155947599845925e-11, 1E-14);
+	EXPECT_NEAR(vars[0], 2.0930442445714591e-07, 1E-14);
+	EXPECT_NEAR(vars[1], 1.3085082650600098e-08, 1E-14);
+	EXPECT_NEAR(vars[2], 8.1787324141968052e-10, 1E-14);
 
 	/* start streaming features parser */
 	streaming_p->end_parser();
@@ -676,4 +868,290 @@ TEST(LinearTimeMMD, statistic_and_variance_fixed_multiple_kernels_different_num_
 	streaming_q->end_parser();
 
 	SG_UNREF(mmd);
+}
+
+TEST(LinearTimeMMD, DISABLED_p_value_WITHIN_BURST_PERMUTATION)
+{
+	/* note that the linear time statistic is designed for much larger datasets
+	 * so increase to get reasonable results */
+	index_t m=50000;
+	index_t dim=2;
+	float64_t difference=0.5;
+
+	/* use fixed seed for reproducibility */
+	CMath::init_random(100);
+
+	/* streaming data generator for mean shift distributions */
+	CMeanShiftDataGenerator* gen_p=new CMeanShiftDataGenerator(0, dim);
+	CMeanShiftDataGenerator* gen_q=new CMeanShiftDataGenerator(difference, dim);
+
+	/* set kernel a-priori. usually one would do some kernel selection. See
+	 * other examples for this. */
+	float64_t width=10;
+	CGaussianKernel* kernel=new CGaussianKernel(10, width);
+
+	/* create linear time mmd instance */
+	index_t blocksize=4;
+	CLinearTimeMMD* mmd=new CLinearTimeMMD(kernel, gen_p, gen_q, m, blocksize);
+	mmd->set_null_var_est_method(WITHIN_BURST_PERMUTATION);
+	mmd->set_null_approximation_method(MMD1_GAUSSIAN);
+
+	/* perform test: compute p-value and test if null-hypothesis is rejected for
+	 * a test level of 0.05 */
+	float64_t alpha=0.05;
+
+	/* assert local machine computed result */
+	float64_t p_value=mmd->perform_test();
+	EXPECT_LT(p_value, alpha);
+
+	SG_UNREF(mmd);
+}
+
+#ifdef HAVE_EIGEN3
+TEST(LinearTimeMMD, DISABLED_p_value_WITHIN_BLOCK_DIRECT)
+{
+	/* note that the linear time statistic is designed for much larger datasets
+	 * so increase to get reasonable results */
+	index_t m=1000;
+	index_t dim=2;
+	float64_t difference=0.5;
+
+	/* use fixed seed for reproducibility */
+	CMath::init_random(100);
+
+	/* streaming data generator for mean shift distributions */
+	CMeanShiftDataGenerator* gen_p=new CMeanShiftDataGenerator(0, dim);
+	CMeanShiftDataGenerator* gen_q=new CMeanShiftDataGenerator(difference, dim);
+
+	/* set kernel a-priori. usually one would do some kernel selection. See
+	 * other examples for this. */
+	float64_t width=10;
+	CGaussianKernel* kernel=new CGaussianKernel(10, width);
+
+	/* create linear time mmd instance */
+	index_t blocksize=4;
+	CLinearTimeMMD* mmd=new CLinearTimeMMD(kernel, gen_p, gen_q, m, blocksize);
+	mmd->set_null_var_est_method(WITHIN_BLOCK_DIRECT);
+	mmd->set_null_approximation_method(MMD1_GAUSSIAN);
+
+	/* perform test: compute p-value and test if null-hypothesis is rejected for
+	 * a test level of 0.05 */
+	float64_t alpha=0.05;
+
+	/* assert local machine computed result */
+	float64_t p_value=mmd->perform_test();
+	EXPECT_LT(p_value, alpha);
+
+	SG_UNREF(mmd);
+}
+#endif // HAVE_EIGEN3
+
+TEST(LinearTimeMMD, DISABLED_typeI_and_typeII_error)
+{
+	/* note that the linear time statistic is designed for much larger datasets
+	 * so increase to get reasonable results */
+	index_t m=1000;
+	index_t dim=2;
+	float64_t difference=0.5;
+
+	/* use fixed seed for reproducibility */
+	CMath::init_random(100);
+
+	/* streaming data generator for mean shift distributions */
+	CMeanShiftDataGenerator* gen_p=new CMeanShiftDataGenerator(0, dim);
+	CMeanShiftDataGenerator* gen_q=new CMeanShiftDataGenerator(difference, dim);
+
+	/* set kernel a-priori. usually one would do some kernel selection. See
+	 * other examples for this. */
+	float64_t width=10;
+	CGaussianKernel* kernel=new CGaussianKernel(10, width);
+
+	/* create linear time mmd instance */
+	index_t blocksize=4;
+	CLinearTimeMMD* mmd=new CLinearTimeMMD(kernel, gen_p, gen_q, m, blocksize);
+	mmd->set_null_approximation_method(MMD1_GAUSSIAN);
+
+	/* perform test: compute p-value and test if null-hypothesis is rejected for
+	 * a test level of 0.05 */
+	float64_t alpha=0.05;
+
+	/* compute tpye I and II error (use many more trials in practice).
+	 * Type I error is only estimated to check MMD1_GAUSSIAN method for
+	 * estimating the null distribution. Note that testing has to happen on
+	 * difference data than kernel selection, but the linear time mmd does this
+	 * implicitly and we used a fixed kernel here. */
+	index_t num_trials=5;
+	SGVector<float64_t> typeIerrors(num_trials);
+	SGVector<float64_t> typeIIerrors(num_trials);
+	for (index_t i=0; i<num_trials; ++i)
+	{
+		/* this effectively means that p=q - rejecting is type I error */
+		mmd->set_simulate_h0(true);
+		typeIerrors[i]=mmd->perform_test()>alpha;
+		mmd->set_simulate_h0(false);
+
+		typeIIerrors[i]=mmd->perform_test()>alpha;
+	}
+
+	EXPECT_NEAR(CStatistics::mean(typeIerrors), 0.8, 1E-15);
+	EXPECT_NEAR(CStatistics::mean(typeIIerrors), 0.4, 1E-15);
+
+	SG_UNREF(mmd);
+}
+
+TEST(LinearTimeMMD, DISABLED_typeI_and_typeII_error_with_opt_kernel_selection)
+{
+	/* Note that the linear time mmd is designed for large datasets. Results on
+	 * this small number will be bad (unstable, type I error wrong) */
+	index_t m=1000;
+	index_t num_blobs=3;
+	float64_t distance=3;
+	float64_t stretch=10;
+	float64_t angle=CMath::PI/4;
+
+	/* use fixed seed for reproducibility */
+	CMath::init_random(100);
+
+	CGaussianBlobsDataGenerator* gen_p=new CGaussianBlobsDataGenerator(
+				num_blobs, distance, stretch, angle);
+
+	CGaussianBlobsDataGenerator* gen_q=new CGaussianBlobsDataGenerator(
+				num_blobs, distance, 1, 1);
+
+	/* create kernels */
+	CCombinedKernel* combined=new CCombinedKernel();
+	float64_t sigma_from=-3;
+	float64_t sigma_to=10;
+	float64_t sigma_step=1;
+	float64_t sigma=sigma_from;
+	while (sigma<=sigma_to)
+	{
+		/* shoguns kernel width is different */
+		float64_t width=CMath::pow(2.0, sigma);
+		float64_t sq_width_twice=width*width*2;
+		combined->append_kernel(new CGaussianKernel(10, sq_width_twice));
+		sigma+=sigma_step;
+	}
+
+	/* create MMD instance */
+	index_t blocksize=4;
+	CLinearTimeMMD* mmd=new CLinearTimeMMD(combined, gen_p, gen_q, m, blocksize);
+
+	/* kernel selection instance with regularisation term. May be replaced by
+	 * other methods for selecting single kernels */
+	CMMDKernelSelectionOpt* selection=new CMMDKernelSelectionOpt(mmd, 10E-5);
+
+	/* compute measures.
+	 * For Opt: ratio of MMD and standard deviation
+	 * For Max: MMDs of single kernels
+	 * for Medigan: Does not work! */
+	SGVector<float64_t> ratios=selection->compute_measures();
+
+	/* select kernel using the maximum ratio (and cast) */
+	CKernel* selected=selection->select_kernel();
+	CGaussianKernel* casted=CGaussianKernel::obtain_from_generic(selected);
+	mmd->set_kernel(selected);
+	SG_UNREF(casted);
+	SG_UNREF(selected);
+
+	mmd->set_null_approximation_method(MMD1_GAUSSIAN);
+
+	/* compute tpye I and II error (use many more trials). Type I error is only
+	 * estimated to check MMD1_GAUSSIAN method for estimating the null
+	 * distribution. Note that testing has to happen on difference data than
+	 * kernel selecting, but the linear time mmd does this implicitly */
+	float64_t alpha=0.05;
+	index_t num_trials=5;
+	SGVector<float64_t> typeIerrors(num_trials);
+	SGVector<float64_t> typeIIerrors(num_trials);
+	for (index_t i=0; i<num_trials; ++i)
+	{
+		/* this effectively means that p=q - rejecting is tpye I error */
+		mmd->set_simulate_h0(true);
+		typeIerrors[i]=mmd->perform_test()>alpha;
+		mmd->set_simulate_h0(false);
+
+		typeIIerrors[i]=mmd->perform_test()>alpha;
+	}
+
+	EXPECT_NEAR(CStatistics::mean(typeIerrors), 0.8, 1E-15);
+	EXPECT_NEAR(CStatistics::mean(typeIIerrors), 1.0, 1E-15);
+
+	SG_UNREF(selection);
+}
+
+TEST(LinearTimeMMD, DISABLED_typeI_and_typeII_error_with_opt_comb_kernel_selection)
+{
+	/* Note that the linear time mmd is designed for large datasets. Results on
+	 * this small number will be bad (unstable, type I error wrong) */
+	index_t m=1000;
+	index_t num_blobs=3;
+	float64_t distance=3;
+	float64_t stretch=10;
+	float64_t angle=CMath::PI/4;
+
+	/* use fixed seed for reproducibility */
+	CMath::init_random(100);
+
+	CGaussianBlobsDataGenerator* gen_p=new CGaussianBlobsDataGenerator(
+				num_blobs, distance, stretch, angle);
+
+	CGaussianBlobsDataGenerator* gen_q=new CGaussianBlobsDataGenerator(
+				num_blobs, distance, 1, 1);
+
+	/* create kernels */
+	CCombinedKernel* combined=new CCombinedKernel();
+	float64_t sigma_from=-3;
+	float64_t sigma_to=10;
+	float64_t sigma_step=1;
+	float64_t sigma=sigma_from;
+	index_t num_kernels=0;
+	while (sigma<=sigma_to)
+	{
+		/* shoguns kernel width is different */
+		float64_t width=CMath::pow(2.0, sigma);
+		float64_t sq_width_twice=width*width*2;
+		combined->append_kernel(new CGaussianKernel(10, sq_width_twice));
+		sigma+=sigma_step;
+		num_kernels++;
+	}
+
+	/* create MMD instance */
+	index_t blocksize=4;
+	CLinearTimeMMD* mmd=new CLinearTimeMMD(combined, gen_p, gen_q, m, blocksize);
+
+	/* kernel selection instance with regularisation term. May be replaced by
+	 * other methods for selecting single kernels */
+	CMMDKernelSelectionCombOpt* selection=new CMMDKernelSelectionCombOpt(mmd, 10E-5);
+
+	/* select kernel (does the same as above, but sets weights to kernel) */
+	CKernel* selected=selection->select_kernel();
+	CCombinedKernel* casted=CCombinedKernel::obtain_from_generic(selected);
+	mmd->set_kernel(selected);
+	SG_UNREF(casted);
+	SG_UNREF(selected);
+
+	/* compute tpye I and II error (use many more trials). Type I error is only
+	 * estimated to check MMD1_GAUSSIAN method for estimating the null
+	 * distribution. Note that testing has to happen on difference data than
+	 * kernel selecting, but the linear time mmd does this implicitly */
+	mmd->set_null_approximation_method(MMD1_GAUSSIAN);
+	float64_t alpha=0.05;
+	index_t num_trials=5;
+	SGVector<float64_t> typeIerrors(num_trials);
+	SGVector<float64_t> typeIIerrors(num_trials);
+	for (index_t i=0; i<num_trials; ++i)
+	{
+		/* this effectively means that p=q - rejecting is tpye I error */
+		mmd->set_simulate_h0(true);
+		typeIerrors[i]=mmd->perform_test()>alpha;
+		mmd->set_simulate_h0(false);
+
+		typeIIerrors[i]=mmd->perform_test()>alpha;
+	}
+
+	EXPECT_NEAR(CStatistics::mean(typeIerrors), 1.0, 1E-15);
+	EXPECT_NEAR(CStatistics::mean(typeIIerrors), 0.6, 1E-15);
+
+	SG_UNREF(selection);
 }

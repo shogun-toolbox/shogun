@@ -59,9 +59,7 @@ CLinearTimeMMD::~CLinearTimeMMD()
 
 float64_t CLinearTimeMMD::compute_statistic_normalizing_constant()
 {
-	if (m_statistic_type!=S_INCOMPLETE_DEPRECATED)
-		return CMath::sqrt(1.0/(m_m+m_n)*m_m*m_n);
-	return 1;
+	return CMath::sqrt(1.0/(m_m+m_n)*m_m*m_n);
 }
 
 float64_t CLinearTimeMMD::compute_variance_normalizing_constant()
@@ -77,7 +75,8 @@ float64_t CLinearTimeMMD::compute_variance_normalizing_constant()
 		case S_INCOMPLETE:
 			return 1.0/16.0*B*(B-2);
 		default:
-			return 1;
+			SG_ERROR("Unknown statistic type (%d) is used!\n", m_statistic_type);
+			return 0;
 	}
 }
 
@@ -94,7 +93,8 @@ float64_t CLinearTimeMMD::compute_gaussian_variance(float64_t variance)
 		case S_INCOMPLETE:
 			return variance*4.0/(B-2);
 		default:
-			return variance;
+			SG_ERROR("Unknown statistic type (%d) is used!\n", m_statistic_type);
+			return 0;
 	}
 }
 
