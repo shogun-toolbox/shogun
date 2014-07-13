@@ -199,8 +199,7 @@ void CExactInferenceMethod::update_mean()
 	m_mu=SGVector<float64_t>(m.vlen);
 	Map<VectorXd> eigen_mu(m_mu.vector, m_mu.vlen);
 
-	// compute mean: mu=K'*alpha+m
-	eigen_mu=eigen_K*CMath::sq(m_scale)*eigen_alpha+eigen_m;
+	eigen_mu=eigen_K*CMath::sq(m_scale)*eigen_alpha;
 }
 
 void CExactInferenceMethod::update_cov()
@@ -217,6 +216,11 @@ void CExactInferenceMethod::update_cov()
 	// compute V = L^(-1) * K, using upper triangular factor L^T
 	MatrixXd eigen_V=eigen_L.triangularView<Upper>().adjoint().solve(
 			eigen_K*CMath::sq(m_scale));
+
+	CGaussianLikelihood* lik=CGaussianLikelihood::obtain_from_generic(m_model);
+	float64_t sigma=lik->get_sigma();
+	SG_UNREF(lik);
+	eigen_V = eigen_V/sigma;
 
 	// compute covariance matrix of the posterior: Sigma = K - V^T * V
 	eigen_Sigma=eigen_K*CMath::sq(m_scale)-eigen_V.adjoint()*eigen_V;
