@@ -43,7 +43,7 @@
 using namespace shogun;
 
 #ifdef HAVE_EIGEN3
-TEST(MatrixSquare, SGMatrix_eigen3_backend)
+TEST(MatrixElementwiseSquare, SGMatrix_eigen3_backend)
 {
 	const index_t m=2;
 	const index_t n=3;
@@ -55,7 +55,7 @@ TEST(MatrixSquare, SGMatrix_eigen3_backend)
 			mat(i, j)=i*10+j+1;
 	}
 
-	SGMatrix<float64_t> sq=linalg::square<linalg::Backend::EIGEN3>(mat);
+	SGMatrix<float64_t> sq=linalg::elementwise_square<linalg::Backend::EIGEN3>(mat);
 
 	for (index_t i=0; i<m; ++i)
 	{
@@ -64,7 +64,7 @@ TEST(MatrixSquare, SGMatrix_eigen3_backend)
 	}
 }
 
-TEST(MatrixSquare, Eigen3_Matrix_eigen3_backend)
+TEST(MatrixElementwiseSquare, Eigen3_Matrix_eigen3_backend)
 {
 	const index_t m=2;
 	const index_t n=3;
@@ -76,7 +76,7 @@ TEST(MatrixSquare, Eigen3_Matrix_eigen3_backend)
 			mat(i, j)=i*10+j+1;
 	}
 
-	Eigen::MatrixXd sq=linalg::square<linalg::Backend::EIGEN3>(mat);
+	SGMatrix<float64_t> sq=linalg::elementwise_square<linalg::Backend::EIGEN3>(mat);
 
 	for (index_t i=0; i<m; ++i)
 	{
@@ -85,7 +85,7 @@ TEST(MatrixSquare, Eigen3_Matrix_eigen3_backend)
 	}
 }
 
-TEST(MatrixSquare, SGMatrix_block_eigen3_backend)
+TEST(MatrixElementwiseSquare, SGMatrix_block_eigen3_backend)
 {
 	const index_t m=2;
 	const index_t n=3;
@@ -97,7 +97,8 @@ TEST(MatrixSquare, SGMatrix_block_eigen3_backend)
 			mat(i, j)=i*10+j+1;
 	}
 
-	SGMatrix<float64_t> sq=linalg::square<linalg::Backend::EIGEN3>(linalg::block(mat,0,0,2,2));
+	SGMatrix<float64_t> sq=linalg::elementwise_square<linalg::Backend::EIGEN3>(
+		linalg::block(mat,0,0,2,2));
 
 	for (index_t i=0; i<2; ++i)
 	{
@@ -106,7 +107,7 @@ TEST(MatrixSquare, SGMatrix_block_eigen3_backend)
 	}
 }
 
-TEST(MatrixSquare, Eigen3_block_eigen3_backend)
+TEST(MatrixElementwiseSquare, Eigen3_block_eigen3_backend)
 {
 	const index_t m=2;
 	const index_t n=3;
@@ -118,7 +119,8 @@ TEST(MatrixSquare, Eigen3_block_eigen3_backend)
 			mat(i, j)=i*10+j+1;
 	}
 
-	Eigen::MatrixXd sq=linalg::square<linalg::Backend::EIGEN3>(linalg::block(mat,0,0,2,2));
+	SGMatrix<float64_t> sq=linalg::elementwise_square<linalg::Backend::EIGEN3>(
+		linalg::block((SGMatrix<float64_t>)mat,0,0,2,2));
 
 	for (index_t i=0; i<2; ++i)
 	{

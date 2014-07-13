@@ -71,7 +71,7 @@ struct sum
 	 * @param no_diag if true, diagonal entries are excluded from the sum
 	 * @return the sum of co-efficients computed as \f$\sum_{i,j}m_{i,j}\f$
 	 */
-	static T compute(const Matrix& m, bool no_diag);
+	static T compute(Matrix m, bool no_diag);
 
 	/**
 	 * Method that computes the sum of co-efficients of dense matrix blocks
@@ -100,7 +100,7 @@ struct sum_symmetric
 	 * @param no_diag if true, diagonal entries are excluded from the sum
 	 * @return the sum of co-efficients computed as \f$\sum_{i,j}m_{i,j}\f$
 	 */
-	static T compute(const Matrix&, bool no_diag);
+	static T compute(Matrix, bool no_diag);
 
 	/**
 	 * Method that computes the sum of co-efficients of symmetric dense matrix blocks
@@ -129,7 +129,7 @@ struct colwise_sum
 	 * @param no_diag if true, diagonal entries are excluded from the sum
 	 * @return the colwise sum of co-efficients computed as \f$s_j=\sum_{i}m_{i,j}\f$
 	 */
-	static SGVector<T> compute(const Matrix&, bool no_diag);
+	static SGVector<T> compute(Matrix, bool no_diag);
 
 	/**
 	 * Method that computes column wise sum of co-efficients of dense matrix blocks
@@ -139,6 +139,25 @@ struct colwise_sum
 	 * @return the colwise sum of co-efficients computed as \f$s_j=\sum_{i}b_{i,j}\f$
 	 */
 	static SGVector<T> compute(Block<Matrix> b, bool no_diag);
+	
+	/**
+	 * Method that computes the column wise sum of co-efficients of SGMatrix using Eigen3
+	 *
+	 * @param m the matrix whose colwise sum of co-efficients has to be computed
+	 * @param no_diag if true, diagonal entries are excluded from the sum
+	 * @param result Pre-allocated vector for the result of the computation
+	 */
+	static void compute(SGMatrix<T> mat, SGVector<T> result, bool no_diag);
+	
+	/**
+	 * Method that computes the column wise sum of co-efficients of SGMatrix blocks
+	 * using Eigen3
+	 *
+	 * @param b the matrix-block whose colwise sum of co-efficients has to be computed
+	 * @param no_diag if true, diagonal entries are excluded from the sum
+	 * @param result Pre-allocated vector for the result of the computation
+	 */
+	static void compute(Block<SGMatrix<T> > b, SGVector<T> result, bool no_diag);
 };
 
 /**
@@ -158,7 +177,7 @@ struct rowwise_sum
 	 * @param no_diag if true, diagonal entries are excluded from the sum
 	 * @return the rowwise sum of co-efficients computed as \f$s_i=\sum_{j}m_{i,j}\f$
 	 */
-	static SGVector<T> compute(const Matrix& m, bool no_diag);
+	static SGVector<T> compute(Matrix m, bool no_diag);
 
 	/**
 	 * Method that computes row wise sum of co-efficients of a dense matrix blocks
@@ -168,6 +187,25 @@ struct rowwise_sum
 	 * @return the rowwise sum of co-efficients computed as \f$s_i=\sum_{j}b_{i,j}\f$
 	 */
 	static SGVector<T> compute(Block<Matrix> b, bool no_diag);
+	
+	/**
+	 * Method that computes the row wise sum of co-efficients of SGMatrix using Eigen3
+	 *
+	 * @param m the matrix whose rowwise sum of co-efficients has to be computed
+	 * @param no_diag if true, diagonal entries are excluded from the sum
+	 * @param result Pre-allocated vector for the result of the computation
+	 */
+	static void compute(SGMatrix<T> mat, SGVector<T> result, bool no_diag);
+	
+	/**
+	 * Method that computes the column wise sum of co-efficients of SGMatrix blocks
+	 * using Eigen3
+	 *
+	 * @param b the matrix-block whose rowwise sum of co-efficients has to be computed
+	 * @param no_diag if true, diagonal entries are excluded from the sum
+	 * @param result Pre-allocated vector for the result of the computation
+	 */
+	static void compute(Block<SGMatrix<T> > b, SGVector<T> result, bool no_diag);
 };
 
 #ifdef HAVE_EIGEN3
@@ -188,14 +226,10 @@ struct sum<Backend::EIGEN3,Matrix>
 	 * @param no_diag if true, diagonal entries are excluded from the sum
 	 * @return the sum of co-efficients computed as \f$\sum_{i,j}m_{i,j}\f$
 	 */
-	static T compute(SGMatrix<T> m, bool no_diag)
+	static T compute(SGMatrix<T> mat, bool no_diag)
 	{
-		return compute((Eigen::Map<MatrixXt>)m, no_diag);
-	}
-	
-	template <class Derived>
-	static T compute(const Eigen::MatrixBase<Derived>& m, bool no_diag)
-	{
+		Eigen::Map<MatrixXt> m = mat;
+		
 		T sum=m.sum();
 
 		// remove the main diagonal elements if required
@@ -220,17 +254,13 @@ struct sum<Backend::EIGEN3,Matrix>
 			b.m_row_begin, b.m_col_begin,
 			b.m_row_size, b.m_col_size);
 
-		return compute(b_eigen, no_diag);
-	}
-	
-	template <int... Info>
-	static T compute(Block<Eigen::Matrix<T,Info...> > b, bool no_diag)
-	{
-		Eigen::Block<Eigen::Matrix<T,Info...> > b_eigen = 
-			b.m_matrix.block(b.m_row_begin, b.m_col_begin,
-				b.m_row_size, b.m_col_size);
+		T sum=b_eigen.sum();
+
+		// remove the main diagonal elements if required
+		if (no_diag)
+			sum-=b_eigen.diagonal().sum();
 		
-		return compute(b_eigen, no_diag);
+		return sum;
 	}
 };
 
@@ -251,20 +281,15 @@ struct sum_symmetric<Backend::EIGEN3,Matrix>
 	 * @param no_diag if true, diagonal entries are excluded from the sum
 	 * @return the sum of co-efficients computed as \f$\sum_{i,j}m_{i,j}\f$
 	 */
-	static T compute(SGMatrix<T> m, bool no_diag)
+	static T compute(SGMatrix<T> mat, bool no_diag)
 	{
-		Eigen::Map<MatrixXt> map = m;
-		return compute((const MatrixXt&)map, no_diag);
-	}
-	
-	template <int... Info>
-	static T compute(const Eigen::Matrix<T,Info...>& m, bool no_diag)
-	{
+		Eigen::Map<MatrixXt> m = mat;
+		
 		REQUIRE(m.rows()==m.cols(), "Matrix is not square!\n");
 
 		// since the matrix is symmetric with main diagonal inside, we can save half
 		// the computation with using only the upper triangular part.
-		const Eigen::Matrix<T, Info...>& m_upper=m.template triangularView<Eigen::StrictlyUpper>();
+		const MatrixXt& m_upper=m.template triangularView<Eigen::StrictlyUpper>();
 		T sum=m_upper.sum();
 
 		// the actual sum would be twice of what we computed
@@ -288,20 +313,24 @@ struct sum_symmetric<Backend::EIGEN3,Matrix>
 	{
 		Eigen::Map<MatrixXt> map = b.m_matrix;
 		
-		const MatrixXt& block=map.template block(b.m_row_begin, b.m_col_begin,
+		const MatrixXt& m=map.template block(b.m_row_begin, b.m_col_begin,
 				b.m_row_size, b.m_col_size);
 		
-		return compute(block, no_diag);
-	}
-	
-	template <int... Info>
-	static T compute(Block<Eigen::Matrix<T,Info...> > b, bool no_diag)
-	{
-		const Eigen::Matrix<T,Info...>& block=b.m_matrix.template block(
-			b.m_row_begin, b.m_col_begin,
-				b.m_row_size, b.m_col_size);
-		
-		return compute(block, no_diag);
+		REQUIRE(m.rows()==m.cols(), "Matrix is not square!\n");
+
+		// since the matrix is symmetric with main diagonal inside, we can save half
+		// the computation with using only the upper triangular part.
+		const MatrixXt& m_upper=m.template triangularView<Eigen::StrictlyUpper>();
+		T sum=m_upper.sum();
+
+		// the actual sum would be twice of what we computed
+		sum*=2;
+
+		// add the diagonal elements if required
+		if (!no_diag)
+			sum+=m.diagonal().sum();
+
+		return sum;
 	}
 };
 
@@ -313,7 +342,10 @@ template <> template <class Matrix>
 struct colwise_sum<Backend::EIGEN3,Matrix>
 {
 	typedef typename Matrix::Scalar T;
+	typedef SGVector<T> ReturnType;
+	
 	typedef Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> MatrixXt;
+	typedef Eigen::Matrix<T,Eigen::Dynamic,1> VectorXt;
 
 	/**
 	 * Method that computes the column wise sum of co-efficients of SGMatrix using Eigen3
@@ -324,26 +356,9 @@ struct colwise_sum<Backend::EIGEN3,Matrix>
 	 */
 	static SGVector<T> compute(SGMatrix<T> m, bool no_diag)
 	{
-		return compute((Eigen::Map<MatrixXt>)m, no_diag);
-	}
-	
-	template <class Derived>
-	static SGVector<T> compute(const Eigen::MatrixBase<Derived>& m, bool no_diag)
-	{
-		Eigen::Matrix<T,Eigen::Dynamic,1> sum = m.colwise().sum();
-		
-		// remove the main diagonal elements if required
-		if (no_diag)
-		{
-			index_t len_major_diag=m.rows() < m.cols() ? m.rows() : m.cols();
-			for (index_t i=0; i<len_major_diag; ++i)
-				sum[i]-=m(i,i);
-		}
-		
-		SGVector<T> s(sum.rows());
-		std::template copy(sum.data(), sum.data()+sum.size(), s.vector);
-
-		return s;
+		SGVector<T> result(m.num_cols);
+		compute(m, result, no_diag);
+		return result;
 	}
 	
 	/**
@@ -356,23 +371,60 @@ struct colwise_sum<Backend::EIGEN3,Matrix>
 	 */
 	static SGVector<T> compute(Block<SGMatrix<T> > b, bool no_diag)
 	{
-		Eigen::Map<MatrixXt> map = b.m_matrix;
+		SGVector<T> result(b.m_col_size);
+		compute(b, result, no_diag);
+		return result;
+	}
+	
+	/**
+	 * Method that computes the column wise sum of co-efficients of SGMatrix using Eigen3
+	 *
+	 * @param m the matrix whose colwise sum of co-efficients has to be computed
+	 * @param no_diag if true, diagonal entries are excluded from the sum
+	 * @param result Pre-allocated vector for the result of the computation
+	 */
+	static void compute(SGMatrix<T> mat, SGVector<T> result, bool no_diag)
+	{
+		Eigen::Map<MatrixXt> m = mat;
+		Eigen::Map<VectorXt> r = result;
 		
-		Eigen::Block< Eigen::Map<MatrixXt> > b_eigen = map.block(
+		r = m.colwise().sum();
+		
+		// remove the main diagonal elements if required
+		if (no_diag)
+		{
+			index_t len_major_diag=m.rows() < m.cols() ? m.rows() : m.cols();
+			for (index_t i=0; i<len_major_diag; ++i)
+				r[i]-=m(i,i);
+		}
+	}
+	
+	/**
+	 * Method that computes the column wise sum of co-efficients of SGMatrix blocks
+	 * using Eigen3
+	 *
+	 * @param b the matrix-block whose colwise sum of co-efficients has to be computed
+	 * @param no_diag if true, diagonal entries are excluded from the sum
+	 * @param result Pre-allocated vector for the result of the computation
+	 */
+	static void compute(Block<SGMatrix<T> > b, SGVector<T> result, bool no_diag)
+	{
+		Eigen::Map<MatrixXt> map = b.m_matrix;
+		Eigen::Map<VectorXt> r = result;
+		
+		Eigen::Block< Eigen::Map<MatrixXt> > m = map.block(
 			b.m_row_begin, b.m_col_begin,
 			b.m_row_size, b.m_col_size);
 
-		return compute(b_eigen, no_diag);
-	}
-	
-	template <int... Info>
-	static SGVector<T> compute(Block<Eigen::Matrix<T,Info...> > b, bool no_diag)
-	{
-		Eigen::Block<Eigen::Matrix<T,Info...> > b_eigen = 
-			b.m_matrix.block(b.m_row_begin, b.m_col_begin,
-				b.m_row_size, b.m_col_size);
+		r = m.colwise().sum();
 		
-		return compute(b_eigen, no_diag);
+		// remove the main diagonal elements if required
+		if (no_diag)
+		{
+			index_t len_major_diag=m.rows() < m.cols() ? m.rows() : m.cols();
+			for (index_t i=0; i<len_major_diag; ++i)
+				r[i]-=m(i,i);
+		}
 	}
 };
 
@@ -384,8 +436,11 @@ template <> template <class Matrix>
 struct rowwise_sum<Backend::EIGEN3,Matrix>
 {
 	typedef typename Matrix::Scalar T;
-	typedef Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> MatrixXt;
+	typedef SGVector<T> ReturnType;
 	
+	typedef Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> MatrixXt;
+	typedef Eigen::Matrix<T,Eigen::Dynamic,1> VectorXt;
+
 	/**
 	 * Method that computes the row wise sum of co-efficients of SGMatrix using Eigen3
 	 *
@@ -395,26 +450,9 @@ struct rowwise_sum<Backend::EIGEN3,Matrix>
 	 */
 	static SGVector<T> compute(SGMatrix<T> m, bool no_diag)
 	{
-		return compute((Eigen::Map<MatrixXt>)m, no_diag);
-	}
-	
-	template <class Derived>
-	static SGVector<T> compute(const Eigen::MatrixBase<Derived>& m, bool no_diag)
-	{
-		Eigen::Matrix<T,Eigen::Dynamic,1> sum = m.rowwise().sum();
-		
-		// remove the main diagonal elements if required
-		if (no_diag)
-		{
-			index_t len_major_diag=m.rows() < m.cols() ? m.rows() : m.cols();
-			for (index_t i=0; i<len_major_diag; ++i)
-				sum[i]-=m(i,i);
-		}
-		
-		SGVector<T> s(sum.rows());
-		std::template copy(sum.data(), sum.data()+sum.size(), s.vector);
-
-		return s;
+		SGVector<T> result(m.num_rows);
+		compute(m, result, no_diag);
+		return result;
 	}
 	
 	/**
@@ -423,27 +461,64 @@ struct rowwise_sum<Backend::EIGEN3,Matrix>
 	 *
 	 * @param b the matrix-block whose rowwise sum of co-efficients has to be computed
 	 * @param no_diag if true, diagonal entries are excluded from the sum
-	 * @return the rowwise sum of co-efficients computed as \f$s_i=\sum_{j}b_{i,j}\f$
+	 * @return the rowwise sum of co-efficients computed as \f$s_i=\sum_{j}m_{i,j}\f$
 	 */
 	static SGVector<T> compute(Block<SGMatrix<T> > b, bool no_diag)
 	{
-		Eigen::Map<MatrixXt> map = b.m_matrix;
+		SGVector<T> result(b.m_row_size);
+		compute(b, result, no_diag);
+		return result;
+	}
+	
+	/**
+	 * Method that computes the row wise sum of co-efficients of SGMatrix using Eigen3
+	 *
+	 * @param m the matrix whose rowwise sum of co-efficients has to be computed
+	 * @param no_diag if true, diagonal entries are excluded from the sum
+	 * @param result Pre-allocated vector for the result of the computation
+	 */
+	static void compute(SGMatrix<T> mat, SGVector<T> result, bool no_diag)
+	{
+		Eigen::Map<MatrixXt> m = mat;
+		Eigen::Map<VectorXt> r = result;
 		
-		Eigen::Block< Eigen::Map<MatrixXt> > b_eigen = map.block(
+		r = m.rowwise().sum();
+		
+		// remove the main diagonal elements if required
+		if (no_diag)
+		{
+			index_t len_major_diag=m.rows() < m.cols() ? m.rows() : m.cols();
+			for (index_t i=0; i<len_major_diag; ++i)
+				r[i]-=m(i,i);
+		}
+	}
+	
+	/**
+	 * Method that computes the column wise sum of co-efficients of SGMatrix blocks
+	 * using Eigen3
+	 *
+	 * @param b the matrix-block whose rowwise sum of co-efficients has to be computed
+	 * @param no_diag if true, diagonal entries are excluded from the sum
+	 * @param result Pre-allocated vector for the result of the computation
+	 */
+	static void compute(Block<SGMatrix<T> > b, SGVector<T> result, bool no_diag)
+	{
+		Eigen::Map<MatrixXt> map = b.m_matrix;
+		Eigen::Map<VectorXt> r = result;
+		
+		Eigen::Block< Eigen::Map<MatrixXt> > m = map.block(
 			b.m_row_begin, b.m_col_begin,
 			b.m_row_size, b.m_col_size);
 
-		return compute(b_eigen, no_diag);
-	}
-	
-	template <int... Info>
-	static SGVector<T> compute(Block<Eigen::Matrix<T,Info...> > b, bool no_diag)
-	{
-		Eigen::Block<Eigen::Matrix<T,Info...> > b_eigen = 
-			b.m_matrix.block(b.m_row_begin, b.m_col_begin,
-				b.m_row_size, b.m_col_size);
+		r = m.rowwise().sum();
 		
-		return compute(b_eigen, no_diag);
+		// remove the main diagonal elements if required
+		if (no_diag)
+		{
+			index_t len_major_diag=m.rows() < m.cols() ? m.rows() : m.cols();
+			for (index_t i=0; i<len_major_diag; ++i)
+				r[i]-=m(i,i);
+		}
 	}
 };
 

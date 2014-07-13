@@ -99,21 +99,7 @@ struct dot<Backend::EIGEN3, Vector>
 		typedef Eigen::Matrix<T, Eigen::Dynamic, 1> VectorXt;
 		Eigen::Map<VectorXt> vec_a = a;
 		Eigen::Map<VectorXt> vec_b = b;
-		return compute(vec_a, vec_b);
-	}
-	
-	/**
-	 * Method that computes the dot product of Eigen3 vectors using Eigen3
-	 *
-	 * @param a first vector
-	 * @param b second vector
-	 * @return the dot product of \f$\mathbf{a}\f$ and \f$\mathbf{b}\f$, computed
-	 * as \f$\sum_i a_i b_i\f$
-	 */
-	template <class Derived1, class Derived2>
-	static T compute(const Eigen::MatrixBase<Derived1>& a, const Eigen::MatrixBase<Derived2>& b)
-	{
-		return a.dot(b);
+		return vec_a.dot(vec_b);
 	}
 };
 #endif // HAVE_EIGEN3

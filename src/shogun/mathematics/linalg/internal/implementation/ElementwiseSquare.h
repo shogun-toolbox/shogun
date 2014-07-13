@@ -28,14 +28,12 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
-#ifndef SQUARE_IMPL_H_
-#define SQUARE_IMPL_H_
+#ifndef ELEMENTWISESQUARE_IMPL_H_
+#define ELEMENTWISESQUARE_IMPL_H_
 
 #include <shogun/lib/config.h>
 #include <shogun/lib/SGMatrix.h>
-#include <shogun/io/SGIO.h>
 #include <shogun/mathematics/linalg/internal/Block.h>
-#include <algorithm>
 
 #ifdef HAVE_EIGEN3
 #include <shogun/mathematics/eigen3.h>
@@ -58,11 +56,9 @@ namespace implementation
  * is specialized for different types of matrices and backend, providing a mean
  * to deal with various matrices directly without having to convert
  */
-template <class Info,enum Backend,template<class,Info...>class Matrix,class T,Info... I>
-struct square
+template <enum Backend,class Matrix>
+struct elementwise_square
 {
-	typedef Matrix<T,I...> matrix_type;
-
 	/**
 	 * Method that computes the square of co-efficients of a dense matrix
 	 *
@@ -70,7 +66,7 @@ struct square
 	 * @return another matrix whose co-efficients are \f$m'_{i,j}=m_(i,j}^2\f$
 	 * for all \f$i,j\f$
 	 */
-	static matrix_type compute(matrix_type m);
+	static Matrix compute(Matrix m);
 
 	/**
 	 * Method that computes the square of co-efficients of a dense matrix-block
@@ -79,98 +75,79 @@ struct square
 	 * @return another matrix whose co-efficients are \f$m'_{i,j}=b_(i,j}^2\f$
 	 * for all \f$i,j\f$
 	 */
-	static matrix_type compute(Block<Matrix<T,I...> > b);
+	static Matrix compute(Block<Matrix> b);
 };
 
 #ifdef HAVE_EIGEN3
 /**
- * @brief Specialization of generic square which works with SGMatrix and uses Eigen3
- * as backend for computing square.
+ * @brief Specialization of generic elementwise_square for the Eigen3 backend
  */
-template <> template <class T>
-struct square<int,Backend::EIGEN3,shogun::SGMatrix,T>
+template <> template <class Matrix>
+struct elementwise_square<Backend::EIGEN3,Matrix>
 {
-	typedef shogun::SGMatrix<T> matrix_type;
+	typedef typename Matrix::Scalar T;
+	typedef SGMatrix<T> ReturnType;
+	
+	typedef Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> MatrixXt;
 
 	/**
-	 * Method that computes the square of co-efficients of SGMatrix using Eigen3
+	 * Method that computes the square of co-efficients of a dense matrix
 	 *
 	 * @param m the matrix whose squared co-efficients matrix has to be computed
 	 * @return another matrix whose co-efficients are \f$m'_{i,j}=m_(i,j}^2\f$
 	 * for all \f$i,j\f$
 	 */
-	static matrix_type compute(matrix_type m)
+	static SGMatrix<T> compute(SGMatrix<T> m)
 	{
-		typedef Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> MatrixXt;
-		Eigen::Map<MatrixXt> eig_m(m.matrix, m.num_rows, m.num_cols);
-
-		MatrixXt sq=square<int,Backend::EIGEN3,Eigen::Matrix,T,Eigen::Dynamic,Eigen::Dynamic>
-			::compute(eig_m);
-
-		matrix_type square(m.num_rows, m.num_cols);
-		std::template copy(sq.data(), sq.data()+sq.size(), square.matrix);
-		return square;
+		SGMatrix<T> result(m.num_rows, m.num_cols);
+		compute(m, result);
+		return result;
 	}
-
+	
 	/**
-	 * Method that computes the square of co-efficients of SGMatrix blocks using Eigen3
+	 * Method that computes the square of co-efficients of a dense matrix-block
 	 *
 	 * @param b the matrix-block whose squared co-efficients matrix has to be computed
 	 * @return another matrix whose co-efficients are \f$m'_{i,j}=b_(i,j}^2\f$
 	 * for all \f$i,j\f$
 	 */
-	static matrix_type compute(Block<shogun::SGMatrix<T> > b)
+	static SGMatrix<T> compute(Block<SGMatrix<T> > b)
 	{
-		typedef Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> MatrixXt;
-		Eigen::Map<MatrixXt> eig_m(b.m_matrix.matrix, b.m_matrix.num_rows,
-				b.m_matrix.num_cols);
-
-		const MatrixXt& block=eig_m.template block(b.m_row_begin, b.m_col_begin,
-				b.m_row_size, b.m_col_size);
-
-		MatrixXt sq=square<int,Backend::EIGEN3,Eigen::Matrix,T,Eigen::Dynamic,Eigen::Dynamic>
-			::compute(block);
-
-		matrix_type square(block.rows(), block.cols());
-		std::template copy(sq.data(), sq.data()+sq.size(), square.matrix);
-		return square;
+		SGMatrix<T> result(b.m_row_size, b.m_col_size);
+		compute(b, result);
+		return result;
 	}
-};
-
-/**
- * @brief Specialization of generic square which works with Eigen3 Matrix and uses Eigen3
- * as backend for computing square.
- */
-template <> template <class T,int...Info>
-struct square<int,Backend::EIGEN3,Eigen::Matrix,T,Info...>
-{
-	typedef Eigen::Matrix<T,Info...> matrix_type;
-
+	
 	/**
-	 * Method that computes the square of co-efficients of SGMatrix using Eigen3
+	 * Method that computes the square of co-efficients of a dense matrix
 	 *
 	 * @param m the matrix whose squared co-efficients matrix has to be computed
-	 * @return another matrix whose co-efficients are \f$m'_{i,j}=m_(i,j}^2\f$
-	 * for all \f$i,j\f$
+	 * @param result Pre-allocated matrix for the result of the computation
 	 */
-	static matrix_type compute(matrix_type m)
+	static void compute(SGMatrix<T> mat, SGMatrix<T> result)
 	{
-		return m.array().template square();
+		Eigen::Map<MatrixXt> m = mat;
+		Eigen::Map<MatrixXt> r = result;
+		
+		r = m.array().template square();
 	}
-
+	
 	/**
-	 * Method that computes the square of co-efficients of SGMatrix using Eigen3
+	 * Method that computes the square of co-efficients of a dense matrix-block
 	 *
-	 * @param m the matrix whose squared co-efficients matrix has to be computed
-	 * @return another matrix whose co-efficients are \f$m'_{i,j}=m_(i,j}^2\f$
-	 * for all \f$i,j\f$
+	 * @param b the matrix-block whose squared co-efficients matrix has to be computed
+	 * @param result Pre-allocated matrix for the result of the computation
 	 */
-	static matrix_type compute(Block<Eigen::Matrix<T,Info...> > b)
+	static void compute(Block<SGMatrix<T> > b, SGMatrix<T> result)
 	{
-		const matrix_type& block=b.m_matrix.template block(b.m_row_begin, b.m_col_begin,
-				b.m_row_size, b.m_col_size);
-
-		return compute(block);
+		Eigen::Map<MatrixXt> map = b.m_matrix;
+		Eigen::Map<MatrixXt> r = result;
+		
+		Eigen::Block< Eigen::Map<MatrixXt> > m = map.block(
+			b.m_row_begin, b.m_col_begin,
+			b.m_row_size, b.m_col_size);
+		
+		r = m.array().template square();
 	}
 };
 
@@ -181,4 +158,4 @@ struct square<int,Backend::EIGEN3,Eigen::Matrix,T,Info...>
 }
 
 }
-#endif // SQUARE_IMPL_H_
+#endif // ELEMENTWISESQUARE_IMPL_H_

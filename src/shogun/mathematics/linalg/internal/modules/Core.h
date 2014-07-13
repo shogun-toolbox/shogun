@@ -1,6 +1,7 @@
 /*
  * Copyright (c) The Shogun Machine Learning Toolbox
  * Written (w) 2014 Soumyajit De
+ * Written (w) 2014 Khaled Nasr
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,15 +29,10 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
-#ifndef VECTOR_SUM_IMPL_H_
-#define VECTOR_SUM_IMPL_H_
+#ifndef CORE_H_
+#define CORE_H_
 
-#include <shogun/lib/config.h>
-#include <shogun/lib/SGVector.h>
-
-#ifdef HAVE_EIGEN3
-#include <shogun/mathematics/eigen3.h>
-#endif // HAVE_EIGEN3
+#include <shogun/mathematics/linalg/internal/implementation/ElementwiseSquare.h>
 
 namespace shogun
 {
@@ -45,58 +41,33 @@ namespace linalg
 {
 
 /**
- * All backend specific implementations are defined within this namespace
+ * Wrapper method for internal implementation of square of co-efficients that works
+ * with generic dense matrices.
+ * 
+ * @param m the matrix whose squared co-efficients matrix has to be computed
+ * @return another matrix whose co-efficients are \f$m'_{i,j}=m_(i,j}^2\f$
+ * for all \f$i,j\f$
  */
-namespace implementation
+template <Backend backend=linalg_traits<Core>::backend,class Matrix>
+typename implementation::elementwise_square<backend,Matrix>::ReturnType elementwise_square(Matrix m)
 {
+	return implementation::elementwise_square<backend,Matrix>::compute(m);
+}
 
 /**
- * @brief Generic class vector_sum which provides a static compute method. This class
- * is specialized for different types of vectors and backend, providing a mean
- * to deal with various vectors directly without having to convert
+ * Wrapper method for internal implementation of square of co-efficients that works
+ * with generic dense matrices.
+ * 
+ * @param m the matrix whose squared co-efficients matrix has to be computed
+ * @param result Pre-allocated matrix for the result of the computation
  */
-template <enum Backend, class Vector>
-struct vector_sum
+template <Backend backend=linalg_traits<Core>::backend,class Matrix, class ResultMatrix>
+void elementwise_square(Matrix m, ResultMatrix result)
 {
-	typedef typename Vector::Scalar T;
-	
-	/**
-	 * Method that computes the vector sum
-	 *
-	 * @param a vector whose sum has to be computed
-	 * @return the vector sum \f$\sum_i a_i\f$
-	 */
-	static T compute(Vector a);
-};
-
-#ifdef HAVE_EIGEN3
-/**
- * @brief Specialization of generic vector_sum for the Eigen3 backend
- */
-template <> template <class Vector>
-struct vector_sum<Backend::EIGEN3, Vector>
-{
-	typedef typename Vector::Scalar T;
-
-	/**
-	 * Method that computes the sum of SGVectors using Eigen3
-	 *
-	 * @param a vector whose sum has to be computed
-	 * @return the vector sum \f$\sum_i a_i\f$
-	 */
-	static T compute(SGVector<T> vec)
-	{
-		typedef Eigen::Matrix<T, Eigen::Dynamic, 1> VectorXt;
-		Eigen::Map<VectorXt> v = vec;
-		return v.sum();
-	}
-};
-
-#endif // HAVE_EIGEN3
-
+	implementation::elementwise_square<backend,Matrix>::compute(m,result);
 }
 
 }
 
 }
-#endif // VECTOR_SUM_IMPL_H_
+#endif // CORE_H_

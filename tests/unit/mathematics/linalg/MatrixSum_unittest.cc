@@ -152,7 +152,7 @@ TEST(MatrixSum, Eigen3_Matrix_asymmetric_block_eigen3_backend_with_diag)
 			mat(i, j)=i*10+j+1;
 	}
 
-	float64_t sum=linalg::sum<linalg::Backend::EIGEN3>(linalg::block(mat,0,0,2,3));
+	float64_t sum=linalg::sum<linalg::Backend::EIGEN3>(linalg::block((SGMatrix<float64_t>)mat,0,0,2,3));
 	EXPECT_NEAR(sum, 42.0, 1E-15);
 }
 
@@ -170,7 +170,7 @@ TEST(MatrixSum, Eigen3_Matrix_symmetric_block_eigen3_backend_with_diag)
 		}
 	}
 
-	float64_t sum=linalg::sum<linalg::Backend::EIGEN3>(linalg::block(mat,1,1,2,2));
+	float64_t sum=linalg::sum<linalg::Backend::EIGEN3>(linalg::block((SGMatrix<float64_t>)mat,1,1,2,2));
 	EXPECT_NEAR(sum, 28.0, 1E-15);
 }
 
@@ -284,7 +284,7 @@ TEST(MatrixSum, Eigen3_Matrix_asymmetric_block_eigen3_backend_no_diag)
 			mat(i, j)=i*10+j+1;
 	}
 
-	float64_t sum=linalg::sum<linalg::Backend::EIGEN3>(linalg::block(mat,0,0,2,3),true);
+	float64_t sum=linalg::sum<linalg::Backend::EIGEN3>(linalg::block((SGMatrix<float64_t>)mat,0,0,2,3),true);
 	EXPECT_NEAR(sum, 29.0, 1E-15);
 }
 
@@ -302,7 +302,7 @@ TEST(MatrixSum, Eigen3_Matrix_symmetric_block_eigen3_backend_no_diag)
 		}
 	}
 
-	float64_t sum=linalg::sum<linalg::Backend::EIGEN3>(linalg::block(mat,1,1,2,2),true);
+	float64_t sum=linalg::sum<linalg::Backend::EIGEN3>(linalg::block((SGMatrix<float64_t>)mat,1,1,2,2),true);
 	EXPECT_NEAR(sum, 26.0, 1E-15);
 }
 
@@ -523,7 +523,7 @@ TEST(MatrixSum, Eigen3_Matrix_block_colwise_eigen3_backend_with_diag)
 	}
 
 	SGVector<float64_t> s=linalg::colwise_sum<linalg::Backend::EIGEN3>(
-			linalg::block(mat, 0, 0, 2, 2));
+			linalg::block((SGMatrix<float64_t>)mat, 0, 0, 2, 2));
 
 	for (index_t j=0; j<2; ++j)
 	{
@@ -751,7 +751,7 @@ TEST(MatrixSum, Eigen3_Matrix_block_rowwise_eigen3_backend_with_diag)
 	}
 
 	SGVector<float64_t> s=linalg::rowwise_sum<linalg::Backend::EIGEN3>(
-			linalg::block(mat, 0, 0, 2, 2));
+			linalg::block((SGMatrix<float64_t>)mat, 0, 0, 2, 2));
 
 	for (index_t i=0; i<2; ++i)
 	{
