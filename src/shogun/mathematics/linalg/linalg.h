@@ -1,6 +1,7 @@
 /*
  * Copyright (c) The Shogun Machine Learning Toolbox
  * Written (w) 2014 Soumyajit De
+ * Written (w) 2014 Khaled Nasr
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -107,12 +108,14 @@ struct MODULE \
 /**
  * Set global backend should define all the module types with same backend.
  * Currently supported modules are
+ * Core         - For basic linear algebra operations (e.g. matrix multiplication, addition)
  * Redux        - For reduction to a scalar from vector or matrix (e.g. norm, sum, dot)
  * Linsolver    - Solvers for linear systems (SVD, Cholesky, QR etc)
  * Eigsolver    - Different eigensolvers
  */
 #ifndef SET_GLOBAL_BACKEND
 #define SET_GLOBAL_BACKEND(BACKEND) \
+	SET_MODULE_BACKEND(Core, BACKEND) \
 	SET_MODULE_BACKEND(Redux, BACKEND) \
 	SET_MODULE_BACKEND(Linsolver, BACKEND) \
 	SET_MODULE_BACKEND(Eigsolver, BACKEND)
@@ -126,6 +129,15 @@ struct MODULE \
 #else
 
 /** set module specific backends */
+
+/** Core module */
+#ifdef USE_EIGEN3_CORE
+	SET_MODULE_BACKEND(Core, EIGEN3)
+#elif USE_VIENNACL_REDUX
+	SET_MODULE_BACKEND(Core, VIENNACL)
+#else // the default case
+	SET_MODULE_BACKEND(Core, DEFAULT)
+#endif
 
 /** Reduction module */
 #ifdef USE_EIGEN3_REDUX
@@ -166,6 +178,7 @@ struct MODULE \
 
 /** include all the modules here */
 
+#include <shogun/mathematics/linalg/internal/modules/Core.h>
 #include <shogun/mathematics/linalg/internal/modules/Redux.h>
 
 #endif // HAVE_LINALG_LIB

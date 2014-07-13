@@ -1,6 +1,7 @@
 /*
  * Copyright (c) The Shogun Machine Learning Toolbox
  * Written (w) 2014 Soumyajit De
+ * Written (w) 2014 Khaled Nasr
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,7 +35,6 @@
 #include <shogun/mathematics/linalg/internal/implementation/Dot.h>
 #include <shogun/mathematics/linalg/internal/implementation/Sum.h>
 #include <shogun/mathematics/linalg/internal/implementation/VectorSum.h>
-#include <shogun/mathematics/linalg/internal/implementation/Square.h>
 
 namespace shogun
 {
@@ -46,461 +46,129 @@ namespace linalg
  * Wrapper method for internal implementation of vector dot-product that works
  * with generic vectors.
  *
- * Uses globally set backend
- *
  * @param a first vector
  * @param b second vector
  * @return the dot product of \f$\mathbf{a}\f$ and \f$\mathbf{b}\f$, represented
  * as \f$\sum_i a_i b_i\f$
  */
-template <class Vector>
-typename Vector::Scalar dot(const Vector& a, const Vector& b)
-{
-	return implementation::dot<linalg_traits<Redux>::backend,Vector>::compute(a, b);
-}
-
-/**
- * Wrapper method for internal implementation of vector dot-product that works
- * with generic vectors.
- *
- * Uses templated specified backend
- *
- * @param a first vector
- * @param b second vector
- * @return the dot product of \f$\mathbf{a}\f$ and \f$\mathbf{b}\f$, represented
- * as \f$\sum_i a_i b_i\f$
- */
-template <Backend backend, class Vector>
-typename Vector::Scalar dot(const Vector& a, const Vector& b)
+template <Backend backend=linalg_traits<Redux>::backend, class Vector>
+typename Vector::Scalar dot(Vector a, Vector b)
 {
 	return implementation::dot<backend,Vector>::compute(a, b);
 }
 
 /**
  * Wrapper method for internal implementation of matrix sum of values that works
- * with generic dense matrices with first templated-argument as its value-type and
- * other (optional) templated-arguments of int type for compile time information
- *
- * Uses globally set backend
- *
- * Suited for Shogun's SGMatrix, Eigen3's Matrix etc
- *
+ * with generic dense matrices
+ * 
  * @param m the matrix whose sum of co-efficients has to be computed
  * @param no_diag if true, diagonal entries are excluded from the sum (default - false)
  * @return the sum of co-efficients computed as \f$\sum_{i,j}m_{i,j}\f$
  */
-template <template <class,int...> class Matrix, class T, int... Info>
-T sum(Matrix<T,Info...> m, bool no_diag=false)
+template <Backend backend=linalg_traits<Redux>::backend, class Matrix>
+typename Matrix::Scalar sum(Matrix m, bool no_diag=false)
 {
-	return implementation::sum<int,linalg_traits<Redux>::backend,Matrix,T,Info...>
-		::compute(m, no_diag);
-}
-
-/**
- * Wrapper method for internal implementation of matrix-block sum of values that works
- * with generic dense matrix blocks with first templated-argument as its value-type and
- * other (optional) templated-arguments of int type for compile time information
- *
- * Uses globally set backend
- *
- * Suited for Shogun's SGMatrix, Eigen3's Matrix blocks etc
- *
- * @param b the matrix-block whose sum of co-efficients has to be computed
- * @param no_diag if true, diagonal entries are excluded from the sum (default - false)
- * @return the sum of co-efficients computed as \f$\sum_{i,j}b_{i,j}\f$
- */
-template <template <class,int...> class Matrix, class T, int... Info>
-T sum(Block<int,Matrix,T,Info...> b, bool no_diag=false)
-{
-	return implementation::sum<int,linalg_traits<Redux>::backend,Matrix,T,Info...>
-		::compute(b, no_diag);
+	return implementation::sum<backend,Matrix>::compute(m, no_diag);
 }
 
 /**
  * Wrapper method for internal implementation of symmetric matrix sum of values that works
- * with generic dense matrices with first templated-argument as its value-type and
- * other (optional) templated-arguments of int type for compile time information
- *
- * Uses globally set backend
- *
- * Suited for Shogun's SGMatrix, Eigen3's Matrix etc
- *
+ * with generic dense matrices 
+ * 
  * @param m the matrix whose sum of co-efficients has to be computed
  * @param no_diag if true, diagonal entries are excluded from the sum (default - false)
  * @return the sum of co-efficients computed as \f$\sum_{i,j}m_{i,j}\f$
  */
-template <template <class,int...> class Matrix, class T, int... Info>
-T sum_symmetric(Matrix<T,Info...> m, bool no_diag=false)
+template <Backend backend=linalg_traits<Redux>::backend,class Matrix>
+typename Matrix::Scalar sum_symmetric(Matrix m, bool no_diag=false)
 {
-	return implementation::sum_symmetric<int,linalg_traits<Redux>::backend,Matrix,T,Info...>
-		::compute(m, no_diag);
+	return implementation::sum_symmetric<backend,Matrix>::compute(m, no_diag);
 }
 
 /**
  * Wrapper method for internal implementation of symmetric matrix-block sum of values that works
- * with generic dense matrix blocks with first templated-argument as its value-type and
- * other (optional) templated-arguments of int type for compile time information
- *
- * Uses globally set backend
- *
- * Suited for Shogun's SGMatrix, Eigen3's Matrix blocks etc
+ * with generic dense matrix blocks 
  *
  * @param b the matrix-block whose sum of co-efficients has to be computed
  * @param no_diag if true, diagonal entries are excluded from the sum (default - false)
  * @return the sum of co-efficients computed as \f$\sum_{i,j}b_{i,j}\f$
  */
-template <template <class,int...> class Matrix, class T, int... Info>
-T sum_symmetric(Block<int,Matrix,T,Info...> b, bool no_diag=false)
+template <Backend backend=linalg_traits<Redux>::backend,class Matrix>
+typename Matrix::Scalar sum_symmetric(Block<Matrix> b, bool no_diag=false)
 {
-	return implementation::sum_symmetric<int,linalg_traits<Redux>::backend,Matrix,T,Info...>
+	return implementation::sum_symmetric<backend,Matrix>
 		::compute(b, no_diag);
 }
 
 /**
  * Wrapper method for internal implementation of matrix colwise sum of values that works
- * with generic dense matrices with first templated-argument as its value-type and
- * other (optional) templated-arguments of int type for compile time information
- *
- * Uses globally set backend
- *
- * Suited for Shogun's SGMatrix, Eigen3's Matrix etc
+ * with generic dense matrices
  *
  * @param m the matrix whose colwise sum of co-efficients has to be computed
  * @param no_diag if true, diagonal entries are excluded from the sum (default - false)
  * @return the colwise sum of co-efficients computed as \f$s_j=\sum_{i}m_{i,j}\f$
  */
-template <template <class,int...> class Matrix, class T, int... Info>
-SGVector<T> colwise_sum(Matrix<T,Info...> m, bool no_diag=false)
+template <Backend backend=linalg_traits<Redux>::backend,class Matrix>
+typename implementation::colwise_sum<backend,Matrix>::ReturnType colwise_sum(
+	Matrix m, bool no_diag=false)
 {
-	return implementation::colwise_sum<int,linalg_traits<Redux>::backend,Matrix,T,Info...>
-		::compute(m, no_diag);
-}
-
-/**
- * Wrapper method for internal implementation of block colwise sum of values that works
- * with generic dense matrices with first templated-argument as its value-type and
- * other (optional) templated-arguments of int type for compile time information
- *
- * Uses globally set backend
- *
- * Suited for Shogun's SGMatrix, Eigen3's Matrix etc
- *
- * @param b the matrix-block whose colwise sum of co-efficients has to be computed
- * @param no_diag if true, diagonal entries are excluded from the sum (default - false)
- * @return the colwise sum of co-efficients computed as \f$s_j=\sum_{i}b_{i,j}\f$
- */
-template <template <class,int...> class Matrix, class T, int... Info>
-SGVector<T> colwise_sum(Block<int,Matrix,T,Info...> b, bool no_diag=false)
-{
-	return implementation::colwise_sum<int,linalg_traits<Redux>::backend,Matrix,T,Info...>
-		::compute(b, no_diag);
-}
-
-/**
- * Wrapper method for internal implementation of matrix rowwise sum of values that works
- * with generic dense matrices with first templated-argument as its value-type and
- * other (optional) templated-arguments of int type for compile time information
- *
- * Uses globally set backend
- *
- * Suited for Shogun's SGMatrix, Eigen3's Matrix etc
- *
- * @param m the matrix whose rowwise sum of co-efficients has to be computed
- * @param no_diag if true, diagonal entries are excluded from the sum (default - false)
- * @return the rowwise sum of co-efficients computed as \f$s_i=\sum_{j}m_{i,j}\f$
- */
-template <template <class,int...> class Matrix, class T, int... Info>
-SGVector<T> rowwise_sum(Matrix<T,Info...> m, bool no_diag=false)
-{
-	return implementation::rowwise_sum<int,linalg_traits<Redux>::backend,Matrix,T,Info...>
-		::compute(m, no_diag);
-}
-
-/**
- * Wrapper method for internal implementation of block rowwise sum of values that works
- * with generic dense matrices with first templated-argument as its value-type and
- * other (optional) templated-arguments of int type for compile time information
- *
- * Uses globally set backend
- *
- * Suited for Shogun's SGMatrix, Eigen3's Matrix etc
- *
- * @param b the matrix-block whose rowwise sum of co-efficients has to be computed
- * @param no_diag if true, diagonal entries are excluded from the sum (default - false)
- * @return the rowwise sum of co-efficients computed as \f$s_i=\sum_{j}b_{i,j}\f$
- */
-template <template <class,int...> class Matrix, class T, int... Info>
-SGVector<T> rowwise_sum(Block<int,Matrix,T,Info...> b, bool no_diag=false)
-{
-	return implementation::rowwise_sum<int,linalg_traits<Redux>::backend,Matrix,T,Info...>
-		::compute(b, no_diag);
-}
-
-/**
- * Wrapper method for internal implementation of matrix sum of values that works
- * with generic dense matrices with first templated-argument as its value-type and
- * other (optional) templated-arguments of int type for compile time information
- *
- * Uses templated specified backend
- *
- * Suited for Shogun's SGMatrix, Eigen3's Matrix etc
- *
- * @param m the matrix whose sum of co-efficients has to be computed
- * @param no_diag if true, diagonal entries are excluded from the sum (default - false)
- * @return the sum of co-efficients computed as \f$\sum_{i,j}m_{i,j}\f$
- */
-template <Backend backend, template <class,int...> class Matrix, class T, int... Info>
-T sum(Matrix<T,Info...> m, bool no_diag=false)
-{
-	return implementation::sum<int,backend,Matrix,T,Info...>::compute(m, no_diag);
-}
-
-/**
- * Wrapper method for internal implementation of symmetric matrix sum of values that works
- * with generic dense matrices with first templated-argument as its value-type and
- * other (optional) templated-arguments of int type for compile time information
- *
- * Uses templated specified backend
- *
- * Suited for Shogun's SGMatrix, Eigen3's Matrix etc
- *
- * @param m the matrix whose sum of co-efficients has to be computed
- * @param no_diag if true, diagonal entries are excluded from the sum (default - false)
- * @return the sum of co-efficients computed as \f$\sum_{i,j}m_{i,j}\f$
- */
-template <Backend backend,template <class,int...> class Matrix, class T, int... Info>
-T sum_symmetric(Matrix<T,Info...> m, bool no_diag=false)
-{
-	return implementation::sum_symmetric<int,backend,Matrix,T,Info...>::compute(m, no_diag);
-}
-
-/**
- * Wrapper method for internal implementation of matrix-block sum of values that works
- * with generic dense matrix blocks with first templated-argument as its value-type and
- * other (optional) templated-arguments of int type for compile time information
- *
- * Uses templated specified backend
- *
- * Suited for Shogun's SGMatrix, Eigen3's Matrix blocks etc
- *
- * @param b the matrix-block whose sum of co-efficients has to be computed
- * @param no_diag if true, diagonal entries are excluded from the sum (default - false)
- * @return the sum of co-efficients computed as \f$\sum_{i,j}b_{i,j}\f$
- */
-template <Backend backend,template <class,int...> class Matrix, class T, int... Info>
-T sum(Block<int,Matrix,T,Info...> b, bool no_diag=false)
-{
-	return implementation::sum<int,backend,Matrix,T,Info...>::compute(b, no_diag);
-}
-
-/**
- * Wrapper method for internal implementation of symmetric matrix-block sum of values that works
- * with generic dense matrix blocks with first templated-argument as its value-type and
- * other (optional) templated-arguments of int type for compile time information
- *
- * Uses templated specified backend
- *
- * Suited for Shogun's SGMatrix, Eigen3's Matrix blocks etc
- *
- * @param b the matrix-block whose sum of co-efficients has to be computed
- * @param no_diag if true, diagonal entries are excluded from the sum (default - false)
- * @return the sum of co-efficients computed as \f$\sum_{i,j}b_{i,j}\f$
- */
-template <Backend backend,template <class,int...> class Matrix, class T, int... Info>
-T sum_symmetric(Block<int,Matrix,T,Info...> b, bool no_diag=false)
-{
-	return implementation::sum_symmetric<int,backend,Matrix,T,Info...>
-		::compute(b, no_diag);
+	return implementation::colwise_sum<backend,Matrix>::compute(m, no_diag);
 }
 
 /**
  * Wrapper method for internal implementation of matrix colwise sum of values that works
- * with generic dense matrices with first templated-argument as its value-type and
- * other (optional) templated-arguments of int type for compile time information
- *
- * Uses templated specified backend
- *
- * Suited for Shogun's SGMatrix, Eigen3's Matrix etc
+ * with generic dense matrices
  *
  * @param m the matrix whose colwise sum of co-efficients has to be computed
  * @param no_diag if true, diagonal entries are excluded from the sum (default - false)
- * @return the colwise sum of co-efficients computed as \f$s_j=\sum_{i}m_{i,j}\f$
+ * @param result Pre-allocated vector for the result of the computation
  */
-template <Backend backend,template <class,int...> class Matrix, class T, int... Info>
-SGVector<T> colwise_sum(Matrix<T,Info...> m, bool no_diag=false)
+template <Backend backend=linalg_traits<Redux>::backend,class Matrix, class Vector>
+void colwise_sum(Matrix m, Vector result, bool no_diag=false)
 {
-	return implementation::colwise_sum<int,backend,Matrix,T,Info...>::compute(m, no_diag);
-}
-
-/**
- * Wrapper method for internal implementation of block colwise sum of values that works
- * with generic dense matrices with first templated-argument as its value-type and
- * other (optional) templated-arguments of int type for compile time information
- *
- * Uses templated specified backend
- *
- * Suited for Shogun's SGMatrix, Eigen3's Matrix etc
- *
- * @param b the matrix-block whose colwise sum of co-efficients has to be computed
- * @param no_diag if true, diagonal entries are excluded from the sum (default - false)
- * @return the colwise sum of co-efficients computed as \f$s_j=\sum_{i}b_{i,j}\f$
- */
-template <Backend backend,template <class,int...> class Matrix, class T, int... Info>
-SGVector<T> colwise_sum(Block<int,Matrix,T,Info...> b, bool no_diag=false)
-{
-	return implementation::colwise_sum<int,backend,Matrix,T,Info...>::compute(b, no_diag);
+	implementation::colwise_sum<backend,Matrix>::compute(m, result, no_diag);
 }
 
 /**
  * Wrapper method for internal implementation of matrix rowwise sum of values that works
- * with generic dense matrices with first templated-argument as its value-type and
- * other (optional) templated-arguments of int type for compile time information
- *
- * Uses templated specified backend
- *
- * Suited for Shogun's SGMatrix, Eigen3's Matrix etc
+ * with generic dense matrices
  *
  * @param m the matrix whose rowwise sum of co-efficients has to be computed
  * @param no_diag if true, diagonal entries are excluded from the sum (default - false)
  * @return the rowwise sum of co-efficients computed as \f$s_i=\sum_{j}m_{i,j}\f$
  */
-template <Backend backend,template <class,int...> class Matrix, class T, int... Info>
-SGVector<T> rowwise_sum(Matrix<T,Info...> m, bool no_diag=false)
+template <Backend backend=linalg_traits<Redux>::backend,class Matrix>
+typename implementation::rowwise_sum<backend,Matrix>::ReturnType rowwise_sum(
+	Matrix m, bool no_diag=false)
 {
-	return implementation::rowwise_sum<int,backend,Matrix,T,Info...>::compute(m, no_diag);
+	return implementation::rowwise_sum<backend,Matrix>::compute(m, no_diag);
 }
 
 /**
- * Wrapper method for internal implementation of block rowwise sum of values that works
- * with generic dense matrices with first templated-argument as its value-type and
- * other (optional) templated-arguments of int type for compile time information
+ * Wrapper method for internal implementation of matrix rowwise sum of values that works
+ * with generic dense matrices
  *
- * Uses templated specified backend
- *
- * Suited for Shogun's SGMatrix, Eigen3's Matrix etc
- *
- * @param b the matrix-block whose rowwise sum of co-efficients has to be computed
+ * @param m the matrix whose rowwise sum of co-efficients has to be computed
  * @param no_diag if true, diagonal entries are excluded from the sum (default - false)
- * @return the rowwise sum of co-efficients computed as \f$s_i=\sum_{j}b_{i,j}\f$
+ * @param result Pre-allocated vector for the result of the computation
  */
-template <Backend backend,template <class,int...> class Matrix, class T, int... Info>
-SGVector<T> rowwise_sum(Block<int,Matrix,T,Info...> b, bool no_diag=false)
+template <Backend backend=linalg_traits<Redux>::backend,class Matrix, class Vector>
+void rowwise_sum(Matrix m, Vector result, bool no_diag=false)
 {
-	return implementation::rowwise_sum<int,backend,Matrix,T,Info...>::compute(b, no_diag);
-}
-
-/**
- * Wrapper method for internal implementation of square of co-efficients that works
- * with generic dense matrices with first templated-argument as its value-type and
- * other (optional) templated-arguments of int type for compile time information
- *
- * Uses globally set backend
- *
- * Suited for Shogun's SGMatrix, Eigen3's Matrix blocks etc
- *
- * @param m the matrix whose squared co-efficients matrix has to be computed
- * @return another matrix whose co-efficients are \f$m'_{i,j}=m_(i,j}^2\f$
- * for all \f$i,j\f$
- */
-template <template <class,int...> class Matrix, class T, int... Info>
-Matrix<T,Info...> square(Matrix<T,Info...> m)
-{
-	return implementation::square<int,linalg_traits<Redux>::backend,Matrix,T,Info...>::compute(m);
-}
-
-/**
- * Wrapper method for internal implementation of square of co-efficients that works
- * with generic dense matrix blocks with first templated-argument as its value-type and
- * other (optional) templated-arguments of int type for compile time information
- *
- * Uses globally set backend
- *
- * Suited for Shogun's SGMatrix, Eigen3's Matrix blocks etc
- *
- * @param b the matrix-block whose squared co-efficients matrix has to be computed
- * @return another matrix whose co-efficients are \f$m'_{i,j}=b_(i,j}^2\f$
- * for all \f$i,j\f$
- */
-template <template <class,int...> class Matrix, class T, int... Info>
-Matrix<T,Info...> square(Block<int,Matrix,T,Info...> b)
-{
-	return implementation::square<int,linalg_traits<Redux>::backend,Matrix,T,Info...>::compute(b);
-}
-
-/**
- * Wrapper method for internal implementation of square of co-efficients that works
- * with generic dense matrices with first templated-argument as its value-type and
- * other (optional) templated-arguments of int type for compile time information
- *
- * Uses templated specified backend
- *
- * Suited for Shogun's SGMatrix, Eigen3's Matrix blocks etc
- *
- * @param m the matrix whose squared co-efficients matrix has to be computed
- * @return another matrix whose co-efficients are \f$m'_{i,j}=m_(i,j}^2\f$
- * for all \f$i,j\f$
- */
-template <Backend backend,template <class,int...> class Matrix, class T, int... Info>
-Matrix<T,Info...> square(Matrix<T,Info...> m)
-{
-	return implementation::square<int,backend,Matrix,T,Info...>::compute(m);
-}
-
-/**
- * Wrapper method for internal implementation of square of co-efficients that works
- * with generic dense matrix blocks with first templated-argument as its value-type and
- * other (optional) templated-arguments of int type for compile time information
- *
- * Uses templated specified backend
- *
- * Suited for Shogun's SGMatrix, Eigen3's Matrix blocks etc
- *
- * @param b the matrix-block whose squared co-efficients matrix has to be computed
- * @return another matrix whose co-efficients are \f$m'_{i,j}=b_(i,j}^2\f$
- * for all \f$i,j\f$
- */
-template <Backend backend,template <class,int...> class Matrix, class T, int... Info>
-Matrix<T,Info...> square(Block<int,Matrix,T,Info...> b)
-{
-	return implementation::square<int,backend,Matrix,T,Info...>::compute(b);
-}
-
-
-/**
- * Wrapper method for internal implementation of vector sum of values that works
- * with generic dense vectors with first templated-argument as its value-type and
- * other (optional) templated-arguments of int type for compile time information
- *
- * Uses globally set backend
- *
- * Suited for Shogun's SGVector, Eigen3's Vector etc
- *
- * @param a vector whose sum has to be computed
- * @return the vector sum \f$\sum_i a_i\f$
- */
-template <template <class,int...> class Vector, class T, int... Info>
-T vector_sum(Vector<T,Info...> a)
-{
-	return implementation::vector_sum<int,linalg_traits<Redux>::backend,Vector,T,Info...>
-		::compute(a);
+	implementation::rowwise_sum<backend,Matrix>::compute(m, result, no_diag);
 }
 
 /**
  * Wrapper method for internal implementation of vector sum of values that works
- * with generic dense vectors with first templated-argument as its value-type and
- * other (optional) templated-arguments of int type for compile time information
- *
- * Uses templated specified backend
- *
- * Suited for Shogun's SGVector, Eigen3's Vector etc
- *
+ * with generic dense vectors
+
  * @param a vector whose sum has to be computed
  * @return the vector sum \f$\sum_i a_i\f$
  */
-template <Backend backend,template <class,int...> class Vector, class T, int... Info>
-T vector_sum(Vector<T,Info...> a)
+template <Backend backend=linalg_traits<Redux>::backend, class Vector>
+typename Vector::Scalar vector_sum(Vector a)
 {
-	return implementation::vector_sum<int,backend,Vector,T,Info...>::compute(a);
+	return implementation::vector_sum<backend,Vector>::compute(a);
 }
 
 }

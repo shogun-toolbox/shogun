@@ -855,6 +855,28 @@ ENDIF ()
 
 # Linear algebra default module specific backend setup
 
+# Core module
+OPTION (SetCoreLib "Set linear algebra backend library for core module")
+IF (SetCoreLib STREQUAL "EIGEN3")
+	FIND_PACKAGE(Eigen3 3.1.2 REQUIRED)
+	IF (EIGEN3_FOUND)
+		SET(USE_EIGEN3_CORE 1)
+		LIST(APPEND DEFINES USE_EIGEN3_CORE)
+		MESSAGE("-- Eigen3 set as default core module (linalg) backend library")
+	ELSE ()
+		MESSAGE("-- Could NOT set Eigen3 as default core module (linalg) backend")
+	ENDIF ()
+ELSEIF (SetCoreLib STREQUAL "VIENNACL")
+	FIND_PACKAGE(ViennaCL REQUIRED)
+	IF (VIENNACL_FOUND)
+		SET(USE_VIENNACL_CORE 1)
+		LIST(APPEND DEFINES USE_VIENNACL_CORE)
+		MESSAGE("-- ViennaCL set as default core module (linalg) backend library")
+	ELSE ()
+		MESSAGE("-- Could NOT set ViennaCL as default core module (linalg) backend")
+	ENDIF ()
+ENDIF ()
+
 # Reduction module
 OPTION (SetReduxLib "Set linear algebra backend library for reduction module")
 IF (SetReduxLib STREQUAL "EIGEN3")
