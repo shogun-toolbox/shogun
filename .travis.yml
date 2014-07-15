@@ -63,7 +63,7 @@ matrix:
       - EXTRA_PACKAGES="lua5.1 liblua5.1-0-dev swig2.0"
       - CC=clang
       - CXX=clang++
-    - compiler: gcc
+      - compiler: gcc
       env:
       - CMAKE_OPTIONS="-DOctaveModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON"
       - EXTRA_PACKAGES="octave liboctave-dev swig2.0"
@@ -101,7 +101,7 @@ before_install:
     fi
 install:
   - if [ -z $OSX ] ; then
-      sudo apt-get install -qq libbz2-dev cdbs libarpack2-dev libatlas-base-dev libblas-dev libglpk-dev libhdf5-serial-dev zlib1g-dev libxml2-dev libreadline6-dev libreadline-dev libsnappy-dev liblzo2-dev liblzma-dev liblapack-dev gdb cmake python-jinja2 ccache $EXTRA_PACKAGES ;
+      sudo apt-get install -qq libopencv-dev libbz2-dev cdbs libarpack2-dev libatlas-base-dev libblas-dev libglpk-dev libhdf5-serial-dev zlib1g-dev libxml2-dev libreadline6-dev libreadline-dev libsnappy-dev liblzo2-dev liblzma-dev liblapack-dev gdb cmake python-jinja2 ccache $EXTRA_PACKAGES ;
     else
       brew install cmake ccache;
     fi
@@ -110,7 +110,7 @@ install:
 before_script:
   - mkdir build
   - cd build
-  - cmake -DENABLE_TESTING=ON -DBUNDLE_EIGEN=ON -DBUNDLE_JSON=ON -DBUNDLE_NLOPT=ON $CMAKE_OPTIONS ..
+  - cmake -DOpenCV=ON -DENABLE_TESTING=ON -DBUNDLE_EIGEN=ON -DBUNDLE_JSON=ON -DBUNDLE_NLOPT=ON CMAKE_OPTIONS ..
 script:
   - if [ -z "$CMAKE_OPTIONS" -o -n "$COVERALLS" ] ; then
       make -j 2 ;
