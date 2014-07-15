@@ -40,6 +40,7 @@ namespace shogun
 {
 
 /** @brief This class implements KD-Tree.
+ * cf. http://www.autonlab.org/autonweb/14665/version/2/part/5/data/moore-tutorial.pdf
  */
 class CKDTree : public CNbodyTree
 {
@@ -49,10 +50,10 @@ public:
 	 * @param data data points using which KD-Tree will be made	 
 	 * @param leaf_size min number of samples in any node
 	 */
-	CKDTree(int32_t leaf_size=1, EDistanceMetric d=DM_EUCLID);
+	CKDTree(int32_t leaf_size=1, EDistanceType d=D_EUCLIDEAN);
 	
 	/** Destructor */
-	~CKDTree();
+	virtual ~CKDTree();
 
 	/** get name
 	 * @return class of the tree 
@@ -60,14 +61,24 @@ public:
 	virtual const char* get_name() const { return "KDTree"; }
 
 private:
-	/** find squared minimum distance between node and a query vector
+	/** find minimum distance between node and a query vector
 	 * 
 	 * @param node present node
 	 * @param feat query vector
 	 * @param dim dimensions of query vector
-	 * @return squared min distance
+	 * @return min distance
 	 */
-	float64_t min_distsq(bnode_t* node,float64_t* feat, int32_t dim);
+	float64_t min_dist(bnode_t* node,float64_t* feat, int32_t dim);
+
+	/** get min as well as max distance of a node from a point
+	 *
+	 * @param pt point whose distance is to be calculated
+	 * @param node node from which distances are to be calculated
+	 * @param lower lower bound of distance
+	 * @param upper upper bound of distance
+	 * @param dim dimension of point vector
+	 */
+	void min_max_dist(float64_t* pt, bnode_t* node, float64_t &lower,float64_t &upper, int32_t dim);
 
 	/** initialize node
 	 *

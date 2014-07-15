@@ -67,13 +67,13 @@ public:
 	 *
 	 * @return max distance value stored in the heap
 	 */
-	float64_t get_max_dist() { return dists[0]; }
+	float64_t get_max_dist() { return m_dists[0]; }
 
 	/** max index
 	 *
 	 * @return vector id of the max distance stored
 	 */
-	index_t get_max_index() { return inds[0]; }
+	index_t get_max_index() { return m_inds[0]; }
 
 	/** get distances
 	 *
@@ -89,16 +89,16 @@ public:
 
 private:
 	/** distance heap */
-	SGVector<float64_t> dists;
+	SGVector<float64_t> m_dists;
 
 	/** vector indices corresponding to distances */
-	SGVector<index_t> inds;
+	SGVector<index_t> m_inds;
 
 	/** heap capacity */
-	int32_t capacity;
+	int32_t m_capacity;
 
 	/** whether distances are already sorted for output */
-	bool sorted;
+	bool m_sorted;
 };
 }
 #endif /* KNNHEAP */

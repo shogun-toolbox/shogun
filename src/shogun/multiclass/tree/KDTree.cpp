@@ -32,7 +32,7 @@
 
 using namespace shogun;
 
-CKDTree::CKDTree(int32_t leaf_size, EDistanceMetric d)
+CKDTree::CKDTree(int32_t leaf_size, EDistanceType d)
 : CNbodyTree(leaf_size,d)
 {
 }
@@ -41,7 +41,7 @@ CKDTree::~CKDTree()
 {
 }
 
-float64_t CKDTree::min_distsq(bnode_t* node,float64_t* feat, int32_t dim)
+float64_t CKDTree::min_dist(bnode_t* node,float64_t* feat, int32_t dim)
 {
 	float64_t dist=0;
 	for (int32_t i=0;i<dim;i++)
@@ -51,7 +51,23 @@ float64_t CKDTree::min_distsq(bnode_t* node,float64_t* feat, int32_t dim)
 		dist+=add_dim_dist(0.5*dim_dist);
 	}
 
-	return dist;
+	return actual_dists(dist);
+}
+
+void CKDTree::min_max_dist(float64_t* pt, bnode_t* node, float64_t &lower,float64_t &upper, int32_t dim)
+{
+	lower=0;
+	upper=0;
+	for(int32_t i=0;i<dim;i++)
+	{
+		float64_t low_dist=node->data.bbox_lower[i]-pt[i];
+		float64_t high_dist=pt[i]-node->data.bbox_upper[i];
+		lower+=add_dim_dist(0.5*(low_dist+CMath::abs(low_dist)+high_dist+CMath::abs(high_dist)));
+		upper+=add_dim_dist(CMath::max(CMath::abs(low_dist),CMath::abs(high_dist)));
+	}
+
+	lower=actual_dists(lower);
+	upper=actual_dists(upper);	
 }
 
 void CKDTree::init_node(bnode_t* node, index_t start, index_t end)
