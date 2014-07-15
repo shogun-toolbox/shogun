@@ -42,6 +42,14 @@
 #include <shogun/mathematics/eigen3.h>
 #endif // HAVE_EIGEN3
 
+#ifdef HAVE_VIENNACL
+#include <shogun/mathematics/linalg/opencl_config.h>
+#include <shogun/lib/GPUMatrix.h>
+#include <shogun/lib/GPUVector.h>
+#endif
+
+#include <string>
+
 namespace shogun
 {
 
@@ -523,6 +531,121 @@ struct rowwise_sum<Backend::EIGEN3,Matrix>
 };
 
 #endif // HAVE_EIGEN3
+
+#ifdef HAVE_VIENNACL
+/**
+ * @brief Specialization of generic sum which works with CGPUMatrix and uses ViennaCL
+ * as backend for computing sum.
+ */
+template <> template <class Matrix>
+struct sum<Backend::VIENNACL,Matrix>
+{
+	typedef typename Matrix::Scalar T;
+	
+	/** Generates the computation kernel */
+	template <class T>
+	static viennacl::ocl::kernel& generate_kernel(bool no_diag)
+	{
+		std::string type_string = viennacl::ocl::type_to_string<T>::apply();
+		std::string prog_name = "sum_prog_" + type_string;
+		if (no_diag)
+			prog_name.append("_no_diag");
+		
+		const std::string kernel_name = "sum_kernel";
+		
+		if (viennacl::ocl::current_context().has_program(prog_name))
+			return viennacl::ocl::current_context().get_program(prog_name).get_kernel(kernel_name);
+		
+		std::string source = "";
+		viennacl::ocl::append_double_precision_pragma<T>(viennacl::ocl::current_context(), source);
+		source.append("#define DATATYPE " + type_string + "\n");
+		source.append("#define KERNEL_NAME " + kernel_name + "\n");
+		source.append("#define WORK_GROUP_SIZE " + std::to_string(OCL_WORK_GROUP_SIZE_1D) + "\n");
+		if (no_diag)
+			source.append("#define NO_DIAG\n");
+		
+		source.append(
+			R"(
+				__kernel void KERNEL_NAME(
+					__global DATATYPE* mat, int nrows, int ncols, int offset, 
+					__global DATATYPE* result)
+				{
+					__local DATATYPE buffer[WORK_GROUP_SIZE];
+					int size = nrows*ncols;
+					
+					int local_id = get_local_id(0);
+					
+					DATATYPE thread_sum = 0;
+					for (int i=local_id; i<size; i+=WORK_GROUP_SIZE)
+					{
+					#ifdef NO_DIAG
+						if (!(i/nrows == i%nrows))
+					#endif
+						thread_sum += mat[i+offset];
+					}
+					
+					buffer[local_id] = thread_sum;
+					
+					for (int j = WORK_GROUP_SIZE/2; j > 0; j = j>>1) 
+					{ 
+						barrier(CLK_LOCAL_MEM_FENCE); 
+						if (local_id < j) 
+							buffer[local_id] += buffer[local_id + j]; 
+					} 
+					
+					barrier(CLK_LOCAL_MEM_FENCE);
+					
+					if (get_global_id(0)==0)
+						*result = buffer[0];
+				}
+			)"
+		);
+		
+		viennacl::ocl::program & prog =
+			viennacl::ocl::current_context().add_program(source, prog_name);
+		
+		viennacl::ocl::kernel& kernel = prog.get_kernel(kernel_name);
+		kernel.local_work_size(0, OCL_WORK_GROUP_SIZE_1D);
+		kernel.global_work_size(0, OCL_WORK_GROUP_SIZE_1D);
+		
+		return kernel;
+	}
+	
+	/**
+	 * Method that computes the sum of co-efficients of CGPUMatrix using ViennaCL
+	 *
+	 * @param m the matrix whose sum of co-efficients has to be computed
+	 * @param no_diag if true, diagonal entries are excluded from the sum
+	 * @return the sum of co-efficients computed as \f$\sum_{i,j}m_{i,j}\f$
+	 */
+	static T compute(CGPUMatrix<T> mat, bool no_diag)
+	{
+		viennacl::ocl::kernel& kernel = generate_kernel<T>(no_diag);
+		
+		CGPUVector<T> result(1);
+		
+		viennacl::ocl::enqueue(kernel(mat.vcl_matrix(), 
+			cl_int(mat.num_rows), cl_int(mat.num_cols), cl_int(mat.offset), 
+			result.vcl_vector()));
+		
+		return result[0];
+	}
+	
+	/**
+	 * Method that computes the sum of co-efficients of CGPUMatrix blocks using ViennaCL
+	 *
+	 * @param b the matrix-block whose sum of co-efficients has to be computed
+	 * @param no_diag if true, diagonal entries are excluded from the sum
+	 * @return the sum of co-efficients computed as \f$\sum_{i,j}b_{i,j}\f$
+	 */
+	static T compute(Block<CGPUMatrix<T> > b, bool no_diag)
+	{
+		SG_SERROR("The operation sum() on a matrix block is currently not supported\n");
+		return 0;
+	}
+};
+
+#endif // HAVE_VIENNACL
 
 }
 
