@@ -40,9 +40,9 @@ def variational_classifier_modular(kl_inference,train_fname=traindat,test_fname=
 	gp.train()
 	pred_labels_train=gp.apply_binary(features_train)
 	error_train=error_eval.evaluate(pred_labels_train, labels_train)
-	print "\nInference name:%s"%inf.get_name(),
-	print "marginal likelihood:%.10f"%inf.get_negative_log_marginal_likelihood(),
-	print "Training error %.4f"%error_train
+	#print "\nInference name:%s"%inf.get_name(),
+	#print "marginal likelihood:%.10f"%inf.get_negative_log_marginal_likelihood(),
+	#print "Training error %.4f"%error_train
 	return pred_labels_train, gp, pred_labels_train.get_labels()
 
 
