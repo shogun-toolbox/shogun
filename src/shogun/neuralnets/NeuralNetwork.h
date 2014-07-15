@@ -106,6 +106,8 @@ enum ENNOptimizationMethod
  */
 class CNeuralNetwork : public CMachine
 {
+friend class CDeepBeliefNetwork;
+
 public:
 	/** default constuctor */
 	CNeuralNetwork();
