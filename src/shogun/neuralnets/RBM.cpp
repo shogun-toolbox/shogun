@@ -165,8 +165,8 @@ void CRBM::train(CDenseFeatures<float64_t>* features)
 			if (counter%monitoring_interval == 0)
 			{
 				if (monitoring_method==RBMMM_RECONSTRUCTION_ERROR)
-					SG_INFO("Epoch %i: Recontruction Error = %f\n",i, 
-						recontruction_error(inputs_batch, buffer));
+					SG_INFO("Epoch %i: reconstruction Error = %f\n",i, 
+						reconstruction_error(inputs_batch, buffer));
 				if (monitoring_method==RBMMM_PSEUDO_LIKELIHOOD)
 					SG_INFO("Epoch %i: Pseudo-log-likelihood = %f\n",i, 
 						pseudo_likelihood(inputs_batch,buffer));
@@ -396,7 +396,7 @@ void CRBM::contrastive_divergence(SGMatrix< float64_t > visible_batch,
 	
 }
 
-float64_t CRBM::recontruction_error(SGMatrix< float64_t > visible,
+float64_t CRBM::reconstruction_error(SGMatrix< float64_t > visible,
 	SGMatrix< float64_t > buffer)
 {
 	set_batch_size(visible.num_cols);
@@ -571,20 +571,20 @@ void CRBM::sample_visible(int32_t index,
 SGMatrix< float64_t > CRBM::get_weights(SGVector< float64_t > p)
 {
 	if (p.vlen==0)
-		return SGMatrix<float64_t>(m_params.vector+m_num_visible+m_num_hidden, 
+		return SGMatrix<float64_t>(m_params.vector+m_num_visible, 
 			m_num_hidden, m_num_visible, false);
 	else
-		return SGMatrix<float64_t>(p.vector+m_num_visible+m_num_hidden, 
+		return SGMatrix<float64_t>(p.vector+m_num_visible, 
 			m_num_hidden, m_num_visible, false);
 }
 
 SGVector< float64_t > CRBM::get_hidden_bias(SGVector< float64_t > p)
 {
 	if (p.vlen==0)
-		return SGVector<float64_t>(m_params.vector+m_num_visible, 
+		return SGVector<float64_t>(m_params.vector+m_num_visible+m_num_visible*m_num_hidden, 
 			m_num_hidden, false);
 	else
-		return SGVector<float64_t>(p.vector+m_num_visible, 
+		return SGVector<float64_t>(p.vector+m_num_visible+m_num_visible*m_num_hidden, 
 			m_num_hidden, false);
 }
 
@@ -607,7 +607,7 @@ void CRBM::init()
 	monitoring_interval = 10;
 	
 	gd_mini_batch_size = 0;
-	max_num_epochs = 0; 
+	max_num_epochs = 1; 
 	gd_learning_rate = 0.1; 
 	gd_learning_rate_decay = 1.0;
 	gd_momentum = 0.9; 
@@ -649,8 +649,6 @@ void CRBM::init()
 	       "Number of Hidden Units", MS_NOT_AVAILABLE);
 	SG_ADD(&m_num_visible, "num_visible",
 	       "Number of Visible Units", MS_NOT_AVAILABLE);
-	SG_ADD(&m_batch_size, "batch_size",
-	       "Batch Size", MS_NOT_AVAILABLE);
 	
 	SG_ADD(&m_num_visible_groups, "num_visible_groups",
 	       "Number of Visible Unit Groups", MS_NOT_AVAILABLE);

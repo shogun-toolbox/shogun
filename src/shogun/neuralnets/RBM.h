@@ -104,9 +104,9 @@ enum ERBMVisibleUnitType
  * Training is done using contrastive divergence [Hinton, 2002] or persistent 
  * contrastive divergence [Tieleman, 2008] (default).
  * 
- * Training progress can be monitored using the recontruction error (default), 
+ * Training progress can be monitored using the reconstruction error (default), 
  * which is the average squared difference between a training batch and the RBM's 
- * recontruction of it. The recontruction is generated using one step of gibbs 
+ * reconstruction of it. The reconstruction is generated using one step of gibbs 
  * sampling. Progress can also be monitored using the 
  * [pseudo-log-likelihood](http://en.wikipedia.org/wiki/Pseudolikelihood) which 
  * is an approximation to the log-likelihood. However, this is currently only 
@@ -122,6 +122,8 @@ enum ERBMVisibleUnitType
  */
 class CRBM : public CSGObject
 {
+friend class CDeepBeliefNetwork;	
+
 public:
 	/** default constructor */
 	CRBM();
@@ -281,14 +283,14 @@ public:
 	virtual void contrastive_divergence(SGMatrix<float64_t> visible_batch, 
 		SGVector<float64_t> gradients);
 	
-	/** Computes the average recontruction error which is defined as:
+	/** Computes the average reconstruction error which is defined as:
 	 * \f[ E = \frac{1}{N} \sum_i (v_i - \widetilde{v})^2 \f]
 	 * where \f$ \widetilde{v} \f$ is computed using one step of gibbs sampling 
 	 * and \f$ N \f$ is the batch size
 	 * 
-	 * @return Average recontruction error over the given batch
+	 * @return Average reconstruction error over the given batch
 	 */
-	virtual float64_t recontruction_error(SGMatrix<float64_t> visible, 
+	virtual float64_t reconstruction_error(SGMatrix<float64_t> visible, 
 		SGMatrix<float64_t> buffer = SGMatrix<float64_t>());
 	
 	/** Computes an approximation to the pseudo-likelihood.
@@ -395,8 +397,7 @@ public:
 	ERBMMonitoringMethod monitoring_method;
 	
 	/** maximum number of iterations over the training set.
-	 * If 0, training will continue until convergence. 
-	 * defualt value is 0
+	 * defualt value is 1
 	 */
 	int32_t max_num_epochs;
 	

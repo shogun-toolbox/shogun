@@ -169,11 +169,11 @@ float64_t CDeepAutoencoder::compute_error(SGMatrix< float64_t > targets)
 	return error;
 }
 
-void CDeepAutoencoder::set_contraction_coefficient(float64_t lambda)
+void CDeepAutoencoder::set_contraction_coefficient(float64_t coeff)
 {
-	m_contraction_coefficient = lambda;
+	m_contraction_coefficient = coeff;
 	for (int32_t i=1; i<=(m_num_layers-1)/2; i++)
-		get_layer(i)->contraction_coefficient = lambda;
+		get_layer(i)->contraction_coefficient = coeff;
 }
 
 
@@ -253,4 +253,6 @@ void CDeepAutoencoder::init()
 	    "Pre-training L2 regularization coeff", MS_NOT_AVAILABLE);
 	SG_ADD(&pt_l1_coefficient, "pt_l1_coefficient",
 	    "Pre-training L1 regularization coeff", MS_NOT_AVAILABLE);
+	
+	SG_ADD(&m_sigma, "m_sigma", "Initialization Sigma", MS_NOT_AVAILABLE);
 }
