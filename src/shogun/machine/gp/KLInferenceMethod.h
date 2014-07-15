@@ -271,7 +271,18 @@ public:
 	 *
 	 */
 	virtual void set_exp_factor(float64_t exp_factor);
+
+	/** set minimum coeefficient of kernel matrix used in LDLT factorization
+	 *
+	 * @param min_coeff_kernel should be non-negative
+	 * default value is 1e-5
+	 *
+	 */
+	virtual void set_min_coeff_kernel(float64_t min_coeff_kernel);
 protected:
+
+	/** The minimum coeefficient of kernel matrix in LDLT factorization used to check whether the kernel matrix is positive definite or not*/
+	float64_t m_min_coeff_kernel;
 
 	/** The factor used to ensure kernel matrix to be positive definite */
 	float64_t m_noise_factor;
