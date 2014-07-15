@@ -36,25 +36,25 @@ using namespace shogun;
 
 CKNNHeap::CKNNHeap(int32_t k)
 {
-	capacity=k;
-	dists=SGVector<float64_t>(capacity);
-	inds=SGVector<index_t>(capacity);
-	sorted=false;
+	m_capacity=k;
+	m_dists=SGVector<float64_t>(m_capacity);
+	m_inds=SGVector<index_t>(m_capacity);
+	m_sorted=false;
 
-	for (int32_t i=0;i<capacity;i++)
+	for (int32_t i=0;i<m_capacity;i++)
 	{
-		dists[i]=CMath::MAX_REAL_NUMBER;
-		inds[i]=0;
+		m_dists[i]=CMath::MAX_REAL_NUMBER;
+		m_inds[i]=0;
 	}
 }
 
 void CKNNHeap::push(index_t index, float64_t dist)
 {
-	if (dist>dists[0])
+	if (dist>m_dists[0])
 		return;
 
-	dists[0]=dist;
-	inds[0]=index;
+	m_dists[0]=dist;
+	m_inds[0]=index;
 
 	index_t i_swap;
 	index_t i=0;
@@ -62,83 +62,83 @@ void CKNNHeap::push(index_t index, float64_t dist)
 	{
 		index_t l=2*i+1;
 		index_t r=l+1;
-		if (l>=capacity)
+		if (l>=m_capacity)
 		{
 			break;
 		}
-		else if (r>=capacity)
+		else if (r>=m_capacity)
 		{
-			if (dists[l]>dist)
+			if (m_dists[l]>dist)
 				i_swap=l;
 			else
 				break;
 		}
-		else if (dists[l]>=dists[r])
+		else if (m_dists[l]>=m_dists[r])
 		{
-			if (dists[l]>dist)
+			if (m_dists[l]>dist)
 				i_swap=l;
 			else
 				break;
 		}
 		else
 		{
-			if (dists[r]>dist)
+			if (m_dists[r]>dist)
 				i_swap=r;
 			else
 				break;
 		}
 
-		dists[i]=dists[i_swap];
-		inds[i]=inds[i_swap];
+		m_dists[i]=m_dists[i_swap];
+		m_inds[i]=m_inds[i_swap];
 
-		dists[i_swap]=dist;
-		inds[i_swap]=index;
+		m_dists[i_swap]=dist;
+		m_inds[i_swap]=index;
 		i=i_swap;
 	}
 }
 
 SGVector<float64_t> CKNNHeap::get_dists()
 {
-	if (sorted)
-		return dists;
+	if (m_sorted)
+		return m_dists;
 
-	sorted=true;
-	SGVector<float64_t> new_dists(capacity);
-	SGVector<index_t> new_inds(capacity);
+	m_sorted=true;
+	SGVector<float64_t> new_dists(m_capacity);
+	SGVector<index_t> new_inds(m_capacity);
 
 	// O(nlogn) heap-sort
-	for (int32_t i=capacity-1;i>-1;i--)
+	for (int32_t i=m_capacity-1;i>-1;i--)
 	{
-		new_dists[i]=dists[0];
-		new_inds[i]=inds[0];
+		new_dists[i]=m_dists[0];
+		new_inds[i]=m_inds[0];
 		push(0,-1);
 	}
 
-	dists=new_dists;
-	inds=new_inds;
+	m_dists=new_dists;
+	m_inds=new_inds;
 
-	return dists;
+	return m_dists;
 }
 
 SGVector<index_t> CKNNHeap::get_indices()
 {
-	if (sorted)
-		return inds;
+	if (m_sorted)
+		return m_inds;
 
-	sorted=true;
-	SGVector<float64_t> new_dists(capacity);
-	SGVector<index_t> new_inds(capacity);
+	m_sorted=true;
+	SGVector<float64_t> new_dists(m_capacity);
+	SGVector<index_t> new_inds(m_capacity);
 
 	// O(nlogn) heap-sort
-	for (int32_t i=capacity-1;i>-1;i--)
+	for (int32_t i=m_capacity-1;i>-1;i--)
 	{
-		new_dists[i]=dists[0];
-		new_inds[i]=inds[0];
+		new_dists[i]=m_dists[0];
+		new_inds[i]=m_inds[0];
 		push(0,-1);
 	}
 
-	dists=new_dists;
-	inds=new_inds;
+	m_dists=new_dists;
+	m_inds=new_inds;
 
-	return inds;
+	return m_inds;
 }

@@ -35,30 +35,28 @@
 #include <shogun/lib/config.h>
 
 #include <shogun/multiclass/tree/TreeMachine.h>
+#include <shogun/kernel/Kernel.h>
+#include <shogun/distance/Distance.h> 
 #include <shogun/multiclass/tree/NbodyTreeNodeData.h>
 #include <shogun/multiclass/tree/KNNHeap.h> 
 #include <shogun/features/DenseFeatures.h>
 
 namespace shogun
 {
-enum EDistanceMetric
-{
-	DM_EUCLID,
-	DM_MANHATTAN
-};
 
-/** @brief This class implements genaralized tree for N-body problems ike k-NN.
+/** @brief This class implements genaralized tree for N-body problems like k-NN, kernel density estimation, 2 point 
+ * correlation.
  */
 class CNbodyTree : public CTreeMachine<NbodyTreeNodeData>
 {
 public:
 
 	/** constructor
-	 * 
-	 * @param data data points using which KD-Tree will be made	 
+	 *  
 	 * @param leaf_size min number of samples in any node
+	 * @param d distance metric to be used	 
 	 */
-	CNbodyTree(int32_t leaf_size=DM_MANHATTAN, EDistanceMetric d=DM_EUCLID);
+	CNbodyTree(int32_t leaf_size=1, EDistanceType d=D_EUCLIDEAN);
 
 	/** Destructor */
 	virtual ~CNbodyTree() { };
@@ -81,6 +79,17 @@ public:
 	 */
 	void query_knn(CDenseFeatures<float64_t>* data, int32_t k);
 
+	/** get log of kernel density at query points
+	 * 
+	 * @param test query points at which kernel density is to be calculated
+	 * @param kernel kernel type
+	 * @param h width of kernel
+	 * @param atol absolute tolerance
+	 * @param rtol relative tolerance
+	 * @return log kernel density
+	 */
+	SGVector<float64_t> log_kernel_density(SGMatrix<float64_t> test, EKernelType kernel, float64_t h, float64_t atol, float64_t rtol);
+
 	/** distance b/w KNN vectors and query vectors
 	 *
 	 * @return distances
@@ -94,14 +103,14 @@ public:
 	SGMatrix<index_t> get_knn_indices();
 
 protected:
-	/** find squared minimum distance between node and a query vector
+	/** find minimum distance between node and a query vector
 	 * 
 	 * @param node present node
 	 * @param feat query vector
 	 * @param dim dimensions of query vector
-	 * @return squared min distance
+	 * @return min distance
 	 */
-	virtual float64_t min_distsq(bnode_t* node,float64_t* feat, int32_t dim)=0;
+	virtual float64_t min_dist(bnode_t* node,float64_t* feat, int32_t dim)=0;
 
 	/** initialize node
 	 *
@@ -111,12 +120,22 @@ protected:
 	 */
 	virtual void init_node(bnode_t* node, index_t start, index_t end)=0;
 
+	/** get min as well max distance of a node from a point
+	 *
+	 * @param pt point whose distance is to be calculated
+	 * @param node node from which distances are to be calculated
+	 * @param lower lower bound of distance
+	 * @param upper upper bound of distance
+	 * @param dim dimension of point vector
+	 */
+	virtual void min_max_dist(float64_t* pt, bnode_t* node, float64_t &lower,float64_t &upper, int32_t dim)=0;	
+
 	/** convert squared distances to actual distances
 	 *
-	 * @param array of distance values
-	 * @param len length of array
+	 * @param dist distance value
+	 * @return actual distance
 	 */
-	void actual_dists(float64_t* dists, int32_t len);
+	float64_t actual_dists(float64_t dist);
 
 	/** distance between 2 vectors
 	 *
@@ -134,9 +153,9 @@ protected:
 	 */
 	inline float64_t add_dim_dist(float64_t d)
 	{
-		if (m_dist==DM_EUCLID)
+		if (m_dist==D_EUCLIDEAN)
 			return d*d;
-		else if (m_dist==DM_MANHATTAN)
+		else if (m_dist==D_MANHATTAN)
 			return CMath::abs(d);
 		else
 			SG_ERROR("distance metric not recognized\n");
@@ -155,6 +174,23 @@ private:
 	 * @param dim dimension of query vector
 	 */
 	void query_knn_single(CKNNHeap* heap, float64_t min_dist, bnode_t* node, float64_t* arr, int32_t dim);
+
+	/** find kde at each query point
+	 *
+	 * @param node current node
+	 * @param data query point
+	 * @param kernel kernel type
+	 * @param h kernel bandwidth
+	 * @param log_atol log of absolute tolerance
+	 * @param log_rtol log of relative tolerance
+	 * @param log_norm log of kernel norm
+	 * @param min_bound_node min evaluated kernel in node
+	 * @param spread_node spread of kernel values in node
+	 * @param min_bound_global stores the globally calculated min kernel density at query point
+	 * @param spread_global spread of kernel values accross entire tree
+	 */
+	void get_kde_single(bnode_t* node,float64_t* data, EKernelType kernel, float64_t h, float64_t log_atol, float64_t log_rtol,
+	float64_t log_norm, float64_t min_bound_node, float64_t spread_node, float64_t &min_bound_global, float64_t &spread_global);
 
 	/** recursive build
 	 * 
@@ -180,6 +216,35 @@ private:
 	 */
 	index_t find_split_dim(bnode_t* node);
 
+	/** log-sum-exp trick for 2 numbers 
+	 * 
+	 * @param x number 1
+	 * @param y number 2
+	 * @return log of sum of exp of numbers
+	 */
+	inline float64_t logsumexp(float64_t x, float64_t y)
+	{
+		float64_t a=CMath::max(x,y);
+		if (a==-CMath::INFTY)
+			return -CMath::INFTY;
+		
+		return a+CMath::log(CMath::exp(x-a)+CMath::exp(y-a));
+	}
+
+	/** log-diff-exp trick for 2 numbers 
+	 * 
+	 * @param x number 1
+	 * @param y number 2
+	 * @return log of difference of exp of numbers
+	 */
+	inline float64_t logdiffexp(float64_t x, float64_t y)
+	{
+		if (x<=y)
+			return -CMath::INFTY;
+
+		return x+CMath::log(1-CMath::exp(y-x));
+	}
+
 	/** initialize parameters */
 	void init();		
 
@@ -195,7 +260,7 @@ private:
 	int32_t m_leaf_size;
 
 	/** distance metric */
-	EDistanceMetric m_dist;
+	EDistanceType m_dist;
 
 	/** knn query done or not */
 	bool knn_done;
