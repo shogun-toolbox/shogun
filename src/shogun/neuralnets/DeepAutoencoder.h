@@ -151,9 +151,9 @@ public:
 	 * with respect to its inputs, \f$ N \f$ is the batch size, and 
 	 * \f$ \lambda \f$ is the contraction coefficient. 
 	 * 
-	 * @param lambda Contraction coefficient
+	 * @param coeff Contraction coefficient
 	 */
-	virtual void set_contraction_coefficient(float64_t lambda);
+	virtual void set_contraction_coefficient(float64_t coeff);
 	
 	virtual const char* get_name() const { return "DeepAutoencoder"; }
 
