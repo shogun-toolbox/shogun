@@ -28,7 +28,7 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
-#include <shogun/machine/KernelDensity.h>
+#include <shogun/distributions/KernelDensity.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/multiclass/tree/KDTree.h>
 #include <shogun/multiclass/tree/BallTree.h> 

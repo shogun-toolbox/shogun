@@ -131,14 +131,6 @@ SGMatrix<index_t> CNbodyTree::get_knn_indices()
 	return SGMatrix<index_t>();
 }
 
-float64_t CNbodyTree::actual_dists(float64_t dists)
-{
-	if (m_dist==D_MANHATTAN)
-		return dists;
-
-	return CMath::sqrt(dists);
-}
-
 void CNbodyTree::query_knn_single(CKNNHeap* heap, float64_t mdist, bnode_t* node, float64_t* arr, int32_t dim)
 {
 	if (mdist>heap->get_max_dist())
