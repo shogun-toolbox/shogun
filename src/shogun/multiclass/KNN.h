@@ -58,6 +58,20 @@ class CKNN : public CDistanceMachine
 {
 	public:
 		MACHINE_PROBLEM_TYPE(PT_MULTICLASS)
+		
+		/** Defines the Mode of Operation for the KNN. There are 3 modes :
+		  * 1) BruteForce.
+		  * 2) CoverTree.
+		  * 3) KDTree.
+		  */
+		enum EKNNMode 
+		{
+		    BruteForce,
+		    CoverTree,
+		#ifdef HAVE_NANOFLANN
+		    KDTree
+		#endif
+		};
 
 		/** default constructor */
 		CKNN();
@@ -67,8 +81,11 @@ class CKNN : public CDistanceMachine
 		 * @param k k
 		 * @param d distance
 		 * @param trainlab labels for training
+		 * @param mode Mode of Operation, default value = BruteForce
+		 * @param leaf_size Leaf Size for KDTree, default value = 20
 		 */
-		CKNN(int32_t k, CDistance* d, CLabels* trainlab);
+		CKNN(int32_t k, CDistance* d, CLabels* trainlab, EKNNMode mode = BruteForce,
+			 int32_t leaf_size = 20);
 		virtual ~CKNN();
 
 		/** get classifier type
@@ -105,7 +122,7 @@ class CKNN : public CDistanceMachine
 		/** classify all examples for 1...k
 		 *
 		 */
-		SGMatrix<int32_t> classify_for_multiple_k();
+		SGMatrix<int32_t> classify_for_multiple_k(CFeatures* data=NULL);
 
 		/** load from file
 		 *
@@ -154,19 +171,27 @@ class CKNN : public CDistanceMachine
 		 */
 		inline float64_t get_q() { return m_q; }
 
-		/** set whether to use cover trees for fast KNN
-		 * @param use_covertree
+		/** set Mode of Operation for KNN
+		 * @param mode
 		 */
-		inline void set_use_covertree(bool use_covertree)
-		{
-			m_use_covertree = use_covertree;
-		}
-
-		/** get whether to use cover trees for fast KNN
-		 * @return use_covertree parameter
+		inline void set_mode(EKNNMode mode) { m_mode = mode; }
+		
+		/** get Mode of Operation for KNN
+		 * @return mode
 		 */
-		inline bool get_use_covertree() const { return m_use_covertree; }
+		inline EKNNMode get_mode() const { return m_mode; }
 
+
+		/** set Leaf Size of KDTree
+		 * @param ls
+		 */
+		inline void set_leaf_size(int32_t ls) { m_leaf_size = ls; }
+		
+		/** get Leaf Size of KDTree
+		 * @return leaf_size
+		 */
+		inline int32_t get_leaf_size() const { return m_leaf_size; }
+		
 		/** @return object name */
 		virtual const char* get_name() const { return "KNN"; }
 
@@ -227,22 +252,25 @@ class CKNN : public CDistanceMachine
 		 * @param step distance between elements to be written in output
 		 */
 		void choose_class_for_multiple_k(int32_t* output, int32_t* classes, int32_t* train_lab, int32_t step);
-
+	
 	protected:
+		/// the Mode of Operation
+		EKNNMode m_mode;
+		
 		/// the k parameter in KNN
 		int32_t m_k;
 
 		/// parameter q of rank weighting
 		float64_t m_q;
 
-		/// parameter to enable cover tree support
-		bool m_use_covertree;
-
 		///	number of classes (i.e. number of values labels can take)
 		int32_t m_num_classes;
 
 		///	smallest label, i.e. -1
 		int32_t m_min_label;
+		
+		/// Leaf-Size, in case KDTree is used
+		int32_t m_leaf_size;
 
 		/** the actual trainlabels */
 		SGVector<int32_t> m_train_labels;
