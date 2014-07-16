@@ -48,6 +48,30 @@ float64_t CBallTree::min_dist(bnode_t* node,float64_t* feat, int32_t dim)
 	return CMath::max(0.0,dist-node->data.radius);
 }
 
+float64_t CBallTree::min_dist_dual(bnode_t* nodeq, bnode_t* noder)
+{
+	float64_t dist=0;
+	SGVector<float64_t> center1=nodeq->data.center;
+	SGVector<float64_t> center2=noder->data.center;	
+	for (int32_t i=0;i<center1.vlen;i++)
+		dist+=add_dim_dist(center1[i]-center2[i]);
+
+	dist=actual_dists(dist);
+	return CMath::max(0.0,dist-nodeq->data.radius-noder->data.radius);
+}
+
+float64_t CBallTree::max_dist_dual(bnode_t* nodeq, bnode_t* noder)
+{
+	float64_t dist=0;
+	SGVector<float64_t> center1=nodeq->data.center;
+	SGVector<float64_t> center2=noder->data.center;	
+	for (int32_t i=0;i<center1.vlen;i++)
+		dist+=add_dim_dist(center1[i]-center2[i]);
+
+	dist=actual_dists(dist);
+	return (dist+nodeq->data.radius+noder->data.radius);
+}
+
 void CBallTree::min_max_dist(float64_t* pt, bnode_t* node, float64_t &lower,float64_t &upper, int32_t dim)
 {
 	float64_t dist=0;

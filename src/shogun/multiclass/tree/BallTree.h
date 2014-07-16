@@ -70,6 +70,22 @@ private:
 	 */
 	float64_t min_dist(bnode_t* node,float64_t* feat, int32_t dim);
 
+	/** find minimum distance between 2 nodes
+	 * 
+	 * @param nodeq node containing active query vectors
+	 * @param noder node containing active training vectors
+	 * @return min distance between 2 nodes
+	 */
+	virtual float64_t min_dist_dual(bnode_t* nodeq, bnode_t* noder);
+
+	/** find max distance between 2 nodes
+	 * 
+	 * @param nodeq node containing active query vectors
+	 * @param noder node containing active training vectors
+	 * @return max distance between 2 nodes
+	 */
+	virtual float64_t max_dist_dual(bnode_t* nodeq, bnode_t* noder);
+
 	/** get min as well as max distance of a node from a point
 	 *
 	 * @param pt point whose distance is to be calculated

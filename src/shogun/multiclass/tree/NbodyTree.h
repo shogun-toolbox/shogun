@@ -112,6 +112,22 @@ protected:
 	 */
 	virtual float64_t min_dist(bnode_t* node,float64_t* feat, int32_t dim)=0;
 
+	/** find minimum distance between 2 nodes
+	 * 
+	 * @param nodeq node containing active query vectors
+	 * @param noder node containing active training vectors
+	 * @return min distance between 2 nodes
+	 */
+	virtual float64_t min_dist_dual(bnode_t* nodeq, bnode_t* noder)=0;
+
+	/** find max distance between 2 nodes
+	 * 
+	 * @param nodeq node containing active query vectors
+	 * @param noder node containing active training vectors
+	 * @return max distance between 2 nodes
+	 */
+	virtual float64_t max_dist_dual(bnode_t* nodeq, bnode_t* noder)=0;
+
 	/** initialize node
 	 *
 	 * @param node node to be initialized
@@ -120,7 +136,7 @@ protected:
 	 */
 	virtual void init_node(bnode_t* node, index_t start, index_t end)=0;
 
-	/** get min as well max distance of a node from a point
+	/** get min as well as max distance of a node from a point
 	 *
 	 * @param pt point whose distance is to be calculated
 	 * @param node node from which distances are to be calculated
@@ -135,7 +151,13 @@ protected:
 	 * @param dist distance value
 	 * @return actual distance
 	 */
-	float64_t actual_dists(float64_t dist);
+	inline float64_t actual_dists(float64_t dists)
+	{
+		if (m_dist==D_MANHATTAN)
+			return dists;
+
+		return CMath::sqrt(dists);
+	}
 
 	/** distance between 2 vectors
 	 *
