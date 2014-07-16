@@ -63,10 +63,10 @@ matrix:
       - EXTRA_PACKAGES="lua5.1 liblua5.1-0-dev swig2.0"
       - CC=clang
       - CXX=clang++
-    - compiler: clang
+    - compiler: gcc
       env:
-      - CMAKE_OPTIONS="-DOpenCV=ON"
-      - EXTRA_PACKAGES="libopencv-dev checkinstall pkg-config yasm libavcodec-dev libavformat-dev libswscale-dev libxine-dev libgstreamer0.10-dev libgstreamer-plugins-base0.10-dev libv4l-dev libtbb-dev libfaac-dev libmp3lame-dev libopencore-amrnb-dev libopencore-amrwb-dev libtheora-dev libvorbis-dev libxvidcore-dev x264 v4l-utils ffmpeg"
+      - CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=Debug -DOpenCV=ON"
+      - EXTRA_PACKAGES="libopencv-dev"
     - compiler: gcc
       env:
       - CMAKE_OPTIONS="-DOctaveModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON"
