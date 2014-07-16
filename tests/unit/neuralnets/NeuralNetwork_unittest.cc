@@ -44,6 +44,7 @@
 #include <shogun/neuralnets/NeuralSoftmaxLayer.h>
 #include <shogun/neuralnets/NeuralRectifiedLinearLayer.h>
 #include <shogun/neuralnets/NeuralConvolutionalLayer.h>
+#include <shogun/neuralnets/NeuralLayers.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;
@@ -80,6 +81,39 @@ TEST(NeuralNetwork, backpropagation_linear)
 	EXPECT_NEAR(network->check_gradients(), 0.0, tolerance);
 	SG_UNREF(network);
 }
+
+/** Tests neural layers builder
+ */
+TEST(NeuralNetwork, neural_layers_builder)
+{
+	float64_t tolerance = 1e-9;
+	
+	CMath::init_random(10);
+	
+	CNeuralLayers* layers = new CNeuralLayers();
+	layers->input(5)
+	      ->input(7)
+	      ->linear(3)
+	      ->linear(6)
+	      ->linear(5)
+	      ->linear(4);
+	CNeuralNetwork* network = new CNeuralNetwork(layers->done());
+	
+	network->connect(0,2);
+	network->connect(1,2);
+	network->connect(2,3);
+	network->connect(2,4);
+	network->connect(3,5);
+	network->connect(4,5);
+	
+	network->initialize();
+	network->l2_coefficient = 0.01;
+	network->l1_coefficient = 0.03;
+
+	EXPECT_NEAR(network->check_gradients(), 0.0, tolerance);
+	SG_UNREF(network);
+}
+
 
 /** Tests gradients computed using backpropagation against gradients computed
  * by numerical approximation. Uses a CNeuralLogisticLayer-based network.
