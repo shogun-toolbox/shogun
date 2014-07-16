@@ -29,10 +29,11 @@
  */
 
 #include <shogun/multiclass/tree/NbodyTree.h>
+#include <shogun/distributions/KernelDensity.h> 
 
 using namespace shogun;
 
-CNbodyTree::CNbodyTree(int32_t leaf_size, EDistanceMetric d)
+CNbodyTree::CNbodyTree(int32_t leaf_size, EDistanceType d)
 : CTreeMachine<NbodyTreeNodeData>()
 {
 	init();
@@ -73,15 +74,43 @@ void CNbodyTree::query_knn(CDenseFeatures<float64_t>* data, int32_t k)
 		if (m_root)
 			root=dynamic_cast<bnode_t*>(m_root);
 
-		float64_t min_dist=min_distsq(root,qfeats.matrix+i*dim,dim);
-		query_knn_single(heap,min_dist,root,qfeats.matrix+i*dim,dim);
+		float64_t mdist=min_dist(root,qfeats.matrix+i*dim,dim);
+		query_knn_single(heap,mdist,root,qfeats.matrix+i*dim,dim);
 		memcpy(knn_dists.matrix+i*k,heap->get_dists(),k*sizeof(float64_t));
 		memcpy(knn_indices.matrix+i*k,heap->get_indices(),k*sizeof(index_t));		
 
 		delete(heap);
 	}
+}
 
-	actual_dists(knn_dists.matrix,knn_dists.num_rows*knn_dists.num_cols);
+SGVector<float64_t> CNbodyTree::log_kernel_density(SGMatrix<float64_t> test, EKernelType kernel, float64_t h, float64_t atol, float64_t rtol)
+{
+	int32_t dim=m_data.num_rows;
+	REQUIRE(test.num_rows==dim,"dimensions of training data and test data should be the same\n")
+
+	float64_t log_atol=CMath::log(atol*m_data.num_cols);
+	float64_t log_rtol=CMath::log(rtol);
+	float64_t log_kernel_norm=CKernelDensity::log_norm(kernel,h,dim);
+	SGVector<float64_t> log_density(test.num_cols);
+	for (int32_t i=0;i<test.num_cols;i++)
+	{
+		bnode_t* root=NULL;
+		if (m_root)
+			root=dynamic_cast<bnode_t*>(m_root);
+
+		float64_t lower_dist=0;
+		float64_t upper_dist=0;
+		min_max_dist(test.matrix+i*dim,root,lower_dist,upper_dist,dim);
+
+		float64_t min_bound=CMath::log(m_data.num_cols)+CKernelDensity::log_kernel(kernel,upper_dist,h);
+		float64_t max_bound=CMath::log(m_data.num_cols)+CKernelDensity::log_kernel(kernel,lower_dist,h);
+		float64_t spread=logdiffexp(max_bound,min_bound);
+
+		get_kde_single(root,test.matrix+i*dim,kernel,h,log_atol,log_rtol,log_kernel_norm,min_bound,spread,min_bound,spread);
+		log_density[i]=logsumexp(min_bound,spread-CMath::log(2))+log_kernel_norm-CMath::log(m_data.num_cols);
+	}
+
+	return log_density;
 }
 
 SGMatrix<float64_t> CNbodyTree::get_knn_dists()
@@ -102,20 +131,9 @@ SGMatrix<index_t> CNbodyTree::get_knn_indices()
 	return SGMatrix<index_t>();
 }
 
-void CNbodyTree::actual_dists(float64_t* dists, int32_t len)
+void CNbodyTree::query_knn_single(CKNNHeap* heap, float64_t mdist, bnode_t* node, float64_t* arr, int32_t dim)
 {
-	if (m_dist==DM_MANHATTAN)
-		return;
-
-	for (int32_t i=0;i<len;i++)
-	{
-		dists[i]=CMath::sqrt(dists[i]);
-	}
-}
-
-void CNbodyTree::query_knn_single(CKNNHeap* heap, float64_t min_dist, bnode_t* node, float64_t* arr, int32_t dim)
-{
-	if (min_dist>heap->get_max_dist())
+	if (mdist>heap->get_max_dist())
 		return;
 
 	if (node->data.is_leaf)
@@ -132,8 +150,8 @@ void CNbodyTree::query_knn_single(CKNNHeap* heap, float64_t min_dist, bnode_t* n
 	bnode_t* cleft=node->left();
 	bnode_t* cright=node->right();
 
-	float64_t min_dist_left=min_distsq(cleft,arr,dim);
-	float64_t min_dist_right=min_distsq(cright,arr,dim);
+	float64_t min_dist_left=min_dist(cleft,arr,dim);
+	float64_t min_dist_right=min_dist(cright,arr,dim);
 
 	if (min_dist_left<=min_dist_right)
 	{
@@ -156,7 +174,7 @@ float64_t CNbodyTree::distance(index_t vec, float64_t* arr, int32_t dim)
 	for (int32_t i=0;i<dim;i++)
 		ret+=add_dim_dist(m_data(i,vec)-arr[i]);
 
-	return ret;
+	return actual_dists(ret);
 }
 
 CBinaryTreeMachineNode<NbodyTreeNodeData>* CNbodyTree::recursive_build(index_t start, index_t end)
@@ -183,6 +201,67 @@ CBinaryTreeMachineNode<NbodyTreeNodeData>* CNbodyTree::recursive_build(index_t s
 	node->right(child_right);
 
 	return node;
+}
+
+void CNbodyTree::get_kde_single(bnode_t* node,float64_t* data, EKernelType kernel, float64_t h, float64_t log_atol, float64_t log_rtol,
+	float64_t log_norm, float64_t min_bound_node, float64_t spread_node, float64_t &min_bound_global, float64_t &spread_global)
+{
+	int32_t n_node=CMath::log(node->data.end_idx-node->data.start_idx+1);
+	int32_t n_total=CMath::log(m_data.num_cols);
+
+	// local bound criterion met
+	if ((log_norm+spread_node+n_total-n_node)<=logsumexp(log_atol,log_rtol+log_norm+min_bound_node))
+		return;
+
+	// global bound criterion met	
+	if ((log_norm+spread_global)<=logsumexp(log_atol,log_rtol+log_norm+min_bound_global))
+		return;
+
+	// node is leaf
+	if (node->data.is_leaf)
+	{
+		min_bound_global=logdiffexp(min_bound_global,min_bound_node);
+		spread_global=logdiffexp(spread_global,spread_node);
+
+		for (int32_t i=node->data.start_idx;i<=node->data.end_idx;i++)
+		{
+			float64_t pt_eval=CKernelDensity::log_kernel(kernel,distance(vec_id[i],data,m_data.num_rows),h);
+			min_bound_global=logsumexp(pt_eval,min_bound_global);
+		}
+
+		return;
+	}
+
+	bnode_t* lchild=node->left();
+	bnode_t* rchild=node->right();
+
+	float64_t lower_dist=0;
+	float64_t upper_dist=0;
+	min_max_dist(data,lchild,lower_dist,upper_dist,m_data.num_rows);
+
+	int32_t n_l=lchild->data.end_idx-lchild->data.start_idx+1;
+	float64_t lower_bound_childl=log(n_l)+CKernelDensity::log_kernel(kernel,upper_dist,h);
+	float64_t spread_childl=logdiffexp(log(n_l)+CKernelDensity::log_kernel(kernel,lower_dist,h),lower_bound_childl);
+
+	min_max_dist(data,rchild,lower_dist,upper_dist,m_data.num_rows);
+	int32_t n_r=rchild->data.end_idx-rchild->data.start_idx+1;
+	float64_t lower_bound_childr=log(n_r)+CKernelDensity::log_kernel(kernel,upper_dist,h);
+	float64_t spread_childr=logdiffexp(log(n_r)+CKernelDensity::log_kernel(kernel,lower_dist,h),lower_bound_childr);
+
+	// update global bounds
+	min_bound_global=logdiffexp(min_bound_global,min_bound_node);
+	min_bound_global=logsumexp(min_bound_global,lower_bound_childl);
+	min_bound_global=logsumexp(min_bound_global,lower_bound_childr);
+
+	spread_global=logdiffexp(spread_global,spread_node);
+	spread_global=logsumexp(spread_global,spread_childl);
+	spread_global=logsumexp(spread_global,spread_childr);
+
+	get_kde_single(lchild,data,kernel,h,log_atol,log_rtol,log_norm,lower_bound_childl,spread_childl,min_bound_global,spread_global);
+	get_kde_single(rchild,data,kernel,h,log_atol,log_rtol,log_norm,lower_bound_childr,spread_childr,min_bound_global,spread_global);
+
+	SG_UNREF(lchild);
+	SG_UNREF(rchild);
 }
 
 void CNbodyTree::partition(index_t dim, index_t start, index_t end, index_t mid)
@@ -237,7 +316,7 @@ void CNbodyTree::init()
 	m_data=SGMatrix<float64_t>();
 	m_leaf_size=1;
 	vec_id=SGVector<index_t>();
-	m_dist=DM_EUCLID;
+	m_dist=D_EUCLIDEAN;
 	knn_done=false;
 	knn_dists=SGMatrix<float64_t>();
 	knn_indices=SGMatrix<index_t>();	

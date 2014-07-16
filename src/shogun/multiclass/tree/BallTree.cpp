@@ -32,19 +32,56 @@
 
 using namespace shogun;
 
-CBallTree::CBallTree(int32_t leaf_size, EDistanceMetric d)
+CBallTree::CBallTree(int32_t leaf_size, EDistanceType d)
 : CNbodyTree(leaf_size,d)
 {
 }
 
-float64_t CBallTree::min_distsq(bnode_t* node,float64_t* feat, int32_t dim)
+float64_t CBallTree::min_dist(bnode_t* node,float64_t* feat, int32_t dim)
 {
 	float64_t dist=0;
 	SGVector<float64_t> center=node->data.center;
 	for (int32_t i=0;i<dim;i++)
 		dist+=add_dim_dist(center[i]-feat[i]);
 
+	dist=actual_dists(dist);
 	return CMath::max(0.0,dist-node->data.radius);
+}
+
+float64_t CBallTree::min_dist_dual(bnode_t* nodeq, bnode_t* noder)
+{
+	float64_t dist=0;
+	SGVector<float64_t> center1=nodeq->data.center;
+	SGVector<float64_t> center2=noder->data.center;	
+	for (int32_t i=0;i<center1.vlen;i++)
+		dist+=add_dim_dist(center1[i]-center2[i]);
+
+	dist=actual_dists(dist);
+	return CMath::max(0.0,dist-nodeq->data.radius-noder->data.radius);
+}
+
+float64_t CBallTree::max_dist_dual(bnode_t* nodeq, bnode_t* noder)
+{
+	float64_t dist=0;
+	SGVector<float64_t> center1=nodeq->data.center;
+	SGVector<float64_t> center2=noder->data.center;	
+	for (int32_t i=0;i<center1.vlen;i++)
+		dist+=add_dim_dist(center1[i]-center2[i]);
+
+	dist=actual_dists(dist);
+	return (dist+nodeq->data.radius+noder->data.radius);
+}
+
+void CBallTree::min_max_dist(float64_t* pt, bnode_t* node, float64_t &lower,float64_t &upper, int32_t dim)
+{
+	float64_t dist=0;
+	SGVector<float64_t> center=node->data.center;
+	for (int32_t i=0;i<dim;i++)
+		dist+=add_dim_dist(center[i]-pt[i]);
+
+	dist=actual_dists(dist);
+	lower=CMath::max(0.0,dist-node->data.radius);
+	upper=dist+node->data.radius;
 }
 
 void CBallTree::init_node(bnode_t* node, index_t start, index_t end)
@@ -72,8 +109,6 @@ void CBallTree::init_node(bnode_t* node, index_t start, index_t end)
 	float64_t radius=0;
 	for (int32_t i=start;i<=end;i++)
 		radius=CMath::max(distance(vec_id[i],center.vector,center.vlen),radius);
-
-	actual_dists(&radius,1);
 
 	node->data.radius=radius;
 	node->data.center=center;

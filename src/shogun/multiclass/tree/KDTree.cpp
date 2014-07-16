@@ -32,7 +32,7 @@
 
 using namespace shogun;
 
-CKDTree::CKDTree(int32_t leaf_size, EDistanceMetric d)
+CKDTree::CKDTree(int32_t leaf_size, EDistanceType d)
 : CNbodyTree(leaf_size,d)
 {
 }
@@ -41,7 +41,7 @@ CKDTree::~CKDTree()
 {
 }
 
-float64_t CKDTree::min_distsq(bnode_t* node,float64_t* feat, int32_t dim)
+float64_t CKDTree::min_dist(bnode_t* node,float64_t* feat, int32_t dim)
 {
 	float64_t dist=0;
 	for (int32_t i=0;i<dim;i++)
@@ -51,7 +51,57 @@ float64_t CKDTree::min_distsq(bnode_t* node,float64_t* feat, int32_t dim)
 		dist+=add_dim_dist(0.5*dim_dist);
 	}
 
-	return dist;
+	return actual_dists(dist);
+}
+
+float64_t CKDTree::min_dist_dual(bnode_t* nodeq, bnode_t* noder)
+{
+	SGVector<float64_t> nodeq_lower=nodeq->data.bbox_lower;
+	SGVector<float64_t> nodeq_upper=nodeq->data.bbox_upper;
+	SGVector<float64_t> noder_lower=noder->data.bbox_lower;
+	SGVector<float64_t> noder_upper=noder->data.bbox_upper;			
+	float64_t dist=0;
+	for(int32_t i=0;i<noder_lower.vlen;i++)
+	{
+		float64_t d1=nodeq_lower[i]-noder_upper[i];
+		float64_t d2=noder_lower[i]-nodeq_upper[i];
+		dist+=add_dim_dist(0.5*(d1+CMath::abs(d1)+d2+CMath::abs(d2)));
+	}
+
+	return actual_dists(dist);
+}
+
+float64_t CKDTree::max_dist_dual(bnode_t* nodeq, bnode_t* noder)
+{
+	SGVector<float64_t> nodeq_lower=nodeq->data.bbox_lower;
+	SGVector<float64_t> nodeq_upper=nodeq->data.bbox_upper;
+	SGVector<float64_t> noder_lower=noder->data.bbox_lower;
+	SGVector<float64_t> noder_upper=noder->data.bbox_upper;			
+	float64_t dist=0;
+	for(int32_t i=0;i<noder_lower.vlen;i++)
+	{
+		float64_t d1=CMath::abs(nodeq_lower[i]-noder_upper[i]);
+		float64_t d2=CMath::abs(noder_lower[i]-nodeq_upper[i]);
+		dist+=add_dim_dist(CMath::max(d1,d2));
+	}
+
+	return actual_dists(dist);
+}
+
+void CKDTree::min_max_dist(float64_t* pt, bnode_t* node, float64_t &lower,float64_t &upper, int32_t dim)
+{
+	lower=0;
+	upper=0;
+	for(int32_t i=0;i<dim;i++)
+	{
+		float64_t low_dist=node->data.bbox_lower[i]-pt[i];
+		float64_t high_dist=pt[i]-node->data.bbox_upper[i];
+		lower+=add_dim_dist(0.5*(low_dist+CMath::abs(low_dist)+high_dist+CMath::abs(high_dist)));
+		upper+=add_dim_dist(CMath::max(CMath::abs(low_dist),CMath::abs(high_dist)));
+	}
+
+	lower=actual_dists(lower);
+	upper=actual_dists(upper);	
 }
 
 void CKDTree::init_node(bnode_t* node, index_t start, index_t end)
