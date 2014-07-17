@@ -31,7 +31,7 @@
 #include <shogun/distributions/KernelDensity.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/multiclass/tree/KDTree.h>
-#include <shogun/multiclass/tree/BallTree.h> 
+#include <shogun/multiclass/tree/BallTree.h>
 
 using namespace shogun;
 
@@ -72,6 +72,16 @@ bool CKernelDensity::train(CFeatures* data)
 			tree=new CBallTree(m_leaf_size,m_dist);
 			break;
 		}
+		case EM_KDTREE_DUAL:
+		{
+			tree=new CKDTree(m_leaf_size,m_dist);
+			break;
+		}
+		case EM_BALLTREE_DUAL:
+		{
+			tree=new CBallTree(m_leaf_size,m_dist);
+			break;
+		}		
 		default:
 		{
 			SG_ERROR("Evaluation mode not recognized\n");
@@ -82,10 +92,36 @@ bool CKernelDensity::train(CFeatures* data)
 	return true;
 }
 
-SGVector<float64_t> CKernelDensity::get_log_density(CDenseFeatures<float64_t>* test)
+SGVector<float64_t> CKernelDensity::get_log_density(CDenseFeatures<float64_t>* test, int32_t leaf_size)
 {
 	REQUIRE(test,"data not supplied\n")
-	return tree->log_kernel_density(test->get_feature_matrix(),m_kernel_type,m_bandwidth,m_atol,m_rtol);
+
+	if ((m_eval==EM_KDTREE_SINGLE) || (m_eval==EM_BALLTREE_SINGLE))
+		return tree->log_kernel_density(test->get_feature_matrix(),m_kernel_type,m_bandwidth,m_atol,m_rtol);
+
+	CNbodyTree* query_tree=NULL;
+	if (m_eval==EM_KDTREE_DUAL)
+		query_tree=new CKDTree(leaf_size,m_dist);
+	else if (m_eval==EM_BALLTREE_DUAL)
+		query_tree=new CBallTree(leaf_size,m_dist);
+	else
+		SG_ERROR("Evaluation mode not identified\n");
+
+	query_tree->build_tree(test);
+	CBinaryTreeMachineNode<NbodyTreeNodeData>* qroot=NULL;
+	CTreeMachineNode<NbodyTreeNodeData>* root=query_tree->get_root();
+	if (root)
+		qroot=dynamic_cast<CBinaryTreeMachineNode<NbodyTreeNodeData>*>(root);
+	else
+		SG_ERROR("Query tree root not found!\n")
+
+	SGVector<index_t> qid=query_tree->get_rearranged_vector_ids();	
+	SGVector<float64_t> ret=tree->log_kernel_density_dual(test->get_feature_matrix(),qid,qroot,m_kernel_type,m_bandwidth,m_atol,m_rtol);
+
+	SG_UNREF(root);
+	SG_UNREF(query_tree);
+
+	return ret;
 }
 
 int32_t CKernelDensity::get_num_model_parameters()
