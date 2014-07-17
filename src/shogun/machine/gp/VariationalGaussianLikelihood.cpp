@@ -50,6 +50,39 @@ void CVariationalGaussianLikelihood::init()
 	SG_ADD(&m_s2, "sigma2", 
 		"The variance of variational normal distribution\n",
 		MS_AVAILABLE, GRADIENT_AVAILABLE);
+
+	SG_ADD(&m_noise_factor, "noise_factor", 
+		"Correct the variance if variance is close to zero or negative\n",
+		MS_NOT_AVAILABLE);
+	m_noise_factor=1e-15;
+}
+
+void CVariationalGaussianLikelihood::set_noise_factor(float64_t noise_factor)
+{
+	REQUIRE(noise_factor>=0, "The noise_factor (%f) should be non negative\n", noise_factor);
+	m_noise_factor=noise_factor;
+}
+
+void CVariationalGaussianLikelihood::set_variational_distribution(SGVector<float64_t> mu,
+	SGVector<float64_t> s2, const CLabels* lab)
+{
+	REQUIRE(lab, "Labels are required (lab should not be NULL)\n");
+	REQUIRE((mu.vlen==s2.vlen) && (mu.vlen==lab->get_num_labels()),
+		"Length of the vector of means (%d), length of the vector of "
+		"variances (%d) and number of labels (%d) should be the same\n",
+		mu.vlen, s2.vlen, lab->get_num_labels());
+
+	for(index_t i = 0; i < s2.vlen; ++i)
+	{
+		REQUIRE(s2[i]+m_noise_factor>0.0,
+			"Corrected variational variance (original s2=%f) should always be positive after noise correction (%f)\n",
+			s2[i], m_noise_factor);
+		if (!(s2[i]>0.0))
+			s2[i]+=m_noise_factor;
+	}
+
+	m_mu=mu;
+	m_s2=s2;
 }
 
 }
