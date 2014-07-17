@@ -63,7 +63,16 @@ public:
 	 * Note that the variational distribution is Gaussian
 	 */
 	virtual void set_variational_distribution(SGVector<float64_t> mu,
-		SGVector<float64_t> s2, const CLabels* lab)=0;
+		SGVector<float64_t> s2, const CLabels* lab);
+
+	/** set a non-negative noise factor in order to correct the variance if variance is close to zero or negative
+	 * setting 0 means correction is not applied
+	 *
+	 * @param noise_factor noise factor
+	 *
+	 * The default value is 1e-15.
+	 */
+	virtual void set_noise_factor(float64_t noise_factor);
 
 protected:
 	/** The mean of variational Gaussian distribution */
@@ -72,8 +81,14 @@ protected:
 	/** The variance of variational Gaussian distribution */
 	SGVector<float64_t> m_s2;
 
+	/** this method is called to initialize m_likelihood in init()*/
+	virtual void init_likelihood()=0;
+
 private:
 	void init();
+
+	/** use to correct the variance if variance is close to zero or negative*/
+	float64_t m_noise_factor;
 };
 }
 

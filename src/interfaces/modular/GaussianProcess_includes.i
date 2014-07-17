@@ -25,7 +25,7 @@
  #include <shogun/machine/gp/InferenceMethod.h>
  #include <shogun/machine/gp/LaplacianInferenceMethod.h>
  #include <shogun/machine/gp/ExactInferenceMethod.h>
- #include <shogun/machine/gp/LaplacianInferenceMethod.h>
+ #include <shogun/machine/gp/LaplacianInferenceMethodWithLBFGS.h>
  #include <shogun/machine/gp/FITCInferenceMethod.h>
  #include <shogun/machine/gp/EPInferenceMethod.h>
 
