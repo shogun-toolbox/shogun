@@ -40,13 +40,10 @@
 
 namespace shogun 
 {
-/** @brief CV2SGFactory converts Shogun's SGMatrix and DenseFeatures data structure
- * into OpenCV's cv::Mat format. 
- *
- * This essentially is performed using the memcpy function. That is, we copy
- * the required matrix pointed by SGMatrix directly to the memory block
- * pointed by the cv::Mat. 
- */    
+/** @brief CV2SGFactory converts Shogun's SGMatrix and DenseFeatures into 
+ * OpenCV's cv::Mat format. The data is directly copied to the memory block
+ * pointed by the cv::Mat.
+ */
 class SG2CVFactory
 {
 	public:

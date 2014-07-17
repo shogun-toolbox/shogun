@@ -7,10 +7,10 @@
  * modification, are permitted provided that the following conditions are met:
  *
  * 1. Redistributions of source code must retain the above copyright notice, this
- *	  list of conditions and the following disclaimer.
+ *    list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
- *	  this list of conditions and the following disclaimer in the documentation
- *	  and/or other materials provided with the distribution.
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -28,7 +28,7 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 #include <shogun/lib/config.h>
-#ifdef HAVE_OPENCV
+#ifdef HAVE_OPENCVs
 
 #ifndef CV2_SGMATRIX_FACTORY_H_
 #define CV2_SGMATRIX_FACTORY_H_
@@ -40,15 +40,11 @@
 
 namespace shogun
 {
-/** @brief CV2SGFactory converts OpenCV's cv::Mat data structure into Shogun's 
- * SGMatrix and DenseFeatures format. The Mat is the basic image container
- * class of OpenCV which is also a general matrix class. For this conversion,
- * you will need to have 2-D matrices. 
- *
- * This essentially is performed using the memcpy function. That is, we copy
- * the required matrix pointed by OpenCV's cv::Mat directly to the memory block
- * pointed by the Shogun datastructures. 
- */    
+/** @brief CV2SGFactory copies data from OpenCV's cv::Mat data structure into
+ * Shogun's SGMatrix and DenseFeatures format. The Mat is the basic image 
+ * container class of OpenCV which is also a general matrix class. For this 
+ * conversion, you need to have 2-D matrices.
+ */
 class CV2SGFactory
 {
 	public:
@@ -59,15 +55,15 @@ class CV2SGFactory
 		/* get SGMatrix from the Mat object. The choice of the data type for the 
 		 * resulting SGMatrix is completely yours irrespective of the cv::Mat
 		 * data type
-		 * @param OpenCV Mat structure
-		 * @return SGMatrix<SG_T> containing the same data. (of SG_T data type)
+		 * @param cv::Mat to be converted
+		 * @return SGMatrix of the specified data type
 		 */
 		template<typename SG_T> static SGMatrix<SG_T> getSGMatrix(cv::Mat);
-		/* get DenseFeature from the Mat object. The choice of the data type
+		/* get DenseFeatures from the Mat object. The choice of the data type
 		 * for the resulting DenseFeatures is completely yours irrespective of
 		 * the cv::Mat data type.
-		 * @param OpenCV Mat structure
-		 * @return CDenseFeatures<SG_T>* for that data.
+		 * @param cv::Mat to be converted
+		 * @return DenseFeatures pointer of the specified data type
 		 */
 		template<typename SG_T> static CDenseFeatures<SG_T>* getDensefeatures(cv::Mat);
 };
