@@ -283,7 +283,6 @@ void CKLInferenceMethod::set_lbfgs_parameters(
 		float64_t delta,
 		int past,
 		float64_t epsilon,
-		bool enable_newton_if_fail,
 		float64_t min_step,
 		float64_t max_step,
 		float64_t ftol,
