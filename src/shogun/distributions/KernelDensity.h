@@ -41,7 +41,9 @@ namespace shogun
 enum EEvaluationMode
 {
 	EM_KDTREE_SINGLE,
-	EM_BALLTREE_SINGLE
+	EM_BALLTREE_SINGLE,
+	EM_KDTREE_DUAL,
+	EM_BALLTREE_DUAL	
 };
 
 /** @brief This class implements the kernel density estimation technique. Kernel density estimation is a non-parametric
@@ -88,9 +90,10 @@ public :
 	/** compute kde for given test points
 	 * 
 	 * @param test data points at which kernel density is to be evaluated
+	 * @param leaf_size leaf size of query tree (ignored in case of single tree evaluation mode)
 	 * @return log of estimated kernel density velues at given test points
 	 */
-	SGVector<float64_t> get_log_density(CDenseFeatures<float64_t>* test);
+	SGVector<float64_t> get_log_density(CDenseFeatures<float64_t>* test, int32_t leaf_size=1);
 
 	/** return number of model parameters
 	 * NOT IMPLEMENTED
