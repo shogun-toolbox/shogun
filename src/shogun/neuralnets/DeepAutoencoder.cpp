@@ -33,7 +33,13 @@
 
 #include <shogun/neuralnets/DeepAutoencoder.h>
 #include <shogun/lib/DynamicObjectArray.h>
-#include <features/DenseFeatures.h>
+#include <shogun/features/DenseFeatures.h>
+
+#include <shogun/neuralnets/NeuralLinearLayer.h>
+#include <shogun/neuralnets/NeuralLogisticLayer.h>
+#include <shogun/neuralnets/NeuralRectifiedLinearLayer.h>
+
+#include <string>
 
 using namespace shogun;
 
@@ -74,9 +80,34 @@ void CDeepAutoencoder::pre_train(CFeatures* data)
 	{
 		SG_INFO("Pre-training Layer %i\n", i);
 		
-		CAutoencoder ae(get_layer(i-1)->get_num_neurons(), 
-			get_layer(i), get_layer(m_num_layers-i), m_sigma);
+		CNeuralLayer* ae_encoding_layer = NULL;
 		
+		if (strcmp(get_layer(i)->get_name(), "NeuralLinearLayer")==0)
+			ae_encoding_layer = new CNeuralLinearLayer(get_layer(i)->get_num_neurons());
+		else if (strcmp(get_layer(i)->get_name(), "NeuralLogisticLayer")==0)
+			ae_encoding_layer = new CNeuralLogisticLayer(get_layer(i)->get_num_neurons());
+		else if (strcmp(get_layer(i)->get_name(), "NeuralRectifiedLinearLayer")==0)
+			ae_encoding_layer = new CNeuralRectifiedLinearLayer(get_layer(i)->get_num_neurons());
+		else
+			SG_ERROR("Unsupported layer type (%s) for layer %i\n", 
+				get_layer(i)->get_name(), i);
+		
+		CNeuralLayer* ae_decoding_layer = NULL;
+		int32_t k = m_num_layers-i;
+		
+		if (strcmp(get_layer(k)->get_name(), "NeuralLinearLayer")==0)
+			ae_decoding_layer = new CNeuralLinearLayer(get_layer(k)->get_num_neurons());
+		else if (strcmp(get_layer(k)->get_name(), "NeuralLogisticLayer")==0)
+			ae_decoding_layer = new CNeuralLogisticLayer(get_layer(k)->get_num_neurons());
+		else if (strcmp(get_layer(k)->get_name(), "NeuralRectifiedLinearLayer")==0)
+			ae_decoding_layer = new CNeuralRectifiedLinearLayer(get_layer(k)->get_num_neurons());
+		else
+			SG_ERROR("Unsupported layer type (%s) for layer %i\n", 
+				get_layer(k)->get_name(), k);
+			
+		CAutoencoder ae(get_layer(i-1)->get_num_neurons(), 
+			ae_encoding_layer, ae_decoding_layer, m_sigma);
+
 		ae.noise_type = EAENoiseType(pt_noise_type[i-1]);
 		ae.noise_parameter = pt_noise_parameter[i-1];
 		ae.set_contraction_coefficient(pt_contraction_coefficient[i-1]);
@@ -115,6 +146,8 @@ void CDeepAutoencoder::pre_train(CFeatures* data)
 		}
 			
 	}
+	
+	set_batch_size(1);
 }
 
 CDenseFeatures< float64_t >* CDeepAutoencoder::transform(

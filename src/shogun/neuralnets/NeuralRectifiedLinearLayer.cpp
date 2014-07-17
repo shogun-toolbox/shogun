@@ -122,13 +122,15 @@ void CNeuralRectifiedLinearLayer::compute_local_gradients(
 				m_local_gradients[i] = (m_activations[i]-targets[i])/m_batch_size;
 		}
 	}
-	
-	int32_t len = m_num_neurons*m_batch_size;
-	for (int32_t i=0; i< len; i++)
+	else
 	{
-		if (m_activations[i]==0)
-			m_local_gradients[i] = 0;
-		else
-			m_local_gradients[i] = m_activation_gradients[i];
+		int32_t len = m_num_neurons*m_batch_size;
+		for (int32_t i=0; i< len; i++)
+		{
+			if (m_activations[i]==0)
+				m_local_gradients[i] = 0;
+			else
+				m_local_gradients[i] = m_activation_gradients[i];
+		}
 	}
 }

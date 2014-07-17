@@ -112,6 +112,7 @@ TEST(NeuralNetwork, neural_layers_builder)
 
 	EXPECT_NEAR(network->check_gradients(), 0.0, tolerance);
 	SG_UNREF(network);
+	SG_UNREF(layers);
 }
 
 
