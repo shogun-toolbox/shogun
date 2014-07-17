@@ -74,6 +74,7 @@ void CKLInferenceMethod::init()
 	m_noise_factor=1e-10;
 	m_max_attempt=0;
 	m_exp_factor=2;
+	m_min_coeff_kernel=1e-5;
 	SG_ADD(&m_noise_factor, "noise_factor",
 		"The noise factor used for correcting Kernel matrix",
 		MS_NOT_AVAILABLE);
@@ -82,6 +83,9 @@ void CKLInferenceMethod::init()
 		MS_NOT_AVAILABLE);
 	SG_ADD(&m_max_attempt, "max_attempt",
 		"The max number of attempt to correct Kernel matrix",
+		MS_NOT_AVAILABLE);
+	SG_ADD(&m_min_coeff_kernel, "min_coeff_kernel",
+		"The minimum coeefficient of kernel matrix in LDLT factorization used to check whether the kernel matrix is positive definite or not",
 		MS_NOT_AVAILABLE);
 
 	set_lbfgs_parameters();
@@ -165,19 +169,25 @@ void CKLInferenceMethod::update()
 
 void CKLInferenceMethod::set_noise_factor(float64_t noise_factor)
 {
-	REQUIRE(noise_factor>=0, "The noise_factor should be non-negative\n");
+	REQUIRE(noise_factor>=0, "The noise_factor %.20f should be non-negative\n", noise_factor);
 	m_noise_factor=noise_factor;
+}
+
+void CKLInferenceMethod::set_min_coeff_kernel(float64_t min_coeff_kernel)
+{
+	REQUIRE(min_coeff_kernel>=0, "The min_coeff_kernel %.20f should be non-negative\n", min_coeff_kernel);
+	m_min_coeff_kernel=min_coeff_kernel;
 }
 
 void CKLInferenceMethod::set_max_attempt(index_t max_attempt)
 {
-	REQUIRE(max_attempt>=0, "The max_attempt should be non-negative. 0 means inifity attempts\n");
+	REQUIRE(max_attempt>=0, "The max_attempt %d should be non-negative. 0 means inifity attempts\n", max_attempt);
 	m_max_attempt=max_attempt;
 }
 
 void CKLInferenceMethod::set_exp_factor(float64_t exp_factor)
 {
-	REQUIRE(exp_factor>1.0, "The exp_factor should be greater than 1.0.\n");
+	REQUIRE(exp_factor>1.0, "The exp_factor %f should be greater than 1.0.\n", exp_factor);
 	m_exp_factor=exp_factor;
 }
 
@@ -197,17 +207,19 @@ Eigen::LDLT<Eigen::MatrixXd> CKLInferenceMethod::update_init_helper()
 
 	float64_t attempt_count=0;
 	MatrixXd Kernel_D=ldlt.vectorD();
-	while (Kernel_D.minCoeff()<=0)
+	float64_t noise_factor=m_noise_factor;
+
+	while (Kernel_D.minCoeff()<=m_min_coeff_kernel)
 	{
 		if (m_max_attempt>0 && attempt_count>m_max_attempt)
-			SG_ERROR("The Kernel matrix is highly non-positive definite",
-				" even when adding %f noise to the diagonal elements at max %d attempts\n",
-				m_noise_factor, m_max_attempt);
+			SG_ERROR("The Kernel matrix is highly non-positive definite since the min_coeff_kernel is less than %.20f",
+				" even when adding %.20f noise to the diagonal elements at max %d attempts\n",
+				m_min_coeff_kernel, noise_factor, m_max_attempt);
 		attempt_count++;
-		float64_t pre_noise_factor=m_noise_factor;
-		m_noise_factor*=m_exp_factor;
-		//updat the noise  eigen_K=eigen_K+m_noise_factor*(m_exp_factor^attempt_count)*Identity()
-		eigen_K=eigen_K+(m_noise_factor-pre_noise_factor)*MatrixXd::Identity(m_ktrtr.num_rows, m_ktrtr.num_cols);
+		float64_t pre_noise_factor=noise_factor;
+		noise_factor*=m_exp_factor;
+		//updat the noise  eigen_K=eigen_K+noise_factor*(m_exp_factor^attempt_count)*Identity()
+		eigen_K=eigen_K+(noise_factor-pre_noise_factor)*MatrixXd::Identity(m_ktrtr.num_rows, m_ktrtr.num_cols);
 		ldlt.compute(eigen_K*CMath::sq(m_scale));
 		Kernel_D=ldlt.vectorD();
 	}

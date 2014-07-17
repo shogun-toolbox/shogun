@@ -4,6 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
+ * Written (W) 2014 Shell Hu
  * Written (W) 2012 Fernando José Iglesias García
  * Copyright (C) 2012 Fernando José Iglesias García
  */
@@ -40,6 +41,8 @@ void CPrimalMosekSOSVM::init()
 	//FIXME model selection available for SO machines
 	SG_ADD(&m_regularization, "regularization", "Regularization constant", MS_NOT_AVAILABLE);
 	SG_ADD(&m_epsilon, "epsilon", "Violation tolerance", MS_NOT_AVAILABLE);
+	SG_ADD(&m_lb, "lb", "Lower bounds", MS_NOT_AVAILABLE);
+	SG_ADD(&m_ub, "ub", "Upper bounds", MS_NOT_AVAILABLE);
 
 	m_regularization = 1.0;
 	m_epsilon = 0.0;
@@ -83,10 +86,22 @@ bool CPrimalMosekSOSVM::train_machine(CFeatures* data)
 	SGVector< float64_t > a, b, lb, ub;
 	m_model->init_primal_opt(m_regularization, A, a, B, b, lb, ub, C);
 
+	REQUIRE(lb.vlen == 0 || lb.vlen == M,
+		"%s::train_machine(): lb.vlen can only be 0 or w.vlen!\n", get_name());
+
+	REQUIRE(ub.vlen == 0 || ub.vlen == M,
+		"%s::train_machine(): ub.vlen can only be 0 or w.vlen!\n", get_name());
+
+	if (lb.vlen == M)
+		set_lower_bounds(lb);
+
+	if (ub.vlen == M)
+		set_upper_bounds(ub);
+
 	SG_DEBUG("Regularization used in PrimalMosekSOSVM equal to %.2f.\n", m_regularization);
 
 	// Input terms of the problem that do not change between iterations
-	REQUIRE(mosek->init_sosvm(M, N, num_aux, num_aux_con, C, lb, ub, A, b) == MSK_RES_OK,
+	REQUIRE(mosek->init_sosvm(M, N, num_aux, num_aux_con, C, m_lb, m_ub, A, b) == MSK_RES_OK,
 		"Mosek error in PrimalMosekSOSVM initializing SO-SVM.\n")
 
 	// Initialize the weight vector
@@ -297,6 +312,16 @@ void CPrimalMosekSOSVM::set_regularization(float64_t C)
 void CPrimalMosekSOSVM::set_epsilon(float64_t epsilon)
 {
 	m_epsilon = epsilon;
+}
+
+void CPrimalMosekSOSVM::set_lower_bounds(SGVector< float64_t > lb)
+{
+	m_lb = lb.clone();
+}
+
+void CPrimalMosekSOSVM::set_upper_bounds(SGVector< float64_t > ub)
+{
+	m_ub = ub.clone();
 }
 
 #endif /* USE_MOSEK */

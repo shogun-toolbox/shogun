@@ -9,6 +9,8 @@
 #include <shogun/neuralnets/ConvolutionalFeatureMap.h>
 #include <shogun/neuralnets/NeuralConvolutionalLayer.h>
 #include <shogun/neuralnets/RBM.h>
+#include <shogun/neuralnets/DeepBeliefNetwork.h>
 #include <shogun/neuralnets/Autoencoder.h>
 #include <shogun/neuralnets/DeepAutoencoder.h>
+#include <shogun/neuralnets/NeuralLayers.h>
 %}

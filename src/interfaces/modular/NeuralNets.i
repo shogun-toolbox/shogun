@@ -5,7 +5,7 @@
 %newobject sample_group_with_evidence(int32_t V, int32_t E, CDenseFeatures<float64_t>* evidence,int32_t num_gibbs_steps);
 %newobject reconstruct(CDenseFeatures<float64_t>* data);
 %newobject transform(CDenseFeatures<float64_t>* data);
-
+%newobject done();
  
 /* Remove C Prefix */ 
 %rename(NeuralNetwork) CNeuralNetwork;
@@ -18,8 +18,10 @@
 %rename(ConvolutionalFeatureMap) CConvolutionalFeatureMap;
 %rename(NeuralConvolutionalLayer) CNeuralConvolutionalLayer;
 %rename(RBM) CRBM;
+%rename(DeepBeliefNetwork) CDeepBeliefNetwork;
 %rename(Autoencoder) CAutoencoder;
 %rename(DeepAutoencoder) CDeepAutoencoder;
+%rename(NeuralLayers) CNeuralLayers;
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/neuralnets/NeuralNetwork.h>
@@ -32,6 +34,7 @@
 %include <shogun/neuralnets/ConvolutionalFeatureMap.h>
 %include <shogun/neuralnets/NeuralConvolutionalLayer.h>
 %include <shogun/neuralnets/RBM.h>
+%include <shogun/neuralnets/DeepBeliefNetwork.h>
 %include <shogun/neuralnets/Autoencoder.h>
 %include <shogun/neuralnets/DeepAutoencoder.h>
-
+%include <shogun/neuralnets/NeuralLayers.h>

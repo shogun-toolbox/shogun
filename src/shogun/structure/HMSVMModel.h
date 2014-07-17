@@ -107,7 +107,7 @@ class CHMSVMModel : public CStructuredModel
 				float64_t regularization,
 				SGMatrix< float64_t > & A,  SGVector< float64_t > a,
 				SGMatrix< float64_t > B,  SGVector< float64_t > & b,
-				SGVector< float64_t > lb, SGVector< float64_t > ub,
+				SGVector< float64_t > & lb, SGVector< float64_t > & ub,
 				SGMatrix < float64_t > & C);
 
 		/**
