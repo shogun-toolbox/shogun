@@ -118,7 +118,6 @@ public:
 	 * p(f|y) \approx q(f|y) = \mathcal{N}(f|\mu,\Sigma)
 	 * \f]
 	 *
-	 * Mean vector \f$\mu\f$ is evaluated using Newton's method.
 	 *
 	 * @return mean vector
 	 */
@@ -189,8 +188,6 @@ public:
 	 * Default value is 0. 
 	 * @param epsilon Epsilon for convergence test based on the change of gradient.
 	 * Default value is 1e-5
-	 * @param enable_newton_if_fail if LBFGS optimizer fails, should we use Newton method.
-	 * Default value is true.  
 	 * @param min_step The minimum step of the line search.
 	 * The default value is 1e-20
 	 * @param max_step The maximum step of the line search.
@@ -219,7 +216,6 @@ public:
 			float64_t delta = 0.0,
 			int past = 0,
 			float64_t epsilon = 1e-5,
-			bool enable_newton_if_fail = true,
 			float64_t min_step = 1e-20,
 			float64_t max_step = 1e+20,
 			float64_t ftol = 1e-4,
