@@ -64,7 +64,9 @@ TEST(DeepAutoencoder, pre_train)
 	
 	CDenseFeatures<float64_t>* features = new CDenseFeatures<float64_t>(data);
 	
+	ae.pt_epsilon.set_const(1e-6);
 	ae.pre_train(features);
+	
 	
 	CDenseFeatures<float64_t>* reconstructed = ae.reconstruct(features);
 	SGMatrix<float64_t> reconstructed_data = reconstructed->get_feature_matrix();

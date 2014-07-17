@@ -83,6 +83,7 @@ CNeuralLayers* CNeuralLayers::with_layer(CNeuralLayer* layer)
 
 CDynamicObjectArray* CNeuralLayers::done()
 {
+	SG_REF(m_layers);
 	return m_layers;
 }
 
