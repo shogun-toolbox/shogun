@@ -7,10 +7,10 @@
  * modification, are permitted provided that the following conditions are met:
  *
  * 1. Redistributions of source code must retain the above copyright notice, this
- *    list of conditions and the following disclaimer.
+ *	  list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimer in the documentation
- *    and/or other materials provided with the distribution.
+ *	  this list of conditions and the following disclaimer in the documentation
+ *	  and/or other materials provided with the distribution.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -40,15 +40,34 @@
 
 namespace shogun 
 {
+/** @brief CV2SGFactory converts Shogun's SGMatrix and DenseFeatures data structure
+ * into OpenCV's cv::Mat format. 
+ *
+ * This essentially is performed using the memcpy function. That is, we copy
+ * the required matrix pointed by SGMatrix directly to the memory block
+ * pointed by the cv::Mat. 
+ */    
 class SG2CVFactory
 {
 	public:
+		/* constructor */
 		SG2CVFactory();
+		/* destructor */
 		~SG2CVFactory();
-
+		/* get cv::Mat from SGMatrix. 
+		 * @param SGMatrix which is to be converted
+		 * @param specify the OpenCV data type. i.e (CV_8U, CV_8S, CV_16U, 
+		 * CV_16S, CV_32S, CV_32F, CV_64F)
+		 * @return Mat object of the specified data type
+		 */
 		template <typename SG_T> static cv::Mat getcvMat(SGMatrix<SG_T> sgMat,
 				int cv_type);
-
+		/* get cv::Mat from Densefeatures
+		 * @param DenseFeatures pointer 
+		 * @param specify the OpenCV data type. i.e (CV_8U, CV_8S, CV_16U,
+		 * CV_16S, CV_32S, CV_32F, CV_64F)
+		 * @return Mat object of the specified data type
+		 */
 		template <typename SG_T> static cv::Mat getcvMat_from_features
 			(CDenseFeatures<SG_T>* sgDense, int cv_type);
 

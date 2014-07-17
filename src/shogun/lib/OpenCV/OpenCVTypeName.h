@@ -37,7 +37,9 @@
 #include <opencv2/core/core.hpp>
 #include <shogun/lib/common.h>
 namespace shogun{
-
+/** @brief OpenCVTypeName converts Shogun data types to their corresponding
+ * OpenCV data types.
+ */
 template <typename T>class OpenCVTypeName
 {
     public:
