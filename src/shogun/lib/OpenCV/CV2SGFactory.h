@@ -28,7 +28,7 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 #include <shogun/lib/config.h>
-#ifdef HAVE_OPENCVs
+#ifdef HAVE_OPENCV
 
 #ifndef CV2_SGMATRIX_FACTORY_H_
 #define CV2_SGMATRIX_FACTORY_H_
