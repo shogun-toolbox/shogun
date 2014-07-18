@@ -43,7 +43,7 @@
 #endif // HAVE_EIGEN3
 
 #ifdef HAVE_VIENNACL
-#include <shogun/mathematics/linalg/opencl_config.h>
+#include <shogun/mathematics/linalg/internal/opencl_util.h>
 #include <shogun/lib/GPUMatrix.h>
 #include <shogun/lib/GPUVector.h>
 #endif
@@ -546,23 +546,16 @@ struct sum<Backend::VIENNACL,Matrix>
 	template <class T>
 	static viennacl::ocl::kernel& generate_kernel(bool no_diag)
 	{
-		std::string type_string = viennacl::ocl::type_to_string<T>::apply();
-		std::string prog_name = "sum_prog_" + type_string;
-		if (no_diag)
-			prog_name.append("_no_diag");
+		std::string prog_name = "sum_prog_" + get_type_string<T>();
+		if (no_diag) prog_name.append("_no_diag");
 		
 		const std::string kernel_name = "sum_kernel";
 		
-		if (viennacl::ocl::current_context().has_program(prog_name))
-			return viennacl::ocl::current_context().get_program(prog_name).get_kernel(kernel_name);
+		if (program_exists(prog_name))
+			return get_kernel(prog_name, kernel_name);
 		
-		std::string source = "";
-		viennacl::ocl::append_double_precision_pragma<T>(viennacl::ocl::current_context(), source);
-		source.append("#define DATATYPE " + type_string + "\n");
-		source.append("#define KERNEL_NAME " + kernel_name + "\n");
-		source.append("#define WORK_GROUP_SIZE " + std::to_string(OCL_WORK_GROUP_SIZE_1D) + "\n");
-		if (no_diag)
-			source.append("#define NO_DIAG\n");
+		std::string source = generate_kernel_preamble<T>(kernel_name);
+		if (no_diag) source.append("#define NO_DIAG\n");
 		
 		source.append(
 			R"(
@@ -570,13 +563,13 @@ struct sum<Backend::VIENNACL,Matrix>
 					__global DATATYPE* mat, int nrows, int ncols, int offset, 
 					__global DATATYPE* result)
 				{
-					__local DATATYPE buffer[WORK_GROUP_SIZE];
+					__local DATATYPE buffer[WORK_GROUP_SIZE_1D];
 					int size = nrows*ncols;
 					
 					int local_id = get_local_id(0);
 					
 					DATATYPE thread_sum = 0;
-					for (int i=local_id; i<size; i+=WORK_GROUP_SIZE)
+					for (int i=local_id; i<size; i+=WORK_GROUP_SIZE_1D)
 					{
 					#ifdef NO_DIAG
 						if (!(i/nrows == i%nrows))
@@ -586,7 +579,7 @@ struct sum<Backend::VIENNACL,Matrix>
 					
 					buffer[local_id] = thread_sum;
 					
-					for (int j = WORK_GROUP_SIZE/2; j > 0; j = j>>1) 
+					for (int j = WORK_GROUP_SIZE_1D/2; j > 0; j = j>>1) 
 					{ 
 						barrier(CLK_LOCAL_MEM_FENCE); 
 						if (local_id < j) 
@@ -601,10 +594,8 @@ struct sum<Backend::VIENNACL,Matrix>
 			)"
 		);
 		
-		viennacl::ocl::program & prog =
-			viennacl::ocl::current_context().add_program(source, prog_name);
+		viennacl::ocl::kernel& kernel = compile_kernel(prog_name, kernel_name, source);
 		
-		viennacl::ocl::kernel& kernel = prog.get_kernel(kernel_name);
 		kernel.local_work_size(0, OCL_WORK_GROUP_SIZE_1D);
 		kernel.global_work_size(0, OCL_WORK_GROUP_SIZE_1D);
 		

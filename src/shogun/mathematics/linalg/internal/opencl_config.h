@@ -35,10 +35,14 @@
 #ifndef __OPENCL_CONFIG_H__
 #define __OPENCL_CONFIG_H__
 
+#include <shogun/lib/config.h>
+#ifdef HAVE_VIENNACL
+
 /** Number of workers in a work group when launching 1D kernels */
 #define OCL_WORK_GROUP_SIZE_1D 256
 
 /** Number of workers along each dimension in a work group when launching 2D kernels */
 #define OCL_WORK_GROUP_SIZE_2D 16
 
+#endif // HAVE_VIENNACL
 #endif // __OPENCL_CONFIG_H__
