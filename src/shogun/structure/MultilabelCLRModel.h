@@ -19,7 +19,7 @@ namespace shogun
  * contains application dependent logic for solving multi-label classification
  * using Calibrated Label Ranking (CLR) [1] method within a generic SO framework.
  *
- * [1] J. Fürnkranz, et.al. Multilabel Classiﬁcation via Calibrated Label Ranking.
+ * [1] J. Furnkranz, et.al. Multilabel Classification via Calibrated Label Ranking.
  *     https://www.mathematik.uni-marburg.de/~eyke/publications/ml08.pdf
  */
 class CMultilabelCLRModel : public CStructuredModel
