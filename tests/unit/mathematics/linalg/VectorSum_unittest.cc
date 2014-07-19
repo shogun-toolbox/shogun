@@ -39,6 +39,10 @@
 #include <shogun/mathematics/eigen3.h>
 #endif // HAVE_EIGEN3
 
+#ifdef HAVE_VIENNACL
+#include <shogun/lib/GPUVector.h>
+#endif
+
 using namespace shogun;
 
 #ifdef HAVE_EIGEN3
@@ -69,4 +73,20 @@ TEST(VectorSum, Eigen3_fixed_explicit_eigen3_backend)
 }
 
 #endif // HAVE_EIGEN3
+
+#ifdef HAVE_VIENNACL
+
+TEST(VectorSum, viennacl_backend)
+{
+	const index_t size=10;
+	CGPUVector<float64_t> a(size);
+	a.set_const(1.0);
+
+	float64_t result=linalg::vector_sum<linalg::Backend::VIENNACL>(a);
+
+	EXPECT_NEAR(result, 10.0, 1E-15);
+}
+
+#endif // HAVE_VIENNACL
+
 #endif // HAVE_LINALG_LIB
