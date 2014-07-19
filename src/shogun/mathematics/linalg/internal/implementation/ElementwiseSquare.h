@@ -34,10 +34,16 @@
 #include <shogun/lib/config.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/mathematics/linalg/internal/Block.h>
+#include <shogun/io/SGIO.h>
 
 #ifdef HAVE_EIGEN3
 #include <shogun/mathematics/eigen3.h>
 #endif // HAVE_EIGEN3
+
+#ifdef HAVE_VIENNACL
+#include <shogun/mathematics/linalg/internal/opencl_util.h>
+#include <shogun/lib/GPUMatrix.h>
+#endif
 
 namespace shogun
 {
@@ -152,6 +158,79 @@ struct elementwise_square<Backend::EIGEN3,Matrix>
 };
 
 #endif // HAVE_EIGEN3
+
+#ifdef HAVE_VIENNACL
+/**
+ * @brief Specialization of generic elementwise_square for the ViennaCL backend
+ */
+template <> template <class Matrix>
+struct elementwise_square<Backend::VIENNACL,Matrix>
+{
+	typedef typename Matrix::Scalar T;
+	typedef CGPUMatrix<T> ReturnType;
+	
+
+	/**
+	 * Method that computes the square of co-efficients of a dense matrix
+	 *
+	 * @param m the matrix whose squared co-efficients matrix has to be computed
+	 * @return another matrix whose co-efficients are \f$m'_{i,j}=m_(i,j}^2\f$
+	 * for all \f$i,j\f$
+	 */
+	static CGPUMatrix<T> compute(CGPUMatrix<T> m)
+	{
+		CGPUMatrix<T> result(m.num_rows, m.num_cols);
+		compute(m, result);
+		return result;
+	}
+	
+	/**
+	 * Method that computes the square of co-efficients of a dense matrix-block
+	 *
+	 * @param b the matrix-block whose squared co-efficients matrix has to be computed
+	 * @return another matrix whose co-efficients are \f$m'_{i,j}=b_(i,j}^2\f$
+	 * for all \f$i,j\f$
+	 */
+	static CGPUMatrix<T> compute(Block<CGPUMatrix<T> > b)
+	{
+		SG_SERROR("The operation elementwise_square() on a matrix block is currently not supported\n");
+		return CGPUMatrix<T>();
+	}
+	
+	/**
+	 * Method that computes the square of co-efficients of a dense matrix
+	 *
+	 * @param m the matrix whose squared co-efficients matrix has to be computed
+	 * @param result Pre-allocated matrix for the result of the computation
+	 */
+	static void compute(CGPUMatrix<T> mat, CGPUMatrix<T> result)
+	{
+		const std::string operation = "return element*element;";
+		
+		std::string kernel_name = "elementwise_square_" + ocl::get_type_string<T>();
+		viennacl::ocl::kernel& kernel = 
+			ocl::generate_single_arg_elementwise_kernel<T>(kernel_name, operation);
+		
+		kernel.global_work_size(0, ocl::align_to_multiple_1d(mat.num_rows*mat.num_cols));
+		
+		viennacl::ocl::enqueue(kernel(mat.vcl_matrix(), 
+			cl_int(mat.num_rows*mat.num_cols), cl_int(mat.offset), 
+			result.vcl_matrix(), cl_int(result.offset)));
+	}
+	
+	/**
+	 * Method that computes the square of co-efficients of a dense matrix-block
+	 *
+	 * @param b the matrix-block whose squared co-efficients matrix has to be computed
+	 * @param result Pre-allocated matrix for the result of the computation
+	 */
+	static void compute(Block<SGMatrix<T> > b, SGMatrix<T> result)
+	{
+		SG_SERROR("The operation elementwise_square() on a matrix block is currently not supported\n");
+	}
+};
+
+#endif // HAVE_VIENNACL
 
 }
 

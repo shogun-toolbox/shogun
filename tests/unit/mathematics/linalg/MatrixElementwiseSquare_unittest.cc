@@ -40,6 +40,10 @@
 #include <shogun/mathematics/eigen3.h>
 #endif // HAVE_EIGEN3
 
+#ifdef HAVE_VIENNACL
+#include <shogun/lib/GPUMatrix.h>
+#endif
+
 using namespace shogun;
 
 #ifdef HAVE_EIGEN3
@@ -129,5 +133,30 @@ TEST(MatrixElementwiseSquare, Eigen3_block_eigen3_backend)
 	}
 }
 #endif // HAVE_EIGEN3
+
+#ifdef HAVE_VIENNACL
+
+#endif // HAVE_VIENNACL
+
+TEST(MatrixElementwiseSquare, viennacl_backend)
+{
+	const index_t m=2;
+	const index_t n=3;
+	CGPUMatrix<float64_t> mat(m, n);
+
+	for (index_t i=0; i<m; ++i)
+	{
+		for (index_t j=0; j<n; ++j)
+			mat(i, j)=i*10+j+1;
+	}
+
+	CGPUMatrix<float64_t> sq=linalg::elementwise_square<linalg::Backend::VIENNACL>(mat);
+
+	for (index_t i=0; i<m; ++i)
+	{
+		for (index_t j=0; j<n; ++j)
+			EXPECT_NEAR(sq(i,j), mat(i,j)*mat(i,j), 1E-15);
+	}
+}
 
 #endif // HAVE_LINALG_LIB

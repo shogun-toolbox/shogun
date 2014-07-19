@@ -799,6 +799,134 @@ TEST(MatrixSum, asymmetric_viennacl_backend_no_diag)
 	EXPECT_NEAR(linalg::sum<linalg::Backend::VIENNACL>(mat, true), 29.0, 1E-15);
 }
 
+TEST(MatrixSum, symmetric_viennacl_backend_with_diag)
+{
+	const index_t n=3;
+	CGPUMatrix<float64_t> mat(n, n);
+	mat.set_const(1.0);
+
+	for (index_t i=0; i<n; ++i)
+	{
+		for (index_t j=i+1; j<n; ++j)
+		{
+			mat(i, j)=i*10+j+1;
+			mat(j, i)=mat(i, j);
+		}
+	}
+
+	EXPECT_NEAR(linalg::sum_symmetric<linalg::Backend::VIENNACL>(mat), 39.0, 1E-15);
+}
+
+TEST(MatrixSum, symmetric_viennacl_backend_no_diag)
+{
+	const index_t n=3;
+	CGPUMatrix<float64_t> mat(n, n);
+	mat.set_const(1.0);
+
+	for (index_t i=0; i<n; ++i)
+	{
+		for (index_t j=i+1; j<n; ++j)
+		{
+			mat(i, j)=i*10+j+1;
+			mat(j, i)=mat(i, j);
+		}
+	}
+
+	EXPECT_NEAR(linalg::sum_symmetric<linalg::Backend::VIENNACL>(mat, true), 36.0, 1E-15);
+}
+
+TEST(MatrixSum, asymmetric_colwise_viennacl_backend_with_diag)
+{
+	const index_t m=2;
+	const index_t n=3;
+	CGPUMatrix<float64_t> mat(m, n);
+
+	for (index_t i=0; i<m; ++i)
+	{
+		for (index_t j=0; j<n; ++j)
+			mat(i, j)=i*10+j+1;
+	}
+
+	CGPUVector<float64_t> s=linalg::colwise_sum<linalg::Backend::VIENNACL>(mat);
+
+	for (index_t j=0; j<n; ++j)
+	{
+		float64_t sum=0;
+		for (index_t i=0; i<m; ++i)
+			sum+=mat(i, j);
+		EXPECT_NEAR(sum, s[j], 1E-15);
+	}
+}
+
+TEST(MatrixSum, asymmetric_colwise_viennacl_backend_no_diag)
+{
+	const index_t m=2;
+	const index_t n=3;
+	CGPUMatrix<float64_t> mat(m, n);
+
+	for (index_t i=0; i<m; ++i)
+	{
+		for (index_t j=0; j<n; ++j)
+			mat(i, j)=i*10+j+1;
+	}
+
+	CGPUVector<float64_t> s=linalg::colwise_sum<linalg::Backend::VIENNACL>(mat, true);
+
+	for (index_t j=0; j<n; ++j)
+	{
+		float64_t sum=0;
+		for (index_t i=0; i<m; ++i)
+			sum+=i==j ? 0 : mat(i, j);
+		EXPECT_NEAR(sum, s[j], 1E-15);
+	}
+}
+
+TEST(MatrixSum, asymmetric_rowwise_viennacl_backend_with_diag)
+{
+	const index_t m=2;
+	const index_t n=3;
+	CGPUMatrix<float64_t> mat(m, n);
+
+	for (index_t i=0; i<m; ++i)
+	{
+		for (index_t j=0; j<n; ++j)
+			mat(i, j)=i*10+j+1;
+	}
+
+	CGPUVector<float64_t> s=linalg::rowwise_sum<linalg::Backend::VIENNACL>(mat);
+
+	for (index_t i=0; i<m; ++i)
+	{
+		float64_t sum=0;
+		for (index_t j=0; j<n; ++j)
+			sum+=mat(i, j);
+		EXPECT_NEAR(sum, s[i], 1E-15);
+	}
+}
+
+TEST(MatrixSum, asymmetric_rowwise_viennacl_backend_no_diag)
+{
+	const index_t m=2;
+	const index_t n=3;
+	CGPUMatrix<float64_t> mat(m, n);
+
+	for (index_t i=0; i<m; ++i)
+	{
+		for (index_t j=0; j<n; ++j)
+			mat(i, j)=i*10+j+1;
+	}
+
+	CGPUVector<float64_t> s=linalg::rowwise_sum<linalg::Backend::VIENNACL>(mat, true);
+
+	for (index_t i=0; i<m; ++i)
+	{
+		float64_t sum=0;
+		for (index_t j=0; j<n; ++j)
+			sum+=i==j ? 0 : mat(i, j);
+		EXPECT_NEAR(sum, s[i], 1E-15);
+	}
+}
+
 #endif
 
 #endif // HAVE_LINALG_LIB

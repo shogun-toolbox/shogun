@@ -546,15 +546,13 @@ struct sum<Backend::VIENNACL,Matrix>
 	template <class T>
 	static viennacl::ocl::kernel& generate_kernel(bool no_diag)
 	{
-		std::string prog_name = "sum_prog_" + get_type_string<T>();
-		if (no_diag) prog_name.append("_no_diag");
+		std::string kernel_name = "sum_" + ocl::get_type_string<T>();
+		if (no_diag) kernel_name.append("_no_diag");
 		
-		const std::string kernel_name = "sum_kernel";
+		if (ocl::kernel_exists(kernel_name))
+			return ocl::get_kernel(kernel_name);
 		
-		if (program_exists(prog_name))
-			return get_kernel(prog_name, kernel_name);
-		
-		std::string source = generate_kernel_preamble<T>(kernel_name);
+		std::string source = ocl::generate_kernel_preamble<T>(kernel_name);
 		if (no_diag) source.append("#define NO_DIAG\n");
 		
 		source.append(
@@ -594,7 +592,7 @@ struct sum<Backend::VIENNACL,Matrix>
 			)"
 		);
 		
-		viennacl::ocl::kernel& kernel = compile_kernel(prog_name, kernel_name, source);
+		viennacl::ocl::kernel& kernel = ocl::compile_kernel(kernel_name, source);
 		
 		kernel.local_work_size(0, OCL_WORK_GROUP_SIZE_1D);
 		kernel.global_work_size(0, OCL_WORK_GROUP_SIZE_1D);
@@ -633,6 +631,269 @@ struct sum<Backend::VIENNACL,Matrix>
 	{
 		SG_SERROR("The operation sum() on a matrix block is currently not supported\n");
 		return 0;
+	}
+};
+
+/**
+ * @brief Specialization of generic sum symmetric which works with CGPUMatrix and uses ViennaCL
+ * as backend for computing sum.
+ */
+template <> template <class Matrix>
+struct sum_symmetric<Backend::VIENNACL,Matrix>
+{
+	typedef typename Matrix::Scalar T;
+	
+	/**
+	 * Method that computes the sum of co-efficients of symmetric CGPUMatrix using ViennaCL
+	 *
+	 * @param m the matrix whose sum of co-efficients has to be computed
+	 * @param no_diag if true, diagonal entries are excluded from the sum
+	 * @return the sum of co-efficients computed as \f$\sum_{i,j}m_{i,j}\f$
+	 */
+	static T compute(CGPUMatrix<T> mat, bool no_diag)
+	{
+		return sum<Backend::VIENNACL, CGPUMatrix<T> >::compute(mat, no_diag);
+	}
+	
+	/**
+	 * Method that computes the sum of co-efficients of symmetric CGPUMatrix blocks using ViennaCL
+	 *
+	 * @param b the matrix-block whose sum of co-efficients has to be computed
+	 * @param no_diag if true, diagonal entries are excluded from the sum
+	 * @return the sum of co-efficients computed as \f$\sum_{i,j}b_{i,j}\f$
+	 */
+	static T compute(Block<CGPUMatrix<T> > b, bool no_diag)
+	{
+		SG_SERROR("The operation sum_symmetric() on a matrix block is currently not supported\n");
+		return 0;
+	}
+};
+
+/**
+ * @brief Specialization of generic colwise_sum which works with CGPUMatrix and uses ViennaCL
+ * as backend for computing sum.
+ */
+template <> template <class Matrix>
+struct colwise_sum<Backend::VIENNACL,Matrix>
+{
+	typedef typename Matrix::Scalar T;
+	typedef CGPUVector<T> ReturnType;
+	
+	/** Generates the computation kernel */
+	template <class T>
+	static viennacl::ocl::kernel& generate_kernel(bool no_diag)
+	{
+		std::string kernel_name = "colwise_sum_" + ocl::get_type_string<T>();
+		if (no_diag) kernel_name.append("_no_diag");
+		
+		if (ocl::kernel_exists(kernel_name))
+			return ocl::get_kernel(kernel_name);
+		
+		std::string source = ocl::generate_kernel_preamble<T>(kernel_name);
+		if (no_diag) source.append("#define NO_DIAG\n");
+		
+		source.append(
+			R"(
+				__kernel void KERNEL_NAME(
+					__global DATATYPE* mat, int nrows, int ncols, int offset,
+					__global DATATYPE* result, int result_offset)
+				{
+					int j = get_global_id(0);
+					
+					if (j>=ncols) 
+						return;
+					
+					DATATYPE sum = 0;
+					for (int i=0; i<nrows; i++)
+					{
+					#ifdef NO_DIAG
+						if (i!=j)
+					#endif
+						sum += mat[offset+i+j*nrows];
+					}
+					
+					result[j+result_offset] = sum;
+				}
+			)"
+		);
+		
+		viennacl::ocl::kernel& kernel = ocl::compile_kernel(kernel_name, source);
+		
+		kernel.local_work_size(0, OCL_WORK_GROUP_SIZE_1D);
+		
+		return kernel;
+	}
+	
+	/**
+	 * Method that computes the column wise sum of co-efficients of CGPUMatrix using ViennaCL
+	 *
+	 * @param m the matrix whose colwise sum of co-efficients has to be computed
+	 * @param no_diag if true, diagonal entries are excluded from the sum
+	 * @return the colwise sum of co-efficients computed as \f$s_j=\sum_{i}m_{i,j}\f$
+	 */
+	static CGPUVector<T> compute(CGPUMatrix<T> m, bool no_diag)
+	{
+		CGPUVector<T> result(m.num_cols);
+		compute(m, result, no_diag);
+		return result;
+	}
+	
+	/**
+	 * Method that computes the column wise sum of co-efficients of CGPUMatrix blocks
+	 * using ViennaCL
+	 *
+	 * @param b the matrix-block whose colwise sum of co-efficients has to be computed
+	 * @param no_diag if true, diagonal entries are excluded from the sum
+	 * @return the colwise sum of co-efficients computed as \f$s_j=\sum_{i}b_{i,j}\f$
+	 */
+	static CGPUVector<T> compute(Block<CGPUMatrix<T> > b, bool no_diag)
+	{
+		SG_SERROR("The operation colwise_sum() on a matrix block is currently not supported\n");
+		return CGPUVector<T>();
+	}
+	
+	/**
+	 * Method that computes the column wise sum of co-efficients of CGPUMatrix using ViennaCL
+	 *
+	 * @param m the matrix whose colwise sum of co-efficients has to be computed
+	 * @param no_diag if true, diagonal entries are excluded from the sum
+	 * @param result Pre-allocated vector for the result of the computation
+	 */
+	static void compute(CGPUMatrix<T> mat, CGPUVector<T> result, bool no_diag)
+	{
+		viennacl::ocl::kernel& kernel = generate_kernel<T>(no_diag);
+		kernel.global_work_size(0, ocl::align_to_multiple_1d(mat.num_cols));
+		
+		viennacl::ocl::enqueue(kernel(mat.vcl_matrix(), 
+			cl_int(mat.num_rows), cl_int(mat.num_cols), cl_int(mat.offset), 
+			result.vcl_vector(), cl_int(result.offset)));
+	}
+	
+	/**
+	 * Method that computes the column wise sum of co-efficients of CGPUMatrix blocks
+	 * using ViennaCL
+	 *
+	 * @param b the matrix-block whose colwise sum of co-efficients has to be computed
+	 * @param no_diag if true, diagonal entries are excluded from the sum
+	 * @param result Pre-allocated vector for the result of the computation
+	 */
+	static void compute(Block<CGPUMatrix<T> > b, CGPUVector<T> result, bool no_diag)
+	{
+		SG_SERROR("The operation colwise_sum() on a matrix block is currently not supported\n");
+	}
+};
+
+/**
+ * @brief Specialization of generic rowwise_sum which works with CGPUMatrix and uses ViennaCL
+ * as backend for computing sum.
+ */
+template <> template <class Matrix>
+struct rowwise_sum<Backend::VIENNACL,Matrix>
+{
+	typedef typename Matrix::Scalar T;
+	typedef CGPUVector<T> ReturnType;
+	
+	/** Generates the computation kernel */
+	template <class T>
+	static viennacl::ocl::kernel& generate_kernel(bool no_diag)
+	{
+		std::string kernel_name = "rowwise_sum_" + ocl::get_type_string<T>();
+		if (no_diag) kernel_name.append("_no_diag");
+		
+		if (ocl::kernel_exists(kernel_name))
+			return ocl::get_kernel(kernel_name);
+		
+		std::string source = ocl::generate_kernel_preamble<T>(kernel_name);
+		if (no_diag) source.append("#define NO_DIAG\n");
+		
+		source.append(
+			R"(
+				__kernel void KERNEL_NAME(
+					__global DATATYPE* mat, int nrows, int ncols, int offset,
+					__global DATATYPE* result, int result_offset)
+				{
+					int i = get_global_id(0);
+					
+					if (i>=nrows) 
+						return;
+					
+					DATATYPE sum = 0;
+					for (int j=0; j<ncols; j++)
+					{
+					#ifdef NO_DIAG
+						if (i!=j)
+					#endif
+						sum += mat[offset+i+j*nrows];
+					}
+					
+					result[i+result_offset] = sum;
+				}
+			)"
+		);
+		
+		viennacl::ocl::kernel& kernel = ocl::compile_kernel(kernel_name, source);
+		
+		kernel.local_work_size(0, OCL_WORK_GROUP_SIZE_1D);
+		
+		return kernel;
+	}
+	
+	/**
+	 * Method that computes the row wise sum of co-efficients of CGPUMatrix using ViennaCL
+	 *
+	 * @param m the matrix whose rowwise sum of co-efficients has to be computed
+	 * @param no_diag if true, diagonal entries are excluded from the sum
+	 * @return the rowwise sum of co-efficients computed as \f$s_i=\sum_{j}m_{i,j}\f$
+	 */
+	static CGPUVector<T> compute(CGPUMatrix<T> m, bool no_diag)
+	{
+		CGPUVector<T> result(m.num_rows);
+		compute(m, result, no_diag);
+		return result;
+	}
+	
+	/**
+	 * Method that computes the row wise sum of co-efficients of CGPUMatrix blocks
+	 * using ViennaCL
+	 *
+	 * @param b the matrix-block whose rowwise sum of co-efficients has to be computed
+	 * @param no_diag if true, diagonal entries are excluded from the sum
+	 * @return the rowwise sum of co-efficients computed as \f$s_i=\sum_{j}m_{i,j}\f$
+	 */
+	static CGPUVector<T> compute(Block<CGPUMatrix<T> > b, bool no_diag)
+	{
+		SG_SERROR("The operation rowwise_sum() on a matrix block is currently not supported\n");
+		return CGPUVector<T>();
+	}
+	
+	/**
+	 * Method that computes the row wise sum of co-efficients of CGPUMatrix using ViennaCL
+	 *
+	 * @param m the matrix whose rowwise sum of co-efficients has to be computed
+	 * @param no_diag if true, diagonal entries are excluded from the sum
+	 * @param result Pre-allocated vector for the result of the computation
+	 */
+	static void compute(CGPUMatrix<T> mat, CGPUVector<T> result, bool no_diag)
+	{
+		viennacl::ocl::kernel& kernel = generate_kernel<T>(no_diag);
+		kernel.global_work_size(0, ocl::align_to_multiple_1d(mat.num_rows));
+		
+		viennacl::ocl::enqueue(kernel(mat.vcl_matrix(), 
+			cl_int(mat.num_rows), cl_int(mat.num_cols), cl_int(mat.offset), 
+			result.vcl_vector(), cl_int(result.offset)));
+	}
+	
+	/**
+	 * Method that computes the column wise sum of co-efficients of CGPUMatrix blocks
+	 * using ViennaCL
+	 *
+	 * @param b the matrix-block whose rowwise sum of co-efficients has to be computed
+	 * @param no_diag if true, diagonal entries are excluded from the sum
+	 * @param result Pre-allocated vector for the result of the computation
+	 */
+	static void compute(Block<CGPUMatrix<T> > b, CGPUVector<T> result, bool no_diag)
+	{
+		SG_SERROR("The operation rowwise_sum() on a matrix block is currently not supported\n");
 	}
 };
 

@@ -37,9 +37,13 @@
 
 #include <shogun/lib/config.h>
 #ifdef HAVE_VIENNACL
+#include <viennacl/ocl/backend.hpp>
+#include <viennacl/ocl/kernel.hpp>
+#include <viennacl/ocl/program.hpp>
+#include <viennacl/ocl/utils.hpp>
+#include <viennacl/tools/tools.hpp>
 
 #include <shogun/mathematics/linalg/internal/opencl_config.h>
-#include "Block.h"
 
 #include <string>
 
@@ -52,6 +56,9 @@ namespace linalg
 namespace implementation
 {
 
+namespace ocl
+{
+	
 /** Returns a string representing type T */
 template <class T>
 std::string get_type_string()
@@ -80,28 +87,86 @@ std::string generate_kernel_preamble(std::string kernel_name)
 	return source;
 }
 
-/** Returns true if the program has already been compiled into the current context */
-inline bool program_exists(std::string prog_name)
+/** Returns true if the kernel has already been compiled into the current context */
+inline bool kernel_exists(std::string kernel_name)
 {
-	return viennacl::ocl::current_context().has_program(prog_name);
+	return viennacl::ocl::current_context().has_program(kernel_name);
 }
 
-/** Returns a kernel in a program that has already been compiled */
-inline viennacl::ocl::kernel& get_kernel(std::string prog_name, std::string kernel_name)
+/** Returns a kernel that has already been compiled */
+inline viennacl::ocl::kernel& get_kernel(std::string kernel_name)
 {
-	return viennacl::ocl::current_context().get_program(prog_name).get_kernel(kernel_name);
+	return viennacl::ocl::current_context().get_program(kernel_name).get_kernel(kernel_name);
 }
 
 /** Compiles and returns a kernel */
-inline viennacl::ocl::kernel& compile_kernel(
-	std::string prog_name, std::string kernel_name, std::string source)
+inline viennacl::ocl::kernel& compile_kernel(std::string kernel_name, std::string source)
 {
 	viennacl::ocl::program & prog =
-		viennacl::ocl::current_context().add_program(source, prog_name);
+		viennacl::ocl::current_context().add_program(source, kernel_name);
 		
 	return prog.get_kernel(kernel_name);
 }
 
+/** Aligns a given value to a multiple of OCL_WORK_GROUP_SIZE_1D */ 
+inline uint32_t align_to_multiple_1d(uint32_t n)
+{
+	return viennacl::tools::align_to_multiple<uint32_t>(n, OCL_WORK_GROUP_SIZE_1D);
+}
+
+/** Aligns a given value to a multiple of OCL_WORK_GROUP_SIZE_2D */ 
+inline uint32_t align_to_multiple_2d(uint32_t n)
+{
+	return viennacl::tools::align_to_multiple<uint32_t>(n, OCL_WORK_GROUP_SIZE_2D);
+}
+
+/** Generates a kernel that performs a single argument elementwise operation on 
+ * a vector
+ * 
+ * The operation is specified by a string containing OpenCL code that performs 
+ * an operation on a variable called "element" and returns the result. For 
+ * example the operation string: "return element+1;" will produce a kernel that
+ * adds 1 to all elements of a vector.
+ * 
+ * The kernel will have the following arguments:
+ * __global DATATYPE* vec, int size, int vec_offset, __global DATATYPE* result, 
+ * int result_offset
+ */
+template <class T>
+viennacl::ocl::kernel& generate_single_arg_elementwise_kernel(
+	std::string kernel_name, std::string operation)
+{
+	if (ocl::kernel_exists(kernel_name))
+		return ocl::get_kernel(kernel_name);
+	
+	std::string source = ocl::generate_kernel_preamble<T>(kernel_name);
+	
+	source.append("inline DATATYPE operation(DATATYPE element)\n{\n");
+	source.append(operation);
+	source.append("\n}\n");
+	
+	source.append(
+		R"(
+			__kernel void KERNEL_NAME(
+				__global DATATYPE* vec, int size, int vec_offset, 
+				__global DATATYPE* result, int result_offset)
+			{
+				int i = get_global_id(0);
+				
+				if (i<size)
+					result[i+result_offset] = operation(vec[i+vec_offset]);
+			}
+		)"
+	);
+	
+	viennacl::ocl::kernel& kernel = ocl::compile_kernel(kernel_name, source);
+	
+	kernel.local_work_size(0, OCL_WORK_GROUP_SIZE_1D);
+	
+	return kernel;
+}
+
+}
 }
 }
 }

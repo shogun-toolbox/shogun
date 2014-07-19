@@ -34,6 +34,12 @@
 #include <shogun/lib/config.h>
 #include <shogun/lib/SGVector.h>
 
+#ifdef HAVE_VIENNACL
+#include <shogun/mathematics/linalg/internal/implementation/Sum.h>
+#include <shogun/lib/GPUVector.h>
+#include <shogun/lib/GPUMatrix.h>
+#endif
+
 #ifdef HAVE_EIGEN3
 #include <shogun/mathematics/eigen3.h>
 #endif // HAVE_EIGEN3
@@ -93,6 +99,30 @@ struct vector_sum<Backend::EIGEN3, Vector>
 };
 
 #endif // HAVE_EIGEN3
+
+#ifdef HAVE_VIENNACL
+/**
+ * @brief Specialization of generic vector_sum for the ViennaCL backend
+ */
+template <> template <class Vector>
+struct vector_sum<Backend::VIENNACL, Vector>
+{
+	typedef typename Vector::Scalar T;
+
+	/**
+	 * Method that computes the sum of SGVectors using Eigen3
+	 *
+	 * @param a vector whose sum has to be computed
+	 * @return the vector sum \f$\sum_i a_i\f$
+	 */
+	static T compute(CGPUVector<T> vec)
+	{
+		CGPUMatrix<T> m(vec.vector, vec.vlen, 1, vec.offset);
+		return sum<Backend::VIENNACL, CGPUMatrix<T> >::compute(m, false);
+	}
+};
+
+#endif // HAVE_VIENNACL
 
 }
 
