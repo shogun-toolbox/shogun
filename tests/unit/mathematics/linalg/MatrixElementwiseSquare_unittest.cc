@@ -136,8 +136,6 @@ TEST(MatrixElementwiseSquare, Eigen3_block_eigen3_backend)
 
 #ifdef HAVE_VIENNACL
 
-#endif // HAVE_VIENNACL
-
 TEST(MatrixElementwiseSquare, viennacl_backend)
 {
 	const index_t m=2;
@@ -158,5 +156,7 @@ TEST(MatrixElementwiseSquare, viennacl_backend)
 			EXPECT_NEAR(sq(i,j), mat(i,j)*mat(i,j), 1E-15);
 	}
 }
+
+#endif // HAVE_VIENNACL
 
 #endif // HAVE_LINALG_LIB
