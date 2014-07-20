@@ -244,7 +244,12 @@ float64_t CStochasticGBMachine::compute_multiplier(CRegressionLabels* f, CRegres
 CMachine* CStochasticGBMachine::fit_model(CDenseFeatures<float64_t>* feats, CRegressionLabels* labels)
 {
 	// clone base machine
-	CMachine* c=dynamic_cast<CMachine*>(m_machine->clone());
+	CSGObject* obj=m_machine->clone();
+	CMachine* c=NULL;
+	if (obj)
+		c=dynamic_cast<CMachine*>(obj);
+	else
+		SG_ERROR("Machine could not be cloned!\n")
 
 	// train cloned machine
 	c->set_labels(labels);
