@@ -625,7 +625,7 @@ void CKernelMachine::data_lock(CLabels* labs, CFeatures* features)
 {
 	if ( !kernel )
 		SG_ERROR("The kernel is not initialized\n")
-	if (kernel->has_property(EKernelProperty::KP_KERNCOMBINATION))
+	if (kernel->has_property(KP_KERNCOMBINATION))
 		SG_ERROR("Locking is not supported (yet) with combined kernel. Please disable it in cross validation")
 
 	/* init kernel with data */
