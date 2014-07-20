@@ -181,7 +181,7 @@ void CDependenceMaximization::set_policy(EFeatureRemovalPolicy policy)
 void CDependenceMaximization::set_labels(CLabels* labels)
 {
 	// NULL check is handled in base class CFeatureSelection
-	CFeatureSelection::set_labels(labels);
+	CFeatureSelection<float64_t>::set_labels(labels);
 
 	// convert the CLabels object to CDenseFeatures
 	SG_UNREF(m_labels_feats);
