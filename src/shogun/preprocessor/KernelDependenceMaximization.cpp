@@ -68,7 +68,7 @@ void CKernelDependenceMaximization::precompute()
 	// be set via public API
 	ASSERT(m_estimator);
 
-	CFeatureSelection::precompute();
+	CFeatureSelection<float64_t>::precompute();
 
 	// make sure that we have an instance of CKernelIndependenceTest via
 	// proper cast and set this kernel to the estimator
