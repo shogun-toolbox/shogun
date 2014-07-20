@@ -35,6 +35,7 @@
 #include <shogun/mathematics/linalg/internal/implementation/Dot.h>
 #include <shogun/mathematics/linalg/internal/implementation/Sum.h>
 #include <shogun/mathematics/linalg/internal/implementation/VectorSum.h>
+#include <shogun/mathematics/linalg/internal/implementation/Max.h>
 
 namespace shogun
 {
@@ -169,6 +170,13 @@ template <Backend backend=linalg_traits<Redux>::backend, class Vector>
 typename Vector::Scalar vector_sum(Vector a)
 {
 	return implementation::vector_sum<backend,Vector>::compute(a);
+}
+
+/** Returns the largest element in a matrix or vector */
+template <Backend backend=linalg_traits<Redux>::backend, class Matrix>
+typename Matrix::Scalar max(Matrix m)
+{
+	return implementation::max<backend,Matrix>::compute(m);
 }
 
 }

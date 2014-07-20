@@ -166,6 +166,55 @@ viennacl::ocl::kernel& generate_single_arg_elementwise_kernel(
 	return kernel;
 }
 
+/** Generates a kernel that performs a two-argument elementwise operation on 
+ * a vector
+ * 
+ * The operation is specified by a string containing OpenCL code that performs 
+ * an operation on variables called "element1" and "element2" and returns the result. For 
+ * example the operation string: "return element1+element2;" will produce a kernel that
+ * adds adds two vectors together
+ * 
+ * The kernel will have the following arguments:
+ * __global DATATYPE* vec1, int size, int vec1_offset, 
+ * __global DATATYPE* vec2, int vec2_offset, 
+ * __global DATATYPE* result, int result_offset
+ */
+template <class T>
+viennacl::ocl::kernel& generate_two_arg_elementwise_kernel(
+	std::string kernel_name, std::string operation)
+{
+	if (ocl::kernel_exists(kernel_name))
+		return ocl::get_kernel(kernel_name);
+	
+	std::string source = ocl::generate_kernel_preamble<T>(kernel_name);
+	
+	source.append("inline DATATYPE operation(DATATYPE element1, DATATYPE element2)\n{\n");
+	source.append(operation);
+	source.append("\n}\n");
+	
+	source.append(
+		R"(
+			__kernel void KERNEL_NAME(
+				__global DATATYPE* vec1, int size, int vec1_offset, 
+				__global DATATYPE* vec2, int vec2_offset, 
+				__global DATATYPE* result, int result_offset)
+			{
+				int i = get_global_id(0);
+				
+				if (i<size)
+					result[i+result_offset] = 
+						operation(vec1[i+vec1_offset], vec2[i+vec2_offset]);
+			}
+		)"
+	);
+	
+	viennacl::ocl::kernel& kernel = ocl::compile_kernel(kernel_name, source);
+	
+	kernel.local_work_size(0, OCL_WORK_GROUP_SIZE_1D);
+	
+	return kernel;
+}
+
 }
 }
 }
