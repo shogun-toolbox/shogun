@@ -246,18 +246,10 @@ SGVector<float64_t> CLogitVGPiecewiseBoundLikelihood::get_variational_first_deri
 void CLogitVGPiecewiseBoundLikelihood::set_variational_distribution(SGVector<float64_t> mu,
 	SGVector<float64_t> s2, const CLabels* lab)
 {
-	REQUIRE(lab, "Labels are required (lab should not be NULL)\n");
-
-	REQUIRE((mu.vlen==s2.vlen) && (mu.vlen==lab->get_num_labels()),
-		"Length of the vector of means (%d), length of the vector of "
-		"variances (%d) and number of labels (%d) should be the same\n",
-		mu.vlen, s2.vlen, lab->get_num_labels());
+	CVariationalGaussianLikelihood::set_variational_distribution(mu, s2, lab);
 
 	REQUIRE(lab->get_label_type()==LT_BINARY,
 		"Labels must be type of CBinaryLabels\n");
-
-	for(index_t i = 0; i < s2.vlen; ++i)
-		REQUIRE(s2[i] > 0.0, "Variance should always be positive (s2 should be a positive vector)\n");
 
 	m_lab = (((CBinaryLabels*)lab)->get_labels()).clone();
 
@@ -266,9 +258,6 @@ void CLogitVGPiecewiseBoundLikelihood::set_variational_distribution(SGVector<flo
 	//0 and 1 repectively.
 	for(index_t i = 0; i < m_lab.size(); ++i)
 		m_lab[i] = CMath::max(m_lab[i], 0.0);
-
-	m_mu = mu;
-	m_s2 = s2;
 
 	precompute();
 }
