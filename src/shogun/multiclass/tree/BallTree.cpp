@@ -92,12 +92,12 @@ void CBallTree::init_node(bnode_t* node, index_t start, index_t end)
 	SGVector<float64_t> center(m_data.num_rows);
 	for (int32_t i=0;i<m_data.num_rows;i++)
 	{
-		center[i]=m_data(i,vec_id[start]);
-		upper_bounds[i]=m_data(i,vec_id[start]);
-		lower_bounds[i]=m_data(i,vec_id[start]);
+		center[i]=m_data(i,m_vec_id[start]);
+		upper_bounds[i]=m_data(i,m_vec_id[start]);
+		lower_bounds[i]=m_data(i,m_vec_id[start]);
 		for (int32_t j=start+1;j<=end;j++)
 		{
-			float64_t data_pt=m_data(i,vec_id[j]);
+			float64_t data_pt=m_data(i,m_vec_id[j]);
 			upper_bounds[i]=CMath::max(upper_bounds[i],data_pt);
 			lower_bounds[i]=CMath::min(lower_bounds[i],data_pt);
 			center[i]+=data_pt;
@@ -108,7 +108,7 @@ void CBallTree::init_node(bnode_t* node, index_t start, index_t end)
 
 	float64_t radius=0;
 	for (int32_t i=start;i<=end;i++)
-		radius=CMath::max(distance(vec_id[i],center.vector,center.vlen),radius);
+		radius=CMath::max(distance(m_vec_id[i],center.vector,center.vlen),radius);
 
 	node->data.radius=radius;
 	node->data.center=center;

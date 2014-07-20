@@ -69,7 +69,7 @@ public:
 	/** get final rearranged vector indices
 	 * @return vector indices rearranged corresponding to the built tree
 	 */
-	SGVector<index_t> get_rearranged_vector_ids() const { return vec_id; }
+	SGVector<index_t> get_rearranged_vector_ids() const { return m_vec_id; }
 
 	/** build tree
 	 *
@@ -314,7 +314,7 @@ protected:
 	SGMatrix<float64_t> m_data;
 
 	/** vector id */
-	SGVector<index_t> vec_id;
+	SGVector<index_t> m_vec_id;
 
 private:
 	/** leaf size */
@@ -324,13 +324,13 @@ private:
 	EDistanceType m_dist;
 
 	/** knn query done or not */
-	bool knn_done;
+	bool m_knn_done;
 
 	/** knn distances */
-	SGMatrix<float64_t> knn_dists;
+	SGMatrix<float64_t> m_knn_dists;
 
 	/** knn indices */
-	SGMatrix<index_t> knn_indices;
+	SGMatrix<index_t> m_knn_indices;
 };
 } /* namespace shogun */
 
