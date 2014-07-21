@@ -301,8 +301,8 @@ void CDeepBeliefNetwork::train(CDenseFeatures<float64_t>* features)
 			{
 				SGMatrix<float64_t> reconstruction = sleep_states[0];
 				float64_t error = 0;
-				for (int32_t i=0; i<inputs_batch.num_rows*inputs_batch.num_cols; i++)
-					error += CMath::pow(reconstruction[i]-inputs_batch[i],2);
+				for (int32_t k=0; k<inputs_batch.num_rows*inputs_batch.num_cols; k++)
+					error += CMath::pow(reconstruction[k]-inputs_batch[k],2);
 		
 				error /= m_batch_size;
 	
@@ -402,7 +402,7 @@ void CDeepBeliefNetwork::down_step(int32_t index, SGVector< float64_t > params,
 	
 	Out.colwise() = B;
 	
-	if (index < m_num_layers-1);
+	if (index < m_num_layers-1)
 	{
 		EMatrix W(get_weights(index,params).matrix, 
 			m_layer_sizes->element(index+1), m_layer_sizes->element(index));
@@ -544,26 +544,26 @@ void CDeepBeliefNetwork::wake_sleep(SGMatrix< float64_t > data, CRBM* top_rbm,
 	}
 }
 
-SGMatrix< float64_t > CDeepBeliefNetwork::get_weights(int32_t i, 
+SGMatrix< float64_t > CDeepBeliefNetwork::get_weights(int32_t index, 
 	SGVector< float64_t > p)
 {
 	if (p.vlen==0)
-		return SGMatrix<float64_t>(m_params.vector+m_weights_index_offsets[i], 
-			m_layer_sizes->element(i+1), m_layer_sizes->element(i), false);
+		return SGMatrix<float64_t>(m_params.vector+m_weights_index_offsets[index], 
+			m_layer_sizes->element(index+1), m_layer_sizes->element(index), false);
 	else
-		return SGMatrix<float64_t>(p.vector+m_weights_index_offsets[i], 
-			m_layer_sizes->element(i+1), m_layer_sizes->element(i), false);
+		return SGMatrix<float64_t>(p.vector+m_weights_index_offsets[index], 
+			m_layer_sizes->element(index+1), m_layer_sizes->element(index), false);
 }
 
-SGVector< float64_t > CDeepBeliefNetwork::get_biases(int32_t i, 
+SGVector< float64_t > CDeepBeliefNetwork::get_biases(int32_t index, 
 	SGVector< float64_t > p)
 {
 	if (p.vlen==0)
-		return SGVector<float64_t>(m_params.vector+m_bias_index_offsets[i], 
-			m_layer_sizes->element(i), false);
+		return SGVector<float64_t>(m_params.vector+m_bias_index_offsets[index], 
+			m_layer_sizes->element(index), false);
 	else
-		return SGVector<float64_t>(p.vector+m_bias_index_offsets[i], 
-			m_layer_sizes->element(i), false);;
+		return SGVector<float64_t>(p.vector+m_bias_index_offsets[index], 
+			m_layer_sizes->element(index), false);;
 }
 
 void CDeepBeliefNetwork::init()
