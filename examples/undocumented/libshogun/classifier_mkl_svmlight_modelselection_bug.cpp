@@ -110,6 +110,8 @@ void test()
 	CCrossValidation* cross=new CCrossValidation(classifier, comb_features,
 			labels, splitting_strategy, evaluation_criterium);
 	cross->set_num_runs(1);
+	/* TODO: remove this once locking is fixed for combined kernels */
+	cross->set_autolock(false);
 
 	/* print all parameter available for modelselection
 	 * Dont worry if yours is not included, simply write to the mailing list */

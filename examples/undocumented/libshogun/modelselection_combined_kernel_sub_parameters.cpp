@@ -125,6 +125,8 @@ void modelselection_combined_kernel()
 	CCrossValidation* cross=new CCrossValidation(classifier, features, labels,
 			splitting_strategy, evaluation_criterium);
 	cross->set_num_runs(1);
+	/* TODO: remove this once locking is fixed for combined kernels */
+	cross->set_autolock(false);
 
 	/* model parameter selection, deletion is handled by modsel class (SG_UNREF) */
 	CModelSelectionParameters* param_tree=build_combined_kernel_parameter_tree();
@@ -150,9 +152,6 @@ void modelselection_combined_kernel()
 	SG_UNREF(kernel);
 	SG_UNREF(gaussian);
 	SG_UNREF(poly);
-
-	/* evaluate selected kernel again, use locking to be faster */
-	cross->set_autolock(true);
 
 	/* larger number of runs to have tighter confidence intervals */
 	cross->set_num_runs(10);
