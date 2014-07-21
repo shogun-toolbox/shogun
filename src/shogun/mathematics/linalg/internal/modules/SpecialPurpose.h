@@ -60,6 +60,47 @@ void multiply_by_logistic_derivative(Matrix A, Matrix C)
 	implementation::special_purpose::multiply_by_logistic_derivative<backend, Matrix>::compute(A, C);
 }
 
+/** Applies the elementwise rectified linear function f(x) = max(0,x) to a matrix */
+template <Backend backend=linalg_traits<Core>::backend,class Matrix>
+void rectified_linear(Matrix A, Matrix result)
+{
+	implementation::special_purpose::rectified_linear<backend, Matrix>::compute(A, result);
+}
+
+/** Performs the operation C(i,j) = C(i,j) * (A(i,j)!=0) for all i and j*/ 
+template <Backend backend=linalg_traits<Core>::backend,class Matrix>
+void multiply_by_rectified_linear_derivative(Matrix A, Matrix C)
+{
+	implementation::special_purpose::multiply_by_rectified_linear_derivative<backend, Matrix>::compute(A, C);
+}
+
+/** Applies the softmax function inplace to a matrix. The softmax function is 
+ * defined as \f$ f(A[i,j]) = \frac{exp(A[i,j])}{\sum_i exp(A[i,j])} \f$ 
+ */
+template <Backend backend=linalg_traits<Core>::backend,class Matrix>
+void softmax(Matrix A)
+{
+	implementation::special_purpose::softmax<backend, Matrix>::compute(A);
+}
+
+/** Returns the cross entropy between P and Q. The cross entropy is defined as 
+ * \f$ H(P,Q) = - \sum_{ij} P[i,j]log(Q[i,j]) \f$
+ */
+template <Backend backend=linalg_traits<Core>::backend,class Matrix>
+typename Matrix::Scalar cross_entropy(Matrix P, Matrix Q)
+{
+	return implementation::special_purpose::cross_entropy<backend, Matrix>::compute(P,Q);
+}
+
+/** Returns the squared error between P and Q. The squared error is defined as 
+ * \f$ E(P,Q) = \frac{1}{2} \sum_{ij} (P[i,j]-Q[i,j])^2 \f$
+ */
+template <Backend backend=linalg_traits<Core>::backend,class Matrix>
+typename Matrix::Scalar squared_error(Matrix P, Matrix Q)
+{
+	return implementation::special_purpose::squared_error<backend, Matrix>::compute(P,Q);
+}
+
 }
 
 }

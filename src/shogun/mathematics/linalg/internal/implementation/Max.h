@@ -64,7 +64,7 @@ struct max
 {
 	typedef typename Matrix::Scalar T;
 	
-	
+	/** Returns the largest element in a matrix or a vector */
 	static T compute(Matrix m);
 };
 
@@ -77,6 +77,7 @@ struct max<Backend::EIGEN3,Matrix>
 	typedef Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> MatrixXt;
 	typedef Eigen::Matrix<T,Eigen::Dynamic,1> VectorXt;
 	
+	/** Returns the largest element in a matrix */
 	static T compute(SGMatrix<T> mat)
 	{
 		Eigen::Map<MatrixXt> m = mat;
@@ -84,6 +85,7 @@ struct max<Backend::EIGEN3,Matrix>
 		return m.maxCoeff();
 	}
 	
+	/** Returns the largest element in a vector */
 	static T compute(SGVector<T> vec)
 	{
 		Eigen::Map<VectorXt> v = vec;
@@ -153,6 +155,7 @@ struct max<Backend::VIENNACL,Matrix>
 		return kernel;
 	}
 	
+	/** Returns the largest element in a matrix */
 	static T compute(CGPUMatrix<T> mat)
 	{
 		viennacl::ocl::kernel& kernel = generate_kernel<T>();
@@ -166,6 +169,7 @@ struct max<Backend::VIENNACL,Matrix>
 		return result[0];
 	}
 	
+	/** Returns the largest element in a vector */
 	static T compute(CGPUVector<T> vec)
 	{
 		viennacl::ocl::kernel& kernel = generate_kernel<T>();
