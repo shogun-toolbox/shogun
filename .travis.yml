@@ -90,7 +90,7 @@ before_install:
       sudo apt-add-repository -y ppa:dr-graef/octave-3.6.precise ;
       sudo apt-add-repository -y ppa:yade-users/external ;
       sudo apt-add-repository -y ppa:ondrej/php5 ;
-      sudo apt-add-repository -y ppa:marutter/c2d4u ;
+      sudo apt-add-repository -y ppa:robotics/ppa ;
       sudo apt-get update -qq ;
     else
       brew update ;
@@ -104,7 +104,7 @@ before_install:
     fi
 install:
   - if [ -z $OSX ] ; then
-      sudo apt-get -f install -y libbz2-dev cdbs libarpack2-dev libatlas-base-dev libblas-dev libglpk-dev libhdf5-dev libhdf5-serial-dev zlib1g-dev libxml2-dev libreadline6-dev libreadline-dev libsnappy-dev liblzo2-dev liblzma-dev liblapack-dev libeigen3-dev libjson-c-dev libnlopt-dev gdb cmake python-jinja2 ccache $EXTRA_PACKAGES ;
+      sudo apt-get -f install -y libbz2-dev cdbs libarpack2-dev libatlas-base-dev libblas-dev libglpk-dev libhdf5-serial-dev zlib1g-dev libxml2-dev libreadline6-dev libreadline-dev libsnappy-dev liblzo2-dev liblzma-dev liblapack-dev libeigen3-dev libjson-c-dev libnlopt-dev gdb cmake python-jinja2 ccache $EXTRA_PACKAGES ;
     else
       brew install cmake ccache;
     fi
