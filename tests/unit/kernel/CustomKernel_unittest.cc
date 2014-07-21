@@ -16,7 +16,9 @@
 #include <gtest/gtest.h>
 
 using namespace shogun;
+#ifdef HAVE_EIGEN3
 using namespace Eigen;
+#endif
 
 TEST(CustomKernelTest,add_row_subset)
 {
