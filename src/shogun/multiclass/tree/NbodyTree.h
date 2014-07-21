@@ -66,6 +66,11 @@ public:
 	 */
 	virtual const char* get_name() const { return "NbodyTree"; }	
 
+	/** get final rearranged vector indices
+	 * @return vector indices rearranged corresponding to the built tree
+	 */
+	SGVector<index_t> get_rearranged_vector_ids() const { return m_vec_id; }
+
 	/** build tree
 	 *
 	 * @param data data for tree formation
@@ -89,6 +94,19 @@ public:
 	 * @return log kernel density
 	 */
 	SGVector<float64_t> log_kernel_density(SGMatrix<float64_t> test, EKernelType kernel, float64_t h, float64_t atol, float64_t rtol);
+
+	/** get log of kernel density at query points
+	 * 
+	 * @param test query points at which kernel density is to be calculated
+	 * @param qid id vector of the query tree 
+	 * @param qroot root of the query tree
+	 * @param kernel kernel type
+	 * @param h width of kernel
+	 * @param atol absolute tolerance
+	 * @param rtol relative tolerance
+	 * @return log kernel density
+	 */
+	SGVector<float64_t> log_kernel_density_dual(SGMatrix<float64_t> test, SGVector<index_t> qid, bnode_t* qroot, EKernelType kernel, float64_t h, float64_t atol, float64_t rtol);
 
 	/** distance b/w KNN vectors and query vectors
 	 *
@@ -214,6 +232,27 @@ private:
 	void get_kde_single(bnode_t* node,float64_t* data, EKernelType kernel, float64_t h, float64_t log_atol, float64_t log_rtol,
 	float64_t log_norm, float64_t min_bound_node, float64_t spread_node, float64_t &min_bound_global, float64_t &spread_global);
 
+	/** depth-first traversal in dual trees for KDE
+	 *
+	 * @param refnode current node from reference tree
+	 * @param querynode current node from query tree
+	 * @param qid id vector of query tree
+	 * @param qdata query data matrix
+	 * @param log_density stores log of kernel density at each query point
+	 * @param kernel_type kernel type used
+	 * @param h kernel bandwidth
+	 * @param log_atol log absolute tolerance
+	 * @param log_rtol log relative tolerance
+	 * @param log_norm log of kernel norm
+	 * @param min_bound_node min evaluated kernel in node
+	 * @param spread_node spread of kernel values in node
+	 * @param min_bound_global stores the globally calculated min kernel density for all query points
+	 * @param spread_global spread of kernel values accross entire reference tree for all query points in query tree
+	 */
+	void kde_dual(bnode_t* refnode, bnode_t* querynode, SGVector<index_t> qid, SGMatrix<float64_t> qdata, SGVector<float64_t> log_density, 
+	EKernelType kernel_type, float64_t h, float64_t log_atol, float64_t log_rtol, float64_t log_norm, float64_t min_bound_node, 
+	float64_t spread_node, float64_t &min_bound_global, float64_t &spread_global);
+
 	/** recursive build
 	 * 
 	 * @param start start index of index vector for building subtree
@@ -275,7 +314,7 @@ protected:
 	SGMatrix<float64_t> m_data;
 
 	/** vector id */
-	SGVector<index_t> vec_id;
+	SGVector<index_t> m_vec_id;
 
 private:
 	/** leaf size */
@@ -285,13 +324,13 @@ private:
 	EDistanceType m_dist;
 
 	/** knn query done or not */
-	bool knn_done;
+	bool m_knn_done;
 
 	/** knn distances */
-	SGMatrix<float64_t> knn_dists;
+	SGMatrix<float64_t> m_knn_dists;
 
 	/** knn indices */
-	SGMatrix<index_t> knn_indices;
+	SGMatrix<index_t> m_knn_indices;
 };
 } /* namespace shogun */
 

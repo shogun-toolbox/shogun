@@ -122,3 +122,77 @@ TEST(KernelDensity,gaussian_kernel_with_manhattan_distance)
 	SG_UNREF(feats);
 	SG_UNREF(k);
 }
+
+TEST(KernelDensity,dual_tree)
+{
+	SGMatrix<float64_t> data(2,4);
+	data(0,0)=0;
+	data(0,1)=0;
+	data(0,2)=2;
+	data(0,3)=2;
+	data(1,0)=0;
+	data(1,1)=2;
+	data(1,2)=0;
+	data(1,3)=2;
+
+	CDenseFeatures<float64_t>* feats=new CDenseFeatures<float64_t>(data);
+
+
+	CKernelDensity* k=new CKernelDensity(1.0, K_GAUSSIAN, D_EUCLIDEAN, EM_BALLTREE_DUAL);
+	k->train(feats);
+
+	SGMatrix<float64_t> test(2,5);
+	test(0,0)=1;
+	test(1,0)=1;
+	test(0,1)=0;
+	test(1,1)=1;
+	test(0,2)=2;
+	test(1,2)=1;
+	test(0,3)=1;
+	test(1,3)=2;
+	test(0,4)=1;
+	test(1,4)=0;
+
+	CDenseFeatures<float64_t>* testfeats=new CDenseFeatures<float64_t>(test);
+	SGVector<float64_t> res=k->get_log_density(testfeats);
+
+	EXPECT_NEAR(res[0],-2.83787706,1e-8);
+	EXPECT_NEAR(res[1],-2.90409623,1e-8);
+	EXPECT_NEAR(res[2],-2.90409623,1e-8);
+	EXPECT_NEAR(res[3],-2.90409623,1e-8);
+	EXPECT_NEAR(res[4],-2.90409623,1e-8);
+
+	SG_UNREF(testfeats);
+	SG_UNREF(feats);
+	SG_UNREF(k);
+}
+
+TEST(KernelDensity,dual_tree_single_tree_equivalence)
+{
+	sg_rand->set_seed(1);
+
+	SGMatrix<float64_t> data(5,100);
+	sg_rand->fill_array_oo(data.matrix,500);
+	CDenseFeatures<float64_t>* feats=new CDenseFeatures<float64_t>(data);
+
+	SGMatrix<float64_t> test(5,20);
+	sg_rand->fill_array_oo(test.matrix,100);	
+	CDenseFeatures<float64_t>* testfeats=new CDenseFeatures<float64_t>(test);
+
+
+	CKernelDensity* k=new CKernelDensity(1.0, K_GAUSSIAN, D_EUCLIDEAN, EM_BALLTREE_DUAL,5);
+	k->train(feats);
+	SGVector<float64_t> res_dual=k->get_log_density(testfeats,2);
+
+	SG_UNREF(k);
+	k=new CKernelDensity(1.0, K_GAUSSIAN, D_EUCLIDEAN, EM_BALLTREE_SINGLE,5);
+	k->train(feats);
+	SGVector<float64_t> res_single=k->get_log_density(testfeats);
+
+	for (int32_t i=0;i<res_dual.vlen;i++)
+		EXPECT_NEAR(res_dual[i],res_single[i],1e-8);
+
+	SG_UNREF(testfeats);
+	SG_UNREF(feats);
+	SG_UNREF(k);
+}

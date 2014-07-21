@@ -111,12 +111,12 @@ void CKDTree::init_node(bnode_t* node, index_t start, index_t end)
 
 	for (int32_t i=0;i<m_data.num_rows;i++)
 	{
-		upper_bounds[i]=m_data(i,vec_id[start]);
-		lower_bounds[i]=m_data(i,vec_id[start]);
+		upper_bounds[i]=m_data(i,m_vec_id[start]);
+		lower_bounds[i]=m_data(i,m_vec_id[start]);
 		for (int32_t j=start+1;j<=end;j++)
 		{
-			upper_bounds[i]=CMath::max(upper_bounds[i],m_data(i,vec_id[j]));
-			lower_bounds[i]=CMath::min(lower_bounds[i],m_data(i,vec_id[j]));
+			upper_bounds[i]=CMath::max(upper_bounds[i],m_data(i,m_vec_id[j]));
+			lower_bounds[i]=CMath::min(lower_bounds[i],m_data(i,m_vec_id[j]));
 		}
 	}
 
