@@ -70,7 +70,7 @@ public:
 	 *
 	 * @param noise_factor noise factor
 	 *
-	 * The default value is 1e-15.
+	 * The default value is 1e-6.
 	 */
 	virtual void set_noise_factor(float64_t noise_factor);
 

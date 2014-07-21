@@ -54,7 +54,7 @@ void CVariationalGaussianLikelihood::init()
 	SG_ADD(&m_noise_factor, "noise_factor", 
 		"Correct the variance if variance is close to zero or negative\n",
 		MS_NOT_AVAILABLE);
-	m_noise_factor=1e-15;
+	m_noise_factor=1e-6;
 }
 
 void CVariationalGaussianLikelihood::set_noise_factor(float64_t noise_factor)
