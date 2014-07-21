@@ -104,9 +104,9 @@ before_install:
     fi
 install:
   - if [ -z $OSX ] ; then
-      sudo apt-get -f install -y libbz2-dev cdbs libarpack2-dev libatlas-base-dev libblas-dev libglpk-dev libhdf5-serial-dev zlib1g-dev libxml2-dev libreadline6-dev libreadline-dev libsnappy-dev liblzo2-dev liblzma-dev liblapack-dev libeigen3-dev libjson-c-dev libnlopt-dev gdb cmake python-jinja2 ccache $EXTRA_PACKAGES ;
+      sudo apt-get install -qq libbz2-dev cdbs libarpack2-dev libatlas-base-dev libblas-dev libglpk-dev libhdf5-serial-dev zlib1g-dev libxml2-dev libreadline6-dev libreadline-dev libsnappy-dev liblzo2-dev liblzma-dev liblapack-dev libeigen3-dev libjson-c-dev libnlopt-dev gdb cmake python-jinja2 ccache $EXTRA_PACKAGES ;
     else
-      brew install cmake ccache;
+      brew install ccache;
     fi
   - eval $CUSTOM_PKG
   - if [[ $TRAVIS_PYTHON_VERSION == '3.3' ]] ; then conda create -n testenv python=$TRAVIS_PYTHON_VERSION numpy scipy && source activate testenv ; fi
