@@ -125,14 +125,6 @@ public:
 	 */
 	virtual void set_GHQ_number(index_t n);
 
-	/** set a non-negative noise factor in order to correct the variance if variance is close to zero or negative
-	 * setting 0 means correction is not applied
-	 *
-	 * @param noise_factor noise factor
-	 *
-	 * The default value is 1e-6.
-	 */
-	virtual void set_noise_factor(float64_t noise_factor);
 protected:
 
 	/** The function used to initialize m_likelihood defined in CVariationalLikelihood
@@ -141,9 +133,6 @@ protected:
 	virtual void init_likelihood()=0;
 
 private:
-
-	/** use to correct the variance if variance is close to zero or negative*/
-	float64_t m_noise_factor;
 
 	/** Using N Gaussian-Hermite quadrature points */
 	index_t m_GHQ_N;
