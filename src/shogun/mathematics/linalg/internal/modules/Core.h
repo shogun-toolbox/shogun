@@ -33,12 +33,63 @@
 #define CORE_H_
 
 #include <shogun/mathematics/linalg/internal/implementation/ElementwiseSquare.h>
+#include <shogun/mathematics/linalg/internal/implementation/MatrixProduct.h>
+#include <shogun/mathematics/linalg/internal/implementation/Add.h>
+#include <shogun/mathematics/linalg/internal/implementation/ElementwiseProduct.h>
+#include <shogun/mathematics/linalg/internal/implementation/Scale.h>
 
 namespace shogun
 {
 
 namespace linalg
 {
+
+/** Performs matrix multiplication 
+ * 
+ * @param A First matrix
+ * @param B Second matrix
+ * @param C Result of the operation
+ * @param transpose_A Whether to the transpose of A should be used instead of A
+ * @param transpose_B Whether to the transpose of B should be used instead of B
+ * @param overwrite If true, the values in C are overwritten with the result, 
+ * otherwise, the result is added to the existing values
+ */
+template <Backend backend=linalg_traits<Core>::backend,class Matrix>
+void matrix_product(Matrix A, Matrix B, Matrix C, 
+	bool transpose_A=false, bool transpose_B=false, bool overwrite=true)
+{
+	implementation::matrix_product<backend, Matrix>::compute(A, B, C, transpose_A, transpose_B, overwrite);
+}
+
+/** Performs the operation C = alpha*A + beta*B. Works for both matrices and vectors */
+template <Backend backend=linalg_traits<Core>::backend,class Matrix>
+void add(Matrix A, Matrix B, Matrix C, 
+	typename Matrix::Scalar alpha=1.0, typename Matrix::Scalar beta=1.0)
+{
+	implementation::add<backend, Matrix>::compute(A, B, C, alpha, beta);
+}
+
+/** Performs the operation C = alpha*A - beta*B. Works for both matrices and vectors */
+template <Backend backend=linalg_traits<Core>::backend,class Matrix>
+void subtract(Matrix A, Matrix B, Matrix C, 
+	typename Matrix::Scalar alpha=1.0, typename Matrix::Scalar beta=1.0)
+{
+	implementation::add<backend, Matrix>::compute(A, B, C, alpha, -1*beta);
+}
+
+/** Performs the operation B = alpha*A. Works for both matrices and vectors */
+template <Backend backend=linalg_traits<Core>::backend,class Matrix>
+void scale(Matrix A, Matrix B, typename Matrix::Scalar alpha)
+{
+	implementation::scale<backend, Matrix>::compute(A, B, alpha);
+}
+
+/** Performs the operation C = A .* B where ".*" denotes elementwise multiplication */
+template <Backend backend=linalg_traits<Core>::backend,class Matrix>
+void elementwise_product(Matrix A, Matrix B, Matrix C)
+{
+	implementation::elementwise_product<backend, Matrix>::compute(A, B, C);
+}
 
 /**
  * Wrapper method for internal implementation of square of co-efficients that works

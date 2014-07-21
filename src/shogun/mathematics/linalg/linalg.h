@@ -180,6 +180,8 @@ struct MODULE \
 
 #include <shogun/mathematics/linalg/internal/modules/Core.h>
 #include <shogun/mathematics/linalg/internal/modules/Redux.h>
+#include <shogun/mathematics/linalg/internal/modules/Util.h>
+#include <shogun/mathematics/linalg/internal/modules/SpecialPurpose.h>
 
 #endif // HAVE_LINALG_LIB
 
