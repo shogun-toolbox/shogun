@@ -15,13 +15,15 @@ def neuralnets_simple_modular (train_fname, test_fname,
 	feats_train=RealFeatures(CSVFile(train_fname))
 	feats_test=RealFeatures(CSVFile(test_fname))
 	labels=BinaryLabels(CSVFile(label_fname))
-
-	network = NeuralNetwork(NeuralLayers().input(feats_train.get_num_features()).linear(50).softmax(2))
+	
+	layers = NeuralLayers()
+	network = NeuralNetwork(layers.input(feats_train.get_num_features()).linear(50).softmax(2).done())
 	network.quick_connect()
 	network.initialize()
-
+	
+	network.set_labels(labels)
 	network.train(feats_train)
-	return network, network.apply_multiclass(labels)
+	return network, network.apply_multiclass(feats_test)
 
 if __name__=='__main__':
 	print('Neural nets')

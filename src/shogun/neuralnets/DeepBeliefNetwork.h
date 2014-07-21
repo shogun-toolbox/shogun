@@ -195,20 +195,20 @@ public:
 	
 	/** Returns the weights matrix between layer i and i+1
 	 * 
-	 * @param i Layer index
+	 * @param index Layer index
 	 * @param p If specified, the weight matrix is extracted from it instead of
 	 * m_params
 	 */
-	virtual SGMatrix<float64_t> get_weights(int32_t i,
+	virtual SGMatrix<float64_t> get_weights(int32_t index,
 		SGVector<float64_t> p = SGVector<float64_t>());
 	
 	/** Returns the bias vector of layer i
 	 * 
-	 * @param i Layer index
+	 * @param index Layer index
 	 * @param p If specified, the bias vector is extracted from it instead of
 	 * m_params
 	 */
-	virtual SGVector<float64_t> get_biases(int32_t i,
+	virtual SGVector<float64_t> get_biases(int32_t index,
 		SGVector<float64_t> p = SGVector<float64_t>());
 	
 	virtual const char* get_name() const { return "DeepBeliefNetwork"; }
