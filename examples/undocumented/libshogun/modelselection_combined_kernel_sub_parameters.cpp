@@ -16,6 +16,7 @@
 #include <shogun/modelselection/ParameterCombination.h>
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/features/DenseFeatures.h>
+#include <shogun/features/CombinedFeatures.h>
 #include <shogun/classifier/svm/LibSVM.h>
 #include <shogun/classifier/mkl/MKLClassification.h>
 #include <shogun/kernel/GaussianKernel.h>
@@ -105,6 +106,11 @@ void modelselection_combined_kernel()
 	/* create num_feautres 2-dimensional vectors */
 	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(matrix);
 
+	/* create combined features */
+	CCombinedFeatures* comb_features=new CCombinedFeatures();
+	comb_features->append_feature_obj(features);
+	comb_features->append_feature_obj(features);
+
 	/* create labels, two classes */
 	for (index_t i=0; i<num_vectors; ++i)
 		labels->set_label(i, i%2==0 ? 1 : -1);
@@ -122,8 +128,9 @@ void modelselection_combined_kernel()
 			new CContingencyTableEvaluation(ACCURACY);
 
 	/* cross validation class for evaluation in model selection */
-	CCrossValidation* cross=new CCrossValidation(classifier, features, labels,
-			splitting_strategy, evaluation_criterium);
+	CCrossValidation* cross=new CCrossValidation(classifier, comb_features,
+												labels, splitting_strategy,
+												evaluation_criterium);
 	cross->set_num_runs(1);
 	/* TODO: remove this once locking is fixed for combined kernels */
 	cross->set_autolock(false);
