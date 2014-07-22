@@ -134,6 +134,9 @@ public:
 	 */
 	virtual SGVector<float64_t> get_first_derivative_wrt_hyperparameter(const TParameter* param) const;
 
+	/** initialize the default bound for this class */
+	void set_default_variational_bound();
+
 protected:
 
 	/** The function used to initialize m_likelihood*/

@@ -39,7 +39,7 @@ label_traindat = '%s/label_train_twoclass.dat'%path
 from modshogun import *
 parameter_list=[
 	[KLCholeskyInferenceMethod,traindat,testdat,label_traindat,0,0,1e-5,1e-2,0],
-	[KLFullDiagonalInferenceMethod,traindat,testdat,label_traindat,0,0,1e-5,1e-2,0],
+	[KLCovarianceInferenceMethod,traindat,testdat,label_traindat,0,0,1e-5,1e-2,0],
 	[KLApproxDiagonalInferenceMethod,traindat,testdat,label_traindat,0,0,1e-5,1e-2,0],
 	[KLDualInferenceMethod,traindat,testdat,label_traindat,0,0,1e-5,1e-2,0]
 ]

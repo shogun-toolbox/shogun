@@ -39,7 +39,7 @@
  * This code specifically adapted from function in approxKL.m and infKL.m
  */
 
-#include <shogun/machine/gp/KLFullDiagonalInferenceMethod.h>
+#include <shogun/machine/gp/KLCovarianceInferenceMethod.h>
 
 #ifdef HAVE_EIGEN3
 #include <shogun/mathematics/Math.h>
@@ -51,19 +51,19 @@ using namespace Eigen;
 namespace shogun
 {
 
-CKLFullDiagonalInferenceMethod::CKLFullDiagonalInferenceMethod() : CKLInferenceMethod()
+CKLCovarianceInferenceMethod::CKLCovarianceInferenceMethod() : CKLInferenceMethod()
 {
 	init();
 }
 
-CKLFullDiagonalInferenceMethod::CKLFullDiagonalInferenceMethod(CKernel* kern,
+CKLCovarianceInferenceMethod::CKLCovarianceInferenceMethod(CKernel* kern,
 		CFeatures* feat, CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod)
 		: CKLInferenceMethod(kern, feat, m, lab, mod)
 {
 	init();
 }
 
-void CKLFullDiagonalInferenceMethod::init()
+void CKLCovarianceInferenceMethod::init()
 {
 	SG_ADD(&m_V, "V",
 		"V is L'*V=diag(sW)*K",
@@ -86,7 +86,7 @@ void CKLFullDiagonalInferenceMethod::init()
 }
 
 
-SGVector<float64_t> CKLFullDiagonalInferenceMethod::get_alpha()
+SGVector<float64_t> CKLCovarianceInferenceMethod::get_alpha()
 {
 	/** Note that m_alpha contains not only the alpha vector defined in the reference
 	 * but also a vector corresponding to the diagonal part of W 
@@ -109,11 +109,11 @@ SGVector<float64_t> CKLFullDiagonalInferenceMethod::get_alpha()
 	return result;
 }
 
-CKLFullDiagonalInferenceMethod::~CKLFullDiagonalInferenceMethod()
+CKLCovarianceInferenceMethod::~CKLCovarianceInferenceMethod()
 {
 }
 
-void CKLFullDiagonalInferenceMethod::lbfgs_precompute()
+void CKLCovarianceInferenceMethod::lbfgs_precompute()
 {
 	SGVector<float64_t> mean=m_mean->get_mean_vector(m_features);
 	Map<VectorXd> eigen_mean(mean.vector, mean.vlen);
@@ -152,7 +152,7 @@ void CKLFullDiagonalInferenceMethod::lbfgs_precompute()
 	lik->set_variational_distribution(m_mu, m_s2, m_labels);
 }
 
-void CKLFullDiagonalInferenceMethod::get_gradient_of_nlml_wrt_parameters(SGVector<float64_t> gradient)
+void CKLCovarianceInferenceMethod::get_gradient_of_nlml_wrt_parameters(SGVector<float64_t> gradient)
 {
 	REQUIRE(gradient.vlen==m_alpha.vlen,
 		"The length of gradients (%d) should the same as the length of parameters (%d)\n",
@@ -203,7 +203,7 @@ void CKLFullDiagonalInferenceMethod::get_gradient_of_nlml_wrt_parameters(SGVecto
 }
 
 
-float64_t CKLFullDiagonalInferenceMethod::get_negative_log_marginal_likelihood_helper()
+float64_t CKLCovarianceInferenceMethod::get_negative_log_marginal_likelihood_helper()
 {
 	Map<MatrixXd> eigen_L(m_L.matrix, m_L.num_rows, m_L.num_cols);
 	Map<VectorXd> eigen_alpha(m_alpha.vector, m_alpha.vlen/2);
@@ -230,7 +230,7 @@ float64_t CKLFullDiagonalInferenceMethod::get_negative_log_marginal_likelihood_h
 	return result;
 }
 
-float64_t CKLFullDiagonalInferenceMethod::get_derivative_related_cov(Eigen::MatrixXd eigen_dK)
+float64_t CKLCovarianceInferenceMethod::get_derivative_related_cov(Eigen::MatrixXd eigen_dK)
 {
 	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
 	Map<VectorXd> eigen_W(m_W.vector, m_W.vlen);
@@ -254,7 +254,7 @@ float64_t CKLFullDiagonalInferenceMethod::get_derivative_related_cov(Eigen::Matr
 	return eigen_alpha.dot(eigen_dK*(eigen_alpha/2.0-eigen_df))-z.dot(eigen_dv);
 }
 
-void CKLFullDiagonalInferenceMethod::update_alpha()
+void CKLCovarianceInferenceMethod::update_alpha()
 {
 	float64_t nlml_new=0;
 	float64_t nlml_def=0;
@@ -318,7 +318,7 @@ void CKLFullDiagonalInferenceMethod::update_alpha()
 	nlml_new=lbfgs_optimization();
 }
 
-SGVector<float64_t> CKLFullDiagonalInferenceMethod::get_diagonal_vector()
+SGVector<float64_t> CKLCovarianceInferenceMethod::get_diagonal_vector()
 {
 	if (parameter_hash_changed())
 		update();
@@ -326,21 +326,21 @@ SGVector<float64_t> CKLFullDiagonalInferenceMethod::get_diagonal_vector()
 	return SGVector<float64_t>(m_sW);
 }
 
-void CKLFullDiagonalInferenceMethod::update_deriv()
+void CKLCovarianceInferenceMethod::update_deriv()
 {
 	/** get_derivative_related_cov(MatrixXd eigen_dK) does the similar job
 	 * Therefore, this function body is empty
 	 */
 }
 
-void CKLFullDiagonalInferenceMethod::update_chol()
+void CKLCovarianceInferenceMethod::update_chol()
 {
 	/** L is automatically updated when update_alpha is called
 	 * Therefore, this function body is empty
 	 */
 }
 
-void CKLFullDiagonalInferenceMethod::update_approx_cov()
+void CKLCovarianceInferenceMethod::update_approx_cov()
 {
 	/** The variational co-variational matrix,
 	 * which is automatically computed when update_alpha is called,
