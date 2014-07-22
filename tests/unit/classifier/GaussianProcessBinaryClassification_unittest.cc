@@ -49,7 +49,7 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/machine/gp/LaplacianInferenceMethodWithLBFGS.h>
 
-#include <shogun/machine/gp/KLFullDiagonalInferenceMethod.h>
+#include <shogun/machine/gp/KLCovarianceInferenceMethod.h>
 #include <shogun/machine/gp/KLCholeskyInferenceMethod.h>
 #include <shogun/machine/gp/KLApproxDiagonalInferenceMethod.h>
 #include <shogun/machine/gp/KLDualInferenceMethod.h>
@@ -1034,7 +1034,7 @@ TEST(GaussianProcessBinaryClassificationUsingLaplacianWithLBFGS,get_probabilitie
 	SG_UNREF(gpc);
 }
 
-TEST(GaussianProcessBinaryClassificationUsingKLFullDiagonal,get_mean_vector)
+TEST(GaussianProcessBinaryClassificationUsingKLCovariance,get_mean_vector)
 {
 	float64_t abs_tolorance;
 	float64_t rel_tolorance=1e-2;
@@ -1102,8 +1102,8 @@ TEST(GaussianProcessBinaryClassificationUsingKLFullDiagonal,get_mean_vector)
 	CLogitVGLikelihood* likelihood=new CLogitVGLikelihood();
 
 	// specify GP classification with Laplacian inference
-	CKLFullDiagonalInferenceMethod* inf
-	= new CKLFullDiagonalInferenceMethod(kernel,
+	CKLCovarianceInferenceMethod* inf
+	= new CKLCovarianceInferenceMethod(kernel,
 		features_train,
 		mean,
 		labels_train,
@@ -1199,7 +1199,7 @@ TEST(GaussianProcessBinaryClassificationUsingKLFullDiagonal,get_mean_vector)
 	SG_UNREF(gpc);
 }
 
-TEST(GaussianProcessBinaryClassificationUsingKLFullDiagonal, get_variance_vector)
+TEST(GaussianProcessBinaryClassificationUsingKLCovariance, get_variance_vector)
 {
 	float64_t abs_tolorance;
 	float64_t rel_tolorance=1e-2;
@@ -1267,8 +1267,8 @@ TEST(GaussianProcessBinaryClassificationUsingKLFullDiagonal, get_variance_vector
 	CLogitVGLikelihood* likelihood=new CLogitVGLikelihood();
 
 	// specify GP classification with Laplacian inference
-	CKLFullDiagonalInferenceMethod* inf
-	= new CKLFullDiagonalInferenceMethod(kernel,
+	CKLCovarianceInferenceMethod* inf
+	= new CKLCovarianceInferenceMethod(kernel,
 		features_train,
 		mean,
 		labels_train,
@@ -1364,7 +1364,7 @@ TEST(GaussianProcessBinaryClassificationUsingKLFullDiagonal, get_variance_vector
 	}
 
 
-TEST(GaussianProcessBinaryClassificationUsingKLFullDiagonal, get_probabilities)
+TEST(GaussianProcessBinaryClassificationUsingKLCovariance, get_probabilities)
 {
 	float64_t abs_tolorance;
 	float64_t rel_tolorance=1e-2;
@@ -1432,8 +1432,8 @@ TEST(GaussianProcessBinaryClassificationUsingKLFullDiagonal, get_probabilities)
 	CLogitVGLikelihood* likelihood=new CLogitVGLikelihood();
 
 	// specify GP classification with Laplacian inference
-	CKLFullDiagonalInferenceMethod* inf
-	= new CKLFullDiagonalInferenceMethod(kernel,
+	CKLCovarianceInferenceMethod* inf
+	= new CKLCovarianceInferenceMethod(kernel,
 		features_train,
 		mean,
 		labels_train,
@@ -1761,8 +1761,8 @@ TEST(GaussianProcessBinaryClassificationUsingKLCholesky, get_variance_vector)
 	CLogitVGLikelihood* likelihood=new CLogitVGLikelihood();
 
 	// specify GP classification with Laplacian inference
-	CKLFullDiagonalInferenceMethod* inf
-	= new CKLFullDiagonalInferenceMethod(kernel,
+	CKLCovarianceInferenceMethod* inf
+	= new CKLCovarianceInferenceMethod(kernel,
 		features_train,
 		mean,
 		labels_train,
