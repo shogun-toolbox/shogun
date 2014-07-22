@@ -38,7 +38,7 @@
  *
  */
 
-#ifndef _KLCovarianceINFERENCEMETHOD_H_
+#ifndef _KLCOVARIANCEINFERENCEMETHOD_H_
 #define _KLCOVARIANCEINFERENCEMETHOD_H_
 
 #include <shogun/lib/config.h>
