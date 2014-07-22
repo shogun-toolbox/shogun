@@ -73,7 +73,6 @@ public:
 	 * The default value is 1e-6.
 	 */
 	virtual void set_noise_factor(float64_t noise_factor);
-
 protected:
 	/** The mean of variational Gaussian distribution */
 	SGVector<float64_t> m_mu;

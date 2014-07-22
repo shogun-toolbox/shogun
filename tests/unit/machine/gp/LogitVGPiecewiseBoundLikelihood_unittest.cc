@@ -177,7 +177,7 @@ TEST(LogitVGPiecewiseBoundLikelihood,get_variational_first_derivative_wrt_sigma2
 	CBinaryLabels* lab = new CBinaryLabels(y);
 	lik->set_variational_distribution(m, v, lab);
 
-	TParameter* s2_param=lik->m_gradient_parameters->get_parameter("sigma2");
+	TParameter* s2_param=lik->m_parameters->get_parameter("sigma2");
 
 	SGVector<float64_t> gvi = lik->get_variational_first_derivative(s2_param);
 
@@ -256,7 +256,7 @@ TEST(LogitVGPiecewiseBoundLikelihood,get_variational_first_derivative_wrt_mu)
 	CBinaryLabels* lab = new CBinaryLabels(y);
 	lik->set_variational_distribution(m, v, lab);
 
-	TParameter* mu_param=lik->m_gradient_parameters->get_parameter("mu");
+	TParameter* mu_param=lik->m_parameters->get_parameter("mu");
 
 	SGVector<float64_t> gmi = lik->get_variational_first_derivative(mu_param);
 

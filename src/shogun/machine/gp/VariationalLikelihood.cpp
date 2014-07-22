@@ -93,6 +93,22 @@ SGVector<float64_t> CVariationalLikelihood::get_first_derivative(
 	return m_likelihood->get_first_derivative(lab, func, param);
 }
 
+SGVector<float64_t> CVariationalLikelihood::get_second_derivative(
+	const CLabels* lab, SGVector<float64_t> func,
+	const TParameter* param) const
+{
+	REQUIRE(m_likelihood != NULL, "The likelihood should be initialized\n");
+	return m_likelihood->get_second_derivative(lab, func, param);
+}
+
+SGVector<float64_t> CVariationalLikelihood::get_third_derivative(
+	const CLabels* lab, SGVector<float64_t> func,
+	const TParameter* param) const
+{
+	REQUIRE(m_likelihood != NULL, "The likelihood should be initialized\n");
+	return m_likelihood->get_third_derivative(lab, func, param);
+}
+
 ELikelihoodModelType CVariationalLikelihood::get_model_type() const
 {
 	REQUIRE(m_likelihood != NULL, "The likelihood should be initialized\n");

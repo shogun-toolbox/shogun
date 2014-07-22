@@ -222,7 +222,7 @@ float64_t evaluate(void *obj, const float64_t *variable, float64_t *gradient,
 	//[fi, gmi, gvi] = ElogLik('bernLogit', y, m, v, bound); get fi at here
 	SGVector<float64_t> fi = obj_prt->lik->get_variational_expection(); 
 
-	TParameter* mu_param = obj_prt->lik->m_gradient_parameters->get_parameter("mu");
+	TParameter* mu_param = obj_prt->lik->m_parameters->get_parameter("mu");
 	//[fi, gmi, gvi] = ElogLik('bernLogit', y, m, v, bound); get gmi at here
 	SGVector<float64_t> gmi =
 		obj_prt->lik->get_variational_first_derivative(mu_param);
