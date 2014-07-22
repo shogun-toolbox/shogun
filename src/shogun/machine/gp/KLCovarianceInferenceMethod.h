@@ -38,8 +38,8 @@
  *
  */
 
-#ifndef _KLFULLDIAGONALINFERENCEMETHOD_H_
-#define _KLFULLDIAGONALINFERENCEMETHOD_H_
+#ifndef _KLCovarianceINFERENCEMETHOD_H_
+#define _KLCOVARIANCEINFERENCEMETHOD_H_
 
 #include <shogun/lib/config.h>
 
@@ -70,15 +70,12 @@ namespace shogun
  * The adapted Matlab code can be found at
  * https://gist.github.com/yorkerlin/b64a015491833562d11a
  *
- * Note that "Full Diagonal" means the Lambda matrix mentioned in the paper is a diagonal matrix 
- * and this is 'exact' variational approximation, which does NOT enforce some structure
- * on the variational co-variance matrix
  */
-class CKLFullDiagonalInferenceMethod: public CKLInferenceMethod
+class CKLCovarianceInferenceMethod: public CKLInferenceMethod
 {
 public:
 	/** default constructor */
-	CKLFullDiagonalInferenceMethod();
+	CKLCovarianceInferenceMethod();
 
 	/** constructor
 	 *
@@ -88,16 +85,16 @@ public:
 	 * @param labels labels of the features
 	 * @param model Likelihood model to use
 	 */
-	CKLFullDiagonalInferenceMethod(CKernel* kernel, CFeatures* features,
+	CKLCovarianceInferenceMethod(CKernel* kernel, CFeatures* features,
 			CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model);
 
-	virtual ~CKLFullDiagonalInferenceMethod();
+	virtual ~CKLCovarianceInferenceMethod();
 
 	/** returns the name of the inference method
 	 *
-	 * @return name KLFullDiagonalInferenceMethod
+	 * @return name KLCovarianceInferenceMethod
 	 */
-	virtual const char* get_name() const { return "KLFullDiagonalInferenceMethod"; }
+	virtual const char* get_name() const { return "KLCovarianceInferenceMethod"; }
 
 	/** get alpha vector
 	 *
@@ -202,4 +199,4 @@ private:
 };
 }
 #endif /* HAVE_EIGEN3 */
-#endif /* _KLFULLDIAGONALINFERENCEMETHOD_H_ */
+#endif /* _KLCOVARIANCEINFERENCEMETHOD_H_ */

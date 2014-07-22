@@ -38,7 +38,7 @@
 
 %rename(KLInferenceMethod) CKLInferenceMethod;
 %rename(KLLowerTriangularInferenceMethod) CKLLowerTriangularInferenceMethod;
-%rename(KLFullDiagonalInferenceMethod) CKLFullDiagonalInferenceMethod;
+%rename(KLCovarianceInferenceMethod) CKLCovarianceInferenceMethod;
 %rename(KLApproxDiagonalInferenceMethod) CKLApproxDiagonalInferenceMethod;
 %rename(KLCholeskyInferenceMethod) CKLCholeskyInferenceMethod;
 %rename(KLDualInferenceMethod) CKLDualInferenceMethod;
@@ -83,7 +83,7 @@
 
 %include <shogun/machine/gp/KLInferenceMethod.h>
 %include <shogun/machine/gp/KLLowerTriangularInferenceMethod.h>
-%include <shogun/machine/gp/KLFullDiagonalInferenceMethod.h>
+%include <shogun/machine/gp/KLCovarianceInferenceMethod.h>
 %include <shogun/machine/gp/KLApproxDiagonalInferenceMethod.h>
 %include <shogun/machine/gp/KLCholeskyInferenceMethod.h>
 %include <shogun/machine/gp/KLDualInferenceMethod.h>
