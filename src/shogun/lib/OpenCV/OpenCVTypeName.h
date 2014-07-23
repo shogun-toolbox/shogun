@@ -41,7 +41,7 @@ namespace shogun{
 template <typename T>class OpenCVTypeName
 {
     public:
-	static int get_opencv_type() ;
+	static int get_opencv_type();
 };
 
 }

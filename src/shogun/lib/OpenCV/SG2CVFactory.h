@@ -57,7 +57,7 @@ class SG2CVFactory
 		 * CV_16S, CV_32S, CV_32F, CV_64F)
 		 * @return Mat object of the specified data type
 		 */
-		template <typename SG_T> static cv::Mat getcvMat(SGMatrix<SG_T> sgMat,
+		template <typename SG_T> static cv::Mat get_cvMat(SGMatrix<SG_T> sgMat,
 				int cv_type);
 		/* get cv::Mat from Densefeatures
 		 * @param DenseFeatures pointer 
@@ -65,15 +65,15 @@ class SG2CVFactory
 		 * CV_16S, CV_32S, CV_32F, CV_64F)
 		 * @return Mat object of the specified data type
 		 */
-		template <typename SG_T> static cv::Mat getcvMat_from_features
+		template <typename SG_T> static cv::Mat get_cvMat_from_features
 			(CDenseFeatures<SG_T>* sgDense, int cv_type);
 
 	private: 
-		template <typename SG_T, typename CV_T> static cv::Mat getcvMat
+		template <typename SG_T, typename CV_T> static cv::Mat get_cvMat
 			(SGMatrix<SG_T> sgMat);
 };
 
-template <typename SG_T, typename CV_T> cv::Mat SG2CVFactory::getcvMat
+template <typename SG_T, typename CV_T> cv::Mat SG2CVFactory::get_cvMat
 	(SGMatrix<SG_T> sgMat)
 {
 	int num_rows=sgMat.num_rows;
@@ -86,48 +86,48 @@ template <typename SG_T, typename CV_T> cv::Mat SG2CVFactory::getcvMat
 	return cvMat.t();
 }
 
-template <typename SG_T> cv::Mat SG2CVFactory::getcvMat
+template <typename SG_T> cv::Mat SG2CVFactory::get_cvMat
 	(SGMatrix<SG_T> sgMat, int cv_type)
 {
 	cv::Mat cvMat;
 	switch(cv_type)
 	{
 		case CV_8U:
-			cvMat=SG2CVFactory::getcvMat<SG_T, unsigned char>(sgMat);
+			cvMat=SG2CVFactory::get_cvMat<SG_T, unsigned char>(sgMat);
 			break;
 
 		case CV_8S:
-			cvMat=SG2CVFactory::getcvMat<SG_T, signed char>(sgMat);
+			cvMat=SG2CVFactory::get_cvMat<SG_T, signed char>(sgMat);
 			break;
 
 		case CV_16U:
-			cvMat=SG2CVFactory::getcvMat<SG_T, unsigned short>(sgMat);
+			cvMat=SG2CVFactory::get_cvMat<SG_T, unsigned short>(sgMat);
 			break;
 
 		case CV_16S:
-			cvMat=SG2CVFactory::getcvMat<SG_T, signed short>(sgMat);
+			cvMat=SG2CVFactory::get_cvMat<SG_T, signed short>(sgMat);
 			break;
 
 		case CV_32S:
-			cvMat=SG2CVFactory::getcvMat<SG_T, int>(sgMat);
+			cvMat=SG2CVFactory::get_cvMat<SG_T, int>(sgMat);
 			break;
 
 		case CV_32F:
-			cvMat=SG2CVFactory::getcvMat<SG_T, float>(sgMat);
+			cvMat=SG2CVFactory::get_cvMat<SG_T, float>(sgMat);
 			break;
 
 		case CV_64F:
-			cvMat=SG2CVFactory::getcvMat<SG_T, double>(sgMat);
+			cvMat=SG2CVFactory::get_cvMat<SG_T, double>(sgMat);
 			break;
 	}
 	return cvMat;
 }
 
-template <typename SG_T> cv::Mat SG2CVFactory::getcvMat_from_features
+template <typename SG_T> cv::Mat SG2CVFactory::get_cvMat_from_features
 	(CDenseFeatures<SG_T>* sgDense, int cv_type)
 {
 	SGMatrix<SG_T> sgMat=sgDense->get_feature_matrix();
-	cv::Mat cvMat=SG2CVFactory::getcvMat<SG_T>(sgMat, cv_type);
+	cv::Mat cvMat=SG2CVFactory::get_cvMat<SG_T>(sgMat, cv_type);
 	return cvMat;
 }
 }
