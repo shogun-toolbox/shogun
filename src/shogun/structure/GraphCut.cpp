@@ -39,8 +39,8 @@ CGraphCut::CGraphCut(int32_t num_nodes, int32_t num_edges)
 
 CGraphCut::~CGraphCut()
 {
-	sg_free(m_nodes);
-	sg_free(m_edges);
+	SG_FREE(m_nodes);
+	SG_FREE(m_edges);
 }
 
 void CGraphCut::init()
@@ -99,8 +99,8 @@ void CGraphCut::build_st_graph(int32_t num_nodes, int32_t num_edges)
 	m_num_nodes = num_nodes;
 
 	// allocate s-t graph
-	m_nodes = (Node*) sg_malloc(m_num_nodes * sizeof(Node));
-	m_edges = (Edge*) sg_malloc(2 * num_edges * sizeof(Edge));
+	m_nodes = SG_MALLOC(Node, m_num_nodes);
+	m_edges = SG_MALLOC(Edge, 2 * num_edges);
 	m_edges_last = m_edges;
 
 	for (int32_t i = 0; i < m_num_nodes; i++)
@@ -765,7 +765,7 @@ void CGraphCut::adopt()
 		{
 			m_orphan_first = np->next;
 			node_i = np->ptr;
-			sg_free(np);
+			SG_FREE(np);
 
 			if (m_orphan_first == NULL)
 			{
@@ -783,7 +783,7 @@ void CGraphCut::set_orphan_front(Node* node_i)
 {
 	NodePtr* np;
 	node_i->parent = ORPHAN_EDGE;
-	np = (NodePtr*) sg_malloc(sizeof(NodePtr));
+	np = SG_MALLOC(NodePtr, 1);
 	np->ptr = node_i;
 	np->next = m_orphan_first;
 	m_orphan_first = np;
@@ -793,7 +793,7 @@ void CGraphCut::set_orphan_rear(Node* node_i)
 {
 	NodePtr* np;
 	node_i->parent = ORPHAN_EDGE;
-	np = (NodePtr*) sg_malloc(sizeof(NodePtr));
+	np = SG_MALLOC(NodePtr, 1);
 	np->ptr = node_i;
 
 	if (m_orphan_last != NULL)
