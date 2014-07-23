@@ -510,12 +510,47 @@ TEST(PCA, PCA_WHITEN_SVD)
 	pca->set_target_dim(3);
 	pca->init(features);
 
+	SGMatrix<float64_t> transmat=pca->get_transformation_matrix();
 	SGMatrix<float64_t> finalmat=pca->apply_to_feature_matrix(features);
+	SGVector<float64_t> eigvec=pca->get_eigenvalues();
 
 	SGMatrix<float64_t> covariance_mat=finalmat.matrix_multiply(finalmat,finalmat,false,true);
-
 	float64_t epsilon = 0.0000001;
 
+	// eigen vector
+	EXPECT_NEAR(0,eigvec[2],epsilon);
+	EXPECT_NEAR(2.327794822241147,eigvec[1],epsilon);
+	EXPECT_NEAR(2.759160840481412,eigvec[0],epsilon);
+
+	// transformation matrix
+	EXPECT_NEAR(-0.10972090328509905,transmat(0,0),epsilon);
+	EXPECT_NEAR(-0.119595760920349875,transmat(0,1),epsilon);
+	EXPECT_NEAR(0.0,transmat(0,2),epsilon);
+	EXPECT_NEAR(0.0551462429348085689,transmat(1,0),epsilon);
+	EXPECT_NEAR(-0.161790659142760002,transmat(1,1),epsilon);
+	EXPECT_NEAR(0.0,transmat(1,2),epsilon);
+	EXPECT_NEAR(-0.276056579030211358,transmat(2,0),epsilon);
+	EXPECT_NEAR(0.2923787587590716,transmat(2,1),epsilon);
+	EXPECT_NEAR(0.0,transmat(2,2),epsilon);
+	EXPECT_NEAR(-0.275452104947822463,transmat(3,0),epsilon);
+	EXPECT_NEAR(-0.173464414476695611,transmat(3,1),epsilon);
+	EXPECT_NEAR(0.0,transmat(3,2),epsilon);
+	EXPECT_NEAR(0.118548031096433193,transmat(4,0),epsilon);
+	EXPECT_NEAR(0.242365340306910926,transmat(4,1),epsilon);
+	EXPECT_NEAR(0.0,transmat(4,2),epsilon);
+
+	// final matrix
+	EXPECT_NEAR(-0.781329936957440241,finalmat(0,0),epsilon);
+	EXPECT_NEAR(0.185378224604300035,finalmat(0,1),epsilon);
+	EXPECT_NEAR(0.595951712353140373,finalmat(0,2),epsilon);
+	EXPECT_NEAR(0.237044713673916413,finalmat(1,0),epsilon);
+	EXPECT_NEAR(-0.79517393097939526,finalmat(1,1),epsilon);
+	EXPECT_NEAR(0.55812921730547882,finalmat(1,2),epsilon);
+	EXPECT_NEAR(0.0,finalmat(2,0),epsilon);
+	EXPECT_NEAR(0.0,finalmat(2,1),epsilon);
+	EXPECT_NEAR(0.0,finalmat(2,2),epsilon);
+
+	// covariance matrix
 	EXPECT_NEAR(1.0,covariance_mat(0,0),epsilon);
 	EXPECT_NEAR(0.0,covariance_mat(0,1),epsilon);
 	EXPECT_NEAR(0.0,covariance_mat(0,2),epsilon);
