@@ -929,12 +929,19 @@ SGMatrix<float64_t> SGMatrix<T>::matrix_multiply(
 			A.matrix, A.num_rows, B.matrix, B.num_rows,
 			0.0, C.matrix, C.num_rows);
 #else
+	/* C(i,j) = scale * \Sigma A(i,k)*B(k,j) */
 	for (int32_t i=0; i<rows_A; i++)
 	{
 		for (int32_t j=0; j<cols_B; j++)
 		{
 			for (int32_t k=0; k<cols_A; k++)
-				C(i,j) += A(i,k)*B(k,j);
+			{
+				float64_t x1=transpose_A ? A(k,i):A(i,k);
+				float64_t x2=transpose_B ? B(j,k):B(k,j);
+				C(i,j)+=x1*x2;
+			}
+
+			C(i,j)*=scale;
 		}
 	}
 #endif //HAVE_LAPACK
