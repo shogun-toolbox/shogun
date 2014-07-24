@@ -188,7 +188,7 @@ bool CPCA::init(CFeatures* features)
 					}
 
 					transformMatrix.col(i) /= 
-					sqrt(eigenValues[i+max_dim_allowed-num_dim]*(num_vectors-1));
+					CMath::sqrt(eigenValues[i+max_dim_allowed-num_dim]*(num_vectors-1));
 				}
 			}
 		}
@@ -256,7 +256,7 @@ bool CPCA::init(CFeatures* features)
 						continue;
 					}
 
-					transformMatrix.col(i) /= sqrt(eigenValues[i]*(num_vectors-1));
+					transformMatrix.col(i) /= CMath::sqrt(eigenValues[i]*(num_vectors-1));
 				}
 			}
 		}
