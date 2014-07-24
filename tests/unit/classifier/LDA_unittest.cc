@@ -33,7 +33,7 @@
 #include <shogun/classifier/LDA.h>
 #include <gtest/gtest.h>
 
-#ifdef HAVE_LAPACK
+#ifdef HAVE_EIGEN3
 using namespace shogun;
 class LDATest: public::testing::Test
 {
@@ -42,7 +42,6 @@ protected:
 	//one setup for all tests.
 	LDATest()
 	{
-
 		const int num=5;
 		const int dims=3;
 		const int classes=2;
@@ -91,48 +90,91 @@ protected:
 				else
 					lab[i*num+j]=+1;
 
-		CBinaryLabels* labels=new CBinaryLabels(lab);
-		CDenseFeatures<float64_t>* features = new CDenseFeatures<float64_t>(feat);
+		labels=new CBinaryLabels(lab);
+		features = new CDenseFeatures<float64_t>(feat);
 
 		//Train the binary classifier.
-		CLDA lda(0, features, labels);
-		lda.train();
+		CLDA lda_FLD(0, features, labels, FLD_LDA);
+		lda_FLD.train();
 
 		//Test.
-		CRegressionLabels* results=(lda.apply_regression(features));
-		SG_REF(results);
-		projection=results->get_labels();
-		w = lda.get_w();
-		SG_UNREF(results);
+		CRegressionLabels* results_FLD=(lda_FLD.apply_regression(features));
+		SG_REF(results_FLD);
+		projection_FLD=results_FLD->get_labels();
+		w_FLD = lda_FLD.get_w();
+		SG_UNREF(results_FLD);
+
+		//Train the binary classifier.
+		CLDA lda_SVD(0, features, labels, SVD_LDA);
+		lda_SVD.train();
+
+		//Test.
+		CRegressionLabels* results_SVD=lda_SVD.apply_regression(features);
+		SG_REF(results_SVD);
+		projection_SVD=results_SVD->get_labels();
+		w_SVD=lda_SVD.get_w();
+		SG_UNREF(results_SVD);
 	}
-	SGVector<float64_t> projection;
-	SGVector<float64_t> w;
+
+	CBinaryLabels* labels;
+	CDenseFeatures<float64_t>* features;
+	SGVector<float64_t> projection_FLD;
+	SGVector<float64_t> projection_SVD;
+	SGVector<float64_t> w_FLD;
+	SGVector<float64_t> w_SVD;
 };
 
-TEST_F(LDATest, CheckEigenvectors)
+TEST_F(LDATest, CheckEigenvectors_FLD)
 {
 	// comparing our 'w' against 'w' a.k.a EigenVec of the scipy implementation
 	// of Fisher 2 Class LDA here:
 	// http://wiki.scipy.org/Cookbook/LinearClassification
 	float64_t epsilon=0.00000001;
-	EXPECT_NEAR(5.31296094, w[0], epsilon);
-	EXPECT_NEAR(40.45747764, w[1], epsilon);
-	EXPECT_NEAR(10.81046958, w[2], epsilon);
+	EXPECT_NEAR(5.31296094, w_FLD[0], epsilon);
+	EXPECT_NEAR(40.45747764, w_FLD[1], epsilon);
+	EXPECT_NEAR(10.81046958, w_FLD[2], epsilon);
 }
 
-TEST_F(LDATest, CheckProjection)
+TEST_F(LDATest, CheckProjection_FLD)
 {
 	// No need of checking the binary labels if the following passes.
 	float64_t epsilon=0.00000001;
-	EXPECT_NEAR(-304.80621346, projection[0], epsilon);
-	EXPECT_NEAR(-281.12285949, projection[1], epsilon);
-	EXPECT_NEAR(-228.60266985, projection[2], epsilon);
-	EXPECT_NEAR(-300.38571766, projection[3], epsilon);
-	EXPECT_NEAR(-258.89964153, projection[4], epsilon);
-	EXPECT_NEAR(+285.84589701, projection[5], epsilon);
-	EXPECT_NEAR(+274.45608852, projection[6], epsilon);
-	EXPECT_NEAR(+251.15879527, projection[7], epsilon);
-	EXPECT_NEAR(+271.14418463, projection[8], epsilon);
-	EXPECT_NEAR(+291.21213655, projection[9], epsilon);
+	EXPECT_NEAR(-304.80621346, projection_FLD[0], epsilon);
+	EXPECT_NEAR(-281.12285949, projection_FLD[1], epsilon);
+	EXPECT_NEAR(-228.60266985, projection_FLD[2], epsilon);
+	EXPECT_NEAR(-300.38571766, projection_FLD[3], epsilon);
+	EXPECT_NEAR(-258.89964153, projection_FLD[4], epsilon);
+	EXPECT_NEAR(+285.84589701, projection_FLD[5], epsilon);
+	EXPECT_NEAR(+274.45608852, projection_FLD[6], epsilon);
+	EXPECT_NEAR(+251.15879527, projection_FLD[7], epsilon);
+	EXPECT_NEAR(+271.14418463, projection_FLD[8], epsilon);
+	EXPECT_NEAR(+291.21213655, projection_FLD[9], epsilon);
 }
-#endif //HAVE_LAPACK
+
+TEST_F(LDATest, CheckEigenvectors_SVD)
+{	
+	// comparing against the eigenvectors of the CanonVar implementation
+	// in the brml toolbox, MATLAB.
+	float64_t epsilon=0.00000001;
+	EXPECT_NEAR(-0.09165651, w_SVD[0], epsilon);
+	EXPECT_NEAR(+0.95744763, w_SVD[1], epsilon);
+	EXPECT_NEAR(+0.27366605, w_SVD[2], epsilon);
+}
+
+TEST_F(LDATest, CheckProjection_SVD)
+{	 
+	//comparing agianst the projections from the CanonVar implementation
+	//in the brml toolbox, MATLAB.
+	float64_t epsilon=0.00000001;
+	EXPECT_NEAR(-8.09643097, projection_SVD[0], epsilon);
+	EXPECT_NEAR(-6.95885362, projection_SVD[1], epsilon);
+	EXPECT_NEAR(-5.76169114, projection_SVD[2], epsilon);
+	EXPECT_NEAR(-7.45158326, projection_SVD[3], epsilon);
+	EXPECT_NEAR(-6.67021673, projection_SVD[4], epsilon);
+	EXPECT_NEAR(+6.85547411, projection_SVD[5], epsilon);
+	EXPECT_NEAR(+6.40276367, projection_SVD[6], epsilon);
+	EXPECT_NEAR(+6.81301359, projection_SVD[7], epsilon);
+	EXPECT_NEAR(+6.90668279, projection_SVD[8], epsilon);
+	EXPECT_NEAR(+7.96084156, projection_SVD[9], epsilon);
+}
+#endif //HAVE_EIGEN3
