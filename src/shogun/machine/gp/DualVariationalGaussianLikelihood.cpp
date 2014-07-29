@@ -213,7 +213,7 @@ void CDualVariationalGaussianLikelihood::init()
 {
 	SG_ADD(&m_lambda, "lambda",
 		"Dual parameter for variational s2",
-		MS_AVAILABLE, GRADIENT_AVAILABLE);
+		MS_NOT_AVAILABLE);
 
 	SG_ADD(&m_is_valid, "is_valid",
 		"Is the Dual parameter valid",

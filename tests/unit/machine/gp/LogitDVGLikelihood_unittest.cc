@@ -170,7 +170,7 @@ TEST(LogitDVGLikelihood,get_variational_first_derivative_wrt_sigma2)
 	CBinaryLabels* lab = new CBinaryLabels(y);
 	lik->set_variational_distribution(m, v, lab);
 
-	TParameter* s2_param=lik->m_gradient_parameters->get_parameter("sigma2");
+	TParameter* s2_param=lik->m_parameters->get_parameter("sigma2");
 
 	SGVector<float64_t> dv = lik->get_variational_first_derivative(s2_param);
 

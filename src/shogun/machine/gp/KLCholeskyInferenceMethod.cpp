@@ -140,11 +140,11 @@ void CKLCholeskyInferenceMethod::get_gradient_of_nlml_wrt_parameters(SGVector<fl
 
 	CVariationalGaussianLikelihood * lik=get_variational_likelihood();
 	//[a,df,dV] = a_related2(mu,s2,y,lik);
-	TParameter* s2_param=lik->m_gradient_parameters->get_parameter("sigma2");
+	TParameter* s2_param=lik->m_parameters->get_parameter("sigma2");
 	SGVector<float64_t> dv=lik->get_variational_first_derivative(s2_param);
 	Map<VectorXd> eigen_dv(dv.vector, dv.vlen);
 
-	TParameter* mu_param=lik->m_gradient_parameters->get_parameter("mu");
+	TParameter* mu_param=lik->m_parameters->get_parameter("mu");
 	SGVector<float64_t> df=lik->get_variational_first_derivative(mu_param);
 	Map<VectorXd> eigen_df(df.vector, df.vlen);
 
