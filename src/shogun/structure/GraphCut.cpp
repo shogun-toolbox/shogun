@@ -18,20 +18,27 @@ CGraphCut::CGraphCut()
 {
 	SG_UNSTABLE("CGraphCut::CGraphCut()", "\n");
 
-	init();
+	m_nodes = NULL;
+	m_edges = NULL;
 }
 
 CGraphCut::CGraphCut(CFactorGraph* fg)
 	: CMAPInferImpl(fg)
 {
 	ASSERT(m_fg != NULL);
-
+	
+	m_nodes = NULL;
+	m_edges = NULL;
+	
 	init();
 }
 
 CGraphCut::CGraphCut(int32_t num_nodes, int32_t num_edges)
 	: CMAPInferImpl()
 {
+	m_nodes = NULL;
+	m_edges = NULL;
+	
 	m_num_nodes = num_nodes;
 	// build s-t graph
 	build_st_graph(m_num_nodes, num_edges);
@@ -39,8 +46,11 @@ CGraphCut::CGraphCut(int32_t num_nodes, int32_t num_edges)
 
 CGraphCut::~CGraphCut()
 {
-	SG_FREE(m_nodes);
-	SG_FREE(m_edges);
+	if (m_nodes!=NULL)
+		SG_FREE(m_nodes);
+	
+	if (m_edges!=NULL)
+		SG_FREE(m_edges);
 }
 
 void CGraphCut::init()
@@ -174,7 +184,7 @@ float64_t CGraphCut::inference(SGVector<int32_t> assignment)
 	m_map_energy = m_fg->evaluate_energy(assignment);
 	SG_DEBUG("fg.evaluate_energy(assignment) = %f\n", m_fg->evaluate_energy(assignment));
 	SG_DEBUG("minimized energy = %f\n", m_map_energy);
-
+	
 	return m_map_energy;
 }
 

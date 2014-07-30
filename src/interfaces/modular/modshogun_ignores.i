@@ -220,4 +220,5 @@
 %ignore shogun::CDisjointSet::CDisjointSet();
 %ignore shogun::CFactorGraph::CFactorGraph();
 %ignore shogun::CMAPInference::CMAPInference();
+%ignore shogun::CGraphCut::CGraphCut();
 %ignore shogun::CFactorGraphModel::CFactorGraphModel();

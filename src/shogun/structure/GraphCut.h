@@ -20,8 +20,6 @@
 #include <shogun/structure/Factor.h>
 #include <shogun/structure/MAPInference.h>
 
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-
 /* special constants for node->parent. */
 #define TERMINAL_EDGE ( (Edge *) 1 ) // to terminal
 #define ORPHAN_EDGE   ( (Edge *) 2 ) // orphan
@@ -65,8 +63,6 @@ struct NodePtr
 	NodePtr* next; // point to the next
 };
 
-#define IGNORE_IN_CLASSLIST
-
 /** Graph-cuts inference for fatcor graph using V. Kolmogorov's max-flow/min-cut algorithm
  *
  * Please refer to the paper for more details:
@@ -77,7 +73,7 @@ struct NodePtr
  *
  * Currently, only binary lablel is supported, factor order <= 3
  */
-IGNORE_IN_CLASSLIST class CGraphCut : public CMAPInferImpl
+class CGraphCut : public CMAPInferImpl
 {
 public:
 	/** Constructor */
@@ -106,7 +102,7 @@ public:
 	/** @return class name */
 	virtual const char* get_name() const
 	{
-		return "Graph cuts";
+		return "GraphCut";
 	}
 
 	/** Inference
@@ -301,7 +297,4 @@ private:
 };
 
 }
-
-#endif /* DOXYGEN_SHOULD_SKIP_THIS */
-
 #endif
