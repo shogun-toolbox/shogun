@@ -137,13 +137,13 @@ private:
 	float64_t delta_loss(SGVector<int32_t> y1, SGVector<int32_t> y2);
 	float64_t delta_loss(int32_t y1, int32_t y2);
 
-	/** get the attribute vector for any label
-	 * the attribute vector would be vector with value 1 for all the nodes
+	/** get the label vector for any label
+	 * the label vector would be vector with value 1 for all the nodes
 	 * that are ancestor of the given labels else 0
 	 *
-	 * @return attribute vector
+	 * @return label vector
 	 */
-	SGVector<int32_t> get_attr_vector(SGVector<int32_t> sparse_label);
+	SGVector<int32_t> get_label_vector(SGVector<int32_t> sparse_label);
 
 }; /* class CHierarchicalMultilabelModel */
 

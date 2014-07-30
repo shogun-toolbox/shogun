@@ -12,16 +12,16 @@
 #include <shogun/mathematics/Math.h>
 #include <gtest/gtest.h>
 
-#define DIMS 3
-#define NUM_SAMPLES 2
-
 using namespace shogun;
 
 TEST(HierarchicalMultilabelModel, get_joint_feature_vector_1)
 {
-	SGMatrix<float64_t> feats(DIMS, NUM_SAMPLES);
+	int32_t dim_features = 3;
+	int32_t num_samples = 2;
 
-	for (index_t i = 0; i < DIMS * NUM_SAMPLES; i++)
+	SGMatrix<float64_t> feats(dim_features, num_samples);
+
+	for (index_t i = 0; i < dim_features * num_samples; i++)
 	{
 		feats[i] = CMath::random(-100, 100);
 	}
@@ -29,7 +29,7 @@ TEST(HierarchicalMultilabelModel, get_joint_feature_vector_1)
 	CSparseFeatures<float64_t> * features = new CSparseFeatures<float64_t>(feats);
 	SG_REF(features);
 
-	CMultilabelSOLabels * labels = new CMultilabelSOLabels(NUM_SAMPLES, 3);
+	CMultilabelSOLabels * labels = new CMultilabelSOLabels(num_samples, 3);
 	SG_REF(labels);
 	SGVector<int32_t> lab_1(1);
 	lab_1[0] = 1;
@@ -64,7 +64,7 @@ TEST(HierarchicalMultilabelModel, get_joint_feature_vector_1)
 
 	for (index_t i = 0; i < psi_1.vlen; i++)
 	{
-		EXPECT_EQ(psi_1[i], attr_vector[i / DIMS] * feats[i % DIMS]);
+		EXPECT_EQ(psi_1[i], attr_vector[i / dim_features] * feats[i % dim_features]);
 	}
 
 	SG_UNREF(slabel_1);
@@ -75,9 +75,12 @@ TEST(HierarchicalMultilabelModel, get_joint_feature_vector_1)
 
 TEST(HierarchicalMultilabelModel, get_joint_feature_vector_2)
 {
-	SGMatrix<float64_t> feats(DIMS, NUM_SAMPLES);
+	int32_t dim_features = 3;
+	int32_t num_samples = 2;
 
-	for (index_t i = 0; i < DIMS * NUM_SAMPLES; i++)
+	SGMatrix<float64_t> feats(dim_features, num_samples);
+
+	for (index_t i = 0; i < dim_features * num_samples; i++)
 	{
 		feats[i] = CMath::random(-100, 100);
 	}
@@ -85,7 +88,7 @@ TEST(HierarchicalMultilabelModel, get_joint_feature_vector_2)
 	CSparseFeatures<float64_t> * features = new CSparseFeatures<float64_t>(feats);
 	SG_REF(features);
 
-	CMultilabelSOLabels * labels = new CMultilabelSOLabels(NUM_SAMPLES, 3);
+	CMultilabelSOLabels * labels = new CMultilabelSOLabels(num_samples, 3);
 	SG_REF(labels);
 	SGVector<int32_t> lab_1(1);
 	lab_1[0] = 1;
@@ -120,7 +123,7 @@ TEST(HierarchicalMultilabelModel, get_joint_feature_vector_2)
 
 	for (index_t i = 0; i < psi_2.vlen; i++)
 	{
-		EXPECT_EQ(psi_2[i], attr_vector[i / DIMS] * feats[i % DIMS]);
+		EXPECT_EQ(psi_2[i], attr_vector[i / dim_features] * feats[i % dim_features]);
 	}
 
 	SG_UNREF(slabel_012);
@@ -131,13 +134,16 @@ TEST(HierarchicalMultilabelModel, get_joint_feature_vector_2)
 
 TEST(HierarchicalMultilabelModel, delta_loss)
 {
-	SGMatrix<float64_t> feats(DIMS, NUM_SAMPLES);
+	int32_t dim_features = 3;
+	int32_t num_samples = 2;
+
+	SGMatrix<float64_t> feats(dim_features, num_samples);
 	feats.zero();
 
 	CSparseFeatures<float64_t> * features = new CSparseFeatures<float64_t>(feats);
 	SG_REF(features);
 
-	CMultilabelSOLabels * labels = new CMultilabelSOLabels(NUM_SAMPLES, 3);
+	CMultilabelSOLabels * labels = new CMultilabelSOLabels(num_samples, 3);
 	SG_REF(labels);
 
 	// assuming the hierarchy to be
@@ -195,9 +201,12 @@ TEST(HierarchicalMultilabelModel, delta_loss)
 
 TEST(HierarchicalMultilabelModel, argmax)
 {
-	SGMatrix<float64_t> feats(DIMS, NUM_SAMPLES);
+	int32_t dim_features = 3;
+	int32_t num_samples = 2;
 
-	for (index_t i = 0; i < DIMS * NUM_SAMPLES; i++)
+	SGMatrix<float64_t> feats(dim_features, num_samples);
+
+	for (index_t i = 0; i < dim_features * num_samples; i++)
 	{
 		feats[i] = CMath::random(-100, 100);
 	}
@@ -205,7 +214,7 @@ TEST(HierarchicalMultilabelModel, argmax)
 	CSparseFeatures<float64_t> * features = new CSparseFeatures<float64_t>(feats);
 	SG_REF(features);
 
-	CMultilabelSOLabels * labels = new CMultilabelSOLabels(NUM_SAMPLES, 3);
+	CMultilabelSOLabels * labels = new CMultilabelSOLabels(num_samples, 3);
 	SG_REF(labels);
 
 	SGVector<int32_t> lab_2(1);
@@ -245,7 +254,7 @@ TEST(HierarchicalMultilabelModel, argmax)
 	{
 		int32_t label = slabel_1[i];
 		float64_t score = ((CDotFeatures *)features)->dense_dot(0,
-		                  w.vector + label * DIMS, DIMS);
+		                  w.vector + label * dim_features, dim_features);
 
 		// score for ROOT should be greater than 0
 		if (label == 0)
@@ -258,7 +267,7 @@ TEST(HierarchicalMultilabelModel, argmax)
 		else
 		{
 			float64_t score_0 = ((CDotFeatures *)features)->dense_dot(0,
-			                    w.vector, DIMS);
+			                    w.vector, dim_features);
 			EXPECT_GE(score_0, 0);
 			EXPECT_GE(score, 0);
 		}
@@ -274,7 +283,7 @@ TEST(HierarchicalMultilabelModel, argmax)
 	{
 		int32_t label = slabel_2[i];
 		float64_t score = ((CDotFeatures *)features)->dense_dot(0,
-		                  w.vector + label * DIMS, DIMS);
+		                  w.vector + label * dim_features, dim_features);
 
 		// score for ROOT should be greater than 0
 		if (label == 0)
@@ -287,7 +296,7 @@ TEST(HierarchicalMultilabelModel, argmax)
 		else
 		{
 			float64_t score_0 = ((CDotFeatures *)features)->dense_dot(0,
-			                    w.vector, DIMS);
+			                    w.vector, dim_features);
 			EXPECT_GE(score_0, 0);
 			EXPECT_GE(score, 0);
 		}
@@ -303,9 +312,12 @@ TEST(HierarchicalMultilabelModel, argmax)
 
 TEST(HierarchicalMultilabelModel, argmax_leaf_nodes_mandatory)
 {
-	SGMatrix<float64_t> feats(DIMS, NUM_SAMPLES);
+	int32_t dim_features = 3;
+	int32_t num_samples = 2;
 
-	for (index_t i = 0; i < DIMS * NUM_SAMPLES; i++)
+	SGMatrix<float64_t> feats(dim_features, num_samples);
+
+	for (index_t i = 0; i < dim_features * num_samples; i++)
 	{
 		feats[i] = CMath::random(-100, 100);
 	}
@@ -313,7 +325,7 @@ TEST(HierarchicalMultilabelModel, argmax_leaf_nodes_mandatory)
 	CSparseFeatures<float64_t> * features = new CSparseFeatures<float64_t>(feats);
 	SG_REF(features);
 
-	CMultilabelSOLabels * labels = new CMultilabelSOLabels(NUM_SAMPLES, 3);
+	CMultilabelSOLabels * labels = new CMultilabelSOLabels(num_samples, 3);
 	SG_REF(labels);
 
 	SGVector<int32_t> lab_2(1);
@@ -360,11 +372,11 @@ TEST(HierarchicalMultilabelModel, argmax_leaf_nodes_mandatory)
 		// of that node, the score for its parent should also be greater than
 		// zero
 		float64_t score_0 = ((CDotFeatures *)features)->dense_dot(0,
-		                    w.vector, DIMS);
+		                    w.vector, dim_features);
 		EXPECT_GE(score_0, 0);
 
 		float64_t score = ((CDotFeatures *)features)->dense_dot(0,
-		                  w.vector + label * DIMS, DIMS);
+		                  w.vector + label * dim_features, dim_features);
 		EXPECT_GE(score, 0);
 	}
 
@@ -385,11 +397,11 @@ TEST(HierarchicalMultilabelModel, argmax_leaf_nodes_mandatory)
 		// of that node, the score for its parent should also be greater than
 		// zero
 		float64_t score_0 = ((CDotFeatures *)features)->dense_dot(0,
-		                    w.vector, DIMS);
+		                    w.vector, dim_features);
 		EXPECT_GE(score_0, 0);
 
 		float64_t score = ((CDotFeatures *)features)->dense_dot(0,
-		                  w.vector + label * DIMS, DIMS);
+		                  w.vector + label * dim_features, dim_features);
 		EXPECT_GE(score, 0);
 	}
 
