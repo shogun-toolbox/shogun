@@ -1,6 +1,6 @@
 /*
  * Copyright (c) The Shogun Machine Learning Toolbox
- * Written (w) 2014 Parijat Mazumdar
+ * Written (w) 2014 Parijat Mazumdar, Wu Lin
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -64,12 +64,12 @@ SGVector<float64_t> CSoftMaxLikelihood::get_log_probability_f(const CLabels* lab
 
 	// log_sum_exp trick
 	VectorXd max_coeff=eigen_f.rowwise().maxCoeff();
-	eigen_f=eigen_f-max_coeff*MatrixXd::Ones(1,eigen_f.cols());
+	eigen_f=eigen_f.array().colwise()-max_coeff.array();
 	VectorXd log_sum_exp=((eigen_f.array().exp()).rowwise().sum()).array().log();
 	log_sum_exp=log_sum_exp+max_coeff;
 
 	// restore original matrix
-	eigen_f=eigen_f+max_coeff*MatrixXd::Ones(1,eigen_f.cols());
+	eigen_f=eigen_f.array().colwise()+max_coeff.array();
 
 	SGVector<float64_t> ret=SGVector<float64_t>(labels.vlen);
 	Map<VectorXd> eigen_ret(ret.vector,ret.vlen);
@@ -115,9 +115,19 @@ SGVector<float64_t> CSoftMaxLikelihood::get_log_probability_derivative1_f(
 	SGVector<float64_t> ret=SGVector<float64_t>(func.num_rows*func.num_cols);
 	memcpy(ret.vector,func.matrix,func.num_rows*func.num_cols*sizeof(float64_t));
 
+	//pi
 	Map<MatrixXd> eigen_ret(ret.vector,func.num_rows,func.num_cols);
-	eigen_ret=eigen_ret.array().exp();
-	eigen_ret=eigen_ret.cwiseQuotient(eigen_ret.rowwise().sum()*MatrixXd::Ones(1,func.num_cols));
+
+	// with log_sum_exp trick
+	VectorXd max_coeff=eigen_ret.rowwise().maxCoeff();
+	eigen_ret=eigen_ret.array().colwise()-max_coeff.array();
+	VectorXd log_sum_exp=((eigen_ret.array().exp()).rowwise().sum()).array().log();
+	eigen_ret=(eigen_ret.array().colwise()-log_sum_exp.array()).exp();
+
+	// without log_sum_exp trick
+	//eigen_ret=eigen_ret.array().exp();
+	//VectorXd tmp=eigen_ret.rowwise().sum();
+	//eigen_ret=eigen_ret.array().colwise()/tmp.array();
 
 	MatrixXd y=MatrixXd::Zero(func.num_rows,func.num_cols);
 
@@ -137,7 +147,8 @@ SGVector<float64_t> CSoftMaxLikelihood::get_log_probability_derivative2_f(SGMatr
 	Map<MatrixXd> eigen_f(func.matrix,func.num_rows,func.num_cols);
 
 	MatrixXd f1= eigen_f.array().exp();
-	f1=f1.cwiseQuotient(f1.rowwise().sum()*MatrixXd::Ones(1,f1.cols()));
+	VectorXd tmp=f1.rowwise().sum();
+	f1=f1.array().colwise()/tmp.array();
 
 	for (int32_t i=0;i<eigen_f.rows();i++)
 	{
@@ -160,7 +171,8 @@ SGVector<float64_t> CSoftMaxLikelihood::get_log_probability_derivative3_f(SGMatr
 	Map<MatrixXd> eigen_f(func.matrix,func.num_rows,func.num_cols);
 
 	MatrixXd f1= eigen_f.array().exp();
-	f1=f1.cwiseQuotient(f1.rowwise().sum()*MatrixXd::Ones(1,f1.cols()));
+	VectorXd tmp=f1.rowwise().sum();
+	f1=f1.array().colwise()/tmp.array();
 
 	for (int32_t i=0;i<func.num_rows;i++)
 	{
