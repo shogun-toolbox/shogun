@@ -233,57 +233,6 @@ SGVector<float64_t> CHSIC::fit_null_gamma()
 	return result;
 }
 
-SGMatrix<float64_t> CHSIC::get_kernel_matrix_K()
-{
-	SG_DEBUG("entering!\n");
-
-	SGMatrix<float64_t> K;
-
-	/* distinguish between custom and normal kernels */
-	if (m_kernel_p->get_kernel_type()==K_CUSTOM)
-	{
-		/* custom kernels need to to be initialised when a subset is added */
-		CCustomKernel* custom_kernel_p=(CCustomKernel*)m_kernel_p;
-		K=custom_kernel_p->get_kernel_matrix();
-	}
-	else
-	{
-		/* need to init the kernel if kernel is not precomputed - if subsets of
-		 * features are in the stack (for permutation), this will handle it */
-		m_kernel_p->init(m_p, m_p);
-		K=m_kernel_p->get_kernel_matrix();
-	}
-
-	SG_DEBUG("leaving!\n");
-
-	return K;
-}
-
-SGMatrix<float64_t> CHSIC::get_kernel_matrix_L()
-{
-	SG_DEBUG("entering!\n");
-
-	SGMatrix<float64_t> L;
-
-	/* now second half of data for L */
-	if (m_kernel_q->get_kernel_type()==K_CUSTOM)
-	{
-		/* custom kernels need to to be initialised - no subsets here */
-		CCustomKernel* custom_kernel_q=(CCustomKernel*)m_kernel_q;
-		L=custom_kernel_q->get_kernel_matrix();
-	}
-	else
-	{
-		/* need to init the kernel if kernel is not precomputed */
-		m_kernel_q->init(m_q, m_q);
-		L=m_kernel_q->get_kernel_matrix();
-	}
-
-	SG_DEBUG("leaving!\n");
-
-	return L;
-}
-
 SGVector<float64_t> CHSIC::sample_null()
 {
 	SG_DEBUG("entering!\n")

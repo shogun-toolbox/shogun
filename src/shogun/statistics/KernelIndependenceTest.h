@@ -127,6 +127,12 @@ private:
 	void init();
 
 protected:
+	/** @return kernel matrix on samples from p. Distinguishes CustomKernels */
+	SGMatrix<float64_t> get_kernel_matrix_K();
+
+	/** @return kernel matrix on samples from q. Distinguishes CustomKernels */
+	SGMatrix<float64_t> get_kernel_matrix_L();
+
 	/** underlying kernel for p */
 	CKernel* m_kernel_p;
 
