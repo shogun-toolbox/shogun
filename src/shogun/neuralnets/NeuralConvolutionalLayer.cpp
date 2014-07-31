@@ -86,16 +86,15 @@ void CNeuralConvolutionalLayer::initialize(CDynamicObjectArray* layers,
 {
 	CNeuralLayer::initialize(layers, input_indices);
 	
-	m_num_parameters = m_num_neurons + 
-		m_num_maps*(2*m_radius_x+1)*(2*m_radius_y+1);
+	// one bias and one weight matrix for each feature map
+	m_num_parameters = (1 + (2*m_radius_x+1)*(2*m_radius_y+1))*m_num_maps;
 }
 
 void CNeuralConvolutionalLayer::initialize_parameters(SGVector<float64_t> parameters,
 		SGVector<bool> parameter_regularizable,
 		float64_t sigma)
 {
-	int32_t num_parameters_per_map = 
-		m_num_neurons/m_num_maps + (2*m_radius_x+1)*(2*m_radius_y+1);
+	int32_t num_parameters_per_map = 1 + (2*m_radius_x+1)*(2*m_radius_y+1);
 	
 	for (int32_t m=0; m<m_num_maps; m++)
 	{
@@ -107,8 +106,8 @@ void CNeuralConvolutionalLayer::initialize_parameters(SGVector<float64_t> parame
 		{
 			map_params[i] = CMath::normal_random(0.0, sigma);
 			
-			// turn off regularization for the bias parameters, on for the rest
-			map_param_regularizable[i] = (i>=m_num_neurons/m_num_maps);
+			// turn off regularization for the bias, on for the rest of the parameters
+			map_param_regularizable[i] = (i != 0);
 		}
 	}
 }
@@ -117,8 +116,7 @@ void CNeuralConvolutionalLayer::compute_activations(
 		SGVector<float64_t> parameters,
 		CDynamicObjectArray* layers)
 {
-	int32_t num_parameters_per_map = 
-		m_num_neurons/m_num_maps + (2*m_radius_x+1)*(2*m_radius_y+1);
+	int32_t num_parameters_per_map = 1 + (2*m_radius_x+1)*(2*m_radius_y+1);
 	
 	for (int32_t m=0; m<m_num_maps; m++)
 	{
@@ -157,8 +155,7 @@ void CNeuralConvolutionalLayer::compute_gradients(
 			m_convolution_output_gradients(m_max_indices(i,j),j) = 
 				m_activation_gradients(i,j);
 
-	int32_t num_parameters_per_map = 
-		m_num_neurons/m_num_maps + (2*m_radius_x+1)*(2*m_radius_y+1);
+	int32_t num_parameters_per_map = 1 + (2*m_radius_x+1)*(2*m_radius_y+1);
 	
 	for (int32_t m=0; m<m_num_maps; m++)
 	{
@@ -184,7 +181,7 @@ void CNeuralConvolutionalLayer::enforce_max_norm(SGVector<float64_t> parameters,
 {
 	int32_t num_weights = (2*m_radius_x+1)*(2*m_radius_y+1);	
 	
-	int32_t num_biases = m_num_neurons/m_num_maps;
+	int32_t num_biases = 1;
 	
 	int32_t num_parameters_per_map = num_biases + num_weights;
 	

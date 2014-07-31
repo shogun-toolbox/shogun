@@ -99,19 +99,18 @@ void CConvolutionalFeatureMap::compute_activations(
 		SG_UNREF(layer);
 	}
 	
-	SGMatrix<float64_t> weights_matrix(
-		parameters.vector+m_output_num_neurons, 
+	SGMatrix<float64_t> weights_matrix(parameters.vector+1, 
 		m_filter_height, m_filter_width, false);
 	
 	convolve(buffer, weights_matrix, activations, 
 		false, true, 0, m_row_offset);
 	
-	float64_t* biases = parameters.vector;
+	float64_t bias = parameters[0];
 	for (int32_t i=0; i<m_output_num_neurons; i++)
 	{
 		for (int32_t j=0; j<batch_size; j++)
 		{
-			activations(i+m_row_offset,j) += biases[i];
+			activations(i+m_row_offset,j) += bias;
 		}
 	}
 	
@@ -161,18 +160,17 @@ void CConvolutionalFeatureMap::compute_gradients(
 					activation_gradients(i+m_row_offset,j) = 0;
 	}
 	
-	float64_t* bias_gradients = parameter_gradients.vector;
+	float64_t bias_gradient = 0;
 	for (int32_t i=0; i<m_output_num_neurons; i++)
-	{
-		bias_gradients[i] = 0;
 		for (int32_t j=0; j<batch_size; j++)
-			bias_gradients[i] += activation_gradients(i+m_row_offset,j);
-	}
+			bias_gradient += activation_gradients(i+m_row_offset,j);
 	
-	SGMatrix<float64_t> W(parameters.vector + m_output_num_neurons, 
+	parameter_gradients[0] = bias_gradient;
+		
+	SGMatrix<float64_t> W(parameters.vector + 1, 
 		m_filter_height, m_filter_width, false);
 	
-	SGMatrix<float64_t> WG(parameter_gradients.vector + m_output_num_neurons, 
+	SGMatrix<float64_t> WG(parameter_gradients.vector + 1, 
 		m_filter_height, m_filter_width, false);
 	
 	WG.zero();
