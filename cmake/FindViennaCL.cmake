@@ -28,9 +28,6 @@ IF (WIN32)
 	else(VIENNACL_INCLUDE_DIR)
 		mark_as_advanced(CLEAR VIENNACL_PATH_WIN32)
 	endif(VIENNACL_INCLUDE_DIR)
-
-ELSEIF(APPLE)
-#TODO
 ELSE (WIN32) #Linux
 	find_path(VIENNACL_INCLUDE_DIR viennacl/forwards.h
 			PATHS
@@ -38,16 +35,35 @@ ELSE (WIN32) #Linux
 			DOC "The ViennaCL include path")
 ENDIF (WIN32)
 
+# TODO: viennacl currently doesn't store the version of itself in the header
+IF (VIENNACL_INCLUDE_DIR)
+	SET(CMAKE_REQUIRED_INCLUDES ${VIENNACL_INCLUDE_DIR})
+
+	include (CheckCXXSymbolExists)
+	IF (VIENNACL_WITH_OPENCL)
+		IF (NOT APPLE)
+			SET(CMAKE_REQUIRED_LIBRARIES OpenCL)
+		ENDIF ()
+	ENDIF()
+	CHECK_CXX_SYMBOL_EXISTS("viennacl::ocl::type_to_string<char>::apply" "viennacl/ocl/utils.hpp" HAVE_VIENNACL_TYPE_TO_STRING)
+	if (HAVE_VIENNACL_TYPE_TO_STRING)
+		SET(VIENNACL_VERSION "1.5.0")
+	else ()
+		SET(VIENNACL_VERSION "1.4.2")
+	endif ()
+ENDIF()
+
 include(FindPackageHandleStandardArgs)
 if(VIENNACL_WITH_OPENCL)
 	set(VIENNACL_INCLUDE_DIRS ${VIENNACL_INCLUDE_DIR} ${OPENCL_INCLUDE_DIRS})
 	set(VIENNACL_LIBRARIES ${OPENCL_LIBRARIES})
-	find_package_handle_standard_args(ViennaCL "ViennaCL not found!"
-			VIENNACL_INCLUDE_DIR OPENCL_INCLUDE_DIRS OPENCL_LIBRARIES)
+	find_package_handle_standard_args(ViennaCL REQUIRED_VARS
+			VIENNACL_INCLUDE_DIR OPENCL_INCLUDE_DIRS OPENCL_LIBRARIES
+			VERSION_VAR VIENNACL_VERSION)
 else(VIENNACL_WITH_OPENCL)
 	set(VIENNACL_INCLUDE_DIRS ${VIENNACL_INCLUDE_DIR})
 	set(VIENNACL_LIBRARIES "")
-	find_package_handle_standard_args(ViennaCL "ViennaCL not found!" VIENNACL_INCLUDE_DIR)
+	find_package_handle_standard_args(ViennaCL REQUIRED_VARS VIENNACL_INCLUDE_DIR VERSION_VAR VIENNACL_VERSION)
 endif(VIENNACL_WITH_OPENCL)
 
 MARK_AS_ADVANCED(VIENNACL_INCLUDE_DIR)
