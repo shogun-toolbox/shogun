@@ -5,6 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 2011 Alesis Novik
+ * Written (W) 2014 Parijat Mazumdar 
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 #include <shogun/lib/config.h>
@@ -108,6 +109,12 @@ float64_t CGaussian::get_log_likelihood_example(int32_t num_example)
 	SGVector<float64_t> v=((CDotFeatures *)features)->get_computed_dot_feature_vector(num_example);
 	float64_t answer=compute_log_PDF(v);
 	return answer;
+}
+
+void CGaussian::update_params_em(SGVector<float64_t> alpha_k)
+{
+	SG_DEBUG("To be implemented")
+	// Supplied with the belongingness values this will compute the updated mean and co-variance matrix
 }
 
 float64_t CGaussian::compute_log_PDF(SGVector<float64_t> point)
