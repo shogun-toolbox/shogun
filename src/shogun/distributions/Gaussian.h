@@ -5,6 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 2011 Alesis Novik
+ * Written (W) 2014 Parijat Mazumdar
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
@@ -101,6 +102,15 @@ class CGaussian : public CDistribution
 		 * @return log likelihood for example
 		 */
 		virtual float64_t get_log_likelihood_example(int32_t num_example);
+
+		/** update parameters in the em maximization step for mixture model of which
+		 * this distribution is a part
+		 *
+		 * abstract base method
+		 *
+		 * @param alpha_k "belongingness" values of various data points
+		 */
+		virtual void update_params_em(SGVector<float64_t> alpha_k);
 
 		/** compute PDF
 		 *

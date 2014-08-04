@@ -5,6 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 1999-2009 Soeren Sonnenburg
+ * Written (W) 2014 Parijat Mazumdar
  * Copyright (C) 1999-2009 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
@@ -184,6 +185,22 @@ class CDistribution : public CSGObject
 		 * @return pseudo count
 		 */
 		virtual float64_t get_pseudo_count() { return pseudo_count; }
+
+		/** update parameters in the em maximization step for mixture model of which
+		 * this distribution is a part
+		 *
+		 * abstract base method
+		 *
+		 * @param alpha_k "belongingness" values of various data points
+		 */
+		virtual void update_params_em(SGVector<float64_t> alpha_k);
+
+		/** obtain from generic
+		 *
+		 * @param object generic object
+		 * @return Distribution object
+		 */
+		static CDistribution* obtain_from_generic(CSGObject* object);				
 
 	protected:
 		/** feature vectors */
