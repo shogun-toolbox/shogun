@@ -113,19 +113,19 @@ public:
 
 	/** get list of sparse class labels (one vector per class)
 	 *
-	 * @return SGVector<int32_t> **
+	 * @return list of sparse class labels
 	 */
 	SGVector<int32_t> ** get_class_labels() const;
-        
-        /** get label maxtrix, only for multiclass multiple output labels
+
+	/** get label matrix, only for multiclass multiple output labels
 	 *
-	 * @return  SGMatrix<int32_t > label
+	 * @return label matrix
 	 */
 	SGMatrix<int32_t> get_labels() const;
-	
-        /** get sparse assignment for j-th label
+
+	/** get sparse assignment for j-th label
 	 *
-	 * @return SGVector<int32_t > sparse label
+	 * @return sparse label
 	 */
 	SGVector<int32_t> get_label(int32_t j);
 
@@ -133,20 +133,20 @@ public:
 	 * will be {d_true; d_false}^dense_dim.  Indices in sparse
 	 * will be marked "d_true", everything else "d_false".
 	 *
-	 * @param SGVector<S> * sparse vector to convert
-	 * @param int32_t       dense dimension
-	 * @param D             marker for "true" labels
-	 * @param D             marker for "false" labels
+	 * @param sparse        sparse vector to convert
+	 * @param dense_len     dimension
+	 * @param d_true        marker for "true" labels
+	 * @param d_false       marker for "false" labels
 	 *
-	 * @return SGVector<D> dense vector of dimension dense_len
+	 * @return dense vector of dimension dense_len
 	 */
 	template <class S, class D>
 	static SGVector<D> to_dense(SGVector<S> * sparse, int32_t dense_len, D d_true, D d_false);
 
 	/** set sparse assignment for j-th label
 	 *
-	 * @param int32_t label index
-	 * @param SGVector<int32_t > sparse label
+	 * @param i     label index
+	 * @param label sparse label
 	 */
 	void set_label(int32_t j, SGVector<int32_t> label);
 
