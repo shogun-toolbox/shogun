@@ -22,6 +22,7 @@ CDistribution::CDistribution()
 
 CDistribution::~CDistribution()
 {
+	SG_UNREF(features);
 }
 
 float64_t CDistribution::get_log_likelihood_sample()
@@ -74,10 +75,11 @@ SGVector<float64_t> CDistribution::get_likelihood_for_all_examples()
 	return result;
 }
 
-void CDistribution::update_params_em(SGVector<float64_t> alpha_k)
+float64_t CDistribution::update_params_em(float64_t* alpha_k, int32_t len)
 {
 	SG_WARNING("Not implemented in this class. This class cannot be used for Mixture models.\n")
 	SG_NOTIMPLEMENTED
+	return -1;
 }
 
 CDistribution* CDistribution::obtain_from_generic(CSGObject* object)
@@ -89,6 +91,5 @@ CDistribution* CDistribution::obtain_from_generic(CSGObject* object)
 	if (!casted)
 		return NULL;
 
-	SG_REF(casted);
 	return casted;
 }
