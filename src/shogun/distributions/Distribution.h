@@ -159,9 +159,9 @@ class CDistribution : public CSGObject
 		 */
 		virtual void set_features(CFeatures* f)
 		{
-			SG_REF(f);
 			SG_UNREF(features);
 			features=f;
+			SG_REF(features);
 		}
 
 		/** get feature vectors
