@@ -48,9 +48,10 @@ class CMixtureModel : public CDistribution
 		CMixtureModel();
 
 		/** constructor
+		 * Note: Automatic initialization of parameters of components is not possible yet 
 		 *
-		 * @param components individual distributions forming the mixture
-		 * @param weights \f$w_m\f$ ie. weights of individual distributions
+		 * @param components individual distributions forming the mixture (parameters must be initialized)
+		 * @param weights initial \f$w_m\f$ ie. weights of individual distributions
 		 */
 		CMixtureModel(CDynamicObjectArray* components, SGVector<float64_t> weights);
 
@@ -129,7 +130,31 @@ class CMixtureModel : public CDistribution
 		 * @param index index of component
 		 * @return component at index
 		 */
-		CDistribution* get_component(index_t index) const;		
+		CDistribution* get_component(index_t index) const;
+
+		/** set max iterations in EM
+		 *
+		 * @param max_iters maximum number of iterations allowed
+		 */
+		void set_max_iters(int32_t max_iters);
+
+		/** get max iterations in EM
+		 *
+		 * @return max_iters maximum number of iterations allowed
+		 */
+		int32_t get_max_iters() const;
+
+		/** set convergence tolerance criterion for EM
+		 *
+		 *	@param epsilon convergence tolerance
+		 */
+		void set_convergence_tolerance(float64_t epsilon);
+
+		/** get convergence tolerance criterion for EM
+		 *
+		 *	@return epsilon convergence tolerance
+		 */
+		float64_t get_convergence_tolerance() const;
 
 		/** sample from model
 		 *
@@ -154,6 +179,12 @@ class CMixtureModel : public CDistribution
 
 		/** weights */
 		SGVector<float64_t> m_weights;
+
+		/** max_iterations of EM */
+		int32_t m_max_iters;
+
+		/** convergence tolerance */
+		float64_t m_conv_tol;
 };
 }
 #endif /* _MIXTUREMODEL_H__ */

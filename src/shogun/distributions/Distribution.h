@@ -192,8 +192,10 @@ class CDistribution : public CSGObject
 		 * abstract base method
 		 *
 		 * @param alpha_k "belongingness" values of various data points
+		 * @param len length of alpha_k array
+		 * @return sum of alpha_k values
 		 */
-		virtual void update_params_em(SGVector<float64_t> alpha_k);
+		virtual float64_t update_params_em(float64_t* alpha_k, int32_t len);
 
 		/** obtain from generic
 		 *
