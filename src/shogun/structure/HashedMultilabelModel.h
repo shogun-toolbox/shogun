@@ -18,6 +18,12 @@ namespace shogun
  * classification with feature hashing within a generic SO framework. We hash
  * the feature of *each* class with a separate seed and put them in the *same*
  * feature space (exploded feature space).
+ *
+ * The hashing function is defined as per:
+ *
+ * [1] K. Weinberger, A. Dasgupta, J. Attenberg, J. Langford, A. Smola
+ *     Feature Hashing for Large Scale Multitask Learning
+ *     http://alex.smola.org/papers/2009/Weinbergeretal09.pdf
  */
 class CHashedMultilabelModel : public CStructuredModel
 {

@@ -17,6 +17,9 @@ namespace shogun
 /** @brief Class CMultilabelModel represents application specific model and
  * contains application dependent logic for solving multilabel classification
  * within a generic SO framework.
+ *
+ * [1] C. Lampert. Maximum Margin Multi-Label Structured Prediction, NIPS 2011.
+ * http://machinelearning.wustl.edu/mlpapers/paper_files/NIPS2011_0207.pdf
  */
 class CMultilabelModel : public CStructuredModel
 {
@@ -50,7 +53,7 @@ public:
 	 * \f]
 	 *
 	 * @param feat_idx index of the feature vector to use
-	 * @pram y structured label to use
+	 * @param y structured label to use
 	 */
 	virtual SGVector<float64_t> get_joint_feature_vector(int32_t feat_idx,
 	                CStructuredData * y);

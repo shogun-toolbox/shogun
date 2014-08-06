@@ -53,7 +53,7 @@ public:
 	 * \f]
 	 *
 	 * @param feat_idx index of the feature vector to use
-	 * @pram y structured label to use
+	 * @param y structured label to use
 	 */
 	virtual SGVector<float64_t> get_joint_feature_vector(int32_t feat_idx,
 	                CStructuredData * y);
