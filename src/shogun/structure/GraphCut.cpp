@@ -17,9 +17,8 @@ CGraphCut::CGraphCut()
 	: CMAPInferImpl()
 {
 	SG_UNSTABLE("CGraphCut::CGraphCut()", "\n");
-
-	m_nodes = NULL;
-	m_edges = NULL;
+	
+	init();
 }
 
 CGraphCut::CGraphCut(CFactorGraph* fg)
@@ -27,18 +26,14 @@ CGraphCut::CGraphCut(CFactorGraph* fg)
 {
 	ASSERT(m_fg != NULL);
 	
-	m_nodes = NULL;
-	m_edges = NULL;
-	
 	init();
 }
 
 CGraphCut::CGraphCut(int32_t num_nodes, int32_t num_edges)
 	: CMAPInferImpl()
 {
-	m_nodes = NULL;
-	m_edges = NULL;
-	
+	init();
+
 	m_num_nodes = num_nodes;
 	// build s-t graph
 	build_st_graph(m_num_nodes, num_edges);
@@ -55,6 +50,26 @@ CGraphCut::~CGraphCut()
 
 void CGraphCut::init()
 {
+	m_nodes = NULL;
+	m_edges = NULL;
+	m_edges_last = NULL;	
+	m_num_nodes = 0;
+	m_num_edges = 0;
+
+	m_active_first[0] = NULL;
+	m_active_last[0] = NULL;
+	m_active_first[1] = NULL;
+	m_active_last[1] = NULL;
+	m_orphan_first = NULL;
+	m_orphan_last = NULL;
+
+	m_timestamp = 0;
+	m_flow = 0;
+	m_map_energy = 0;
+
+	if (m_fg == NULL)
+		return;
+
 	CDynamicObjectArray* facs = m_fg->get_factors();
 
 	SGVector<int32_t> cards = m_fg->get_cardinalities();
@@ -122,6 +137,15 @@ void CGraphCut::build_st_graph(int32_t num_nodes, int32_t num_edges)
 
 	m_num_edges = 0; // m_num_edges will be counted in add_edge()
 	m_flow = 0;
+
+	m_active_first[0] = NULL;
+	m_active_last[0] = NULL;
+	m_active_first[1] = NULL;
+	m_active_last[1] = NULL;
+	m_orphan_first = NULL;
+	m_orphan_last = NULL;
+
+	m_timestamp = 0;
 }
 
 void CGraphCut::init_maxflow()
