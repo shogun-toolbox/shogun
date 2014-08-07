@@ -157,7 +157,7 @@ protected:
 	 * get_gradient_of_nlml_wrt_parameters(SGVector<float64_t> gradient)
 	 *
 	 */
-	virtual void lbfgs_precompute();
+	virtual bool lbfgs_precompute();
 
 	/** compute matrices which are required to compute negative log marginal
 	 * likelihood derivatives wrt  hyperparameter in cov function
