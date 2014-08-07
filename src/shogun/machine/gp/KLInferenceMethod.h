@@ -398,7 +398,7 @@ protected:
 	 * get_gradient_of_nlml_wrt_parameters(SGVector<float64_t> gradient)
 	 *
 	 */
-	virtual bool lbfgs_precompute()=0;
+	virtual void lbfgs_precompute()=0;
 
 	/** mean vector of the approximation to the posterior
 	 * Note that m_mu is also a variational parameter

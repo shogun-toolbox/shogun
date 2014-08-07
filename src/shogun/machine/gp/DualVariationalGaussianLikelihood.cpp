@@ -69,12 +69,6 @@ SGVector<float64_t> CDualVariationalGaussianLikelihood::get_variational_expectio
 	return var_lik->get_variational_expection();
 }
 
-void CDualVariationalGaussianLikelihood::set_noise_factor(float64_t noise_factor)
-{
-	CVariationalGaussianLikelihood * var_lik=get_variational_likelihood();
-	var_lik->set_noise_factor(noise_factor);
-}
-
 SGVector<float64_t> CDualVariationalGaussianLikelihood::get_variational_first_derivative(const TParameter* param) const
 {
 	CVariationalLikelihood * var_lik=get_variational_likelihood();
@@ -93,11 +87,11 @@ SGVector<float64_t> CDualVariationalGaussianLikelihood::get_first_derivative_wrt
 	return var_lik->get_first_derivative_wrt_hyperparameter(param);
 }
 
-bool CDualVariationalGaussianLikelihood::set_variational_distribution(
+void CDualVariationalGaussianLikelihood::set_variational_distribution(
 	SGVector<float64_t> mu,	SGVector<float64_t> s2, const CLabels* lab)
 {
 	CVariationalGaussianLikelihood* var_lik=get_variational_likelihood();
-	return var_lik->set_variational_distribution(mu, s2, lab);
+	var_lik->set_variational_distribution(mu, s2, lab);
 }
 
 void CDualVariationalGaussianLikelihood::set_strict_scale(float64_t strict_scale)

@@ -63,7 +63,7 @@ void CVariationalGaussianLikelihood::set_noise_factor(float64_t noise_factor)
 	m_noise_factor=noise_factor;
 }
 
-bool CVariationalGaussianLikelihood::set_variational_distribution(SGVector<float64_t> mu,
+void CVariationalGaussianLikelihood::set_variational_distribution(SGVector<float64_t> mu,
 	SGVector<float64_t> s2, const CLabels* lab)
 {
 	REQUIRE(lab, "Labels are required (lab should not be NULL)\n");
@@ -74,15 +74,15 @@ bool CVariationalGaussianLikelihood::set_variational_distribution(SGVector<float
 
 	for(index_t i = 0; i < s2.vlen; ++i)
 	{
-		if (!((s2[i]+m_noise_factor)>0.0)) 
-			return false;
+		REQUIRE(s2[i]+m_noise_factor>0.0,
+			"Corrected variational variance (original s2=%f) should always be positive after noise correction (%f)\n",
+			s2[i], m_noise_factor);
 		if (!(s2[i]>0.0))
 			s2[i]+=m_noise_factor;
 	}
 
 	m_mu=mu;
 	m_s2=s2;
-	return true;
 }
 
 }

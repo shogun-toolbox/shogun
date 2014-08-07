@@ -116,7 +116,7 @@ void CKLDualInferenceMethod::init()
 	m_is_dual_valid=false;
 }
 
-bool CKLDualInferenceMethod::lbfgs_precompute()
+void CKLDualInferenceMethod::lbfgs_precompute()
 {
 	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
 	CDualVariationalGaussianLikelihood *lik= get_dual_variational_likelihood();
@@ -126,7 +126,7 @@ bool CKLDualInferenceMethod::lbfgs_precompute()
 	m_is_dual_valid=lik->dual_parameters_valid();
 
 	if (!m_is_dual_valid)
-		return false;
+		return;
 
 	//construct alpha
 	m_alpha=lik->get_mu_dual_parameter();
@@ -153,7 +153,6 @@ bool CKLDualInferenceMethod::lbfgs_precompute()
 	Map<VectorXd> eigen_mu(m_mu.vector, m_mu.vlen);
 	//mu=K*alpha+m
 	eigen_mu=eigen_K*CMath::sq(m_scale)*eigen_alpha+eigen_mean;
-	return true;
 }
 
 float64_t CKLDualInferenceMethod::get_dual_objective_wrt_parameters()
@@ -235,10 +234,8 @@ float64_t CKLDualInferenceMethod::get_nlml_wrapper(SGVector<float64_t> alpha, SG
 float64_t CKLDualInferenceMethod::get_negative_log_marginal_likelihood_helper()
 {
 	CDualVariationalGaussianLikelihood *lik=get_dual_variational_likelihood();
-	bool status = lik->set_variational_distribution(m_mu, m_s2, m_labels);
-	if (status)
-		return get_nlml_wrapper(m_alpha, m_mu, m_L);
-	return CMath::NOT_A_NUMBER;
+	lik->set_variational_distribution(m_mu, m_s2, m_labels);
+	return get_nlml_wrapper(m_alpha, m_mu, m_L);
 }
 
 float64_t CKLDualInferenceMethod::get_derivative_related_cov(Eigen::MatrixXd eigen_dK)
@@ -378,18 +375,14 @@ float64_t CKLDualInferenceMethod::evaluate(void *obj, const float64_t *parameter
 
 	ASSERT(obj_prt != NULL);
 
-	bool status=obj_prt->lbfgs_precompute();
-	if (status)
-	{
-		float64_t nlml=obj_prt->get_dual_objective_wrt_parameters();
+	obj_prt->lbfgs_precompute();
+	float64_t nlml=obj_prt->get_dual_objective_wrt_parameters();
 
-		SGVector<float64_t> sg_gradient(gradient, dim, false);
-		Map<VectorXd> eigen_g(sg_gradient.vector, sg_gradient.vlen);
-		obj_prt->get_gradient_of_dual_objective_wrt_parameters(sg_gradient);
+	SGVector<float64_t> sg_gradient(gradient, dim, false);
+	Map<VectorXd> eigen_g(sg_gradient.vector, sg_gradient.vlen);
+	obj_prt->get_gradient_of_dual_objective_wrt_parameters(sg_gradient);
 
-		return nlml;
-	}
-	return CMath::NOT_A_NUMBER;
+	return nlml;
 }
 
 float64_t CKLDualInferenceMethod::lbfgs_optimization()
