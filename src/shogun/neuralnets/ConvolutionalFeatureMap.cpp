@@ -68,50 +68,38 @@ void CConvolutionalFeatureMap::compute_activations(
 	SGVector< float64_t > parameters, 
 	CDynamicObjectArray* layers, 
 	SGVector< int32_t > input_indices,
-	SGMatrix<float64_t> activations,
-	SGMatrix<float64_t> buffer)
+	SGMatrix<float64_t> activations)
 {
 	int32_t batch_size = activations.num_cols;
-	
-	// sum up all the inputs into the buffer
-	buffer.zero();
-	for (int32_t l=0; l<input_indices.vlen; l++)
-	{
-		CNeuralLayer* layer = 
-			(CNeuralLayer*)layers->element(input_indices[l]);
-		
-		SGMatrix<float64_t> input = layer->get_activations();
-		
-		int32_t num_maps = layer->get_num_neurons()/m_input_num_neurons;
-		
-		for (int32_t m=0; m<num_maps; m++)
-		{
-			for (int32_t i=0; i<m_input_num_neurons; i++)
-			{
-				for (int32_t j=0; j<batch_size; j++)
-				{
-					buffer(i,j) += 
-						input(i+m*m_input_num_neurons,j);
-				}
-			}
-		}
-		
-		SG_UNREF(layer);
-	}
-	
-	SGMatrix<float64_t> weights_matrix(parameters.vector+1, 
-		m_filter_height, m_filter_width, false);
-	
-	convolve(buffer, weights_matrix, activations, 
-		false, true, 0, m_row_offset);
 	
 	float64_t bias = parameters[0];
 	for (int32_t i=0; i<m_output_num_neurons; i++)
 	{
 		for (int32_t j=0; j<batch_size; j++)
 		{
-			activations(i+m_row_offset,j) += bias;
+			activations(i+m_row_offset,j) = bias;
 		}
+	}
+	
+	int32_t weights_index_offset = 1;
+	for (int32_t l=0; l<input_indices.vlen; l++)
+	{
+		CNeuralLayer* layer = 
+			(CNeuralLayer*)layers->element(input_indices[l]);
+		
+		int32_t num_maps = layer->get_num_neurons()/m_input_num_neurons;
+		
+		for (int32_t m=0; m<num_maps; m++)
+		{
+			SGMatrix<float64_t> weights_matrix(parameters.vector+weights_index_offset, 
+				m_filter_height, m_filter_width, false);
+			weights_index_offset += m_filter_height*m_filter_width;
+			
+			convolve(layer->get_activations(), weights_matrix, activations, 
+				false, false, m*m_input_num_neurons, m_row_offset);
+		}
+		
+		SG_UNREF(layer);
 	}
 	
 	if (m_activation_function==CMAF_LOGISTIC)
@@ -166,25 +154,23 @@ void CConvolutionalFeatureMap::compute_gradients(
 			bias_gradient += activation_gradients(i+m_row_offset,j);
 	
 	parameter_gradients[0] = bias_gradient;
-		
-	SGMatrix<float64_t> W(parameters.vector + 1, 
-		m_filter_height, m_filter_width, false);
 	
-	SGMatrix<float64_t> WG(parameter_gradients.vector + 1, 
-		m_filter_height, m_filter_width, false);
-	
-	WG.zero();
+	int32_t weights_index_offset = 1;
 	for (int32_t l=0; l<input_indices.vlen; l++)
 	{
 		CNeuralLayer* layer = 
 			(CNeuralLayer*)layers->element(input_indices[l]);
 		
-		SGMatrix<float64_t> input = layer->get_activations();
-		
 		int32_t num_maps = layer->get_num_neurons()/m_input_num_neurons;
 		
 		for (int32_t m=0; m<num_maps; m++)
 		{
+			SGMatrix<float64_t> W(parameters.vector+weights_index_offset, 
+				m_filter_height, m_filter_width, false);
+			SGMatrix<float64_t> WG(parameter_gradients.vector+weights_index_offset, 
+				m_filter_height, m_filter_width, false);
+			weights_index_offset += m_filter_height*m_filter_width;
+			
 			compute_weight_gradients(layer->get_activations(), 
 				activation_gradients, WG, m*m_input_num_neurons, m_row_offset);
 			
@@ -297,6 +283,7 @@ void CConvolutionalFeatureMap::compute_weight_gradients(
 	int32_t inputs_row_offset,
  	int32_t local_gradients_row_offset)
 {
+	weight_gradients.zero();
 	for (int32_t i=0; i<local_gradients.num_cols; i++)
 	{
 		SGMatrix<float64_t> image(

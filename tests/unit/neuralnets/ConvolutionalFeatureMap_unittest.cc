@@ -75,7 +75,7 @@ TEST(ConvolutionalFeatureMap, compute_activations)
 	input_indices[1] = 1;
 	
 	CConvolutionalFeatureMap map(w,h,rx,ry,1,1,map_index);
-	SGVector<float64_t> params(1+(2*rx+1)*(2*ry+1));
+	SGVector<float64_t> params(1+(2*rx+1)*(2*ry+1)*3);
 	for (int32_t i=0; i<params.vlen; i++)
 		params[i] = float64_t(i)/4;
 	
@@ -83,22 +83,21 @@ TEST(ConvolutionalFeatureMap, compute_activations)
 	input2->compute_activations(x2);
 	
 	SGMatrix<float64_t> A(num_maps*w*h,b);
-	SGMatrix<float64_t> buffer(w*h,b);
-	map.compute_activations(params, layers, input_indices, A, buffer);
+	map.compute_activations(params, layers, input_indices, A);
 	
 	// reference numbers generated using scipy.signal.convolve2d
 	float64_t ref[] = { 
-		  17.50000,  34.37500,  40.93750,  47.50000,  40.00000,  52.50000,  
-		  96.56250, 110.62500, 124.68750,  99.37500,  94.68750, 166.87500, 
-		  180.93750, 195.00000, 150.93750, 136.87500, 237.18750, 251.25000, 
-		  265.31250, 202.50000, 179.06250, 307.50000, 321.56250, 335.62500, 
-		  254.06250, 190.00000, 314.68750, 326.87500, 339.06250, 248.75000, 
-		  152.50000, 270.62500, 277.18750, 283.75000, 220.00000, 356.25000, 
-		  602.81250, 616.87500, 630.93750, 470.62500, 398.43750, 673.12500,
-		  687.18750, 701.25000, 522.18750, 440.62500, 743.43750, 757.50000, 
-		  771.56250, 573.75000, 482.81250, 813.75000, 827.81250, 841.87500, 
-		  625.31250, 460.00000, 753.43750, 765.62500, 777.81250, 563.75000};
-	
+		95.12500, 153.34375, 164.96875, 176.59375, 127.75000, 181.59375, 
+		294.00000, 315.65625, 337.31250, 243.65625, 249.09375, 402.28125, 
+		423.93750, 445.59375, 320.53125, 316.59375, 510.56250, 532.21875, 
+		553.87500, 397.40625, 384.09375, 618.84375, 640.50000, 662.15625, 
+		474.28125, 335.12500, 534.90625, 552.15625, 569.40625, 404.00000, 
+		432.62500, 693.34375, 704.96875, 716.59375, 510.25000, 789.09375,
+		1255.87500,1277.53125,1299.18750, 918.65625, 856.59375,1364.15625,
+		1385.81250,1407.46875, 995.53125, 924.09375,1472.43750,1494.09375,
+		1515.75000,1072.40625, 991.59375,1580.71875,1602.37500,1624.03125,
+		1149.28125, 807.62500,1277.40625,1294.65625,1311.90625, 921.50000};
+		
 	for (int32_t i=0; i<w*h; i++)
 		for (int32_t j=0; j<A.num_cols; j++)
 			EXPECT_NEAR(ref[i+j*w*h], A(i+map_index*w*h,j), 1.0e-15);
@@ -145,7 +144,7 @@ TEST(ConvolutionalFeatureMap, compute_activations_with_stride)
 	input_indices[1] = 1;
 	
 	CConvolutionalFeatureMap map(w,h,rx,ry,stride_x,stride_y,map_index);
-	SGVector<float64_t> params(1+(2*rx+1)*(2*ry+1));
+	SGVector<float64_t> params(1+(2*rx+1)*(2*ry+1)*3);
 	for (int32_t i=0; i<params.vlen; i++)
 		params[i] = float64_t(i)/4;
 	
@@ -153,18 +152,17 @@ TEST(ConvolutionalFeatureMap, compute_activations_with_stride)
 	input2->compute_activations(x2);
 	
 	SGMatrix<float64_t> A(num_maps*w_out*h_out,b);
-	SGMatrix<float64_t> buffer(w*h,b);
-	map.compute_activations(params, layers, input_indices, A, buffer);
+	map.compute_activations(params, layers, input_indices, A);
 	
 	// reference numbers generated using scipy.signal.convolve2d
 	float64_t ref[] = { 
-		  55.93750, 109.37500, 122.50000, 135.62500, 148.75000, 320.62500, 
-		  560.62500, 588.75000, 616.87500, 645.00000, 573.75000, 982.50000,
-		  1010.62500,1038.75000,1066.87500, 826.87500,1404.37500,1432.50000,
-		  1460.62500,1488.75000, 595.93750,1054.37500,1067.50000,1080.62500,
-		  1093.75000,1535.62500,2585.62500,2613.75000,2641.87500,2670.00000,
-		  1788.75000,3007.50000,3035.62500,3063.75000,3091.87500,2041.87500,
-		  3429.37500,3457.50000,3485.62500,3513.75000};
+		344.50000, 549.81250, 573.06250, 596.31250, 619.56250, 880.03125,
+		1411.12500,1454.43750,1497.75000,1541.06250,1285.03125,2060.81250,
+		2104.12500,2147.43750,2190.75000,1690.03125,2710.50000,2753.81250,
+		2797.12500,2840.43750,1694.50000,2709.81250,2733.06250,2756.31250,
+		2779.56250,3310.03125,5258.62500,5301.93750,5345.25000,5388.56250,
+		3715.03125,5908.31250,5951.62500,5994.93750,6038.25000,4120.03125,
+		6558.00000,6601.31250,6644.62500,6687.93750};
 
 	for (int32_t i=0; i<w_out*h_out; i++)
 		for (int32_t j=0; j<A.num_cols; j++)
@@ -207,7 +205,7 @@ TEST(ConvolutionalFeatureMap, compute_activations_logistic)
 	input_indices[1] = 1;
 	
 	CConvolutionalFeatureMap map(w,h,rx,ry,1,1,map_index,CMAF_LOGISTIC);
-	SGVector<float64_t> params(1+(2*rx+1)*(2*ry+1));
+	SGVector<float64_t> params(1+(2*rx+1)*(2*ry+1)*3);
 	for (int32_t i=0; i<params.vlen; i++)
 		params[i] = float64_t(i)*1e-4;
 	
@@ -215,20 +213,19 @@ TEST(ConvolutionalFeatureMap, compute_activations_logistic)
 	input2->compute_activations(x2);
 	
 	SGMatrix<float64_t> A(num_maps*w*h,b);
-	SGMatrix<float64_t> buffer(w*h,b);
-	map.compute_activations(params, layers, input_indices, A, buffer);
+	map.compute_activations(params, layers, input_indices, A);
 	
 	float64_t ref[] = { 
-		0.50175,   0.50344,   0.50409,   0.50475,   0.50400,   0.50525,   
-		0.50966,   0.51106,   0.51247,   0.50994,   0.50947,   0.51668,   
-		0.51809,   0.51949,   0.51509,   0.51368,   0.52370,   0.52510,   
-		0.52651,   0.52024,   0.51790,   0.53071,   0.53211,   0.53351,   
-		0.52538,   0.51899,   0.53143,   0.53264,   0.53385,   0.52485,   
-		0.51525,   0.52704,   0.52769,   0.52834,   0.52199,   0.53556,   
-		0.55999,   0.56138,   0.56276,   0.54692,   0.53976,   0.56691,   
-		0.56829,   0.56967,   0.55203,   0.54395,   0.57380,   0.57518,   
-		0.57655,   0.55712,   0.54813,   0.58066,   0.58203,   0.58340,   
-		0.56221,   0.54587,   0.57478,   0.57597,   0.57716,   0.55614};
+		0.50951,   0.51533,   0.51649,   0.51765,   0.51277,   0.51815,   
+		0.52937,   0.53152,   0.53368,   0.52435,   0.52489,   0.54014,   
+		0.54229,   0.54444,   0.53201,   0.53162,   0.55088,   0.55302,   
+		0.55516,   0.53966,   0.53833,   0.56157,   0.56370,   0.56583,   
+		0.54729,   0.53346,   0.55329,   0.55499,   0.55670,   0.54031,   
+		0.54315,   0.56889,   0.57003,   0.57117,   0.55085,   0.57826,   
+		0.62301,   0.62504,   0.62707,   0.59085,   0.58483,   0.63313,   
+		0.63514,   0.63714,   0.59826,   0.59137,   0.64313,   0.64512,   
+		0.64710,   0.60563,   0.59788,   0.65301,   0.65497,   0.65692,   
+		0.61295,   0.58007,   0.62503,   0.62665,   0.62826,   0.59112};
 	
 	for (int32_t i=0; i<w*h; i++)
 		for (int32_t j=0; j<A.num_cols; j++)
@@ -271,28 +268,27 @@ TEST(ConvolutionalFeatureMap, compute_activations_rectified_linear)
 	input_indices[1] = 1;
 	
 	CConvolutionalFeatureMap map(w,h,rx,ry,1,1,map_index,CMAF_RECTIFIED_LINEAR);
-	SGVector<float64_t> params(1+(2*rx+1)*(2*ry+1));
+	SGVector<float64_t> params(1+(2*rx+1)*(2*ry+1)*3);
 	for (int32_t i=0; i<params.vlen; i++)
-		params[i] = float64_t(i)/4 - 1;
+		params[i] = float64_t(i)/4 - 2.5;
 	
 	input1->compute_activations(x1);
 	input2->compute_activations(x2);
 	
 	SGMatrix<float64_t> A(num_maps*w*h,b);
-	SGMatrix<float64_t> buffer(w*h,b);
-	map.compute_activations(params, layers, input_indices, A, buffer);
+	map.compute_activations(params, layers, input_indices, A);
 	
 	float64_t ref[] = { 
+		17.62500,  28.96875,  21.84375,  14.71875,  12.75000,  19.71875,  
+		38.37500,  31.90625,  25.43750,  25.53125,  -0.00000,   6.03125,  
+		-0.00000,  -0.00000,   8.65625,  -0.00000,  -0.00000,  -0.00000,  
 		-0.00000,  -0.00000,  -0.00000,  -0.00000,  -0.00000,  -0.00000,  
-		-0.00000,  -0.00000,  -0.00000,  12.12500,  -0.00000,   8.37500,  
-		11.18750,  14.00000,  26.18750,  -0.00000,  22.43750,  25.25000,  
-		28.06250,  40.25000,   1.81250,  36.50000,  39.31250,  42.12500,  
-		54.31250,  59.00000, 114.93750, 119.62500, 124.31250, 102.75000,  
-		-0.00000,  -0.00000,  -0.00000,  -0.00000,  -0.00000,  21.50000, 
-		95.56250,  98.37500, 101.18750, 113.37500,  26.18750, 109.62500, 
-		112.43750, 115.25000, 127.43750,  30.87500, 123.68750, 126.50000, 
-		129.31250, 141.50000,  35.56250, 137.75000, 140.56250, 143.37500, 
-		155.56250, 149.00000, 283.68750, 288.37500, 293.06250, 237.75000};
+		-0.00000,   7.62500,  35.53125,  34.03125,  32.53125,  39.00000,  
+		-0.00000,  -0.00000,  -0.00000,  -0.00000,  -0.00000,  -0.00000,  
+		-0.00000,  -0.00000,  -0.00000,  25.53125,  -0.00000,  -0.00000,  
+		-0.00000,  -0.00000,   8.65625,  -0.00000,  -0.00000,  -0.00000,  
+		-0.00000,  -0.00000,  -0.00000,  -0.00000,  -0.00000,  -0.00000,  
+		-0.00000,  30.12500, 103.03125, 101.53125, 100.03125, 106.50000};
 	
 	for (int32_t i=0; i<w*h; i++)
 		for (int32_t j=0; j<A.num_cols; j++)
@@ -337,7 +333,7 @@ TEST(ConvolutionalFeatureMap, compute_parameter_gradients)
 	input_indices[1] = 1;
 	
 	CConvolutionalFeatureMap map(w,h,rx,ry,1,1,map_index);
-	SGVector<float64_t> params(1+(2*rx+1)*(2*ry+1));
+	SGVector<float64_t> params(1+(2*rx+1)*(2*ry+1)*3);
 	for (int32_t i=0; i<params.vlen; i++)
 		params[i] = CMath::normal_random(0.0,0.01);
 	
@@ -345,10 +341,9 @@ TEST(ConvolutionalFeatureMap, compute_parameter_gradients)
 	input2->compute_activations(x2);
 	
 	SGMatrix<float64_t> A(num_maps*w*h,b);
-	SGMatrix<float64_t> buffer(w*h,b);
 	A.zero();
 	
-	map.compute_activations(params, layers, input_indices, A, buffer);
+	map.compute_activations(params, layers, input_indices, A);
 	
 	// compute activation gradients with respect to some function
 	// assuming the function is 0.5*sum(A[i]^2)
@@ -366,13 +361,13 @@ TEST(ConvolutionalFeatureMap, compute_parameter_gradients)
 	for (int32_t i=0; i<params.vlen; i++)
 	{
 		params[i] += epsilon;
-		map.compute_activations(params, layers, input_indices, A, buffer);
+		map.compute_activations(params, layers, input_indices, A);
 		float64_t error_plus = 0;
 		for (int32_t k=0; k<A.num_rows*A.num_cols; k++)
 			error_plus += 0.5*A[k]*A[k];
 		
 		params[i] -= 2*epsilon;
-		map.compute_activations(params, layers, input_indices, A, buffer);
+		map.compute_activations(params, layers, input_indices, A);
 		float64_t error_minus = 0;
 		for (int32_t k=0; k<A.num_rows*A.num_cols; k++)
 			error_minus += 0.5*A[k]*A[k];
@@ -430,7 +425,7 @@ TEST(ConvolutionalFeatureMap, compute_parameter_gradients_with_stride)
 	input_indices[1] = 1;
 	
 	CConvolutionalFeatureMap map(w,h,rx,ry,stride_x,stride_y,map_index);
-	SGVector<float64_t> params(1+(2*rx+1)*(2*ry+1));
+	SGVector<float64_t> params(1+(2*rx+1)*(2*ry+1)*3);
 	for (int32_t i=0; i<params.vlen; i++)
 		params[i] = CMath::normal_random(0.0,0.01);
 	
@@ -438,10 +433,9 @@ TEST(ConvolutionalFeatureMap, compute_parameter_gradients_with_stride)
 	input2->compute_activations(x2);
 	
 	SGMatrix<float64_t> A(num_maps*w_out*h_out,b);
-	SGMatrix<float64_t> buffer(w*h,b);
 	A.zero();
 	
-	map.compute_activations(params, layers, input_indices, A, buffer);
+	map.compute_activations(params, layers, input_indices, A);
 	
 	// compute activation gradients with respect to some function
 	// assuming the function is 0.5*sum(A[i]^2)
@@ -459,13 +453,13 @@ TEST(ConvolutionalFeatureMap, compute_parameter_gradients_with_stride)
 	for (int32_t i=0; i<params.vlen; i++)
 	{
 		params[i] += epsilon;
-		map.compute_activations(params, layers, input_indices, A, buffer);
+		map.compute_activations(params, layers, input_indices, A);
 		float64_t error_plus = 0;
 		for (int32_t k=0; k<A.num_rows*A.num_cols; k++)
 			error_plus += 0.5*A[k]*A[k];
 		
 		params[i] -= 2*epsilon;
-		map.compute_activations(params, layers, input_indices, A, buffer);
+		map.compute_activations(params, layers, input_indices, A);
 		float64_t error_minus = 0;
 		for (int32_t k=0; k<A.num_rows*A.num_cols; k++)
 			error_minus += 0.5*A[k]*A[k];
@@ -513,10 +507,9 @@ TEST(ConvolutionalFeatureMap, compute_parameter_gradients_logistic)
 	input1->compute_activations(x1);
 	
 	SGMatrix<float64_t> A(w*h,b);
-	SGMatrix<float64_t> buffer(w*h,b);
 	A.zero();
 	
-	map.compute_activations(params, layers, input_indices, A, buffer);
+	map.compute_activations(params, layers, input_indices, A);
 	
 	// compute activation gradients with respect to some function
 	// assuming the function is 0.5*sum(A[i]^2)
@@ -534,13 +527,13 @@ TEST(ConvolutionalFeatureMap, compute_parameter_gradients_logistic)
 	for (int32_t i=0; i<params.vlen; i++)
 	{
 		params[i] += epsilon;
-		map.compute_activations(params, layers, input_indices, A, buffer);
+		map.compute_activations(params, layers, input_indices, A);
 		float64_t error_plus = 0;
 		for (int32_t k=0; k<A.num_rows*A.num_cols; k++)
 			error_plus += 0.5*A[k]*A[k];
 		
 		params[i] -= 2*epsilon;
-		map.compute_activations(params, layers, input_indices, A, buffer);
+		map.compute_activations(params, layers, input_indices, A);
 		float64_t error_minus = 0;
 		for (int32_t k=0; k<A.num_rows*A.num_cols; k++)
 			error_minus += 0.5*A[k]*A[k];
@@ -588,10 +581,9 @@ TEST(ConvolutionalFeatureMap, compute_parameter_gradients_rectified_linear)
 	input1->compute_activations(x1);
 	
 	SGMatrix<float64_t> A(w*h,b);
-	SGMatrix<float64_t> buffer(w*h,b);
 	A.zero();
 	
-	map.compute_activations(params, layers, input_indices, A, buffer);
+	map.compute_activations(params, layers, input_indices, A);
 	
 	// compute activation gradients with respect to some function
 	// assuming the function is 0.5*sum(A[i]^2)
@@ -609,13 +601,13 @@ TEST(ConvolutionalFeatureMap, compute_parameter_gradients_rectified_linear)
 	for (int32_t i=0; i<params.vlen; i++)
 	{
 		params[i] += epsilon;
-		map.compute_activations(params, layers, input_indices, A, buffer);
+		map.compute_activations(params, layers, input_indices, A);
 		float64_t error_plus = 0;
 		for (int32_t k=0; k<A.num_rows*A.num_cols; k++)
 			error_plus += 0.5*A[k]*A[k];
 		
 		params[i] -= 2*epsilon;
-		map.compute_activations(params, layers, input_indices, A, buffer);
+		map.compute_activations(params, layers, input_indices, A);
 		float64_t error_minus = 0;
 		for (int32_t k=0; k<A.num_rows*A.num_cols; k++)
 			error_minus += 0.5*A[k]*A[k];
@@ -666,15 +658,14 @@ TEST(ConvolutionalFeatureMap, compute_input_gradients)
 	input_indices[1] = 1;
 	
 	CConvolutionalFeatureMap map(w,h,rx,ry,1,1,map_index);
-	SGVector<float64_t> params(1+(2*rx+1)*(2*ry+1));
+	SGVector<float64_t> params(1+(2*rx+1)*(2*ry+1)*3);
 	for (int32_t i=0; i<params.vlen; i++)
 		params[i] = CMath::normal_random(0.0,0.01);
 	
 	SGMatrix<float64_t> A(num_maps*w*h,b);
-	SGMatrix<float64_t> buffer(num_maps*w*h,b);
 	A.zero();
 	
-	map.compute_activations(params, layers, input_indices, A, buffer);
+	map.compute_activations(params, layers, input_indices, A);
 	
 	// compute activation gradients with respect to some function
 	// assuming the function is 0.5*sum(A[i]^2)
@@ -695,13 +686,13 @@ TEST(ConvolutionalFeatureMap, compute_input_gradients)
 	for (int32_t i=0; i<IG1.num_rows*IG1.num_cols; i++)
 	{
 		input1->get_activations()[i] += epsilon;
-		map.compute_activations(params, layers, input_indices, A, buffer);
+		map.compute_activations(params, layers, input_indices, A);
 		float64_t error_plus = 0;
 		for (int32_t k=0; k<A.num_rows*A.num_cols; k++)
 			error_plus += 0.5*A[k]*A[k];
 		
 		input1->get_activations()[i] -= 2*epsilon;
-		map.compute_activations(params, layers, input_indices, A, buffer);
+		map.compute_activations(params, layers, input_indices, A);
 		float64_t error_minus = 0;
 		for (int32_t k=0; k<A.num_rows*A.num_cols; k++)
 			error_minus += 0.5*A[k]*A[k];
@@ -715,13 +706,13 @@ TEST(ConvolutionalFeatureMap, compute_input_gradients)
 	for (int32_t i=0; i<IG2.num_rows*IG2.num_cols; i++)
 	{
 		input2->get_activations()[i] += epsilon;
-		map.compute_activations(params, layers, input_indices, A, buffer);
+		map.compute_activations(params, layers, input_indices, A);
 		float64_t error_plus = 0;
 		for (int32_t k=0; k<A.num_rows*A.num_cols; k++)
 			error_plus += 0.5*A[k]*A[k];
 		
 		input2->get_activations()[i] -= 2*epsilon;
-		map.compute_activations(params, layers, input_indices, A, buffer);
+		map.compute_activations(params, layers, input_indices, A);
 		float64_t error_minus = 0;
 		for (int32_t k=0; k<A.num_rows*A.num_cols; k++)
 			error_minus += 0.5*A[k]*A[k];

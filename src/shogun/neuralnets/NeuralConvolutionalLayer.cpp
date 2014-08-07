@@ -72,8 +72,6 @@ void CNeuralConvolutionalLayer::set_batch_size(int32_t batch_size)
 	m_convolution_output = SGMatrix<float64_t>(m_num_maps*
 		(m_input_width/m_stride_x)*(m_input_height/m_stride_y), batch_size);
 	
-	m_buffer = SGMatrix<float64_t>(m_input_width*m_input_height, batch_size);
-	
 	m_max_indices = SGMatrix<float64_t>(m_num_neurons, m_batch_size);
 	
 	m_convolution_output_gradients = SGMatrix<float64_t>(
@@ -86,26 +84,40 @@ void CNeuralConvolutionalLayer::initialize(CDynamicObjectArray* layers,
 {
 	CNeuralLayer::initialize(layers, input_indices);
 	
-	// one bias and one weight matrix for each feature map
-	m_num_parameters = (1 + (2*m_radius_x+1)*(2*m_radius_y+1))*m_num_maps;
+	m_input_num_channels = 0;
+	for (int32_t l=0; l<input_indices.vlen; l++)
+	{
+		CNeuralLayer* layer = 
+			(CNeuralLayer*)layers->element(input_indices[l]);
+		
+		m_input_num_channels += layer->get_num_neurons()/(m_input_height*m_input_width);
+		
+		SG_UNREF(layer);
+	}
+	
+	// one bias for each map and one weight matrix between each map in this 
+	// layer and each channel in the input layers
+	m_num_parameters = 
+		m_num_maps*(1 + m_input_num_channels*(2*m_radius_x+1)*(2*m_radius_y+1));
 }
 
 void CNeuralConvolutionalLayer::initialize_parameters(SGVector<float64_t> parameters,
 		SGVector<bool> parameter_regularizable,
 		float64_t sigma)
 {
-	int32_t num_parameters_per_map = 1 + (2*m_radius_x+1)*(2*m_radius_y+1);
-	
+	int32_t num_parameters_per_map = 
+		1 + m_input_num_channels*(2*m_radius_x+1)*(2*m_radius_y+1);
+
 	for (int32_t m=0; m<m_num_maps; m++)
 	{
 		float64_t* map_params = parameters.vector+m*num_parameters_per_map;
 		bool* map_param_regularizable = 
 			parameter_regularizable.vector+m*num_parameters_per_map;
-		
+
 		for (int32_t i=0; i<num_parameters_per_map; i++)
 		{
 			map_params[i] = CMath::normal_random(0.0, sigma);
-			
+
 			// turn off regularization for the bias, on for the rest of the parameters
 			map_param_regularizable[i] = (i != 0);
 		}
@@ -116,7 +128,8 @@ void CNeuralConvolutionalLayer::compute_activations(
 		SGVector<float64_t> parameters,
 		CDynamicObjectArray* layers)
 {
-	int32_t num_parameters_per_map = 1 + (2*m_radius_x+1)*(2*m_radius_y+1);
+	int32_t num_parameters_per_map = 
+		1 + m_input_num_channels*(2*m_radius_x+1)*(2*m_radius_y+1);
 	
 	for (int32_t m=0; m<m_num_maps; m++)
 	{
@@ -128,7 +141,7 @@ void CNeuralConvolutionalLayer::compute_activations(
 			m_radius_x, m_radius_y, m_stride_x, m_stride_y, m, m_activation_function);
 		
 		map.compute_activations(map_params, layers, m_input_indices, 
-			m_convolution_output, m_buffer);
+			m_convolution_output);
 		
 		map.pool_activations(m_convolution_output, 
 			m_pooling_width, m_pooling_height, m_activations, m_max_indices);
@@ -155,7 +168,8 @@ void CNeuralConvolutionalLayer::compute_gradients(
 			m_convolution_output_gradients(m_max_indices(i,j),j) = 
 				m_activation_gradients(i,j);
 
-	int32_t num_parameters_per_map = 1 + (2*m_radius_x+1)*(2*m_radius_y+1);
+	int32_t num_parameters_per_map =
+		1 + m_input_num_channels*(2*m_radius_x+1)*(2*m_radius_y+1);
 	
 	for (int32_t m=0; m<m_num_maps; m++)
 	{
@@ -181,13 +195,11 @@ void CNeuralConvolutionalLayer::enforce_max_norm(SGVector<float64_t> parameters,
 {
 	int32_t num_weights = (2*m_radius_x+1)*(2*m_radius_y+1);	
 	
-	int32_t num_biases = 1;
+	int32_t num_parameters_per_map = 1 + m_input_num_channels*num_weights;
 	
-	int32_t num_parameters_per_map = num_biases + num_weights;
-	
-	for (int32_t m=0; m<m_num_maps; m++)
+	for (int32_t offset=1; offset<parameters.vlen; offset+=num_parameters_per_map)
 	{
-		float64_t* weights = parameters.vector+m*num_parameters_per_map+num_biases;
+		float64_t* weights = parameters.vector+offset;
 		
 		float64_t norm = 
 				SGVector<float64_t>::twonorm(weights, num_weights);
@@ -206,6 +218,7 @@ void CNeuralConvolutionalLayer::init()
 	m_num_maps = 1;
 	m_input_width = 0;
 	m_input_height = 0;
+	m_input_num_channels = 0;
 	m_radius_x = 0;
 	m_radius_y = 0;
 	m_pooling_width = 1;
@@ -216,7 +229,9 @@ void CNeuralConvolutionalLayer::init()
 	
 	SG_ADD(&m_num_maps, "num_maps", "Number of maps", MS_NOT_AVAILABLE);
 	SG_ADD(&m_input_width, "input_width", "Input Width", MS_NOT_AVAILABLE);
-	SG_ADD(&m_input_height, "nput_height", "Input Height", MS_NOT_AVAILABLE);
+	SG_ADD(&m_input_height, "input_height", "Input Height", MS_NOT_AVAILABLE);
+	SG_ADD(&m_input_num_channels, "input_num_channels", "Input's number of channels", 
+		MS_NOT_AVAILABLE);
 	SG_ADD(&m_radius_x, "radius_x", "X Radius", MS_NOT_AVAILABLE);
 	SG_ADD(&m_radius_y, "radius_y", "Y Radius", MS_NOT_AVAILABLE);
 	SG_ADD(&m_pooling_width, "pooling_width", "Pooling Width", MS_NOT_AVAILABLE);
@@ -231,7 +246,4 @@ void CNeuralConvolutionalLayer::init()
 	
 	SG_ADD(&m_convolution_output_gradients, "convolution_output_gradients", 
 		"Convolution Output Gradients", MS_NOT_AVAILABLE);
-	
-	SG_ADD(&m_buffer, "buffer", 
-		"Buffer", MS_NOT_AVAILABLE);
 }

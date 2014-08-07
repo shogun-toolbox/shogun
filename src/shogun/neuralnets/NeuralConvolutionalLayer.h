@@ -202,6 +202,9 @@ protected:
 	/** Height of the input */
 	int32_t m_input_height;
 	
+	/** Total number channels in the inputs */
+	int32_t m_input_num_channels;
+	
 	/** Radius of the convolution filter on the x (width) axis */
 	int32_t m_radius_x;
 	
@@ -228,9 +231,6 @@ protected:
 	
 	/** Gradients of the error with respect to the convolution's output */
 	SGMatrix<float64_t> m_convolution_output_gradients;
-	
-	/** Buffer for activation calculation */
-	SGMatrix<float64_t> m_buffer;
 	
 	/** Row indices of the max elements for each pooling region */
 	SGMatrix<float64_t> m_max_indices;

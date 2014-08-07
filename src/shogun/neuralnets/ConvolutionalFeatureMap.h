@@ -102,15 +102,11 @@ public:
 	 * as input
 	 * 
 	 * @param activations Matrix in which the activations are to be stored
-	 * 
-	 * @param buffer Matrix of size (input_width*input_height)xbatch_size. 
-	 * Used as a buffer during computations
 	 */
 	void compute_activations(SGVector<float64_t> parameters, 
 			CDynamicObjectArray* layers,
 			SGVector<int32_t> input_indices,
-			SGMatrix<float64_t> activations,
-			SGMatrix<float64_t> buffer);
+			SGMatrix<float64_t> activations);
 	
 	/** Computes the gradients with respect to the parameters and the inputs to 
 	 * the map
