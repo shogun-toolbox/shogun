@@ -117,7 +117,7 @@ public:
 	 *
 	 * Note that the variational distribution is Gaussian
 	 */
-	virtual void set_variational_distribution(SGVector<float64_t> mu,
+	virtual bool set_variational_distribution(SGVector<float64_t> mu,
 		SGVector<float64_t> s2, const CLabels* lab);
 
 	/** check whether the dual parameters are valid or not.
@@ -204,6 +204,16 @@ public:
 	 *
 	 */
 	virtual void set_strict_scale(float64_t strict_scale);
+
+
+	/** set a non-negative noise factor in order to correct the variance if variance is close to zero or negative
+	 * setting 0 means correction is not applied
+	 *
+	 * @param noise_factor noise factor
+	 *
+	 * The default value is 1e-6.
+	 */
+	virtual void set_noise_factor(float64_t noise_factor);
 protected:
 
 	/** The dual variables (lambda) for the variational parameter s2.

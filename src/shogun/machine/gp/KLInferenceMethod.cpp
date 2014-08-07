@@ -252,7 +252,10 @@ float64_t CKLInferenceMethod::evaluate(void *obj, const float64_t *parameters,
 
 	REQUIRE(obj_prt, "The instance object passed to L-BFGS optimizer should not be NULL\n");
 
-	obj_prt->lbfgs_precompute();
+	bool status = obj_prt->lbfgs_precompute();
+	if (!status)
+		return CMath::NOT_A_NUMBER;
+
 	float64_t nlml=obj_prt->get_nlml_wrt_parameters();
 
 	SGVector<float64_t> sg_gradient(gradient, dim, false);
