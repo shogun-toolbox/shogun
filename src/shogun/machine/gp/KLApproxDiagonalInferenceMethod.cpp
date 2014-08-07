@@ -96,7 +96,7 @@ CKLApproxDiagonalInferenceMethod::~CKLApproxDiagonalInferenceMethod()
 {
 }
 
-bool CKLApproxDiagonalInferenceMethod::lbfgs_precompute()
+void CKLApproxDiagonalInferenceMethod::lbfgs_precompute()
 {
 	index_t len=m_mean_vec.vlen;
 	Map<VectorXd> eigen_mean(m_mean_vec.vector, m_mean_vec.vlen);
@@ -113,8 +113,7 @@ bool CKLApproxDiagonalInferenceMethod::lbfgs_precompute()
 	eigen_s2=eigen_log_v.array().exp();
 
 	CVariationalGaussianLikelihood * lik=get_variational_likelihood();
-	bool status=lik->set_variational_distribution(m_mu, m_s2, m_labels);
-	return status;
+	lik->set_variational_distribution(m_mu, m_s2, m_labels);
 }
 
 void CKLApproxDiagonalInferenceMethod::get_gradient_of_nlml_wrt_parameters(SGVector<float64_t> gradient)

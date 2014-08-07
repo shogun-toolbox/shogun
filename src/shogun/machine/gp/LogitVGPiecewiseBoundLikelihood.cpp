@@ -355,28 +355,23 @@ SGVector<float64_t> CLogitVGPiecewiseBoundLikelihood::get_variational_first_deri
 	return result;
 }
 
-bool CLogitVGPiecewiseBoundLikelihood::set_variational_distribution(SGVector<float64_t> mu,
+void CLogitVGPiecewiseBoundLikelihood::set_variational_distribution(SGVector<float64_t> mu,
 	SGVector<float64_t> s2, const CLabels* lab)
 {
-	bool status = true;
-	status=CVariationalGaussianLikelihood::set_variational_distribution(mu, s2, lab);
-	if (status)
-	{
-		REQUIRE(lab->get_label_type()==LT_BINARY,
-			"Labels must be type of CBinaryLabels\n");
+	CVariationalGaussianLikelihood::set_variational_distribution(mu, s2, lab);
 
-		m_lab = (((CBinaryLabels*)lab)->get_labels()).clone();
+	REQUIRE(lab->get_label_type()==LT_BINARY,
+		"Labels must be type of CBinaryLabels\n");
 
-		//Convert the input label to standard label used in the class
-		//Note that Shogun uses  -1 and 1 as labels and this class internally uses 
-		//0 and 1 repectively.
-		for(index_t i = 0; i < m_lab.size(); ++i)
-			m_lab[i] = CMath::max(m_lab[i], 0.0);
+	m_lab = (((CBinaryLabels*)lab)->get_labels()).clone();
 
-		precompute();
+	//Convert the input label to standard label used in the class
+	//Note that Shogun uses  -1 and 1 as labels and this class internally uses 
+	//0 and 1 repectively.
+	for(index_t i = 0; i < m_lab.size(); ++i)
+		m_lab[i] = CMath::max(m_lab[i], 0.0);
 
-	}
-	return status;
+	precompute();
 }
 
 void CLogitVGPiecewiseBoundLikelihood::init_likelihood()
