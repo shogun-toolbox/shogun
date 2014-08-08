@@ -44,7 +44,10 @@ enum EStatisticType
 	S_LINEAR_TIME_MMD, S_QUADRATIC_TIME_MMD, S_HSIC, S_BTEST_MMD
 };
 
-/** enum for different method to approximate null-distibution */
+/** enum for different method to approximate null-distibution. Please
+ * check class documentation of CQuadraticTimeMMD, CStreamingMMD, CHSIC
+ * for their description
+ */
 enum ENullApproximationMethod
 {
 	PERMUTATION,

@@ -106,27 +106,32 @@ public:
 	}
 
 protected:
-	/** Method that computes statistic estimate multiplier \f$\zeta\f$ as
-	 * \f$\frac{n_xn_y}{n_x+n_y}\sqrt{\frac{B}{n}}\f$
+	/** Method that computes normalizing constant \f$theta_1\f$ for
+	 * statistic estimate as \f$\frac{n_xn_y}{n_x+n_y}\sqrt{\frac{B}{n}}\f$.
 	 *
-	 * @return multiplier \f$\zeta\f$ for statistic estimate
+	 * @return normalizing constant \f$theta_1\f$ for statistic estimate for
+	 * computing p-value/threshold
 	 */
-	virtual float64_t compute_stat_est_multiplier();
+	virtual float64_t compute_statistic_normalizing_constant();
 
-	/** Method that computes variance estimate multiplier \f$\gamma\f$ for
-	 * within block permuation approach as \f$\left(\frac{B_xB_y}{B_x+B_y}
-	 * \right )^2\f$.
+	/** Method that computes normalizing constant \f$\theta_2\f$ for
+	 * variance estimate under null for within burst permuation approach. as
+	 * \f$\left(\frac{B_xB_y}{B_x+B_y}\right )^2\f$.
 	 *
-	 * @return multiplier \f$\gamma\f$ for variance estimate under null
+	 * @return normalizing constant \f$theta_2\f$ for variance estimate of the
+	 * statistic under null when using within-burst permutation method
 	 */
-	virtual float64_t compute_var_est_multiplier();
+	virtual float64_t compute_variance_normalizing_constant();
 
-	/** Method that computes multiplier for Gaussian approximation of
-	 * asymptotic distribution under null. For B-test this just returns 1
+	/** Method that computes the variance for Gaussian approximation of
+	 * asymptotic distribution of the test-statistic under null. For B-test
+	 * this just returns 1*variance
 	 *
-	 * @return multiplier for Gaussian approximation
+	 * @param variance the variance under null
+	 * @return the variance for Gaussian approximation of asymptotic
+	 * distribution
 	 */
-	virtual float64_t compute_gaussian_multiplier();
+	virtual float64_t compute_gaussian_variance(float64_t variance);
 };
 
 }

@@ -117,30 +117,34 @@ public:
 	}
 
 protected:
-	/** Method that computes statistic estimate multiplier \f$\zeta\f$ as
-	 * \f$\sqrt{\frac{n_xn_y}{n_x+n_y}}\f$
+	/** Method that computes normalizing constant \f$theta_1\f$ for
+	 * statistic estimate as \f$\sqrt{\frac{n_xn_y}{n_x+n_y}}\f$.
 	 *
-	 * @return multiplier \f$\zeta\f$ for statistic estimate
+	 * @return normalizing constant \f$theta_1\f$ for statistic estimate for
+	 * computing p-value/threshold
 	 */
-	virtual float64_t compute_stat_est_multiplier();
+	virtual float64_t compute_statistic_normalizing_constant();
 
-	/** Method that computes variance estimate multiplier \f$\gamma\f$ for
-	 * within block permuation approach as \f$\frac{B_xB_y(B_x-1)(B_y-1)}
-	 * {(B-1)(B-2)}\f$. If INCOMPLETE statistic type is used, then it
-	 * computes \f$\gamma=\frac{B(B-2)}{16}\f$.
+	/** Method that computes normalizing constant \f$\theta_2\f$ for
+	 * variance estimate under null for within burst permuation approach. as
+	 * \f$\frac{B_xB_y(B_x-1)(B_y-1)}{(B-1)(B-2)}\f$. If ::S_INCOMPLETE statistic
+	 * type is used, then it computes \f$\theta_2=\frac{B(B-2)}{16}\f$.
 	 *
-	 * @return multiplier \f$\gamma\f$ for variance estimate under null
+	 * @return normalizing constant \f$theta_2\f$ for variance estimate of the
+	 * statistic under null when using within-burst permutation method
 	 */
-	virtual float64_t compute_var_est_multiplier();
+	virtual float64_t compute_variance_normalizing_constant();
 
-	/** Method that computes multiplier for Gaussian approximation of
-	 * asymptotic distribution under null as \f$\frac{(B-1)(B-2)}
-	 * {B(B_x-1)(B_y-1)}\f$ for S_UNBIASED statistic type and as
-	 * \f$\frac{4}{B-2}\f$ for S_INCOMPLETE statistic type.
+	/** Method that computes the variance for Gaussian approximation of
+	 * asymptotic distribution of the test-statistic under null as
+	 * \f$\frac{(B-1)(B-2)}{B(B_x-1)(B_y-1)}\f$ for ::S_UNBIASED statistic type
+	 * and as \f$\frac{4}{B-2}\f$ for ::S_INCOMPLETE statistic type.
 	 *
-	 * @return multiplier for Gaussian approximation
+	 * @param variance the variance under null
+	 * @return the variance for Gaussian approximation of asymptotic
+	 * distribution
 	 */
-	virtual float64_t compute_gaussian_multiplier();
+	virtual float64_t compute_gaussian_variance(float64_t variance);
 };
 
 }

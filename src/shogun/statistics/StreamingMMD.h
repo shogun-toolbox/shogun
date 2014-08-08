@@ -44,21 +44,24 @@ class CFeatures;
 class CKernel;
 
 /**
- * See StreamingMMD class documentation for their description
+ * Null variance estimation methods for streaming MMD classes. See
+ * CStreamingMMD class documentation for their description
  */
 enum ENullVarianceEstimationMethod
 {
-	WITHIN_BLOCK_PERMUTATION,
-	WITHIN_BLOCK_DIRECT
+	WITHIN_BURST_PERMUTATION,
+	WITHIN_BLOCK_DIRECT,
+	NO_PERMUTATION_DEPRECATED
 };
 
 /**
- * See StreamingMMD class documentation for their description
+ * Statistic type for streaming MMD classes. See CStreamingMMD class
+ * documentation for their description
  */
 enum EStreamingStatisticType
 {
 	S_UNBIASED,
-	S_INCOMPLETE
+	S_INCOMPLETE,
 };
 
 /** @brief Abstract base class that provides an interface for performing kernel
@@ -73,9 +76,9 @@ enum EStreamingStatisticType
  * \f]
  *
  * where \f$x,x'\sim p\f$ and \f$y,y'\sim q\f$. The data has to be provided as
- * streaming features, which are processed in blocks for a given blocksize,
- * \f$B\f$. The blocksize determines how many samples are processed at once
- * from both distributions. The number of samples in each block for each
+ * an instance of CStreamingFeatures, which are processed in blocks for a given
+ * blocksize, \f$B\f$. The blocksize determines how many samples are processed
+ * at once from both distributions. The number of samples in each block for each
  * distribution depends on the total number of samples from both distribution
  * as well as their proportion in that total number. To be exact, if there are
  * \f$n_x\f$ samples from \f$p\f$, \f$\{x_i\}_{i=1}^{n_x}\sim p\f$ and \f$n_y\f$
@@ -89,18 +92,20 @@ enum EStreamingStatisticType
  * by \f$B\f$ and \f$B_x\f$ and \f$B_y\f$ are integers. If provided blocksize
  * disagrees with this, an error message is displayed.
  *
- * For faster execution, a number of data blocks of size \f$B\f$ are streamed
- * from both the streaming features in each burst which returns a merged feature
- * of \f$s\times B_x\f$ samples from \f$p\f$ followed by \f$s\times B_y\f$
- * samples from \f$q\f$ which are then processed blockwise. The total number
- * of features returned by this method is always equal to \f$s\times B\f$.
- * \f$s\f$ by default is set as 1000 but its verified and adjusted internally
- * based on how many total samples are there and how many of them are left to
- * be processed.
+ * Streaming data blocks is performed by stream_data_blocks() method. For faster
+ * execution, a number of data blocks of size \f$B\f$ are streamed from both the
+ * streaming features in each burst which is decided by #m_num_blocks_per_burst.
+ * Using \f$s\f$ to denote this, it then returns a merged feature of \f$s\times
+ * B_x\f$ samples from \f$p\f$ followed by \f$s\times B_y\f$ samples from
+ * \f$q\f$ which are then processed blockwise. The total number of features
+ * returned by this method is always equal to \f$s\times B\f$. \f$s\f$ by
+ * default is set as 10000 but it's verified and adjusted internally based on
+ * how many total samples are there and how many of them are left to be
+ * processed. One can always set this number by set_num_blocks_per_burst().
  *
- * If PERMUTATION test is desired, this method optionally shuffles this merged
- * features to accomplish the effect of randomly merging and redistributing
- * samples between these two distributions.
+ * If ::PERMUTATION test is desired, stream_data_blocks() optionally shuffles
+ * this merged features to accomplish the effect of randomly merging and
+ * redistributing samples between these two distributions.
  *
  * This class provides a compute_statistic_and_variance() method for computing
  * statistic estimate \f$\hat{\eta}_k\f$ and variance estimate of the asymptotic
@@ -111,20 +116,21 @@ enum EStreamingStatisticType
  * \f[
  *	\hat{\eta}_k=\frac{B}{n}\sum_{b=1}^{n/B}\hat{\eta}_{k,b}
  * \f]
- * The statistic returned is always \f$\zeta\times\hat{\eta}_k\f$ where the
- * multiplier \f$\zeta\f$ is computed in subclasses.
+ * The statistic returned is always \f$\theta_1\times\hat{\eta}_k\f$ where the
+ * normalizing constant \f$\theta_1\f$ is computed in subclasses.
  *
  * Presently there are two methods for computing the statistic.
  *
- * 1. S_UNBIASED:
- * The default setup. Within block \f$b\f$, the statistic estimate is computed as
+ * - ::S_UNBIASED:
+ * The default setup. Within block \f$b\f$, the statistic estimate is computed
+ * as
  * \f[
  * 	\hat{\eta}_{k,b}=\frac{1}{B_x(B_x-1)}\sum_{i=1}^{B_x}\sum_{j\neq i}
  * 	k(x_i,x_j)+\frac{1}{B_y(B_y-1)}\sum_{i=1}^{B_y}\sum_{j\neq i}k(y_i,y_j)
  * 	-\frac{2}{B_xB_y}\sum_{i=1}^{B_x}\sum_{j=1}^{B_y}k(x_i,y_j)
  * \f]
  *
- * 2. S_INCOMPLETE:
+ * - ::S_INCOMPLETE:
  * Only applicable when \f$n_x=n_y=\frac{n}{2}\f$. Within block \f$b\f$,
  * the statistic estimate is computed as
  * \f[
@@ -138,17 +144,17 @@ enum EStreamingStatisticType
  *
  * Variance estimate is also computed blockwise via two separate methods -
  *
- * 1. WITHIN_BLOCK_PERMUTATION:
- * In this approach, the samples within current block are randomly split in the
+ * - ::WITHIN_BURST_PERMUTATION:
+ * In this approach, the samples within current burst are randomly split in the
  * same proportions and a statistic estimate \f$\hat{\eta}_{k,b}^*\f$ is
- * computed. The final variance estimate is computed as
+ * computed blockwise. The final variance estimate is computed as
  * \f[
- * 	\hat{\sigma}_{k,0}^2=\gamma\times\text{var}\left[\{\hat{\eta}_{k,b}^*\}_{b=1}
- *	^{n/B} \right ]
+ * 	\hat{\sigma}_{k,0}^2=\theta_2\times\text{var}\left[\{\hat{\eta}_{k,b}^*\}
+ *	_{b=1}^{n/B} \right ]
  * \f]
- * where the multiplier \f$\gamma\f$ is computed in the subclasses.
+ * where the normalizing constant \f$\theta_2\f$ is computed in the subclasses.
  *
- * 2. WITHIN_BLOCK_DIRECT:
+ * - ::WITHIN_BLOCK_DIRECT:
  * A blockwise variance estimate is computed as
  * \f[
  * 	\left(\hat{\sigma}_{k,0}^2 \right )^{(b)}=\frac{2}{B(B-3)}\left[
@@ -166,18 +172,23 @@ enum EStreamingStatisticType
  *	\right )^{(b)}
  * \f]
  *
+ * - ::NO_PERMUTATION_DEPRECATED:
+ * This is an incorrest estimation of the variance under null. If specified,
+ * this just computes an online variance based on the statistic computed for
+ * each burst without permuting the samples.
+ *
  * Use set_null_var_est_method() to set the variance estimation method. The
- * default is WITHIN_BLOCK_PERMUTATION. Both these methods take
+ * default is ::WITHIN_BURST_PERMUTATION. Both these methods take
  * \f$\mathcal{O}(B^2)\f$
  *
  * Blockwise computation of kernel functions for statistic/variance is done via
  *
- * compute_blockwise_statistic_variance() method: used with direct within
- * -block variance estimation which returns a matrix of statistic estimate
- * \f$\hat{\eta}_{k,b}\f$ in its first column and variance estimate
- * \f$\left(\hat{\sigma}_{k,0}^2\right )^{(b)}\f$ in its second column.
+ * - compute_blockwise_statistic_variance() method: used with
+ * ::WITHIN_BLOCK_DIRECT variance estimation which returns a matrix of
+ * statistic estimate \f$\hat{\eta}_{k,b}\f$ in its first column and variance
+ * estimate \f$\left(\hat{\sigma}_{k,0}^2\right )^{(b)}\f$ in second column.
  *
- * compute_blockwise_statistic() method : used with permutation within-block
+ * - compute_blockwise_statistic() method : used with ::WITHIN_BURST_PERMUTATION
  * variance estimation which returns a vector of values \f$\hat{\eta}_{k,b}\f$,
  * one entry per block in the current burst
  *
@@ -195,11 +206,11 @@ enum EStreamingStatisticType
  *
  * To choose, use set_null_approximation_method() and choose from
  *
- * MMD1_GAUSSIAN: Approximates the null-distribution with a Gaussian. Only use
+ * - ::MMD1_GAUSSIAN: Approximates the null-distribution with a Gaussian. Only use
  * from at least 1000 samples. If using, check if type I error equals the
  * desired value.
  *
- * PERMUTATION: For permuting available samples to sample null-distribution.
+ * - ::PERMUTATION: For permuting available samples to sample null-distribution.
  *
  * For kernel selection see CMMDKernelSelection.
  *
@@ -211,17 +222,17 @@ enum EStreamingStatisticType
  * -scale two-sample tests. NIPS 2012.
  *
  * Please note that \f$n_x\f$, \f$n_x\f$, \f$B\f$, \f$B_x\f$, \f$B_y\f$, \f$s\f$
- * are denoted as m, n, blocksize, blocksize_p, blocksize_q and num_blocks
- * respectively, in the implementation
+ * are denoted as #m_m, #m_n, #m_blocksize, #m_blocksize_p, #m_blocksize_q and
+ * #m_num_blocks_per_burst, respectively, in the implementation.
  */
 class CStreamingMMD: public CKernelTwoSampleTest
 {
 public:
-	/** default constructor */
+	/** Default constructor */
 	CStreamingMMD();
 
 	/**
-	 * constructor.
+	 * Constructor.
 	 *
 	 * @param kernel kernel to use
 	 * @param p streaming features p to use
@@ -232,7 +243,7 @@ public:
 	CStreamingMMD(CKernel* kernel, CStreamingFeatures* p, CStreamingFeatures* q,
 			index_t m, index_t n);
 
-	/** destructor */
+	/** Destructor */
 	virtual ~CStreamingMMD();
 
 	/** Computes the squared MMD for the current data. This is an unbiased
@@ -248,19 +259,19 @@ public:
 	/** Same as compute_statistic(), but with the possibility to perform on
 	 * multiple kernels at once
 	 *
-	 * @param multiple_kernels if true, and underlying kernel is K_COMBINED,
+	 * @param multiple_kernels if true, and underlying kernel is ::K_COMBINED,
 	 * method will be executed on all subkernels on the same data
 	 * @return vector of results for subkernels
 	 */
 	SGVector<float64_t> compute_statistic(bool multiple_kernels);
 
-	/** computes a p-value based on current method for approximating the
+	/** Computes a p-value based on current method for approximating the
 	 * null-distribution. The p-value is the 1-p quantile of the null-
 	 * distribution where the given statistic lies in.
 	 *
 	 * The method for computing the p-value can be set via
 	 * set_null_approximation_method().
-	 * Since the null- distribution is normal, a Gaussian approximation
+	 * Since the null-distribution is normal, a Gaussian approximation
 	 * is available.
 	 *
 	 * @param statistic statistic value to compute the p-value for
@@ -272,7 +283,7 @@ public:
 	/** Performs the complete two-sample test on current data and returns a
 	 * p-value.
 	 *
-	 * In case null distribution should be estimated with MMD1_GAUSSIAN,
+	 * In case null distribution should be estimated with ::MMD1_GAUSSIAN,
 	 * statistic and p-value are computed in the same loop, which is more
 	 * efficient than first computing statistic and then computung p-values.
 	 *
@@ -286,13 +297,13 @@ public:
 	 */
 	virtual float64_t perform_test();
 
-	/** computes a threshold based on current method for approximating the
+	/** Computes a threshold based on current method for approximating the
 	 * null-distribution. The threshold is the value that a statistic has
-	 * to have in ordner to reject the null-hypothesis.
+	 * to have in order to reject the null-hypothesis.
 	 *
 	 * The method for computing the p-value can be set via
 	 * set_null_approximation_method().
-	 * Since the null- distribution is normal, a Gaussian approximation
+	 * Since the null-distribution is normal, a Gaussian approximation
 	 * is available.
 	 *
 	 * @param alpha test level to reject null-hypothesis
@@ -300,7 +311,7 @@ public:
 	 */
 	virtual float64_t compute_threshold(float64_t alpha);
 
-	/** computes a linear time estimate of the variance of the squared mmd,
+	/** Computes a linear time estimate of the variance of the squared mmd,
 	 * which may be used for an approximation of the null-distribution
 	 * The value is the variance of the vector of which the MMD is the mean.
 	 *
@@ -308,14 +319,14 @@ public:
 	 */
 	float64_t compute_variance_estimate();
 
-	/** computes MMD and a linear time variance estimate. If multiple_kernels
+	/** Computes MMD and a linear time variance estimate. If multiple_kernels
 	 * is set to true, each subkernel is evaluated on the same data.
 	 *
 	 * @param statistic return parameter for statistic, vector with entry for
-	 * each kernel. May be allocated before but doesn not have to be
+	 * each kernel. May be preallocated but does not have to be
 	 *
 	 * @param variance return parameter for statistic, vector with entry for
-	 * each kernel. May be allocated before but doesn not have to be
+	 * each kernel. May be preallocated but does not have to be
 	 *
 	 * @param multiple_kernels optional flag, if set to true, it is assumed that
 	 * the underlying kernel is of type K_COMBINED. Then, the MMD is computed on
@@ -339,7 +350,7 @@ public:
 	 * constantly streamed and then merged. Usually, this is not necessary
 	 * since there is the Gaussian approximation for the null distribution.
 	 * However, in certain cases this may fail and sampling the null
-	 * distribution might be numerically more stable. Ovewrite superclass
+	 * distribution might be numerically more stable. Overwrites superclass
 	 * method that merges samples.
 	 *
 	 * @return vector of all null samples
@@ -351,7 +362,7 @@ public:
 	 * each of the distribution at once, blocksize_p and blocksize_q.
 	 * (see class documentation for details). This method internally sets
 	 * the number of blocks to be streamed in one burst as well and verifies
-	 * whether it is valid (see set_num_blocks() documentation)
+	 * whether it is valid (see set_num_blocks_per_burst() documentation)
 	 *
 	 * @param blocksize new blocksize to use
 	 */
@@ -361,19 +372,19 @@ public:
 	 * internally verifies the number provided. For example, if total number
 	 * of samples are 1000 from p and 1200 from q and the corresponding
 	 * blocksizes are 10 and 12, at max 100 such blocks can be streamed. If
-	 * given num_blocks is greater than this, it sets num_blocks as maximum
-	 * value possible (i.e. 100 in this case). Can only be used once the
-	 * blocksize is set.
+	 * given num_blocks_per_burst is greater than this, it sets
+	 * num_blocks_per_burst as maximum value possible (i.e. 100 in this case).
+	 * Can only be used once the blocksize is set.
 	 *
-	 * @param num_blocks number of blocks to be streamed at once
+	 * @param num_blocks_per_burst number of blocks to be streamed at once
 	 */
-	void set_num_blocks(index_t num_blocks);
+	void set_num_blocks_per_burst(index_t num_blocks_per_burst);
 
 	/** @return blocksize being used */
 	index_t get_blocksize();
 
 	/** @return the number of blocks to be streamed at once */
-	index_t get_num_blocks();
+	index_t get_num_blocks_per_burst();
 
 	/** Not implemented for streaming MMD since it uses streaming feautres */
 	virtual void set_p_and_q(CFeatures* p_and_q);
@@ -430,30 +441,31 @@ public:
 
 protected:
 	/**
-	 * Streams m_num_blocks blocks of data from each distribution with blocks
-	 * of size m_blocksize. If m_simulate_h0 is set, it shuffles the samples
+	 * Streams #m_num_blocks_per_burst blocks of data from each distribution
+	 * with blocks of size #m_blocksize. If #m_simulate_h0 is set, it shuffles
+	 * the samples (See class description).
 	 *
 	 * @return merged features for samples from both distribution with
-	 * m_num_blocks*m_blocksize_p samples from p followed by m_num_blocks*
-	 * m_blocksize_q samples from q. (see class description)
+	 * #m_num_blocks_per_burst*#m_blocksize_p samples from p followed by
+	 * #m_num_blocks_per_burst*#m_blocksize_q samples from q.
 	 */
 	CFeatures* stream_data_blocks();
 
 #ifdef HAVE_EIGEN3
 	/**
 	 * Method that computes blockwise statistic and variance estimate.
-	 * Used with WITHIN_BLOCK_DIRECT_ESTIMATION null-var estimation method
+	 * Used with ::WITHIN_BLOCK_DIRECT null-var estimation method
 	 *
 	 * @param kernel the kernel to be used for computing MMD. This will be
 	 * useful when multiple kernels are used
 	 * @param p_and_q_current_burst the merged features within current burst,
-	 * with m_num_blocks*m_blocksize_p samples from p followed by
-	 * m_num_blocks*m_blocksize_q samples from q.
-	 * @return a matrix of m_num_blocks rows with two entries in each column
-	 * for each block, first entry is the statistic estimate in current block
-	 * \f$\hat{\eta}_{k,b}\f$, and second entry is the variance estimate
-	 * \f$\left(\hat{\sigma}_{k,0}^2\right )^{(b)}\f$ for within-block direct
-	 * estimation
+	 * with #m_num_blocks_per_burst*#m_blocksize_p samples from p followed by
+	 * #m_num_blocks_per_burst*#m_blocksize_q samples from q.
+	 * @return a matrix of #m_num_blocks_per_burst rows with two entries in
+	 * each column for each block, first entry is the statistic estimate in
+	 * current block is \f$\hat{\eta}_{k,b}\f$, and second entry is the
+	 * variance estimate \f$\left(\hat{\sigma}_{k,0}^2\right )^{(b)}\f$ for
+	 * within-block direct estimation
 	 */
 	SGMatrix<float64_t> compute_blockwise_statistic_variance(CKernel*
 			kernel, CFeatures* p_and_q_current_burst);
@@ -461,40 +473,44 @@ protected:
 
 	/**
 	 * Method that computes blockwise statistic estimate.
-	 * Used with WITHIN_BLOCK_PERMUTATION null-var estimation method
+	 * Used with ::WITHIN_BURST_PERMUTATION null-var estimation method
 	 *
 	 * @param kernel the kernel to be used for computing MMD. This will be
 	 * useful when multiple kernels are used
 	 * @param p_and_q_current_burst the merged features within current burst,
-	 * with m_num_blocks*m_blocksize_p samples from p followed by
-	 * m_num_blocks*m_blocksize_q samples from q.
+	 * with m_num_blocks_per_burst*m_blocksize_p samples from p followed by
+	 * m_num_blocks_per_burst*m_blocksize_q samples from q.
 	 * @return a vector of statistic estimates for each block in the current
 	 * burst, \f$\hat{\eta}_{k,b}\f$
 	 */
 	SGVector<float64_t> compute_blockwise_statistic(CKernel* kernel,
 			CFeatures* p_and_q_current_burst);
 
-	/** Abstract method that computes statistic estimate multiplier. This varies
-	 * In the subclasses
+	/** Abstract method that computes normalizing constant \f$theta_1\f$ for
+	 * statistic estimate. This varies in the subclasses
 	 *
-	 * @return multiplier for statistic estimate for computing p-value/threshold
+	 * @return normalizing constant \f$theta_1\f$ for statistic estimate for
+	 * computing p-value/threshold
 	 */
-	virtual float64_t compute_stat_est_multiplier()=0;
+	virtual float64_t compute_statistic_normalizing_constant()=0;
 
-	/** Abstract method that computes variance estimate multiplier for within
-	 * block permuation approach. This varies in the subclasses.
+	/** Abstract method that computes normalizing constant \f$\theta_2\f$ for
+	 * variance estimate under null for within burst permuation approach. This
+	 * varies in the subclasses.
 	 *
-	 * @return multiplier for variance estimate of the statistic under null
-	 * when using within-block permutation method
+	 * @return normalizing constant \f$theta_2\f$ for variance estimate of the
+	 * statistic under null when using within-burst permutation method
 	 */
-	virtual float64_t compute_var_est_multiplier()=0;
+	virtual float64_t compute_variance_normalizing_constant()=0;
 
-	/** Abstract method that computes multiplier for Gaussian approximation of
-	 * asymptotic distribution of test-statistic under null
+	/** Abstract method that computes the variance for Gaussian approximation of
+	 * asymptotic distribution of the test-statistic under null
 	 *
-	 * @return multiplier for Gaussian approximation of asymptotic distribution
+	 * @param variance the variance under null
+	 * @return the variance for Gaussian approximation of asymptotic
+	 * distribution
 	 */
-	virtual float64_t compute_gaussian_multiplier()=0;
+	virtual float64_t compute_gaussian_variance(float64_t variance)=0;
 
 	/** Streaming feature objects that are used instead of merged samples */
 	CStreamingFeatures* m_streaming_p;
@@ -515,8 +531,8 @@ protected:
 	index_t m_blocksize_q;
 
 	/** Number of blocks to be streamed at one burst Use higher number for
-	 * faster execution. Default is 1000 */
-	index_t m_num_blocks;
+	 * faster execution. Default is 10000 */
+	index_t m_num_blocks_per_burst;
 
 	/** If this is true, samples will be mixed between p and q in any method
 	 * that computes the statistic */
