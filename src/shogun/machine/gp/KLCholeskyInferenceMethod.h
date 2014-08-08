@@ -126,8 +126,10 @@ protected:
 	 * and/or
 	 * get_gradient_of_nlml_wrt_parameters(SGVector<float64_t> gradient)
 	 *
+	 * @return true if precomputed parameters are valid
+	 *
 	 */
-	virtual void lbfgs_precompute();
+	virtual bool lbfgs_precompute();
 
 	/** compute posterior Sigma matrix*/
 	virtual void update_Sigma();

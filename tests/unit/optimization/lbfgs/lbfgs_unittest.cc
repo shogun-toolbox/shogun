@@ -270,7 +270,7 @@ TEST(lbfgs, lbfgs_with_adjust_step_test2)
 	lbfgs(x.vlen, x.vector, &opt_value,
 		evaluate_strict_bounded, NULL, NULL, &lbfgs_param, &adjust_step_strict_bounded);
 
-	float64_t rel_tolorance = strict_scale;
+	float64_t rel_tolorance=strict_scale;
 	float64_t abs_tolorance;
 
 	abs_tolorance = CMath::get_abs_tolorance(len, rel_tolorance);

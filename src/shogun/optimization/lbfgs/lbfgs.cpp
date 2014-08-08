@@ -70,6 +70,7 @@ licence.
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/memory.h>
+#include <shogun/mathematics/Math.h>
 
 namespace shogun
 {
@@ -427,18 +428,23 @@ int32_t lbfgs(
         }
         if (ls < 0) {
             /* Revert to the previous point. */
-			std::copy(xp,xp+n,x);
-			std::copy(gp,gp+n,g);
+            std::copy(xp,xp+n,x);
+            std::copy(gp,gp+n,g);
             ret = ls;
+
+            /* Roll back */
+        if (ls==LBFGSERR_INVALID_VALUE)
+            fx = cd.proc_evaluate(cd.instance, x, g, cd.n, step);
+
             goto lbfgs_exit;
         }
 
         /* Compute x and g norms. */
-		xnorm = SGVector<float64_t>::twonorm(x, n);
+        xnorm = SGVector<float64_t>::twonorm(x, n);
         if (param.orthantwise_c == 0.) {
-			gnorm = SGVector<float64_t>::twonorm(g, n);
+            gnorm = SGVector<float64_t>::twonorm(g, n);
         } else {
-			gnorm = SGVector<float64_t>::twonorm(pg, n);
+            gnorm = SGVector<float64_t>::twonorm(pg, n);
         }
 
         /* Report the progress. */
@@ -622,7 +628,7 @@ static int32_t line_search_backtracking(
     }
 
     /* Compute the initial gradient in the search direction. */
-	dginit = SGVector<float64_t>::dot(g, s, n);
+    dginit = SGVector<float64_t>::dot(g, s, n);
 
     /* Make sure that s points to a descent direction. */
     if (0 < dginit) {
@@ -632,18 +638,38 @@ static int32_t line_search_backtracking(
     /* The initial value of the objective function. */
     finit = *f;
     dgtest = param->ftol * dginit;
+    const index_t max_iter = 20;
 
     for (;;) {
         std::copy(xp,xp+n,x);
         if (cd->proc_adjust_step)
             *stp=cd->proc_adjust_step(cd->instance, x, s, cd->n, *stp);
 
+        for(index_t j=0; j<n; j++)
+        {
+            if (CMath::is_nan(s[j]) || CMath::is_infinity(s[j]))
+                return LBFGSERR_INVALID_VALUE;
+        }
+
         SGVector<float64_t>::add(x, 1, x, *stp, s, n);
+        float64_t decay=0.5;
+        index_t iter=0;
 
-        /* Evaluate the function and gradient values. */
-        *f = cd->proc_evaluate(cd->instance, x, g, cd->n, *stp);
+        while(true)
+        {
+            /* Evaluate the function and gradient values. */
+            *f = cd->proc_evaluate(cd->instance, x, g, cd->n, *stp);
+            ++count;
+            if (CMath::is_nan(*f) || CMath::is_infinity(*f))
+                *stp*=decay;
+            else
+                break;
+            SGVector<float64_t>::add(x, 1, x, -1.0*(*stp), s, n);
+            iter++;
+            if (iter>max_iter)
+                return LBFGSERR_INVALID_VALUE;
+        }
 
-        ++count;
 
         if (*f > finit + *stp * dgtest) {
             width = dec;
@@ -859,10 +885,12 @@ static int32_t line_search_morethuente(
         std::copy(xp,xp+n,x);
         if (cd->proc_adjust_step)
             *stp=cd->proc_adjust_step(cd->instance, x, s, cd->n, *stp);
+
         SGVector<float64_t>::add(x, 1, x, *stp, s, n);
 
         /* Evaluate the function and gradient values. */
         *f = cd->proc_evaluate(cd->instance, x, g, cd->n, *stp);
+
         dg = SGVector<float64_t>::dot(g, s, n);
 
         ftest1 = finit + *stp * dgtest;

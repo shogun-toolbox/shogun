@@ -77,9 +77,10 @@ public:
 	 * @param mu mean of the variational Gaussian distribution
 	 * @param s2 variance of the variational Gaussian distribution
 	 * @param lab labels/data used
+	 * @return true if variational parameters are valid
 	 *
 	 */
-	virtual void set_variational_distribution(SGVector<float64_t> mu,
+	virtual bool set_variational_distribution(SGVector<float64_t> mu,
 		SGVector<float64_t> s2, const CLabels* lab);
 
 	/** returns the expection of the logarithm of a logit distribution 

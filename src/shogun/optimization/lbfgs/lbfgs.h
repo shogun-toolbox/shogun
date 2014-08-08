@@ -119,6 +119,8 @@ enum {
     LBFGSERR_INVALIDPARAMETERS,
     /** The current search direction increases the objective function value. */
     LBFGSERR_INCREASEGRADIENT,
+    /** Invalid value of objective function*/
+    LBFGSERR_INVALID_VALUE
 };
 
 /**
