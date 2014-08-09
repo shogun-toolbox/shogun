@@ -42,6 +42,20 @@
 
 namespace shogun
 {
+
+/** For autoencoders, specifies the position of the layer in the autoencoder, 
+ * i.e an encoding layer or a decoding layer 
+ */
+enum ENLAutoencoderPosition
+{
+	/** The layer is not a part of an autoencoder */
+	NLAP_NONE=0,
+	/** The layer is an encoding layer */
+	NLAP_ENCODING=1,
+	/** The layer is a decoding layer */
+	NLAP_DECODING=2
+};	
+
 template <class T> class SGVector;	
 
 /** @brief Base class for neural network layers
@@ -292,6 +306,11 @@ public:
 	 * Default value is 0.0.
 	 */ 
 	float64_t contraction_coefficient;
+	
+	/** For autoencoders, specifies the position of the layer in the autoencoder, 
+	 * i.e an encoding layer or a decoding layer. Default value is NLAP_NONE
+	 */
+	ENLAutoencoderPosition autoencoder_position;
 	
 protected:
 	/** Number of neurons in this layer */

@@ -35,6 +35,7 @@
 #define __CONVOLUTIONALFEATUREMAP_H__
 
 #include <shogun/lib/common.h>
+#include <shogun/neuralnets/NeuralLayer.h>
 
 namespace shogun
 {
@@ -88,7 +89,8 @@ public:
 			int32_t radius_x, int32_t radius_y, 
 			int32_t stride_x=1, int32_t stride_y=1,
 			int32_t index=0,
-			EConvMapActivationFunction function = CMAF_IDENTITY);
+			EConvMapActivationFunction function = CMAF_IDENTITY,
+			ENLAutoencoderPosition autoencoder_position = NLAP_NONE);
 	
 	/** Computes the activations of the feature map
 	 * 
@@ -250,6 +252,11 @@ protected:
 	
 	/** Height of the convolution filter */
 	int32_t m_filter_height;
+	
+	/** For autoencoders, specifies the position of the layer in the autoencoder, 
+	 * i.e an encoding layer or a decoding layer. Default value is NLAP_NONE
+	 */
+	ENLAutoencoderPosition m_autoencoder_position;
 };
 
 }

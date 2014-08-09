@@ -114,6 +114,7 @@ void CNeuralLayer::init()
 	dropout_prop = 0.0;
 	contraction_coefficient = 0.0;
 	is_training = false;
+	autoencoder_position = NLAP_NONE;
 	
 	SG_ADD(&m_num_neurons, "num_neurons",
 	       "Number of Neurons", MS_NOT_AVAILABLE);
@@ -139,4 +140,7 @@ void CNeuralLayer::init()
 	       "Local Gradients", MS_NOT_AVAILABLE);
 	SG_ADD(&m_dropout_mask, "dropout_mask",
 	       "Dropout mask", MS_NOT_AVAILABLE);
+	
+	SG_ADD((machine_int_t*)&autoencoder_position, "autoencoder_position",
+	       "Autoencoder Position", MS_NOT_AVAILABLE);
 }

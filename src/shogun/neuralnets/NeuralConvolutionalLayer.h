@@ -176,6 +176,14 @@ public:
 			CDynamicObjectArray* layers,
 			SGVector<float64_t> parameter_gradients);
 
+	/** Computes the error between the layer's current activations and the given
+	 * target activations. Should only be used with output layers
+	 *
+	 * @param targets desired values for the layer's activations, matrix of size
+	 * num_neurons*batch_size
+	 */
+	virtual float64_t compute_error(SGMatrix<float64_t> targets);
+	
 	/** Constrains the weights of each neuron in the layer to have an L2 norm of
 	 * at most max_norm
 	 * 

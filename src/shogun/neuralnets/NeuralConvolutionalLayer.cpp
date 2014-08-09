@@ -60,17 +60,18 @@ CNeuralConvolutionalLayer::CNeuralConvolutionalLayer(
 	m_pooling_height = pooling_height;
 	m_stride_x = stride_x;
 	m_stride_y = stride_y;
-	
-	m_num_neurons = (m_input_width/(m_stride_x*m_pooling_width)) * 
-		(m_input_height/(m_stride_y*m_pooling_height)) * m_num_maps;
 }
 
 void CNeuralConvolutionalLayer::set_batch_size(int32_t batch_size)
 {
 	CNeuralLayer::set_batch_size(batch_size);
 	
-	m_convolution_output = SGMatrix<float64_t>(m_num_maps*
-		(m_input_width/m_stride_x)*(m_input_height/m_stride_y), batch_size);
+	if (autoencoder_position==NLAP_NONE)	
+		m_convolution_output = SGMatrix<float64_t>(m_num_maps*
+			(m_input_width/m_stride_x)*(m_input_height/m_stride_y), batch_size);
+	else
+		m_convolution_output = SGMatrix<float64_t>(
+			m_num_maps*m_input_width*m_input_height, batch_size);
 	
 	m_max_indices = SGMatrix<float64_t>(m_num_neurons, m_batch_size);
 	
@@ -82,6 +83,12 @@ void CNeuralConvolutionalLayer::set_batch_size(int32_t batch_size)
 void CNeuralConvolutionalLayer::initialize(CDynamicObjectArray* layers, 
 		SGVector< int32_t > input_indices)
 {
+	if (autoencoder_position==NLAP_NONE)
+		m_num_neurons = (m_input_width/(m_stride_x*m_pooling_width)) * 
+			(m_input_height/(m_stride_y*m_pooling_height)) * m_num_maps;
+	else
+		m_num_neurons = m_input_width*m_input_height*m_num_maps;
+	
 	CNeuralLayer::initialize(layers, input_indices);
 	
 	m_input_num_channels = 0;
@@ -138,7 +145,8 @@ void CNeuralConvolutionalLayer::compute_activations(
 			num_parameters_per_map, false);
 		
 		CConvolutionalFeatureMap map(m_input_width, m_input_height, 
-			m_radius_x, m_radius_y, m_stride_x, m_stride_y, m, m_activation_function);
+			m_radius_x, m_radius_y, m_stride_x, m_stride_y, m, 
+			m_activation_function, autoencoder_position);
 		
 		map.compute_activations(map_params, layers, m_input_indices, 
 			m_convolution_output);
@@ -154,6 +162,15 @@ void CNeuralConvolutionalLayer::compute_gradients(
 		CDynamicObjectArray* layers,
 		SGVector<float64_t> parameter_gradients)
 {
+	if (targets.num_rows != 0)
+	{
+		// sqaured error measure
+		// local_gradients = activations-targets
+		int32_t length = m_num_neurons*m_batch_size;
+		for (int32_t i=0; i<length; i++)
+			m_activation_gradients[i] = (m_activations[i]-targets[i])/m_batch_size;
+	}
+	
 	if (dropout_prop>0.0)
 	{
 		int32_t len = m_num_neurons*m_batch_size;
@@ -165,8 +182,9 @@ void CNeuralConvolutionalLayer::compute_gradients(
 	m_convolution_output_gradients.zero();
 	for (int32_t i=0; i<m_num_neurons; i++)
 		for (int32_t j=0; j<m_batch_size; j++)
-			m_convolution_output_gradients(m_max_indices(i,j),j) = 
-				m_activation_gradients(i,j);
+			if (m_max_indices(i,j)!=-1.0)
+				m_convolution_output_gradients(m_max_indices(i,j),j) = 
+					m_activation_gradients(i,j);
 
 	int32_t num_parameters_per_map =
 		1 + m_input_num_channels*(2*m_radius_x+1)*(2*m_radius_y+1);
@@ -182,12 +200,24 @@ void CNeuralConvolutionalLayer::compute_gradients(
 			num_parameters_per_map, false);
 		
 		CConvolutionalFeatureMap map(m_input_width, m_input_height, 
-			m_radius_x, m_radius_y, m_stride_x, m_stride_y, m, m_activation_function);
+			m_radius_x, m_radius_y, m_stride_x, m_stride_y, m, 
+			m_activation_function, autoencoder_position);
 			
 		map.compute_gradients(map_params, m_convolution_output, 
 			m_convolution_output_gradients, layers, 
 			m_input_indices, map_gradients);
 	}
+}
+
+float64_t CNeuralConvolutionalLayer::compute_error(SGMatrix<float64_t> targets)
+{
+	// error = 0.5*(sum(targets-activations)^2)/batch_size
+	float64_t sum = 0;
+	int32_t length = m_num_neurons*m_batch_size;
+	for (int32_t i=0; i<length; i++)
+		sum += (targets[i]-m_activations[i])*(targets[i]-m_activations[i]);
+	sum *= (0.5/m_batch_size);
+	return sum;
 }
 
 void CNeuralConvolutionalLayer::enforce_max_norm(SGVector<float64_t> parameters, 
