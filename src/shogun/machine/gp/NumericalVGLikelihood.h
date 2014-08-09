@@ -42,7 +42,6 @@
 
 #ifdef HAVE_EIGEN3
 #include <shogun/machine/gp/VariationalGaussianLikelihood.h>
-#include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/labels/RegressionLabels.h>

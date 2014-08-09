@@ -38,7 +38,6 @@
 #ifdef HAVE_EIGEN3
 
 #include <shogun/machine/gp/LaplacianInferenceMethod.h>
-#include <shogun/mathematics/eigen3.h>
 #include <shogun/optimization/lbfgs/lbfgs.h>
 
 

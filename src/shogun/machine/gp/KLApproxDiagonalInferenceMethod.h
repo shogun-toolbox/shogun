@@ -45,7 +45,6 @@
 
 #ifdef HAVE_EIGEN3
 #include <shogun/machine/gp/KLLowerTriangularInferenceMethod.h>
-#include <shogun/mathematics/eigen3.h>
 
 namespace shogun
 {

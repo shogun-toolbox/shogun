@@ -15,9 +15,6 @@
 #ifdef HAVE_EIGEN3
 #include <shogun/preprocessor/PCA.h>
 #include <shogun/mathematics/Math.h>
-#include <string.h>
-#include <stdlib.h>
-#include <shogun/lib/common.h>
 #include <shogun/preprocessor/DensePreprocessor.h>
 #include <shogun/features/Features.h>
 #include <shogun/io/SGIO.h>

@@ -42,7 +42,6 @@
 #ifdef HAVE_EIGEN3
 
 #include <shogun/machine/gp/LogitLikelihood.h>
-#include <shogun/mathematics/eigen3.h>
 #include <shogun/machine/gp/DualVariationalGaussianLikelihood.h>
 
 namespace shogun

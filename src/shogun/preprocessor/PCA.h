@@ -17,8 +17,6 @@
 #include <shogun/lib/config.h>
 
 #ifdef HAVE_EIGEN3
-#include <shogun/mathematics/eigen3.h>
-#include <stdio.h>
 #include <shogun/preprocessor/DimensionReductionPreprocessor.h>
 #include <shogun/features/Features.h>
 #include <shogun/lib/common.h>

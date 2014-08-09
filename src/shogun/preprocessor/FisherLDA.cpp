@@ -42,6 +42,7 @@
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/preprocessor/FisherLDA.h>
 #include <shogun/preprocessor/DimensionReductionPreprocessor.h>
+#include <shogun/mathematics/eigen3.h>
 #include <vector>
 
 using namespace std;

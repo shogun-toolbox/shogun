@@ -33,6 +33,7 @@
 #include <shogun/machine/gp/KLInferenceMethod.h>
 
 #ifdef HAVE_EIGEN3
+#include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/Math.h>
 
 using namespace Eigen;

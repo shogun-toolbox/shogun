@@ -28,10 +28,10 @@
  * either expressed or implied, of the Shogun Development Team.
  *
  */
+#include <shogun/machine/gp/DualVariationalGaussianLikelihood.h>
 
 #ifdef HAVE_EIGEN3
-
-#include <shogun/machine/gp/DualVariationalGaussianLikelihood.h>
+#include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/distributions/classical/GaussianDistribution.h>
 #include <shogun/mathematics/Math.h>

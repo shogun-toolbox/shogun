@@ -38,9 +38,10 @@
  * http://www.cs.ubc.ca/~emtiyaz/papers/truncatedGaussianMoments.pdf
  */
 
-#ifdef HAVE_EIGEN3
-
 #include <shogun/machine/gp/LogitVGPiecewiseBoundLikelihood.h>
+
+#ifdef HAVE_EIGEN3
+#include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/distributions/classical/GaussianDistribution.h>
 #include <shogun/mathematics/Math.h>
