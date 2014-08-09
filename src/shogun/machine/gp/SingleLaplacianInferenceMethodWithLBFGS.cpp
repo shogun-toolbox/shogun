@@ -30,7 +30,7 @@
  * Code adapted from Gaussian Process Machine Learning Toolbox
  * http://www.gaussianprocess.org/gpml/code/matlab/doc/
  */
-#include <shogun/machine/gp/LaplacianInferenceMethodWithLBFGS.h>
+#include <shogun/machine/gp/SingleLaplacianInferenceMethodWithLBFGS.h>
 
 #ifdef HAVE_EIGEN3
 #include <shogun/mathematics/Math.h>
@@ -39,41 +39,41 @@
 namespace shogun
 {
 
-CLaplacianInferenceMethodWithLBFGS::CLaplacianInferenceMethodWithLBFGS()
-		: CLaplacianInferenceMethod()
+CSingleLaplacianInferenceMethodWithLBFGS::CSingleLaplacianInferenceMethodWithLBFGS()
+	: CSingleLaplacianInferenceMethod()
 {
 	init();
 }
 
-CLaplacianInferenceMethodWithLBFGS::CLaplacianInferenceMethodWithLBFGS(
-		CKernel* kern,
-		CFeatures* feat,
-		CMeanFunction* m,
-		CLabels* lab,
-		CLikelihoodModel* mod)
-		: CLaplacianInferenceMethod(kern, feat, m, lab, mod)
+CSingleLaplacianInferenceMethodWithLBFGS::CSingleLaplacianInferenceMethodWithLBFGS(
+	CKernel* kern,
+	CFeatures* feat,
+	CMeanFunction* m,
+	CLabels* lab,
+	CLikelihoodModel* mod)
+	: CSingleLaplacianInferenceMethod(kern, feat, m, lab, mod)
 {
 	init();
 }
 
-void CLaplacianInferenceMethodWithLBFGS::set_lbfgs_parameters(
-		int m,
-		int max_linesearch,
-		int linesearch,
-		int max_iterations,
-		float64_t delta,
-		int past,
-		float64_t epsilon,
-		bool enable_newton_if_fail,
-		float64_t min_step,
-		float64_t max_step,
-		float64_t ftol,
-		float64_t wolfe,
-		float64_t gtol,
-		float64_t xtol,
-		float64_t orthantwise_c,
-		int orthantwise_start,
-		int orthantwise_end)
+void CSingleLaplacianInferenceMethodWithLBFGS::set_lbfgs_parameters(
+	int m,
+	int max_linesearch,
+	int linesearch,
+	int max_iterations,
+	float64_t delta,
+	int past,
+	float64_t epsilon,
+	bool enable_newton_if_fail,
+	float64_t min_step,
+	float64_t max_step,
+	float64_t ftol,
+	float64_t wolfe,
+	float64_t gtol,
+	float64_t xtol,
+	float64_t orthantwise_c,
+	int orthantwise_start,
+	int orthantwise_end)
 {
 	m_m = m;
 	m_max_linesearch = max_linesearch;
@@ -94,7 +94,7 @@ void CLaplacianInferenceMethodWithLBFGS::set_lbfgs_parameters(
 	m_enable_newton_if_fail = enable_newton_if_fail;
 }
 
-	void CLaplacianInferenceMethodWithLBFGS::init()
+void CSingleLaplacianInferenceMethodWithLBFGS::init()
 {
 	set_lbfgs_parameters();
 	m_mean_f = NULL;
@@ -151,24 +151,24 @@ void CLaplacianInferenceMethodWithLBFGS::set_lbfgs_parameters(
 		MS_NOT_AVAILABLE);
 }
 
-	CLaplacianInferenceMethodWithLBFGS::~CLaplacianInferenceMethodWithLBFGS()
+CSingleLaplacianInferenceMethodWithLBFGS::~CSingleLaplacianInferenceMethodWithLBFGS()
 {
 }
 
-	float64_t CLaplacianInferenceMethodWithLBFGS::evaluate(
-		void *obj,
-		const float64_t *alpha,
-		float64_t *gradient,
-		const int dim,
-		const float64_t step)
+float64_t CSingleLaplacianInferenceMethodWithLBFGS::evaluate(
+	void *obj,
+	const float64_t *alpha,
+	float64_t *gradient,
+	const int dim,
+	const float64_t step)
 {
 	/* Note that alpha = alpha_pre_iter - step * gradient_pre_iter */
 
 	/* Unfortunately we can not use dynamic_cast to cast the void * pointer to an
 	 * object pointer. Therefore, make sure this method is private.  
 	 */
-	CLaplacianInferenceMethodWithLBFGS * obj_prt
-		= static_cast<CLaplacianInferenceMethodWithLBFGS *>(obj);
+	CSingleLaplacianInferenceMethodWithLBFGS * obj_prt
+		= static_cast<CSingleLaplacianInferenceMethodWithLBFGS *>(obj);
 	float64_t * alpha_cast = const_cast<float64_t *>(alpha);
 	Eigen::Map<Eigen::VectorXd> eigen_alpha(alpha_cast, dim);
 	float64_t psi = 0.0;
@@ -178,7 +178,7 @@ void CLaplacianInferenceMethodWithLBFGS::set_lbfgs_parameters(
 	return psi;
 }
 
-	void CLaplacianInferenceMethodWithLBFGS::update_alpha()
+void CSingleLaplacianInferenceMethodWithLBFGS::update_alpha()
 {
 	float64_t psi_new;
 	float64_t psi_def;
@@ -205,14 +205,14 @@ void CLaplacianInferenceMethodWithLBFGS::set_lbfgs_parameters(
 		/* f = mean, if length of alpha and length of y doesn't match*/
 		eigen_mu = eigen_mean_f;
 		psi_new = -SGVector<float64_t>::sum(
-		m_model->get_log_probability_f(m_labels, m_mu));
+			m_model->get_log_probability_f(m_labels, m_mu));
 	}
 	else
 	{
 		/* compute f = K * alpha + m*/
 		Eigen::Map<Eigen::VectorXd> eigen_alpha(m_alpha.vector, m_alpha.vlen);
 		eigen_mu = eigen_ktrtr * (eigen_alpha * CMath::sq(m_scale)) + eigen_mean_f;
-	psi_new = eigen_alpha.dot(eigen_mu - eigen_mean_f) / 2.0;
+		psi_new = eigen_alpha.dot(eigen_mu - eigen_mean_f) / 2.0;
 		psi_new -= SGVector<float64_t>::sum(m_model->get_log_probability_f(m_labels, m_mu));
 
 		psi_def = -SGVector<float64_t>::sum(
@@ -260,7 +260,7 @@ void CLaplacianInferenceMethodWithLBFGS::set_lbfgs_parameters(
 	void * obj_prt = static_cast<void *>(this);
 
 	int ret = lbfgs(m_alpha.vlen, m_alpha.vector, &psi_new,
-		CLaplacianInferenceMethodWithLBFGS::evaluate,
+		CSingleLaplacianInferenceMethodWithLBFGS::evaluate,
 		NULL, obj_prt, &lbfgs_param);
 	/* clean up*/
 	m_mean_f = NULL;
@@ -275,7 +275,7 @@ void CLaplacianInferenceMethodWithLBFGS::set_lbfgs_parameters(
 		 * Newton method.
 		 */
 		SG_WARNING("Error during L-BFGS optimization, using original Newton method as fallback\n");
-		CLaplacianInferenceMethod::update_alpha();
+		CSingleLaplacianInferenceMethod::update_alpha();
 		return;
 	}
 
@@ -283,19 +283,19 @@ void CLaplacianInferenceMethodWithLBFGS::set_lbfgs_parameters(
 	eigen_mu = eigen_ktrtr * (eigen_alpha * CMath::sq(m_scale)) + eigen_mean_f;
 
 	/* get log probability derivatives*/
-	dlp  = m_model->get_log_probability_derivative_f(m_labels, m_mu, 1);
-	d2lp = m_model->get_log_probability_derivative_f(m_labels, m_mu, 2);
-	d3lp = m_model->get_log_probability_derivative_f(m_labels, m_mu, 3);
+	m_dlp  = m_model->get_log_probability_derivative_f(m_labels, m_mu, 1);
+	m_d2lp = m_model->get_log_probability_derivative_f(m_labels, m_mu, 2);
+	m_d3lp = m_model->get_log_probability_derivative_f(m_labels, m_mu, 3);
 
 	/* W = -d2lp*/
-	W = d2lp.clone();
-	W.scale(-1.0);
+	m_W = m_d2lp.clone();
+	m_W.scale(-1.0);
 
 	/* compute sW*/
-	Eigen::Map<Eigen::VectorXd> eigen_W(W.vector, W.vlen);
+	Eigen::Map<Eigen::VectorXd> eigen_W(m_W.vector, m_W.vlen);
 	/* create shogun and eigen representation of sW*/
-	sW = SGVector<float64_t>(W.vlen);
-	Eigen::Map<Eigen::VectorXd> eigen_sW(sW.vector, sW.vlen);
+	m_sW = SGVector<float64_t>(m_W.vlen);
+	Eigen::Map<Eigen::VectorXd> eigen_sW(m_sW.vector, m_sW.vlen);
 
 	if (eigen_W.minCoeff() > 0)
 		eigen_sW = eigen_W.cwiseSqrt();
@@ -303,49 +303,49 @@ void CLaplacianInferenceMethodWithLBFGS::set_lbfgs_parameters(
 		eigen_sW.setZero();
 }
 
-	void CLaplacianInferenceMethodWithLBFGS::get_psi_wrt_alpha(
-		Eigen::Map<Eigen::VectorXd>* alpha,
-		float64_t* psi)
-	{
-		SGVector<float64_t> f(alpha->rows());
-		Eigen::Map<Eigen::VectorXd> eigen_f(f.vector, f.vlen);
-		Eigen::Map<Eigen::MatrixXd> kernel(m_ktrtr.matrix,
-			m_ktrtr.num_rows,
-			m_ktrtr.num_cols);
-		Eigen::Map<Eigen::VectorXd> eigen_mean_f(m_mean_f->vector,
-			m_mean_f->vlen);
-		/* f = K * alpha + mean_f given alpha*/
-		eigen_f
-			= kernel * ((*alpha) * CMath::sq(m_scale)) + eigen_mean_f;
+void CSingleLaplacianInferenceMethodWithLBFGS::get_psi_wrt_alpha(
+	Eigen::Map<Eigen::VectorXd>* alpha,
+	float64_t* psi)
+{
+	SGVector<float64_t> f(alpha->rows());
+	Eigen::Map<Eigen::VectorXd> eigen_f(f.vector, f.vlen);
+	Eigen::Map<Eigen::MatrixXd> kernel(m_ktrtr.matrix,
+		m_ktrtr.num_rows,
+		m_ktrtr.num_cols);
+	Eigen::Map<Eigen::VectorXd> eigen_mean_f(m_mean_f->vector,
+		m_mean_f->vlen);
+	/* f = K * alpha + mean_f given alpha*/
+	eigen_f
+		= kernel * ((*alpha) * CMath::sq(m_scale)) + eigen_mean_f;
 
-		/* psi = 0.5 * alpha .* (f - m) - sum(dlp)*/
-		*psi = alpha->dot(eigen_f - eigen_mean_f) * 0.5;
-		*psi -= SGVector<float64_t>::sum(m_model->get_log_probability_f(m_labels, f));
-	}
+	/* psi = 0.5 * alpha .* (f - m) - sum(dlp)*/
+	*psi = alpha->dot(eigen_f - eigen_mean_f) * 0.5;
+	*psi -= SGVector<float64_t>::sum(m_model->get_log_probability_f(m_labels, f));
+}
 
-	void CLaplacianInferenceMethodWithLBFGS::get_gradient_wrt_alpha(
-		Eigen::Map<Eigen::VectorXd>* alpha,
-		Eigen::Map<Eigen::VectorXd>* gradient)
-	{
-		SGVector<float64_t> f(alpha->rows());
-		Eigen::Map<Eigen::VectorXd> eigen_f(f.vector, f.vlen);
-		Eigen::Map<Eigen::MatrixXd> kernel(m_ktrtr.matrix,
-			m_ktrtr.num_rows,
-			m_ktrtr.num_cols);
-		Eigen::Map<Eigen::VectorXd> eigen_mean_f(m_mean_f->vector,
-			m_mean_f->vlen);
+void CSingleLaplacianInferenceMethodWithLBFGS::get_gradient_wrt_alpha(
+	Eigen::Map<Eigen::VectorXd>* alpha,
+	Eigen::Map<Eigen::VectorXd>* gradient)
+{
+	SGVector<float64_t> f(alpha->rows());
+	Eigen::Map<Eigen::VectorXd> eigen_f(f.vector, f.vlen);
+	Eigen::Map<Eigen::MatrixXd> kernel(m_ktrtr.matrix,
+		m_ktrtr.num_rows,
+		m_ktrtr.num_cols);
+	Eigen::Map<Eigen::VectorXd> eigen_mean_f(m_mean_f->vector,
+		m_mean_f->vlen);
 
-		/* f = K * alpha + mean_f given alpha*/
-		eigen_f = kernel * ((*alpha) * CMath::sq(m_scale)) + eigen_mean_f;
+	/* f = K * alpha + mean_f given alpha*/
+	eigen_f = kernel * ((*alpha) * CMath::sq(m_scale)) + eigen_mean_f;
 
-		SGVector<float64_t> dlp_f =
-			m_model->get_log_probability_derivative_f(m_labels, f, 1);
+	SGVector<float64_t> dlp_f =
+		m_model->get_log_probability_derivative_f(m_labels, f, 1);
 
-		Eigen::Map<Eigen::VectorXd> eigen_dlp_f(dlp_f.vector, dlp_f.vlen);
+	Eigen::Map<Eigen::VectorXd> eigen_dlp_f(dlp_f.vector, dlp_f.vlen);
 
-		/* g_alpha = K * (alpha - dlp_f)*/
-		*gradient = kernel * ((*alpha - eigen_dlp_f) * CMath::sq(m_scale));
-	}
+	/* g_alpha = K * (alpha - dlp_f)*/
+	*gradient = kernel * ((*alpha - eigen_dlp_f) * CMath::sq(m_scale));
+}
 
 } /* namespace shogun */
 #endif /* HAVE_EIGEN3 */

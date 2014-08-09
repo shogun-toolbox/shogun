@@ -16,7 +16,7 @@
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/kernel/GaussianKernel.h>
-#include <shogun/machine/gp/LaplacianInferenceMethod.h>
+#include <shogun/machine/gp/SingleLaplacianInferenceMethod.h>
 #include <shogun/machine/gp/EPInferenceMethod.h>
 #include <shogun/machine/gp/ZeroMean.h>
 #include <shogun/machine/gp/LogitLikelihood.h>
@@ -84,7 +84,7 @@ int main(int argc, char** argv)
 	// uncommenting/commenting the following lines:
 
 	// specify Laplace approximation inference method
-	// CLaplacianInferenceMethod* inf=new CLaplacianInferenceMethod(kernel,
+	// CSingleLaplacianInferenceMethod* inf=new CSingleLaplacianInferenceMethod(kernel,
 	//		feat_train, mean, lab_train, lik);
 
 	// specify EP approximation inference method

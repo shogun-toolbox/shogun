@@ -41,13 +41,13 @@
 #include <shogun/machine/gp/ZeroMean.h>
 #include <shogun/machine/gp/ProbitLikelihood.h>
 #include <shogun/machine/gp/LogitLikelihood.h>
-#include <shogun/machine/gp/LaplacianInferenceMethod.h>
+#include <shogun/machine/gp/SingleLaplacianInferenceMethod.h>
 #include <shogun/machine/gp/EPInferenceMethod.h>
 #include <shogun/classifier/GaussianProcessBinaryClassification.h>
 #include <shogun/preprocessor/RescaleFeatures.h>
 #include <gtest/gtest.h>
 #include <shogun/mathematics/Math.h>
-#include <shogun/machine/gp/LaplacianInferenceMethodWithLBFGS.h>
+#include <shogun/machine/gp/SingleLaplacianInferenceMethodWithLBFGS.h>
 
 #include <shogun/machine/gp/KLCovarianceInferenceMethod.h>
 #include <shogun/machine/gp/KLCholeskyInferenceMethod.h>
@@ -124,7 +124,7 @@ TEST(GaussianProcessBinaryClassification,get_mean_vector)
 	CProbitLikelihood* likelihood=new CProbitLikelihood();
 
 	// specify GP classification with Laplacian inference
-	CLaplacianInferenceMethod* inf=new CLaplacianInferenceMethod(kernel,
+	CSingleLaplacianInferenceMethod* inf=new CSingleLaplacianInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	// train Gaussian process binary classifier
@@ -229,7 +229,7 @@ TEST(GaussianProcessBinaryClassification,get_variance_vector)
 	CProbitLikelihood* likelihood=new CProbitLikelihood();
 
 	// specify GP classification with Laplacian inference
-	CLaplacianInferenceMethod* inf=new CLaplacianInferenceMethod(kernel,
+	CSingleLaplacianInferenceMethod* inf=new CSingleLaplacianInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	// train gaussian process classifier
@@ -334,7 +334,7 @@ TEST(GaussianProcessBinaryClassification,get_probabilities)
 	CProbitLikelihood* likelihood=new CProbitLikelihood();
 
 	// specify GP classification with Laplacian inference
-	CLaplacianInferenceMethod* inf=new CLaplacianInferenceMethod(kernel,
+	CSingleLaplacianInferenceMethod* inf=new CSingleLaplacianInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	// train gaussian process classifier
@@ -560,8 +560,8 @@ TEST(GaussianProcessBinaryClassificationUsingLaplacianWithLBFGS,get_mean_vector)
 	CProbitLikelihood* likelihood=new CProbitLikelihood();
 
 	// specify GP classification with Laplacian inference
-	CLaplacianInferenceMethodWithLBFGS* inf
-	= new CLaplacianInferenceMethodWithLBFGS(kernel,
+	CSingleLaplacianInferenceMethodWithLBFGS* inf
+	= new CSingleLaplacianInferenceMethodWithLBFGS(kernel,
 		features_train,
 		mean,
 		labels_train,
@@ -742,8 +742,8 @@ TEST(GaussianProcessBinaryClassificationUsingLaplacianWithLBFGS,get_variance_vec
 	CProbitLikelihood* likelihood=new CProbitLikelihood();
 
 	// specify GP classification with Laplacian inference
-	CLaplacianInferenceMethodWithLBFGS* inf
-		= new CLaplacianInferenceMethodWithLBFGS(kernel,
+	CSingleLaplacianInferenceMethodWithLBFGS* inf
+		= new CSingleLaplacianInferenceMethodWithLBFGS(kernel,
 			features_train,
 			mean,
 			labels_train,
@@ -924,7 +924,7 @@ TEST(GaussianProcessBinaryClassificationUsingLaplacianWithLBFGS,get_probabilitie
 	CProbitLikelihood* likelihood=new CProbitLikelihood();
 
 	// specify GP classification with Laplacian inference
-	CLaplacianInferenceMethodWithLBFGS* inf=new CLaplacianInferenceMethodWithLBFGS(kernel,
+	CSingleLaplacianInferenceMethodWithLBFGS* inf=new CSingleLaplacianInferenceMethodWithLBFGS(kernel,
 			features_train, mean, labels_train, likelihood);
 
 	int m = 100;
