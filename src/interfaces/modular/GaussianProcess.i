@@ -15,8 +15,9 @@
 
 %rename(InferenceMethod) CInferenceMethod;
 %rename(ExactInferenceMethod) CExactInferenceMethod;
-%rename(LaplacianInferenceMethod) CLaplacianInferenceMethod;
-%rename(LaplacianInferenceMethodWithLBFGS) CLaplacianInferenceMethodWithLBFGS;
+%rename(LaplacianInferenceBase) CLaplacianInferenceBase;
+%rename(SingleLaplacianInferenceMethod) CSingleLaplacianInferenceMethod;
+%rename(SingleLaplacianInferenceMethodWithLBFGS) CSingleLaplacianInferenceMethodWithLBFGS;
 %rename(FITCInferenceMethod) CFITCInferenceMethod;
 %rename(EPInferenceMethod) CEPInferenceMethod;
 
@@ -75,9 +76,10 @@
 %include <shogun/machine/gp/ConstMean.h>
 
 %include <shogun/machine/gp/InferenceMethod.h>
-%include <shogun/machine/gp/LaplacianInferenceMethod.h>
+%include <shogun/machine/gp/LaplacianInferenceBase.h>
+%include <shogun/machine/gp/SingleLaplacianInferenceMethod.h>
 %include <shogun/machine/gp/ExactInferenceMethod.h>
-%include <shogun/machine/gp/LaplacianInferenceMethodWithLBFGS.h>
+%include <shogun/machine/gp/SingleLaplacianInferenceMethodWithLBFGS.h>
 %include <shogun/machine/gp/FITCInferenceMethod.h>
 %include <shogun/machine/gp/EPInferenceMethod.h>
 

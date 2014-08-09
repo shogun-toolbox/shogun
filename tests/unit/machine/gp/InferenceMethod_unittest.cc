@@ -15,7 +15,7 @@
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/kernel/GaussianKernel.h>
-#include <shogun/machine/gp/LaplacianInferenceMethod.h>
+#include <shogun/machine/gp/SingleLaplacianInferenceMethod.h>
 #include <shogun/machine/gp/EPInferenceMethod.h>
 #include <shogun/machine/gp/ZeroMean.h>
 #include <shogun/machine/gp/LogitLikelihood.h>
@@ -42,7 +42,7 @@ TEST(InferenceMethod,get_marginal_likelihood_estimate_logit_laplace)
 	CGaussianKernel* kernel=new CGaussianKernel(10, 8);
 	CZeroMean* mean=new CZeroMean();
 	CLogitLikelihood* likelihood=new CLogitLikelihood();
-	CLaplacianInferenceMethod* inf=new CLaplacianInferenceMethod(kernel,
+	CSingleLaplacianInferenceMethod* inf=new CSingleLaplacianInferenceMethod(kernel,
 			features_train,	mean, labels_train, likelihood);
 	inf->set_scale(2.0);
 

@@ -30,14 +30,14 @@
  * Code adapted from Gaussian Process Machine Learning Toolbox
  * http://www.gaussianprocess.org/gpml/code/matlab/doc/
  */
-#ifndef CLAPLACIANINFERENCEMETHODWITHLBFGS_H_
-#define CLAPLACIANINFERENCEMETHODWITHLBFGS_H_
+#ifndef CSINGLELAPLACIANINFERENCEMETHODWITHLBFGS_H_
+#define CSINGLELAPLACIANINFERENCEMETHODWITHLBFGS_H_
 
 #include <shogun/lib/config.h>
 
 #ifdef HAVE_EIGEN3
 
-#include <shogun/machine/gp/LaplacianInferenceMethod.h>
+#include <shogun/machine/gp/SingleLaplacianInferenceMethod.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/optimization/lbfgs/lbfgs.h>
 
@@ -45,7 +45,7 @@
 namespace shogun
 {
 
-/** @brief The Laplace approximation inference method with LBFGS class.
+/** @brief The Laplace approximation inference method with LBFGS class for regression and binary classification.
  *
  * This inference method approximates the posterior likelihood function by using
  * Laplace's method. Here, we compute a Gaussian approximation to the posterior
@@ -63,11 +63,11 @@ namespace shogun
  * This specific implementation was based on the idea 
  * from Murphy, Kevin P. "Machine learning: a probabilistic perspective." (2012), Pages 251-252.
  */
-class CLaplacianInferenceMethodWithLBFGS: public CLaplacianInferenceMethod
+class CSingleLaplacianInferenceMethodWithLBFGS: public CSingleLaplacianInferenceMethod
 {
 public:
 	/* default constructor */
-	CLaplacianInferenceMethodWithLBFGS();
+	CSingleLaplacianInferenceMethodWithLBFGS();
 
 	/* constructor
 	 *
@@ -77,20 +77,20 @@ public:
 	 * @param labels labels of the features
 	 * @param model Likelihood model to use
 	 */
-	CLaplacianInferenceMethodWithLBFGS(CKernel* kernel,
+	CSingleLaplacianInferenceMethodWithLBFGS(CKernel* kernel,
 			CFeatures* features,
 			CMeanFunction* mean,
 			CLabels* labels,
 			CLikelihoodModel* model);
 
-	virtual ~CLaplacianInferenceMethodWithLBFGS();
+	virtual ~CSingleLaplacianInferenceMethodWithLBFGS();
 
 	/* returns the name of the inference method
 	 *
-	 * @return name LaplacianWithLBFGS
+	 * @return name SingleLaplacianWithLBFGS
 	 */
 	virtual const char* get_name() const
-	{return "LaplacianInferenceMethodWithLBFGS";}
+	{return "SingleLaplacianInferenceMethodWithLBFGS";}
 
 	/* set L-BFGS parameters
 	 * For details please see shogun/optimization/lbfgs/lbfgs.h
@@ -234,4 +234,4 @@ private:
 
 } /* namespace shogun */
 #endif /* HAVE_EIGEN3 */
-#endif /* CLAPLACIANINFERENCEMETHODWITHLBFGS_H_ */
+#endif /* CSINGLELAPLACIANINFERENCEMETHODWITHLBFGS_H_ */
