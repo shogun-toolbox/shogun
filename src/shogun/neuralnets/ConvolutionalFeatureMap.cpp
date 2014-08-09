@@ -45,15 +45,25 @@ CConvolutionalFeatureMap::CConvolutionalFeatureMap(
 	int32_t radius_x, int32_t radius_y,
 	int32_t stride_x, int32_t stride_y,
 	int32_t index, 
-	EConvMapActivationFunction function) :
+	EConvMapActivationFunction function, 
+	ENLAutoencoderPosition autoencoder_position) :
 		m_input_width(input_width), m_input_height(input_height), 
 		m_radius_x(radius_x), m_radius_y(radius_y),
 		m_stride_x(stride_x), m_stride_y(stride_y),
 		m_index(index),
-		m_activation_function(function)
+		m_activation_function(function),
+		m_autoencoder_position(autoencoder_position)
 {
-	m_output_width = m_input_width/m_stride_x;
-	m_output_height = m_input_height/m_stride_y;
+	if (m_autoencoder_position == NLAP_NONE)
+	{
+		m_output_width = m_input_width/m_stride_x;
+		m_output_height = m_input_height/m_stride_y;
+	}
+	else
+	{
+		m_output_width = m_input_width;
+		m_output_height = m_input_height;
+	}
 	
 	m_input_num_neurons = m_input_width*m_input_height;
 	m_output_num_neurons = m_output_width*m_output_height;
@@ -68,51 +78,38 @@ void CConvolutionalFeatureMap::compute_activations(
 	SGVector< float64_t > parameters, 
 	CDynamicObjectArray* layers, 
 	SGVector< int32_t > input_indices,
-	SGMatrix<float64_t> activations,
-	SGMatrix<float64_t> buffer)
+	SGMatrix<float64_t> activations)
 {
 	int32_t batch_size = activations.num_cols;
 	
-	// sum up all the inputs into the buffer
-	buffer.zero();
+	float64_t bias = parameters[0];
+	for (int32_t i=0; i<m_output_num_neurons; i++)
+	{
+		for (int32_t j=0; j<batch_size; j++)
+		{
+			activations(i+m_row_offset,j) = bias;
+		}
+	}
+	
+	int32_t weights_index_offset = 1;
 	for (int32_t l=0; l<input_indices.vlen; l++)
 	{
 		CNeuralLayer* layer = 
 			(CNeuralLayer*)layers->element(input_indices[l]);
 		
-		SGMatrix<float64_t> input = layer->get_activations();
-		
 		int32_t num_maps = layer->get_num_neurons()/m_input_num_neurons;
 		
 		for (int32_t m=0; m<num_maps; m++)
 		{
-			for (int32_t i=0; i<m_input_num_neurons; i++)
-			{
-				for (int32_t j=0; j<batch_size; j++)
-				{
-					buffer(i,j) += 
-						input(i+m*m_input_num_neurons,j);
-				}
-			}
+			SGMatrix<float64_t> weights_matrix(parameters.vector+weights_index_offset, 
+				m_filter_height, m_filter_width, false);
+			weights_index_offset += m_filter_height*m_filter_width;
+			
+			convolve(layer->get_activations(), weights_matrix, activations, 
+				false, false, m*m_input_num_neurons, m_row_offset);
 		}
 		
 		SG_UNREF(layer);
-	}
-	
-	SGMatrix<float64_t> weights_matrix(
-		parameters.vector+m_output_num_neurons, 
-		m_filter_height, m_filter_width, false);
-	
-	convolve(buffer, weights_matrix, activations, 
-		false, true, 0, m_row_offset);
-	
-	float64_t* biases = parameters.vector;
-	for (int32_t i=0; i<m_output_num_neurons; i++)
-	{
-		for (int32_t j=0; j<batch_size; j++)
-		{
-			activations(i+m_row_offset,j) += biases[i];
-		}
 	}
 	
 	if (m_activation_function==CMAF_LOGISTIC)
@@ -161,32 +158,29 @@ void CConvolutionalFeatureMap::compute_gradients(
 					activation_gradients(i+m_row_offset,j) = 0;
 	}
 	
-	float64_t* bias_gradients = parameter_gradients.vector;
+	float64_t bias_gradient = 0;
 	for (int32_t i=0; i<m_output_num_neurons; i++)
-	{
-		bias_gradients[i] = 0;
 		for (int32_t j=0; j<batch_size; j++)
-			bias_gradients[i] += activation_gradients(i+m_row_offset,j);
-	}
+			bias_gradient += activation_gradients(i+m_row_offset,j);
 	
-	SGMatrix<float64_t> W(parameters.vector + m_output_num_neurons, 
-		m_filter_height, m_filter_width, false);
+	parameter_gradients[0] = bias_gradient;
 	
-	SGMatrix<float64_t> WG(parameter_gradients.vector + m_output_num_neurons, 
-		m_filter_height, m_filter_width, false);
-	
-	WG.zero();
+	int32_t weights_index_offset = 1;
 	for (int32_t l=0; l<input_indices.vlen; l++)
 	{
 		CNeuralLayer* layer = 
 			(CNeuralLayer*)layers->element(input_indices[l]);
 		
-		SGMatrix<float64_t> input = layer->get_activations();
-		
 		int32_t num_maps = layer->get_num_neurons()/m_input_num_neurons;
 		
 		for (int32_t m=0; m<num_maps; m++)
 		{
+			SGMatrix<float64_t> W(parameters.vector+weights_index_offset, 
+				m_filter_height, m_filter_width, false);
+			SGMatrix<float64_t> WG(parameter_gradients.vector+weights_index_offset, 
+				m_filter_height, m_filter_width, false);
+			weights_index_offset += m_filter_height*m_filter_width;
+			
 			compute_weight_gradients(layer->get_activations(), 
 				activation_gradients, WG, m*m_input_num_neurons, m_row_offset);
 			
@@ -206,7 +200,16 @@ void CConvolutionalFeatureMap::pool_activations(
 	SGMatrix< float64_t > pooled_activations, 
 	SGMatrix< float64_t > max_indices)
 {
-	int32_t pooled_row_offset = m_row_offset/(pooling_width*pooling_height);
+	int32_t result_row_offset = m_row_offset;
+	int32_t result_width = m_output_width;
+	int32_t result_height = m_output_height;
+	
+	if (m_autoencoder_position == NLAP_NONE)
+	{
+		result_row_offset /= (pooling_width*pooling_height);
+		result_width /= pooling_width;
+		result_height /= pooling_height;
+	}
 	
 	for (int32_t i=0; i<pooled_activations.num_cols; i++)
 	{
@@ -215,12 +218,18 @@ void CConvolutionalFeatureMap::pool_activations(
 			m_output_height, m_output_width, false);
 		
 		SGMatrix<float64_t> result(
-			pooled_activations.matrix+i*pooled_activations.num_rows + pooled_row_offset, 
-			m_output_height/pooling_height, m_output_width/pooling_width, false);
+			pooled_activations.matrix+i*pooled_activations.num_rows + result_row_offset, 
+			result_height, result_width, false);
 		
 		SGMatrix<float64_t> indices(
-			max_indices.matrix+i*max_indices.num_rows + pooled_row_offset, 
-			m_output_height/pooling_height, m_output_width/pooling_width, false);
+			max_indices.matrix+i*max_indices.num_rows + result_row_offset, 
+			result_height, result_width, false);
+		
+		if (m_autoencoder_position != NLAP_NONE)
+		{
+			result.zero();
+			indices.set_const(-1.0);
+		}
 		
 		for (int32_t x=0; x<m_output_width; x+=pooling_width)
 		{
@@ -240,8 +249,16 @@ void CConvolutionalFeatureMap::pool_activations(
 						}
 					}
 				}
-				result(y/pooling_height, x/pooling_width) = max;
-				indices(y/pooling_height, x/pooling_width) = max_index;
+				if (m_autoencoder_position == NLAP_NONE)
+				{
+					result(y/pooling_height, x/pooling_width) = max;
+					indices(y/pooling_height, x/pooling_width) = max_index;
+				}
+				else
+				{
+					result(y, x) = max;
+					indices(y, x) = max_index;
+				}
 			}
 		}
 	}
@@ -270,7 +287,10 @@ void CConvolutionalFeatureMap::convolve(
 		{
 			for (int32_t y=0; y<m_input_height; y+=m_stride_y)
 			{
-				float64_t sum = reset_output ? 0 : result(y/m_stride_y,x/m_stride_x);
+				int32_t res_x = m_autoencoder_position == NLAP_NONE ? x/m_stride_x : x;
+				int32_t res_y = m_autoencoder_position == NLAP_NONE ? y/m_stride_y : y;
+				
+				float64_t sum = reset_output ? 0 : result(res_y,res_x);
 				for (int32_t x1=x-m_radius_x; x1<=x+m_radius_x; x1++)
 				{
 					for (int32_t y1=y-m_radius_y; y1<=y+m_radius_y; y1++)
@@ -286,7 +306,7 @@ void CConvolutionalFeatureMap::convolve(
 						}
 					}
 				}
-				result(y/m_stride_y,x/m_stride_x) = sum;
+				result(res_y,res_x) = sum;
 			}
 		}
 	}
@@ -299,6 +319,7 @@ void CConvolutionalFeatureMap::compute_weight_gradients(
 	int32_t inputs_row_offset,
  	int32_t local_gradients_row_offset)
 {
+	weight_gradients.zero();
 	for (int32_t i=0; i<local_gradients.num_cols; i++)
 	{
 		SGMatrix<float64_t> image(
@@ -318,8 +339,14 @@ void CConvolutionalFeatureMap::compute_weight_gradients(
 					for (int32_t y1=y-m_radius_y; y1<=y+m_radius_y; y1++)
 					{
 						if (x1>=0 && y1>=0 && x1<image.num_cols && y1<image.num_rows)
-							weight_gradients(m_radius_y-y1+y,m_radius_x-x1+x) +=
-								LG_image(y/m_stride_y,x/m_stride_x)*image(y1,x1);
+						{
+							if (m_autoencoder_position == NLAP_NONE)
+								weight_gradients(m_radius_y-y1+y,m_radius_x-x1+x) +=
+									LG_image(y/m_stride_y,x/m_stride_x)*image(y1,x1);
+							else
+								weight_gradients(m_radius_y-y1+y,m_radius_x-x1+x) +=
+									LG_image(y,x)*image(y1,x1);
+						}
 					}
 				}
 			}

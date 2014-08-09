@@ -260,7 +260,7 @@ bool CNeuralNetwork::train_gradient_descent(SGMatrix<float64_t> inputs,
 	SGVector<float64_t> param_updates(n_param);
 	param_updates.zero();
 	
-	float64_t error_last_time = -1.0, error = 0;
+	float64_t error_last_time = -1.0, error = -1.0;
 	
 	float64_t c = gd_error_damping_coeff;
 	if (c==-1.0)
@@ -272,7 +272,7 @@ bool CNeuralNetwork::train_gradient_descent(SGMatrix<float64_t> inputs,
 	for (int32_t i=0; continue_training; i++)
 	{	
 		if (max_num_epochs!=0)
-			if (i>max_num_epochs) break;
+			if (i>=max_num_epochs) break;
 			
 		for (int32_t j=0; j < training_set_size; j += gd_mini_batch_size)
 		{
@@ -290,9 +290,13 @@ bool CNeuralNetwork::train_gradient_descent(SGMatrix<float64_t> inputs,
 			for (int32_t k=0; k<n_param; k++)
 				m_params[k] += gd_momentum*param_updates[k];
 			
+			float64_t e = compute_gradients(inputs_batch, targets_batch, gradients);
+			
 			// filter the errors
-			error = (1.0-c) * error + 
-				c*compute_gradients(inputs_batch, targets_batch, gradients);
+			if (error==-1.0)
+				error = e;
+			else
+				error = (1.0-c) * error + c*e;
 			
 			for (int32_t k=0; k<n_param; k++)
 			{
@@ -759,8 +763,6 @@ void CNeuralNetwork::init()
 	       "Max Norm", MS_NOT_AVAILABLE);
 	SG_ADD(&m_total_num_parameters, "total_num_parameters",
 	       "Total number of parameters", MS_NOT_AVAILABLE);
-	SG_ADD(&m_batch_size, "batch_size",
-	       "Batch Size", MS_NOT_AVAILABLE);
 	SG_ADD(&m_index_offsets, "index_offsets",
 		"Index Offsets", MS_NOT_AVAILABLE);
 	SG_ADD(&m_params, "params",

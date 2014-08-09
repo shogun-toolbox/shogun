@@ -49,6 +49,27 @@ template <class T> class CDenseFeatures;
  * unsupervised manner using train(), or in a supervised manner using 
  * convert_to_neural_network().
  * 
+ * This class supports training normal deep autoencoders and 
+ * [denoising autoencoders](http://www.iro.umontreal.ca/~lisa/publications2/index.php/publications/show/217)
+ * [Vincent, 2008]. To use denoising autoencoders set noise_type and noise_parameter 
+ * to specify the type and strength of the noise (pt_noise_type and 
+ * pt_noise_parameter for pre-training).
+ * 
+ * NOTE: LBFGS does not work properly with denoising autoencoders due to their 
+ * stochastic nature. Use gradient descent instead.
+ * 
+ * [Deep contractive autoencoders](http://machinelearning.wustl.edu/mlpapers/paper_files/ICML2011Rifai_455.pdf) 
+ * [Rifai, 2011] are also supported. To use them, call set_contraction_coefficient() 
+ * (or use pt_contraction_coefficient for pre-training).
+ * Denoising can also be used with contractive autoencoders through noise_type 
+ * and noise_parameter.
+ * 
+ * [Deep convolutional autoencoders](http://www.idsia.ch/~ciresan/data/icann2011.pdf) 
+ * [J Masci, 2011] are also supported. Simply build the autoencoder
+ * using CNeuralConvolutionalLayer objects.
+ * 
+ * NOTE: Contractive convolutional autoencoders are not supported.
+ * 
  * If the autoencoder has N layers, encoding layers will be the layers following
  * the input layer up to and including layer (N-1)/2. The rest of the layers are 
  * called the decoding layers. Note that the number of encoding layers is the 
@@ -79,13 +100,6 @@ public:
 	CDeepAutoencoder(CDynamicObjectArray* layers, float64_t sigma = 0.01);
 	
 	virtual ~CDeepAutoencoder() {}
-	
-	/** Sets the layers of the autoencoder
-	 * 
-	 * @param layers An array of CNeuralLayer objects specifying the layers of 
-	 * the autoencoder 
-	 */
-	virtual void set_layers(CDynamicObjectArray* layers);
 	
 	/** Pre-trains the deep autoencoder as a stack of autoencoders
 	 * 

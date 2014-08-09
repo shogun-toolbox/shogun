@@ -34,6 +34,7 @@
 #include <shogun/neuralnets/NeuralInputLayer.h>
 #include <shogun/neuralnets/NeuralRectifiedLinearLayer.h>
 #include <shogun/neuralnets/NeuralLogisticLayer.h>
+#include <shogun/neuralnets/NeuralConvolutionalLayer.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/mathematics/Math.h>
@@ -120,6 +121,82 @@ TEST(Autoencoder, contractive_logistic)
 	ae.initialize();
 	
 	ae.set_contraction_coefficient(1.0);
+	
+	EXPECT_NEAR(ae.check_gradients(), 0.0, tolerance);
+}
+
+/** Tests gradients computed using backpropagation against gradients computed
+ * by numerical approximation. Uses a CNeuralConvolutionalLayer-based autoencoder.
+ */
+TEST(Autoencoder, convolutional)
+{
+	const int32_t w = 12;
+	const int32_t h = 10;
+	
+	float64_t tolerance = 1e-9;
+	
+	CMath::init_random(10);
+	
+	CAutoencoder ae(3*w*h, 
+		new CNeuralConvolutionalLayer(CMAF_IDENTITY, 2, w, h, 1,1, 1,1, 1,1),
+		new CNeuralConvolutionalLayer(CMAF_IDENTITY, 3, w, h, 1,1, 1,1, 1,1));
+	
+	EXPECT_NEAR(ae.check_gradients(), 0.0, tolerance);
+}
+
+/** Tests gradients computed using backpropagation against gradients computed
+ * by numerical approximation. Uses a CNeuralConvolutionalLayer-based autoencoder.
+ */
+TEST(Autoencoder, convolutional_with_pooling)
+{
+	const int32_t w = 12;
+	const int32_t h = 10;
+	
+	float64_t tolerance = 1e-9;
+	
+	CMath::init_random(10);
+	
+	CAutoencoder ae(3*w*h, 
+		new CNeuralConvolutionalLayer(CMAF_IDENTITY, 2, w, h, 1,1, 3,2, 1,1),
+		new CNeuralConvolutionalLayer(CMAF_IDENTITY, 3, w, h, 1,1, 1,1, 1,1));
+	
+	EXPECT_NEAR(ae.check_gradients(), 0.0, tolerance);
+}
+
+/** Tests gradients computed using backpropagation against gradients computed
+ * by numerical approximation. Uses a CNeuralConvolutionalLayer-based autoencoder.
+ */
+TEST(Autoencoder, convolutional_with_stride)
+{
+	const int32_t w = 12;
+	const int32_t h = 10;
+	
+	float64_t tolerance = 1e-9;
+	
+	CMath::init_random(10);
+	
+	CAutoencoder ae(3*w*h, 
+		new CNeuralConvolutionalLayer(CMAF_IDENTITY, 2, w, h, 1,1, 1,1, 3,2),
+		new CNeuralConvolutionalLayer(CMAF_IDENTITY, 3, w, h, 1,1, 1,1, 1,1));
+	
+	EXPECT_NEAR(ae.check_gradients(), 0.0, tolerance);
+}
+
+/** Tests gradients computed using backpropagation against gradients computed
+ * by numerical approximation. Uses a CNeuralConvolutionalLayer-based autoencoder.
+ */
+TEST(Autoencoder, convolutional_with_stride_and_pooling)
+{
+	const int32_t w = 16;
+	const int32_t h = 16;
+	
+	float64_t tolerance = 1e-9;
+	
+	CMath::init_random(10);
+	
+	CAutoencoder ae(3*w*h, 
+		new CNeuralConvolutionalLayer(CMAF_IDENTITY, 2, w, h, 1,1, 2,2, 2,2),
+		new CNeuralConvolutionalLayer(CMAF_IDENTITY, 3, w, h, 1,1, 1,1, 1,1));
 	
 	EXPECT_NEAR(ae.check_gradients(), 0.0, tolerance);
 }

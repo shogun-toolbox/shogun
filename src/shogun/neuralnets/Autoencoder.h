@@ -75,6 +75,12 @@ enum EAENoiseType
  * [Rifai, 2011] are also supported. To use them, call set_contraction_coefficient().
  * Denoising can also be used with contractive autoencoders through noise_type 
  * and noise_parameter.
+ * 
+ * [Convolutional autoencoders](http://www.idsia.ch/~ciresan/data/icann2011.pdf) 
+ * [J Masci, 2011] are also supported. Simply build the autoencoder
+ * using CNeuralConvolutionalLayer objects.
+ * 
+ * NOTE: Contractive convolutional autoencoders are not supported.
  */
 class CAutoencoder : public CNeuralNetwork
 {

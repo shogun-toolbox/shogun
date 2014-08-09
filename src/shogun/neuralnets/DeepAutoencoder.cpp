@@ -55,12 +55,17 @@ CAutoencoder()
 	init();
 	m_sigma = sigma;
 	quick_connect();
+	
+	int32_t num_encoding_layers = (m_num_layers-1)/2;
+	for (int32_t i=0; i<m_num_layers; i++)
+	{
+		if (i<= num_encoding_layers)
+			get_layer(i)->autoencoder_position = NLAP_ENCODING;
+		else
+			get_layer(i)->autoencoder_position = NLAP_DECODING;
+	}
+	
 	initialize(m_sigma);
-}
-
-void CDeepAutoencoder::set_layers(CDynamicObjectArray* layers)
-{
-	CNeuralNetwork::set_layers(layers);
 	
 	for (int32_t i=0; i<m_num_layers; i++)
 	{
@@ -80,34 +85,17 @@ void CDeepAutoencoder::pre_train(CFeatures* data)
 	{
 		SG_INFO("Pre-training Layer %i\n", i);
 		
-		CNeuralLayer* ae_encoding_layer = NULL;
+		CNeuralLayer* ae_encoding_layer = (CNeuralLayer*)get_layer(i)->clone();
 		
-		if (strcmp(get_layer(i)->get_name(), "NeuralLinearLayer")==0)
-			ae_encoding_layer = new CNeuralLinearLayer(get_layer(i)->get_num_neurons());
-		else if (strcmp(get_layer(i)->get_name(), "NeuralLogisticLayer")==0)
-			ae_encoding_layer = new CNeuralLogisticLayer(get_layer(i)->get_num_neurons());
-		else if (strcmp(get_layer(i)->get_name(), "NeuralRectifiedLinearLayer")==0)
-			ae_encoding_layer = new CNeuralRectifiedLinearLayer(get_layer(i)->get_num_neurons());
-		else
-			SG_ERROR("Unsupported layer type (%s) for layer %i\n", 
-				get_layer(i)->get_name(), i);
+		CNeuralLayer* ae_decoding_layer = 
+			(CNeuralLayer*)get_layer(m_num_layers-i)->clone();
 		
-		CNeuralLayer* ae_decoding_layer = NULL;
-		int32_t k = m_num_layers-i;
-		
-		if (strcmp(get_layer(k)->get_name(), "NeuralLinearLayer")==0)
-			ae_decoding_layer = new CNeuralLinearLayer(get_layer(k)->get_num_neurons());
-		else if (strcmp(get_layer(k)->get_name(), "NeuralLogisticLayer")==0)
-			ae_decoding_layer = new CNeuralLogisticLayer(get_layer(k)->get_num_neurons());
-		else if (strcmp(get_layer(k)->get_name(), "NeuralRectifiedLinearLayer")==0)
-			ae_decoding_layer = new CNeuralRectifiedLinearLayer(get_layer(k)->get_num_neurons());
-		else
-			SG_ERROR("Unsupported layer type (%s) for layer %i\n", 
-				get_layer(k)->get_name(), k);
-			
 		CAutoencoder ae(get_layer(i-1)->get_num_neurons(), 
 			ae_encoding_layer, ae_decoding_layer, m_sigma);
-
+		
+		SG_UNREF(ae_encoding_layer);
+		SG_UNREF(ae_decoding_layer);
+		
 		ae.noise_type = EAENoiseType(pt_noise_type[i-1]);
 		ae.noise_parameter = pt_noise_parameter[i-1];
 		ae.set_contraction_coefficient(pt_contraction_coefficient[i-1]);
@@ -169,7 +157,12 @@ CNeuralNetwork* CDeepAutoencoder::convert_to_neural_network(
 {
 	CDynamicObjectArray* layers = new CDynamicObjectArray;
 	for (int32_t i=0; i<=(m_num_layers-1)/2; i++)
-		layers->append_element(get_layer(i));
+	{
+		CNeuralLayer* layer = (CNeuralLayer*)get_layer(i)->clone();
+		layer->autoencoder_position = NLAP_NONE;
+		layers->append_element(layer);
+		SG_UNREF(layer);
+	}
 	
 	if (output_layer != NULL)
 		layers->append_element(output_layer);
