@@ -37,6 +37,7 @@
 #include <shogun/mathematics/linalg/internal/implementation/Add.h>
 #include <shogun/mathematics/linalg/internal/implementation/ElementwiseProduct.h>
 #include <shogun/mathematics/linalg/internal/implementation/Scale.h>
+#include <shogun/mathematics/linalg/internal/implementation/Convolve.h>
 
 namespace shogun
 {
@@ -116,6 +117,29 @@ template <Backend backend=linalg_traits<Core>::backend,class Matrix, class Resul
 void elementwise_square(Matrix m, ResultMatrix result)
 {
 	implementation::elementwise_square<backend,Matrix>::compute(m,result);
+}
+
+/** Computes the 2D convolution of X with W
+ * 
+ * NOTE: For the ViennaCL backend, the size of W (number of bytes) must not exceed 
+ * [CL_DEVICE_MAX_CONSTANT_BUFFER_SIZE](http://www.khronos.org/registry/cl/sdk/1.2/docs/man/xhtml/clGetDeviceInfo.html). 
+ * 
+ * @param X Input image
+ * @param W Filter coefficients. The dimensions of the matrix must be odd-numbered.
+ * @param Y Output image of the same size as the input image, as the borders 
+ * of the input image are implicitly padded with zeros during the computation
+ * @param flip If true the filter coefficients are flipped, performing cross-correlation 
+ * instead of convolution
+ * @param overwrite If true, the values in Y are overwritten with result of the 
+ * computation. Otherwise, the result is added to the existing values in Y.
+ * @param stride_x Stride in the x (column) direction
+ * @param stride_y Stride in the y (row) direction
+ */
+template <Backend backend=linalg_traits<Core>::backend,class Matrix>
+void convolve(Matrix X, Matrix W, Matrix Y, bool flip = false,
+	bool overwrite=true, int32_t stride_x=1, int32_t stride_y=1)
+{
+	implementation::convolve<backend, Matrix>::compute(X, W, Y, flip, overwrite, stride_x, stride_y);
 }
 
 }
