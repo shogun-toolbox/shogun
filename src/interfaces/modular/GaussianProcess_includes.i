@@ -23,9 +23,10 @@
  #include <shogun/machine/gp/ConstMean.h>
 
  #include <shogun/machine/gp/InferenceMethod.h>
- #include <shogun/machine/gp/LaplacianInferenceMethod.h>
+ #include <shogun/machine/gp/LaplacianInferenceBase.h>
+ #include <shogun/machine/gp/SingleLaplacianInferenceMethod.h>
  #include <shogun/machine/gp/ExactInferenceMethod.h>
- #include <shogun/machine/gp/LaplacianInferenceMethodWithLBFGS.h>
+ #include <shogun/machine/gp/SingleLaplacianInferenceMethodWithLBFGS.h>
  #include <shogun/machine/gp/FITCInferenceMethod.h>
  #include <shogun/machine/gp/EPInferenceMethod.h>
 

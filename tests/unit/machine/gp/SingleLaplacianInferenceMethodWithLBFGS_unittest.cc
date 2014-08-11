@@ -39,7 +39,7 @@
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/kernel/GaussianKernel.h>
-#include <shogun/machine/gp/LaplacianInferenceMethodWithLBFGS.h>
+#include <shogun/machine/gp/SingleLaplacianInferenceMethodWithLBFGS.h>
 #include <shogun/machine/gp/ZeroMean.h>
 #include <shogun/machine/gp/GaussianLikelihood.h>
 #include <shogun/machine/gp/StudentsTLikelihood.h>
@@ -50,7 +50,7 @@
 
 using namespace shogun;
 
-TEST(LaplacianInferenceMethodWithLBFGS,get_cholesky_probit_likelihood)
+TEST(SingleLaplacianInferenceMethodWithLBFGS,get_cholesky_probit_likelihood)
 {
 	float64_t rel_tolorance = 1e-2;
 	float64_t abs_tolorance;
@@ -89,9 +89,9 @@ TEST(LaplacianInferenceMethodWithLBFGS,get_cholesky_probit_likelihood)
 	// probit likelihood
 	CProbitLikelihood* likelihood=new CProbitLikelihood();
 
-	// specify GP classification with Laplacian inference
-	CLaplacianInferenceMethodWithLBFGS* inf
-		= new CLaplacianInferenceMethodWithLBFGS(kernel,
+	// specify GP classification with SingleLaplacian inference
+	CSingleLaplacianInferenceMethodWithLBFGS* inf
+		= new CSingleLaplacianInferenceMethodWithLBFGS(kernel,
 			features_train,
 			mean,
 			labels_train,
@@ -166,7 +166,7 @@ TEST(LaplacianInferenceMethodWithLBFGS,get_cholesky_probit_likelihood)
 }
 
 
-TEST(LaplacianInferenceMethodWithLBFGS,get_alpha_probit_likelihood)
+TEST(SingleLaplacianInferenceMethodWithLBFGS,get_alpha_probit_likelihood)
 {
 
 	float64_t rel_tolorance = 1e-2;
@@ -206,9 +206,9 @@ TEST(LaplacianInferenceMethodWithLBFGS,get_alpha_probit_likelihood)
 	// probit likelihood
 	CProbitLikelihood* likelihood=new CProbitLikelihood();
 
-	// specify GP classification with Laplacian inference
-	CLaplacianInferenceMethodWithLBFGS* inf
-		= new CLaplacianInferenceMethodWithLBFGS(kernel,
+	// specify GP classification with SingleLaplacian inference
+	CSingleLaplacianInferenceMethodWithLBFGS* inf
+		= new CSingleLaplacianInferenceMethodWithLBFGS(kernel,
 			features_train,
 			mean,
 			labels_train,
@@ -257,7 +257,7 @@ TEST(LaplacianInferenceMethodWithLBFGS,get_alpha_probit_likelihood)
 	SG_UNREF(inf);
 }
 
-TEST(LaplacianInferenceMethodWithLBFGS,get_negative_marginal_likelihood_probit_likelihood)
+TEST(SingleLaplacianInferenceMethodWithLBFGS,get_negative_marginal_likelihood_probit_likelihood)
 {
 
 	float64_t rel_tolorance = 1e-2;
@@ -297,9 +297,9 @@ TEST(LaplacianInferenceMethodWithLBFGS,get_negative_marginal_likelihood_probit_l
 	// probit likelihood
 	CProbitLikelihood* likelihood=new CProbitLikelihood();
 
-	// specify GP classification with Laplacian inference
-	CLaplacianInferenceMethodWithLBFGS* inf
-		= new CLaplacianInferenceMethodWithLBFGS(kernel,
+	// specify GP classification with SingleLaplacian inference
+	CSingleLaplacianInferenceMethodWithLBFGS* inf
+		= new CSingleLaplacianInferenceMethodWithLBFGS(kernel,
 			features_train,
 			mean,
 			labels_train,
@@ -335,7 +335,7 @@ TEST(LaplacianInferenceMethodWithLBFGS,get_negative_marginal_likelihood_probit_l
 	SG_UNREF(inf);
 }
 
-TEST(LaplacianInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_probit_likelihood)
+TEST(SingleLaplacianInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_probit_likelihood)
 {
 
 	float64_t rel_tolorance = 1e-2;
@@ -375,9 +375,9 @@ TEST(LaplacianInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_probi
 	// probit likelihood
 	CProbitLikelihood* likelihood=new CProbitLikelihood();
 
-	// specify GP classification with Laplacian inference
-	CLaplacianInferenceMethodWithLBFGS* inf
-		= new CLaplacianInferenceMethodWithLBFGS(kernel,
+	// specify GP classification with SingleLaplacian inference
+	CSingleLaplacianInferenceMethodWithLBFGS* inf
+		= new CSingleLaplacianInferenceMethodWithLBFGS(kernel,
 			features_train,
 			mean,
 			labels_train,
@@ -431,7 +431,7 @@ TEST(LaplacianInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_probi
 	SG_UNREF(inf);
 }
 
-TEST(LaplacianInferenceMethodWithLBFGS,get_posterior_mean_probit_likelihood)
+TEST(SingleLaplacianInferenceMethodWithLBFGS,get_posterior_mean_probit_likelihood)
 {
 
 	float64_t rel_tolorance = 1e-2;
@@ -471,9 +471,9 @@ TEST(LaplacianInferenceMethodWithLBFGS,get_posterior_mean_probit_likelihood)
 	// probit likelihood
 	CProbitLikelihood* likelihood=new CProbitLikelihood();
 
-	// specify GP classification with Laplacian inference
-	CLaplacianInferenceMethodWithLBFGS* inf
-		= new CLaplacianInferenceMethodWithLBFGS(kernel,
+	// specify GP classification with SingleLaplacian inference
+	CSingleLaplacianInferenceMethodWithLBFGS* inf
+		= new CSingleLaplacianInferenceMethodWithLBFGS(kernel,
 			features_train,
 			mean,
 			labels_train,
@@ -522,7 +522,7 @@ TEST(LaplacianInferenceMethodWithLBFGS,get_posterior_mean_probit_likelihood)
 	SG_UNREF(inf);
 }
 
-TEST(LaplacianInferenceMethodWithLBFGS,get_posterior_covariance_probit_likelihood)
+TEST(SingleLaplacianInferenceMethodWithLBFGS,get_posterior_covariance_probit_likelihood)
 {
 
 	float64_t rel_tolorance = 1e-2;
@@ -562,9 +562,9 @@ TEST(LaplacianInferenceMethodWithLBFGS,get_posterior_covariance_probit_likelihoo
 	// probit likelihood
 	CProbitLikelihood* likelihood=new CProbitLikelihood();
 
-	// specify GP classification with Laplacian inference
-	CLaplacianInferenceMethodWithLBFGS* inf
-		= new CLaplacianInferenceMethodWithLBFGS(kernel,
+	// specify GP classification with SingleLaplacian inference
+	CSingleLaplacianInferenceMethodWithLBFGS* inf
+		= new CSingleLaplacianInferenceMethodWithLBFGS(kernel,
 			features_train,
 			mean,
 			labels_train,
@@ -636,7 +636,7 @@ TEST(LaplacianInferenceMethodWithLBFGS,get_posterior_covariance_probit_likelihoo
 	SG_UNREF(inf);
 }
 
-TEST(LaplacianInferenceMethodWithLBFGS,get_cholesky_logit_likelihood)
+TEST(SingleLaplacianInferenceMethodWithLBFGS,get_cholesky_logit_likelihood)
 {
 
 	float64_t rel_tolorance = 1e-2;
@@ -677,9 +677,9 @@ TEST(LaplacianInferenceMethodWithLBFGS,get_cholesky_logit_likelihood)
 	// logit likelihood
 	CLogitLikelihood* likelihood=new CLogitLikelihood();
 
-	// specify GP classification with Laplacian inference
-	CLaplacianInferenceMethodWithLBFGS* inf
-		= new CLaplacianInferenceMethodWithLBFGS(kernel,
+	// specify GP classification with SingleLaplacian inference
+	CSingleLaplacianInferenceMethodWithLBFGS* inf
+		= new CSingleLaplacianInferenceMethodWithLBFGS(kernel,
 			features_train,
 			mean,
 			labels_train,
@@ -751,7 +751,7 @@ TEST(LaplacianInferenceMethodWithLBFGS,get_cholesky_logit_likelihood)
 	SG_UNREF(inf);
 }
 
-TEST(LaplacianInferenceMethodWithLBFGS,get_alpha_logit_likelihood)
+TEST(SingleLaplacianInferenceMethodWithLBFGS,get_alpha_logit_likelihood)
 {
 
 	float64_t rel_tolorance = 1e-2;
@@ -792,9 +792,9 @@ TEST(LaplacianInferenceMethodWithLBFGS,get_alpha_logit_likelihood)
 	// logit likelihood
 	CLogitLikelihood* likelihood=new CLogitLikelihood();
 
-	// specify GP classification with Laplacian inference
-	CLaplacianInferenceMethodWithLBFGS* inf
-		= new CLaplacianInferenceMethodWithLBFGS(kernel,
+	// specify GP classification with SingleLaplacian inference
+	CSingleLaplacianInferenceMethodWithLBFGS* inf
+		= new CSingleLaplacianInferenceMethodWithLBFGS(kernel,
 			features_train,
 			mean,
 			labels_train,
@@ -843,7 +843,7 @@ TEST(LaplacianInferenceMethodWithLBFGS,get_alpha_logit_likelihood)
 }
 
 
-TEST(LaplacianInferenceMethodWithLBFGS,get_negative_marginal_likelihood_logit_likelihood)
+TEST(SingleLaplacianInferenceMethodWithLBFGS,get_negative_marginal_likelihood_logit_likelihood)
 {
 
 	float64_t rel_tolorance = 1e-2;
@@ -884,9 +884,9 @@ TEST(LaplacianInferenceMethodWithLBFGS,get_negative_marginal_likelihood_logit_li
 	// logit likelihood
 	CLogitLikelihood* likelihood=new CLogitLikelihood();
 
-	// specify GP classification with Laplacian inference
-	CLaplacianInferenceMethodWithLBFGS* inf
-		= new CLaplacianInferenceMethodWithLBFGS(kernel,
+	// specify GP classification with SingleLaplacian inference
+	CSingleLaplacianInferenceMethodWithLBFGS* inf
+		= new CSingleLaplacianInferenceMethodWithLBFGS(kernel,
 			features_train,
 			mean,
 			labels_train,
@@ -923,7 +923,7 @@ TEST(LaplacianInferenceMethodWithLBFGS,get_negative_marginal_likelihood_logit_li
 }
 
 
-TEST(LaplacianInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_logit_likelihood)
+TEST(SingleLaplacianInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_logit_likelihood)
 {
 
 	float64_t rel_tolorance = 1e-2;
@@ -964,9 +964,9 @@ TEST(LaplacianInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_logit
 	// logit likelihood
 	CLogitLikelihood* likelihood=new CLogitLikelihood();
 
-	// specify GP classification with Laplacian inference
-	CLaplacianInferenceMethodWithLBFGS* inf
-		= new CLaplacianInferenceMethodWithLBFGS(kernel,
+	// specify GP classification with SingleLaplacian inference
+	CSingleLaplacianInferenceMethodWithLBFGS* inf
+		= new CSingleLaplacianInferenceMethodWithLBFGS(kernel,
 			features_train,
 			mean,
 			labels_train,
@@ -1021,7 +1021,7 @@ TEST(LaplacianInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_logit
 }
 
 
-TEST(LaplacianInferenceMethodWithLBFGS,get_cholesky_gaussian_likelihood)
+TEST(SingleLaplacianInferenceMethodWithLBFGS,get_cholesky_gaussian_likelihood)
 {
 
 	float64_t rel_tolorance = 1e-2;
@@ -1056,9 +1056,9 @@ TEST(LaplacianInferenceMethodWithLBFGS,get_cholesky_gaussian_likelihood)
 	// Gaussian likelihood with sigma = 1 (by default)
 	CGaussianLikelihood* likelihood=new CGaussianLikelihood();
 
-	// specify GP regression with Laplacian inference
-	CLaplacianInferenceMethodWithLBFGS* inf
-		= new CLaplacianInferenceMethodWithLBFGS(kernel,
+	// specify GP regression with SingleLaplacian inference
+	CSingleLaplacianInferenceMethodWithLBFGS* inf
+		= new CSingleLaplacianInferenceMethodWithLBFGS(kernel,
 			features_train,
 			mean,
 			labels_train,
@@ -1130,7 +1130,7 @@ TEST(LaplacianInferenceMethodWithLBFGS,get_cholesky_gaussian_likelihood)
 	// clean up
 	SG_UNREF(inf);
 }
-TEST(LaplacianInferenceMethodWithLBFGS,get_alpha_gaussian_likelihood)
+TEST(SingleLaplacianInferenceMethodWithLBFGS,get_alpha_gaussian_likelihood)
 {
 
 	float64_t rel_tolorance = 1e-2;
@@ -1165,9 +1165,9 @@ TEST(LaplacianInferenceMethodWithLBFGS,get_alpha_gaussian_likelihood)
 	// Gaussian likelihood with sigma = 1 (by default)
 	CGaussianLikelihood* likelihood=new CGaussianLikelihood();
 
-	// specify GP regression with Laplacian inference
-	CLaplacianInferenceMethodWithLBFGS* inf
-		= new CLaplacianInferenceMethodWithLBFGS(kernel,
+	// specify GP regression with SingleLaplacian inference
+	CSingleLaplacianInferenceMethodWithLBFGS* inf
+		= new CSingleLaplacianInferenceMethodWithLBFGS(kernel,
 			features_train,
 			mean,
 			labels_train,
@@ -1214,7 +1214,7 @@ TEST(LaplacianInferenceMethodWithLBFGS,get_alpha_gaussian_likelihood)
 	SG_UNREF(inf);
 }
 
-TEST(LaplacianInferenceMethodWithLBFGS,get_negative_marginal_likelihood_gaussian_likelihood)
+TEST(SingleLaplacianInferenceMethodWithLBFGS,get_negative_marginal_likelihood_gaussian_likelihood)
 {
 
 	float64_t rel_tolorance = 1e-2;
@@ -1249,9 +1249,9 @@ TEST(LaplacianInferenceMethodWithLBFGS,get_negative_marginal_likelihood_gaussian
 	// Gaussian likelihood with sigma = 1 (by default)
 	CGaussianLikelihood* likelihood=new CGaussianLikelihood();
 
-	// specify GP regression with Laplacian inference
-	CLaplacianInferenceMethodWithLBFGS* inf
-		= new CLaplacianInferenceMethodWithLBFGS(kernel,
+	// specify GP regression with SingleLaplacian inference
+	CSingleLaplacianInferenceMethodWithLBFGS* inf
+		= new CSingleLaplacianInferenceMethodWithLBFGS(kernel,
 			features_train,
 			mean,
 			labels_train,
@@ -1287,7 +1287,7 @@ TEST(LaplacianInferenceMethodWithLBFGS,get_negative_marginal_likelihood_gaussian
 	SG_UNREF(inf);
 }
 
-TEST(LaplacianInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_gaussian_likelihood)
+TEST(SingleLaplacianInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_gaussian_likelihood)
 {
 
 	float64_t rel_tolorance = 1e-2;
@@ -1324,9 +1324,9 @@ TEST(LaplacianInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_gauss
 	// Gaussian likelihood with sigma = 0.25
 	CGaussianLikelihood* lik=new CGaussianLikelihood(0.25);
 
-	// specify GP regression with Laplacian inference
-	CLaplacianInferenceMethodWithLBFGS* inf
-		= new CLaplacianInferenceMethodWithLBFGS(kernel,
+	// specify GP regression with SingleLaplacian inference
+	CSingleLaplacianInferenceMethodWithLBFGS* inf
+		= new CSingleLaplacianInferenceMethodWithLBFGS(kernel,
 			features_train,
 			mean,
 			labels_train,
@@ -1387,7 +1387,7 @@ TEST(LaplacianInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_gauss
 }
 
 
-TEST(LaplacianInferenceMethodWithLBFGS,get_cholesky_t_likelihood)
+TEST(SingleLaplacianInferenceMethodWithLBFGS,get_cholesky_t_likelihood)
 {
 
 	float64_t rel_tolorance = 1e-1;
@@ -1422,9 +1422,9 @@ TEST(LaplacianInferenceMethodWithLBFGS,get_cholesky_t_likelihood)
 	// Student's-T likelihood with sigma = 1, df = 3
 	CStudentsTLikelihood* likelihood=new CStudentsTLikelihood(1, 3);
 
-	// specify GP regression with Laplacian inference
-	CLaplacianInferenceMethodWithLBFGS* inf
-		= new CLaplacianInferenceMethodWithLBFGS(kernel,
+	// specify GP regression with SingleLaplacian inference
+	CSingleLaplacianInferenceMethodWithLBFGS* inf
+		= new CSingleLaplacianInferenceMethodWithLBFGS(kernel,
 			features_train,
 			mean,
 			labels_train,
@@ -1496,7 +1496,7 @@ TEST(LaplacianInferenceMethodWithLBFGS,get_cholesky_t_likelihood)
 	SG_UNREF(inf);
 }
 
-TEST(LaplacianInferenceMethodWithLBFGS,get_alpha_t_likelihood)
+TEST(SingleLaplacianInferenceMethodWithLBFGS,get_alpha_t_likelihood)
 {
 
 	float64_t rel_tolorance = 1e-1;
@@ -1531,9 +1531,9 @@ TEST(LaplacianInferenceMethodWithLBFGS,get_alpha_t_likelihood)
 	// Student's-T likelihood with sigma = 1, df = 3
 	CStudentsTLikelihood* likelihood=new CStudentsTLikelihood(1, 3);
 
-	// specify GP regression with Laplacian inference
-	CLaplacianInferenceMethodWithLBFGS* inf 
-		= new CLaplacianInferenceMethodWithLBFGS(kernel,
+	// specify GP regression with SingleLaplacian inference
+	CSingleLaplacianInferenceMethodWithLBFGS* inf 
+		= new CSingleLaplacianInferenceMethodWithLBFGS(kernel,
 			features_train,
 			mean,
 			labels_train,
@@ -1580,7 +1580,7 @@ TEST(LaplacianInferenceMethodWithLBFGS,get_alpha_t_likelihood)
 	SG_UNREF(inf);
 }
 
-TEST(LaplacianInferenceMethodWithLBFGS,get_negative_marginal_likelihood_t_likelihood)
+TEST(SingleLaplacianInferenceMethodWithLBFGS,get_negative_marginal_likelihood_t_likelihood)
 {
 
 	float64_t rel_tolorance = 1e-1;
@@ -1615,9 +1615,9 @@ TEST(LaplacianInferenceMethodWithLBFGS,get_negative_marginal_likelihood_t_likeli
 	// Student's-T likelihood with sigma = 1, df = 3
 	CStudentsTLikelihood* likelihood=new CStudentsTLikelihood(1, 3);
 
-	// specify GP regression with Laplacian inference
-	CLaplacianInferenceMethodWithLBFGS* inf 
-		= new CLaplacianInferenceMethodWithLBFGS(kernel,
+	// specify GP regression with SingleLaplacian inference
+	CSingleLaplacianInferenceMethodWithLBFGS* inf 
+		= new CSingleLaplacianInferenceMethodWithLBFGS(kernel,
 			features_train,
 			mean,
 			labels_train,
@@ -1653,7 +1653,7 @@ TEST(LaplacianInferenceMethodWithLBFGS,get_negative_marginal_likelihood_t_likeli
 	SG_UNREF(inf);
 }
 
-TEST(LaplacianInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_t_likelihood)
+TEST(SingleLaplacianInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_t_likelihood)
 {
 
 	float64_t rel_tolorance = 1e-1;
@@ -1690,8 +1690,8 @@ TEST(LaplacianInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_t_lik
 	CStudentsTLikelihood* lik=new CStudentsTLikelihood(0.25, 3);
 
 	// specify GP regression with exact inference
-	CLaplacianInferenceMethodWithLBFGS* inf
-		= new CLaplacianInferenceMethodWithLBFGS(kernel,
+	CSingleLaplacianInferenceMethodWithLBFGS* inf
+		= new CSingleLaplacianInferenceMethodWithLBFGS(kernel,
 			features_train,
 			mean,
 			labels_train,
