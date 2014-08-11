@@ -29,9 +29,10 @@
  *
  */
 
-#ifdef HAVE_EIGEN3
-
 #include <shogun/machine/gp/LogitDVGLikelihood.h>
+
+#ifdef HAVE_EIGEN3
+#include <shogun/mathematics/eigen3.h>
 #include <shogun/machine/gp/LogitVGLikelihood.h>
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/distributions/classical/GaussianDistribution.h>

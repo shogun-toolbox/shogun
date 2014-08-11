@@ -45,7 +45,6 @@
 
 #ifdef HAVE_EIGEN3
 #include <shogun/machine/gp/KLInferenceMethod.h>
-#include <shogun/mathematics/eigen3.h>
 
 namespace shogun
 {
@@ -156,8 +155,9 @@ protected:
 	 * and/or
 	 * get_gradient_of_nlml_wrt_parameters(SGVector<float64_t> gradient)
 	 *
+	 * @return true if precomputed parameters are valid
 	 */
-	virtual void lbfgs_precompute();
+	virtual bool lbfgs_precompute();
 
 	/** compute matrices which are required to compute negative log marginal
 	 * likelihood derivatives wrt  hyperparameter in cov function

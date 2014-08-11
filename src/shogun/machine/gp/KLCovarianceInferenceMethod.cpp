@@ -42,6 +42,7 @@
 #include <shogun/machine/gp/KLCovarianceInferenceMethod.h>
 
 #ifdef HAVE_EIGEN3
+#include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/machine/gp/MatrixOperations.h>
 #include <shogun/machine/gp/VariationalGaussianLikelihood.h>
@@ -113,7 +114,7 @@ CKLCovarianceInferenceMethod::~CKLCovarianceInferenceMethod()
 {
 }
 
-void CKLCovarianceInferenceMethod::lbfgs_precompute()
+bool CKLCovarianceInferenceMethod::lbfgs_precompute()
 {
 	SGVector<float64_t> mean=m_mean->get_mean_vector(m_features);
 	Map<VectorXd> eigen_mean(mean.vector, mean.vlen);
@@ -149,7 +150,8 @@ void CKLCovarianceInferenceMethod::lbfgs_precompute()
 	eigen_s2=(eigen_K.diagonal().array()*CMath::sq(m_scale)-(eigen_V.array().pow(2).colwise().sum().transpose())).abs().matrix();
 
 	CVariationalGaussianLikelihood * lik=get_variational_likelihood();
-	lik->set_variational_distribution(m_mu, m_s2, m_labels);
+	bool status = lik->set_variational_distribution(m_mu, m_s2, m_labels);
+	return status;
 }
 
 void CKLCovarianceInferenceMethod::get_gradient_of_nlml_wrt_parameters(SGVector<float64_t> gradient)

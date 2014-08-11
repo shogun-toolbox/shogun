@@ -16,13 +16,14 @@
 #include <shogun/features/IndexFeatures.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/base/ParameterMap.h>
-#include <shogun/mathematics/eigen3.h>
 
 using namespace shogun;
 
-#ifdef HAVE_EIGEN3
-using namespace Eigen;
-#endif // HAVE_EIGEN3
+#ifdef HAVE_LINALG_LIB
+#include <shogun/mathematics/linalg/linalg.h>
+
+using namespace linalg;
+#endif // HAVE_LINALG_LIB
 
 void CCustomKernel::init()
 {
@@ -179,6 +180,7 @@ bool CCustomKernel::init(CFeatures* l, CFeatures* r)
 	return init_normalizer();
 }
 
+#ifdef HAVE_LINALG_LIB
 #ifdef HAVE_EIGEN3
 float64_t CCustomKernel::sum_symmetric_block(index_t block_begin,
 		index_t block_size, bool no_diag)
@@ -201,25 +203,10 @@ float64_t CCustomKernel::sum_symmetric_block(index_t block_begin,
 			"Please use smaller blocks!", block_size, block_begin, block_begin)
 	REQUIRE(block_size>=1, "Invalid block size (%d)!\n", block_size)
 
-	Map<MatrixXf> k_m(kmatrix.matrix, kmatrix.num_rows, kmatrix.num_cols);
-	const MatrixXf& k_m_block=k_m.block(block_begin, block_begin, block_size,
-			block_size);
-
-	// since the block is symmetric with main diagonal inside, we can save half
-	// the computation with using only the upper triangular part.
-	const MatrixXf& k_m_upper=k_m_block.triangularView<StrictlyUpper>();
-	float64_t sum=k_m_upper.sum();
-
-	// the actual sum would be twice of what we computed
-	sum*=2;
-
-	// add the diagonal elements if required
-	if (!no_diag)
-		sum+=k_m_block.diagonal().sum();
-
 	SG_DEBUG("Leaving\n");
 
-	return sum;
+	return sum_symmetric<Backend::EIGEN3>(block(kmatrix, block_begin,
+				block_begin, block_size, block_size), no_diag);
 }
 
 float64_t CCustomKernel::sum_block(index_t block_begin_row,
@@ -256,19 +243,10 @@ float64_t CCustomKernel::sum_block(index_t block_begin_row,
 		no_diag=false;
 	}
 
-	Map<MatrixXf> k_m(kmatrix.matrix, kmatrix.num_rows, kmatrix.num_cols);
-	const MatrixXf& k_m_block=k_m.block(block_begin_row, block_begin_col,
-			block_size_row, block_size_col);
-
-	float64_t sum=k_m_block.sum();
-
-	// remove diagonal if specified
-	if (no_diag)
-		sum-=k_m_block.diagonal().sum();
-
 	SG_DEBUG("Leaving\n");
 
-	return sum;
+	return sum<Backend::EIGEN3>(block(kmatrix, block_begin_row, block_begin_col,
+				block_size_row, block_size_col), no_diag);
 }
 
 SGVector<float64_t> CCustomKernel::row_wise_sum_symmetric_block(index_t
@@ -293,29 +271,17 @@ SGVector<float64_t> CCustomKernel::row_wise_sum_symmetric_block(index_t
 			"Please use smaller blocks!", block_size, block_begin, block_begin)
 	REQUIRE(block_size>=1, "Invalid block size (%d)!\n", block_size)
 
-	// initialize the vector that accumulates the row/col-wise sum on the go
-	SGVector<float64_t> row_sum(block_size);
-	row_sum.set_const(0.0);
+	SGVector<float32_t> s=rowwise_sum<Backend::EIGEN3>(block(kmatrix, block_begin,
+				block_begin, block_size, block_size), no_diag);
 
-	Map<MatrixXf> k_m(kmatrix.matrix, kmatrix.num_rows, kmatrix.num_cols);
-	const MatrixXf& k_m_block=k_m.block(block_begin, block_begin, block_size,
-			block_size);
-
-	// compute row/col-wise sum
-	for (index_t i=0; i<block_size; ++i)
-		row_sum[i]=k_m_block.col(i).sum();
-
-	// remove the diagonal elements if specified
-	if (no_diag)
-	{
-		const VectorXf& diag=k_m_block.diagonal();
-		for (index_t i=0; i<block_size; ++i)
-			row_sum[i]-=diag[i];
-	}
+	// casting to float64_t vector
+	SGVector<float64_t> sum(s.vlen);
+	for (index_t i=0; i<s.vlen; ++i)
+		sum[i]=s[i];
 
 	SG_DEBUG("Leaving\n");
 
-	return row_sum;
+	return sum;
 }
 
 SGMatrix<float64_t> CCustomKernel::row_wise_sum_squared_sum_symmetric_block(
@@ -340,48 +306,23 @@ SGMatrix<float64_t> CCustomKernel::row_wise_sum_squared_sum_symmetric_block(
 			"Please use smaller blocks!", block_size, block_begin, block_begin)
 	REQUIRE(block_size>=1, "Invalid block size (%d)!\n", block_size)
 
-	// initialize the matrix that accumulates the row/col-wise sum on the go
+	// initialize the matrix that accumulates the row/col-wise sum
 	// the first column stores the sum of kernel values
 	// the second column stores the sum of squared kernel values
 	SGMatrix<float64_t> row_sum(block_size, 2);
-	row_sum.set_const(0.0);
 
-	Map<MatrixXf> k_m(kmatrix.matrix, kmatrix.num_rows, kmatrix.num_cols);
-	const MatrixXf& k_m_block=k_m.block(block_begin, block_begin, block_size,
-			block_size);
+	SGVector<float32_t> sum=rowwise_sum<Backend::EIGEN3>(block(kmatrix,
+				block_begin, block_begin, block_size, block_size), no_diag);
 
-	// compute row/col-wise sum - includes diagonal entries
-	for (index_t i=0; i<block_size; ++i)
-		row_sum(i, 0)=k_m_block.col(i).sum();
+	SGVector<float32_t> sq_sum=rowwise_sum<Backend::EIGEN3>(
+		elementwise_square<Backend::EIGEN3>(block(kmatrix,
+		block_begin, block_begin, block_size, block_size)), no_diag);
 
-	// compute row/col-wise sum of squared kernel values
-	// since the block is symmetric with main diagonal inside, we can save half
-	// the computation with using only the upper triangular part
-	for (index_t i=0; i<block_size; ++i)
-	{
-		// use the kernel values on the upper triangular part of the kernel
-		// matrix and compute row-wise sum and squared sum on the fly
-		// this doesn't include diagonal entries
-		for (index_t j=i+1; j<block_size; ++j)
-		{
-			float64_t k=k_m_block(i, j);
-			row_sum(i, 1)+=k*k;
-			row_sum(j, 1)+=k*k;
-		}
-	}
+	for (index_t i=0; i<sum.vlen; ++i)
+		row_sum(i, 0)=sum[i];
 
-	// add/remove the diagonal elements as specified
-	const VectorXf& diag=k_m_block.diagonal();
-	if (no_diag)
-	{
-		for (index_t i=0; i<block_size; ++i)
-			row_sum(i, 0)-=diag[i];
-	}
-	else
-	{
-		for (index_t i=0; i<block_size; ++i)
-			row_sum(i, 1)+=diag[i]*diag[i];
-	}
+	for (index_t i=0; i<sq_sum.vlen; ++i)
+		row_sum(i, 1)=sq_sum[i];
 
 	SG_DEBUG("Leaving\n");
 
@@ -422,40 +363,31 @@ SGVector<float64_t> CCustomKernel::row_col_wise_sum_block(index_t
 		no_diag=false;
 	}
 
-	// initialize the vector that accumulates the row/col-wise sum on the go
+	// initialize the vector that accumulates the row/col-wise sum
 	// the first block_size_row entries store the row-wise sum of kernel values
 	// the nextt block_size_col entries store the col-wise sum of kernel values
 	SGVector<float64_t> sum(block_size_row+block_size_col);
-	sum.set_const(0.0);
 
-	Map<MatrixXf> k_m(kmatrix.matrix, kmatrix.num_rows, kmatrix.num_cols);
-	const MatrixXf& k_m_block=k_m.block(block_begin_row, block_begin_col,
-			block_size_row, block_size_col);
+	SGVector<float32_t> rowwise=rowwise_sum<Backend::EIGEN3>(block(kmatrix,
+				block_begin_row, block_begin_col, block_size_row,
+				block_size_col), no_diag);
 
-	// computing row-wise sum
-	for (index_t i=0; i<block_size_row; ++i)
-		sum[i]=k_m_block.row(i).sum();
+	SGVector<float32_t> colwise=colwise_sum<Backend::EIGEN3>(block(kmatrix,
+				block_begin_row, block_begin_col, block_size_row,
+				block_size_col), no_diag);
 
-	// computing col-wise sum
-	for (index_t i=0; i<block_size_col; ++i)
-		sum[i+block_size_row]=k_m_block.col(i).sum();
+	for (index_t i=0; i<rowwise.vlen; ++i)
+		sum[i]=rowwise[i];
 
-	// remove diagonal entries if specified
-	if (no_diag)
-	{
-		const VectorXf& diag=k_m_block.diagonal();
-		for (index_t i=0; i<diag.rows(); ++i)
-		{
-			sum[i]-=diag[i];
-			sum[i+block_size_row]-=diag[i];
-		}
-	}
+	for (index_t i=0; i<colwise.vlen; ++i)
+		sum[i+rowwise.vlen]=colwise[i];
 
 	SG_DEBUG("Leaving\n");
 
 	return sum;
 }
 #endif // HAVE_EIGEN3
+#endif // HAVE_LINALG_LIB
 
 void CCustomKernel::cleanup_custom()
 {

@@ -41,7 +41,6 @@
 #include <shogun/preprocessor/Preprocessor.h>
 #include <shogun/labels/Labels.h>
 #include <shogun/features/Features.h>
-#include <shogun/mathematics/eigen3.h>
 
 namespace shogun
 {

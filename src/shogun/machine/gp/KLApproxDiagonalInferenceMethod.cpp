@@ -42,6 +42,7 @@
 #include <shogun/machine/gp/KLApproxDiagonalInferenceMethod.h>
 
 #ifdef HAVE_EIGEN3
+#include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/machine/gp/VariationalGaussianLikelihood.h>
@@ -96,7 +97,7 @@ CKLApproxDiagonalInferenceMethod::~CKLApproxDiagonalInferenceMethod()
 {
 }
 
-void CKLApproxDiagonalInferenceMethod::lbfgs_precompute()
+bool CKLApproxDiagonalInferenceMethod::lbfgs_precompute()
 {
 	index_t len=m_mean_vec.vlen;
 	Map<VectorXd> eigen_mean(m_mean_vec.vector, m_mean_vec.vlen);
@@ -113,7 +114,8 @@ void CKLApproxDiagonalInferenceMethod::lbfgs_precompute()
 	eigen_s2=eigen_log_v.array().exp();
 
 	CVariationalGaussianLikelihood * lik=get_variational_likelihood();
-	lik->set_variational_distribution(m_mu, m_s2, m_labels);
+	bool status=lik->set_variational_distribution(m_mu, m_s2, m_labels);
+	return status;
 }
 
 void CKLApproxDiagonalInferenceMethod::get_gradient_of_nlml_wrt_parameters(SGVector<float64_t> gradient)

@@ -33,6 +33,7 @@
 #include <shogun/machine/gp/KLInferenceMethod.h>
 
 #ifdef HAVE_EIGEN3
+#include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/Math.h>
 
 using namespace Eigen;
@@ -252,7 +253,10 @@ float64_t CKLInferenceMethod::evaluate(void *obj, const float64_t *parameters,
 
 	REQUIRE(obj_prt, "The instance object passed to L-BFGS optimizer should not be NULL\n");
 
-	obj_prt->lbfgs_precompute();
+	bool status = obj_prt->lbfgs_precompute();
+	if (!status)
+		return CMath::NOT_A_NUMBER;
+
 	float64_t nlml=obj_prt->get_nlml_wrt_parameters();
 
 	SGVector<float64_t> sg_gradient(gradient, dim, false);

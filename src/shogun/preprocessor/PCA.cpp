@@ -15,9 +15,6 @@
 #ifdef HAVE_EIGEN3
 #include <shogun/preprocessor/PCA.h>
 #include <shogun/mathematics/Math.h>
-#include <string.h>
-#include <stdlib.h>
-#include <shogun/lib/common.h>
 #include <shogun/preprocessor/DensePreprocessor.h>
 #include <shogun/features/Features.h>
 #include <shogun/io/SGIO.h>
@@ -58,7 +55,7 @@ void CPCA::init()
 	m_thresh = 1e-6;
 	m_mem_mode = MEM_REALLOCATE;
 	m_method = AUTO;
-	m_eigenvalue_zero_tolerance=1e-15;	
+	m_eigenvalue_zero_tolerance=1e-15;
 
 	SG_ADD(&m_transformation_matrix, "transformation_matrix",
 	    "Transformation matrix (Eigenvectors of covariance matrix).",
@@ -72,9 +69,9 @@ void CPCA::init()
 	    MS_AVAILABLE);
 	SG_ADD((machine_int_t*) &m_mode, "mode", "PCA Mode.", MS_AVAILABLE);
 	SG_ADD(&m_thresh, "m_thresh", "Cutoff threshold.", MS_AVAILABLE);
-	SG_ADD((machine_int_t*) &m_mem_mode, "m_mem_mode", 
+	SG_ADD((machine_int_t*) &m_mem_mode, "m_mem_mode",
 		"Memory mode (in-place or reallocation).", MS_NOT_AVAILABLE);
-	SG_ADD((machine_int_t*) &m_method, "m_method", 
+	SG_ADD((machine_int_t*) &m_method, "m_method",
 		"Method used for PCA calculation", MS_NOT_AVAILABLE);
 	SG_ADD(&m_eigenvalue_zero_tolerance, "eigenvalue_zero_tolerance", "zero tolerance"
 	" for determining zero eigenvalues during whitening to avoid numerical issues", MS_NOT_AVAILABLE);
@@ -98,7 +95,7 @@ bool CPCA::init(CFeatures* features)
 		SG_INFO("num_examples: %ld num_features: %ld \n", num_vectors, num_features)
 
 		// max target dim allowed
-		int32_t max_dim_allowed = CMath::min(num_vectors, num_features);	
+		int32_t max_dim_allowed = CMath::min(num_vectors, num_features);
 		num_dim=0;
 
 		REQUIRE(m_target_dim<=max_dim_allowed,
@@ -120,13 +117,13 @@ bool CPCA::init(CFeatures* features)
 		if (m_method == EVD)
 		{
 			// covariance matrix
-			MatrixXd cov_mat(num_features, num_features);	
+			MatrixXd cov_mat(num_features, num_features);
 			cov_mat = fmatrix*fmatrix.transpose();
 			cov_mat /= (num_vectors-1);
 
 			SG_INFO("Computing Eigenvalues ... ")
 			// eigen value computed
-			SelfAdjointEigenSolver<MatrixXd> eigenSolve = 
+			SelfAdjointEigenSolver<MatrixXd> eigenSolve =
 					SelfAdjointEigenSolver<MatrixXd>(cov_mat);
 			eigenValues = eigenSolve.eigenvalues().tail(max_dim_allowed);
 
@@ -167,27 +164,27 @@ bool CPCA::init(CFeatures* features)
 			Map<MatrixXd> transformMatrix(m_transformation_matrix.matrix,
 								 num_features, num_dim);
 			num_old_dim = num_features;
-                        
+
 			// eigenvector matrix
-			transformMatrix = eigenSolve.eigenvectors().block(0, 
+			transformMatrix = eigenSolve.eigenvectors().block(0,
 						num_features-num_dim, num_features,num_dim);
 			if (m_whitening)
 			{
 				for (int32_t i=0; i<num_dim; i++)
 				{
-					if (CMath::fequals_abs<float64_t>(0.0, eigenValues[i+max_dim_allowed-num_dim], 
+					if (CMath::fequals_abs<float64_t>(0.0, eigenValues[i+max_dim_allowed-num_dim],
 											m_eigenvalue_zero_tolerance))
 					{
 						SG_WARNING("Covariance matrix has almost zero Eigenvalue (ie "
 							"Eigenvalue within a tolerance of %E around 0) at "
-							"dimension %d. Consider reducing its dimension.", 
+							"dimension %d. Consider reducing its dimension.",
 							m_eigenvalue_zero_tolerance, i+max_dim_allowed-num_dim+1)
 
 						transformMatrix.col(i) = MatrixXd::Zero(num_features,1);
 						continue;
 					}
 
-					transformMatrix.col(i) /= 
+					transformMatrix.col(i) /=
 					CMath::sqrt(eigenValues[i+max_dim_allowed-num_dim]*(num_vectors-1));
 				}
 			}
@@ -244,12 +241,12 @@ bool CPCA::init(CFeatures* features)
 			{
 				for (int32_t i=0; i<num_dim; i++)
 				{
-					if (CMath::fequals_abs<float64_t>(0.0, eigenValues[i], 
+					if (CMath::fequals_abs<float64_t>(0.0, eigenValues[i],
 								m_eigenvalue_zero_tolerance))
 					{
 						SG_WARNING("Covariance matrix has almost zero Eigenvalue (ie "
 							"Eigenvalue within a tolerance of %E around 0) at "
-							"dimension %d. Consider reducing its dimension.", 
+							"dimension %d. Consider reducing its dimension.",
 							m_eigenvalue_zero_tolerance, i+1)
 
 						transformMatrix.col(i) = MatrixXd::Zero(num_features,1);
@@ -281,6 +278,7 @@ void CPCA::cleanup()
 SGMatrix<float64_t> CPCA::apply_to_feature_matrix(CFeatures* features)
 {
 	ASSERT(m_initialized)
+	ASSERT(features != NULL)
 	SGMatrix<float64_t> m = ((CDenseFeatures<float64_t>*) features)->get_feature_matrix();
 	int32_t num_vectors = m.num_cols;
 	int32_t num_features = m.num_rows;
@@ -298,9 +296,9 @@ SGMatrix<float64_t> CPCA::apply_to_feature_matrix(CFeatures* features)
 			VectorXd data_mean = feature_matrix.rowwise().sum()/(float64_t) num_vectors;
 			feature_matrix = feature_matrix.colwise()-data_mean;
 
-			feature_matrix.block(0,0,num_dim,num_vectors) = 
+			feature_matrix.block(0,0,num_dim,num_vectors) =
 					transform_matrix.transpose()*feature_matrix;
-	
+
 			SG_INFO("Form matrix of target dimension")
 			for (int32_t col=0; col<num_vectors; col++)
 			{

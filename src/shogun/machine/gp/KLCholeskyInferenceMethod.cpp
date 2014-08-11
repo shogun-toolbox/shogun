@@ -42,6 +42,7 @@
 #include <shogun/machine/gp/KLCholeskyInferenceMethod.h>
 
 #ifdef HAVE_EIGEN3
+#include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/machine/gp/VariationalGaussianLikelihood.h>
@@ -101,7 +102,7 @@ CKLCholeskyInferenceMethod::~CKLCholeskyInferenceMethod()
 {
 }
 
-void CKLCholeskyInferenceMethod::lbfgs_precompute()
+bool CKLCholeskyInferenceMethod::lbfgs_precompute()
 {
 	index_t len=m_mean_vec.vlen;
 	Map<VectorXd> eigen_mean(m_mean_vec.vector, m_mean_vec.vlen);
@@ -119,10 +120,13 @@ void CKLCholeskyInferenceMethod::lbfgs_precompute()
 	eigen_s2=(eigen_C.array()*eigen_C.array()).rowwise().sum().matrix();
 
 	CVariationalGaussianLikelihood * lik=get_variational_likelihood();
-	lik->set_variational_distribution(m_mu, m_s2, m_labels);
-	Map<MatrixXd> eigen_InvK_C(m_InvK_C.matrix, m_InvK_C.num_rows, m_InvK_C.num_cols);
-
-	eigen_InvK_C=solve_inverse(eigen_C);
+	bool status = lik->set_variational_distribution(m_mu, m_s2, m_labels);
+	if (status)
+	{
+		Map<MatrixXd> eigen_InvK_C(m_InvK_C.matrix, m_InvK_C.num_rows, m_InvK_C.num_cols);
+		eigen_InvK_C=solve_inverse(eigen_C);
+	}
+	return status;
 }
 
 void CKLCholeskyInferenceMethod::get_gradient_of_nlml_wrt_parameters(SGVector<float64_t> gradient)

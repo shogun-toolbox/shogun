@@ -42,6 +42,7 @@
 #include <shogun/machine/gp/NumericalVGLikelihood.h>
 
 #ifdef HAVE_EIGEN3
+#include <shogun/mathematics/eigen3.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/mathematics/Integration.h>
@@ -221,41 +222,48 @@ SGVector<float64_t> CNumericalVGLikelihood::get_variational_first_derivative(
 }
 
 
-void CNumericalVGLikelihood::set_variational_distribution(SGVector<float64_t> mu,
+bool CNumericalVGLikelihood::set_variational_distribution(SGVector<float64_t> mu,
 	SGVector<float64_t> s2, const CLabels* lab)
 {
-	CVariationalGaussianLikelihood::set_variational_distribution(mu, s2, lab);
+	bool status = true;
+	status = CVariationalGaussianLikelihood::set_variational_distribution(mu, s2, lab);
 
-	if (supports_binary())
+	if (status)
 	{
-		REQUIRE(lab->get_label_type()==LT_BINARY,
-			"Labels must be type of CBinaryLabels\n");
-	}
-	else 
-	{
-		if (supports_regression())
+		if (supports_binary())
 		{
-			REQUIRE(lab->get_label_type()==LT_REGRESSION,
-			"Labels must be type of CRegressionLabels\n");
+			REQUIRE(lab->get_label_type()==LT_BINARY,
+				"Labels must be type of CBinaryLabels\n");
 		}
+		else 
+		{
+			if (supports_regression())
+			{
+				REQUIRE(lab->get_label_type()==LT_REGRESSION,
+					"Labels must be type of CRegressionLabels\n");
+			}
+			else
+				SG_ERROR("Unsupported Label type\n");
+		}
+
+		if (supports_binary())
+			m_lab=((CBinaryLabels*)lab)->get_labels();
 		else
-			SG_ERROR("Unsupported Label type\n");
+			m_lab=((CRegressionLabels*)lab)->get_labels();
+
+		if (!m_is_init_GHQ)
+		{
+			m_xgh=SGVector<float64_t>(m_GHQ_N);
+			m_wgh=SGVector<float64_t>(m_GHQ_N);
+			CIntegration::generate_gauher(m_xgh, m_wgh);
+			m_is_init_GHQ=true;
+		}
+
+		precompute();
+
 	}
 
-	if (supports_binary())
-		m_lab=((CBinaryLabels*)lab)->get_labels();
-	else
-		m_lab=((CRegressionLabels*)lab)->get_labels();
-
-	if (!m_is_init_GHQ)
-	{
-		m_xgh=SGVector<float64_t>(m_GHQ_N);
-		m_wgh=SGVector<float64_t>(m_GHQ_N);
-		CIntegration::generate_gauher(m_xgh, m_wgh);
-		m_is_init_GHQ=true;
-	}
-
-	precompute();
+	return status;
 }
 
 void CNumericalVGLikelihood::precompute()
@@ -271,9 +279,9 @@ void CNumericalVGLikelihood::precompute()
 	VectorXd eigen_sv=eigen_v.array().sqrt().matrix();
 	//varargin{3} = f + sv*t(i);   % coordinate transform of the quadrature points
 	eigen_log_lam = (
-			(eigen_t.replicate(1, eigen_v.rows()).array().transpose().colwise()
-			 *eigen_sv.array()).colwise()+eigen_f.array()
-	).matrix();
+		(eigen_t.replicate(1, eigen_v.rows()).array().transpose().colwise()
+		 *eigen_sv.array()).colwise()+eigen_f.array()
+		).matrix();
 }
 
 } /* namespace shogun */

@@ -45,7 +45,6 @@
 
 #ifdef HAVE_EIGEN3
 #include <shogun/machine/gp/InferenceMethod.h>
-#include <shogun/mathematics/eigen3.h>
 #include <shogun/optimization/lbfgs/lbfgs.h>
 #include <shogun/machine/gp/VariationalGaussianLikelihood.h>
 
@@ -397,8 +396,9 @@ protected:
 	 * and/or
 	 * get_gradient_of_nlml_wrt_parameters(SGVector<float64_t> gradient)
 	 *
+	 * @return true if precomputed parameters are valid
 	 */
-	virtual void lbfgs_precompute()=0;
+	virtual bool lbfgs_precompute()=0;
 
 	/** mean vector of the approximation to the posterior
 	 * Note that m_mu is also a variational parameter

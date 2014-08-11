@@ -19,6 +19,10 @@
 #include <shogun/lib/common.h>
 #include <shogun/lib/SGReferencedData.h>
 
+#ifdef HAVE_EIGEN3
+#include <shogun/mathematics/eigen3.h>
+#endif
+
 namespace shogun
 {
 	template <class T> class SGSparseVector;
@@ -30,18 +34,45 @@ namespace shogun
 template<class T> class SGVector : public SGReferencedData
 {
 	public:
+		typedef T Scalar;
+		
 		/** default constructor */
 		SGVector();
 
 		/** constructor for setting params */
 		SGVector(T* v, index_t len, bool ref_counting=true);
-
+		
+		/** Wraps a vector around an existing memory segment with an offset */
+		SGVector(T* m, index_t len, index_t offset) 
+			: SGReferencedData(false), vector(m+offset), vlen(len) { }
+		
 		/** constructor to create new vector in memory */
 		SGVector(index_t len, bool ref_counting=true);
 
 		/** copy constructor */
 		SGVector(const SGVector &orig);
-
+		
+#ifndef SWIG // SWIG should skip this part
+#ifdef HAVE_EIGEN3
+		/** Wraps a vector around the data of an Eigen3 vector */
+		template <class Derived>
+		SGVector(Eigen::PlainObjectBase<Derived>& vec) 
+			: SGReferencedData(false), vector(vec.data()), vlen(vec.size()) { }
+		
+		/** Wraps an Eigen3 column vector around the data of this vector */
+		operator Eigen::Map<Eigen::Matrix<T, Eigen::Dynamic, 1> >() const
+		{ 
+			return Eigen::Map<Eigen::Matrix<T, Eigen::Dynamic, 1> >(vector, vlen);
+		}
+		
+		/** Wraps an Eigen3 row vector around the data of this vector */
+		operator Eigen::Map<Eigen::Matrix<T, 1, Eigen::Dynamic> >() const
+		{ 
+			return Eigen::Map<Eigen::Matrix<T, 1, Eigen::Dynamic> >(vector, vlen);
+		}
+#endif
+#endif
+		
 		/** wrapper for the copy constructor useful for SWIG interfaces
 		 *
 		 * @param orig vector to set
