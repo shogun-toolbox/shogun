@@ -34,6 +34,7 @@
 #include <shogun/neuralnets/Autoencoder.h>
 #include <shogun/neuralnets/NeuralInputLayer.h>
 #include <shogun/neuralnets/NeuralLinearLayer.h>
+#include <shogun/neuralnets/NeuralConvolutionalLayer.h>
 #include <shogun/lib/DynamicObjectArray.h>
 #include <features/DenseFeatures.h>
 
@@ -66,6 +67,31 @@ CAutoencoder::CAutoencoder(int32_t num_inputs, CNeuralLayer* hidden_layer,
 	
 	initialize(sigma);
 }
+
+CAutoencoder::CAutoencoder(
+	int32_t input_width, int32_t input_height, int32_t input_num_channels, 
+	CNeuralConvolutionalLayer* hidden_layer, 
+	CNeuralConvolutionalLayer* decoding_layer, 
+	float64_t sigma)
+	: CNeuralNetwork()
+{
+	init();
+	
+	CDynamicObjectArray* layers = new CDynamicObjectArray();
+	layers->append_element(new CNeuralInputLayer(input_width, input_height, input_num_channels));
+	layers->append_element(hidden_layer);
+	layers->append_element(decoding_layer);
+	
+	set_layers(layers);
+	
+	quick_connect();
+	
+	hidden_layer->autoencoder_position = NLAP_ENCODING;
+	decoding_layer->autoencoder_position = NLAP_DECODING;
+	
+	initialize(sigma);
+}
+
 
 bool CAutoencoder::train(CFeatures* data)
 {

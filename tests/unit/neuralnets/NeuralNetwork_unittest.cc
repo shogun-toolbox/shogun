@@ -222,14 +222,14 @@ TEST(NeuralNetwork, backpropagation_convolutional)
 	CMath::init_random(10);
 	
 	CDynamicObjectArray* layers = new CDynamicObjectArray();
-	layers->append_element(new CNeuralInputLayer(6*4));
-	layers->append_element(new CNeuralInputLayer(6*4));
+	layers->append_element(new CNeuralInputLayer(6,4));
+	layers->append_element(new CNeuralInputLayer(6,4));
 	layers->append_element(new CNeuralConvolutionalLayer(
-		CMAF_LOGISTIC,1, 6,4, 1,1, 1,1, 1,1));
+		CMAF_LOGISTIC,1, 1,1, 1,1, 1,1));
 	layers->append_element(new CNeuralConvolutionalLayer(
-		CMAF_LOGISTIC,1, 6,4, 1,1, 1,1, 1,1));
+		CMAF_LOGISTIC,1, 1,1, 1,1, 1,1));
 	layers->append_element(new CNeuralConvolutionalLayer(
-		CMAF_LOGISTIC,1, 6,4, 1,1, 1,1, 1,1));
+		CMAF_LOGISTIC,1, 1,1, 1,1, 1,1));
 	layers->append_element(new CNeuralLinearLayer(4));
 	CNeuralNetwork* network = new CNeuralNetwork(layers);
 	

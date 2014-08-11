@@ -47,6 +47,15 @@ CNeuralLayer(num_neurons)
 	m_start_index = start_index;
 }
 
+CNeuralInputLayer::CNeuralInputLayer(int32_t width, int32_t height, 
+	int32_t num_channels, int32_t start_index): CNeuralLayer(width*height*num_channels)
+{
+	init();
+	m_width = width;
+	m_height = height;
+	m_start_index = start_index;
+}
+
 void CNeuralInputLayer::compute_activations(SGMatrix< float64_t > inputs)
 {
 	if (m_start_index == 0)

@@ -68,10 +68,6 @@ public:
 	 * 
 	 * @param num_maps Number of feature maps
 	 * 
-	 * @param input_width Width of the input
-	 * 
-	 * @param input_height Height of the input
-	 * 
 	 * @param radius_x Radius of the convolution filter on the x (width) axis.
 	 * The filter size on the x-axis equals (2*radius_x+1)
 	 * 
@@ -88,7 +84,6 @@ public:
 	 */
 	CNeuralConvolutionalLayer(EConvMapActivationFunction function,
 		int32_t num_maps,
-		int32_t input_width, int32_t input_height,
 		int32_t radius_x, int32_t radius_y,
 		int32_t pooling_width=1, int32_t pooling_height=1,
 		int32_t stride_x=1, int32_t stride_y=1);
