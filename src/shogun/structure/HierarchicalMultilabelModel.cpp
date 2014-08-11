@@ -202,8 +202,8 @@ void CHierarchicalMultilabelModel::init_primal_opt(
         SGVector<float64_t> a,
         SGMatrix<float64_t> B,
         SGVector<float64_t> &b,
-        SGVector<float64_t> lb,
-        SGVector<float64_t> ub,
+        SGVector<float64_t> &lb,
+        SGVector<float64_t> &ub,
         SGMatrix<float64_t> &C)
 {
 	C = SGMatrix<float64_t>::create_identity_matrix(get_dim(), regularization);
