@@ -38,6 +38,7 @@
 #include <shogun/neuralnets/NeuralLinearLayer.h>
 #include <shogun/neuralnets/NeuralLogisticLayer.h>
 #include <shogun/neuralnets/NeuralRectifiedLinearLayer.h>
+#include <shogun/neuralnets/NeuralConvolutionalLayer.h>
 
 #include <string>
 
@@ -90,25 +91,40 @@ void CDeepAutoencoder::pre_train(CFeatures* data)
 		CNeuralLayer* ae_decoding_layer = 
 			(CNeuralLayer*)get_layer(m_num_layers-i)->clone();
 		
-		CAutoencoder ae(get_layer(i-1)->get_num_neurons(), 
-			ae_encoding_layer, ae_decoding_layer, m_sigma);
+		CAutoencoder* ae = NULL;
+		
+		if (strcmp(ae_encoding_layer->get_name(), "NeuralConvolutionalLayer")==0)
+		{
+			ae = new CAutoencoder(
+				ae_encoding_layer->get_width(), 
+				ae_encoding_layer->get_height(), 
+				get_layer(i-1)->get_num_neurons()
+				/(ae_encoding_layer->get_width()*ae_encoding_layer->get_height()), 
+				(CNeuralConvolutionalLayer*)ae_encoding_layer, 
+				(CNeuralConvolutionalLayer*)ae_decoding_layer, m_sigma);
+		}
+		else
+		{
+			ae = new CAutoencoder(get_layer(i-1)->get_num_neurons(), 
+				ae_encoding_layer, ae_decoding_layer, m_sigma);
+		}
 		
 		SG_UNREF(ae_encoding_layer);
 		SG_UNREF(ae_decoding_layer);
 		
-		ae.noise_type = EAENoiseType(pt_noise_type[i-1]);
-		ae.noise_parameter = pt_noise_parameter[i-1];
-		ae.set_contraction_coefficient(pt_contraction_coefficient[i-1]);
-		ae.optimization_method = ENNOptimizationMethod(pt_optimization_method[i-1]);
-		ae.l2_coefficient = pt_l2_coefficient[i-1];
-		ae.l1_coefficient = pt_l1_coefficient[i-1];
-		ae.epsilon = pt_epsilon[i-1];
-		ae.max_num_epochs = pt_max_num_epochs[i-1];
-		ae.gd_learning_rate = pt_gd_learning_rate[i-1];
-		ae.gd_learning_rate_decay = pt_gd_learning_rate_decay[i-1];
-		ae.gd_momentum = pt_gd_momentum[i-1];
-		ae.gd_mini_batch_size = pt_gd_mini_batch_size[i-1];
-		ae.gd_error_damping_coeff = pt_gd_error_damping_coeff[i-1];
+		ae->noise_type = EAENoiseType(pt_noise_type[i-1]);
+		ae->noise_parameter = pt_noise_parameter[i-1];
+		ae->set_contraction_coefficient(pt_contraction_coefficient[i-1]);
+		ae->optimization_method = ENNOptimizationMethod(pt_optimization_method[i-1]);
+		ae->l2_coefficient = pt_l2_coefficient[i-1];
+		ae->l1_coefficient = pt_l1_coefficient[i-1];
+		ae->epsilon = pt_epsilon[i-1];
+		ae->max_num_epochs = pt_max_num_epochs[i-1];
+		ae->gd_learning_rate = pt_gd_learning_rate[i-1];
+		ae->gd_learning_rate_decay = pt_gd_learning_rate_decay[i-1];
+		ae->gd_momentum = pt_gd_momentum[i-1];
+		ae->gd_mini_batch_size = pt_gd_mini_batch_size[i-1];
+		ae->gd_error_damping_coeff = pt_gd_error_damping_coeff[i-1];
 		
 		// forward propagate the data to obtain the training data for the 
 		// current autoencoder
@@ -119,9 +135,9 @@ void CDeepAutoencoder::pre_train(CFeatures* data)
 		for (int32_t j=0; j<i-1; j++)
 			get_layer(j)->set_batch_size(1);
 		
-		ae.train(&ae_input_features);
+		ae->train(&ae_input_features);
 		
-		SGVector<float64_t> ae_params = ae.get_parameters();
+		SGVector<float64_t> ae_params = ae->get_parameters();
 		SGVector<float64_t> encoding_layer_params = get_section(m_params, i);
 		SGVector<float64_t> decoding_layer_params = get_section(m_params, m_num_layers-i);
 		
@@ -132,7 +148,7 @@ void CDeepAutoencoder::pre_train(CFeatures* data)
 			else
 				decoding_layer_params[j-encoding_layer_params.vlen] = ae_params[j];
 		}
-			
+		SG_UNREF(ae);
 	}
 	
 	set_batch_size(1);

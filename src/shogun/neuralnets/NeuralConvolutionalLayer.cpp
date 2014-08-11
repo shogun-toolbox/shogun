@@ -45,15 +45,12 @@ CNeuralConvolutionalLayer::CNeuralConvolutionalLayer() : CNeuralLayer()
 CNeuralConvolutionalLayer::CNeuralConvolutionalLayer(
 		EConvMapActivationFunction function,
 		int32_t num_maps,
-		int32_t input_width, int32_t input_height,
 		int32_t radius_x, int32_t radius_y,
 		int32_t pooling_width, int32_t pooling_height,
 		int32_t stride_x, int32_t stride_y) : CNeuralLayer()
 {
 	init();
 	m_num_maps = num_maps;
-	m_input_width = input_width;
-	m_input_height = input_height;
 	m_radius_x = radius_x;
 	m_radius_y = radius_y;
 	m_pooling_width = pooling_width;
@@ -83,11 +80,24 @@ void CNeuralConvolutionalLayer::set_batch_size(int32_t batch_size)
 void CNeuralConvolutionalLayer::initialize(CDynamicObjectArray* layers, 
 		SGVector< int32_t > input_indices)
 {
+	CNeuralLayer* first_input_layer = 
+		(CNeuralLayer*)layers->element(input_indices[0]);
+	
+	m_input_width = first_input_layer->get_width();
+	m_input_height = first_input_layer->get_height();
+	
 	if (autoencoder_position==NLAP_NONE)
-		m_num_neurons = (m_input_width/(m_stride_x*m_pooling_width)) * 
-			(m_input_height/(m_stride_y*m_pooling_height)) * m_num_maps;
+	{
+		m_width = m_input_width/(m_stride_x*m_pooling_width);
+		m_height = m_input_height/(m_stride_y*m_pooling_height);
+	}
 	else
-		m_num_neurons = m_input_width*m_input_height*m_num_maps;
+	{
+		m_width = m_input_width;
+		m_height = m_input_height;
+	}
+	
+	m_num_neurons = m_width*m_height*m_num_maps;
 	
 	CNeuralLayer::initialize(layers, input_indices);
 	

@@ -137,9 +137,9 @@ TEST(Autoencoder, convolutional)
 	
 	CMath::init_random(10);
 	
-	CAutoencoder ae(3*w*h, 
-		new CNeuralConvolutionalLayer(CMAF_IDENTITY, 2, w, h, 1,1, 1,1, 1,1),
-		new CNeuralConvolutionalLayer(CMAF_IDENTITY, 3, w, h, 1,1, 1,1, 1,1));
+	CAutoencoder ae(w,h,3, 
+		new CNeuralConvolutionalLayer(CMAF_IDENTITY, 2, 1,1, 1,1, 1,1),
+		new CNeuralConvolutionalLayer(CMAF_IDENTITY, 3, 1,1, 1,1, 1,1));
 	
 	EXPECT_NEAR(ae.check_gradients(), 0.0, tolerance);
 }
@@ -156,9 +156,9 @@ TEST(Autoencoder, convolutional_with_pooling)
 	
 	CMath::init_random(10);
 	
-	CAutoencoder ae(3*w*h, 
-		new CNeuralConvolutionalLayer(CMAF_IDENTITY, 2, w, h, 1,1, 3,2, 1,1),
-		new CNeuralConvolutionalLayer(CMAF_IDENTITY, 3, w, h, 1,1, 1,1, 1,1));
+	CAutoencoder ae(w,h,3, 
+		new CNeuralConvolutionalLayer(CMAF_IDENTITY, 2, 1,1, 3,2, 1,1),
+		new CNeuralConvolutionalLayer(CMAF_IDENTITY, 3, 1,1, 1,1, 1,1));
 	
 	EXPECT_NEAR(ae.check_gradients(), 0.0, tolerance);
 }
@@ -175,9 +175,9 @@ TEST(Autoencoder, convolutional_with_stride)
 	
 	CMath::init_random(10);
 	
-	CAutoencoder ae(3*w*h, 
-		new CNeuralConvolutionalLayer(CMAF_IDENTITY, 2, w, h, 1,1, 1,1, 3,2),
-		new CNeuralConvolutionalLayer(CMAF_IDENTITY, 3, w, h, 1,1, 1,1, 1,1));
+	CAutoencoder ae(w,h,3, 
+		new CNeuralConvolutionalLayer(CMAF_IDENTITY, 2, 1,1, 1,1, 3,2),
+		new CNeuralConvolutionalLayer(CMAF_IDENTITY, 3, 1,1, 1,1, 1,1));
 	
 	EXPECT_NEAR(ae.check_gradients(), 0.0, tolerance);
 }
@@ -194,9 +194,9 @@ TEST(Autoencoder, convolutional_with_stride_and_pooling)
 	
 	CMath::init_random(10);
 	
-	CAutoencoder ae(3*w*h, 
-		new CNeuralConvolutionalLayer(CMAF_IDENTITY, 2, w, h, 1,1, 2,2, 2,2),
-		new CNeuralConvolutionalLayer(CMAF_IDENTITY, 3, w, h, 1,1, 1,1, 1,1));
+	CAutoencoder ae(w,h,3, 
+		new CNeuralConvolutionalLayer(CMAF_IDENTITY, 2, 1,1, 2,2, 2,2),
+		new CNeuralConvolutionalLayer(CMAF_IDENTITY, 3, 1,1, 1,1, 1,1));
 	
 	EXPECT_NEAR(ae.check_gradients(), 0.0, tolerance);
 }

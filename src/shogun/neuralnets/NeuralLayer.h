@@ -250,6 +250,20 @@ public:
 	 */
 	virtual int32_t get_num_neurons() { return m_num_neurons; }
 	
+	/** Returns the width assuming that the layer's activations are interpreted as 
+	 * images (i.e for convolutional nets)
+	 * 
+	 * @return Width
+	 */
+	virtual int32_t get_width() { return m_width; }
+	
+	/** Returns the height assuming that the layer's activations are interpreted as 
+	 * images (i.e for convolutional nets)
+	 * 
+	 * @return Height
+	 */
+	virtual int32_t get_height() { return m_height; }
+	
 	/** Gets the number of parameters used in this layer
 	 * 
 	 * @return number of parameters used in this layer
@@ -315,6 +329,16 @@ public:
 protected:
 	/** Number of neurons in this layer */
 	int32_t m_num_neurons;
+	
+	/** Width of the image (if the layer's activations are to be interpreted as 
+	 * images. Default value is m_num_neurons
+	 */
+	int32_t m_width;
+	
+	/** Width of the image (if the layer's activations are to be interpreted as 
+	 * images. Default value is 1
+	 */
+	int32_t m_height;
 	
 	/** Number of neurons in this layer */
 	int32_t m_num_parameters;
