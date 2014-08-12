@@ -62,6 +62,7 @@
 #endif /* USE_MOSEK */
 
 %rename(StochasticSOSVM) CStochasticSOSVM;
+%rename(FWSOSVM) CFWSOSVM;
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/structure/PlifBase.h>
@@ -109,3 +110,4 @@
 #endif /* USE_MOSEK */
 
 %include <shogun/structure/StochasticSOSVM.h>
+%include <shogun/structure/FWSOSVM.h>

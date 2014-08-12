@@ -76,15 +76,15 @@ float64_t CSOSVMHelper::primal_objective(SGVector<float64_t> w, CStructuredModel
 		SG_UNREF(result);
 	}
 
-	return (lbda/2*SGVector<float64_t>::dot(w.vector, w.vector, w.vlen) + hinge_losses/N);
+	return (lbda/2 * SGVector<float64_t>::dot(w.vector, w.vector, w.vlen) + hinge_losses/N);
 }
 
-float64_t CSOSVMHelper::dual_objective(SGVector<float64_t> w, float64_t b_alpha, float64_t lbda)
+float64_t CSOSVMHelper::dual_objective(SGVector<float64_t> w, float64_t aloss, float64_t lbda)
 {
-	return (lbda/2*SGVector<float64_t>::dot(w.vector, w.vector, w.vlen) - b_alpha);
+	return (-lbda/2 * SGVector<float64_t>::dot(w.vector, w.vector, w.vlen) + aloss);
 }
 
-float64_t CSOSVMHelper::average_loss(SGVector<float64_t> w, CStructuredModel* model)
+float64_t CSOSVMHelper::average_loss(SGVector<float64_t> w, CStructuredModel* model, bool is_ub)
 {
 	float64_t loss = 0.0;
 	CStructuredLabels* labels = model->get_labels();
@@ -94,7 +94,7 @@ float64_t CSOSVMHelper::average_loss(SGVector<float64_t> w, CStructuredModel* mo
 	for (int32_t i = 0; i < N; i++)
 	{
 		// solve the standard inference for point i
-		CResultSet* result = model->argmax(w, i, false);
+		CResultSet* result = model->argmax(w, i, is_ub);
 
 		loss += result->delta;
 
