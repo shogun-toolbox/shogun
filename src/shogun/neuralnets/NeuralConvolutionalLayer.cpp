@@ -86,6 +86,8 @@ void CNeuralConvolutionalLayer::initialize(CDynamicObjectArray* layers,
 	m_input_width = first_input_layer->get_width();
 	m_input_height = first_input_layer->get_height();
 	
+	SG_UNREF(first_input_layer);
+	
 	if (autoencoder_position==NLAP_NONE)
 	{
 		m_width = m_input_width/(m_stride_x*m_pooling_width);
