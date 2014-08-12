@@ -59,6 +59,22 @@ public:
 	 */
 	CNeuralInputLayer(int32_t num_neurons, int32_t start_index = 0);
 	
+	/** Constructs an input layer that deals with images (for convolutional nets).
+	 * Sets the number of neurons to width*height*num_channels
+	 * 
+	 * @param width Width of the image
+	 * 
+	 * @param height Width of the image
+	 * 
+	 * @param num_channels Number of channels
+	 * 
+	 * @param start_index Index of the first feature that the layer connects to, 
+	 * i.e the activations of the layer are copied from 
+	 * input_features[start_index:start_index+num_neurons]
+	 */
+	CNeuralInputLayer(int32_t width, int32_t height, int32_t num_channels, 
+		int32_t start_index = 0);
+	
 	virtual ~CNeuralInputLayer() {}
 	
 	/** Returns true */

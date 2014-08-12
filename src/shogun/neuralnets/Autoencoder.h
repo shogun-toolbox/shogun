@@ -41,6 +41,7 @@
 namespace shogun
 {
 template <class T> class CDenseFeatures;
+class CNeuralConvolutionalLayer;
 
 /** @brief Determines the noise type for denoising autoencoders */
 enum EAENoiseType
@@ -101,6 +102,21 @@ public:
 	 */
 	CAutoencoder(int32_t num_inputs, CNeuralLayer* hidden_layer, 
 		CNeuralLayer* decoding_layer=NULL, float64_t sigma = 0.01);
+	
+	/** Constructor for convolutional autoencoders
+	 * 
+	 * @param input_width Width of the input images
+	 * @param input_height height of the input images
+	 * @param input_num_channels number of channels in the input images
+	 * @param hidden_layer Hidden layer
+	 * @param decoding_layer Decoding layer. Should have the same dimensions as 
+	 * the inputs.
+	 * @param sigma Standard deviation of the gaussian used to initialize the 
+	 * parameters
+	 */
+	CAutoencoder(int32_t input_width, int32_t input_height, int32_t input_num_channels, 
+		CNeuralConvolutionalLayer* hidden_layer, 
+		CNeuralConvolutionalLayer* decoding_layer, float64_t sigma = 0.01);
 	
 	/** Trains the autoencoder 
 	 * 

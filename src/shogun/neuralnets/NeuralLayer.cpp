@@ -50,6 +50,8 @@ CNeuralLayer::CNeuralLayer(int32_t num_neurons)
 {
 	init();
 	m_num_neurons = num_neurons;
+	m_width = m_num_neurons;
+	m_height = 1;
 }
 
 CNeuralLayer::~CNeuralLayer()
@@ -109,6 +111,8 @@ void CNeuralLayer::dropout_activations()
 void CNeuralLayer::init()
 {
 	m_num_neurons = 0; 
+	m_width = 0;
+	m_height = 0;
 	m_num_parameters = 0;
 	m_batch_size = 0;
 	dropout_prop = 0.0;
@@ -118,8 +122,10 @@ void CNeuralLayer::init()
 	
 	SG_ADD(&m_num_neurons, "num_neurons",
 	       "Number of Neurons", MS_NOT_AVAILABLE);
-	SG_ADD(&m_num_parameters, "num_parameters",
-	       "Number of Parameters", MS_NOT_AVAILABLE);
+	SG_ADD(&m_width, "width",
+	       "Width", MS_NOT_AVAILABLE);
+	SG_ADD(&m_height, "height",
+	       "Height", MS_NOT_AVAILABLE);
 	SG_ADD(&m_input_indices, "input_indices",
 	       "Input Indices", MS_NOT_AVAILABLE);
 	SG_ADD(&m_input_sizes, "input_sizes",
