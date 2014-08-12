@@ -65,10 +65,6 @@ matrix:
       - CXX=clang++
     - compiler: gcc
       env:
-      - CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=Debug -DOpenCV=ON"
-      - EXTRA_PACKAGES="libopencv-dev"
-    - compiler: gcc
-      env:
       - CMAKE_OPTIONS="-DOctaveModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON"
       - EXTRA_PACKAGES="octave liboctave-dev swig2.0"
     - compiler: clang
