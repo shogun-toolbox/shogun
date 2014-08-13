@@ -17,6 +17,7 @@
 #include <shogun/preprocessor/DimensionReductionPreprocessor.h>
 #include <shogun/preprocessor/PCA.h>
 #include <shogun/preprocessor/KernelPCA.h>
+#include <shogun/preprocessor/FisherLDA.h>
 
 #include <shogun/preprocessor/StringPreprocessor.h>
 #include <shogun/preprocessor/DecompressString.h>
