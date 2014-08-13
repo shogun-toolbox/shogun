@@ -183,7 +183,8 @@ struct IndexSorter
 	/** access operator */
 	bool operator() (index_t i, index_t j) const
 	{
-		return data[i] < data[j];
+		return CMath::abs(data[i]-data[j])>std::numeric_limits<T>::epsilon()
+			&& data[i]<data[j];
 	}
 
 	/** data */
