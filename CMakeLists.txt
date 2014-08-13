@@ -59,7 +59,11 @@ IF (
 	OctaveModular OR JavaModular OR PerlModular OR
 	RubyModular OR CSharpModular
    )
-	FIND_PACKAGE(SWIG 2.0.4 REQUIRED)
+	IF(RModular)
+		FIND_PACKAGE(SWIG 2.0.5 REQUIRED)
+	ELSE()
+		FIND_PACKAGE(SWIG 2.0.4 REQUIRED)
+	ENDIF()
 
 	# SWIG >= 3.0.0 has some new handling with C# (Mono) and breaks
 	# typemapping created for earlier versions of SWIG.

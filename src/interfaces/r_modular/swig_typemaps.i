@@ -63,7 +63,7 @@ TYPEMAP_IN_SGVECTOR(REALSXP, REAL, float64_t, "Double Precision")
 #undef TYPEMAP_IN_SGVECTOR
 
 /* One dimensional output arrays */
-%define TYPEMAP_OUT_SGVECTOR(r_type, r_cast, sg_type, if_type, error_string)
+%define TYPEMAP_OUT_SGVECTOR(r_type, r_cast, r_type_string, sg_type, if_type, error_string)
 %typemap(out) shogun::SGVector<sg_type>
 {
     sg_type* vec = $1.vector;
@@ -76,14 +76,20 @@ TYPEMAP_IN_SGVECTOR(REALSXP, REAL, float64_t, "Double Precision")
 
     Rf_unprotect(1);
 }
+
+%typemap("rtype") shogun::SGVector<sg_type>   r_type_string
+
+%typemap("scoerceout") shogun::SGVector<sg_type>
+%{ %}
+
 %enddef
 
-TYPEMAP_OUT_SGVECTOR(INTSXP, INTEGER, uint8_t, int, "Byte")
-TYPEMAP_OUT_SGVECTOR(INTSXP, INTEGER, int32_t, int, "Integer")
-TYPEMAP_OUT_SGVECTOR(INTSXP, INTEGER, int16_t, int, "Short")
-TYPEMAP_OUT_SGVECTOR(REALSXP, REAL, float32_t, float, "Single Precision")
-TYPEMAP_OUT_SGVECTOR(REALSXP, REAL, float64_t, double, "Double Precision")
-TYPEMAP_OUT_SGVECTOR(INTSXP, INTEGER, uint16_t, int, "Word")
+TYPEMAP_OUT_SGVECTOR(INTSXP, INTEGER, "integer", uint8_t, int, "Byte")
+TYPEMAP_OUT_SGVECTOR(INTSXP, INTEGER, "integer", int32_t, int, "Integer")
+TYPEMAP_OUT_SGVECTOR(INTSXP, INTEGER, "integer", int16_t, int, "Short")
+TYPEMAP_OUT_SGVECTOR(REALSXP, REAL, "numeric", float32_t, float, "Single Precision")
+TYPEMAP_OUT_SGVECTOR(REALSXP, REAL, "numeric", float64_t, double, "Double Precision")
+TYPEMAP_OUT_SGVECTOR(INTSXP, INTEGER, "integer", uint16_t, int, "Word")
 
 #undef TYPEMAP_OUT_SGVECTOR
 
@@ -131,6 +137,12 @@ TYPEMAP_IN_SGMATRIX(REALSXP, REAL, float64_t, "Double Precision")
 
     Rf_unprotect(1);
 }
+
+%typemap("rtype") shogun::SGMatrix<sg_type>   "matrix"
+
+%typemap("scoerceout") shogun::SGMatrix<sg_type>
+%{ %}
+
 %enddef
 
 TYPEMAP_OUT_SGMATRIX(INTSXP, INTEGER, uint8_t, int, "Byte")
