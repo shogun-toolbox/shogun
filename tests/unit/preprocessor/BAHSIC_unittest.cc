@@ -81,7 +81,7 @@ TEST(BAHSIC, apply)
 
 	// ensure that selected feats are the same as computed in local machine
 	SGVector<index_t> inds(target_dim);
-	inds[0]=2;
+	inds[0]=4;
 	inds[1]=5;
 	inds[2]=6;
 	inds[3]=7;
