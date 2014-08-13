@@ -91,6 +91,7 @@ before_install:
       sudo apt-add-repository -y ppa:yade-users/external ;
       sudo apt-add-repository -y ppa:ondrej/php5 ;
       sudo apt-add-repository -y ppa:robotics/ppa ;
+      sudo apt-add-repository -y ppa:swt-techie/swig ;
       sudo apt-get update -qq ;
     else
       brew update ;
