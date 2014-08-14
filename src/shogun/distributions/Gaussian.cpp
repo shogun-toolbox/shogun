@@ -137,7 +137,7 @@ float64_t CGaussian::update_params_em(float64_t* alpha_k, int32_t len)
 
 	set_mean(mean);
 
-	// compute co-variance matrix
+	// compute covariance matrix
 
 	float64_t* cov_sum=NULL;
 	ECovType cov_type=get_cov_type();
@@ -148,12 +148,12 @@ float64_t CGaussian::update_params_em(float64_t* alpha_k, int32_t len)
 	}
 	else if(cov_type==DIAG)
 	{
-		cov_sum=SG_MALLOC(float64_t, num_dim);
+		cov_sum=SG_MALLOC(float64_t,num_dim);
 		memset(cov_sum, 0, num_dim*sizeof(float64_t));
 	}
 	else if(cov_type==SPHERICAL)
 	{
-		cov_sum=SG_MALLOC(float64_t, 1);
+		cov_sum=SG_MALLOC(float64_t,1);
 		cov_sum[0]=0;
 	}
 
@@ -191,18 +191,26 @@ float64_t CGaussian::update_params_em(float64_t* alpha_k, int32_t len)
 			for (int32_t j=0; j<num_dim*num_dim; j++)
 				cov_sum[j]/=alpha_k_sum;
 
+			float64_t* d0;
+			d0=SGMatrix<float64_t>::compute_eigenvectors(cov_sum, num_dim, num_dim);
+
+			set_d(SGVector<float64_t>(d0, num_dim));
+			set_u(SGMatrix<float64_t>(cov_sum, num_dim, num_dim));
+
 			break;
+
 		case DIAG:
 			for (int32_t j=0; j<num_dim; j++)
 				cov_sum[j]/=alpha_k_sum;
 
-			set_d(SGVector<float64_t>(cov_sum, num_dim));
+			set_d(SGVector<float64_t>(cov_sum,num_dim));
 
 			break;
+
 		case SPHERICAL:
 			cov_sum[0]/=alpha_k_sum*num_dim;
 
-			set_d(SGVector<float64_t>(cov_sum, 1));
+			set_d(SGVector<float64_t>(cov_sum,1));
 
 			break;
 	}

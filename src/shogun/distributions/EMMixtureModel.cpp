@@ -48,7 +48,7 @@ float64_t CEMMixtureModel::expectation_step()
 	for (int32_t i=0;i<data.alpha.num_rows;i++)
 	{
 		SGVector<float64_t> alpha_ij(data.alpha.num_cols);
-		// for each component - TODO log_sum_exp with max as denom
+		// for each component
 		for (int32_t j=0;j<data.alpha.num_cols;j++)
 		{
 			CDistribution* jth_component=CDistribution::obtain_from_generic(data.components->get_element(j));
@@ -94,7 +94,8 @@ void CEMMixtureModel::maximization_step()
 
 float64_t CEMMixtureModel::log_sum_exp(SGVector<float64_t> values)
 {
-	REQUIRE(values.vector, "Values are empty");
+	REQUIRE(values.vlen>0,"number of values supplied is 0\n")
+	REQUIRE(values.vector, "Values are empty\n");
 
 	/* find max element index */
 	index_t max_index=0;

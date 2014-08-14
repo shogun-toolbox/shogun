@@ -50,6 +50,7 @@ template <class T> class CEMBase : public CSGObject
 		/* destructor */
 		virtual ~CEMBase() { };
 
+		/* returns the name of the class */
 		virtual const char* get_name() const { return "EMBase"; }		
 
 		/* expectation step
