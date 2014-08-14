@@ -1,37 +1,72 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
- *
- * Written (W) 2013 Roman Votyakov
- */
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation; either version 3 of the License, or
+* (at your option) any later version.
+*
+* Written (W) 2013 Roman Votyakov
+* Written (W) 2014 Wu Lin
+*/
 
 #include <shogun/lib/config.h>
 
 #ifdef HAVE_EIGEN3
 
-#include <shogun/classifier/GaussianProcessBinaryClassification.h>
+#include <shogun/classifier/GaussianProcessClassification.h>
 
 using namespace shogun;
 
-CGaussianProcessBinaryClassification::CGaussianProcessBinaryClassification()
+CGaussianProcessClassification::CGaussianProcessClassification()
 	: CGaussianProcessMachine()
 {
 }
 
-CGaussianProcessBinaryClassification::CGaussianProcessBinaryClassification(
+CGaussianProcessClassification::CGaussianProcessClassification(
 		CInferenceMethod* method) : CGaussianProcessMachine(method)
 {
 	// set labels
 	m_labels=method->get_labels();
 }
 
-CGaussianProcessBinaryClassification::~CGaussianProcessBinaryClassification()
+CGaussianProcessClassification::~CGaussianProcessClassification()
 {
 }
 
-CBinaryLabels* CGaussianProcessBinaryClassification::apply_binary(
+CMulticlassLabels* CGaussianProcessClassification::apply_multiclass(CFeatures* data)
+{
+	// check whether given combination of inference method and likelihood
+	// function supports classification
+	REQUIRE(m_method, "Inference method should not be NULL\n")
+	CLikelihoodModel* lik=m_method->get_model();
+	REQUIRE(m_method->supports_multiclass(), "%s with %s doesn't support "
+			"multi classification\n", m_method->get_name(), lik->get_name())
+	SG_UNREF(lik);
+
+	// if regression data equals to NULL, then apply classification on training
+	// features
+	if (!data)
+		data=m_method->get_features();
+	else
+		SG_REF(data);
+
+	const index_t n=data->get_num_vectors();
+	SGVector<float64_t> mean=get_mean_vector(data);
+	const index_t C=mean.vlen/n;
+	SGVector<index_t> lab(n);
+	for(index_t idx=0; idx<n; idx++)
+	{
+		int32_t cate=SGVector<float64_t>::arg_max(mean.vector+idx*C, 1, C);
+		lab[idx]=cate;
+	}
+	CMulticlassLabels *result=new CMulticlassLabels();
+	result->set_int_labels(lab);
+	
+	SG_UNREF(data);
+
+	return result;
+}
+
+CBinaryLabels* CGaussianProcessClassification::apply_binary(
 		CFeatures* data)
 {
 	// check whether given combination of inference method and likelihood
@@ -55,14 +90,14 @@ CBinaryLabels* CGaussianProcessBinaryClassification::apply_binary(
 	return result;
 }
 
-bool CGaussianProcessBinaryClassification::train_machine(CFeatures* data)
+bool CGaussianProcessClassification::train_machine(CFeatures* data)
 {
 	// check whether given combination of inference method and likelihood
 	// function supports classification
 	REQUIRE(m_method, "Inference method should not be NULL\n")
 	CLikelihoodModel* lik=m_method->get_model();
-	REQUIRE(m_method->supports_binary(), "%s with %s doesn't support "
-			"binary classification\n", m_method->get_name(), lik->get_name())
+	REQUIRE(m_method->supports_binary() || m_method->supports_multiclass(), "%s with %s doesn't support "
+			"classification\n", m_method->get_name(), lik->get_name())
 	SG_UNREF(lik);
 
 	if (data)
@@ -74,15 +109,15 @@ bool CGaussianProcessBinaryClassification::train_machine(CFeatures* data)
 	return true;
 }
 
-SGVector<float64_t> CGaussianProcessBinaryClassification::get_mean_vector(
+SGVector<float64_t> CGaussianProcessClassification::get_mean_vector(
 		CFeatures* data)
 {
 	// check whether given combination of inference method and likelihood
 	// function supports classification
 	REQUIRE(m_method, "Inference method should not be NULL\n")
 	CLikelihoodModel* lik=m_method->get_model();
-	REQUIRE(m_method->supports_binary(), "%s with %s doesn't support "
-			"binary classification\n", m_method->get_name(), lik->get_name())
+	REQUIRE(m_method->supports_binary() || m_method->supports_multiclass(),
+		"%s with %s doesn't support classification\n", m_method->get_name(), lik->get_name())
 
 	SG_REF(data);
 	SGVector<float64_t> mu=get_posterior_means(data);
@@ -96,15 +131,15 @@ SGVector<float64_t> CGaussianProcessBinaryClassification::get_mean_vector(
 	return mu;
 }
 
-SGVector<float64_t> CGaussianProcessBinaryClassification::get_variance_vector(
+SGVector<float64_t> CGaussianProcessClassification::get_variance_vector(
 		CFeatures* data)
 {
 	// check whether given combination of inference method and
 	// likelihood function supports classification
 	REQUIRE(m_method, "Inference method should not be NULL\n")
 	CLikelihoodModel* lik=m_method->get_model();
-	REQUIRE(m_method->supports_binary(), "%s with %s doesn't support "
-			"binary classification\n", m_method->get_name(), lik->get_name())
+	REQUIRE(m_method->supports_binary() || m_method->supports_multiclass(),
+		"%s with %s doesn't support classification\n", m_method->get_name(), lik->get_name())
 
 	SG_REF(data);
 	SGVector<float64_t> mu=get_posterior_means(data);
@@ -118,15 +153,15 @@ SGVector<float64_t> CGaussianProcessBinaryClassification::get_variance_vector(
 	return s2;
 }
 
-SGVector<float64_t> CGaussianProcessBinaryClassification::get_probabilities(
+SGVector<float64_t> CGaussianProcessClassification::get_probabilities(
 		CFeatures* data)
 {
 	// check whether given combination of inference method and likelihood
 	// function supports classification
 	REQUIRE(m_method, "Inference method should not be NULL\n")
 	CLikelihoodModel* lik=m_method->get_model();
-	REQUIRE(m_method->supports_binary(), "%s with %s doesn't support "
-			"binary classification\n", m_method->get_name(), lik->get_name())
+	REQUIRE(m_method->supports_binary() || m_method->supports_multiclass(),
+		"%s with %s doesn't support classification\n", m_method->get_name(), lik->get_name())
 
 	SG_REF(data);
 	SGVector<float64_t> mu=get_posterior_means(data);

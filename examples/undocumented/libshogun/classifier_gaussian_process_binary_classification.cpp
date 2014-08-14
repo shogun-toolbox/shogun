@@ -21,7 +21,7 @@
 #include <shogun/machine/gp/ZeroMean.h>
 #include <shogun/machine/gp/LogitLikelihood.h>
 #include <shogun/machine/gp/ProbitLikelihood.h>
-#include <shogun/classifier/GaussianProcessBinaryClassification.h>
+#include <shogun/classifier/GaussianProcessClassification.h>
 #include <shogun/io/CSVFile.h>
 
 using namespace shogun;
@@ -80,10 +80,10 @@ int main(int argc, char** argv)
 	// create logit likelihood model
 	CLogitLikelihood* lik=new CLogitLikelihood();
 
-	// you can easily switch between Laplace and EP approximation by
+	// you can easily switch between SingleLaplace and EP approximation by
 	// uncommenting/commenting the following lines:
 
-	// specify Laplace approximation inference method
+	// specify SingleLaplace approximation inference method
 	// CSingleLaplacianInferenceMethod* inf=new CSingleLaplacianInferenceMethod(kernel,
 	//		feat_train, mean, lab_train, lik);
 
@@ -91,8 +91,8 @@ int main(int argc, char** argv)
 	CEPInferenceMethod* inf=new CEPInferenceMethod(kernel, feat_train, mean,
 			lab_train, lik);
 
-	// create and train GP classifier, which uses Laplace approximation
-	CGaussianProcessBinaryClassification* gpc=new CGaussianProcessBinaryClassification(inf);
+	// create and train GP classifier, which uses SingleLaplace approximation
+	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
 	gpc->train();
 
 	// apply binary classification to the test data and get -1/+1
