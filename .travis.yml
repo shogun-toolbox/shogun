@@ -77,13 +77,6 @@ matrix:
       env:
       - OSX=1
       - CUSTOM_PKG="curl -O -L https://raw.github.com/rudix-mac/package-manager/master/rudix.py && sudo python rudix.py install rudix && sudo rudix install jinja2"
-  allow_failures:
-    - compiler: clang
-      env:
-      - CMAKE_OPTIONS="-DRModular=ON -DTRAVIS_DISABLE_UNIT_TESTS=ON -DTRAVIS_DISABLE_LIBSHOGUN_TESTS=ON"
-      - EXTRA_PACKAGES="r-base-core swig2.0"
-      - CC=clang
-      - CXX=clang++
 before_install:
   - if [ -z $OSX ] ; then
       sudo apt-add-repository -y ppa:kubuntu-ppa/backports ;
