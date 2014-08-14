@@ -106,11 +106,11 @@ class CGaussian : public CDistribution
 		/** update parameters in the em maximization step for mixture model of which
 		 * this distribution is a part
 		 *
-		 * abstract base method
-		 *
 		 * @param alpha_k "belongingness" values of various data points
+		 * @param len length of alpha_k array
+		 * @return sum of values in alpha_k
 		 */
-		virtual void update_params_em(SGVector<float64_t> alpha_k);
+		virtual float64_t update_params_em(float64_t* alpha_k, int32_t len);
 
 		/** compute PDF
 		 *

@@ -30,6 +30,9 @@
 
 #include <shogun/distributions/MixtureModel.h>
 #include <shogun/mathematics/Math.h> 
+#include <shogun/features/DotFeatures.h>
+#include <shogun/features/DenseFeatures.h>
+#include <shogun/distributions/EMMixtureModel.h>
 
 using namespace shogun;
 
@@ -53,7 +56,47 @@ CMixtureModel::~CMixtureModel()
 
 bool CMixtureModel::train(CFeatures* data)
 {
-	//TBD
+	REQUIRE(m_components->get_num_elements()>0,"mixture componenents not specified\n")
+	REQUIRE(m_components->get_num_elements()==m_weights.vlen,"number of weights (%d) does  not"
+		" match number of components (%d)\n",m_weights.vlen,m_components->get_num_elements())
+
+	// set training features
+	if (data)
+	{
+		if (!data->has_property(FP_DOT))
+				SG_ERROR("Specified features are not of type CDotFeatures\n")
+		set_features(data);
+	}
+	else if (!features)
+	{
+		SG_ERROR("No features to train on.\n")
+	}
+
+	// set training points in all components of the mixture 
+	for (int32_t i=0;i<m_components->get_num_elements();i++)
+	{
+		CDistribution* comp=CDistribution::obtain_from_generic(m_components->get_element(i));
+		comp->set_features(features);
+
+		SG_UNREF(comp)
+	}
+
+	CDotFeatures* dotdata=dynamic_cast<CDotFeatures *>(features);
+	REQUIRE(dotdata,"dynamic cast from CFeatures to CDotFeatures returned NULL")
+	int32_t num_vectors=dotdata->get_num_vectors();
+
+	// set data for EM
+	CEMMixtureModel* em=new CEMMixtureModel();
+	em->data.alpha=SGMatrix<float64_t>(num_vectors,m_components->get_num_elements());
+	em->data.components=m_components;
+	em->data.weights=m_weights;
+
+	// run EM
+	bool is_converged=em->iterate_em(m_max_iters,m_conv_tol);
+	if (!is_converged)
+		SG_WARNING("max iterations reached. No convergence yet!\n")
+
+	SG_UNREF(em)
 	return true;
 }
 
@@ -67,14 +110,26 @@ float64_t CMixtureModel::get_log_model_parameter(int32_t num_param)
 
 float64_t CMixtureModel::get_log_derivative(int32_t num_param, int32_t num_example)
 {
-	// TBD
+	SG_NOTIMPLEMENTED
 	return 0;
 }
 
 float64_t CMixtureModel::get_log_likelihood_example(int32_t num_example)
 {
-	// TBD
-	return 0;	
+	REQUIRE(features,"features not set\n")
+	REQUIRE(features->get_feature_class() == C_DENSE,"Dense features required\n")
+	REQUIRE(features->get_feature_type() == F_DREAL,"Real features required\n")
+
+	SGVector<float64_t> log_likelihood_component(m_components->get_num_elements());
+	for (int32_t i=0;i<m_components->get_num_elements();i++)
+	{
+		CDistribution* ith_comp=CDistribution::obtain_from_generic(m_components->get_element(i));
+		log_likelihood_component[i]=ith_comp->get_log_likelihood_example(num_example)+CMath::log(m_weights[i]);
+
+		SG_UNREF(ith_comp);
+	}
+
+	return CMath::log_sum_exp(log_likelihood_component);
 }
 
 SGVector<float64_t> CMixtureModel::get_weights() const
@@ -114,15 +169,37 @@ CDistribution* CMixtureModel::get_component(index_t index) const
 	return CDistribution::obtain_from_generic(m_components->get_element(index));
 }
 
+void CMixtureModel::set_max_iters(int32_t max_iters)
+{
+	m_max_iters=max_iters;
+}
+
+int32_t CMixtureModel::get_max_iters() const
+{
+	return m_max_iters;
+}
+
+void CMixtureModel::set_convergence_tolerance(float64_t conv_tol)
+{
+	m_conv_tol=conv_tol;
+}
+
+float64_t CMixtureModel::get_convergence_tolerance() const
+{
+	return m_conv_tol;
+}
+
 SGVector<float64_t> CMixtureModel::sample()
 {
 	// TBD
+	SG_NOTIMPLEMENTED;
 	return SGVector<float64_t>();
 }
 
 SGVector<float64_t> CMixtureModel::cluster(SGVector<float64_t> point)
 {
 	// TBD
+	SG_NOTIMPLEMENTED;
 	return point;
 }
 
@@ -130,7 +207,11 @@ void CMixtureModel::init()
 {
 	m_components=NULL;
 	m_weights=SGVector<float64_t>();
+	m_conv_tol=1e-8;
+	m_max_iters=1000;
 
 	SG_ADD((CSGObject**)&m_components,"m_components","components of mixture",MS_NOT_AVAILABLE);
-	SG_ADD(&m_weights,"m_weights","weights of components",MS_NOT_AVAILABLE);	
+	SG_ADD(&m_weights,"m_weights","weights of components",MS_NOT_AVAILABLE);
+	SG_ADD(&m_conv_tol,"m_conv_tol","convergence tolerance",MS_NOT_AVAILABLE);
+	SG_ADD(&m_max_iters,"m_max_iters","max number of iterations",MS_NOT_AVAILABLE);
 }

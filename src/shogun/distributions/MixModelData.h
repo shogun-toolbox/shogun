@@ -28,38 +28,36 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
-#include <shogun/distributions/EMBase.h>
-#include <shogun/mathematics/Math.h>
+#ifndef _MIXMODELDATA_H__
+#define _MIXMODELDATA_H__
 
-using namespace shogun;
+#include <shogun/lib/config.h>
+#include <shogun/lib/SGMatrix.h>
+#include <shogun/lib/SGVector.h>
+#include <shogun/lib/DynamicObjectArray.h> 
 
-template<typename T> CEMBase<T>::CEMBase()
-: CSGObject()
-{ }
-
-template<typename T> CEMBase<T>::~CEMBase()
-{ }
-
-template<typename T> bool CEMBase<T>::iterate_em(int32_t max_iters, float64_t epsilon)
+namespace shogun
 {
-	float64_t expect_cur=CMath::MIN_REAL_NUMBER;
-	float64_t expect_prev=0;
-	int32_t i=0;
-	bool converge=false;
-	while (i<max_iters)
+/** @brief This structure is used for storing data required for using the generic Expectation Maximization (EM)  implemented 
+ * by the template class CEMBase for mixture models like gaussian mixture model, multinomial mixture model etc. The EM 
+ * specialized for mixture models is implemented by the class CEMMixtureModel which uses this MixModelData structure.
+ */
+struct MixModelData
+{
+	/** allocated belongingness matrix */
+	SGMatrix<float64_t> alpha;
+	/** components of mixture */
+	CDynamicObjectArray* components;
+	/** weights of mixture */
+	SGVector<float64_t> weights;
+
+	MixModelData()
 	{
-		expect_prev=expect_cur;
-		expectation_step();
-		expect_cur=maximization_step();
-
-		if ((expect_cur-expect_prev)<epsilon)
-		{
-			converge=true;
-			break;
-		}
-
-		i++;
+		alpha=SGMatrix<float64_t>();
+		components=NULL;
+		weights=SGVector<float64_t>();
 	}
+};
+} /* shogun */
 
-	return converge;
-}
+#endif /* _MIXMODELDATA_H__ */

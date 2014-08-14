@@ -28,75 +28,47 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
-#ifndef _EMBASE_H__
-#define _EMBASE_H__
+#ifndef _EMMIXTUREMODEL_H__
+#define _EMMIXTUREMODEL_H__
 
 #include <shogun/lib/config.h>
-#include <shogun/base/SGObject.h>
+#include <shogun/distributions/EMBase.h>
+#include <shogun/distributions/MixModelData.h>
 
 namespace shogun
 {
+template class CEMBase<MixModelData>;
 
-/** @brief This is the base class for Expectation Maximization (EM). EM for various purposes can be derived from
- * this base class. This is a template class having a template member called data which can be used to store all
- * parameters used and results calculated by the expectation and maximization steps of EM.   
+/** @brief This is the implementation of EM specialized for Mixture models.   
  */
-template <class T> class CEMBase : public CSGObject
+class CEMMixtureModel : public CEMBase<MixModelData>
 {
 	public:
 		/* constructor */
-		CEMBase() : CSGObject() { };
+		CEMMixtureModel();
 
 		/* destructor */
-		virtual ~CEMBase() { };
+		virtual ~CEMMixtureModel();
 
-		/* returns the name of the class */
-		virtual const char* get_name() const { return "EMBase"; }		
+		/* returns name of class */
+		virtual const char* get_name() const { return "EMMixtureModel"; }		
 
 		/* expectation step
 		 * 
 		 * @return updated value log_likelihood
 		 */
-		virtual float64_t expectation_step()=0;
+		virtual float64_t expectation_step();
 
 		/** maximization step */
-		virtual void maximization_step()=0;
+		virtual void maximization_step();
 
-		/** Expectation Maximization algorithm - runs expectation step and maximization step repeatedly as long as 
-		 * max number of iterations is not reached or convergence does not take place.
+	private:
+		/** log sum exp trick
 		 *
-		 * @param max_iters max number of iterations of EM
-		 * @param epsilon convergence tolerance
-		 * @param whether convergence is acheived
+		 * @param log_values vector of logarithmic values on which log_sum_exp trick has to be applied
+		 * @return log_sum_exp of the supplied log_values
 		 */
-		bool iterate_em(int32_t max_iters=10000, float64_t epsilon=1e-8)
-		{
-			float64_t log_likelihood_cur=0;
-			float64_t log_likelihood_prev=0;
-			int32_t i=0;
-			bool converge=false;
-			while (i<max_iters)
-			{
-				log_likelihood_prev=log_likelihood_cur;
-				log_likelihood_cur=expectation_step();
-
-				if ((i>0)&&(log_likelihood_cur-log_likelihood_prev)<epsilon)
-				{
-					converge=true;
-					break;
-				}
-
-				maximization_step();
-				i++;
-			}
-
-			return converge;
-		}
-
-	public:
-		/* data */
-		T data;
-
+		float64_t log_sum_exp(SGVector<float64_t> log_values);
 };
 } /* shogun */
-#endif /* _EMBASE_H__ */
+#endif /* _EMMIXTUREMODEL_H__ */
