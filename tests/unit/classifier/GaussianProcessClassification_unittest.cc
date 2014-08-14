@@ -43,7 +43,7 @@
 #include <shogun/machine/gp/LogitLikelihood.h>
 #include <shogun/machine/gp/SingleLaplacianInferenceMethod.h>
 #include <shogun/machine/gp/EPInferenceMethod.h>
-#include <shogun/classifier/GaussianProcessBinaryClassification.h>
+#include <shogun/classifier/GaussianProcessClassification.h>
 #include <shogun/preprocessor/RescaleFeatures.h>
 #include <gtest/gtest.h>
 #include <shogun/mathematics/Math.h>
@@ -58,7 +58,7 @@
 
 using namespace shogun;
 
-TEST(GaussianProcessBinaryClassification,get_mean_vector)
+TEST(GaussianProcessClassification,get_mean_vector)
 {
 	// create some easy random classification data
 	index_t n=10, m=25, i=0;
@@ -123,12 +123,12 @@ TEST(GaussianProcessBinaryClassification,get_mean_vector)
 	// probit likelihood
 	CProbitLikelihood* likelihood=new CProbitLikelihood();
 
-	// specify GP classification with Laplacian inference
+	// specify GP classification with SingleLaplacian inference
 	CSingleLaplacianInferenceMethod* inf=new CSingleLaplacianInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	// train Gaussian process binary classifier
-	CGaussianProcessBinaryClassification* gpc=new CGaussianProcessBinaryClassification(inf);
+	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
 	gpc->train();
 
 	// compare mean vector with result form GPML
@@ -163,7 +163,7 @@ TEST(GaussianProcessBinaryClassification,get_mean_vector)
 	SG_UNREF(gpc);
 }
 
-TEST(GaussianProcessBinaryClassification,get_variance_vector)
+TEST(GaussianProcessClassification,get_variance_vector)
 {
 	// create some easy random classification data
 	index_t n=10, m=25, i=0;
@@ -228,12 +228,12 @@ TEST(GaussianProcessBinaryClassification,get_variance_vector)
 	// probit likelihood
 	CProbitLikelihood* likelihood=new CProbitLikelihood();
 
-	// specify GP classification with Laplacian inference
+	// specify GP classification with SingleLaplacian inference
 	CSingleLaplacianInferenceMethod* inf=new CSingleLaplacianInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	// train gaussian process classifier
-	CGaussianProcessBinaryClassification* gpc=new CGaussianProcessBinaryClassification(inf);
+	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
 	gpc->train();
 
 	// compare variance vector with result form GPML
@@ -268,7 +268,7 @@ TEST(GaussianProcessBinaryClassification,get_variance_vector)
 	SG_UNREF(gpc);
 }
 
-TEST(GaussianProcessBinaryClassification,get_probabilities)
+TEST(GaussianProcessClassification,get_probabilities)
 {
 	// create some easy random classification data
 	index_t n=10, m=25, i=0;
@@ -333,12 +333,12 @@ TEST(GaussianProcessBinaryClassification,get_probabilities)
 	// probit likelihood
 	CProbitLikelihood* likelihood=new CProbitLikelihood();
 
-	// specify GP classification with Laplacian inference
+	// specify GP classification with SingleLaplacian inference
 	CSingleLaplacianInferenceMethod* inf=new CSingleLaplacianInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	// train gaussian process classifier
-	CGaussianProcessBinaryClassification* gpc=new CGaussianProcessBinaryClassification(inf);
+	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
 	gpc->train();
 
 	// compare variance vector with result form GPML
@@ -373,7 +373,7 @@ TEST(GaussianProcessBinaryClassification,get_probabilities)
 	SG_UNREF(gpc);
 }
 
-TEST(GaussianProcessBinaryClassification,apply_preprocessor_and_binary)
+TEST(GaussianProcessClassification,apply_preprocessor_and_binary)
 {
 	// create some easy random classification data
 	index_t n=10, m=25, i=0;
@@ -447,14 +447,13 @@ TEST(GaussianProcessBinaryClassification,apply_preprocessor_and_binary)
 	// logit likelihood
 	CLogitLikelihood* likelihood=new CLogitLikelihood();
 
-	// specify GP classification with Laplacian inference
 	CEPInferenceMethod* inf=new CEPInferenceMethod(kernel, features_train,
 			mean, labels_train, likelihood);
 
 	inf->set_scale(1.5);
 
 	// train gaussian process classifier
-	CGaussianProcessBinaryClassification* gpc=new CGaussianProcessBinaryClassification(inf);
+	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
 	gpc->train();
 
 	// compare predictions with result form GPML
@@ -492,7 +491,7 @@ TEST(GaussianProcessBinaryClassification,apply_preprocessor_and_binary)
 	SG_UNREF(prediction);
 }
 
-TEST(GaussianProcessBinaryClassificationUsingLaplacianWithLBFGS,get_mean_vector)
+TEST(GaussianProcessClassificationUsingSingleLaplacianWithLBFGS,get_mean_vector)
 {
 	float64_t abs_tolorance;
 	float64_t rel_tolorance=1e-2;
@@ -559,7 +558,7 @@ TEST(GaussianProcessBinaryClassificationUsingLaplacianWithLBFGS,get_mean_vector)
 	// probit likelihood
 	CProbitLikelihood* likelihood=new CProbitLikelihood();
 
-	// specify GP classification with Laplacian inference
+	// specify GP classification with SingleLaplacian inference
 	CSingleLaplacianInferenceMethodWithLBFGS* inf
 	= new CSingleLaplacianInferenceMethodWithLBFGS(kernel,
 		features_train,
@@ -586,7 +585,7 @@ TEST(GaussianProcessBinaryClassificationUsingLaplacianWithLBFGS,get_mean_vector)
 		);
 
 	// train Gaussian process binary classifier
-	CGaussianProcessBinaryClassification* gpc=new CGaussianProcessBinaryClassification(inf);
+	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
 	gpc->train();
 
 	// compare mean vector with result form GPML with the minfunc function
@@ -674,7 +673,7 @@ TEST(GaussianProcessBinaryClassificationUsingLaplacianWithLBFGS,get_mean_vector)
 	SG_UNREF(gpc);
 }
 
-TEST(GaussianProcessBinaryClassificationUsingLaplacianWithLBFGS,get_variance_vector)
+TEST(GaussianProcessClassificationUsingSingleLaplacianWithLBFGS,get_variance_vector)
 {
 	float64_t abs_tolorance;
 	float64_t rel_tolorance=1e-2;
@@ -741,7 +740,7 @@ TEST(GaussianProcessBinaryClassificationUsingLaplacianWithLBFGS,get_variance_vec
 	// probit likelihood
 	CProbitLikelihood* likelihood=new CProbitLikelihood();
 
-	// specify GP classification with Laplacian inference
+	// specify GP classification with SingleLaplacian inference
 	CSingleLaplacianInferenceMethodWithLBFGS* inf
 		= new CSingleLaplacianInferenceMethodWithLBFGS(kernel,
 			features_train,
@@ -768,7 +767,7 @@ TEST(GaussianProcessBinaryClassificationUsingLaplacianWithLBFGS,get_variance_vec
 		);
 
 	// train gaussian process classifier
-	CGaussianProcessBinaryClassification* gpc=new CGaussianProcessBinaryClassification(inf);
+	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
 	gpc->train();
 
 	// compare variance vector with result form GPML with the minfunc function
@@ -856,7 +855,7 @@ TEST(GaussianProcessBinaryClassificationUsingLaplacianWithLBFGS,get_variance_vec
 	SG_UNREF(gpc);
 }
 
-TEST(GaussianProcessBinaryClassificationUsingLaplacianWithLBFGS,get_probabilities)
+TEST(GaussianProcessClassificationUsingSingleLaplacianWithLBFGS,get_probabilities)
 {
 	float64_t abs_tolorance;
 	float64_t rel_tolorance=1e-2;
@@ -923,7 +922,7 @@ TEST(GaussianProcessBinaryClassificationUsingLaplacianWithLBFGS,get_probabilitie
 	// probit likelihood
 	CProbitLikelihood* likelihood=new CProbitLikelihood();
 
-	// specify GP classification with Laplacian inference
+	// specify GP classification with SingleLaplacian inference
 	CSingleLaplacianInferenceMethodWithLBFGS* inf=new CSingleLaplacianInferenceMethodWithLBFGS(kernel,
 			features_train, mean, labels_train, likelihood);
 
@@ -946,7 +945,7 @@ TEST(GaussianProcessBinaryClassificationUsingLaplacianWithLBFGS,get_probabilitie
 		);
 
 	// train gaussian process classifier
-	CGaussianProcessBinaryClassification* gpc=new CGaussianProcessBinaryClassification(inf);
+	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
 	gpc->train();
 
 	// compare probabilities with result form GPML with the minfunc function
@@ -1034,7 +1033,7 @@ TEST(GaussianProcessBinaryClassificationUsingLaplacianWithLBFGS,get_probabilitie
 	SG_UNREF(gpc);
 }
 
-TEST(GaussianProcessBinaryClassificationUsingKLCovariance,get_mean_vector)
+TEST(GaussianProcessClassificationUsingKLCovariance,get_mean_vector)
 {
 	float64_t abs_tolorance;
 	float64_t rel_tolorance=1e-2;
@@ -1101,7 +1100,6 @@ TEST(GaussianProcessBinaryClassificationUsingKLCovariance,get_mean_vector)
 	// probit likelihood
 	CLogitVGLikelihood* likelihood=new CLogitVGLikelihood();
 
-	// specify GP classification with Laplacian inference
 	CKLCovarianceInferenceMethod* inf
 	= new CKLCovarianceInferenceMethod(kernel,
 		features_train,
@@ -1110,7 +1108,7 @@ TEST(GaussianProcessBinaryClassificationUsingKLCovariance,get_mean_vector)
 		likelihood);
 
 	// train Gaussian process binary classifier
-	CGaussianProcessBinaryClassification* gpc=new CGaussianProcessBinaryClassification(inf);
+	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
 	gpc->train();
 
 	// compare mean vector with result form the following Matlab code with the minfunc function
@@ -1199,7 +1197,7 @@ TEST(GaussianProcessBinaryClassificationUsingKLCovariance,get_mean_vector)
 	SG_UNREF(gpc);
 }
 
-TEST(GaussianProcessBinaryClassificationUsingKLCovariance, get_variance_vector)
+TEST(GaussianProcessClassificationUsingKLCovariance, get_variance_vector)
 {
 	float64_t abs_tolorance;
 	float64_t rel_tolorance=1e-2;
@@ -1266,7 +1264,6 @@ TEST(GaussianProcessBinaryClassificationUsingKLCovariance, get_variance_vector)
 	// probit likelihood
 	CLogitVGLikelihood* likelihood=new CLogitVGLikelihood();
 
-	// specify GP classification with Laplacian inference
 	CKLCovarianceInferenceMethod* inf
 	= new CKLCovarianceInferenceMethod(kernel,
 		features_train,
@@ -1275,7 +1272,7 @@ TEST(GaussianProcessBinaryClassificationUsingKLCovariance, get_variance_vector)
 		likelihood);
 
 	// train Gaussian process binary classifier
-	CGaussianProcessBinaryClassification* gpc=new CGaussianProcessBinaryClassification(inf);
+	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
 	gpc->train();
 
 	// compare mean vector with result form the following Matlab code with the minfunc function
@@ -1364,7 +1361,7 @@ TEST(GaussianProcessBinaryClassificationUsingKLCovariance, get_variance_vector)
 	}
 
 
-TEST(GaussianProcessBinaryClassificationUsingKLCovariance, get_probabilities)
+TEST(GaussianProcessClassificationUsingKLCovariance, get_probabilities)
 {
 	float64_t abs_tolorance;
 	float64_t rel_tolorance=1e-2;
@@ -1431,7 +1428,6 @@ TEST(GaussianProcessBinaryClassificationUsingKLCovariance, get_probabilities)
 	// probit likelihood
 	CLogitVGLikelihood* likelihood=new CLogitVGLikelihood();
 
-	// specify GP classification with Laplacian inference
 	CKLCovarianceInferenceMethod* inf
 	= new CKLCovarianceInferenceMethod(kernel,
 		features_train,
@@ -1440,7 +1436,7 @@ TEST(GaussianProcessBinaryClassificationUsingKLCovariance, get_probabilities)
 		likelihood);
 
 	// train Gaussian process binary classifier
-	CGaussianProcessBinaryClassification* gpc=new CGaussianProcessBinaryClassification(inf);
+	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
 	gpc->train();
 
 	// compare mean vector with result form the following Matlab code with the minfunc function
@@ -1528,7 +1524,7 @@ TEST(GaussianProcessBinaryClassificationUsingKLCovariance, get_probabilities)
 	SG_UNREF(gpc);
 	}
 
-TEST(GaussianProcessBinaryClassificationUsingKLCholesky,get_mean_vector)
+TEST(GaussianProcessClassificationUsingKLCholesky,get_mean_vector)
 {
 	float64_t abs_tolorance;
 	float64_t rel_tolorance=1e-2;
@@ -1595,7 +1591,6 @@ TEST(GaussianProcessBinaryClassificationUsingKLCholesky,get_mean_vector)
 	// probit likelihood
 	CLogitVGLikelihood* likelihood=new CLogitVGLikelihood();
 
-	// specify GP classification with Laplacian inference
 	CKLCholeskyInferenceMethod* inf
 	= new CKLCholeskyInferenceMethod(kernel,
 		features_train,
@@ -1604,7 +1599,7 @@ TEST(GaussianProcessBinaryClassificationUsingKLCholesky,get_mean_vector)
 		likelihood);
 
 	// train Gaussian process binary classifier
-	CGaussianProcessBinaryClassification* gpc=new CGaussianProcessBinaryClassification(inf);
+	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
 	gpc->train();
 
 	// compare mean vector with result form the following Matlab code with the minfunc function
@@ -1693,7 +1688,7 @@ TEST(GaussianProcessBinaryClassificationUsingKLCholesky,get_mean_vector)
 	SG_UNREF(gpc);
 }
 
-TEST(GaussianProcessBinaryClassificationUsingKLCholesky, get_variance_vector)
+TEST(GaussianProcessClassificationUsingKLCholesky, get_variance_vector)
 {
 	float64_t abs_tolorance;
 	float64_t rel_tolorance=1e-2;
@@ -1760,7 +1755,6 @@ TEST(GaussianProcessBinaryClassificationUsingKLCholesky, get_variance_vector)
 	// probit likelihood
 	CLogitVGLikelihood* likelihood=new CLogitVGLikelihood();
 
-	// specify GP classification with Laplacian inference
 	CKLCovarianceInferenceMethod* inf
 	= new CKLCovarianceInferenceMethod(kernel,
 		features_train,
@@ -1769,7 +1763,7 @@ TEST(GaussianProcessBinaryClassificationUsingKLCholesky, get_variance_vector)
 		likelihood);
 
 	// train Gaussian process binary classifier
-	CGaussianProcessBinaryClassification* gpc=new CGaussianProcessBinaryClassification(inf);
+	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
 	gpc->train();
 
 	// compare mean vector with result form the following Matlab code with the minfunc function
@@ -1857,7 +1851,7 @@ TEST(GaussianProcessBinaryClassificationUsingKLCholesky, get_variance_vector)
 	SG_UNREF(gpc);
 	}
 
-TEST(GaussianProcessBinaryClassificationUsingKLCholesky, get_probabilities)
+TEST(GaussianProcessClassificationUsingKLCholesky, get_probabilities)
 {
 	float64_t abs_tolorance;
 	float64_t rel_tolorance=1e-2;
@@ -1924,7 +1918,6 @@ TEST(GaussianProcessBinaryClassificationUsingKLCholesky, get_probabilities)
 	// probit likelihood
 	CLogitVGLikelihood* likelihood=new CLogitVGLikelihood();
 
-	// specify GP classification with Laplacian inference
 	CKLCholeskyInferenceMethod* inf
 	= new CKLCholeskyInferenceMethod(kernel,
 		features_train,
@@ -1933,7 +1926,7 @@ TEST(GaussianProcessBinaryClassificationUsingKLCholesky, get_probabilities)
 		likelihood);
 
 	// train Gaussian process binary classifier
-	CGaussianProcessBinaryClassification* gpc=new CGaussianProcessBinaryClassification(inf);
+	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
 	gpc->train();
 
 	// compare mean vector with result form the following Matlab code with the minfunc function
@@ -2021,7 +2014,7 @@ TEST(GaussianProcessBinaryClassificationUsingKLCholesky, get_probabilities)
 	SG_UNREF(gpc);
 	}
 
-TEST(GaussianProcessBinaryClassificationUsingKLApproxDiagonal,get_mean_vector)
+TEST(GaussianProcessClassificationUsingKLApproxDiagonal,get_mean_vector)
 {
 	float64_t abs_tolorance;
 	float64_t rel_tolorance=1e-2;
@@ -2088,7 +2081,6 @@ TEST(GaussianProcessBinaryClassificationUsingKLApproxDiagonal,get_mean_vector)
 	// probit likelihood
 	CLogitVGLikelihood* likelihood=new CLogitVGLikelihood();
 
-	// specify GP classification with Laplacian inference
 	CKLApproxDiagonalInferenceMethod* inf
 	= new CKLApproxDiagonalInferenceMethod(kernel,
 		features_train,
@@ -2097,7 +2089,7 @@ TEST(GaussianProcessBinaryClassificationUsingKLApproxDiagonal,get_mean_vector)
 		likelihood);
 
 	// train Gaussian process binary classifier
-	CGaussianProcessBinaryClassification* gpc=new CGaussianProcessBinaryClassification(inf);
+	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
 	gpc->train();
 
 	// compare mean vector with result form the following Matlab code with the minfunc function
@@ -2186,7 +2178,7 @@ TEST(GaussianProcessBinaryClassificationUsingKLApproxDiagonal,get_mean_vector)
 	SG_UNREF(gpc);
 }
 
-TEST(GaussianProcessBinaryClassificationUsingKLApproxDiagonal, get_variance_vector)
+TEST(GaussianProcessClassificationUsingKLApproxDiagonal, get_variance_vector)
 {
 	float64_t abs_tolorance;
 	float64_t rel_tolorance=1e-2;
@@ -2253,7 +2245,6 @@ TEST(GaussianProcessBinaryClassificationUsingKLApproxDiagonal, get_variance_vect
 	// probit likelihood
 	CLogitVGLikelihood* likelihood=new CLogitVGLikelihood();
 
-	// specify GP classification with Laplacian inference
 	CKLApproxDiagonalInferenceMethod* inf
 	= new CKLApproxDiagonalInferenceMethod(kernel,
 		features_train,
@@ -2262,7 +2253,7 @@ TEST(GaussianProcessBinaryClassificationUsingKLApproxDiagonal, get_variance_vect
 		likelihood);
 
 	// train Gaussian process binary classifier
-	CGaussianProcessBinaryClassification* gpc=new CGaussianProcessBinaryClassification(inf);
+	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
 	gpc->train();
 
 	// compare mean vector with result form the following Matlab code with the minfunc function
@@ -2350,7 +2341,7 @@ TEST(GaussianProcessBinaryClassificationUsingKLApproxDiagonal, get_variance_vect
 	SG_UNREF(gpc);
 	}
 
-TEST(GaussianProcessBinaryClassificationUsingKLApproxDiagonal, get_probabilities)
+TEST(GaussianProcessClassificationUsingKLApproxDiagonal, get_probabilities)
 {
 	float64_t abs_tolorance;
 	float64_t rel_tolorance=1e-2;
@@ -2417,7 +2408,6 @@ TEST(GaussianProcessBinaryClassificationUsingKLApproxDiagonal, get_probabilities
 	// probit likelihood
 	CLogitVGLikelihood* likelihood=new CLogitVGLikelihood();
 
-	// specify GP classification with Laplacian inference
 	CKLApproxDiagonalInferenceMethod* inf
 	= new CKLApproxDiagonalInferenceMethod(kernel,
 		features_train,
@@ -2426,7 +2416,7 @@ TEST(GaussianProcessBinaryClassificationUsingKLApproxDiagonal, get_probabilities
 		likelihood);
 
 	// train Gaussian process binary classifier
-	CGaussianProcessBinaryClassification* gpc=new CGaussianProcessBinaryClassification(inf);
+	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
 	gpc->train();
 
 	// compare mean vector with result form the following Matlab code with the minfunc function
@@ -2514,7 +2504,7 @@ TEST(GaussianProcessBinaryClassificationUsingKLApproxDiagonal, get_probabilities
 	SG_UNREF(gpc);
 	}
 
-TEST(GaussianProcessBinaryClassificationUsingKLDual,get_mean_vector)
+TEST(GaussianProcessClassificationUsingKLDual,get_mean_vector)
 {
 	float64_t abs_tolorance;
 	float64_t rel_tolorance=1e-2;
@@ -2581,7 +2571,6 @@ TEST(GaussianProcessBinaryClassificationUsingKLDual,get_mean_vector)
 	// probit likelihood
 	CLogitDVGLikelihood* likelihood=new CLogitDVGLikelihood();
 
-	// specify GP classification with Laplacian inference
 	CKLDualInferenceMethod* inf
 	= new CKLDualInferenceMethod(kernel,
 		features_train,
@@ -2590,7 +2579,7 @@ TEST(GaussianProcessBinaryClassificationUsingKLDual,get_mean_vector)
 		likelihood);
 
 	// train Gaussian process binary classifier
-	CGaussianProcessBinaryClassification* gpc=new CGaussianProcessBinaryClassification(inf);
+	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
 	gpc->train();
 
 	// compare mean vector with result form the following Matlab code with the minfunc function
@@ -2679,7 +2668,7 @@ TEST(GaussianProcessBinaryClassificationUsingKLDual,get_mean_vector)
 	SG_UNREF(gpc);
 }
 
-TEST(GaussianProcessBinaryClassificationUsingKLDual, get_variance_vector)
+TEST(GaussianProcessClassificationUsingKLDual, get_variance_vector)
 {
 	float64_t abs_tolorance;
 	float64_t rel_tolorance=1e-2;
@@ -2746,7 +2735,6 @@ TEST(GaussianProcessBinaryClassificationUsingKLDual, get_variance_vector)
 	// probit likelihood
 	CLogitDVGLikelihood* likelihood=new CLogitDVGLikelihood();
 
-	// specify GP classification with Laplacian inference
 	CKLDualInferenceMethod* inf
 	= new CKLDualInferenceMethod(kernel,
 		features_train,
@@ -2755,7 +2743,7 @@ TEST(GaussianProcessBinaryClassificationUsingKLDual, get_variance_vector)
 		likelihood);
 
 	// train Gaussian process binary classifier
-	CGaussianProcessBinaryClassification* gpc=new CGaussianProcessBinaryClassification(inf);
+	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
 	gpc->train();
 
 	// compare mean vector with result form the following Matlab code with the minfunc function
@@ -2843,7 +2831,7 @@ TEST(GaussianProcessBinaryClassificationUsingKLDual, get_variance_vector)
 	SG_UNREF(gpc);
 	}
 
-TEST(GaussianProcessBinaryClassificationUsingKLDual, get_probabilities)
+TEST(GaussianProcessClassificationUsingKLDual, get_probabilities)
 {
 	float64_t abs_tolorance;
 	float64_t rel_tolorance=1e-2;
@@ -2910,7 +2898,6 @@ TEST(GaussianProcessBinaryClassificationUsingKLDual, get_probabilities)
 	// probit likelihood
 	CLogitDVGLikelihood* likelihood=new CLogitDVGLikelihood();
 
-	// specify GP classification with Laplacian inference
 	CKLDualInferenceMethod* inf
 	= new CKLDualInferenceMethod(kernel,
 		features_train,
@@ -2919,11 +2906,10 @@ TEST(GaussianProcessBinaryClassificationUsingKLDual, get_probabilities)
 		likelihood);
 
 	// train Gaussian process binary classifier
-	CGaussianProcessBinaryClassification* gpc=new CGaussianProcessBinaryClassification(inf);
+	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
 	gpc->train();
 
 	// compare mean vector with result form the following Matlab code with the minfunc function
-	//
 	SGVector<float64_t> probabilities=gpc->get_probabilities(features_test);
 	/*probabilities=
 	0.491181581204178
@@ -3006,4 +2992,5 @@ TEST(GaussianProcessBinaryClassificationUsingKLDual, get_probabilities)
 	
 	SG_UNREF(gpc);
 	}
+
 #endif /* HAVE_EIGEN3 */

@@ -45,7 +45,7 @@
 %rename(KLDualInferenceMethod) CKLDualInferenceMethod;
 
 %rename(GaussianProcessMachine) CGaussianProcessMachine;
-%rename(GaussianProcessBinaryClassification) CGaussianProcessBinaryClassification;
+%rename(GaussianProcessClassification) CGaussianProcessClassification;
 %rename(GaussianProcessRegression) CGaussianProcessRegression;
 
 #endif //HAVE_EIGEN3
@@ -91,7 +91,7 @@
 %include <shogun/machine/gp/KLDualInferenceMethod.h>
 
 %include <shogun/machine/GaussianProcessMachine.h>
-%include <shogun/classifier/GaussianProcessBinaryClassification.h>
+%include <shogun/classifier/GaussianProcessClassification.h>
 %include <shogun/regression/GaussianProcessRegression.h>
 
 #endif //HAVE_EIGEN3

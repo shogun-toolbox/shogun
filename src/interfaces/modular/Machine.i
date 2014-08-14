@@ -87,7 +87,7 @@ APPLY_BINARY(CKernelMachine);
 APPLY_BINARY(CWDSVMOcas);
 APPLY_BINARY(CPluginEstimate);
 #ifdef HAVE_EIGEN3
-APPLY_BINARY(CGaussianProcessBinaryClassification);
+APPLY_BINARY(CGaussianProcessClassification);
 #endif //HAVE_EIGEN3
 
 APPLY_REGRESSION(CLibSVR);
