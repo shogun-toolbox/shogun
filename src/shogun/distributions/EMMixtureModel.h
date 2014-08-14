@@ -39,7 +39,7 @@ namespace shogun
 {
 template class CEMBase<MixModelData>;
 
-/** @brief This is implementation of EM specialized for Mixture models.   
+/** @brief This is the implementation of EM specialized for Mixture models.   
  */
 class CEMMixtureModel : public CEMBase<MixModelData>
 {
@@ -50,6 +50,7 @@ class CEMMixtureModel : public CEMBase<MixModelData>
 		/* destructor */
 		virtual ~CEMMixtureModel();
 
+		/* returns name of class */
 		virtual const char* get_name() const { return "EMMixtureModel"; }		
 
 		/* expectation step
@@ -62,8 +63,12 @@ class CEMMixtureModel : public CEMBase<MixModelData>
 		virtual void maximization_step();
 
 	private:
-		/** log sum exp trick */
-		float64_t log_sum_exp(SGVector<float64_t> values);
+		/** log sum exp trick
+		 *
+		 * @param log_values vector of logarithmic values on which log_sum_exp trick has to be applied
+		 * @return log_sum_exp of the supplied log_values
+		 */
+		float64_t log_sum_exp(SGVector<float64_t> log_values);
 };
 } /* shogun */
 #endif /* _EMMIXTUREMODEL_H__ */

@@ -38,22 +38,26 @@
 
 namespace shogun
 {
-	struct MixModelData
-	{
-		/** allocated belongingness matrix */
-		SGMatrix<float64_t> alpha;
-		/** components of mixture */
-		CDynamicObjectArray* components;
-		/** weights of mixture */
-		SGVector<float64_t> weights;
+/** @brief This structure is used for storing data required for using the generic Expectation Maximization (EM)  implemented 
+ * by the template class CEMBase for mixture models like gaussian mixture model, multinomial mixture model etc. The EM 
+ * specialized for mixture models is implemented by the class CEMMixtureModel which uses this MixModelData structure.
+ */
+struct MixModelData
+{
+	/** allocated belongingness matrix */
+	SGMatrix<float64_t> alpha;
+	/** components of mixture */
+	CDynamicObjectArray* components;
+	/** weights of mixture */
+	SGVector<float64_t> weights;
 
-		MixModelData()
-		{
-			alpha=SGMatrix<float64_t>();
-			components=NULL;
-			weights=SGVector<float64_t>();
-		}
-	};
+	MixModelData()
+	{
+		alpha=SGMatrix<float64_t>();
+		components=NULL;
+		weights=SGVector<float64_t>();
+	}
+};
 } /* shogun */
 
 #endif /* _MIXMODELDATA_H__ */
