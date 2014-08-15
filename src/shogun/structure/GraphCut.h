@@ -21,8 +21,8 @@
 #include <shogun/structure/MAPInference.h>
 
 /* special constants for node->parent. */
-#define TERMINAL_EDGE ( (Edge *) 1 ) // to terminal
-#define ORPHAN_EDGE   ( (Edge *) 2 ) // orphan
+#define TERMINAL_EDGE ( (GCEdge *) 1 ) // to terminal
+#define ORPHAN_EDGE   ( (GCEdge *) 2 ) // orphan
 
 #define INFINITE_D 1000000000 // infinite distance to the terminal
 
@@ -30,37 +30,57 @@ namespace shogun
 {
 enum ETerminalType
 {
-    SOURCE = 0, // source terminal
-    SINK = 1 // sink terminal
+	/** source terminal */
+	SOURCE = 0,
+	/** sink terminal */
+	SINK = 1 
 };
 
-struct Node;
-struct Edge
+struct GCNode;
+struct GCEdge
 {
-	int32_t id; // edge id
-	Node* head; // node the edge point to
-	Edge* next; // next edge with the same originated node
-	Edge* reverse; // reverse edge
-	float64_t residual_capacity; // residual capacity
+	/** edge id */
+	int32_t id;
+	/** node the edge point to */
+	GCNode* head;
+	/** next edge with the same originated node */
+	GCEdge* next;
+	/** reverse edge */
+	GCEdge* reverse;
+	/** residual capacity */
+	float64_t residual_capacity;
 };
 
-struct Node
+struct GCNode
 {
-	int32_t id; // node id
-	Edge* first; // first outcoming edge
-	Edge* parent; // node's parent
-	Node* next; // pointer to the next active node (or itself if it is the last node in the list)
-	int32_t timestamp; // timestamp showing when dist_to_terminal was computed
-	int32_t dist_terminal; // distance to the terminal
-	ETerminalType type_tree; // the type of the tree that the node belongs to
-	float64_t tree_cap; // if tree_cap > 0 then tree_cap is residual capacity of the edge SOURCE->node
-	// otherwise -tree_cap is residual capacity of the edge node->SINK
+	/** node id */
+	int32_t id;
+	/** first outcoming edge */
+	GCEdge* first;
+	/** node's parent */
+	GCEdge* parent;
+	/** pointer to the next active node
+	 * (or itself if it is the last node in the list)
+	 */
+	GCNode* next;
+	/** timestamp showing when dist_to_terminal was computed */
+	int32_t timestamp;
+	/** distance to the terminal */
+	int32_t dist_terminal;
+	/** the type of the tree that the node belongs to */
+	ETerminalType type_tree;
+	/** if tree_cap > 0 then tree_cap is residual capacity
+	 * of the edge SOURCE->node otherwise -tree_cap is 
+	 * residual capacity of the edge node->SINK */
+	float64_t tree_cap;
 };
 
-struct NodePtr
+struct GCNodePtr
 {
-	Node* ptr; // pointer of the node
-	NodePtr* next; // point to the next
+	/** pointer of the node */
+	GCNode* ptr;
+	/** point to the next */
+	GCNodePtr* next;
 };
 
 /** Graph-cuts inference for fatcor graph using V. Kolmogorov's max-flow/min-cut algorithm
@@ -228,29 +248,29 @@ private:
 	 *
 	 * @param node_i the node to add
 	 */
-	void set_active(Node* node_i);
+	void set_active(GCNode* node_i);
 
 	/** Get an active node next to the current node from the list */
-	Node* next_active();
+	GCNode* next_active();
 
 	/** Add node to the beginning of the orphan list
 	 *
 	 * @param node_i the node to add
 	 */
-	void set_orphan_front(Node* node_i);
+	void set_orphan_front(GCNode* node_i);
 
 	/** Add node to the end of the orphan list
 	 *
 	 * @param node_i the node to add
 	 */
-	void set_orphan_rear(Node* node_i);
+	void set_orphan_rear(GCNode* node_i);
 
 	/** Process an orphan node
 	 *
 	 * @param node_i the node to process
 	 * @param terminalType_tree SOURCE or SINK tree
 	 */
-	void process_orphan(Node* node_i, ETerminalType terminalType_tree);
+	void process_orphan(GCNode* node_i, ETerminalType terminalType_tree);
 
 	/** Grow to add node to active set
 	 *
@@ -259,41 +279,56 @@ private:
 	 *
 	 * @return true if the next active node is found otherwise false
 	 */
-	bool grow(Edge* &edge, Node* &current_node);
+	bool grow(GCEdge* &edge, GCNode* &current_node);
 
 	/** Augment the source->sink path
 	 *
 	 * @param connecting_edge the edge connecting a source->sink path
 	 */
-	void augment_path(Edge* connecting_edge);
+	void augment_path(GCEdge* connecting_edge);
 
 	/** Adopt orphan nodes */
 	void adopt();
 
 	/** Test the consistency of the graph, for debug mode */
-	void test_consistency(Node* current_node = NULL);
+	void test_consistency(GCNode* current_node = NULL);
 protected:
-	float64_t m_map_energy; // the total energy of the factor graph
+	/** the total energy of the factor graph */
+	float64_t m_map_energy;
 
 private:
-	int32_t m_num_variables; // number of variables in the factor graph
-	SGVector<int32_t> m_num_factors_at_order; // statistic of the number of the factors at order [1, 2, 3]
-	DynArray< SGVector<int32_t> > m_triple_list; // list of triple nodes, for order-3 factors
+	/** number of variables in the factor graph */
+	int32_t m_num_variables;
+	/** statistic of the number of the factors at order [1, 2, 3] */
+	SGVector<int32_t> m_num_factors_at_order;
+	/** list of triple nodes, for order-3 factors */
+	DynArray< SGVector<int32_t> > m_triple_list;
 
-	Node*		m_nodes; // nodes in the st graph
-	int32_t		m_num_nodes; // number of nodes
-	Edge*		m_edges; // edges in the st graph
-	Edge*		m_edges_last; // point to the end of the added edges
-	int32_t		m_num_edges; // number of edges
+	/** nodes in the st graph */
+	GCNode*		m_nodes;
+	/** number of nodes */
+	int32_t		m_num_nodes;
+	/** edges in the st graph */
+	GCEdge*		m_edges;
+	/** point to the end of the added edges */
+	GCEdge*		m_edges_last;
+	/** number of edges */
+	int32_t		m_num_edges;
 
-	float64_t	m_flow; // total flow
-	int32_t		m_timestamp; // timestamp
+	/** total flow */
+	float64_t	m_flow;
+	/** timestamp */
+	int32_t		m_timestamp;
 
-	Node*		m_active_first[2]; // list of active nodes
-	Node*		m_active_last[2]; // list of active nodes
+	/** list of active nodes */
+	GCNode*		m_active_first[2];
+	/** list of active nodes */
+	GCNode*		m_active_last[2];
 
-	NodePtr*	m_orphan_first; // list of pointers to orphans
-	NodePtr*	m_orphan_last; // list of pointers to orphans
+	/** list of pointers to orphans */
+	GCNodePtr*	m_orphan_first;
+	/** list of pointers to orphans */
+	GCNodePtr*	m_orphan_last;
 };
 
 }
