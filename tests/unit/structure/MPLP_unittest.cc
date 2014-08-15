@@ -11,7 +11,7 @@
 #include <shogun/structure/Factor.h>
 #include <shogun/structure/MAPInference.h>
 #include <shogun/structure/StochasticSOSVM.h>
-#include <shogun/structure/GraphCut.h>
+#include <shogun/structure/MPLP.h>
 
 #include <shogun/features/FactorGraphFeatures.h>
 #include <shogun/labels/FactorGraphLabels.h>
@@ -25,63 +25,8 @@ inline int grid_to_index(int32_t x, int32_t y, int32_t w = 10)
 	return x + w * y;
 }
 
-void truncate(float64_t &A, float64_t &B, float64_t &C, float64_t &D)
-{
-	if (A + D > C + B)
-	{
-		SG_SDEBUG("\nTruncate initialized data to ensure submodularity.\n");
-		float64_t delta = A + D - C - B;
-		float64_t subtrA = delta / 3;
-		A = A - subtrA;
-		C = C + subtrA;
-		B = B + (delta - subtrA * 2) + 0.0001; // for numeric issue
-	}
-}
-
-// Test max-flow algorithm on s-t graph
-TEST(GraphCut, graph_cut_st_graph)
-{
-	int32_t num_nodes = 5;
-	int32_t num_edges = 6;
-
-	CGraphCut* g = new CGraphCut(num_nodes, num_edges);
-	SG_REF(g);
-
-	g->add_tweights(0, 4, 0);
-	g->add_tweights(1, 2, 0);
-	g->add_tweights(2, 8, 0);
-	g->add_tweights(2, 0, 4);
-	g->add_tweights(3, 0, 7);
-	g->add_tweights(4, 0, 5);
-
-	g->add_edge(0, 2, 5, 0);
-	g->add_edge(0, 3, 2, 0);
-	g->add_edge(1, 2, 6, 0);
-	g->add_edge(1, 4, 9, 0);
-	g->add_edge(2, 3, 1, 0);
-	g->add_edge(2, 4, 3, 0);
-
-	g->init_maxflow();
-	int32_t flow = g->compute_maxflow();
-	EXPECT_EQ(flow, 12);
-
-	DynArray<ETerminalType> expected_assignments;
-	expected_assignments.push_back(SOURCE);
-	expected_assignments.push_back(SOURCE);
-	expected_assignments.push_back(SOURCE);
-	expected_assignments.push_back(SINK);
-	expected_assignments.push_back(SOURCE);
-
-	for (int32_t i = 0; i < num_nodes; i++)
-	{
-		EXPECT_EQ(g->get_assignment(i), expected_assignments[i]);
-	}
-
-	SG_UNREF(g);
-}
-
-// Test graph-cuts inference for a simple two nodes chain structure graph
-TEST(GraphCut, graph_cut_chain)
+// Test MPLP inference for a simple two nodes chain structure graph
+TEST(MPLP, mplp_chain)
 {
 	// ftype
 	SGVector<int32_t> card(2);
@@ -152,7 +97,7 @@ TEST(GraphCut, graph_cut_chain)
 	EXPECT_TRUE(fg->is_tree_graph());
 	EXPECT_EQ(fg->get_num_edges(), 4);
 
-	CMAPInference infer_met(fg, GRAPH_CUT);
+	CMAPInference infer_met(fg, LP_RELAXATION);
 	infer_met.inference();
 
 	CFactorGraphObservation* fg_observ = infer_met.get_structured_outputs();
@@ -164,9 +109,9 @@ TEST(GraphCut, graph_cut_chain)
 	SG_UNREF(fg);
 }
 
-// Test graph-cuts inference for a four nodes chain graph
+// Test MPLP inference for a four nodes chain graph
 // potentials are randomly generated
-TEST(GraphCut, graph_cut_random)
+TEST(MPLP, mplp_random)
 {
 	CMath::init_random(17);
 	int N = 2;
@@ -221,9 +166,6 @@ TEST(GraphCut, graph_cut_random)
 					float64_t B = CMath::random(0.0, 1.0);//E(0,1)->B
 					float64_t D = CMath::random(0.0, 1.0);//E(1,1)->D
 
-					// Add truncation to ensure submodularity
-					truncate(A, B, C, D);
-
 					data[0] = A;
 					data[1] = C;
 					data[2] = B;
@@ -243,10 +185,7 @@ TEST(GraphCut, graph_cut_random)
 					float64_t C = CMath::random(0.0, 1.0);//E(1,0)->C
 					float64_t B = CMath::random(0.0, 1.0);//E(0,1)->B
 					float64_t D = CMath::random(0.0, 1.0);//E(1,1)->D
-
-					// Add truncation to ensure submodularity
-					truncate(A, B, C, D);
-
+					
 					data[0] = A;
 					data[1] = C;
 					data[2] = B;
@@ -274,7 +213,7 @@ TEST(GraphCut, graph_cut_random)
 		EXPECT_TRUE(fg->is_tree_graph());
 		EXPECT_EQ(fg->get_num_edges(), 10);
 
-		CMAPInference infer_met(fg, GRAPH_CUT);
+		CMAPInference infer_met(fg, LP_RELAXATION);
 		infer_met.inference();
 
 		CFactorGraphObservation* fg_observ = infer_met.get_structured_outputs();
@@ -321,7 +260,7 @@ TEST(GraphCut, graph_cut_random)
 }
 
 /*---------------------------------------------------------------------------------
-Test graph-cuts with SOSVM framework using randomly generated synthetic data
+Test MPLP with SOSVM framework using randomly generated synthetic data
 ----------------------------------------------------------------------------------*/
 
 /** Generate random data following [1]:
@@ -486,7 +425,7 @@ inline void define_factor_types(int32_t num_classes, int32_t dim, int32_t num_ed
 	}
 }
 
-TEST(GraphCut, graphcuts_sosvm)
+TEST(MPLP, mplp_sosvm)
 {
 	SGMatrix<int32_t> labels_train;
 	SGMatrix<float64_t> feats_train;
@@ -516,7 +455,7 @@ TEST(GraphCut, graphcuts_sosvm)
 	build_factor_graph(feats_train, labels_train, edge_table, v_factor_type, fg_feats_train, fg_labels_train);
 
 	// 1.4 Create factor graph model
-	CFactorGraphModel* model = new CFactorGraphModel(fg_feats_train, fg_labels_train, GRAPH_CUT, false);
+	CFactorGraphModel* model = new CFactorGraphModel(fg_feats_train, fg_labels_train, LP_RELAXATION, false);
 	SG_REF(model);
 
 	// Initialize model parameters
@@ -566,7 +505,7 @@ TEST(GraphCut, graphcuts_sosvm)
 
 	ave_loss_sgd = acc_loss_sgd / static_cast<float64_t>(num_sample_train);
 
-	// training error is expected to be 0
+	// training error is expected to be close to 0
 	EXPECT_NEAR(ave_loss_sgd, 0, 0.1);
 
 	SG_UNREF(labels_sgd);
