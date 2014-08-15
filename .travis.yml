@@ -107,7 +107,7 @@ install:
 before_script:
   - mkdir build
   - cd build
-  - cmake -DENABLE_TESTING=ON $CMAKE_OPTIONS ..
+  - cmake -DENABLE_TESTING=ON -DOpenCV=ON $CMAKE_OPTIONS ..
 script:
   - if [ -z "$CMAKE_OPTIONS" -o -n "$COVERALLS" ] ; then
       make -j 2 ;
