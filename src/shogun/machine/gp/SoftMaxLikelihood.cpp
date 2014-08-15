@@ -26,6 +26,14 @@
  * The views and conclusions contained in the software and documentation are those
  * of the authors and should not be interpreted as representing official policies,
  * either expressed or implied, of the Shogun Development Team.
+ *
+ * Code adapted from
+ * https://gist.github.com/yorkerlin/8a36e8f9b298aa0246a4
+ * and
+ * GPstuff - Gaussian process models for Bayesian analysis
+ * http://becs.aalto.fi/en/research/bayes/gpstuff/
+ *
+ * The reference pseudo code is the algorithm 3.4 of the GPML textbook
  */
 
 #include <shogun/machine/gp/SoftMaxLikelihood.h>
@@ -34,16 +42,26 @@
 
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/mathematics/eigen3.h>
+#include <shogun/distributions/classical/GaussianDistribution.h>
 
 using namespace shogun;
 using namespace Eigen;
 
 CSoftMaxLikelihood::CSoftMaxLikelihood() : CLikelihoodModel()
 {
+	init();
 }
 
 CSoftMaxLikelihood::~CSoftMaxLikelihood()
 {
+}
+
+void CSoftMaxLikelihood::init()
+{
+	m_num_samples=10000;
+	SG_ADD(&m_num_samples, "num_samples", 
+		"Number of samples to be generated",
+		MS_NOT_AVAILABLE);
 }
 
 SGVector<float64_t> CSoftMaxLikelihood::get_log_probability_f(const CLabels* lab,
@@ -201,6 +219,130 @@ SGVector<float64_t> CSoftMaxLikelihood::get_log_probability_derivative3_f(SGMatr
 	}
 
 	return ret;
+}
+
+void CSoftMaxLikelihood::set_num_samples(index_t num_samples)
+{
+	REQUIRE(num_samples>0, "Numer of samples (%d) should be positive\n",
+		num_samples);
+	m_num_samples=num_samples;
+}
+
+SGVector<float64_t> CSoftMaxLikelihood::predictive_helper(SGVector<float64_t> mu,
+	SGVector<float64_t> s2, const CLabels *lab, EMCSamplerType option) const
+{
+	const index_t C=s2.vlen/mu.vlen;
+	const index_t n=mu.vlen/C;
+
+	REQUIRE(n*C==mu.vlen, "Number of labels (%d) times number of classes (%d) must match "
+		"number of elements(%d) in mu\n", n, C, mu.vlen);
+
+	REQUIRE(n*C*C==s2.vlen, "Number of labels (%d) times second power of number of classes (%d*%d) must match "
+		"number of elements(%d) in s2\n",n, C, C, s2.vlen);
+
+	SGVector<index_t> y;
+
+	if (lab)
+	{
+		REQUIRE(lab->get_label_type()==LT_MULTICLASS,
+			"Labels must be type of CMulticlassLabels\n");
+
+		const index_t n1=lab->get_num_labels();
+		REQUIRE(n==n1, "Number of samples (%d) learned from mu and s2 must match "
+			"number of labels(%d) in lab\n",n,n1);
+
+		y=((CMulticlassLabels*) lab)->get_int_labels();
+		for (index_t i=0;i<y.vlen;i++)
+			REQUIRE(y[i]<C,"Labels must be between 0 and C(ie %d here). Currently lab[%d] is"
+				"%d\n",C,i,y[i]);
+	}
+	else
+	{
+		y=SGVector<index_t>(n);
+		y.set_const(C);
+	}
+
+	SGVector<float64_t> ret(mu.vlen);
+
+	for(index_t idx=0; idx<n; idx++)
+	{
+		SGMatrix<float64_t> Sigma(s2.vector+idx*C*C, C, C, false);
+		SGVector<float64_t> mean(mu.vector+idx*C, C, false);
+		SGVector<float64_t> label(C);
+		if (y[idx]<C)
+		{
+			label.set_const(0);
+			label[y[idx]]=1.0;
+		}
+		else
+		{
+			label.set_const(1.0);
+		}
+
+		Map<VectorXd> eigen_ret_sub(ret.vector+idx*C, C);
+		SGVector<float64_t> tmp=mc_sampler(m_num_samples,mean,Sigma,label);
+		Map<VectorXd> eigen_tmp(tmp.vector, tmp.vlen);
+		eigen_ret_sub=eigen_tmp;
+
+		if (option==1)
+		{
+			Map<VectorXd> eigen_label(label.vector, label.vlen);
+			eigen_ret_sub=eigen_ret_sub.array()*eigen_label.array()+(1-eigen_ret_sub.array())*(1-eigen_label.array());
+		}
+	}
+
+	if (option==2)
+	{
+		Map<VectorXd> eigen_ret(ret.vector, ret.vlen);
+		eigen_ret=eigen_ret.array()*(1-eigen_ret.array());
+	}
+
+	return ret;
+}
+
+SGVector<float64_t> CSoftMaxLikelihood::get_predictive_log_probabilities(
+	SGVector<float64_t> mu, SGVector<float64_t> s2, const CLabels *lab) const
+{
+	return predictive_helper(mu, s2, lab, MC_Probability);
+}
+
+SGVector<float64_t> CSoftMaxLikelihood::mc_sampler(index_t num_samples, SGVector<float64_t> mean,
+	SGMatrix<float64_t> Sigma, SGVector<float64_t> y) const
+{
+	CGaussianDistribution *gen=new CGaussianDistribution (mean, Sigma);
+
+	//category by samples
+	SGMatrix<float64_t> samples=gen->sample(num_samples);
+	Map<MatrixXd> eigen_samples(samples.matrix, samples.num_rows, samples.num_cols);
+
+	MatrixXd my_samples=eigen_samples.array().exp();
+	VectorXd sum_samples=my_samples.array().colwise().sum().transpose();
+	MatrixXd normal_samples=(my_samples.array().rowwise()/sum_samples.array().transpose());
+	VectorXd mean_samples=normal_samples.rowwise().mean();
+
+	SGVector<float64_t>est(mean.vlen);
+	Map<VectorXd> eigen_est(est.vector, est.vlen);
+	
+	//0 and 1 encoding
+	Map<VectorXd> eigen_y(y.vector, y.vlen);
+	eigen_est=(mean_samples.array()*eigen_y.array())+(1-mean_samples.array())*(1-eigen_y.array());
+
+	SG_UNREF(gen);
+
+	return est;
+}
+
+SGVector<float64_t> CSoftMaxLikelihood::get_predictive_means(
+		SGVector<float64_t> mu, SGVector<float64_t> s2, const CLabels* lab) const
+{
+	
+	return predictive_helper(mu, s2, lab, MC_Mean);
+}
+
+SGVector<float64_t> CSoftMaxLikelihood::get_predictive_variances(
+		SGVector<float64_t> mu, SGVector<float64_t> s2, const CLabels* lab) const
+{
+	return predictive_helper(mu, s2, lab, MC_Variance);
 }
 
 #endif /* HAVE_EIGEN3 */

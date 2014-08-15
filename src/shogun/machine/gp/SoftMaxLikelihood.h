@@ -26,6 +26,15 @@
  * The views and conclusions contained in the software and documentation are those
  * of the authors and should not be interpreted as representing official policies,
  * either expressed or implied, of the Shogun Development Team.
+ *
+ * Code adapted from
+ * https://gist.github.com/yorkerlin/8a36e8f9b298aa0246a4
+ * and
+ * GPstuff - Gaussian process models for Bayesian analysis
+ * http://becs.aalto.fi/en/research/bayes/gpstuff/
+ *
+ * The reference pseudo code is the algorithm 3.4 of the GPML textbook
+ *
  */
 
 #ifndef _SOFTMAXLIKELIHOOD_H_
@@ -41,9 +50,30 @@
 namespace shogun
 {
 
+/** mc sampler type */
+enum EMCSamplerType
+{
+	MC_Probability,
+	MC_Mean,
+	MC_Variance
+};
+
 /** @brief Class that models Soft-Max likelihood.
  *
  * softmax_i(f)=\frac{\exp{f_i}}{\sum\exp{f_i}}
+ *
+ * Code adapted from
+ * https://gist.github.com/yorkerlin/8a36e8f9b298aa0246a4
+ * and
+ * GPstuff - Gaussian process models for Bayesian analysis
+ * http://becs.aalto.fi/en/research/bayes/gpstuff/
+ *
+ * The reference pseudo code is the algorithm 3.4 of the GPML textbook
+ *
+ * The implementation of predictive statistics is based on the mc sampler.
+ * The basic idea of the sampler is that 
+ * first generating samples from the posterior Gaussian distribution given by mu and s2
+ * and then using the samplers to estimate the predictive marginal distribution.
  *
  */
 class CSoftMaxLikelihood : public CLikelihoodModel
@@ -62,8 +92,7 @@ public:
 	virtual const char* get_name() const { return "SoftMaxLikelihood"; }
 
 	/** returns mean of the predictive marginal \f$p(y_*|X,y,x_*)\f$
-	 *
-	 * NOTE: NOT IMPLEMENTED
+	 * The implementation is based on a simple Monte Carlo sampler from the pseudo code.
 	 *
 	 * @param mu posterior mean of a Gaussian distribution
 	 * \f$\mathcal{N}(\mu,\sigma^2)\f$, which is an approximation to the
@@ -73,18 +102,16 @@ public:
 	 * posterior marginal \f$p(f_*|X,y,x_*)\f$
 	 * @param lab labels \f$y_*\f$
 	 *
-	 * @return final means evaluated by likelihood function
+	 * Note that the mean vector should be a column-marjor linearized C-by-n matrix,
+	 * where C is the number of classes and n is the number of samplers
+	 *
+	 * @return final means (based on 0 and 1 bernoulli-encoding) evaluated by likelihood function
 	 */
 	virtual SGVector<float64_t> get_predictive_means(SGVector<float64_t> mu,
-			SGVector<float64_t> s2, const CLabels* lab=NULL) const
-	{
-		SG_ERROR("Not Implemented\n");
-		return SGVector<float64_t>();
-	}
+			SGVector<float64_t> s2, const CLabels* lab=NULL) const;
 
 	/** returns variance of the predictive marginal \f$p(y_*|X,y,x_*)\f$
-	 *
-	 * NOTE: NOT IMPLEMENTED
+	 * The implementation is based on a simple Monte Carlo sampler from the pseudo code.
 	 *
 	 * @param mu posterior mean of a Gaussian distribution
 	 * \f$\mathcal{N}(\mu,\sigma^2)\f$, which is an approximation to the
@@ -94,14 +121,47 @@ public:
 	 * posterior marginal \f$p(f_*|X,y,x_*)\f$
 	 * @param lab labels \f$y_*\f$
 	 *
-	 * @return final variances evaluated by likelihood function
+	 * Note that the variance vector should be a column-marjor linearized C-by-n matrix,
+	 * where C is the number of classes and n is the number of samplers
+	 *
+	 * @return final variances (based on 0 and 1 bernoulli-encoding) evaluated by likelihood function
 	 */
 	virtual SGVector<float64_t> get_predictive_variances(SGVector<float64_t> mu,
-			SGVector<float64_t> s2, const CLabels* lab=NULL) const
-	{
-		SG_ERROR("Not Implemented\n");
-		return SGVector<float64_t>();
-	}
+			SGVector<float64_t> s2, const CLabels* lab=NULL) const;
+
+	/** returns the logarithm of the predictive density of \f$y_*\f$:
+	 * The implementation is based on a simple Monte Carlo sampler from the pseudo code.
+	 *
+	 * \f[
+	 * log(p(y_*|X,y,x_*)) = log\left(\int p(y_*|f_*) p(f_*|X,y,x_*) df_*\right)
+	 * \f]
+	 *
+	 * which approximately equals to
+	 *
+	 * \f[
+	 * log\left(\int p(y_*|f_*) \mathcal{N}(f_*|\mu,\sigma^2) df_*\right)
+	 * \f]
+	 *
+	 * where normal distribution \f$\mathcal{N}(\mu,\sigma^2)\f$ is an
+	 * approximation to the posterior marginal \f$p(f_*|X,y,x_*)\f$.
+	 *
+	 * NOTE: if lab equals to NULL, then each \f$y_*\f$ equals to one.
+	 *
+	 * @param mu posterior mean of a Gaussian distribution
+	 * \f$\mathcal{N}(\mu,\sigma^2)\f$, which is an approximation to the
+	 * posterior marginal \f$p(f_*|X,y,x_*)\f$
+	 * @param s2 posterior variance of a Gaussian distribution
+	 * \f$\mathcal{N}(\mu,\sigma^2)\f$, which is an approximation to the
+	 * posterior marginal \f$p(f_*|X,y,x_*)\f$
+	 * @param lab labels \f$y_*\f$
+	 *
+	 * Note that the log_probability vector should be a column-marjor linearized C-by-n matrix,
+	 * where C is the number of classes and n is the number of samplers
+	 *
+	 * @return \f$log(p(y_*|X, y, x*))\f$ for each label \f$y_*\f$ (based on 0 and 1 bernoulli-encoding)
+	 */
+	virtual SGVector<float64_t> get_predictive_log_probabilities(SGVector<float64_t> mu,
+		SGVector<float64_t> s2, const CLabels *lab=NULL) const;
 
 	/** returns the logarithm of the point-wise likelihood \f$log(p(y_i|f_i))\f$
 	 * for each label \f$y_i\f$, an integer between 1 and C (ie. number of classes).
@@ -196,7 +256,53 @@ public:
 	 */
 	virtual bool supports_multiclass() const { return true; }
 
+	/** 
+	 * set the num_samples used in the mc sampler
+	 * @param num_samples number of samples to be generated
+	 *
+	 */
+	virtual void set_num_samples(index_t num_samples);
+
 private:
+	/** init */
+	void init();
+	/** number of samples to be generated */
+	index_t m_num_samples;
+
+	/**use to get predictive statistics(probability,mean,variance)
+	 *
+	 * @param mu posterior mean of a Gaussian distribution
+	 * \f$\mathcal{N}(\mu,\sigma^2)\f$, which is an approximation to the
+	 * posterior marginal \f$p(f_*|X,y,x_*)\f$
+	 * @param s2 posterior variance of a Gaussian distribution
+	 * \f$\mathcal{N}(\mu,\sigma^2)\f$, which is an approximation to the
+	 * posterior marginal \f$p(f_*|X,y,x_*)\f$
+	 * @param lab labels \f$y_*\f$
+	 * @param option predictive statistics(MC_Probability,MC_Mean,MC_Variance)
+	 *
+	 * @return the statistics based on mc sampler
+	 */
+	SGVector<float64_t> predictive_helper(SGVector<float64_t> mu,
+	SGVector<float64_t> s2, const CLabels *lab, EMCSamplerType option) const;
+
+	/**the Monte method sampler
+	 *
+	 * @oaram num_samples number of samples to be generated
+	 * @param mu posterior mean of a Gaussian distribution
+	 * \f$\mathcal{N}(\mu,\sigma^2)\f$, which is an approximation to the
+	 * posterior marginal \f$p(f_*|X,y,x_*)\f$
+	 * @param s2 posterior variance of a Gaussian distribution
+	 * \f$\mathcal{N}(\mu,\sigma^2)\f$, which is an approximation to the
+	 * posterior marginal \f$p(f_*|X,y,x_*)\f$
+	 * @param y labels based on 0 and 1 encoding \f$y_*\f$
+	 *
+	 * @return the statistics based on mc sampler
+	 */
+
+	SGVector<float64_t> mc_sampler(index_t num_samples, SGVector<float64_t> mean,
+		SGMatrix<float64_t> Sigma, SGVector<float64_t> y) const;
+
+
 	/** get 1st derivative of log likelihood \f$log(p(y|f))\f$ with respect to
 	 * location function \f$f\f$
 	 *

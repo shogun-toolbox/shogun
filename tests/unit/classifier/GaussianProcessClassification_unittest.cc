@@ -48,6 +48,7 @@
 #include <gtest/gtest.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/machine/gp/SingleLaplacianInferenceMethodWithLBFGS.h>
+#include <shogun/machine/gp/MultiLaplacianInferenceMethod.h>
 
 #include <shogun/machine/gp/KLCovarianceInferenceMethod.h>
 #include <shogun/machine/gp/KLCholeskyInferenceMethod.h>
@@ -55,6 +56,7 @@
 #include <shogun/machine/gp/KLDualInferenceMethod.h>
 #include <shogun/machine/gp/LogitVGLikelihood.h>
 #include <shogun/machine/gp/LogitDVGLikelihood.h>
+#include <shogun/machine/gp/SoftMaxLikelihood.h>
 
 using namespace shogun;
 
@@ -2992,5 +2994,363 @@ TEST(GaussianProcessClassificationUsingKLDual, get_probabilities)
 	
 	SG_UNREF(gpc);
 	}
+
+TEST(GaussianProcessClassificationUsingMultiLaplacian,get_mean_vector)
+{
+
+	float64_t abs_tolorance;
+	//the implementation used mc sampler
+	//rel_tolorance is big
+	float64_t rel_tolorance=1e-1;
+	index_t n=10, m=10;
+	const index_t C=2;
+
+	SGMatrix<float64_t> feat_train(2, n);
+	SGVector<index_t> lab_train(n);
+	SGMatrix<float64_t> feat_test(2, m);
+
+	feat_train(0, 0)=0.0919736;
+	feat_train(0, 1)=-0.3813827;
+	feat_train(0, 2)=-1.8011128;
+	feat_train(0, 3)=-1.4603061;
+	feat_train(0, 4)=-0.1386884;
+	feat_train(0, 5)=0.7827657;
+	feat_train(0, 6)=-0.1369808;
+	feat_train(0, 7)=0.0058596;
+	feat_train(0, 8)=0.1059573;
+	feat_train(0, 9)=-1.3059609;
+
+	feat_train(1, 0)=1.4186892;
+	feat_train(1, 1)=0.2271813;
+	feat_train(1, 2)=0.3451326;
+	feat_train(1, 3)=0.4495962;
+	feat_train(1, 4)=1.2066144;
+	feat_train(1, 5)=-0.5425118;
+	feat_train(1, 6)=1.3479000;
+	feat_train(1, 7)=0.7181545;
+	feat_train(1, 8)=0.4036014;
+	feat_train(1, 9)=0.8928408;
+
+	lab_train[0]=0;
+	lab_train[1]=1;
+	lab_train[2]=1;
+	lab_train[3]=1;
+	lab_train[4]=1;
+	lab_train[5]=0;
+	lab_train[6]=1;
+	lab_train[7]=0;
+	lab_train[8]=0;
+	lab_train[9]=1;
+
+	feat_test(0, 0)=-2;
+	feat_test(0, 1)=-2;
+	feat_test(0, 2)=-2;
+	feat_test(0, 3)=-2;
+	feat_test(0, 4)=-2;
+	feat_test(0, 5)=1;
+	feat_test(0, 6)=1;
+	feat_test(0, 7)=1;
+	feat_test(0, 8)=1;
+	feat_test(0, 9)=1;
+
+	feat_test(1, 0)=-2;
+	feat_test(1, 1)=-1;
+	feat_test(1, 2)=0;
+	feat_test(1, 3)=1;
+	feat_test(1, 4)=2;
+	feat_test(1, 5)=-2;
+	feat_test(1, 6)=-1;
+	feat_test(1, 7)=0;
+	feat_test(1, 8)=1;
+	feat_test(1, 9)=2;
+
+	// shogun representation of features and labels
+	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
+	CMulticlassLabels* labels_train=new CMulticlassLabels();
+	labels_train->set_int_labels(lab_train);
+
+	const float64_t ell=1.210875895826508;
+	// choose Gaussian kernel with width = 2*ell^2 and zero mean function
+	CGaussianKernel* kernel=new CGaussianKernel(10, ell*ell*2.0);
+	CZeroMean* mean=new CZeroMean();
+
+	CSoftMaxLikelihood* likelihood=new CSoftMaxLikelihood();
+	CMultiLaplacianInferenceMethod* inf=new CMultiLaplacianInferenceMethod(kernel,
+		features_train,	mean, labels_train, likelihood);
+
+	const float64_t scale=CMath::sqrt(497.3965463400368);
+	inf->set_scale(scale);
+
+	CDenseFeatures<float64_t>* features_test=new CDenseFeatures<float64_t>(feat_test);
+
+	// train gaussian process classifier
+	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
+	gpc->train();
+
+	// compare mean vector with result form GP-Stuff 4.4
+	SGVector<float64_t> mean_vector=gpc->get_mean_vector(features_test);
+	SGMatrix<float64_t> mean_matrix(mean_vector.vector, C, m, false);
+
+	//0.495018898849053   0.440144547864533   0.378181314460968  0.316866130884288  0.363482284945346  0.507788773680543 0.571331569524648  0.741011569366910   0.844409862561900   0.737462852233711
+   //0.504981101150947   0.559855452135468   0.621818685539032  0.683133869115712  0.636517715054655  0.492211226319456 0.428668430475352  0.258988430633090   0.155590137438104   0.262537147766292
+
+	abs_tolorance = CMath::get_abs_tolorance(0.495018898849053, rel_tolorance);
+	EXPECT_NEAR(mean_matrix(0,0),  0.495018898849053,  abs_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(0.440144547864533, rel_tolorance);
+	EXPECT_NEAR(mean_matrix(0,1),  0.440144547864533,  abs_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(0.378181314460968, rel_tolorance);
+	EXPECT_NEAR(mean_matrix(0,2),  0.378181314460968,  abs_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(0.316866130884288, rel_tolorance);
+	EXPECT_NEAR(mean_matrix(0,3),  0.316866130884288,  abs_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(0.363482284945346, rel_tolorance);
+	EXPECT_NEAR(mean_matrix(0,4),  0.363482284945346,  abs_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(0.507788773680543, rel_tolorance);
+	EXPECT_NEAR(mean_matrix(0,5),  0.507788773680543,  abs_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(0.571331569524648, rel_tolorance);
+	EXPECT_NEAR(mean_matrix(0,6),  0.571331569524648,  abs_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(0.741011569366910, rel_tolorance);
+	EXPECT_NEAR(mean_matrix(0,7),  0.741011569366910,  abs_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(0.844409862561900, rel_tolorance);
+	EXPECT_NEAR(mean_matrix(0,8),  0.844409862561900,  abs_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(0.737462852233711, rel_tolorance);
+	EXPECT_NEAR(mean_matrix(0,9),  0.737462852233711,  abs_tolorance);
+
+	abs_tolorance = CMath::get_abs_tolorance(0.504981101150947, rel_tolorance);
+	EXPECT_NEAR(mean_matrix(1,0),  0.504981101150947,  abs_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(0.559855452135468, rel_tolorance);
+	EXPECT_NEAR(mean_matrix(1,1),  0.559855452135468,  abs_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(0.621818685539032, rel_tolorance);
+	EXPECT_NEAR(mean_matrix(1,2),  0.621818685539032,  abs_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(0.683133869115712, rel_tolorance);
+	EXPECT_NEAR(mean_matrix(1,3),  0.683133869115712,  abs_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(0.636517715054655, rel_tolorance);
+	EXPECT_NEAR(mean_matrix(1,4),  0.636517715054655,  abs_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(0.492211226319456, rel_tolorance);
+	EXPECT_NEAR(mean_matrix(1,5),  0.492211226319456,  abs_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(0.428668430475352, rel_tolorance);
+	EXPECT_NEAR(mean_matrix(1,6),  0.428668430475352,  abs_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(0.258988430633090, rel_tolorance);
+	EXPECT_NEAR(mean_matrix(1,7),  0.258988430633090,  abs_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(0.155590137438104, rel_tolorance);
+	EXPECT_NEAR(mean_matrix(1,8),  0.155590137438104,  abs_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(0.262537147766292, rel_tolorance);
+	EXPECT_NEAR(mean_matrix(1,9),  0.262537147766292,  abs_tolorance);
+	
+	SG_UNREF(gpc);
+}
+
+TEST(GaussianProcessClassificationUsingMultiLaplacian,get_variance_vector)
+{
+
+	float64_t abs_tolorance;
+	//the implementation used mc sampler
+	//rel_tolorance is big
+	float64_t rel_tolorance=1e-1;
+	index_t n=10, m=10;
+	const index_t C=2;
+
+	SGMatrix<float64_t> feat_train(2, n);
+	SGVector<index_t> lab_train(n);
+	SGMatrix<float64_t> feat_test(2, m);
+
+	feat_train(0, 0)=0.0919736;
+	feat_train(0, 1)=-0.3813827;
+	feat_train(0, 2)=-1.8011128;
+	feat_train(0, 3)=-1.4603061;
+	feat_train(0, 4)=-0.1386884;
+	feat_train(0, 5)=0.7827657;
+	feat_train(0, 6)=-0.1369808;
+	feat_train(0, 7)=0.0058596;
+	feat_train(0, 8)=0.1059573;
+	feat_train(0, 9)=-1.3059609;
+
+	feat_train(1, 0)=1.4186892;
+	feat_train(1, 1)=0.2271813;
+	feat_train(1, 2)=0.3451326;
+	feat_train(1, 3)=0.4495962;
+	feat_train(1, 4)=1.2066144;
+	feat_train(1, 5)=-0.5425118;
+	feat_train(1, 6)=1.3479000;
+	feat_train(1, 7)=0.7181545;
+	feat_train(1, 8)=0.4036014;
+	feat_train(1, 9)=0.8928408;
+
+	lab_train[0]=0;
+	lab_train[1]=1;
+	lab_train[2]=1;
+	lab_train[3]=1;
+	lab_train[4]=1;
+	lab_train[5]=0;
+	lab_train[6]=1;
+	lab_train[7]=0;
+	lab_train[8]=0;
+	lab_train[9]=1;
+
+	feat_test(0, 0)=-2;
+	feat_test(0, 1)=-2;
+	feat_test(0, 2)=-2;
+	feat_test(0, 3)=-2;
+	feat_test(0, 4)=-2;
+	feat_test(0, 5)=1;
+	feat_test(0, 6)=1;
+	feat_test(0, 7)=1;
+	feat_test(0, 8)=1;
+	feat_test(0, 9)=1;
+
+	feat_test(1, 0)=-2;
+	feat_test(1, 1)=-1;
+	feat_test(1, 2)=0;
+	feat_test(1, 3)=1;
+	feat_test(1, 4)=2;
+	feat_test(1, 5)=-2;
+	feat_test(1, 6)=-1;
+	feat_test(1, 7)=0;
+	feat_test(1, 8)=1;
+	feat_test(1, 9)=2;
+
+	// shogun representation of features and labels
+	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
+	CMulticlassLabels* labels_train=new CMulticlassLabels();
+	labels_train->set_int_labels(lab_train);
+
+	const float64_t ell=1.210875895826508;
+	// choose Gaussian kernel with width = 2*ell^2 and zero mean function
+	CGaussianKernel* kernel=new CGaussianKernel(10, ell*ell*2.0);
+	CZeroMean* mean=new CZeroMean();
+
+	CSoftMaxLikelihood* likelihood=new CSoftMaxLikelihood();
+	CMultiLaplacianInferenceMethod* inf=new CMultiLaplacianInferenceMethod(kernel,
+		features_train,	mean, labels_train, likelihood);
+
+	const float64_t scale=CMath::sqrt(497.3965463400368);
+	inf->set_scale(scale);
+
+	CDenseFeatures<float64_t>* features_test=new CDenseFeatures<float64_t>(feat_test);
+
+	// train gaussian process classifier
+	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
+	gpc->train();
+
+	// compare variance vector with result form the following Matlab code
+	SGVector<float64_t> variance_vector=gpc->get_variance_vector(features_test);
+	SGMatrix<float64_t> variance_matrix(variance_vector.vector, C, m, false);
+
+	
+	//0.249642303718200   0.246892076745162   0.237282230243870   0.216467221239879   0.230674540362865   0.249716846163020 0.243943184224802   0.188439563066926   0.131755968107814   0.197173723102424
+	//0.249642303718200   0.246892076745162   0.237282230243870   0.216467221239878   0.230674540362865 0.249716846163020 0.243943184224802   0.188439563066926   0.131755968107815   0.197173723102423
+
+	abs_tolorance = CMath::get_abs_tolorance(0.249642303718200, rel_tolorance);
+	EXPECT_NEAR(variance_matrix(0,0),  0.249642303718200,  abs_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(0.246892076745162, rel_tolorance);
+	EXPECT_NEAR(variance_matrix(0,1),  0.246892076745162,  abs_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(0.237282230243870, rel_tolorance);
+	EXPECT_NEAR(variance_matrix(0,2),  0.237282230243870,  abs_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(0.216467221239879, rel_tolorance);
+	EXPECT_NEAR(variance_matrix(0,3),  0.216467221239879,  abs_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(0.230674540362865, rel_tolorance);
+	EXPECT_NEAR(variance_matrix(0,4),  0.230674540362865,  abs_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(0.249716846163020, rel_tolorance);
+	EXPECT_NEAR(variance_matrix(0,5),  0.249716846163020,  abs_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(0.243943184224802, rel_tolorance);
+	EXPECT_NEAR(variance_matrix(0,6),  0.243943184224802,  abs_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(0.188439563066926, rel_tolorance);
+	EXPECT_NEAR(variance_matrix(0,7),  0.188439563066926,  abs_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(0.131755968107814, rel_tolorance);
+	EXPECT_NEAR(variance_matrix(0,8),  0.131755968107814,  abs_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(0.197173723102424, rel_tolorance);
+	EXPECT_NEAR(variance_matrix(0,9),  0.197173723102424,  abs_tolorance);
+
+	abs_tolorance = CMath::get_abs_tolorance(0.249642303718200, rel_tolorance);
+	EXPECT_NEAR(variance_matrix(1,0),  0.249642303718200,  abs_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(0.246892076745162, rel_tolorance);
+	EXPECT_NEAR(variance_matrix(1,1),  0.246892076745162,  abs_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(0.237282230243870, rel_tolorance);
+	EXPECT_NEAR(variance_matrix(1,2),  0.237282230243870,  abs_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(0.216467221239878, rel_tolorance);
+	EXPECT_NEAR(variance_matrix(1,3),  0.216467221239878,  abs_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(0.230674540362865, rel_tolorance);
+	EXPECT_NEAR(variance_matrix(1,4),  0.230674540362865,  abs_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(0.249716846163020, rel_tolorance);
+	EXPECT_NEAR(variance_matrix(1,5),  0.249716846163020,  abs_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(0.243943184224802, rel_tolorance);
+	EXPECT_NEAR(variance_matrix(1,6),  0.243943184224802,  abs_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(0.188439563066926, rel_tolorance);
+	EXPECT_NEAR(variance_matrix(1,7),  0.188439563066926,  abs_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(0.131755968107815, rel_tolorance);
+	EXPECT_NEAR(variance_matrix(1,8),  0.131755968107815,  abs_tolorance);
+	abs_tolorance = CMath::get_abs_tolorance(0.197173723102423, rel_tolorance);
+	EXPECT_NEAR(variance_matrix(1,9),  0.197173723102423,  abs_tolorance);
+	
+	SG_UNREF(gpc);
+}
+
+TEST(GaussianProcessClassificationUsingMultiLaplacian,apply_multiclass)
+{
+	index_t n=5;
+
+	SGMatrix<float64_t> feat_train(2, n);
+	SGVector<index_t> lab_train(n);
+	
+	index_t m=3;
+	SGMatrix<float64_t> feat_test(2, m);
+
+	feat_train(0,0)=0.8822936;
+	feat_train(0,1)=-0.7160792;
+	feat_train(0,2)=0.9178174;
+	feat_train(0,3)=-0.0135544;
+	feat_train(0,4)=-0.5275911;
+
+	feat_train(1,0)=-0.9597321;
+	feat_train(1,1)=0.0231289;
+	feat_train(1,2)=0.8284935;
+	feat_train(1,3)=0.0023812;
+	feat_train(1,4)=-0.7218931;
+
+	lab_train[0]=0;
+	lab_train[1]=1;
+	lab_train[2]=0;
+	lab_train[3]=2;
+	lab_train[4]=1;
+
+	feat_test(0,0)=0.8822936;
+	feat_test(0,1)=-0.7160792;
+	feat_test(0,2)=-0.0135544;
+
+	feat_test(1,0)=-0.9597321;
+	feat_test(1,1)=0.0231289;
+	feat_test(1,2)=0.0023812;
+
+	// shogun representation of features and labels
+	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
+	CMulticlassLabels* labels_train=new CMulticlassLabels();
+	labels_train->set_int_labels(lab_train);
+
+	// choose Gaussian kernel with width = 2*2^2 and zero mean function
+	const float64_t ell=0.829123236069650;
+	CGaussianKernel* kernel=new CGaussianKernel(10, ell*ell*2.0);
+	CZeroMean* mean=new CZeroMean();
+
+	CSoftMaxLikelihood* likelihood=new CSoftMaxLikelihood();
+	CMultiLaplacianInferenceMethod* inf=new CMultiLaplacianInferenceMethod(kernel,
+		features_train,	mean, labels_train, likelihood);
+
+	const float64_t scale=CMath::sqrt(5.114014937226176);
+	inf->set_scale(scale);
+
+	CDenseFeatures<float64_t>* features_test=new CDenseFeatures<float64_t>(feat_test);
+
+	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
+	gpc->train();
+
+	CMulticlassLabels* prediction=gpc->apply_multiclass(features_test);
+	SGVector<int32_t> p=prediction->get_int_labels();
+
+	EXPECT_EQ(p[0], 0);
+	EXPECT_EQ(p[1], 1);
+	EXPECT_EQ(p[2], 2);
+
+	SG_UNREF(gpc);
+	SG_UNREF(prediction);
+}
 
 #endif /* HAVE_EIGEN3 */
