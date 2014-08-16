@@ -5,6 +5,7 @@
  #include <shogun/machine/gp/LikelihoodModel.h>
  #include <shogun/machine/gp/ProbitLikelihood.h>
  #include <shogun/machine/gp/LogitLikelihood.h>
+ #include <shogun/machine/gp/SoftMaxLikelihood.h>
  #include <shogun/machine/gp/GaussianLikelihood.h>
  #include <shogun/machine/gp/StudentsTLikelihood.h>
 
@@ -25,6 +26,7 @@
  #include <shogun/machine/gp/InferenceMethod.h>
  #include <shogun/machine/gp/LaplacianInferenceBase.h>
  #include <shogun/machine/gp/SingleLaplacianInferenceMethod.h>
+ #include <shogun/machine/gp/MultiLaplacianInferenceMethod.h>
  #include <shogun/machine/gp/ExactInferenceMethod.h>
  #include <shogun/machine/gp/SingleLaplacianInferenceMethodWithLBFGS.h>
  #include <shogun/machine/gp/FITCInferenceMethod.h>

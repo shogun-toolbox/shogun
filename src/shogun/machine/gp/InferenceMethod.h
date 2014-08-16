@@ -86,10 +86,10 @@ public:
 	 */
 	virtual float64_t get_negative_log_marginal_likelihood()=0;
 
-	/** Computes an unbiased estimate of the marginal-likelihood,
+	/** Computes an unbiased estimate of the log-marginal-likelihood,
 	 *
 	 * \f[
-	 * p(y|X,\theta),
+	 * log(p(y|X,\theta)),
 	 * \f]
 	 * where \f$y\f$ are the labels, \f$X\f$ are the features (omitted from in
 	 * the following expressions), and \f$\theta\f$ represent hyperparameters.
@@ -118,9 +118,8 @@ public:
 	 * approximation to stabilise things. Increase if Cholesky factorization
 	 * fails.
 	 *
-	 * @return Unbiased estimate of the the marginal likelihood
-	 * \f$ p(y|\theta)\f$. Note this is not an estimate for the log-marginal
-	 * likelihood but the marginal likelihood itself (using log-sum-exp).
+	 * @return unbiased estimate of the log of the marginal likelihood function
+	 * \f$ log(p(y|\theta)) \f$
 	 */
 	float64_t get_marginal_likelihood_estimate(int32_t num_importance_samples=1,
 			float64_t ridge_size=1e-15);
@@ -147,36 +146,27 @@ public:
 	 * @return vector to compute posterior mean of Gaussian Process:
 	 *
 	 * \f[
-	 * \mu = K\alpha
+	 * \mu = K\alpha+meanf
 	 * \f]
 	 *
-	 * where \f$\mu\f$ is the mean and \f$K\f$ is the prior covariance matrix.
+	 * where \f$\mu\f$ is the mean,
+	 * \f$K\f$ is the prior covariance matrix,
+	 * and \f$meanf$\f is the mean prior fomr MeanFunction
+	 *
 	 */
 	virtual SGVector<float64_t> get_alpha()=0;
 
 	/** get Cholesky decomposition matrix
 	 *
-	 * @return Cholesky decomposition of matrix:
+	 * @return Cholesky decomposition of matrix
 	 *
-	 * \f[
-	 * L = cholesky(sW*K*sW+I)
-	 * \f]
-	 *
-	 * where \f$K\f$ is the prior covariance matrix, \f$sW\f$ is the vector
-	 * returned by get_diagonal_vector(), and \f$I\f$ is the identity matrix.
 	 */
 	virtual SGMatrix<float64_t> get_cholesky()=0;
 
 	/** get diagonal vector
 	 *
-	 * @return diagonal of matrix used to calculate posterior covariance matrix:
+	 * @return diagonal of matrix used to calculate posterior covariance matrix
 	 *
-	 * \f[
-	 * Cov = (K^{-1}+sW^{2})^{-1}
-	 * \f]
-	 *
-	 * where \f$Cov\f$ is the posterior covariance matrix, \f$K\f$ is the prior
-	 * covariance matrix, and \f$sW\f$ is the diagonal vector.
 	 */
 	virtual SGVector<float64_t> get_diagonal_vector()=0;
 
@@ -359,6 +349,13 @@ public:
 	/** update all matrices */
 	virtual void update();
 
+	/** get the E matrix used for multi classification
+	 *
+	 * @return the matrix for multi classification
+	 *
+	 */
+	virtual SGMatrix<float64_t> get_multiclass_E();
+
 protected:
 	/** check if members of object are valid for inference */
 	virtual void check_members() const;
@@ -452,6 +449,9 @@ protected:
 
 	/** kernel matrix from features (non-scalled by inference scalling) */
 	SGMatrix<float64_t> m_ktrtr;
+
+	/** the matrix used for multi classification*/
+	SGMatrix<float64_t> m_E;
 };
 }
 #endif /* HAVE_EIGEN3 */
