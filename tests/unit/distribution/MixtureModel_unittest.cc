@@ -36,6 +36,8 @@
 
 using namespace shogun;
 
+#ifdef HAVE_LAPACK
+
 TEST(MixtureModel,gaussian_mixture_model)
 {
 	sg_rand->set_seed(2);	
@@ -97,3 +99,5 @@ TEST(MixtureModel,gaussian_mixture_model)
 	SG_UNREF(distr);
 	SG_UNREF(mix)
 }
+
+#endif /* HAVE_LAPACK */
