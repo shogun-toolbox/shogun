@@ -23,6 +23,7 @@
 %rename(DimensionReductionPreprocessor) CDimensionReductionPreprocessor;
 %rename(PCA) CPCA;
 %rename(KernelPCA) CKernelPCA;
+%rename(FisherLda) CFisherLDA;
 
 %rename(SortUlongString) CSortUlongString;
 %rename(SortWordString) CSortWordString;
@@ -140,6 +141,7 @@ namespace shogun
 
 %include <shogun/preprocessor/PCA.h>
 %include <shogun/preprocessor/KernelPCA.h>
+%include <shogun/preprocessor/FisherLDA.h>
 
 %include <shogun/preprocessor/SortUlongString.h>
 %include <shogun/preprocessor/SortWordString.h>
