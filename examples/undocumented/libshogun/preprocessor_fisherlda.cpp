@@ -15,7 +15,6 @@
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/preprocessor/FisherLDA.h>
 #include <shogun/features/DenseFeatures.h>
-#include <shogun/io/SGIO.h>
 #include <shogun/lib/common.h>
 #include <shogun/features/DataGenerator.h>
 
@@ -33,20 +32,27 @@ void test()
 	feat=CDataGenerator::generate_gaussians(NUM,CLASSES,DIMS);
 	for(int i=0; i<CLASSES; ++i)
 		for(int j=0; j<NUM; ++j)
-			lab[i*NUM+j] = double(i);
+			lab[i*NUM+j]=double(i);
 
 	// Create train labels
 	CMulticlassLabels* labels=new CMulticlassLabels(lab);
+	SG_REF(labels)
 
 	// Create train features
 	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(feat);
+	SG_REF(features)
 
-	CFisherLDA fisherlda(AUTO_FLDA);
-	fisherlda.init(features, labels, 1);
-	SGMatrix<float64_t> y=fisherlda.apply_to_feature_matrix(features);
+	// Initiate the FisherLDA class
+	CFisherLDA* fisherlda=new CFisherLDA(AUTO_FLDA);
+	SG_REF(fisherlda)
+	fisherlda->init(features, labels, 1);
+	SGMatrix<float64_t> y=fisherlda->apply_to_feature_matrix(features);
 
 	// display output
 	y.display_matrix();
+	SG_UNREF(fisherlda)
+	SG_UNREF(features)
+	SG_UNREF(labels)
 }
 
 int main(int argc, char ** argv)

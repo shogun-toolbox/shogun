@@ -12,12 +12,12 @@ def preprocessor_fisherlda_modular (data, labels, method):
 
 	from modshogun import RealFeatures, MulticlassLabels, CANVAR_FLDA
 	from modshogun import FisherLda
-        from modshogun import MulticlassLabels
+	from modshogun import MulticlassLabels
 
 	sg_features = RealFeatures(data)
-        sg_labels = MulticlassLabels(labels)
+	sg_labels = MulticlassLabels(labels)
         
-        preprocessor=FisherLda(method)
+	preprocessor=FisherLda(method)
 	preprocessor.init(sg_features, sg_labels, 1)
 	yn=preprocessor.apply_to_feature_matrix(sg_features)
 
