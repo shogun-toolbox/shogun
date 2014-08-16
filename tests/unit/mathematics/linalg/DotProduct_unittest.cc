@@ -83,14 +83,6 @@ TEST(DotProduct, Eigen3_dynamic_default_backend)
 	EXPECT_NEAR(linalg::dot(a, b), 20.0, 1E-15);
 }
 
-TEST(DotProduct, Eigen3_fixed_default_backend)
-{
-	Eigen::Vector3d a=Eigen::Vector3d::Constant(1);
-	Eigen::Vector3d b=Eigen::Vector3d::Constant(2);
-
-	EXPECT_NEAR(linalg::dot(a, b), 6.0, 1E-15);
-}
-
 TEST(DotProduct, Eigen3_dynamic_explicit_eigen3_backend)
 {
 	index_t size=10;
@@ -98,14 +90,6 @@ TEST(DotProduct, Eigen3_dynamic_explicit_eigen3_backend)
 	Eigen::VectorXd b=Eigen::VectorXd::Constant(size, 2);
 
 	EXPECT_NEAR(linalg::dot<linalg::Backend::EIGEN3>(a, b), 20.0, 1E-15);
-}
-
-TEST(DotProduct, Eigen3_fixed_explicit_eigen3_backend)
-{
-	Eigen::Vector3d a=Eigen::Vector3d::Constant(1);
-	Eigen::Vector3d b=Eigen::Vector3d::Constant(2);
-
-	EXPECT_NEAR(linalg::dot<linalg::Backend::EIGEN3>(a, b), 6.0, 1E-15);
 }
 
 #ifdef HAVE_VIENNACL
@@ -118,13 +102,6 @@ TEST(DotProduct, Eigen3_dynamic_explicit_viennacl_backend)
 	EXPECT_NEAR(linalg::dot<linalg::Backend::VIENNACL>(a, b), 20.0, 1E-6);
 }
 
-TEST(DotProduct, Eigen3_fixed_explicit_viennacl_backend)
-{
-	Eigen::Vector3f a=Eigen::Vector3f::Constant(1);
-	Eigen::Vector3f b=Eigen::Vector3f::Constant(2);
-
-	EXPECT_NEAR(linalg::dot<linalg::Backend::VIENNACL>(a, b), 6.0, 1E-6);
-}
 #endif // HAVE_VIENNACL
 #endif // HAVE_EIGEN3
 

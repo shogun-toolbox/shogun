@@ -34,8 +34,16 @@
 #include <shogun/lib/config.h>
 
 #ifdef HAVE_VIENNACL
+#ifdef HAVE_CXX11
 
 #include <shogun/lib/GPUVector.h>
+#include <viennacl/vector.hpp>
+
+#include <shogun/lib/SGVector.h>
+
+#ifdef HAVE_EIGEN3
+#include <shogun/mathematics/eigen3.h>
+#endif
 
 namespace shogun
 {
@@ -47,18 +55,19 @@ CGPUVector<T>::CGPUVector()
 }
 
 template <class T> 
-CGPUVector<T>::CGPUVector(index_t length)
+CGPUVector<T>::CGPUVector(index_t length) : vector(new VCLMemoryArray())
 {
 	init();
 	
 	vlen = length;
 	
-	viennacl::backend::memory_create(vector, sizeof(T)*vlen, 
+	viennacl::backend::memory_create(*vector, sizeof(T)*vlen, 
 		viennacl::context());
 }
 
 template <class T> 
-CGPUVector<T>::CGPUVector(VCLMemoryArray mem, index_t length, index_t mem_offset)
+CGPUVector<T>::CGPUVector(std::shared_ptr<VCLMemoryArray> mem, index_t length, 
+	index_t mem_offset)
 {
 	init();
 	
@@ -68,36 +77,64 @@ CGPUVector<T>::CGPUVector(VCLMemoryArray mem, index_t length, index_t mem_offset
 }
 
 template <class T> 
-CGPUVector<T>::CGPUVector(const SGVector<T>& cpu_vec)
+CGPUVector<T>::CGPUVector(const SGVector<T>& cpu_vec) : vector(new VCLMemoryArray())
 {
 	init();
 	vlen = cpu_vec.vlen;
-	
-	viennacl::backend::memory_create(vector, sizeof(T)*vlen, 
+
+	viennacl::backend::memory_create(*vector, sizeof(T)*vlen, 
 		viennacl::context());
 	
-	viennacl::backend::memory_write(vector, 0, vlen*sizeof(T), 
+	viennacl::backend::memory_write(*vector, 0, vlen*sizeof(T), 
 		cpu_vec.vector);
 }
 
 #ifdef HAVE_EIGEN3
 template <class T> 
-CGPUVector<T>::operator Eigen::Matrix<T, Eigen::Dynamic, 1>() const
+CGPUVector<T>::CGPUVector(const EigenVectorXt& cpu_vec)
+: vector(new VCLMemoryArray())
 {
-	Eigen::Matrix<T, Eigen::Dynamic, 1> cpu_vec(vlen);
+	init();
+	vlen = cpu_vec.size();
+
+	viennacl::backend::memory_create(*vector, sizeof(T)*vlen, 
+		viennacl::context());
 	
-	viennacl::backend::memory_read(vector, offset*sizeof(T), vlen*sizeof(T), 
+	viennacl::backend::memory_write(*vector, 0, vlen*sizeof(T), 
+		cpu_vec.data());
+}
+
+template <class T> 
+CGPUVector<T>::CGPUVector(const EigenRowVectorXt& cpu_vec)
+: vector(new VCLMemoryArray())
+{
+	init();
+	vlen = cpu_vec.size();
+	
+	viennacl::backend::memory_create(*vector, sizeof(T)*vlen, 
+		viennacl::context());
+	
+	viennacl::backend::memory_write(*vector, 0, vlen*sizeof(T), 
+		cpu_vec.data());
+}
+
+template <class T> 
+CGPUVector<T>::operator EigenVectorXt() const
+{
+	EigenVectorXt cpu_vec(vlen);
+	
+	viennacl::backend::memory_read(*vector, offset*sizeof(T), vlen*sizeof(T), 
 		cpu_vec.data());
 
 	return cpu_vec;
 }
 
 template <class T> 
-CGPUVector<T>::operator Eigen::Matrix<T, 1, Eigen::Dynamic>() const
+CGPUVector<T>::operator EigenRowVectorXt() const
 {
-	Eigen::Matrix<T, 1, Eigen::Dynamic> cpu_vec(vlen);
+	EigenRowVectorXt cpu_vec(vlen);
 	
-	viennacl::backend::memory_read(vector, offset*sizeof(T), vlen*sizeof(T), 
+	viennacl::backend::memory_read(*vector, offset*sizeof(T), vlen*sizeof(T), 
 		cpu_vec.data());
 
 	return cpu_vec;
@@ -109,10 +146,47 @@ CGPUVector<T>::operator SGVector<T>() const
 {
 	SGVector<T> cpu_vec(vlen);
 	
-	viennacl::backend::memory_read(vector, offset*sizeof(T), vlen*sizeof(T), 
+	viennacl::backend::memory_read(*vector, offset*sizeof(T), vlen*sizeof(T), 
 		cpu_vec.vector);
 
 	return cpu_vec;
+}
+
+template <class T> 
+typename CGPUVector<T>::VCLVectorBase CGPUVector<T>::vcl_vector()
+{
+	return VCLVectorBase(*vector,vlen, offset, 1);
+}
+
+template <class T> 
+void CGPUVector<T>::display_vector(const char* name) const
+{
+	((SGVector<T>)*this).display_vector(name);
+}
+
+template <class T> 
+void CGPUVector<T>::zero()
+{
+	vcl_vector().clear();
+}
+
+template <class T> 
+void CGPUVector<T>::set_const(T value)
+{
+	VCLVectorBase v = vcl_vector();
+	viennacl::linalg::vector_assign(v, value);
+}
+
+template <class T> 
+viennacl::const_entry_proxy< T > CGPUVector<T>::operator[](index_t index) const
+{
+	return viennacl::const_entry_proxy<T>(offset+index, *vector);
+}
+
+template <class T>
+viennacl::entry_proxy< T > CGPUVector<T>::operator[](index_t index)
+{
+	return viennacl::entry_proxy<T>(offset+index, *vector);
 }
 
 template <class T> 
@@ -134,4 +208,5 @@ template class CGPUVector<float32_t>;
 template class CGPUVector<float64_t>;
 }
 
-#endif
+#endif // HAVE_CXX11
+#endif // HAVE_VIENNACL

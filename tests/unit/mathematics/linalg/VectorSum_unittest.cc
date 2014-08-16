@@ -65,13 +65,6 @@ TEST(VectorSum, Eigen3_dynamic_explicit_eigen3_backend)
 	EXPECT_NEAR(linalg::vector_sum<linalg::Backend::EIGEN3>(a), 10.0, 1E-15);
 }
 
-TEST(VectorSum, Eigen3_fixed_explicit_eigen3_backend)
-{
-	Eigen::Vector3d a=Eigen::Vector3d::Constant(1);
-
-	EXPECT_NEAR(linalg::vector_sum<linalg::Backend::EIGEN3>(a), 3.0, 1E-15);
-}
-
 #endif // HAVE_EIGEN3
 
 #ifdef HAVE_VIENNACL

@@ -19,9 +19,12 @@
 #include <shogun/lib/common.h>
 #include <shogun/lib/SGReferencedData.h>
 
-#ifdef HAVE_EIGEN3
-#include <shogun/mathematics/eigen3.h>
-#endif
+namespace Eigen
+{
+	template <class, int, int, int, int, int> class Matrix;
+	template<int, int> class Stride;
+	template <class, int, class> class Map;
+}
 
 namespace shogun
 {
@@ -33,6 +36,14 @@ namespace shogun
 /** @brief shogun vector */
 template<class T> class SGVector : public SGReferencedData
 {
+	typedef Eigen::Matrix<T,-1,1,0,-1,1> EigenVectorXt;
+	typedef Eigen::Matrix<T,1,-1,0x1,1,-1> EigenRowVectorXt;
+	
+	typedef Eigen::Map<EigenVectorXt,0,Eigen::Stride<0,0> > EigenVectorXtMap;
+	typedef Eigen::Map<EigenRowVectorXt,0,Eigen::Stride<0,0> > EigenRowVectorXtMap;
+	
+	
+	
 	public:
 		typedef T Scalar;
 		
@@ -54,22 +65,17 @@ template<class T> class SGVector : public SGReferencedData
 		
 #ifndef SWIG // SWIG should skip this part
 #ifdef HAVE_EIGEN3
-		/** Wraps a vector around the data of an Eigen3 vector */
-		template <class Derived>
-		SGVector(Eigen::PlainObjectBase<Derived>& vec) 
-			: SGReferencedData(false), vector(vec.data()), vlen(vec.size()) { }
+		/** Wraps a matrix around the data of an Eigen3 column vector */
+		SGVector(EigenVectorXt& vec);
 		
-		/** Wraps an Eigen3 column vector around the data of this vector */
-		operator Eigen::Map<Eigen::Matrix<T, Eigen::Dynamic, 1> >() const
-		{ 
-			return Eigen::Map<Eigen::Matrix<T, Eigen::Dynamic, 1> >(vector, vlen);
-		}
+		/** Wraps a matrix around the data of an Eigen3 row vector */
+		SGVector(EigenRowVectorXt& vec);
 		
-		/** Wraps an Eigen3 row vector around the data of this vector */
-		operator Eigen::Map<Eigen::Matrix<T, 1, Eigen::Dynamic> >() const
-		{ 
-			return Eigen::Map<Eigen::Matrix<T, 1, Eigen::Dynamic> >(vector, vlen);
-		}
+		/** Wraps an Eigen3 column vector around the data of this matrix */
+		operator EigenVectorXtMap() const;
+		
+		/** Wraps an Eigen3 row vector around the data of this matrix */
+		operator EigenRowVectorXtMap() const;
 #endif
 #endif
 		
