@@ -289,7 +289,7 @@ TEST(CustomKernelTest, sum_block)
 	float64_t sum1=kernel->sum_block(0, m, m, n);
 	float64_t sum2=precomputed_kernel->sum_block(0, m, m, n);
 
-	EXPECT_NEAR(sum1, sum2, 1E-4);
+	EXPECT_NEAR(sum1, sum2, 1E-3);
 
 	float64_t sum3=kernel->sum_block(m, 0, n, m);
 	float64_t sum4=precomputed_kernel->sum_block(m, 0, n, m);
