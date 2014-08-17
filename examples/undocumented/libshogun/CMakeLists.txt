@@ -111,6 +111,10 @@ SET(EXAMPLES
 	io_libsvm_multilabel
 	variational_approx_example
 	so_fg_multilabel
+	neuralnets_basic
+	neuralnets_convolutional
+	neuralnets_deep_autoencoder
+	neuralnets_deep_belief_network
 )
 
 IF (USE_MOSEK)
