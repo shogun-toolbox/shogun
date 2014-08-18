@@ -37,14 +37,20 @@
 #ifdef HAVE_EIGEN3
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGMatrix.h>
+#include <shogun/mathematics/eigen3.h>
 
 using namespace Eigen;
 
 namespace shogun
 {
-SGMatrix<float64_t> CMatrixOperations::get_choleksy(VectorXd eigen_W,
-	VectorXd eigen_sW, MatrixXd eigen_kernel, float64_t scale)
+
+SGMatrix<float64_t> CMatrixOperations::get_choleksy(SGVector<float64_t> W,
+	SGVector<float64_t> sW, SGMatrix<float64_t> kernel, float64_t scale)
 {
+	Map<VectorXd> eigen_W(W.vector, W.vlen);
+	Map<VectorXd> eigen_sW(sW.vector, sW.vlen);
+	Map<MatrixXd> eigen_kernel(kernel.matrix, kernel.num_rows, kernel.num_cols);
+
 	REQUIRE(eigen_W.rows()==eigen_sW.rows(),
 		"The length of W (%d) and sW (%d) should be the same\n",
 		eigen_W.rows(), eigen_sW.rows());
@@ -83,54 +89,31 @@ SGMatrix<float64_t> CMatrixOperations::get_choleksy(VectorXd eigen_W,
 	return L;
 }
 
-SGMatrix<float64_t> CMatrixOperations::get_choleksy(SGVector<float64_t> W,
-	SGVector<float64_t> sW, SGMatrix<float64_t> kernel, float64_t scale)
-{
-
-	Map<VectorXd> eigen_W(W.vector, W.vlen);
-	Map<VectorXd> eigen_sW(sW.vector, sW.vlen);
-	Map<MatrixXd> eigen_kernel(kernel.matrix, kernel.num_rows, kernel.num_cols);
-
-	return get_choleksy(eigen_W, eigen_sW, eigen_kernel, scale);
-}
-
 SGMatrix<float64_t> CMatrixOperations::get_inverse(SGMatrix<float64_t> L, SGMatrix<float64_t> kernel,
 	SGVector<float64_t> sW, float64_t scale)
 {
 	Map<MatrixXd> eigen_L(L.matrix, L.num_rows, L.num_cols);
 	Map<MatrixXd> eigen_kernel(kernel.matrix, kernel.num_rows, kernel.num_cols);
 	Map<VectorXd> eigen_sW(sW.vector, sW.vlen);
-	
-	return get_inverse(eigen_L, eigen_kernel, eigen_sW, scale);
-}
-
-SGMatrix<float64_t> CMatrixOperations::get_inverse(Eigen::MatrixXd eigen_L, Eigen::MatrixXd eigen_kernel,
-	Eigen::VectorXd eigen_sW, float64_t scale)
-{
-	REQUIRE(eigen_kernel.rows()==eigen_kernel.cols(),
-		"Kernel should a sqaure matrix, row (%d) col (%d)\n",
-		eigen_kernel.rows(), eigen_kernel.cols());
-	REQUIRE(eigen_L.rows()==eigen_L.cols(),
-		"L should a sqaure matrix, row (%d) col (%d)\n",
-		eigen_L.rows(), eigen_L.cols());
-	REQUIRE(eigen_kernel.rows()==eigen_sW.rows(),
-		"The dimension between kernel (%d) and sW (%d) should be matched\n",
-		eigen_kernel.rows(), eigen_sW.rows());
-	REQUIRE(eigen_L.rows()==eigen_sW.rows(),
-		"The dimension between L (%d) and sW (%d) should be matched\n",
-		eigen_L.rows(), eigen_sW.rows());
+	SGMatrix<float64_t> V(L.num_rows, L.num_cols);
+	Map<MatrixXd> eigen_V(V.matrix, V.num_rows, V.num_cols);
 
 	// compute V = L^(-1) * W^(1/2) * K, using upper triangular factor L^T
-	MatrixXd eigen_V=eigen_L.triangularView<Upper>().adjoint().solve(
+	eigen_V=eigen_L.triangularView<Upper>().adjoint().solve(
 		eigen_sW.asDiagonal()*eigen_kernel*CMath::sq(scale));
 
-	return get_inverse(eigen_L, eigen_kernel, eigen_sW, eigen_V, scale);
+	return get_inverse(L, kernel, sW, V, scale);
 }
 
-SGMatrix<float64_t> CMatrixOperations::get_inverse(MatrixXd eigen_L,
-	MatrixXd eigen_kernel, VectorXd eigen_sW, MatrixXd eigen_V,
+SGMatrix<float64_t> CMatrixOperations::get_inverse(SGMatrix<float64_t> L,
+	SGMatrix<float64_t> kernel, SGVector<float64_t> sW, SGMatrix<float64_t> V,
 	float64_t scale)
 {
+	Map<MatrixXd> eigen_L(L.matrix, L.num_rows, L.num_cols);
+	Map<MatrixXd> eigen_kernel(kernel.matrix, kernel.num_rows, kernel.num_cols);
+	Map<VectorXd> eigen_sW(sW.vector, sW.vlen);
+	Map<MatrixXd> eigen_V(V.matrix, V.num_rows, V.num_cols);
+
 	REQUIRE(eigen_kernel.rows()==eigen_kernel.cols(),
 		"Kernel should a sqaure matrix, row (%d) col (%d)\n",
 		eigen_kernel.rows(), eigen_kernel.cols());
@@ -154,18 +137,6 @@ SGMatrix<float64_t> CMatrixOperations::get_inverse(MatrixXd eigen_L,
 	// K - (W^(1/2) * K)^T * (L^(-1))^T * L^(-1) * W^(1/2) * K = K - V^T * V
 	eigen_tmp=eigen_kernel*CMath::sq(scale)-eigen_V.adjoint()*eigen_V;
 	return tmp;
-}
-
-SGMatrix<float64_t> CMatrixOperations::get_inverse(SGMatrix<float64_t> L,
-	SGMatrix<float64_t> kernel, SGVector<float64_t> sW, SGMatrix<float64_t> V,
-	float64_t scale)
-{
-	Map<MatrixXd> eigen_L(L.matrix, L.num_rows, L.num_cols);
-	Map<MatrixXd> eigen_kernel(kernel.matrix, kernel.num_rows, kernel.num_cols);
-	Map<VectorXd> eigen_sW(sW.vector, sW.vlen);
-	Map<MatrixXd> eigen_V(V.matrix, V.num_rows, V.num_cols);
-	
-	return get_inverse(eigen_L, eigen_kernel, eigen_sW, eigen_V, scale);
 }
 
 } /* namespace shogun */
