@@ -124,8 +124,8 @@ void CGraphCut::build_st_graph(int32_t num_nodes, int32_t num_edges)
 	m_num_nodes = num_nodes;
 
 	// allocate s-t graph
-	m_nodes = SG_MALLOC(Node, m_num_nodes);
-	m_edges = SG_MALLOC(Edge, 2 * num_edges);
+	m_nodes = SG_MALLOC(GCNode, m_num_nodes);
+	m_edges = SG_MALLOC(GCEdge, 2 * num_edges);
 	m_edges_last = m_edges;
 
 	for (int32_t i = 0; i < m_num_nodes; i++)
@@ -150,7 +150,7 @@ void CGraphCut::build_st_graph(int32_t num_nodes, int32_t num_edges)
 
 void CGraphCut::init_maxflow()
 {
-	Node* node_i;
+	GCNode* node_i;
 
 	m_active_first[0] = NULL;
 	m_active_last[0] = NULL;
@@ -456,13 +456,13 @@ void CGraphCut::add_edge(int32_t i, int32_t j, float64_t capacity, float64_t rev
 	ASSERT(capacity >= 0);
 	ASSERT(reverse_capacity >= 0);
 
-	Edge* e = m_edges_last++;
+	GCEdge* e = m_edges_last++;
 	e->id = m_num_edges++;
-	Edge* e_rev = m_edges_last++;
+	GCEdge* e_rev = m_edges_last++;
 	e_rev->id = m_num_edges++;
 
-	Node* node_i = m_nodes + i;
-	Node* node_j = m_nodes + j;
+	GCNode* node_i = m_nodes + i;
+	GCNode* node_j = m_nodes + j;
 
 	e->reverse = e_rev;
 	e_rev->reverse = e;
@@ -476,7 +476,7 @@ void CGraphCut::add_edge(int32_t i, int32_t j, float64_t capacity, float64_t rev
 	e_rev->residual_capacity = reverse_capacity;
 }
 
-void CGraphCut::set_active(Node* node_i)
+void CGraphCut::set_active(GCNode* node_i)
 {	
 	if (node_i->next == NULL)
 	{
@@ -495,11 +495,11 @@ void CGraphCut::set_active(Node* node_i)
 	}
 }
 
-Node* CGraphCut::next_active()
+GCNode* CGraphCut::next_active()
 {
 	// Returns the next active node. If it is connected to the sink,
 	// it stays in the list, otherwise it is removed from the list.
-	Node* node_i;
+	GCNode* node_i;
 
 	while (true)
 	{
@@ -539,7 +539,7 @@ Node* CGraphCut::next_active()
 
 float64_t CGraphCut::compute_maxflow()
 {
-	Node* current_node = NULL;
+	GCNode* current_node = NULL;
 	bool active_set_found = true;
 
 	// start the main loop
@@ -548,7 +548,7 @@ float64_t CGraphCut::compute_maxflow()
 		if (sg_io->get_loglevel() == MSG_DEBUG)
 			test_consistency(current_node);
 
-		Edge* connecting_edge;
+		GCEdge* connecting_edge;
 
 		// find a path from source to sink
 		active_set_found = grow(connecting_edge, current_node);
@@ -578,9 +578,9 @@ float64_t CGraphCut::compute_maxflow()
 	return m_flow;
 }
 
-bool CGraphCut::grow(Edge* &edge, Node* &current_node)
+bool CGraphCut::grow(GCEdge* &edge, GCNode* &current_node)
 {
-	Node* node_i, *node_j;
+	GCNode* node_i, *node_j;
 
 	if ((node_i = current_node) != NULL)
 	{
@@ -674,10 +674,10 @@ bool CGraphCut::grow(Edge* &edge, Node* &current_node)
 	return true;
 }
 
-void CGraphCut::augment_path(Edge* connecting_edge)
+void CGraphCut::augment_path(GCEdge* connecting_edge)
 {
-	Node* node_i;
-	Edge* edge;
+	GCNode* node_i;
+	GCEdge* edge;
 	float64_t bottleneck;
 
 	// 1. Finding bottleneck capacity
@@ -787,8 +787,8 @@ void CGraphCut::augment_path(Edge* connecting_edge)
 
 void CGraphCut::adopt()
 {
-	NodePtr* np, *np_next;
-	Node* node_i;
+	GCNodePtr* np, *np_next;
+	GCNode* node_i;
 
 	while ((np = m_orphan_first) != NULL)
 	{
@@ -813,21 +813,21 @@ void CGraphCut::adopt()
 	}
 }
 
-void CGraphCut::set_orphan_front(Node* node_i)
+void CGraphCut::set_orphan_front(GCNode* node_i)
 {
-	NodePtr* np;
+	GCNodePtr* np;
 	node_i->parent = ORPHAN_EDGE;
-	np = SG_MALLOC(NodePtr, 1);
+	np = SG_MALLOC(GCNodePtr, 1);
 	np->ptr = node_i;
 	np->next = m_orphan_first;
 	m_orphan_first = np;
 }
 
-void CGraphCut::set_orphan_rear(Node* node_i)
+void CGraphCut::set_orphan_rear(GCNode* node_i)
 {
-	NodePtr* np;
+	GCNodePtr* np;
 	node_i->parent = ORPHAN_EDGE;
-	np = SG_MALLOC(NodePtr, 1);
+	np = SG_MALLOC(GCNodePtr, 1);
 	np->ptr = node_i;
 
 	if (m_orphan_last != NULL)
@@ -843,12 +843,12 @@ void CGraphCut::set_orphan_rear(Node* node_i)
 	np->next = NULL;
 }
 
-void CGraphCut::process_orphan(Node* node_i, ETerminalType terminalType_tree)
+void CGraphCut::process_orphan(GCNode* node_i, ETerminalType terminalType_tree)
 {
-	Node* node_j;
-	Edge* edge0;
-	Edge* edge0_min = NULL;
-	Edge* edge;
+	GCNode* node_j;
+	GCEdge* edge0;
+	GCEdge* edge0_min = NULL;
+	GCEdge* edge;
 	int32_t d;
 	int32_t d_min = INFINITE_D;
 
@@ -958,7 +958,7 @@ void CGraphCut::print_graph()
 	// print SOURCE-node_i and node_i->SINK edges
 	for (int32_t i = 0; i < m_num_nodes; i++)
 	{
-		Node* node_i = m_nodes + i;
+		GCNode* node_i = m_nodes + i;
 		if (node_i->parent == TERMINAL_EDGE)
 		{
 			if (node_i->type_tree == SOURCE)
@@ -975,7 +975,7 @@ void CGraphCut::print_graph()
 	// print node_i->node_j edges
 	for (int32_t i = 0; i < m_num_edges; i++)
 	{
-		Edge* edge = m_edges + i;
+		GCEdge* edge = m_edges + i;
 		SG_SPRINT("\n %d -> %d, cost = %f", edge->reverse->head->id, edge->head->id, edge->residual_capacity);
 	}
 
@@ -985,23 +985,23 @@ void CGraphCut::print_assignment()
 {
 	for (int32_t i = 0; i < m_num_nodes; i++)
 	{
-		Node* node_i = m_nodes + i;
+		GCNode* node_i = m_nodes + i;
 
 		if (get_assignment(i) == SOURCE)
 		{
-			SG_SPRINT("\nNode %2d: S", node_i->id);
+			SG_SPRINT("\nGCNode %2d: S", node_i->id);
 		}
 		else
 		{
-			SG_SPRINT("\nNode %2d: T", node_i->id);
+			SG_SPRINT("\nGCNode %2d: T", node_i->id);
 		}
 	}
 }
 
-void CGraphCut::test_consistency(Node* current_node)
+void CGraphCut::test_consistency(GCNode* current_node)
 {
-	Node* node_i;
-	Edge* edge;
+	GCNode* node_i;
+	GCEdge* edge;
 	int32_t num1 = 0;
 	int32_t num2 = 0;
 
