@@ -39,7 +39,6 @@
 #include <shogun/lib/config.h>
 
 #ifdef HAVE_EIGEN3
-#include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/Math.h>
 
 namespace shogun
@@ -56,20 +55,11 @@ public:
 	static SGMatrix<float64_t> get_choleksy(SGVector<float64_t> W, SGVector<float64_t> sW,
 		SGMatrix<float64_t> kernel, float64_t scale);
 
-	static SGMatrix<float64_t> get_choleksy(Eigen::VectorXd eigen_W, Eigen::VectorXd eigen_sW,
-		Eigen::MatrixXd eigen_kernel, float64_t scale);
-
 	static SGMatrix<float64_t> get_inverse(SGMatrix<float64_t> L, SGMatrix<float64_t> kernel,
 		SGVector<float64_t> sW, SGMatrix<float64_t> V, float64_t scale);
 
-	static SGMatrix<float64_t> get_inverse(Eigen::MatrixXd eigen_L, Eigen::MatrixXd eigen_kernel,
-		Eigen::VectorXd eigen_sW, Eigen::MatrixXd eigen_V, float64_t scale);
-
 	static SGMatrix<float64_t> get_inverse(SGMatrix<float64_t> L, SGMatrix<float64_t> kernel,
 		SGVector<float64_t> sW, float64_t scale);
-
-	static SGMatrix<float64_t> get_inverse(Eigen::MatrixXd eigen_L, Eigen::MatrixXd eigen_kernel,
-		Eigen::VectorXd eigen_sW, float64_t scale);
 
 };
 }
