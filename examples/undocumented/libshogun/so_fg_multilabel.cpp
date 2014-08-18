@@ -46,7 +46,9 @@ struct MultilabelParameter
 	int32_t sgd_num_iter;
 	float64_t sgd_lambda;
 
-	MultilabelParameter() {}
+	MultilabelParameter() : graph_type(FULL), infer_type(GRAPH_CUT), 
+							sgd_num_iter(200), sgd_lambda(0.0001)
+	{}
 
 	MultilabelParameter(EGraphStructure graph, EMAPInferType infer,
 			int32_t num_iter = 200, float64_t lambda = 0.0001)
