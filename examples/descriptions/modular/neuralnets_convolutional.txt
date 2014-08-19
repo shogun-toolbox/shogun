@@ -1,0 +1,1 @@
+This examples shows how to create and train a convolutional neural network

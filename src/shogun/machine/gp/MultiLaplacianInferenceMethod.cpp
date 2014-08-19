@@ -42,7 +42,7 @@
 #include <shogun/machine/gp/MultiLaplacianInferenceMethod.h>
 
 #ifdef HAVE_EIGEN3
-
+#include <shogun/mathematics/eigen3.h>
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/external/brent.h>

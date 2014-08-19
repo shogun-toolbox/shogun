@@ -86,7 +86,7 @@ public:
 	 */
 	virtual float64_t get_negative_log_marginal_likelihood()=0;
 
-	/** Computes an unbiased estimate of the log-marginal-likelihood,
+	/** Computes an unbiased estimate of the marginal-likelihood (in log-domain),
 	 *
 	 * \f[
 	 * log(p(y|X,\theta)),
@@ -109,17 +109,18 @@ public:
 	 * where \f$ f^{(i)} \f$ are samples from the posterior approximation
 	 * \f$ q(f|y, \theta) \f$. The resulting estimator has a low variance if
 	 * \f$ q(f|y, \theta) \f$ is a good approximation. It has large variance
-	 * otherwise (while still being consistent).
+	 * otherwise (while still being consistent). Storing all number of log-domain
+	 * ensures numerical stability.
 	 *
 	 * @param num_importance_samples the number of importance samples \f$n\f$
 	 * from \f$ q(f|y, \theta) \f$.
 	 * @param ridge_size scalar that is added to the diagonal of the involved
 	 * Gaussian distribution's covariance of GP prior and posterior
-	 * approximation to stabilise things. Increase if Cholesky factorization
-	 * fails.
+	 * approximation to stabilise things. Increase if covariance matrix is not
+	 * numerically positive semi-definite.
 	 *
-	 * @return unbiased estimate of the log of the marginal likelihood function
-	 * \f$ log(p(y|\theta)) \f$
+	 * @return unbiased estimate of the marginal likelihood function
+	 * \f$ p(y|\theta),\f$ in log-domain.
 	 */
 	float64_t get_marginal_likelihood_estimate(int32_t num_importance_samples=1,
 			float64_t ridge_size=1e-15);
