@@ -57,12 +57,12 @@ int main(int, char*[])
 	CMath::init_random(10);
 	
 	// Prepare the training data
-	const int width = 16;
-	const int height = 16;
-	const int num_channels = 3;
+	const int width = 4;
+	const int height = 4;
+	const int num_channels = 2;
 	const int num_features = width*height*num_channels;
-	const int num_classes = 4;
-	const int num_examples_per_class = 20;
+	const int num_classes = 3;
+	const int num_examples_per_class = 15;
 	
 	SGMatrix<float64_t> X = CDataGenerator::generate_gaussians(
 		num_examples_per_class,num_classes,num_features);
@@ -82,13 +82,13 @@ int main(int, char*[])
 	// input layer
 	layers->append_element(new CNeuralInputLayer(width,height,num_channels));
 	
-	// first convolutional layer: 5 feature maps, 3x3 masks, 2x2 max-pooling
+	// first convolutional layer: 3 feature maps, 3x3 masks, 2x2 max-pooling
 	layers->append_element(new CNeuralConvolutionalLayer(
-		CMAF_RECTIFIED_LINEAR, 5, 1,1, 2,2));
+		CMAF_RECTIFIED_LINEAR, 3, 1,1, 2,2));
 	
-	// second convolutional layer: 10 feature maps, 3x3 masks, 2x2 max-pooling
+	// second convolutional layer: 5 feature maps, 3x3 masks
 	layers->append_element(new CNeuralConvolutionalLayer(
-		CMAF_RECTIFIED_LINEAR, 10, 1,1, 2,2));
+		CMAF_RECTIFIED_LINEAR, 5, 1,1));
 	
 	// output layer
 	layers->append_element(new CNeuralSoftmaxLayer(num_classes));
@@ -96,7 +96,7 @@ int main(int, char*[])
 	// create and initialize the network
 	CNeuralNetwork* network = new CNeuralNetwork(layers);
 	network->quick_connect();
-	network->initialize(0.001);
+	network->initialize(0.1);
 	
 	// uncomment this line to enable info logging
 	// network->io->set_loglevel(MSG_INFO);
