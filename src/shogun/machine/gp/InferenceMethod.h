@@ -119,8 +119,8 @@ public:
 	 * approximation to stabilise things. Increase if covariance matrix is not
 	 * numerically positive semi-definite.
 	 *
-	 * @return unbiased estimate of the log of the marginal likelihood function
-	 * \f$ log(p(y|\theta)) \f$
+	 * @return unbiased estimate of the marginal likelihood function
+	 * \f$ p(y|\theta),\f$ in log-domain.
 	 */
 	float64_t get_marginal_likelihood_estimate(int32_t num_importance_samples=1,
 			float64_t ridge_size=1e-15);
