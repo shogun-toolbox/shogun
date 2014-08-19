@@ -78,7 +78,7 @@ The following table depicts the status of each interface available in SHOGUN:
 |csharp\_modular   | *stable* (no known problems; not all examples are ported) |
 |lua\_modular      | *alpha* (some examples work, string typemaps are unstable |
 |perl\_modular     | *pre-alpha* (work in progress quality)                    |
-|r\_modular        | *pre-alpha* (SWIG does not properly handle reference counting and thus only for the brave, <br/> --disable-reference-counting to get it to work, but beware that it will leak memory; disabled by default)           |
+|r\_modular        | *stable* (no known problems; not all examples are ported) |
 |octave\_static    | *mature* (no known problems)                                |
 |matlab\_static    | *mature* (no known problems)                                |
 |python\_static    | *mature* (no known problems)                                |
