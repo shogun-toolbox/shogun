@@ -70,10 +70,10 @@ int main(int, char*[])
 	CDeepAutoencoder* ae = new CDeepAutoencoder(layers->done());
 	
 	// uncomment this line to enable info logging
-	ae->io->set_loglevel(MSG_INFO);
+	// ae->io->set_loglevel(MSG_INFO);
 	
 	// pre-train
-	ae->pt_epsilon.set_const(1e-12);
+	ae->pt_epsilon.set_const(1e-6);
 	ae->pre_train(features);
 	
 	// fine-tune
