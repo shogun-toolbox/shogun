@@ -133,8 +133,8 @@ CFeatures* CDependenceMaximization::remove_feats(CFeatures* features,
 
 	REQUIRE(m_num_remove>0, "Number or percentage of features to be removed is "
 			"not set! Please use set_num_remove() to set this!\n");
-	REQUIRE(m_policy==N_SMALLEST || m_policy==PERCENTILE_SMALLEST,
-			"Only N_SMALLEST and PERCENTILE_SMALLEST removal policy can work "
+	REQUIRE(m_policy==N_LARGEST || m_policy==PERCENTILE_LARGEST,
+			"Only N_LARGEST and PERCENTILE_LARGEST removal policy can work "
 			"with %s!\n", get_name());
 	REQUIRE(features, "Features is not intialized!\n");
 	REQUIRE(argsorted.vector, "The argsorted vector is not initialized!\n");
@@ -144,7 +144,7 @@ CFeatures* CDependenceMaximization::remove_feats(CFeatures* features,
 
 	// compute a threshold to remove for both the policies
 	index_t threshold=m_num_remove;
-	if (m_policy==PERCENTILE_SMALLEST)
+	if (m_policy==PERCENTILE_LARGEST)
 		threshold*=argsorted.vlen*0.01;
 
 	// make sure that the threshold is valid given the current number of feats
@@ -153,9 +153,9 @@ CFeatures* CDependenceMaximization::remove_feats(CFeatures* features,
 			"number for removal using set_num_remove() call",
 			threshold, argsorted.vlen);
 
-	// remove the lowest threshold rank holders by storing indices
+	// remove the highest rank holders by storing indices
 	SGVector<index_t> inds(argsorted.vlen-threshold);
-	memcpy(inds.vector, argsorted.vector+threshold, sizeof(index_t)*inds.vlen);
+	memcpy(inds.vector, argsorted.vector, sizeof(index_t)*inds.vlen);
 
 	// sorting the indices to get the original order
 	inds.qsort();
@@ -172,8 +172,8 @@ CFeatures* CDependenceMaximization::remove_feats(CFeatures* features,
 
 void CDependenceMaximization::set_policy(EFeatureRemovalPolicy policy)
 {
-	REQUIRE(policy==N_SMALLEST || policy==PERCENTILE_SMALLEST,
-			"Only N_SMALLEST and PERCENTILE_SMALLEST removal policy can work "
+	REQUIRE(policy==N_LARGEST || policy==PERCENTILE_LARGEST,
+			"Only N_LARGEST and PERCENTILE_LARGEST removal policy can work "
 			"with %s!\n", get_name());
 	m_policy=policy;
 }

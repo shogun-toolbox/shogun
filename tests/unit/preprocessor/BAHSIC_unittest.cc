@@ -68,7 +68,7 @@ TEST(BAHSIC, apply)
 	fs->set_target_dim(target_dim);
 	fs->set_kernel_features(kernel_p);
 	fs->set_kernel_labels(kernel_q);
-	fs->set_policy(N_SMALLEST);
+	fs->set_policy(N_LARGEST);
 	fs->set_num_remove(dim-target_dim);
 	CFeatures* selected=fs->apply(feats);
 
@@ -81,10 +81,10 @@ TEST(BAHSIC, apply)
 
 	// ensure that selected feats are the same as computed in local machine
 	SGVector<index_t> inds(target_dim);
-	inds[0]=4;
-	inds[1]=5;
-	inds[2]=6;
-	inds[3]=7;
+	inds[0]=0;
+	inds[1]=1;
+	inds[2]=2;
+	inds[3]=3;
 
 	for (index_t i=0; i<target_dim; ++i)
 	{
