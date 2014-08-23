@@ -39,6 +39,7 @@ namespace shogun
 
 class CFeatures;
 class CLabels;
+class CSubsetStack;
 
 /** Enum for feature selection algorithms. See class documentation of
  * CFeatureSelection for their descriptions.
@@ -118,7 +119,11 @@ enum EFeatureRemovalPolicy
  *
  * Removal of features in each iteration is handled by an abstract method
  * remove_feats() that removes a set of features at once based on the ranks
- * of the features on the measure.
+ * of the features on the measure. Internally this method also updates a subset
+ * stack to keep track of the selected features. After calling apply(),
+ * the indices of the original features that are selected can be obtained
+ * by calling get_selected_feats() method. Please note that the selected
+ * features are always kept in the original order.
  *
  * Some of the methods are for internal purpose and are not exposed to the
  * public API. For example,
@@ -163,7 +168,8 @@ public:
 
 	/**
 	 * Abstract method which is defined in the subclasses to handle the removal
-	 * of features based on removal policy (see class documentation).
+	 * of features based on removal policy (see class documentation). This
+	 * also updates the subset internally for selected features.
 	 *
 	 * @param features the features object from which specific features has
 	 * to be removed
@@ -173,6 +179,9 @@ public:
 	 */
 	virtual CFeatures* remove_feats(CFeatures* features,
 			SGVector<index_t> argsorted)=0;
+
+	/** @return indices of selected features */
+	SGVector<index_t> get_selected_feats();
 
 	/** @return the feature class, ::C_ANY */
 	virtual EFeatureClass get_feature_class();
@@ -305,6 +314,9 @@ protected:
 
 	/** The labels for the feature vectors */
 	CLabels* m_labels;
+
+	/** The indices of features that are selected */
+	CSubsetStack* m_subset;
 
 private:
 	/** Register params and initialize with default values */
