@@ -7,4 +7,4 @@
 	url = git://github.com/shogun-toolbox/shogun-tutorial.git
 [submodule "doc/md"]
 	path = doc/md
-	url = git@github.com:shogun-toolbox/shogun.wiki.git
+	url = git://github.com/shogun-toolbox/shogun.wiki.git
