@@ -32,6 +32,7 @@
 #include <shogun/features/Features.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/SparseFeatures.h>
+#include <shogun/features/SubsetStack.h>
 #include <shogun/preprocessor/FeatureSelection.h>
 
 namespace shogun
@@ -56,24 +57,29 @@ void CFeatureSelection<ST>::init()
 			"be removed", MS_NOT_AVAILABLE);
 	SG_ADD((CSGObject**)&m_labels, "labels",
 			"the class labels for the features", MS_NOT_AVAILABLE);
+	SG_ADD((CSGObject**)&m_subset, "subset",
+			"indices of selected features", MS_NOT_AVAILABLE);
 
 	m_target_dim=0;
 	m_algorithm=BACKWARD_ELIMINATION;
 	m_policy=N_LARGEST;
 	m_num_remove=1;
 	m_labels=NULL;
+	m_subset=new CSubsetStack();
 }
 
 template <class ST>
 CFeatureSelection<ST>::~CFeatureSelection()
 {
 	SG_UNREF(m_labels);
+	SG_UNREF(m_subset);
 }
 
 
 template <class ST>
 void CFeatureSelection<ST>::cleanup()
 {
+	m_subset->remove_all_subsets();
 }
 
 template <class ST>
@@ -138,7 +144,8 @@ CFeatures* CFeatureSelection<ST>::apply_backward_elimination(CFeatures* features
 		}
 
 		// remove appropriate number of features based on the measures and the
-		// removal policy
+		// removal policy. this internally update the subset for selected
+		// features as well
 		features=remove_feats(features, argsorted);
 
 		// restore original removal policy and numbers if necessary for the
@@ -154,6 +161,9 @@ CFeatures* CFeatureSelection<ST>::apply_backward_elimination(CFeatures* features
 		SG_DEBUG("Current number of features %d!\n", num_features);
 	}
 
+	// sanity check
+	ASSERT(m_subset->get_size()==m_target_dim);
+
 	SG_DEBUG("Leaving!\n");
 	return features;
 }
@@ -162,6 +172,9 @@ template <class ST>
 CFeatures* CFeatureSelection<ST>::apply(CFeatures* features)
 {
 	SG_DEBUG("Entering!\n");
+
+	// remove previously computed feature subsets
+	m_subset->remove_all_subsets();
 
 	// sanity checks
 	REQUIRE(features, "Features cannot be NULL!\n");
@@ -204,6 +217,23 @@ void CFeatureSelection<ST>::precompute()
 template <class ST>
 void CFeatureSelection<ST>::adapt_params(CFeatures* features)
 {
+}
+
+template <class ST>
+SGVector<index_t> CFeatureSelection<ST>::get_selected_feats()
+{
+	ASSERT(m_subset);
+
+	SGVector<index_t> inds;
+	if (m_subset->has_subsets())
+	{
+		inds=SGVector<index_t>(m_subset->get_size());
+		for (index_t i=0; i<inds.vlen; ++i)
+			inds[i]=m_subset->subset_idx_conversion(i);
+		inds.qsort();
+	}
+
+	return inds;
 }
 
 template <class ST>

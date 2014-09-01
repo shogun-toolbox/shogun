@@ -164,6 +164,11 @@ CFeatures* CDependenceMaximization::remove_feats(CFeatures* features,
 
 	// copy rest of the features and SG_UNREF the original feat obj
 	CFeatures* reduced_feats=features->copy_dimension_subset(inds);
+
+	// add the selected features to the subset
+	ASSERT(m_subset)
+	m_subset->add_subset(inds);
+
 	SG_UNREF(features);
 
 	SG_DEBUG("Leaving!\n");
