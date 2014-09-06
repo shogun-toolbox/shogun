@@ -95,8 +95,8 @@ def get_features_labels(input_file):
 if __name__ == '__main__':
     print('Hierarchical Multilabel Classification')
 
-    train_file = open('../../../data/multilabel/image_clef_train.arff')
-    test_file = open('../../../data/multilabel/image_clef_test.arff')
+    train_file = open('../data/image_clef_train.arff')
+    test_file = open('../data/image_clef_test.arff')
 
     train_features, train_labels, train_taxonomy = get_features_labels(train_file)
 
