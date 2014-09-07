@@ -397,5 +397,4 @@ int main(int argc, char** argv)
 {
 	return 0;
 }
-}
 #endif /* HAVE_EIGEN3 */
