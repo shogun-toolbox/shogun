@@ -64,7 +64,7 @@ void CGaussianProcessMachine::init()
 	m_method=NULL;
 
 	SG_ADD((CSGObject**) &m_method, "inference_method", "Inference method",
-	    MS_AVAILABLE);
+		MS_AVAILABLE);
 }
 
 CGaussianProcessMachine::~CGaussianProcessMachine()
@@ -253,5 +253,70 @@ SGVector<float64_t> CGaussianProcessMachine::get_posterior_variances(
 
 	return s2;
 }
+
+SGMatrix<float64_t> CGaussianProcessMachine::get_posterior_covariance(CFeatures* data){
+	REQUIRE(m_method, "Inference method must be attached\n")
+
+	// check testing features
+	REQUIRE(data, "Testing features can not be NULL\n")
+	REQUIRE(data->has_property(FP_DOT),
+			"Testing features must be type of CFeatures\n")
+	REQUIRE(data->get_feature_class()==C_DENSE, "Testing features must be dense\n")
+	REQUIRE(data->get_feature_type()==F_DREAL, "Testing features must be real\n")
+ 
+	REQUIRE(m_method->get_inference_type()==INF_EXACT, "Inference type must be exact\n")
+
+	CFeatures* feat=m_method->get_features();
+
+	SG_REF(data);
+
+	// get kernel and compute kernel matrix: K(data, data)*scale^2
+	CKernel* kernel=m_method->get_kernel();
+	kernel->init(data, data);
+	
+	// get kernel matrix and create eigen representation of it
+	SGMatrix<float64_t> k_tsts=kernel->get_kernel_matrix();
+	Map<MatrixXd> eigen_Kss(k_tsts.matrix, k_tsts.num_rows, k_tsts.num_cols);
+
+	// compute Kss=Kss*scale^2
+	eigen_Kss*=CMath::sq(m_method->get_scale());
+
+	kernel->cleanup();
+
+	// compute kernel matrix: K(feat, data)*scale^2
+	kernel->init(feat, data);
+
+	// get kernel matrix and create eigen representation of it
+	SGMatrix<float64_t> k_trts=kernel->get_kernel_matrix();
+	Map<MatrixXd> eigen_Ks(k_trts.matrix, k_trts.num_rows, k_trts.num_cols);
+
+	// compute Ks=Ks*scale^2
+	eigen_Ks*=CMath::sq(m_method->get_scale());
+
+	// cleanup
+	SG_UNREF(kernel);
+	SG_UNREF(feat);
+	SG_UNREF(data);
+
+	// get shogun representation of cholesky and create eigen representation
+	SGMatrix<float64_t> L=m_method->get_cholesky();
+	Map<MatrixXd> eigen_L(L.matrix, L.num_rows, L.num_cols);
+	// get shogun rep of diagonal sigma vector and create eigen representation
+	SGVector<float64_t> sW=m_method->get_diagonal_vector();
+	Map<VectorXd> eigen_sW(sW.vector, sW.vlen);
+	
+	// result covariance matrix
+	SGMatrix<float64_t> Sigma(k_tsts.num_rows,k_tsts.num_cols);
+	Map<MatrixXd> eigen_Sig(Sigma.matrix, Sigma.num_rows, Sigma.num_cols);
+
+	// solve L * L' * V = U' * U * V = Ks * sW^2 
+	MatrixXd eigen_V=eigen_L.triangularView<Upper>().adjoint().solve(eigen_sW.asDiagonal()*eigen_Ks); 
+	eigen_V =  eigen_L.triangularView<Upper>().solve(eigen_sW.asDiagonal()*eigen_V);
+
+	eigen_Sig = eigen_Kss - eigen_Ks.adjoint()*eigen_V;
+
+	return Sigma;
+}
+
 
 #endif /* HAVE_EIGEN3 */
