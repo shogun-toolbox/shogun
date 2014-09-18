@@ -66,8 +66,8 @@ public:
 	 * @return variance vector
 	 */
 	SGVector<float64_t> get_variance_vector(CFeatures* data);
-  
-  /** get covariance matrix
+	
+	/** get covariance matrix
 	 *
 	 * @return covariance matrix
 	 */
