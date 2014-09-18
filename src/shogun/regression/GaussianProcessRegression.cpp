@@ -152,5 +152,22 @@ SGVector<float64_t> CGaussianProcessRegression::get_variance_vector(
 
 	return s2;
 }
+SGMatrix<float64_t> CGaussianProcessRegression::get_covariance_matrix(CFeatures* data)
+{
+  // check whether given combination of inference method and likelihood function
+	// supports regression
+	REQUIRE(m_method, "Inference method must be attached\n")
+	CLikelihoodModel* lik=m_method->get_model();
+	REQUIRE(m_method->supports_regression(), "%s with %s doesn't support regression\n",
+			m_method->get_name(), lik->get_name())
 
+	SG_REF(data);
+	SGMatrix<float64_t> Sigma=get_posterior_covariance(data);
+	SG_UNREF(data);
+
+  REQUIRE(lik->get_model_type() == LT_GAUSSIAN, "Restricted to gaussian likelihood");
+  SG_UNREF(lik);
+
+  return Sigma;
+}
 #endif

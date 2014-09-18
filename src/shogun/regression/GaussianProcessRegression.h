@@ -66,7 +66,13 @@ public:
 	 * @return variance vector
 	 */
 	SGVector<float64_t> get_variance_vector(CFeatures* data);
-
+  
+  /** get covariance matrix
+	 *
+	 * @return covariance matrix
+	 */
+	SGMatrix<float64_t> get_covariance_matrix(CFeatures* data);
+ 
 	/** get classifier type
 	 *
 	 * @return classifier type GaussianProcessRegression

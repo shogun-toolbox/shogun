@@ -98,6 +98,17 @@ public:
 	 */
 	SGVector<float64_t> get_posterior_variances(CFeatures* data);
 
+  /** return a covariance matrix \f$\Sigma\f$ of a Gaussian distribution
+	 * \f$N(\mu,\Sigma)\f$, the posterior \f$p(f_*|x_*,x,y)\f$.
+	 *
+	 * @param data testing features
+	 *
+	 * @return posterior covariance on the test features
+	 */
+  SGMatrix<float64_t> get_posterior_covariance(CFeatures* data);
+
+
+
 	/** get inference method
 	 *
 	 * @return inference method, which is used by Gaussian process machine
