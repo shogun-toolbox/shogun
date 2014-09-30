@@ -10,7 +10,6 @@ Buildbot: http://buildbot.shogun-toolbox.org/waterfall.
 
 Quick links to this file:
 
-* [Quickstart](wiki/QUICKSTART)
 * [Introduction](#introduction)
 * [Interfaces](#interfaces)
 * [Platforms](#platforms)
@@ -23,10 +22,10 @@ Quick links to this file:
 
 Other links that may be useful:
 
-* See [INSTALL](doc/md/INSTALL.md) for first steps on installation and running SHOGUN.
-* See [README.developer](doc/md/README_developer.md) for the developer documentation.
-* See [README.data](doc/md/README_data.md) for how to download example data sets accompanying SHOGUN.
-* See [README.cmake](doc/md/README_cmake.md) for setting particular build options with SHOGUN and cmake.
+* See [QUICKSTART](https://github.com/shogun-toolbox/shogun/wiki/QUICKSTART) for first steps on installation and running SHOGUN.
+* See [README\_developer](https://github.com/shogun-toolbox/shogun/wiki/README_developer) for the developer documentation.
+* See [README\_data](https://github.com/shogun-toolbox/shogun/wiki/README_data) for how to download example data sets accompanying SHOGUN.
+* See [README\_cmake](https://github.com/shogun-toolbox/shogun/wiki/README_cmake) for setting particular build options with SHOGUN and cmake.
 
 ## Introduction
 ---------------
@@ -56,9 +55,9 @@ each feature object allowing for on-the-fly pre-processing.
 
 Shogun got initiated by Soeren Sonnenburg and Gunnar Raetsch (thats where the
 name ShoGun originates from). It is now developed by a much larger Team
-cf. [AUTHORS](doc/md/AUTHORS.md) and would not have been possible without the patches
+cf. [AUTHORS](https://github.com/shogun-toolbox/shogun/wiki/AUTHORS) and would not have been possible without the patches
 and bug reports by various people and by the various authors of other machine
-learning packages that we utilize. See [CONTRIBUTIONS](doc/md/CONTRIBUTIONS.md) for
+learning packages that we utilize. See [CONTRIBUTIONS](https://github.com/shogun-toolbox/shogun/wiki/CONTRIBUTION) for
 a detailled list.
 
 ## Interfaces
@@ -94,7 +93,7 @@ Visit http://www.shogun-toolbox.org/doc/en/current for further information.
 ------------
 
 Debian GNU/Linux, Mac OSX and WIN32/CYGWIN are supported platforms (see
-the [INSTALL](doc/md/INSTALL.md) file for generic and platform specific installation instructions).
+the [QUICKSTART](https://github.com/shogun-toolbox/shogun/wiki/QUICKSTART) file for generic installation instructions).
 
 ## Contents
 -----------
@@ -134,11 +133,11 @@ Except for the files classifier/svm/Optimizer.{cpp,h},
 classifier/svm/SVM_light.{cpp,h}, regression/svr/SVR_light.{cpp,h}
 and the kernel caching functions in kernel/Kernel.{cpp,h}
 which are (C) Torsten Joachims and follow a different
-licensing scheme (cf. [LICENSE\_SVMlight](doc/md/LICENSE_SVMlight.md)) SHOGUN is
+licensing scheme (cf. [LICENSE\_SVMlight](https://github.com/shogun-toolbox/shogun/wiki/LICENSE_SVMlight)) SHOGUN is
 generally licensed under the GPL version 3 or any later version (cf.
-[LICENSE](doc/md/LICENSE.md)) with code borrowed from various GPL compatible
-libraries from various places (cf. [CONTRIBUTIONS](doc/md/CONTRIBUTIONS.md)). See also
-[LICENSE\_msufsort](doc/md/LICENSE_msufsort.md) and  [LICENSE\_tapkee](doc/md/LICENSE_tapkee.md).
+[LICENSE](https://github.com/shogun-toolbox/shogun/wiki/LICENSE)) with code borrowed from various GPL compatible
+libraries from various places (cf. [CONTRIBUTIONS](https://github.com/shogun-toolbox/shogun/wiki/CONTRIBUTIONS)). See also
+[LICENSE\_msufsort](https://github.com/shogun-toolbox/shogun/wiki/LICENSE_msufsort) and  [LICENSE\_tapkee](https://github.com/shogun-toolbox/shogun/wiki/LICENSE_tapkee).
 
 ## Contributions
 ----------------
