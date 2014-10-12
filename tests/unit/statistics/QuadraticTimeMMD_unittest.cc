@@ -17,7 +17,10 @@
 #include <gtest/gtest.h>
 
 using namespace shogun;
+
+#ifdef HAVE_EIGEN3
 using namespace Eigen;
+#endif
 
 TEST(QuadraticTimeMMD,test_quadratic_mmd_biased)
 {

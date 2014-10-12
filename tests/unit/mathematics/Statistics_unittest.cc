@@ -1,17 +1,19 @@
 #include <shogun/lib/config.h>
-#ifdef HAVE_EIGEN3
 
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGSparseMatrix.h>
 #include <shogun/lib/SGSparseVector.h>
 #include <shogun/mathematics/Statistics.h>
-#include <shogun/mathematics/eigen3.h>
 #include <math.h>
 #include <gtest/gtest.h>
 #include <shogun/mathematics/Math.h>
 
 using namespace shogun;
+
+#ifdef HAVE_EIGEN3
+#include <shogun/mathematics/eigen3.h>
+
 using namespace Eigen;
 
 TEST(Statistics, fit_sigmoid)
