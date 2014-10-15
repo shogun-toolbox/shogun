@@ -37,17 +37,34 @@
 #include <shogun/lib/config.h>
 
 #ifdef HAVE_VIENNACL
+#ifdef HAVE_CXX11
 
-#include <shogun/lib/SGMatrix.h>
+#include <shogun/lib/common.h>
 
-#include <viennacl/matrix.hpp>
+#include <memory>
 
-#ifdef HAVE_EIGEN3
-#include <shogun/mathematics/eigen3.h>
-#endif
+namespace viennacl
+{
+	template <class, class, class, class> class matrix_base;
+	template <class> class const_entry_proxy;
+	template <class> class entry_proxy;
+	class column_major;
+	
+	namespace backend 
+	{
+		class mem_handle;
+	}
+}
+
+namespace Eigen
+{
+	template <class, int, int, int, int, int> class Matrix;
+}
 
 namespace shogun
-{
+{	
+
+template <class> class SGMatrix;
 
 /** @brief Represents a column-major matrix on the GPU 
  * 
@@ -62,8 +79,10 @@ namespace shogun
  */
 template <class T> class CGPUMatrix
 {
-	typedef viennacl::matrix_base<T, viennacl::column_major> VCLMatrixBase;
+	typedef viennacl::matrix_base<T, viennacl::column_major, std::size_t, std::ptrdiff_t> VCLMatrixBase;
 	typedef viennacl::backend::mem_handle VCLMemoryArray;
+	
+	typedef Eigen::Matrix<T,-1,-1,0,-1,-1> EigenMatrixXt;
 	
 public:
 	typedef T Scalar;
@@ -86,29 +105,17 @@ public:
 	 * @param mem_offset Offset for the memory segment, i.e the data of the matrix
 	 * starts at mem+mem_offset
 	 */
-	CGPUMatrix(VCLMemoryArray mem, index_t nrows, index_t ncols, index_t mem_offset=0);
+	CGPUMatrix(std::shared_ptr<VCLMemoryArray> mem, index_t nrows, index_t ncols, 
+		index_t mem_offset=0);
 	
 	/** Creates a gpu matrix using data from an SGMatrix */
 	CGPUMatrix(const SGMatrix<T>& cpu_mat);
 
 #ifdef HAVE_EIGEN3
-	/** Creates a gpu matrix using data from an Eigen3 matrix */
-	template <class Derived>
-	CGPUMatrix(const Eigen::PlainObjectBase<Derived>& cpu_mat)
-	{
-		init();
-		
-		num_rows = cpu_mat.rows();
-		num_cols = cpu_mat.cols();
-		viennacl::backend::memory_create(matrix, sizeof(T)*num_rows*num_cols, 
-			viennacl::context());
-		
-		viennacl::backend::memory_write(matrix, 0, num_rows*num_cols*sizeof(T), 
-			cpu_mat.data());
-	}
+	CGPUMatrix(const EigenMatrixXt& cpu_mat);
 	
 	/** Converts the matrix into an Eigen3 matrix */
-	operator Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>() const;
+	operator EigenMatrixXt() const;
 #endif
 	
 	/** Converts the matrix into an SGMatrix */
@@ -117,32 +124,19 @@ public:
 	/** Returns a ViennaCL matrix wrapped around the data of this matrix. Can be 
 	 * used to call native ViennaCL methods on this matrix
 	 */
-	VCLMatrixBase vcl_matrix()
-	{
-		return VCLMatrixBase(matrix,num_rows, offset, 1, num_rows, num_cols, 0, 1, num_cols);
-	}
+	VCLMatrixBase vcl_matrix();
 	
 	/** Sets all the elements of the matrix to zero */
-	void zero()
-	{
-		vcl_matrix().clear();
-	}
+	void zero();
 	
 	/** Sets all the elements of the matrix to a constant value 
 	 * 
 	 * @param value New value for all the elements in the matrix
 	 */ 
-	void set_const(T value)
-	{
-		VCLMatrixBase m = vcl_matrix();
-		viennacl::linalg::matrix_assign(m, value);
-	}
+	void set_const(T value);
 	
 	/** Displays the matrix */
-	void display_matrix(const char* name="matrix") const
-	{
-		((SGMatrix<T>)*this).display_matrix(name);
-	}
+	void display_matrix(const char* name="matrix") const;
 	
 	/** Read only memory access. Note that this is very slow as it copies the 
 	 * element from the GPU to the CPU
@@ -150,10 +144,7 @@ public:
 	 * @param i Row index
 	 * @param j Column index
 	 */ 
-	inline viennacl::const_entry_proxy<T> operator()(index_t i, index_t j) const
-	{
-		return viennacl::const_entry_proxy<T>(offset+i+j*num_rows, matrix);
-	}
+	viennacl::const_entry_proxy<T> operator()(index_t i, index_t j) const;
 	
 	/** Read/write memory access. Note that this is very slow as it copies the 
 	 * element between the GPU and the CPU
@@ -161,37 +152,28 @@ public:
 	 * @param i Row index
 	 * @param j Column index
 	 */ 
-	inline viennacl::entry_proxy<T> operator()(index_t i, index_t j)
-	{
-		return viennacl::entry_proxy<T>(offset+i+j*num_rows, matrix);
-	}
+	viennacl::entry_proxy<T> operator()(index_t i, index_t j);
 	
 	/** Read only memory access. Note that this is very slow as it copies the 
 	 * element from the GPU to the CPU
 	 * 
 	 * @param index Array index
 	 */ 
-	inline viennacl::const_entry_proxy<T> operator[](index_t index) const
-	{
-		return viennacl::const_entry_proxy<T>(offset+index, matrix);
-	}
+	viennacl::const_entry_proxy<T> operator[](index_t index) const;
 	
 	/** Read/write memory access. Note that this is very slow as it copies the 
 	 * element between the GPU and the CPU
 	 * 
 	 * @param index Array index
 	 */ 
-	inline viennacl::entry_proxy<T> operator[](index_t index)
-	{
-		return viennacl::entry_proxy<T>(offset+index, matrix);
-	}
+	viennacl::entry_proxy<T> operator[](index_t index);
 	
 private:
 	void init();
 	
 public:
 	/** Memory segment holding the data for the matrix */
-	VCLMemoryArray matrix;
+	std::shared_ptr<VCLMemoryArray> matrix;
 	
 	/** Offset for the memory segment, i.e the data of the matrix
 	 * starts at matrix+offset
@@ -207,5 +189,6 @@ public:
 
 }
 
-#endif
-#endif
+#endif // HAVE_CXX11
+#endif // HAVE_VIENNACL
+#endif // __GPUMATRIX_H__

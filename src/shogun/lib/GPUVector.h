@@ -37,14 +37,28 @@
 #include <shogun/lib/config.h>
 
 #ifdef HAVE_VIENNACL
+#ifdef HAVE_CXX11
 
-#include <shogun/lib/SGVector.h>
+#include <shogun/lib/common.h>
 
-#include <viennacl/vector.hpp>
+#include <memory>
 
-#ifdef HAVE_EIGEN3
-#include <shogun/mathematics/eigen3.h>
-#endif
+namespace viennacl
+{
+	template <class, class, class> class vector_base;
+	template <class> class const_entry_proxy;
+	template <class> class entry_proxy;
+	
+	namespace backend 
+	{
+		class mem_handle;
+	}
+}
+
+namespace Eigen
+{
+	template <class, int, int, int, int, int> class Matrix;
+}
 
 namespace shogun
 {
@@ -62,8 +76,11 @@ namespace shogun
  */
 template <class T> class CGPUVector
 {
-	typedef viennacl::vector_base<T> VCLVectorBase;
+	typedef viennacl::vector_base<T, std::size_t, std::ptrdiff_t> VCLVectorBase;
 	typedef viennacl::backend::mem_handle VCLMemoryArray;
+	
+	typedef Eigen::Matrix<T,-1,1,0,-1,1> EigenVectorXt;
+	typedef Eigen::Matrix<T,1,-1,0x1,1,-1> EigenRowVectorXt;
 	
 public:
 	typedef T Scalar;
@@ -84,31 +101,23 @@ public:
 	 * @param mem_offset Offset for the memory segment, i.e the data of the vector
 	 * starts at mem+mem_offset
 	 */
-	CGPUVector(VCLMemoryArray mem, index_t length, index_t mem_offset=0);
+	CGPUVector(std::shared_ptr<VCLMemoryArray> mem, index_t length, index_t mem_offset=0);
 	
 	/** Creates a gpu vector using data from an SGVector */
 	CGPUVector(const SGVector<T>& cpu_vec);
 
 #ifdef HAVE_EIGEN3
-	/** Creates a gpu vector using data from an Eigen3 vector */
-	template <class Derived>
-	CGPUVector(const Eigen::PlainObjectBase<Derived>& cpu_vec)
-	{
-		init();
-		vlen = cpu_vec.size();
-		
-		viennacl::backend::memory_create(vector, sizeof(T)*vlen, 
-			viennacl::context());
-		
-		viennacl::backend::memory_write(vector, 0, vlen*sizeof(T), 
-			cpu_vec.data());
-	}
+	/** Creates a gpu vector using data from an Eigen3 column vector */
+	CGPUVector(const EigenVectorXt& cpu_vec);
+	
+	/** Creates a gpu vector using data from an Eigen3 row vector */
+	CGPUVector(const EigenRowVectorXt& cpu_vec);
 	
 	/** Converts the vector into an Eigen3 column vector */
-	operator Eigen::Matrix<T, Eigen::Dynamic, 1>() const;
+	operator EigenVectorXt() const;
 	
 	/** Converts the vector into an Eigen3 row vector */
-	operator Eigen::Matrix<T, 1, Eigen::Dynamic>() const;
+	operator EigenRowVectorXt() const;
 #endif
 	
 	/** Converts the vector into an SGVector */
@@ -117,59 +126,40 @@ public:
 	/** Returns a ViennaCL vector wrapped around the data of this vector. Can be 
 	 * used to call native ViennaCL methods on this vector
 	 */
-	VCLVectorBase vcl_vector()
-	{
-		return VCLVectorBase(vector,vlen, offset, 1);
-	}
+	VCLVectorBase vcl_vector();
 	
 	/** Sets all the elements of the vector to zero */
-	void zero()
-	{
-		vcl_vector().clear();
-	}
+	void zero();
 	
 	/** Sets all the elements of the vector to a constant value 
 	 * 
 	 * @param value New value for all the elements in the vector
 	 */ 
-	void set_const(T value)
-	{
-		VCLVectorBase v = vcl_vector();
-		viennacl::linalg::vector_assign(v, value);
-	}
+	void set_const(T value);
 	
 	/** Displays the vector */
-	void display_vector(const char* name="vector") const
-	{
-		((SGVector<T>)*this).display_vector(name);
-	}
+	void display_vector(const char* name="vector") const;
 	
 	/** Read only memory access. Note that this is very slow as it copies the 
 	 * element from the GPU to the CPU
 	 * 
 	 * @param index Element index
 	 */ 
-	inline viennacl::const_entry_proxy<T> operator[](index_t index) const
-	{
-		return viennacl::const_entry_proxy<T>(offset+index, vector);
-	}
+	viennacl::const_entry_proxy<T> operator[](index_t index) const;
 	
 	/** Read/write memory access. Note that this is very slow as it copies the 
 	 * element between the GPU and the CPU
 	 * 
 	 * @param index Element index
 	 */ 
-	inline viennacl::entry_proxy<T> operator[](index_t index)
-	{
-		return viennacl::entry_proxy<T>(offset+index, vector);
-	}
+	viennacl::entry_proxy<T> operator[](index_t index);
 	
 private:
 	void init();
 	
 public:
 	/** Memory segment holding the data for the vector */
-	VCLMemoryArray vector;
+	std::shared_ptr<VCLMemoryArray> vector;
 	
 	/** Offset for the memory segment, i.e the data of the vector
 	 * starts at vector+offset
@@ -182,5 +172,6 @@ public:
 
 }
 
-#endif
-#endif
+#endif // HAVE_CXX11
+#endif // HAVE_VIENNACL
+#endif // __GPUVECTOR_H__

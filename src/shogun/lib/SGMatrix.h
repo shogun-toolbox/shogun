@@ -17,9 +17,12 @@
 #include <shogun/lib/common.h>
 #include <shogun/lib/SGReferencedData.h>
 
-#ifdef HAVE_EIGEN3
-#include <shogun/mathematics/eigen3.h>
-#endif
+namespace Eigen
+{
+	template <class, int, int, int, int, int> class Matrix;
+	template<int, int> class Stride;
+	template <class, int, class> class Map;
+}
 
 namespace shogun
 {
@@ -29,6 +32,9 @@ namespace shogun
 /** @brief shogun matrix */
 template<class T> class SGMatrix : public SGReferencedData
 {
+	typedef Eigen::Matrix<T,-1,-1,0,-1,-1> EigenMatrixXt;
+	typedef Eigen::Map<EigenMatrixXt,0,Eigen::Stride<0,0> > EigenMatrixXtMap;
+	
 	public:
 		typedef T Scalar;
 		
@@ -56,17 +62,10 @@ template<class T> class SGMatrix : public SGReferencedData
 #ifndef SWIG // SWIG should skip this part
 #ifdef HAVE_EIGEN3
 		/** Wraps a matrix around the data of an Eigen3 matrix */
-		template <class Derived>
-		SGMatrix(Eigen::PlainObjectBase<Derived>& mat) 
-			: SGReferencedData(false), matrix(mat.data()), 
-			num_rows(mat.rows()), num_cols(mat.cols()) { }
+		SGMatrix(EigenMatrixXt& mat);
 		
 		/** Wraps an Eigen3 matrix around the data of this matrix */
-		operator Eigen::Map<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> >() const
-		{ 
-			return Eigen::Map<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> >(
-				matrix, num_rows, num_cols);
-		}
+		operator EigenMatrixXtMap() const;
 #endif
 #endif
 

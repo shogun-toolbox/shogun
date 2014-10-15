@@ -20,6 +20,10 @@
 #include <shogun/mathematics/lapack.h>
 #include <limits>
 
+#ifdef HAVE_EIGEN3
+#include <shogun/mathematics/eigen3.h>
+#endif
+
 namespace shogun {
 
 template <class T>
@@ -51,6 +55,22 @@ SGMatrix<T>::SGMatrix(const SGMatrix &orig) : SGReferencedData(orig)
 {
 	copy_data(orig);
 }
+
+#ifdef HAVE_EIGEN3
+template <class T>
+SGMatrix<T>::SGMatrix(EigenMatrixXt& mat)
+: SGReferencedData(false), matrix(mat.data()), 
+	num_rows(mat.rows()), num_cols(mat.cols())
+{
+
+}
+
+template <class T> 
+SGMatrix<T>::operator EigenMatrixXtMap() const
+{
+	return EigenMatrixXtMap(matrix, num_rows, num_cols);
+}
+#endif
 
 template <class T>
 SGMatrix<T>::~SGMatrix()

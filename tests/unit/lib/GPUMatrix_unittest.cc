@@ -34,14 +34,18 @@
 #include <shogun/lib/config.h>
 
 #ifdef HAVE_VIENNACL
+#ifdef HAVE_CXX11
 
 #include <shogun/lib/GPUMatrix.h>
+#include <viennacl/matrix.hpp>
 #include <viennacl/linalg/prod.hpp>
 #include <gtest/gtest.h>
 
 #ifdef HAVE_EIGEN3
 #include <shogun/mathematics/eigen3.h>
 #endif
+
+#include <shogun/lib/SGMatrix.h>
 
 using namespace shogun;
 
@@ -202,4 +206,5 @@ TEST(GPUMatrix, from_eigen3)
 
 #endif
 
-#endif
+#endif // HAVE_CXX11
+#endif // HAVE_VIENNACL
