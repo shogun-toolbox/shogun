@@ -348,8 +348,7 @@ protected:
 	 *  first the overridden method BASE_CLASS::LOAD_SERIALIZABLE_PRE
 	 *  is called.
 	 *
-	 *  @exception ShogunException Will be thrown if an error
-	 *                             occurres.
+	 *  @exception ShogunException will be thrown if an error occurs.
 	 */
 	virtual void load_serializable_pre() throw (ShogunException);
 
@@ -358,8 +357,7 @@ protected:
 	 *  first the overridden method BASE_CLASS::LOAD_SERIALIZABLE_POST
 	 *  is called.
 	 *
-	 *  @exception ShogunException Will be thrown if an error
-	 *                             occurres.
+	 *  @exception ShogunException will be thrown if an error occurs.
 	 */
 	virtual void load_serializable_post() throw (ShogunException);
 
@@ -368,8 +366,7 @@ protected:
 	 *  first the overridden method BASE_CLASS::SAVE_SERIALIZABLE_PRE
 	 *  is called.
 	 *
-	 *  @exception ShogunException Will be thrown if an error
-	 *                             occurres.
+	 *  @exception ShogunException will be thrown if an error occurs.
 	 */
 	virtual void save_serializable_pre() throw (ShogunException);
 
@@ -378,8 +375,7 @@ protected:
 	 *  first the overridden method BASE_CLASS::SAVE_SERIALIZABLE_POST
 	 *  is called.
 	 *
-	 *  @exception ShogunException Will be thrown if an error
-	 *                             occurres.
+	 *  @exception ShogunException will be thrown if an error occurs.
 	 */
 	virtual void save_serializable_post() throw (ShogunException);
 
