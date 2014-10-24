@@ -83,17 +83,26 @@ class CKernelRidgeRegression : public CKernelMachine
 		/** default destructor */
 		virtual ~CKernelRidgeRegression() {}
 
+		/** @return type of training method */
+		ETrainingType get_train_func() { return m_train_func; };
+
 		/** set regularization constant
 		 *
-		 * @param tau new tau
+		 * @param tau new regularization parameter tau
 		 */
-		inline void set_tau(float64_t tau) { m_tau = tau; };
+		void set_tau(float64_t tau) { m_tau = tau; };
+
+		/** @return regularization parameter tau */
+		float64_t get_tau() { return m_tau; };
 
 		/** set convergence precision for gauss seidel method
 		 *
 		 * @param epsilon new epsilon
 		 */
-		inline void set_epsilon(float64_t epsilon) { m_epsilon = epsilon; }
+		void set_epsilon(float64_t epsilon) { m_epsilon = epsilon; }
+
+		/** @return Convergence precision epsilon for Gauss-Seidel  */
+		float64_t get_epsilon() { return m_epsilon; };
 
 		/** load regression from file
 		 *
@@ -148,13 +157,13 @@ class CKernelRidgeRegression : public CKernelMachine
 		bool train_machine_pinv();
 
 	private:
-		/** regularization parameter tau */
+		/** Regularization parameter tau */
 		float64_t m_tau;
 
-		/** epsilon constant */
+		/** Convergence precision. epsilon constant for Gauss-Seidel */
 		float64_t m_epsilon;
 
-		/** training function */
+		/** Type of training method */
 		ETrainingType m_train_func;
 };
 }

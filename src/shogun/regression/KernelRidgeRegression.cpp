@@ -40,6 +40,7 @@ void CKernelRidgeRegression::init()
 {
 	m_tau=1e-6;
 	m_epsilon=0.0001;
+	m_train_func=PINV;
 	SG_ADD(&m_tau, "tau", "Regularization parameter", MS_AVAILABLE);
 }
 
