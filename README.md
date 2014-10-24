@@ -29,36 +29,15 @@ Other links that may be useful:
 
 ## Introduction
 ---------------
+The Shogun Machine learning toolbox provides a wide range of *unified* and *efficient* Machine Learning (ML) methods. The toolbox seamlessly allows to easily combine multiple data representations, algorithm classes, and general purpose tools. This enables both rapid prototyping of data pipelines and extensibility in terms of new algorithms. We combine modern software architecture in C++ with both efficient low-level computing backends and cutting edge algorithm implementations to solve large-scale Machine Learning problems (yet) on single machines.
 
-The machine learning toolbox's focus is on large scale kernel methods and
-especially on Support Vector Machines (SVM) [1]. It provides a generic SVM
-object interfacing to several different SVM implementations, among them the
-state of the art LibSVM [2] and SVMlight [3].  Each of the SVMs can be
-combined with a variety of kernels. The toolbox not only provides efficient
-implementations of the most common kernels, like the Linear, Polynomial,
-Gaussian and Sigmoid Kernel but also comes with a number of recent string
-kernels as e.g. the Locality Improved [4], Fischer [5], TOP [6], Spectrum [7],
-Weighted Degree Kernel (with shifts) [8, 9, 10]. For the latter the efficient
-LINADD [10] optimizations are implemented.  Also SHOGUN offers the freedom of
-working with custom pre-computed kernels.  One of its key features is the
-*combined kernel* which can be constructed by a weighted linear combination
-of a number of sub-kernels, each of which not necessarily working on the same
-domain. An optimal sub-kernel weighting can be learned using Multiple Kernel
-Learning [11, 12, 16]. Currently SVM 2-class classification and regression problems can be dealt
-with. However SHOGUN also implements a number of linear methods like Linear
-Discriminant Analysis (LDA), Linear Programming Machine (LPM), (Kernel)
-Perceptrons and features algorithms to train hidden markov models.
-The input feature-objects can be dense, sparse or strings, and
-of types int/short/double/char. In addition, they can be converted into different feature types.
-Chains of *preprocessors* (e.g. substracting the mean) can be attached to
-each feature object allowing for on-the-fly pre-processing.
+One of Shogun's most exciting features is that you can use the toolbox through a *unified* interface from C++, Python, Octave, R, Java, Lua, C#, etc. This not just means that we are independent of trends in computing languages, but it also lets you use Shogun as a vehicle to expose your algorithm to multiple communities. We use [SWIG](http://www.swig.org/) to enable *bidirectional* communication between C++ and target languages. Shogun runs under Linux/Unix, MacOS, Windows.
 
-Shogun got initiated by Soeren Sonnenburg and Gunnar Raetsch (thats where the
-name ShoGun originates from). It is now developed by a much larger Team
-cf. [AUTHORS](https://github.com/shogun-toolbox/shogun/wiki/AUTHORS) and would not have been possible without the patches
-and bug reports by various people and by the various authors of other machine
-learning packages that we utilize. See [CONTRIBUTIONS](https://github.com/shogun-toolbox/shogun/wiki/CONTRIBUTION) for
-a detailled list.
+Originally focussing on large-scale kernel methods and bioinformatics (for a list of scientific papers mentioning Shogun, see [here](http://scholar.google.com/scholar?hl=en&q=shogun+toolbox&btnG=&as_sdt=1%2C33&as_sdtp=)), the toolbox saw massive extensions to other fields in recent years. It now offers features that span the whole space of Machine Learning methods, including many classical methods in classification, regression, dimensionality reduction, clustering, but also more advanced algorithm classes such as metric, multi-task, structured output, and online learning, as well as feature hashing, ensemble methods, and optimization, just to name a few. Shogun in addition contains a number of exclusive state-of-the art algorithms such as a wealth of efficient SVM implementations, Multiple Kernel Learning, kernel hypothesis testing, Krylov methods, etc. All algorithms are supported by a collection of general purpose methods for evaluation, parameter tuning, preprocessing, serialisation & I/O, etc; the resulting combinatorial possibilities are huge. See our [feature list](http://www.shogun-toolbox.org/page/features/) for more details.
+
+The wealth of ML open-source software allows us to offer bindings to other sophisticated libraries including: [LibSVM](http://www.csie.ntu.edu.tw/~cjlin/libsvm/)/[LibLinear](http://www.csie.ntu.edu.tw/~cjlin/liblinear/), [SVMLight](http://svmlight.joachims.org/), [LibOCAS](http://cmp.felk.cvut.cz/~xfrancv/ocas/html/), [libqp](http://cmp.felk.cvut.cz/~xfrancv/libqp/html/), [VowpalWabbit](http://www.hunch.net/~vw/), [Tapkee](http://tapkee.lisitsyn.me/), [SLEP](http://www.public.asu.edu/~jye02/Software/SLEP/), [GPML](http://www.gaussianprocess.org/gpml/code/matlab/doc/) and more. See our [list of integrated external libraries](http://www.shogun-toolbox.org/page/about/contributions).
+
+Shogun got initiated in 1999 by [Soeren Sonnenburg](http://sonnenburgs.de/soeren) and [Gunnar Raetsch](http://www.raetschlab.org/) (that's where the name ShoGun originates from). It is now developed by a much larger Team cf. [website](http://shogun-toolbox.org/page/about/ourteam) and [AUTHORS](http://www.github.com/shogun-toolbox/shogun/wiki/AUTHORS), and would not have been possible without the patches and bug reports by various people. See [CONTRIBUTIONS](http://www.github.com/shogun-toolbox/shogun/wiki/CONTRIBUTIONS) for a detailed list. Statistics on Shogun's development activity can be found on [ohloh](https://www.openhub.net/p/shogun).
 
 ## Interfaces
 -------------
