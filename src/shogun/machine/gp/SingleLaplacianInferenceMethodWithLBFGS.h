@@ -38,7 +38,6 @@
 #ifdef HAVE_EIGEN3
 
 #include <shogun/machine/gp/SingleLaplacianInferenceMethod.h>
-#include <shogun/mathematics/eigen3.h>
 #include <shogun/optimization/lbfgs/lbfgs.h>
 
 
@@ -224,12 +223,12 @@ private:
 			const float64_t step);
 
 	/* compute the gradient given the current alpha*/
-	void get_gradient_wrt_alpha(Eigen::Map<Eigen::VectorXd>* alpha,
-			Eigen::Map<Eigen::VectorXd>* gradient);
+	void get_gradient_wrt_alpha(float64_t *alpha,
+			float64_t *gradient, const int dim);
 
 	/* compute the function value given the current alpha*/
-	void get_psi_wrt_alpha(Eigen::Map<Eigen::VectorXd>* alpha,
-			float64_t* psi);
+	void get_psi_wrt_alpha(float64_t *alpha,
+			const int dim, float64_t &psi);
 };
 
 } /* namespace shogun */

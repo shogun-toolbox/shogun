@@ -35,6 +35,7 @@
 #ifdef HAVE_EIGEN3
 #include <shogun/mathematics/Math.h>
 #include <shogun/optimization/lbfgs/lbfgs.h>
+#include <shogun/mathematics/eigen3.h>
 
 namespace shogun
 {
@@ -170,11 +171,9 @@ float64_t CSingleLaplacianInferenceMethodWithLBFGS::evaluate(
 	CSingleLaplacianInferenceMethodWithLBFGS * obj_prt
 		= static_cast<CSingleLaplacianInferenceMethodWithLBFGS *>(obj);
 	float64_t * alpha_cast = const_cast<float64_t *>(alpha);
-	Eigen::Map<Eigen::VectorXd> eigen_alpha(alpha_cast, dim);
 	float64_t psi = 0.0;
-	obj_prt->get_psi_wrt_alpha(&eigen_alpha, &psi);
-	Eigen::Map<Eigen::VectorXd> eigen_gradient(gradient, dim);
-	obj_prt->get_gradient_wrt_alpha(&eigen_alpha, &eigen_gradient);
+	obj_prt->get_psi_wrt_alpha(alpha_cast, dim, psi);
+	obj_prt->get_gradient_wrt_alpha(alpha_cast, gradient, dim);
 	return psi;
 }
 
@@ -304,10 +303,12 @@ void CSingleLaplacianInferenceMethodWithLBFGS::update_alpha()
 }
 
 void CSingleLaplacianInferenceMethodWithLBFGS::get_psi_wrt_alpha(
-	Eigen::Map<Eigen::VectorXd>* alpha,
-	float64_t* psi)
+	float64_t *alpha,
+	const int dim,
+	float64_t &psi)
 {
-	SGVector<float64_t> f(alpha->rows());
+	Eigen::Map<Eigen::VectorXd> eigen_alpha(alpha, dim);
+	SGVector<float64_t> f(dim);
 	Eigen::Map<Eigen::VectorXd> eigen_f(f.vector, f.vlen);
 	Eigen::Map<Eigen::MatrixXd> kernel(m_ktrtr.matrix,
 		m_ktrtr.num_rows,
@@ -316,18 +317,21 @@ void CSingleLaplacianInferenceMethodWithLBFGS::get_psi_wrt_alpha(
 		m_mean_f->vlen);
 	/* f = K * alpha + mean_f given alpha*/
 	eigen_f
-		= kernel * ((*alpha) * CMath::sq(m_scale)) + eigen_mean_f;
+		= kernel * ((eigen_alpha) * CMath::sq(m_scale)) + eigen_mean_f;
 
 	/* psi = 0.5 * alpha .* (f - m) - sum(dlp)*/
-	*psi = alpha->dot(eigen_f - eigen_mean_f) * 0.5;
-	*psi -= SGVector<float64_t>::sum(m_model->get_log_probability_f(m_labels, f));
+	psi = eigen_alpha.dot(eigen_f - eigen_mean_f) * 0.5;
+	psi -= SGVector<float64_t>::sum(m_model->get_log_probability_f(m_labels, f));
 }
 
 void CSingleLaplacianInferenceMethodWithLBFGS::get_gradient_wrt_alpha(
-	Eigen::Map<Eigen::VectorXd>* alpha,
-	Eigen::Map<Eigen::VectorXd>* gradient)
+	float64_t *alpha,
+	float64_t *gradient,
+	const int dim)
 {
-	SGVector<float64_t> f(alpha->rows());
+	Eigen::Map<Eigen::VectorXd> eigen_alpha(alpha, dim);
+	Eigen::Map<Eigen::VectorXd> eigen_gradient(gradient, dim);
+	SGVector<float64_t> f(dim);
 	Eigen::Map<Eigen::VectorXd> eigen_f(f.vector, f.vlen);
 	Eigen::Map<Eigen::MatrixXd> kernel(m_ktrtr.matrix,
 		m_ktrtr.num_rows,
@@ -336,7 +340,7 @@ void CSingleLaplacianInferenceMethodWithLBFGS::get_gradient_wrt_alpha(
 		m_mean_f->vlen);
 
 	/* f = K * alpha + mean_f given alpha*/
-	eigen_f = kernel * ((*alpha) * CMath::sq(m_scale)) + eigen_mean_f;
+	eigen_f = kernel * ((eigen_alpha) * CMath::sq(m_scale)) + eigen_mean_f;
 
 	SGVector<float64_t> dlp_f =
 		m_model->get_log_probability_derivative_f(m_labels, f, 1);
@@ -344,7 +348,7 @@ void CSingleLaplacianInferenceMethodWithLBFGS::get_gradient_wrt_alpha(
 	Eigen::Map<Eigen::VectorXd> eigen_dlp_f(dlp_f.vector, dlp_f.vlen);
 
 	/* g_alpha = K * (alpha - dlp_f)*/
-	*gradient = kernel * ((*alpha - eigen_dlp_f) * CMath::sq(m_scale));
+	eigen_gradient = kernel * ((eigen_alpha - eigen_dlp_f) * CMath::sq(m_scale));
 }
 
 } /* namespace shogun */
