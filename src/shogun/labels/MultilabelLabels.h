@@ -160,10 +160,14 @@ private:
 	void init(int32_t num_labels, int32_t num_classes);
 
 protected:
+	/** Number of labels */
+	int32_t m_num_labels;
 
-	int32_t             m_num_labels;
-	int32_t             m_num_classes;
-	SGVector<int32_t> * m_labels;
+	/** Number of classes */
+	int32_t m_num_classes;
+
+	/** Labels themselves */
+	SGVector<int32_t>* m_labels;
 };
 
 }
