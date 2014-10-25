@@ -44,16 +44,16 @@ template class CEMBase<MixModelData>;
 class CEMMixtureModel : public CEMBase<MixModelData>
 {
 	public:
-		/* constructor */
+		/** constructor */
 		CEMMixtureModel();
 
-		/* destructor */
+		/** destructor */
 		virtual ~CEMMixtureModel();
 
-		/* returns name of class */
+		/** returns name of class */
 		virtual const char* get_name() const { return "EMMixtureModel"; }		
 
-		/* expectation step
+		/** expectation step
 		 * 
 		 * @return updated value log_likelihood
 		 */

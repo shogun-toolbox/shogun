@@ -94,7 +94,7 @@ template <class T> class CEMBase : public CSGObject
 		}
 
 	public:
-		/* data */
+		/** data */
 		T data;
 
 };
