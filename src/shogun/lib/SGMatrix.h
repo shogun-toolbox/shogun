@@ -34,46 +34,48 @@ template<class T> class SGMatrix : public SGReferencedData
 {
 	typedef Eigen::Matrix<T,-1,-1,0,-1,-1> EigenMatrixXt;
 	typedef Eigen::Map<EigenMatrixXt,0,Eigen::Stride<0,0> > EigenMatrixXtMap;
-	
+
 	public:
+		/** The scalar type of the matrix */
 		typedef T Scalar;
-		
-		/** default constructor */
+
+		/** Default constructor */
 		SGMatrix();
 
-		/** constructor for setting reference counting while not creating
+		/** Constructor for setting reference counting while not creating
 		 * the matrix in memory (use this for static SGMatrix instances) */
 		SGMatrix(bool ref_counting);
 
-		/** constructor for setting params */
+		/** Constructor for setting params */
 		SGMatrix(T* m, index_t nrows, index_t ncols, bool ref_counting=true);
-		
+
 		/** Wraps a matrix around an existing memory segment with an offset */
-		SGMatrix(T* m, index_t nrows, index_t ncols, index_t offset) 
+		SGMatrix(T* m, index_t nrows, index_t ncols, index_t offset)
 			: SGReferencedData(false), matrix(m+offset),
 			num_rows(nrows), num_cols(ncols) { }
-		
-		/** constructor to create new matrix in memory */
+
+		/** Constructor to create new matrix in memory */
 		SGMatrix(index_t nrows, index_t ncols, bool ref_counting=true);
 
-		/** copy constructor */
+		/** Copy constructor */
 		SGMatrix(const SGMatrix &orig);
 
 #ifndef SWIG // SWIG should skip this part
 #ifdef HAVE_EIGEN3
 		/** Wraps a matrix around the data of an Eigen3 matrix */
 		SGMatrix(EigenMatrixXt& mat);
-		
+
 		/** Wraps an Eigen3 matrix around the data of this matrix */
 		operator EigenMatrixXtMap() const;
 #endif
 #endif
 
-		/** empty destructor */
+		/** Empty destructor */
 		virtual ~SGMatrix();
 
-		/** get a column vector
+		/** Get a column vector
 		 * @param col column index
+		 * @return the column vector for index col
 		 */
 		T* get_column_vector(index_t col) const
 		{
@@ -81,20 +83,20 @@ template<class T> class SGMatrix : public SGReferencedData
 			return &matrix[c*num_rows];
 		}
 
-		/** get a row vector
+		/** Get a row vector
 		 *
 		 * @param row row index
 		 * @return row vector
 		 */
 		SGVector<T> get_row_vector(index_t row) const;
 
-		/** get a main diagonal vector. Matrix is not required to be square.
+		/** Get a main diagonal vector. Matrix is not required to be square.
 		 *
 		 * @return main diagonal vector
 		 */
 		SGVector<T> get_diagonal_vector() const;
 
-		/** operator overload for matrix read only access
+		/** Operator overload for matrix read only access
 		 * @param i_row
 		 * @param i_col
 		 */
@@ -104,7 +106,7 @@ template<class T> class SGMatrix : public SGReferencedData
 		    return matrix[c*num_rows + i_row];
 		}
 
-		/** operator overload for matrix read only access
+		/** Operator overload for matrix read only access
 		 * @param index to access
 		 */
 		inline const T& operator[](index_t index) const
@@ -112,7 +114,7 @@ template<class T> class SGMatrix : public SGReferencedData
 			return matrix[index];
 		}
 
-		/** operator overload for matrix r/w access
+		/** Operator overload for matrix r/w access
 		 * @param i_row
 		 * @param i_col
 		 */
@@ -122,7 +124,7 @@ template<class T> class SGMatrix : public SGReferencedData
 		    return matrix[c*num_rows + i_row];
 		}
 
-		/** operator overload for matrix r/w access
+		/** Operator overload for matrix r/w access
 		 * @param index to access
 		 */
 		inline T& operator[](index_t index)
@@ -131,7 +133,7 @@ template<class T> class SGMatrix : public SGReferencedData
 		}
 
 		/**
-		 * get the matrix (no copying is done here)
+		 * Get the matrix (no copying is done here)
 		 *
 		 * @return the refcount increased matrix
 		 */
@@ -140,10 +142,10 @@ template<class T> class SGMatrix : public SGReferencedData
 			return *this;
 		}
 
-		/** check for pointer identity */
+		/** Check for pointer identity */
 		bool operator==(SGMatrix<T>& other);
 
-		/** operator overload for element-wise matrix comparison.
+		/** Operator overload for element-wise matrix comparison.
 		 * Note that only numerical data is compared
 		 *
 		 * @param other matrix to compare with
@@ -151,7 +153,7 @@ template<class T> class SGMatrix : public SGReferencedData
 		 */
 		bool equals(SGMatrix<T>& other);
 
-		/** set matrix to a constant */
+		/** Set matrix to a constant */
 		void set_const(T const_elem);
 
 		/** fill matrix with zeros */
@@ -168,23 +170,23 @@ template<class T> class SGMatrix : public SGReferencedData
 		 */
 		bool is_symmetric();
 
-		/** returns the maximum single element of the matrix */
+		/** @return the maximum single element of the matrix */
 		T max_single();
 
-		/** clone matrix */
+		/** Clone matrix */
 		SGMatrix<T> clone();
 
-		/** clone matrix */
+		/** Clone matrix */
 		static T* clone_matrix(const T* matrix, int32_t nrows, int32_t ncols);
 
-		/** transpose matrix */
+		/** Transpose matrix */
 		static void transpose_matrix(
 			T*& matrix, int32_t& num_feat, int32_t& num_vec);
 
-		/** create diagonal matrix */
+		/** Create diagonal matrix */
 		static void create_diagonal_matrix(T* matrix, T* v,int32_t size);
 
-		/** returns the identity matrix, scaled by a factor
+		/** Returns the identity matrix, scaled by a factor
 		 *
 		 * @param size size of square identity matrix
 		 * @param scale (optional) scaling factor
@@ -192,7 +194,7 @@ template<class T> class SGMatrix : public SGReferencedData
 		static SGMatrix<T> create_identity_matrix(index_t size, T scale);
 
 #ifdef HAVE_LAPACK
-		/** compute eigenvalues and eigenvectors of symmetric matrix using
+		/** Compute eigenvalues and eigenvectors of symmetric matrix using
 		 * LAPACK
 		 *
 		 * @param matrix symmetric matrix to compute eigenproblem. Is
@@ -203,7 +205,7 @@ template<class T> class SGMatrix : public SGReferencedData
 		static SGVector<float64_t> compute_eigenvectors(
 				SGMatrix<float64_t> matrix);
 
-		/** compute eigenvalues and eigenvectors of symmetric matrix
+		/** Compute eigenvalues and eigenvectors of symmetric matrix
 		 *
 		 * @param matrix  overwritten and contains n orthonormal eigenvectors
 		 * @param n
@@ -212,7 +214,7 @@ template<class T> class SGMatrix : public SGReferencedData
 		 * */
 		static double* compute_eigenvectors(double* matrix, int n, int m);
 
-		/** compute few eigenpairs of a symmetric matrix using LAPACK DSYEVR method
+		/** Compute few eigenpairs of a symmetric matrix using LAPACK DSYEVR method
 		 * (Relatively Robust Representations).
 		 * Has at least O(n^3/3) complexity
 		 * @param matrix_ symmetric matrix
@@ -238,10 +240,10 @@ template<class T> class SGMatrix : public SGReferencedData
 				bool transpose_A=false, bool transpose_B=false,
 				float64_t scale=1.0);
 #ifdef HAVE_LAPACK
-		/** inverses square matrix in-place */
+		/** Inverses square matrix in-place */
 		static void inverse(SGMatrix<float64_t> matrix);
 
-		/** return the pseudo inverse for matrix
+		/** Return the pseudo inverse for matrix
 		 * when matrix has shape (rows, cols) the pseudo inverse has (cols, rows)
 		 */
 		static float64_t* pinv(
@@ -250,14 +252,14 @@ template<class T> class SGMatrix : public SGReferencedData
 
 #endif
 
-		/** compute trace */
+		/** Compute trace */
 		static float64_t trace(
 			float64_t* mat, int32_t cols, int32_t rows);
 
-		/** sums up all rows of a matrix and returns the resulting rowvector */
+		/** Sums up all rows of a matrix and returns the resulting rowvector */
 		static T* get_row_sum(T* matrix, int32_t m, int32_t n);
 
-		/** sums up all columns of a matrix and returns the resulting columnvector */
+		/** Sums up all columns of a matrix and returns the resulting columnvector */
 		static T* get_column_sum(T* matrix, int32_t m, int32_t n);
 
 		/** Centers the matrix, i.e. removes column/row mean from columns/rows */
@@ -266,18 +268,18 @@ template<class T> class SGMatrix : public SGReferencedData
 		/** Centers  matrix (e.g. kernel matrix in feature space INPLACE */
 		static void center_matrix(T* matrix, int32_t m, int32_t n);
 
-		/** remove column mean */
+		/** Remove column mean */
 		void remove_column_mean();
 
-		/** display matrix */
+		/** Display matrix */
 		void display_matrix(const char* name="matrix") const;
 
-		/** display matrix (useful for debugging) */
+		/** Display matrix (useful for debugging) */
 		static void display_matrix(
 			const T* matrix, int32_t rows, int32_t cols,
 			const char* name="matrix", const char* prefix="");
 
-		/** display matrix */
+		/** Display matrix */
 		static void display_matrix(
 			const SGMatrix<T> matrix, const char* name="matrix",
 			const char* prefix="");
@@ -296,13 +298,13 @@ template<class T> class SGMatrix : public SGReferencedData
 		static SGMatrix<T> get_allocated_matrix(index_t num_rows,
 				index_t num_cols, SGMatrix<T> pre_allocated=SGMatrix<T>());
 
-		/** load matrix from file
+		/** Load matrix from file
 		 *
 		 * @param loader File object via which to load data
 		 */
 		void load(CFile* loader);
 
-		/** save matrix to file
+		/** Save matrix to file
 		 *
 		 * @param saver File object via which to save data
 		 */
