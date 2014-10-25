@@ -44,16 +44,16 @@ namespace shogun
 template <class T> class CEMBase : public CSGObject
 {
 	public:
-		/* constructor */
+		/** constructor */
 		CEMBase() : CSGObject() { };
 
-		/* destructor */
+		/** destructor */
 		virtual ~CEMBase() { };
 
-		/* returns the name of the class */
+		/** returns the name of the class */
 		virtual const char* get_name() const { return "EMBase"; }		
 
-		/* expectation step
+		/** expectation step
 		 * 
 		 * @return updated value log_likelihood
 		 */
