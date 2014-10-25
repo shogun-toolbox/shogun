@@ -38,7 +38,9 @@ enum ETerminalType
 };
 
 struct GCNode;
-/** Graph-cuts edge */
+/** @class Graph-cuts edge 
+ *
+ */
 struct GCEdge
 {
 	/** edge id */
@@ -53,7 +55,9 @@ struct GCEdge
 	float64_t residual_capacity;
 };
 
-/** Graph-cuts node */
+/** @class Graph-cuts node 
+ *
+ */
 struct GCNode
 {
 	/** node id */
@@ -78,7 +82,9 @@ struct GCNode
 	float64_t tree_cap;
 };
 
-/** Graph-cuts node pointer */
+/** @class Graph-cuts node pointer
+ *
+ */
 struct GCNodePtr
 {
 	/** pointer of the node */

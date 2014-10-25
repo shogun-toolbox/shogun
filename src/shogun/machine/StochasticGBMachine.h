@@ -134,8 +134,8 @@ public:
 
 	/** apply_regression
 	 *
-	 * @param test data
-	 * @param Regression labels
+	 * @param data test data
+	 * @return Regression labels
 	 */
 	virtual CRegressionLabels* apply_regression(CFeatures* data=NULL);
 
@@ -190,7 +190,7 @@ protected:
 	/** call-back evaluate method for lbfgs
 	 *
 	 * @param obj object parameters required for loss calculation
-	 * @param paramaters current state of variables of target function
+	 * @param parameters current state of variables of target function
 	 * @param gradient stores gradient computed by this method
 	 * @param dim dimensions
 	 * @param step step in linesearch
