@@ -107,6 +107,7 @@ public:
 	/** Creates a gpu vector using data from an SGVector */
 	CGPUVector(const SGVector<T>& cpu_vec);
 
+#ifndef SWIG // SWIG should skip this part
 #ifdef HAVE_EIGEN3
 	/** Creates a gpu vector using data from an Eigen3 column vector */
 	CGPUVector(const EigenVectorXt& cpu_vec);
@@ -119,6 +120,7 @@ public:
 
 	/** Converts the vector into an Eigen3 row vector */
 	operator EigenRowVectorXt() const;
+#endif
 #endif
 
 	/** Converts the vector into an SGVector */

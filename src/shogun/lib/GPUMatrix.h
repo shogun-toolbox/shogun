@@ -112,11 +112,13 @@ public:
 	/** Creates a gpu matrix using data from an SGMatrix */
 	CGPUMatrix(const SGMatrix<T>& cpu_mat);
 
+#ifndef SWIG // SWIG should skip this part
 #ifdef HAVE_EIGEN3
 	CGPUMatrix(const EigenMatrixXt& cpu_mat);
 
 	/** Converts the matrix into an Eigen3 matrix */
 	operator EigenMatrixXt() const;
+#endif
 #endif
 
 	/** Converts the matrix into an SGMatrix */
