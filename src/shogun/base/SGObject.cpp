@@ -21,7 +21,7 @@
 #include <shogun/lib/SGStringList.h>
 #include <shogun/io/SerializableFile.h>
 
-#include <shogun/base/class_list.h>
+#include "class_list.h"
 
 #include <stdlib.h>
 #include <stdio.h>
