@@ -50,7 +50,7 @@ public:
     }
 
     /** Compute method for computing dot product of two vectors
-     *  (\f$\sum_{i=1}^d a_ib_i$ where $a,b$ are $d$-dimensional vectors)
+     *  (\f$\sum_{i=1}^d a_ib_i\f$ where \f$a,b\f$ are \f$d\f$-dimensional vectors)
      *  @param vector1 input vector
      *  @param vector2 input vector
      *  @return the result of dot product operation
