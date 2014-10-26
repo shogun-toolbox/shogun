@@ -63,7 +63,6 @@ public:
 	/** default destructor */
 	virtual ~CFile();
 
-#ifndef SWIG // SWIG should skip this
 	/** close */
 	void close()
 	{
@@ -76,6 +75,7 @@ public:
 		file=NULL;
 	}
 
+#ifndef SWIG // SWIG should skip this
 	/** get the file descriptor
 	 *
 	 * @return FILE ptr
