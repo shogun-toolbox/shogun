@@ -56,7 +56,7 @@ class CIndependenceTest;
  * test statistic, greater the dependency between the rest of the features
  * and the class labels, and therefore lesser significant the current feature
  * becomes. Therefore, highest scoring features are removed. The removal policy
- * thus can only be ::N_LARGEST and ::PERCENTILE_LARGEST and
+ * thus can only be shogun::N_LARGEST and shogun::PERCENTILE_LARGEST and
  * it can be set via set_policy() call. remove_feats() method handles the
  * removal of features based on the specified policy.
  *
@@ -92,8 +92,8 @@ public:
 	 * Method which handles the removal of features based on removal policy.
 	 * see documentation of CFeatureSelection. For dependence maximization
 	 * approach, the highest scoring features are removed. Therefore, only
-	 * #m_policy can only be N_LARGEST, PERCENTILE_LARGEST. see set_policy()
-	 * method for specifying the exact policy
+	 * #m_policy can only be shogun::N_LARGEST, shogun::PERCENTILE_LARGEST.
+	 * See set_policy() method for specifying the exact policy
 	 *
 	 * @param features the features object from which specific features has
 	 * to be removed

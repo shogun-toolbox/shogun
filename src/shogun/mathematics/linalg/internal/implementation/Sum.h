@@ -72,7 +72,7 @@ struct sum
 {
 	/** Scalar type */
 	typedef typename Matrix::Scalar T;
-	
+
 	/**
 	 * Method that computes the sum of co-efficients of a dense matrix
 	 *
@@ -102,15 +102,15 @@ struct sum_symmetric
 {
 	/** Scalar type */
 	typedef typename Matrix::Scalar T;
-	
+
 	/**
 	 * Method that computes the sum of co-efficients of a symmetric dense matrix
 	 *
-	 * @param Matrix the matrix whose sum of co-efficients has to be computed
+	 * @param m the matrix whose sum of co-efficients has to be computed
 	 * @param no_diag if true, diagonal entries are excluded from the sum
 	 * @return the sum of co-efficients computed as \f$\sum_{i,j}m_{i,j}\f$
 	 */
-	static T compute(Matrix, bool no_diag);
+	static T compute(Matrix m, bool no_diag);
 
 	/**
 	 * Method that computes the sum of co-efficients of symmetric dense matrix blocks
@@ -132,7 +132,7 @@ struct colwise_sum
 {
 	/** Scalar type */
 	typedef typename Matrix::Scalar T;
-	
+
 	/**
 	 * Method that computes column wise sum of co-efficients of a dense matrix
 	 *
@@ -140,7 +140,7 @@ struct colwise_sum
 	 * @param no_diag if true, diagonal entries are excluded from the sum
 	 * @return the colwise sum of co-efficients computed as \f$s_j=\sum_{i}m_{i,j}\f$
 	 */
-	static SGVector<T> compute(Matrix, bool no_diag);
+	static SGVector<T> compute(Matrix m, bool no_diag);
 
 	/**
 	 * Method that computes column wise sum of co-efficients of dense matrix blocks
@@ -150,7 +150,7 @@ struct colwise_sum
 	 * @return the colwise sum of co-efficients computed as \f$s_j=\sum_{i}b_{i,j}\f$
 	 */
 	static SGVector<T> compute(Block<Matrix> b, bool no_diag);
-	
+
 	/**
 	 * Method that computes the column wise sum of co-efficients of SGMatrix using Eigen3
 	 *
@@ -158,8 +158,8 @@ struct colwise_sum
 	 * @param no_diag if true, diagonal entries are excluded from the sum
 	 * @param result Pre-allocated vector for the result of the computation
 	 */
-	static void compute(SGMatrix<T> mat, SGVector<T> result, bool no_diag);
-	
+	static void compute(SGMatrix<T> m, SGVector<T> result, bool no_diag);
+
 	/**
 	 * Method that computes the column wise sum of co-efficients of SGMatrix blocks
 	 * using Eigen3
@@ -181,7 +181,7 @@ struct rowwise_sum
 {
 	/** Scalar type */
 	typedef typename Matrix::Scalar T;
-	
+
 	/**
 	 * Method that computes row wise sum of co-efficients of a dense matrix
 	 *
@@ -199,7 +199,7 @@ struct rowwise_sum
 	 * @return the rowwise sum of co-efficients computed as \f$s_i=\sum_{j}b_{i,j}\f$
 	 */
 	static SGVector<T> compute(Block<Matrix> b, bool no_diag);
-	
+
 	/**
 	 * Method that computes the row wise sum of co-efficients of SGMatrix using Eigen3
 	 *
@@ -207,8 +207,8 @@ struct rowwise_sum
 	 * @param no_diag if true, diagonal entries are excluded from the sum
 	 * @param result Pre-allocated vector for the result of the computation
 	 */
-	static void compute(SGMatrix<T> mat, SGVector<T> result, bool no_diag);
-	
+	static void compute(SGMatrix<T> m, SGVector<T> result, bool no_diag);
+
 	/**
 	 * Method that computes the column wise sum of co-efficients of SGMatrix blocks
 	 * using Eigen3
@@ -228,9 +228,12 @@ struct rowwise_sum
 template <> template <class Matrix>
 struct sum<Backend::EIGEN3,Matrix>
 {
+	/** Scalar type */
 	typedef typename Matrix::Scalar T;
+
+	/** Eigen matrix type */
 	typedef Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> MatrixXt;
-	
+
 	/**
 	 * Method that computes the sum of co-efficients of SGMatrix using Eigen3
 	 *
@@ -241,16 +244,16 @@ struct sum<Backend::EIGEN3,Matrix>
 	static T compute(SGMatrix<T> mat, bool no_diag)
 	{
 		Eigen::Map<MatrixXt> m = mat;
-		
+
 		T sum=m.sum();
 
 		// remove the main diagonal elements if required
 		if (no_diag)
 			sum-=m.diagonal().sum();
-		
+
 		return sum;
 	}
-	
+
 	/**
 	 * Method that computes the sum of co-efficients of SGMatrix blocks using Eigen3
 	 *
@@ -261,7 +264,7 @@ struct sum<Backend::EIGEN3,Matrix>
 	static T compute(Block<SGMatrix<T> > b, bool no_diag)
 	{
 		Eigen::Map<MatrixXt> map = b.m_matrix;
-		
+
 		Eigen::Block< Eigen::Map<MatrixXt> > b_eigen = map.block(
 			b.m_row_begin, b.m_col_begin,
 			b.m_row_size, b.m_col_size);
@@ -271,7 +274,7 @@ struct sum<Backend::EIGEN3,Matrix>
 		// remove the main diagonal elements if required
 		if (no_diag)
 			sum-=b_eigen.diagonal().sum();
-		
+
 		return sum;
 	}
 };
@@ -283,9 +286,12 @@ struct sum<Backend::EIGEN3,Matrix>
 template <> template <class Matrix>
 struct sum_symmetric<Backend::EIGEN3,Matrix>
 {
+	/** Scalar type */
 	typedef typename Matrix::Scalar T;
+
+	/** Eigen matrix type */
 	typedef Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> MatrixXt;
-	
+
 	/**
 	 * Method that computes the sum of co-efficients of symmetric SGMatrix using Eigen3
 	 *
@@ -296,7 +302,7 @@ struct sum_symmetric<Backend::EIGEN3,Matrix>
 	static T compute(SGMatrix<T> mat, bool no_diag)
 	{
 		Eigen::Map<MatrixXt> m = mat;
-		
+
 		REQUIRE(m.rows()==m.cols(), "Matrix is not square!\n");
 
 		// since the matrix is symmetric with main diagonal inside, we can save half
@@ -313,7 +319,7 @@ struct sum_symmetric<Backend::EIGEN3,Matrix>
 
 		return sum;
 	}
-	
+
 	/**
 	 * Method that computes the sum of co-efficients of symmetric SGMatrix blocks using Eigen3
 	 *
@@ -324,10 +330,10 @@ struct sum_symmetric<Backend::EIGEN3,Matrix>
 	static T compute(Block<SGMatrix<T> > b, bool no_diag)
 	{
 		Eigen::Map<MatrixXt> map = b.m_matrix;
-		
+
 		const MatrixXt& m=map.template block(b.m_row_begin, b.m_col_begin,
 				b.m_row_size, b.m_col_size);
-		
+
 		REQUIRE(m.rows()==m.cols(), "Matrix is not square!\n");
 
 		// since the matrix is symmetric with main diagonal inside, we can save half
@@ -353,10 +359,16 @@ struct sum_symmetric<Backend::EIGEN3,Matrix>
 template <> template <class Matrix>
 struct colwise_sum<Backend::EIGEN3,Matrix>
 {
+	/** Scalar type */
 	typedef typename Matrix::Scalar T;
+
+	/** Return type */
 	typedef SGVector<T> ReturnType;
-	
+
+	/** Eigen matrix type */
 	typedef Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> MatrixXt;
+
+	/** Eigen vector type */
 	typedef Eigen::Matrix<T,Eigen::Dynamic,1> VectorXt;
 
 	/**
@@ -372,7 +384,7 @@ struct colwise_sum<Backend::EIGEN3,Matrix>
 		compute(m, result, no_diag);
 		return result;
 	}
-	
+
 	/**
 	 * Method that computes the column wise sum of co-efficients of SGMatrix blocks
 	 * using Eigen3
@@ -387,7 +399,7 @@ struct colwise_sum<Backend::EIGEN3,Matrix>
 		compute(b, result, no_diag);
 		return result;
 	}
-	
+
 	/**
 	 * Method that computes the column wise sum of co-efficients of SGMatrix using Eigen3
 	 *
@@ -399,9 +411,9 @@ struct colwise_sum<Backend::EIGEN3,Matrix>
 	{
 		Eigen::Map<MatrixXt> m = mat;
 		Eigen::Map<VectorXt> r = result;
-		
+
 		r = m.colwise().sum();
-		
+
 		// remove the main diagonal elements if required
 		if (no_diag)
 		{
@@ -410,7 +422,7 @@ struct colwise_sum<Backend::EIGEN3,Matrix>
 				r[i]-=m(i,i);
 		}
 	}
-	
+
 	/**
 	 * Method that computes the column wise sum of co-efficients of SGMatrix blocks
 	 * using Eigen3
@@ -423,13 +435,13 @@ struct colwise_sum<Backend::EIGEN3,Matrix>
 	{
 		Eigen::Map<MatrixXt> map = b.m_matrix;
 		Eigen::Map<VectorXt> r = result;
-		
+
 		Eigen::Block< Eigen::Map<MatrixXt> > m = map.block(
 			b.m_row_begin, b.m_col_begin,
 			b.m_row_size, b.m_col_size);
 
 		r = m.colwise().sum();
-		
+
 		// remove the main diagonal elements if required
 		if (no_diag)
 		{
@@ -447,10 +459,16 @@ struct colwise_sum<Backend::EIGEN3,Matrix>
 template <> template <class Matrix>
 struct rowwise_sum<Backend::EIGEN3,Matrix>
 {
+	/** Scalar type */
 	typedef typename Matrix::Scalar T;
+
+	/** Return type */
 	typedef SGVector<T> ReturnType;
-	
+
+	/** Eigen matrix type */
 	typedef Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> MatrixXt;
+
+	/** Eigen vector type */
 	typedef Eigen::Matrix<T,Eigen::Dynamic,1> VectorXt;
 
 	/**
@@ -466,7 +484,7 @@ struct rowwise_sum<Backend::EIGEN3,Matrix>
 		compute(m, result, no_diag);
 		return result;
 	}
-	
+
 	/**
 	 * Method that computes the row wise sum of co-efficients of SGMatrix blocks
 	 * using Eigen3
@@ -481,7 +499,7 @@ struct rowwise_sum<Backend::EIGEN3,Matrix>
 		compute(b, result, no_diag);
 		return result;
 	}
-	
+
 	/**
 	 * Method that computes the row wise sum of co-efficients of SGMatrix using Eigen3
 	 *
@@ -493,9 +511,9 @@ struct rowwise_sum<Backend::EIGEN3,Matrix>
 	{
 		Eigen::Map<MatrixXt> m = mat;
 		Eigen::Map<VectorXt> r = result;
-		
+
 		r = m.rowwise().sum();
-		
+
 		// remove the main diagonal elements if required
 		if (no_diag)
 		{
@@ -504,7 +522,7 @@ struct rowwise_sum<Backend::EIGEN3,Matrix>
 				r[i]-=m(i,i);
 		}
 	}
-	
+
 	/**
 	 * Method that computes the column wise sum of co-efficients of SGMatrix blocks
 	 * using Eigen3
@@ -517,13 +535,13 @@ struct rowwise_sum<Backend::EIGEN3,Matrix>
 	{
 		Eigen::Map<MatrixXt> map = b.m_matrix;
 		Eigen::Map<VectorXt> r = result;
-		
+
 		Eigen::Block< Eigen::Map<MatrixXt> > m = map.block(
 			b.m_row_begin, b.m_col_begin,
 			b.m_row_size, b.m_col_size);
 
 		r = m.rowwise().sum();
-		
+
 		// remove the main diagonal elements if required
 		if (no_diag)
 		{
@@ -544,32 +562,33 @@ struct rowwise_sum<Backend::EIGEN3,Matrix>
 template <> template <class Matrix>
 struct sum<Backend::VIENNACL,Matrix>
 {
+	/** Scalar type */
 	typedef typename Matrix::Scalar T;
-	
+
 	/** Generates the computation kernel */
 	template <class T>
 	static viennacl::ocl::kernel& generate_kernel(bool no_diag)
 	{
 		std::string kernel_name = "sum_" + ocl::get_type_string<T>();
 		if (no_diag) kernel_name.append("_no_diag");
-		
+
 		if (ocl::kernel_exists(kernel_name))
 			return ocl::get_kernel(kernel_name);
-		
+
 		std::string source = ocl::generate_kernel_preamble<T>(kernel_name);
 		if (no_diag) source.append("#define NO_DIAG\n");
-		
+
 		source.append(
 			R"(
 				__kernel void KERNEL_NAME(
-					__global DATATYPE* mat, int nrows, int ncols, int offset, 
+					__global DATATYPE* mat, int nrows, int ncols, int offset,
 					__global DATATYPE* result)
 				{
 					__local DATATYPE buffer[WORK_GROUP_SIZE_1D];
 					int size = nrows*ncols;
-					
+
 					int local_id = get_local_id(0);
-					
+
 					DATATYPE thread_sum = 0;
 					for (int i=local_id; i<size; i+=WORK_GROUP_SIZE_1D)
 					{
@@ -578,32 +597,32 @@ struct sum<Backend::VIENNACL,Matrix>
 					#endif
 						thread_sum += mat[i+offset];
 					}
-					
+
 					buffer[local_id] = thread_sum;
-					
-					for (int j = WORK_GROUP_SIZE_1D/2; j > 0; j = j>>1) 
-					{ 
-						barrier(CLK_LOCAL_MEM_FENCE); 
-						if (local_id < j) 
-							buffer[local_id] += buffer[local_id + j]; 
-					} 
-					
+
+					for (int j = WORK_GROUP_SIZE_1D/2; j > 0; j = j>>1)
+					{
+						barrier(CLK_LOCAL_MEM_FENCE);
+						if (local_id < j)
+							buffer[local_id] += buffer[local_id + j];
+					}
+
 					barrier(CLK_LOCAL_MEM_FENCE);
-					
+
 					if (get_global_id(0)==0)
 						*result = buffer[0];
 				}
 			)"
 		);
-		
+
 		viennacl::ocl::kernel& kernel = ocl::compile_kernel(kernel_name, source);
-		
+
 		kernel.local_work_size(0, OCL_WORK_GROUP_SIZE_1D);
 		kernel.global_work_size(0, OCL_WORK_GROUP_SIZE_1D);
-		
+
 		return kernel;
 	}
-	
+
 	/**
 	 * Method that computes the sum of co-efficients of CGPUMatrix using ViennaCL
 	 *
@@ -614,16 +633,16 @@ struct sum<Backend::VIENNACL,Matrix>
 	static T compute(CGPUMatrix<T> mat, bool no_diag)
 	{
 		viennacl::ocl::kernel& kernel = generate_kernel<T>(no_diag);
-		
+
 		CGPUVector<T> result(1);
-		
-		viennacl::ocl::enqueue(kernel(mat.vcl_matrix(), 
-			cl_int(mat.num_rows), cl_int(mat.num_cols), cl_int(mat.offset), 
+
+		viennacl::ocl::enqueue(kernel(mat.vcl_matrix(),
+			cl_int(mat.num_rows), cl_int(mat.num_cols), cl_int(mat.offset),
 			result.vcl_vector()));
-		
+
 		return result[0];
 	}
-	
+
 	/**
 	 * Method that computes the sum of co-efficients of CGPUMatrix blocks using ViennaCL
 	 *
@@ -645,8 +664,9 @@ struct sum<Backend::VIENNACL,Matrix>
 template <> template <class Matrix>
 struct sum_symmetric<Backend::VIENNACL,Matrix>
 {
+	/** Scalar type */
 	typedef typename Matrix::Scalar T;
-	
+
 	/**
 	 * Method that computes the sum of co-efficients of symmetric CGPUMatrix using ViennaCL
 	 *
@@ -658,7 +678,7 @@ struct sum_symmetric<Backend::VIENNACL,Matrix>
 	{
 		return sum<Backend::VIENNACL, CGPUMatrix<T> >::compute(mat, no_diag);
 	}
-	
+
 	/**
 	 * Method that computes the sum of co-efficients of symmetric CGPUMatrix blocks using ViennaCL
 	 *
@@ -680,22 +700,25 @@ struct sum_symmetric<Backend::VIENNACL,Matrix>
 template <> template <class Matrix>
 struct colwise_sum<Backend::VIENNACL,Matrix>
 {
+	/** Scalar type */
 	typedef typename Matrix::Scalar T;
+
+	/** Return type */
 	typedef CGPUVector<T> ReturnType;
-	
+
 	/** Generates the computation kernel */
 	template <class T>
 	static viennacl::ocl::kernel& generate_kernel(bool no_diag)
 	{
 		std::string kernel_name = "colwise_sum_" + ocl::get_type_string<T>();
 		if (no_diag) kernel_name.append("_no_diag");
-		
+
 		if (ocl::kernel_exists(kernel_name))
 			return ocl::get_kernel(kernel_name);
-		
+
 		std::string source = ocl::generate_kernel_preamble<T>(kernel_name);
 		if (no_diag) source.append("#define NO_DIAG\n");
-		
+
 		source.append(
 			R"(
 				__kernel void KERNEL_NAME(
@@ -703,10 +726,10 @@ struct colwise_sum<Backend::VIENNACL,Matrix>
 					__global DATATYPE* result, int result_offset)
 				{
 					int j = get_global_id(0);
-					
-					if (j>=ncols) 
+
+					if (j>=ncols)
 						return;
-					
+
 					DATATYPE sum = 0;
 					for (int i=0; i<nrows; i++)
 					{
@@ -715,19 +738,19 @@ struct colwise_sum<Backend::VIENNACL,Matrix>
 					#endif
 						sum += mat[offset+i+j*nrows];
 					}
-					
+
 					result[j+result_offset] = sum;
 				}
 			)"
 		);
-		
+
 		viennacl::ocl::kernel& kernel = ocl::compile_kernel(kernel_name, source);
-		
+
 		kernel.local_work_size(0, OCL_WORK_GROUP_SIZE_1D);
-		
+
 		return kernel;
 	}
-	
+
 	/**
 	 * Method that computes the column wise sum of co-efficients of CGPUMatrix using ViennaCL
 	 *
@@ -741,7 +764,7 @@ struct colwise_sum<Backend::VIENNACL,Matrix>
 		compute(m, result, no_diag);
 		return result;
 	}
-	
+
 	/**
 	 * Method that computes the column wise sum of co-efficients of CGPUMatrix blocks
 	 * using ViennaCL
@@ -755,7 +778,7 @@ struct colwise_sum<Backend::VIENNACL,Matrix>
 		SG_SERROR("The operation colwise_sum() on a matrix block is currently not supported\n");
 		return CGPUVector<T>();
 	}
-	
+
 	/**
 	 * Method that computes the column wise sum of co-efficients of CGPUMatrix using ViennaCL
 	 *
@@ -767,12 +790,12 @@ struct colwise_sum<Backend::VIENNACL,Matrix>
 	{
 		viennacl::ocl::kernel& kernel = generate_kernel<T>(no_diag);
 		kernel.global_work_size(0, ocl::align_to_multiple_1d(mat.num_cols));
-		
-		viennacl::ocl::enqueue(kernel(mat.vcl_matrix(), 
-			cl_int(mat.num_rows), cl_int(mat.num_cols), cl_int(mat.offset), 
+
+		viennacl::ocl::enqueue(kernel(mat.vcl_matrix(),
+			cl_int(mat.num_rows), cl_int(mat.num_cols), cl_int(mat.offset),
 			result.vcl_vector(), cl_int(result.offset)));
 	}
-	
+
 	/**
 	 * Method that computes the column wise sum of co-efficients of CGPUMatrix blocks
 	 * using ViennaCL
@@ -794,22 +817,25 @@ struct colwise_sum<Backend::VIENNACL,Matrix>
 template <> template <class Matrix>
 struct rowwise_sum<Backend::VIENNACL,Matrix>
 {
+	/** Scalar type */
 	typedef typename Matrix::Scalar T;
+
+	/** Return type */
 	typedef CGPUVector<T> ReturnType;
-	
+
 	/** Generates the computation kernel */
 	template <class T>
 	static viennacl::ocl::kernel& generate_kernel(bool no_diag)
 	{
 		std::string kernel_name = "rowwise_sum_" + ocl::get_type_string<T>();
 		if (no_diag) kernel_name.append("_no_diag");
-		
+
 		if (ocl::kernel_exists(kernel_name))
 			return ocl::get_kernel(kernel_name);
-		
+
 		std::string source = ocl::generate_kernel_preamble<T>(kernel_name);
 		if (no_diag) source.append("#define NO_DIAG\n");
-		
+
 		source.append(
 			R"(
 				__kernel void KERNEL_NAME(
@@ -817,10 +843,10 @@ struct rowwise_sum<Backend::VIENNACL,Matrix>
 					__global DATATYPE* result, int result_offset)
 				{
 					int i = get_global_id(0);
-					
-					if (i>=nrows) 
+
+					if (i>=nrows)
 						return;
-					
+
 					DATATYPE sum = 0;
 					for (int j=0; j<ncols; j++)
 					{
@@ -829,19 +855,19 @@ struct rowwise_sum<Backend::VIENNACL,Matrix>
 					#endif
 						sum += mat[offset+i+j*nrows];
 					}
-					
+
 					result[i+result_offset] = sum;
 				}
 			)"
 		);
-		
+
 		viennacl::ocl::kernel& kernel = ocl::compile_kernel(kernel_name, source);
-		
+
 		kernel.local_work_size(0, OCL_WORK_GROUP_SIZE_1D);
-		
+
 		return kernel;
 	}
-	
+
 	/**
 	 * Method that computes the row wise sum of co-efficients of CGPUMatrix using ViennaCL
 	 *
@@ -855,7 +881,7 @@ struct rowwise_sum<Backend::VIENNACL,Matrix>
 		compute(m, result, no_diag);
 		return result;
 	}
-	
+
 	/**
 	 * Method that computes the row wise sum of co-efficients of CGPUMatrix blocks
 	 * using ViennaCL
@@ -869,7 +895,7 @@ struct rowwise_sum<Backend::VIENNACL,Matrix>
 		SG_SERROR("The operation rowwise_sum() on a matrix block is currently not supported\n");
 		return CGPUVector<T>();
 	}
-	
+
 	/**
 	 * Method that computes the row wise sum of co-efficients of CGPUMatrix using ViennaCL
 	 *
@@ -881,12 +907,12 @@ struct rowwise_sum<Backend::VIENNACL,Matrix>
 	{
 		viennacl::ocl::kernel& kernel = generate_kernel<T>(no_diag);
 		kernel.global_work_size(0, ocl::align_to_multiple_1d(mat.num_rows));
-		
-		viennacl::ocl::enqueue(kernel(mat.vcl_matrix(), 
-			cl_int(mat.num_rows), cl_int(mat.num_cols), cl_int(mat.offset), 
+
+		viennacl::ocl::enqueue(kernel(mat.vcl_matrix(),
+			cl_int(mat.num_rows), cl_int(mat.num_cols), cl_int(mat.offset),
 			result.vcl_vector(), cl_int(result.offset)));
 	}
-	
+
 	/**
 	 * Method that computes the column wise sum of co-efficients of CGPUMatrix blocks
 	 * using ViennaCL
