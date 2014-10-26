@@ -89,7 +89,7 @@ def get_includes(classes):
 
 	includes=[]
 	for o in result:
-		includes.append('#include "%s"' % o.strip().lstrip('./'))
+		includes.append('#include <shogun/%s>' % o.strip().lstrip('./'))
 	return includes
 
 def get_definitions(classes):
