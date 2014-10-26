@@ -49,6 +49,7 @@ public:
 	/** default destructor */
 	virtual ~CHDF5File();
 
+#ifndef SWIG // SWIG should skip this
 	/** @name Vector Access Functions
 	 *
 	 * Functions to access vectors of one of the several base data types.
@@ -369,7 +370,7 @@ public:
 	{
 		SG_NOTIMPLEMENTED
 	}
-
+#endif // #ifndef SWIG // SWIG should skip this
 
 	/** @return object name */
 	virtual const char* get_name() const { return "HDF5File"; }

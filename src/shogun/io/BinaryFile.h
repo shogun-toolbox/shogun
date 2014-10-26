@@ -51,6 +51,7 @@ public:
 	/** default destructor */
 	virtual ~CBinaryFile();
 
+#ifndef SWIG // SWIG should skip this
 	/** @name Vector Access Functions
 	 *
 	 * Functions to access vectors of one of the several base data types.
@@ -360,6 +361,7 @@ public:
 	virtual void set_string_list(
 			const SGString<floatmax_t>* strings, int32_t num_str);
 	//@}
+#endif // #ifndef SWIG
 
 	/** @return object name */
 	virtual const char* get_name() const { return "BinaryFile"; }
