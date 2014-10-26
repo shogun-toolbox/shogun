@@ -10,5 +10,3 @@ ENDFOREACH()
 INSTALL(FILES ${EXAMPLES}
 	DESTINATION share/shogun/examples/cmdline
 	COMPONENT cmdline-examples)
-
-SET(CPACK_COMPONENTS_ALL ${CPACK_COMPONENTS_ALL} cmdline-examples PARENT_SCOPE)

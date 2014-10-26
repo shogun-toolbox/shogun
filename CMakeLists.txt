@@ -26,8 +26,6 @@ if(CCACHE_FOUND AND ENABLE_CCACHE)
 	SET(CMAKE_CXX_FLAGS "${CCACHE_FLAGS} ${CMAKE_CXX_FLAGS}")
 endif()
 
-SET(CPACK_PACKAGE_CONTACT shogun@shogun-toolbox.org)
-
 ################# VARIABLES #####################
 SET(DEFINES "SWIG_TYPE_TABLE=shogun;SHOGUN")
 SET(INCLUDES "")
@@ -648,7 +646,7 @@ ELSE()
 ENDIF()
 
 # OpenCL/ViennaCL detection
-FIND_PACKAGE(ViennaCL ${VIENNACL_VERSION_MINIMUM})
+#FIND_PACKAGE(ViennaCL ${VIENNACL_VERSION_MINIMUM})
 IF (VIENNACL_FOUND)
 	SET(HAVE_VIENNACL 1)
 	LIST(APPEND DEFINES HAVE_VIENNACL)
@@ -1194,24 +1192,7 @@ IF(DOXYGEN_FOUND)
 	ENDIF()
 ENDIF()
 
-# general cpack settings
-set(CPACK_PACKAGE_NAME "shogun")
-set(CPACK_PACKAGE_VENDOR "shogun")
-#SET(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/src/README")
-#SET(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/src/COPYRIGHT")
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Shogun Machine Learning Toolbox")
-set(CPACK_PACKAGE_VERSION ${VERSION})
-set(CPACK_PACKAGE_VERSION_MAJOR ${SHOGUN_VERSION_MAJOR})
-set(CPACK_PACKAGE_VERSION_MINOR ${SHOGUN_VERSION_MINOR})
-set(CPACK_PACKAGE_VERSION_PATCH ${SHOGUN_VERSION_PATCH})
-
-# debian package settings
-set(CPACK_DEB_COMPONENT_INSTALL ON)
-
-# rpm package settings
-set(CPACK_RPM_COMPONENT_INSTALL ON)
-
-INCLUDE(CPack)
+include(ShogunPackaging)
 
 message(STATUS "===================================================================================================================")
 message(STATUS "Summary of Configuration Variables")
