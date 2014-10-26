@@ -120,6 +120,17 @@ private:
 	 */
 	template <class T> void append_item(DynArray<T>* items, char* ptr_data, char* ptr_item);
 
+	/**
+	 * Split a given substring into an array of substrings
+	 * based on a specified delimiter
+	 *
+	 * @param delim delimiter to use
+	 * @param s substring to tokenize
+	 * @param ret array of substrings, returned
+	 */
+	void tokenize(char delim, substring s, v_array<substring> &ret);
+
+private:
 	/// Helper for parsing
 	v_array<substring> words;
 
