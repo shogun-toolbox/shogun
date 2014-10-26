@@ -46,9 +46,9 @@ class CKDTree : public CNbodyTree
 {
 public:
 	/** constructor
-	 * 
-	 * @param data data points using which KD-Tree will be made	 
+	 *
 	 * @param leaf_size min number of samples in any node
+	 * @param d distance type
 	 */
 	CKDTree(int32_t leaf_size=1, EDistanceType d=D_EUCLIDEAN);
 	

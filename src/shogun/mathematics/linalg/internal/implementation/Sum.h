@@ -70,6 +70,7 @@ namespace implementation
 template <enum Backend,class Matrix>
 struct sum
 {
+	/** Scalar type */
 	typedef typename Matrix::Scalar T;
 	
 	/**
@@ -99,12 +100,13 @@ struct sum
 template <enum Backend,class Matrix>
 struct sum_symmetric
 {
+	/** Scalar type */
 	typedef typename Matrix::Scalar T;
 	
 	/**
 	 * Method that computes the sum of co-efficients of a symmetric dense matrix
 	 *
-	 * @param m the matrix whose sum of co-efficients has to be computed
+	 * @param Matrix the matrix whose sum of co-efficients has to be computed
 	 * @param no_diag if true, diagonal entries are excluded from the sum
 	 * @return the sum of co-efficients computed as \f$\sum_{i,j}m_{i,j}\f$
 	 */
@@ -128,6 +130,7 @@ struct sum_symmetric
 template <enum Backend,class Matrix>
 struct colwise_sum
 {
+	/** Scalar type */
 	typedef typename Matrix::Scalar T;
 	
 	/**
@@ -176,6 +179,7 @@ struct colwise_sum
 template <enum Backend,class Matrix>
 struct rowwise_sum
 {
+	/** Scalar type */
 	typedef typename Matrix::Scalar T;
 	
 	/**

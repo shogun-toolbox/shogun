@@ -58,6 +58,7 @@ namespace implementation
 template <enum Backend, class Matrix>
 struct elementwise_product
 {
+	/** Scalar type */
 	typedef typename Matrix::Scalar T;
 	
 	/** Performs the operation C = A .* B where ".*" denotes elementwise multiplication */

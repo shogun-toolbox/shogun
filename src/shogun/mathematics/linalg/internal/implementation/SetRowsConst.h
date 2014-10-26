@@ -60,8 +60,9 @@ namespace implementation
 template <enum Backend, class Matrix, class Vector>
 struct set_rows_const
 {
+	/** Scalar type */
 	typedef typename Matrix::Scalar T;
-	
+
 	/** Sets each row of a matrix to some constant value. That is, perfoms the 
 	 * operation A[i,j] = v[i], for all i and j
 	 */

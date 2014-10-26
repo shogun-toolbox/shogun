@@ -28,7 +28,7 @@
 
 namespace shogun
 {
-/** Graph-cuts terminal type */
+/** Graph cuts terminal type */
 enum ETerminalType
 {
 	/** source terminal */
@@ -38,7 +38,7 @@ enum ETerminalType
 };
 
 struct GCNode;
-/** @class Graph-cuts edge 
+/** @brief Graph cuts edge
  *
  */
 struct GCEdge
@@ -55,7 +55,7 @@ struct GCEdge
 	float64_t residual_capacity;
 };
 
-/** @class Graph-cuts node 
+/** @brief Graph cuts node
  *
  */
 struct GCNode
@@ -82,7 +82,7 @@ struct GCNode
 	float64_t tree_cap;
 };
 
-/** @class Graph-cuts node pointer
+/** @brief Graph guts node pointer
  *
  */
 struct GCNodePtr
@@ -93,7 +93,7 @@ struct GCNodePtr
 	GCNodePtr* next;
 };
 
-/** Graph-cuts inference for fatcor graph using V. Kolmogorov's max-flow/min-cut algorithm
+/** Graph cuts inference for fatcor graph using V. Kolmogorov's max-flow/min-cut algorithm
  *
  * Please refer to the paper for more details:
  *
@@ -217,7 +217,7 @@ public:
 	 *
 	 * @return terminal that the node belongs to
 	 */
-	ETerminalType get_assignment(int32_t i, ETerminalType default_termainal = SOURCE);
+	ETerminalType get_assignment(int32_t i, ETerminalType default_terminal = SOURCE);
 
 	/** Print the s-t graph */
 	void print_graph();

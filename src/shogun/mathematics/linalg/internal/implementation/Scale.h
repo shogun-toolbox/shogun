@@ -59,6 +59,7 @@ namespace implementation
 template <enum Backend, class Matrix>
 struct scale
 {
+	/** Scalar type */
 	typedef typename Matrix::Scalar T;
 	
 	/** Performs the operation B = alpha*A */

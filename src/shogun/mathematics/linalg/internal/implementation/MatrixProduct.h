@@ -59,6 +59,7 @@ namespace implementation
 template <enum Backend, class Matrix>
 struct matrix_product
 {
+	/** Scalar type */
 	typedef typename Matrix::Scalar T;
 	
 	/** Performs matrix multiplication 

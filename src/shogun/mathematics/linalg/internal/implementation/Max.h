@@ -62,6 +62,7 @@ namespace implementation
 template <enum Backend,class Matrix>
 struct max
 {
+	/** Scalar type */
 	typedef typename Matrix::Scalar T;
 	
 	/** Returns the largest element in a matrix or a vector */

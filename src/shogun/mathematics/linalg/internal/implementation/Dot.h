@@ -64,6 +64,7 @@ namespace implementation
 template <enum Backend, class Vector>
 struct dot
 {
+	/** Scalar type */
 	typedef typename Vector::Scalar T;
 	
 	/**

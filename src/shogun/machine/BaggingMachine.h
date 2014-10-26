@@ -154,8 +154,6 @@ namespace shogun
 			 */
 			CDynamicArray<index_t>* get_oob_indices(const SGVector<index_t>& in_bag);
 
-			void clear_oob_indicies();
-
 		protected:
 			/** bags array */
 			CDynamicObjectArray* m_bags;

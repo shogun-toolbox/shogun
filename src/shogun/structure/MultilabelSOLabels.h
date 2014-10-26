@@ -67,6 +67,7 @@ public:
 		return "SparseMultilabel";
 	}
 
+	/** @return label */
 	SGVector<int32_t> get_data() const
 	{
 		return m_label;

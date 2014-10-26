@@ -46,9 +46,9 @@ class CBallTree : public CNbodyTree
 {
 public:
 	/** constructor
-	 * 
-	 * @param data data points using which Ball-Tree will be made	 
+	 *
 	 * @param leaf_size min number of samples in any node
+	 * @param d distance type
 	 */
 	CBallTree(int32_t leaf_size=1, EDistanceType d=D_EUCLIDEAN);
 	

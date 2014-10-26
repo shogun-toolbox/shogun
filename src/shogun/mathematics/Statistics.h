@@ -413,10 +413,9 @@ public:
 	 */
 	static float64_t fdistribution_cdf(float64_t x, float64_t d1, float64_t d2);
 
-	/* use to estimates erfc(x) valid for -100 < x < -8
+	/** Use to estimates erfc(x) valid for -100 < x < -8
 	 *
 	 * @param x real value
-	 *
 	 * @return weighted sum
 	 */
 	static float64_t erfc8_weighted_sum(float64_t x);
@@ -607,10 +606,10 @@ public:
 	SGSparseMatrix<float64_t> cov, int32_t N=1, bool precision_matrix=false);
 #endif //HAVE_EIGEN3
 
-	/* Magic number for computing lnormal_cdf */
+	/** Magic number for computing lnormal_cdf */
 	static const float64_t ERFC_CASE1;
 
-	/* Magic number for computing lnormal_cdf */
+	/** Magic number for computing lnormal_cdf */
 	static const float64_t ERFC_CASE2;
 
 protected:

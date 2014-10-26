@@ -75,7 +75,7 @@ public:
 	/** computes \f$ \Delta(y_{1}, y_{2}) \f$
 	 *
 	 * @param y1 an instance of structured data
-	 * @param y1 another instance of structured data
+	 * @param y2 another instance of structured data
 	 *
 	 * @return loss value
 	 */

@@ -78,8 +78,9 @@ public:
 	 * \Delta(y_{pred}, y_{truth}) + \langle w, \Psi(x_{truth}, y_{pred} \rangle
 	 * \f]
 	 *
+	 * @param w weight vector
 	 * @param feat_idx index of the feature vector to use
-	 * @param y structured label to use
+	 * @param training whether training is being used
 	 */
 	virtual CResultSet * argmax(SGVector<float64_t> w, int32_t feat_idx,
 	                            bool const training = true);

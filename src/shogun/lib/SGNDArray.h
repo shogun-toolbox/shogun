@@ -146,7 +146,7 @@ template<class T> class SGNDArray : public SGReferencedData
 		
 		/** get the value at index
 		 *
-		 * @param the index of the N-d array
+		 * @param index vector of indices where the value to retrieve of the array is located
 		 * @return the value at index
 		 */
 		T get_value(SGVector<index_t> index) const;

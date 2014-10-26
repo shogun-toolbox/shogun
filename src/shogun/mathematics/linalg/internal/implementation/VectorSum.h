@@ -64,8 +64,9 @@ namespace implementation
 template <enum Backend, class Vector>
 struct vector_sum
 {
+	/** Scalar type */
 	typedef typename Vector::Scalar T;
-	
+
 	/**
 	 * Method that computes the vector sum
 	 *
