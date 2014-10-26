@@ -481,8 +481,7 @@ TEST(Statistics,log_det_general_test_3)
 
 TEST(Statistics,log_det_general_test_4)
 {
-	float64_t rel_tolorance = 1e-10;
-	float64_t abs_tolorance, result;
+	float64_t result;
 	index_t size = 6;
 	SGMatrix<float64_t> A(size, size);
 	A(0,0) = 35.000000;
