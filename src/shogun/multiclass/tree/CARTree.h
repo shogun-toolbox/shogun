@@ -203,7 +203,7 @@ public:
 
 	/** set min allowed node size
 	 *
-	 * @param min allowed node size
+	 * @param nsize min allowed node size
 	 */
 	void set_min_node_size(int32_t nsize);
 

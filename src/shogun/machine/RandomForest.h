@@ -70,7 +70,8 @@ public:
 	 * @param features training features
 	 * @param labels training labels
 	 * @param weights weights of training feature vectors
-	 * @param num_rand_feats number of attributes chosen randomly during node split in candidate trees 
+	 * @param num_bags number of trees in forest
+	 * @param num_rand_feats number of attributes chosen randomly during node split in candidate trees
 	 */
 	CRandomForest(CFeatures* features, CLabels* labels, SGVector<float64_t> weights, int32_t num_bags=10, int32_t num_rand_feats=0);
 

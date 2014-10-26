@@ -145,7 +145,7 @@ public:
 
 	/** set sparse assignment for j-th label
 	 *
-	 * @param i     label index
+	 * @param j     label index
 	 * @param label sparse label
 	 */
 	void set_label(int32_t j, SGVector<int32_t> label);

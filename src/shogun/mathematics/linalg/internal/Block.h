@@ -48,6 +48,7 @@ namespace linalg
 template <class Matrix>
 struct Block
 {
+	/** scalar type */
 	typedef typename Matrix::Scalar Scalar;
 	
 	/**

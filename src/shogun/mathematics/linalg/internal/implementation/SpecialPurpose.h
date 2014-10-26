@@ -62,6 +62,7 @@ namespace special_purpose
 template <enum Backend, class Matrix>
 struct logistic
 {
+	/** Scalar type */
 	typedef typename Matrix::Scalar T;
 	
 	/** Applies the elementwise logistic function f(x) = 1/(1+exp(-x)) to a matrix */
@@ -119,6 +120,7 @@ struct logistic<Backend::VIENNACL, Matrix>
 template <enum Backend, class Matrix>
 struct multiply_by_logistic_derivative
 {
+	/** Scalar type */
 	typedef typename Matrix::Scalar T;
 	
 	/** Performs the operation C(i,j) = C(i,j) * A(i,j) * (1.0-A(i,j) for all i and j*/ 
@@ -177,6 +179,7 @@ struct multiply_by_logistic_derivative<Backend::VIENNACL, Matrix>
 template <enum Backend, class Matrix>
 struct rectified_linear
 {
+	/** Scalar type */
 	typedef typename Matrix::Scalar T;
 	
 	/** Applies the elementwise rectified linear function f(x) = max(0,x) to a matrix */
@@ -234,6 +237,7 @@ struct rectified_linear<Backend::VIENNACL, Matrix>
 template <enum Backend, class Matrix>
 struct multiply_by_rectified_linear_derivative
 {
+	/** Scalar type */
 	typedef typename Matrix::Scalar T;
 	
 	/** Performs the operation C(i,j) = C(i,j) * (A(i,j)!=0) for all i and j*/ 
@@ -293,6 +297,7 @@ struct multiply_by_rectified_linear_derivative<Backend::VIENNACL, Matrix>
 template <enum Backend, class Matrix>
 struct softmax
 {
+	/** Scalar type */
 	typedef typename Matrix::Scalar T;
 	
 	/** Applies the softmax function inplace to a matrix. The softmax function is 
@@ -408,6 +413,7 @@ struct softmax<Backend::VIENNACL, Matrix>
 template <enum Backend,class Matrix>
 struct cross_entropy
 {
+	/** Scalar type */
 	typedef typename Matrix::Scalar T;
 	
 	/** Returns the cross entropy between P and Q. The cross entropy is defined as 
@@ -533,7 +539,9 @@ struct squared_error
 template <> template <class Matrix>
 struct squared_error<Backend::EIGEN3,Matrix>
 {
+	/** Scalar type */
 	typedef typename Matrix::Scalar T;
+	/** Matrix type */
 	typedef Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> MatrixXt;
 	
 	/** Returns the squared error between P and Q. The squared error is defined as 
