@@ -78,6 +78,7 @@ template<class T> class SGVector : public SGReferencedData
 #endif
 #endif
 
+#ifndef SWIG // SWIG should skip this part
 		/** Wrapper for the copy constructor useful for SWIG interfaces
 		 *
 		 * @param orig vector to set
@@ -725,7 +726,7 @@ template<class T> class SGVector : public SGReferencedData
 		 * @return matrix
 		 */
 		static void convert_to_matrix(T*& matrix, index_t nrows, index_t ncols, const T* vector, int32_t vlen, bool fortran_order);
-
+#endif // #ifndef SWIG // SWIG should skip this part
 	protected:
 		/** needs to be overridden to copy data */
 		virtual void copy_data(const SGReferencedData &orig);

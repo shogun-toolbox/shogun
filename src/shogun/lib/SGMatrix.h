@@ -73,6 +73,7 @@ template<class T> class SGMatrix : public SGReferencedData
 		/** Empty destructor */
 		virtual ~SGMatrix();
 
+#ifndef SWIG // SWIG should skip this part
 		/** Get a column vector
 		 * @param col column index
 		 * @return the column vector for index col
@@ -309,6 +310,7 @@ template<class T> class SGMatrix : public SGReferencedData
 		 * @param saver File object via which to save data
 		 */
 		void save(CFile* saver);
+#endif // #ifndef SWIG // SWIG should skip this part
 
 	protected:
 		/** overridden to copy data */

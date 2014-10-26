@@ -55,6 +55,7 @@ public:
 	 */
 	void set_delimiter(char delimiter);
 
+#ifndef SWIG // SWIG should skip this
 	/**
 	 * Utility function to convert a string to a boolean value
 	 *
@@ -100,6 +101,8 @@ public:
 	GET_VECTOR_DECL(uint64_t)
 	GET_VECTOR_DECL(floatmax_t)
 #undef GET_VECTOR_DECL
+
+#endif // #ifndef SWIG // SWIG should skip this
 
 	/** @return object name */
 	virtual const char* get_name() const

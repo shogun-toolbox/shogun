@@ -14,7 +14,6 @@
 
 #include <shogun/lib/config.h>
 
-#include <stdio.h>
 #include <shogun/base/SGObject.h>
 
 namespace shogun
@@ -64,6 +63,7 @@ public:
 	/** default destructor */
 	virtual ~CFile();
 
+#ifndef SWIG // SWIG should skip this
 	/** close */
 	void close()
 	{
@@ -496,6 +496,7 @@ public:
      * @return buffer to read file - needs to be freed with SG_FREE
      */
     static char* read_whole_file(char* fname, size_t& len);
+#endif // #ifndef SWIG
 
 protected:
 	/** file object */

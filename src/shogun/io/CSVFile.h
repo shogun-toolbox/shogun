@@ -85,6 +85,7 @@ public:
 	 */
 	int32_t get_stats(int32_t& num_tokens);
 
+#ifndef SWIG
 	/** @name Vector Access Functions
 	 *
 	 * Functions to access vectors of one of the several base data types.
@@ -371,6 +372,7 @@ public:
 	virtual void set_string_list(
 			const SGString<floatmax_t>* strings, int32_t num_str);
 	//@}
+#endif // #ifndef SWIG
 
 	/**
 	 * Split a given substring into an array of substrings

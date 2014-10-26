@@ -51,6 +51,7 @@ public:
 	/** default destructor */
 	virtual ~CBinaryFile();
 
+#ifndef SWIG // SWIG should skip this
 	/** @name Vector Access Functions
 	 *
 	 * Functions to access vectors of one of the several base data types.
@@ -390,6 +391,7 @@ protected:
      * @return -1
      */
     int32_t parse_next_header(TSGDataType& type);
+#endif // #ifndef SWIG
 
 private:
 	/** load data (templated)
