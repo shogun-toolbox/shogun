@@ -361,6 +361,7 @@ public:
 	virtual void set_string_list(
 			const SGString<floatmax_t>* strings, int32_t num_str);
 	//@}
+#endif // #ifndef SWIG
 
 	/** @return object name */
 	virtual const char* get_name() const { return "BinaryFile"; }
@@ -391,7 +392,6 @@ protected:
      * @return -1
      */
     int32_t parse_next_header(TSGDataType& type);
-#endif // #ifndef SWIG
 
 private:
 	/** load data (templated)
