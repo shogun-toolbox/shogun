@@ -87,7 +87,7 @@ def statistics_hsic (n, difference, angle):
 	thresh_gamma=hsic.compute_threshold(alpha)
 	#print "p_value:", p_value_gamma
 	#print "threshold for 0.05 alpha:", thresh_gamma
-	print "p_value <", alpha, ", i.e. test sais p and q are dependend::", p_value_gamma<alpha
+	#print "p_value <", alpha, ", i.e. test sais p and q are dependend:", p_value_gamma<alpha
 
 	# sample from null distribution (these may be plotted or whatsoever)
 	# mean should be close to zero, variance stronly depends on data/kernel
