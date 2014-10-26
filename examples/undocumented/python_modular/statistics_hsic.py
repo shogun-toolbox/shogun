@@ -92,12 +92,12 @@ def statistics_hsic (n, difference, angle):
 	# sample from null distribution (these may be plotted or whatsoever)
 	# mean should be close to zero, variance stronly depends on data/kernel
 	# sampling null, biased statistic
-	print "sampling null distribution using sample_null"
+	#print "sampling null distribution using sample_null"
 	hsic.set_null_approximation_method(PERMUTATION)
 	hsic.set_num_null_samples(100)
 	null_samples=hsic.sample_null()
-	print "null mean:", np.mean(null_samples)
-	print "null variance:", np.var(null_samples)
+	#print "null mean:", np.mean(null_samples)
+	#print "null variance:", np.var(null_samples)
 	#hist(null_samples, 100); show()
 
 	return p_value_boot, thresh_boot, p_value_gamma, thresh_gamma, statistic, null_samples
