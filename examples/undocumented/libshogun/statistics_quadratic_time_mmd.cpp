@@ -97,7 +97,7 @@ void quadratic_time_mmd()
 	for (index_t i=0; i<num_trials; ++i)
 	{
 		/* this effectively means that p=q - rejecting is tpye I error */
-		inds.permute();
+		CMath::permute(inds);
 		precomputed->add_row_subset(inds);
 		precomputed->add_col_subset(inds);
 		type_I_errors[i]=mmd->perform_test()>alpha;

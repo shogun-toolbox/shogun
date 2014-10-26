@@ -13,6 +13,7 @@
 #include <shogun/features/IndexFeatures.h>
 #include <shogun/features/streaming/generators/MeanShiftDataGenerator.h>
 #include <shogun/mathematics/eigen3.h>
+#include <shogun/mathematics/Math.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;
@@ -37,7 +38,7 @@ TEST(CustomKernelTest,add_row_subset)
 	index_t num_runs=10;
 	for (index_t i=0; i<num_runs; ++i)
 	{
-		inds.permute();
+		CMath::permute(inds);
 
 		feats->add_subset(inds);
 		custom->add_row_subset(inds);
@@ -93,7 +94,7 @@ TEST(CustomKernelTest,add_row_subset_constructor)
 	 * from this, assert equalness */
 	SGVector<index_t> inds(n);
 	inds.range_fill();
-	inds.permute();
+	CMath::permute(inds);
 	main_kernel->add_row_subset(inds);
 	SGMatrix<float64_t> main_subset_matrix=main_kernel->get_kernel_matrix();
 	main_kernel->remove_row_subset();
@@ -164,9 +165,9 @@ TEST(CustomKernelTest,index_features_subset)
 	SGVector<index_t> r_idx(n);
 	SGVector<index_t> c_idx(n);
 	r_idx.range_fill();
-	r_idx.permute();
+	CMath::permute(r_idx);
 	c_idx.range_fill();
-	c_idx.permute();
+	CMath::permute(c_idx);
 
 	/* Create IndexFeatures instances */
 	CIndexFeatures * feat_r_idx = new CIndexFeatures(r_idx);

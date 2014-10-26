@@ -356,14 +356,15 @@ void generate_data(int32_t len_label, int32_t len_feat, int32_t size_data,
 		v_label[i] = 1;
 
 		// generate feature vector
-		SGVector<int32_t> random_indeces(len_feat);
-		random_indeces.randperm();
+		SGVector<int32_t> random_indices(len_feat);
+		random_indices.range_fill();
+		CMath::permute(random_indices);
 		SGVector<float64_t> v_feat(len_feat);
 		v_feat.zero();
 
 		for (int32_t j = 0; j < 4 * (i + 1); j++)
 		{
-			int32_t r = random_indeces[j];
+			int32_t r = random_indices[j];
 			v_feat[r] = 1;
 		}
 

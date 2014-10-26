@@ -14,6 +14,7 @@
 #include <shogun/features/streaming/generators/MeanShiftDataGenerator.h>
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/mathematics/eigen3.h>
+#include <shogun/mathematics/Math.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;
@@ -771,7 +772,7 @@ TEST(QuadraticTimeMMD,custom_kernel_vs_normal_kernel_DEPRECATED)
 	for (index_t i=0; i<num_trials; ++i)
 	{
 		/* this effectively means that p=q - rejecting is tpye I error */
-		inds.permute();
+		CMath::permute(inds);
 
 		/* setting seed for Gaussian samples used in spectrum approximation method */
 		sg_rand->set_seed(1);

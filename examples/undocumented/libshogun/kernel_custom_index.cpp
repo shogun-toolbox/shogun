@@ -58,9 +58,9 @@ void test_custom_kernel_index_subsets()
 	SGVector<index_t> row_subset(num_sub_row);
 	SGVector<index_t> col_subset(num_sub_col);
 	row_subset.range_fill();
-	row_subset.permute();
+	CMath::permute(row_subset);
 	col_subset.range_fill();
-	col_subset.permute();
+	CMath::permute(col_subset);
 
 	/* create index features */
 	CIndexFeatures* row_idx_feat=new CIndexFeatures(row_subset);

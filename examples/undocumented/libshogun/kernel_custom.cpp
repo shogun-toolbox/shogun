@@ -13,6 +13,7 @@
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/DataGenerator.h>
 #include <shogun/features/IndexFeatures.h>
+#include <shogun/mathematics/Math.h>
 
 using namespace shogun;
 
@@ -36,7 +37,7 @@ void test_custom_kernel_subsets()
 	for (index_t run=0; run<100; ++run)
 	{
 		subset.range_fill();
-		subset.permute();
+		CMath::permute(subset);
 //		subset.display_vector("permutation");
 		features->add_subset(subset);
 		k->init(features, features);

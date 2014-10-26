@@ -90,7 +90,7 @@ SGVector<float64_t> CIndependenceTest::sample_null()
 		 * and compute statistic. This is done using subsets here */
 
 		/* create index permutation and add as subset to features from p */
-		SGVector<index_t>::permute_vector(ind_permutation);
+		CMath::permute(ind_permutation);
 
 		/* compute statistic for this permutation of mixed samples */
 		m_p->add_subset(ind_permutation);

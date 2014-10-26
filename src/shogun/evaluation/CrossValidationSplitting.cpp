@@ -35,7 +35,7 @@ void CCrossValidationSplitting::build_subsets()
 	/* permute indices */
 	SGVector<index_t> indices(m_labels->get_num_labels());
 	indices.range_fill();
-	indices.permute(m_rng);
+	CMath::permute(indices, m_rng);
 
 	index_t num_subsets=m_subset_indices->get_num_elements();
 

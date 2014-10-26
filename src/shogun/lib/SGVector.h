@@ -116,20 +116,6 @@ template<class T> class SGVector : public SGReferencedData
 		 */
 		void random(T min_value, T max_value);
 
-		/** Returns a random permutation of number from 0 to len-1 */
-		void randperm();
-
-		/** Returns a random permutation of number from 0 to n-1 */
-		static SGVector<T> randperm_vec(int32_t n);
-
-		/** Returns a random permutation of number from 0 to n-1.
-		 * Caller has to free memory.
-		 *
-		 * @param n range of permutation
-		 * @return random permutation of number from 0 to n-1
-		 */
-		static T* randperm(int32_t n);
-
 		/** Returns a vector with n linearly spaced elements between start and end.
 		 *
 		 * @param start beginning of the interval to divide
@@ -189,15 +175,6 @@ template<class T> class SGVector : public SGReferencedData
 
 		/** Random vector */
 		static void random_vector(T* vec, int32_t len, T min_value, T max_value);
-
-		/** Random permatutaion */
-		static void randperm(T* perm, int32_t n);
-
-		/** Permute */
-		static void permute(T* vec, int32_t n);
-
-		/** Permute with given CRandom state */
-		static void permute(T* vec, int32_t n, CRandom * rand);
 
 		/**
 		 * Get the vector (no copying is done here)
@@ -352,15 +329,6 @@ template<class T> class SGVector : public SGReferencedData
 		 * true otherwise
 		 */
 		bool equals(SGVector<T>& other);
-
-		/** Permute vector */
-		static void permute_vector(SGVector<T> vec);
-
-		/** Create a random permutation in place */
-		void permute();
-
-		/** Create a random permutation with given CRandom state */
-		void permute(CRandom * rand);
 
 		/// || x ||_2
 		static T twonorm(const T* x, int32_t len);

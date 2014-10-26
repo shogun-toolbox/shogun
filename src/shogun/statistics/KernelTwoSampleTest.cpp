@@ -11,6 +11,7 @@
 #include <shogun/features/Features.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/kernel/CustomKernel.h>
+#include <shogun/mathematics/Math.h>
 
 using namespace shogun;
 
@@ -91,7 +92,7 @@ SGVector<float64_t> CKernelTwoSampleTest::sample_null()
 			 * This is done using subsets here. add to custom kernel since
 			 * it has no features to subset. CustomKernel has not to be
 			 * re-initialised after each subset setting */
-			SGVector<int32_t>::permute_vector(ind_permutation);
+			CMath::permute(ind_permutation);
 
 			custom_kernel->add_row_subset(ind_permutation);
 			custom_kernel->add_col_subset(ind_permutation);

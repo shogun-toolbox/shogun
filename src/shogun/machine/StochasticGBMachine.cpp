@@ -30,6 +30,7 @@
 
 #include <shogun/machine/StochasticGBMachine.h>
 #include <shogun/optimization/lbfgs/lbfgs.h>
+#include <shogun/mathematics/Math.h>
 
 using namespace shogun;
 
@@ -275,8 +276,8 @@ void CStochasticGBMachine::apply_subset(CDenseFeatures<float64_t>* f, CLabels* i
 {
 	int32_t subset_size=m_subset_frac*(f->get_num_vectors());
 	SGVector<index_t> idx(f->get_num_vectors());
-	idx.range_fill(0);
-	idx.randperm();
+	idx.range_fill();
+	CMath::permute(idx);
 
 	SGVector<index_t> subset(subset_size);
 	memcpy(subset.vector,idx.vector,subset.vlen*sizeof(index_t));

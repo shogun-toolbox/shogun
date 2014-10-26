@@ -29,6 +29,7 @@
 */
 
 #include <shogun/features/IndexFeatures.h>
+#include <shogun/mathematics/Math.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;
@@ -57,11 +58,11 @@ TEST(IndexFeaturesTest,subset_copy)
 	index_t vlen = 10;
 	SGVector<index_t> index_vector(vlen);
 	index_vector.range_fill();
-	index_vector.permute();
+	CMath::permute(index_vector);
 
 	SGVector<index_t> sub_idx(vlen/2);
 	sub_idx.range_fill();
-	sub_idx.permute();
+	CMath::permute(sub_idx);
 
 	CIndexFeatures* index_features = new CIndexFeatures(index_vector);
 
