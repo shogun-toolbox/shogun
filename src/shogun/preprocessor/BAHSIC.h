@@ -41,7 +41,7 @@ namespace shogun
  * HSIC [1] to compute dependence measures for feature selection using a
  * backward elimination approach as described in [1]. This class serves as a
  * convenience class that initializes the CDependenceMaximization#m_estimator
- * with an instance of CHSIC and allows only ::BACKWARD_ELIMINATION algorithm
+ * with an instance of CHSIC and allows only shogun::BACKWARD_ELIMINATION algorithm
  * to use which is set internally. Therefore, trying to use other algorithms
  * by set_algorithm() will not work. Plese see the class documentation of CHSIC
  * and [2] for more details on mathematical description of HSIC.
@@ -65,7 +65,7 @@ public:
 	virtual ~CBAHSIC();
 
 	/**
-	 * Since only ::BACKWARD_ELIMINATION algorithm is applicable for BAHSIC,
+	 * Since only shogun::BACKWARD_ELIMINATION algorithm is applicable for BAHSIC,
 	 * and this is set internally, this method is overridden to prevent this
 	 * to be set from public API.
 	 *
