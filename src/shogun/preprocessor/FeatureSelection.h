@@ -39,6 +39,7 @@ namespace shogun
 
 class CFeatures;
 class CLabels;
+class CSubsetStack;
 
 /** Enum for feature selection algorithms. See class documentation of
  * CFeatureSelection for their descriptions.
@@ -68,13 +69,13 @@ enum EFeatureRemovalPolicy
  * the enum #EFeatureSelectionAlgorithm which can be set via set_algorithm()
  * call. Supported wrapper algorithms are
  *
- * - ::BACKWARD_ELIMINATION: apply_backward_elimination() method implements
+ * - shogun::BACKWARD_ELIMINATION: apply_backward_elimination() method implements
  * this algorithm. This runs inside a loop till it reaches #m_target_dim. In
  * each iteration, inside another loop that runs for all current dimensions we
  * compute measures and store the scores for each current dimension. Based on
  * those measures a number of features are removed at once.
  *
- * - ::FORWARD_SELECTION: apply_forward_selection() method implements this
+ * - shogun::FORWARD_SELECTION: apply_forward_selection() method implements this
  * algorithm. Inside a loop it adds selected features to an empty feature set
  * till it reaches #m_target_dim. In each iteration, inside another loop that
  * runs for all current dimensions we compute measures and store the scores for
@@ -100,25 +101,29 @@ enum EFeatureRemovalPolicy
  * different which is specified by the #EFeatureRemovalPolicy enum and can be
  * set by set_policy() call. The supported policies are
  *
- * - ::N_SMALLEST: Features corresponding to N smallest measures are removed
- * - ::PERCENTILE_SMALLEST: Features corresponding to smallest N% measures are
+ * - shogun::N_SMALLEST: Features corresponding to N smallest measures are removed
+ * - shogun::PERCENTILE_SMALLEST: Features corresponding to smallest N% measures are
  *   removed
- * - ::N_LARGEST: Features corresponding to N largeest measures are removed
- * - ::PERCENTILE_LARGEST: Features corresponding to largest N% measures are
+ * - shogun::N_LARGEST: Features corresponding to N largeest measures are removed
+ * - shogun::PERCENTILE_LARGEST: Features corresponding to largest N% measures are
  *   removed
  *
  * Note that not all policies can be adapted for a specific feature seleciton
  * approaches. In general, in classes where feature selection is performed by
  * removing the features which correspond to lowest measure, the policies
- * ::N_SMALLEST and ::PERCENTILE_SMALLEST are appropriate. When features
+ * shogun::N_SMALLEST and shogun::PERCENTILE_SMALLEST are appropriate. When features
  * corresponding to highest measures are removed (e.g. training error in a
- * cross-validation scenario), ::N_LARGEST and ::PERCENTILE_LARGEST are
+ * cross-validation scenario), shogun::N_LARGEST and shogun::PERCENTILE_LARGEST are
  * applicable. Therefore, set_policy() is kept abstract and subclasses define
  * this to allow specific policies to be set.
  *
  * Removal of features in each iteration is handled by an abstract method
  * remove_feats() that removes a set of features at once based on the ranks
- * of the features on the measure.
+ * of the features on the measure. Internally this method also updates a subset
+ * stack to keep track of the selected features. After calling apply(),
+ * the indices of the original features that are selected can be obtained
+ * by calling get_selected_feats() method. Please note that the selected
+ * features are always kept in the original order.
  *
  * Some of the methods are for internal purpose and are not exposed to the
  * public API. For example,
@@ -163,7 +168,8 @@ public:
 
 	/**
 	 * Abstract method which is defined in the subclasses to handle the removal
-	 * of features based on removal policy (see class documentation).
+	 * of features based on removal policy (see class documentation). This
+	 * also updates the subset internally for selected features.
 	 *
 	 * @param features the features object from which specific features has
 	 * to be removed
@@ -174,7 +180,10 @@ public:
 	virtual CFeatures* remove_feats(CFeatures* features,
 			SGVector<index_t> argsorted)=0;
 
-	/** @return the feature class, ::C_ANY */
+	/** @return indices of selected features */
+	SGVector<index_t> get_selected_feats();
+
+	/** @return the feature class, shogun::C_ANY */
 	virtual EFeatureClass get_feature_class();
 
 	/** @return feature type */
@@ -296,8 +305,8 @@ protected:
 	EFeatureRemovalPolicy m_policy;
 
 	/** Number or percentage of features to be removed. When the policy is set
-	 * as ::N_SMALLEST or ::N_LARGEST, this number decides how many features in
-	 * an iteration. For ::PERCENTILE_SMALLEST or ::PERCENTILE_LARGEST, this
+	 * as shogun::N_SMALLEST or shogun::N_LARGEST, this number decides how many features in
+	 * an iteration. For shogun::PERCENTILE_SMALLEST or shogun::PERCENTILE_LARGEST, this
 	 * decides the percentage of current number of features to be removed in
 	 * each iteration
 	 */
@@ -305,6 +314,9 @@ protected:
 
 	/** The labels for the feature vectors */
 	CLabels* m_labels;
+
+	/** The indices of features that are selected */
+	CSubsetStack* m_subset;
 
 private:
 	/** Register params and initialize with default values */

@@ -78,7 +78,7 @@ enum EPCAMemoryMode
  * This class provides 3 method options to compute the transformation matrix :
  * <em>EVD</em> : Eigen Value Decomposition of Covariance Matrix (\f$XX^T\f$)
  * The covariance matrix \f$XX^T\f$ is first formed internally and then
- * its eigenvectors and eigenvalues are computed using QR decomposition of the matrix.
+ * its eigenvectors and eigenvalues are computed.
  * The time complexity of this method is \f$~10D^3\f$ and should be used when N > D.
  * 
  * <em>SVD</em> : Singular Value Decomposition of feature matrix X

@@ -59,6 +59,7 @@ namespace implementation
 template <enum Backend, class Matrix>
 struct add
 {
+	/** Scalar type */
 	typedef typename Matrix::Scalar T;
 	
 	/** Performs the operation C = alpha*A + beta*B. Works for both matrices and vectors */

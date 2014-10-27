@@ -31,6 +31,7 @@
 
 namespace shogun
 {
+/** Buffer size */
 extern uint32_t BufSize;
 
 /** Linked list for cutting planes buffer management */

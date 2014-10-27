@@ -7,7 +7,7 @@
 #
 # Written (C) 2012-2013 Heiko Strathmann
 #
-from numpy import *
+import numpy as np
 
 parameter_list = [[30,2,0.5]]
 
@@ -19,9 +19,10 @@ def statistics_quadratic_time_mmd (m,dim,difference):
 	from modshogun import PERMUTATION, MMD2_SPECTRUM, MMD2_GAMMA, BIASED, BIASED_DEPRECATED
 	from modshogun import Statistics, IntVector, RealVector, Math
 
-	# init seed for reproducability
+	# for reproducable results (the numpy one might not be reproducible across
+	# different OS/Python-distributions
 	Math.init_random(1)
-	random.seed(17)
+	np.random.seed(1)
 
 	# number of examples kept low in order to make things fast
 
@@ -86,9 +87,9 @@ def statistics_quadratic_time_mmd (m,dim,difference):
 	mmd.set_null_approximation_method(PERMUTATION);
 	mmd.set_num_null_samples(5);
 	num_trials=5;
-	type_I_errors=RealVector(num_trials);
-	type_II_errors=RealVector(num_trials);
-	inds=int32(array([x for x in range(2*m)])) # numpy
+	type_I_errors=np.zeros(num_trials)
+	type_II_errors=np.zeros(num_trials)
+	inds=np.array([x for x in range(2*m)], dtype=np.int32)
 	p_and_q=mmd.get_p_and_q();
 
 	# use a precomputed kernel to be faster
@@ -97,7 +98,7 @@ def statistics_quadratic_time_mmd (m,dim,difference):
 	mmd.set_kernel(precomputed);
 	for i in range(num_trials):
 		# this effectively means that p=q - rejecting is tpye I error
-		inds=random.permutation(inds) # numpy permutation
+		inds=np.random.permutation(inds) # numpy permutation
 		precomputed.add_row_subset(inds);
 		precomputed.add_col_subset(inds);
 		type_I_errors[i]=mmd.perform_test()>alpha;
@@ -107,7 +108,7 @@ def statistics_quadratic_time_mmd (m,dim,difference):
 		# on normal data, this gives type II error
 		type_II_errors[i]=mmd.perform_test()>alpha;
 
-	return type_I_errors.get(),type_I_errors.get(),p_value_null,p_value_spectrum,p_value_gamma,
+	return type_I_errors,type_I_errors,p_value_null,p_value_spectrum,p_value_gamma,
 
 if __name__=='__main__':
 	print('QuadraticTimeMMD')

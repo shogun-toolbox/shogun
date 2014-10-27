@@ -13,7 +13,6 @@
 #define __LIBSVMFILE_H__
 
 #include <shogun/lib/config.h>
-
 #include <shogun/io/File.h>
 
 namespace shogun
@@ -56,6 +55,7 @@ public:
 	/** destructor */
 	virtual ~CLibSVMFile();
 
+#ifndef SWIG // SWIG should skip this part
 	/** @name Vector Access Functions
 	 *
 	 * Functions to access vectors of one of the several base data types.
@@ -535,6 +535,7 @@ public:
 	virtual void set_string_list(
 			const SGString<floatmax_t>* strings, int32_t num_str) { };
 	//@}
+#endif // #ifndef SWIG // SWIG should skip this part
 
 	virtual const char* get_name() const { return "LibSVMFile"; }
 

@@ -32,6 +32,7 @@
 		- Fix fail in library_mldatahdf5.cpp example when http://mldata.org is not working properly [Parijat Mazumdar]
 		- Fix memory leaks in Vowpal Wabbit, LibSVMFile and KernelPCA [Thoralf Klein]
 		- Fix memory and control flow issues discovered by Coverity [Thoralf Klein]
+		- Fix R modular interface SWIG typemap (Requires SWIG >= 2.0.5) [Matt Huska]
 	* Cleanup and API Changes:
 		- PCA now depends on Eigen3 instead of LAPACK [Parijat Mazumdar]
 		- Removing redundant and fixing implicit imports [Thoralf Klein]

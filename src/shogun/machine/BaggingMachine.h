@@ -127,7 +127,7 @@ namespace shogun
 			 * sets parameters of CMachine - useful in Random Forest
 			 *
 			 * @param m machine
-			 * @param idx indices of training vectors chosen in current bag			 
+			 * @param idx indices of training vectors chosen in current bag
 			 */
 			virtual void set_machine_parameters(CMachine* m, SGVector<index_t> idx);
 
@@ -139,7 +139,10 @@ namespace shogun
 			 */
 			SGVector<float64_t> apply_get_outputs(CFeatures* data);
 
+			/** Register paramaters */
 			void register_parameters();
+
+			/** Initialize the members with default values */
 			void init();
 
 			/**
@@ -147,11 +150,9 @@ namespace shogun
 			 *
 			 * @param in_bag vector of indices that are in bag.
 			 * NOTE: in_bag is a randomly generated with replacement
-			 * @return
+			 * @return the vector of indices
 			 */
 			CDynamicArray<index_t>* get_oob_indices(const SGVector<index_t>& in_bag);
-
-			void clear_oob_indicies();
 
 		protected:
 			/** bags array */

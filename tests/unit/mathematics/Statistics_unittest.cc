@@ -1,17 +1,19 @@
 #include <shogun/lib/config.h>
-#ifdef HAVE_EIGEN3
 
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/lib/SGSparseMatrix.h>
 #include <shogun/lib/SGSparseVector.h>
 #include <shogun/mathematics/Statistics.h>
-#include <shogun/mathematics/eigen3.h>
 #include <math.h>
 #include <gtest/gtest.h>
 #include <shogun/mathematics/Math.h>
 
 using namespace shogun;
+
+#ifdef HAVE_EIGEN3
+#include <shogun/mathematics/eigen3.h>
+
 using namespace Eigen;
 
 TEST(Statistics, fit_sigmoid)
@@ -479,8 +481,7 @@ TEST(Statistics,log_det_general_test_3)
 
 TEST(Statistics,log_det_general_test_4)
 {
-	float64_t rel_tolorance = 1e-10;
-	float64_t abs_tolorance, result;
+	float64_t result;
 	index_t size = 6;
 	SGMatrix<float64_t> A(size, size);
 	A(0,0) = 35.000000;

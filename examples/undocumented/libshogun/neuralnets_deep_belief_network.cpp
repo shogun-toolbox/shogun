@@ -32,7 +32,7 @@
  */
 
 #include <shogun/base/init.h>
-
+#ifdef HAVE_EIGEN3
 #include <shogun/mathematics/Math.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/mathematics/Statistics.h>
@@ -49,8 +49,8 @@ int main(int, char*[])
 	CMath::init_random(10);
 	
 	// Prepare the training data
-	const int num_features = 10;
-	const int num_examples= 200;
+	const int num_features = 5;
+	const int num_examples= 50;
 	
 	SGVector<float64_t> means(num_features);
 	for (int32_t i=0; i<num_features; i++)
@@ -65,9 +65,9 @@ int main(int, char*[])
 	
 	// Create a DBN
 	CDeepBeliefNetwork* dbn = new CDeepBeliefNetwork(num_features, RBMVUT_GAUSSIAN);
+	dbn->add_hidden_layer(10);
+	dbn->add_hidden_layer(10);
 	dbn->add_hidden_layer(20);
-	dbn->add_hidden_layer(20);
-	dbn->add_hidden_layer(50);
 	
 	dbn->initialize();
 	
@@ -75,19 +75,19 @@ int main(int, char*[])
 	// dbn->io->set_loglevel(MSG_INFO);
 	
 	// pre-train
-	dbn->pt_max_num_epochs.set_const(200);
+	dbn->pt_max_num_epochs.set_const(100);
 	dbn->pt_cd_num_steps.set_const(10);
 	dbn->pt_gd_learning_rate.set_const(0.01);
 	dbn->pre_train(features);
 	
 	// fine-tune
-	dbn->max_num_epochs = 200;
+	dbn->max_num_epochs = 100;
 	dbn->cd_num_steps = 10;
 	dbn->gd_learning_rate = 0.01;
 	dbn->train(features);
 	
 	// draw 1000 samples from the DBN
-	CDenseFeatures<float64_t>* samples = dbn->sample(500,1000);
+	CDenseFeatures<float64_t>* samples = dbn->sample(100,1000);
 	SGMatrix<float64_t> samples_matrix = samples->get_feature_matrix();
 	
 	// compute the sample means
@@ -109,3 +109,9 @@ int main(int, char*[])
 	exit_shogun();
 	return 0;
 }
+#else
+int main(int, char*[])
+{
+	return 0;
+}
+#endif

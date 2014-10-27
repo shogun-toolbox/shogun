@@ -166,7 +166,7 @@ protected:
 
 	/** convert squared distances to actual distances
 	 *
-	 * @param dist distance value
+	 * @param dists distance value
 	 * @return actual distance
 	 */
 	inline float64_t actual_dists(float64_t dists)
@@ -179,7 +179,7 @@ protected:
 
 	/** distance between 2 vectors
 	 *
-	 * @param index of training data vector
+	 * @param vec index of training data vector
 	 * @param arr query vector
 	 * @param dim dimension of query vector
 	 * @return distance b/w vectors

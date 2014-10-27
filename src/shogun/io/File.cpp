@@ -27,6 +27,7 @@ CFile::CFile() : CSGObject()
 	file=NULL;
 	filename=NULL;
 	variable_name=NULL;
+	task='\0';
 }
 
 CFile::CFile(FILE* f, const char* name) : CSGObject()
@@ -34,6 +35,7 @@ CFile::CFile(FILE* f, const char* name) : CSGObject()
 	file=f;
 	filename=NULL;
 	variable_name=NULL;
+	task='\0';
 
 	if (name)
 		set_variable_name(name);
@@ -44,6 +46,7 @@ CFile::CFile(int fd, const char* mode, const char* name) : CSGObject()
 	file=fdopen(fd, mode);
 	filename=NULL;
 	variable_name=NULL;
+	task=mode[0];
 
 	if (name)
 		set_variable_name(name);

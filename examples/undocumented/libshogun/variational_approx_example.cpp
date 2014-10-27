@@ -392,4 +392,9 @@ int main(int argc, char** argv)
 	exit_shogun();
 	return 0;
 }
+#else /* HAVE_EIGEN3 */
+int main(int argc, char** argv)
+{
+	return 0;
+}
 #endif /* HAVE_EIGEN3 */

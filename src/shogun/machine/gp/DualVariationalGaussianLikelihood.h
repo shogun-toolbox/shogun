@@ -141,13 +141,13 @@ public:
 
 	/** set dual parameters for variational parameters
 	 *
-	 * @param lambda dual parameter for variational mean
+	 * @param the_lambda dual parameter for variational mean
 	 * @param lab labels/data used
 	 *
 	 * Note that dual parameter (alpha) for the variational variance
 	 * is implicitly set based on lambda
 	 */
-	virtual void set_dual_parameters(SGVector<float64_t> lambda,  const CLabels* lab);
+	virtual void set_dual_parameters(SGVector<float64_t> the_lambda,  const CLabels* lab);
 
 	/** get the dual parameter (alpha) for variational mu
 	 *

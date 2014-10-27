@@ -48,6 +48,7 @@ class VwExample;
 		/** default destructor */
 		virtual ~CStreamingFile();
 
+#ifndef SWIG // SWIG should skip this
 		/**
 		 * Closes the file
 		 */
@@ -281,6 +282,8 @@ class VwExample;
 		 * @param label label
 		 */
 		virtual void get_vector_and_label(VwExample*& ex, int32_t& len, float64_t& label);
+#endif // #ifndef SWIG // SWIG should skip this
+
 
 		/** @return object name */
 		virtual const char* get_name() const { return "StreamingFile"; }

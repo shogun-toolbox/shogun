@@ -48,6 +48,14 @@
 #include <shogun/optimization/lbfgs/lbfgs.h>
 #include <shogun/machine/gp/VariationalGaussianLikelihood.h>
 
+namespace Eigen
+{
+	template <class, int, int, int, int, int> class Matrix;
+	template <class, int> class LDLT;
+	
+	typedef Matrix<float64_t,-1,-1,0,-1,-1> MatrixXd;
+}
+
 namespace shogun
 {
 
@@ -297,7 +305,7 @@ protected:
 	 *
 	 * @return the LDLT factorization of the corrected kernel matrix
 	 */
-	virtual Eigen::LDLT<Eigen::MatrixXd> update_init_helper();
+	virtual Eigen::LDLT<Eigen::MatrixXd,0x1> update_init_helper();
 
 	/** this method is used to dynamic-cast the likelihood model, m_model,
 	 * to variational likelihood model.

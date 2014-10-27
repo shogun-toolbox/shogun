@@ -7,8 +7,7 @@
 #
 # Written (C) 2012-2013 Heiko Strathmann
 #
-from numpy import *
-#from pylab import *
+import numpy as np
 from math import pi
 
 parameter_list = [[250,3,3]]
@@ -20,10 +19,12 @@ def statistics_hsic (n, difference, angle):
 	from modshogun import HSIC
 	from modshogun import PERMUTATION, HSIC_GAMMA
 	from modshogun import EuclideanDistance
-	from modshogun import Math, Statistics, IntVector
+	from modshogun import Statistics, Math
 
-	# init seed for reproducability
+	# for reproducable results (the numpy one might not be reproducible across
+	# different OS/Python-distributions
 	Math.init_random(1)
+	np.random.seed(1)
 
 	# note that the HSIC has to store kernel matrices
 	# which upper bounds the sample size
@@ -33,15 +34,15 @@ def statistics_hsic (n, difference, angle):
 	#plot(data[0], data[1], 'x');show()
 
 	# create shogun feature representation
-	features_x=RealFeatures(array([data[0]]))
-	features_y=RealFeatures(array([data[1]]))
+	features_x=RealFeatures(np.array([data[0]]))
+	features_y=RealFeatures(np.array([data[1]]))
 
 	# compute median data distance in order to use for Gaussian kernel width
 	# 0.5*median_distance normally (factor two in Gaussian kernel)
 	# However, shoguns kernel width is different to usual parametrization
 	# Therefore 0.5*2*median_distance^2
 	# Use a subset of data for that, only 200 elements. Median is stable
-	subset=IntVector.randperm_vec(features_x.get_num_vectors())
+	subset=np.random.permutation(features_x.get_num_vectors()).astype(np.int32)
 	subset=subset[0:200]
 	features_x.add_subset(subset)
 	dist=EuclideanDistance(features_x, features_x)
@@ -86,7 +87,7 @@ def statistics_hsic (n, difference, angle):
 	thresh_gamma=hsic.compute_threshold(alpha)
 	#print "p_value:", p_value_gamma
 	#print "threshold for 0.05 alpha:", thresh_gamma
-	#print "p_value <", alpha, ", i.e. test sais p and q are dependend::", p_value_gamma<alpha
+	#print "p_value <", alpha, ", i.e. test sais p and q are dependend:", p_value_gamma<alpha
 
 	# sample from null distribution (these may be plotted or whatsoever)
 	# mean should be close to zero, variance stronly depends on data/kernel
@@ -95,8 +96,8 @@ def statistics_hsic (n, difference, angle):
 	hsic.set_null_approximation_method(PERMUTATION)
 	hsic.set_num_null_samples(100)
 	null_samples=hsic.sample_null()
-	#print "null mean:", mean(null_samples)
-	#print "null variance:", var(null_samples)
+	#print "null mean:", np.mean(null_samples)
+	#print "null variance:", np.var(null_samples)
 	#hist(null_samples, 100); show()
 
 	return p_value_boot, thresh_boot, p_value_gamma, thresh_gamma, statistic, null_samples

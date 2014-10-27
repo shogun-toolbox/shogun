@@ -37,9 +37,9 @@
 #include <gtest/gtest.h>
 
 using namespace shogun;
-using namespace Eigen;
 
 #ifdef HAVE_EIGEN3
+using namespace Eigen;
 
 /** tests the nocco statistic for a single fixed data case and ensures
  * equality with matlab implementation */

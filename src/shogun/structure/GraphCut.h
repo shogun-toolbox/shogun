@@ -28,6 +28,7 @@
 
 namespace shogun
 {
+/** Graph cuts terminal type */
 enum ETerminalType
 {
 	/** source terminal */
@@ -37,6 +38,9 @@ enum ETerminalType
 };
 
 struct GCNode;
+/** @brief Graph cuts edge
+ *
+ */
 struct GCEdge
 {
 	/** edge id */
@@ -51,6 +55,9 @@ struct GCEdge
 	float64_t residual_capacity;
 };
 
+/** @brief Graph cuts node
+ *
+ */
 struct GCNode
 {
 	/** node id */
@@ -75,6 +82,9 @@ struct GCNode
 	float64_t tree_cap;
 };
 
+/** @brief Graph guts node pointer
+ *
+ */
 struct GCNodePtr
 {
 	/** pointer of the node */
@@ -83,7 +93,7 @@ struct GCNodePtr
 	GCNodePtr* next;
 };
 
-/** Graph-cuts inference for fatcor graph using V. Kolmogorov's max-flow/min-cut algorithm
+/** Graph cuts inference for fatcor graph using V. Kolmogorov's max-flow/min-cut algorithm
  *
  * Please refer to the paper for more details:
  *
@@ -127,7 +137,7 @@ public:
 
 	/** Inference
 	 *
-	 * @param the assignment
+	 * @param assignment the assignment
 	 * @return the total energy after doing inference
 	 */
 	virtual float64_t inference(SGVector<int32_t> assignment);
@@ -150,7 +160,7 @@ public:
 	 * @param i node id i
 	 * @param j node id j
 	 * @param capacity edge capacity
-	 * @param reverse_capacity_cap edge capacity
+	 * @param reverse_capacity reverse edge capacity
 	 */
 	void add_edge(int32_t i, int32_t j, float64_t capacity, float64_t reverse_capacity);
 
@@ -161,7 +171,7 @@ public:
 	 *
 	 * @param i node id i
 	 * @param cap_source SOURCE->i capacity
-	 * @param reverse_capacity i->SINK capacity
+	 * @param cap_sink i->SINK capacity
 	 */
 	void add_tweights(int32_t i, float64_t cap_source, float64_t cap_sink);
 
@@ -207,7 +217,7 @@ public:
 	 *
 	 * @return terminal that the node belongs to
 	 */
-	ETerminalType get_assignment(int32_t i, ETerminalType default_termainl = SOURCE);
+	ETerminalType get_assignment(int32_t i, ETerminalType default_terminal = SOURCE);
 
 	/** Print the s-t graph */
 	void print_graph();

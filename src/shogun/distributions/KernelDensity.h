@@ -38,6 +38,8 @@
 
 namespace shogun
 {
+
+/** Evaluation method of KDE, see CKernelDensity */
 enum EEvaluationMode
 {
 	EM_KDTREE_SINGLE,

@@ -41,6 +41,7 @@
 #ifdef HAVE_VIENNACL
 #include <shogun/lib/GPUMatrix.h>
 #include <viennacl/linalg/prod.hpp>
+#include <viennacl/matrix.hpp>
 #endif // HAVE_VIENNACL
 
 namespace shogun
@@ -58,6 +59,7 @@ namespace implementation
 template <enum Backend, class Matrix>
 struct matrix_product
 {
+	/** Scalar type */
 	typedef typename Matrix::Scalar T;
 	
 	/** Performs matrix multiplication 

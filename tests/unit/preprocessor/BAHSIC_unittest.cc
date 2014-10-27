@@ -40,6 +40,61 @@
 
 using namespace shogun;
 
+TEST(BAHSIC, get_selected_feats)
+{
+	const index_t dim=25;
+	const index_t num_data=100;
+
+	// use fix seed for reproducibility
+	CMath::init_random(12345);
+
+	SGMatrix<float64_t> data(dim, num_data);
+	for (index_t i=0; i<dim*num_data; ++i)
+		data.matrix[i]=CMath::randn_double();
+
+	SGVector<float64_t> labels_vec(num_data);
+	for (index_t i=0; i<num_data; ++i)
+		labels_vec[i]=CMath::random(0, 1);
+
+	CDenseFeatures<float64_t>* feats=new CDenseFeatures<float64_t>(data);
+	CBinaryLabels* labels=new CBinaryLabels(labels_vec);
+
+	float64_t sigma=0.5;
+
+	CGaussianKernel* kernel_p=new CGaussianKernel(10, 2*CMath::sq(sigma));
+	CGaussianKernel* kernel_q=new CGaussianKernel(10, 2*CMath::sq(sigma));
+
+	CBAHSIC* fs=new CBAHSIC();
+
+	index_t target_dim=dim/5;
+
+	fs->set_labels(labels);
+	fs->set_target_dim(target_dim);
+	fs->set_kernel_features(kernel_p);
+	fs->set_kernel_labels(kernel_q);
+	fs->set_policy(N_LARGEST);
+
+	// remove one feature at a time
+	fs->set_num_remove(1);
+
+	CFeatures* selected=fs->apply(feats);
+
+	SGMatrix<float64_t> selected_data
+		=((CDenseFeatures<float64_t>*)selected)->get_feature_matrix();
+
+	SGVector<index_t> inds=fs->get_selected_feats();
+
+	for (index_t i=0; i<target_dim; ++i)
+	{
+		for (index_t j=0; j<num_data; ++j)
+			EXPECT_NEAR(data(inds[i], j), selected_data(i, j), 1E-15);
+	}
+
+	SG_UNREF(selected);
+	SG_UNREF(fs);
+	SG_UNREF(feats);
+}
+
 TEST(BAHSIC, apply)
 {
 	const index_t dim=8;
@@ -68,29 +123,23 @@ TEST(BAHSIC, apply)
 	fs->set_target_dim(target_dim);
 	fs->set_kernel_features(kernel_p);
 	fs->set_kernel_labels(kernel_q);
-	fs->set_policy(N_SMALLEST);
+	fs->set_policy(N_LARGEST);
 	fs->set_num_remove(dim-target_dim);
 	CFeatures* selected=fs->apply(feats);
 
-	SGMatrix<float64_t> selected_data
-		=((CDenseFeatures<float64_t>*)selected)->get_feature_matrix();
-
-	// ensure that the selected number of features is indeed equal to the
-	// target dimension
-	EXPECT_EQ(selected_data.num_rows, target_dim);
+	SGVector<index_t> selected_inds=fs->get_selected_feats();
 
 	// ensure that selected feats are the same as computed in local machine
 	SGVector<index_t> inds(target_dim);
-	inds[0]=4;
-	inds[1]=5;
-	inds[2]=6;
-	inds[3]=7;
+	inds[0]=0;
+	inds[1]=1;
+	inds[2]=2;
+	inds[3]=3;
+
+	EXPECT_EQ(selected_inds.vlen, inds.vlen);
 
 	for (index_t i=0; i<target_dim; ++i)
-	{
-		for (index_t j=0; j<num_data; ++j)
-			EXPECT_NEAR(data(inds[i], j), selected_data(i, j), 1E-15);
-	}
+		EXPECT_EQ(selected_inds[i], inds[i]);
 
 	SG_UNREF(selected);
 	SG_UNREF(fs);

@@ -2648,6 +2648,8 @@ TParameter::save(CSerializableFile* file, const char* prefix)
 bool
 TParameter::load(CSerializableFile* file, const char* prefix)
 {
+	REQUIRE(file != NULL, "Serializable file object should be != NULL\n");
+
 	const int32_t buflen=100;
 	char* buf=SG_MALLOC(char, buflen);
 	m_datatype.to_string(buf, buflen);

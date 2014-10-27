@@ -39,22 +39,22 @@ namespace shogun
 
 /** @brief This is the base class for Expectation Maximization (EM). EM for various purposes can be derived from
  * this base class. This is a template class having a template member called data which can be used to store all
- * parameters used and results calculated by the expectation and maximization steps of EM.   
+ * parameters used and results calculated by the expectation and maximization steps of EM.
  */
 template <class T> class CEMBase : public CSGObject
 {
 	public:
-		/* constructor */
+		/** constructor */
 		CEMBase() : CSGObject() { };
 
-		/* destructor */
+		/** destructor */
 		virtual ~CEMBase() { };
 
-		/* returns the name of the class */
-		virtual const char* get_name() const { return "EMBase"; }		
+		/** returns the name of the class */
+		virtual const char* get_name() const { return "EMBase"; }
 
-		/* expectation step
-		 * 
+		/** expectation step
+		 *
 		 * @return updated value log_likelihood
 		 */
 		virtual float64_t expectation_step()=0;
@@ -62,12 +62,12 @@ template <class T> class CEMBase : public CSGObject
 		/** maximization step */
 		virtual void maximization_step()=0;
 
-		/** Expectation Maximization algorithm - runs expectation step and maximization step repeatedly as long as 
+		/** Expectation Maximization algorithm - runs expectation step and maximization step repeatedly as long as
 		 * max number of iterations is not reached or convergence does not take place.
 		 *
 		 * @param max_iters max number of iterations of EM
 		 * @param epsilon convergence tolerance
-		 * @param whether convergence is acheived
+		 * @return whether convergence is acheived
 		 */
 		bool iterate_em(int32_t max_iters=10000, float64_t epsilon=1e-8)
 		{
@@ -94,7 +94,7 @@ template <class T> class CEMBase : public CSGObject
 		}
 
 	public:
-		/* data */
+		/** data */
 		T data;
 
 };
