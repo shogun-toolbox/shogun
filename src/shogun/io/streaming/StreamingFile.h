@@ -15,7 +15,6 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/io/IOBuffer.h>
-#include <shogun/classifier/vw/vw_common.h>
 
 namespace shogun
 {
