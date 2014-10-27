@@ -13,7 +13,6 @@
 %rename(ConditionalProbabilityTree) CConditionalProbabilityTree;
 %rename(RandomConditionalProbabilityTree) CRandomConditionalProbabilityTree;
 %rename(RelaxedTree) CRelaxedTree;
-%rename(RelaxedTreeNodeData) CRelaxedTreeNodeData;
 %rename(TreeMachineNode) CTreeMachineNode;
 %rename(VwConditionalProbabilityTree) VwConditionalProbabilityTree;
 %rename(ID3ClassifierTree) CID3ClassifierTree;
