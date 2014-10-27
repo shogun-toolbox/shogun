@@ -23,7 +23,7 @@ def multiclass_cartree_modular(train=traindat,test=testdat,labels=label_traindat
 	train_labels=MulticlassLabels(CSVFile(labels))
 
 	# CART Tree formation with 5 fold cross-validation pruning
-	c=CARTree(ft,5,PT_MULTICLASS,True)
+	c=CARTree(ft,PT_MULTICLASS,5,True)
 	c.set_labels(train_labels)
 	c.train(feats_train)
 

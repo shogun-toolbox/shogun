@@ -89,12 +89,12 @@ public:
 	CCARTree(SGVector<bool> attribute_types, EProblemType prob_type=PT_MULTICLASS);
 
 	/** constructor - to be used while using cross-validation pruning
-	 * @param attribute_types type of each predictive attribute (true for nominal, false for ordinal/continuous) 
+	 * @param attribute_types type of each predictive attribute (true for nominal, false for ordinal/continuous)
+	 * @param prob_type machine problem type - PT_MULTICLASS or PT_REGRESSION
 	 * @param num_folds number of subsets used in cross-valiation
-	 * @param prob_type machine problem type - PT_MULTICLASS or PT_REGRESSION 
-	 * @param cv_prune - whether to use cross-validation pruning, True by default
+	 * @param cv_prune - whether to use cross-validation pruning
 	 */
-	CCARTree(SGVector<bool> attribute_types, int32_t num_folds, EProblemType prob_type=PT_MULTICLASS, bool cv_prune=true);
+	CCARTree(SGVector<bool> attribute_types, EProblemType prob_type, int32_t num_folds, bool cv_prune);
 
 	/** destructor */
 	virtual ~CCARTree();

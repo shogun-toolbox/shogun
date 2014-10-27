@@ -29,7 +29,7 @@ def regression_cartree_modular(num_train=500,num_test=50,x_range=15,noise_var=0.
 	train_labels=RegressionLabels(Y_train[0])
 
 	# CART Tree formation
-	c=CARTree(ft,5,PT_REGRESSION,True)
+	c=CARTree(ft,PT_REGRESSION,5,True)
 	c.set_labels(train_labels)
 	c.train(feats_train)
 
