@@ -46,6 +46,7 @@
 	* Cleanup and API Changes:
 		- PCA now depends on Eigen3 instead of LAPACK [Parijat Mazumdar]
 		- Removing redundant and fixing implicit imports [Thoralf Klein]
+		- Hide many methods from SWIG, reducing compile memory by 500MiB [Heiko Strathmann, Fernando Iglesias, Thoralf Klein]
 
 2014-02-17 Soeren Sonnenburg <sonne@debian.org>
 
