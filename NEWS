@@ -12,6 +12,7 @@
 	    - Variational Learning for Gaussian Processes [Wu Lin; Heiko Strathmann, Emtiyaz Khan]
 	* This release also contains several cleanups and bugfixes:
 	* Features:
+		- New Shogun project description [Heiko Strathmann]
 		- ID3 algorithm for decision tree learning [Parijat Mazumdar]
 		- New modes for PCA matrix factorizations: SVD & EVD, in-place or reallocating [Parijat Mazumdar]
 		- Add Neural Networks with linear, logistic and softmax neurons [Khaled Nasr]
