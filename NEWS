@@ -1,8 +1,18 @@
 2014-03-01 Soeren Sonnenburg <sonne@debian.org>
 
 	* SHOGUN Release version 3.2.1 (libshogun 16.1, data 0.8, parameter 1)
+	* This release features the work of our 8 GSoC 2014 students [student; mentors]:
+	    - OpenCV Integration and Computer Vision Applications [Abhijeet Kislay; Kevin Hughes]
+	    - Large-Scale Multi-Label Classification [Abinash Panda; Thoralf Klein]
+	    - Large-scale structured prediction with approximate inference [Jiaolong Xu; Shell Hu]
+	    - Essential Deep Learning Modules [Khaled Nasr; Sergey Lisitsyn, Theofanis Karaletsos]
+	    - Fundamental Machine Learning Algorithms [Parijat Mazumdar ; Fernando Iglesias] 
+	    - Shogun Missionary & Shogun in Education [Saurabh Mahindre; Heiko Strathmann]
+	    - Testing and Measuring Variable Interactions With Kernels [Soumyajit De; Dino Sejdinovic, Heiko Strathmann]
+	    - Variational Learning for Gaussian Processes [Wu Lin; Heiko Strathmann, Emtiyaz Khan]
 	* This release also contains several cleanups and bugfixes:
 	* Features:
+		- New Shogun project description [Heiko Strathmann]
 		- ID3 algorithm for decision tree learning [Parijat Mazumdar]
 		- New modes for PCA matrix factorizations: SVD & EVD, in-place or reallocating [Parijat Mazumdar]
 		- Add Neural Networks with linear, logistic and softmax neurons [Khaled Nasr]
@@ -36,6 +46,7 @@
 	* Cleanup and API Changes:
 		- PCA now depends on Eigen3 instead of LAPACK [Parijat Mazumdar]
 		- Removing redundant and fixing implicit imports [Thoralf Klein]
+		- Hide many methods from SWIG, reducing compile memory by 500MiB [Heiko Strathmann, Fernando Iglesias, Thoralf Klein]
 
 2014-02-17 Soeren Sonnenburg <sonne@debian.org>
 
