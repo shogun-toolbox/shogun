@@ -1,6 +1,15 @@
 2014-03-01 Soeren Sonnenburg <sonne@debian.org>
 
 	* SHOGUN Release version 3.2.1 (libshogun 16.1, data 0.8, parameter 1)
+	* This release features the work of our 8 GSoC 2014 students [student; mentors]:
+	    - OpenCV Integration and Computer Vision Applications [Abhijeet Kislay; Kevin Hughes]
+	    - Large-Scale Multi-Label Classification [Abinash Panda; Thoralf Klein]
+	    - Large-scale structured prediction with approximate inference [Jiaolong Xu; Shell Hu]
+	    - Essential Deep Learning Modules [Khaled Nasr; Sergey Lisitsyn, Theofanis Karaletsos]
+	    - Fundamental Machine Learning Algorithms [Parijat Mazumdar ; Fernando Iglesias] 
+	    - Shogun Missionary & Shogun in Education [Saurabh Mahindre; Heiko Strathmann]
+	    - Testing and Measuring Variable Interactions With Kernels [Soumyajit De; Dino Sejdinovic, Heiko Strathmann]
+	    - Variational Learning for Gaussian Processes [Wu Lin; Heiko Strathmann, Emtiyaz Khan]
 	* This release also contains several cleanups and bugfixes:
 	* Features:
 		- ID3 algorithm for decision tree learning [Parijat Mazumdar]
