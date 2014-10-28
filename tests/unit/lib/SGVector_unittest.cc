@@ -204,7 +204,7 @@ TEST(SGVectorTest,complex128_tests)
 		EXPECT_NEAR(a[i].real(), 10.0, 1E-14);
 		EXPECT_NEAR(a[i].imag(), 12.0, 1E-14);
 	}
-	a.permute();
+
 	complex128_t sum=SGVector<complex128_t>::sum_abs(a.vector, 1);
 	EXPECT_NEAR(sum.real(), 15.62049935181330878825, 1E-14);
 	EXPECT_NEAR(sum.imag(), 0.0, 1E-14);

@@ -27,6 +27,7 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/base/Parallel.h>
 #include <shogun/mathematics/Random.h>
+#include <shogun/lib/SGVector.h>
 
 #ifndef _USE_MATH_DEFINES
 #define _USE_MATH_DEFINES
@@ -693,6 +694,27 @@ class CMath : public CSGObject
 		{
 			return sg_rand->std_normal_distrib();
 		}
+
+		/** Permute randomly the elements of the vector. If provided, use the
+		 *  random object to generate the permutations.
+		 *
+		 * @param v the vector to permute.
+		 * @param rand random object that might be used to generate the permutations.
+		 */
+		template <class T>
+			static void permute(SGVector<T> v, CRandom* rand=NULL)
+			{
+				if (rand)
+				{
+					for (index_t i=0; i<v.vlen; ++i)
+						swap(v[i], v[rand->random(i, v.vlen-1)]);
+				}
+				else
+				{
+					for (index_t i=0; i<v.vlen; ++i)
+						swap(v[i], v[random(i, v.vlen-1)]);
+				}
+			}
 
 		template <class T>
 			static int32_t get_num_nonzero(T* vec, int32_t len)
@@ -1659,9 +1681,9 @@ void CMath::nmin(float64_t* output, T* index, int32_t size, int32_t n)
 {
 	if (6*n*size<13*size*CMath::log(size))
 		for (int32_t i=0; i<n; i++)
-			min(&output[i], &index[i], size-i) ;
+			min(&output[i], &index[i], size-i);
 	else
-		qsort_index(output, index, size) ;
+		qsort_index(output, index, size);
 }
 
 /* move the smallest entry in the array to the beginning */

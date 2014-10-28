@@ -185,14 +185,6 @@ void SGVector<T>::random(T min_value, T max_value)
 
 COMPLEX128_ERROR_TWOARGS(random)
 
-template<class T>
-void SGVector<T>::randperm()
-{
-	randperm(vector, vlen);
-}
-
-COMPLEX128_ERROR_NOARG(randperm)
-
 template <class T>
 void SGVector<T>::qsort()
 {
@@ -687,88 +679,6 @@ void SGVector<complex128_t>::random_vector(complex128_t* vec, int32_t len,
 	complex128_t min_value, complex128_t max_value)
 {
 	SG_SNOTIMPLEMENTED
-}
-
-template <class T>
-SGVector<T> SGVector<T>::randperm_vec(int32_t n)
-{
-	return SGVector<T>(randperm(n), n);
-}
-
-template <>
-SGVector<complex128_t> SGVector<complex128_t>::randperm_vec(int32_t n)
-{
-	SG_SNOTIMPLEMENTED
-	SGVector<complex128_t> perm(n);
-	return perm;
-}
-
-template <class T>
-T* SGVector<T>::randperm(int32_t n)
-{
-	T* perm = SG_MALLOC(T, n);
-	randperm(perm, n);
-
-	return perm;
-}
-
-template <>
-complex128_t* SGVector<complex128_t>::randperm(int32_t n)
-{
-	SG_SNOTIMPLEMENTED
-	SGVector<complex128_t> perm(n);
-	return perm.vector;
-}
-
-template <class T>
-void SGVector<T>::randperm(T* perm, int32_t n)
-{
-	for (int32_t i = 0; i < n; i++)
-		perm[i] = i;
-	permute(perm,n);
-}
-
-template <>
-void SGVector<complex128_t>::randperm(complex128_t* perm, int32_t n)
-{
-	SG_SNOTIMPLEMENTED
-}
-
-/** permute */
-template <class T>
-void SGVector<T>::permute(T* vec, int32_t n)
-{
-	for (int32_t i = 0; i < n; i++)
-		CMath::swap(vec[i], vec[CMath::random(i, n-1)]);
-}
-
-template <class T>
-void SGVector<T>::permute(T* vec, int32_t n, CRandom * rand)
-{
-	for (int32_t i = 0; i < n; i++)
-		CMath::swap(vec[i], vec[rand->random(i, n-1)]);
-}
-
-template<class T>
-void SGVector<T>::permute()
-{
-	SGVector<T>::permute(vector, vlen);
-}
-
-template<class T>
-void SGVector<T>::permute(CRandom * rand)
-{
-        SGVector<T>::permute(vector, vlen, rand);
-}
-
-template <class T>
-void SGVector<T>::permute_vector(SGVector<T> vec)
-{
-	for (index_t i=0; i<vec.vlen; ++i)
-	{
-		CMath::swap(vec.vector[i],
-				vec.vector[CMath::random(i, vec.vlen-1)]);
-	}
 }
 
 template <>

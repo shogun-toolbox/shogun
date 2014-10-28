@@ -375,3 +375,30 @@ TEST(CMath, get_abs_tolorance)
 	EXPECT_EQ(CMath::get_abs_tolorance(CMath::F_MIN_VAL64, 0.01), CMath::F_MIN_VAL64);
 
 }
+
+TEST(CMath, permute)
+{
+	SGVector<int32_t> v(4);
+	v.range_fill(0);
+	CMath::init_random(2);
+	CMath::permute(v);
+
+	EXPECT_EQ(v[0], 2);
+	EXPECT_EQ(v[1], 1);
+	EXPECT_EQ(v[2], 3);
+	EXPECT_EQ(v[3], 0);
+}
+
+TEST(CMath, permute_with_random)
+{
+	SGVector<int32_t> v(4);
+	v.range_fill(0);
+	CRandom* random = new CRandom(2);
+	CMath::permute(v, random);
+	SG_UNREF(random);
+
+	EXPECT_EQ(v[0], 2);
+	EXPECT_EQ(v[1], 1);
+	EXPECT_EQ(v[2], 3);
+	EXPECT_EQ(v[3], 0);
+}

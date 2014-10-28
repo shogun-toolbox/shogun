@@ -270,7 +270,7 @@ CList* CStreamingMMD::stream_data_blocks(index_t num_blocks,
 		/* permute */
 		SGVector<index_t> inds(merged->get_num_vectors());
 		inds.range_fill();
-		inds.permute();
+		CMath::permute(inds);
 		merged->add_subset(inds);
 
 		/* copy back */
