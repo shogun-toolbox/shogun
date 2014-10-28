@@ -51,7 +51,7 @@ CCARTree::CCARTree(SGVector<bool> attribute_types, EProblemType prob_type)
 	set_machine_problem_type(prob_type);
 }
 
-CCARTree::CCARTree(SGVector<bool> attribute_types, int32_t num_folds, EProblemType prob_type, bool cv_prune)
+CCARTree::CCARTree(SGVector<bool> attribute_types, EProblemType prob_type, int32_t num_folds, bool cv_prune)
 : CTreeMachine<CARTreeNodeData>()
 {
 	init();
