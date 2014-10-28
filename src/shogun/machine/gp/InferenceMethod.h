@@ -89,7 +89,7 @@ public:
 	/** Computes an unbiased estimate of the marginal-likelihood (in log-domain),
 	 *
 	 * \f[
-	 * p(y|X,\theta),
+	 * log(p(y|X,\theta)),
 	 * \f]
 	 * where \f$y\f$ are the labels, \f$X\f$ are the features (omitted from in
 	 * the following expressions), and \f$\theta\f$ represent hyperparameters.
