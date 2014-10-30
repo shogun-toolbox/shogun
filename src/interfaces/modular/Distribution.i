@@ -19,7 +19,6 @@
 %rename(Distribution) CDistribution;
 %rename(Histogram) CHistogram;
 %rename(HMM) CHMM;
-%rename(GHMM) CGHMM;
 %rename(LinearHMM) CLinearHMM;
 %rename(PositionalPWM) CPositionalPWM;
 %rename(Gaussian) CGaussian;
@@ -33,7 +32,6 @@
 %include <shogun/distributions/Distribution.h>
 %include <shogun/distributions/Histogram.h>
 %include <shogun/distributions/HMM.h>
-%include <shogun/distributions/GHMM.h>
 %include <shogun/distributions/LinearHMM.h>
 %include <shogun/distributions/PositionalPWM.h>
 %include <shogun/distributions/Gaussian.h>
