@@ -57,7 +57,7 @@ CMulticlassLabels* CID3ClassifierTree::apply_multiclass(CFeatures* data)
 	return ret;
 }
 
-bool CID3ClassifierTree::prune_tree(CDenseFeatures<float64_t>* validation_data, 
+bool CID3ClassifierTree::prune_tree(CDenseFeatures<float64_t>* validation_data,
 			CMulticlassLabels* validation_labels, float64_t epsilon)
 {
 	node_t* current = get_root();
@@ -81,21 +81,21 @@ bool CID3ClassifierTree::train_machine(CFeatures* data)
 	return true;
 }
 
-CTreeMachineNode<id3TreeNodeData>* CID3ClassifierTree::id3train(CFeatures* data, 
+CTreeMachineNode<id3TreeNodeData>* CID3ClassifierTree::id3train(CFeatures* data,
 	CMulticlassLabels* class_labels, SGVector<int32_t> feature_id_vector, int32_t level)
 {
 	node_t* node = new node_t();
 	CDenseFeatures<float64_t>* feats = dynamic_cast<CDenseFeatures<float64_t>*>(data);
 	int32_t num_vecs = feats->get_num_vectors();
 
-	// set class_label for the node as the mode of occurring multiclass labels  
+	// set class_label for the node as the mode of occurring multiclass labels
 	SGVector<float64_t> labels = class_labels->get_labels_copy();
 	labels.qsort();
-	
+
 	int32_t most_label = labels[0];
 	int32_t most_num = 1;
 	int32_t count = 1;
-	
+
 	for (int32_t i=1; i<labels.vlen; i++)
 	{
 		if (labels[i] == labels[i-1])
@@ -111,7 +111,7 @@ CTreeMachineNode<id3TreeNodeData>* CID3ClassifierTree::id3train(CFeatures* data,
 		else
 		{
 			count = 1;
-		}	
+		}
 	}
 
 	node->data.class_label = most_label;
@@ -136,7 +136,7 @@ CTreeMachineNode<id3TreeNodeData>* CID3ClassifierTree::id3train(CFeatures* data,
 			max = gain;
 			best_feature_index = i;
 		}
-	}	
+	}
 
 	// get feature values for the best feature chosen
 	SGVector<float64_t> best_feature_values = SGVector<float64_t>(num_vecs);
@@ -158,7 +158,7 @@ CTreeMachineNode<id3TreeNodeData>* CID3ClassifierTree::id3train(CFeatures* data,
 				num_cols++;
 		}
 
-		SGMatrix<float64_t> mat = SGMatrix<float64_t>(feats->get_num_features()-1, num_cols);	
+		SGMatrix<float64_t> mat = SGMatrix<float64_t>(feats->get_num_features()-1, num_cols);
 		SGVector<float64_t> new_labels_vector = SGVector<float64_t>(num_cols);
 
 		int32_t cnt = 0;
@@ -171,22 +171,22 @@ CTreeMachineNode<id3TreeNodeData>* CID3ClassifierTree::id3train(CFeatures* data,
 				int32_t idx = -1;
 				for (int32_t k=0; k<sample.size(); k++)
 				{
-					if (k != best_feature_index)			
+					if (k != best_feature_index)
 						mat(++idx, cnt) = sample[k];
 				}
 
 				new_labels_vector[cnt] = class_labels->get_labels()[j];
-				cnt++;					
+				cnt++;
 			}
 		}
 
 		// remove the best_attribute from the remaining attributes index vector
-		SGVector<int32_t> new_feature_id_vector = SGVector<int32_t>(feature_id_vector.vlen-1);		
+		SGVector<int32_t> new_feature_id_vector = SGVector<int32_t>(feature_id_vector.vlen-1);
 		cnt = -1;
 		for (int32_t j=0;j<feature_id_vector.vlen;j++)
 		{
 			if (j!=best_feature_index)
-				new_feature_id_vector[++cnt] = feature_id_vector[j];		
+				new_feature_id_vector[++cnt] = feature_id_vector[j];
 		}
 
 		CMulticlassLabels* new_class_labels = new CMulticlassLabels(new_labels_vector);
@@ -206,7 +206,7 @@ CTreeMachineNode<id3TreeNodeData>* CID3ClassifierTree::id3train(CFeatures* data,
 	return node;
 }
 
-float64_t CID3ClassifierTree::informational_gain_attribute(int32_t attr_no, CFeatures* data, 
+float64_t CID3ClassifierTree::informational_gain_attribute(int32_t attr_no, CFeatures* data,
 								CMulticlassLabels* class_labels)
 {
 	REQUIRE(data,"Data required for information gain calculation\n")
@@ -245,7 +245,7 @@ float64_t CID3ClassifierTree::informational_gain_attribute(int32_t attr_no, CFea
 			if (attribute_values[j] == attr_val_unique[i])
 				sub_class[count++] = class_labels->get_label(j);
 		}
-		
+
 		CMulticlassLabels* sub_labels = new CMulticlassLabels(sub_class);
 		float64_t sub_entropy = entropy(sub_labels);
 		gain += sub_entropy*(attr_count-0.f)/(num_vecs-0.f);
@@ -257,7 +257,7 @@ float64_t CID3ClassifierTree::informational_gain_attribute(int32_t attr_no, CFea
 	gain = data_entropy-gain;
 
 	SG_UNREF(attribute_labels);
-	
+
 	return gain;
 }
 
@@ -279,7 +279,7 @@ float64_t CID3ClassifierTree::entropy(CMulticlassLabels* labels)
 		log_ratios[i] = (count-0.f)/(labels->get_num_labels()-0.f);
 
 		if (log_ratios[i] != 0)
-			log_ratios[i] = CMath::log(log_ratios[i]);			
+			log_ratios[i] = CMath::log(log_ratios[i]);
 	}
 
 	return CStatistics::entropy(log_ratios.vector, log_ratios.vlen);
@@ -344,7 +344,7 @@ void CID3ClassifierTree::prune_tree_machine(CDenseFeatures<float64_t>* feats,
 	CMulticlassAccuracy* accuracy = new CMulticlassAccuracy();
 	float64_t unpruned_accuracy = accuracy->evaluate(predicted_unpruned, gnd_truth);
 	float64_t pruned_accuracy = accuracy->evaluate(predicted_pruned, gnd_truth);
-	
+
 	if (unpruned_accuracy<pruned_accuracy+epsilon)
 	{
 		CDynamicObjectArray* null_children = new CDynamicObjectArray();
@@ -357,9 +357,12 @@ void CID3ClassifierTree::prune_tree_machine(CDenseFeatures<float64_t>* feats,
 	SG_UNREF(predicted_unpruned);
 }
 
-CMulticlassLabels* CID3ClassifierTree::apply_multiclass_from_current_node(CDenseFeatures<float64_t>* feats, 
+CMulticlassLabels* CID3ClassifierTree::apply_multiclass_from_current_node(CDenseFeatures<float64_t>* feats,
 											node_t* current)
 {
+	REQUIRE(feats, "Features should not be NULL")
+	REQUIRE(current, "Current node should not be NULL")
+
 	int32_t num_vecs = feats->get_num_vectors();
 	SGVector<float64_t> labels = SGVector<float64_t>(num_vecs);
 
@@ -379,7 +382,7 @@ CMulticlassLabels* CID3ClassifierTree::apply_multiclass_from_current_node(CDense
 			for (int32_t j=0; j<children->get_num_elements(); j++)
 			{
 				node_t* child = dynamic_cast<node_t*>(children->get_element(j));
-				if (child->data.transit_if_feature_value 
+				if (child->data.transit_if_feature_value
 						== sample[node->data.attribute_id])
 				{
 					flag = true;
@@ -399,14 +402,14 @@ CMulticlassLabels* CID3ClassifierTree::apply_multiclass_from_current_node(CDense
 			if (!flag)
 				break;
 		}
-		
+
 		// class_label of leaf node is the class to which chosen vector belongs
 		labels[i] = node->data.class_label;
 
 		SG_UNREF(node);
 		SG_UNREF(children);
 	}
-	
+
 	CMulticlassLabels* ret = new CMulticlassLabels(labels);
 	return ret;
 }
