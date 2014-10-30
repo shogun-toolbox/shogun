@@ -342,6 +342,12 @@ int32_t L2_SVM_MFN(
 		ActiveSubset->d=active;
 		if(CMath::abs(F-F_old)<RELATIVE_STOP_EPS*CMath::abs(F_old))
 		{
+			SG_FREE(ActiveSubset->vec);
+			SG_FREE(ActiveSubset);
+			SG_FREE(o_bar);
+			SG_FREE(w_bar);
+			SG_FREE(Weights_bar);
+			SG_FREE(Outputs_bar);
 			SG_SINFO("L2_SVM_MFN converged (rel. criterion) in %d iterations", iter)
 			return 2;
 		}

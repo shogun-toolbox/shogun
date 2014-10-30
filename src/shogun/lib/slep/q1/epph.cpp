@@ -632,6 +632,7 @@ void eppO(double *x, double * cc, int * iter_step, double *v,  int n, double rho
 				printf("\n The number of bisection steps exceed %d.", outerIter);
 				printf("\n c1=%e, c2=%e, x_diff=%e, f=%e",c1,c2,x_diff,f);
 				printf("\n If you meet with this problem, please contact Jun Liu (j.liu@asu.edu). Thanks!");
+				free(flag);
 
 				return;
 			}
