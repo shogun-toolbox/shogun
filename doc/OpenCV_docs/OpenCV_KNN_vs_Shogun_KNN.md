@@ -214,9 +214,7 @@ Test it!
 
 ```
 OUTPUT
-```sh
-The accuracy of OpenCV's k-NN is: 79.7454
-
-The accuracy of Shogun's k-NN is: 66.5509
-
+```
+The accuracy of OpenCV's k-NN is: 79.7454.
+The accuracy of Shogun's k-NN is: 66.5509.
 ```
