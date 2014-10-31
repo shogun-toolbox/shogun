@@ -204,7 +204,7 @@ Test it!
         ++ki;
     }
 
-    cout << "The accuracy of Shogun's k-NN is: "<< (float)100.0 *ki/sgvec.vlen << endl;
+    cout << "The accuracy of Shogun's k-NN is: " << (float)100.0 *ki/sgvec.vlen << endl;
  	
 	SG_UNREF(knn)
 	SG_UNREF(output)  
@@ -215,8 +215,8 @@ Test it!
 ```
 OUTPUT
 ```sh
-the efficiency of OpenCV k-NN is: 79.7454
+The accuracy of OpenCV's k-NN is: 79.7454
 
-the efficiency of k-NN for Shogun is: 66.5509
+The accuracy of Shogun's k-NN is: 66.5509
 
 ```
