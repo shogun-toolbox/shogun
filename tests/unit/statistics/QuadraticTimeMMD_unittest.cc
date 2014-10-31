@@ -450,15 +450,15 @@ TEST(QuadraticTimeMMD,compute_variance_null)
 	/* assert local machine computed result */
 	mmd->set_statistic_type(UNBIASED);
 	float64_t var=mmd->compute_variance_under_null();
-	EXPECT_NEAR(var, 0.0064888052500351456, 1E-15);
+	EXPECT_NEAR(var, 0.0064888052500351456, 1E-10);
 
 	mmd->set_statistic_type(BIASED);
 	var=mmd->compute_variance_under_null();
-	EXPECT_NEAR(var, 0.0071464012090942663, 1E-15);
+	EXPECT_NEAR(var, 0.0071464012090942663, 1E-10);
 
 	mmd->set_statistic_type(INCOMPLETE);
 	var=mmd->compute_variance_under_null();
-	EXPECT_NEAR(var, 0.0064888052500342575, 1E-15);
+	EXPECT_NEAR(var, 0.0064888052500342575, 1E-10);
 
 	/* clean up */
 	SG_UNREF(mmd);
