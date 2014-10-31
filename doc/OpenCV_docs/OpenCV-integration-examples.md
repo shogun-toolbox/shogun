@@ -1,14 +1,7 @@
-## KNN benchmarking with OpenCV
- * [K-Nearest Neighbours ](OpenCV_KNN_vs_Shogun_KNN.md) 
+## Shogun and OpenCV Integration Benchmarks and Examples
 
-## NN benchmarking with OpenCV
- * [Neural Networks](OpenCV_NN_vs_Shogun_NN.md)
-                                                                              
-## SVM benchmarking with OpenCV
- * [Support Vector Machines](OpenCV_SVM_vs_Shogun_SVM.md)
-
-## Eigenfaces face recognition using Shogun and OpenCV
- * [EigenFaces](eigenfaces.cpp)
-
-## Fisherfaces face recognition using Shogun and OpenCV
- * [FisherFaces](fisherfaces.cpp)
+* [k-Nearest Neighbours (k-NN) benchmarking](OpenCV_KNN_vs_Shogun_KNN.md).
+* [Neural Networks (NN) benchmark](OpenCV_NN_vs_Shogun_NN.md).
+* [Support Vector Machines (SVM) benchmark](OpenCV_SVM_vs_Shogun_SVM.md).
+* [EigenFaces face recognition example](eigenfaces.cpp).
+* [FisherFaces face recognition example](fisherfaces.cpp).
