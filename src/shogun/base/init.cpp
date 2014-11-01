@@ -17,7 +17,7 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/base/Parallel.h>
 #include <shogun/base/Version.h>
-#include <shogun/base/SGRefObject.h>
+#include <shogun/base/SGObject.h>
 #include <stdlib.h>
 #include <string.h>
 

@@ -6,7 +6,7 @@
  *
  * Written (W) 2008-2010 Soeren Sonnenburg
  * Written (W) 2011-2013 Heiko Strathmann
- * Written (W) 2013 Thoralf Klein
+ * Written (W) 2013-2014 Thoralf Klein
  * Copyright (C) 2008-2010 Fraunhofer Institute FIRST and Max Planck Society
  */
 
@@ -17,7 +17,6 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/lib/DataType.h>
-#include <shogun/base/SGRefObject.h>
 #include <shogun/lib/ShogunException.h>
 #include <shogun/base/Version.h>
 
@@ -26,6 +25,7 @@
  */
 namespace shogun
 {
+class RefCount;
 class SGIO;
 class Parallel;
 class Parameter;
@@ -38,6 +38,20 @@ template <class T, class K> class CMap;
 struct TParameter;
 template <class T> class DynArray;
 template <class T> class SGStringList;
+
+/*******************************************************************************
+ * define reference counter macros
+ ******************************************************************************/
+
+#ifdef USE_REFERENCE_COUNTING
+#define SG_REF(x) { if (x) (x)->ref(); }
+#define SG_UNREF(x) { if (x) { if ((x)->unref()==0) (x)=NULL; } }
+#define SG_UNREF_NO_NULL(x) { if (x) { (x)->unref(); } }
+#else
+#define SG_REF(x)
+#define SG_UNREF(x)
+#define SG_UNREF_NO_NULL(x)
+#endif
 
 /*******************************************************************************
  * Macros for registering parameters/model selection parameters
@@ -95,7 +109,7 @@ enum EGradientAvailability
  *
  * All objects can be cloned and compared (deep copy, recursively)
  */
-class CSGObject : public SGRefObject
+class CSGObject
 {
 public:
 	/** default constructor */
@@ -106,6 +120,31 @@ public:
 
 	/** destructor */
 	virtual ~CSGObject();
+
+#ifdef USE_REFERENCE_COUNTING
+	/** increase reference counter
+	 *
+	 * @return reference count
+	 */
+	int32_t ref();
+
+	/** display reference counter
+	 *
+	 * @return reference count
+	 */
+	int32_t ref_count();
+
+	/** decrement reference counter and deallocate object if refcount is zero
+	 * before or after decrementing it
+	 *
+	 * @return reference count
+	 */
+	int32_t unref();
+#endif //USE_REFERENCE_COUNTING
+
+#ifdef TRACE_MEMORY_ALLOCS
+	static void list_memory_allocs();
+#endif
 
 	/** A shallow copy.
 	 * All the SGObject instance variables will be simply assigned and SG_REF-ed.
@@ -484,6 +523,8 @@ private:
 	bool m_load_post_called;
 	bool m_save_pre_called;
 	bool m_save_post_called;
+
+	RefCount* m_refcount;
 };
 }
 #endif // __SGOBJECT_H__
