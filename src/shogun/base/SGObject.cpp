@@ -185,7 +185,7 @@ int32_t CSGObject::unref()
 #include <shogun/lib/Map.h>
 extern CMap<void*, shogun::MemoryBlock>* sg_mallocs;
 
-void SGObject::list_memory_allocs()
+void CSGObject::list_memory_allocs()
 {
 	shogun::list_memory_allocs();
 }
