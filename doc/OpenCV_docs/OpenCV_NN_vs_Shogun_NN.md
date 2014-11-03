@@ -1,6 +1,6 @@
 ###Neural network comparison between Shogun and OpenCV
 
-We will try to do a one to one comparison between Shogun's implementation of neural network to that of OpenCV's one on a standard multi-class data-set available [here.](http://archive.ics.uci.edu/ml/machine-learning-databases/car/car.data) Our dataset consists of 1728 examples in which we will use the first half (864) as the training data and the rest as the testing data.
+In this document, we will do a comparison between Shogun's implementation of neural networks and OpenCV's one using a standard multi-class data-set available [here.](http://archive.ics.uci.edu/ml/machine-learning-databases/car/car.data) Our dataset consists of 1728 examples. We will use the first half (864) as the training data and the rest as the testing data.
 
 Let's start with the includes!
 ```CPP
@@ -29,7 +29,7 @@ Let's start with the includes!
 // The variable start will be later used in the time measurement calculations.
 double start;
 #define ntime start=omp_get_wtime()
-#define ftime cout<<omp_get_wtime()-start<<endl
+#define ftime <<omp_get_wtime()-start<<endl
 ```
 
 Now the namespaces.
@@ -53,9 +53,9 @@ We will be using the ```CvMLData``` class of OpenCV.
     mlData.read_csv("car.data");
 ```
 
-The data that we have has the class response(outcome) written as the last index of each row.
+The data have the class response (outcome) written as the last index of each row.
 
-We get a pointer to a ```CvMat``` object containing all the data. Total number of the features is ```total columns -1```.
+We get a pointer to a ```CvMat``` object containing all the data. Total number of the features is ```the total columns - 1```.
 
 ```CPP
     const CvMat* temp = mlData.get_values();
@@ -213,12 +213,12 @@ Test it!
         if (p_max.x == test_max.x)
         ++k;
     }
-    cout<< "our nn for opencv gives an efficiency of: "<< 100.0* k/testdata.rows<<endl;
+    cout<< "Our OpenCV NN gives an accuracy of: "<< 100.0* k/testdata.rows<<endl;
 ```
 
-Now we start with the **Shogun's** Neural Network implementation.
+Now we start with the Neural Network implementation in **Shogun**.
 
-As usual, we start with creating the training data as the ```DenseFeatures```.
+As usual, we start with creating a ```DenseFeatures``` object with the training data.
 
 ```CPP
     SGMatrix<float64_t> shogun_traindata = CV2SGFactory::get_sgmatrix<float64_t>(traindata);
@@ -227,7 +227,7 @@ As usual, we start with creating the training data as the ```DenseFeatures```.
 ```
 
 
-Now the training responses as the ```MulticlassLabels```.
+The training responses are in an object of type ```MulticlassLabels```.
 ```CPP
     CDenseFeatures<float64_t>* shogun_dense_response = CV2SGFactory::get_dense_features<float64_t>(shogun_trainresponse);
     SGVector<float64_t> shogun_vector_response = shogun_dense_response->get_feature_vector(0);
@@ -243,9 +243,9 @@ Prepare the testing data.
 ```
 
 
-To use Neural Networks in **Shogun** following things are needed to be done
+To use Neural Networks in **Shogun** the following things need to be done:
 
-* Prepare a ```CDynamicObjectArray``` of ```CNeuralLayer```-based objects that specify the type of layers used in the network. The array must contain at least one input layer. The last layer in the array is treated as the output layer. Also note that forward propagation is performed in the order at which the layers appear in the array. So if layer ```j``` takes its input from layer ```i``` then ```i``` must be less than ```j```.
+* Prepare a ```CDynamicObjectArray``` of ```CNeuralLayer```-based objects that specify the type of layers used in the network. The array must contain at least one input layer. The last layer in the array is treated as the output layer. Also note that forward propagation is performed in the order the layers appear in the array. So, if layer ```j``` takes its input from layer ```i```, then ```i``` must be less than ```j```.
 
 * Specify how the layers are connected together. This can be done using either ```connect()``` or ```quick_connect()```.
 
@@ -264,7 +264,7 @@ To use Neural Networks in **Shogun** following things are needed to be done
 * Let us start with the first step.
 
 We will be preparing a ```CDynamicObjectArray```. It creates an array that can be used like a list or an array.
-We then append information related to number of neurons per layer in there respective order.
+We then append information related to the number of neurons per layer in the respective order.
 
 Here I have created a ```3``` layered network. The input layer consists of ```6``` neurons which is equal to number of features.
 The hidden layer has ```10``` neurons and similarly the output layer has ```4``` neurons which is equal to the number of classes.
@@ -315,7 +315,7 @@ The hidden layer has ```10``` neurons and similarly the output layer has ```4```
         if (predictions->get_label(i)==shogun_testresponse.at<int>(i))
         ++k;
     }
-    cout<<"our nn for shogun gives an efficiency of: "<<100.0*k/(mytraindataidx.cols)<<endl;
+    <<"Our Shogun NN gives an accuracy of: "<<100.0*k/(mytraindataidx.cols)<<endl;
     return 0;
 }
 ```
@@ -323,26 +323,25 @@ The hidden layer has ```10``` neurons and similarly the output layer has ```4```
 Output!
 
 1st time
-```sh
+```
     2.32288
-    Our nn for OpenCV gives an efficiency of: 68.8657
+    Our OpenCV NN gives an accuracy of: 68.8657
     0.39906
-    Our nn for Shogun gives an efficiency of: 81.713
+    Our Shogun NN gives an accuracy of: 81.713
 ```
 
 2nd time
-```sh
+```
     2.33449
-    our nn for opencv gives an efficiency of: 68.8657
+    Our OpenCV NN gives an accuracy of: 68.8657
     0.39428
-    our nn for shogun gives an efficiency of: 78.125
+    Our Shogun NN gives an accuracy of: 78.125
 ```
 
 3rd time
 ```sh
     2.30646
-    our nn for opencv gives an efficiency of: 68.8657
+    Our OpenCV NN gives an accuracy of: 68.8657
     0.40048
-    our nn for shogun gives an efficiency of: 76.8519
-
+    Our Shogun NN gives an accuracy of: 76.8519
 ```
