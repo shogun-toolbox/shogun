@@ -1458,8 +1458,8 @@ void CTrie<Trie>::count(
 	const int32_t m = ( m_a < m_b ) ? m_a : m_b;
 	// all proper k-substrings
 	const int32_t offset0 = nofKmers * p;
-	register int32_t i;
-	register int32_t offset;
+	int32_t i;
+	int32_t offset;
 	offset = offset0;
 	for( i = 0; i < m; ++i ) {
 		const int32_t y = info.substrs[i+k+1];

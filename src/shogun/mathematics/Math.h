@@ -315,7 +315,7 @@ class CMath : public CSGObject
 			static inline void swap(T &a,T &b)
 			{
 			/* register for fast swaps */
-				register T c=a;
+				T c=a;
 				a=b;
 				b=c;
 			}
