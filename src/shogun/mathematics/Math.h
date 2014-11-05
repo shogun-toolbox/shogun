@@ -314,7 +314,6 @@ class CMath : public CSGObject
 		template <class T>
 			static inline void swap(T &a,T &b)
 			{
-			/* register for fast swaps */
 				T c=a;
 				a=b;
 				b=c;
@@ -1416,9 +1415,9 @@ class CMath : public CSGObject
 					}
 					else
 					{
-						register float64_t *pp=p ;
+						float64_t *pp=p ;
 						if (len%2==1) pp++ ;
-						for (register int32_t j=0; j < len>>1; j++)
+						for (int32_t j=0; j < len>>1; j++)
 							pp[j]=logarithmic_sum(pp[j<<1], pp[1+(j<<1)]) ;
 					}
 					return logarithmic_sum_array(p,len%2 + (len>>1)) ;
