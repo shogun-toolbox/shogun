@@ -762,6 +762,7 @@ class CMath : public CSGObject
 		static T log_sum_exp(SGVector<T> values)
 		{
 			REQUIRE(values.vector, "Values are empty");
+			REQUIRE(values.vlen>0,"number of values supplied is 0\n");
 
 			/* find minimum element index */
 			index_t min_index=0;
