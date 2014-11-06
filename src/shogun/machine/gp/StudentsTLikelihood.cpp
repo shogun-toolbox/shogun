@@ -604,7 +604,8 @@ SGVector<float64_t> CStudentsTLikelihood::get_log_zeroth_moments(
 
 	SG_UNREF(h);
 
-	r.log();
+	for (index_t i=0; i<r.vlen; i++)
+		r[i]=CMath::log(r[i]);
 
 	return r;
 }
