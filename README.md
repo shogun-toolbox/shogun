@@ -29,6 +29,7 @@ Other links that may be useful:
 
 ## Introduction
 ---------------
+
 The Shogun Machine learning toolbox provides a wide range of *unified* and *efficient* Machine Learning (ML) methods. The toolbox seamlessly allows to easily combine multiple data representations, algorithm classes, and general purpose tools. This enables both rapid prototyping of data pipelines and extensibility in terms of new algorithms. We combine modern software architecture in C++ with both efficient low-level computing backends and cutting edge algorithm implementations to solve large-scale Machine Learning problems (yet) on single machines.
 
 One of Shogun's most exciting features is that you can use the toolbox through a *unified* interface from C++, Python, Octave, R, Java, Lua, C#, etc. This not just means that we are independent of trends in computing languages, but it also lets you use Shogun as a vehicle to expose your algorithm to multiple communities. We use [SWIG](http://www.swig.org/) to enable *bidirectional* communication between C++ and target languages. Shogun runs under Linux/Unix, MacOS, Windows.
