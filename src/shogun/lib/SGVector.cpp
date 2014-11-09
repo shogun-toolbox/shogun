@@ -1193,78 +1193,6 @@ void SGVector<complex128_t>::save(CFile* saver)
 	SG_SERROR("SGVector::save():: Not supported for complex128_t\n");
 }
 
-
-#define MATHOP(op)								\
-template <class T> void SGVector<T>::op()		\
-{												\
-	for (int32_t i=0; i<vlen; i++)				\
-		vector[i]=(T) CMath::op((double) vector[i]);		\
-}
-
-MATHOP(abs)
-MATHOP(acos)
-MATHOP(asin)
-MATHOP(atan)
-MATHOP(cos)
-MATHOP(cosh)
-MATHOP(exp)
-MATHOP(log)
-MATHOP(log10)
-MATHOP(sin)
-MATHOP(sinh)
-MATHOP(sqrt)
-MATHOP(tan)
-MATHOP(tanh)
-#undef MATHOP
-
-#define COMPLEX128_MATHOP(op)								\
-template <>\
-void SGVector<complex128_t>::op()		\
-{												\
-	for (int32_t i=0; i<vlen; i++)				\
-		vector[i]=complex128_t(CMath::op(vector[i]));		\
-}
-
-COMPLEX128_MATHOP(abs)
-COMPLEX128_MATHOP(sin)
-COMPLEX128_MATHOP(cos)
-COMPLEX128_MATHOP(tan)
-COMPLEX128_MATHOP(sinh)
-COMPLEX128_MATHOP(cosh)
-COMPLEX128_MATHOP(tanh)
-COMPLEX128_MATHOP(exp)
-COMPLEX128_MATHOP(log)
-COMPLEX128_MATHOP(log10)
-COMPLEX128_MATHOP(sqrt)
-#undef COMPLEX128_MATHOP
-
-#define COMPLEX128_MATHOP_NOTIMPLEMENTED(op)								\
-template <>\
-void SGVector<complex128_t>::op()		\
-{												\
-	SG_SERROR("SGVector::%s():: Not supported for complex128_t\n",#op);\
-}
-
-COMPLEX128_MATHOP_NOTIMPLEMENTED(asin)
-COMPLEX128_MATHOP_NOTIMPLEMENTED(acos)
-COMPLEX128_MATHOP_NOTIMPLEMENTED(atan)
-#undef COMPLEX128_MATHOP_NOTIMPLEMENTED
-
-template <class T> void SGVector<T>::atan2(T x)
-{
-	for (int32_t i=0; i<vlen; i++)
-		vector[i]=CMath::atan2(vector[i], x);
-}
-
-BOOL_ERROR_ONEARG(atan2)
-COMPLEX128_ERROR_ONEARG(atan2)
-
-template <class T> void SGVector<T>::pow(T q)
-{
-	for (int32_t i=0; i<vlen; i++)
-		vector[i]=(T) CMath::pow((double) vector[i], (double) q);
-}
-
 template <class T>
 SGVector<float64_t> SGVector<T>::linspace_vec(T start, T end, int32_t n)
 {
@@ -1286,13 +1214,6 @@ float64_t* SGVector<complex128_t>::linspace(complex128_t start, complex128_t end
 	float64_t* output = SG_MALLOC(float64_t, n);
 	SG_SERROR("SGVector::linspace():: Not supported for complex128_t\n");
 	return output;
-}
-
-template <>
-void SGVector<complex128_t>::pow(complex128_t q)
-{
-	for (int32_t i=0; i<vlen; i++)
-		vector[i]=CMath::pow(vector[i], q);
 }
 
 template <class T> SGVector<float64_t> SGVector<T>::get_real()

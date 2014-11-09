@@ -629,39 +629,6 @@ template<class T> class SGVector : public SGReferencedData
 		 */
 		void save(CFile* saver);
 
-		/// Absolute value of vector elements
-		void abs();
-		/// Arc cosine of vector elements
-		void acos();
-		/// Arc sine of vector elements
-		void asin();
-		/// Arc tangent of vector elements
-		void atan();
-		/// Atan2 of vector elements
-		void atan2(T x);
-		/// Cosine of vector elements
-		void cos();
-		/// Hyperbolic cosine of vector elements
-		void cosh();
-		/// Exponential of vector elements
-		void exp();
-		/// Natural logarithm of vector elements
-		void log();
-		/// Common logarithm of vector elements
-		void log10();
-		/// Power of vector elements
-		void pow(T q);
-		/// Sine of vector elements
-		void sin();
-		/// Hyperbolic sine of vector elements
-		void sinh();
-		/// Square root of vector elements
-		void sqrt();
-		/// Tangent of vector elements
-		void tan();
-		/// Hyperbolic tangent of vector elements
-		void tanh();
-
 		/** Real part of a complex128_t vector */
 		SGVector<float64_t> get_real();
 

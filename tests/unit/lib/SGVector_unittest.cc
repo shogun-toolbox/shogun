@@ -228,31 +228,7 @@ TEST(SGVectorTest,complex128_tests)
 	EXPECT_NEAR(norm2.real(), 10.0, 1E-14);
 	EXPECT_NEAR(norm2.imag(), 12.0, 1E-14);
 
-	// tests ::maths
-	a.set_const(complex128_t(1.0, 2.0));
-	a.abs();
-	for (index_t i=0; i<a.vlen; ++i)
-	{
-		EXPECT_NEAR(a[i].real(), 2.23606797749978980505, 1E-14);
-		EXPECT_NEAR(a[i].imag(), 0.0, 1E-14);
-	}
-
-	a.set_const(complex128_t(1.0, 2.0));
-	a.sin();
-	for (index_t i=0; i<a.vlen; ++i)
-	{
-		EXPECT_NEAR(a[i].real(), 3.16577851321616821068, 1E-14);
-		EXPECT_NEAR(a[i].imag(), 1.95960104142160607132, 1E-14);
-	}
-
-	a.set_const(complex128_t(1.0, 2.0));
-	a.cos();
-	for (index_t i=0; i<a.vlen; ++i)
-	{
-		EXPECT_NEAR(a[i].real(), 2.03272300701966557313, 1E-14);
-		EXPECT_NEAR(a[i].imag(), -3.05189779915179970615, 1E-14);
-	}
-
+	// tests ::get_real and ::get_imag
 	a.set_const(complex128_t(1.0, 2.0));
 	SGVector<float64_t> a_real=a.get_real();
 	SGVector<float64_t> a_imag=a.get_imag();

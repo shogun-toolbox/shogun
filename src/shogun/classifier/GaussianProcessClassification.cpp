@@ -40,6 +40,7 @@
 #ifdef HAVE_EIGEN3
 
 #include <shogun/classifier/GaussianProcessClassification.h>
+#include <shogun/mathematics/Math.h>
 
 using namespace shogun;
 
@@ -80,7 +81,7 @@ CMulticlassLabels* CGaussianProcessClassification::apply_multiclass(CFeatures* d
 	SGVector<float64_t> mean=get_mean_vector(data);
 	const index_t C=mean.vlen/n;
 	SGVector<index_t> lab(n);
-	for(index_t idx=0; idx<n; idx++)
+	for (index_t idx=0; idx<n; idx++)
 	{
 		int32_t cate=SGVector<float64_t>::arg_max(mean.vector+idx*C, 1, C);
 		lab[idx]=cate;
@@ -200,7 +201,8 @@ SGVector<float64_t> CGaussianProcessClassification::get_probabilities(
 	SG_UNREF(lik);
 
 	// evaluate probabilities
-	p.exp();
+	for (index_t idx=0; idx<p.vlen; idx++)
+		p[idx]=CMath::exp(p[idx]);
 
 	return p;
 }
