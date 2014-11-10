@@ -78,6 +78,22 @@ template<class T> class SGVector : public SGReferencedData
 #endif
 #endif
 
+		/** Set vector to a constant
+		 *
+		 * @param const_elem - value to set vector to
+		 */
+		void set_const(T const_elem);
+
+		/**
+		 * Get the vector (no copying is done here)
+		 *
+		 * @return the refcount increased vector
+		 */
+		SGVector<T> get()
+		{
+			return *this;
+		}
+
 #ifndef SWIG // SWIG should skip this part
 		/** Wrapper for the copy constructor useful for SWIG interfaces
 		 *
@@ -96,12 +112,6 @@ template<class T> class SGVector : public SGReferencedData
 
 		/** Fill vector with zeros */
 		void zero();
-
-		/** Set vector to a constant
-		 *
-		 * @param const_elem - value to set vector to
-		 */
-		void set_const(T const_elem);
 
 		/** Range fill a vector with start...start+len-1
 		 *
@@ -175,16 +185,6 @@ template<class T> class SGVector : public SGReferencedData
 
 		/** Random vector */
 		static void random_vector(T* vec, int32_t len, T min_value, T max_value);
-
-		/**
-		 * Get the vector (no copying is done here)
-		 *
-		 * @return the refcount increased vector
-		 */
-		SGVector<T> get()
-		{
-			return *this;
-		}
 
 		/** Get vector element at index
 		 *
