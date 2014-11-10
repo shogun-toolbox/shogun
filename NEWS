@@ -12,7 +12,8 @@
 	    - Variational Learning for Gaussian Processes [Wu Lin; Heiko Strathmann, Emtiyaz Khan]
 	* This release also contains several cleanups and bugfixes:
 	* Features:
-		- New Shogun project description [Heiko Strathmann]
+		- New nightly *binary* build for Ubuntu: https://launchpad.net/~shogun-daily/+archive/ubuntu/ppa [Viktor Gal]
+		- New Shogun project description and documentation updates [Heiko Strathmann]
 		- ID3 algorithm for decision tree learning [Parijat Mazumdar]
 		- New modes for PCA matrix factorizations: SVD & EVD, in-place or reallocating [Parijat Mazumdar]
 		- Add Neural Networks with linear, logistic and softmax neurons [Khaled Nasr]
@@ -43,6 +44,8 @@
 		- Fix memory leaks in Vowpal Wabbit, LibSVMFile and KernelPCA [Thoralf Klein]
 		- Fix memory and control flow issues discovered by Coverity [Thoralf Klein]
 		- Fix R modular interface SWIG typemap (Requires SWIG >= 2.0.5) [Matt Huska]
+		- Fixes for SWIG3 [Viktor Gal]
+		- Fixes for C# and Mono3 [Viktor Gal]
 	* Cleanup and API Changes:
 		- PCA now depends on Eigen3 instead of LAPACK [Parijat Mazumdar]
 		- Removing redundant and fixing implicit imports [Thoralf Klein]
