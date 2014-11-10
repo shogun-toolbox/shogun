@@ -21,9 +21,10 @@ Shogun got initiated in 1999 by [Soeren Sonnenburg](http://sonnenburgs.de/soeren
   \li \subpage interfaces
   \li \subpage faq
   \li \subpage developer "Developer Guide"
-  \li \subpage authors
+  \li \subpage authors "Authors"
+  \li \subpage contributions "Contributions"
   \li \subpage license
 
   Sincerely,
-  the shogun-authors.
+  the Shogun team.
 */
