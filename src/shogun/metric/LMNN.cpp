@@ -14,8 +14,7 @@
 #include <shogun/metric/LMNNImpl.h>
 #include <shogun/mathematics/Math.h>
 
-/// useful shorthands to perform operations with Eigen matrices
-
+// useful shorthand to perform operations with Eigen matrices
 // trace of the product of two matrices computed fast using trace(A*B)=sum(A.*B')
 #define	TRACE(A,B)		(((A).array()*(B).transpose().array()).sum())
 
@@ -61,10 +60,10 @@ void CLMNN::train(SGMatrix<float64_t> init_transform)
 {
 	SG_DEBUG("Entering CLMNN::train().\n")
 
-	/// Check training data and arguments, initializing, if necessary, init_transform
+	// Check training data and arguments, initializing, if necessary, init_transform
 	CLMNNImpl::check_training_setup(m_features, m_labels, init_transform);
 
-	/// Initializations
+	// Initializations
 
 	// cast is safe, check_training_setup ensures features are dense
 	CDenseFeatures<float64_t>* x = static_cast<CDenseFeatures<float64_t>*>(m_features);
@@ -94,7 +93,7 @@ void CLMNN::train(SGMatrix<float64_t> init_transform)
 	// Make space for the training statistics
 	m_statistics->resize(m_maxiter);
 
-	/// Main loop
+	// Main loop
 	while (!stop)
 	{
 		SG_PROGRESS(iter, 0, m_maxiter)
@@ -137,7 +136,7 @@ void CLMNN::train(SGMatrix<float64_t> init_transform)
 	// Truncate statistics in case convergence was reached in less than maxiter
 	m_statistics->resize(iter);
 
-	/// Store the transformation found in the class attribute
+	// Store the transformation found in the class attribute
 	int32_t nfeats = x->get_num_features();
 	float64_t* cloned_data = SGMatrix<float64_t>::clone_matrix(L.data(), nfeats, nfeats);
 	m_linear_transform = SGMatrix<float64_t>(cloned_data, nfeats, nfeats);
