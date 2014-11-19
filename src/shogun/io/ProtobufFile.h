@@ -16,16 +16,21 @@
 
 #include <shogun/io/File.h>
 
-#if defined(__APPLE__) && defined(TYPE_BOOL)
-    #define ___APPLE_TYPE_BOOL TYPE_BOOL
-    #undef TYPE_BOOL
+// a hack to avoid clashes with apple's ConditionalMacros.h
+#ifdef __APPLE__
+    #ifdef TYPE_BOOL
+        #define ___APPLE_TYPE_BOOL TYPE_BOOL
+        #undef TYPE_BOOL
+    #endif
 #endif
 
 #include <google/protobuf/message.h>
 
-#if defined(__APPLE__) && defined(___APPLE_TYPE_BOOL)
-    #define TYPE_BOOL ___APPLE_TYPE_BOOL
-    #undef ___APPLE_TYPE_BOOL
+#ifdef __APPLE__
+    #ifdef ___APPLE_TYPE_BOOL
+        #define TYPE_BOOL ___APPLE_TYPE_BOOL
+        #undef ___APPLE_TYPE_BOOL
+    #endif
 #endif
 
 #include <shogun/io/protobuf/ShogunVersion.pb.h>
