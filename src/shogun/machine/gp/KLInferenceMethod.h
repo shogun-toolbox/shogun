@@ -186,7 +186,7 @@ public:
 	 * @param max_linesearch The maximum number of trials to do line search for each L-BFGS update. 
 	 * Default value is 1000.
 	 * @param linesearch The line search algorithm. 
-	 * Default value is using the Morethuente line search
+	 * Default value is using the backtracking with the strong Wolfe condition line search
 	 * @param max_iterations The maximum number of iterations for L-BFGS update. 
 	 * Default value is 1000.
 	 * @param delta Delta for convergence test based on the change of function value.
@@ -218,7 +218,7 @@ public:
 	 */
 	virtual void set_lbfgs_parameters(int m = 100,
 			int max_linesearch = 1000,
-			int linesearch = LBFGS_LINESEARCH_DEFAULT,
+			int linesearch = LBFGS_LINESEARCH_BACKTRACKING_STRONG_WOLFE,
 			int max_iterations = 1000,
 			float64_t delta = 0.0,
 			int past = 0,

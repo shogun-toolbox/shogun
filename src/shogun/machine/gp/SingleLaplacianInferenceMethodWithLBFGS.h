@@ -98,7 +98,7 @@ public:
 	 * @param max_linesearch The maximum number of trials to do line search for each L-BFGS update. 
 	 * Default value is 1000.
 	 * @param linesearch The line search algorithm. 
-	 * Default value is using the Morethuente line search
+	 * Default value is using the backtracking with the strong Wolfe condition line search
 	 * @param max_iterations The maximum number of iterations for L-BFGS update. 
 	 * Default value is 1000.
 	 * @param delta Delta for convergence test based on the change of function value.
@@ -107,8 +107,6 @@ public:
 	 * Default value is 0. 
 	 * @param epsilon Epsilon for convergence test based on the change of gradient.
 	 * Default value is 1e-5
-	 * @param enable_newton_if_fail if LBFGS optimizer fails, should we use Newton method.
-	 * Default value is true.  
 	 * @param min_step The minimum step of the line search.
 	 * The default value is 1e-20
 	 * @param max_step The maximum step of the line search.
@@ -132,12 +130,11 @@ public:
 	 */
 	virtual void set_lbfgs_parameters(int m = 100,
 			int max_linesearch = 1000,
-			int linesearch = LBFGS_LINESEARCH_DEFAULT,
+			int linesearch = LBFGS_LINESEARCH_BACKTRACKING_STRONG_WOLFE,
 			int max_iterations = 1000,
 			float64_t delta = 0.0,
 			int past = 0,
 			float64_t epsilon = 1e-5,
-			bool enable_newton_if_fail = true,
 			float64_t min_step = 1e-20,
 			float64_t max_step = 1e+20,
 			float64_t ftol = 1e-4,
@@ -148,7 +145,11 @@ public:
 			int orthantwise_start = 0,
 			int orthantwise_end = 1);
 
-
+	/* wheter we use Newton method as rollbak if LBFGS optimizer fails
+	 *
+	 * @param enable_newton_if_fail if LBFGS optimizer fails, should we use Newton method.
+	 */ 
+	virtual void set_newton_method(bool enable_newton_if_fail);
 protected:
 	/* update alpha using the LBFGS method*/
 	virtual void update_alpha();

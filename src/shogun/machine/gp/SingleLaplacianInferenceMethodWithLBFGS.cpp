@@ -57,6 +57,12 @@ CSingleLaplacianInferenceMethodWithLBFGS::CSingleLaplacianInferenceMethodWithLBF
 	init();
 }
 
+void CSingleLaplacianInferenceMethodWithLBFGS::set_newton_method(
+	bool enable_newton_if_fail)
+{
+	m_enable_newton_if_fail = enable_newton_if_fail;
+}
+
 void CSingleLaplacianInferenceMethodWithLBFGS::set_lbfgs_parameters(
 	int m,
 	int max_linesearch,
@@ -65,7 +71,6 @@ void CSingleLaplacianInferenceMethodWithLBFGS::set_lbfgs_parameters(
 	float64_t delta,
 	int past,
 	float64_t epsilon,
-	bool enable_newton_if_fail,
 	float64_t min_step,
 	float64_t max_step,
 	float64_t ftol,
@@ -92,12 +97,12 @@ void CSingleLaplacianInferenceMethodWithLBFGS::set_lbfgs_parameters(
 	m_orthantwise_c = orthantwise_c;
 	m_orthantwise_start = orthantwise_start;
 	m_orthantwise_end = orthantwise_end;
-	m_enable_newton_if_fail = enable_newton_if_fail;
 }
 
 void CSingleLaplacianInferenceMethodWithLBFGS::init()
 {
 	set_lbfgs_parameters();
+	set_newton_method(false);
 	m_mean_f = NULL;
 	SG_ADD(&m_m, "m",
 		"The number of corrections to approximate the inverse hessian matrix",
