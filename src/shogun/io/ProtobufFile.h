@@ -23,7 +23,7 @@
 
 #include <google/protobuf/message.h>
 
-#if defined(__APPLE__) && defined(TYPE_BOOL)
+#if defined(__APPLE__) && defined(___APPLE_TYPE_BOOL)
     #define TYPE_BOOL ___APPLE_TYPE_BOOL
     #undef ___APPLE_TYPE_BOOL
 #endif
