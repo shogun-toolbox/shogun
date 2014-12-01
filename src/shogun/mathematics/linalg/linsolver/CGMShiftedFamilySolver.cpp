@@ -186,7 +186,7 @@ SGVector<complex128_t> CCGMShiftedFamilySolver::solve_shifted_weighted(
 	if (!it.succeeded(r))
 		SG_WARNING("Did not converge!\n");
 
-	SG_INFO("Iteration took %ld times, residual norm=%.20lf, time elapsed=%lf\n",
+	SG_INFO("Iteration took %d times, residual norm=%.20lf, time elapsed=%f\n",
 		it.get_iter_info().iteration_count, it.get_iter_info().residual_norm, elapsed);
 
 	// compute the final result vector multiplied by weights
