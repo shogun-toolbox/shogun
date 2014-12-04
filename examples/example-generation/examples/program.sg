@@ -1,0 +1,15 @@
+CSVFile trainf("train.dat")
+RealFeatures feats_train(trainf)
+CSVFile testf("test.dat")
+RealFeatures feats_test(testf)
+
+EuclideanDistance distance(feats_train, feats_test)
+CSVFile train_labels("train_label.dat")
+MulticlassLabels labels(train_labels)
+
+KNN knn(3, distance, labels)
+bool knn_train = knn.train()
+knn_train = False
+Labels test_labels = knn.apply(feats_test)
+RealVector label_values = test_labels.get_values()
+IntMatrix mulitple_k = knn.classify_for_multiple_k()
