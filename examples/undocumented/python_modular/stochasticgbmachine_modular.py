@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 import numpy as np
 
-traindat = '../../../data/multiclass/categorical_dataset/fm_housing.dat'
-label_traindat = '../../../data/multiclass/categorical_dataset/housing_label.dat'
+traindat = '../../../data/uci/housing/fm_housing.dat'
+label_traindat = '../../../data/uci/housing/housing_label.dat'
 
 # set both input attributes as nominal (True) / continuous (False)
 feat_types=np.array([False,False,False,True,False,False,False,False,False,False,False,False,False])
