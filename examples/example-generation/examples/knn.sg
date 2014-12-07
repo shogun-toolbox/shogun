@@ -1,10 +1,10 @@
-CSVFile trainf("train.dat")
+CSVFile trainf("../documented/data/fm_train_real.dat")
 RealFeatures feats_train(trainf)
-CSVFile testf("test.dat")
+CSVFile testf("../documented/data/fm_test_real.dat")
 RealFeatures feats_test(testf)
 
 EuclideanDistance distance(feats_train, feats_test)
-CSVFile train_labels("train_label.dat")
+CSVFile train_labels("../documented/data/label_train_multiclass.dat")
 MulticlassLabels labels(train_labels)
 
 KNN knn(3, distance, labels)

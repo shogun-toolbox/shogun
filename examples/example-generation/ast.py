@@ -24,6 +24,15 @@ class StringLiteral(Literal): pass
 
 class JSONEncoder(json.JSONEncoder):
     def default(self, node):
+        """ Encodes the AST into objects that are JSON serializable """
+
+        if issubclass(node.__class__, ArgumentList):
+            # Flatten argument lists: [Expr, [Expr, [Expr]]] = [Expr, Expr, Expr]
+            while isinstance(node.tokens[-1], ArgumentList):
+                tail = node.tokens[-1].tokens
+                node.tokens = node.tokens[0:-1]
+                node.tokens.extend(tail)
+
         if issubclass(node.__class__, BaseNode):
             if len(node.tokens) > 1:
                 # If tokens is a list we only consider instances of BaseClass subclasses
@@ -33,5 +42,7 @@ class JSONEncoder(json.JSONEncoder):
 
                 return {node.__class__.__name__: objectList}
             else:
+                # For non-lists, we pass on the token no matter its type
                 return {node.__class__.__name__:self.default(node.tokens[0])}
+
         return node

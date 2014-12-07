@@ -1,0 +1,23 @@
+{
+    "ImportDependencies": "from modshogun import $dependencies\n\n",
+    "Statement": "$statement\n",
+    "Init": {
+        "Construct": "$name = $type($arguments)",
+        "Copy": "$name = $expr"
+    },
+    "Assign": "$name = $expr",
+    "Type": {
+        "BasicType": "$type",
+        "ObjectType": "$type"
+    },
+    "Expr": {
+        "StringLiteral": "\"$literal\"",
+        "BoolLiteral": {
+            "True": "True",
+            "False": "False"
+        },
+        "NumberLiteral": "$number",
+        "MethodCall": "$object.$method($arguments)",
+        "Identifier": "$identifier"
+    }    
+}

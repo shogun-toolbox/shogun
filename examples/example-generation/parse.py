@@ -1,9 +1,10 @@
 import sys
-import parsetree as tree
+import ast
 import pyparsing as pp
 import json
 # Memoization speed boost
 pp.ParserElement.enablePackrat()
+pp.ParserElement.setDefaultWhitespaceChars(' \t')
 
 """
 grammar (mixed BNF and regex notation)
@@ -20,10 +21,10 @@ argumentList -> expr | expr, argumentList
 methodCall -> identifier . identifier '(' argumentList | empty ')'
 expr -> stringLiteral | boolLiteral | numeral | methodCall | identifier
 
-assignment -> identiger = expr
+assignment -> identifier = expr
 initialisation -> type identifier ('(' argumentList | epsilon ')' | (= expr))
 
-statement -> (initialisation | assignment | expr) ;
+statement -> (initialisation | assignment | expr)
 
 grammar -> statement*
 """
@@ -47,25 +48,25 @@ def grammar():
     assignment = identifier + '=' + expr
     initialisation = type + identifier + (('(' + (argumentList ^ pp.empty) + ')') ^ ('=' + expr))
 
-    statement = (initialisation ^ assignment ^ expr) + pp.lineEnd
+    statement = ((initialisation ^ assignment ^ expr) + pp.lineEnd) ^ pp.lineEnd
 
     grammar = pp.Forward()
     grammar << pp.ZeroOrMore(statement)
 
-    # Connect grammar to parse tree data structure
-    grammar.setParseAction(tree.Program)
-    statement.setParseAction(tree.Statement)
-    initialisation.setParseAction(tree.Init)
-    assignment.setParseAction(tree.Assign)
-    expr.setParseAction(tree.Expr)
-    methodCall.setParseAction(tree.MethodCall)
-    numeral.setParseAction(tree.NumberLiteral)
-    stringLiteral.setParseAction(tree.StringLiteral)
-    boolLiteral.setParseAction(tree.BoolLiteral)
-    basicType.setParseAction(tree.BasicType)
-    objectType.setParseAction(tree.ObjectType)
-    identifier.setParseAction(tree.Identifier)
-    argumentList.setParseAction(tree.ArgumentList)
+    # Connect grammar to ast data structure
+    grammar.setParseAction(ast.Program)
+    statement.setParseAction(ast.Statement)
+    initialisation.setParseAction(ast.Init)
+    assignment.setParseAction(ast.Assign)
+    expr.setParseAction(ast.Expr)
+    methodCall.setParseAction(ast.MethodCall)
+    numeral.setParseAction(ast.NumberLiteral)
+    stringLiteral.setParseAction(ast.StringLiteral)
+    boolLiteral.setParseAction(ast.BoolLiteral)
+    basicType.setParseAction(ast.BasicType)
+    objectType.setParseAction(ast.ObjectType)
+    identifier.setParseAction(ast.Identifier)
+    argumentList.setParseAction(ast.ArgumentList)
 
     return grammar
 
@@ -81,4 +82,4 @@ def shogunType():
 
 if __name__ == "__main__":
     program = grammar().parseFile(sys.argv[1], parseAll=True)[0]
-    print json.dumps(program, cls=tree.JSONEncoder, indent=2)
+    print json.dumps(program, cls=ast.JSONEncoder, indent=2)
