@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 def get_dataset():
 	from os.path import exists
-	filename = "../data/optdigits.tes"
+	filename = "../../../data/uci/optdigits/optdigits.tes"
 	if exists(filename):
 		return open(filename)
 	else:
-		#print("Retrieving data...")
+		# print("Retrieving data...")
 		try:
 			from urllib2 import urlopen
 		except ImportError:
@@ -15,7 +15,7 @@ def get_dataset():
 def prepare_data():
 	from numpy import loadtxt
 	stream = get_dataset()
-	#print("Loading data...")
+	# print("Loading data...")
 	data = loadtxt(stream, delimiter=',')
 	fea = data[:, :-1]
 	gnd = data[:, -1]
@@ -34,7 +34,7 @@ def run_clustering(data, k):
 	distance = EuclideanDistance(fea, fea)
 	kmeans=KMeans(k, distance)
 
-	#print("Running clustering...")
+	# print("Running clustering...")
 	kmeans.train()
 
 	return kmeans.get_cluster_centers()
