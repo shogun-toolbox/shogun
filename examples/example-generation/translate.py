@@ -24,6 +24,9 @@ class Translator:
         """ Returns dependency import string 
             e.g. for python: "from modshogun import RealFeatures\n\n" 
         """
+        if len(self.dependencies) == 0:
+            return ""
+
         dependencyList = list(self.dependencies)
         importTemplate = Template(self.targetDict["ImportDependencies"])
         csdependencies = "" # comma separated dependencies
@@ -53,6 +56,8 @@ class Translator:
             translation = template.substitute(name=name, expr=expr)
         elif type == "Expr":
             translation = self.translateExpr(statement["Expr"])
+        elif type == "Print":
+            translation = self.translatePrint(statement["Print"])
 
         if translation == None:
             raise Exception("Unknown statment type: " + type)
@@ -117,7 +122,15 @@ class Translator:
             template = Template(self.targetDict["Expr"]["Identifier"])
             return template.substitute(identifier=expr[key])
 
+        elif key == "Enum":
+            self.dependencies.add(expr[key]["Identifier"])
+            return self.translateExpr(expr[key])
+
         raise Exception("Unknown expression type: " + key)
+
+    def translatePrint(self, printStmt):
+        template = Template(self.targetDict["Print"])
+        return template.substitute(expr=self.translateExpr(printStmt["Expr"]))
 
     def translateType(self, type):
         """ Translate type AST
@@ -161,6 +174,12 @@ class Translator:
 if __name__ == "__main__":
     translator = Translator("targets/python.json")
 
-    programString = sys.stdin.read()
+    programString = None
+    if len(sys.argv) > 1:
+        with open(sys.argv[1], "r") as inputFile:
+            programString = inputFile.read()
+    else:
+        programString = sys.stdin.read()
+
     programObject = json.loads(programString)
     print translator.translateProgram(programObject["Program"])

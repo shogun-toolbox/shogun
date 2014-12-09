@@ -123,6 +123,15 @@ class TestPythonTranslator(unittest.TestCase):
         translation = self.translator.translateStatement(stmtAST)
         self.assertEqual(translation, u"\n")
 
+    def test_translateStatementPrint(self):
+        stmtAST = {
+            "Print": {"Expr": {"Identifier": "multiple_k"}}
+        }
+
+        translation = self.translator.translateStatement(stmtAST)
+
+        self.assertEqual(translation, u"print multiple_k\n")
+
     def test_translateType(self):
         typeAST = {
             "ObjectType": "IntMatrix"
@@ -130,6 +139,15 @@ class TestPythonTranslator(unittest.TestCase):
         translation = self.translator.translateType(typeAST)
 
         self.assertEqual(translation, u"IntMatrix")
+
+    def test_translateExprEnum(self):
+        enumAST = {
+            "Enum": {"Identifier": "L2R_L2LOSS_SVC_DUAL"}
+        }
+        translation = self.translator.translateExpr(enumAST)
+
+        self.assertEqual(translation, u"L2R_L2LOSS_SVC_DUAL")
+        self.assertTrue(u"L2R_L2LOSS_SVC_DUAL" in self.translator.dependencies)
 
 
 if __name__ == '__main__':

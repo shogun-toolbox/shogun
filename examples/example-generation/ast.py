@@ -10,9 +10,11 @@ class Program(BaseNode): pass
 class Statement(BaseNode): pass
 class Init(BaseNode): pass
 class Assign(BaseNode): pass
+class Print(BaseNode): pass
 class Identifier(BaseNode): pass
 class ArgumentList(BaseNode): pass
 class Expr(BaseNode): pass
+class Enum(Expr): pass
 class MethodCall(Expr): pass
 class Type(BaseNode): pass # Abstract. Don't use directly
 class BasicType(Type): pass
@@ -33,6 +35,11 @@ class JSONEncoder(json.JSONEncoder):
                 node.tokens = node.tokens[0:-1]
                 node.tokens.extend(tail)
 
+        if issubclass(node.__class__, Program):
+            # Remove the EOF token if it got parsed as an individual statement
+            if len(node.tokens[-1].tokens) == 0:
+                node.tokens = node.tokens[0:-1]
+
         if issubclass(node.__class__, BaseNode):
             if len(node.tokens) > 1:
                 # If tokens is a list we only consider instances of BaseClass subclasses
@@ -42,7 +49,11 @@ class JSONEncoder(json.JSONEncoder):
 
                 return {node.__class__.__name__: objectList}
             else:
+                tokens = None
+                if len(node.tokens) > 0:
+                    tokens = self.default(node.tokens[0])
+
                 # For non-lists, we pass on the token no matter its type
-                return {node.__class__.__name__:self.default(node.tokens[0])}
+                return {node.__class__.__name__:tokens}
 
         return node

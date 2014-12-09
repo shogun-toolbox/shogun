@@ -11,5 +11,10 @@ KNN knn(3, distance, labels)
 bool knn_train = knn.train()
 knn_train = False
 Labels test_labels = knn.apply(feats_test)
-RealVector label_values = test_labels.get_values()
+RealVector output = test_labels.get_values()
 IntMatrix mulitple_k = knn.classify_for_multiple_k()
+
+print knn
+print knn_train
+print output
+print multiple_k

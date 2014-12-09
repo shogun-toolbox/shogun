@@ -19,5 +19,6 @@
         "NumberLiteral": "$number",
         "MethodCall": "$object.$method($arguments)",
         "Identifier": "$identifier"
-    }    
+    },
+    "Print": "print $expr"
 }
