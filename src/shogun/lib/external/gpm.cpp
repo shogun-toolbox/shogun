@@ -71,7 +71,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <math.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/lib/external/gpdt.h>
 #include <shogun/io/SGIO.h>
 

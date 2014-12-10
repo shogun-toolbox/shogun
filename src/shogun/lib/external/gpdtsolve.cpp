@@ -68,12 +68,12 @@
  ***                                                                        ***
  *** SHOGUN adaptions  Written (W) 2006-2009 Soeren Sonnenburg              ***
  ******************************************************************************/
-#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
 
+#include <shogun/mathematics/Math.h>
 #include <shogun/lib/external/gpm.h>
 #include <shogun/lib/external/gpdt.h>
 #include <shogun/lib/external/gpdtsolve.h>

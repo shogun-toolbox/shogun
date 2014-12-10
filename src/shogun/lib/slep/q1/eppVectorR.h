@@ -20,7 +20,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
-#include <math.h>
+#include <shogun/mathematics/Math.h>
 
 /*
    min  1/2 ( ||x- u||_2^2 + ||t-v||_2^2 )

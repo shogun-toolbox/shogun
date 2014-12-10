@@ -10,8 +10,8 @@
 
 #include <shogun/io/SGIO.h>
 #include <shogun/preprocessor/HomogeneousKernelMap.h>
+#include <shogun/mathematics/Math.h>
 
-#include <math.h>
 #include <iostream>
 
 using namespace shogun;

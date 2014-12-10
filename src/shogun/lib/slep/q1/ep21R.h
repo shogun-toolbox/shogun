@@ -17,10 +17,11 @@
 #ifndef  EP21R_SLEP
 #define  EP21R_SLEP
 
+#include <shogun/mathematics/Math.h>
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
-#include <math.h>
 
 
 /*

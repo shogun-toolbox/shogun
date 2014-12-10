@@ -13,12 +13,12 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include <math.h>
 #include <sys/time.h>
 #include <time.h>
 #include <stdio.h>
 #include <stdint.h>
 
+#include <shogun/mathematics/Math.h>
 #include <shogun/lib/Time.h>
 #include <shogun/lib/external/libocas.h>
 #include <shogun/lib/external/libocas_common.h>

@@ -19,10 +19,11 @@
 
 #define IGNORE_IN_CLASSLIST
 
+#include <shogun/mathematics/Math.h>
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
-#include <math.h>
 
 
 /*

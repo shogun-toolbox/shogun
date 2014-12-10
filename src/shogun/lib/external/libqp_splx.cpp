@@ -68,13 +68,13 @@
  * Version 3, 29 June 2007
  *-------------------------------------------------------------------- */
 
-#include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdint.h>
 #include <limits.h>
 
+#include <shogun/mathematics/Math.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/external/libqp.h>
 namespace shogun

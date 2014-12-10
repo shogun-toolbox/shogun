@@ -4,7 +4,6 @@
 #include <shogun/lib/JLCoverTreePoint.h>
 #include <shogun/mathematics/Math.h>
 
-#include<math.h>
 #include<stdio.h>
 #define NDEBUG
 #include<assert.h>

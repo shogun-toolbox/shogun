@@ -19,7 +19,7 @@
 
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/common.h>
-#include <math.h>
+#include <shogun/mathematics/Math.h>
 
 namespace shogun
 {

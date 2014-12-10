@@ -17,7 +17,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
-#include <math.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/lib/slep/q1/epph.h>
 
 #define delta 1e-8

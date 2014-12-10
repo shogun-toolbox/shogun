@@ -18,8 +18,8 @@
 #include <shogun/mathematics/lapack.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/external/pr_loqo.h>
+#include <shogun/mathematics/Math.h>
 
-#include <math.h>
 #include <time.h>
 #include <stdlib.h>
 #include <stdio.h>

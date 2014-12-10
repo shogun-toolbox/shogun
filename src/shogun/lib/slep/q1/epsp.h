@@ -20,7 +20,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
-#include <math.h>
+#include <shogun/mathematics/Math.h>
 
 #define delta 1e-12
 

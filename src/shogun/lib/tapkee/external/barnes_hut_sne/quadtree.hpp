@@ -29,7 +29,7 @@
  *
  */
 
-#include <math.h>
+#include <shogun/mathematics/Math.h>
 #include <float.h>
 #include <stdlib.h>
 #include <stdio.h>
