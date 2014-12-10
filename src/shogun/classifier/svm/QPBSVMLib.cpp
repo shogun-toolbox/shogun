@@ -46,7 +46,7 @@
  *
 -------------------------------------------------------------------- */
 
-#include <math.h>
+#include <shogun/mathematics/Math.h>
 #include <string.h>
 #include <limits.h>
 
