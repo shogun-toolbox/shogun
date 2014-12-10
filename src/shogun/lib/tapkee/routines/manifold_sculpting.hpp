@@ -11,7 +11,7 @@
 #include <shogun/lib/tapkee/utils/sparse.hpp>
 /* End of Tapkee includes */
 
-#include <math.h>
+#include <shogun/mathematics/Math.h>
 #include <ctime>
 #include <cfloat>
 #include <deque>

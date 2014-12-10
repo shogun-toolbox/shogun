@@ -15,10 +15,11 @@
  */
 
 #include <shogun/lib/slep/flsa/sfa.h>
+#include <shogun/mathematics/Math.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
-#include <math.h>
+
 
 #define delta 1e-10
 

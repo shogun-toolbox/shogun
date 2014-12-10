@@ -68,7 +68,7 @@
  * Version 3, 29 June 2007
  *-------------------------------------------------------------------- */
 
-#include <math.h>
+#include <shogun/mathematics/Math.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>

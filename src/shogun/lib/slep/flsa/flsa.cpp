@@ -16,10 +16,10 @@
 
 #include <shogun/lib/slep/flsa/flsa.h>
 #include <shogun/lib/slep/flsa/sfa.h>
+#include <shogun/mathematics/Math.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
-#include <math.h>
 
 void flsa(double *x, double *z, double *infor,
 		double * v, double *z0,

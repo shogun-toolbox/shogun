@@ -10,7 +10,6 @@
 
 #include <shogun/kernel/BesselKernel.h>
 #include <shogun/mathematics/Math.h>
-#include <math.h>
 
 using namespace shogun;
 

@@ -19,7 +19,7 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/external/pr_loqo.h>
 
-#include <math.h>
+#include <shogun/mathematics/Math.h>
 #include <time.h>
 #include <stdlib.h>
 #include <stdio.h>

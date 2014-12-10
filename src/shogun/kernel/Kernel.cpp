@@ -30,7 +30,7 @@
 
 #include <string.h>
 #include <unistd.h>
-#include <math.h>
+#include <shogun/mathematics/Math.h>
 
 #ifdef HAVE_PTHREAD
 #include <pthread.h>
@@ -992,9 +992,9 @@ template <class T> struct K_THREAD_PARAM
 	/** end (unit row) */
 	int32_t end;
 	/** start (unit number of elements) */
-	int64_t total_start;
+	int32_t total_start;
 	/** end (unit number of elements) */
-	int64_t total_end;
+	int32_t total_end;
 	/** m */
 	int32_t m;
 	/** n */

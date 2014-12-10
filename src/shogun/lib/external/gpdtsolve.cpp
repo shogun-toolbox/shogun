@@ -68,7 +68,7 @@
  ***                                                                        ***
  *** SHOGUN adaptions  Written (W) 2006-2009 Soeren Sonnenburg              ***
  ******************************************************************************/
-#include <math.h>
+#include <shogun/mathematics/Math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

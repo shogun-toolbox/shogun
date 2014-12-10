@@ -21,7 +21,7 @@
 #ifndef libqp_h
 #define libqp_h
 
-#include <math.h>
+#include <shogun/mathematics/Math.h>
 
 #include <shogun/lib/common.h>
 namespace shogun

@@ -39,7 +39,7 @@
 #include <shogun/lib/tapkee/external/barnes_hut_sne/vptree.hpp>
 /* End of Tapkee includes */
 
-#include <math.h>
+#include <shogun/mathematics/Math.h>
 #include <float.h>
 #include <stdlib.h>
 #include <stdio.h>

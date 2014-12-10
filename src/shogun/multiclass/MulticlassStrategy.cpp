@@ -40,7 +40,9 @@ void CMulticlassStrategy::init()
 
 	SG_ADD((CSGObject**)&m_rejection_strategy, "rejection_strategy", "Strategy of rejection", MS_NOT_AVAILABLE);
 	SG_ADD(&m_num_classes, "num_classes", "Number of classes", MS_NOT_AVAILABLE);
-	SG_ADD((machine_int_t*)&m_prob_heuris, "prob_heuris", "Probability estimation heuristics", MS_NOT_AVAILABLE);
+	//SG_ADD((machine_int_t*)&m_prob_heuris, "prob_heuris", "Probability estimation heuristics", MS_NOT_AVAILABLE);
+
+	SG_WARNING("%s::CMulticlassStrategy(): register parameters!\n", get_name());
 }
 
 void CMulticlassStrategy::train_start(CMulticlassLabels *orig_labels, CBinaryLabels *train_labels)

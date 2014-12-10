@@ -21,7 +21,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <math.h>
+#include <shogun/mathematics/Math.h>
 #include <ctype.h>
 #include <string.h>
 #include <shogun/kernel/string/LocalAlignmentStringKernel.h>

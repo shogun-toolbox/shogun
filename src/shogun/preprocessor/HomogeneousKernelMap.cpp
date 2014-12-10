@@ -11,7 +11,7 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/preprocessor/HomogeneousKernelMap.h>
 
-#include <math.h>
+#include <shogun/mathematics/Math.h>
 #include <iostream>
 
 using namespace shogun;

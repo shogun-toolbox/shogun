@@ -7,7 +7,7 @@
 #include <shogun/lib/SGSparseVector.h>
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/mathematics/eigen3.h>
-#include <math.h>
+#include <shogun/mathematics/Math.h>
 #include <gtest/gtest.h>
 
 using namespace shogun;

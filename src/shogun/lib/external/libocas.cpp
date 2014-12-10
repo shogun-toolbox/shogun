@@ -13,7 +13,7 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include <math.h>
+#include <shogun/mathematics/Math.h>
 #include <sys/time.h>
 #include <time.h>
 #include <stdio.h>
