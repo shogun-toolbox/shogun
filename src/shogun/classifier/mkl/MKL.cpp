@@ -16,6 +16,16 @@
 #include <shogun/classifier/svm/LibSVM.h>
 #include <shogun/kernel/CombinedKernel.h>
 
+#ifdef USE_GLPK
+#include <glpk.h>
+#endif
+
+#ifdef USE_CPLEX
+extern "C" {
+#include <ilcplex/cplex.h>
+}
+#endif
+
 using namespace shogun;
 
 CMKL::CMKL(CSVM* s) : CSVM(), svm(NULL), C_mkl(0), mkl_norm(1), ent_lambda(0),

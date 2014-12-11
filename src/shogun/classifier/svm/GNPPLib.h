@@ -15,8 +15,6 @@
 #ifndef GNPPLIB_H__ 
 #define GNPPLIB_H__ 
 
-#include <limits.h>
-
 #include <shogun/mathematics/Math.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/io/SGIO.h>

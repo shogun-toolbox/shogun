@@ -7,6 +7,7 @@
  * Written (W) 2012 Philippe Tillet
  */
 
+#include <stdio.h>
 #include <shogun/classifier/NearestCentroid.h>
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/features/Features.h>

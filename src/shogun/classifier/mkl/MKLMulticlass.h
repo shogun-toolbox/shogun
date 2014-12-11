@@ -14,8 +14,6 @@
 #ifndef MKLMulticlass_H_
 #define MKLMulticlass_H_
 
-#include <vector>
-
 #include <shogun/base/SGObject.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/kernel/CombinedKernel.h>

@@ -15,8 +15,6 @@
 #include <shogun/classifier/svm/SVM.h>
 #include <shogun/lib/external/shogun_libsvm.h>
 
-#include <stdio.h>
-
 namespace shogun
 {
 /** @brief class LibSVMOneClass */

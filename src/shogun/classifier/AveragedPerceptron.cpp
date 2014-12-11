@@ -7,6 +7,7 @@
  * Written (W) 2011 Hidekazu Oiwa
  */
 
+#include <stdio.h>
 #include <shogun/classifier/AveragedPerceptron.h>
 #include <shogun/labels/Labels.h>
 #include <shogun/mathematics/Math.h>

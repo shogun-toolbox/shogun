@@ -12,6 +12,7 @@
 
 #ifdef USE_CPLEX
 
+#include <stdio.h>
 #include <shogun/classifier/LPBoost.h>
 #include <shogun/labels/Labels.h>
 #include <shogun/mathematics/Math.h>

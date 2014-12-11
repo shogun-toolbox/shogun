@@ -14,9 +14,6 @@
 #ifndef MKLMulticlassGRADIENT_H_
 #define MKLMulticlassGRADIENT_H_
 
-#include <vector>
-#include <cmath>
-#include <cassert>
 #include <shogun/base/SGObject.h>
 #include <shogun/classifier/mkl/MKLMulticlassOptimizationBase.h>
 

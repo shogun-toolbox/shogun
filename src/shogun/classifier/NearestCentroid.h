@@ -10,7 +10,6 @@
 #ifndef _NEAREST_CENTROID_H__
 #define _NEAREST_CENTROID_H__
 
-#include <stdio.h>
 #include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/features/Features.h>

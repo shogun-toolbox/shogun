@@ -42,6 +42,12 @@
 #include <shogun/base/Parallel.h>
 #include <shogun/labels/BinaryLabels.h>
 
+#include <stdio.h>
+#include <ctype.h>
+#include <string.h>
+#include <stdlib.h>
+#include <time.h>
+
 #ifdef HAVE_PTHREAD
 #include <pthread.h>
 #endif

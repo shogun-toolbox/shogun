@@ -13,16 +13,6 @@
 
 #include <shogun/lib/config.h>
 
-#ifdef USE_GLPK
-#include <glpk.h>
-#endif
-
-#ifdef USE_CPLEX
-extern "C" {
-#include <ilcplex/cplex.h>
-}
-#endif
-
 #include <shogun/lib/common.h>
 #include <shogun/lib/Time.h>
 #include <shogun/features/Features.h>

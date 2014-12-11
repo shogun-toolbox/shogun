@@ -11,6 +11,9 @@
  *
  */
 
+#include <vector>
+#include <cmath>
+#include <cassert>
 #include <shogun/classifier/mkl/MKLMulticlassGradient.h>
 #include <shogun/mathematics/Math.h>
 

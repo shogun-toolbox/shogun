@@ -12,6 +12,7 @@
 
 #ifdef USE_CPLEX
 
+#include <stdio.h>
 #include <shogun/classifier/LPM.h>
 #include <shogun/labels/Labels.h>
 #include <shogun/labels/BinaryLabels.h>
