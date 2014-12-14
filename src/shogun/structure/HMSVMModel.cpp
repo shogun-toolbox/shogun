@@ -11,6 +11,7 @@
 #include <shogun/structure/HMSVMModel.h>
 #include <shogun/features/MatrixFeatures.h>
 #include <shogun/structure/TwoStateModel.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/structure/Plif.h>
 #include <shogun/mathematics/Math.h>
 
@@ -338,7 +339,7 @@ CResultSet* CHMSVMModel::argmax(
 	{
 		ret->delta     = CStructuredModel::delta_loss(feat_idx, ypred);
 		ret->psi_truth = CStructuredModel::get_joint_feature_vector(feat_idx, feat_idx);
-		ret->score    -= SGVector< float64_t >::dot(w.vector, ret->psi_truth.vector, dim);
+		ret->score    -= CMath::dot(w.vector, ret->psi_truth.vector, dim);
 	}
 
 	return ret;

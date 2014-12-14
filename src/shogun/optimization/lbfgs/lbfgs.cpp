@@ -509,8 +509,8 @@ int32_t lbfgs(
                 yy = y^t \cdot y.
             Notice that yy is used for scaling the hessian matrix H_0 (Cholesky factor).
          */
-		ys = SGVector<float64_t>::dot(it->y, it->s, n);
-		yy = SGVector<float64_t>::dot(it->y, it->y, n);
+		ys = CMath::dot(it->y, it->s, n);
+		yy = CMath::dot(it->y, it->y, n);
         it->ys = ys;
 
         /*
@@ -540,7 +540,7 @@ int32_t lbfgs(
             j = (j + m - 1) % m;    /* if (--j == -1) j = m-1; */
             it = &lm[j];
             /* \alpha_{j} = \rho_{j} s^{t}_{j} \cdot q_{k+1}. */
-			it->alpha = SGVector<float64_t>::dot(it->s, d, n);
+			it->alpha = CMath::dot(it->s, d, n);
             it->alpha /= it->ys;
             /* q_{i} = q_{i+1} - \alpha_{i} y_{i}. */
 			SGVector<float64_t>::add(d, 1, d, -it->alpha, it->y, n);
@@ -551,7 +551,7 @@ int32_t lbfgs(
         for (i = 0;i < bound;++i) {
             it = &lm[j];
             /* \beta_{j} = \rho_{j} y^t_{j} \cdot \gamma_{i}. */
-			beta = SGVector<float64_t>::dot(it->y, d, n);
+			beta = CMath::dot(it->y, d, n);
             beta /= it->ys;
             /* \gamma_{i+1} = \gamma_{i} + (\alpha_{j} - \beta_{j}) s_{j}. */
 			SGVector<float64_t>::add(d, 1, d, it->alpha-beta, it->s, n);
@@ -628,7 +628,7 @@ static int32_t line_search_backtracking(
     }
 
     /* Compute the initial gradient in the search direction. */
-    dginit = SGVector<float64_t>::dot(g, s, n);
+    dginit = CMath::dot(g, s, n);
 
     /* Make sure that s points to a descent direction. */
     if (0 < dginit) {
@@ -681,7 +681,7 @@ static int32_t line_search_backtracking(
 	        }
 
 	        /* Check the Wolfe condition. */
-			dg = SGVector<float64_t>::dot(g, s, n);
+			dg = CMath::dot(g, s, n);
 	        if (dg < param->wolfe * dginit) {
 		    width = inc;
 	        } else {
@@ -825,7 +825,7 @@ static int32_t line_search_morethuente(
     }
 
     /* Compute the initial gradient in the search direction. */
-    dginit = SGVector<float64_t>::dot(g, s, n);
+    dginit = CMath::dot(g, s, n);
 
     /* Make sure that s points to a descent direction. */
     if (0 < dginit) {
@@ -891,7 +891,7 @@ static int32_t line_search_morethuente(
         /* Evaluate the function and gradient values. */
         *f = cd->proc_evaluate(cd->instance, x, g, cd->n, *stp);
 
-        dg = SGVector<float64_t>::dot(g, s, n);
+        dg = CMath::dot(g, s, n);
 
         ftest1 = finit + *stp * dgtest;
         ++count;

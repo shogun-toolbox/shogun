@@ -71,7 +71,7 @@ float64_t CLinearStringKernel::compute(int32_t idx_a, int32_t idx_b)
 	char* avec = ((CStringFeatures<char>*) lhs)->get_feature_vector(idx_a, alen, free_avec);
 	char* bvec = ((CStringFeatures<char>*) rhs)->get_feature_vector(idx_b, blen, free_bvec);
 	ASSERT(alen==blen)
-	float64_t result=SGVector<float64_t>::dot(avec, bvec, alen);
+	float64_t result=CMath::dot(avec, bvec, alen);
 	((CStringFeatures<char>*) lhs)->free_feature_vector(avec, idx_a, free_avec);
 	((CStringFeatures<char>*) rhs)->free_feature_vector(bvec, idx_b, free_bvec);
 	return result;
@@ -118,7 +118,7 @@ float64_t CLinearStringKernel::compute_optimized(int32_t idx_b)
 	int32_t blen;
 	bool free_bvec;
 	char* bvec = ((CStringFeatures<char>*) rhs)->get_feature_vector(idx_b, blen, free_bvec);
-	float64_t result=normalizer->normalize_rhs(SGVector<float64_t>::dot(normal, bvec, blen), idx_b);
+	float64_t result=normalizer->normalize_rhs(CMath::dot(normal, bvec, blen), idx_b);
 	((CStringFeatures<char>*) rhs)->free_feature_vector(bvec, idx_b, free_bvec);
 	return result;
 }

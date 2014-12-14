@@ -83,20 +83,6 @@ TEST(SGVectorTest,add)
 		EXPECT_EQ(c[i], 2*a[i]);
 }
 
-TEST(SGVectorTest,dot)
-{
-	CMath::init_random(17);
-	SGVector<float64_t> a(10);
-	a.random(0.0, 1024.0);
-	float64_t dot_val = 0.0;
-
-	for (int32_t i = 0; i < a.vlen; ++i)
-		dot_val += a[i]*a[i];
-
-	float64_t sgdot_val = a.dot(a.vector,a.vector, a.vlen);
-	EXPECT_NEAR(dot_val, sgdot_val, 1e-9);
-}
-
 TEST(SGVectorTest,norm)
 {
 	CMath::init_random(17);
@@ -104,7 +90,7 @@ TEST(SGVectorTest,norm)
 	a.random(-50.0, 1024.0);
 
 	/* check l-2 norm */
-	float64_t l2_norm = CMath::sqrt(a.dot(a.vector,a.vector, a.vlen));
+	float64_t l2_norm = CMath::sqrt(CMath::dot(a.vector,a.vector, a.vlen));
 	float64_t sgl2_norm = SGVector<float64_t>::twonorm(a.vector, a.vlen);
 
 	EXPECT_NEAR(l2_norm, sgl2_norm, 1e-12);

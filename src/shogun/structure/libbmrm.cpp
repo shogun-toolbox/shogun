@@ -14,6 +14,7 @@
 #include <shogun/structure/libbmrm.h>
 #include <shogun/lib/external/libqp.h>
 #include <shogun/lib/Time.h>
+#include <shogun/mathematics/Math.h>
 
 #include <climits>
 #include <limits>
@@ -413,7 +414,7 @@ BmrmStatistics svm_bmrm_solver(
 			{
 				A_1=get_cutting_plane(cp_ptr);
 				cp_ptr=cp_ptr->next;
-				rsum= SGVector<float64_t>::dot(A_1, A_2, nDim);
+				rsum= CMath::dot(A_1, A_2, nDim);
 
 				H[LIBBMRM_INDEX(bmrm.nCP, i, BufSize)]
 					= H[LIBBMRM_INDEX(i, bmrm.nCP, BufSize)]
@@ -422,7 +423,7 @@ BmrmStatistics svm_bmrm_solver(
 		}
 
 		A_2=get_cutting_plane(CPList_tail);
-		rsum = SGVector<float64_t>::dot(A_2, A_2, nDim);
+		rsum = CMath::dot(A_2, A_2, nDim);
 
 		H[LIBBMRM_INDEX(bmrm.nCP, bmrm.nCP, BufSize)]=rsum/_lambda;
 
@@ -487,8 +488,8 @@ BmrmStatistics svm_bmrm_solver(
 		add_cutting_plane(&CPList_tail, map, A,
 				find_free_idx(map, BufSize), subgrad, nDim);
 
-		sq_norm_W=SGVector<float64_t>::dot(W, W, nDim);
-		b[bmrm.nCP]=SGVector<float64_t>::dot(subgrad, W, nDim) - R;
+		sq_norm_W=CMath::dot(W, W, nDim);
+		b[bmrm.nCP]=CMath::dot(subgrad, W, nDim) - R;
 
 		sq_norm_Wdiff=0.0;
 		for (uint32_t j=0; j<nDim; ++j)

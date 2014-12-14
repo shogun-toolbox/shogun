@@ -518,6 +518,140 @@ class CMath : public CSGObject
 			return ::exp((double) x);
 		}
 
+		/// Compute dot product between v1 and v2 (blas optimized)
+		static inline float64_t dot(const bool* v1, const bool* v2, int32_t n)
+		{
+			float64_t r=0;
+			for (int32_t i=0; i<n; i++)
+				r+=((v1[i]) ? 1 : 0) * ((v2[i]) ? 1 : 0);
+			return r;
+		}
+
+		/// Compute dot product between v1 and v2 (blas optimized)
+		static inline floatmax_t dot(const floatmax_t* v1, const floatmax_t* v2, int32_t n)
+		{
+			floatmax_t r=0;
+			for (int32_t i=0; i<n; i++)
+				r+=v1[i]*v2[i];
+			return r;
+		}
+
+
+		/// Compute dot product between v1 and v2 (blas optimized)
+		static float64_t dot(const float64_t* v1, const float64_t* v2, int32_t n);
+
+		/// Compute dot product between v1 and v2 (blas optimized)
+		static float32_t dot(const float32_t* v1, const float32_t* v2, int32_t n);
+
+		/// compute dot product between v1 and v2 (for 64bit unsigned ints)
+		static inline float64_t dot(
+			const uint64_t* v1, const uint64_t* v2, int32_t n)
+		{
+			float64_t r=0;
+			for (int32_t i=0; i<n; i++)
+				r+=((float64_t) v1[i])*v2[i];
+
+			return r;
+		}
+		/// Compute dot product between v1 and v2 (for 64bit ints)
+		static inline float64_t dot(
+			const int64_t* v1, const int64_t* v2, int32_t n)
+		{
+			float64_t r=0;
+			for (int32_t i=0; i<n; i++)
+				r+=((float64_t) v1[i])*v2[i];
+
+			return r;
+		}
+
+		/// Compute dot product between v1 and v2 (for 32bit ints)
+		static inline float64_t dot(
+			const int32_t* v1, const int32_t* v2, int32_t n)
+		{
+			float64_t r=0;
+			for (int32_t i=0; i<n; i++)
+				r+=((float64_t) v1[i])*v2[i];
+
+			return r;
+		}
+
+		/// Compute dot product between v1 and v2 (for 32bit unsigned ints)
+		static inline float64_t dot(
+			const uint32_t* v1, const uint32_t* v2, int32_t n)
+		{
+			float64_t r=0;
+			for (int32_t i=0; i<n; i++)
+				r+=((float64_t) v1[i])*v2[i];
+
+			return r;
+		}
+
+		/// Compute dot product between v1 and v2 (for 16bit unsigned ints)
+		static inline float64_t dot(
+			const uint16_t* v1, const uint16_t* v2, int32_t n)
+		{
+			float64_t r=0;
+			for (int32_t i=0; i<n; i++)
+				r+=((float64_t) v1[i])*v2[i];
+
+			return r;
+		}
+
+		/// Compute dot product between v1 and v2 (for 16bit unsigned ints)
+		static inline float64_t dot(
+			const int16_t* v1, const int16_t* v2, int32_t n)
+		{
+			float64_t r=0;
+			for (int32_t i=0; i<n; i++)
+				r+=((float64_t) v1[i])*v2[i];
+
+			return r;
+		}
+
+		/// Compute dot product between v1 and v2 (for 8bit (un)signed ints)
+		static inline float64_t dot(
+			const char* v1, const char* v2, int32_t n)
+		{
+			float64_t r=0;
+			for (int32_t i=0; i<n; i++)
+				r+=((float64_t) v1[i])*v2[i];
+
+			return r;
+		}
+
+		/// Compute dot product between v1 and v2 (for 8bit (un)signed ints)
+		static inline float64_t dot(
+			const uint8_t* v1, const uint8_t* v2, int32_t n)
+		{
+			float64_t r=0;
+			for (int32_t i=0; i<n; i++)
+				r+=((float64_t) v1[i])*v2[i];
+
+			return r;
+		}
+
+		/// Compute dot product between v1 and v2 (for 8bit (un)signed ints)
+		static inline float64_t dot(
+			const int8_t* v1, const int8_t* v2, int32_t n)
+		{
+			float64_t r=0;
+			for (int32_t i=0; i<n; i++)
+				r+=((float64_t) v1[i])*v2[i];
+
+			return r;
+		}
+
+		/// Compute dot product between v1 and v2
+		static inline float64_t dot(
+			const float64_t* v1, const char* v2, int32_t n)
+		{
+			float64_t r=0;
+			for (int32_t i=0; i<n; i++)
+				r+=((float64_t) v1[i])*v2[i];
+
+			return r;
+		}
+
 		/// exp(x), x being a complex128_t
 		COMPLEX128_STDMATH(exp)
 

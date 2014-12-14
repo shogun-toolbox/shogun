@@ -14,6 +14,7 @@
 #include <shogun/classifier/svm/OnlineLibLinear.h>
 #include <shogun/features/streaming/StreamingDenseFeatures.h>
 #include <shogun/features/streaming/StreamingSparseFeatures.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/lib/Time.h>
 
 using namespace shogun;
@@ -148,10 +149,10 @@ void COnlineLibLinear::train_one(SGVector<float32_t> ex, float64_t label)
 
 	QD = diag[y_current + 1];
 	// Dot product of vector with itself
-	QD += SGVector<float32_t>::dot(ex.vector, ex.vector, ex.vlen);
+	QD += CMath::dot(ex.vector, ex.vector, ex.vlen);
 
 	// Dot product of vector with learned weights
-	G = SGVector<float32_t>::dot(ex.vector, w, w_dim);
+	G = CMath::dot(ex.vector, w, w_dim);
 
 	if (use_bias)
 		G += bias;

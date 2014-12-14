@@ -11,6 +11,7 @@
 #include <shogun/structure/FactorGraphModel.h>
 #include <shogun/structure/Factor.h>
 #include <shogun/features/FactorGraphFeatures.h>
+ #include <shogun/mathematics/Math.h>
 
 #ifdef HAVE_STD_UNORDERED_MAP
 	#include <unordered_map>
@@ -353,8 +354,8 @@ CResultSet* CFactorGraphModel::argmax(SGVector<float64_t> w, int32_t feat_idx, b
 
 	if (m_verbose)
 	{
-		float64_t dot_pred = SGVector< float64_t >::dot(w.vector, ret->psi_pred.vector, w.vlen);
-		float64_t dot_truth = SGVector< float64_t >::dot(w.vector, ret->psi_truth.vector, w.vlen);
+		float64_t dot_pred = CMath::dot(w.vector, ret->psi_pred.vector, w.vlen);
+		float64_t dot_truth = CMath::dot(w.vector, ret->psi_truth.vector, w.vlen);
 		float64_t slack =  dot_pred + ret->delta - dot_truth;
 
 		SG_SPRINT("\n");

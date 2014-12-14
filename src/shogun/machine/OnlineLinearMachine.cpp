@@ -11,6 +11,7 @@
 #include <shogun/machine/OnlineLinearMachine.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/labels/RegressionLabels.h>
+#include <shogun/mathematics/Math.h>
 
 using namespace shogun;
 
@@ -82,7 +83,7 @@ SGVector<float64_t> COnlineLinearMachine::apply_get_outputs(CFeatures* data)
 
 float32_t COnlineLinearMachine::apply_one(float32_t* vec, int32_t len)
 {
-		return SGVector<float32_t>::dot(vec, w, len)+bias;
+		return CMath::dot(vec, w, len)+bias;
 }
 
 float32_t COnlineLinearMachine::apply_to_current_example()

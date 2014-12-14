@@ -232,9 +232,9 @@ float64_t CPrimalMosekSOSVM::compute_loss_arg(CResultSet* result) const
 
 	if(result->psi_computed)
 	{
-		return	SGVector< float64_t >::dot(m_w.vector, result->psi_pred.vector, M) +
+		return	CMath::dot(m_w.vector, result->psi_pred.vector, M) +
 			result->delta -
-			SGVector< float64_t >::dot(m_w.vector, result->psi_truth.vector, M);
+			CMath::dot(m_w.vector, result->psi_truth.vector, M);
 	}
 	else if(result->psi_computed_sparse)
 	{

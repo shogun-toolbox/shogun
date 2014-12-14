@@ -10,6 +10,7 @@
  */
 
 #include <shogun/preprocessor/RandomFourierGaussPreproc.h>
+#include <shogun/mathematics/Math.h>
 #include <cmath>
 #include <vector>
 #include <algorithm>
@@ -360,7 +361,7 @@ SGVector<float64_t> CRandomFourierGaussPreproc::apply_to_feature_vector(SGVector
 	float64_t *res = SG_MALLOC(float64_t, cur_dim_feature_space);
 
 	for (int32_t od = 0; od < cur_dim_feature_space; ++od) {
-		res[od] = val * cos(randomcoeff_additive[od] + SGVector<float64_t>::dot(vector.vector,
+		res[od] = val * cos(randomcoeff_additive[od] + CMath::dot(vector.vector,
 				randomcoeff_multiplicative+od*cur_dim_input_space, cur_dim_input_space));
 	}
 
@@ -397,7 +398,7 @@ SGMatrix<float64_t> CRandomFourierGaussPreproc::apply_to_feature_matrix(CFeature
 			{
 				res.matrix[od + vec * cur_dim_feature_space] = val * cos(
 						randomcoeff_additive[od]
-								+ SGVector<float64_t>::dot(m+vec * num_features,
+								+ CMath::dot(m+vec * num_features,
 										randomcoeff_multiplicative+od*cur_dim_input_space,
 										cur_dim_input_space));
 			}

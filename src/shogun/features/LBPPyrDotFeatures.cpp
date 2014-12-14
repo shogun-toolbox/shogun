@@ -10,6 +10,7 @@
  * Copyright (C) 2010 Berlin Institute of Technology
  */
 #include <shogun/features/LBPPyrDotFeatures.h>
+#include <shogun/mathematics/Math.h>
 
 using namespace shogun;
 
@@ -104,7 +105,7 @@ float64_t CLBPPyrDotFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t ve
 	SGVector<char> vec1 = get_transformed_image(vec_idx1);
 	SGVector<char> vec2 = lbp_feat->get_transformed_image(vec_idx2);
 
-	return SGVector<char>::dot(vec1.vector, vec2.vector, vec_nDim);
+	return CMath::dot(vec1.vector, vec2.vector, vec_nDim);
 }
 
 SGVector<char> CLBPPyrDotFeatures::get_transformed_image(int32_t index)
