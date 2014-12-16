@@ -8,7 +8,7 @@
  * Copyright (C) 2011 Berlin Institute of Technology and Max-Planck-Society
  */
 
-#include <math.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/kernel/ANOVAKernel.h>
 #include <shogun/mathematics/Math.h>
 
