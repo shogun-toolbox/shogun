@@ -56,7 +56,7 @@ float64_t CEMMixtureModel::expectation_step()
 			SG_UNREF(jth_component);
 		};
 
-		float64_t normalize=log_sum_exp(alpha_ij);
+		float64_t normalize=CMath::log_sum_exp(alpha_ij);
 		log_likelihood+=normalize;
 
 		// fill row of alpha
@@ -90,37 +90,4 @@ void CEMMixtureModel::maximization_step()
 	// update weights - normalization
 	for (int32_t j=0;j<data.alpha.num_cols;j++)
 		data.weights[j]/=sum_weights;
-}
-
-float64_t CEMMixtureModel::log_sum_exp(SGVector<float64_t> values)
-{
-	REQUIRE(values.vlen>0,"number of values supplied is 0\n")
-	REQUIRE(values.vector, "Values are empty\n");
-
-	/* find max element index */
-	index_t max_index=0;
-	float64_t X0=values[0];
-
-	for (index_t i=1; i<values.vlen; ++i)
-	{
-		if (values[i]>X0)
-		{
-			X0=values[i];
-			max_index=i;
-		}
-	}
-
-	/* remove element from vector copy and compute log sum exp */
-	SGVector<float64_t> values_without_X0(values.vlen-1);
-	index_t to_idx=0;
-	for (index_t from_idx=0; from_idx<values.vlen; ++from_idx)
-	{
-		if (from_idx!=max_index)
-		{
-			values_without_X0[to_idx]=exp(values[from_idx]-X0);
-			to_idx++;
-		}
-	}
-
-	return X0+log(SGVector<float64_t>::sum(values_without_X0)+1);
 }
