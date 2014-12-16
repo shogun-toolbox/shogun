@@ -402,3 +402,25 @@ TEST(CMath, permute_with_random)
 	EXPECT_EQ(v[2], 3);
 	EXPECT_EQ(v[3], 0);
 }
+
+TEST(CMath,misc)
+{
+	CMath::init_random(17);
+	SGVector<float64_t> a(10);
+	a.random(-1024.0, 1024.0);
+
+	/* test, min, max */
+	float64_t min = 1025, max = -1025;
+	for (int32_t i = 0; i < a.vlen; ++i)
+	{
+		if (a[i] > max)
+		{
+			max = a[i];
+		}
+		if (a[i] < min)
+			min = a[i];
+	}
+
+	EXPECT_EQ(min, CMath::min<float64_t>(a.vector,a.vlen));
+	EXPECT_EQ(max, CMath::max<float64_t>(a.vector,a.vlen));
+}
