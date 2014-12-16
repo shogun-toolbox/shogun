@@ -540,14 +540,8 @@ template<class T> class SGVector : public SGReferencedData
 			return product(vector, vlen);
 		}
 
-		/** @return min(vec) */
-		static T min(T* vec, int32_t len);
-
 		/** @return max(abs(vec)) */
 		static T max_abs(T* vec, int32_t len);
-
-		/** @return max(vec) */
-		static T max(T* vec, int32_t len);
 
 		/** @return arg_max(vec) */
 		static int32_t arg_max(T * vec, int32_t inc, int32_t len, T * maxv_ptr = NULL);

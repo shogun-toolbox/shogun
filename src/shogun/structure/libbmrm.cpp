@@ -435,7 +435,7 @@ BmrmStatistics svm_bmrm_solver(
 
 #if 0
 		/* TODO: scaling...*/
-		float64_t scale = SGVector<float64_t>::max(diag_H, BufSize)/(1000.0*_lambda);
+		float64_t scale = CMath::max<float64_t>(diag_H, BufSize)/(1000.0*_lambda);
 		SGVector<float64_t> sb(bmrm.nCP);
 		sb.zero();
 		sb.vec1_plus_scalar_times_vec2(sb.vector, 1/scale, b, bmrm.nCP);

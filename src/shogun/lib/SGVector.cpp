@@ -860,19 +860,6 @@ complex128_t SGVector<complex128_t>::qnorm(complex128_t* x, int32_t len, float64
 	return complex128_t(0.0);
 }
 
-/** @return min(vec) */
-template <class T>
-	T SGVector<T>::min(T* vec, int32_t len)
-	{
-		ASSERT(len>0)
-		T minv=vec[0];
-
-		for (int32_t i=1; i<len; i++)
-			minv=CMath::min(vec[i], minv);
-
-		return minv;
-	}
-
 #ifdef HAVE_LAPACK
 template <>
 float64_t SGVector<float64_t>::max_abs(float64_t* vec, int32_t len)
@@ -913,19 +900,6 @@ complex128_t SGVector<complex128_t>::max_abs(complex128_t* vec, int32_t len)
 {
 	SG_SNOTIMPLEMENTED
 	return complex128_t(0.0);
-}
-
-/** @return max(vec) */
-template <class T>
-T SGVector<T>::max(T* vec, int32_t len)
-{
-	ASSERT(len>0)
-	T maxv=vec[0];
-
-	for (int32_t i=1; i<len; i++)
-		maxv=CMath::max(vec[i], maxv);
-
-	return maxv;
 }
 
 #ifdef HAVE_LAPACK

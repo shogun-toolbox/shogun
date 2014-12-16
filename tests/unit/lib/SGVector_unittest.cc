@@ -129,7 +129,7 @@ TEST(SGVectorTest,misc)
 
 	/* test, min, max, sum */
 	int arg_max = 0, arg_max_abs = 0;
-	float64_t min = 1025, max = -1025, sum = 0.0, max_abs = -1, sum_abs = 0.0;
+	float64_t max = -1025, sum = 0.0, max_abs = -1, sum_abs = 0.0;
 	for (int32_t i = 0; i < a.vlen; ++i)
 	{
 		sum += a[i];
@@ -144,12 +144,8 @@ TEST(SGVectorTest,misc)
 			max = a[i];
 			arg_max=i;
 		}
-		if (a[i] < min)
-			min = a[i];
 	}
 
-	EXPECT_EQ(min, SGVector<float64_t>::min(a.vector,a.vlen));
-	EXPECT_EQ(max, SGVector<float64_t>::max(a.vector,a.vlen));
 	EXPECT_EQ(arg_max, SGVector<float64_t>::arg_max(a.vector,1, a.vlen, NULL));
 	EXPECT_EQ(max_abs, SGVector<float64_t>::max_abs(a.vector,a.vlen));
 	EXPECT_EQ(arg_max_abs, SGVector<float64_t>::arg_max_abs(a.vector, 1, a.vlen, NULL));

@@ -1930,7 +1930,7 @@ float64_t CStatistics::fishers_exact_test_for_2x3_table(
 	m[4]=table.matrix[4]+table.matrix[5];
 
 	float64_t n=SGVector<float64_t>::sum(m, m_len)/2.0;
-	int32_t x_len=2*3*CMath::sq(SGVector<float64_t>::max(m, m_len));
+	int32_t x_len=2*3*CMath::sq(CMath::max<float64_t>(m, m_len));
 	float64_t* x=SG_MALLOC(float64_t, x_len);
 	SGVector<float64_t>::fill_vector(x, x_len, 0.0);
 

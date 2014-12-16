@@ -165,6 +165,34 @@ class CMath : public CSGObject
 				return (a>=b) ? a : b;
 			}
 
+		///return the smallest element in a vector.
+		/** @return min(vec) */
+		template <class T>
+			static T min(T* vec, int32_t len)
+			{
+				ASSERT(len>0)
+				T minv=vec[0];
+
+				for (int32_t i=1; i<len; i++)
+					minv=min(vec[i], minv);
+
+				return minv;
+			}
+
+		///return the greatest element in a vector.
+		/** @return max(vec) */
+		template <class T>
+			static T max(T* vec, int32_t len)
+			{
+				ASSERT(len>0)
+				T maxv=vec[0];
+
+				for (int32_t i=1; i<len; i++)
+					maxv=max(vec[i], maxv);
+
+				return maxv;
+			}
+
 		///return the value clamped to interval [lb,ub]
 		template <class T>
 			static inline T clamp(T value, T lb, T ub)

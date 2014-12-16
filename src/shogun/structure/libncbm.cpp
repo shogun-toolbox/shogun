@@ -510,7 +510,7 @@ BmrmStatistics svm_ncbm_solver(
 			scores.vec1_plus_scalar_times_vec2(scores.vector, -1.0, bias.vector, scores.vlen);
 
 			float64_t w_norm = cur_w.dot(cur_w.vector, cur_w.vector, cur_w.vlen);
-			float64_t PO = 0.5*_lambda*w_norm + scores.max(scores.vector, scores.vlen);
+			float64_t PO = 0.5*_lambda*w_norm + CMath::max<float64_t>(scores.vector, scores.vlen);
 			float64_t QP_gap = PO - ncbm.Fd;
 
 			SG_SPRINT("%4d: primal:%f dual:%f QP_gap:%f\n", ncbm.nIter, PO, ncbm.Fd, QP_gap)

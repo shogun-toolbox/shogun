@@ -181,7 +181,7 @@ void CSVMSGD::calibrate()
 
 		//waste cpu cycles for readability
 		//(only changed dims need checking)
-		m=SGVector<float64_t>::max(c, c_dim);
+		m=CMath::max<float64_t>(c, c_dim);
 	}
 
 	// bias update scaling
