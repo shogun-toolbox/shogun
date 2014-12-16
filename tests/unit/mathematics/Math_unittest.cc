@@ -421,6 +421,6 @@ TEST(CMath,misc)
 			min = a[i];
 	}
 
-	EXPECT_EQ(min, CMath::min<float64_t>(a.vector,a.vlen));
-	EXPECT_EQ(max, CMath::max<float64_t>(a.vector,a.vlen));
+	EXPECT_EQ(min, CMath::min(a.vector,a.vlen));
+	EXPECT_EQ(max, CMath::max(a.vector,a.vlen));
 }

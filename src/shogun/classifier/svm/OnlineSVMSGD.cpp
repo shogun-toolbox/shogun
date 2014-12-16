@@ -183,7 +183,7 @@ void COnlineSVMSGD::calibrate(int32_t max_vec_num)
 
 		//waste cpu cycles for readability
 		//(only changed dims need checking)
-		m=CMath::max<float32_t>(c, c_dim);
+		m=CMath::max(c, c_dim);
 		n++;
 
 		features->release_example();

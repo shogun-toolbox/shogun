@@ -1296,7 +1296,7 @@ float64_t CCARTree::find_weakest_alpha(bnode_t* node)
 
 		SG_UNREF(left);
 		SG_UNREF(right);
-		return CMath::min<float64_t>(weak_links.vector,weak_links.vlen);		
+		return CMath::min(weak_links.vector,weak_links.vlen);		
 	}
 
 	return CMath::MAX_REAL_NUMBER;

@@ -32,8 +32,8 @@ TEST(RescaleFeatures, apply_to_feature_matrix)
 	for (index_t i = 0; i < num_features; i++)
 	{
 		SGVector<float64_t> t = em.get_row_vector(i);
-		min[i] = CMath::min<float64_t>(t.vector, t.vlen);
-		range[i] = CMath::max<float64_t>(t.vector, t.vlen) - min[i];
+		min[i] = CMath::min(t.vector, t.vlen);
+		range[i] = CMath::max(t.vector, t.vlen) - min[i];
 	}
 
 	feats->add_preprocessor(rescaler);
