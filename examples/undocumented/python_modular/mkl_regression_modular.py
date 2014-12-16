@@ -10,7 +10,7 @@ def regression_libsvr_modular (n=100,n_test=100, \
 	from modshogun import GaussianKernel, PolyKernel, CombinedKernel
 	from modshogun import MKLRegression, SVRLight
 
-	# reproducable results
+	# reproducible results
 	random.seed(seed)
 
 	# easy regression data: one dimensional noisy sine wave
