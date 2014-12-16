@@ -93,7 +93,7 @@ void CSubsetStack::add_subset(SGVector<index_t> subset)
 		}
 
 		/* check for range of indices */
-		index_t max_index=CMath::max<index_t>(subset.vector, subset.vlen);
+		index_t max_index=CMath::max(subset.vector, subset.vlen);
 		if (max_index>=latest->m_subset_idx.vlen)
 		{
 			subset.display_vector("subset");

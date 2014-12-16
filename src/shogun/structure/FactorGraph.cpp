@@ -313,7 +313,7 @@ void CFactorGraph::loss_augmentation(SGVector<int32_t> states_gt, SGVector<float
 	}
 
 	// make sure all variables have been checked
-	int32_t min_var = CMath::min<int32_t>(var_flags.vector, var_flags.vlen);
+	int32_t min_var = CMath::min(var_flags.vector, var_flags.vlen);
 	ASSERT(min_var == 1);
 }
 

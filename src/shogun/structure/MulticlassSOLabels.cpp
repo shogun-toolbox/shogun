@@ -30,7 +30,7 @@ CMulticlassSOLabels::CMulticlassSOLabels(SGVector< float64_t > const src)
 {
 	init();
 
-	m_num_classes = CMath::max< float64_t >(src.vector, src.vlen) + 1;
+	m_num_classes = CMath::max(src.vector, src.vlen) + 1;
 	m_labels_vector.resize_vector(src.vlen);
 
 	for ( int32_t i = 0 ; i < src.vlen ; ++i )
