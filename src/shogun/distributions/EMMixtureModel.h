@@ -37,7 +37,7 @@
 
 namespace shogun
 {
-template class CEMBase<MixModelData>;
+/* template class CEMBase<MixModelData>;  // this f*ckes up mp-gcc on Mac OSX 10.10 */
 
 /** @brief This is the implementation of EM specialized for Mixture models.   
  */
