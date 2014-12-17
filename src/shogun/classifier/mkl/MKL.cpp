@@ -16,6 +16,7 @@
 #include <shogun/classifier/svm/LibSVM.h>
 #include <shogun/kernel/CombinedKernel.h>
 
+
 using namespace shogun;
 
 CMKL::CMKL(CSVM* s) : CSVM(), svm(NULL), C_mkl(0), mkl_norm(1), ent_lambda(0),

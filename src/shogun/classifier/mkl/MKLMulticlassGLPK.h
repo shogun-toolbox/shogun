@@ -16,7 +16,6 @@
 
 #include <shogun/lib/config.h>
 
-#include <vector>
 #include <shogun/base/SGObject.h>
 #include <shogun/classifier/mkl/MKLMulticlassOptimizationBase.h>
 

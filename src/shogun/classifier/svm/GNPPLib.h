@@ -17,8 +17,6 @@
 
 #include <shogun/lib/config.h>
 
-#include <limits.h>
-
 #include <shogun/base/SGObject.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/common.h>

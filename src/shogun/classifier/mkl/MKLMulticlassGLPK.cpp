@@ -13,6 +13,7 @@
 
 #include <shogun/classifier/mkl/MKLMulticlassGLPK.h>
 #include <shogun/io/SGIO.h>
+#include <vector>
 
 #ifdef USE_GLPK
 #include <glpk.h>
