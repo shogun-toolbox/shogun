@@ -9,7 +9,7 @@
  */
 
 #include <string.h>
-#include <math.h>
+#include <shogun/mathematics/Math.h>
 #include <ctype.h>
 
 #include <shogun/features/Alphabet.h>

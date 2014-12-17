@@ -21,7 +21,6 @@
 
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/common.h>
-#include <math.h>
 
 namespace shogun
 {

@@ -30,7 +30,7 @@
 
 #include <string.h>
 #include <unistd.h>
-#include <math.h>
+#include <shogun/mathematics/Math.h>
 
 #ifdef HAVE_PTHREAD
 #include <pthread.h>
