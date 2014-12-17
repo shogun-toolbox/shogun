@@ -17,7 +17,7 @@
 #include <shogun/multiclass/tree/RelaxedTreeUtil.h>
 #include <shogun/multiclass/tree/RelaxedTree.h>
 #include <shogun/kernel/GaussianKernel.h>
-
+#include <shogun/mathematics/Math.h>
 
 using namespace shogun;
 
@@ -471,7 +471,7 @@ SGVector<int32_t> CRelaxedTree::color_label_space(CSVM *svm, SGVector<int32_t> c
 	if (npos == 0)
 	{
 		// no positive class
-		index_t min_idx = SGVector<float64_t>::arg_min(xi_pos_class.vector, 1, xi_pos_class.vlen);
+		index_t min_idx = CMath::arg_min(xi_pos_class.vector, 1, xi_pos_class.vlen);
 		mu[min_idx] = 1;
 	}
 
@@ -485,7 +485,7 @@ SGVector<int32_t> CRelaxedTree::color_label_space(CSVM *svm, SGVector<int32_t> c
 	if (nneg == 0)
 	{
 		// no negative class
-		index_t min_idx = SGVector<float64_t>::arg_min(xi_neg_class.vector, 1, xi_neg_class.vlen);
+		index_t min_idx = CMath::arg_min(xi_neg_class.vector, 1, xi_neg_class.vlen);
 		if (mu[min_idx] == 1 && (npos == 0 || npos == 1))
 		{
 			// avoid overwritting the only positive class

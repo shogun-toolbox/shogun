@@ -185,7 +185,7 @@ int32_t CShareBoost::choose_feature()
 		}
 	}
 
-	return SGVector<float64_t>::arg_max(l1norm.vector, 1, l1norm.vlen);
+	return CMath::arg_max(l1norm.vector, 1, l1norm.vlen);
 }
 
 void CShareBoost::optimize_coefficients()

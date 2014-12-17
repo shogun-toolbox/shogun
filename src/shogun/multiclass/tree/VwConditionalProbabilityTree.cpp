@@ -11,6 +11,7 @@
 #include <vector>
 #include <stack>
 #include <shogun/multiclass/tree/VwConditionalProbabilityTree.h>
+#include <shogun/mathematics/Math.h>
 
 using namespace shogun;
 using namespace std;
@@ -50,7 +51,7 @@ int32_t CVwConditionalProbabilityTree::apply_multiclass_example(VwExample* ex)
 	{
 		probs[it->first] = accumulate_conditional_probability(it->second);
 	}
-	return SGVector<float64_t>::arg_max(probs.vector, 1, probs.vlen);
+	return CMath::arg_max(probs.vector, 1, probs.vlen);
 }
 
 void CVwConditionalProbabilityTree::compute_conditional_probabilities(VwExample *ex)

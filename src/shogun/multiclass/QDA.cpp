@@ -136,7 +136,7 @@ CMulticlassLabels* CQDA::apply_multiclass(CFeatures* data)
 	CMulticlassLabels* out = new CMulticlassLabels(num_vecs);
 
 	for (int i = 0 ; i < num_vecs; i++)
-		out->set_label(i, SGVector<float64_t>::arg_max(norm2.data()+i, num_vecs, m_num_classes));
+		out->set_label(i, CMath::arg_max(norm2.data()+i, num_vecs, m_num_classes));
 
 	return out;
 }

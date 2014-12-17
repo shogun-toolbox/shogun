@@ -83,7 +83,7 @@ CMulticlassLabels* CGaussianProcessClassification::apply_multiclass(CFeatures* d
 	SGVector<index_t> lab(n);
 	for (index_t idx=0; idx<n; idx++)
 	{
-		int32_t cate=SGVector<float64_t>::arg_max(mean.vector+idx*C, 1, C);
+		int32_t cate=CMath::arg_max(mean.vector+idx*C, 1, C);
 		lab[idx]=cate;
 	}
 	CMulticlassLabels *result=new CMulticlassLabels();
