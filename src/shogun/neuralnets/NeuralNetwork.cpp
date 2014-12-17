@@ -197,7 +197,7 @@ CMulticlassLabels* CNeuralNetwork::apply_multiclass(CFeatures* data)
 
 	for (int32_t i=0; i<m_batch_size; i++)
 	{
-		labels_vec[i] = SGVector<float64_t>::arg_max(
+		labels_vec[i] = CMath::arg_max(
 			output_activations.matrix+i*get_num_outputs(), 1, get_num_outputs());
 	}
 

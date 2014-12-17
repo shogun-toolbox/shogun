@@ -228,6 +228,49 @@ class CMath : public CSGObject
 		}
 		//@}
 
+		/** @return arg_max(vec) */
+		template <class T>
+			static int32_t arg_max(T * vec, int32_t inc, int32_t len, T * maxv_ptr = NULL)
+			{
+				ASSERT(len > 0 || inc > 0)
+
+				T maxv = vec[0];
+				int32_t maxIdx = 0;
+
+				for (int32_t i = 1, j = inc ; i < len ; i++, j += inc)
+				{
+					if (vec[j] > maxv)
+					maxv = vec[j], maxIdx = i;
+				}
+
+				if (maxv_ptr != NULL)
+					*maxv_ptr = maxv;
+
+				return maxIdx;
+			}
+
+		/// return arg_min(vec)
+		/** @return arg_min(vec) */
+		template <class T>
+			static int32_t arg_min(T * vec, int32_t inc, int32_t len, T * minv_ptr = NULL)
+		{
+			ASSERT(len > 0 || inc > 0)
+
+			T minv = vec[0];
+			int32_t minIdx = 0;
+
+			for (int32_t i = 1, j = inc ; i < len ; i++, j += inc)
+			{
+				if (vec[j] < minv)
+				minv = vec[j], minIdx = i;
+			}
+
+			if (minv_ptr != NULL)
+				*minv_ptr = minv;
+
+			return minIdx;
+		}
+
 		/**@name misc functions */
 		//@{
 		
@@ -1769,6 +1812,16 @@ inline void CMath::function<complex128_t>(complex128_t* output, int32_t b)	\
 		#function);\
 }
 
+#define COMPLEX128_ERROR_ARG_MAX_MIN(function)	\
+template <> \
+inline int32_t CMath::function<complex128_t>(complex128_t * a, int32_t b, int32_t c, complex128_t * d) \
+{ \
+	int32_t maxIdx=0; \
+	SG_SERROR("CMath::%s():: Not supported for complex128_t\n",\
+		#function);\
+	return maxIdx; \
+}
+
 /// min not implemented for complex128_t, returns (0.0)+i(0.0) instead
 COMPLEX128_ERROR_TWOARGS_T(min)
 
@@ -1781,14 +1834,20 @@ COMPLEX128_ERROR_THREEARGS_T(clamp)
 /// signum not implemented for complex128_t, returns (0.0)+i(0.0) instead
 // COMPLEX128_ERROR_ONEARG_T(sign)
 
-/// qsort not implemented for comple64_t
+/// qsort not implemented for complex128_t
 COMPLEX128_ERROR_SORT_T(qsort)
 
-/// insertion_sort not implemented for comple64_t
+/// insertion_sort not implemented for complex128_t
 COMPLEX128_ERROR_SORT_T(insertion_sort)
 
-/// radix_sort not implemented for comple64_t
+/// radix_sort not implemented for complex128_t
 COMPLEX128_ERROR_SORT_T(radix_sort)
+
+/// arg_max not implemented for complex128_t
+COMPLEX128_ERROR_ARG_MAX_MIN(arg_max)
+
+/// arg_min not implemented for complex128_t
+COMPLEX128_ERROR_ARG_MAX_MIN(arg_min)
 
 }
 #undef COMPLEX128_ERROR_ONEARG

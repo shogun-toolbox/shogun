@@ -34,7 +34,7 @@ int32_t CECOCIHDDecoder::decide_label(const SGVector<float64_t> outputs, const S
     // res = m_delta * L
     cblas_dgemv(CblasColMajor, CblasNoTrans, m_delta.num_cols, m_delta.num_cols,
             1, m_delta.matrix, m_delta.num_cols, L.vector, 1, 1, res.vector, 1);
-    return SGVector<float64_t>::arg_max(res.vector, 1, res.vlen);
+    return CMath::arg_max(res.vector, 1, res.vlen);
 }
 
 void CECOCIHDDecoder::update_delta_cache(const SGMatrix<int32_t> codebook)

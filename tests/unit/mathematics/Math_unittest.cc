@@ -410,12 +410,14 @@ TEST(CMath,misc)
 	a.random(-1024.0, 1024.0);
 
 	/* test, min, max */
+	int arg_max = 0;
 	float64_t min = 1025, max = -1025;
 	for (int32_t i = 0; i < a.vlen; ++i)
 	{
 		if (a[i] > max)
 		{
 			max = a[i];
+			arg_max=i;
 		}
 		if (a[i] < min)
 			min = a[i];
@@ -423,4 +425,5 @@ TEST(CMath,misc)
 
 	EXPECT_EQ(min, CMath::min(a.vector,a.vlen));
 	EXPECT_EQ(max, CMath::max(a.vector,a.vlen));
+	EXPECT_EQ(arg_max, CMath::arg_max(a.vector,1, a.vlen));
 }

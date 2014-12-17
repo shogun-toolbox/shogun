@@ -146,7 +146,7 @@ CMulticlassLabels* CMCLDA::apply_multiclass(CFeatures* data)
 	// argmax to apply labels
 	CMulticlassLabels* out = new CMulticlassLabels(num_vecs);
 	for (int i = 0; i < num_vecs; i++)
-		out->set_label(i, SGVector<float64_t>::arg_max(d.data()+i, num_vecs, m_num_classes));
+		out->set_label(i, CMath::arg_max(d.data()+i, num_vecs, m_num_classes));
 
 	return out;
 }
