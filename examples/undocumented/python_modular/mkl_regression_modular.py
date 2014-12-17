@@ -3,7 +3,7 @@ from numpy import *
 
 parameter_list=[[20,100,6,10,0.5,1, 1], [20,100,6,10,0.5,1, 2]]
 
-def regression_libsvr_modular (n=100,n_test=100, \
+def mkl_regression_modular(n=100,n_test=100, \
 		x_range=6,x_range_test=10,noise_var=0.5,width=1, seed=1):
 
 	from modshogun import RegressionLabels, RealFeatures
@@ -51,4 +51,4 @@ def regression_libsvr_modular (n=100,n_test=100, \
 
 if __name__=='__main__':
 	print('MKLRegression')
-	regression_libsvr_modular(*parameter_list[0])
+	mkl_regression_modular(*parameter_list[0])
