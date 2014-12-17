@@ -235,21 +235,17 @@ ELSEIF(DARWIN AND ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang") AND NOT (CMAKE_C
 	SET(SWIG_CXX_COMPILER_FLAGS "-stdlib=libstdc++ ${SWIG_CXX_COMPILER_FLAGS}")
 ENDIF()
 
+# Fix build on Mac OSX 10.10 Yosemite when using mp-gcc-4X.
+# See: https://github.com/shogun-toolbox/shogun/issues/2635
+IF(DARWIN AND (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang"))
+	SET(CMAKE_CXX_FLAGS "-mno-avx -flax-vector-conversions -D'__has_extension(x)=0' -DvImage_Utilities_h -DvImage_CVUtilities_h ${CMAKE_CXX_FLAGS}")
+	SET(SWIG_CXX_COMPILER_FLAGS "-mno-avx -flax-vector-conversions -D'__has_extension(x)=0' -DvImage_Utilities_h -DvImage_CVUtilities_h ${SWIG_CXX_COMPILER_FLAGS}")
+ENDIF(DARWIN AND (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang"))
+
 include(CheckIncludeFileCXX)
 CHECK_INCLUDE_FILE_CXX("unordered_map" HAVE_STD_UNORDERED_MAP)
 IF (HAVE_STD_UNORDERED_MAP)
 	LIST(APPEND DEFINES HAVE_STD_UNORDERED_MAP)
-ENDIF()
-
-IF(CMAKE_BUILD_TYPE MATCHES "Release")
-	# there's a bug on FreeBSD -march=native.
-	# for some CPU types it does not detect the right flags
-	# see: http://www.freebsd.org/cgi/query-pr.cgi?pr=178792&cat=
-	IF (NOT (FREEBSD AND ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")))
-		SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=native")
-		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
-		SET(SWIG_CXX_COMPILER_FLAGS "${SWIG_CXX_COMPILER_FLAGS} -march=native")
-	ENDIF()
 ENDIF()
 
 ###### MALLOC LIBRARY ###########
