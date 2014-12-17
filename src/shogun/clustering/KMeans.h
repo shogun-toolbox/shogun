@@ -25,16 +25,6 @@ namespace shogun
 {
 class CDistanceMachine;
 
-/** Training method. */
-enum EKMeansMethod
-{
-	/** Mini batch based training */
-    KMM_MINI_BATCH,
-
-    /* Standard KMeans with Lloyds algorithm */
-    KMM_LLOYD
-};
-
 /** @brief KMeans clustering,  partitions the data into k (a-priori specified) clusters.
  *
  * It minimizes
@@ -65,26 +55,16 @@ class CKMeans : public CDistanceMachine
 		 *
 		 * @param k parameter k
 		 * @param d distance
-		 * @param f train_method value
-		 */
-		CKMeans(int32_t k, CDistance* d, EKMeansMethod f);
-
-		/** constructor
-		 *
-		 * @param k parameter k
-		 * @param d distance
 		 * @param kmeanspp true for using KMeans++ (default false)
-		 * @param f train_method value
 		 */
-		CKMeans(int32_t k, CDistance* d, bool kmeanspp=false, EKMeansMethod f=KMM_LLOYD);
+		CKMeans(int32_t k, CDistance* d, bool kmeanspp=false);
 
 		/** constructor for supplying initial centers
 		 * @param k_i parameter k
 		 * @param d_i distance
 		 * @param centers_i initial centers for KMeans algorithm
-		 * @param f train_method value
 		*/
-		CKMeans(int32_t k_i, CDistance* d_i, SGMatrix<float64_t> centers_i, EKMeansMethod f=KMM_LLOYD);
+		CKMeans(int32_t k_i, CDistance* d_i, SGMatrix<float64_t> centers_i);
 		virtual ~CKMeans();
 
 
@@ -185,49 +165,6 @@ class CKMeans : public CDistanceMachine
 		 */
 		virtual void set_initial_centers(SGMatrix<float64_t> centers);
 		
-		/** set training method
-		 *
-		 *@param f minibatch if mini-batch KMeans
-		 */
-		void set_train_method(EKMeansMethod f);
-
-		/** get training method
-		 *
-		 *@return training method used - minibatch or lloyd
-		 */
-		EKMeansMethod get_train_method() const;
-
-		/** set batch size for mini-batch KMeans
-		 *
-		 *@param b batch size int32_t(greater than 0)
-		 */
-		void set_mbKMeans_batch_size(int32_t b);
-
-		/** get batch size for mini-batch KMeans
-		 *
-		 *@return batch size
-		 */
-		int32_t get_mbKMeans_batch_size() const;
-
-		/** set no. of iterations for mini-batch KMeans
-		 *
-		 *@param t no. of iterations int32_t(greater than 0)
-		 */
-		void set_mbKMeans_iter(int32_t t);
-
-		/** get no. of iterations for mini-batch KMeans
-		 *
-		 *@return no. of iterations
-		 */
-		int32_t get_mbKMeans_iter() const;
-
-		/** set batch size and no. of iteration for mini-batch KMeans
-		 *
-		 *@param b batch size
-		 *@param t no. of iterations
-		 */
-		void set_mbKMeans_params(int32_t b, int32_t t);
-
 	private:
 		/** train k-means
 		 *
@@ -244,23 +181,11 @@ class CKMeans : public CDistanceMachine
 
 		virtual bool train_require_labels() const { return false; }
 
-		/** kmeans++ algorithm to initialize cluster centers
-		* 
-		* @return initial cluster centers: matrix (k columns, dim rows)
-		*/	
-		SGMatrix<float64_t> kmeanspp();
 		void init();
 
-		/** algorithm to initialize random cluster centers
-		* 
-		* @return initial cluster centers: matrix (k columns, dim rows)
-		*/
-		void set_random_centers(SGVector<float64_t> weights_set, SGVector<int32_t> ClList, int32_t XSize);
-		void set_initial_centers(SGVector<float64_t> weights_set, 
-					SGVector<int32_t> ClList, int32_t XSize);
-		void compute_cluster_variances();
 
-	private:
+	protected:
+
 		/// maximum number of iterations
 		int32_t max_iter;
 
@@ -282,17 +207,27 @@ class CKMeans : public CDistanceMachine
 		///flag to check if kmeans++ has to be used
 		bool use_kmeanspp;
 	
-		///batch size for mini-batch KMeans
-		int32_t batch_size;
-
-		///number of iterations for mini-batch KMeans
-		int32_t minib_iter;
-
 		/// temp variable for cluster centers
 		SGMatrix<float64_t> mus;
 
-		/// set minibatch to use mini-batch KMeans
-		EKMeansMethod train_method;
+	protected:
+
+		/** kmeans++ algorithm to initialize cluster centers
+		* 
+		* @return initial cluster centers: matrix (k columns, dim rows)
+		*/	
+		SGMatrix<float64_t> kmeanspp();
+
+
+		/** algorithm to initialize random cluster centers
+		* 
+		* @return initial cluster centers: matrix (k columns, dim rows)
+		*/
+		void set_random_centers(SGVector<float64_t> weights_set, SGVector<int32_t> ClList, int32_t XSize);
+		void set_initial_centers(SGVector<float64_t> weights_set, 
+					SGVector<int32_t> ClList, int32_t XSize);
+		void compute_cluster_variances();
+
 };
 }
 #endif

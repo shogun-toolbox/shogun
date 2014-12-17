@@ -32,33 +32,22 @@ CKMeans::CKMeans()
 	init();
 }
 
-CKMeans::CKMeans(int32_t k_, CDistance* d, EKMeansMethod f)
-:CDistanceMachine()
-{
-	init();
-	k=k_;
-	set_distance(d);
-	train_method=f;
-}
-
-CKMeans::CKMeans(int32_t k_, CDistance* d, bool use_kmpp, EKMeansMethod f)
+CKMeans::CKMeans(int32_t k_, CDistance* d, bool use_kmpp)
 : CDistanceMachine()
 {	
 	init();
 	k=k_;
 	set_distance(d);
 	use_kmeanspp=use_kmpp;
-	train_method=f;
 }
 
-CKMeans::CKMeans(int32_t k_i, CDistance* d_i, SGMatrix<float64_t> centers_i, EKMeansMethod f)
+CKMeans::CKMeans(int32_t k_i, CDistance* d_i, SGMatrix<float64_t> centers_i)
 : CDistanceMachine()
 {
 	init();
 	k = k_i;
 	set_distance(d_i);
 	set_initial_centers(centers_i);
-	train_method=f;
 }
 
 CKMeans::~CKMeans()
@@ -225,54 +214,9 @@ void CKMeans::compute_cluster_variances()
 	}
 }
 
+
 bool CKMeans::train_machine(CFeatures* data)
 {
-	ASSERT(distance && distance->get_feature_type()==F_DREAL)
-
-	if (data)
-		distance->init(data, data);
-
-	CDenseFeatures<float64_t>* lhs=
-		CDenseFeatures<float64_t>::obtain_from_generic(distance->get_lhs());
-
-	ASSERT(lhs);
-	int32_t XSize=lhs->get_num_vectors();
-	dimensions=lhs->get_num_features();
-	const int32_t XDimk=dimensions*k;
-
-	ASSERT(XSize>0 && dimensions>0);
-
-	///if kmeans++ to be used
-	if (use_kmeanspp)
-		mus_initial=kmeanspp();
-
-	R=SGVector<float64_t>(k);
-
-	mus=SGMatrix<float64_t>(dimensions, k);
-	/* cluster_centers=zeros(dimensions, k) ; */
-	memset(mus.matrix, 0, sizeof(float64_t)*XDimk);
-
-	SGVector<int32_t> ClList=SGVector<int32_t>(XSize);
-	ClList.zero();
-	SGVector<float64_t> weights_set=SGVector<float64_t>(k);
-	weights_set.zero();
-
-	if (mus_initial.matrix)
-		set_initial_centers(weights_set, ClList, XSize);
-	else
-		set_random_centers(weights_set, ClList, XSize);
-	
-	if (train_method==KMM_MINI_BATCH)
-	{
-		CKMeansMiniBatchImpl::minibatch_KMeans(k, distance, batch_size, minib_iter, mus);
-	}
-	else
-	{
-		CKMeansLloydImpl::Lloyd_KMeans(k, distance, max_iter, mus, ClList, weights_set, fixed_centers);
-	}
-
-	compute_cluster_variances();
-	SG_UNREF(lhs);
 	return true;
 }
 
@@ -320,46 +264,6 @@ void CKMeans::set_max_iter(int32_t iter)
 float64_t CKMeans::get_max_iter()
 {
 	return max_iter;
-}
-
-void CKMeans::set_train_method(EKMeansMethod f)
-{
-	train_method=f;
-}
-
-EKMeansMethod CKMeans::get_train_method() const
-{
-	return train_method;
-}
-
-void CKMeans::set_mbKMeans_batch_size(int32_t b)
-{
-	REQUIRE(b>0, "Parameter bach size should be > 0");
-	batch_size=b;
-}
-
-int32_t CKMeans::get_mbKMeans_batch_size() const
-{
-	return batch_size;
-}
-
-void CKMeans::set_mbKMeans_iter(int32_t i)
-{
-	REQUIRE(i>0, "Parameter number of iterations should be > 0");
-	minib_iter=i;
-}
-
-int32_t CKMeans::get_mbKMeans_iter() const
-{
-	return minib_iter;
-}
-
-void CKMeans::set_mbKMeans_params(int32_t b, int32_t t)
-{
-	REQUIRE(b>0, "Parameter bach size should be > 0");
-	REQUIRE(t>0, "Parameter number of iterations should be > 0");
-	batch_size=b;
-	minib_iter=t;
 }
 
 SGVector<float64_t> CKMeans::get_radiuses()
@@ -468,9 +372,6 @@ void CKMeans::init()
 	dimensions=0;
 	fixed_centers=false;
 	use_kmeanspp=false;
-	train_method=KMM_LLOYD;
-	batch_size=-1;
-	minib_iter=-1;
 	SG_ADD(&max_iter, "max_iter", "Maximum number of iterations", MS_AVAILABLE);
 	SG_ADD(&k, "k", "k, the number of clusters", MS_AVAILABLE);
 	SG_ADD(&dimensions, "dimensions", "Dimensions of data", MS_NOT_AVAILABLE);

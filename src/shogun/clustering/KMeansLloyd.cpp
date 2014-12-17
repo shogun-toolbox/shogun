@@ -7,7 +7,7 @@
  * Written (W) 2014 Parijat Mazumdar
  */
 
-#include "shogun/clustering/KMeansLloydImpl.h"
+#include "shogun/clustering/KMeansLloyd.h"
 #include <shogun/distance/Distance.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/mathematics/Math.h>
@@ -17,13 +17,28 @@ using namespace shogun;
 
 namespace shogun
 {
-void CKMeansLloydImpl::Lloyd_KMeans(int32_t k, CDistance* distance, int32_t max_iter, SGMatrix<float64_t> mus, 
-		SGVector<int32_t> ClList, SGVector<float64_t> weights_set, bool fixed_centers)
+CKMeansLloyd::CKMeansLloyd() : CKMeans()
+{
+}
+
+CKMeansLloyd::CKMeansLloyd(int32_t k_, CDistance* d, bool use_kmpp) : CKMeans(k_, d, use_kmpp)
+{
+}
+
+CKMeansLloyd::CKMeansLloyd(int32_t k_i, CDistance* d_i, SGMatrix<float64_t> centers_i) : CKMeans(k_i, d_i, centers_i)
+{
+}
+
+CKMeansLloyd::~CKMeansLloyd()
+{
+}
+
+void CKMeansLloyd::Lloyd_KMeans(SGVector<int32_t> ClList_, SGVector<float64_t> weights_set_)
 {
 	CDenseFeatures<float64_t>* lhs=
 		CDenseFeatures<float64_t>::obtain_from_generic(distance->get_lhs());
 	int32_t XSize=lhs->get_num_vectors();
-	int32_t dimensions=lhs->get_num_features();
+	//int32_t dimensions=lhs->get_num_features();
 
 	CDenseFeatures<float64_t>* rhs_mus=new CDenseFeatures<float64_t>(0);
 	CFeatures* rhs_cache=distance->replace_rhs(rhs_mus);
@@ -53,7 +68,7 @@ void CKMeansLloydImpl::Lloyd_KMeans(int32_t k, CDistance* distance, int32_t max_
 			mus.zero();
 			for (int32_t i=0; i<XSize; i++)
 			{
-				int32_t Cl=ClList[i];
+				int32_t Cl=ClList_[i];
 
 				vec=lhs->get_feature_vector(i, vlen, vfree);
 
@@ -65,10 +80,10 @@ void CKMeansLloydImpl::Lloyd_KMeans(int32_t k, CDistance* distance, int32_t max_
 
 			for (int32_t i=0; i<k; i++)
 			{
-				if (weights_set[i]!=0.0)
+				if (weights_set_[i]!=0.0)
 				{
 					for (int32_t j=0; j<dimensions; j++)
-						mus.matrix[i*dimensions+j] /= weights_set[i];
+						mus.matrix[i*dimensions+j] /= weights_set_[i];
 				}
 			}
 		}
@@ -77,7 +92,7 @@ void CKMeansLloydImpl::Lloyd_KMeans(int32_t k, CDistance* distance, int32_t max_
 		{
 			/* ks=ceil(rand(1,XSize)*XSize) ; */
 			const int32_t Pat=CMath::random(0, XSize-1);
-			const int32_t ClList_Pat=ClList[Pat];
+			const int32_t ClList_Pat=ClList_[Pat];
 			int32_t imini, j;
 			float64_t mini;
 
@@ -99,30 +114,30 @@ void CKMeansLloydImpl::Lloyd_KMeans(int32_t k, CDistance* distance, int32_t max_
 				changed++;
 
 				/* weights_set(imini) = weights_set(imini) + 1.0 ; */
-				weights_set[imini]+= 1.0;
+				weights_set_[imini]+= 1.0;
 				/* weights_set(j)     = weights_set(j)     - 1.0 ; */
-				weights_set[ClList_Pat]-= 1.0;
+				weights_set_[ClList_Pat]-= 1.0;
 
 				vec=lhs->get_feature_vector(Pat, vlen, vfree);
 
 				for (j=0; j<dimensions; j++)
 				{
 					mus.matrix[imini*dimensions+j]-=
-						(vec[j]-mus.matrix[imini*dimensions+j]) / weights_set[imini];
+						(vec[j]-mus.matrix[imini*dimensions+j]) / weights_set_[imini];
 				}
 
 				lhs->free_feature_vector(vec, Pat, vfree);
 
 				/* mu_new = mu_old - (x - mu_old)/(n-1) */
 				/* if weights_set(j)~=0 */
-				if (weights_set[ClList_Pat]!=0.0)
+				if (weights_set_[ClList_Pat]!=0.0)
 				{
 					vec=lhs->get_feature_vector(Pat, vlen, vfree);
 	
 					for (j=0; j<dimensions; j++)
 					{
 						mus.matrix[ClList_Pat*dimensions+j]-=
-								(vec[j]-mus.matrix[ClList_Pat*dimensions+j]) / weights_set[ClList_Pat];
+								(vec[j]-mus.matrix[ClList_Pat*dimensions+j]) / weights_set_[ClList_Pat];
 					}
 					lhs->free_feature_vector(vec, Pat, vfree);
 				}
@@ -134,7 +149,7 @@ void CKMeansLloydImpl::Lloyd_KMeans(int32_t k, CDistance* distance, int32_t max_
 				}
 
 				/* ClList(i)= imini ; */
-				ClList[Pat] = imini;
+				ClList_[Pat] = imini;
 			}
 		}
 	}
@@ -142,4 +157,49 @@ void CKMeansLloydImpl::Lloyd_KMeans(int32_t k, CDistance* distance, int32_t max_
 	delete rhs_mus;
 	SG_UNREF(lhs);
 }
+
+bool CKMeansLloyd::train_machine(CFeatures* data)
+{
+	ASSERT(distance && distance->get_feature_type()==F_DREAL)
+
+	if (data)
+		distance->init(data, data);
+
+	CDenseFeatures<float64_t>* lhs=
+		CDenseFeatures<float64_t>::obtain_from_generic(distance->get_lhs());
+
+	ASSERT(lhs);
+	int32_t XSize=lhs->get_num_vectors();
+	dimensions=lhs->get_num_features();
+	const int32_t XDimk=dimensions*k;
+
+	ASSERT(XSize>0 && dimensions>0);
+
+	///if kmeans++ to be used
+	if (use_kmeanspp)
+		mus_initial=kmeanspp();
+
+	R=SGVector<float64_t>(k);
+
+	mus=SGMatrix<float64_t>(dimensions, k);
+	/* cluster_centers=zeros(dimensions, k) ; */
+	memset(mus.matrix, 0, sizeof(float64_t)*XDimk);
+
+	SGVector<int32_t> ClList=SGVector<int32_t>(XSize);
+	ClList.zero();
+	SGVector<float64_t> weights_set=SGVector<float64_t>(k);
+	weights_set.zero();
+
+	if (mus_initial.matrix)
+		set_initial_centers(weights_set, ClList, XSize);
+	else
+		set_random_centers(weights_set, ClList, XSize);
+	
+	Lloyd_KMeans(ClList, weights_set);
+
+	compute_cluster_variances();
+	SG_UNREF(lhs);
+	return true;
+}
+
 }
