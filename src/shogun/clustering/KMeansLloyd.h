@@ -43,7 +43,8 @@ class CKMeansLloyd : public CKMeans
 		CKMeansLloyd(int32_t k_i, CDistance* d_i, SGMatrix<float64_t> centers_i);
 		virtual ~CKMeansLloyd();
 
-
+		/** @return object name */
+		virtual const char* get_name() const { return "KMeansLloyd"; }		
 
 	private:
 

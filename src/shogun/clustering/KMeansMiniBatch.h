@@ -44,6 +44,9 @@ class CKMeansMiniBatch : public CKMeans
 		CKMeansMiniBatch(int32_t k_i, CDistance* d_i, SGMatrix<float64_t> centers_i);
 		virtual ~CKMeansMiniBatch();
 
+		/** @return object name */
+		virtual const char* get_name() const { return "KMeansMiniBatch"; }	
+
 		/** set batch size for mini-batch KMeans
 		 *
 		 *@param b batch size int32_t(greater than 0)
@@ -110,10 +113,10 @@ class CKMeansMiniBatch : public CKMeans
 	private:
 
 		///batch size for mini-batch KMeans
-		int32_t batch_size;
+		int32_t m_batch_size;
 
 		///number of iterations for mini-batch KMeans
-		int32_t minib_iter;
+		int32_t m_minib_iter;
 
 };
 }

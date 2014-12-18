@@ -187,28 +187,28 @@ class CKMeans : public CDistanceMachine
 	protected:
 
 		/// maximum number of iterations
-		int32_t max_iter;
+		int32_t m_max_iter;
 
 		/// whether to keep cluster centers fixed or not
-		bool fixed_centers;
+		bool m_fixed_centers;
 
 		/// the k parameter in KMeans
-		int32_t k;
+		int32_t m_k;
 
 		/// number of dimensions
-		int32_t dimensions;
+		int32_t m_dimensions;
 
 		/// radi of the clusters (size k)
-		SGVector<float64_t> R;
+		SGVector<float64_t> m_R;
 
 		///initial centers supplied
-		SGMatrix<float64_t> mus_initial;
+		SGMatrix<float64_t> m_mus_initial;
 		
 		///flag to check if kmeans++ has to be used
-		bool use_kmeanspp;
+		bool m_use_kmeanspp;
 	
 		/// temp variable for cluster centers
-		SGMatrix<float64_t> mus;
+		SGMatrix<float64_t> m_mus;
 
 	protected:
 
