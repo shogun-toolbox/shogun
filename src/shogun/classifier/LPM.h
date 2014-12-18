@@ -14,7 +14,6 @@
 #include <shogun/lib/config.h>
 #ifdef USE_CPLEX
 
-#include <stdio.h>
 #include <shogun/lib/common.h>
 #include <shogun/features/Features.h>
 #include <shogun/machine/LinearMachine.h>
