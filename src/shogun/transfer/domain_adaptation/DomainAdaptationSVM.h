@@ -18,7 +18,6 @@
 #include <shogun/lib/common.h>
 #include <shogun/classifier/svm/SVMLight.h>
 
-#include <stdio.h>
 
 namespace shogun
 {

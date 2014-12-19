@@ -10,6 +10,7 @@
 #include <shogun/transfer/multitask/MultitaskLogisticRegression.h>
 #include <shogun/lib/slep/slep_solver.h>
 #include <shogun/lib/slep/slep_options.h>
+#include <vector>
 
 namespace shogun
 {

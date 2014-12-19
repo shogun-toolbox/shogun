@@ -17,7 +17,6 @@
 #include <shogun/features/streaming/StreamingDotFeatures.h>
 #include <shogun/machine/Machine.h>
 
-#include <stdio.h>
 
 namespace shogun
 {

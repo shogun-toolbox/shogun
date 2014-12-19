@@ -17,7 +17,6 @@
 #include <shogun/lib/common.h>
 #include <shogun/machine/Machine.h>
 
-#include <stdio.h>
 
 namespace shogun
 {

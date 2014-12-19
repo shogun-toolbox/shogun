@@ -18,7 +18,6 @@
 #include <shogun/machine/Machine.h>
 #include <shogun/lib/SGVector.h>
 
-#include <stdio.h>
 
 namespace shogun
 {

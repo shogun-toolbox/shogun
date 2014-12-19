@@ -17,8 +17,6 @@
 #include <shogun/transfer/multitask/TaskTree.h>
 #include <shogun/transfer/multitask/Task.h>
 
-#include <vector>
-#include <set>
 
 using namespace std;
 
