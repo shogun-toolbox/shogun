@@ -20,8 +20,6 @@
 #include <shogun/features/StringFeatures.h>
 #include <shogun/distributions/Distribution.h>
 
-#include <stdio.h>
-
 #ifdef USE_HMMPARALLEL
 #define USE_HMMPARALLEL_STRUCTURES 1
 #endif

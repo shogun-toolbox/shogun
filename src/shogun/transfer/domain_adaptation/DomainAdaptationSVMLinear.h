@@ -16,7 +16,6 @@
 #include <shogun/lib/common.h>
 #include <shogun/classifier/svm/LibLinear.h>
 
-#include <stdio.h>
 
 namespace shogun
 {

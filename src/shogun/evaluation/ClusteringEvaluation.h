@@ -13,8 +13,6 @@
 
 #include <shogun/lib/config.h>
 
-#include <vector>
-
 #include <shogun/evaluation/Evaluation.h>
 #include <shogun/labels/Labels.h>
 
