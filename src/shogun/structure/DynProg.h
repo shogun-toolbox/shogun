@@ -30,8 +30,6 @@
 #include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/lib/Time.h>
 
-#include <stdio.h>
-#include <limits.h>
 
 namespace shogun
 {

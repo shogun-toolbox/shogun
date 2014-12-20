@@ -14,8 +14,6 @@
 
 #include <shogun/lib/config.h>
 
-#include <stdio.h>
-
 #include <shogun/lib/common.h>
 #include <shogun/io/File.h>
 #include <shogun/mathematics/Math.h>

@@ -16,7 +16,6 @@
 
 #include <shogun/lib/config.h>
 
-#include <stdio.h>
 #include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/features/Features.h>

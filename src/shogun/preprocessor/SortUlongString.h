@@ -17,7 +17,6 @@
 #include <shogun/preprocessor/StringPreprocessor.h>
 #include <shogun/lib/common.h>
 
-#include <stdio.h>
 namespace shogun
 {
 /** @brief Preprocessor SortUlongString, sorts the indivual strings in ascending order.

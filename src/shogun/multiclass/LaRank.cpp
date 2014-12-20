@@ -48,6 +48,9 @@
 
 #include <vector>
 #include <algorithm>
+#include <ctime>
+#include <algorithm>
+#include <sys/time.h>
 
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/Signal.h>

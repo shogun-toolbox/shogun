@@ -11,6 +11,8 @@
 
 #include <shogun/preprocessor/RandomFourierGaussPreproc.h>
 #include <cmath>
+#include <vector>
+#include <algorithm>
 
 using namespace shogun;
 
