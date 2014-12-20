@@ -17,7 +17,6 @@
 #include <shogun/features/Features.h>
 #include <shogun/lib/common.h>
 
-#include <stdio.h>
 
 namespace shogun
 {

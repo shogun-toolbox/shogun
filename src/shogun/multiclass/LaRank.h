@@ -49,10 +49,7 @@
 #ifndef LARANK_H
 #define LARANK_H
 
-#include <ctime>
 #include <vector>
-#include <algorithm>
-#include <sys/time.h>
 #include <set>
 #include <map>
 #define STDEXT_NAMESPACE __gnu_cxx
