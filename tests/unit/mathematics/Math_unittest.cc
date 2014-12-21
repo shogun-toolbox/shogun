@@ -137,17 +137,23 @@ TEST(CMath, linspace_test)
 
 	SGVector<float64_t> vec(100);
 	CMath::linspace(vec.vector, start, end, n);
+	SGVector<float64_t> sg_vec = CMath::linspace_vec(start, end, n);
 
 	// The first and last elements are tested outside the loop, because
 	// linspace sets them directly using the arguments
 	EXPECT_EQ(vec[0], start);
 	EXPECT_EQ(vec[n-1], end);
 
+	// test for CMath::linspace_vec which returns a vector
+	EXPECT_EQ(sg_vec[0], start);
+	EXPECT_EQ(sg_vec[n-1], end);
+
 	float64_t val = start;
 	for (index_t i = 1; i < n-1; ++i)
 	{
 		val += (end-start)/(n-1);
 		EXPECT_EQ(vec[i], val);
+		EXPECT_EQ(sg_vec[i], val);
 	}
 }
 

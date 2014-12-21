@@ -523,3 +523,22 @@ TEST(Statistics,log_det_general_test_4)
 	result = CStatistics::log_det_general(A);
 	EXPECT_EQ(result, CMath::INFTY);
 }
+
+TEST(Statistics, vector_mean_test)
+{
+	CMath::init_random(17);
+	SGVector<float64_t> a(10);
+	a.random(-1024.0, 1024.0);
+	floatmax_t sum_a=0;
+	for(int i=0; i<a.vlen; i++)
+		sum_a+=a[i];
+
+	EXPECT_EQ(sum_a/a.vlen, CStatistics::mean(a));
+}
+
+TEST(Statistics, vector_mean_overflow_test)
+{
+	SGVector<float64_t> a(10);
+	a.set_const(std::numeric_limits<float64_t>::max());
+	EXPECT_EQ(std::numeric_limits<float64_t>::max(), CStatistics::mean(a));
+}
