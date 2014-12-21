@@ -15,9 +15,8 @@
 
 #include <shogun/lib/config.h>
 
-#include <stdio.h>
-#include <string.h>
 #include <dirent.h>
+#include <string.h>
 #include <locale.h>
 #include <sys/types.h>
 

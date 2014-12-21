@@ -14,7 +14,6 @@
 
 #include <shogun/lib/SGVector.h>
 #include <shogun/base/SGObject.h>
-#include <stdio.h>
 
 namespace shogun
 {
