@@ -37,18 +37,6 @@ using namespace Eigen;
 
 using namespace shogun;
 
-float64_t CStatistics::mean(SGVector<float64_t> values)
-{
-	ASSERT(values.vlen>0)
-	ASSERT(values.vector)
-
-	float64_t sum=0;
-	for (index_t i=0; i<values.vlen; ++i)
-		sum+=values.vector[i];
-
-	return sum/values.vlen;
-}
-
 float64_t CStatistics::median(SGVector<float64_t> values, bool modify,
 			bool in_place)
 {

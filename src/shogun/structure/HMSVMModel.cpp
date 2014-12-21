@@ -12,6 +12,7 @@
 #include <shogun/features/MatrixFeatures.h>
 #include <shogun/structure/TwoStateModel.h>
 #include <shogun/structure/Plif.h>
+#include <shogun/mathematics/Math.h>
 
 using namespace shogun;
 
@@ -558,7 +559,7 @@ void CHMSVMModel::init_training()
 		}
 
 		// Choose the supporting points so that roughly the same number of points fall in each bin
-		SGVector< float64_t > a = SGVector< float64_t >::linspace_vec(1, N, m_num_plif_nodes+1);
+		SGVector< float64_t > a = CMath::linspace_vec(1, N, m_num_plif_nodes+1);
 		SGVector< index_t > signal_idxs(m_num_plif_nodes);
 		for ( int32_t i = 0 ; i < signal_idxs.vlen ; ++i )
 			signal_idxs[i] = (index_t) CMath::round( (a[i] + a[i+1]) / 2 ) - 1;
