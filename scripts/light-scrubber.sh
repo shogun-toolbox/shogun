@@ -63,7 +63,7 @@ touch -r ${_file}.orig ${_file} &&						\
 rm -rf ${_file}.orig
 
 _file="src/interfaces/modular/Machine.i" &&					\
-sed -i.orig -e 'd/.*CSVRLight.*/' ${_file} &&					\
+sed -i.orig -e '/.*CSVRLight.*/d' ${_file} &&					\
 touch -r ${_file}.orig ${_file} &&						\
 rm -rf ${_file}.orig
 
