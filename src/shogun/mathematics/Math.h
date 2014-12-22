@@ -823,6 +823,35 @@ class CMath : public CSGObject
 		 */
 		static void linspace(float64_t* output, float64_t start, float64_t end, int32_t n = 100);
 
+		/** Returns an array with n linearly spaced elements between start and end.
+		 *
+		 * @param start beginning of the interval to divide
+		 * @param end upper bound of the interval to divide
+		 * @param n number of elements used to divide the interval
+		 * @return array with linearly spaced elements within the interval
+		 */
+		template <class T>
+			static float64_t* linspace(T start, T end, int32_t n)
+			{
+				float64_t* output = SG_MALLOC(float64_t, n);
+				linspace(output, start, end, n);
+
+				return output;
+			}
+
+		/** Returns a vector with n linearly spaced elements between start and end.
+		 *
+		 * @param start beginning of the interval to divide
+		 * @param end upper bound of the interval to divide
+		 * @param n number of elements used to divide the interval
+		 * @return vector with linearly spaced elements within the interval
+		 */
+		template <class T>
+			static SGVector<float64_t> linspace_vec(T start, T end, int32_t n)
+			{
+				return SGVector<float64_t>(linspace(start, end, n), n);
+			}
+
 		/** Computes \f$\log(\sum_{i=1}^n \exp(x_i))\f$ for given \f$x_i\f$
 		 * using the log-sum-exp trick which avoids numerical problems.
 		 *
@@ -1775,6 +1804,13 @@ void CMath::min(float64_t* output, T* index, int32_t size)
 	}
 	swap(output[0], output[min_index]);
 	swap(index[0], index[min_index]);
+}
+
+template <>
+inline float64_t* CMath::linspace<complex128_t>(complex128_t start, complex128_t end, int32_t n)
+{
+	SG_SERROR("SGVector::linspace():: Not supported for complex128_t\n");
+	return NULL;
 }
 
 #define COMPLEX128_ERROR_ONEARG_T(function)	\

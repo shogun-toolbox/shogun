@@ -19,6 +19,8 @@
 #include <math.h>
 #include <shogun/lib/config.h>
 #include <shogun/base/SGObject.h>
+#include <shogun/lib/SGVector.h>
+#include <shogun/io/SGIO.h>
 
 namespace shogun
 {
@@ -39,7 +41,16 @@ public:
 	 * @param values vector of values
 	 * @return mean of given values
 	 */
-	static float64_t mean(SGVector<float64_t> values);
+	template<class T>
+		static floatmax_t mean(SGVector<T> vec)
+		{
+			floatmax_t sum = 0;
+
+			for ( index_t i = 0 ; i < vec.vlen ; ++i )
+				sum += vec[i];
+
+			return sum/vec.vlen;
+		}
 
 	/** Calculates median of given values. The median is the value that one
 	 * gets when the input vector is sorted and then selects the middle value.
@@ -653,6 +664,13 @@ protected:
 	/** method to make ALGLIB integration easier */
 	static inline bool greater_equal(float64_t a, float64_t b) { return a>=b; }
 };
+
+template <>
+	inline floatmax_t CStatistics::mean<complex128_t>(SGVector<complex128_t> vec)
+	{
+		SG_SNOTIMPLEMENTED
+		return floatmax_t(0.0);
+	}
 
 }
 

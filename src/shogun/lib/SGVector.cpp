@@ -958,23 +958,6 @@ void SGVector<T>::scale(T alpha)
 	scale_vector(alpha, vector, vlen);
 }
 
-template<class T> float64_t SGVector<T>::mean() const
-{
-	float64_t cum = 0;
-
-	for ( index_t i = 0 ; i < vlen ; ++i )
-		cum += vector[i];
-
-	return cum/vlen;
-}
-
-template <>
-float64_t SGVector<complex128_t>::mean() const
-{
-	SG_SNOTIMPLEMENTED
-	return float64_t(0.0);
-}
-
 template<class T> void SGVector<T>::load(CFile* loader)
 {
 	ASSERT(loader)
@@ -1008,29 +991,6 @@ template<>
 void SGVector<complex128_t>::save(CFile* saver)
 {
 	SG_SERROR("SGVector::save():: Not supported for complex128_t\n");
-}
-
-template <class T>
-SGVector<float64_t> SGVector<T>::linspace_vec(T start, T end, int32_t n)
-{
-	return SGVector<float64_t>(linspace(start, end, n), n);
-}
-
-template <class T>
-float64_t* SGVector<T>::linspace(T start, T end, int32_t n)
-{
-	float64_t* output = SG_MALLOC(float64_t, n);
-	CMath::linspace(output, start, end, n);
-
-	return output;
-}
-
-template <>
-float64_t* SGVector<complex128_t>::linspace(complex128_t start, complex128_t end, int32_t n)
-{
-	float64_t* output = SG_MALLOC(float64_t, n);
-	SG_SERROR("SGVector::linspace():: Not supported for complex128_t\n");
-	return output;
 }
 
 template <class T> SGVector<float64_t> SGVector<T>::get_real()
