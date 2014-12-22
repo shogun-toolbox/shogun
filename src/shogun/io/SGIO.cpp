@@ -18,7 +18,6 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/RefCount.h>
 
-#include <stdio.h>
 #include <stdarg.h>
 #include <ctype.h>
 #include <dirent.h>

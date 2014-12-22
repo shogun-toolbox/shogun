@@ -24,8 +24,6 @@
     #endif
 #endif
 
-#include <google/protobuf/message.h>
-
 #ifdef __APPLE__
     #ifdef ___APPLE_TYPE_BOOL
         #define TYPE_BOOL ___APPLE_TYPE_BOOL
