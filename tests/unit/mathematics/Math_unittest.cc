@@ -433,3 +433,67 @@ TEST(CMath,misc)
 	EXPECT_EQ(max, CMath::max(a.vector,a.vlen));
 	EXPECT_EQ(arg_max, CMath::arg_max(a.vector,1, a.vlen));
 }
+
+TEST(CMath,vector_qsort_test)
+{
+	SGVector<index_t> v(4);
+	v[0]=12;
+	v[1]=1;
+	v[2]=7;
+	v[3]=9;
+
+	CMath::qsort(v);
+
+	EXPECT_EQ(v.vlen, 4);
+	EXPECT_EQ(v[0], 1);
+	EXPECT_EQ(v[1], 7);
+	EXPECT_EQ(v[2], 9);
+	EXPECT_EQ(v[3], 12);
+}
+
+TEST(CMath,is_sorted)
+{
+	SGVector<index_t> v(4);
+	v[0]=12;
+	v[1]=1;
+	v[2]=7;
+	v[3]=9;
+
+	EXPECT_EQ(CMath::is_sorted(v), false);
+	CMath::qsort(v);
+
+	EXPECT_EQ(CMath::is_sorted(v), true);
+}
+
+TEST(CMath,is_sorted_0)
+{
+	SGVector<index_t> v(0);
+
+	EXPECT_EQ(CMath::is_sorted(v), true);
+	CMath::qsort(v);
+
+	EXPECT_EQ(CMath::is_sorted(v), true);
+}
+
+TEST(CMath,is_sorted_1)
+{
+	SGVector<index_t> v(1);
+	v[0]=12;
+
+	EXPECT_EQ(CMath::is_sorted(v), true);
+	CMath::qsort(v);
+
+	EXPECT_EQ(CMath::is_sorted(v), true);
+}
+
+TEST(CMath,is_sorted_2)
+{
+	SGVector<index_t> v(2);
+	v[0]=12;
+	v[1]=1;
+
+	EXPECT_EQ(CMath::is_sorted(v), false);
+	CMath::qsort(v);
+
+	EXPECT_EQ(CMath::is_sorted(v), true);
+}

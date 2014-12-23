@@ -134,25 +134,6 @@ template<class T> class SGVector : public SGReferencedData
 		 */
 		index_t find_position_to_insert(T element);
 
-		/** Quicksort the vector
-		 * it is sorted from in ascending (for type T)
-		 */
-		void qsort();
-
-		/** Get sorted index.
-		 *
-		 * idx = v.argsort() is similar to Matlab [~, idx] = sort(v)
-		 *
-		 * @return sorted index for this vector
-		 */
-		SGVector<index_t> argsort();
-
-		/** Check if vector is sorted
-		 *
-		 * @return true if vector is sorted, false otherwise
-		 */
-		bool is_sorted() const;
-
 		/** Clone vector */
 		SGVector<T> clone() const;
 

@@ -28,6 +28,7 @@
 #include <shogun/base/Parallel.h>
 #include <shogun/mathematics/Random.h>
 #include <shogun/lib/SGVector.h>
+#include <algorithm>
 
 #ifndef _USE_MATH_DEFINES
 #define _USE_MATH_DEFINES
@@ -1157,6 +1158,73 @@ class CMath : public CSGObject
 			SG_SERROR("CMath::qsort():: Not supported for complex128_t\n");
 		}
 
+		/** Quicksort the vector in ascending order (for type T)
+		  * @param vector vector to be sorted
+		  */
+		template <class T>
+			static void qsort(SGVector<T> vector)
+			{
+				qsort<T>(vector, vector.size());
+			}
+
+		/** Helper functor for the function argsort */
+		template<class T>
+			struct IndexSorter
+			{
+				/** constructor */
+				IndexSorter(const SGVector<T> *vec) { data = vec->vector; }
+
+				/** access operator */
+				bool operator() (index_t i, index_t j) const
+				{
+					return abs(data[i]-data[j])>std::numeric_limits<T>::epsilon()
+					&& data[i]<data[j];
+				}
+
+				/** data */
+				const T* data;
+			};
+
+		/** Get sorted index.
+		 *
+		 * idx = v.argsort() is similar to Matlab [~, idx] = sort(v)
+		 * 
+		 * @param vector vector to be sorted
+		 * @return sorted index for this vector
+		 */
+		template<class T>
+			static SGVector<index_t> argsort(SGVector<T> vector)
+			{
+				IndexSorter<T> cmp(&vector);
+				SGVector<index_t> idx(vector.size());
+				for (index_t i=0; i < vector.size(); ++i)
+					idx[i] = i;
+
+				std::sort(idx.vector, idx.vector+vector.size(), cmp);
+
+				return idx;
+			}
+
+		/** Check if vector is sorted
+		 *
+		 * @param vector input vector
+		 * @return true if vector is sorted, false otherwise
+		 */
+		template <class T>
+			static bool is_sorted(SGVector<T> vector)
+			{
+				if (vector.size() < 2)
+					return true;
+
+				for(int32_t i=1; i<vector.size(); i++)
+				{
+					if (vector[i-1] > vector[i])
+						return false;
+				}
+
+				return true;
+			}
+
 		/// display bits (useful for debugging)
 		template <class T> static void display_bits(T word, int32_t width=8*sizeof(T))
 		{
@@ -1813,6 +1881,15 @@ inline float64_t* CMath::linspace<complex128_t>(complex128_t start, complex128_t
 	return NULL;
 }
 
+#define COMPLEX128_ERROR_ONEVECARG_RETURNS_T(function, return_type, return_statement) \
+template <> \
+inline return_type CMath::function<complex128_t>(SGVector<complex128_t> vector) \
+{ \
+	SG_SERROR("CMath::%s():: Not supported for complex128_t\n", \
+		#function); \
+	return_statement; \
+}
+
 #define COMPLEX128_ERROR_ONEARG_T(function)	\
 template <> \
 inline complex128_t CMath::function<complex128_t>(complex128_t a)	\
@@ -1857,6 +1934,15 @@ inline int32_t CMath::function<complex128_t>(complex128_t * a, int32_t b, int32_
 		#function);\
 	return maxIdx; \
 }
+
+/// qsort not implemented for complex128_t, returns void instead
+COMPLEX128_ERROR_ONEVECARG_RETURNS_T(qsort, void, return;)
+
+/// argsort not implemented for complex128_t, returns a vector
+COMPLEX128_ERROR_ONEVECARG_RETURNS_T(argsort, SGVector<index_t>, SGVector<index_t> idx(vector.size());return idx;)
+
+/// is_sorted not implemented for complex128_t, returns false
+COMPLEX128_ERROR_ONEVECARG_RETURNS_T(is_sorted, bool, return false;)
 
 /// min not implemented for complex128_t, returns (0.0)+i(0.0) instead
 COMPLEX128_ERROR_TWOARGS_T(min)

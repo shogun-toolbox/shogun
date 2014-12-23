@@ -33,6 +33,7 @@
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/statistics/IndependenceTest.h>
 #include <shogun/preprocessor/DependenceMaximization.h>
+#include <shogun/mathematics/Math.h>
 
 using namespace shogun;
 
@@ -158,7 +159,7 @@ CFeatures* CDependenceMaximization::remove_feats(CFeatures* features,
 	memcpy(inds.vector, argsorted.vector, sizeof(index_t)*inds.vlen);
 
 	// sorting the indices to get the original order
-	inds.qsort();
+	CMath::qsort(inds);
 	if (io->get_loglevel()==MSG_DEBUG || io->get_loglevel()==MSG_GCDEBUG)
 		inds.display_vector("selected feats");
 

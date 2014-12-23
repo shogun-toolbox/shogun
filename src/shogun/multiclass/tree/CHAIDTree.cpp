@@ -218,7 +218,7 @@ CTreeMachineNode<CHAIDTreeNodeData>* CCHAIDTree::CHAIDtrain(CFeatures* data, SGV
 	else if (m_dependent_vartype==0 || m_dependent_vartype==1)
 	{
 		SGVector<float64_t> lab=labels_vec.clone();	
-		lab.qsort();
+		CMath::qsort(lab);
 		// stores max total weight for a single label 
 		int32_t max=weights[0];
 		// stores one of the indices having max total weight
@@ -1326,7 +1326,7 @@ bool CCHAIDTree::continuous_to_ordinal(CDenseFeatures<float64_t>* feats)
 		for (int32_t j=0;j<values.vlen;j++)
 			values[j]=feats->get_feature_vector(j)[cont_ind[i]];
 
-		values.qsort();
+		CMath::qsort(values);
 
 		for (int32_t j=0;j<m_num_breakpoints;j++)
 		{

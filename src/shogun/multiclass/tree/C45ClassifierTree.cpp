@@ -157,7 +157,7 @@ CTreeMachineNode<C45TreeNodeData>* CC45ClassifierTree::C45train(CFeatures* data,
 
 	// set class_label for the node as the mode of occurring multiclass labels
 	SGVector<float64_t> labels=class_labels->get_labels_copy();
-	labels.qsort();
+	CMath::qsort(labels);
 
 	int32_t most_label=labels[0];
 	int32_t most_weight=weights[0];

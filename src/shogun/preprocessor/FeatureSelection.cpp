@@ -34,6 +34,7 @@
 #include <shogun/features/SparseFeatures.h>
 #include <shogun/features/SubsetStack.h>
 #include <shogun/preprocessor/FeatureSelection.h>
+#include <shogun/mathematics/Math.h>
 
 namespace shogun
 {
@@ -110,7 +111,7 @@ CFeatures* CFeatureSelection<ST>::apply_backward_elimination(CFeatures* features
 			measures.display_vector("measures");
 
 		// rank the measures
-		SGVector<index_t> argsorted=measures.argsort();
+		SGVector<index_t> argsorted=CMath::argsort(measures);
 
 		if (io->get_loglevel()==MSG_DEBUG || io->get_loglevel()==MSG_GCDEBUG)
 			argsorted.display_vector("argsorted");
@@ -230,7 +231,7 @@ SGVector<index_t> CFeatureSelection<ST>::get_selected_feats()
 		inds=SGVector<index_t>(m_subset->get_size());
 		for (index_t i=0; i<inds.vlen; ++i)
 			inds[i]=m_subset->subset_idx_conversion(i);
-		inds.qsort();
+		CMath::qsort(inds);
 	}
 
 	return inds;

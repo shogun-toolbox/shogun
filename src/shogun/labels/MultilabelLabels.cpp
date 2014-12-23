@@ -95,13 +95,13 @@ CMultilabelLabels::ensure_valid(const char * context)
 {
 	for (int32_t label_j = 0; label_j < get_num_labels(); label_j++)
 	{
-		if (sg_io->get_loglevel() == MSG_DEBUG && !m_labels[label_j].is_sorted())
+		if (sg_io->get_loglevel() == MSG_DEBUG && !CMath::is_sorted(m_labels[label_j]))
 		{
 			SG_PRINT("m_labels[label_j=%d] not sorted: ", label_j);
 			m_labels[label_j].display_vector("");
 		}
 
-		REQUIRE(m_labels[label_j].is_sorted(),
+		REQUIRE(CMath::is_sorted(m_labels[label_j]),
 		        "labels[%d] are not sorted!", label_j);
 
 		int32_t c_len = m_labels[label_j].vlen;
