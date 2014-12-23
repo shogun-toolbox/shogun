@@ -4,7 +4,7 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2014 Parijat Mazumdar
+ * Written (W) 2014 Saurabh Mahindre
  */
 
 #ifndef _MBKMEANS_H__
@@ -14,15 +14,15 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/io/SGIO.h>
-#include <shogun/clustering/KMeans.h>
+#include <shogun/clustering/KMeansBase.h>
 
 
 namespace shogun
 {
-class CKMeans;
+class CKMeansBase;
 
-/** Implementation class for the mini batch KMeans */
-class CKMeansMiniBatch : public CKMeans
+/** Class for the mini batch KMeans */
+class CKMeansMiniBatch : public CKMeansBase
 {
 	public:
 		/** default constructor */
@@ -90,23 +90,6 @@ class CKMeansMiniBatch : public CKMeans
 		 * @return whether training was successful
 		 */
 		virtual bool train_machine(CFeatures* data=NULL);
-
-
-		/** mini-batch KMeans training method
-		 *
-		 * @param k parameter k
-		 * @param distance distance
- 		 * @param batch_size parameter batch size
-		 * @param minib_iter parameter number of iterations
-		 * @param mus cluster centers matrix (k columns) 
-		 */
-		void minibatch_KMeans();
-
-
-		/* choose b integers between 0 and num-1
-		 * 
-		 */
-		static SGVector<int32_t> mbchoose_rand(int32_t b, int32_t num);
 
 		void init();		
 

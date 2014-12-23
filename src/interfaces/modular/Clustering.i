@@ -18,16 +18,16 @@
 /* Remove C Prefix */
 %rename(DistanceMachine) CDistanceMachine;
 %rename(Hierarchical) CHierarchical;
-%rename(KMeans) CKMeans;
+%rename(KMeansBase) CKMeansBase;
 %rename(GMM) CGMM;
 %rename(KMeansMiniBatch) CKMeansMiniBatch;
-%rename(KMeansLloyd) CKMeansLloyd;
+%rename(KMeans) CKMeans;
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/machine/Machine.h>
 %include <shogun/machine/DistanceMachine.h>
+%include <shogun/clustering/KMeansBase.h>
 %include <shogun/clustering/KMeans.h>
-%include <shogun/clustering/KMeansLloyd.h>
 %include <shogun/clustering/KMeansMiniBatch.h>
 %include <shogun/clustering/Hierarchical.h>
 %include <shogun/clustering/GMM.h>

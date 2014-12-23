@@ -80,7 +80,7 @@ int main(int argc, char **argv)
 	CEuclideanDistance* distance=new CEuclideanDistance(features, features);
 
 	/* create distance machine */
-	CKMeans* clustering=new CKMeansLloyd(num_clusters, distance);
+	CKMeans* clustering=new CKMeans(num_clusters, distance);
 	clustering->train(features);
 
 	/* build clusters */

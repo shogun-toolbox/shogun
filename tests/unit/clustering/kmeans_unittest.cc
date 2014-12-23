@@ -11,7 +11,6 @@
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/clustering/KMeans.h>
 #include <shogun/clustering/KMeansMiniBatch.h>
-#include <shogun/clustering/KMeansLloyd.h>
 #include <shogun/distance/EuclideanDistance.h>
 #include <gtest/gtest.h>
 
@@ -39,7 +38,7 @@ TEST(KMeans, manual_center_initialization_test)
 
 	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(rect);
 	CEuclideanDistance* distance=new CEuclideanDistance(features, features);
-	CKMeans* clustering=new CKMeansLloyd(2, distance,initial_centers);
+	CKMeans* clustering=new CKMeans(2, distance,initial_centers);
 
 	for (int32_t loop=0; loop<10; loop++)
 	{
@@ -84,7 +83,7 @@ TEST(KMeans, KMeanspp_center_initialization_test)
 	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(rect);
 	SG_REF(features);
 	CEuclideanDistance* distance=new CEuclideanDistance(features, features);
-	CKMeans* clustering=new CKMeansLloyd(4, distance,true);
+	CKMeans* clustering=new CKMeans(4, distance,true);
 
 	for (int32_t loop=0; loop<10; loop++)
 	{
@@ -148,7 +147,6 @@ TEST(KMeans, minibatch_training_test)
 
 	for (int32_t loop=0; loop<10; loop++)
 	{
-		//clustering->set_train_method(KMM_MINI_BATCH);
 		clustering->set_mbKMeans_params(4,1000);
 		clustering->train(features);
 		CDenseFeatures<float64_t>* learnt_centers=CDenseFeatures<float64_t>::obtain_from_generic(distance->get_lhs());

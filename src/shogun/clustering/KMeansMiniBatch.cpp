@@ -4,10 +4,11 @@
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2014 Parijat Mazumdar
+ * Written (W) 2014 Saurabh Mahindre
  */
 
 #include <shogun/clustering/KMeansMiniBatch.h>
+#include <shogun/clustering/KMeansMiniBatchImpl.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/distance/Distance.h>
 #include <shogun/features/DenseFeatures.h>
@@ -17,17 +18,17 @@ using namespace shogun;
 namespace shogun
 {
 
-CKMeansMiniBatch::CKMeansMiniBatch() : CKMeans()
+CKMeansMiniBatch::CKMeansMiniBatch() : CKMeansBase()
 {
 	init();
 }
 
-CKMeansMiniBatch::CKMeansMiniBatch(int32_t k, CDistance* d, bool use_kmpp) : CKMeans(k, d, use_kmpp)
+CKMeansMiniBatch::CKMeansMiniBatch(int32_t k, CDistance* d, bool use_kmpp) : CKMeansBase(k, d, use_kmpp)
 {
 	init();
 }
 
-CKMeansMiniBatch::CKMeansMiniBatch(int32_t k_i, CDistance* d_i, SGMatrix<float64_t> centers_i) : CKMeans(k_i, d_i, centers_i)
+CKMeansMiniBatch::CKMeansMiniBatch(int32_t k_i, CDistance* d_i, SGMatrix<float64_t> centers_i) : CKMeansBase(k_i, d_i, centers_i)
 {
 	init();
 }
@@ -66,110 +67,11 @@ void CKMeansMiniBatch::set_mbKMeans_params(int32_t b, int32_t t)
 	m_minib_iter=t;
 }
 
-SGVector<int32_t> CKMeansMiniBatch::mbchoose_rand(int32_t b, int32_t num)
-{
-	SGVector<int32_t> chosen=SGVector<int32_t>(num);
-	SGVector<int32_t> ret=SGVector<int32_t>(b);
-	chosen.zero();
-	int32_t ch=0;
-	while (ch<b)
-	{
-		const int32_t n=CMath::random(0,num-1);
-		if (chosen[n]==0)
-		{
-			chosen[n]+=1;
-			ret[ch]=n;
-			ch++;
-		}
-	}
-	return ret;
-}
-
-void CKMeansMiniBatch::minibatch_KMeans()
-{
-	REQUIRE(m_batch_size>0,
-		"batch size not set to positive value. Current batch size %d \n", m_batch_size);
-	REQUIRE(m_minib_iter>0,
-		"number of iterations not set to positive value. Current iterations %d \n", m_minib_iter);
-
-	CDenseFeatures<float64_t>* lhs=
-		CDenseFeatures<float64_t>::obtain_from_generic(distance->get_lhs());
-	CDenseFeatures<float64_t>* rhs_mus=new CDenseFeatures<float64_t>(0);
-	CFeatures* rhs_cache=distance->replace_rhs(rhs_mus);
-	rhs_mus->set_feature_matrix(m_mus);
-	int32_t XSize=lhs->get_num_vectors();
-	int32_t dims=lhs->get_num_features();
-
-	SGVector<float64_t> v=SGVector<float64_t>(m_k);
-	v.zero();
-
-	for (int32_t i=0; i<m_minib_iter; i++)
-	{
-		SGVector<int32_t> M=mbchoose_rand(m_batch_size,XSize);
-		SGVector<int32_t> ncent=SGVector<int32_t>(m_batch_size);
-		for (int32_t j=0; j<m_batch_size; j++)
-		{
-			SGVector<float64_t> dists=SGVector<float64_t>(m_k);
-			for (int32_t p=0; p<m_k; p++)
-				dists[p]=distance->distance(M[j],p);
-
-			int32_t imin=0;
-			float64_t min=dists[0];
-			for (int32_t p=1; p<m_k; p++)
-			{
-				if (dists[p]<min)
-				{
-					imin=p;
-					min=dists[p];
-				}
-			}
-			ncent[j]=imin;
-		}
-		for (int32_t j=0; j<m_batch_size; j++)
-		{
-			int32_t near=ncent[j];
-			SGVector<float64_t> c_alive=rhs_mus->get_feature_vector(near);
-			SGVector<float64_t> x=lhs->get_feature_vector(M[j]);
-			v[near]+=1.0;
-			float64_t eta=1.0/v[near];
-			for (int32_t c=0; c<dims; c++)
-			{
-				c_alive[c]=(1.0-eta)*c_alive[c]+eta*x[c];
-			}
-		}
-	}
-	SG_UNREF(lhs);
-	distance->replace_rhs(rhs_cache);
-	delete rhs_mus;
-}
-
 bool CKMeansMiniBatch::train_machine(CFeatures* data)
 {
-	ASSERT(distance && distance->get_feature_type()==F_DREAL)
-
-	if (data)
-		distance->init(data, data);
-
-	CDenseFeatures<float64_t>* lhs=
-		CDenseFeatures<float64_t>::obtain_from_generic(distance->get_lhs());
-
-	ASSERT(lhs);
-	int32_t XSize=lhs->get_num_vectors();
-	m_dimensions=lhs->get_num_features();
-	const int32_t XDimk=m_dimensions*m_k;
-
-	ASSERT(XSize>0 && m_dimensions>0);
-
-	///if kmeans++ to be used
-	if (m_use_kmeanspp)
-		m_mus_initial=kmeanspp();
-
-	m_R=SGVector<float64_t>(m_k);
-
-	m_mus=SGMatrix<float64_t>(m_dimensions, m_k);
-	/* cluster_centers=zeros(dimensions, k) ; */
-	memset(m_mus.matrix, 0, sizeof(float64_t)*XDimk);
-
+	int32_t XSize;
+	XSize=initialize_training(data);	
+	
 	SGVector<int32_t> ClList=SGVector<int32_t>(XSize);
 	ClList.zero();
 	SGVector<float64_t> weights_set=SGVector<float64_t>(m_k);
@@ -179,11 +81,10 @@ bool CKMeansMiniBatch::train_machine(CFeatures* data)
 		set_initial_centers(weights_set, ClList, XSize);
 	else
 		set_random_centers(weights_set, ClList, XSize);
-		
-	minibatch_KMeans();
+
+	CKMeansMiniBatchImpl::minibatch_KMeans(m_k, distance, m_batch_size, m_minib_iter, m_mus);
 
 	compute_cluster_variances();
-	SG_UNREF(lhs);
 	return true;
 }
 
@@ -192,6 +93,5 @@ void CKMeansMiniBatch::init()
 	m_batch_size=-1;
 	m_minib_iter=-1;
 }
-
 
 }

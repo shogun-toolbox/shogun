@@ -12,7 +12,7 @@
 #ifdef HAVE_LAPACK
 
 #include <shogun/clustering/GMM.h>
-#include <shogun/clustering/KMeansLloyd.h>
+#include <shogun/clustering/KMeans.h>
 #include <shogun/distance/EuclideanDistance.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/mathematics/Math.h>
@@ -138,7 +138,7 @@ float64_t CGMM::train_em(float64_t min_cov, int32_t max_iter, float64_t min_chan
 	/* compute initialization via kmeans if none is present */
 	if (m_components[0]->get_mean().vector==NULL)
 	{
-		CKMeans* init_k_means=new CKMeansLloyd(int32_t(m_components.size()), new CEuclideanDistance());
+		CKMeans* init_k_means=new CKMeans(int32_t(m_components.size()), new CEuclideanDistance());
 		init_k_means->train(dotdata);
 		SGMatrix<float64_t> init_means=init_k_means->get_cluster_centers();
 
