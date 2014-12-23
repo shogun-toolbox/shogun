@@ -36,7 +36,7 @@ FOREACH(file ${MODULAR_FILES})
 ENDFOREACH()
 
 ADD_CUSTOM_TARGET(${MODULAR_NAME}_modular_src
-	DEPENDS ${modular_files}
+	DEPENDS shogun ${modular_files}
 	COMMENT "copying SWIG files")
 
 INCLUDE(${SWIG_USE_FILE})
@@ -64,6 +64,7 @@ IF(DOXYGEN_FOUND)
 	OUTPUT    modshogun
 	COMMAND   ${DOXYGEN_EXECUTABLE}
 	ARGS	  modshogun.doxy
+	DEPENDS   shogun
 	COMMENT   "Generating doxygen doc"
 	)
 
