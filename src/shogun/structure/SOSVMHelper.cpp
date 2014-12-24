@@ -11,6 +11,7 @@
 #include <shogun/structure/SOSVMHelper.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/labels/StructuredLabels.h>
+ #include <shogun/mathematics/Math.h>
 
 using namespace shogun;
 
@@ -76,12 +77,12 @@ float64_t CSOSVMHelper::primal_objective(SGVector<float64_t> w, CStructuredModel
 		SG_UNREF(result);
 	}
 
-	return (lbda/2 * SGVector<float64_t>::dot(w.vector, w.vector, w.vlen) + hinge_losses/N);
+	return (lbda/2 * CMath::dot(w.vector, w.vector, w.vlen) + hinge_losses/N);
 }
 
 float64_t CSOSVMHelper::dual_objective(SGVector<float64_t> w, float64_t aloss, float64_t lbda)
 {
-	return (-lbda/2 * SGVector<float64_t>::dot(w.vector, w.vector, w.vlen) + aloss);
+	return (-lbda/2 * CMath::dot(w.vector, w.vector, w.vlen) + aloss);
 }
 
 float64_t CSOSVMHelper::average_loss(SGVector<float64_t> w, CStructuredModel* model, bool is_ub)

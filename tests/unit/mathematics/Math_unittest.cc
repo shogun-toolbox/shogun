@@ -497,3 +497,17 @@ TEST(CMath,is_sorted_2)
 
 	EXPECT_EQ(CMath::is_sorted(v), true);
 }
+
+TEST(CMath, dot)
+{
+	CMath::init_random(17);
+	SGVector<float64_t> a(10);
+	a.random(0.0, 1024.0);
+	float64_t dot_val = 0.0;
+
+	for (int32_t i = 0; i < a.vlen; ++i)
+		dot_val += a[i]*a[i];
+
+	float64_t sgdot_val = CMath::dot(a.vector,a.vector, a.vlen);
+	EXPECT_NEAR(dot_val, sgdot_val, 1e-9);
+}

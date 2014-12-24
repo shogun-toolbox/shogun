@@ -11,6 +11,7 @@
 #include <shogun/structure/CCSOSVM.h>
 #include <shogun/mathematics/Mosek.h>
 #include <shogun/lib/SGSparseVector.h>
+#include <shogun/mathematics/Math.h>
 
 using namespace shogun;
 
@@ -243,7 +244,7 @@ bool CCCSOSVM::train_machine(CFeatures* data)
 	new_constraint = find_cutting_plane(&margin);
 	value = margin - new_constraint.dense_dot(1.0, m_w.vector, m_w.vlen, 0);
 
-	primal_obj_b = primal_obj = 0.5*m_w.dot(m_w.vector, m_w.vector, m_w.vlen)+m_C*value;
+	primal_obj_b = primal_obj = 0.5*CMath::dot(m_w.vector, m_w.vector, m_w.vlen)+m_C*value;
 	primal_lower_bound = 0;
 	expected_descent = -primal_obj_b;
 	initial_primal_obj = primal_obj_b;
@@ -280,8 +281,8 @@ bool CCCSOSVM::train_machine(CFeatures* data)
 		cut_error.resize_vector(size_active);
 		// note g_i = - new_constraint
 		cut_error[size_active-1] = m_C*(new_constraint.dense_dot(1.0, w_b.vector, w_b.vlen, 0) - new_constraint.dense_dot(1.0, m_w.vector, m_w.vlen, 0));
-		cut_error[size_active-1] += (primal_obj_b - 0.5*w_b.dot(w_b.vector, w_b.vector, w_b.vlen));
-		cut_error[size_active-1] -= (primal_obj - 0.5*m_w.dot(m_w.vector, m_w.vector, m_w.vlen));
+		cut_error[size_active-1] += (primal_obj_b - 0.5*CMath::dot(w_b.vector, w_b.vector, w_b.vlen));
+		cut_error[size_active-1] -= (primal_obj - 0.5*CMath::dot(m_w.vector, m_w.vector, m_w.vlen));
 
 		gammaG0.resize_vector(size_active);
 
@@ -378,12 +379,12 @@ bool CCCSOSVM::train_machine(CFeatures* data)
 		if (m_qp_type == SVMLIGHT)
 		{
 			/* compute dual obj */
-			dual_obj = +0.5*(1+rho)*m_w.dot(m_w.vector, m_w.vector, m_w.vlen);
+			dual_obj = +0.5*(1+rho)*CMath::dot(m_w.vector, m_w.vector, m_w.vlen);
 			for (int32_t j=0;j<size_active;j++)
 				dual_obj -= proximal_rhs[j]/(1+rho)*alpha[j];
 		}
 
-		z_k_norm = CMath::sqrt(m_w.dot(m_w.vector, m_w.vector, m_w.vlen));
+		z_k_norm = CMath::sqrt(CMath::dot(m_w.vector, m_w.vector, m_w.vlen));
 		m_w.vec1_plus_scalar_times_vec2(m_w.vector, rho/(1+rho), w_b.vector, w_b.vlen);
 
 		/* detect if step size too small */
@@ -417,11 +418,11 @@ bool CCCSOSVM::train_machine(CFeatures* data)
 		value = margin - new_constraint.dense_dot(1.0, m_w.vector, m_w.vlen, 0);
 
 		/* print primal objective */
-		primal_obj = 0.5*m_w.dot(m_w.vector, m_w.vector, m_w.vlen)+m_C*value;
+		primal_obj = 0.5*CMath::dot(m_w.vector, m_w.vector, m_w.vlen)+m_C*value;
 
 		SG_DEBUG("ITER PRIMAL_OBJ %.4f\n", primal_obj)
 
-		temp_var = w_b.dot(w_b.vector, w_b.vector, w_b.vlen);
+		temp_var = CMath::dot(w_b.vector, w_b.vector, w_b.vlen);
 		proximal_term = 0.0;
 		for (index_t i=0; i < m_model->get_dim(); i++)
 			proximal_term += (m_w[i]-w_b[i])*(m_w[i]-w_b[i]);
@@ -455,9 +456,9 @@ bool CCCSOSVM::train_machine(CFeatures* data)
 				/* update cut_error */
 				for (index_t i = 0; i < size_active; i++)
 				{
-					cut_error[i] -= (primal_obj_b - 0.5*w_b.dot(w_b.vector, w_b.vector, w_b.vlen));
+					cut_error[i] -= (primal_obj_b - 0.5*CMath::dot(w_b.vector, w_b.vector, w_b.vlen));
 					cut_error[i] -= m_C*dXc[i].dense_dot(1.0, w_b.vector, w_b.vlen, 0);
-					cut_error[i] += (primal_obj - 0.5*m_w.dot(m_w, m_w, m_w.vlen));
+					cut_error[i] += (primal_obj - 0.5*CMath::dot(m_w, m_w, m_w.vlen));
 					cut_error[i] += m_C*dXc[i].dense_dot(1.0, m_w.vector, m_w.vlen, 0);
 				}
 				primal_obj_b = primal_obj;
@@ -554,8 +555,8 @@ SGSparseVector<float64_t> CCCSOSVM::find_cutting_plane(float64_t* margin)
 		}
 		/*
 		printf("%.16lf %.16lf\n",
-				SGVector<float64_t>::dot(result->psi_truth.vector, result->psi_truth.vector, result->psi_truth.vlen),
-				SGVector<float64_t>::dot(result->psi_pred.vector, result->psi_pred.vector, result->psi_pred.vlen));
+				CMath::dot(result->psi_truth.vector, result->psi_truth.vector, result->psi_truth.vlen),
+				CMath::dot(result->psi_pred.vector, result->psi_pred.vector, result->psi_pred.vlen));
 		*/
 		*margin += result->delta;
 		SG_UNREF(result);

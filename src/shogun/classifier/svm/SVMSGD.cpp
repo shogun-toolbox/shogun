@@ -23,6 +23,7 @@
 #include <shogun/classifier/svm/SVMSGD.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/lib/Signal.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/labels/BinaryLabels.h>
 #include <shogun/loss/HingeLoss.h>
 
@@ -149,7 +150,7 @@ bool CSVMSGD::train_machine(CFeatures* data)
 		}
 	}
 
-	float64_t wnorm =  SGVector<float64_t>::dot(w.vector,w.vector, w.vlen);
+	float64_t wnorm =  CMath::dot(w.vector,w.vector, w.vlen);
 	SG_INFO("Norm: %.6f, Bias: %.6f\n", wnorm, bias)
 
 	return true;

@@ -139,7 +139,7 @@ bool CFWSOSVM::train_machine(CFeatures* data)
 
 			// 3) loss_i = L(y_i, y_pred) 
 			float64_t loss_i = result->delta; 
-			ASSERT(loss_i - SGVector<float64_t>::dot(m_w.vector, psi_i.vector, m_w.vlen) >= -1e-12);
+			ASSERT(loss_i - CMath::dot(m_w.vector, psi_i.vector, m_w.vlen) >= -1e-12);
 
 			// 4) update w_s and ell_s
 			w_s.add(psi_i);
@@ -155,7 +155,7 @@ bool CFWSOSVM::train_machine(CFeatures* data)
 		// 5) duality gap
 		SGVector<float64_t> w_diff = m_w.clone();
 		SGVector<float64_t>::add(w_diff.vector, 1.0, m_w.vector, -1.0, w_s.vector, w_s.vlen);
-		float64_t dual_gap = m_lambda * SGVector<float64_t>::dot(m_w.vector, w_diff.vector, m_w.vlen) - m_ell + ell_s;
+		float64_t dual_gap = m_lambda * CMath::dot(m_w.vector, w_diff.vector, m_w.vlen) - m_ell + ell_s;
 
 		// Debug: compute primal and dual objectives and training error
 		if (m_verbose)
@@ -190,7 +190,7 @@ bool CFWSOSVM::train_machine(CFeatures* data)
 		if (m_do_line_search)
 		{
 			gamma = dual_gap / (m_lambda \
-					* (SGVector<float64_t>::dot(w_diff.vector, w_diff.vector, w_diff.vlen) + 1e-12));
+					* (CMath::dot(w_diff.vector, w_diff.vector, w_diff.vlen) + 1e-12));
 			gamma = ((gamma > 1 ? 1 : gamma) < 0) ? 0 : gamma; // clip to [0,1], or max(0,min(1,gamma))
 		}
 

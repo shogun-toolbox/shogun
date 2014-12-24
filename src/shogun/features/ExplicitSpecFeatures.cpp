@@ -9,6 +9,7 @@
  */
 
 #include <shogun/features/ExplicitSpecFeatures.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/io/SGIO.h>
 
 using namespace shogun;
@@ -70,7 +71,7 @@ float64_t CExplicitSpecFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t
 	float64_t* vec1=k_spectrum[vec_idx1];
 	float64_t* vec2=sf->k_spectrum[vec_idx2];
 
-	return SGVector<float64_t>::dot(vec1, vec2, spec_size);
+	return CMath::dot(vec1, vec2, spec_size);
 }
 
 float64_t CExplicitSpecFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len)

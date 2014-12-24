@@ -37,6 +37,7 @@
 #ifdef HAVE_CXX11
 
 #include <shogun/lib/GPUVector.h>
+#include <shogun/mathematics/Math.h>
 #include <viennacl/vector.hpp>
 #include <viennacl/linalg/inner_prod.hpp>
 #include <gtest/gtest.h>
@@ -111,7 +112,7 @@ TEST(GPUVector, dot_product_with_offset)
 	
 	float c = viennacl::linalg::inner_prod(A.vcl_vector(), B.vcl_vector());
 	
-	float c_sg = SGVector<float64_t>::dot(
+	float c_sg = CMath::dot(
 		((SGVector<float64_t>)A).vector, ((SGVector<float64_t>)B).vector, 12);
 	
 	EXPECT_NEAR(c_sg, c, 1e-15);

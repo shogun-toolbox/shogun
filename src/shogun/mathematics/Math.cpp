@@ -16,6 +16,7 @@
 #include <shogun/mathematics/lapack.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/SGVector.h>
+#include <shogun/mathematics/eigen3.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -86,6 +87,40 @@ CMath::~CMath()
 	SG_FREE(CMath::logtable);
 	CMath::logtable=NULL;
 #endif
+}
+
+float64_t CMath::dot(const float64_t* v1, const float64_t* v2, int32_t n)
+{
+	float64_t r=0;
+#ifdef HAVE_EIGEN3
+	Eigen::Map<const Eigen::VectorXd> ev1(v1,n);
+	Eigen::Map<const Eigen::VectorXd> ev2(v2,n);
+	r = ev1.dot(ev2);
+#elif HAVE_LAPACK
+	int32_t skip=1;
+	r = cblas_ddot(n, v1, skip, v2, skip);
+#else
+	for (int32_t i=0; i<n; i++)
+		r+=v1[i]*v2[i];
+#endif
+	return r;
+}
+
+float32_t CMath::dot(const float32_t* v1, const float32_t* v2, int32_t n)
+{
+	float32_t r=0;
+#ifdef HAVE_EIGEN3
+	Eigen::Map<const Eigen::VectorXf> ev1(v1,n);
+	Eigen::Map<const Eigen::VectorXf> ev2(v2,n);
+	r = ev1.dot(ev2);
+#elif HAVE_LAPACK
+	int32_t skip=1;
+	r = cblas_sdot(n, v1, skip, v2, skip);
+#else
+	for (int32_t i=0; i<n; i++)
+		r+=v1[i]*v2[i];
+#endif
+	return r;
 }
 
 #ifdef USE_LOGCACHE

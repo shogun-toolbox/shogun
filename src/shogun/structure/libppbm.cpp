@@ -13,6 +13,7 @@
 
 #include <shogun/structure/libppbm.h>
 #include <shogun/lib/external/libqp.h>
+ #include <shogun/mathematics/Math.h>
 #include <shogun/lib/Time.h>
 
 namespace shogun
@@ -202,8 +203,8 @@ BmrmStatistics svm_ppbm_solver(
 	/* Compute initial value of Fp, Fd, assuming that W is zero vector */
 	sq_norm_Wdiff=0.0;
 
-	b[0] = SGVector<float64_t>::dot(subgrad, W, nDim);
-	sq_norm_W = SGVector<float64_t>::dot(W, W, nDim);
+	b[0] = CMath::dot(subgrad, W, nDim);
+	sq_norm_W = CMath::dot(W, W, nDim);
 	for (uint32_t j=0; j<nDim; ++j)
 	{
 		sq_norm_Wdiff+=(W[j]-prevW[j])*(W[j]-prevW[j]);
@@ -252,7 +253,7 @@ BmrmStatistics svm_ppbm_solver(
 			{
 				A_1=get_cutting_plane(cp_ptr);
 				cp_ptr=cp_ptr->next;
-				rsum=SGVector<float64_t>::dot(A_1, A_2, nDim);
+				rsum=CMath::dot(A_1, A_2, nDim);
 
 				H[LIBBMRM_INDEX(ppbmrm.nCP, i, BufSize)]
 					= H[LIBBMRM_INDEX(i, ppbmrm.nCP, BufSize)]
@@ -261,7 +262,7 @@ BmrmStatistics svm_ppbm_solver(
 		}
 
 		A_2=get_cutting_plane(CPList_tail);
-		rsum = SGVector<float64_t>::dot(A_2, A_2, nDim);
+		rsum = CMath::dot(A_2, A_2, nDim);
 
 		H[LIBBMRM_INDEX(ppbmrm.nCP, ppbmrm.nCP, BufSize)]=rsum;
 
@@ -296,7 +297,7 @@ BmrmStatistics svm_ppbm_solver(
 				A_1=get_cutting_plane(cp_ptr);
 				cp_ptr=cp_ptr->next;
 
-				rsum = SGVector<float64_t>::dot(A_1, prevW, nDim);
+				rsum = CMath::dot(A_1, prevW, nDim);
 
 				b2[i]=b[i]-((2*alpha)/(_lambda+2*alpha))*rsum;
 				diag_H2[i]=diag_H[i]/(_lambda+2*alpha);
@@ -361,7 +362,7 @@ BmrmStatistics svm_ppbm_solver(
 					A_1=get_cutting_plane(cp_ptr);
 					cp_ptr=cp_ptr->next;
 
-					rsum = SGVector<float64_t>::dot(A_1, prevW, nDim);
+					rsum = CMath::dot(A_1, prevW, nDim);
 
 					b2[i]=b[i]-((2*alpha)/(_lambda+2*alpha))*rsum;
 					diag_H2[i]=diag_H[i]/(_lambda+2*alpha);
@@ -466,7 +467,7 @@ BmrmStatistics svm_ppbm_solver(
 				A_1=get_cutting_plane(cp_ptr);
 				cp_ptr=cp_ptr->next;
 
-				rsum = SGVector<float64_t>::dot(A_1, prevW, nDim);
+				rsum = CMath::dot(A_1, prevW, nDim);
 
 				b2[i]=b[i]-((2*alpha)/(_lambda+2*alpha))*rsum;
 				diag_H2[i]=diag_H[i]/(_lambda+2*alpha);
@@ -521,9 +522,9 @@ BmrmStatistics svm_ppbm_solver(
 		add_cutting_plane(&CPList_tail, map, A,
 				find_free_idx(map, BufSize), subgrad, nDim);
 
-		sq_norm_W=SGVector<float64_t>::dot(W, W, nDim);
-		sq_norm_prevW=SGVector<float64_t>::dot(prevW, prevW, nDim);
-		b[ppbmrm.nCP]=SGVector<float64_t>::dot(subgrad, W, nDim) - R;
+		sq_norm_W=CMath::dot(W, W, nDim);
+		sq_norm_prevW=CMath::dot(prevW, prevW, nDim);
+		b[ppbmrm.nCP]=CMath::dot(subgrad, W, nDim) - R;
 
 		sq_norm_Wdiff=0.0;
 		for (uint32_t j=0; j<nDim; ++j)

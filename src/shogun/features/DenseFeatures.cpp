@@ -487,7 +487,7 @@ template<class ST> float64_t CDenseFeatures<ST>::dot(int32_t vec_idx1, CDotFeatu
 	ST* vec1 = get_feature_vector(vec_idx1, len1, free1);
 	ST* vec2 = sf->get_feature_vector(vec_idx2, len2, free2);
 
-	float64_t result = SGVector<ST>::dot(vec1, vec2, len1);
+	float64_t result = CMath::dot(vec1, vec2, len1);
 
 	free_feature_vector(vec1, vec_idx1, free1);
 	sf->free_feature_vector(vec2, vec_idx2, free2);
@@ -912,7 +912,7 @@ template<> float64_t CDenseFeatures<float64_t>::dense_dot(
 	float64_t* vec1 = get_feature_vector(vec_idx1, vlen, vfree);
 
 	ASSERT(vlen == num_features)
-	float64_t result = SGVector<float64_t>::dot(vec1, vec2, num_features);
+	float64_t result = CMath::dot(vec1, vec2, num_features);
 
 	free_feature_vector(vec1, vec_idx1, vfree);
 

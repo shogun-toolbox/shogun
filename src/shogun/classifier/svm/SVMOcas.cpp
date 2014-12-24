@@ -322,8 +322,8 @@ void CSVMOcas::compute_W(
 		bias += c_bias[i]*alpha[i];
 	}
 
-	*sq_norm_W = SGVector<float64_t>::dot(W,W, nDim) + CMath::sq(bias);
-	*dp_WoldW = SGVector<float64_t>::dot(W,oldW, nDim) + bias*old_bias;
+	*sq_norm_W = CMath::dot(W,W, nDim) + CMath::sq(bias);
+	*dp_WoldW = CMath::dot(W,oldW, nDim) + bias*old_bias;
 	//SG_PRINT("nSel=%d sq_norm_W=%f dp_WoldW=%f\n", nSel, *sq_norm_W, *dp_WoldW)
 
 	o->bias = bias;

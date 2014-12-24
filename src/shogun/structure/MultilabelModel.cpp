@@ -205,7 +205,7 @@ CResultSet * CMultilabelModel::argmax(SGVector<float64_t> w, int32_t feat_idx,
 		ret->delta = CStructuredModel::delta_loss(feat_idx, y_pred);
 		ret->psi_truth = CStructuredModel::get_joint_feature_vector(
 		                         feat_idx, feat_idx);
-		ret->score += (ret->delta - SGVector<float64_t>::dot(w.vector,
+		ret->score += (ret->delta - CMath::dot(w.vector,
 		                ret->psi_truth.vector, dim));
 	}
 
