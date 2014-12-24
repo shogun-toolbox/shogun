@@ -396,19 +396,19 @@ bool CMath::strtold(const char* str, floatmax_t* long_double_result)
 	return endptr != buf.vector;
 }
 
-float64_t CMath::get_abs_tolorance(float64_t true_value, float64_t rel_tolorance)
+float64_t CMath::get_abs_tolerance(float64_t true_value, float64_t rel_tolerance)
 {
-	REQUIRE(rel_tolorance > 0 && rel_tolorance < 1.0,
-		"Relative tolorance (%f) should be less than 1.0 and positive\n", rel_tolorance);
+	REQUIRE(rel_tolerance > 0 && rel_tolerance < 1.0,
+		"Relative tolerance (%f) should be less than 1.0 and positive\n", rel_tolerance);
 	REQUIRE(is_finite(true_value),
 		"The true_value should be finite\n");
-	float64_t abs_tolorance = rel_tolorance;
+	float64_t abs_tolerance = rel_tolerance;
 	if (abs(true_value)>0.0)
 	{
-		if (log(abs(true_value)) + log(rel_tolorance) < log(F_MIN_VAL64))
-			abs_tolorance = F_MIN_VAL64;
+		if (log(abs(true_value)) + log(rel_tolerance) < log(F_MIN_VAL64))
+			abs_tolerance = F_MIN_VAL64;
 		else
-			abs_tolorance = abs(true_value * rel_tolorance);
+			abs_tolerance = abs(true_value * rel_tolerance);
 	}
-	return abs_tolorance;
+	return abs_tolerance;
 }

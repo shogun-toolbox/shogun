@@ -48,8 +48,8 @@ using namespace shogun;
 
 TEST(LogitDVGLikelihood,get_variational_expection)
 {
-	float64_t rel_tolorance = 1e-2;
-	float64_t abs_tolorance;
+	float64_t rel_tolerance = 1e-2;
+	float64_t abs_tolerance;
 
 	const index_t dim = 10;
 	SGVector<float64_t> y(dim);
@@ -97,26 +97,26 @@ TEST(LogitDVGLikelihood,get_variational_expection)
 
 	// comparison of the result with result from the Matlab code
 	
-	abs_tolorance = CMath::get_abs_tolorance(-12.37985798146909388606, rel_tolorance);
-	EXPECT_NEAR(aa[0],  -12.37985798146909388606,  abs_tolorance);
-	abs_tolorance = CMath::get_abs_tolorance(-0.47875796595588515636, rel_tolorance);
-	EXPECT_NEAR(aa[1],  -0.47875796595588515636,  abs_tolorance);
-	abs_tolorance = CMath::get_abs_tolorance(-0.33755028791138003141, rel_tolorance);
-	EXPECT_NEAR(aa[2],  -0.33755028791138003141,  abs_tolorance);
-	abs_tolorance = CMath::get_abs_tolorance(-0.13544452397723591441, rel_tolorance);
-	EXPECT_NEAR(aa[3],  -0.13544452397723591441,  abs_tolorance);
-	abs_tolorance = CMath::get_abs_tolorance(-0.02909618088898882626, rel_tolorance);
-	EXPECT_NEAR(aa[4],  -0.02909618088898882626,  abs_tolorance);
-	abs_tolorance = CMath::get_abs_tolorance(-8.00238261467492328904, rel_tolorance);
-	EXPECT_NEAR(aa[5],  -8.00238261467492328904,  abs_tolorance);
-	abs_tolorance = CMath::get_abs_tolorance(-16.00019738299328153630, rel_tolorance);
-	EXPECT_NEAR(aa[6],  -16.00019738299328153630,  abs_tolorance);
-	abs_tolorance = CMath::get_abs_tolorance(-32.00000838679385850583, rel_tolorance);
-	EXPECT_NEAR(aa[7],  -32.00000838679385850583,  abs_tolorance);
-	abs_tolorance = CMath::get_abs_tolorance(-64.00000000036386893498, rel_tolorance);
-	EXPECT_NEAR(aa[8],  -64.00000000036386893498,  abs_tolorance);
-	abs_tolorance = CMath::get_abs_tolorance(-128.00000071165447934618, rel_tolorance);
-	EXPECT_NEAR(aa[9],  -128.00000071165447934618,  abs_tolorance);
+	abs_tolerance = CMath::get_abs_tolerance(-12.37985798146909388606, rel_tolerance);
+	EXPECT_NEAR(aa[0],  -12.37985798146909388606,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-0.47875796595588515636, rel_tolerance);
+	EXPECT_NEAR(aa[1],  -0.47875796595588515636,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-0.33755028791138003141, rel_tolerance);
+	EXPECT_NEAR(aa[2],  -0.33755028791138003141,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-0.13544452397723591441, rel_tolerance);
+	EXPECT_NEAR(aa[3],  -0.13544452397723591441,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-0.02909618088898882626, rel_tolerance);
+	EXPECT_NEAR(aa[4],  -0.02909618088898882626,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-8.00238261467492328904, rel_tolerance);
+	EXPECT_NEAR(aa[5],  -8.00238261467492328904,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-16.00019738299328153630, rel_tolerance);
+	EXPECT_NEAR(aa[6],  -16.00019738299328153630,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-32.00000838679385850583, rel_tolerance);
+	EXPECT_NEAR(aa[7],  -32.00000838679385850583,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-64.00000000036386893498, rel_tolerance);
+	EXPECT_NEAR(aa[8],  -64.00000000036386893498,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-128.00000071165447934618, rel_tolerance);
+	EXPECT_NEAR(aa[9],  -128.00000071165447934618,  abs_tolerance);
 
 	// clean up
 	SG_UNREF(lab);
@@ -125,8 +125,8 @@ TEST(LogitDVGLikelihood,get_variational_expection)
 
 TEST(LogitDVGLikelihood,get_variational_first_derivative_wrt_sigma2)
 {
-	float64_t rel_tolorance = 1e-2;
-	float64_t abs_tolorance;
+	float64_t rel_tolerance = 1e-2;
+	float64_t abs_tolerance;
 
 	const index_t dim = 10;
 	SGVector<float64_t> y(dim);
@@ -176,26 +176,26 @@ TEST(LogitDVGLikelihood,get_variational_first_derivative_wrt_sigma2)
 
 	// comparison of the result with result from the Matlab code
 	
-	abs_tolorance = CMath::get_abs_tolorance(-0.00643984624096141135, rel_tolorance);
-	EXPECT_NEAR(dv[0],  -0.00643984624096141135,  abs_tolorance);
-	abs_tolorance = CMath::get_abs_tolorance(-0.11655165622477028919, rel_tolorance);
-	EXPECT_NEAR(dv[1],  -0.11655165622477028919,  abs_tolorance);
-	abs_tolorance = CMath::get_abs_tolorance(-0.09597058610526683353, rel_tolorance);
-	EXPECT_NEAR(dv[2],  -0.09597058610526683353,  abs_tolorance);
-	abs_tolorance = CMath::get_abs_tolorance(-0.05391483966182461507, rel_tolorance);
-	EXPECT_NEAR(dv[3],  -0.05391483966182461507,  abs_tolorance);
-	abs_tolorance = CMath::get_abs_tolorance(-0.01314876026830374620, rel_tolorance);
-	EXPECT_NEAR(dv[4],  -0.01314876026830374620,  abs_tolorance);
-	abs_tolorance = CMath::get_abs_tolorance(-0.00109703575801320245, rel_tolorance);
-	EXPECT_NEAR(dv[5],  -0.00109703575801320245,  abs_tolorance);
-	abs_tolorance = CMath::get_abs_tolorance(-0.00006892159173584106, rel_tolorance);
-	EXPECT_NEAR(dv[6],  -0.00006892159173584106,  abs_tolorance);
-	abs_tolorance = CMath::get_abs_tolorance(-0.00000162370307891630, rel_tolorance);
-	EXPECT_NEAR(dv[7],  -0.00000162370307891630,  abs_tolorance);
-	abs_tolorance = CMath::get_abs_tolorance(-0.00000000006545277067, rel_tolorance);
-	EXPECT_NEAR(dv[8],  -0.00000000006545277067,  abs_tolorance);
-	abs_tolorance = CMath::get_abs_tolorance(-0.00000000689624744111, rel_tolorance);
-	EXPECT_NEAR(dv[9],  -0.00000000689624744111,  abs_tolorance);
+	abs_tolerance = CMath::get_abs_tolerance(-0.00643984624096141135, rel_tolerance);
+	EXPECT_NEAR(dv[0],  -0.00643984624096141135,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-0.11655165622477028919, rel_tolerance);
+	EXPECT_NEAR(dv[1],  -0.11655165622477028919,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-0.09597058610526683353, rel_tolerance);
+	EXPECT_NEAR(dv[2],  -0.09597058610526683353,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-0.05391483966182461507, rel_tolerance);
+	EXPECT_NEAR(dv[3],  -0.05391483966182461507,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-0.01314876026830374620, rel_tolerance);
+	EXPECT_NEAR(dv[4],  -0.01314876026830374620,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-0.00109703575801320245, rel_tolerance);
+	EXPECT_NEAR(dv[5],  -0.00109703575801320245,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-0.00006892159173584106, rel_tolerance);
+	EXPECT_NEAR(dv[6],  -0.00006892159173584106,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-0.00000162370307891630, rel_tolerance);
+	EXPECT_NEAR(dv[7],  -0.00000162370307891630,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-0.00000000006545277067, rel_tolerance);
+	EXPECT_NEAR(dv[8],  -0.00000000006545277067,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-0.00000000689624744111, rel_tolerance);
+	EXPECT_NEAR(dv[9],  -0.00000000689624744111,  abs_tolerance);
 	
 	// clean up
 	SG_UNREF(lab);

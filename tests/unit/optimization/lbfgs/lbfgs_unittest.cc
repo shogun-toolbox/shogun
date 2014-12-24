@@ -203,26 +203,26 @@ TEST(lbfgs, original_lbfgs)
 	lbfgs(x.vlen, x.vector, &opt_value,
 		evaluate, NULL, NULL, &lbfgs_param);
 
-	float64_t rel_tolorance = 1e-15;
-	float64_t abs_tolorance;
+	float64_t rel_tolerance = 1e-15;
+	float64_t abs_tolerance;
 
-	abs_tolorance = CMath::get_abs_tolorance(0, rel_tolorance);
-	EXPECT_NEAR(opt_value, 0, abs_tolorance);
+	abs_tolerance = CMath::get_abs_tolerance(0, rel_tolerance);
+	EXPECT_NEAR(opt_value, 0, abs_tolerance);
 
-	abs_tolorance = CMath::get_abs_tolorance(0, rel_tolorance);
-	EXPECT_NEAR(x[0], 0, abs_tolorance);
+	abs_tolerance = CMath::get_abs_tolerance(0, rel_tolerance);
+	EXPECT_NEAR(x[0], 0, abs_tolerance);
 
-	abs_tolorance = CMath::get_abs_tolorance(0, rel_tolorance);
-	EXPECT_NEAR(x[1], 0, abs_tolorance);
+	abs_tolerance = CMath::get_abs_tolerance(0, rel_tolerance);
+	EXPECT_NEAR(x[1], 0, abs_tolerance);
 
-	abs_tolorance = CMath::get_abs_tolorance(0, rel_tolorance);
-	EXPECT_NEAR(x[2], 0, abs_tolorance);
+	abs_tolerance = CMath::get_abs_tolerance(0, rel_tolerance);
+	EXPECT_NEAR(x[2], 0, abs_tolerance);
 
-	abs_tolorance = CMath::get_abs_tolorance(0, rel_tolorance);
-	EXPECT_NEAR(x[3], 0, abs_tolorance);
+	abs_tolerance = CMath::get_abs_tolerance(0, rel_tolerance);
+	EXPECT_NEAR(x[3], 0, abs_tolerance);
 
-	abs_tolorance = CMath::get_abs_tolorance(0, rel_tolorance);
-	EXPECT_NEAR(x[4], 0, abs_tolorance);
+	abs_tolerance = CMath::get_abs_tolerance(0, rel_tolerance);
+	EXPECT_NEAR(x[4], 0, abs_tolerance);
 }
 
 TEST(lbfgs, lbfgs_with_adjust_step_test1)
@@ -236,26 +236,26 @@ TEST(lbfgs, lbfgs_with_adjust_step_test1)
 	lbfgs(x.vlen, x.vector, &opt_value,
 		evaluate_bounded, NULL, NULL, &lbfgs_param, &adjust_step_bounded);
 
-	float64_t rel_tolorance = 1e-15;
-	float64_t abs_tolorance;
+	float64_t rel_tolerance = 1e-15;
+	float64_t abs_tolerance;
 
-	abs_tolorance = CMath::get_abs_tolorance(len, rel_tolorance);
-	EXPECT_NEAR(opt_value, len, abs_tolorance);
+	abs_tolerance = CMath::get_abs_tolerance(len, rel_tolerance);
+	EXPECT_NEAR(opt_value, len, abs_tolerance);
 
-	abs_tolorance = CMath::get_abs_tolorance(lower_bound, rel_tolorance);
-	EXPECT_NEAR(x[0], lower_bound, abs_tolorance);
+	abs_tolerance = CMath::get_abs_tolerance(lower_bound, rel_tolerance);
+	EXPECT_NEAR(x[0], lower_bound, abs_tolerance);
 
-	abs_tolorance = CMath::get_abs_tolorance(lower_bound, rel_tolorance);
-	EXPECT_NEAR(x[1], lower_bound, abs_tolorance);
+	abs_tolerance = CMath::get_abs_tolerance(lower_bound, rel_tolerance);
+	EXPECT_NEAR(x[1], lower_bound, abs_tolerance);
 
-	abs_tolorance = CMath::get_abs_tolorance(lower_bound, rel_tolorance);
-	EXPECT_NEAR(x[2], lower_bound, abs_tolorance);
+	abs_tolerance = CMath::get_abs_tolerance(lower_bound, rel_tolerance);
+	EXPECT_NEAR(x[2], lower_bound, abs_tolerance);
 
-	abs_tolorance = CMath::get_abs_tolorance(lower_bound, rel_tolorance);
-	EXPECT_NEAR(x[3], lower_bound, abs_tolorance);
+	abs_tolerance = CMath::get_abs_tolerance(lower_bound, rel_tolerance);
+	EXPECT_NEAR(x[3], lower_bound, abs_tolerance);
 
-	abs_tolorance = CMath::get_abs_tolorance(lower_bound, rel_tolorance);
-	EXPECT_NEAR(x[4], lower_bound, abs_tolorance);
+	abs_tolerance = CMath::get_abs_tolerance(lower_bound, rel_tolerance);
+	EXPECT_NEAR(x[4], lower_bound, abs_tolerance);
 
 }
 
@@ -270,11 +270,11 @@ TEST(lbfgs, lbfgs_with_adjust_step_test2)
 	lbfgs(x.vlen, x.vector, &opt_value,
 		evaluate_strict_bounded, NULL, NULL, &lbfgs_param, &adjust_step_strict_bounded);
 
-	float64_t rel_tolorance=strict_scale;
-	float64_t abs_tolorance;
+	float64_t rel_tolerance=strict_scale;
+	float64_t abs_tolerance;
 
-	abs_tolorance = CMath::get_abs_tolorance(len, rel_tolorance);
-	EXPECT_NEAR(opt_value, len, abs_tolorance);
+	abs_tolerance = CMath::get_abs_tolerance(len, rel_tolerance);
+	EXPECT_NEAR(opt_value, len, abs_tolerance);
 
 	eigen_x=eigen_x.array()-lower_bound;
 
