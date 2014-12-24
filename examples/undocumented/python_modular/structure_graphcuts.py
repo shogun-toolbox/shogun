@@ -1,4 +1,4 @@
-#!/usr/bin7env python
+#!/usr/bin/env python
 
 import numpy as np
 import itertools
