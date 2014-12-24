@@ -102,7 +102,8 @@ void CKMeansBase::set_random_centers(SGVector<float64_t> weights_set, SGVector<i
 void CKMeansBase::set_initial_centers(SGVector<float64_t> weights_set, 
 				SGVector<int32_t> ClList, int32_t XSize)
 {
-	ASSERT(m_mus_initial.matrix);
+	REQUIRE(m_mus_initial.matrix, 
+			"Initial cluster centers not supplied.\n");
 
 	/// set rhs to mus_start
 	CDenseFeatures<float64_t>* rhs_mus=new CDenseFeatures<float64_t>(0);
@@ -369,7 +370,10 @@ SGMatrix<float64_t> CKMeansBase::kmeanspp()
 
 int32_t CKMeansBase::initialize_training(CFeatures* data)
 {
-	ASSERT(distance && distance->get_feature_type()==F_DREAL)
+	REQUIRE(distance, "Distance not supplied.\n");
+	
+	REQUIRE(distance->get_feature_type()==F_DREAL, 
+		"Expected feature type : F_DREAL, got (%s) \n", distance->get_feature_type())
 
 	if (data)
 		distance->init(data, data);
@@ -377,11 +381,14 @@ int32_t CKMeansBase::initialize_training(CFeatures* data)
 	CDenseFeatures<float64_t>* lhs=
 		CDenseFeatures<float64_t>::obtain_from_generic(distance->get_lhs());
 
-	ASSERT(lhs);
+	REQUIRE(lhs,
+		 "Provided Distance does not have left-hand side features used in distance matrix\n");
+
 	int32_t XSize=lhs->get_num_vectors();
 	m_dimensions=lhs->get_num_features();
 
-	ASSERT(XSize>0 && m_dimensions>0);
+	REQUIRE(XSize>0, "No. of vectors in left-hand side features should be > 0 \n");
+	REQUIRE(m_dimensions>0, "No. of features in left-hand side features should be > 0 \n");
 
 	///if kmeans++ to be used
 	if (m_use_kmeanspp)
