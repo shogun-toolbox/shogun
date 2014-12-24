@@ -349,29 +349,29 @@ TEST(Statistics, lnormal_cdf)
 	for(index_t i = 0; i < dim; i++)
 		res[i]=CStatistics::lnormal_cdf(t[i]);
 
-	float64_t rel_tolorance = 1e-2;
-	float64_t abs_tolorance;
+	float64_t rel_tolerance = 1e-2;
+	float64_t abs_tolerance;
 
-	abs_tolorance = CMath::get_abs_tolorance(-0.54789890348158110100, rel_tolorance);
-	EXPECT_NEAR(res[0],  -0.54789890348158110100,  abs_tolorance);
-	abs_tolorance = CMath::get_abs_tolorance(-0.68861439622252362813, rel_tolorance);
-	EXPECT_NEAR(res[1],  -0.68861439622252362813,  abs_tolorance);
-	abs_tolorance = CMath::get_abs_tolorance(0.00000000000000000000, rel_tolorance);
-	EXPECT_NEAR(res[2],  0.00000000000000000000,  abs_tolorance);
-	abs_tolorance = CMath::get_abs_tolorance(-0.36192936264423153370, rel_tolorance);
-	EXPECT_NEAR(res[3],  -0.36192936264423153370,  abs_tolorance);
-	abs_tolorance = CMath::get_abs_tolorance(-0.00000690176209610232, rel_tolorance);
-	EXPECT_NEAR(res[4],  -0.00000690176209610232,  abs_tolorance);
-	abs_tolorance = CMath::get_abs_tolorance(-40.88657697941886226545, rel_tolorance);
-	EXPECT_NEAR(res[5],  -40.88657697941886226545,  abs_tolorance);
-	abs_tolorance = CMath::get_abs_tolorance(-154.94677031185918281153, rel_tolorance);
-	EXPECT_NEAR(res[6],  -154.94677031185918281153,  abs_tolorance);
-	abs_tolorance = CMath::get_abs_tolorance(-597.12805462746462126233, rel_tolorance);
-	EXPECT_NEAR(res[7],  -597.12805462746462126233,  abs_tolorance);
-	abs_tolorance = CMath::get_abs_tolorance(-2281.20710267821459638071, rel_tolorance);
-	EXPECT_NEAR(res[8],  -2281.20710267821459638071,  abs_tolorance);
-	abs_tolorance = CMath::get_abs_tolorance(-9345.74193347713662660681, rel_tolorance);
-	EXPECT_NEAR(res[9],  -9345.74193347713662660681,  abs_tolorance);
+	abs_tolerance = CMath::get_abs_tolerance(-0.54789890348158110100, rel_tolerance);
+	EXPECT_NEAR(res[0],  -0.54789890348158110100,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-0.68861439622252362813, rel_tolerance);
+	EXPECT_NEAR(res[1],  -0.68861439622252362813,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(0.00000000000000000000, rel_tolerance);
+	EXPECT_NEAR(res[2],  0.00000000000000000000,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-0.36192936264423153370, rel_tolerance);
+	EXPECT_NEAR(res[3],  -0.36192936264423153370,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-0.00000690176209610232, rel_tolerance);
+	EXPECT_NEAR(res[4],  -0.00000690176209610232,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-40.88657697941886226545, rel_tolerance);
+	EXPECT_NEAR(res[5],  -40.88657697941886226545,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-154.94677031185918281153, rel_tolerance);
+	EXPECT_NEAR(res[6],  -154.94677031185918281153,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-597.12805462746462126233, rel_tolerance);
+	EXPECT_NEAR(res[7],  -597.12805462746462126233,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-2281.20710267821459638071, rel_tolerance);
+	EXPECT_NEAR(res[8],  -2281.20710267821459638071,  abs_tolerance);
+	abs_tolerance = CMath::get_abs_tolerance(-9345.74193347713662660681, rel_tolerance);
+	EXPECT_NEAR(res[9],  -9345.74193347713662660681,  abs_tolerance);
 	
 }
 
@@ -444,8 +444,8 @@ TEST(Statistics, log_det_general_test_2)
 
 TEST(Statistics,log_det_general_test_3)
 {
-	float64_t rel_tolorance = 1e-10;
-	float64_t abs_tolorance, result;
+	float64_t rel_tolerance = 1e-10;
+	float64_t abs_tolerance, result;
 
 	index_t size = 5;
 	SGMatrix<float64_t> A(size, size);
@@ -475,8 +475,8 @@ TEST(Statistics,log_det_general_test_3)
 	A(4,3) = 2.0;
 	A(4,4) = 9.0;
 	result = CStatistics::log_det_general(A);
-	abs_tolorance = CMath::get_abs_tolorance(15.438851375567365, rel_tolorance);
-	EXPECT_NEAR(result, 15.438851375567365, abs_tolorance);
+	abs_tolerance = CMath::get_abs_tolerance(15.438851375567365, rel_tolerance);
+	EXPECT_NEAR(result, 15.438851375567365, abs_tolerance);
 }
 
 TEST(Statistics,log_det_general_test_4)

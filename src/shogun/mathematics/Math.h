@@ -388,11 +388,11 @@ class CMath : public CSGObject
 		 * \f]
 		 *
 		 * @param true_value true value should be finite (neither NAN nor INF)
-		 * @param rel_tolorance relative tolerance should be positive and less than 1.0
+		 * @param rel_tolerance relative tolerance should be positive and less than 1.0
 		 *
 		 * @return the corresponding absolute tolerance
 		 */
-		static float64_t get_abs_tolorance(float64_t true_value, float64_t rel_tolorance);
+		static float64_t get_abs_tolerance(float64_t true_value, float64_t rel_tolerance);
 		
 		/** Rounds off the input value to it's nearest integer (as a floating-point value)
 		 * @param d input decimal value
