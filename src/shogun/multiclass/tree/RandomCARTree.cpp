@@ -108,7 +108,7 @@ int32_t CRandomCARTree::compute_best_attribute(SGMatrix<float64_t> mat, SGVector
 			feats[j]=mat(idx[i],j);
 
 		// O(N*logN)
-		SGVector<index_t> sorted_args=feats.argsort();
+		SGVector<index_t> sorted_args=CMath::argsort(feats);
 
 		// number of non-missing vecs
 		int32_t n_nm_vecs=feats.vlen;

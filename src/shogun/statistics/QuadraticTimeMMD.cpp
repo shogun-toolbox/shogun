@@ -758,7 +758,7 @@ float64_t CQuadraticTimeMMD::compute_p_value(float64_t statistic)
 		/* get samples from null-distribution and compute p-value of statistic */
 		SGVector<float64_t> null_samples=sample_null_spectrum(
 				m_num_samples_spectrum, m_num_eigenvalues_spectrum);
-		null_samples.qsort();
+		CMath::qsort(null_samples);
 		index_t pos=null_samples.find_position_to_insert(statistic);
 		result=1.0-((float64_t)pos)/null_samples.vlen;
 #else // HAVE_EIGEN3
@@ -773,7 +773,7 @@ float64_t CQuadraticTimeMMD::compute_p_value(float64_t statistic)
 		/* get samples from null-distribution and compute p-value of statistic */
 		SGVector<float64_t> null_samples=sample_null_spectrum_DEPRECATED(
 				m_num_samples_spectrum, m_num_eigenvalues_spectrum);
-		null_samples.qsort();
+		CMath::qsort(null_samples);
 		index_t pos=null_samples.find_position_to_insert(statistic);
 		result=1.0-((float64_t)pos)/null_samples.vlen;
 #else // HAVE_EIGEN3
@@ -810,7 +810,7 @@ float64_t CQuadraticTimeMMD::compute_threshold(float64_t alpha)
 		/* get samples from null-distribution and compute threshold */
 		SGVector<float64_t> null_samples=sample_null_spectrum(
 				m_num_samples_spectrum, m_num_eigenvalues_spectrum);
-		null_samples.qsort();
+		CMath::qsort(null_samples);
 		result=null_samples[index_t(CMath::floor(null_samples.vlen*(1-alpha)))];
 #else // HAVE_EIGEN3
 		SG_ERROR("Only possible if shogun is compiled with EIGEN3 enabled\n");
@@ -824,7 +824,7 @@ float64_t CQuadraticTimeMMD::compute_threshold(float64_t alpha)
 		/* get samples from null-distribution and compute threshold */
 		SGVector<float64_t> null_samples=sample_null_spectrum_DEPRECATED(
 				m_num_samples_spectrum, m_num_eigenvalues_spectrum);
-		null_samples.qsort();
+		CMath::qsort(null_samples);
 		result=null_samples[index_t(CMath::floor(null_samples.vlen*(1-alpha)))];
 #else // HAVE_EIGEN3
 		SG_ERROR("Only possible if shogun is compiled with EIGEN3 enabled\n");

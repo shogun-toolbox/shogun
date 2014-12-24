@@ -577,7 +577,7 @@ void CHMSVMModel::init_training()
 					signal[idx++] = feat_vec(f,j);
 			}
 
-			signal.qsort();
+			CMath::qsort(signal);
 			SGVector< float64_t > limits(m_num_plif_nodes);
 			for ( int32_t i = 0 ; i < m_num_plif_nodes ; ++i )
 				limits[i] = signal[ signal_idxs[i] ];

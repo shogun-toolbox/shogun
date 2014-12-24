@@ -597,7 +597,7 @@ TEST(Integration, generate_gauher)
 
 	CIntegration::generate_gauher(xgh, wgh);
 
-	SGVector<index_t> index = xgh.argsort();
+	SGVector<index_t> index = CMath::argsort(xgh);
 
 	abs_tolorance = CMath::get_abs_tolorance(-7.619048541679757, rel_tolorance);
 	EXPECT_NEAR(xgh[index[0]],  -7.619048541679757,  abs_tolorance);

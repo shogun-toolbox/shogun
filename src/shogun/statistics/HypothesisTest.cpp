@@ -31,6 +31,7 @@
 #include <shogun/statistics/HypothesisTest.h>
 #include <shogun/base/Parameter.h>
 #include <shogun/lib/SGVector.h>
+#include <shogun/mathematics/Math.h>
 
 using namespace shogun;
 
@@ -78,7 +79,7 @@ float64_t CHypothesisTest::compute_p_value(float64_t statistic)
 		SGVector<float64_t> values=sample_null();
 
 		/* find out percentile of parameter "statistic" in null distribution */
-		values.qsort();
+		CMath::qsort(values);
 		float64_t i=values.find_position_to_insert(statistic);
 
 		/* return corresponding p-value */
@@ -100,7 +101,7 @@ float64_t CHypothesisTest::compute_threshold(float64_t alpha)
 		SGVector<float64_t> values=sample_null();
 
 		/* return value of (1-alpha) quantile */
-		values.qsort();
+		CMath::qsort(values);
 		result=values[index_t(CMath::floor(values.vlen*(1-alpha)))];
 	}
 	else

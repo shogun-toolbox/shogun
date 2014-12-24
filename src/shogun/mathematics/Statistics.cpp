@@ -2064,7 +2064,7 @@ SGVector<int32_t> CStatistics::sample_indices(int32_t sample_size, int32_t N)
 	SG_FREE(idxs);
 
 	SGVector<int32_t> result=SGVector<int32_t>(permuted_idxs, sample_size);
-	result.qsort();
+	CMath::qsort(result);
 	return result;
 }
 

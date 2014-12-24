@@ -579,7 +579,7 @@ void CRelaxedTree::enforce_balance_constraints_upper(SGVector<int32_t> &mu, SGVe
 		}
 	}
 
-	SGVector<index_t> sorted_index = S_delta.argsort();
+	SGVector<index_t> sorted_index = CMath::argsort(S_delta);
 	SGVector<float64_t> S_delta_sorted(S_delta.vlen);
 	for (index_t i=0; i < sorted_index.vlen; ++i)
 	{
@@ -768,7 +768,7 @@ void CRelaxedTree::enforce_balance_constraints_lower(SGVector<int32_t> &mu, SGVe
 		}
 	}
 
-	SGVector<index_t> sorted_index = S_delta.argsort();
+	SGVector<index_t> sorted_index = CMath::argsort(S_delta);
 	SGVector<float64_t> S_delta_sorted(S_delta.vlen);
 	for (index_t i=0; i < sorted_index.vlen; ++i)
 	{
