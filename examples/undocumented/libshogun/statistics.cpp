@@ -142,13 +142,13 @@ void test_inverse_student_t()
 	SG_SPRINT("inverse_student_t(0.99, 3)=%f\n", difference);
 	difference-=4.540702858568132;
 	difference=CMath::abs(difference);
-	ASSERT(difference<=10E-20);
+	ASSERT(difference<=10E-14);
 
 	difference=boost::math::detail::inverse_students_t(4.0, 0.99, 1-0.99,boost::math::policies::policy<>());
 	SG_SPRINT("inverse_student_t(0.99, 4)=%f\n", difference);
 	difference-=3.746947387979196;
 	difference=CMath::abs(difference);
-	ASSERT(difference<=10E-20);
+	ASSERT(difference<=10E-14);
 }
 
 void test_incomplete_gamma()
