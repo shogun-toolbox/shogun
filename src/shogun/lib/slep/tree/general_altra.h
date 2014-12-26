@@ -19,10 +19,6 @@
 
 #include <shogun/lib/config.h>
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-#include <string.h>
 
 /*
  * Important Notice: September 20, 2010

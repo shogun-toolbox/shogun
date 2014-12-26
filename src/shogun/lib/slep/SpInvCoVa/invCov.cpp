@@ -15,6 +15,10 @@
  */
 
 #include <shogun/lib/slep/SpInvCoVa/invCov.h>
+#include <shogun/mathematics/Math.h>
+
+#include <stdlib.h>
+#include <time.h>
 
 void m_Ax(double *Ax, double  *A, double *x, int n, int ith)
 {

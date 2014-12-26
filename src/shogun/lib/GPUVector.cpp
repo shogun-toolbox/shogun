@@ -45,6 +45,8 @@
 #include <shogun/mathematics/eigen3.h>
 #endif
 
+#include <memory>
+
 namespace shogun
 {
 
